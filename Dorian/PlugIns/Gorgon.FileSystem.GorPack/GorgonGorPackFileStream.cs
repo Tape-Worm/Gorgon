@@ -405,6 +405,7 @@ namespace GorgonLibrary.FileSystem.GorPack
 		public override void Close()
 		{
 			Dispose(true);
+			GC.SuppressFinalize(this);
 		}
 		#endregion
 

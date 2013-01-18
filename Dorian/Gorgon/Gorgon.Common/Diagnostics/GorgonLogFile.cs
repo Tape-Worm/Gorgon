@@ -266,7 +266,8 @@ namespace GorgonLibrary.Diagnostics
 		/// </summary>
 		void IDisposable.Dispose()
 		{
-			Dispose(true);			
+			Dispose(true);
+			GC.SuppressFinalize(this);
 		}
 		#endregion
 	}

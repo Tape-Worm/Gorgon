@@ -1663,7 +1663,7 @@ namespace GorgonLibrary
 		/// </summary>
 		~GorgonDataStream()
 		{
-			Dispose(true);
+			Dispose(false);
 		}
 		#endregion
 	}
