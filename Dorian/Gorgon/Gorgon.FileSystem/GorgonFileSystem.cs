@@ -26,6 +26,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -39,25 +40,59 @@ namespace GorgonLibrary.FileSystem
 	/// </summary>
 	/// <remarks>This will allow the user to mount folders or packed files (such as Zip files) into a unified file system.  For example, if the user has mount MyData.zip and C:\users\Bob\Data\ into the file system then
 	/// all files and/or directories from both sources would be combined into a single virtual file system.
-	/// <para>Accessing a file is handled like this:  GorgonFileSystem.ReadFile("\MyFile.txt");  It won't matter where MyFile.txt is stored, the system will know where to find it.</para>
-	/// <para>Writing in the file system is restricted to a single directory specified by the <see cref="P:GorgonLibrary.FileSystem.GorgonFileSystem.WriteLocation">WriteLocaton</see> property.  Any files written or updated (depending on whether the file system will allow it) will be sent to this location.</para>
+	/// <para>Accessing a file is handled like this:  GorgonFileSystem.ReadFile("/MyFile.txt");  It won't matter where MyFile.txt is stored on the physical file system, the system will know where to find it.</para>
+	/// <para>Writing in the file system reroutes the data to a location under a physical file system directory.  This directory is specified by the <see cref="P:GorgonLibrary.FileSystem.GorgonFileSystem.WriteLocation">WriteLocaton</see> property.  
+	/// For example, if the user sets the WriteLocation to C:\MyWriteDirectory, and proceeds to create a new file called "SomeText.txt" in the root of the virtual file system, then the file will be sent to 
+	/// "C:\MyWriteDirectory\SomeText.txt".  Likewise, if a file, /SubDir1/SomeText.txt is in a sub directory on the virtual file system, the file will be rerouted to "C:\MyWriteDirectory\SubDir1\SomeText.txt".</para>
+	/// <para>The order in which file systems are mounted into the virtual file system is important.  If a zip file contains SomeText.txt, and a directory to be mounted as root contains the same file and the
+	/// directory is mounted first, followed by the zip, then the zip file version of the SomeText.txt file will take precedence and will be used.  The only exception to this rule is the WriteLocation directory
+	/// which has the highest precedence over all files.</para>
 	/// </remarks>
 	public class GorgonFileSystem
 	{
 		#region Variables.
+		private bool _mountListChanged = false;									// Flag to indicate that the mount point list was changed.
+		private static readonly object _syncLock = new object();				// Synchronization object.
+		private ReadOnlyCollection<GorgonFileSystemMountPoint> _mountPointList = null;			// The list of mount points to expose to the user.
+		private IList<GorgonFileSystemMountPoint> _mountPoints = null;							// Mount points.
 		private string _writeLocation = string.Empty;							// The area on the physical file system that we can write into.
+		private Type _defaultProviderType = null;								// Type for the default file system provider (folder file system).
 		#endregion
 
 		#region Properties.
 		/// <summary>
+		/// Property to return a list of current mount points.
+		/// </summary>
+		public IList<GorgonFileSystemMountPoint> MountPoints
+		{
+			get
+			{
+				if (_mountListChanged)
+				{
+					lock (_syncLock)
+					{
+						if (_mountListChanged)
+						{
+							_mountListChanged = false;
+							_mountPointList = new ReadOnlyCollection<GorgonFileSystemMountPoint>(_mountPoints);							
+						}
+					}
+				}
+
+				return _mountPointList;
+			}
+		}
+
+		/// <summary>
 		/// Property to set or return the location on the physical file system that can be written to.
 		/// </summary>
-		/// <remarks>The path for the write location must be an area that the user can write into, otherwise any write operations will fail.
-		/// <para>If NULL (Nothing in VB.Net) or an empty string is assigned to this property, then no writeable area is assigned.  This is the default setting.</para>
-		/// <para>Files written to this location will be created using the directories of the virtual file system.  So, if the user sets "C:\MyWriteArea\" as the writeable location and then
+		/// <remarks>Files written to this location will be created using the directories of the virtual file system.  So, if the user sets "C:\MyWriteArea\" as the writeable location and then
 		/// proceeds to create a directory:  "/LetsSayThisIsaZipFileDirectory/ZipDirectory/MyNewDirectory", the directory will be created in "C:\MyWriteArea\LetsSayThisIsaZipFileDirectory\ZipDirectory\".
-		/// This also applies to files being written into a directory.  If the user creates a file: "/MountedFolder/MyFile.txt", then the file will be created as "C:\MyWriteArea\MountedFolder\MyFile.txt".</para>
-		/// <para>The write directory is not mounted into the file system for read operations, the user will be responsible for mounting the write directory.</para>
+		/// This also applies to files being written into a directory.  If the user creates a file: "/MountedFolder/MyFile.txt", then the file will be created as "C:\MyWriteArea\MountedFolder\MyFile.txt".
+		/// <para>The write directory is automatically mounted last and will have precedence over all files in the file system (i.e. files retrieved will come from the write location first if they exist).</para>
+		/// <para>If this value is set to NULL (Nothing in VB.Net) or an empty string, then no writeable area is assigned.  This will make the file system read-only until a valid write location is applied 
+		/// to the property.  This is the default setting.</para>
+		/// <para>The path for the write location must be an area that the user can write into, otherwise any write operations will fail.</para>
 		/// </remarks>
 		public string WriteLocation
 		{
@@ -71,13 +106,16 @@ namespace GorgonLibrary.FileSystem
 					value = string.Empty;
 				_writeLocation = value;
 
-				if (string.IsNullOrEmpty(_writeLocation))
-					return;
+				if (!string.IsNullOrEmpty(_writeLocation))
+				{
+					_writeLocation = _writeLocation.FormatDirectory(Path.DirectorySeparatorChar);
 
-				_writeLocation = _writeLocation.FormatDirectory(Path.DirectorySeparatorChar);
+					if (!Directory.Exists(_writeLocation))
+						Directory.CreateDirectory(_writeLocation);
+				}
 
-				if (!Directory.Exists(_writeLocation))
-					Directory.CreateDirectory(_writeLocation);
+				// Query the files/sub directories in the write location.
+				Refresh();
 			}
 		}
 
@@ -101,6 +139,23 @@ namespace GorgonLibrary.FileSystem
 		#endregion
 
 		#region Methods.
+		/// <summary>
+		/// Function to query the write location.
+		/// </summary>
+		private void QueryWriteLocation()
+		{
+			var folderProvider = Providers[_defaultProviderType.FullName];
+
+			// If we've not included a write location, then leave.
+			if ((string.IsNullOrEmpty(WriteLocation)) || (folderProvider == null))
+			{
+				return;
+			}
+
+			// Mount the writable location into the root.			
+			folderProvider.Mount(WriteLocation, "/");
+		}
+		
 		/// <summary>
 		/// Function to recursively search for files.
 		/// </summary>
@@ -151,6 +206,32 @@ namespace GorgonLibrary.FileSystem
 			}
 		}
 
+		/// <summary>
+		/// Function to unmount the mounted virtual file system directories and files pointed at by a mount point.
+		/// </summary>
+		/// <param name="mountPoint">Mount point to unmount.</param>
+		/// <exception cref="System.IO.IOException">The path was not found.</exception>
+		/// <returns>TRUE if unmounted, FALSE if not.</returns>
+		private bool UnmountMountPoint(GorgonFileSystemMountPoint mountPoint)
+		{
+			if (string.IsNullOrWhiteSpace(mountPoint.PhysicalPath))
+			{
+				return false;
+			}
+
+			string physicalPath = Path.GetFullPath(mountPoint.PhysicalPath);
+
+			if (!_mountPoints.Contains(mountPoint))
+			{
+				throw new IOException("The mount point '" + mountPoint.MountLocation + "' with physical location '" + mountPoint.PhysicalPath + "' was not found.");
+			}
+
+			_mountPoints.Remove(mountPoint);
+			_mountListChanged = true;
+
+			return true;
+		}
+		
 		/// <summary>
 		/// Function to add a directory entry to the list of directories.
 		/// </summary>
@@ -239,13 +320,9 @@ namespace GorgonLibrary.FileSystem
 			if (directory == null)
 				throw new ArgumentException("The path '" + directoryName + "' could not be found.", "path");
 
-			if (!directory.Files.Contains(fileName))
-			{
-				result = new GorgonFileSystemFileEntry(provider, directory, fileName, mountPoint, physicalLocation, size, offset, createDate);
-				directory.Files.Add(result);
-			}
-			else
-				return directory.Files[fileName];
+			// If the file exists, then override it.
+			result = new GorgonFileSystemFileEntry(provider, directory, fileName, mountPoint, physicalLocation, size, offset, createDate);
+			directory.Files[fileName] = result;
 
 			return result;
 		}
@@ -528,7 +605,7 @@ namespace GorgonLibrary.FileSystem
 			file = GetFile(path);
 
 			if (file == null)
-				file = AddFileEntry(Providers[typeof(GorgonFolderFileSystemProvider).FullName], path, Path.GetDirectoryName(GetWritePath(path)) + Path.DirectorySeparatorChar.ToString(), GetWritePath(path), 0, 0, DateTime.Now);
+				file = AddFileEntry(Providers[_defaultProviderType.FullName], path, Path.GetDirectoryName(GetWritePath(path)) + Path.DirectorySeparatorChar.ToString(), GetWritePath(path), 0, 0, DateTime.Now);
 
 			file.Provider.WriteFile(file, data);
 		}
@@ -560,7 +637,7 @@ namespace GorgonLibrary.FileSystem
 				if (!writeable)
 					throw new FileNotFoundException("Could not find the file '" + path + "'.", path);
 				else
-					file = AddFileEntry(Providers[typeof(GorgonFolderFileSystemProvider).FullName], path, Path.GetDirectoryName(GetWritePath(path)) + Path.DirectorySeparatorChar.ToString(), GetWritePath(path), 0, 0, DateTime.Now);
+					file = AddFileEntry(Providers[_defaultProviderType.FullName], path, Path.GetDirectoryName(GetWritePath(path)) + Path.DirectorySeparatorChar.ToString(), GetWritePath(path), 0, 0, DateTime.Now);
 			}
 			
 			return file.Provider.OpenStream(file, writeable);
@@ -701,9 +778,91 @@ namespace GorgonLibrary.FileSystem
 		/// </summary>
 		public void Clear()
 		{
+			_mountListChanged = true;
+			_mountPoints.Clear();
 			RootDirectory.Directories.Clear();
 			RootDirectory.Files.Clear();
 		}
+
+		/// <summary>
+		/// Function to refresh all the files and directories in the file system.
+		/// </summary>
+		public void Refresh()
+		{
+			string writeLocation = this.WriteLocation;
+
+			try
+			{
+				RootDirectory.Directories.Clear();
+				RootDirectory.Files.Clear();
+
+				_writeLocation = string.Empty;
+
+				// This isn't the most efficient way, but it works.
+				// Since the directories don't track which physical location they're in
+				// and files only track the last mounted physical location, we have no way
+				// to selectively exclude files.  The best approach at this point is to 
+				// just clear it all out, and start over.
+				foreach (GorgonFileSystemMountPoint mountPoint in _mountPoints)
+				{
+					Mount(mountPoint.PhysicalPath, mountPoint.MountLocation);
+				}
+			}
+			finally
+			{
+				if (!string.IsNullOrWhiteSpace(writeLocation))
+				{
+					_writeLocation = writeLocation;
+					QueryWriteLocation();
+				}
+			}
+		}
+
+		/// <summary>
+		/// Function to unmount the mounted virtual file system directories and files pointed at by a mount point.
+		/// </summary>
+		/// <param name="mountPoint">The mount point to unmount.</param>
+		/// <exception cref="System.IO.IOException">The path was not found.</exception>
+		public void Unmount(GorgonFileSystemMountPoint mountPoint)
+		{
+			if (UnmountMountPoint(mountPoint))
+			{
+				Refresh();
+			}
+		}
+
+		/// <summary>
+		/// Function to unmount the mounted virtual file system directories and files pointed at the by the physical path specified and mounted into the mount location specified.
+		/// </summary>
+		/// <param name="physicalPath">Physical file system path.</param>
+		/// <param name="mountLocation">Virtual sub directory that the physical location is mounted under.</param>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="physicalPath"/> or the <paramref name="mountLocation"/> parameters are NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="physicalPath"/> or the <paramref name="mountLocation"/> parameters are empty.</exception>
+		/// <exception cref="System.IO.IOException">The path was not found.</exception>
+		public void Unmount(string physicalPath, string mountLocation)
+		{
+			GorgonDebug.AssertParamString(physicalPath, "physicalPath");
+			GorgonDebug.AssertParamString(mountLocation, "mountLocation");
+
+			Unmount(new GorgonFileSystemMountPoint(physicalPath, mountLocation));
+		}
+
+		/// <summary>
+		/// Function to unmount the mounted virtual file system directories and files pointed at by a physical path.
+		/// </summary>
+		/// <param name="physicalPath">The physical path to unmount.</param>
+		/// <remarks>This overload will unmount all the mounted virtual files/directories for every mount point with the specified <paramref name="physicalPath"/>.</remarks>
+		public void Unmount(string physicalPath)
+		{
+			var mountPoints = _mountPoints.Where(item => string.Compare(Path.GetFullPath(physicalPath), Path.GetFullPath(item.PhysicalPath), true) == 0);
+
+			foreach (var mountPoint in mountPoints)
+			{
+				UnmountMountPoint(mountPoint);				
+			}
+
+			Refresh();
+		}		
 
 		/// <summary>
 		/// Function to mount a physical file system into the virtual file system.
@@ -712,11 +871,24 @@ namespace GorgonLibrary.FileSystem
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="source"/> parameter is NULL (Nothing in VB.Net).</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="source"/> parameter is an empty string.
 		/// <para>-or-</para><para>Thrown when the path in the <paramref name="source"/> parameter is not valid.</para>
-		/// <para>-or-</para><para>Thrown when the file in the <paramref name="source"/> parameter cannot be read by any of the file system providers.</para>
 		/// </exception>
+		/// <exception cref="System.IO.IOException">Thrown when the file pointed to by the physicalPath parameter could not be read by any of the file system providers.</exception>
 		public void Mount(string source)
 		{
 			Mount(source, "/");
+		}
+
+		/// <summary>
+		/// Function to mount a physical file system into the virtual file system.
+		/// </summary>
+		/// <param name="mountPoint">The mount point containing the physical path and the virtual file system location.</param>
+		/// <exception cref="System.ArgumentException">Thrown when the physical path in the <paramref name="mountPoint"/> parameter is not valid.
+		/// <para>-or-</para><para>Thrown when the file in the mountPoint parameter cannot be read by any of the file system providers.</para>
+		/// </exception>
+		/// <exception cref="System.IO.IOException">Thrown when the file pointed to by the physicalPath parameter could not be read by any of the file system providers.</exception>
+		public void Mount(GorgonFileSystemMountPoint mountPoint)
+		{
+			Mount(mountPoint.PhysicalPath, mountPoint.MountLocation);
 		}
 
 		/// <summary>
@@ -727,8 +899,8 @@ namespace GorgonLibrary.FileSystem
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="physicalPath"/> or the <paramref name="mountPath"/> parameter is NULL (Nothing in VB.Net).</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="physicalPath"/> or the <paramref name="mountPath"/> parameter is an empty string.
 		/// <para>-or-</para><para>Thrown when the path in the <paramref name="physicalPath"/> parameter is not valid.</para>
-		/// <para>-or-</para><para>Thrown when the file in the <paramref name="physicalPath"/> parameter cannot be read by any of the file system providers.</para>
 		/// </exception>
+		/// <exception cref="System.IO.IOException">Thrown when the file pointed to by the physicalPath parameter could not be read by any of the file system providers.</exception>
 		public void Mount(string physicalPath, string mountPath)
 		{
 			string fileName = string.Empty;
@@ -737,6 +909,12 @@ namespace GorgonLibrary.FileSystem
 
 			GorgonDebug.AssertParamString(physicalPath, "physicalPath");
 			GorgonDebug.AssertParamString(mountPath, "mountPath");
+
+			// Don't mount the write location.  It will be automatically queried every time we mount a physical location.
+			if ((!string.IsNullOrEmpty(WriteLocation)) && (string.Compare(physicalPath, WriteLocation, true) == 0))
+			{
+				return;
+			}
 
 			physicalPath = Path.GetFullPath(physicalPath);
 			fileName = Path.GetFileName(physicalPath);
@@ -751,11 +929,18 @@ namespace GorgonLibrary.FileSystem
 				directory = directory.FormatDirectory(Path.DirectorySeparatorChar);
 
 				// Use the default folder provider.
-				provider = Providers[typeof(GorgonFolderFileSystemProvider).FullName];
+				provider = Providers[_defaultProviderType.FullName];
 				if (!Directory.Exists(directory))
 					throw new ArgumentException("The path '" + directory + "' does not exist.", "physicalPath");
+				
 				provider.Mount(physicalPath, mountPath);
 
+				GorgonFileSystemMountPoint mountPoint = new GorgonFileSystemMountPoint(physicalPath, mountPath);
+				if (!_mountPoints.Contains(mountPoint))
+				{
+					_mountPoints.Add(mountPoint);
+					_mountListChanged = true;
+				}
 				return;
 			}
 
@@ -772,11 +957,21 @@ namespace GorgonLibrary.FileSystem
 				if (fileSystemProvider.CanReadFile(directory + fileName))
 				{					
 					fileSystemProvider.Mount(physicalPath, mountPath);
+
+					GorgonFileSystemMountPoint mountPoint = new GorgonFileSystemMountPoint(physicalPath, mountPath);
+					if (!_mountPoints.Contains(mountPoint))
+					{
+						_mountPoints.Add(mountPoint);
+						_mountListChanged = true;
+					}
 					return;
 				}
 			}
 
-			throw new ArgumentException("The file '" + directory + fileName + "' could not be read by any of the loaded file system providers.", "source");
+			// Requery the write location if it exists.
+			QueryWriteLocation();
+
+			throw new IOException("The file '" + directory + fileName + "' could not be read by any of the loaded file system providers.");
 		}
 
 		/// <summary>
@@ -810,6 +1005,10 @@ namespace GorgonLibrary.FileSystem
 		/// </summary>
 		public GorgonFileSystem()
 		{
+			_defaultProviderType = typeof(GorgonFolderFileSystemProvider);
+			_mountPoints = new List<GorgonFileSystemMountPoint>();
+			_mountPointList = new ReadOnlyCollection<GorgonFileSystemMountPoint>(_mountPoints);
+
 			Providers = new GorgonFileSystemProviderCollection(this);
 			RootDirectory = new GorgonFileSystemDirectory("/", null);
 			Clear();

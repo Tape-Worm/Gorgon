@@ -49,22 +49,23 @@
 			// 
 			this.labelText.BackColor = System.Drawing.Color.White;
 			this.labelText.Dock = System.Windows.Forms.DockStyle.Bottom;
-			this.labelText.Location = new System.Drawing.Point(0, 125);
+			this.labelText.Location = new System.Drawing.Point(0, 121);
 			this.labelText.Name = "labelText";
-			this.labelText.Size = new System.Drawing.Size(620, 23);
+			this.labelText.Size = new System.Drawing.Size(620, 27);
 			this.labelText.TabIndex = 2;
 			this.labelText.Text = "Here\'s some splash screen text!";
 			this.labelText.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			// 
 			// formSplash
 			// 
-			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+			this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.BackColor = System.Drawing.Color.White;
 			this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
 			this.ClientSize = new System.Drawing.Size(622, 150);
 			this.ControlBox = false;
 			this.Controls.Add(this.panel1);
+			this.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
 			this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
 			this.MaximizeBox = false;

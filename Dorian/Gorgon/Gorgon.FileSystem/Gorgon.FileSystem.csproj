@@ -59,6 +59,7 @@
     <Compile Include="GorgonFileSystemDirectoryCollection.cs" />
     <Compile Include="GorgonFileSystemFileEntry.cs" />
     <Compile Include="GorgonFileSystemFileEntryCollection.cs" />
+    <Compile Include="GorgonFileSystemMountPoint.cs" />
     <Compile Include="GorgonFileSystemProvider.cs" />
     <Compile Include="GorgonFileSystemProviderCollection.cs" />
     <Compile Include="GorgonFileSystemProviderPlugIn.cs" />

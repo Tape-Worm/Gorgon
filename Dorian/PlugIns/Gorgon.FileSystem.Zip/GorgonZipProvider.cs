@@ -101,17 +101,6 @@ namespace GorgonLibrary.FileSystem.Zip
 		}
 
 		/// <summary>
-		/// Function called when a file is written to the provider.
-		/// </summary>
-		/// <param name="file">File to read.</param>
-		/// <param name="data">Data to write to the file.</param>
-		/// <remarks>Implementors must implement this method to read the file from the physical file system.</remarks>
-		protected override void OnWriteFile(GorgonFileSystemFileEntry file, byte[] data)
-		{
-			throw new NotImplementedException("The " + GetType().FullName + " provider is read-only.");
-		}
-
-		/// <summary>
 		/// Function called when a file is opened as a file stream.
 		/// </summary>
 		/// <param name="file">File to open.</param>
@@ -119,24 +108,15 @@ namespace GorgonLibrary.FileSystem.Zip
 		/// <returns>
 		/// The open <see cref="GorgonLibrary.FileSystem.GorgonFileSystemStream"/> file stream object.
 		/// </returns>
-		/// <remarks>Some providers cannot write, and should throw an exception.</remarks>
 		protected override GorgonFileSystemStream OnOpenFileStream(GorgonFileSystemFileEntry file, bool writeable)
 		{
-			FileStream stream = null;
-
 			if (writeable)
-				throw new NotImplementedException("The " + GetType().FullName + " provider is read-only.");
-
-			try
 			{
-				stream = File.Open(file.MountPoint, FileMode.Open, FileAccess.Read, FileShare.Read);
-				return new GorgonZipFileStream(file, stream);
+				return WriteToWriteLocation(file);
 			}
-			catch
+			else
 			{
-				if (stream != null)
-					stream.Dispose();
-				throw;
+				return new GorgonZipFileStream(file, File.Open(file.MountPoint, FileMode.Open, FileAccess.Read, FileShare.Read));
 			}
 		} 
 
