@@ -59,7 +59,7 @@
 			this.panelDisplay.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.panelDisplay.Location = new System.Drawing.Point(0, 0);
 			this.panelDisplay.Name = "panelDisplay";
-			this.panelDisplay.Size = new System.Drawing.Size(778, 474);
+			this.panelDisplay.Size = new System.Drawing.Size(778, 462);
 			this.panelDisplay.TabIndex = 0;
 			// 
 			// panelControllers
@@ -71,9 +71,9 @@
 			this.panelControllers.Controls.Add(this.panelController2);
 			this.panelControllers.Controls.Add(this.panelController3);
 			this.panelControllers.Dock = System.Windows.Forms.DockStyle.Bottom;
-			this.panelControllers.Location = new System.Drawing.Point(0, 474);
+			this.panelControllers.Location = new System.Drawing.Point(0, 462);
 			this.panelControllers.Name = "panelControllers";
-			this.panelControllers.Size = new System.Drawing.Size(778, 80);
+			this.panelControllers.Size = new System.Drawing.Size(778, 92);
 			this.panelControllers.TabIndex = 1;
 			// 
 			// panelController0
@@ -84,15 +84,15 @@
 			this.panelController0.Dock = System.Windows.Forms.DockStyle.Bottom;
 			this.panelController0.Location = new System.Drawing.Point(0, 0);
 			this.panelController0.Name = "panelController0";
-			this.panelController0.Size = new System.Drawing.Size(778, 20);
+			this.panelController0.Size = new System.Drawing.Size(778, 23);
 			this.panelController0.TabIndex = 2;
 			// 
 			// labelController0
 			// 
 			this.labelController0.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.labelController0.Location = new System.Drawing.Point(20, 0);
+			this.labelController0.Location = new System.Drawing.Point(23, 0);
 			this.labelController0.Name = "labelController0";
-			this.labelController0.Size = new System.Drawing.Size(758, 20);
+			this.labelController0.Size = new System.Drawing.Size(755, 23);
 			this.labelController0.TabIndex = 0;
 			this.labelController0.Text = "XBox Controller";
 			this.labelController0.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -104,7 +104,7 @@
 			this.pictureBox1.Image = global::GorgonLibrary.Examples.Properties.Resources.device_gamepad_16x16;
 			this.pictureBox1.Location = new System.Drawing.Point(0, 0);
 			this.pictureBox1.Name = "pictureBox1";
-			this.pictureBox1.Size = new System.Drawing.Size(20, 20);
+			this.pictureBox1.Size = new System.Drawing.Size(23, 23);
 			this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
 			this.pictureBox1.TabIndex = 1;
 			this.pictureBox1.TabStop = false;
@@ -116,18 +116,18 @@
 			this.panelController1.Controls.Add(this.labelController1);
 			this.panelController1.Controls.Add(this.pictureBox2);
 			this.panelController1.Dock = System.Windows.Forms.DockStyle.Bottom;
-			this.panelController1.Location = new System.Drawing.Point(0, 20);
+			this.panelController1.Location = new System.Drawing.Point(0, 23);
 			this.panelController1.Name = "panelController1";
-			this.panelController1.Size = new System.Drawing.Size(778, 20);
+			this.panelController1.Size = new System.Drawing.Size(778, 23);
 			this.panelController1.TabIndex = 3;
 			this.panelController1.Visible = false;
 			// 
 			// labelController1
 			// 
 			this.labelController1.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.labelController1.Location = new System.Drawing.Point(20, 0);
+			this.labelController1.Location = new System.Drawing.Point(23, 0);
 			this.labelController1.Name = "labelController1";
-			this.labelController1.Size = new System.Drawing.Size(758, 20);
+			this.labelController1.Size = new System.Drawing.Size(755, 23);
 			this.labelController1.TabIndex = 0;
 			this.labelController1.Text = "XBox Controller";
 			this.labelController1.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -139,7 +139,7 @@
 			this.pictureBox2.Image = global::GorgonLibrary.Examples.Properties.Resources.device_gamepad_16x16;
 			this.pictureBox2.Location = new System.Drawing.Point(0, 0);
 			this.pictureBox2.Name = "pictureBox2";
-			this.pictureBox2.Size = new System.Drawing.Size(20, 20);
+			this.pictureBox2.Size = new System.Drawing.Size(23, 23);
 			this.pictureBox2.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
 			this.pictureBox2.TabIndex = 1;
 			this.pictureBox2.TabStop = false;
@@ -151,18 +151,18 @@
 			this.panelController2.Controls.Add(this.labelController2);
 			this.panelController2.Controls.Add(this.pictureBox3);
 			this.panelController2.Dock = System.Windows.Forms.DockStyle.Bottom;
-			this.panelController2.Location = new System.Drawing.Point(0, 40);
+			this.panelController2.Location = new System.Drawing.Point(0, 46);
 			this.panelController2.Name = "panelController2";
-			this.panelController2.Size = new System.Drawing.Size(778, 20);
+			this.panelController2.Size = new System.Drawing.Size(778, 23);
 			this.panelController2.TabIndex = 4;
 			this.panelController2.Visible = false;
 			// 
 			// labelController2
 			// 
 			this.labelController2.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.labelController2.Location = new System.Drawing.Point(20, 0);
+			this.labelController2.Location = new System.Drawing.Point(23, 0);
 			this.labelController2.Name = "labelController2";
-			this.labelController2.Size = new System.Drawing.Size(758, 20);
+			this.labelController2.Size = new System.Drawing.Size(755, 23);
 			this.labelController2.TabIndex = 0;
 			this.labelController2.Text = "XBox Controller";
 			this.labelController2.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -174,7 +174,7 @@
 			this.pictureBox3.Image = global::GorgonLibrary.Examples.Properties.Resources.device_gamepad_16x16;
 			this.pictureBox3.Location = new System.Drawing.Point(0, 0);
 			this.pictureBox3.Name = "pictureBox3";
-			this.pictureBox3.Size = new System.Drawing.Size(20, 20);
+			this.pictureBox3.Size = new System.Drawing.Size(23, 23);
 			this.pictureBox3.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
 			this.pictureBox3.TabIndex = 1;
 			this.pictureBox3.TabStop = false;
@@ -186,18 +186,18 @@
 			this.panelController3.Controls.Add(this.labelController3);
 			this.panelController3.Controls.Add(this.pictureBox4);
 			this.panelController3.Dock = System.Windows.Forms.DockStyle.Bottom;
-			this.panelController3.Location = new System.Drawing.Point(0, 60);
+			this.panelController3.Location = new System.Drawing.Point(0, 69);
 			this.panelController3.Name = "panelController3";
-			this.panelController3.Size = new System.Drawing.Size(778, 20);
+			this.panelController3.Size = new System.Drawing.Size(778, 23);
 			this.panelController3.TabIndex = 5;
 			this.panelController3.Visible = false;
 			// 
 			// labelController3
 			// 
 			this.labelController3.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.labelController3.Location = new System.Drawing.Point(20, 0);
+			this.labelController3.Location = new System.Drawing.Point(23, 0);
 			this.labelController3.Name = "labelController3";
-			this.labelController3.Size = new System.Drawing.Size(758, 20);
+			this.labelController3.Size = new System.Drawing.Size(755, 23);
 			this.labelController3.TabIndex = 0;
 			this.labelController3.Text = "XBox Controller";
 			this.labelController3.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -209,7 +209,7 @@
 			this.pictureBox4.Image = global::GorgonLibrary.Examples.Properties.Resources.device_gamepad_16x16;
 			this.pictureBox4.Location = new System.Drawing.Point(0, 0);
 			this.pictureBox4.Name = "pictureBox4";
-			this.pictureBox4.Size = new System.Drawing.Size(20, 20);
+			this.pictureBox4.Size = new System.Drawing.Size(23, 23);
 			this.pictureBox4.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
 			this.pictureBox4.TabIndex = 1;
 			this.pictureBox4.TabStop = false;
@@ -217,11 +217,12 @@
 			// 
 			// formMain
 			// 
-			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+			this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.ClientSize = new System.Drawing.Size(778, 554);
 			this.Controls.Add(this.panelDisplay);
 			this.Controls.Add(this.panelControllers);
+			this.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
 			this.Name = "formMain";
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;

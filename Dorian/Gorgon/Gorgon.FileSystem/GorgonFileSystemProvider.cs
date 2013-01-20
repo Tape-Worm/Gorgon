@@ -113,6 +113,32 @@ namespace GorgonLibrary.FileSystem
 		}
 
 		/// <summary>
+		/// Function to write a file into the write location.
+		/// </summary>
+		/// <param name="file">File to write to the write location.</param>
+		/// <returns>The writable stream for the file.</returns>
+		/// <exception cref="System.InvalidOperationException">Thrown when the <see cref="P:GorgonLibrary.FileSystem.GorgonFileSystem.WriteLocation">WriteLocation</see> property is not set.</exception>
+		protected GorgonFileSystemStream WriteToWriteLocation(GorgonFileSystemFileEntry file)
+		{			
+			if (string.IsNullOrEmpty(FileSystem.WriteLocation))
+				throw new InvalidOperationException("Cannot write to the file '" + file.FullPath + "' because the there is no write path set.");
+
+			string newPath = GetWritePath(file.FullPath);
+
+			if (!Directory.Exists(Path.GetDirectoryName(newPath)))
+			{
+				Directory.CreateDirectory(Path.GetDirectoryName(newPath));
+			}
+
+			// Write the file out to the write location.
+			FileStream stream = File.Open(newPath, FileMode.Create, FileAccess.ReadWrite, FileShare.ReadWrite);
+			UpdateFileInfo(file, null, null, null, newPath, this);
+
+			return new GorgonFileSystemStream(file, stream);
+		}
+
+
+		/// <summary>
 		/// Function to enumerate the files and directories for a mount point.
 		/// </summary>
 		/// <param name="physicalMountPoint">Mount point being enumerated.</param>
@@ -132,8 +158,20 @@ namespace GorgonLibrary.FileSystem
 		/// </summary>
 		/// <param name="file">File to read.</param>
 		/// <param name="data">Data to write to the file.</param>
-		/// <remarks>Implementors must implement this method to read the file from the physical file system.</remarks>
-		protected abstract void OnWriteFile(GorgonFileSystemFileEntry file, byte[] data);
+		/// <exception cref="System.InvalidOperationException">Thrown when the <see cref="P:GorgonLibrary.FileSystem.GorgonFileSystem.WriteLocation">WriteLocation</see> on the file system is empty.</exception>
+		protected void OnWriteFile(GorgonFileSystemFileEntry file, byte[] data)
+		{
+			FileInfo info = null;
+			string newPath = string.Empty;
+
+			using (Stream stream = WriteToWriteLocation(file))
+			{
+				stream.Write(data, 0, data.Length);
+			}
+
+			info = new FileInfo(newPath);
+			UpdateFileInfo(file, info.Length, null, info.CreationTime, newPath, this);
+		}
 
 		/// <summary>
 		/// Function called when a file is opened as a file stream.

@@ -53,6 +53,31 @@ namespace GorgonLibrary.FileSystem
 			{
 				return GetItem(fileName.RemoveIllegalFilenameChars());
 			}
+			internal set
+			{
+				bool exists = Contains(fileName);
+				string formattedFileName = fileName.RemoveIllegalFilenameChars();
+
+				// If we pass in NULL, remove the file.
+				if (value == null)
+				{
+					if (exists)
+					{
+						Remove(GetItem(formattedFileName));						
+					}
+
+					return;
+				}
+
+				if (!exists)
+				{
+					Add(value);
+				}
+				else
+				{					
+					SetItem(formattedFileName, value);
+				}
+			}
 		}
 
 		/// <summary>

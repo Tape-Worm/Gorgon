@@ -41,16 +41,16 @@
 			this.labelFPS.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(128)))));
 			this.labelFPS.Location = new System.Drawing.Point(0, 0);
 			this.labelFPS.Name = "labelFPS";
-			this.labelFPS.Size = new System.Drawing.Size(550, 13);
+			this.labelFPS.Size = new System.Drawing.Size(539, 15);
 			this.labelFPS.TabIndex = 0;
 			this.labelFPS.Text = "FPS: 0";
 			// 
 			// panelGraphics
 			// 
 			this.panelGraphics.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.panelGraphics.Location = new System.Drawing.Point(0, 13);
+			this.panelGraphics.Location = new System.Drawing.Point(0, 15);
 			this.panelGraphics.Name = "panelGraphics";
-			this.panelGraphics.Size = new System.Drawing.Size(550, 234);
+			this.panelGraphics.Size = new System.Drawing.Size(539, 216);
 			this.panelGraphics.TabIndex = 1;
 			// 
 			// label1
@@ -61,21 +61,22 @@
 			this.label1.ForeColor = System.Drawing.Color.Black;
 			this.label1.Image = global::GorgonLibrary.Examples.Properties.Resources.keyboardIcon;
 			this.label1.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.label1.Location = new System.Drawing.Point(0, 247);
+			this.label1.Location = new System.Drawing.Point(0, 231);
 			this.label1.Name = "label1";
-			this.label1.Size = new System.Drawing.Size(550, 19);
+			this.label1.Size = new System.Drawing.Size(539, 22);
 			this.label1.TabIndex = 1;
 			this.label1.Text = "         Press the space bar to change idle loops.";
 			this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			// 
 			// formMain
 			// 
-			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+			this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(550, 266);
+			this.ClientSize = new System.Drawing.Size(539, 253);
 			this.Controls.Add(this.panelGraphics);
 			this.Controls.Add(this.label1);
 			this.Controls.Add(this.labelFPS);
+			this.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
 			this.Name = "formMain";
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;

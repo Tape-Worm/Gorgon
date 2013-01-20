@@ -49,6 +49,7 @@
 			this.splitFileSystem.Panel1.Controls.Add(this.treeFileSystem);
 			this.splitFileSystem.Size = new System.Drawing.Size(784, 561);
 			this.splitFileSystem.SplitterDistance = 202;
+			this.splitFileSystem.SplitterWidth = 5;
 			this.splitFileSystem.TabIndex = 0;
 			// 
 			// treeFileSystem
@@ -77,10 +78,11 @@
 			// 
 			// formMain
 			// 
-			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+			this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.ClientSize = new System.Drawing.Size(784, 561);
 			this.Controls.Add(this.splitFileSystem);
+			this.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
 			this.Name = "formMain";
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;

@@ -102,9 +102,7 @@ namespace GorgonLibrary.FileSystem
 				{
 					string newPath = MapToVirtualPath(file.DirectoryName.FormatDirectory(Path.DirectorySeparatorChar) + file.Name, physicalMountPoint, mountPoint.FullPath);
 
-					// Do not add duplicate files.
-					if (FileSystem.GetFile(newPath) == null)
-						AddFileEntry(newPath, physicalMountPoint, file.FullName, file.Length, 0, file.CreationTime);
+					AddFileEntry(newPath, physicalMountPoint, file.FullName, file.Length, 0, file.CreationTime);
 				}
 			}
 		}
@@ -131,39 +129,6 @@ namespace GorgonLibrary.FileSystem
 		}
 
 		/// <summary>
-		/// Function called when a file is written to the provider.
-		/// </summary>
-		/// <param name="file">File to read.</param>
-		/// <param name="data">Data to write to the file.</param>
-		/// <returns></returns>
-		/// <remarks>Implementors must implement this method to read the file from the physical file system.</remarks>
-		protected override void OnWriteFile(GorgonFileSystemFileEntry file, byte[] data)
-		{
-			FileInfo info = null;
-			string newPath = string.Empty;
-
-			if (string.IsNullOrEmpty(FileSystem.WriteLocation))
-				throw new ArgumentException("Cannot write to the file '" + file.FullPath + "' because the there is no write path set.", "writeable");
-
-			newPath = GetWritePath(file.FullPath);
-
-			if (!Directory.Exists(Path.GetDirectoryName(newPath)))
-				Directory.CreateDirectory(Path.GetDirectoryName(newPath));
-
-			using (FileStream stream = File.Open(newPath, FileMode.Create, FileAccess.ReadWrite, FileShare.ReadWrite))
-			{
-				using (GorgonFileSystemStream orphStream = new GorgonFileSystemStream(file, stream))
-				{
-					if ((data != null) && (data.Length > 0))
-						orphStream.Write(data, 0, data.Length);
-				}
-			}
-
-			info = new FileInfo(newPath);
-			UpdateFileInfo(file, info.Length, null, info.CreationTime, newPath, this);			
-		}
-
-		/// <summary>
 		/// Function called when a file is opened as a file stream.
 		/// </summary>
 		/// <param name="file">File to open.</param>
@@ -171,29 +136,17 @@ namespace GorgonLibrary.FileSystem
 		/// <returns>
 		/// The open <see cref="GorgonLibrary.FileSystem.GorgonFileSystemStream"/> file stream object.
 		/// </returns>
-		/// <remarks>Some providers cannot write, and should throw an exception.</remarks>
 		protected override GorgonFileSystemStream OnOpenFileStream(GorgonFileSystemFileEntry file, bool writeable)
 		{
-			FileStream stream = null;
-
 			// If we're opening for writing, then send it to the writeable directory.
 			if (writeable)
 			{
-				if (string.IsNullOrEmpty(FileSystem.WriteLocation))
-					throw new ArgumentException("Cannot write to the file '" + file.FullPath + "' because the there is no write path set.", "writeable");
-
-				string newPath = GetWritePath(file.FullPath);
-
-				if (!Directory.Exists(Path.GetDirectoryName(newPath)))
-					Directory.CreateDirectory(Path.GetDirectoryName(newPath));
-
-				stream = File.Open(newPath, FileMode.Create, FileAccess.ReadWrite, FileShare.ReadWrite);
-				UpdateFileInfo(file, null, null, null, newPath, this);
+				return new GorgonFileSystemStream(file, WriteToWriteLocation(file));
 			}
 			else
-				stream = File.Open(file.PhysicalFileSystemPath, FileMode.Open, FileAccess.Read, FileShare.Read);
-
-			return new GorgonFileSystemStream(file, stream);
+			{
+				return new GorgonFileSystemStream(file, File.Open(file.PhysicalFileSystemPath, FileMode.Open, FileAccess.Read, FileShare.Read));
+			}
 		}
 
 		/// <summary>
@@ -205,7 +158,7 @@ namespace GorgonLibrary.FileSystem
 		/// </returns>
 		/// <remarks>This method is applicable to packed files only.
 		/// <para>Implementors must use this method to determine if a packed file can be read by reading the header of the file.</para>
-		/// </remarks>
+		/// </remarks>		
 		public override bool CanReadFile(string physicalPath)
 		{
 			// Folder file systems don't use packed files, always return false.

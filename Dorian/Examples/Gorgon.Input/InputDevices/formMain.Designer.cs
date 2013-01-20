@@ -55,7 +55,7 @@
 			this.panelDisplay.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.panelDisplay.Location = new System.Drawing.Point(0, 0);
 			this.panelDisplay.Name = "panelDisplay";
-			this.panelDisplay.Size = new System.Drawing.Size(778, 494);
+			this.panelDisplay.Size = new System.Drawing.Size(778, 485);
 			this.panelDisplay.TabIndex = 1;
 			// 
 			// panel1
@@ -66,9 +66,9 @@
 			this.panel1.Controls.Add(this.panelKeyboard);
 			this.panel1.Controls.Add(this.panelJoystick);
 			this.panel1.Dock = System.Windows.Forms.DockStyle.Bottom;
-			this.panel1.Location = new System.Drawing.Point(0, 494);
+			this.panel1.Location = new System.Drawing.Point(0, 485);
 			this.panel1.Name = "panel1";
-			this.panel1.Size = new System.Drawing.Size(778, 60);
+			this.panel1.Size = new System.Drawing.Size(778, 69);
 			this.panel1.TabIndex = 0;
 			// 
 			// panelMouse
@@ -78,16 +78,16 @@
 			this.panelMouse.Dock = System.Windows.Forms.DockStyle.Bottom;
 			this.panelMouse.Location = new System.Drawing.Point(0, 0);
 			this.panelMouse.Name = "panelMouse";
-			this.panelMouse.Size = new System.Drawing.Size(778, 20);
+			this.panelMouse.Size = new System.Drawing.Size(778, 23);
 			this.panelMouse.TabIndex = 6;
 			// 
 			// labelMouse
 			// 
 			this.labelMouse.BackColor = System.Drawing.SystemColors.Info;
 			this.labelMouse.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.labelMouse.Location = new System.Drawing.Point(22, 0);
+			this.labelMouse.Location = new System.Drawing.Point(26, 0);
 			this.labelMouse.Name = "labelMouse";
-			this.labelMouse.Size = new System.Drawing.Size(756, 20);
+			this.labelMouse.Size = new System.Drawing.Size(752, 23);
 			this.labelMouse.TabIndex = 0;
 			this.labelMouse.Text = "Mouse";
 			this.labelMouse.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -100,7 +100,7 @@
 			this.pictureBox3.Image = global::GorgonLibrary.Examples.Properties.Resources.device_mouse_16x16;
 			this.pictureBox3.Location = new System.Drawing.Point(0, 0);
 			this.pictureBox3.Name = "pictureBox3";
-			this.pictureBox3.Size = new System.Drawing.Size(22, 20);
+			this.pictureBox3.Size = new System.Drawing.Size(26, 23);
 			this.pictureBox3.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
 			this.pictureBox3.TabIndex = 1;
 			this.pictureBox3.TabStop = false;
@@ -111,18 +111,18 @@
 			this.panelKeyboard.Controls.Add(this.labelKeyboard);
 			this.panelKeyboard.Controls.Add(this.pictureBox1);
 			this.panelKeyboard.Dock = System.Windows.Forms.DockStyle.Bottom;
-			this.panelKeyboard.Location = new System.Drawing.Point(0, 20);
+			this.panelKeyboard.Location = new System.Drawing.Point(0, 23);
 			this.panelKeyboard.Name = "panelKeyboard";
-			this.panelKeyboard.Size = new System.Drawing.Size(778, 20);
+			this.panelKeyboard.Size = new System.Drawing.Size(778, 23);
 			this.panelKeyboard.TabIndex = 5;
 			// 
 			// labelKeyboard
 			// 
 			this.labelKeyboard.BackColor = System.Drawing.SystemColors.Info;
 			this.labelKeyboard.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.labelKeyboard.Location = new System.Drawing.Point(22, 0);
+			this.labelKeyboard.Location = new System.Drawing.Point(26, 0);
 			this.labelKeyboard.Name = "labelKeyboard";
-			this.labelKeyboard.Size = new System.Drawing.Size(756, 20);
+			this.labelKeyboard.Size = new System.Drawing.Size(752, 23);
 			this.labelKeyboard.TabIndex = 0;
 			this.labelKeyboard.Text = "Keyboard";
 			this.labelKeyboard.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -134,7 +134,7 @@
 			this.pictureBox1.Image = global::GorgonLibrary.Examples.Properties.Resources.device_keyboard_16x16;
 			this.pictureBox1.Location = new System.Drawing.Point(0, 0);
 			this.pictureBox1.Name = "pictureBox1";
-			this.pictureBox1.Size = new System.Drawing.Size(22, 20);
+			this.pictureBox1.Size = new System.Drawing.Size(26, 23);
 			this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
 			this.pictureBox1.TabIndex = 1;
 			this.pictureBox1.TabStop = false;
@@ -144,9 +144,9 @@
 			this.panelJoystick.Controls.Add(this.labelJoystick);
 			this.panelJoystick.Controls.Add(this.pictureBox2);
 			this.panelJoystick.Dock = System.Windows.Forms.DockStyle.Bottom;
-			this.panelJoystick.Location = new System.Drawing.Point(0, 40);
+			this.panelJoystick.Location = new System.Drawing.Point(0, 46);
 			this.panelJoystick.Name = "panelJoystick";
-			this.panelJoystick.Size = new System.Drawing.Size(778, 20);
+			this.panelJoystick.Size = new System.Drawing.Size(778, 23);
 			this.panelJoystick.TabIndex = 4;
 			this.panelJoystick.Visible = false;
 			// 
@@ -154,9 +154,9 @@
 			// 
 			this.labelJoystick.BackColor = System.Drawing.SystemColors.Info;
 			this.labelJoystick.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.labelJoystick.Location = new System.Drawing.Point(22, 0);
+			this.labelJoystick.Location = new System.Drawing.Point(26, 0);
 			this.labelJoystick.Name = "labelJoystick";
-			this.labelJoystick.Size = new System.Drawing.Size(756, 20);
+			this.labelJoystick.Size = new System.Drawing.Size(752, 23);
 			this.labelJoystick.TabIndex = 2;
 			this.labelJoystick.Text = "Joystick";
 			this.labelJoystick.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -168,18 +168,19 @@
 			this.pictureBox2.Image = global::GorgonLibrary.Examples.Properties.Resources.device_gamepad_16x16;
 			this.pictureBox2.Location = new System.Drawing.Point(0, 0);
 			this.pictureBox2.Name = "pictureBox2";
-			this.pictureBox2.Size = new System.Drawing.Size(22, 20);
+			this.pictureBox2.Size = new System.Drawing.Size(26, 23);
 			this.pictureBox2.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
 			this.pictureBox2.TabIndex = 3;
 			this.pictureBox2.TabStop = false;
 			// 
 			// formMain
 			// 
-			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+			this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.ClientSize = new System.Drawing.Size(778, 554);
 			this.Controls.Add(this.panelDisplay);
 			this.Controls.Add(this.panel1);
+			this.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
 			this.Name = "formMain";
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;

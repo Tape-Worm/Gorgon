@@ -389,6 +389,7 @@ namespace GorgonLibrary.Examples
 				_instructions.AutoSize = false;
 				_instructions.TextAlign = ContentAlignment.MiddleCenter;
 				_instructions.Dock = DockStyle.Fill;
+				_instructions.Font = this.Font;
 
 				// Add the instructions.
 				splitFileSystem.Panel2.Controls.Add(_instructions);
