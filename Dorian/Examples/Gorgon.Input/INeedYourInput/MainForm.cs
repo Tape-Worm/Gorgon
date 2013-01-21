@@ -356,10 +356,9 @@ namespace GorgonLibrary.Examples
 				// Create the graphics interface.
 				_graphics = new GorgonGraphics();
 				_screen = _graphics.Output.CreateSwapChain("Screen", new GorgonSwapChainSettings() {
-					Width = 640,
-					Height = 480,
+					Size = Properties.Settings.Default.Resolution,
 					Format = BufferFormat.R8G8B8A8_UIntNormal,
-					IsWindowed = true
+					IsWindowed = Properties.Settings.Default.IsWindowed
 				});
 
 				// Create the 2D renderer.
@@ -394,8 +393,7 @@ namespace GorgonLibrary.Examples
 
 				// Create a back buffer.
 				_backBuffer = _graphics.Output.CreateRenderTarget("BackBuffer", new GorgonRenderTargetSettings() {
-					Width = 640,
-					Height = 480,
+					Size = _screen.Settings.Size,
 					Format = BufferFormat.R8G8B8A8_UIntNormal
 				});
 				_backBuffer.Clear(Color.White);
@@ -416,16 +414,16 @@ namespace GorgonLibrary.Examples
 						Format = BufferFormat.R8G8B8A8_UIntNormal,
 						Usage = BufferUsage.Staging,
 					}, new ISubResourceData[] { data });
-				}				
-
-				// Set the mouse range and position.
-				Cursor.Position = PointToScreen(new Point(320, 240));
-				_mouse.SetPosition(320.0f, 240.0f);
-				_mouse.SetPositionRange(0, 0, 640.0f, 480.0f);
+				}
 
 				// Relocate the window to the center of the screen.				
 				Location = new Point(currentScreen.Bounds.Left + (currentScreen.WorkingArea.Width / 2) - ClientSize.Width / 2,
 									 currentScreen.Bounds.Top + (currentScreen.WorkingArea.Height / 2) - ClientSize.Height / 2);
+
+				// Set the mouse range and position.
+				Cursor.Position = PointToScreen(new Point(Properties.Settings.Default.Resolution.Width / 2, Properties.Settings.Default.Resolution.Height / 2));
+				_mouse.SetPosition(Properties.Settings.Default.Resolution.Width / 2, Properties.Settings.Default.Resolution.Height / 2);
+				_mouse.SetPositionRange(0, 0, Properties.Settings.Default.Resolution.Width, Properties.Settings.Default.Resolution.Height);
 
 				// Set gorgon events.
 				_screen.AfterStateTransition += (sender, args) =>

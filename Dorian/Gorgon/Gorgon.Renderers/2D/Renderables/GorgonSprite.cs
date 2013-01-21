@@ -28,7 +28,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.IO;
 using SlimMath;
+using GorgonLibrary.IO;
 using GorgonLibrary.Diagnostics;
 using GorgonLibrary.Math;
 using GorgonLibrary.Graphics;
@@ -67,8 +69,19 @@ namespace GorgonLibrary.Renderers
 	/// A sprite object.
 	/// </summary>
 	public class GorgonSprite
-		: GorgonMoveable, IDeferredTextureLoad, I2DCollisionObject
+		: GorgonMoveable, IDeferredTextureLoad, I2DCollisionObject, IPersistedRenderable
 	{
+		#region Constants.
+		/// <summary>
+		/// Header for the v1.2 Gorgon sprite file.
+		/// </summary>
+		public const string FileHeader12 = "GORSPR1.2";
+		/// <summary>
+		/// Header for the Gorgon sprite file.
+		/// </summary>		
+		public const string FileHeader = "GORSPR2.0";
+		#endregion
+
 		#region Variables.
 		private float[] _corners = new float[4];										// Corners for the sprite.
 		private string _textureName = string.Empty;										// Name of the texture for the sprite.
@@ -392,9 +405,74 @@ namespace GorgonLibrary.Renderers
 		{
 			return Vertices[(int)corner].Color;
 		}
+
+		/// <summary>
+		/// Function to save the sprite into memory.
+		/// </summary>
+		/// <returns>A byte array containing the sprite data.</returns>
+		public byte[] Save()
+		{
+			using (MemoryStream stream = new MemoryStream())
+			{
+				Save(stream);
+
+				return stream.ToArray();
+			}			
+		}
+
+		/// <summary>
+		/// Function to save the sprite to a file.
+		/// </summary>
+		/// <param name="filePath">Path to the file to write the sprite information into.</param>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="filePath"/> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentException">Thrown when the filePath parameter is empty.</exception>
+		public void Save(string filePath)
+		{
+			if (filePath == null)
+			{
+				throw new ArgumentNullException("filePath");
+			}
+
+			if (string.IsNullOrWhiteSpace(filePath))
+			{
+				throw new ArgumentException("The parameter must not be empty.", filePath);
+			}
+
+			using (FileStream stream = File.Open(filePath, FileMode.Create, FileAccess.Write, FileShare.None))
+			{
+				Save(stream);
+			}
+		}
 		#endregion
 
 		#region Constructor/Destructor.
+		/// <summary>
+		/// Initializes a new instance of the <see cref="GorgonSprite" /> class.
+		/// </summary>
+		/// <param name="gorgon2D">The interface that owns this object.</param>
+		/// <param name="name">Name of the sprite.</param>
+		internal GorgonSprite(Gorgon2D gorgon2D, string name)
+			: base(gorgon2D, name)
+		{
+			InitializeVertices(4);
+
+			Size = Vector2.Zero;
+			Color = GorgonColor.White;
+			Angle = 0;
+			Scale = new Vector2(1.0f);
+			Position = Vector2.Zero;
+			Texture = null;
+			TextureRegion = System.Drawing.RectangleF.Empty;
+			Anchor = Vector2.Zero;
+
+			_offsets = new[] { 
+				Vector2.Zero, 
+				Vector2.Zero, 
+				Vector2.Zero, 
+				Vector2.Zero, 
+			};
+		}
+
 		/// <summary>
 		/// Initializes a new instance of the <see cref="GorgonSprite"/> class.
 		/// </summary>
@@ -402,10 +480,8 @@ namespace GorgonLibrary.Renderers
 		/// <param name="name">Name of the sprite.</param>
 		/// <param name="settings">Settings for the sprite.</param>
 		internal GorgonSprite(Gorgon2D gorgon2D, string name, GorgonSpriteSettings settings)
-			: base(gorgon2D, name)
+			: this(gorgon2D, name)
 		{
-			InitializeVertices(4);
-
 			Size = settings.Size;
 			Color = settings.Color;
 			Angle = settings.InitialAngle;
@@ -419,13 +495,177 @@ namespace GorgonLibrary.Renderers
 			Texture = settings.Texture;
 			TextureRegion = settings.TextureRegion;
 			Anchor = settings.Anchor;
+		}
+		#endregion
 
-			_offsets = new[] { 
-				Vector2.Zero, 
-				Vector2.Zero, 
-				Vector2.Zero, 
-				Vector2.Zero, 
-			};
+		#region IPersisted2DRenderable		
+		/// <summary>
+		/// Function to read the renderable data from a stream.
+		/// </summary>
+		/// <param name="stream">Open file stream containing the renderable data.</param>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="stream" /> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.IO.IOException">Thrown when the stream parameter is not opened for reading data.</exception>
+		/// <exception cref="GorgonLibrary.GorgonException">Thrown when the data in the stream does not contain valid renderable data, or contains a newer version of the renderable than Gorgon can handle.</exception>
+		void IPersistedRenderable.Load(Stream stream)
+		{		
+			string currentHeader = string.Empty;			// Current header from the file.
+
+			if (stream == null)
+			{
+				throw new ArgumentNullException("stream");
+			}
+
+			if (!stream.CanRead)
+			{
+				throw new IOException("Stream is not open for reading.");
+			}
+						
+			using (GorgonBinaryReader reader = new GorgonBinaryReader(stream, true))
+			{
+				byte[] fileHeader = Encoding.UTF8.GetBytes(FileHeader);
+				reader.Read(fileHeader, 0, fileHeader.Length);
+				currentHeader = Encoding.UTF8.GetString(fileHeader);
+
+				// Get the header and ensure that is is a sprite file.
+				if (string.Compare(FileHeader, currentHeader) != 0)
+				{
+					// Reset the stream and try again with an older version.
+					stream.Position -= fileHeader.Length;
+
+					// Check to see if it's an older version of the Gorgon sprite file.
+					GorgonV1SpriteReader.LoadSprite(this, reader);
+					return;
+				}				
+			}
+		}
+
+		/// <summary>
+		/// Function to save the sprite data into a stream.
+		/// </summary>
+		/// <param name="stream">Stream that is used to write out the sprite data.</param>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="stream"/> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.IO.IOException">Thrown when the stream parameter is not opened for writing data.</exception>
+		public void Save(Stream stream)
+		{
+			if (stream == null)
+			{
+				throw new ArgumentNullException("stream");
+			}
+
+			if (!stream.CanWrite)
+			{
+				throw new IOException("Stream is not open for writing.");
+			}
+
+			// Write out the sprite information.
+			using (GorgonBinaryWriter writer = new GorgonBinaryWriter(stream, true))
+			{
+				// Write the file header.
+				byte[] fileHeader = Encoding.UTF8.GetBytes(FileHeader);
+				writer.Write(fileHeader, 0, fileHeader.Length);
+
+				// Write sprite data.
+
+				// Write alpha testing values.				
+				writer.Write(AlphaTestValues.Minimum);
+				writer.Write(AlphaTestValues.Maximum);
+
+				// Write anchor information.
+				writer.Write(Anchor.X);
+				writer.Write(Anchor.Y);
+
+				// Write out blending information.
+				writer.Write((int)Blending.AlphaOperation);
+				writer.Write(Blending.BlendFactor);
+				writer.Write((int)Blending.BlendOperation);
+				writer.Write((int)Blending.DestinationAlphaBlend);
+				writer.Write((int)Blending.DestinationBlend);
+				writer.Write((int)Blending.SourceAlphaBlend);
+				writer.Write((int)Blending.SourceBlend);
+				writer.Write((int)Blending.WriteMask);
+				
+				// Write out collider information.
+				writer.Write(Collider != null);
+				if (Collider != null)
+				{
+					Collider.WriteToStream(writer);
+				}
+
+				// Write out the color.
+				writer.Write(Color.ToARGB());
+
+				// Write out the culling mode.
+				writer.Write((int)CullingMode);
+
+				// Write out depth information.
+				writer.Write((int)DepthStencil.BackFace.ComparisonOperator);
+				writer.Write((int)DepthStencil.BackFace.DepthFailOperation);
+				writer.Write((int)DepthStencil.BackFace.FailOperation);
+				writer.Write((int)DepthStencil.BackFace.PassOperation);
+				writer.Write((int)DepthStencil.FrontFace.ComparisonOperator);
+				writer.Write((int)DepthStencil.FrontFace.DepthFailOperation);
+				writer.Write((int)DepthStencil.FrontFace.FailOperation);
+				writer.Write((int)DepthStencil.FrontFace.PassOperation);
+				writer.Write(DepthStencil.DepthBias);
+				writer.Write((int)DepthStencil.DepthComparison);
+				writer.Write(DepthStencil.DepthStencilReference);
+				writer.Write(DepthStencil.IsDepthWriteEnabled);
+				writer.Write(DepthStencil.StencilReadMask);
+				writer.Write(DepthStencil.StencilWriteMask);
+
+				// Write flip orientation information.
+				writer.Write(HorizontalFlip);
+				writer.Write(VerticalFlip);
+
+				// Write opacity information.
+				writer.Write(Opacity);
+
+				// Write size information.
+				writer.Write(Size.X);
+				writer.Write(Size.Y);
+
+				// Write texture sampler information.
+				writer.Write(TextureSampler.BorderColor.ToARGB());
+				writer.Write((int)TextureSampler.HorizontalWrapping);
+				writer.Write((int)TextureSampler.TextureFilter);
+				writer.Write((int)TextureSampler.VerticalWrapping);
+				
+				// Write rectangle offsets.
+				for (int i = 0; i < _offsets.Length; i++)
+				{
+					writer.Write(_offsets[i].X);
+					writer.Write(_offsets[i].Y);
+				}
+
+				// Write vertex colors.
+				for (int i = 0; i < Vertices.Length; i++)
+				{
+					writer.Write(Vertices[i].Color.ToARGB());
+				}
+
+				// Write out texture information.
+				writer.Write((Texture != null) || (!string.IsNullOrWhiteSpace(DeferredTextureName)));
+				if ((Texture != null) || (!string.IsNullOrWhiteSpace(DeferredTextureName)))
+				{
+					if (Texture != null)
+					{
+						// Write out the texture name.
+						// If the texture is not found when the sprite is loaded, it'll be used in a deferred texture load look up.
+						writer.Write(Texture.Name);
+					}
+					else
+					{
+						// Write out the deferred texture name if we don't have an actual texture bound to the sprite.
+						writer.Write(DeferredTextureName);
+					}
+
+					// Write out coordinate information.
+					writer.Write(TextureRegion.X);
+					writer.Write(TextureRegion.Y);
+					writer.Write(TextureRegion.Width);
+					writer.Write(TextureRegion.Height);					
+				}				
+			}
 		}
 		#endregion
 
@@ -456,18 +696,25 @@ namespace GorgonLibrary.Renderers
 		/// <summary>
 		/// Function to assign a deferred texture.
 		/// </summary>
-		/// <remarks>If there are multiple textures with the same name, then the first texture will be chosen.</remarks>
+		/// <remarks>
+		/// Call this method to assign a texture that's been deferred.  If a sprite is created/loaded before its texture has been loaded, then the 
+		/// sprite will just appear with the color assigned to it and no image.  To counteract this we can assign the <see cref="P:GorgonLibrary.Renderers.GorgonSprite.DeferredTextureName">DeferredTextureName</see> 
+		/// property to the name of the texture.  Once the texture with the right name is loaded, call this method to get the sprite to update its texture value from the deferred name.
+		/// <para>If loading a sprite from a data source, then this method will be called upon load.  If the texture is not bound successfully (i.e. Texture == null), then it will set the deferred name 
+		/// to the texture name stored in the sprite data.</para>
+		/// <para>If there are multiple textures with the same name, then the first texture will be chosen.</para>
+		/// </remarks>
 		public virtual void GetDeferredTexture()
 		{
 			if (string.IsNullOrEmpty(_textureName))
 			{
-				base.Texture = null;
+				Texture = null;
 				return;
 			}
 
 			// Look through the tracked objects in the graphics object.
 			// FYI, LINQ is fucking awesome (if a little slow)...
-			base.Texture = (from texture in Gorgon2D.Graphics.GetGraphicsObjectOfType<GorgonTexture2D>()
+			Texture = (from texture in Gorgon2D.Graphics.GetGraphicsObjectOfType<GorgonTexture2D>()
 							where (texture != null) && (string.Compare(texture.Name, _textureName, true) == 0)
 							select texture).FirstOrDefault();
 			NeedsTextureUpdate = true;

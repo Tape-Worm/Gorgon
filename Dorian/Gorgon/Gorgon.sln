@@ -96,6 +96,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Writing", "..\Examples\Gorg
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tester_FileSystem", "..\Examples\Tester_FileSystem\Tester_FileSystem.csproj", "{33E13883-C323-436D-94E6-148414845A9C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FolderFileSystemOPower", "..\Examples\Gorgon.FileSystem\FolderFileSystemOPower\FolderFileSystemOPower.csproj", "{1D07F29F-4930-42E7-BAF0-8D246300CF67}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BZipFileSystemOPower", "..\Examples\Gorgon.FileSystem\BZipFileSystemOPower\BZipFileSystemOPower.csproj", "{2F5E93A6-8413-45A2-AD07-BC92B58FBCC7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -254,6 +258,14 @@ Global
 		{33E13883-C323-436D-94E6-148414845A9C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{33E13883-C323-436D-94E6-148414845A9C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{33E13883-C323-436D-94E6-148414845A9C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1D07F29F-4930-42E7-BAF0-8D246300CF67}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1D07F29F-4930-42E7-BAF0-8D246300CF67}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1D07F29F-4930-42E7-BAF0-8D246300CF67}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1D07F29F-4930-42E7-BAF0-8D246300CF67}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2F5E93A6-8413-45A2-AD07-BC92B58FBCC7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2F5E93A6-8413-45A2-AD07-BC92B58FBCC7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2F5E93A6-8413-45A2-AD07-BC92B58FBCC7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2F5E93A6-8413-45A2-AD07-BC92B58FBCC7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -280,5 +292,7 @@ Global
 		{13E8A005-B842-44C9-B5F5-EE2BA50ADB8D} = {D4582ECC-614C-484F-9CF9-2D88C4B57EE0}
 		{5AFB65B6-A077-4EB5-A363-D9A5246ADD78} = {D4582ECC-614C-484F-9CF9-2D88C4B57EE0}
 		{DF5B8F28-1A1B-45CF-91B1-BE53E6B3C063} = {D4582ECC-614C-484F-9CF9-2D88C4B57EE0}
+		{1D07F29F-4930-42E7-BAF0-8D246300CF67} = {D4582ECC-614C-484F-9CF9-2D88C4B57EE0}
+		{2F5E93A6-8413-45A2-AD07-BC92B58FBCC7} = {D4582ECC-614C-484F-9CF9-2D88C4B57EE0}
 	EndGlobalSection
 EndGlobal

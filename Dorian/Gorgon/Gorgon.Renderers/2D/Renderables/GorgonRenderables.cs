@@ -29,6 +29,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Drawing;
+using System.IO;
 using SlimMath;
 using GorgonLibrary.Diagnostics;
 using GorgonLibrary.Graphics;
@@ -52,6 +53,92 @@ namespace GorgonLibrary.Renderers
 		#endregion
 
 		#region Methods.
+		/// <summary>
+		/// Function to load a renderable from a stream.
+		/// </summary>
+		/// <typeparam name="T">Type of renderable to load.</typeparam>
+		/// <param name="name">The name of the renderable object.</param>
+		/// <param name="stream">Stream that contains the renderable.</param>
+		/// <returns>A new renderable object of the specified type.</returns>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="stream" /> parameter is NULL (Nothing in VB.Net).
+		/// <para>-or-</para>
+		/// <para>Thrown when the <paramref name="name"/> parameter is NULL.</para>
+		/// </exception>
+		/// <exception cref="System.ArgumentException">Thrown when the name parameter is empty.</exception>
+		/// <exception cref="System.IO.IOException">Thrown when the stream parameter is not opened for reading data.</exception>
+		/// <exception cref="GorgonLibrary.GorgonException">Thrown when the data in the stream does not contain valid renderable data, or contains a newer version of the renderable than Gorgon can handle.</exception>
+		public T FromStream<T>(string name, Stream stream)
+			where T : class, IPersistedRenderable
+		{
+			Type type = typeof(T);
+			T result = null;
+
+			GorgonDebug.AssertParamString(name, "name");
+
+			result = (T)(Activator.CreateInstance(type, System.Reflection.BindingFlags.CreateInstance | System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance, null,  new object[] { _gorgon2D, name }, null));
+			result.Load(stream);
+
+			return result;
+		}
+
+		/// <summary>
+		/// Function to load a renderable from memory.
+		/// </summary>
+		/// <typeparam name="T">Type of renderable to load.</typeparam>
+		/// <param name="name">The name of the renderable object.</param>
+		/// <param name="data">Array of bytes containing the renderable data to load.</param>
+		/// <returns>A new renderable object of the specified type.</returns>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="data" /> parameter is NULL (Nothing in VB.Net).
+		/// <para>-or-</para>
+		/// <para>Thrown when the <paramref name="name"/> parameter is NULL.</para>
+		/// </exception>
+		/// <exception cref="System.ArgumentException">Thrown when the name parameter is empty.</exception>
+		/// <exception cref="System.IO.IOException">Thrown when the stream parameter is not opened for reading data.</exception>
+		/// <exception cref="GorgonLibrary.GorgonException">Thrown when the data in the stream does not contain valid renderable data, or contains a newer version of the renderable than Gorgon can handle.</exception>
+		public T FromMemory<T>(string name, byte[] data)
+			where T : class, IPersistedRenderable
+		{
+			GorgonDebug.AssertNull<byte[]>(data, "data");
+
+			if (data.Length == 0)
+			{
+				return null;
+			}
+
+			using (MemoryStream stream = new MemoryStream(data))
+			{
+				return FromStream<T>(name, stream);
+			}
+		}
+
+		/// <summary>
+		/// Function to load a renderable from a file.
+		/// </summary>
+		/// <typeparam name="T">Type of renderable to load.</typeparam>
+		/// <param name="name">The name of the renderable object.</param>
+		/// <param name="filePath">The path to the file to load.</param>
+		/// <returns>A new renderable object of the specified type.</returns>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="filePath" /> parameter is NULL (Nothing in VB.Net).
+		/// <para>-or-</para>
+		/// <para>Thrown when the <paramref name="name"/> parameter is NULL.</para>
+		/// </exception>
+		/// <exception cref="System.ArgumentException">Thrown when the name parameter is empty.
+		/// <para>-or-</para>
+		/// <para>Thrown when the filePath parameter is empty.</para>
+		/// </exception>
+		/// <exception cref="System.IO.IOException">Thrown when the stream parameter is not opened for reading data.</exception>
+		/// <exception cref="GorgonLibrary.GorgonException">Thrown when the data in the stream does not contain valid renderable data, or contains a newer version of the renderable than Gorgon can handle.</exception>
+		public T FromFile<T>(string name, string filePath)
+			where T : class, IPersistedRenderable
+		{
+			GorgonDebug.AssertParamString(filePath, "filePath");
+
+			using (FileStream stream = File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.Read))
+			{
+				return FromStream<T>(name, stream);
+			}
+		}
+
 		/// <summary>
 		/// Function to create a new text object.
 		/// </summary>

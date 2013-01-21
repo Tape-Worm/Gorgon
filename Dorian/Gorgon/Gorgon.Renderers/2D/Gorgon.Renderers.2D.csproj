@@ -90,8 +90,10 @@
     <Compile Include="Renderables\GorgonSprite.cs" />
     <Compile Include="Renderables\GorgonSpriteSettings.cs" />
     <Compile Include="Renderables\GorgonTriangle.cs" />
+    <Compile Include="Renderables\Internal\GorgonV1SpriteReader.cs" />
     <Compile Include="Renderables\IDeferredTextureLoad.cs" />
     <Compile Include="Renderables\IMoveable.cs" />
+    <Compile Include="Renderables\IPersistedRenderable.cs" />
     <Compile Include="Renderables\IRenderable.cs" />
     <Compile Include="Renderables\GorgonText.cs" />
     <Compile Include="Shaders\Gorgon2DDisplacementEffect.cs" />

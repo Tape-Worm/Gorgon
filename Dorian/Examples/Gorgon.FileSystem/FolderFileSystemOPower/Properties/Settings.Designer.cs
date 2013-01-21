@@ -25,10 +25,10 @@ namespace GorgonLibrary.Examples.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("..\\..\\..\\..\\..\\PlugIns\\Bin\\{0}")]
-        public string PlugInLocation {
+        [global::System.Configuration.DefaultSettingValueAttribute("..\\..\\..\\..\\..\\Resources\\FileSystems\\")]
+        public string ResourceLocation {
             get {
-                return ((string)(this["PlugInLocation"]));
+                return ((string)(this["ResourceLocation"]));
             }
         }
         

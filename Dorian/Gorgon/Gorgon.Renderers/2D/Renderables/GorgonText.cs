@@ -645,7 +645,7 @@ namespace GorgonLibrary.Renderers
 				// In order to get the font to look right on a second line, we need to use point filtering.
 				// We -could- use a Floor here, but then movement becomes very jerky.  We're better off turning
 				// off texture filtering even just for an increase in speed.
-				pos.Y += (_font.LineHeight + outlineOffset.Y) * _lineSpace;
+				pos.Y += (_font.FontHeight + outlineOffset.Y) * _lineSpace;
 				pos.X = 0;
 			}
 
@@ -891,9 +891,9 @@ namespace GorgonLibrary.Renderers
 				outlineSize = _font.Settings.OutlineSize;
 
 			if (_lineSpace != 1.0)
-				result.Y = (_lines.Count - 1) * (((_font.LineHeight + outlineSize) * _lineSpace)) + (_font.LineHeight + outlineSize);
+				result.Y = (_lines.Count - 1) * (((_font.FontHeight + outlineSize) * _lineSpace)) + (_font.FontHeight + outlineSize);
 			else
-				result.Y = (_lines.Count * (((_font.LineHeight + outlineSize) * _lineSpace)));
+				result.Y = (_lines.Count * (((_font.FontHeight + outlineSize) * _lineSpace)));
 
 			for (int i = 0; i < _lines.Count; i++)
 				result.X = result.X.Max(LineMeasure(_lines[i], outlineSize));
