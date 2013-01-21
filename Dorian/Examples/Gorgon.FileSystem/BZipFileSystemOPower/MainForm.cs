@@ -237,6 +237,8 @@ namespace GorgonLibrary.Examples
             _sprites[1] = _2D.Renderables.FromMemory<GorgonSprite>("Mother", _fileSystem.ReadFile("/Sprites/Mother.gorSprite"));
             _sprites[2] = _2D.Renderables.FromMemory<GorgonSprite>("Mother2c", _fileSystem.ReadFile("/Sprites/Mother2c.gorSprite"));
 
+            _sprites[2].Save(@"c:\mike\unpak\testSprite.gorSprite");
+
             // Get poetry.            
             _textPosition = new Vector2(0, _2D.Target.Settings.Height + _textFont.LineHeight);
             _poetry = _2D.Renderables.CreateText("Poetry", _textFont, Encoding.UTF8.GetString(_fileSystem.ReadFile("/SomeText.txt")), Color.Black);

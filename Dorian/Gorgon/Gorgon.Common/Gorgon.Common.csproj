@@ -158,6 +158,7 @@
     <Compile Include="IO\GorgonBinaryWriter.cs" />
     <Compile Include="GorgonResult.cs" />
     <Compile Include="GorgonNamedObject.cs" />
+    <Compile Include="IO\GorgonChunkedFormat.cs" />
     <Compile Include="IO\GorgonDataStream.cs" />
     <Compile Include="Math\GorgonRandom.cs" />
     <Compile Include="Math\GorgonSpline.cs" />
