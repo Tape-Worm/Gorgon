@@ -39,6 +39,7 @@ using GorgonLibrary.Diagnostics;
 using GorgonLibrary.Graphics;
 using GorgonLibrary.Renderers;
 using GorgonLibrary.Input;
+using GorgonLibrary.IO;
 
 namespace GorgonLibrary.Examples
 {

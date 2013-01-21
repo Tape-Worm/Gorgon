@@ -31,6 +31,7 @@ using System.Threading.Tasks;
 using System.Reflection;
 using System.IO;
 using GorgonLibrary;
+using GorgonLibrary.IO;
 using GorgonLibrary.FileSystem;
 
 namespace GorgonLibrary.Examples

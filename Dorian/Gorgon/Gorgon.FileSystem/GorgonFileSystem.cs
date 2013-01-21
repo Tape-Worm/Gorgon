@@ -31,6 +31,7 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using GorgonLibrary.Diagnostics;
+using GorgonLibrary.IO;
 using GorgonLibrary.PlugIns;
 
 namespace GorgonLibrary.FileSystem

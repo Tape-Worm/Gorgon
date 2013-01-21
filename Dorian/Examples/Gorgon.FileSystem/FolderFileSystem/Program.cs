@@ -32,6 +32,7 @@ using System.Reflection;
 using System.IO;
 using GorgonLibrary;
 using GorgonLibrary.FileSystem;
+using GorgonLibrary.IO;
 
 namespace GorgonLibrary.Examples
 {

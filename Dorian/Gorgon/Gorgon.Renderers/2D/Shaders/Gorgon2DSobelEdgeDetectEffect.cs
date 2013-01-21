@@ -31,6 +31,7 @@ using System.Text;
 using System.Drawing;
 using SlimMath;
 using GorgonLibrary.Graphics;
+using GorgonLibrary.IO;
 
 namespace GorgonLibrary.Renderers
 {

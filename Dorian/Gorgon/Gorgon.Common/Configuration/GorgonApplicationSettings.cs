@@ -33,6 +33,7 @@ using System.Reflection;
 using System.Xml.Linq;
 using System.ComponentModel;
 using GorgonLibrary.Diagnostics;
+using GorgonLibrary.IO;
 
 namespace GorgonLibrary.Configuration
 {

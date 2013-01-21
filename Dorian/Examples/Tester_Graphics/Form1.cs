@@ -17,6 +17,7 @@ using GorgonLibrary.PlugIns;
 using GorgonLibrary.Collections;
 using GorgonLibrary.Graphics;
 using GorgonLibrary.Renderers;
+using GorgonLibrary.IO;
 
 namespace Tester_Graphics
 {	

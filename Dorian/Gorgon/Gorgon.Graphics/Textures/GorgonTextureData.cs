@@ -29,6 +29,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using DX = SharpDX;
+using GorgonLibrary.IO;
 using GorgonLibrary.Diagnostics;
 
 namespace GorgonLibrary.Graphics

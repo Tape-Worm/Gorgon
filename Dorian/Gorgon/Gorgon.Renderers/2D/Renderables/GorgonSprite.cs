@@ -30,6 +30,7 @@ using System.Linq;
 using System.Text;
 using System.IO;
 using SlimMath;
+using GorgonLibrary;
 using GorgonLibrary.IO;
 using GorgonLibrary.Diagnostics;
 using GorgonLibrary.Math;
@@ -498,7 +499,7 @@ namespace GorgonLibrary.Renderers
 		}
 		#endregion
 
-		#region IPersisted2DRenderable		
+		#region IPersisted2DRenderable
 		/// <summary>
 		/// Function to read the renderable data from a stream.
 		/// </summary>
@@ -547,6 +548,7 @@ namespace GorgonLibrary.Renderers
 		/// <exception cref="System.IO.IOException">Thrown when the stream parameter is not opened for writing data.</exception>
 		public void Save(Stream stream)
 		{
+            
 			if (stream == null)
 			{
 				throw new ArgumentNullException("stream");
@@ -560,7 +562,7 @@ namespace GorgonLibrary.Renderers
 			// Write out the sprite information.
 			using (GorgonBinaryWriter writer = new GorgonBinaryWriter(stream, true))
 			{
-				// Write the file header.
+				// Write the file header.                
 				byte[] fileHeader = Encoding.UTF8.GetBytes(FileHeader);
 				writer.Write(fileHeader, 0, fileHeader.Length);
 
@@ -591,9 +593,6 @@ namespace GorgonLibrary.Renderers
 					Collider.WriteToStream(writer);
 				}
 
-				// Write out the color.
-				writer.Write(Color.ToARGB());
-
 				// Write out the culling mode.
 				writer.Write((int)CullingMode);
 
@@ -616,9 +615,6 @@ namespace GorgonLibrary.Renderers
 				// Write flip orientation information.
 				writer.Write(HorizontalFlip);
 				writer.Write(VerticalFlip);
-
-				// Write opacity information.
-				writer.Write(Opacity);
 
 				// Write size information.
 				writer.Write(Size.X);

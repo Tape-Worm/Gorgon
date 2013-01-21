@@ -34,6 +34,7 @@ using System.Text;
 using System.Windows.Forms;
 using System.IO;
 using GorgonLibrary.UI;
+using GorgonLibrary.IO;
 
 namespace GorgonLibrary.GorgonEditor
 {

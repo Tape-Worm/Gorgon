@@ -36,6 +36,7 @@ using D3D = SharpDX.Direct3D11;
 using SlimMath;
 using GorgonLibrary.Math;
 using GorgonLibrary.Diagnostics;
+using GorgonLibrary.IO;
 
 namespace GorgonLibrary.Graphics
 {
@@ -338,7 +339,7 @@ namespace GorgonLibrary.Graphics
 		/// Function to create an image with initial data.
 		/// </summary>
 		/// <param name="initialData">Data to use when creating the image.</param>
-		/// <remarks>The initial data can be a <see cref="GorgonLibrary.GorgonDataStream">GorgonDataStream</see>, <see cref="GorgonLibrary.Graphics.GorgonTexture2DData">GorgonTexture2DData</see> or <see cref="GorgonLibrary.Graphics.GorgonTexture3DData">GorgonTexture3DData</see></remarks>
+		/// <remarks>The initial data can be a <see cref="GorgonLibrary.IO.GorgonDataStream">GorgonDataStream</see>, <see cref="GorgonLibrary.Graphics.GorgonTexture2DData">GorgonTexture2DData</see> or <see cref="GorgonLibrary.Graphics.GorgonTexture3DData">GorgonTexture3DData</see></remarks>
 		protected abstract void InitializeImpl(IEnumerable<ISubResourceData> initialData);
 
 		/// <summary>
@@ -371,7 +372,7 @@ namespace GorgonLibrary.Graphics
 		/// Function to create an image with initial data.
 		/// </summary>
 		/// <param name="initialData">Data to use when creating the image.</param>
-		/// <remarks>The initial data can be a <see cref="GorgonLibrary.GorgonDataStream">GorgonDataStream</see>, <see cref="GorgonLibrary.Graphics.GorgonTexture2DData">GorgonTexture2DData</see> or <see cref="GorgonLibrary.Graphics.GorgonTexture3DData">GorgonTexture3DData</see></remarks>
+		/// <remarks>The initial data can be a <see cref="GorgonLibrary.IO.GorgonDataStream">GorgonDataStream</see>, <see cref="GorgonLibrary.Graphics.GorgonTexture2DData">GorgonTexture2DData</see> or <see cref="GorgonLibrary.Graphics.GorgonTexture3DData">GorgonTexture3DData</see></remarks>
 		internal void Initialize(IEnumerable<ISubResourceData> initialData)
 		{
 			try

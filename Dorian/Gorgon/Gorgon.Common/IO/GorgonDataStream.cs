@@ -34,7 +34,7 @@ using System.Runtime.InteropServices;
 using GorgonLibrary.Diagnostics;
 using GorgonLibrary.Native;
 
-namespace GorgonLibrary
+namespace GorgonLibrary.IO
 {
 	/// <summary>
 	/// Status for the stream.

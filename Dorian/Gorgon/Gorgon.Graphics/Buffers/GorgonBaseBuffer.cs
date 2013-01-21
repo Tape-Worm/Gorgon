@@ -32,6 +32,7 @@ using D3D11 = SharpDX.Direct3D11;
 using GorgonLibrary.Native;
 using GorgonLibrary.Math;
 using GorgonLibrary.Diagnostics;
+using GorgonLibrary.IO;
 
 namespace GorgonLibrary.Graphics
 {

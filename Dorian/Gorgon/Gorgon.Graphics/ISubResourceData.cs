@@ -28,6 +28,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using GorgonLibrary.IO;
 
 namespace GorgonLibrary.Graphics
 {

@@ -39,6 +39,7 @@ using GorgonLibrary.Diagnostics;
 using GorgonLibrary.FileSystem;
 using GorgonLibrary.Graphics;
 using GorgonLibrary.Renderers;
+using GorgonLibrary.IO;
 
 namespace GorgonLibrary.GorgonEditor
 {

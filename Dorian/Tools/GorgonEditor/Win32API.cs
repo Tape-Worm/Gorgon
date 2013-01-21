@@ -31,6 +31,7 @@ using System.Text;
 using System.Runtime.InteropServices;
 using System.Drawing;
 using GorgonLibrary.Native;
+using GorgonLibrary.IO;
 
 namespace GorgonLibrary.GorgonEditor
 {

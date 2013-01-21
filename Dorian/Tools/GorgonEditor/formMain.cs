@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -39,7 +40,7 @@ using GorgonLibrary.FileSystem;
 using GorgonLibrary.Diagnostics;
 using GorgonLibrary.UI;
 using GorgonLibrary.Graphics;
-using System.Collections;
+using GorgonLibrary.IO;
 
 namespace GorgonLibrary.GorgonEditor
 {

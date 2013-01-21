@@ -26,6 +26,7 @@
 
 using System;
 using System.IO;
+using GorgonLibrary.IO;
 
 namespace GorgonLibrary.FileSystem
 {
