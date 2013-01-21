@@ -984,9 +984,10 @@ namespace GorgonLibrary.Graphics
 		/// <param name="g">Graphics interface to use.</param>
 		/// <param name="font">Font to apply.</param>
 		/// <param name="format">Format for the font.</param>
+		/// <param name="drawFormat">The string format used to draw the glyph.</param>
 		/// <param name="c">Character to evaluate.</param>
 		/// <returns>A rectangle for the bounding box and offset of the character.</returns>
-		private Tuple<Rectangle, Vector2, char> GetCharRect(System.Drawing.Graphics g, Font font, StringFormat format, char c)
+		private Tuple<Rectangle, Vector2, char> GetCharRect(System.Drawing.Graphics g, Font font, StringFormat format, StringFormat drawFormat, char c)
 		{
 			Region[] size = null;
 			Region[] defaultSize = null;
@@ -1012,8 +1013,6 @@ namespace GorgonLibrary.Graphics
 				}
 
 				result = size[0].GetBounds(g);
-				size[0].Dispose();
-				size = null;
 
 				if ((result.Width < 0.1f) || (result.Height < 0.1f))
 				{
@@ -1043,10 +1042,10 @@ namespace GorgonLibrary.Graphics
 				result.Height = (float)System.Math.Ceiling(result.Height);
 
 				// Update the cached character bitmap size.
-				if ((result.Width > _charBitmap.Width) || (result.Height > _charBitmap.Height))
+				if ((result.Width * 2 > _charBitmap.Width) || (result.Height > _charBitmap.Height))
 				{
 					_charBitmap.Dispose();
-					_charBitmap = new Bitmap((int)result.Width, (int)result.Height, PixelFormat.Format32bppArgb);					
+					_charBitmap = new Bitmap((int)result.Width * 2, (int)result.Height, PixelFormat.Format32bppArgb);					
 				}
 
 				Point cropTL = new Point(0, 0);
@@ -1062,7 +1061,7 @@ namespace GorgonLibrary.Graphics
 					charGraphics.TextRenderingHint = g.TextRenderingHint;
 					
 					// Draw the character.
-					DrawGlyphCharacter(charGraphics, _charBitmap, font, format, currentCharacter, new Rectangle(0, 0, _charBitmap.Width, _charBitmap.Height));
+					DrawGlyphCharacter(charGraphics, _charBitmap, font, drawFormat, currentCharacter, new Rectangle(0, 0, _charBitmap.Width, _charBitmap.Height));
 
 					// We use unsafe mode to scan pixels, it's much faster.
 					pixels = _charBitmap.LockBits(new Rectangle(0, 0, _charBitmap.Width, _charBitmap.Height), ImageLockMode.ReadWrite, PixelFormat.Format32bppArgb);
@@ -1092,7 +1091,7 @@ namespace GorgonLibrary.Graphics
 					{
 						cropTL.Y = (int)result.Y;
 						cropRB.Y = (int)result.Height - 1;
-					}
+					}					
 				}
 
 				return new Tuple<Rectangle, Vector2, char>(Rectangle.FromLTRB(cropTL.X, cropTL.Y, cropRB.X, cropRB.Y), cropTL, currentCharacter);
@@ -1225,6 +1224,7 @@ namespace GorgonLibrary.Graphics
 			FontFamily family = null;
 			Bitmap tempBitmap = null;
 			StringFormat stringFormat = null;
+			StringFormat drawFormat = null;
 			System.Drawing.Graphics graphics = null;
 			IDictionary<char, ABC> charABC = null;
 			IList<KERNINGPAIR> kernPairs = null;
@@ -1296,6 +1296,14 @@ namespace GorgonLibrary.Graphics
 				stringFormat.LineAlignment = StringAlignment.Near;
 				stringFormat.SetMeasurableCharacterRanges(range);
 
+				// Create a separate drawing format because some glyphs are being clipped when they have overhang
+				// on the left boundary.
+				drawFormat = new StringFormat(StringFormat.GenericDefault);
+				drawFormat.FormatFlags = StringFormatFlags.NoFontFallback | StringFormatFlags.MeasureTrailingSpaces;
+				drawFormat.Alignment = StringAlignment.Near;
+				drawFormat.LineAlignment = StringAlignment.Near;
+				drawFormat.SetMeasurableCharacterRanges(range);
+
 				// Remove control characters and anything below a space.
 				availableCharacters = (from chars in Settings.Characters
 									   where (!Char.IsControl(chars)) && (!Glyphs.Contains(chars) && (Convert.ToInt32(chars) >= 32) && (!char.IsWhiteSpace(chars)))
@@ -1331,7 +1339,7 @@ namespace GorgonLibrary.Graphics
 				List<Tuple<char, int>> charsizes = new List<Tuple<char,int>>();
 				foreach (char c in availableCharacters)
 				{
-					Tuple<Rectangle, Vector2, char> charBounds = GetCharRect(graphics, newFont, stringFormat, c);
+					Tuple<Rectangle, Vector2, char> charBounds = GetCharRect(graphics, newFont, stringFormat, drawFormat, c);
 					charsizes.Add(new Tuple<char, int>(c, charBounds.Item1.Width * charBounds.Item1.Height));
 				}
 				
@@ -1359,7 +1367,7 @@ namespace GorgonLibrary.Graphics
 					// Begin rasterization.
 					foreach (char c in characters)
 					{
-						Tuple<Rectangle, Vector2, char> charBounds = GetCharRect(graphics, newFont, stringFormat,  c);
+						Tuple<Rectangle, Vector2, char> charBounds = GetCharRect(graphics, newFont, stringFormat, drawFormat, c);
 						Rectangle? placement = null;
 						int packingSpace = Settings.PackingSpacing > 0 ? Settings.PackingSpacing * 2 : 1;
 
@@ -1418,6 +1426,8 @@ namespace GorgonLibrary.Graphics
 					_charBitmap.Dispose();
 				if (stringFormat != null)
 					stringFormat.Dispose();
+				if (drawFormat != null)
+					drawFormat.Dispose();
 				if (tempBitmap != null)
 					tempBitmap.Dispose();
 				if (newFont != null)

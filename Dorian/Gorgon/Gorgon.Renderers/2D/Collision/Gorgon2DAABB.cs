@@ -70,10 +70,7 @@ namespace GorgonLibrary.Renderers
 					return;
 
 				_location = value;
-				if (CollisionObject == null)
-					ColliderBoundaries = new RectangleF(_location, _size);
-				else
-					UpdateFromCollisionObject();
+				OnPropertyUpdated();
 			}
 		}
 
@@ -109,15 +106,59 @@ namespace GorgonLibrary.Renderers
 					return;
 
 				_size = value;
-				if (CollisionObject == null)
-					ColliderBoundaries = new RectangleF(_location, _size);
-				else
-					UpdateFromCollisionObject();
+				OnPropertyUpdated();
 			}
 		}
 		#endregion
 
 		#region Methods.
+		/// <summary>
+		/// Function called when the size or position properties are updated.
+		/// </summary>
+		private void OnPropertyUpdated()
+		{
+			if (CollisionObject == null)
+				ColliderBoundaries = new RectangleF(_location, _size);
+			else
+				UpdateFromCollisionObject();
+		}
+
+		/// <summary>
+		/// Function to write the collider information into a stream.
+		/// </summary>
+		/// <param name="writer">Writer to use to output the information.</param>
+		/// <remarks>
+		/// This method must be implemented to write out collider information to a stream (e.g. saving a sprite with collider information).
+		/// <para>The format is as follows:  Write the full type name of the collider, then any relevant information pertaining the collider (e.g. location, width, height, etc...).</para>
+		/// </remarks>
+		protected internal override void WriteToStream(IO.GorgonBinaryWriter writer)
+		{
+			writer.Write(this.GetType().FullName);
+			writer.Write(Location.X);
+			writer.Write(Location.Y);
+			writer.Write(Size.X);
+			writer.Write(Size.Y);
+		}
+
+		/// <summary>
+		/// Function to read in the information about a collider from a stream.
+		/// </summary>
+		/// <param name="reader">Reader to use when reading the information.</param>
+		/// <remarks>
+		/// This method must be implemented to read in collider information to a stream (e.g. reading a sprite with collider information).
+		/// <para>Unlike the <see cref="M:GorgonLibrary.Renderers.Gorgon2DCollider.WriteToStream">WriteToStream</see> method, the reader only needs to read in any custom information
+		/// about the collider (e.g. location, width, height, etc...).</para>
+		/// </remarks>
+		protected internal override void ReadFromStream(IO.GorgonBinaryReader reader)
+		{
+			_location.X = reader.ReadSingle();
+			_location.Y = reader.ReadSingle();
+			_size.X = reader.ReadSingle();
+			_size.Y = reader.ReadSingle();
+
+			OnPropertyUpdated();
+		}
+
 		/// <summary>
 		/// Function to update the collider on the object to match the collision object transformation.
 		/// </summary>

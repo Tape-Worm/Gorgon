@@ -572,6 +572,7 @@ namespace GorgonLibrary.GorgonEditor
 				// Draw i-bar.
 				if ((_fontWindow.EditMode) && (_fontWindow.panelText.Focused) && (_showIBar))
 				{
+					Program.Renderer.Drawing.BlendingMode = BlendingMode.Inverted;
 					Vector2 size = _text.MeasureText(lines[lines.Count - 1], false, 0);
 					// 0.40625 is the aspect ratio of the i-bar cursor (26w x 64h)
 					if (size.X < _fontWindow.panelText.ClientSize.Width)
@@ -590,8 +591,10 @@ namespace GorgonLibrary.GorgonEditor
 						int width = (int)(height * 0.692308f);
 
 						Program.Renderer.Drawing.FilledRectangle(new RectangleF(_fontWindow.panelText.ClientSize.Width - width, (int)(position.Y - _font.FontHeight), width, height), Color.White, Program.FontTools, new RectangleF(new Vector2(35, 3), new SizeF(9, 13)));
+					
 						Program.Renderer.Drawing.FilledRectangle(new RectangleF(_fontWindow.panelText.ClientSize.Width - width, (int)(position.Y - height), width, height), Color.White, Program.FontTools, new RectangleF(new Vector2(35, 3), new SizeF(9, 13)));
 					}
+					Program.Renderer.Drawing.BlendingMode = BlendingMode.Modulate;
 				}
 
 				Program.Renderer.Target = SwapChain;

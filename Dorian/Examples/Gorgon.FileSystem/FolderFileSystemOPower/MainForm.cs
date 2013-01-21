@@ -1,0 +1,286 @@
+#region MIT.
+// 
+// Gorgon.
+// Copyright (C) 2013 Michael Winsor
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
+// 
+// Created: Saturday, January 19, 2013 7:32:49 PM
+// 
+#endregion
+
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Drawing;
+using System.Text;
+using System.Windows.Forms;
+using SlimMath;
+using GorgonLibrary;
+using GorgonLibrary.Diagnostics;
+using GorgonLibrary.UI;
+using GorgonLibrary.Graphics;
+using GorgonLibrary.Renderers;
+using GorgonLibrary.FileSystem;
+
+namespace GorgonLibrary.Examples
+{
+	/// <summary>
+	/// Main application form.
+	/// </summary>
+	/// <remarks>
+	/// TODO.
+	/// </remarks>
+	public partial class MainForm 
+		: Form
+	{
+		#region Variables.
+		private GorgonFileSystem _fileSystem = null;		// The file system.
+		private GorgonGraphics _graphics = null;			// The graphics interface.		
+		private Gorgon2D _2D = null;						// The 2D renderer interface.
+		private GorgonTexture2D _spriteImage = null;		// The sprite image texture.
+		private GorgonFont _textFont = null;				// Font for text display.
+		private GorgonFont _helpFont = null;				// Font for help screen.
+		private IList<GorgonSprite> _sprites = null;		// Sprites.
+		private GorgonText _helpText = null;				// Help text.
+		private GorgonText _poetry = null;					// Poetry text.
+		private Vector2 _textPosition = Vector2.Zero;		// Text position.
+		private float _blurDelta = -2.0f;					// Blur delta.
+		private bool _showHelp = true;						// Flag to show help.
+		private bool _showStats = false;					// Show rendering statistics.	
+		#endregion
+
+		#region Methods.
+		/// <summary>
+		/// Function to handle idle time processing.
+		/// </summary>
+		/// <returns>TRUE to continue processing, FALSE to stop.</returns>
+		private bool Idle()
+		{
+			int width = _2D.Target.Settings.Width;
+			int height = _2D.Target.Settings.Height;
+
+			_2D.Clear(Color.FromArgb(250, 245, 220));
+
+			if (_poetry.Position.Y < -_poetry.Size.Y)
+			{
+				_textPosition = new Vector2(0, height + _textFont.LineHeight);				
+			}
+
+			// Scroll up.
+			_textPosition.Y -= (25.0f * GorgonTiming.Delta);
+
+			// Alter blur value.
+			_2D.Effects.GaussianBlur.BlurAmount += _blurDelta * GorgonTiming.Delta;
+			if (_2D.Effects.GaussianBlur.BlurAmount < 4.5f)
+			{
+				_2D.Effects.GaussianBlur.BlurAmount = 4.5f;
+				_blurDelta = -_blurDelta;
+			}
+
+			if (_2D.Effects.GaussianBlur.BlurAmount > 13.0f)
+			{
+				_2D.Effects.GaussianBlur.BlurAmount = 13.0f;
+				_blurDelta = -_blurDelta;
+			}
+
+			// Draw text.
+			_poetry.Position = _textPosition;
+			_poetry.Draw();
+
+			// Draw the base.
+			_sprites[0].Position = new Vector2(width / 4, height / 4);
+			_sprites[0].Draw();
+
+			// Draw motherships.
+			_sprites[1].Position = new Vector2(width - (width / 4), height / 4);
+			_sprites[1].Draw();
+
+			_sprites[2].Anchor = new Vector2(_sprites[2].Size.X / 2.0f, _sprites[2].Size.Y / 2.0f);
+			_sprites[2].Position = new Vector2(width / 2, height / 2);
+			_sprites[2].Scale = new Vector2(1.0f);
+			_sprites[2].Draw();
+
+			_2D.Effects.GaussianBlur.Render((int passIndex) =>
+				{
+					if (passIndex == 0)
+					{
+						// Draw the blurred texture at the upper left corner instead of
+						// centered.
+						_sprites[2].Anchor = Vector2.Zero;
+						_sprites[2].Position = Vector2.Zero;
+						// Scale to the size of the blur target.
+						_sprites[2].Scale = new Vector2(1.0f, _2D.Effects.GaussianBlur.BlurRenderTargetsSize.Height / _sprites[2].Size.Y);
+						// Adjust the texture size to avoid bleed when blurring.
+						_sprites[2].TextureSize = new Vector2(125.0f / _spriteImage.Settings.Width, _sprites[2].TextureSize.Y);
+
+						_sprites[2].Draw();
+
+						// Reset.
+						_sprites[2].TextureSize = new Vector2(128.0f / _spriteImage.Settings.Width, _sprites[2].TextureSize.Y);
+					}
+					else
+					{
+						// Copy the target onto the screen (scaled to the original size of the sprite).
+						_2D.Drawing.Blit(_2D.Effects.GaussianBlur.BlurredTexture, new RectangleF(width / 2 - _sprites[2].Size.X / 2.0f,
+																								height / 2 - _sprites[2].Size.Y / 2.0f,
+																								_sprites[2].Size.X,
+																								_sprites[2].Size.Y));
+					}
+				});
+			
+
+			// Draw help text.
+			if (_showHelp)
+			{
+				_helpText.Draw();
+			}
+
+			if (_showStats)
+			{
+				_2D.Drawing.FilledRectangle(new RectangleF(0, 0, width, 36.0f), Color.FromArgb(192, Color.Black));
+				_2D.Drawing.DrawLine(new Vector2(0, 36), new Vector2(width, 36), Color.White);
+				_2D.Drawing.DrawString(_helpFont, string.Format("FPS: {0}\nFrame Delta: {1}ms.", GorgonTiming.FPS.ToString("0.0"), (GorgonTiming.Delta * 1000).ToString("0.0##")), Vector2.Zero, Color.White);
+			}
+
+			_2D.Render();
+			return true;
+		}
+
+		/// <summary>
+		/// Function called to initialize the application.
+		/// </summary>
+		private void Initialize()
+		{
+			// Resize and center the screen.
+			var screen = Screen.FromHandle(this.Handle);
+			ClientSize = Properties.Settings.Default.Resolution;
+			Location = new Point(screen.Bounds.Left + screen.WorkingArea.Width / 2 - ClientSize.Width / 2, screen.Bounds.Top + screen.WorkingArea.Height / 2 - ClientSize.Height / 2);
+
+			// Initialize our graphics.
+			_graphics = new GorgonGraphics();			
+			_2D = _graphics.Output.Create2DRenderer(this, ClientSize.Width, ClientSize.Height, BufferFormat.R8G8B8A8_UIntNormal, Properties.Settings.Default.IsWindowed);
+
+			_2D.IsLogoVisible = true;
+
+			// Create fonts.
+			_textFont = _graphics.Fonts.CreateFont("GiGi_24pt", new GorgonFontSettings()
+			{
+				FontFamilyName = "GiGi",
+				AntiAliasingMode = FontAntiAliasMode.AntiAliasHQ,
+				Size = 24.0f,
+				FontHeightMode = FontHeightMode.Points,
+				TextureSize = new Size(512, 256)
+			});
+
+			// Use the form font for this one.
+			_helpFont = _graphics.Fonts.CreateFont("FormFont", new GorgonFontSettings()
+			{
+				FontFamilyName = this.Font.FontFamily.Name,
+				FontStyle = FontStyle.Bold,
+				AntiAliasingMode = FontAntiAliasMode.AntiAliasHQ,
+				Size = this.Font.Size,
+				FontHeightMode = FontHeightMode.Points
+			});
+
+			// Create our file system and mount the resources.
+			_fileSystem = new GorgonFileSystem();
+			_fileSystem.Mount(Program.GetResourcePath(@"FolderSystem\"));
+
+			// Get the sprite image.
+			_spriteImage = _graphics.Textures.FromMemory<GorgonTexture2D>("0_HardVacuum", _fileSystem.ReadFile("/Images/0_HardVacuum.png"));
+
+			// Get the sprites.
+			_sprites = new GorgonSprite[3];
+			_sprites[0] = _2D.Renderables.FromMemory<GorgonSprite>("Base", _fileSystem.ReadFile("/Sprites/base.gorSprite"));
+			_sprites[1] = _2D.Renderables.FromMemory<GorgonSprite>("Mother", _fileSystem.ReadFile("/Sprites/Mother.gorSprite"));
+			_sprites[2] = _2D.Renderables.FromMemory<GorgonSprite>("Mother2c", _fileSystem.ReadFile("/Sprites/Mother2c.gorSprite"));
+
+			// Get poetry.
+			_textPosition = new Vector2(0, _2D.Target.Settings.Height + _textFont.LineHeight);
+			_poetry = _2D.Renderables.CreateText("Poetry", _textFont, Encoding.UTF8.GetString(_fileSystem.ReadFile("/SomeText.txt")), Color.Black);
+			_poetry.Position = _textPosition;
+
+			// Set up help text.
+			_helpText = _2D.Renderables.CreateText("Help", _helpFont, "F1 - Show/hide this help text.\nS - Show frame statistics.\nESC - Exit.", Color.Blue);
+			_helpText.Position = new Vector2(3, 3);
+
+			// Set the initial blur value.
+			_2D.Effects.GaussianBlur.BlurAmount = 13.0f;
+			_2D.Effects.GaussianBlur.BlurRenderTargetsSize = new Size(128, 128);
+
+			Gorgon.ApplicationIdleLoopMethod = Idle;
+		}
+
+		/// <summary>
+		/// Raises the <see cref="E:System.Windows.Forms.Control.KeyDown" /> event.
+		/// </summary>
+		/// <param name="e">A <see cref="T:System.Windows.Forms.KeyEventArgs" /> that contains the event data.</param>
+		protected override void OnKeyDown(KeyEventArgs e)
+		{
+			base.OnKeyDown(e);
+
+			if (e.KeyCode == Keys.F1)
+			{
+				_showHelp = !_showHelp;
+			}
+
+			if (e.KeyCode == Keys.S)
+			{
+				_showStats = !_showStats;
+			}
+		}
+
+		/// <summary>
+		/// Raises the <see cref="E:System.Windows.Forms.Form.Load" /> event.
+		/// </summary>
+		/// <param name="e">An <see cref="T:System.EventArgs" /> that contains the event data.</param>
+		protected override void OnLoad(EventArgs e)
+		{
+			base.OnLoad(e);
+
+			try
+			{
+				this.Cursor = Cursors.WaitCursor;
+
+				// Initialize.
+				Initialize();
+			}
+			catch (Exception ex)
+			{
+				GorgonException.Catch(ex, () => GorgonDialogs.ErrorBox(this, ex));
+				Gorgon.Quit();
+			}
+			finally
+			{
+				this.Cursor = Cursors.Default;
+			}
+		}
+		#endregion
+
+		#region Constructor/Destructor.
+		/// <summary>
+		/// Constructor.
+		/// </summary>
+		public MainForm()
+		{
+			InitializeComponent();
+		}
+		#endregion
+	}
+}

@@ -205,6 +205,12 @@ namespace GorgonLibrary.Renderers
 		{
 			int index = 0;
 
+			if (_vTarget == null)
+			{
+				UpdateRenderTarget();
+			}
+
+
 			for (int i = -_blurRadius; i <= _blurRadius; i++)
 			{
 				_xOffsets[index] = new Vector4((1.0f / _vTarget.Settings.Width) * (float)i, 0, 0, 0);
@@ -268,6 +274,9 @@ namespace GorgonLibrary.Renderers
 		protected override void OnBeforeRenderPass(int passIndex)
 		{
 			base.OnBeforeRenderPass(passIndex);
+
+			if ((_hTarget == null) || (_vTarget == null))
+				UpdateRenderTarget();
 
 			_blurStream.Position = 0;
 			if (passIndex == 0)
