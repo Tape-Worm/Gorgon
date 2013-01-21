@@ -1,7 +1,7 @@
 #region MIT.
 // 
-// Examples.
-// Copyright (C) 2008 Michael Winsor
+// Gorgon.
+// Copyright (C) 2013 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -20,192 +20,295 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: Thursday, October 02, 2008 10:46:02 PM
+// Created: Monday, January 21, 2013 8:44:19 AM
 // 
 #endregion
 
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using Drawing = System.Drawing;
+using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
-using Dialogs;
+using SlimMath;
 using GorgonLibrary;
+using GorgonLibrary.Diagnostics;
+using GorgonLibrary.UI;
 using GorgonLibrary.Graphics;
-using GorgonLibrary.FileSystems;
+using GorgonLibrary.Renderers;
+using GorgonLibrary.FileSystem;
 
-namespace GorgonLibrary.Example
+namespace GorgonLibrary.Examples
 {
-	/// <summary>
-	/// Main application form.
-	/// </summary>
-	public partial class MainForm 
-		: Form
-	{
-		#region Variables.
-		private FileSystem _bzipFS = null;					// BZip file system.
-		private Image _spriteImage = null;					// Sprite image.
-		private Sprite _base = null;						// Base sprite.
-		private Sprite _mother1 = null;						// Mothership 1.
-		private Sprite _mother2 = null;						// Mothership 2.
-		private string _text = string.Empty;				// Text to display.
-		private TextSprite _textSprite = null;				// Text sprite.
-		private Font _textFont = null;						// Font for the text.
-		private Font _helpFont = null;						// Font for the help text.
-		private float _textY = 0.0f;						// Text vertical positioning.
-		private FXShader _blur = null;						// Blur shader.
-		private bool _blurBounce = false;					// Blur bounce flag.
-		private float _blurAmount = 1.0f;					// Blur amount.
-		private bool _showHelp = true;						// Flag to show help.
-		#endregion
+    /// <summary>
+    /// Main application form.
+    /// </summary>
+    /// <remarks>
+    /// This example is a port of the Gorgon 1.x BZip packed file system example into Gorgon 2.x.
+    /// 
+    /// In this example we mount a Gorgon packed file as a virtual file system and pull in an image, 
+    /// some Gorgon 1.0 sprites, the backing sprite image and some text for display.
+    /// 
+    /// The difference between this example and the folder file system example is that we're loading
+    /// a packed file from the previous version of Gorgon as a file system.  The scenario is the same
+    /// as loading a zip file:  Load the provider plug-in into the file system, and mount the packed
+    /// file.
+    /// </remarks>
+    public partial class MainForm
+        : Form
+    {
+        #region Variables.
+        private GorgonFileSystem _fileSystem = null;		// The file system.
+        private GorgonGraphics _graphics = null;			// The graphics interface.		
+        private Gorgon2D _2D = null;						// The 2D renderer interface.
+        private GorgonTexture2D _spriteImage = null;		// The sprite image texture.
+        private GorgonFont _textFont = null;				// Font for text display.
+        private GorgonFont _helpFont = null;				// Font for help screen.
+        private IList<GorgonSprite> _sprites = null;		// Sprites.
+        private GorgonText _helpText = null;				// Help text.
+        private GorgonText _poetry = null;					// Poetry text.
+        private Vector2 _textPosition = Vector2.Zero;		// Text position.
+        private float _blurDelta = -2.0f;					// Blur delta.
+        private bool _showHelp = true;						// Flag to show help.
+        private bool _showStats = false;					// Show rendering statistics.	
+        #endregion
 
-		#region Methods.
-		/// <summary>
-		/// Handles the KeyDown event of the MainForm control.
-		/// </summary>
-		/// <param name="sender">The source of the event.</param>
-		/// <param name="e">The <see cref="System.Windows.Forms.KeyEventArgs"/> instance containing the event data.</param>
-		private void MainForm_KeyDown(object sender, KeyEventArgs e)
-		{
+        #region Methods.
+        /// <summary>
+        /// Function to handle idle time processing.
+        /// </summary>
+        /// <returns>TRUE to continue processing, FALSE to stop.</returns>
+        private bool Idle()
+        {
+            int width = _2D.Target.Settings.Width;
+            int height = _2D.Target.Settings.Height;
 
-		}
+            _2D.Clear(Color.FromArgb(250, 245, 220));
 
-		/// <summary>
-		/// Handles the OnFrameBegin event of the Screen control.
-		/// </summary>
-		/// <param name="sender">The source of the event.</param>
-		/// <param name="e">The <see cref="GorgonLibrary.FrameEventArgs"/> instance containing the event data.</param>
-		private void Screen_OnFrameBegin(object sender, FrameEventArgs e)
-		{
-			// Clear the screen.
-			Gorgon.Screen.Clear();
+            // Reset the text position.
+            if (_poetry.Position.Y < -_poetry.Size.Y)
+            {
+                _textPosition = new Vector2(0, height + _textFont.LineHeight);
+            }
 
-			_textSprite.SetPosition(0, (int)_textY);
-			_textSprite.Draw();
+            // Scroll up.
+            _textPosition.Y -= (25.0f * GorgonTiming.Delta);
 
-			if (_textSprite.Position.Y < -_textSprite.Height)
-				_textY = Gorgon.Screen.Height + _textFont.LineHeight;
+            // Alter blur value.
+            _2D.Effects.GaussianBlur.BlurAmount += _blurDelta * GorgonTiming.Delta;
+            if (_2D.Effects.GaussianBlur.BlurAmount < 4.5f)
+            {
+                _2D.Effects.GaussianBlur.BlurAmount = 4.5f;
+                _blurDelta = -_blurDelta;
+            }
 
-			// Scroll up.
-			_textY -= (25.0f * e.FrameDeltaTime);
+            if (_2D.Effects.GaussianBlur.BlurAmount > 13.0f)
+            {
+                _2D.Effects.GaussianBlur.BlurAmount = 13.0f;
+                _blurDelta = -_blurDelta;
+            }
 
-			// Set blur amount.
-			if (_blur != null)
-				_blur.Parameters["blurAmount"].SetValue(_blurAmount);
-			else
-				_mother2.Opacity = (byte)(34.0f * _blurAmount);
+            // Draw text.
+            _poetry.Position = _textPosition;
+            _poetry.Draw();
 
-			if (!_blurBounce)
-                _blurAmount += 5.0f * e.FrameDeltaTime;
-            else
-                _blurAmount -= 5.0f * e.FrameDeltaTime;
+            // Draw the base.
+            _sprites[0].Position = new Vector2(width / 4, height / 4);
+            _sprites[0].Draw();
 
-			if ((_blurAmount >= 7.5f) || (_blurAmount <= 0.5f))
-				_blurBounce = !_blurBounce;
+            // Draw motherships.
+            _sprites[1].Position = new Vector2(width - (width / 4), height / 4);
+            _sprites[1].Draw();
 
-			// Draw the base.
-			_base.SetPosition(Gorgon.Screen.Width / 4, Gorgon.Screen.Height / 4);
-			_base.Draw();
+            // Draw the blurred sprite.
+            _2D.Effects.GaussianBlur.Render((int passIndex) =>
+            {
+                if (passIndex == 0)
+                {
+                    // Draw the sprite at the upper left corner instead of
+                    // centered.  Otherwise it'll be centered in the blur 
+                    // render target and will be clipped.
+                    _sprites[2].Anchor = Vector2.Zero;
+                    _sprites[2].Position = Vector2.Zero;
+                    // Scale to the size of the blur target.
+                    _sprites[2].Scale = new Vector2(1.0f, _2D.Effects.GaussianBlur.BlurRenderTargetsSize.Height / _sprites[2].Size.Y);
+                    // Adjust the texture size to avoid bleed when blurring.  
+                    // Bleed means that other portions of the texture get pulled
+                    // in to the texture because of bi-linear filtering (and the
+                    // blur operates in a similar manner, and therefore unwanted
+                    // pixels get pulled in as well).
+                    // See http://tape-worm.net/?page_id=277 for more info.
+                    _sprites[2].TextureSize = new Vector2(125.0f / _spriteImage.Settings.Width, _sprites[2].TextureSize.Y);
 
-			// Draw motherships.
-			_mother1.SetPosition(Gorgon.Screen.Width - (Gorgon.Screen.Width / 4), Gorgon.Screen.Height / 4);
-			_mother1.Draw();
+                    _sprites[2].Draw();
 
-			_mother2.SetPosition(Gorgon.Screen.Width / 2, Gorgon.Screen.Height / 2);
-			Gorgon.CurrentShader = _blur;
-			_mother2.Draw();
-			Gorgon.CurrentShader = null;
-			if (_showHelp)
-			{
-				_textSprite.SetPosition(0, 0);
-				_textSprite.Font = _helpFont;
-				_textSprite.Color = Drawing.Color.Blue;
-				_textSprite.Text = "F1 - Show/hide this help text.\nS - Show frame statistics.\nESC - Exit.";
-				_textSprite.Draw();
+                    // Reset.
+                    _sprites[2].TextureSize = new Vector2(128.0f / _spriteImage.Settings.Width, _sprites[2].TextureSize.Y);
+                }
+                else
+                {
+                    // Copy the target onto the screen (scaled to the original size of the sprite).
+                    // We scale the blit because the render targets used for blurring are much smaller
+                    // than the actual sprite.  If we didn't scale, the sprite would be clipped.
+                    _2D.Drawing.Blit(_2D.Effects.GaussianBlur.BlurredTexture, new RectangleF(width / 2 - _sprites[2].Size.X / 2.0f,
+                                                                                            height / 2 - _sprites[2].Size.Y / 2.0f,
+                                                                                            _sprites[2].Size.X,
+                                                                                            _sprites[2].Size.Y));
+                }
+            });
 
-				// Reset our text.
-				_textSprite.Color = Drawing.Color.Black;
-				_textSprite.Text = _text;
-				_textSprite.Font = _textFont;
-			}
-		}
 
-		/// <summary>
-		/// Handles the FormClosing event of the MainForm control.
-		/// </summary>
-		/// <param name="sender">The source of the event.</param>
-		/// <param name="e">The <see cref="System.Windows.Forms.FormClosingEventArgs"/> instance containing the event data.</param>
-		private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
-		{
+            // Draw help text.
+            if (_showHelp)
+            {
+                _helpText.Draw();
+            }
 
-		}
+            // Show our rendering statistics.
+            if (_showStats)
+            {
+                _2D.Drawing.FilledRectangle(new RectangleF(0, 0, width, 36.0f), Color.FromArgb(192, Color.Black));
+                _2D.Drawing.DrawLine(new Vector2(0, 36), new Vector2(width, 36), Color.White);
+                _2D.Drawing.DrawString(_helpFont, string.Format("FPS: {0}\nFrame Delta: {1}ms.", GorgonTiming.FPS.ToString("0.0"), (GorgonTiming.Delta * 1000).ToString("0.0##")), Vector2.Zero, Color.White);
+            }
 
-		/// <summary>
-		/// Function called to initialize the application.
-		/// </summary>
-		private void Initialize()
-		{
-			// Create font.
-			_textFont = new Font("Gigi_24pt", "Gigi", 24.0f, true);
-			_helpFont = new Font("Arial_9pt", "Arial", 10.0f, true, true);
+            _2D.Render();
+            return true;
+        }
 
-			// Get the file system provider.
-			FileSystemProvider.Load(@"..\..\..\..\PlugIns\bin\Release\GorgonBZip2FileSystem.dll");
+        /// <summary>
+        /// Function called to initialize the application.
+        /// </summary>
+        private void Initialize()
+        {
+            // Resize and center the screen.
+            var screen = Screen.FromHandle(this.Handle);
+            ClientSize = Properties.Settings.Default.Resolution;
+            Location = new Point(screen.Bounds.Left + screen.WorkingArea.Width / 2 - ClientSize.Width / 2, screen.Bounds.Top + screen.WorkingArea.Height / 2 - ClientSize.Height / 2);
 
-			// Create the bzip file system.
-            _bzipFS = FileSystem.Create("SomeBZipFileSystem", FileSystemProviderCache.Providers["Gorgon.BZip2FileSystem"]);
+            // Initialize our graphics.
+            _graphics = new GorgonGraphics();
+            _2D = _graphics.Output.Create2DRenderer(this, ClientSize.Width, ClientSize.Height, BufferFormat.R8G8B8A8_UIntNormal, Properties.Settings.Default.IsWindowed);
 
-			// Mount the file system.
-			_bzipFS.AssignRoot(@"..\..\..\..\Resources\FileSystems\BZipFileSystem.gorPack");
+            // Show the logo because I'm insecure.
+            _2D.IsLogoVisible = true;
 
-			// Get the sprite image.
-			_spriteImage = Image.FromFileSystem(_bzipFS, @"\Images\0_HardVacuum.png");
+            // Create fonts.
+            _textFont = _graphics.Fonts.CreateFont("GiGi_24pt", new GorgonFontSettings()
+            {
+                FontFamilyName = "GiGi",
+                AntiAliasingMode = FontAntiAliasMode.AntiAliasHQ,
+                Size = 24.0f,
+                FontHeightMode = FontHeightMode.Points,
+                TextureSize = new Size(512, 256)
+            });
 
-			// Get shader.
-			if (Gorgon.CurrentDriver.PixelShaderVersion >= new Version(2, 0))
-			{
-#if DEBUG
-				_blur = FXShader.FromFileSystem(_bzipFS, @"\Shaders\Blur.fx", ShaderCompileOptions.Debug);
-#else
-				_blur = FXShader.FromFileSystem(_bzipFS, @"\Shaders\Blur.fx", ShaderCompileOptions.OptimizationLevel3);
-#endif
-			}
+            // Use the form font for this one.
+            _helpFont = _graphics.Fonts.CreateFont("FormFont", new GorgonFontSettings()
+            {
+                FontFamilyName = this.Font.FontFamily.Name,
+                FontStyle = FontStyle.Bold,
+                AntiAliasingMode = FontAntiAliasMode.AntiAliasHQ,
+                Size = this.Font.Size,
+                FontHeightMode = FontHeightMode.Points
+            });
 
-			// Get the sprites.
-			_base = Sprite.FromFileSystem(_bzipFS, @"\Sprites\base.gorSprite");
-			_mother1 = Sprite.FromFileSystem(_bzipFS, @"\Sprites\Mother.gorSprite");
-			_mother2 = Sprite.FromFileSystem(_bzipFS, @"\Sprites\Mother2c.gorSprite");
+            // Load the Gorgon BZip packed file provider plug-in assembly.
+            Gorgon.PlugIns.LoadPlugInAssembly(Program.PlugInPath + "Gorgon.FileSystem.GorPack.dll");            
 
-			// Get poetry.
-			_text = Encoding.UTF8.GetString(_bzipFS.ReadFile(@"\SomeText.txt"));
+            // Create our file system and mount the resources.
+            _fileSystem = new GorgonFileSystem();
+            
+            // Add the Gorgon BZip packed file provider to the file system.
+            _fileSystem.AddProvider("GorgonLibrary.FileSystem.GorgonGorPackPlugIn");
 
-			// Create text.
-			_textSprite = new TextSprite("Poetry", _text, _textFont);
-			_textSprite.Color = Drawing.Color.Black;
-			_textSprite.Refresh();
-			_textY = Gorgon.Screen.Height + _textFont.LineHeight;
-		}
+            // Mount the packed file.
+            _fileSystem.Mount(Program.GetResourcePath(@"BZipFileSystem.gorPack"));
 
-		/// <summary>
-		/// Handles the Load event of the MainForm control.
-		/// </summary>
-		/// <param name="sender">The source of the event.</param>
-		/// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
-		private void MainForm_Load(object sender, EventArgs e)
-		{
+            // Get the sprite image.            
+            _spriteImage = _graphics.Textures.FromMemory<GorgonTexture2D>("0_HardVacuum", _fileSystem.ReadFile("/Images/0_HardVacuum.png"));
 
-		}
-		#endregion
+            // Get the sprites.
+            // The sprites in the file system are from version 1.0 of Gorgon.
+            // This version is backwards compatible and can load any version
+            // of the sprites produced by older versions of Gorgon.
+            _sprites = new GorgonSprite[3];
+            _sprites[0] = _2D.Renderables.FromMemory<GorgonSprite>("Base", _fileSystem.ReadFile("/Sprites/base.gorSprite"));
+            _sprites[1] = _2D.Renderables.FromMemory<GorgonSprite>("Mother", _fileSystem.ReadFile("/Sprites/Mother.gorSprite"));
+            _sprites[2] = _2D.Renderables.FromMemory<GorgonSprite>("Mother2c", _fileSystem.ReadFile("/Sprites/Mother2c.gorSprite"));
 
-		#region Constructor/Destructor.
-		/// <summary>
-		/// Constructor.
-		/// </summary>
-		public MainForm()
-		{
-			InitializeComponent();
-		}
-		#endregion
-	}
+            // Get poetry.            
+            _textPosition = new Vector2(0, _2D.Target.Settings.Height + _textFont.LineHeight);
+            _poetry = _2D.Renderables.CreateText("Poetry", _textFont, Encoding.UTF8.GetString(_fileSystem.ReadFile("/SomeText.txt")), Color.Black);
+            _poetry.Position = _textPosition;
+
+            // Set up help text.
+            _helpText = _2D.Renderables.CreateText("Help", _helpFont, "F1 - Show/hide this help text.\nS - Show frame statistics.\nESC - Exit.", Color.Blue);
+            _helpText.Position = new Vector2(3, 3);
+
+            // Set the initial blur value.
+            // We set a small render target for the blur, this will help
+            // speed up the effect.
+            _2D.Effects.GaussianBlur.BlurAmount = 13.0f;
+            _2D.Effects.GaussianBlur.BlurRenderTargetsSize = new Size(128, 128);
+
+            Gorgon.ApplicationIdleLoopMethod = Idle;
+        }
+
+        /// <summary>
+        /// Raises the <see cref="E:System.Windows.Forms.Control.KeyDown" /> event.
+        /// </summary>
+        /// <param name="e">A <see cref="T:System.Windows.Forms.KeyEventArgs" /> that contains the event data.</param>
+        protected override void OnKeyDown(KeyEventArgs e)
+        {
+            base.OnKeyDown(e);
+
+            if (e.KeyCode == Keys.F1)
+            {
+                _showHelp = !_showHelp;
+            }
+
+            if (e.KeyCode == Keys.S)
+            {
+                _showStats = !_showStats;
+            }
+        }
+
+        /// <summary>
+        /// Raises the <see cref="E:System.Windows.Forms.Form.Load" /> event.
+        /// </summary>
+        /// <param name="e">An <see cref="T:System.EventArgs" /> that contains the event data.</param>
+        protected override void OnLoad(EventArgs e)
+        {
+            base.OnLoad(e);
+
+            try
+            {
+                this.Cursor = Cursors.WaitCursor;
+
+                // Initialize.
+                Initialize();
+            }
+            catch (Exception ex)
+            {
+                GorgonException.Catch(ex, () => GorgonDialogs.ErrorBox(this, ex));
+                Gorgon.Quit();
+            }
+            finally
+            {
+                this.Cursor = Cursors.Default;
+            }
+        }
+        #endregion
+
+        #region Constructor/Destructor.
+        /// <summary>
+        /// Constructor.
+        /// </summary>
+        public MainForm()
+        {
+            InitializeComponent();
+        }
+        #endregion
+    }
 }

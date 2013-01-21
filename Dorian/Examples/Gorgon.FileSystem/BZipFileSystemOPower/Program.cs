@@ -20,30 +20,108 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: Monday, January 21, 2013 8:38:25 AM
+// Created: Monday, January 21, 2013 8:43:08 AM
 // 
 #endregion
 
 using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
+using System.IO;
+using GorgonLibrary;
+using GorgonLibrary.UI;
 
 namespace GorgonLibrary.Examples
 {
-	/// <summary>
-	/// Main application.
-	/// </summary>
-	static class Program
-	{
-		/// <summary>
-		/// The main entry point for the application.
-		/// </summary>
-		[STAThread]
-		static void Main()
-		{
-			Application.EnableVisualStyles();
-			Application.SetCompatibleTextRenderingDefault(false);
-			Application.Run(new MainForm());
-		}
-	}
+    /// <summary>
+    /// Main application.
+    /// </summary>
+    static class Program
+    {
+        #region Properties.
+        /// <summary>
+        /// Property to return the path to the plug-ins.
+        /// </summary>
+        public static string PlugInPath
+        {
+            get
+            {
+                string path = Properties.Settings.Default.PlugInLocation;
+
+                if (path.Contains("{0}"))
+                {
+#if DEBUG
+                    path = string.Format(path, "Debug");
+#else
+					path = string.Format(path, "Release");					
+#endif
+                }
+
+                if (!path.EndsWith(Path.DirectorySeparatorChar.ToString()))
+                {
+                    path += Path.DirectorySeparatorChar.ToString();
+                }
+
+                return Path.GetFullPath(path);
+            }
+        }
+        #endregion
+
+        #region Methods.
+        /// <summary>
+        /// Property to return the path to the resources for the example.
+        /// </summary>
+        /// <param name="resourceItem">The directory or file to use as a resource.</param>
+        /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="resourceItem"/> was NULL (Nothing in VB.Net) or empty.</exception>
+        public static string GetResourcePath(string resourceItem)
+        {
+            string path = Properties.Settings.Default.ResourceLocation;
+
+            if (string.IsNullOrEmpty(resourceItem))
+            {
+                throw new ArgumentException("The resource was not specified.", "resourceItem");
+            }
+
+            if (!path.EndsWith(Path.DirectorySeparatorChar.ToString()))
+            {
+                path += Path.DirectorySeparatorChar.ToString();
+            }
+
+            path = path.RemoveIllegalPathChars();
+
+            // If this is a directory, then sanitize it as such.
+            if (resourceItem.EndsWith(Path.DirectorySeparatorChar.ToString()))
+            {
+                path += resourceItem.RemoveIllegalPathChars();
+            }
+            else
+            {
+                // Otherwise, sanitize the file name.
+                path += resourceItem.RemoveIllegalFilenameChars();
+            }
+
+            // Ensure that 
+            return Path.GetFullPath(path);
+        }
+
+        /// <summary>
+        /// The main entry point for the application.
+        /// </summary>
+        [STAThread]
+        static void Main()
+        {
+            try
+            {
+                Application.EnableVisualStyles();
+                Application.SetCompatibleTextRenderingDefault(false);
+
+                Gorgon.Run(new MainForm());
+            }
+            catch (Exception ex)
+            {
+                GorgonException.Catch(ex, () => GorgonDialogs.ErrorBox(null, ex));
+            }
+        }
+        #endregion
+    }
 }

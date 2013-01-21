@@ -44,7 +44,10 @@ namespace GorgonLibrary.Examples
 	/// Main application form.
 	/// </summary>
 	/// <remarks>
-	/// TODO.
+	/// This example is a port of the Gorgon 1.x folder file system example into Gorgon 2.x.
+    /// 
+    /// In this example we mount a folder as a virtual file system and pull in an image, some Gorgon 1.0 sprites, the 
+    /// backing sprite image and some text for display.
 	/// </remarks>
 	public partial class MainForm 
 		: Form
@@ -77,6 +80,7 @@ namespace GorgonLibrary.Examples
 
 			_2D.Clear(Color.FromArgb(250, 245, 220));
 
+            // Reset the text position.
 			if (_poetry.Position.Y < -_poetry.Size.Y)
 			{
 				_textPosition = new Vector2(0, height + _textFont.LineHeight);				
@@ -111,22 +115,24 @@ namespace GorgonLibrary.Examples
 			_sprites[1].Position = new Vector2(width - (width / 4), height / 4);
 			_sprites[1].Draw();
 
-			_sprites[2].Anchor = new Vector2(_sprites[2].Size.X / 2.0f, _sprites[2].Size.Y / 2.0f);
-			_sprites[2].Position = new Vector2(width / 2, height / 2);
-			_sprites[2].Scale = new Vector2(1.0f);
-			_sprites[2].Draw();
-
+            // Draw the blurred sprite.
 			_2D.Effects.GaussianBlur.Render((int passIndex) =>
 				{
 					if (passIndex == 0)
 					{
-						// Draw the blurred texture at the upper left corner instead of
-						// centered.
+						// Draw the sprite at the upper left corner instead of
+						// centered.  Otherwise it'll be centered in the blur 
+                        // render target and will be clipped.
 						_sprites[2].Anchor = Vector2.Zero;
 						_sprites[2].Position = Vector2.Zero;
 						// Scale to the size of the blur target.
 						_sprites[2].Scale = new Vector2(1.0f, _2D.Effects.GaussianBlur.BlurRenderTargetsSize.Height / _sprites[2].Size.Y);
-						// Adjust the texture size to avoid bleed when blurring.
+						// Adjust the texture size to avoid bleed when blurring.  
+                        // Bleed means that other portions of the texture get pulled
+                        // in to the texture because of bi-linear filtering (and the
+                        // blur operates in a similar manner, and therefore unwanted
+                        // pixels get pulled in as well).
+                        // See http://tape-worm.net/?page_id=277 for more info.
 						_sprites[2].TextureSize = new Vector2(125.0f / _spriteImage.Settings.Width, _sprites[2].TextureSize.Y);
 
 						_sprites[2].Draw();
@@ -137,6 +143,8 @@ namespace GorgonLibrary.Examples
 					else
 					{
 						// Copy the target onto the screen (scaled to the original size of the sprite).
+                        // We scale the blit because the render targets used for blurring are much smaller
+                        // than the actual sprite.  If we didn't scale, the sprite would be clipped.
 						_2D.Drawing.Blit(_2D.Effects.GaussianBlur.BlurredTexture, new RectangleF(width / 2 - _sprites[2].Size.X / 2.0f,
 																								height / 2 - _sprites[2].Size.Y / 2.0f,
 																								_sprites[2].Size.X,
@@ -151,6 +159,7 @@ namespace GorgonLibrary.Examples
 				_helpText.Draw();
 			}
 
+            // Show our rendering statistics.
 			if (_showStats)
 			{
 				_2D.Drawing.FilledRectangle(new RectangleF(0, 0, width, 36.0f), Color.FromArgb(192, Color.Black));
@@ -176,6 +185,7 @@ namespace GorgonLibrary.Examples
 			_graphics = new GorgonGraphics();			
 			_2D = _graphics.Output.Create2DRenderer(this, ClientSize.Width, ClientSize.Height, BufferFormat.R8G8B8A8_UIntNormal, Properties.Settings.Default.IsWindowed);
 
+            // Show the logo because I'm insecure.
 			_2D.IsLogoVisible = true;
 
 			// Create fonts.
@@ -202,16 +212,19 @@ namespace GorgonLibrary.Examples
 			_fileSystem = new GorgonFileSystem();
 			_fileSystem.Mount(Program.GetResourcePath(@"FolderSystem\"));
 
-			// Get the sprite image.
+			// Get the sprite image.            
 			_spriteImage = _graphics.Textures.FromMemory<GorgonTexture2D>("0_HardVacuum", _fileSystem.ReadFile("/Images/0_HardVacuum.png"));
 
 			// Get the sprites.
+            // The sprites in the file system are from version 1.0 of Gorgon.
+            // This version is backwards compatible and can load any version
+            // of the sprites produced by older versions of Gorgon.
 			_sprites = new GorgonSprite[3];
 			_sprites[0] = _2D.Renderables.FromMemory<GorgonSprite>("Base", _fileSystem.ReadFile("/Sprites/base.gorSprite"));
 			_sprites[1] = _2D.Renderables.FromMemory<GorgonSprite>("Mother", _fileSystem.ReadFile("/Sprites/Mother.gorSprite"));
 			_sprites[2] = _2D.Renderables.FromMemory<GorgonSprite>("Mother2c", _fileSystem.ReadFile("/Sprites/Mother2c.gorSprite"));
 
-			// Get poetry.
+			// Get poetry.            
 			_textPosition = new Vector2(0, _2D.Target.Settings.Height + _textFont.LineHeight);
 			_poetry = _2D.Renderables.CreateText("Poetry", _textFont, Encoding.UTF8.GetString(_fileSystem.ReadFile("/SomeText.txt")), Color.Black);
 			_poetry.Position = _textPosition;
@@ -221,6 +234,8 @@ namespace GorgonLibrary.Examples
 			_helpText.Position = new Vector2(3, 3);
 
 			// Set the initial blur value.
+            // We set a small render target for the blur, this will help
+            // speed up the effect.
 			_2D.Effects.GaussianBlur.BlurAmount = 13.0f;
 			_2D.Effects.GaussianBlur.BlurRenderTargetsSize = new Size(128, 128);
 
