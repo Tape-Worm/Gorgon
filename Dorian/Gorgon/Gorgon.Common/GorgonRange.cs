@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.Runtime.InteropServices;
 using GorgonLibrary.Math;
 
 namespace GorgonLibrary
@@ -56,6 +57,7 @@ namespace GorgonLibrary
 	/// <summary>
 	/// Value type to indicate a range of double values.
 	/// </summary>
+    [StructLayout(LayoutKind.Sequential, Pack = 4)]
 	public struct GorgonMinMaxD
 		: IRange<double>, IEquatable<GorgonMinMaxD>
 	{
@@ -594,6 +596,7 @@ namespace GorgonLibrary
 	/// <summary>
 	/// Value type to indicate a range of floating point values.
 	/// </summary>
+    [StructLayout(LayoutKind.Sequential, Pack = 4)]
 	public struct GorgonMinMaxF
 		: IRange<float>, IEquatable<GorgonMinMaxF>
 	{
@@ -1132,6 +1135,7 @@ namespace GorgonLibrary
 	/// <summary>
 	/// Value type to indicate a range of integer values.
 	/// </summary>
+    [StructLayout(LayoutKind.Sequential, Pack=4)]
 	public struct GorgonMinMax
 		: IRange<int>, IEquatable<GorgonMinMax>
 	{

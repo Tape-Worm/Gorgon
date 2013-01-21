@@ -25,17 +25,15 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
-using System.IO;
-using SlimMath;
-using GorgonLibrary;
-using GorgonLibrary.IO;
-using GorgonLibrary.Diagnostics;
-using GorgonLibrary.Math;
-using GorgonLibrary.Graphics;
 using GorgonLibrary.Animation;
+using GorgonLibrary.Graphics;
+using GorgonLibrary.Native;
+using GorgonLibrary.IO;
+using GorgonLibrary.Math;
+using SlimMath;
 
 namespace GorgonLibrary.Renderers
 {
@@ -74,16 +72,13 @@ namespace GorgonLibrary.Renderers
 	{
 		#region Constants.
 		/// <summary>
-		/// Header for the v1.2 Gorgon sprite file.
-		/// </summary>
-		public const string FileHeader12 = "GORSPR1.2";
-		/// <summary>
 		/// Header for the Gorgon sprite file.
 		/// </summary>		
 		public const string FileHeader = "GORSPR2.0";
 		#endregion
 
 		#region Variables.
+        private byte[] _headerData = null;                                              // File header data.
 		private float[] _corners = new float[4];										// Corners for the sprite.
 		private string _textureName = string.Empty;										// Name of the texture for the sprite.
 		private Vector2[] _offsets = null;												// A list of vertex offsets.
@@ -455,6 +450,8 @@ namespace GorgonLibrary.Renderers
 		internal GorgonSprite(Gorgon2D gorgon2D, string name)
 			: base(gorgon2D, name)
 		{
+            _headerData = Encoding.UTF8.GetBytes(FileHeader);
+
 			InitializeVertices(4);
 
 			Size = Vector2.Zero;
@@ -548,7 +545,9 @@ namespace GorgonLibrary.Renderers
 		/// <exception cref="System.IO.IOException">Thrown when the stream parameter is not opened for writing data.</exception>
 		public void Save(Stream stream)
 		{
-            
+            byte[] spriteData = null;
+            int chunkSize = 0;
+
 			if (stream == null)
 			{
 				throw new ArgumentNullException("stream");
@@ -559,109 +558,103 @@ namespace GorgonLibrary.Renderers
 				throw new IOException("Stream is not open for writing.");
 			}
 
-			// Write out the sprite information.
-			using (GorgonBinaryWriter writer = new GorgonBinaryWriter(stream, true))
-			{
-				// Write the file header.                
-				byte[] fileHeader = Encoding.UTF8.GetBytes(FileHeader);
-				writer.Write(fileHeader, 0, fileHeader.Length);
+            // Chunk the file.
+            using (GorgonBinaryWriter writer = new GorgonBinaryWriter(stream, true))
+            {
+                // Write out the file header.
+                writer.Write(_headerData, 0, _headerData.Length);
 
-				// Write sprite data.
+                using (GorgonChunkedFormat chunk = new GorgonChunkedFormat())
+                {
+                    // Write anchor information.
+                    chunkSize = (Vector2.SizeInBytes * 2) + sizeof(bool) * 2 + (DirectAccess.SizeOf<GorgonColor>() * Vertices.Length) + (Vector2.SizeInBytes * _offsets.Length);
+                    var chunkStream = chunk.CreateChunk("SpriteData", chunkSize);
+                    chunkStream.Write<Vector2>(Anchor);
+                    chunkStream.Write<Vector2>(Size);
+				    chunkStream.Write<bool>(HorizontalFlip);
+				    chunkStream.Write<bool>(VerticalFlip);
+                    // Write vertex colors.
+				    for (int i = 0; i < Vertices.Length; i++)
+				    {
+    					chunkStream.Write<GorgonColor>(Vertices[i].Color);
+	    			}
+                    // Write vertex offsets.
+				    for (int i = 0; i < _offsets.Length; i++)
+				    {
+					    chunkStream.Write<Vector2>(_offsets[i]);
+				    }                    
 
-				// Write alpha testing values.				
-				writer.Write(AlphaTestValues.Minimum);
-				writer.Write(AlphaTestValues.Maximum);
+                    // Write rendering information.
+                    chunkSize = (sizeof(int) * 19) + DirectAccess.SizeOf<GorgonMinMaxF>() + sizeof(bool) + (sizeof(byte) * 2) + (DirectAccess.SizeOf<GorgonColor>());
+                    chunkStream = chunk.CreateChunk("RenderInfo", chunkSize);
+                    chunkStream.Write<CullingMode>(CullingMode);
+                    chunkStream.Write<GorgonMinMaxF>(AlphaTestValues);
+                    chunkStream.Write<BlendOperation>(Blending.AlphaOperation);
+                    chunkStream.Write<BlendOperation>(Blending.BlendOperation);
+                    chunkStream.Write<GorgonColor>(Blending.BlendFactor);
+                    chunkStream.Write<BlendType>(Blending.DestinationAlphaBlend);
+                    chunkStream.Write<BlendType>(Blending.DestinationBlend);
+                    chunkStream.Write<BlendType>(Blending.SourceAlphaBlend);
+                    chunkStream.Write<BlendType>(Blending.SourceBlend);
+                    chunkStream.Write<ColorWriteMaskFlags>(Blending.WriteMask);
+				    chunkStream.Write<ComparisonOperators>(DepthStencil.BackFace.ComparisonOperator);
+				    chunkStream.Write<StencilOperations>(DepthStencil.BackFace.DepthFailOperation);
+				    chunkStream.Write<StencilOperations>(DepthStencil.BackFace.FailOperation);
+				    chunkStream.Write<StencilOperations>(DepthStencil.BackFace.PassOperation);
+				    chunkStream.Write<ComparisonOperators>(DepthStencil.FrontFace.ComparisonOperator);
+				    chunkStream.Write<StencilOperations>(DepthStencil.FrontFace.DepthFailOperation);
+				    chunkStream.Write<StencilOperations>(DepthStencil.FrontFace.FailOperation);
+				    chunkStream.Write<StencilOperations>(DepthStencil.FrontFace.PassOperation);
+				    chunkStream.WriteInt32(DepthStencil.DepthBias);
+				    chunkStream.Write<ComparisonOperators>(DepthStencil.DepthComparison);
+				    chunkStream.WriteInt32(DepthStencil.DepthStencilReference);
+				    chunkStream.Write<bool>(DepthStencil.IsDepthWriteEnabled);
+				    chunkStream.WriteByte(DepthStencil.StencilReadMask);
+				    chunkStream.WriteByte(DepthStencil.StencilWriteMask);
 
-				// Write anchor information.
-				writer.Write(Anchor.X);
-				writer.Write(Anchor.Y);
+                    // Write collider information.                    
+                    if (_collider != null)
+                    {
+                        byte[] colliderData = _collider.WriteToArray();
+                        chunkSize = colliderData.Length;
+                        chunkStream = chunk.CreateChunk("Collider", chunkSize);
+                        chunkStream.Write<bool>(true);
+                        chunkStream.Write(colliderData, 0, colliderData.Length);
+                    }
 
-				// Write out blending information.
-				writer.Write((int)Blending.AlphaOperation);
-				writer.Write(Blending.BlendFactor);
-				writer.Write((int)Blending.BlendOperation);
-				writer.Write((int)Blending.DestinationAlphaBlend);
-				writer.Write((int)Blending.DestinationBlend);
-				writer.Write((int)Blending.SourceAlphaBlend);
-				writer.Write((int)Blending.SourceBlend);
-				writer.Write((int)Blending.WriteMask);
-				
-				// Write out collider information.
-				writer.Write(Collider != null);
-				if (Collider != null)
-				{
-					Collider.WriteToStream(writer);
-				}
+                    // Write texture information.
+                    if ((Texture != null) || (!string.IsNullOrWhiteSpace(DeferredTextureName)))
+                    {
+                        byte[] textureName = null;
 
-				// Write out the culling mode.
-				writer.Write((int)CullingMode);
+                        if (Texture != null)
+                        {
+                            textureName = Encoding.UTF8.GetBytes(Texture.Name);
+                        }
+                        else
+                        {
+                            textureName = Encoding.UTF8.GetBytes(DeferredTextureName);
+                        }
 
-				// Write out depth information.
-				writer.Write((int)DepthStencil.BackFace.ComparisonOperator);
-				writer.Write((int)DepthStencil.BackFace.DepthFailOperation);
-				writer.Write((int)DepthStencil.BackFace.FailOperation);
-				writer.Write((int)DepthStencil.BackFace.PassOperation);
-				writer.Write((int)DepthStencil.FrontFace.ComparisonOperator);
-				writer.Write((int)DepthStencil.FrontFace.DepthFailOperation);
-				writer.Write((int)DepthStencil.FrontFace.FailOperation);
-				writer.Write((int)DepthStencil.FrontFace.PassOperation);
-				writer.Write(DepthStencil.DepthBias);
-				writer.Write((int)DepthStencil.DepthComparison);
-				writer.Write(DepthStencil.DepthStencilReference);
-				writer.Write(DepthStencil.IsDepthWriteEnabled);
-				writer.Write(DepthStencil.StencilReadMask);
-				writer.Write(DepthStencil.StencilWriteMask);
+                        chunkSize = DirectAccess.SizeOf<GorgonColor>() + (sizeof(int) * 4) + textureName.Length + (sizeof(float) * 4);
+                        chunkStream = chunk.CreateChunk("TextureInfo", chunkSize);
+                        chunkStream.Write<GorgonColor>(TextureSampler.BorderColor);
+                        chunkStream.Write<TextureAddressing>(TextureSampler.HorizontalWrapping);
+                        chunkStream.Write<TextureAddressing>(TextureSampler.VerticalWrapping);
+                        chunkStream.Write<TextureFilter>(TextureSampler.TextureFilter);
+                        chunkStream.WriteInt32(textureName.Length);
+                        chunkStream.Write(textureName, 0, textureName.Length);
+                        chunkStream.WriteFloat(TextureRegion.X);
+                        chunkStream.WriteFloat(TextureRegion.Y);
+                        chunkStream.WriteFloat(TextureRegion.Width);
+                        chunkStream.WriteFloat(TextureRegion.Height);
+                    }
 
-				// Write flip orientation information.
-				writer.Write(HorizontalFlip);
-				writer.Write(VerticalFlip);
+                    spriteData = chunk.Save();
+                }
 
-				// Write size information.
-				writer.Write(Size.X);
-				writer.Write(Size.Y);
-
-				// Write texture sampler information.
-				writer.Write(TextureSampler.BorderColor.ToARGB());
-				writer.Write((int)TextureSampler.HorizontalWrapping);
-				writer.Write((int)TextureSampler.TextureFilter);
-				writer.Write((int)TextureSampler.VerticalWrapping);
-				
-				// Write rectangle offsets.
-				for (int i = 0; i < _offsets.Length; i++)
-				{
-					writer.Write(_offsets[i].X);
-					writer.Write(_offsets[i].Y);
-				}
-
-				// Write vertex colors.
-				for (int i = 0; i < Vertices.Length; i++)
-				{
-					writer.Write(Vertices[i].Color.ToARGB());
-				}
-
-				// Write out texture information.
-				writer.Write((Texture != null) || (!string.IsNullOrWhiteSpace(DeferredTextureName)));
-				if ((Texture != null) || (!string.IsNullOrWhiteSpace(DeferredTextureName)))
-				{
-					if (Texture != null)
-					{
-						// Write out the texture name.
-						// If the texture is not found when the sprite is loaded, it'll be used in a deferred texture load look up.
-						writer.Write(Texture.Name);
-					}
-					else
-					{
-						// Write out the deferred texture name if we don't have an actual texture bound to the sprite.
-						writer.Write(DeferredTextureName);
-					}
-
-					// Write out coordinate information.
-					writer.Write(TextureRegion.X);
-					writer.Write(TextureRegion.Y);
-					writer.Write(TextureRegion.Width);
-					writer.Write(TextureRegion.Height);					
-				}				
-			}
+                writer.Write(spriteData, 0, spriteData.Length);
+            }
 		}
 		#endregion
 

@@ -123,40 +123,50 @@ namespace GorgonLibrary.Renderers
 				UpdateFromCollisionObject();
 		}
 
-		/// <summary>
-		/// Function to write the collider information into a stream.
-		/// </summary>
-		/// <param name="writer">Writer to use to output the information.</param>
-		/// <remarks>
-		/// This method must be implemented to write out collider information to a stream (e.g. saving a sprite with collider information).
-		/// <para>The format is as follows:  Write the full type name of the collider, then any relevant information pertaining the collider (e.g. location, width, height, etc...).</para>
-		/// </remarks>
-		protected internal override void WriteToStream(IO.GorgonBinaryWriter writer)
+        /// <summary>
+        /// Function to write the collider information into a stream.
+        /// </summary>
+        /// <returns>
+        /// A byte array containing the data.
+        /// </returns>
+        /// <remarks>
+        /// This method must be implemented to write out collider information to a stream (e.g. saving a sprite with collider information).
+        /// <para>The format is as follows:  Write the full type name of the collider, then any relevant information pertaining the collider (e.g. location, width, height, etc...).</para>
+        /// </remarks>
+		protected internal override byte[] WriteToArray()
 		{
-			writer.Write(this.GetType().FullName);
-			writer.Write(Location.X);
-			writer.Write(Location.Y);
-			writer.Write(Size.X);
-			writer.Write(Size.Y);
+            using (IO.GorgonBinaryWriter writer = new IO.GorgonBinaryWriter(new System.IO.MemoryStream(), false))
+            {
+                writer.Write(this.GetType().FullName);
+                writer.Write(Location.X);
+                writer.Write(Location.Y);
+                writer.Write(Size.X);
+                writer.Write(Size.Y);
+
+                return ((System.IO.MemoryStream)writer.BaseStream).ToArray();
+            }
 		}
 
-		/// <summary>
-		/// Function to read in the information about a collider from a stream.
-		/// </summary>
-		/// <param name="reader">Reader to use when reading the information.</param>
-		/// <remarks>
-		/// This method must be implemented to read in collider information to a stream (e.g. reading a sprite with collider information).
-		/// <para>Unlike the <see cref="M:GorgonLibrary.Renderers.Gorgon2DCollider.WriteToStream">WriteToStream</see> method, the reader only needs to read in any custom information
-		/// about the collider (e.g. location, width, height, etc...).</para>
-		/// </remarks>
-		protected internal override void ReadFromStream(IO.GorgonBinaryReader reader)
+        /// <summary>
+        /// Function to read in the information about a collider from a byte array.
+        /// </summary>
+        /// <param name="data"></param>
+        /// <remarks>
+        /// This method must be implemented to read in collider information to a stream (e.g. reading a sprite with collider information).
+        /// <para>Unlike the <see cref="M:GorgonLibrary.Renderers.Gorgon2DCollider.WriteToArray">WriteToArray</see> method, the reader only needs to read in any custom information
+        /// about the collider (e.g. location, width, height, etc...).</para>
+        /// </remarks>
+        protected internal override void ReadFromArray(byte[] data)
 		{
-			_location.X = reader.ReadSingle();
-			_location.Y = reader.ReadSingle();
-			_size.X = reader.ReadSingle();
-			_size.Y = reader.ReadSingle();
+            using (IO.GorgonBinaryReader reader = new IO.GorgonBinaryReader(new System.IO.MemoryStream(data), false))
+            {
+                _location.X = reader.ReadSingle();
+                _location.Y = reader.ReadSingle();
+                _size.X = reader.ReadSingle();
+                _size.Y = reader.ReadSingle();
 
-			OnPropertyUpdated();
+                OnPropertyUpdated();
+            }
 		}
 
 		/// <summary>

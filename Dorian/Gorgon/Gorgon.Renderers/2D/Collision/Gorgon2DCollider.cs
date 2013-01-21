@@ -99,23 +99,24 @@ namespace GorgonLibrary.Renderers
 		protected internal abstract void UpdateFromCollisionObject();
 
 		/// <summary>
-		/// Function to write the collider information into a stream.
+		/// Function to write the collider information into a byte array.
 		/// </summary>
 		/// <param name="writer">Writer to use to output the information.</param>
 		/// <remarks>This method must be implemented to write out collider information to a stream (e.g. saving a sprite with collider information).  
 		/// <para>The format is as follows:  Write the full type name of the collider, then any relevant information pertaining the collider (e.g. location, width, height, etc...).</para>
 		/// </remarks>
-		protected internal abstract void WriteToStream(GorgonBinaryWriter writer);
+        /// <returns>A byte array containing the data.</returns>
+		protected internal abstract byte[] WriteToArray();
 
 		/// <summary>
-		/// Function to read in the information about a collider from a stream.
+		/// Function to read in the information about a collider from a byte array.
 		/// </summary>
 		/// <param name="reader">Reader to use when reading the information.</param>
 		/// <remarks>This method must be implemented to read in collider information to a stream (e.g. reading a sprite with collider information).  
-		/// <para>Unlike the <see cref="M:GorgonLibrary.Renderers.Gorgon2DCollider.WriteToStream">WriteToStream</see> method, the reader only needs to read in any custom information 
+		/// <para>Unlike the <see cref="M:GorgonLibrary.Renderers.Gorgon2DCollider.WriteToArray">WriteToArray</see> method, the reader only needs to read in any custom information 
 		/// about the collider (e.g. location, width, height, etc...).</para>
 		/// </remarks>
-		protected internal abstract void ReadFromStream(GorgonBinaryReader reader);
+        protected internal abstract void ReadFromArray(byte[] data);
 		#endregion
 
 		#region Constructor.
