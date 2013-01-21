@@ -27,6 +27,7 @@
 using System;
 using System.IO;
 using GorgonLibrary.Diagnostics;
+using GorgonLibrary.IO;
 
 namespace GorgonLibrary.FileSystem
 {

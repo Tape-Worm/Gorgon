@@ -31,6 +31,7 @@ using System.Text;
 using System.IO;
 using Aga.Controls.Tree;
 using GorgonLibrary.FileSystem;
+using GorgonLibrary.IO;
 
 namespace GorgonLibrary.GorgonEditor
 {

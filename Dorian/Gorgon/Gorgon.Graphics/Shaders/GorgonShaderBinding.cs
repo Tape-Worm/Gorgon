@@ -32,6 +32,7 @@ using System.IO;
 using Shaders = SharpDX.D3DCompiler;
 using GorgonLibrary.Native;
 using GorgonLibrary.Diagnostics;
+using GorgonLibrary.IO;
 
 namespace GorgonLibrary.Graphics
 {

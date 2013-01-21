@@ -35,6 +35,7 @@ using GorgonLibrary.Native;
 using GorgonLibrary.Diagnostics;
 using GorgonLibrary.Collections.Specialized;
 using GorgonLibrary.Graphics;
+using GorgonLibrary.IO;
 
 namespace GorgonLibrary.Renderers
 {

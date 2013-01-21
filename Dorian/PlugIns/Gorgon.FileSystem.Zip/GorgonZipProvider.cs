@@ -32,6 +32,7 @@ using System.IO;
 using ICSharpCode.SharpZipLib;
 using ICSharpCode.SharpZipLib.Zip;
 using GorgonLibrary.Diagnostics;
+using GorgonLibrary.IO;
 
 namespace GorgonLibrary.FileSystem.Zip
 {

@@ -31,6 +31,7 @@ using System.Text;
 using System.Runtime.InteropServices;
 using DX = SharpDX;
 using D3D = SharpDX.Direct3D11;
+using GorgonLibrary.IO;
 using GorgonLibrary.Diagnostics;
 
 namespace GorgonLibrary.Graphics

@@ -29,6 +29,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using GorgonLibrary.Graphics;
+using GorgonLibrary.IO;
 
 namespace GorgonLibrary.Renderers
 {
