@@ -824,6 +824,134 @@ namespace GorgonLibrary.IO
 			}
 		}
 
+        /// <summary>
+        /// Function to write a character to the current position in the stream and advances the position within the stream.
+        /// </summary>
+        /// <param name="value">The character to write to the stream.</param>
+        /// <exception cref="T:System.IO.IOException">An I/O error occurs. </exception>
+        /// <exception cref="T:System.NotSupportedException">The stream does not support writing, or the stream is already closed. </exception>
+        /// <exception cref="T:System.ObjectDisposedException">Methods were called after the stream was closed. </exception>
+        public void WriteChar(char value)
+        {
+            WriteChar(value, null);
+        }
+
+        /// <summary>
+        /// Function to read a character with the specified encoding from the stream and increment the position by the size of a character.
+        /// </summary>
+        /// <param name="encoding">The encoding to use.</param>
+        /// <returns>
+        /// The character in the stream or the default character to indicate the end of stream.
+        /// </returns>
+        /// <exception cref="T:System.NotSupportedException">The stream does not support reading. </exception>
+        /// <exception cref="T:System.ObjectDisposedException">Methods were called after the stream was closed. </exception>
+        public char ReadChar(Encoding encoding)
+        {
+            char result = default(char);
+#if DEBUG
+            if (!CanRead)
+                throw new NotSupportedException("Buffer is write only.");
+
+            if (_data == IntPtr.Zero)
+                throw new ObjectDisposedException("GorgonDataStream");
+#endif
+            if (Position >= Length)
+            {
+                return result;
+            }
+
+            if (encoding == null)
+            {
+                encoding = Encoding.Default;
+            }
+
+            int byteCount = (encoding is UnicodeEncoding) ? 2 : 1;
+
+            unsafe
+            {                
+                byte* pointer = (byte*)_pointerOffset;
+                byte* charData = stackalloc byte[byteCount];
+
+                for (int i = 0; i < byteCount; i++)
+                {
+                    charData[i] = *pointer;
+
+                    // Only get the first byte(s) if we're out of space.
+                    if (Position + 1L >= Length)
+                    {
+                        break;
+                    }
+
+                    pointer++;
+                    Position++;                    
+                }
+
+                encoding.GetChars(charData, byteCount, &result, 1);
+
+                return result;
+            }
+        }
+
+        /// <summary>
+        /// Function to read a character from the stream and increment the position by the size of a character.
+        /// </summary>
+        /// <returns>
+        /// The character in the stream or the default character to indicate the end of stream.
+        /// </returns>
+        /// <exception cref="T:System.NotSupportedException">The stream does not support reading. </exception>
+        /// <exception cref="T:System.ObjectDisposedException">Methods were called after the stream was closed. </exception>
+        public char ReadChar()
+        {
+            return ReadChar(null);
+        }
+
+        /// <summary>
+        /// Function to write a character to the current position in the stream and advances the position within the stream with the specified encoding.
+        /// </summary>
+        /// <param name="value">The character to write to the stream.</param>
+        /// <param name="encoding">Enocding to use for the character.</param>
+        /// <exception cref="T:System.IO.IOException">An I/O error occurs. </exception>
+        /// <exception cref="T:System.NotSupportedException">The stream does not support writing, or the stream is already closed. </exception>
+        /// <exception cref="T:System.ObjectDisposedException">Methods were called after the stream was closed. </exception>
+        public void WriteChar(char value, Encoding encoding)
+        {
+#if DEBUG
+            if (!CanWrite)
+                throw new NotSupportedException("Buffer is read only.");
+
+            if (_data == IntPtr.Zero)
+                throw new ObjectDisposedException("GorgonDataStream");
+
+            if (char.IsSurrogate(value))
+            {
+                throw new ArgumentException("Cannot write a single surrogate character to the stream.", "value");
+            }
+#endif
+
+            if (encoding == null)
+            {
+                encoding = Encoding.Default;
+            }
+
+            if (_pointerPosition >= _length)
+                return;
+            
+            unsafe
+            {                
+                byte* pointer = (byte*)_pointerOffset;
+                byte* charData = stackalloc byte[16];
+                int bytes = encoding.GetBytes(&value, 1, charData, 16);
+
+                for (int i = 0; i < bytes; i++)
+                {
+                    *pointer = charData[i];
+                    pointer++;
+                }
+
+                Position += bytes;
+            }
+        }
+
 		/// <summary>
 		/// Writes a byte to the current position in the stream and advances the position within the stream by one byte.
 		/// </summary>
@@ -1378,6 +1506,46 @@ namespace GorgonLibrary.IO
 			_pointerOffset.CopyTo(pointer, size);
 			Position += size;
 		}
+
+        /// <summary>
+        /// Function to return the size of an encoded string, in bytes.
+        /// </summary>
+        /// <param name="value">The string to measure.</param>
+        /// <returns>The length of the encoded string.</returns>
+        public static int GetStringLength(string value)
+        {
+            return GetStringLength(value, null);
+        }
+
+        /// <summary>
+        /// Function to return the size of an encoded string, in bytes.
+        /// </summary>
+        /// <param name="value">The string to measure.</param>
+        /// <param name="encoding">Encoding to use.</param>
+        /// <returns>The length of the encoded string.</returns>
+        public static int GetStringLength(string value, Encoding encoding)
+        {
+            if (string.IsNullOrEmpty(value))
+            {
+                return 0;
+            }
+
+            if (encoding == null)
+            {
+                encoding = Encoding.Default;
+            }
+
+            int length = encoding.GetByteCount(value);
+            int byteCount = length;
+
+            while (length >= 0x80)
+            {
+                byteCount++;
+                length >>= 7;
+            }
+
+            return byteCount;
+        }
 
 		/// <summary>
 		/// Function to write a string to the stream.

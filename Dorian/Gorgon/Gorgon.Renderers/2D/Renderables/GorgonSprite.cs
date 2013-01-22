@@ -620,16 +620,13 @@ namespace GorgonLibrary.Renderers
 				// Read texture information.
 				if (chunk.HasChunk("TextureInfo"))
 				{					
-					byte[] textureName = null;
-
 					data = chunk["TextureInfo"];
 					TextureSampler.BorderColor = data.Read<GorgonColor>();
 					TextureSampler.HorizontalWrapping = data.Read<TextureAddressing>();
 					TextureSampler.VerticalWrapping = data.Read<TextureAddressing>();
 					TextureSampler.TextureFilter = data.Read<TextureFilter>();
 
-					textureName = data.ReadRange<byte>(data.ReadInt32());
-					DeferredTextureName = Encoding.UTF8.GetString(textureName, 0, textureName.Length);
+                    DeferredTextureName = data.ReadString();
 
 					TextureRegion = new System.Drawing.RectangleF(data.ReadFloat(), data.ReadFloat(), data.ReadFloat(), data.ReadFloat());
 				}
@@ -720,27 +717,15 @@ namespace GorgonLibrary.Renderers
                     }
 
                     // Write texture information.
-                    if ((Texture != null) || (!string.IsNullOrWhiteSpace(DeferredTextureName)))
+                    if (!string.IsNullOrWhiteSpace(DeferredTextureName))
                     {
-                        byte[] textureName = null;
-
-                        if (Texture != null)
-                        {
-                            textureName = Encoding.UTF8.GetBytes(Texture.Name);
-                        }
-                        else
-                        {
-                            textureName = Encoding.UTF8.GetBytes(DeferredTextureName);
-                        }
-
-                        chunkSize = DirectAccess.SizeOf<GorgonColor>() + (sizeof(int) * 4) + textureName.Length + (sizeof(float) * 4);
+                        chunkSize = DirectAccess.SizeOf<GorgonColor>() + (sizeof(int) * 4) + GorgonDataStream.GetStringLength(DeferredTextureName) + (sizeof(float) * 4);
                         chunkStream = chunk.CreateChunk("TextureInfo", chunkSize);
                         chunkStream.Write<GorgonColor>(TextureSampler.BorderColor);
                         chunkStream.Write<TextureAddressing>(TextureSampler.HorizontalWrapping);
                         chunkStream.Write<TextureAddressing>(TextureSampler.VerticalWrapping);
                         chunkStream.Write<TextureFilter>(TextureSampler.TextureFilter);
-                        chunkStream.WriteInt32(textureName.Length);
-                        chunkStream.Write(textureName, 0, textureName.Length);
+                        chunkStream.WriteString(DeferredTextureName);
                         chunkStream.WriteFloat(TextureRegion.X);
                         chunkStream.WriteFloat(TextureRegion.Y);
                         chunkStream.WriteFloat(TextureRegion.Width);
@@ -764,7 +749,17 @@ namespace GorgonLibrary.Renderers
 		{
 			get
 			{
-				return _textureName;
+                if (Texture == null)
+                {
+                    // Check to see if the texture is loaded.
+                    if (!string.IsNullOrWhiteSpace(_textureName))
+                    {
+                        GetDeferredTexture();
+                    }
+                    return _textureName;
+                }
+
+                return Texture.Name;
 			}
 			set
 			{
