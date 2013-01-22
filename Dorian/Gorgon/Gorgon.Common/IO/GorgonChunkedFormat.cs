@@ -498,64 +498,17 @@ namespace GorgonLibrary.IO
         /// <returns>An array of bytes containing all the chunked data.</returns>
         public byte[] Save()
         {            
-            long chunkOffset = 0;
-
             if (_chunks.Count == 0)
             {
                 return new byte[] { };
             }
 
-			using (GorgonBinaryWriter table = new GorgonBinaryWriter(new MemoryStream(), true))
-            {
-                // Don't write empty chunks.
-                var chunks = _chunks.Where(item => item.Value != null && item.Value.Length > 0);
-				int chunkCount = chunks.Count();
-			
-				// Calculate how big the table will be.
-				chunkOffset = (chunkCount * sizeof(long)) + _headerData.Length + sizeof(int);
+			using (MemoryStream stream = new MemoryStream())
+			{
+				Save(stream);
 
-				// Write the header for the chunked data.
-				table.Write(_headerData, 0, _headerData.Length);
-
-				// Write out the number of chunks.
-				table.Write(chunkCount);
-
-                using (GorgonBinaryWriter body = new GorgonBinaryWriter(new MemoryStream(), true))
-                {
-                    // Enumerate the size of each chunk.
-                    foreach (var chunk in chunks)
-                    {
-                        if (chunk.Value != null)
-                        {
-							long chunkWriteSize = body.BaseStream.Position;
-                           
-                            // Reset the chunk stream position.
-                            chunk.Value.Position = 0;
-
-                            // Copy byte-by-byte to avoid creating a new array for each chunk.							
-                            body.Write(chunk.Key);
-							
-							// Write the size of the chunk.
-							body.Write((int)chunk.Value.Length);
-
-							// Copy the stream data to the body.
-							chunk.Value.CopyTo(body.BaseStream);
-
-							// Find out how many bytes were actually written, including the chunk header.
-							chunkWriteSize = body.BaseStream.Position - chunkWriteSize;
-							table.Write(chunkOffset);
-							chunkOffset += chunkWriteSize;
-                        }
-                    }
-
-                    byte[] bodyData = ((MemoryStream)body.BaseStream).ToArray();
-
-					// Write the body.
-                    table.Write(bodyData, 0, bodyData.Length);
-                }
-
-                return ((MemoryStream)table.BaseStream).ToArray();
-            }
+				return stream.ToArray();
+			}
         }
         #endregion
 
