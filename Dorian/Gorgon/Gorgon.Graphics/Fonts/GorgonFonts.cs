@@ -131,13 +131,12 @@ namespace GorgonLibrary.Graphics
 				if (chunk.HasChunk("FontInfo"))
 				{
 					data = chunk["FontInfo"];
-					byte[] familyName = data.ReadRange<byte>(data.ReadInt32());
-					settings.FontFamilyName = Encoding.UTF8.GetString(familyName, 0, familyName.Length);
+                    settings.FontFamilyName = data.ReadString();
 					settings.Size = data.ReadFloat();
 					settings.FontHeightMode = data.Read<FontHeightMode>();
 					settings.FontStyle = data.Read<FontStyle>();
-					settings.DefaultCharacter = Convert.ToChar(data.ReadInt32());
-					settings.Characters = data.ReadRange<int>(data.ReadInt32()).Select(item => Convert.ToChar(item));
+                    settings.DefaultCharacter = data.ReadChar();
+                    settings.Characters = data.ReadString();
 					fontHeight = data.ReadFloat();
 					fontLineHeight = data.ReadFloat();
 					fontAscent = data.ReadFloat();

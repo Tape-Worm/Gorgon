@@ -470,10 +470,12 @@ namespace GorgonLibrary.Graphics
 		/// </exception>
 		public byte[] Save(ImageFileFormat format)
 		{
-			MemoryStream stream = new MemoryStream();
-			Save(stream, format);
-			stream.Position = 0;
-			return stream.ToArray();
+            using (MemoryStream stream = new MemoryStream())
+            {
+                Save(stream, format);
+                stream.Position = 0;
+                return stream.ToArray();
+            }
 		}
 
 		/// <summary>
@@ -511,17 +513,9 @@ namespace GorgonLibrary.Graphics
 		{
 			GorgonDebug.AssertParamString(fileName, "fileName");
 
-			FileStream stream = null;
-
-			try
-			{
-				stream = File.Open(fileName, FileMode.Create, FileAccess.Write, FileShare.None);
+            using (FileStream stream = File.Open(fileName, FileMode.Create, FileAccess.Write, FileShare.None))
+            {
 				Save(stream, format);
-			}
-			finally
-			{
-				if (stream != null)
-					stream.Dispose();
 			}
 		}
 

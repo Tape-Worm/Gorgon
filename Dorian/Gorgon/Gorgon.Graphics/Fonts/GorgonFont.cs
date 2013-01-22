@@ -33,6 +33,7 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.Drawing.Drawing2D;
 using System.IO;
+using System.Runtime.InteropServices;
 using SlimMath;
 using GorgonLibrary.IO;
 using GorgonLibrary.Native;
@@ -764,30 +765,25 @@ namespace GorgonLibrary.Graphics
 
 				using (GorgonChunkedFormat chunk = new GorgonChunkedFormat())
 				{
-					byte[] familyName = Encoding.UTF8.GetBytes(Settings.FontFamilyName);
 					int chunkSize = 0;
 					GorgonDataStream data = null;
+                    string characterList = string.Join(string.Empty, Settings.Characters);
 
 					// Write font information.
-					chunkSize = familyName.Length + (sizeof(float) * 5) + (sizeof(int) * (5 + Settings.Characters.Count()));
+					chunkSize = (sizeof(float) * 5) + (sizeof(int) * 5) + GorgonDataStream.GetStringLength(Settings.FontFamilyName) + GorgonDataStream.GetStringLength(characterList);
 					data = chunk.CreateChunk("FontInfo", chunkSize);
-					data.WriteInt32(familyName.Length);
-					data.Write(familyName, 0, familyName.Length);
+                    data.WriteString(Settings.FontFamilyName);
 					data.WriteFloat(Settings.Size);
 					data.Write<FontHeightMode>(Settings.FontHeightMode);
 					data.Write<FontStyle>(Settings.FontStyle);
-					data.WriteInt32(Convert.ToInt32(Settings.DefaultCharacter));
-					data.WriteInt32(Settings.Characters.Count());
-					foreach(char glyph in Settings.Characters)
-					{
-						data.WriteInt32(Convert.ToInt32(glyph));
-					}
+                    data.WriteChar(Settings.DefaultCharacter);
+                    data.WriteString(characterList);
 					data.WriteFloat(FontHeight);
 					data.WriteFloat(LineHeight);
 					data.WriteFloat(Ascent);
 					data.WriteFloat(Descent);
 
-					// Write render information.
+					// Write render information.                    
 					chunkSize = (sizeof(int) * 4) + ((Settings.BaseColors.Count + 1) * DirectAccess.SizeOf<GorgonColor>());
 					data = chunk.CreateChunk("RenderInfo", chunkSize);
 					data.Write<FontAntiAliasMode>(Settings.AntiAliasingMode);
@@ -802,6 +798,28 @@ namespace GorgonLibrary.Graphics
 
 					// Write texture information.					
 					chunkSize = sizeof(int) * 4;
+                    
+                    string chunkName = externalTextures ? "ExternalTextures" : "Textures";
+                    int maxBufferSize = externalTextures ? 4096 : Textures.Max(item => item.SizeInBytes);
+                    byte[][] textureData = new byte[Textures.Count][];
+
+                    // Compact the textures as PNG files into byte array.
+                    if (!externalTextures)
+                    {
+                        foreach(var texture in Textures)
+                        {
+                            textureData[textureCounter] = texture.Save(ImageFileFormat.PNG);
+                            chunkSize += textureData[textureCounter].Length + sizeof(int) + GorgonDataStream.GetStringLength(texture.Name);
+                            textureCounter++;
+                        }
+                    }
+
+                    // TODO: Process textures and place them in the chunk.
+                    foreach (var texture in Textures)
+                    {
+
+                    }
+
 					if (!externalTextures)
 					{
 						// Get the largest texture size, in bytes.
