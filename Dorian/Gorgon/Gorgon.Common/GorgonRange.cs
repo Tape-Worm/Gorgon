@@ -560,7 +560,7 @@ namespace GorgonLibrary
 		{
 			get
 			{
-				return !((Maximum > 0.0f) || (Minimum > 0.0f));
+				return !((Maximum != 0.0) || (Minimum != 0.0));
 			}
 		}
 
@@ -576,7 +576,7 @@ namespace GorgonLibrary
 		}
 		#endregion
 
-		#region IEquatable<RangeD> Members
+		#region IEquatable<GorgonMinMaxD> Members
 		/// <summary>
 		/// Indicates whether the current object is equal to another object of the same type.
 		/// </summary>
@@ -1091,7 +1091,7 @@ namespace GorgonLibrary
 		}
 		#endregion
 
-		#region IRangeF<float> Members
+		#region IRange<float> Members
 		/// <summary>
 		/// Property to return whether the range is empty or not.
 		/// </summary>
@@ -1099,7 +1099,7 @@ namespace GorgonLibrary
 		{
 			get
 			{
-				return !((Maximum > 0.0f) || (Minimum > 0.0f));
+				return !((Maximum != 0.0f) || (Minimum != 0.0f));
 			}
 		}
 
@@ -1115,7 +1115,7 @@ namespace GorgonLibrary
 		}
 		#endregion
 
-		#region IEquatable<RangeF> Members
+		#region IEquatable<GorgonMinMaxF> Members
 		/// <summary>
 		/// Indicates whether the current object is equal to another object of the same type.
 		/// </summary>
@@ -1630,7 +1630,7 @@ namespace GorgonLibrary
 		}
 		#endregion
 
-		#region IRangeF<int> Members
+		#region IRange<int> Members
 		/// <summary>
 		/// Property to return whether the range is empty or not.
 		/// </summary>
@@ -1638,7 +1638,7 @@ namespace GorgonLibrary
 		{
 			get
 			{
-				return !((Maximum > 0.0f) || (Minimum > 0.0f));
+				return !((Maximum != 0) || (Minimum != 0));
 			}
 		}
 
@@ -1654,7 +1654,7 @@ namespace GorgonLibrary
 		}
 		#endregion
 
-		#region IEquatable<RangeF> Members
+		#region IEquatable<GorgonMinMax> Members
 		/// <summary>
 		/// Indicates whether the current object is equal to another object of the same type.
 		/// </summary>

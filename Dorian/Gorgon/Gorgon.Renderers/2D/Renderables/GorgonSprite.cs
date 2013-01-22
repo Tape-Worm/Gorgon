@@ -517,7 +517,8 @@ namespace GorgonLibrary.Renderers
 			{
 				throw new IOException("Stream is not open for reading.");
 			}
-						
+			
+			// Read the sprite in.
 			using (GorgonBinaryReader reader = new GorgonBinaryReader(stream, true))
 			{
 				byte[] fileHeader = Encoding.UTF8.GetBytes(FileHeader);
@@ -533,7 +534,105 @@ namespace GorgonLibrary.Renderers
 					// Check to see if it's an older version of the Gorgon sprite file.
 					GorgonV1SpriteReader.LoadSprite(this, reader);
 					return;
-				}				
+				}
+			}
+
+			// If we're here, then we've got a v2.0 chunked file.
+			// Load it.
+			using (GorgonChunkedFormat chunk = new GorgonChunkedFormat())
+			{
+				GorgonDataStream data = null;
+
+				chunk.Load(stream);
+
+				// Get sprite information.
+				if (chunk.HasChunk("SpriteData"))
+				{
+					data = chunk["SpriteData"];
+					Anchor = data.Read<Vector2>();
+					Size = data.Read<Vector2>();
+					HorizontalFlip = data.Read<bool>();
+					VerticalFlip = data.Read<bool>();
+
+					// Read vertex colors.
+					for (int i = 0; i < Vertices.Length; i++)
+					{
+						Vertices[i].Color = data.Read<GorgonColor>();
+					}
+
+					// Read vertex offsets.
+					for (int i = 0; i < _offsets.Length; i++)
+					{
+						_offsets[i] = data.Read<Vector2>();
+					}
+				}
+				else
+				{
+					throw new GorgonException(GorgonResult.CannotRead, "Cannot read this sprite.  It is either corrupted or not a Gorgon sprite.");
+				}
+
+				// Read rendering information.
+				if (chunk.HasChunk("RenderInfo"))
+				{
+					data = chunk["RenderInfo"];
+					CullingMode = data.Read<CullingMode>();
+					AlphaTestValues = data.Read<GorgonMinMaxF>();
+					Blending.AlphaOperation = data.Read<BlendOperation>();
+					Blending.BlendOperation = data.Read<BlendOperation>();
+					Blending.BlendFactor = data.Read<GorgonColor>();
+					Blending.DestinationAlphaBlend = data.Read<BlendType>();
+					Blending.DestinationBlend = data.Read<BlendType>();
+					Blending.SourceAlphaBlend = data.Read<BlendType>();
+					Blending.SourceBlend = data.Read<BlendType>();
+					Blending.WriteMask = data.Read<ColorWriteMaskFlags>();
+					DepthStencil.BackFace.ComparisonOperator = data.Read<ComparisonOperators>();
+					DepthStencil.BackFace.DepthFailOperation = data.Read<StencilOperations>();
+					DepthStencil.BackFace.FailOperation = data.Read<StencilOperations>();
+					DepthStencil.BackFace.PassOperation = data.Read<StencilOperations>();
+					DepthStencil.FrontFace.ComparisonOperator = data.Read<ComparisonOperators>();
+					DepthStencil.FrontFace.DepthFailOperation = data.Read<StencilOperations>();
+					DepthStencil.FrontFace.FailOperation = data.Read<StencilOperations>();
+					DepthStencil.FrontFace.PassOperation = data.Read<StencilOperations>();
+					DepthStencil.DepthBias = data.ReadInt32();
+					DepthStencil.DepthComparison = data.Read<ComparisonOperators>();
+					DepthStencil.DepthStencilReference = data.ReadInt32();
+					DepthStencil.IsDepthWriteEnabled = data.Read<bool>();
+					DepthStencil.StencilReadMask = (byte)data.ReadByte();
+					DepthStencil.StencilWriteMask = (byte)data.ReadByte();
+				}
+				else
+				{
+					throw new GorgonException(GorgonResult.CannotRead, "Cannot read this sprite.  It is either corrupted or not a Gorgon sprite.");
+				}
+
+				// Read collider information.
+				if (chunk.HasChunk("Collider"))
+				{
+					Type colliderType = null;
+					Gorgon2DCollider collider = null;
+
+					data = chunk["Collider"];
+					colliderType = Type.GetType(data.ReadString());
+					collider = Activator.CreateInstance(colliderType) as Gorgon2DCollider;
+					collider.ReadFromArray(data.ReadRange<byte>((int)data.Length));
+				}
+
+				// Read texture information.
+				if (chunk.HasChunk("TextureInfo"))
+				{					
+					byte[] textureName = null;
+
+					data = chunk["TextureInfo"];
+					TextureSampler.BorderColor = data.Read<GorgonColor>();
+					TextureSampler.HorizontalWrapping = data.Read<TextureAddressing>();
+					TextureSampler.VerticalWrapping = data.Read<TextureAddressing>();
+					TextureSampler.TextureFilter = data.Read<TextureFilter>();
+
+					textureName = data.ReadRange<byte>(data.ReadInt32());
+					DeferredTextureName = Encoding.UTF8.GetString(textureName, 0, textureName.Length);
+
+					TextureRegion = new System.Drawing.RectangleF(data.ReadFloat(), data.ReadFloat(), data.ReadFloat(), data.ReadFloat());
+				}
 			}
 		}
 
@@ -545,7 +644,6 @@ namespace GorgonLibrary.Renderers
 		/// <exception cref="System.IO.IOException">Thrown when the stream parameter is not opened for writing data.</exception>
 		public void Save(Stream stream)
 		{
-            byte[] spriteData = null;
             int chunkSize = 0;
 
 			if (stream == null)
@@ -618,7 +716,6 @@ namespace GorgonLibrary.Renderers
                         byte[] colliderData = _collider.WriteToArray();
                         chunkSize = colliderData.Length;
                         chunkStream = chunk.CreateChunk("Collider", chunkSize);
-                        chunkStream.Write<bool>(true);
                         chunkStream.Write(colliderData, 0, colliderData.Length);
                     }
 
@@ -650,10 +747,10 @@ namespace GorgonLibrary.Renderers
                         chunkStream.WriteFloat(TextureRegion.Height);
                     }
 
-                    spriteData = chunk.Save();
+					// Write the chunked data.
+					chunk.Save(stream);
                 }
 
-                writer.Write(spriteData, 0, spriteData.Length);
             }
 		}
 		#endregion
