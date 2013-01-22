@@ -85,7 +85,7 @@ namespace GorgonLibrary.IO
                     throw new ArgumentException("Parameter must not be empty.", "name");
                 }
 
-                string keyName = name.ToLower();
+                string keyName = name.ToUpper();
 
                 if (!_chunks.ContainsKey(keyName))
                 {
@@ -106,7 +106,7 @@ namespace GorgonLibrary.IO
                     throw new ArgumentException("Parameter must not be empty.", "name");
                 }
 
-                string keyName = name.ToLower();
+                string keyName = name.ToUpper();
                 bool containsItem = _chunks.ContainsKey(keyName);
 
                 if (containsItem)
@@ -161,7 +161,7 @@ namespace GorgonLibrary.IO
         /// <returns>TRUE if found, FALSE if not.</returns>
         public bool HasChunk(string name)
         {
-            return _chunks.ContainsKey(name.ToLower());
+            return _chunks.ContainsKey(name.ToUpper());
         }
 
         /// <summary>
@@ -183,7 +183,7 @@ namespace GorgonLibrary.IO
                 throw new ArgumentException("Parameter must not be empty.", "name");
             }
 
-            string keyName = name.ToLower();
+            string keyName = name.ToUpper();
 
             if (!_chunks.ContainsKey(keyName))
             {                
@@ -240,7 +240,7 @@ namespace GorgonLibrary.IO
                 throw new ArgumentException("Parameter must not be empty.", "name");
             }
 
-            string keyName = name.ToLower();
+            string keyName = name.ToUpper();
 
             if (!stream.CanWrite)
             {
@@ -294,10 +294,48 @@ namespace GorgonLibrary.IO
                 throw new ArgumentNullException("stream");
             }
 
-            byte[] byteData = new byte[stream.Length];
+			// Destroy current chunk data.
+			ClearChunks();
+						
+			// Read from the stream.
+			using (GorgonBinaryReader reader = new GorgonBinaryReader(stream, true))
+			{
+				// Get the header.
+				reader.Read(_headerData, 0, _headerData.Length);
 
-            stream.Read(byteData, 0, byteData.Length);
-            Load(byteData);
+				if (string.Compare(Encoding.UTF8.GetString(_headerData, 0, _headerData.Length), FileHeader, true) != 0)
+				{
+					throw new IOException("The data is not a chunked format, or is a later version.");
+				}
+
+				// Get the number of chunks.
+				int chunkCount = reader.ReadInt32();
+				long tablePosition = stream.Position;
+				long dataPosition = tablePosition + (chunkCount * sizeof(long));
+
+				for (int i = 0; i < chunkCount; i++)
+				{
+					string chunkName = string.Empty;					// Chunk name.
+					int chunkLength = 0;								// Chunk size, in bytes.
+					GorgonDataStream chunkStream = null;				// Chunk stream.
+
+					// Position to the next table index.
+					stream.Position = tablePosition + (i * sizeof(long));
+
+					// Move to the data.
+					stream.Position = reader.ReadInt64() + tablePosition;
+
+					chunkName = reader.ReadString();
+					chunkLength = reader.ReadInt32();
+					chunkStream = new GorgonDataStream(chunkLength);
+
+					// Copy the data.
+					reader.BaseStream.CopyTo(chunkStream);
+
+					chunkStream.Position = 0;
+					_chunks[chunkName] = chunkStream;
+				}
+			}
         }
 
         /// <summary>
@@ -323,43 +361,7 @@ namespace GorgonLibrary.IO
 
             using (GorgonDataStream stream = new GorgonDataStream(data))
             {
-                // Read the header.
-                stream.Read(_headerData, 0, _headerData.Length);
-
-                if (string.Compare(Encoding.UTF8.GetString(_headerData, 0, _headerData.Length), FileHeader, true) != 0)
-                {
-                    throw new IOException("The data is not a chunked format, or is a later version.");
-                }
-
-                // Get the number of chunks.
-                int chunkCount = stream.ReadInt32();
-
-                for (int i = 0; i < chunkCount; i++)
-                {
-                    long tablePosition = stream.Position;       // Store where we are in the table.
-                    long dataOffset = stream.ReadInt64();       // Get the offset for the chunk.
-                    string chunkName = string.Empty;            // Chunk name.
-                    int chunkLength = 0;                        // Chunk size, in bytes.
-                    GorgonDataStream chunkStream = null;        // Chunk stream.
-
-                    // Move to the data.
-                    stream.Position = dataOffset;
-
-                    chunkName = stream.ReadString();
-                    chunkName = chunkName.Substring("GORCHUNK ".Length);
-                    chunkLength = stream.ReadInt32();
-                    _chunks[chunkName] = chunkStream = new GorgonDataStream(chunkLength);
-
-                    // Copy the data byte by byte to avoid creating arrays for each chunk.
-                    for (int j = 0; j < chunkLength; j++)
-                    {                        
-                        chunkStream.WriteByte((byte)stream.ReadByte());
-                    }
-                    chunkStream.Position = 0;
-
-                    // Restore where we are.
-                    stream.Position = tablePosition;
-                }
+				Load(stream);
             }
         }
 
@@ -388,7 +390,7 @@ namespace GorgonLibrary.IO
             }
         }
 
-        /// <summary>
+        /*/// <summary>
         /// Function to save the chunked data to a stream.
         /// </summary>
         /// <param name="stream">Stream to write into.</param>
@@ -406,7 +408,89 @@ namespace GorgonLibrary.IO
             {
                 stream.Write(data, 0, data.Length);
             }
-        }
+        }*/
+
+		/// <summary>
+		/// Function to save the chunked data to a stream.
+		/// </summary>
+		/// <param name="stream">Stream to write into.</param>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="stream"/> parameter is NULL (Nothing in VB.Net).</exception>
+		public void Save(Stream stream)
+		{
+			long chunkOffset = 0;
+
+			if (stream == null)
+			{
+				throw new ArgumentNullException("stream");
+			}
+
+			if (_chunks.Count == 0)
+			{
+				return;
+			}
+
+			using (GorgonBinaryWriter writer = new GorgonBinaryWriter(stream, true))
+			{				
+				long streamStart = stream.Position;		// Capture the starting position of the stream.
+				long tableOffset = 0;					// Offset into the stream for the table.
+				int chunkCounter = 0;					// Chunk index counter.
+
+				// Don't write empty chunks.
+				var chunks = _chunks.Where(item => item.Value != null && item.Value.Length > 0);
+				int chunkCount = chunks.Count();
+
+				// Calculate how big the table will be.
+				chunkOffset = (chunkCount * sizeof(long));
+
+				// Write the header for the chunked data.
+				writer.Write(_headerData, 0, _headerData.Length);
+
+				// Write out the number of chunks.
+				writer.Write(chunkCount);
+
+				// Remember our table offset.
+				tableOffset = stream.Position;
+
+				// Pre fill table.
+				for (int i = 0; i < chunkCount; i++)
+				{
+					writer.Write(0L);
+				}				
+
+				// Enumerate each chunk and send it to the stream.
+				foreach (var chunk in chunks)
+				{
+					long chunkStreamPosition = 0;					// Chunk stream position.
+					long chunkWriteSize = stream.Position;			// Used to calculate the actual chunk size, including header.
+
+					// Reset the chunk stream to the beginning.
+					chunk.Value.Position = 0;
+
+					// Write the chunk header.
+					writer.Write(chunk.Key.ToUpper());
+
+					// Write the length of the chunk.
+					writer.Write((int)chunk.Value.Length);
+
+					// Copy the stream data into the destination stream.
+					chunk.Value.CopyTo(stream);
+
+					// Remember this stream position.
+					chunkStreamPosition = stream.Position;
+
+					// Calculate the size of the written data.
+					chunkWriteSize = stream.Position - chunkWriteSize;
+
+					// Put the entry back into the table.
+					stream.Position = tableOffset + (chunkCounter * sizeof(long));
+					writer.Write(chunkOffset);
+					stream.Position = chunkStreamPosition;
+
+					chunkOffset += chunkWriteSize;
+					chunkCounter++;
+				}
+			}
+		}
 
         /// <summary>
         /// Function to retrieve the chunked data as an array.
@@ -415,27 +499,26 @@ namespace GorgonLibrary.IO
         public byte[] Save()
         {            
             long chunkOffset = 0;
-            List<long> chunkOffsets = null;
 
             if (_chunks.Count == 0)
             {
                 return new byte[] { };
             }
 
-            chunkOffsets = new List<long>();
-
-            using (GorgonBinaryWriter table = new GorgonBinaryWriter(new MemoryStream(), true))
+			using (GorgonBinaryWriter table = new GorgonBinaryWriter(new MemoryStream(), true))
             {
                 // Don't write empty chunks.
                 var chunks = _chunks.Where(item => item.Value != null && item.Value.Length > 0);
+				int chunkCount = chunks.Count();
+			
+				// Calculate how big the table will be.
+				chunkOffset = (chunkCount * sizeof(long)) + _headerData.Length + sizeof(int);
 
-                // Write the header for the chunked data.
-                table.Write(_headerData, 0, _headerData.Length);
+				// Write the header for the chunked data.
+				table.Write(_headerData, 0, _headerData.Length);
 
-                // Write out the number of chunks.
-                table.Write(chunks.Count());
-
-                chunkOffset = (chunks.Count() + 1) * sizeof(int) + _headerData.Length;
+				// Write out the number of chunks.
+				table.Write(chunkCount);
 
                 using (GorgonBinaryWriter body = new GorgonBinaryWriter(new MemoryStream(), true))
                 {
@@ -443,28 +526,31 @@ namespace GorgonLibrary.IO
                     foreach (var chunk in chunks)
                     {
                         if (chunk.Value != null)
-                        {                            
-                            // Write the size of the chunk.
-                            body.Write((int)chunk.Value.Length);
-                            
+                        {
+							long chunkWriteSize = body.BaseStream.Position;
+                           
                             // Reset the chunk stream position.
                             chunk.Value.Position = 0;
 
-                            // Copy byte-by-byte to avoid creating a new array for each chunk.                            
-                            body.Write("GORCHUNK " + chunk.Key.ToUpper());
-                            for (long i = 0; i < chunk.Value.Length; i++)
-                            {
-                                body.Write(chunk.Value.ReadByte());
-                            }
+                            // Copy byte-by-byte to avoid creating a new array for each chunk.							
+                            body.Write(chunk.Key);
+							
+							// Write the size of the chunk.
+							body.Write((int)chunk.Value.Length);
 
-                            // TODO: Ensure chunk is offset by the name and the number of bytes.
-                            //       Currently it's not doing this.
-                            table.Write(chunkOffset);
-                            chunkOffset += (int)body.BaseStream.Position;
+							// Copy the stream data to the body.
+							chunk.Value.CopyTo(body.BaseStream);
+
+							// Find out how many bytes were actually written, including the chunk header.
+							chunkWriteSize = body.BaseStream.Position - chunkWriteSize;
+							table.Write(chunkOffset);
+							chunkOffset += chunkWriteSize;
                         }
                     }
 
                     byte[] bodyData = ((MemoryStream)body.BaseStream).ToArray();
+
+					// Write the body.
                     table.Write(bodyData, 0, bodyData.Length);
                 }
 

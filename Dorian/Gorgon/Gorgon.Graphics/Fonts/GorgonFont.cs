@@ -743,10 +743,12 @@ namespace GorgonLibrary.Graphics
 		/// <remarks>The <paramref name="externalTextures"/> parameter will only work on file streams, if the stream is not a file stream, then an exception will be thrown.</remarks>
 		private void Save(Stream stream, bool externalTextures)
 		{
-			GorgonBinaryWriter writer = null;
 			int textureCounter = 0;
 
-			GorgonDebug.AssertNull<Stream>(stream, "stream");
+			if (stream == null)
+			{
+				throw new ArgumentNullException("stream");
+			}
 
 			if (!stream.CanWrite)
 				throw new IOException("The stream is not writable.");
@@ -754,109 +756,180 @@ namespace GorgonLibrary.Graphics
 			if ((externalTextures) && (!(stream is FileStream)))
 				throw new ArgumentException("The stream is not a file stream, external textures cannot be saved.", "externalTextures");
 
-			try
+			// Output the font in chunked format.
+			using (GorgonBinaryWriter writer = new GorgonBinaryWriter(stream, true))
 			{
-				writer = new GorgonBinaryWriter(stream, true);
+				// Write the file header.
 				writer.Write(_fileHeader, 0, _fileHeader.Length);
-				// Write font settings meta data.
-				writer.Write((int)Settings.AntiAliasingMode);
-				writer.Write(Settings.BaseColors.Count);
-				for (int i = 0; i < Settings.BaseColors.Count; i++)
-					writer.Write(Settings.BaseColors[i].ToRGBA());
-				writer.Write(string.Join(string.Empty, Settings.Characters));
-				writer.Write(Settings.DefaultCharacter);
-				writer.Write(Settings.FontFamilyName);
-				writer.Write((int)Settings.FontHeightMode);
-				writer.Write((int)Settings.FontStyle);
-				writer.Write(Settings.OutlineColor.ToRGBA());
-				writer.Write(Settings.OutlineSize);
-				writer.Write(Settings.PackingSpacing);
-				writer.Write(Settings.Size);
-				writer.Write(Settings.TextContrast);
-				writer.Write(Settings.TextureSize.Width);
-				writer.Write(Settings.TextureSize.Height);
 
-				// Save other meta-data.
-				writer.Write(FontHeight);
-				writer.Write(LineHeight);
-				writer.Write(Ascent);
-				writer.Write(Descent);
-
-				// Write texture data.
-				writer.Write(Textures.Count);
-				foreach (var texture in Textures)
+				using (GorgonChunkedFormat chunk = new GorgonChunkedFormat())
 				{
-					writer.Write(texture.Name);
+					byte[] familyName = Encoding.UTF8.GetBytes(Settings.FontFamilyName);
+					int chunkSize = 0;
+					GorgonDataStream data = null;
+
+					// Write font information.
+					chunkSize = familyName.Length + (sizeof(float) * 5) + (sizeof(int) * (5 + Settings.Characters.Count()));
+					data = chunk.CreateChunk("FontInfo", chunkSize);
+					data.WriteInt32(familyName.Length);
+					data.Write(familyName, 0, familyName.Length);
+					data.WriteFloat(Settings.Size);
+					data.Write<FontHeightMode>(Settings.FontHeightMode);
+					data.Write<FontStyle>(Settings.FontStyle);
+					data.WriteInt32(Convert.ToInt32(Settings.DefaultCharacter));
+					data.WriteInt32(Settings.Characters.Count());
+					foreach(char glyph in Settings.Characters)
+					{
+						data.WriteInt32(Convert.ToInt32(glyph));
+					}
+					data.WriteFloat(FontHeight);
+					data.WriteFloat(LineHeight);
+					data.WriteFloat(Ascent);
+					data.WriteFloat(Descent);
+
+					// Write render information.
+					chunkSize = (sizeof(int) * 4) + ((Settings.BaseColors.Count + 1) * DirectAccess.SizeOf<GorgonColor>());
+					data = chunk.CreateChunk("RenderInfo", chunkSize);
+					data.Write<FontAntiAliasMode>(Settings.AntiAliasingMode);
+					data.WriteInt32(Settings.BaseColors.Count);					
+					for (int i = 0; i < Settings.BaseColors.Count; i++)
+					{
+						data.Write<GorgonColor>(Settings.BaseColors[i]);
+					}
+					data.Write<GorgonColor>(Settings.OutlineColor);
+					data.WriteInt32(Settings.OutlineSize);
+					data.WriteInt32(Settings.TextContrast);
+
+					// Write texture information.					
+					chunkSize = sizeof(int) * 4;
 					if (!externalTextures)
 					{
-						// Save the position of the stream so we can write out the size
-						// without allocating memory to determine the size of the compressed
-						// texture.
-						long position = 0;
-						int size = 0;
-						writer.Write(false);
+						// Get the largest texture size, in bytes.
+						int maxTextureSize = Textures.Max(item => item.SizeInBytes);
 
-						position = stream.Position;
-						// Write a dummy value that we will overwrite after.
-						writer.Write(size);
-						texture.Save(stream, ImageFileFormat.PNG);
-						size = (int)(stream.Position - position);
-						stream.Position = position;
-						writer.Write(size);
-						stream.Position += size;
+						// Create a memory stream to hold all the textures.
+						using (GorgonBinaryWriter textureWriter = new GorgonBinaryWriter(new MemoryStream(maxTextureSize), false))
+						{
+							foreach (GorgonTexture2D texture in Textures)
+							{
+								int size = 0;
+								int markerStart = 0;
+								int textureEnd = 0;
+
+								// Store the texture name.
+								textureWriter.Write(texture.Name);
+
+								markerStart = (int)textureWriter.BaseStream.Position;
+
+								// Write a dummy value for the size.
+								textureWriter.Write(textureEnd);
+																
+								// Save as PNG format to compress the data down as much as possible.
+								texture.Save(textureWriter.BaseStream, ImageFileFormat.PNG);
+								textureEnd = (int)textureWriter.BaseStream.Position;
+								size = textureEnd - (markerStart + sizeof(int));								
+
+								// Update the size marker.
+								textureWriter.BaseStream.Position = markerStart;
+								textureWriter.Write(size);
+								textureWriter.BaseStream.Position = textureEnd;								
+							}
+							textureWriter.BaseStream.Position = 0;
+
+							chunkSize += (int)textureWriter.BaseStream.Length;
+							data = chunk.CreateChunk("Textures", chunkSize);
+							// Write common texture data.
+							data.WriteInt32(Settings.PackingSpacing);
+							data.WriteInt32(Settings.TextureSize.Width);
+							data.WriteInt32(Settings.TextureSize.Height);
+							data.WriteInt32(Textures.Count);
+							textureWriter.BaseStream.CopyTo(data);
+						}
 					}
 					else
 					{
-						FileStream fileStream = stream as FileStream;
+						FileStream fileStream = (FileStream)stream;
 						string path = Path.GetDirectoryName(fileStream.Name);
-						string textureFileName = Name + "Texture_" + textureCounter.ToString("0000") + ".png";
-						textureFileName = textureFileName.FormatFileName().Replace(' ', '_');						
-						texture.Save(path.FormatDirectory(Path.DirectorySeparatorChar) + textureFileName, ImageFileFormat.PNG);
-						writer.Write(true);
-						writer.Write(textureFileName);
-						textureCounter++;
+
+						// Write out the files to an external source.
+						// Note that these files must be in the same directory as the font file.
+						using (GorgonBinaryWriter textureNames = new GorgonBinaryWriter(new MemoryStream(4096), false))
+						{
+							foreach(GorgonTexture2D texture in Textures)
+							{
+								string textureFileName = Name + "Texture_" + textureCounter.ToString("0000") + ".png";
+								textureFileName = textureFileName.FormatFileName().Replace(' ', '_');						
+								texture.Save(path.FormatDirectory(Path.DirectorySeparatorChar) + textureFileName, ImageFileFormat.PNG);
+								textureCounter++;
+
+								textureNames.Write(texture.Name);
+								textureNames.Write(textureFileName);
+							}
+							textureNames.BaseStream.Position = 0;
+
+							chunkSize += (int)textureNames.BaseStream.Length;
+							data = chunk.CreateChunk("ExternalTextures", chunkSize);
+							// Write common texture data.
+							data.WriteInt32(Settings.PackingSpacing);
+							data.WriteInt32(Settings.TextureSize.Width);
+							data.WriteInt32(Settings.TextureSize.Height);
+							data.WriteInt32(Textures.Count);
+							textureNames.BaseStream.CopyTo(data);
+						}
 					}
-				}
 
-				// Write glyph data.
-				var textureGlyphs = from GorgonGlyph glyph in Glyphs
-									group glyph by glyph.Texture;
+					// Write glyph data.
+					var textureGlyphs = from GorgonGlyph glyph in Glyphs
+										group glyph by glyph.Texture;
 
-				// Write group count.
-				writer.Write(textureGlyphs.Count());
-
-				foreach (var group in textureGlyphs)
-				{
-					writer.Write(group.Key.Name);
-					writer.Write(group.Count());
-					foreach (var glyph in group)
+					chunkSize = sizeof(int);					
+					using (GorgonBinaryWriter glyphWriter = new GorgonBinaryWriter(new MemoryStream(8192), false))
 					{
-						writer.Write(glyph.Character);
-						writer.Write(glyph.GlyphCoordinates.Left);
-						writer.Write(glyph.GlyphCoordinates.Top);
-						writer.Write(glyph.GlyphCoordinates.Width);
-						writer.Write(glyph.GlyphCoordinates.Height);
-						writer.Write(glyph.Offset.X);
-						writer.Write(glyph.Offset.Y);
-						writer.Write(glyph.Advance.X);
-						writer.Write(glyph.Advance.Y);
-						writer.Write(glyph.Advance.Z);
-					}
-				}
+						foreach (var group in textureGlyphs)
+						{
+							glyphWriter.Write(group.Key.Name);
+							glyphWriter.Write(group.Count());
+							foreach (var glyph in group)
+							{
+								glyphWriter.Write(Convert.ToInt32(glyph.Character));
+								glyphWriter.Write(glyph.GlyphCoordinates.Left);
+								glyphWriter.Write(glyph.GlyphCoordinates.Top);
+								glyphWriter.Write(glyph.GlyphCoordinates.Width);
+								glyphWriter.Write(glyph.GlyphCoordinates.Height);
+								glyphWriter.Write(glyph.Offset.X);
+								glyphWriter.Write(glyph.Offset.Y);
+								glyphWriter.Write(glyph.Advance.X);
+								glyphWriter.Write(glyph.Advance.Y);
+								glyphWriter.Write(glyph.Advance.Z);
+							}
+						}
 
-				// Write kerning data if we have it.
-				writer.Write(this.KerningPairs.Count);
-				foreach (var kernInfo in KerningPairs)
-				{
-					writer.Write(kernInfo.Key.LeftCharacter);
-					writer.Write(kernInfo.Key.RightCharacter);
-					writer.Write(kernInfo.Value);
-				}
-			}
-			finally
-			{
-				if (writer != null)
-					writer.Dispose();
+						glyphWriter.BaseStream.Position = 0;
+
+						chunkSize += (int)glyphWriter.BaseStream.Length;
+						data = chunk.CreateChunk("GlyphData", chunkSize);
+						data.WriteInt32(textureGlyphs.Count());
+						glyphWriter.BaseStream.CopyTo(data);
+					}
+
+
+					// Write kerning data if we have it.
+					if (KerningPairs.Count > 0)
+					{
+						chunkSize = (sizeof(int) * 3) * KerningPairs.Count + sizeof(int);
+						data = chunk.CreateChunk("KerningPairs", chunkSize);
+						
+						data.WriteInt32(this.KerningPairs.Count);
+						foreach (var kernInfo in KerningPairs)
+						{
+							data.WriteInt32(Convert.ToInt32(kernInfo.Key.LeftCharacter));
+							data.WriteInt32(Convert.ToInt32(kernInfo.Key.RightCharacter));
+							data.WriteInt32(kernInfo.Value);
+						}
+					}
+
+					chunk.Save(stream);
+				}				
 			}
 		}
 

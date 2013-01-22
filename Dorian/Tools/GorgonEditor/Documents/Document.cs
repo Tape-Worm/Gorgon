@@ -400,7 +400,7 @@ namespace GorgonLibrary.GorgonEditor
 				_serialized = null;
 			}
 
-			_serialized = new GorgonDataStream();
+			_serialized = new GorgonDataStream(0);
 			SerializeImpl(_serialized);
 			_serialized.Position = 0;
 		}

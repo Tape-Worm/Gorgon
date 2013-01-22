@@ -101,105 +101,160 @@ namespace GorgonLibrary.Graphics
 		/// <returns>The font loaded from the stream.</returns>
 		private GorgonFont LoadFont(string fontName, Stream stream)
 		{
-			GorgonBinaryReader reader = null;
-			GorgonFont font = null;			
+			GorgonFontSettings settings = null;
+			GorgonFont font = null;
 
-			try
+			using (GorgonBinaryReader reader = new GorgonBinaryReader(stream, true))
 			{
-				GorgonFontSettings settings = new GorgonFontSettings();
-				reader = new GorgonBinaryReader(stream, true);
-
+				// Read in our header.
 				reader.Read(_fileHeader, 0, _fileHeader.Length);
-				string header = Encoding.UTF8.GetString(_fileHeader);
-
-				if (string.Compare(header, GorgonFont.FileHeader, false) != 0)
-					throw new GorgonException(GorgonResult.CannotRead, "Cannot read this font.  It is not a Gorgon font or is a newer version.");
-
-				// Read font meta-data.
-				settings.AntiAliasingMode = (FontAntiAliasMode)reader.ReadInt32();
-				GorgonColor[] colors = new GorgonColor[reader.ReadInt32()];
-				for (int i = 0; i < colors.Length; i++)
-					colors[i] = GorgonColor.FromRGBA(reader.ReadInt32());
-				settings.BaseColors = colors;
-				settings.Characters = reader.ReadString();
-				settings.DefaultCharacter = reader.ReadChar();
-				settings.FontFamilyName = reader.ReadString();
-				settings.FontHeightMode = (FontHeightMode)reader.ReadInt32();
-				settings.FontStyle = (FontStyle)reader.ReadInt32();
-				settings.OutlineColor = GorgonColor.FromRGBA(reader.ReadInt32());
-				settings.OutlineSize = reader.ReadInt32();
-				settings.PackingSpacing = reader.ReadInt32();
-				settings.Size = reader.ReadSingle();
-				settings.TextContrast = reader.ReadInt32();
-				settings.TextureSize = new Size(reader.ReadInt32(), reader.ReadInt32());
-
-				// Create our font.
-				font = new GorgonFont(_graphics, fontName, settings);
-
-				// Read other miscellaneous font data.
-				font.FontHeight = reader.ReadSingle();
-				font.LineHeight = reader.ReadSingle();
-				font.Ascent = reader.ReadSingle();
-				font.Descent = reader.ReadSingle();
-
-				// Get our textures.
-				int textureCount = reader.ReadInt32();
-				for (int i = 0; i < textureCount; i++)
+				if (string.Compare(Encoding.UTF8.GetString(_fileHeader, 0, _fileHeader.Length), GorgonFont.FileHeader) != 0)
 				{
-					GorgonTexture2D texture = null;
-					string textureName = string.Empty;
-					bool externTexture = false;
+					throw new GorgonException(GorgonResult.CannotRead, "Cannot read this font.  It is not a Gorgon font or is a newer version.");
+				}
+			}
 
-					textureName = reader.ReadString();
-					externTexture = reader.ReadBoolean();
+			using (GorgonChunkedFormat chunk = new GorgonChunkedFormat())
+			{
+				GorgonDataStream data = null;
+				float fontHeight = 0.0f;
+				float fontAscent = 0.0f;
+				float fontDescent = 0.0f;
+				float fontLineHeight = 0.0f;
 
-					if ((externTexture) && (!(stream is FileStream)))
-						throw new ArgumentException("The stream is not a file stream.  External textures cannot be read.", "stream");
+				// Load in our chunked font data.
+				chunk.Load(stream);
 
-					// Load the external texture file.
-					if (externTexture)
-					{
-						FileStream fileStream = stream as FileStream;
-						string texturePath = reader.ReadString();
+				settings = new GorgonFontSettings();
 
-						texturePath = Path.GetDirectoryName(fileStream.Name).FormatDirectory(Path.DirectorySeparatorChar) + texturePath;
-						texture = _graphics.Textures.FromFile<GorgonTexture2D>(textureName, texturePath);
-					}
-					else
-						texture = _graphics.Textures.FromStream<GorgonTexture2D>(textureName, stream, reader.ReadInt32());
-					
-					// Do not track these items.
-					_graphics.RemoveTrackedObject(texture);
-
-					font.Textures.Add(texture);
+				// Get the font information.
+				if (chunk.HasChunk("FontInfo"))
+				{
+					data = chunk["FontInfo"];
+					byte[] familyName = data.ReadRange<byte>(data.ReadInt32());
+					settings.FontFamilyName = Encoding.UTF8.GetString(familyName, 0, familyName.Length);
+					settings.Size = data.ReadFloat();
+					settings.FontHeightMode = data.Read<FontHeightMode>();
+					settings.FontStyle = data.Read<FontStyle>();
+					settings.DefaultCharacter = Convert.ToChar(data.ReadInt32());
+					settings.Characters = data.ReadRange<int>(data.ReadInt32()).Select(item => Convert.ToChar(item));
+					fontHeight = data.ReadFloat();
+					fontLineHeight = data.ReadFloat();
+					fontAscent = data.ReadFloat();
+					fontDescent = data.ReadFloat();
+				}
+				else
+				{
+					throw new GorgonException(GorgonResult.CannotRead, "Cannot read this font.  It is either corrupted or not a Gorgon font.");
 				}
 
-				// Read glyphs.
-				int groupCount = reader.ReadInt32();
-
-				for (int i = 0; i < groupCount; i++)
+				// Get rendering information.
+				if (chunk.HasChunk("RenderInfo"))
 				{
-					string textureName = reader.ReadString();
-					int glyphCount = reader.ReadInt32();
+					data = chunk["RenderInfo"];
+					settings.AntiAliasingMode = data.Read<FontAntiAliasMode>();
+					settings.BaseColors = data.ReadRange<GorgonColor>(data.ReadInt32());
+					settings.OutlineColor = data.Read<GorgonColor>();
+					settings.OutlineSize = data.ReadInt32();
+					settings.TextContrast = data.ReadInt32();
+				}
 
-					for (int j = 0; j < glyphCount; j++)
+				// Get texture data.
+				int textureCount = 0;
+				if (chunk.HasChunk("Textures"))
+				{
+					data = chunk["Textures"];
+					settings.PackingSpacing = data.ReadInt32();
+					settings.TextureSize = new Size(data.ReadInt32(), data.ReadInt32());
+					textureCount = data.ReadInt32();
+
+					// Create our font before loading textures.
+					font = new GorgonFont(_graphics, fontName, settings);
+
+					// Load the textures.
+					for (int i = 0; i < textureCount; i++)
 					{
-						GorgonGlyph glyph = new GorgonGlyph(reader.ReadChar(), font.Textures[textureName],
-							new Rectangle(reader.ReadInt32(), reader.ReadInt32(), reader.ReadInt32(), reader.ReadInt32()),
-							new Vector2(reader.ReadSingle(), reader.ReadSingle()),
-							new Vector3(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle()));
-
-						font.Glyphs.Add(glyph);
+						GorgonTexture2D texture = _graphics.Textures.FromStream<GorgonTexture2D>(data.ReadString(), data, data.ReadInt32());
+						font.Textures.Add(texture);
+						_graphics.RemoveTrackedObject(texture);
 					}
+
+				}
+				else if (chunk.HasChunk("ExternalTextures"))
+				{
+					FileStream fileStream = stream as FileStream;
+					if (fileStream == null)
+					{
+						throw new ArgumentException("The stream is not a file stream.  External textures cannot be read.", "stream");
+					}
+
+					data = chunk["ExternalTextures"];
+					settings.PackingSpacing = data.ReadInt32();
+					settings.TextureSize = new Size(data.ReadInt32(), data.ReadInt32());
+					textureCount = data.ReadInt32();
+
+					// Create our font before loading textures.
+					font = new GorgonFont(_graphics, fontName, settings);
+
+					for (int i = 0; i < textureCount; i++)
+					{
+						string textureName = data.ReadString();
+						string texturePath = Path.GetDirectoryName(fileStream.Name).FormatDirectory(Path.DirectorySeparatorChar) + data.ReadString();
+						GorgonTexture2D texture = _graphics.Textures.FromFile<GorgonTexture2D>(textureName, texturePath);
+						font.Textures.Add(texture);
+						_graphics.RemoveTrackedObject(texture);
+					}
+				}
+				else
+				{
+					throw new GorgonException(GorgonResult.CannotRead, "Cannot read this font.  It is either corrupted or not a Gorgon font.");
+				}
+
+				// Get our glyph data.
+				if (chunk.HasChunk("GlyphData"))
+				{
+					data = chunk["GlyphData"];
+
+					int groupCount = data.ReadInt32();
+
+					for (int i = 0; i < groupCount; i++)
+					{
+						string textureName = data.ReadString();
+						int glyphCount = data.ReadInt32();
+
+						for (int j = 0; j < glyphCount; j++)
+						{
+							GorgonGlyph glyph = new GorgonGlyph(Convert.ToChar(data.ReadInt32()), font.Textures[textureName],
+								new Rectangle(data.ReadInt32(), data.ReadInt32(), data.ReadInt32(), data.ReadInt32()),
+								data.Read<Vector2>(),
+								data.Read<Vector3>());
+
+							font.Glyphs.Add(glyph);
+						}
+					}
+				}
+				else
+				{
+					throw new GorgonException(GorgonResult.CannotRead, "Cannot read this font.  It is either corrupted or not a Gorgon font.");
 				}
 
 				// Read kerning information.
-				int kernCount = reader.ReadInt32();
-				for (int i = 0; i < kernCount; i++)
+				if (chunk.HasChunk("KerningPairs"))
 				{
-					GorgonKerningPair pair = new GorgonKerningPair(reader.ReadChar(), reader.ReadChar());
-					font.KerningPairs.Add(pair, reader.ReadInt32());
+					data = chunk["KerningPairs"];
+
+					int kernCount = data.ReadInt32();
+					for (int i = 0; i < kernCount; i++)
+					{
+						GorgonKerningPair pair = new GorgonKerningPair(Convert.ToChar(data.ReadInt32()), Convert.ToChar(data.ReadInt32()));
+						font.KerningPairs.Add(pair, data.ReadInt32());
+					}
 				}
+
+				font.FontHeight = fontHeight;
+				font.LineHeight = fontLineHeight;
+				font.Ascent = fontAscent;
+				font.Descent = fontDescent;
 
 				font.HasChanged = false;
 
@@ -207,11 +262,6 @@ namespace GorgonLibrary.Graphics
 
 				return font;
 			}
-			finally
-			{
-				if (reader != null)
-					reader.Dispose();
-			}			
 		}
 
 		/// <summary>

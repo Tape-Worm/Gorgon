@@ -1558,14 +1558,6 @@ namespace GorgonLibrary.IO
 		/// <summary>
 		/// Initializes a new instance of the <see cref="GorgonDataStream"/> class.
 		/// </summary>
-		public GorgonDataStream()
-		{
-			SetLength(0);
-		}
-		
-		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonDataStream"/> class.
-		/// </summary>
 		/// <param name="data">The data used to initialize the stream.</param>
 		/// <param name="index">Index inside of the source array to start reading from.</param>
 		/// <param name="count">Number of elements to read.</param>
