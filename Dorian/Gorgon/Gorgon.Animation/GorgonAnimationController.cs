@@ -26,13 +26,12 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
-using System.Reflection;
-using System.IO;
-using GorgonLibrary.IO;
-using GorgonLibrary.Diagnostics;
 using GorgonLibrary.Collections;
+using GorgonLibrary.Diagnostics;
+using GorgonLibrary.IO;
 
 
 namespace GorgonLibrary.Animation

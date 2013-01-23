@@ -26,8 +26,6 @@
 
 using System;
 using System.Drawing;
-using System.Windows.Forms;
-using System.Text;
 using System.Runtime.InteropServices;
 
 namespace GorgonLibrary.Native

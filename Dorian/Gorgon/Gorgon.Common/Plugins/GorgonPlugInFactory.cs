@@ -25,13 +25,11 @@
 #endregion
 
 using System;
-using System.IO;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
-using System.Runtime.InteropServices;
 using System.Reflection;
 using System.Security.Policy;
-using System.Security.Permissions;
 using GorgonLibrary.Collections;
 using GorgonLibrary.Collections.Specialized;
 using GorgonLibrary.Diagnostics;

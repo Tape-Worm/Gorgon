@@ -26,19 +26,17 @@
 
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
+using System.Drawing;
+using System.Drawing.Drawing2D;
+using System.Drawing.Imaging;
+using System.IO;
 using System.Linq;
 using System.Text;
-using System.Drawing;
-using System.Drawing.Imaging;
-using System.Drawing.Drawing2D;
-using System.IO;
-using System.Runtime.InteropServices;
-using SlimMath;
+using GorgonLibrary.Collections;
+using GorgonLibrary.Diagnostics;
 using GorgonLibrary.IO;
 using GorgonLibrary.Native;
-using GorgonLibrary.Diagnostics;
-using GorgonLibrary.Collections;
+using SlimMath;
 
 namespace GorgonLibrary.Graphics
 {
