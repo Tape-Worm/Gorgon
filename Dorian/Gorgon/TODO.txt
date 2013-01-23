@@ -49,6 +49,7 @@ This list is not in order.  Please don't get excited.
 * Maybe add higher level code for GUI, scenegraph, collisions, etc... once base library is working and relatively bug free
 * Way in the future... maybe write a 3D component for Gorgon.  A lot of work though, very lazy.
 * Fix up animation to use chunked format.
+* Fix up chunking code to be more efficient, currently it's ass.
 
 ----
 Examples
@@ -62,9 +63,9 @@ Done
 
 File System:
 1.  Write an example to show mounting a zip file. (Done)
-2.  Write an example to show mounting multiple file system types.
-3.  Write an example to show how to use the write directory.
-4.  Import Gorgon 1.x examples.
+2.  Write an example to show mounting multiple file system types. (Done)
+3.  Write an example to show how to use the write directory. (Done)
+4.  Import Gorgon 1.x examples. (Done)
 
 Graphics:
 TBD
