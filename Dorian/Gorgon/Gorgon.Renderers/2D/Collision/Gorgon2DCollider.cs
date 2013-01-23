@@ -101,7 +101,6 @@ namespace GorgonLibrary.Renderers
 		/// <summary>
 		/// Function to write the collider information into a byte array.
 		/// </summary>
-		/// <param name="writer">Writer to use to output the information.</param>
 		/// <remarks>This method must be implemented to write out collider information to a stream (e.g. saving a sprite with collider information).  
 		/// <para>The format is as follows:  Write the full type name of the collider, then any relevant information pertaining the collider (e.g. location, width, height, etc...).</para>
 		/// </remarks>
@@ -111,7 +110,7 @@ namespace GorgonLibrary.Renderers
 		/// <summary>
 		/// Function to read in the information about a collider from a byte array.
 		/// </summary>
-		/// <param name="reader">Reader to use when reading the information.</param>
+		/// <param name="data">Data to use when reading the information.</param>
 		/// <remarks>This method must be implemented to read in collider information to a stream (e.g. reading a sprite with collider information).  
 		/// <para>Unlike the <see cref="M:GorgonLibrary.Renderers.Gorgon2DCollider.WriteToArray">WriteToArray</see> method, the reader only needs to read in any custom information 
 		/// about the collider (e.g. location, width, height, etc...).</para>
