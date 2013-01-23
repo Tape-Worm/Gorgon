@@ -25,13 +25,9 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Reflection;
 using System.Drawing;
-using SlimMath;
 using GorgonLibrary.Graphics;
+using SlimMath;
 
 namespace GorgonLibrary.Animation
 {

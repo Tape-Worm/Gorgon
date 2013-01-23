@@ -28,9 +28,6 @@
 // The original code can be found at http://code.google.com/p/simplexnoise/
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using SlimMath;
 
 namespace GorgonLibrary.Math

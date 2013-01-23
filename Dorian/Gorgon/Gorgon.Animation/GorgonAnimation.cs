@@ -24,14 +24,10 @@
 // 
 #endregion
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.IO;
-using GorgonLibrary.IO;
+using System.Text;
 using GorgonLibrary.Diagnostics;
-using GorgonLibrary.Graphics;
+using GorgonLibrary.IO;
 
 namespace GorgonLibrary.Animation
 {

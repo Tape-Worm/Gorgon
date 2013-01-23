@@ -25,14 +25,9 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
 using System.Reflection;
-using System.IO;
 using GorgonLibrary.Math;
-using GorgonLibrary.Diagnostics;
 
 namespace GorgonLibrary.Animation
 {

@@ -26,9 +26,9 @@
 
 using System;
 using System.Collections.Generic;
-using System.Xml.Linq;
-using System.Linq;
 using System.IO;
+using System.Linq;
+using System.Xml.Linq;
 using GorgonLibrary.Diagnostics;
 using GorgonLibrary.PlugIns;
 
