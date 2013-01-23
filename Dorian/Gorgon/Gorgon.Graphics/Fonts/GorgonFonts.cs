@@ -94,6 +94,27 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
+		/// Function to retrieve an existing font (if it was not generated interally) texture for a texture.
+		/// </summary>
+		/// <param name="textureName">Name of the texture to look up.</param>
+		/// <returns>The texture if found, NULL if not.</returns>
+		private GorgonTexture2D GetFontTexture(string textureName)
+		{
+			GorgonTexture2D result = null;
+
+			// Only look at textures that weren't created by Gorgon internally and aren't font textures.
+			if ((!textureName.StartsWith("GorgonFont.", StringComparison.CurrentCultureIgnoreCase))
+				|| (textureName.IndexOf(".InternalTexture_", StringComparison.CurrentCultureIgnoreCase) == -1))
+			{
+				result = (from texture in _graphics.GetGraphicsObjectOfType<GorgonTexture2D>()
+						  where (string.Compare(texture.Name, textureName, true) == 0)
+						  select texture).FirstOrDefault();
+			}
+						
+			return result;
+		}
+
+		/// <summary>
 		/// Function to load the font from a stream.
 		/// </summary>
 		/// <param name="fontName">Name of the font object.</param>
@@ -103,6 +124,7 @@ namespace GorgonLibrary.Graphics
 		{
 			GorgonFontSettings settings = null;
 			GorgonFont font = null;
+			FileStream fileStream = null;
 
 			using (GorgonBinaryReader reader = new GorgonBinaryReader(stream, true))
 			{
@@ -158,55 +180,84 @@ namespace GorgonLibrary.Graphics
 					settings.TextContrast = data.ReadInt32();
 				}
 
-				// Get texture data.
+				bool useExternal = false;
 				int textureCount = 0;
+
+				// Check for external textures.
 				if (chunk.HasChunk("Textures"))
 				{
 					data = chunk["Textures"];
-					settings.PackingSpacing = data.ReadInt32();
-					settings.TextureSize = new Size(data.ReadInt32(), data.ReadInt32());
-					textureCount = data.ReadInt32();
-
-					// Create our font before loading textures.
-					font = new GorgonFont(_graphics, fontName, settings);
-
-					// Load the textures.
-					for (int i = 0; i < textureCount; i++)
-					{
-						GorgonTexture2D texture = _graphics.Textures.FromStream<GorgonTexture2D>(data.ReadString(), data, data.ReadInt32());
-						font.Textures.Add(texture);
-						_graphics.RemoveTrackedObject(texture);
-					}
-
 				}
 				else if (chunk.HasChunk("ExternalTextures"))
 				{
-					FileStream fileStream = stream as FileStream;
+					data = chunk["ExternalTextures"];
+					useExternal = true;
+
+					fileStream = stream as FileStream;
 					if (fileStream == null)
 					{
 						throw new ArgumentException("The stream is not a file stream.  External textures cannot be read.", "stream");
-					}
-
-					data = chunk["ExternalTextures"];
-					settings.PackingSpacing = data.ReadInt32();
-					settings.TextureSize = new Size(data.ReadInt32(), data.ReadInt32());
-					textureCount = data.ReadInt32();
-
-					// Create our font before loading textures.
-					font = new GorgonFont(_graphics, fontName, settings);
-
-					for (int i = 0; i < textureCount; i++)
-					{
-						string textureName = data.ReadString();
-						string texturePath = Path.GetDirectoryName(fileStream.Name).FormatDirectory(Path.DirectorySeparatorChar) + data.ReadString();
-						GorgonTexture2D texture = _graphics.Textures.FromFile<GorgonTexture2D>(textureName, texturePath);
-						font.Textures.Add(texture);
-						_graphics.RemoveTrackedObject(texture);
 					}
 				}
 				else
 				{
 					throw new GorgonException(GorgonResult.CannotRead, "Cannot read this font.  It is either corrupted or not a Gorgon font.");
+				}
+				
+				// Get common texture information.
+				settings.PackingSpacing = data.ReadInt32();
+				settings.TextureSize = new Size(data.ReadInt32(), data.ReadInt32());
+				textureCount = data.ReadInt32();
+
+				// Our settings are now complete.  Create our font.
+				font = new GorgonFont(_graphics, fontName, settings);
+
+				// Load the textures.
+				for (int i = 0; i < textureCount; i++)
+				{
+					GorgonTexture2D texture = null;
+					string textureName = data.ReadString();
+
+					// Get the texture if it already exists.
+					texture = GetFontTexture(textureName);
+
+					// Add to the font.
+					if (texture != null)
+					{
+						font.Textures.Add(texture);
+					}
+
+					if (!useExternal)
+					{
+						int textureSize = data.ReadInt32();
+
+						if (texture == null)
+						{
+							texture = _graphics.Textures.FromStream<GorgonTexture2D>(textureName, data, textureSize);
+							// Don't track these textures.
+							_graphics.RemoveTrackedObject(texture);
+							font.Textures.AddBind(texture);
+						}
+						else
+						{
+							data.Position += textureSize;
+						}
+					}
+					else
+					{
+						// Get the path to the texture (must be local to the font file).
+						string texturePath = Path.GetDirectoryName(fileStream.Name).FormatDirectory(Path.DirectorySeparatorChar) + data.ReadString();
+						texture = GetFontTexture(textureName);
+
+						// If the texture exists, then don't bother loading it.
+						// Otherwise load it in.
+						if (texture == null)
+						{
+							texture = _graphics.Textures.FromFile<GorgonTexture2D>(textureName, texturePath);
+							_graphics.RemoveTrackedObject(texture);
+							font.Textures.AddBind(texture);
+						}
+					}
 				}
 
 				// Get our glyph data.
@@ -223,7 +274,7 @@ namespace GorgonLibrary.Graphics
 
 						for (int j = 0; j < glyphCount; j++)
 						{
-							GorgonGlyph glyph = new GorgonGlyph(Convert.ToChar(data.ReadInt32()), font.Textures[textureName],
+							GorgonGlyph glyph = new GorgonGlyph(data.ReadChar(), font.Textures[textureName],
 								new Rectangle(data.ReadInt32(), data.ReadInt32(), data.ReadInt32(), data.ReadInt32()),
 								data.Read<Vector2>(),
 								data.Read<Vector3>());
