@@ -828,12 +828,11 @@ namespace GorgonLibrary.IO
         /// Function to write a character to the current position in the stream and advances the position by 2 bytes.
         /// </summary>
         /// <param name="value">The character to write to the stream.</param>
-        /// <param name="encoding">Enocding to use for the character.</param>
 		/// <remarks>This function advances the position by 2 bytes because internally .NET defaults to UTF16 for a character, which is 2 bytes.</remarks>
         /// <exception cref="T:System.IO.IOException">An I/O error occurs. </exception>
         /// <exception cref="T:System.NotSupportedException">The stream does not support writing, or the stream is already closed. </exception>
         /// <exception cref="T:System.ObjectDisposedException">Methods were called after the stream was closed. </exception>
-		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="char"/> parameter is a surrogate character.  These are not supported.</exception>
+		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="value"/> parameter is a surrogate character.  These are not supported.</exception>
         public void WriteChar(char value)
         {
 #if DEBUG
@@ -1406,77 +1405,24 @@ namespace GorgonLibrary.IO
 			Position += size;
 		}
 
-        /// <summary>
-        /// Function to return the size of an encoded string, in bytes.
-        /// </summary>
-        /// <param name="value">The string to measure.</param>
-        /// <returns>The length of the encoded string.</returns>
-        public static int GetStringLength(string value)
-        {
-            return GetStringLength(value, null);
-        }
-
-        /// <summary>
-        /// Function to return the size of an encoded string, in bytes.
-        /// </summary>
-        /// <param name="value">The string to measure.</param>
-        /// <param name="encoding">Encoding to use.</param>
-        /// <returns>The length of the encoded string.</returns>
-        public static int GetStringLength(string value, Encoding encoding)
-        {
-            if (string.IsNullOrEmpty(value))
-            {
-                return 0;
-            }
-
-            if (encoding == null)
-            {
-                encoding = Encoding.Default;
-            }
-
-            int length = encoding.GetByteCount(value);
-            int byteCount = length + 1;
-
-            while (length >= 0x80)
-            {
-                byteCount++;
-                length >>= 7;
-            }
-
-            return byteCount;
-        }
-
 		/// <summary>
 		/// Function to write a string to the stream.
 		/// </summary>
 		/// <param name="value">String to write into the stream.</param>
 		/// <param name="encoding">Encoding to use.</param>
+        /// <remarks>This stores the length of the string prefixed to the string data.  The length is encoded as series of 7 bit byte values.
+        /// <para>If the <paramref name="encoding"/> value is NULL (Nothing in VB.Net), then UTF-8 encoding will be used.</para>
+        /// </remarks>
 		public void WriteString(string value, Encoding encoding)
 		{
-			if (string.IsNullOrEmpty(value))
-				return;
-
-			if (encoding == null)
-				encoding = Encoding.Default;
-
-			int length = encoding.GetByteCount(value);
-			byte[] stringData = encoding.GetBytes(value);
-
-			while (length >= 0x80)
-			{
-				WriteByte((byte)(length | 0x80));
-				length >>= 7;
-			}
-
-			WriteByte((byte)length);
-
-			Write(stringData, 0, stringData.Length);
+            value.WriteToStream(this, encoding);
 		}
 
 		/// <summary>
 		/// Function to write a string to the stream.
 		/// </summary>
 		/// <param name="value">String to write into the stream.</param>
+        /// <remarks>This stores the length of the string prefixed to the string data.  The length is encoded as series of 7 bit byte values.</remarks>
 		public void WriteString(string value)
 		{
 			WriteString(value, null);
@@ -1485,7 +1431,6 @@ namespace GorgonLibrary.IO
         /// <summary>
         /// Function to read a character with the specified encoding from the stream and increment the position by the size of a character.
         /// </summary>
-        /// <param name="encoding">The encoding to use.</param>
         /// <returns>
         /// The character in the stream or the default character to indicate the end of stream.
         /// </returns>
@@ -1523,39 +1468,10 @@ namespace GorgonLibrary.IO
 		/// </summary>
 		/// <param name="encoding">Text encoding to use.</param>
 		/// <returns>The string in the stream.</returns>
+        /// <remarks>This method reads the length of the string from a series of 7 bit bytes before reading the string.</remarks>
 		public string ReadString(Encoding encoding)
 		{
-			int stringLength = 0;
-			string result = string.Empty;
-
-			if (encoding == null)
-				encoding = Encoding.Default;
-
-			// String length is encoded in a 7 bit integer.
-			// We have to get each byte and shift it until there are no more high bits set, or the counter becomes larger than 32 bits.
-			int counter = 0;
-			while (true)
-			{
-				int value = ReadByte();
-				stringLength |= (value & 0x7F) << counter;
-				counter += 7;
-				if (((value & 0x80) == 0) || (counter > 32))
-					break;
-			}
-
-			if (stringLength + Position > Length)
-				stringLength = (int)(Length - Position);
-
-			if (stringLength == 0)
-				return string.Empty;
-
-			byte[] byteData = new byte[stringLength];
-			char[] chars = null;
-
-			Read(byteData, 0, byteData.Length);
-			chars = encoding.GetChars(byteData);
-
-			return new string(chars);
+            return GorgonIOExtensions.ReadString(this, encoding);
 		}
 
 		/// <summary>

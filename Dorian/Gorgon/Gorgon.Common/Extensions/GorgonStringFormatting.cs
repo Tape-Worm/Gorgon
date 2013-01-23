@@ -25,6 +25,7 @@
 #endregion
 
 using System.Collections.Generic;
+using System.Text;
 
 namespace GorgonLibrary
 {
@@ -233,6 +234,61 @@ namespace GorgonLibrary
                 }
 
                 result += lines[i];
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Function to return the length of a string, in bytes.
+        /// </summary>
+        /// <param name="value">The string to measure.</param>
+        /// <param name="includeLength">TRUE to include the number of bytes for the encoded length, FALSE to exclude.</param>
+        /// <returns>The length of the string, in bytes.</returns>
+        /// <remarks>
+        /// If the <paramref name="includeLength"/> parameter is TRUE, then the return value will also include the number of 
+        /// 7-bit bytes required to encode the length of the string.
+        /// </remarks>
+        public static int GetByteCount(this string value, bool includeLength)
+        {
+            return GetByteCount(value, includeLength, null);
+        }
+
+        /// <summary>
+        /// Function to return the length of a string, in bytes, with the specified encoding.
+        /// </summary>
+        /// <param name="value">The string to measure.</param>
+        /// <param name="includeLength">TRUE to include the number of bytes for the encoded length, FALSE to exclude.</param>
+        /// <param name="encoding">The encoding for the string.</param>
+        /// <returns>The length of the string, in bytes.</returns>
+        /// <remarks>
+        /// If the <paramref name="includeLength"/> parameter is TRUE, then the return value will also include the number of 
+        /// 7-bit bytes required to encode the length of the string.
+        /// <para>If the <paramref name="encoding"/> parameter is NULL, then UTF-8 encoding will be used.</para></remarks>
+        public static int GetByteCount(this string value, bool includeLength, Encoding encoding)
+        {
+            if (string.IsNullOrEmpty(value))
+            {
+                return 0;
+            }
+
+            if (encoding == null)
+            {
+                encoding = Encoding.UTF8;
+            }
+
+            int size = encoding.GetByteCount(value);
+            int result = size;
+
+            if (includeLength)
+            {
+                result++;
+
+                while (size >= 0x80)
+                {
+                    size >>= 7;
+                    result++;
+                }
             }
 
             return result;

@@ -35,13 +35,181 @@ namespace GorgonLibrary.IO
     /// <summary>
     /// String formatting extensions for IO operations.
     /// </summary>
-    public static class GorgonIOStringFormatting
+    public static class GorgonIOExtensions
     {
         #region Variables.
         private static List<string> _pathParts = null;			// Parts for a path.
         #endregion
 
         #region Methods.
+        /// <summary>
+        /// Function to write a string into a stream.
+        /// </summary>
+        /// <param name="value">The string to write into the stream.</param>
+        /// <param name="stream">Stream to encode the string into.</param>
+        /// <remarks>This will encode the string as a series of bytes into a stream.  The length of the string will be prefixed to the 
+        /// string as a series of 7 bit byte values.
+        /// </remarks>
+        /// <returns>The number of bytes written to the stream.</returns>
+        /// <exception cref="System.IO.IOException">Thrown when the <paramref name="stream"/> parameter is read-only.</exception>
+        /// <exception cref="System.ArgumentNullException">Thrown when the stream parameter is NULL.</exception>
+        public static int WriteToStream(this string value, Stream stream)
+        {
+            return WriteToStream(value, stream, null);
+        }
+
+        /// <summary>
+        /// Function to encode a string into a stream with the specified encoding.
+        /// </summary>
+        /// <param name="value">The string to write into the stream.</param>
+        /// <param name="stream">Stream to encode the string into.</param>
+        /// <param name="encoding">Encoding for the string.</param>
+        /// <remarks>This will encode the string as a series of bytes into a stream.  The length of the string will be prefixed to the 
+        /// string as a series of 7 bit byte values.
+        /// <para>If the <paramref name="encoding"/> parameter is NULL (Nothing in VB.Net), then UTF-8 encoding will be used.</para>
+        /// </remarks>
+        /// <returns>The number of bytes written to the stream.</returns>
+        /// <exception cref="System.IO.IOException">Thrown when the <paramref name="stream"/> parameter is read-only.</exception>
+        /// <exception cref="System.ArgumentNullException">Thrown when the stream parameter is NULL.</exception>
+        public static int WriteToStream(this string value, Stream stream, Encoding encoding)
+        {
+            int size = 0;
+            int result = 0;
+
+            if (string.IsNullOrEmpty(value))
+            {
+                return 0;
+            }
+
+            if (stream == null)
+            {
+                throw new ArgumentNullException("stream");
+            }
+
+            if (!stream.CanWrite)
+            {
+                throw new IOException("The stream is read-only.");
+            }
+
+            if (encoding == null)
+            {
+                encoding = Encoding.UTF8;
+            }
+
+            byte[] stringData = encoding.GetBytes(value);
+            size = stringData.Length;
+            result = size + 1;          // Length of the string + one byte for length.
+
+            // Build the 7 bit encoded length.
+            while (size >= 0x80)
+            {
+                stream.WriteByte((byte)((size | 80) & 0xFF));
+                size >>= 7;
+                result++;
+            }
+
+            stream.WriteByte((byte)size);
+            stream.Write(stringData, 0, stringData.Length);
+
+            return result;
+        }
+
+        /// <summary>
+        /// Function to write a string to a stream with the specified encoding.
+        /// </summary>
+        /// <param name="stream">The stream to write the string into.</param>
+        /// <param name="value">The string to write.</param>
+        /// <param name="encoding">The encoding for the string.</param>
+        /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="stream"/> parameter is NULL.</exception>
+        /// <remarks>Gorgon stores its strings in a stream by prefixing the string data with the length of the string.  This length is encoded as 
+        /// a series of 7-bit bytes.
+        /// <para>If the <paramref name="encoding"/> parameter is NULL (Nothing in VB.Net), then UTF-8 encoding is used.</para>
+        /// </remarks>
+        public static void WriteString(this Stream stream, string value, Encoding encoding)
+        {
+            WriteToStream(value, stream, encoding);
+        }
+
+        /// <summary>
+        /// Function to write a string to a stream with the specified encoding.
+        /// </summary>
+        /// <param name="stream">The stream to write the string into.</param>
+        /// <param name="value">The string to write.</param>
+        /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="stream"/> parameter is NULL.</exception>
+        /// <remarks>Gorgon stores its strings in a stream by prefixing the string data with the length of the string.  This length is encoded as 
+        /// a series of 7-bit bytes.
+        /// </remarks>
+        public static void WriteString(this Stream stream, string value)
+        {
+            WriteToStream(value, stream, null);
+        }
+
+        /// <summary>
+        /// Function to read a string from a stream.
+        /// </summary>
+        /// <param name="stream">The stream to read the string from.</param>
+        /// <returns>The string in the stream.</returns>
+        /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="stream"/> parameter is NULL.</exception>
+        /// <exception cref="System.IO.IOException">Thrown when an attempt to read beyond the end of the stream is made.</exception>
+        /// <remarks>Gorgon stores its strings in a stream by prefixing the string data with the length of the string.  This length is encoded as 
+        /// a series of 7-bit bytes.
+        /// </remarks>
+        public static string ReadString(this Stream stream)
+        {
+            return ReadString(stream, null);
+        }
+
+        /// <summary>
+        /// Function to read a string from a stream with the specified encoding.
+        /// </summary>
+        /// <param name="stream">The stream to read the string from.</param>
+        /// <param name="encoding">The encoding for the string.</param>
+        /// <returns>The string in the stream.</returns>
+        /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="stream"/> parameter is NULL.</exception>
+        /// <exception cref="System.IO.IOException">Thrown when an attempt to read beyond the end of the stream is made.</exception>
+        /// <remarks>Gorgon stores its strings in a stream by prefixing the string data with the length of the string.  This length is encoded as 
+        /// a series of 7-bit bytes.
+        /// <para>If the <paramref name="encoding"/> parameter is NULL (Nothing in VB.Net), then UTF-8 encoding is used.</para>
+        /// </remarks>
+        public static string ReadString(this Stream stream, Encoding encoding)
+        {
+            int stringLength = 0;
+            string result = string.Empty;
+
+            if (stream == null)
+            {
+                throw new ArgumentNullException("stream");
+            }
+
+            if (encoding == null)
+                encoding = Encoding.Default;
+
+            // String length is encoded in a 7 bit integer.
+            // We have to get each byte and shift it until there are no more high bits set, or the counter becomes larger than 32 bits.
+            int counter = 0;
+            while (true)
+            {
+                int value = stream.ReadByte();
+
+                if (value == -1)
+                {
+                    throw new IOException("Cannot read beyond the end of the stream.");
+                }
+
+                stringLength |= (value & 0x7F) << counter;
+                counter += 7;
+                if (((value & 0x80) == 0) || (counter > 32))
+                    break;
+            }
+
+            if (stringLength == 0)
+                return string.Empty;
+            
+            byte[] byteData = new byte[stringLength];
+            stream.Read(byteData, 0, byteData.Length);
+            return encoding.GetString(byteData, 0, byteData.Length);
+        }
+
         /// <summary>
         /// Function to determine if this path is valid.
         /// </summary>
@@ -202,9 +370,9 @@ namespace GorgonLibrary.IO
 
         #region Constructor/Destructor.
         /// <summary>
-        /// Initializes the <see cref="GorgonIOStringFormatting" /> class.
+        /// Initializes the <see cref="GorgonIOExtensions" /> class.
         /// </summary>
-        static GorgonIOStringFormatting()
+        static GorgonIOExtensions()
         {
             _pathParts = new List<string>();
         }

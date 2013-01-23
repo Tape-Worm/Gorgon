@@ -778,7 +778,7 @@ namespace GorgonLibrary.Graphics
                     string characterList = string.Join(string.Empty, Settings.Characters);
 
 					// Write font information.
-					chunkSize = (sizeof(float) * 5) + (sizeof(int) * 2) + GorgonDataStream.GetStringLength(Settings.FontFamilyName) + GorgonDataStream.GetStringLength(characterList) + (sizeof(ushort));
+					chunkSize = (sizeof(float) * 5) + (sizeof(int) * 2) + Settings.FontFamilyName.GetByteCount(true) + characterList.GetByteCount(true) + (sizeof(ushort));
 					data = chunk.CreateChunk("FontInfo", chunkSize);
                     data.WriteString(Settings.FontFamilyName);
 					data.WriteFloat(Settings.Size);
@@ -823,7 +823,7 @@ namespace GorgonLibrary.Graphics
 
 								textureData[textureCounter] = texture;
 								textureCounter++;
-								return texture.Length + sizeof(int) + GorgonDataStream.GetStringLength(item.Name);
+                                return texture.Length + sizeof(int) + item.Name.GetByteCount(true);
 							});
 					}
 					else
@@ -846,7 +846,7 @@ namespace GorgonLibrary.Graphics
 								// Record the file name.
 								textureFiles[textureCounter] = textureFileName;
 								textureCounter++;
-								return GorgonDataStream.GetStringLength(textureFileName) + GorgonDataStream.GetStringLength(item.Name);
+								return textureFileName.GetByteCount(true) + item.Name.GetByteCount(true);
 							});
 					}
 
@@ -886,7 +886,7 @@ namespace GorgonLibrary.Graphics
 					chunkSize = sizeof(int) + textureGlyphs.Sum(
 						(group) => 
 						{
-							int groupSize = GorgonDataStream.GetStringLength(group.Key.Name) + sizeof(int);
+							int groupSize = group.Key.Name.GetByteCount(true) + sizeof(int);
 							int glyphSize = sizeof(ushort) + (sizeof(int) * 4) + DirectAccess.SizeOf<Vector2>() + DirectAccess.SizeOf<Vector3>();
 
 							return groupSize + (glyphSize * group.Count());

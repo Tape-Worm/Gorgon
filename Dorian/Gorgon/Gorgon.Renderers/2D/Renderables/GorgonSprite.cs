@@ -719,7 +719,7 @@ namespace GorgonLibrary.Renderers
                     // Write texture information.
                     if (!string.IsNullOrWhiteSpace(DeferredTextureName))
                     {
-                        chunkSize = DirectAccess.SizeOf<GorgonColor>() + (sizeof(int) * 4) + GorgonDataStream.GetStringLength(DeferredTextureName) + (sizeof(float) * 4);
+                        chunkSize = DirectAccess.SizeOf<GorgonColor>() + (sizeof(int) * 4) + DeferredTextureName.GetByteCount(true) + (sizeof(float) * 4);
                         chunkStream = chunk.CreateChunk("TextureInfo", chunkSize);
                         chunkStream.Write<GorgonColor>(TextureSampler.BorderColor);
                         chunkStream.Write<TextureAddressing>(TextureSampler.HorizontalWrapping);

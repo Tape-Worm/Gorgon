@@ -161,7 +161,7 @@ namespace GorgonLibrary.Renderers
         /// <summary>
         /// Function to read in the information about a collider from a byte array.
         /// </summary>
-        /// <param name="data"></param>
+        /// <param name="data">Data to use when reading the information.</param>
         /// <remarks>
         /// This method must be implemented to read in collider information to a stream (e.g. reading a sprite with collider information).
         /// <para>Unlike the <see cref="M:GorgonLibrary.Renderers.Gorgon2DCollider.WriteToArray">WriteToArray</see> method, the reader only needs to read in any custom information
