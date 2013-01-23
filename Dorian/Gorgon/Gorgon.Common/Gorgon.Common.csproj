@@ -138,7 +138,7 @@
     <Compile Include="Extensions\GorgonHashGenerationExtension.cs" />
     <Compile Include="Extensions\GorgonIntPtrExtensions.cs" />
     <Compile Include="Diagnostics\GorgonDebug.cs" />
-    <Compile Include="Extensions\GorgonIOStringFormatting.cs" />
+    <Compile Include="Extensions\GorgonIOExtensions.cs" />
     <Compile Include="Extensions\GorgonListViewExtensions.cs" />
     <Compile Include="Extensions\GorgonMathExtensions.cs" />
     <Compile Include="Extensions\GorgonNumericFormatting.cs" />
