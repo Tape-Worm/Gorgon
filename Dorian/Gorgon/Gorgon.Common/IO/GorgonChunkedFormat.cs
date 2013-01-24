@@ -60,6 +60,13 @@ namespace GorgonLibrary.IO
     public abstract class GorgonChunkedFormat
         : IDisposable
     {
+        #region Constants.
+        /// <summary>
+        /// The size of the temporary buffer for large data reads/writes.
+        /// </summary>
+        protected const int TempBufferSize = 65536;
+        #endregion
+
         #region Variables.
         private bool _disposed = false;                                                 // Flag to indicate that the object was disposed.
 		private ulong _currentChunk = 0;												// Our current chunk.
@@ -69,6 +76,15 @@ namespace GorgonLibrary.IO
         #endregion
 
         #region Properties.
+        /// <summary>
+        /// Property to set or return the temporary buffer for large reads/writes.
+        /// </summary>
+        protected byte[] TempBuffer
+        {
+            get;
+            set;
+        }
+
 		/// <summary>
 		/// Property to return the writer for our stream.
 		/// </summary>
@@ -99,23 +115,6 @@ namespace GorgonLibrary.IO
 
         #region Methods.
 		/// <summary>
-		/// Function to convert a chunk name into a code.
-		/// </summary>
-		/// <param name="chunkName">The string containing the code to use.</param>
-		/// <returns>The name encoded as an 8 byte unsigned long value.</returns>
-		private ulong GetChunkCode(string chunkName)
-		{
-			if (chunkName.Length != 8)
-			{
-				throw new ArgumentException("The name must be 8 characters exactly.", "chunkName");
-			}
-			chunkName = chunkName.ToUpper();
-
-			return ((ulong)chunkName[7] << 56) | ((ulong)chunkName[6] << 48) | ((ulong)chunkName[5] << 40) | ((ulong)chunkName[4] << 32)
-			       | ((ulong)chunkName[3] << 24) | ((ulong)chunkName[2] << 16) | ((ulong)chunkName[1] << 8) | ((ulong)chunkName[0]);
-		}
-
-		/// <summary>
 		/// Function to validate the access mode.
 		/// </summary>
 		/// <param name="isWrite">TRUE if writing, FALSE if not.</param>
@@ -132,7 +131,24 @@ namespace GorgonLibrary.IO
 			}
 		}
 
-		/// <summary>
+        /// <summary>
+        /// Function to convert a chunk name into a code.
+        /// </summary>
+        /// <param name="chunkName">The string containing the code to use.</param>
+        /// <returns>The name encoded as an 8 byte unsigned long value.</returns>
+        protected ulong GetChunkCode(string chunkName)
+        {
+            if (chunkName.Length != 8)
+            {
+                throw new ArgumentException("The name must be 8 characters exactly.", "chunkName");
+            }
+            chunkName = chunkName.ToUpper();
+
+            return ((ulong)chunkName[7] << 56) | ((ulong)chunkName[6] << 48) | ((ulong)chunkName[5] << 40) | ((ulong)chunkName[4] << 32)
+                   | ((ulong)chunkName[3] << 24) | ((ulong)chunkName[2] << 16) | ((ulong)chunkName[1] << 8) | ((ulong)chunkName[0]);
+        }
+        
+        /// <summary>
 		/// Function to begin reading/writing the chunk
 		/// </summary>
 		/// <param name="chunkName">The name of the chunk.</param>
@@ -164,18 +180,26 @@ namespace GorgonLibrary.IO
 				throw new ArgumentException("The parameter must not be empty.", "chunkName");
 			}
 
-			if (_currentChunk != 0)
+            // Truncate to 8 characters.
+            if (chunkName.Length > 8)
+            {
+                chunkName = chunkName.Substring(0, 8);
+            }
+
+            ulong newChunkID = GetChunkCode(chunkName);
+
+            // Return if we're using the same chunk.
+            if (newChunkID == _currentChunk)
+            {
+                return;
+            }
+
+			if (_currentChunk != 0) 
 			{
 				End();
 			}
-
-			// Truncate to 8 characters.
-			if (chunkName.Length > 8)
-			{
-				chunkName = chunkName.Substring(0, 8);
-			}
-
-			_currentChunk = GetChunkCode(chunkName);
+            
+			_currentChunk = newChunkID;
 
 			if (ChunkAccessMode == ChunkAccessMode.Write)
 			{
@@ -236,11 +260,6 @@ namespace GorgonLibrary.IO
 				// Skip ahead.
 				if (skipAmount > 0)
 				{
-					if (!Reader.BaseStream.CanSeek)
-					{
-						throw new IOException("There is a size mismatch in the chunk data.  The remaining chunk data cannot be skipped because stream cannot seek.");
-					}
-
 					Reader.BaseStream.Seek(skipAmount, SeekOrigin.Current);
 				}
 			}
@@ -251,6 +270,22 @@ namespace GorgonLibrary.IO
 			_chunkSize = 0;
 			_chunkEnd = 0;
 		}
+
+        /// <summary>
+        /// Function to skip the specified number of bytes in the stream.
+        /// </summary>
+        /// <param name="byteCount">Number of bytes in the stream to skip.</param>
+        public void SkipBytes(long byteCount)
+        {
+            if (ChunkAccessMode == IO.ChunkAccessMode.Write)
+            {
+                Reader.BaseStream.Seek(byteCount, SeekOrigin.Current);
+            }
+            else
+            {
+                Writer.BaseStream.Seek(byteCount, SeekOrigin.Current);
+            }
+        }
 		#endregion
 
         #region Constructor/Destructor.
@@ -264,7 +299,7 @@ namespace GorgonLibrary.IO
 		/// <para>-or-</para>
 		/// <para>Thrown when the accessMode parameter is set to write, but the stream cannot be written.</para>
 		/// <para>-or-</para>
-		/// <para>Thrown if the stream can't seek and we're in write mode.</para>
+		/// <para>Thrown if the stream can't perform seek operations.</para>
 		/// </exception>
         protected GorgonChunkedFormat(Stream stream, ChunkAccessMode accessMode)
         {		
@@ -275,13 +310,13 @@ namespace GorgonLibrary.IO
 
 			ChunkAccessMode = accessMode;
 
+            if (!stream.CanSeek)
+            {
+                throw new ArgumentException("The stream is not seekable.", "stream");
+            }
+
 			if (accessMode == ChunkAccessMode.Write)
 			{
-				if (!stream.CanSeek)
-				{
-					throw new ArgumentException("The stream is not seekable.", "stream");
-				}
-
 				if (!stream.CanWrite)
 				{
 					throw new ArgumentException("The stream is write-only.", "accessMode");

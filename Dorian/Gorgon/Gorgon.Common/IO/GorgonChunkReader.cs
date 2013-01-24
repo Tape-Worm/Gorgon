@@ -45,9 +45,45 @@ namespace GorgonLibrary.IO
 	/// unnecessary parts.</remarks>
 	public class GorgonChunkReader
 		: GorgonChunkedFormat
-	{
-		#region Methods.
-		/// <summary>
+    {
+        #region Methods.
+        /// <summary>
+        /// Function to determine if the next bytes indicate match the chunk ID.
+        /// </summary>
+        /// <param name="chunkName">Name of the chunk.</param>
+        /// <returns>TRUE if the next bytes are a the specified chunk ID, FALSE if not.</returns>
+        /// <remarks>The <paramref name="chunkName"/> parameter must be at least 8 characters in length, if it is not, then an exception will be thrown. 
+        /// If the chunkName parameter is longer than 8 characters, then it will be truncated to 8 characters.
+        /// </remarks>
+        public bool HasChunk(string chunkName)
+        {
+            if (chunkName.Length < 8)
+            {
+                throw new ArgumentException("The name must be at least 8 characters in length.", "chunkName");
+            }
+
+            if (chunkName.Length > 8)
+            {
+                chunkName = chunkName.Substring(0, 8);
+            }
+
+            // If we're at the end of the stream, then obviously we don't have the chunk ID.
+            if (Reader.BaseStream.Position + 8 > Reader.BaseStream.Length)
+            {
+                return false;
+            }
+
+            long streamPosition = Reader.BaseStream.Position;
+            ulong chunkID = GetChunkCode(chunkName);
+            ulong streamData = ReadUInt64();
+
+            // Reset the stream position.
+            Reader.BaseStream.Position = streamPosition;
+
+            return chunkID == streamData;
+        }
+
+        /// <summary>
 		/// Function to read a signed byte from the stream.
 		/// </summary>
 		/// <returns>The signed byte in the stream.</returns>
@@ -163,7 +199,7 @@ namespace GorgonLibrary.IO
 		/// <summary>
 		/// Function to read a string from the stream with the specified encoding.
 		/// </summary>
-		/// <param name="encoding">The encoding to use.</returns>
+		/// <param name="encoding">The encoding to use.</param>
 		/// <returns>The string value in the stream.</returns>
 		/// <remarks>If the <paramref name="encoding"/> is NULL (Nothing in VB.Net), UTF-8 encoding will be used instead.</remarks>
 		/// <exception cref="System.IO.IOException">Thrown when the stream is write-only.</exception>
@@ -179,7 +215,7 @@ namespace GorgonLibrary.IO
 		/// </summary>
 		/// <returns>The string value in the stream.</returns>
 		/// <exception cref="System.IO.IOException">Thrown when the stream is write-only.</exception>
-		public string ReadString(string value)
+		public string ReadString()
 		{
 			ValidateAccess(false);
 			return Reader.BaseStream.ReadString(null);
@@ -190,7 +226,7 @@ namespace GorgonLibrary.IO
 		/// </summary>
 		/// <returns>The double precision value in the stream.</returns>
 		/// <exception cref="System.IO.IOException">Thrown when the stream is write-only.</exception>
-		public double ReadDouble(double value)
+		public double ReadDouble()
 		{
 			ValidateAccess(false);
 			return Reader.ReadDouble();
@@ -201,7 +237,7 @@ namespace GorgonLibrary.IO
 		/// </summary>
 		/// <returns>The single precision floating point value in the stream.</returns>
 		/// <exception cref="System.IO.IOException">Thrown when the stream is write-only.</exception>
-		public float ReadFloat(float value)
+		public float ReadFloat()
 		{
 			ValidateAccess(false);
 			return Reader.ReadSingle();
@@ -221,17 +257,172 @@ namespace GorgonLibrary.IO
 		/// <summary>
 		/// Function to read an array of bytes from the stream.
 		/// </summary>
-		/// <param name="data">Array of bytes in the stream.</returns>
-		/// <param name="startIndex">Starting index in the array.</returns>
-		/// <param name="count">Number of bytes in the array to read.</returns>
-		/// <exception cref="System.IO.IOException">Thrown when the stream is write-only.</exception>
-		public void Read(byte[] data, int startIndex, int count)
+		/// <param name="data">Array of bytes in the stream.</param>
+        /// <param name="startIndex">Starting index in the array.</param>
+        /// <param name="count">Number of bytes in the array to read.</param>
+        /// <exception cref="System.IO.IOException">Thrown when the stream is read-only.</exception>
+        /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="data"/> parameter is NULL (Nothing in VB.Net).</exception>
+        /// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="startIndex"/> parameter is less than 0.
+        /// <para>-or-</para>
+        /// <para>Thrown when the startIndex parameter is equal to or greater than the number of elements in the value parameter.</para>
+        /// <para>-or-</para>
+        /// <para>Thrown when the sum of startIndex and <paramref name="count"/> is greater than the number of elements in the value parameter.</para>
+        /// </exception>
+        public void Read(byte[] data, int startIndex, int count)
 		{
 			ValidateAccess(false);
+
+            if (data == null)
+            {
+                throw new ArgumentNullException("value");
+            }
+
+            if ((data.Length == 0) || (count <= 0))
+            {
+                return;
+            }
+
+            if (startIndex < 0)
+            {
+                throw new ArgumentOutOfRangeException("The start index must be greater than or equal to 0.", "startIndex");
+            }
+
+            if (startIndex >= data.Length)
+            {
+                throw new ArgumentOutOfRangeException("The start index must be less than the number of elements in the array.", "startIndex");
+            }
+
+            if (startIndex + count > data.Length)
+            {
+                throw new ArgumentOutOfRangeException("The sum of start index and count is larger than the number of elements in the array");
+            }            
+
 			Reader.Read(data, startIndex, count);
 		}
 
-		/// <summary>
+        /// <summary>
+        /// Function to read a range of generic values.
+        /// </summary>
+        /// <typeparam name="T">Type of value to read.  Must be a value type.</typeparam>
+        /// <param name="value">Array of values to read.</param>
+        /// <param name="startIndex">Starting index in the array.</param>
+        /// <param name="count">Number of array elements to copy.</param>
+        /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="value"/> parameter is NULL (Nothing in VB.Net).</exception>
+        /// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="startIndex"/> parameter is less than 0.
+        /// <para>-or-</para>
+        /// <para>Thrown when the startIndex parameter is equal to or greater than the number of elements in the value parameter.</para>
+        /// <para>-or-</para>
+        /// <para>Thrown when the sum of startIndex and <paramref name="count"/> is greater than the number of elements in the value parameter.</para>
+        /// </exception>
+        /// <exception cref="System.IO.IOException">Thrown when the stream is write-only.</exception>
+        public unsafe void ReadRange<T>(T[] value, int startIndex, int count)
+            where T : struct
+        {
+            ValidateAccess(true);
+
+            if (value == null)
+            {
+                throw new ArgumentNullException("value");
+            }
+
+            if ((value.Length == 0) || (count <= 0))
+            {
+                return;
+            }
+
+            if (startIndex < 0)
+            {
+                throw new ArgumentOutOfRangeException("The start index must be greater than or equal to 0.", "startIndex");
+            }
+
+            if (startIndex >= value.Length)
+            {
+                throw new ArgumentOutOfRangeException("The start index must be less than the number of elements in the array.", "startIndex");
+            }
+
+            if (startIndex + count > value.Length)
+            {
+                throw new ArgumentOutOfRangeException("The sum of start index and count is larger than the number of elements in the array");
+            }
+
+            int typeSize = DirectAccess.SizeOf<T>();
+            int size = typeSize * count;
+            int offset = startIndex * typeSize;
+
+            if (TempBuffer != null)
+            {
+                TempBuffer = new byte[TempBufferSize];
+            }
+
+            fixed (byte* tempBufferPointer = &TempBuffer[0])
+            {
+                while (size > 0)
+                {
+                    int blockSize = size > TempBufferSize ? TempBufferSize : size;
+
+                    // Read the data from the stream as byte values.
+                    Read(TempBuffer, 0, blockSize);
+                    
+                    // Copy into our array.
+                    DirectAccess.Read<T>(tempBufferPointer, value, offset, blockSize);
+
+                    offset += blockSize;
+                    size -= blockSize;                    
+                }
+            }
+        }
+
+        /// <summary>
+        /// Function to read a range of generic values.
+        /// </summary>
+        /// <typeparam name="T">Type of value to read.  Must be a value type.</typeparam>
+        /// <param name="value">Array of values to read.</param>
+        /// <param name="count">Number of array elements to copy.</param>
+        /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="value"/> parameter is NULL (Nothing in VB.Net).</exception>
+        /// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="count"/> parameter is greater than the number of elements in the value parameter.
+        /// </exception>
+        /// <exception cref="System.IO.IOException">Thrown when the stream is write-only.</exception>
+        public void ReadRange<T>(T[] value, int count)
+            where T : struct
+        {
+            ReadRange<T>(value, 0, count);
+        }
+
+        /// <summary>
+        /// Function to read a range of generic values.
+        /// </summary>
+        /// <typeparam name="T">Type of value to read.  Must be a value type.</typeparam>
+        /// <param name="value">Array of values to read.</param>
+        /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="value"/> parameter is NULL (Nothing in VB.Net).</exception>
+        /// <exception cref="System.IO.IOException">Thrown when the stream is write-only.</exception>
+        public void ReadRange<T>(T[] value)
+            where T : struct
+        {
+            if (value == null)
+            {
+                throw new ArgumentNullException("value");
+            }
+
+            ReadRange<T>(value, 0, value.Length);
+        }
+
+        /// <summary>
+        /// Function to read a range of generic values.
+        /// </summary>
+        /// <typeparam name="T">Type of value to read.  Must be a value type.</typeparam>
+        /// <param name="count">Number of array elements to copy.</param>
+        /// <exception cref="System.IO.IOException">Thrown when the stream is write-only.</exception>
+        public T[] ReadRange<T>(int count)
+            where T : struct
+        {
+            T[] array = new T[count];
+
+            ReadRange<T>(array, 0, count);
+
+            return array;
+        }
+                
+        /// <summary>
 		/// Function to read a generic value from the stream.
 		/// </summary>
 		/// <typeparam name="T">Type of value to read.  Must be a value type.</typeparam>
@@ -276,7 +467,7 @@ namespace GorgonLibrary.IO
 		/// </summary>
 		/// <returns>The point in the stream.</returns>
 		/// <exception cref="System.IO.IOException">Thrown when the stream is write-only.</exception>
-		public Point ReadPoint(Point value)
+		public Point ReadPoint()
 		{
 			ValidateAccess(false);
 
@@ -288,7 +479,7 @@ namespace GorgonLibrary.IO
 		/// </summary>
 		/// <returns>The point in the stream.</returns>
 		/// <exception cref="System.IO.IOException">Thrown when the stream is write-only.</exception>
-		public PointF ReadPointF(PointF value)
+		public PointF ReadPointF()
 		{
 			ValidateAccess(false);
 
@@ -300,7 +491,7 @@ namespace GorgonLibrary.IO
 		/// </summary>
 		/// <returns>The point in the stream.</returns>
 		/// <exception cref="System.IO.IOException">Thrown when the stream is write-only.</exception>
-		public Size ReadSize(Size value)
+		public Size ReadSize()
 		{
 			ValidateAccess(false);
 
@@ -312,7 +503,7 @@ namespace GorgonLibrary.IO
 		/// </summary>
 		/// <returns>The point in the stream.</returns>
 		/// <exception cref="System.IO.IOException">Thrown when the stream is write-only.</exception>
-		public SizeF ReadSizeF(SizeF value)
+		public SizeF ReadSizeF()
 		{
 			ValidateAccess(false);
 
@@ -324,7 +515,7 @@ namespace GorgonLibrary.IO
 		/// </summary>
 		/// <returns>The rectangle in the stream.</returns>
 		/// <exception cref="System.IO.IOException">Thrown when the stream is write-only.</exception>
-		public Rectangle ReadRectangle(Rectangle value)
+		public Rectangle ReadRectangle()
 		{
 			ValidateAccess(false);
 
@@ -336,7 +527,7 @@ namespace GorgonLibrary.IO
 		/// </summary>
 		/// <returns>The rectangle in the stream.</returns>
 		/// <exception cref="System.IO.IOException">Thrown when the stream is write-only.</exception>
-		public RectangleF ReadRectangleF(RectangleF value)
+		public RectangleF ReadRectangleF()
 		{
 			ValidateAccess(false);
 
@@ -348,7 +539,7 @@ namespace GorgonLibrary.IO
 		/// <summary>
 		/// Initializes a new instance of the <see cref="GorgonChunkReader" /> class.
 		/// </summary>
-		/// <param name="stream">The stream.</returns>
+		/// <param name="stream">The stream.</param>
 		public GorgonChunkReader(Stream stream)
 			: base(stream, ChunkAccessMode.Read)
 		{
