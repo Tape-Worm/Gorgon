@@ -136,47 +136,37 @@ namespace GorgonLibrary.Renderers
 		}
 
         /// <summary>
-        /// Function to write the collider information into a stream.
+        /// Function to write the collider information into a chunk.
         /// </summary>
-        /// <returns>
-        /// A byte array containing the data.
-        /// </returns>
+        /// <param name="writer">The writer for the chunk.</param>
         /// <remarks>
         /// This method must be implemented to write out collider information to a stream (e.g. saving a sprite with collider information).
         /// <para>The format is as follows:  Write the full type name of the collider, then any relevant information pertaining the collider (e.g. location, width, height, etc...).</para>
+        /// <para>This method assumes the chunk writer has already started the collider chunk.</para>
         /// </remarks>
-        protected internal override byte[] WriteToArray()
+        protected internal override void WriteToChunk(GorgonLibrary.IO.GorgonChunkWriter writer)
         {
-            using (IO.GorgonBinaryWriter writer = new IO.GorgonBinaryWriter(new System.IO.MemoryStream(), false))
-            {
-                writer.Write(this.GetType().FullName);
-                writer.Write(Center.X);
-                writer.Write(Center.Y);
-                writer.Write(Radius);
-
-                return ((System.IO.MemoryStream)writer.BaseStream).ToArray();
-            }
+            writer.WriteString(this.GetType().FullName);
+            writer.Write<Vector2>(Center);
+            writer.WriteFloat(Radius);
         }
 
         /// <summary>
-        /// Function to read in the information about a collider from a byte array.
+        /// Function to read in the information about a collider from a chunk.
         /// </summary>
-        /// <param name="data">Data to use when reading the information.</param>
+        /// <param name="reader">The reader for the chunk.</param>
         /// <remarks>
         /// This method must be implemented to read in collider information to a stream (e.g. reading a sprite with collider information).
-        /// <para>Unlike the <see cref="M:GorgonLibrary.Renderers.Gorgon2DCollider.WriteToArray">WriteToArray</see> method, the reader only needs to read in any custom information
+        /// <para>Unlike the <see cref="M:GorgonLibrary.Renderers.Gorgon2DCollider.WriteToChunk">WriteToChunk</see> method, the reader only needs to read in any custom information
         /// about the collider (e.g. location, width, height, etc...).</para>
+        /// <para>This method assumes the chunk writer has already positioned at the collider chunk.</para>
         /// </remarks>
-        protected internal override void ReadFromArray(byte[] data)
+        protected internal override void ReadFromChunk(GorgonLibrary.IO.GorgonChunkReader reader)
         {
-            using (IO.GorgonBinaryReader reader = new IO.GorgonBinaryReader(new System.IO.MemoryStream(data), false))
-            {
-                _center.X = reader.ReadSingle();
-                _center.Y = reader.ReadSingle();
-                _radius = reader.ReadSingle();
+            _center = reader.Read<Vector2>();
+            _radius = reader.ReadFloat();
 
-                OnPropertyUpdated();
-            }
+            OnPropertyUpdated();
         }
 
 		/// <summary>

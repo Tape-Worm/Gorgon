@@ -45,9 +45,9 @@ namespace GorgonLibrary.IO
 	/// unnecessary parts.</remarks>
 	public class GorgonChunkWriter
 		: GorgonChunkedFormat
-	{
-		#region Methods.
-		/// <summary>
+    {
+        #region Methods.
+        /// <summary>
 		/// Function to write a signed byte to the stream.
 		/// </summary>
 		/// <param name="value">Value to write to the stream.</param>
@@ -228,9 +228,42 @@ namespace GorgonLibrary.IO
 		/// <param name="startIndex">Starting index in the array.</param>
 		/// <param name="count">Number of bytes in the array to write.</param>
 		/// <exception cref="System.IO.IOException">Thrown when the stream is read-only.</exception>
-		public void Write(byte[] data, int startIndex, int count)
+        /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="data"/> parameter is NULL (Nothing in VB.Net).</exception>
+        /// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="startIndex"/> parameter is less than 0.
+        /// <para>-or-</para>
+        /// <para>Thrown when the startIndex parameter is equal to or greater than the number of elements in the value parameter.</para>
+        /// <para>-or-</para>
+        /// <para>Thrown when the sum of startIndex and <paramref name="count"/> is greater than the number of elements in the value parameter.</para>
+        /// </exception>
+        public void Write(byte[] data, int startIndex, int count)
 		{
 			ValidateAccess(true);
+
+            if (data == null)
+            {
+                throw new ArgumentNullException("value");
+            }
+
+            if ((data.Length == 0) || (count <= 0))
+            {
+                return;
+            }
+
+            if (startIndex < 0)
+            {
+                throw new ArgumentOutOfRangeException("The start index must be greater than or equal to 0.", "startIndex");
+            }
+
+            if (startIndex >= data.Length)
+            {
+                throw new ArgumentOutOfRangeException("The start index must be less than the number of elements in the array.", "startIndex");
+            }
+
+            if (startIndex + count > data.Length)
+            {
+                throw new ArgumentOutOfRangeException("The sum of start index and count is larger than the number of elements in the array");
+            }            
+
 			Writer.Write(data, startIndex, count);
 		}
 
@@ -315,6 +348,113 @@ namespace GorgonLibrary.IO
 			Writer.Write(value.Width);
 			Writer.Write(value.Height);
 		}
+
+        /// <summary>
+        /// Function to write a range of generic values.
+        /// </summary>
+        /// <typeparam name="T">Type of value to write.  Must be a value type.</typeparam>
+        /// <param name="value">Array of values to write.</param>
+        /// <param name="startIndex">Starting index in the array.</param>
+        /// <param name="count">Number of array elements to copy.</param>
+        /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="value"/> parameter is NULL (Nothing in VB.Net).</exception>
+        /// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="startIndex"/> parameter is less than 0.
+        /// <para>-or-</para>
+        /// <para>Thrown when the startIndex parameter is equal to or greater than the number of elements in the value parameter.</para>
+        /// <para>-or-</para>
+        /// <para>Thrown when the sum of startIndex and <paramref name="count"/> is greater than the number of elements in the value parameter.</para>
+        /// </exception>
+        /// <exception cref="System.IO.IOException">Thrown when the stream is read-only.</exception>
+        public unsafe void WriteRange<T>(T[] value, int startIndex, int count)
+            where T : struct
+        {
+            ValidateAccess(true);
+
+            if (value == null)
+            {
+                throw new ArgumentNullException("value");
+            }
+
+            if ((value.Length == 0) || (count <= 0))
+            {
+                return;
+            }
+
+            if (startIndex < 0)
+            {
+                throw new ArgumentOutOfRangeException("The start index must be greater than or equal to 0.", "startIndex");
+            }
+
+            if (startIndex >= value.Length)
+            {
+                throw new ArgumentOutOfRangeException("The start index must be less than the number of elements in the array.", "startIndex");
+            }
+
+            if (startIndex + count > value.Length)
+            {
+                throw new ArgumentOutOfRangeException("The sum of start index and count is larger than the number of elements in the array");
+            }            
+
+            int typeSize = DirectAccess.SizeOf<T>();
+            int offset = typeSize * startIndex;
+            int size = typeSize * count;            
+
+            // Allocate our temporary buffer if we haven't already.
+            if (TempBuffer == null)
+            {
+                TempBuffer = new byte[TempBufferSize];
+            }
+
+            fixed (byte *tempBufferPointer = &TempBuffer[0])
+            {
+                while (size > 0)
+                {
+                    int blockSize = size > TempBufferSize ? TempBufferSize : size;
+
+                    // Read our array into our temporary byte buffer.
+                    DirectAccess.Read<T>(tempBufferPointer, value, offset, blockSize);
+
+                    offset += blockSize;
+                    size -= size;
+
+                    // Write the temporary byte buffer to the stream.
+                    Write(TempBuffer, 0, blockSize);
+                }                
+            }
+        }
+
+        /// <summary>
+        /// Function to write a range of generic values.
+        /// </summary>
+        /// <typeparam name="T">Type of value to write.  Must be a value type.</typeparam>
+        /// <param name="value">Array of values to write.</param>
+        /// <param name="count">Number of array elements to copy.</param>
+        /// <exception cref="System.IO.IOException">Thrown when the stream is read-only.</exception>
+        /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="value"/> parameter is NULL (Nothing in VB.Net).</exception>
+        /// <exception cref="System.ArgumentOutOfRangeException">Thrown when <paramref name="count"/> parameter is greater than the number of elements in the value parameter.
+        /// </exception>
+        public void WriteRange<T>(T[] value, int count)
+            where T : struct
+        {
+            WriteRange<T>(value, 0, count);
+        }
+
+        /// <summary>
+        /// Functio to write a range of generic values.
+        /// </summary>
+        /// <typeparam name="T">Type of value to write.  Must be a value type.</typeparam>
+        /// <param name="value">Array of values to write.</param>
+        /// <exception cref="System.IO.IOException">Thrown when the stream is read-only.</exception>
+        /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="value"/> parameter is NULL (Nothing in VB.Net).</exception>
+        public void WriteRange<T>(T[] value)
+            where T : struct
+        {
+            if (value == null)
+            {
+                throw new ArgumentNullException("value");
+            }
+
+            WriteRange<T>(value, 0, value.Length);
+        }
 
 		/// <summary>
 		/// Function to write a generic value to the stream.

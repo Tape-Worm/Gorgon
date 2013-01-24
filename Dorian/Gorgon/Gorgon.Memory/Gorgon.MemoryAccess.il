@@ -129,6 +129,35 @@
 		IL_0017: ret
 	}
 
+	// Function to write an array of value types to native memory.
+	.method public hidebysig static 
+		void Write<valuetype .ctor T> (
+			void *destination,
+			!!T[] buffer,
+			int32 offset,
+			int32 size
+		) cil managed 
+	{
+		// Method begins at RVA 0x1000
+		// Code size 24 (0x18)
+		.maxstack 3
+		.locals (
+			[0] !!T& pinned modopt([mscorlib]System.Runtime.CompilerServices.IsExplicitlyDereferenced) 
+		)
+
+		ldarg.1
+		ldarg.2
+		ldelema !!T
+		stloc.0
+		ldarg.0
+		ldloc.0
+		ldarg.3
+		conv.i8
+		unaligned. 1
+		cpblk
+		ret
+	}
+
 	// Function to write an array of value types to native memory.  Optimized for x86.
 	.method public hidebysig static 
 		void Writex86<valuetype .ctor T> (
@@ -187,6 +216,35 @@
 		IL_0012: unaligned. 1
 		IL_0015: cpblk
 		IL_0017: ret
+	}
+
+	// Function to read an array of value types from native memory.
+	.method public hidebysig static 
+		void Read<valuetype .ctor T> (
+			void *source,
+			!!T[] buffer,
+			int32 offset,
+			int32 size
+		) cil managed 
+	{
+		// Method begins at RVA 0x1024
+		// Code size 24 (0x18)
+		.maxstack 3
+		.locals (
+			[0] !!T& pinned modopt([mscorlib]System.Runtime.CompilerServices.IsExplicitlyDereferenced) 
+		)
+
+		ldarg.1
+		ldarg.2
+		ldelema !!T
+		stloc.0
+		ldloc.0
+		ldarg.0
+		ldarg.3
+		conv.i8
+		unaligned. 1
+		cpblk
+		ret
 	}
 
 	// Function to read an array of value types from native memory. Optimized for x86.
@@ -379,7 +437,7 @@
 		stloc.0
 		ldloc.0
 		ret
-	} 
+	} 	
 
 
   .method private hidebysig specialname rtspecialname static 
