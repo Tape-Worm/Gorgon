@@ -327,7 +327,7 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		/// <returns>The 3D vector.</returns>
 		/// <remarks>This will map the R, G and B components to X, Y and Z respectively.</remarks>
-		public Vector3 ToVector3D()
+		public Vector3 ToVector3()
 		{
 			return new Vector3(Red, Green, Blue);
 		}
@@ -337,7 +337,7 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		/// <returns>The 4D vector.</returns>
 		/// <remarks>This will map the R, G, B and A components to X, Y, Z and W respectively.</remarks>
-		public Vector4 ToVector4D()
+		public Vector4 ToVector4()
 		{
 			return new Vector4(Red, Green, Blue, Alpha);
 		}
@@ -471,7 +471,7 @@ namespace GorgonLibrary.Graphics
 		/// <returns>The result of the conversion.</returns>
 		public static explicit operator Vector3(GorgonColor color)
 		{
-			return color.ToVector3D();
+			return color.ToVector3();
 		}
 
 		/// <summary>
@@ -491,7 +491,7 @@ namespace GorgonLibrary.Graphics
 		/// <returns>The result of the conversion.</returns>
 		public static implicit operator Vector4(GorgonColor color)
 		{
-			return color.ToVector4D();
+			return color.ToVector4();
 		}
 
 		/// <summary>
