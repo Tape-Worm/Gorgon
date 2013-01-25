@@ -104,8 +104,8 @@
 		void WriteArray<valuetype .ctor T> (
 			native int destination,
 			!!T[] buffer,
-			int32 offset,
-			int32 size
+			int32 arrayIndex,
+			int32 sizeInBytes
 		) cil managed 
 	{
 		// Method begins at RVA 0x1000
@@ -133,8 +133,8 @@
 		void WriteArray<valuetype .ctor T> (
 			void *destination,
 			!!T[] buffer,
-			int32 offset,
-			int32 size
+			int32 arrayIndex,
+			int32 sizeInBytes
 		) cil managed 
 	{
 		// Method begins at RVA 0x1000
