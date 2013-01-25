@@ -61,7 +61,7 @@ namespace GorgonLibrary.IO
 	/// <remarks>This will hold generic byte data in unmanaged memory.  It is similar to the <see cref="System.IO.MemoryStream">MemoryStream</see> object, except that MemoryStream uses an array of bytes as a backing store.
 	/// <para>Because this stream uses unmanaged memory, it is imperative that you call the Dispose method when you're done with the object.</para>
 	/// </remarks>
-	public class GorgonDataStream
+	public unsafe class GorgonDataStream
 		: Stream
 	{
 		#region Variables.
@@ -72,6 +72,7 @@ namespace GorgonLibrary.IO
 		private IntPtr _pointerOffset = IntPtr.Zero;			// Pointer offset.
 		private GCHandle _handle = default(GCHandle);			// Handle to a pinned array.
 		private bool _ownsPointer = true;						// Flag to indicate that we own this pointer.
+        private void* _dataPointer = null;                      // Pointer to the data in memory.
 		#endregion
 
 		#region Properties.
@@ -172,6 +173,7 @@ namespace GorgonLibrary.IO
 				
 				_pointerPosition = (int)value;
 				_pointerOffset = _data + _pointerPosition;
+                _dataPointer = _pointerOffset.ToPointer();
 			}
 		}
 
@@ -200,11 +202,11 @@ namespace GorgonLibrary.IO
 		/// <summary>
 		/// Property to return the pointer to the allocated unmanaged memory.
 		/// </summary>
-		public unsafe void* UnsafePointer
+		public void* UnsafePointer
 		{
 			get
 			{
-				return (void *)_data;
+				return _dataPointer;
 			}
 		}
 		#endregion
@@ -231,6 +233,7 @@ namespace GorgonLibrary.IO
 
 				_data = IntPtr.Zero;
 				_pointerOffset = IntPtr.Zero;
+                _dataPointer = null;
 				_disposed = true;
 			}
 
@@ -427,7 +430,7 @@ namespace GorgonLibrary.IO
 			if ((actualCount + _pointerPosition) > _length)
 				actualCount = (_length - _pointerPosition);
 
-			_pointerOffset.CopyTo(buffer, offset, actualCount);
+            DirectAccess.ReadArray<byte>(_dataPointer, buffer, offset, count);
 
 			Position += actualCount;
 
@@ -514,14 +517,16 @@ namespace GorgonLibrary.IO
 
 			_data = IntPtr.Zero;
 			_pointerOffset = IntPtr.Zero;
+            _dataPointer = null;
 			_pointerPosition = 0;
 			_length = 0;
 
 			if (value == 0)
 				return;
 
-			_data = Marshal.AllocHGlobal((int)value);
+			_data = Marshal.AllocHGlobal((int)value);            
 			_pointerOffset = _data;
+            _dataPointer = _pointerOffset.ToPointer();
 			_length = (int)value;
 		}
 
@@ -571,7 +576,7 @@ namespace GorgonLibrary.IO
 			if ((actualCount + _pointerPosition) > _length)
 				actualCount = (_length - _pointerPosition);
 
-			_pointerOffset.CopyFrom(buffer, offset, actualCount);
+            DirectAccess.WriteArray<byte>(_dataPointer, buffer, offset, actualCount);
 
 			Position += actualCount;
 		}
@@ -598,13 +603,10 @@ namespace GorgonLibrary.IO
 			if (_pointerPosition >= _length)
 				return;
 
-			unsafe
-			{
-				float* pointer = (float*)_pointerOffset;
-				*pointer = value;
+			float* pointer = (float*)_dataPointer;
+			*pointer = value;
 
-				Position += 4;
-			}
+			Position += 4;
 		}
 
 		/// <summary>
@@ -629,13 +631,10 @@ namespace GorgonLibrary.IO
 			if (_pointerPosition >= _length)
 				return;
 
-			unsafe
-			{
-				double* pointer = (double*)_pointerOffset;
-				*pointer = value;
+            double* pointer = (double*)_dataPointer;
+			*pointer = value;
 
-				Position += sizeof(double);
-			}
+			Position += sizeof(double);
 		}
 
 		/// <summary>
@@ -660,13 +659,10 @@ namespace GorgonLibrary.IO
 			if (_pointerPosition >= _length)
 				return;
 
-			unsafe
-			{
-				UInt16* pointer = (UInt16*)_pointerOffset;
-				*pointer = value;
+			UInt16* pointer = (UInt16*)_dataPointer;
+			*pointer = value;
 
-				Position += 2;
-			}
+			Position += 2;
 		}
 
 		/// <summary>
@@ -691,13 +687,10 @@ namespace GorgonLibrary.IO
 			if (_pointerPosition >= _length)
 				return;
 
-			unsafe
-			{
-				UInt64* pointer = (UInt64*)_pointerOffset;
-				*pointer = value;
+			UInt64* pointer = (UInt64*)_dataPointer;
+			*pointer = value;
 
-				Position += 8;
-			}
+			Position += 8;
 		}
 
 		/// <summary>
@@ -722,13 +715,10 @@ namespace GorgonLibrary.IO
 			if (_pointerPosition >= _length)
 				return;
 
-			unsafe
-			{
-				UInt32* pointer = (UInt32*)_pointerOffset;
-				*pointer = value;
+			UInt32* pointer = (UInt32*)_dataPointer;
+			*pointer = value;
 
-				Position += 4;
-			}
+			Position += 4;
 		}
 
 		/// <summary>
@@ -753,13 +743,10 @@ namespace GorgonLibrary.IO
 			if (_pointerPosition >= _length)
 				return;
 
-			unsafe
-			{
-				Int16* pointer = (Int16*)_pointerOffset;
-				*pointer = value;
+			Int16* pointer = (Int16*)_dataPointer;
+			*pointer = value;
 
-				Position += 2;
-			}
+			Position += 2;
 		}
 
 		/// <summary>
@@ -784,13 +771,10 @@ namespace GorgonLibrary.IO
 			if (_pointerPosition >= _length)
 				return;
 
-			unsafe
-			{
-				Int64* pointer = (Int64*)_pointerOffset;
-				*pointer = value;
+			Int64* pointer = (Int64*)_dataPointer;
+			*pointer = value;
 
-				Position += 8;
-			}
+			Position += 8;
 		}
 
 		/// <summary>
@@ -815,13 +799,10 @@ namespace GorgonLibrary.IO
 			if (_pointerPosition >= _length)
 				return;
 
-			unsafe
-			{
-				Int32* pointer = (Int32*)_pointerOffset;
-				*pointer = value;
+			Int32* pointer = (Int32*)_dataPointer;
+			*pointer = value;
 
-				Position += 4;
-			}
+			Position += 4;
 		}
 
         /// <summary>
@@ -872,13 +853,10 @@ namespace GorgonLibrary.IO
 			if (_pointerPosition >= _length)
 				return;
 
-			unsafe
-			{
-				byte* pointer = (byte*)_pointerOffset;
-				*pointer = value;
+			byte* pointer = (byte*)_dataPointer;
+			*pointer = value;
 
-				Position++;
-			}			
+			Position++;
 		}
 
 		/// <summary>
@@ -902,13 +880,10 @@ namespace GorgonLibrary.IO
 			if (_pointerPosition >= Length)
 				return -1;
 
-			unsafe
-			{
-				float* pointer = (float*)_pointerOffset;
-				Position +=4;
+			float* pointer = (float*)_dataPointer;
+			Position +=4;
 
-				return *pointer;
-			}
+			return *pointer;
 		}
 
 		/// <summary>
@@ -932,13 +907,10 @@ namespace GorgonLibrary.IO
 			if (_pointerPosition >= Length)
 				return -1;
 
-			unsafe
-			{
-				double* pointer = (double*)_pointerOffset;
-				Position += sizeof(double);
+			double* pointer = (double*)_dataPointer;
+			Position += sizeof(double);
 
-				return *pointer;
-			}
+			return *pointer;
 		}
 
 		/// <summary>
@@ -962,13 +934,10 @@ namespace GorgonLibrary.IO
 			if (_pointerPosition >= Length)
 				return 0;
 
-			unsafe
-			{
-				UInt16* pointer = (UInt16*)_pointerOffset;
-				Position+=2;
+			UInt16* pointer = (UInt16*)_dataPointer;
+			Position+=2;
 
-				return *pointer;
-			}
+			return *pointer;
 		}
 
 		/// <summary>
@@ -992,13 +961,10 @@ namespace GorgonLibrary.IO
 			if (_pointerPosition >= Length)
 				return 0;
 
-			unsafe
-			{
-				UInt32* pointer = (UInt32*)_pointerOffset;
-				Position+=4;
+			UInt32* pointer = (UInt32*)_dataPointer;
+			Position+=4;
 
-				return *pointer;
-			}
+			return *pointer;
 		}
 
 		/// <summary>
@@ -1022,13 +988,10 @@ namespace GorgonLibrary.IO
 			if (_pointerPosition >= Length)
 				return 0;
 
-			unsafe
-			{
-				UInt64* pointer = (UInt64*)_pointerOffset;
-				Position+=8;
+			UInt64* pointer = (UInt64*)_dataPointer;
+			Position+=8;
 
-				return *pointer;
-			}
+			return *pointer;
 		}
 
 		/// <summary>
@@ -1052,13 +1015,10 @@ namespace GorgonLibrary.IO
 			if (_pointerPosition >= Length)
 				return -1;
 
-			unsafe
-			{
-				Int16* pointer = (Int16*)_pointerOffset;
-				Position+=2;
+			Int16* pointer = (Int16*)_dataPointer;
+			Position+=2;
 
-				return *pointer;
-			}
+			return *pointer;
 		}
 
 		/// <summary>
@@ -1082,13 +1042,10 @@ namespace GorgonLibrary.IO
 			if (_pointerPosition >= Length)
 				return -1;
 
-			unsafe
-			{
-				Int32* pointer = (Int32*)_pointerOffset;
-				Position+=4;
+			Int32* pointer = (Int32*)_dataPointer;
+			Position+=4;
 
-				return *pointer;
-			}
+			return *pointer;
 		}
 
 		/// <summary>
@@ -1112,13 +1069,10 @@ namespace GorgonLibrary.IO
 			if (_pointerPosition >= Length)
 				return -1;
 
-			unsafe
-			{
-				Int64* pointer = (Int64*)_pointerOffset;
-				Position+=8;
+			Int64* pointer = (Int64*)_dataPointer;
+			Position+=8;
 
-				return *pointer;
-			}
+			return *pointer;
 		}
 
 		/// <summary>
@@ -1143,13 +1097,10 @@ namespace GorgonLibrary.IO
 			if (_pointerPosition >= Length)
 				return -1;
 
-			unsafe
-			{
-				byte* pointer = (byte*)_pointerOffset;
-				Position++;
+			byte* pointer = (byte*)_dataPointer;
+			Position++;
 
-				return (int)(*pointer);
-			}
+			return (int)(*pointer);
 		}
 
 		/// <summary>
@@ -1201,7 +1152,7 @@ namespace GorgonLibrary.IO
 			if ((actualCount + _pointerPosition) > _length)
 				actualCount = (_length - _pointerPosition);
 
-			_pointerOffset.CopyFrom<T>(buffer, offset, actualCount);
+            DirectAccess.WriteArray<T>(_dataPointer, buffer, offset, actualCount);
 			
 			Position += actualCount;
 		}
@@ -1268,8 +1219,7 @@ namespace GorgonLibrary.IO
 			if (typeSize + Position > _length)
 				throw new AccessViolationException("Cannot write beyond the end of the stream.");
 #endif
-
-			_pointerOffset.Write<T>(ref item);
+            DirectAccess.WriteValue<T>(_dataPointer, ref item);
 			Position += typeSize;
 		}
 
@@ -1324,7 +1274,7 @@ namespace GorgonLibrary.IO
 			if ((actualCount + _pointerPosition) > _length)
 				actualCount = (_length - _pointerPosition);
 
-			_pointerOffset.CopyTo<T>(buffer, offset, actualCount);
+            DirectAccess.ReadArray<T>(_dataPointer, buffer, offset, actualCount);
 
 			Position += actualCount;
 
@@ -1374,21 +1324,21 @@ namespace GorgonLibrary.IO
 #endif
 
 			T result = default(T);
-			_pointerOffset.Read<T>(out result);
+            DirectAccess.ReadValue<T>(_dataPointer, out result);
 			Position += typeSize;
 
 			return result;
 		}
 
 		/// <summary>
-		/// Function to write data from the stream into a pointer.
+		/// Function to copy data from the stream into a pointer.
 		/// </summary>
-		/// <param name="pointer">Pointer to read from.</param>
-		/// <param name="size">Size, in bytes, to read.</param>
+		/// <param name="pointer">Pointer to the data to write into.</param>
+		/// <param name="size">Size, in bytes, to read from the stream.</param>
 		/// <exception cref="System.AccessViolationException">Thrown when trying to read beyond the end of the stream.</exception>
 		/// <exception cref="T:System.NotSupportedException">The stream does not support reading. </exception>
 		/// <exception cref="T:System.ObjectDisposedException">Methods were called after the stream was closed. </exception>
-		public void Read(IntPtr pointer, int size)
+		public void CopyToPointer(IntPtr pointer, int size)
 		{
 #if DEBUG
 			if (!CanRead)
@@ -1400,10 +1350,33 @@ namespace GorgonLibrary.IO
 			if (size + Position > _length)
 				throw new AccessViolationException("Cannot read beyond the end of the stream.");
 #endif
-
-			_pointerOffset.CopyTo(pointer, size);
+            _pointerOffset.CopyTo(pointer, size);
 			Position += size;
 		}
+
+        /// <summary>
+        /// Function to copy data from the stream into a pointer.
+        /// </summary>
+        /// <param name="pointer">Pointer to the data to write into.</param>
+        /// <param name="size">Size, in bytes, to read from the stream.</param>
+        /// <exception cref="System.AccessViolationException">Thrown when trying to read beyond the end of the stream.</exception>
+        /// <exception cref="T:System.NotSupportedException">The stream does not support reading. </exception>
+        /// <exception cref="T:System.ObjectDisposedException">Methods were called after the stream was closed. </exception>
+        public void CopyToPointer(void* pointer, int size)
+        {
+#if DEBUG
+            if (!CanRead)
+                throw new NotSupportedException("Buffer is write only.");
+
+            if (_data == IntPtr.Zero)
+                throw new ObjectDisposedException("GorgonDataStream");
+
+            if (size + Position > _length)
+                throw new AccessViolationException("Cannot read beyond the end of the stream.");
+#endif
+            DirectAccess.MemoryCopy(_dataPointer, pointer, size);
+            Position += size;
+        }
 
 		/// <summary>
 		/// Function to write a string to the stream.
@@ -1475,14 +1448,14 @@ namespace GorgonLibrary.IO
 		}
 
 		/// <summary>
-		/// Function to read the data from a pointer into the stream.		
+		/// Function to copy the data from a pointer into the stream.		
 		/// </summary>
-		/// <param name="pointer">Pointer to write into.</param>
-		/// <param name="size">Size, in bytes, to write.</param>
+		/// <param name="pointer">Pointer to the data to read.</param>
+		/// <param name="size">Size, in bytes, to write to the stream.</param>
 		/// <exception cref="System.AccessViolationException">Thrown when trying to write beyond the end of the stream.</exception>
 		/// <exception cref="T:System.NotSupportedException">The stream does not support writing. </exception>
 		/// <exception cref="T:System.ObjectDisposedException">Methods were called after the stream was closed. </exception>
-		public void Write(IntPtr pointer, int size)
+		public void CopyFromPointer(IntPtr pointer, int size)
 		{
 #if DEBUG
 			if (!CanWrite)
@@ -1498,6 +1471,30 @@ namespace GorgonLibrary.IO
 			_pointerOffset.CopyFrom(pointer, size);
 			Position += size;
 		}
+
+        /// <summary>
+        /// Function to copy the data from a pointer into the stream.		
+        /// </summary>
+        /// <param name="pointer">Pointer to the data to read.</param>
+        /// <param name="size">Size, in bytes, to write to the stream.</param>
+        /// <exception cref="System.AccessViolationException">Thrown when trying to write beyond the end of the stream.</exception>
+        /// <exception cref="T:System.NotSupportedException">The stream does not support writing. </exception>
+        /// <exception cref="T:System.ObjectDisposedException">Methods were called after the stream was closed. </exception>
+        public void CopyFromPointer(void *pointer, int size)
+        {
+#if DEBUG
+            if (!CanWrite)
+                throw new NotSupportedException("Buffer is read only.");
+
+            if (_data == IntPtr.Zero)
+                throw new ObjectDisposedException("GorgonDataStream");
+
+            if (size + Position > _length)
+                throw new AccessViolationException("Cannot write beyond the end of the stream.");
+#endif
+            DirectAccess.MemoryCopy(_dataPointer, pointer, size);
+            Position += size;
+        }
 
 		/// <summary>
 		/// Function to marshal a structure into the stream.
@@ -1598,6 +1595,7 @@ namespace GorgonLibrary.IO
 			_data = Marshal.UnsafeAddrOfPinnedArrayElement(data, index);
 			_length = count * Marshal.SizeOf(data.GetType().GetElementType());
 			_pointerOffset = _data;
+            _dataPointer = _pointerOffset.ToPointer();
 			StreamStatus = status;
 		}
 
@@ -1654,10 +1652,27 @@ namespace GorgonLibrary.IO
 			_ownsPointer = false;
 			_data = source;
 			_pointerOffset = source;
+            _dataPointer = _pointerOffset.ToPointer();
 			_pointerPosition = 0;
 			_length = size;
 			StreamStatus = StreamStatus.ReadWrite;
 		}
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GorgonDataStream"/> class.
+        /// </summary>
+        /// <param name="source">The source pointer.</param>
+        /// <param name="size">The size of the buffer (in bytes).</param>
+        public GorgonDataStream(void *source, int size)
+        {
+            _ownsPointer = false;
+            _dataPointer = source;
+            _data = new IntPtr(_dataPointer);
+            _pointerOffset = _data;
+            _pointerPosition = 0;
+            _length = size;
+            StreamStatus = StreamStatus.ReadWrite;
+        }
 
 		/// <summary>
 		/// Releases unmanaged resources and performs other cleanup operations before the
