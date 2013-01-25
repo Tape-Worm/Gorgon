@@ -93,13 +93,15 @@
 	.method public hidebysig static
 		int32 SizeOf<valuetype .ctor T> () cil managed
 	{
+		.maxstack 1
+		
 		IL_0000: sizeof !!T
 		IL_0006: ret
 	}
 	
 	// Function to write an array of value types to native memory.
 	.method public hidebysig static 
-		void Write<valuetype .ctor T> (
+		void WriteArray<valuetype .ctor T> (
 			native int destination,
 			!!T[] buffer,
 			int32 offset,
@@ -113,23 +115,22 @@
 			[0] !!T& pinned modopt([mscorlib]System.Runtime.CompilerServices.IsExplicitlyDereferenced) 
 		)
 
-		IL_0000: ldarg.1
-		IL_0001: ldarg.2
-		IL_0002: ldelema !!T
-		IL_0007: stloc.0
-		IL_0008: ldarga.s destination
-		IL_000a: call instance void* [mscorlib]System.IntPtr::ToPointer()
-		IL_000f: ldloc.0
-		IL_0010: ldarg.3
-		IL_0011: conv.i8
-		IL_0012: unaligned. 1
-		IL_0015: cpblk
-		IL_0017: ret
+		ldarg.1
+		ldarg.2
+		ldelema !!T
+		stloc.0
+		ldarga.s destination
+		call instance void* [mscorlib]System.IntPtr::ToPointer()
+		ldloc.0
+		ldarg.3
+		unaligned. 1
+		cpblk
+		ret
 	}
 
 	// Function to write an array of value types to native memory.
 	.method public hidebysig static 
-		void Write<valuetype .ctor T> (
+		void WriteArray<valuetype .ctor T> (
 			void *destination,
 			!!T[] buffer,
 			int32 offset,
@@ -150,7 +151,6 @@
 		ldarg.0
 		ldloc.0
 		ldarg.3
-		conv.i8
 		unaligned. 1
 		cpblk
 		ret
@@ -158,46 +158,45 @@
 
 	// Function to read an array of value types from native memory.
 	.method public hidebysig static 
-		void Read<valuetype .ctor T> (
+		void ReadArray<valuetype .ctor T> (
 			native int source,
 			!!T[] buffer,
-			int32 offset,
-			int32 size
+			int32 arrayIndex,
+			int32 sizeInBytes
 		) cil managed 
 	{
 		// Method begins at RVA 0x1024
 		// Code size 24 (0x18)
-		.maxstack 3
+		.maxstack 8
 		.locals (
 			[0] !!T& pinned modopt([mscorlib]System.Runtime.CompilerServices.IsExplicitlyDereferenced) 
 		)
 
-		IL_0000: ldarg.1
-		IL_0001: ldarg.2
-		IL_0002: ldelema !!T
-		IL_0007: stloc.0
-		IL_0008: ldloc.0
-		IL_0009: ldarga.s source
-		IL_000b: call instance void* [mscorlib]System.IntPtr::ToPointer()
-		IL_0010: ldarg.3
-		IL_0011: conv.i8
-		IL_0012: unaligned. 1
-		IL_0015: cpblk
-		IL_0017: ret
+		ldarg.1
+		ldarg.2
+		ldelema !!T
+		stloc.0
+		ldloc.0
+		ldarga.s source
+		call instance void* [mscorlib]System.IntPtr::ToPointer()
+		ldarg.3
+		unaligned. 1
+		cpblk
+		ret
 	}
 
 	// Function to read an array of value types from native memory.
 	.method public hidebysig static 
-		void Read<valuetype .ctor T> (
+		void ReadArray<valuetype .ctor T> (
 			void *source,
 			!!T[] buffer,
-			int32 offset,
-			int32 size
+			int32 arrayIndex,
+			int32 sizeInBytes
 		) cil managed 
 	{
 		// Method begins at RVA 0x1024
 		// Code size 24 (0x18)
-		.maxstack 3
+		.maxstack 8
 		.locals (
 			[0] !!T& pinned modopt([mscorlib]System.Runtime.CompilerServices.IsExplicitlyDereferenced) 
 		)
@@ -209,7 +208,6 @@
 		ldloc.0
 		ldarg.0
 		ldarg.3
-		conv.i8
 		unaligned. 1
 		cpblk
 		ret
@@ -217,7 +215,7 @@
 
 	// Function to read a value types to native memory.
 	.method public hidebysig static 
-		void Read<valuetype .ctor T> (
+		void ReadValue<valuetype .ctor T> (
 			native int source,
 			[out] !!T& retValue 
 		) cil managed 
@@ -235,12 +233,13 @@
 		ldarga.s source
 		call instance void* [mscorlib]System.IntPtr::ToPointer()
 		sizeof !!T
+		unaligned. 1
 		cpblk
 		ret
 	} 
 	// Function to read a value types to native memory.
 	.method public hidebysig static 
-		void Read<valuetype .ctor T> (
+		void ReadValue<valuetype .ctor T> (
 			void *source,
 			[out] !!T& retValue 
 		) cil managed 
@@ -257,13 +256,14 @@
 		ldloc.0
 		ldarg.0
 		sizeof !!T
+		unaligned. 1
 		cpblk
 		ret
 	} 
 
 	// Function to write a value type to native memory.
 	.method public hidebysig static 
-		void Write<valuetype .ctor T> (
+		void WriteValue<valuetype .ctor T> (
 			native int destination,
 			!!T& 'value'
 		) cil managed 
@@ -281,12 +281,13 @@
 		call instance void* [mscorlib]System.IntPtr::ToPointer()
 		ldloc.0
 		sizeof !!T
+		unaligned. 1
 		cpblk
 		ret
 	} 
 	// Function to write a value type to native memory.
 	.method public hidebysig static 
-		void Write<valuetype .ctor T> (
+		void WriteValue<valuetype .ctor T> (
 			void *destination,
 			!!T& 'value'
 		) cil managed 
@@ -301,12 +302,13 @@
 		ldarg.0
 		ldloc.0
 		sizeof !!T
+		unaligned. 1
 		cpblk
 		ret
 	} 
 	// Function to copy data from one area of native memory to another.
 	.method public hidebysig static
-		void Write
+		void MemoryCopy
 		(
 			native int destination,
 			native int source,
@@ -315,18 +317,19 @@
 	{
 		.maxstack 3
 		
-		IL_0000: ldarga.s destination
-		IL_0002: call instance void* [mscorlib]System.IntPtr::ToPointer()
-		IL_0007: ldarga.s source
-		IL_0009: call instance void* [mscorlib]System.IntPtr::ToPointer()
-		IL_000e: ldarg.2
-		IL_000f: cpblk
-		IL_0011: ret
+		ldarga.s destination
+		call instance void* [mscorlib]System.IntPtr::ToPointer()
+		ldarga.s source
+		call instance void* [mscorlib]System.IntPtr::ToPointer()
+		ldarg.2
+		unaligned. 1
+		cpblk		
+		ret
 	}
 
 	// Function to copy data from one area of native memory to another.
 	.method public hidebysig static
-		void Write
+		void MemoryCopy
 		(
 			void *destination,
 			void *source,
@@ -338,6 +341,7 @@
 		ldarg.0
 		ldarg.1
 		ldarg.2
+		unaligned. 1
 		cpblk
 		ret
 	}	
@@ -355,6 +359,7 @@
 		call instance void* [mscorlib]System.IntPtr::ToPointer()
 		ldc.i4.0
 		ldarg.1
+		unaligned. 1
 		initblk
 		ret
 	}	
@@ -371,6 +376,7 @@
 		ldarg.0
 		ldc.i4.0
 		ldarg.1
+		unaligned. 1
 		initblk
 		ret
 	}	
@@ -389,6 +395,7 @@
 		call instance void* [mscorlib]System.IntPtr::ToPointer()
 		ldarg.1
 		ldarg.2
+		unaligned. 1
 		initblk
 		ret
 	}	
@@ -406,44 +413,10 @@
 		ldarg.0
 		ldarg.1
 		ldarg.2
+		unaligned. 1
 		initblk
 		ret
 	}	
-	// Function to retrieve a pointer to a generic object
-	.method public hidebysig static 
-		void *GetPtr<valuetype .ctor T> (
-			!!T& 'value'
-		) cil managed 
-	{
-		.maxstack 8
-		.locals init (
-			[0] !!T& pinned 
-		)
-			
-		ldarg.0
-		stloc.0
-		ldloc.0
-		ret
-	} 
-	// Function to retrieve a pointer to a generic typed array.
-	.method public hidebysig static 
-		void *GetPtr<valuetype .ctor T> (
-			!!T[] 'value'
-		) cil managed 
-	{
-		.maxstack 8
-		.locals init (
-			[0] !!T& pinned 
-		)
-		
-		ldarg.0	
-		ldc.i4.0
-		ldelema !!T
-		stloc.0
-		ldloc.0
-		ret
-	} 	
-
 
   .method private hidebysig specialname rtspecialname static 
           void  .cctor() cil managed
