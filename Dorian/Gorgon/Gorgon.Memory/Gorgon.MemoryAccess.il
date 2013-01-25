@@ -23,6 +23,13 @@
 // Created: Sunday, September 19, 2011 1:10:19 PM
 // 
 
+// This assembly contains unsafe methods for manipulating native memory.
+// This assembly is meant for INTERNAL use by Gorgon only.  Use at your
+// own risk.
+//
+// NO SUPPORT WILL BE GIVEN FOR THE USAGE OF THIS ASSEMBLY.
+//
+
 
 // Metadata version: v4.0.30319
 .assembly extern mscorlib
@@ -52,11 +59,11 @@
                                                                                                   2D 34 63 38 66 2D 62 64 34 30 2D 39 38 31 61 34   // -4c8f-bd40-981a4
                                                                                                   35 38 37 34 61 31 35 00 00 )                      // 5874a15..
   .custom instance void [mscorlib]System.Reflection.AssemblyFileVersionAttribute::.ctor(string) = ( 01 00 07 31 2E 30 2E 30 2E 30 00 00 )             // ...1.0.0.0..
-  .custom instance void [mscorlib]System.Runtime.Versioning.TargetFrameworkAttribute::.ctor(string) = ( 01 00 1A 2E 4E 45 54 46 72 61 6D 65 77 6F 72 6B   // ....NETFramework
-                                                                                                        2C 56 65 72 73 69 6F 6E 3D 76 34 2E 30 01 00 54   // ,Version=v4.0..T
-                                                                                                        0E 14 46 72 61 6D 65 77 6F 72 6B 44 69 73 70 6C   // ..FrameworkDispl
-                                                                                                        61 79 4E 61 6D 65 10 2E 4E 45 54 20 46 72 61 6D   // ayName..NET Fram
-                                                                                                        65 77 6F 72 6B 20 34 )                            // ework 4
+  .custom instance void [mscorlib]System.Runtime.Versioning.TargetFrameworkAttribute::.ctor(string) = ( 01 00 1a 2e 4e 45 54 46 72 61 6d 65 77 6f 72 6b
+													2c 56 65 72 73 69 6f 6e 3d 76 34 2e 35 01 00 54
+													0e 14 46 72 61 6d 65 77 6f 72 6b 44 69 73 70 6c
+													61 79 4e 61 6d 65 12 2e 4e 45 54 20 46 72 61 6d
+													65 77 6f 72 6b 20 34 2e 35 )
 
   // --- The following custom attribute is added automatically, do not uncomment -------
   //  .custom instance void [mscorlib]System.Diagnostics.DebuggableAttribute::.ctor(valuetype [mscorlib]System.Diagnostics.DebuggableAttribute/DebuggingModes) = ( 01 00 02 00 00 00 00 00 ) 
@@ -82,15 +89,6 @@
 .class public auto ansi GorgonLibrary.Native.DirectAccess
        extends [mscorlib]System.Object
 {
-	// Native method to copy data from one pointer to another.  Used to optimize memory transfer under x86.
-	.method private hidebysig static pinvokeimpl("msvcrt.dll" as "memcpy" cdecl) 
-		void*  CopyMemory(void* dest,
-				  void* src,
-				  int64 count) cil managed preservesig
-	{
-	  .custom instance void [mscorlib]System.Security.SuppressUnmanagedCodeSecurityAttribute::.ctor() = ( 01 00 00 00 ) 
-	}
-
 	// Function to return the size of a type (value types only) in bytes.
 	.method public hidebysig static
 		int32 SizeOf<valuetype .ctor T> () cil managed
@@ -158,36 +156,6 @@
 		ret
 	}
 
-	// Function to write an array of value types to native memory.  Optimized for x86.
-	.method public hidebysig static 
-		void Writex86<valuetype .ctor T> (
-			native int destination,
-			!!T[] buffer,
-			int32 offset,
-			int32 size
-		) cil managed 
-	{
-		// Method begins at RVA 0x1000
-		// Code size 24 (0x18)
-		.maxstack 3
-		.locals (
-			[0] !!T& pinned modopt([mscorlib]System.Runtime.CompilerServices.IsExplicitlyDereferenced) 
-		)
-
-		ldarg.1
-		ldarg.2
-		ldelema !!T
-		stloc.0
-		ldarga.s destination
-		call instance void* [mscorlib]System.IntPtr::ToPointer()
-		ldloc.0
-		ldarg.3
-		conv.i8
-		call void * GorgonLibrary.Native.DirectAccess::CopyMemory(void *, void *, int64)
-		pop
-		ret
-	}
-
 	// Function to read an array of value types from native memory.
 	.method public hidebysig static 
 		void Read<valuetype .ctor T> (
@@ -247,41 +215,10 @@
 		ret
 	}
 
-	// Function to read an array of value types from native memory. Optimized for x86.
-	.method public hidebysig static 
-		void Readx86<valuetype .ctor T> (
-			native int source,
-			!!T[] buffer,
-			int32 offset,
-			int32 size
-		) cil managed 
-	{
-		// Method begins at RVA 0x1024
-		// Code size 24 (0x18)
-		.maxstack 3
-		.locals (
-			[0] !!T& pinned modopt([mscorlib]System.Runtime.CompilerServices.IsExplicitlyDereferenced) 
-		)
-
-		ldarg.1
-		ldarg.2
-		ldelema !!T
-		stloc.0
-		 ldloc.0
-		ldarga.s source
-		call instance void* [mscorlib]System.IntPtr::ToPointer()
-		ldarg.3
-		conv.i8
-		call void* GorgonLibrary.Native.DirectAccess::CopyMemory(void *, void *, int64)
-		pop
-		ret
-	}
-
 	// Function to read a value types to native memory.
 	.method public hidebysig static 
 		void Read<valuetype .ctor T> (
 			native int source,
-			int32 size,
 			[out] !!T& retValue 
 		) cil managed 
 	{
@@ -292,12 +229,34 @@
 			[0] !!T& pinned 
 		)
 
-		ldarg.2
+		ldarg.1
 		stloc.0
 		ldloc.0
 		ldarga.s source
 		call instance void* [mscorlib]System.IntPtr::ToPointer()
+		sizeof !!T
+		cpblk
+		ret
+	} 
+	// Function to read a value types to native memory.
+	.method public hidebysig static 
+		void Read<valuetype .ctor T> (
+			void *source,
+			[out] !!T& retValue 
+		) cil managed 
+	{
+		// Method begins at RVA 0x1070
+		// Code size 26 (0x1a)
+		.maxstack 3
+		.locals (
+			[0] !!T& pinned 
+		)
+
 		ldarg.1
+		stloc.0
+		ldloc.0
+		ldarg.0
+		sizeof !!T
 		cpblk
 		ret
 	} 
@@ -306,7 +265,6 @@
 	.method public hidebysig static 
 		void Write<valuetype .ctor T> (
 			native int destination,
-			int32 size,
 			!!T& 'value'
 		) cil managed 
 	{
@@ -317,38 +275,35 @@
 			[0] !!T& pinned 
 		)
 		
-		ldarg.2
+		ldarg.1
 		stloc.0
 		ldarga.s destination
 		call instance void* [mscorlib]System.IntPtr::ToPointer()
 		ldloc.0
-		ldarg.1
+		sizeof !!T
 		cpblk
 		ret
 	} 
-
-	// Function to write a value type to native memory.  Optimized for x86.
-	.method public hidebysig static
-		void Writex86
-		(
-			native int destination,
-			native int source,
-			int32 size
-		) cil managed	
+	// Function to write a value type to native memory.
+	.method public hidebysig static 
+		void Write<valuetype .ctor T> (
+			void *destination,
+			!!T& 'value'
+		) cil managed 
 	{
-		.maxstack 3		
-			
- 		ldarga.s   destination
-  		call       instance void* [mscorlib]System.IntPtr::ToPointer()
-  		ldarga.s   source
-  		call       instance void* [mscorlib]System.IntPtr::ToPointer()
-  		ldarg.2
-  		conv.i8
-  		call       void* GorgonLibrary.Native.DirectAccess::CopyMemory(void*,void*,int64)
-  		pop	
-  		ret
-	}
-
+		.maxstack 3
+		.locals (
+			[0] !!T& pinned 
+		)
+		
+		ldarg.1
+		stloc.0
+		ldarg.0
+		ldloc.0
+		sizeof !!T
+		cpblk
+		ret
+	} 
 	// Function to copy data from one area of native memory to another.
 	.method public hidebysig static
 		void Write
@@ -368,7 +323,24 @@
 		IL_000f: cpblk
 		IL_0011: ret
 	}
-	
+
+	// Function to copy data from one area of native memory to another.
+	.method public hidebysig static
+		void Write
+		(
+			void *destination,
+			void *source,
+			int32 size
+		) cil managed	
+	{
+		.maxstack 3
+		
+		ldarg.0
+		ldarg.1
+		ldarg.2
+		cpblk
+		ret
+	}	
 	// Function to initialize memory with zeroes.
 	.method public hidebysig static
 		void ZeroMemory
@@ -388,6 +360,22 @@
 	}	
 	// Function to initialize memory with zeroes.
 	.method public hidebysig static
+		void ZeroMemory
+		(
+			void *destination,
+			int32 size
+		) cil managed	
+	{
+		.maxstack 3
+		
+		ldarg.0
+		ldc.i4.0
+		ldarg.1
+		initblk
+		ret
+	}	
+	// Function to initialize memory with a byte value.
+	.method public hidebysig static
 		void FillMemory
 		(
 			native int destination,
@@ -399,6 +387,23 @@
 		
 		ldarga.s destination
 		call instance void* [mscorlib]System.IntPtr::ToPointer()
+		ldarg.1
+		ldarg.2
+		initblk
+		ret
+	}	
+	// Function to initialize memory with a byte value.
+	.method public hidebysig static
+		void FillMemory
+		(
+			void *destination,
+			unsigned int8 fillValue,
+			int32 size
+		) cil managed	
+	{
+		.maxstack 3
+		
+		ldarg.0
 		ldarg.1
 		ldarg.2
 		initblk
