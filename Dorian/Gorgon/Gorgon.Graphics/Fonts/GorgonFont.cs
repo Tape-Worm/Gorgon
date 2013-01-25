@@ -821,13 +821,14 @@ namespace GorgonLibrary.Graphics
                     {
                         byte[] textureData = texture.Save(ImageFileFormat.PNG);
                         chunk.WriteString(texture.Name);
+						chunk.WriteInt32(textureData.Length);
                         chunk.Write(textureData, 0, textureData.Length);
                     }
                     else
                     {
                         FileStream fileStream = (FileStream)stream;
                         string path = Path.GetDirectoryName(fileStream.Name);
-                        string textureFileName = Name + "Texture_" + textureCounter.ToString("0000") + ".png";
+                        string textureFileName = Path.GetFileNameWithoutExtension(fileStream.Name) + "Texture_" + textureCounter.ToString("0000") + ".png";
 
                         textureFileName = textureFileName.FormatFileName().Replace(' ', '_');
 

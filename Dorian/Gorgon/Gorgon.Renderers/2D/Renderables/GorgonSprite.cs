@@ -523,9 +523,6 @@ namespace GorgonLibrary.Renderers
             {
                 if (!chunk.HasChunk(FileHeader))
                 {
-                    // Reset the stream to start again.
-                    stream.Position -= 8;
-
                     // Check to see if it's an older version of the Gorgon sprite data.
                     using (GorgonBinaryReader oldReader = new GorgonBinaryReader(stream, true))
                     {
@@ -536,7 +533,7 @@ namespace GorgonLibrary.Renderers
                 else
                 {
                     // Read in the file header.
-                    chunk.ReadUInt64();
+					chunk.Begin(FileHeader);
                 }
                 
                 chunk.Begin("SPRTDATA");

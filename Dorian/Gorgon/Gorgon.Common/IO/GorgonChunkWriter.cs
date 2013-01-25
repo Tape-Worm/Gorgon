@@ -411,7 +411,7 @@ namespace GorgonLibrary.IO
                     int blockSize = size > TempBufferSize ? TempBufferSize : size;
 
                     // Read our array into our temporary byte buffer.
-                    DirectAccess.Read<T>(tempBufferPointer, value, offset, blockSize);
+                    DirectAccess.ReadArray<T>(tempBufferPointer, value, offset, blockSize);
 
                     offset += blockSize;
                     size -= size;
@@ -468,7 +468,7 @@ namespace GorgonLibrary.IO
 			ValidateAccess(true);
 
 			int size = DirectAccess.SizeOf<T>();
-			byte *pointer = (byte *)DirectAccess.GetPtr<T>(ref value);
+			byte *pointer = (byte *)DirectAccess.PinPointer<T>(ref value);
 
 			switch (size)
 			{

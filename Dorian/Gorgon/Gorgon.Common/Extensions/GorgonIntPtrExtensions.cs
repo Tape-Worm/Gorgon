@@ -24,9 +24,6 @@
 // 
 #endregion
 
-//#define MEMCPY		// Use only memcpy.
-//#define CPBLK			// Use only copy block IL.
-
 using System;
 using System.Runtime.InteropServices;
 using GorgonLibrary.Diagnostics;
@@ -36,6 +33,9 @@ namespace GorgonLibrary.Native
 	/// <summary>
 	/// Extensions for manipulating memory via an Intptr.
 	/// </summary>
+	/// <remarks>Great care must be exercised when using these methods.  They allow access to native memory, so it's entirely possible 
+	/// to corrupt memory very easily with these methods.  Be sure that you are familiar with how pointers work and how unmanaged memory
+	/// works before using these methods.</remarks>
 	public static class GorgonIntPtrExtensions
 	{
 		/// <summary>
@@ -48,18 +48,7 @@ namespace GorgonLibrary.Native
 		/// <exception cref="System.ArgumentNullException">Thrown when the destination pointer is NULL (Nothing in VB.Net).</exception>
 		public unsafe static void CopyTo(this IntPtr source, IntPtr destination, int size)
 		{
-#if !MEMCPY && !CPBLK
-			if (GorgonComputerInfo.PlatformArchitecture == PlatformArchitecture.x64)
-				DirectAccess.Write(destination, source, size);
-			else
-				DirectAccess.Writex86(destination, source, size);
-#else
-#if MEMCPY
-			DirectAccess.Writex86(destination, source, size);
-#else
-			DirectAccess.Write(destination, source, size);
-#endif
-#endif
+			DirectAccess.MemoryCopy(destination, source, size);
 		}
 
 		/// <summary>
@@ -80,6 +69,7 @@ namespace GorgonLibrary.Native
 			if (source == IntPtr.Zero)
 				return;
 
+#if DEBUG
 			if (destination == null)
 				throw new ArgumentNullException("destination");
 
@@ -88,8 +78,8 @@ namespace GorgonLibrary.Native
 
 			if (destinationIndex + size > destination.Length)
 				throw new ArgumentOutOfRangeException("destinationIndex", "Index and size cannot be larger than the array.");
-
-			Marshal.Copy(source, destination, destinationIndex, size);
+#endif
+			DirectAccess.ReadArray<byte>(source, destination, destinationIndex, size);
 		}
 
 		/// <summary>
@@ -122,8 +112,10 @@ namespace GorgonLibrary.Native
 		/// </exception>
 		public static void CopyTo(this IntPtr source, byte[] destination)
 		{
+#if DEBUG
 			if (destination == null)
 				throw new ArgumentNullException("destination");
+#endif
 
 			CopyTo(source, destination, 0, destination.Length);
 		}
@@ -145,6 +137,7 @@ namespace GorgonLibrary.Native
 		public static void CopyTo<T>(this IntPtr source, T[] destination, int destinationIndex, int size)
 			where T : struct
 		{
+#if DEBUG
 			if (source == IntPtr.Zero)
 				return;
 
@@ -156,19 +149,9 @@ namespace GorgonLibrary.Native
 
 			if (destinationIndex + size > destination.Length * DirectAccess.SizeOf<T>())
 				throw new ArgumentOutOfRangeException("destinationIndex", "Index and size cannot be larger than the array.");
+#endif
 
-#if !MEMCPY && !CPBLK
-			if (GorgonComputerInfo.PlatformArchitecture == PlatformArchitecture.x64)
-				DirectAccess.Read<T>(source, destination, destinationIndex, size);
-			else
-				DirectAccess.Readx86<T>(source, destination, destinationIndex, size);
-#else
-#if MEMCPY
-			DirectAccess.Readx86<T>(source, destination, destinationIndex, size);
-#else
-			DirectAccess.Read<T>(source, destination, destinationIndex, size);
-#endif
-#endif
+			DirectAccess.ReadArray<T>(source, destination, destinationIndex, size);
 		}
 
 		/// <summary>
@@ -186,8 +169,10 @@ namespace GorgonLibrary.Native
 		public static void CopyTo<T>(this IntPtr source, T[] destination)
 			where T : struct
 		{
+#if DEBUG
 			if (destination == null)
 				throw new ArgumentNullException("destination");
+#endif
 
 			CopyTo<T>(source, destination, 0, destination.Length * DirectAccess.SizeOf<T>());
 		}
@@ -221,18 +206,7 @@ namespace GorgonLibrary.Native
 		/// <remarks>Since a pointer doesn't have a size associated with it, care must be taken to not overstep the bounds of the data pointed at by the pointer.</remarks>
 		public static void CopyFrom(this IntPtr destination, IntPtr source, int size)
 		{
-#if !MEMCPY && !CPBLK
-			if (GorgonComputerInfo.PlatformArchitecture == PlatformArchitecture.x64)
-				DirectAccess.Write(destination, source, size);
-			else
-				DirectAccess.Writex86(destination, source, size);
-#else
-#if MEMCPY
-			DirectAccess.Writex86(destination, source, size);
-#else
-			DirectAccess.Write(destination, source, size);
-#endif
-#endif
+			DirectAccess.MemoryCopy(destination, source, size);
 		}
 
 		/// <summary>
@@ -253,6 +227,7 @@ namespace GorgonLibrary.Native
 			if (destination == IntPtr.Zero)
 				return;
 
+#if DEBUG
 			if (source == null)
 				throw new ArgumentNullException("destination");
 
@@ -261,8 +236,9 @@ namespace GorgonLibrary.Native
 
 			if (sourceIndex + size > source.Length)
 				throw new ArgumentOutOfRangeException("sourceIndex", "Index and size cannot be larger than the array.");
+#endif
 
-			Marshal.Copy(source, sourceIndex, destination, size);
+			DirectAccess.WriteArray<byte>(destination, source, sourceIndex, size);
 		}
 
 		/// <summary>
@@ -295,8 +271,10 @@ namespace GorgonLibrary.Native
 		/// </exception>
 		public static void CopyFrom(this IntPtr destination, byte[] source)
 		{
+#if DEBUG
 			if (source == null)
 				throw new ArgumentNullException("source");
+#endif
 			
 			CopyFrom(destination, source, 0, source.Length);
 		}
@@ -320,6 +298,7 @@ namespace GorgonLibrary.Native
 		{
 			int typeSize = DirectAccess.SizeOf<T>();
 
+#if DEBUG
 			if (destination == IntPtr.Zero)
 				return;
 
@@ -331,19 +310,9 @@ namespace GorgonLibrary.Native
 
 			if (sourceIndex + size > source.Length * typeSize)
 				throw new ArgumentOutOfRangeException("sourceIndex", "Index and size cannot be larger than the array.");
+#endif
 
-#if !MEMCPY && !CPBLK
-			if (GorgonComputerInfo.PlatformArchitecture == PlatformArchitecture.x64)
-				DirectAccess.Write<T>(destination, source, sourceIndex, size);
-			else
-				DirectAccess.Writex86<T>(destination, source, sourceIndex, size);
-#else
-#if MEMCPY
-			DirectAccess.Writex86<T>(destination, source, sourceIndex, size);
-#else
-			DirectAccess.Write<T>(destination, source, sourceIndex, size);
-#endif
-#endif
+			DirectAccess.WriteArray<T>(destination, source, sourceIndex, size);
 		}
 
 		/// <summary>
@@ -380,8 +349,10 @@ namespace GorgonLibrary.Native
 		public static void CopyFrom<T>(this IntPtr destination, T[] source)
 			where T : struct
 		{
+#if DEBUG
 			if (source == null)
 				throw new ArgumentNullException("source");
+#endif
 
 			CopyFrom(destination, source, 0, source.Length * DirectAccess.SizeOf<T>());
 		}
@@ -468,7 +439,7 @@ namespace GorgonLibrary.Native
 		public static void Write<T>(this IntPtr destination, ref T value)
 			where T : struct
 		{
-			DirectAccess.Write<T>(destination, DirectAccess.SizeOf<T>(), ref value);
+			DirectAccess.WriteValue<T>(destination, ref value);
 		}
 
 		/// <summary>
@@ -484,7 +455,7 @@ namespace GorgonLibrary.Native
 		public static void Read<T>(this IntPtr source, out T value)
 			where T : struct
 		{
-			DirectAccess.Read<T>(source, DirectAccess.SizeOf<T>(), out value);
+			DirectAccess.ReadValue<T>(source, out value);
 		}
 	}
 }

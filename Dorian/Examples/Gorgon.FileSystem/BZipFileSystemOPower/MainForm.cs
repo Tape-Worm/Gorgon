@@ -26,17 +26,15 @@
 
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
-using SlimMath;
-using GorgonLibrary;
 using GorgonLibrary.Diagnostics;
-using GorgonLibrary.UI;
+using GorgonLibrary.FileSystem;
 using GorgonLibrary.Graphics;
 using GorgonLibrary.Renderers;
-using GorgonLibrary.FileSystem;
+using GorgonLibrary.UI;
+using SlimMath;
 
 namespace GorgonLibrary.Examples
 {
@@ -202,6 +200,7 @@ namespace GorgonLibrary.Examples
                 FontHeightMode = FontHeightMode.Points,
                 TextureSize = new Size(512, 256)
             });
+			
 
             // Use the form font for this one.
             _helpFont = _graphics.Fonts.CreateFont("FormFont", new GorgonFontSettings()

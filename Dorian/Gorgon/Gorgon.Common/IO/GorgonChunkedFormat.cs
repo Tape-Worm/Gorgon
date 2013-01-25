@@ -225,7 +225,7 @@ namespace GorgonLibrary.IO
 				// Read the size of this chunk.
 				_chunkSize = Reader.ReadUInt32();
 								
-				_chunkStart = Writer.BaseStream.Position;
+				_chunkStart = Reader.BaseStream.Position;
 				_chunkEnd += _chunkSize + _chunkStart;
 			}
 		}
@@ -242,11 +242,11 @@ namespace GorgonLibrary.IO
 				return;
 			}
 
-			// Record the end of the chunk.
-			_chunkEnd = Writer.BaseStream.Position;
+			// Record the end of the chunk.			
 
 			if (ChunkAccessMode == ChunkAccessMode.Write)
 			{
+				_chunkEnd = Writer.BaseStream.Position;
 				_chunkSize = (uint)(_chunkEnd - _chunkStart);
 				Writer.BaseStream.Position = _chunkStart - sizeof(uint);
 				Writer.Write(_chunkSize);
@@ -254,6 +254,7 @@ namespace GorgonLibrary.IO
 			}
 			else
 			{
+				_chunkEnd = Reader.BaseStream.Position;
 				// If we end the read prematurely, then just skip to the next chunk.
 				long skipAmount = _chunkEnd - (_chunkStart + _chunkSize);
 
