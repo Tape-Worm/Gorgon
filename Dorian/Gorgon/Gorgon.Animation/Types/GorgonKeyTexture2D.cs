@@ -179,37 +179,30 @@ namespace GorgonLibrary.Animation
 			return new GorgonKeyTexture2D(Time, Value, TextureRegion);
 		}
 
-		/// <summary>
-		/// Function to retrieve key frame data from a binary data reader.
-		/// </summary>
-		/// <param name="reader">Reader used to read the stream.</param>
-		void IKeyFrame.FromStream(IO.GorgonBinaryReader reader)
+		void IKeyFrame.FromChunk(IO.GorgonChunkReader chunk)
 		{
 			bool hasTexture = false;
 
 			Value = null;
-			TextureRegion = RectangleF.Empty;
-
-			Time = reader.ReadSingle();
-			hasTexture = reader.ReadBoolean();
+			Time = chunk.ReadFloat();
+			hasTexture = chunk.ReadBoolean();
 
 			// Get the texture region we're using.
-			TextureRegion = new RectangleF(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle());
+			TextureRegion = chunk.ReadRectangleF();
 
 			if (hasTexture)
 			{
 				// Get our texture name.
-				_textureName = reader.ReadString();
+				_textureName = chunk.ReadString();
 
 				// Read in our texture information.
 				_settings = new GorgonTexture2DSettings();
-				_settings.ArrayCount = reader.ReadInt32();
-				_settings.Format = (BufferFormat)reader.ReadInt32();
-				_settings.Height = reader.ReadInt32();
-				_settings.Width = reader.ReadInt32();
-				_settings.IsTextureCube = reader.ReadBoolean();
-				_settings.MipCount = reader.ReadInt32();
-				_settings.Multisampling = new GorgonMultisampling(reader.ReadInt32(), reader.ReadInt32());
+				_settings.ArrayCount = chunk.ReadInt32();
+				_settings.Format = chunk.Read<BufferFormat>();
+				_settings.Size = chunk.ReadSize();
+				_settings.IsTextureCube = chunk.ReadBoolean();
+				_settings.MipCount = chunk.ReadInt32();
+				_settings.Multisampling = new GorgonMultisampling(chunk.ReadInt32(), chunk.ReadInt32());
 				_settings.Usage = BufferUsage.Default;
 				_settings.ViewFormat = BufferFormat.Unknown;
 
@@ -219,28 +212,25 @@ namespace GorgonLibrary.Animation
 		}
 
 		/// <summary>
-		/// Function to send the key frame data to a binary data writer.
+		/// Function to send the key frame data to the data chunk.
 		/// </summary>
-		/// <param name="writer">Writer used to write to the stream.</param>
-		void IKeyFrame.ToStream(IO.GorgonBinaryWriter writer)
+		/// <param name="chunk">Chunk to write.</param>
+		void IKeyFrame.ToChunk(IO.GorgonChunkWriter chunk)
 		{
-			writer.Write(Time);
-			writer.Write(Value != null);
-			writer.Write(this.TextureRegion.X);
-			writer.Write(this.TextureRegion.Y);
-			writer.Write(this.TextureRegion.Width);
-			writer.Write(this.TextureRegion.Height);
+			chunk.WriteFloat(Time);
+			chunk.WriteBoolean(Value != null);
+			chunk.WriteRectangle(TextureRegion);
+
 			if (Value != null)
 			{
-				writer.Write(Value.Name);
-				writer.Write(Value.Settings.ArrayCount);
-				writer.Write((int)Value.Settings.Format);
-				writer.Write(Value.Settings.Height);
-				writer.Write(Value.Settings.Width);
-				writer.Write(Value.Settings.IsTextureCube);
-				writer.Write(Value.Settings.MipCount);
-				writer.Write(Value.Settings.Multisampling.Count);
-				writer.Write(Value.Settings.Multisampling.Quality);
+				chunk.WriteString(Value.Name);
+				chunk.WriteInt32(Value.Settings.ArrayCount);
+				chunk.Write<BufferFormat>(Value.Settings.Format);
+				chunk.WriteSize(Value.Settings.Size);
+				chunk.WriteBoolean(Value.Settings.IsTextureCube);
+				chunk.WriteInt32(Value.Settings.MipCount);
+				chunk.WriteInt32(Value.Settings.Multisampling.Count);
+				chunk.WriteInt32(Value.Settings.Multisampling.Quality);
 			}
 		}
 		#endregion

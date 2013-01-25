@@ -181,6 +181,12 @@ namespace Test_TextureArray
 			//anim.Speed = 0.5f;
 			//anim.Time = anim.Length;
 			anim.Tracks["Position"].InterpolationMode = TrackInterpolationMode.Linear;
+
+			anim.Save(@"D:\unpak\anim.gorAnim");
+						
+			_controller.Clear();
+
+			_controller.FromFile(@"D:\unpak\anim.gorAnim");
 			
 			_textController = new GorgonAnimationController<GorgonText>();
 			var tanim = _textController.Add("Rotation", 3000.0f);

@@ -48,8 +48,8 @@ This list is not in order.  Please don't get excited.
 * Consider dropping feature level 9 support, it's really painful and limits what we can do.
 * Maybe add higher level code for GUI, scenegraph, collisions, etc... once base library is working and relatively bug free
 * Way in the future... maybe write a 3D component for Gorgon.  A lot of work though, very lazy.
-* Fix up animation to use chunked format.
-* Fix up chunking code to be more efficient, currently it's ass.
+* Fix up animation to use chunked format (Done).
+* Fix up chunking code to be more efficient, currently it's ass (Done).
 
 ----
 Examples

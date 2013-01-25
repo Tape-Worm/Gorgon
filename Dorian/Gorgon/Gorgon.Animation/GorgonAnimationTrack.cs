@@ -392,34 +392,41 @@ namespace GorgonLibrary.Animation
 		protected abstract internal void ApplyKey(ref IKeyFrame key);
 
 		/// <summary>
-		/// Function to read the track data from a stream.
+		/// Function to read the track data from a data chunk.
 		/// </summary>
-		/// <param name="reader">Reader used to read in the data from the stream.</param>
-		internal void FromStream(GorgonLibrary.IO.GorgonBinaryReader reader)
+		/// <param name="chunk">Chunk to read.</param>
+		internal void FromChunk(GorgonLibrary.IO.GorgonChunkReader chunk)
 		{
-			InterpolationMode = (TrackInterpolationMode)reader.ReadInt32();
+			InterpolationMode = chunk.Read<TrackInterpolationMode>();
 
-			int keyCount = reader.ReadInt32();
-
-			for (int i = 0; i < keyCount; i++)
+			// Load all key frames from this track.
+			while (chunk.HasChunk("KEYFRAME"))
 			{
 				IKeyFrame key = MakeKey();
-				key.FromStream(reader);
+
+				chunk.Begin("KEYFRAME");
+				key.FromChunk(chunk);
+				chunk.End();
+
 				KeyFrames.Add(key);
 			}
 		}
 
 		/// <summary>
-		/// Function to write the track data to a stream.
+		/// Function to write the track data to a data chunk.
 		/// </summary>
-		/// <param name="writer">Writer used to write the data to the stream.</param>
-		internal void ToStream(GorgonLibrary.IO.GorgonBinaryWriter writer)
+		/// <param name="chunk">Chunk to write.</param>
+		internal void ToChunk(GorgonLibrary.IO.GorgonChunkWriter chunk)
 		{
-			writer.Write(Name);
-			writer.Write((int)InterpolationMode);
-			writer.Write(KeyFrames.Count);
+			chunk.WriteString(Name);
+			chunk.Write<TrackInterpolationMode>(InterpolationMode);
+
 			for (int i = 0; i < KeyFrames.Count; i++)
-				KeyFrames[i].ToStream(writer);
+			{
+				chunk.Begin("KEYFRAME");
+				KeyFrames[i].ToChunk(chunk);
+				chunk.End();
+			}
 		}
 
 		/// <summary>

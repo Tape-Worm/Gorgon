@@ -94,23 +94,23 @@ namespace GorgonLibrary.Animation
 		}
 
 		/// <summary>
-		/// Function to retrieve key frame data from a binary data reader.
+		/// Function to retrieve key frame data from data chunk.
 		/// </summary>
-		/// <param name="reader">Reader used to read the stream.</param>
-		void IKeyFrame.FromStream(IO.GorgonBinaryReader reader)
+		/// <param name="chunk">Chunk to read.</param>
+		void IKeyFrame.FromChunk(IO.GorgonChunkReader chunk)
 		{
-			this.Time = reader.ReadSingle();
-			Value = reader.ReadUInt32();
+			Time = chunk.ReadFloat();
+			Value = chunk.ReadUInt32();
 		}
 
 		/// <summary>
-		/// Function to send the key frame data to a binary data writer.
+		/// Function to send the key frame data to the data chunk.
 		/// </summary>
-		/// <param name="writer">Writer used to write to the stream.</param>
-		void IKeyFrame.ToStream(IO.GorgonBinaryWriter writer)
+		/// <param name="chunk">Chunk to write.</param>
+		void IKeyFrame.ToChunk(IO.GorgonChunkWriter chunk)
 		{
-			writer.Write(Time);
-			writer.Write(Value);
+			chunk.WriteFloat(Time);
+			chunk.WriteUInt32(Value);
 		}
 		#endregion
 	}

@@ -95,25 +95,23 @@ namespace GorgonLibrary.Animation
 		}
 
 		/// <summary>
-		/// Function to retrieve key frame data from a binary data reader.
+		/// Function to retrieve key frame data from data chunk.
 		/// </summary>
-		/// <param name="reader">Reader used to read the stream.</param>
-		void IKeyFrame.FromStream(IO.GorgonBinaryReader reader)
+		/// <param name="chunk">Chunk to read.</param>
+		void IKeyFrame.FromChunk(IO.GorgonChunkReader chunk)
 		{
-			GorgonColor color = default(GorgonColor);
-
-			this.Time = reader.ReadSingle();
-			color = new GorgonColor(reader.ReadInt32());
+			Time = chunk.ReadFloat();
+			Value = chunk.Read<GorgonColor>();
 		}
 
 		/// <summary>
-		/// Function to send the key frame data to a binary data writer.
+		/// Function to send the key frame data to the data chunk.
 		/// </summary>
-		/// <param name="writer">Writer used to write to the stream.</param>
-		void IKeyFrame.ToStream(IO.GorgonBinaryWriter writer)
+		/// <param name="chunk">Chunk to write.</param>
+		void IKeyFrame.ToChunk(IO.GorgonChunkWriter chunk)
 		{
-			writer.Write(Time);
-			writer.Write(Value.ToARGB());
+			chunk.WriteFloat(Time);
+			chunk.Write<GorgonColor>(Value);
 		}
 		#endregion
 	}
