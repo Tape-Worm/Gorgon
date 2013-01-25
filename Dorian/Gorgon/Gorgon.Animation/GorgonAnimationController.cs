@@ -57,7 +57,7 @@ namespace GorgonLibrary.Animation
 		/// <summary>
 		/// Version header for the animation.
 		/// </summary>
-		public const string AnimationVersion = "GORANM2.0";
+		public const string AnimationVersion = "GORANM10";
 		#endregion
 
 		#region Properties.
@@ -204,41 +204,41 @@ namespace GorgonLibrary.Animation
 			GorgonAnimation<T> animation = null;
 			GorgonDebug.AssertNull<Stream>(stream, "stream");
 
-			using (GorgonBinaryReader reader = new GorgonBinaryReader(stream, true))
+			using (GorgonChunkReader chunk = new GorgonChunkReader(stream))
 			{
-				byte[] headerData = reader.ReadBytes(Encoding.UTF8.GetByteCount(AnimationVersion));
+				// Get the header.
+				chunk.Begin(AnimationVersion);
 
-				if (string.Compare(Encoding.UTF8.GetString(headerData), AnimationVersion, true) != 0)
-					throw new ArgumentException("This stream does not contain a Gorgon animation file.", "stream");
-
-				// Get the type of data.
-				string typeString = reader.ReadString();
+				chunk.Begin("ANIMDATA");				
+				// Get the type data.
+				string typeString = chunk.ReadString();
 
 				if (typeString != AnimatedObjectType.FullName)
 					throw new InvalidCastException("This animation is for type '" + typeString + "' and is not compatible with a controller bound to type '" + AnimatedObjectType.FullName + "'.");
 
 				// Get the name.
-				string animationName = reader.ReadString();
+				string animationName = chunk.ReadString();
 				if (Contains(animationName))
 					throw new ArgumentException("The animation '" + animationName + "' already exists in this collection.", "stream");
+								
+				animation = new GorgonAnimation<T>(this, animationName, chunk.ReadFloat());
+				animation.IsLooped = chunk.ReadBoolean();
 
-				// Get the length of the animation.
-				float length = reader.ReadSingle();
+				chunk.End();
 
-				animation = new GorgonAnimation<T>(this, animationName, length);
-				animation.IsLooped = reader.ReadBoolean();
-
-				int trackCount = reader.ReadInt32();
-				
-				// Get the tracks.
-				for (int i = 0; i < trackCount; i++)
+				// Get all the tracks.
+				while (chunk.HasChunk("TRCKDATA"))
 				{
-					string trackName = reader.ReadString();				// Get the track name.
+					chunk.Begin("TRCKDATA");
+
+					string trackName = chunk.ReadString();			// Get the name of the track.
 
 					if (!animation.Tracks.Contains(trackName))
 						throw new ArgumentException("There is no track named '" + trackName + "' that matches a property on the type '" + AnimatedObjectType.FullName + "'.", "stream");
 
-					animation.Tracks[trackName].FromStream(reader);
+					animation.Tracks[trackName].FromChunk(chunk);
+
+					chunk.End();
 				}
 			}
 

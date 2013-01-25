@@ -26,6 +26,7 @@
 
 using System.IO;
 using System.Text;
+using System.Linq;
 using GorgonLibrary.Diagnostics;
 using GorgonLibrary.IO;
 
@@ -210,23 +211,33 @@ namespace GorgonLibrary.Animation
 		{
 			GorgonDebug.AssertNull<Stream>(stream, "stream");
 
-			byte[] header = Encoding.UTF8.GetBytes(GorgonAnimationController<T>.AnimationVersion);
-
-			using (GorgonBinaryWriter writer = new GorgonBinaryWriter(stream, true))
+			using (GorgonChunkWriter chunk = new GorgonChunkWriter(stream))
 			{
-				writer.Write(header);		// Write the header.
+				chunk.Begin(GorgonAnimationController<T>.AnimationVersion);
 
-				writer.Write(AnimationController.AnimatedObjectType.FullName);		// Write object type.
+				// Write out animation header data.
+				chunk.Begin("ANIMDATA");
+				chunk.WriteString(AnimationController.AnimatedObjectType.FullName);
+				chunk.WriteString(Name);
+				chunk.WriteFloat(Length);
+				chunk.WriteBoolean(IsLooped);
+				chunk.End();
 
-				// Write out meta data.
-				writer.Write(Name);
-				writer.Write(Length);
-				writer.Write(IsLooped);
+				// Put out the tracks with the most keys first.
+				var activeTracks = from GorgonAnimationTrack<T> track in Tracks
+								   where track.KeyFrames.Count > 0
+								   orderby track.KeyFrames.Count
+								   select track;
 
-				writer.Write(Tracks.Count);
-
-				foreach (var track in Tracks)
-					track.ToStream(writer);
+				foreach (var track in activeTracks)
+				{
+					if (track.KeyFrames.Count > 0)
+					{
+						chunk.Begin("TRCKDATA");
+						track.ToChunk(chunk);
+						chunk.End();
+					}
+				}
 			}
 		}
 

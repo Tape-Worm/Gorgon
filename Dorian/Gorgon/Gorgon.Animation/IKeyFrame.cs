@@ -54,16 +54,16 @@ namespace GorgonLibrary.Animation
 
 		#region Methods.
 		/// <summary>
-		/// Function to retrieve key frame data from a binary data reader.
+		/// Function to retrieve key frame data from data chunk.
 		/// </summary>
-		/// <param name="reader">Reader used to read the stream.</param>
-		void FromStream(GorgonLibrary.IO.GorgonBinaryReader reader);
+		/// <param name="chunk">Chunk to read.</param>
+		void FromChunk(GorgonLibrary.IO.GorgonChunkReader chunk);
 
 		/// <summary>
-		/// Function to send the key frame data to a binary data writer.
+		/// Function to send the key frame data to the data chunk.
 		/// </summary>
-		/// <param name="writer">Writer used to write to the stream.</param>
-		void ToStream(GorgonLibrary.IO.GorgonBinaryWriter writer);
+		/// <param name="chunk">Chunk to write.</param>
+		void ToChunk(GorgonLibrary.IO.GorgonChunkWriter chunk);
 		#endregion
 	}
 }
