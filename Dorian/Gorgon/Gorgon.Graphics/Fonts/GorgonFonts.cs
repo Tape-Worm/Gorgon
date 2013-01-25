@@ -122,7 +122,7 @@ namespace GorgonLibrary.Graphics
 		/// <returns>The font loaded from the stream.</returns>
 		private GorgonFont LoadFont(string fontName, Stream stream)
 		{
-			GorgonFontSettings settings = null;
+			GorgonFontSettings settings = new GorgonFontSettings();
 			GorgonFont font = null;
 			FileStream fileStream = null;
             float fontHeight = 0.0f;
@@ -177,6 +177,12 @@ namespace GorgonLibrary.Graphics
                 {
                     isExternal = true;
                     chunk.Begin("TXTREXTL");
+
+					fileStream = stream as FileStream;
+					if (fileStream == null)
+					{
+						throw new ArgumentException("Cannot load external textures for the font because the stream is not a file stream.", "stream");
+					}
                 }
                 else
                 {
@@ -217,7 +223,6 @@ namespace GorgonLibrary.Graphics
                     {
                         // Get the path to the texture (must be local to the font file).
                         string texturePath = Path.GetDirectoryName(fileStream.Name).FormatDirectory(Path.DirectorySeparatorChar) + chunk.ReadString();
-                        texture = GetFontTexture(textureName);
 
                         // If the texture exists, then don't bother loading it.
                         // Otherwise load it in.

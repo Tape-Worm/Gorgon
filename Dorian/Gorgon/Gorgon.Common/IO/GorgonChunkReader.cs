@@ -318,7 +318,7 @@ namespace GorgonLibrary.IO
         public unsafe void ReadRange<T>(T[] value, int startIndex, int count)
             where T : struct
         {
-            ValidateAccess(true);
+            ValidateAccess(false);
 
             if (value == null)
             {
@@ -349,7 +349,7 @@ namespace GorgonLibrary.IO
             int size = typeSize * count;
             int offset = startIndex * typeSize;
 
-            if (TempBuffer != null)
+            if (TempBuffer == null)
             {
                 TempBuffer = new byte[TempBufferSize];
             }
@@ -364,7 +364,7 @@ namespace GorgonLibrary.IO
                     Read(TempBuffer, 0, blockSize);
                     
                     // Copy into our array.
-                    DirectAccess.Read<T>(tempBufferPointer, value, offset, blockSize);
+                    DirectAccess.ReadArray<T>(tempBufferPointer, value, offset, blockSize);
 
                     offset += blockSize;
                     size -= blockSize;                    
@@ -432,7 +432,7 @@ namespace GorgonLibrary.IO
 		{
 			T returnVal = default(T);
 			int size = DirectAccess.SizeOf<T>();
-			byte* pointer = (byte*)DirectAccess.GetPtr<T>(ref returnVal);
+			byte* pointer = (byte*)DirectAccess.PinPointer<T>(ref returnVal);
 
 			switch (size)
 			{

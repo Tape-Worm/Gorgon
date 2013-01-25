@@ -103,7 +103,7 @@ namespace GorgonLibrary.IO
             // Build the 7 bit encoded length.
             while (size >= 0x80)
             {
-                stream.WriteByte((byte)((size | 80) & 0xFF));
+                stream.WriteByte((byte)((size | 0x80) & 0xFF));
                 size >>= 7;
                 result++;
             }
@@ -181,8 +181,10 @@ namespace GorgonLibrary.IO
                 throw new ArgumentNullException("stream");
             }
 
-            if (encoding == null)
-                encoding = Encoding.Default;
+			if (encoding == null)
+			{
+				encoding = Encoding.UTF8;
+			}
 
             // String length is encoded in a 7 bit integer.
             // We have to get each byte and shift it until there are no more high bits set, or the counter becomes larger than 32 bits.
