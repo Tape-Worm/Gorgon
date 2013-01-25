@@ -247,7 +247,6 @@ namespace GorgonLibrary.Graphics.Example
 			_sphere.Draw();
 
 			// Draw the sphere shadow first.
-			// This will 
 			var spherePosition = _sphere.Position;
 			_graphics.Output.DepthStencilState.States = _noDepth;
 			_graphics.Shaders.PixelShader.Current = _pixelShaderDiffuse;
