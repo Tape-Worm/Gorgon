@@ -418,42 +418,6 @@
 		ret
 	}	
 
-	// Function to retrieve a pinned pointer to a generic object
-	.method public hidebysig static 
-		void *PinPointer<valuetype .ctor T> (
-			!!T& 'value'
-		) cil managed 
-	{
-		.maxstack 8
-		.locals init (
-			[0] !!T& pinned 
-		)
-			
-		ldarg.0
-		stloc.0
-		ldloc.0
-		ret
-	} 
-	// Function to retrieve a pinned pointer to a generic typed array.
-	.method public hidebysig static 
-		void *PinPointer<valuetype .ctor T> (
-			!!T[] 'value'
-		) cil managed 
-	{
-		.maxstack 8
-		.locals init (
-			[0] !!T& pinned 
-		)
-		
-		ldarg.0	
-		ldc.i4.0
-		ldelema !!T
-		stloc.0
-		ldloc.0
-		ret
-	} 	
-
-
   .method private hidebysig specialname rtspecialname static 
           void  .cctor() cil managed
   {
