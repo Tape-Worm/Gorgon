@@ -30,7 +30,9 @@ using System.Collections.Generic;
 using System.Windows.Forms;
 using System.Drawing;
 using System.Text;
+using System.IO;
 using SlimMath;
+using GorgonLibrary.IO;
 using GorgonLibrary.Diagnostics;
 using GorgonLibrary.Renderers;
 
@@ -60,6 +62,42 @@ namespace GorgonLibrary.Graphics.Example
 		private static StringBuilder _fpsText = null;														// Frames per second text.
 		private static StringBuilder _helpText = null;														// Help text.
 		private static bool _showHelp = true;																// Flag to indicate that the help text should be shown.
+
+		/// <summary>
+		/// Property to return the path to the resources for the example.
+		/// </summary>
+		/// <param name="resourceItem">The directory or file to use as a resource.</param>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="resourceItem"/> was NULL (Nothing in VB.Net) or empty.</exception>
+		public static string GetResourcePath(string resourceItem)
+		{
+			string path = Properties.Settings.Default.ResourceLocation;
+
+			if (string.IsNullOrEmpty(resourceItem))
+			{
+				throw new ArgumentException("The resource was not specified.", "resourceItem");
+			}
+
+			if (!path.EndsWith(Path.DirectorySeparatorChar.ToString()))
+			{
+				path += Path.DirectorySeparatorChar.ToString();
+			}
+
+			path = path.RemoveIllegalPathChars();
+
+			// If this is a directory, then sanitize it as such.
+			if (resourceItem.EndsWith(Path.DirectorySeparatorChar.ToString()))
+			{
+				path += resourceItem.RemoveIllegalPathChars();
+			}
+			else
+			{
+				// Otherwise, sanitize the file name.
+				path += resourceItem.RemoveIllegalFilenameChars();
+			}
+
+			// Ensure that 
+			return Path.GetFullPath(path);
+		}
 
 		/// <summary>
 		/// Function to generate the balls.
@@ -302,7 +340,7 @@ namespace GorgonLibrary.Graphics.Example
 				_form.Location = new Point(_mainScreen.VideoOutput.OutputBounds.Width / 2 - _form.Width / 2 + _mainScreen.VideoOutput.OutputBounds.Left, _mainScreen.VideoOutput.OutputBounds.Height / 2 - _form.Height / 2 + _mainScreen.VideoOutput.OutputBounds.Top);
 
 			// Load the ball texture.
-			_ballTexture = _graphics.Textures.FromFile<GorgonTexture2D>("BallTexture", @"..\..\..\..\Resources\Images\BallDemo.png");
+			_ballTexture = _graphics.Textures.FromFile<GorgonTexture2D>("BallTexture", GetResourcePath(@"Images\BallDemo.png"));
 
 			// Create the 2D interface.
 			_2D = _graphics.Output.Create2DRenderer(_mainScreen);
@@ -361,10 +399,9 @@ namespace GorgonLibrary.Graphics.Example
 				AntiAliasingMode = FontAntiAliasMode.AntiAliasHQ,
 				FontStyle = FontStyle.Bold,
 				FontFamilyName = "Arial",
-				FontHeightMode = FontHeightMode.Pixels,
-				Characters = " ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890()_.-+:\u2191\u2193",
-				TextureSize = new Size(256, 256),
-				Size = 12.0f
+				FontHeightMode = FontHeightMode.Points,
+				Characters = " ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890()_.-+:\u2191\u2193",				
+				Size = 9.0f
 			});
 
 			// Statistics text buffer.

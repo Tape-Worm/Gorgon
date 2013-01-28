@@ -391,6 +391,12 @@ namespace GorgonLibrary.Renderers
 			// Find out how many vertices we have.
 			_vertexCount = _text.Length * (_shadowEnabled ? 8 : 4);
 
+			// Don't do less than 512 vertices.
+			if (_vertexCount < 512)
+			{
+				_vertexCount = 512;
+			}
+
 			// Allocate the number of vertices if the vertex count is less than the required amount.
 			if (_vertexCount > _vertices.Length)
 			{

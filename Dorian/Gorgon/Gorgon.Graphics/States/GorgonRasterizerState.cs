@@ -72,7 +72,7 @@ namespace GorgonLibrary.Graphics
 	/// Immutable states for the rasterizer.
 	/// </summary>
 	public struct GorgonRasterizerStates
-		: IEquatable<GorgonRasterizerStates>
+		: IEquatableByRef<GorgonRasterizerStates>
 	{
 		#region Variables.
 		/// <summary>
@@ -251,6 +251,20 @@ namespace GorgonLibrary.Graphics
 			return GorgonRasterizerStates.Equals(ref this, ref other);
 		}
 		#endregion
+
+		#region IEquatableByRef<GorgonRasterizerStates> Members
+		/// <summary>
+		/// Indicates whether the current object is equal to another object of the same type.
+		/// </summary>
+		/// <param name="other">An object to compare with this object.</param>
+		/// <returns>
+		/// true if the current object is equal to the <paramref name="other"/> parameter; otherwise, false.
+		/// </returns>
+		public bool Equals(ref GorgonRasterizerStates other)
+		{
+			return GorgonRasterizerStates.Equals(ref this, ref other);
+		}
+		#endregion
 	}
 	#endregion
 
@@ -258,24 +272,25 @@ namespace GorgonLibrary.Graphics
 	/// Render states for the rasterizer.
 	/// </summary>
 	public class GorgonRasterizerRenderState
-		: GorgonStateObject<GorgonRasterizerStates>
+		: GorgonState<GorgonRasterizerStates>
 	{
 		#region Methods.
 		/// <summary>
-		/// Function to apply the state to the appropriate state object.
+		/// Function to apply the state to the current rendering context.
 		/// </summary>
-		/// <param name="state">The Direct3D state object to apply.</param>
-		protected override void ApplyState(IDisposable state)
+		/// <param name="stateObject">State to apply.</param>
+		internal override void ApplyState(D3D.DeviceChild stateObject)
 		{
-			Graphics.Context.Rasterizer.State = (D3D.RasterizerState)state;
+			Graphics.Context.Rasterizer.State = (D3D.RasterizerState)stateObject;
 		}
 
 		/// <summary>
-		/// Function to convert this state object into a rasterizer state.
+		/// Function to retrieve the D3D state object.
 		/// </summary>
-		/// <returns>The new rasterizer state.</returns>
-		protected override IDisposable Convert()
-		{			
+		/// <param name="stateType">The state type information.</param>
+		/// <returns>The D3D state object.</returns>
+		internal override D3D.DeviceChild GetStateObject(ref GorgonRasterizerStates stateType)
+		{
 			D3D.RasterizerStateDescription desc = new D3D.RasterizerStateDescription();
 
 			desc.CullMode = (D3D.CullMode)States.CullingMode;
@@ -380,7 +395,7 @@ namespace GorgonLibrary.Graphics
 		/// Initializes a new instance of the <see cref="GorgonRasterizerRenderState"/> class.
 		/// </summary>
 		internal GorgonRasterizerRenderState(GorgonGraphics graphics)
-			: base(graphics, 4096, 10000)
+			: base(graphics)
 		{
 			States = GorgonRasterizerStates.DefaultStates;
 		}

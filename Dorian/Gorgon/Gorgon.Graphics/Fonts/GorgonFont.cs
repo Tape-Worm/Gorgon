@@ -1333,18 +1333,21 @@ namespace GorgonLibrary.Graphics
 
 				Win32API.SetActiveFont(graphics, newFont);
 				charABC = Win32API.GetCharABCWidths(availableCharacters.First(), availableCharacters.Last());
-				kernPairs = Win32API.GetKerningPairs();
-
-				// Add our kerning pairs.
-				if (kernPairs.Count > 0)
+				if (settings.UseKerningPairs)
 				{
-					foreach (KERNINGPAIR pair in kernPairs)
-					{
-						char first = Convert.ToChar(pair.First);
-						char second = Convert.ToChar(pair.Second);
+					kernPairs = Win32API.GetKerningPairs();
 
-						if (((availableCharacters.Contains(first)) || (availableCharacters.Contains(second))) && (pair.KernAmount != 0))
-							KerningPairs.Add(new GorgonKerningPair(Convert.ToChar(first), Convert.ToChar(second)), pair.KernAmount);
+					// Add our kerning pairs.
+					if (kernPairs.Count > 0)
+					{
+						foreach (KERNINGPAIR pair in kernPairs)
+						{
+							char first = Convert.ToChar(pair.First);
+							char second = Convert.ToChar(pair.Second);
+
+							if (((availableCharacters.Contains(first)) || (availableCharacters.Contains(second))) && (pair.KernAmount != 0))
+								KerningPairs.Add(new GorgonKerningPair(Convert.ToChar(first), Convert.ToChar(second)), pair.KernAmount);
+						}
 					}
 				}
 

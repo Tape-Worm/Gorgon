@@ -487,14 +487,12 @@ namespace GorgonLibrary.PlugIns
 			}
 			catch (ReflectionTypeLoadException rex)
 			{
-#if DEBUG
 				// In this case, we'll just return false and log the message.				
 				Gorgon.Log.Print("Exception while determining if assembly is a plug-in assembly:", LoggingLevel.Verbose);
 				foreach (Exception loaderEx in rex.LoaderExceptions)
 				{
 					Gorgon.Log.Print("{0}", LoggingLevel.Verbose, loaderEx.Message);
 				}
-#endif
 			}
 
 			return result;

@@ -468,32 +468,36 @@ namespace GorgonLibrary.IO
 			ValidateAccess(true);
 
 			int size = DirectAccess.SizeOf<T>();
-			byte *pointer = (byte *)DirectAccess.PinPointer<T>(ref value);
+			byte* pointer = stackalloc byte[size];
 
-			switch (size)
+			DirectAccess.WriteValue<T>(pointer, ref value);
+
+			while (size > 0)
 			{
-				case 1:
+				if (size >= 8)
+				{
+					Writer.Write(*((long *)pointer));
+					pointer += 8;
+					size -= 8;
+				}
+				else if (size >= 4)
+				{
+					Writer.Write(*((int*)pointer));
+					pointer += 4;
+					size -= 4;
+				}
+				else if (size >= 2)
+				{
+					Writer.Write(*((short*)pointer));
+					pointer += 2;
+					size -= 2;
+				}
+				else
+				{
 					Writer.Write(*pointer);
-					break;
-				case 2:
-					Writer.Write(*(short*)pointer);
-					break;
-				case 4:
-					Writer.Write(*(int*)pointer);
-					break;
-				case 8:
-					Writer.Write(*(long*)pointer);
-					break;
-				default:
-					while (size > 0)
-					{
-						byte byteValue = *pointer;
-						Writer.Write(byteValue);
-
-						pointer++;
-						size--;
-					}
-					break;
+					pointer++;
+					size--;
+				}
 			}
 		}
 		#endregion

@@ -120,7 +120,8 @@
     <Compile Include="Native\Win32API.cs" />
     <Compile Include="Native\Win32Types.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="States\GorgonStateObject.cs" />
+    <Compile Include="States\GorgonState.cs" />
+    <Compile Include="States\GorgonStateCache.cs" />
     <Compile Include="States\GorgonTextureSamplerState.cs" />
     <Compile Include="Targets\GorgonOutputMerger.cs" />
     <Compile Include="Targets\GorgonRenderTarget.cs" />

@@ -45,101 +45,111 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		/// <remarks>This is used to control how textures are used by the shader.</remarks>
 		public class TextureSamplerState
-			: GorgonStateCache<GorgonTextureSamplerStates>, IList<GorgonTextureSamplerStates>
+			: GorgonState<GorgonTextureSamplerStates>, IList<GorgonTextureSamplerStates>
 		{
-			#region Variables.
-			private GorgonShaderState<T> _shader = null;							// Shader that owns the state.
-			private IList<GorgonTextureSamplerStates> _textureStates = null;		// Sampler states.
-			private D3D.SamplerState[] _states = null;								// D3D Sampler states.
+			#region Variables.			
+			private GorgonTextureSamplerStates[] _states = null;								// List of sampler states.
+			private D3D.SamplerState[] _d3dStates = null;										// List of sampler state objects.
+			private GorgonShaderState<T> _shader = null;										// Shader that owns the state.
+			#endregion
+
+			#region Properties.
+			/// <summary>
+			/// Property to set or return the current state.
+			/// </summary>
+			/// <remarks>This property is not used for texture samplers and will throw an exception if used.</remarks>
+			/// <exception cref="System.NotImplementedException">Thrown when this property is accessed because it is not implemented for texture samplers.</exception>
+			[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+			public override GorgonTextureSamplerStates States
+			{
+				get
+				{
+					throw new NotImplementedException();
+				}
+				set
+				{
+					throw new NotImplementedException();
+				}
+			}
 			#endregion
 
 			#region Methods.
 			/// <summary>
-			/// Function to retrieve the cached sampler state or return a new one.
+			/// Applies the state.
 			/// </summary>
-			/// <param name="state">State to look up or create.</param>
-			/// <returns>The cached/new state.</returns>
-			private D3D.SamplerState GetState(GorgonTextureSamplerStates state)
-			{
-				D3D.SamplerState result = null;
-
-				result = GetItem(state) as D3D.SamplerState;
-				if (result == null)
-				{
-					result = Convert(state);
-					SetItem(state, result);
-				}
-
-				return result;
+			/// <param name="stateObject">The state object.</param>
+			internal override void ApplyState(D3D.DeviceChild stateObject)
+			{				
+				// Not used.
 			}
 
 			/// <summary>
-			/// Function to convert this blend state into a Direct3D blend state.
+			/// Function to retrieve the D3D state object.
 			/// </summary>
-			/// <param name="states">States being converted.</param>
-			/// <returns>The Direct3D blend state.</returns>
-			private D3D.SamplerState Convert(GorgonTextureSamplerStates states)
+			/// <param name="stateType">The state type information.</param>
+			/// <returns>The D3D state object.</returns>
+			internal override D3D.DeviceChild GetStateObject(ref GorgonTextureSamplerStates stateType)
 			{
 				D3D.SamplerStateDescription desc = new D3D.SamplerStateDescription();
 
-				desc.AddressU = (D3D.TextureAddressMode)states.HorizontalAddressing;
-				desc.AddressV = (D3D.TextureAddressMode)states.VerticalAddressing;
-				desc.AddressW = (D3D.TextureAddressMode)states.DepthAddressing;
-				desc.BorderColor = new SharpDX.Color4(states.BorderColor.Red, states.BorderColor.Green, states.BorderColor.Blue, states.BorderColor.Alpha);
-				desc.ComparisonFunction = (D3D.Comparison)states.ComparisonFunction;
-				desc.MaximumAnisotropy = states.MaxAnisotropy;
-				desc.MaximumLod = states.MaxLOD;
-				desc.MinimumLod = states.MinLOD;
-				desc.MipLodBias = states.MipLODBias;
+				desc.AddressU = (D3D.TextureAddressMode)stateType.HorizontalAddressing;
+				desc.AddressV = (D3D.TextureAddressMode)stateType.VerticalAddressing;
+				desc.AddressW = (D3D.TextureAddressMode)stateType.DepthAddressing;
+				desc.BorderColor = new SharpDX.Color4(stateType.BorderColor.Red, stateType.BorderColor.Green, stateType.BorderColor.Blue, stateType.BorderColor.Alpha);
+				desc.ComparisonFunction = (D3D.Comparison)stateType.ComparisonFunction;
+				desc.MaximumAnisotropy = stateType.MaxAnisotropy;
+				desc.MaximumLod = stateType.MaxLOD;
+				desc.MinimumLod = stateType.MinLOD;
+				desc.MipLodBias = stateType.MipLODBias;
 
 
-				if (states.TextureFilter == TextureFilter.Anisotropic)
+				if (stateType.TextureFilter == TextureFilter.Anisotropic)
 					desc.Filter = D3D.Filter.Anisotropic;
-				if (states.TextureFilter == TextureFilter.CompareAnisotropic)
+				if (stateType.TextureFilter == TextureFilter.CompareAnisotropic)
 					desc.Filter = D3D.Filter.ComparisonAnisotropic;
 
-				// Sort out filter states.
-				// Check comparison states.
-				if ((states.TextureFilter & TextureFilter.Comparison) == TextureFilter.Comparison)
+				// Sort out filter stateType.
+				// Check comparison stateType.
+				if ((stateType.TextureFilter & TextureFilter.Comparison) == TextureFilter.Comparison)
 				{
-					if (((states.TextureFilter & TextureFilter.MinLinear) == TextureFilter.MinLinear) && ((states.TextureFilter & TextureFilter.MagLinear) == TextureFilter.MagLinear) && ((states.TextureFilter & TextureFilter.MipLinear) == TextureFilter.MipLinear))
+					if (((stateType.TextureFilter & TextureFilter.MinLinear) == TextureFilter.MinLinear) && ((stateType.TextureFilter & TextureFilter.MagLinear) == TextureFilter.MagLinear) && ((stateType.TextureFilter & TextureFilter.MipLinear) == TextureFilter.MipLinear))
 						desc.Filter = D3D.Filter.ComparisonMinMagMipLinear;
-					if (((states.TextureFilter & TextureFilter.MinPoint) == TextureFilter.MinPoint) && ((states.TextureFilter & TextureFilter.MagPoint) == TextureFilter.MagPoint) && ((states.TextureFilter & TextureFilter.MipPoint) == TextureFilter.MipPoint))
+					if (((stateType.TextureFilter & TextureFilter.MinPoint) == TextureFilter.MinPoint) && ((stateType.TextureFilter & TextureFilter.MagPoint) == TextureFilter.MagPoint) && ((stateType.TextureFilter & TextureFilter.MipPoint) == TextureFilter.MipPoint))
 						desc.Filter = D3D.Filter.ComparisonMinMagMipPoint;
 
-					if (((states.TextureFilter & TextureFilter.MinLinear) == TextureFilter.MinLinear) && ((states.TextureFilter & TextureFilter.MagLinear) == TextureFilter.MagLinear) && ((states.TextureFilter & TextureFilter.MipPoint) == TextureFilter.MipPoint))
+					if (((stateType.TextureFilter & TextureFilter.MinLinear) == TextureFilter.MinLinear) && ((stateType.TextureFilter & TextureFilter.MagLinear) == TextureFilter.MagLinear) && ((stateType.TextureFilter & TextureFilter.MipPoint) == TextureFilter.MipPoint))
 						desc.Filter = D3D.Filter.ComparisonMinMagLinearMipPoint;
-					if (((states.TextureFilter & TextureFilter.MinLinear) == TextureFilter.MinLinear) && ((states.TextureFilter & TextureFilter.MagPoint) == TextureFilter.MagPoint) && ((states.TextureFilter & TextureFilter.MipPoint) == TextureFilter.MipPoint))
+					if (((stateType.TextureFilter & TextureFilter.MinLinear) == TextureFilter.MinLinear) && ((stateType.TextureFilter & TextureFilter.MagPoint) == TextureFilter.MagPoint) && ((stateType.TextureFilter & TextureFilter.MipPoint) == TextureFilter.MipPoint))
 						desc.Filter = D3D.Filter.ComparisonMinLinearMagMipPoint;
-					if (((states.TextureFilter & TextureFilter.MinLinear) == TextureFilter.MinLinear) && ((states.TextureFilter & TextureFilter.MagPoint) == TextureFilter.MagPoint) && ((states.TextureFilter & TextureFilter.MipLinear) == TextureFilter.MipLinear))
+					if (((stateType.TextureFilter & TextureFilter.MinLinear) == TextureFilter.MinLinear) && ((stateType.TextureFilter & TextureFilter.MagPoint) == TextureFilter.MagPoint) && ((stateType.TextureFilter & TextureFilter.MipLinear) == TextureFilter.MipLinear))
 						desc.Filter = D3D.Filter.ComparisonMinLinearMagPointMipLinear;
 
-					if (((states.TextureFilter & TextureFilter.MinPoint) == TextureFilter.MinPoint) && ((states.TextureFilter & TextureFilter.MagLinear) == TextureFilter.MagLinear) && ((states.TextureFilter & TextureFilter.MipLinear) == TextureFilter.MipLinear))
+					if (((stateType.TextureFilter & TextureFilter.MinPoint) == TextureFilter.MinPoint) && ((stateType.TextureFilter & TextureFilter.MagLinear) == TextureFilter.MagLinear) && ((stateType.TextureFilter & TextureFilter.MipLinear) == TextureFilter.MipLinear))
 						desc.Filter = D3D.Filter.ComparisonMinPointMagMipLinear;
-					if (((states.TextureFilter & TextureFilter.MinPoint) == TextureFilter.MinPoint) && ((states.TextureFilter & TextureFilter.MagPoint) == TextureFilter.MagPoint) && ((states.TextureFilter & TextureFilter.MipLinear) == TextureFilter.MipLinear))
+					if (((stateType.TextureFilter & TextureFilter.MinPoint) == TextureFilter.MinPoint) && ((stateType.TextureFilter & TextureFilter.MagPoint) == TextureFilter.MagPoint) && ((stateType.TextureFilter & TextureFilter.MipLinear) == TextureFilter.MipLinear))
 						desc.Filter = D3D.Filter.ComparisonMinMagPointMipLinear;
-					if (((states.TextureFilter & TextureFilter.MinPoint) == TextureFilter.MinPoint) && ((states.TextureFilter & TextureFilter.MagLinear) == TextureFilter.MagLinear) && ((states.TextureFilter & TextureFilter.MipPoint) == TextureFilter.MipPoint))
+					if (((stateType.TextureFilter & TextureFilter.MinPoint) == TextureFilter.MinPoint) && ((stateType.TextureFilter & TextureFilter.MagLinear) == TextureFilter.MagLinear) && ((stateType.TextureFilter & TextureFilter.MipPoint) == TextureFilter.MipPoint))
 						desc.Filter = D3D.Filter.ComparisonMinPointMagLinearMipPoint;
 				}
 				else
 				{
-					if (((states.TextureFilter & TextureFilter.MinLinear) == TextureFilter.MinLinear) && ((states.TextureFilter & TextureFilter.MagLinear) == TextureFilter.MagLinear) && ((states.TextureFilter & TextureFilter.MipLinear) == TextureFilter.MipLinear))
+					if (((stateType.TextureFilter & TextureFilter.MinLinear) == TextureFilter.MinLinear) && ((stateType.TextureFilter & TextureFilter.MagLinear) == TextureFilter.MagLinear) && ((stateType.TextureFilter & TextureFilter.MipLinear) == TextureFilter.MipLinear))
 						desc.Filter = D3D.Filter.MinMagMipLinear;
-					if (((states.TextureFilter & TextureFilter.MinPoint) == TextureFilter.MinPoint) && ((states.TextureFilter & TextureFilter.MagPoint) == TextureFilter.MagPoint) && ((states.TextureFilter & TextureFilter.MipPoint) == TextureFilter.MipPoint))
+					if (((stateType.TextureFilter & TextureFilter.MinPoint) == TextureFilter.MinPoint) && ((stateType.TextureFilter & TextureFilter.MagPoint) == TextureFilter.MagPoint) && ((stateType.TextureFilter & TextureFilter.MipPoint) == TextureFilter.MipPoint))
 						desc.Filter = D3D.Filter.MinMagMipPoint;
 
-					if (((states.TextureFilter & TextureFilter.MinLinear) == TextureFilter.MinLinear) && ((states.TextureFilter & TextureFilter.MagLinear) == TextureFilter.MagLinear) && ((states.TextureFilter & TextureFilter.MipPoint) == TextureFilter.MipPoint))
+					if (((stateType.TextureFilter & TextureFilter.MinLinear) == TextureFilter.MinLinear) && ((stateType.TextureFilter & TextureFilter.MagLinear) == TextureFilter.MagLinear) && ((stateType.TextureFilter & TextureFilter.MipPoint) == TextureFilter.MipPoint))
 						desc.Filter = D3D.Filter.MinMagLinearMipPoint;
-					if (((states.TextureFilter & TextureFilter.MinLinear) == TextureFilter.MinLinear) && ((states.TextureFilter & TextureFilter.MagPoint) == TextureFilter.MagPoint) && ((states.TextureFilter & TextureFilter.MipPoint) == TextureFilter.MipPoint))
+					if (((stateType.TextureFilter & TextureFilter.MinLinear) == TextureFilter.MinLinear) && ((stateType.TextureFilter & TextureFilter.MagPoint) == TextureFilter.MagPoint) && ((stateType.TextureFilter & TextureFilter.MipPoint) == TextureFilter.MipPoint))
 						desc.Filter = D3D.Filter.MinLinearMagMipPoint;
-					if (((states.TextureFilter & TextureFilter.MinLinear) == TextureFilter.MinLinear) && ((states.TextureFilter & TextureFilter.MagPoint) == TextureFilter.MagPoint) && ((states.TextureFilter & TextureFilter.MipLinear) == TextureFilter.MipLinear))
+					if (((stateType.TextureFilter & TextureFilter.MinLinear) == TextureFilter.MinLinear) && ((stateType.TextureFilter & TextureFilter.MagPoint) == TextureFilter.MagPoint) && ((stateType.TextureFilter & TextureFilter.MipLinear) == TextureFilter.MipLinear))
 						desc.Filter = D3D.Filter.MinLinearMagPointMipLinear;
 
-					if (((states.TextureFilter & TextureFilter.MinPoint) == TextureFilter.MinPoint) && ((states.TextureFilter & TextureFilter.MagLinear) == TextureFilter.MagLinear) && ((states.TextureFilter & TextureFilter.MipLinear) == TextureFilter.MipLinear))
+					if (((stateType.TextureFilter & TextureFilter.MinPoint) == TextureFilter.MinPoint) && ((stateType.TextureFilter & TextureFilter.MagLinear) == TextureFilter.MagLinear) && ((stateType.TextureFilter & TextureFilter.MipLinear) == TextureFilter.MipLinear))
 						desc.Filter = D3D.Filter.MinPointMagMipLinear;
-					if (((states.TextureFilter & TextureFilter.MinPoint) == TextureFilter.MinPoint) && ((states.TextureFilter & TextureFilter.MagPoint) == TextureFilter.MagPoint) && ((states.TextureFilter & TextureFilter.MipLinear) == TextureFilter.MipLinear))
+					if (((stateType.TextureFilter & TextureFilter.MinPoint) == TextureFilter.MinPoint) && ((stateType.TextureFilter & TextureFilter.MagPoint) == TextureFilter.MagPoint) && ((stateType.TextureFilter & TextureFilter.MipLinear) == TextureFilter.MipLinear))
 						desc.Filter = D3D.Filter.MinMagPointMipLinear;
-					if (((states.TextureFilter & TextureFilter.MinPoint) == TextureFilter.MinPoint) && ((states.TextureFilter & TextureFilter.MagLinear) == TextureFilter.MagLinear) && ((states.TextureFilter & TextureFilter.MipPoint) == TextureFilter.MipPoint))
+					if (((stateType.TextureFilter & TextureFilter.MinPoint) == TextureFilter.MinPoint) && ((stateType.TextureFilter & TextureFilter.MagLinear) == TextureFilter.MagLinear) && ((stateType.TextureFilter & TextureFilter.MipPoint) == TextureFilter.MipPoint))
 						desc.Filter = D3D.Filter.MinPointMagLinearMipPoint;
 				}
 
@@ -171,12 +181,25 @@ namespace GorgonLibrary.Graphics
 				count = states.Count();
 				for (int i = 0; i < count; i++)
 				{
+					int stateIndex = i + slot;
 					var state = states.ElementAtOrDefault(i);
-					_textureStates[i + slot] = state;
-					_states[i] = GetState(state);
+
+					if (!_states[stateIndex].Equals(ref state))
+					{
+						D3D.DeviceChild d3dState = GetFromCache(ref state);
+
+						if (d3dState == null)
+						{
+							d3dState = GetStateObject(ref state);
+							StoreInCache(ref state, d3dState);
+						}
+
+						_states[stateIndex] = state;
+						_d3dStates[i] = (D3D.SamplerState)d3dState;
+					}
 				}
 
-				_shader.SetSamplers(slot, count, _states);
+				_shader.SetSamplers(slot, count, _d3dStates);
 			}
 			#endregion
 
@@ -186,7 +209,7 @@ namespace GorgonLibrary.Graphics
 			/// </summary>
 			/// <param name="shaderState">Shader that owns the state.</param>
 			internal TextureSamplerState(GorgonShaderState<T> shaderState)
-				: base(shaderState.Graphics, 4096, Int32.MaxValue)
+				: base(shaderState.Graphics)
 			{
 				int count = D3D.CommonShaderStage.SamplerSlotCount;
 
@@ -199,8 +222,8 @@ namespace GorgonLibrary.Graphics
 						count = 16;
 				}
 
-				_textureStates = new GorgonTextureSamplerStates[count];
-				_states = new D3D.SamplerState[_textureStates.Count];
+				_states = new GorgonTextureSamplerStates[count];
+				_d3dStates = new D3D.SamplerState[_states.Length];
 			}
 			#endregion
 
@@ -218,22 +241,24 @@ namespace GorgonLibrary.Graphics
 			{
 				get
 				{
-					return _textureStates[index];
+					return _states[index];
 				}
 				set
-				{
-					if (_textureStates[index] != value)
+				{					
+					if (!_states[index].Equals(ref value))
 					{
-						_textureStates[index] = value;
-						_states[0] = GetState(value);
-						_shader.SetSamplers(index, 1, _states);
-					}
-					else
-						Touch(value);
+						D3D.DeviceChild state = GetFromCache(ref value);
 
-					// Drop expired items if we are at or over our limit.
-					if (StateCacheCount >= CacheLimit)
-						EvictCache();
+						if (state == null)
+						{
+							state = GetStateObject(ref value);
+							StoreInCache(ref value, state);
+						}
+
+						_states[index] = value;
+						_d3dStates[0] = (D3D.SamplerState)state;
+						_shader.SetSamplers(index, 1, _d3dStates);
+					}
 				}
 			}
 			#endregion
@@ -248,7 +273,15 @@ namespace GorgonLibrary.Graphics
 			/// </returns>
 			public int IndexOf(GorgonTextureSamplerStates item)
 			{
-				return _textureStates.IndexOf(item);
+				for (int i = 0; i < _states.Length; i++)
+				{
+					if (_states[i].Equals(ref item))
+					{
+						return i;
+					}
+				}
+
+				return -1;
 			}
 
 			/// <summary>
@@ -281,7 +314,7 @@ namespace GorgonLibrary.Graphics
 			{
 				get
 				{
-					return _textureStates.Count;
+					return _states.Length;
 				}
 			}
 
@@ -322,7 +355,7 @@ namespace GorgonLibrary.Graphics
 			/// <returns>TRUE if found, FALSE if not.</returns>
 			public new bool Contains(GorgonTextureSamplerStates item)
 			{
-				return _textureStates.Contains(item);
+				return IndexOf(item) != -1;
 			}
 
 			/// <summary>
@@ -332,7 +365,7 @@ namespace GorgonLibrary.Graphics
 			/// <param name="arrayIndex">Index of the array to start writing at.</param>
 			public void CopyTo(GorgonTextureSamplerStates[] array, int arrayIndex)
 			{
-				_textureStates.CopyTo(array, arrayIndex);
+				_states.CopyTo(array, arrayIndex);
 			}
 
 			/// <summary>
@@ -354,7 +387,7 @@ namespace GorgonLibrary.Graphics
 			/// <returns>The enumerator for the sampler states.</returns>
 			public IEnumerator<GorgonTextureSamplerStates> GetEnumerator()
 			{
-				foreach (var item in _textureStates)
+				foreach (var item in _states)
 					yield return item;
 			}
 			#endregion
@@ -366,7 +399,7 @@ namespace GorgonLibrary.Graphics
 			/// <returns></returns>
 			System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
 			{
-				return GetEnumerator();
+				return ((System.Collections.IEnumerable)_states).GetEnumerator();
 			}
 			#endregion
 		}

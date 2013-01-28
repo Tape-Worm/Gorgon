@@ -473,7 +473,6 @@ namespace GorgonLibrary.Graphics.Example
 			// Pretty much what this is.  Turning on alpha blending (for our shadow).
 			_graphics.Output.BlendingState.States = new GorgonBlendStates()
 			{
-				IsAlphaCoverageEnabled = false,
 				RenderTarget0 = new GorgonRenderTargetBlendState()
 				{
 					AlphaOperation = BlendOperation.Add,
@@ -486,6 +485,7 @@ namespace GorgonLibrary.Graphics.Example
 					WriteMask = ColorWriteMaskFlags.All
 				}
 			};
+
 
 			// Turn on depth writing.
 			// This is our depth writing state.  When this is on, all polygon data sent to the card

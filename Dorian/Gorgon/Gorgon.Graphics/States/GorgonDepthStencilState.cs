@@ -73,131 +73,144 @@ namespace GorgonLibrary.Graphics
 	}
 
 	/// <summary>
-	/// States for the depth/stencil.
+	/// Operations to perform on the depth/stencil buffer.
+	/// </summary>
+	public struct GorgonDepthStencilOperations
+		: IEquatableByRef<GorgonDepthStencilOperations>
+	{
+		#region Variables.
+		/// <summary>
+		/// The comparison operator for the stencil testing.
+		/// </summary>
+		/// <remarks>The default value is Always.</remarks>
+		public ComparisonOperators ComparisonOperator;
+
+		/// <summary>
+		/// The operation to perform when the test fails.
+		/// </summary>
+		/// <remarks>The default value is Keep.</remarks>
+		public StencilOperations FailOperation;
+
+		/// <summary>
+		/// The operation to perform when the depth test fails.
+		/// </summary>
+		/// <remarks>The default value is Keep.</remarks>
+		public StencilOperations DepthFailOperation;
+
+		/// <summary>
+		/// The operation to perform when the test succeeds.
+		/// </summary>
+		/// <remarks>The default value is Keep.</remarks>
+		public StencilOperations PassOperation;
+		#endregion
+
+		#region Methods.
+		/// <summary>
+		/// Determines whether the specified objects are equal.
+		/// </summary>
+		/// <param name="x">The first depth stencil operation to compare.</param>
+		/// <param name="y">The second depth stencil operation to compare.</param>
+		/// <returns>
+		/// true if the specified objects are equal; otherwise, false.
+		/// </returns>
+		public static bool Equals(ref GorgonDepthStencilOperations x, ref GorgonDepthStencilOperations y)
+		{
+			return ((x.ComparisonOperator == y.ComparisonOperator) && (x.FailOperation == y.FailOperation) && (x.DepthFailOperation == y.DepthFailOperation) && (x.PassOperation == y.PassOperation));
+		}
+
+		/// <summary>
+		/// Returns a hash code for this instance.
+		/// </summary>
+		/// <returns>
+		/// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table. 
+		/// </returns>
+		public override int GetHashCode()
+		{
+			unchecked
+			{
+				return 281.GenerateHash(ComparisonOperator).
+							GenerateHash(FailOperation).
+							GenerateHash(DepthFailOperation).
+							GenerateHash(PassOperation);
+			}
+		}
+
+		/// <summary>
+		/// Determines whether the specified <see cref="System.Object"/> is equal to this instance.
+		/// </summary>
+		/// <param name="obj">The <see cref="System.Object"/> to compare with this instance.</param>
+		/// <returns>
+		///   <c>true</c> if the specified <see cref="System.Object"/> is equal to this instance; otherwise, <c>false</c>.
+		/// </returns>
+		public override bool Equals(object obj)
+		{
+			if (obj is GorgonDepthStencilOperations)
+				return this.Equals((GorgonDepthStencilOperations)obj);
+
+			return base.Equals(obj);
+		}
+
+		/// <summary>
+		/// Implements the operator ==.
+		/// </summary>
+		/// <param name="left">The left.</param>
+		/// <param name="right">The right.</param>
+		/// <returns>
+		/// The result of the operator.
+		/// </returns>
+		public static bool operator ==(GorgonDepthStencilOperations left, GorgonDepthStencilOperations right)
+		{
+			return GorgonDepthStencilOperations.Equals(ref left, ref right);
+		}
+
+		/// <summary>
+		/// Implements the operator !=.
+		/// </summary>
+		/// <param name="left">The left.</param>
+		/// <param name="right">The right.</param>
+		/// <returns>
+		/// The result of the operator.
+		/// </returns>
+		public static bool operator !=(GorgonDepthStencilOperations left, GorgonDepthStencilOperations right)
+		{
+			return !GorgonDepthStencilOperations.Equals(ref left, ref right);
+		}
+		#endregion
+
+		#region IEquatable<DepthStencilOperations> Members
+		/// <summary>
+		/// Indicates whether the current object is equal to another object of the same type.
+		/// </summary>
+		/// <param name="other">An object to compare with this object.</param>
+		/// <returns>
+		/// true if the current object is equal to the <paramref name="other"/> parameter; otherwise, false.
+		/// </returns>
+		public bool Equals(GorgonDepthStencilOperations other)
+		{
+			return GorgonDepthStencilOperations.Equals(ref this, ref other);
+		}
+		#endregion
+
+		#region IEquatableByRef<GorgonDepthStencilOperations> Members
+		/// <summary>
+		/// Function to compare this instance with another.
+		/// </summary>
+		/// <param name="other">The other instance to use for comparison.</param>
+		/// <returns>TRUE if equal, FALSE if not.</returns>
+		public bool Equals(ref GorgonDepthStencilOperations other)
+		{
+			return GorgonDepthStencilOperations.Equals(ref this, ref other);
+		}
+		#endregion
+	}
+
+	/// <summary>
+	/// Depth/stencil states to control testing via the depth and/or stencil buffer.
 	/// </summary>
 	public struct GorgonDepthStencilStates
-	: IEquatable<GorgonDepthStencilStates>
+		: IEquatableByRef<GorgonDepthStencilStates>
 	{
 		#region Value Types.
-		/// <summary>
-		/// Operations to perform on the depth/stencil buffer.
-		/// </summary>
-		public struct DepthStencilOperations
-			: IEquatable<DepthStencilOperations>
-		{
-			#region Variables.
-			/// <summary>
-			/// The comparison operator for the stencil testing.
-			/// </summary>
-			/// <remarks>The default value is Always.</remarks>
-			public ComparisonOperators ComparisonOperator;
-
-			/// <summary>
-			/// The operation to perform when the test fails.
-			/// </summary>
-			/// <remarks>The default value is Keep.</remarks>
-			public StencilOperations FailOperation;
-
-			/// <summary>
-			/// The operation to perform when the depth test fails.
-			/// </summary>
-			/// <remarks>The default value is Keep.</remarks>
-			public StencilOperations DepthFailOperation;
-
-			/// <summary>
-			/// The operation to perform when the test succeeds.
-			/// </summary>
-			/// <remarks>The default value is Keep.</remarks>
-			public StencilOperations PassOperation;
-			#endregion
-
-			#region Methods.
-			/// <summary>
-			/// Determines whether the specified objects are equal.
-			/// </summary>
-			/// <param name="x">The first depth stencil operation to compare.</param>
-			/// <param name="y">The second depth stencil operation to compare.</param>
-			/// <returns>
-			/// true if the specified objects are equal; otherwise, false.
-			/// </returns>
-			public static bool Equals(ref DepthStencilOperations x, ref DepthStencilOperations y)
-			{
-				return ((x.ComparisonOperator == y.ComparisonOperator) && (x.FailOperation == y.FailOperation) && (x.DepthFailOperation == y.DepthFailOperation) && (x.PassOperation == y.PassOperation));
-			}
-
-			/// <summary>
-			/// Returns a hash code for this instance.
-			/// </summary>
-			/// <returns>
-			/// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table. 
-			/// </returns>
-			public override int GetHashCode()
-			{
-				unchecked
-				{
-					return 281.GenerateHash(ComparisonOperator).
-								GenerateHash(FailOperation).
-								GenerateHash(DepthFailOperation).
-								GenerateHash(PassOperation);
-				}
-			}
-
-			/// <summary>
-			/// Determines whether the specified <see cref="System.Object"/> is equal to this instance.
-			/// </summary>
-			/// <param name="obj">The <see cref="System.Object"/> to compare with this instance.</param>
-			/// <returns>
-			///   <c>true</c> if the specified <see cref="System.Object"/> is equal to this instance; otherwise, <c>false</c>.
-			/// </returns>
-			public override bool Equals(object obj)
-			{
-				if (obj is DepthStencilOperations)
-					return this.Equals((DepthStencilOperations)obj);
-
-				return base.Equals(obj);
-			}
-
-			/// <summary>
-			/// Implements the operator ==.
-			/// </summary>
-			/// <param name="left">The left.</param>
-			/// <param name="right">The right.</param>
-			/// <returns>
-			/// The result of the operator.
-			/// </returns>
-			public static bool operator ==(DepthStencilOperations left, DepthStencilOperations right)
-			{
-				return DepthStencilOperations.Equals(ref left, ref right);
-			}
-
-			/// <summary>
-			/// Implements the operator !=.
-			/// </summary>
-			/// <param name="left">The left.</param>
-			/// <param name="right">The right.</param>
-			/// <returns>
-			/// The result of the operator.
-			/// </returns>
-			public static bool operator !=(DepthStencilOperations left, DepthStencilOperations right)
-			{
-				return !DepthStencilOperations.Equals(ref left, ref right);
-			}
-			#endregion
-
-			#region IEquatable<DepthStencilOperations> Members
-			/// <summary>
-			/// Indicates whether the current object is equal to another object of the same type.
-			/// </summary>
-			/// <param name="other">An object to compare with this object.</param>
-			/// <returns>
-			/// true if the current object is equal to the <paramref name="other"/> parameter; otherwise, false.
-			/// </returns>
-			public bool Equals(DepthStencilOperations other)
-			{
-				return ((ComparisonOperator == other.ComparisonOperator) && (FailOperation == other.FailOperation) && (DepthFailOperation == other.DepthFailOperation) && (PassOperation == other.PassOperation));
-			}
-			#endregion
-		}
 		#endregion
 
 		#region Variables.
@@ -212,14 +225,14 @@ namespace GorgonLibrary.Graphics
 			StencilReadMask = 0xff,
 			StencilWriteMask = 0xff,
 			DepthComparison = ComparisonOperators.Less,
-			StencilFrontFace = new DepthStencilOperations()
+			StencilFrontFace = new GorgonDepthStencilOperations()
 			{
 				ComparisonOperator = ComparisonOperators.Always,
 				DepthFailOperation = StencilOperations.Keep,
 				FailOperation = StencilOperations.Keep,
 				PassOperation = StencilOperations.Keep
 			},
-			StencilBackFace = new DepthStencilOperations()
+			StencilBackFace = new GorgonDepthStencilOperations()
 			{
 				ComparisonOperator = ComparisonOperators.Always,
 				DepthFailOperation = StencilOperations.Keep,
@@ -231,12 +244,12 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Operations to perform on the front face in a stencil test.
 		/// </summary>
-		public DepthStencilOperations StencilFrontFace;
+		public GorgonDepthStencilOperations StencilFrontFace;
 
 		/// <summary>
 		/// Operations to perform on the back face in a stencil test.
 		/// </summary>
-		public DepthStencilOperations StencilBackFace;
+		public GorgonDepthStencilOperations StencilBackFace;
 
 		/// <summary>
 		/// Is the depth buffer enabled or not.
@@ -286,7 +299,7 @@ namespace GorgonLibrary.Graphics
 		/// </returns>
 		public static bool Equals(ref GorgonDepthStencilStates x, ref GorgonDepthStencilStates y)
 		{
-			return ((DepthStencilOperations.Equals(ref x.StencilFrontFace, ref y.StencilFrontFace)) && (DepthStencilOperations.Equals(ref x.StencilBackFace, ref y.StencilBackFace)) &&
+			return ((GorgonDepthStencilOperations.Equals(ref x.StencilFrontFace, ref y.StencilFrontFace)) && (GorgonDepthStencilOperations.Equals(ref x.StencilBackFace, ref y.StencilBackFace)) &&
 					(x.DepthComparison == y.DepthComparison) && (x.IsDepthEnabled == y.IsDepthEnabled) && (x.IsDepthWriteEnabled == y.IsDepthWriteEnabled) &&
 					(x.IsStencilEnabled == y.IsStencilEnabled) && (x.StencilReadMask == y.StencilReadMask) && (x.StencilWriteMask == y.StencilWriteMask));
 		}
@@ -367,20 +380,26 @@ namespace GorgonLibrary.Graphics
 			return GorgonDepthStencilStates.Equals(ref this, ref other);
 		}
 		#endregion
+
+		#region IEquatableByRef<GorgonDepthStencilStates> Members
+		/// <summary>
+		/// Function to compare this instance with another.
+		/// </summary>
+		/// <param name="other">The other instance to use for comparison.</param>
+		/// <returns>TRUE if equal, FALSE if not.</returns>
+		public bool Equals(ref GorgonDepthStencilStates other)
+		{
+			return GorgonDepthStencilStates.Equals(ref this, ref other);
+		}
+		#endregion
 	}
 
 	/// <summary>
-	/// Depth/stencil buffer state.
+	/// Depth/stencil buffer render state.
 	/// </summary>
-	/// <remarks>Used to control how depth/stencil testing is applied to a scene.
-	/// <para>State objects are immutable.  Therefore, when an application requires a different state, the user must create a new state value, give it the necessary parameters and pass it to the 
-	/// appropriate render state.  This is different from previous methods of applying state, where one would modify a render state variable and it would apply immediately.  This model incurred performance penalties 
-	/// from too many state changes.  This method does not suffer as much because the states can be reused.  Currently, the system will cache 4096 unique state values for each render state type and 
-	/// will reuse these state settings to lower the impact of changing states.
-	/// </para>
-	/// </remarks>
+	/// <remarks>Used to control how depth/stencil testing is applied to a scene.// </remarks>
 	public class GorgonDepthStencilRenderState
-		: GorgonStateObject<GorgonDepthStencilStates>
+		: GorgonState<GorgonDepthStencilStates>
 	{
 		#region Variables.
 		private int _depthRef = 0;																// Depth reference.
@@ -416,19 +435,20 @@ namespace GorgonLibrary.Graphics
 
 		#region Methods.
 		/// <summary>
-		/// Function to apply the state to the appropriate state object.
+		/// Function to apply the state to the current rendering context.
 		/// </summary>
-		/// <param name="state">The Direct3D state object to apply.</param>
-		protected override void ApplyState(IDisposable state)
+		/// <param name="stateObject">State to apply.</param>
+		internal override void ApplyState(D3D.DeviceChild stateObject)
 		{
-			Graphics.Context.OutputMerger.DepthStencilState = (D3D.DepthStencilState)state;
+			Graphics.Context.OutputMerger.DepthStencilState = (D3D.DepthStencilState)stateObject;
 		}
 
 		/// <summary>
-		/// Function to convert this state object to the native state object type and apply it.
+		/// Function to retrieve the D3D state object.
 		/// </summary>
-		/// <returns>A direct 3D depth/stencil state object.</returns>
-		protected override IDisposable Convert()
+		/// <param name="stateType">The state type information.</param>
+		/// <returns>The D3D state object.</returns>
+		internal override D3D.DeviceChild GetStateObject(ref GorgonDepthStencilStates stateType)
 		{
 			D3D.DepthStencilStateDescription desc = new D3D.DepthStencilStateDescription();
 			desc.IsDepthEnabled = States.IsDepthEnabled;
@@ -464,7 +484,7 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		/// <param name="graphics">The graphics interface that owns this object.</param>
 		internal GorgonDepthStencilRenderState(GorgonGraphics graphics)
-			: base(graphics, 4096, 15000)
+			: base(graphics)
 		{
 			States = GorgonDepthStencilStates.DefaultStates;
 		}
