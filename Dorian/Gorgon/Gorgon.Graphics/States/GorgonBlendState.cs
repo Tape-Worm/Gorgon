@@ -30,6 +30,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using D3D = SharpDX.Direct3D11;
+using GorgonLibrary.Diagnostics;
 
 namespace GorgonLibrary.Graphics
 {
@@ -168,7 +169,7 @@ namespace GorgonLibrary.Graphics
 	/// Blending state for an individual render target.
 	/// </summary>
 	public struct GorgonRenderTargetBlendState
-		: IEquatable<GorgonRenderTargetBlendState>
+		: IEquatableByRef<GorgonRenderTargetBlendState>
 	{
 		#region Variables.
 		/// <summary>
@@ -359,15 +360,27 @@ namespace GorgonLibrary.Graphics
 			return GorgonRenderTargetBlendState.Equals(ref this, ref other);
 		}
 		#endregion
+
+		#region IEquatableByRef<GorgonRenderTargetBlendState> Members
+		/// <summary>
+		/// Function to compare this instance with another.
+		/// </summary>
+		/// <param name="other">The other instance to use for comparison.</param>
+		/// <returns>TRUE if equal, FALSE if not.</returns>
+		public bool Equals(ref GorgonRenderTargetBlendState other)
+		{
+			return GorgonRenderTargetBlendState.Equals(ref this, ref other);			
+		}
+		#endregion
 	}
 
 	/// <summary>
-	/// Blend states.
+	/// Blending states used to determine how to blend pixels together.
 	/// </summary>
 	public struct GorgonBlendStates
-		: IEquatable<GorgonBlendStates>
+		: IEquatableByRef<GorgonBlendStates>
 	{
-		#region Variables.
+		#region Variables.		
 		/// <summary>
 		/// Default blending states.
 		/// </summary>
@@ -413,7 +426,7 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		public GorgonRenderTargetBlendState RenderTarget1;
 
-				/// <summary>
+		/// <summary>
 		/// Blend states for render target 2.
 		/// </summary>
 		public GorgonRenderTargetBlendState RenderTarget2;
@@ -423,7 +436,7 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		public GorgonRenderTargetBlendState RenderTarget3;
 
-				/// <summary>
+		/// <summary>
 		/// Blend states for render target 4.
 		/// </summary>
 		public GorgonRenderTargetBlendState RenderTarget4;
@@ -433,7 +446,7 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		public GorgonRenderTargetBlendState RenderTarget5;
 
-				/// <summary>
+		/// <summary>
 		/// Blend states for render target 6.
 		/// </summary>
 		public GorgonRenderTargetBlendState RenderTarget6;
@@ -539,19 +552,31 @@ namespace GorgonLibrary.Graphics
 			return GorgonBlendStates.Equals(ref this, ref other);
 		}
 		#endregion
+
+		#region IEquatableByRef<GorgonBlendStates> Members
+		/// <summary>
+		/// Function to compare this instance with another.
+		/// </summary>
+		/// <param name="other">The other instance to use for comparison.</param>
+		/// <returns>TRUE if equal, FALSE if not.</returns>
+		public bool Equals(ref GorgonBlendStates other)
+		{
+			return GorgonBlendStates.Equals(ref this, ref other);		
+		}
+		#endregion
 	}
 	#endregion
-	
+		
 	/// <summary>
-	/// Blending state.
+	/// The blending render state.
 	/// </summary>
 	/// <remarks>This is used to control how polygons are blended in a scene.</remarks>
 	public class GorgonBlendRenderState
-		: GorgonStateObject<GorgonBlendStates>
+		: GorgonState<GorgonBlendStates>
 	{
 		#region Variables.
-		private GorgonColor _blendFactor = new GorgonColor(0.0f, 0.0f, 0.0f, 0.0f);														// Blend factor.
-		private uint _sampleMask = 0xFFFFFFFF;																							// Sample mask.
+		private GorgonColor _blendFactor = new GorgonColor(0.0f, 0.0f, 0.0f, 0.0f);		// Blend factor.
+		private uint _sampleMask = 0xFFFFFFFF;											// Sample mask.
 		#endregion
 
 		#region Properties.
@@ -604,45 +629,46 @@ namespace GorgonLibrary.Graphics
 		}
 		#endregion
 
-		#region Methods.
+		#region Methods.		
 		/// <summary>
-		/// Function to apply the state to the appropriate state object.
+		/// Function to apply the state to the current rendering context.
 		/// </summary>
-		/// <param name="state">The Direct3D state object to apply.</param>
-		protected override void ApplyState(IDisposable state)
-		{	
-			Graphics.Context.OutputMerger.BlendState = (D3D.BlendState)state;
+		/// <param name="stateObject">State to apply.</param>
+		internal override void ApplyState(D3D.DeviceChild stateObject)
+		{
+			Graphics.Context.OutputMerger.BlendState = (D3D.BlendState)stateObject;
 		}
 
 		/// <summary>
-		/// Function to convert this blend state into a Direct3D blend state.
+		/// Function to retrieve the D3D state object.
 		/// </summary>
-		/// <returns>The Direct3D blend state.</returns>
-		protected override IDisposable Convert()
-		{			
+		/// <param name="stateType">The state type information.</param>
+		/// <returns>The D3D state object.</returns>
+		internal override D3D.DeviceChild GetStateObject(ref GorgonBlendStates stateType)
+		{
 			D3D.BlendStateDescription desc = new D3D.BlendStateDescription();
 
 			if ((desc.AlphaToCoverageEnable) && (Graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM2_a_b))
 				throw new GorgonException(GorgonResult.CannotBind, "Cannot bind the blending state.  Alpha to coverage is only available on SM 4.x or better video devices.");
-			
-			desc.AlphaToCoverageEnable = States.IsAlphaCoverageEnabled;
-			desc.IndependentBlendEnable = States.IsIndependentBlendEnabled;
+
+			desc.AlphaToCoverageEnable = stateType.IsAlphaCoverageEnabled;
+			desc.IndependentBlendEnable = stateType.IsIndependentBlendEnabled;
 
 			// Copy render targets.
-			desc.RenderTarget[0] = States.RenderTarget0.Convert();
-			desc.RenderTarget[1] = States.RenderTarget1.Convert();
-			desc.RenderTarget[2] = States.RenderTarget2.Convert();
-			desc.RenderTarget[3] = States.RenderTarget3.Convert();
-			desc.RenderTarget[4] = States.RenderTarget4.Convert();
-			desc.RenderTarget[5] = States.RenderTarget5.Convert();
-			desc.RenderTarget[6] = States.RenderTarget6.Convert();
-			desc.RenderTarget[7] = States.RenderTarget7.Convert();
+			desc.RenderTarget[0] = stateType.RenderTarget0.Convert();
+			desc.RenderTarget[1] = stateType.RenderTarget1.Convert();
+			desc.RenderTarget[2] = stateType.RenderTarget2.Convert();
+			desc.RenderTarget[3] = stateType.RenderTarget3.Convert();
+			desc.RenderTarget[4] = stateType.RenderTarget4.Convert();
+			desc.RenderTarget[5] = stateType.RenderTarget5.Convert();
+			desc.RenderTarget[6] = stateType.RenderTarget6.Convert();
+			desc.RenderTarget[7] = stateType.RenderTarget7.Convert();
 
 			D3D.BlendState state = new D3D.BlendState(Graphics.D3DDevice, desc);
 			state.DebugName = "Gorgon Blend State #" + StateCacheCount.ToString();
 
 			return state;
-		}
+		}		
 		#endregion
 
 		#region Constructor/Destructor.
@@ -651,7 +677,7 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		/// <param name="graphics">The graphics interface that owns this object.</param>
 		internal GorgonBlendRenderState(GorgonGraphics graphics)
-			: base(graphics, 4096, 20000)
+			: base(graphics)
 		{
 			States = GorgonBlendStates.DefaultStates;
 		}

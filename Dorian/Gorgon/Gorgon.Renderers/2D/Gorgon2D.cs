@@ -223,46 +223,10 @@ namespace GorgonLibrary.Renderers
 			public int DepthStencilReference;
 
 			/// <summary>
-			/// Function to restore the previous states.
+			/// Function to save the state information to this object.
 			/// </summary>
 			/// <param name="graphics">Graphics interface.</param>
-			public void Restore(GorgonGraphics graphics)
-			{				
-				graphics.Output.RenderTargets[0] = Target;
-				if (Target != null)
-					graphics.Rasterizer.SetViewport(Target.Viewport);
-				graphics.Input.IndexBuffer = IndexBuffer;
-				graphics.Input.VertexBuffers[0] = VertexBuffer;
-				graphics.Input.Layout = InputLayout;
-				graphics.Input.PrimitiveType = PrimitiveType;
-				graphics.Shaders.PixelShader.Current = PixelShader;
-				graphics.Shaders.VertexShader.Current = VertexShader;
-				graphics.Output.BlendingState.BlendSampleMask = BlendSampleMask;
-				graphics.Output.BlendingState.BlendFactor = BlendFactor;
-				graphics.Output.BlendingState.States = BlendStates;
-				graphics.Output.DepthStencilState.States = DepthStencilState;
-				graphics.Output.DepthStencilState.DepthStencilReference = DepthStencilReference;
-				graphics.Rasterizer.States = RasterStates;
-				graphics.Shaders.PixelShader.Resources[0] = Resource;
-				graphics.Shaders.PixelShader.TextureSamplers[0] = SamplerState;
-
-				// Restore any constant buffers.				
-				foreach (var vsConstant in VSConstantBuffers)
-				{
-					graphics.Shaders.VertexShader.ConstantBuffers[vsConstant.Key] = vsConstant.Value;
-				}
-
-				foreach (var psConstant in PSConstantBuffers)
-				{
-					graphics.Shaders.PixelShader.ConstantBuffers[psConstant.Key] = psConstant.Value;
-				}
-			}
-
-			/// <summary>
-			/// Initializes a new instance of the <see cref="PreviousStates"/> struct.
-			/// </summary>
-			/// <param name="graphics">The graphics.</param>
-			public PreviousStates(GorgonGraphics graphics)
+			public void Save(GorgonGraphics graphics)
 			{
 				Target = graphics.Output.RenderTargets[0];
 				IndexBuffer = graphics.Input.IndexBuffer;
@@ -306,6 +270,49 @@ namespace GorgonLibrary.Renderers
 					}
 				}
 			}
+
+			/// <summary>
+			/// Function to restore the previous states.
+			/// </summary>
+			/// <param name="graphics">Graphics interface.</param>
+			public void Restore(GorgonGraphics graphics)
+			{				
+				graphics.Output.RenderTargets[0] = Target;
+				if (Target != null)
+					graphics.Rasterizer.SetViewport(Target.Viewport);
+				graphics.Input.IndexBuffer = IndexBuffer;
+				graphics.Input.VertexBuffers[0] = VertexBuffer;
+				graphics.Input.Layout = InputLayout;
+				graphics.Input.PrimitiveType = PrimitiveType;
+				graphics.Shaders.PixelShader.Current = PixelShader;
+				graphics.Shaders.VertexShader.Current = VertexShader;
+				graphics.Output.BlendingState.BlendSampleMask = BlendSampleMask;
+				graphics.Output.BlendingState.BlendFactor = BlendFactor;
+				graphics.Output.BlendingState.States = BlendStates;
+				graphics.Output.DepthStencilState.States = DepthStencilState;
+				graphics.Output.DepthStencilState.DepthStencilReference = DepthStencilReference;
+				graphics.Rasterizer.States = RasterStates;
+				graphics.Shaders.PixelShader.Resources[0] = Resource;
+				graphics.Shaders.PixelShader.TextureSamplers[0] = SamplerState;
+
+				// Restore any constant buffers.				
+				foreach (var vsConstant in VSConstantBuffers)
+				{
+					graphics.Shaders.VertexShader.ConstantBuffers[vsConstant.Key] = vsConstant.Value;
+				}
+
+				foreach (var psConstant in PSConstantBuffers)
+				{
+					graphics.Shaders.PixelShader.ConstantBuffers[psConstant.Key] = psConstant.Value;
+				}
+			}
+
+			/// <summary>
+			/// Initializes a new instance of the <see cref="PreviousStates"/> struct.
+			/// </summary>
+			public PreviousStates()
+			{
+			}
 		}
 		#endregion
 
@@ -324,7 +331,8 @@ namespace GorgonLibrary.Renderers
 		private GorgonRenderTarget _defaultTarget = null;											// Default render target.
 		private GorgonRenderTarget _target = null;													// Current render target.	
 		private GorgonInputLayout _layout = null;													// Input layout.
-		private Stack<PreviousStates> _stateRecall = null;											// State recall.		
+		private PreviousStates[] _stateRecall = null;												// State recall.
+		private int _stateRecallPointer = 0;														// State recall pointer index.
 		private bool _multiSampleEnable = false;													// Flag to indicate that multi sampling is enabled.
 		private GorgonViewport? _viewPort = null;													// Viewport to use.
 		private Rectangle? _clip = null;															// Clipping rectangle.
@@ -920,13 +928,13 @@ namespace GorgonLibrary.Renderers
 		/// <param name="vertexStart">Starting vertex to add.</param>
 		/// <param name="vertexCount">Number of vertices to add.</param>
 		/// <returns>The number of remaining vertices in the cache.</returns>
-		internal void AddVertices(IList<Gorgon2DVertex> vertices, int baseVertex, int indicesPerPrimitive, int vertexStart, int vertexCount)
+		internal void AddVertices(Gorgon2DVertex[] vertices, int baseVertex, int indicesPerPrimitive, int vertexStart, int vertexCount)
 		{
 			int cacheIndex = 0;
 			int vertexIndex = 0;
 
 			// Do nothing if there aren't any vertices.
-			if (vertices.Count == 0)
+			if (vertices.Length == 0)
 				return;
 
 			// If the next set of vertices is going to overflow the buffer, then render the buffer contents.
@@ -1093,7 +1101,24 @@ namespace GorgonLibrary.Renderers
 			_renderIndexStart = 0;
 			_cacheWritten = 0;
 
-			_stateRecall.Push(new PreviousStates(Graphics));
+			// Initialize the state.
+			if (_stateRecall == null)
+			{
+				_stateRecall = new PreviousStates[16];
+				for (int i = 0; i < _stateRecall.Length; i++)
+				{
+					_stateRecall[i] = new PreviousStates();
+				}
+			}
+
+			// Resize the array if necessary.
+			if (_stateRecallPointer >= _stateRecall.Length)
+			{
+				Array.Resize<PreviousStates>(ref _stateRecall, _stateRecall.Length * 2);
+			}
+
+			_stateRecall[_stateRecallPointer].Save(Graphics);
+			_stateRecallPointer++;
 
 			// Set our default shaders.
 			VertexShader.Current = VertexShader.DefaultVertexShader;
@@ -1126,7 +1151,7 @@ namespace GorgonLibrary.Renderers
 
 			Graphics.Rasterizer.SetViewport(Target.Viewport);
 			Graphics.Rasterizer.States = GorgonRasterizerStates.DefaultStates;
-			Graphics.Output.BlendingState.States = GorgonBlendStates.DefaultStates;			
+			Graphics.Output.BlendingState.States = GorgonBlendStates.DefaultStates;
 			Graphics.Output.DepthStencilState.States = GorgonDepthStencilStates.DefaultStates;
 			Graphics.Output.DepthStencilState.DepthStencilReference = 0;
 
@@ -1147,9 +1172,9 @@ namespace GorgonLibrary.Renderers
 		/// </remarks>		
 		public void End2D()
 		{
-			if (_stateRecall.Count > 0)
+			if (_stateRecallPointer > 0)
 			{
-				PreviousStates states = _stateRecall.Pop();
+				PreviousStates states = _stateRecall[--_stateRecallPointer];
 				states.Restore(Graphics);
 
 				// Reset the cache values.
@@ -1274,8 +1299,7 @@ namespace GorgonLibrary.Renderers
 		/// </summary>
 		/// <param name="target">The primary render target to use.</param>		
 		internal Gorgon2D(GorgonRenderTarget target)
-		{			
-			_stateRecall = new Stack<PreviousStates>(16);
+		{						
 			TrackedObjects = new GorgonTrackedObjectCollection();
 			Graphics = target.Graphics;
 			_defaultTarget = target;

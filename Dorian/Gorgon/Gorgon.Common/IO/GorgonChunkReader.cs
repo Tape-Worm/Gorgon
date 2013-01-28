@@ -432,32 +432,38 @@ namespace GorgonLibrary.IO
 		{
 			T returnVal = default(T);
 			int size = DirectAccess.SizeOf<T>();
-			byte* pointer = (byte*)DirectAccess.PinPointer<T>(ref returnVal);
+			byte* pointer = stackalloc byte[size];
+			byte* bytes = pointer;
 
-			switch (size)
+			while (size > 0)
 			{
-				case 1:
-					*pointer = Reader.ReadByte();
-					break;
-				case 2:
-					*((short*)pointer) = Reader.ReadInt16();
-					break;
-				case 4:
-					*((int*)pointer) = Reader.ReadInt32();
-					break;
-				case 8:
-					*((long*)pointer) = Reader.ReadInt64();
-					break;
-				default:
-					while (size > 0)
-					{
-						*pointer = Reader.ReadByte();
-
-						pointer++;
-						size--;
-					}
-					break;
+				if (size >= 8)
+				{
+					*((long*)bytes) = Reader.ReadInt64();
+					bytes += 8;
+					size -= 8;
+				}
+				else if (size >= 4)
+				{
+					*((int*)bytes) = Reader.ReadInt32();
+					bytes += 4;
+					size -= 4;
+				}
+				else if (size >= 2)
+				{
+					*((short*)bytes) = Reader.ReadInt16();
+					bytes += 2;
+					size -= 2;
+				}
+				else
+				{
+					*bytes = Reader.ReadByte();
+					bytes++;
+					size--;
+				}
 			}
+
+			DirectAccess.ReadValue<T>(pointer, out returnVal);
 
 			return returnVal;
 		}

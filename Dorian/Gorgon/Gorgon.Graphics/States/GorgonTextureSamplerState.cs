@@ -130,7 +130,7 @@ namespace GorgonLibrary.Graphics
 	/// States for the texture samplers.
 	/// </summary>
 	public struct GorgonTextureSamplerStates
-		: IEquatable<GorgonTextureSamplerStates>
+		: IEquatableByRef<GorgonTextureSamplerStates>
 	{
 		#region Variables.
 		/// <summary>
@@ -278,6 +278,20 @@ namespace GorgonLibrary.Graphics
 		public bool Equals(GorgonTextureSamplerStates other)
 		{
 			return Equals(ref this, ref other);
+		}
+		#endregion
+
+		#region IEquatableByRef<GorgonTextureSamplerStates> Members
+		/// <summary>
+		/// Indicates whether the current object is equal to another object of the same type.
+		/// </summary>
+		/// <param name="other">An object to compare with this object.</param>
+		/// <returns>
+		/// true if the current object is equal to the <paramref name="other"/> parameter; otherwise, false.
+		/// </returns>
+		public bool Equals(ref GorgonTextureSamplerStates other)
+		{
+			return GorgonTextureSamplerStates.Equals(ref this, ref other);			
 		}
 		#endregion
 	}

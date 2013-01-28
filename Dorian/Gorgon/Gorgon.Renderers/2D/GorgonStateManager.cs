@@ -271,6 +271,7 @@ namespace GorgonLibrary.Renderers
 
 			if ((state & StateChange.BlendState) == StateChange.BlendState)
 			{
+
 				_blendState.RenderTarget0.AlphaOperation = blending.AlphaOperation;
 				_blendState.RenderTarget0.BlendingOperation = blending.BlendOperation;
 				_blendState.RenderTarget0.DestinationAlphaBlend = blending.DestinationAlphaBlend;

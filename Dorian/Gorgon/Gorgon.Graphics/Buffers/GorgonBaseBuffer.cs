@@ -299,8 +299,10 @@ namespace GorgonLibrary.Graphics
 		{
 			GorgonDebug.AssertNull<GorgonDataStream>(stream, "stream");
 
+#if DEBUG
 			if (BufferUsage != GorgonLibrary.Graphics.BufferUsage.Default)
 				throw new InvalidOperationException("Cannot use Update on a non-default buffer.");
+#endif
 
 			UpdateImpl(stream, offset, size);
 		}
@@ -342,6 +344,7 @@ namespace GorgonLibrary.Graphics
 		{
 			GorgonDataStream result = null;
 
+#if DEBUG
 			if (IsLocked)
 				throw new InvalidOperationException("The buffer is already locked.");
 
@@ -350,6 +353,7 @@ namespace GorgonLibrary.Graphics
 
 			if (BufferUsage == BufferUsage.Immutable)
 				throw new InvalidOperationException("The buffer is immutable and cannot be locked.");
+#endif
 
 			result = LockImpl(lockFlags);
 
