@@ -47,7 +47,7 @@ namespace GorgonLibrary.Graphics
 		private T _state = default(T);										// Immutable state for the object.
 		#endregion
 
-		#region Properties.		
+		#region Properties.
 		/// <summary>
 		/// Property to return the number of state objects cached.
 		/// </summary>
