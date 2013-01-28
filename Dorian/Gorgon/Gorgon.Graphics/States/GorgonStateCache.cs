@@ -73,7 +73,7 @@ namespace GorgonLibrary.Graphics
 		/// <returns>The index of the state, or -1 if not found.</returns>
 		private int IndexOf(ref T state)
 		{
-			for (int i = 0; i < _cache.Length; i++)
+			for (int i = 0; i < _cacheCount; i++)
 			{
 				if (_cache[i].Item1.Equals(ref state))
 				{
@@ -178,10 +178,6 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		public GorgonStateCacheNEW()
 		{
-			for (int i = 0; i < _cache.Length; i++)
-			{
-				_cache[i] = new Tuple<T, D3D.DeviceChild>(default(T), null);
-			}
 		}
 		#endregion
 
