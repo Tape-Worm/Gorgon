@@ -66,10 +66,10 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Function to convert this viewport rectangle into a Direct3D viewport.
 		/// </summary>
-		/// <returns></returns>
-		internal D3D.Viewport Convert()
+		/// <returns>The Direct3D viewport value type.</returns>		
+		internal SharpDX.ViewportF Convert()
 		{
-			return new D3D.Viewport(Region.X, Region.Y, Region.Width, Region.Height, MinimumZ, MaximumZ);
+			return new SharpDX.ViewportF(Region.X, Region.Y, Region.Width, Region.Height, MinimumZ, MaximumZ);
 		}
 
 		/// <summary>

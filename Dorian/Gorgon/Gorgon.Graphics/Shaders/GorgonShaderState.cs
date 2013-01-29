@@ -353,7 +353,7 @@ namespace GorgonLibrary.Graphics
 			/// </summary>
 			/// <param name="item">Sampler state to look up.</param>
 			/// <returns>TRUE if found, FALSE if not.</returns>
-			public new bool Contains(GorgonTextureSamplerStates item)
+			public bool Contains(GorgonTextureSamplerStates item)
 			{
 				return IndexOf(item) != -1;
 			}

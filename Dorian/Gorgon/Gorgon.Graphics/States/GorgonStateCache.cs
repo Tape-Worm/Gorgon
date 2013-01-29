@@ -42,7 +42,7 @@ namespace GorgonLibrary.Graphics
 		where T : struct, IEquatableByRef<T>
 	{
 		#region Constants.
-		private const int _cacheLimit = 128;									// Number of objects that can initially live in the cache.
+		private const int _cacheLimit = 4096;									// Number of objects that can initially live in the cache.
 		#endregion
 
 		#region Variables.
