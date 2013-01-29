@@ -456,7 +456,7 @@ namespace GorgonLibrary.Graphics
 			{
 				GetDevice();
 				return (((_tempDevice.CheckFormatSupport((GI.Format)format) & D3D.FormatSupport.RenderTarget) == D3D.FormatSupport.RenderTarget) && 
-					((isMultiSampled) && ((_tempDevice.CheckFormatSupport((GI.Format)format) & D3D.FormatSupport.MultisampleRendertarget) == D3D.FormatSupport.MultisampleRendertarget) || 
+					((isMultiSampled) && ((_tempDevice.CheckFormatSupport((GI.Format)format) & D3D.FormatSupport.MultisampleRenderTarget) == D3D.FormatSupport.MultisampleRenderTarget) || 
 					(!isMultiSampled)));
 			}
 			finally
