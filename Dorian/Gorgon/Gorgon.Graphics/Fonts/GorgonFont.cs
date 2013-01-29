@@ -817,12 +817,24 @@ namespace GorgonLibrary.Graphics
                 textureCounter = 0;
                 foreach (var texture in Textures)
                 {
+					chunk.WriteString(texture.Name);
+
                     if (!externalTextures)
                     {
-                        byte[] textureData = texture.Save(ImageFileFormat.PNG);
-                        chunk.WriteString(texture.Name);
-						chunk.WriteInt32(textureData.Length);
-                        chunk.Write(textureData, 0, textureData.Length);
+						long startPosition = stream.Position;		// Save the stream position to avoid having to save the PNG data to an array.
+						long endPosition = 0;						// The end of the image data.
+
+						// Write placeholder.
+						chunk.WriteInt32(0);
+
+						// Save our texture and record where we left off.
+						texture.Save(stream, ImageFileFormat.PNG);
+						endPosition = stream.Position;
+
+						// Put the image size in the placeholder.
+						stream.Position = startPosition;
+						chunk.WriteInt32((int)(endPosition - startPosition - sizeof(int)));
+						stream.Position = endPosition;
                     }
                     else
                     {
@@ -834,8 +846,7 @@ namespace GorgonLibrary.Graphics
 
                         // Write out the file in the same directory as the font info.
                         texture.Save(path.FormatDirectory(Path.DirectorySeparatorChar) + textureFileName, ImageFileFormat.PNG);
-
-                        chunk.WriteString(texture.Name);
+						                        
                         chunk.WriteString(textureFileName);
                     }
                     textureCounter++;
