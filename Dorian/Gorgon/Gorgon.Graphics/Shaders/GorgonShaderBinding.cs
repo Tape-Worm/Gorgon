@@ -335,7 +335,6 @@ namespace GorgonLibrary.Graphics
 				throw new ArgumentException("The element size must be greater than 0.", "settings");
 #endif
 
-			// TODO: Update this to allow for unordered access.
 			result = new GorgonStructuredBuffer(_graphics, elementCount, elementSize, false, allowCPUWrite);
 			result.Initialize(stream);
 
