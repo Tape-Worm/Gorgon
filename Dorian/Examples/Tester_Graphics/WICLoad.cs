@@ -222,6 +222,7 @@ namespace Tester_Graphics
 		#region Variables.
 		// TODO: Write a method in chunk writer and chunk reader to load and save texture data.
 		//       Then updated GorgonFont to use that code.
+        //       Make an extension class for it.
 		private bool _disposed = false;																// Flag to indicate that the object was disposed.
 		private WIC.ImagingFactory _factory = null;													// Factory for WIC image data.
 
