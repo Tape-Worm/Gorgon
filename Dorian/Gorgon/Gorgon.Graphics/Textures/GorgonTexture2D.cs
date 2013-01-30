@@ -32,6 +32,7 @@ using System.IO;
 using System.Drawing;
 using DX = SharpDX;
 using D3D = SharpDX.Direct3D11;
+using Tool = SharpDX.Toolkit.Graphics;
 using SlimMath;
 using GorgonLibrary.Diagnostics;
 
@@ -225,29 +226,6 @@ namespace GorgonLibrary.Graphics
 			}
 			else
 				D3DResource = new D3D.Texture2D(Graphics.D3DDevice, desc);
-		}
-
-		/// <summary>
-		/// Function to copy this texture into a staging texture.
-		/// </summary>
-		/// <returns>A new staging texture.</returns>
-		public GorgonTexture2D GetStagingTexture()
-		{
-			GorgonTexture2DSettings settings = new GorgonTexture2DSettings();
-
-			settings.ArrayCount = Settings.ArrayCount;
-			settings.Format = Settings.Format;
-			settings.Height = Settings.Height;
-			settings.Width = Settings.Width;
-			settings.IsTextureCube = Settings.IsTextureCube;
-			settings.MipCount = Settings.MipCount;
-			settings.Multisampling = Settings.Multisampling;
-			settings.Usage = BufferUsage.Staging;
-
-			GorgonTexture2D result = Graphics.Textures.CreateTexture<GorgonTexture2D>(Name + ".Staging", settings);
-			result.Copy(this);
-
-			return result;
 		}
 
 		/// <summary>
