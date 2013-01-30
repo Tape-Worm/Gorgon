@@ -457,6 +457,65 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
+		/// Function to copy this texture into a staging texture.
+		/// </summary>
+		/// <returns>A new staging texture.</returns>
+		public T GetStagingTexture<T>()
+			where T : GorgonTexture
+		{			
+			GorgonTexture staging = null;
+
+			if (_texture1D != null)
+			{
+				GorgonTexture1DSettings settings1D = new GorgonTexture1DSettings()
+				{
+					ArrayCount = Settings.ArrayCount,
+					Format = Settings.Format,
+					Width = Settings.Width,
+					MipCount = Settings.MipCount,
+					Usage = BufferUsage.Staging
+				};
+
+				staging = Graphics.Textures.CreateTexture<GorgonTexture1D>(Name + ".Staging", settings1D);
+			}
+			else if (_texture2D != null)
+			{
+				GorgonTexture2DSettings settings2D = new GorgonTexture2DSettings()
+				{
+					ArrayCount = Settings.ArrayCount,
+					Format = Settings.Format,
+					Width = Settings.Width,
+					Height = Settings.Height,
+					IsTextureCube = Settings.IsTextureCube,
+					Multisampling = Settings.Multisampling,
+					MipCount = Settings.MipCount,
+					Usage = BufferUsage.Staging
+				};
+
+				staging = Graphics.Textures.CreateTexture<GorgonTexture2D>(Name + ".Staging", settings2D);
+			}
+			else if (_texture3D != null)
+			{
+				GorgonTexture3DSettings settings3D = new GorgonTexture3DSettings()
+				{
+					Format = Settings.Format,
+					Width = Settings.Width,
+					Height = Settings.Height,
+					Depth = Settings.Depth,					
+					MipCount = Settings.MipCount,
+					Usage = BufferUsage.Staging
+				};
+
+				staging = Graphics.Textures.CreateTexture<GorgonTexture3D>(Name + ".Staging", settings3D);				
+			}
+
+			staging.Copy(this);
+
+			return (T)staging;
+		}
+
+
+		/// <summary>
 		/// Function to save the texture data to an array of bytes.
 		/// </summary>
 		/// <param name="format">Image format to use.</param>

@@ -147,6 +147,20 @@ namespace GorgonLibrary.IO
             return ((ulong)chunkName[7] << 56) | ((ulong)chunkName[6] << 48) | ((ulong)chunkName[5] << 40) | ((ulong)chunkName[4] << 32)
                    | ((ulong)chunkName[3] << 24) | ((ulong)chunkName[2] << 16) | ((ulong)chunkName[1] << 8) | ((ulong)chunkName[0]);
         }
+
+		/// <summary>
+		/// Function to return the underlying stream used for the reading/writing of chunks.
+		/// </summary>
+		/// <returns>The stream used to read/write chunks.</returns>
+		public Stream GetStream()
+		{
+			if (ChunkAccessMode == IO.ChunkAccessMode.Write)
+			{
+				return Writer.BaseStream;
+			}
+
+			return Reader.BaseStream;
+		}
         
         /// <summary>
 		/// Function to begin reading/writing the chunk
