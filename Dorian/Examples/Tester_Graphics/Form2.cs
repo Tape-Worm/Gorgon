@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.IO;
 using SlimMath;
 using GorgonLibrary;
 using GorgonLibrary.UI;
@@ -42,7 +43,16 @@ namespace Tester_Graphics
 					Format = BufferFormat.R8G8B8A8_UIntNormal
 				});
 
-				
+				using (GorgonTexture2D texture = _graphics.Textures.FromFile<GorgonTexture2D>("Test", @"D:\images\OSUsers.jpg"))
+				{
+					using (WICLoad wic = new WICLoad())
+					{
+						using (FileStream stream = File.Open(@"D:\unpak\wictest.png", FileMode.Create, FileAccess.Write, FileShare.None))
+						{
+							wic.SavePNGToStream(texture, stream);
+						}
+					}
+				}
 
 				Gorgon.ApplicationIdleLoopMethod = Idle;
 			}

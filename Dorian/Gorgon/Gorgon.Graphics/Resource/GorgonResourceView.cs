@@ -133,7 +133,7 @@ namespace GorgonLibrary.Graphics
 				}
 				else
 				{
-					if (string.Compare(resource.ViewFormatInformation.Group, resource.FormatInformation.Group, true) != 0)
+					if (resource.ViewFormatInformation.Group != resource.FormatInformation.Group)
 						throw new GorgonException(GorgonResult.CannotCreate, "Cannot create the shader view.  The format '" + resource.Settings.Format.ToString() + "' and the view format '" + resource.Settings.ViewFormat.ToString() + "' are not part of the same group.");
 
 					desc.Format = (GI.Format)resource.Settings.ViewFormat;

@@ -74,6 +74,103 @@ namespace GorgonLibrary.Graphics
 
 		#region Methods.
 		/// <summary>
+		/// Function to return sub resource data for a lock operation.
+		/// </summary>
+		/// <param name="dataStream">Stream containing the data.</param>
+		/// <param name="rowPitch">The number of bytes per row of the texture.</param>
+		/// <param name="slicePitch">The number of bytes per depth slice of the texture.</param>
+		/// <returns>
+		/// The sub resource data.
+		/// </returns>
+		protected override ISubResourceData GetLockSubResourceData(IO.GorgonDataStream dataStream, int rowPitch, int slicePitch)
+		{
+			return new GorgonTexture1DData(dataStream);
+		}
+
+		/// <summary>
+		/// Function to copy data from the CPU to a texture.
+		/// </summary>
+		/// <param name="data">Data to copy to the texture.</param>
+		/// <param name="subResource">Sub resource index to use.</param>
+		protected override void UpdateSubResourceImpl(ISubResourceData data, int subResource)
+		{
+			SharpDX.DataBox box = new SharpDX.DataBox()
+			{
+				DataPointer = data.Data.PositionPointer,
+				RowPitch = data.RowPitch,
+				SlicePitch = data.SlicePitch
+			};
+
+			D3D.ResourceRegion region = new D3D.ResourceRegion();
+
+			region.Front = 0;
+			region.Back = 1;
+			region.Left = 0;
+			region.Right = Settings.Width;
+			region.Top = 0;
+			region.Bottom = 1;
+
+			Graphics.Context.UpdateSubresource(box, D3DResource, subResource, region);
+		}
+
+		/// <summary>
+		/// Function to copy this texture into a new staging texture.
+		/// </summary>
+		/// <returns>
+		/// The new staging texture.
+		/// </returns>
+		protected override GorgonTexture GetStagingTextureImpl()
+		{
+			GorgonTexture staging = null;
+
+			GorgonTexture1DSettings settings1D = new GorgonTexture1DSettings()
+			{
+				ArrayCount = Settings.ArrayCount,
+				Format = Settings.Format,
+				Width = Settings.Width,
+				MipCount = Settings.MipCount,
+				Usage = BufferUsage.Staging
+			};
+
+			staging = Graphics.Textures.CreateTexture<GorgonTexture1D>(Name + ".Staging", settings1D);
+			staging.Copy(this);
+
+			return staging;
+		}
+
+		/// <summary>
+		/// Function to retrieve information about an existing texture.
+		/// </summary>
+		/// <returns>
+		/// New settings for the texture.
+		/// </returns>
+		protected override ITextureSettings GetTextureInformation()
+		{
+			ITextureSettings newSettings = null;
+			BufferFormat viewFormat = BufferFormat.Unknown;
+
+			if (Settings != null)
+				viewFormat = Settings.ViewFormat;
+
+			D3D.Texture1DDescription desc = ((D3D.Texture1D)this.D3DResource).Description;
+			newSettings = new GorgonTexture1DSettings();
+			newSettings.Width = desc.Width;
+			newSettings.Height = 1;
+			newSettings.ArrayCount = desc.ArraySize;
+			newSettings.Depth = 1;
+			newSettings.Format = (BufferFormat)desc.Format;
+			newSettings.MipCount = desc.MipLevels;
+			newSettings.Usage = (BufferUsage)desc.Usage;
+			newSettings.ViewFormat = BufferFormat.Unknown;
+			newSettings.Multisampling = new GorgonMultisampling(1, 0);
+
+			// Preserve any custom view format.
+			newSettings.ViewFormat = viewFormat;
+
+			return newSettings;
+		}
+
+		/// <summary>
 		/// Function to read image data from an array of bytes.
 		/// </summary>
 		/// <param name="imageData">Array of bytes holding the image data.</param>
@@ -236,7 +333,7 @@ namespace GorgonLibrary.Graphics
 				throw new InvalidOperationException("Cannot copy to an immutable resource.");
 
 			// If the format is different, then check to see if the format group is the same.
-			if ((texture.Settings.Format != Settings.Format) && ((string.Compare(texture.FormatInformation.Group, FormatInformation.Group, true) != 0) || (Graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM2_a_b) || (Graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM4)))
+			if ((texture.Settings.Format != Settings.Format) && ((texture.FormatInformation.Group != FormatInformation.Group) || (Graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM2_a_b) || (Graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM4)))
 				throw new ArgumentException("Cannot copy because these formats: '" + texture.Settings.Format.ToString() + "' and '" + Settings.Format.ToString() + "', cannot be converted.", "texture");
 
 			if ((this == texture) && (subResource == destSubResource))

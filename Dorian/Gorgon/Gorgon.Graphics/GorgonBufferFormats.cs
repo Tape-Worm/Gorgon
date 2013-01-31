@@ -28,11 +28,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Drawing;
 using SharpDX.DXGI;
+using GorgonLibrary.Math;
 using GorgonLibrary.Collections;
 
 namespace GorgonLibrary.Graphics
 {
+	#region The Formats.
 	/// <summary>
 	/// Various buffer formats supported for textures, rendertargets, swap chains and display modes.
 	/// </summary>
@@ -439,39 +442,74 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		BC7_UIntNormal_sRGB = 99
 	}
+	#endregion
 
 	/// <summary>
-	/// Types used in a format.
+	/// Flags to handle legacy format types.
 	/// </summary>
 	[Flags()]
-	public enum FormatTypes
+	public enum PitchFlags
 	{
 		/// <summary>
-		/// Typeless.
+		/// None.
 		/// </summary>
-		/// <remarks>This flag is mutually exclusive.</remarks>
-		Untyped = 0,
+		None = 0,
 		/// <summary>
-		/// Type is an integer.
+		/// Data is aligned to a DWORD boundary instead of a byte boundary.
 		/// </summary>
-		Integer = 1,
+		LegacyDWORD = 1,
 		/// <summary>
-		/// Type is unsigned.
+		/// Format uses 24 bits per pixel.
 		/// </summary>
-		Unsigned = 2,
+		BPP24 = 0x10000,
 		/// <summary>
-		/// Type is normalized.
+		/// Format uses 16 bits per pixel.
 		/// </summary>
-		Normalized = 4,
+		BPP16 = 0x20000,
 		/// <summary>
-		/// Type uses sRGB data.
+		/// Format uses 8 bits per pixel.
 		/// </summary>
-		sRGB = 8,
-		/// <summary>
-		/// Type is a floating point value.
-		/// </summary>
-		FloatingPoint = 16
+		BPP8 = 0x40000
 	}
+
+	/// <summary>
+	/// Information about a row and slice pitch for a format.
+	/// </summary>
+	/// <remarks>A pitch is the number of bytes it takes to move to another section.  For example, in a texture, the 
+	/// row pitch would be the number of bytes it takes to move to the next line in the image, and a slice pitch is the 
+	/// number of bytes required to move to the next depth slice in a 3D texture.</remarks>
+	public struct GorgonFormatPitch
+	{
+		/// <summary>
+		/// The number of bytes per line of data.
+		/// </summary>
+		/// <remarks>In a texture, this would indicate the number of bytes necessary for one row of pixel data.</remarks>
+		public readonly int RowPitch;
+
+		/// <summary>
+		/// The number of bytes per slice of data.
+		/// </summary>
+		/// <remarks>In a 3D texture, this would indicate the number of bytes per level of depth.</remarks>
+		public readonly int SlicePitch;
+
+		/// <summary>
+		/// The number of blocks in a compressed format.
+		/// </summary>
+		public readonly Size BlockCount;
+		
+		/// <summary>
+		/// Initializes a new instance of the <see cref="GorgonFormatPitch" /> struct.
+		/// </summary>
+		/// <param name="rowPitch">The row pitch.</param>
+		/// <param name="slicePitch">The slice pitch.</param>
+		/// <param name="blockCount">Number of compressed blocks in a compressed format.</param>
+		public GorgonFormatPitch(int rowPitch, int slicePitch, Size blockCount)
+		{
+			RowPitch = rowPitch;
+			SlicePitch = slicePitch;
+			BlockCount = blockCount;
+		}
+	}	
 
 	/// <summary>
 	/// Retrieves information about the format.
@@ -484,235 +522,7 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		public class GorgonFormatData
 		{
-			#region Value Types.
-			/// <summary>
-			/// Information about a specific component.
-			/// </summary>
-			public struct ComponentInformation
-				: INamedObject
-			{
-				#region Variables.
-				private string _name;
-				private int _shift;
-				private long _mask;
-				private FormatTypes _type;
-				private int _bitDepth;
-				#endregion
-
-				#region Properties.
-				/// <summary>
-				/// Property to return the bit shift value for the component within the packed format.
-				/// </summary>
-				public int Shift
-				{
-					get
-					{
-						return _shift;
-					}
-				}
-
-				/// <summary>
-				/// Property to return the masking value for the component.
-				/// </summary>
-				public long Mask
-				{
-					get
-					{
-						return _mask;
-					}
-				}
-
-				/// <summary>
-				/// Property to return the type of the component.
-				/// </summary>
-				public FormatTypes Type
-				{
-					get
-					{
-						return _type;
-					}
-				}
-
-				/// <summary>
-				/// Property to return the bit depth for the format.
-				/// </summary>
-				public int BitDepth
-				{
-					get
-					{
-						return _bitDepth;
-					}
-				}
-				#endregion
-
-				#region Constructor.
-				/// <summary>
-				/// Initializes a new instance of the <see cref="ComponentInformation"/> struct.
-				/// </summary>
-				/// <param name="name">The name of the component.</param>
-				/// <param name="type">The type for the component.</param>
-				/// <param name="bitDepth">The bit depth of the component.</param>
-				/// <param name="shift">The bit shift amount for the component.</param>
-				/// <param name="mask">The masking value for the component.</param>
-				internal ComponentInformation(string name, FormatTypes type, int bitDepth, int shift, long mask)
-				{
-					_name = name;
-					_type = type;
-					_bitDepth = bitDepth;
-					_shift = shift;
-					_mask = mask;
-				}
-				#endregion
-
-				#region INamedObject Members
-				/// <summary>
-				/// Property to return the name of the component.
-				/// </summary>
-				public string Name
-				{
-					get
-					{
-						return _name;
-					}
-				}
-				#endregion
-			}
-			#endregion
-
-			#region Classes.
-			/// <summary>
-			/// Layout for the format.
-			/// </summary>
-			public class FormatComponents
-				: IEnumerable<ComponentInformation>
-			{
-				#region Variables.
-				private IDictionary<string, ComponentInformation> _layout = null;
-				private System.Collections.ObjectModel.ReadOnlyCollection<string> _names = null;
-				#endregion
-
-				#region Properties.
-				/// <summary>
-				/// Property to return the number of components in the format.
-				/// </summary>
-				public int Count
-				{
-					get
-					{
-						return _layout.Count;
-					}
-				}
-
-				/// <summary>
-				/// Property to return the component information.
-				/// </summary>
-				/// <param name="name"></param>
-				/// <returns></returns>
-				public ComponentInformation this[string name]
-				{
-					get
-					{
-						if (HasComponent(name))
-							return _layout[name.ToLower()];
-						else
-							return new ComponentInformation(name, FormatTypes.Untyped, 0, 0, 0);
-					}
-				}
-
-				/// <summary>
-				/// Property to return a list of names in the component list.
-				/// </summary>
-				public System.Collections.ObjectModel.ReadOnlyCollection<string> ComponentNames
-				{
-					get
-					{
-						return _names;
-					}
-				}
-				#endregion
-
-				#region Methods.
-				/// <summary>
-				/// Function to add information for a component.
-				/// </summary>
-				/// <param name="info"></param>
-				internal void Add(ComponentInformation info)
-				{
-					_layout.Add(info.Name.ToLower(), info);
-				}
-
-				/// <summary>
-				/// Function to retrieve the total bit depth for the components.
-				/// </summary>
-				/// <returns>The total bit depth for the components.</returns>
-				internal int GetBitDepth()
-				{
-					return _layout.Sum(item => item.Value.BitDepth);
-				}
-
-				/// <summary>
-				/// Function to add the names of the components.
-				/// </summary>
-				internal void AddNames()
-				{
-					var names = (from name in _layout
-								select name.Value.Name).ToArray();
-
-					_names = new System.Collections.ObjectModel.ReadOnlyCollection<string>(names);
-				}
-
-				/// <summary>
-				/// Function to return whether the format contains a particular component.
-				/// </summary>
-				/// <param name="name">Name of the component.</param>
-				/// <returns>TRUE if the component exists in this format, FALSE if not.</returns>
-				public bool HasComponent(string name)
-				{
-					return _layout.ContainsKey(name.ToLower());
-				}
-				#endregion
-
-				#region Constructor.
-				/// <summary>
-				/// Initializes a new instance of the <see cref="FormatComponents"/> class.
-				/// </summary>
-				internal FormatComponents()
-				{
-					_layout = new Dictionary<string, ComponentInformation>();					
-				}
-				#endregion
-
-				#region IEnumerable<ComponentInformation> Members
-				/// <summary>
-				/// Returns an enumerator that iterates through the collection.
-				/// </summary>
-				/// <returns>
-				/// A <see cref="T:System.Collections.Generic.IEnumerator`1"/> that can be used to iterate through the collection.
-				/// </returns>
-				public IEnumerator<ComponentInformation> GetEnumerator()
-				{
-					foreach (var info in _layout)
-						yield return info.Value;
-				}
-				#endregion
-
-				#region IEnumerable Members
-				/// <summary>
-				/// Returns an enumerator that iterates through a collection.
-				/// </summary>
-				/// <returns>
-				/// An <see cref="T:System.Collections.IEnumerator"/> object that can be used to iterate through the collection.
-				/// </returns>
-				System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
-				{
-					return GetEnumerator();
-				}
-				#endregion
-			}
-			#endregion
-
 			#region Variables.
-			private int _bitDepth = 0;
 			private int _sizeInBytes = 0;
 			#endregion
 
@@ -720,7 +530,7 @@ namespace GorgonLibrary.Graphics
 			/// <summary>
 			/// Property to return the group for the format.
 			/// </summary>
-			public string Group
+			public BufferFormat Group
 			{
 				get;
 				private set;
@@ -740,49 +550,6 @@ namespace GorgonLibrary.Graphics
 			/// </summary>
 			public bool IsTypeless
 			{
-				get
-				{
-					switch (Format)
-					{
-						case BufferFormat.B8G8R8A8:
-						case BufferFormat.B8G8R8X8:
-						case BufferFormat.BC1:
-						case BufferFormat.BC2:
-						case BufferFormat.BC3:
-						case BufferFormat.BC4:
-						case BufferFormat.BC5:
-						case BufferFormat.BC6H:
-						case BufferFormat.BC7:
-						case BufferFormat.R10G10B10A2:
-						case BufferFormat.R16:
-						case BufferFormat.R16G16:
-						case BufferFormat.R16G16B16A16:
-						case BufferFormat.R24G8:
-						case BufferFormat.R24_UIntNormal_X8:
-						case BufferFormat.R32:
-						case BufferFormat.R32_Float_X8X24:
-						case BufferFormat.R32G32:
-						case BufferFormat.R32G32B32:
-						case BufferFormat.R32G32B32A32:
-						case BufferFormat.R32G8X24:
-						case BufferFormat.R8:
-						case BufferFormat.R8G8:
-						case BufferFormat.R8G8B8A8:
-						case BufferFormat.X24_G8_UInt:
-						case BufferFormat.X32_G8X24_UInt:
-						case BufferFormat.Unknown:
-							return true;
-						default:
-							return false;
-					}
-				}
-			}
-
-			/// <summary>
-			/// Property to return information about the components in the format.
-			/// </summary>
-			public FormatComponents Components
-			{
 				get;
 				private set;
 			}
@@ -792,13 +559,8 @@ namespace GorgonLibrary.Graphics
 			/// </summary>
 			public int BitDepth
 			{
-				get
-				{
-					if (_bitDepth == 0)
-						_bitDepth = Components.GetBitDepth();
-
-					return _bitDepth;
-				}
+				get;
+				private set;
 			}
 
 			/// <summary>
@@ -810,7 +572,7 @@ namespace GorgonLibrary.Graphics
 				{
 					if (_sizeInBytes == 0)
 					{
-						// Can't have a data type smaller than 1 bit.
+						// Can't have a data type smaller than 1 byte.
 						if (BitDepth >= 8)
 							_sizeInBytes = BitDepth / 8;
 						else
@@ -826,10 +588,8 @@ namespace GorgonLibrary.Graphics
 			/// </summary>
 			public bool HasDepth
 			{
-				get
-				{
-					return Components.HasComponent("D");
-				}
+				get;
+				private set;
 			}
 
 			/// <summary>
@@ -837,10 +597,17 @@ namespace GorgonLibrary.Graphics
 			/// </summary>
 			public bool HasStencil
 			{
-				get
-				{
-					return Components.HasComponent("S");
-				}
+				get;
+				private set;
+			}
+
+			/// <summary>
+			/// Property to return whether this format is an sRGB format or not.
+			/// </summary>
+			public bool IssRGB
+			{
+				get;
+				private set;
 			}
 
 			/// <summary>
@@ -848,10 +615,8 @@ namespace GorgonLibrary.Graphics
 			/// </summary>
 			public bool HasAlpha
 			{
-				get
-				{
-					return Components.HasComponent("A");
-				}
+				get;
+				private set;
 			}
 
 			/// <summary>
@@ -875,56 +640,421 @@ namespace GorgonLibrary.Graphics
 
 			#region Methods.
 			/// <summary>
-			/// Function to parse the layout information.
+			/// Function to retrieve whether this format has a depth component or not.
 			/// </summary>
-			/// <param name="layoutInfo">Layout information.</param>
-			private void GetLayout(Tuple<string, FormatTypes> layoutInfo)
+			/// <param name="format">Format to look up.</param>
+			private void GetDepthState(BufferFormat format)
 			{
-				string packedComponent = layoutInfo.Item1;
-				StringBuilder numbers = new StringBuilder(layoutInfo.Item1.Length);
-				StringBuilder letters = new StringBuilder(layoutInfo.Item1.Length);
-				int offset = 0;
-				
-				for (int i = 0; i < packedComponent.Length; i++)
+				switch (format)
 				{
-					if (char.IsNumber(packedComponent[i]))
-					{
-						numbers.Append(packedComponent[i]);
-						letters.Append(' ');
-					}
-
-					if (char.IsLetter(packedComponent[i]))
-					{
-						letters.Append(packedComponent[i]);
-						numbers.Append(' ');
-					}
+					case BufferFormat.D24_UIntNormal_S8_UInt:
+					case BufferFormat.D32_Float_S8X24_UInt:
+						HasDepth = true;
+						HasStencil = true;
+						break;
+					case BufferFormat.D32_Float:
+					case BufferFormat.D16_UIntNormal:
+						HasStencil = false;
+						HasDepth = true;
+						break;
+					default:
+						HasDepth = false;
+						HasStencil = false;
+						break;
 				}
+			}
 
-				var componentNames = letters.ToString().Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
-				var componentDepths = numbers.ToString().Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
-
-				// These should be the same length.  If not, then we'll just have to exit.
-				if (componentNames.Length != componentDepths.Length)
-					return;
-
-				if (Components.Count > 0)
-					offset = Components.Last().Shift + Components.Last().BitDepth;
-
-				for (int i = componentNames.Length - 1; i >= 0; i--)
+			/// <summary>
+			/// Function to retrieve the number of bits required for the format.
+			/// </summary>
+			/// <param name="format">Format to evaluate.</param>
+			private void GetBitDepth(BufferFormat format)
+			{
+				switch (format)
 				{
-					int bitDepth = 0;
-					int nameCounter = 1;
-					string name = componentNames[i];
+					case BufferFormat.R1_UIntNormal:
+						BitDepth = 1;
+						break;
+					case BufferFormat.R8:
+					case BufferFormat.R8_UIntNormal:
+					case BufferFormat.R8_UInt:
+					case BufferFormat.R8_IntNormal:
+					case BufferFormat.R8_Int:
+					case BufferFormat.A8_UIntNormal:
+					case BufferFormat.BC1:
+					case BufferFormat.BC1_UIntNormal:
+					case BufferFormat.BC1_UIntNormal_sRGB:
+					case BufferFormat.BC4:
+					case BufferFormat.BC4_UIntNormal:
+					case BufferFormat.BC4_IntNormal:
+						BitDepth = 4;
+						break;
+					case BufferFormat.BC2:
+					case BufferFormat.BC2_UIntNormal:
+					case BufferFormat.BC2_UIntNormal_sRGB:
+					case BufferFormat.BC3:
+					case BufferFormat.BC3_UIntNormal:
+					case BufferFormat.BC3_UIntNormal_sRGB:
+					case BufferFormat.BC5:
+					case BufferFormat.BC5_UIntNormal:
+					case BufferFormat.BC5_IntNormal:
+					case BufferFormat.BC6H:
+					case BufferFormat.BC6H_UF16:
+					case BufferFormat.BC6H_SF16:
+					case BufferFormat.BC7:
+					case BufferFormat.BC7_UIntNormal:
+					case BufferFormat.BC7_UIntNormal_sRGB:
+					case BufferFormat.R8G8:
+					case BufferFormat.R8G8_UIntNormal:
+					case BufferFormat.R8G8_UInt:
+					case BufferFormat.R8G8_IntNormal:
+					case BufferFormat.R8G8_Int:
+					case BufferFormat.R16:
+					case BufferFormat.R16_Float:
+					case BufferFormat.D16_UIntNormal:
+					case BufferFormat.R16_UIntNormal:
+					case BufferFormat.R16_UInt:
+					case BufferFormat.R16_IntNormal:
+					case BufferFormat.R16_Int:
+					case BufferFormat.B5G6R5_UIntNormal:
+					case BufferFormat.B5G5R5A1_UIntNormal:
+						BitDepth = 8;
+						break;
+					case BufferFormat.R10G10B10A2:
+					case BufferFormat.R10G10B10A2_UIntNormal:
+					case BufferFormat.R10G10B10A2_UInt:
+					case BufferFormat.R11G11B10_Float:
+					case BufferFormat.R8G8B8A8:
+					case BufferFormat.R8G8B8A8_UIntNormal:
+					case BufferFormat.R8G8B8A8_UIntNormal_sRGB:
+					case BufferFormat.R8G8B8A8_UInt:
+					case BufferFormat.R8G8B8A8_IntNormal:
+					case BufferFormat.R8G8B8A8_Int:
+					case BufferFormat.R16G16:
+					case BufferFormat.R16G16_Float:
+					case BufferFormat.R16G16_UIntNormal:
+					case BufferFormat.R16G16_UInt:
+					case BufferFormat.R16G16_IntNormal:
+					case BufferFormat.R16G16_Int:
+					case BufferFormat.R32:
+					case BufferFormat.D32_Float:
+					case BufferFormat.R32_Float:
+					case BufferFormat.R32_UInt:
+					case BufferFormat.R32_Int:
+					case BufferFormat.R24G8:
+					case BufferFormat.D24_UIntNormal_S8_UInt:
+					case BufferFormat.R24_UIntNormal_X8:
+					case BufferFormat.X24_G8_UInt:
+					case BufferFormat.R9G9B9E5_SharedExp:
+					case BufferFormat.R8G8_B8G8_UIntNormal:
+					case BufferFormat.G8R8_G8B8_UIntNormal:
+					case BufferFormat.B8G8R8A8_UIntNormal:
+					case BufferFormat.B8G8R8X8_UIntNormal:
+					case BufferFormat.R10G10B10_XR_BIAS_A2_UIntNormal:
+					case BufferFormat.B8G8R8A8:
+					case BufferFormat.B8G8R8A8_UIntNormal_sRGB:
+					case BufferFormat.B8G8R8X8:
+					case BufferFormat.B8G8R8X8_UIntNormal_sRGB:
+						BitDepth = 32;
+						break;
+					case BufferFormat.R16G16B16A16:
+					case BufferFormat.R16G16B16A16_Float:
+					case BufferFormat.R16G16B16A16_UIntNormal:
+					case BufferFormat.R16G16B16A16_UInt:
+					case BufferFormat.R16G16B16A16_IntNormal:
+					case BufferFormat.R16G16B16A16_Int:
+					case BufferFormat.R32G32:
+					case BufferFormat.R32G32_Float:
+					case BufferFormat.R32G32_UInt:
+					case BufferFormat.R32G32_Int:
+					case BufferFormat.R32G8X24:
+					case BufferFormat.D32_Float_S8X24_UInt:
+					case BufferFormat.R32_Float_X8X24:
+					case BufferFormat.X32_G8X24_UInt:
+						BitDepth = 64;
+						break;
+					case BufferFormat.R32G32B32:
+					case BufferFormat.R32G32B32_Float:
+					case BufferFormat.R32G32B32_UInt:
+					case BufferFormat.R32G32B32_Int:
+						BitDepth = 96;
+						break;
+					case BufferFormat.R32G32B32A32:
+					case BufferFormat.R32G32B32A32_Float:
+					case BufferFormat.R32G32B32A32_UInt:
+					case BufferFormat.R32G32B32A32_Int:
+						BitDepth = 128;
+						break;
+					default:
+						BitDepth = 0;
+						break;
+				}
+			}
 
-					bitDepth = Convert.ToInt32(componentDepths[i]);
-					while (Components.HasComponent(name))
-					{
-						name = componentNames[i] + "." + nameCounter.ToString();
-						nameCounter++;
-					}
+			/// <summary>
+			/// Function to retrieve whether this format is an sRGB format or not.
+			/// </summary>
+			/// <param name="format">Format to look up.</param>
+			private void GetsRGBState(BufferFormat format)
+			{
+				switch (format)
+				{
+					case BufferFormat.R8G8B8A8_UIntNormal_sRGB:
+					case BufferFormat.BC1_UIntNormal_sRGB:
+					case BufferFormat.BC2_UIntNormal_sRGB:
+					case BufferFormat.BC3_UIntNormal_sRGB:
+					case BufferFormat.B8G8R8A8_UIntNormal_sRGB:
+					case BufferFormat.B8G8R8X8_UIntNormal_sRGB:
+					case BufferFormat.BC7_UIntNormal_sRGB: 
+						IssRGB = true;
+						break;
+					default:
+						IssRGB = false;
+						break;
+				}
+			}
 
-					Components.Add(new ComponentInformation(name, layoutInfo.Item2, bitDepth, offset, ((long)System.Math.Pow(2, bitDepth)) - 1));
-					offset += bitDepth;
+			/// <summary>
+			/// Function to retrieve whether a buffer is compressed or not.
+			/// </summary>
+			/// <param name="format">Format of the buffer.</param>
+			private void GetCompressedState(BufferFormat format)
+			{
+				switch (format)
+				{
+					case BufferFormat.BC1:
+					case BufferFormat.BC1_UIntNormal:
+					case BufferFormat.BC1_UIntNormal_sRGB:
+					case BufferFormat.BC2:
+					case BufferFormat.BC2_UIntNormal:
+					case BufferFormat.BC2_UIntNormal_sRGB:
+					case BufferFormat.BC3:
+					case BufferFormat.BC3_UIntNormal:
+					case BufferFormat.BC3_UIntNormal_sRGB:
+					case BufferFormat.BC4:
+					case BufferFormat.BC4_IntNormal:
+					case BufferFormat.BC4_UIntNormal:
+					case BufferFormat.BC5:
+					case BufferFormat.BC5_IntNormal:
+					case BufferFormat.BC5_UIntNormal:
+					case BufferFormat.BC6H:
+					case BufferFormat.BC6H_SF16:
+					case BufferFormat.BC6H_UF16:
+					case BufferFormat.BC7:
+					case BufferFormat.BC7_UIntNormal:
+					case BufferFormat.BC7_UIntNormal_sRGB:
+						IsCompressed = true;
+						break;
+					default:
+						IsCompressed = false;
+						break;
+				}
+			}
+
+			/// <summary>
+			/// Function to determine which typeless group the format belongs to.
+			/// </summary>
+			/// <param name="format">The format to evaluate.</param>
+			private void GetGroup(BufferFormat format)
+			{
+				switch (format)
+				{
+					case BufferFormat.B8G8R8A8_UIntNormal:
+					case BufferFormat.B8G8R8A8_UIntNormal_sRGB:
+						Group = BufferFormat.B8G8R8A8;
+						break;
+					case BufferFormat.B8G8R8X8_UIntNormal:
+					case BufferFormat.B8G8R8X8_UIntNormal_sRGB:
+						Group = BufferFormat.B8G8R8X8;
+						break;
+					case BufferFormat.BC1_UIntNormal:
+					case BufferFormat.BC1_UIntNormal_sRGB:
+						Group = BufferFormat.BC1;
+						break;
+					case BufferFormat.BC2_UIntNormal:
+					case BufferFormat.BC2_UIntNormal_sRGB:
+						Group = BufferFormat.BC2;
+						break;
+					case BufferFormat.BC3_UIntNormal:
+					case BufferFormat.BC3_UIntNormal_sRGB:
+						Group = BufferFormat.BC3;
+						break;
+					case BufferFormat.BC4_UIntNormal:
+					case BufferFormat.BC4_IntNormal:
+						Group = BufferFormat.BC4;
+						break;
+					case BufferFormat.BC5_UIntNormal:
+					case BufferFormat.BC5_IntNormal:
+						Group = BufferFormat.BC5;
+						break;
+					case BufferFormat.BC6H_UF16:
+					case BufferFormat.BC6H_SF16:
+						Group = BufferFormat.BC6H;
+						break;
+					case BufferFormat.BC7_UIntNormal:
+					case BufferFormat.BC7_UIntNormal_sRGB:
+						Group = BufferFormat.BC7;
+						break;
+					case BufferFormat.R10G10B10A2_UIntNormal:
+					case BufferFormat.R10G10B10A2_UInt:
+						Group = BufferFormat.R10G10B10A2;
+						break;
+					case BufferFormat.R16_Float:
+					case BufferFormat.R16_UIntNormal:
+					case BufferFormat.R16_UInt:
+					case BufferFormat.R16_IntNormal:
+					case BufferFormat.R16_Int:
+						Group = BufferFormat.R16;
+						break;
+					case BufferFormat.R16G16_Float:
+					case BufferFormat.R16G16_UIntNormal:
+					case BufferFormat.R16G16_UInt:
+					case BufferFormat.R16G16_IntNormal:
+					case BufferFormat.R16G16_Int:
+						Group = BufferFormat.R16G16;
+						break;
+					case BufferFormat.R16G16B16A16_Float:
+					case BufferFormat.R16G16B16A16_UIntNormal:
+					case BufferFormat.R16G16B16A16_UInt:
+					case BufferFormat.R16G16B16A16_IntNormal:
+					case BufferFormat.R16G16B16A16_Int:
+						Group = BufferFormat.R16G16B16A16;
+						break;
+					case BufferFormat.R32_Float:
+					case BufferFormat.R32_UInt:
+					case BufferFormat.R32_Int:
+						Group = BufferFormat.R32;
+						break;
+					case BufferFormat.R32G32_Float:
+					case BufferFormat.R32G32_UInt:
+					case BufferFormat.R32G32_Int:
+						Group = BufferFormat.R32G32;
+						break;
+					case BufferFormat.R32G32B32_Float:
+					case BufferFormat.R32G32B32_UInt:
+					case BufferFormat.R32G32B32_Int:
+						Group = BufferFormat.R32G32B32;
+						break;
+					case BufferFormat.R32G32B32A32_Float:
+					case BufferFormat.R32G32B32A32_UInt:
+					case BufferFormat.R32G32B32A32_Int:
+						Group = BufferFormat.R32G32B32A32;
+						break;
+					case BufferFormat.R8_UIntNormal:
+					case BufferFormat.R8_UInt:
+					case BufferFormat.R8_IntNormal:
+					case BufferFormat.R8_Int:
+						Group = BufferFormat.R8;
+						break;
+					case BufferFormat.R8G8_UIntNormal:
+					case BufferFormat.R8G8_UInt:
+					case BufferFormat.R8G8_IntNormal:
+					case BufferFormat.R8G8_Int:
+						Group = BufferFormat.R8G8;
+						break;
+					case BufferFormat.R8G8B8A8_UIntNormal:
+					case BufferFormat.R8G8B8A8_UIntNormal_sRGB:
+					case BufferFormat.R8G8B8A8_UInt:
+					case BufferFormat.R8G8B8A8_IntNormal:
+					case BufferFormat.R8G8B8A8_Int:
+						Group = BufferFormat.R8G8B8A8;
+						break;
+					default:
+						Group = BufferFormat.Unknown;
+						break;
+				}
+			}
+
+			/// <summary>
+			/// Function to determine if the specified format is typeless.
+			/// </summary>
+			/// <param name="format">The format to check.</param>
+			private void GetTypelessState(BufferFormat format)
+			{
+				switch (format)
+				{
+					case BufferFormat.R32G32B32A32:
+					case BufferFormat.R32G32B32:
+					case BufferFormat.R16G16B16A16:
+					case BufferFormat.R32G32:
+					case BufferFormat.R32G8X24:
+					case BufferFormat.R32_Float_X8X24:
+					case BufferFormat.X32_G8X24_UInt:
+					case BufferFormat.R10G10B10A2:
+					case BufferFormat.R8G8B8A8:
+					case BufferFormat.R16G16:
+					case BufferFormat.R32:
+					case BufferFormat.R24G8:
+					case BufferFormat.R24_UIntNormal_X8:
+					case BufferFormat.X24_G8_UInt:
+					case BufferFormat.R8G8:
+					case BufferFormat.R16:
+					case BufferFormat.R8:
+					case BufferFormat.BC1:
+					case BufferFormat.BC2:
+					case BufferFormat.BC3:
+					case BufferFormat.BC4:
+					case BufferFormat.BC5:
+					case BufferFormat.B8G8R8A8:
+					case BufferFormat.B8G8R8X8:
+					case BufferFormat.BC6H:
+					case BufferFormat.BC7:
+					case BufferFormat.Unknown:
+						IsTypeless = true;
+						break;
+					default:
+						IsTypeless = false;
+						break;
+				}
+			}
+
+			/// <summary>
+			/// Function to determine if the format has an alpha channel.
+			/// </summary>
+			/// <param name="format">Format to check.</param>
+			private void GetAlphaChannel(BufferFormat format)
+			{
+				switch (format)
+				{
+					case BufferFormat.R32G32B32A32:
+					case BufferFormat.R32G32B32A32_Float:
+					case BufferFormat.R32G32B32A32_UInt:
+					case BufferFormat.R32G32B32A32_Int:
+					case BufferFormat.R16G16B16A16:
+					case BufferFormat.R16G16B16A16_Float:
+					case BufferFormat.R16G16B16A16_UIntNormal:
+					case BufferFormat.R16G16B16A16_UInt:
+					case BufferFormat.R16G16B16A16_IntNormal:
+					case BufferFormat.R16G16B16A16_Int:
+					case BufferFormat.R10G10B10A2:
+					case BufferFormat.R10G10B10A2_UIntNormal:
+					case BufferFormat.R10G10B10A2_UInt:
+					case BufferFormat.R8G8B8A8:
+					case BufferFormat.R8G8B8A8_UIntNormal:
+					case BufferFormat.R8G8B8A8_UIntNormal_sRGB:
+					case BufferFormat.R8G8B8A8_UInt:
+					case BufferFormat.R8G8B8A8_IntNormal:
+					case BufferFormat.R8G8B8A8_Int:
+					case BufferFormat.A8_UIntNormal:
+					case BufferFormat.BC2:
+					case BufferFormat.BC2_UIntNormal:
+					case BufferFormat.BC2_UIntNormal_sRGB:
+					case BufferFormat.BC3:
+					case BufferFormat.BC3_UIntNormal:
+					case BufferFormat.BC3_UIntNormal_sRGB:
+					case BufferFormat.B5G5R5A1_UIntNormal:
+					case BufferFormat.B8G8R8A8_UIntNormal:
+					case BufferFormat.R10G10B10_XR_BIAS_A2_UIntNormal:
+					case BufferFormat.B8G8R8A8:
+					case BufferFormat.B8G8R8A8_UIntNormal_sRGB:
+					case BufferFormat.BC7:
+					case BufferFormat.BC7_UIntNormal:
+					case BufferFormat.BC7_UIntNormal_sRGB:
+						HasAlpha = true;
+						break;
+					default:
+						HasAlpha = false;
+						break;
 				}
 			}
 
@@ -934,86 +1064,110 @@ namespace GorgonLibrary.Graphics
 			/// <param name="format">Format to parse.</param>
 			private void ParseFormat(BufferFormat format)
 			{
-				string[] types = new string[] { "UInt", "Int", "UIntNormal", "IntNormal", "Float", "SharedExp" };
-				string formatString = format.ToString();
-				string originalString = formatString;
-				IList<Tuple<string, FormatTypes>> components = new List<Tuple<string, FormatTypes>>();
+				GetGroup(format);
+				GetCompressedState(format);
+				GetTypelessState(format);
+				GetAlphaChannel(format);
+				GetsRGBState(format);
+				GetDepthState(format);
+				GetBitDepth(format);
 
-				// Don't process the compression formats.
-				if (formatString.StartsWith("BC", StringComparison.CurrentCultureIgnoreCase))
-				{
-					IsCompressed = true;
-					return;
-				}
-
-				IsCompressed = false;
 				IsPacked = (format == BufferFormat.R8G8_B8G8_UIntNormal) || (format == BufferFormat.G8R8_G8B8_UIntNormal);
+			}
 
-				// Split out the major component types.
-				while (formatString.Length > 0)
+			/// <summary>
+			/// Function to return pitch information for this format.
+			/// </summary>
+			/// <param name="width">The width of the pixel data.</param>
+			/// <param name="height">The height of the pixel data.</param>
+			/// <param name="flags">Legacy flags for counting the bits per pixel and data alignment.</param>
+			/// <returns>The pitch information for the format.</returns>
+			public GorgonFormatPitch GetPitch(int width, int height, PitchFlags flags)
+			{
+				int rowPitch = 0;
+				int widthCounter = width;
+				int heightCounter = height;
+
+				// Do calculations for compressed formats.
+				if (IsCompressed)
 				{
-					FormatTypes formatType = FormatTypes.Untyped;
-					int index = formatString.IndexOf('_');
-					string part = string.Empty;
+					int bpb = 0;
 
-					if (index > -1)
-						part = formatString.Substring(0, index);
-					else
+					switch (Format)
 					{
-						part = formatString;
-						formatString = string.Empty;
+						case BufferFormat.BC1:
+						case BufferFormat.BC1_UIntNormal:
+						case BufferFormat.BC1_UIntNormal_sRGB:
+						case BufferFormat.BC4:
+						case BufferFormat.BC4_IntNormal:
+						case BufferFormat.BC4_UIntNormal:
+							bpb = 8;
+							break;
+						default:
+							bpb = 16;
+							break;
 					}
 
-					string stringType = types.Where(item => string.Compare(part, item, true) == 0).FirstOrDefault();
-
-					// No type?  Then this is a component.
-					if ((string.IsNullOrEmpty(stringType)) && (string.Compare(part, "sRGB", true) != 0))
-						components.Add(new Tuple<string, FormatTypes>(part, formatType));
-					else
-					{
-						// The format of the enumeration value should be <components>[_<type>][_<components>_[type]]
-						if (components.Count != 0)
-						{
-							switch (stringType)
-							{
-								case "UInt":
-									formatType = FormatTypes.Unsigned | FormatTypes.Integer;
-									break;
-								case "UIntNormal":
-									formatType = FormatTypes.Unsigned | FormatTypes.Integer | FormatTypes.Normalized;
-									break;
-								case "Int":
-									formatType = FormatTypes.Integer;
-									break;
-								case "IntNormal":
-									formatType = FormatTypes.Integer | FormatTypes.Normalized;
-									break;
-								case "SharedExp":
-								case "Float":
-									formatType = FormatTypes.FloatingPoint;
-									break;
-							}
-
-							// If this is an sRGB format, then apply it to the format type.
-							if (originalString.EndsWith("_sRGB", StringComparison.CurrentCultureIgnoreCase))
-								formatType |= FormatTypes.sRGB;
-
-							// Look for the previous component, and assign the type.
-							for (int i = components.Count - 1; i >= 0; i--)
-							{
-								// Replace previously untyped.
-								if (components[i].Item2 == FormatTypes.Untyped)
-									components[i] = new Tuple<string, FormatTypes>(components[i].Item1, formatType);
-							}
-						}
-					}
-
-					if (!string.IsNullOrEmpty(formatString))
-						formatString = formatString.Substring(index + 1);
+					widthCounter = 1.Max((width + 3) / 4);
+					heightCounter = 1.Max((height + 3) / 4);
+					rowPitch = widthCounter * bpb;
+					return new GorgonFormatPitch(widthCounter * bpb, heightCounter * rowPitch, new Size(widthCounter, heightCounter));
 				}
 
-				foreach (var component in components.Reverse())
-					GetLayout(component);
+				if (IsPacked)
+				{
+					rowPitch = ((width + 1) >> 1) >> 2;
+					return new GorgonFormatPitch(rowPitch, rowPitch * height, Size.Empty);
+				}
+
+				int bitsPerPixel = BitDepth;
+
+				if ((flags & PitchFlags.BPP24) == PitchFlags.BPP24)
+				{
+					bitsPerPixel = 24;
+				}
+				else if ((flags & PitchFlags.BPP16) == PitchFlags.BPP16)
+				{
+					bitsPerPixel = 16;
+				} 
+				else if ((flags & PitchFlags.BPP8) == PitchFlags.BPP8)
+				{
+					bitsPerPixel = 8;
+				}
+
+				// This is for handling old DirectDraw DDS files that didn't output
+				// properly because of assumptions about pitch alignment.
+				if ((flags & PitchFlags.LegacyDWORD) == PitchFlags.LegacyDWORD)
+				{
+					rowPitch = ((width * bitsPerPixel + 31) / 32) * sizeof(int);
+				}
+				else
+				{
+					rowPitch = ((width * bitsPerPixel + 7) / 8);
+				}
+
+				return new GorgonFormatPitch(rowPitch, rowPitch * height, Size.Empty);
+			}
+
+			/// <summary>
+			/// Function to compute the scan lines for a format, given a specific height.
+			/// </summary>
+			/// <param name="height">Height of the image.</param>
+			/// <returns>The number of scan lines.</returns>
+			/// <remarks>
+			/// This will compute the number of scan lines for an image that uses the format that this information describes.  If the format is 
+			/// <see cref="P:GorgonLibrary.Graphics.GorgonBufferFormatInfo.GorgonFormatData.IsCompressed">compressed</see>, then this method will 
+			/// compute the scanline count based on the maximum size between 1 and a block size multiple of 4.  If the format is not compressed, 
+			/// then it will just return the height value passed in.
+			/// </remarks>
+			public int Scanlines(int height)
+			{
+				if (IsCompressed)
+				{
+					return 1.Max((height + 3) / 4);
+				}
+
+				return height;
 			}
 			#endregion
 
@@ -1025,77 +1179,11 @@ namespace GorgonLibrary.Graphics
 			internal GorgonFormatData(BufferFormat format)
 			{
 				Format = format;
-				Components = new FormatComponents();
-				Group = "No group";
+				Group = BufferFormat.Unknown;
 
 				if (format != BufferFormat.Unknown)
 				{
 					ParseFormat(format);
-					Components.AddNames();
-
-					Group = string.Empty;
-					foreach (var component in this.Components.Reverse())
-						Group += component.Name + component.BitDepth.ToString();
-
-					// Group compressed formats.
-					if (string.IsNullOrEmpty(Group))
-					{
-						switch (format)
-						{	
-							case BufferFormat.BC1:
-							case BufferFormat.BC1_UIntNormal:
-							case BufferFormat.BC1_UIntNormal_sRGB:
-								Group = "BC1";
-								_bitDepth = 4;
-								_sizeInBytes = 8;
-								break;
-							case BufferFormat.BC2:
-							case BufferFormat.BC2_UIntNormal:
-							case BufferFormat.BC2_UIntNormal_sRGB:
-								Group = "BC2";
-								_bitDepth = 8;
-								_sizeInBytes = 16;
-								break;
-							case BufferFormat.BC3:
-							case BufferFormat.BC3_UIntNormal:
-							case BufferFormat.BC3_UIntNormal_sRGB:
-								Group = "BC3";
-								_bitDepth = 8;
-								_sizeInBytes = 16;
-								break;
-							case BufferFormat.BC4:
-							case BufferFormat.BC4_IntNormal:
-							case BufferFormat.BC4_UIntNormal:
-								Group = "BC4";
-								_bitDepth = 4;
-								_sizeInBytes = 8;
-								break;
-							case BufferFormat.BC5:
-							case BufferFormat.BC5_IntNormal:
-							case BufferFormat.BC5_UIntNormal:
-								Group = "BC5";
-								_bitDepth = 8;
-								_sizeInBytes = 16;
-								break;
-							case BufferFormat.BC6H:
-							case BufferFormat.BC6H_SF16:
-							case BufferFormat.BC6H_UF16:
-								Group = "BC6";
-								_bitDepth = 8;
-								_sizeInBytes = 16;
-								break;
-							case BufferFormat.BC7:
-							case BufferFormat.BC7_UIntNormal:
-							case BufferFormat.BC7_UIntNormal_sRGB:
-								Group = "BC7";
-								_bitDepth = 8;
-								_sizeInBytes = 16;
-								break;
-							default:
-								Group = "No group";
-								break;
-						}
-					}
 				}
 			}
 			#endregion
@@ -1103,6 +1191,7 @@ namespace GorgonLibrary.Graphics
 		#endregion
 
 		#region Variables.
+		private static readonly object _syncLock = new object();
 		private static IDictionary<BufferFormat, GorgonFormatData> _formats = null;
 		#endregion
 
@@ -1112,10 +1201,13 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		private static void GetFormatInfo()
 		{
-			BufferFormat[] formats = (BufferFormat[])Enum.GetValues(typeof(BufferFormat));
+			lock (_syncLock)
+			{
+				BufferFormat[] formats = (BufferFormat[])Enum.GetValues(typeof(BufferFormat));
 
-			foreach (var format in formats)
-				_formats.Add(format, new GorgonFormatData(format));
+				foreach (var format in formats)
+					_formats.Add(format, new GorgonFormatData(format));
+			}
 		}
 
 		/// <summary>

@@ -109,8 +109,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.IO;
 using WIC = SharpDX.WIC;
+using GorgonLibrary.IO;
 using GorgonLibrary.Graphics;
+using GorgonLibrary.Native;
 
 namespace Tester_Graphics
 {
@@ -336,6 +339,142 @@ namespace Tester_Graphics
 			}
 
 			return null;
+		}
+
+		/// <summary>
+		/// Function to allocate a buffer and copy the data from the texture into that buffer.
+		/// </summary>
+		/// <param name="texture">Texture to copy from.</param>
+		/// <param name="pitchInfo">Pitch information.</param>
+		/// <returns>A data stream containing the buffer.</returns>
+		private unsafe GorgonDataStream GetTextureData(GorgonTexture texture, out GorgonFormatPitch pitchInfo)
+		{
+			GorgonDataStream result = null;			
+
+			using (GorgonTexture stagingTexture = texture.GetStagingTexture<GorgonTexture>())
+			{
+				var imageData = stagingTexture.Lock<ISubResourceData>(BufferLockFlags.Read);
+
+				try
+				{
+					var formatPitch = texture.FormatInformation.GetPitch(texture.Settings.Width, texture.Settings.Height, PitchFlags.None);
+					result = new GorgonDataStream(stagingTexture.SizeInBytes);
+
+					// Pitch information is identical, copy all data in one burst.
+					if ((imageData.RowPitch == formatPitch.RowPitch) && (imageData.SlicePitch == formatPitch.SlicePitch))
+					{
+						DirectAccess.MemoryCopy(result.UnsafePointer, imageData.Data.UnsafePointer, stagingTexture.SizeInBytes);
+					}
+					else
+					{
+						byte* dest = (byte*)result.UnsafePointer;
+						int depth = (stagingTexture.Settings.Depth < 1) ? 1 : stagingTexture.Settings.Depth;
+
+						// Otherwise, we'll need to copy by scanline.
+						for (int z = 0; z < depth; z++)
+						{
+							byte* source = ((byte *)imageData.Data.UnsafePointer) + (z * imageData.SlicePitch);
+
+							for (int y = 0; y < stagingTexture.Settings.Height; y++)
+							{
+								DirectAccess.MemoryCopy(dest, source, formatPitch.RowPitch);
+								source += imageData.RowPitch;
+								dest += formatPitch.RowPitch;
+							}
+						}
+					}
+
+					pitchInfo = new GorgonFormatPitch(formatPitch.RowPitch, formatPitch.SlicePitch, System.Drawing.Size.Empty);
+
+					return result;
+				}
+				finally
+				{
+					stagingTexture.Unlock();
+				}				
+			}
+		}
+
+		/// <summary>
+		/// Function to save a PNG encoded image to a stream.
+		/// </summary>
+		/// <param name="texture">Texture to write to the stream.</param>
+		/// <param name="stream">Stream to contain the image data.</param>
+		public unsafe void SavePNGToStream(GorgonTexture texture, Stream stream)
+		{
+			GorgonFormatPitch pitchInfo = default(GorgonFormatPitch);
+
+			using (GorgonDataStream imageData = GetTextureData(texture, out pitchInfo))
+			{
+				using (WIC.BitmapEncoder encoder = new WIC.BitmapEncoder(_factory, WIC.ContainerFormatGuids.Png, stream))
+				{
+					using (WIC.BitmapFrameEncode frame = new WIC.BitmapFrameEncode(encoder))
+					{
+						Guid? wicGuid = GetGUID(texture.Settings.Format);
+
+						if (wicGuid == null)
+						{
+							throw new ArgumentException("The format '" + texture.Settings.Format.ToString() + "' is not supported.", "texture");
+						}
+
+						Guid target = wicGuid.Value;
+
+						frame.Initialize();
+						frame.SetSize(texture.Settings.Width, texture.Settings.Height);
+						frame.SetResolution(72, 72);
+						frame.SetPixelFormat(ref target);
+
+						if (wicGuid.Value != target)
+						{
+							SharpDX.DataRectangle rect = new SharpDX.DataRectangle(imageData.BasePointer, pitchInfo.RowPitch);
+							using (var sourceData = new WIC.Bitmap(_factory, texture.Settings.Width, texture.Settings.Height, wicGuid.Value, rect, pitchInfo.SlicePitch))
+							{
+								using (var converter = new WIC.FormatConverter(_factory))
+								{
+									int bitsPerPixel = 0;
+									int rowPitch = 0;
+									int slicePitch = 0;
+
+									converter.Initialize(sourceData, target, WIC.BitmapDitherType.None, null, 0, WIC.BitmapPaletteType.Custom);
+
+									using (var component = new WIC.ComponentInfo(_factory, target))
+									{
+										if (component.ComponentType != WIC.ComponentType.PixelFormat)
+										{
+											throw new InvalidDataException("The bits per pixel could not be determined from the format.");
+										}
+
+										using (var pixelInfo = component.QueryInterfaceOrNull<WIC.PixelFormatInfo>())
+										{
+											if (pixelInfo == null)
+											{
+												throw new InvalidDataException("The bits per pixel could not be determined from the format.");
+											}
+
+											bitsPerPixel = pixelInfo.BitsPerPixel;
+										}
+									}
+
+									rowPitch = (texture.Settings.Width * bitsPerPixel + 7) / 8;
+									slicePitch = rowPitch * texture.Settings.Height;
+									using (GorgonDataStream dataPointer = new GorgonDataStream(slicePitch))
+									{
+										converter.CopyPixels(rowPitch, dataPointer.BasePointer, slicePitch);
+										frame.WritePixels(texture.Settings.Height, dataPointer.BasePointer, rowPitch, slicePitch);
+									}
+								}
+							}
+						}
+						else
+						{
+							frame.WritePixels(texture.Settings.Height, imageData.BasePointer, pitchInfo.RowPitch, pitchInfo.SlicePitch);
+						}
+						frame.Commit();
+
+						encoder.Commit();
+					}
+				}
+			}
 		}
 		#endregion
 
