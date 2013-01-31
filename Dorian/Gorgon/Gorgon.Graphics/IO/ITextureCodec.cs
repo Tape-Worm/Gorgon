@@ -43,7 +43,7 @@ namespace GorgonLibrary.IO
     /// </remarks>
     public interface ITextureCodec
     {
-        #region Methods.        
+        #region Methods.
         /// <summary>
         /// Function to load a texture from a stream.
         /// </summary>
