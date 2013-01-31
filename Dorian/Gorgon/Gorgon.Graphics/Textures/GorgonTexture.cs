@@ -48,9 +48,6 @@ namespace GorgonLibrary.Graphics
 	{
 		#region Variables.
 		private int _size = 0;								// Size of the texture, in bytes.
-		private GorgonTexture1D _texture1D = null;			// 1D representation of this texture.
-		private GorgonTexture2D _texture2D = null;			// 2D representation of this texture.
-		private GorgonTexture3D _texture3D = null;			// 3D representation of this texture.
 		private IList<DX.DataStream> _lock = null;			// Locks for the texture.
 		#endregion
 
@@ -131,8 +128,6 @@ namespace GorgonLibrary.Graphics
 			int mipCount = 1;
 			int arrayCount = 1;		// This is always 1 for a 3D texture.
 			int result = 0;
-			int bytes = 0;
-			bool isCompressed = false;
 
 			if (FormatInformation == null)
 			{
@@ -147,35 +142,25 @@ namespace GorgonLibrary.Graphics
 				}
 			}
 
-			bytes = FormatInformation.SizeInBytes;
-			isCompressed = FormatInformation.IsCompressed;
-
-			if (bytes == 0)
+			if (FormatInformation.SizeInBytes == 0)
 				return 0;
 
-			if (_texture1D != null)
+			// Gather the settings.
+			width = Settings.Width;
+			height = Settings.Height;
+			depth = Settings.Depth;
+
+			// Ensure we have at least 1 mip map and array index.
+			if (Settings.MipCount > 1)
 			{
-				width = _texture1D.Settings.Width;
-				mipCount = _texture1D.Settings.MipCount;
-				arrayCount = _texture1D.Settings.ArrayCount;
+				mipCount = Settings.MipCount;
+			}
+			if (Settings.ArrayCount > 1)
+			{
+				arrayCount = Settings.ArrayCount;
 			}
 
-			if (_texture2D != null)
-			{
-				width = _texture2D.Settings.Width;
-				height = _texture2D.Settings.Height;
-				mipCount = _texture2D.Settings.MipCount;
-				arrayCount = _texture2D.Settings.ArrayCount;
-			}
-
-			if (_texture3D != null)
-			{
-				width = _texture3D.Settings.Width;
-				height = _texture3D.Settings.Height;
-				depth = _texture3D.Settings.Depth;
-				mipCount = _texture3D.Settings.MipCount;
-			}
-
+			// Calculate the size, in bytes.
 			for (int arrayIndex = 0; arrayIndex < arrayCount; arrayIndex++)
 			{
 				int mipWidth = width;
@@ -183,15 +168,9 @@ namespace GorgonLibrary.Graphics
 
 				for (int mipIndex = 0; mipIndex < mipCount; mipIndex++)
 				{
-					int slicePitch = 0;
+					var formatPitch = FormatInformation.GetPitch(mipWidth, mipHeight, PitchFlags.None);
 
-					if (isCompressed)
-						slicePitch = 1.Max(((mipHeight + 3) / 4)) * (1.Max(((mipWidth + 3) / 4)) * bytes);
-					else
-						slicePitch = (mipWidth * bytes) * mipHeight;
-						
-					for (int slice = 0; slice < depth; slice++)
-						result += slicePitch;
+					result += (formatPitch.SlicePitch * depth);
 
 					if (mipWidth > 1)
 						mipWidth >>= 1;
@@ -266,67 +245,32 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
+		/// Function to return sub resource data for a lock operation.
+		/// </summary>
+		/// <param name="dataStream">Stream containing the data.</param>
+		/// <param name="rowPitch">The number of bytes per row of the texture.</param>
+		/// <param name="slicePitch">The number of bytes per depth slice of the texture.</param>
+		/// <returns>The sub resource data.</returns>
+		protected abstract ISubResourceData GetLockSubResourceData(GorgonDataStream dataStream, int rowPitch, int slicePitch);
+
+		/// <summary>
+		/// Function to copy data from the CPU to a texture.
+		/// </summary>
+		/// <param name="data">Data to copy to the texture.</param>
+		/// <param name="subResource">Sub resource index to use.</param>
+		protected abstract void UpdateSubResourceImpl(ISubResourceData data, int subResource);
+
+		/// <summary>
+		/// Function to copy this texture into a new staging texture.
+		/// </summary>
+		/// <returns>The new staging texture.</returns>
+		protected abstract GorgonTexture GetStagingTextureImpl();
+
+		/// <summary>
 		/// Function to retrieve information about an existing texture.
 		/// </summary>
 		/// <returns>New settings for the texture.</returns>
-		protected ITextureSettings GetTextureInformation()
-		{
-			ITextureSettings newSettings = null;
-			BufferFormat viewFormat = BufferFormat.Unknown;
-
-			if (Settings != null)
-				viewFormat = Settings.ViewFormat;
-
-			if (_texture1D != null)
-			{
-				D3D.Texture1DDescription desc = ((D3D.Texture1D)_texture1D.D3DResource).Description;
-				newSettings = new GorgonTexture1DSettings();
-				newSettings.Width = desc.Width;
-				newSettings.Height = 1;
-				newSettings.ArrayCount = desc.ArraySize;
-				newSettings.Depth = 1;
-				newSettings.Format = (BufferFormat)desc.Format;
-				newSettings.MipCount = desc.MipLevels;
-				newSettings.Usage = (BufferUsage)desc.Usage;
-				newSettings.ViewFormat = BufferFormat.Unknown;
-				newSettings.Multisampling = new GorgonMultisampling(1, 0);
-			}
-
-			if (_texture2D != null)
-			{
-				D3D.Texture2DDescription desc = ((D3D.Texture2D)_texture2D.D3DResource).Description;
-				newSettings = new GorgonTexture2DSettings();
-				newSettings.Width = desc.Width;
-				newSettings.Height = desc.Height;
-				newSettings.ArrayCount = desc.ArraySize;
-				newSettings.Depth = 1;
-				newSettings.Format = (BufferFormat)desc.Format;
-				newSettings.MipCount = desc.MipLevels;
-				newSettings.Usage = (BufferUsage)desc.Usage;
-				newSettings.ViewFormat = BufferFormat.Unknown;
-				newSettings.Multisampling = new GorgonMultisampling(desc.SampleDescription.Count, desc.SampleDescription.Quality);
-			}
-
-			if (_texture3D != null)
-			{
-				D3D.Texture3DDescription desc = ((D3D.Texture3D)_texture3D.D3DResource).Description;
-				newSettings = new GorgonTexture3DSettings();
-				newSettings.Width = desc.Width;
-				newSettings.Height = desc.Height;
-				newSettings.ArrayCount = 1;
-				newSettings.Depth = desc.Depth;
-				newSettings.Format = (BufferFormat)desc.Format;
-				newSettings.MipCount = desc.MipLevels;
-				newSettings.Usage = (BufferUsage)desc.Usage;
-				newSettings.ViewFormat = BufferFormat.Unknown;
-				newSettings.Multisampling = new GorgonMultisampling(1, 0);
-			}
-
-			// Preserve any custom view format.
-			newSettings.ViewFormat = viewFormat;
-
-			return newSettings;
-		}
+		protected abstract ITextureSettings GetTextureInformation();
 
 		/// <summary>
 		/// Function to read image data from an array of bytes.
@@ -409,7 +353,7 @@ namespace GorgonLibrary.Graphics
 					imageInfo.BindFlags = D3D.BindFlags.None;
 
 				// Rebind as a render target.
-				if ((_texture2D != null) && (_texture2D.IsRenderTarget))
+				if (this.IsRenderTarget)
 					imageInfo.BindFlags |= D3D.BindFlags.RenderTarget;
 
 				switch (Settings.Usage)
@@ -462,58 +406,9 @@ namespace GorgonLibrary.Graphics
 		/// <returns>A new staging texture.</returns>
 		public T GetStagingTexture<T>()
 			where T : GorgonTexture
-		{			
-			GorgonTexture staging = null;
-
-			if (_texture1D != null)
-			{
-				GorgonTexture1DSettings settings1D = new GorgonTexture1DSettings()
-				{
-					ArrayCount = Settings.ArrayCount,
-					Format = Settings.Format,
-					Width = Settings.Width,
-					MipCount = Settings.MipCount,
-					Usage = BufferUsage.Staging
-				};
-
-				staging = Graphics.Textures.CreateTexture<GorgonTexture1D>(Name + ".Staging", settings1D);
-			}
-			else if (_texture2D != null)
-			{
-				GorgonTexture2DSettings settings2D = new GorgonTexture2DSettings()
-				{
-					ArrayCount = Settings.ArrayCount,
-					Format = Settings.Format,
-					Width = Settings.Width,
-					Height = Settings.Height,
-					IsTextureCube = Settings.IsTextureCube,
-					Multisampling = Settings.Multisampling,
-					MipCount = Settings.MipCount,
-					Usage = BufferUsage.Staging
-				};
-
-				staging = Graphics.Textures.CreateTexture<GorgonTexture2D>(Name + ".Staging", settings2D);
-			}
-			else if (_texture3D != null)
-			{
-				GorgonTexture3DSettings settings3D = new GorgonTexture3DSettings()
-				{
-					Format = Settings.Format,
-					Width = Settings.Width,
-					Height = Settings.Height,
-					Depth = Settings.Depth,					
-					MipCount = Settings.MipCount,
-					Usage = BufferUsage.Staging
-				};
-
-				staging = Graphics.Textures.CreateTexture<GorgonTexture3D>(Name + ".Staging", settings3D);				
-			}
-
-			staging.Copy(this);
-
-			return (T)staging;
+		{
+			return (T)GetStagingTextureImpl();
 		}
-
 
 		/// <summary>
 		/// Function to save the texture data to an array of bytes.
@@ -619,7 +514,7 @@ namespace GorgonLibrary.Graphics
 				throw new InvalidOperationException("Cannot copy textures with different multisampling parameters.");
 
 			// If the format is different, then check to see if the format group is the same.
-			if ((texture.Settings.Format != Settings.Format) && ((string.Compare(texture.FormatInformation.Group, FormatInformation.Group, true) != 0) || (Graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM2_a_b) || (Graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM4)))
+			if ((texture.Settings.Format != Settings.Format) && ((texture.FormatInformation.Group != FormatInformation.Group) || (Graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM2_a_b) || (Graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM4)))
 				throw new ArgumentException("Cannot copy because these formats: '" + texture.Settings.Format.ToString() + "' and '" + Settings.Format.ToString() + "', cannot be converted.", "texture");
 
 			if ((texture.Settings.Width != Settings.Width) || (texture.Settings.Height != Settings.Height))
@@ -654,49 +549,8 @@ namespace GorgonLibrary.Graphics
 
 			if ((Settings.Multisampling.Count > 1) || (Settings.Multisampling.Quality > 0))
 				throw new InvalidOperationException("Cannot update a texture that is multisampled.");
-
-			if ((_texture2D != null) && (_texture2D.IsDepthStencil))
-				throw new InvalidOperationException("Cannot update a texture used as a depth/stencil buffer.");
 #endif
-
-			SharpDX.DataBox box = new SharpDX.DataBox()
-			{
-				DataPointer = data.Data.PositionPointer,
-				RowPitch = data.RowPitch,
-				SlicePitch = data.SlicePitch
-			};
-
-			D3D.ResourceRegion region = new D3D.ResourceRegion();
-
-			if (_texture1D != null)
-			{
-				region.Front = 0;
-				region.Back = 1;
-				region.Left = 0;
-				region.Right = Settings.Width;
-				region.Top = 0;
-				region.Bottom = 1;
-			}
-			else if (_texture2D != null)
-			{
-				region.Front = 0;
-				region.Back = 1;
-				region.Left = 0;
-				region.Right = Settings.Width;
-				region.Top = 0;
-				region.Bottom = Settings.Height;
-			} 
-			else if (_texture3D != null)
-			{
-				region.Front = 0;
-				region.Back = Settings.Depth;
-				region.Left = 0;
-				region.Right = Settings.Width;
-				region.Top = 0;
-				region.Bottom = Settings.Height;
-			}
-
-			Graphics.Context.UpdateSubresource(box, D3DResource, subResource, region);
+			UpdateSubResourceImpl(data, subResource);
 		}
 
 		/// <summary>
@@ -819,12 +673,7 @@ namespace GorgonLibrary.Graphics
 			else
 				_lock[subResource] = lockStream;
 
-			if (_texture1D != null)
-				data = new GorgonTexture1DData(new GorgonDataStream(lockStream.DataPointer, (int)lockStream.Length));
-			else if (_texture2D != null)
-				data = new GorgonTexture2DData(new GorgonDataStream(lockStream.DataPointer, (int)lockStream.Length), box.RowPitch);
-			else if (_texture3D != null)
-				data = new GorgonTexture3DData(new GorgonDataStream(lockStream.DataPointer, (int)lockStream.Length), box.RowPitch, box.SlicePitch);
+			data = GetLockSubResourceData(new GorgonDataStream(lockStream.DataPointer, (int)lockStream.Length), box.RowPitch, box.SlicePitch); 
 
 			return (T)data;
 		}
@@ -863,9 +712,6 @@ namespace GorgonLibrary.Graphics
 		{
 			_lock = new List<DX.DataStream>(16);
 			Settings = settings;
-			_texture1D = this as GorgonTexture1D;
-			_texture2D = this as GorgonTexture2D;
-			_texture3D = this as GorgonTexture3D;			
 		}
 		#endregion
 	}
