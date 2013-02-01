@@ -35,13 +35,13 @@ using GorgonLibrary.Graphics;
 namespace GorgonLibrary.IO
 {
     /// <summary>
-    /// Defines for loading/saving textures to a stream.
+    /// Defines for loading/saving images to and from a stream.
     /// </summary>
-    /// <remarks>A codec is used to decode and encode data to and from a data store (such as a <see cref="System.IO.Stream">Stream</see>).  
+    /// <remarks>An image codec is used to decode and encode image data to and from a data store (such as a <see cref="System.IO.Stream">Stream</see>).  
     /// Using these codecs, we will be able to read/write any image data source as long as there's an implementation for the image format.
-    /// <para>Gorgon will have several built-in codecs for Png, Bmp, TGA, dds, Jpg, and Wmp.</para>
+    /// <para>Gorgon will have several built-in codecs for PNG, BMP, TGA, DDS, JPG, and WMP.</para>
     /// </remarks>
-    public interface ITextureCodec
+    public interface IImageCodec
     {
         #region Methods.
         /// <summary>

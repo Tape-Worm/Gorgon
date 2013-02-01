@@ -30,6 +30,7 @@ using System.Linq;
 using System.Text;
 using System.Drawing;
 using D3D = SharpDX.Direct3D11;
+using GorgonLibrary.Math;
 
 namespace GorgonLibrary.Graphics
 {
@@ -188,6 +189,24 @@ namespace GorgonLibrary.Graphics
 			get;
 			set;
 		}
+		#endregion
+
+		#region Methods.
+		/// <summary>
+		/// Function to retrieve the size, in bytes, of the texture described by these settings.
+		/// </summary>
+		/// <returns>The number of bytes for the texture.</returns>
+		/// <exception cref="System.NotSupportedException">Thrown when the <see cref="GorgonLibrary.Graphics.ITextureSettings.Format">Format</see> property is set to Unknown.
+		/// <para>-or-</para>
+		/// <para>Thrown when the format is not a valid format.</para>
+		/// </exception>
+		int GetSizeInBytes();
+
+		/// <summary>
+		/// Function to calculate the number of mip levels based on the width, height and depth information.
+		/// </summary>
+		/// <returns>The number of mip map levels.</returns>
+		int CalculateMipLevels();
 		#endregion
 	}
 	
@@ -387,6 +406,69 @@ namespace GorgonLibrary.Graphics
 			{
 				return ((Width == 0) || (Width & (Width - 1)) == 0);
 			}
+		}
+
+		/// <summary>
+		/// Function to retrieve the size, in bytes, of the texture described by these settings.
+		/// </summary>
+		/// <returns>The number of bytes for the texture.</returns>
+		/// <exception cref="System.NotSupportedException">Thrown when the <see cref="GorgonLibrary.Graphics.ITextureSettings.Format">Format</see> property is set to Unknown.
+		/// <para>-or-</para>
+		/// <para>Thrown when the format is not a valid format.</para>
+		/// </exception>
+		int ITextureSettings.GetSizeInBytes()
+		{
+			if (Format == BufferFormat.Unknown)
+			{
+				throw new NotSupportedException("The buffer type 'Unknown' is not a valid format.");
+			}
+
+			int width = 1.Max(Width);
+			int arrayCount = 1.Max(ArrayCount);
+			int mipCount = 1.Max(MipCount);
+			var formatInfo = GorgonBufferFormatInfo.GetInfo(Format);
+			int result = 0;
+
+			if (formatInfo.SizeInBytes == 0)
+			{
+				throw new NotSupportedException("The format '" + Format.ToString() + "' is not supported.");
+			}
+
+			for (int array = 0; array < arrayCount; array++)
+			{
+				int mipWidth = width;
+				
+				for (int mip = 0; mip < mipCount; mip++)
+				{
+					var pitchInfo = formatInfo.GetPitch(mipWidth, 1, PitchFlags.None);
+					result += pitchInfo.SlicePitch;
+
+					if (mipWidth > 1)
+					{
+						mipWidth >>= 1;
+					}					
+				}
+			}
+
+			return result;
+		}
+
+		/// <summary>
+		/// Function to return the number of actual mip map levels that will be made for the image.
+		/// </summary>
+		/// <returns>The number of mip levels for the image.</returns>
+		public int CalculateMipLevels()
+		{
+			int width = 1.Max(Width);
+			int result = 1;
+
+			while (width > 1)
+			{
+				width >>= 1;
+				result++;
+			}
+			
+			return result;
 		}
 		#endregion
 	}
@@ -603,6 +685,84 @@ namespace GorgonLibrary.Graphics
 						((Height == 0) || (Height & (Height - 1)) == 0);
 			}
 		}
+
+		/// <summary>
+		/// Function to retrieve the size, in bytes, of the texture described by these settings.
+		/// </summary>
+		/// <returns>The number of bytes for the texture.</returns>
+		/// <exception cref="System.NotSupportedException">Thrown when the <see cref="GorgonLibrary.Graphics.ITextureSettings.Format">Format</see> property is set to Unknown.
+		/// <para>-or-</para>
+		/// <para>Thrown when the format is not a valid format.</para>
+		/// </exception>
+		int ITextureSettings.GetSizeInBytes()
+		{
+			if (Format == BufferFormat.Unknown)
+			{
+				throw new NotSupportedException("The buffer type 'Unknown' is not a valid format.");
+			}
+
+			int width = 1.Max(Width);
+			int height = 1.Max(Height);
+			int arrayCount = 1.Max(ArrayCount);
+			int mipCount = 1.Max(MipCount);
+			var formatInfo = GorgonBufferFormatInfo.GetInfo(Format);
+			int result = 0;
+
+			if (formatInfo.SizeInBytes == 0)
+			{
+				throw new NotSupportedException("The format '" + Format.ToString() + "' is not supported.");
+			}
+
+			for (int array = 0; array < arrayCount; array++)
+			{
+				int mipWidth = width;
+				int mipHeight = height;
+
+				for (int mip = 0; mip < mipCount; mip++)
+				{
+					var pitchInfo = formatInfo.GetPitch(mipWidth, mipHeight, PitchFlags.None);
+					result += pitchInfo.SlicePitch;
+
+					if (mipWidth > 1)
+					{
+						mipWidth >>= 1;
+					}
+					if (mipHeight > 1)
+					{
+						mipHeight >>= 1;
+					}
+				}
+			}
+
+			return result;
+		}
+
+		/// <summary>
+		/// Function to return the number of actual mip map levels that will be made for the image.
+		/// </summary>
+		/// <returns>The number of mip levels for the image.</returns>
+		public int CalculateMipLevels()
+		{
+			int width = 1.Max(Width);
+			int height = 1.Max(Height);
+			int result = 1;
+
+			while ((width > 1) || (height > 1))
+			{
+				if (width > 1)
+				{
+					width >>= 1;
+				}
+				if (height > 1)
+				{
+					height >>= 1;
+				}
+
+				result++;
+			}
+
+			return result;
+		}
 		#endregion
 	}
 
@@ -809,6 +969,90 @@ namespace GorgonLibrary.Graphics
 						((Height == 0) || (Height & (Height - 1)) == 0) &&
 						((Depth == 0) || (Depth & (Depth - 1)) == 0);
 			}
+		}
+
+		/// <summary>
+		/// Function to retrieve the size, in bytes, of the texture described by these settings.
+		/// </summary>
+		/// <returns>The number of bytes for the texture.</returns>
+		/// <exception cref="System.NotSupportedException">Thrown when the <see cref="GorgonLibrary.Graphics.ITextureSettings.Format">Format</see> property is set to Unknown.
+		/// <para>-or-</para>
+		/// <para>Thrown when the format is not a valid format.</para>
+		/// </exception>
+		int ITextureSettings.GetSizeInBytes()
+		{
+			if (Format == BufferFormat.Unknown)
+			{
+				throw new NotSupportedException("The buffer type 'Unknown' is not a valid format.");
+			}
+
+			int width = 1.Max(Width);
+			int height = 1.Max(Height);
+			int depth = 1.Max(Depth);
+			int mipCount = 1.Max(MipCount);
+			var formatInfo = GorgonBufferFormatInfo.GetInfo(Format);
+			int result = 0;
+
+			if (formatInfo.SizeInBytes == 0)
+			{
+				throw new NotSupportedException("The format '" + Format.ToString() + "' is not supported.");
+			}
+
+			int mipWidth = width;
+			int mipHeight = height;
+
+			for (int mip = 0; mip < mipCount; mip++)
+			{
+				var pitchInfo = formatInfo.GetPitch(mipWidth, mipHeight, PitchFlags.None);
+				result += pitchInfo.SlicePitch * depth;
+
+				if (mipWidth > 1)
+				{
+					mipWidth >>= 1;
+				}
+				if (mipHeight > 1)
+				{
+					mipHeight >>= 1;
+				}
+				if (depth > 1)
+				{
+					depth >>= 1;
+				}
+			}
+
+			return result;
+		}
+
+		/// <summary>
+		/// Function to return the number of actual mip map levels that will be made for the image.
+		/// </summary>
+		/// <returns>The number of mip levels for the image.</returns>
+		public int CalculateMipLevels()
+		{
+			int width = 1.Max(Width);
+			int height = 1.Max(Height);
+			int depth = 1.Max(Depth);
+			int result = 1;
+
+			while ((width > 1) || (height > 1) || (depth > 1))
+			{
+				if (width > 1)
+				{
+					width >>= 1;
+				}
+				if (height > 1)
+				{
+					height >>= 1;
+				}
+				if (depth > 1)
+				{
+					depth >>= 1;
+				}
+
+				result++;
+			}
+
+			return result;
 		}
 		#endregion
 	}
