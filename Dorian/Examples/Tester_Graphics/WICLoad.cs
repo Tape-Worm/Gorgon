@@ -222,7 +222,7 @@ namespace Tester_Graphics
 		}
 		#endregion
 
-		#region Variables.		
+		#region Variables.
 		private bool _disposed = false;																// Flag to indicate that the object was disposed.
 		private WIC.ImagingFactory _factory = null;													// Factory for WIC image data.
 
