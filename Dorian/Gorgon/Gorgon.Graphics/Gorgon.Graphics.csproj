@@ -153,6 +153,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Textures\GorgonTextureSettings.cs" />
+    <Compile Include="Textures\GorgonWICImage.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Gorgon2.ico" />
