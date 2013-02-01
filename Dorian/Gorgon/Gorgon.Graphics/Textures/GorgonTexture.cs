@@ -98,10 +98,7 @@ namespace GorgonLibrary.Graphics
 		{
 			get
 			{
-				if (_size == 0)
-					_size = GetTextureSize();
-
-				return _size;
+				return Settings.GetSizeInBytes();
 			}
 		}
 
@@ -116,74 +113,6 @@ namespace GorgonLibrary.Graphics
 		#endregion
 
 		#region Methods.
-		/// <summary>
-		/// Function to retrieve the size of the texture, in bytes.
-		/// </summary>
-		/// <returns>The size of the texture in bytes.</returns>
-		private int GetTextureSize()
-		{
-			int width = 1;
-			int height = 1;
-			int depth = 1;
-			int mipCount = 1;
-			int arrayCount = 1;		// This is always 1 for a 3D texture.
-			int result = 0;
-
-			if (FormatInformation == null)
-			{
-				FormatInformation = GorgonBufferFormatInfo.GetInfo(Settings.Format);
-
-				if (ViewFormatInformation == null)
-				{
-					if (Settings.ViewFormat == BufferFormat.Unknown)
-						ViewFormatInformation = FormatInformation;
-					else
-						ViewFormatInformation = GorgonBufferFormatInfo.GetInfo(Settings.ViewFormat);
-				}
-			}
-
-			if (FormatInformation.SizeInBytes == 0)
-				return 0;
-
-			// Gather the settings.
-			width = Settings.Width;
-			height = Settings.Height;
-			depth = Settings.Depth;
-
-			// Ensure we have at least 1 mip map and array index.
-			if (Settings.MipCount > 1)
-			{
-				mipCount = Settings.MipCount;
-			}
-			if (Settings.ArrayCount > 1)
-			{
-				arrayCount = Settings.ArrayCount;
-			}
-
-			// Calculate the size, in bytes.
-			for (int arrayIndex = 0; arrayIndex < arrayCount; arrayIndex++)
-			{
-				int mipWidth = width;
-				int mipHeight = height;
-
-				for (int mipIndex = 0; mipIndex < mipCount; mipIndex++)
-				{
-					var formatPitch = FormatInformation.GetPitch(mipWidth, mipHeight, PitchFlags.None);
-
-					result += (formatPitch.SlicePitch * depth);
-
-					if (mipWidth > 1)
-						mipWidth >>= 1;
-					if (mipHeight > 1)
-						mipHeight >>= 1;
-					if (depth > 1)
-						depth >>= 1;
-				}
-			}
-
-			return result;
-		}
-
 		/// <summary>
 		/// Function to create the resource object.
 		/// </summary>
