@@ -714,17 +714,20 @@ namespace GorgonLibrary.IO
 					throw new ArgumentOutOfRangeException("images", "The mip level count and the depth slice count exceed the length of the array.");
 				}
 
-				for (int depth = 0; depth < depthMip; depth++)
-				{
-					var image = images[imageIndex + depth];
+                if (mipLevel == 1)
+                {
+                    for (int depth = 0; depth < depthMip; depth++)
+                    {
+                        var image = images[imageIndex + depth];
 
-					// Using the image, convert to a WIC bitmap object.
-					using (var bitmap = wic.CreateWICImageFromImage(image))
-					{
-						var buffer = data[0, mipLevel, depth];
-						wic.AddWICBitmapToImageData(bitmap, options.Filter, options.Dither, buffer, options.UseClipping);
-					}
-				}
+                        // Using the image, convert to a WIC bitmap object.
+                        using (var bitmap = wic.CreateWICImageFromImage(image))
+                        {
+                            var buffer = data[0, mipLevel, 0];
+                            wic.AddWICBitmapToImageData(bitmap, options.Filter, options.Dither, buffer, options.UseClipping);
+                        }
+                    }
+                }
 
 				imageIndex += depthMip;
 

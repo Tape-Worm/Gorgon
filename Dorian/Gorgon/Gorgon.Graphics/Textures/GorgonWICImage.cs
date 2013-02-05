@@ -468,7 +468,7 @@ namespace GorgonLibrary.Graphics
 					source = scaler;
 				}
 
-				// Create a clipper if want to clip and the image needs resizing.
+				// Create a clipper if we want to clip and the image needs resizing.
 				if ((clip) && (scale) && ((buffer.Width < bitmap.Size.Width) || (buffer.Height < bitmap.Size.Height)))
 				{
 					var clipper = new WIC.BitmapClipper(_factory);
@@ -574,7 +574,8 @@ namespace GorgonLibrary.Graphics
                 throw new ArgumentException("The buffer format '" + buffer.Format.ToString() + "' is not supported.", "imageData");
             }
 
-            if ((bitmap.Size.Width == buffer.Width) && (bitmap.Size.Height == buffer.Height))
+            // Turn off filtering if we're not resizing.
+            if (!needsResize)
             {
 				filter = ImageFilter.Point;
             }
@@ -587,7 +588,7 @@ namespace GorgonLibrary.Graphics
 			}
             else
             {
-                // Just dump without converting because our formats and sizes are equal.
+                // Just dump without converting because our formats are equal.
 				if ((!needsResize) || (!ResizeBitmap(bitmap, (WIC.BitmapInterpolationMode)filter, buffer, clip)))
 				{
 					bitmap.CopyPixels(buffer.PitchInformation.RowPitch, buffer.Data.BasePointer, buffer.PitchInformation.SlicePitch);

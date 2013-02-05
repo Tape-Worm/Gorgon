@@ -246,6 +246,7 @@ namespace GorgonLibrary.Graphics
 		{
 			get
 			{
+                #error This is probably where the 3D mip-map problem is originating from.  It looks like we're shifted down by a depth level.  Need to reconfirm calculations.
 				GorgonDebug.AssertParamRange(arrayIndex, 0, Settings.ArrayCount, "arrayIndex");
 				GorgonDebug.AssertParamRange(mipLevel, 0, Settings.MipCount, "mipLevel");
 
@@ -324,13 +325,13 @@ namespace GorgonLibrary.Graphics
 			// Enumerate array indices. (For 1D and 2D only, 3D will always be 1)
 			for (int array = 0; array < Settings.ArrayCount; array++)
 			{
-				// Enumerate mip map levels.
+                int mipWidth = Settings.Width;
+                int mipHeight = Settings.Height;
+                int mipDepth = Settings.Depth;
+                
+                // Enumerate mip map levels.
 				for (int mip = 0; mip < Settings.MipCount; mip++)
 				{
-					int mipWidth = Settings.Width;
-					int mipHeight = Settings.Height;
-					int mipDepth = Settings.Depth;
-
 					// Enumerate depth slices.
 					for (int depth = 0; depth < mipDepth; depth++)
 					{
@@ -389,13 +390,12 @@ namespace GorgonLibrary.Graphics
 		/// <returns>An array of data rectangles.</returns>
 		internal DX.DataBox[] GetDataBoxes()
 		{
-			int index = 0;
-			DX.DataBox[] result = new DX.DataBox[Count];
+			DX.DataBox[] result = new DX.DataBox[_buffers.Length];
 
-			foreach (var buffer in this)
-			{				
-				result[index] = new DX.DataBox(buffer.Data.BasePointer, buffer.PitchInformation.RowPitch, buffer.PitchInformation.SlicePitch);
-				index++;
+			for (int i = 0; i < _buffers.Length; i++)
+			{
+                var buffer = _buffers[i];
+				result[i] = new DX.DataBox(buffer.Data.BasePointer, buffer.PitchInformation.RowPitch, buffer.PitchInformation.SlicePitch);
 			}
 
 			return result;

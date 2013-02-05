@@ -45,9 +45,9 @@ namespace Tester_Graphics
 					Format = BufferFormat.R8G8B8A8_UIntNormal
 				});
 
-				using (Image image = Image.FromFile(@"d:\images\OSUsers_512x512.gif"))
+				using (Image image = Image.FromFile(@"D:\images\OSUsers_512x512.gif"))
 				{
-					Image[] images = new Image[GorgonImageData.GetDepthSliceCount(4, 4)];
+					Image[] images = new Image[GorgonImageData.GetDepthSliceCount(2, 4)];
 					for (int i = 0; i < images.Length; i++)
 					{
 						images[i] = image.Clone() as Image;
@@ -55,7 +55,7 @@ namespace Tester_Graphics
 					using (var texture = _graphics.Textures.Create3DTextureFromGDIImage("Test", images, new GorgonGDIOptions()
 						{
 							MipCount = 4,
-							Depth = 2
+                            Depth = 2
 						}))
 					{
 						texture.Save(@"D:\unpak\textureUpload.dds", ImageFileFormat.DDS);
