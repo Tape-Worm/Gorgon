@@ -11,7 +11,9 @@ using System.IO;
 using SlimMath;
 using GorgonLibrary;
 using GorgonLibrary.UI;
+using GorgonLibrary.IO;
 using GorgonLibrary.Graphics;
+using SharpDX.WIC;
 
 namespace Tester_Graphics
 {
@@ -43,7 +45,26 @@ namespace Tester_Graphics
 					Format = BufferFormat.R8G8B8A8_UIntNormal
 				});
 
-				using (GorgonTexture2D texture = _graphics.Textures.FromFile<GorgonTexture2D>("Test", @"D:\images\OSUsers.jpg"))
+				using (Image image = Image.FromFile(@"d:\images\OSUsers_512x512.gif"))
+				{
+					Image[] images = new Image[GorgonImageData.GetDepthSliceCount(4, 4)];
+					for (int i = 0; i < images.Length; i++)
+					{
+						images[i] = image.Clone() as Image;
+					}
+					using (var texture = _graphics.Textures.Create3DTextureFromGDIImage("Test", images, new GorgonGDIOptions()
+						{
+							MipCount = 4,
+							Depth = 2
+						}))
+					{
+						texture.Save(@"D:\unpak\textureUpload.dds", ImageFileFormat.DDS);
+					}
+				}
+
+				//Image[] images = new Image[
+
+				/*using (GorgonTexture2D texture = _graphics.Textures.FromFile<GorgonTexture2D>("Test", @"D:\images\OSUsers.jpg"))
 				{
 					using (WICLoad wic = new WICLoad())
 					{
@@ -52,7 +73,7 @@ namespace Tester_Graphics
 							wic.SavePNGToStream(texture, stream);
 						}
 					}
-				}
+				}*/
 
 				Gorgon.ApplicationIdleLoopMethod = Idle;
 			}

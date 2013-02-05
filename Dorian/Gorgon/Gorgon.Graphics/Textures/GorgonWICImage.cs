@@ -110,6 +110,7 @@ using System.Text;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Threading.Tasks;
+using DX = SharpDX;
 using WIC = SharpDX.WIC;
 using GorgonLibrary.IO;
 using GorgonLibrary.Diagnostics;
@@ -117,54 +118,6 @@ using GorgonLibrary.Native;
 
 namespace GorgonLibrary.Graphics
 {
-    /// <summary>
-    /// Flags for WIC image data.
-    /// </summary>
-    [Flags]
-    enum WICFlags
-    {
-        /// <summary>
-        /// Nothing.
-        /// </summary>
-        None = 0x0,
-        /// <summary>
-        /// Loads DXGI 1.1 BGR formats as DXGI_FORMAT_R8G8B8A8_UNORM to avoid use of optional WDDM 1.1 formats 
-        /// </summary>
-        ForceRgb = 0x1,
-        /// <summary>
-        /// Loads DXGI 1.1 X2 10:10:10:2 format as DXGI_FORMAT_R10G10B10A2_UNORM 
-        /// </summary>
-        NoX2Bias = 0x2,
-        /// <summary>
-        /// Loads all images in a multi-frame file, converting/resizing to match the first frame as needed, defaults to 0th frame otherwise
-        /// </summary>
-        AllFrames = 0x10,
-        /// <summary>
-        /// Use ordered 4x4 dithering for any required conversions
-        /// </summary>
-        Dither = 0x10000,
-        /// <summary>
-        /// Use error-diffusion dithering for any required conversions
-        /// </summary>
-        DitherDiffusion = 0x20000,
-        /// <summary>
-        /// Filtering mode to use for any required image resizing (only needed when loading arrays of differently sized images; defaults to Fant)
-        /// </summary>
-        FilterPoint = 0x100000,
-        /// <summary>
-        /// Filtering mode to use for any required image resizing (only needed when loading arrays of differently sized images; defaults to Fant)
-        /// </summary>
-        FilterLinear = 0x200000,
-        /// <summary>
-        /// Filtering mode to use for any required image resizing (only needed when loading arrays of differently sized images; defaults to Fant)
-        /// </summary>
-        FilterCubic = 0x300000,
-        /// <summary>
-        /// Combination of Linear and Box filter
-        /// </summary>
-        FilterFant = 0x400000
-    };
-
     /// <summary>
     /// A Gorgon image data converter for WIC images.
     /// </summary>
@@ -290,13 +243,13 @@ namespace GorgonLibrary.Graphics
 		};
         #endregion
 
-        #region Methods.
-        /// <summary>
-        /// Function to retrieve the equivalent Gorgon buffer format from a WIC GUID.
-        /// </summary>
-        /// <param name="wicGUID">WIC GUID to look up.</param>
-        /// <returns>The buffer format if found, or BufferFormat.Unknown if not found.</returns>
-        private BufferFormat GetGorgonFormat(Guid wicGUID)
+		#region Methods.
+		/// <summary>
+		/// Function to retrieve the equivalent Gorgon buffer format from a WIC GUID.
+		/// </summary>
+		/// <param name="wicGUID">WIC GUID to look up.</param>
+		/// <returns>The buffer format if found, or BufferFormat.Unknown if not found.</returns>
+		private BufferFormat GetGorgonFormat(Guid wicGUID)
         {
             for (int i = 0; i < _wicGorgonFormats.Length; i++)
             {
@@ -309,12 +262,48 @@ namespace GorgonLibrary.Graphics
             return BufferFormat.Unknown;
         }
 
+		/// <summary>
+		/// Function to retrieve a WIC format GUID from a System.Drawing PixelFormat.
+		/// </summary>
+		/// <param name="format">Pixel format to translate.</param>
+		/// <returns>The GUID to convert into, NULL if the pixel format is not supported.</returns>
+		private Guid GetGUID(PixelFormat format)
+		{
+			switch (format)
+			{
+				case PixelFormat.Format16bppArgb1555:
+					return WIC.PixelFormat.Format16bppBGRA5551;
+				case PixelFormat.Format16bppGrayScale:
+					return WIC.PixelFormat.Format16bppGray;
+				case PixelFormat.Format16bppRgb565:
+					return WIC.PixelFormat.Format16bppBGR565;
+				case PixelFormat.Format24bppRgb:
+					return WIC.PixelFormat.Format24bppBGR;
+				case PixelFormat.Format1bppIndexed:			// We don't care about indexed formats because they'll be upconverted to 32 bpp.
+				case PixelFormat.Format4bppIndexed:
+				case PixelFormat.Format8bppIndexed:
+				case PixelFormat.Format32bppRgb:
+				case PixelFormat.Format32bppArgb:
+					return WIC.PixelFormat.Format32bppBGRA;
+				case PixelFormat.Format32bppPArgb:
+					return WIC.PixelFormat.Format32bppPBGRA;
+				case PixelFormat.Format48bppRgb:
+					return WIC.PixelFormat.Format48bppBGR;
+				case PixelFormat.Format64bppArgb:
+					return WIC.PixelFormat.Format64bppBGRA;
+				case PixelFormat.Format64bppPArgb:
+					return WIC.PixelFormat.Format64bppPBGRA;
+			}
+
+			return Guid.Empty;
+		}
+
         /// <summary>
         /// Function to retrieve a WIC equivalent format GUID based on the Gorgon buffer format.
         /// </summary>
         /// <param name="format">Format to look up.</param>
         /// <returns>The GUID for the format, or NULL (Nothing in VB.Net) if not found.</returns>
-        private Guid? GetGUID(BufferFormat format)
+        private Guid GetGUID(BufferFormat format)
         {
             for (int i = 0; i < _wicGorgonFormats.Length; i++)
             {
@@ -338,7 +327,7 @@ namespace GorgonLibrary.Graphics
                     return WIC.PixelFormat.Format32bppBGR;
             }
 
-            return null;
+            return Guid.Empty;
         }
 
         /// <summary>
@@ -373,6 +362,9 @@ namespace GorgonLibrary.Graphics
         /// <param name="image">Image to convert.</param>
         public WIC.Bitmap CreateWICImageFromImage(Image image)
         {
+			DX.DataRectangle pointer = default(DX.DataRectangle);
+			WIC.Bitmap result = null;
+			BitmapData bmpData = null;
             Bitmap imageBitmap = image as Bitmap;
             bool bitmapClone = false;
 
@@ -381,7 +373,10 @@ namespace GorgonLibrary.Graphics
                 throw new ArgumentNullException("image");
             }
 
-            if (imageBitmap == null)
+			// If the image being passed is not a bitmap, then make it into one.
+			// Or, if the image is a 32bpp RGB (without alpha), or if the image is indexed.
+            if ((imageBitmap == null) || (image.PixelFormat == PixelFormat.Format32bppRgb) 
+				|| ((image.PixelFormat & PixelFormat.Indexed) == PixelFormat.Indexed))
             {
                 imageBitmap = new Bitmap(image);
                 bitmapClone = true;
@@ -389,70 +384,215 @@ namespace GorgonLibrary.Graphics
 
             try
             {
-                WIC.BitmapAlphaChannelOption flags = WIC.BitmapAlphaChannelOption.IgnoreAlpha;
-
-                if ((image.PixelFormat & PixelFormat.PAlpha) == PixelFormat.PAlpha)
-                {
-                    flags = WIC.BitmapAlphaChannelOption.UsePremultipliedAlpha;
-                }
-                else if ((image.PixelFormat & PixelFormat.Alpha) == PixelFormat.Alpha)
-                {
-                    flags = WIC.BitmapAlphaChannelOption.UseAlpha;
-                }
+				// Try to get a compatible WIC format.
+				Guid guid = GetGUID(imageBitmap.PixelFormat);
                 
-                return new WIC.Bitmap(_factory, imageBitmap, flags);
+				if (guid == Guid.Empty)
+				{
+					throw new ArgumentException("The pixel format '" + image.PixelFormat.ToString() + "' is not supported.", "image");
+				}
+						
+				bmpData = imageBitmap.LockBits(new Rectangle(0, 0, imageBitmap.Width, imageBitmap.Height), ImageLockMode.ReadOnly, imageBitmap.PixelFormat);
+
+				pointer = new DX.DataRectangle(bmpData.Scan0, bmpData.Stride);
+				result = new WIC.Bitmap(_factory, imageBitmap.Width, imageBitmap.Height, guid, pointer, bmpData.Stride * bmpData.Height);
+				result.SetResolution(image.HorizontalResolution, image.VerticalResolution);
+
+				return result;
             }
             finally
             {
-                if ((imageBitmap != null) && (bitmapClone))
-                {
-                    imageBitmap.Dispose();
-                    imageBitmap = null;
-                }
+				if (imageBitmap != null)
+				{
+					if (bmpData != null)
+					{
+						imageBitmap.UnlockBits(bmpData);						
+					}
+
+					if (bitmapClone)
+					{
+						imageBitmap.Dispose();
+						imageBitmap = null;
+					}
+				}
             }
         }
+
+		/// <summary>
+		/// Function to convert the format of a bitmap into the format of the buffer.
+		/// </summary>
+		/// <param name="sourceFormat">Format to convert from.</param>
+		/// <param name="destFormat">Format to convert into.</param>
+		/// <param name="dithering">Dithering to apply.</param>
+		/// <param name="filter">Filtering to apply to scaled bitmaps.</param>
+		/// <param name="bitmap">Bitmap to convert.</param>
+		/// <param name="bitmapPalette">Palette for the bitmap.</param>
+		/// <param name="alphaValue">Value of pixel to consider transparent.</param>
+		/// <param name="buffer">Buffer holding the converted data.</param>
+		/// <param name="scale">TRUE to scale when converting, FALSE to keep at original size.</param>
+		/// <param name="clip">TRUE to perform clipping, FALSE to keep at original size.</param>
+		private void ConvertFormat(Guid sourceFormat, Guid destFormat, WIC.BitmapDitherType dithering, WIC.BitmapInterpolationMode filter, WIC.BitmapSource bitmap, WIC.Palette bitmapPalette, int alphaValue, GorgonImageData.ImageBuffer buffer, bool scale, bool clip)
+		{
+			WIC.BitmapSource source = bitmap;
+			int rowPitch = 0;
+			int slicePitch = 0;
+			double alphaPercent = alphaValue / 255.0;
+			WIC.BitmapPaletteType paletteType = WIC.BitmapPaletteType.Custom;
+
+			// If we have a palette, then confirm that the dithering method is valid.
+			if (bitmapPalette != null)
+			{
+				// Do not apply dithering if we're using
+				// a custom palette and request ordered dithering.
+				switch (dithering)
+				{
+					case WIC.BitmapDitherType.Ordered4x4:
+					case WIC.BitmapDitherType.Ordered8x8:
+					case WIC.BitmapDitherType.Ordered16x16:					
+						if (bitmapPalette.TypeInfo == WIC.BitmapPaletteType.Custom)
+						{
+							dithering = WIC.BitmapDitherType.None;
+						}
+						break;
+				}
+				paletteType = bitmapPalette.TypeInfo;
+			}
+
+			try
+			{
+				// Create a scaler if need one.
+				if ((scale) && (!clip))
+				{
+					var scaler = new WIC.BitmapScaler(_factory);
+					scaler.Initialize(bitmap, buffer.Width, buffer.Height, filter);
+					source = scaler;
+				}
+
+				// Create a clipper if want to clip and the image needs resizing.
+				if ((clip) && (scale) && ((buffer.Width < bitmap.Size.Width) || (buffer.Height < bitmap.Size.Height)))
+				{
+					var clipper = new WIC.BitmapClipper(_factory);
+					clipper.Initialize(bitmap, new DX.DrawingRectangle(0, 0, buffer.Width < bitmap.Size.Width ? buffer.Width : bitmap.Size.Width, 
+																			 buffer.Height < bitmap.Size.Height ? buffer.Height : bitmap.Size.Height));
+					source = clipper;
+				}
+
+				using (var converter = new WIC.FormatConverter(_factory))
+				{
+					if (!converter.CanConvert(sourceFormat, destFormat))
+					{
+						throw new ArgumentException("The buffer format '" + buffer.Format.ToString() + "' is not supported.", "buffer");
+					}
+
+					converter.Initialize(source, destFormat, dithering, bitmapPalette, alphaPercent, paletteType);
+
+					if (!scale)
+					{
+						rowPitch = (GetBitsPerPixel(destFormat) * bitmap.Size.Width + 7) / 8;
+						slicePitch = rowPitch * bitmap.Size.Height;
+
+						if ((rowPitch != buffer.PitchInformation.RowPitch) || (slicePitch != buffer.PitchInformation.SlicePitch))
+						{
+							throw new AccessViolationException("The row pitch and/or the slice pitch of the image is not correct.");
+						}
+					}
+					converter.CopyPixels(buffer.PitchInformation.RowPitch, buffer.Data.BasePointer, buffer.PitchInformation.SlicePitch);
+				}
+			}
+			finally
+			{
+				if (source != bitmap)
+				{
+					source.Dispose();
+				}
+				source = null;
+			}
+		}
+
+		/// <summary>
+		/// Function to clip or scale the bitmap up or down to the size of the buffer.
+		/// </summary>
+		/// <param name="bitmap">Bitmap to scale.</param>
+		/// <param name="filter">Filtering to apply to the scaled bitmap.</param>
+		/// <param name="buffer">Buffer to receive the scaled bitmap.</param>
+		/// <param name="clip">TRUE to clip, FALSE to scale.</param>
+		/// <returns>TRUE if clipping/scaling was performed, FALSE if not.</returns>
+		private bool ResizeBitmap(WIC.BitmapSource bitmap, WIC.BitmapInterpolationMode filter, GorgonImageData.ImageBuffer buffer, bool clip)
+		{
+			if (!clip)
+			{
+				using (var scaler = new WIC.BitmapScaler(_factory))
+				{
+					scaler.Initialize(bitmap, buffer.Width, buffer.Height, filter);
+					scaler.CopyPixels(buffer.PitchInformation.RowPitch, buffer.Data.BasePointer, buffer.PitchInformation.SlicePitch);
+				}
+
+				return true;
+			}
+			else
+			{
+				if ((buffer.Width < bitmap.Size.Width) || (buffer.Height < bitmap.Size.Height))
+				{
+					ClipBitmap(bitmap, buffer);
+					return true;
+				}
+			}
+
+			return false;
+		}
+
+		/// <summary>
+		/// Function to clip a bitmap.
+		/// </summary>
+		/// <param name="bitmap">Bitmap to clip.</param>
+		/// <param name="buffer">Buffer containing clipped data.</param>
+		private void ClipBitmap(WIC.BitmapSource bitmap, GorgonImageData.ImageBuffer buffer)
+		{
+			using (var clipper = new WIC.BitmapClipper(_factory))
+			{
+				clipper.Initialize(bitmap, new DX.DrawingRectangle(0, 0, buffer.Width < bitmap.Size.Width ? buffer.Width : bitmap.Size.Width, 
+																		 buffer.Height < bitmap.Size.Height ? buffer.Height : bitmap.Size.Height));
+				clipper.CopyPixels(buffer.PitchInformation.RowPitch, buffer.Data.BasePointer, buffer.PitchInformation.SlicePitch);
+			}
+		}
 
         /// <summary>
         /// Function to create a WIC bitmap from a System.Drawing.Image object.
         /// </summary>
         /// <param name="bitmap">WIC bitmap to copy to our image data.</param>
-        /// <param name="imageData">Our image data.</param>
-        /// <param name="arrayIndex">Index of the array to use.</param>
-        /// <param name="mipLevel">Mip map level to use.</param>
-        /// <param name="depthSlice">Depth slice to use.</param>
-        public void AddWICBitmapToImageData<T>(WIC.Bitmap bitmap, WIC.BitmapDitherType ditherFlags, GorgonImageData<T> imageData, int arrayIndex, int mipLevel, int depthSlice)
-            where T : class, ITextureSettings
+		/// <param name="filter">Filter used to scale the image.</param>
+		/// <param name="ditherFlags">Flags used to dither the image.</param>
+		/// <param name="buffer">Buffer for holding the image data.</param>
+		/// <param name="clip">TRUE to clip the data, FALSE to scale it.</param>
+        public void AddWICBitmapToImageData(WIC.Bitmap bitmap, ImageFilter filter, ImageDithering ditherFlags, GorgonImageData.ImageBuffer buffer, bool clip)
         {
-            GorgonImageData<T>.ImageBuffer buffer = imageData[arrayIndex, mipLevel, depthSlice];
-            Guid? conversionFormat = GetGUID(imageData.Settings.Format);
+            Guid conversionFormat = GetGUID(buffer.Format);
+			bool needsResize = (buffer.Width != bitmap.Size.Width) || (buffer.Height != bitmap.Size.Height);			
 
-            if (conversionFormat == null)
+            if (conversionFormat == Guid.Empty)
             {
-                throw new ArgumentException("The buffer format '" + imageData.Settings.Format.ToString() + "' is not supported.", "imageData");
+                throw new ArgumentException("The buffer format '" + buffer.Format.ToString() + "' is not supported.", "imageData");
+            }
+
+            if ((bitmap.Size.Width == buffer.Width) && (bitmap.Size.Height == buffer.Height))
+            {
+				filter = ImageFilter.Point;
             }
             
             // If the pixel format of the bitmap is not the same as our
-            // converstion format, then we need to convert the image.
-            if (bitmap.PixelFormat != conversionFormat.Value)
+            // conversion format, then we need to convert the image.
+            if (bitmap.PixelFormat != conversionFormat)
             {
-                using (var converter = new WIC.FormatConverter(_factory))
-                {
-                    if (!converter.CanConvert(bitmap.PixelFormat, conversionFormat.Value))
-                    {
-                        throw new ArgumentException("The buffer format '" + imageData.Settings.Format.ToString() + "' is not supported.", "imageData");
-                    }
-
-                    converter.Initialize(bitmap, conversionFormat.Value, ditherFlags, null, 0, WIC.BitmapPaletteType.Custom);
-                    converter.CopyPixels(buffer.PitchInformation.RowPitch, buffer.Data.BasePointer, buffer.PitchInformation.SlicePitch);
-                }
-            }
+				ConvertFormat(bitmap.PixelFormat, conversionFormat, (WIC.BitmapDitherType)ditherFlags, (WIC.BitmapInterpolationMode)filter, bitmap, null, 0, buffer, needsResize, clip);
+			}
             else
             {
-                // Just dump without converting because our formats are equal.
-                bitmap.CopyPixels(buffer.PitchInformation.RowPitch, buffer.Data.BasePointer, buffer.PitchInformation.SlicePitch);
+                // Just dump without converting because our formats and sizes are equal.
+				if ((!needsResize) || (!ResizeBitmap(bitmap, (WIC.BitmapInterpolationMode)filter, buffer, clip)))
+				{
+					bitmap.CopyPixels(buffer.PitchInformation.RowPitch, buffer.Data.BasePointer, buffer.PitchInformation.SlicePitch);
+				}
             }            
-
-            // TODO: Add code to handle resizing, dithering, and filtering.
         }
         #endregion
 

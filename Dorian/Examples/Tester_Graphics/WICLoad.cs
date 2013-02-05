@@ -421,7 +421,7 @@ namespace Tester_Graphics
 						frame.SetResolution(72, 72);
 						frame.SetPixelFormat(ref target);
 
-						if (wicGuid.Value != target)
+						/*if (wicGuid.Value != target)
 						{
 							SharpDX.DataRectangle rect = new SharpDX.DataRectangle(imageData.BasePointer, pitchInfo.RowPitch);
 							using (var sourceData = new WIC.Bitmap(_factory, texture.Settings.Width, texture.Settings.Height, wicGuid.Value, rect, pitchInfo.SlicePitch))
@@ -462,7 +462,7 @@ namespace Tester_Graphics
 								}
 							}
 						}
-						else
+						else*/
 						{
 							frame.WritePixels(texture.Settings.Height, imageData.BasePointer, pitchInfo.RowPitch, pitchInfo.SlicePitch);
 						}

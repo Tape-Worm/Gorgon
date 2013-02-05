@@ -6,7 +6,7 @@
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
 // in the Software without restriction, including without limitation the rights
-// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// to use, copy, modify, merge, publish, distribute, sublicense, and the sell
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
 // 
@@ -31,6 +31,7 @@ using System.Text;
 using System.IO;
 using System.Drawing;
 using D3D = SharpDX.Direct3D11;
+using GorgonLibrary.IO;
 using GorgonLibrary.Diagnostics;
 
 namespace GorgonLibrary.Graphics
@@ -479,6 +480,222 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
+		/// Function to create a texture from a GDI+ image object.
+		/// </summary>
+		/// <param name="name">Name of the texture.</param>
+		/// <param name="image">Image to load.</param>
+		/// <returns>The clone of the GDI+ image contained within a new 1D texture.</returns>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> or the <paramref name="image"/> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentException">Thrown when the name parameter is an empty string.</exception>
+		public GorgonTexture1D Create1DTextureFromGDIImage(string name, Image image)
+		{
+			return Create1DTextureFromGDIImage(name, image, new GorgonGDIOptions());
+		}
+
+		/// <summary>
+		/// Function to create a texture from a GDI+ image object.
+		/// </summary>
+		/// <param name="name">Name of the texture.</param>
+		/// <param name="image">Image to load.</param>
+		/// <param name="settings">Settings for the conversion process.</param>
+		/// <returns>The clone of the GDI+ image contained within a new 1D texture.</returns>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/>, <paramref name="image"/> or the <paramref name="settings"/> parameters are NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentException">Thrown when the name parameter is an empty string.</exception>
+		public GorgonTexture1D Create1DTextureFromGDIImage(string name, Image image, GorgonGDIOptions settings)
+		{
+			GorgonTexture1D result = null;
+
+			GorgonDebug.AssertNull<Image>(image, "image");
+			GorgonDebug.AssertNull<GorgonGDIOptions>(settings, "settings");
+
+			using (GorgonImageData data = GorgonImageData.Create1DFromGDIImage(image, settings))
+			{
+				result = CreateTexture<GorgonTexture1D>(name, data.Settings as ITextureSettings, data);
+			}
+
+			return result;
+		}
+
+		/// <summary>
+		/// Function to create a texture from a GDI+ image object.
+		/// </summary>
+		/// <param name="name">Name of the texture.</param>
+		/// <param name="image">Image to load.</param>
+		/// <returns>The clone of the GDI+ image contained within a new 2D texture.</returns>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> or the <paramref name="image"/> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentException">Thrown when the name parameter is an empty string.</exception>
+		public GorgonTexture2D Create2DTextureFromGDIImage(string name, Image image)
+		{
+			return Create2DTextureFromGDIImage(name, image, new GorgonGDIOptions());
+		}
+
+		/// <summary>
+		/// Function to create a texture from a GDI+ image object.
+		/// </summary>
+		/// <param name="name">Name of the texture.</param>
+		/// <param name="image">Image to load.</param>
+		/// <param name="settings">Settings for the conversion process.</param>
+		/// <returns>The clone of the GDI+ image contained within a new 2D texture.</returns>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/>, <paramref name="image"/> or the <paramref name="settings"/> parameters are NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentException">Thrown when the name parameter is an empty string.</exception>
+		public GorgonTexture2D Create2DTextureFromGDIImage(string name, Image image, GorgonGDIOptions settings)
+		{
+			GorgonTexture2D result = null;
+
+			GorgonDebug.AssertNull<Image>(image, "image");
+			GorgonDebug.AssertNull<GorgonGDIOptions>(settings, "settings");
+
+			using (GorgonImageData data = GorgonImageData.Create2DFromGDIImage(image, settings))
+			{
+				result = CreateTexture<GorgonTexture2D>(name, data.Settings as ITextureSettings, data);
+			}
+
+			return result;
+		}
+
+		/// <summary>
+		/// Function to create a texture array and the mip chain from a list of GDI+ image objects.
+		/// </summary>
+		/// <param name="name">Name of the texture.</param>
+		/// <param name="images">Image to load.</param>
+		/// <returns>The clone of the GDI+ image contained within a new 1D texture.</returns>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> or the <paramref name="images"/> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentException">Thrown when the name parameter is an empty string.</exception>
+		public GorgonTexture1D Create1DTextureFromGDIImage(string name, IList<Image> images)
+		{
+			return Create1DTextureFromGDIImage(name, images, new GorgonGDIOptions());
+		}
+
+		/// <summary>
+		/// Function to create a texture array and the mip chain from a list of GDI+ image objects.
+		/// </summary>
+		/// <param name="name">Name of the texture.</param>
+		/// <param name="images">Image to load.</param>
+		/// <param name="settings">Settings for the conversion process.</param>
+		/// <returns>The clone of the GDI+ image contained within a new 1D texture.</returns>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/>, <paramref name="images"/> or the <paramref name="settings"/> parameters are NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentException">Thrown when the name parameter is an empty string.</exception>
+		public GorgonTexture1D Create1DTextureFromGDIImage(string name, IList<Image> images, GorgonGDIOptions settings)
+		{
+			GorgonTexture1D result = null;
+
+			GorgonDebug.AssertNull<IList<Image>>(images, "image");
+			GorgonDebug.AssertNull<GorgonGDIOptions>(settings, "settings");
+
+#if DEBUG
+			if (images.Count == 0)
+			{
+				throw new ArgumentException("The parameter must not be empty.", "images");
+			}
+#endif
+
+			if (images.Count == 1)
+			{
+				return Create1DTextureFromGDIImage(name, images[0], settings);
+			}
+			
+			using (GorgonImageData data = GorgonImageData.Create1DFromGDIImage(images, settings))
+			{
+				result = CreateTexture<GorgonTexture1D>(name, data.Settings as ITextureSettings, data);
+			}
+
+			return result;
+		}
+
+		/// <summary>
+		/// Function to create a 2D texture and the mip chain from a list of GDI+ image objects.
+		/// </summary>
+		/// <param name="name">Name of the texture.</param>
+		/// <param name="images">Images to load.</param>
+		/// <returns>The clone of the GDI+ image contained within a new 3D texture.</returns>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> or the <paramref name="images"/> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentException">Thrown when the name parameter is an empty string.</exception>
+		public GorgonTexture2D Create2DTextureFromGDIImage(string name, IList<Image> images)
+		{
+			return Create2DTextureFromGDIImage(name, images, new GorgonGDIOptions());
+		}
+
+		/// <summary>
+		/// Function to create a texture array and the mip chain from a list of GDI+ image objects.
+		/// </summary>
+		/// <param name="name">Name of the texture.</param>
+		/// <param name="images">Image to load.</param>
+		/// <param name="settings">Settings for the conversion process.</param>
+		/// <returns>The clone of the GDI+ image contained within a new 2D texture.</returns>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/>, <paramref name="images"/> or the <paramref name="settings"/> parameters are NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentException">Thrown when the name parameter is an empty string.</exception>
+		public GorgonTexture2D Create2DTextureFromGDIImage(string name, IList<Image> images, GorgonGDIOptions settings)
+		{
+			GorgonTexture2D result = null;
+
+			GorgonDebug.AssertNull<IList<Image>>(images, "image");
+			GorgonDebug.AssertNull<GorgonGDIOptions>(settings, "settings");
+
+#if DEBUG
+			if (images.Count == 0)
+			{
+				throw new ArgumentException("The parameter must not be empty.", "images");
+			}
+#endif
+
+			if (images.Count == 1)
+			{
+				return Create2DTextureFromGDIImage(name, images[0], settings);
+			}
+
+			using (GorgonImageData data = GorgonImageData.Create2DFromGDIImage(images, settings))
+			{
+				result = CreateTexture<GorgonTexture2D>(name, data.Settings as ITextureSettings, data);
+			}
+
+			return result;
+		}
+
+		/// <summary>
+		/// Function to create a 3D texture and the mip chain from a list of GDI+ image objects.
+		/// </summary>
+		/// <param name="name">Name of the texture.</param>
+		/// <param name="images">Images to load.</param>
+		/// <returns>The clone of the GDI+ image contained within a new 3D texture.</returns>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> or the <paramref name="images"/> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentException">Thrown when the name parameter is an empty string.</exception>
+		public GorgonTexture3D Create3DTextureFromGDIImage(string name, IList<Image> images)
+		{
+			return Create3DTextureFromGDIImage(name, images, new GorgonGDIOptions());
+		}
+
+		/// <summary>
+		/// Function to create a 3D texture and the mip chain from a list of GDI+ image objects.
+		/// </summary>
+		/// <param name="name">Name of the texture.</param>
+		/// <param name="images">Images to load.</param>
+		/// <param name="settings">Settings for the conversion process.</param>
+		/// <returns>The clone of the GDI+ image contained within a new 3D texture.</returns>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/>, <paramref name="images"/>, <paramref name="settings"/> parameters are NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentException">Thrown when the name parameter is an empty string.</exception>
+		public GorgonTexture3D Create3DTextureFromGDIImage(string name, IList<Image> images, GorgonGDIOptions settings)
+		{
+			GorgonTexture3D result = null;
+
+			GorgonDebug.AssertNull<IList<Image>>(images, "image");
+			GorgonDebug.AssertNull<GorgonGDIOptions>(settings, "settings");
+
+#if DEBUG
+			if (images.Count == 0)
+			{
+				throw new ArgumentException("The parameter must not be empty.", "images");
+			}
+#endif
+
+			using (GorgonImageData data = GorgonImageData.Create3DFromGDIImage(images, settings))
+			{
+				result = CreateTexture<GorgonTexture3D>(name, data.Settings as ITextureSettings, data);
+			}
+
+			return result;
+		}
+
+		/// <summary>
 		/// Function to load a texture from a byte array.
 		/// </summary>
 		/// <typeparam name="T">Type of texture to load.</typeparam>
@@ -814,6 +1031,11 @@ namespace GorgonLibrary.Graphics
 		/// <param name="settings">Settings for the texture.</param>
 		/// <param name="data">Data used to initialize the texture.</param>
 		/// <returns>A new texture.</returns>
+		/// <remarks>This will create a new texture from the image data specified.  If the image data parameter is NULL (Nothing in VB.Net), then no image data will be 
+		/// uploaded to the texture.
+		/// <para>If the data parameter is not NULL, then the texture settings width, height, depth, mip count, array count, and format will use the settings from the data parameter.  
+		/// Otherwise, the settings from the texture settings will be used.</para>
+		/// </remarks>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> or the <paramref name="settings"/> parameters are NULL (Nothing in VB.Net)</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the name parameter is an empty string.
 		/// <para>-or-</para>
@@ -823,45 +1045,53 @@ namespace GorgonLibrary.Graphics
 		/// <para>-or-</para>
 		/// <para>Thrown when the texture format isn't supported by the hardware.</para>
 		/// </exception>
-		public T CreateTexture<T>(string name, ITextureSettings settings, IEnumerable<ISubResourceData> data)
+		public T CreateTexture<T>(string name, ITextureSettings settings, GorgonImageData data)
 			where T : GorgonTexture
 		{
-			GorgonTexture texture = null;
+			Type type = typeof(T);
+			T texture = null;
 
 			GorgonDebug.AssertNull<ITextureSettings>(settings, "settings");
 			GorgonDebug.AssertParamString(name, "name");
 
-			if ((settings.Usage == BufferUsage.Immutable) && ((data == null) || (data.Count() == 0)))
-				throw new ArgumentException("Immutable textures require data to initialize them.", "data");
+			if ((settings.Usage == BufferUsage.Immutable) && ((data == null) || (data.Count == 0)))
+				throw new ArgumentException("Immutable textures require initialization data.", "data");
 
-			if (typeof(T) == typeof(GorgonTexture1D))
+			// Ensure that the settings match between the data and the texture settings.
+			if (data != null)
 			{
-				ValidateTexture1D(ref settings, false);
-				texture = new GorgonTexture1D(_graphics, name, settings);
+				settings.ArrayCount = data.Settings.ArrayCount;
+				settings.MipCount = data.Settings.MipCount;
+				settings.Width = data.Settings.Width;
+				settings.Height = data.Settings.Height;
+				settings.Depth = data.Settings.Depth;
+				settings.Format = data.Settings.Format;
 			}
-			else
+
+			switch (settings.ImageType)
 			{
-				if (typeof(T) == typeof(GorgonTexture2D))
-				{
-					ValidateTexture2D(ref settings, false);
-					texture = GorgonTexture2D.CreateTexture(_graphics, name, settings);
-				}
-				else
-				{
-					if (typeof(T) == typeof(GorgonTexture3D))
-					{
-						ValidateTexture3D(ref settings, false);
-						texture = new GorgonTexture3D(_graphics, name, settings);
-					}
-					else
-						throw new ArgumentException("The settings type '" + settings.GetType().FullName + "' is unknown.", "settings");
-				}
+				case ImageType.Image1D:
+					texture = new GorgonTexture1D(_graphics, name, settings) as T;
+					break;
+				case ImageType.Image2D:
+					texture = GorgonTexture2D.CreateTexture(_graphics, name, settings) as T;
+					break;
+				case ImageType.Image3D:
+					texture = new GorgonTexture3D(_graphics, name, settings) as T;
+					break;
+				default:
+					throw new ArgumentException("The texture type '" + type.FullName + "' is unknown.", "settings");
+			}
+
+			if (texture == null)
+			{
+				throw new ArgumentException("The texture type '" + type.FullName + "' is unknown.", "settings");
 			}
 
 			texture.Initialize(data);
 
 			_graphics.AddTrackedObject(texture);
-			return (T)texture;
+			return texture;
 		}
 		#endregion
 

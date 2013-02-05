@@ -293,13 +293,12 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
-		/// Function to create an image with initial data.
+		/// Function to initialize the texture with optional initial data.
 		/// </summary>
-		/// <param name="initialData">Data to use when creating the image.</param>
-		protected override void InitializeImpl(IEnumerable<ISubResourceData> initialData)
+		/// <param name="initialData">Data used to populate the image.</param>
+		protected override void InitializeImpl(GorgonImageData initialData)
 		{
 			D3D.Texture2DDescription desc = new D3D.Texture2DDescription();
-			DX.DataRectangle[] dataRects = null;
 
 			desc.ArraySize = Settings.ArrayCount;
 			desc.Format = (SharpDX.DXGI.Format)Settings.Format;
@@ -328,11 +327,12 @@ namespace GorgonLibrary.Graphics
 
 			if (initialData != null)
 			{
-				dataRects = GorgonTexture2DData.Convert(initialData);
-				D3DResource = new D3D.Texture2D(Graphics.D3DDevice, desc, dataRects);
+				D3DResource = new D3D.Texture2D(Graphics.D3DDevice, desc, initialData.GetDataBoxes());
 			}
 			else
+			{
 				D3DResource = new D3D.Texture2D(Graphics.D3DDevice, desc);
+			}
 		}
 
 		/// <summary>

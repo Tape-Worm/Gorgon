@@ -125,7 +125,7 @@ namespace Test_TextureArray
 					MipCount = 1
 				});
 
-			_tex = _graphics.Textures.CreateTexture<GorgonTexture2D>("Texture", new GorgonTexture2DSettings()
+			/*_tex = _graphics.Textures.CreateTexture<GorgonTexture2D>("Texture", new GorgonTexture2DSettings()
 			{
 				Width = image.Settings.Width,
 				Height = image.Settings.Height,
@@ -136,11 +136,16 @@ namespace Test_TextureArray
 			});
 
 			_tex.CopySubResource(_noDecal, 0, 1);
-			_tex.CopySubResource(image, 0, 0);
+			_tex.CopySubResource(image, 0, 0);*/
+			_tex = _graphics.Textures.FromFile<GorgonTexture2D>("Texture", @"D:\unpak\textureUpload.dds", new GorgonTexture2DSettings()
+				{
+					MipCount = 0
+				});
 
 			image.Dispose();
 
-			_sprite = _2D.Renderables.CreateSprite("Test", new Vector2(64, 64), _noDecal, new RectangleF(0, 0, 0.5f, 0.5f));
+			_sprite = _2D.Renderables.CreateSprite("Test", new Vector2(32, 32), _noDecal, new RectangleF(0, 0, 1.0f, 1.0f));
+			//_sprite = _2D.Renderables.CreateSprite("Test", new Vector2(64, 64), _noDecal, new RectangleF(0, 0, 0.5f, 0.5f));
 			//_sprite.Collider = new Gorgon2DAABB();
 			//((Gorgon2DAABB)_sprite.Collider).Location = new Vector2(_tex.Settings.Width / 4.0f, _tex.Settings.Height / 4.0f);
 			//((Gorgon2DAABB)_sprite.Collider).Size = new Vector2(0.5f, 0.5f);
@@ -161,7 +166,7 @@ namespace Test_TextureArray
 
 			_sprite.Position = new Vector2(_swap.Settings.Width / 2.0f, _swap.Settings.Height / 2.0f);
 
-			anim.Tracks["Position"].KeyFrames.Add(new GorgonKeyVector2(0.0f, new Vector2(_swap.Settings.Width / 2.0f, _swap.Settings.Height / 2.0f)));
+			/*anim.Tracks["Position"].KeyFrames.Add(new GorgonKeyVector2(0.0f, new Vector2(_swap.Settings.Width / 2.0f, _swap.Settings.Height / 2.0f)));
 			anim.Tracks["Position"].KeyFrames.Add(new GorgonKeyVector2(1000.0f, new Vector2(0, _swap.Settings.Height / 2.0f)));
 			anim.Tracks["Position"].KeyFrames.Add(new GorgonKeyVector2(2000.0f, new Vector2(_swap.Settings.Width / 2.0f, 0)));
 			anim.Tracks["Position"].KeyFrames.Add(new GorgonKeyVector2(3000.0f, new Vector2(_swap.Settings.Width / 2.0f, _swap.Settings.Height / 2.0f)));
@@ -175,7 +180,10 @@ namespace Test_TextureArray
 			anim.Tracks["Texture"].KeyFrames.Add(new GorgonKeyTexture2D(1000.0f, _noDecal, new RectangleF(0.5f, 0, 0.5f, 0.5f)));
 			anim.Tracks["Texture"].KeyFrames.Add(new GorgonKeyTexture2D(2000.0f, _noDecal, new RectangleF(0.0f, 0.5f, 0.5f, 0.5f)));
 			anim.Tracks["Texture"].KeyFrames.Add(new GorgonKeyTexture2D(2250.0f, _tex, new RectangleF(0, 0, 1.0f, 1.0f)));
-			anim.Tracks["Texture"].InterpolationMode = TrackInterpolationMode.None;
+			anim.Tracks["Texture"].InterpolationMode = TrackInterpolationMode.None;*/
+			anim.Tracks["Scale"].KeyFrames.Add(new GorgonKeyVector2(0.0f, new Vector2(1.0f, 1.0f)));
+			anim.Tracks["Scale"].KeyFrames.Add(new GorgonKeyVector2(1500.0f, new Vector2(256.0f, 256.0f)));
+			anim.Tracks["Scale"].KeyFrames.Add(new GorgonKeyVector2(3000.0f, new Vector2(1.0f, 1.0f)));
 
 			anim.IsLooped = true;
 			//anim.Speed = 0.5f;
