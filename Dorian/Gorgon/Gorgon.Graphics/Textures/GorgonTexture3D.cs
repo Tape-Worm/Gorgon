@@ -184,10 +184,13 @@ namespace GorgonLibrary.Graphics
 		/// Function to create an image with initial data.
 		/// </summary>
 		/// <param name="initialData">Data to use when creating the image.</param>
-		protected override void InitializeImpl(IEnumerable<ISubResourceData> initialData)
+		/// <remarks>
+		/// The <paramref name="initialData" /> can be NULL (Nothing in VB.Net) IF the texture is not created with an Immutable usage flag.
+		/// <para>To initialize the texture, create a new <see cref="GorgonLibrary.Graphics.GorgonImageData">GorgonImageData</see> object and fill it with image information.</para>
+		/// </remarks>
+		protected override void InitializeImpl(GorgonImageData initialData)
 		{
 			D3D.Texture3DDescription desc = new D3D.Texture3DDescription();
-			DX.DataBox[] dataRects = null;
 
 			desc.Format = (SharpDX.DXGI.Format)Settings.Format;
 			desc.Width = Settings.Width;
@@ -213,13 +216,14 @@ namespace GorgonLibrary.Graphics
 			}
 			desc.OptionFlags = D3D.ResourceOptionFlags.None;
 
-			if (initialData != null)
+			if ((initialData != null) && (initialData.Count > 0))
 			{
-				dataRects = GorgonTexture3DData.Convert(initialData);
-				D3DResource = new D3D.Texture3D(Graphics.D3DDevice, desc, dataRects);
+				D3DResource = new D3D.Texture3D(Graphics.D3DDevice, desc, initialData.GetDataBoxes());
 			}
 			else
+			{
 				D3DResource = new D3D.Texture3D(Graphics.D3DDevice, desc);
+			}
 		}
 
 		/// <summary>
@@ -314,7 +318,7 @@ namespace GorgonLibrary.Graphics
 		///   </exception>
 		public override void Save(System.IO.Stream stream, ImageFileFormat format)
 		{
-			if (format == ImageFileFormat.DDS)
+			if (format != ImageFileFormat.DDS)
 				throw new ArgumentException("Volume textures can only be saved to DDS format.", "format");
 
 			D3D.Resource.ToStream<D3D.Texture3D>(Graphics.Context, (D3D.Texture3D)D3DResource, D3D.ImageFileFormat.Dds, stream);

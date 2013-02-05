@@ -404,17 +404,16 @@ namespace GorgonLibrary.Examples
 				using (GorgonDataStream stream = new GorgonDataStream(currentScreen.Bounds.Width * currentScreen.Bounds.Height * 4))
 				{
 					// Clear our backup image to white to match our primary screen.
-					GorgonTexture2DData data = new GorgonTexture2DData(stream, currentScreen.Bounds.Width * 4);
-					stream.Fill(0xFF);
-					stream.Position = 0;
-
-					_backupImage = _graphics.Textures.CreateTexture<GorgonTexture2D>("Backup", new GorgonTexture2DSettings()
+					GorgonImageData data = new GorgonImageData(new GorgonTexture2DSettings()
 					{
 						Width = currentScreen.Bounds.Width,
 						Height = currentScreen.Bounds.Height,
 						Format = BufferFormat.R8G8B8A8_UIntNormal,
-						Usage = BufferUsage.Staging,
-					}, new ISubResourceData[] { data });
+						Usage = BufferUsage.Staging
+					});
+					data[0].Data.Fill(0xFF);
+
+					_backupImage = _graphics.Textures.CreateTexture<GorgonTexture2D>("Backup", (GorgonTexture2DSettings)data.Settings, data);
 				}
 
 				// Relocate the window to the center of the screen.				

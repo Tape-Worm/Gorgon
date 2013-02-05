@@ -35,57 +35,12 @@ using GorgonLibrary.Math;
 namespace GorgonLibrary.Graphics
 {
 	/// <summary>
-	/// Settings for a texture.
+	/// Settings to describe a texture structure.
 	/// </summary>
 	public interface ITextureSettings
+		: IImageSettings
 	{
 		#region Properties.
-		/// <summary>
-		/// Property to set or return the width of a texture.
-		/// </summary>
-		/// <remarks>When loading a file, leave as 0 to use the width from the file source.</remarks>
-		int Width
-		{
-			get;
-			set;
-		}
-
-		/// <summary>
-		/// Property to set or return the height of a texture.
-		/// </summary>
-		/// <remarks>
-		/// When loading a file, leave as 0 to use the height from the file source.
-		/// <para>This applies to 2D and 3D textures only.</para></remarks>
-		int Height
-		{
-			get;
-			set;
-		}
-
-		/// <summary>
-		/// Property to set or return the depth of a texture.
-		/// </summary>
-		/// <remarks>
-		/// When loading a file, leave as 0 to use the width from the depth source.
-		/// <para>This applies to 3D textures only.</para></remarks>
-		int Depth
-		{
-			get;
-			set;
-		}
-
-		/// <summary>
-		/// Property to set or return the format of a texture.
-		/// </summary>
-		/// <remarks>
-		/// When loading a texture from a file, leave this as Unknown to get the file format from the source file.
-		/// <para>This sets the format of the texture data.  If you want to change the format of a texture when being sampled in a shader, then set the <see cref="P:GorgonLibrary.Graphics.ITextureSettings.ViewFormat">ViewFormat</see> property to anything other than Unknown.</para></remarks>
-		BufferFormat Format
-		{
-			get;
-			set;
-		}
-
 		/// <summary>
 		/// Property to set or return the shader view format.
 		/// </summary>
@@ -106,31 +61,11 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
-		/// Property to set or return the number of textures there are in a texture array.
-		/// </summary>
-		/// <remarks>This only applies to 1D and 2D textures, 3D textures always have this value set to 1.  The default value is 1.</remarks>
-		int ArrayCount
-		{
-			get;
-			set;
-		}
-
-		/// <summary>
 		/// Property to set or return whether this is a cube texture.
 		/// </summary>
 		/// <remarks>When setting this value to TRUE, ensure that the <see cref="P:GorgonLibrary.Graphics.ITextureSettings.ArrayCount">ArrayCount</see> property is set to a multiple of 6.
 		/// <para>This only applies to 2D textures.  All other textures will return FALSE.  The default value is FALSE.</para></remarks>
 		bool IsTextureCube
-		{
-			get;
-			set;
-		}
-
-		/// <summary>
-		/// Property to set or return the number of mip maps in a texture.
-		/// </summary>
-		/// <remarks>To have the system generate mipmaps for you, set this value to 0.  The default value for this setting is 1.</remarks>
-		int MipCount
 		{
 			get;
 			set;
@@ -159,14 +94,6 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
-		/// Property to return whether the size of the texture is a power of 2 or not.
-		/// </summary>
-		bool IsPowerOfTwo
-		{
-			get;
-		}
-
-		/// <summary>
 		/// Property to set or return the type of filter when loading an image from a stream or file.
 		/// </summary>
 		/// <remarks>This only applies to textures created when loading an image from a stream or file.  Texture creation methods do not use this.
@@ -189,24 +116,6 @@ namespace GorgonLibrary.Graphics
 			get;
 			set;
 		}
-		#endregion
-
-		#region Methods.
-		/// <summary>
-		/// Function to retrieve the size, in bytes, of the texture described by these settings.
-		/// </summary>
-		/// <returns>The number of bytes for the texture.</returns>
-		/// <exception cref="System.NotSupportedException">Thrown when the <see cref="GorgonLibrary.Graphics.ITextureSettings.Format">Format</see> property is set to Unknown.
-		/// <para>-or-</para>
-		/// <para>Thrown when the format is not a valid format.</para>
-		/// </exception>
-		int GetSizeInBytes();
-
-		/// <summary>
-		/// Function to calculate the number of mip levels based on the width, height and depth information.
-		/// </summary>
-		/// <returns>The number of mip map levels.</returns>
-		int CalculateMipLevels();
 		#endregion
 	}
 	
@@ -234,6 +143,18 @@ namespace GorgonLibrary.Graphics
 		#endregion
 
 		#region ITextureSettings Members
+		#region Properties.
+		/// <summary>
+		/// Property to return the type of image data.
+		/// </summary>
+		public ImageType ImageType
+		{
+			get
+			{
+				return ImageType.Image1D;
+			}
+		}
+
 		/// <summary>
 		/// Property to set or return the type of filter when loading an image from a stream or file.
 		/// </summary>
@@ -290,7 +211,7 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		/// <value></value>
 		/// <remarks>This applies to 2D and 3D textures only.</remarks>
-		int ITextureSettings.Height
+		int IImageSettings.Height
 		{
 			get
 			{
@@ -306,7 +227,7 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		/// <value></value>
 		/// <remarks>This applies to 3D textures only.</remarks>
-		int ITextureSettings.Depth
+		int IImageSettings.Depth
 		{
 			get
 			{
@@ -407,69 +328,7 @@ namespace GorgonLibrary.Graphics
 				return ((Width == 0) || (Width & (Width - 1)) == 0);
 			}
 		}
-
-		/// <summary>
-		/// Function to retrieve the size, in bytes, of the texture described by these settings.
-		/// </summary>
-		/// <returns>The number of bytes for the texture.</returns>
-		/// <exception cref="System.NotSupportedException">Thrown when the <see cref="GorgonLibrary.Graphics.ITextureSettings.Format">Format</see> property is set to Unknown.
-		/// <para>-or-</para>
-		/// <para>Thrown when the format is not a valid format.</para>
-		/// </exception>
-		int ITextureSettings.GetSizeInBytes()
-		{
-			if (Format == BufferFormat.Unknown)
-			{
-				throw new NotSupportedException("The buffer type 'Unknown' is not a valid format.");
-			}
-
-			int width = 1.Max(Width);
-			int arrayCount = 1.Max(ArrayCount);
-			int mipCount = 1.Max(MipCount);
-			var formatInfo = GorgonBufferFormatInfo.GetInfo(Format);
-			int result = 0;
-
-			if (formatInfo.SizeInBytes == 0)
-			{
-				throw new NotSupportedException("The format '" + Format.ToString() + "' is not supported.");
-			}
-
-			for (int array = 0; array < arrayCount; array++)
-			{
-				int mipWidth = width;
-				
-				for (int mip = 0; mip < mipCount; mip++)
-				{
-					var pitchInfo = formatInfo.GetPitch(mipWidth, 1, PitchFlags.None);
-					result += pitchInfo.SlicePitch;
-
-					if (mipWidth > 1)
-					{
-						mipWidth >>= 1;
-					}					
-				}
-			}
-
-			return result;
-		}
-
-		/// <summary>
-		/// Function to return the number of actual mip map levels that will be made for the image.
-		/// </summary>
-		/// <returns>The number of mip levels for the image.</returns>
-		public int CalculateMipLevels()
-		{
-			int width = 1.Max(Width);
-			int result = 1;
-
-			while (width > 1)
-			{
-				width >>= 1;
-				result++;
-			}
-			
-			return result;
-		}
+		#endregion
 		#endregion
 	}
 
@@ -517,6 +376,18 @@ namespace GorgonLibrary.Graphics
 		#endregion
 
 		#region ITextureSettings Members
+		#region Properties.
+		/// <summary>
+		/// Property to return the type of image data.
+		/// </summary>
+		public ImageType ImageType
+		{
+			get
+			{
+				return ImageType.Image2D;
+			}
+		}
+
 		/// <summary>
 		/// Property to set or return the type of filter when loading an image from a stream or file.
 		/// </summary>
@@ -584,7 +455,7 @@ namespace GorgonLibrary.Graphics
 		/// <remarks>
 		/// When loading a file, leave as 0 to use the width from the depth source.
 		/// <para>This applies to 3D textures only.</para></remarks>
-		int ITextureSettings.Depth
+		int IImageSettings.Depth
 		{
 			get
 			{
@@ -685,84 +556,7 @@ namespace GorgonLibrary.Graphics
 						((Height == 0) || (Height & (Height - 1)) == 0);
 			}
 		}
-
-		/// <summary>
-		/// Function to retrieve the size, in bytes, of the texture described by these settings.
-		/// </summary>
-		/// <returns>The number of bytes for the texture.</returns>
-		/// <exception cref="System.NotSupportedException">Thrown when the <see cref="GorgonLibrary.Graphics.ITextureSettings.Format">Format</see> property is set to Unknown.
-		/// <para>-or-</para>
-		/// <para>Thrown when the format is not a valid format.</para>
-		/// </exception>
-		int ITextureSettings.GetSizeInBytes()
-		{
-			if (Format == BufferFormat.Unknown)
-			{
-				throw new NotSupportedException("The buffer type 'Unknown' is not a valid format.");
-			}
-
-			int width = 1.Max(Width);
-			int height = 1.Max(Height);
-			int arrayCount = 1.Max(ArrayCount);
-			int mipCount = 1.Max(MipCount);
-			var formatInfo = GorgonBufferFormatInfo.GetInfo(Format);
-			int result = 0;
-
-			if (formatInfo.SizeInBytes == 0)
-			{
-				throw new NotSupportedException("The format '" + Format.ToString() + "' is not supported.");
-			}
-
-			for (int array = 0; array < arrayCount; array++)
-			{
-				int mipWidth = width;
-				int mipHeight = height;
-
-				for (int mip = 0; mip < mipCount; mip++)
-				{
-					var pitchInfo = formatInfo.GetPitch(mipWidth, mipHeight, PitchFlags.None);
-					result += pitchInfo.SlicePitch;
-
-					if (mipWidth > 1)
-					{
-						mipWidth >>= 1;
-					}
-					if (mipHeight > 1)
-					{
-						mipHeight >>= 1;
-					}
-				}
-			}
-
-			return result;
-		}
-
-		/// <summary>
-		/// Function to return the number of actual mip map levels that will be made for the image.
-		/// </summary>
-		/// <returns>The number of mip levels for the image.</returns>
-		public int CalculateMipLevels()
-		{
-			int width = 1.Max(Width);
-			int height = 1.Max(Height);
-			int result = 1;
-
-			while ((width > 1) || (height > 1))
-			{
-				if (width > 1)
-				{
-					width >>= 1;
-				}
-				if (height > 1)
-				{
-					height >>= 1;
-				}
-
-				result++;
-			}
-
-			return result;
-		}
+		#endregion
 		#endregion
 	}
 
@@ -791,6 +585,18 @@ namespace GorgonLibrary.Graphics
 		#endregion
 
 		#region ITextureSettings Members
+		#region Properties.
+		/// <summary>
+		/// Property to return the type of image data.
+		/// </summary>
+		public ImageType ImageType
+		{
+			get
+			{
+				return ImageType.Image3D;
+			}
+		}
+
 		/// <summary>
 		/// Property to set or return the type of filter when loading an image from a stream or file.
 		/// </summary>
@@ -907,7 +713,7 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		/// <value></value>
 		/// <remarks>This only applies to 1D and 2D textures, 3D textures always have this value set to 1.  The default value is 1.</remarks>
-		int ITextureSettings.ArrayCount
+		int IImageSettings.ArrayCount
 		{
 			get
 			{
@@ -970,90 +776,7 @@ namespace GorgonLibrary.Graphics
 						((Depth == 0) || (Depth & (Depth - 1)) == 0);
 			}
 		}
-
-		/// <summary>
-		/// Function to retrieve the size, in bytes, of the texture described by these settings.
-		/// </summary>
-		/// <returns>The number of bytes for the texture.</returns>
-		/// <exception cref="System.NotSupportedException">Thrown when the <see cref="GorgonLibrary.Graphics.ITextureSettings.Format">Format</see> property is set to Unknown.
-		/// <para>-or-</para>
-		/// <para>Thrown when the format is not a valid format.</para>
-		/// </exception>
-		int ITextureSettings.GetSizeInBytes()
-		{
-			if (Format == BufferFormat.Unknown)
-			{
-				throw new NotSupportedException("The buffer type 'Unknown' is not a valid format.");
-			}
-
-			int width = 1.Max(Width);
-			int height = 1.Max(Height);
-			int depth = 1.Max(Depth);
-			int mipCount = 1.Max(MipCount);
-			var formatInfo = GorgonBufferFormatInfo.GetInfo(Format);
-			int result = 0;
-
-			if (formatInfo.SizeInBytes == 0)
-			{
-				throw new NotSupportedException("The format '" + Format.ToString() + "' is not supported.");
-			}
-
-			int mipWidth = width;
-			int mipHeight = height;
-
-			for (int mip = 0; mip < mipCount; mip++)
-			{
-				var pitchInfo = formatInfo.GetPitch(mipWidth, mipHeight, PitchFlags.None);
-				result += pitchInfo.SlicePitch * depth;
-
-				if (mipWidth > 1)
-				{
-					mipWidth >>= 1;
-				}
-				if (mipHeight > 1)
-				{
-					mipHeight >>= 1;
-				}
-				if (depth > 1)
-				{
-					depth >>= 1;
-				}
-			}
-
-			return result;
-		}
-
-		/// <summary>
-		/// Function to return the number of actual mip map levels that will be made for the image.
-		/// </summary>
-		/// <returns>The number of mip levels for the image.</returns>
-		public int CalculateMipLevels()
-		{
-			int width = 1.Max(Width);
-			int height = 1.Max(Height);
-			int depth = 1.Max(Depth);
-			int result = 1;
-
-			while ((width > 1) || (height > 1) || (depth > 1))
-			{
-				if (width > 1)
-				{
-					width >>= 1;
-				}
-				if (height > 1)
-				{
-					height >>= 1;
-				}
-				if (depth > 1)
-				{
-					depth >>= 1;
-				}
-
-				result++;
-			}
-
-			return result;
-		}
+		#endregion
 		#endregion
 	}
 }

@@ -47,7 +47,6 @@ namespace GorgonLibrary.Graphics
 		: GorgonNamedResource
 	{
 		#region Variables.
-		private int _size = 0;								// Size of the texture, in bytes.
 		private IList<DX.DataStream> _lock = null;			// Locks for the texture.
 		#endregion
 
@@ -98,7 +97,7 @@ namespace GorgonLibrary.Graphics
 		{
 			get
 			{
-				return Settings.GetSizeInBytes();
+				return GorgonImageData.GetSizeInBytes(Settings);
 			}
 		}
 
@@ -212,8 +211,10 @@ namespace GorgonLibrary.Graphics
 		/// Function to create an image with initial data.
 		/// </summary>
 		/// <param name="initialData">Data to use when creating the image.</param>
-		/// <remarks>The initial data can be a <see cref="GorgonLibrary.IO.GorgonDataStream">GorgonDataStream</see>, <see cref="GorgonLibrary.Graphics.GorgonTexture2DData">GorgonTexture2DData</see> or <see cref="GorgonLibrary.Graphics.GorgonTexture3DData">GorgonTexture3DData</see></remarks>
-		protected abstract void InitializeImpl(IEnumerable<ISubResourceData> initialData);
+		/// <remarks>The <paramref name="initialData"/> can be NULL (Nothing in VB.Net) IF the texture is not created with an Immutable usage flag.
+		/// <para>To initialize the texture, create a new <see cref="GorgonLibrary.Graphics.GorgonImageData">GorgonImageData</see> object and fill it with image information.</para>
+		/// </remarks>
+		protected abstract void InitializeImpl(GorgonImageData initialData);
 
 		/// <summary>
 		/// Function to copy a resource in its entirety.
@@ -246,7 +247,7 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		/// <param name="initialData">Data to use when creating the image.</param>
 		/// <remarks>The initial data can be a <see cref="GorgonLibrary.IO.GorgonDataStream">GorgonDataStream</see>, <see cref="GorgonLibrary.Graphics.GorgonTexture2DData">GorgonTexture2DData</see> or <see cref="GorgonLibrary.Graphics.GorgonTexture3DData">GorgonTexture3DData</see></remarks>
-		internal void Initialize(IEnumerable<ISubResourceData> initialData)
+		internal void Initialize(GorgonImageData initialData)
 		{
 			try
 			{

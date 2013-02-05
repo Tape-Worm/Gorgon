@@ -30,10 +30,78 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.IO;
+using WIC = SharpDX.WIC;
 using GorgonLibrary.Graphics;
+
 
 namespace GorgonLibrary.IO
 {
+	/// <summary>
+	/// Filter to be applied to an image that's been stretched or shrunk.
+	/// </summary>
+	public enum ImageFilter
+	{
+		/// <summary>
+		/// The output pixel is assigned the value of the pixel that the point falls within. No other pixels are considered.
+		/// </summary>
+		Point = WIC.BitmapInterpolationMode.NearestNeighbor,
+		/// <summary>
+		/// The output pixel values are computed as a weighted average of the nearest four pixels in a 2x2 grid.
+		/// </summary>
+		Linear = WIC.BitmapInterpolationMode.Linear,
+		/// <summary>
+		/// Destination pixel values are computed as a weighted average of the nearest sixteen pixels in a 4x4 grid.
+		/// </summary>
+		Cubic = WIC.BitmapInterpolationMode.Cubic,
+		/// <summary>
+		/// Destination pixel values are computed as a weighted average of the all the pixels that map to the new pixel.
+		/// </summary>
+		Fant = WIC.BitmapInterpolationMode.Fant
+	}
+
+	/// <summary>
+	/// Filter for dithering an image when it is downsampled to a lower bit depth.
+	/// </summary>
+	public enum ImageDithering
+	{
+		/// <summary>
+		/// No dithering.
+		/// </summary>
+		None = WIC.BitmapDitherType.None,
+		/// <summary>
+		/// A 4x4 ordered dither algorithm.
+		/// </summary>
+		Dither4x4 = WIC.BitmapDitherType.Ordered4x4,
+		/// <summary>
+		/// An 8x8 ordered dither algorithm.
+		/// </summary>
+		Dither8x8 = WIC.BitmapDitherType.Ordered8x8,
+		/// <summary>
+		/// A 16x16 ordered dither algorithm.
+		/// </summary>
+		Dither16x16 = WIC.BitmapDitherType.Ordered16x16,
+		/// <summary>
+		/// An 4x4 spiral dither algorithm.
+		/// </summary>
+		Spiral4x4 = WIC.BitmapDitherType.Spiral4x4,
+		/// <summary>
+		/// An 8x8 spiral dither algorithm.
+		/// </summary>
+		Spiral8x8 = WIC.BitmapDitherType.Spiral8x8,
+		/// <summary>
+		/// A 4x4 dual spiral dither algorithm.
+		/// </summary>
+		DualSpiral4x4 = WIC.BitmapDitherType.DualSpiral4x4,
+		/// <summary>
+		/// An 8x8 dual spiral dither algorithm.
+		/// </summary>
+		DualSpiral8x8 = WIC.BitmapDitherType.DualSpiral8x8,
+		/// <summary>
+		/// An error diffusion algorithm.
+		/// </summary>
+		ErrorDiffusion = WIC.BitmapDitherType.ErrorDiffusion
+	}
+
     /// <summary>
     /// Defines for loading/saving images to and from a stream.
     /// </summary>

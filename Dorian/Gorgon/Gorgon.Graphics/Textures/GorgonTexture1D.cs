@@ -188,7 +188,11 @@ namespace GorgonLibrary.Graphics
 		/// Function to create an image with initial data.
 		/// </summary>
 		/// <param name="initialData">Data to use when creating the image.</param>
-		protected override void InitializeImpl(IEnumerable<ISubResourceData> initialData)
+		/// <remarks>
+		/// The <paramref name="initialData" /> can be NULL (Nothing in VB.Net) IF the texture is not created with an Immutable usage flag.
+		/// <para>To initialize the texture, create a new <see cref="GorgonLibrary.Graphics.GorgonImageData">GorgonImageData</see> object and fill it with image information.</para>
+		/// </remarks>
+		protected override void InitializeImpl(GorgonImageData initialData)
 		{
 			D3D.Texture1DDescription desc = new D3D.Texture1DDescription();
 
@@ -196,7 +200,7 @@ namespace GorgonLibrary.Graphics
 			desc.Format = (SharpDX.DXGI.Format)Settings.Format;
 			desc.Width = Settings.Width;
 			desc.MipLevels = Settings.MipCount;
-			
+
 			if (Settings.Usage != BufferUsage.Staging)
 				desc.BindFlags = D3D.BindFlags.ShaderResource;
 			else
@@ -214,20 +218,17 @@ namespace GorgonLibrary.Graphics
 				default:
 					desc.CpuAccessFlags = D3D.CpuAccessFlags.None;
 					break;
-			}			
+			}
 			desc.OptionFlags = D3D.ResourceOptionFlags.None;
 
-			if ((initialData != null) && (initialData.Count() > 0))
+			if ((initialData != null) && (initialData.Count > 0))
 			{
-				DX.DataStream[] streams = GorgonTexture1DData.Convert(initialData);
-				D3DResource = new D3D.Texture1D(Graphics.D3DDevice, desc, streams);
-
-				// Clean up.
-				foreach (var stream in streams)
-					stream.Dispose();
+				D3DResource = new D3D.Texture1D(Graphics.D3DDevice, desc, initialData.GetDataBoxes());
 			}
 			else
+			{
 				D3DResource = new D3D.Texture1D(Graphics.D3DDevice, desc);
+			}
 		}
 
 		/// <summary>
