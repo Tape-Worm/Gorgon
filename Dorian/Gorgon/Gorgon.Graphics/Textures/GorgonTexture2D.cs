@@ -526,6 +526,9 @@ namespace GorgonLibrary.Graphics
 		/// </exception>
 		public Image ToGDIBitmap()
 		{
+			// TODO: Add code to use WIC to save as an image array (to save arrays and/or mip maps).
+			//		 Add this to volume textures and 1D textures too.
+			//		 We will forego the resizing/format conversion and instead convert to the nearest format at the same size.
 			MemoryStream stream = null;
 
 			try

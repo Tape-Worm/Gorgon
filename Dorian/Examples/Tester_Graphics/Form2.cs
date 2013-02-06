@@ -47,15 +47,15 @@ namespace Tester_Graphics
 
 				using (Image image = Image.FromFile(@"D:\images\OSUsers_512x512.gif"))
 				{
-					Image[] images = new Image[GorgonImageData.GetDepthSliceCount(2, 4)];
+					Image[] images = new Image[160];
 					for (int i = 0; i < images.Length; i++)
 					{
 						images[i] = image.Clone() as Image;
 					}
-					using (var texture = _graphics.Textures.Create3DTextureFromGDIImage("Test", images, new GorgonGDIOptions()
+					using (var texture = _graphics.Textures.Create2DTextureFromGDIImage("Test", images, new GorgonGDIOptions()
 						{
-							MipCount = 4,
-                            Depth = 2
+							MipCount = 10,
+                            ArrayCount = 16
 						}))
 					{
 						texture.Save(@"D:\unpak\textureUpload.dds", ImageFileFormat.DDS);

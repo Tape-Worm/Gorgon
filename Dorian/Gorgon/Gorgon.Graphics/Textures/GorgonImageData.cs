@@ -199,6 +199,7 @@ namespace GorgonLibrary.Graphics
 		#endregion
 
 		#region Variables.
+		private DX.DataBox[] _dataBoxes = null;						// Data boxes for textures.
 		private bool _disposed = false;                             // Flag to indicate whether the object was disposed.
         private GorgonDataStream _imageData = null;                 // Base image data buffer.
 		private ImageBuffer[] _buffers = null;						// Buffers for access to the arrays, slices and mip maps.
@@ -246,7 +247,6 @@ namespace GorgonLibrary.Graphics
 		{
 			get
 			{
-                #error This is probably where the 3D mip-map problem is originating from.  It looks like we're shifted down by a depth level.  Need to reconfirm calculations.
 				GorgonDebug.AssertParamRange(arrayIndex, 0, Settings.ArrayCount, "arrayIndex");
 				GorgonDebug.AssertParamRange(mipLevel, 0, Settings.MipCount, "mipLevel");
 
@@ -318,9 +318,10 @@ namespace GorgonLibrary.Graphics
             }
 
 			// Create buffers.
-			_buffers = new ImageBuffer[GetDepthSliceCount(Settings.Depth, Settings.MipCount)];	// Allocate enough room for the array and mip levels.
-			_mipOffsetSize = new Tuple<int, int>[Settings.MipCount * Settings.ArrayCount];		// Offsets for the mip maps.
-			byte* imageData = (byte*)_imageData.UnsafePointer;									// Start at the beginning of our data block.
+			_buffers = new ImageBuffer[GetDepthSliceCount(Settings.Depth, Settings.MipCount) * Settings.ArrayCount];	// Allocate enough room for the array and mip levels.
+			_mipOffsetSize = new Tuple<int, int>[Settings.MipCount * Settings.ArrayCount];								// Offsets for the mip maps.
+			_dataBoxes = new DX.DataBox[Settings.ArrayCount * Settings.MipCount];										// Create the data boxes for textures.
+			byte* imageData = (byte*)_imageData.UnsafePointer;															// Start at the beginning of our data block.
 			
 			// Enumerate array indices. (For 1D and 2D only, 3D will always be 1)
 			for (int array = 0; array < Settings.ArrayCount; array++)
@@ -332,18 +333,24 @@ namespace GorgonLibrary.Graphics
                 // Enumerate mip map levels.
 				for (int mip = 0; mip < Settings.MipCount; mip++)
 				{
+					int arrayIndex = mip + (array * Settings.MipCount);
+					var pitchInformation = formatInfo.GetPitch(mipWidth, mipHeight, PitchFlags.None);
+
+					// Get data box for texture upload.
+					_dataBoxes[arrayIndex] = new DX.DataBox(new IntPtr(imageData), pitchInformation.RowPitch, pitchInformation.SlicePitch);
+
+					// Calculate buffer offset by mip.
+					_mipOffsetSize[arrayIndex] = new Tuple<int, int>(bufferIndex, mipDepth);
+
 					// Enumerate depth slices.
 					for (int depth = 0; depth < mipDepth; depth++)
 					{
-						// Get mip information.
-						var pitchInformation = formatInfo.GetPitch(mipWidth, mipHeight, PitchFlags.None);
+						// Get mip information.						
 						_buffers[bufferIndex] = new ImageBuffer(imageData, pitchInformation, mip, array, depth, mipWidth, mipHeight, mipDepth, Settings.Format);
 
 						imageData += pitchInformation.SlicePitch;
 						bufferIndex++;
-					}
-
-					_mipOffsetSize[mip + (array * Settings.MipCount)] = new Tuple<int, int>(bufferIndex - mipDepth, mipDepth);
+					}					
 
 					if (mipWidth > 1)
 					{
@@ -390,15 +397,7 @@ namespace GorgonLibrary.Graphics
 		/// <returns>An array of data rectangles.</returns>
 		internal DX.DataBox[] GetDataBoxes()
 		{
-			DX.DataBox[] result = new DX.DataBox[_buffers.Length];
-
-			for (int i = 0; i < _buffers.Length; i++)
-			{
-                var buffer = _buffers[i];
-				result[i] = new DX.DataBox(buffer.Data.BasePointer, buffer.PitchInformation.RowPitch, buffer.PitchInformation.SlicePitch);
-			}
-
-			return result;
+			return _dataBoxes;
 		}
 
         /// <summary>
