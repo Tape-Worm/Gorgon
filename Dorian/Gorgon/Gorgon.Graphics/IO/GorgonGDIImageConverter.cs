@@ -742,6 +742,54 @@ namespace GorgonLibrary.IO
 			return data;
 		}
 
+        /// <summary>
+        /// Function to create an array of System.Drawing.Images from a given texture.
+        /// </summary>
+        /// <param name="texture">Texture to evaluate.</param>
+        /// <returns>A list of GDI+ images.</returns>
+        public static Image[] CreateGDIImagesFromTexture(GorgonTexture texture)
+        {
+            PixelFormat? format = GetPixelFormat(texture.Settings.Format);
+            WIC.Bitmap[] bitmaps = null;
+            Image[] images = null;
+
+            if (format == null)
+            {
+                throw new ArgumentException("Cannot convert, the format '" + texture.Settings.Format.ToString() + "' is not supported.");
+            }
+
+            using (var wic = new GorgonWICImage())
+            {
+                try
+                {                    
+                    using (var data = GorgonImageData.CreateFromTexture(texture))
+                    {   
+                        bitmaps = wic.CreateWICBitmapsFromImageData(data);
+                        images = new Image[bitmaps.Length];
+
+                        for (int i = 0; i < bitmaps.Length; i++)
+                        {
+                            images[i] = wic.CreateGDIImageFromWICBitmap(bitmaps[i], format.Value);
+                        }
+                    }
+                }
+                finally
+                {
+                    // Clean up.
+                    if (bitmaps != null)
+                    {
+                        foreach(var bitmap in bitmaps)
+                        {
+                            bitmap.Dispose();
+                        }
+                    }
+                    bitmaps = null;
+                }
+            }
+
+            return images;
+        }
+
 
 		/*using (var stream = System.IO.File.Open(@"D:\unpak\myimage.gif", System.IO.FileMode.Create))
 		{

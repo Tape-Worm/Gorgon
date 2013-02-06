@@ -45,22 +45,36 @@ namespace Tester_Graphics
 					Format = BufferFormat.R8G8B8A8_UIntNormal
 				});
 
-				using (Image image = Image.FromFile(@"D:\images\OSUsers_512x512.gif"))
+                using (var texture = _graphics.Textures.FromFile<GorgonTexture3D>("Test", @"c:\mike\unpak\textureUpload.dds", new GorgonTexture3DSettings()
+                {
+                    MipCount = 0
+                }))
+                {
+                    var images = texture.ToImage();
+
+                    for (int i = 0; i < images.Length; i++)
+                    {
+                        images[i].Save(@"c:\mike\unpak\Test\toImage" + i.ToString() + ".png", System.Drawing.Imaging.ImageFormat.Png);
+                    }
+                }
+
+                
+				/*using (Image image = Image.FromFile(@"c:\mike\unpak\OSUsers_512x512.gif"))
 				{
 					Image[] images = new Image[160];
 					for (int i = 0; i < images.Length; i++)
 					{
 						images[i] = image.Clone() as Image;
 					}
-					using (var texture = _graphics.Textures.Create2DTextureFromGDIImage("Test", images, new GorgonGDIOptions()
+					using (var texture = _graphics.Textures.Create3DTextureFromGDIImage("Test", images, new GorgonGDIOptions()
 						{
 							MipCount = 10,
-                            ArrayCount = 16
+                            Depth = 16
 						}))
 					{
-						texture.Save(@"D:\unpak\textureUpload.dds", ImageFileFormat.DDS);
+						texture.Save(@"c:\mike\unpak\textureUpload.dds", ImageFileFormat.DDS);
 					}
-				}
+				}*/
 
 				//Image[] images = new Image[
 

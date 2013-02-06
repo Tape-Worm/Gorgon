@@ -330,6 +330,15 @@ namespace GorgonLibrary.Graphics
 			}
 		}
 
+        /// <summary>
+        /// Function to convert this texture into an array of System.Drawing.Images.
+        /// </summary>
+        /// <returns>A list of <see cref="System.Drawing.Image"/> image objects.</returns>
+        public Image[] ToImage()
+        {
+            return GorgonGDIImageConverter.CreateGDIImagesFromTexture(this);
+        }
+
 		/// <summary>
 		/// Function to copy this texture into a staging texture.
 		/// </summary>
