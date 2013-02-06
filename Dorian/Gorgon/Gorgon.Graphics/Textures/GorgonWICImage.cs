@@ -126,6 +126,32 @@ namespace GorgonLibrary.Graphics
     {
         #region Value Types.
         /// <summary>
+        /// A value typ hold a WIC to System.Drawing.Imaging.PixelFormat value.
+        /// </summary>
+        private struct WICPixelFormat
+        {
+            /// <summary>
+            /// WIC GUID to convert from/to.
+            /// </summary>
+            public Guid WICGuid;
+            /// <summary>
+            /// Pixel format to convert from/to.
+            /// </summary>
+            public PixelFormat PixelFormat;
+
+            /// <summary>
+            /// Initializes a new instance of the <see cref="WICPixelFormat" /> struct.
+            /// </summary>
+            /// <param name="guid">The GUID.</param>
+            /// <param name="format">The format.</param>
+            public WICPixelFormat(Guid guid, PixelFormat format)
+            {
+                WICGuid = guid;
+                PixelFormat = format;
+            }
+        }
+
+        /// <summary>
         /// A value to hold a WIC to Gorgon buffer format value.
         /// </summary>
         private struct WICGorgonFormat
@@ -181,6 +207,20 @@ namespace GorgonLibrary.Graphics
         #region Variables.
         private WIC.ImagingFactory _factory = null;                 // WIC image factory.
         private bool _disposed = false;                             // Flag to indicate that the object was disposed.
+
+        private readonly WICPixelFormat[] _wicPixelFormats = new[]                                 // Formats for conversion between System.Drawing.Images and WIC.
+        {            
+            new WICPixelFormat(WIC.PixelFormat.Format64bppPBGRA, PixelFormat.Format64bppPArgb),            
+            new WICPixelFormat(WIC.PixelFormat.Format64bppBGRA, PixelFormat.Format64bppArgb),            
+            new WICPixelFormat(WIC.PixelFormat.Format48bppBGR, PixelFormat.Format48bppRgb),            
+            new WICPixelFormat(WIC.PixelFormat.Format32bppPBGRA, PixelFormat.Format32bppPArgb),            
+            new WICPixelFormat(WIC.PixelFormat.Format32bppBGRA, PixelFormat.Format32bppArgb),
+            new WICPixelFormat(WIC.PixelFormat.Format24bppBGR, PixelFormat.Format24bppRgb),
+            new WICPixelFormat(WIC.PixelFormat.Format16bppGray, PixelFormat.Format16bppGrayScale),
+            new WICPixelFormat(WIC.PixelFormat.Format16bppBGRA5551, PixelFormat.Format16bppArgb1555),
+            new WICPixelFormat(WIC.PixelFormat.Format16bppBGR565, PixelFormat.Format16bppRgb565),
+            new WICPixelFormat(WIC.PixelFormat.Format16bppBGR555, PixelFormat.Format16bppRgb555),
+        };
 
         private readonly WICGorgonFormat[] _wicGorgonFormats = new[]								// Formats for conversion between Gorgon and WIC.
 		{
@@ -262,6 +302,24 @@ namespace GorgonLibrary.Graphics
             return BufferFormat.Unknown;
         }
 
+        /// <summary>
+        /// Function to retrieve a System.Drawing.Imaging.PixelFormat from a WIC pixel format GUID.
+        /// </summary>
+        /// <param name="wicFormat">WIC pixel format GUID.</param>
+        /// <returns>The pixel format, or DontCare if a match could not be found.</returns>
+        private PixelFormat GetPixelFormat(Guid wicFormat)
+        {
+            for (int i = 0; i < _wicPixelFormats.Length; i++)
+            {
+                if (_wicPixelFormats[i].WICGuid == wicFormat)
+                {
+                    return _wicPixelFormats[i].PixelFormat;
+                }
+            }
+
+            return PixelFormat.DontCare;
+        }               
+
 		/// <summary>
 		/// Function to retrieve a WIC format GUID from a System.Drawing PixelFormat.
 		/// </summary>
@@ -269,33 +327,25 @@ namespace GorgonLibrary.Graphics
 		/// <returns>The GUID to convert into, NULL if the pixel format is not supported.</returns>
 		private Guid GetGUID(PixelFormat format)
 		{
-			switch (format)
-			{
-				case PixelFormat.Format16bppArgb1555:
-					return WIC.PixelFormat.Format16bppBGRA5551;
-				case PixelFormat.Format16bppGrayScale:
-					return WIC.PixelFormat.Format16bppGray;
-				case PixelFormat.Format16bppRgb565:
-					return WIC.PixelFormat.Format16bppBGR565;
-				case PixelFormat.Format24bppRgb:
-					return WIC.PixelFormat.Format24bppBGR;
-				case PixelFormat.Format1bppIndexed:			// We don't care about indexed formats because they'll be upconverted to 32 bpp.
-				case PixelFormat.Format4bppIndexed:
-				case PixelFormat.Format8bppIndexed:
-				case PixelFormat.Format32bppRgb:
-				case PixelFormat.Format32bppArgb:
-					return WIC.PixelFormat.Format32bppBGRA;
-				case PixelFormat.Format32bppPArgb:
-					return WIC.PixelFormat.Format32bppPBGRA;
-				case PixelFormat.Format48bppRgb:
-					return WIC.PixelFormat.Format48bppBGR;
-				case PixelFormat.Format64bppArgb:
-					return WIC.PixelFormat.Format64bppBGRA;
-				case PixelFormat.Format64bppPArgb:
-					return WIC.PixelFormat.Format64bppPBGRA;
-			}
+            for (int i = 0; i < _wicPixelFormats.Length; i++)
+            {
+                if (_wicPixelFormats[i].PixelFormat == format)
+                {
+                    return _wicPixelFormats[i].WICGuid;
+                }
+            }
 
-			return Guid.Empty;
+            // We don't care about indexed formats because they'll be upconverted to 32 bpp.
+            switch (format)
+            {
+                case PixelFormat.Format1bppIndexed:			
+                case PixelFormat.Format4bppIndexed:
+                case PixelFormat.Format8bppIndexed:
+                case PixelFormat.Format32bppRgb:
+                    return WIC.PixelFormat.Format32bppBGRA;
+                default:
+                    return Guid.Empty;
+            }
 		}
 
         /// <summary>
@@ -352,6 +402,86 @@ namespace GorgonLibrary.Graphics
                     }
 
                     return formatInfo.BitsPerPixel;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Function to create a list of WIC bitmaps from Gorgon image data.
+        /// </summary>
+        /// <param name="data">Data to convert to the list of WIC bitmaps.</param>
+        /// <returns>The list of WIC bitmaps.</returns>
+        public WIC.Bitmap[] CreateWICBitmapsFromImageData(GorgonImageData data)
+        {
+            int bitmapIndex = 0;
+            WIC.Bitmap[] bitmaps = null;
+            Guid bitmapFormat = GetGUID(data.Settings.Format);
+                       
+            if (bitmapFormat == Guid.Empty)
+            {
+                throw new ArgumentException("The format '" + data.Settings.Format.ToString() + "' is not valid.");
+            }
+
+            // Make room for all the buffers.
+            bitmaps = new WIC.Bitmap[data.Count];
+
+            // Copy to the bitmap.
+            foreach (var buffer in data)
+            {
+                var pointer = new DX.DataRectangle(buffer.Data.BasePointer, buffer.PitchInformation.RowPitch);
+                bitmaps[bitmapIndex] = new WIC.Bitmap(_factory, buffer.Width, buffer.Height, bitmapFormat, pointer, pointer.Pitch * buffer.Height);
+                bitmapIndex++;
+            }
+
+            return bitmaps;
+        }
+
+        /// <summary>
+        /// Function to convert a WIC bitmap to a System.Drawing.Image
+        /// </summary>
+        /// <param name="bitmap">Bitmap to convert.</param>
+        /// <param name="format">Pixel format to use.</param>
+        /// <returns>The converted bitmap.</returns>
+        public Image CreateGDIImageFromWICBitmap(WIC.Bitmap bitmap, PixelFormat format)
+        {
+            Bitmap result = null;
+            BitmapData lockData = null;
+            Guid conversionFormat = GetGUID(format);
+
+            if (conversionFormat == Guid.Empty)
+            {
+                throw new ArgumentException("Cannot convert, the pixel format " + format.ToString() + " is not supported.");
+            }
+
+            try
+            {
+                // Create the new bitmap.
+                result = new Bitmap(bitmap.Size.Width, bitmap.Size.Height, format);
+
+                lockData = result.LockBits(new Rectangle(0, 0, bitmap.Size.Width, bitmap.Size.Height), ImageLockMode.WriteOnly, format);
+
+                // We need to convert, so copy using the format converter.
+                if (bitmap.PixelFormat != conversionFormat)
+                {
+                    using (WIC.FormatConverter converter = new WIC.FormatConverter(_factory))
+                    {
+                        converter.Initialize(bitmap, conversionFormat, WIC.BitmapDitherType.None, null, 0, WIC.BitmapPaletteType.Custom);
+                        converter.CopyPixels(lockData.Stride, lockData.Scan0, lockData.Stride * lockData.Height);
+                    }
+                }
+                else
+                {
+                    // Otherwise, copy it all in one shot.
+                    bitmap.CopyPixels(lockData.Stride, lockData.Scan0, lockData.Stride * lockData.Height);
+                }
+
+                return result;
+            }
+            finally
+            {
+                if ((lockData != null) && (result != null))
+                {
+                    result.UnlockBits(lockData);
                 }
             }
         }

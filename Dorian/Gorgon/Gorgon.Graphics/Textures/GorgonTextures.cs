@@ -486,8 +486,14 @@ namespace GorgonLibrary.Graphics
 		/// <param name="image">Image to load.</param>
 		/// <returns>The clone of the GDI+ image contained within a new 1D texture.</returns>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> or the <paramref name="image"/> parameter is NULL (Nothing in VB.Net).</exception>
-		/// <exception cref="System.ArgumentException">Thrown when the name parameter is an empty string.</exception>
-		public GorgonTexture1D Create1DTextureFromGDIImage(string name, Image image)
+		/// <exception cref="System.ArgumentException">Thrown when the name parameter is an empty string.
+        /// <para>-or-</para>
+        /// <para>Thrown when pixel format in the options cannot be converted or is not supported.</para></exception>
+        /// <remarks>
+        /// This method will create a new <see cref="GorgonLibrary.Graphics.GorgonTexture1D">GorgonTexture1D</see> object from a <see cref="System.Drawing.Image">GDI+ Image</see>.
+        /// The method will copy the image information and do a best fit conversion.
+        /// </remarks>
+        public GorgonTexture1D Create1DTextureFromGDIImage(string name, Image image)
 		{
 			return Create1DTextureFromGDIImage(name, image, new GorgonGDIOptions());
 		}
@@ -497,18 +503,57 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		/// <param name="name">Name of the texture.</param>
 		/// <param name="image">Image to load.</param>
-		/// <param name="settings">Settings for the conversion process.</param>
+		/// <param name="options">Settings for the conversion process.</param>
 		/// <returns>The clone of the GDI+ image contained within a new 1D texture.</returns>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/>, <paramref name="image"/> or the <paramref name="settings"/> parameters are NULL (Nothing in VB.Net).</exception>
-		/// <exception cref="System.ArgumentException">Thrown when the name parameter is an empty string.</exception>
-		public GorgonTexture1D Create1DTextureFromGDIImage(string name, Image image, GorgonGDIOptions settings)
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/>, <paramref name="image"/> or the <paramref name="options"/> parameters is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentException">Thrown when the name parameter is an empty string.
+        /// <para>-or-</para>
+        /// <para>Thrown when pixel format in the options cannot be converted or is not supported.</para></exception>
+        /// <remarks>
+        /// This method will create a new <see cref="GorgonLibrary.Graphics.GorgonTexture1D">GorgonTexture1D</see> object from a <see cref="System.Drawing.Image">GDI+ Image</see>.
+        /// The method will copy the image information and do a best fit conversion.
+        /// <para>The <paramref name="options"/> parameter controls how the <paramref name="image" /> is converted.  Here is a list of available conversion options:</para>
+        /// <list type="table">
+        /// <listheader>
+        /// <term>Setting</term><term>Description</term>
+        /// </listheader>
+        /// <item>
+        /// <description>Width</description><description>The image will be resized to match the width specified.  Set to 0 to use the original image width.</description>
+        /// </item>
+        /// <item>
+        /// <description>Height</description><description>This is ignored for 1D images.</description>
+        /// </item>
+        /// <item>
+        /// <description>Depth</description><description>This is ignored for 1D images.</description>
+        /// </item>
+        /// <item>
+        /// <description>Format</description><description>The image will be converted to the format specified.  Set to Unknown to map to the closest available format.</description>
+        /// </item>
+        /// <item>
+        /// <description>MipCount</description><description>Gorgon will generate the requested number of mip-maps from the source image.  Set to 0 to generate a full mip-map chain, or set to 1 if no mip-maps are required.</description>
+        /// </item>
+        /// <item>
+        /// <description>ArrayCount</description><description>This is ignored for this overload.</description>
+        /// </item>
+        /// <item>
+        /// <description>Dither</description><description>Dithering to apply to images with a higher bit depth than the specified format.  The default value is None.</description>
+        /// </item>
+        /// <item>
+        /// <description>Filter</description><description>Filtering to apply to images that are scaled to the width/height specified.  The default value is Point.</description>
+        /// </item>
+        /// <item>
+        /// <description>UseClipping</description><description>Set to TRUE to clip the image instead of scaling when the width/height is smaller than the image width/height.  The default value is FALSE.</description>
+        /// </item>
+        /// </list>
+        /// </remarks>
+        public GorgonTexture1D Create1DTextureFromGDIImage(string name, Image image, GorgonGDIOptions options)
 		{
 			GorgonTexture1D result = null;
 
 			GorgonDebug.AssertNull<Image>(image, "image");
-			GorgonDebug.AssertNull<GorgonGDIOptions>(settings, "settings");
+			GorgonDebug.AssertNull<GorgonGDIOptions>(options, "options");
 
-			using (GorgonImageData data = GorgonImageData.Create1DFromGDIImage(image, settings))
+			using (GorgonImageData data = GorgonImageData.Create1DFromGDIImage(image, options))
 			{
 				result = CreateTexture<GorgonTexture1D>(name, data.Settings as ITextureSettings, data);
 			}
@@ -523,8 +568,14 @@ namespace GorgonLibrary.Graphics
 		/// <param name="image">Image to load.</param>
 		/// <returns>The clone of the GDI+ image contained within a new 2D texture.</returns>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> or the <paramref name="image"/> parameter is NULL (Nothing in VB.Net).</exception>
-		/// <exception cref="System.ArgumentException">Thrown when the name parameter is an empty string.</exception>
-		public GorgonTexture2D Create2DTextureFromGDIImage(string name, Image image)
+		/// <exception cref="System.ArgumentException">Thrown when the name parameter is an empty string.
+        /// <para>-or-</para>
+        /// <para>Thrown when pixel format in the options cannot be converted or is not supported.</para></exception>
+        /// <remarks>
+        /// This method will create a new <see cref="GorgonLibrary.Graphics.GorgonTexture2D">GorgonTexture2D</see> object from a <see cref="System.Drawing.Image">GDI+ Image</see>.
+        /// The method will copy the image information and do a best fit conversion.
+        /// </remarks>
+        public GorgonTexture2D Create2DTextureFromGDIImage(string name, Image image)
 		{
 			return Create2DTextureFromGDIImage(name, image, new GorgonGDIOptions());
 		}
@@ -534,18 +585,57 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		/// <param name="name">Name of the texture.</param>
 		/// <param name="image">Image to load.</param>
-		/// <param name="settings">Settings for the conversion process.</param>
+		/// <param name="options">Settings for the conversion process.</param>
 		/// <returns>The clone of the GDI+ image contained within a new 2D texture.</returns>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/>, <paramref name="image"/> or the <paramref name="settings"/> parameters are NULL (Nothing in VB.Net).</exception>
-		/// <exception cref="System.ArgumentException">Thrown when the name parameter is an empty string.</exception>
-		public GorgonTexture2D Create2DTextureFromGDIImage(string name, Image image, GorgonGDIOptions settings)
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/>, <paramref name="image"/> or the <paramref name="options"/> parameters are NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentException">Thrown when the name parameter is an empty string.
+        /// <para>-or-</para>
+        /// <para>Thrown when pixel format in the options cannot be converted or is not supported.</para></exception>
+        /// <remarks>
+        /// This method will create a new <see cref="GorgonLibrary.Graphics.GorgonTexture2D">GorgonTexture2D</see> object from a <see cref="System.Drawing.Image">GDI+ Image</see>.
+        /// The method will copy the image information and do a best fit conversion.
+        /// <para>The <paramref name="options"/> parameter controls how the <paramref name="image" /> is converted.  Here is a list of available conversion options:</para>
+        /// <list type="table">
+        /// <listheader>
+        /// <term>Setting</term><term>Description</term>
+        /// </listheader>
+        /// <item>
+        /// <description>Width</description><description>The image will be resized to match the width specified.  Set to 0 to use the original image width.</description>
+        /// </item>
+        /// <item>
+        /// <description>Height</description><description>The image will be resized to match the height specified.  Set to 0 to use the original image height.</description>
+        /// </item>
+        /// <item>
+        /// <description>Depth</description><description>This is ignored for 2D images.</description>
+        /// </item>
+        /// <item>
+        /// <description>Format</description><description>The image will be converted to the format specified.  Set to Unknown to map to the closest available format.</description>
+        /// </item>
+        /// <item>
+        /// <description>MipCount</description><description>Gorgon will generate the requested number of mip-maps from the source image.  Set to 0 to generate a full mip-map chain, or set to 1 if no mip-maps are required.</description>
+        /// </item>
+        /// <item>
+        /// <description>ArrayCount</description><description>This is ignored for this overload.</description>
+        /// </item>
+        /// <item>
+        /// <description>Dither</description><description>Dithering to apply to images with a higher bit depth than the specified format.  The default value is None.</description>
+        /// </item>
+        /// <item>
+        /// <description>Filter</description><description>Filtering to apply to images that are scaled to the width/height specified.  The default value is Point.</description>
+        /// </item>
+        /// <item>
+        /// <description>UseClipping</description><description>Set to TRUE to clip the image instead of scaling when the width/height is smaller than the image width/height.  The default value is FALSE.</description>
+        /// </item>
+        /// </list>
+        /// </remarks>
+        public GorgonTexture2D Create2DTextureFromGDIImage(string name, Image image, GorgonGDIOptions options)
 		{
 			GorgonTexture2D result = null;
 
 			GorgonDebug.AssertNull<Image>(image, "image");
-			GorgonDebug.AssertNull<GorgonGDIOptions>(settings, "settings");
+			GorgonDebug.AssertNull<GorgonGDIOptions>(options, "options");
 
-			using (GorgonImageData data = GorgonImageData.Create2DFromGDIImage(image, settings))
+			using (GorgonImageData data = GorgonImageData.Create2DFromGDIImage(image, options))
 			{
 				result = CreateTexture<GorgonTexture2D>(name, data.Settings as ITextureSettings, data);
 			}
@@ -558,29 +648,78 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		/// <param name="name">Name of the texture.</param>
 		/// <param name="images">Image to load.</param>
-		/// <returns>The clone of the GDI+ image contained within a new 1D texture.</returns>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> or the <paramref name="images"/> parameter is NULL (Nothing in VB.Net).</exception>
-		/// <exception cref="System.ArgumentException">Thrown when the name parameter is an empty string.</exception>
-		public GorgonTexture1D Create1DTextureFromGDIImage(string name, IList<Image> images)
-		{
-			return Create1DTextureFromGDIImage(name, images, new GorgonGDIOptions());
-		}
-
-		/// <summary>
-		/// Function to create a texture array and the mip chain from a list of GDI+ image objects.
-		/// </summary>
-		/// <param name="name">Name of the texture.</param>
-		/// <param name="images">Image to load.</param>
-		/// <param name="settings">Settings for the conversion process.</param>
-		/// <returns>The clone of the GDI+ image contained within a new 1D texture.</returns>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/>, <paramref name="images"/> or the <paramref name="settings"/> parameters are NULL (Nothing in VB.Net).</exception>
-		/// <exception cref="System.ArgumentException">Thrown when the name parameter is an empty string.</exception>
-		public GorgonTexture1D Create1DTextureFromGDIImage(string name, IList<Image> images, GorgonGDIOptions settings)
+		/// <param name="options">Settings for the conversion process.</param>
+		/// <returns>The clone of the GDI+ images contained within a new 1D texture.</returns>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/>, <paramref name="images"/> or the <paramref name="options"/> parameters are NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentException">Thrown when the name parameter is an empty string.
+        /// <para>-or-</para>
+        /// <para>Thrown when the images parameter is NULL (Nothing in VB.Net) or empty.</para>
+        /// <para>-or-</para>
+        /// <para>Thrown when the pixel format is unsupported or not the same across all images.</para>
+        /// <para>-or-</para>
+        /// <para>Thrown when an image in the list is NULL.</para>		
+        /// </exception>
+        /// <exception cref="System.ArgumentOutOfRangeException">Thrown when the images parameter does not contain enough elements to satisfy the array and mip count.</exception>
+        /// <remarks>
+        /// This method will create a new <see cref="GorgonLibrary.Graphics.GorgonTexture1D">GorgonTexture1D</see> object from a list of <see cref="System.Drawing.Image">GDI+ Images</see>.
+        /// The method will copy the image information and do a best fit conversion.
+        /// <para>This overload is used to create image arrays and/or mip-map chains from a list of images.  If the MipCount and ArrayCount are set to 1, then
+        /// only the first image will be processed.</para>
+        /// <para>The layout of the image list is processed in the following order (assuming the ArrayCount = 2, and the MipCount = 4):</para>
+        /// <code>
+        /// images[0]: Array Index 0, Mip Level 0
+        /// images[1]: Array Index 0, Mip Level 1
+        /// images[2]: Array Index 0, Mip Level 2
+        /// images[3]: Array Index 0, Mip Level 3
+        /// images[4]: Array Index 1, Mip Level 0
+        /// images[5]: Array Index 1, Mip Level 1
+        /// images[6]: Array Index 1, Mip Level 2
+        /// images[7]: Array Index 1, Mip Level 3
+        /// </code>
+        /// <para>The <paramref name="options" /> parameter controls how the <paramref name="images" /> are converted.  Here is a list of available conversion options:</para>
+        /// <list type="table">
+        /// <listheader>
+        /// <term>Setting</term><term>Description</term>
+        /// </listheader>
+        /// <item>
+        /// <description>Width</description><description>The image will be resized to match the width specified.  Set to 0 to use the original image width.</description>
+        /// </item>
+        /// <item>
+        /// <description>Height</description><description>The image will be resized to match the height specified.  Set to 0 to use the original image height.</description>
+        /// </item>
+        /// <item>
+        /// <description>Depth</description><description>This is ignored for 2D images.</description>
+        /// </item>
+        /// <item>
+        /// <description>Format</description><description>The image will be converted to the format specified.  Set to Unknown to map to the closest available format.</description>
+        /// </item>
+        /// <item>
+        /// <description>MipCount</description><description>Gorgon will generate the requested number of mip-maps from the source image.  Set to 1 if no mip-maps are required.</description>
+        /// </item>
+        /// <item>
+        /// <description>ArrayCount</description><description>Gorgon will generate the requested number of image arrays from the source image.  Set to 1 if no image arrays are required.</description>
+        /// </item>
+        /// <item>
+        /// <description>Dither</description><description>Dithering to apply to images with a higher bit depth than the specified format.  The default value is None.</description>
+        /// </item>
+        /// <item>
+        /// <description>Filter</description><description>Filtering to apply to images that are scaled to the width/height specified.  The default value is Point.</description>
+        /// </item>
+        /// <item>
+        /// <description>UseClipping</description><description>Set to TRUE to clip the image instead of scaling when the width/height is smaller than the image width/height.  The default value is FALSE.</description>
+        /// </item>
+        /// </list>
+        /// <para>The list of images must be large enough to accomodate the number of array indices and mip map levels (ArrayCount * MipCount), must not contain any NULL (Nothing in VB.Net) elements and all images must use
+        /// the same pixel format.  If the list is larger than the requested mip/array count, then only the first elements up until ArrayCount * MipCount are used.  Unlike other overloads, this method will NOT auto-generate
+        /// mip-maps and will only use the images provided.</para>
+        /// <para>Images in the list to be used as mip-map levels do not need to be resized because the method will automatically resize based on mip-map level.</para>
+        /// </remarks>
+        public GorgonTexture1D Create1DTextureFromGDIImage(string name, IList<Image> images, GorgonGDIOptions options)
 		{
 			GorgonTexture1D result = null;
 
 			GorgonDebug.AssertNull<IList<Image>>(images, "image");
-			GorgonDebug.AssertNull<GorgonGDIOptions>(settings, "settings");
+			GorgonDebug.AssertNull<GorgonGDIOptions>(options, "options");
 
 #if DEBUG
 			if (images.Count == 0)
@@ -591,10 +730,10 @@ namespace GorgonLibrary.Graphics
 
 			if (images.Count == 1)
 			{
-				return Create1DTextureFromGDIImage(name, images[0], settings);
+				return Create1DTextureFromGDIImage(name, images[0], options);
 			}
 			
-			using (GorgonImageData data = GorgonImageData.Create1DFromGDIImage(images, settings))
+			using (GorgonImageData data = GorgonImageData.Create1DFromGDIImage(images, options))
 			{
 				result = CreateTexture<GorgonTexture1D>(name, data.Settings as ITextureSettings, data);
 			}
@@ -603,33 +742,82 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
-		/// Function to create a 2D texture and the mip chain from a list of GDI+ image objects.
-		/// </summary>
-		/// <param name="name">Name of the texture.</param>
-		/// <param name="images">Images to load.</param>
-		/// <returns>The clone of the GDI+ image contained within a new 3D texture.</returns>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> or the <paramref name="images"/> parameter is NULL (Nothing in VB.Net).</exception>
-		/// <exception cref="System.ArgumentException">Thrown when the name parameter is an empty string.</exception>
-		public GorgonTexture2D Create2DTextureFromGDIImage(string name, IList<Image> images)
-		{
-			return Create2DTextureFromGDIImage(name, images, new GorgonGDIOptions());
-		}
-
-		/// <summary>
 		/// Function to create a texture array and the mip chain from a list of GDI+ image objects.
 		/// </summary>
 		/// <param name="name">Name of the texture.</param>
 		/// <param name="images">Image to load.</param>
-		/// <param name="settings">Settings for the conversion process.</param>
-		/// <returns>The clone of the GDI+ image contained within a new 2D texture.</returns>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/>, <paramref name="images"/> or the <paramref name="settings"/> parameters are NULL (Nothing in VB.Net).</exception>
-		/// <exception cref="System.ArgumentException">Thrown when the name parameter is an empty string.</exception>
-		public GorgonTexture2D Create2DTextureFromGDIImage(string name, IList<Image> images, GorgonGDIOptions settings)
+		/// <param name="options">Settings for the conversion process.</param>
+		/// <returns>The clone of the GDI+ images contained within a new 2D texture.</returns>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/>, <paramref name="images"/> or the <paramref name="options"/> parameters are NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentException">Thrown when the name parameter is an empty string.
+        /// <para>-or-</para>
+        /// <para>Thrown when the images parameter is NULL (Nothing in VB.Net) or empty.</para>
+        /// <para>-or-</para>
+        /// <para>Thrown when the pixel format is unsupported or not the same across all images.</para>
+        /// <para>-or-</para>
+        /// <para>Thrown when an image in the list is NULL.</para>		
+        /// </exception>
+        /// <exception cref="System.ArgumentOutOfRangeException">Thrown when the images parameter does not contain enough elements to satisfy the array and mip count.</exception>
+        /// <remarks>
+        /// This method will create a new <see cref="GorgonLibrary.Graphics.GorgonTexture2D">GorgonTexture2D</see> object from a list of <see cref="System.Drawing.Image">GDI+ Images</see>.
+        /// The method will copy the image information and do a best fit conversion.
+        /// <para>This overload is used to create image arrays and/or mip-map chains from a list of images.  If the MipCount and ArrayCount are set to 1, then
+        /// only the first image will be processed.</para>
+        /// <para>The layout of the image list is processed in the following order (assuming the ArrayCount = 2, and the MipCount = 4):</para>
+        /// <code>
+        /// images[0]: Array Index 0, Mip Level 0
+        /// images[1]: Array Index 0, Mip Level 1
+        /// images[2]: Array Index 0, Mip Level 2
+        /// images[3]: Array Index 0, Mip Level 3
+        /// images[4]: Array Index 1, Mip Level 0
+        /// images[5]: Array Index 1, Mip Level 1
+        /// images[6]: Array Index 1, Mip Level 2
+        /// images[7]: Array Index 1, Mip Level 3
+        /// </code>
+        /// <para>The <paramref name="options" /> parameter controls how the <paramref name="images" /> are converted.  Here is a list of available conversion options:</para>
+        /// <list type="table">
+        /// <listheader>
+        /// <term>Setting</term><term>Description</term>
+        /// </listheader>
+        /// <item>
+        /// <description>Width</description><description>The image will be resized to match the width specified.  Set to 0 to use the original image width.</description>
+        /// </item>
+        /// <item>
+        /// <description>Height</description><description>The image will be resized to match the height specified.  Set to 0 to use the original image height.</description>
+        /// </item>
+        /// <item>
+        /// <description>Depth</description><description>This is ignored for 2D images.</description>
+        /// </item>
+        /// <item>
+        /// <description>Format</description><description>The image will be converted to the format specified.  Set to Unknown to map to the closest available format.</description>
+        /// </item>
+        /// <item>
+        /// <description>MipCount</description><description>Gorgon will generate the requested number of mip-maps from the source image.  Set to 1 if no mip-maps are required.</description>
+        /// </item>
+        /// <item>
+        /// <description>ArrayCount</description><description>Gorgon will generate the requested number of image arrays from the source image.  Set to 1 if no image arrays are required.</description>
+        /// </item>
+        /// <item>
+        /// <description>Dither</description><description>Dithering to apply to images with a higher bit depth than the specified format.  The default value is None.</description>
+        /// </item>
+        /// <item>
+        /// <description>Filter</description><description>Filtering to apply to images that are scaled to the width/height specified.  The default value is Point.</description>
+        /// </item>
+        /// <item>
+        /// <description>UseClipping</description><description>Set to TRUE to clip the image instead of scaling when the width/height is smaller than the image width/height.  The default value is FALSE.</description>
+        /// </item>
+        /// </list>
+        /// <para>The list of images must be large enough to accomodate the number of array indices and mip map levels (ArrayCount * MipCount), must not contain any NULL (Nothing in VB.Net) elements and all images must use
+        /// the same pixel format.  If the list is larger than the requested mip/array count, then only the first elements up until ArrayCount * MipCount are used.  Unlike other overloads, this method will NOT auto-generate
+        /// mip-maps and will only use the images provided.</para>
+        /// <para>Images in the list to be used as mip-map levels do not need to be resized because the method will automatically resize based on mip-map level.</para>
+        /// </remarks>
+        public GorgonTexture2D Create2DTextureFromGDIImage(string name, IList<Image> images, GorgonGDIOptions options)
 		{
 			GorgonTexture2D result = null;
 
 			GorgonDebug.AssertNull<IList<Image>>(images, "image");
-			GorgonDebug.AssertNull<GorgonGDIOptions>(settings, "settings");
+			GorgonDebug.AssertNull<GorgonGDIOptions>(options, "options");
 
 #if DEBUG
 			if (images.Count == 0)
@@ -640,10 +828,10 @@ namespace GorgonLibrary.Graphics
 
 			if (images.Count == 1)
 			{
-				return Create2DTextureFromGDIImage(name, images[0], settings);
+				return Create2DTextureFromGDIImage(name, images[0], options);
 			}
 
-			using (GorgonImageData data = GorgonImageData.Create2DFromGDIImage(images, settings))
+			using (GorgonImageData data = GorgonImageData.Create2DFromGDIImage(images, options))
 			{
 				result = CreateTexture<GorgonTexture2D>(name, data.Settings as ITextureSettings, data);
 			}
@@ -656,10 +844,43 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		/// <param name="name">Name of the texture.</param>
 		/// <param name="images">Images to load.</param>
-		/// <returns>The clone of the GDI+ image contained within a new 3D texture.</returns>
+		/// <returns>The clone of the GDI+ images contained within a new 3D texture.</returns>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> or the <paramref name="images"/> parameter is NULL (Nothing in VB.Net).</exception>
-		/// <exception cref="System.ArgumentException">Thrown when the name parameter is an empty string.</exception>
-		public GorgonTexture3D Create3DTextureFromGDIImage(string name, IList<Image> images)
+		/// <exception cref="System.ArgumentException">Thrown when the name parameter is an empty string.
+        /// <para>-or-</para>
+        /// <para>Thrown when the images parameter is NULL (Nothing in VB.Net) or empty.</para>
+        /// <para>-or-</para>
+        /// <para>Thrown when the pixel format is unsupported or not the same across all images.</para>
+        /// <para>-or-</para>
+        /// <para>Thrown when an image in the list is NULL.</para>		
+        /// </exception>
+        /// <exception cref="System.ArgumentOutOfRangeException">Thrown when the images parameter does not contain enough elements to satisfy the depth and mip count.</exception>
+        /// <remarks>
+        /// This method will create a new <see cref="GorgonLibrary.Graphics.GorgonTexture3D">GorgonTexture3D</see> object from a list of <see cref="System.Drawing.Image">GDI+ Images</see>.
+        /// The method will copy the image information and do a best fit conversion.
+        /// <para>This overload is used to create a 3D image from a list of images.  If the MipCount is set to 1, then
+        /// only the first image will be processed IF there is only one image in the list.  If there is more than 1 image in the list, and the mip count is set to 1, then the element count 
+        /// of the list will be taken as the depth size.</para>
+        /// <para>The layout of the image list is processed in the following order (assuming the MipCount = 2, and the depth is = 4):</para>
+        /// <code>
+        /// images[0]: Mip Level 0, Depth slice 0.
+        /// images[1]: Mip Level 0, Depth slice 1
+        /// images[2]: Mip Level 0, Depth slice 2
+        /// images[3]: Mip Level 0, Depth slice 3
+        /// images[4]: Mip Level 1, Depth slice 4
+        /// images[5]: Mip Level 1, Depth slice 5
+        /// </code>
+        /// <para>The depth is shrunk by a power of 2 for each mip level.  So, at mip level 0 we have 4 depth slices, and at mip level 1 we have 2.  If we had a third mip level, then 
+        /// the depth would be 1 at that mip level.</para>
+        /// <para>Note that unlike other image types, there is no array.  3D images do not support arrays and will ignore them.  Also note that a 3D image MUST have a width, height 
+        /// and depth that is a power of 2 if mip maps are to be used.  If the image does not meet the criteria, then an exception will be thrown.
+        /// </para>
+        /// <para>The list of images must be large enough to accomodate the number of mip map levels and the depth at each mip level, must not contain any NULL (Nothing in VB.Net) elements and all images must use
+        /// the same pixel format.  If the list is larger than the requested mip/array count, then only the first elements up until mip count and each depth for each mip level are used.  Unlike other overloads, 
+        /// this method will NOT auto-generate mip-maps and will only use the images provided.</para>
+        /// <para>Images in the list to be used as mip-map levels do not need to be resized because the method will automatically resize based on mip-map level.</para>
+        /// </remarks>
+        public GorgonTexture3D Create3DTextureFromGDIImage(string name, IList<Image> images)
 		{
 			return Create3DTextureFromGDIImage(name, images, new GorgonGDIOptions());
 		}
@@ -669,16 +890,82 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		/// <param name="name">Name of the texture.</param>
 		/// <param name="images">Images to load.</param>
-		/// <param name="settings">Settings for the conversion process.</param>
-		/// <returns>The clone of the GDI+ image contained within a new 3D texture.</returns>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/>, <paramref name="images"/>, <paramref name="settings"/> parameters are NULL (Nothing in VB.Net).</exception>
-		/// <exception cref="System.ArgumentException">Thrown when the name parameter is an empty string.</exception>
-		public GorgonTexture3D Create3DTextureFromGDIImage(string name, IList<Image> images, GorgonGDIOptions settings)
+		/// <param name="options">Settings for the conversion process.</param>
+		/// <returns>The clone of the GDI+ images contained within a new 3D texture.</returns>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/>, <paramref name="images"/>, <paramref name="options"/> parameters are NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentException">Thrown when the name parameter is an empty string.
+        /// <para>-or-</para>
+        /// <para>Thrown when the images parameter is NULL (Nothing in VB.Net) or empty.</para>
+        /// <para>-or-</para>
+        /// <para>Thrown when the pixel format is unsupported or not the same across all images.</para>
+        /// <para>-or-</para>
+        /// <para>Thrown when an image in the list is NULL.</para>		
+        /// </exception>
+        /// <exception cref="System.ArgumentOutOfRangeException">Thrown when the images parameter does not contain enough elements to satisfy the depth and mip count.</exception>
+        /// <remarks>
+        /// This method will create a new <see cref="GorgonLibrary.Graphics.GorgonTexture3D">GorgonTexture3D</see> object from a list of <see cref="System.Drawing.Image">GDI+ Images</see>.
+        /// The method will copy the image information and do a best fit conversion.
+        /// <para>This overload is used to create a 3D image from a list of images.  If the MipCount is set to 1, then
+        /// only the first image will be processed IF there is only one image in the list.  If there is more than 1 image in the list, and the mip count is set to 1, then the element count 
+        /// of the list will be taken as the depth size.</para>
+        /// <para>The layout of the image list is processed in the following order (assuming the MipCount = 2, and the depth is = 4):</para>
+        /// <code>
+        /// images[0]: Mip Level 0, Depth slice 0.
+        /// images[1]: Mip Level 0, Depth slice 1
+        /// images[2]: Mip Level 0, Depth slice 2
+        /// images[3]: Mip Level 0, Depth slice 3
+        /// images[4]: Mip Level 1, Depth slice 4
+        /// images[5]: Mip Level 1, Depth slice 5
+        /// </code>
+        /// <para>The depth is shrunk by a power of 2 for each mip level.  So, at mip level 0 we have 4 depth slices, and at mip level 1 we have 2.  If we had a third mip level, then 
+        /// the depth would be 1 at that mip level.</para>
+        /// <para>Note that unlike other image types, there is no array.  3D images do not support arrays and will ignore them.  Also note that a 3D image MUST have a width, height 
+        /// and depth that is a power of 2 if mip maps are to be used.  If the image does not meet the criteria, then an exception will be thrown.
+        /// </para>
+        /// <para>The <paramref name="options" /> parameter controls how the <paramref name="images" /> are converted.  Here is a list of available conversion options:</para>
+        /// <list type="table">
+        /// <listheader>
+        /// <term>Setting</term><term>Description</term>
+        /// </listheader>
+        /// <item>
+        /// <description>Width</description><description>The image will be resized to match the width specified.  Set to 0 to use the original image width.</description>
+        /// </item>
+        /// <item>
+        /// <description>Height</description><description>The image will be resized to match the height specified.  Set to 0 to use the original image height.</description>
+        /// </item>
+        /// <item>
+        /// <description>Depth</description><description>This sets the depth for the image.  The default value is set to 1.  If there are no mip-maps (i.e. MipCount = 1), then the number of elements in the list will be used as the depth size.</description>
+        /// </item>
+        /// <item>
+        /// <description>Format</description><description>The image will be converted to the format specified.  Set to Unknown to map to the closest available format.</description>
+        /// </item>
+        /// <item>
+        /// <description>MipCount</description><description>Gorgon will generate the requested number of mip-maps from the source image.  Set to 1 if no mip-maps are required.</description>
+        /// </item>
+        /// <item>
+        /// <description>ArrayCount</description><description>Image arrays are not available for 3D images.</description>
+        /// </item>
+        /// <item>
+        /// <description>Dither</description><description>Dithering to apply to images with a higher bit depth than the specified format.  The default value is None.</description>
+        /// </item>
+        /// <item>
+        /// <description>Filter</description><description>Filtering to apply to images that are scaled to the width/height specified.  The default value is Point.</description>
+        /// </item>
+        /// <item>
+        /// <description>UseClipping</description><description>Set to TRUE to clip the image instead of scaling when the width/height is smaller than the image width/height.  The default value is FALSE.</description>
+        /// </item>
+        /// </list>
+        /// <para>The list of images must be large enough to accomodate the number of mip map levels and the depth at each mip level, must not contain any NULL (Nothing in VB.Net) elements and all images must use
+        /// the same pixel format.  If the list is larger than the requested mip/array count, then only the first elements up until mip count and each depth for each mip level are used.  Unlike other overloads, 
+        /// this method will NOT auto-generate mip-maps and will only use the images provided.</para>
+        /// <para>Images in the list to be used as mip-map levels do not need to be resized because the method will automatically resize based on mip-map level.</para>
+        /// </remarks>
+        public GorgonTexture3D Create3DTextureFromGDIImage(string name, IList<Image> images, GorgonGDIOptions options)
 		{
 			GorgonTexture3D result = null;
 
 			GorgonDebug.AssertNull<IList<Image>>(images, "image");
-			GorgonDebug.AssertNull<GorgonGDIOptions>(settings, "settings");
+			GorgonDebug.AssertNull<GorgonGDIOptions>(options, "options");
 
 #if DEBUG
 			if (images.Count == 0)
@@ -687,7 +974,7 @@ namespace GorgonLibrary.Graphics
 			}
 #endif
 
-			using (GorgonImageData data = GorgonImageData.Create3DFromGDIImage(images, settings))
+			using (GorgonImageData data = GorgonImageData.Create3DFromGDIImage(images, options))
 			{
 				result = CreateTexture<GorgonTexture3D>(name, data.Settings as ITextureSettings, data);
 			}
@@ -753,16 +1040,14 @@ namespace GorgonLibrary.Graphics
 			// Assign defaults.
 			if (info != null)
 			{
-				// Only load 2D textures.
-				if (info.Value.ResourceDimension != D3D.ResourceDimension.Texture2D)
-					throw new ArgumentException("The specified texture is not a 2D texture.", "stream");
-
 				if (settings.Format == BufferFormat.Unknown)
 					settings.Format = (BufferFormat)info.Value.Format;
 				if (settings.Width < 1)
 					settings.Width = info.Value.Width;
 				if (settings.Height < 1)
 					settings.Height = info.Value.Height;
+                if (settings.Depth < 1)
+                    settings.Depth = info.Value.Depth;
 				if (settings.MipCount == 0)
 					settings.MipCount = info.Value.MipLevels;
 				if (settings.ArrayCount == 0)
@@ -783,7 +1068,7 @@ namespace GorgonLibrary.Graphics
 				}
 				else
 				{
-					if (typeof(T) == typeof(GorgonTexture3DSettings))
+					if (typeof(T) == typeof(GorgonTexture3D))
 					{
 						ValidateTexture3D(ref settings, true);
 						result = new GorgonTexture3D(_graphics, name, settings);
