@@ -33,6 +33,7 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using WIC = SharpDX.WIC;
 using GorgonLibrary.Math;
+using GorgonLibrary.Native;
 using GorgonLibrary.Graphics;
 
 namespace GorgonLibrary.IO
@@ -714,7 +715,7 @@ namespace GorgonLibrary.IO
 					throw new ArgumentOutOfRangeException("images", "The mip level count and the depth slice count exceed the length of the array.");
 				}
 
-                if (mipLevel == 1)
+                //if (mipLevel < 2)
                 {
                     for (int depth = 0; depth < depthMip; depth++)
                     {
@@ -723,7 +724,7 @@ namespace GorgonLibrary.IO
                         // Using the image, convert to a WIC bitmap object.
                         using (var bitmap = wic.CreateWICImageFromImage(image))
                         {
-                            var buffer = data[0, mipLevel, 0];
+                            var buffer = data[0, mipLevel, depth];
                             wic.AddWICBitmapToImageData(bitmap, options.Filter, options.Dither, buffer, options.UseClipping);
                         }
                     }
