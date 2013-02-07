@@ -113,10 +113,11 @@ using GorgonLibrary.Graphics;
 
 namespace GorgonLibrary.IO
 {
-	/// <summary>
+    #region Enums.
+    /// <summary>
 	/// DDS Flags.
 	/// </summary>
-	enum DDSFlags
+	public enum DDSFlags
 		: uint
 	{
 		/// <summary>
@@ -365,15 +366,56 @@ namespace GorgonLibrary.IO
 		/// </summary>
 		Volume = 0x200000
 	}
-	
-	/// <summary>
+    #endregion
+
+    /// <summary>
 	/// A codec to handle reading/writing DDS files.
 	/// </summary>
-	public unsafe sealed class GorgonCodecDDS
+    /// <remarks>A codec allows for reading and/or writing of data in an encoded format.  Users may inherit from this object to define their own 
+    /// image formats, or use one of the predefined image codecs available in Gorgon.
+    /// <para>The codec accepts and returns a <see cref="GorgonLibrary.Graphics.GorgonImageData">GorgonImageData</see> type, which is filled from or read into the encoded file.</para>
+    /// <para>This DDS codec does not support the following legacy Direct3D 9 formats:
+    /// <list type="bullet">
+    ///     <item>
+    ///         <description>BumpDuDv D3DFMT_V8U8</description>
+    ///     </item>
+    ///     <item>
+    ///         <description>D3DFMT_Q8W8V8U8</description>
+    ///     </item>
+    ///     <item>
+    ///         <description>D3DFMT_V16U16</description>
+    ///     </item>
+    ///     <item>
+    ///         <description>D3DFMT_A2W10V10U10</description>
+    ///     </item>
+    ///     <item>
+    ///         <description>BumpLuminance D3DFMT_L6V5U5</description>
+    ///     </item>
+    ///     <item>
+    ///         <description>D3DFMT_X8L8V8U8</description>
+    ///     </item>
+    ///     <item>
+    ///         <description>FourCC "UYVY" D3DFMT_UYVY</description>
+    ///     </item>
+    ///     <item>
+    ///         <description>FourCC "YUY2" D3DFMT_YUY2</description>
+    ///     </item>
+    ///     <item>
+    ///         <description>FourCC 117 D3DFMT_CxV8U8</description>
+    ///     </item>
+    ///     <item>
+    ///         <description>ZBuffer D3DFMT_D16_LOCKABLE</description>
+    ///     </item>
+    ///     <item>
+    ///         <description>FourCC 82 D3DFMT_D32F_LOCKABLE</description>
+    ///     </item>
+    /// </list>
+    /// </remarks>
+    public unsafe sealed class GorgonCodecDDS
 		: GorgonImageCodec
 	{
 		#region Constants.
-		private const uint MagicNumber = 0x20534444;		// The DDS file magic number: "DDS "
+		private const uint MagicNumber = 0x20534444;		// The DDS file magic number: "DDS "        
 		#endregion
 
 		#region Value Types.
@@ -648,9 +690,24 @@ namespace GorgonLibrary.IO
 			new DDSLegacyConversion(BufferFormat.R8G8B8A8_UIntNormal, DDSConversionFlags.Expand | DDSConversionFlags.NoAlpha | DDSConversionFlags.RGB4444, new DDSPixelFormat(DDSPixelFormatFlags.RGB, 0, 16, 0x0f00, 0x00f0, 0x000f, 0x0000)),
 			new DDSLegacyConversion(BufferFormat.R8G8B8A8_UIntNormal, DDSConversionFlags.Expand | DDSConversionFlags.RGB44, new DDSPixelFormat(DDSPixelFormatFlags.Luminance, 0, 8, 0x0f, 0x00, 0x00, 0xf0))
 		};
+
+        private BufferFormat[] _formats = null;         // Buffer formats.
 		#endregion
 
 		#region Properties.
+        /// <summary>
+        /// Property to set or return the flags used when converting legacy pixel formats to the buffer format.
+        /// </summary>
+        /// <remarks>
+        /// Use this to control how Gorgon converts data from a legacy DDS file format.  This only applies to DDS files generated with files saved by Direct3D 9 interfaces.
+        /// <para>The property only applies when reading image data</para>
+        /// <para>The default value is None.</para></remarks>
+        public DDSFlags LegacyConversionFlags
+        {
+            get;
+            set;
+        }
+
 		/// <summary>
 		/// Property to return the friendly description of the format.
 		/// </summary>
@@ -690,6 +747,315 @@ namespace GorgonLibrary.IO
 				return ((uint)((byte)c1)) | (((uint)((byte)c2)) << 8) | (((uint)((byte)c3)) << 16) | (((uint)((byte)c4)) << 24);
 			}
 		}
+
+        /// <summary>
+        /// Function to read the optional DX10 header.
+        /// </summary>
+        /// <param name="reader">Reader interface for the stream.</param>
+        /// <param name="header">DDS header.</param>
+        /// <param name="flags">Conversion flags.</param>
+        /// <returns>A new image settings object.</returns>
+        private IImageSettings ReadDX10Header(GorgonBinaryReader reader, ref DDSHeader header, out DDSConversionFlags flags)
+        {
+            IImageSettings settings = null;
+            DX10Header dx10Header = default(DX10Header);
+
+            dx10Header = reader.ReadValue<DX10Header>();
+            flags = DDSConversionFlags.DX10;
+
+            // Default the array count if it's not valid.
+            if (dx10Header.ArrayCount <= 0)
+            {
+                throw new System.IO.IOException("The data in the stream cannot be decoded as a DDS file.  The array count is 0 or less than 0.");
+            }           
+
+            switch (dx10Header.ResourceDimension)
+            {
+                case ImageType.Image1D:
+                    settings = new GorgonTexture1DSettings();
+                    settings.ArrayCount = (int)dx10Header.ArrayCount;
+                    settings.Height = 1;
+                    settings.Depth = 1;
+                    break;
+                case ImageType.Image2D:
+                    settings = new GorgonTexture2DSettings();
+
+                    // Get cube texture settings.
+                    if ((dx10Header.MiscFlags & DDSHeaderMiscFlags.TextureCube) == DDSHeaderMiscFlags.TextureCube)
+                    {
+                        settings.ArrayCount = (int)dx10Header.ArrayCount * 6;
+                        ((GorgonTexture2DSettings)settings).IsTextureCube = true;
+                    }
+                    settings.Height = (int)header.Height;
+                    settings.Depth = 1;
+                    break;
+                case ImageType.Image3D:
+                    if ((header.Flags & DDSHeaderFlags.Volume) != DDSHeaderFlags.Volume)
+                    {
+                        throw new System.IO.IOException("The data in the stream cannot be decoded as a DDS file.  Image claims to be 3D image, but is missing volume flag.");
+                    }
+
+                    settings = new GorgonTexture3DSettings();
+                    settings.ArrayCount = 1;
+                    settings.Height = (int)header.Height;
+                    settings.Depth = (int)header.Depth;
+                    break;
+                default:
+                    throw new System.IO.IOException("The data in the stream cannot be decoded as a DDS file.  The image data is not 1D, 2D or 3D.");
+            }
+
+            settings.Width = (int)header.Width;           
+
+            // Ensure the format is correct.
+            for (int i = 0; i < _formats.Length; i++)
+            {
+                if (_formats[i] == dx10Header.Format)
+                {
+                    settings.Format = dx10Header.Format;
+
+                    if (settings.Format != BufferFormat.Unknown)
+                    {
+                        return settings;
+                    }
+                }
+            }
+
+            throw new System.IO.IOException("The data in the stream cannot be decoded as a DDS file.  The buffer format is unrecognized.");
+        }
+
+        /// <summary>
+        /// Function to retrieve the correct BufferFormat from the header information.
+        /// </summary>
+        /// <param name="format">Format in the header.</param>
+        /// <param name="flags">Flags to alter conversion behaviour.</param>
+        /// <param name="conversionFlags">Flags to indicate the types of conversions.</param>
+        /// <returns>The format of the buffer, or Unknown if the format is not supported.</returns>
+        private BufferFormat GetFormat(ref DDSPixelFormat format, DDSFlags flags, out DDSConversionFlags conversionFlags)
+        {
+            BufferFormat result = BufferFormat.Unknown;
+            DDSLegacyConversion conversion = default(DDSLegacyConversion);
+
+            foreach (var ddsFormat in _legacyMapping)
+            {
+                if ((format.Flags & ddsFormat.PixelFormat.Flags) != 0)
+                {
+                    // Check to see if the FOURCC values match.
+                    if ((ddsFormat.PixelFormat.Flags & DDSPixelFormatFlags.FourCC) == DDSPixelFormatFlags.FourCC)
+                    {
+                        if (ddsFormat.PixelFormat.FourCC == format.FourCC)
+                        {
+                            conversion = ddsFormat;
+                            break;
+                        }
+                    }
+                    else if ((ddsFormat.PixelFormat.Flags & DDSPixelFormatFlags.PaletterIndexed) == DDSPixelFormatFlags.PaletterIndexed)
+                    {
+                        // If indexed, then check the bit count.
+                        if (ddsFormat.PixelFormat.BitCount == format.BitCount)
+                        {
+                            conversion = ddsFormat;
+                            break;
+                        }
+                    }
+                    else if (ddsFormat.PixelFormat.BitCount == format.BitCount)
+                    {
+                        // If the bit masks are the same, then use this one.
+                        if ((ddsFormat.PixelFormat.RBitMask == format.RBitMask)
+                            && (ddsFormat.PixelFormat.GBitMask == format.GBitMask)
+                            && (ddsFormat.PixelFormat.BBitMask == format.BBitMask)
+                            && (ddsFormat.PixelFormat.ABitMask == format.ABitMask))
+                        {
+                            conversion = ddsFormat;
+                            break;
+                        }
+                    }
+                }
+            }
+
+            conversionFlags = conversion.Flags;
+            result = conversion.Format;
+
+            if (conversion.Format == BufferFormat.Unknown)
+            {
+                return BufferFormat.Unknown;
+            }
+
+            // We do not want to expand the bit count to match, so we can't convert.
+            if (((flags & DDSFlags.NoLegacyExpansion) == DDSFlags.NoLegacyExpansion) && ((conversionFlags & DDSConversionFlags.Expand) == DDSConversionFlags.Expand))
+            {
+                return BufferFormat.Unknown;
+            }
+
+            // Don't fix up RGB101010A2.
+            if ((result == BufferFormat.R10G10B10A2_UIntNormal) && ((flags & DDSFlags.NoR10B10G10A2Fix) == DDSFlags.NoR10B10G10A2Fix))
+            {
+                conversionFlags ^= DDSConversionFlags.Swizzle;
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Function to read in the DDS header from a stream.
+        /// </summary>
+        /// <param name="reader">Reader interface for the stream.</param>
+        private IImageSettings ReadHeader(GorgonBinaryReader reader)
+        {
+            IImageSettings settings = null;
+            DDSHeader header = new DDSHeader();
+            DDSConversionFlags conversionFlags = DDSConversionFlags.None;
+            uint magicNumber = 0;            
+
+            // Read the magic # from the header.
+            magicNumber = reader.ReadUInt32();
+
+            // If the magic number doesn't match, then this is not a DDS file.
+            if (magicNumber != MagicNumber)
+            {
+                throw new System.IO.IOException("The data in the stream cannot be decoded as a DDS file.");
+            }
+
+            // Read the header from the file.
+            header = reader.ReadValue<DDSHeader>();
+
+            if (header.Size != DirectAccess.SizeOf<DDSHeader>())
+            {
+                throw new System.IO.IOException("The data in the stream cannot be decoded as a DDS file.  There was a size mismatch.  Expected: [" 
+                        + DirectAccess.SizeOf<DDSHeader>().ToString() + "], got: [" + header.Size.ToString() + "]");
+            }
+
+            if (header.PixelFormat.SizeInBytes != DirectAccess.SizeOf<DDSPixelFormat>())
+            {
+                throw new System.IO.IOException("The data in the stream cannot be decoded as a DDS file.  There was a pixel format size mismatch.  Expected: ["
+                        + DirectAccess.SizeOf<DDSPixelFormat>().ToString() + "], got: [" + header.PixelFormat.SizeInBytes.ToString() + "]");
+            }
+
+            // Ensure that we have at least one mip level.
+            if (header.MipCount == 0)
+            {
+                header.MipCount = 1;
+            }
+
+            // Get DX 10 header information.
+            if (((header.PixelFormat.Flags & DDSPixelFormatFlags.FourCC) == DDSPixelFormatFlags.FourCC) && (header.PixelFormat.FourCC == _pfDX10.FourCC))
+            {
+                settings = ReadDX10Header(reader, ref header, out conversionFlags);
+            }
+            else
+            {
+                if ((header.Flags & DDSHeaderFlags.Volume) == DDSHeaderFlags.Volume)
+                {
+                    settings = new GorgonTexture3DSettings();
+                    settings.ArrayCount = 1;
+                    settings.Depth = (int)header.Depth;
+                }
+                else
+                {
+                    settings = new GorgonTexture2DSettings();
+                    settings.ArrayCount = 1;
+                    settings.Depth = 1;
+                    if ((header.Caps1 & DDSCAPS1.CubeMap) == DDSCAPS1.CubeMap)
+                    {
+                        // Only allow all faces.
+                        if ((header.Caps2 & DDSCAPS2.AllFaces) != DDSCAPS2.AllFaces)
+                        {
+                            throw new System.IO.IOException("The data in the stream cannot be decoded as a DDS file.  Image is a cube map, but faces are missing from the cube.");
+                        }
+
+                        ((GorgonTexture2DSettings)settings).IsTextureCube = true;
+                        settings.ArrayCount = 6;
+                    }
+                }
+
+                settings.Width = (int)header.Width;
+                settings.Height = (int)header.Height;
+                settings.Format = GetFormat(ref header.PixelFormat, LegacyConversionFlags, out conversionFlags);
+
+                if (settings.Format == BufferFormat.Unknown)
+                {
+                    throw new System.IO.IOException("The data in the stream cannot be decoded as a DDS file.  The pixel format cannot be converted to a suitable buffer format.");
+                }
+            }
+
+            settings.MipCount = (int)header.MipCount;
+
+            // Special flag for handling BGR DXGI 1.1 formats
+            if ((LegacyConversionFlags & DDSFlags.ForceRGB) == DDSFlags.ForceRGB)
+            {
+                switch (settings.Format)
+                {
+                    case BufferFormat.B8G8R8A8_UIntNormal:
+                        settings.Format = BufferFormat.R8G8B8A8_UIntNormal;
+                        if (conversionFlags != DDSConversionFlags.None)
+                        {
+                            conversionFlags |= DDSConversionFlags.Swizzle;
+                        }
+                        break;
+
+                    case BufferFormat.B8G8R8X8_UNORM:
+                        settings.Format = BufferFormat.R8G8B8A8_UNORM;
+                        if (conversionFlags != DDSConversionFlags.None)
+                        {
+                            conversionFlags  |= CONV_FLAGS_SWIZZLE | CONV_FLAGS_NOALPHA;
+                        }
+                        break;
+
+                    case BufferFormat.B8G8R8A8_TYPELESS:
+                        settings.Format = BufferFormat.R8G8B8A8_TYPELESS;
+                        if (conversionFlags != DDSConversionFlags.None)
+                        {
+                            conversionFlags  |= CONV_FLAGS_SWIZZLE;
+                        }
+                        break;
+
+                    case BufferFormat.B8G8R8A8_UNORM_SRGB:
+                        settings.Format = BufferFormat.R8G8B8A8_UNORM_SRGB;
+                        if (conversionFlags != DDSConversionFlags.None)
+                        {
+                            conversionFlags  |= CONV_FLAGS_SWIZZLE;
+                        }
+                        break;
+
+                    case BufferFormat.B8G8R8X8_TYPELESS:
+                        settings.Format = BufferFormat.R8G8B8A8_TYPELESS;
+                        if (conversionFlags != DDSConversionFlags.None)
+                        {
+                            conversionFlags  |= CONV_FLAGS_SWIZZLE | CONV_FLAGS_NOALPHA;
+                        }
+                        break;
+                    case BufferFormat.B8G8R8X8_UNORM_SRGB:
+                        settings.Format = BufferFormat.R8G8B8A8_UNORM_SRGB;
+                        if (conversionFlags != DDSConversionFlags.None)
+                        {
+                            conversionFlags  |= CONV_FLAGS_SWIZZLE | CONV_FLAGS_NOALPHA;
+                        }
+                        break;
+                }
+            }
+
+    // Special flag for handling 16bpp formats
+    if (flags & DDS_FLAGS_NO_16BPP)
+    {
+        switch ( metadata.format )
+        {
+        case DXGI_FORMAT_B5G6R5_UNORM:
+        case DXGI_FORMAT_B5G5R5A1_UNORM:
+#ifdef DXGI_1_2_FORMATS
+        case DXGI_FORMAT_B4G4R4A4_UNORM:
+#endif
+            metadata.format = DXGI_FORMAT_R8G8B8A8_UNORM;
+            if ( convFlags )
+            {
+                *convFlags |= CONV_FLAGS_EXPAND;
+                if ( metadata.format == DXGI_FORMAT_B5G6R5_UNORM )
+                    *convFlags |= CONV_FLAGS_NOALPHA;
+            }
+        }
+    }
+
+
+            return settings;
+        }
 
 		/// <summary>
 		/// Function to write out the DDS header to the stream.
@@ -836,7 +1202,7 @@ namespace GorgonLibrary.IO
 
 					if (settings.ImageType == ImageType.ImageCube)
 					{
-						header.Caps1 |= DDSCAPS1.CubeMap;
+                        header.Caps1 |= DDSCAPS1.CubeMap;
 						header.Caps2 |= DDSCAPS2.AllFaces;
 					}
 					break;
@@ -967,6 +1333,38 @@ namespace GorgonLibrary.IO
 				}
 			}
 		}
+
+        /// <summary>
+        /// Function to determine if this codec can read the file or not.
+        /// </summary>
+        /// <param name="stream"></param>
+        /// <returns>
+        /// TRUE if the codec can read the file, FALSE if not.
+        /// </returns>
+        /// <exception cref="System.IO.IOException">Thrown when the <paramref name="stream"/> is write-only or if the stream cannot perform seek operations.</exception>
+        public override bool CanBeRead(System.IO.Stream stream)
+        {
+            uint magicNumber = 0;
+            long position = stream.Position;
+
+            if (!stream.CanRead)
+            {
+                throw new System.IO.IOException("Stream is write-only.");
+            }
+
+            if (!stream.CanSeek)
+            {
+                throw new System.IO.IOException("The stream cannot perform seek operations.");
+            }
+
+            using (GorgonBinaryReader reader = new GorgonBinaryReader(stream, true))
+            {
+                magicNumber = reader.ReadUInt32();
+            }
+
+            stream.Position = position;
+            return magicNumber == MagicNumber;
+        }
 		#endregion
 
 		#region Constructor/Destructor.
@@ -976,6 +1374,9 @@ namespace GorgonLibrary.IO
 		internal GorgonCodecDDS()
 		{
 			this.CodecCommonExtensions = new string[] { "DDS" };
+            _formats = (BufferFormat[])Enum.GetValues(typeof(BufferFormat));
+
+            LegacyConversionFlags = DDSFlags.None;
 		}
 		#endregion
 	}
