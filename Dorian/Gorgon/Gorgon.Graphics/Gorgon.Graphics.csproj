@@ -95,7 +95,7 @@
     <Compile Include="GorgonColor.cs" />
     <Compile Include="GorgonGraphics.cs" />
     <Compile Include="GorgonRenderStatistics.cs" />
-    <Compile Include="IO\ITextureCodec.cs" />
+    <Compile Include="IO\IImageCodec.cs" />
     <Compile Include="ISubResourceData.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
