@@ -1358,7 +1358,8 @@ namespace GorgonLibrary.Graphics
 				case ImageType.Image1D:
 					texture = new GorgonTexture1D(_graphics, name, settings) as T;
 					break;
-				case ImageType.Image2D:
+				case ImageType.ImageCube:
+				case ImageType.Image2D:				
 					texture = GorgonTexture2D.CreateTexture(_graphics, name, settings) as T;
 					break;
 				case ImageType.Image3D:

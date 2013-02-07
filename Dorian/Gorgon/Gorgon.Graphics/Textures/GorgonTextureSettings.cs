@@ -384,7 +384,14 @@ namespace GorgonLibrary.Graphics
 		{
 			get
 			{
-				return ImageType.Image2D;
+				if (IsTextureCube)
+				{
+					return Graphics.ImageType.ImageCube;
+				}
+				else
+				{
+					return ImageType.Image2D;
+				}
 			}
 		}
 

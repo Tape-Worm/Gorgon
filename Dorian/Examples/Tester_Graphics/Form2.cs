@@ -45,17 +45,23 @@ namespace Tester_Graphics
 					Format = BufferFormat.R8G8B8A8_UIntNormal
 				});
 
-                using (var texture = _graphics.Textures.FromFile<GorgonTexture3D>("Test", @"c:\mike\unpak\textureUpload.dds", new GorgonTexture3DSettings()
+                using (var texture = _graphics.Textures.FromFile<GorgonTexture2D>("Test", @"d:\unpak\textureUpload.dds", new GorgonTexture2DSettings()
                 {
-                    MipCount = 0
+                    MipCount = 0,
+					Usage = BufferUsage.Default
                 }))
                 {
-                    var images = texture.ToImage();
+					using (var data = GorgonImageData.CreateFromTexture(texture))
+					{
+						data.Save(@"D:\unpak\testSave.dds", GorgonImageCodecs.DDS);
+					}
+
+                    /*var images = texture.ToImage();
 
                     for (int i = 0; i < images.Length; i++)
                     {
-                        images[i].Save(@"c:\mike\unpak\Test\toImage" + i.ToString() + ".png", System.Drawing.Imaging.ImageFormat.Png);
-                    }
+                        images[i].Save(@"d:\unpak\Test\toImage" + i.ToString() + ".png", System.Drawing.Imaging.ImageFormat.Png);
+                    }*/
                 }
 
                 
