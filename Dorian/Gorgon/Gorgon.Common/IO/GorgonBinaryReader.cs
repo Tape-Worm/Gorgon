@@ -24,7 +24,9 @@
 // 
 #endregion
 
+using System;
 using System.Text;
+using GorgonLibrary.Native;
 
 namespace GorgonLibrary.IO
 {
@@ -37,6 +39,7 @@ namespace GorgonLibrary.IO
 		: System.IO.BinaryReader
 	{
 		#region Variables.
+		private byte[] _tempBuffer = null;		// Temporary buffer.
 		private bool _keepOpen = false;			// Flag to keep the underlying stream open.
 		#endregion
 
@@ -72,6 +75,226 @@ namespace GorgonLibrary.IO
 
 			// Force the dispose to -not- destroy the underlying stream.
 			base.Dispose(false);
+		}
+
+		/// <summary>
+		/// Function to read bytes from a stream into a buffer pointed at by the pointer.
+		/// </summary>
+		/// <param name="pointer">Pointer to the buffer to fill with data.</param>
+		/// <param name="size">Number of bytes to read.</param>
+		/// <remarks>This method is unsafe, therefore a proper <paramref name="size"/> must be passed to the method.  Failure to do so can lead to memory corruption.  Use this method at your own peril.</remarks>
+		public unsafe void Read(IntPtr pointer, int size)
+		{
+			Read(pointer.ToPointer(), size);
+		}
+
+		/// <summary>
+		/// Function to read bytes from a stream into a buffer pointed at by the pointer.
+		/// </summary>
+		/// <param name="pointer">Pointer to the buffer to fill with data.</param>
+		/// <param name="size">Number of bytes to read.</param>
+		/// <remarks>This method is unsafe, therefore a proper <paramref name="size"/> must be passed to the method.  Failure to do so can lead to memory corruption.  Use this method at your own peril.</remarks>
+		public unsafe void Read(void* pointer, int size)
+		{
+			if ((pointer == null) || (size < 1))
+			{
+				return;
+			}
+
+			byte* data = (byte*)pointer;
+			while (size > 0)
+			{
+				if (size >= 8)
+				{
+					*((long*)data) = ReadInt64();
+					size -= 8;
+					data += 8;
+				}
+				else if (size >= 4)
+				{
+					*((int*)data) = ReadInt32();
+					size -= 4;
+					data += 4;
+				}
+				else if (size >= 2)
+				{
+					*((short*)data) = ReadInt16();
+					size -= 2;
+					data += 2;
+				}
+				else
+				{
+					*data = ReadByte();
+					size--;
+					data++;
+				}
+			}
+		}
+
+		/// <summary>
+		/// Function to read a generic value from the stream.
+		/// </summary>
+		/// <typeparam name="T">Type of value to read.  Must be a value type.</typeparam>
+		/// <returns>The value in the stream.</returns>
+		public unsafe T ReadValue<T>()
+			where T : struct
+		{
+			T returnVal = default(T);
+			int size = DirectAccess.SizeOf<T>();
+			byte* pointer = stackalloc byte[size];
+			byte* bytes = pointer;
+
+			while (size > 0)
+			{
+				if (size >= 8)
+				{
+					*((long*)bytes) = ReadInt64();
+					bytes += 8;
+					size -= 8;
+				}
+				else if (size >= 4)
+				{
+					*((int*)bytes) = ReadInt32();
+					bytes += 4;
+					size -= 4;
+				}
+				else if (size >= 2)
+				{
+					*((short*)bytes) = ReadInt16();
+					bytes += 2;
+					size -= 2;
+				}
+				else
+				{
+					*bytes = ReadByte();
+					bytes++;
+					size--;
+				}
+			}
+
+			DirectAccess.ReadValue<T>(pointer, out returnVal);
+
+			return returnVal;
+		}
+
+		/// <summary>
+		/// Function to read a range of generic values.
+		/// </summary>
+		/// <typeparam name="T">Type of value to read.  Must be a value type.</typeparam>
+		/// <param name="value">Array of values to read.</param>
+		/// <param name="startIndex">Starting index in the array.</param>
+		/// <param name="count">Number of array elements to copy.</param>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="value"/> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="startIndex"/> parameter is less than 0.
+		/// <para>-or-</para>
+		/// <para>Thrown when the startIndex parameter is equal to or greater than the number of elements in the value parameter.</para>
+		/// <para>-or-</para>
+		/// <para>Thrown when the sum of startIndex and <paramref name="count"/> is greater than the number of elements in the value parameter.</para>
+		/// </exception>
+		/// <exception cref="System.IO.IOException">Thrown when the stream is write-only.</exception>
+		public unsafe void ReadRange<T>(T[] value, int startIndex, int count)
+			where T : struct
+		{
+			if (value == null)
+			{
+				throw new ArgumentNullException("value");
+			}
+
+			if ((value.Length == 0) || (count <= 0))
+			{
+				return;
+			}
+
+			if (startIndex < 0)
+			{
+				throw new ArgumentOutOfRangeException("The start index must be greater than or equal to 0.", "startIndex");
+			}
+
+			if (startIndex >= value.Length)
+			{
+				throw new ArgumentOutOfRangeException("The start index must be less than the number of elements in the array.", "startIndex");
+			}
+
+			if (startIndex + count > value.Length)
+			{
+				throw new ArgumentOutOfRangeException("The sum of start index and count is larger than the number of elements in the array");
+			}
+
+			int typeSize = DirectAccess.SizeOf<T>();
+			int size = typeSize * count;
+			int offset = startIndex * typeSize;
+
+			if (_tempBuffer == null)
+			{
+				_tempBuffer = new byte[GorgonChunkedFormat.TempBufferSize];
+			}
+
+			fixed (byte* tempBufferPointer = &_tempBuffer[0])
+			{
+				while (size > 0)
+				{
+					int blockSize = size > GorgonChunkedFormat.TempBufferSize ? GorgonChunkedFormat.TempBufferSize : size;
+
+					// Read the data from the stream as byte values.
+					Read(_tempBuffer, 0, blockSize);
+
+					// Copy into our array.
+					DirectAccess.ReadArray<T>(tempBufferPointer, value, offset, blockSize);
+
+					offset += blockSize;
+					size -= blockSize;
+				}
+			}
+		}
+
+		/// <summary>
+		/// Function to read a range of generic values.
+		/// </summary>
+		/// <typeparam name="T">Type of value to read.  Must be a value type.</typeparam>
+		/// <param name="value">Array of values to read.</param>
+		/// <param name="count">Number of array elements to copy.</param>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="value"/> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="count"/> parameter is greater than the number of elements in the value parameter.
+		/// </exception>
+		/// <exception cref="System.IO.IOException">Thrown when the stream is write-only.</exception>
+		public void ReadRange<T>(T[] value, int count)
+			where T : struct
+		{
+			ReadRange<T>(value, 0, count);
+		}
+
+		/// <summary>
+		/// Function to read a range of generic values.
+		/// </summary>
+		/// <typeparam name="T">Type of value to read.  Must be a value type.</typeparam>
+		/// <param name="value">Array of values to read.</param>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="value"/> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.IO.IOException">Thrown when the stream is write-only.</exception>
+		public void ReadRange<T>(T[] value)
+			where T : struct
+		{
+			if (value == null)
+			{
+				throw new ArgumentNullException("value");
+			}
+
+			ReadRange<T>(value, 0, value.Length);
+		}
+
+		/// <summary>
+		/// Function to read a range of generic values.
+		/// </summary>
+		/// <typeparam name="T">Type of value to read.  Must be a value type.</typeparam>
+		/// <param name="count">Number of array elements to copy.</param>
+		/// <exception cref="System.IO.IOException">Thrown when the stream is write-only.</exception>
+		public T[] ReadRange<T>(int count)
+			where T : struct
+		{
+			T[] array = new T[count];
+
+			ReadRange<T>(array, 0, count);
+
+			return array;
 		}
 		#endregion
 

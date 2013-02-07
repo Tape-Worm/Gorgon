@@ -64,7 +64,7 @@ namespace GorgonLibrary.IO
         /// <summary>
         /// The size of the temporary buffer for large data reads/writes.
         /// </summary>
-        protected const int TempBufferSize = 65536;
+        protected internal const int TempBufferSize = 65536;
         #endregion
 
         #region Variables.

@@ -389,6 +389,15 @@ namespace GorgonLibrary.Graphics
 			{
 				Settings.MipCount = GorgonImageData.GetMaxMipCount(Settings);
 			}
+
+			// If we're an image cube, and we don't have an array count that's a multiple of 6, then up size until we do.
+			if ((Settings.ImageType == ImageType.ImageCube) && ((Settings.ArrayCount % 6) != 0))
+			{
+				while ((Settings.ArrayCount % 6) != 0)
+				{
+					Settings.ArrayCount++;
+				}
+			}
         }
 
 		/// <summary>
@@ -919,6 +928,7 @@ namespace GorgonLibrary.Graphics
                     resourceIndex = GorgonTexture1D.GetSubResourceIndex(mipLevel, arrayIndex, stagingTexture.Settings.MipCount, stagingTexture.Settings.ArrayCount);
                     break;
                 case ImageType.Image2D:
+				case ImageType.ImageCube:					
                     resourceIndex = GorgonTexture2D.GetSubResourceIndex(mipLevel, arrayIndex, stagingTexture.Settings.MipCount, stagingTexture.Settings.ArrayCount);
                     break;
                 case ImageType.Image3D:
@@ -1408,6 +1418,115 @@ namespace GorgonLibrary.Graphics
 			}
 
 			return _mipOffsetSize[mipLevel].Item2; 
+		}
+
+		/// <summary>
+		/// Function to save the image data to a file with the specified codec.
+		/// </summary>
+		/// <param name="filePath">Path to the file.</param>
+		/// <param name="codec">Codec used to encode the file data.</param>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="filePath"/> or the <paramref name="codec"/> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentException">Thrown when the filePath parameter is empty.</exception>
+		/// <exception cref="System.IO.IOException">Thrown when the stream is read-only.</exception>
+		/// <remarks>This will persist the contents of the image data object into a stream.  The data is encoded into various formats via the codec parameter.  Gorgon contains a 
+		/// number of built-in codecs accessible from the <see cref="GorgonLibrary.IO.GorgonImageCodecs">GorgonImageCodecs</see> interface.  Currently, Gorgon supports the following formats:
+		/// <list type="bullet">
+		///		<item>
+		///			<description>DDS</description>
+		///		</item>
+		///		<item>
+		///			<description>TGA</description>
+		///		</item>
+		///		<item>
+		///			<description>PNG (WIC)</description>
+		///		</item>
+		///		<item>
+		///			<description>BMP (WIC)</description>
+		///		</item>
+		///		<item>
+		///			<description>JPG (WIC)</description>
+		///		</item>
+		///		<item>
+		///			<description>WMP (WIC)</description>
+		///		</item>
+		///		<item>
+		///			<description>TIF (WIC)</description>
+		///		</item>
+		/// </list>
+		/// <para>The items with (WIC) indicate that the codec support is supplied by the Windows Imaging Component.  This component should be installed on most systems, but if it is not 
+		/// then it is required in order to read/save the files in those formats.</para>
+		/// </remarks>
+		public void Save(string filePath, GorgonImageCodec codec)
+		{
+			if (filePath == null)
+			{
+				throw new ArgumentNullException("filePath");
+			}
+
+			if (string.IsNullOrWhiteSpace(filePath))
+			{
+				throw new ArgumentException("The parameter must not be empty.", "filePath");
+			}
+
+			using (System.IO.FileStream file = System.IO.File.Open(filePath, System.IO.FileMode.Create, System.IO.FileAccess.Write, System.IO.FileShare.None))
+			{
+				Save(file, codec);
+			}
+		}
+
+		/// <summary>
+		/// Function to save the image data to a stream with the specified codec.
+		/// </summary>
+		/// <param name="stream">Stream that will contain the image information.</param>
+		/// <param name="codec">Codec used to encode the stream data.</param>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="stream"/> or the <paramref name="codec"/> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.IO.IOException">Thrown when the stream is read-only.</exception>
+		/// <remarks>This will persist the contents of the image data object into a stream.  The data is encoded into various formats via the codec parameter.  Gorgon contains a 
+		/// number of built-in codecs accessible from the <see cref="GorgonLibrary.IO.GorgonImageCodecs">GorgonImageCodecs</see> interface.  Currently, Gorgon supports the following formats:
+		/// <list type="bullet">
+		///		<item>
+		///			<description>DDS</description>
+		///		</item>
+		///		<item>
+		///			<description>TGA</description>
+		///		</item>
+		///		<item>
+		///			<description>PNG (WIC)</description>
+		///		</item>
+		///		<item>
+		///			<description>BMP (WIC)</description>
+		///		</item>
+		///		<item>
+		///			<description>JPG (WIC)</description>
+		///		</item>
+		///		<item>
+		///			<description>WMP (WIC)</description>
+		///		</item>
+		///		<item>
+		///			<description>TIF (WIC)</description>
+		///		</item>
+		/// </list>
+		/// <para>The items with (WIC) indicate that the codec support is supplied by the Windows Imaging Component.  This component should be installed on most systems, but if it is not 
+		/// then it is required in order to read/save the files in those formats.</para>
+		/// </remarks>
+		public void Save(System.IO.Stream stream, GorgonImageCodec codec)
+		{
+			if (stream == null)
+			{
+				throw new ArgumentNullException("stream");
+			}
+
+			if (codec == null)
+			{
+				throw new ArgumentNullException("codec");
+			}
+
+			if (!stream.CanWrite)
+			{
+				throw new System.IO.IOException("The stream is read-only.");
+			}
+
+			codec.SaveToStream(this, stream);
 		}
         #endregion
 

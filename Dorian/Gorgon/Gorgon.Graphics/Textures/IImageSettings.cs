@@ -41,15 +41,19 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Image is a 1 dimensional image.
 		/// </summary>
-		Image1D = 0,
+		Image1D = 2,
 		/// <summary>
 		/// Image is a 2 dimensional image.
 		/// </summary>
-		Image2D = 1,
+		Image2D = 3,
 		/// <summary>
 		/// Image is a 3 dimensional image.
 		/// </summary>
-		Image3D = 2
+		Image3D = 4,
+		/// <summary>
+		/// Image is a texture cube.
+		/// </summary>
+		ImageCube = 0xFF
 	}
 
 	/// <summary>

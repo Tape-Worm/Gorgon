@@ -20,7 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: Thursday, January 31, 2013 8:17:00 AM
+// Created: Wednesday, February 6, 2013 5:59:03 PM
 // 
 #endregion
 
@@ -32,7 +32,6 @@ using System.Threading.Tasks;
 using System.IO;
 using WIC = SharpDX.WIC;
 using GorgonLibrary.Graphics;
-
 
 namespace GorgonLibrary.IO
 {
@@ -102,41 +101,80 @@ namespace GorgonLibrary.IO
 		ErrorDiffusion = WIC.BitmapDitherType.ErrorDiffusion
 	}
 
-    /// <summary>
-    /// Defines for loading/saving images to and from a stream.
-    /// </summary>
-    /// <remarks>An image codec is used to decode and encode image data to and from a data store (such as a <see cref="System.IO.Stream">Stream</see>).  
-    /// Using these codecs, we will be able to read/write any image data source as long as there's an implementation for the image format.
-    /// <para>Gorgon will have several built-in codecs for PNG, BMP, TGA, DDS, JPG, and WMP.</para>
-    /// </remarks>
-    public interface IImageCodec
-    {
-        #region Methods.
-        /// <summary>
-        /// Function to load a texture from a stream.
-        /// </summary>
-        /// <typeparam name="T">Type of texture to load.  Must be a GorgonTexture.</typeparam>
-        /// <param name="stream">Stream containing the data to load.</param>
-        /// <param name="sizeInBytes">The size of the texture, in bytes.</param>
-        /// <returns>The texture that was in the stream.</returns>
-        /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="stream"/> parameter is NULL (Nothing in VB.Net).</exception>
-        /// <exception cref="System.ArgumentException">Thrown when the <paramref name="sizeInBytes"/> parameter is less than 1 byte.</exception>
-        /// <exception cref="System.IO.IOException">Thrown when the stream parameter is write-only.</exception>
-        /// <exception cref="System.IO.EndOfStreamException">Thrown when an attempt is made to read beyond the end of the stream.</exception>
-        T LoadFromStream<T>(Stream stream, int sizeInBytes) where T : GorgonTexture;
+	/// <summary>
+	/// A codec to reading and/or writing image data.
+	/// </summary>
+	/// <remarks>A codec allows for reading and/or writing of data in an encoded format.  Users may inherit from this object to define their own 
+	/// image formats, or use one of the predefined image codecs available in Gorgon.
+	/// <para>The codec accepts and returns a <see cref="GorgonLibrary.Graphics.GorgonImageData">GorgonImageData</see> type, which is filled from or read into the encoded file.</para>
+	/// </remarks>
+	public abstract class GorgonImageCodec
+	{
+		#region Variables.
 
-        /// <summary>
-        /// Function to persist a texture to a stream.
-        /// </summary>
-        /// <typeparam name="T">Type of texture to load.  Must be a GorgonTexture.</typeparam>
-        /// <param name="texture">Texture to persist to the stream.</param>
-        /// <param name="stream">Stream that will contain the data.</param>
-        /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="texture"/> parameter is NULL (Nothing in VB.Net).
-        /// <para>-or-</para>
-        /// <para>Thrown when the <paramref name="stream"/> parameter is NULL.</para>
-        /// </exception>
-        /// <exception cref="System.IO.IOException">Thrown when the stream parameter is read-only.</exception>
-        void SaveToStream<T>(T texture, Stream stream) where T : GorgonTexture;
-        #endregion
-    }
+		#endregion
+
+		#region Properties.
+		/// <summary>
+		/// Property to return the common file name extension(s) for a codec.
+		/// </summary>
+		public IList<string> CodecCommonExtensions
+		{
+			get;
+			protected set;
+		}
+
+		/// <summary>
+		/// Property to return the friendly description of the format.
+		/// </summary>
+		public abstract string CodecDescription
+		{
+			get;
+		}
+
+		/// <summary>
+		/// Property to return the abbreviated name of the codec (e.g. PNG).
+		/// </summary>
+		public abstract string Codec
+		{
+			get;
+		}
+		#endregion
+
+		#region Methods.
+		/// <summary>
+		/// Function to load an image from a stream.
+		/// </summary>
+		/// <param name="stream">Stream containing the data to load.</param>
+		/// <param name="sizeInBytes">The size of the image data, in bytes.</param>
+		/// <returns>The image data that was in the stream.</returns>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="stream"/> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="sizeInBytes"/> parameter is less than 1 byte.</exception>
+		/// <exception cref="System.IO.IOException">Thrown when the stream parameter is write-only.</exception>
+		/// <exception cref="System.IO.EndOfStreamException">Thrown when an attempt is made to read beyond the end of the stream.</exception>
+		protected internal abstract GorgonImageData LoadFromStream(Stream stream, int sizeInBytes);
+
+		/// <summary>
+		/// Function to persist image data to a stream.
+		/// </summary>
+		/// <param name="imageData"><see cref="GorgonLibrary.Graphics.GorgonImageData">Gorgon image data</see> to persist.</param>
+		/// <param name="stream">Stream that will contain the data.</param>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="imageData"/> parameter is NULL (Nothing in VB.Net).
+		/// <para>-or-</para>
+		/// <para>Thrown when the <paramref name="stream"/> parameter is NULL.</para>
+		/// </exception>
+		/// <exception cref="System.IO.IOException">Thrown when the stream parameter is read-only.</exception>
+		protected internal abstract void SaveToStream(GorgonImageData imageData, Stream stream);
+		#endregion
+
+		#region Constructor/Destructor.
+		/// <summary>
+		/// Initializes a new instance of the <see cref="GorgonImageCodec" /> class.
+		/// </summary>
+		protected GorgonImageCodec()
+		{
+			CodecCommonExtensions = new string[] { };
+		}
+		#endregion
+	}
 }

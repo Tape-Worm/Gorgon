@@ -24,7 +24,9 @@
 // 
 #endregion
 
+using System;
 using System.Text;
+using GorgonLibrary.Native;
 
 namespace GorgonLibrary.IO
 {
@@ -37,6 +39,7 @@ namespace GorgonLibrary.IO
 		: System.IO.BinaryWriter
 	{
 		#region Variables.
+		private byte[] _tempBuffer = null;		// Temporary buffer.
 		private bool _keepOpen = false;			// Flag to keep the underlying stream open.
 		#endregion
 
@@ -72,6 +75,208 @@ namespace GorgonLibrary.IO
 
 			// Force the dispose to -not- destroy the underlying stream.
 			base.Dispose(false);
+		}
+
+		/// <summary>
+		/// Function to write the bytes pointed at by the pointer into the stream.
+		/// </summary>
+		/// <param name="pointer">Pointer to the buffer containing the data.</param>
+		/// <param name="size">Number of bytes to write.</param>
+		/// <remarks>This method is unsafe, therefore a proper <paramref name="size"/> must be passed to the method.  Failure to do so can lead to memory corruption.  Use this method at your own peril.</remarks>
+		public unsafe void Write(IntPtr pointer, int size)
+		{
+			Write(pointer.ToPointer(), size);
+		}
+
+		/// <summary>
+		/// Function to write the bytes pointed at by the pointer into the stream.
+		/// </summary>
+		/// <param name="pointer">Pointer to the buffer containing the data.</param>
+		/// <param name="size">Number of bytes to write.</param>
+		/// <remarks>This method is unsafe, therefore a proper <paramref name="size"/> must be passed to the method.  Failure to do so can lead to memory corruption.  Use this method at your own peril.</remarks>
+		public unsafe void Write(void* pointer, int size)
+		{
+			if ((pointer == null) || (size < 1))
+			{
+				return;
+			}
+
+			byte* data = (byte*)pointer;
+			while (size > 0)
+			{
+				if (size >= 8)
+				{
+					Write(*((long*)data));
+					size -= 8;
+					data += 8;
+				}
+				else if (size >= 4)
+				{
+					Write(*((int*)data));
+					size -= 4;
+					data += 4;
+				}
+				else if (size >= 2)
+				{
+					Write(*((short*)data));
+					size -= 2;
+					data += 2;
+				}
+				else
+				{
+					Write(*data);
+					size--;
+					data++;
+				}
+			}
+		}
+
+		/// <summary>
+		/// Function to write a generic value to the stream.
+		/// </summary>
+		/// <typeparam name="T">Type of value to write.  Must be a value type.</typeparam>
+		/// <param name="value">Value to write to the stream.</param>
+		/// <exception cref="System.IO.IOException">Thrown when the stream is read-only.</exception>
+		public unsafe void WriteValue<T>(T value)
+			where T : struct
+		{
+			int size = DirectAccess.SizeOf<T>();
+			byte* pointer = stackalloc byte[size];
+
+			DirectAccess.WriteValue<T>(pointer, ref value);
+
+			while (size > 0)
+			{
+				if (size >= 8)
+				{					
+					Write(*((long*)pointer));
+					pointer += 8;
+					size -= 8;
+				}
+				else if (size >= 4)
+				{
+					Write(*((int*)pointer));
+					pointer += 4;
+					size -= 4;
+				}
+				else if (size >= 2)
+				{
+					Write(*((short*)pointer));
+					pointer += 2;
+					size -= 2;
+				}
+				else
+				{
+					Write(*pointer);
+					pointer++;
+					size--;
+				}
+			}
+		}
+
+		/// <summary>
+		/// Function to write a range of generic values.
+		/// </summary>
+		/// <typeparam name="T">Type of value to write.  Must be a value type.</typeparam>
+		/// <param name="value">Array of values to write.</param>
+		/// <param name="startIndex">Starting index in the array.</param>
+		/// <param name="count">Number of array elements to copy.</param>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="value"/> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="startIndex"/> parameter is less than 0.
+		/// <para>-or-</para>
+		/// <para>Thrown when the startIndex parameter is equal to or greater than the number of elements in the value parameter.</para>
+		/// <para>-or-</para>
+		/// <para>Thrown when the sum of startIndex and <paramref name="count"/> is greater than the number of elements in the value parameter.</para>
+		/// </exception>
+		/// <exception cref="System.IO.IOException">Thrown when the stream is read-only.</exception>
+		public unsafe void WriteRange<T>(T[] value, int startIndex, int count)
+			where T : struct
+		{
+			if (value == null)
+			{
+				throw new ArgumentNullException("value");
+			}
+
+			if ((value.Length == 0) || (count <= 0))
+			{
+				return;
+			}
+
+			if (startIndex < 0)
+			{
+				throw new ArgumentOutOfRangeException("The start index must be greater than or equal to 0.", "startIndex");
+			}
+
+			if (startIndex >= value.Length)
+			{
+				throw new ArgumentOutOfRangeException("The start index must be less than the number of elements in the array.", "startIndex");
+			}
+
+			if (startIndex + count > value.Length)
+			{
+				throw new ArgumentOutOfRangeException("The sum of start index and count is larger than the number of elements in the array");
+			}
+
+			int typeSize = DirectAccess.SizeOf<T>();
+			int offset = typeSize * startIndex;
+			int size = typeSize * count;
+
+			// Allocate our temporary buffer if we haven't already.
+			if (_tempBuffer == null)
+			{
+				_tempBuffer = new byte[GorgonChunkedFormat.TempBufferSize];
+			}
+
+			fixed (byte* tempBufferPointer = &_tempBuffer[0])
+			{
+				while (size > 0)
+				{
+					int blockSize = size > GorgonChunkedFormat.TempBufferSize ? GorgonChunkedFormat.TempBufferSize : size;
+
+					// Read our array into our temporary byte buffer.
+					DirectAccess.ReadArray<T>(tempBufferPointer, value, offset, blockSize);
+
+					offset += blockSize;
+					size -= size;
+
+					// Write the temporary byte buffer to the stream.
+					Write(_tempBuffer, 0, blockSize);
+				}
+			}
+		}
+
+		/// <summary>
+		/// Function to write a range of generic values.
+		/// </summary>
+		/// <typeparam name="T">Type of value to write.  Must be a value type.</typeparam>
+		/// <param name="value">Array of values to write.</param>
+		/// <param name="count">Number of array elements to copy.</param>
+		/// <exception cref="System.IO.IOException">Thrown when the stream is read-only.</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="value"/> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentOutOfRangeException">Thrown when <paramref name="count"/> parameter is greater than the number of elements in the value parameter.
+		/// </exception>
+		public void WriteRange<T>(T[] value, int count)
+			where T : struct
+		{
+			WriteRange<T>(value, 0, count);
+		}
+
+		/// <summary>
+		/// Functio to write a range of generic values.
+		/// </summary>
+		/// <typeparam name="T">Type of value to write.  Must be a value type.</typeparam>
+		/// <param name="value">Array of values to write.</param>
+		/// <exception cref="System.IO.IOException">Thrown when the stream is read-only.</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="value"/> parameter is NULL (Nothing in VB.Net).</exception>
+		public void WriteRange<T>(T[] value)
+			where T : struct
+		{
+			if (value == null)
+			{
+				throw new ArgumentNullException("value");
+			}
+
+			WriteRange<T>(value, 0, value.Length);
 		}
 		#endregion
 
