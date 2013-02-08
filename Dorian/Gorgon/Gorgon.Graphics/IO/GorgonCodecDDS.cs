@@ -973,7 +973,7 @@ namespace GorgonLibrary.IO
                     settings = new GorgonTexture2DSettings();
                     settings.ArrayCount = 1;
                     settings.Depth = 1;
-                    if ((header.Caps1 & DDSCAPS1.CubeMap) == DDSCAPS1.CubeMap)
+                    if ((header.Caps2 & DDSCAPS2.CubeMap) == DDSCAPS2.CubeMap)
                     {
                         // Only allow all faces.
                         if ((header.Caps2 & DDSCAPS2.AllFaces) != DDSCAPS2.AllFaces)
@@ -1355,20 +1355,20 @@ namespace GorgonLibrary.IO
 							var buffer = image[array, mipLevel];
 
 							// Get compressed data.
-							if (formatInfo.IsCompressed)
+							if ((formatInfo.IsCompressed) || (conversionFlags == DDSConversionFlags.None))
 							{
 								reader.Read(buffer.Data.UnsafePointer, buffer.PitchInformation.SlicePitch);
 							}
-							else
-							{
-								byte* bufferPointer = (byte *)buffer.Data.UnsafePointer;
+                            else
+                            {
+                                byte* bufferPointer = (byte*)buffer.Data.UnsafePointer;
 
-								// If not compressed, then read each scan line.
-								for (int h = 0; h < buffer.Height; h++)
-								{
-									bufferPointer += buffer.PitchInformation.SlicePitch;
-								}
-							}
+                                // If not compressed, then read each scan line.
+                                for (int h = 0; h < buffer.Height; h++)
+                                {
+                                    bufferPointer += buffer.PitchInformation.SlicePitch;
+                                }
+                            }
 						}
 					}
 					break;
