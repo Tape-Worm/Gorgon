@@ -1161,7 +1161,7 @@ namespace GorgonLibrary.Graphics
 		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="format"/> parameter is set to Unknown.</exception>
 		public static int GetSizeInBytes(int width, BufferFormat format, int arrayCount, int mipCount)
 		{
-			return GetSizeInBytes(width, 1, format, arrayCount, mipCount);
+			return GetSizeInBytes(width, 1, format, arrayCount, mipCount, PitchFlags.None);
 		}
 
 		/// <summary>
@@ -1174,7 +1174,7 @@ namespace GorgonLibrary.Graphics
 		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="format"/> parameter is set to Unknown.</exception>
 		public static int GetSizeInBytes(int width, int height, BufferFormat format)
 		{
-			return GetSizeInBytes(width, height, format, 1, 1);
+			return GetSizeInBytes(width, height, format, 1, 1, PitchFlags.None);
 		}
 
 		/// <summary>
@@ -1188,7 +1188,7 @@ namespace GorgonLibrary.Graphics
 		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="format"/> parameter is set to Unknown.</exception>
 		public static int GetSizeInBytes(int width, int height, BufferFormat format, int mipCount)
 		{
-			return GetSizeInBytes(width, height, format, 1, mipCount);
+			return GetSizeInBytes(width, height, format, 1, mipCount, PitchFlags.None);
 		}
 
 		/// <summary>
@@ -1203,13 +1203,29 @@ namespace GorgonLibrary.Graphics
 		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="format"/> parameter is set to Unknown.</exception>
 		public static int GetSizeInBytes(int width, int height, BufferFormat format, int arrayCount, int mipCount)
 		{
+			return GetSizeInBytes(width, height, format, arrayCount, mipCount, PitchFlags.None);
+		}
+
+		/// <summary>
+		/// Function to return the size of a 2D image in bytes.
+		/// </summary>
+		/// <param name="width">Width of the 2D image.</param>
+		/// <param name="height">Height of the 2D image.</param>
+		/// <param name="format">Format of the 2D image.</param>
+		/// <param name="arrayCount">Number of array indices.</param>
+		/// <param name="mipCount">Number of mip-map levels in the 2D image.</param>
+		/// <param name="pitchFlags">Flags used to influence the row pitch size.</param>
+		/// <returns>The number of bytes for the 2D image.</returns>
+		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="format"/> parameter is set to Unknown.</exception>
+		public static int GetSizeInBytes(int width, int height, BufferFormat format, int arrayCount, int mipCount, PitchFlags pitchFlags)
+		{
 			int result = 0;
 
 			arrayCount = 1.Max(arrayCount);
 
 			for (int i = 0; i < arrayCount; i++)
 			{
-				result += GetSizeInBytes(width, height, 1, format, mipCount);
+				result += GetSizeInBytes(width, height, 1, format, mipCount, pitchFlags);
 			}
 
 			return result;
@@ -1226,7 +1242,7 @@ namespace GorgonLibrary.Graphics
 		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="format"/> parameter is set to Unknown.</exception>
 		public static int GetSizeInBytes(int width, int height, int depth, BufferFormat format)
 		{
-			return GetSizeInBytes(width, height, depth, format, 1);
+			return GetSizeInBytes(width, height, depth, format, 1, PitchFlags.None);
 		}
 
 		/// <summary>
@@ -1240,6 +1256,22 @@ namespace GorgonLibrary.Graphics
 		/// <returns>The number of bytes for the 3D image.</returns>
 		/// <exception cref="System.ArgumentException">Thrown when the value of the <paramref name="format"/> parameter is not supported.</exception>
 		public static int GetSizeInBytes(int width, int height, int depth, BufferFormat format, int mipCount)
+		{
+			return GetSizeInBytes(width, height, depth, format, mipCount, PitchFlags.None);
+		}
+
+		/// <summary>
+		/// Function to return the size of a 3D image in bytes.
+		/// </summary>
+		/// <param name="width">Width of the 3D image.</param>
+		/// <param name="height">Height of the 3D image.</param>
+		/// <param name="depth">Depth of the 3D image.</param>
+		/// <param name="format">Format of the 3D image.</param>
+		/// <param name="mipCount">Number of mip-map levels in the 3D image.</param>
+		/// <param name="pitchFlags">Flags used to influence the row pitch of the image.</param>
+		/// <returns>The number of bytes for the 3D image.</returns>
+		/// <exception cref="System.ArgumentException">Thrown when the value of the <paramref name="format"/> parameter is not supported.</exception>
+		public static int GetSizeInBytes(int width, int height, int depth, BufferFormat format, int mipCount, PitchFlags pitchFlags)
 		{
 			if (format == BufferFormat.Unknown)
 			{
@@ -1263,7 +1295,7 @@ namespace GorgonLibrary.Graphics
 
 			for (int mip = 0; mip < mipCount; mip++)
 			{
-				var pitchInfo = formatInfo.GetPitch(mipWidth, mipHeight, PitchFlags.None);
+				var pitchInfo = formatInfo.GetPitch(mipWidth, mipHeight, pitchFlags);
 				result += pitchInfo.SlicePitch * depth;
 
 				if (mipWidth > 1)
@@ -1287,17 +1319,30 @@ namespace GorgonLibrary.Graphics
 		/// Function to return the size, in bytes, of an image with the given settings.
 		/// </summary>
 		/// <param name="settings">Settings to describe the image.</param>
+		/// <param name="pitchFlags">Flags to influence the size of the row pitch.</param>
 		/// <returns>The number of bytes for the image.</returns>
 		/// <exception cref="System.ArgumentException">Thrown when the format value of the <paramref name="settings"/> parameter is not supported.</exception>
 		public static int GetSizeInBytes(IImageSettings settings)
 		{
+			return GetSizeInBytes(settings, PitchFlags.None);
+		}
+
+		/// <summary>
+		/// Function to return the size, in bytes, of an image with the given settings.
+		/// </summary>
+		/// <param name="settings">Settings to describe the image.</param>
+		/// <param name="pitchFlags">Flags to influence the size of the row pitch.</param>
+		/// <returns>The number of bytes for the image.</returns>
+		/// <exception cref="System.ArgumentException">Thrown when the format value of the <paramref name="settings"/> parameter is not supported.</exception>
+		public static int GetSizeInBytes(IImageSettings settings, PitchFlags pitchFlags)
+		{
 			if (settings.ImageType == ImageType.Image3D)
 			{
-				return GetSizeInBytes(settings.Width, settings.Height, settings.Depth, settings.Format, settings.MipCount);
+				return GetSizeInBytes(settings.Width, settings.Height, settings.Depth, settings.Format, settings.MipCount, pitchFlags);
 			}
 			else
 			{
-				return GetSizeInBytes(settings.Width, settings.Height, settings.Format, settings.ArrayCount, settings.MipCount);
+				return GetSizeInBytes(settings.Width, settings.Height, settings.Format, settings.ArrayCount, settings.MipCount, pitchFlags);
 			}
 		}
 
@@ -1527,6 +1572,72 @@ namespace GorgonLibrary.Graphics
 			}
 
 			codec.SaveToStream(this, stream);
+		}
+
+		/// <summary>
+		/// Function to read image data from a file.
+		/// </summary>
+		/// <param name="filePath">Path to the file that contains the image data.</param>
+		/// <returns>The image data from the stream.</returns>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="filePath"/> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentException">Thrown when the filePath parameter is empty.
+		/// <para>-or-</para>
+		/// <para>Thrown when the data in the stream cannot be read by any of the registered image codecs.</para></exception>
+		/// <exception cref="System.IO.IOException">Thrown when the stream is write-only.
+		/// <para>-or-</para>
+		/// <para>The image file is corrupted or unable to be read by a codec.</para>
+		/// </exception>
+		public static GorgonImageData FromFile(string filePath)
+		{
+			using (var stream = System.IO.File.Open(filePath, System.IO.FileMode.Open, System.IO.FileAccess.Read, System.IO.FileShare.Read))
+			{
+				return FromStream(stream);
+			}
+		}
+
+		/// <summary>
+		/// Function to read image data from a stream.
+		/// </summary>
+		/// <param name="stream">Stream that contains the image data.</param>
+		/// <returns>The image data from the stream.</returns>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="stream"/> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentException">Thrown when the data in the stream cannot be read by any of the registered image codecs.</exception>
+		/// <exception cref="System.IO.IOException">Thrown when the stream is write-only.
+		/// <para>-or-</para>
+		/// <para>The image file is corrupted or unable to be read by a codec.</para>
+		/// </exception>
+		/// <exception cref="System.IO.EndOfStreamException">Thrown if an attempt to read beyond the end of the stream is made.</exception>
+		public static GorgonImageData FromStream(System.IO.Stream stream)
+		{
+			GorgonImageCodec codec = null;
+
+			if (stream == null)
+			{
+				throw new ArgumentNullException("stream");
+			}
+
+			if (!stream.CanRead)
+			{
+				throw new System.IO.IOException("The stream is write-only.");
+			}
+
+			// Determine the codec by attempting to read the magic number from the stream.
+			foreach (var codecItem in GorgonImageCodecs.InternalCodecs)
+			{
+				if (codecItem.CanBeRead(stream))
+				{
+					codec = codecItem;
+					break;
+				}
+			}
+
+			// We couldn't find a codec.
+			if (codec == null)
+			{
+				throw new ArgumentException("The data in the stream cannot be ready any registered image codec.", "stream");
+			}
+
+			return codec.LoadFromStream(stream);
 		}
         #endregion
 

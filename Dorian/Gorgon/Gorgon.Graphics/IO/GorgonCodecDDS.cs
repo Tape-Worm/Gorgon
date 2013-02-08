@@ -137,7 +137,7 @@ namespace GorgonLibrary.IO
 		/// </summary>
 		NoR10B10G10A2Fix = 0x4,
 		/// <summary>
-		/// Convert DXGI 1.1 BGR formats to DXGI_FORMAT_R8G8B8A8_UNORM to avoid use of optional WDDM 1.1 formats
+		/// Convert DXGI 1.1 BGR formats to BufferFormat.R8G8B8A8_UIntNormal to avoid use of optional WDDM 1.1 formats
 		/// </summary>
 		ForceRGB = 0x8,
 		/// <summary>
@@ -700,13 +700,29 @@ namespace GorgonLibrary.IO
         /// </summary>
         /// <remarks>
         /// Use this to control how Gorgon converts data from a legacy DDS file format.  This only applies to DDS files generated with files saved by Direct3D 9 interfaces.
-        /// <para>The property only applies when reading image data</para>
+        /// <para>The property only applies when decoding image data.  Encoding operations ignore this property.</para>
         /// <para>The default value is None.</para></remarks>
         public DDSFlags LegacyConversionFlags
         {
             get;
             set;
         }
+
+		/// <summary>
+		/// Property to set or return the palette assigned to indexed images.
+		/// </summary>
+		/// <remarks>
+		/// If this value is assigned, then this palette will be used for any indexed pixel formats.  
+		/// <para>It is recommended to make an array of 256 entries for the palette.</para>
+		/// <para>The property only applies when decoding image data.  Encoding operations ignore this property.</para>
+		/// <para>The default value is NULL.</para>
+		/// </remarks>
+		public IList<GorgonColor> Palette
+		{
+			get;
+			set;
+		}
+
 
 		/// <summary>
 		/// Property to return the friendly description of the format.
@@ -788,11 +804,12 @@ namespace GorgonLibrary.IO
                     }
                     settings.Height = (int)header.Height;
                     settings.Depth = 1;
+					settings.ArrayCount = (int)dx10Header.ArrayCount;
                     break;
                 case ImageType.Image3D:
                     if ((header.Flags & DDSHeaderFlags.Volume) != DDSHeaderFlags.Volume)
                     {
-                        throw new System.IO.IOException("The data in the stream cannot be decoded as a DDS file.  Image claims to be 3D image, but is missing volume flag.");
+                        throw new System.IO.IOException("The data in the stream cannot be decoded as a DDS file.  Image claims to be a 3D image, but is missing volume flag.");
                     }
 
                     settings = new GorgonTexture3DSettings();
@@ -899,12 +916,14 @@ namespace GorgonLibrary.IO
         /// Function to read in the DDS header from a stream.
         /// </summary>
         /// <param name="reader">Reader interface for the stream.</param>
-        private IImageSettings ReadHeader(GorgonBinaryReader reader)
+        private IImageSettings ReadHeader(GorgonBinaryReader reader, out DDSConversionFlags conversionFlags)
         {
             IImageSettings settings = null;
-            DDSHeader header = new DDSHeader();
-            DDSConversionFlags conversionFlags = DDSConversionFlags.None;
-            uint magicNumber = 0;            
+            DDSHeader header = new DDSHeader();            
+            uint magicNumber = 0;
+
+			// Start with no conversion.
+			conversionFlags = DDSConversionFlags.None;
 
             // Read the magic # from the header.
             magicNumber = reader.ReadUInt32();
@@ -991,68 +1010,64 @@ namespace GorgonLibrary.IO
                             conversionFlags |= DDSConversionFlags.Swizzle;
                         }
                         break;
-
-                    case BufferFormat.B8G8R8X8_UNORM:
-                        settings.Format = BufferFormat.R8G8B8A8_UNORM;
+                    case BufferFormat.B8G8R8X8_UIntNormal:
+                        settings.Format = BufferFormat.R8G8B8A8_UIntNormal;
                         if (conversionFlags != DDSConversionFlags.None)
                         {
-                            conversionFlags  |= CONV_FLAGS_SWIZZLE | CONV_FLAGS_NOALPHA;
+                            conversionFlags  |= DDSConversionFlags.Swizzle | DDSConversionFlags.NoAlpha;
+                        }
+                        break;
+                    case BufferFormat.B8G8R8A8:
+                        settings.Format = BufferFormat.R8G8B8A8;
+                        if (conversionFlags != DDSConversionFlags.None)
+                        {
+                            conversionFlags  |= DDSConversionFlags.Swizzle;
+                        }
+                        break;
+                    case BufferFormat.B8G8R8A8_UIntNormal_sRGB:
+                        settings.Format = BufferFormat.R8G8B8A8_UIntNormal_sRGB;
+                        if (conversionFlags != DDSConversionFlags.None)
+                        {
+                            conversionFlags  |= DDSConversionFlags.Swizzle;
                         }
                         break;
 
-                    case BufferFormat.B8G8R8A8_TYPELESS:
-                        settings.Format = BufferFormat.R8G8B8A8_TYPELESS;
+                    case BufferFormat.B8G8R8X8:
+                        settings.Format = BufferFormat.R8G8B8A8;
                         if (conversionFlags != DDSConversionFlags.None)
                         {
-                            conversionFlags  |= CONV_FLAGS_SWIZZLE;
+                            conversionFlags  |= DDSConversionFlags.Swizzle | DDSConversionFlags.NoAlpha;
                         }
                         break;
-
-                    case BufferFormat.B8G8R8A8_UNORM_SRGB:
-                        settings.Format = BufferFormat.R8G8B8A8_UNORM_SRGB;
+                    case BufferFormat.B8G8R8X8_UIntNormal_sRGB:
+                        settings.Format = BufferFormat.R8G8B8A8_UIntNormal_sRGB;
                         if (conversionFlags != DDSConversionFlags.None)
                         {
-                            conversionFlags  |= CONV_FLAGS_SWIZZLE;
-                        }
-                        break;
-
-                    case BufferFormat.B8G8R8X8_TYPELESS:
-                        settings.Format = BufferFormat.R8G8B8A8_TYPELESS;
-                        if (conversionFlags != DDSConversionFlags.None)
-                        {
-                            conversionFlags  |= CONV_FLAGS_SWIZZLE | CONV_FLAGS_NOALPHA;
-                        }
-                        break;
-                    case BufferFormat.B8G8R8X8_UNORM_SRGB:
-                        settings.Format = BufferFormat.R8G8B8A8_UNORM_SRGB;
-                        if (conversionFlags != DDSConversionFlags.None)
-                        {
-                            conversionFlags  |= CONV_FLAGS_SWIZZLE | CONV_FLAGS_NOALPHA;
+                            conversionFlags  |= DDSConversionFlags.Swizzle | DDSConversionFlags.NoAlpha;
                         }
                         break;
                 }
             }
 
-    // Special flag for handling 16bpp formats
-    if (flags & DDS_FLAGS_NO_16BPP)
-    {
-        switch ( metadata.format )
-        {
-        case DXGI_FORMAT_B5G6R5_UNORM:
-        case DXGI_FORMAT_B5G5R5A1_UNORM:
-#ifdef DXGI_1_2_FORMATS
-        case DXGI_FORMAT_B4G4R4A4_UNORM:
-#endif
-            metadata.format = DXGI_FORMAT_R8G8B8A8_UNORM;
-            if ( convFlags )
-            {
-                *convFlags |= CONV_FLAGS_EXPAND;
-                if ( metadata.format == DXGI_FORMAT_B5G6R5_UNORM )
-                    *convFlags |= CONV_FLAGS_NOALPHA;
-            }
-        }
-    }
-
+			// Special flag for handling 16bpp formats
+			if ((LegacyConversionFlags & DDSFlags.No16BPP) == DDSFlags.No16BPP)
+			{
+				switch (settings.Format)
+				{
+					case BufferFormat.B5G6R5_UIntNormal:
+					case BufferFormat.B5G5R5A1_UIntNormal:
+						settings.Format = BufferFormat.R8G8B8A8_UIntNormal;
+						if (conversionFlags != DDSConversionFlags.None)
+						{
+							conversionFlags |= DDSConversionFlags.Expand;
+							if (settings.Format == BufferFormat.B5G6R5_UIntNormal)
+							{
+								conversionFlags |= DDSConversionFlags.NoAlpha;
+							}
+						}
+						break;
+				}
+			}
 
             return settings;
         }
@@ -1258,16 +1273,164 @@ namespace GorgonLibrary.IO
 		}
 
 		/// <summary>
+		/// Function to read a scan line from the image data.
+		/// </summary>
+		/// <param name="reader">Reader interface for the stream.</param>
+		/// <param name="row">Row index.</param>
+		/// <param name="buffer">Current image buffer.</param>
+		/// <param name="rowPitch">Row pitch of the buffer.</param>
+		/// <param name="slicePitch">Slice pitch of the buffer.</param>
+		/// <param name="conversionFlags">Conversion flags.</param>
+		/// <param name="setAlpha">TRUE to set alpha to off, FALSE to preserve.</param>
+		/// <param name="legacyScanLine">TRUE to use legacy scanlines, FALSE to something, something.</param>
+		private void ReadScanLine(GorgonBinaryReader reader, int row, void *buffer, int rowPitch, int slicePitch, DDSConversionFlags conversionFlags, bool setAlpha, bool legacyScanLine)
+		{
+			if ((conversionFlags & DDSConversionFlags.Expand) == DDSConversionFlags.Expand)
+			{
+				// Perform expansion.
+			}
+			else if ((conversionFlags & DDSConversionFlags.Swizzle) == DDSConversionFlags.Swizzle)
+			{
+				// Perform swizzle.
+			}
+			else
+			{
+				// Perform straight copy.
+			}
+		}
+
+		/// <summary>
+		/// Function to perform the copying of image data into the buffer.
+		/// </summary>
+		/// <param name="reader">Reader interface for the stream.</param>
+		/// <param name="image">Image data.</param>
+		/// <param name="pitchFlags">Flags used to determine pitch when expanding pixels.</param>
+		/// <param name="conversionFlags">Flags used for conversion between legacy formats and the current format.</param>
+		/// <param name="palette">Palette used in indexed conversion.</param>
+		private void CopyImageData(GorgonBinaryReader reader, GorgonImageData image, PitchFlags pitchFlags, DDSConversionFlags conversionFlags, GorgonColor[] palette)
+		{
+			var formatInfo = GorgonBufferFormatInfo.GetInfo(image.Settings.Format);
+			GorgonFormatPitch pitchInfo = default(GorgonFormatPitch);
+			int sizeInBytes = 0;
+
+			// Get copy flag bits per pixel if we have an expansion.
+			if ((conversionFlags & DDSConversionFlags.Expand) == DDSConversionFlags.Expand)
+			{
+				if ((conversionFlags & DDSConversionFlags.RGB888) == DDSConversionFlags.RGB888)
+				{
+					pitchFlags |= PitchFlags.BPP24;
+				}
+				else if (((conversionFlags & DDSConversionFlags.RGB565) == DDSConversionFlags.RGB565)
+							|| ((conversionFlags & DDSConversionFlags.RGB5551) == DDSConversionFlags.RGB5551)
+							|| ((conversionFlags & DDSConversionFlags.RGB4444) == DDSConversionFlags.RGB4444)
+							|| ((conversionFlags & DDSConversionFlags.RGB332) == DDSConversionFlags.RGB8332)
+							|| ((conversionFlags & DDSConversionFlags.RGB332) == DDSConversionFlags.A8P8))
+				{
+					pitchFlags |= PitchFlags.BPP16;
+				}
+				else if (((conversionFlags & DDSConversionFlags.RGB44) == DDSConversionFlags.RGB44)
+							|| ((conversionFlags & DDSConversionFlags.RGB332) == DDSConversionFlags.RGB332)
+							|| ((conversionFlags & DDSConversionFlags.Palette) == DDSConversionFlags.Palette))
+				{
+					pitchFlags |= PitchFlags.BPP8;
+				}
+			}
+
+			// Get the size of the image in bytes.
+			pitchInfo = formatInfo.GetPitch(image.Settings.Width, image.Settings.Height, pitchFlags);
+			sizeInBytes = GorgonImageData.GetSizeInBytes(image.Settings, pitchFlags);
+			
+			bool setAlpha = ((conversionFlags & DDSConversionFlags.NoAlpha) == DDSConversionFlags.NoAlpha);
+			bool legacyScanLine = ((conversionFlags & DDSConversionFlags.Swizzle) == DDSConversionFlags.Swizzle);
+
+			switch (image.Settings.ImageType)
+			{
+				case ImageType.Image1D:
+				case ImageType.Image2D:
+					for (int array = 0; array < image.Settings.ArrayCount; array++)
+					{
+						for (int mipLevel = 0; mipLevel < image.Settings.MipCount; mipLevel++)
+						{
+							// Get our destination buffer.
+							var buffer = image[array, mipLevel];
+
+							// Get compressed data.
+							if (formatInfo.IsCompressed)
+							{
+								reader.Read(buffer.Data.UnsafePointer, buffer.PitchInformation.SlicePitch);
+							}
+							else
+							{
+								byte* bufferPointer = (byte *)buffer.Data.UnsafePointer;
+
+								// If not compressed, then read each scan line.
+								for (int h = 0; h < buffer.Height; h++)
+								{
+									bufferPointer += buffer.PitchInformation.SlicePitch;
+								}
+							}
+						}
+					}
+					break;
+			}
+		}
+
+		/// <summary>
 		/// Function to load an image from a stream.
 		/// </summary>
 		/// <param name="stream">Stream containing the data to load.</param>
-		/// <param name="sizeInBytes">The size of the image data, in bytes.</param>
 		/// <returns>
 		/// The image data that was in the stream.
 		/// </returns>
-		protected internal override GorgonImageData LoadFromStream(System.IO.Stream stream, int sizeInBytes)
+		protected internal override GorgonImageData LoadFromStream(System.IO.Stream stream)
 		{
-			return null;
+			GorgonImageData imageData = null;
+			DDSConversionFlags flags = DDSConversionFlags.None;
+			IImageSettings settings = null;
+			GorgonColor[] palette = null;
+
+
+			using (var reader = new GorgonBinaryReader(stream, true))
+			{
+				// Read the header information.
+				settings = ReadHeader(reader, out flags);
+
+				// Create our image data structure.
+				imageData = new GorgonImageData(settings);
+
+				// We have a palette, either create a new one or clone the assigned one.
+				if ((flags & DDSConversionFlags.Palette) == DDSConversionFlags.Palette)
+				{
+					palette = new GorgonColor[256];
+					if (Palette != null)
+					{						
+						int count = Palette.Count > 256 ? 256 : Palette.Count;
+
+						for (int i = 0; i < count; i++)
+						{
+							palette[i] = Palette[i];
+						}
+					}
+				}
+
+				try
+				{
+					// Copy the data from the stream to the buffer.
+					CopyImageData(reader, imageData, ((LegacyConversionFlags & DDSFlags.LegacyDWORD) == DDSFlags.LegacyDWORD) ? PitchFlags.LegacyDWORD : PitchFlags.None, flags, palette);
+				}
+				catch 
+				{
+					// Clean up any memory allocated if we can't copy the image.
+					if (imageData != null)
+					{
+						imageData.Dispose();
+					}
+
+					throw;
+				}
+			}
+
+			return imageData;
 		}
 
 		/// <summary>
@@ -1334,15 +1497,38 @@ namespace GorgonLibrary.IO
 			}
 		}
 
-        /// <summary>
-        /// Function to determine if this codec can read the file or not.
-        /// </summary>
-        /// <param name="stream"></param>
-        /// <returns>
-        /// TRUE if the codec can read the file, FALSE if not.
-        /// </returns>
-        /// <exception cref="System.IO.IOException">Thrown when the <paramref name="stream"/> is write-only or if the stream cannot perform seek operations.</exception>
-        public override bool CanBeRead(System.IO.Stream stream)
+		/// <summary>
+		/// Function to read file meta data.
+		/// </summary>
+		/// <param name="stream">Stream used to read the metadata.</param>
+		/// <returns>
+		/// The image meta data as a <see cref="GorgonLibrary.Graphics.IImageSettings">IImageSettings</see> value.
+		/// </returns>
+		/// <exception cref="System.IO.IOException">Thrown when the <paramref name="stream"/> is write-only or if the stream cannot perform seek operations.
+		/// <para>-or-</para>
+		/// <para>Thrown if the file is corrupt or can't be read by the codec.</para>
+		/// </exception>
+		/// <exception cref="System.IO.EndOfStreamException">Thrown when an attempt to read beyond the end of the stream is made.</exception>
+		public override IImageSettings GetMetaData(System.IO.Stream stream)
+		{
+			DDSConversionFlags flags = DDSConversionFlags.None;
+
+			using (GorgonBinaryReader reader = new GorgonBinaryReader(stream, true))
+			{
+				return this.ReadHeader(reader, out flags);
+			}
+		}
+
+		/// <summary>
+		/// Function to determine if this codec can read the file or not.
+		/// </summary>
+		/// <param name="stream">Stream used to read the file information.</param>
+		/// <returns>
+		/// TRUE if the codec can read the file, FALSE if not.
+		/// </returns>
+		/// <exception cref="System.IO.IOException">Thrown when the <paramref name="stream"/> is write-only or if the stream cannot perform seek operations.</exception>
+		/// <exception cref="System.IO.EndOfStreamException">Thrown when an attempt to read beyond the end of the stream is made.</exception>
+		public override bool CanBeRead(System.IO.Stream stream)
         {
             uint magicNumber = 0;
             long position = stream.Position;

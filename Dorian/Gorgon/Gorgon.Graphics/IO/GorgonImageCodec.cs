@@ -109,11 +109,8 @@ namespace GorgonLibrary.IO
 	/// <para>The codec accepts and returns a <see cref="GorgonLibrary.Graphics.GorgonImageData">GorgonImageData</see> type, which is filled from or read into the encoded file.</para>
 	/// </remarks>
 	public abstract class GorgonImageCodec
+		: INamedObject
 	{
-		#region Variables.
-
-		#endregion
-
 		#region Properties.
 		/// <summary>
 		/// Property to return the common file name extension(s) for a codec.
@@ -146,13 +143,12 @@ namespace GorgonLibrary.IO
 		/// Function to load an image from a stream.
 		/// </summary>
 		/// <param name="stream">Stream containing the data to load.</param>
-		/// <param name="sizeInBytes">The size of the image data, in bytes.</param>
 		/// <returns>The image data that was in the stream.</returns>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="stream"/> parameter is NULL (Nothing in VB.Net).</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="sizeInBytes"/> parameter is less than 1 byte.</exception>
 		/// <exception cref="System.IO.IOException">Thrown when the stream parameter is write-only.</exception>
 		/// <exception cref="System.IO.EndOfStreamException">Thrown when an attempt is made to read beyond the end of the stream.</exception>
-		protected internal abstract GorgonImageData LoadFromStream(Stream stream, int sizeInBytes);
+		protected internal abstract GorgonImageData LoadFromStream(Stream stream);
 
 		/// <summary>
 		/// Function to persist image data to a stream.
@@ -165,6 +161,31 @@ namespace GorgonLibrary.IO
 		/// </exception>
 		/// <exception cref="System.IO.IOException">Thrown when the stream parameter is read-only.</exception>
 		protected internal abstract void SaveToStream(GorgonImageData imageData, Stream stream);
+
+        /// <summary>
+        /// Function to determine if this codec can read the file or not.
+        /// </summary>
+        /// <param name="stream">Stream used to read the file information.</param>
+        /// <returns>
+        /// TRUE if the codec can read the file, FALSE if not.
+        /// </returns>
+        /// <exception cref="System.IO.IOException">Thrown when the <paramref name="stream"/> is write-only or if the stream cannot perform seek operations.</exception>
+		/// <exception cref="System.IO.EndOfStreamException">Thrown when an attempt to read beyond the end of the stream is made.</exception>
+		public abstract bool CanBeRead(System.IO.Stream stream);
+
+		/// <summary>
+        /// Function to read file meta data.
+        /// </summary>
+        /// <param name="stream">Stream used to read the metadata.</param>
+        /// <returns>
+        /// The image meta data as a <see cref="GorgonLibrary.Graphics.IImageSettings">IImageSettings</see> value.
+        /// </returns>
+        /// <exception cref="System.IO.IOException">Thrown when the <paramref name="stream"/> is write-only or if the stream cannot perform seek operations.
+		/// <para>-or-</para>
+		/// <para>Thrown if the file is corrupt or can't be read by the codec.</para>
+		/// </exception>
+		/// <exception cref="System.IO.EndOfStreamException">Thrown when an attempt to read beyond the end of the stream is made.</exception>
+		public abstract IImageSettings GetMetaData(System.IO.Stream stream);
 		#endregion
 
 		#region Constructor/Destructor.
@@ -174,6 +195,19 @@ namespace GorgonLibrary.IO
 		protected GorgonImageCodec()
 		{
 			CodecCommonExtensions = new string[] { };
+		}
+		#endregion
+
+		#region INamedObject Members
+		/// <summary>
+		/// Property to return the name of this object.
+		/// </summary>
+		string INamedObject.Name
+		{
+			get 
+			{
+				return Codec;
+			}
 		}
 		#endregion
 	}
