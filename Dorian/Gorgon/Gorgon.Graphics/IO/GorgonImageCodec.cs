@@ -278,10 +278,95 @@ namespace GorgonLibrary.IO
 		/// <param name="destPitch">The pitch of the destination data.</param>
 		/// <param name="format">Format of the destination buffer.</param>
 		/// <param name="bitFlags">Image bit conversion control flags.</param>
-		/// <remarks>Use this method to copy a single scanline and swizzle the bits of an image and (optionally) set an opaque constant alpha value.</remarks>
+        /// <exception cref="System.ArgumentException">Thrown when the <paramref name="format"/> parameter is Unknown.</exception>
+        /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="src"/> or the <paramref name="dest"/> parameter is NULL.</exception>
+        /// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="srcPitch"/> or the <paramref name="destPitch"/> parameter is less than 0.</exception>
+        /// <remarks>Use this method to copy a single scanline and swizzle the bits of an image and (optionally) set an opaque constant alpha value.</remarks>
 		protected unsafe void SwizzleScanline(void* src, int srcPitch, void* dest, int destPitch, BufferFormat format, ImageBitFlags bitFlags)
 		{
-		}
+            int size = srcPitch.Min(destPitch);
+            uint r = 0, g = 0, b = 0, a = 0, pixel = 0;
+
+            if ((src == null) || (dest == null))
+            {
+                throw new ArgumentNullException("The source/destination pointer must not be NULL.");
+            }
+
+            if ((srcPitch <= 0) || (destPitch <= 0))
+            {
+                throw new ArgumentOutOfRangeException("The source/destination pitch must be greater than 0");
+            }
+
+            if (format == BufferFormat.Unknown)
+            {
+                throw new ArgumentException("The format is unknown", "format");
+            }
+
+            var srcPtr = (uint*)src;
+            var destPtr = (uint*)dest;
+
+            switch (format)
+            {
+                case BufferFormat.R10G10B10A2:
+                case BufferFormat.R10G10B10A2_UInt:
+                case BufferFormat.R10G10B10A2_UIntNormal:
+                case BufferFormat.R10G10B10_XR_BIAS_A2_UIntNormal:
+                    for (int i = 0; i < size; i += 4)
+                    {
+                        if (src != dest)
+                        {
+                            pixel = *(srcPtr++);
+                        }
+                        else
+                        {
+                            pixel = *(destPtr);
+                        }
+
+                        r = (uint)((pixel & 0x3FF00000) >> 20);
+                        g = (uint)(pixel & 0x000FFC00);
+                        b = (uint)((pixel & 0x000003FF) << 20);
+                        a = ((bitFlags & ImageBitFlags.OpaqueAlpha) == ImageBitFlags.OpaqueAlpha) ? 0xC0000000 : pixel & 0xC0000000;
+
+                        *destPtr = r | g | b | a;
+                        destPtr++;
+                    }
+                    return;
+                case BufferFormat.R8G8B8A8:
+                case BufferFormat.R8G8B8A8_UIntNormal:
+                case BufferFormat.R8G8B8A8_UIntNormal_sRGB:
+                case BufferFormat.B8G8R8A8_UIntNormal:
+                case BufferFormat.B8G8R8X8_UIntNormal:
+                case BufferFormat.B8G8R8A8:
+                case BufferFormat.B8G8R8A8_UIntNormal_sRGB:
+                case BufferFormat.B8G8R8X8:
+                case BufferFormat.B8G8R8X8_UIntNormal_sRGB:
+                    for (int i = 0; i < size; i += 4)
+                    {
+                        if (src != dest)
+                        {
+                            pixel = *(srcPtr++);
+                        }
+                        else
+                        {
+                            pixel = *(destPtr);
+                        }
+
+                        r = (uint)((pixel & 0xFF0000) >> 16);
+                        g = (uint)(pixel & 0x00FF00);
+                        b = (uint)((pixel & 0x0000FF) << 16);
+                        a = ((bitFlags & ImageBitFlags.OpaqueAlpha) == ImageBitFlags.OpaqueAlpha) ? 0xFF000000 : pixel & 0xFF000000;
+
+                        *destPtr = r | g | b | a;
+                        destPtr++;
+                    }
+                    return;
+            }
+
+            if (src != dest)
+            {
+                DirectAccess.MemoryCopy(dest, src, size);
+            }
+        }
 
 
 		/// <summary>
@@ -498,6 +583,17 @@ namespace GorgonLibrary.IO
 		/// </exception>
 		/// <exception cref="System.IO.EndOfStreamException">Thrown when an attempt to read beyond the end of the stream is made.</exception>
 		public abstract IImageSettings GetMetaData(System.IO.Stream stream);
+
+        /// <summary>
+        /// Returns a <see cref="System.String" /> that represents this instance.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="System.String" /> that represents this instance.
+        /// </returns>
+        public override string ToString()
+        {
+            return "Gorgon " + Codec + " Image Codec";
+        }
 		#endregion
 
 		#region Constructor/Destructor.

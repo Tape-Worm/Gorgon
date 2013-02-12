@@ -95,6 +95,7 @@
     <Compile Include="GorgonColor.cs" />
     <Compile Include="GorgonGraphics.cs" />
     <Compile Include="GorgonRenderStatistics.cs" />
+    <Compile Include="IO\GorgonCodecTGA.cs" />
     <Compile Include="IO\GorgonCodecDDS.cs" />
     <Compile Include="IO\GorgonImageCodec.cs" />
     <Compile Include="IO\GorgonImageCodecs.cs" />

@@ -299,7 +299,7 @@ namespace GorgonLibrary.IO
 		/// <summary>
 		/// Paletted/indexed data.
 		/// </summary>
-		PaletterIndexed = 0x20
+		PaletteIndexed = 0x20
 	}
 
 	/// <summary>
@@ -686,8 +686,8 @@ namespace GorgonLibrary.IO
 			new DDSLegacyConversion(BufferFormat.R32G32_Float, DDSConversionFlags.None, new DDSPixelFormat(DDSPixelFormatFlags.FourCC, 115, 0, 0, 0, 0, 0)),
 			new DDSLegacyConversion(BufferFormat.R32G32B32A32_Float, DDSConversionFlags.None, new DDSPixelFormat(DDSPixelFormatFlags.FourCC, 116, 0, 0, 0, 0, 0)),
 			new DDSLegacyConversion(BufferFormat.R32_Float, DDSConversionFlags.None, new DDSPixelFormat(DDSPixelFormatFlags.RGB, 0, 32, 0xffffffff, 0x00000000, 0x00000000, 0x00000000)),
-			new DDSLegacyConversion(BufferFormat.R8G8B8A8_UIntNormal, DDSConversionFlags.Expand | DDSConversionFlags.Palette | DDSConversionFlags.A8P8, new DDSPixelFormat(DDSPixelFormatFlags.PaletterIndexed, 0, 16, 0, 0, 0, 0)),
-			new DDSLegacyConversion(BufferFormat.R8G8B8A8_UIntNormal, DDSConversionFlags.Expand | DDSConversionFlags.Palette, new DDSPixelFormat(DDSPixelFormatFlags.PaletterIndexed, 0, 8, 0, 0, 0, 0)),
+			new DDSLegacyConversion(BufferFormat.R8G8B8A8_UIntNormal, DDSConversionFlags.Expand | DDSConversionFlags.Palette | DDSConversionFlags.A8P8, new DDSPixelFormat(DDSPixelFormatFlags.PaletteIndexed, 0, 16, 0, 0, 0, 0)),
+			new DDSLegacyConversion(BufferFormat.R8G8B8A8_UIntNormal, DDSConversionFlags.Expand | DDSConversionFlags.Palette, new DDSPixelFormat(DDSPixelFormatFlags.PaletteIndexed, 0, 8, 0, 0, 0, 0)),
 			new DDSLegacyConversion(BufferFormat.R8G8B8A8_UIntNormal, DDSConversionFlags.Expand | DDSConversionFlags.RGB4444, _pfA4R4G4B4),
 			new DDSLegacyConversion(BufferFormat.R8G8B8A8_UIntNormal, DDSConversionFlags.Expand | DDSConversionFlags.NoAlpha | DDSConversionFlags.RGB4444, new DDSPixelFormat(DDSPixelFormatFlags.RGB, 0, 16, 0x0f00, 0x00f0, 0x000f, 0x0000)),
 			new DDSLegacyConversion(BufferFormat.R8G8B8A8_UIntNormal, DDSConversionFlags.Expand | DDSConversionFlags.A4L4, new DDSPixelFormat(DDSPixelFormatFlags.Luminance, 0, 8, 0x0f, 0x00, 0x00, 0xf0))
@@ -904,7 +904,7 @@ namespace GorgonLibrary.IO
                             break;
                         }
                     }
-                    else if ((ddsFormat.PixelFormat.Flags & DDSPixelFormatFlags.PaletterIndexed) == DDSPixelFormatFlags.PaletterIndexed)
+                    else if ((ddsFormat.PixelFormat.Flags & DDSPixelFormatFlags.PaletteIndexed) == DDSPixelFormatFlags.PaletteIndexed)
                     {
                         // If indexed, then check the bit count.
                         if (ddsFormat.PixelFormat.BitCount == format.BitCount)
@@ -1634,7 +1634,7 @@ namespace GorgonLibrary.IO
 								else if ((conversionFlags & DDSConversionFlags.Swizzle) == DDSConversionFlags.Swizzle)
 								{
 									// Perform swizzle.
-									//CopyScanLineSwizzle(srcPointer, pitchInfo.RowPitch, destPointer, destPointer.PitchInformation.RowPitch, image.Settings.Format);
+                                    SwizzleScanline(srcPointer, pitchInfo.RowPitch, destPointer, destBuffer.PitchInformation.RowPitch, image.Settings.Format, expFlags);
 								}
 								else
 								{
@@ -1726,21 +1726,6 @@ namespace GorgonLibrary.IO
 		/// <param name="stream">Stream that will contain the data.</param>
 		protected internal override void SaveToStream(GorgonImageData imageData, System.IO.Stream stream)
 		{
-			if (imageData == null)
-			{
-				throw new ArgumentNullException("imageData");
-			}
-
-			if (stream == null)
-			{
-				throw new ArgumentNullException("stream");
-			}
-
-			if (!stream.CanWrite)
-			{
-				throw new System.IO.IOException("The stream is read-only.");
-			}
-
 			// Use a binary writer.
 			using (GorgonBinaryWriter writer = new GorgonBinaryWriter(stream, true))
 			{
