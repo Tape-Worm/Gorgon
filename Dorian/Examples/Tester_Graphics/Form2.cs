@@ -44,12 +44,13 @@ namespace Tester_Graphics
 					Height = 600,
 					Format = BufferFormat.R8G8B8A8_UIntNormal
 				});
-                                
-				using (var data = GorgonImageData.FromFile(@"C:\mike\unpak\textureUpload.dds"))
+
+				GorgonImageCodecs.DDS.LegacyConversionFlags = DDSFlags.ForceRGB;
+				using (var data = GorgonImageData.FromFile(@"D:\unpak\textureUpload_4444.dds"))
 				{
                     using (var texture = _graphics.Textures.CreateTexture<GorgonTexture2D>("Test", (GorgonTexture2DSettings)data.Settings, data))
                     {
-                        texture.Save(@"C:\mike\unpak\test.dds", ImageFileFormat.DDS);
+                        texture.Save(@"D:\unpak\test.dds", ImageFileFormat.DDS);
                     }
 				}
 
@@ -73,7 +74,7 @@ namespace Tester_Graphics
                 }*/
 
                 
-				/*using (Image image = Image.FromFile(@"c:\mike\unpak\OSUsers_512x512.gif"))
+				/*using (Image image = Image.FromFile(@"d:\images\OSUsers_512x512.gif"))
 				{
 					Image[] images = new Image[160];
 					for (int i = 0; i < images.Length; i++)
@@ -82,11 +83,10 @@ namespace Tester_Graphics
 					}
 					using (var texture = _graphics.Textures.Create2DTextureFromGDIImage("Test", images, new GorgonGDIOptions()
 						{
-							MipCount = 10
-                            
+							MipCount = 10                            
 						}))
 					{
-						texture.Save(@"c:\mike\unpak\textureUpload.dds", ImageFileFormat.DDS);
+						texture.Save(@"d:\unpak\textureUpload.dds", ImageFileFormat.DDS);
 					}
 				}*/
 

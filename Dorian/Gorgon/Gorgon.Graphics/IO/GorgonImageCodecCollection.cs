@@ -43,7 +43,6 @@ namespace GorgonLibrary.IO
 		/// <summary>
 		/// Gets the <see cref="GorgonImageCodec" /> at the specified index.
 		/// </summary>
-		/// <value>
 		/// <exception cref="System.ArgumentOutOfRangeException">Thrown when the index is less than 0 or larger than or equal to the count of the collection.</exception>
 		public GorgonImageCodec this[int index]
 		{

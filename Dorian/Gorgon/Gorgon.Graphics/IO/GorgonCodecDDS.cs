@@ -108,6 +108,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Runtime.InteropServices;
+using GorgonLibrary.Math;
 using GorgonLibrary.Native;
 using GorgonLibrary.Graphics;
 
@@ -195,7 +196,7 @@ namespace GorgonLibrary.IO
 		/// <summary>
 		/// Source is 8 bit format.
 		/// </summary>
-		RGB44 = 0x100,
+		A4L4 = 0x100,
 		/// <summary>
 		/// Source is 8 bit format.
 		/// </summary>
@@ -410,6 +411,7 @@ namespace GorgonLibrary.IO
     ///         <description>FourCC 82 D3DFMT_D32F_LOCKABLE</description>
     ///     </item>
     /// </list>
+	/// </para>
     /// </remarks>
     public unsafe sealed class GorgonCodecDDS
 		: GorgonImageCodec
@@ -688,7 +690,7 @@ namespace GorgonLibrary.IO
 			new DDSLegacyConversion(BufferFormat.R8G8B8A8_UIntNormal, DDSConversionFlags.Expand | DDSConversionFlags.Palette, new DDSPixelFormat(DDSPixelFormatFlags.PaletterIndexed, 0, 8, 0, 0, 0, 0)),
 			new DDSLegacyConversion(BufferFormat.R8G8B8A8_UIntNormal, DDSConversionFlags.Expand | DDSConversionFlags.RGB4444, _pfA4R4G4B4),
 			new DDSLegacyConversion(BufferFormat.R8G8B8A8_UIntNormal, DDSConversionFlags.Expand | DDSConversionFlags.NoAlpha | DDSConversionFlags.RGB4444, new DDSPixelFormat(DDSPixelFormatFlags.RGB, 0, 16, 0x0f00, 0x00f0, 0x000f, 0x0000)),
-			new DDSLegacyConversion(BufferFormat.R8G8B8A8_UIntNormal, DDSConversionFlags.Expand | DDSConversionFlags.RGB44, new DDSPixelFormat(DDSPixelFormatFlags.Luminance, 0, 8, 0x0f, 0x00, 0x00, 0xf0))
+			new DDSLegacyConversion(BufferFormat.R8G8B8A8_UIntNormal, DDSConversionFlags.Expand | DDSConversionFlags.A4L4, new DDSPixelFormat(DDSPixelFormatFlags.Luminance, 0, 8, 0x0f, 0x00, 0x00, 0xf0))
 		};
 
         private BufferFormat[] _formats = null;         // Buffer formats.
@@ -700,7 +702,7 @@ namespace GorgonLibrary.IO
         /// </summary>
         /// <remarks>
         /// Use this to control how Gorgon converts data from a legacy DDS file format.  This only applies to DDS files generated with files saved by Direct3D 9 interfaces.
-        /// <para>The property only applies when decoding image data.  Encoding operations ignore this property.</para>
+        /// <para>The property applies to both encoding and decoding image data.</para>
         /// <para>The default value is None.</para></remarks>
         public DDSFlags LegacyConversionFlags
         {
@@ -764,7 +766,44 @@ namespace GorgonLibrary.IO
 			}
 		}
 
-        /// <summary>
+		/// <summary>
+		/// Function to retrieve the correct format for pixel expansion.
+		/// </summary>
+		/// <param name="flags">Current conversion flags.</param>
+		/// <returns>The correct format for pixel expansion, or None if no applicable format was found.</returns>
+		private DDSConversionFlags ExpansionFormat(DDSConversionFlags flags)
+		{
+			DDSConversionFlags result = DDSConversionFlags.None;
+
+			if ((flags & DDSConversionFlags.Palette) == DDSConversionFlags.Palette)
+			{
+				return ((flags & DDSConversionFlags.A8P8) == DDSConversionFlags.A8P8) ? DDSConversionFlags.A8P8 : DDSConversionFlags.Palette;
+			}
+			else if ((flags & DDSConversionFlags.RGB888) == DDSConversionFlags.RGB888)
+			{
+				return DDSConversionFlags.RGB888;
+			}
+			else if ((flags & DDSConversionFlags.RGB332) == DDSConversionFlags.RGB332)
+			{
+				return DDSConversionFlags.RGB332;
+			}
+			else if ((flags & DDSConversionFlags.RGB8332) == DDSConversionFlags.RGB8332)
+			{
+				return DDSConversionFlags.RGB8332;
+			}
+			else if ((flags & DDSConversionFlags.A4L4) == DDSConversionFlags.A4L4)
+			{
+				return DDSConversionFlags.A4L4;
+			}
+			else if ((flags & DDSConversionFlags.RGB4444) == DDSConversionFlags.RGB4444)
+			{
+				return DDSConversionFlags.RGB4444;
+			}
+
+			return result;
+		}
+
+		/// <summary>
         /// Function to read the optional DX10 header.
         /// </summary>
         /// <param name="reader">Reader interface for the stream.</param>
@@ -912,12 +951,14 @@ namespace GorgonLibrary.IO
             return result;
         }
 
-        /// <summary>
-        /// Function to read in the DDS header from a stream.
-        /// </summary>
-        /// <param name="reader">Reader interface for the stream.</param>
+		/// <summary>
+		/// Function to read in the DDS header from a stream.
+		/// </summary>
+		/// <param name="reader">Reader interface for the stream.</param>
+		/// <param name="conversionFlags">The conversion flags.</param>
+		/// <returns>New image settings.</returns>
         private IImageSettings ReadHeader(GorgonBinaryReader reader, out DDSConversionFlags conversionFlags)
-        {
+        {			
             IImageSettings settings = null;
             DDSHeader header = new DDSHeader();            
             uint magicNumber = 0;
@@ -996,6 +1037,27 @@ namespace GorgonLibrary.IO
                 }
             }
 
+			var formatInfo = GorgonBufferFormatInfo.GetInfo(settings.Format);
+
+			if (formatInfo.IsCompressed)
+			{
+				int modWidth = settings.Width % 4;
+				int modHeight = settings.Height % 4;
+
+				if ((modWidth != 0) && (modHeight != 0))
+				{
+					throw new System.IO.IOException("The data in the stream cannot be decoded as a DDS file.  The compressed file requires the width and height be a multiple of 4.  The current width [" + settings.Width.ToString() + "] and height [" + settings.Height.ToString() + "] are not a multiple of 4.");
+				}
+				else if (modWidth != 0)
+				{
+					throw new System.IO.IOException("The data in the stream cannot be decoded as a DDS file.  The compressed file requires the width be a multiple of 4.  The current width [" + settings.Width.ToString() + "] is not a multiple of 4.");
+				}
+				else if (modHeight != 0)
+				{
+					throw new System.IO.IOException("The data in the stream cannot be decoded as a DDS file.  The compressed file requires the height be a multiple of 4.  The current height [" + settings.Height.ToString() + "] is not a multiple of 4.");
+				}					 
+			}
+
             settings.MipCount = (int)header.MipCount;
 
             // Special flag for handling BGR DXGI 1.1 formats
@@ -1073,6 +1135,183 @@ namespace GorgonLibrary.IO
         }
 
 		/// <summary>
+		/// Function to expand out legacy formats.
+		/// </summary>
+		/// <param name="src">The pointer to the source data.</param>
+		/// <param name="srcPitch">The pitch of the source data.</param>
+		/// <param name="srcFormat">Format to convert from.</param>
+		/// <param name="dest">The pointer to the destination data.</param>
+		/// <param name="destPitch">The pitch of the destination data.</param>
+		/// <param name="destFormat">The destination format.</param>
+		/// <param name="bitFlags">Image bit conversion control flags.</param>
+		/// <param name="palette">Palette to assigned to indexed images.</param>
+		private void ExpandLegacyScanline(void* src, int srcPitch, DDSConversionFlags srcFormat, void* dest, int destPitch, BufferFormat destFormat, ImageBitFlags bitFlags, uint[] palette)
+		{
+			if ((srcFormat == DDSConversionFlags.RGB332) && (destFormat != BufferFormat.B5G6R5_UIntNormal))
+			{
+				throw new System.IO.IOException("The data in the stream cannot be decoded as a DDS file.  The target image buffer type (" + destFormat.ToString() + ") must be B5G6R5_UIntNormal.");
+			}
+
+			if ((srcFormat != DDSConversionFlags.RGB332) && (destFormat != BufferFormat.R8G8B8A8_UIntNormal))
+			{
+				throw new System.IO.IOException("The data in the stream cannot be decoded as a DDS file.  The target image buffer type (" + destFormat.ToString() + ") must be R8G8B8A8_UIntNormal.");
+			}
+
+			if (((srcFormat == DDSConversionFlags.Palette) || (srcFormat == DDSConversionFlags.A8P8)) && ((palette == null) || (palette.Length != 256)))
+			{
+				throw new System.IO.IOException("The data in the stream cannot be decoded as a DDS file.  An indexed image requires a palette with 256 entries.");
+			}
+
+			switch(srcFormat)
+			{
+				case DDSConversionFlags.Palette:
+					{
+						var srcPtr = (byte *)src;
+						var destPtr = (uint *)dest;
+
+						// Copy indexed data.
+						for (int srcCount = 0, destCount = 0; ((srcCount < srcPitch) && (destCount < destPitch)); ++srcCount, destCount += 4)
+						{
+							*(destPtr++) = (uint)palette[*(srcPtr++)];
+						}
+					}
+					break;
+				case DDSConversionFlags.A4L4:
+					{
+						var srcPtr = (byte*)src;
+						var destPtr = (uint*)dest;
+
+						// Copy alpha luminance.
+						for (int srcCount = 0, destCount = 0; ((srcCount < srcPitch) && (destCount < destPitch)); ++srcCount, destCount += 4)
+						{
+							byte pixel = *(srcPtr++);
+
+							uint alpha = ((bitFlags & ImageBitFlags.OpaqueAlpha) == ImageBitFlags.OpaqueAlpha) ? 0xFF000000 : (uint)(((pixel & 0xF0)  << 24) | ((pixel & 0xF0 << 20)));
+							uint lum = (uint)((pixel & 0x0F << 4) | (pixel & 0x0F));
+
+							*(destPtr++) = lum | (lum << 8) | (lum << 16) | alpha;
+						}
+					}
+					break;
+				case DDSConversionFlags.RGB332:
+					{
+						var srcPtr = (byte*)src;
+
+						if (destFormat == BufferFormat.R8G8B8A8_UIntNormal)
+						{
+							var destPtr = (uint*)dest;
+
+							// Copy 8 bit RGB.
+							for (int srcCount = 0, destCount = 0; ((srcCount < srcPitch) && (destCount < destPitch)); ++srcCount, destCount += 4)
+							{
+								uint r = 0, g = 0, b = 0;
+								byte pixel = *(srcPtr++);
+
+								r = (uint)((pixel & 0xE0) | ((pixel & 0xE0) >> 3) | ((pixel & 0xC0) >> 6));
+								g = (uint)(((pixel & 0x1C) << 11) | ((pixel & 0x1C) << 8) | ((pixel & 0x18) << 5));
+								b = (uint)(((pixel & 0x03) << 22) | ((pixel & 0x03) << 20) | ((pixel & 0x03) << 18) | ((pixel & 0x03) << 16));
+
+								*(destPtr++) = r | g | b | 0xFF000000;
+							}
+						}
+						else if (destFormat == BufferFormat.B5G6R5_UIntNormal)
+						{
+							var destPtr = (ushort*)dest;
+
+							// Copy 8 bit RGB.
+							for (int srcCount = 0, destCount = 0; ((srcCount < srcPitch) && (destCount < destPitch)); ++srcCount, destCount += 2)
+							{
+								uint r = 0, g = 0, b = 0;
+								byte pixel = *(srcPtr++);
+
+								r = (uint)(((pixel & 0xE0) << 8) | ((pixel & 0xC0) << 5));
+								g = (uint)(((pixel & 0x1C) << 6) | ((pixel & 0x1C) << 3));
+								b = (uint)(((pixel & 0x03) << 3) | ((pixel & 0x03) << 1) | ((pixel & 0x02) >> 1));
+
+								*(destPtr++) = (ushort)(r | g | b);
+							}
+						}
+					}
+					break;
+				case DDSConversionFlags.A8P8:
+					{
+						var srcPtr = (ushort*)src;
+						var destPtr = (uint*)dest;
+
+						// Copy indexed data with alpha.
+						for (int srcCount = 0, destCount = 0; ((srcCount < srcPitch) && (destCount < destPitch)); srcCount += 2, destCount += 4)
+						{
+							ushort pixel = *(srcPtr++);
+							uint color = palette[pixel & 0xFF];
+							uint alpha = ((bitFlags & ImageBitFlags.OpaqueAlpha) == ImageBitFlags.OpaqueAlpha) ? 0xFF000000 : (uint)((pixel & 0xFF00) << 16);
+
+							*(destPtr++) = pixel | alpha;
+						}
+					}
+					break;
+				case DDSConversionFlags.RGB8332:
+					{
+						var srcPtr = (ushort*)src;
+						var destPtr = (uint*)dest;
+
+						// Copy 8 bit RGB with alpha.
+						for (int srcCount = 0, destCount = 0; ((srcCount < srcPitch) && (destCount < destPitch)); srcCount += 2, destCount += 4)
+						{
+							uint r = 0, g = 0, b = 0;
+							ushort pixel = (ushort)(*(srcPtr++) & 0xFF);
+							uint alpha = ((bitFlags & ImageBitFlags.OpaqueAlpha) == ImageBitFlags.OpaqueAlpha) ? 0xFF000000 : (uint)((pixel & 0xFF00) << 16);
+
+							r = (uint)((pixel & 0xE0) | ((pixel & 0xE0) >> 3) | ((pixel & 0xC0) >> 6));
+							g = (uint)(((pixel & 0x1C) << 11) | ((pixel & 0x1C) << 8) | ((pixel & 0x18) << 5));
+							b = (uint)(((pixel & 0x03) << 22) | ((pixel & 0x03) << 20) | ((pixel & 0x03) << 18) | ((pixel & 0x03) << 16));
+
+							*(destPtr++) = r | g | b | alpha;
+						}
+					}
+					break;
+				case DDSConversionFlags.RGB4444:
+					{
+						var srcPtr = (ushort*)src;
+						var destPtr = (uint*)dest;
+
+						// Copy 12 bit RGB with 4 bit alpha.
+						for (int srcCount = 0, destCount = 0; ((srcCount < srcPitch) && (destCount < destPitch)); srcCount += 2, destCount += 4)
+						{
+							uint r = 0, g = 0, b = 0;
+							ushort pixel = *(srcPtr++);
+							uint alpha = ((bitFlags & ImageBitFlags.OpaqueAlpha) == ImageBitFlags.OpaqueAlpha) ? 0xFF000000 : (uint)(((pixel & 0xF000) << 16) | ((pixel & 0xF000) << 12));
+
+							r = (uint)(((pixel & 0x0F00) >> 4) | ((pixel & 0x0F00) >> 8));
+							g = (uint)(((pixel & 0x00F0) << 4) | ((pixel & 0x00F0) << 8));
+							b = (uint)(((pixel & 0x000F) << 16) | ((pixel & 0x000F) << 20));
+
+							*(destPtr++) = r | g | b | alpha;
+						}
+					}
+					break;
+				case DDSConversionFlags.RGB888:
+					{
+						var srcPtr = (byte*)src;
+						var destPtr = (uint*)dest;
+
+						// Copy 24 bit RGB.
+						for (int srcCount = 0, destCount = 0; ((srcCount < srcPitch) && (destCount < destPitch)); ++srcCount, destCount += 4)
+						{
+							uint r = 0, g = 0, b = 0;							
+
+							// 24 bit DDS files are encoded as BGR, need to swizzle.
+							b = (uint)(*(srcPtr++) << 16);
+							g = (uint)(*(srcPtr++) << 8);
+							r = *(srcPtr++);	
+
+							*(destPtr++) = r | g | b | 0xFF000000;
+						}
+					}
+					break;
+			}			
+		}
+
+		/// <summary>
 		/// Function to write out the DDS header to the stream.
 		/// </summary>
 		/// <param name="settings">Meta data for the image header.</param>
@@ -1081,12 +1320,12 @@ namespace GorgonLibrary.IO
 		{
 			DDSHeader header = new DDSHeader();
 			DDSPixelFormat? format = null;
-			DDSFlags flags = DDSFlags.None;
+			DDSFlags flags = LegacyConversionFlags;
 			var formatInfo = GorgonBufferFormatInfo.GetInfo(settings.Format);
 
 			if ((settings.ArrayCount > 1) && ((settings.ArrayCount != 6) || ((settings.ImageType != ImageType.Image2D) && (settings.ImageType != ImageType.ImageCube))))
 			{
-				flags = DDSFlags.ForceDX10;
+				flags |= DDSFlags.ForceDX10;
 			}
 
 			// If we're not forcing the DX10 header, then do a legacy conversion.
@@ -1273,33 +1512,6 @@ namespace GorgonLibrary.IO
 		}
 
 		/// <summary>
-		/// Function to read a scan line from the image data.
-		/// </summary>
-		/// <param name="reader">Reader interface for the stream.</param>
-		/// <param name="row">Row index.</param>
-		/// <param name="buffer">Current image buffer.</param>
-		/// <param name="rowPitch">Row pitch of the buffer.</param>
-		/// <param name="slicePitch">Slice pitch of the buffer.</param>
-		/// <param name="conversionFlags">Conversion flags.</param>
-		/// <param name="setAlpha">TRUE to set alpha to off, FALSE to preserve.</param>
-		/// <param name="legacyScanLine">TRUE to use legacy scanlines, FALSE to something, something.</param>
-		private void ReadScanLine(GorgonBinaryReader reader, int row, void *buffer, int rowPitch, int slicePitch, DDSConversionFlags conversionFlags, bool setAlpha, bool legacyScanLine)
-		{
-			if ((conversionFlags & DDSConversionFlags.Expand) == DDSConversionFlags.Expand)
-			{
-				// Perform expansion.
-			}
-			else if ((conversionFlags & DDSConversionFlags.Swizzle) == DDSConversionFlags.Swizzle)
-			{
-				// Perform swizzle.
-			}
-			else
-			{
-				// Perform straight copy.
-			}
-		}
-
-		/// <summary>
 		/// Function to perform the copying of image data into the buffer.
 		/// </summary>
 		/// <param name="reader">Reader interface for the stream.</param>
@@ -1307,10 +1519,9 @@ namespace GorgonLibrary.IO
 		/// <param name="pitchFlags">Flags used to determine pitch when expanding pixels.</param>
 		/// <param name="conversionFlags">Flags used for conversion between legacy formats and the current format.</param>
 		/// <param name="palette">Palette used in indexed conversion.</param>
-		private void CopyImageData(GorgonBinaryReader reader, GorgonImageData image, PitchFlags pitchFlags, DDSConversionFlags conversionFlags, GorgonColor[] palette)
+		private void CopyImageData(GorgonBinaryReader reader, GorgonImageData image, PitchFlags pitchFlags, DDSConversionFlags conversionFlags, uint[] palette)
 		{
 			var formatInfo = GorgonBufferFormatInfo.GetInfo(image.Settings.Format);
-			GorgonFormatPitch pitchInfo = default(GorgonFormatPitch);
 			int sizeInBytes = 0;
 
 			// Get copy flag bits per pixel if we have an expansion.
@@ -1328,7 +1539,7 @@ namespace GorgonLibrary.IO
 				{
 					pitchFlags |= PitchFlags.BPP16;
 				}
-				else if (((conversionFlags & DDSConversionFlags.RGB44) == DDSConversionFlags.RGB44)
+				else if (((conversionFlags & DDSConversionFlags.A4L4) == DDSConversionFlags.A4L4)
 							|| ((conversionFlags & DDSConversionFlags.RGB332) == DDSConversionFlags.RGB332)
 							|| ((conversionFlags & DDSConversionFlags.Palette) == DDSConversionFlags.Palette))
 				{
@@ -1336,42 +1547,113 @@ namespace GorgonLibrary.IO
 				}
 			}
 
-			// Get the size of the image in bytes.
-			pitchInfo = formatInfo.GetPitch(image.Settings.Width, image.Settings.Height, pitchFlags);
+			// Get the size of the source image in bytes, and its pitch information.
 			sizeInBytes = GorgonImageData.GetSizeInBytes(image.Settings, pitchFlags);
-			
-			bool setAlpha = ((conversionFlags & DDSConversionFlags.NoAlpha) == DDSConversionFlags.NoAlpha);
-			bool legacyScanLine = ((conversionFlags & DDSConversionFlags.Swizzle) == DDSConversionFlags.Swizzle);
 
-			switch (image.Settings.ImageType)
+			if (sizeInBytes > image.SizeInBytes)
 			{
-				case ImageType.Image1D:
-				case ImageType.Image2D:
-					for (int array = 0; array < image.Settings.ArrayCount; array++)
+				throw new System.IO.IOException("The data in the stream cannot be decoded as a DDS file.  Data size mismatch.");
+			}
+
+			// If no conversion is to take place, then just do a straight dump into memory.
+			if (((conversionFlags == DDSConversionFlags.None)
+						|| (conversionFlags == DDSConversionFlags.DX10))
+					&& (pitchFlags == PitchFlags.None))
+			{
+				// First mip, array and depth slice is at the start of our image memory buffer.
+				reader.Read(image[0].Data.UnsafePointer, sizeInBytes);
+				return;
+			}
+
+			ImageBitFlags expFlags = ImageBitFlags.None;
+
+			if ((conversionFlags & DDSConversionFlags.NoAlpha) == DDSConversionFlags.NoAlpha)
+			{
+				expFlags |= ImageBitFlags.OpaqueAlpha;
+			}
+
+			if ((conversionFlags & DDSConversionFlags.Swizzle) == DDSConversionFlags.Swizzle)
+			{
+				expFlags |= ImageBitFlags.Legacy;
+			}
+
+			// We require conversion, so we'll need to load in the image data into a buffer so we can work with it.
+			using (var buffer = new GorgonDataStream(sizeInBytes))
+			{
+				int depth = image.Settings.Depth;
+				byte *srcPointer = (byte*)buffer.UnsafePointer;
+
+				// Read in the source data to convert.
+				reader.Read(buffer.UnsafePointer, sizeInBytes);				
+
+				for (int array = 0; array < image.Settings.ArrayCount; array++)
+				{
+					for (int mipLevel = 0; mipLevel < image.Settings.MipCount; mipLevel++)
 					{
-						for (int mipLevel = 0; mipLevel < image.Settings.MipCount; mipLevel++)
+						// Get our destination buffer.
+						var destBuffer = image[array, mipLevel];
+						var pitchInfo = formatInfo.GetPitch(destBuffer.Width, destBuffer.Height, pitchFlags);		
+						var destPointer = (byte*)destBuffer.Data.UnsafePointer;
+
+						for (int slice = 0; slice < depth; slice++)
 						{
-							// Get our destination buffer.
-							var buffer = image[array, mipLevel];
-
-							// Get compressed data.
-							if ((formatInfo.IsCompressed) || (conversionFlags == DDSConversionFlags.None))
+							// We're using compressed data, just copy.
+							if (formatInfo.IsCompressed)
 							{
-								reader.Read(buffer.Data.UnsafePointer, buffer.PitchInformation.SlicePitch);
+								DirectAccess.MemoryCopy(destPointer, srcPointer, pitchInfo.SlicePitch.Min(destBuffer.PitchInformation.SlicePitch));
+								destPointer += pitchInfo.SlicePitch;
+								srcPointer += destBuffer.PitchInformation.SlicePitch;
+								continue;
 							}
-                            else
-                            {
-                                byte* bufferPointer = (byte*)buffer.Data.UnsafePointer;
 
-                                // If not compressed, then read each scan line.
-                                for (int h = 0; h < buffer.Height; h++)
-                                {
-                                    bufferPointer += buffer.PitchInformation.SlicePitch;
-                                }
-                            }
+							// Read each scan line if we require some form of conversion. 
+							for (int h = 0; h < destBuffer.Height; h++)
+							{
+								if ((conversionFlags & DDSConversionFlags.Expand) == DDSConversionFlags.Expand)
+								{
+									// Perform expansion.
+									if ((conversionFlags & (DDSConversionFlags.RGB565 | DDSConversionFlags.RGB5551)) != 0)
+									{
+										this.Expand16BPPScanline(srcPointer, pitchInfo.RowPitch,
+														((conversionFlags & DDSConversionFlags.RGB5551) == DDSConversionFlags.RGB5551) ? BufferFormat.B5G5R5A1_UIntNormal : BufferFormat.B5G6R5_UIntNormal,
+														destPointer, destBuffer.PitchInformation.RowPitch, expFlags);
+									}
+									else
+									{
+										// If we're 8 bit or some other type of format, then expand to match.
+										DDSConversionFlags expandLegacyFormat = this.ExpansionFormat(conversionFlags);
+
+										if (expandLegacyFormat == DDSConversionFlags.None)
+										{
+											throw new System.IO.IOException("The data in the stream cannot be decoded as a DDS file.  The legacy format " + expandLegacyFormat.ToString() +  " is not supported.");
+										}
+
+										ExpandLegacyScanline(srcPointer, pitchInfo.RowPitch, expandLegacyFormat, destPointer, destBuffer.PitchInformation.RowPitch, image.Settings.Format, expFlags, palette);
+									}
+								}
+								else if ((conversionFlags & DDSConversionFlags.Swizzle) == DDSConversionFlags.Swizzle)
+								{
+									// Perform swizzle.
+									//CopyScanLineSwizzle(srcPointer, pitchInfo.RowPitch, destPointer, destPointer.PitchInformation.RowPitch, image.Settings.Format);
+								}
+								else
+								{
+									// Copy and set constant alpha (if necessary).
+									CopyScanline(srcPointer, pitchInfo.RowPitch, destPointer, destBuffer.PitchInformation.RowPitch, image.Settings.Format, expFlags);
+								}
+								
+								// Increment our pointer data by one line.
+								srcPointer += pitchInfo.RowPitch;
+								destPointer += destBuffer.PitchInformation.RowPitch;
+							}
+						}
+
+						if (depth > 1)
+						{
+							depth >>= 1;
 						}
 					}
-					break;
+				}
 			}
 		}
 
@@ -1387,8 +1669,7 @@ namespace GorgonLibrary.IO
 			GorgonImageData imageData = null;
 			DDSConversionFlags flags = DDSConversionFlags.None;
 			IImageSettings settings = null;
-			GorgonColor[] palette = null;
-
+			uint[] palette = null;
 
 			using (var reader = new GorgonBinaryReader(stream, true))
 			{
@@ -1401,15 +1682,20 @@ namespace GorgonLibrary.IO
 				// We have a palette, either create a new one or clone the assigned one.
 				if ((flags & DDSConversionFlags.Palette) == DDSConversionFlags.Palette)
 				{
-					palette = new GorgonColor[256];
+					palette = new uint[256];
 					if (Palette != null)
-					{						
+					{
 						int count = Palette.Count > 256 ? 256 : Palette.Count;
 
 						for (int i = 0; i < count; i++)
 						{
-							palette[i] = Palette[i];
+							palette[i] = (uint)Palette[i].ToARGB();
 						}
+					}
+					else
+					{
+						// Read from the stream if we haven't assigned a palette.
+						reader.ReadRange<uint>(palette, 256);
 					}
 				}
 
