@@ -1319,7 +1319,6 @@ namespace GorgonLibrary.Graphics
 		/// Function to return the size, in bytes, of an image with the given settings.
 		/// </summary>
 		/// <param name="settings">Settings to describe the image.</param>
-		/// <param name="pitchFlags">Flags to influence the size of the row pitch.</param>
 		/// <returns>The number of bytes for the image.</returns>
 		/// <exception cref="System.ArgumentException">Thrown when the format value of the <paramref name="settings"/> parameter is not supported.</exception>
 		public static int GetSizeInBytes(IImageSettings settings)
