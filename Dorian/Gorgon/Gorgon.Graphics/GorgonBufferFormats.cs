@@ -30,6 +30,7 @@ using System.Linq;
 using System.Text;
 using System.Drawing;
 using SharpDX.DXGI;
+using GorgonLibrary;
 using GorgonLibrary.Math;
 using GorgonLibrary.Collections;
 
@@ -479,6 +480,7 @@ namespace GorgonLibrary.Graphics
 	/// row pitch would be the number of bytes it takes to move to the next line in the image, and a slice pitch is the 
 	/// number of bytes required to move to the next depth slice in a 3D texture.</remarks>
 	public struct GorgonFormatPitch
+		: IEquatable<GorgonFormatPitch>
 	{
 		/// <summary>
 		/// The number of bytes per line of data.
@@ -496,6 +498,86 @@ namespace GorgonLibrary.Graphics
 		/// The number of blocks in a compressed format.
 		/// </summary>
 		public readonly Size BlockCount;
+
+		/// <summary>
+		/// Function to compare two instances for equality.
+		/// </summary>
+		/// <param name="left">Left instance to compare.</param>
+		/// <param name="right">Right instance to compare.</param>
+		/// <returns>TRUE if equal, FALSE if not.</returns>
+		public static bool Equals(ref GorgonFormatPitch left, ref GorgonFormatPitch right)
+		{
+			return ((left.RowPitch == right.RowPitch) && (left.SlicePitch == right.SlicePitch)
+					&& (left.BlockCount.Width == right.BlockCount.Width) && (left.BlockCount.Height == right.BlockCount.Height));
+		}
+
+		/// <summary>
+		/// Determines whether the specified <see cref="System.Object" /> is equal to this instance.
+		/// </summary>
+		/// <param name="obj">The <see cref="System.Object" /> to compare with this instance.</param>
+		/// <returns>
+		///   <c>true</c> if the specified <see cref="System.Object" /> is equal to this instance; otherwise, <c>false</c>.
+		/// </returns>
+		public override bool Equals(object obj)
+		{
+			if (obj is GorgonFormatPitch)
+			{
+				this.Equals((GorgonFormatPitch)obj);	
+			}
+
+			return base.Equals(obj);
+		}
+
+		/// <summary>
+		/// Returns a hash code for this instance.
+		/// </summary>
+		/// <returns>
+		/// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table. 
+		/// </returns>
+		public override int GetHashCode()
+		{
+			return 281.GenerateHash(RowPitch).GenerateHash(SlicePitch).GenerateHash(BlockCount.Width).GenerateHash(BlockCount.Height);
+		}
+
+		/// <summary>
+		/// Returns a <see cref="System.String" /> that represents this instance.
+		/// </summary>
+		/// <returns>
+		/// A <see cref="System.String" /> that represents this instance.
+		/// </returns>
+		public override string ToString()
+		{
+			if (BlockCount.IsEmpty)
+			{
+				return string.Format("Image pitch information.  Width={0} bytes, Size={1} bytes.", RowPitch, SlicePitch);
+			}
+			else
+			{
+				return string.Format("Image pitch information.  Width={0} bytes, Size={1} bytes.  Format is compressed. Block count width: {2}, Block count height: {3}", RowPitch, SlicePitch, BlockCount.Width, BlockCount.Height);
+			}
+		}
+
+		/// <summary>
+		/// Equality operator.
+		/// </summary>
+		/// <param name="left">The left instance to compare.</param>
+		/// <param name="right">The right instance to compare.</param>
+		/// <returns>TRUE if equal, FALSE if not</returns>
+		public static bool operator ==(GorgonFormatPitch left, GorgonFormatPitch right)
+		{
+			return Equals(ref left, ref right);
+		}
+
+		/// <summary>
+		/// Inequality operator.
+		/// </summary>
+		/// <param name="left">The left instance to compare.</param>
+		/// <param name="right">The right instance to compare.</param>
+		/// <returns>TRUE if not equal, FALSE if they are.</returns>
+		public static bool operator !=(GorgonFormatPitch left, GorgonFormatPitch right)
+		{
+			return !Equals(ref left, ref right);
+		}
 		
 		/// <summary>
 		/// Initializes a new instance of the <see cref="GorgonFormatPitch" /> struct.
@@ -509,6 +591,30 @@ namespace GorgonLibrary.Graphics
 			SlicePitch = slicePitch;
 			BlockCount = blockCount;
 		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="GorgonFormatPitch" /> struct.
+		/// </summary>
+		/// <param name="rowPitch">The row pitch.</param>
+		/// <param name="slicePitch">The slice pitch.</param>
+		public GorgonFormatPitch(int rowPitch, int slicePitch)
+		{
+			RowPitch = rowPitch;
+			SlicePitch = slicePitch;
+			BlockCount = Size.Empty;
+		}
+
+		#region IEquatable<GorgonFormatPitch> Members
+		/// <summary>
+		/// Function to compare two instances for equality.
+		/// </summary>
+		/// <param name="other">The other instance to compare to this one.</param>
+		/// <returns>TRUE if equal, FALSE if not.</returns>
+		public bool Equals(GorgonFormatPitch other)
+		{
+			return Equals(ref this, ref other);
+		}
+		#endregion
 	}	
 
 	/// <summary>
