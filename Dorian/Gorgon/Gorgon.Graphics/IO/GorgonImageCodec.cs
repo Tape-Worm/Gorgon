@@ -549,8 +549,9 @@ namespace GorgonLibrary.IO
 		/// Function to load an image from a stream.
 		/// </summary>
 		/// <param name="stream">Stream containing the data to load.</param>
+        /// <param name="size">Size of the data to read, in bytes.</param>
 		/// <returns>The image data that was in the stream.</returns>
-		protected internal abstract GorgonImageData LoadFromStream(Stream stream);
+		protected internal abstract GorgonImageData LoadFromStream(GorgonDataStream stream, int size);
 
 		/// <summary>
 		/// Function to persist image data to a stream.

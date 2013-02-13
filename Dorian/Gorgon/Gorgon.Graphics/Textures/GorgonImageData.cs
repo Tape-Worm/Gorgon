@@ -54,6 +54,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Runtime.InteropServices;
 using System.Drawing;
 using DX = SharpDX;
 using WIC = SharpDX.WIC;
@@ -199,6 +200,7 @@ namespace GorgonLibrary.Graphics
 		#endregion
 
 		#region Variables.
+        private static byte[] _readBuffer = null;                   // Buffer for read operations.
 		private DX.DataBox[] _dataBoxes = null;						// Data boxes for textures.
 		private bool _disposed = false;                             // Flag to indicate whether the object was disposed.
         private GorgonDataStream _imageData = null;                 // Base image data buffer.
@@ -207,6 +209,28 @@ namespace GorgonLibrary.Graphics
         #endregion
 
         #region Properties.
+        /// <summary>
+        /// Property to return the pointer to the beginning of the internal buffer.
+        /// </summary>
+        public IntPtr BufferPointer
+        {
+            get
+            {
+                return _imageData.BasePointer;
+            }            
+        }
+
+        /// <summary>
+        /// Property to return an unsafe pointer to the beginning of the internal buffer.
+        /// </summary>
+        public void *UnsafePointer
+        {
+            get
+            {
+                return _imageData.UnsafePointer;
+            }
+        }
+
         /// <summary>
         /// Property to return the settings for the image.
         /// </summary>
@@ -1522,7 +1546,7 @@ namespace GorgonLibrary.Graphics
 		/// Function to save the image data to a stream with the specified codec.
 		/// </summary>
 		/// <param name="stream">Stream that will contain the image information.</param>
-		/// <param name="codec">Codec used to encode the stream data.</param>
+		/// <param name="codec">Codec used to encode the stream data.</param>        
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="stream"/> or the <paramref name="codec"/> parameter is NULL (Nothing in VB.Net).</exception>
 		/// <exception cref="System.IO.IOException">Thrown when the stream is read-only.</exception>
 		/// <remarks>This will persist the contents of the image data object into a stream.  The data is encoded into various formats via the codec parameter.  Gorgon contains a 
@@ -1588,10 +1612,10 @@ namespace GorgonLibrary.Graphics
 		/// </exception>
 		public static GorgonImageData FromFile(string filePath)
 		{
-			using (var stream = System.IO.File.Open(filePath, System.IO.FileMode.Open, System.IO.FileAccess.Read, System.IO.FileShare.Read))
-			{
-				return FromStream(stream);
-			}
+            using (var stream = System.IO.File.Open(filePath, System.IO.FileMode.Open, System.IO.FileAccess.Read, System.IO.FileShare.Read))
+            {
+                return FromStream(stream, (int)stream.Length);
+            }
 		}
 
 		/// <summary>
@@ -1600,15 +1624,23 @@ namespace GorgonLibrary.Graphics
 		/// <param name="stream">Stream that contains the image data.</param>
 		/// <returns>The image data from the stream.</returns>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="stream"/> parameter is NULL (Nothing in VB.Net).</exception>
+        /// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="size"/> parameter is less than or equal to 0.</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the data in the stream cannot be read by any of the registered image codecs.</exception>
 		/// <exception cref="System.IO.IOException">Thrown when the stream is write-only.
 		/// <para>-or-</para>
 		/// <para>The image file is corrupted or unable to be read by a codec.</para>
 		/// </exception>
 		/// <exception cref="System.IO.EndOfStreamException">Thrown if an attempt to read beyond the end of the stream is made.</exception>
-		public static GorgonImageData FromStream(System.IO.Stream stream)
+		public static GorgonImageData FromStream(System.IO.Stream stream, int size)
 		{
 			GorgonImageCodec codec = null;
+            GorgonDataStream memoryStream = null;
+            GorgonImageData result = null;
+
+            if (size <= 0)
+            {
+                throw new ArgumentOutOfRangeException("The parameter must be greater than 0.", "size");
+            }
 
 			if (stream == null)
 			{
@@ -1629,14 +1661,40 @@ namespace GorgonLibrary.Graphics
 					break;
 				}
 			}
-
+            
 			// We couldn't find a codec.
 			if (codec == null)
 			{
 				throw new ArgumentException("The data in the stream cannot be ready any registered image codec.", "stream");
 			}
 
-			return codec.LoadFromStream(stream);
+            // Just apply directly if we're already using a data stream.
+            if (stream is GorgonDataStream)
+            {
+                return codec.LoadFromStream((GorgonDataStream)stream, size);
+            }
+
+            // Load the data into unmanaged memory.
+            try
+            {
+                // Use a memory stream for ease of access.
+                memoryStream = new GorgonDataStream(size);
+                memoryStream.ReadFromStream(stream, size);
+                memoryStream.Position = 0;
+
+                result = codec.LoadFromStream(memoryStream, size);
+            }
+            finally
+            {
+                // If we haven't co-opted the pointer, then free the memory we've allocated.
+                if (memoryStream != null)
+                {
+                    memoryStream.Dispose();
+                }
+                memoryStream = null;
+            }
+
+            return result;
 		}
         #endregion
 

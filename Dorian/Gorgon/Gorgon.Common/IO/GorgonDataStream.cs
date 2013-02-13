@@ -65,6 +65,7 @@ namespace GorgonLibrary.IO
 		: Stream
 	{
 		#region Variables.
+        private static byte[] _buffer = null;                   // Buffer for read operations.
 		private bool _disposed = false;							// Flag to indicate that the object was disposed.
 		private IntPtr _data = IntPtr.Zero;						// Pointer to the data held by the stream.
 		private int _pointerPosition = 0;						// Position in the buffer.
@@ -187,6 +188,17 @@ namespace GorgonLibrary.IO
 				return _data;
 			}
 		}
+
+        /// <summary>
+        /// Property to return the unsafe pointer to the data offset by the position within the stream.
+        /// </summary>
+        public void* PositionPointerUnsafe
+        {
+            get
+            {
+                return _pointerOffset.ToPointer();
+            }
+        }
 
 		/// <summary>
 		/// Property to return the pointer address of the current position in the stream.
@@ -1201,7 +1213,7 @@ namespace GorgonLibrary.IO
 		/// <typeparam name="T">Type of data to write.</typeparam>
 		/// <param name="item">Value to write.</param>
 		/// <remarks>At this time, this function will only support structures with primitive types in them, strings and other objects will not work.</remarks>
-		/// <exception cref="System.AccessViolationException">Thrown when trying to write beyond the end of the stream.</exception>
+        /// <exception cref="System.IO.EndOfStreamException">Thrown when trying to write beyond the end of the stream.</exception>
 		/// <exception cref="T:System.NotSupportedException">The stream does not support writing. </exception>
 		/// <exception cref="T:System.ObjectDisposedException">Methods were called after the stream was closed. </exception>
 		public void Write<T>(T item)
@@ -1217,7 +1229,7 @@ namespace GorgonLibrary.IO
 				throw new ObjectDisposedException("GorgonDataStream");
 
 			if (typeSize + Position > _length)
-				throw new AccessViolationException("Cannot write beyond the end of the stream.");
+                throw new EndOfStreamException("Cannot write beyond the end of the stream.");
 #endif
             DirectAccess.WriteValue<T>(_dataPointer, ref item);
 			Position += typeSize;
@@ -1281,6 +1293,58 @@ namespace GorgonLibrary.IO
 			return actualCount;
 		}
 
+        /// <summary>
+        /// Function to copy data from a stream into this stream.
+        /// </summary>
+        /// <param name="stream">The stream to copy from.</param>
+        /// <param name="size">The size of the data to copy.</param>
+        /// <exception cref="System.IO.IOException">Thrown when the <paramref name="stream"/> parameter is write-only.</exception>
+        /// <exception cref="System.IO.EndOfStreamException">Thrown when an attempt is made to read beyond the end of the stream parameter .
+        /// <para>-or-</para>
+        /// <para>Thrown when this stream cannot accomodate the <paramref name="size"/> parameter.</para>
+        /// </exception>
+        public void ReadFromStream(Stream stream, int size)
+        {
+            GorgonDebug.AssertNull<Stream>(stream, "stream");
+#if DEBUG
+            if (!stream.CanRead)
+            {
+                throw new System.IO.IOException("The stream is write-only.");
+            }
+
+            if (_length - _pointerPosition < size)
+            {
+                throw new EndOfStreamException("Cannot write beyond the end of the stream.");
+            }
+
+            if (size > stream.Length - stream.Position)
+            {
+                throw new EndOfStreamException("Cannot read beyond the end of the stream.");
+            }
+#endif   
+            // Create a buffer that's under the Large Object Heap size requirement.
+            if (_buffer == null)
+            {
+                _buffer = new byte[81920];
+            }
+
+            int blockSize = _buffer.Length;
+
+            // Copy by block.
+            while (size > 0)
+            {
+                if (blockSize > size)
+                {
+                    blockSize = size;
+                }
+
+                stream.Read(_buffer, 0, blockSize);
+                Write(_buffer, 0, blockSize);
+
+                size -= blockSize;
+            }
+        }
+
 		/// <summary>
 		/// Function to read an array of value types from the stream.
 		/// </summary>
@@ -1305,7 +1369,7 @@ namespace GorgonLibrary.IO
 		/// <returns>The value type within the stream.</returns>
 		/// <remarks>At this time, this function will only support structures with primitive types in them, strings and other objects will not work.</remarks>
 		/// <exception cref="T:System.ObjectDisposedException">Methods were called after the stream was closed. </exception>
-		/// <exception cref="System.AccessViolationException">Thrown when trying to read beyond the end of the stream.</exception>
+        /// <exception cref="System.IO.EndOfStreamException">Thrown when trying to read beyond the end of the stream.</exception>
 		/// <exception cref="T:System.NotSupportedException">The stream does not support reading. </exception>
 		public T Read<T>()
 			where T : struct
@@ -1320,7 +1384,7 @@ namespace GorgonLibrary.IO
 				throw new ObjectDisposedException("GorgonDataStream");
 
 			if (typeSize + Position > _length)
-				throw new AccessViolationException("Cannot read beyond the end of the stream.");
+				throw new EndOfStreamException("Cannot read beyond the end of the stream.");
 #endif
 
 			T result = default(T);
@@ -1335,7 +1399,7 @@ namespace GorgonLibrary.IO
 		/// </summary>
 		/// <param name="pointer">Pointer to the data to write into.</param>
 		/// <param name="size">Size, in bytes, to read from the stream.</param>
-		/// <exception cref="System.AccessViolationException">Thrown when trying to read beyond the end of the stream.</exception>
+        /// <exception cref="System.IO.EndOfStreamException">Thrown when trying to read beyond the end of the stream.</exception>
 		/// <exception cref="T:System.NotSupportedException">The stream does not support reading. </exception>
 		/// <exception cref="T:System.ObjectDisposedException">Methods were called after the stream was closed. </exception>
 		public void CopyToPointer(IntPtr pointer, int size)
@@ -1348,7 +1412,7 @@ namespace GorgonLibrary.IO
 				throw new ObjectDisposedException("GorgonDataStream");
 
 			if (size + Position > _length)
-				throw new AccessViolationException("Cannot read beyond the end of the stream.");
+                throw new EndOfStreamException("Cannot read beyond the end of the stream.");
 #endif
             _pointerOffset.CopyTo(pointer, size);
 			Position += size;
@@ -1359,7 +1423,7 @@ namespace GorgonLibrary.IO
         /// </summary>
         /// <param name="pointer">Pointer to the data to write into.</param>
         /// <param name="size">Size, in bytes, to read from the stream.</param>
-        /// <exception cref="System.AccessViolationException">Thrown when trying to read beyond the end of the stream.</exception>
+        /// <exception cref="System.IO.EndOfStreamException">Thrown when trying to read beyond the end of the stream.</exception>
         /// <exception cref="T:System.NotSupportedException">The stream does not support reading. </exception>
         /// <exception cref="T:System.ObjectDisposedException">Methods were called after the stream was closed. </exception>
         public void CopyToPointer(void* pointer, int size)
@@ -1372,7 +1436,7 @@ namespace GorgonLibrary.IO
                 throw new ObjectDisposedException("GorgonDataStream");
 
             if (size + Position > _length)
-                throw new AccessViolationException("Cannot read beyond the end of the stream.");
+                throw new EndOfStreamException("Cannot read beyond the end of the stream.");
 #endif
             DirectAccess.MemoryCopy(_dataPointer, pointer, size);
             Position += size;
@@ -1452,7 +1516,7 @@ namespace GorgonLibrary.IO
 		/// </summary>
 		/// <param name="pointer">Pointer to the data to read.</param>
 		/// <param name="size">Size, in bytes, to write to the stream.</param>
-		/// <exception cref="System.AccessViolationException">Thrown when trying to write beyond the end of the stream.</exception>
+        /// <exception cref="System.IO.EndOfStreamException">Thrown when trying to write beyond the end of the stream.</exception>
 		/// <exception cref="T:System.NotSupportedException">The stream does not support writing. </exception>
 		/// <exception cref="T:System.ObjectDisposedException">Methods were called after the stream was closed. </exception>
 		public void CopyFromPointer(IntPtr pointer, int size)
@@ -1465,7 +1529,7 @@ namespace GorgonLibrary.IO
 				throw new ObjectDisposedException("GorgonDataStream");
 
 			if (size + Position > _length)
-				throw new AccessViolationException("Cannot write beyond the end of the stream.");
+                throw new EndOfStreamException("Cannot write beyond the end of the stream.");
 #endif
 
 			_pointerOffset.CopyFrom(pointer, size);
@@ -1477,7 +1541,7 @@ namespace GorgonLibrary.IO
         /// </summary>
         /// <param name="pointer">Pointer to the data to read.</param>
         /// <param name="size">Size, in bytes, to write to the stream.</param>
-        /// <exception cref="System.AccessViolationException">Thrown when trying to write beyond the end of the stream.</exception>
+        /// <exception cref="System.IO.EndOfStreamException">Thrown when trying to write beyond the end of the stream.</exception>
         /// <exception cref="T:System.NotSupportedException">The stream does not support writing. </exception>
         /// <exception cref="T:System.ObjectDisposedException">Methods were called after the stream was closed. </exception>
         public void CopyFromPointer(void *pointer, int size)
@@ -1490,7 +1554,7 @@ namespace GorgonLibrary.IO
                 throw new ObjectDisposedException("GorgonDataStream");
 
             if (size + Position > _length)
-                throw new AccessViolationException("Cannot write beyond the end of the stream.");
+                throw new EndOfStreamException("Cannot write beyond the end of the stream.");
 #endif
             DirectAccess.MemoryCopy(_dataPointer, pointer, size);
             Position += size;
@@ -1508,6 +1572,7 @@ namespace GorgonLibrary.IO
 		/// </remarks>
 		/// <exception cref="T:System.NotSupportedException">The stream does not support writing. </exception>
 		/// <exception cref="T:System.ObjectDisposedException">Methods were called after the stream was closed. </exception>
+        /// <exception cref="System.IO.EndOfStreamException">Thrown when an attempt to read beyond the length of the stream is made.</exception>
 		public void WriteMarshal<T>(T data, bool deleteContents)
 		{
 			int dataSize = Marshal.SizeOf(typeof(T));
@@ -1520,7 +1585,7 @@ namespace GorgonLibrary.IO
 				throw new ObjectDisposedException("GorgonDataStream");
 
 			if (dataSize + Position > _length)
-				throw new AccessViolationException("Cannot write beyond the end of the stream.");
+                throw new EndOfStreamException("Cannot write beyond the end of the stream.");
 #endif
 
 			_pointerOffset.MarshalFrom(data, deleteContents);
@@ -1538,7 +1603,7 @@ namespace GorgonLibrary.IO
 		/// </remarks>
 		/// <exception cref="T:System.ObjectDisposedException">Methods were called after the stream was closed. </exception>
 		/// <exception cref="T:System.NotSupportedException">The stream does not support reading. </exception>
-		/// <exception cref="T:System.ObjectDisposedException">Methods were called after the stream was closed. </exception>
+        /// <exception cref="System.IO.EndOfStreamException">Thrown when an attempt to read beyond the end of the stream was made.</exception>
 		public T ReadMarshal<T>()
 		{
 			int dataSize = Marshal.SizeOf(typeof(T));
@@ -1551,7 +1616,7 @@ namespace GorgonLibrary.IO
 				throw new ObjectDisposedException("GorgonDataStream");
 
 			if (dataSize + Position > _length)
-				throw new AccessViolationException("Cannot write beyond the end of the stream.");
+                throw new EndOfStreamException("Cannot write beyond the end of the stream.");
 #endif
 
 			T value = _pointerOffset.MarshalTo<T>();			
