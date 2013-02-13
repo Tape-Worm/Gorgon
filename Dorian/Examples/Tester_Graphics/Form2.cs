@@ -45,12 +45,12 @@ namespace Tester_Graphics
 					Format = BufferFormat.R8G8B8A8_UIntNormal
 				});
 
-				GorgonImageCodecs.DDS.LegacyConversionFlags = DDSFlags.ForceRGB;
-				using (var data = GorgonImageData.FromFile(@"D:\unpak\textureUpload_4444.dds"))
+				//GorgonImageCodecs.DDS.LegacyConversionFlags = DDSFlags.NoR10B10G10A2Fix;
+				using (var data = GorgonImageData.FromFile(@"c:\mike\unpak\textureUpload.dds"))
 				{
                     using (var texture = _graphics.Textures.CreateTexture<GorgonTexture2D>("Test", (GorgonTexture2DSettings)data.Settings, data))
                     {
-                        texture.Save(@"D:\unpak\test.dds", ImageFileFormat.DDS);
+                        texture.Save(@"c:\mike\unpak\test.dds", ImageFileFormat.DDS);
                     }
 				}
 
