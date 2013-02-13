@@ -486,10 +486,10 @@ namespace GorgonLibrary.IO
 		/// <summary>
 		/// Function to read in the DDS header from a stream.
 		/// </summary>
-		/// <param name="reader">Reader interface for the stream.</param>
+		/// <param name="stream">Stream containing the data.</param>
         /// <param name="conversionFlags">Flags for conversion.</param>
 		/// <returns>New image settings.</returns>
-        private IImageSettings ReadHeader(GorgonBinaryReader reader, out TGAConversionFlags conversionFlags)
+        private IImageSettings ReadHeader(GorgonDataStream stream, out TGAConversionFlags conversionFlags)
         {            
             IImageSettings settings = new GorgonTexture2DSettings();
             TGAHeader header = default(TGAHeader);
@@ -497,7 +497,7 @@ namespace GorgonLibrary.IO
             conversionFlags = TGAConversionFlags.None;
 
             // Get the header for the file.
-            header = reader.ReadValue<TGAHeader>();
+            header = stream.Read<TGAHeader>();
 
             if ((header.ColorMapType != 0) || (header.ColorMapLength != 0))
             {
@@ -580,7 +580,7 @@ namespace GorgonLibrary.IO
             {
                 for (int i = 0; i < header.IDLength; i++)
                 {
-                    reader.ReadByte();
+                    stream.ReadByte();
                 }
             }
 
@@ -1094,10 +1094,10 @@ namespace GorgonLibrary.IO
 		/// <summary>
 		/// Function to perform the copying of image data into the buffer.
 		/// </summary>
-		/// <param name="reader">Reader interface for the stream.</param>
+		/// <param name="stream">Stream containing the image data.</param>
 		/// <param name="image">Image data.</param>
 		/// <param name="conversionFlags">Flags used to convert the image.</param>
-		private unsafe void CopyImageData(GorgonBinaryReader reader, GorgonImageData image, TGAConversionFlags conversionFlags)
+		private unsafe void CopyImageData(GorgonDataStream stream, GorgonImageData image, TGAConversionFlags conversionFlags)
 		{
 			GorgonFormatPitch srcPitch = default(GorgonFormatPitch);	// Source pitch.
 			var buffer = image[0, 0, 0];								// Get the first buffer only.
@@ -1112,101 +1112,104 @@ namespace GorgonLibrary.IO
 				srcPitch = formatInfo.GetPitch(image.Settings.Width, image.Settings.Height, PitchFlags.None);
 			}
 
-			// The data is identical in the file, so copy it directly.
+			// The data is identical in the file, so just co-opt the the pointer.
 			if ((srcPitch == buffer.PitchInformation) && (conversionFlags == TGAConversionFlags.InvertY))
 			{
-				reader.Read(buffer.Data.UnsafePointer, srcPitch.SlicePitch);
-				return;
+                // First mip, array and depth slice is at the start of our image memory buffer.
+                DirectAccess.MemoryCopy(image[0].Data.UnsafePointer, stream.PositionPointerUnsafe, image.SizeInBytes);
+                return;
 			}
 
 			// Otherwise, allocate a buffer for conversion.
-			using (var convertBuffer = new GorgonDataStream(srcPitch.SlicePitch))
+			bool setOpaque = false;
+			byte* srcPtr = (byte*)stream.PositionPointerUnsafe;
+			byte* destPtr = (byte*)buffer.Data.UnsafePointer;
+
+			// Adjust destination for inverted axes.
+			if ((conversionFlags & TGAConversionFlags.InvertX) == TGAConversionFlags.InvertX)
 			{
-				reader.Read(convertBuffer.UnsafePointer, srcPitch.SlicePitch);
+				destPtr += buffer.PitchInformation.RowPitch - formatInfo.SizeInBytes;
+			}
 
-				bool setOpaque = false;
-				byte* srcPtr = (byte*)convertBuffer.UnsafePointer;
-				byte* destPtr = (byte*)buffer.Data.UnsafePointer;
+			if ((conversionFlags & TGAConversionFlags.InvertY) != TGAConversionFlags.InvertY)
+			{
+				destPtr += (image.Settings.Height - 1) * buffer.PitchInformation.RowPitch;
+			}
 
-				// Adjust destination for inverted axes.
-				if ((conversionFlags & TGAConversionFlags.InvertX) == TGAConversionFlags.InvertX)
+			for (int y = 0; y < image.Settings.Height; y++)
+			{
+				if ((conversionFlags & TGAConversionFlags.RLE) == TGAConversionFlags.RLE)
 				{
-					destPtr += buffer.PitchInformation.RowPitch - formatInfo.SizeInBytes;
+					setOpaque = ReadCompressed(&srcPtr, (int)(stream.Length - stream.Position), image.Settings.Width, destPtr, buffer.PitchInformation.RowPitch, image.Settings.Format, conversionFlags);
+				}
+				else
+				{
+					setOpaque = ReadUncompressed(srcPtr, srcPitch.RowPitch, destPtr, buffer.PitchInformation.RowPitch, image.Settings.Format, conversionFlags);
+					srcPtr += srcPitch.RowPitch;
 				}
 
+				if ((setOpaque) && (SetOpaqueIfZeroAlpha))
+				{
+							// Set the alpha to opaque if we don't have any alpha values (i.e. alpha = 0 for all pixels).
+					CopyScanline(destPtr, buffer.PitchInformation.RowPitch, destPtr, buffer.PitchInformation.RowPitch, image.Settings.Format, ImageBitFlags.OpaqueAlpha);
+						
+				}
+					
 				if ((conversionFlags & TGAConversionFlags.InvertY) != TGAConversionFlags.InvertY)
 				{
-					destPtr += (image.Settings.Height - 1) * buffer.PitchInformation.RowPitch;
+					destPtr -= buffer.PitchInformation.RowPitch;
 				}
-
-
-				for (int y = 0; y < image.Settings.Height; y++)
+				else
 				{
-					if ((conversionFlags & TGAConversionFlags.RLE) == TGAConversionFlags.RLE)
-					{
-						setOpaque = ReadCompressed(&srcPtr, (int)convertBuffer.Length, image.Settings.Width, destPtr, buffer.PitchInformation.RowPitch, image.Settings.Format, conversionFlags);
-					}
-					else
-					{
-						setOpaque = ReadUncompressed(srcPtr, srcPitch.RowPitch, destPtr, buffer.PitchInformation.RowPitch, image.Settings.Format, conversionFlags);
-						srcPtr += srcPitch.RowPitch;
-					}
-
-					if ((setOpaque) && (SetOpaqueIfZeroAlpha))
-					{
-								// Set the alpha to opaque if we don't have any alpha values (i.e. alpha = 0 for all pixels).
-						CopyScanline(destPtr, buffer.PitchInformation.RowPitch, destPtr, buffer.PitchInformation.RowPitch, image.Settings.Format, ImageBitFlags.OpaqueAlpha);
-						
-					}
-					
-					if ((conversionFlags & TGAConversionFlags.InvertY) != TGAConversionFlags.InvertY)
-					{
-						destPtr -= buffer.PitchInformation.RowPitch;
-					}
-					else
-					{
-						destPtr += buffer.PitchInformation.RowPitch;
-					}
+					destPtr += buffer.PitchInformation.RowPitch;
 				}
 			}
 		}
 
-		/// <summary>
-		/// Function to load an image from a stream.
-		/// </summary>
-		/// <param name="stream">Stream containing the data to load.</param>
-		/// <returns>
-		/// The image data that was in the stream.
-		/// </returns>
-		protected internal override GorgonImageData LoadFromStream(System.IO.Stream stream)
+        /// <summary>
+        /// Function to load an image from a stream.
+        /// </summary>
+        /// <param name="stream">Stream containing the data to load.</param>
+        /// <param name="size">Size of the data to read, in bytes.</param>
+        /// <returns>
+        /// The image data that was in the stream.
+        /// </returns>
+		protected internal override GorgonImageData LoadFromStream(GorgonDataStream stream, int size)
 		{
 			GorgonImageData imageData = null;
 			IImageSettings settings = null;
 			TGAConversionFlags flags = TGAConversionFlags.None;
 
-			using (var reader = new GorgonBinaryReader(stream, true))
+            if (DirectAccess.SizeOf<TGAHeader>() > size)
+            {
+                throw new System.IO.EndOfStreamException("Cannot read beyond the end of the stream.");
+            }
+
+			// Read the header information.
+			settings = ReadHeader(stream, out flags);
+
+            try
+            {
+                // Create our image data structure.
+			    imageData = new GorgonImageData(settings);
+
+                if (imageData.SizeInBytes > stream.Length - stream.Position)
+                {
+                    throw new System.IO.EndOfStreamException("Cannot read beyond the end of the stream.");
+                }
+
+				// Copy the data from the stream to the buffer.
+				CopyImageData(stream, imageData, flags);
+			}
+			catch 
 			{
-				// Read the header information.
-				settings = ReadHeader(reader, out flags);
-
-				// Create our image data structure.
-				imageData = new GorgonImageData(settings);
-
-				try
+				// Clean up any memory allocated if we can't copy the image.
+				if (imageData != null)
 				{
-					// Copy the data from the stream to the buffer.
-					CopyImageData(reader, imageData, flags);
+					imageData.Dispose();
 				}
-				catch 
-				{
-					// Clean up any memory allocated if we can't copy the image.
-					if (imageData != null)
-					{
-						imageData.Dispose();
-					}
 
-					throw;
-				}
+				throw;
 			}
 
 			return imageData;
@@ -1295,12 +1298,49 @@ namespace GorgonLibrary.IO
 		/// <exception cref="System.IO.EndOfStreamException">Thrown when an attempt to read beyond the end of the stream is made.</exception>
 		public override IImageSettings GetMetaData(System.IO.Stream stream)
 		{
+            long position = 0;
 			TGAConversionFlags conversion = TGAConversionFlags.None;
+            int headerSize = DirectAccess.SizeOf<TGAHeader>();
 
-			using (GorgonBinaryReader reader = new GorgonBinaryReader(stream, true))
-			{
-				return this.ReadHeader(reader, out conversion);
-			}
+            if (stream == null)
+            {
+                throw new ArgumentNullException("stream");
+            }
+
+            if (!stream.CanRead)
+            {
+                throw new System.IO.IOException("Stream is write-only.");
+            }
+
+            if (!stream.CanSeek)
+            {
+                throw new System.IO.IOException("The stream cannot perform seek operations.");
+            }
+
+            if (stream.Length - stream.Position < sizeof(uint) + DirectAccess.SizeOf<TGAHeader>())
+            {
+                throw new System.IO.EndOfStreamException("Cannot read beyond the end of the stream.");
+            }
+
+            try
+            {
+                position = stream.Position;
+
+                if (stream is GorgonDataStream)
+                {
+                    return this.ReadHeader((GorgonDataStream)stream, out conversion);
+                }
+
+                using (var memoryStream = new GorgonDataStream(headerSize))
+                {
+                    memoryStream.ReadFromStream(stream, headerSize);
+                    return this.ReadHeader(memoryStream, out conversion);
+                }
+            }
+            finally
+            {
+                stream.Position = position;
+            }            
 		}
 
 		/// <summary>
@@ -1315,16 +1355,32 @@ namespace GorgonLibrary.IO
 		public override bool CanBeRead(System.IO.Stream stream)
         {
 			TGAHeader header = default(TGAHeader);
-			long position = stream.Position;
+			long position = 0;
 			GorgonBinaryReader reader = null;
 
-			if (stream.Length < DirectAccess.SizeOf<TGAHeader>())
+            if (stream == null)
+            {
+                throw new ArgumentNullException("stream");
+            }
+
+            if (!stream.CanRead)
+            {
+                throw new System.IO.IOException("Stream is write-only.");
+            }
+
+            if (!stream.CanSeek)
+            {
+                throw new System.IO.IOException("The stream cannot perform seek operations.");
+            }
+            
+            if (stream.Length - stream.Position < DirectAccess.SizeOf<TGAHeader>())
 			{
 				return false;
 			}
-
+            
 			try
 			{
+                position = stream.Position;
 				reader = new GorgonBinaryReader(stream, true); 
 				header = reader.ReadValue<TGAHeader>();
 			}

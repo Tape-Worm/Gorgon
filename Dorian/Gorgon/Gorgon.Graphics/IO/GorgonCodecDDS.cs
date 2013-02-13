@@ -806,16 +806,16 @@ namespace GorgonLibrary.IO
 		/// <summary>
         /// Function to read the optional DX10 header.
         /// </summary>
-        /// <param name="reader">Reader interface for the stream.</param>
+        /// <param name="stream">The stream containing the header.</param>
         /// <param name="header">DDS header.</param>
         /// <param name="flags">Conversion flags.</param>
         /// <returns>A new image settings object.</returns>
-        private IImageSettings ReadDX10Header(GorgonBinaryReader reader, ref DDSHeader header, out DDSConversionFlags flags)
+        private IImageSettings ReadDX10Header(GorgonDataStream stream, ref DDSHeader header, out DDSConversionFlags flags)
         {
             IImageSettings settings = null;
             DX10Header dx10Header = default(DX10Header);
 
-            dx10Header = reader.ReadValue<DX10Header>();
+            dx10Header = stream.Read<DX10Header>();
             flags = DDSConversionFlags.DX10;
 
             // Default the array count if it's not valid.
@@ -954,10 +954,11 @@ namespace GorgonLibrary.IO
 		/// <summary>
 		/// Function to read in the DDS header from a stream.
 		/// </summary>
-		/// <param name="reader">Reader interface for the stream.</param>
+		/// <param name="stream">The stream containing the data to read.</param>
+        /// <param name="size">Size of the image, in bytes.</param>
 		/// <param name="conversionFlags">The conversion flags.</param>
 		/// <returns>New image settings.</returns>
-        private IImageSettings ReadHeader(GorgonBinaryReader reader, out DDSConversionFlags conversionFlags)
+        private IImageSettings ReadHeader(GorgonDataStream stream, int size, out DDSConversionFlags conversionFlags)
         {			
             IImageSettings settings = null;
             DDSHeader header = new DDSHeader();            
@@ -967,16 +968,16 @@ namespace GorgonLibrary.IO
 			conversionFlags = DDSConversionFlags.None;
 
             // Read the magic # from the header.
-            magicNumber = reader.ReadUInt32();
+            magicNumber = stream.ReadUInt32();
 
             // If the magic number doesn't match, then this is not a DDS file.
             if (magicNumber != MagicNumber)
             {
                 throw new System.IO.IOException("The data in the stream cannot be decoded as a DDS file.");
-            }
+            }            
 
             // Read the header from the file.
-            header = reader.ReadValue<DDSHeader>();
+            header = stream.Read<DDSHeader>();
 
             if (header.Size != DirectAccess.SizeOf<DDSHeader>())
             {
@@ -999,7 +1000,12 @@ namespace GorgonLibrary.IO
             // Get DX 10 header information.
             if (((header.PixelFormat.Flags & DDSPixelFormatFlags.FourCC) == DDSPixelFormatFlags.FourCC) && (header.PixelFormat.FourCC == _pfDX10.FourCC))
             {
-                settings = ReadDX10Header(reader, ref header, out conversionFlags);
+                if (size < DirectAccess.SizeOf<DX10Header>() + DirectAccess.SizeOf<DDSHeader>() + sizeof(uint))
+                {
+                    throw new System.IO.EndOfStreamException("Cannot read beyond the end of the stream.");
+                }
+
+                settings = ReadDX10Header(stream, ref header, out conversionFlags);
             }
             else
             {
@@ -1493,12 +1499,12 @@ namespace GorgonLibrary.IO
 		/// <summary>
 		/// Function to perform the copying of image data into the buffer.
 		/// </summary>
-		/// <param name="reader">Reader interface for the stream.</param>
+		/// <param name="stream">Stream that contains the image data.</param>
 		/// <param name="image">Image data.</param>
 		/// <param name="pitchFlags">Flags used to determine pitch when expanding pixels.</param>
 		/// <param name="conversionFlags">Flags used for conversion between legacy formats and the current format.</param>
 		/// <param name="palette">Palette used in indexed conversion.</param>
-		private void CopyImageData(GorgonBinaryReader reader, GorgonImageData image, PitchFlags pitchFlags, DDSConversionFlags conversionFlags, uint[] palette)
+		private void CopyImageData(GorgonDataStream stream, GorgonImageData image, PitchFlags pitchFlags, DDSConversionFlags conversionFlags, uint[] palette)
 		{
 			var formatInfo = GorgonBufferFormatInfo.GetInfo(image.Settings.Format);
 			int sizeInBytes = 0;
@@ -1539,9 +1545,9 @@ namespace GorgonLibrary.IO
 						|| (conversionFlags == DDSConversionFlags.DX10))
 					&& (pitchFlags == PitchFlags.None))
 			{
-				// First mip, array and depth slice is at the start of our image memory buffer.
-				reader.Read(image[0].Data.UnsafePointer, sizeInBytes);
-				return;
+                // First mip, array and depth slice is at the start of our image memory buffer.
+                DirectAccess.MemoryCopy(image[0].Data.UnsafePointer, stream.PositionPointerUnsafe, sizeInBytes);
+                return;
 			}
 
 			ImageBitFlags expFlags = ImageBitFlags.None;
@@ -1556,143 +1562,154 @@ namespace GorgonLibrary.IO
 				expFlags |= ImageBitFlags.Legacy;
 			}
 
-			// We require conversion, so we'll need to load in the image data into a buffer so we can work with it.
-			using (var buffer = new GorgonDataStream(sizeInBytes))
+			int depth = image.Settings.Depth;
+			byte *srcPointer = (byte*)stream.PositionPointerUnsafe;
+
+			for (int array = 0; array < image.Settings.ArrayCount; array++)
 			{
-				int depth = image.Settings.Depth;
-				byte *srcPointer = (byte*)buffer.UnsafePointer;
-
-				// Read in the source data to convert.
-				reader.Read(buffer.UnsafePointer, sizeInBytes);				
-
-				for (int array = 0; array < image.Settings.ArrayCount; array++)
+				for (int mipLevel = 0; mipLevel < image.Settings.MipCount; mipLevel++)
 				{
-					for (int mipLevel = 0; mipLevel < image.Settings.MipCount; mipLevel++)
+					// Get our destination buffer.
+					var destBuffer = image[array, mipLevel];
+					var pitchInfo = formatInfo.GetPitch(destBuffer.Width, destBuffer.Height, pitchFlags);		
+					var destPointer = (byte*)destBuffer.Data.UnsafePointer;
+
+					for (int slice = 0; slice < depth; slice++)
 					{
-						// Get our destination buffer.
-						var destBuffer = image[array, mipLevel];
-						var pitchInfo = formatInfo.GetPitch(destBuffer.Width, destBuffer.Height, pitchFlags);		
-						var destPointer = (byte*)destBuffer.Data.UnsafePointer;
-
-						for (int slice = 0; slice < depth; slice++)
+						// We're using compressed data, just copy.
+						if (formatInfo.IsCompressed)
 						{
-							// We're using compressed data, just copy.
-							if (formatInfo.IsCompressed)
+							DirectAccess.MemoryCopy(destPointer, srcPointer, pitchInfo.SlicePitch.Min(destBuffer.PitchInformation.SlicePitch));
+							destPointer += pitchInfo.SlicePitch;
+							srcPointer += destBuffer.PitchInformation.SlicePitch;
+							continue;
+						}
+
+						// Read each scan line if we require some form of conversion. 
+						for (int h = 0; h < destBuffer.Height; h++)
+						{
+							if ((conversionFlags & DDSConversionFlags.Expand) == DDSConversionFlags.Expand)
 							{
-								DirectAccess.MemoryCopy(destPointer, srcPointer, pitchInfo.SlicePitch.Min(destBuffer.PitchInformation.SlicePitch));
-								destPointer += pitchInfo.SlicePitch;
-								srcPointer += destBuffer.PitchInformation.SlicePitch;
-								continue;
-							}
-
-							// Read each scan line if we require some form of conversion. 
-							for (int h = 0; h < destBuffer.Height; h++)
-							{
-								if ((conversionFlags & DDSConversionFlags.Expand) == DDSConversionFlags.Expand)
+								// Perform expansion.
+								if ((conversionFlags & (DDSConversionFlags.RGB565 | DDSConversionFlags.RGB5551)) != 0)
 								{
-									// Perform expansion.
-									if ((conversionFlags & (DDSConversionFlags.RGB565 | DDSConversionFlags.RGB5551)) != 0)
-									{
-										this.Expand16BPPScanline(srcPointer, pitchInfo.RowPitch,
-														((conversionFlags & DDSConversionFlags.RGB5551) == DDSConversionFlags.RGB5551) ? BufferFormat.B5G5R5A1_UIntNormal : BufferFormat.B5G6R5_UIntNormal,
-														destPointer, destBuffer.PitchInformation.RowPitch, expFlags);
-									}
-									else
-									{
-										// If we're 8 bit or some other type of format, then expand to match.
-										DDSConversionFlags expandLegacyFormat = this.ExpansionFormat(conversionFlags);
-
-										if (expandLegacyFormat == DDSConversionFlags.None)
-										{
-											throw new System.IO.IOException("The data in the stream cannot be decoded as a DDS file.  The legacy format " + expandLegacyFormat.ToString() +  " is not supported.");
-										}
-
-										ExpandLegacyScanline(srcPointer, pitchInfo.RowPitch, expandLegacyFormat, destPointer, destBuffer.PitchInformation.RowPitch, image.Settings.Format, expFlags, palette);
-									}
-								}
-								else if ((conversionFlags & DDSConversionFlags.Swizzle) == DDSConversionFlags.Swizzle)
-								{
-									// Perform swizzle.
-                                    SwizzleScanline(srcPointer, pitchInfo.RowPitch, destPointer, destBuffer.PitchInformation.RowPitch, image.Settings.Format, expFlags);
+									this.Expand16BPPScanline(srcPointer, pitchInfo.RowPitch,
+													((conversionFlags & DDSConversionFlags.RGB5551) == DDSConversionFlags.RGB5551) ? BufferFormat.B5G5R5A1_UIntNormal : BufferFormat.B5G6R5_UIntNormal,
+													destPointer, destBuffer.PitchInformation.RowPitch, expFlags);
 								}
 								else
 								{
-									// Copy and set constant alpha (if necessary).
-									CopyScanline(srcPointer, pitchInfo.RowPitch, destPointer, destBuffer.PitchInformation.RowPitch, image.Settings.Format, expFlags);
-								}
-								
-								// Increment our pointer data by one line.
-								srcPointer += pitchInfo.RowPitch;
-								destPointer += destBuffer.PitchInformation.RowPitch;
-							}
-						}
+									// If we're 8 bit or some other type of format, then expand to match.
+									DDSConversionFlags expandLegacyFormat = this.ExpansionFormat(conversionFlags);
 
-						if (depth > 1)
-						{
-							depth >>= 1;
+									if (expandLegacyFormat == DDSConversionFlags.None)
+									{
+										throw new System.IO.IOException("The data in the stream cannot be decoded as a DDS file.  The legacy format " + expandLegacyFormat.ToString() +  " is not supported.");
+									}
+
+									ExpandLegacyScanline(srcPointer, pitchInfo.RowPitch, expandLegacyFormat, destPointer, destBuffer.PitchInformation.RowPitch, image.Settings.Format, expFlags, palette);
+								}
+							}
+							else if ((conversionFlags & DDSConversionFlags.Swizzle) == DDSConversionFlags.Swizzle)
+							{
+								// Perform swizzle.
+                                SwizzleScanline(srcPointer, pitchInfo.RowPitch, destPointer, destBuffer.PitchInformation.RowPitch, image.Settings.Format, expFlags);
+							}
+							else
+							{
+								// Copy and set constant alpha (if necessary).
+								CopyScanline(srcPointer, pitchInfo.RowPitch, destPointer, destBuffer.PitchInformation.RowPitch, image.Settings.Format, expFlags);
+							}
+								
+							// Increment our pointer data by one line.
+							srcPointer += pitchInfo.RowPitch;
+							destPointer += destBuffer.PitchInformation.RowPitch;
 						}
+					}
+
+					if (depth > 1)
+					{
+						depth >>= 1;
 					}
 				}
 			}
 		}
 
-		/// <summary>
-		/// Function to load an image from a stream.
-		/// </summary>
-		/// <param name="stream">Stream containing the data to load.</param>
-		/// <returns>
-		/// The image data that was in the stream.
-		/// </returns>
-		protected internal override GorgonImageData LoadFromStream(System.IO.Stream stream)
+        /// <summary>
+        /// Function to load an image from a stream.
+        /// </summary>
+        /// <param name="stream">Stream containing the data to load.</param>
+        /// <param name="size">Size of the data to read, in bytes.</param>
+        /// <returns>
+        /// The image data that was in the stream.
+        /// </returns>
+		protected internal override GorgonImageData LoadFromStream(GorgonDataStream stream, int size)
 		{
 			GorgonImageData imageData = null;
 			DDSConversionFlags flags = DDSConversionFlags.None;
 			IImageSettings settings = null;
 			uint[] palette = null;
+                        
+            if (size < DirectAccess.SizeOf<DDSHeader>() + sizeof(uint))
+            {
+                throw new System.IO.EndOfStreamException("Cannot read beyond the end of the stream.");
+            }
 
-			using (var reader = new GorgonBinaryReader(stream, true))
+			// Read the header information.
+			settings = ReadHeader(stream, size, out flags);
+            
+			// Create our image data structure.
+			imageData = new GorgonImageData(settings);
+
+            try
+            {
+                if (stream.Length - stream.Position < imageData.SizeInBytes)
+                {
+                    throw new System.IO.EndOfStreamException("Cannot read beyond the end of the stream.");
+                }
+
+			    // We have a palette, either create a new one or clone the assigned one.
+			    if ((flags & DDSConversionFlags.Palette) == DDSConversionFlags.Palette)
+			    {
+                    int paletteSize = sizeof(uint) * 256;
+
+                    if (paletteSize + imageData.SizeInBytes > stream.Length - stream.Position)
+                    {
+                        throw new System.IO.EndOfStreamException("Cannot read beyond the end of the stream.");
+                    }
+
+				    palette = new uint[256];
+				    if (Palette != null)
+				    {
+					    int count = Palette.Count > 256 ? 256 : Palette.Count;
+
+					    for (int i = 0; i < count; i++)
+					    {
+						    palette[i] = (uint)Palette[i].ToARGB();
+					    }
+
+                        // Skip past palette data since we're not using it.
+                        stream.Position += paletteSize;
+				    }
+				    else
+				    {
+					    // Read from the stream if we haven't assigned a palette.
+					    stream.ReadRange<uint>(palette, 0, 256);
+				    }
+			    }
+
+				// Copy the data from the stream to the buffer.
+				CopyImageData(stream, imageData, ((LegacyConversionFlags & DDSFlags.LegacyDWORD) == DDSFlags.LegacyDWORD) ? PitchFlags.LegacyDWORD : PitchFlags.None, flags, palette);
+			}
+			catch 
 			{
-				// Read the header information.
-				settings = ReadHeader(reader, out flags);
-
-				// Create our image data structure.
-				imageData = new GorgonImageData(settings);
-
-				// We have a palette, either create a new one or clone the assigned one.
-				if ((flags & DDSConversionFlags.Palette) == DDSConversionFlags.Palette)
+				// Clean up any memory allocated if we can't copy the image.
+				if (imageData != null)
 				{
-					palette = new uint[256];
-					if (Palette != null)
-					{
-						int count = Palette.Count > 256 ? 256 : Palette.Count;
-
-						for (int i = 0; i < count; i++)
-						{
-							palette[i] = (uint)Palette[i].ToARGB();
-						}
-					}
-					else
-					{
-						// Read from the stream if we haven't assigned a palette.
-						reader.ReadRange<uint>(palette, 256);
-					}
+					imageData.Dispose();
 				}
 
-				try
-				{
-					// Copy the data from the stream to the buffer.
-					CopyImageData(reader, imageData, ((LegacyConversionFlags & DDSFlags.LegacyDWORD) == DDSFlags.LegacyDWORD) ? PitchFlags.LegacyDWORD : PitchFlags.None, flags, palette);
-				}
-				catch 
-				{
-					// Clean up any memory allocated if we can't copy the image.
-					if (imageData != null)
-					{
-						imageData.Dispose();
-					}
-
-					throw;
-				}
+				throw;
 			}
 
 			return imageData;
@@ -1761,12 +1778,49 @@ namespace GorgonLibrary.IO
 		/// <exception cref="System.IO.EndOfStreamException">Thrown when an attempt to read beyond the end of the stream is made.</exception>
 		public override IImageSettings GetMetaData(System.IO.Stream stream)
 		{
+            long position = 0;
 			DDSConversionFlags flags = DDSConversionFlags.None;
+            int size = DirectAccess.SizeOf<DDSHeader>() + DirectAccess.SizeOf<DX10Header>() + sizeof(uint); // Allocate enough space to hold the header and the DX 10 header and the magic number.
 
-			using (GorgonBinaryReader reader = new GorgonBinaryReader(stream, true))
-			{
-				return this.ReadHeader(reader, out flags);
-			}
+            if (stream == null)
+            {
+                throw new ArgumentNullException("stream");
+            }
+
+            if (!stream.CanRead)
+            {
+                throw new System.IO.IOException("Stream is write-only.");
+            }
+
+            if (!stream.CanSeek)
+            {
+                throw new System.IO.IOException("The stream cannot perform seek operations.");
+            }
+
+            if (stream.Length - stream.Position < size)
+            {
+                throw new System.IO.EndOfStreamException("Cannot read beyond the end of the stream.");
+            }
+
+            try
+            {
+                position = stream.Position;
+
+                if (stream is GorgonDataStream)
+                {
+                    return this.ReadHeader((GorgonDataStream)stream, size, out flags);
+                }
+
+                using (GorgonDataStream memoryStream = new GorgonDataStream(size))
+                {
+                    memoryStream.ReadFromStream(stream, size);
+                    return this.ReadHeader(memoryStream, size, out flags);
+                }
+            }
+            finally
+            {
+                stream.Position = position;
+            }
 		}
 
 		/// <summary>
@@ -1781,7 +1835,12 @@ namespace GorgonLibrary.IO
 		public override bool CanBeRead(System.IO.Stream stream)
         {
             uint magicNumber = 0;
-            long position = stream.Position;
+            long position = 0;
+
+            if (stream == null)
+            {
+                throw new ArgumentNullException("stream");
+            }
 
             if (!stream.CanRead)
             {
@@ -1793,12 +1852,23 @@ namespace GorgonLibrary.IO
                 throw new System.IO.IOException("The stream cannot perform seek operations.");
             }
 
-            using (GorgonBinaryReader reader = new GorgonBinaryReader(stream, true))
+            if (stream.Length - stream.Position < sizeof(uint) + DirectAccess.SizeOf<DDSHeader>())
             {
-                magicNumber = reader.ReadUInt32();
+                return false;
             }
 
-            stream.Position = position;
+            try
+            {
+                position = stream.Position;
+                using (GorgonBinaryReader reader = new GorgonBinaryReader(stream, true))
+                {
+                    magicNumber = reader.ReadUInt32();
+                }
+            }
+            finally
+            {
+                stream.Position = position;
+            }
             return magicNumber == MagicNumber;
         }
 		#endregion
