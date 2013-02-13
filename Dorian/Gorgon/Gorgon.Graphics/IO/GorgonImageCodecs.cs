@@ -70,6 +70,7 @@ namespace GorgonLibrary.IO
 		private static GorgonImageCodecCollection _internal = null;		// Internal codecs.
 		private static GorgonImageCodecCollection _codecs = null;		// List of registered codecs.
 		private static GorgonCodecDDS _dds = null;						// DDS file format.
+		private static GorgonCodecTGA _tga = null;						// TGA file format.
 		#endregion
 
 		#region Properties.
@@ -92,6 +93,17 @@ namespace GorgonLibrary.IO
 			get
 			{
 				return _codecs;
+			}
+		}
+
+		/// <summary>
+		/// Property to return the TGA codec.
+		/// </summary>
+		public static GorgonCodecTGA TGA
+		{
+			get
+			{
+				return _tga;
 			}
 		}
 
@@ -170,11 +182,14 @@ namespace GorgonLibrary.IO
 		static GorgonImageCodecs()
 		{
 			_dds = new GorgonCodecDDS();
+			_tga = new GorgonCodecTGA();
+
 			_codecs = new GorgonImageCodecCollection();
 			_internal = new GorgonImageCodecCollection();
 
 			// Add our system codecs.
 			_internal.Add(_dds);
+			_internal.Add(_tga);
 		}
 		#endregion
 	}

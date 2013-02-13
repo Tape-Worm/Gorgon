@@ -1067,46 +1067,28 @@ namespace GorgonLibrary.IO
                 {
                     case BufferFormat.B8G8R8A8_UIntNormal:
                         settings.Format = BufferFormat.R8G8B8A8_UIntNormal;
-                        if (conversionFlags != DDSConversionFlags.None)
-                        {
-                            conversionFlags |= DDSConversionFlags.Swizzle;
-                        }
+                        conversionFlags |= DDSConversionFlags.Swizzle;
                         break;
                     case BufferFormat.B8G8R8X8_UIntNormal:
                         settings.Format = BufferFormat.R8G8B8A8_UIntNormal;
-                        if (conversionFlags != DDSConversionFlags.None)
-                        {
-                            conversionFlags  |= DDSConversionFlags.Swizzle | DDSConversionFlags.NoAlpha;
-                        }
+                        conversionFlags  |= DDSConversionFlags.Swizzle | DDSConversionFlags.NoAlpha;
                         break;
                     case BufferFormat.B8G8R8A8:
                         settings.Format = BufferFormat.R8G8B8A8;
-                        if (conversionFlags != DDSConversionFlags.None)
-                        {
-                            conversionFlags  |= DDSConversionFlags.Swizzle;
-                        }
+                        conversionFlags  |= DDSConversionFlags.Swizzle;
                         break;
                     case BufferFormat.B8G8R8A8_UIntNormal_sRGB:
                         settings.Format = BufferFormat.R8G8B8A8_UIntNormal_sRGB;
-                        if (conversionFlags != DDSConversionFlags.None)
-                        {
-                            conversionFlags  |= DDSConversionFlags.Swizzle;
-                        }
+                        conversionFlags  |= DDSConversionFlags.Swizzle;
                         break;
 
                     case BufferFormat.B8G8R8X8:
                         settings.Format = BufferFormat.R8G8B8A8;
-                        if (conversionFlags != DDSConversionFlags.None)
-                        {
-                            conversionFlags  |= DDSConversionFlags.Swizzle | DDSConversionFlags.NoAlpha;
-                        }
+                        conversionFlags  |= DDSConversionFlags.Swizzle | DDSConversionFlags.NoAlpha;
                         break;
                     case BufferFormat.B8G8R8X8_UIntNormal_sRGB:
                         settings.Format = BufferFormat.R8G8B8A8_UIntNormal_sRGB;
-                        if (conversionFlags != DDSConversionFlags.None)
-                        {
-                            conversionFlags  |= DDSConversionFlags.Swizzle | DDSConversionFlags.NoAlpha;
-                        }
+                        conversionFlags  |= DDSConversionFlags.Swizzle | DDSConversionFlags.NoAlpha;
                         break;
                 }
             }
@@ -1119,13 +1101,10 @@ namespace GorgonLibrary.IO
 					case BufferFormat.B5G6R5_UIntNormal:
 					case BufferFormat.B5G5R5A1_UIntNormal:
 						settings.Format = BufferFormat.R8G8B8A8_UIntNormal;
-						if (conversionFlags != DDSConversionFlags.None)
+						conversionFlags |= DDSConversionFlags.Expand;
+						if (settings.Format == BufferFormat.B5G6R5_UIntNormal)
 						{
-							conversionFlags |= DDSConversionFlags.Expand;
-							if (settings.Format == BufferFormat.B5G6R5_UIntNormal)
-							{
-								conversionFlags |= DDSConversionFlags.NoAlpha;
-							}
+							conversionFlags |= DDSConversionFlags.NoAlpha;
 						}
 						break;
 				}
