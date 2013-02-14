@@ -71,6 +71,9 @@ namespace GorgonLibrary.IO
 		private static GorgonImageCodecCollection _codecs = null;		// List of registered codecs.
 		private static GorgonCodecDDS _dds = null;						// DDS file format.
 		private static GorgonCodecTGA _tga = null;						// TGA file format.
+		private static GorgonCodecWIC _png = null;						// PNG file format.
+		private static GorgonCodecWIC _bmp = null;						// BMP file format.
+		private static GorgonCodecWIC _tiff = null;						// TIFF file format.
 		#endregion
 
 		#region Properties.
@@ -115,6 +118,39 @@ namespace GorgonLibrary.IO
 			get
 			{
 				return _dds;
+			}
+		}
+
+		/// <summary>
+		/// Property to return the PNG codec.
+		/// </summary>
+		public static GorgonCodecWIC PNG
+		{
+			get
+			{
+				return _png;
+			}
+		}
+
+		/// <summary>
+		/// Property to return the TIFF codec.
+		/// </summary>
+		public static GorgonCodecWIC TIFF
+		{
+			get
+			{
+				return _tiff;
+			}
+		}
+
+		/// <summary>
+		/// Property to return the BMP codec.
+		/// </summary>
+		public static GorgonCodecWIC BMP
+		{
+			get
+			{
+				return _bmp;
 			}
 		}
 		#endregion
@@ -183,6 +219,9 @@ namespace GorgonLibrary.IO
 		{
 			_dds = new GorgonCodecDDS();
 			_tga = new GorgonCodecTGA();
+			_png = new GorgonCodecWIC("PNG", "Portable Network Graphics", new string[] { "png" });
+			_bmp = new GorgonCodecWIC("BMP", "Windows Bitmap", new string[] { "bmp" });
+			_tiff = new GorgonCodecWIC("TIFF", "Tagged Image File Format", new string[] { "tif", "tiff" });
 
 			_codecs = new GorgonImageCodecCollection();
 			_internal = new GorgonImageCodecCollection();
@@ -190,6 +229,9 @@ namespace GorgonLibrary.IO
 			// Add our system codecs.
 			_internal.Add(_dds);
 			_internal.Add(_tga);
+			_internal.Add(_png);
+			_internal.Add(_bmp);
+			_internal.Add(_tiff);
 		}
 		#endregion
 	}

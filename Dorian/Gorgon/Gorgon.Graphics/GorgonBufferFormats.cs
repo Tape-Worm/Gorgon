@@ -781,12 +781,6 @@ namespace GorgonLibrary.Graphics
 					case BufferFormat.R1_UIntNormal:
 						BitDepth = 1;
 						break;
-					case BufferFormat.R8:
-					case BufferFormat.R8_UIntNormal:
-					case BufferFormat.R8_UInt:
-					case BufferFormat.R8_IntNormal:
-					case BufferFormat.R8_Int:
-					case BufferFormat.A8_UIntNormal:
 					case BufferFormat.BC1:
 					case BufferFormat.BC1_UIntNormal:
 					case BufferFormat.BC1_UIntNormal_sRGB:
@@ -795,6 +789,12 @@ namespace GorgonLibrary.Graphics
 					case BufferFormat.BC4_IntNormal:
 						BitDepth = 4;
 						break;
+					case BufferFormat.R8:
+					case BufferFormat.R8_UIntNormal:
+					case BufferFormat.R8_UInt:
+					case BufferFormat.R8_IntNormal:
+					case BufferFormat.R8_Int:
+					case BufferFormat.A8_UIntNormal:
 					case BufferFormat.BC2:
 					case BufferFormat.BC2_UIntNormal:
 					case BufferFormat.BC2_UIntNormal_sRGB:
@@ -810,6 +810,8 @@ namespace GorgonLibrary.Graphics
 					case BufferFormat.BC7:
 					case BufferFormat.BC7_UIntNormal:
 					case BufferFormat.BC7_UIntNormal_sRGB:
+						BitDepth = 8;
+						break;
 					case BufferFormat.R8G8:
 					case BufferFormat.R8G8_UIntNormal:
 					case BufferFormat.R8G8_UInt:
@@ -824,7 +826,7 @@ namespace GorgonLibrary.Graphics
 					case BufferFormat.R16_Int:
 					case BufferFormat.B5G6R5_UIntNormal:
 					case BufferFormat.B5G5R5A1_UIntNormal:
-						BitDepth = 8;
+						BitDepth = 16;
 						break;
 					case BufferFormat.R10G10B10A2:
 					case BufferFormat.R10G10B10A2_UIntNormal:

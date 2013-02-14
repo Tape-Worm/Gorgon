@@ -310,134 +310,6 @@ namespace GorgonLibrary.IO
             /// </summary>
             public TGADescriptor Descriptor;
         }
-
-        /// <summary>
-        /// Extension information.
-        /// </summary>
-        [StructLayout(LayoutKind.Sequential, Pack = 1)]
-        unsafe struct TGAExtension
-        {
-            /// <summary>
-            /// Size of the extension.
-            /// </summary>
-            public ushort Size;
-            /// <summary>
-            /// Author.
-            /// </summary>
-            public fixed byte AuthorName[41];
-            /// <summary>
-            /// Comment.
-            /// </summary>
-            public fixed byte AuthorComment[324];
-            /// <summary>
-            /// Timestamp month.
-            /// </summary>
-            public ushort StampMonth;
-            /// <summary>
-            /// Timestamp day.
-            /// </summary>
-            public ushort StampDay;
-            /// <summary>
-            /// Timestamp year.
-            /// </summary>
-            public ushort StampYear;
-            /// <summary>
-            /// Timestamp hour.
-            /// </summary>
-            public ushort StampHour;
-            /// <summary>
-            /// Timestamp minute.
-            /// </summary>
-            public ushort StampMinute;
-            /// <summary>
-            /// Timestamp second.
-            /// </summary>
-            public ushort StampSecond;
-            /// <summary>
-            /// Job name.
-            /// </summary>
-            public fixed byte JobName[41];
-            /// <summary>
-            /// Job hour.
-            /// </summary>
-            public ushort JobHour;
-            /// <summary>
-            /// Job minute.
-            /// </summary>
-            public ushort JobMinute;
-            /// <summary>
-            /// Job second.
-            /// </summary>
-            public ushort JobSecond;
-            /// <summary>
-            /// Software ID.
-            /// </summary>
-            public fixed byte SoftwareId[41];
-            /// <summary>
-            /// Version number.
-            /// </summary>
-            public ushort VersionNumber;
-            /// <summary>
-            /// Version letter.
-            /// </summary>
-            public byte VersionLetter;
-            /// <summary>
-            /// Key color.
-            /// </summary>
-            public uint KeyColor;
-            /// <summary>
-            /// Pixel numerator.
-            /// </summary>
-            public ushort PixelNumerator;
-            /// <summary>
-            /// Pixel denominator.
-            /// </summary>
-            public ushort PixelDenominator;
-            /// <summary>
-            /// Gamma numerator.
-            /// </summary>
-            public ushort GammaNumerator;
-            /// <summary>
-            /// Gamme denominator.
-            /// </summary>
-            public ushort GammaDenominator;
-            /// <summary>
-            /// Offset.
-            /// </summary>
-            public uint ColorOffset;
-            /// <summary>
-            /// Offset.
-            /// </summary>
-            public uint StampOffset;
-            /// <summary>
-            /// Offset.
-            /// </summary>
-            public uint ScanOffset;
-            /// <summary>
-            /// Attribute type.
-            /// </summary>
-            public byte AttributesType;
-        }
-
-        /// <summary>
-        /// Footer information.
-        /// </summary>
-        [StructLayout(LayoutKind.Sequential, Pack = 1)]
-        unsafe struct TGAFooter
-        {
-            /// <summary>
-            /// Offset in the file for the extension.
-            /// </summary>
-            public ushort ExtensionOffset;
-            /// <summary>
-            /// Offset in the file for the developer.
-            /// </summary>
-            public ushort DeveloperOffset;
-            /// <summary>
-            /// Signature.
-            /// </summary>
-            public fixed byte Signature[18];
-        }
 		#endregion
 
 		#region Variables.
@@ -691,36 +563,35 @@ namespace GorgonLibrary.IO
 		/// <param name="width">Image width.</param>
 		/// <param name="dest">Destination buffer pointner</param>		
 		/// <param name="destPitch">Pitch of the destination scan line</param>
+		/// <param name="end">End of the scan line.</param>
 		/// <param name="format">Format of the destination buffer.</param>
 		/// <param name="conversionFlags">Flags used for conversion.</param>
-		private unsafe bool ReadCompressed(byte **src, int bufferSize, int width, byte *dest, int destPitch, BufferFormat format, TGAConversionFlags conversionFlags)
+		private unsafe bool ReadCompressed(ref byte *src, int bufferSize, int width, byte *dest, int destPitch, byte *end, BufferFormat format, TGAConversionFlags conversionFlags)
 		{
 			bool setOpaque = true;
-			bool flipHorizontal = (conversionFlags & TGAConversionFlags.InvertX) == TGAConversionFlags.InvertX;
-			byte *srcPtr = *src;
-			byte* end = srcPtr + bufferSize;
+			bool flipHorizontal = (conversionFlags & TGAConversionFlags.InvertX) == TGAConversionFlags.InvertX;			
 
 			switch (format)
 			{
 				case BufferFormat.R8_UIntNormal:
-					for (int x = 0; x < width; x++)
+					for (int x = 0; x < width; )
 					{
-						if (srcPtr >= end)
+						if (src >= end)
 						{
 							throw new System.IO.IOException("Cannot decode TGA file.  The buffer is too small for the width of the image.");
 						}
 
-						int size = ((*srcPtr & 0x7F) + 1);
+						int size = ((*src & 0x7F) + 1);
 
 						// Do a repeat run.
-						if ((*srcPtr & 0x80) != 0)
+						if ((*(src++) & 0x80) != 0)
 						{
-							if ((++srcPtr) >= end)
+							if (src >= end)
 							{
 								throw new System.IO.IOException("Cannot decode TGA file.  The buffer is too small for the width of the image.");
 							}
 
-							for (; size > 0; size--, ++x)
+							for (; size > 0; --size, ++x)
 							{
 								if (x >= width)
 								{
@@ -729,26 +600,24 @@ namespace GorgonLibrary.IO
 
 								if (!flipHorizontal)
 								{
-									*(dest++) = *srcPtr;
+									*(dest++) = *src;
 								}
 								else
 								{
-									*(dest--) = *srcPtr;
+									*(dest--) = *src;
 								}
 							}
 
-							++srcPtr;
+							++src;
 						}
 						else
 						{
-							++srcPtr;
-
-							if (srcPtr + size > end)
+							if (src + size > end)
 							{
 								throw new System.IO.IOException("Cannot decode TGA file.  The buffer is too small for the width of the image.");
 							}
 
-							for (; size > 0; size--, ++x)
+							for (; size > 0; --size, ++x)
 							{
 								if (x >= width)
 								{
@@ -757,11 +626,11 @@ namespace GorgonLibrary.IO
 
 								if (!flipHorizontal)
 								{
-									*(dest++) = *srcPtr;
+									*(dest++) = *(src++);
 								}
 								else
 								{
-									*(dest--) = *srcPtr;
+									*(dest--) = *(src++);
 								}
 							}
 						}
@@ -771,31 +640,30 @@ namespace GorgonLibrary.IO
 					{
 						ushort* destPtr = (ushort*)dest;
 
-						for (int x = 0; x < width; x++)
+						for (int x = 0; x < width; )
 						{
-							if (srcPtr >= end)
+							if (src >= end)
 							{
 								throw new System.IO.IOException("Cannot decode TGA file.  The buffer is too small for the width of the image.");
 							}
 
-							int size = ((*srcPtr & 0x7F) + 1);
-							++srcPtr;
+							int size = ((*src & 0x7F) + 1);							
 
 							// Do a repeat run.
-							if ((*srcPtr & 0x80) != 0)
+							if ((*(src++) & 0x80) != 0)
 							{
-								if ((srcPtr + 1) >= end)
+								if ((src + 1) >= end)
 								{
 									throw new System.IO.IOException("Cannot decode TGA file.  The buffer is too small for the width of the image.");
 								}
 
-								ushort pixel = (ushort)(*srcPtr | (*(srcPtr + 1) << 8));
+								ushort pixel = (ushort)(*src | (*(src + 1) << 8));
 
 								if ((pixel & 0x8000) != 0)
 								{
 									setOpaque = false;
 								}
-								srcPtr += 2;
+								src += 2;
 
 								for (; size > 0; size--, ++x)
 								{
@@ -813,12 +681,10 @@ namespace GorgonLibrary.IO
 										*(destPtr--) = pixel;
 									}
 								}
-
-								++srcPtr;
 							}
 							else
 							{
-								if (srcPtr + (size * 2) > end)
+								if (src + (size * 2) > end)
 								{
 									throw new System.IO.IOException("Cannot decode TGA file.  The buffer is too small for the width of the image.");
 								}
@@ -830,8 +696,8 @@ namespace GorgonLibrary.IO
 										throw new System.IO.IOException("Cannot decode TGA file.  The buffer is too small for the width of the image.");
 									}
 
-									ushort pixel = (ushort)(*srcPtr | (*(srcPtr + 1) << 8));
-									srcPtr += 2;
+									ushort pixel = (ushort)(*src | (*(src + 1) << 8));
+									src += 2;
 
 									if ((pixel & 0x8000) != 0)
 									{
@@ -855,46 +721,45 @@ namespace GorgonLibrary.IO
 					{
 						uint* destPtr = (uint*)dest;
 						
-						for (int x = 0; x < width; x++)
+						for (int x = 0; x < width;)
 						{
-							if (srcPtr >= end)
+							if (src >= end)
 							{
 								throw new System.IO.IOException("Cannot decode TGA file.  The buffer is too small for the width of the image.");
 							}
 
 							uint pixel = 0;
-							int size = (*srcPtr & 0x7F) + 1;
-							srcPtr++;
+							int size = (*src & 0x7F) + 1;							
 
-							if ((*srcPtr & 0x80) != 0)
-							{
+							if ((*(src++) & 0x80) != 0)
+							{								
 								// Do expansion.
-								if ((conversionFlags & TGAConversionFlags.RGB888) == TGAConversionFlags.RGB888)
+								if ((conversionFlags & TGAConversionFlags.Expand) == TGAConversionFlags.Expand)
 								{
-									if (srcPtr + 2 >= end)
+									if (src + 2 >= end)
 									{
 										throw new System.IO.IOException("Cannot decode TGA file.  The buffer is too small for the width of the image.");
 									}
 
-									pixel = ((uint)(*srcPtr << 16) | (uint)(*(srcPtr + 1) << 8) | (uint)(*(srcPtr + 2)) | 0xFF000000);
-									srcPtr += 3;
+									pixel = ((uint)(*src << 16) | (uint)(*(src + 1) << 8) | (uint)(*(src + 2)) | 0xFF000000);
+									src += 3;
 									setOpaque = false;
 								}
 								else
 								{
-									if (srcPtr + 3 >= end)
+									if (src + 3 >= end)
 									{
 										throw new System.IO.IOException("Cannot decode TGA file.  The buffer is too small for the width of the image.");
 									}
 
-									pixel = ((uint)(*srcPtr << 16) | (uint)(*(srcPtr + 1) << 8) | (uint)(*(srcPtr + 2)) | (uint)(*(srcPtr + 3) << 24));									
+									pixel = ((uint)(*src << 16) | (uint)(*(src + 1) << 8) | (uint)(*(src + 2)) | (uint)(*(src + 3) << 24));									
 
-									if (*(srcPtr + 3) > 0)
+									if (*(src + 3) > 0)
 									{
 										setOpaque = false;
 									}
 
-									srcPtr += 4;
+									src += 4;
 								}
 
 								for (; size > 0; --size, ++x)
@@ -918,14 +783,14 @@ namespace GorgonLibrary.IO
 							{
 								if ((conversionFlags & TGAConversionFlags.Expand) == TGAConversionFlags.Expand)
 								{
-									if (srcPtr + (size * 3) > end)
+									if (src + (size * 3) > end)
 									{
 										throw new System.IO.IOException("Cannot decode TGA file.  The buffer is too small for the width of the image.");
 									}
 								}
 								else
 								{
-									if (srcPtr + (size * 4) > end)
+									if (src + (size * 4) > end)
 									{
 										throw new System.IO.IOException("Cannot decode TGA file.  The buffer is too small for the width of the image.");
 									}
@@ -940,31 +805,31 @@ namespace GorgonLibrary.IO
 
 									if ((conversionFlags & TGAConversionFlags.Expand) == TGAConversionFlags.Expand)
 									{
-										if (srcPtr + 2 >= end)
+										if (src + 2 >= end)
 										{
 											throw new System.IO.IOException("Cannot decode TGA file.  The buffer is too small for the width of the image.");
 										}
 
-										pixel = ((uint)(*srcPtr << 16) | (uint)(*(srcPtr + 1) << 8) | (uint)(*(srcPtr + 2)) | 0xFF000000);
-										srcPtr += 3;
+										pixel = ((uint)(*src << 16) | (uint)(*(src + 1) << 8) | (uint)(*(src + 2)) | 0xFF000000);
+										src += 3;
 
 										setOpaque = false;
 									}
 									else
 									{
-										if (srcPtr + 3 >= end)
+										if (src + 3 >= end)
 										{
 											throw new System.IO.IOException("Cannot decode TGA file.  The buffer is too small for the width of the image.");
 										}
 
-										pixel = ((uint)(*srcPtr << 16) | (uint)(*(srcPtr + 1) << 8) | (uint)(*(srcPtr + 2)) | (uint)(*(srcPtr + 3) << 24));
+										pixel = ((uint)(*src << 16) | (uint)(*(src + 1) << 8) | (uint)(*(src + 2)) | (uint)(*(src + 3) << 24));
 
-										if (*(srcPtr + 3) > 0)
+										if (*(src + 3) > 0)
 										{
 											setOpaque = false;
 										}
 
-										srcPtr += 4;
+										src += 4;
 									}
 
 									if (!flipHorizontal)
@@ -1136,11 +1001,15 @@ namespace GorgonLibrary.IO
 				destPtr += (image.Settings.Height - 1) * buffer.PitchInformation.RowPitch;
 			}
 
+			// Get bounds of image memory.
+			int scanSize = (int)(stream.Length - stream.Position);
+			byte* endScan = (byte*)stream.PositionPointerUnsafe + scanSize;
+
 			for (int y = 0; y < image.Settings.Height; y++)
-			{
+			{				
 				if ((conversionFlags & TGAConversionFlags.RLE) == TGAConversionFlags.RLE)
 				{
-					setOpaque = ReadCompressed(&srcPtr, (int)(stream.Length - stream.Position), image.Settings.Width, destPtr, buffer.PitchInformation.RowPitch, image.Settings.Format, conversionFlags);
+					setOpaque = ReadCompressed(ref srcPtr, scanSize, image.Settings.Width, destPtr, buffer.PitchInformation.RowPitch, endScan, image.Settings.Format, conversionFlags);
 				}
 				else
 				{
@@ -1150,9 +1019,8 @@ namespace GorgonLibrary.IO
 
 				if ((setOpaque) && (SetOpaqueIfZeroAlpha))
 				{
-							// Set the alpha to opaque if we don't have any alpha values (i.e. alpha = 0 for all pixels).
-					CopyScanline(destPtr, buffer.PitchInformation.RowPitch, destPtr, buffer.PitchInformation.RowPitch, image.Settings.Format, ImageBitFlags.OpaqueAlpha);
-						
+					// Set the alpha to opaque if we don't have any alpha values (i.e. alpha = 0 for all pixels).
+					CopyScanline(destPtr, buffer.PitchInformation.RowPitch, destPtr, buffer.PitchInformation.RowPitch, image.Settings.Format, ImageBitFlags.OpaqueAlpha);						
 				}
 					
 				if ((conversionFlags & TGAConversionFlags.InvertY) != TGAConversionFlags.InvertY)
@@ -1192,11 +1060,6 @@ namespace GorgonLibrary.IO
             {
                 // Create our image data structure.
 			    imageData = new GorgonImageData(settings);
-
-                if (imageData.SizeInBytes > stream.Length - stream.Position)
-                {
-                    throw new System.IO.EndOfStreamException("Cannot read beyond the end of the stream.");
-                }
 
 				// Copy the data from the stream to the buffer.
 				CopyImageData(stream, imageData, flags);
@@ -1427,7 +1290,7 @@ namespace GorgonLibrary.IO
 		{
 			SetOpaqueIfZeroAlpha = true;
 
-			this.CodecCommonExtensions = new string[] { "TGA" };
+			this.CodecCommonExtensions = new string[] { "tga" };
             _formats = (BufferFormat[])Enum.GetValues(typeof(BufferFormat));
 		}
 		#endregion

@@ -283,6 +283,19 @@ namespace GorgonLibrary.Graphics
 		};
         #endregion
 
+		#region Properties.
+		/// <summary>
+		/// Property to return the factory object.
+		/// </summary>
+		public WIC.ImagingFactory Factory
+		{
+			get
+			{
+				return _factory;
+			}
+		}
+		#endregion
+
 		#region Methods.
 		/// <summary>
 		/// Function to retrieve the equivalent Gorgon buffer format from a WIC GUID.
@@ -380,12 +393,90 @@ namespace GorgonLibrary.Graphics
             return Guid.Empty;
         }
 
+		/// <summary>
+		/// Function to find the best buffer format for a given pixel format.
+		/// </summary>
+		/// <param name="sourcePixelFormat">Pixel format to translate.</param>
+		/// <param name="flags">Flags to apply to the pixel format conversion.</param>
+		/// <param name="updatedPixelFormat">The updated pixel format after flags are applied.</param>
+		/// <returns>The buffer format, or Unknown if the format couldn't be converted.</returns>
+		public BufferFormat FindBestFormat(Guid sourcePixelFormat, WICFlags flags, ref Guid updatedPixelFormat)
+		{
+			BufferFormat result = GetGorgonFormat(sourcePixelFormat);
+
+			updatedPixelFormat = Guid.Empty;
+
+			if (result == BufferFormat.Unknown)
+			{
+				if (sourcePixelFormat == WIC.PixelFormat.Format96bppRGBFixedPoint)
+				{
+					updatedPixelFormat = WIC.PixelFormat.Format128bppRGBAFloat;
+					result = BufferFormat.R32G32B32A32_Float;
+				}
+				else
+				{
+					// Find the best fit format if we couldn't find an exact match.
+					for (int i = 0; i < _wicBestFitFormat.Length; i++)
+					{
+						if (_wicBestFitFormat[i].Source == sourcePixelFormat)
+						{
+							updatedPixelFormat = _wicBestFitFormat[i].Destination;
+							result = GetGorgonFormat(updatedPixelFormat);
+
+							// We couldn't find the format, bail out.
+							if (result == BufferFormat.Unknown)
+							{
+								return result;
+							}
+							break;
+						}
+					}
+				}
+			}
+
+			switch (result)
+			{
+				case BufferFormat.B8G8R8A8_UIntNormal:
+				case BufferFormat.B8G8R8X8_UIntNormal:
+					if ((flags & WICFlags.ForceRGB) == WICFlags.ForceRGB)
+					{
+						result = BufferFormat.R8G8B8A8_UIntNormal;
+						updatedPixelFormat = WIC.PixelFormat.Format32bppRGBA;
+					}
+					break;
+				case BufferFormat.R10G10B10_XR_BIAS_A2_UIntNormal:
+					if ((flags & WICFlags.NoX2Bias) == WICFlags.NoX2Bias)
+					{
+						result = BufferFormat.R10G10B10A2_UIntNormal;
+						updatedPixelFormat = WIC.PixelFormat.Format32bppRGBA1010102;
+					}
+					break;
+				case BufferFormat.B5G5R5A1_UIntNormal:
+				case BufferFormat.B5G6R5_UIntNormal:
+					if ((flags & WICFlags.No16BPP) == WICFlags.No16BPP)
+					{
+						result = BufferFormat.R8G8B8A8_UIntNormal;
+						updatedPixelFormat = WIC.PixelFormat.Format32bppRGBA;
+					}				
+					break;
+				case BufferFormat.R1_UIntNormal:
+					if ((flags & WICFlags.AllowMono) != WICFlags.AllowMono)
+					{
+						result = BufferFormat.R1_UIntNormal;
+						updatedPixelFormat = WIC.PixelFormat.Format8bppGray;
+					}
+					break;
+			}
+
+			return result;
+		}
+
         /// <summary>
         /// Function to retrieve the bits per pixel in the specified WIC image format.
         /// </summary>
         /// <param name="wicPixelFormat">Image format to look up.</param>
         /// <returns>The bits per pixel of the format.</returns>
-        private int GetBitsPerPixel(Guid wicPixelFormat)
+        public int GetBitsPerPixel(Guid wicPixelFormat)
         {
             using (var component = new WIC.ComponentInfo(_factory, wicPixelFormat))
             {
@@ -400,7 +491,7 @@ namespace GorgonLibrary.Graphics
                     {
                         throw new ArgumentException("The bits per pixel could not be determined from the pixel format.", "wicPixelFormat");
                     }
-
+					
                     return formatInfo.BitsPerPixel;
                 }
             }
