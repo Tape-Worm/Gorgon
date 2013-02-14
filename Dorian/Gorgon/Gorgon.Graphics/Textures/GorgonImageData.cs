@@ -200,7 +200,6 @@ namespace GorgonLibrary.Graphics
 		#endregion
 
 		#region Variables.
-        private static byte[] _readBuffer = null;                   // Buffer for read operations.
 		private DX.DataBox[] _dataBoxes = null;						// Data boxes for textures.
 		private bool _disposed = false;                             // Flag to indicate whether the object was disposed.
         private GorgonDataStream _imageData = null;                 // Base image data buffer.
@@ -1622,6 +1621,7 @@ namespace GorgonLibrary.Graphics
 		/// Function to read image data from a stream.
 		/// </summary>
 		/// <param name="stream">Stream that contains the image data.</param>
+		/// <param name="size">The size of the image, in bytes.</param>
 		/// <returns>The image data from the stream.</returns>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="stream"/> parameter is NULL (Nothing in VB.Net).</exception>
         /// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="size"/> parameter is less than or equal to 0.</exception>
@@ -1665,7 +1665,7 @@ namespace GorgonLibrary.Graphics
 			// We couldn't find a codec.
 			if (codec == null)
 			{
-				throw new ArgumentException("The data in the stream cannot be ready any registered image codec.", "stream");
+				throw new ArgumentException("The data in the stream cannot be read any registered image codec.", "stream");
 			}
 
             // Just apply directly if we're already using a data stream.

@@ -1663,17 +1663,12 @@ namespace GorgonLibrary.IO
 
             try
             {
-                if (stream.Length - stream.Position < imageData.SizeInBytes)
-                {
-                    throw new System.IO.EndOfStreamException("Cannot read beyond the end of the stream.");
-                }
-
 			    // We have a palette, either create a new one or clone the assigned one.
 			    if ((flags & DDSConversionFlags.Palette) == DDSConversionFlags.Palette)
 			    {
                     int paletteSize = sizeof(uint) * 256;
 
-                    if (paletteSize + imageData.SizeInBytes > stream.Length - stream.Position)
+                    if (paletteSize > stream.Length - stream.Position)
                     {
                         throw new System.IO.EndOfStreamException("Cannot read beyond the end of the stream.");
                     }
@@ -1879,7 +1874,7 @@ namespace GorgonLibrary.IO
 		/// </summary>
 		internal GorgonCodecDDS()
 		{
-			this.CodecCommonExtensions = new string[] { "DDS" };
+			this.CodecCommonExtensions = new string[] { "dds" };
             _formats = (BufferFormat[])Enum.GetValues(typeof(BufferFormat));
 
             LegacyConversionFlags = DDSFlags.None;
