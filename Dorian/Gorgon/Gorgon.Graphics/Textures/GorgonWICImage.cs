@@ -366,7 +366,7 @@ namespace GorgonLibrary.Graphics
         /// </summary>
         /// <param name="format">Format to look up.</param>
         /// <returns>The GUID for the format, or NULL (Nothing in VB.Net) if not found.</returns>
-        private Guid GetGUID(BufferFormat format)
+        public Guid GetGUID(BufferFormat format)
         {
             for (int i = 0; i < _wicGorgonFormats.Length; i++)
             {

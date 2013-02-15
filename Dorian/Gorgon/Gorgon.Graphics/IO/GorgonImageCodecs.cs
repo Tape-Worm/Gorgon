@@ -74,6 +74,9 @@ namespace GorgonLibrary.IO
 		private static GorgonCodecWIC _png = null;						// PNG file format.
 		private static GorgonCodecWIC _bmp = null;						// BMP file format.
 		private static GorgonCodecWIC _tiff = null;						// TIFF file format.
+		private static GorgonCodecWIC _wmp = null;						// WMP file format.
+		private static GorgonCodecGIF _gif = null;						// GIF file format.
+		private static GorgonCodecWIC _jpg = null;						// JPG file format.
 		#endregion
 
 		#region Properties.
@@ -153,6 +156,39 @@ namespace GorgonLibrary.IO
 				return _bmp;
 			}
 		}
+
+		/// <summary>
+		/// Property to return the WMP codec.
+		/// </summary>
+		public static GorgonCodecWIC WMP
+		{
+			get
+			{
+				return _wmp;
+			}
+		}
+
+		/// <summary>
+		/// Property to return JPG codec.
+		/// </summary>
+		public static GorgonCodecWIC JPG
+		{
+			get
+			{
+				return _jpg;
+			}
+		}
+
+		/// <summary>
+		/// Property to return the GIF codec.
+		/// </summary>
+		public static GorgonCodecGIF GIF
+		{
+			get
+			{
+				return _gif;
+			}
+		}
 		#endregion
 
 		#region Methods.
@@ -220,8 +256,11 @@ namespace GorgonLibrary.IO
 			_dds = new GorgonCodecDDS();
 			_tga = new GorgonCodecTGA();
 			_png = new GorgonCodecWIC("PNG", "Portable Network Graphics", new string[] { "png" });
-			_bmp = new GorgonCodecWIC("BMP", "Windows Bitmap", new string[] { "bmp" });
+			_bmp = new GorgonCodecWIC("BMP", "Windows Bitmap", new string[] { "bmp", "dib" });
 			_tiff = new GorgonCodecWIC("TIFF", "Tagged Image File Format", new string[] { "tif", "tiff" });
+			_wmp = new GorgonCodecWIC("WMP", "Windows Media Photo", new string[] { "wmp" });
+			_jpg = new GorgonCodecWIC("JPG", "Joint Photographic Experts Group", new string[] { "jpg", "jpeg", "jpe", "jif", "jfif", "jfi" });
+			_gif = new GorgonCodecGIF();
 
 			_codecs = new GorgonImageCodecCollection();
 			_internal = new GorgonImageCodecCollection();
@@ -230,8 +269,12 @@ namespace GorgonLibrary.IO
 			_internal.Add(_dds);
 			_internal.Add(_tga);
 			_internal.Add(_png);
+			// Put derived codecs first.
+			_internal.Add(_gif);
 			_internal.Add(_bmp);
 			_internal.Add(_tiff);
+			_internal.Add(_wmp);			
+			_internal.Add(_jpg);
 		}
 		#endregion
 	}
