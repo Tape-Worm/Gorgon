@@ -108,6 +108,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using WIC = SharpDX.WIC;
+using GorgonLibrary.Native;
 using GorgonLibrary.Graphics;
 
 namespace GorgonLibrary.IO
@@ -224,28 +225,6 @@ namespace GorgonLibrary.IO
 		#endregion
 
 		#region Methods.
-		/// <summary>
-		/// Function to retrieve meta data from the image.
-		/// </summary>
-		/// <param name="wic">WIC interface.</param>
-		/// <param name="decoder">Decoder for the image.</param>
-		/// <param name="frame">Frame in the image to decode.</param>
-		/// <param name="bestFormatMatch">The best match for the pixel format.</param>
-		/// <returns>Settings for the new image.</returns>
-		private IImageSettings ReadMetaData(GorgonWICImage wic, WIC.BitmapDecoder decoder, WIC.BitmapFrameDecode frame, ref Guid bestFormatMatch)
-		{
-			GorgonTexture2DSettings settings = new GorgonTexture2DSettings();
-			
-			return new GorgonTexture2DSettings()
-			{
-				Width = frame.Size.Width,
-				Height = frame.Size.Height,
-				MipCount = 1,
-				ArrayCount = (CodecUseAllFrames) ? decoder.FrameCount : 1,
-				Format = wic.FindBestFormat(frame.PixelFormat, DecodeFlags, ref bestFormatMatch)
-			};
-		}
-
 		/// <summary>
 		/// Function to read multiple frames from a decoder that supports multiple frames.
 		/// </summary>
@@ -421,7 +400,29 @@ namespace GorgonLibrary.IO
 			}
 		}
 
-		/// <summary>
+        /// <summary>
+        /// Function to retrieve meta data from the image.
+        /// </summary>
+        /// <param name="wic">WIC interface.</param>
+        /// <param name="decoder">Decoder for the image.</param>
+        /// <param name="frame">Frame in the image to decode.</param>
+        /// <param name="bestFormatMatch">The best match for the pixel format.</param>
+        /// <returns>Settings for the new image.</returns>
+        internal IImageSettings ReadMetaData(GorgonWICImage wic, WIC.BitmapDecoder decoder, WIC.BitmapFrameDecode frame, ref Guid bestFormatMatch)
+        {
+            GorgonTexture2DSettings settings = new GorgonTexture2DSettings();
+
+            return new GorgonTexture2DSettings()
+            {
+                Width = frame.Size.Width,
+                Height = frame.Size.Height,
+                MipCount = 1,
+                ArrayCount = (CodecUseAllFrames) ? decoder.FrameCount : 1,
+                Format = wic.FindBestFormat(frame.PixelFormat, DecodeFlags, ref bestFormatMatch)
+            };
+        }
+
+        /// <summary>
 		/// Function to retrieve the offset for the frame being decoded.
 		/// </summary>
 		/// <param name="frame">Frame to decode.</param>
@@ -527,25 +528,50 @@ namespace GorgonLibrary.IO
 		public override IImageSettings GetMetaData(System.IO.Stream stream)
 		{
 			Guid bestFormat = Guid.Empty;
+            long position = 0;
 
-			// Get our WIC interface.
-			using (var wic = new GorgonWICImage())
-			{
-				using (var decoder = new WIC.BitmapDecoder(wic.Factory, stream, WIC.DecodeOptions.CacheOnDemand))
-				{
-					using (var frame = decoder.GetFrame(0))
-					{
-						var settings = ReadMetaData(wic, decoder, frame, ref bestFormat);
+            if (stream == null)
+            {
+                throw new ArgumentNullException("stream");
+            }
 
-						if (settings.Format == BufferFormat.Unknown)
-						{
-							throw new System.IO.IOException("Cannot decode the " + Codec + " file.  Format is not supported.");
-						}
+            if (!stream.CanRead)
+            {
+                throw new System.IO.IOException("Stream is write-only.");
+            }
 
-						return settings;
-					}
-				}
-			}
+            if (!stream.CanSeek)
+            {
+                throw new System.IO.IOException("The stream cannot perform seek operations.");
+            }
+
+            position = stream.Position;
+
+            try
+            {
+                // Get our WIC interface.
+                using (var wic = new GorgonWICImage())
+                {
+                    using (var decoder = new WIC.BitmapDecoder(wic.Factory, stream, WIC.DecodeOptions.CacheOnDemand))
+                    {
+                        using (var frame = decoder.GetFrame(0))
+                        {
+                            var settings = ReadMetaData(wic, decoder, frame, ref bestFormat);
+
+                            if (settings.Format == BufferFormat.Unknown)
+                            {
+                                throw new System.IO.IOException("Cannot decode the " + Codec + " file.  Format is not supported.");
+                            }
+
+                            return settings;
+                        }
+                    }
+                }
+            }
+            finally
+            {
+                stream.Position = position;
+            }
 		}
 
 		/// <summary>
@@ -613,10 +639,10 @@ namespace GorgonLibrary.IO
 			{
 				stream.Position = position;
 			}
-		}
+		}       
 		#endregion
 
-		#region Constructor/Destructor.		
+		#region Constructor/Destructor.
 		/// <summary>
 		/// Initializes a new instance of the <see cref="GorgonCodecWIC" /> class.
 		/// </summary>

@@ -196,6 +196,129 @@ namespace GorgonLibrary.IO
 
 			return new Tuple<WIC.Palette, double, WIC.BitmapPaletteType>(palette, AlphaThresholdPercent, WIC.BitmapPaletteType.Custom);
 		}
+
+        /// <summary>
+        /// Function to retrieve a list of frame delays for each frame in an animated GIF.
+        /// </summary>
+        /// <param name="filePath">Path to the animated GIF file.</param>
+        /// <returns>An array of frame delays (1/100th of a second), or an empty array if the image is not an animated GIF.</returns>
+        /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="filePath"/> parameter is NULL (Nothing in VB.Net).</exception>
+        /// <exception cref="System.ArgumentException">Thown when the filePath parameter is empty.</exception>
+        /// <exception cref="System.IO.IOException">Thrown when the stream parameter is write-only.
+        /// <para>-or-</para>
+        /// <para>The data in the stream could not be decoded as GIF file.</para>
+        /// </exception>
+        /// <exception cref="System.IO.EndOfStreamException">Thrown when an attempt to read beyond the end of the stream is made.</exception>
+        public int[] GetFrameDelays(string filePath)
+        {
+            if (filePath == null)
+            {
+                throw new ArgumentNullException("filePath");
+            }
+
+            if (string.IsNullOrWhiteSpace(filePath))
+            {
+                throw new ArgumentException("The parameter must not be NULL or empty.", "filePath");
+            }
+
+            using (var fileStream = System.IO.File.Open(filePath, System.IO.FileMode.Open, System.IO.FileAccess.Read, System.IO.FileShare.Read))
+            {
+                return GetFrameDelays(fileStream);
+            }
+        }
+
+        /// <summary>
+        /// Function to retrieve a list of frame delays for each frame in an animated GIF.
+        /// </summary>
+        /// <param name="stream">Stream containing the animated GIF.</param>
+        /// <returns>
+        /// An array of frame delays (1/100th of a second), or an empty array if the image is not an animated GIF.
+        /// </returns>
+        /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="stream"/> parameter is NULL (Nothing in VB.Net).</exception>
+        /// <exception cref="System.IO.IOException">Thrown when the stream parameter is write-only.
+        /// <para>-or-</para>
+        /// <para>The data in the stream could not be decoded as GIF file.</para>
+        /// <para>-or-</para>
+        /// <para>The stream cannot perform seek operations.</para>
+        /// </exception>
+        /// <exception cref="System.IO.EndOfStreamException">Thrown when an attempt to read beyond the end of the stream is made.</exception>
+        public int[] GetFrameDelays(System.IO.Stream stream)
+        {
+            IImageSettings settings = null;
+            int[] result = new int[0];
+            Guid bestFormat = Guid.Empty;
+            long position = 0;
+
+            if (stream == null)
+            {
+                throw new ArgumentNullException("stream");
+            }
+
+            if (!stream.CanRead)
+            {
+                throw new System.IO.IOException("Stream is write-only.");
+            }
+
+            if (!stream.CanSeek)
+            {
+                throw new System.IO.IOException("The stream cannot perform seek operations.");
+            }
+
+            position = stream.Position;
+
+            try
+            {
+                // Get our WIC interface.
+                using (var wic = new GorgonWICImage())
+                {
+                    using (var decoder = new WIC.BitmapDecoder(wic.Factory, stream, WIC.DecodeOptions.CacheOnDemand))
+                    {
+                        if (decoder.FrameCount < 2)
+                        {
+                            return result;
+                        }
+
+                        result = new int[decoder.FrameCount];
+
+                        for (int frame = 0; frame < result.Length; frame++)
+                        {
+
+                            using (var frameImage = decoder.GetFrame(frame))
+                            {
+                                // Check to see if we can actually read this thing.
+                                if (frame == 0)
+                                {
+                                    Guid temp = Guid.Empty;
+                                    settings = ReadMetaData(wic, decoder, frameImage, ref temp);
+
+                                    if (settings.Format == BufferFormat.Unknown)
+                                    {
+                                        throw new System.IO.IOException("Cannot decode the GIF file.  The data could not be decoded as a GIF file.");
+                                    }
+                                }
+
+                                var metaData = frameImage.MetadataQueryReader.GetMetadataByName("/grctlext/Delay");
+
+                                if (metaData != null)
+                                {
+                                    result[frame] = (ushort)metaData;
+                                }
+                                else
+                                {
+                                    result[frame] = 0;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            finally
+            {
+                stream.Position = position;
+            }
+
+            return result;
+        }
 		#endregion
 
 		#region Constructor/Destructor.

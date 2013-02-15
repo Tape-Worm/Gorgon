@@ -126,7 +126,7 @@
 
 Texture2DArray _textureArray : register(t0);
 
-cbuffer frameIndex : register(b0)
+cbuffer frameIndex : register(b2)
 {
 	float4 index;
 }
@@ -134,17 +134,9 @@ cbuffer frameIndex : register(b0)
 
 float4 DualTex(GorgonSpriteVertex vertex) : SV_Target
 {
-	float4 sample0 = _textureArray.Sample(_gorgonSampler, float3(vertex.uv, 0));
-	float4 sample1 = _textureArray.Sample(_gorgonSampler, float3(vertex.uv, index.x));
+	float4 sample0 = _textureArray.Sample(_gorgonSampler, float3(vertex.uv, index.x));
 
-	if (sample1.a &gt; 0)
-	{
-		return sample1 * vertex.color.a;
-	}
-	else
-	{
-		return sample0 * vertex.color.a;
-	}
+	return sample0 * vertex.color.a;
 }</value>
   </data>
   <data name="Test" type="System.Resources.ResXFileRef, System.Windows.Forms">
