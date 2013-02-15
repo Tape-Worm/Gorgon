@@ -70,34 +70,6 @@ namespace GorgonLibrary.IO
 		/// </summary>
 		None = WIC.BitmapDitherType.None,
 		/// <summary>
-		/// A 4x4 ordered dither algorithm.
-		/// </summary>
-		Dither4x4 = WIC.BitmapDitherType.Ordered4x4,
-		/// <summary>
-		/// An 8x8 ordered dither algorithm.
-		/// </summary>
-		Dither8x8 = WIC.BitmapDitherType.Ordered8x8,
-		/// <summary>
-		/// A 16x16 ordered dither algorithm.
-		/// </summary>
-		Dither16x16 = WIC.BitmapDitherType.Ordered16x16,
-		/// <summary>
-		/// An 4x4 spiral dither algorithm.
-		/// </summary>
-		Spiral4x4 = WIC.BitmapDitherType.Spiral4x4,
-		/// <summary>
-		/// An 8x8 spiral dither algorithm.
-		/// </summary>
-		Spiral8x8 = WIC.BitmapDitherType.Spiral8x8,
-		/// <summary>
-		/// A 4x4 dual spiral dither algorithm.
-		/// </summary>
-		DualSpiral4x4 = WIC.BitmapDitherType.DualSpiral4x4,
-		/// <summary>
-		/// An 8x8 dual spiral dither algorithm.
-		/// </summary>
-		DualSpiral8x8 = WIC.BitmapDitherType.DualSpiral8x8,
-		/// <summary>
 		/// An error diffusion algorithm.
 		/// </summary>
 		ErrorDiffusion = WIC.BitmapDitherType.ErrorDiffusion
@@ -134,6 +106,45 @@ namespace GorgonLibrary.IO
 		: INamedObject
 	{
 		#region Properties.
+		/// <summary>
+		/// Property to set or return whether to clip the image or to scale it if the size is mismatched.
+		/// </summary>
+		/// <remarks>Setting this value to FALSE will scale the image to match the image data buffer size.  Setting it to TRUE will clip it to the buffer size.
+		/// <para>This applies to decoding images only and only when the image width or height is smaller than the width or height in the image file.</para>
+		/// <para>The default value is TRUE.</para>
+		/// </remarks>
+		public bool Clip
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Property to set or return the dithering type to apply to images that lose bit depth information.
+		/// </summary>
+		/// <remarks>This will allow the image to be dithered to cover up lost information due downsampling to a lower color depth.
+		/// <para>This applies to decoding images only and only when images are down sampled in bit depth (e.g. 32 bpp -> 16 bpp).</para>
+		/// <para>The default is None.</para>
+		/// </remarks>
+		public ImageDithering Dithering
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Property to set or return the filter to apply when an image file is scaled up or down to match the image data buffer.
+		/// </summary>
+		/// <remarks>This will apply filtering to smooth out the image file data if it needs to be scaled up or down.
+		/// <para>This applies to decoding images only and only when images are scaled.</para>
+		/// <para>The default value is Fant.</para>
+		/// </remarks>
+		public ImageFilter Filter
+		{
+			get;
+			set;
+		}
+
 		/// <summary>
 		/// Property to return the common file name extension(s) for a codec.
 		/// </summary>
@@ -603,6 +614,9 @@ namespace GorgonLibrary.IO
 		/// </summary>
 		protected GorgonImageCodec()
 		{
+			Clip = true;
+			Filter = ImageFilter.Fant;
+			Dithering = ImageDithering.None;
 			CodecCommonExtensions = new string[] { };
 		}
 		#endregion

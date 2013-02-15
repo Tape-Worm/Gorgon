@@ -1290,7 +1290,7 @@ namespace GorgonLibrary.IO
 		{
 			SetOpaqueIfZeroAlpha = true;
 
-			this.CodecCommonExtensions = new string[] { "tga" };
+			this.CodecCommonExtensions = new string[] { "tga", "tpic" };
             _formats = (BufferFormat[])Enum.GetValues(typeof(BufferFormat));
 		}
 		#endregion
