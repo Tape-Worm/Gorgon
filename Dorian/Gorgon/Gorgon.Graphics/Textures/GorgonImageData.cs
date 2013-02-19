@@ -621,8 +621,26 @@ namespace GorgonLibrary.Graphics
 				}
 			}
 			else
-			{				
-				texture.UpdateSubResource(textureData, resourceIndex);
+			{
+				switch (texture.Settings.ImageType)
+				{
+					case ImageType.Image1D:
+						((GorgonTexture1D)texture).UpdateSubResource(textureData, resourceIndex, new GorgonMinMax(0, texture.Settings.Width.Min(Settings.Width)));
+						break;
+					case ImageType.Image2D:
+					case ImageType.ImageCube:
+						Rectangle destArea = new Rectangle(0, 0, texture.Settings.Width.Min(Settings.Width), height);
+						((GorgonTexture2D)texture).UpdateSubResource(textureData, resourceIndex, destArea);
+						break;
+					case ImageType.Image3D:
+						GorgonBox destBox = new GorgonBox();
+						destBox.X = destBox.Y = destBox.Z = 0;
+						destBox.Width = texture.Settings.Width.Min(Settings.Width);
+						destBox.Height = height;
+						destBox.Depth = depth;
+						((GorgonTexture3D)texture).UpdateSubResource(textureData, resourceIndex, destBox);
+						break;
+				}
 			}				
 		}
 
