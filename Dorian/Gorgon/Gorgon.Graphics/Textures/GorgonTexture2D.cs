@@ -121,9 +121,9 @@ namespace GorgonLibrary.Graphics
 			region.Front = 0;
 			region.Back = 1;
 			region.Left = 0;
-			region.Right = Settings.Width - 1;
+			region.Right = Settings.Width;
 			region.Top = 0;
-			region.Bottom = Settings.Height - 1;
+			region.Bottom = Settings.Height;
 
 			Graphics.Context.UpdateSubresource(box, D3DResource, subResource, region);			
 		}
