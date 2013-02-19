@@ -157,34 +157,12 @@ namespace GorgonLibrary.IO
 
 		#region Properties
 		/// <summary>
-		/// Property to return formats to that are supported by this codec.
+		/// Property to set or return the format that is supported by this codec.
 		/// </summary>
-		protected Guid[] SupportedFormats
+		protected Guid SupportedFormat
 		{
 			get;
-			set;
-		}
-
-		/// <summary>
-		/// Property to return whether the codec supports multiple frames or not.
-		/// </summary>
-		public bool SupportsMultiFrame
-		{
-			get;
-			protected set;
-		}
-
-		/// <summary>
-		/// Property to set or return the flags used for decoding the image.
-		/// </summary>
-		/// <remarks>This will alter the conversion process for an image when changing formats.
-		/// <para>This property applied to decoding of image data only.</para>
-		/// <para>The default value is None.</para>
-		/// </remarks>
-		public WICFlags DecodeFlags
-		{
-			get;
-			set;
+			private set;
 		}
 
 		/// <summary>
@@ -196,6 +174,19 @@ namespace GorgonLibrary.IO
 		/// <para>The default value is FALSE.</para>
 		/// </remarks>
 		protected bool CodecUseAllFrames
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Property to set or return the flags used for decoding the image.
+		/// </summary>
+		/// <remarks>This will alter the conversion process for an image when changing formats.
+		/// <para>This property applied to decoding of image data only.</para>
+		/// <para>The default value is None.</para>
+		/// </remarks>
+		public WICFlags DecodeFlags
 		{
 			get;
 			set;
@@ -253,20 +244,22 @@ namespace GorgonLibrary.IO
 					Guid frameFormat = frame.PixelFormat;
 					int frameWidth = frame.Size.Width;
 					int frameHeight = frame.Size.Height;
-					bool needsSizeAdjust = (frameWidth > data.Settings.Width) && (frameHeight > data.Settings.Height);
 					var frameOffset = GetFrameOffset(frame);
 
-					// Calculate the pointer offset if we have an offset from the frame..
-					if ((frameOffset.Y != 0) || (frameOffset.X != 0))
+					// Calculate the pointer offset if we have an offset from the frame.  Only offset if we're clipping the image though.
+					if (((frameOffset.Y != 0) || (frameOffset.X != 0)) && (Clip))
 					{
 						bufferPointer = buffer.Data.BasePointer + (frameOffset.Y * buffer.PitchInformation.RowPitch) + (frameOffset.X * (buffer.PitchInformation.RowPitch / buffer.Width));
 					}
+
+					// Confirm that we actually need to perform clipping.
+					bool needsSizeAdjust = (frameWidth + frameOffset.X > data.Settings.Width) || (frameHeight + frameOffset.Y > data.Settings.Height);
 
 					// If the formats match, then we don't need to do conversion.
 					if (bestPixelFormat == frameFormat)
 					{
 						// If the width and height are the same then we can just do a straight copy into the buffer.
-						if ((frameWidth == data.Settings.Width) && (frameHeight == data.Settings.Height) || ((!needsSizeAdjust) && (Clip)))
+						if (((frameWidth == data.Settings.Width) && (frameHeight == data.Settings.Height)) || ((!needsSizeAdjust) && (Clip)))
 						{
 							frame.CopyPixels(buffer.PitchInformation.RowPitch, bufferPointer, buffer.PitchInformation.SlicePitch);
 						}
@@ -299,7 +292,7 @@ namespace GorgonLibrary.IO
 						{		
 							converter.Initialize(frame, bestPixelFormat, (WIC.BitmapDitherType)Dithering, null, 0.0, WIC.BitmapPaletteType.Custom);
 
-							if ((frameWidth == data.Settings.Width) && (frameHeight == data.Settings.Height) || ((!needsSizeAdjust) && (Clip)))
+							if (((frameWidth == data.Settings.Width) && (frameHeight == data.Settings.Height)) || ((!needsSizeAdjust) && (Clip)))
 							{
 								converter.CopyPixels(buffer.PitchInformation.RowPitch, bufferPointer, buffer.PitchInformation.SlicePitch);
 							}
@@ -362,7 +355,7 @@ namespace GorgonLibrary.IO
 					// If the pixel format is indexed, then retrieve a palette.
 					if (isIndexed)
 					{
-						paletteInfo = GetPaletteInfo(wic, true);
+						paletteInfo = GetPaletteInfo(wic, null);
 					}
 
 					// If we've defined a palette for an indexed image, then copy it to a bitmap and set its palette.
@@ -417,7 +410,7 @@ namespace GorgonLibrary.IO
                 Width = frame.Size.Width,
                 Height = frame.Size.Height,
                 MipCount = 1,
-                ArrayCount = (CodecUseAllFrames) ? decoder.FrameCount : 1,
+                ArrayCount = (CodecUseAllFrames && SupportsMultipleFrames) ? decoder.FrameCount : 1,
                 Format = wic.FindBestFormat(frame.PixelFormat, DecodeFlags, ref bestFormatMatch)
             };
         }
@@ -436,9 +429,9 @@ namespace GorgonLibrary.IO
 		/// Function to retrieve palette information for indexed images.
 		/// </summary>
 		/// <param name="wic">The WIC interface.</param>
-		/// <param name="decoding">TRUE if decoding, FALSE if not.</param>
+		/// <param name="bitmap">The bitmap to derive the palette from (only used when encoding).</param>
 		/// <returns>A tuple containing the palette data, alpha percentage and the type of palette.  NULL if we're encoding and we want to generate the palette from the frame.</returns>
-		internal virtual Tuple<WIC.Palette, double, WIC.BitmapPaletteType> GetPaletteInfo(GorgonWICImage wic, bool decoding)
+		internal virtual Tuple<WIC.Palette, double, WIC.BitmapPaletteType> GetPaletteInfo(GorgonWICImage wic, WIC.Bitmap bitmap)
 		{
 			return new Tuple<WIC.Palette, double, WIC.BitmapPaletteType>(null, 0, WIC.BitmapPaletteType.Custom);
 		}
@@ -459,41 +452,54 @@ namespace GorgonLibrary.IO
 			// Get our WIC interface.
 			using (var wic = new GorgonWICImage())
 			{
-				using (var decoder = new WIC.BitmapDecoder(wic.Factory, stream, WIC.DecodeOptions.CacheOnDemand))
+				using (var decoder = new WIC.BitmapDecoder(wic.Factory, SupportedFormat))
 				{
-					using (var frame = decoder.GetFrame(0))
-					{						
-						var settings = ReadMetaData(wic, decoder, frame, ref bestFormat);
-
-						if (settings.Format == BufferFormat.Unknown)
-						{
-							throw new System.IO.IOException("Cannot decode the " + Codec + " file.  Format is not supported.");
-						}
-
-						// Create our image data.
+					using (var wicStream = new WIC.WICStream(wic.Factory, stream))
+					{
 						try
 						{
-							result = new GorgonImageData(settings);
-
-							if (settings.ArrayCount > 1)
-							{
-								ReadFrames(wic, result, decoder);
-							}
-							else
-							{
-								ReadFrame(wic, result, frame.PixelFormat, bestFormat, frame);
-							}
+							decoder.Initialize(wicStream, WIC.DecodeOptions.CacheOnDemand);
 						}
-						catch
+						catch (SharpDX.SharpDXException sdex)
 						{
-							// If we run into a problem, dump the memory buffer.
-							if (result != null)
-							{
-								result.Dispose();
-							}
-							result = null;
+							// Repackage this exception to keep in line with our API.
+							throw new System.IO.IOException("Cannot decode the " + Codec + " file. " + sdex.Descriptor.Description, sdex);
+						}
 
-							throw;
+						using (var frame = decoder.GetFrame(0))
+						{
+							var settings = ReadMetaData(wic, decoder, frame, ref bestFormat);
+
+							if (settings.Format == BufferFormat.Unknown)
+							{
+								throw new System.IO.IOException("Cannot decode the " + Codec + " file.  Format is not supported.");
+							}
+
+							// Create our image data.
+							try
+							{
+								result = new GorgonImageData(settings);
+
+								if (settings.ArrayCount > 1)
+								{
+									ReadFrames(wic, result, decoder);
+								}
+								else
+								{
+									ReadFrame(wic, result, frame.PixelFormat, bestFormat, frame);
+								}
+							}
+							catch
+							{
+								// If we run into a problem, dump the memory buffer.
+								if (result != null)
+								{
+									result.Dispose();
+								}
+								result = null;
+
+								throw;
+							}
 						}
 					}
 				}
@@ -509,7 +515,100 @@ namespace GorgonLibrary.IO
 		/// <param name="stream">Stream that will contain the data.</param>
 		protected internal override void SaveToStream(GorgonImageData imageData, System.IO.Stream stream)
 		{
-			
+			int frameCount = 1;
+			Guid targetFormat = Guid.Empty;
+			Guid actualFormat = Guid.Empty;
+
+			using (var wic = new GorgonWICImage())
+			{
+				// Find a compatible format.
+				targetFormat = wic.GetGUID(imageData.Settings.Format);
+
+				if (targetFormat == Guid.Empty)
+				{
+					throw new System.IO.IOException("Cannot encode the " + Codec + " file. The format " + imageData.Settings.Format.ToString() + " is not supported.");
+				}
+
+				actualFormat = targetFormat;
+								
+				using (var encoder = new WIC.BitmapEncoder(wic.Factory, SupportedFormat))
+				{
+					try
+					{
+						encoder.Initialize(stream);
+					}
+					catch(SharpDX.SharpDXException sdex)
+					{
+						// Repackage this exception to keep in line with our API.
+						throw new System.IO.IOException("Cannot encode the " + Codec + " file. " + sdex.Descriptor.Description, sdex);
+					}
+
+					if ((imageData.Settings.ArrayCount > 1) && (CodecUseAllFrames) && (encoder.EncoderInfo.IsMultiframeSupported))
+					{
+						frameCount = imageData.Settings.ArrayCount;
+					}
+										
+					for (int frameIndex = 0; frameIndex < frameCount; frameIndex++)
+					{
+						using (var frame = new WIC.BitmapFrameEncode(encoder))
+						{
+							var buffer = imageData[frameIndex, 0];
+							
+							frame.Initialize();
+							frame.SetSize(buffer.Width, buffer.Height);
+							frame.SetResolution(72, 72);
+							frame.SetPixelFormat(ref actualFormat);
+
+							// If the image encoder doesn't like the format we've chosen, then we'll need to convert to 
+							// the best format for the codec.
+							if (targetFormat != actualFormat)
+							{
+								SharpDX.DataRectangle rect = new SharpDX.DataRectangle(buffer.Data.BasePointer, buffer.PitchInformation.RowPitch);
+								using (WIC.Bitmap bitmap = new WIC.Bitmap(wic.Factory, buffer.Width, buffer.Height, targetFormat, rect))
+								{
+									// If we're using a codec that supports 8 bit indexed data, then get the palette info.									
+									var paletteInfo = GetPaletteInfo(wic, bitmap);
+
+									if (paletteInfo == null)
+									{
+										throw new NullReferenceException("The codec does not return proper palette encoding information.");
+									}
+
+									try
+									{
+										using (WIC.FormatConverter converter = new WIC.FormatConverter(wic.Factory))
+										{
+											converter.Initialize(bitmap, actualFormat, (WIC.BitmapDitherType)Dithering, paletteInfo.Item1, paletteInfo.Item2, paletteInfo.Item3);
+											if (paletteInfo.Item1 != null)
+											{
+												frame.Palette = paletteInfo.Item1;
+											}
+											frame.WriteSource(converter);
+										}
+									}
+									finally
+									{
+										if ((paletteInfo != null) && (paletteInfo.Item1 != null))
+										{
+											paletteInfo.Item1.Dispose();
+											paletteInfo = null;
+										}										
+									}
+								}
+							}
+							else
+							{
+								// No conversion was needed, just dump as-is.
+								frame.WritePixels(buffer.Height, buffer.Data.BasePointer, buffer.PitchInformation.RowPitch, buffer.PitchInformation.SlicePitch);
+							}
+
+							frame.Commit();
+						}
+					}
+
+					encoder.Commit();
+				}
+			}
 		}
 
 		/// <summary>
@@ -552,23 +651,35 @@ namespace GorgonLibrary.IO
                 // Get our WIC interface.
                 using (var wic = new GorgonWICImage())
                 {
-                    using (var decoder = new WIC.BitmapDecoder(wic.Factory, stream, WIC.DecodeOptions.CacheOnDemand))
+                    using (var decoder = new WIC.BitmapDecoder(wic.Factory, SupportedFormat))
                     {
-                        using (var frame = decoder.GetFrame(0))
-                        {
-                            var settings = ReadMetaData(wic, decoder, frame, ref bestFormat);
+						using (var wicStream = new WIC.WICStream(wic.Factory, stream))
+						{
+							try
+							{
+								decoder.Initialize(wicStream, WIC.DecodeOptions.CacheOnDemand);
+							}
+							catch (SharpDX.SharpDXException sdex)
+							{
+								throw new System.IO.IOException("Cannot decode the " + Codec + " file. " + sdex.Descriptor.Description, sdex);
+							}
 
-                            if (settings.Format == BufferFormat.Unknown)
-                            {
-                                throw new System.IO.IOException("Cannot decode the " + Codec + " file.  Format is not supported.");
-                            }
+							using (var frame = decoder.GetFrame(0))
+							{
+								var settings = ReadMetaData(wic, decoder, frame, ref bestFormat);
 
-                            return settings;
-                        }
+								if (settings.Format == BufferFormat.Unknown)
+								{
+									throw new System.IO.IOException("Cannot decode the " + Codec + " file.  Format is not supported.");
+								}
+
+								return settings;
+							}
+						}
                     }
                 }
             }
-            finally
+			finally
             {
                 stream.Position = position;
             }
@@ -586,7 +697,7 @@ namespace GorgonLibrary.IO
 		/// <para>-or-</para>
 		/// <para>Thrown when the stream cannot perform seek operations.</para>
 		/// </exception>		
-		public override bool CanBeRead(System.IO.Stream stream)
+		public override bool IsReadable(System.IO.Stream stream)
 		{
 			long position = 0;
 			Guid bestFormat = Guid.Empty;
@@ -613,27 +724,34 @@ namespace GorgonLibrary.IO
 				// Get our WIC interface.
 				using (var wic = new GorgonWICImage())
 				{
-					using (var decoder = new WIC.BitmapDecoder(wic.Factory, stream, WIC.DecodeOptions.CacheOnDemand))
+					using (var decoder = new WIC.BitmapDecoder(wic.Factory, SupportedFormat))
 					{
-						// Only load supported WIC formats.
-						if (!SupportedFormats.Contains(decoder.ContainerFormat))
+						using (WIC.WICStream wicStream = new WIC.WICStream(wic.Factory, stream))
 						{
-							return false;
-						}
+							try
+							{
+								decoder.Initialize(wicStream, WIC.DecodeOptions.CacheOnDemand);
+							}
+							catch (SharpDX.SharpDXException)
+							{
+								return false;
+							}
 
-						using (var frame = decoder.GetFrame(0))
-						{
-							var settings = ReadMetaData(wic, decoder, frame, ref bestFormat);
+							// Only load supported WIC formats.
+							if (SupportedFormat != decoder.ContainerFormat)
+							{
+								return false;
+							}
 
-							return (settings.Format != BufferFormat.Unknown);
+							using (var frame = decoder.GetFrame(0))
+							{
+								var settings = ReadMetaData(wic, decoder, frame, ref bestFormat);
+
+								return (settings.Format != BufferFormat.Unknown);
+							}							
 						}
 					}
 				}
-			}
-			catch (System.IO.EndOfStreamException)
-			{
-				// Catch end of stream as a sign that we can't read this file.
-				return false;
 			}
 			finally
 			{
@@ -649,19 +767,15 @@ namespace GorgonLibrary.IO
 		/// <param name="codec">Codec name.</param>
 		/// <param name="description">Description for the codec.</param>
 		/// <param name="extensions">Common extension(s) for the codec.</param>
-		internal GorgonCodecWIC(string codec, string description, string[] extensions)
+		/// <param name="containerGUID">GUID for the container format.</param>
+		internal GorgonCodecWIC(string codec, string description, string[] extensions, Guid containerGUID)
 		{
 			DecodeFlags = WICFlags.None;
-			CodecUseAllFrames = false;
+			CodecUseAllFrames = true;
 			_codec = codec;
 			_description = description;
 			CodecCommonExtensions = extensions;
-			SupportedFormats = new [] 
-			{
-				WIC.ContainerFormatGuids.Png,
-				WIC.ContainerFormatGuids.Jpeg,
-				WIC.ContainerFormatGuids.Wmp
-			};
+			SupportedFormat = containerGUID;			
 		}
 		#endregion
 	}

@@ -1305,7 +1305,7 @@ namespace GorgonLibrary.Renderers
 			_defaultTarget = target;
 			_swapChain = target as GorgonSwapChain;
 
-			Icons = Graphics.Textures.FromGDIBitmap("Gorgon2D.Icons", Properties.Resources.Icons, new GorgonTexture2DSettings());
+			Icons = Graphics.Textures.Create2DTextureFromGDIImage("Gorgon2D.Icons", Properties.Resources.Icons);
 			_logoSprite = new GorgonSprite(this, "Gorgon2D.LogoSprite", new GorgonSpriteSettings()
 			{
 				Anchor = new Vector2(Graphics.Textures.GorgonLogo.Settings.Size),

@@ -401,20 +401,20 @@ namespace GorgonLibrary.Examples
 
 				// Create the backup image.  Make it as large as the monitor that we're on.
 				Screen currentScreen = Screen.FromHandle(this.Handle);				
-				using (GorgonDataStream stream = new GorgonDataStream(currentScreen.Bounds.Width * currentScreen.Bounds.Height * 4))
-				{
-					// Clear our backup image to white to match our primary screen.
-					GorgonImageData data = new GorgonImageData(new GorgonTexture2DSettings()
-					{
-						Width = currentScreen.Bounds.Width,
-						Height = currentScreen.Bounds.Height,
-						Format = BufferFormat.R8G8B8A8_UIntNormal,
-						Usage = BufferUsage.Staging
-					});
-					data[0].Data.Fill(0xFF);
 
-					_backupImage = _graphics.Textures.CreateTexture<GorgonTexture2D>("Backup", (GorgonTexture2DSettings)data.Settings, data);
-				}
+				var settings = new GorgonTexture2DSettings()
+				{
+					Width = currentScreen.Bounds.Width,
+					Height = currentScreen.Bounds.Height,
+					Format = BufferFormat.R8G8B8A8_UIntNormal,
+					Usage = BufferUsage.Staging
+				};
+
+				// Clear our backup image to white to match our primary screen.
+				_backupImage = _graphics.Textures.CreateTexture<GorgonTexture2D>("Backup", settings);
+				var textureData = _backupImage.Lock<GorgonTexture2DData>(BufferLockFlags.Write);
+				textureData.Data.Fill(0xFF);
+				_backupImage.Unlock();
 
 				// Relocate the window to the center of the screen.				
 				Location = new Point(currentScreen.Bounds.Left + (currentScreen.WorkingArea.Width / 2) - ClientSize.Width / 2,

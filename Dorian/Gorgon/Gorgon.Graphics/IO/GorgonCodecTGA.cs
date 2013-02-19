@@ -1215,7 +1215,7 @@ namespace GorgonLibrary.IO
 		/// </returns>
 		/// <exception cref="System.IO.IOException">Thrown when the <paramref name="stream"/> is write-only or if the stream cannot perform seek operations.</exception>
 		/// <exception cref="System.IO.EndOfStreamException">Thrown when an attempt to read beyond the end of the stream is made.</exception>
-		public override bool CanBeRead(System.IO.Stream stream)
+		public override bool IsReadable(System.IO.Stream stream)
         {
 			TGAHeader header = default(TGAHeader);
 			long position = 0;

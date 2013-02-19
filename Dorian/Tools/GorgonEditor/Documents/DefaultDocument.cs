@@ -7,6 +7,7 @@ using System.Windows.Forms;
 using System.ComponentModel;
 using KRBTabControl;
 using SlimMath;
+using GorgonLibrary.IO;
 using GorgonLibrary.Diagnostics;
 using GorgonLibrary.Graphics;
 using GorgonLibrary.Renderers;
@@ -142,15 +143,12 @@ namespace GorgonLibrary.GorgonEditor
 			SizeF logoSize = SizeF.Empty;
 			GorgonRenderTarget blur = null;	// Medium blur.
 
-			_logo = Program.Graphics.Textures.FromGDIBitmap("Logo", Properties.Resources.Gorgon_2_Logo_Full, new GorgonTexture2DSettings()
+			_logo = Program.Graphics.Textures.Create2DTextureFromGDIImage("Logo", Properties.Resources.Gorgon_2_Logo_Full, new GorgonGDIOptions()
 			{
 				Width = 0,
 				Height = 372,
-				FileFilter = ImageFilters.None,
-				FileMipFilter = ImageFilters.None,
 				Format = BufferFormat.Unknown,
 				ArrayCount = 1,
-				IsTextureCube = false,
 				MipCount = 1,
 				Usage = BufferUsage.Default
 			});

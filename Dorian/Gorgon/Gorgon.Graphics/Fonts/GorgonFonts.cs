@@ -209,7 +209,7 @@ namespace GorgonLibrary.Graphics
 
                         if (texture == null)
                         {
-                            texture = _graphics.Textures.FromStream<GorgonTexture2D>(textureName, stream, textureSize);
+                            texture = _graphics.Textures.FromStream<GorgonTexture2D>(textureName, stream, textureSize, GorgonImageCodecs.Png);
                             // Don't track these textures.
                             _graphics.RemoveTrackedObject(texture);
                             font.Textures.AddBind(texture);
@@ -228,7 +228,7 @@ namespace GorgonLibrary.Graphics
                         // Otherwise load it in.
                         if (texture == null)
                         {
-                            texture = _graphics.Textures.FromFile<GorgonTexture2D>(textureName, texturePath);
+							texture = _graphics.Textures.FromFile<GorgonTexture2D>(textureName, texturePath, GorgonImageCodecs.Png);
                             _graphics.RemoveTrackedObject(texture);
                             font.Textures.AddBind(texture);
                         }

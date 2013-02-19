@@ -139,7 +139,7 @@ namespace Test_Dual
 
 			_2D = _graphics.Output.Create2DRenderer(_swap1);
 			_font = _graphics.Fonts.CreateFont("Font", _form1.Font, FontAntiAliasMode.AntiAliasHQ, new System.Drawing.Size(256, 256));
-			_ball = _graphics.Textures.FromFile<GorgonTexture2D>("Ball", @"..\..\..\..\Resources\BallDemo\BallDemo.png");
+			_ball = _graphics.Textures.FromFile<GorgonTexture2D>("Ball", @"..\..\..\..\Resources\BallDemo\BallDemo.png", GorgonLibrary.IO.GorgonImageCodecs.Png);
 			_sprite = _2D.Renderables.CreateSprite("Sprite", new Vector2(64, 64), _ball, new System.Drawing.RectangleF(64, 0, 64, 64));
 			_sprite.Anchor = new Vector2(32, 32);
 			_bounds1 = new RectangleF(-32, 0, 864, 600);
@@ -169,7 +169,7 @@ namespace Test_Dual
 					});
 				combinedTexture.CopySubResource(_swap1.Texture, 0, 0, new Rectangle(0, 0, 800, 600), Vector2.Zero);
 				combinedTexture.CopySubResource(_swap2.Texture, 0, 0, new Rectangle(0, 0, 800, 600), new Vector2(800, 0));
-				combinedTexture.Save(Environment.GetFolderPath(Environment.SpecialFolder.Desktop) + @"\DualMonitor.png", ImageFileFormat.PNG);
+				combinedTexture.Save(Environment.GetFolderPath(Environment.SpecialFolder.Desktop) + @"\DualMonitor.png", GorgonLibrary.IO.GorgonImageCodecs.Png);
 			}
 		}
 

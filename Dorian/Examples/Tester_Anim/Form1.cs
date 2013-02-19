@@ -8,6 +8,7 @@ using System.Text;
 using System.Windows.Forms;
 using SlimMath;
 using GorgonLibrary;
+using GorgonLibrary.IO;
 using GorgonLibrary.UI;
 using GorgonLibrary.Graphics;
 using GorgonLibrary.Animation;
@@ -106,7 +107,7 @@ namespace Tester_Anim
 				_2D = _graphics.Output.Create2DRenderer(this);
 				ClientSize = new System.Drawing.Size(1280, 800);
 
-				_texture = _graphics.Textures.FromFile<GorgonTexture2D>("Stars", @"..\..\..\..\Resources\Images\Stars.png");
+				_texture = _graphics.Textures.FromFile<GorgonTexture2D>("Stars", @"..\..\..\..\Resources\Images\Stars.png", GorgonImageCodecs.Png);
 				_sprites = new StarSprite[6];
 				_stars = new Star[2048];
 

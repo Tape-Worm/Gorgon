@@ -107,6 +107,59 @@ namespace GorgonLibrary.IO
 	{
 		#region Properties.
 		/// <summary>
+		/// Property to return whether the codec supports decoding/encoding multiple frames or not.
+		/// </summary>
+		public virtual bool SupportsMultipleFrames
+		{
+			get
+			{
+				return false;
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return the usage for textures loaded with this codec.
+		/// </summary>
+		/// <remarks>This will assign the usage pattern for a texture that is loaded by this codc.
+		/// <para>This property is for <see cref="GorgonLibrary.Graphics.GorgonTexture">textures</see> only, for <see cref="GorgonLibrary.Graphics.GorgonImageData">image data</see> it is ignored.</para>
+		/// <para>This property is only applied when decoding an image, otherwise it is ignored.</para>
+		/// <para>The default value is Default.</para>
+		/// </remarks>
+		public BufferUsage Usage
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Property to set or return the shader view format for a texture loaded with this codec.
+		/// </summary>
+		/// <remarks>This changes how the texture is sampled/viewed in a shader.  When this value is set to Unknown the view format is taken from the texture format.
+		/// <para>This property is for <see cref="GorgonLibrary.Graphics.GorgonTexture">textures</see> only, for <see cref="GorgonLibrary.Graphics.GorgonImageData">image data</see> it is ignored.</para>
+		/// <para>This property is only applied when decoding an image, otherwise it is ignored.</para>
+		/// <para>The default value is Unknown.</para>
+		/// </remarks>
+		public BufferFormat ViewFormat
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Property to set or return whether the view uses unordered access.
+		/// </summary>
+		/// <remarks>This changes how the texture is sampled/viewed in a shader.  
+		/// <para>This property is for <see cref="GorgonLibrary.Graphics.GorgonTexture">textures</see> only, for <see cref="GorgonLibrary.Graphics.GorgonImageData">image data</see> it is ignored.</para>
+		/// <para>This property is only applied when decoding an image, otherwise it is ignored.</para>
+		/// <para>The default value is FALSE.</para>
+		/// </remarks>
+		public bool ViewIsUnordered
+		{
+			get;
+			set;
+		}
+		
+		/// <summary>
 		/// Property to set or return whether to clip the image or to scale it if the size is mismatched.
 		/// </summary>
 		/// <remarks>Setting this value to FALSE will scale the image to match the image data buffer size.  Setting it to TRUE will clip it to the buffer size.
@@ -580,7 +633,7 @@ namespace GorgonLibrary.IO
         /// </returns>
         /// <exception cref="System.IO.IOException">Thrown when the <paramref name="stream"/> is write-only or if the stream cannot perform seek operations.</exception>
 		/// <exception cref="System.IO.EndOfStreamException">Thrown when an attempt to read beyond the end of the stream is made.</exception>
-		public abstract bool CanBeRead(System.IO.Stream stream);
+		public abstract bool IsReadable(System.IO.Stream stream);
 
 		/// <summary>
         /// Function to read file meta data.
@@ -618,6 +671,9 @@ namespace GorgonLibrary.IO
 			Filter = ImageFilter.Fant;
 			Dithering = ImageDithering.None;
 			CodecCommonExtensions = new string[] { };
+			ViewFormat = BufferFormat.Unknown;
+			ViewIsUnordered = false;
+			Usage = BufferUsage.Default;
 		}
 		#endregion
 

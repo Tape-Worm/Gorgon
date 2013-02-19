@@ -132,7 +132,7 @@ namespace GorgonLibrary.GorgonEditor
 			}
 
 			Graphics = new GorgonGraphics();
-			FontTools = Graphics.Textures.FromGDIBitmap("Texture.FontTools", Properties.Resources.IBar);
+			FontTools = Graphics.Textures.Create2DTextureFromGDIImage("Texture.FontTools", Properties.Resources.IBar);
 			// Create the renderer with a default swap chain.  This is sized to 1x1 to keep from eating
 			// video memory since we'll never use this particular swap chain.
 			// The down side is that we'll end up having to manage our render targets manually.

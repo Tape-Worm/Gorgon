@@ -109,6 +109,44 @@ namespace GorgonLibrary.Renderers
 		}
 
 		/// <summary>
+		/// Property to set or return the size of the renderable after scaling has been applied.
+		/// </summary>
+		/// <remarks>This property will set or return the actual size of the renderable.  This means that if a <see cref="GorgonLibrary.Renderers.GorgonMoveable.Scale">Scale</see> has been set, 
+		/// then this property will return the size of the renderable with multiplied by the scale.  When assigning a value, the scale be set on value derived from the current size of the renderable.
+		/// <para>A renderable with a size of 1,1 will set/return the same value as <see cref="GorgonLibrary.Renderers.GorgonMoveable.Scale">Scale</see> property.</para></remarks>
+		/// <exception cref="System.DivideByZeroException">Thrown when one of the axes in the Size property of the renderable is 0.</exception>
+		public virtual Vector2 ScaledSize
+		{
+			get
+			{
+				if ((Size.X == 1.0f) && (Size.Y == 1.0f))
+				{
+					return Size;
+				}
+
+				return new Vector2(Scale.X * Size.X, Scale.Y * Size.Y);
+			}
+			set
+			{
+				if ((Size.X == 1.0f) && (Size.Y == 1.0f))
+				{
+					Scale = value;
+					return;
+				}
+
+#if DEBUG
+				// If the renderable has no dimensions, then leave.
+				if ((Size.X == 0) || (Size.Y == 0))
+				{
+					throw new DivideByZeroException("Divide by zero.  Cannot calculate scale, the size of the renderable is {" + Size.X.ToString() + ", " + Size.Y.ToString() + "}.");
+				}
+#endif
+
+				Scale = new Vector2(value.X / Size.X, value.Y / Size.Y);
+			}
+		}
+
+		/// <summary>
 		/// Property to set or return the size of the renderable.
 		/// </summary>
 		[AnimatedProperty()]

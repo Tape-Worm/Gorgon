@@ -267,74 +267,11 @@ namespace GorgonLibrary.Graphics
 			}
 		}
 
-		/// <summary>
-		/// Function to read image data from an array of bytes.
-		/// </summary>
-		/// <param name="imageData">Array of bytes holding the image data.</param>
-		internal void InitializeFileData(byte[] imageData)
-		{
-			try
-			{
-				D3D.ImageLoadInformation imageInfo = new D3D.ImageLoadInformation();
-
-				if (Settings.Usage != BufferUsage.Staging)
-					imageInfo.BindFlags = D3D.BindFlags.ShaderResource;
-				else
-					imageInfo.BindFlags = D3D.BindFlags.None;
-
-				// Rebind as a render target.
-				if (this.IsRenderTarget)
-					imageInfo.BindFlags |= D3D.BindFlags.RenderTarget;
-
-				switch (Settings.Usage)
-				{
-					case BufferUsage.Staging:
-						imageInfo.CpuAccessFlags = D3D.CpuAccessFlags.Read | D3D.CpuAccessFlags.Write;
-						break;
-					case BufferUsage.Dynamic:
-						imageInfo.CpuAccessFlags = D3D.CpuAccessFlags.Write;
-						break;
-					default:
-						imageInfo.CpuAccessFlags = D3D.CpuAccessFlags.None;
-						break;
-				}
-
-				imageInfo.Depth = Settings.Depth;
-				imageInfo.Filter = (D3D.FilterFlags)Settings.FileFilter;
-				imageInfo.FirstMipLevel = 0;
-				imageInfo.Format = (SharpDX.DXGI.Format)Settings.Format;
-				imageInfo.Width = Settings.Width;
-				imageInfo.Height = Settings.Height;
-				imageInfo.MipFilter = (D3D.FilterFlags)Settings.FileMipFilter;
-				imageInfo.MipLevels = Settings.MipCount;
-				imageInfo.OptionFlags = D3D.ResourceOptionFlags.None;
-				imageInfo.Usage = (D3D.ResourceUsage)Settings.Usage;
-
-				Gorgon.Log.Print("{0} {1}: Loading D3D11 texture resource...", Diagnostics.LoggingLevel.Verbose, GetType().Name, Name);
-				InitializeImpl(imageData, imageInfo);
-
-				Settings = GetTextureInformation();
-				CreateDefaultResourceView();
-
-				GorgonRenderStatistics.TextureCount++;
-				GorgonRenderStatistics.TextureSize += SizeInBytes;
-			}
-			catch
-			{
-				if (D3DResource != null)
-				{
-					D3DResource.Dispose();
-					D3DResource = null;
-				}
-				throw;
-			}
-		}
-
         /// <summary>
         /// Function to convert this texture into an array of System.Drawing.Images.
         /// </summary>
         /// <returns>A list of <see cref="System.Drawing.Image"/> image objects.</returns>
-        public Image[] ToImage()
+        public Image[] ToGDIImage()
         {
             return GorgonGDIImageConverter.CreateGDIImagesFromTexture(this);
         }
@@ -350,65 +287,105 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
-		/// Function to save the texture data to an array of bytes.
+		/// Function to save the texture to a stream with the specified codec.
 		/// </summary>
-		/// <param name="format">Image format to use.</param>
-		/// <returns>An array of bytes containing the image data.</returns>
-		/// <remarks>The <paramref name="format"/> parameter must be set to DDS when saving 1D or 3D textures.
-		/// <para>If the texture format is not compatiable with a file format, then an exception will be raised.</para>
-		/// </remarks>
-		/// <exception cref="System.ArgumentException">Thrown when the format is anything other than DDS for a volume (3D) or 1D texture.
+		/// <param name="stream">Stream that will contain the texture information.</param>
+		/// <param name="codec">Codec used to encode the stream data.</param>        
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="stream"/> or the <paramref name="codec"/> parameter is NULL (Nothing in VB.Net).</exception>		
+		/// <exception cref="System.IO.IOException">Thrown when the stream is read-only.
 		/// <para>-or-</para>
-		/// <para>Thrown when the file cannot be saved with the requested file <paramref name="format"/>.</para>
+		/// <para>Thrown when there is an error when attempting to encode the image data.</para>
 		/// </exception>
-		public byte[] Save(ImageFileFormat format)
+		/// <remarks>This will persist the contents of the texture into a stream.  The data is encoded into various formats via the codec parameter.  Gorgon contains a 
+		/// number of built-in codecs accessible from the <see cref="GorgonLibrary.IO.GorgonImageCodecs">GorgonImageCodecs</see> interface.  Currently, Gorgon supports the following formats:
+		/// <list type="bullet">
+		///		<item>
+		///			<description>DDS</description>
+		///		</item>
+		///		<item>
+		///			<description>TGA</description>
+		///		</item>
+		///		<item>
+		///			<description>PNG (WIC)</description>
+		///		</item>
+		///		<item>
+		///			<description>BMP (WIC)</description>
+		///		</item>
+		///		<item>
+		///			<description>JPG (WIC)</description>
+		///		</item>
+		///		<item>
+		///			<description>WMP (WIC)</description>
+		///		</item>
+		///		<item>
+		///			<description>TIF (WIC)</description>
+		///		</item>
+		/// </list>
+		/// <para>The items with (WIC) indicate that the codec support is supplied by the Windows Imaging Component.  This component should be installed on most systems, but if it is not 
+		/// then it is required in order to read/save the files in those formats.</para>
+		/// </remarks>
+		public virtual void Save(Stream stream, IO.GorgonImageCodec codec)
 		{
-            using (MemoryStream stream = new MemoryStream())
-            {
-                Save(stream, format);
-                stream.Position = 0;
-                return stream.ToArray();
-            }
+			using (var textureData = GorgonImageData.CreateFromTexture(this))
+			{
+				textureData.Save(stream, codec);
+			}
 		}
 
 		/// <summary>
-		/// Function to save the texture data to a stream.
+		/// Function to save the image data to a file with the specified codec.
 		/// </summary>
-		/// <param name="stream">Stream to write.</param>
-		/// <param name="format">Image format to use.</param>
-		/// <remarks>The <paramref name="format"/> parameter must be set to DDS when saving 1D or 3D textures.
-		/// <para>If the texture format is not compatiable with a file format, then an exception will be raised.</para>
-		/// </remarks>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="stream"/> parameter is NULL (Nothing in VB.Net).</exception>
-		/// <exception cref="System.ArgumentException">
-		/// Thrown when the format is anything other than DDS for a volume (3D) or 1D texture.
+		/// <param name="filePath">Path to the file.</param>
+		/// <param name="codec">Codec used to encode the file data.</param>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="filePath"/> or the <paramref name="codec"/> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentException">Thrown when the filePath parameter is empty.</exception>
+		/// <exception cref="System.IO.IOException">Thrown when the stream is read-only.
 		/// <para>-or-</para>
-		/// <para>Thrown when the format is anything other than DDS.</para>
+		/// <para>Thrown when there is an error when attempting to encode the image data.</para>
 		/// </exception>
-		public abstract void Save(System.IO.Stream stream, ImageFileFormat format);
-
-		/// <summary>
-		/// Function to save the texture data to a file.
-		/// </summary>
-		/// <param name="fileName">Name of the file to save into.</param>
-		/// <param name="format">Image format to use.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="fileName"/> parameter is NULL (Nothing in VB.Net).</exception>
-		/// <exception cref="System.ArgumentException">Thrown when the fileName parameter is an empty string.
-		/// <para>-or-</para>
-		/// <para>Thrown when the format is anything other than DDS for a volume (3D) or 1D texture.</para>
-		/// <para>-or-</para>
-		/// <para>Thrown when the file cannot be saved with the requested file <paramref name="format"/>.</para>
-		/// </exception>
-		/// <remarks>The <paramref name="format"/> parameter must be set to DDS when saving 1D or 3D textures.
-		/// <para>If the texture format is not compatiable with a file format, then an exception will be raised.</para>
+		/// <remarks>This will persist the contents of the image data object into a stream.  The data is encoded into various formats via the codec parameter.  Gorgon contains a 
+		/// number of built-in codecs accessible from the <see cref="GorgonLibrary.IO.GorgonImageCodecs">GorgonImageCodecs</see> interface.  Currently, Gorgon supports the following formats:
+		/// <list type="bullet">
+		///		<item>
+		///			<description>DDS</description>
+		///		</item>
+		///		<item>
+		///			<description>TGA</description>
+		///		</item>
+		///		<item>
+		///			<description>PNG (WIC)</description>
+		///		</item>
+		///		<item>
+		///			<description>BMP (WIC)</description>
+		///		</item>
+		///		<item>
+		///			<description>JPG (WIC)</description>
+		///		</item>
+		///		<item>
+		///			<description>WMP (WIC)</description>
+		///		</item>
+		///		<item>
+		///			<description>TIF (WIC)</description>
+		///		</item>
+		/// </list>
+		/// <para>The items with (WIC) indicate that the codec support is supplied by the Windows Imaging Component.  This component should be installed on most systems, but if it is not 
+		/// then it is required in order to read/save the files in those formats.</para>
 		/// </remarks>
-		public void Save(string fileName, ImageFileFormat format)
+		public void Save(string filePath, GorgonImageCodec codec)
 		{
-			GorgonDebug.AssertParamString(fileName, "fileName");
+			if (filePath == null)
+			{
+				throw new ArgumentNullException("filePath");
+			}
 
-            using (FileStream stream = File.Open(fileName, FileMode.Create, FileAccess.Write, FileShare.None))
+			if (string.IsNullOrWhiteSpace(filePath))
+			{
+				throw new ArgumentException("The parameter must not be NULL or empty.", "fileName");
+			}
+
+            using (FileStream stream = File.Open(filePath, FileMode.Create, FileAccess.Write, FileShare.None))
             {
-				Save(stream, format);
+				Save(stream, codec);
 			}
 		}
 
@@ -464,7 +441,6 @@ namespace GorgonLibrary.Graphics
 				throw new InvalidOperationException("This 3D texture is CPU accessible and cannot be copied.");
 #endif
 
-			// If we have multisampling enabled, then copy the entire sub resource.
 			Graphics.Context.CopyResource(texture.D3DResource, D3DResource);
 		}
 

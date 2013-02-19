@@ -32,6 +32,7 @@ using System.Text;
 using System.Windows.Forms;
 using SlimMath;
 using GorgonLibrary;
+using GorgonLibrary.IO;
 using GorgonLibrary.Diagnostics;
 using GorgonLibrary.UI;
 using GorgonLibrary.Graphics;
@@ -213,7 +214,7 @@ namespace GorgonLibrary.Examples
 			_fileSystem.Mount(Program.GetResourcePath(@"FolderSystem\"));
 
 			// Get the sprite image.            
-			_spriteImage = _graphics.Textures.FromMemory<GorgonTexture2D>("0_HardVacuum", _fileSystem.ReadFile("/Images/0_HardVacuum.png"));
+			_spriteImage = _graphics.Textures.FromMemory<GorgonTexture2D>("0_HardVacuum", _fileSystem.ReadFile("/Images/0_HardVacuum.png"), GorgonImageCodecs.Png);
 
 			// Get the sprites.
             // The sprites in the file system are from version 1.0 of Gorgon.

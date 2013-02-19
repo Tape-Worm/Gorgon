@@ -29,6 +29,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
+using GorgonLibrary.IO;
 using GorgonLibrary.Diagnostics;
 using GorgonLibrary.FileSystem;
 using GorgonLibrary.Graphics;
@@ -224,8 +225,8 @@ namespace GorgonLibrary.Examples
             // Mount the packed file.
             _fileSystem.Mount(Program.GetResourcePath(@"BZipFileSystem.gorPack"));
 
-            // Get the sprite image.            
-            _spriteImage = _graphics.Textures.FromMemory<GorgonTexture2D>("0_HardVacuum", _fileSystem.ReadFile("/Images/0_HardVacuum.png"));
+			// Get the sprite image.            
+			_spriteImage = _graphics.Textures.FromMemory<GorgonTexture2D>("0_HardVacuum", _fileSystem.ReadFile("/Images/0_HardVacuum.png"), GorgonImageCodecs.Png);
 
             // Get the sprites.
             // The sprites in the file system are from version 1.0 of Gorgon.

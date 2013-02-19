@@ -61,14 +61,12 @@ namespace GorgonLibrary.IO
 	/// </list>
 	/// <para>The items with (WIC) indicate that the codec support is supplied by the Windows Imaging Component.  This component should be installed on most systems, but if it is not 
 	/// then it is required in order to read/save the files in those formats.</para>
-	/// <para>These codecs are system codecs and are always present.  However, a user may define their own codec to read and write images.  To do so, the user must create a codec object that inherits from 
-	/// <see cref="GorgonLibrary.IO.GorgonImageCodec">GorgonImageCodec</see> and then register it with the <see cref="GorgonLibrary.IO.GorgonImageCodecs.RegisterCodec">RegisterCodec</see> method.</para>
+	/// <para>These codecs are system codecs and are always present.  However, a user may define their own codec to read and write images (e.g. you don't want to require WIC).  To do so, the user must create a codec object that inherits from 
+	/// <see cref="GorgonLibrary.IO.GorgonImageCodec">GorgonImageCodec</see>.</para>
 	/// </remarks>
 	public static class GorgonImageCodecs
 	{
 		#region Variables.
-		private static GorgonImageCodecCollection _internal = null;		// Internal codecs.
-		private static GorgonImageCodecCollection _codecs = null;		// List of registered codecs.
 		private static GorgonCodecDDS _dds = null;						// DDS file format.
 		private static GorgonCodecTGA _tga = null;						// TGA file format.
 		private static GorgonCodecWIC _png = null;						// PNG file format.
@@ -81,31 +79,9 @@ namespace GorgonLibrary.IO
 
 		#region Properties.
 		/// <summary>
-		/// Property to return the internal list of registered codecs.
+		/// Property to return the Truevision Graphics Array codec.
 		/// </summary>
-		internal static GorgonImageCodecCollection InternalCodecs
-		{
-			get
-			{
-				return _internal;
-			}
-		}
-
-		/// <summary>
-		/// Property to return the registered codecs.
-		/// </summary>
-		public static GorgonImageCodecCollection RegisteredCodecs
-		{
-			get
-			{
-				return _codecs;
-			}
-		}
-
-		/// <summary>
-		/// Property to return the TGA codec.
-		/// </summary>
-		public static GorgonCodecTGA TGA
+		public static GorgonCodecTGA Tga
 		{
 			get
 			{
@@ -114,9 +90,9 @@ namespace GorgonLibrary.IO
 		}
 
 		/// <summary>
-		/// Property to return the DDS codec.
+		/// Property to return the Direct Draw Surface codec.
 		/// </summary>
-		public static GorgonCodecDDS DDS
+		public static GorgonCodecDDS Dds
 		{
 			get
 			{
@@ -125,9 +101,9 @@ namespace GorgonLibrary.IO
 		}
 
 		/// <summary>
-		/// Property to return the PNG codec.
+		/// Property to return the Portable Network Graphics codec.
 		/// </summary>
-		public static GorgonCodecWIC PNG
+		public static GorgonCodecWIC Png
 		{
 			get
 			{
@@ -136,9 +112,9 @@ namespace GorgonLibrary.IO
 		}
 
 		/// <summary>
-		/// Property to return the TIFF codec.
+		/// Property to return the Tagged Image File Format codec.
 		/// </summary>
-		public static GorgonCodecWIC TIFF
+		public static GorgonCodecWIC Tiff
 		{
 			get
 			{
@@ -147,9 +123,9 @@ namespace GorgonLibrary.IO
 		}
 
 		/// <summary>
-		/// Property to return the BMP codec.
+		/// Property to return the Windows Bitmap codec.
 		/// </summary>
-		public static GorgonCodecWIC BMP
+		public static GorgonCodecWIC Bmp
 		{
 			get
 			{
@@ -158,9 +134,9 @@ namespace GorgonLibrary.IO
 		}
 
 		/// <summary>
-		/// Property to return the WMP codec.
+		/// Property to return the Windows Media Photo codec.
 		/// </summary>
-		public static GorgonCodecWIC WMP
+		public static GorgonCodecWIC Wmp
 		{
 			get
 			{
@@ -169,9 +145,9 @@ namespace GorgonLibrary.IO
 		}
 
 		/// <summary>
-		/// Property to return JPG codec.
+		/// Property to return Joint Photographic Experts Group codec.
 		/// </summary>
-		public static GorgonCodecWIC JPG
+		public static GorgonCodecWIC Jpeg
 		{
 			get
 			{
@@ -180,69 +156,13 @@ namespace GorgonLibrary.IO
 		}
 
 		/// <summary>
-		/// Property to return the GIF codec.
+		/// Property to return the Graphics Interchange Format codec.
 		/// </summary>
-		public static GorgonCodecGIF GIF
+		public static GorgonCodecGIF Gif
 		{
 			get
 			{
 				return _gif;
-			}
-		}
-		#endregion
-
-		#region Methods.
-		/// <summary>
-		/// Function to register a custom image codec with Gorgon.
-		/// </summary>
-		/// <param name="codec">The image codec to register.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="codec"/> parameter is NULL (Nothing in VB.Net).</exception>
-		/// <exception cref="System.ArgumentException">Thrown when the codec is already registered.</exception>
-		/// <remarks>Use this method to register any custom image codecs with the system.  Users may wish to create their own image format for various reasons.  To get Gorgon to read/write the image 
-		/// format, a codec that inherits from <see cref="GorgonLibrary.IO.GorgonImageCodec">GorgonImageCodec</see> must be created.  Then, register the codec with the 
-		/// Gorgon via this method so that Gorgon will know how to read and write the image.</remarks>
-		public static void RegisterCodec(GorgonImageCodec codec)
-		{
-			if (codec == null)
-			{
-				throw new ArgumentNullException("codec");
-			}
-
-			if ((_codecs.Contains(codec)) || (_codecs.Contains(codec.Codec)) || (_internal.Contains(codec)) || (_internal.Contains(codec.Codec)))
-			{
-				throw new ArgumentException("The codec '" + codec.Codec + "' is already registered.", "codec");
-			}
-
-			_codecs.Add(codec);
-			_internal.Add(codec);
-		}
-
-		/// <summary>
-		/// Function to unregister a custom image codec from the system.
-		/// </summary>
-		/// <param name="codec">The image codec to unregister.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="codec"/> parameter is NULL (Nothing in VB.Net).</exception>
-		/// <exception cref="System.Collections.Generic.KeyNotFoundException">Thrown when if the codec was not found.</exception>
-		/// <remarks>Use this to remove a custom image codec from Gorgon.  
-		/// <para>Note that an attempt to unregister a system codec (DDS, GIF, PNG, TGA, BMP, WMP, TIF) will be ignored.</para></remarks>
-		public static void UnregisterCodec(GorgonImageCodec codec)
-		{
-			if (codec == null)
-			{
-				throw new ArgumentNullException("codec");
-			}
-
-			if (!_codecs.Contains(codec))
-			{
-				throw new KeyNotFoundException("The codec '" + codec.Codec + "' was not registered.");
-			}
-
-			_codecs.Remove(codec);
-
-			// Remove from the global codec list.
-			if (_internal.Contains(codec))
-			{
-				_internal.Remove(codec);
 			}
 		}
 		#endregion
@@ -255,26 +175,12 @@ namespace GorgonLibrary.IO
 		{
 			_dds = new GorgonCodecDDS();
 			_tga = new GorgonCodecTGA();
-			_png = new GorgonCodecWIC("PNG", "Portable Network Graphics", new string[] { "png" });
-			_bmp = new GorgonCodecWIC("BMP", "Windows Bitmap", new string[] { "bmp", "dib" });
-			_tiff = new GorgonCodecWIC("TIFF", "Tagged Image File Format", new string[] { "tif", "tiff" });
-			_wmp = new GorgonCodecWIC("WMP", "Windows Media Photo", new string[] { "wmp" });
-			_jpg = new GorgonCodecWIC("JPG", "Joint Photographic Experts Group", new string[] { "jpg", "jpeg", "jpe", "jif", "jfif", "jfi" });
+			_png = new GorgonCodecWIC("PNG", "Portable Network Graphics", new string[] { "png" }, SharpDX.WIC.ContainerFormatGuids.Png);
+			_bmp = new GorgonCodecWIC("BMP", "Windows Bitmap", new string[] { "bmp", "dib" }, SharpDX.WIC.ContainerFormatGuids.Bmp);
+			_tiff = new GorgonCodecWIC("TIFF", "Tagged Image File Format", new string[] { "tif", "tiff" }, SharpDX.WIC.ContainerFormatGuids.Tiff);
+			_wmp = new GorgonCodecWIC("WMP", "Windows Media Photo", new string[] { "wmp" }, SharpDX.WIC.ContainerFormatGuids.Wmp);
+			_jpg = new GorgonCodecWIC("JPG", "Joint Photographic Experts Group", new string[] { "jpg", "jpeg", "jpe", "jif", "jfif", "jfi" }, SharpDX.WIC.ContainerFormatGuids.Jpeg);
 			_gif = new GorgonCodecGIF();
-
-			_codecs = new GorgonImageCodecCollection();
-			_internal = new GorgonImageCodecCollection();
-
-			// Add our system codecs.
-			_internal.Add(_dds);
-			_internal.Add(_tga);
-			_internal.Add(_png);
-			// Put derived codecs first.
-			_internal.Add(_gif);
-			_internal.Add(_bmp);
-			_internal.Add(_tiff);
-			_internal.Add(_wmp);			
-			_internal.Add(_jpg);
 		}
 		#endregion
 	}

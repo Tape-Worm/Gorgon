@@ -30,35 +30,13 @@ using System.Linq;
 using System.Text;
 using System.IO;
 using System.Drawing;
+using System.Threading;
 using D3D = SharpDX.Direct3D11;
 using GorgonLibrary.IO;
 using GorgonLibrary.Diagnostics;
 
 namespace GorgonLibrary.Graphics
 {
-	/// <summary>
-	/// Formats for image files.
-	/// </summary>
-	public enum ImageFileFormat
-	{
-		/// <summary>
-		/// Portable network graphics.
-		/// </summary>
-		PNG = 3,
-		/// <summary>
-		/// Joint Photographic Experts Group.
-		/// </summary>
-		JPG = 1,
-		/// <summary>
-		/// Windows bitmap.
-		/// </summary>
-		BMP = 0,
-		/// <summary>
-		/// Direct Draw Surface.
-		/// </summary>
-		DDS = 4
-	}
-
 	/// <summary>
 	/// Filters applied to an image when it is loaded from a stream, file, etc...
 	/// </summary>
@@ -121,6 +99,7 @@ namespace GorgonLibrary.Graphics
 		#region Variables.
 		private GorgonGraphics _graphics = null;
 		private GorgonTexture2D _logo = null;
+		private static int _incrementCount = 0;
 		#endregion
 
 		#region Properties.
@@ -131,12 +110,18 @@ namespace GorgonLibrary.Graphics
 		{
 			get
 			{
-				if (_logo == null)
+				// Keep other threads from creating this image multiple times.
+				if (Interlocked.Increment(ref _incrementCount) == 1)
 				{
-					_logo = FromGDIBitmap("Gorgon.Logo", Properties.Resources.Gorgon_2_x_Logo_Small);
+					if (_logo == null)
+					{
+						_logo = _graphics.Textures.Create2DTextureFromGDIImage("Gorgon.Logo", Properties.Resources.Gorgon_2_x_Logo_Small);
 
-					// Don't track this image.
-					_graphics.RemoveTrackedObject(GorgonLogo);
+						// Don't track this image.
+						_graphics.RemoveTrackedObject(GorgonLogo);
+				
+						Interlocked.Decrement(ref _incrementCount);
+					}
 				}
 
 				return _logo;
@@ -200,23 +185,61 @@ namespace GorgonLibrary.Graphics
 
 		#region Methods.
 		/// <summary>
-		/// Function to return correct settings object for the specified texture.
+		/// Function to retrieve compatible texture settings from existing image settings.
 		/// </summary>
-		/// <typeparam name="T">Type of texture.</typeparam>
-		/// <returns>The correct settings object.</returns>
-		private ITextureSettings GetSettings<T>()
-			where T : GorgonTexture
+		/// <param name="settings">Settings to derive settings from.</param>
+		/// <returns>The compatible texture settings.</returns>
+		private ITextureSettings GetTextureSettings(IImageSettings settings)
 		{
-			if (typeof(T) == typeof(GorgonTexture1D))
-				return new GorgonTexture1DSettings();
+			// If these settings are already texture settings, then just leave.
+			if (settings is ITextureSettings)
+			{
+				return (ITextureSettings)settings;
+			}
 
-			if (typeof(T) == typeof(GorgonTexture2D))
-				return new GorgonTexture2DSettings();
-
-			if (typeof(T) == typeof(GorgonTexture3D))
-				return new GorgonTexture3DSettings();
-
-			throw new InvalidCastException("The settings could not be determined for the type '" + typeof(T).FullName + "'.");
+			switch (settings.ImageType)
+			{
+				case ImageType.Image1D:
+					return new GorgonTexture1DSettings()
+					{
+						Width = settings.Width,
+						ArrayCount = settings.ArrayCount,
+						Format = settings.Format,
+						MipCount = settings.MipCount,
+						Usage = BufferUsage.Default,
+						ViewFormat = BufferFormat.Unknown,
+						ViewIsUnordered = false
+					};
+				case ImageType.Image2D:
+				case ImageType.ImageCube:
+					return new GorgonTexture2DSettings()
+					{
+						Width = settings.Width,
+						Height = settings.Height,
+						IsTextureCube = (settings.ImageType == ImageType.ImageCube),						
+						ArrayCount = settings.ArrayCount,
+						Format = settings.Format,
+						MipCount = settings.MipCount,
+						Usage = BufferUsage.Default,
+						Multisampling = new GorgonMultisampling(1, 0),
+						ViewFormat = BufferFormat.Unknown,
+						ViewIsUnordered = false
+					};
+				case ImageType.Image3D:
+					return new GorgonTexture3DSettings()
+					{
+						Width = settings.Width,
+						Height = settings.Height,
+						Depth = settings.Depth,
+						Format = settings.Format,
+						MipCount = settings.MipCount,
+						Usage = BufferUsage.Default,						
+						ViewFormat = BufferFormat.Unknown,
+						ViewIsUnordered = false
+					};					
+				default:
+					throw new ArgumentException("These image settings are not compatible with texture settings.", "settings");
+			}
 		}
 
 		/// <summary>
@@ -253,8 +276,7 @@ namespace GorgonLibrary.Graphics
 		/// Function to validate the 3D texture settings.
 		/// </summary>
 		/// <param name="settings">Settings to validate.</param>
-		/// <param name="isReading">TRUE if reading from a stream, FALSE if not.</param>
-		private void ValidateTexture3D(ref ITextureSettings settings, bool isReading)
+		private void ValidateTexture3D(ref ITextureSettings settings)
 		{
 			if (settings.MipCount < 0)
 				settings.MipCount = 0;
@@ -269,7 +291,8 @@ namespace GorgonLibrary.Graphics
 				settings.Height = 0;
 
 			// Direct3D 9 video devices require resizing to power of two.
-			if (_graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM2_a_b)
+			// Mip maps also require power of 2 sizing for volume textures.
+			if ((_graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM2_a_b) || (settings.MipCount != 1))
 			{
 				Tuple<int, int, int> newSize = GetPow2Size(settings.Width, settings.Height, settings.Depth);
 				settings.Width = newSize.Item1;
@@ -277,28 +300,32 @@ namespace GorgonLibrary.Graphics
 				settings.Depth = newSize.Item3;
 			}
 
-			if (!isReading)
+			// Check texture size if using a compressed format.
+			var formatInfo = GorgonBufferFormatInfo.GetInfo(settings.Format);
+
+			if (formatInfo.IsCompressed)
 			{
-				if (settings.Width <= 0)
-					throw new GorgonException(GorgonResult.CannotCreate, "The texture width must be at least 1.");
-				if (settings.Height <= 0)
-					throw new GorgonException(GorgonResult.CannotCreate, "The texture height must be at least 1.");
-				if (settings.Depth <= 0)
-					throw new GorgonException(GorgonResult.CannotCreate, "The texture depth must be at least 1.");
+				if ((settings.Width % 4) != 0)
+				{
+					throw new GorgonException(GorgonResult.CannotCreate, "A compressed texture must have a width that is a multiple of 4.");
+				}
+
+				if ((settings.Height % 4) != 0)
+				{
+					throw new GorgonException(GorgonResult.CannotCreate, "A compressed texture must have a height that is a multiple of 4.");
+				}
 			}
 
-			if (settings.Width > MaxDepth)
-				throw new GorgonException(GorgonResult.CannotCreate, "The texture width must be less than " + MaxDepth.ToString() + ".");
-			if (settings.Height > MaxDepth)
-				throw new GorgonException(GorgonResult.CannotCreate, "The texture height must be less than " + MaxDepth.ToString() + ".");
+			if (settings.Width > MaxWidth)
+				throw new GorgonException(GorgonResult.CannotCreate, "The texture width must be less than " + MaxWidth.ToString() + ".");
+			if (settings.Height > MaxHeight)
+				throw new GorgonException(GorgonResult.CannotCreate, "The texture height must be less than " + MaxHeight.ToString() + ".");
 			if (settings.Depth > MaxDepth)
 				throw new GorgonException(GorgonResult.CannotCreate, "The texture depth must be less than " + MaxDepth.ToString() + ".");
 
 			// Check the format to see if it's available on this device.
 			if (!_graphics.VideoDevice.Supports3DTextureFormat(settings.Format))
 				throw new GorgonException(GorgonResult.CannotCreate, "Cannot create the texture.  The format '" + settings.Format.ToString() + "' is not supported by the hardware.");
-
-
 		}
 
 		/// <summary>
@@ -308,16 +335,16 @@ namespace GorgonLibrary.Graphics
 		{
 			if (_logo != null)
 				_logo.Dispose();
-			_logo = null;
+			_logo = null;			
 		}
 
 		/// <summary>
 		/// Function to validate the 2D texture settings.
 		/// </summary>
 		/// <param name="settings">Settings to validate.</param>
-		/// <param name="isReading">TRUE if reading from a stream, FALSE if not.</param>
-		internal void ValidateTexture2D(ref ITextureSettings settings, bool isReading)
-		{			
+		internal void ValidateTexture2D(ref ITextureSettings settings)
+		{		
+			
 			if (settings.ArrayCount < 1)
 				settings.ArrayCount = 1;
 
@@ -347,6 +374,22 @@ namespace GorgonLibrary.Graphics
 
 			if (settings.Height < 0)
 				settings.Height = 0;
+			
+			// Check texture size if using a compressed format.
+			var formatInfo = GorgonBufferFormatInfo.GetInfo(settings.Format);
+
+			if (formatInfo.IsCompressed)
+			{
+				if ((settings.Width % 4) != 0)
+				{
+					throw new GorgonException(GorgonResult.CannotCreate, "A compressed texture must have a width that is a multiple of 4.");
+				}
+
+				if ((settings.Height % 4) != 0)
+				{
+					throw new GorgonException(GorgonResult.CannotCreate, "A compressed texture must have a height that is a multiple of 4.");
+				}
+			}
 
 			// Direct3D 9 video devices require resizing to power of two if there is more than 1 mip level.
 			if ((_graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM2_a_b) && (settings.MipCount != 1))
@@ -354,14 +397,6 @@ namespace GorgonLibrary.Graphics
 				Tuple<int, int, int> newSize = GetPow2Size(settings.Width, settings.Height, 0);
 				settings.Width = newSize.Item1;
 				settings.Height = newSize.Item2;
-			}
-
-			if (!isReading)
-			{
-				if (settings.Width <= 0)
-					throw new GorgonException(GorgonResult.CannotCreate, "The texture width must be at least 1.");
-				if (settings.Height <= 0)
-					throw new GorgonException(GorgonResult.CannotCreate, "The texture height must be at least 1.");
 			}
 
 			if (settings.Width > MaxWidth)
@@ -378,8 +413,7 @@ namespace GorgonLibrary.Graphics
 		/// Function to validate the 1D texture settings.
 		/// </summary>
 		/// <param name="settings">Settings to validate.</param>
-		/// <param name="isReading">TRUE if reading from a stream, FALSE if not.</param>
-		private void ValidateTexture1D(ref ITextureSettings settings, bool isReading)
+		private void ValidateTexture1D(ref ITextureSettings settings)
 		{
 			if (_graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM2_a_b)
 				throw new GorgonException(GorgonResult.CannotCreate, "1 dimensional textures are not supported on SM2_a_b devices.");
@@ -396,17 +430,22 @@ namespace GorgonLibrary.Graphics
 			if (settings.Width < 0)
 				settings.Width = 0;
 
+			// Check texture size if using a compressed format.
+			var formatInfo = GorgonBufferFormatInfo.GetInfo(settings.Format);
+
+			if (formatInfo.IsCompressed)
+			{
+				if ((settings.Width % 4) != 0)
+				{
+					throw new GorgonException(GorgonResult.CannotCreate, "A compressed texture must have a width that is a multiple of 4.");
+				}
+			}
+
 			// Direct3D 9 video devices require resizing to power of two if there is more than 1 mip level.
 			if ((_graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM2_a_b) && (settings.MipCount != 1))
 			{
 				Tuple<int, int, int> newSize = GetPow2Size(settings.Width, 0, 0);
 				settings.Width = newSize.Item1;
-			}
-
-			if (!isReading)
-			{
-				if (settings.Width <= 0)
-					throw new GorgonException(GorgonResult.CannotCreate, "The texture width must be at least 1.");
 			}
 
 			if (settings.Width > MaxWidth)
@@ -415,68 +454,6 @@ namespace GorgonLibrary.Graphics
 			// Check the format to see if it's available on this device.
 			if (!_graphics.VideoDevice.Supports1DTextureFormat(settings.Format))
 				throw new GorgonException(GorgonResult.CannotCreate, "Cannot create the texture.  The format '" + settings.Format.ToString() + "' is not supported by the hardware.");
-		}
-
-		/// <summary>
-		/// Function to load a texture from a GDI+ bitmap object.
-		/// </summary>
-		/// <param name="name">Name of the texture.</param>
-		/// <param name="bitmap">Bitmap to load.</param>
-		/// <returns>The new 2D texture.</returns>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> or <paramref name="bitmap"/> parameters are NULL (Nothing in VB.Net).</exception>
-		/// <exception cref="System.ArgumentException">Thrown when the name parameter is an empty string.</exception>
-		/// <exception cref="GorgonLibrary.GorgonException">Thrown when the texture size is too large or too small.
-		/// <para>-or-</para>
-		/// <para>Thrown when the format is not supported.</para>
-		/// </exception>
-		public GorgonTexture2D FromGDIBitmap(string name, Image bitmap)
-		{
-			GorgonDebug.AssertNull<Image>(bitmap, "bitmap");
-
-			GorgonTexture2DSettings settings = new GorgonTexture2DSettings()
-			{
-				Width = bitmap.Width,
-				Height = bitmap.Height
-			};
-
-			return FromGDIBitmap(name, bitmap, settings);
-		}
-
-		/// <summary>
-		/// Function to load a texture from a GDI+ bitmap object.
-		/// </summary>
-		/// <param name="name">Name of the texture.</param>
-		/// <param name="bitmap">Bitmap to load.</param>
-		/// <param name="settings">Settings for the texture.</param>
-		/// <returns>The new 2D texture.</returns>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/>, <paramref name="bitmap"/> or the <paramref name="settings"/> parameters are NULL (Nothing in VB.Net).</exception>
-		/// <exception cref="System.ArgumentException">Thrown when the name parameter is an empty string.</exception>
-		/// <exception cref="GorgonLibrary.GorgonException">Thrown when the texture size is too large or too small.
-		/// <para>-or-</para>
-		/// <para>Thrown when the format is not supported.</para>
-		/// </exception>
-		public GorgonTexture2D FromGDIBitmap(string name, Image bitmap, GorgonTexture2DSettings settings)
-		{
-			GorgonTexture2D result = null;
-			MemoryStream stream = null;
-
-			GorgonDebug.AssertNull<Image>(bitmap, "bitmap");
-			GorgonDebug.AssertNull<GorgonTexture2DSettings>(settings, "settings");
-
-			try
-			{
-				stream = new MemoryStream();
-				bitmap.Save(stream, System.Drawing.Imaging.ImageFormat.Png);
-				stream.Position = 0;
-				result = FromStream<GorgonTexture2D>(name, stream, (int)stream.Length, settings);
-			}
-			finally
-			{
-				if (stream != null)
-					stream.Dispose();
-			}			
-
-			return result;
 		}
 
 		/// <summary>
@@ -550,12 +527,19 @@ namespace GorgonLibrary.Graphics
 		{
 			GorgonTexture1D result = null;
 
-			GorgonDebug.AssertNull<Image>(image, "image");
-			GorgonDebug.AssertNull<GorgonGDIOptions>(options, "options");
+			if (image == null)
+			{
+				throw new ArgumentNullException("image");
+			}
+
+			if (options == null)
+			{
+				throw new ArgumentNullException("options");
+			}
 
 			using (GorgonImageData data = GorgonImageData.Create1DFromGDIImage(image, options))
 			{
-				result = CreateTexture<GorgonTexture1D>(name, data.Settings as ITextureSettings, data);
+				result = CreateTexture<GorgonTexture1D>(name, data);
 			}
 
 			return result;
@@ -632,12 +616,19 @@ namespace GorgonLibrary.Graphics
 		{
 			GorgonTexture2D result = null;
 
-			GorgonDebug.AssertNull<Image>(image, "image");
-			GorgonDebug.AssertNull<GorgonGDIOptions>(options, "options");
+			if (image == null)
+			{
+				throw new ArgumentNullException("image");
+			}
+
+			if (options == null)
+			{
+				throw new ArgumentNullException("options");
+			}
 
 			using (GorgonImageData data = GorgonImageData.Create2DFromGDIImage(image, options))
 			{
-				result = CreateTexture<GorgonTexture2D>(name, data.Settings as ITextureSettings, data);
+				result = CreateTexture<GorgonTexture2D>(name, data);
 			}
 
 			return result;
@@ -718,15 +709,20 @@ namespace GorgonLibrary.Graphics
 		{
 			GorgonTexture1D result = null;
 
-			GorgonDebug.AssertNull<IList<Image>>(images, "image");
-			GorgonDebug.AssertNull<GorgonGDIOptions>(options, "options");
+			if (images == null)
+			{
+				throw new ArgumentNullException("images");
+			}
 
-#if DEBUG
+			if (options == null)
+			{
+				throw new ArgumentNullException("options");
+			}
+
 			if (images.Count == 0)
 			{
 				throw new ArgumentException("The parameter must not be empty.", "images");
 			}
-#endif
 
 			if (images.Count == 1)
 			{
@@ -735,7 +731,7 @@ namespace GorgonLibrary.Graphics
 			
 			using (GorgonImageData data = GorgonImageData.Create1DFromGDIImage(images, options))
 			{
-				result = CreateTexture<GorgonTexture1D>(name, data.Settings as ITextureSettings, data);
+				result = CreateTexture<GorgonTexture1D>(name, data);
 			}
 
 			return result;
@@ -816,15 +812,20 @@ namespace GorgonLibrary.Graphics
 		{
 			GorgonTexture2D result = null;
 
-			GorgonDebug.AssertNull<IList<Image>>(images, "image");
-			GorgonDebug.AssertNull<GorgonGDIOptions>(options, "options");
+			if (images == null)
+			{
+				throw new ArgumentNullException("images");
+			}
 
-#if DEBUG
+			if (options == null)
+			{
+				throw new ArgumentNullException("options");
+			}
+
 			if (images.Count == 0)
 			{
 				throw new ArgumentException("The parameter must not be empty.", "images");
 			}
-#endif
 
 			if (images.Count == 1)
 			{
@@ -833,7 +834,7 @@ namespace GorgonLibrary.Graphics
 
 			using (GorgonImageData data = GorgonImageData.Create2DFromGDIImage(images, options))
 			{
-				result = CreateTexture<GorgonTexture2D>(name, data.Settings as ITextureSettings, data);
+				result = CreateTexture<GorgonTexture2D>(name, data);
 			}
 
 			return result;
@@ -964,225 +965,180 @@ namespace GorgonLibrary.Graphics
 		{
 			GorgonTexture3D result = null;
 
-			GorgonDebug.AssertNull<IList<Image>>(images, "image");
-			GorgonDebug.AssertNull<GorgonGDIOptions>(options, "options");
+			if (images == null)
+			{
+				throw new ArgumentNullException("images");
+			}
 
-#if DEBUG
+			if (options == null)
+			{
+				throw new ArgumentNullException("options");
+			}
+
 			if (images.Count == 0)
 			{
 				throw new ArgumentException("The parameter must not be empty.", "images");
 			}
-#endif
 
 			using (GorgonImageData data = GorgonImageData.Create3DFromGDIImage(images, options))
 			{
-				result = CreateTexture<GorgonTexture3D>(name, data.Settings as ITextureSettings, data);
+				result = CreateTexture<GorgonTexture3D>(name, data);
 			}
 
 			return result;
 		}
 
 		/// <summary>
-		/// Function to load a texture from a byte array.
+		/// Function to load texture data from a file.
 		/// </summary>
-		/// <typeparam name="T">Type of texture to load.</typeparam>
+		/// <typeparam name="T">Type of texture to load.  Must inherit from <see cref="GorgonLibrary.Graphics.GorgonTexture">GorgonTexture</see>.</typeparam>
 		/// <param name="name">Name of the texture.</param>
-		/// <param name="imageData">Array containing the image data.</param>
-		/// <returns>A new texture.</returns>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> or <paramref name="imageData"/> parameters are NULL (Nothing in VB.Net).</exception>
-		/// <exception cref="System.ArgumentException">Thrown when the name parameter is an empty string.
+		/// <param name="filePath">Path to the texture image file.</param>
+		/// <param name="codec">Codec used to load the image data.</param>
+		/// <returns>The texture populated with image data from the stream.</returns>
+		/// <remarks>This will load a texture from a file.  The file must have been encoded by a supported image codec.  The primary codecs supported by Gorgon are detailed in the 
+		/// <see cref="GorgonLibrary.IO.GorgonImageCodecs">GorgonImageCodecs</see> class.  These are the codecs that Gorgon supports "out of the box", additional user 
+		/// codecs may be defined and used to load a texture.
+		/// </remarks>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> or the <paramref name="filePath "/> parameter is NULL (Nothing in VB.Net).
 		/// <para>-or-</para>
-		/// <para>Thrown when the imageData parameter is empty.</para>
+		/// <para>The <paramref name="codec"/> parameter is NULL.</para>
 		/// </exception>
-		/// <exception cref="GorgonLibrary.GorgonException">Thrown when the texture size is too large or too small.
+		/// <exception cref="System.ArgumentOutOfRangeException">Thrown when the file size is less than or equal to 0.</exception>
+		/// <exception cref="System.ArgumentException">Thrown when the name or the filePath parameter is empty.
 		/// <para>-or-</para>
-		/// <para>Thrown when the format is not supported.</para>
+		/// <para>Thrown when the data in the stream cannot be read by the image codec.</para>
 		/// </exception>
-		public T FromMemory<T>(string name, byte[] imageData)
+		/// <exception cref="System.IO.IOException">Thrown when the stream is write-only.
+		/// <para>-or-</para>
+		/// <para>The image file is corrupted or unable to be read by a codec.</para>
+		/// </exception>
+		/// <exception cref="System.IO.EndOfStreamException">Thrown if an attempt to read beyond the end of the stream is made.</exception>
+		/// <exception cref="GorgonLibrary.GorgonException">Thrown if the texture type was not recognized.</exception>
+		public T FromFile<T>(string name, string filePath, GorgonImageCodec codec)
 			where T : GorgonTexture
 		{
-			return FromMemory<T>(name, imageData, GetSettings<T>());
+			using (var fileStream = File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.Read))
+			{
+				return FromStream<T>(name, fileStream, (int)fileStream.Length, codec);
+			}
 		}
 
 		/// <summary>
-		/// Function to load a texture from a byte array.
+		/// Function to load texture data from a byte array.
 		/// </summary>
-		/// <typeparam name="T">Type of texture to load.</typeparam>
+		/// <typeparam name="T">Type of texture to load.  Must inherit from <see cref="GorgonLibrary.Graphics.GorgonTexture">GorgonTexture</see>.</typeparam>
 		/// <param name="name">Name of the texture.</param>
-		/// <param name="imageData">Array containing the image data.</param>
-		/// <param name="settings">Settings to apply to the texture.</param>
-		/// <returns>A new texture.</returns>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/>, <paramref name="imageData"/> or the <paramref name="settings"/> parameters are NULL (Nothing in VB.Net).</exception>
-		/// <exception cref="System.ArgumentException">Thrown when the name parameter is an empty string.
+		/// <param name="data">Byte array containing the texture data.</param>
+		/// <param name="codec">Codec used to load the image data.</param>
+		/// <returns>The texture populated with image data from the stream.</returns>
+		/// <remarks>This will load a texture from a byte array.  The texture data in the array must have been encoded by a supported image codec.  The primary codecs supported by Gorgon are detailed in the 
+		/// <see cref="GorgonLibrary.IO.GorgonImageCodecs">GorgonImageCodecs</see> class.  These are the codecs that Gorgon supports "out of the box", additional user 
+		/// codecs may be defined and used to load a texture.
+		/// </remarks>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (Nothing in VB.Net).
 		/// <para>-or-</para>
-		/// <para>Thrown when the imageData parameter is empty.</para>
-		/// </exception>
-		/// <exception cref="GorgonLibrary.GorgonException">Thrown when the texture size is too large or too small.
+		/// <para>Thrown when the <paramref name="data"/> parameter is NULL.</para>
 		/// <para>-or-</para>
-		/// <para>Thrown when the format is not supported.</para>
+		/// <para>The <paramref name="codec"/> parameter is NULL.</para>
 		/// </exception>
-		public T FromMemory<T>(string name, byte[] imageData, ITextureSettings settings)
+		/// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="length"/> parameter is less than or equal to 0.</exception>
+		/// <exception cref="System.ArgumentException">Thrown when the name parameter is empty.
+		/// <para>-or-</para>
+		/// <para>Thrown when the data in the array cannot be read by the image codec.</para>
+		/// </exception>
+		/// <exception cref="System.IO.IOException">Thrown when the stream is write-only.
+		/// <para>-or-</para>
+		/// <para>The image file is corrupted or unable to be read by a codec.</para>
+		/// </exception>
+		/// <exception cref="System.IO.EndOfStreamException">Thrown if an attempt to read beyond the end of the stream is made.</exception>
+		/// <exception cref="GorgonLibrary.GorgonException">Thrown if the texture type was not recognized.</exception>
+		public T FromMemory<T>(string name, byte[] data, GorgonImageCodec codec)
 			where T : GorgonTexture
 		{
-			D3D.ImageInformation? info = null;
-			GorgonTexture result = null;
-
-			GorgonDebug.AssertNull<ITextureSettings>(settings, "settings");
-			GorgonDebug.AssertParamString(name, "name");
-			GorgonDebug.AssertNull(imageData, "imageData");
-
-			if (imageData.Length == 0)
-				throw new ArgumentException("There is no data for the image.", "imageData");
-
-			// Get the file information.
-			info = D3D.ImageInformation.FromMemory(imageData);
-
-			// Assign defaults.
-			if (info != null)
+			if (data == null)
 			{
-				if (settings.Format == BufferFormat.Unknown)
-					settings.Format = (BufferFormat)info.Value.Format;
-				if (settings.Width < 1)
-					settings.Width = info.Value.Width;
-				if (settings.Height < 1)
-					settings.Height = info.Value.Height;
-                if (settings.Depth < 1)
-                    settings.Depth = info.Value.Depth;
-				if (settings.MipCount == 0)
-					settings.MipCount = info.Value.MipLevels;
-				if (settings.ArrayCount == 0)
-					settings.ArrayCount = info.Value.ArraySize;
+				throw new ArgumentNullException("data");
 			}
-
-			if (typeof(T) == typeof(GorgonTexture1D))
+			
+			using (var memoryStream = new GorgonDataStream(data))
 			{
-				ValidateTexture1D(ref settings, true);
-				result = new GorgonTexture1D(_graphics, name, settings);
+				return FromStream<T>(name, memoryStream, data.Length, codec);
 			}
-			else
+		}
+
+		/// <summary>
+		/// Function to load texture data from a stream.
+		/// </summary>
+		/// <typeparam name="T">Type of texture to load.  Must inherit from <see cref="GorgonLibrary.Graphics.GorgonTexture">GorgonTexture</see>.</typeparam>
+		/// <param name="name">Name of the texture.</param>
+		/// <param name="stream">Stream containing the texture data to load.</param>
+		/// <param name="length">Length of the texture data, in bytes.</param>
+		/// <param name="codec">Codec used to load the image data.</param>
+		/// <returns>The texture populated with image data from the stream.</returns>
+		/// <remarks>This will load a texture from a stream.  The texture data in the stream must have been encoded by a supported image codec.  The primary codecs supported by Gorgon are detailed in the 
+		/// <see cref="GorgonLibrary.IO.GorgonImageCodecs">GorgonImageCodecs</see> class.  These are the codecs that Gorgon supports "out of the box", additional user 
+		/// codecs may be defined and used to load a texture.
+		/// </remarks>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (Nothing in VB.Net).
+		/// <para>-or-</para>
+		/// <para>Thrown when the <paramref name="stream"/> parameter is NULL.</para>
+		/// <para>-or-</para>
+		/// <para>The <paramref name="codec"/> parameter is NULL.</para>
+		/// </exception>
+		/// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="length"/> parameter is less than or equal to 0.</exception>
+		/// <exception cref="System.ArgumentException">Thrown when the name parameter is empty.
+		/// <para>-or-</para>
+		/// <para>Thrown when the data in the stream cannot be read by the image codec.</para>
+		/// </exception>
+		/// <exception cref="System.IO.IOException">Thrown when the stream is write-only.
+		/// <para>-or-</para>
+		/// <para>The image file is corrupted or unable to be read by a codec.</para>
+		/// </exception>
+		/// <exception cref="System.IO.EndOfStreamException">Thrown if an attempt to read beyond the end of the stream is made.</exception>
+		/// <exception cref="GorgonLibrary.GorgonException">Thrown if the texture type was not recognized.</exception>
+		public T FromStream<T>(string name, Stream stream, int length, GorgonImageCodec codec)
+			where T : GorgonTexture
+		{
+			ITextureSettings settings = null;
+			T result = null;
+
+			using (GorgonImageData imageData = GorgonImageData.FromStream(stream, length, codec))
 			{
-				if (typeof(T) == typeof(GorgonTexture2D))
+				settings = GetTextureSettings(imageData.Settings);
+
+				// Apply texture specific settings from the codec.
+				settings.Usage = codec.Usage;
+				settings.ViewFormat = codec.ViewFormat;
+				settings.ViewIsUnordered = codec.ViewIsUnordered;
+
+				switch (settings.ImageType)
 				{
-					ValidateTexture2D(ref settings, true);
-					result = GorgonTexture2D.CreateTexture(_graphics, name, settings);
+					case ImageType.Image1D:
+						ValidateTexture1D(ref settings);
+						result = CreateTexture<GorgonTexture1D>(name, imageData) as T;
+						break;
+					case ImageType.Image2D:
+					case ImageType.ImageCube:
+						ValidateTexture2D(ref settings);
+						result = CreateTexture<GorgonTexture2D>(name, imageData) as T;
+						break;
+					case ImageType.Image3D:
+						ValidateTexture3D(ref settings);
+						result = CreateTexture<GorgonTexture3D>(name, imageData) as T;
+						break;
+					default:
+						throw new GorgonException(GorgonResult.CannotCreate, "The texture type is unknown.");
 				}
-				else
-				{
-					if (typeof(T) == typeof(GorgonTexture3D))
-					{
-						ValidateTexture3D(ref settings, true);
-						result = new GorgonTexture3D(_graphics, name, settings);
-					}
-					else
-						throw new ArgumentException("Unknown settings type '" + settings.GetType().FullName + "'.", "settings");
-				}
-				
-			}		
-
-			result.InitializeFileData(imageData);
-
-			_graphics.AddTrackedObject(result);
-
-			return (T)result;
-		}
-
-		/// <summary>
-		/// Function to load an image from a stream.
-		/// </summary>
-		/// <typeparam name="T">Type of texture.</typeparam>
-		/// <param name="name">Name of the texture.</param>
-		/// <param name="stream">Stream to load the texture from.</param>
-		/// <param name="length">Size of the texture in the stream, in bytes.</param>
-		/// <returns>A new 1D texture.</returns>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> or <paramref name="stream"/> parameters are NULL (Nothing in VB.Net).</exception>
-		/// <exception cref="System.ArgumentException">Thrown when the name parameter is an empty string.</exception>
-		/// <exception cref="GorgonLibrary.GorgonException">Thrown when the texture size is too large or too small.
-		/// <para>-or-</para>
-		/// <para>Thrown when the format is not supported.</para>
-		/// </exception>
-		public T FromStream<T>(string name, Stream stream, int length)
-			where T : GorgonTexture
-		{
-			return FromStream<T>(name, stream, length, GetSettings<T>());
-		}
-		
-		/// <summary>
-		/// Function to load an image from a stream.
-		/// </summary>
-		/// <typeparam name="T">Type of texture.</typeparam>
-		/// <param name="name">Name of the texture.</param>
-		/// <param name="stream">Stream to load the texture from.</param>
-		/// <param name="length">Size of the texture in the stream, in bytes.</param>
-		/// <param name="settings">Settings to apply to the texture.</param>
-		/// <returns>A new 1D texture.</returns>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/>, <paramref name="stream"/> or <paramref name="settings"/> parameters are NULL (Nothing in VB.Net).</exception>
-		/// <exception cref="System.ArgumentException">Thrown when the name parameter is an empty string.</exception>
-		/// <exception cref="GorgonLibrary.GorgonException">Thrown when the texture size is too large or too small.
-		/// <para>-or-</para>
-		/// <para>Thrown when the format is not supported.</para>
-		/// </exception>
-		public T FromStream<T>(string name, Stream stream, int length, ITextureSettings settings)
-			where T : GorgonTexture
-		{
-			GorgonDebug.AssertParamString(name, "name");
-			GorgonDebug.AssertNull(stream, "stream");
-
-			byte[] imageData = new byte[length];
-
-			// Read the image data.
-			stream.Read(imageData, 0, length);
-
-			return FromMemory<T>(name, imageData, settings);
-		}
-
-		/// <summary>
-		/// Function to load a texture from a file.
-		/// </summary>
-		/// <typeparam name="T">Type of texture.</typeparam>
-		/// <param name="name">Name of the texture.</param>
-		/// <param name="filePath">Path to the file.</param>
-		/// <param name="settings">Settings to apply to the loaded texture.</param>
-		/// <returns>A new texture.</returns>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/>, <paramref name="filePath"/> or <paramref name="settings"/> parameters are NULL (Nothing in VB.Net).</exception>
-		/// <exception cref="System.ArgumentException">Thrown when the name or the filePath parameters are empty strings.</exception>
-		/// <exception cref="GorgonLibrary.GorgonException">Thrown when the texture size is too large or too small.
-		/// <para>-or-</para>
-		/// <para>Thrown when the format is not supported.</para>
-		/// </exception>
-		public T FromFile<T>(string name, string filePath, ITextureSettings settings)
-			where T : GorgonTexture
-		{
-			Stream stream = null;
-
-			try
-			{
-				stream = File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.Read);
-				return FromStream<T>(name, stream, (int)stream.Length, settings);
 			}
-			finally
-			{
-				if (stream != null)
-					stream.Dispose();
-			}
-		}
 
-		/// <summary>
-		/// Function to load a texture from a file.
-		/// </summary>
-		/// <typeparam name="T">Type of texture.</typeparam>
-		/// <param name="name">Name of the texture.</param>
-		/// <param name="filePath">Path to the file.</param>
-		/// <returns>A new texture.</returns>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> or <paramref name="filePath"/> parameters are NULL (Nothing in VB.Net).</exception>
-		/// <exception cref="System.ArgumentException">Thrown when the name or the filePath parameters are empty strings.</exception>
-		/// <exception cref="GorgonLibrary.GorgonException">Thrown when the texture size is too large or too small.
-		/// <para>-or-</para>
-		/// <para>Thrown when the format is not supported.</para>
-		/// </exception>
-		public T FromFile<T>(string name, string filePath)
-			where T : GorgonTexture
-		{
-			return FromFile<T>(name, filePath, GetSettings<T>());
+			// This should never happen.
+			if (result == null)
+			{
+				throw new GorgonException(GorgonResult.CannotCreate, "The texture type is unknown.");
+			}
+
+			return result;
 		}
 
 		/// <summary>
@@ -1217,7 +1173,7 @@ namespace GorgonLibrary.Graphics
 				Format = format,
 				MipCount = 1,
 				Usage = usage
-			}, null);
+			});
 		}
 
 		/// <summary>
@@ -1252,7 +1208,7 @@ namespace GorgonLibrary.Graphics
 				ArrayCount = 1,
 				Multisampling = new GorgonMultisampling(1, 0),
 				Usage = usage
-			}, null);
+			});
 		}
 
 		/// <summary>
@@ -1284,7 +1240,7 @@ namespace GorgonLibrary.Graphics
 				MipCount = 1,
 				ArrayCount = 1,
 				Usage = usage
-			}, null);
+			});
 		}
 
 		/// <summary>
@@ -1305,7 +1261,58 @@ namespace GorgonLibrary.Graphics
 		public T CreateTexture<T>(string name, ITextureSettings settings)
 			where T : GorgonTexture
 		{
-			return CreateTexture<T>(name, settings, null);
+			Type type = typeof(T);
+			T texture = null;
+
+			if (name == null)
+			{
+				throw new ArgumentNullException("name");
+			}
+
+			if (string.IsNullOrWhiteSpace(name))
+			{
+				throw new ArgumentException("The parameter must not be NULL or empty.", "name");
+			}
+
+			if (settings == null)
+			{
+				throw new ArgumentNullException("settings");
+			}
+
+			// We cannot create an immutable texture without some initialization data.
+			if (settings.Usage == BufferUsage.Immutable)
+			{
+				throw new ArgumentException("Immutable textures require initialization data.", "data");
+			}
+
+			switch (settings.ImageType)
+			{
+				case ImageType.Image1D:
+					ValidateTexture1D(ref settings);
+					texture = new GorgonTexture1D(_graphics, name, settings) as T;
+					break;
+				case ImageType.ImageCube:
+				case ImageType.Image2D:
+					ValidateTexture2D(ref settings);
+					texture = GorgonTexture2D.CreateTexture(_graphics, name, settings) as T;
+					break;
+				case ImageType.Image3D:
+					ValidateTexture3D(ref settings);
+					texture = new GorgonTexture3D(_graphics, name, settings) as T;
+					break;
+				default:
+					throw new ArgumentException("The texture type '" + type.FullName + "' is unknown.", "settings");
+			}
+
+			if (texture == null)
+			{
+				throw new ArgumentException("The texture type '" + type.FullName + "' is unknown.", "settings");
+			}
+
+			texture.Initialize(null);
+
+			_graphics.AddTrackedObject(texture);
+			return texture;
 		}
 
 		/// <summary>
@@ -1313,56 +1320,63 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		/// <typeparam name="T">Type of texture to create.</typeparam>
 		/// <param name="name">Name of the texture.</param>
-		/// <param name="settings">Settings for the texture.</param>
 		/// <param name="data">Data used to initialize the texture.</param>
 		/// <returns>A new texture.</returns>
-		/// <remarks>This will create a new texture from the image data specified.  If the image data parameter is NULL (Nothing in VB.Net), then no image data will be 
-		/// uploaded to the texture.
-		/// <para>If the data parameter is not NULL, then the texture settings width, height, depth, mip count, array count, and format will use the settings from the data parameter.  
-		/// Otherwise, the settings from the texture settings will be used.</para>
+		/// <remarks>This will create a new texture from the image data specified.
+		/// <para>The texture settings width, height, depth, mip count, array count, and format will use the settings from the <paramref name="data"/> parameter.</para>
 		/// </remarks>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> or the <paramref name="settings"/> parameters are NULL (Nothing in VB.Net)</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> or the <paramref name="data"/> parameters are NULL (Nothing in VB.Net)</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the name parameter is an empty string.
 		/// <para>-or-</para>
-		/// <para>Thrown when the <paramref name="data"/> parameter is NULL and the usage is set to immutable.</para>
+		/// <para>Thrown if there is no data to upload to the texture.</para>
 		/// </exception>
 		/// <exception cref="GorgonLibrary.GorgonException">Thrown when the texture size is too small or large.
 		/// <para>-or-</para>
 		/// <para>Thrown when the texture format isn't supported by the hardware.</para>
 		/// </exception>
-		public T CreateTexture<T>(string name, ITextureSettings settings, GorgonImageData data)
+		public T CreateTexture<T>(string name, GorgonImageData data)
 			where T : GorgonTexture
 		{
+			ITextureSettings settings = null;
 			Type type = typeof(T);
 			T texture = null;
 
-			GorgonDebug.AssertNull<ITextureSettings>(settings, "settings");
-			GorgonDebug.AssertParamString(name, "name");
-
-			if ((settings.Usage == BufferUsage.Immutable) && ((data == null) || (data.Count == 0)))
-				throw new ArgumentException("Immutable textures require initialization data.", "data");
-
-			// Ensure that the settings match between the data and the texture settings.
-			if (data != null)
+			if (name == null)
 			{
-				settings.ArrayCount = data.Settings.ArrayCount;
-				settings.MipCount = data.Settings.MipCount;
-				settings.Width = data.Settings.Width;
-				settings.Height = data.Settings.Height;
-				settings.Depth = data.Settings.Depth;
-				settings.Format = data.Settings.Format;
+				throw new ArgumentNullException("name");
 			}
+
+			if (string.IsNullOrWhiteSpace(name))
+			{
+				throw new ArgumentException("The parameter must not be NULL or empty.", "name");
+			}
+
+			if (data == null)
+			{
+				throw new ArgumentNullException("data");
+			}
+
+			if (data.Count == 0)
+			{
+				throw new ArgumentException("There was no image data to upload.", "data");
+			}
+
+			// Get the settings from the image data.
+			settings = GetTextureSettings(data.Settings);
 
 			switch (settings.ImageType)
 			{
 				case ImageType.Image1D:
+					ValidateTexture1D(ref settings);
 					texture = new GorgonTexture1D(_graphics, name, settings) as T;
 					break;
 				case ImageType.ImageCube:
-				case ImageType.Image2D:				
+				case ImageType.Image2D:
+					ValidateTexture2D(ref settings);
 					texture = GorgonTexture2D.CreateTexture(_graphics, name, settings) as T;
 					break;
 				case ImageType.Image3D:
+					ValidateTexture3D(ref settings);
 					texture = new GorgonTexture3D(_graphics, name, settings) as T;
 					break;
 				default:

@@ -86,7 +86,7 @@ namespace GorgonLibrary.Graphics
 			try
 			{
 				shim = new D3D.Texture2D(Graphics.D3DDevice, desc);
-				shim.DebugName = "HACK: Fix for broken D3DX. Texture: \"" + Name + "\"";
+				shim.DebugName = "HACK: Fix for broken D3D9 down level stuff. Texture: \"" + Name + "\"";
 
 				// Copy the texture to the temporary texture.
 				Graphics.Context.CopyResource(D3DResource, shim);
@@ -150,39 +150,85 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
-		/// Function to save the texture data to a stream.
+		/// Function to save the texture to a stream with the specified codec.
 		/// </summary>
-		/// <param name="stream">Stream to write.</param>
-		/// <param name="format">Image format to use.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="stream"/> parameter is NULL (Nothing in VB.Net).</exception>
-		///   
-		/// <exception cref="System.ArgumentException">
-		/// Thrown when the format is anything other than DDS for a volume (3D) texture.
-		///   <para>-or-</para>
-		///   <para>Thrown when the format is anything other than DDS.</para>
-		///   </exception>
-		public override void Save(System.IO.Stream stream, ImageFileFormat format)
+		/// <param name="stream">Stream that will contain the texture information.</param>
+		/// <param name="codec">Codec used to encode the stream data.</param>        
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="stream"/> or the <paramref name="codec"/> parameter is NULL (Nothing in VB.Net).</exception>		
+		/// <exception cref="System.IO.IOException">Thrown when the stream is read-only.
+		/// <para>-or-</para>
+		/// <para>Thrown when there is an error when attempting to encode the image data.</para>
+		/// </exception>
+		/// <remarks>This will persist the contents of the texture into a stream.  The data is encoded into various formats via the codec parameter.  Gorgon contains a 
+		/// number of built-in codecs accessible from the <see cref="GorgonLibrary.IO.GorgonImageCodecs">GorgonImageCodecs</see> interface.  Currently, Gorgon supports the following formats:
+		/// <list type="bullet">
+		///		<item>
+		///			<description>DDS</description>
+		///		</item>
+		///		<item>
+		///			<description>TGA</description>
+		///		</item>
+		///		<item>
+		///			<description>PNG (WIC)</description>
+		///		</item>
+		///		<item>
+		///			<description>BMP (WIC)</description>
+		///		</item>
+		///		<item>
+		///			<description>JPG (WIC)</description>
+		///		</item>
+		///		<item>
+		///			<description>WMP (WIC)</description>
+		///		</item>
+		///		<item>
+		///			<description>TIF (WIC)</description>
+		///		</item>
+		/// </list>
+		/// <para>The items with (WIC) indicate that the codec support is supplied by the Windows Imaging Component.  This component should be installed on most systems, but if it is not 
+		/// then it is required in order to read/save the files in those formats.</para>
+		/// </remarks>
+		public override void Save(System.IO.Stream stream, IO.GorgonImageCodec codec)
 		{
-			D3D.ImageFileFormat fileFormat = (D3D.ImageFileFormat)format;
-			GorgonTexture2D shim = null;
-
-			if (IsDepthStencil)
-				throw new GorgonException(GorgonResult.CannotWrite, "Cannot save a depth/stencil buffer texture.");
-
-			// We can only save to 32 bit RGBA uint normalized formats if we're not using DDS, so we have to convert.
-			if ((format != ImageFileFormat.DDS) && (Settings.Format != BufferFormat.R8G8B8A8_UIntNormal) && (Settings.Format != BufferFormat.R8G8B8A8_UIntNormal_sRGB))
-				throw new ArgumentException("Cannot save the format '" + Settings.Format.ToString() + "' to a " + format.ToString() + " file.  DDS is the only file format that may be used with that texture format.");
-
-			try
+			using (var textureData = GorgonImageData.CreateFromTexture(this))
 			{
-				shim = CreateShim(this);
-				D3D.Resource.ToStream<D3D.Resource>(Graphics.Context, shim != null ? shim.D3DResource : this.D3DResource, fileFormat, stream);
-			}
-			finally
-			{
-				DestroyShim(shim);
+				textureData.Save(stream, codec);
 			}
 		}
+
+		///// <summary>
+		///// Function to save the texture data to a stream.
+		///// </summary>
+		///// <param name="stream">Stream to write.</param>
+		///// <param name="format">Image format to use.</param>
+		///// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="stream"/> parameter is NULL (Nothing in VB.Net).</exception>
+		/////   
+		///// <exception cref="System.ArgumentException">
+		///// Thrown when the format is anything other than DDS for a volume (3D) texture.
+		/////   <para>-or-</para>
+		/////   <para>Thrown when the format is anything other than DDS.</para>
+		/////   </exception>
+		//public override void Save(System.IO.Stream stream, ImageFileFormat format)
+		//{
+		//	D3D.ImageFileFormat fileFormat = (D3D.ImageFileFormat)format;
+		//	GorgonTexture2D shim = null;
+
+		//	if (IsDepthStencil)
+		//		throw new GorgonException(GorgonResult.CannotWrite, "Cannot save a depth/stencil buffer texture.");
+
+		//	// We can only save to 32 bit RGBA uint normalized formats if we're not using DDS, so we have to convert.
+		//	if ((format != ImageFileFormat.DDS) && (Settings.Format != BufferFormat.R8G8B8A8_UIntNormal) && (Settings.Format != BufferFormat.R8G8B8A8_UIntNormal_sRGB))
+		//		throw new ArgumentException("Cannot save the format '" + Settings.Format.ToString() + "' to a " + format.ToString() + " file.  DDS is the only file format that may be used with that texture format.");
+
+		//	try
+		//	{
+		//		shim = CreateShim(this);
+		//		D3D.Resource.ToStream<D3D.Resource>(Graphics.Context, shim != null ? shim.D3DResource : this.D3DResource, fileFormat, stream);
+		//	}
+		//	finally
+		//	{
+		//		DestroyShim(shim);
+		//	}
+		//}
 		#endregion
 
 		#region Constructor/Destructor.

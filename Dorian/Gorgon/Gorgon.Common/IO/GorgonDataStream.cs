@@ -442,7 +442,7 @@ namespace GorgonLibrary.IO
 			if ((actualCount + _pointerPosition) > _length)
 				actualCount = (_length - _pointerPosition);
 
-            DirectAccess.ReadArray<byte>(_dataPointer, buffer, offset, count);
+            DirectAccess.ReadArray<byte>(_dataPointer, buffer, offset, actualCount);
 
 			Position += actualCount;
 

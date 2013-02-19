@@ -121,9 +121,9 @@ namespace GorgonLibrary.Graphics
 			region.Front = 0;
 			region.Back = 1;
 			region.Left = 0;
-			region.Right = Settings.Width;
+			region.Right = Settings.Width - 1;
 			region.Top = 0;
-			region.Bottom = Settings.Height;
+			region.Bottom = Settings.Height - 1;
 
 			Graphics.Context.UpdateSubresource(box, D3DResource, subResource, region);			
 		}
@@ -419,140 +419,6 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
-		/// Function to copy a GDI bitmap to this image.
-		/// </summary>
-		/// <param name="image">Image to copy.</param>
-		/// <remarks>Use this to copy data from a GDI+ bitmap into the texture.
-		/// <para>This overload will preserve the <see cref="P:GorgonLibrary.Graphics.GorgonTexture2D.Settings">settings</see> of the texture and make the bitmap conform to those settings.</para>
-		/// </remarks>
-		/// <exception cref="GorgonLibrary.GorgonException">Thrown when the texture size is too large or too small.
-		/// <para>-or-</para>
-		/// <para>Thrown when the format is not supported.</para>
-		/// </exception>
-		public void Copy(Image image)
-		{
-			Copy(image, Settings);
-		}
-
-		/// <summary>
-		/// Function to copy a GDI bitmap to this image.
-		/// </summary>
-		/// <param name="image">Image to copy.</param>
-		/// <param name="settings">Settings to apply to the current texture.</param>
-		/// <remarks>Use this to copy data from a GDI+ bitmap into the texture.</remarks>
-		/// <exception cref="GorgonLibrary.GorgonException">Thrown when the texture size is too large or too small.
-		/// <para>-or-</para>
-		/// <para>Thrown when the format is not supported.</para>
-		/// </exception>
-		public void Copy(Image image, GorgonTexture2DSettings settings)
-		{
-			D3D.ImageInformation? info = null;
-			System.IO.MemoryStream stream = null;
-			byte[] imageData = null;
-
-			try
-			{
-				if ((image.Width <= 0) || (image.Width >= Graphics.Textures.MaxWidth))
-					throw new ArgumentException("The texture width must be at least 1 pixel, or less than " + Graphics.Textures.MaxWidth.ToString() + " pixels.", "image");
-
-				if ((image.Height <= 0) || (image.Height >= Graphics.Textures.MaxHeight))
-					throw new ArgumentException("The texture height must be at least 1 pixel, or less than " + Graphics.Textures.MaxHeight.ToString() + " pixels.", "image");
-
-				stream = new MemoryStream();
-				image.Save(stream, System.Drawing.Imaging.ImageFormat.Png);
-				imageData = stream.ToArray();
-
-				// Get the file information.
-				info = D3D.ImageInformation.FromMemory(imageData);
-
-				// Assign defaults.
-				if (info != null)
-				{
-					// Only load 2D textures.
-					if (info.Value.ResourceDimension != D3D.ResourceDimension.Texture2D)
-						throw new ArgumentException("The specified texture is not a 2D texture.", "stream");
-
-					if (settings.Format == BufferFormat.Unknown)
-						settings.Format = (BufferFormat)info.Value.Format;
-					if (settings.Width < 1)
-						settings.Width = info.Value.Width;
-					if (settings.Height < 1)
-						settings.Height = info.Value.Height;
-					if (settings.MipCount == 0)
-						settings.MipCount = 1;
-				}
-				settings.ArrayCount = 1;
-
-				// Validate the texture settings.
-				ITextureSettings iSettings = settings;
-				Graphics.Textures.ValidateTexture2D(ref iSettings, true);
-
-				if (View != null)
-				{
-					View.Dispose();
-					View = null;
-				}
-
-				if (D3DResource != null)
-				{
-					D3DResource.Dispose();
-					D3DResource = null;
-				}
-
-				base.Settings = iSettings;
-
-				InitializeFileData(imageData);
-
-				if (RenderTarget != null)
-					RenderTarget.UpdateResourceView();
-
-				Graphics.Shaders.Reseat(this);
-			}
-			finally
-			{
-				if (stream != null)
-					stream.Dispose();
-				stream = null;
-			}
-		}
-
-		/// <summary>
-		/// Function to save this image to a GDI bitmap.
-		/// </summary>
-		/// <remarks>Use this to copy data from this texture into a GDI+ bitmap.</remarks>
-		/// <exception cref="GorgonLibrary.GorgonException">Thrown when the texture size is too large or too small.
-		/// <para>-or-</para>
-		/// <para>Thrown when the format is not supported.</para>
-		/// </exception>
-		public Image ToGDIBitmap()
-		{
-			// TODO: Add code to use WIC to save as an image array (to save arrays and/or mip maps).
-			//		 Add this to volume textures and 1D textures too.
-			//		 We will forego the resizing/format conversion and instead convert to the nearest format at the same size.
-			MemoryStream stream = null;
-
-			try
-			{
-				// If this format is not compatible, then throw an exception.
-				if (Settings.Format != BufferFormat.R8G8B8A8)
-					throw new GorgonException(GorgonResult.CannotCreate, "To convert to GDI the format must be one of the R8G8B8A8 group members.");
-
-				stream = new MemoryStream();
-				Save(stream, ImageFileFormat.PNG);
-				stream.Position = 0;
-
-				return Image.FromStream(stream);
-			}
-			finally
-			{
-				if (stream != null)
-					stream.Dispose();
-				stream = null;
-			}
-		}
-
-
-		/// <summary>
 		/// Function to copy a texture subresource from another texture.
 		/// </summary>
 		/// <param name="texture">Source texture to copy.</param>
@@ -709,32 +575,6 @@ namespace GorgonLibrary.Graphics
 			GorgonDebug.AssertNull<GorgonTexture>(texture, "texture");
 
 			CopySubResource(texture, subResource, destSubResource, null, Vector2.Zero);
-		}
-
-		/// <summary>
-		/// Function to save the texture data to a stream.
-		/// </summary>
-		/// <param name="stream">Stream to write.</param>
-		/// <param name="format">Image format to use.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="stream"/> parameter is NULL (Nothing in VB.Net).</exception>
-		///   
-		/// <exception cref="System.ArgumentException">
-		/// Thrown when the format is anything other than DDS for a volume (3D) texture.
-		///   <para>-or-</para>
-		///   <para>Thrown when the format is anything other than DDS.</para>
-		///   </exception>
-		public override void Save(System.IO.Stream stream, ImageFileFormat format)
-		{
-			D3D.ImageFileFormat fileFormat = (D3D.ImageFileFormat)format;
-
-			if (IsDepthStencil)
-				throw new GorgonException(GorgonResult.CannotWrite, "Cannot save a depth/stencil buffer texture.");
-
-			// We can only save to 32 bit RGBA uint normalized formats if we're not using DDS, so we have to convert.
-			if ((format != ImageFileFormat.DDS) && (Settings.Format != BufferFormat.R8G8B8A8_UIntNormal) && (Settings.Format != BufferFormat.R8G8B8A8_UIntNormal_sRGB))
-				throw new ArgumentException("Cannot save the format '" + Settings.Format.ToString() + "' to a " + format.ToString() + " file.  DDS is the only file format that may be used with that texture format.");
-
-			D3D.Resource.ToStream<D3D.Texture2D>(Graphics.Context, (D3D.Texture2D)D3DResource, fileFormat, stream);
 		}
 
 		/// <summary>
