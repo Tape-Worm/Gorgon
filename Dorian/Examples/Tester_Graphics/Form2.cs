@@ -40,7 +40,7 @@ namespace Tester_Graphics
 		{
             _2D.PixelShader.Current = _shader;
             _2D.PixelShader.ConstantBuffers[2] = _frameIndex;
-            _2D.Target = _target;            
+            _2D.Target = _target;
 
 			_sprite.Draw();
 
@@ -48,7 +48,23 @@ namespace Tester_Graphics
             _2D.Target = null;
             _2D.Clear(Color.White);
 
-            _targetSprite.Size = new Vector2(_swap.Settings.Width, _swap.Settings.Height);
+			float aspectRatio = 1.0f;
+
+			if (_targetSprite.Size.X >= _targetSprite.Size.Y)
+			{
+				aspectRatio = ((_targetSprite.Size.Y / _targetSprite.Size.X) / ((float)_swap.Settings.Height / (float)_swap.Settings.Width));
+				_targetSprite.ScaledSize = new Vector2(_swap.Settings.Width, _swap.Settings.Height * aspectRatio);
+			}
+			else
+			{
+				aspectRatio = ((_targetSprite.Size.X / _targetSprite.Size.Y) / ((float)_swap.Settings.Width / (float)_swap.Settings.Height));
+				_targetSprite.ScaledSize = new Vector2(_swap.Settings.Width * aspectRatio, _swap.Settings.Height);
+			}
+
+            
+			_targetSprite.Anchor = new Vector2(_targetSprite.Size.X / 2.0f, _targetSprite.Size.Y / 2.0f);
+			
+			_targetSprite.Position = new Vector2(_swap.Settings.Width / 2.0f, _swap.Settings.Height / 2.0f);
             _targetSprite.Opacity += 0.25f * GorgonTiming.Delta;
             _targetSprite.Opacity = 1.0f.Min(_targetSprite.Opacity);
             _targetSprite.Draw();
@@ -110,14 +126,11 @@ namespace Tester_Graphics
 				});
 
 				//GorgonImageCodecs.DDS.LegacyConversionFlags = DDSFlags.NoR10B10G10A2Fix;
-                string fileName = @"c:\mike\unpak\moondance.gif";
-				GorgonImageCodecs.GIF.UseAllFrames = true;
-				GorgonImageCodecs.GIF.Clip = true;	// Clip this image because animated gifs can have varying frame sizes and resizing the frames can cause issues.
-                _delays = GorgonImageCodecs.GIF.GetFrameDelays(fileName);
-				using (var data = GorgonImageData.FromFile(fileName))
-				{
-                    _texture = _graphics.Textures.CreateTexture<GorgonTexture2D>("Test", (GorgonTexture2DSettings)data.Settings, data);
-				}
+                string fileName = @"d:\images\lightning.gif";
+				//GorgonImageCodecs.TIFF.UseAllFrames = true;
+				GorgonImageCodecs.Gif.Clip = true;	// Clip this image because animated gifs can have varying frame sizes and resizing the frames can cause issues.
+                _delays = GorgonImageCodecs.Gif.GetFrameDelays(fileName);
+				_texture = _graphics.Textures.FromFile<GorgonTexture2D>("Test", fileName, GorgonImageCodecs.Gif);
 
 				_2D = _graphics.Output.Create2DRenderer(_swap);
 				
@@ -141,6 +154,8 @@ namespace Tester_Graphics
                 _target.Clear(Color.Transparent);
                 _targetSprite = _2D.Renderables.CreateSprite("Target", new Vector2(_target.Settings.Width, _target.Settings.Height), _target.Texture);
                 _targetSprite.Opacity = 0.0f;
+				_targetSprite.SmoothingMode = SmoothingMode.Smooth;
+				_targetSprite.Anchor = new Vector2(_targetSprite.Size.X / 2.0f, _targetSprite.Size.Y / 2.0f);
 
                 /*using (var texture = _graphics.Textures.FromFile<GorgonTexture2D>("Test", @"d:\unpak\textureUpload.dds", new GorgonTexture2DSettings()
                 {

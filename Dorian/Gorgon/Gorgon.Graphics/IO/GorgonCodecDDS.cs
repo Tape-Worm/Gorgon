@@ -1656,7 +1656,7 @@ namespace GorgonLibrary.IO
             }
 
 			// Read the header information.
-			settings = ReadHeader(stream, size, out flags);
+			settings = ReadHeader(stream, size, out flags);			
             
 			// Create our image data structure.
 			imageData = new GorgonImageData(settings);
@@ -1827,7 +1827,7 @@ namespace GorgonLibrary.IO
 		/// </returns>
 		/// <exception cref="System.IO.IOException">Thrown when the <paramref name="stream"/> is write-only or if the stream cannot perform seek operations.</exception>
 		/// <exception cref="System.IO.EndOfStreamException">Thrown when an attempt to read beyond the end of the stream is made.</exception>
-		public override bool CanBeRead(System.IO.Stream stream)
+		public override bool IsReadable(System.IO.Stream stream)
         {
             uint magicNumber = 0;
             long position = 0;

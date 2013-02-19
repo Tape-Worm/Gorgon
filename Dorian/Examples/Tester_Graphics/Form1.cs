@@ -109,7 +109,7 @@ namespace Tester_Graphics
 				//    byte[] data = _1D.Save(ImageFileFormat.DDS);
 				//}
 
-				_texture = _graphics.Textures.FromFile<GorgonTexture2D>("File", @"..\..\..\..\Resources\Images\Ship.png");
+				_texture = _graphics.Textures.FromFile<GorgonTexture2D>("File", @"..\..\..\..\Resources\Images\Ship.png", GorgonImageCodecs.Png);
 				//_textureNM = _graphics.Textures.FromFile<GorgonTexture2D>("File", @"..\..\..\..\Resources\Images\Ship_DISP.png", GorgonTexture2DSettings.FromFile);
 
 				_mainScreen = _graphics.Output.CreateSwapChain("MainScreen", new GorgonSwapChainSettings()
@@ -123,8 +123,14 @@ namespace Tester_Graphics
 
 				GorgonSprite sprite = _2D.Renderables.CreateSprite("Sprite", new Vector2(178, 207), _texture, new RectangleF(0, 0, _texture.Settings.Width, _texture.Settings.Height));
 
-				_target.Texture.Copy(Properties.Resources.Haiku);
-				_target2.Texture.Copy(Properties.Resources.Haiku);
+				using (var imageData = GorgonImageData.Create2DFromGDIImage(Properties.Resources.Haiku))
+				{
+					imageData.CopyToTexture(_target.Texture);
+					//imageData.CopyToTexture(_target2.Texture);
+					//_target.Texture.Copy(Properties.Resources.Haiku);
+					//_target2.Texture.Copy(Properties.Resources.Haiku);
+				}
+				_target.Texture.Save(@"D:\unpak\test1.png", GorgonImageCodecs.Png);
 				//_texture.CopySubResource(_target.Texture, new Rectangle(0, 0, 256, 128), Vector2.Zero);
 
 				//byte[] data = new byte[_texture.SizeInBytes];

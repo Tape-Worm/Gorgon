@@ -397,7 +397,7 @@ namespace GorgonLibrary.Graphics.Example
 
 			// Load our textures from the resources.
 			// This contains our textures for the walls and ball.  
-			_texture = _graphics.Textures.FromGDIBitmap("PlaneTexture", Properties.Resources.Texture);
+			_texture = _graphics.Textures.Create2DTextureFromGDIImage("PlaneTexture", Properties.Resources.Texture);
 
 			// Set up our view matrix.
 			// Move the camera (view matrix) back 2.2 units.  This will give us enough room to see what's

@@ -432,6 +432,200 @@ namespace GorgonLibrary.Graphics
 			return _dataBoxes;
 		}
 
+		/// <summary>
+		/// Function to copy the image data to an existing texture.
+		/// </summary>
+		/// <param name="texture">Texture to copy into.</param>
+		/// <remarks>This method will do a straight copy of the data into the specified texture.  This method will not perform format conversions, stretching/shrinking of the image data 
+		/// to match the texture.  Clipping will occour if the texture width/height is not the same as the image data width/height.
+		/// <para>This overload will copy all mip levels and array indices (if applicable).  If the texture has fewer array indices or mip levels than the image data, then 
+		/// the data will be clipped to the lower mip/array count.</para>
+		/// <para>Images and textures must be the same format, and share the same number of dimensions (i.e. 2D texture needs 2D image data, etc...).</para>
+		/// <para>The texture to update must not have usage type of Immutable.</para>
+		/// </remarks>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="texture"/> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentException">Thrown when the texture and the image data do not have the same format.
+		/// <para>-or-</para>
+		/// <para>Thrown when the texture and the image data do not share the same number dimensions.</para>
+		/// <para>-or-</para>
+		/// <para>Thrown when the texture passed in is immutable.</para>
+		/// </exception>
+		public void CopyToTexture(GorgonTexture texture)
+		{
+			if (texture == null)
+			{
+				throw new ArgumentNullException("texture");
+			}
+
+			if (texture.Settings.Format != Settings.Format)
+			{
+				throw new ArgumentException("The texture format [" + texture.Settings.Format.ToString() + "] must match the image data format [" + Settings.Format.ToString() + "].", "texture");
+			}
+
+			if (texture.Settings.ImageType != Settings.ImageType)
+			{
+				throw new ArgumentException("The texture is not a '" + texture.Settings.ImageType.ToString() + "'.", "texture");
+			}
+
+			if (texture.Settings.Usage == BufferUsage.Immutable)
+			{
+				throw new ArgumentException("The texture is immutable.", "texture");
+			}
+
+			int arrayCount = texture.Settings.ArrayCount.Min(Settings.ArrayCount);
+			int mipCount = texture.Settings.MipCount.Min(Settings.MipCount);
+
+			// Copy to the texture.
+			for (int array = 0; array < arrayCount; array++)
+			{
+				for (int mip = 0; mip < mipCount; mip++)
+				{
+					CopyToTexture(texture, array, mip);
+				}
+			}
+		}
+
+		/// <summary>
+		/// Function to copy the image data to an existing texture.
+		/// </summary>
+		/// <param name="texture">Texture to copy into.</param>
+		/// <param name="arrayIndex">Array index to copy.</param>
+		/// <param name="mipLevel">Mip map level to copy.</param>
+		/// <remarks>This method will do a straight copy of the data into the specified texture.  This method will not perform format conversions, stretching/shrinking of the image data 
+		/// to match the texture.  Clipping will occour if the texture width/height is not the same as the image data width/height.
+		/// <para>Images and textures must be the same format, and share the same number of dimensions (i.e. 2D texture needs 2D image data, etc...).</para>
+		/// <para>The texture to update must not have usage type of Immutable.</para>
+		/// </remarks>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="texture"/> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentException">Thrown when the texture and the image data do not have the same format.
+		/// <para>-or-</para>
+		/// <para>Thrown when the texture and the image data do not share the same number dimensions.</para>
+		/// <para>-or-</para>
+		/// <para>Thrown when the texture passed in is immutable.</para>
+		/// </exception>
+		public void CopyToTexture(GorgonTexture texture, int arrayIndex, int mipLevel)
+		{
+			int depth = 1;
+			int height = 1;
+
+			if (texture == null)
+			{
+				throw new ArgumentNullException("texture");
+			}
+
+			if (texture.Settings.Format != Settings.Format)
+			{
+				throw new ArgumentException("The texture format [" + texture.Settings.Format.ToString() + "] must match the image data format [" + Settings.Format.ToString() + "].", "texture");
+			}
+
+			if (texture.Settings.ImageType != Settings.ImageType)
+			{
+				throw new ArgumentException("The texture is not a '" + texture.Settings.ImageType.ToString() + "'.", "texture");
+			}
+
+			if (texture.Settings.Usage == BufferUsage.Immutable)
+			{
+				throw new ArgumentException("The texture is immutable.", "texture");
+			}			
+
+			int arrayCount = Settings.ArrayCount.Min(texture.Settings.ArrayCount);
+			int mipCount = Settings.MipCount.Min(texture.Settings.MipCount);
+
+			// Ensure our mip levels and array indices are within the bounds.
+			if (mipLevel >= mipCount)
+			{
+				mipLevel = mipCount - 1;
+			}
+
+			if (arrayIndex >= arrayCount)
+			{
+				arrayIndex = arrayCount - 1;
+			}
+
+			// Get the buffer to copy.
+			var buffer = this[arrayIndex, mipLevel];
+			ISubResourceData textureData = null;
+			int resourceIndex = 0;			
+
+			switch (texture.Settings.ImageType)
+			{
+				case ImageType.Image1D:
+					resourceIndex = GorgonTexture1D.GetSubResourceIndex(mipLevel, arrayIndex, mipCount, arrayCount);
+					textureData = new GorgonTexture1DData(buffer.Data);
+					break;
+				case ImageType.Image2D:
+				case ImageType.ImageCube:
+					resourceIndex = GorgonTexture2D.GetSubResourceIndex(mipLevel, arrayIndex, mipCount, arrayCount);
+					textureData = new GorgonTexture2DData(buffer.Data, buffer.PitchInformation.RowPitch);
+					break;
+				case ImageType.Image3D:
+					resourceIndex = GorgonTexture3D.GetSubResourceIndex(mipLevel, mipCount);
+					textureData = new GorgonTexture3DData(buffer.Data, buffer.PitchInformation.RowPitch, buffer.PitchInformation.SlicePitch);					
+
+					depth = texture.Settings.Depth;
+					break;
+			}
+
+			height = texture.Settings.Height.Min(Settings.Height);
+
+			// Calculate depth for the texture.
+			for (int mip = 1; mip <= mipLevel; mip++)
+			{
+				if (height > 1)
+				{
+					height >>= 1;
+				}
+
+				if (depth > 1)
+				{
+					depth >>= 1;
+				}
+			}
+
+			// Copy manually.
+			if (texture.Settings.Usage != BufferUsage.Default)
+			{
+				textureData = texture.Lock<ISubResourceData>(resourceIndex, BufferLockFlags.Write);
+
+				try
+				{
+					if ((textureData.RowPitch == buffer.PitchInformation.RowPitch) && (textureData.SlicePitch == buffer.PitchInformation.SlicePitch) && (depth == buffer.Depth))
+					{
+						DirectAccess.MemoryCopy(textureData.Data.UnsafePointer, buffer.Data.UnsafePointer, buffer.PitchInformation.SlicePitch * buffer.Depth);
+					}
+					else
+					{
+						int clipRowPitch = textureData.RowPitch.Min(buffer.PitchInformation.RowPitch);
+						var destDepthPtr = (byte*)textureData.Data.UnsafePointer;
+						var srcPtr = (byte*)textureData.Data.UnsafePointer;
+
+						// Copy all depth information.
+						for (int i = 0; i < depth; i++)
+						{
+							var destPtr = destDepthPtr;
+
+							for (int y = 0; y < height; y++)
+							{
+								DirectAccess.MemoryCopy(destPtr, srcPtr, clipRowPitch);
+								destPtr += textureData.RowPitch;
+								srcPtr += buffer.PitchInformation.RowPitch;
+							}
+
+							destDepthPtr += textureData.SlicePitch;
+						}
+					}
+				}
+				finally
+				{
+					texture.Unlock();
+				}
+			}
+			else
+			{				
+				texture.UpdateSubResource(textureData, resourceIndex);
+			}				
+		}
+
         /// <summary>
         /// Function to create a new 1D image data object from a GDI+ Image.
         /// </summary>
@@ -1494,7 +1688,10 @@ namespace GorgonLibrary.Graphics
 		/// <param name="codec">Codec used to encode the file data.</param>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="filePath"/> or the <paramref name="codec"/> parameter is NULL (Nothing in VB.Net).</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the filePath parameter is empty.</exception>
-		/// <exception cref="System.IO.IOException">Thrown when the stream is read-only.</exception>
+		/// <exception cref="System.IO.IOException">Thrown when the stream is read-only.
+		/// <para>-or-</para>
+		/// <para>Thrown when there is an error when attempting to encode the image data.</para>
+		/// </exception>
 		/// <remarks>This will persist the contents of the image data object into a stream.  The data is encoded into various formats via the codec parameter.  Gorgon contains a 
 		/// number of built-in codecs accessible from the <see cref="GorgonLibrary.IO.GorgonImageCodecs">GorgonImageCodecs</see> interface.  Currently, Gorgon supports the following formats:
 		/// <list type="bullet">
@@ -1546,8 +1743,11 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		/// <param name="stream">Stream that will contain the image information.</param>
 		/// <param name="codec">Codec used to encode the stream data.</param>        
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="stream"/> or the <paramref name="codec"/> parameter is NULL (Nothing in VB.Net).</exception>
-		/// <exception cref="System.IO.IOException">Thrown when the stream is read-only.</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="stream"/> or the <paramref name="codec"/> parameter is NULL (Nothing in VB.Net).</exception>		
+		/// <exception cref="System.IO.IOException">Thrown when the stream is read-only.
+		/// <para>-or-</para>
+		/// <para>Thrown when there is an error when attempting to encode the image data.</para>
+		/// </exception>
 		/// <remarks>This will persist the contents of the image data object into a stream.  The data is encoded into various formats via the codec parameter.  Gorgon contains a 
 		/// number of built-in codecs accessible from the <see cref="GorgonLibrary.IO.GorgonImageCodecs">GorgonImageCodecs</see> interface.  Currently, Gorgon supports the following formats:
 		/// <list type="bullet">
@@ -1597,23 +1797,126 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
+		/// Function to save the image data to a byte array.
+		/// </summary>
+		/// <param name="codec">Codec used to encode the stream data.</param>        
+		/// <returns>A byte array containing the encoded image data.</returns>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="codec"/> parameter is NULL (Nothing in VB.Net).</exception>		
+		/// <exception cref="System.IO.IOException">Thrown when the stream is read-only.
+		/// <para>-or-</para>
+		/// <para>Thrown when there is an error when attempting to encode the image data.</para>
+		/// </exception>
+		/// <remarks>This will persist the contents of the image data object into a byte array.  The data is encoded into various formats via the codec parameter.  Gorgon contains a 
+		/// number of built-in codecs accessible from the <see cref="GorgonLibrary.IO.GorgonImageCodecs">GorgonImageCodecs</see> interface.  Currently, Gorgon supports the following formats:
+		/// <list type="bullet">
+		///		<item>
+		///			<description>DDS</description>
+		///		</item>
+		///		<item>
+		///			<description>TGA</description>
+		///		</item>
+		///		<item>
+		///			<description>PNG (WIC)</description>
+		///		</item>
+		///		<item>
+		///			<description>BMP (WIC)</description>
+		///		</item>
+		///		<item>
+		///			<description>JPG (WIC)</description>
+		///		</item>
+		///		<item>
+		///			<description>WMP (WIC)</description>
+		///		</item>
+		///		<item>
+		///			<description>TIF (WIC)</description>
+		///		</item>
+		/// </list>
+		/// <para>The items with (WIC) indicate that the codec support is supplied by the Windows Imaging Component.  This component should be installed on most systems, but if it is not 
+		/// then it is required in order to read/save the files in those formats.</para>
+		/// </remarks>
+		public byte[] Save(GorgonImageCodec codec)
+		{
+			using (var memoryStream = new System.IO.MemoryStream())
+			{
+				Save(memoryStream, codec);
+				memoryStream.Position = 0;
+
+				return memoryStream.ToArray();
+			}
+		}
+
+		/// <summary>
+		/// Function to save the raw image data to a byte array.
+		/// </summary>
+		/// <returns>A byte array containing the raw image data.</returns>
+		/// <remarks>This will write the contents of this image into a byte array with no encoding.  Use this when there is a need to transfer the raw image data from one 
+		/// data structure to another.</remarks>
+		public byte[] SaveRaw()
+		{
+			byte[] result = new byte[SizeInBytes];
+
+			fixed (byte* element = &result[0])
+			{
+				DirectAccess.MemoryCopy(element, _imageData.UnsafePointer, result.Length);
+			}
+
+			return result;
+		}
+
+		/// <summary>
+		/// Function to save the raw image data to a stream.
+		/// </summary>
+		/// <param name="stream">Stream that will contain the raw image data.</param>
+		/// <remarks>This will write the contents of this image into a stream with no encoding.  Use this when there is a need to transfer the raw image data from one 
+		/// data structure to another.</remarks>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="stream"/> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.IO.IOException">Thrown when the stream parameter is read only.</exception>
+		public void SaveRaw(System.IO.Stream stream)
+		{
+			if (stream == null)
+			{
+				throw new ArgumentNullException("stream");
+			}
+
+			if (!stream.CanWrite)
+			{
+				throw new System.IO.IOException("The stream is read only.");
+			}
+
+			using (var writer = new GorgonBinaryWriter(stream, true))
+			{
+				writer.Write(_imageData.UnsafePointer, SizeInBytes);
+			}
+		}
+
+		/// <summary>
 		/// Function to read image data from a file.
 		/// </summary>
 		/// <param name="filePath">Path to the file that contains the image data.</param>
+		/// <param name="codec">The codec that will read the file.</param>
 		/// <returns>The image data from the stream.</returns>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="filePath"/> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <remarks>This will load image data from a file.  The file must have been encoded by a supported image codec.  The primary codecs supported by Gorgon are detailed in the 
+		/// <see cref="GorgonLibrary.IO.GorgonImageCodecs">GorgonImageCodecs</see> class.  These are the codecs that Gorgon supports "out of the box", additional user 
+		/// codecs may be defined and used to load image data.
+		/// </remarks>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="filePath"/> parameter is NULL (Nothing in VB.Net).
+		/// <para>-or-</para>
+		/// <para>The <paramref name="codec"/> parameter is NULL.</para>
+		/// </exception>
 		/// <exception cref="System.ArgumentException">Thrown when the filePath parameter is empty.
 		/// <para>-or-</para>
-		/// <para>Thrown when the data in the stream cannot be read by any of the registered image codecs.</para></exception>
+		/// <para>Thrown when the data in the stream cannot be read by the image codec.</para></exception>
 		/// <exception cref="System.IO.IOException">Thrown when the stream is write-only.
 		/// <para>-or-</para>
 		/// <para>The image file is corrupted or unable to be read by a codec.</para>
 		/// </exception>
-		public static GorgonImageData FromFile(string filePath)
+		public static GorgonImageData FromFile(string filePath, GorgonImageCodec codec)
 		{
+			Gorgon.Log.Print("GorgonImageData : Loading image data from '{0}'...", Diagnostics.LoggingLevel.Verbose, filePath);
+
             using (var stream = System.IO.File.Open(filePath, System.IO.FileMode.Open, System.IO.FileAccess.Read, System.IO.FileShare.Read))
             {
-                return FromStream(stream, (int)stream.Length);
+                return FromStream(stream, (int)stream.Length, codec);
             }
 		}
 
@@ -1622,20 +1925,32 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		/// <param name="stream">Stream that contains the image data.</param>
 		/// <param name="size">The size of the image, in bytes.</param>
+		/// <param name="codec">The codec that will read the file.</param>
 		/// <returns>The image data from the stream.</returns>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="stream"/> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <remarks>This will load image data from a stream.  The image data in the stream must have been encoded by a supported image codec.  The primary codecs supported by Gorgon are detailed in the 
+		/// <see cref="GorgonLibrary.IO.GorgonImageCodecs">GorgonImageCodecs</see> class.  These are the codecs that Gorgon supports "out of the box", additional user 
+		/// codecs may be defined and used to load image data.
+		/// </remarks>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="stream"/> parameter is NULL (Nothing in VB.Net).
+		/// <para>-or-</para>
+		/// <para>The <paramref name="codec"/> parameter is NULL.</para>
+		/// </exception>
         /// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="size"/> parameter is less than or equal to 0.</exception>
-		/// <exception cref="System.ArgumentException">Thrown when the data in the stream cannot be read by any of the registered image codecs.</exception>
+		/// <exception cref="System.ArgumentException">Thrown when the data in the stream cannot be read by the image codec.</exception>
 		/// <exception cref="System.IO.IOException">Thrown when the stream is write-only.
 		/// <para>-or-</para>
 		/// <para>The image file is corrupted or unable to be read by a codec.</para>
 		/// </exception>
 		/// <exception cref="System.IO.EndOfStreamException">Thrown if an attempt to read beyond the end of the stream is made.</exception>
-		public static GorgonImageData FromStream(System.IO.Stream stream, int size)
+		public static GorgonImageData FromStream(System.IO.Stream stream, int size, GorgonImageCodec codec)
 		{
-			GorgonImageCodec codec = null;
             GorgonDataStream memoryStream = null;
             GorgonImageData result = null;
+
+			if (codec == null)
+			{
+				throw new ArgumentNullException("codec");
+			}
 
             if (size <= 0)
             {
@@ -1652,20 +1967,10 @@ namespace GorgonLibrary.Graphics
 				throw new System.IO.IOException("The stream is write-only.");
 			}
 
-			// Determine the codec by attempting to read the magic number from the stream.
-			foreach (var codecItem in GorgonImageCodecs.InternalCodecs)
+			// Check to see if the decoder can actually read the data in the stream.
+			if (!codec.IsReadable(stream))
 			{
-				if (codecItem.CanBeRead(stream))
-				{
-					codec = codecItem;
-					break;
-				}
-			}
-            
-			// We couldn't find a codec.
-			if (codec == null)
-			{
-				throw new ArgumentException("The data in the stream cannot be read any registered image codec.", "stream");
+				throw new System.IO.IOException("The data in the stream is not a valid " + codec.Codec + " file.");
 			}
 
             // Just apply directly if we're already using a data stream.

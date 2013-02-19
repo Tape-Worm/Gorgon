@@ -287,21 +287,6 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
-		/// Function to save the texture data to a stream.
-		/// </summary>
-		/// <param name="stream">Stream to write.</param>
-		/// <param name="format">Image format to use.</param>
-		/// <remarks>A 1D dimensional texture can only be saved to DDS format.</remarks>
-		/// <exception cref="System.ArgumentException">Thrown when the format is not DDS.</exception>
-		public override void Save(System.IO.Stream stream, ImageFileFormat format)
-		{
-			if (format != ImageFileFormat.DDS)
-				throw new ArgumentException("The file format for a 1D texture can only be DDS.", "format");
-
-			D3D.Resource.ToStream<D3D.Texture1D>(Graphics.Context, (D3D.Texture1D)D3DResource, D3D.ImageFileFormat.Dds, stream);
-		}
-
-		/// <summary>
 		/// Function to copy a texture subresource from another texture.
 		/// </summary>
 		/// <param name="texture">Source texture to copy.</param>

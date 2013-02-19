@@ -44,7 +44,9 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Property to set or return the shader view format.
 		/// </summary>
-		/// <remarks>This changes how the texture is sampled/viewed in a shader.  The default value is Unknown.</remarks>
+		/// <remarks>This changes how the texture is sampled/viewed in a shader.  When this value is set to Unknown the view format is taken from the texture format.
+		/// <para>The default value is Unknown.</para>
+		/// </remarks>
 		BufferFormat ViewFormat
 		{
 			get;
@@ -54,6 +56,9 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Property to set or return whether the view uses unordered access.
 		/// </summary>
+		/// <remarks>This changes how a texture sampled/viewed in a shader.
+		/// <para>The default value is FALSE.</para>
+		/// </remarks>
 		bool ViewIsUnordered
 		{
 			get;
@@ -92,30 +97,6 @@ namespace GorgonLibrary.Graphics
 			get;
 			set;
 		}
-
-		/// <summary>
-		/// Property to set or return the type of filter when loading an image from a stream or file.
-		/// </summary>
-		/// <remarks>This only applies to textures created when loading an image from a stream or file.  Texture creation methods do not use this.
-		/// <para>This defaults to None.</para>
-		/// </remarks>
-		ImageFilters FileFilter
-		{
-			get;
-			set;
-		}
-
-		/// <summary>
-		/// Property to set or return the type of mipmap filter when loading an image from a stream or file.
-		/// </summary>
-		/// <remarks>This only applies to textures created when loading an image from a stream or file.  Texture creation methods do not use this.
-		/// <para>This defaults to None.</para>
-		/// </remarks>
-		ImageFilters FileMipFilter
-		{
-			get;
-			set;
-		}
 		#endregion
 	}
 	
@@ -137,8 +118,6 @@ namespace GorgonLibrary.Graphics
 			MipCount = 1;
 			ViewFormat = BufferFormat.Unknown;
 			Usage = BufferUsage.Default;
-			FileFilter = ImageFilters.None;
-			FileMipFilter = ImageFilters.None;
 		}
 		#endregion
 
@@ -153,30 +132,6 @@ namespace GorgonLibrary.Graphics
 			{
 				return ImageType.Image1D;
 			}
-		}
-
-		/// <summary>
-		/// Property to set or return the type of filter when loading an image from a stream or file.
-		/// </summary>
-		/// <remarks>This only applies to textures created when loading an image from a stream or file.  Texture creation methods do not use this.
-		/// <para>This defaults to None.</para>
-		/// </remarks>
-		public ImageFilters FileFilter
-		{
-			get;
-			set;
-		}
-
-		/// <summary>
-		/// Property to set or return the type of mipmap filter when loading an image from a stream or file.
-		/// </summary>
-		/// <remarks>This only applies to textures created when loading an image from a stream or file.  Texture creation methods do not use this.
-		/// <para>This defaults to None.</para>
-		/// </remarks>
-		public ImageFilters FileMipFilter
-		{
-			get;
-			set;
 		}
 
 		/// <summary>
@@ -370,8 +325,6 @@ namespace GorgonLibrary.Graphics
 			Multisampling = new GorgonMultisampling(1, 0);
 			ViewFormat = BufferFormat.Unknown;
 			Usage = BufferUsage.Default;
-			FileFilter = ImageFilters.None;
-			FileMipFilter = ImageFilters.None;
 		}
 		#endregion
 
@@ -393,30 +346,6 @@ namespace GorgonLibrary.Graphics
 					return ImageType.Image2D;
 				}
 			}
-		}
-
-		/// <summary>
-		/// Property to set or return the type of filter when loading an image from a stream or file.
-		/// </summary>
-		/// <remarks>This only applies to textures created when loading an image from a stream or file.  Texture creation methods do not use this.
-		/// <para>This defaults to None.</para>
-		/// </remarks>
-		public ImageFilters FileFilter
-		{
-			get;
-			set;
-		}
-
-		/// <summary>
-		/// Property to set or return the type of mipmap filter when loading an image from a stream or file.
-		/// </summary>
-		/// <remarks>This only applies to textures created when loading an image from a stream or file.  Texture creation methods do not use this.
-		/// <para>This defaults to None.</para>
-		/// </remarks>
-		public ImageFilters FileMipFilter
-		{
-			get;
-			set;
 		}
 
 		/// <summary>
@@ -586,8 +515,6 @@ namespace GorgonLibrary.Graphics
 			MipCount = 1;
 			ViewFormat = BufferFormat.Unknown;
 			Usage = BufferUsage.Default;
-			FileFilter = ImageFilters.None;
-			FileMipFilter = ImageFilters.None;
 		}
 		#endregion
 
@@ -602,30 +529,6 @@ namespace GorgonLibrary.Graphics
 			{
 				return ImageType.Image3D;
 			}
-		}
-
-		/// <summary>
-		/// Property to set or return the type of filter when loading an image from a stream or file.
-		/// </summary>
-		/// <remarks>This only applies to textures created when loading an image from a stream or file.  Texture creation methods do not use this.
-		/// <para>This defaults to None.</para>
-		/// </remarks>
-		public ImageFilters FileFilter
-		{
-			get;
-			set;
-		}
-
-		/// <summary>
-		/// Property to set or return the type of mipmap filter when loading an image from a stream or file.
-		/// </summary>
-		/// <remarks>This only applies to textures created when loading an image from a stream or file.  Texture creation methods do not use this.
-		/// <para>This defaults to None.</para>
-		/// </remarks>
-		public ImageFilters FileMipFilter
-		{
-			get;
-			set;
 		}
 
 		/// <summary>

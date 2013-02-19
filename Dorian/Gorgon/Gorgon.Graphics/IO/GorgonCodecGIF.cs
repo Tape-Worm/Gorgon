@@ -58,6 +58,17 @@ namespace GorgonLibrary.IO
 
 		#region Properties.
 		/// <summary>
+		/// Property to return whether the codec supports decoding/encoding multiple frames or not.
+		/// </summary>
+		public override bool SupportsMultipleFrames
+		{
+			get
+			{
+				return true;
+			}
+		}
+
+		/// <summary>
 		/// Property to set or return whether all frames in a multi-frame image should be encoded/decoded or not.
 		/// </summary>
 		/// <remarks>This property will encode or decode multiple frames from or into an array.  Note that this is only supported on codecs that support multiple frames (e.g. animated Gif).  
@@ -142,8 +153,8 @@ namespace GorgonLibrary.IO
 			}
 
 			// Get frame offsets.
-			var offsetX = frame.MetadataQueryReader.GetMetadataByName("/imgdesc/left");
-			var offsetY = frame.MetadataQueryReader.GetMetadataByName("/imgdesc/top");
+			var offsetX = frame.MetadataQueryReader.GetMetadataByName("/imgdesc/Left");
+			var offsetY = frame.MetadataQueryReader.GetMetadataByName("/imgdesc/Top");
 
 			if (offsetX != null)
 			{
@@ -161,24 +172,27 @@ namespace GorgonLibrary.IO
 		/// Function to retrieve palette information for indexed images.
 		/// </summary>
 		/// <param name="wic">The WIC interface.</param>
-		/// <param name="decoding">TRUE if decoding, FALSE if not.</param>
+		/// <param name="bitmap">The bitmap to derive the palette from (only used when encoding).</param>
 		/// <returns>
 		/// A tuple containing the palette data, alpha percentage and the type of palette.
 		/// </returns>
-		internal override Tuple<WIC.Palette, double, WIC.BitmapPaletteType> GetPaletteInfo(GorgonWICImage wic, bool decoding)
+		internal override Tuple<WIC.Palette, double, WIC.BitmapPaletteType> GetPaletteInfo(GorgonWICImage wic, WIC.Bitmap bitmap)
 		{			
 			WIC.Palette palette = null;
 
 			if (Palette == null)
 			{
 				// If decoding, just return the default, otherwise we'll need to generate from the frame.
-				if (decoding)
+				if (bitmap == null)
 				{
-					return base.GetPaletteInfo(wic, decoding);
+					return base.GetPaletteInfo(wic, bitmap);
 				}
 				else
 				{
-					return null;
+					palette = new WIC.Palette(wic.Factory);
+					palette.Initialize(bitmap, 256, true);
+					
+					return new Tuple<WIC.Palette,double,WIC.BitmapPaletteType>(palette, AlphaThresholdPercent, WIC.BitmapPaletteType.Custom);
 				}
 			}
 
@@ -264,54 +278,71 @@ namespace GorgonLibrary.IO
                 throw new System.IO.IOException("The stream cannot perform seek operations.");
             }
 
+			if (!UseAllFrames)
+			{
+				return result;
+			}
+
             position = stream.Position;
 
-            try
-            {
-                // Get our WIC interface.
-                using (var wic = new GorgonWICImage())
-                {
-                    using (var decoder = new WIC.BitmapDecoder(wic.Factory, stream, WIC.DecodeOptions.CacheOnDemand))
-                    {
-                        if (decoder.FrameCount < 2)
-                        {
-                            return result;
-                        }
+			try
+			{
+				// Get our WIC interface.
+				using (var wic = new GorgonWICImage())
+				{
+					using (var decoder = new WIC.BitmapDecoder(wic.Factory, SupportedFormat))
+					{
+						using (WIC.WICStream wicStream = new WIC.WICStream(wic.Factory, stream))
+						{
+							try
+							{
+								decoder.Initialize(wicStream, WIC.DecodeOptions.CacheOnDemand);
+							}
+							catch (DX.SharpDXException sdex)
+							{
+								// Repackage the exception to keep in line with our API defintion.
+								throw new System.IO.IOException("Cannot decode the " + Codec + " file. " + sdex.Descriptor.Description, sdex);
+							}
 
-                        result = new int[decoder.FrameCount];
+							if (decoder.FrameCount < 2)
+							{
+								return result;
+							}
 
-                        for (int frame = 0; frame < result.Length; frame++)
-                        {
+							result = new int[decoder.FrameCount];
 
-                            using (var frameImage = decoder.GetFrame(frame))
-                            {
-                                // Check to see if we can actually read this thing.
-                                if (frame == 0)
-                                {
-                                    Guid temp = Guid.Empty;
-                                    settings = ReadMetaData(wic, decoder, frameImage, ref temp);
+							for (int frame = 0; frame < result.Length; frame++)
+							{
+								using (var frameImage = decoder.GetFrame(frame))
+								{
+									// Check to see if we can actually read this thing.
+									if (frame == 0)
+									{
+										Guid temp = Guid.Empty;
+										settings = ReadMetaData(wic, decoder, frameImage, ref temp);
 
-                                    if (settings.Format == BufferFormat.Unknown)
-                                    {
-                                        throw new System.IO.IOException("Cannot decode the GIF file.  The data could not be decoded as a GIF file.");
-                                    }
-                                }
+										if (settings.Format == BufferFormat.Unknown)
+										{
+											throw new System.IO.IOException("Cannot decode the GIF file.  The data could not be decoded as a GIF file.");
+										}
+									}
 
-                                var metaData = frameImage.MetadataQueryReader.GetMetadataByName("/grctlext/Delay");
+									var metaData = frameImage.MetadataQueryReader.GetMetadataByName("/grctlext/Delay");
 
-                                if (metaData != null)
-                                {
-                                    result[frame] = (ushort)metaData;
-                                }
-                                else
-                                {
-                                    result[frame] = 0;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
+									if (metaData != null)
+									{
+										result[frame] = (ushort)metaData;
+									}
+									else
+									{
+										result[frame] = 0;
+									}
+								}
+							}
+						}
+					}
+				}
+			}
             finally
             {
                 stream.Position = position;
@@ -326,12 +357,8 @@ namespace GorgonLibrary.IO
 		/// Initializes a new instance of the <see cref="GorgonCodecWIC" /> class.
 		/// </summary>
 		internal GorgonCodecGIF()
-			: base("GIF", "Graphics Interchange Format", new string[] { "gif" })
+			: base("GIF", "Graphics Interchange Format", new string[] { "gif" }, WIC.ContainerFormatGuids.Gif)
 		{
-			SupportedFormats = new[]
-			{
-				WIC.ContainerFormatGuids.Gif
-			};
 		}
 		#endregion
 	}

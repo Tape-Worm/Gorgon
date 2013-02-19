@@ -201,27 +201,6 @@ namespace GorgonLibrary.FileSystem.GorPack
 		}
 
 		/// <summary>
-		/// Begins an asynchronous read operation.
-		/// </summary>
-		/// <param name="buffer">The buffer to read the data into.</param>
-		/// <param name="offset">The byte offset in <paramref name="buffer"/> at which to begin writing data read from the stream.</param>
-		/// <param name="count">The maximum number of bytes to read.</param>
-		/// <param name="callback">An optional asynchronous callback, to be called when the read is complete.</param>
-		/// <param name="state">A user-provided object that distinguishes this particular asynchronous read request from other requests.</param>
-		/// <returns>
-		/// An <see cref="T:System.IAsyncResult"/> that represents the asynchronous read, which could still be pending.
-		/// </returns>
-		/// <exception cref="T:System.IO.IOException">Attempted an asynchronous read past the end of the stream, or a disk error occurs. </exception>
-		/// <exception cref="T:System.ArgumentException">One or more of the arguments is invalid. </exception>
-		/// <exception cref="T:System.ObjectDisposedException">Methods were called after the stream was closed. </exception>
-		/// <exception cref="T:System.NotSupportedException">The current Stream implementation does not support the read operation. </exception>
-		public override System.IAsyncResult BeginRead(byte[] buffer, int offset, int count, System.AsyncCallback callback, object state)
-		{
-			_position = offset;
-			return _bzipStream.BeginRead(buffer, offset, count, callback, state);
-		}
-
-		/// <summary>
 		/// Begins an asynchronous write operation.
 		/// </summary>
 		/// <param name="buffer">The buffer to write data from.</param>
@@ -239,23 +218,6 @@ namespace GorgonLibrary.FileSystem.GorPack
 		public override System.IAsyncResult BeginWrite(byte[] buffer, int offset, int count, System.AsyncCallback callback, object state)
 		{
 			throw new NotSupportedException();
-		}
-
-		/// <summary>
-		/// Waits for the pending asynchronous read to complete.
-		/// </summary>
-		/// <param name="asyncResult">The reference to the pending asynchronous request to finish.</param>
-		/// <returns>
-		/// The number of bytes read from the stream, between zero (0) and the number of bytes you requested. Streams return zero (0) only at the end of the stream, otherwise, they should block until at least one byte is available.
-		/// </returns>
-		/// <exception cref="T:System.ArgumentNullException">
-		/// 	<paramref name="asyncResult"/> is null. </exception>
-		/// <exception cref="T:System.ArgumentException">
-		/// 	<paramref name="asyncResult"/> did not originate from a <see cref="M:System.IO.Stream.BeginRead(System.Byte[],System.Int32,System.Int32,System.AsyncCallback,System.Object)"/> method on the current stream. </exception>
-		/// <exception cref="T:System.IO.IOException">The stream is closed or an internal error has occurred.</exception>
-		public override int EndRead(System.IAsyncResult asyncResult)
-		{
-			return _bzipStream.EndRead(asyncResult);
 		}
 
 		/// <summary>
@@ -300,8 +262,11 @@ namespace GorgonLibrary.FileSystem.GorPack
 		/// <exception cref="T:System.ObjectDisposedException">Methods were called after the stream was closed. </exception>
 		public override int Read(byte[] buffer, int offset, int count)
 		{
-			_position += count;
-			return _bzipStream.Read(buffer, offset, count);
+			int result = _bzipStream.Read(buffer, offset, count);
+
+			_position += result;
+
+			return result;
 		}
 
 		/// <summary>
@@ -331,12 +296,14 @@ namespace GorgonLibrary.FileSystem.GorPack
 			}
 			
 			
-			if (_position > Length)
-				throw new IOException("At the end of the stream.");
+			if (_position >= Length)
+				throw new EndOfStreamException("At the end of the stream.");
 			if (_position < 0)
-				throw new IOException("At the beginning of the stream.");
+				throw new EndOfStreamException("At the beginning of the stream.");
 
-			return _bzipStream.Seek(offset, origin);
+			_bzipStream.Seek(_basePosition + _position, origin);
+
+			return _position;
 		}
 
 		/// <summary>
@@ -349,11 +316,11 @@ namespace GorgonLibrary.FileSystem.GorPack
 		/// <exception cref="T:System.ObjectDisposedException">Methods were called after the stream was closed. </exception>
 		public override int ReadByte()
 		{
-			_position += 1;
+			int result = _bzipStream.ReadByte();
 
-			if (_position > Length)
-				throw new IOException("At the end of the stream.");
-			return _bzipStream.ReadByte();
+			_position += result;
+
+			return result;
 		}
 
 		/// <summary>
