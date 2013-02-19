@@ -160,7 +160,7 @@ namespace GorgonLibrary.Graphics
 		/// <para>Thrown when there is an error when attempting to encode the image data.</para>
 		/// </exception>
 		/// <remarks>This will persist the contents of the texture into a stream.  The data is encoded into various formats via the codec parameter.  Gorgon contains a 
-		/// number of built-in codecs accessible from the <see cref="GorgonLibrary.IO.GorgonImageCodecs">GorgonImageCodecs</see> interface.  Currently, Gorgon supports the following formats:
+		/// number of built-in codecs.  Currently, Gorgon supports the following formats:
 		/// <list type="bullet">
 		///		<item>
 		///			<description>DDS</description>
