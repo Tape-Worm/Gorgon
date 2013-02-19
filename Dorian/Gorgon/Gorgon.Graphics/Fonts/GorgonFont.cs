@@ -828,7 +828,7 @@ namespace GorgonLibrary.Graphics
 						chunk.WriteInt32(0);
 
 						// Save our texture and record where we left off.
-						texture.Save(stream, GorgonImageCodecs.Png);
+						texture.Save(stream, new GorgonCodecPNG());
 						endPosition = stream.Position;
 
 						// Put the image size in the placeholder.
@@ -845,7 +845,7 @@ namespace GorgonLibrary.Graphics
                         textureFileName = textureFileName.FormatFileName().Replace(' ', '_');
 
                         // Write out the file in the same directory as the font info.
-                        texture.Save(path.FormatDirectory(Path.DirectorySeparatorChar) + textureFileName, GorgonImageCodecs.Png);
+                        texture.Save(path.FormatDirectory(Path.DirectorySeparatorChar) + textureFileName, new GorgonCodecPNG());
 						                        
                         chunk.WriteString(textureFileName);
                     }

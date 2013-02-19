@@ -95,12 +95,16 @@
     <Compile Include="GorgonColor.cs" />
     <Compile Include="GorgonGraphics.cs" />
     <Compile Include="GorgonRenderStatistics.cs" />
+    <Compile Include="IO\GorgonCodecTIFF.cs" />
+    <Compile Include="IO\GorgonCodecWMP.cs" />
+    <Compile Include="IO\GorgonCodecJPEG.cs" />
+    <Compile Include="IO\GorgonCodecBMP.cs" />
     <Compile Include="IO\GorgonCodecGIF.cs" />
+    <Compile Include="IO\GorgonCodecPNG.cs" />
     <Compile Include="IO\GorgonCodecTGA.cs" />
     <Compile Include="IO\GorgonCodecDDS.cs" />
     <Compile Include="IO\GorgonCodecWIC.cs" />
     <Compile Include="IO\GorgonImageCodec.cs" />
-    <Compile Include="IO\GorgonImageCodecs.cs" />
     <Compile Include="ISubResourceData.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>

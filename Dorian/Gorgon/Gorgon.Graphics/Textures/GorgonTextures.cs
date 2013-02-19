@@ -996,9 +996,9 @@ namespace GorgonLibrary.Graphics
 		/// <param name="filePath">Path to the texture image file.</param>
 		/// <param name="codec">Codec used to load the image data.</param>
 		/// <returns>The texture populated with image data from the stream.</returns>
-		/// <remarks>This will load a texture from a file.  The file must have been encoded by a supported image codec.  The primary codecs supported by Gorgon are detailed in the 
-		/// <see cref="GorgonLibrary.IO.GorgonImageCodecs">GorgonImageCodecs</see> class.  These are the codecs that Gorgon supports "out of the box", additional user 
-		/// codecs may be defined and used to load a texture.
+		/// <remarks>This will load a texture from a file.  The file must have been encoded by a supported image codec. 
+        /// Gorgon supports several codecs such as Png, Dds, Tiff, Jpg, Bmp and Wmp "out of the box", additional user 
+        /// codecs may be defined and used to load a texture.
 		/// </remarks>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> or the <paramref name="filePath "/> parameter is NULL (Nothing in VB.Net).
 		/// <para>-or-</para>
@@ -1032,8 +1032,8 @@ namespace GorgonLibrary.Graphics
 		/// <param name="data">Byte array containing the texture data.</param>
 		/// <param name="codec">Codec used to load the image data.</param>
 		/// <returns>The texture populated with image data from the stream.</returns>
-		/// <remarks>This will load a texture from a byte array.  The texture data in the array must have been encoded by a supported image codec.  The primary codecs supported by Gorgon are detailed in the 
-		/// <see cref="GorgonLibrary.IO.GorgonImageCodecs">GorgonImageCodecs</see> class.  These are the codecs that Gorgon supports "out of the box", additional user 
+		/// <remarks>This will load a texture from a byte array.  The texture data in the array must have been encoded by a supported image codec.  
+        /// Gorgon supports several codecs such as Png, Dds, Tiff, Jpg, Bmp and Wmp "out of the box", additional user 
 		/// codecs may be defined and used to load a texture.
 		/// </remarks>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (Nothing in VB.Net).
@@ -1042,7 +1042,7 @@ namespace GorgonLibrary.Graphics
 		/// <para>-or-</para>
 		/// <para>The <paramref name="codec"/> parameter is NULL.</para>
 		/// </exception>
-		/// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="length"/> parameter is less than or equal to 0.</exception>
+		/// <exception cref="System.ArgumentOutOfRangeException">Thrown when size of the data parameter is less than or equal to 0.</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the name parameter is empty.
 		/// <para>-or-</para>
 		/// <para>Thrown when the data in the array cannot be read by the image codec.</para>
@@ -1076,10 +1076,10 @@ namespace GorgonLibrary.Graphics
 		/// <param name="length">Length of the texture data, in bytes.</param>
 		/// <param name="codec">Codec used to load the image data.</param>
 		/// <returns>The texture populated with image data from the stream.</returns>
-		/// <remarks>This will load a texture from a stream.  The texture data in the stream must have been encoded by a supported image codec.  The primary codecs supported by Gorgon are detailed in the 
-		/// <see cref="GorgonLibrary.IO.GorgonImageCodecs">GorgonImageCodecs</see> class.  These are the codecs that Gorgon supports "out of the box", additional user 
-		/// codecs may be defined and used to load a texture.
-		/// </remarks>
+		/// <remarks>This will load a texture from a stream.  The texture data in the stream must have been encoded by a supported image codec.  
+        /// Gorgon supports several codecs such as Png, Dds, Tiff, Jpg, Bmp and Wmp "out of the box", additional user 
+        /// codecs may be defined and used to load a texture.
+        /// </remarks>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (Nothing in VB.Net).
 		/// <para>-or-</para>
 		/// <para>Thrown when the <paramref name="stream"/> parameter is NULL.</para>

@@ -1711,7 +1711,7 @@ namespace GorgonLibrary.Graphics
 		/// <para>Thrown when there is an error when attempting to encode the image data.</para>
 		/// </exception>
 		/// <remarks>This will persist the contents of the image data object into a stream.  The data is encoded into various formats via the codec parameter.  Gorgon contains a 
-		/// number of built-in codecs accessible from the <see cref="GorgonLibrary.IO.GorgonImageCodecs">GorgonImageCodecs</see> interface.  Currently, Gorgon supports the following formats:
+		/// number of built-in codecs.  Currently, Gorgon supports the following formats:
 		/// <list type="bullet">
 		///		<item>
 		///			<description>DDS</description>
@@ -1767,7 +1767,7 @@ namespace GorgonLibrary.Graphics
 		/// <para>Thrown when there is an error when attempting to encode the image data.</para>
 		/// </exception>
 		/// <remarks>This will persist the contents of the image data object into a stream.  The data is encoded into various formats via the codec parameter.  Gorgon contains a 
-		/// number of built-in codecs accessible from the <see cref="GorgonLibrary.IO.GorgonImageCodecs">GorgonImageCodecs</see> interface.  Currently, Gorgon supports the following formats:
+		/// number of built-in codecs.  Currently, Gorgon supports the following formats:
 		/// <list type="bullet">
 		///		<item>
 		///			<description>DDS</description>
@@ -1825,7 +1825,7 @@ namespace GorgonLibrary.Graphics
 		/// <para>Thrown when there is an error when attempting to encode the image data.</para>
 		/// </exception>
 		/// <remarks>This will persist the contents of the image data object into a byte array.  The data is encoded into various formats via the codec parameter.  Gorgon contains a 
-		/// number of built-in codecs accessible from the <see cref="GorgonLibrary.IO.GorgonImageCodecs">GorgonImageCodecs</see> interface.  Currently, Gorgon supports the following formats:
+		/// number of built-in codecs.  Currently, Gorgon supports the following formats:
 		/// <list type="bullet">
 		///		<item>
 		///			<description>DDS</description>
@@ -1913,10 +1913,10 @@ namespace GorgonLibrary.Graphics
 		/// <param name="filePath">Path to the file that contains the image data.</param>
 		/// <param name="codec">The codec that will read the file.</param>
 		/// <returns>The image data from the stream.</returns>
-		/// <remarks>This will load image data from a file.  The file must have been encoded by a supported image codec.  The primary codecs supported by Gorgon are detailed in the 
-		/// <see cref="GorgonLibrary.IO.GorgonImageCodecs">GorgonImageCodecs</see> class.  These are the codecs that Gorgon supports "out of the box", additional user 
-		/// codecs may be defined and used to load image data.
-		/// </remarks>
+		/// <remarks>This will load image data from a file.  The file must have been encoded by a supported image codec.  
+        /// Gorgon supports several codecs such as Png, Dds, Tiff, Jpg, Bmp and Wmp "out of the box", additional user 
+        /// codecs may be defined and used to load a texture.
+        /// </remarks>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="filePath"/> parameter is NULL (Nothing in VB.Net).
 		/// <para>-or-</para>
 		/// <para>The <paramref name="codec"/> parameter is NULL.</para>
@@ -1945,10 +1945,10 @@ namespace GorgonLibrary.Graphics
 		/// <param name="size">The size of the image, in bytes.</param>
 		/// <param name="codec">The codec that will read the file.</param>
 		/// <returns>The image data from the stream.</returns>
-		/// <remarks>This will load image data from a stream.  The image data in the stream must have been encoded by a supported image codec.  The primary codecs supported by Gorgon are detailed in the 
-		/// <see cref="GorgonLibrary.IO.GorgonImageCodecs">GorgonImageCodecs</see> class.  These are the codecs that Gorgon supports "out of the box", additional user 
-		/// codecs may be defined and used to load image data.
-		/// </remarks>
+		/// <remarks>This will load image data from a stream.  The image data in the stream must have been encoded by a supported image codec.  
+        /// Gorgon supports several codecs such as Png, Dds, Tiff, Jpg, Bmp and Wmp "out of the box", additional user 
+        /// codecs may be defined and used to load a texture.
+        /// </remarks>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="stream"/> parameter is NULL (Nothing in VB.Net).
 		/// <para>-or-</para>
 		/// <para>The <paramref name="codec"/> parameter is NULL.</para>
