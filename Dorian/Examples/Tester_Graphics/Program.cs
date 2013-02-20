@@ -26,7 +26,7 @@ namespace Tester_Graphics
 			//GorgonDialogs.ConfirmBox(null, "Fuck you ABCDEFGHIJKLMNOPQSTUVWXYZ 1234567890 !@#$%^&*()_+-=Fuck you ABCDEFGHIJKLMNOPQSTUVWXYZ 1234567890 !@#$%^&*()_+-=Fuck you ABCDEFGHIJKLMNOPQSTUVWXYZ 1234567890 !@#$%^&*()_+-=\nFuck you ABCDEFGHIJKLMNOPQSTUVWXYZ 1234567890 !@#$%^&*()_+-=\nFuck you ABCDEFGHIJKLMNOPQSTUVWXYZ 1234567890 !@#$%^&*()_+-=\nFuck you ABCDEFGHIJKLMNOPQSTUVWXYZ 1234567890 !@#$%^&*()_+-=\nFuck you ABCDEFGHIJKLMNOPQSTUVWXYZ 1234567890 !@#$%^&*()_+-=\nFuck you ABCDEFGHIJKLMNOPQSTUVWXYZ 1234567890 !@#$%^&*()_+-=", true, false);
 			//GorgonDialogs.ConfirmBox(null, "Fuck you ABCDEFGHIJKLMNOPQSTUVWXYZ 1234567890 !@#$%^&*()_+-=Fuck you ABCDEFGHIJKLMNOPQSTUVWXYZ 1234567890 !@#$%^&*()_+-=Fuck you ABCDEFGHIJKLMNOPQSTUVWXYZ 1234567890 !@#$%^&*()_+-=\nFuck you ABCDEFGHIJKLMNOPQSTUVWXYZ 1234567890 !@#$%^&*()_+-=\nFuck you ABCDEFGHIJKLMNOPQSTUVWXYZ 1234567890 !@#$%^&*()_+-=\nFuck you ABCDEFGHIJKLMNOPQSTUVWXYZ 1234567890 !@#$%^&*()_+-=\nFuck you ABCDEFGHIJKLMNOPQSTUVWXYZ 1234567890 !@#$%^&*()_+-=\nFuck you ABCDEFGHIJKLMNOPQSTUVWXYZ 1234567890 !@#$%^&*()_+-=", true, true);
 
-			Gorgon.Run(new Form1());
+			Gorgon.Run(new Form2());
 		}
 	}
 }

@@ -340,7 +340,7 @@ namespace GorgonLibrary.Graphics.Example
 				_form.Location = new Point(_mainScreen.VideoOutput.OutputBounds.Width / 2 - _form.Width / 2 + _mainScreen.VideoOutput.OutputBounds.Left, _mainScreen.VideoOutput.OutputBounds.Height / 2 - _form.Height / 2 + _mainScreen.VideoOutput.OutputBounds.Top);
 
 			// Load the ball texture.
-			_ballTexture = _graphics.Textures.FromFile<GorgonTexture2D>("BallTexture", GetResourcePath(@"Images\BallDemo.png"), GorgonImageCodecs.Png);
+			_ballTexture = _graphics.Textures.FromFile<GorgonTexture2D>("BallTexture", GetResourcePath(@"Images\BallDemo.png"), new GorgonCodecPNG());
 
 			// Create the 2D interface.
 			_2D = _graphics.Output.Create2DRenderer(_mainScreen);

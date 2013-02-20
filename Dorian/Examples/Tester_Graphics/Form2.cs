@@ -128,9 +128,10 @@ namespace Tester_Graphics
 				//GorgonImageCodecs.DDS.LegacyConversionFlags = DDSFlags.NoR10B10G10A2Fix;
                 string fileName = @"d:\images\lightning.gif";
 				//GorgonImageCodecs.TIFF.UseAllFrames = true;
-				GorgonImageCodecs.Gif.Clip = true;	// Clip this image because animated gifs can have varying frame sizes and resizing the frames can cause issues.
-                _delays = GorgonImageCodecs.Gif.GetFrameDelays(fileName);
-				_texture = _graphics.Textures.FromFile<GorgonTexture2D>("Test", fileName, GorgonImageCodecs.Gif);
+				var codec = new GorgonCodecGIF();
+				codec.Clip = true;	// Clip this image because animated gifs can have varying frame sizes and resizing the frames can cause issues.
+                _delays = codec.GetFrameDelays(fileName);
+				_texture = _graphics.Textures.FromFile<GorgonTexture2D>("Test", fileName, codec);
 
 				_2D = _graphics.Output.Create2DRenderer(_swap);
 				

@@ -226,7 +226,7 @@ namespace GorgonLibrary.Examples
             _fileSystem.Mount(Program.GetResourcePath(@"BZipFileSystem.gorPack"));
 
 			// Get the sprite image.            
-			_spriteImage = _graphics.Textures.FromMemory<GorgonTexture2D>("0_HardVacuum", _fileSystem.ReadFile("/Images/0_HardVacuum.png"), GorgonImageCodecs.Png);
+			_spriteImage = _graphics.Textures.FromMemory<GorgonTexture2D>("0_HardVacuum", _fileSystem.ReadFile("/Images/0_HardVacuum.png"), new GorgonCodecPNG());
 
             // Get the sprites.
             // The sprites in the file system are from version 1.0 of Gorgon.

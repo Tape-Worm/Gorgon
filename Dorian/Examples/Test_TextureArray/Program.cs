@@ -109,11 +109,12 @@ namespace Test_TextureArray
 
 			_shader = _graphics.Shaders.CreateShader<GorgonPixelShader>("MyShader", "DualTex", Properties.Resources.Shader, true);
 
-			_noDecal = _graphics.Textures.FromFile<GorgonTexture2D>("Image", @"..\..\..\..\Resources\Images\BallDemo.png", GorgonImageCodecs.Png);
+			_noDecal = _graphics.Textures.FromFile<GorgonTexture2D>("Image", @"..\..\..\..\Resources\Images\BallDemo.png", new GorgonCodecPNG());
 
-			GorgonImageCodecs.Png.Usage = BufferUsage.Staging;
-			GorgonTexture2D image = _graphics.Textures.FromFile<GorgonTexture2D>("Image2", @"..\..\..\..\Resources\Images\Ship_Decal.png", GorgonImageCodecs.Png);
-			GorgonImageCodecs.Png.Usage = BufferUsage.Default;
+			GorgonTexture2D image = _graphics.Textures.FromFile<GorgonTexture2D>("Image2", @"..\..\..\..\Resources\Images\Ship_Decal.png", new GorgonCodecPNG()
+				{
+					Usage = BufferUsage.Staging
+				});
 			/*_tex = _graphics.Textures.CreateTexture<GorgonTexture2D>("Texture", new GorgonTexture2DSettings()
 			{
 				Width = image.Settings.Width,
@@ -126,7 +127,7 @@ namespace Test_TextureArray
 
 			_tex.CopySubResource(_noDecal, 0, 1);
 			_tex.CopySubResource(image, 0, 0);*/
-			_tex = _graphics.Textures.FromFile<GorgonTexture2D>("Texture", @"D:\unpak\textureUpload.dds", GorgonImageCodecs.Png);
+			_tex = _graphics.Textures.FromFile<GorgonTexture2D>("Texture", @"D:\unpak\textureUpload.dds", new GorgonCodecPNG());
 
 			image.Dispose();
 

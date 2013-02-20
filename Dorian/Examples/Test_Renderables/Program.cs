@@ -67,7 +67,7 @@ namespace Test_Renderables
 			_graphics = new GorgonGraphics();
 			_2D = _graphics.Output.Create2DRenderer(_form);
 
-			_texture = _graphics.Textures.FromFile<GorgonTexture2D>("BallTexture", @"..\..\..\..\Resources\Images\BallDemo.png", GorgonImageCodecs.Png);
+			_texture = _graphics.Textures.FromFile<GorgonTexture2D>("BallTexture", @"..\..\..\..\Resources\Images\BallDemo.png", new GorgonCodecPNG());
 			_line = _2D.Renderables.CreateLine("Line", new Vector2(50, 50), new Vector2(320, 240), GorgonColor.White);			
 			_line.Texture = _texture;
 			_line.TextureStart = new Vector2(0.625f, 0);

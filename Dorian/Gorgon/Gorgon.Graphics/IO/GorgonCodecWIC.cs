@@ -147,7 +147,7 @@ namespace GorgonLibrary.IO
 	/// <remarks>A codec allows for reading and/or writing of data in an encoded format.  Users may inherit from this object to define their own 
 	/// image formats, or use one of the predefined image codecs available in Gorgon.
 	/// </remarks>
-	public unsafe class GorgonCodecWIC
+	public abstract unsafe class GorgonCodecWIC
 		: GorgonImageCodec
 	{
 		#region Variables.
