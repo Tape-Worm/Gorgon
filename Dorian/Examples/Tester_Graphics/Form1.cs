@@ -109,7 +109,7 @@ namespace Tester_Graphics
 				//    byte[] data = _1D.Save(ImageFileFormat.DDS);
 				//}
 
-				_texture = _graphics.Textures.FromFile<GorgonTexture2D>("File", @"..\..\..\..\Resources\Images\Ship.png", GorgonImageCodecs.Png);
+				_texture = _graphics.Textures.FromFile<GorgonTexture2D>("File", @"..\..\..\..\Resources\Images\Ship.png", new GorgonCodecPNG());
 				//_textureNM = _graphics.Textures.FromFile<GorgonTexture2D>("File", @"..\..\..\..\Resources\Images\Ship_DISP.png", GorgonTexture2DSettings.FromFile);
 
 				_mainScreen = _graphics.Output.CreateSwapChain("MainScreen", new GorgonSwapChainSettings()
@@ -130,7 +130,7 @@ namespace Tester_Graphics
 					//_target.Texture.Copy(Properties.Resources.Haiku);
 					//_target2.Texture.Copy(Properties.Resources.Haiku);
 				}
-				_target.Texture.Save(@"D:\unpak\test1.png", GorgonImageCodecs.Png);
+				_target.Texture.Save(@"D:\unpak\test1.png", new GorgonCodecPNG());
 				//_texture.CopySubResource(_target.Texture, new Rectangle(0, 0, 256, 128), Vector2.Zero);
 
 				//byte[] data = new byte[_texture.SizeInBytes];

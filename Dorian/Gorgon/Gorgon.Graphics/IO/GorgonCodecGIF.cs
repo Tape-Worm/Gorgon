@@ -356,7 +356,7 @@ namespace GorgonLibrary.IO
 		/// <summary>
 		/// Initializes a new instance of the <see cref="GorgonCodecWIC" /> class.
 		/// </summary>
-		internal GorgonCodecGIF()
+		public GorgonCodecGIF()
 			: base("GIF", "Graphics Interchange Format", new string[] { "gif" }, WIC.ContainerFormatGuids.Gif)
 		{
 		}

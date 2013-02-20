@@ -107,7 +107,7 @@ namespace Tester_Anim
 				_2D = _graphics.Output.Create2DRenderer(this);
 				ClientSize = new System.Drawing.Size(1280, 800);
 
-				_texture = _graphics.Textures.FromFile<GorgonTexture2D>("Stars", @"..\..\..\..\Resources\Images\Stars.png", GorgonImageCodecs.Png);
+				_texture = _graphics.Textures.FromFile<GorgonTexture2D>("Stars", @"..\..\..\..\Resources\Images\Stars.png", new GorgonCodecPNG());
 				_sprites = new StarSprite[6];
 				_stars = new Star[2048];
 
