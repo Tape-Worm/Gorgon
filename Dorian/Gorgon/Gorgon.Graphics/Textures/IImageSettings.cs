@@ -59,7 +59,7 @@ namespace GorgonLibrary.Graphics
 	/// <summary>
 	/// Image settings to describe the characteristics of an image.
 	/// </summary>
-	public interface IImageSettings
+	public interface IImageSettings        
 	{
 		#region Properties.
 		/// <summary>
@@ -135,5 +135,13 @@ namespace GorgonLibrary.Graphics
 			set;
 		}
 		#endregion
-	}
+
+        #region Methods
+        /// <summary>
+        /// Function to clone these image settings.
+        /// </summary>
+        /// <returns>A clone of the image settings.</returns>
+        IImageSettings Clone();
+        #endregion
+    }
 }

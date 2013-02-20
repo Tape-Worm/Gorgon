@@ -816,6 +816,75 @@ namespace GorgonLibrary.Graphics
 				}
             }            
         }
+
+        /// <summary>
+        /// Function to perform conversion/transformation of a bitmap.
+        /// </summary>
+        /// <param name="sourceData">WIC bitmap to transform.</param>
+        /// <param name="destData">Destination data buffer.</param>
+        /// <param name="rowPitch">Number of bytes per row in the image.</param>
+        /// <param name="slicePitch">Number of bytes in total for the image.</param>
+        /// <param name="destFormat">Destination format for transformation.</param>
+        /// <param name="dither">Dithering to apply to images that get converted to a lower bit depth.</param>
+        /// <param name="destRect">Rectangle containing the area to scale or clip</param>
+        /// <param name="clip">TRUE to perform clipping instead of scaling.</param>
+        /// <param name="scaleFilter">Filter to apply to scaled data.</param>
+        public unsafe void TransformImageData(WIC.BitmapSource sourceData, IntPtr destData, int rowPitch, int slicePitch, Guid destFormat, ImageDithering dither, Rectangle destRect, bool clip, ImageFilter scaleFilter)
+        {
+            WIC.BitmapSource source = sourceData;
+            WIC.FormatConverter converter = null;
+            WIC.BitmapClipper clipper = null;
+            WIC.BitmapScaler scaler = null;
+
+            try
+            {
+                if (destFormat != Guid.Empty)
+                {
+                    converter = new WIC.FormatConverter(_factory);
+                    converter.Initialize(source, destFormat, (WIC.BitmapDitherType)dither, null, 0, WIC.BitmapPaletteType.Custom);
+                    source = converter;
+                }
+
+                if (!destRect.IsEmpty)
+                {
+                    if (!clip)
+                    {
+                        scaler = new WIC.BitmapScaler(_factory);
+                        scaler.Initialize(source, destRect.Width, destRect.Height, (WIC.BitmapInterpolationMode)scaleFilter);
+                        source = scaler;
+                    }
+                    else
+                    {
+                        clipper = new WIC.BitmapClipper(_factory);
+                        clipper.Initialize(source, new DX.DrawingRectangle(destRect.X, destRect.Y, destRect.Width, destRect.Height));
+                        source = clipper;
+                    }
+                }
+
+                source.CopyPixels(rowPitch, destData, slicePitch);
+            }
+            finally
+            {
+                if (converter != null)
+                {
+                    converter.Dispose();
+                }
+
+                if (scaler != null)
+                {
+                    scaler.Dispose();
+                }
+
+                if (clipper != null)
+                {
+                    clipper.Dispose();
+                }
+
+                scaler = null;
+                clipper = null;
+                converter = null;
+            }
+        }
         #endregion
 
         #region Constructor/Destructor.

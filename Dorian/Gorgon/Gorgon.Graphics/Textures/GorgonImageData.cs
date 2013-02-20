@@ -423,6 +423,41 @@ namespace GorgonLibrary.Graphics
 			}
         }
 
+        /// <summary>
+        /// Function to determine if this image format can be converted to another format.
+        /// </summary>
+        /// <param name="wic">WIC interface.</param>
+        /// <param name="format">Format to convert to.</param>
+        /// <returns>TRUE if the the current format and the requested format can be converted, FALSE if not.</returns>
+        private bool CanConvert(GorgonWICImage wic, BufferFormat format)
+        {
+            if (format == BufferFormat.Unknown)
+            {
+                return false;
+            }
+
+            if (format == Settings.Format)
+            {
+                return true;
+            }
+
+            Guid sourcePixelFormat = wic.GetGUID(Settings.Format);
+            Guid destPixelFormat = wic.GetGUID(format);
+
+            if ((sourcePixelFormat == Guid.Empty) || (destPixelFormat == Guid.Empty))
+            {
+                return false;
+            }
+
+            // Ensure WIC can convert between the two formats.
+            using (WIC.FormatConverter converter = new WIC.FormatConverter(wic.Factory))
+            {
+                converter.CanConvert(sourcePixelFormat, destPixelFormat);
+            }
+
+            return (sourcePixelFormat != Guid.Empty) && (destPixelFormat != Guid.Empty);
+        }
+
 		/// <summary>
 		/// Function convert the data into Direct 3D data boxes.
 		/// </summary>
@@ -2019,6 +2054,99 @@ namespace GorgonLibrary.Graphics
 
             return result;
 		}
+
+        /// <summary>
+        /// Function to determine if this image format can be converted to another format.
+        /// </summary>
+        /// <param name="format">Format to convert to.</param>
+        /// <returns>TRUE if the the current format and the requested format can be converted, FALSE if not.</returns>
+        public bool CanConvert(BufferFormat format)
+        {
+            using (var wic = new GorgonWICImage())
+            {
+                return CanConvert(wic, format);
+            }
+        }
+
+        
+
+        /// <summary>
+        /// Function to convert the format of this image to the requested format.
+        /// </summary>
+        /// <param name="format">New format for the image.</param>
+        /// <param name="ditherMode">Dithering to apply to images that have to be downsampled.</param>
+        /// <exception cref="System.ArgumentException">Thrown when the <paramref name="format"/> is set to Unknown.</exception>
+        /// <exception cref="GorgonLibrary.GorgonException">Thrown when the format of this image data or the format parameter is not supported for conversion.</exception>
+        /// <remarks>This will convert the current image data to another buffer format.  If a format is unable to be converted then an exception will be thrown.</remarks>
+        public void ConvertFormat(BufferFormat format, ImageDithering ditherMode)
+        {
+            if (format == BufferFormat.Unknown)
+            {
+                throw new ArgumentException("The parameter must be a known value.", "format");
+            }
+
+            // We have the same format, why convert?
+            if (format == Settings.Format)
+            {
+                return;
+            }
+
+            using (var wic = new GorgonWICImage())
+            {
+                IImageSettings destSettings = null;
+                GorgonImageData destData = null;
+                Guid sourceFormat = wic.GetGUID(Settings.Format);
+                Guid destFormat = wic.GetGUID(format);
+
+                if (sourceFormat == Guid.Empty)
+                {
+                    throw new GorgonException(GorgonResult.FormatNotSupported, "The format of this image '" + Settings.Format.ToString() + "' is not supported for conversion.");
+                }
+
+                if (destFormat == Guid.Empty)
+                {
+                    throw new GorgonException(GorgonResult.FormatNotSupported, "The destination format '" + format.ToString() + "' is not supported for conversion.");
+                }
+
+                try
+                {
+                    // Create our destination buffer to hold the converted data.
+                    destSettings = Settings.Clone();
+                    destSettings.Format = format;
+
+                    destData = new GorgonImageData(Settings.Clone());
+
+                    for (int array = 0; array < Settings.ArrayCount; array++)
+                    {
+                        for (int mip = 0; mip < Settings.MipCount; mip++)
+                        {
+                            int depthCount = destData.GetDepthCount(mip);
+
+                            for (int depth = 0; depth < depthCount; depth++)
+                            {
+                                // Get the array/mip/depth buffer.
+                                var buffer = destData[array, mip, depth];
+                                DX.DataRectangle rect = new DX.DataRectangle(buffer.Data.BasePointer, buffer.PitchInformation.RowPitch);
+                               
+                                // Create a WIC bitmap so we have a source for conversion.
+                                using (WIC.Bitmap wicBmp = new WIC.Bitmap(wic.Factory, destData.Settings.Width, destData.Settings.Height, sourceFormat, rect, rect.Pitch * destData.Settings.Height))
+                                {
+
+                                }
+                            }
+                        }
+                    }
+                }
+                catch
+                {
+                    if (destData != null)
+                    {
+                        destData.Dispose();
+                    }
+                    destData = null;
+                }                
+            }                        
+        }
         #endregion
 
         #region Constructor/Destructor.
