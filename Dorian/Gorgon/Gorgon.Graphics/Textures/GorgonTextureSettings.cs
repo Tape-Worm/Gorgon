@@ -37,8 +37,8 @@ namespace GorgonLibrary.Graphics
 	/// <summary>
 	/// Settings to describe a texture structure.
 	/// </summary>
-	public interface ITextureSettings
-		: IImageSettings
+	public interface ITextureSettings		
+        : IImageSettings
 	{
 		#region Properties.
 		/// <summary>
@@ -284,8 +284,28 @@ namespace GorgonLibrary.Graphics
 			}
 		}
 		#endregion
-		#endregion
-	}
+
+        #region Methods.
+        /// <summary>
+        /// Function to clone the current 1D texture settings.
+        /// </summary>
+        /// <returns>A clone of the image settings object.</returns>
+        public IImageSettings Clone()
+        {
+            return (IImageSettings)new GorgonTexture1DSettings()
+            {
+                Width = this.Width,
+                Format = this.Format,
+                ArrayCount = this.ArrayCount,
+                MipCount = this.MipCount,
+                ViewFormat = this.ViewFormat,
+                ViewIsUnordered = this.ViewIsUnordered,
+                Usage = this.Usage
+            };
+        }
+        #endregion
+        #endregion
+    }
 
 	/// <summary>
 	/// Settings for a 2D texture.
@@ -493,6 +513,29 @@ namespace GorgonLibrary.Graphics
 			}
 		}
 		#endregion
+
+        #region Methods.
+        /// <summary>
+        /// Function to clone the current 1D texture settings.
+        /// </summary>
+        /// <returns>A clone of the image settings object.</returns>
+        public IImageSettings Clone()
+        {
+            return (IImageSettings)new GorgonTexture2DSettings()
+            {
+                Width = this.Width,
+                Height = this.Height,
+                Format = this.Format,
+                ArrayCount = this.ArrayCount,
+                MipCount = this.MipCount,
+                IsTextureCube = this.IsTextureCube,
+                ViewFormat = this.ViewFormat,
+                ViewIsUnordered = this.ViewIsUnordered,
+                Multisampling = this.Multisampling,                
+                Usage = this.Usage
+            };
+        }
+        #endregion
 		#endregion
 	}
 
@@ -687,6 +730,27 @@ namespace GorgonLibrary.Graphics
 			}
 		}
 		#endregion
+
+        #region Methods.
+        /// <summary>
+        /// Function to clone the current 1D texture settings.
+        /// </summary>
+        /// <returns>A clone of the image settings object.</returns>
+        public IImageSettings Clone()
+        {
+            return (IImageSettings)new GorgonTexture3DSettings()
+            {
+                Width = this.Width,
+                Height = this.Height,
+                Depth = this.Depth,
+                Format = this.Format,
+                MipCount = this.MipCount,
+                ViewFormat = this.ViewFormat,
+                ViewIsUnordered = this.ViewIsUnordered,                
+                Usage = this.Usage
+            };
+        }
+        #endregion
 		#endregion
 	}
 }

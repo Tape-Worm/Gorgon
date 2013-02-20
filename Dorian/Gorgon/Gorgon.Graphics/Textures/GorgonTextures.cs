@@ -38,60 +38,6 @@ using GorgonLibrary.Diagnostics;
 namespace GorgonLibrary.Graphics
 {
 	/// <summary>
-	/// Filters applied to an image when it is loaded from a stream, file, etc...
-	/// </summary>
-	[Flags()]
-	public enum ImageFilters
-	{
-		///<summary>No scaling or filtering will take place. Pixels outside the bounds of the source image are assumed to be transparent black.</summary>
-		None = 1,
-		/// <summary>
-		/// Each destination pixel is computed by sampling the nearest pixel from the source image.
-		/// </summary>
-		Point = 2,
-		/// <summary>
-		/// Each destination pixel is computed by sampling the four nearest pixels from the source image. This filter works best when the scale on both axes is less than two.
-		/// </summary>
-		Linear = 3,
-		/// <summary>
-		/// Every pixel in the source image contributes equally to the destination image.  This is the slowest of the filters.
-		/// </summary>
-		Triangle = 4,
-		/// <summary>
-		/// Each pixel is computed by averaging a 2x2(x2) box of pixels from the source image. This filter works only when the dimensions of the destination are half those of the source, as is the case with mipmaps.
-		/// </summary>
-		Box = 5,
-		/// <summary>
-		/// Pixels off the edge of the texture on the u-axis should be mirrored, not wrapped.
-		/// </summary>
-		MirrorU = 65536,
-		/// <summary>
-		/// Pixels off the edge of the texture on the v-axis should be mirrored, not wrapped.
-		/// </summary>
-		MirrorV = 131072,
-		/// <summary>
-		/// Pixels off the edge of the texture on the w-axis should be mirrored, not wrapped.
-		/// </summary>
-		MirrorW = 262144,
-		/// <summary>
-		/// The resulting image must be dithered using a 4x4 ordered dither algorithm. This happens when converting from one format to another.
-		/// </summary>
-		Dither = 524288,
-		/// <summary>
-		/// Do diffuse dithering on the image when changing from one format to another.
-		/// </summary>
-		DitherDiffusion = 1048576,
-		/// <summary>
-		/// Input data is in standard RGB (sRGB) color space.
-		/// </summary>
-		SRgbIn = 2097152,
-		/// <summary>
-		/// Output data is in standard RGB (sRGB) color space.
-		/// </summary>
-		SRgbOut = 4194304
-	}
-
-	/// <summary>
 	/// Textures interface.
 	/// </summary>
 	public sealed class GorgonTextures
