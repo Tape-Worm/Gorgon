@@ -1872,7 +1872,7 @@ namespace GorgonLibrary.IO
 		/// <summary>
 		/// Initializes a new instance of the <see cref="GorgonCodecDDS" /> class.
 		/// </summary>
-		internal GorgonCodecDDS()
+		public GorgonCodecDDS()
 		{
 			this.CodecCommonExtensions = new string[] { "dds" };
             _formats = (BufferFormat[])Enum.GetValues(typeof(BufferFormat));

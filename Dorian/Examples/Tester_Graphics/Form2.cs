@@ -131,7 +131,16 @@ namespace Tester_Graphics
 				var codec = new GorgonCodecGIF();
 				codec.Clip = true;	// Clip this image because animated gifs can have varying frame sizes and resizing the frames can cause issues.
                 _delays = codec.GetFrameDelays(fileName);
-				_texture = _graphics.Textures.FromFile<GorgonTexture2D>("Test", fileName, codec);
+
+				throw new Exception("Fuck");
+
+				_texture = _graphics.Textures.FromFile<GorgonTexture2D>("Test", fileName, codec);				
+
+				using (var imageData = GorgonImageData.FromFile(@"D:\unpak\myimage.png", new GorgonCodecPNG()))
+				{
+					imageData.ConvertFormat(BufferFormat.R8, ImageDithering.ErrorDiffusion);
+					imageData.Save(@"D:\unpak\convertTest.dds", new GorgonCodecDDS());
+				}
 
 				_2D = _graphics.Output.Create2DRenderer(_swap);
 				

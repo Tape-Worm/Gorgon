@@ -841,6 +841,12 @@ namespace GorgonLibrary.Graphics
                 if (destFormat != Guid.Empty)
                 {
                     converter = new WIC.FormatConverter(_factory);
+
+					if (!converter.CanConvert(sourceData.PixelFormat, destFormat))
+					{
+						throw new GorgonException(GorgonResult.FormatNotSupported, "Cannot convert to the destination format.");
+					}
+
                     converter.Initialize(source, destFormat, (WIC.BitmapDitherType)dither, null, 0, WIC.BitmapPaletteType.Custom);
                     source = converter;
                 }

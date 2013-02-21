@@ -153,16 +153,19 @@ namespace GorgonLibrary.IO
 			}
 
 			// Get frame offsets.
-			var offsetX = frame.MetadataQueryReader.GetMetadataByName("/imgdesc/Left");
-			var offsetY = frame.MetadataQueryReader.GetMetadataByName("/imgdesc/Top");
+			using (var reader = frame.MetadataQueryReader)
+			{
+				var offsetX = reader.GetMetadataByName("/imgdesc/Left");
+				var offsetY = reader.GetMetadataByName("/imgdesc/Top");
 
-			if (offsetX != null)
-			{
-				offset.X = (ushort)offsetX;
-			}
-			if (offsetY != null)
-			{
-				offset.Y = (ushort)offsetY;
+				if (offsetX != null)
+				{
+					offset.X = (ushort)offsetX;
+				}
+				if (offsetY != null)
+				{
+					offset.Y = (ushort)offsetY;
+				}
 			}
 
 			return offset;
@@ -327,15 +330,18 @@ namespace GorgonLibrary.IO
 										}
 									}
 
-									var metaData = frameImage.MetadataQueryReader.GetMetadataByName("/grctlext/Delay");
+									using (var reader = frameImage.MetadataQueryReader)
+									{
+										var metaData = reader.GetMetadataByName("/grctlext/Delay");
 
-									if (metaData != null)
-									{
-										result[frame] = (ushort)metaData;
-									}
-									else
-									{
-										result[frame] = 0;
+										if (metaData != null)
+										{
+											result[frame] = (ushort)metaData;
+										}
+										else
+										{
+											result[frame] = 0;
+										}
 									}
 								}
 							}
