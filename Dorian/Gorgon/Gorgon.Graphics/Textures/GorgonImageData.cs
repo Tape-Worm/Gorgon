@@ -2068,7 +2068,28 @@ namespace GorgonLibrary.Graphics
             }
         }
 
-        
+		/// <summary>
+		/// Function to consume the data from another image into this one.
+		/// </summary>
+		/// <param name="data">Data to consume.</param>
+		private void Import(GorgonImageData data)
+		{
+			// Clean up this image.
+			foreach (var buffer in _buffers)
+			{
+				buffer.Data.Dispose();
+			}
+			
+			_imageData.Dispose();
+
+			// Import the data and settings from the other image.
+			Settings = data.Settings;
+			SizeInBytes = data.SizeInBytes;
+			_imageData = data._imageData;
+			_buffers = data._buffers;
+			_dataBoxes = data._dataBoxes;
+			_mipOffsetSize = data._mipOffsetSize;
+		}		       
 
         /// <summary>
         /// Function to convert the format of this image to the requested format.
@@ -2114,7 +2135,7 @@ namespace GorgonLibrary.Graphics
                     destSettings = Settings.Clone();
                     destSettings.Format = format;
 
-                    destData = new GorgonImageData(Settings.Clone());
+                    destData = new GorgonImageData(destSettings);
 
                     for (int array = 0; array < Settings.ArrayCount; array++)
                     {
@@ -2125,17 +2146,22 @@ namespace GorgonLibrary.Graphics
                             for (int depth = 0; depth < depthCount; depth++)
                             {
                                 // Get the array/mip/depth buffer.
-                                var buffer = destData[array, mip, depth];
-                                DX.DataRectangle rect = new DX.DataRectangle(buffer.Data.BasePointer, buffer.PitchInformation.RowPitch);
+                                var destBuffer = destData[array, mip, depth];
+								var srcBuffer = this[array, mip, depth];
+                                DX.DataRectangle rect = new DX.DataRectangle(srcBuffer.Data.BasePointer, srcBuffer.PitchInformation.RowPitch);
                                
                                 // Create a WIC bitmap so we have a source for conversion.
-                                using (WIC.Bitmap wicBmp = new WIC.Bitmap(wic.Factory, destData.Settings.Width, destData.Settings.Height, sourceFormat, rect, rect.Pitch * destData.Settings.Height))
+                                using (WIC.Bitmap wicBmp = new WIC.Bitmap(wic.Factory, srcBuffer.Width, srcBuffer.Height, sourceFormat, rect, rect.Pitch * destData.Settings.Height))
                                 {
-
+									wic.TransformImageData(wicBmp, destBuffer.Data.BasePointer, destBuffer.PitchInformation.RowPitch, 
+																	destBuffer.PitchInformation.SlicePitch, destFormat, ditherMode, Rectangle.Empty, true, ImageFilter.Point);
                                 }
                             }
                         }
                     }
+
+					// Import the data into our current image.
+					Import(destData);
                 }
                 catch
                 {

@@ -1088,7 +1088,6 @@ namespace GorgonLibrary.IO
 			TGAConversionFlags conversionFlags = TGAConversionFlags.None;
 			GorgonFormatPitch pitch = default(GorgonFormatPitch);
 			
-
 			// Use a binary writer.
 			using (GorgonBinaryWriter writer = new GorgonBinaryWriter(stream, true))
 			{
@@ -1286,7 +1285,7 @@ namespace GorgonLibrary.IO
 		/// <summary>
 		/// Initializes a new instance of the <see cref="GorgonCodecTGA" /> class.
 		/// </summary>
-		internal GorgonCodecTGA()
+		public GorgonCodecTGA()
 		{
 			SetOpaqueIfZeroAlpha = true;
 
