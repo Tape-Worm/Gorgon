@@ -694,10 +694,28 @@ namespace GorgonLibrary.IO
 		};
 
         private BufferFormat[] _formats = null;         // Buffer formats.
+		private int _actualDepth = 0;					// Actual depth value.
+		private int _actualArrayCount = 0;				// Actual array count.
 		#endregion
 
 		#region Properties.
-        /// <summary>
+		/// <summary>
+		/// Property to set or return the depth for the image.
+		/// </summary>
+		/// <remarks>Use this to control the depth of the image.  Note that no scaling will be applied if a depth is larger or smaller than the depth stored in the file.  Set the value to 0 use the 
+		/// depth value in the file.
+		/// <para>This will not convert a 1D/2D image into a 3D image.  The file must have been saved as a volume texture/image for this property to take effect.</para>
+		/// <para>For most codecs, there will only be 1 depth level, so a setting of 0 would be the same as a setting of 1.  Depth image data is usually only found in DDS files.</para>
+		/// <para>This property only applies to decoding image data.</para>
+		/// <para>The default value is 0.</para>
+		/// </remarks>
+		public int Depth
+		{
+			get;
+			set;
+		}
+		
+		/// <summary>
         /// Property to set or return the flags used when converting legacy pixel formats to the buffer format.
         /// </summary>
         /// <remarks>
@@ -1009,11 +1027,12 @@ namespace GorgonLibrary.IO
             }
             else
             {
+				// If we actually have a volume texture, or we want to make one.
                 if ((header.Flags & DDSHeaderFlags.Volume) == DDSHeaderFlags.Volume)
                 {
                     settings = new GorgonTexture3DSettings();
                     settings.ArrayCount = 1;
-                    settings.Depth = (int)header.Depth;
+                    settings.Depth = (int)header.Depth.Min(1);
                 }
                 else
                 {
@@ -1308,7 +1327,7 @@ namespace GorgonLibrary.IO
 			DDSFlags flags = LegacyConversionFlags;
 			var formatInfo = GorgonBufferFormatInfo.GetInfo(settings.Format);
 
-			if ((settings.ArrayCount > 1) && ((settings.ArrayCount != 6) || ((settings.ImageType != ImageType.Image2D) && (settings.ImageType != ImageType.ImageCube))))
+			if ((settings.ArrayCount > 1) && ((settings.ArrayCount != 6) || (settings.ImageType != ImageType.Image2D) || (settings.ImageType != ImageType.ImageCube)))
 			{
 				flags |= DDSFlags.ForceDX10;
 			}
@@ -1399,8 +1418,6 @@ namespace GorgonLibrary.IO
 					case BufferFormat.R16_Float:
 						format = new DDSPixelFormat(DDSPixelFormatFlags.FourCC, 111, 0, 0, 0, 0, 0);
 						break;
-					default:
-						throw new ArgumentException("Cannot convert the format '" + settings.Format.ToString() + "' to a legacy format.", "settings");
 				}
 			}
 
@@ -1543,7 +1560,7 @@ namespace GorgonLibrary.IO
 			// If no conversion is to take place, then just do a straight dump into memory.
 			if (((conversionFlags == DDSConversionFlags.None)
 						|| (conversionFlags == DDSConversionFlags.DX10))
-					&& (pitchFlags == PitchFlags.None))
+					&& (pitchFlags == PitchFlags.None) && (image.Settings.ArrayCount == _actualArrayCount) && (image.Settings.Depth == _actualDepth))
 			{
                 // First mip, array and depth slice is at the start of our image memory buffer.
                 DirectAccess.MemoryCopy(image[0].Data.UnsafePointer, stream.PositionPointerUnsafe, sizeInBytes);
@@ -1562,10 +1579,12 @@ namespace GorgonLibrary.IO
 				expFlags |= ImageBitFlags.Legacy;
 			}
 
-			int depth = image.Settings.Depth;
+			// Clip the depth.
+			int depth = _actualDepth.Min(image.Settings.Depth);
+			int arrayCount = _actualArrayCount.Min(image.Settings.ArrayCount);
 			byte *srcPointer = (byte*)stream.PositionPointerUnsafe;
 
-			for (int array = 0; array < image.Settings.ArrayCount; array++)
+			for (int array = 0; array < arrayCount; array++)
 			{
 				for (int mipLevel = 0; mipLevel < image.Settings.MipCount; mipLevel++)
 				{
@@ -1659,6 +1678,35 @@ namespace GorgonLibrary.IO
 			settings = ReadHeader(stream, size, out flags);			
             
 			// Create our image data structure.
+			_actualDepth = settings.Depth;
+			_actualArrayCount = settings.ArrayCount;
+
+			// Override depth settings.
+			if (Depth > 0)
+			{				
+				settings.Depth = Depth;
+			}			
+
+			// Override the array count.
+			if (ArrayCount > 0)
+			{
+				if (ArrayCount > 1)
+				{
+					_actualDepth = 1;
+					settings.Depth = 1;
+				}
+				settings.ArrayCount = ArrayCount;
+			}
+			else
+			{
+				// Reset depth override if we have an array in the image and we're not overriding the array count.
+				if (_actualArrayCount > 1)
+				{
+					_actualDepth = 1;
+					settings.Depth = 1;
+				}
+			}
+
 			imageData = new GorgonImageData(settings);
 
             try
@@ -1874,6 +1922,7 @@ namespace GorgonLibrary.IO
 		/// </summary>
 		public GorgonCodecDDS()
 		{
+			Depth = 0;
 			this.CodecCommonExtensions = new string[] { "dds" };
             _formats = (BufferFormat[])Enum.GetValues(typeof(BufferFormat));
 

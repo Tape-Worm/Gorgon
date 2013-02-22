@@ -109,6 +109,7 @@ using System.Text;
 using System.Threading.Tasks;
 using WIC = SharpDX.WIC;
 using GorgonLibrary.Native;
+using GorgonLibrary.Math;
 using GorgonLibrary.Graphics;
 
 namespace GorgonLibrary.IO
@@ -153,6 +154,7 @@ namespace GorgonLibrary.IO
 		#region Variables.
 		private string _codec = string.Empty;				// Codec name.
 		private string _description = string.Empty;			// Codec description.
+		private int _actualArrayCount = 0;					// Array count.
 		#endregion
 
 		#region Properties
@@ -233,7 +235,9 @@ namespace GorgonLibrary.IO
 			}
 
 			// Use the image array as the frames.
-			for (int array = 0; array < data.Settings.ArrayCount; array++)
+			int arrayCount = _actualArrayCount.Min(data.Settings.ArrayCount);
+
+			for (int array = 0; array < arrayCount; array++)
 			{
 				var buffer = data[array, 0];
 
@@ -478,9 +482,15 @@ namespace GorgonLibrary.IO
 							// Create our image data.
 							try
 							{
+								_actualArrayCount = settings.ArrayCount;
+								if (ArrayCount > 0)
+								{
+									settings.ArrayCount = ArrayCount;
+								}
+
 								result = new GorgonImageData(settings);
 
-								if (settings.ArrayCount > 1)
+								if ((settings.ArrayCount > 1) && (_actualArrayCount > 1))
 								{
 									ReadFrames(wic, result, decoder);
 								}
