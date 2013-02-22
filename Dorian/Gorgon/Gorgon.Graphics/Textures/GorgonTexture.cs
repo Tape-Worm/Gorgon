@@ -201,13 +201,6 @@ namespace GorgonLibrary.Graphics
 		protected abstract ITextureSettings GetTextureInformation();
 
 		/// <summary>
-		/// Function to read image data from an array of bytes.
-		/// </summary>
-		/// <param name="imageData">Array of bytes holding the image data.</param>
-		/// <param name="imageInfo">Information to pass to the image loading method.</param>
-		protected abstract void InitializeImpl(byte[] imageData, D3D.ImageLoadInformation imageInfo);
-
-		/// <summary>
 		/// Function to create an image with initial data.
 		/// </summary>
 		/// <param name="initialData">Data to use when creating the image.</param>
@@ -215,32 +208,6 @@ namespace GorgonLibrary.Graphics
 		/// <para>To initialize the texture, create a new <see cref="GorgonLibrary.Graphics.GorgonImageData">GorgonImageData</see> object and fill it with image information.</para>
 		/// </remarks>
 		protected abstract void InitializeImpl(GorgonImageData initialData);
-
-		/// <summary>
-		/// Function to copy a resource in its entirety.
-		/// </summary>
-		/// <param name="source">Resource to copy.</param>
-		/// <param name="destination">Destination resource.</param>
-		internal virtual void CopyResourceProxy(GorgonTexture source, GorgonTexture destination)
-		{
-			Graphics.Context.CopyResource(source.D3DResource, destination.D3DResource);
-		}
-
-		/// <summary>
-		/// Function to copy a sub resource.
-		/// </summary>
-		/// <param name="source">The source resource.</param>
-		/// <param name="destination">The destination resource.</param>
-		/// <param name="srcSubResourceIndex">Index of the source subresource.</param>
-		/// <param name="destSubResourceIndex">Index of the destination subresource.</param>
-		/// <param name="sourceRegion">The source region to copy.</param>
-		/// <param name="x">Destination horizontal coordindate.</param>
-		/// <param name="y">Destination vertical coordinate.</param>
-		/// <param name="z">Destination depth coordinate.</param>
-		internal virtual void CopySubResourceProxy(GorgonTexture source, GorgonTexture destination, int srcSubResourceIndex, int destSubResourceIndex, D3D.ResourceRegion? sourceRegion, int x, int y, int z)
-		{
-			Graphics.Context.CopySubresourceRegion(source.D3DResource, srcSubResourceIndex, sourceRegion, destination.D3DResource, destSubResourceIndex, x, y, z);
-		}
 
 		/// <summary>
 		/// Function to create an image with initial data.
@@ -280,9 +247,17 @@ namespace GorgonLibrary.Graphics
 		/// Function to copy this texture into a staging texture.
 		/// </summary>
 		/// <returns>A new staging texture.</returns>
+        /// <remarks>If the current video device has a feature level of SM2_a_b, and this texture is not a staging texture, then an exception will be thrown.</remarks>
+        /// <exception cref="System.NotSupportedException">Thrown when a device with a feature level of SM2_a_b tries to create a staging texture from a texture that isn't already a staging texture.</exception>
 		public T GetStagingTexture<T>()
 			where T : GorgonTexture
 		{
+#if DEBUG
+            if ((Graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM2_a_b) && (Settings.Usage != BufferUsage.Staging))
+            {
+                throw new NotSupportedException("Feature level SM2_a_b video devices cannot build a staging texture from a non-staging texture.");
+            }
+#endif
 			return (T)GetStagingTextureImpl();
 		}
 
@@ -296,6 +271,7 @@ namespace GorgonLibrary.Graphics
 		/// <para>-or-</para>
 		/// <para>Thrown when there is an error when attempting to encode the image data.</para>
 		/// </exception>
+        /// <exception cref="System.NotSupportedException">Thrown when the current video device has a feature level of SM2_a_b and the texture is not a staging texture or the texture is not 2D.</exception>
 		/// <remarks>This will persist the contents of the texture into a stream.  The data is encoded into various formats via the codec parameter.  Gorgon contains a 
 		/// number of built-in codecs.  Currently, Gorgon supports the following formats:
 		/// <list type="bullet">
@@ -323,10 +299,25 @@ namespace GorgonLibrary.Graphics
 		/// </list>
 		/// <para>The items with (WIC) indicate that the codec support is supplied by the Windows Imaging Component.  This component should be installed on most systems, but if it is not 
 		/// then it is required in order to read/save the files in those formats.</para>
+        /// <para>Note that devices with a feature level of SM2_a_b cannot save textures that don't have a usage of staging.  Also, these devices will only save 2D staging textures.  Attempting to 
+        /// save 3D and 1D textures will throw an exception.</para>
 		/// </remarks>
-		public virtual void Save(Stream stream, IO.GorgonImageCodec codec)
+		public void Save(Stream stream, IO.GorgonImageCodec codec)
 		{
-			using (var textureData = GorgonImageData.CreateFromTexture(this))
+            if (Graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM2_a_b)
+            {
+                if (Settings.Usage != BufferUsage.Staging)
+                {
+                    throw new NotSupportedException("Feature level SM2_a_b video devices cannot save a non-staging texture.");
+                }
+
+                if (Settings.ImageType != ImageType.Image2D)
+                {
+                    throw new NotSupportedException("Feature level SM2_a_B video devices can only save 2D staging textures.");
+                }
+            }
+
+            using (var textureData = GorgonImageData.CreateFromTexture(this))
 			{
 				textureData.Save(stream, codec);
 			}
@@ -343,6 +334,7 @@ namespace GorgonLibrary.Graphics
 		/// <para>-or-</para>
 		/// <para>Thrown when there is an error when attempting to encode the image data.</para>
 		/// </exception>
+        /// <exception cref="System.NotSupportedException">Thrown when the current video device has a feature level of SM2_a_b and the texture is not a staging texture or the texture is not 2D.</exception>
 		/// <remarks>This will persist the contents of the image data object into a stream.  The data is encoded into various formats via the codec parameter.  Gorgon contains a 
 		/// number of built-in codecs.  Currently, Gorgon supports the following formats:
 		/// <list type="bullet">
@@ -370,7 +362,9 @@ namespace GorgonLibrary.Graphics
 		/// </list>
 		/// <para>The items with (WIC) indicate that the codec support is supplied by the Windows Imaging Component.  This component should be installed on most systems, but if it is not 
 		/// then it is required in order to read/save the files in those formats.</para>
-		/// </remarks>
+        /// <para>Note that devices with a feature level of SM2_a_b cannot save textures that don't have a usage of staging.  Also, these devices will only save 2D staging textures.  Attempting to 
+        /// save 3D and 1D textures will throw an exception.</para>
+        /// </remarks>
 		public void Save(string filePath, GorgonImageCodec codec)
 		{
 			if (filePath == null)
@@ -382,6 +376,19 @@ namespace GorgonLibrary.Graphics
 			{
 				throw new ArgumentException("The parameter must not be NULL or empty.", "fileName");
 			}
+
+            if (Graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM2_a_b)
+            {
+                if (Settings.Usage != BufferUsage.Staging)
+                {
+                    throw new NotSupportedException("Feature level SM2_a_b video devices cannot save a non-staging texture.");
+                }
+
+                if (Settings.ImageType != ImageType.Image2D)
+                {
+                    throw new NotSupportedException("Feature level SM2_a_B video devices can only save 2D staging textures.");
+                }
+            }
 
             using (FileStream stream = File.Open(filePath, FileMode.Create, FileAccess.Write, FileShare.None))
             {
@@ -415,13 +422,28 @@ namespace GorgonLibrary.Graphics
 		/// <para>-or-</para>
 		/// <para>Thrown if this texture is a 3D texture and is in CPU accessible memory and the video device is a SM2_a_b device.</para>
 		/// </exception>
+        /// <exception cref="System.NotSupportedException">Thrown when the video device has a feature level of SM2_a_b, and the source texture 
+        /// is not a staging texture and the this texture is a staging texture, or if the textures are 1D textures and neither texture is a staging texture.</exception>
 		public void Copy(GorgonTexture texture)
 		{
 			GorgonDebug.AssertNull<GorgonTexture>(texture, "texture");
 
-#if DEBUG
-			if (texture.GetType() != this.GetType())
-				throw new ArgumentException("The texure '" + texture.Name + "' is of type '" + texture.GetType().FullName + "' and cannot be copied to or from the type '" + this.GetType().FullName + "'.", "texture");
+#if DEBUG            
+            if (Graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM2_a_b)
+            {
+                if ((texture.Settings.Usage != BufferUsage.Staging) && (Settings.Usage == BufferUsage.Staging))
+                {
+                    throw new NotSupportedException("Feature level SM2_a_b video devices cannot copy non staging texture data into a staging texture.");
+                }
+
+                if ((texture.Settings.ImageType == ImageType.Image1D) && (Settings.Usage != BufferUsage.Staging) && (texture.Settings.Usage != BufferUsage.Staging))
+                {
+                    throw new NotSupportedException("Feature level SM2_a_b video devices cannot copy 1D texture data in GPU memory.");
+                }
+            }
+
+            if (texture.GetType() != this.GetType())
+                throw new ArgumentException("The texure '" + texture.Name + "' is of type '" + texture.GetType().FullName + "' and cannot be copied to or from the type '" + this.GetType().FullName + "'.", "texture");
 
 			if (Settings.Usage == BufferUsage.Immutable)
 				throw new InvalidOperationException("Cannot copy to an immutable resource.");

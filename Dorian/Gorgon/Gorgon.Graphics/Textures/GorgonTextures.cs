@@ -1240,7 +1240,7 @@ namespace GorgonLibrary.Graphics
 				case ImageType.ImageCube:
 				case ImageType.Image2D:
 					ValidateTexture2D(ref settings);
-					texture = GorgonTexture2D.CreateTexture(_graphics, name, settings) as T;
+					texture = new GorgonTexture2D(_graphics, name, settings) as T;
 					break;
 				case ImageType.Image3D:
 					ValidateTexture3D(ref settings);
@@ -1319,7 +1319,7 @@ namespace GorgonLibrary.Graphics
 				case ImageType.ImageCube:
 				case ImageType.Image2D:
 					ValidateTexture2D(ref settings);
-					texture = GorgonTexture2D.CreateTexture(_graphics, name, settings) as T;
+					texture = new GorgonTexture2D(_graphics, name, settings) as T;
 					break;
 				case ImageType.Image3D:
 					ValidateTexture3D(ref settings);

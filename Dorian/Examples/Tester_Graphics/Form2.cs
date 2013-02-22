@@ -38,8 +38,11 @@ namespace Tester_Graphics
 
 		private bool Idle()
 		{
-            _2D.PixelShader.Current = _shader;
-            _2D.PixelShader.ConstantBuffers[2] = _frameIndex;
+            if (_graphics.VideoDevice.SupportedFeatureLevel != DeviceFeatureLevel.SM2_a_b)
+            {
+                _2D.PixelShader.Current = _shader;
+                _2D.PixelShader.ConstantBuffers[2] = _frameIndex;
+            }
             _2D.Target = _target;
 
 			_sprite.Draw();
@@ -74,19 +77,22 @@ namespace Tester_Graphics
 				_timer = new GorgonTimer();
 			}
 
-            int delay = _delays[_frame] * 10;
-			if (_timer.Milliseconds > delay)
-			{
-				_timer.Reset();
-				_frame++;
+            if (_texture.Settings.ArrayCount > 1)
+            {
+                int delay = _delays[_frame] * 10;
+                if (_timer.Milliseconds > delay)
+                {
+                    _timer.Reset();
+                    _frame++;
 
-				if (_frame >= _texture.Settings.ArrayCount)
-				{
-					_frame = 0;
-				}
+                    if (_frame >= _texture.Settings.ArrayCount)
+                    {
+                        _frame = 0;
+                    }
 
-				UpdateFrame(_frame);
-			}
+                    UpdateFrame(_frame);
+                }
+            }
 
 			_2D.Render();
 			return true;
@@ -116,7 +122,7 @@ namespace Tester_Graphics
 
 			try
 			{
-				_graphics = new GorgonGraphics();
+				_graphics = new GorgonGraphics(DeviceFeatureLevel.SM2_a_b);
 				_swap = _graphics.Output.CreateSwapChain("Screen", new GorgonSwapChainSettings()
 				{
 					IsWindowed = true,
@@ -126,7 +132,7 @@ namespace Tester_Graphics
 				});
 
 				//GorgonImageCodecs.DDS.LegacyConversionFlags = DDSFlags.NoR10B10G10A2Fix;
-                string fileName = @"d:\images\rain_test.gif";
+                string fileName = @"c:\mike\unpak\OSUsers_512x512.gif";
 				//GorgonImageCodecs.TIFF.UseAllFrames = true;
 				var codec = new GorgonCodecGIF();
 				codec.Clip = true;	// Clip this image because animated gifs can have varying frame sizes and resizing the frames can cause issues.				
@@ -139,6 +145,8 @@ namespace Tester_Graphics
 					_texture = _graphics.Textures.CreateTexture<GorgonTexture2D>("Test", imageData);
 				}
 
+                _texture.Save(@"c:\mike\unpak\saveTest.png", new GorgonCodecPNG());
+
 				_2D = _graphics.Output.Create2DRenderer(_swap);
 				
 				_sprite = _2D.Renderables.CreateSprite("Test", new Vector2(_texture.Settings.Width, _texture.Settings.Height), _texture);
@@ -149,7 +157,10 @@ namespace Tester_Graphics
 				_stream = new GorgonDataStream(sizeof(float));
                 UpdateFrame(0);
 
-				_shader = _graphics.Shaders.CreateShader<GorgonPixelShader>("TArray", "DualTex", Properties.Resources.Shader, true);
+                if (_graphics.VideoDevice.SupportedFeatureLevel != DeviceFeatureLevel.SM2_a_b)
+                {
+                    _shader = _graphics.Shaders.CreateShader<GorgonPixelShader>("TArray", "DualTex", Properties.Resources.Shader, true);
+                }
 
                 _target = _graphics.Output.CreateRenderTarget("Name", new GorgonRenderTargetSettings()
                 {

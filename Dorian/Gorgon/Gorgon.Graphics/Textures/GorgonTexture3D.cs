@@ -171,16 +171,6 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
-		/// Function to read image data from an array of bytes.
-		/// </summary>
-		/// <param name="imageData">Array of bytes holding the image data.</param>
-		/// <param name="imageInfo">Information to pass to the image loading method.</param>
-		protected override void InitializeImpl(byte[] imageData, D3D.ImageLoadInformation imageInfo)
-		{
-			D3DResource = D3D.Texture3D.FromMemory<D3D.Texture3D>(Graphics.D3DDevice, imageData, imageInfo);
-		}
-
-		/// <summary>
 		/// Function to create an image with initial data.
 		/// </summary>
 		/// <param name="initialData">Data to use when creating the image.</param>
@@ -319,7 +309,8 @@ namespace GorgonLibrary.Graphics
 		/// <para>When copying sub resources (e.g. mip-map levels), the <paramref name="subResource"/> and <paramref name="destSubResource"/> must be different if the source texture is the same as the destination texture.</para>
 		/// <para>Sub resource indices can be calculated with the <see cref="M:GorgonLibrary.Graphics.GorgonTexture2D.GetSubResourceIndex">GetSubResourceIndex</see> static method.</para>
 		/// <para>Pass NULL (Nothing in VB.Net) to the sourceRegion parameter to copy the entire sub resource.</para>
-		/// <para>SM2_a_b devices using 3D textures can only be copied to textures that are in GPU memory, if either texture is a staging texture, then an exception will be thrown.</para>
+		/// <para>SM2_a_b devices using 3D textures can only be copied to textures that are in GPU memory, if either texture is a staging texture, then an exception will be thrown.  Also, if both textures are not staging 
+        /// textures, and the video device has a feature level of SM2_a_b, then an exception will be thrown.</para>
 		/// </remarks>
 		/// <exception cref="System.ArgumentNullException">Thrown when the texture parameter is NULL (Nothing in VB.Net).</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the formats cannot be converted because they're not of the same group or the current video device is a SM_2_a_b device or a SM_4 device.
@@ -332,12 +323,18 @@ namespace GorgonLibrary.Graphics
 		/// <para>-or-</para>
 		/// <para>Thrown when this 3D texture is in CPU accessible memory and the video device is a SM2_a_b device.</para>
 		/// </exception>
+        /// <exception cref="System.NotSupportedException">Thrown when the video device has a feature level of SM2_a_b, and this texture and the source texture are not staging textures.</exception>
 		public void CopySubResource(GorgonTexture3D texture, int subResource, int destSubResource, GorgonBox? sourceRegion, Vector3 destination)
 		{
 			GorgonDebug.AssertNull<GorgonTexture3D>(texture, "texture");
 
 #if DEBUG
-			if (Settings.Usage == BufferUsage.Immutable)
+            if ((Graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM2_a_b) && (Settings.Usage != BufferUsage.Staging) && (texture.Settings.Usage != BufferUsage.Staging))
+            {
+                throw new NotSupportedException("Feature level SM2_a_b video devices cannot copy 1D non-staging textures.");
+            }
+
+            if (Settings.Usage == BufferUsage.Immutable)
 				throw new InvalidOperationException("Cannot copy to an immutable resource.");
 
 			// If the format is different, then check to see if the format group is the same.
@@ -348,7 +345,8 @@ namespace GorgonLibrary.Graphics
 				throw new ArgumentException("Cannot copy to and from the same sub resource on the same texture.");
 
 			// Ensure that the SM2_a_b devices don't try and copy between CPU and GPU accessible memory.
-			if ((this is GorgonTexture3D) && (Graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM2_a_b) && (this.Settings.Usage == BufferUsage.Staging))
+			if ((this is GorgonTexture3D) && (Graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM2_a_b) 
+                && (this.Settings.Usage == BufferUsage.Staging) && (texture.Settings.Usage != BufferUsage.Staging))
 				throw new InvalidOperationException("This 3D texture is CPU accessible and cannot be copied.");
 #endif
 
@@ -358,7 +356,7 @@ namespace GorgonLibrary.Graphics
 			if (sourceRegion != null)
 				region = sourceRegion.Value.Convert;
 
-			CopySubResourceProxy(texture, this, subResource, destSubResource, region, (int)destination.X, (int)destination.Y, (int)destination.Z);
+            Graphics.Context.CopySubresourceRegion(texture.D3DResource, subResource, region, this.D3DResource, destSubResource, (int)destination.X, (int)destination.Y, (int)destination.Z);
 		}
 
 		/// <summary>
