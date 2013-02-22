@@ -122,24 +122,21 @@ namespace Tester_Graphics
 					IsWindowed = true,
 					Width = 800,
 					Height = 600,
-					Format = BufferFormat.R8G8B8A8_UIntNormal
+					Format = BufferFormat.R8G8B8A8_UIntNormal_sRGB
 				});
 
 				//GorgonImageCodecs.DDS.LegacyConversionFlags = DDSFlags.NoR10B10G10A2Fix;
-                string fileName = @"d:\images\lightning.gif";
+                string fileName = @"d:\images\rain_test.gif";
 				//GorgonImageCodecs.TIFF.UseAllFrames = true;
 				var codec = new GorgonCodecGIF();
-				codec.Clip = true;	// Clip this image because animated gifs can have varying frame sizes and resizing the frames can cause issues.
+				codec.Clip = true;	// Clip this image because animated gifs can have varying frame sizes and resizing the frames can cause issues.				
+				codec.Format = BufferFormat.R32G32B32A32_Float;
                 _delays = codec.GetFrameDelays(fileName);
-
-				throw new Exception("Fuck");
-
-				_texture = _graphics.Textures.FromFile<GorgonTexture2D>("Test", fileName, codec);				
-
-				using (var imageData = GorgonImageData.FromFile(@"D:\unpak\myimage.png", new GorgonCodecPNG()))
+				using (var imageData = GorgonImageData.FromFile(fileName, codec))
 				{
-					imageData.ConvertFormat(BufferFormat.R8, ImageDithering.ErrorDiffusion);
-					imageData.Save(@"D:\unpak\convertTest.dds", new GorgonCodecDDS());
+					//imageData.Resize(64, 128, false, ImageFilter.Cubic);
+					//_texture = _graphics.Textures.FromFile<GorgonTexture2D>("Test", fileName, codec);
+					_texture = _graphics.Textures.CreateTexture<GorgonTexture2D>("Test", imageData);
 				}
 
 				_2D = _graphics.Output.Create2DRenderer(_swap);

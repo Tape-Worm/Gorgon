@@ -977,14 +977,6 @@ namespace GorgonLibrary.IO
 				srcPitch = formatInfo.GetPitch(image.Settings.Width, image.Settings.Height, PitchFlags.None);
 			}
 
-			// The data is identical in the file, so just co-opt the the pointer.
-			if ((srcPitch == buffer.PitchInformation) && (conversionFlags == TGAConversionFlags.InvertY))
-			{
-                // First mip, array and depth slice is at the start of our image memory buffer.
-                DirectAccess.MemoryCopy(image[0].Data.UnsafePointer, stream.PositionPointerUnsafe, image.SizeInBytes);
-                return;
-			}
-
 			// Otherwise, allocate a buffer for conversion.
 			bool setOpaque = false;
 			byte* srcPtr = (byte*)stream.PositionPointerUnsafe;
@@ -1055,6 +1047,11 @@ namespace GorgonLibrary.IO
 
 			// Read the header information.
 			settings = ReadHeader(stream, out flags);
+
+			if (ArrayCount > 1)
+			{
+				settings.ArrayCount = ArrayCount;
+			}
 
             try
             {

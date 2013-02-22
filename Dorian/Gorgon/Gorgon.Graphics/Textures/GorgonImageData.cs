@@ -2033,15 +2033,31 @@ namespace GorgonLibrary.Graphics
             }
 
             // Load the data into unmanaged memory.
-            try
-            {
-                // Use a memory stream for ease of access.
-                memoryStream = new GorgonDataStream(size);
-                memoryStream.ReadFromStream(stream, size);
-                memoryStream.Position = 0;
+			try
+			{
+				// Use a memory stream for ease of access.
+				memoryStream = new GorgonDataStream(size);
+				memoryStream.ReadFromStream(stream, size);
+				memoryStream.Position = 0;
 
-                result = codec.LoadFromStream(memoryStream, size);
-            }
+				result = codec.LoadFromStream(memoryStream, size);
+
+				// Post process our data.
+				if ((codec.Width != 0) || (codec.Height != 0) || (codec.MipCount != 0) || (codec.Format != BufferFormat.Unknown))
+				{
+					codec.PostProcess(result);
+				}
+			}
+			catch
+			{
+				if (result != null)
+				{
+					result.Dispose();
+					result = null;
+				}
+
+				throw;
+			}
             finally
             {
                 // If we haven't co-opted the pointer, then free the memory we've allocated.
@@ -2072,7 +2088,7 @@ namespace GorgonLibrary.Graphics
 		/// Function to consume the data from another image into this one.
 		/// </summary>
 		/// <param name="data">Data to consume.</param>
-		private void Import(GorgonImageData data)
+		internal void Import(GorgonImageData data)
 		{
 			// Clean up this image.
 			foreach (var buffer in _buffers)
@@ -2089,7 +2105,241 @@ namespace GorgonLibrary.Graphics
 			_buffers = data._buffers;
 			_dataBoxes = data._dataBoxes;
 			_mipOffsetSize = data._mipOffsetSize;
-		}		       
+		}
+
+		/// <summary>
+		/// Function to generate a new mip map chain.
+		/// </summary>
+		/// <param name="mipCount">Number of mip map levels.</param>
+		/// <param name="filter">Filter to apply.</param>
+		/// <returns>The actual number of mip maps generated.</returns>
+		/// <remarks>This method will generate a new mip map chain for the image data.  If the current number of mip maps is not the same as the requested number, then the image 
+		/// buffer will be adjusted to use the requested number of mip maps.  If 0 is passed to <paramref name="mipCount"/>, then a full mip map chain is generated.
+		/// <para>Note that the number of requested mip maps may not be honored depending on the current width, height, and depth of the image.  Check the return value to get the 
+		/// actual number of mip maps generated.</para>
+		/// </remarks>
+		public int GenerateMipMaps(int mipCount, ImageFilter filter)
+		{
+			IImageSettings destSettings = null;
+			GorgonImageData destData = null;
+			GorgonImageData mipWorker = this;
+			int maxMips = GetMaxMipCount(Settings);
+
+			// If we specify 0, then generate a full chain.
+			if ((mipCount <= 0) || (mipCount > maxMips))
+			{
+				mipCount = maxMips;
+			}
+
+			try
+			{
+				// If we need more or less mip maps than we currently have, then we need to use an extra buffer.
+				if (mipCount != Settings.MipCount)
+				{
+					destSettings = Settings.Clone();
+					destSettings.MipCount = mipCount;
+
+					destData = new GorgonImageData(destSettings);
+
+					// Copy the first buffer from the source image to the dest image.
+					for (int array = 0; array < Settings.ArrayCount; array++)
+					{
+						DirectAccess.MemoryCopy(destData[array, 0].Data.UnsafePointer, this[array, 0].Data.UnsafePointer, this[array, 0].PitchInformation.SlicePitch * Settings.Depth);
+					}
+
+					// Assign the worker.
+					mipWorker = destData;
+				}
+
+				if (mipCount > 1)
+				{
+					using (GorgonWICImage wic = new GorgonWICImage())
+					{
+						Guid format = wic.GetGUID(Settings.Format);
+
+						if (format == Guid.Empty)
+						{
+							throw new GorgonException(GorgonResult.FormatNotSupported, "The format '" + Settings.Format.ToString() + "' cannot be converted to a mip map chain.");
+						}
+
+						// Begin scaling.
+						for (int array = 0; array < Settings.ArrayCount; array++)
+						{							
+							int mipDepth = Settings.Depth;
+
+							// Start at 1 because we've either already copied the first levels, or we're using the source data.
+							for (int mipLevel = 1; mipLevel < mipCount; mipLevel++)
+							{
+								for (int depth = 0; depth < mipDepth; depth++)
+								{
+									var sourceBuffer = mipWorker[array, 0, (Settings.Depth / mipDepth) * depth];
+									var depthBuffer = mipWorker[array, mipLevel, depth];
+
+									SharpDX.DataRectangle dataPtr = new DX.DataRectangle(sourceBuffer.Data.BasePointer, sourceBuffer.PitchInformation.RowPitch);
+									// Create a temporary bitmap and resize it.
+									using (WIC.Bitmap bitmap = new WIC.Bitmap(wic.Factory, sourceBuffer.Width, sourceBuffer.Height, format, dataPtr, sourceBuffer.PitchInformation.SlicePitch))
+									{
+										// Scale the image into the next buffer.
+										wic.TransformImageData(bitmap, depthBuffer.Data.BasePointer, depthBuffer.PitchInformation.RowPitch, depthBuffer.PitchInformation.SlicePitch,
+																Guid.Empty, ImageDithering.None, new Rectangle(0, 0, depthBuffer.Width, depthBuffer.Height), false, filter);
+									}
+								}
+							}
+
+							// Scale the depth.
+							if (mipDepth > 1)
+							{
+								mipDepth >>= 1;
+							}
+						}
+					}
+				}
+
+				// If we have a worker buffer, then import it into this buffer.
+				if (destData != null)
+				{
+					Import(destData);
+				}				
+			}
+			catch
+			{
+				if (destData != null)
+				{
+					destData.Dispose();
+				}
+				destData = null;
+
+				throw;
+			}
+
+			return mipCount;
+		}
+
+		/// <summary>
+		/// Function to resize the image data.
+		/// </summary>
+		/// <param name="width">New width of the image data.</param>
+		/// <param name="height">New height of the image data.</param>
+		/// <param name="filter">Filtering to apply to the image if it was upscaled or downscaled.</param>
+		/// <param name="clip">TRUE to clip the image data, or FALSE to scale the image data to the new size.</param>
+		/// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="width"/> or the <paramref name="height"/> parameter is less than 1.</exception>
+		/// <exception cref="GorgonException">Thrown when the format of the image could not be stretched.</exception>
+		/// <remarks>
+		/// This will stretch or shrink the image to a new size.  If the <paramref name="clip" /> parameter is set to TRUE, then the image data will be clipped.  That is, it
+		/// will not be stretched if the image bounds are larger than the previous image data, and it will not be shrunk if the image bounds were smaller.
+		/// <para>Please note that if the image has existing mip-mips then they will be lost and only the first level will be retained. Resizing will only affect the width or height of an image,
+		/// not the depth of a 3D image.  1D images can only be stretched horizontally.</para>
+		/// <para>If the image is in a format that is not supported, an exception will be thrown.</para>
+		/// <para>This overload only provides point filtering when the image is scaled.</para>
+		/// </remarks>
+		public void Resize(int width, int height, bool clip)
+		{
+			Resize(width, height, clip, ImageFilter.Point);
+		}
+
+		/// <summary>
+		/// Function to resize the image data.
+		/// </summary>
+		/// <param name="width">New width of the image data.</param>
+		/// <param name="height">New height of the image data.</param>
+		/// <param name="filter">Filtering to apply to the image if it was upscaled or downscaled.</param>
+		/// <param name="clip">TRUE to clip the image data, or FALSE to scale the image data to the new size.</param>
+		/// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="width"/> or the <paramref name="height"/> parameter is less than 1.</exception>
+		/// <exception cref="GorgonException">Thrown when the format of the image could not be stretched.</exception>
+		/// <remarks>
+		/// This will stretch or shrink the image to a new size.  If the <paramref name="clip" /> parameter is set to TRUE, then the image data will be clipped.  That is, it
+		/// will not be stretched if the image bounds are larger than the previous image data, and it will not be shrunk if the image bounds were smaller.
+		/// <para>Please note that if the image has existing mip-mips then they will be lost and only the first level will be retained. Resizing will only affect the width or height of an image,
+		/// not the depth of a 3D image.  1D images can only be stretched horizontally.</para>
+		/// <para>If the image is in a format that is not supported, an exception will be thrown.</para>
+		/// <para>The <paramref name="filter"/> parameter will only be applied with <paramref name="clip"/> is set to FALSE.  Otherwise it has no effect.</para>
+		/// </remarks>
+		public void Resize(int width, int height, bool clip, ImageFilter filter)
+		{
+			if (width <= 0)
+			{
+				throw new ArgumentOutOfRangeException("width", "The width must be at least 1 pixel.");
+			}
+
+			if (height <= 0)
+			{
+				throw new ArgumentOutOfRangeException("height", "The height must be at least 1 pixel.");
+			}
+
+			// Well, that was easy...
+			if ((width == Settings.Width) && (height == Settings.Height))
+			{
+				return;
+			}
+
+			using (var wic = new GorgonWICImage())
+			{
+				IImageSettings destSettings = null;
+				GorgonImageData destData = null;
+				Guid sourceFormat = wic.GetGUID(Settings.Format);
+
+				if (sourceFormat == Guid.Empty)
+				{
+					throw new GorgonException(GorgonResult.FormatNotSupported, "The format '" + Settings.Format.ToString() + "' cannot be stretched.");
+				}
+
+				try
+				{
+					// Create our destination buffer to hold the converted data.
+					destSettings = Settings.Clone();
+					destSettings.Width = width;
+
+					// Don't allow a 1D image to be stretched vertically.
+					if (Settings.ImageType != ImageType.Image1D)
+					{
+						destSettings.Height = height;
+					}
+
+					destData = new GorgonImageData(destSettings);
+
+					for (int array = 0; array < Settings.ArrayCount; array++)
+					{
+						for (int depth = 0; depth < Settings.Depth; depth++)
+						{
+							// Get the array/mip/depth buffer.
+							var destBuffer = destData[array, 0, depth];
+							var srcBuffer = this[array, 0, depth];
+							DX.DataRectangle rect = new DX.DataRectangle(srcBuffer.Data.BasePointer, srcBuffer.PitchInformation.RowPitch);
+
+							// Create a WIC bitmap so we have a source for conversion.
+							using (WIC.Bitmap wicBmp = new WIC.Bitmap(wic.Factory, srcBuffer.Width, srcBuffer.Height, sourceFormat, rect, rect.Pitch * Settings.Height))
+							{
+								wic.TransformImageData(wicBmp, destBuffer.Data.BasePointer, destBuffer.PitchInformation.RowPitch,
+																destBuffer.PitchInformation.SlicePitch, Guid.Empty, ImageDithering.None, new Rectangle(0, 0, width, height), clip, filter);
+							}
+						}
+					}
+
+					// Import the data into our current image.
+					Import(destData);
+				}
+				catch
+				{
+					if (destData != null)
+					{
+						destData.Dispose();
+					}
+					throw;
+				}
+			}
+		}
+
+        /// <summary>
+        /// Function to convert the format of this image to the requested format.
+        /// </summary>
+        /// <param name="format">New format for the image.</param>
+        /// <exception cref="System.ArgumentException">Thrown when the <paramref name="format"/> is set to Unknown.</exception>
+        /// <exception cref="GorgonLibrary.GorgonException">Thrown when the format of this image data or the format parameter is not supported for conversion.</exception>
+        /// <remarks>This will convert the current image data to another buffer format.  If a format is unable to be converted then an exception will be thrown.</remarks>
+		public void ConvertFormat(BufferFormat format)
+		{
+			ConvertFormat(format, ImageDithering.None);
+		}
 
         /// <summary>
         /// Function to convert the format of this image to the requested format.
@@ -2128,6 +2378,12 @@ namespace GorgonLibrary.Graphics
                 {
                     throw new GorgonException(GorgonResult.FormatNotSupported, "The destination format '" + format.ToString() + "' is not supported for conversion.");
                 }
+
+				// Well, that was easy...
+				if (sourceFormat == destFormat)
+				{
+					return;
+				}
 
                 try
                 {

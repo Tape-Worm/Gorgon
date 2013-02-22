@@ -113,6 +113,7 @@ using System.Threading.Tasks;
 using DX = SharpDX;
 using WIC = SharpDX.WIC;
 using GorgonLibrary.IO;
+using GorgonLibrary.Math;
 using GorgonLibrary.Diagnostics;
 using GorgonLibrary.Native;
 
@@ -831,6 +832,7 @@ namespace GorgonLibrary.Graphics
         /// <param name="scaleFilter">Filter to apply to scaled data.</param>
         public unsafe void TransformImageData(WIC.BitmapSource sourceData, IntPtr destData, int rowPitch, int slicePitch, Guid destFormat, ImageDithering dither, Rectangle destRect, bool clip, ImageFilter scaleFilter)
         {
+			Guid pixelFormat = destFormat;
             WIC.BitmapSource source = sourceData;
             WIC.FormatConverter converter = null;
             WIC.BitmapClipper clipper = null;
@@ -853,6 +855,8 @@ namespace GorgonLibrary.Graphics
 
                 if (!destRect.IsEmpty)
                 {
+					pixelFormat = source.PixelFormat;
+
                     if (!clip)
                     {
                         scaler = new WIC.BitmapScaler(_factory);
@@ -861,16 +865,38 @@ namespace GorgonLibrary.Graphics
                     }
                     else
                     {
-                        clipper = new WIC.BitmapClipper(_factory);
-                        clipper.Initialize(source, new DX.DrawingRectangle(destRect.X, destRect.Y, destRect.Width, destRect.Height));
-                        source = clipper;
+						destRect.Width = destRect.Width.Min(source.Size.Width);
+						destRect.Height = destRect.Height.Min(source.Size.Height);
+
+						if ((destRect.Width < source.Size.Width) || (destRect.Height < source.Size.Height))
+						{
+							clipper = new WIC.BitmapClipper(_factory);
+							clipper.Initialize(source, new DX.DrawingRectangle(destRect.X, destRect.Y, destRect.Width, destRect.Height));
+							source = clipper;
+						}
                     }
+
+					// We have a change of format (probably due to the filter when scaling)... so we need to convert.
+					if (source.PixelFormat != pixelFormat)
+					{
+						converter = new WIC.FormatConverter(_factory);
+
+						if (!converter.CanConvert(source.PixelFormat, pixelFormat))
+						{
+							throw new GorgonException(GorgonResult.FormatNotSupported, "Cannot convert to the destination format.");
+						}
+
+						converter.Initialize(source, pixelFormat, WIC.BitmapDitherType.None, null, 0, WIC.BitmapPaletteType.Custom);
+						source = converter;
+					}
                 }
 
-                source.CopyPixels(rowPitch, destData, slicePitch);
+				source.CopyPixels(rowPitch, destData, slicePitch);
             }
             finally
             {
+				source = null;
+
                 if (converter != null)
                 {
                     converter.Dispose();

@@ -29,6 +29,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Drawing;
 using System.IO;
 using WIC = SharpDX.WIC;
 using GorgonLibrary.Native;
@@ -106,6 +107,80 @@ namespace GorgonLibrary.IO
 		: INamedObject
 	{
 		#region Properties.
+		/// <summary>
+		/// Property to set or return the array count for the image.
+		/// </summary>
+		/// <remarks>Use this to control the array count of the image.  If this value is set to a value larger than 1, then any depth information will be ignored in the image.
+		/// <para>For most codecs, there will only be 1 array index, so a setting of 0 is the same as a setting of 1.  Array image data is usually only found in DDS files and in files that support multiple frames 
+		/// like GIF files.</para>
+		/// <para>This property only applies to decoding image data.</para>
+		/// <para>The default value is 0.</para>
+		/// </remarks>
+		public int ArrayCount
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Property to set or return the width of the image.
+		/// </summary>
+		/// <remarks>Use this to clip or scale the width of the image.  To clip, ensure that the <see cref="GorgonLibrary.IO.GorgonImageCodec.Clip">Clip</see> property is set to TRUE.  To scale, ensure that 
+		/// the property is set to FALSE.  Filtering may be applied to scaled images by the <see cref="GorgonLibrary.IO.GorgonImageCodec.Filter">Filter</see> property.
+		/// <para>Set this value to 0 to use the width in the file.</para>
+		/// <para>This property only applies to decoding image data.</para>
+		/// <para>The default value is 0.</para>
+		/// </remarks>
+		public int Width
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Property to set or return the height of the image.
+		/// </summary>
+		/// <remarks>Use this to clip or scale the height of the image.  To clip, ensure that the <see cref="GorgonLibrary.IO.GorgonImageCodec.Clip">Clip</see> property is set to TRUE.  To scale, ensure that 
+		/// the property is set to FALSE.  Filtering may be applied to scaled images by the <see cref="GorgonLibrary.IO.GorgonImageCodec.Filter">Filter</see> property.
+		/// <para>Set this value to 0 to use the height in the file.</para>
+		/// <para>This property only applies to decoding image data.</para>
+		/// <para>The default value is 0.</para>
+		/// </remarks>
+		public int Height
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Property to set or return the format to convert to.
+		/// </summary>
+		/// <remarks>Use this to convert an image to another format.  Some formats are unsupported, and in those cases the image will be returned with its original format.
+		/// <para>Set this value to Unknown to use the format of the image as it appears in the file.</para>
+		/// <para>This property only applies to decoding image data.</para>
+		/// <para>The default value is Unknown.</para>
+		/// </remarks>
+		public BufferFormat Format
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Property to set or return the mip map level count.
+		/// </summary>
+		/// <remarks>Use this to override the number of mip maps in the image.  When this value is set, Gorgon will attempt to fill out as many of the requested 
+		/// mip maps as it can (depending on width, height and depth of the image).  
+		/// <para>Set this value to 0 to use the number of mip maps that are present in the file.</para>
+		/// <para>This property only applies to decoding image data.</para>
+		/// <para>The default value is 0.</para>
+		/// </remarks>
+		public int MipCount
+		{
+			get;
+			set;
+		}
+
 		/// <summary>
 		/// Property to return whether the codec supports decoding/encoding multiple frames or not.
 		/// </summary>
@@ -624,6 +699,150 @@ namespace GorgonLibrary.IO
 		/// <param name="stream">Stream that will contain the data.</param>
 		protected internal abstract void SaveToStream(GorgonImageData imageData, Stream stream);
 
+		/// <summary>
+		/// Function to perform any post processing on image data.
+		/// </summary>
+		internal void PostProcess(GorgonImageData data)
+		{
+			IImageSettings destSettings = data.Settings.Clone();
+			GorgonImageData destData = null;
+			int width = Width > 0 ? Width : data.Settings.Width;
+			int height = Height > 0 ? Height : data.Settings.Height;
+			int mipCount = MipCount > 0 ? MipCount : data.Settings.MipCount;
+			BufferFormat format = (Format != BufferFormat.Unknown) ? Format : data.Settings.Format;
+			Guid srcPixelFormat = Guid.Empty;
+			Guid destPixelFormat = Guid.Empty;
+			Rectangle newSize = Rectangle.Empty;
+			int maxMips = 0;
+			int mipStart = 0;
+
+			// First, confirm whether we can perform format conversions.
+			using (var wic = new GorgonWICImage())
+			{
+				srcPixelFormat = wic.GetGUID(data.Settings.Format);
+				destPixelFormat = wic.GetGUID(format);
+
+				// Do nothing if we can't do anything with the source format.
+				if (srcPixelFormat == Guid.Empty)
+				{
+					return;
+				}
+
+				// Cancel conversion if we're using the same format.
+				if (srcPixelFormat == destPixelFormat)
+				{
+					destPixelFormat = Guid.Empty;
+				}
+
+				// Get the new size.
+				if ((width != data.Settings.Width) || (height != data.Settings.Height))
+				{
+					newSize = new Rectangle(0, 0, width, height);
+				}
+
+				// Set up destination buffer settings.
+				destSettings.Format = format;
+				destSettings.Width = width;
+				destSettings.Height = height;
+				destSettings.MipCount = mipCount;
+
+				// Ensure we don't go over the maximum.
+				maxMips = GorgonImageData.GetMaxMipCount(destSettings);
+
+				if (mipCount > maxMips)
+				{
+					mipCount = maxMips;
+				}
+
+				// Nothing's going to happen here, so leave.
+				if ((destPixelFormat == Guid.Empty) && (newSize == Rectangle.Empty) && (mipCount == 1))
+				{
+					return;
+				}
+
+				try
+				{
+					// Create our worker buffer.
+					destData = new GorgonImageData(destSettings);
+
+					// The first step is to convert and resize our images:
+					if ((destPixelFormat != Guid.Empty) || (newSize != Rectangle.Empty))
+					{
+						for (int array = 0; array < destSettings.ArrayCount; array++)
+						{
+							// We're not going to copy mip levels at this point, that will come in the next step.
+							for (int depth = 0; depth < destSettings.Depth; depth++)
+							{
+								// Get our source/destination buffers.
+								var sourceBuffer = data[array, 0, depth];
+								var destBuffer = destData[array, 0, depth];
+
+								SharpDX.DataRectangle dataRect = new SharpDX.DataRectangle(sourceBuffer.Data.BasePointer, sourceBuffer.PitchInformation.RowPitch);
+
+								// Create a temporary WIC bitmap to work with.
+								using (var bitmap = new WIC.Bitmap(wic.Factory, sourceBuffer.Width, sourceBuffer.Height, srcPixelFormat, dataRect, sourceBuffer.PitchInformation.SlicePitch))
+								{
+									wic.TransformImageData(bitmap, destBuffer.Data.BasePointer, destBuffer.PitchInformation.RowPitch, destBuffer.PitchInformation.SlicePitch,
+															destPixelFormat, Dithering, newSize, Clip, Filter);
+								}
+							}
+						}
+
+						// Adjust the mip map starting point.
+						mipStart = 1;
+					}
+
+					// Next, we need to build mip maps.
+					if (destSettings.MipCount > 1)
+					{
+						// The first step is to convert and resize our images:
+						for (int array = 0; array < destSettings.ArrayCount; array++)
+						{
+							int mipDepth = destSettings.Depth;
+
+							for (int mip = mipStart; mip < destSettings.MipCount; mip++)
+							{
+								// We're not going to copy mip levels at this point, that will come in the next step.
+								for (int depth = 0; depth < mipDepth; depth++)
+								{
+									// Get our source/destination buffers.
+									var sourceBuffer = destData[array, 0, (destSettings.Depth / mipDepth) * depth];
+									var destBuffer = destData[array, mip, depth];
+
+									SharpDX.DataRectangle dataRect = new SharpDX.DataRectangle(sourceBuffer.Data.BasePointer, sourceBuffer.PitchInformation.RowPitch);
+
+									// Create a temporary WIC bitmap to work with.
+									using (var bitmap = new WIC.Bitmap(wic.Factory, sourceBuffer.Width, sourceBuffer.Height, srcPixelFormat, dataRect, sourceBuffer.PitchInformation.SlicePitch))
+									{
+										wic.TransformImageData(bitmap, destBuffer.Data.BasePointer, destBuffer.PitchInformation.RowPitch, destBuffer.PitchInformation.SlicePitch,
+																Guid.Empty, ImageDithering.None, new Rectangle(0, 0, destBuffer.Width, destBuffer.Height), false, Filter);
+									}
+								}
+
+								if (mipDepth > 1)
+								{
+									mipDepth >>= 1;
+								}
+							}
+						}
+					}
+
+					// Update our data.
+					data.Import(destData);
+				}
+				catch
+				{
+					if (destData != null)
+					{
+						destData.Dispose();
+						destData = null;
+					}
+
+					throw;
+				}
+			}
+		}
+
         /// <summary>
         /// Function to determine if this codec can read the file or not.
         /// </summary>
@@ -667,6 +886,11 @@ namespace GorgonLibrary.IO
 		/// </summary>
 		protected GorgonImageCodec()
 		{
+			Width = 0;
+			Height = 0;
+			Format = BufferFormat.Unknown;
+			MipCount = 0;
+
 			Clip = true;
 			Filter = ImageFilter.Fant;
 			Dithering = ImageDithering.None;
