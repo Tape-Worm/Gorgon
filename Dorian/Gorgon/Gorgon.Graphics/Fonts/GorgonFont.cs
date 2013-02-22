@@ -1391,7 +1391,7 @@ namespace GorgonLibrary.Graphics
 					// Create a texture.
 					_textureSettings.Width = Settings.TextureSize.Width;
 					_textureSettings.Height = Settings.TextureSize.Height;
-					currentTexture = GorgonTexture2D.CreateTexture(Graphics, "GorgonFont." + Name + ".InternalTexture_" + Guid.NewGuid().ToString(), _textureSettings);
+					currentTexture = new GorgonTexture2D(Graphics, "GorgonFont." + Name + ".InternalTexture_" + Guid.NewGuid().ToString(), _textureSettings);
 					currentTexture.Initialize(null);
 
 					GorgonGlyphPacker.CreateRoot(Settings.TextureSize);

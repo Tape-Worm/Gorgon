@@ -864,8 +864,8 @@ namespace GorgonLibrary.Graphics
 
 				if ((_shader is GorgonVertexShaderState) && (_shader.Graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM2_a_b))
 				{
-					_views = null;
-					_resources = null;
+					_views = new D3D.ShaderResourceView[] { };
+					_resources = new GorgonResourceView[] { };
 				}
 				else
 				{

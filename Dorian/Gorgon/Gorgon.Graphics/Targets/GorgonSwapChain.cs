@@ -321,7 +321,7 @@ namespace GorgonLibrary.Graphics
 				InternalDepthStencil.UpdateSettings();
 			}
 
-			Texture = GorgonTexture2D.CreateTexture(this);
+			Texture = new GorgonTexture2D(this);
 			D3DRenderTarget = new D3D.RenderTargetView(Graphics.D3DDevice, Texture.D3DResource);
 			D3DRenderTarget.DebugName = "SwapChain '" + Name + "' Render Target View";
 

@@ -149,9 +149,6 @@
     <Compile Include="Textures\GorgonTexture2D.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Textures\GorgonTexture2DSM2.cs">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="Textures\GorgonTexture3D.cs">
       <SubType>Code</SubType>
     </Compile>

@@ -171,20 +171,6 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
-		/// Function to read image data from an array of bytes.
-		/// </summary>
-		/// <param name="imageData">Array of bytes holding the image data.</param>
-		/// <param name="imageInfo">Information to pass to the image loading method.</param>
-		protected override void InitializeImpl(byte[] imageData, D3D.ImageLoadInformation imageInfo)
-		{
-			// We don't need depth or height for this guy.
-			imageInfo.Depth = 0;
-			imageInfo.Height = 0;
-						
-			D3DResource = D3D.Texture1D.FromMemory<D3D.Texture1D>(Graphics.D3DDevice, imageData, imageInfo);
-		}
-
-		/// <summary>
 		/// Function to create an image with initial data.
 		/// </summary>
 		/// <param name="initialData">Data to use when creating the image.</param>
@@ -302,6 +288,7 @@ namespace GorgonLibrary.Graphics
 		/// <para>When copying sub resources (e.g. mip-map levels), the <paramref name="subResource"/> and <paramref name="destSubResource"/> must be different if the source texture is the same as the destination texture.</para>
 		/// <para>Sub resource indices can be calculated with the <see cref="M:GorgonLibrary.Graphics.GorgonTexture1D.GetSubResourceIndex">GetSubResourceIndex</see> static method.</para>
 		/// <para>Pass NULL (Nothing in VB.Net) to the sourceRange parameter to copy the entire sub resource.</para>
+        /// <para>Video devices that have a feature level of SM2_a_b cannot copy sub resource data in a 1D texture if the texture is not a staging texture.</para>
 		/// </remarks>
 		/// <exception cref="System.ArgumentNullException">Thrown when the texture parameter is NULL (Nothing in VB.Net).</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the formats cannot be converted because they're not of the same group or the current video device is a SM_2_a_b device or a SM_4 device.
@@ -310,11 +297,17 @@ namespace GorgonLibrary.Graphics
 		/// </exception>
 		/// <exception cref="System.InvalidOperationException">Thrown when this texture is an immutable texture.
 		/// </exception>
+        /// <exception cref="System.NotSupportedException">Thrown when the video device has a feature level of SM2_a_b and this texture or the source texture are not staging textures.</exception>
 		public void CopySubResource(GorgonTexture1D texture, int subResource, int destSubResource, GorgonMinMax? sourceRange, int destination)
 		{
 			GorgonDebug.AssertNull<GorgonTexture1D>(texture, "texture");
 
 #if DEBUG
+            if ((Graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM2_a_b) && ((Settings.Usage != BufferUsage.Staging) || (texture.Settings.Usage != BufferUsage.Staging)))
+            {
+                throw new NotSupportedException("Feature level SM2_a_b video devices cannot copy 1D non-staging textures.");
+            }
+
 			if (Settings.Usage == BufferUsage.Immutable)
 				throw new InvalidOperationException("Cannot copy to an immutable resource.");
 
@@ -326,16 +319,22 @@ namespace GorgonLibrary.Graphics
 				throw new ArgumentException("Cannot copy to and from the same sub resource on the same texture.");
 #endif
 
-			// If we have multisampling enabled, then copy the entire sub resource.
-			CopySubResourceProxy(texture, this, subResource, destSubResource, new D3D.ResourceRegion()
-			{
-				Back = 1,
-				Front = 0,
-				Top = 0,
-				Left = sourceRange.Value.Minimum,
-				Right = sourceRange.Value.Maximum,
-				Bottom = 1
-			}, destination, 0, 0);
+            if (sourceRange != null)
+            {
+                Graphics.Context.CopySubresourceRegion(texture.D3DResource, subResource, new D3D.ResourceRegion()
+                    {
+                        Back = 1,
+                        Front = 0,
+                        Top = 0,
+                        Left = sourceRange.Value.Minimum,
+                        Right = sourceRange.Value.Maximum,
+                        Bottom = 1
+                    }, this.D3DResource, destSubResource, destination, 0, 0);
+            }
+            else
+            {
+                Graphics.Context.CopySubresourceRegion(texture.D3DResource, subResource, null, this.D3DResource, destSubResource, 0, 0, 0);
+            }
 		}
 
 		/// <summary>

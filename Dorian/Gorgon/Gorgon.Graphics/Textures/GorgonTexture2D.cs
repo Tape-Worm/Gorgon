@@ -190,56 +190,6 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
-		/// Function to create the texture.
-		/// </summary>
-		/// <param name="graphics">Graphics interface that created this object.</param>
-		/// <param name="name">Name of the object.</param>
-		/// <param name="settings">Settings for the object.</param>
-		/// <returns>The new 2D texture.</returns>
-		/// <remarks>This is here to bypass a bug when dealing with SM2_a_b video devices.</remarks>
-		internal static GorgonTexture2D CreateTexture(GorgonGraphics graphics, string name, ITextureSettings settings)
-		{
-			GorgonTexture2D texture = null;
-
-			if (graphics.VideoDevice.SupportedFeatureLevel != DeviceFeatureLevel.SM2_a_b)
-				texture = new GorgonTexture2D(graphics, name, settings);
-			else
-				texture = new GorgonTexture2DSM2(graphics, name, settings);
-
-			return texture;
-		}
-
-		/// <summary>
-		/// Function to create the texture.
-		/// </summary>
-		/// <param name="swapChain">Swap chain to retrieve texture from.</param>
-		/// <returns>The texture for the swap chain.</returns>
-		/// <remarks>This is here to bypass a bug when dealing with SM2_a_b video devices.</remarks>
-		internal static GorgonTexture2D CreateTexture(GorgonSwapChain swapChain)
-		{
-			GorgonTexture2D texture = null;
-
-			if (swapChain.Graphics.VideoDevice.SupportedFeatureLevel != DeviceFeatureLevel.SM2_a_b)
-				texture = new GorgonTexture2D(swapChain);
-			else
-				texture = new GorgonTexture2DSM2(swapChain);
-
-			return texture;
-		}
-
-		/// <summary>
-		/// Function to read image data from an array of bytes.
-		/// </summary>
-		/// <param name="imageData">Array of bytes holding the image data.</param>
-		/// <param name="imageInfo">Information to pass to the image loading method.</param>
-		protected override void InitializeImpl(byte[] imageData, D3D.ImageLoadInformation imageInfo)
-		{
-			// We don't use depth for 2D textures.
-			imageInfo.Depth = 0;
-			D3DResource = D3D.Texture2D.FromMemory<D3D.Texture2D>(Graphics.D3DDevice, imageData, imageInfo);
-		}
-
-		/// <summary>
 		/// Function to initialize a render target texture.
 		/// </summary>
 		internal void InitializeRenderTarget()
@@ -435,6 +385,7 @@ namespace GorgonLibrary.Graphics
 		/// <para>Sub resource indices can be calculated with the <see cref="M:GorgonLibrary.Graphics.GorgonTexture2D.GetSubResourceIndex">GetSubResourceIndex</see> static method.</para>
 		/// <para>Pass NULL (Nothing in VB.Net) to the sourceRegion parameter to copy the entire sub resource.</para>
 		/// <para>SM2_a_b devices may copy 2D textures, but there are format restrictions (must be compatible with a render target format).  3D textures can only be copied to textures that are in GPU memory, if either texture is a staging texture, then an exception will be thrown.</para>
+        /// <para>Video devices with a feature level of SM2_a_b cannot copy textures from GPU memory into staging textures, doing so will throw an exception.</para>
 		/// </remarks>
 		/// <exception cref="System.ArgumentNullException">Thrown when the texture parameter is NULL (Nothing in VB.Net).</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the formats cannot be converted because they're not of the same group or the current video device is a SM_2_a_b device or a SM_4 device.
@@ -447,11 +398,17 @@ namespace GorgonLibrary.Graphics
 		/// </exception>
 		/// <exception cref="System.InvalidOperationException">Thrown when this texture is an immutable texture.
 		/// </exception>
+        /// <exception cref="System.NotSupportedException">Thrown when the video device has a feature level of SM2_a_b and this texture is a staging texture and the source texture is not a staging texture.</exception>
 		public void CopySubResource(GorgonTexture2D texture, int subResource, int destSubResource, Rectangle? sourceRegion, Vector2 destination)
 		{
 			GorgonDebug.AssertNull<GorgonTexture>(texture, "texture");
 
 #if DEBUG
+            if ((Graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM2_a_b) && (Settings.Usage == BufferUsage.Staging) && (texture.Settings.Usage != BufferUsage.Staging))
+            {
+                throw new NotSupportedException("Feature level SM2_a_b video devices cannot copy sub resources from non staging textures to staging textures.");
+            }
+
 			if (Settings.Usage == BufferUsage.Immutable)
 				throw new InvalidOperationException("Cannot copy to an immutable resource.");
 
@@ -466,19 +423,23 @@ namespace GorgonLibrary.Graphics
 				throw new ArgumentException("Cannot copy to and from the same sub resource on the same texture.");
 #endif
 
-			// If we have multisampling enabled, then copy the entire sub resource.
-			if ((Settings.Multisampling.Count > 1) || (Settings.Multisampling.Quality > 0) || (sourceRegion == null))
-				CopySubResourceProxy(texture, this, subResource, destSubResource, null, 0, 0, 0);
-			else
-				CopySubResourceProxy(texture, this, subResource, destSubResource, new D3D.ResourceRegion()
-				{
-					Back = 1,
-					Front = 0,
-					Top = sourceRegion.Value.Top,
-					Left = sourceRegion.Value.Left,
-					Right = sourceRegion.Value.Right,
-					Bottom = sourceRegion.Value.Bottom
-				}, (int)destination.X, (int)destination.Y, 0);
+			// If we have multisampling enabled, then copy the entire sub resource.            
+            if ((Settings.Multisampling.Count > 1) || (Settings.Multisampling.Quality > 0) || (sourceRegion == null))
+            {
+                Graphics.Context.CopySubresourceRegion(texture.D3DResource, subResource, null, this.D3DResource, destSubResource, 0, 0, 0);
+            }
+            else
+            {
+                Graphics.Context.CopySubresourceRegion(texture.D3DResource, subResource, new D3D.ResourceRegion()
+                    {
+                        Back = 1,
+                        Front = 0,
+                        Top = sourceRegion.Value.Top,
+                        Left = sourceRegion.Value.Left,
+                        Right = sourceRegion.Value.Right,
+                        Bottom = sourceRegion.Value.Bottom
+                    }, this.D3DResource, destSubResource, (int)destination.X, (int)destination.Y, 0);
+            }
 		}
 
 		/// <summary>
@@ -647,7 +608,7 @@ namespace GorgonLibrary.Graphics
 		/// Initializes a new instance of the <see cref="GorgonTexture2D"/> class.
 		/// </summary>
 		/// <param name="swapChain">The swap chain to get texture information from.</param>
-		protected GorgonTexture2D(GorgonSwapChain swapChain)
+		internal GorgonTexture2D(GorgonSwapChain swapChain)
 			: base(swapChain.Graphics, swapChain.Name + "_Internal_Texture_" + Guid.NewGuid().ToString(), null)
 		{
 			D3DResource = D3D.Texture2D.FromSwapChain<D3D.Texture2D>(swapChain.GISwapChain, 0);
@@ -668,7 +629,7 @@ namespace GorgonLibrary.Graphics
 		/// <param name="settings">Settings to pass to the texture.</param>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (Nothing in VB.Net).</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="name"/> parameter is an empty string.</exception>
-		protected GorgonTexture2D(GorgonGraphics graphics, string name, ITextureSettings settings)
+		internal GorgonTexture2D(GorgonGraphics graphics, string name, ITextureSettings settings)
 			: base(graphics, name, settings)
 		{
 		}
