@@ -6,7 +6,7 @@ This list is not in order.  Please don't get excited.
 	+ Add GetSubResourceIndex1/2/3D to the Textures interface (Done, added to texture objects as static member).
 * Add buffers
 	+ Update vertex buffer (and index buffer?  Need to research) code to allow for stream output from Geometry shaders.
-	+ Add raw buffers 
+	+ Add raw buffers
 	+ Add structured buffer (Done)
 		- Add append and counter buffers (Done)
 	+ Add type buffer
@@ -19,7 +19,7 @@ This list is not in order.  Please don't get excited.
 	+ A lightweight effects framework to simplify shaders. (Done)
 	+ Some basic shaders for blurring, color inversion, sharpening, etc... (Done)
 		- Expose these as 'Effect' objects for easier use. (Done)
-	+ Add functionality to allow creation of custom shader resource/unordered views for objects.
+	+ Add functionality to allow creation of custom shader resource/unordered views for objects. (Done)
 * Add multi-threaded support for D3D 11 device contexts.
 * Maybe update Gorgon2D to create a swap chain in its Create2DRenderer method in addition to passing one in. (Done)
 * Update 2D shader code (Not necessary, 2D specific shader types are now gone and integrated via #GorgonInclude in the shader).
@@ -41,7 +41,6 @@ This list is not in order.  Please don't get excited.
 * Add a batch renderable using a static vertex buffer (possible with dynamic, may be worth looking into)
 * Add perspective camera
 * Add perspective sprites
-* Add user definable shaders for 2D library. (Done)
 * Write editor for creating/editing sprites, fonts, shaders (maybe), textures (maybe, probably not)
 	+ This time make it one large program that uses a project so everything can be integrated.
 	+ Maybe allow for pack file support like zip, previous gorgon bzip stuff.
@@ -50,6 +49,8 @@ This list is not in order.  Please don't get excited.
 * Way in the future... maybe write a 3D component for Gorgon.  A lot of work though, very lazy.
 * Fix up animation to use chunked format (Done).
 * Fix up chunking code to be more efficient, currently it's ass (Done).
+* Test FromStream methods for textures.  Currently WICStream seems to not like streams with a position greater than 0.
+* Add FromMemory to Gorgon Fonts
 
 ----
 Examples

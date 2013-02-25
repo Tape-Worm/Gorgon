@@ -60,7 +60,7 @@ namespace GorgonLibrary.IO
         /// Initializes a new instance of the <see cref="GorgonCodecWMP"/> class.
         /// </summary>
         public GorgonCodecWMP()
-            : base("WMP", "Windows Media Photo", new string[] { "wmp" }, WIC.ContainerFormatGuids.Wmp)
+            : base("WMP", "Windows Media Photo", new string[] { "wmp", "hdp" }, WIC.ContainerFormatGuids.Wmp)
         {
         }
         #endregion

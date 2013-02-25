@@ -287,67 +287,67 @@ namespace GorgonLibrary.IO
 			}
 
             position = stream.Position;
-
+            
 			try
-			{
-				// Get our WIC interface.
-				using (var wic = new GorgonWICImage())
-				{
-					using (var decoder = new WIC.BitmapDecoder(wic.Factory, SupportedFormat))
-					{
-						using (WIC.WICStream wicStream = new WIC.WICStream(wic.Factory, stream))
-						{
-							try
-							{
-								decoder.Initialize(wicStream, WIC.DecodeOptions.CacheOnDemand);
-							}
-							catch (DX.SharpDXException sdex)
-							{
-								// Repackage the exception to keep in line with our API defintion.
-								throw new System.IO.IOException("Cannot decode the " + Codec + " file. " + sdex.Descriptor.Description, sdex);
-							}
+			{				
+                // Get our WIC interface.
+                using (var wic = new GorgonWICImage())
+                {
+                    using (var decoder = new WIC.BitmapDecoder(wic.Factory, SupportedFormat))
+                    {
+                        using (WIC.WICStream wicStream = new WIC.WICStream(wic.Factory, stream))
+                        {
+                            try
+                            {
+                                decoder.Initialize(wicStream, WIC.DecodeOptions.CacheOnDemand);
+                            }
+                            catch (DX.SharpDXException sdex)
+                            {
+                                // Repackage the exception to keep in line with our API defintion.
+                                throw new System.IO.IOException("Cannot decode the " + Codec + " file. " + sdex.Descriptor.Description, sdex);
+                            }
 
-							if (decoder.FrameCount < 2)
-							{
-								return result;
-							}
+                            if (decoder.FrameCount < 2)
+                            {
+                                return result;
+                            }
 
-							result = new int[decoder.FrameCount];
+                            result = new int[decoder.FrameCount];
 
-							for (int frame = 0; frame < result.Length; frame++)
-							{
-								using (var frameImage = decoder.GetFrame(frame))
-								{
-									// Check to see if we can actually read this thing.
-									if (frame == 0)
-									{
-										Guid temp = Guid.Empty;
-										settings = ReadMetaData(wic, decoder, frameImage, ref temp);
+                            for (int frame = 0; frame < result.Length; frame++)
+                            {
+                                using (var frameImage = decoder.GetFrame(frame))
+                                {
+                                    // Check to see if we can actually read this thing.
+                                    if (frame == 0)
+                                    {
+                                        Guid temp = Guid.Empty;
+                                        settings = ReadMetaData(wic, decoder, frameImage, ref temp);
 
-										if (settings.Format == BufferFormat.Unknown)
-										{
-											throw new System.IO.IOException("Cannot decode the GIF file.  The data could not be decoded as a GIF file.");
-										}
-									}
+                                        if (settings.Format == BufferFormat.Unknown)
+                                        {
+                                            throw new System.IO.IOException("Cannot decode the GIF file.  The data could not be decoded as a GIF file.");
+                                        }
+                                    }
 
-									using (var reader = frameImage.MetadataQueryReader)
-									{
-										var metaData = reader.GetMetadataByName("/grctlext/Delay");
+                                    using (var reader = frameImage.MetadataQueryReader)
+                                    {
+                                        var metaData = reader.GetMetadataByName("/grctlext/Delay");
 
-										if (metaData != null)
-										{
-											result[frame] = (ushort)metaData;
-										}
-										else
-										{
-											result[frame] = 0;
-										}
-									}
-								}
-							}
-						}
-					}
-				}
+                                        if (metaData != null)
+                                        {
+                                            result[frame] = (ushort)metaData;
+                                        }
+                                        else
+                                        {
+                                            result[frame] = 0;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
 			}
             finally
             {
