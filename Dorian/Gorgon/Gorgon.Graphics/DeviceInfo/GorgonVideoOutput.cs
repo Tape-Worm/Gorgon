@@ -26,6 +26,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Drawing;
@@ -39,20 +40,16 @@ namespace GorgonLibrary.Graphics
 	/// </summary>
 	/// <remarks>A video output is a head on the video device.</remarks>
 	public class GorgonVideoOutput
-		: IDisposable
+		: INamedObject
 	{
-		#region Variables.
-		private bool _disposed = false;		// Flag to indicate that the object was disposed.
-		#endregion
-
 		#region Properties.
 		/// <summary>
-		/// Property to return the GI output.
+		/// Property to set or return the index of this output.
 		/// </summary>
-		internal GI.Output GIOutput
+		internal int Index
 		{
 			get;
-			private set;
+			set;
 		}
 
 		/// <summary>
@@ -60,10 +57,8 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		public string Name
 		{
-			get
-			{
-				return GIOutput.Description.DeviceName;
-			}
+			get;
+			private set;
 		}
 
 		/// <summary>
@@ -71,10 +66,8 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		public Rectangle OutputBounds
 		{
-			get
-			{
-				return new Rectangle(GIOutput.Description.DesktopBounds.Left, GIOutput.Description.DesktopBounds.Top, GIOutput.Description.DesktopBounds.Width, GIOutput.Description.DesktopBounds.Height);
-			}
+			get;
+			private set;
 		}
 
 		/// <summary>
@@ -82,10 +75,8 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		public bool IsAttachedToDesktop
 		{
-			get
-			{
-				return GIOutput.Description.IsAttachedToDesktop;
-			}
+			get;
+			private set;
 		}
 
 		/// <summary>
@@ -93,29 +84,17 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		public int Rotation
 		{
-			get
-			{
-				switch (GIOutput.Description.Rotation)
-				{
-					case GI.DisplayModeRotation.Rotate90:
-						return 90;
-					case GI.DisplayModeRotation.Rotate270:
-						return 270;
-					case GI.DisplayModeRotation.Rotate180:
-						return 180;
-					default:
-						return 0;
-				}				
-			}
+			get;
+			private set;
 		}
 
 		/// <summary>
 		/// Property to return the video modes for this output.
 		/// </summary>
-		public GorgonVideoModeList VideoModes
+		public ReadOnlyCollection<GorgonVideoMode> VideoModes
 		{
 			get;
-			private set;
+			internal set;
 		}
 
 		/// <summary>
@@ -132,10 +111,8 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		public IntPtr Handle
 		{
-			get
-			{
-				return GIOutput.Description.MonitorHandle;
-			}
+			get;
+			private set;
 		}
 
 		/// <summary>
@@ -152,67 +129,71 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Function to find the nearest video mode to the one specified.
 		/// </summary>
+		/// <param name="output">Output for the video mode.</param>
+		/// <param name="mode">Mode to find.</param>
+		/// <returns>The closest matching video mode to the <paramref name="mode"/> parameter.</returns>
+		internal GorgonVideoMode FindMode(GI.Output output, GorgonVideoMode mode)
+		{
+			GI.ModeDescription findMode = GorgonVideoMode.Convert(mode);
+			GI.ModeDescription result = default(GI.ModeDescription);
+			
+			output.GetClosestMatchingMode(VideoDevice.Graphics.D3DDevice, findMode, out result);
+
+			return GorgonVideoMode.Convert(result);
+		}
+		
+#pragma warning disable 0618
+		/// <summary>
+		/// Function to find the nearest video mode to the one specified.
+		/// </summary>
 		/// <param name="mode">Mode to find.</param>
 		/// <returns>The closest matching video mode to the <paramref name="mode"/> parameter.</returns>
 		public GorgonVideoMode FindMode(GorgonVideoMode mode)
 		{			
-			GI.ModeDescription findMode = GorgonVideoMode.Convert(mode);
-			GI.ModeDescription result = default(GI.ModeDescription);
+			if ((VideoDevice.Graphics != null) && (VideoDevice.Graphics.D3DDevice != null))
+			{
+				using (var output = VideoDevice.Graphics.Adapter.GetOutput(Index))
+				{
+					return FindMode(output, mode);
+				}
+			}
 
-			if (VideoDevice.Graphics != null)
-				GIOutput.GetClosestMatchingMode(VideoDevice.Graphics.D3DDevice, findMode, out result);
-
-			return GorgonVideoMode.Convert(result);
+			return mode;
 		}
+#pragma warning restore 0618
 		#endregion
 
 		#region Constructor/Destructor.
 		/// <summary>
 		/// Initializes a new instance of the <see cref="GorgonVideoOutput"/> class.
 		/// </summary>
-		/// <param name="videoDevice">Video device that owns this output.</param>
 		/// <param name="output">Output to evaluate.</param>
-		internal GorgonVideoOutput(GorgonVideoDevice videoDevice, GI.Output output)
+		/// <param name="device">Video device that owns the output.</param>
+		/// <param name="index">The index of the output.</param>
+		internal GorgonVideoOutput(GI.Output output, GorgonVideoDevice device, int index)
 		{
-			if (videoDevice == null)
-				throw new ArgumentNullException("videoDevice");
-
-			if (output == null)
-				throw new ArgumentNullException("output");
-
-			VideoModes = new GorgonVideoModeList(this);
-			VideoDevice = videoDevice;
-			GIOutput = output;
-		}
-		#endregion
-
-		#region IDisposable Members
-		/// <summary>
-		/// Releases unmanaged and - optionally - managed resources
-		/// </summary>
-		/// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
-		private void Dispose(bool disposing)
-		{
-			if (!_disposed)
+			VideoDevice = device;
+			
+			this.Index = index;
+			this.Handle = output.Description.MonitorHandle;
+			this.IsAttachedToDesktop = output.Description.IsAttachedToDesktop;
+			this.Name = output.Description.DeviceName;
+			this.OutputBounds = new Rectangle(output.Description.DesktopBounds.Left, output.Description.DesktopBounds.Top, output.Description.DesktopBounds.Width, output.Description.DesktopBounds.Height);
+			switch (output.Description.Rotation)
 			{
-				if (GIOutput != null)
-				{
-					Gorgon.Log.Print("Removing DXGI output...", Diagnostics.LoggingLevel.Verbose);
-					GIOutput.Dispose();
-				}
-
-				GIOutput = null;
-				_disposed = true;
-			}
-		}
-
-		/// <summary>
-		/// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-		/// </summary>
-		void IDisposable.Dispose()
-		{
-			Dispose(true);
-			GC.SuppressFinalize(this);
+				case GI.DisplayModeRotation.Rotate90:
+					this.Rotation = 90;
+					break;
+				case GI.DisplayModeRotation.Rotate270:
+					this.Rotation = 270;
+					break;
+				case GI.DisplayModeRotation.Rotate180:
+					this.Rotation = 180;
+					break;
+				default:
+					this.Rotation = 0;
+					break;
+			}				
 		}
 		#endregion
 	}

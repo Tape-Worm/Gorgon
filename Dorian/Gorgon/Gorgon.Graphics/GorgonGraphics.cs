@@ -32,6 +32,7 @@ using System.Windows.Forms;
 using System.Drawing;
 using System.Runtime.InteropServices;
 using SharpDX;
+using D3DCommon = SharpDX.Direct3D;
 using GI = SharpDX.DXGI;
 using D3D = SharpDX.Direct3D11;
 using GorgonLibrary.Collections;
@@ -107,9 +108,18 @@ namespace GorgonLibrary.Graphics
 
 		#region Properties.
 		/// <summary>
-		/// Property to set or return the DX GI factory.
+		/// Property to return the DX GI factory.
 		/// </summary>
 		internal GI.Factory1 GIFactory
+		{
+			get;
+			private set;
+		}
+
+		/// <summary>
+		/// Property to return the DXGI adapter to use.
+		/// </summary>
+		internal GI.Adapter1 Adapter
 		{
 			get;
 			private set;
@@ -252,10 +262,6 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Property to set or return the video device to use for this graphics interface.
 		/// </summary>
-		/// <remarks>When this value is set to NULL (Nothing in VB.Net), then the first video device in the <see cref="P:GorgonLibrary.Graphics.GorgonGraphics.VideoDevices">VideoDevices</see> collection will be returned.
-		/// <para>When the device is changed, all resources associated with the device (swap chains, buffers, etc...) will be destroyed.  The user will be responsible for re-creating these resources, and should do so in the 
-		/// <see cref="E:GorgonLibrary.Graphics.GorgonGraphics.AfterDeviceChange">AfterDeviceChange</see> event.</para>
-		/// </remarks>
 		public GorgonVideoDevice VideoDevice
 		{
 			get;
@@ -376,8 +382,6 @@ namespace GorgonLibrary.Graphics
 		/// </remarks>
 		public GorgonGraphics(GorgonVideoDevice device, DeviceFeatureLevel featureLevel)
 		{
-			GorgonVideoDeviceCollection enumerator = null;
-
 			if (featureLevel == DeviceFeatureLevel.Unsupported)
 				throw new ArgumentException("Must supply a known feature level.", "featureLevel");
 
@@ -390,27 +394,42 @@ namespace GorgonLibrary.Graphics
 			Gorgon.Log.Print("Gorgon Graphics initializing...", Diagnostics.LoggingLevel.Simple);
 			
 #if DEBUG
-			SharpDX.Configuration.EnableObjectTracking = true;
+			if (!SharpDX.Configuration.EnableObjectTracking)
+			{
+				SharpDX.Configuration.EnableObjectTracking = true;
+			}
 #else
 			SharpDX.Configuration.EnableObjectTracking = false;
 #endif
 
 			if (device == null)
 			{
-				enumerator = new GorgonVideoDeviceCollection(false, false);
-				device = enumerator[0];
+				if (GorgonVideoDeviceEnumerator.VideoDevices.Count == 0)
+				{
+					GorgonVideoDeviceEnumerator.Enumerate(false, false);
+				}				
+
+				// Use the first device in the list.
+				device = GorgonVideoDeviceEnumerator.VideoDevices[0];
 			}
 
 			if (device != null)
 			{
-				GIFactory = device.GIFactory;
-				VideoDevice = device;
-				D3DDevice = device.CreateD3DDevice(featureLevel);
-				device.Graphics = this;
-			}
+				D3D.DeviceCreationFlags flags = D3D.DeviceCreationFlags.None;
 
-			if (enumerator != null)
-				enumerator.Dispose();
+#if DEBUG
+				flags = D3D.DeviceCreationFlags.Debug;
+#endif
+				VideoDevice = device;				
+
+				// Create the DXGI factory for the video device.
+				GIFactory = new GI.Factory1();
+				Adapter = GIFactory.GetAdapter1(VideoDevice.Index);
+				D3DDevice = new D3D.Device(Adapter, flags, VideoDevice.GetFeatureLevel(featureLevel));
+				D3DDevice.DebugName = VideoDevice.Name + " D3D11Device";
+				D3DDevice.ImmediateContext.ClearState();
+				VideoDevice.Graphics = this;
+			}
 
 			Gorgon.AddTrackedObject(this);
 
@@ -508,10 +527,27 @@ namespace GorgonLibrary.Graphics
 					}
 
 					// Destroy the video device interface.
+					if (D3DDevice != null)
+					{
+						D3DDevice.Dispose();
+						D3DDevice = null;
+					}
+
+					if (Adapter != null)
+					{
+						Adapter.Dispose();
+						Adapter = null;
+					}
+
+					if (GIFactory != null)
+					{
+						GIFactory.Dispose();
+						GIFactory = null;
+					}
+
 					if (VideoDevice != null)
 					{
 						VideoDevice.Graphics = null;
-						((IDisposable)VideoDevice).Dispose();
 					}
 
 					Gorgon.Log.Print("Removing DXGI factory interface...", LoggingLevel.Verbose);

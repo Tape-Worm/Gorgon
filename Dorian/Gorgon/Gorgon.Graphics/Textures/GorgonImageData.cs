@@ -2220,7 +2220,6 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		/// <param name="width">New width of the image data.</param>
 		/// <param name="height">New height of the image data.</param>
-		/// <param name="filter">Filtering to apply to the image if it was upscaled or downscaled.</param>
 		/// <param name="clip">TRUE to clip the image data, or FALSE to scale the image data to the new size.</param>
 		/// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="width"/> or the <paramref name="height"/> parameter is less than 1.</exception>
 		/// <exception cref="GorgonException">Thrown when the format of the image could not be stretched.</exception>

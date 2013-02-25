@@ -166,35 +166,28 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
-		/// Property to return the video output that the swap chain is operating on.
+		/// Function to return the video output that the swap chain is operating on.
 		/// </summary>
 		public GorgonVideoOutput VideoOutput
 		{
 			get
 			{
 				if (GISwapChain == null)
-					return null;
-
-				if (Graphics.VideoDevice.Outputs.Count == 1)
-					return Graphics.VideoDevice.Outputs[0];
-
-				GI.Output d3doutput = GISwapChain.ContainingOutput;				
-
-				try
 				{
-					for (int i = 0; i < Graphics.VideoDevice.Outputs.Count; i++)
+					return null;
+				}
+
+				IntPtr handle = Win32API.GetMonitor(Settings.Window);
+
+				for (int i = 0; i < Graphics.VideoDevice.Outputs.Count; i++)
+				{
+					if (Graphics.VideoDevice.Outputs[i].Handle == handle)
 					{
-						if (Graphics.VideoDevice.Outputs[i].Handle == d3doutput.Description.MonitorHandle)
-							return Graphics.VideoDevice.Outputs[i];
+						return Graphics.VideoDevice.Outputs[i];
 					}
+				}
 
-					return null;
-				}
-				finally
-				{
-					if (d3doutput != null)
-						d3doutput.Dispose();
-				}
+				return null;
 			}
 		}
 
@@ -253,7 +246,8 @@ namespace GorgonLibrary.Graphics
 			if (!GISwapChain.IsFullScreen) 
 			{
 				((Form)Settings.Window).WindowState = FormWindowState.Normal;
-				GISwapChain.SetFullscreenState(true, VideoOutput.GIOutput);
+				// Get the current video output.				
+				GISwapChain.SetFullscreenState(true, null);
 				Settings.IsWindowed = false;
 			}
 		}
@@ -389,7 +383,11 @@ namespace GorgonLibrary.Graphics
 
 					if (!e.Cancel)
 					{
-						GISwapChain.SetFullscreenState(true, VideoOutput.GIOutput);
+						// We don't need to force an output.  We'll just let DXGI figure it out from the 
+						// window area on the monitor.  Currently SharpDX's ContainingOutput property is
+						// buggy in 2.4.2 and will return multiple ref counts for each time the property is 
+						// read.  v2.5.0 is in dev, but now has the problem of not returning the correct output.						
+						GISwapChain.SetFullscreenState(true, null);
 						_parentForm.Activated += new EventHandler(_parentForm_Activated);
 						_parentForm.Deactivate += new EventHandler(_parentForm_Deactivate);
 					}
@@ -491,7 +489,9 @@ namespace GorgonLibrary.Graphics
 					  select videoOutput).SingleOrDefault();
 
 			if (output == null)
+			{
 				throw new GorgonException(GorgonResult.CannotCreate, "Could not find the video output for the specified window.");
+			}
 
 			// Get the Direct 3D device instance.
 			d3dDevice = graphics.D3DDevice;
@@ -527,7 +527,9 @@ namespace GorgonLibrary.Graphics
 
 				// We couldn't find the mode in the list, find the nearest match.
 				if (modeCount == 0)
+				{
 					stagedMode = output.FindMode(stagedMode);
+				}
 			}
 			else
 			{
@@ -598,10 +600,15 @@ namespace GorgonLibrary.Graphics
 			Graphics.GIFactory.MakeWindowAssociation(Settings.Window.Handle, GI.WindowAssociationFlags.IgnoreAll);
 
 			if (!Settings.IsWindowed)
+			{
 				flags |= GI.SwapChainFlags.Nonprerotated;
+			}
 
 			if (!Settings.IsWindowed)
+			{
 				ModeStateUpdate();
+			}
+
 			CreateResources();
 
 			Settings.Window.Resize += new EventHandler(Window_Resize);
