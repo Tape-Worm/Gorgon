@@ -68,7 +68,7 @@ namespace Tester_Graphics
 			_targetSprite.Anchor = new Vector2(_targetSprite.Size.X / 2.0f, _targetSprite.Size.Y / 2.0f);
 			
 			_targetSprite.Position = new Vector2(_swap.Settings.Width / 2.0f, _swap.Settings.Height / 2.0f);
-            _targetSprite.Opacity += 0.25f * GorgonTiming.Delta;
+            _targetSprite.Opacity += (GorgonTiming.Delta * 0.5f);
             _targetSprite.Opacity = 1.0f.Min(_targetSprite.Opacity);
             _targetSprite.Draw();
 
@@ -122,7 +122,7 @@ namespace Tester_Graphics
 
 			try
 			{
-				_graphics = new GorgonGraphics(DeviceFeatureLevel.SM2_a_b);
+				_graphics = new GorgonGraphics(DeviceFeatureLevel.SM5);
 				_swap = _graphics.Output.CreateSwapChain("Screen", new GorgonSwapChainSettings()
 				{
 					IsWindowed = true,
@@ -132,7 +132,7 @@ namespace Tester_Graphics
 				});
 
 				//GorgonImageCodecs.DDS.LegacyConversionFlags = DDSFlags.NoR10B10G10A2Fix;
-                string fileName = @"c:\mike\unpak\OSUsers_512x512.gif";
+                string fileName = @"d:\images\lightning.gif";
 				//GorgonImageCodecs.TIFF.UseAllFrames = true;
 				var codec = new GorgonCodecGIF();
 				codec.Clip = true;	// Clip this image because animated gifs can have varying frame sizes and resizing the frames can cause issues.				
@@ -145,7 +145,7 @@ namespace Tester_Graphics
 					_texture = _graphics.Textures.CreateTexture<GorgonTexture2D>("Test", imageData);
 				}
 
-                _texture.Save(@"c:\mike\unpak\saveTest.png", new GorgonCodecPNG());
+                _texture.Save(@"d:\unpak\saveTest.png", new GorgonCodecPNG());
 
 				_2D = _graphics.Output.Create2DRenderer(_swap);
 				

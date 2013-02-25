@@ -125,7 +125,7 @@ namespace GorgonLibrary.Graphics
 			region.Top = 0;
 			region.Bottom = Settings.Height;
 
-			Graphics.Context.UpdateSubresource(box, D3DResource, subResource, region);			
+			Graphics.Context.UpdateSubresourceSafe(box, D3DResource, FormatInformation.SizeInBytes, subResource, region, FormatInformation.IsCompressed);			
 		}
 
 		/// <summary>

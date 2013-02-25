@@ -74,12 +74,8 @@ namespace Tester_Graphics
 
 				this.ClientSize = new Size(800, 600);
 
-				using (GorgonVideoDeviceCollection devices = new GorgonVideoDeviceCollection(true, false))
-				{
-					//_graphics = new GorgonGraphics(devices[0], DeviceFeatureLevel.SM5);
-					_graphics = new GorgonGraphics(devices[0], DeviceFeatureLevel.SM4);
-					//_graphics = new GorgonGraphics(devices[0], DeviceFeatureLevel.SM2_a_b);
-				}
+				GorgonVideoDeviceEnumerator.Enumerate(true, false);
+				_graphics = new GorgonGraphics(GorgonVideoDeviceEnumerator.VideoDevices[0], DeviceFeatureLevel.SM2_a_b);
 
 				_target = _graphics.Output.CreateRenderTarget("My target", new GorgonRenderTargetSettings()
 				{

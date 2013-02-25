@@ -1,7 +1,7 @@
 ﻿#region MIT.
 // 
 // Gorgon.
-// Copyright (C) 2011 Michael Winsor
+// Copyright (C) 2013 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -20,7 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: Thursday, July 21, 2011 3:17:20 PM
+// Created: Saturday, February 23, 2013 4:33:38 PM
 // 
 #endregion
 
@@ -28,7 +28,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using GorgonLibrary.Collections;
+using GorgonLibrary.Collections.Specialized;
 using GorgonLibrary.Diagnostics;
 using GI = SharpDX.DXGI;
 using D3DCommon = SharpDX.Direct3D;
@@ -95,39 +95,25 @@ namespace GorgonLibrary.Graphics
 	/// Contains information about a video device.
 	/// </summary>
 	public class GorgonVideoDevice
-		: INamedObject, IDisposable
+		: INamedObject
 	{
-		#region Variables.
-		private bool _disposed = false;														// Flag to indicate that the object was disposed.
-		private D3D.Device _tempDevice = null;												// Temporary device.
-		#endregion
-
 		#region Properties.
 		/// <summary>
-		/// Property to set or return the DX GI factory interface.
-		/// </summary>
-		internal GI.Factory1 GIFactory
-		{
-			get;
-			set;
-		}
-
-		/// <summary>
-		/// Property to return the DX GI adapter interface for this video device.
-		/// </summary>
-		internal GI.Adapter1 GIAdapter
-		{
-			get;
-			set;
-		}
-
-		/// <summary>
-		/// Property to set or return the graphics interface bound with this device.
+		/// Property to set or return the graphics interface that is using this video device.
 		/// </summary>
 		internal GorgonGraphics Graphics
 		{
 			get;
 			set;
+		}
+
+		/// <summary>
+		/// Property to return the index of the video device.
+		/// </summary>
+		internal int Index
+		{
+			get;
+			private set;
 		}
 
 		/// <summary>
@@ -160,7 +146,7 @@ namespace GorgonLibrary.Graphics
 		public DeviceFeatureLevel SupportedFeatureLevel
 		{
 			get;
-			private set;
+			internal set;
 		}
 
 		/// <summary>
@@ -168,10 +154,8 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		public int DeviceID
 		{
-			get
-			{
-				return GIAdapter.Description1.DeviceId;
-			}
+			get;
+			private set;
 		}
 
 		/// <summary>
@@ -179,10 +163,8 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		public long UUID
 		{
-			get
-			{
-				return GIAdapter.Description1.Luid;
-			}
+			get;
+			private set;
 		}
 
 		/// <summary>
@@ -190,10 +172,8 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		public int Revision
 		{
-			get
-			{
-				return GIAdapter.Description1.Revision;
-			}
+			get;
+			private set;
 		}
 
 		/// <summary>
@@ -201,10 +181,8 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		public int SubSystemID
 		{
-			get
-			{
-				return GIAdapter.Description1.SubsystemId;
-			}
+			get;
+			private set;
 		}
 
 		/// <summary>
@@ -212,10 +190,8 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		public int VendorID
 		{
-			get
-			{
-				return GIAdapter.Description1.VendorId;
-			}
+			get;
+			private set;
 		}
 
 		/// <summary>
@@ -223,10 +199,8 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		public long DedicatedSystemMemory
 		{
-			get
-			{
-				return GIAdapter.Description1.DedicatedSystemMemory;
-			}
+			get;
+			private set;
 		}
 
 		/// <summary>
@@ -234,10 +208,8 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		public long DedicatedVideoMemory
 		{
-			get
-			{
-				return GIAdapter.Description1.DedicatedVideoMemory;
-			}
+			get;
+			private set;
 		}
 
 		/// <summary>
@@ -245,21 +217,19 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		public long SharedSystemMemory
 		{
-			get
-			{
-				return GIAdapter.Description1.SharedSystemMemory;
-			}
+			get;
+			private set;
 		}
 
 		/// <summary>
 		/// Property to return the outputs on this device.
 		/// </summary>
 		/// <remarks>The outputs are typically monitors attached to the device.</remarks>
-		public GorgonVideoOutputCollection Outputs
+		public GorgonNamedObjectReadOnlyCollection<GorgonVideoOutput> Outputs
 		{
 			get;
-			protected set;
-		}		
+			internal set;
+		}
 		#endregion
 
 		#region Methods.
@@ -295,7 +265,7 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		/// <param name="featureLevel">Feature level to convert.</param>
 		/// <returns>The D3D feature level.</returns>
-		private D3DCommon.FeatureLevel[] Convert(DeviceFeatureLevel featureLevel)
+		internal D3DCommon.FeatureLevel[] GetFeatureLevel(DeviceFeatureLevel featureLevel)
 		{
 			if (HardwareFeatureLevel < featureLevel)
 				featureLevel = HardwareFeatureLevel;
@@ -336,65 +306,7 @@ namespace GorgonLibrary.Graphics
 					};
 				default:
 					throw new GorgonException(GorgonResult.CannotCreate, "Cannot create device.  Device is not supported.");
-			}			
-		}
-
-		/// <summary>
-		/// Function to retrieve the Direct3D device object.
-		/// </summary>
-		private void GetDevice()
-		{
-			// If we've assigned a device externally, then return it.
-			if ((Graphics != null) && (Graphics.D3DDevice != null))
-			{
-				_tempDevice = Graphics.D3DDevice;
-				return;
 			}
-
-			_tempDevice = CreateD3DDeviceNoLogging(HardwareFeatureLevel);
-		}
-
-		/// <summary>
-		/// Function to release the temporary device object.
-		/// </summary>
-		private void ReleaseTempDevice()
-		{
-			if ((_tempDevice != null) && (Graphics != null) && (_tempDevice != Graphics.D3DDevice))
-				_tempDevice.Dispose();
-			_tempDevice = null;
-		}
-
-		/// <summary>
-		/// Function to create the Direct3D device object.
-		/// </summary>
-		/// <param name="maxFeatureLevel">Maximum feature level to support.</param>
-		/// <returns>The Direct3D 11 device object.</returns>
-		internal D3D.Device CreateD3DDeviceNoLogging(DeviceFeatureLevel maxFeatureLevel)
-		{
-			D3D.Device device = null;
-
-			D3D.DeviceCreationFlags flags = D3D.DeviceCreationFlags.None;
-
-#if DEBUG
-			flags = D3D.DeviceCreationFlags.Debug;
-#endif
-
-			device = new D3D.Device(GIAdapter, flags, Convert(maxFeatureLevel));
-			device.DebugName = Name + " D3D11Device";
-			device.ImmediateContext.ClearState();
-
-			return device;
-		}
-
-		/// <summary>
-		/// Function to retrieve the D3D 11 device object associated with this video device.
-		/// </summary>
-		/// <param name="maxFeatureLevel">Maximum feature level to support.</param>
-		/// <returns>The Direct3D 11 device object.</returns>
-		internal D3D.Device CreateD3DDevice(DeviceFeatureLevel maxFeatureLevel)
-		{
-			Gorgon.Log.Print("Creating D3D 11 device for video device '{0}'...", LoggingLevel.Verbose, Name);
-			return CreateD3DDeviceNoLogging(maxFeatureLevel);
 		}
 
 		/// <summary>
@@ -409,20 +321,48 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
+		/// Function to create a temporary interface to get device support features.
+		/// </summary>
+		/// <returns>The temporary D3D device.</returns>
+		private Tuple<GI.Factory1, GI.Adapter1, D3D.Device> CreateTemporaryInterfaces()
+		{
+			var factory = new GI.Factory1();
+			var adapter = factory.GetAdapter1(Index);
+			var device = new D3D.Device(adapter, D3D.DeviceCreationFlags.Debug, GetFeatureLevel(HardwareFeatureLevel));
+
+			return new Tuple<GI.Factory1,GI.Adapter1,D3D.Device>(factory, adapter, device);
+		}
+
+		/// <summary>
 		/// Function to determine if the specified format is supported for display.
 		/// </summary>
 		/// <param name="format">Format to check.</param>
 		/// <returns>TRUE if the format is supported for displaying on the video device, FALSE if not.</returns>
 		public bool SupportsDisplayFormat(BufferFormat format)
 		{
+			D3D.Device device = (Graphics != null) ? Graphics.D3DDevice : null;
+			Tuple<GI.Factory1, GI.Adapter1, D3D.Device> tempInterfaces = null;
+
 			try
 			{
-				GetDevice();
-				return ((_tempDevice.CheckFormatSupport((GI.Format)format) & D3D.FormatSupport.Display) == D3D.FormatSupport.Display);
+				if (device == null)
+				{
+					tempInterfaces = CreateTemporaryInterfaces();
+					device = tempInterfaces.Item3;
+				}
+				
+				return ((device.CheckFormatSupport((GI.Format)format) & D3D.FormatSupport.Display) == D3D.FormatSupport.Display);
 			}
 			finally
 			{
-				ReleaseTempDevice();
+				if (tempInterfaces != null)
+				{
+					tempInterfaces.Item3.Dispose();
+					tempInterfaces.Item2.Dispose();
+					tempInterfaces.Item1.Dispose();
+
+					tempInterfaces = null;
+				}
 			}
 		}
 
@@ -433,14 +373,29 @@ namespace GorgonLibrary.Graphics
 		/// <returns>TRUE if the format is supported for the texture, FALSE if not.</returns>
 		public bool Supports3DTextureFormat(BufferFormat format)
 		{
+			D3D.Device device = (Graphics != null) ? Graphics.D3DDevice : null;
+			Tuple<GI.Factory1, GI.Adapter1, D3D.Device> tempInterfaces = null;
+
 			try
 			{
-				GetDevice();
-				return ((_tempDevice.CheckFormatSupport((GI.Format)format) & D3D.FormatSupport.Texture3D) == D3D.FormatSupport.Texture3D);
+				if (device == null)
+				{
+					tempInterfaces = CreateTemporaryInterfaces();
+					device = tempInterfaces.Item3;
+				}
+
+				return ((device.CheckFormatSupport((GI.Format)format) & D3D.FormatSupport.Texture3D) == D3D.FormatSupport.Texture3D);
 			}
 			finally
 			{
-				ReleaseTempDevice();
+				if (tempInterfaces != null)
+				{
+					tempInterfaces.Item3.Dispose();
+					tempInterfaces.Item2.Dispose();
+					tempInterfaces.Item1.Dispose();
+
+					tempInterfaces = null;
+				}
 			}
 		}
 
@@ -452,16 +407,31 @@ namespace GorgonLibrary.Graphics
 		/// <returns>TRUE if the format is supported for the render target, FALSE if not.</returns>
 		public bool SupportsRenderTargetFormat(BufferFormat format, bool isMultiSampled)
 		{
+			D3D.Device device = (Graphics != null) ? Graphics.D3DDevice : null;
+			Tuple<GI.Factory1, GI.Adapter1, D3D.Device> tempInterfaces = null;
+
 			try
 			{
-				GetDevice();
-				return (((_tempDevice.CheckFormatSupport((GI.Format)format) & D3D.FormatSupport.RenderTarget) == D3D.FormatSupport.RenderTarget) && 
-					((isMultiSampled) && ((_tempDevice.CheckFormatSupport((GI.Format)format) & D3D.FormatSupport.MultisampleRenderTarget) == D3D.FormatSupport.MultisampleRenderTarget) || 
+				if (device == null)
+				{
+					tempInterfaces = CreateTemporaryInterfaces();
+					device = tempInterfaces.Item3;
+				}
+				
+				return (((device.CheckFormatSupport((GI.Format)format) & D3D.FormatSupport.RenderTarget) == D3D.FormatSupport.RenderTarget) &&
+					((isMultiSampled) && ((device.CheckFormatSupport((GI.Format)format) & D3D.FormatSupport.MultisampleRenderTarget) == D3D.FormatSupport.MultisampleRenderTarget) ||
 					(!isMultiSampled)));
 			}
 			finally
 			{
-				ReleaseTempDevice();
+				if (tempInterfaces != null)
+				{
+					tempInterfaces.Item3.Dispose();
+					tempInterfaces.Item2.Dispose();
+					tempInterfaces.Item1.Dispose();
+
+					tempInterfaces = null;
+				}
 			}
 		}
 
@@ -472,14 +442,29 @@ namespace GorgonLibrary.Graphics
 		/// <returns>TRUE if the format is supported for the texture, FALSE if not.</returns>
 		public bool Supports2DTextureFormat(BufferFormat format)
 		{
+			D3D.Device device = (Graphics != null) ? Graphics.D3DDevice : null;
+			Tuple<GI.Factory1, GI.Adapter1, D3D.Device> tempInterfaces = null;
+
 			try
 			{
-				GetDevice();
-				return ((_tempDevice.CheckFormatSupport((GI.Format)format) & D3D.FormatSupport.Texture2D) == D3D.FormatSupport.Texture2D);
+				if (device == null)
+				{
+					tempInterfaces = CreateTemporaryInterfaces();
+					device = tempInterfaces.Item3;
+				}
+
+				return ((device.CheckFormatSupport((GI.Format)format) & D3D.FormatSupport.Texture2D) == D3D.FormatSupport.Texture2D);
 			}
 			finally
 			{
-				ReleaseTempDevice();
+				if (tempInterfaces != null)
+				{
+					tempInterfaces.Item3.Dispose();
+					tempInterfaces.Item2.Dispose();
+					tempInterfaces.Item1.Dispose();
+
+					tempInterfaces = null;
+				}
 			}
 		}
 
@@ -490,14 +475,29 @@ namespace GorgonLibrary.Graphics
 		/// <returns>TRUE if the format is supported for the texture, FALSE if not.</returns>
 		public bool Supports1DTextureFormat(BufferFormat format)
 		{
+			D3D.Device device = (Graphics != null) ? Graphics.D3DDevice : null;
+			Tuple<GI.Factory1, GI.Adapter1, D3D.Device> tempInterfaces = null;
+
 			try
 			{
-				GetDevice();
-				return ((_tempDevice.CheckFormatSupport((GI.Format)format) & D3D.FormatSupport.Texture1D) == D3D.FormatSupport.Texture1D);
+				if (device == null)
+				{
+					tempInterfaces = CreateTemporaryInterfaces();
+					device = tempInterfaces.Item3;
+				}
+
+				return ((device.CheckFormatSupport((GI.Format)format) & D3D.FormatSupport.Texture1D) == D3D.FormatSupport.Texture1D);
 			}
 			finally
 			{
-				ReleaseTempDevice();
+				if (tempInterfaces != null)
+				{
+					tempInterfaces.Item3.Dispose();
+					tempInterfaces.Item2.Dispose();
+					tempInterfaces.Item1.Dispose();
+
+					tempInterfaces = null;
+				}
 			}
 		}
 
@@ -508,14 +508,29 @@ namespace GorgonLibrary.Graphics
 		/// <returns>TRUE if the format is supported as a depth/stencil buffer, FALSE if not.</returns>
 		public bool SupportsDepthFormat(BufferFormat format)
 		{
+			D3D.Device device = (Graphics != null) ? Graphics.D3DDevice : null;
+			Tuple<GI.Factory1, GI.Adapter1, D3D.Device> tempInterfaces = null;
+
 			try
 			{
-				GetDevice();
-				return ((_tempDevice.CheckFormatSupport((GI.Format)format) & D3D.FormatSupport.DepthStencil) == D3D.FormatSupport.DepthStencil);
+				if (device == null)
+				{
+					tempInterfaces = CreateTemporaryInterfaces();
+					device = tempInterfaces.Item3;
+				}
+
+				return ((device.CheckFormatSupport((GI.Format)format) & D3D.FormatSupport.DepthStencil) == D3D.FormatSupport.DepthStencil);
 			}
 			finally
 			{
-				ReleaseTempDevice();
+				if (tempInterfaces != null)
+				{
+					tempInterfaces.Item3.Dispose();
+					tempInterfaces.Item2.Dispose();
+					tempInterfaces.Item1.Dispose();
+
+					tempInterfaces = null;
+				}
 			}
 		}
 
@@ -533,14 +548,29 @@ namespace GorgonLibrary.Graphics
 			if (count < 1)
 				count = 1;
 
+			D3D.Device device = (Graphics != null) ? Graphics.D3DDevice : null;
+			Tuple<GI.Factory1, GI.Adapter1, D3D.Device> tempInterfaces = null;
+
 			try
 			{
-				GetDevice();
-				return _tempDevice.CheckMultisampleQualityLevels((GI.Format)format, count);
+				if (device == null)
+				{
+					tempInterfaces = CreateTemporaryInterfaces();
+					device = tempInterfaces.Item3;
+				}
+
+				return device.CheckMultisampleQualityLevels((GI.Format)format, count);
 			}
 			finally
 			{
-				ReleaseTempDevice();
+				if (tempInterfaces != null)
+				{
+					tempInterfaces.Item3.Dispose();
+					tempInterfaces.Item2.Dispose();
+					tempInterfaces.Item1.Dispose();
+
+					tempInterfaces = null;
+				}
 			}
 		}
 		#endregion
@@ -551,65 +581,34 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		/// <param name="adapter">DXGI video adapter.</param>
 		/// <param name="deviceType">Type of video device.</param>
-		internal GorgonVideoDevice(GI.Adapter1 adapter, VideoDeviceType deviceType)
+		/// <param name="index">Index of the device.</param>
+		internal GorgonVideoDevice(GI.Adapter1 adapter, VideoDeviceType deviceType, int index)
 		{
 			VideoDeviceType = deviceType;
-			GIAdapter = adapter;
-			GIFactory = adapter.GetParent<GI.Factory1>();
-			EnumerateFeatureLevels(D3D.Device.GetSupportedFeatureLevel(adapter));
-			Outputs = new GorgonVideoOutputCollection(this);
-		}
-		#endregion
-
-		#region IDisposable Members
-		/// <summary>
-		/// Releases unmanaged and - optionally - managed resources
-		/// </summary>
-		/// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
-		protected void Dispose(bool disposing)
-		{
-			if (!_disposed)
+			this.Index = index;
+			this.DedicatedSystemMemory = adapter.Description1.DedicatedSystemMemory;
+			this.DedicatedVideoMemory = adapter.Description1.DedicatedVideoMemory;
+			this.DeviceID = adapter.Description1.DeviceId;
+			this.HardwareFeatureLevel = DeviceFeatureLevel.Unsupported;
+			switch (deviceType)
 			{
-				if (disposing)
-				{
-					// If we've assigned a device object externally, then do not destroy this object.
-					if (Graphics != null)
-						return;
+				case VideoDeviceType.Software:
+					this.Name = "WARP software rasterizer";
+					break;
+				case VideoDeviceType.ReferenceRasterizer:
+					this.Name = "Reference rasterizer";
+					break;
+				default:
+					this.Name = adapter.Description1.Description;
+					break;
+			}			
+			this.Revision = adapter.Description1.Revision;
+			this.SharedSystemMemory = adapter.Description1.SharedSystemMemory;
+			this.SubSystemID = adapter.Description1.SubsystemId;
+			this.VendorID = adapter.Description1.VendorId;
 
-					if (GIFactory != null)
-					{
-						GIFactory.Dispose();
-						GIFactory = null;
-					}
-
-					if (_tempDevice != null)
-						_tempDevice.Dispose();
-
-					Outputs.ClearOutputs();
-
-					Gorgon.Log.Print("Removing DXGI adapter interface...", Diagnostics.LoggingLevel.Verbose);
-					if (GIAdapter != null)
-					{
-						GIAdapter.Dispose();
-						GIAdapter = null;
-					}
-				}
-
-				_tempDevice = null;
-				Graphics = null;
-				GIFactory = null;
-				GIAdapter = null;
-				_disposed = true;
-			}
-		}
-
-		/// <summary>
-		/// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-		/// </summary>
-		void IDisposable.Dispose()
-		{
-			Dispose(true);
-			GC.SuppressFinalize(this);
+			EnumerateFeatureLevels(D3D.Device.GetSupportedFeatureLevel(adapter));
+			Outputs = new GorgonNamedObjectReadOnlyCollection<GorgonVideoOutput>(false, new GorgonVideoOutput[] { });
 		}
 		#endregion
 
@@ -619,18 +618,8 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		public string Name
 		{
-			get 
-			{
-				switch(VideoDeviceType)
-				{
-					case VideoDeviceType.ReferenceRasterizer:
-						return "Reference rasterizer";
-					case VideoDeviceType.Software:
-						return "WARP software rasterizer";
-					default:
-						return GIAdapter.Description1.Description;
-				}
-			}
+			get;
+			private set;
 		}
 		#endregion
 	}

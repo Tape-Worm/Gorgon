@@ -35,7 +35,7 @@ namespace GorgonLibrary.Collections.Specialized
 	/// </summary>
 	/// <typeparam name="T">Type of object, must implement <see cref="GorgonLibrary.INamedObject">INamedObject</see>.</typeparam>
 	public class GorgonNamedObjectReadOnlyCollection<T>
-		: GorgonBaseNamedObjectCollection<T>
+		: GorgonBaseNamedObjectList<T>
 		where T : INamedObject
 	{
 		#region Properties.
