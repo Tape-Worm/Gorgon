@@ -38,8 +38,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GorgonEditor", "..\Tools\Go
 		{7500ADE6-2E65-4923-8DC9-95F230D4C7DB} = {7500ADE6-2E65-4923-8DC9-95F230D4C7DB}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GorPackWriter", "..\Tools\GorgonEditor PlugIns\GorPackWriter\GorPackWriter.csproj", "{BA035656-F13A-45CA-AD56-F5CDEDAADAD9}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test_Dual", "..\Examples\Test_Dual\Test_Dual.csproj", "{F9B1B01F-C9B8-4937-8979-F79D0F62553F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test_TextureArray", "..\Examples\Test_TextureArray\Test_TextureArray.csproj", "{0C1E79B4-0531-46FA-995A-D7413BBE9A1B}"
@@ -158,10 +156,6 @@ Global
 		{559CD7CE-1C08-46E8-B5FD-87A2829F5115}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{559CD7CE-1C08-46E8-B5FD-87A2829F5115}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{559CD7CE-1C08-46E8-B5FD-87A2829F5115}.Release|Any CPU.Build.0 = Release|Any CPU
-		{BA035656-F13A-45CA-AD56-F5CDEDAADAD9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{BA035656-F13A-45CA-AD56-F5CDEDAADAD9}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{BA035656-F13A-45CA-AD56-F5CDEDAADAD9}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{BA035656-F13A-45CA-AD56-F5CDEDAADAD9}.Release|Any CPU.Build.0 = Release|Any CPU
 		{F9B1B01F-C9B8-4937-8979-F79D0F62553F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{F9B1B01F-C9B8-4937-8979-F79D0F62553F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F9B1B01F-C9B8-4937-8979-F79D0F62553F}.Release|Any CPU.ActiveCfg = Release|Any CPU

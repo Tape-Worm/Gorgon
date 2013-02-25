@@ -853,7 +853,10 @@ namespace GorgonLibrary.FileSystem
 		/// </summary>
 		/// <param name="physicalPath">The physical path to unmount.</param>
 		/// <remarks>This overload will unmount all the mounted virtual files/directories for every mount point with the specified <paramref name="physicalPath"/>.</remarks>
-		public void Unmount(string physicalPath)
+        /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="physicalPath"/> parameter is NULL (Nothing in VB.Net).</exception>
+        /// <exception cref="System.ArgumentException">Thrown when the <paramref name="physicalPath"/> parameter is empty.</exception>
+        /// <exception cref="System.IO.IOException">The path was not found.</exception>
+        public void Unmount(string physicalPath)
 		{
 			var mountPoints = _mountPoints.Where(item => string.Compare(Path.GetFullPath(physicalPath), Path.GetFullPath(item.PhysicalPath), true) == 0);
 

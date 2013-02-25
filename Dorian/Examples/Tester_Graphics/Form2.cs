@@ -16,6 +16,7 @@ using GorgonLibrary.IO;
 using GorgonLibrary.Diagnostics;
 using GorgonLibrary.Graphics;
 using GorgonLibrary.Renderers;
+using WIC = SharpDX.WIC;
 
 namespace Tester_Graphics
 {
@@ -132,11 +133,11 @@ namespace Tester_Graphics
 				});
 
 				//GorgonImageCodecs.DDS.LegacyConversionFlags = DDSFlags.NoR10B10G10A2Fix;
-                string fileName = @"d:\images\lightning.gif";
+                string fileName = @"c:\mike\unpak\lightning.gif";
 				//GorgonImageCodecs.TIFF.UseAllFrames = true;
 				var codec = new GorgonCodecGIF();
 				codec.Clip = true;	// Clip this image because animated gifs can have varying frame sizes and resizing the frames can cause issues.				
-				codec.Format = BufferFormat.R32G32B32A32_Float;
+				codec.Format = BufferFormat.R8G8B8A8_UIntNormal;
                 _delays = codec.GetFrameDelays(fileName);
 				using (var imageData = GorgonImageData.FromFile(fileName, codec))
 				{
@@ -145,7 +146,38 @@ namespace Tester_Graphics
 					_texture = _graphics.Textures.CreateTexture<GorgonTexture2D>("Test", imageData);
 				}
 
-                _texture.Save(@"d:\unpak\saveTest.png", new GorgonCodecPNG());
+                //_texture.Save(@"d:\unpak\saveTest.png", new GorgonCodecPNG());
+
+                using (var stream = File.Open(@"C:\mike\unpak\testStream.bin", FileMode.Create, FileAccess.Write, FileShare.None))
+                {
+                    stream.WriteByte(0x7F);
+                    stream.WriteByte(0x7F);
+                    stream.WriteByte(0x7F);
+                    _texture.Save(stream, new GorgonCodecGIF());
+                }
+                              
+
+                using (var stream = File.Open(@"c:\mike\unpak\testStream.bin", FileMode.Open))
+                {
+                    long position = stream.Position;
+
+                    stream.ReadByte();
+                    stream.ReadByte();
+                    stream.ReadByte();
+
+                    _delays = codec.GetFrameDelays(stream);
+                    
+                    using (var factory = new WIC.ImagingFactory())
+                    {
+                        using (var decoder = new WIC.BitmapDecoder(factory, WIC.ContainerFormatGuids.Png))
+                        {
+                            using (var wicStream = new WIC.WICStream(factory, stream))
+                            {
+                                decoder.Initialize(wicStream, WIC.DecodeOptions.CacheOnDemand);
+                            }
+                        }
+                    }
+                }
 
 				_2D = _graphics.Output.Create2DRenderer(_swap);
 				

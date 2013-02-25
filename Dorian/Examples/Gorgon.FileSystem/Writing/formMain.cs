@@ -50,7 +50,7 @@ namespace GorgonLibrary.Examples
 	/// physical directory on your harddrive and must be able to be written into.
 	/// 
 	/// Setting up a write directory is fairly simple:  Just set the WriteLocation property on your file system object.  Once this is
-	/// done you should mount the directory into the file system.  Once a write location is set, the files in it will take precedence
+	/// done the directory is automatically mounted into the file system.  Once a write location is set, the files in it will take precedence
 	/// over all files in the file system.  So, for example, if SomeText.txt exists in root of the mounted folder, and the same file
 	/// name exists in the root of the WriteLocation, then the version in the write location will be used for file I/O operations.
 	/// 

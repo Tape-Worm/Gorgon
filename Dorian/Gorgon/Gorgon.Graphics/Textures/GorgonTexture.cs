@@ -261,6 +261,55 @@ namespace GorgonLibrary.Graphics
 			return (T)GetStagingTextureImpl();
 		}
 
+        /// <summary>
+        /// Function to save the texture to a byte array.
+        /// </summary>
+        /// <param name="codec">Codec used to encode the stream data.</param>
+        /// <returns>A byte array containing the texture data.</returns>
+        /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="codec"/> parameter is NULL (Nothing in VB.Net).</exception>		
+        /// <exception cref="System.IO.IOException">Thrown when there is an error when attempting to encode the image data.</exception>
+        /// <exception cref="System.NotSupportedException">Thrown when the current video device has a feature level of SM2_a_b and the texture is not a staging texture or the texture is not 2D.</exception>
+        /// <remarks>This will persist the contents of the texture into an array of bytes.  The data is encoded into various formats via the codec parameter.  Gorgon contains a 
+        /// number of built-in codecs.  Currently, Gorgon supports the following formats:
+        /// <list type="bullet">
+        ///		<item>
+        ///			<description>DDS</description>
+        ///		</item>
+        ///		<item>
+        ///			<description>TGA</description>
+        ///		</item>
+        ///		<item>
+        ///			<description>PNG (WIC)</description>
+        ///		</item>
+        ///		<item>
+        ///			<description>BMP (WIC)</description>
+        ///		</item>
+        ///		<item>
+        ///			<description>JPG (WIC)</description>
+        ///		</item>
+        ///		<item>
+        ///			<description>WMP (WIC)</description>
+        ///		</item>
+        ///		<item>
+        ///			<description>TIF (WIC)</description>
+        ///		</item>
+        /// </list>
+        /// <para>The items with (WIC) indicate that the codec support is supplied by the Windows Imaging Component.  This component should be installed on most systems, but if it is not 
+        /// then it is required in order to read/save the files in those formats.</para>
+        /// <para>Note that devices with a feature level of SM2_a_b cannot save textures that don't have a usage of staging.  Also, these devices will only save 2D staging textures.  Attempting to 
+        /// save 3D and 1D textures will throw an exception.</para>
+        /// </remarks>
+        public byte[] Save(IO.GorgonImageCodec codec)
+        {
+            using (var memoryStream = new MemoryStream())
+            {
+                Save(memoryStream, codec);
+                memoryStream.Position = 0;
+
+                return memoryStream.ToArray();
+            }
+        }
+
 		/// <summary>
 		/// Function to save the texture to a stream with the specified codec.
 		/// </summary>
@@ -471,7 +520,7 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		/// <param name="data">Data to copy to the texture.</param>
 		/// <param name="subResource">Sub resource index to use.</param>
-		/// <remarks>Use this to copy data to this texture.  If the texture is non CPU accessible texture then an exception is raised.</remarks>
+		/// <remarks>Use this to copy data to this texture.</remarks>
 		/// <exception cref="System.InvalidOperationException">Thrown when this texture has an Immutable, Dynamic or a Staging usage.
 		/// <para>-or-</para>
 		/// <para>Thrown when this texture has multisampling applied.</para>
@@ -494,7 +543,7 @@ namespace GorgonLibrary.Graphics
 		/// Function to copy data from the CPU to a texture.
 		/// </summary>
 		/// <param name="data">Data to copy to the texture.</param>
-		/// <remarks>Use this to copy data to this texture.  If the texture is non CPU accessible texture then an exception is raised.</remarks>
+		/// <remarks>Use this to copy data to this texture.</remarks>
 		/// <exception cref="System.InvalidOperationException">Thrown when this texture has an Immutable, Dynamic or a Staging usage.
 		/// <para>-or-</para>
 		/// <para>Thrown when this texture has multisampling applied.</para>
