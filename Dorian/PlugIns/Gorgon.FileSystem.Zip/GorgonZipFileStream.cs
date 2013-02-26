@@ -323,7 +323,7 @@ namespace GorgonLibrary.FileSystem.Zip
 					_position += offset;
 					break;
 				case SeekOrigin.End:
-					_position -= offset;
+					_position = Length + offset;
 					break;
 			}
 			

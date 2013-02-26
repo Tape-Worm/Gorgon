@@ -291,7 +291,7 @@ namespace GorgonLibrary.FileSystem.GorPack
 					_position += offset;
 					break;
 				case SeekOrigin.End:
-					_position -= offset;
+					_position = Length + offset;
 					break;
 			}
 			
