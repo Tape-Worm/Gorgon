@@ -94,8 +94,8 @@
     <Compile Include="GorgonColor.cs" />
     <Compile Include="GorgonGraphics.cs" />
     <Compile Include="GorgonRenderStatistics.cs" />
+    <Compile Include="IO\GorgonCodecHDP.cs" />
     <Compile Include="IO\GorgonCodecTIFF.cs" />
-    <Compile Include="IO\GorgonCodecWMP.cs" />
     <Compile Include="IO\GorgonCodecJPEG.cs" />
     <Compile Include="IO\GorgonCodecBMP.cs" />
     <Compile Include="IO\GorgonCodecGIF.cs" />
