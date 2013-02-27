@@ -213,12 +213,6 @@ namespace GorgonLibrary.Examples
                 FontHeightMode = FontHeightMode.Points
             });
 
-            _textFont.Save(@"C:\mike\unpak\testFont.gorFont");
-
-            _textFont.Dispose();
-            _textFont = null;
-            _textFont = _graphics.Fonts.FromFile("FontName", @"c:\mike\unpak\testFont.gorFont");
-
             // Load the Gorgon BZip packed file provider plug-in assembly.
             Gorgon.PlugIns.LoadPlugInAssembly(Program.PlugInPath + "Gorgon.FileSystem.GorPack.dll");            
 
