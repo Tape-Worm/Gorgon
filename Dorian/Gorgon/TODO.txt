@@ -49,8 +49,10 @@ This list is not in order.  Please don't get excited.
 * Way in the future... maybe write a 3D component for Gorgon.  A lot of work though, very lazy.
 * Fix up animation to use chunked format (Done).
 * Fix up chunking code to be more efficient, currently it's ass (Done).
-* Test FromStream methods for textures.  Currently WICStream seems to not like streams with a position greater than 0.
+* Test FromStream methods for textures.  Currently WICStream seems to not like streams with a position greater than 0. (Done/Fixed).
+* Add encoding options to codecs (Done)
 * Add FromMemory to Gorgon Fonts
+* Try to fix up unreleased COM objects for DXGI/WIC.  This problem is in SharpDX, and may not be resolved until an update is released.
 
 ----
 Examples
