@@ -16,7 +16,6 @@ using GorgonLibrary.IO;
 using GorgonLibrary.Diagnostics;
 using GorgonLibrary.Graphics;
 using GorgonLibrary.Renderers;
-using WIC = SharpDX.WIC;
 
 namespace Tester_Graphics
 {
@@ -34,7 +33,7 @@ namespace Tester_Graphics
 		private GorgonTexture2D _texture = null;
 		private GorgonTimer _timer = null;
 		private GorgonPixelShader _shader = null;
-        private int[] _delays = null;
+        private ushort[] _delays = null;
 		private int _frame = 0;
 
 		private bool Idle()
@@ -133,7 +132,7 @@ namespace Tester_Graphics
 				});
 
 				//GorgonImageCodecs.DDS.LegacyConversionFlags = DDSFlags.NoR10B10G10A2Fix;
-                string fileName = @"c:\mike\unpak\lightning.gif";
+                string fileName = @"d:\images\lightning.gif";
 				//GorgonImageCodecs.TIFF.UseAllFrames = true;
 				var codec = new GorgonCodecGIF();
 				codec.Clip = true;	// Clip this image because animated gifs can have varying frame sizes and resizing the frames can cause issues.				
@@ -148,36 +147,38 @@ namespace Tester_Graphics
 
                 //_texture.Save(@"d:\unpak\saveTest.png", new GorgonCodecPNG());
 
-                using (var stream = File.Open(@"C:\mike\unpak\testStream.bin", FileMode.Create, FileAccess.Write, FileShare.None))
+                using (var stream = File.Open(@"d:\unpak\testStream.bin", FileMode.Create, FileAccess.Write, FileShare.None))
                 {
                     stream.WriteByte(0x7F);
                     stream.WriteByte(0x7F);
                     stream.WriteByte(0x7F);
-                    _texture.Save(stream, new GorgonCodecGIF());
+					_texture.Save(stream, new GorgonCodecGIF()
+						{
+							AlphaThresholdPercent = 0.5,
+							FrameDelays = _delays
+						});
+
+					_texture.Save(@"D:\unpak\testAnimSave.gif", new GorgonCodecGIF()
+						{
+							AlphaThresholdPercent = 1.0,
+							FrameDelays = _delays,
+							LoopAnimation = true
+						});
                 }
-                              
 
-                using (var stream = File.Open(@"c:\mike\unpak\testStream.bin", FileMode.Open))
-                {
-                    long position = stream.Position;
+				_texture.Dispose();
+				
+				using (var stream = File.Open(@"D:\unpak\testStream.bin", FileMode.Open, FileAccess.Read, FileShare.Read))
+				{
+					stream.ReadByte();
+					stream.ReadByte();
+					stream.ReadByte();
 
-                    stream.ReadByte();
-                    stream.ReadByte();
-                    stream.ReadByte();
+					_delays = codec.GetFrameDelays(stream);
+					_texture = _graphics.Textures.FromStream<GorgonTexture2D>("Test", stream, (int)(stream.Length - stream.Position), new GorgonCodecGIF());
+				}
 
-                    _delays = codec.GetFrameDelays(stream);
-                    
-                    using (var factory = new WIC.ImagingFactory())
-                    {
-                        using (var decoder = new WIC.BitmapDecoder(factory, WIC.ContainerFormatGuids.Png))
-                        {
-                            using (var wicStream = new WIC.WICStream(factory, stream))
-                            {
-                                decoder.Initialize(wicStream, WIC.DecodeOptions.CacheOnDemand);
-                            }
-                        }
-                    }
-                }
+				
 
 				_2D = _graphics.Output.Create2DRenderer(_swap);
 				

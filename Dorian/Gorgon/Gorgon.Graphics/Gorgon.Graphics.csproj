@@ -104,6 +104,7 @@
     <Compile Include="IO\GorgonCodecDDS.cs" />
     <Compile Include="IO\GorgonCodecWIC.cs" />
     <Compile Include="IO\GorgonImageCodec.cs" />
+    <Compile Include="IO\GorgonStreamWrapper.cs" />
     <Compile Include="ISubResourceData.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>

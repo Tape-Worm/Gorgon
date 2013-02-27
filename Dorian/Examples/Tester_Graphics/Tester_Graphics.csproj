@@ -46,10 +46,6 @@
       <HintPath>..\..\Gorgon\Gorgon.Memory\Gorgon.MemoryAccess.dll</HintPath>
     </Reference>
     <Reference Include="PresentationCore" />
-    <Reference Include="SharpDX, Version=2.4.2.0, Culture=neutral, PublicKeyToken=c001d94e9acbbee7, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Dependencies\SharpDX_242\SharpDX.dll</HintPath>
-    </Reference>
     <Reference Include="SlimMath">
       <HintPath>..\..\Dependencies\SlimMath\SlimMath\bin\Release\SlimMath.dll</HintPath>
     </Reference>

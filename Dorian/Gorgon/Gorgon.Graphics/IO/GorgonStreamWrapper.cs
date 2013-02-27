@@ -36,7 +36,7 @@ namespace GorgonLibrary.IO
     /// <summary>
     /// Wrapper for a stream because WIC (not SharpDX) resets the stream position to 0 by default.
     /// </summary>
-    public class GorgonStreamWrapper
+    class GorgonStreamWrapper
         : Stream
     {
         #region Variables.
