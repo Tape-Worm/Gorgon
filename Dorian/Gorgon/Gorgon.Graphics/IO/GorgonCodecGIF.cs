@@ -58,6 +58,39 @@ namespace GorgonLibrary.IO
 
 		#region Properties.
 		/// <summary>
+		/// Property to set or return the delays between each frame in 1/10 of a second.
+		/// </summary>
+		/// <remarks>This property will store the delays between individual frames (image array indices) for animation.  If this value is left as NULL (Nothing in VB.Net), the no frame delays 
+		/// will be put in to the GIF file.  If the array has less elements than the number of frames available, then a delay of 0 will be used for remaining delays and if the array has more 
+		/// delays than frames, then any frame delays after the number of images will be discarded.
+		/// <para>This property is only used on image data with multiple array indices.</para>
+		/// <para>The property only applies to encoding of the image.</para>
+		/// <para>The default value is NULL.</para>
+		/// </remarks>
+		public IList<ushort> FrameDelays
+		{
+			get;
+			set;
+		}
+
+		// Looping won't work.  We need to write out NETSCAPE2.0 to the global encoder block and 
+		// SharpDX's WIC implementation isn't encoding our byte array properly (or at least, I 
+		// can't make it work).  Disable this for now.
+		/*/// <summary>
+		/// Property to set or return whether an encoded animation is looped or not.
+		/// </summary>
+		/// <remarks>This property will set the looping flag for a GIF animation.
+		/// <para>This property is only used on image data with multiple array indices and the <see cref="P:GorgonLibrary.IO.GorgonCodecGIF.FrameDelays">FrameDelays</see> property must be non-NULL (Nothing in VB.Net).</para>
+		/// <para>This property only applies to encoding of the image.</para>
+		/// <para>The default value is FALSE.</para>
+		/// </remarks>
+		public bool LoopAnimation
+		{
+			get;
+			set;
+		}*/
+
+		/// <summary>
 		/// Property to return whether the codec supports decoding/encoding multiple frames or not.
 		/// </summary>
 		public override bool SupportsMultipleFrames
@@ -136,6 +169,50 @@ namespace GorgonLibrary.IO
 		#endregion
 
 		#region Methods.
+		/// <summary>
+		/// Function to add custom metadata to the frame.
+		/// </summary>
+		/// <param name="encoder">Encoder being used to encode the image.</param>
+		/// <param name="frame">Frame to encode.</param>
+		/// <param name="frameIndex">Index of the current frame.</param>
+		/// <param name="settings">Image data settings.</param>
+		/// <param name="paletteColors">Palette colors used to encode the images.</param>
+		internal override void AddCustomMetaData(WIC.BitmapEncoder encoder, WIC.BitmapFrameEncode frame, int frameIndex, IImageSettings settings, SharpDX.Color[] paletteColors)
+		{
+			// Do nothing.
+			if (FrameDelays == null)
+			{
+				return;
+			}
+
+			if (frame != null)
+			{
+				if ((settings.ArrayCount > 1) && (UseAllFrames))
+				{
+					using (var writer = frame.MetadataQueryWriter)
+					{
+						ushort delayValue = 0;
+
+						if ((FrameDelays != null) && (frameIndex >= 0) && (frameIndex < FrameDelays.Count))
+						{
+							delayValue = FrameDelays[frameIndex];
+						}
+
+						bool hasTransparency = paletteColors.Any(item => item.A == 0);
+
+						writer.SetMetadataByName("/grctlext/Delay", delayValue);
+						writer.SetMetadataByName("/grctlext/Disposal", (byte)1);
+						writer.SetMetadataByName("/grctlext/TransparencyFlag", hasTransparency);
+						if (hasTransparency)
+						{
+							byte transparentIndex = (byte)Array.FindIndex<DX.Color>(paletteColors, item => item.A == 0);
+							writer.SetMetadataByName("/grctlext/TransparentColorIndex", transparentIndex);
+						}
+					}
+				}
+			}
+		}
+
 		/// <summary>
 		/// Function to retrieve the offset for the frame being decoded.
 		/// </summary>
@@ -226,7 +303,7 @@ namespace GorgonLibrary.IO
         /// <para>The data in the stream could not be decoded as GIF file.</para>
         /// </exception>
         /// <exception cref="System.IO.EndOfStreamException">Thrown when an attempt to read beyond the end of the stream is made.</exception>
-        public int[] GetFrameDelays(string filePath)
+        public ushort[] GetFrameDelays(string filePath)
         {
             if (filePath == null)
             {
@@ -259,10 +336,10 @@ namespace GorgonLibrary.IO
         /// <para>The stream cannot perform seek operations.</para>
         /// </exception>
         /// <exception cref="System.IO.EndOfStreamException">Thrown when an attempt to read beyond the end of the stream is made.</exception>
-        public int[] GetFrameDelays(System.IO.Stream stream)
+        public ushort[] GetFrameDelays(System.IO.Stream stream)
         {
             IImageSettings settings = null;
-            int[] result = new int[0];
+            ushort[] result = new ushort[0];
             Guid bestFormat = Guid.Empty;
             long position = 0;
 
@@ -289,65 +366,68 @@ namespace GorgonLibrary.IO
             position = stream.Position;
             
 			try
-			{				
-                // Get our WIC interface.
-                using (var wic = new GorgonWICImage())
-                {
-                    using (var decoder = new WIC.BitmapDecoder(wic.Factory, SupportedFormat))
-                    {
-                        using (WIC.WICStream wicStream = new WIC.WICStream(wic.Factory, stream))
-                        {
-                            try
-                            {
-                                decoder.Initialize(wicStream, WIC.DecodeOptions.CacheOnDemand);
-                            }
-                            catch (DX.SharpDXException sdex)
-                            {
-                                // Repackage the exception to keep in line with our API defintion.
-                                throw new System.IO.IOException("Cannot decode the " + Codec + " file. " + sdex.Descriptor.Description, sdex);
-                            }
+			{
+				using (var wrapperStream = new GorgonStreamWrapper(stream))
+				{
+					// Get our WIC interface.				
+					using (var wic = new GorgonWICImage())
+					{
+						using (var decoder = new WIC.BitmapDecoder(wic.Factory, SupportedFormat))
+						{
+							using (WIC.WICStream wicStream = new WIC.WICStream(wic.Factory, wrapperStream))
+							{
+								try
+								{
+									decoder.Initialize(wicStream, WIC.DecodeOptions.CacheOnDemand);
+								}
+								catch (DX.SharpDXException sdex)
+								{
+									// Repackage the exception to keep in line with our API defintion.
+									throw new System.IO.IOException("Cannot decode the " + Codec + " file. " + sdex.Descriptor.Description, sdex);
+								}
 
-                            if (decoder.FrameCount < 2)
-                            {
-                                return result;
-                            }
+								if (decoder.FrameCount < 2)
+								{
+									return result;
+								}
 
-                            result = new int[decoder.FrameCount];
+								result = new ushort[decoder.FrameCount];
 
-                            for (int frame = 0; frame < result.Length; frame++)
-                            {
-                                using (var frameImage = decoder.GetFrame(frame))
-                                {
-                                    // Check to see if we can actually read this thing.
-                                    if (frame == 0)
-                                    {
-                                        Guid temp = Guid.Empty;
-                                        settings = ReadMetaData(wic, decoder, frameImage, ref temp);
+								for (int frame = 0; frame < result.Length; frame++)
+								{
+									using (var frameImage = decoder.GetFrame(frame))
+									{
+										// Check to see if we can actually read this thing.
+										if (frame == 0)
+										{
+											Guid temp = Guid.Empty;
+											settings = ReadMetaData(wic, decoder, frameImage, ref temp);
 
-                                        if (settings.Format == BufferFormat.Unknown)
-                                        {
-                                            throw new System.IO.IOException("Cannot decode the GIF file.  The data could not be decoded as a GIF file.");
-                                        }
-                                    }
+											if (settings.Format == BufferFormat.Unknown)
+											{
+												throw new System.IO.IOException("Cannot decode the GIF file.  The data could not be decoded as a GIF file.");
+											}
+										}
 
-                                    using (var reader = frameImage.MetadataQueryReader)
-                                    {
-                                        var metaData = reader.GetMetadataByName("/grctlext/Delay");
+										using (var reader = frameImage.MetadataQueryReader)
+										{
+											var metaData = reader.GetMetadataByName("/grctlext/Delay");
 
-                                        if (metaData != null)
-                                        {
-                                            result[frame] = (ushort)metaData;
-                                        }
-                                        else
-                                        {
-                                            result[frame] = 0;
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
+											if (metaData != null)
+											{
+												result[frame] = (ushort)metaData;
+											}
+											else
+											{
+												result[frame] = 0;
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
 			}
             finally
             {
@@ -365,6 +445,8 @@ namespace GorgonLibrary.IO
 		public GorgonCodecGIF()
 			: base("GIF", "Graphics Interchange Format", new string[] { "gif" }, WIC.ContainerFormatGuids.Gif)
 		{
+			LoopAnimation = false;
+			FrameDelays = null;
 		}
 		#endregion
 	}
