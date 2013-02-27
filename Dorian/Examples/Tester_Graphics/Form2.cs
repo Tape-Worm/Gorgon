@@ -132,7 +132,7 @@ namespace Tester_Graphics
 				});
 
 				//GorgonImageCodecs.DDS.LegacyConversionFlags = DDSFlags.NoR10B10G10A2Fix;
-                string fileName = @"d:\images\lightning.gif";
+                string fileName = @"c:\mike\unpak\lightning.gif";
 				//GorgonImageCodecs.TIFF.UseAllFrames = true;
 				var codec = new GorgonCodecGIF();
 				codec.Clip = true;	// Clip this image because animated gifs can have varying frame sizes and resizing the frames can cause issues.				
@@ -143,32 +143,24 @@ namespace Tester_Graphics
 					//imageData.Resize(64, 128, false, ImageFilter.Cubic);
 					//_texture = _graphics.Textures.FromFile<GorgonTexture2D>("Test", fileName, codec);
 					_texture = _graphics.Textures.CreateTexture<GorgonTexture2D>("Test", imageData);
+                    throw new Exception("Test memory leaks.");
 				}
 
                 //_texture.Save(@"d:\unpak\saveTest.png", new GorgonCodecPNG());
 
-                using (var stream = File.Open(@"d:\unpak\testStream.bin", FileMode.Create, FileAccess.Write, FileShare.None))
+/*                using (var stream = File.Open(@"c:\mike\unpak\testStream.bin", FileMode.Create, FileAccess.Write, FileShare.None))
                 {
                     stream.WriteByte(0x7F);
                     stream.WriteByte(0x7F);
                     stream.WriteByte(0x7F);
-					_texture.Save(stream, new GorgonCodecGIF()
+					_texture.Save(stream, new GorgonCodecPNG()
 						{
-							AlphaThresholdPercent = 0.5,
-							FrameDelays = _delays
-						});
-
-					_texture.Save(@"D:\unpak\testAnimSave.gif", new GorgonCodecGIF()
-						{
-							AlphaThresholdPercent = 1.0,
-							FrameDelays = _delays,
-							LoopAnimation = true
 						});
                 }
 
 				_texture.Dispose();
 				
-				using (var stream = File.Open(@"D:\unpak\testStream.bin", FileMode.Open, FileAccess.Read, FileShare.Read))
+				using (var stream = File.Open(@"c:\mike\unpak\testStream.bin", FileMode.Open, FileAccess.Read, FileShare.Read))
 				{
 					stream.ReadByte();
 					stream.ReadByte();
@@ -176,7 +168,7 @@ namespace Tester_Graphics
 
 					_delays = codec.GetFrameDelays(stream);
 					_texture = _graphics.Textures.FromStream<GorgonTexture2D>("Test", stream, (int)(stream.Length - stream.Position), new GorgonCodecGIF());
-				}
+				}*/
 
 				
 
