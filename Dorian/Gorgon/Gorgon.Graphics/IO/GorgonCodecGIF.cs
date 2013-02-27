@@ -445,7 +445,6 @@ namespace GorgonLibrary.IO
 		public GorgonCodecGIF()
 			: base("GIF", "Graphics Interchange Format", new string[] { "gif" }, WIC.ContainerFormatGuids.Gif)
 		{
-			LoopAnimation = false;
 			FrameDelays = null;
 		}
 		#endregion

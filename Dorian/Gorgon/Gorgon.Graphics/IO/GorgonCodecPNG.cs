@@ -34,6 +34,41 @@ using WIC = SharpDX.WIC;
 namespace GorgonLibrary.IO
 {
     /// <summary>
+    /// Filter to apply for compression optimization.
+    /// </summary>
+    public enum PNGFilter
+    {
+        /// <summary>
+        /// The system will chose the best filter based on the image data.
+        /// </summary>
+        DontCare = WIC.PngFilterOption.Unspecified,
+        /// <summary>
+        /// No filtering.
+        /// </summary>
+        None = WIC.PngFilterOption.None,
+        /// <summary>
+        /// Sub filtering.
+        /// </summary>
+        Sub = WIC.PngFilterOption.Sub,
+        /// <summary>
+        /// Up filtering.
+        /// </summary>
+        Up = WIC.PngFilterOption.Up,
+        /// <summary>
+        /// Average filtering.
+        /// </summary>
+        Average = WIC.PngFilterOption.Average,
+        /// <summary>
+        /// Paeth filtering.
+        /// </summary>
+        Paeth = WIC.PngFilterOption.Paeth,
+        /// <summary>
+        /// Adaptive filtering.  The system will choose the best filter based on a per-scanline basis.
+        /// </summary>
+        Adaptive = WIC.PngFilterOption.Adaptive
+    }
+
+    /// <summary>
     /// A codec to handle read/writing of PNG files.
     /// </summary>
     /// <remarks>A codec allows for reading and/or writing of data in an encoded format.  Users may inherit from this object to define their own 
@@ -43,16 +78,45 @@ namespace GorgonLibrary.IO
     public sealed class GorgonCodecPNG
         : GorgonCodecWIC
     {
-        #region Variables.
-
-        #endregion
-
         #region Properties.
+        /// <summary>
+        /// Property to set or return the filter to apply.
+        /// </summary>
+        /// <remarks>This property will control the filtering applied to the image for compression optimization.
+        /// <para>This property only applies when encoding the image.</para>
+        /// <para>The default value is None.</para>
+        /// </remarks>
+        public PNGFilter Filter
+        {
+            get;
+            set;
+        }
 
+        /// <summary>
+        /// Property to set or return whether to use interlacing on the image data.
+        /// </summary>
+        /// <remarks>
+        /// Use this property to control the output of vertical rows in the image.  
+        /// <para>This property only applies when encoding the image.</para>
+        /// <para>The default value is FALSE.</para>
+        /// </remarks>
+        public bool UseInterlacing
+        {
+            get;
+            set;
+        }
         #endregion
 
         #region Methods.
-
+        /// <summary>
+        /// Function to set custom encoding options.
+        /// </summary>
+        /// <param name="frame">Frame encoder to use.</param>
+        internal override void SetFrameOptions(WIC.BitmapFrameEncode frame)
+        {
+            frame.Options.InterlaceOption = UseInterlacing;
+            frame.Options.FilterOption = (WIC.PngFilterOption)Filter;
+        }
         #endregion
 
         #region Constructor/Destructor.
@@ -62,6 +126,8 @@ namespace GorgonLibrary.IO
         public GorgonCodecPNG()
             : base("PNG", "Portable Network Graphics", new string[] { "png" }, WIC.ContainerFormatGuids.Png)
         {
+            UseInterlacing = false;
+            Filter = PNGFilter.None;
         }
         #endregion
     }

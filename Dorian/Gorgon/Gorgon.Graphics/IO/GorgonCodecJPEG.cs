@@ -44,15 +44,48 @@ namespace GorgonLibrary.IO
         : GorgonCodecWIC
     {
         #region Variables.
-
+        private float _imageQuality = 1.0f;         // Image quality for lossy compressed images.
         #endregion
 
         #region Properties.
+        /// <summary>
+        /// Property to set or return the quality of an image compressed with lossy compression.
+        /// </summary>
+        /// <remarks>
+        /// Use this property to control the fidelity of an image compressed with lossy compression.  0.0f will give the 
+        /// lowest quality and 1.0f will give the highest.
+        /// </remarks>
+        public float ImageQuality
+        {
+            get
+            {
+                return _imageQuality;
+            }
+            set
+            {
+                if (value < 0.0f)
+                {
+                    value = 0.0f;
+                }
+                if (value > 1.0f)
+                {
+                    value = 1.0f;
+                }
 
+                _imageQuality = value;
+            }
+        }
         #endregion
 
         #region Methods.
-
+        /// <summary>
+        /// Function to set custom encoding options.
+        /// </summary>
+        /// <param name="frame">Frame encoder to use.</param>
+        internal override void SetFrameOptions(WIC.BitmapFrameEncode frame)
+        {
+            frame.Options.ImageQuality = _imageQuality;
+        }
         #endregion
 
         #region Constructor/Destructor.
