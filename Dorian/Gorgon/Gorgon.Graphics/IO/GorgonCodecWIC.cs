@@ -452,6 +452,14 @@ namespace GorgonLibrary.IO
 		{
 		}
 
+        /// <summary>
+        /// Function to set custom encoding options.
+        /// </summary>
+        /// <param name="frame">Frame encoder to use.</param>
+        internal virtual void SetFrameOptions(WIC.BitmapFrameEncode frame)
+        {
+        }
+
 		/// <summary>
 		/// Function to load an image from a stream.
 		/// </summary>
@@ -585,8 +593,10 @@ namespace GorgonLibrary.IO
 									frame.Initialize();
 									frame.SetSize(buffer.Width, buffer.Height);
 									frame.SetResolution(72, 72);
-									frame.SetPixelFormat(ref actualFormat);									
-									
+									frame.SetPixelFormat(ref actualFormat);
+
+                                    SetFrameOptions(frame);
+
 									// If the image encoder doesn't like the format we've chosen, then we'll need to convert to 
 									// the best format for the codec.
 									if (targetFormat != actualFormat)

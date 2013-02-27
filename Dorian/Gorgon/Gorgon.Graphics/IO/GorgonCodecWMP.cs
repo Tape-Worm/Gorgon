@@ -44,15 +44,67 @@ namespace GorgonLibrary.IO
         : GorgonCodecWIC
     {
         #region Variables.
-
+        private float _imageQuality = 1.0f;         // Image quality for lossy compressed images.
         #endregion
 
         #region Properties.
+        /// <summary>
+        /// Property to set or return whether lossless compression should be used to encode the image.
+        /// </summary>
+        /// <remarks>
+        /// Set the property to TRUE to avoid lossy compression which may introduce artifacts to the image.  Setting this value to TRUE 
+        /// will cause the <see cref="P:GorgonLibrary.IO.GorgonCodecWMP.ImageQuality">ImageQuality</see> property to be ignored.
+        /// <para>This property is only used when encoding the image.</para>
+        /// <para>The default value is FALSE.</para>
+        /// </remarks>
+        public bool UseLosslessCompression
+        {
+            get;
+            set;
+        }
 
+        /// <summary>
+        /// Property to set or return the quality of an image compressed with lossy compression.
+        /// </summary>
+        /// <remarks>
+        /// Use this property to control the fidelity of an image compressed with lossy compression.  0.0f will give the 
+        /// lowest quality and 1.0f will give the highest.  If the <see cref="P:GorgonLibrary.IO.GorgonCodecWMP.UseLosslessCompression">UseLosslessCompression</see> 
+        /// property is set to TRUE, then this property will be ignored.
+        /// <para>This property is only used when encoding the image.</para>
+        /// <para>The default value is 1.0f.</para>
+        /// </remarks>
+        public float ImageQuality
+        {
+            get
+            {
+                return _imageQuality;
+            }
+            set
+            {
+                if (value < 0.0f)
+                {
+                    value = 0.0f;
+                }
+                if (value > 1.0f)
+                {
+                    value = 1.0f;
+                }
+
+                _imageQuality = value;
+            }
+        }
         #endregion
 
         #region Methods.
-
+        /// <summary>
+        /// Function to set custom encoding options.
+        /// </summary>
+        /// <param name="frame">Frame encoder to use.</param>
+        internal override void SetFrameOptions(WIC.BitmapFrameEncode frame)
+        {
+            frame.Options.LossLess = UseLosslessCompression;
+            frame.Options.ImageQuality = _imageQuality;
+        }
         #endregion
 
         #region Constructor/Destructor.

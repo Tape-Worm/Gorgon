@@ -34,6 +34,33 @@ using WIC = SharpDX.WIC;
 namespace GorgonLibrary.IO
 {
     /// <summary>
+    /// Types of compression for the TIFF codec.
+    /// </summary>
+    public enum TIFFCompressionType
+    {
+        /// <summary>
+        /// The system will pick a compression format based on the format of the image.
+        /// </summary>
+        DontCare = WIC.TiffCompressionOption.DontCare,
+        /// <summary>
+        /// No compression.
+        /// </summary>
+        None = WIC.TiffCompressionOption.None,
+        /// <summary>
+        /// LZW compression algorithm.
+        /// </summary>
+        LZW = WIC.TiffCompressionOption.LZW,
+        /// <summary>
+        /// ZIP compression algorithm.
+        /// </summary>
+        ZIP = WIC.TiffCompressionOption.ZIP,
+        /// <summary>
+        /// LZW differencing compression algorithm.
+        /// </summary>
+        LZWDifferencing = WIC.TiffCompressionOption.LZWHDifferencing
+    }
+
+    /// <summary>
     /// A codec to handle read/writing of TIFF files.
     /// </summary>
     /// <remarks>A codec allows for reading and/or writing of data in an encoded format.  Users may inherit from this object to define their own 
@@ -44,15 +71,66 @@ namespace GorgonLibrary.IO
         : GorgonCodecWIC
     {
         #region Variables.
-
+        private float _compressionQuality = 1.0f;       // Compression quality.        
         #endregion
 
         #region Properties.
+        /// <summary>
+        /// Property to set or return the amount of compression to use.
+        /// </summary>
+        /// <remarks>
+        /// This property controls how much compression to apply to the image.  A value of 0.0f will use the least amount of compression and 
+        /// will result in larger files, a value of 1.0f will use the best compression and produce smaller files.
+        /// <para>This property only applies when encoding an image.</para>
+        /// <para>The default value is 1.0f</para>
+        /// </remarks>
+        public float CompressionQuality
+        {
+            get
+            {
+                return _compressionQuality;
+            }
+            set
+            {
+                if (value < 0.0f)
+                {
+                    value = 0.0f;
+                }
 
+                if (value > 1.0f)
+                {
+                    value = 1.0f;
+                }
+
+                _compressionQuality = value;
+            }
+        }
+
+        /// <summary>
+        /// Property to set or return the type of compression to apply to the image.
+        /// </summary>
+        /// <remarks>
+        /// This property controls the type of compression for the image.
+        /// <para>This property only applies when encoding an image.</para>
+        /// <para>The default value is None.</para>
+        /// </remarks>
+        public TIFFCompressionType CompressionType
+        {
+            get;
+            set;
+        }
         #endregion
 
         #region Methods.
-
+        /// <summary>
+        /// Function to set custom encoding options.
+        /// </summary>
+        /// <param name="frame">Frame encoder to use.</param>
+        internal override void SetFrameOptions(WIC.BitmapFrameEncode frame)
+        {
+            frame.Options.CompressionQuality = _compressionQuality;
+            frame.Options.TiffCompressionMethod = (WIC.TiffCompressionOption)CompressionType;
+        }
         #endregion
 
         #region Constructor/Destructor.
@@ -62,6 +140,7 @@ namespace GorgonLibrary.IO
         public GorgonCodecTIFF()
             : base("TIFF", "Tagged Image File Format", new string[] { "tif", "tiff" }, WIC.ContainerFormatGuids.Tiff)
         {
+            CompressionType = TIFFCompressionType.None;
         }
         #endregion
     }

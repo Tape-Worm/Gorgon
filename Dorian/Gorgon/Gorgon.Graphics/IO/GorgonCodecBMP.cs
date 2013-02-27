@@ -43,18 +43,6 @@ namespace GorgonLibrary.IO
     public sealed class GorgonCodecBMP
         : GorgonCodecWIC
     {
-        #region Variables.
-
-        #endregion
-
-        #region Properties.
-
-        #endregion
-
-        #region Methods.
-
-        #endregion
-
         #region Constructor/Destructor.
         /// <summary>
         /// Initializes a new instance of the <see cref="GorgonCodecBMP"/> class.
