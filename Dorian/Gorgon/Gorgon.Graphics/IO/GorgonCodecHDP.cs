@@ -34,13 +34,13 @@ using WIC = SharpDX.WIC;
 namespace GorgonLibrary.IO
 {
     /// <summary>
-    /// A codec to handle read/writing of WMP files.
+    /// A codec to handle read/writing of high defintion photo files.
     /// </summary>
     /// <remarks>A codec allows for reading and/or writing of data in an encoded format.  Users may inherit from this object to define their own 
     /// image formats, or use one of the predefined image codecs available in Gorgon.
     /// <para>This format requires that the Windows Imaging Components are installed on the system.</para>
     /// </remarks>
-    public sealed class GorgonCodecWMP
+    public sealed class GorgonCodecHDP
         : GorgonCodecWIC
     {
         #region Variables.
@@ -53,7 +53,7 @@ namespace GorgonLibrary.IO
         /// </summary>
         /// <remarks>
         /// Set the property to TRUE to avoid lossy compression which may introduce artifacts to the image.  Setting this value to TRUE 
-        /// will cause the <see cref="P:GorgonLibrary.IO.GorgonCodecWMP.ImageQuality">ImageQuality</see> property to be ignored.
+        /// will cause the <see cref="P:GorgonLibrary.IO.GorgonCodecHDP.ImageQuality">ImageQuality</see> property to be ignored.
         /// <para>This property is only used when encoding the image.</para>
         /// <para>The default value is FALSE.</para>
         /// </remarks>
@@ -68,7 +68,7 @@ namespace GorgonLibrary.IO
         /// </summary>
         /// <remarks>
         /// Use this property to control the fidelity of an image compressed with lossy compression.  0.0f will give the 
-        /// lowest quality and 1.0f will give the highest.  If the <see cref="P:GorgonLibrary.IO.GorgonCodecWMP.UseLosslessCompression">UseLosslessCompression</see> 
+        /// lowest quality and 1.0f will give the highest.  If the <see cref="P:GorgonLibrary.IO.GorgonCodecHDP.UseLosslessCompression">UseLosslessCompression</see> 
         /// property is set to TRUE, then this property will be ignored.
         /// <para>This property is only used when encoding the image.</para>
         /// <para>The default value is 1.0f.</para>
@@ -109,10 +109,10 @@ namespace GorgonLibrary.IO
 
         #region Constructor/Destructor.
         /// <summary>
-        /// Initializes a new instance of the <see cref="GorgonCodecWMP"/> class.
+        /// Initializes a new instance of the <see cref="GorgonCodecHDP"/> class.
         /// </summary>
-        public GorgonCodecWMP()
-            : base("WMP", "Windows Media Photo", new string[] { "wmp", "hdp" }, WIC.ContainerFormatGuids.Wmp)
+        public GorgonCodecHDP()
+            : base("WMP", "HD Photo format", new string[] { "hdp", "wmp" }, WIC.ContainerFormatGuids.Wmp)
         {
         }
         #endregion
