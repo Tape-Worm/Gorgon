@@ -47,7 +47,7 @@ namespace GorgonLibrary.Graphics
 		public class TextureSamplerState
 			: GorgonState<GorgonTextureSamplerStates>, IList<GorgonTextureSamplerStates>
 		{
-			#region Variables.			
+			#region Variables.
 			private GorgonTextureSamplerStates[] _states = null;								// List of sampler states.
 			private D3D.SamplerState[] _d3dStates = null;										// List of sampler state objects.
 			private GorgonShaderState<T> _shader = null;										// Shader that owns the state.

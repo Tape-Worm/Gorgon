@@ -594,7 +594,20 @@ namespace GorgonLibrary.Graphics
 		{
 			GorgonDepthStencil depthBuffer = null;
 
-			GorgonDebug.AssertNull<GorgonDepthStencilSettings>(settings, "settings");
+            if (name == null)
+            {
+                throw new ArgumentNullException("name");
+            }
+
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                throw new ArgumentException("The parameter must not be empty.", "name");
+            }
+
+            if (settings == null)
+            {
+                throw new ArgumentNullException("settings");
+            }
 
 			GorgonDepthStencil.ValidateSettings(_graphics, settings);
 
@@ -638,7 +651,20 @@ namespace GorgonLibrary.Graphics
 		{
 			GorgonSwapChain swapChain = null;
 
-			GorgonDebug.AssertNull<GorgonSwapChainSettings>(settings, "settings");
+            if (name == null)
+            {
+                throw new ArgumentNullException("name");
+            }
+
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                throw new ArgumentException("The parameter must not be empty.", "name");
+            }
+
+            if (settings == null)
+            {
+                throw new ArgumentNullException("settings");
+            }
 
 			GorgonSwapChain.ValidateSwapChainSettings(_graphics, settings);
 
@@ -675,7 +701,20 @@ namespace GorgonLibrary.Graphics
 		{
 			GorgonRenderTarget target = null;
 
-			GorgonDebug.AssertNull<GorgonRenderTargetSettings>(settings, "settings");
+            if (name == null)
+            {
+                throw new ArgumentNullException("name");
+            }
+
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                throw new ArgumentException("The parameter must not be empty.", "name");
+            }
+
+            if (settings == null)
+            {
+                throw new ArgumentNullException("settings");
+            }
 
 			GorgonRenderTarget.ValidateRenderTargetSettings(_graphics, settings);
 

@@ -296,10 +296,45 @@ namespace GorgonLibrary.Graphics
 		/// <exception cref="GorgonLibrary.GorgonException">Thrown if the font cannot be read.</exception>
 		public GorgonFont FromStream(string name, Stream stream)
 		{
-			GorgonDebug.AssertParamString(name, "name");
-			GorgonDebug.AssertNull<Stream>(stream, "stream");
-			return LoadFont(name, stream);
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                throw new ArgumentException("The parameter must not be empty.", "name");
+            }
+
+            if (stream == null)
+            {
+                throw new ArgumentNullException("stream");
+            }
+
+            if (stream.Length == 0)
+            {
+                throw new ArgumentException("The parameter must not be empty.", "stream");
+            }
+            
+            return LoadFont(name, stream);
 		}
+
+        /// <summary>
+        /// Function to read a font from memory.
+        /// </summary>
+        /// <param name="name">Name of the font object.</param>
+        /// <param name="fontData">Byte array containing the font data.</param>
+        /// <returns>The font in the array.</returns>
+        /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="fontData"/> or the <paramref name="name"/> parameters are NULL.</exception>
+        /// <exception cref="System.ArgumentException">Thrown if the name parameter is an empty string.
+        /// <para>-or-</para>
+        /// <para>Thrown if the font uses external textures.</para>
+        /// <para>-or-</para>
+        /// <para>Thrown if the fontData array is empty.</para>
+        /// </exception>
+        /// <exception cref="GorgonLibrary.GorgonException">Thrown if the font cannot be read.</exception>
+        public GorgonFont FromMemory(string name, byte[] fontData)
+        {
+            using (var memoryStream = new GorgonDataStream(fontData))
+            {
+                return FromStream(name, memoryStream);
+            }
+        }
 
 		/// <summary>
 		/// Function to read a font from a file.
@@ -316,10 +351,17 @@ namespace GorgonLibrary.Graphics
 		{
 			FileStream stream = null;
 
-			GorgonDebug.AssertParamString(name, "name");
-			GorgonDebug.AssertParamString(fileName, "fileName");
+            if (fileName == null)
+            {
+                throw new ArgumentNullException("fileName");
+            }
 
-			try
+            if (string.IsNullOrWhiteSpace(fileName))
+            {
+                throw new ArgumentException("The parameter must not be empty.", "fileName");
+            }
+            
+            try
 			{
 				stream = File.Open(fileName, FileMode.Open, FileAccess.Read, FileShare.Read);
 				return LoadFont(name, stream);
@@ -374,9 +416,6 @@ namespace GorgonLibrary.Graphics
 		/// </exception>
 		public GorgonFont CreateFont(string fontName, string fontFamily, float pointSize, FontStyle style, FontAntiAliasMode antiAliasMode, Size textureSize)
 		{
-			GorgonDebug.AssertParamString(fontName, "fontName");
-			GorgonDebug.AssertParamString(fontFamily, "fontFamily");
-
 			if (pointSize < 1e-6f)
 				pointSize = 1e-6f;
 
@@ -430,8 +469,10 @@ namespace GorgonLibrary.Graphics
 		/// </exception>
 		public GorgonFont CreateFont(string fontName, Font font, FontAntiAliasMode antiAliasMode, Size textureSize)
 		{
-			GorgonDebug.AssertParamString(fontName, "fontName");
-			GorgonDebug.AssertNull<Font>(font, "font");
+            if (font == null)
+            {
+                throw new ArgumentNullException("font");
+            }
 
 			GorgonFontSettings settings = new GorgonFontSettings()
 			{
@@ -465,8 +506,26 @@ namespace GorgonLibrary.Graphics
 		/// </exception>
 		public GorgonFont CreateFont(string fontName, GorgonFontSettings settings)
 		{
-			GorgonDebug.AssertParamString(fontName, "fontName");
-			GorgonDebug.AssertNull<GorgonFontSettings>(settings, "settings");
+            if (fontName == null)
+            {
+                throw new ArgumentNullException("fontName");
+            }
+
+            if (string.IsNullOrWhiteSpace("fontName"))
+            {
+                throw new ArgumentException("The parameter must not be empty.", "fontName");
+            }
+
+            if (settings == null)
+            {
+                throw new ArgumentNullException("settings");
+            }
+
+            if (string.IsNullOrWhiteSpace(settings.FontFamilyName))
+            {
+                throw new ArgumentNullException("The font family name must not be NULL or empty.", "settings");
+            }
+
 			GorgonFont result = new GorgonFont(_graphics, fontName, settings);
 
 			result.Update(settings);

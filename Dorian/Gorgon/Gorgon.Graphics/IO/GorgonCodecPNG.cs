@@ -86,7 +86,7 @@ namespace GorgonLibrary.IO
         /// <para>This property only applies when encoding the image.</para>
         /// <para>The default value is None.</para>
         /// </remarks>
-        public PNGFilter Filter
+        public PNGFilter CompressionFilter
         {
             get;
             set;
@@ -115,7 +115,7 @@ namespace GorgonLibrary.IO
         internal override void SetFrameOptions(WIC.BitmapFrameEncode frame)
         {
             frame.Options.InterlaceOption = UseInterlacing;
-            frame.Options.FilterOption = (WIC.PngFilterOption)Filter;
+            frame.Options.FilterOption = (WIC.PngFilterOption)CompressionFilter;
         }
         #endregion
 
@@ -127,7 +127,7 @@ namespace GorgonLibrary.IO
             : base("PNG", "Portable Network Graphics", new string[] { "png" }, WIC.ContainerFormatGuids.Png)
         {
             UseInterlacing = false;
-            Filter = PNGFilter.None;
+            CompressionFilter = PNGFilter.None;
         }
         #endregion
     }
