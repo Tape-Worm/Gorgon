@@ -369,6 +369,26 @@ namespace GorgonLibrary.Graphics
 			LoadShader();
 		}
 
+        /// <summary>
+        /// Function to save the shader to a stream.
+        /// </summary>
+        /// <param name="binary">TRUE to save the binary version of the shader, FALSE to save the source.</param>
+        /// <param name="saveDebug">TRUE to save the debug information, FALSE to exclude it.</param>
+        /// <returns>An array of bytes.</returns>
+        /// <remarks>The <paramref name="saveDebug"/> parameter is only applicable when the <paramref name="binary"/> parameter is set to TRUE.</remarks>
+        /// <exception cref="System.ArgumentException">Thrown when the shader is being saved as source code and the <see cref="GorgonLibrary.Graphics.GorgonShader.SourceCode">SourceCode</see> parameter is NULL (Nothing in VB.Net) or empty.</exception>
+        /// <exception cref="GorgonLibrary.GorgonException">Thrown when the shader fails to compile.</exception>
+        public byte[] Save(bool binary, bool saveDebug)
+        {
+            using (var memoryStream = new MemoryStream())
+            {
+                Save(memoryStream, binary, saveDebug);
+                memoryStream.Position = 0;
+
+                return memoryStream.ToArray();
+            }
+        }
+
 		/// <summary>
 		/// Function to save the shader to a stream.
 		/// </summary>

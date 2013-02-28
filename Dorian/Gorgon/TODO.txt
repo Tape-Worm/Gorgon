@@ -51,7 +51,8 @@ This list is not in order.  Please don't get excited.
 * Fix up chunking code to be more efficient, currently it's ass (Done).
 * Test FromStream methods for textures.  Currently WICStream seems to not like streams with a position greater than 0. (Done/Fixed).
 * Add encoding options to codecs (Done)
-* Add FromMemory to Gorgon Fonts
+* Add FromMemory to Gorgon Fonts (Done)
+* Make save/load methods orthogonal.
 * Try to fix up unreleased COM objects for DXGI/WIC.  This problem is in SharpDX, and may not be resolved until an update is released.
 
 ----

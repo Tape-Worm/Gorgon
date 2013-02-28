@@ -73,7 +73,15 @@ namespace GorgonLibrary.Renderers
 			Type type = typeof(T);
 			T result = null;
 
-			GorgonDebug.AssertParamString(name, "name");
+            if (name == null)
+            {
+                throw new ArgumentNullException("name");
+            }
+
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                throw new ArgumentException("The parameter must not be empty.", "name");
+            }
 
 			result = (T)(Activator.CreateInstance(type, System.Reflection.BindingFlags.CreateInstance | System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance, null,  new object[] { _gorgon2D, name }, null));
 			result.Load(stream);
@@ -98,13 +106,11 @@ namespace GorgonLibrary.Renderers
 		public T FromMemory<T>(string name, byte[] data)
 			where T : class, IPersistedRenderable
 		{
-			GorgonDebug.AssertNull<byte[]>(data, "data");
-
-			if (data.Length == 0)
-			{
-				return null;
-			}
-
+            if (data == null)
+            {
+                throw new ArgumentNullException("data");
+            }
+			
 			using (MemoryStream stream = new MemoryStream(data))
 			{
 				return FromStream<T>(name, stream);
@@ -131,7 +137,15 @@ namespace GorgonLibrary.Renderers
 		public T FromFile<T>(string name, string filePath)
 			where T : class, IPersistedRenderable
 		{
-			GorgonDebug.AssertParamString(filePath, "filePath");
+            if (filePath == null)
+            {
+                throw new ArgumentNullException("filePath");
+            }
+
+            if (string.IsNullOrWhiteSpace(filePath))
+            {
+                throw new ArgumentException("The parameter must not be empty.", "filePath");
+            }
 
 			using (FileStream stream = File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.Read))
 			{

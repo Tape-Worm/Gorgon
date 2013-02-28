@@ -964,6 +964,16 @@ namespace GorgonLibrary.Graphics
 		public T FromFile<T>(string name, string filePath, GorgonImageCodec codec)
 			where T : GorgonTexture
 		{
+            if (filePath == null)
+            {
+                throw new ArgumentNullException("filePath");
+            }
+
+            if (string.IsNullOrWhiteSpace(filePath))
+            {
+                throw new ArgumentException("The parameter must not be empty.", "filePath");
+            }
+
 			using (var fileStream = File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.Read))
 			{
 				return FromStream<T>(name, fileStream, (int)fileStream.Length, codec);
@@ -1108,9 +1118,6 @@ namespace GorgonLibrary.Graphics
 		/// </exception>
 		public GorgonTexture3D CreateTexture(string name, int width, int height, int depth, BufferFormat format, BufferUsage usage)
 		{
-			if (usage == BufferUsage.Immutable)
-				throw new ArgumentException("Cannot use immutable without initialization data.", "usage");
-
 			return CreateTexture<GorgonTexture3D>(name, new GorgonTexture3DSettings()
 			{
 				Width = width,
@@ -1142,9 +1149,6 @@ namespace GorgonLibrary.Graphics
 		/// </exception>
 		public GorgonTexture2D CreateTexture(string name, int width, int height, BufferFormat format, BufferUsage usage)
 		{
-			if (usage == BufferUsage.Immutable)
-				throw new ArgumentException("Cannot use immutable without initialization data.", "usage");
-
 			return CreateTexture<GorgonTexture2D>(name, new GorgonTexture2DSettings()
 			{
 				Width = width,
@@ -1176,9 +1180,6 @@ namespace GorgonLibrary.Graphics
 		/// </exception>
 		public GorgonTexture1D CreateTexture(string name, int width, BufferFormat format, BufferUsage usage)
 		{
-			if (usage == BufferUsage.Immutable)
-				throw new ArgumentException("Cannot use immutable without initialization data.", "usage");
-
 			return CreateTexture<GorgonTexture1D>(name, new GorgonTexture1DSettings()
 			{
 				Width = width,
@@ -1304,7 +1305,7 @@ namespace GorgonLibrary.Graphics
 
 			if (data.Count == 0)
 			{
-				throw new ArgumentException("There was no image data to upload.", "data");
+				throw new ArgumentException("There was no image data to upload to the texture.", "data");
 			}
 
 			// Get the settings from the image data.
