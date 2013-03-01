@@ -784,7 +784,7 @@ namespace GorgonLibrary.GorgonEditor
 
 			try
 			{
-				ToolStripManager.Renderer = new MetroDarkRenderer();
+				ToolStripManager.Renderer = new DarkFormsRenderer();
 
 				// Adjust main window.
 				Visible = true;

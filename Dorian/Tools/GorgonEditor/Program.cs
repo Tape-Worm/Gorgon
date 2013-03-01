@@ -222,7 +222,6 @@ namespace GorgonLibrary.GorgonEditor
 				Application.EnableVisualStyles();
 				Application.SetCompatibleTextRenderingDefault(false);
 
-				Project.LoadProject(Path.GetPathRoot(Environment.GetCommandLineArgs()[0]) + @"unpak\");
 				Settings.Load();
 								
 				Gorgon.Run(new AppContext());

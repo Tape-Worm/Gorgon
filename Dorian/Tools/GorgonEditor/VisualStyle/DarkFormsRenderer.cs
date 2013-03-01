@@ -36,9 +36,34 @@ using System.Windows.Forms.VisualStyles;
 
 namespace GorgonLibrary.GorgonEditor
 {
-	public class MetroDarkRenderer
+	public class DarkFormsRenderer
 		: ToolStripRenderer
 	{
+        /// <summary>
+        /// Dark background color for most items.
+        /// </summary>
+        public Color DarkBackground = Color.FromArgb(58, 58, 58);
+        /// <summary>
+        /// Hilighted menu item background color.
+        /// </summary>
+        public Color MenuHilightBackground = Color.FromArgb(189, 189, 189);
+        /// <summary>
+        /// Hilighted menu item foreground color.
+        /// </summary>
+        public Color MenuHilightForeground = Color.FromArgb(51, 51, 51);
+        /// <summary>
+        /// Border color.
+        /// </summary>
+        public Color BorderColor = Color.FromArgb(88, 85, 90);
+        /// <summary>
+        /// Disabled color.
+        /// </summary>
+        public Color DisabledColor = Color.FromArgb(102, 102, 102);
+        /// <summary>
+        /// Foreground color.
+        /// </summary>
+        public Color ForeColor = Color.White;
+        
 		/// <summary>
 		/// Raises the <see cref="E:System.Windows.Forms.ToolStripRenderer.RenderToolStripBorder"/> event.
 		/// </summary>
@@ -55,9 +80,9 @@ namespace GorgonLibrary.GorgonEditor
 		protected override void OnRenderArrow(ToolStripArrowRenderEventArgs e)
 		{
 			if (e.Item.Enabled)
-				e.ArrowColor = Color.White;
+				e.ArrowColor = ForeColor;
 			else
-				e.ArrowColor = Color.Black;
+				e.ArrowColor = DisabledColor;
 			base.OnRenderArrow(e);
 		}
 
@@ -98,10 +123,19 @@ namespace GorgonLibrary.GorgonEditor
 		/// <param name="e">A <see cref="T:System.Windows.Forms.ToolStripItemTextRenderEventArgs"/> that contains the event data.</param>
 		protected override void OnRenderItemText(ToolStripItemTextRenderEventArgs e)
 		{
-			Color textColor = Color.White;
-				
-			if (!e.Item.Enabled)
-				textColor = Color.FromArgb(255, 0, 0, 0);
+			Color textColor = ForeColor;
+
+            if (!e.Item.Enabled)
+            {
+                textColor = DisabledColor;
+            }
+            else
+            {
+                if (e.Item.Selected)
+                {
+                    textColor = MenuHilightForeground;
+                }
+            }
 
 			ToolStrip strip = e.Item.GetCurrentParent();
 
@@ -110,7 +144,7 @@ namespace GorgonLibrary.GorgonEditor
 				if (e.Item.AutoSize)
 					e.TextRectangle = new Rectangle(e.TextRectangle.Location, Size.Round(e.Graphics.MeasureString(e.Text, e.TextFont)));
 			}
-
+                        
 			TextRenderer.DrawText(e.Graphics, e.Text, e.TextFont, e.TextRectangle, textColor, e.TextFormat);
 		}
 
@@ -130,7 +164,7 @@ namespace GorgonLibrary.GorgonEditor
 
 			if (item.Selected)
 			{
-				using (Brush backBrush = new SolidBrush(Color.FromKnownColor(item.DropDown.Visible ? KnownColor.DimGray : KnownColor.SteelBlue)))
+                using (Brush backBrush = new SolidBrush(item.DropDown.Visible ? MenuHilightBackground : DarkBackground))
 					e.Graphics.FillRectangle(backBrush, new Rectangle(1, 1, e.Item.Width - 2, e.Item.Height - 2));
 			}
 
@@ -138,9 +172,12 @@ namespace GorgonLibrary.GorgonEditor
 			{
 				if (item.DropDown.Visible)
 				{
-					e.Graphics.DrawLine(Pens.Black, new Point(0, 0), new Point(e.Item.Width - 1, 0));
-					e.Graphics.DrawLine(Pens.Black, new Point(0, 0), new Point(0, e.Item.Height));
-					e.Graphics.DrawLine(Pens.Black, new Point(e.Item.Width - 1, 0), new Point(e.Item.Width - 1, e.Item.Height));
+                    using (var pen = new Pen(BorderColor, 1.0f))
+                    {
+                        e.Graphics.DrawLine(pen, new Point(0, 0), new Point(e.Item.Width - 1, 0));
+                        e.Graphics.DrawLine(pen, new Point(0, 0), new Point(0, e.Item.Height));
+                        e.Graphics.DrawLine(pen, new Point(e.Item.Width - 1, 0), new Point(e.Item.Width - 1, e.Item.Height));
+                    }
 				}
 			}
 		}
@@ -153,7 +190,7 @@ namespace GorgonLibrary.GorgonEditor
 		{			
 			if (e.Item.Selected)
 			{
-				Color color = Color.FromKnownColor(KnownColor.SteelBlue);
+				Color color = MenuHilightBackground;
 
 				if (Control.MouseButtons != MouseButtons.None)
 					color = Color.FromKnownColor(KnownColor.DodgerBlue);
@@ -185,16 +222,19 @@ namespace GorgonLibrary.GorgonEditor
 		/// <param name="e">A <see cref="T:System.Windows.Forms.ToolStripRenderEventArgs"/> that contains the event data.</param>
 		protected override void OnRenderToolStripBackground(ToolStripRenderEventArgs e)
 		{
-			using(Brush backBrush = new SolidBrush(Color.FromArgb(255, 160, 160, 160)))
+			using(Brush backBrush = new SolidBrush(DarkBackground))
 			{				
-				using (Pen selectPen = new Pen(Color.FromKnownColor(KnownColor.SteelBlue)))
+				using (Pen selectPen = new Pen(MenuHilightBackground))
 				{
 					e.Graphics.FillRectangle(backBrush, e.AffectedBounds);
 
 					if ((e.ToolStrip.IsDropDown))
 					{					
 						ToolStripDropDownMenu menu = e.ToolStrip as ToolStripDropDownMenu;
-						e.Graphics.DrawRectangle(Pens.Black, new Rectangle(e.AffectedBounds.Left, e.AffectedBounds.Top, e.AffectedBounds.Width - 1, e.AffectedBounds.Height - 1));
+                        using (Pen borderPen = new Pen(BorderColor))
+                        {
+                            e.Graphics.DrawRectangle(borderPen, new Rectangle(e.AffectedBounds.Left, e.AffectedBounds.Top, e.AffectedBounds.Width - 1, e.AffectedBounds.Height - 1));
+                        }
 						e.Graphics.FillRectangle(backBrush, e.ConnectedArea);
 						//e.Graphics.DrawLine(selectPen, e.ConnectedArea.Left, e.ConnectedArea.Top, e.ConnectedArea.Right - 1, e.ConnectedArea.Top);
 					}
@@ -208,10 +248,13 @@ namespace GorgonLibrary.GorgonEditor
 		/// <param name="e">A <see cref="T:System.Windows.Forms.ToolStripSeparatorRenderEventArgs"/> that contains the event data.</param>
 		protected override void OnRenderSeparator(ToolStripSeparatorRenderEventArgs e)
 		{
-			if (!e.Vertical)
-				e.Graphics.DrawLine(Pens.Black, new Point(0, e.Item.ContentRectangle.Height / 2), new Point(e.Item.Width, e.Item.ContentRectangle.Height / 2));
-			else
-				e.Graphics.DrawLine(Pens.Black, new Point(e.Item.ContentRectangle.Width / 2, e.Item.ContentRectangle.Top + 3), new Point(e.Item.ContentRectangle.Width / 2, e.Item.ContentRectangle.Bottom - 5));
+            using (var pen = new Pen(BorderColor, 1.0f))
+            {
+                if (!e.Vertical)
+                    e.Graphics.DrawLine(pen, new Point(0, e.Item.ContentRectangle.Height / 2), new Point(e.Item.Width, e.Item.ContentRectangle.Height / 2));
+                else
+                    e.Graphics.DrawLine(pen, new Point(e.Item.ContentRectangle.Width / 2, e.Item.ContentRectangle.Top + 3), new Point(e.Item.ContentRectangle.Width / 2, e.Item.ContentRectangle.Bottom - 5));
+            }
 		}
 
 		/// <summary>
@@ -224,22 +267,25 @@ namespace GorgonLibrary.GorgonEditor
 
 			if (item.Selected)
 			{
-				using (Brush backBrush = new SolidBrush(Color.FromKnownColor(item.DropDown.Visible ? KnownColor.DimGray : KnownColor.SteelBlue)))
+				using (Brush backBrush = new SolidBrush(item.DropDown.Visible ? DarkBackground : MenuHilightBackground))
 					e.Graphics.FillRectangle(backBrush, new Rectangle(1, 1, e.Item.Width - 2, e.Item.Height - 2));
 			}
 
 			if (item.DropDown.Visible)
 			{
-				e.Graphics.DrawLine(Pens.Black, new Point(0, 0), new Point(e.Item.Width - 1, 0));
-				e.Graphics.DrawLine(Pens.Black, new Point(0, 0), new Point(0, e.Item.Height));
-				e.Graphics.DrawLine(Pens.Black, new Point(e.Item.Width - 1, 0), new Point(e.Item.Width - 1, e.Item.Height));
+                using (var pen = new Pen(BorderColor, 1.0f))
+                {
+                    e.Graphics.DrawLine(pen, new Point(0, 0), new Point(e.Item.Width - 1, 0));
+                    e.Graphics.DrawLine(pen, new Point(0, 0), new Point(0, e.Item.Height));
+                    e.Graphics.DrawLine(pen, new Point(e.Item.Width - 1, 0), new Point(e.Item.Width - 1, e.Item.Height));
+                }
 			}
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="MetroDarkRenderer"/> class.
+		/// Initializes a new instance of the <see cref="DarkFormsRenderer"/> class.
 		/// </summary>
-		public MetroDarkRenderer()			
+		public DarkFormsRenderer()			
 			: base()
 		{			
 		}
