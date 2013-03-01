@@ -35,6 +35,15 @@ namespace Tester_Graphics
 		private GorgonPixelShader _shader = null;
         private ushort[] _delays = null;
 		private int _frame = 0;
+		private GorgonFont _font = null;
+		private GorgonText _text = null;
+		private GorgonRectangle _rect = null;
+		private GorgonRasterizerStates _wireFrame = new GorgonRasterizerStates()
+		{
+			CullingMode = CullingMode.Back,
+			FillMode = FillMode.Wireframe,
+			IsDepthClippingEnabled = true
+		};
 
 		private bool Idle()
 		{
@@ -44,7 +53,7 @@ namespace Tester_Graphics
                 _2D.PixelShader.ConstantBuffers[2] = _frameIndex;
             }
             _2D.Target = _target;
-
+			
 			_sprite.Draw();
 
             _2D.PixelShader.Current = null;
@@ -94,6 +103,17 @@ namespace Tester_Graphics
                 }
             }
 
+			_rect.Draw();
+			//_2D.ClipRegion = new Rectangle(0, 0, 64, 32);
+			GorgonRasterizerStates prevstate = _graphics.Rasterizer.States;
+//			_2D.Render(false);
+
+//			_graphics.Rasterizer.States = _wireFrame;
+			_text.Draw();			
+//			_2D.Render(false);
+//			_graphics.Rasterizer.States = prevstate;
+			//_2D.ClipRegion = null;
+
 			_2D.Render();
 			return true;
 		}
@@ -122,17 +142,20 @@ namespace Tester_Graphics
 
 			try
 			{
+				int count = 8;
+				int quality = GorgonVideoDeviceEnumerator.VideoDevices[0].GetMultiSampleQuality(BufferFormat.R8G8B8A8_UIntNormal, count) - 1;
 				_graphics = new GorgonGraphics(DeviceFeatureLevel.SM5);
 				_swap = _graphics.Output.CreateSwapChain("Screen", new GorgonSwapChainSettings()
 				{
 					IsWindowed = true,
 					Width = 800,
 					Height = 600,
-					Format = BufferFormat.R8G8B8A8_UIntNormal_sRGB
+					MultiSample = new GorgonMultisampling(count, quality),
+					Format = BufferFormat.R8G8B8A8_UIntNormal
 				});
 
 				//GorgonImageCodecs.DDS.LegacyConversionFlags = DDSFlags.NoR10B10G10A2Fix;
-                string fileName = @"c:\mike\unpak\lightning.gif";
+                string fileName = @"d:\images\rain_test.gif";
 				//GorgonImageCodecs.TIFF.UseAllFrames = true;
 				var codec = new GorgonCodecGIF();
 				codec.Clip = true;	// Clip this image because animated gifs can have varying frame sizes and resizing the frames can cause issues.				
@@ -143,7 +166,7 @@ namespace Tester_Graphics
 					//imageData.Resize(64, 128, false, ImageFilter.Cubic);
 					//_texture = _graphics.Textures.FromFile<GorgonTexture2D>("Test", fileName, codec);
 					_texture = _graphics.Textures.CreateTexture<GorgonTexture2D>("Test", imageData);
-                    throw new Exception("Test memory leaks.");
+                    //throw new Exception("Test memory leaks.");
 				}
 
                 //_texture.Save(@"d:\unpak\saveTest.png", new GorgonCodecPNG());
@@ -170,10 +193,28 @@ namespace Tester_Graphics
 					_texture = _graphics.Textures.FromStream<GorgonTexture2D>("Test", stream, (int)(stream.Length - stream.Position), new GorgonCodecGIF());
 				}*/
 
-				
+				_font = _graphics.Fonts.CreateFont("Test", new GorgonFontSettings() {
+					FontFamilyName = "Times New Roman", 
+					Size = 96.0f, 
+					FontStyle = FontStyle.Bold, 
+					AntiAliasingMode = FontAntiAliasMode.AntiAliasHQ, 
+					TextureSize = new System.Drawing.Size(256, 256),
+					OutlineSize = 2
+				});				
 
-				_2D = _graphics.Output.Create2DRenderer(_swap);
-				
+				_2D = _graphics.Output.Create2DRenderer(_swap);				
+
+				_text = _2D.Renderables.CreateText("Test", _font, "Testing gradient\nTesting spacing.");
+				_text.SmoothingMode = SmoothingMode.Smooth;
+				_text.Color = Color.Blue;
+				_text.SetCornerColor(RectangleCorner.LowerRight, Color.Cyan);
+				_text.SetCornerColor(RectangleCorner.LowerLeft, Color.Cyan);
+				_text.Angle = 40.0f;				
+				_text.Position = new Vector2(0, 32);
+
+				_rect = _2D.Renderables.CreateRectangle("Rect", new RectangleF(_text.Position, _text.Size), Color.DarkGray, true);
+				_rect.Angle = _text.Angle;
+
 				_sprite = _2D.Renderables.CreateSprite("Test", new Vector2(_texture.Settings.Width, _texture.Settings.Height), _texture);
                 _sprite.Blending.SourceAlphaBlend = BlendType.One;
                 _sprite.Blending.DestinationAlphaBlend = BlendType.One;
