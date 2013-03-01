@@ -114,6 +114,7 @@
       <DependentUpon>formProjectFolderSelector.cs</DependentUpon>
     </Compile>
     <Compile Include="ProjectWriterPlugIn.cs" />
+    <Compile Include="VisualStyle\DarkFormsRenderer.cs" />
     <Compile Include="Win32API.cs" />
     <Compile Include="Designers\CharacterSetEditor.cs" />
     <Compile Include="Designers\CharacterSetTypeConverter.cs" />
@@ -181,7 +182,6 @@
     <Compile Include="PropertyGrid\DocumentTypeDescriptor.cs" />
     <Compile Include="PropertyGrid\DocumentPropertyDescriptor.cs" />
     <Compile Include="Designers\RGBATypeConverter.cs" />
-    <Compile Include="VisualStyle\MetroDarkRenderer.cs" />
     <EmbeddedResource Include="Controls\controlColorPicker.resx">
       <DependentUpon>controlColorPicker.cs</DependentUpon>
     </EmbeddedResource>
