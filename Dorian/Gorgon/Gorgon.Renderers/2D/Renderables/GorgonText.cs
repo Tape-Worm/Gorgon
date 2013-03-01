@@ -189,6 +189,7 @@ namespace GorgonLibrary.Renderers
 				if (_lineSpace != value)
 				{
 					_lineSpace = value;
+					_size = GetTextSize();
 					_needsVertexUpdate = true;
 				}
 			}
@@ -643,7 +644,7 @@ namespace GorgonLibrary.Renderers
 							pos.X += glyph.Advance.Z;
 					}
 					else
-						pos.X += glyph.GlyphCoordinates.Width;
+						pos.X += glyph.GlyphCoordinates.Width + outlineOffset.X;
 				}
 
 				// TODO: Ensure that this is documented somewhere.				
@@ -829,10 +830,11 @@ namespace GorgonLibrary.Renderers
 		/// <returns>The width, pixels, of a single line of text.</returns>
 		private float LineMeasure(string line, float outlineOffset)
 		{
+			bool offsetApplied = false;
 			float size = 0;
 
 			for (int i = 0; i < line.Length; i++)
-			{
+			{				
 				GorgonGlyph glyph = null;
 				char c = line[i];
 
@@ -854,26 +856,28 @@ namespace GorgonLibrary.Renderers
 						continue;
 				}
 
+				// Include the initial offset.
+				if (!offsetApplied)
+				{
+					size += glyph.Offset.X + outlineOffset;
+					offsetApplied = true;
+				}
+
+				// Apply kerning pairs.
 				if (_useKerning)
 				{
-					if (i < line.Length - 1)
+					size += glyph.Advance.X + glyph.Advance.Y + outlineOffset;
+
+					if ((i < line.Length - 1) && (_font.KerningPairs.Count > 0))
 					{
-						size += glyph.Advance.X + glyph.Advance.Y + outlineOffset;
-
-						if (_font.KerningPairs.Count > 0)
-						{
-							GorgonKerningPair kernPair = new GorgonKerningPair(c, line[i + 1]);
-
-							if (_font.KerningPairs.ContainsKey(kernPair))
-								size += _font.KerningPairs[kernPair];
-							else
-								size += glyph.Advance.Z;
-						}
+						GorgonKerningPair kerning = new GorgonKerningPair(c, line[i + 1]);
+						if (_font.KerningPairs.ContainsKey(kerning))
+							size += _font.KerningPairs[kerning];
 						else
 							size += glyph.Advance.Z;
 					}
 					else
-						size += glyph.GlyphCoordinates.Width;
+						size += glyph.Advance.Z;
 				}
 				else
 					size += glyph.GlyphCoordinates.Width + outlineOffset;
@@ -897,14 +901,40 @@ namespace GorgonLibrary.Renderers
 				outlineSize = _font.Settings.OutlineSize;
 
 			if (_lineSpace != 1.0)
-				result.Y = (_lines.Count - 1) * (((_font.FontHeight + outlineSize) * _lineSpace)) + (_font.FontHeight + outlineSize);
+				result.Y = (_lines.Count - 1) * (((_font.FontHeight + (outlineSize * 2.0f)) * _lineSpace)) + (_font.FontHeight + (outlineSize * 2.0f));
 			else
-				result.Y = (_lines.Count * (((_font.FontHeight + outlineSize) * _lineSpace)));
+				result.Y = (_lines.Count * (_font.FontHeight + (outlineSize * 2.0f)));
 
 			for (int i = 0; i < _lines.Count; i++)
 				result.X = result.X.Max(LineMeasure(_lines[i], outlineSize));
 
 			return result;
+		}
+
+		/// <summary>
+		/// Function to set the color for a specific corner on all characters in the string.
+		/// </summary>
+		/// <param name="corner">Corner of the characters to set.</param>
+		/// <param name="color">Color to set.</param>
+		public void SetCornerColor(RectangleCorner corner, GorgonColor color)
+		{
+			int index = (int)corner;
+
+			if (color != _colors[index])
+			{
+				_colors[index] = color;
+				_needsColorUpdate = true;
+			}
+		}
+
+		/// <summary>
+		/// Function to retrieve the color for a specific corner on all characters in the string.
+		/// </summary>
+		/// <param name="corner">Corner of the characters to retrieve the color from.</param>
+		/// <returns>The color on the specified corner of the characters.</returns>
+		public GorgonColor GetCornerColor(RectangleCorner corner)
+		{
+			return _colors[(int)corner];
 		}
 
 		/// <summary>
@@ -1001,15 +1031,15 @@ namespace GorgonLibrary.Renderers
 				_font.HasChanged = false;
 			}
 
+			if ((ClipToRectangle) && (((lastClip == null) && (_textRect != null)) || ((lastClip != null) && (lastClip.Value != ClipRegion))))
+				Gorgon2D.ClipRegion = clipRegion;
+
 			states = Gorgon2D.StateManager.CheckState(this);
 			if (states != StateChange.None)
 			{
 				Gorgon2D.RenderObjects();
 				Gorgon2D.StateManager.ApplyState(this, states);
 			}
-
-			if ((ClipToRectangle) && (((lastClip == null) && (_textRect != null)) || ((lastClip != null) && (lastClip.Value != ClipRegion))))
-				Gorgon2D.ClipRegion = clipRegion;
 
 			if (_needsVertexUpdate)
 			{
@@ -1086,7 +1116,9 @@ namespace GorgonLibrary.Renderers
 			}
 
 			if (ClipToRectangle)
+			{
 				Gorgon2D.ClipRegion = lastClip;
+			}
 		}
 		#endregion
 

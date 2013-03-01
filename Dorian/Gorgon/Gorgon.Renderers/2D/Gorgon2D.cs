@@ -531,7 +531,7 @@ namespace GorgonLibrary.Renderers
 			set
 			{
 				if (_clip != value)
-				{
+				{					
 					RenderObjects();
 
 					_clip = value;

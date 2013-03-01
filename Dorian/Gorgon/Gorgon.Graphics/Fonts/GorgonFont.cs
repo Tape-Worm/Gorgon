@@ -1260,10 +1260,16 @@ namespace GorgonLibrary.Graphics
 			List<char> availableCharacters = null;
 			CharacterRange[] range = new[] { new CharacterRange(0, 1) };
 
-			GorgonDebug.AssertNull<GorgonFontSettings>(settings, "settings");
-			GorgonDebug.AssertParamString(settings.FontFamilyName, "Settings.FontFamilyName");
+			if (settings == null)
+			{
+				throw new ArgumentNullException("settings");
+			}
 
-#if DEBUG
+			if (string.IsNullOrWhiteSpace(settings.FontFamilyName))
+			{
+				throw new ArgumentException("The font family name must not be NULL or empty.", "settings");
+			}
+
 			if (settings.TextureSize.Width >= Graphics.Textures.MaxWidth)
 				throw new ArgumentException("The texture width '" + settings.TextureSize.Width.ToString() + "' is too large for the current feature level.");
 
@@ -1272,7 +1278,6 @@ namespace GorgonLibrary.Graphics
 
 			if (!settings.Characters.Contains(settings.DefaultCharacter))
 				throw new ArgumentException("The default character '" + settings.DefaultCharacter.ToString() + "' does not exist in the font character set.");
-#endif
 
 			try
 			{

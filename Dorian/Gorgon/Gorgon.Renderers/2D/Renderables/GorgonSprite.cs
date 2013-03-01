@@ -68,7 +68,7 @@ namespace GorgonLibrary.Renderers
 	/// A sprite object.
 	/// </summary>
 	public class GorgonSprite
-		: GorgonMoveable, IDeferredTextureLoad, I2DCollisionObject, IPersistedRenderable, IRenderableChild
+		: GorgonMoveable, IDeferredTextureLoad, I2DCollisionObject, IPersistedRenderable
 	{
 		#region Constants.
 		/// <summary>
@@ -78,14 +78,6 @@ namespace GorgonLibrary.Renderers
 		#endregion
 
 		#region Variables.
-        private bool _inheritRotation = true;                                           // Flag to indicate whether this sprite should inherit its rotation from its parent.
-        private bool _inheritScale = false;                                             // Flag to indicate whether this sprite should inherit its scale from its parent.
-        private bool _parentChanged = false;                                            // Flag to indicate whether the parent renderable has changed or not.
-        private Vector2 _finalPosition = Vector2.Zero;                                  // Final position.
-        private Vector2 _finalScale = new Vector2(1);                                   // Final scale.
-        private float _finalAngle = 0.0f;                                               // Final angle.
-        private GorgonRenderableChildrenList _children = null;                          // Children of this sprite.
-        private IRenderableChild _parent = null;                                        // Parent of this sprite.
         private byte[] _headerData = null;                                              // File header data.
 		private float[] _corners = new float[4];										// Corners for the sprite.
 		private string _textureName = string.Empty;										// Name of the texture for the sprite.
@@ -197,53 +189,6 @@ namespace GorgonLibrary.Renderers
 		#endregion
 
 		#region Methods.
-        /// <summary>
-        /// Function to update the transform of this sprite based on its parent.
-        /// </summary>
-        private void UpdateFromParent()
-        {
-            if (!_parentChanged)
-                return;
-
-            if (_parent == null)
-            {
-                _finalPosition = Position;
-                _finalAngle = Angle;
-                _finalScale = Scale;
-            }
-            else
-            {
-                Vector2 parentScale = _parent.Scale;
-                Vector2 parentPosition = _parent.Position;
-                Vector2 scale = Scale;
-                Vector2 position = Position;
-                float angle = _parent.Angle.Radians();                      // Angle in radians.
-                float cos = angle.Cos();                                    // Cached cosine.
-                float sin = angle.Sin();                                    // Cached sine.
-
-                // Rotate around the offset from the parent.
-                _finalPosition.X = ((Position.X * _parent.Scale.X) * cos) - ((Position.Y * _parent.Scale.Y) * sin);
-                _finalPosition.Y = ((Position.X * _parent.Scale.X) * sin) + ((Position.Y * _parent.Scale.Y) * cos);
-
-                // Get the scale.
-                if (_inheritScale)
-                    Vector2.Modulate(ref scale, ref parentScale, out _finalScale);
-                else
-                    _finalScale = scale;
-
-                // Get the rotation.
-                if (_inheritRotation)
-                    _finalAngle = _parent.Angle + Angle;
-                else
-                    _finalAngle = Angle;
-
-                // Update the translation.
-                Vector2.Add(ref position, ref parentPosition, out _finalPosition);
-            }
-
-            _parentChanged = false;
-        }
-
 		/// <summary>
 		/// Function to transform the vertices.
 		/// </summary>
@@ -506,7 +451,6 @@ namespace GorgonLibrary.Renderers
 			: base(gorgon2D, name)
 		{
             _headerData = Encoding.UTF8.GetBytes(FileHeader);
-            _children = new GorgonRenderableChildrenList(this);
 
 			InitializeVertices(4);
 
@@ -518,7 +462,6 @@ namespace GorgonLibrary.Renderers
 			Texture = null;
 			TextureRegion = System.Drawing.RectangleF.Empty;
 			Anchor = Vector2.Zero;
-            InheritRotation = true;
 
 			_offsets = new[] { 
 				Vector2.Zero, 
@@ -873,159 +816,5 @@ namespace GorgonLibrary.Renderers
 			}
 		}
 		#endregion
-
-        #region IRenderableChild Members
-        #region Properties.
-        /// <summary>
-        /// Property to return the final position of the child renderable.
-        /// </summary>
-        /// <remarks>
-        /// This will return the absolute position of the child in screen space.
-        /// </remarks>
-        public Vector2 FinalPosition
-        {
-            get 
-            {
-                UpdateFromParent();
-                return _finalPosition;
-            }
-        }
-
-        /// <summary>
-        /// Property to return the final rotation of the child renderable.
-        /// </summary>
-        /// <remarks>
-        /// This will return the absolute angle, in degrees, of rotation for the child.
-        /// </remarks>
-        public float FinalRotation
-        {
-            get 
-            {
-                UpdateFromParent();
-                return _finalAngle;
-            }
-        }
-
-        /// <summary>
-        /// Property to return the final scale of the child renderable.
-        /// </summary>
-        /// <remarks>
-        /// This will return the absolute scale of the child.
-        /// </remarks>
-        public Vector2 FinalScale
-        {
-            get 
-            {
-                UpdateFromParent();
-                return _finalScale;
-            }
-        }
-
-        /// <summary>
-        /// Property to set or return whether to inherit the scale of the parent renderable.
-        /// </summary>
-        /// <remarks>The default value is FALSE.</remarks>
-        public bool InheritScale
-        {
-            get
-            {
-                return _inheritScale;
-            }
-            set
-            {
-                if (value != _inheritScale)
-                {
-                    _inheritScale = value;
-                    _parentChanged = true;
-                    UpdateFromParent();
-                }
-            }
-        }
-
-        /// <summary>
-        /// Property to set or return whether to inherit the rotation of the parent renderable.
-        /// </summary>
-        /// <remarks>The default value is TRUE.</remarks>
-        public bool InheritRotation
-        {
-            get
-            {
-                return _inheritRotation;
-            }
-            set
-            {
-                if (value != _inheritRotation)
-                {
-                    _inheritRotation = value;
-                    _parentChanged = true;
-                    UpdateFromParent();
-                }
-            }
-        }
-
-        /// <summary>
-        /// Property to return the parent of this renderable.
-        /// </summary>
-        public IRenderable Parent
-        {
-            get 
-            {
-                return _parent;
-            }
-        }
-
-        /// <summary>
-        /// Property to return the list of children for this renderable.
-        /// </summary>
-        public GorgonRenderableChildrenList Children
-        {
-            get 
-            {
-                return _children;
-            }
-        }
-        #endregion
-
-        #region Methods.
-        /// <summary>
-        /// Function to update the child renderable from its parent transformation.
-        /// </summary>
-        void IRenderableChild.UpdateFromParent()
-        {
-            UpdateFromParent();
-        }
-
-        /// <summary>
-        /// Function called when the parent of a renderable has changed.
-        /// </summary>
-        /// <param name="parent">The parent of the renderable.</param>
-        void IRenderableChild.OnParentChanged(IRenderableChild parent)
-        {
-            if (parent == null)
-            {
-                _parentChanged = true;
-                UpdateFromParent();
-
-                Position = _finalPosition;
-                if (InheritRotation)
-                {
-                    Angle = _finalAngle;
-                }
-                if (InheritScale)
-                {
-                    Scale = _finalScale;
-                }
-            }
-
-            _parent = parent;
-
-            if (parent != null)
-            {
-                _parentChanged = true;
-                UpdateFromParent();
-            }
-        }
-        #endregion
-        #endregion
     }
 }
