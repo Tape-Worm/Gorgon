@@ -84,7 +84,6 @@
 			this.checkBold.TabIndex = 7;
 			this.checkBold.Text = "Bold";
 			this.checkBold.UseVisualStyleBackColor = false;
-			this.checkBold.Click += new System.EventHandler(this.comboFonts_SelectedIndexChanged);
 			// 
 			// checkItalic
 			// 
@@ -102,7 +101,6 @@
 			this.checkItalic.TabIndex = 8;
 			this.checkItalic.Text = "Italic";
 			this.checkItalic.UseVisualStyleBackColor = false;
-			this.checkItalic.Click += new System.EventHandler(this.comboFonts_SelectedIndexChanged);
 			// 
 			// checkUnderline
 			// 
@@ -120,7 +118,6 @@
 			this.checkUnderline.TabIndex = 9;
 			this.checkUnderline.Text = "Underline";
 			this.checkUnderline.UseVisualStyleBackColor = false;
-			this.checkUnderline.Click += new System.EventHandler(this.comboFonts_SelectedIndexChanged);
 			// 
 			// checkStrikeThrough
 			// 
@@ -138,7 +135,6 @@
 			this.checkStrikeThrough.TabIndex = 10;
 			this.checkStrikeThrough.Text = "Strikethrough";
 			this.checkStrikeThrough.UseVisualStyleBackColor = false;
-			this.checkStrikeThrough.Click += new System.EventHandler(this.comboFonts_SelectedIndexChanged);
 			// 
 			// label2
 			// 
@@ -174,7 +170,6 @@
             0,
             0,
             0});
-			this.numericSize.ValueChanged += new System.EventHandler(this.comboFonts_SelectedIndexChanged);
 			// 
 			// label3
 			// 
@@ -193,15 +188,14 @@
 			this.textName.Name = "textName";
 			this.textName.Size = new System.Drawing.Size(365, 23);
 			this.textName.TabIndex = 0;
-			this.textName.TextChanged += new System.EventHandler(this.textName_TextChanged);
 			// 
 			// panel1
 			// 
 			this.panel1.BackColor = System.Drawing.Color.White;
 			this.panel1.Controls.Add(this.labelPreview);
-			this.panel1.Location = new System.Drawing.Point(13, 235);
+			this.panel1.Location = new System.Drawing.Point(12, 235);
 			this.panel1.Name = "panel1";
-			this.panel1.Size = new System.Drawing.Size(365, 61);
+			this.panel1.Size = new System.Drawing.Size(376, 61);
 			this.panel1.TabIndex = 12;
 			// 
 			// labelPreview
@@ -209,7 +203,7 @@
 			this.labelPreview.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.labelPreview.Location = new System.Drawing.Point(0, 0);
 			this.labelPreview.Name = "labelPreview";
-			this.labelPreview.Size = new System.Drawing.Size(365, 61);
+			this.labelPreview.Size = new System.Drawing.Size(376, 61);
 			this.labelPreview.TabIndex = 0;
 			this.labelPreview.Text = "The quick brown fox jumps over the lazy dog.";
 			this.labelPreview.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -327,12 +321,11 @@
 			this.comboSizeType.Name = "comboSizeType";
 			this.comboSizeType.Size = new System.Drawing.Size(103, 23);
 			this.comboSizeType.TabIndex = 3;
-			this.comboSizeType.SelectedIndexChanged += new System.EventHandler(this.comboFonts_SelectedIndexChanged);
 			// 
 			// label7
 			// 
 			this.label7.AutoSize = true;
-			this.label7.Location = new System.Drawing.Point(13, 217);
+			this.label7.Location = new System.Drawing.Point(9, 217);
 			this.label7.Name = "label7";
 			this.label7.Size = new System.Drawing.Size(51, 15);
 			this.label7.TabIndex = 19;
@@ -341,11 +334,14 @@
 			// buttonOK
 			// 
 			this.buttonOK.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+			this.buttonOK.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(89)))), ((int)(((byte)(89)))), ((int)(((byte)(89)))));
 			this.buttonOK.DialogResult = System.Windows.Forms.DialogResult.OK;
 			this.buttonOK.Enabled = false;
-			this.buttonOK.FlatAppearance.BorderColor = System.Drawing.Color.Black;
-			this.buttonOK.FlatAppearance.MouseDownBackColor = System.Drawing.Color.SteelBlue;
-			this.buttonOK.FlatAppearance.MouseOverBackColor = System.Drawing.Color.SteelBlue;
+			this.buttonOK.FlatAppearance.CheckedBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(68)))), ((int)(((byte)(68)))), ((int)(((byte)(68)))));
+			this.buttonOK.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(68)))), ((int)(((byte)(68)))), ((int)(((byte)(68)))));
+			this.buttonOK.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(189)))), ((int)(((byte)(189)))), ((int)(((byte)(189)))));
+			this.buttonOK.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+			this.buttonOK.ForeColor = System.Drawing.Color.White;
 			this.buttonOK.Image = global::GorgonLibrary.GorgonEditor.Properties.Resources.ok_16x16;
 			this.buttonOK.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			this.buttonOK.Location = new System.Drawing.Point(208, 16);
@@ -354,11 +350,18 @@
 			this.buttonOK.TabIndex = 11;
 			this.buttonOK.Text = "OK";
 			this.buttonOK.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+			this.buttonOK.UseVisualStyleBackColor = false;
 			// 
 			// buttonCancel
 			// 
 			this.buttonCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+			this.buttonCancel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(89)))), ((int)(((byte)(89)))), ((int)(((byte)(89)))));
 			this.buttonCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+			this.buttonCancel.FlatAppearance.CheckedBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(68)))), ((int)(((byte)(68)))), ((int)(((byte)(68)))));
+			this.buttonCancel.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(68)))), ((int)(((byte)(68)))), ((int)(((byte)(68)))));
+			this.buttonCancel.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(189)))), ((int)(((byte)(189)))), ((int)(((byte)(189)))));
+			this.buttonCancel.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+			this.buttonCancel.ForeColor = System.Drawing.Color.White;
 			this.buttonCancel.Image = global::GorgonLibrary.GorgonEditor.Properties.Resources.cancel_16x16;
 			this.buttonCancel.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			this.buttonCancel.Location = new System.Drawing.Point(301, 16);
@@ -367,6 +370,7 @@
 			this.buttonCancel.TabIndex = 12;
 			this.buttonCancel.Text = "Cancel";
 			this.buttonCancel.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+			this.buttonCancel.UseVisualStyleBackColor = true;
 			// 
 			// comboFonts
 			// 
@@ -377,10 +381,10 @@
 			this.comboFonts.Name = "comboFonts";
 			this.comboFonts.Size = new System.Drawing.Size(365, 24);
 			this.comboFonts.TabIndex = 1;
-			this.comboFonts.SelectedIndexChanged += new System.EventHandler(this.comboFonts_SelectedIndexChanged);
 			// 
 			// panel2
 			// 
+			this.panel2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(68)))), ((int)(((byte)(68)))), ((int)(((byte)(68)))));
 			this.panel2.Controls.Add(this.buttonOK);
 			this.panel2.Controls.Add(this.buttonCancel);
 			this.panel2.Dock = System.Windows.Forms.DockStyle.Bottom;
@@ -394,7 +398,7 @@
 			this.AcceptButton = this.buttonOK;
 			this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.BackColor = System.Drawing.SystemColors.Control;
+			this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(58)))), ((int)(((byte)(58)))), ((int)(((byte)(58)))));
 			this.CancelButton = this.buttonCancel;
 			this.ClientSize = new System.Drawing.Size(400, 358);
 			this.Controls.Add(this.label7);
@@ -418,6 +422,7 @@
 			this.Controls.Add(this.label1);
 			this.Controls.Add(this.panel2);
 			this.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.ForeColor = System.Drawing.Color.White;
 			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
 			this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
 			this.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);

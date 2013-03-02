@@ -16,7 +16,7 @@ namespace GorgonLibrary.GorgonEditor
 	/// </summary>
 	public partial class formNewFont : Form
 	{
-		#region Variables.
+/*		#region Variables.
 		private Font _font = null;			// Font used for preview.
 		#endregion
 
@@ -275,7 +275,7 @@ namespace GorgonLibrary.GorgonEditor
 
 			ValidateControls();
 		}
-		#endregion
+		#endregion*/
 
 		#region Constructor/Destructor.
 		/// <summary>

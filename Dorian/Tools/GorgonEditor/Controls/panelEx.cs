@@ -48,8 +48,14 @@ namespace GorgonLibrary.GorgonEditor
 		{
 			base.OnPaint(e);
 
-			e.Graphics.FillRectangle(Brushes.White, e.ClipRectangle);
-			e.Graphics.DrawLine(Pens.Black, new Point(0, e.ClipRectangle.Top), new Point(e.ClipRectangle.Width + 1, e.ClipRectangle.Top));
+			using (var brush = new SolidBrush(BackColor))
+			{
+				e.Graphics.FillRectangle(brush, e.ClipRectangle);
+			}
+			using (var pen = new Pen(DarkFormsRenderer.BorderColor))
+			{
+				e.Graphics.DrawLine(pen, new Point(0, e.ClipRectangle.Top), new Point(e.ClipRectangle.Width + 1, e.ClipRectangle.Top));
+			}
 		}
 
 		/// <summary>
