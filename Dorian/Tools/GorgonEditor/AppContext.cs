@@ -95,9 +95,6 @@ namespace GorgonLibrary.GorgonEditor
 				_splash.UpdateVersion("Initializing graphics...");
 				Program.InitializeGraphics(MainForm);
 
-				// Create the default document.
-				((formMain)MainForm).InitializeDefaultDocument();
-
 				_splash.UpdateVersion(string.Empty);
 
 				while (timer.Milliseconds < 3000)

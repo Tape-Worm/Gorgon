@@ -49,24 +49,6 @@ namespace GorgonLibrary.GorgonEditor
 
 		#region Properties.
 		/// <summary>
-		/// Property to return the current project.
-		/// </summary>
-		public static Project Project
-		{
-			get;
-			private set;
-		}
-
-		/// <summary>
-		/// Property to return the texture used for font tools.
-		/// </summary>
-		public static GorgonTexture2D FontTools
-		{
-			get;
-			private set;
-		}
-
-		/// <summary>
 		/// Property to set or return the settings for the application.
 		/// </summary>
 		public static GorgonEditorSettings Settings
@@ -82,15 +64,6 @@ namespace GorgonLibrary.GorgonEditor
 		{
 			get;
 			private set;
-		}
-
-		/// <summary>
-		/// Property to set or return the currently active document.
-		/// </summary>
-		public static Document CurrentDocument
-		{
-			get;
-			set;
 		}
 
 		/// <summary>
@@ -117,7 +90,7 @@ namespace GorgonLibrary.GorgonEditor
 		/// Function to initialize the graphics interface.
 		/// </summary>
 		/// <param name="form">Main form interface.</param>
-		public static void InitializeGraphics(Form form)
+		static void InitializeGraphics(Form form)
 		{
 			if (Renderer != null)
 			{
@@ -132,7 +105,7 @@ namespace GorgonLibrary.GorgonEditor
 			}
 
 			Graphics = new GorgonGraphics();
-			FontTools = Graphics.Textures.Create2DTextureFromGDIImage("Texture.FontTools", Properties.Resources.IBar);
+			
 			// Create the renderer with a default swap chain.  This is sized to 1x1 to keep from eating
 			// video memory since we'll never use this particular swap chain.
 			// The down side is that we'll end up having to manage our render targets manually.
@@ -157,7 +130,7 @@ namespace GorgonLibrary.GorgonEditor
 		/// <summary>
 		/// Function to update the font cache.
 		/// </summary>
-		public static void UpdateCachedFonts()
+		static void UpdateCachedFonts()
 		{
 			SortedDictionary<string, Font> fonts = null;
 
@@ -207,7 +180,6 @@ namespace GorgonLibrary.GorgonEditor
 		static Program()
 		{
 			Settings = new GorgonEditorSettings();
-			Project = new Project();			
 		}
 		#endregion
 
@@ -233,12 +205,6 @@ namespace GorgonLibrary.GorgonEditor
 			finally
 			{
 				// Get rid of shared resources.
-				if (FontTools != null)
-				{
-					FontTools.Dispose();
-					FontTools = null;
-				}
-
 				if (Renderer != null)
 				{
 					Renderer.Dispose();

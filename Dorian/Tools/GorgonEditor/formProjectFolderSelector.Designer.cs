@@ -109,8 +109,6 @@
 			this.treeFolders.ShowRootLines = false;
 			this.treeFolders.Size = new System.Drawing.Size(422, 319);
 			this.treeFolders.TabIndex = 6;
-			this.treeFolders.BeforeCollapse += new System.Windows.Forms.TreeViewCancelEventHandler(this.treeFolders_BeforeCollapse);
-			this.treeFolders.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treeFolders_AfterSelect);
 			// 
 			// imageTree
 			// 

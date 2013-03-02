@@ -86,26 +86,20 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AppContext.cs" />
-    <Compile Include="Controls\controlDefault.cs">
-      <SubType>UserControl</SubType>
+    <Compile Include="Controls\comboFonts.cs">
+      <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Controls\controlDefault.Designer.cs">
-      <DependentUpon>controlDefault.cs</DependentUpon>
+    <Compile Include="Controls\panelEx.cs">
+      <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Designers\AlphaChannelEditor.cs" />
-    <Compile Include="Designers\AlphaChannelTypeConverter.cs" />
-    <Compile Include="Designers\PointFConverter.cs" />
-    <Compile Include="Documents\DocumentExtensionAttribute.cs" />
-    <Compile Include="Documents\DocumentUnknown.cs" />
-    <Compile Include="Documents\DefaultDocument.cs" />
-    <Compile Include="Documents\ProjectFolderCollection.cs" />
-    <Compile Include="Documents\Project.cs" />
-    <Compile Include="Documents\ProjectFolder.cs" />
-    <Compile Include="formImport.cs">
+    <Compile Include="Controls\panelEx.Designer.cs">
+      <DependentUpon>panelEx.cs</DependentUpon>
+    </Compile>
+    <Compile Include="formNewFont.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="formImport.Designer.cs">
-      <DependentUpon>formImport.cs</DependentUpon>
+    <Compile Include="formNewFont.Designer.cs">
+      <DependentUpon>formNewFont.cs</DependentUpon>
     </Compile>
     <Compile Include="formProjectFolderSelector.cs">
       <SubType>Form</SubType>
@@ -113,54 +107,13 @@
     <Compile Include="formProjectFolderSelector.Designer.cs">
       <DependentUpon>formProjectFolderSelector.cs</DependentUpon>
     </Compile>
-    <Compile Include="ProjectWriterPlugIn.cs" />
     <Compile Include="VisualStyle\DarkFormsRenderer.cs" />
     <Compile Include="Win32API.cs" />
-    <Compile Include="Designers\CharacterSetEditor.cs" />
-    <Compile Include="Designers\CharacterSetTypeConverter.cs" />
-    <Compile Include="Controls\controlColorPicker.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Controls\controlColorPicker.Designer.cs">
-      <DependentUpon>controlColorPicker.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Controls\comboFonts.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Designers\RGBAEditor.cs" />
-    <Compile Include="Documents\DocumentCollection.cs" />
-    <Compile Include="Controls\controlFontDisplay.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Controls\controlFontDisplay.Designer.cs">
-      <DependentUpon>controlFontDisplay.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Documents\DocumentFont.cs" />
-    <Compile Include="Designers\FontFamilyEditor.cs" />
-    <Compile Include="Controls\listBoxFont.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Controls\listBoxFontStyle.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Designers\FontStyleEditor.cs" />
-    <Compile Include="Designers\formCharacterPicker.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Designers\formCharacterPicker.Designer.cs">
-      <DependentUpon>formCharacterPicker.cs</DependentUpon>
-    </Compile>
     <Compile Include="formMain.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="formMain.Designer.cs">
       <DependentUpon>formMain.cs</DependentUpon>
-    </Compile>
-    <Compile Include="formNewFont.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="formNewFont.Designer.cs">
-      <DependentUpon>formNewFont.cs</DependentUpon>
     </Compile>
     <Compile Include="formSplash.cs">
       <SubType>Form</SubType>
@@ -169,33 +122,10 @@
       <DependentUpon>formSplash.cs</DependentUpon>
     </Compile>
     <Compile Include="GorgonEditorSettings.cs" />
-    <Compile Include="Documents\Document.cs" />
-    <Compile Include="Controls\panelEx.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Controls\panelEx.Designer.cs">
-      <DependentUpon>panelEx.cs</DependentUpon>
-    </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="PropertyGrid\DocumentProperty.cs" />
-    <Compile Include="PropertyGrid\DocumentTypeDescriptor.cs" />
-    <Compile Include="PropertyGrid\DocumentPropertyDescriptor.cs" />
-    <Compile Include="Designers\RGBATypeConverter.cs" />
-    <EmbeddedResource Include="Controls\controlColorPicker.resx">
-      <DependentUpon>controlColorPicker.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Controls\controlDefault.resx">
-      <DependentUpon>controlDefault.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Controls\controlFontDisplay.resx">
-      <DependentUpon>controlFontDisplay.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Designers\formCharacterPicker.resx">
-      <DependentUpon>formCharacterPicker.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="formImport.resx">
-      <DependentUpon>formImport.cs</DependentUpon>
+    <EmbeddedResource Include="Controls\panelEx.resx">
+      <DependentUpon>panelEx.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="formMain.resx">
       <DependentUpon>formMain.cs</DependentUpon>
@@ -208,9 +138,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="formSplash.resx">
       <DependentUpon>formSplash.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Controls\panelEx.resx">
-      <DependentUpon>panelEx.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
@@ -248,28 +175,10 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Gorgon2.ico" />
-    <None Include="Resources\project_node_16x16.png" />
-    <None Include="Resources\import_16x16.png" />
-    <None Include="Resources\export_16x16.png" />
-    <None Include="Resources\unknown_document_16x16.png" />
-    <None Include="Resources\font_document_16x16.png" />
-    <None Include="Resources\folder_16x16.png" />
-    <None Include="Resources\font_64x64.png" />
     <None Include="Resources\cancel_16x16.png" />
     <None Include="Resources\ok_16x16.png" />
-    <None Include="Resources\no_16x16.png" />
-    <None Include="Resources\save_as_16x16.png" />
-    <None Include="Resources\open_project_16x16.png" />
-    <None Include="Resources\new_project_16x16.png" />
-    <None Include="Resources\delete_item_16x16.png" />
-    <None Include="Resources\edit_16x16.png" />
-    <None Include="Resources\new_item_16x16.png" />
-    <None Include="Resources\item_actions_16x16.png" />
-    <None Include="Resources\font_16x16.png" />
-    <None Include="Resources\IBar.png" />
     <None Include="Resources\UnicodeData.txt" />
     <None Include="Resources\UnicodeBlocks.txt" />
-    <None Include="Resources\Expando.png" />
     <None Include="Resources\PropertyChecker.png" />
     <None Include="Resources\Check_Enabled.png" />
     <None Include="Resources\Check_Disabled.png" />

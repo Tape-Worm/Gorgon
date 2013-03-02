@@ -42,27 +42,27 @@ namespace GorgonLibrary.GorgonEditor
         /// <summary>
         /// Dark background color for most items.
         /// </summary>
-        public Color DarkBackground = Color.FromArgb(58, 58, 58);
+        public static readonly Color DarkBackground = Color.FromArgb(58, 58, 58);
         /// <summary>
         /// Hilighted menu item background color.
         /// </summary>
-        public Color MenuHilightBackground = Color.FromArgb(189, 189, 189);
+		public static readonly Color MenuHilightBackground = Color.FromArgb(189, 189, 189);
         /// <summary>
         /// Hilighted menu item foreground color.
         /// </summary>
-        public Color MenuHilightForeground = Color.FromArgb(51, 51, 51);
+		public static readonly Color MenuHilightForeground = Color.FromArgb(51, 51, 51);
         /// <summary>
         /// Border color.
         /// </summary>
-        public Color BorderColor = Color.FromArgb(88, 85, 90);
+		public static readonly Color BorderColor = Color.FromArgb(88, 85, 90);
         /// <summary>
         /// Disabled color.
         /// </summary>
-        public Color DisabledColor = Color.FromArgb(102, 102, 102);
+		public static readonly Color DisabledColor = Color.FromArgb(102, 102, 102);
         /// <summary>
         /// Foreground color.
         /// </summary>
-        public Color ForeColor = Color.White;
+		public static readonly Color ForeColor = Color.White;
         
 		/// <summary>
 		/// Raises the <see cref="E:System.Windows.Forms.ToolStripRenderer.RenderToolStripBorder"/> event.
@@ -80,7 +80,16 @@ namespace GorgonLibrary.GorgonEditor
 		protected override void OnRenderArrow(ToolStripArrowRenderEventArgs e)
 		{
 			if (e.Item.Enabled)
-				e.ArrowColor = ForeColor;
+			{
+				if (!e.Item.Selected)
+				{
+					e.ArrowColor = ForeColor;
+				}
+				else
+				{
+					e.ArrowColor = MenuHilightForeground;
+				}
+			}
 			else
 				e.ArrowColor = DisabledColor;
 			base.OnRenderArrow(e);
@@ -130,12 +139,18 @@ namespace GorgonLibrary.GorgonEditor
                 textColor = DisabledColor;
             }
             else
-            {
+            {				
                 if (e.Item.Selected)
                 {
                     textColor = MenuHilightForeground;
                 }
             }
+
+			ToolStripMenuItem item = e.Item as ToolStripMenuItem;
+			if ((item != null) && (item.IsOnDropDown))
+			{				
+				e.TextRectangle = new Rectangle(e.TextRectangle.X - 12, e.TextRectangle.Y, e.TextRectangle.Width, e.TextRectangle.Height);
+			}
 
 			ToolStrip strip = e.Item.GetCurrentParent();
 
@@ -164,8 +179,10 @@ namespace GorgonLibrary.GorgonEditor
 
 			if (item.Selected)
 			{
-                using (Brush backBrush = new SolidBrush(item.DropDown.Visible ? MenuHilightBackground : DarkBackground))
+				using (Brush backBrush = new SolidBrush(MenuHilightBackground))
+				{
 					e.Graphics.FillRectangle(backBrush, new Rectangle(1, 1, e.Item.Width - 2, e.Item.Height - 2));
+				}
 			}
 
 			if (!item.IsOnDropDown)
@@ -208,12 +225,15 @@ namespace GorgonLibrary.GorgonEditor
 		/// <param name="e">A <see cref="T:System.Windows.Forms.ToolStripItemImageRenderEventArgs"/> that contains the event data.</param>
 		protected override void OnRenderItemCheck(ToolStripItemImageRenderEventArgs e)
 		{
-			//base.OnRenderItemCheck(e);
 			Rectangle newRect = new Rectangle(e.Item.Width - e.Image.Width - 5, e.ImageRectangle.Top, e.ImageRectangle.Width, e.ImageRectangle.Height);
-			if (e.Item.Enabled)
-				e.Graphics.DrawImage(Properties.Resources.Check_Enabled, newRect.Location);
+			if ((e.Item.Enabled) && (!e.Item.Selected))
+			{
+				e.Graphics.DrawImage(Properties.Resources.Check_Enabled, newRect);
+			}
 			else
-				e.Graphics.DrawImage(Properties.Resources.Check_Disabled, newRect.Location);
+			{
+				e.Graphics.DrawImage(Properties.Resources.Check_Disabled, newRect);
+			}
 		}
 
 		/// <summary>
@@ -224,20 +244,16 @@ namespace GorgonLibrary.GorgonEditor
 		{
 			using(Brush backBrush = new SolidBrush(DarkBackground))
 			{				
-				using (Pen selectPen = new Pen(MenuHilightBackground))
-				{
-					e.Graphics.FillRectangle(backBrush, e.AffectedBounds);
+				e.Graphics.FillRectangle(backBrush, e.AffectedBounds);
 
-					if ((e.ToolStrip.IsDropDown))
-					{					
-						ToolStripDropDownMenu menu = e.ToolStrip as ToolStripDropDownMenu;
-                        using (Pen borderPen = new Pen(BorderColor))
-                        {
-                            e.Graphics.DrawRectangle(borderPen, new Rectangle(e.AffectedBounds.Left, e.AffectedBounds.Top, e.AffectedBounds.Width - 1, e.AffectedBounds.Height - 1));
-                        }
-						e.Graphics.FillRectangle(backBrush, e.ConnectedArea);
-						//e.Graphics.DrawLine(selectPen, e.ConnectedArea.Left, e.ConnectedArea.Top, e.ConnectedArea.Right - 1, e.ConnectedArea.Top);
-					}
+				if ((e.ToolStrip.IsDropDown))
+				{					
+					ToolStripDropDownMenu menu = e.ToolStrip as ToolStripDropDownMenu;
+                    using (Pen borderPen = new Pen(BorderColor))
+                    {
+                        e.Graphics.DrawRectangle(borderPen, new Rectangle(e.AffectedBounds.Left, e.AffectedBounds.Top, e.AffectedBounds.Width - 1, e.AffectedBounds.Height - 1));
+                    }
+					e.Graphics.FillRectangle(backBrush, e.ConnectedArea);					
 				}
 			}
 		}

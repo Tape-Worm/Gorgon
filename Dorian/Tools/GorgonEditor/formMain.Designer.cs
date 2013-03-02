@@ -70,8 +70,6 @@ namespace GorgonLibrary.GorgonEditor
 			this.itemExit = new System.Windows.Forms.ToolStripMenuItem();
 			this.splitEdit = new System.Windows.Forms.SplitContainer();
 			this.panelEditor = new System.Windows.Forms.Panel();
-			this.tabDocuments = new KRBTabControl.KRBTabControl();
-			this.imageFiles = new System.Windows.Forms.ImageList(this.components);
 			this.tabDocumentManager = new KRBTabControl.KRBTabControl();
 			this.pageItems = new KRBTabControl.TabPageEx();
 			this.containerFiles = new System.Windows.Forms.ToolStripContainer();
@@ -79,41 +77,35 @@ namespace GorgonLibrary.GorgonEditor
 			this.columnFiles = new Aga.Controls.Tree.TreeColumn();
 			this._nodeImage = new Aga.Controls.Tree.NodeControls.NodeStateIcon();
 			this._nodeText = new Aga.Controls.Tree.NodeControls.NodeTextBox();
-			this.stripFiles = new System.Windows.Forms.ToolStrip();
-			this.buttonNewItem = new System.Windows.Forms.ToolStripDropDownButton();
-			this.itemNewFont = new System.Windows.Forms.ToolStripMenuItem();
-			this.buttonEditItem = new System.Windows.Forms.ToolStripButton();
-			this.buttonDeleteItem = new System.Windows.Forms.ToolStripButton();
 			this.pageProperties = new KRBTabControl.TabPageEx();
 			this.propertyItem = new System.Windows.Forms.PropertyGrid();
 			this.popupProperties = new System.Windows.Forms.ContextMenuStrip(this.components);
 			this.itemResetValue = new System.Windows.Forms.ToolStripMenuItem();
+			this.buttonNewItem = new System.Windows.Forms.ToolStripDropDownButton();
+			this.itemNewFont = new System.Windows.Forms.ToolStripMenuItem();
+			this.buttonEditItem = new System.Windows.Forms.ToolStripButton();
+			this.buttonDeleteItem = new System.Windows.Forms.ToolStripButton();
 			this.dialogExport = new System.Windows.Forms.SaveFileDialog();
-			this.menuMain.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.splitEdit)).BeginInit();
 			this.splitEdit.Panel1.SuspendLayout();
 			this.splitEdit.Panel2.SuspendLayout();
 			this.splitEdit.SuspendLayout();
-			this.panelEditor.SuspendLayout();
 			this.tabDocumentManager.SuspendLayout();
 			this.pageItems.SuspendLayout();
 			this.containerFiles.ContentPanel.SuspendLayout();
-			this.containerFiles.TopToolStripPanel.SuspendLayout();
 			this.containerFiles.SuspendLayout();
-			this.stripFiles.SuspendLayout();
 			this.pageProperties.SuspendLayout();
 			this.popupProperties.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// menuMain
 			// 
-			this.menuMain.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.menuFile});
 			this.menuMain.Location = new System.Drawing.Point(0, 0);
 			this.menuMain.Name = "menuMain";
 			this.menuMain.Size = new System.Drawing.Size(944, 24);
 			this.menuMain.TabIndex = 0;
 			this.menuMain.Text = "menuStrip1";
+			this.menuMain.Items.Add(menuFile);
 			// 
 			// menuFile
 			// 
@@ -134,7 +126,6 @@ namespace GorgonLibrary.GorgonEditor
 			// 
 			// itemNew
 			// 
-			this.itemNew.Image = global::GorgonLibrary.GorgonEditor.Properties.Resources.new_project_16x16;
 			this.itemNew.Name = "itemNew";
 			this.itemNew.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.N)));
 			this.itemNew.Size = new System.Drawing.Size(155, 22);
@@ -142,7 +133,6 @@ namespace GorgonLibrary.GorgonEditor
 			// 
 			// itemOpen
 			// 
-			this.itemOpen.Image = global::GorgonLibrary.GorgonEditor.Properties.Resources.open_project_16x16;
 			this.itemOpen.Name = "itemOpen";
 			this.itemOpen.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.O)));
 			this.itemOpen.Size = new System.Drawing.Size(155, 22);
@@ -162,11 +152,9 @@ namespace GorgonLibrary.GorgonEditor
 			// 
 			// itemSaveAs
 			// 
-			this.itemSaveAs.Image = global::GorgonLibrary.GorgonEditor.Properties.Resources.save_as_16x16;
 			this.itemSaveAs.Name = "itemSaveAs";
 			this.itemSaveAs.Size = new System.Drawing.Size(155, 22);
 			this.itemSaveAs.Text = "Save &as...";
-			this.itemSaveAs.Click += new System.EventHandler(this.itemSaveAs_Click);
 			// 
 			// toolStripMenuItem5
 			// 
@@ -175,19 +163,15 @@ namespace GorgonLibrary.GorgonEditor
 			// 
 			// itemImport
 			// 
-			this.itemImport.Image = global::GorgonLibrary.GorgonEditor.Properties.Resources.import_16x16;
 			this.itemImport.Name = "itemImport";
 			this.itemImport.Size = new System.Drawing.Size(155, 22);
 			this.itemImport.Text = "Import...";
-			this.itemImport.Click += new System.EventHandler(this.itemImport_Click);
 			// 
 			// itemExport
 			// 
-			this.itemExport.Image = global::GorgonLibrary.GorgonEditor.Properties.Resources.export_16x16;
 			this.itemExport.Name = "itemExport";
 			this.itemExport.Size = new System.Drawing.Size(155, 22);
 			this.itemExport.Text = "&Export...";
-			this.itemExport.Click += new System.EventHandler(this.itemExport_Click);
 			// 
 			// toolStripSeparator2
 			// 
@@ -204,6 +188,7 @@ namespace GorgonLibrary.GorgonEditor
 			// 
 			// splitEdit
 			// 
+			this.splitEdit.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(68)))), ((int)(((byte)(68)))), ((int)(((byte)(68)))));
 			this.splitEdit.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.splitEdit.FixedPanel = System.Windows.Forms.FixedPanel.Panel2;
 			this.splitEdit.Location = new System.Drawing.Point(0, 24);
@@ -215,6 +200,7 @@ namespace GorgonLibrary.GorgonEditor
 			// 
 			// splitEdit.Panel2
 			// 
+			this.splitEdit.Panel2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(68)))), ((int)(((byte)(68)))), ((int)(((byte)(68)))));
 			this.splitEdit.Panel2.Controls.Add(this.tabDocumentManager);
 			this.splitEdit.Size = new System.Drawing.Size(944, 589);
 			this.splitEdit.SplitterDistance = 715;
@@ -222,88 +208,48 @@ namespace GorgonLibrary.GorgonEditor
 			// 
 			// panelEditor
 			// 
-			this.panelEditor.Controls.Add(this.tabDocuments);
+			this.panelEditor.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(68)))), ((int)(((byte)(68)))), ((int)(((byte)(68)))));
 			this.panelEditor.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.panelEditor.Location = new System.Drawing.Point(0, 0);
 			this.panelEditor.Name = "panelEditor";
 			this.panelEditor.Size = new System.Drawing.Size(715, 589);
 			this.panelEditor.TabIndex = 0;
 			// 
-			// tabDocuments
-			// 
-			this.tabDocuments.AllowDrop = true;
-			this.tabDocuments.BackgroundColor = System.Drawing.Color.DimGray;
-			this.tabDocuments.BackgroundHatcher.HatchType = System.Drawing.Drawing2D.HatchStyle.DashedVertical;
-			this.tabDocuments.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(160)))), ((int)(((byte)(160)))), ((int)(((byte)(160)))));
-			this.tabDocuments.CaptionButtons.InactiveCaptionButtonsColor = System.Drawing.SystemColors.ControlDark;
-			this.tabDocuments.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.tabDocuments.GradientCaption.ActiveCaptionColorEnd = System.Drawing.SystemColors.ControlDark;
-			this.tabDocuments.GradientCaption.ActiveCaptionColorStart = System.Drawing.SystemColors.ControlDark;
-			this.tabDocuments.GradientCaption.ActiveCaptionFontStyle = System.Drawing.FontStyle.Bold;
-			this.tabDocuments.GradientCaption.ActiveCaptionTextColor = System.Drawing.Color.White;
-			this.tabDocuments.GradientCaption.InactiveCaptionColorEnd = System.Drawing.SystemColors.ControlDarkDark;
-			this.tabDocuments.GradientCaption.InactiveCaptionColorStart = System.Drawing.SystemColors.ControlDarkDark;
-			this.tabDocuments.GradientCaption.InactiveCaptionTextColor = System.Drawing.SystemColors.ControlDark;
-			this.tabDocuments.ImageList = this.imageFiles;
-			this.tabDocuments.IsCaptionVisible = false;
-			this.tabDocuments.IsDocumentTabStyle = true;
-			this.tabDocuments.IsDrawTabSeparator = true;
-			this.tabDocuments.IsUserInteraction = false;
-			this.tabDocuments.ItemSize = new System.Drawing.Size(0, 26);
-			this.tabDocuments.Location = new System.Drawing.Point(0, 0);
-			this.tabDocuments.Name = "tabDocuments";
-			this.tabDocuments.Size = new System.Drawing.Size(715, 589);
-			this.tabDocuments.TabGradient.ColorEnd = System.Drawing.Color.FromArgb(((int)(((byte)(160)))), ((int)(((byte)(160)))), ((int)(((byte)(160)))));
-			this.tabDocuments.TabGradient.ColorStart = System.Drawing.Color.FromArgb(((int)(((byte)(160)))), ((int)(((byte)(160)))), ((int)(((byte)(160)))));
-			this.tabDocuments.TabHOffset = 2;
-			this.tabDocuments.TabIndex = 0;
-			this.tabDocuments.UpDownStyle = KRBTabControl.KRBTabControl.UpDown32Style.BlackGlass;
-			this.tabDocuments.TabPageClosing += new System.EventHandler<KRBTabControl.KRBTabControl.SelectedIndexChangingEventArgs>(this.tabDocuments_TabPageClosing);
-			this.tabDocuments.ContextMenuShown += new System.EventHandler<KRBTabControl.KRBTabControl.ContextMenuShownEventArgs>(this.tabDocuments_ContextMenuShown);
-			this.tabDocuments.Selected += new System.Windows.Forms.TabControlEventHandler(this.tabDocuments_Selected);
-			// 
-			// imageFiles
-			// 
-			this.imageFiles.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("imageFiles.ImageStream")));
-			this.imageFiles.TransparentColor = System.Drawing.Color.Transparent;
-			this.imageFiles.Images.SetKeyName(0, "gorgon_icon");
-			this.imageFiles.Images.SetKeyName(1, "font_icon");
-			this.imageFiles.Images.SetKeyName(2, "files_tab");
-			this.imageFiles.Images.SetKeyName(3, "properties_tab");
-			// 
 			// tabDocumentManager
 			// 
 			this.tabDocumentManager.Alignment = System.Windows.Forms.TabAlignment.Bottom;
 			this.tabDocumentManager.Alignments = KRBTabControl.KRBTabControl.TabAlignments.Bottom;
 			this.tabDocumentManager.AllowDrop = true;
-			this.tabDocumentManager.BackgroundColor = System.Drawing.Color.DimGray;
+			this.tabDocumentManager.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(51)))), ((int)(((byte)(51)))), ((int)(((byte)(51)))));
 			this.tabDocumentManager.BackgroundHatcher.HatchType = System.Drawing.Drawing2D.HatchStyle.DashedVertical;
-			this.tabDocumentManager.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(160)))), ((int)(((byte)(160)))), ((int)(((byte)(160)))));
+			this.tabDocumentManager.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(51)))), ((int)(((byte)(51)))), ((int)(((byte)(51)))));
 			this.tabDocumentManager.Controls.Add(this.pageItems);
 			this.tabDocumentManager.Controls.Add(this.pageProperties);
 			this.tabDocumentManager.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.tabDocumentManager.ImageList = this.imageFiles;
 			this.tabDocumentManager.IsCaptionVisible = false;
 			this.tabDocumentManager.IsDocumentTabStyle = true;
-			this.tabDocumentManager.IsDrawTabSeparator = true;
+			this.tabDocumentManager.IsDrawHeader = false;
 			this.tabDocumentManager.IsUserInteraction = false;
 			this.tabDocumentManager.ItemSize = new System.Drawing.Size(0, 28);
 			this.tabDocumentManager.Location = new System.Drawing.Point(0, 0);
 			this.tabDocumentManager.Name = "tabDocumentManager";
 			this.tabDocumentManager.SelectedIndex = 0;
 			this.tabDocumentManager.Size = new System.Drawing.Size(225, 589);
-			this.tabDocumentManager.TabGradient.ColorEnd = System.Drawing.Color.FromArgb(((int)(((byte)(160)))), ((int)(((byte)(160)))), ((int)(((byte)(160)))));
-			this.tabDocumentManager.TabGradient.ColorStart = System.Drawing.Color.FromArgb(((int)(((byte)(160)))), ((int)(((byte)(160)))), ((int)(((byte)(160)))));
+			this.tabDocumentManager.TabBorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(89)))), ((int)(((byte)(89)))), ((int)(((byte)(89)))));
+			this.tabDocumentManager.TabGradient.ColorEnd = System.Drawing.Color.FromArgb(((int)(((byte)(89)))), ((int)(((byte)(89)))), ((int)(((byte)(89)))));
+			this.tabDocumentManager.TabGradient.ColorStart = System.Drawing.Color.FromArgb(((int)(((byte)(89)))), ((int)(((byte)(89)))), ((int)(((byte)(89)))));
+			this.tabDocumentManager.TabGradient.TabPageSelectedTextColor = System.Drawing.Color.White;
+			this.tabDocumentManager.TabGradient.TabPageTextColor = System.Drawing.Color.White;
 			this.tabDocumentManager.TabHOffset = -1;
 			this.tabDocumentManager.TabIndex = 1;
 			this.tabDocumentManager.UpDownStyle = KRBTabControl.KRBTabControl.UpDown32Style.BlackGlass;
 			// 
 			// pageItems
 			// 
-			this.pageItems.BackColor = System.Drawing.Color.DimGray;
+			this.pageItems.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(51)))), ((int)(((byte)(51)))), ((int)(((byte)(51)))));
 			this.pageItems.Controls.Add(this.containerFiles);
 			this.pageItems.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.pageItems.ImageIndex = 2;
+			this.pageItems.ForeColor = System.Drawing.Color.White;
 			this.pageItems.IsClosable = false;
 			this.pageItems.Location = new System.Drawing.Point(1, 1);
 			this.pageItems.Name = "pageItems";
@@ -316,8 +262,10 @@ namespace GorgonLibrary.GorgonEditor
 			// 
 			// containerFiles.ContentPanel
 			// 
+			this.containerFiles.ContentPanel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(51)))), ((int)(((byte)(51)))), ((int)(((byte)(51)))));
 			this.containerFiles.ContentPanel.Controls.Add(this.treeFiles);
-			this.containerFiles.ContentPanel.Size = new System.Drawing.Size(223, 529);
+			this.containerFiles.ContentPanel.ForeColor = System.Drawing.Color.White;
+			this.containerFiles.ContentPanel.Size = new System.Drawing.Size(223, 554);
 			this.containerFiles.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.containerFiles.Location = new System.Drawing.Point(0, 0);
 			this.containerFiles.Name = "containerFiles";
@@ -325,14 +273,10 @@ namespace GorgonLibrary.GorgonEditor
 			this.containerFiles.TabIndex = 0;
 			this.containerFiles.Text = "toolStripContainer1";
 			// 
-			// containerFiles.TopToolStripPanel
-			// 
-			this.containerFiles.TopToolStripPanel.Controls.Add(this.stripFiles);
-			// 
 			// treeFiles
 			// 
-			this.treeFiles.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(160)))), ((int)(((byte)(160)))), ((int)(((byte)(160)))));
-			this.treeFiles.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			this.treeFiles.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(51)))), ((int)(((byte)(51)))), ((int)(((byte)(51)))));
+			this.treeFiles.BorderStyle = System.Windows.Forms.BorderStyle.None;
 			this.treeFiles.Columns.Add(this.columnFiles);
 			this.treeFiles.DefaultToolTipProvider = null;
 			this.treeFiles.DisplayDraggingNodes = true;
@@ -350,9 +294,8 @@ namespace GorgonLibrary.GorgonEditor
 			this.treeFiles.SelectionMode = Aga.Controls.Tree.TreeSelectionMode.Multi;
 			this.treeFiles.ShiftFirstNode = true;
 			this.treeFiles.ShowLines = false;
-			this.treeFiles.Size = new System.Drawing.Size(223, 529);
+			this.treeFiles.Size = new System.Drawing.Size(223, 554);
 			this.treeFiles.TabIndex = 0;
-			this.treeFiles.NodeMouseDoubleClick += new System.EventHandler<Aga.Controls.Tree.TreeNodeAdvMouseEventArgs>(this.treeFiles_NodeMouseDoubleClick);
 			// 
 			// columnFiles
 			// 
@@ -376,61 +319,6 @@ namespace GorgonLibrary.GorgonEditor
 			this._nodeText.LeftMargin = 3;
 			this._nodeText.ParentColumn = null;
 			// 
-			// stripFiles
-			// 
-			this.stripFiles.Dock = System.Windows.Forms.DockStyle.None;
-			this.stripFiles.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
-			this.stripFiles.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.buttonNewItem,
-            this.buttonEditItem,
-            this.buttonDeleteItem});
-			this.stripFiles.Location = new System.Drawing.Point(0, 0);
-			this.stripFiles.Name = "stripFiles";
-			this.stripFiles.Size = new System.Drawing.Size(223, 25);
-			this.stripFiles.Stretch = true;
-			this.stripFiles.TabIndex = 0;
-			// 
-			// buttonNewItem
-			// 
-			this.buttonNewItem.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-			this.buttonNewItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.itemNewFont});
-			this.buttonNewItem.Image = global::GorgonLibrary.GorgonEditor.Properties.Resources.new_item_16x16;
-			this.buttonNewItem.ImageTransparentColor = System.Drawing.Color.Magenta;
-			this.buttonNewItem.Name = "buttonNewItem";
-			this.buttonNewItem.Size = new System.Drawing.Size(29, 22);
-			this.buttonNewItem.Text = "New item";
-			this.buttonNewItem.ToolTipText = "New item...";
-			// 
-			// itemNewFont
-			// 
-			this.itemNewFont.Image = global::GorgonLibrary.GorgonEditor.Properties.Resources.font_16x16;
-			this.itemNewFont.Name = "itemNewFont";
-			this.itemNewFont.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.F)));
-			this.itemNewFont.Size = new System.Drawing.Size(147, 22);
-			this.itemNewFont.Text = "Font...";
-			// 
-			// buttonEditItem
-			// 
-			this.buttonEditItem.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-			this.buttonEditItem.Enabled = false;
-			this.buttonEditItem.Image = global::GorgonLibrary.GorgonEditor.Properties.Resources.edit_16x16;
-			this.buttonEditItem.ImageTransparentColor = System.Drawing.Color.Magenta;
-			this.buttonEditItem.Name = "buttonEditItem";
-			this.buttonEditItem.Size = new System.Drawing.Size(23, 22);
-			this.buttonEditItem.Text = "Edit";
-			// 
-			// buttonDeleteItem
-			// 
-			this.buttonDeleteItem.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-			this.buttonDeleteItem.Enabled = false;
-			this.buttonDeleteItem.Image = global::GorgonLibrary.GorgonEditor.Properties.Resources.delete_item_16x16;
-			this.buttonDeleteItem.ImageTransparentColor = System.Drawing.Color.Magenta;
-			this.buttonDeleteItem.Name = "buttonDeleteItem";
-			this.buttonDeleteItem.Size = new System.Drawing.Size(23, 22);
-			this.buttonDeleteItem.Text = "Delete";
-			this.buttonDeleteItem.Click += new System.EventHandler(this.buttonDeleteItem_Click);
-			// 
 			// pageProperties
 			// 
 			this.pageProperties.BackColor = System.Drawing.Color.DimGray;
@@ -453,6 +341,7 @@ namespace GorgonLibrary.GorgonEditor
 			this.propertyItem.CommandsForeColor = System.Drawing.Color.White;
 			this.propertyItem.CommandsLinkColor = System.Drawing.Color.SteelBlue;
 			this.propertyItem.ContextMenuStrip = this.popupProperties;
+			this.propertyItem.DisabledItemForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(127)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))));
 			this.propertyItem.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.propertyItem.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.propertyItem.HelpBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(160)))), ((int)(((byte)(160)))), ((int)(((byte)(160)))));
@@ -480,6 +369,42 @@ namespace GorgonLibrary.GorgonEditor
 			this.itemResetValue.Text = "&Reset Value";
 			this.itemResetValue.Click += new System.EventHandler(this.itemResetValue_Click);
 			// 
+			// buttonNewItem
+			// 
+			this.buttonNewItem.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.buttonNewItem.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.buttonNewItem.Name = "buttonNewItem";
+			this.buttonNewItem.Size = new System.Drawing.Size(13, 22);
+			this.buttonNewItem.Text = "New item";
+			this.buttonNewItem.ToolTipText = "New item...";
+			// 
+			// itemNewFont
+			// 
+			this.itemNewFont.Name = "itemNewFont";
+			this.itemNewFont.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.F)));
+			this.itemNewFont.Size = new System.Drawing.Size(152, 22);
+			this.itemNewFont.Text = "Font...";
+			// 
+			// buttonEditItem
+			// 
+			this.buttonEditItem.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.buttonEditItem.Enabled = false;
+			this.buttonEditItem.Image = global::GorgonLibrary.GorgonEditor.Properties.Resources.edit_16x16;
+			this.buttonEditItem.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.buttonEditItem.Name = "buttonEditItem";
+			this.buttonEditItem.Size = new System.Drawing.Size(23, 22);
+			this.buttonEditItem.Text = "Edit";
+			// 
+			// buttonDeleteItem
+			// 
+			this.buttonDeleteItem.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.buttonDeleteItem.Enabled = false;
+			this.buttonDeleteItem.Image = global::GorgonLibrary.GorgonEditor.Properties.Resources.delete_item_16x16;
+			this.buttonDeleteItem.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.buttonDeleteItem.Name = "buttonDeleteItem";
+			this.buttonDeleteItem.Size = new System.Drawing.Size(23, 22);
+			this.buttonDeleteItem.Text = "Delete";
+			// 
 			// dialogExport
 			// 
 			this.dialogExport.Filter = "All files (*.*)|*.*";
@@ -499,22 +424,15 @@ namespace GorgonLibrary.GorgonEditor
 			this.Name = "formMain";
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
 			this.Text = "Editor";
-			this.menuMain.ResumeLayout(false);
-			this.menuMain.PerformLayout();
 			this.splitEdit.Panel1.ResumeLayout(false);
 			this.splitEdit.Panel2.ResumeLayout(false);
 			((System.ComponentModel.ISupportInitialize)(this.splitEdit)).EndInit();
 			this.splitEdit.ResumeLayout(false);
-			this.panelEditor.ResumeLayout(false);
 			this.tabDocumentManager.ResumeLayout(false);
 			this.pageItems.ResumeLayout(false);
 			this.containerFiles.ContentPanel.ResumeLayout(false);
-			this.containerFiles.TopToolStripPanel.ResumeLayout(false);
-			this.containerFiles.TopToolStripPanel.PerformLayout();
 			this.containerFiles.ResumeLayout(false);
 			this.containerFiles.PerformLayout();
-			this.stripFiles.ResumeLayout(false);
-			this.stripFiles.PerformLayout();
 			this.pageProperties.ResumeLayout(false);
 			this.popupProperties.ResumeLayout(false);
 			this.ResumeLayout(false);
@@ -527,7 +445,6 @@ namespace GorgonLibrary.GorgonEditor
 		private System.Windows.Forms.SplitContainer splitEdit;
 		private System.Windows.Forms.PropertyGrid propertyItem;
 		private System.Windows.Forms.Panel panelEditor;
-		private KRBTabControl.KRBTabControl tabDocuments;
 		private System.Windows.Forms.MenuStrip menuMain;
 		private System.Windows.Forms.ContextMenuStrip popupProperties;
 		private System.Windows.Forms.ToolStripMenuItem itemResetValue;
@@ -542,9 +459,7 @@ namespace GorgonLibrary.GorgonEditor
 		private KRBTabControl.KRBTabControl tabDocumentManager;
 		private KRBTabControl.TabPageEx pageProperties;
 		private KRBTabControl.TabPageEx pageItems;
-		private System.Windows.Forms.ImageList imageFiles;
 		private System.Windows.Forms.ToolStripContainer containerFiles;
-		private System.Windows.Forms.ToolStrip stripFiles;
 		private System.Windows.Forms.ToolStripDropDownButton buttonNewItem;
 		private System.Windows.Forms.ToolStripMenuItem itemNewFont;
 		private System.Windows.Forms.ToolStripButton buttonEditItem;
