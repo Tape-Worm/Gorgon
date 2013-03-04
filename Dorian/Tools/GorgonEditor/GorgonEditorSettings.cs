@@ -34,7 +34,7 @@ using System.IO;
 using GorgonLibrary.Diagnostics;
 using GorgonLibrary.Configuration;
 
-namespace GorgonLibrary.GorgonEditor
+namespace GorgonLibrary.Editor
 {
 	/// <summary>
 	/// Configuration settings for the editor.
@@ -42,9 +42,6 @@ namespace GorgonLibrary.GorgonEditor
 	public class GorgonEditorSettings
 		: GorgonApplicationSettings
 	{
-		#region Variables.
-		#endregion
-
 		#region Properties.
 		/// <summary>
 		/// Property to set or return the main form state.
@@ -61,76 +58,6 @@ namespace GorgonLibrary.GorgonEditor
 		/// </summary>
 		[ApplicationSetting("WindowDimensions", typeof(Rectangle), "MainApplication")]
 		public Rectangle WindowDimensions
-		{
-			get;
-			set;
-		}
-
-		/// <summary>
-		/// Property to set or return the default size type.
-		/// </summary>
-		[ApplicationSetting("FontSizeType", Graphics.FontHeightMode.Points, typeof(Graphics.FontHeightMode), "FontEditor")]
-		public Graphics.FontHeightMode FontSizeType
-		{
-			get;
-			set;
-		}
-
-		/// <summary>
-		/// Property to set or return the default font anti-alias mode.
-		/// </summary>
-		[ApplicationSetting("FontAntiAliasMode", Graphics.FontAntiAliasMode.AntiAliasHQ, typeof(Graphics.FontAntiAliasMode), "FontEditor")]
-		public Graphics.FontAntiAliasMode FontAntiAliasMode
-		{
-			get;
-			set;
-		}
-
-		/// <summary>
-		/// Property to set or return the default font texture size.
-		/// </summary>
-		[ApplicationSetting("FontTextureSize", typeof(Size), "FontEditor")]
-		public Size FontTextureSize
-		{
-			get;
-			set;
-		}
-
-		/// <summary>
-		/// Property to set or return the initial path for projects.
-		/// </summary>
-		[ApplicationSetting("InitialPath", typeof(string), "")]
-		public string InitialPath
-		{
-			get;
-			set;
-		}
-
-		/// <summary>
-		/// Property to set or return whether to open the documents after they're imported.
-		/// </summary>
-		[ApplicationSetting("OpenAfterImport", false, typeof(bool), "Import")]
-		public bool OpenDocsAfterImport
-		{
-			get;
-			set;
-		}
-
-		/// <summary>
-		/// Property to set or return whether to open the last document when opening documents after import.
-		/// </summary>
-		[ApplicationSetting("OpenLastDocOnly", false, typeof(bool), "Import")]
-		public bool OpenLastDocOnly
-		{
-			get;
-			set;
-		}
-
-		/// <summary>
-		/// Property to set or return the import project folder path.
-		/// </summary>
-		[ApplicationSetting("LastProjectFolder", "", typeof(string), "Import")]
-		public string ImportLastProjectFolder
 		{
 			get;
 			set;
@@ -155,6 +82,16 @@ namespace GorgonLibrary.GorgonEditor
 			get;
 			set;
 		}
+
+		/// <summary>
+		/// Property to return the list of plug-ins to load.
+		/// </summary>
+		[ApplicationSetting("PlugIns", null, typeof(IList<string>), "PlugInLocations")]
+		public IList<string> PlugIns
+		{
+			get;
+			private set;
+		}
 		#endregion
 
 		#region Constructor/Destructor.
@@ -167,7 +104,8 @@ namespace GorgonLibrary.GorgonEditor
 			Size baseSize = new Size(1280, 800);
 
 			FormState = FormWindowState.Maximized;
-			FontTextureSize = new Size(256, 256);
+						
+			PlugIns = new List<string>();			
 
 			// Set the default size, but ensure that it fits within the primary monitor.
 			// Do not go larger than 1280x800 by default.
@@ -177,7 +115,6 @@ namespace GorgonLibrary.GorgonEditor
 				baseSize.Height = Screen.PrimaryScreen.WorkingArea.Height;
 			
 			WindowDimensions = new Rectangle(Screen.PrimaryScreen.WorkingArea.Width / 2 - baseSize.Width / 2, Screen.PrimaryScreen.WorkingArea.Height / 2 - baseSize.Height / 2, 1280, 800);
-			InitialPath = GorgonComputerInfo.FolderPath(Environment.SpecialFolder.MyDocuments) + @"\Gorgon\Projects\";
 		}
 		#endregion
 	}

@@ -42,13 +42,13 @@ using GorgonLibrary.UI;
 using GorgonLibrary.Graphics;
 using GorgonLibrary.IO;
 
-namespace GorgonLibrary.GorgonEditor
+namespace GorgonLibrary.Editor
 {
 	/// <summary>
 	/// Main application object.
 	/// </summary>
 	public partial class formMain
-		: Form
+		: ZuneForm
 	{
 		#region Classes.
 		/// <summary>
@@ -88,6 +88,7 @@ namespace GorgonLibrary.GorgonEditor
 		#endregion
 
 		#region Variables.
+		private DefaultContent _defaultContent = null;						// Default content page.
 		private SortedTreeModel _treeModel = null;							// Tree model.
 		private Font _unSavedFont = null;									// Font for unsaved documents.
 		private bool _wasSaved = false;										// Flag to indicate that the project was previously saved.
@@ -181,6 +182,12 @@ namespace GorgonLibrary.GorgonEditor
 					Program.Settings.WindowDimensions = this.DesktopBounds;
 
 				Program.Settings.Save();
+
+				if (_defaultContent != null)
+				{
+					_defaultContent.Dispose();
+				}
+				_defaultContent = null;
 			}
 #if DEBUG
 			catch (Exception ex)
@@ -200,6 +207,12 @@ namespace GorgonLibrary.GorgonEditor
 		/// <returns>TRUE to continue, FALSE to exit.</returns>
 		private bool Idle()
 		{
+			Program.Renderer.Clear(panelContent.BackColor);
+
+			int retraces = _defaultContent.Draw();
+
+			Program.Renderer.Render(retraces);
+
 			return true;
 		}
 
@@ -275,6 +288,14 @@ namespace GorgonLibrary.GorgonEditor
 			{
 				ValidateControls();
 			}
+		}
+
+		/// <summary>
+		/// Function to initialize the default content in the panel.
+		/// </summary>
+		internal void InitializeDefaultContent()
+		{
+			_defaultContent = new DefaultContent();
 		}
 		#endregion
 

@@ -196,6 +196,19 @@ namespace GorgonLibrary.Native
 		#endregion
 
 		#region Methods.
+
+		/// <summary>
+		/// DWM default window procedure.
+		/// </summary>
+		/// <param name="hwnd"></param>
+		/// <param name="message"></param>
+		/// <param name="wParam"></param>
+		/// <param name="lParam"></param>
+		/// <param name="result"></param>
+		/// <returns></returns>
+		[DllImport("dwmapi.dll", CharSet = CharSet.Auto, SetLastError = true)]
+		public static extern int DwmDefWindowProc(IntPtr hwnd, WindowMessages message, IntPtr wParam, IntPtr lParam, ref IntPtr result);
+
 		/// <summary>
 		/// Function to retrieve the foreground window.
 		/// </summary>
@@ -213,6 +226,13 @@ namespace GorgonLibrary.Native
 		/// <returns></returns>
 		[DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
 		public static extern IntPtr SendMessage(IntPtr hWnd, UInt32 msg, IntPtr wParam, IntPtr lParam);
+
+		/// <summary>
+		/// Function to release the captured mouse.
+		/// </summary>
+		/// <returns></returns>
+		[DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
+		public static extern bool ReleaseCapture();
 
 		/// <summary>
 		/// Function to send a message to a window.
@@ -354,6 +374,139 @@ namespace GorgonLibrary.Native
 			Marshal.PrelinkAll(typeof(Win32API));
 		}
 		#endregion
+	}
+
+	/// <summary>
+	/// Win 32 Rectangle.
+	/// </summary>
+	[StructLayout(LayoutKind.Sequential)]
+	struct RECT
+	{
+		/// <summary>
+		/// Left coordinate.
+		/// </summary>
+		public int Left;
+		/// <summary>
+		/// Top coordinate.
+		/// </summary>
+		public int Top;
+		/// <summary>
+		/// Right coordinate.
+		/// </summary>
+		public int Right;
+		/// <summary>
+		/// Bottom coordinate.
+		/// </summary>
+		public int Bottom;
+
+		/// <summary>
+		/// Property to return the width.
+		/// </summary>
+		public int Width
+		{
+			get
+			{
+				return Right - Left;
+			}
+		}
+
+		/// <summary>
+		/// Property to return the height.
+		/// </summary>
+		public int Height
+		{
+			get
+			{
+				return Bottom - Top;
+			}
+		}
+
+		/// <summary>
+		/// Property to return the size of the rectangle.
+		/// </summary>
+		public Size Size
+		{
+			get
+			{
+				return new Size(Width, Height);
+			}
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="RECT"/> struct.
+		/// </summary>
+		/// <param name="rectangle">The rectangle.</param>
+		public RECT(Rectangle rectangle)
+		{
+			Left = rectangle.Left;
+			Top = rectangle.Top;
+			Right = rectangle.Right;
+			Bottom = rectangle.Bottom;
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="RECT"/> struct.
+		/// </summary>
+		/// <param name="left">The left.</param>
+		/// <param name="top">The top.</param>
+		/// <param name="right">The right.</param>
+		/// <param name="bottom">The bottom.</param>
+		public RECT(int left, int top, int right, int bottom)
+		{
+			Left = left;
+			Top = top;
+			Right = right;
+			Bottom = bottom;
+		}
+	}
+
+	/// <summary>
+	/// Margin data.
+	/// </summary>
+    [StructLayout(LayoutKind.Sequential)]
+    struct MARGINS
+	{
+		/// <summary>
+		/// 
+		/// </summary>
+        public int cxLeftWidth;
+		/// <summary>
+		/// 
+		/// </summary>
+        public int cxRightWidth;
+		/// <summary>
+		/// 
+		/// </summary>
+        public int cyTopHeight;
+		/// <summary>
+		/// 
+		/// </summary>
+        public int cyBottomHeight;
+	}
+
+	/// <summary>
+	/// Non-client size calculation parameters.
+	/// </summary>
+	[StructLayout(LayoutKind.Sequential)]
+	struct NCCALCSIZE_PARAMS
+	{
+		/// <summary>
+		/// Rectangle 0.
+		/// </summary>
+		public RECT Rgrc0;
+		/// <summary>
+		/// Rectangle 1.
+		/// </summary>
+		public RECT Rgrc1;
+		/// <summary>
+		/// Rectangle 2.
+		/// </summary>
+		public RECT Rgrc2;
+
+		/// <summary>
+		/// Pointer to window position data.
+		/// </summary>
+		public IntPtr LPWindowPos;
 	}
 }
 

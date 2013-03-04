@@ -41,7 +41,8 @@ namespace GorgonLibrary.Renderers
 		#region Variables.
 		private bool _isDisposed = false;							// Flag to indicate that the object was disposed.
 		private GorgonPixelShader _lastPixelShader = null;			// Last pixel shader.
-		private GorgonVertexShader _lastVertexShader = null;			// Last vertex shader.
+		private GorgonVertexShader _lastVertexShader = null;		// Last vertex shader.
+		private GorgonRenderTarget _currentTarget = null;			// Current render target.
 		#endregion
 
 		#region Properties.
@@ -56,6 +57,27 @@ namespace GorgonLibrary.Renderers
 		#endregion
 
 		#region Methods.
+		/// <summary>
+		/// Function called before rendering begins.
+		/// </summary>
+		/// <returns>
+		/// TRUE to continue rendering, FALSE to exit.
+		/// </returns>
+		protected override bool OnBeforeRender()
+		{
+			_currentTarget = Gorgon2D.Target;
+
+			return true;
+		}
+
+		/// <summary>
+		/// Function called after rendering ends.
+		/// </summary>
+		protected override void OnAfterRender()
+		{
+			Gorgon2D.Target = _currentTarget;
+		}
+
 		/// <summary>
 		/// Function called when a pass is about to start rendering.
 		/// </summary>

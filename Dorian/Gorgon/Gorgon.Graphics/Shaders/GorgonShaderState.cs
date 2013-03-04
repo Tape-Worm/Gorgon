@@ -675,6 +675,11 @@ namespace GorgonLibrary.Graphics
             /// <param name="resource">Resource containing the view to unbind.</param>
             internal void Unbind(GorgonResource resource)
             {
+				if (resource == null)
+				{
+					return;
+				}
+
                 Unbind(resource.DefaultView);
             }
 

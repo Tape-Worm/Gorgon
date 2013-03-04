@@ -33,7 +33,7 @@ using System.Drawing;
 using GorgonLibrary.Native;
 using GorgonLibrary.IO;
 
-namespace GorgonLibrary.GorgonEditor
+namespace GorgonLibrary.Editor
 {
 	/// <summary>
 	/// Win32 functions.

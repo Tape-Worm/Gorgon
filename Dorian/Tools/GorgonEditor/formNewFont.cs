@@ -9,7 +9,7 @@ using System.Windows.Forms;
 using GorgonLibrary.UI;
 using GorgonLibrary.Graphics;
 
-namespace GorgonLibrary.GorgonEditor
+namespace GorgonLibrary.Editor
 {
 	/// <summary>
 	/// Font creation form.

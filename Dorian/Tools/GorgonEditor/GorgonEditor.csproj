@@ -8,8 +8,8 @@
     <ProjectGuid>{559CD7CE-1C08-46E8-B5FD-87A2829F5115}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>GorgonLibrary.GorgonEditor</RootNamespace>
-    <AssemblyName>GorgonEditor</AssemblyName>
+    <RootNamespace>GorgonLibrary.Editor</RootNamespace>
+    <AssemblyName>Gorgon.Editor</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <TargetFrameworkProfile>
     </TargetFrameworkProfile>
@@ -58,6 +58,9 @@
   <PropertyGroup>
     <ApplicationIcon>Gorgon2.ico</ApplicationIcon>
   </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject>GorgonLibrary.Editor.Program</StartupObject>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Aga.Controls">
       <HintPath>..\..\Dependencies\treeviewadv\Aga.Controls.dll</HintPath>
@@ -95,6 +98,7 @@
     <Compile Include="Controls\panelEx.Designer.cs">
       <DependentUpon>panelEx.cs</DependentUpon>
     </Compile>
+    <Compile Include="DefaultContent.cs" />
     <Compile Include="formNewFont.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -107,6 +111,7 @@
     <Compile Include="formProjectFolderSelector.Designer.cs">
       <DependentUpon>formProjectFolderSelector.cs</DependentUpon>
     </Compile>
+    <Compile Include="PlugIn\EditorPlugIn.cs" />
     <Compile Include="VisualStyle\DarkFormsRenderer.cs" />
     <Compile Include="Win32API.cs" />
     <Compile Include="formMain.cs">
@@ -175,6 +180,8 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Gorgon2.ico" />
+    <None Include="Resources\Gorgon_2.x_Logo_Blurry.dds" />
+    <None Include="Resources\Gorgon_2.x_Logo_Blurry.png" />
     <None Include="Resources\cancel_16x16.png" />
     <None Include="Resources\ok_16x16.png" />
     <None Include="Resources\UnicodeData.txt" />

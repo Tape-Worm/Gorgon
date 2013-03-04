@@ -1,4 +1,4 @@
-﻿namespace GorgonLibrary.GorgonEditor
+﻿namespace GorgonLibrary.Editor
 {
 	partial class formProjectFolderSelector
 	{
@@ -30,7 +30,7 @@
 		{
 			this.components = new System.ComponentModel.Container();
 			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(formProjectFolderSelector));
-			this.panel2 = new GorgonLibrary.GorgonEditor.panelEx();
+			this.panel2 = new GorgonLibrary.Editor.panelEx();
 			this.buttonOK = new System.Windows.Forms.Button();
 			this.buttonCancel = new System.Windows.Forms.Button();
 			this.statusStrip1 = new System.Windows.Forms.StatusStrip();
@@ -59,7 +59,7 @@
 			this.buttonOK.FlatAppearance.BorderColor = System.Drawing.Color.Black;
 			this.buttonOK.FlatAppearance.MouseDownBackColor = System.Drawing.Color.SteelBlue;
 			this.buttonOK.FlatAppearance.MouseOverBackColor = System.Drawing.Color.SteelBlue;
-			this.buttonOK.Image = global::GorgonLibrary.GorgonEditor.Properties.Resources.ok_16x16;
+			this.buttonOK.Image = global::GorgonLibrary.Editor.Properties.Resources.ok_16x16;
 			this.buttonOK.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			this.buttonOK.Location = new System.Drawing.Point(236, 11);
 			this.buttonOK.Name = "buttonOK";
@@ -72,7 +72,7 @@
 			// 
 			this.buttonCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
 			this.buttonCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-			this.buttonCancel.Image = global::GorgonLibrary.GorgonEditor.Properties.Resources.cancel_16x16;
+			this.buttonCancel.Image = global::GorgonLibrary.Editor.Properties.Resources.cancel_16x16;
 			this.buttonCancel.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			this.buttonCancel.Location = new System.Drawing.Point(329, 11);
 			this.buttonCancel.Name = "buttonCancel";

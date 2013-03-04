@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace GorgonLibrary.GorgonEditor.Properties {
+namespace GorgonLibrary.Editor.Properties {
     using System;
     
     
@@ -39,7 +39,7 @@ namespace GorgonLibrary.GorgonEditor.Properties {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("GorgonLibrary.GorgonEditor.Properties.Resources", typeof(Resources).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("GorgonLibrary.Editor.Properties.Resources", typeof(Resources).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -97,6 +97,16 @@ namespace GorgonLibrary.GorgonEditor.Properties {
             get {
                 object obj = ResourceManager.GetObject("Gorgon_2_Logo_Full", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] Gorgon_2_x_Logo_Blurry {
+            get {
+                object obj = ResourceManager.GetObject("Gorgon_2_x_Logo_Blurry", resourceCulture);
+                return ((byte[])(obj));
             }
         }
         
