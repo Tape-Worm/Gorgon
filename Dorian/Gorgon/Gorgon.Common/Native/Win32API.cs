@@ -265,7 +265,11 @@ namespace GorgonLibrary.Native
 		[DllImport("user32.dll", CharSet = CharSet.Auto)]
 		public static extern Int32 GetWindowThreadProcessId(IntPtr hWnd, out uint lpdwProcessId);
 
-		/// <summary/>
+		/// <summary>
+		/// Function to return the amount of memory available on the machine.
+		/// </summary>
+		/// <param name="stat">Memory status data.</param>
+		/// <returns>TRUE if successful, FALSE if not.</returns>
 		[DllImport("kernel32.dll")]
 		private static extern bool GlobalMemoryStatusEx(ref MemoryStatusEx stat);
 		

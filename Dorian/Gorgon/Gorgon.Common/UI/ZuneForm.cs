@@ -115,22 +115,22 @@ namespace GorgonLibrary.UI
 				{
 					case ResizeDirection.Bottom:
 					case ResizeDirection.Top:
-						this.Cursor = Cursors.SizeNS;
+						Cursor.Current = Cursors.SizeNS;
 						break;
 					case ResizeDirection.Right:
 					case ResizeDirection.Left:
-						this.Cursor = Cursors.SizeWE;
+						Cursor.Current = Cursors.SizeWE;
 						break;
 					case ResizeDirection.BottomRight:
 					case ResizeDirection.TopLeft:
-						this.Cursor = Cursors.SizeNWSE;
+						Cursor.Current = Cursors.SizeNWSE;
 						break;
 					case ResizeDirection.TopRight:
 					case ResizeDirection.BottomLeft:
-						this.Cursor = Cursors.SizeNESW;
+						Cursor.Current = Cursors.SizeNESW;
 						break;
 					default:
-						this.Cursor = Cursors.Arrow;
+						Cursor.Current = Cursors.Default;
 						break;
 				}
 			}
@@ -165,7 +165,96 @@ namespace GorgonLibrary.UI
 		#endregion
 
 		#region Methods.
-		/// <summary>
+        /// <summary>
+        /// Handles the MouseEnter event of the labelClose control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void labelClose_MouseEnter(object sender, EventArgs e)
+        {
+            Label label = sender as Label;
+
+            if (label != null)
+            {
+                label.ForeColor = Color.FromKnownColor(KnownColor.HighlightText);
+            }
+        }
+
+        /// <summary>
+        /// Handles the MouseLeave event of the labelClose control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void labelClose_MouseLeave(object sender, EventArgs e)
+        {
+            Label label = sender as Label;
+
+            if (label != null)
+            {
+                label.ForeColor = ForeColor;
+            }
+        }
+
+        /// <summary>
+        /// Handles the MouseDown event of the labelClose control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="MouseEventArgs"/> instance containing the event data.</param>
+        private void labelClose_MouseDown(object sender, MouseEventArgs e)
+        {
+            Close();
+        }
+
+        /// <summary>
+        /// Handles the Click event of the labelMinimize control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void labelMinimize_Click(object sender, EventArgs e)
+        {
+            WindowState = FormWindowState.Minimized;
+            ValidateWindowControls();
+        }
+
+        /// <summary>
+        /// Handles the Click event of the labelMaxRestore control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void labelMaxRestore_Click(object sender, EventArgs e)
+        {
+            if (WindowState != FormWindowState.Maximized)
+            {
+                WindowState = FormWindowState.Maximized;
+            }
+            else
+            {
+                WindowState = FormWindowState.Normal;
+            }
+            ValidateWindowControls();
+        }
+
+        /// <summary>
+        /// Handles the MouseDown event of the labelCaption control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="MouseEventArgs"/> instance containing the event data.</param>
+        private void labelCaption_MouseDown(object sender, MouseEventArgs e)
+        {
+            OnMouseDown(e);
+        }
+
+        /// <summary>
+        /// Handles the MouseMove event of the labelCaption control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="MouseEventArgs"/> instance containing the event data.</param>
+        private void labelCaption_MouseMove(object sender, MouseEventArgs e)
+        {
+            OnMouseMove(e);
+        }
+        
+        /// <summary>
 		/// Function to validate all the window controls.
 		/// </summary>
 		private void ValidateWindowControls()
@@ -267,6 +356,16 @@ namespace GorgonLibrary.UI
 
 			return HitTests.Client;
 		}
+
+        /// <summary>
+        /// </summary>
+        /// <param name="e">An <see cref="T:System.EventArgs" /> that contains the event data.</param>
+        protected override void OnResize(EventArgs e)
+        {
+            base.OnResize(e);
+
+            ValidateWindowControls();
+        }
 
 		/// <summary>
 		/// Window procedure.
@@ -385,7 +484,7 @@ namespace GorgonLibrary.UI
 
 			if (e.Button == System.Windows.Forms.MouseButtons.Left)
 			{
-				if ((Width - BorderWidth > e.X) && (e.X > BorderWidth) && (e.Y > BorderWidth))
+				if ((Width - BorderWidth > e.X) && (e.X > BorderWidth) && (e.Y > BorderWidth) && (e.Y < Height - BorderWidth))
 				{
 			        Win32API.ReleaseCapture();
 					Win32API.SendMessage(Handle, (uint)WindowMessages.NCLeftButtonDown, new IntPtr((int)HitTests.Caption), IntPtr.Zero);
@@ -398,34 +497,42 @@ namespace GorgonLibrary.UI
 						{
 							case ResizeDirection.Left:
 								Win32API.ReleaseCapture();
+                                Cursor.Current = Cursors.SizeWE;
 								Win32API.SendMessage(Handle, (uint)WindowMessages.NCLeftButtonDown, new IntPtr((int)HitTests.Left), IntPtr.Zero);								
 								break;
 							case ResizeDirection.TopLeft:
 								Win32API.ReleaseCapture();
+                                Cursor.Current = Cursors.SizeNWSE;
 								Win32API.SendMessage(Handle, (uint)WindowMessages.NCLeftButtonDown, new IntPtr((int)HitTests.TopLeft), IntPtr.Zero);								
 								break;
 							case ResizeDirection.Top:
 								Win32API.ReleaseCapture();
+                                Cursor.Current = Cursors.SizeNS;
 								Win32API.SendMessage(Handle, (uint)WindowMessages.NCLeftButtonDown, new IntPtr((int)HitTests.Top), IntPtr.Zero);								
 								break;
 							case ResizeDirection.TopRight:
 								Win32API.ReleaseCapture();
+                                Cursor.Current = Cursors.SizeNESW;
 								Win32API.SendMessage(Handle, (uint)WindowMessages.NCLeftButtonDown, new IntPtr((int)HitTests.TopRight), IntPtr.Zero);								
 								break;
 							case ResizeDirection.Right:
 								Win32API.ReleaseCapture();
+                                Cursor.Current = Cursors.SizeWE;
 								Win32API.SendMessage(Handle, (uint)WindowMessages.NCLeftButtonDown, new IntPtr((int)HitTests.Right), IntPtr.Zero);								
 								break;
 							case ResizeDirection.BottomRight:
 								Win32API.ReleaseCapture();
+                                Cursor.Current = Cursors.SizeNWSE;
 								Win32API.SendMessage(Handle, (uint)WindowMessages.NCLeftButtonDown, new IntPtr((int)HitTests.BottomRight), IntPtr.Zero);								
 								break;
 							case ResizeDirection.Bottom:
 								Win32API.ReleaseCapture();
+                                Cursor.Current = Cursors.SizeNS;
 								Win32API.SendMessage(Handle, (uint)WindowMessages.NCLeftButtonDown, new IntPtr((int)HitTests.Bottom), IntPtr.Zero);
 								break;
 							case ResizeDirection.BottomLeft:
 								Win32API.ReleaseCapture();
+                                Cursor.Current = Cursors.SizeNESW;
 								Win32API.SendMessage(Handle, (uint)WindowMessages.NCLeftButtonDown, new IntPtr((int)HitTests.BottomLeft), IntPtr.Zero);
 								break;
 						}
@@ -476,94 +583,5 @@ namespace GorgonLibrary.UI
 			ValidateWindowControls();
 		}
 		#endregion
-
-		/// <summary>
-		/// Handles the MouseEnter event of the labelClose control.
-		/// </summary>
-		/// <param name="sender">The source of the event.</param>
-		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-		private void labelClose_MouseEnter(object sender, EventArgs e)
-		{
-			Label label = sender as Label;
-
-			if (label != null)
-			{
-				label.ForeColor = Color.FromKnownColor(KnownColor.HighlightText);
-			}
-		}
-
-		/// <summary>
-		/// Handles the MouseLeave event of the labelClose control.
-		/// </summary>
-		/// <param name="sender">The source of the event.</param>
-		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-		private void labelClose_MouseLeave(object sender, EventArgs e)
-		{
-			Label label = sender as Label;
-
-			if (label != null)
-			{
-				label.ForeColor = ForeColor;
-			}
-		}
-
-		/// <summary>
-		/// Handles the MouseDown event of the labelClose control.
-		/// </summary>
-		/// <param name="sender">The source of the event.</param>
-		/// <param name="e">The <see cref="MouseEventArgs"/> instance containing the event data.</param>
-		private void labelClose_MouseDown(object sender, MouseEventArgs e)
-		{
-			Close();
-		}
-
-		/// <summary>
-		/// Handles the Click event of the labelMinimize control.
-		/// </summary>
-		/// <param name="sender">The source of the event.</param>
-		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-		private void labelMinimize_Click(object sender, EventArgs e)
-		{
-			WindowState = FormWindowState.Minimized;
-			ValidateWindowControls();
-		}
-
-		/// <summary>
-		/// Handles the Click event of the labelMaxRestore control.
-		/// </summary>
-		/// <param name="sender">The source of the event.</param>
-		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-		private void labelMaxRestore_Click(object sender, EventArgs e)
-		{
-			if (WindowState != FormWindowState.Maximized)
-			{
-				WindowState = FormWindowState.Maximized;
-			}
-			else
-			{
-				WindowState = FormWindowState.Normal;
-			}
-			ValidateWindowControls();
-		}
-
-		/// <summary>
-		/// Handles the MouseDown event of the labelCaption control.
-		/// </summary>
-		/// <param name="sender">The source of the event.</param>
-		/// <param name="e">The <see cref="MouseEventArgs"/> instance containing the event data.</param>
-		private void labelCaption_MouseDown(object sender, MouseEventArgs e)
-		{
-			OnMouseDown(e);
-		}
-
-		/// <summary>
-		/// Handles the MouseMove event of the labelCaption control.
-		/// </summary>
-		/// <param name="sender">The source of the event.</param>
-		/// <param name="e">The <see cref="MouseEventArgs"/> instance containing the event data.</param>
-		private void labelCaption_MouseMove(object sender, MouseEventArgs e)
-		{
-			OnMouseMove(e);
-		}
 	}
 }
