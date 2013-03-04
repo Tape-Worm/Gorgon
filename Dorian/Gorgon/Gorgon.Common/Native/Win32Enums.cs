@@ -30,6 +30,77 @@ namespace GorgonLibrary.Native
 {
 	#region Enumerations
 	/// <summary>
+	/// 
+	/// </summary>
+	[Flags]
+	internal enum DWM_BB
+	{
+		/// <summary>
+		/// 
+		/// </summary>
+		Enable = 1,
+		/// <summary>
+		/// 
+		/// </summary>
+		BlurRegion = 2,
+		/// <summary>
+		/// 
+		/// </summary>
+		TransitionMaximized = 4
+	}
+
+	/// <summary>
+	/// Hit tests for non-client areas.
+	/// </summary>
+	internal enum HitTests
+	{
+		/// <summary>
+		/// Border.
+		/// </summary>
+		Border = 18,
+		/// <summary>
+		/// Bottom border
+		/// </summary>
+		Bottom = 15,
+		/// <summary>
+		/// Bottom left corner.
+		/// </summary>
+		BottomLeft = 16,
+		/// <summary>
+		/// Bottom right corner.
+		/// </summary>
+		BottomRight = 17,
+		/// <summary>
+		/// Caption area.
+		/// </summary>
+		Caption = 2,
+		/// <summary>
+		/// Left border.
+		/// </summary>
+		Left = 10,
+		/// <summary>
+		/// Right border.
+		/// </summary>
+		Right = 11,
+		/// <summary>
+		/// Top border.
+		/// </summary>
+		Top = 12,
+		/// <summary>
+		/// Top left corner.
+		/// </summary>
+		TopLeft = 13,
+		/// <summary>
+		/// Top right corner.
+		/// </summary>
+		TopRight = 14,
+		/// <summary>
+		/// Client area.
+		/// </summary>
+		Client = 1
+	}
+
+	/// <summary>
 	/// Types of messages that passed to a window.
 	/// </summary>
 	/// <remarks>See the MSDN documentation for more detail.</remarks>

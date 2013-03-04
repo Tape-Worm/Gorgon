@@ -35,7 +35,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyDescription("An application to create/edit various items (Sprites, Fonts, etc...) for the Gorgon components.")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Michael Winsor")]
-[assembly: AssemblyProduct("GorgonEditor")]
+[assembly: AssemblyProduct("Gorgon.Editor")]
 [assembly: AssemblyCopyright("Copyright © Michael Winsor 2011")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]

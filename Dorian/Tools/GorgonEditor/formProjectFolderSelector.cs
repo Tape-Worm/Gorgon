@@ -34,7 +34,7 @@ using System.Text;
 using System.Windows.Forms;
 using GorgonLibrary.UI;
 
-namespace GorgonLibrary.GorgonEditor
+namespace GorgonLibrary.Editor
 {
 	/// <summary>
 	/// Project folder selection tree.

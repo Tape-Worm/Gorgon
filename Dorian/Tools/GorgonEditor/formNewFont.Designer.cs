@@ -1,4 +1,4 @@
-﻿namespace GorgonLibrary.GorgonEditor
+﻿namespace GorgonLibrary.Editor
 {
 	partial class formNewFont
 	{
@@ -50,8 +50,8 @@
 			this.label7 = new System.Windows.Forms.Label();
 			this.buttonOK = new System.Windows.Forms.Button();
 			this.buttonCancel = new System.Windows.Forms.Button();
-			this.comboFonts = new GorgonLibrary.GorgonEditor.comboFonts();
-			this.panel2 = new GorgonLibrary.GorgonEditor.panelEx();
+			this.comboFonts = new GorgonLibrary.Editor.comboFonts();
+			this.panel2 = new GorgonLibrary.Editor.panelEx();
 			((System.ComponentModel.ISupportInitialize)(this.numericSize)).BeginInit();
 			this.panel1.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.numericTextureWidth)).BeginInit();
@@ -342,7 +342,7 @@
 			this.buttonOK.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(189)))), ((int)(((byte)(189)))), ((int)(((byte)(189)))));
 			this.buttonOK.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
 			this.buttonOK.ForeColor = System.Drawing.Color.White;
-			this.buttonOK.Image = global::GorgonLibrary.GorgonEditor.Properties.Resources.ok_16x16;
+			this.buttonOK.Image = global::GorgonLibrary.Editor.Properties.Resources.ok_16x16;
 			this.buttonOK.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			this.buttonOK.Location = new System.Drawing.Point(208, 16);
 			this.buttonOK.Name = "buttonOK";
@@ -362,7 +362,7 @@
 			this.buttonCancel.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(189)))), ((int)(((byte)(189)))), ((int)(((byte)(189)))));
 			this.buttonCancel.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
 			this.buttonCancel.ForeColor = System.Drawing.Color.White;
-			this.buttonCancel.Image = global::GorgonLibrary.GorgonEditor.Properties.Resources.cancel_16x16;
+			this.buttonCancel.Image = global::GorgonLibrary.Editor.Properties.Resources.cancel_16x16;
 			this.buttonCancel.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			this.buttonCancel.Location = new System.Drawing.Point(301, 16);
 			this.buttonCancel.Name = "buttonCancel";

@@ -32,7 +32,7 @@ using System.Windows.Forms;
 using GorgonLibrary.UI;
 using GorgonLibrary.Diagnostics;
 
-namespace GorgonLibrary.GorgonEditor
+namespace GorgonLibrary.Editor
 {
 	/// <summary>
 	/// Application context for the editor.
@@ -63,12 +63,14 @@ namespace GorgonLibrary.GorgonEditor
 		/// </summary>
 		public AppContext()
 		{
+			formMain mainForm = null;
+
 			try
 			{
 				GorgonTimer timer = null;		
 
 				_splash = new formSplash();
-				MainForm = new formMain();
+				MainForm = mainForm = new formMain();
 
 				_splash.Show();
 				_splash.Refresh();
@@ -88,12 +90,9 @@ namespace GorgonLibrary.GorgonEditor
 				// If we've got time left, keep the pretty logo up.
 				timer.Reset();
 
-				_splash.UpdateVersion("Building font cache...");
-				// Get our cached fonts.
-				Program.UpdateCachedFonts();
-
 				_splash.UpdateVersion("Initializing graphics...");
-				Program.InitializeGraphics(MainForm);
+				Program.InitializeGraphics(mainForm.panelContent);
+				mainForm.InitializeDefaultContent();
 
 				_splash.UpdateVersion(string.Empty);
 

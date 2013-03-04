@@ -211,6 +211,12 @@
     <Compile Include="GorgonException.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="UI\ZuneForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UI\ZuneForm.Designer.cs">
+      <DependentUpon>ZuneForm.cs</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Properties\Resources.resx">
@@ -230,6 +236,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="UI\ErrorDialog.resx">
       <DependentUpon>ErrorDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UI\ZuneForm.resx">
+      <DependentUpon>ZuneForm.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

@@ -37,7 +37,7 @@ using GorgonLibrary.FileSystem;
 using GorgonLibrary.Graphics;
 using GorgonLibrary.Renderers;
 
-namespace GorgonLibrary.GorgonEditor
+namespace GorgonLibrary.Editor
 {
 	/// <summary>
 	/// Main application interface.
@@ -89,8 +89,8 @@ namespace GorgonLibrary.GorgonEditor
 		/// <summary>
 		/// Function to initialize the graphics interface.
 		/// </summary>
-		/// <param name="form">Main form interface.</param>
-		static void InitializeGraphics(Form form)
+		/// <param name="control">Main content control.</param>
+		public static void InitializeGraphics(Control control)
 		{
 			if (Renderer != null)
 			{
@@ -104,26 +104,22 @@ namespace GorgonLibrary.GorgonEditor
 				Graphics = null;
 			}
 
-			Graphics = new GorgonGraphics();
+			Graphics = new GorgonGraphics(DeviceFeatureLevel.SM2_a_b);
 			
 			// Create the renderer with a default swap chain.  This is sized to 1x1 to keep from eating
 			// video memory since we'll never use this particular swap chain.
 			// The down side is that we'll end up having to manage our render targets manually.
 			// i.e. setting Target = null won't work because it'll just flip to this 1x1 swap chain.
 			Renderer = Graphics.Output.Create2DRenderer(
-				Graphics.Output.CreateSwapChain("Dummy.SwapChain", new GorgonSwapChainSettings()
+				Graphics.Output.CreateSwapChain("Content.SwapChain", new GorgonSwapChainSettings()
 				{
-					Width = 1,
-					Height = 1,
 					BufferCount = 2,
 					DepthStencilFormat = BufferFormat.Unknown,
 					Flags = SwapChainUsageFlags.RenderTarget,
 					Format = BufferFormat.R8G8B8A8_UIntNormal,
-					IsWindowed = true,
 					MultiSample = new GorgonMultisampling(1, 0),
-					NoClientResize = true,
 					SwapEffect = SwapEffect.Discard,
-					Window = form
+					Window = control
 				}));
 		}
 

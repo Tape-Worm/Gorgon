@@ -50,6 +50,36 @@ namespace GorgonLibrary.Configuration
 
 		#region Properties.
 		/// <summary>
+		/// Property to set or return the path to the configuration file.
+		/// </summary>
+		public string Path
+		{
+			get
+			{
+				return _path;
+			}
+			set
+			{
+				if (string.IsNullOrWhiteSpace(value))
+				{
+					return;
+				}
+
+				string fileName = System.IO.Path.GetFileName(value);
+				string directory = System.IO.Path.GetDirectoryName(value);
+
+				if (string.IsNullOrWhiteSpace(fileName))
+				{
+					fileName = System.IO.Path.ChangeExtension(GetType().Assembly.GetName().Name.RemoveIllegalFilenameChars(), "config.xml");
+				}
+
+				fileName = fileName.FormatFileName();
+				directory = directory.FormatDirectory(System.IO.Path.DirectorySeparatorChar);
+
+				_path = directory + fileName;
+			}			
+		}
+		/// <summary>
 		/// Property to set or return the application settings version.
 		/// </summary>
 		/// <remarks>Assigning NULL (Nothing in VB.Net) will bypass version checking.</remarks>
@@ -364,7 +394,7 @@ namespace GorgonLibrary.Configuration
 		private object[] GetSettings(string section, string settingName, Type valueType)
 		{
 			XElement currentSection = null;
-			IList settings = null;
+			object[] settings = null;
 
 			GorgonDebug.AssertParamString(settingName, "settingName");
 
@@ -376,14 +406,18 @@ namespace GorgonLibrary.Configuration
 								  where ((setting != null) && (setting.Attribute(settingName) != null))
 								  select setting);
 
-			settings = new ArrayList();
+			settings = new object[currentSetting.Count()];
 			if (currentSetting != null)
 			{
+				int i = 0;
 				foreach (var settingItem in currentSetting)
-					settings.Add(UnconvertValue(settingItem.Attribute(settingName).Value, valueType));
+				{
+					settings[i] = UnconvertValue(settingItem.Attribute(settingName).Value, valueType);
+					i++;
+				}
 			}
 
-			return ((ArrayList)settings).ToArray();
+			return settings;
 		}
 
 		/// <summary>
@@ -470,8 +504,8 @@ namespace GorgonLibrary.Configuration
 			}
 
 
-			if (!Directory.Exists(Path.GetDirectoryName(_path)))
-				Directory.CreateDirectory(Path.GetDirectoryName(_path));
+			if (!Directory.Exists(System.IO.Path.GetDirectoryName(_path)))
+				Directory.CreateDirectory(System.IO.Path.GetDirectoryName(_path));
 			_xmlSettings.Save(_path);
 		}
 		
@@ -513,19 +547,19 @@ namespace GorgonLibrary.Configuration
 		/// <remarks>Passing NULL (Nothing in VB.Net) to the <paramref name="settingsVersion"/> parameter will bypass version checking for the settings.</remarks>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="applicationName"/> parameter was NULL (Nothing in VB.Net).</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the applicationName parameter is empty.</exception>
-		public GorgonApplicationSettings(string applicationName, Version settingsVersion)
+		protected GorgonApplicationSettings(string applicationName, Version settingsVersion)
 		{
 			GorgonDebug.AssertParamString(applicationName, "applicationName");
 
 			Version = settingsVersion;
 
 			_path = GorgonComputerInfo.FolderPath(Environment.SpecialFolder.ApplicationData);
-			_path += Path.DirectorySeparatorChar.ToString();
-			_path += applicationName.RemoveIllegalFilenameChars() + Path.DirectorySeparatorChar.ToString();
-			_path += Path.ChangeExtension(GetType().Assembly.GetName().Name.RemoveIllegalFilenameChars(), "config.xml");
+			_path += System.IO.Path.DirectorySeparatorChar.ToString();
+			_path += applicationName.RemoveIllegalFilenameChars() + System.IO.Path.DirectorySeparatorChar.ToString();
+			_path += System.IO.Path.ChangeExtension(GetType().Assembly.GetName().Name.RemoveIllegalFilenameChars(), "config.xml");
 
 			Clear();
-		}
+		}		
 		#endregion
 	}
 }

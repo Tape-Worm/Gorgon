@@ -34,7 +34,7 @@ using System.Drawing.Imaging;
 using System.Windows.Forms;
 using System.Windows.Forms.VisualStyles;
 
-namespace GorgonLibrary.GorgonEditor
+namespace GorgonLibrary.Editor
 {
 	public class DarkFormsRenderer
 		: ToolStripRenderer
