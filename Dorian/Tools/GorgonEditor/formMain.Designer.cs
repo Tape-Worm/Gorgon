@@ -113,7 +113,7 @@ namespace GorgonLibrary.Editor
             this.menuFile});
 			this.menuMain.Location = new System.Drawing.Point(0, 0);
 			this.menuMain.Name = "menuMain";
-			this.menuMain.Size = new System.Drawing.Size(1086, 24);
+			this.menuMain.Size = new System.Drawing.Size(1080, 24);
 			this.menuMain.TabIndex = 0;
 			this.menuMain.Text = "menuStrip1";
 			// 
@@ -202,6 +202,7 @@ namespace GorgonLibrary.Editor
 			this.splitEdit.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.splitEdit.FixedPanel = System.Windows.Forms.FixedPanel.Panel2;
 			this.splitEdit.Location = new System.Drawing.Point(0, 0);
+			this.splitEdit.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
 			this.splitEdit.Name = "splitEdit";
 			// 
 			// splitEdit.Panel1
@@ -212,8 +213,9 @@ namespace GorgonLibrary.Editor
 			// 
 			this.splitEdit.Panel2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(68)))), ((int)(((byte)(68)))), ((int)(((byte)(68)))));
 			this.splitEdit.Panel2.Controls.Add(this.tabDocumentManager);
-			this.splitEdit.Size = new System.Drawing.Size(1086, 693);
-			this.splitEdit.SplitterDistance = 847;
+			this.splitEdit.Size = new System.Drawing.Size(1080, 687);
+			this.splitEdit.SplitterDistance = 840;
+			this.splitEdit.SplitterWidth = 5;
 			this.splitEdit.TabIndex = 0;
 			// 
 			// containerContent
@@ -222,11 +224,13 @@ namespace GorgonLibrary.Editor
 			// containerContent.ContentPanel
 			// 
 			this.containerContent.ContentPanel.Controls.Add(this.panelContent);
-			this.containerContent.ContentPanel.Size = new System.Drawing.Size(847, 693);
+			this.containerContent.ContentPanel.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+			this.containerContent.ContentPanel.Size = new System.Drawing.Size(840, 654);
 			this.containerContent.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.containerContent.Location = new System.Drawing.Point(0, 0);
+			this.containerContent.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
 			this.containerContent.Name = "containerContent";
-			this.containerContent.Size = new System.Drawing.Size(847, 693);
+			this.containerContent.Size = new System.Drawing.Size(840, 687);
 			this.containerContent.TabIndex = 3;
 			this.containerContent.Text = "toolStripContainer1";
 			// 
@@ -235,8 +239,9 @@ namespace GorgonLibrary.Editor
 			this.panelContent.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(51)))), ((int)(((byte)(51)))), ((int)(((byte)(51)))));
 			this.panelContent.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.panelContent.Location = new System.Drawing.Point(0, 0);
+			this.panelContent.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
 			this.panelContent.Name = "panelContent";
-			this.panelContent.Size = new System.Drawing.Size(847, 693);
+			this.panelContent.Size = new System.Drawing.Size(840, 654);
 			this.panelContent.TabIndex = 0;
 			// 
 			// tabDocumentManager
@@ -258,7 +263,7 @@ namespace GorgonLibrary.Editor
 			this.tabDocumentManager.Location = new System.Drawing.Point(0, 0);
 			this.tabDocumentManager.Name = "tabDocumentManager";
 			this.tabDocumentManager.SelectedIndex = 0;
-			this.tabDocumentManager.Size = new System.Drawing.Size(235, 693);
+			this.tabDocumentManager.Size = new System.Drawing.Size(235, 687);
 			this.tabDocumentManager.TabBorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(89)))), ((int)(((byte)(89)))), ((int)(((byte)(89)))));
 			this.tabDocumentManager.TabGradient.ColorEnd = System.Drawing.Color.FromArgb(((int)(((byte)(89)))), ((int)(((byte)(89)))), ((int)(((byte)(89)))));
 			this.tabDocumentManager.TabGradient.ColorStart = System.Drawing.Color.FromArgb(((int)(((byte)(89)))), ((int)(((byte)(89)))), ((int)(((byte)(89)))));
@@ -276,9 +281,9 @@ namespace GorgonLibrary.Editor
 			this.pageItems.ForeColor = System.Drawing.Color.White;
 			this.pageItems.IsClosable = false;
 			this.pageItems.Location = new System.Drawing.Point(1, 1);
-			this.pageItems.Margin = new System.Windows.Forms.Padding(3, 87, 3, 87);
+			this.pageItems.Margin = new System.Windows.Forms.Padding(3, 116, 3, 116);
 			this.pageItems.Name = "pageItems";
-			this.pageItems.Size = new System.Drawing.Size(233, 658);
+			this.pageItems.Size = new System.Drawing.Size(233, 652);
 			this.pageItems.TabIndex = 1;
 			this.pageItems.Text = "Items";
 			// 
@@ -290,13 +295,13 @@ namespace GorgonLibrary.Editor
 			this.containerFiles.ContentPanel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(51)))), ((int)(((byte)(51)))), ((int)(((byte)(51)))));
 			this.containerFiles.ContentPanel.Controls.Add(this.treeFiles);
 			this.containerFiles.ContentPanel.ForeColor = System.Drawing.Color.White;
-			this.containerFiles.ContentPanel.Margin = new System.Windows.Forms.Padding(3, 87, 3, 87);
-			this.containerFiles.ContentPanel.Size = new System.Drawing.Size(233, 625);
+			this.containerFiles.ContentPanel.Margin = new System.Windows.Forms.Padding(3, 116, 3, 116);
+			this.containerFiles.ContentPanel.Size = new System.Drawing.Size(233, 619);
 			this.containerFiles.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.containerFiles.Location = new System.Drawing.Point(0, 0);
-			this.containerFiles.Margin = new System.Windows.Forms.Padding(3, 87, 3, 87);
+			this.containerFiles.Margin = new System.Windows.Forms.Padding(3, 116, 3, 116);
 			this.containerFiles.Name = "containerFiles";
-			this.containerFiles.Size = new System.Drawing.Size(233, 658);
+			this.containerFiles.Size = new System.Drawing.Size(233, 652);
 			this.containerFiles.TabIndex = 0;
 			this.containerFiles.Text = "toolStripContainer1";
 			// 
@@ -313,7 +318,7 @@ namespace GorgonLibrary.Editor
 			this.treeFiles.ForeColor = System.Drawing.Color.White;
 			this.treeFiles.LineColor = System.Drawing.Color.Black;
 			this.treeFiles.Location = new System.Drawing.Point(0, 0);
-			this.treeFiles.Margin = new System.Windows.Forms.Padding(3, 87, 3, 87);
+			this.treeFiles.Margin = new System.Windows.Forms.Padding(3, 116, 3, 116);
 			this.treeFiles.Model = null;
 			this.treeFiles.Name = "treeFiles";
 			this.treeFiles.NodeControls.Add(this._nodeImage);
@@ -322,7 +327,7 @@ namespace GorgonLibrary.Editor
 			this.treeFiles.SelectionMode = Aga.Controls.Tree.TreeSelectionMode.Multi;
 			this.treeFiles.ShiftFirstNode = true;
 			this.treeFiles.ShowLines = false;
-			this.treeFiles.Size = new System.Drawing.Size(233, 625);
+			this.treeFiles.Size = new System.Drawing.Size(233, 619);
 			this.treeFiles.TabIndex = 0;
 			// 
 			// columnFiles
@@ -355,9 +360,9 @@ namespace GorgonLibrary.Editor
 			this.pageProperties.ImageIndex = 3;
 			this.pageProperties.IsClosable = false;
 			this.pageProperties.Location = new System.Drawing.Point(1, 1);
-			this.pageProperties.Margin = new System.Windows.Forms.Padding(3, 87, 3, 87);
+			this.pageProperties.Margin = new System.Windows.Forms.Padding(3, 116, 3, 116);
 			this.pageProperties.Name = "pageProperties";
-			this.pageProperties.Size = new System.Drawing.Size(267, 914);
+			this.pageProperties.Size = new System.Drawing.Size(267, 889);
 			this.pageProperties.TabIndex = 0;
 			this.pageProperties.Text = "Properties";
 			// 
@@ -380,11 +385,11 @@ namespace GorgonLibrary.Editor
 			this.propertyItem.HelpForeColor = System.Drawing.Color.White;
 			this.propertyItem.LineColor = System.Drawing.Color.FromArgb(((int)(((byte)(160)))), ((int)(((byte)(160)))), ((int)(((byte)(160)))));
 			this.propertyItem.Location = new System.Drawing.Point(0, 0);
-			this.propertyItem.Margin = new System.Windows.Forms.Padding(3, 87, 3, 87);
+			this.propertyItem.Margin = new System.Windows.Forms.Padding(3, 116, 3, 116);
 			this.propertyItem.Name = "propertyItem";
 			this.propertyItem.SelectedItemWithFocusBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(189)))), ((int)(((byte)(189)))), ((int)(((byte)(189)))));
 			this.propertyItem.SelectedItemWithFocusForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(51)))), ((int)(((byte)(51)))), ((int)(((byte)(51)))));
-			this.propertyItem.Size = new System.Drawing.Size(267, 914);
+			this.propertyItem.Size = new System.Drawing.Size(267, 889);
 			this.propertyItem.TabIndex = 0;
 			this.propertyItem.ToolbarVisible = false;
 			this.propertyItem.ViewBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(51)))), ((int)(((byte)(51)))), ((int)(((byte)(51)))));
@@ -415,9 +420,9 @@ namespace GorgonLibrary.Editor
 			// 
 			this.panelEditor.Controls.Add(this.toolStripContainer1);
 			this.panelEditor.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.panelEditor.Location = new System.Drawing.Point(3, 27);
+			this.panelEditor.Location = new System.Drawing.Point(6, 30);
 			this.panelEditor.Name = "panelEditor";
-			this.panelEditor.Size = new System.Drawing.Size(1086, 739);
+			this.panelEditor.Size = new System.Drawing.Size(1080, 733);
 			this.panelEditor.TabIndex = 4;
 			// 
 			// toolStripContainer1
@@ -430,11 +435,12 @@ namespace GorgonLibrary.Editor
 			// toolStripContainer1.ContentPanel
 			// 
 			this.toolStripContainer1.ContentPanel.Controls.Add(this.splitEdit);
-			this.toolStripContainer1.ContentPanel.Size = new System.Drawing.Size(1086, 693);
+			this.toolStripContainer1.ContentPanel.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+			this.toolStripContainer1.ContentPanel.Size = new System.Drawing.Size(1080, 687);
 			this.toolStripContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.toolStripContainer1.Location = new System.Drawing.Point(0, 0);
 			this.toolStripContainer1.Name = "toolStripContainer1";
-			this.toolStripContainer1.Size = new System.Drawing.Size(1086, 739);
+			this.toolStripContainer1.Size = new System.Drawing.Size(1080, 733);
 			this.toolStripContainer1.TabIndex = 0;
 			this.toolStripContainer1.Text = "toolStripContainer1";
 			// 
@@ -448,7 +454,7 @@ namespace GorgonLibrary.Editor
 			this.stripStatus.Location = new System.Drawing.Point(0, 0);
 			this.stripStatus.Name = "stripStatus";
 			this.stripStatus.RenderMode = System.Windows.Forms.ToolStripRenderMode.ManagerRenderMode;
-			this.stripStatus.Size = new System.Drawing.Size(1086, 22);
+			this.stripStatus.Size = new System.Drawing.Size(1080, 22);
 			this.stripStatus.TabIndex = 0;
 			// 
 			// formMain
@@ -463,7 +469,7 @@ namespace GorgonLibrary.Editor
 			this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
 			this.Margin = new System.Windows.Forms.Padding(4);
 			this.Name = "formMain";
-			this.Padding = new System.Windows.Forms.Padding(3);
+			this.Padding = new System.Windows.Forms.Padding(6);
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
 			this.Text = "Editor";
 			this.Controls.SetChildIndex(this.panelEditor, 0);

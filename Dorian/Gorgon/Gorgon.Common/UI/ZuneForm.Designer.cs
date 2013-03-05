@@ -17,6 +17,12 @@
 			{
 				components.Dispose();
 			}
+
+			if (disposing)
+			{
+				_iconImage.Dispose();
+				_iconImage = null;
+			}
 			base.Dispose(disposing);
 		}
 
@@ -34,7 +40,9 @@
 			this.labelMinimize = new System.Windows.Forms.Label();
 			this.labelCaption = new System.Windows.Forms.Label();
 			this.panelCaptionArea = new System.Windows.Forms.Panel();
+			this.pictureIcon = new System.Windows.Forms.PictureBox();
 			this.panelCaptionArea.SuspendLayout();
+			((System.ComponentModel.ISupportInitialize)(this.pictureIcon)).BeginInit();
 			this.SuspendLayout();
 			// 
 			// labelClose
@@ -83,7 +91,7 @@
 			// 
 			this.labelCaption.AutoSize = true;
 			this.labelCaption.Font = new System.Drawing.Font("Segoe UI", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.labelCaption.Location = new System.Drawing.Point(0, 0);
+			this.labelCaption.Location = new System.Drawing.Point(26, 1);
 			this.labelCaption.Name = "labelCaption";
 			this.labelCaption.Size = new System.Drawing.Size(61, 20);
 			this.labelCaption.TabIndex = 3;
@@ -93,6 +101,7 @@
 			// 
 			// panelCaptionArea
 			// 
+			this.panelCaptionArea.Controls.Add(this.pictureIcon);
 			this.panelCaptionArea.Controls.Add(this.labelCaption);
 			this.panelCaptionArea.Controls.Add(this.labelMinimize);
 			this.panelCaptionArea.Controls.Add(this.labelMaxRestore);
@@ -104,6 +113,16 @@
 			this.panelCaptionArea.TabIndex = 4;
 			this.panelCaptionArea.MouseDown += new System.Windows.Forms.MouseEventHandler(this.labelCaption_MouseDown);
 			this.panelCaptionArea.MouseMove += new System.Windows.Forms.MouseEventHandler(this.labelCaption_MouseMove);
+			// 
+			// pictureIcon
+			// 
+			this.pictureIcon.Location = new System.Drawing.Point(0, 0);
+			this.pictureIcon.Name = "pictureIcon";
+			this.pictureIcon.Size = new System.Drawing.Size(24, 24);
+			this.pictureIcon.TabIndex = 4;
+			this.pictureIcon.TabStop = false;
+			this.pictureIcon.Click += new System.EventHandler(this.pictureIcon_Click);
+			this.pictureIcon.DoubleClick += new System.EventHandler(this.pictureIcon_DoubleClick);
 			// 
 			// ZuneForm
 			// 
@@ -119,6 +138,7 @@
 			this.Text = "Form";
 			this.panelCaptionArea.ResumeLayout(false);
 			this.panelCaptionArea.PerformLayout();
+			((System.ComponentModel.ISupportInitialize)(this.pictureIcon)).EndInit();
 			this.ResumeLayout(false);
 
 		}
@@ -130,5 +150,6 @@
 		private System.Windows.Forms.Label labelMinimize;
 		private System.Windows.Forms.Label labelCaption;
 		private System.Windows.Forms.Panel panelCaptionArea;
+		private System.Windows.Forms.PictureBox pictureIcon;
 	}
 }

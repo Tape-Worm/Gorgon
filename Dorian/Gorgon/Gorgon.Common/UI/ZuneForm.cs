@@ -95,6 +95,7 @@ namespace GorgonLibrary.UI
 		private MARGINS _dwmMargins = default(MARGINS);
 		private bool _marginOk = false;
 		private ResizeDirection _resizeDirection = ResizeDirection.None;
+		private Image _iconImage = null;
 		#endregion
 
 		#region Properties.
@@ -162,10 +163,49 @@ namespace GorgonLibrary.UI
 				labelCaption.Text = value;
 			}
 		}
+
+		/// <summary>
+		/// Property to set or return the icon for this form.
+		/// </summary>
+		public new Icon Icon
+		{
+			get
+			{
+				return base.Icon;
+			}
+			set
+			{
+				base.Icon = value;
+				if (!DesignMode)
+				{
+					ExtractIcon();
+				}
+			}
+		}
 		#endregion
 
 		#region Methods.
-        /// <summary>
+		/// <summary>
+		/// Handles the DoubleClick event of the pictureIcon control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+		private void pictureIcon_DoubleClick(object sender, EventArgs e)
+		{
+			Close();
+		}
+
+		/// <summary>
+		/// Handles the Click event of the pictureIcon control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+		private void pictureIcon_Click(object sender, EventArgs e)
+		{
+			SendKeys.Send("% ");
+		}
+
+		/// <summary>
         /// Handles the MouseEnter event of the labelClose control.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
@@ -426,7 +466,7 @@ namespace GorgonLibrary.UI
 		{
 			base.OnMouseMove(e);
 
-			if (DesignMode)
+			if ((DesignMode) || (WindowState != FormWindowState.Normal))
 			{
 				return;
 			}
@@ -539,6 +579,32 @@ namespace GorgonLibrary.UI
 					}
 				}
 			}
+		}
+
+		/// <summary>
+		/// Function to extract the icon image from the embedded image.
+		/// </summary>
+		private void ExtractIcon()
+		{
+			if (_iconImage != null)
+			{
+				pictureIcon.Image = null;
+				_iconImage.Dispose();
+				_iconImage = null;
+			}
+
+			if ((!ControlBox) || (Icon == null))
+			{
+				return;
+			}
+
+			_iconImage = new Bitmap(24, 24, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+			using (Graphics g = Graphics.FromImage(_iconImage))
+			{
+				g.DrawIcon(Icon, new Rectangle(0, 0, 24, 24));
+			}
+
+			pictureIcon.Image = _iconImage;
 		}
 
 		/// <summary>

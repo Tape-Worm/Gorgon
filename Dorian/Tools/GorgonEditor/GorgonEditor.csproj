@@ -181,7 +181,6 @@
   <ItemGroup>
     <Content Include="Gorgon2.ico" />
     <None Include="Resources\Gorgon_2.x_Logo_Blurry.dds" />
-    <None Include="Resources\Gorgon_2.x_Logo_Blurry.png" />
     <None Include="Resources\cancel_16x16.png" />
     <None Include="Resources\ok_16x16.png" />
     <None Include="Resources\UnicodeData.txt" />
