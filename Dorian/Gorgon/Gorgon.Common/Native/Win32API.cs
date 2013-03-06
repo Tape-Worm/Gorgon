@@ -196,6 +196,27 @@ namespace GorgonLibrary.Native
 		#endregion
 
 		#region Methods.
+		/// <summary>
+		/// Function to show a pop up menu.
+		/// </summary>
+		/// <param name="hmenu">The hmenu.</param>
+		/// <param name="flags">The flags.</param>
+		/// <param name="x">The x.</param>
+		/// <param name="y">The y.</param>
+		/// <param name="hwnd">The HWND.</param>
+		/// <param name="lptpm">The LPTPM.</param>
+		/// <returns></returns>
+		[DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
+		public static extern int TrackPopupMenuEx(IntPtr hmenu, TrackPopupMenu flags, int x, int y, IntPtr hwnd, IntPtr lptpm);
+
+		/// <summary>
+		/// Function to retrieve the system menu handle.
+		/// </summary>
+		/// <param name="hwnd"></param>
+		/// <param name="bRevert"></param>
+		/// <returns></returns>
+		[DllImport("User32.dll", CharSet = CharSet.Auto, SetLastError = true)]
+		public static extern IntPtr GetSystemMenu(IntPtr hwnd, bool bRevert);
 
 		/// <summary>
 		/// DWM default window procedure.

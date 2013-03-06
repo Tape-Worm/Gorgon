@@ -20,8 +20,11 @@
 
 			if (disposing)
 			{
-				_iconImage.Dispose();
-				_iconImage = null;
+				if (_iconImage != null)
+				{
+					_iconImage.Dispose();
+					_iconImage = null;
+				}
 			}
 			base.Dispose(disposing);
 		}
@@ -34,6 +37,7 @@
 		/// </summary>
 		private void InitializeComponent()
 		{
+			this.components = new System.ComponentModel.Container();
 			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ZuneForm));
 			this.labelClose = new System.Windows.Forms.Label();
 			this.labelMaxRestore = new System.Windows.Forms.Label();
@@ -41,8 +45,18 @@
 			this.labelCaption = new System.Windows.Forms.Label();
 			this.panelCaptionArea = new System.Windows.Forms.Panel();
 			this.pictureIcon = new System.Windows.Forms.PictureBox();
+			this.popupSysMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
+			this.itemRestore = new System.Windows.Forms.ToolStripMenuItem();
+			this.itemMove = new System.Windows.Forms.ToolStripMenuItem();
+			this.itemSize = new System.Windows.Forms.ToolStripMenuItem();
+			this.itemMinimize = new System.Windows.Forms.ToolStripMenuItem();
+			this.itemMaximize = new System.Windows.Forms.ToolStripMenuItem();
+			this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
+			this.itemClose = new System.Windows.Forms.ToolStripMenuItem();
+			this.toolTip = new System.Windows.Forms.ToolTip(this.components);
 			this.panelCaptionArea.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.pictureIcon)).BeginInit();
+			this.popupSysMenu.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// labelClose
@@ -54,6 +68,7 @@
 			this.labelClose.Size = new System.Drawing.Size(22, 15);
 			this.labelClose.TabIndex = 0;
 			this.labelClose.Text = "r";
+			this.toolTip.SetToolTip(this.labelClose, "Close the window");
 			this.labelClose.MouseDown += new System.Windows.Forms.MouseEventHandler(this.labelClose_MouseDown);
 			this.labelClose.MouseEnter += new System.EventHandler(this.labelClose_MouseEnter);
 			this.labelClose.MouseLeave += new System.EventHandler(this.labelClose_MouseLeave);
@@ -68,6 +83,7 @@
 			this.labelMaxRestore.Size = new System.Drawing.Size(22, 15);
 			this.labelMaxRestore.TabIndex = 1;
 			this.labelMaxRestore.Text = "2";
+			this.toolTip.SetToolTip(this.labelMaxRestore, "Maximize the window");
 			this.labelMaxRestore.Click += new System.EventHandler(this.labelMaxRestore_Click);
 			this.labelMaxRestore.MouseEnter += new System.EventHandler(this.labelClose_MouseEnter);
 			this.labelMaxRestore.MouseLeave += new System.EventHandler(this.labelClose_MouseLeave);
@@ -82,6 +98,7 @@
 			this.labelMinimize.Size = new System.Drawing.Size(22, 15);
 			this.labelMinimize.TabIndex = 2;
 			this.labelMinimize.Text = "0";
+			this.toolTip.SetToolTip(this.labelMinimize, "Minimize the window");
 			this.labelMinimize.Click += new System.EventHandler(this.labelMinimize_Click);
 			this.labelMinimize.MouseEnter += new System.EventHandler(this.labelClose_MouseEnter);
 			this.labelMinimize.MouseLeave += new System.EventHandler(this.labelClose_MouseLeave);
@@ -122,7 +139,79 @@
 			this.pictureIcon.TabIndex = 4;
 			this.pictureIcon.TabStop = false;
 			this.pictureIcon.Click += new System.EventHandler(this.pictureIcon_Click);
-			this.pictureIcon.DoubleClick += new System.EventHandler(this.pictureIcon_DoubleClick);
+			// 
+			// popupSysMenu
+			// 
+			this.popupSysMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.itemRestore,
+            this.itemMove,
+            this.itemSize,
+            this.itemMinimize,
+            this.itemMaximize,
+            this.toolStripMenuItem1,
+            this.itemClose});
+			this.popupSysMenu.Name = "popupSysMenu";
+			this.popupSysMenu.Size = new System.Drawing.Size(148, 142);
+			// 
+			// itemRestore
+			// 
+			this.itemRestore.Image = global::GorgonLibrary.Properties.Resources.Restore;
+			this.itemRestore.Name = "itemRestore";
+			this.itemRestore.Size = new System.Drawing.Size(147, 22);
+			this.itemRestore.Text = "&Restore";
+			this.itemRestore.Click += new System.EventHandler(this.itemRestore_Click);
+			// 
+			// itemMove
+			// 
+			this.itemMove.Name = "itemMove";
+			this.itemMove.Size = new System.Drawing.Size(147, 22);
+			this.itemMove.Text = "&Move";
+			this.itemMove.Click += new System.EventHandler(this.itemMove_Click);
+			// 
+			// itemSize
+			// 
+			this.itemSize.Name = "itemSize";
+			this.itemSize.Size = new System.Drawing.Size(147, 22);
+			this.itemSize.Text = "&Size";
+			this.itemSize.Click += new System.EventHandler(this.itemSize_Click);
+			// 
+			// itemMinimize
+			// 
+			this.itemMinimize.Image = ((System.Drawing.Image)(resources.GetObject("itemMinimize.Image")));
+			this.itemMinimize.Name = "itemMinimize";
+			this.itemMinimize.Size = new System.Drawing.Size(147, 22);
+			this.itemMinimize.Text = "Mi&nimize";
+			this.itemMinimize.Click += new System.EventHandler(this.itemMinimize_Click);
+			// 
+			// itemMaximize
+			// 
+			this.itemMaximize.Image = ((System.Drawing.Image)(resources.GetObject("itemMaximize.Image")));
+			this.itemMaximize.Name = "itemMaximize";
+			this.itemMaximize.Size = new System.Drawing.Size(147, 22);
+			this.itemMaximize.Text = "Ma&ximize";
+			this.itemMaximize.Click += new System.EventHandler(this.itemMaximize_Click);
+			// 
+			// toolStripMenuItem1
+			// 
+			this.toolStripMenuItem1.Name = "toolStripMenuItem1";
+			this.toolStripMenuItem1.Size = new System.Drawing.Size(144, 6);
+			// 
+			// itemClose
+			// 
+			this.itemClose.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
+			this.itemClose.Image = global::GorgonLibrary.Properties.Resources.Close;
+			this.itemClose.Name = "itemClose";
+			this.itemClose.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.F4)));
+			this.itemClose.Size = new System.Drawing.Size(147, 22);
+			this.itemClose.Text = "Close";
+			this.itemClose.Click += new System.EventHandler(this.itemClose_Click);
+			// 
+			// toolTip
+			// 
+			this.toolTip.AutoPopDelay = 5000;
+			this.toolTip.BackColor = System.Drawing.Color.White;
+			this.toolTip.InitialDelay = 1500;
+			this.toolTip.ReshowDelay = 100;
 			// 
 			// ZuneForm
 			// 
@@ -132,13 +221,15 @@
 			this.Controls.Add(this.panelCaptionArea);
 			this.DoubleBuffered = true;
 			this.Font = new System.Drawing.Font("Segoe UI", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
+			this.KeyPreview = true;
 			this.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
 			this.Name = "ZuneForm";
 			this.Text = "Form";
 			this.panelCaptionArea.ResumeLayout(false);
 			this.panelCaptionArea.PerformLayout();
 			((System.ComponentModel.ISupportInitialize)(this.pictureIcon)).EndInit();
+			this.popupSysMenu.ResumeLayout(false);
 			this.ResumeLayout(false);
 
 		}
@@ -151,5 +242,14 @@
 		private System.Windows.Forms.Label labelCaption;
 		private System.Windows.Forms.Panel panelCaptionArea;
 		private System.Windows.Forms.PictureBox pictureIcon;
+		private System.Windows.Forms.ToolStripMenuItem itemRestore;
+		private System.Windows.Forms.ToolStripMenuItem itemMove;
+		private System.Windows.Forms.ToolStripMenuItem itemSize;
+		private System.Windows.Forms.ToolStripMenuItem itemMinimize;
+		private System.Windows.Forms.ToolStripMenuItem itemMaximize;
+		private System.Windows.Forms.ToolStripSeparator toolStripMenuItem1;
+		private System.Windows.Forms.ToolStripMenuItem itemClose;
+		private System.Windows.Forms.ContextMenuStrip popupSysMenu;
+		private System.Windows.Forms.ToolTip toolTip;
 	}
 }

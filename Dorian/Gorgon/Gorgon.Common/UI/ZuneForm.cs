@@ -92,10 +92,11 @@ namespace GorgonLibrary.UI
 		#endregion
 
 		#region Variables.
+		private Padding? _currentPadding = null;
 		private MARGINS _dwmMargins = default(MARGINS);
-		private bool _marginOk = false;
 		private ResizeDirection _resizeDirection = ResizeDirection.None;
 		private Image _iconImage = null;
+		private bool _showWindowCaption = true;
 		#endregion
 
 		#region Properties.
@@ -132,19 +133,100 @@ namespace GorgonLibrary.UI
 						break;
 					default:
 						Cursor.Current = Cursors.Default;
-						break;
+						break;						
 				}
 			}
-		}				
+		}
+
+		/// <summary>
+		/// Gets or sets the border style of the form.
+		/// </summary>
+		/// <returns>A <see cref="T:System.Windows.Forms.FormBorderStyle" /> that represents the style of border to display for the form. The default is FormBorderStyle.Sizable.</returns>
+		///   <PermissionSet>
+		///   <IPermission class="System.Security.Permissions.EnvironmentPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+		///   <IPermission class="System.Security.Permissions.FileIOPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+		///   <IPermission class="System.Security.Permissions.SecurityPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="UnmanagedCode, ControlEvidence" />
+		///   <IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+		///   </PermissionSet>
+		[Browsable(false), EditorBrowsable(EditorBrowsableState.Never), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+		public new FormBorderStyle FormBorderStyle
+		{
+			get
+			{
+				return System.Windows.Forms.FormBorderStyle.None;
+			}
+			set
+			{
+				base.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return whether the form can be resized by a user or not.
+		/// </summary>
+		[Browsable(true), Category("Behavior"), Description("Determines if a form can be resized by the user or not."), DefaultValue(true)]
+		public bool Resizable
+		{
+			get;
+			set;
+		}
 
 		/// <summary>
 		/// Property to set or return the width of the border, in pixels.
 		/// </summary>
-		[Browsable(true), Description("The width of the resize border in pixels."), Category("Design")]
+		/// <remarks>This is only valid when <see cref="GorgonLibrary.UI.ZuneForm.Resizable">Resizable</see> is set to TRUE.</remarks>
+		[Browsable(true), Description("The width of the resize area in pixels."), Category("Design")]
 		public int BorderWidth
 		{
 			get;
 			set;
+		}
+
+		/// <summary>
+		/// Hidden control box property.
+		/// </summary>
+		[Browsable(false), EditorBrowsable(EditorBrowsableState.Never), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+		public new bool ControlBox
+		{
+			get
+			{
+				return true;
+			}
+			set
+			{
+			}
+		}
+
+		/// <summary>
+		/// Hidden help button box property.
+		/// </summary>
+		[Browsable(false), EditorBrowsable(EditorBrowsableState.Never), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+		public new bool HelpButton
+		{
+			get
+			{
+				return false;
+			}
+			set
+			{
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return whether the window caption, including the system menu, max/min buttons and the close button are visible.
+		/// </summary>
+		[Browsable(true), Category("Window Style"), Description("Shows or hides the caption for the window.  This will include the caption, system menu, and the minimize/maximize/close buttons.")]
+		public bool ShowWindowCaption
+		{
+			get
+			{
+				return _showWindowCaption;
+			}
+			set
+			{
+				_showWindowCaption = value;
+				ValidateWindowControls();
+			}
 		}
 
 		/// <summary>
@@ -161,6 +243,7 @@ namespace GorgonLibrary.UI
 			{
 				base.Text = value;
 				labelCaption.Text = value;
+				ValidateWindowControls();
 			}
 		}
 
@@ -176,23 +259,86 @@ namespace GorgonLibrary.UI
 			set
 			{
 				base.Icon = value;
-				if (!DesignMode)
-				{
-					ExtractIcon();
-				}
+				ExtractIcon();					
+				ValidateWindowControls();
 			}
 		}
 		#endregion
 
-		#region Methods.
+		#region Methods.		
 		/// <summary>
-		/// Handles the DoubleClick event of the pictureIcon control.
+		/// Handles the Click event of the itemMove control.
 		/// </summary>
 		/// <param name="sender">The source of the event.</param>
 		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-		private void pictureIcon_DoubleClick(object sender, EventArgs e)
+		private void itemMove_Click(object sender, EventArgs e)
+		{
+			Win32API.ReleaseCapture();										// SC_MOVE
+			Win32API.SendMessage(this.Handle, (int)WindowMessages.SysCommand, new IntPtr(0xF010), IntPtr.Zero);
+		}
+
+		/// <summary>
+		/// Handles the Click event of the itemSize control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+		private void itemSize_Click(object sender, EventArgs e)
+		{
+			Win32API.ReleaseCapture();										// SC_SIZE
+			Win32API.SendMessage(this.Handle, (int)WindowMessages.SysCommand, new IntPtr(0xF000), IntPtr.Zero);
+		}
+
+		/// <summary>
+		/// Handles the Click event of the itemMinimize control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+		private void itemMinimize_Click(object sender, EventArgs e)
+		{
+			WindowState = FormWindowState.Minimized;
+		}
+
+		/// <summary>
+		/// Handles the Click event of the itemRestore control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+		private void itemRestore_Click(object sender, EventArgs e)
+		{
+			WindowState = FormWindowState.Normal;
+		}
+
+		/// <summary>
+		/// Handles the Click event of the itemMaximize control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+		private void itemMaximize_Click(object sender, EventArgs e)
+		{
+			WindowState = FormWindowState.Maximized;
+		}
+
+		/// <summary>
+		/// Handles the Click event of the itemClose control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+		private void itemClose_Click(object sender, EventArgs e)
 		{
 			Close();
+		}
+
+		/// <summary>
+		/// Function to show the system menu.
+		/// </summary>
+		private void ShowSysMenu()
+		{
+			if (!ShowWindowCaption)
+			{
+				return;
+			}
+
+			popupSysMenu.Show(PointToScreen(new Point(panelCaptionArea.Left, panelCaptionArea.Height + panelCaptionArea.Top)));
 		}
 
 		/// <summary>
@@ -202,8 +348,9 @@ namespace GorgonLibrary.UI
 		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
 		private void pictureIcon_Click(object sender, EventArgs e)
 		{
-			SendKeys.Send("% ");
-		}
+			ValidateWindowControls();
+			ShowSysMenu();	
+		}		
 
 		/// <summary>
         /// Handles the MouseEnter event of the labelClose control.
@@ -299,7 +446,7 @@ namespace GorgonLibrary.UI
 		/// </summary>
 		private void ValidateWindowControls()
 		{
-			if (ControlBox)
+			if (ShowWindowCaption)
 			{
 				panelCaptionArea.Visible = true;
 
@@ -310,22 +457,46 @@ namespace GorgonLibrary.UI
 					labelMinimize.Enabled = MinimizeBox;
 				}
 				else
-				{
+				{					
 					labelMaxRestore.Visible = labelMinimize.Visible = false;
+					itemRestore.Visible = false;
 				}
+
+				itemMaximize.Visible = MaximizeBox;
+				itemMinimize.Visible = MinimizeBox;
 			}
 			else
 			{
 				panelCaptionArea.Visible = false;
 			}
 
-			if (WindowState == FormWindowState.Maximized)
+			itemSize.Visible = Resizable;
+
+			switch (WindowState)
 			{
-				labelMaxRestore.Text = "2";
-			}
-			else
-			{
-				labelMaxRestore.Text = "1";
+				case FormWindowState.Maximized:
+					itemRestore.Enabled = true;
+					itemMaximize.Enabled = false;
+					itemMinimize.Enabled = true;
+					itemMove.Enabled = false;
+					itemSize.Enabled = false;
+					labelMaxRestore.Text = "2";
+					break;
+				case FormWindowState.Minimized:
+					itemRestore.Enabled = true;
+					itemMove.Enabled = false;
+					itemSize.Enabled = false;
+					itemMaximize.Enabled = true;
+					itemMinimize.Enabled = false;
+					break;
+				case FormWindowState.Normal:
+					labelMaxRestore.Text = "1";
+					itemMove.Enabled = true;
+					itemSize.Enabled = true;
+					itemRestore.Enabled = false;
+					itemMaximize.Enabled = true;
+					itemMinimize.Enabled = true;
+					break;
 			}
 		}
 
@@ -396,6 +567,28 @@ namespace GorgonLibrary.UI
 
 			return HitTests.Client;
 		}
+			
+
+		/// <summary>
+		/// Processes a command key.
+		/// </summary>
+		/// <param name="msg">A <see cref="T:System.Windows.Forms.Message" />, passed by reference, that represents the Win32 message to process.</param>
+		/// <param name="keyData">One of the <see cref="T:System.Windows.Forms.Keys" /> values that represents the key to process.</param>
+		/// <returns>
+		/// true if the keystroke was processed and consumed by the control; otherwise, false to allow further processing.
+		/// </returns>
+		protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
+		{
+			WindowMessages message = (WindowMessages)msg.Msg;
+
+			if (keyData == (Keys.Alt | Keys.Space))
+			{
+				ShowSysMenu();
+				return true;
+			}
+
+			return base.ProcessCmdKey(ref msg, keyData);
+		}
 
         /// <summary>
         /// </summary>
@@ -404,59 +597,24 @@ namespace GorgonLibrary.UI
         {
             base.OnResize(e);
 
-            ValidateWindowControls();
-        }
-
-		/// <summary>
-		/// Window procedure.
-		/// </summary>
-		/// <param name="m">The Windows <see cref="T:System.Windows.Forms.Message" /> to process.</param>
-		protected override void WndProc(ref Message m)
-		{
-			IntPtr result = IntPtr.Zero;
-			WindowMessages message = (WindowMessages)m.Msg;
-
-			if (DesignMode)
+			if ((!DesignMode) && (_currentPadding != null))
 			{
-				base.WndProc(ref m);
-				return;
-			}
-
-			if (Win32API.DwmDefWindowProc(m.HWnd, message, m.WParam, m.LParam, ref result) == 1)
-			{
-				m.Result = result;
-				return;
-			}
-
-			if ((message == WindowMessages.NCCalcSize) && (m.WParam.ToInt32() == 1))
-			{
-				unsafe
+				if (this.WindowState == FormWindowState.Maximized)
 				{
-					_dwmMargins = default(MARGINS);
-					//NCCALCSIZE_PARAMS sizeParameters = default(NCCALCSIZE_PARAMS);
-					//m.LParam.Read<NCCALCSIZE_PARAMS>(out sizeParameters);
-
-					if (!_marginOk)
+					_currentPadding = Padding;
+					Padding = new Padding(0);
+				}
+				else
+				{
+					if (Padding != _currentPadding.Value)
 					{
-						_dwmMargins.cyBottomHeight = 3;
-						_marginOk = true;
+						Padding = _currentPadding.Value;
 					}
-
-					//m.LParam.Write<NCCALCSIZE_PARAMS>(ref sizeParameters);
-
-					m.Result = IntPtr.Zero;
-					return;
 				}
 			}
 
-			if ((message == WindowMessages.NCHitTest) && (m.WParam.ToInt32() == 0))
-			{
-				m.Result = new IntPtr((int)HitTestNonClient(m.HWnd, m.WParam, m.LParam));
-				return;
-			}
-
-			base.WndProc(ref m);
-		}
+            ValidateWindowControls();
+        }
 
 		/// <summary>
 		/// Raises the <see cref="E:System.Windows.Forms.Control.MouseMove" /> event.
@@ -466,7 +624,7 @@ namespace GorgonLibrary.UI
 		{
 			base.OnMouseMove(e);
 
-			if ((DesignMode) || (WindowState != FormWindowState.Normal))
+			if ((DesignMode) || (WindowState != FormWindowState.Normal) || (!Resizable))
 			{
 				return;
 			}
@@ -531,7 +689,7 @@ namespace GorgonLibrary.UI
 				}
 				else
 				{
-					if ((WindowState == FormWindowState.Normal) && (this.FormBorderStyle == System.Windows.Forms.FormBorderStyle.Sizable))
+					if ((WindowState == FormWindowState.Normal) && (Resizable))
 					{
 						switch(ResizeDir)
 						{
@@ -593,7 +751,7 @@ namespace GorgonLibrary.UI
 				_iconImage = null;
 			}
 
-			if ((!ControlBox) || (Icon == null))
+			if ((!ShowWindowCaption) || (Icon == null))
 			{
 				return;
 			}
@@ -619,18 +777,17 @@ namespace GorgonLibrary.UI
 		}
 
 		/// <summary>
-		/// Disable this function as it messes up our sizing.
+		/// Raises the <see cref="E:System.Windows.Forms.Control.PaddingChanged" /> event.
 		/// </summary>
-		/// <param name="x">The x-coordinate.</param>
-		/// <param name="y">The y-coordinate.</param>
-		/// <param name="width">The bounds width.</param>
-		/// <param name="height">The bounds height.</param>
-		/// <param name="specified">A value from the BoundsSpecified enumeration.</param>
-		protected override void SetBoundsCore(int x, int y, int width, int height, BoundsSpecified specified)
+		/// <param name="e">An <see cref="T:System.EventArgs" /> that contains the event data.</param>
+		protected override void OnPaddingChanged(EventArgs e)
 		{
-			if (DesignMode)
+			base.OnPaddingChanged(e);
+
+			// Only store the current padding for the first time.
+			if (_currentPadding == null)
 			{
-				base.SetBoundsCore(x, y, width, height, specified);
+				_currentPadding = Padding;
 			}
 		}
 		#endregion
@@ -645,8 +802,9 @@ namespace GorgonLibrary.UI
 
 			InitializeComponent();
 
+			Resizable = true;
 			BorderWidth = 6;
-			ValidateWindowControls();
+			ValidateWindowControls();			
 		}
 		#endregion
 	}

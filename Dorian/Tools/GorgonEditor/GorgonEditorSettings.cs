@@ -31,6 +31,7 @@ using System.Text;
 using System.Drawing;
 using System.Windows.Forms;
 using System.IO;
+using GorgonLibrary.IO;
 using GorgonLibrary.Diagnostics;
 using GorgonLibrary.Configuration;
 
@@ -42,6 +43,10 @@ namespace GorgonLibrary.Editor
 	public class GorgonEditorSettings
 		: GorgonApplicationSettings
 	{
+		#region Variables.
+		private float _animationRate = 0.25f;		// Animation rate.
+		#endregion
+
 		#region Properties.
 		/// <summary>
 		/// Property to set or return the main form state.
@@ -61,6 +66,51 @@ namespace GorgonLibrary.Editor
 		{
 			get;
 			set;
+		}
+
+		/// <summary>
+		/// Property to set or return the path to the scratch location for temporary data.
+		/// </summary>
+		[ApplicationSetting("ScratchPath", typeof(string), "Options")]
+		public string ScratchPath
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Property to set or return whether to animate the start page for the editor.
+		/// </summary>
+		[ApplicationSetting("StartPageAnimation", true, typeof(bool), "Options")]
+		public bool AnimateStartPage
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Property to set or return the rate of animation for the default start page.
+		/// </summary>
+		[ApplicationSetting("StartPageAnimationRate", 0.1f, typeof(float), "Options")]
+		public float StartPageAnimationPulseRate
+		{
+			get
+			{
+				return _animationRate;
+			}
+			set
+			{
+				if (value < 0)
+				{
+					value = 0;
+				}
+				if (value > 1)
+				{
+					value = 1;
+				}
+
+				_animationRate = value;
+			}
 		}
 
 		/// <summary>
@@ -99,12 +149,16 @@ namespace GorgonLibrary.Editor
 		/// Initializes a new instance of the <see cref="GorgonEditorSettings"/> class.
 		/// </summary>
 		internal GorgonEditorSettings()
-			: base("Gorgon Editor", new Version(1, 0))
+			: base("Gorgon.Editor", new Version(1, 0))
 		{
+			// Set the path for the application settings.
+			this.Path = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData).FormatDirectory(System.IO.Path.DirectorySeparatorChar) 
+					  + "Tape_Worm".FormatDirectory(System.IO.Path.DirectorySeparatorChar)
+					  + this.ApplicationName.FormatDirectory(System.IO.Path.DirectorySeparatorChar)
+					  + "Gorgon.Editor.config.xml";
+
 			Size baseSize = new Size(1280, 800);
 
-			FormState = FormWindowState.Maximized;
-						
 			PlugIns = new List<string>();			
 
 			// Set the default size, but ensure that it fits within the primary monitor.
@@ -115,6 +169,12 @@ namespace GorgonLibrary.Editor
 				baseSize.Height = Screen.PrimaryScreen.WorkingArea.Height;
 			
 			WindowDimensions = new Rectangle(Screen.PrimaryScreen.WorkingArea.Width / 2 - baseSize.Width / 2, Screen.PrimaryScreen.WorkingArea.Height / 2 - baseSize.Height / 2, 1280, 800);
+
+			// Get the default scratch location.
+			ScratchPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData).FormatDirectory(System.IO.Path.DirectorySeparatorChar)
+							+ "Tape_Worm".FormatDirectory(System.IO.Path.DirectorySeparatorChar)
+							+ this.ApplicationName.FormatDirectory(System.IO.Path.DirectorySeparatorChar)
+							+ "ScratchData".FormatDirectory(System.IO.Path.DirectorySeparatorChar);							
 		}
 		#endregion
 	}

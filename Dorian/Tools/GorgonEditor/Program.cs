@@ -44,10 +44,16 @@ namespace GorgonLibrary.Editor
 	/// </summary>
 	static class Program
 	{
-		#region Variables.
-		#endregion
-
 		#region Properties.
+		/// <summary>
+		/// Property to return the currently loaded content.
+		/// </summary>
+		public static DefaultContent CurrentContent
+		{
+			get;
+			internal set;
+		}
+
 		/// <summary>
 		/// Property to set or return the settings for the application.
 		/// </summary>
@@ -74,15 +80,6 @@ namespace GorgonLibrary.Editor
 			get;
 			private set;
 		}
-
-		/// <summary>
-		/// Property to return the renderer for the editor.
-		/// </summary>
-		public static Gorgon2D Renderer
-		{
-			get;
-			private set;
-		}
 		#endregion
 
 		#region Methods.
@@ -90,37 +87,15 @@ namespace GorgonLibrary.Editor
 		/// Function to initialize the graphics interface.
 		/// </summary>
 		/// <param name="control">Main content control.</param>
-		public static void InitializeGraphics(Control control)
+		public static void InitializeGraphics()
 		{
-			if (Renderer != null)
-			{
-				Renderer.Dispose();
-				Renderer = null;
-			}
-
 			if (Graphics != null)
 			{
 				Graphics.Dispose();
 				Graphics = null;
 			}
 
-			Graphics = new GorgonGraphics(DeviceFeatureLevel.SM2_a_b);
-			
-			// Create the renderer with a default swap chain.  This is sized to 1x1 to keep from eating
-			// video memory since we'll never use this particular swap chain.
-			// The down side is that we'll end up having to manage our render targets manually.
-			// i.e. setting Target = null won't work because it'll just flip to this 1x1 swap chain.
-			Renderer = Graphics.Output.Create2DRenderer(
-				Graphics.Output.CreateSwapChain("Content.SwapChain", new GorgonSwapChainSettings()
-				{
-					BufferCount = 2,
-					DepthStencilFormat = BufferFormat.Unknown,
-					Flags = SwapChainUsageFlags.RenderTarget,
-					Format = BufferFormat.R8G8B8A8_UIntNormal,
-					MultiSample = new GorgonMultisampling(1, 0),
-					SwapEffect = SwapEffect.Discard,
-					Window = control
-				}));
+			Graphics = new GorgonGraphics(DeviceFeatureLevel.SM2_a_b);			
 		}
 
 		/// <summary>
@@ -200,11 +175,11 @@ namespace GorgonLibrary.Editor
 			}
 			finally
 			{
-				// Get rid of shared resources.
-				if (Renderer != null)
+				// Destroy the current content.
+				if (CurrentContent != null)
 				{
-					Renderer.Dispose();
-					Renderer = null;
+					CurrentContent.Dispose();
+					CurrentContent = null;
 				}
 
 				// Shut down the graphics interface.

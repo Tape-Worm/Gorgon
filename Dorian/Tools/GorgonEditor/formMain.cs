@@ -88,7 +88,6 @@ namespace GorgonLibrary.Editor
 		#endregion
 
 		#region Variables.
-		private DefaultContent _defaultContent = null;						// Default content page.
 		private SortedTreeModel _treeModel = null;							// Tree model.
 		private Font _unSavedFont = null;									// Font for unsaved documents.
 		private bool _wasSaved = false;										// Flag to indicate that the project was previously saved.
@@ -107,7 +106,7 @@ namespace GorgonLibrary.Editor
 		private void itemExit_Click(object sender, EventArgs e)
 		{
 			try
-			{
+			{				
 				Close();
 			}
 			catch (Exception ex)
@@ -161,6 +160,55 @@ namespace GorgonLibrary.Editor
 		}
 
 		/// <summary>
+		/// Function to load content into the interface.
+		/// </summary>
+		/// <param name="content">Content to load into the interface.</param>
+		private void LoadContentPane(DefaultContent content)
+		{
+			if (Program.CurrentContent != null)
+			{
+				if (Program.CurrentContent.Close())
+				{
+					Program.CurrentContent.Dispose();
+					Program.CurrentContent = null;
+				}
+				else
+				{
+					return;
+				}
+			}
+
+			if (content == null)
+			{
+				content = new DefaultContent();
+			}
+
+			Program.CurrentContent = content;
+
+			// Load the content.
+			Control control = content.LoadContent();
+
+			if (control != null)
+			{
+				control.Dock = DockStyle.Fill;
+			}
+
+			// Add to our interface.
+			splitEdit.Panel1.Controls.Add(control);
+			Program.CurrentContent = content;
+
+			// If the current content 
+			if (content.HasRenderer)
+			{
+				Gorgon.ApplicationIdleLoopMethod = Idle;
+			}
+			else
+			{
+				Gorgon.ApplicationIdleLoopMethod = null;
+			}
+		}
+
+		/// <summary>
 		/// Raises the <see cref="E:System.Windows.Forms.Form.FormClosing"/> event.
 		/// </summary>
 		/// <param name="e">A <see cref="T:System.Windows.Forms.FormClosingEventArgs"/> that contains the event data.</param>
@@ -170,24 +218,52 @@ namespace GorgonLibrary.Editor
 
 			try
 			{
+				if ((Program.CurrentContent != null) && (Program.CurrentContent.HasChanges))
+				{
+					ConfirmationResult result = ConfirmationResult.None;
+
+					result = GorgonDialogs.ConfirmBox(this, "The " + Program.CurrentContent.ContentType + " '" + Program.CurrentContent.Name + "' has changes.  Would you like to save it?", true, false);
+
+					if (result == ConfirmationResult.Yes)
+					{
+						// TODO:
+						// Program.CurrentContent.Save();
+					}
+
+					if (result == ConfirmationResult.Cancel)
+					{
+						e.Cancel = true;
+						return;
+					}
+
+					// Destroy the current content.
+					Program.CurrentContent.Dispose();
+					Program.CurrentContent = null;
+				}
+				
 				if (_unSavedFont != null)
+				{
 					_unSavedFont.Dispose();
+					_unSavedFont = null;
+				}
+
 				_nodeText.DrawText -= new EventHandler<Aga.Controls.Tree.NodeControls.DrawEventArgs>(_nodeText_DrawText);
 
 				if (this.WindowState != FormWindowState.Minimized)
+				{
 					Program.Settings.FormState = this.WindowState;
+				}
+
 				if (this.WindowState != FormWindowState.Normal)
+				{
 					Program.Settings.WindowDimensions = this.RestoreBounds;
+				}
 				else
+				{
 					Program.Settings.WindowDimensions = this.DesktopBounds;
+				}
 
 				Program.Settings.Save();
-
-				if (_defaultContent != null)
-				{
-					_defaultContent.Dispose();
-				}
-				_defaultContent = null;
 			}
 #if DEBUG
 			catch (Exception ex)
@@ -207,11 +283,7 @@ namespace GorgonLibrary.Editor
 		/// <returns>TRUE to continue, FALSE to exit.</returns>
 		private bool Idle()
 		{
-			Program.Renderer.Clear(panelContent.BackColor);
-
-			int retraces = _defaultContent.Draw();
-
-			Program.Renderer.Render(retraces);
+			Program.CurrentContent.Draw();
 
 			return true;
 		}
@@ -266,19 +338,18 @@ namespace GorgonLibrary.Editor
 			{
 				ToolStripManager.Renderer = new DarkFormsRenderer();
 
-				// Adjust main window.
-				Visible = true;
-				this.DesktopBounds = Program.Settings.WindowDimensions;
+				this.Location = Program.Settings.WindowDimensions.Location;
+				this.Size = Program.Settings.WindowDimensions.Size;
 
 				// If this window can't be placed on a monitor, then shift it to the primary.
-				if (Screen.AllScreens.Count(item => item.Bounds.Contains(this.Location)) == 0)
+				if (!Screen.AllScreens.Any(item => item.Bounds.Contains(this.Location)))
+				{
 					this.Location = Screen.PrimaryScreen.Bounds.Location;
+				}
 
 				this.WindowState = Program.Settings.FormState;
 
 				InitializeTree();
-
-				Gorgon.ApplicationIdleLoopMethod = Idle;
 			}
 			catch (Exception ex)
 			{
@@ -291,11 +362,11 @@ namespace GorgonLibrary.Editor
 		}
 
 		/// <summary>
-		/// Function to initialize the default content in the panel.
+		/// Function to load the default content pane.
 		/// </summary>
-		internal void InitializeDefaultContent()
+		internal void LoadDefaultContent()
 		{
-			_defaultContent = new DefaultContent();
+			LoadContentPane(null);
 		}
 		#endregion
 
@@ -306,6 +377,9 @@ namespace GorgonLibrary.Editor
 		public formMain()
 		{
 			InitializeComponent();
+
+			// Force the splitter width to stay at 4 pixels!
+			splitEdit.SplitterWidth = 4;
 
 			_unSavedFont = new Font(this.Font, FontStyle.Bold);
 		}
