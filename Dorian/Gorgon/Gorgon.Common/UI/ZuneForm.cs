@@ -265,7 +265,7 @@ namespace GorgonLibrary.UI
 		}
 		#endregion
 
-		#region Methods.		
+		#region Methods.
 		/// <summary>
 		/// Handles the Click event of the itemMove control.
 		/// </summary>
@@ -530,7 +530,17 @@ namespace GorgonLibrary.UI
 				return HitTests.TopRight;
 			}
 
-			if (top.Contains(point))
+            if (bottomLeft.Contains(point))
+            {
+                return HitTests.BottomLeft;
+            }
+
+            if (bottomRight.Contains(point))
+            {
+                return HitTests.BottomRight;
+            }
+            
+            if (top.Contains(point))
 			{
 				return HitTests.Top;
 			}
@@ -548,16 +558,6 @@ namespace GorgonLibrary.UI
 			if (bottom.Contains(point))
 			{
 				return HitTests.Bottom;
-			}
-
-			if (bottomLeft.Contains(point))
-			{
-				return HitTests.BottomLeft;
-			}
-
-			if (bottomRight.Contains(point))
-			{
-				return HitTests.BottomRight;
 			}
 
 			if (caption.Contains(point))
