@@ -344,17 +344,33 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
+		/// Handles the ParentChanged event of the Window control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+		private void Window_ParentChanged(object sender, EventArgs e)
+		{
+			_parentForm = Gorgon.GetTopLevelForm(Settings.Window);
+		}
+
+		/// <summary>
 		/// Handles the Resize event of the Window control.
 		/// </summary>
 		/// <param name="sender">The source of the event.</param>
 		/// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
 		private void Window_Resize(object sender, EventArgs e)
 		{
-			if ((!AutoResize) || (_parentForm == null))
+			// Attempt to get the parent form if we don't have one yet.
+			if (_parentForm == null)
+			{
+				_parentForm = Gorgon.GetTopLevelForm(Settings.Window);
+			}
+
+			if ((!AutoResize) || ((_parentForm != null) && (_parentForm.WindowState == FormWindowState.Minimized)))
 				return;
 
 			// Only do this if the size has changed, if we're just restoring the window, then don't bother.
-			if (((_parentForm.WindowState != FormWindowState.Minimized) && (GISwapChain != null)) && (Settings.Window.ClientSize.Width > 0) && (Settings.Window.ClientSize.Height > 0))
+			if (((GISwapChain != null)) && (Settings.Window.ClientSize.Width > 0) && (Settings.Window.ClientSize.Height > 0))
 			{
 				// Resize the video mode.
 				Settings.VideoMode = new GorgonVideoMode(Settings.Window.ClientSize, Settings.VideoMode);
@@ -388,8 +404,11 @@ namespace GorgonLibrary.Graphics
 						// buggy in 2.4.2 and will return multiple ref counts for each time the property is 
 						// read.  v2.5.0 is in dev, but now has the problem of not returning the correct output.						
 						GISwapChain.SetFullscreenState(true, null);
-						_parentForm.Activated += new EventHandler(_parentForm_Activated);
-						_parentForm.Deactivate += new EventHandler(_parentForm_Deactivate);
+						if (_parentForm != null)
+						{
+							_parentForm.Activated += new EventHandler(_parentForm_Activated);
+							_parentForm.Deactivate += new EventHandler(_parentForm_Deactivate);
+						}
 					}
 				}
 				else
@@ -431,8 +450,14 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		protected override void CleanUp()
 		{
-			_parentForm.Activated -= new EventHandler(_parentForm_Activated);
-			_parentForm.Deactivate -= new EventHandler(_parentForm_Deactivate);
+			Settings.Window.ParentChanged -= Window_ParentChanged;
+
+			if (_parentForm != null)
+			{
+				_parentForm.Activated -= new EventHandler(_parentForm_Activated);
+				_parentForm.Deactivate -= new EventHandler(_parentForm_Deactivate);
+			}
+
 			Settings.Window.Resize -= new EventHandler(Window_Resize);
 
 			ReleaseResources();
@@ -707,8 +732,11 @@ namespace GorgonLibrary.Graphics
 			if (GISwapChain == null)
 				return;
 
-			_parentForm.Activated -= new EventHandler(_parentForm_Activated);
-			_parentForm.Deactivate -= new EventHandler(_parentForm_Deactivate);
+			if (_parentForm != null)
+			{
+				_parentForm.Activated -= new EventHandler(_parentForm_Activated);
+				_parentForm.Deactivate -= new EventHandler(_parentForm_Deactivate);
+			}
 
 			// Assign the new settings.	
 			Settings.IsWindowed = isWindowed;			
@@ -795,6 +823,8 @@ namespace GorgonLibrary.Graphics
 		{
 			// Get the parent form for our window.
 			_parentForm = Gorgon.GetTopLevelForm(settings.Window);
+			settings.Window.ParentChanged += Window_ParentChanged;
+
 			AutoResize = true;
 		}
 		#endregion

@@ -243,6 +243,10 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Gorgon2.ico" />
+    <None Include="Resources\Close.png" />
+    <None Include="Resources\Maximize.png" />
+    <None Include="Resources\Minimize.png" />
+    <None Include="Resources\Restore.png" />
     <None Include="Resources\WarningDialogIcon.ico" />
     <None Include="Resources\InfoDialogIcon.ico" />
     <None Include="Resources\Warning_48x48.png" />

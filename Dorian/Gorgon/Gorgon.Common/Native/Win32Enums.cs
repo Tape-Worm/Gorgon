@@ -509,6 +509,25 @@ namespace GorgonLibrary.Native
 	}
 
 	/// <summary>
+	/// Popup menu tracking constants.
+	/// </summary>
+	internal enum TrackPopupMenu
+	{
+		/// <summary>
+		/// Left button.
+		/// </summary>
+		LeftButton = 0,
+		/// <summary>
+		/// Right button.
+		/// </summary>
+		RightButton = 2,
+		/// <summary>
+		/// Return a command ID.
+		/// </summary>
+		ReturnCommand = 0x100
+	}
+
+	/// <summary>
 	/// Types of System commands.
 	/// </summary>
 	/// <remarks>

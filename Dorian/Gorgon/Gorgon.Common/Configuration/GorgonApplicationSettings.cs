@@ -50,9 +50,18 @@ namespace GorgonLibrary.Configuration
 
 		#region Properties.
 		/// <summary>
+		/// Property to return the name of the application that the settings are from.
+		/// </summary>
+		public string ApplicationName
+		{
+			get;
+			private set;
+		}
+
+		/// <summary>
 		/// Property to set or return the path to the configuration file.
 		/// </summary>
-		public string Path
+		public virtual string Path
 		{
 			get
 			{
@@ -551,6 +560,7 @@ namespace GorgonLibrary.Configuration
 		{
 			GorgonDebug.AssertParamString(applicationName, "applicationName");
 
+			ApplicationName = applicationName;
 			Version = settingsVersion;
 
 			_path = GorgonComputerInfo.FolderPath(Environment.SpecialFolder.ApplicationData);

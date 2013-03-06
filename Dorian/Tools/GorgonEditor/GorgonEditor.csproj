@@ -98,7 +98,14 @@
     <Compile Include="Controls\panelEx.Designer.cs">
       <DependentUpon>panelEx.cs</DependentUpon>
     </Compile>
+    <Compile Include="ContentSettings.cs" />
     <Compile Include="DefaultContent.cs" />
+    <Compile Include="DefaultContentPanel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="DefaultContentPanel.Designer.cs">
+      <DependentUpon>DefaultContentPanel.cs</DependentUpon>
+    </Compile>
     <Compile Include="formNewFont.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -131,6 +138,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Controls\panelEx.resx">
       <DependentUpon>panelEx.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="DefaultContentPanel.resx">
+      <DependentUpon>DefaultContentPanel.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="formMain.resx">
       <DependentUpon>formMain.cs</DependentUpon>

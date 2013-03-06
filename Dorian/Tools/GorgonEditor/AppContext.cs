@@ -91,8 +91,8 @@ namespace GorgonLibrary.Editor
 				timer.Reset();
 
 				_splash.UpdateVersion("Initializing graphics...");
-				Program.InitializeGraphics(mainForm.panelContent);
-				mainForm.InitializeDefaultContent();
+				Program.InitializeGraphics();
+				mainForm.LoadDefaultContent();
 
 				_splash.UpdateVersion(string.Empty);
 
