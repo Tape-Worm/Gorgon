@@ -113,6 +113,7 @@
 			this.labelCaption.Size = new System.Drawing.Size(61, 20);
 			this.labelCaption.TabIndex = 3;
 			this.labelCaption.Text = "Caption";
+			this.labelCaption.DoubleClick += new System.EventHandler(this.panelCaptionArea_DoubleClick);
 			this.labelCaption.MouseDown += new System.Windows.Forms.MouseEventHandler(this.labelCaption_MouseDown);
 			this.labelCaption.MouseMove += new System.Windows.Forms.MouseEventHandler(this.labelCaption_MouseMove);
 			// 
@@ -128,6 +129,7 @@
 			this.panelCaptionArea.Name = "panelCaptionArea";
 			this.panelCaptionArea.Size = new System.Drawing.Size(487, 24);
 			this.panelCaptionArea.TabIndex = 4;
+			this.panelCaptionArea.DoubleClick += new System.EventHandler(this.panelCaptionArea_DoubleClick);
 			this.panelCaptionArea.MouseDown += new System.Windows.Forms.MouseEventHandler(this.labelCaption_MouseDown);
 			this.panelCaptionArea.MouseMove += new System.Windows.Forms.MouseEventHandler(this.labelCaption_MouseMove);
 			// 
@@ -138,7 +140,7 @@
 			this.pictureIcon.Size = new System.Drawing.Size(24, 24);
 			this.pictureIcon.TabIndex = 4;
 			this.pictureIcon.TabStop = false;
-			this.pictureIcon.Click += new System.EventHandler(this.pictureIcon_Click);
+			this.pictureIcon.MouseDown += new System.Windows.Forms.MouseEventHandler(this.pictureIcon_MouseDown);
 			// 
 			// popupSysMenu
 			// 
@@ -222,10 +224,14 @@
 			this.DoubleBuffered = true;
 			this.Font = new System.Drawing.Font("Segoe UI", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
-			this.KeyPreview = true;
 			this.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
 			this.Name = "ZuneForm";
 			this.Text = "Form";
+			this.Load += new System.EventHandler(this.ZuneForm_Load);
+			this.PaddingChanged += new System.EventHandler(this.ZuneForm_PaddingChanged);
+			this.MouseDown += new System.Windows.Forms.MouseEventHandler(this.ZuneForm_MouseDown);
+			this.MouseMove += new System.Windows.Forms.MouseEventHandler(this.ZuneForm_MouseMove);
+			this.Resize += new System.EventHandler(this.ZuneForm_Resize);
 			this.panelCaptionArea.ResumeLayout(false);
 			this.panelCaptionArea.PerformLayout();
 			((System.ComponentModel.ISupportInitialize)(this.pictureIcon)).EndInit();

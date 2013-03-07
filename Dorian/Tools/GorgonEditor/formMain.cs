@@ -163,42 +163,43 @@ namespace GorgonLibrary.Editor
 		/// Function to load content into the interface.
 		/// </summary>
 		/// <param name="content">Content to load into the interface.</param>
-		private void LoadContentPane(DefaultContent content)
+		internal void LoadContentPane<T>()
+			where T : ContentObject, new()
 		{
+			ContentObject result = null;
+
 			if (Program.CurrentContent != null)
 			{
-				if (Program.CurrentContent.Close())
-				{
-					Program.CurrentContent.Dispose();
-					Program.CurrentContent = null;
-				}
-				else
+				if (!Program.CurrentContent.Close())
 				{
 					return;
 				}
 			}
 
-			if (content == null)
-			{
-				content = new DefaultContent();
-			}
-
-			Program.CurrentContent = content;
-
 			// Load the content.
-			Control control = content.LoadContent();
+			result = new T();
+			Control control = result.InitializeContent();
 
-			if (control != null)
+			// If we fail to return a control, then return to the default.
+			if (control == null)
 			{
-				control.Dock = DockStyle.Fill;
+				result.Dispose();
+				result = null;
+				
+				result = new DefaultContent();
+				control = result.InitializeContent();
 			}
-
+						
+			control.Dock = DockStyle.Fill;
+			
 			// Add to our interface.
 			splitEdit.Panel1.Controls.Add(control);
-			Program.CurrentContent = content;
+			
+			Program.CurrentContent = result;
 
-			// If the current content 
-			if (content.HasRenderer)
+			// If the current content has a renderer, then activate it.
+			// Otherwise, turn it off to conserve cycles.
+			if (result.HasRenderer)
 			{
 				Gorgon.ApplicationIdleLoopMethod = Idle;
 			}
@@ -359,14 +360,6 @@ namespace GorgonLibrary.Editor
 			{
 				ValidateControls();
 			}
-		}
-
-		/// <summary>
-		/// Function to load the default content pane.
-		/// </summary>
-		internal void LoadDefaultContent()
-		{
-			LoadContentPane(null);
 		}
 		#endregion
 

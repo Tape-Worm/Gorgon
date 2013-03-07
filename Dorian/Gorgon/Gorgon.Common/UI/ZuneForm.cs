@@ -267,6 +267,23 @@ namespace GorgonLibrary.UI
 
 		#region Methods.
 		/// <summary>
+		/// Handles the DoubleClick event of the panelCaptionArea control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+		private void panelCaptionArea_DoubleClick(object sender, EventArgs e)
+		{
+			if (WindowState == FormWindowState.Maximized)
+			{
+				WindowState = FormWindowState.Normal;
+			}
+			else
+			{
+				WindowState = FormWindowState.Maximized;
+			}
+		}
+
+		/// <summary>
 		/// Handles the Click event of the itemMove control.
 		/// </summary>
 		/// <param name="sender">The source of the event.</param>
@@ -342,15 +359,21 @@ namespace GorgonLibrary.UI
 		}
 
 		/// <summary>
-		/// Handles the Click event of the pictureIcon control.
+		/// Handles the MouseDown event of the pictureIcon control.
 		/// </summary>
 		/// <param name="sender">The source of the event.</param>
-		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-		private void pictureIcon_Click(object sender, EventArgs e)
+		/// <param name="e">The <see cref="MouseEventArgs"/> instance containing the event data.</param>
+		private void pictureIcon_MouseDown(object sender, MouseEventArgs e)
 		{
+			if ((e.Clicks > 1) && (e.Button == System.Windows.Forms.MouseButtons.Left))
+			{
+				Close();
+				return;
+			}
+
 			ValidateWindowControls();
-			ShowSysMenu();	
-		}		
+			ShowSysMenu();
+		}
 
 		/// <summary>
         /// Handles the MouseEnter event of the labelClose control.
@@ -590,153 +613,155 @@ namespace GorgonLibrary.UI
 			return base.ProcessCmdKey(ref msg, keyData);
 		}
 
-        /// <summary>
-        /// </summary>
-        /// <param name="e">An <see cref="T:System.EventArgs" /> that contains the event data.</param>
-        protected override void OnResize(EventArgs e)
-        {
-            base.OnResize(e);
-
-			if ((!DesignMode) && (_currentPadding != null))
+		/// <summary>
+		/// Handles the MouseMove event of the ZuneForm control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="MouseEventArgs"/> instance containing the event data.</param>
+		private void ZuneForm_MouseMove(object sender, MouseEventArgs e)
+		{
+			try
 			{
-				if (this.WindowState == FormWindowState.Maximized)
+				if ((DesignMode) || (WindowState != FormWindowState.Normal) || (!Resizable))
 				{
-					_currentPadding = Padding;
-					Padding = new Padding(0);
+					return;
+				}
+
+				if ((e.Location.X < BorderWidth) && (e.Location.Y < BorderWidth))
+				{
+					ResizeDir = ResizeDirection.TopLeft;
+				}
+				else if ((e.Location.X < BorderWidth) && (e.Location.Y > this.Height - BorderWidth))
+				{
+					ResizeDir = ResizeDirection.BottomLeft;
+				}
+				else if ((e.Location.X > this.Width - BorderWidth) && (e.Location.Y > this.Height - BorderWidth))
+				{
+					ResizeDir = ResizeDirection.BottomRight;
+				}
+				else if ((e.Location.X > this.Width - BorderWidth) && (e.Location.Y < BorderWidth))
+				{
+					ResizeDir = ResizeDirection.TopRight;
+				}
+				else if ((e.Location.X < BorderWidth))
+				{
+					ResizeDir = ResizeDirection.Left;
+				}
+				else if ((e.Location.X > this.Width - BorderWidth))
+				{
+					ResizeDir = ResizeDirection.Right;
+				}
+				else if ((e.Location.Y < BorderWidth))
+				{
+					ResizeDir = ResizeDirection.Top;
+				}
+				else if ((e.Location.Y > this.Height - BorderWidth))
+				{
+					ResizeDir = ResizeDirection.Bottom;
 				}
 				else
 				{
-					if (Padding != _currentPadding.Value)
-					{
-						Padding = _currentPadding.Value;
-					}
+					ResizeDir = ResizeDirection.None;
 				}
 			}
-
-            ValidateWindowControls();
-        }
-
-		/// <summary>
-		/// Raises the <see cref="E:System.Windows.Forms.Control.MouseMove" /> event.
-		/// </summary>
-		/// <param name="e">A <see cref="T:System.Windows.Forms.MouseEventArgs" /> that contains the event data.</param>
-		protected override void OnMouseMove(MouseEventArgs e)
-		{
-			base.OnMouseMove(e);
-
-			if ((DesignMode) || (WindowState != FormWindowState.Normal) || (!Resizable))
+			finally
 			{
-				return;
-			}
-
-			if ((e.Location.X < BorderWidth) && (e.Location.Y < BorderWidth))
-			{
-				ResizeDir = ResizeDirection.TopLeft;
-			}
-			else if ((e.Location.X < BorderWidth) && (e.Location.Y > this.Height - BorderWidth))
-			{
-				ResizeDir = ResizeDirection.BottomLeft;
-			}
-			else if ((e.Location.X > this.Width - BorderWidth) && (e.Location.Y > this.Height - BorderWidth))
-			{
-				ResizeDir = ResizeDirection.BottomRight;
-			}
-			else if ((e.Location.X > this.Width - BorderWidth) && (e.Location.Y < BorderWidth))
-			{
-				ResizeDir = ResizeDirection.TopRight;
-			}
-			else if ((e.Location.X < BorderWidth))
-			{
-				ResizeDir = ResizeDirection.Left;
-			}
-			else if ((e.Location.X > this.Width - BorderWidth))
-			{
-				ResizeDir = ResizeDirection.Right;
-			}
-			else if ((e.Location.Y < BorderWidth))
-			{
-				ResizeDir = ResizeDirection.Top;
-			}
-			else if ((e.Location.Y > this.Height - BorderWidth))
-			{
-				ResizeDir = ResizeDirection.Bottom;
-			}
-			else
-			{
-				ResizeDir = ResizeDirection.None;
+				ValidateWindowControls();
 			}
 		}
 
 		/// <summary>
-		/// Raises the <see cref="E:System.Windows.Forms.Control.MouseDown" /> event.
+		/// Handles the MouseDown event of the ZuneForm control.
 		/// </summary>
-		/// <param name="e">A <see cref="T:System.Windows.Forms.MouseEventArgs" /> that contains the event data.</param>
-		protected override void OnMouseDown(MouseEventArgs e)
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="MouseEventArgs"/> instance containing the event data.</param>
+		private void ZuneForm_MouseDown(object sender, MouseEventArgs e)
 		{
-			base.OnMouseDown(e);
-
 			if (DesignMode)
 			{
 				return;
 			}
 
-			if (e.Button == System.Windows.Forms.MouseButtons.Left)
+			try
 			{
-				if ((Width - BorderWidth > e.X) && (e.X > BorderWidth) && (e.Y > BorderWidth) && (e.Y < Height - BorderWidth))
+				if ((e.Button == System.Windows.Forms.MouseButtons.Left) && (e.Clicks > 1))
 				{
-			        Win32API.ReleaseCapture();
-					Win32API.SendMessage(Handle, (uint)WindowMessages.NCLeftButtonDown, new IntPtr((int)HitTests.Caption), IntPtr.Zero);
+					panelCaptionArea_DoubleClick(this, EventArgs.Empty);
+					return;
 				}
-				else
+
+				if (e.Button == System.Windows.Forms.MouseButtons.Left)
 				{
-					if ((WindowState == FormWindowState.Normal) && (Resizable))
+					if ((Width - BorderWidth > e.X) && (e.X > BorderWidth) && (e.Y > BorderWidth) && (e.Y < Height - BorderWidth))
 					{
-						switch(ResizeDir)
+						Win32API.ReleaseCapture();
+						Win32API.SendMessage(Handle, (uint)WindowMessages.NCLeftButtonDown, new IntPtr((int)HitTests.Caption), IntPtr.Zero);
+					}
+					else
+					{
+						if ((WindowState == FormWindowState.Normal) && (Resizable))
 						{
-							case ResizeDirection.Left:
-								Win32API.ReleaseCapture();
-                                Cursor.Current = Cursors.SizeWE;
-								Win32API.SendMessage(Handle, (uint)WindowMessages.NCLeftButtonDown, new IntPtr((int)HitTests.Left), IntPtr.Zero);								
-								break;
-							case ResizeDirection.TopLeft:
-								Win32API.ReleaseCapture();
-                                Cursor.Current = Cursors.SizeNWSE;
-								Win32API.SendMessage(Handle, (uint)WindowMessages.NCLeftButtonDown, new IntPtr((int)HitTests.TopLeft), IntPtr.Zero);								
-								break;
-							case ResizeDirection.Top:
-								Win32API.ReleaseCapture();
-                                Cursor.Current = Cursors.SizeNS;
-								Win32API.SendMessage(Handle, (uint)WindowMessages.NCLeftButtonDown, new IntPtr((int)HitTests.Top), IntPtr.Zero);								
-								break;
-							case ResizeDirection.TopRight:
-								Win32API.ReleaseCapture();
-                                Cursor.Current = Cursors.SizeNESW;
-								Win32API.SendMessage(Handle, (uint)WindowMessages.NCLeftButtonDown, new IntPtr((int)HitTests.TopRight), IntPtr.Zero);								
-								break;
-							case ResizeDirection.Right:
-								Win32API.ReleaseCapture();
-                                Cursor.Current = Cursors.SizeWE;
-								Win32API.SendMessage(Handle, (uint)WindowMessages.NCLeftButtonDown, new IntPtr((int)HitTests.Right), IntPtr.Zero);								
-								break;
-							case ResizeDirection.BottomRight:
-								Win32API.ReleaseCapture();
-                                Cursor.Current = Cursors.SizeNWSE;
-								Win32API.SendMessage(Handle, (uint)WindowMessages.NCLeftButtonDown, new IntPtr((int)HitTests.BottomRight), IntPtr.Zero);								
-								break;
-							case ResizeDirection.Bottom:
-								Win32API.ReleaseCapture();
-                                Cursor.Current = Cursors.SizeNS;
-								Win32API.SendMessage(Handle, (uint)WindowMessages.NCLeftButtonDown, new IntPtr((int)HitTests.Bottom), IntPtr.Zero);
-								break;
-							case ResizeDirection.BottomLeft:
-								Win32API.ReleaseCapture();
-                                Cursor.Current = Cursors.SizeNESW;
-								Win32API.SendMessage(Handle, (uint)WindowMessages.NCLeftButtonDown, new IntPtr((int)HitTests.BottomLeft), IntPtr.Zero);
-								break;
+							switch (ResizeDir)
+							{
+								case ResizeDirection.Left:
+									Win32API.ReleaseCapture();
+									Cursor.Current = Cursors.SizeWE;
+									Win32API.SendMessage(Handle, (uint)WindowMessages.NCLeftButtonDown, new IntPtr((int)HitTests.Left), IntPtr.Zero);
+									break;
+								case ResizeDirection.TopLeft:
+									Win32API.ReleaseCapture();
+									Cursor.Current = Cursors.SizeNWSE;
+									Win32API.SendMessage(Handle, (uint)WindowMessages.NCLeftButtonDown, new IntPtr((int)HitTests.TopLeft), IntPtr.Zero);
+									break;
+								case ResizeDirection.Top:
+									Win32API.ReleaseCapture();
+									Cursor.Current = Cursors.SizeNS;
+									Win32API.SendMessage(Handle, (uint)WindowMessages.NCLeftButtonDown, new IntPtr((int)HitTests.Top), IntPtr.Zero);
+									break;
+								case ResizeDirection.TopRight:
+									Win32API.ReleaseCapture();
+									Cursor.Current = Cursors.SizeNESW;
+									Win32API.SendMessage(Handle, (uint)WindowMessages.NCLeftButtonDown, new IntPtr((int)HitTests.TopRight), IntPtr.Zero);
+									break;
+								case ResizeDirection.Right:
+									Win32API.ReleaseCapture();
+									Cursor.Current = Cursors.SizeWE;
+									Win32API.SendMessage(Handle, (uint)WindowMessages.NCLeftButtonDown, new IntPtr((int)HitTests.Right), IntPtr.Zero);
+									break;
+								case ResizeDirection.BottomRight:
+									Win32API.ReleaseCapture();
+									Cursor.Current = Cursors.SizeNWSE;
+									Win32API.SendMessage(Handle, (uint)WindowMessages.NCLeftButtonDown, new IntPtr((int)HitTests.BottomRight), IntPtr.Zero);
+									break;
+								case ResizeDirection.Bottom:
+									Win32API.ReleaseCapture();
+									Cursor.Current = Cursors.SizeNS;
+									Win32API.SendMessage(Handle, (uint)WindowMessages.NCLeftButtonDown, new IntPtr((int)HitTests.Bottom), IntPtr.Zero);
+									break;
+								case ResizeDirection.BottomLeft:
+									Win32API.ReleaseCapture();
+									Cursor.Current = Cursors.SizeNESW;
+									Win32API.SendMessage(Handle, (uint)WindowMessages.NCLeftButtonDown, new IntPtr((int)HitTests.BottomLeft), IntPtr.Zero);
+									break;
+							}
 						}
 					}
 				}
 			}
+			finally
+			{
+				ValidateWindowControls();
+			}
+		}
+
+		/// <summary>
+		/// Handles the Load event of the ZuneForm control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+		private void ZuneForm_Load(object sender, EventArgs e)
+		{
+			ValidateWindowControls();
 		}
 
 		/// <summary>
@@ -766,29 +791,50 @@ namespace GorgonLibrary.UI
 		}
 
 		/// <summary>
-		/// Raises the <see cref="E:System.Windows.Forms.Form.Load" /> event.
+		/// Handles the Resize event of the ZuneForm control.
 		/// </summary>
-		/// <param name="e">An <see cref="T:System.EventArgs" /> that contains the event data.</param>
-		protected override void OnLoad(EventArgs e)
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+		private void ZuneForm_Resize(object sender, EventArgs e)
 		{
-			base.OnLoad(e);
-
-			ValidateWindowControls();
+			try
+			{
+				if ((!DesignMode) && (_currentPadding != null))
+				{
+					if (this.WindowState == FormWindowState.Maximized)
+					{
+						_currentPadding = Padding;
+						Padding = new Padding(0);
+					}
+					else
+					{
+						if (Padding != _currentPadding.Value)
+						{
+							Padding = _currentPadding.Value;
+						}
+					}
+				}
+			}
+			finally
+			{
+				ValidateWindowControls();
+			}
 		}
 
 		/// <summary>
-		/// Raises the <see cref="E:System.Windows.Forms.Control.PaddingChanged" /> event.
+		/// Handles the PaddingChanged event of the ZuneForm control.
 		/// </summary>
-		/// <param name="e">An <see cref="T:System.EventArgs" /> that contains the event data.</param>
-		protected override void OnPaddingChanged(EventArgs e)
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+		private void ZuneForm_PaddingChanged(object sender, EventArgs e)
 		{
-			base.OnPaddingChanged(e);
-
 			// Only store the current padding for the first time.
 			if (_currentPadding == null)
 			{
 				_currentPadding = Padding;
 			}
+
+			ValidateWindowControls();
 		}
 		#endregion
 

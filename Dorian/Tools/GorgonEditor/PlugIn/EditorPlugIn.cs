@@ -74,11 +74,38 @@ namespace GorgonLibrary.Editor
 	}
 
 	/// <summary>
+	/// Type of plug-in.
+	/// </summary>
+	public enum PlugInType
+	{
+		/// <summary>
+		/// Plug-in writes out content packed files in a specific format.
+		/// </summary>
+		/// <remarks>File readers are implemented using the GorgonFileSystem objects, and are not specific to the editor.</remarks>
+		FileWriter = 0,
+		/// <summary>
+		/// Plug-in is used to create content.
+		/// </summary>
+		Content = 1
+	}
+
+	/// <summary>
 	/// An interface for editor plug-ins.
 	/// </summary>
 	public abstract class EditorPlugIn
 		: GorgonPlugIn
 	{
+		#region Properties.
+		/// <summary>
+		/// Property to return the type of plug-in.
+		/// </summary>
+		/// <remarks>Implementors must provide one of the PlugInType enumeration values (except Unknown).</remarks>
+		public abstract PlugInType PlugInType
+		{
+			get;
+		}
+		#endregion
+
 		#region Methods.
 		/// <summary>
 		/// Function to create the plug-in interface.
