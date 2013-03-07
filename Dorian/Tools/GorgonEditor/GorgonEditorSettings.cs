@@ -199,6 +199,18 @@ namespace GorgonLibrary.Editor
 						// We can't access this drive for whatever reason, so we move on.						
 					}
 				}
+
+                // If the drive is the same as the drive for our profile, then just stick the temp dir in there.
+                if (biggestDrive != null) 
+                {
+                    var rootPath = System.IO.Path.GetPathRoot(biggestDrive.RootDirectory.Name);
+                    var userPath = System.IO.Path.GetPathRoot(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData));
+                                        
+                    if (rootPath == userPath)
+                    {
+                        biggestDrive = null;
+                    }
+                }
 			}
 			else
 			{
