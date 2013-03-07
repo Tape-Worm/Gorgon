@@ -46,6 +46,15 @@ namespace GorgonLibrary.Editor
 	static class Program
 	{
 		#region Properties.
+        /// <summary>
+        /// Property to return a list of loaded content objects.
+        /// </summary>
+        public static Dictionary<string, ContentPlugIn> ContentPlugIns
+        {
+            get;
+            private set;
+        }
+
 		/// <summary>
 		/// Property to return the logging interface for the application.
 		/// </summary>
@@ -145,7 +154,8 @@ namespace GorgonLibrary.Editor
 		/// <summary>
 		/// Function to clean up the scratch area when the program exits.
 		/// </summary>
-		public static void CleanUpScratchArea()
+        /// <returns>TRUE if the clean up operation was successful, FALSE if not.</returns>
+		public static bool CleanUpScratchArea()
 		{
 			if (Program.Settings == null) 
 			{
@@ -155,7 +165,7 @@ namespace GorgonLibrary.Editor
 			// The scratch directory is gone, nothing to clean up.
 			if (!Directory.Exists(Settings.ScratchPath))
 			{
-				return;
+				return true;
 			}
 
 			try
@@ -172,7 +182,11 @@ namespace GorgonLibrary.Editor
 				GorgonException.Log = LogFile;
 				GorgonException.Catch(ex);
 				GorgonException.Log = Gorgon.Log;
+
+                return false;
 			}
+
+            return true;
 		}
 
 		/// <summary>
@@ -243,6 +257,7 @@ namespace GorgonLibrary.Editor
 		static Program()
 		{
 			Settings = new GorgonEditorSettings();
+            ContentPlugIns = new Dictionary<string, ContentPlugIn>();
 		}
 		#endregion
 

@@ -116,7 +116,7 @@ namespace GorgonLibrary.Editor
 		/// <summary>
 		/// Property to set or return the last import file path.
 		/// </summary>
-		[ApplicationSetting("LastFilePath", "", typeof(string), "Import")]
+		[ApplicationSetting("LastImportFilePath", "", typeof(string), "MainApplication")]
 		public string ImportLastFilePath
 		{
 			get;
@@ -126,7 +126,7 @@ namespace GorgonLibrary.Editor
 		/// <summary>
 		/// Property to set or return the last export file path.
 		/// </summary>
-		[ApplicationSetting("LastFilePath", "", typeof(string), "Export")]
+        [ApplicationSetting("LastExportFilePath", "", typeof(string), "MainApplication")]
 		public string ExportLastFilePath
 		{
 			get;
@@ -159,7 +159,18 @@ namespace GorgonLibrary.Editor
 
 			Size baseSize = new Size(1280, 800);
 
-			PlugIns = new List<string>();			
+			PlugIns = new List<string>();
+
+            // Set up default plug-ins.
+            if (File.Exists(Gorgon.ApplicationDirectory + "Gorgon.FontEditor.dll"))
+            {
+                PlugIns.Add(Gorgon.ApplicationDirectory + "Gorgon.FontEditor.dll");
+            }
+
+            if (File.Exists(Gorgon.ApplicationDirectory + "Gorgon.FileSystem.GorPack.dll"))
+            {
+                PlugIns.Add(Gorgon.ApplicationDirectory + "Gorgon.FileSystem.GorPack.dll");
+            }
 
 			// Set the default size, but ensure that it fits within the primary monitor.
 			// Do not go larger than 1280x800 by default.

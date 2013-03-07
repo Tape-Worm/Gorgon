@@ -226,7 +226,12 @@
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PreBuildEvent>copy "$(SolutionDir)..\plugins\bin\$(ConfigurationName)\Gorgon.Filesystem.*" "$(TargetDir)"</PreBuildEvent>
+    <PreBuildEvent>
+    </PreBuildEvent>
+  </PropertyGroup>
+  <PropertyGroup>
+    <PostBuildEvent>copy "$(SolutionDir)..\plugins\bin\$(ConfigurationName)\Gorgon.Filesystem.*" "$(TargetDir)"
+copy "$(SolutionDir)..\plugins\bin\$(ConfigurationName)\ICSharpCode.SharpZipLib.dll" "$(TargetDir)"</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

@@ -99,19 +99,11 @@ namespace GorgonLibrary.Editor
 		/// <summary>
 		/// Property to return the type of plug-in.
 		/// </summary>
-		/// <remarks>Implementors must provide one of the PlugInType enumeration values (except Unknown).</remarks>
+		/// <remarks>Implementors must provide one of the PlugInType enumeration values.</remarks>
 		public abstract PlugInType PlugInType
 		{
 			get;
 		}
-		#endregion
-
-		#region Methods.
-		/// <summary>
-		/// Function to create the plug-in interface.
-		/// </summary>
-		/// <param name="editorObjects">Editor interfaces for the plug-in to manipulate.</param>
-		protected internal abstract void CreateInterface(EditorPlugInData editorObjects);
 		#endregion
 
 		#region Constructor/Destructor.
@@ -128,4 +120,52 @@ namespace GorgonLibrary.Editor
 		}
 		#endregion
 	}
+
+    /// <summary>
+    /// An interface for content plug-ins.
+    /// </summary>
+    public abstract class ContentPlugIn
+        : EditorPlugIn
+    {
+        #region Variables.
+
+        #endregion
+
+        #region Properties.
+        /// <summary>
+        /// Property to return the type of plug-in.
+        /// </summary>
+        /// <remarks>Implementors must provide one of the PlugInType enumeration values.</remarks>
+        public override PlugInType PlugInType
+        {
+            get 
+            {
+                return Editor.PlugInType.Content;
+            }
+        }
+        #endregion
+
+        #region Methods.
+        /// <summary>
+        /// Function to create a content object interface.
+        /// </summary>
+        /// <param name="editorObjects">Editor information to pass to the interface.</param>
+        /// <returns>A new content object interface.</returns>
+        protected internal abstract ContentObject CreateContentObject(EditorPlugInData editorObjects);
+        #endregion
+
+        #region Constructor/Destructor.
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ContentPlugIn"/> class.
+        /// </summary>
+        /// <param name="description">Optional description of the plug-in.</param>
+        /// <remarks>
+        /// Objects that implement this base class should pass in a hard coded description on the base constructor.
+        /// </remarks>
+        protected ContentPlugIn(string description)
+            : base(description)
+        {
+        }
+        #endregion
+    }
 }
