@@ -349,8 +349,10 @@ namespace GorgonLibrary
 		private static bool Initialize()
 		{
 			// Display the form.
-			if (ApplicationForm != null)
+			if ((ApplicationForm != null) && (!ApplicationForm.IsDisposed))
+			{
 				ApplicationForm.Show();
+			}
 
 			if ((ApplicationIdleLoopMethod != null) && (!_quitSignalled))
 			{

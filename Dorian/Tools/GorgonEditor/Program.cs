@@ -31,6 +31,7 @@ using System.Drawing;
 using System.Windows.Forms;
 using System.IO;
 using GorgonLibrary;
+using GorgonLibrary.IO;
 using GorgonLibrary.Diagnostics;
 using GorgonLibrary.UI;
 using GorgonLibrary.FileSystem;
@@ -46,9 +47,27 @@ namespace GorgonLibrary.Editor
 	{
 		#region Properties.
 		/// <summary>
+		/// Property to return the logging interface for the application.
+		/// </summary>
+		public static GorgonLogFile LogFile
+		{
+			get;
+			internal set;
+		}
+
+		/// <summary>
+		/// Property to return the file system for the scratch files.
+		/// </summary>
+		public static GorgonFileSystem ScratchFiles
+		{
+			get;
+			internal set;
+		}
+
+		/// <summary>
 		/// Property to return the currently loaded content.
 		/// </summary>
-		public static DefaultContent CurrentContent
+		public static ContentObject CurrentContent
 		{
 			get;
 			internal set;
@@ -83,6 +102,79 @@ namespace GorgonLibrary.Editor
 		#endregion
 
 		#region Methods.
+		/// <summary>
+		/// Function to allow the user to select a new scratch file location.
+		/// </summary>
+		/// <returns>The new path for the scratch data, or NULL if canceled.</returns>
+		public static string SetScratchLocation()
+		{
+			FolderBrowserDialog dialog = null;
+
+			try
+			{
+				dialog = new FolderBrowserDialog();
+				dialog.Description = "Select a new temporary scratch path.";
+				if (Directory.Exists(Settings.ScratchPath))
+				{
+					dialog.SelectedPath = Settings.ScratchPath;
+				}
+				dialog.ShowNewFolderButton = true;
+
+				if (dialog.ShowDialog() == DialogResult.OK)
+				{
+					// Append the scratch directory.
+					return dialog.SelectedPath.FormatDirectory(Path.DirectorySeparatorChar) + "Gorgon.Editor." + Guid.NewGuid().ToString("N").FormatDirectory(Path.DirectorySeparatorChar);
+				}
+
+				return null;
+			}
+			catch (Exception ex)
+			{
+				GorgonDialogs.ErrorBox(null, ex);
+				return null;
+			}
+			finally
+			{
+				if (dialog != null)
+				{
+					dialog.Dispose();
+				}
+			}
+		}
+
+		/// <summary>
+		/// Function to clean up the scratch area when the program exits.
+		/// </summary>
+		public static void CleanUpScratchArea()
+		{
+			if (Program.Settings == null) 
+			{
+				throw new ApplicationException("The application settings were not loaded.");
+			}
+
+			// The scratch directory is gone, nothing to clean up.
+			if (!Directory.Exists(Settings.ScratchPath))
+			{
+				return;
+			}
+
+			try
+			{
+				LogFile.Print("Cleaning up scratch area at \"{0}\".", LoggingLevel.Simple, Settings.ScratchPath);
+
+				DirectoryInfo directory = new DirectoryInfo(Settings.ScratchPath);
+
+				// Wipe out everything in this directory and the directory proper.
+				directory.Delete(true);
+			}
+			catch (Exception ex)
+			{
+				GorgonException.Log = LogFile;
+				GorgonException.Catch(ex);
+				GorgonException.Log = Gorgon.Log;
+			}
+		}
+
 		/// <summary>
 		/// Function to initialize the graphics interface.
 		/// </summary>
@@ -187,6 +279,18 @@ namespace GorgonLibrary.Editor
 				{
 					Graphics.Dispose();
 					Graphics = null;
+				}
+
+				// Clean up temporary files in scratch area.
+				if (Program.Settings != null)
+				{
+					CleanUpScratchArea();
+				}
+
+				// Close the logging file.
+				if (Program.LogFile != null)
+				{
+					Program.LogFile.Close();
 				}
 
 				// Clear the cached fonts.

@@ -44,7 +44,7 @@ namespace GorgonLibrary.Editor
 	/// Default content object.
 	/// </summary>
 	class DefaultContent
-		: INamedObject, IDisposable
+		: ContentObject
 	{
 		#region Variables.
 		private DefaultContentPanel _container = null;			// Our container control.
@@ -59,20 +59,11 @@ namespace GorgonLibrary.Editor
 		private string _name = string.Empty;					// Name of the document.
 		#endregion
 
-		#region Properties.
-		/// <summary>
-		/// Property to set or return whether there are changes on this content that need to be saved.
-		/// </summary>
-		protected internal bool HasChanges
-		{
-			get;
-			protected set;
-		}
-
+		#region Properties.		
 		/// <summary>
 		/// Property to return the type of content.
 		/// </summary>
-		protected internal string ContentType
+		protected internal override string ContentType
 		{
 			get
 			{
@@ -81,29 +72,9 @@ namespace GorgonLibrary.Editor
 		}
 
 		/// <summary>
-		/// Property to return the name of the content.
-		/// </summary>
-		public string Name
-		{
-			get
-			{
-				return _name;
-			}
-			protected set
-			{
-				if (string.IsNullOrWhiteSpace(Name))
-				{
-					return;
-				}
-
-				_name = value;
-			}
-		}
-
-		/// <summary>
 		/// Property to return whether the content uses a renderer.
 		/// </summary>
-		public bool HasRenderer
+		public override bool HasRenderer
 		{
 			get
 			{
@@ -144,10 +115,12 @@ namespace GorgonLibrary.Editor
 		}
 
 		/// <summary>
-		/// Function to close the content.
+		/// Function called when the content window is closed.
 		/// </summary>
-		/// <returns>TRUE if the content should close, FALSE if the content should stay open.</returns>
-		internal bool Close()
+		/// <returns>
+		/// TRUE to continue closing the window, FALSE to cancel the close.
+		/// </returns>
+		protected override bool OnClose()
 		{
 			return true;
 		}
@@ -155,7 +128,7 @@ namespace GorgonLibrary.Editor
 		/// <summary>
 		/// Function to draw the default content page.
 		/// </summary>
-		public void Draw()
+		public override void Draw()
 		{
 			var defaultTarget = _2D.DefaultTarget;
 			RectangleF logoBounds = RectangleF.Empty;
@@ -232,7 +205,7 @@ namespace GorgonLibrary.Editor
 		/// Function to perform initialization on the content.
 		/// </summary>
 		/// <returns>A control to embed into the container interface.</returns>
-		public Control LoadContent()
+		public override Control InitializeContent()
 		{		
 			
 			_container = new DefaultContentPanel();
@@ -279,7 +252,7 @@ namespace GorgonLibrary.Editor
 		/// Releases unmanaged and - optionally - managed resources.
 		/// </summary>
 		/// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
-		private void Dispose(bool disposing)
+		protected override void Dispose(bool disposing)
 		{
 			if (!_disposed)
 			{
@@ -306,29 +279,6 @@ namespace GorgonLibrary.Editor
 				_2D = null;
 				_logo = null;
 				_disposed = true;
-			}
-		}
-
-		/// <summary>
-		/// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-		/// </summary>
-		public void Dispose()
-		{
-			Dispose(true);
-			GC.SuppressFinalize(this);
-		}
-		#endregion
-
-		#region INamedObject Members
-		/// <summary>
-		/// Property to return the name of this object.
-		/// </summary>
-		/// <exception cref="System.NotImplementedException"></exception>
-		string INamedObject.Name
-		{
-			get 
-			{
-				return _name;
 			}
 		}
 		#endregion

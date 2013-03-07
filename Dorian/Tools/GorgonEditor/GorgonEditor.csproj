@@ -89,6 +89,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AppContext.cs" />
+    <Compile Include="ContentObject.cs" />
     <Compile Include="Controls\comboFonts.cs">
       <SubType>Component</SubType>
     </Compile>

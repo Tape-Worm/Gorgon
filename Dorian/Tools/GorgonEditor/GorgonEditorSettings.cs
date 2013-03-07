@@ -170,11 +170,54 @@ namespace GorgonLibrary.Editor
 			
 			WindowDimensions = new Rectangle(Screen.PrimaryScreen.WorkingArea.Width / 2 - baseSize.Width / 2, Screen.PrimaryScreen.WorkingArea.Height / 2 - baseSize.Height / 2, 1280, 800);
 
-			// Get the default scratch location.
-			ScratchPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData).FormatDirectory(System.IO.Path.DirectorySeparatorChar)
-							+ "Tape_Worm".FormatDirectory(System.IO.Path.DirectorySeparatorChar)
-							+ this.ApplicationName.FormatDirectory(System.IO.Path.DirectorySeparatorChar)
-							+ "ScratchData".FormatDirectory(System.IO.Path.DirectorySeparatorChar);							
+			DriveInfo biggestDrive = null;		// Biggest writable drive on the system.
+
+			// Find the drive with the most free space.
+			var driveList = (from drive in DriveInfo.GetDrives()
+							 where ((drive.DriveType == DriveType.Fixed) || (drive.DriveType == DriveType.Ram))
+									&& (drive.AvailableFreeSpace >= 157286400) && (drive.IsReady)
+							 orderby drive.AvailableFreeSpace descending
+							 select drive);
+			
+			// Do not assume we can write to the root directory of the selected drive, fall back if we can't.
+			if ((driveList != null) && (driveList.Count() > 0))
+			{
+				foreach (var drive in driveList)
+				{
+					try
+					{
+						// This function will fail if the root directory is read-only or we don't have
+						// permission to read the rights on the directory.
+						var accessControl = drive.RootDirectory.GetAccessControl();
+
+						// We made it this far, so we're good.
+						biggestDrive = drive;
+						break;
+					}
+					catch (UnauthorizedAccessException)
+					{
+						// We can't access this drive for whatever reason, so we move on.						
+					}
+				}
+			}
+			else
+			{
+				throw new System.IO.IOException("There are no drives on the system with enough free space.  The Gorgon Editor requires a minimum of 150 MB of free space for temporary files.");
+			}
+
+			// Can't find a writable root directory for some reason, so make do with the user directory (if that's not writable, then you're shit out of luck).
+			if (biggestDrive == null)
+			{
+				// Get the default scratch location.
+				ScratchPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData).FormatDirectory(System.IO.Path.DirectorySeparatorChar)
+								+ "Tape_Worm".FormatDirectory(System.IO.Path.DirectorySeparatorChar)
+								+ this.ApplicationName.FormatDirectory(System.IO.Path.DirectorySeparatorChar)
+								+ "Gorgon.Editor." + Guid.NewGuid().ToString("N").FormatDirectory(System.IO.Path.DirectorySeparatorChar);
+			}
+			else
+			{
+				ScratchPath = biggestDrive.RootDirectory.Name + "Gorgon.Editor." + Guid.NewGuid().ToString("N").FormatDirectory(System.IO.Path.DirectorySeparatorChar);
+			}
 		}
 		#endregion
 	}
