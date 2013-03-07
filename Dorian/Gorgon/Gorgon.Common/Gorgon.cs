@@ -28,6 +28,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
+using GorgonLibrary.IO;
 using GorgonLibrary.Collections.Specialized;
 using GorgonLibrary.Diagnostics;
 using GorgonLibrary.Native;
@@ -242,7 +243,7 @@ namespace GorgonLibrary
 		{
 			get
 			{
-				return Application.StartupPath;
+				return Application.StartupPath.FormatDirectory(System.IO.Path.DirectorySeparatorChar);
 			}
 		}
 

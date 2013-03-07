@@ -54,67 +54,67 @@ namespace GorgonLibrary.Editor
 		/// </summary>
 		private void InitializeComponent()
 		{
-			this.components = new System.ComponentModel.Container();
-			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(formMain));
-			this.menuMain = new System.Windows.Forms.MenuStrip();
-			this.menuFile = new System.Windows.Forms.ToolStripMenuItem();
-			this.itemNew = new System.Windows.Forms.ToolStripMenuItem();
-			this.itemOpen = new System.Windows.Forms.ToolStripMenuItem();
-			this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
-			this.itemSave = new System.Windows.Forms.ToolStripMenuItem();
-			this.itemSaveAs = new System.Windows.Forms.ToolStripMenuItem();
-			this.toolStripMenuItem5 = new System.Windows.Forms.ToolStripSeparator();
-			this.itemImport = new System.Windows.Forms.ToolStripMenuItem();
-			this.itemExport = new System.Windows.Forms.ToolStripMenuItem();
-			this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
-			this.itemExit = new System.Windows.Forms.ToolStripMenuItem();
-			this.splitEdit = new System.Windows.Forms.SplitContainer();
-			this.tabDocumentManager = new KRBTabControl.KRBTabControl();
-			this.pageItems = new KRBTabControl.TabPageEx();
-			this.containerFiles = new System.Windows.Forms.ToolStripContainer();
-			this.treeFiles = new Aga.Controls.Tree.TreeViewAdv();
-			this.columnFiles = new Aga.Controls.Tree.TreeColumn();
-			this._nodeImage = new Aga.Controls.Tree.NodeControls.NodeStateIcon();
-			this._nodeText = new Aga.Controls.Tree.NodeControls.NodeTextBox();
-			this.pageProperties = new KRBTabControl.TabPageEx();
-			this.propertyItem = new System.Windows.Forms.PropertyGrid();
-			this.popupProperties = new System.Windows.Forms.ContextMenuStrip(this.components);
-			this.itemResetValue = new System.Windows.Forms.ToolStripMenuItem();
-			this.dialogExport = new System.Windows.Forms.SaveFileDialog();
-			this.panelEditor = new System.Windows.Forms.Panel();
-			this.toolStripContainer1 = new System.Windows.Forms.ToolStripContainer();
-			this.stripStatus = new System.Windows.Forms.StatusStrip();
-			this.menuMain.SuspendLayout();
-			((System.ComponentModel.ISupportInitialize)(this.splitEdit)).BeginInit();
-			this.splitEdit.Panel2.SuspendLayout();
-			this.splitEdit.SuspendLayout();
-			this.tabDocumentManager.SuspendLayout();
-			this.pageItems.SuspendLayout();
-			this.containerFiles.ContentPanel.SuspendLayout();
-			this.containerFiles.SuspendLayout();
-			this.pageProperties.SuspendLayout();
-			this.popupProperties.SuspendLayout();
-			this.panelEditor.SuspendLayout();
-			this.toolStripContainer1.BottomToolStripPanel.SuspendLayout();
-			this.toolStripContainer1.ContentPanel.SuspendLayout();
-			this.toolStripContainer1.TopToolStripPanel.SuspendLayout();
-			this.toolStripContainer1.SuspendLayout();
-			this.SuspendLayout();
-			// 
-			// menuMain
-			// 
-			this.menuMain.Dock = System.Windows.Forms.DockStyle.None;
-			this.menuMain.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.components = new System.ComponentModel.Container();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(formMain));
+            this.menuMain = new System.Windows.Forms.MenuStrip();
+            this.menuFile = new System.Windows.Forms.ToolStripMenuItem();
+            this.itemNew = new System.Windows.Forms.ToolStripMenuItem();
+            this.itemOpen = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+            this.itemSave = new System.Windows.Forms.ToolStripMenuItem();
+            this.itemSaveAs = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItem5 = new System.Windows.Forms.ToolStripSeparator();
+            this.itemImport = new System.Windows.Forms.ToolStripMenuItem();
+            this.itemExport = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
+            this.itemExit = new System.Windows.Forms.ToolStripMenuItem();
+            this.splitEdit = new System.Windows.Forms.SplitContainer();
+            this.tabDocumentManager = new KRBTabControl.KRBTabControl();
+            this.pageItems = new KRBTabControl.TabPageEx();
+            this.containerFiles = new System.Windows.Forms.ToolStripContainer();
+            this.treeFiles = new Aga.Controls.Tree.TreeViewAdv();
+            this.columnFiles = new Aga.Controls.Tree.TreeColumn();
+            this._nodeImage = new Aga.Controls.Tree.NodeControls.NodeStateIcon();
+            this._nodeText = new Aga.Controls.Tree.NodeControls.NodeTextBox();
+            this.pageProperties = new KRBTabControl.TabPageEx();
+            this.propertyItem = new System.Windows.Forms.PropertyGrid();
+            this.popupProperties = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.itemResetValue = new System.Windows.Forms.ToolStripMenuItem();
+            this.dialogExport = new System.Windows.Forms.SaveFileDialog();
+            this.panelEditor = new System.Windows.Forms.Panel();
+            this.toolStripContainer1 = new System.Windows.Forms.ToolStripContainer();
+            this.stripStatus = new System.Windows.Forms.StatusStrip();
+            this.menuMain.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.splitEdit)).BeginInit();
+            this.splitEdit.Panel2.SuspendLayout();
+            this.splitEdit.SuspendLayout();
+            this.tabDocumentManager.SuspendLayout();
+            this.pageItems.SuspendLayout();
+            this.containerFiles.ContentPanel.SuspendLayout();
+            this.containerFiles.SuspendLayout();
+            this.pageProperties.SuspendLayout();
+            this.popupProperties.SuspendLayout();
+            this.panelEditor.SuspendLayout();
+            this.toolStripContainer1.BottomToolStripPanel.SuspendLayout();
+            this.toolStripContainer1.ContentPanel.SuspendLayout();
+            this.toolStripContainer1.TopToolStripPanel.SuspendLayout();
+            this.toolStripContainer1.SuspendLayout();
+            this.SuspendLayout();
+            // 
+            // menuMain
+            // 
+            this.menuMain.Dock = System.Windows.Forms.DockStyle.None;
+            this.menuMain.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.menuFile});
-			this.menuMain.Location = new System.Drawing.Point(0, 0);
-			this.menuMain.Name = "menuMain";
-			this.menuMain.Size = new System.Drawing.Size(1084, 24);
-			this.menuMain.TabIndex = 0;
-			this.menuMain.Text = "menuStrip1";
-			// 
-			// menuFile
-			// 
-			this.menuFile.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.menuMain.Location = new System.Drawing.Point(0, 0);
+            this.menuMain.Name = "menuMain";
+            this.menuMain.Size = new System.Drawing.Size(1084, 24);
+            this.menuMain.TabIndex = 0;
+            this.menuMain.Text = "menuStrip1";
+            // 
+            // menuFile
+            // 
+            this.menuFile.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.itemNew,
             this.itemOpen,
             this.toolStripSeparator1,
@@ -125,342 +125,349 @@ namespace GorgonLibrary.Editor
             this.itemExport,
             this.toolStripSeparator2,
             this.itemExit});
-			this.menuFile.Name = "menuFile";
-			this.menuFile.Size = new System.Drawing.Size(37, 20);
-			this.menuFile.Text = "File";
-			// 
-			// itemNew
-			// 
-			this.itemNew.Name = "itemNew";
-			this.itemNew.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.N)));
-			this.itemNew.Size = new System.Drawing.Size(155, 22);
-			this.itemNew.Text = "&New...";
-			// 
-			// itemOpen
-			// 
-			this.itemOpen.Name = "itemOpen";
-			this.itemOpen.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.O)));
-			this.itemOpen.Size = new System.Drawing.Size(155, 22);
-			this.itemOpen.Text = "&Open...";
-			// 
-			// toolStripSeparator1
-			// 
-			this.toolStripSeparator1.Name = "toolStripSeparator1";
-			this.toolStripSeparator1.Size = new System.Drawing.Size(152, 6);
-			// 
-			// itemSave
-			// 
-			this.itemSave.Name = "itemSave";
-			this.itemSave.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
-			this.itemSave.Size = new System.Drawing.Size(155, 22);
-			this.itemSave.Text = "&Save...";
-			// 
-			// itemSaveAs
-			// 
-			this.itemSaveAs.Name = "itemSaveAs";
-			this.itemSaveAs.Size = new System.Drawing.Size(155, 22);
-			this.itemSaveAs.Text = "Save &as...";
-			// 
-			// toolStripMenuItem5
-			// 
-			this.toolStripMenuItem5.Name = "toolStripMenuItem5";
-			this.toolStripMenuItem5.Size = new System.Drawing.Size(152, 6);
-			// 
-			// itemImport
-			// 
-			this.itemImport.Name = "itemImport";
-			this.itemImport.Size = new System.Drawing.Size(155, 22);
-			this.itemImport.Text = "Import...";
-			// 
-			// itemExport
-			// 
-			this.itemExport.Name = "itemExport";
-			this.itemExport.Size = new System.Drawing.Size(155, 22);
-			this.itemExport.Text = "&Export...";
-			// 
-			// toolStripSeparator2
-			// 
-			this.toolStripSeparator2.Name = "toolStripSeparator2";
-			this.toolStripSeparator2.Size = new System.Drawing.Size(152, 6);
-			// 
-			// itemExit
-			// 
-			this.itemExit.Name = "itemExit";
-			this.itemExit.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.F4)));
-			this.itemExit.Size = new System.Drawing.Size(155, 22);
-			this.itemExit.Text = "E&xit";
-			this.itemExit.Click += new System.EventHandler(this.itemExit_Click);
-			// 
-			// splitEdit
-			// 
-			this.splitEdit.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(68)))), ((int)(((byte)(68)))), ((int)(((byte)(68)))));
-			this.splitEdit.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.splitEdit.FixedPanel = System.Windows.Forms.FixedPanel.Panel2;
-			this.splitEdit.Location = new System.Drawing.Point(0, 0);
-			this.splitEdit.Name = "splitEdit";
-			// 
-			// splitEdit.Panel1
-			// 
-			this.splitEdit.Panel1.Padding = new System.Windows.Forms.Padding(4, 4, 0, 4);
-			// 
-			// splitEdit.Panel2
-			// 
-			this.splitEdit.Panel2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(68)))), ((int)(((byte)(68)))), ((int)(((byte)(68)))));
-			this.splitEdit.Panel2.Controls.Add(this.tabDocumentManager);
-			this.splitEdit.Size = new System.Drawing.Size(1084, 691);
-			this.splitEdit.SplitterDistance = 850;
-			this.splitEdit.TabIndex = 0;
-			// 
-			// tabDocumentManager
-			// 
-			this.tabDocumentManager.Alignment = System.Windows.Forms.TabAlignment.Bottom;
-			this.tabDocumentManager.Alignments = KRBTabControl.KRBTabControl.TabAlignments.Bottom;
-			this.tabDocumentManager.AllowDrop = true;
-			this.tabDocumentManager.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(51)))), ((int)(((byte)(51)))), ((int)(((byte)(51)))));
-			this.tabDocumentManager.BackgroundHatcher.HatchType = System.Drawing.Drawing2D.HatchStyle.DashedVertical;
-			this.tabDocumentManager.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(51)))), ((int)(((byte)(51)))), ((int)(((byte)(51)))));
-			this.tabDocumentManager.Controls.Add(this.pageItems);
-			this.tabDocumentManager.Controls.Add(this.pageProperties);
-			this.tabDocumentManager.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.tabDocumentManager.IsCaptionVisible = false;
-			this.tabDocumentManager.IsDocumentTabStyle = true;
-			this.tabDocumentManager.IsDrawHeader = false;
-			this.tabDocumentManager.IsUserInteraction = false;
-			this.tabDocumentManager.ItemSize = new System.Drawing.Size(0, 28);
-			this.tabDocumentManager.Location = new System.Drawing.Point(0, 0);
-			this.tabDocumentManager.Name = "tabDocumentManager";
-			this.tabDocumentManager.SelectedIndex = 0;
-			this.tabDocumentManager.Size = new System.Drawing.Size(230, 691);
-			this.tabDocumentManager.TabBorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(89)))), ((int)(((byte)(89)))), ((int)(((byte)(89)))));
-			this.tabDocumentManager.TabGradient.ColorEnd = System.Drawing.Color.FromArgb(((int)(((byte)(89)))), ((int)(((byte)(89)))), ((int)(((byte)(89)))));
-			this.tabDocumentManager.TabGradient.ColorStart = System.Drawing.Color.FromArgb(((int)(((byte)(89)))), ((int)(((byte)(89)))), ((int)(((byte)(89)))));
-			this.tabDocumentManager.TabGradient.TabPageSelectedTextColor = System.Drawing.Color.White;
-			this.tabDocumentManager.TabGradient.TabPageTextColor = System.Drawing.Color.White;
-			this.tabDocumentManager.TabHOffset = -1;
-			this.tabDocumentManager.TabIndex = 1;
-			this.tabDocumentManager.UpDownStyle = KRBTabControl.KRBTabControl.UpDown32Style.BlackGlass;
-			// 
-			// pageItems
-			// 
-			this.pageItems.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(51)))), ((int)(((byte)(51)))), ((int)(((byte)(51)))));
-			this.pageItems.Controls.Add(this.containerFiles);
-			this.pageItems.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.pageItems.ForeColor = System.Drawing.Color.White;
-			this.pageItems.IsClosable = false;
-			this.pageItems.Location = new System.Drawing.Point(1, 1);
-			this.pageItems.Margin = new System.Windows.Forms.Padding(3, 20671, 3, 20671);
-			this.pageItems.Name = "pageItems";
-			this.pageItems.Size = new System.Drawing.Size(228, 656);
-			this.pageItems.TabIndex = 1;
-			this.pageItems.Text = "Items";
-			// 
-			// containerFiles
-			// 
-			// 
-			// containerFiles.ContentPanel
-			// 
-			this.containerFiles.ContentPanel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(51)))), ((int)(((byte)(51)))), ((int)(((byte)(51)))));
-			this.containerFiles.ContentPanel.Controls.Add(this.treeFiles);
-			this.containerFiles.ContentPanel.ForeColor = System.Drawing.Color.White;
-			this.containerFiles.ContentPanel.Margin = new System.Windows.Forms.Padding(3, 20671, 3, 20671);
-			this.containerFiles.ContentPanel.Size = new System.Drawing.Size(228, 623);
-			this.containerFiles.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.containerFiles.Location = new System.Drawing.Point(0, 0);
-			this.containerFiles.Margin = new System.Windows.Forms.Padding(3, 20671, 3, 20671);
-			this.containerFiles.Name = "containerFiles";
-			this.containerFiles.Size = new System.Drawing.Size(228, 656);
-			this.containerFiles.TabIndex = 0;
-			this.containerFiles.Text = "toolStripContainer1";
-			// 
-			// treeFiles
-			// 
-			this.treeFiles.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(51)))), ((int)(((byte)(51)))), ((int)(((byte)(51)))));
-			this.treeFiles.BorderStyle = System.Windows.Forms.BorderStyle.None;
-			this.treeFiles.Columns.Add(this.columnFiles);
-			this.treeFiles.DefaultToolTipProvider = null;
-			this.treeFiles.DisplayDraggingNodes = true;
-			this.treeFiles.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.treeFiles.DragDropMarkColor = System.Drawing.Color.Black;
-			this.treeFiles.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.treeFiles.ForeColor = System.Drawing.Color.White;
-			this.treeFiles.LineColor = System.Drawing.Color.Black;
-			this.treeFiles.Location = new System.Drawing.Point(0, 0);
-			this.treeFiles.Margin = new System.Windows.Forms.Padding(3, 20671, 3, 20671);
-			this.treeFiles.Model = null;
-			this.treeFiles.Name = "treeFiles";
-			this.treeFiles.NodeControls.Add(this._nodeImage);
-			this.treeFiles.NodeControls.Add(this._nodeText);
-			this.treeFiles.SelectedNode = null;
-			this.treeFiles.SelectionMode = Aga.Controls.Tree.TreeSelectionMode.Multi;
-			this.treeFiles.ShiftFirstNode = true;
-			this.treeFiles.ShowLines = false;
-			this.treeFiles.Size = new System.Drawing.Size(228, 623);
-			this.treeFiles.TabIndex = 0;
-			// 
-			// columnFiles
-			// 
-			this.columnFiles.Header = "";
-			this.columnFiles.SortOrder = System.Windows.Forms.SortOrder.None;
-			this.columnFiles.TooltipText = null;
-			// 
-			// _nodeImage
-			// 
-			this._nodeImage.DataPropertyName = "Image";
-			this._nodeImage.LeftMargin = 1;
-			this._nodeImage.ParentColumn = null;
-			this._nodeImage.ScaleMode = Aga.Controls.Tree.ImageScaleMode.Clip;
-			// 
-			// _nodeText
-			// 
-			this._nodeText.DataPropertyName = "Text";
-			this._nodeText.EditEnabled = true;
-			this._nodeText.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this._nodeText.IncrementalSearchEnabled = true;
-			this._nodeText.LeftMargin = 3;
-			this._nodeText.ParentColumn = null;
-			// 
-			// pageProperties
-			// 
-			this.pageProperties.BackColor = System.Drawing.Color.DimGray;
-			this.pageProperties.Controls.Add(this.propertyItem);
-			this.pageProperties.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.pageProperties.ImageIndex = 3;
-			this.pageProperties.IsClosable = false;
-			this.pageProperties.Location = new System.Drawing.Point(1, 1);
-			this.pageProperties.Margin = new System.Windows.Forms.Padding(3, 20671, 3, 20671);
-			this.pageProperties.Name = "pageProperties";
-			this.pageProperties.Size = new System.Drawing.Size(261, 886);
-			this.pageProperties.TabIndex = 0;
-			this.pageProperties.Text = "Properties";
-			// 
-			// propertyItem
-			// 
-			this.propertyItem.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(51)))), ((int)(((byte)(51)))), ((int)(((byte)(51)))));
-			this.propertyItem.CategoryForeColor = System.Drawing.Color.White;
-			this.propertyItem.CategorySplitterColor = System.Drawing.Color.FromArgb(((int)(((byte)(88)))), ((int)(((byte)(85)))), ((int)(((byte)(90)))));
-			this.propertyItem.CommandsActiveLinkColor = System.Drawing.Color.Lavender;
-			this.propertyItem.CommandsBorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(68)))), ((int)(((byte)(68)))), ((int)(((byte)(68)))));
-			this.propertyItem.CommandsDisabledLinkColor = System.Drawing.Color.FromArgb(((int)(((byte)(102)))), ((int)(((byte)(102)))), ((int)(((byte)(102)))));
-			this.propertyItem.CommandsForeColor = System.Drawing.Color.White;
-			this.propertyItem.CommandsLinkColor = System.Drawing.Color.SteelBlue;
-			this.propertyItem.ContextMenuStrip = this.popupProperties;
-			this.propertyItem.DisabledItemForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(127)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))));
-			this.propertyItem.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.propertyItem.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.propertyItem.HelpBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(68)))), ((int)(((byte)(68)))), ((int)(((byte)(68)))));
-			this.propertyItem.HelpBorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(68)))), ((int)(((byte)(68)))), ((int)(((byte)(68)))));
-			this.propertyItem.HelpForeColor = System.Drawing.Color.White;
-			this.propertyItem.LineColor = System.Drawing.Color.FromArgb(((int)(((byte)(160)))), ((int)(((byte)(160)))), ((int)(((byte)(160)))));
-			this.propertyItem.Location = new System.Drawing.Point(0, 0);
-			this.propertyItem.Margin = new System.Windows.Forms.Padding(3, 20671, 3, 20671);
-			this.propertyItem.Name = "propertyItem";
-			this.propertyItem.SelectedItemWithFocusBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(189)))), ((int)(((byte)(189)))), ((int)(((byte)(189)))));
-			this.propertyItem.SelectedItemWithFocusForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(51)))), ((int)(((byte)(51)))), ((int)(((byte)(51)))));
-			this.propertyItem.Size = new System.Drawing.Size(261, 886);
-			this.propertyItem.TabIndex = 0;
-			this.propertyItem.ToolbarVisible = false;
-			this.propertyItem.ViewBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(51)))), ((int)(((byte)(51)))), ((int)(((byte)(51)))));
-			this.propertyItem.ViewBorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(51)))), ((int)(((byte)(51)))), ((int)(((byte)(51)))));
-			this.propertyItem.ViewForeColor = System.Drawing.Color.White;
-			// 
-			// popupProperties
-			// 
-			this.popupProperties.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.menuFile.Name = "menuFile";
+            this.menuFile.Size = new System.Drawing.Size(37, 20);
+            this.menuFile.Text = "File";
+            // 
+            // itemNew
+            // 
+            this.itemNew.Name = "itemNew";
+            this.itemNew.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.N)));
+            this.itemNew.Size = new System.Drawing.Size(155, 22);
+            this.itemNew.Text = "&New...";
+            // 
+            // itemOpen
+            // 
+            this.itemOpen.Enabled = false;
+            this.itemOpen.Name = "itemOpen";
+            this.itemOpen.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.O)));
+            this.itemOpen.Size = new System.Drawing.Size(155, 22);
+            this.itemOpen.Text = "&Open...";
+            // 
+            // toolStripSeparator1
+            // 
+            this.toolStripSeparator1.Name = "toolStripSeparator1";
+            this.toolStripSeparator1.Size = new System.Drawing.Size(152, 6);
+            // 
+            // itemSave
+            // 
+            this.itemSave.Enabled = false;
+            this.itemSave.Name = "itemSave";
+            this.itemSave.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
+            this.itemSave.Size = new System.Drawing.Size(155, 22);
+            this.itemSave.Text = "&Save...";
+            // 
+            // itemSaveAs
+            // 
+            this.itemSaveAs.Enabled = false;
+            this.itemSaveAs.Name = "itemSaveAs";
+            this.itemSaveAs.Size = new System.Drawing.Size(155, 22);
+            this.itemSaveAs.Text = "Save &as...";
+            // 
+            // toolStripMenuItem5
+            // 
+            this.toolStripMenuItem5.Name = "toolStripMenuItem5";
+            this.toolStripMenuItem5.Size = new System.Drawing.Size(152, 6);
+            // 
+            // itemImport
+            // 
+            this.itemImport.Enabled = false;
+            this.itemImport.Name = "itemImport";
+            this.itemImport.Size = new System.Drawing.Size(155, 22);
+            this.itemImport.Text = "Import...";
+            // 
+            // itemExport
+            // 
+            this.itemExport.Enabled = false;
+            this.itemExport.Name = "itemExport";
+            this.itemExport.Size = new System.Drawing.Size(155, 22);
+            this.itemExport.Text = "&Export...";
+            // 
+            // toolStripSeparator2
+            // 
+            this.toolStripSeparator2.Name = "toolStripSeparator2";
+            this.toolStripSeparator2.Size = new System.Drawing.Size(152, 6);
+            // 
+            // itemExit
+            // 
+            this.itemExit.Name = "itemExit";
+            this.itemExit.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.F4)));
+            this.itemExit.Size = new System.Drawing.Size(155, 22);
+            this.itemExit.Text = "E&xit";
+            this.itemExit.Click += new System.EventHandler(this.itemExit_Click);
+            // 
+            // splitEdit
+            // 
+            this.splitEdit.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(68)))), ((int)(((byte)(68)))), ((int)(((byte)(68)))));
+            this.splitEdit.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.splitEdit.FixedPanel = System.Windows.Forms.FixedPanel.Panel2;
+            this.splitEdit.Location = new System.Drawing.Point(0, 0);
+            this.splitEdit.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.splitEdit.Name = "splitEdit";
+            // 
+            // splitEdit.Panel1
+            // 
+            this.splitEdit.Panel1.Padding = new System.Windows.Forms.Padding(5, 5, 0, 5);
+            // 
+            // splitEdit.Panel2
+            // 
+            this.splitEdit.Panel2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(68)))), ((int)(((byte)(68)))), ((int)(((byte)(68)))));
+            this.splitEdit.Panel2.Controls.Add(this.tabDocumentManager);
+            this.splitEdit.Size = new System.Drawing.Size(1084, 691);
+            this.splitEdit.SplitterDistance = 850;
+            this.splitEdit.TabIndex = 0;
+            // 
+            // tabDocumentManager
+            // 
+            this.tabDocumentManager.Alignment = System.Windows.Forms.TabAlignment.Bottom;
+            this.tabDocumentManager.Alignments = KRBTabControl.KRBTabControl.TabAlignments.Bottom;
+            this.tabDocumentManager.AllowDrop = true;
+            this.tabDocumentManager.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(51)))), ((int)(((byte)(51)))), ((int)(((byte)(51)))));
+            this.tabDocumentManager.BackgroundHatcher.HatchType = System.Drawing.Drawing2D.HatchStyle.DashedVertical;
+            this.tabDocumentManager.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(51)))), ((int)(((byte)(51)))), ((int)(((byte)(51)))));
+            this.tabDocumentManager.Controls.Add(this.pageItems);
+            this.tabDocumentManager.Controls.Add(this.pageProperties);
+            this.tabDocumentManager.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tabDocumentManager.IsCaptionVisible = false;
+            this.tabDocumentManager.IsDocumentTabStyle = true;
+            this.tabDocumentManager.IsDrawHeader = false;
+            this.tabDocumentManager.IsUserInteraction = false;
+            this.tabDocumentManager.ItemSize = new System.Drawing.Size(0, 28);
+            this.tabDocumentManager.Location = new System.Drawing.Point(0, 0);
+            this.tabDocumentManager.Name = "tabDocumentManager";
+            this.tabDocumentManager.SelectedIndex = 0;
+            this.tabDocumentManager.Size = new System.Drawing.Size(230, 691);
+            this.tabDocumentManager.TabBorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(89)))), ((int)(((byte)(89)))), ((int)(((byte)(89)))));
+            this.tabDocumentManager.TabGradient.ColorEnd = System.Drawing.Color.FromArgb(((int)(((byte)(89)))), ((int)(((byte)(89)))), ((int)(((byte)(89)))));
+            this.tabDocumentManager.TabGradient.ColorStart = System.Drawing.Color.FromArgb(((int)(((byte)(89)))), ((int)(((byte)(89)))), ((int)(((byte)(89)))));
+            this.tabDocumentManager.TabGradient.TabPageSelectedTextColor = System.Drawing.Color.White;
+            this.tabDocumentManager.TabGradient.TabPageTextColor = System.Drawing.Color.White;
+            this.tabDocumentManager.TabHOffset = -1;
+            this.tabDocumentManager.TabIndex = 1;
+            this.tabDocumentManager.UpDownStyle = KRBTabControl.KRBTabControl.UpDown32Style.BlackGlass;
+            // 
+            // pageItems
+            // 
+            this.pageItems.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(51)))), ((int)(((byte)(51)))), ((int)(((byte)(51)))));
+            this.pageItems.Controls.Add(this.containerFiles);
+            this.pageItems.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.pageItems.ForeColor = System.Drawing.Color.White;
+            this.pageItems.IsClosable = false;
+            this.pageItems.Location = new System.Drawing.Point(1, 1);
+            this.pageItems.Margin = new System.Windows.Forms.Padding(3, 27561, 3, 27561);
+            this.pageItems.Name = "pageItems";
+            this.pageItems.Size = new System.Drawing.Size(228, 656);
+            this.pageItems.TabIndex = 1;
+            this.pageItems.Text = "Items";
+            // 
+            // containerFiles
+            // 
+            // 
+            // containerFiles.ContentPanel
+            // 
+            this.containerFiles.ContentPanel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(51)))), ((int)(((byte)(51)))), ((int)(((byte)(51)))));
+            this.containerFiles.ContentPanel.Controls.Add(this.treeFiles);
+            this.containerFiles.ContentPanel.ForeColor = System.Drawing.Color.White;
+            this.containerFiles.ContentPanel.Margin = new System.Windows.Forms.Padding(3, 27561, 3, 27561);
+            this.containerFiles.ContentPanel.Size = new System.Drawing.Size(228, 623);
+            this.containerFiles.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.containerFiles.Location = new System.Drawing.Point(0, 0);
+            this.containerFiles.Margin = new System.Windows.Forms.Padding(3, 27561, 3, 27561);
+            this.containerFiles.Name = "containerFiles";
+            this.containerFiles.Size = new System.Drawing.Size(228, 656);
+            this.containerFiles.TabIndex = 0;
+            this.containerFiles.Text = "toolStripContainer1";
+            // 
+            // treeFiles
+            // 
+            this.treeFiles.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(51)))), ((int)(((byte)(51)))), ((int)(((byte)(51)))));
+            this.treeFiles.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.treeFiles.Columns.Add(this.columnFiles);
+            this.treeFiles.DefaultToolTipProvider = null;
+            this.treeFiles.DisplayDraggingNodes = true;
+            this.treeFiles.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.treeFiles.DragDropMarkColor = System.Drawing.Color.Black;
+            this.treeFiles.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.treeFiles.ForeColor = System.Drawing.Color.White;
+            this.treeFiles.LineColor = System.Drawing.Color.Black;
+            this.treeFiles.Location = new System.Drawing.Point(0, 0);
+            this.treeFiles.Margin = new System.Windows.Forms.Padding(3, 27561, 3, 27561);
+            this.treeFiles.Model = null;
+            this.treeFiles.Name = "treeFiles";
+            this.treeFiles.NodeControls.Add(this._nodeImage);
+            this.treeFiles.NodeControls.Add(this._nodeText);
+            this.treeFiles.SelectedNode = null;
+            this.treeFiles.SelectionMode = Aga.Controls.Tree.TreeSelectionMode.Multi;
+            this.treeFiles.ShiftFirstNode = true;
+            this.treeFiles.ShowLines = false;
+            this.treeFiles.Size = new System.Drawing.Size(228, 623);
+            this.treeFiles.TabIndex = 0;
+            // 
+            // columnFiles
+            // 
+            this.columnFiles.Header = "";
+            this.columnFiles.SortOrder = System.Windows.Forms.SortOrder.None;
+            this.columnFiles.TooltipText = null;
+            // 
+            // _nodeImage
+            // 
+            this._nodeImage.DataPropertyName = "Image";
+            this._nodeImage.LeftMargin = 1;
+            this._nodeImage.ParentColumn = null;
+            this._nodeImage.ScaleMode = Aga.Controls.Tree.ImageScaleMode.Clip;
+            // 
+            // _nodeText
+            // 
+            this._nodeText.DataPropertyName = "Text";
+            this._nodeText.EditEnabled = true;
+            this._nodeText.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this._nodeText.IncrementalSearchEnabled = true;
+            this._nodeText.LeftMargin = 3;
+            this._nodeText.ParentColumn = null;
+            // 
+            // pageProperties
+            // 
+            this.pageProperties.BackColor = System.Drawing.Color.DimGray;
+            this.pageProperties.Controls.Add(this.propertyItem);
+            this.pageProperties.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.pageProperties.ImageIndex = 3;
+            this.pageProperties.IsClosable = false;
+            this.pageProperties.Location = new System.Drawing.Point(1, 1);
+            this.pageProperties.Margin = new System.Windows.Forms.Padding(3, 27561, 3, 27561);
+            this.pageProperties.Name = "pageProperties";
+            this.pageProperties.Size = new System.Drawing.Size(261, 886);
+            this.pageProperties.TabIndex = 0;
+            this.pageProperties.Text = "Properties";
+            // 
+            // propertyItem
+            // 
+            this.propertyItem.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(51)))), ((int)(((byte)(51)))), ((int)(((byte)(51)))));
+            this.propertyItem.CategoryForeColor = System.Drawing.Color.White;
+            this.propertyItem.CategorySplitterColor = System.Drawing.Color.FromArgb(((int)(((byte)(88)))), ((int)(((byte)(85)))), ((int)(((byte)(90)))));
+            this.propertyItem.CommandsActiveLinkColor = System.Drawing.Color.Lavender;
+            this.propertyItem.CommandsBorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(68)))), ((int)(((byte)(68)))), ((int)(((byte)(68)))));
+            this.propertyItem.CommandsDisabledLinkColor = System.Drawing.Color.FromArgb(((int)(((byte)(102)))), ((int)(((byte)(102)))), ((int)(((byte)(102)))));
+            this.propertyItem.CommandsForeColor = System.Drawing.Color.White;
+            this.propertyItem.CommandsLinkColor = System.Drawing.Color.SteelBlue;
+            this.propertyItem.ContextMenuStrip = this.popupProperties;
+            this.propertyItem.DisabledItemForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(127)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))));
+            this.propertyItem.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.propertyItem.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.propertyItem.HelpBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(68)))), ((int)(((byte)(68)))), ((int)(((byte)(68)))));
+            this.propertyItem.HelpBorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(68)))), ((int)(((byte)(68)))), ((int)(((byte)(68)))));
+            this.propertyItem.HelpForeColor = System.Drawing.Color.White;
+            this.propertyItem.LineColor = System.Drawing.Color.FromArgb(((int)(((byte)(160)))), ((int)(((byte)(160)))), ((int)(((byte)(160)))));
+            this.propertyItem.Location = new System.Drawing.Point(0, 0);
+            this.propertyItem.Margin = new System.Windows.Forms.Padding(3, 27561, 3, 27561);
+            this.propertyItem.Name = "propertyItem";
+            this.propertyItem.SelectedItemWithFocusBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(189)))), ((int)(((byte)(189)))), ((int)(((byte)(189)))));
+            this.propertyItem.SelectedItemWithFocusForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(51)))), ((int)(((byte)(51)))), ((int)(((byte)(51)))));
+            this.propertyItem.Size = new System.Drawing.Size(261, 886);
+            this.propertyItem.TabIndex = 0;
+            this.propertyItem.ToolbarVisible = false;
+            this.propertyItem.ViewBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(51)))), ((int)(((byte)(51)))), ((int)(((byte)(51)))));
+            this.propertyItem.ViewBorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(51)))), ((int)(((byte)(51)))), ((int)(((byte)(51)))));
+            this.propertyItem.ViewForeColor = System.Drawing.Color.White;
+            // 
+            // popupProperties
+            // 
+            this.popupProperties.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.itemResetValue});
-			this.popupProperties.Name = "popupProperties";
-			this.popupProperties.Size = new System.Drawing.Size(135, 26);
-			this.popupProperties.Opening += new System.ComponentModel.CancelEventHandler(this.popupProperties_Opening);
-			// 
-			// itemResetValue
-			// 
-			this.itemResetValue.Name = "itemResetValue";
-			this.itemResetValue.Size = new System.Drawing.Size(134, 22);
-			this.itemResetValue.Text = "&Reset Value";
-			this.itemResetValue.Click += new System.EventHandler(this.itemResetValue_Click);
-			// 
-			// dialogExport
-			// 
-			this.dialogExport.Filter = "All files (*.*)|*.*";
-			this.dialogExport.Title = "Export current document.";
-			// 
-			// panelEditor
-			// 
-			this.panelEditor.Controls.Add(this.toolStripContainer1);
-			this.panelEditor.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.panelEditor.Location = new System.Drawing.Point(4, 28);
-			this.panelEditor.Name = "panelEditor";
-			this.panelEditor.Size = new System.Drawing.Size(1084, 737);
-			this.panelEditor.TabIndex = 4;
-			// 
-			// toolStripContainer1
-			// 
-			// 
-			// toolStripContainer1.BottomToolStripPanel
-			// 
-			this.toolStripContainer1.BottomToolStripPanel.Controls.Add(this.stripStatus);
-			// 
-			// toolStripContainer1.ContentPanel
-			// 
-			this.toolStripContainer1.ContentPanel.Controls.Add(this.splitEdit);
-			this.toolStripContainer1.ContentPanel.Size = new System.Drawing.Size(1084, 691);
-			this.toolStripContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.toolStripContainer1.Location = new System.Drawing.Point(0, 0);
-			this.toolStripContainer1.Name = "toolStripContainer1";
-			this.toolStripContainer1.Size = new System.Drawing.Size(1084, 737);
-			this.toolStripContainer1.TabIndex = 0;
-			this.toolStripContainer1.Text = "toolStripContainer1";
-			// 
-			// toolStripContainer1.TopToolStripPanel
-			// 
-			this.toolStripContainer1.TopToolStripPanel.Controls.Add(this.menuMain);
-			// 
-			// stripStatus
-			// 
-			this.stripStatus.Dock = System.Windows.Forms.DockStyle.None;
-			this.stripStatus.Location = new System.Drawing.Point(0, 0);
-			this.stripStatus.Name = "stripStatus";
-			this.stripStatus.RenderMode = System.Windows.Forms.ToolStripRenderMode.ManagerRenderMode;
-			this.stripStatus.Size = new System.Drawing.Size(1084, 22);
-			this.stripStatus.TabIndex = 0;
-			// 
-			// formMain
-			// 
-			this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
-			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(58)))), ((int)(((byte)(58)))), ((int)(((byte)(58)))));
-			this.BorderWidth = 4;
-			this.ClientSize = new System.Drawing.Size(1092, 769);
-			this.Controls.Add(this.panelEditor);
-			this.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.ForeColor = System.Drawing.SystemColors.ControlDark;
-			this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-			this.Margin = new System.Windows.Forms.Padding(4);
-			this.Name = "formMain";
-			this.Padding = new System.Windows.Forms.Padding(4);
-			this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
-			this.Text = "Gorgon Editor";
-			this.Controls.SetChildIndex(this.panelEditor, 0);
-			this.menuMain.ResumeLayout(false);
-			this.menuMain.PerformLayout();
-			this.splitEdit.Panel2.ResumeLayout(false);
-			((System.ComponentModel.ISupportInitialize)(this.splitEdit)).EndInit();
-			this.splitEdit.ResumeLayout(false);
-			this.tabDocumentManager.ResumeLayout(false);
-			this.pageItems.ResumeLayout(false);
-			this.containerFiles.ContentPanel.ResumeLayout(false);
-			this.containerFiles.ResumeLayout(false);
-			this.containerFiles.PerformLayout();
-			this.pageProperties.ResumeLayout(false);
-			this.popupProperties.ResumeLayout(false);
-			this.panelEditor.ResumeLayout(false);
-			this.toolStripContainer1.BottomToolStripPanel.ResumeLayout(false);
-			this.toolStripContainer1.BottomToolStripPanel.PerformLayout();
-			this.toolStripContainer1.ContentPanel.ResumeLayout(false);
-			this.toolStripContainer1.TopToolStripPanel.ResumeLayout(false);
-			this.toolStripContainer1.TopToolStripPanel.PerformLayout();
-			this.toolStripContainer1.ResumeLayout(false);
-			this.toolStripContainer1.PerformLayout();
-			this.ResumeLayout(false);
+            this.popupProperties.Name = "popupProperties";
+            this.popupProperties.Size = new System.Drawing.Size(135, 26);
+            this.popupProperties.Opening += new System.ComponentModel.CancelEventHandler(this.popupProperties_Opening);
+            // 
+            // itemResetValue
+            // 
+            this.itemResetValue.Name = "itemResetValue";
+            this.itemResetValue.Size = new System.Drawing.Size(134, 22);
+            this.itemResetValue.Text = "&Reset Value";
+            this.itemResetValue.Click += new System.EventHandler(this.itemResetValue_Click);
+            // 
+            // dialogExport
+            // 
+            this.dialogExport.Filter = "All files (*.*)|*.*";
+            this.dialogExport.Title = "Export current document.";
+            // 
+            // panelEditor
+            // 
+            this.panelEditor.Controls.Add(this.toolStripContainer1);
+            this.panelEditor.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panelEditor.Location = new System.Drawing.Point(4, 28);
+            this.panelEditor.Name = "panelEditor";
+            this.panelEditor.Size = new System.Drawing.Size(1084, 737);
+            this.panelEditor.TabIndex = 4;
+            // 
+            // toolStripContainer1
+            // 
+            // 
+            // toolStripContainer1.BottomToolStripPanel
+            // 
+            this.toolStripContainer1.BottomToolStripPanel.Controls.Add(this.stripStatus);
+            // 
+            // toolStripContainer1.ContentPanel
+            // 
+            this.toolStripContainer1.ContentPanel.Controls.Add(this.splitEdit);
+            this.toolStripContainer1.ContentPanel.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.toolStripContainer1.ContentPanel.Size = new System.Drawing.Size(1084, 691);
+            this.toolStripContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.toolStripContainer1.Location = new System.Drawing.Point(0, 0);
+            this.toolStripContainer1.Name = "toolStripContainer1";
+            this.toolStripContainer1.Size = new System.Drawing.Size(1084, 737);
+            this.toolStripContainer1.TabIndex = 0;
+            this.toolStripContainer1.Text = "toolStripContainer1";
+            // 
+            // toolStripContainer1.TopToolStripPanel
+            // 
+            this.toolStripContainer1.TopToolStripPanel.Controls.Add(this.menuMain);
+            // 
+            // stripStatus
+            // 
+            this.stripStatus.Dock = System.Windows.Forms.DockStyle.None;
+            this.stripStatus.Location = new System.Drawing.Point(0, 0);
+            this.stripStatus.Name = "stripStatus";
+            this.stripStatus.RenderMode = System.Windows.Forms.ToolStripRenderMode.ManagerRenderMode;
+            this.stripStatus.Size = new System.Drawing.Size(1084, 22);
+            this.stripStatus.TabIndex = 0;
+            // 
+            // formMain
+            // 
+            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(58)))), ((int)(((byte)(58)))), ((int)(((byte)(58)))));
+            this.BorderWidth = 4;
+            this.ClientSize = new System.Drawing.Size(1092, 769);
+            this.Controls.Add(this.panelEditor);
+            this.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.ForeColor = System.Drawing.SystemColors.ControlDark;
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.Margin = new System.Windows.Forms.Padding(4);
+            this.Name = "formMain";
+            this.Padding = new System.Windows.Forms.Padding(4);
+            this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
+            this.Text = "Gorgon Editor";
+            this.Controls.SetChildIndex(this.panelEditor, 0);
+            this.menuMain.ResumeLayout(false);
+            this.menuMain.PerformLayout();
+            this.splitEdit.Panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.splitEdit)).EndInit();
+            this.splitEdit.ResumeLayout(false);
+            this.tabDocumentManager.ResumeLayout(false);
+            this.pageItems.ResumeLayout(false);
+            this.containerFiles.ContentPanel.ResumeLayout(false);
+            this.containerFiles.ResumeLayout(false);
+            this.containerFiles.PerformLayout();
+            this.pageProperties.ResumeLayout(false);
+            this.popupProperties.ResumeLayout(false);
+            this.panelEditor.ResumeLayout(false);
+            this.toolStripContainer1.BottomToolStripPanel.ResumeLayout(false);
+            this.toolStripContainer1.BottomToolStripPanel.PerformLayout();
+            this.toolStripContainer1.ContentPanel.ResumeLayout(false);
+            this.toolStripContainer1.TopToolStripPanel.ResumeLayout(false);
+            this.toolStripContainer1.TopToolStripPanel.PerformLayout();
+            this.toolStripContainer1.ResumeLayout(false);
+            this.toolStripContainer1.PerformLayout();
+            this.ResumeLayout(false);
 
 		}
 
