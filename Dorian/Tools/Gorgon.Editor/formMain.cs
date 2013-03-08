@@ -119,7 +119,7 @@ namespace GorgonLibrary.Editor
                 {
                     GorgonFileSystemFileEntry file = (GorgonFileSystemFileEntry)node.Tag;
 
-                    itemOpen.Enabled = Program.ContentPlugIns.Any(item => item.Value.FileExtensions.ContainsKey(file.Extension.ToLower())));
+                    itemOpen.Enabled = Program.ContentPlugIns.Any(item => item.Value.FileExtensions.ContainsKey(file.Extension.ToLower()));
                     itemDelete.Enabled = true;
                     itemRenameFolder.Enabled = true;
                 }
