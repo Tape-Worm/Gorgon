@@ -29,6 +29,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Drawing;
+using System.Windows.Forms;
 using GorgonLibrary.PlugIns;
 using GorgonLibrary.Graphics;
 using GorgonLibrary.Renderers;
@@ -125,14 +127,24 @@ namespace GorgonLibrary.Editor
     /// An interface for content plug-ins.
     /// </summary>
     public abstract class ContentPlugIn
-        : EditorPlugIn
+        : EditorPlugIn, IDisposable
     {
         #region Variables.
 
         #endregion
 
         #region Properties.
-        /// <summary>
+		/// <summary>
+		/// Property to return the file extensions (and descriptions) for this content type.
+		/// </summary>
+		/// <remarks>This dictionary contains the file extension including the leading period as the key (in lowercase), and a tuple containing the file extension, and a description of the file (for display).</remarks>
+		public IDictionary<string, Tuple<string, string>> FileExtensions
+		{
+			get;
+			private set;
+		}
+
+		/// <summary>
         /// Property to return the type of plug-in.
         /// </summary>
         /// <remarks>Implementors must provide one of the PlugInType enumeration values.</remarks>
@@ -152,6 +164,24 @@ namespace GorgonLibrary.Editor
         /// <param name="editorObjects">Editor information to pass to the interface.</param>
         /// <returns>A new content object interface.</returns>
         protected internal abstract ContentObject CreateContentObject(EditorPlugInData editorObjects);
+
+		/// <summary>
+		/// Function to return the icon for the content.
+		/// </summary>
+		/// <returns>The 16x16 image for the content.</returns>
+		public virtual Image GetContentIcon()
+		{
+			return Properties.Resources.unknown_document_16x16;
+		}
+		
+		/// <summary>
+		/// Function to retrieve the create menu item for this content.
+		/// </summary>
+		/// <returns>The menu item for this </returns>
+		public virtual ToolStripMenuItem GetCreateMenuItem()
+		{
+			return null;
+		}
         #endregion
 
         #region Constructor/Destructor.
@@ -165,7 +195,27 @@ namespace GorgonLibrary.Editor
         protected ContentPlugIn(string description)
             : base(description)
         {
+			FileExtensions = new Dictionary<string, Tuple<string, string>>();
         }
         #endregion
-    }
+
+		#region IDisposable Members
+		/// <summary>
+		/// Releases unmanaged and - optionally - managed resources.
+		/// </summary>
+		/// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
+		protected virtual void Dispose(bool disposing)
+		{
+		}
+
+		/// <summary>
+		/// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+		/// </summary>
+		public void Dispose()
+		{
+			Dispose(true);
+			GC.SuppressFinalize(this);
+		}
+		#endregion
+	}
 }

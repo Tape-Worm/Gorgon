@@ -63,7 +63,7 @@ namespace GorgonLibrary.Editor
 		/// <summary>
 		/// Property to return the type of content.
 		/// </summary>
-		protected internal override string ContentType
+		public override string ContentType
 		{
 			get
 			{

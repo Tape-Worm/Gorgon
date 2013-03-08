@@ -191,6 +191,13 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Gorgon2.ico" />
+    <None Include="Resources\new_item_16x16.png" />
+    <None Include="Resources\delete_item_16x16.png" />
+    <None Include="Resources\edit_16x16.png" />
+    <None Include="Resources\unknown_document_16x16.png" />
+    <None Include="Resources\folder_open_16x16.png" />
+    <None Include="Resources\folder_16x16.png" />
+    <None Include="Resources\project_node_16x16.png" />
     <None Include="Resources\Gorgon_2.x_Logo_Blurry.dds" />
     <None Include="Resources\cancel_16x16.png" />
     <None Include="Resources\ok_16x16.png" />

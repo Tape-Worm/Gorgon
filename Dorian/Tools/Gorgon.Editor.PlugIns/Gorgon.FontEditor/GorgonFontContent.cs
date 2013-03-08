@@ -53,13 +53,13 @@ namespace GorgonLibrary.Editor
         /// <summary>
         /// Property to return the type of content.
         /// </summary>
-        protected override string ContentType
+        public override string ContentType
         {
             get 
             {
                 return "Gorgon Font";
             }
-        }
+        }		
 
         /// <summary>
         /// Property to return whether the content object supports a renderer interface.
@@ -128,8 +128,7 @@ namespace GorgonLibrary.Editor
         /// </summary>
         public GorgonFontContent()
             : base()
-        {
-
+        {			
         }
         #endregion
     }
