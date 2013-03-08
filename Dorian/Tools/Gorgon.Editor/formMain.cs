@@ -60,7 +60,83 @@ namespace GorgonLibrary.Editor
 		#endregion
 
 		#region Methods.
-		/// <summary>
+        /// <summary>
+        /// Function to validate the controls on the display.
+        /// </summary>
+        private void ValidateControls()
+        {
+            itemAdd.Enabled = false;
+            popupItemAdd.Enabled = false;
+            dropNewContent.Enabled = false;
+            itemDelete.Visible = true;
+            itemDelete.Enabled = false;
+            itemDelete.Text = "Delete...";
+            itemOpen.Enabled = false;
+            toolStripSeparator4.Visible = true;
+            itemRenameFolder.Visible = true;
+            itemRenameFolder.Enabled = false;
+            itemRenameFolder.Text = "Rename...";
+            itemCreateFolder.Visible = false;
+
+            // No node is the same as selecting the root.
+            if (treeFiles.SelectedNode == null)
+            {
+                itemAdd.Enabled = true;
+                dropNewContent.Enabled = true;
+                popupItemAdd.Enabled = true;
+                itemDelete.Visible = false;
+                toolStripSeparator4.Visible = false;
+                itemRenameFolder.Visible = false;
+            }
+            else
+            {
+                var node = treeFiles.SelectedNode.Tag as Node;
+                                
+                if (node.Tag is GorgonFileSystemDirectory)
+                {
+                    itemAdd.Enabled = true;
+                    dropNewContent.Enabled = true;
+                    popupItemAdd.Enabled = true;
+                    itemOpen.Enabled = false;
+                    itemCreateFolder.Enabled = true;
+                    itemCreateFolder.Visible = true;
+                    if (node.Tag != Program.ScratchFiles.RootDirectory)
+                    {
+                        itemDelete.Enabled = true;
+                        itemDelete.Text = "Delete Folder...";
+                        itemRenameFolder.Enabled = true;
+                        itemRenameFolder.Text = "Rename Folder...";
+                    }
+                    else
+                    {
+                        itemDelete.Visible = false;
+                        toolStripSeparator4.Visible = false;
+                        itemRenameFolder.Visible = false;
+                    }                    
+                }
+
+                if (node.Tag is GorgonFileSystemFileEntry)
+                {
+                    GorgonFileSystemFileEntry file = (GorgonFileSystemFileEntry)node.Tag;
+
+                    itemOpen.Enabled = Program.ContentPlugIns.Any(item => item.Value.FileExtensions.ContainsKey(file.Extension.ToLower())));
+                    itemDelete.Enabled = true;
+                    itemRenameFolder.Enabled = true;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Handles the SelectionChanged event of the treeFiles control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void treeFiles_SelectionChanged(object sender, EventArgs e)
+        {
+            ValidateControls();
+        }
+        
+        /// <summary>
 		/// Handles the Click event of the itemExit control.
 		/// </summary>
 		/// <param name="sender">The source of the event.</param>
@@ -112,13 +188,6 @@ namespace GorgonLibrary.Editor
 			}
 
 			itemResetValue.Enabled = (propertyItem.SelectedGridItem.PropertyDescriptor.CanResetValue(propertyItem.SelectedObject));
-		}
-
-		/// <summary>
-		/// Function to validate the controls on the form.
-		/// </summary>
-		private void ValidateControls()
-		{
 		}
 
 		/// <summary>
