@@ -284,14 +284,19 @@ namespace GorgonLibrary.Configuration
 					settingName = (string.IsNullOrEmpty(property.Value.SettingName) ? property.Key.Name + "_item" : property.Value.SettingName);
 					values = GetSettings(property.Value.Section, settingName, valueType);
 
-					collection = property.Key.GetValue(this, null);
-					addMethod = collection.GetType().GetMethod("Add");
-					clearMethod = collection.GetType().GetMethod("Clear");
+					// If the list setting doesn't exist, then use a default (if any).
+					// If there are no settings in the list, then we can overwrite the default list.
+					if (values != null)
+					{
+						collection = property.Key.GetValue(this, null);
+						addMethod = collection.GetType().GetMethod("Add");
+						clearMethod = collection.GetType().GetMethod("Clear");
 
-					clearMethod.Invoke(collection, null);
+						clearMethod.Invoke(collection, null);
 
-					for (int i = 0; i < values.Length; i++)
-						addMethod.Invoke(collection, new object[] { values[i] });
+						for (int i = 0; i < values.Length; i++)
+							addMethod.Invoke(collection, new object[] { values[i] });
+					}
 				}
 				else
 				{
@@ -397,7 +402,8 @@ namespace GorgonLibrary.Configuration
 		/// <param name="section">Section the settings reside under.</param>
 		/// <param name="settingName">Name of the setting to retrieve.</param>
 		/// <param name="valueType">Type of values stored in the collection.</param>
-		/// <returns>A list containing the settings with the name specified in <paramref name="settingName"/>.</returns>
+		/// <returns>A list containing the settings with the name specified in <paramref name="settingName"/>.  If the setting list was not found in the configuration file, then 
+		/// NULL (Nothing in is returned).</returns>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="settingName"/> parameter was NULL (Nothing in VB.Net).</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the settingName parameter is empty or the <paramref name="section"/> or the <paramref name="settingName"/> could not be found.</exception>
 		private object[] GetSettings(string section, string settingName, Type valueType)
@@ -409,7 +415,9 @@ namespace GorgonLibrary.Configuration
 
 			currentSection = GetSectionElement(section);
 			if (currentSection == null)
-				return new object[0];
+			{
+				return null;
+			}
 			
 			var currentSetting = (from setting in currentSection.Descendants("Setting")
 								  where ((setting != null) && (setting.Attribute(settingName) != null))

@@ -29,6 +29,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace GorgonLibrary.Editor
 {
@@ -37,9 +38,14 @@ namespace GorgonLibrary.Editor
     /// </summary>
     public class GorgonFontEditorPlugIn
         : ContentPlugIn
-    {
-        #region Methods.
-        /// <summary>
+	{
+		#region Variables.
+		private ToolStripMenuItem _createItem = null;
+		private bool _disposed = false;
+		#endregion
+
+		#region Methods.
+		/// <summary>
         /// Function to create a content object interface.
         /// </summary>
         /// <param name="editorObjects">Editor information to pass to the interface.</param>
@@ -50,6 +56,55 @@ namespace GorgonLibrary.Editor
         {
             return new GorgonFontContent();
         }
+
+		/// <summary>
+		/// Releases unmanaged and - optionally - managed resources.
+		/// </summary>
+		/// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
+		protected override void Dispose(bool disposing)
+		{
+			if (!_disposed)
+			{
+				if (disposing)
+				{
+					if (_createItem != null)
+					{
+						_createItem.Dispose();
+					}
+				}
+
+				_createItem = null;
+				_disposed = true;
+			}
+
+			base.Dispose(disposing);
+		}
+
+		/// <summary>
+		/// Function to retrieve the create menu item for this content.
+		/// </summary>
+		/// <returns>The menu item for this </returns>
+		public override ToolStripMenuItem GetCreateMenuItem()
+		{
+			if (_createItem == null)
+			{
+				_createItem = new ToolStripMenuItem("Create new font...", Properties.Resources.font_document_16x16);
+				_createItem.Name = "itemCreateGorgonFont";
+			}
+
+			return _createItem;
+		}
+
+		/// <summary>
+		/// Function to return the icon for the content.
+		/// </summary>
+		/// <returns>
+		/// The 16x16 image for the content.
+		/// </returns>
+		public override System.Drawing.Image GetContentIcon()
+		{
+			return Properties.Resources.font_document_16x16;
+		}
         #endregion
 
         #region Constructor/Destructor.
@@ -59,6 +114,7 @@ namespace GorgonLibrary.Editor
         public GorgonFontEditorPlugIn()
             : base("Gorgon Font Editor")
         {
+			FileExtensions.Add(".gorfont", new Tuple<string, string>("gorFont", "Gorgon Font File (*.gorFont)"));
         }
         #endregion
     }

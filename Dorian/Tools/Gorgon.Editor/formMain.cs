@@ -50,45 +50,7 @@ namespace GorgonLibrary.Editor
 	public partial class formMain
 		: ZuneForm
 	{
-		#region Classes.
-		/// <summary>
-		/// Sorter for our file tree nodes.
-		/// </summary>
-		class FileNodeComparer
-			: IComparer
-		{
-			#region IComparer Members
-			/// <summary>
-			/// Compares two objects and returns a value indicating whether one is less than, equal to, or greater than the other.
-			/// </summary>
-			/// <param name="x">The first object to compare.</param>
-			/// <param name="y">The second object to compare.</param>
-			/// <returns>
-			/// A signed integer that indicates the relative values of <paramref name="x"/> and <paramref name="y"/>, as shown in the following table.Value Meaning Less than zero <paramref name="x"/> is less than <paramref name="y"/>. Zero <paramref name="x"/> equals <paramref name="y"/>. Greater than zero <paramref name="x"/> is greater than <paramref name="y"/>.
-			/// </returns>
-			/// <exception cref="T:System.ArgumentException">Neither <paramref name="x"/> nor <paramref name="y"/> implements the <see cref="T:System.IComparable"/> interface.-or- <paramref name="x"/> and <paramref name="y"/> are of different types and neither one can handle comparisons with the other. </exception>
-			public int Compare(object x, object y)
-			{
-				Node left = (Node)x;
-				Node right = (Node)y;
-				
-/*				if ((left.Tag is ProjectFolder) && (right.Tag is Document))
-					return -1;
-
-				if ((left.Tag is Document) && (right.Tag is ProjectFolder))
-					return 1;
-
-				if (((left.Tag is Document) && (right.Tag is Document)) || ((left.Tag is ProjectFolder) && (right.Tag is ProjectFolder)))
-					return string.Compare(left.Text, right.Text);*/
-
-				return 0;
-			}
-			#endregion
-		}
-		#endregion
-
 		#region Variables.
-		private SortedTreeModel _treeModel = null;							// Tree model.
 		private Font _unSavedFont = null;									// Font for unsaved documents.
 		private bool _wasSaved = false;										// Flag to indicate that the project was previously saved.
 		#endregion
@@ -290,24 +252,165 @@ namespace GorgonLibrary.Editor
 		}
 
 		/// <summary>
+		/// Handles the Collapsed event of the treeFiles control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="TreeViewAdvEventArgs"/> instance containing the event data.</param>
+		private void treeFiles_Collapsed(object sender, TreeViewAdvEventArgs e)
+		{
+			Cursor.Current = Cursors.WaitCursor;
+
+			try
+			{
+				Node node = e.Node.Tag as Node;
+
+				if (node == null)
+				{
+					return;
+				}
+
+				if (node.Tag is GorgonFileSystemDirectory)
+				{
+					if (node.Tag != Program.ScratchFiles.RootDirectory)
+					{
+						node.Image = Properties.Resources.folder_16x16;
+					}
+					return;
+				}
+			}
+			catch (Exception ex)
+			{
+				GorgonDialogs.ErrorBox(this, ex);
+			}
+			finally
+			{
+				Cursor.Current = Cursors.Default;
+			}
+		}
+
+		/// <summary>
+		/// Handles the Expanding event of the treeFiles control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="TreeViewAdvEventArgs"/> instance containing the event data.</param>
+		private void treeFiles_Expanding(object sender, TreeViewAdvEventArgs e)
+		{
+			Cursor.Current = Cursors.WaitCursor;
+
+			try
+			{
+				Node node = e.Node.Tag as Node;
+
+				if (node == null)
+				{
+					return;
+				}
+
+				// Expand sub folders.
+				if (node.Tag is GorgonFileSystemDirectory)
+				{
+					GetFolders(node);
+					if (node.Tag != Program.ScratchFiles.RootDirectory)
+					{
+						node.Image = Properties.Resources.folder_open_16x16;
+					}
+					return;
+				}
+			}
+			catch (Exception ex)
+			{
+				GorgonDialogs.ErrorBox(this, ex);
+			}
+			finally
+			{
+				Cursor.Current = Cursors.Default;
+			}
+		}
+
+		/// <summary>
 		/// Handles the DrawText event of the _nodeText control.
 		/// </summary>
 		/// <param name="sender">The source of the event.</param>
 		/// <param name="e">The <see cref="Aga.Controls.Tree.NodeControls.DrawEventArgs"/> instance containing the event data.</param>
 		private void _nodeText_DrawText(object sender, Aga.Controls.Tree.NodeControls.DrawEventArgs e)
 		{
+			Node node = e.Node.Tag as Node;
 
-/*			e.TextColor = Color.White;
+			e.TextColor = Color.White;
 
-			if (document != null)
+			if (node != null)
+			{
+				var file = node.Tag as GorgonFileSystemFileEntry;
+
+				// Check to see if we have any content editors that can open this type of file.
+				if (file != null)
+				{
+					if (!Program.ContentPlugIns.Any(item => item.Value.FileExtensions.ContainsKey(file.Extension.ToLower())))
+					{
+						e.TextColor = DarkFormsRenderer.DisabledColor;
+					}
+					return;
+				}
+			}
+
+			/*if (document != null)
 			{
 				if (!document.CanOpen)
 					e.TextColor = Color.Black;
 
 				if ((document.NeedsSave) && (document.CanSave))
 					e.Font = _unSavedFont;
-			}*/
-			
+			}*/			
+		}
+
+		/// <summary>
+		/// Function to retrieve the folder nodes.
+		/// </summary>
+		/// <param name="rootNode">Node to add folder information into.</param>
+		private void GetFolders(Node rootNode)
+		{
+			GorgonFileSystemDirectory directory = rootNode.Tag as GorgonFileSystemDirectory;
+
+			// Get the sub directories.
+			rootNode.Nodes.Clear();
+
+			foreach (var subDirectory in directory.Directories.OrderBy(item => item.Name))
+			{
+				Node subNode = new Node(subDirectory.Name);
+				subNode.Tag = subDirectory;
+				subNode.Image = Properties.Resources.folder_16x16;				
+
+				if ((subDirectory.Directories.Count > 0) || (subDirectory.Files.Count > 0))
+				{
+					subNode.Nodes.Add(new Node("DummyNode"));
+				}
+
+				rootNode.Nodes.Add(subNode);
+			}
+
+			// Add file nodes.
+			foreach (var file in directory.Files.OrderBy(item => item.Name))
+			{
+				Node fileNode = new Node(file.Name);
+				fileNode.Tag = file;
+				fileNode.Image = Properties.Resources.unknown_document_16x16;
+
+				// Look through content providers to get content icon.
+				if (!string.IsNullOrWhiteSpace(file.Extension))
+				{
+					var contentPlugIn = (from plugIn in Program.ContentPlugIns
+										where plugIn.Value.FileExtensions.ContainsKey(file.Extension.ToLower())
+										select plugIn.Value).FirstOrDefault();
+
+					if (contentPlugIn != null)
+					{
+						fileNode.Image = contentPlugIn.GetContentIcon();
+					}
+				}
+
+
+				rootNode.Nodes.Add(fileNode);
+			}
 		}
 
 		/// <summary>
@@ -315,16 +418,47 @@ namespace GorgonLibrary.Editor
 		/// </summary>
 		private void InitializeTree()
 		{
-			/*_nodeText.DrawText += new EventHandler<Aga.Controls.Tree.NodeControls.DrawEventArgs>(_nodeText_DrawText);
-			_treeModel = new SortedTreeModel(new TreeModel());
-			_treeModel.Comparer = new FileNodeComparer();
-			treeFiles.Model = _treeModel;
+			Node rootNode = new Node(Program.ProjectFile);
+			rootNode.Image = Properties.Resources.project_node_16x16;
+			rootNode.Tag = Program.ScratchFiles.RootDirectory;
+
+			// If we have files or sub directories, dump them in here.
+			if ((Program.ScratchFiles.RootDirectory.Directories.Count > 0) || (Program.ScratchFiles.RootDirectory.Files.Count > 0))
+			{
+				rootNode.Nodes.Add(new Node("DummyNode"));
+			}
+
+			_nodeText.DrawText += new EventHandler<Aga.Controls.Tree.NodeControls.DrawEventArgs>(_nodeText_DrawText);
+			treeFiles.Model = new TreeModel();
 
 			treeFiles.BeginUpdate();
-			((TreeModel)_treeModel.InnerModel).Nodes.Add(Program.Project.RootNode);
+			((TreeModel)treeFiles.Model).Nodes.Add(rootNode);
 			treeFiles.EndUpdate();
 
-			treeFiles.Root.Children[0].Expand();*/
+			treeFiles.Root.Children[0].Expand();
+		}
+
+		/// <summary>
+		/// Function to initialize the global interface commands for each content plug-in.
+		/// </summary>
+		private void InitializeInterface()
+		{
+			foreach (var plugIn in Program.ContentPlugIns)
+			{
+				// Get the menu item.
+				var createItem = plugIn.Value.GetCreateMenuItem();
+
+				if (createItem != null)
+				{
+					// Add to the 3 "Add" loctaions.
+					popupAddContentMenu.Items.Add(createItem);
+				}
+
+				// TODO: Assign event for click??
+			}
+
+			// Enable the add items if we have anything new.
+			popupItemAdd.Enabled = dropNewContent.Enabled = itemAdd.Enabled = itemAdd.DropDownItems.Count > 0;
 		}
 
 		/// <summary>
@@ -349,6 +483,8 @@ namespace GorgonLibrary.Editor
 				}
 
 				this.WindowState = Program.Settings.FormState;
+
+				InitializeInterface();
 
 				InitializeTree();
 			}

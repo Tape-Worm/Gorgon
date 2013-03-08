@@ -288,6 +288,8 @@ namespace GorgonLibrary.Editor
                 _splash.UpdateVersion("Loading file system providers...");
                 // Get any file system providers.
                 Program.ScratchFiles.AddAllProviders();
+				// TODO: Remove this, just here for testes.
+				Program.ScratchFiles.Mount(@"..\..\..\..\Resources\FileSystems\BZipFileSystem.gorPack");
 
 				_splash.UpdateVersion("Initializing graphics...");
 				Program.InitializeGraphics();

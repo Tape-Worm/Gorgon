@@ -207,12 +207,7 @@ namespace GorgonLibrary.Editor
 		{			
 			if (e.Item.Selected)
 			{
-				Color color = MenuHilightBackground;
-
-				if (Control.MouseButtons != MouseButtons.None)
-					color = Color.FromKnownColor(KnownColor.DodgerBlue);
-
-				using (Brush backBrush = new SolidBrush(color))
+				using (Brush backBrush = new SolidBrush(MenuHilightBackground))
 					e.Graphics.FillRectangle(backBrush, new Rectangle(1, 1, e.Item.Width - 2, e.Item.Height - 2));
 			}
 			else			
@@ -283,7 +278,7 @@ namespace GorgonLibrary.Editor
 
 			if (item.Selected)
 			{
-				using (Brush backBrush = new SolidBrush(item.DropDown.Visible ? DarkBackground : MenuHilightBackground))
+				using (Brush backBrush = new SolidBrush(MenuHilightBackground))
 					e.Graphics.FillRectangle(backBrush, new Rectangle(1, 1, e.Item.Width - 2, e.Item.Height - 2));
 			}
 

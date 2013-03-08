@@ -30,6 +30,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Drawing;
+using GorgonLibrary.Graphics;
 
 namespace GorgonLibrary.Editor
 {
@@ -56,9 +58,20 @@ namespace GorgonLibrary.Editor
 		/// <summary>
 		/// Property to return the type of content.
 		/// </summary>
-		protected internal abstract string ContentType
+		public abstract string ContentType
 		{
 			get;
+		}
+
+		/// <summary>
+		/// Property to return the graphics interface for the application.
+		/// </summary>
+		public GorgonGraphics Graphics
+		{
+			get
+			{
+				return Program.Graphics;
+			}
 		}
 
 		/// <summary>
@@ -88,6 +101,15 @@ namespace GorgonLibrary.Editor
 				_name = value;
 			}
 		}
+
+		/// <summary>
+		/// Property to return the path to this content.
+		/// </summary>
+		public string FilePath
+		{
+			get;
+			private set;
+		}
 		#endregion
 
 		#region Methods.
@@ -95,13 +117,13 @@ namespace GorgonLibrary.Editor
 		/// Function called when the content window is closed.
 		/// </summary>
 		/// <returns>TRUE to continue closing the window, FALSE to cancel the close.</returns>
-		protected abstract bool OnClose();
+		protected abstract bool OnClose();		
 
 		/// <summary>
 		/// Function to close the content window.
 		/// </summary>
 		/// <returns>TRUE to continue closing the window, FALSE to cancel the close.</returns>
-		internal bool Close()
+		public bool Close()
 		{
 			return OnClose();
 		}
@@ -126,7 +148,7 @@ namespace GorgonLibrary.Editor
 		/// </summary>
 		protected ContentObject()
 		{
-			HasChanges = false;
+			HasChanges = false;			
 		}
 		#endregion
 

@@ -56,12 +56,21 @@ namespace GorgonLibrary.Editor
         }
 
 		/// <summary>
+		/// Property to return the name of the project file.
+		/// </summary>
+		public static string ProjectFile
+		{
+			get;
+			private set;
+		}
+
+		/// <summary>
 		/// Property to return the logging interface for the application.
 		/// </summary>
 		public static GorgonLogFile LogFile
 		{
 			get;
-			internal set;
+			set;
 		}
 
 		/// <summary>
@@ -70,7 +79,7 @@ namespace GorgonLibrary.Editor
 		public static GorgonFileSystem ScratchFiles
 		{
 			get;
-			internal set;
+			set;
 		}
 
 		/// <summary>
@@ -79,7 +88,7 @@ namespace GorgonLibrary.Editor
 		public static ContentObject CurrentContent
 		{
 			get;
-			internal set;
+			set;
 		}
 
 		/// <summary>
@@ -258,6 +267,7 @@ namespace GorgonLibrary.Editor
 		{
 			Settings = new GorgonEditorSettings();
             ContentPlugIns = new Dictionary<string, ContentPlugIn>();
+			ProjectFile = "Untitled";
 		}
 		#endregion
 
