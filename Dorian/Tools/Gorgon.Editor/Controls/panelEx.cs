@@ -38,7 +38,7 @@ namespace GorgonLibrary.Editor
 	/// <summary>
 	/// A custom panel.
 	/// </summary>
-	partial class panelEx : Panel
+	public partial class panelEx : Panel
 	{
 		/// <summary>
 		/// Raises the <see cref="E:System.Windows.Forms.Control.Paint"/> event.

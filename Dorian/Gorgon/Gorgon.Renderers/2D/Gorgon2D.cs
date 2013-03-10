@@ -344,6 +344,15 @@ namespace GorgonLibrary.Renderers
 
 		#region Properties.
 		/// <summary>
+		/// Property to set or return whether the swap chain created was created by the system or by the user.
+		/// </summary>
+		internal bool SystemCreatedTarget
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
 		/// Property to return the global state manager.
 		/// </summary>
 		internal GorgonStateManager StateManager
@@ -1372,6 +1381,12 @@ namespace GorgonLibrary.Renderers
 						AlphaTestBuffer.Dispose();
 					if (AlphaTestStream != null)
 						AlphaTestStream.Dispose();
+
+					if ((SystemCreatedTarget) && (_defaultTarget != null))
+					{
+						_defaultTarget.Dispose();
+						_defaultTarget = null;
+					}
 
 					Graphics.RemoveTrackedObject(this);
 				}

@@ -207,7 +207,6 @@ namespace GorgonLibrary.Editor
 		/// <returns>A control to embed into the container interface.</returns>
 		public override Control InitializeContent()
 		{		
-			
 			_container = new DefaultContentPanel();
 			_container.BackColor = DarkFormsRenderer.DarkBackground;
 			_container.checkPulse.Checked = Program.Settings.AnimateStartPage;
@@ -265,7 +264,6 @@ namespace GorgonLibrary.Editor
 
 					if (_2D != null)
 					{
-						_2D.DefaultTarget.Dispose();
 						_2D.Dispose();						
 					}
 

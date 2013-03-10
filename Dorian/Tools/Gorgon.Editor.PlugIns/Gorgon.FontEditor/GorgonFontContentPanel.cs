@@ -34,12 +34,13 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace GorgonLibrary.Editor
+namespace GorgonLibrary.Editor.FontEditorPlugIn
 {
     /// <summary>
     /// Control for displaying font data.
     /// </summary>
-    partial class GorgonFontContentPanel : UserControl
+    partial class GorgonFontContentPanel 
+		: ContentPanel
     {
         #region Variables.
 

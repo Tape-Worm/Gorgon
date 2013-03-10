@@ -1,4 +1,30 @@
-﻿using System;
+﻿#region MIT.
+// 
+// Gorgon.
+// Copyright (C) 2013 Michael Winsor
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
+// 
+// Created: Saturday, March 9, 2013 6:38:42 PM
+// 
+#endregion
+
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -9,18 +35,28 @@ using System.Windows.Forms;
 using GorgonLibrary.UI;
 using GorgonLibrary.Graphics;
 
-namespace GorgonLibrary.Editor
+namespace GorgonLibrary.Editor.FontEditorPlugIn
 {
 	/// <summary>
 	/// Font creation form.
 	/// </summary>
-	public partial class formNewFont : Form
+	partial class formNewFont 
+		: ZuneForm
 	{
-/*		#region Variables.
-		private Font _font = null;			// Font used for preview.
+		#region Variables.
+		private Font _font = null;						// Font used for preview.
 		#endregion
 
 		#region Properties.
+		/// <summary>
+		/// Property to set or return the content object to design.
+		/// </summary>
+		public GorgonFontContent Content
+		{
+			get;
+			set;
+		}
+
 		/// <summary>
 		/// Property to return the font name.
 		/// </summary>
@@ -135,11 +171,11 @@ namespace GorgonLibrary.Editor
 			{
 				var family = FontFamily.Families.Where(item => string.Compare(item.Name, comboFonts.Text, true) == 0).SingleOrDefault();
 
-				if ((family == null) || (!Program.CachedFonts.ContainsKey(family.Name)))
+				if ((family == null) || (!GorgonFontEditorPlugIn.CachedFonts.ContainsKey(family.Name)))
 					checkBold.Checked = checkUnderline.Checked = checkItalic.Checked = checkStrikeThrough.Checked = false;
 				else
-				{						
-					Font font = Program.CachedFonts[family.Name];
+				{
+					Font font = GorgonFontEditorPlugIn.CachedFonts[family.Name];
 
 					checkBold.Enabled = family.IsStyleAvailable(FontStyle.Bold) && family.IsStyleAvailable(FontStyle.Regular);
 					checkUnderline.Enabled = family.IsStyleAvailable(FontStyle.Underline) && family.IsStyleAvailable(FontStyle.Regular);
@@ -253,11 +289,11 @@ namespace GorgonLibrary.Editor
 		{
 			base.OnLoad(e);
 
-			numericTextureWidth.Maximum = Program.Graphics.Textures.MaxWidth;
-			numericTextureHeight.Maximum = Program.Graphics.Textures.MaxHeight;
-			comboSizeType.Text = Program.Settings.FontSizeType.ToString();
+			numericTextureWidth.Maximum = Content.Graphics.Textures.MaxWidth;
+			numericTextureHeight.Maximum = Content.Graphics.Textures.MaxHeight;
+			comboSizeType.Text = GorgonFontEditorPlugIn.Settings.FontSizeType.ToString();
 
-			switch (Program.Settings.FontAntiAliasMode)
+			switch (GorgonFontEditorPlugIn.Settings.FontAntiAliasMode)
 			{
 				case Graphics.FontAntiAliasMode.None:
 					comboAA.Text = "None";
@@ -270,12 +306,12 @@ namespace GorgonLibrary.Editor
 					break;
 			}
 
-			numericTextureWidth.Value = Program.Settings.FontTextureSize.Width;
-			numericTextureHeight.Value = Program.Settings.FontTextureSize.Height;
+			numericTextureWidth.Value = GorgonFontEditorPlugIn.Settings.FontTextureSize.Width;
+			numericTextureHeight.Value = GorgonFontEditorPlugIn.Settings.FontTextureSize.Height;
 
 			ValidateControls();
 		}
-		#endregion*/
+		#endregion
 
 		#region Constructor/Destructor.
 		/// <summary>

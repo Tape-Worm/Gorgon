@@ -65,18 +65,23 @@ namespace GorgonLibrary.Editor
         /// </summary>
         private void ValidateControls()
         {
+			itemImport.Enabled = Program.ContentPlugIns.Any(item => item.Value.SupportsImport);
+			itemExport.Enabled = Program.ContentPlugIns.Any(item => item.Value.SupportsExport);
+
             itemAdd.Enabled = false;
             popupItemAdd.Enabled = false;
             dropNewContent.Enabled = false;
             itemDelete.Visible = true;
             itemDelete.Enabled = false;
             itemDelete.Text = "Delete...";
-            itemOpen.Enabled = false;
+            itemEdit.Visible = false;
             toolStripSeparator4.Visible = true;
             itemRenameFolder.Visible = true;
             itemRenameFolder.Enabled = false;
             itemRenameFolder.Text = "Rename...";
             itemCreateFolder.Visible = false;
+			buttonEditContent.Enabled = false;
+			buttonDeleteContent.Enabled = false;
 
             // No node is the same as selecting the root.
             if (treeFiles.SelectedNode == null)
@@ -119,7 +124,8 @@ namespace GorgonLibrary.Editor
                 {
                     GorgonFileSystemFileEntry file = (GorgonFileSystemFileEntry)node.Tag;
 
-                    itemOpen.Enabled = Program.ContentPlugIns.Any(item => item.Value.FileExtensions.ContainsKey(file.Extension.ToLower()));
+					buttonDeleteContent.Enabled = true;
+					buttonEditContent.Enabled = itemEdit.Visible = itemEdit.Enabled = Program.ContentPlugIns.Any(item => item.Value.FileExtensions.ContainsKey(file.Extension.ToLower()));
                     itemDelete.Enabled = true;
                     itemRenameFolder.Enabled = true;
                 }
@@ -191,53 +197,86 @@ namespace GorgonLibrary.Editor
 		}
 
 		/// <summary>
-		/// Function to load content into the interface.
+		/// Function to load a content object into the main interface.
 		/// </summary>
-		/// <param name="content">Content to load into the interface.</param>
-		internal void LoadContentPane<T>()
-			where T : ContentObject, new()
+		/// <param name="content">Content object to load in.</param>
+		private void LoadContentPane(ref ContentObject content)
 		{
-			ContentObject result = null;
+			Control control = null;
 
+			// Turn off rendering.
+			Gorgon.ApplicationIdleLoopMethod = null;
+
+			if (content == null)
+			{
+				content = new DefaultContent();				
+			}
+
+			// Create the content resources and such.
+			control = content.InitializeContent();
+
+			// We couldn't get an interface component, fall back to the default display.
+			if (control == null)
+			{
+				content.Dispose();
+				content = new DefaultContent();
+				control = content.InitializeContent();
+			}
+
+			control.Dock = DockStyle.Fill;
+
+			// If we have content loaded, ensure we get a chance to save it.
 			if (Program.CurrentContent != null)
 			{
 				if (!Program.CurrentContent.Close())
 				{
+					if (content != null)
+					{
+						content.Dispose();
+						content = null;
+					}
+
 					return;
 				}
+
+				// Destroy the previous content.
+				Program.CurrentContent.Dispose();
+				Program.CurrentContent = null;
 			}
 
-			// Load the content.
-			result = new T();
-			Control control = result.InitializeContent();
-
-			// If we fail to return a control, then return to the default.
-			if (control == null)
-			{
-				result.Dispose();
-				result = null;
-				
-				result = new DefaultContent();
-				control = result.InitializeContent();
-			}
-						
-			control.Dock = DockStyle.Fill;
-			
-			// Add to our interface.
-			splitEdit.Panel1.Controls.Add(control);
-			
-			Program.CurrentContent = result;
+			// Add to the main interface.
+			Program.CurrentContent = content;
+			splitEdit.Panel1.Controls.Add(control);			
 
 			// If the current content has a renderer, then activate it.
 			// Otherwise, turn it off to conserve cycles.
-			if (result.HasRenderer)
+			if (content.HasRenderer)
 			{
 				Gorgon.ApplicationIdleLoopMethod = Idle;
 			}
-			else
-			{
-				Gorgon.ApplicationIdleLoopMethod = null;
-			}
+		}
+
+		/// <summary>
+		/// Function to load content into the interface from a plug-in.
+		/// </summary>
+		/// <param name="plugIn">Plug-in containing the content to interface.</param>
+		internal void LoadContentPane(ContentPlugIn plugIn)
+		{
+			var result = plugIn.CreateContentObject();
+
+			LoadContentPane(ref result);
+		}
+
+		/// <summary>
+		/// Function to load content into the interface.
+		/// </summary>
+		/// <typeparam name="T">Type of content object to load.</typeparam>
+		internal void LoadContentPane<T>()
+			where T : ContentObject, new()
+		{
+			// Load the content.
+			ContentObject result = new T();
+			LoadContentPane(ref result);
 		}
 
 		/// <summary>
@@ -508,6 +547,51 @@ namespace GorgonLibrary.Editor
 		}
 
 		/// <summary>
+		/// Function to add content to the interface.
+		/// </summary>
+		/// <param name="sender">The sender.</param>
+		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+		private void AddContent(object sender, EventArgs e)
+		{			
+			ToolStripMenuItem item = sender as ToolStripMenuItem;
+			ContentPlugIn plugIn = null;
+
+			if (item == null)
+			{
+				return;
+			}
+
+			plugIn = item.Tag as ContentPlugIn;
+
+			if (plugIn == null)
+			{
+				return;
+			}
+
+			Cursor.Current = Cursors.WaitCursor;
+			try
+			{
+				LoadContentPane(plugIn);
+
+				if (!Program.CurrentContent.CreateNew())
+				{
+					LoadContentPane<DefaultContent>();
+				}
+			}
+			catch (Exception ex)
+			{
+				GorgonDialogs.ErrorBox(this, ex);
+
+				// Load the default pane.
+				LoadContentPane<DefaultContent>();
+			}
+			finally
+			{
+				Cursor.Current = Cursors.Default;
+			}
+		}
+
+		/// <summary>
 		/// Function to initialize the global interface commands for each content plug-in.
 		/// </summary>
 		private void InitializeInterface()
@@ -521,9 +605,10 @@ namespace GorgonLibrary.Editor
 				{
 					// Add to the 3 "Add" loctaions.
 					popupAddContentMenu.Items.Add(createItem);
-				}
 
-				// TODO: Assign event for click??
+					// Click event.
+					createItem.Click += AddContent;
+				}
 			}
 
 			// Enable the add items if we have anything new.

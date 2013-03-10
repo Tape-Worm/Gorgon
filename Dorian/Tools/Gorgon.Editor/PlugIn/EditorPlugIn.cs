@@ -38,44 +38,6 @@ using GorgonLibrary.Renderers;
 namespace GorgonLibrary.Editor
 {
 	/// <summary>
-	/// Data passed from the editor to the plug-in.
-	/// </summary>
-	public struct EditorPlugInData
-	{
-		/// <summary>
-		/// The panel that contains the main content for the application.
-		/// </summary>
-		public readonly System.Windows.Forms.Panel ContentPanel;
-		/// <summary>
-		/// The main menu for the application.
-		/// </summary>
-		public readonly System.Windows.Forms.MenuStrip MainMenu;
-		/// <summary>
-		/// The graphics interface for the application.
-		/// </summary>
-		public readonly GorgonGraphics Graphics;
-		/// <summary>
-		/// The renderer interface for the application.
-		/// </summary>
-		public readonly Gorgon2D Renderer;
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="EditorPlugInData"/> struct.
-		/// </summary>
-		/// <param name="contentPanel">The panel that contains the main content for the application.</param>
-		/// <param name="mainMenu">The main menu for the application.</param>
-		/// <param name="graphics">The graphics interface for the application.</param>
-		/// <param name="renderer">The renderer for the application.</param>
-		internal EditorPlugInData(System.Windows.Forms.Panel contentPanel, System.Windows.Forms.MenuStrip mainMenu, GorgonGraphics graphics, Gorgon2D renderer)
-		{
-			ContentPanel = contentPanel;
-			MainMenu = mainMenu;
-			Graphics = graphics;
-			Renderer = renderer;
-		}
-	}
-
-	/// <summary>
 	/// Type of plug-in.
 	/// </summary>
 	public enum PlugInType
@@ -105,6 +67,24 @@ namespace GorgonLibrary.Editor
 		public abstract PlugInType PlugInType
 		{
 			get;
+		}
+		#endregion
+
+		#region Methods.
+		/// <summary>
+		/// Function to create a tool strip menu item.
+		/// </summary>
+		/// <param name="name">Name of the menu item.</param>
+		/// <param name="text">Text to display on the menu item.</param>
+		/// <param name="icon">Icon to show on the menu item.</param>
+		/// <returns>A new tool strip menu item.</returns>
+		protected ToolStripMenuItem CreateMenuItem(string name, string text, Image icon)
+		{
+			ToolStripMenuItem result = new ToolStripMenuItem(text, icon);
+			result.Name = name;
+			result.Tag = this;
+
+			return result;
 		}
 		#endregion
 
@@ -155,15 +135,30 @@ namespace GorgonLibrary.Editor
                 return Editor.PlugInType.Content;
             }
         }
+
+		/// <summary>
+		/// Property to return whether the plug-in supports importing of external data.
+		/// </summary>
+		public abstract bool SupportsImport
+		{
+			get;
+		}
+
+		/// <summary>
+		/// Property to return whether the plug-in supports exporting of content data.
+		/// </summary>
+		public abstract bool SupportsExport
+		{
+			get;
+		}
         #endregion
 
         #region Methods.
         /// <summary>
         /// Function to create a content object interface.
         /// </summary>
-        /// <param name="editorObjects">Editor information to pass to the interface.</param>
         /// <returns>A new content object interface.</returns>
-        protected internal abstract ContentObject CreateContentObject(EditorPlugInData editorObjects);
+        protected internal abstract ContentObject CreateContentObject();
 
 		/// <summary>
 		/// Function to return the icon for the content.

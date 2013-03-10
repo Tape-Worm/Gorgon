@@ -210,52 +210,8 @@ namespace GorgonLibrary.Editor
 				Graphics = null;
 			}
 
-			Graphics = new GorgonGraphics(DeviceFeatureLevel.SM2_a_b);			
-		}
-
-		/// <summary>
-		/// Function to update the font cache.
-		/// </summary>
-		static void UpdateCachedFonts()
-		{
-			SortedDictionary<string, Font> fonts = null;
-
-			// Clear the cached fonts.
-			if (CachedFonts != null)
-			{
-				foreach (var font in CachedFonts)
-					font.Value.Dispose();
-			}
-
-			fonts = new SortedDictionary<string,Font>();
-
-			// Get font families.
-			foreach (var family in FontFamily.Families)
-			{
-				Font newFont = null;
-
-				if (!fonts.ContainsKey(family.Name))
-				{
-					if (family.IsStyleAvailable(FontStyle.Regular))
-						newFont = new Font(family, 16.0f, FontStyle.Regular, GraphicsUnit.Pixel);
-					else
-					{
-						if (family.IsStyleAvailable(FontStyle.Bold))
-							newFont = new Font(family, 16.0f, FontStyle.Bold, GraphicsUnit.Pixel);
-						else
-						{
-							if (family.IsStyleAvailable(FontStyle.Italic))
-								newFont = new Font(family, 16.0f, FontStyle.Italic, GraphicsUnit.Pixel);
-						}
-					}
-
-					// Only add if we could use the regular, bold or italic style.
-					if (newFont != null)
-						fonts.Add(family.Name, newFont);
-				}
-			}
-
-			CachedFonts = fonts;
+			//Graphics = new GorgonGraphics(DeviceFeatureLevel.SM2_a_b);			
+			Graphics = new GorgonGraphics();
 		}
 		#endregion
 
@@ -316,13 +272,6 @@ namespace GorgonLibrary.Editor
 				if (Program.LogFile != null)
 				{
 					Program.LogFile.Close();
-				}
-
-				// Clear the cached fonts.
-				if (CachedFonts != null)
-				{
-					foreach (var font in CachedFonts)
-						font.Value.Dispose();
 				}
 			}
 		}
