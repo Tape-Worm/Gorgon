@@ -29,14 +29,17 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Drawing;
+using System.Windows.Forms;
 using SlimMath;
 using GorgonLibrary;
+using GorgonLibrary.UI;
 using GorgonLibrary.IO;
 using GorgonLibrary.Math;
 using GorgonLibrary.Graphics;
 using GorgonLibrary.Renderers;
 
-namespace GorgonLibrary.Editor
+namespace GorgonLibrary.Editor.FontEditorPlugIn
 {
     /// <summary>
     /// The main content interface.
@@ -45,6 +48,7 @@ namespace GorgonLibrary.Editor
         : ContentObject
     {
         #region Variables.
+		private ContentPlugIn _plugIn = null;						// The plug-in that interfaces the content with the main system.
         private GorgonFontContentPanel _panel = null;               // Interface for editing the font.
         private bool _disposed = false;                             // Flag to indicate that the object was disposed.
         #endregion
@@ -84,6 +88,8 @@ namespace GorgonLibrary.Editor
             {
                 if (disposing)
                 {
+					_panel.Dispose();
+					_panel = null;
                 }
 
                 _disposed = true;
@@ -108,6 +114,43 @@ namespace GorgonLibrary.Editor
             return true;
         }
 
+		/// <summary>
+		/// Function to create new content.
+		/// </summary>
+		/// <returns>
+		/// TRUE if successful, FALSE if not or canceled.
+		/// </returns>
+		protected override bool CreateNew()
+		{
+			formNewFont newFont = null;
+
+			try
+			{
+				newFont = new formNewFont();
+				newFont.Content = this;
+
+				if (newFont.ShowDialog() == DialogResult.OK)
+				{
+					return true;
+				}
+
+				return false;
+			}
+			catch (Exception ex)
+			{
+				GorgonDialogs.ErrorBox(null, ex);
+				return false;
+			}
+			finally
+			{
+				if (newFont != null)
+				{
+					newFont.Dispose();
+					newFont = null;
+				}
+			}
+		}
+
         /// <summary>
         /// Function to initialize the content editor.
         /// </summary>
@@ -117,6 +160,7 @@ namespace GorgonLibrary.Editor
         public override System.Windows.Forms.Control InitializeContent()
         {
             _panel = new GorgonFontContentPanel();
+			_panel.Content = this;
 
             return _panel;
         }
@@ -126,9 +170,11 @@ namespace GorgonLibrary.Editor
         /// <summary>
         /// Initializes a new instance of the <see cref="GorgonFontContent"/> class.
         /// </summary>
-        public GorgonFontContent()
+		/// <param name="plugIn">The plug-in that creates this object.</param>
+        public GorgonFontContent(ContentPlugIn plugIn)
             : base()
-        {			
+        {
+			_plugIn = plugIn;
         }
         #endregion
     }

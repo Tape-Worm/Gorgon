@@ -64,7 +64,7 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
-		/// Property to set or return the resource that is bound to this view.
+		/// Property to return the resource that is bound to this view.
 		/// </summary>
 		public GorgonResource Resource
 		{
@@ -124,11 +124,13 @@ namespace GorgonLibrary.Graphics
 				if ((resource.Settings.ViewFormat == BufferFormat.Unknown) || (resource.Settings.ViewFormat == resource.Settings.Format))
 				{
 					D3DResourceView = new D3D.ShaderResourceView(Graphics.D3DDevice, resource.D3DResource);
+					D3DResourceView.DebugName = textureType + " '" + Name + "' Shader Resource View";
 
 					// Create an unordered access view if we've requested one.
 					if (resource.Settings.ViewIsUnordered)
 					{
 						D3DUnorderedResourceView = new D3D.UnorderedAccessView(Graphics.D3DDevice, resource.D3DResource);
+						D3DUnorderedResourceView.DebugName = textureType + " '" + Name + "' Shader Resource View";
 					}
 				}
 				else

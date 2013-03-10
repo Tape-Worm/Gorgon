@@ -154,6 +154,9 @@ namespace GorgonLibrary.Graphics
 			}
 			set
 			{
+				// If we're changing the view, ensure it's not bound.
+				Graphics.Shaders.Unbind(this);
+
 				if ((value == DefaultView) && (_view != DefaultView))
 				{
 					_view.Resource = null;

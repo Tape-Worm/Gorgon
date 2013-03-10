@@ -1,7 +1,7 @@
 ﻿#region MIT.
 // 
 // Gorgon.
-// Copyright (C) 2012 Michael Winsor
+// Copyright (C) 2013 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -20,7 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: Thursday, May 03, 2012 12:14:58 PM
+// Created: Saturday, March 9, 2013 6:55:02 PM
 // 
 #endregion
 
@@ -32,12 +32,12 @@ using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
 
-namespace GorgonLibrary.Editor
+namespace GorgonLibrary.Editor.FontEditorPlugIn
 {
 	/// <summary>
 	/// A combo box for displaying fonts.
 	/// </summary>
-	public class comboFonts
+	class comboFonts
 		: ComboBox
 	{		
 		#region Properties.
@@ -101,13 +101,13 @@ namespace GorgonLibrary.Editor
 				e.DrawFocusRectangle();
 
 			string fontName = Items[e.Index].ToString();
-			if (Program.CachedFonts.ContainsKey(fontName))
+			if (GorgonFontEditorPlugIn.CachedFonts.ContainsKey(fontName))
 			{
 				e.Graphics.TextRenderingHint = System.Drawing.Text.TextRenderingHint.ClearTypeGridFit;
 				Size measure = TextRenderer.MeasureText(e.Graphics, fontName, this.Font, e.Bounds.Size, flags);
 				Rectangle textBounds = new Rectangle(e.Bounds.Width - measure.Width + e.Bounds.Left, e.Bounds.Top, e.Bounds.Width, e.Bounds.Height);
 				Rectangle fontBounds = new Rectangle(e.Bounds.Left, e.Bounds.Top, textBounds.X - 2, e.Bounds.Height);
-				TextRenderer.DrawText(e.Graphics, fontName, Program.CachedFonts[fontName], fontBounds, e.ForeColor, e.BackColor, flags);
+				TextRenderer.DrawText(e.Graphics, fontName, GorgonFontEditorPlugIn.CachedFonts[fontName], fontBounds, e.ForeColor, e.BackColor, flags);
 				TextRenderer.DrawText(e.Graphics, fontName, this.Font, textBounds, e.ForeColor, e.BackColor, flags);
 			}
 		}
@@ -133,7 +133,7 @@ namespace GorgonLibrary.Editor
 		public void RefreshFonts()
 		{
 			Items.Clear();
-			foreach (var font in Program.CachedFonts)
+			foreach (var font in GorgonFontEditorPlugIn.CachedFonts)
 				this.Items.Add(font.Key);
 		}
 		#endregion

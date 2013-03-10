@@ -1,4 +1,4 @@
-﻿namespace GorgonLibrary.Editor
+﻿namespace GorgonLibrary.Editor.FontEditorPlugIn
 {
 	partial class formNewFont
 	{
@@ -50,19 +50,17 @@
 			this.label7 = new System.Windows.Forms.Label();
 			this.buttonOK = new System.Windows.Forms.Button();
 			this.buttonCancel = new System.Windows.Forms.Button();
-			this.comboFonts = new GorgonLibrary.Editor.comboFonts();
-			this.panel2 = new GorgonLibrary.Editor.panelEx();
+			this.comboFonts = new GorgonLibrary.Editor.FontEditorPlugIn.comboFonts();
 			((System.ComponentModel.ISupportInitialize)(this.numericSize)).BeginInit();
 			this.panel1.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.numericTextureWidth)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.numericTextureHeight)).BeginInit();
-			this.panel2.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// label1
 			// 
 			this.label1.AutoSize = true;
-			this.label1.Location = new System.Drawing.Point(13, 52);
+			this.label1.Location = new System.Drawing.Point(8, 71);
 			this.label1.Name = "label1";
 			this.label1.Size = new System.Drawing.Size(34, 15);
 			this.label1.TabIndex = 0;
@@ -77,7 +75,7 @@
 			this.checkBold.FlatAppearance.MouseOverBackColor = System.Drawing.Color.SteelBlue;
 			this.checkBold.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
 			this.checkBold.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.checkBold.Location = new System.Drawing.Point(16, 188);
+			this.checkBold.Location = new System.Drawing.Point(15, 207);
 			this.checkBold.Name = "checkBold";
 			this.checkBold.Padding = new System.Windows.Forms.Padding(3, 0, 0, 0);
 			this.checkBold.Size = new System.Drawing.Size(65, 22);
@@ -94,7 +92,7 @@
 			this.checkItalic.FlatAppearance.MouseOverBackColor = System.Drawing.Color.SteelBlue;
 			this.checkItalic.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
 			this.checkItalic.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.checkItalic.Location = new System.Drawing.Point(87, 188);
+			this.checkItalic.Location = new System.Drawing.Point(86, 207);
 			this.checkItalic.Name = "checkItalic";
 			this.checkItalic.Padding = new System.Windows.Forms.Padding(3, 0, 0, 0);
 			this.checkItalic.Size = new System.Drawing.Size(75, 22);
@@ -111,7 +109,7 @@
 			this.checkUnderline.FlatAppearance.MouseOverBackColor = System.Drawing.Color.SteelBlue;
 			this.checkUnderline.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
 			this.checkUnderline.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Underline, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.checkUnderline.Location = new System.Drawing.Point(168, 188);
+			this.checkUnderline.Location = new System.Drawing.Point(167, 207);
 			this.checkUnderline.Name = "checkUnderline";
 			this.checkUnderline.Padding = new System.Windows.Forms.Padding(3, 0, 0, 0);
 			this.checkUnderline.Size = new System.Drawing.Size(98, 22);
@@ -128,7 +126,7 @@
 			this.checkStrikeThrough.FlatAppearance.MouseOverBackColor = System.Drawing.Color.SteelBlue;
 			this.checkStrikeThrough.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
 			this.checkStrikeThrough.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Strikeout, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.checkStrikeThrough.Location = new System.Drawing.Point(272, 188);
+			this.checkStrikeThrough.Location = new System.Drawing.Point(271, 207);
 			this.checkStrikeThrough.Name = "checkStrikeThrough";
 			this.checkStrikeThrough.Padding = new System.Windows.Forms.Padding(3, 0, 0, 0);
 			this.checkStrikeThrough.Size = new System.Drawing.Size(109, 22);
@@ -139,7 +137,7 @@
 			// label2
 			// 
 			this.label2.AutoSize = true;
-			this.label2.Location = new System.Drawing.Point(13, 97);
+			this.label2.Location = new System.Drawing.Point(8, 116);
 			this.label2.Name = "label2";
 			this.label2.Size = new System.Drawing.Size(30, 15);
 			this.label2.TabIndex = 7;
@@ -150,7 +148,7 @@
 			this.numericSize.BackColor = System.Drawing.Color.White;
 			this.numericSize.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
 			this.numericSize.DecimalPlaces = 2;
-			this.numericSize.Location = new System.Drawing.Point(16, 115);
+			this.numericSize.Location = new System.Drawing.Point(11, 134);
 			this.numericSize.Maximum = new decimal(new int[] {
             512,
             0,
@@ -162,7 +160,7 @@
             0,
             0});
 			this.numericSize.Name = "numericSize";
-			this.numericSize.Size = new System.Drawing.Size(110, 23);
+			this.numericSize.Size = new System.Drawing.Size(117, 23);
 			this.numericSize.TabIndex = 2;
 			this.numericSize.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
 			this.numericSize.Value = new decimal(new int[] {
@@ -174,7 +172,7 @@
 			// label3
 			// 
 			this.label3.AutoSize = true;
-			this.label3.Location = new System.Drawing.Point(13, 8);
+			this.label3.Location = new System.Drawing.Point(8, 27);
 			this.label3.Name = "label3";
 			this.label3.Size = new System.Drawing.Size(42, 15);
 			this.label3.TabIndex = 9;
@@ -184,16 +182,17 @@
 			// 
 			this.textName.BackColor = System.Drawing.Color.White;
 			this.textName.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-			this.textName.Location = new System.Drawing.Point(16, 26);
+			this.textName.Location = new System.Drawing.Point(11, 45);
 			this.textName.Name = "textName";
-			this.textName.Size = new System.Drawing.Size(365, 23);
+			this.textName.Size = new System.Drawing.Size(376, 23);
 			this.textName.TabIndex = 0;
+			this.textName.TextChanged += new System.EventHandler(this.textName_TextChanged);
 			// 
 			// panel1
 			// 
 			this.panel1.BackColor = System.Drawing.Color.White;
 			this.panel1.Controls.Add(this.labelPreview);
-			this.panel1.Location = new System.Drawing.Point(12, 235);
+			this.panel1.Location = new System.Drawing.Point(11, 254);
 			this.panel1.Name = "panel1";
 			this.panel1.Size = new System.Drawing.Size(376, 61);
 			this.panel1.TabIndex = 12;
@@ -211,7 +210,7 @@
 			// label4
 			// 
 			this.label4.AutoSize = true;
-			this.label4.Location = new System.Drawing.Point(238, 97);
+			this.label4.Location = new System.Drawing.Point(244, 116);
 			this.label4.Name = "label4";
 			this.label4.Size = new System.Drawing.Size(116, 15);
 			this.label4.TabIndex = 13;
@@ -226,7 +225,7 @@
             "None",
             "Anti-Alias",
             "Anti-Alias (High Quality)"});
-			this.comboAA.Location = new System.Drawing.Point(241, 115);
+			this.comboAA.Location = new System.Drawing.Point(247, 134);
 			this.comboAA.Name = "comboAA";
 			this.comboAA.Size = new System.Drawing.Size(140, 23);
 			this.comboAA.TabIndex = 4;
@@ -240,7 +239,7 @@
             0,
             0,
             0});
-			this.numericTextureWidth.Location = new System.Drawing.Point(16, 159);
+			this.numericTextureWidth.Location = new System.Drawing.Point(11, 178);
 			this.numericTextureWidth.Maximum = new decimal(new int[] {
             16384,
             0,
@@ -264,7 +263,7 @@
 			// label5
 			// 
 			this.label5.AutoSize = true;
-			this.label5.Location = new System.Drawing.Point(13, 141);
+			this.label5.Location = new System.Drawing.Point(8, 160);
 			this.label5.Name = "label5";
 			this.label5.Size = new System.Drawing.Size(72, 15);
 			this.label5.TabIndex = 16;
@@ -279,7 +278,7 @@
             0,
             0,
             0});
-			this.numericTextureHeight.Location = new System.Drawing.Point(150, 159);
+			this.numericTextureHeight.Location = new System.Drawing.Point(145, 178);
 			this.numericTextureHeight.Maximum = new decimal(new int[] {
             16384,
             0,
@@ -303,7 +302,7 @@
 			// label6
 			// 
 			this.label6.AutoSize = true;
-			this.label6.Location = new System.Drawing.Point(132, 161);
+			this.label6.Location = new System.Drawing.Point(127, 180);
 			this.label6.Name = "label6";
 			this.label6.Size = new System.Drawing.Size(12, 15);
 			this.label6.TabIndex = 18;
@@ -317,15 +316,15 @@
 			this.comboSizeType.Items.AddRange(new object[] {
             "Points",
             "Pixels"});
-			this.comboSizeType.Location = new System.Drawing.Point(132, 115);
+			this.comboSizeType.Location = new System.Drawing.Point(134, 134);
 			this.comboSizeType.Name = "comboSizeType";
-			this.comboSizeType.Size = new System.Drawing.Size(103, 23);
+			this.comboSizeType.Size = new System.Drawing.Size(107, 23);
 			this.comboSizeType.TabIndex = 3;
 			// 
 			// label7
 			// 
 			this.label7.AutoSize = true;
-			this.label7.Location = new System.Drawing.Point(9, 217);
+			this.label7.Location = new System.Drawing.Point(8, 236);
 			this.label7.Name = "label7";
 			this.label7.Size = new System.Drawing.Size(51, 15);
 			this.label7.TabIndex = 19;
@@ -334,7 +333,7 @@
 			// buttonOK
 			// 
 			this.buttonOK.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-			this.buttonOK.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(89)))), ((int)(((byte)(89)))), ((int)(((byte)(89)))));
+			this.buttonOK.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(68)))), ((int)(((byte)(68)))), ((int)(((byte)(68)))));
 			this.buttonOK.DialogResult = System.Windows.Forms.DialogResult.OK;
 			this.buttonOK.Enabled = false;
 			this.buttonOK.FlatAppearance.CheckedBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(68)))), ((int)(((byte)(68)))), ((int)(((byte)(68)))));
@@ -342,9 +341,9 @@
 			this.buttonOK.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(189)))), ((int)(((byte)(189)))), ((int)(((byte)(189)))));
 			this.buttonOK.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
 			this.buttonOK.ForeColor = System.Drawing.Color.White;
-			this.buttonOK.Image = global::GorgonLibrary.Editor.Properties.Resources.ok_16x16;
+			this.buttonOK.Image = global::GorgonLibrary.Editor.FontEditorPlugIn.Properties.Resources.ok_16x16;
 			this.buttonOK.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.buttonOK.Location = new System.Drawing.Point(208, 16);
+			this.buttonOK.Location = new System.Drawing.Point(207, 325);
 			this.buttonOK.Name = "buttonOK";
 			this.buttonOK.Size = new System.Drawing.Size(87, 28);
 			this.buttonOK.TabIndex = 11;
@@ -355,52 +354,43 @@
 			// buttonCancel
 			// 
 			this.buttonCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-			this.buttonCancel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(89)))), ((int)(((byte)(89)))), ((int)(((byte)(89)))));
+			this.buttonCancel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(68)))), ((int)(((byte)(68)))), ((int)(((byte)(68)))));
 			this.buttonCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
 			this.buttonCancel.FlatAppearance.CheckedBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(68)))), ((int)(((byte)(68)))), ((int)(((byte)(68)))));
 			this.buttonCancel.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(68)))), ((int)(((byte)(68)))), ((int)(((byte)(68)))));
 			this.buttonCancel.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(189)))), ((int)(((byte)(189)))), ((int)(((byte)(189)))));
 			this.buttonCancel.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
 			this.buttonCancel.ForeColor = System.Drawing.Color.White;
-			this.buttonCancel.Image = global::GorgonLibrary.Editor.Properties.Resources.cancel_16x16;
+			this.buttonCancel.Image = global::GorgonLibrary.Editor.FontEditorPlugIn.Properties.Resources.cancel_16x16;
 			this.buttonCancel.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.buttonCancel.Location = new System.Drawing.Point(301, 16);
+			this.buttonCancel.Location = new System.Drawing.Point(300, 325);
 			this.buttonCancel.Name = "buttonCancel";
 			this.buttonCancel.Size = new System.Drawing.Size(87, 28);
 			this.buttonCancel.TabIndex = 12;
 			this.buttonCancel.Text = "Cancel";
 			this.buttonCancel.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-			this.buttonCancel.UseVisualStyleBackColor = true;
+			this.buttonCancel.UseVisualStyleBackColor = false;
 			// 
 			// comboFonts
 			// 
 			this.comboFonts.BackColor = System.Drawing.Color.White;
 			this.comboFonts.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
 			this.comboFonts.FormattingEnabled = true;
-			this.comboFonts.Location = new System.Drawing.Point(16, 70);
+			this.comboFonts.Location = new System.Drawing.Point(11, 89);
 			this.comboFonts.Name = "comboFonts";
-			this.comboFonts.Size = new System.Drawing.Size(365, 24);
+			this.comboFonts.Size = new System.Drawing.Size(376, 24);
 			this.comboFonts.TabIndex = 1;
-			// 
-			// panel2
-			// 
-			this.panel2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(68)))), ((int)(((byte)(68)))), ((int)(((byte)(68)))));
-			this.panel2.Controls.Add(this.buttonOK);
-			this.panel2.Controls.Add(this.buttonCancel);
-			this.panel2.Dock = System.Windows.Forms.DockStyle.Bottom;
-			this.panel2.Location = new System.Drawing.Point(0, 302);
-			this.panel2.Name = "panel2";
-			this.panel2.Size = new System.Drawing.Size(400, 56);
-			this.panel2.TabIndex = 20;
+			this.comboFonts.SelectedIndexChanged += new System.EventHandler(this.comboFonts_SelectedIndexChanged);
 			// 
 			// formNewFont
 			// 
 			this.AcceptButton = this.buttonOK;
-			this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
-			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
 			this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(58)))), ((int)(((byte)(58)))), ((int)(((byte)(58)))));
 			this.CancelButton = this.buttonCancel;
-			this.ClientSize = new System.Drawing.Size(400, 358);
+			this.ClientSize = new System.Drawing.Size(400, 365);
+			this.Controls.Add(this.buttonCancel);
+			this.Controls.Add(this.buttonOK);
 			this.Controls.Add(this.label7);
 			this.Controls.Add(this.comboSizeType);
 			this.Controls.Add(this.label6);
@@ -420,23 +410,42 @@
 			this.Controls.Add(this.checkBold);
 			this.Controls.Add(this.comboFonts);
 			this.Controls.Add(this.label1);
-			this.Controls.Add(this.panel2);
 			this.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.ForeColor = System.Drawing.Color.White;
-			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
 			this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
 			this.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
 			this.MaximizeBox = false;
 			this.MinimizeBox = false;
 			this.Name = "formNewFont";
+			this.Resizable = false;
 			this.ShowInTaskbar = false;
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
 			this.Text = "New Font";
+			this.Controls.SetChildIndex(this.label1, 0);
+			this.Controls.SetChildIndex(this.comboFonts, 0);
+			this.Controls.SetChildIndex(this.checkBold, 0);
+			this.Controls.SetChildIndex(this.checkItalic, 0);
+			this.Controls.SetChildIndex(this.checkUnderline, 0);
+			this.Controls.SetChildIndex(this.checkStrikeThrough, 0);
+			this.Controls.SetChildIndex(this.label2, 0);
+			this.Controls.SetChildIndex(this.numericSize, 0);
+			this.Controls.SetChildIndex(this.label3, 0);
+			this.Controls.SetChildIndex(this.textName, 0);
+			this.Controls.SetChildIndex(this.panel1, 0);
+			this.Controls.SetChildIndex(this.label4, 0);
+			this.Controls.SetChildIndex(this.comboAA, 0);
+			this.Controls.SetChildIndex(this.label5, 0);
+			this.Controls.SetChildIndex(this.numericTextureWidth, 0);
+			this.Controls.SetChildIndex(this.numericTextureHeight, 0);
+			this.Controls.SetChildIndex(this.label6, 0);
+			this.Controls.SetChildIndex(this.comboSizeType, 0);
+			this.Controls.SetChildIndex(this.label7, 0);
+			this.Controls.SetChildIndex(this.buttonOK, 0);
+			this.Controls.SetChildIndex(this.buttonCancel, 0);
 			((System.ComponentModel.ISupportInitialize)(this.numericSize)).EndInit();
 			this.panel1.ResumeLayout(false);
 			((System.ComponentModel.ISupportInitialize)(this.numericTextureWidth)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this.numericTextureHeight)).EndInit();
-			this.panel2.ResumeLayout(false);
 			this.ResumeLayout(false);
 			this.PerformLayout();
 
@@ -466,6 +475,5 @@
 		private System.Windows.Forms.Label label6;
 		private System.Windows.Forms.ComboBox comboSizeType;
 		private System.Windows.Forms.Label label7;
-		private panelEx panel2;
 	}
 }

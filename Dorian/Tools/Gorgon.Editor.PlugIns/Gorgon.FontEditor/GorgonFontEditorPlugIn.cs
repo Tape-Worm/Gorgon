@@ -29,9 +29,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Drawing;
 using System.Windows.Forms;
 
-namespace GorgonLibrary.Editor
+namespace GorgonLibrary.Editor.FontEditorPlugIn
 {
     /// <summary>
     /// Font editor plug-in interface.
@@ -44,7 +45,94 @@ namespace GorgonLibrary.Editor
 		private bool _disposed = false;
 		#endregion
 
+		#region Properties.
+		/// <summary>
+		/// Property to return the cached fonts for the font editor.
+		/// </summary>
+		internal static SortedDictionary<string, Font> CachedFonts
+		{
+			get;
+			private set;
+		}
+
+		/// <summary>
+		/// Property to return the settings for the plug-in.
+		/// </summary>
+		internal static GorgonFontContentSettings Settings
+		{
+			get;
+			private set;
+		}
+
+		/// <summary>
+		/// Property to return whether the plug-in supports exporting of content data.
+		/// </summary>
+		public override bool SupportsExport
+		{
+			get 
+			{
+				return true;
+			}
+		}
+
+		/// <summary>
+		/// Property to return whether the plug-in supports importing of external data.
+		/// </summary>
+		public override bool SupportsImport
+		{
+			get 
+			{
+				return true;
+			}
+		}
+		#endregion
+
 		#region Methods.
+		/// <summary>
+		/// Function to update the font cache.
+		/// </summary>
+		private void UpdateCachedFonts()
+		{
+			SortedDictionary<string, Font> fonts = null;
+
+			// Clear the cached fonts.
+			if (CachedFonts != null)
+			{
+				foreach (var font in CachedFonts)
+					font.Value.Dispose();
+			}
+
+			fonts = new SortedDictionary<string, Font>();
+
+			// Get font families.
+			foreach (var family in FontFamily.Families)
+			{
+				Font newFont = null;
+
+				if (!fonts.ContainsKey(family.Name))
+				{
+					if (family.IsStyleAvailable(FontStyle.Regular))
+						newFont = new Font(family, 16.0f, FontStyle.Regular, GraphicsUnit.Pixel);
+					else
+					{
+						if (family.IsStyleAvailable(FontStyle.Bold))
+							newFont = new Font(family, 16.0f, FontStyle.Bold, GraphicsUnit.Pixel);
+						else
+						{
+							if (family.IsStyleAvailable(FontStyle.Italic))
+								newFont = new Font(family, 16.0f, FontStyle.Italic, GraphicsUnit.Pixel);
+						}
+					}
+
+					// Only add if we could use the regular, bold or italic style.
+					if (newFont != null)
+						fonts.Add(family.Name, newFont);
+				}
+			}
+
+			CachedFonts = fonts;
+		}
+
 		/// <summary>
         /// Function to create a content object interface.
         /// </summary>
@@ -52,9 +140,9 @@ namespace GorgonLibrary.Editor
         /// <returns>
         /// A new content object interface.
         /// </returns>
-        protected override ContentObject CreateContentObject(EditorPlugInData editorObjects)
+        protected override ContentObject CreateContentObject()
         {
-            return new GorgonFontContent();
+            return new GorgonFontContent(this);
         }
 
 		/// <summary>
@@ -71,8 +159,18 @@ namespace GorgonLibrary.Editor
 					{
 						_createItem.Dispose();
 					}
+
+					if (CachedFonts != null)
+					{
+						foreach (var font in CachedFonts)
+						{
+							font.Value.Dispose();							
+						}
+						CachedFonts.Clear();						
+					}
 				}
 
+				CachedFonts = null;
 				_createItem = null;
 				_disposed = true;
 			}
@@ -88,8 +186,7 @@ namespace GorgonLibrary.Editor
 		{
 			if (_createItem == null)
 			{
-				_createItem = new ToolStripMenuItem("Create new font...", Properties.Resources.font_document_16x16);
-				_createItem.Name = "itemCreateGorgonFont";
+				_createItem = CreateMenuItem("itemCreateGorgonFont", "Create new font...", GetContentIcon());
 			}
 
 			return _createItem;
@@ -115,6 +212,10 @@ namespace GorgonLibrary.Editor
             : base("Gorgon Font Editor")
         {
 			FileExtensions.Add(".gorfont", new Tuple<string, string>("gorFont", "Gorgon Font File (*.gorFont)"));
+			UpdateCachedFonts();
+			
+			Settings = new GorgonFontContentSettings();
+			Settings.Load();
         }
         #endregion
     }

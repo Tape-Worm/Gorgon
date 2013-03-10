@@ -90,8 +90,11 @@
   <ItemGroup>
     <Compile Include="AppContext.cs" />
     <Compile Include="ContentObject.cs" />
-    <Compile Include="Controls\comboFonts.cs">
-      <SubType>Component</SubType>
+    <Compile Include="ContentPanel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="ContentPanel.Designer.cs">
+      <DependentUpon>ContentPanel.cs</DependentUpon>
     </Compile>
     <Compile Include="Controls\panelEx.cs">
       <SubType>Component</SubType>
@@ -106,12 +109,6 @@
     </Compile>
     <Compile Include="DefaultContentPanel.Designer.cs">
       <DependentUpon>DefaultContentPanel.cs</DependentUpon>
-    </Compile>
-    <Compile Include="formNewFont.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="formNewFont.Designer.cs">
-      <DependentUpon>formNewFont.cs</DependentUpon>
     </Compile>
     <Compile Include="formProjectFolderSelector.cs">
       <SubType>Form</SubType>
@@ -137,6 +134,9 @@
     <Compile Include="GorgonEditorSettings.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="ContentPanel.resx">
+      <DependentUpon>ContentPanel.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Controls\panelEx.resx">
       <DependentUpon>panelEx.cs</DependentUpon>
     </EmbeddedResource>
@@ -145,9 +145,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="formMain.resx">
       <DependentUpon>formMain.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="formNewFont.resx">
-      <DependentUpon>formNewFont.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="formProjectFolderSelector.resx">
       <DependentUpon>formProjectFolderSelector.cs</DependentUpon>

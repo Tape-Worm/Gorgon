@@ -117,7 +117,16 @@ namespace GorgonLibrary.Editor
 		/// Function called when the content window is closed.
 		/// </summary>
 		/// <returns>TRUE to continue closing the window, FALSE to cancel the close.</returns>
-		protected abstract bool OnClose();		
+		protected abstract bool OnClose();
+
+		/// <summary>
+		/// Function to create new content.
+		/// </summary>
+		/// <returns>TRUE if successful, FALSE if not or canceled.</returns>
+		protected internal virtual bool CreateNew()
+		{
+			return true;
+		}
 
 		/// <summary>
 		/// Function to close the content window.
