@@ -7,7 +7,7 @@ Please note that you will need the following in order to compile Gorgon, its too
    DirectX (http://www.microsoft.com/en-us/download/details.aspx?id=35) if the debug libraries for Gorgon
    are not required.
 
-.NET 4.5 and DirectX is required to run all samples, tools and anything produced with Gorgon.
+.NET 4.5 and DirectX are required to run all samples, tools and anything produced with Gorgon.
 If you wish to use the debug version of the Gorgon libraries, install the June 2010 DirectX SDK.
 
 For more assistance go to:
