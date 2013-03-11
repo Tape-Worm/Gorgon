@@ -54,7 +54,16 @@ namespace GorgonLibrary.Editor
             get;
             private set;
         }
-
+        
+        /// <summary>
+        /// Property to return a list of items that have been changed since the file was opened.
+        /// </summary>
+        public static Dictionary<string, bool> ChangedItems
+        {
+            get;
+            private set;
+        }
+        
 		/// <summary>
 		/// Property to return the name of the project file.
 		/// </summary>
@@ -223,6 +232,7 @@ namespace GorgonLibrary.Editor
 		{
 			Settings = new GorgonEditorSettings();
             ContentPlugIns = new Dictionary<string, ContentPlugIn>();
+            ChangedItems = new Dictionary<string, bool>();
 			ProjectFile = "Untitled";
 		}
 		#endregion

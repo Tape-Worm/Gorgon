@@ -53,10 +53,21 @@ namespace GorgonLibrary.Editor
 		#region Variables.
 		private Font _unSavedFont = null;									// Font for unsaved documents.
 		private bool _wasSaved = false;										// Flag to indicate that the project was previously saved.
+        private string _editorFile = "Untitled";                            // Editor file file name.
+        private string _editorFilePath = string.Empty;                      // Editor file file path.
 		#endregion
 
 		#region Properties.
-
+        /// <summary>
+        /// Property to return whether we need the save as... dialog or not.
+        /// </summary>
+        private bool IsSaveAs
+        {
+            get
+            {
+                return string.IsNullOrWhiteSpace(_editorFilePath);
+            }
+        }
 		#endregion
 
 		#region Methods.
@@ -278,16 +289,27 @@ namespace GorgonLibrary.Editor
 
 			try
 			{
-				if ((Program.CurrentContent != null) && (Program.CurrentContent.HasChanges))
+				if (Program.ChangedItems.Count > 0)
 				{
 					ConfirmationResult result = ConfirmationResult.None;
 
-					result = GorgonDialogs.ConfirmBox(this, "The " + Program.CurrentContent.ContentType + " '" + Program.CurrentContent.Name + "' has changes.  Would you like to save it?", true, false);
+					result = GorgonDialogs.ConfirmBox(this, "The editor file '" + _editorFile + "' has unsaved changes.  Would you like to save these changes?", true, false);
 
 					if (result == ConfirmationResult.Yes)
 					{
-						// TODO:
-						// Program.CurrentContent.Save();
+                        // If we have content open and it hasn't been persisted to the file system, 
+                        // then persist those changes.
+                        if ((Program.CurrentContent != null) && (Program.CurrentContent.HasChanges))
+                        {
+                            if (!Program.CurrentContent.Close())
+                            {
+                                e.Cancel = true;
+                                return;
+                            }
+                        }
+                        
+                        // TODO:
+						// Program.Save(IsSaveAs);
 					}
 
 					if (result == ConfirmationResult.Cancel)
@@ -442,22 +464,28 @@ namespace GorgonLibrary.Editor
 				// Check to see if we have any content editors that can open this type of file.
 				if (file != null)
 				{
+                    string filePath = file.FullPath.ToLower();
+
 					if (!Program.ContentPlugIns.Any(item => item.Value.FileExtensions.ContainsKey(file.Extension.ToLower())))
 					{
 						e.TextColor = DarkFormsRenderer.DisabledColor;
 					}
+
+                    // This node contains a file that's been changed, update the text accordingly.
+                    if (Program.ChangedItems.ContainsKey(filePath))
+                    {
+                        bool state = Program.ChangedItems.ContainsKey(filePath);
+                        e.Font = _unSavedFont;
+
+                        // If this is a new file, then change the text color to indicate that.
+                        if (state)
+                        {
+                            e.TextColor = Color.LightGreen;
+                        }
+                    }
 					return;
 				}
 			}
-
-			/*if (document != null)
-			{
-				if (!document.CanOpen)
-					e.TextColor = Color.Black;
-
-				if ((document.NeedsSave) && (document.CanSave))
-					e.Font = _unSavedFont;
-			}*/			
 		}
 
 		/// <summary>
@@ -535,6 +563,84 @@ namespace GorgonLibrary.Editor
 			treeFiles.Root.Children[0].Expand();
 		}
 
+        /// <summary>
+        /// Function to retrieve the directory from the selected node.
+        /// </summary>
+        /// <returns>The file system directory and the node for that directory.</returns>
+        private Tuple<GorgonFileSystemDirectory, Node> GetDirectoryFromNode()
+        {
+            GorgonFileSystemDirectory result = Program.ScratchFiles.RootDirectory;
+            Node currentNode = (Node)treeFiles.Root.Children[0].Tag;
+
+            if (treeFiles.SelectedNode != null)
+            {
+                currentNode = treeFiles.SelectedNode.Tag as Node;
+
+                if (currentNode.Tag is GorgonFileSystemFileEntry)
+                {
+                    // If we've got a file hilighted, then add to the same directory.
+                    result = ((GorgonFileSystemFileEntry)currentNode.Tag).Directory;
+                }
+
+                if (currentNode.Tag is GorgonFileSystemDirectory)
+                {
+                    result = ((GorgonFileSystemDirectory)currentNode.Tag);
+                }
+                
+                treeFiles.SelectedNode.Expand();
+            }
+            else
+            {
+                treeFiles.Root.Children[0].Expand();
+            }
+
+            return new Tuple<GorgonFileSystemDirectory,Node>(result, currentNode);
+        }
+
+        /// <summary>
+        /// Function to create a new file node in the tree.
+        /// </summary>
+        /// <param name="content">Content object to use.</param>
+        private void CreateNewFileNode(ContentObject content)
+        {
+            var directoryNode = GetDirectoryFromNode();
+            GorgonFileSystemFileEntry file = null;
+            Node newNode = null;
+            Image icon = null;
+            ContentPlugIn plugIn = null;
+            string extension = Path.GetExtension(content.Name).ToLower();
+
+            if (!extension.StartsWith("."))
+            {
+                extension = "." + extension;
+            }            
+
+            plugIn = (from contentPlugIn in Program.ContentPlugIns
+                     where contentPlugIn.Value.FileExtensions.ContainsKey(extension)
+                     select contentPlugIn.Value).FirstOrDefault();
+
+            if (plugIn != null)
+            {
+                icon = plugIn.GetContentIcon();
+            }
+
+            // Write the file.
+            file = Program.ScratchFiles.WriteFile(directoryNode.Item1.FullPath + content.Name, null);
+            content.HasChanges = true;
+            content.Persist(file);
+
+            // Add to our changed item list.
+            // We set this to true to indicate that this is a new file.
+            Program.ChangedItems[file.FullPath.ToLower()] = true;
+
+            // Create the node.
+            newNode = new Node(content.Name);
+            newNode.Image = icon;
+            newNode.Tag = file;
+            
+            directoryNode.Item2.Nodes.Add(newNode);
+        }
+
 		/// <summary>
 		/// Function to add content to the interface.
 		/// </summary>
@@ -571,6 +677,13 @@ namespace GorgonLibrary.Editor
 					return;
 				}
 
+                // Reset to a wait cursor.
+                Cursor.Current = Cursors.WaitCursor;
+
+                // Create the node in the tree.
+                CreateNewFileNode(content);
+
+                // Show the content in the editor.
 				LoadContentPane(ref content);
 			}
 			catch (Exception ex)

@@ -59,7 +59,7 @@ namespace GorgonLibrary.Editor
 		private string _name = string.Empty;					// Name of the document.
 		#endregion
 
-		#region Properties.		
+		#region Properties.
 		/// <summary>
 		/// Property to return the type of content.
 		/// </summary>
@@ -83,7 +83,7 @@ namespace GorgonLibrary.Editor
 		}
 		#endregion
 
-		#region Methods.
+		#region Methods.       
 		/// <summary>
 		/// Handles the Click event of the checkPulse control.
 		/// </summary>
@@ -113,6 +113,13 @@ namespace GorgonLibrary.Editor
 				_alphaDelta = Program.Settings.StartPageAnimationPulseRate;
 			}			
 		}
+
+        /// <summary>
+        /// Function to persist the content to the file system.
+        /// </summary>
+        protected override void OnPersist()
+        {            
+        }
 
 		/// <summary>
 		/// Function called when the content window is closed.

@@ -117,6 +117,12 @@ namespace GorgonLibrary.FileSystem
 		protected override byte[] OnReadFile(GorgonFileSystemFileEntry file)
 		{
 			byte[] data = null;
+            
+            // Return an empty file if the file does not exist on the physical file system.
+            if (!File.Exists(file.PhysicalFileSystemPath))
+            {
+                return new byte[0];
+            }
 
 			using (FileStream stream = File.Open(file.PhysicalFileSystemPath, FileMode.Open, FileAccess.Read, FileShare.Read))
 			{

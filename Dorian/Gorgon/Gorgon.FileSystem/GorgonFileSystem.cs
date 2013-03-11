@@ -591,12 +591,15 @@ namespace GorgonLibrary.FileSystem
 		/// </summary>
 		/// <param name="path">Path to the file to write.</param>
 		/// <param name="data">Data to write.</param>
+        /// <returns>The file system file entry that was updated or created.</returns>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="path"/> parameter is NULL (Nothing in VB.Net)</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="path"/> parameter is an empty string.
 		/// <para>-or-</para><para>The file system provider that holds the file is read-only.</para></exception>
 		/// <exception cref="System.InvalidOperationException">Thrown when the <see cref="P:GorgonLibrary.FileSystem.GorgonFileSystem.WriteLocation">WriteLocation</see> is empty.</exception>
 		/// <exception cref="System.IO.FileNotFoundException">Thrown when the file in <paramref name="path"/> was not found.</exception>
-		public void WriteFile(string path, byte[] data)
+        /// <remarks>Passing NULL (Nothing in VB.Net) to the <paramref name="data"/> parameter will only add a file entry (if it does not already exist) to the virtual directory, but will not create 
+        /// it on the actual physical file system.  To create a 0 byte file, pass an empty array into the data parameter.</remarks>
+		public GorgonFileSystemFileEntry WriteFile(string path, byte[] data)
 		{
 			GorgonFileSystemFileEntry file = null;
 
@@ -608,7 +611,13 @@ namespace GorgonLibrary.FileSystem
 			if (file == null)
 				file = AddFileEntry(Providers[_defaultProviderType.FullName], path, Path.GetDirectoryName(GetWritePath(path)) + Path.DirectorySeparatorChar.ToString(), GetWritePath(path), 0, 0, DateTime.Now);
 
-			file.Provider.WriteFile(file, data);
+            // If we're not passing any data, then do nothing.
+            if (data != null)
+            {
+                file.Provider.WriteFile(file, data);
+            }
+
+            return file;
 		}
 
 		/// <summary>
