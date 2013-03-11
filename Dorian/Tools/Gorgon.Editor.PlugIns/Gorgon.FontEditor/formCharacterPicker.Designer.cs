@@ -1,4 +1,4 @@
-﻿namespace GorgonLibrary.GorgonEditor
+﻿namespace GorgonLibrary.Editor.FontEditorPlugIn
 {
 	partial class formCharacterPicker
 	{
@@ -90,10 +90,8 @@
 			this.tipChar = new System.Windows.Forms.ToolTip(this.components);
 			this.buttonOK = new System.Windows.Forms.Button();
 			this.buttonCancel = new System.Windows.Forms.Button();
-			this.panelEx1 = new GorgonLibrary.GorgonEditor.panelEx();
 			this.panel1.SuspendLayout();
 			this.panelCharacters.SuspendLayout();
-			this.panelEx1.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// panel1
@@ -104,34 +102,41 @@
 			this.panel1.Controls.Add(this.textCharacters);
 			this.panel1.Controls.Add(this.label1);
 			this.panel1.Dock = System.Windows.Forms.DockStyle.Top;
-			this.panel1.Location = new System.Drawing.Point(0, 0);
+			this.panel1.Location = new System.Drawing.Point(1, 25);
 			this.panel1.Name = "panel1";
-			this.panel1.Size = new System.Drawing.Size(626, 333);
+			this.panel1.Size = new System.Drawing.Size(624, 372);
 			this.panel1.TabIndex = 15;
 			// 
 			// buttonSelectAll
 			// 
-			this.buttonSelectAll.Location = new System.Drawing.Point(372, 306);
+			this.buttonSelectAll.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(68)))), ((int)(((byte)(68)))), ((int)(((byte)(68)))));
+			this.buttonSelectAll.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(68)))), ((int)(((byte)(68)))), ((int)(((byte)(68)))));
+			this.buttonSelectAll.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(189)))), ((int)(((byte)(189)))), ((int)(((byte)(189)))));
+			this.buttonSelectAll.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+			this.buttonSelectAll.ForeColor = System.Drawing.Color.White;
+			this.buttonSelectAll.Location = new System.Drawing.Point(372, 346);
 			this.buttonSelectAll.Name = "buttonSelectAll";
 			this.buttonSelectAll.Size = new System.Drawing.Size(243, 23);
-			this.buttonSelectAll.TabIndex = 17;
+			this.buttonSelectAll.TabIndex = 3;
 			this.buttonSelectAll.Text = "Select ??";
-			this.buttonSelectAll.UseVisualStyleBackColor = true;
+			this.buttonSelectAll.UseVisualStyleBackColor = false;
 			this.buttonSelectAll.Click += new System.EventHandler(this.buttonSelectAll_Click);
 			// 
 			// listRanges
 			// 
+			this.listRanges.BackColor = System.Drawing.Color.White;
 			this.listRanges.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
 			this.listRanges.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.columnRange,
             this.columnRangeName});
+			this.listRanges.ForeColor = System.Drawing.Color.Black;
 			this.listRanges.FullRowSelect = true;
 			this.listRanges.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
-			this.listRanges.Location = new System.Drawing.Point(372, 12);
+			this.listRanges.Location = new System.Drawing.Point(372, 6);
 			this.listRanges.MultiSelect = false;
 			this.listRanges.Name = "listRanges";
-			this.listRanges.Size = new System.Drawing.Size(243, 288);
-			this.listRanges.TabIndex = 1;
+			this.listRanges.Size = new System.Drawing.Size(243, 334);
+			this.listRanges.TabIndex = 2;
 			this.listRanges.UseCompatibleStateImageBehavior = false;
 			this.listRanges.View = System.Windows.Forms.View.Details;
 			this.listRanges.SelectedIndexChanged += new System.EventHandler(this.listRanges_SelectedIndexChanged);
@@ -146,7 +151,6 @@
 			// 
 			// panelCharacters
 			// 
-			this.panelCharacters.BackColor = System.Drawing.Color.DimGray;
 			this.panelCharacters.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
 			this.panelCharacters.Controls.Add(this.scrollVertical);
 			this.panelCharacters.Controls.Add(this.checkBox1);
@@ -197,7 +201,8 @@
 			this.panelCharacters.Controls.Add(this.checkBox44);
 			this.panelCharacters.Controls.Add(this.checkBox42);
 			this.panelCharacters.Controls.Add(this.checkBox41);
-			this.panelCharacters.Location = new System.Drawing.Point(6, 5);
+			this.panelCharacters.ForeColor = System.Drawing.Color.White;
+			this.panelCharacters.Location = new System.Drawing.Point(6, 6);
 			this.panelCharacters.Name = "panelCharacters";
 			this.panelCharacters.Size = new System.Drawing.Size(360, 252);
 			this.panelCharacters.TabIndex = 0;
@@ -221,6 +226,7 @@
 			this.checkBox1.FlatAppearance.MouseDownBackColor = System.Drawing.Color.Gray;
 			this.checkBox1.FlatAppearance.MouseOverBackColor = System.Drawing.Color.Silver;
 			this.checkBox1.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			this.checkBox1.ForeColor = System.Drawing.Color.Black;
 			this.checkBox1.Location = new System.Drawing.Point(7, 3);
 			this.checkBox1.Name = "checkBox1";
 			this.checkBox1.Size = new System.Drawing.Size(35, 35);
@@ -237,6 +243,7 @@
 			this.checkBox2.FlatAppearance.MouseDownBackColor = System.Drawing.Color.Gray;
 			this.checkBox2.FlatAppearance.MouseOverBackColor = System.Drawing.Color.Silver;
 			this.checkBox2.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			this.checkBox2.ForeColor = System.Drawing.Color.Black;
 			this.checkBox2.Location = new System.Drawing.Point(49, 3);
 			this.checkBox2.Name = "checkBox2";
 			this.checkBox2.Size = new System.Drawing.Size(35, 35);
@@ -253,6 +260,7 @@
 			this.checkBox3.FlatAppearance.MouseDownBackColor = System.Drawing.Color.Gray;
 			this.checkBox3.FlatAppearance.MouseOverBackColor = System.Drawing.Color.Silver;
 			this.checkBox3.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			this.checkBox3.ForeColor = System.Drawing.Color.Black;
 			this.checkBox3.Location = new System.Drawing.Point(91, 3);
 			this.checkBox3.Name = "checkBox3";
 			this.checkBox3.Size = new System.Drawing.Size(35, 35);
@@ -269,6 +277,7 @@
 			this.checkBox4.FlatAppearance.MouseDownBackColor = System.Drawing.Color.Gray;
 			this.checkBox4.FlatAppearance.MouseOverBackColor = System.Drawing.Color.Silver;
 			this.checkBox4.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			this.checkBox4.ForeColor = System.Drawing.Color.Black;
 			this.checkBox4.Location = new System.Drawing.Point(133, 3);
 			this.checkBox4.Name = "checkBox4";
 			this.checkBox4.Size = new System.Drawing.Size(35, 35);
@@ -285,6 +294,7 @@
 			this.checkBox5.FlatAppearance.MouseDownBackColor = System.Drawing.Color.Gray;
 			this.checkBox5.FlatAppearance.MouseOverBackColor = System.Drawing.Color.Silver;
 			this.checkBox5.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			this.checkBox5.ForeColor = System.Drawing.Color.Black;
 			this.checkBox5.Location = new System.Drawing.Point(175, 3);
 			this.checkBox5.Name = "checkBox5";
 			this.checkBox5.Size = new System.Drawing.Size(35, 35);
@@ -301,6 +311,7 @@
 			this.checkBox6.FlatAppearance.MouseDownBackColor = System.Drawing.Color.Gray;
 			this.checkBox6.FlatAppearance.MouseOverBackColor = System.Drawing.Color.Silver;
 			this.checkBox6.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			this.checkBox6.ForeColor = System.Drawing.Color.Black;
 			this.checkBox6.Location = new System.Drawing.Point(217, 3);
 			this.checkBox6.Name = "checkBox6";
 			this.checkBox6.Size = new System.Drawing.Size(35, 35);
@@ -317,6 +328,7 @@
 			this.checkBox7.FlatAppearance.MouseDownBackColor = System.Drawing.Color.Gray;
 			this.checkBox7.FlatAppearance.MouseOverBackColor = System.Drawing.Color.Silver;
 			this.checkBox7.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			this.checkBox7.ForeColor = System.Drawing.Color.Black;
 			this.checkBox7.Location = new System.Drawing.Point(259, 3);
 			this.checkBox7.Name = "checkBox7";
 			this.checkBox7.Size = new System.Drawing.Size(35, 35);
@@ -333,6 +345,7 @@
 			this.checkBox8.FlatAppearance.MouseDownBackColor = System.Drawing.Color.Gray;
 			this.checkBox8.FlatAppearance.MouseOverBackColor = System.Drawing.Color.Silver;
 			this.checkBox8.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			this.checkBox8.ForeColor = System.Drawing.Color.Black;
 			this.checkBox8.Location = new System.Drawing.Point(301, 3);
 			this.checkBox8.Name = "checkBox8";
 			this.checkBox8.Size = new System.Drawing.Size(35, 35);
@@ -349,6 +362,7 @@
 			this.checkBox16.FlatAppearance.MouseDownBackColor = System.Drawing.Color.Gray;
 			this.checkBox16.FlatAppearance.MouseOverBackColor = System.Drawing.Color.Silver;
 			this.checkBox16.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			this.checkBox16.ForeColor = System.Drawing.Color.Black;
 			this.checkBox16.Location = new System.Drawing.Point(301, 45);
 			this.checkBox16.Name = "checkBox16";
 			this.checkBox16.Size = new System.Drawing.Size(35, 35);
@@ -365,6 +379,7 @@
 			this.checkBox15.FlatAppearance.MouseDownBackColor = System.Drawing.Color.Gray;
 			this.checkBox15.FlatAppearance.MouseOverBackColor = System.Drawing.Color.Silver;
 			this.checkBox15.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			this.checkBox15.ForeColor = System.Drawing.Color.Black;
 			this.checkBox15.Location = new System.Drawing.Point(259, 45);
 			this.checkBox15.Name = "checkBox15";
 			this.checkBox15.Size = new System.Drawing.Size(35, 35);
@@ -381,6 +396,7 @@
 			this.checkBox14.FlatAppearance.MouseDownBackColor = System.Drawing.Color.Gray;
 			this.checkBox14.FlatAppearance.MouseOverBackColor = System.Drawing.Color.Silver;
 			this.checkBox14.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			this.checkBox14.ForeColor = System.Drawing.Color.Black;
 			this.checkBox14.Location = new System.Drawing.Point(217, 45);
 			this.checkBox14.Name = "checkBox14";
 			this.checkBox14.Size = new System.Drawing.Size(35, 35);
@@ -397,6 +413,7 @@
 			this.checkBox13.FlatAppearance.MouseDownBackColor = System.Drawing.Color.Gray;
 			this.checkBox13.FlatAppearance.MouseOverBackColor = System.Drawing.Color.Silver;
 			this.checkBox13.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			this.checkBox13.ForeColor = System.Drawing.Color.Black;
 			this.checkBox13.Location = new System.Drawing.Point(175, 45);
 			this.checkBox13.Name = "checkBox13";
 			this.checkBox13.Size = new System.Drawing.Size(35, 35);
@@ -413,6 +430,7 @@
 			this.checkBox11.FlatAppearance.MouseDownBackColor = System.Drawing.Color.Gray;
 			this.checkBox11.FlatAppearance.MouseOverBackColor = System.Drawing.Color.Silver;
 			this.checkBox11.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			this.checkBox11.ForeColor = System.Drawing.Color.Black;
 			this.checkBox11.Location = new System.Drawing.Point(91, 45);
 			this.checkBox11.Name = "checkBox11";
 			this.checkBox11.Size = new System.Drawing.Size(35, 35);
@@ -429,6 +447,7 @@
 			this.checkBox12.FlatAppearance.MouseDownBackColor = System.Drawing.Color.Gray;
 			this.checkBox12.FlatAppearance.MouseOverBackColor = System.Drawing.Color.Silver;
 			this.checkBox12.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			this.checkBox12.ForeColor = System.Drawing.Color.Black;
 			this.checkBox12.Location = new System.Drawing.Point(133, 45);
 			this.checkBox12.Name = "checkBox12";
 			this.checkBox12.Size = new System.Drawing.Size(35, 35);
@@ -445,6 +464,7 @@
 			this.checkBox10.FlatAppearance.MouseDownBackColor = System.Drawing.Color.Gray;
 			this.checkBox10.FlatAppearance.MouseOverBackColor = System.Drawing.Color.Silver;
 			this.checkBox10.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			this.checkBox10.ForeColor = System.Drawing.Color.Black;
 			this.checkBox10.Location = new System.Drawing.Point(49, 45);
 			this.checkBox10.Name = "checkBox10";
 			this.checkBox10.Size = new System.Drawing.Size(35, 35);
@@ -461,6 +481,7 @@
 			this.checkBox9.FlatAppearance.MouseDownBackColor = System.Drawing.Color.Gray;
 			this.checkBox9.FlatAppearance.MouseOverBackColor = System.Drawing.Color.Silver;
 			this.checkBox9.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			this.checkBox9.ForeColor = System.Drawing.Color.Black;
 			this.checkBox9.Location = new System.Drawing.Point(7, 45);
 			this.checkBox9.Name = "checkBox9";
 			this.checkBox9.Size = new System.Drawing.Size(35, 35);
@@ -477,6 +498,7 @@
 			this.checkBox24.FlatAppearance.MouseDownBackColor = System.Drawing.Color.Gray;
 			this.checkBox24.FlatAppearance.MouseOverBackColor = System.Drawing.Color.Silver;
 			this.checkBox24.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			this.checkBox24.ForeColor = System.Drawing.Color.Black;
 			this.checkBox24.Location = new System.Drawing.Point(301, 87);
 			this.checkBox24.Name = "checkBox24";
 			this.checkBox24.Size = new System.Drawing.Size(35, 35);
@@ -493,6 +515,7 @@
 			this.checkBox23.FlatAppearance.MouseDownBackColor = System.Drawing.Color.Gray;
 			this.checkBox23.FlatAppearance.MouseOverBackColor = System.Drawing.Color.Silver;
 			this.checkBox23.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			this.checkBox23.ForeColor = System.Drawing.Color.Black;
 			this.checkBox23.Location = new System.Drawing.Point(259, 87);
 			this.checkBox23.Name = "checkBox23";
 			this.checkBox23.Size = new System.Drawing.Size(35, 35);
@@ -509,6 +532,7 @@
 			this.checkBox22.FlatAppearance.MouseDownBackColor = System.Drawing.Color.Gray;
 			this.checkBox22.FlatAppearance.MouseOverBackColor = System.Drawing.Color.Silver;
 			this.checkBox22.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			this.checkBox22.ForeColor = System.Drawing.Color.Black;
 			this.checkBox22.Location = new System.Drawing.Point(217, 87);
 			this.checkBox22.Name = "checkBox22";
 			this.checkBox22.Size = new System.Drawing.Size(35, 35);
@@ -525,6 +549,7 @@
 			this.checkBox21.FlatAppearance.MouseDownBackColor = System.Drawing.Color.Gray;
 			this.checkBox21.FlatAppearance.MouseOverBackColor = System.Drawing.Color.Silver;
 			this.checkBox21.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			this.checkBox21.ForeColor = System.Drawing.Color.Black;
 			this.checkBox21.Location = new System.Drawing.Point(175, 87);
 			this.checkBox21.Name = "checkBox21";
 			this.checkBox21.Size = new System.Drawing.Size(35, 35);
@@ -541,6 +566,7 @@
 			this.checkBox19.FlatAppearance.MouseDownBackColor = System.Drawing.Color.Gray;
 			this.checkBox19.FlatAppearance.MouseOverBackColor = System.Drawing.Color.Silver;
 			this.checkBox19.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			this.checkBox19.ForeColor = System.Drawing.Color.Black;
 			this.checkBox19.Location = new System.Drawing.Point(91, 87);
 			this.checkBox19.Name = "checkBox19";
 			this.checkBox19.Size = new System.Drawing.Size(35, 35);
@@ -557,6 +583,7 @@
 			this.checkBox20.FlatAppearance.MouseDownBackColor = System.Drawing.Color.Gray;
 			this.checkBox20.FlatAppearance.MouseOverBackColor = System.Drawing.Color.Silver;
 			this.checkBox20.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			this.checkBox20.ForeColor = System.Drawing.Color.Black;
 			this.checkBox20.Location = new System.Drawing.Point(133, 87);
 			this.checkBox20.Name = "checkBox20";
 			this.checkBox20.Size = new System.Drawing.Size(35, 35);
@@ -573,6 +600,7 @@
 			this.checkBox18.FlatAppearance.MouseDownBackColor = System.Drawing.Color.Gray;
 			this.checkBox18.FlatAppearance.MouseOverBackColor = System.Drawing.Color.Silver;
 			this.checkBox18.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			this.checkBox18.ForeColor = System.Drawing.Color.Black;
 			this.checkBox18.Location = new System.Drawing.Point(49, 87);
 			this.checkBox18.Name = "checkBox18";
 			this.checkBox18.Size = new System.Drawing.Size(35, 35);
@@ -589,6 +617,7 @@
 			this.checkBox17.FlatAppearance.MouseDownBackColor = System.Drawing.Color.Gray;
 			this.checkBox17.FlatAppearance.MouseOverBackColor = System.Drawing.Color.Silver;
 			this.checkBox17.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			this.checkBox17.ForeColor = System.Drawing.Color.Black;
 			this.checkBox17.Location = new System.Drawing.Point(7, 87);
 			this.checkBox17.Name = "checkBox17";
 			this.checkBox17.Size = new System.Drawing.Size(35, 35);
@@ -605,6 +634,7 @@
 			this.checkBox32.FlatAppearance.MouseDownBackColor = System.Drawing.Color.Gray;
 			this.checkBox32.FlatAppearance.MouseOverBackColor = System.Drawing.Color.Silver;
 			this.checkBox32.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			this.checkBox32.ForeColor = System.Drawing.Color.Black;
 			this.checkBox32.Location = new System.Drawing.Point(301, 128);
 			this.checkBox32.Name = "checkBox32";
 			this.checkBox32.Size = new System.Drawing.Size(35, 35);
@@ -621,6 +651,7 @@
 			this.checkBox31.FlatAppearance.MouseDownBackColor = System.Drawing.Color.Gray;
 			this.checkBox31.FlatAppearance.MouseOverBackColor = System.Drawing.Color.Silver;
 			this.checkBox31.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			this.checkBox31.ForeColor = System.Drawing.Color.Black;
 			this.checkBox31.Location = new System.Drawing.Point(259, 128);
 			this.checkBox31.Name = "checkBox31";
 			this.checkBox31.Size = new System.Drawing.Size(35, 35);
@@ -637,6 +668,7 @@
 			this.checkBox30.FlatAppearance.MouseDownBackColor = System.Drawing.Color.Gray;
 			this.checkBox30.FlatAppearance.MouseOverBackColor = System.Drawing.Color.Silver;
 			this.checkBox30.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			this.checkBox30.ForeColor = System.Drawing.Color.Black;
 			this.checkBox30.Location = new System.Drawing.Point(217, 128);
 			this.checkBox30.Name = "checkBox30";
 			this.checkBox30.Size = new System.Drawing.Size(35, 35);
@@ -653,6 +685,7 @@
 			this.checkBox29.FlatAppearance.MouseDownBackColor = System.Drawing.Color.Gray;
 			this.checkBox29.FlatAppearance.MouseOverBackColor = System.Drawing.Color.Silver;
 			this.checkBox29.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			this.checkBox29.ForeColor = System.Drawing.Color.Black;
 			this.checkBox29.Location = new System.Drawing.Point(175, 128);
 			this.checkBox29.Name = "checkBox29";
 			this.checkBox29.Size = new System.Drawing.Size(35, 35);
@@ -669,6 +702,7 @@
 			this.checkBox27.FlatAppearance.MouseDownBackColor = System.Drawing.Color.Gray;
 			this.checkBox27.FlatAppearance.MouseOverBackColor = System.Drawing.Color.Silver;
 			this.checkBox27.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			this.checkBox27.ForeColor = System.Drawing.Color.Black;
 			this.checkBox27.Location = new System.Drawing.Point(91, 128);
 			this.checkBox27.Name = "checkBox27";
 			this.checkBox27.Size = new System.Drawing.Size(35, 35);
@@ -685,6 +719,7 @@
 			this.checkBox28.FlatAppearance.MouseDownBackColor = System.Drawing.Color.Gray;
 			this.checkBox28.FlatAppearance.MouseOverBackColor = System.Drawing.Color.Silver;
 			this.checkBox28.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			this.checkBox28.ForeColor = System.Drawing.Color.Black;
 			this.checkBox28.Location = new System.Drawing.Point(133, 128);
 			this.checkBox28.Name = "checkBox28";
 			this.checkBox28.Size = new System.Drawing.Size(35, 35);
@@ -701,6 +736,7 @@
 			this.checkBox26.FlatAppearance.MouseDownBackColor = System.Drawing.Color.Gray;
 			this.checkBox26.FlatAppearance.MouseOverBackColor = System.Drawing.Color.Silver;
 			this.checkBox26.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			this.checkBox26.ForeColor = System.Drawing.Color.Black;
 			this.checkBox26.Location = new System.Drawing.Point(49, 128);
 			this.checkBox26.Name = "checkBox26";
 			this.checkBox26.Size = new System.Drawing.Size(35, 35);
@@ -717,6 +753,7 @@
 			this.checkBox25.FlatAppearance.MouseDownBackColor = System.Drawing.Color.Gray;
 			this.checkBox25.FlatAppearance.MouseOverBackColor = System.Drawing.Color.Silver;
 			this.checkBox25.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			this.checkBox25.ForeColor = System.Drawing.Color.Black;
 			this.checkBox25.Location = new System.Drawing.Point(7, 128);
 			this.checkBox25.Name = "checkBox25";
 			this.checkBox25.Size = new System.Drawing.Size(35, 35);
@@ -733,6 +770,7 @@
 			this.checkBox40.FlatAppearance.MouseDownBackColor = System.Drawing.Color.Gray;
 			this.checkBox40.FlatAppearance.MouseOverBackColor = System.Drawing.Color.Silver;
 			this.checkBox40.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			this.checkBox40.ForeColor = System.Drawing.Color.Black;
 			this.checkBox40.Location = new System.Drawing.Point(301, 170);
 			this.checkBox40.Name = "checkBox40";
 			this.checkBox40.Size = new System.Drawing.Size(35, 35);
@@ -749,6 +787,7 @@
 			this.checkBox39.FlatAppearance.MouseDownBackColor = System.Drawing.Color.Gray;
 			this.checkBox39.FlatAppearance.MouseOverBackColor = System.Drawing.Color.Silver;
 			this.checkBox39.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			this.checkBox39.ForeColor = System.Drawing.Color.Black;
 			this.checkBox39.Location = new System.Drawing.Point(259, 170);
 			this.checkBox39.Name = "checkBox39";
 			this.checkBox39.Size = new System.Drawing.Size(35, 35);
@@ -765,6 +804,7 @@
 			this.checkBox38.FlatAppearance.MouseDownBackColor = System.Drawing.Color.Gray;
 			this.checkBox38.FlatAppearance.MouseOverBackColor = System.Drawing.Color.Silver;
 			this.checkBox38.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			this.checkBox38.ForeColor = System.Drawing.Color.Black;
 			this.checkBox38.Location = new System.Drawing.Point(217, 170);
 			this.checkBox38.Name = "checkBox38";
 			this.checkBox38.Size = new System.Drawing.Size(35, 35);
@@ -781,6 +821,7 @@
 			this.checkBox37.FlatAppearance.MouseDownBackColor = System.Drawing.Color.Gray;
 			this.checkBox37.FlatAppearance.MouseOverBackColor = System.Drawing.Color.Silver;
 			this.checkBox37.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			this.checkBox37.ForeColor = System.Drawing.Color.Black;
 			this.checkBox37.Location = new System.Drawing.Point(175, 170);
 			this.checkBox37.Name = "checkBox37";
 			this.checkBox37.Size = new System.Drawing.Size(35, 35);
@@ -797,6 +838,7 @@
 			this.checkBox35.FlatAppearance.MouseDownBackColor = System.Drawing.Color.Gray;
 			this.checkBox35.FlatAppearance.MouseOverBackColor = System.Drawing.Color.Silver;
 			this.checkBox35.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			this.checkBox35.ForeColor = System.Drawing.Color.Black;
 			this.checkBox35.Location = new System.Drawing.Point(91, 170);
 			this.checkBox35.Name = "checkBox35";
 			this.checkBox35.Size = new System.Drawing.Size(35, 35);
@@ -813,6 +855,7 @@
 			this.checkBox36.FlatAppearance.MouseDownBackColor = System.Drawing.Color.Gray;
 			this.checkBox36.FlatAppearance.MouseOverBackColor = System.Drawing.Color.Silver;
 			this.checkBox36.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			this.checkBox36.ForeColor = System.Drawing.Color.Black;
 			this.checkBox36.Location = new System.Drawing.Point(133, 170);
 			this.checkBox36.Name = "checkBox36";
 			this.checkBox36.Size = new System.Drawing.Size(35, 35);
@@ -829,6 +872,7 @@
 			this.checkBox34.FlatAppearance.MouseDownBackColor = System.Drawing.Color.Gray;
 			this.checkBox34.FlatAppearance.MouseOverBackColor = System.Drawing.Color.Silver;
 			this.checkBox34.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			this.checkBox34.ForeColor = System.Drawing.Color.Black;
 			this.checkBox34.Location = new System.Drawing.Point(49, 170);
 			this.checkBox34.Name = "checkBox34";
 			this.checkBox34.Size = new System.Drawing.Size(35, 35);
@@ -845,6 +889,7 @@
 			this.checkBox33.FlatAppearance.MouseDownBackColor = System.Drawing.Color.Gray;
 			this.checkBox33.FlatAppearance.MouseOverBackColor = System.Drawing.Color.Silver;
 			this.checkBox33.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			this.checkBox33.ForeColor = System.Drawing.Color.Black;
 			this.checkBox33.Location = new System.Drawing.Point(7, 170);
 			this.checkBox33.Name = "checkBox33";
 			this.checkBox33.Size = new System.Drawing.Size(35, 35);
@@ -861,6 +906,7 @@
 			this.checkBox48.FlatAppearance.MouseDownBackColor = System.Drawing.Color.Gray;
 			this.checkBox48.FlatAppearance.MouseOverBackColor = System.Drawing.Color.Silver;
 			this.checkBox48.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			this.checkBox48.ForeColor = System.Drawing.Color.Black;
 			this.checkBox48.Location = new System.Drawing.Point(301, 211);
 			this.checkBox48.Name = "checkBox48";
 			this.checkBox48.Size = new System.Drawing.Size(35, 35);
@@ -877,6 +923,7 @@
 			this.checkBox47.FlatAppearance.MouseDownBackColor = System.Drawing.Color.Gray;
 			this.checkBox47.FlatAppearance.MouseOverBackColor = System.Drawing.Color.Silver;
 			this.checkBox47.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			this.checkBox47.ForeColor = System.Drawing.Color.Black;
 			this.checkBox47.Location = new System.Drawing.Point(259, 211);
 			this.checkBox47.Name = "checkBox47";
 			this.checkBox47.Size = new System.Drawing.Size(35, 35);
@@ -893,6 +940,7 @@
 			this.checkBox46.FlatAppearance.MouseDownBackColor = System.Drawing.Color.Gray;
 			this.checkBox46.FlatAppearance.MouseOverBackColor = System.Drawing.Color.Silver;
 			this.checkBox46.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			this.checkBox46.ForeColor = System.Drawing.Color.Black;
 			this.checkBox46.Location = new System.Drawing.Point(217, 211);
 			this.checkBox46.Name = "checkBox46";
 			this.checkBox46.Size = new System.Drawing.Size(35, 35);
@@ -909,6 +957,7 @@
 			this.checkBox45.FlatAppearance.MouseDownBackColor = System.Drawing.Color.Gray;
 			this.checkBox45.FlatAppearance.MouseOverBackColor = System.Drawing.Color.Silver;
 			this.checkBox45.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			this.checkBox45.ForeColor = System.Drawing.Color.Black;
 			this.checkBox45.Location = new System.Drawing.Point(175, 211);
 			this.checkBox45.Name = "checkBox45";
 			this.checkBox45.Size = new System.Drawing.Size(35, 35);
@@ -925,6 +974,7 @@
 			this.checkBox43.FlatAppearance.MouseDownBackColor = System.Drawing.Color.Gray;
 			this.checkBox43.FlatAppearance.MouseOverBackColor = System.Drawing.Color.Silver;
 			this.checkBox43.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			this.checkBox43.ForeColor = System.Drawing.Color.Black;
 			this.checkBox43.Location = new System.Drawing.Point(91, 211);
 			this.checkBox43.Name = "checkBox43";
 			this.checkBox43.Size = new System.Drawing.Size(35, 35);
@@ -941,6 +991,7 @@
 			this.checkBox44.FlatAppearance.MouseDownBackColor = System.Drawing.Color.Gray;
 			this.checkBox44.FlatAppearance.MouseOverBackColor = System.Drawing.Color.Silver;
 			this.checkBox44.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			this.checkBox44.ForeColor = System.Drawing.Color.Black;
 			this.checkBox44.Location = new System.Drawing.Point(133, 211);
 			this.checkBox44.Name = "checkBox44";
 			this.checkBox44.Size = new System.Drawing.Size(35, 35);
@@ -957,6 +1008,7 @@
 			this.checkBox42.FlatAppearance.MouseDownBackColor = System.Drawing.Color.Gray;
 			this.checkBox42.FlatAppearance.MouseOverBackColor = System.Drawing.Color.Silver;
 			this.checkBox42.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			this.checkBox42.ForeColor = System.Drawing.Color.Black;
 			this.checkBox42.Location = new System.Drawing.Point(49, 211);
 			this.checkBox42.Name = "checkBox42";
 			this.checkBox42.Size = new System.Drawing.Size(35, 35);
@@ -973,6 +1025,7 @@
 			this.checkBox41.FlatAppearance.MouseDownBackColor = System.Drawing.Color.Gray;
 			this.checkBox41.FlatAppearance.MouseOverBackColor = System.Drawing.Color.Silver;
 			this.checkBox41.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			this.checkBox41.ForeColor = System.Drawing.Color.Black;
 			this.checkBox41.Location = new System.Drawing.Point(7, 211);
 			this.checkBox41.Name = "checkBox41";
 			this.checkBox41.Size = new System.Drawing.Size(35, 35);
@@ -983,21 +1036,24 @@
 			// 
 			// textCharacters
 			// 
+			this.textCharacters.BackColor = System.Drawing.Color.White;
 			this.textCharacters.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-			this.textCharacters.Location = new System.Drawing.Point(89, 267);
+			this.textCharacters.ForeColor = System.Drawing.Color.Black;
+			this.textCharacters.Location = new System.Drawing.Point(6, 279);
 			this.textCharacters.MaxLength = 65536;
 			this.textCharacters.Multiline = true;
 			this.textCharacters.Name = "textCharacters";
 			this.textCharacters.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-			this.textCharacters.Size = new System.Drawing.Size(277, 62);
-			this.textCharacters.TabIndex = 2;
+			this.textCharacters.Size = new System.Drawing.Size(360, 90);
+			this.textCharacters.TabIndex = 1;
 			this.textCharacters.KeyDown += new System.Windows.Forms.KeyEventHandler(this.textCharacters_KeyDown);
 			this.textCharacters.Leave += new System.EventHandler(this.textCharacters_Leave);
 			// 
 			// label1
 			// 
 			this.label1.AutoSize = true;
-			this.label1.Location = new System.Drawing.Point(10, 269);
+			this.label1.ForeColor = System.Drawing.Color.White;
+			this.label1.Location = new System.Drawing.Point(3, 261);
 			this.label1.Name = "label1";
 			this.label1.Size = new System.Drawing.Size(66, 15);
 			this.label1.TabIndex = 16;
@@ -1006,69 +1062,72 @@
 			// buttonOK
 			// 
 			this.buttonOK.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+			this.buttonOK.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(68)))), ((int)(((byte)(68)))), ((int)(((byte)(68)))));
 			this.buttonOK.DialogResult = System.Windows.Forms.DialogResult.OK;
 			this.buttonOK.Enabled = false;
-			this.buttonOK.FlatAppearance.BorderColor = System.Drawing.Color.Black;
-			this.buttonOK.FlatAppearance.MouseDownBackColor = System.Drawing.Color.SteelBlue;
-			this.buttonOK.FlatAppearance.MouseOverBackColor = System.Drawing.Color.SteelBlue;
-			this.buttonOK.Image = global::GorgonLibrary.GorgonEditor.Properties.Resources.ok_16x16;
+			this.buttonOK.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(68)))), ((int)(((byte)(68)))), ((int)(((byte)(68)))));
+			this.buttonOK.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(189)))), ((int)(((byte)(189)))), ((int)(((byte)(189)))));
+			this.buttonOK.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+			this.buttonOK.ForeColor = System.Drawing.Color.White;
+			this.buttonOK.Image = global::GorgonLibrary.Editor.FontEditorPlugIn.Properties.Resources.ok_16x16;
 			this.buttonOK.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.buttonOK.Location = new System.Drawing.Point(430, 14);
+			this.buttonOK.Location = new System.Drawing.Point(431, 403);
 			this.buttonOK.Name = "buttonOK";
 			this.buttonOK.Size = new System.Drawing.Size(87, 28);
 			this.buttonOK.TabIndex = 0;
 			this.buttonOK.Text = "OK";
 			this.buttonOK.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+			this.buttonOK.UseVisualStyleBackColor = false;
 			this.buttonOK.Click += new System.EventHandler(this.buttonOK_Click);
 			// 
 			// buttonCancel
 			// 
 			this.buttonCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+			this.buttonCancel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(68)))), ((int)(((byte)(68)))), ((int)(((byte)(68)))));
 			this.buttonCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-			this.buttonCancel.FlatAppearance.BorderColor = System.Drawing.Color.Black;
-			this.buttonCancel.FlatAppearance.MouseDownBackColor = System.Drawing.Color.SteelBlue;
-			this.buttonCancel.FlatAppearance.MouseOverBackColor = System.Drawing.Color.SteelBlue;
-			this.buttonCancel.Image = global::GorgonLibrary.GorgonEditor.Properties.Resources.cancel_16x16;
+			this.buttonCancel.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(68)))), ((int)(((byte)(68)))), ((int)(((byte)(68)))));
+			this.buttonCancel.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(189)))), ((int)(((byte)(189)))), ((int)(((byte)(189)))));
+			this.buttonCancel.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+			this.buttonCancel.ForeColor = System.Drawing.Color.White;
+			this.buttonCancel.Image = global::GorgonLibrary.Editor.FontEditorPlugIn.Properties.Resources.cancel_16x16;
 			this.buttonCancel.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.buttonCancel.Location = new System.Drawing.Point(525, 14);
+			this.buttonCancel.Location = new System.Drawing.Point(529, 403);
 			this.buttonCancel.Name = "buttonCancel";
 			this.buttonCancel.Size = new System.Drawing.Size(87, 28);
 			this.buttonCancel.TabIndex = 1;
 			this.buttonCancel.Text = "Cancel";
 			this.buttonCancel.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-			// 
-			// panelEx1
-			// 
-			this.panelEx1.Controls.Add(this.buttonCancel);
-			this.panelEx1.Controls.Add(this.buttonOK);
-			this.panelEx1.Dock = System.Windows.Forms.DockStyle.Bottom;
-			this.panelEx1.Location = new System.Drawing.Point(0, 335);
-			this.panelEx1.Name = "panelEx1";
-			this.panelEx1.Size = new System.Drawing.Size(626, 55);
-			this.panelEx1.TabIndex = 16;
+			this.buttonCancel.UseVisualStyleBackColor = false;
 			// 
 			// formCharacterPicker
 			// 
 			this.AcceptButton = this.buttonOK;
-			this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
-			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
+			this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(58)))), ((int)(((byte)(58)))), ((int)(((byte)(58)))));
+			this.Border = true;
+			this.BorderColor = System.Drawing.Color.SteelBlue;
 			this.CancelButton = this.buttonCancel;
-			this.ClientSize = new System.Drawing.Size(626, 390);
+			this.ClientSize = new System.Drawing.Size(626, 444);
 			this.Controls.Add(this.panel1);
-			this.Controls.Add(this.panelEx1);
+			this.Controls.Add(this.buttonCancel);
+			this.Controls.Add(this.buttonOK);
 			this.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
+			this.ForeColor = System.Drawing.Color.Silver;
 			this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
 			this.MaximizeBox = false;
 			this.MinimizeBox = false;
 			this.Name = "formCharacterPicker";
+			this.Padding = new System.Windows.Forms.Padding(1);
+			this.Resizable = false;
 			this.ShowInTaskbar = false;
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
 			this.Text = "Character Picker";
+			this.Controls.SetChildIndex(this.buttonOK, 0);
+			this.Controls.SetChildIndex(this.buttonCancel, 0);
+			this.Controls.SetChildIndex(this.panel1, 0);
 			this.panel1.ResumeLayout(false);
 			this.panel1.PerformLayout();
 			this.panelCharacters.ResumeLayout(false);
-			this.panelEx1.ResumeLayout(false);
 			this.ResumeLayout(false);
 
 		}
@@ -1130,7 +1189,6 @@
 		private System.Windows.Forms.CheckBox checkBox41;
 		private System.Windows.Forms.TextBox textCharacters;
 		private System.Windows.Forms.Label label1;
-		private panelEx panelEx1;
 		private System.Windows.Forms.ListView listRanges;
 		private System.Windows.Forms.ColumnHeader columnRange;
 		private System.Windows.Forms.ColumnHeader columnRangeName;

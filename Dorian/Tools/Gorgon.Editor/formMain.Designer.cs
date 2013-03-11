@@ -259,7 +259,7 @@ namespace GorgonLibrary.Editor
 			// splitEdit.Panel1
 			// 
 			this.splitEdit.Panel1.ForeColor = System.Drawing.Color.White;
-			this.splitEdit.Panel1.Padding = new System.Windows.Forms.Padding(4, 4, 0, 4);
+			this.splitEdit.Panel1.Padding = new System.Windows.Forms.Padding(6, 7, 0, 7);
 			// 
 			// splitEdit.Panel2
 			// 
@@ -306,7 +306,7 @@ namespace GorgonLibrary.Editor
 			this.pageItems.ForeColor = System.Drawing.Color.White;
 			this.pageItems.IsClosable = false;
 			this.pageItems.Location = new System.Drawing.Point(1, 1);
-			this.pageItems.Margin = new System.Windows.Forms.Padding(3, 86810669, 3, 86810669);
+			this.pageItems.Margin = new System.Windows.Forms.Padding(3, 154330095, 3, 154330095);
 			this.pageItems.Name = "pageItems";
 			this.pageItems.Size = new System.Drawing.Size(228, 656);
 			this.pageItems.TabIndex = 1;
@@ -320,11 +320,11 @@ namespace GorgonLibrary.Editor
 			this.containerFiles.ContentPanel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(51)))), ((int)(((byte)(51)))), ((int)(((byte)(51)))));
 			this.containerFiles.ContentPanel.Controls.Add(this.treeFiles);
 			this.containerFiles.ContentPanel.ForeColor = System.Drawing.Color.White;
-			this.containerFiles.ContentPanel.Margin = new System.Windows.Forms.Padding(3, 86810669, 3, 86810669);
+			this.containerFiles.ContentPanel.Margin = new System.Windows.Forms.Padding(3, 154330095, 3, 154330095);
 			this.containerFiles.ContentPanel.Size = new System.Drawing.Size(228, 631);
 			this.containerFiles.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.containerFiles.Location = new System.Drawing.Point(0, 0);
-			this.containerFiles.Margin = new System.Windows.Forms.Padding(3, 86810669, 3, 86810669);
+			this.containerFiles.Margin = new System.Windows.Forms.Padding(3, 154330095, 3, 154330095);
 			this.containerFiles.Name = "containerFiles";
 			this.containerFiles.Size = new System.Drawing.Size(228, 656);
 			this.containerFiles.TabIndex = 0;
@@ -348,7 +348,7 @@ namespace GorgonLibrary.Editor
 			this.treeFiles.ForeColor = System.Drawing.Color.White;
 			this.treeFiles.LineColor = System.Drawing.Color.Black;
 			this.treeFiles.Location = new System.Drawing.Point(0, 0);
-			this.treeFiles.Margin = new System.Windows.Forms.Padding(3, 2069, 3, 2069);
+			this.treeFiles.Margin = new System.Windows.Forms.Padding(3, 3679, 3, 3679);
 			this.treeFiles.Model = null;
 			this.treeFiles.Name = "treeFiles";
 			this.treeFiles.NodeControls.Add(this._nodeImage);
@@ -479,7 +479,7 @@ namespace GorgonLibrary.Editor
 			this.pageProperties.ImageIndex = 3;
 			this.pageProperties.IsClosable = false;
 			this.pageProperties.Location = new System.Drawing.Point(1, 1);
-			this.pageProperties.Margin = new System.Windows.Forms.Padding(3, 86810669, 3, 86810669);
+			this.pageProperties.Margin = new System.Windows.Forms.Padding(3, 154330095, 3, 154330095);
 			this.pageProperties.Name = "pageProperties";
 			this.pageProperties.Size = new System.Drawing.Size(261, 886);
 			this.pageProperties.TabIndex = 0;
@@ -504,7 +504,7 @@ namespace GorgonLibrary.Editor
 			this.propertyItem.HelpForeColor = System.Drawing.Color.White;
 			this.propertyItem.LineColor = System.Drawing.Color.FromArgb(((int)(((byte)(160)))), ((int)(((byte)(160)))), ((int)(((byte)(160)))));
 			this.propertyItem.Location = new System.Drawing.Point(0, 0);
-			this.propertyItem.Margin = new System.Windows.Forms.Padding(3, 86810669, 3, 86810669);
+			this.propertyItem.Margin = new System.Windows.Forms.Padding(3, 154330095, 3, 154330095);
 			this.propertyItem.Name = "propertyItem";
 			this.propertyItem.SelectedItemWithFocusBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(189)))), ((int)(((byte)(189)))), ((int)(((byte)(189)))));
 			this.propertyItem.SelectedItemWithFocusForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(51)))), ((int)(((byte)(51)))), ((int)(((byte)(51)))));
@@ -559,7 +559,6 @@ namespace GorgonLibrary.Editor
 			this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(58)))), ((int)(((byte)(58)))), ((int)(((byte)(58)))));
-			this.BorderWidth = 4;
 			this.ClientSize = new System.Drawing.Size(1092, 769);
 			this.Controls.Add(this.panelEditor);
 			this.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
@@ -569,6 +568,7 @@ namespace GorgonLibrary.Editor
 			this.MinimumSize = new System.Drawing.Size(128, 32);
 			this.Name = "formMain";
 			this.Padding = new System.Windows.Forms.Padding(4);
+			this.ResizeHandleSize = 4;
 			this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
 			this.Text = "Gorgon Editor";
 			this.Controls.SetChildIndex(this.panelEditor, 0);

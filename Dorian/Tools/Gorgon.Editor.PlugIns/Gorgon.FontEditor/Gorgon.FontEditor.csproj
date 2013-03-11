@@ -50,6 +50,12 @@
     <Compile Include="Controls\comboFonts.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="formCharacterPicker.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="formCharacterPicker.Designer.cs">
+      <DependentUpon>formCharacterPicker.cs</DependentUpon>
+    </Compile>
     <Compile Include="formNewFont.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -71,9 +77,12 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="Win32API.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Gorgon2.ico" />
+    <None Include="Resources\UnicodeData.txt" />
+    <None Include="Resources\UnicodeBlocks.txt" />
     <None Include="Resources\ok_16x16.png" />
     <None Include="Resources\cancel_16x16.png" />
     <None Include="Resources\font_document_16x16.png" />
@@ -97,6 +106,9 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="formCharacterPicker.resx">
+      <DependentUpon>formCharacterPicker.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="formNewFont.resx">
       <DependentUpon>formNewFont.cs</DependentUpon>
     </EmbeddedResource>

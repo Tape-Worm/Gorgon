@@ -117,6 +117,110 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <metadata name="tipInfo.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+    <value>17, 17</value>
+  </metadata>
+  <metadata name="tipInfo.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+    <value>17, 17</value>
+  </metadata>
+  <data name="label2.ToolTip" xml:space="preserve">
+    <value>The font size.
+
+This is the height of the font.  The unit size drop down is used to 
+determine the actual height of the font.  When set to pixels, the 
+font will be n pixels high.  When set to points it will be n points 
+high, and will be based on the current DPI settings.</value>
+  </data>
+  <data name="numericSize.ToolTip" xml:space="preserve">
+    <value>The font size.
+
+This is the height of the font.  The unit size drop down is used to 
+determine the actual height of the font.  When set to pixels, the 
+font will be n pixels high.  When set to points it will be n points 
+high, and will be based on the current DPI settings.</value>
+  </data>
+  <data name="label4.ToolTip" xml:space="preserve">
+    <value>The font anti-aliasing quality.
+
+Defines how smooth the font will appear when generated.  There are 3 
+anti-aliasing settings:
+1.  None - Will result in blocky/jagged looking fonts, especially at low 
+resolutions.  
+2.  Anti Aliased - Will smooth the font but will look somewhat blurry.
+3.  Anti Aliased HQ - Will smooth the font more intelligently and will 
+look the best.  Smaller font sizes may not be anti-aliased.</value>
+  </data>
+  <data name="comboAA.ToolTip" xml:space="preserve">
+    <value>The font anti-aliasing quality.
+
+Defines how smooth the font will appear when generated.  There are 3 
+anti-aliasing settings:
+1.  None - Will result in blocky/jagged looking fonts, especially at low 
+resolutions.  
+2.  Anti Aliased - Will smooth the font but will look somewhat blurry.
+3.  Anti Aliased HQ - Will smooth the font more intelligently and will 
+look the best.  Smaller font sizes may not be anti-aliased.</value>
+  </data>
+  <data name="numericTextureWidth.ToolTip" xml:space="preserve">
+    <value>The font backing texture size.
+
+This defines how large the backing textures for the font will be.  A larger 
+texture size will consume more texture memory on the video card and will 
+be able to hold more characters per texture.  
+
+In Gorgon, the texture size will determine how many textures will be required 
+to generate the font.  If more than 1 texture is required, then a performance 
+penalty may be incurred for switching textures when drawing text.</value>
+  </data>
+  <data name="label5.ToolTip" xml:space="preserve">
+    <value>The font backing texture size.
+
+This defines how large the backing textures for the font will be.  A larger 
+texture size will consume more texture memory on the video card and will 
+be able to hold more characters per texture.  
+
+In Gorgon, the texture size will determine how many textures will be required 
+to generate the font.  If more than 1 texture is required, then a performance 
+penalty may be incurred for switching textures when drawing text.</value>
+  </data>
+  <data name="numericTextureHeight.ToolTip" xml:space="preserve">
+    <value>The font backing texture size.
+
+This defines how large the backing textures for the font will be.  A larger 
+texture size will consume more texture memory on the video card and will 
+be able to hold more characters per texture.  
+
+In Gorgon, the texture size will determine how many textures will be required 
+to generate the font.  If more than 1 texture is required, then a performance 
+penalty may be incurred for switching textures when drawing text.</value>
+  </data>
+  <data name="label6.ToolTip" xml:space="preserve">
+    <value>The font backing texture size.
+
+This defines how large the backing textures for the font will be.  A larger 
+texture size will consume more texture memory on the video card and will 
+be able to hold more characters per texture.  
+
+In Gorgon, the texture size will determine how many textures will be required 
+to generate the font.  If more than 1 texture is required, then a performance 
+penalty may be incurred for switching textures when drawing text.</value>
+  </data>
+  <data name="comboSizeType.ToolTip" xml:space="preserve">
+    <value>The font size.
+
+This is the height of the font.  The unit size drop down is used to 
+determine the actual height of the font.  When set to pixels, the 
+font will be n pixels high.  When set to points it will be n points 
+high, and will be based on the current DPI settings.</value>
+  </data>
+  <data name="buttonCharacterList.ToolTip" xml:space="preserve">
+    <value>The available characters for the font.
+
+This is used to determine which characters in the font should be used in the 
+generated font.  The fewer characters, the fewer textures (and a smaller texture 
+size) will be required to generate the font, but text output will be limited to the 
+characters selected.</value>
+  </data>
   <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
   <data name="$this.Icon" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
