@@ -1,7 +1,7 @@
 ﻿#region MIT.
 // 
 // Gorgon.
-// Copyright (C) 2012 Michael Winsor
+// Copyright (C) 2013 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -20,7 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: Wednesday, May 16, 2012 1:23:32 PM
+// Created: Sunday, March 10, 2013 11:07:01 PM
 // 
 #endregion
 
@@ -33,7 +33,7 @@ using System.Drawing;
 using GorgonLibrary.Native;
 using GorgonLibrary.IO;
 
-namespace GorgonLibrary.Editor
+namespace GorgonLibrary.Editor.FontEditorPlugIn
 {
 	/// <summary>
 	/// Win32 functions.

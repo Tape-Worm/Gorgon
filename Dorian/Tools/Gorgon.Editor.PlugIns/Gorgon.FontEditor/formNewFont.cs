@@ -49,6 +49,15 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 
 		#region Properties.
 		/// <summary>
+		/// Property to return the selected font characters to use.
+		/// </summary>
+		public IEnumerable<char> FontCharacters
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
 		/// Property to set or return the content object to design.
 		/// </summary>
 		public GorgonFontContent Content
@@ -156,20 +165,65 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 
 		#region Methods.
 		/// <summary>
+		/// Handles the Click event of the buttonCharacterList control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+		private void buttonCharacterList_Click(object sender, EventArgs e)
+		{
+			Font currentFont = null;
+			formCharacterPicker picker = null;
+
+			try
+			{
+				currentFont = new System.Drawing.Font(FontFamilyName, 16.0f, GraphicsUnit.Pixel);
+
+				picker = new formCharacterPicker();
+				picker.Characters = FontCharacters;
+				picker.CurrentFont = currentFont;
+
+				if (picker.ShowDialog(this) == System.Windows.Forms.DialogResult.OK)
+				{
+					FontCharacters = picker.Characters;
+				}
+			}
+			catch (Exception ex)
+			{
+				GorgonDialogs.ErrorBox(this, ex);
+			}
+			finally
+			{
+				if (currentFont != null)
+				{
+					currentFont.Dispose();
+					currentFont = null;
+				}
+
+				if (picker != null)
+				{
+					picker.Dispose();
+					picker = null;
+				}
+			}
+		}
+
+		/// <summary>
 		/// Function to validate the controls on the form.
 		/// </summary>
 		private void ValidateControls()
 		{
 			if (string.IsNullOrEmpty(comboAA.Text))
 				comboAA.Text = "Anti-Alias (High Quality)";
-
+						
 			buttonOK.Enabled = checkBold.Enabled = checkUnderline.Enabled = checkItalic.Enabled = checkStrikeThrough.Enabled = false;
 
 			if (string.IsNullOrEmpty(comboFonts.Text))
-				buttonOK.Enabled = checkBold.Enabled = checkUnderline.Enabled = checkItalic.Enabled = checkStrikeThrough.Enabled = false;
+				buttonCharacterList.Enabled = buttonOK.Enabled = checkBold.Enabled = checkUnderline.Enabled = checkItalic.Enabled = checkStrikeThrough.Enabled = false;
 			else
 			{
 				var family = FontFamily.Families.Where(item => string.Compare(item.Name, comboFonts.Text, true) == 0).SingleOrDefault();
+
+				buttonCharacterList.Enabled = true;
 
 				if ((family == null) || (!GorgonFontEditorPlugIn.CachedFonts.ContainsKey(family.Name)))
 					checkBold.Checked = checkUnderline.Checked = checkItalic.Checked = checkStrikeThrough.Checked = false;

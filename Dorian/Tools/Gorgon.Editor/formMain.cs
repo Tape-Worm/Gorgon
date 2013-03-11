@@ -257,17 +257,6 @@ namespace GorgonLibrary.Editor
 		}
 
 		/// <summary>
-		/// Function to load content into the interface from a plug-in.
-		/// </summary>
-		/// <param name="plugIn">Plug-in containing the content to interface.</param>
-		internal void LoadContentPane(ContentPlugIn plugIn)
-		{
-			var result = plugIn.CreateContentObject();
-
-			LoadContentPane(ref result);
-		}
-
-		/// <summary>
 		/// Function to load content into the interface.
 		/// </summary>
 		/// <typeparam name="T">Type of content object to load.</typeparam>
@@ -552,7 +541,8 @@ namespace GorgonLibrary.Editor
 		/// <param name="sender">The sender.</param>
 		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
 		private void AddContent(object sender, EventArgs e)
-		{			
+		{		
+			ContentObject content = null;
 			ToolStripMenuItem item = sender as ToolStripMenuItem;
 			ContentPlugIn plugIn = null;
 
@@ -571,12 +561,17 @@ namespace GorgonLibrary.Editor
 			Cursor.Current = Cursors.WaitCursor;
 			try
 			{
-				LoadContentPane(plugIn);
+				content = plugIn.CreateContentObject();
 
-				if (!Program.CurrentContent.CreateNew())
+				// Create the content settings.
+				if (!content.CreateNew())
 				{
-					LoadContentPane<DefaultContent>();
+					content.Dispose();
+					content = null;
+					return;
 				}
+
+				LoadContentPane(ref content);
 			}
 			catch (Exception ex)
 			{
@@ -584,6 +579,12 @@ namespace GorgonLibrary.Editor
 
 				// Load the default pane.
 				LoadContentPane<DefaultContent>();
+
+				if (content != null)
+				{
+					content.Dispose();
+					content = null;
+				}
 			}
 			finally
 			{

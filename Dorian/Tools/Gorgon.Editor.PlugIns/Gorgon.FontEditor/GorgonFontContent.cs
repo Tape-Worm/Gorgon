@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.IO;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -51,6 +52,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		private ContentPlugIn _plugIn = null;						// The plug-in that interfaces the content with the main system.
         private GorgonFontContentPanel _panel = null;               // Interface for editing the font.
         private bool _disposed = false;                             // Flag to indicate that the object was disposed.
+		private GorgonFontSettings _settings = null;				// Settings for the font.
         #endregion
 
         #region Properties.
@@ -88,10 +90,13 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
             {
                 if (disposing)
                 {
-					_panel.Dispose();
-					_panel = null;
+					if (_panel != null)
+					{
+						_panel.Dispose();						
+					}
                 }
 
+				_panel = null;
                 _disposed = true;
             }
 
@@ -111,6 +116,9 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
                 // TODO: Perform save functionality here.
             }
 
+			// Save our settings.
+			GorgonFontEditorPlugIn.Settings.Save();
+
             return true;
         }
 
@@ -128,9 +136,20 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 			{
 				newFont = new formNewFont();
 				newFont.Content = this;
+				newFont.FontCharacters = _settings.Characters;
 
 				if (newFont.ShowDialog() == DialogResult.OK)
 				{
+					this.Name = Path.ChangeExtension(newFont.FontName.FormatFileName(), ".gorFont");
+
+					_settings.FontFamilyName = newFont.FontFamilyName;
+					_settings.Size = newFont.FontSize;
+					_settings.FontHeightMode = newFont.FontHeightMode;
+					_settings.AntiAliasingMode = newFont.FontAntiAliasMode;
+					_settings.FontStyle = newFont.FontStyle;
+					_settings.TextureSize = newFont.FontTextureSize;
+					_settings.Characters = newFont.FontCharacters;
+					
 					return true;
 				}
 
@@ -161,6 +180,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
         {
             _panel = new GorgonFontContentPanel();
 			_panel.Content = this;
+			_panel.Text = "Gorgon Font - " + Name;
 
             return _panel;
         }
@@ -175,6 +195,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
             : base()
         {
 			_plugIn = plugIn;
+			_settings = new GorgonFontSettings();
         }
         #endregion
     }

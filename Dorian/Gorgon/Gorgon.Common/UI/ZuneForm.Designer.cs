@@ -107,8 +107,9 @@
 			// labelCaption
 			// 
 			this.labelCaption.AutoSize = true;
+			this.labelCaption.Dock = System.Windows.Forms.DockStyle.Left;
 			this.labelCaption.Font = new System.Drawing.Font("Segoe UI", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.labelCaption.Location = new System.Drawing.Point(26, 1);
+			this.labelCaption.Location = new System.Drawing.Point(24, 0);
 			this.labelCaption.Name = "labelCaption";
 			this.labelCaption.Size = new System.Drawing.Size(61, 20);
 			this.labelCaption.TabIndex = 3;
@@ -119,8 +120,8 @@
 			// 
 			// panelCaptionArea
 			// 
-			this.panelCaptionArea.Controls.Add(this.pictureIcon);
 			this.panelCaptionArea.Controls.Add(this.labelCaption);
+			this.panelCaptionArea.Controls.Add(this.pictureIcon);
 			this.panelCaptionArea.Controls.Add(this.labelMinimize);
 			this.panelCaptionArea.Controls.Add(this.labelMaxRestore);
 			this.panelCaptionArea.Controls.Add(this.labelClose);
@@ -135,6 +136,7 @@
 			// 
 			// pictureIcon
 			// 
+			this.pictureIcon.Dock = System.Windows.Forms.DockStyle.Left;
 			this.pictureIcon.Location = new System.Drawing.Point(0, 0);
 			this.pictureIcon.Name = "pictureIcon";
 			this.pictureIcon.Size = new System.Drawing.Size(24, 24);
@@ -229,6 +231,7 @@
 			this.Text = "Form";
 			this.Load += new System.EventHandler(this.ZuneForm_Load);
 			this.PaddingChanged += new System.EventHandler(this.ZuneForm_PaddingChanged);
+			this.Paint += new System.Windows.Forms.PaintEventHandler(this.ZuneForm_Paint);
 			this.MouseDown += new System.Windows.Forms.MouseEventHandler(this.ZuneForm_MouseDown);
 			this.MouseMove += new System.Windows.Forms.MouseEventHandler(this.ZuneForm_MouseMove);
 			this.Resize += new System.EventHandler(this.ZuneForm_Resize);

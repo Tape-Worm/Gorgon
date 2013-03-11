@@ -1,7 +1,7 @@
 ﻿#region MIT.
 // 
 // Gorgon.
-// Copyright (C) 2012 Michael Winsor
+// Copyright (C) 2013 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -20,7 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: Wednesday, May 16, 2012 11:49:56 AM
+// Created: Sunday, March 10, 2013 10:57:24 PM
 // 
 #endregion
 
@@ -34,12 +34,13 @@ using System.Text;
 using System.Windows.Forms;
 using GorgonLibrary.UI;
 
-namespace GorgonLibrary.GorgonEditor
+namespace GorgonLibrary.Editor.FontEditorPlugIn
 {
 	/// <summary>
 	/// Dialog to pick characters for conversion into bitmap glyphs.
 	/// </summary>
-	public partial class formCharacterPicker : Form
+	partial class formCharacterPicker 
+		: ZuneForm
 	{
 		#region Variables.
 		private int _page = 0;														// Page for characters.

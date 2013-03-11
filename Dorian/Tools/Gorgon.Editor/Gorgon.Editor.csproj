@@ -118,7 +118,6 @@
     </Compile>
     <Compile Include="PlugIn\EditorPlugIn.cs" />
     <Compile Include="VisualStyle\DarkFormsRenderer.cs" />
-    <Compile Include="Win32API.cs" />
     <Compile Include="formMain.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -198,8 +197,6 @@
     <None Include="Resources\Gorgon_2.x_Logo_Blurry.dds" />
     <None Include="Resources\cancel_16x16.png" />
     <None Include="Resources\ok_16x16.png" />
-    <None Include="Resources\UnicodeData.txt" />
-    <None Include="Resources\UnicodeBlocks.txt" />
     <None Include="Resources\PropertyChecker.png" />
     <None Include="Resources\Check_Enabled.png" />
     <None Include="Resources\Check_Disabled.png" />
@@ -227,7 +224,9 @@
       <Install>true</Install>
     </BootstrapperPackage>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Designers\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PreBuildEvent>

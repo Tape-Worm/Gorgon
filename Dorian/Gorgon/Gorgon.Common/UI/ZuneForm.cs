@@ -97,6 +97,9 @@ namespace GorgonLibrary.UI
 		private ResizeDirection _resizeDirection = ResizeDirection.None;
 		private Image _iconImage = null;
 		private bool _showWindowCaption = true;
+		private int _borderWidth = 1;
+		private bool _border = false;
+		private Color _borderColor = Color.Black;
 		#endregion
 
 		#region Properties.
@@ -139,6 +142,24 @@ namespace GorgonLibrary.UI
 		}
 
 		/// <summary>
+		/// Property to set or return the color of the border.
+		/// </summary>
+		[Browsable(true), Category("Appearance"), Description("Sets the color of the border on the form when Border is set to true."), 
+		RefreshProperties(System.ComponentModel.RefreshProperties.All)]
+		public Color BorderColor
+		{
+			get
+			{
+				return _borderColor;
+			}
+			set
+			{
+				_borderColor = value;
+				Refresh();
+			}
+		}
+
+		/// <summary>
 		/// Gets or sets the border style of the form.
 		/// </summary>
 		/// <returns>A <see cref="T:System.Windows.Forms.FormBorderStyle" /> that represents the style of border to display for the form. The default is FormBorderStyle.Sizable.</returns>
@@ -162,6 +183,50 @@ namespace GorgonLibrary.UI
 		}
 
 		/// <summary>
+		/// Property to set or return whether a single pixel width border will be drawn on the form.
+		/// </summary>
+		[Browsable(true), Category("Appearance"), Description("When set to true, a border will be drawn on the form."), DefaultValue(false), 
+		RefreshProperties(System.ComponentModel.RefreshProperties.All)]
+		public bool Border
+		{
+			get
+			{
+				return _border;
+			}
+			set
+			{
+				_border = value;
+
+				Refresh();
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return the size of the border, in pixels.
+		/// </summary>
+		/// <remarks>This is only valid when <see cref="GorgonLibrary.UI.ZuneForm.Resizable">Resizable</see> is set to TRUE.</remarks>
+		[Browsable(true), Description("The size, in pixels, of the window border when the Border property is set to true."), Category("Appearance"),
+		RefreshProperties(System.ComponentModel.RefreshProperties.All), DefaultValue(1)]
+		public int BorderSize
+		{
+			get
+			{
+				return _borderWidth;
+			}
+			set
+			{
+				if (value < 0)
+				{
+					value = 0;
+				}
+
+				_borderWidth = value;
+				Refresh();
+			}
+		}
+
+
+		/// <summary>
 		/// Property to set or return whether the form can be resized by a user or not.
 		/// </summary>
 		[Browsable(true), Category("Behavior"), Description("Determines if a form can be resized by the user or not."), DefaultValue(true)]
@@ -172,11 +237,12 @@ namespace GorgonLibrary.UI
 		}
 
 		/// <summary>
-		/// Property to set or return the width of the border, in pixels.
+		/// Property to set or return the size of the resize handle border, in pixels.
 		/// </summary>
 		/// <remarks>This is only valid when <see cref="GorgonLibrary.UI.ZuneForm.Resizable">Resizable</see> is set to TRUE.</remarks>
-		[Browsable(true), Description("The width of the resize area in pixels."), Category("Design")]
-		public int BorderWidth
+		[Browsable(true), Description("The size, in pixels, of the resizable handles on the window border."), Category("Design"),
+		RefreshProperties(System.ComponentModel.RefreshProperties.All), DefaultValue(6)]
+		public int ResizeHandleSize
 		{
 			get;
 			set;
@@ -209,6 +275,22 @@ namespace GorgonLibrary.UI
 			}
 			set
 			{
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return whether to show the icon for the form.
+		/// </summary>
+		public new bool ShowIcon
+		{
+			get
+			{
+				return base.ShowIcon;
+			}
+			set
+			{
+				base.ShowIcon = value;
+				pictureIcon.Visible = base.ShowIcon;
 			}
 		}
 
@@ -627,35 +709,35 @@ namespace GorgonLibrary.UI
 					return;
 				}
 
-				if ((e.Location.X < BorderWidth) && (e.Location.Y < BorderWidth))
+				if ((e.Location.X < ResizeHandleSize) && (e.Location.Y < ResizeHandleSize))
 				{
 					ResizeDir = ResizeDirection.TopLeft;
 				}
-				else if ((e.Location.X < BorderWidth) && (e.Location.Y > this.Height - BorderWidth))
+				else if ((e.Location.X < ResizeHandleSize) && (e.Location.Y > this.Height - ResizeHandleSize))
 				{
 					ResizeDir = ResizeDirection.BottomLeft;
 				}
-				else if ((e.Location.X > this.Width - BorderWidth) && (e.Location.Y > this.Height - BorderWidth))
+				else if ((e.Location.X > this.Width - ResizeHandleSize) && (e.Location.Y > this.Height - ResizeHandleSize))
 				{
 					ResizeDir = ResizeDirection.BottomRight;
 				}
-				else if ((e.Location.X > this.Width - BorderWidth) && (e.Location.Y < BorderWidth))
+				else if ((e.Location.X > this.Width - ResizeHandleSize) && (e.Location.Y < ResizeHandleSize))
 				{
 					ResizeDir = ResizeDirection.TopRight;
 				}
-				else if ((e.Location.X < BorderWidth))
+				else if ((e.Location.X < ResizeHandleSize))
 				{
 					ResizeDir = ResizeDirection.Left;
 				}
-				else if ((e.Location.X > this.Width - BorderWidth))
+				else if ((e.Location.X > this.Width - ResizeHandleSize))
 				{
 					ResizeDir = ResizeDirection.Right;
 				}
-				else if ((e.Location.Y < BorderWidth))
+				else if ((e.Location.Y < ResizeHandleSize))
 				{
 					ResizeDir = ResizeDirection.Top;
 				}
-				else if ((e.Location.Y > this.Height - BorderWidth))
+				else if ((e.Location.Y > this.Height - ResizeHandleSize))
 				{
 					ResizeDir = ResizeDirection.Bottom;
 				}
@@ -692,7 +774,7 @@ namespace GorgonLibrary.UI
 
 				if (e.Button == System.Windows.Forms.MouseButtons.Left)
 				{
-					if ((Width - BorderWidth > e.X) && (e.X > BorderWidth) && (e.Y > BorderWidth) && (e.Y < Height - BorderWidth))
+					if ((Width - ResizeHandleSize > e.X) && (e.X > ResizeHandleSize) && (e.Y > ResizeHandleSize) && (e.Y < Height - ResizeHandleSize))
 					{
 						Win32API.ReleaseCapture();
 						Win32API.SendMessage(Handle, (uint)WindowMessages.NCLeftButtonDown, new IntPtr((int)HitTests.Caption), IntPtr.Zero);
@@ -822,6 +904,22 @@ namespace GorgonLibrary.UI
 		}
 
 		/// <summary>
+		/// Handles the Paint event of the ZuneForm control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="PaintEventArgs"/> instance containing the event data.</param>
+		private void ZuneForm_Paint(object sender, PaintEventArgs e)
+		{
+			if ((WindowState == FormWindowState.Normal) && (Border))
+			{
+				using (Pen pen = new Pen(BorderColor, _borderWidth))
+				{
+					e.Graphics.DrawRectangle(pen, new Rectangle(0, 0, Width - 1, Height - 1));
+				}
+			}
+		}
+
+		/// <summary>
 		/// Handles the PaddingChanged event of the ZuneForm control.
 		/// </summary>
 		/// <param name="sender">The source of the event.</param>
@@ -844,12 +942,13 @@ namespace GorgonLibrary.UI
 		/// </summary>
 		public ZuneForm()
 		{
+			ResizeHandleSize = 6;
+			Resizable = true;
+
 			SetStyle(ControlStyles.ResizeRedraw, true);
 
 			InitializeComponent();
 
-			Resizable = true;
-			BorderWidth = 6;
 			ValidateWindowControls();			
 		}
 		#endregion
