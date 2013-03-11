@@ -25,12 +25,14 @@
 #endregion
 
 using System;
+using System.IO;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Drawing;
+using GorgonLibrary.FileSystem;
 using GorgonLibrary.Graphics;
 
 namespace GorgonLibrary.Editor
@@ -42,6 +44,7 @@ namespace GorgonLibrary.Editor
 		: IDisposable, INamedObject
 	{
 		#region Variables.
+        private bool _hasChanged = false;           // Flag to indicate that the object was changed.
 		private string _name = "Content";			// Name of the content.
 		#endregion
 
@@ -51,8 +54,15 @@ namespace GorgonLibrary.Editor
 		/// </summary>
 		protected internal bool HasChanges
 		{
-			get;
-			protected set;
+            get
+            {
+                return _hasChanged;
+            }
+            internal set
+            {
+                _hasChanged = value;
+                OnHasChangesUpdated();
+            }
 		}
 
 		/// <summary>
@@ -103,9 +113,9 @@ namespace GorgonLibrary.Editor
 		}
 
 		/// <summary>
-		/// Property to return the path to this content.
+		/// Property to return the file system file that contains this content.
 		/// </summary>
-		public string FilePath
+		public GorgonFileSystemFileEntry File
 		{
 			get;
 			private set;
@@ -113,6 +123,18 @@ namespace GorgonLibrary.Editor
 		#endregion
 
 		#region Methods.
+        /// <summary>
+        /// Function called when the HasChanges property is updated.
+        /// </summary>
+        protected virtual void OnHasChangesUpdated()
+        {
+        }
+
+        /// <summary>
+        /// Function to persist the content to the file system.
+        /// </summary>
+        protected abstract void OnPersist();
+
 		/// <summary>
 		/// Function called when the content window is closed.
 		/// </summary>
@@ -127,6 +149,27 @@ namespace GorgonLibrary.Editor
 		{
 			return true;
 		}
+
+        /// <summary>
+        /// Function to persist the content to a file in the file system.
+        /// </summary>
+        /// <param name="file">The file to persist the data into.</param>
+        /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="file"/> parameter is NULL (Nothing in VB.Net).</exception>
+        public void Persist(GorgonFileSystemFileEntry file)
+        {
+            if (file == null)
+            {
+                throw new ArgumentNullException("file");
+            }
+
+            File = file;
+
+            if (HasChanges)
+            {
+                OnPersist();
+                HasChanges = false;    
+            }
+        }
 
 		/// <summary>
 		/// Function to close the content window.

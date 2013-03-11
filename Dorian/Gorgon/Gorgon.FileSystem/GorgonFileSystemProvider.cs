@@ -160,18 +160,17 @@ namespace GorgonLibrary.FileSystem
 		/// <param name="file">File to read.</param>
 		/// <param name="data">Data to write to the file.</param>
 		/// <exception cref="System.InvalidOperationException">Thrown when the <see cref="P:GorgonLibrary.FileSystem.GorgonFileSystem.WriteLocation">WriteLocation</see> on the file system is empty.</exception>
-		protected void OnWriteFile(GorgonFileSystemFileEntry file, byte[] data)
+		protected virtual void OnWriteFile(GorgonFileSystemFileEntry file, byte[] data)
 		{
-			FileInfo info = null;
-			string newPath = string.Empty;
+            if (data != null)
+            {
+                throw new ArgumentNullException("data");                
+            }
 
 			using (Stream stream = WriteToWriteLocation(file))
 			{
 				stream.Write(data, 0, data.Length);
 			}
-
-			info = new FileInfo(newPath);
-			UpdateFileInfo(file, info.Length, null, info.CreationTime, newPath, this);
 		}
 
 		/// <summary>
@@ -215,11 +214,22 @@ namespace GorgonLibrary.FileSystem
 		/// <param name="data">Data to write.</param>
 		internal void WriteFile(GorgonFileSystemFileEntry file, byte[] data)
 		{
-			if (file == null)
-				throw new ArgumentNullException("file");
+            FileInfo info = null;
+            string newPath = string.Empty;
 
-			OnWriteFile(file, data);
-		}
+            if (file == null)
+            {
+                throw new ArgumentNullException("file");
+            }
+
+            if (data != null)
+            {
+                OnWriteFile(file, data);
+
+                info = new FileInfo(file.PhysicalFileSystemPath);
+                UpdateFileInfo(file, info.Length, null, info.CreationTime, null, this);
+            }
+        }
 
 		/// <summary>
 		/// Function to open a file stream.
@@ -298,7 +308,7 @@ namespace GorgonLibrary.FileSystem
 				file.CreateDate = createDate.Value;
 			if (provider != null)
 				file.Provider = provider;
-			if (!string.IsNullOrEmpty(physicalPath))
+			if (!string.IsNullOrWhiteSpace(physicalPath))
 				file.PhysicalFileSystemPath = physicalPath;
 		}
 

@@ -36,6 +36,7 @@ using SlimMath;
 using GorgonLibrary;
 using GorgonLibrary.UI;
 using GorgonLibrary.IO;
+using GorgonLibrary.FileSystem;
 using GorgonLibrary.Math;
 using GorgonLibrary.Graphics;
 using GorgonLibrary.Renderers;
@@ -53,9 +54,10 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
         private GorgonFontContentPanel _panel = null;               // Interface for editing the font.
         private bool _disposed = false;                             // Flag to indicate that the object was disposed.
 		private GorgonFontSettings _settings = null;				// Settings for the font.
+        private GorgonFont _font = null;                            // Our font object.
         #endregion
 
-        #region Properties.
+        #region Properties.        
         /// <summary>
         /// Property to return the type of content.
         /// </summary>
@@ -90,17 +92,48 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
             {
                 if (disposing)
                 {
+                    if (_font != null)
+                    {
+                        _font.Dispose();
+                    }
+
 					if (_panel != null)
 					{
 						_panel.Dispose();						
 					}
                 }
 
+                _font = null;
 				_panel = null;
                 _disposed = true;
             }
 
             base.Dispose(disposing);
+        }
+
+        /// <summary>
+        /// Function called when the HasChanges property is updated.
+        /// </summary>
+        protected override void OnHasChangesUpdated()
+        {
+            if (_panel != null)
+            {
+                _panel.OnContentChanged();
+            }
+        }
+
+        /// <summary>
+        /// Function to persist the content to the file system.
+        /// </summary>
+        protected override void OnPersist()
+        {
+            if ((_font != null) && (File != null) && (HasChanges))
+            {
+                using (var stream = File.OpenStream(true))
+                {
+                    _font.Save(stream);
+                }
+            }            
         }
 
         /// <summary>
@@ -113,7 +146,8 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
         {
             if (HasChanges)
             {
-                // TODO: Perform save functionality here.
+                // Write the changes to the file.
+                OnPersist();
             }
 
 			// Save our settings.
@@ -148,8 +182,10 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 					_settings.AntiAliasingMode = newFont.FontAntiAliasMode;
 					_settings.FontStyle = newFont.FontStyle;
 					_settings.TextureSize = newFont.FontTextureSize;
-					_settings.Characters = newFont.FontCharacters;
-					
+					_settings.Characters = newFont.FontCharacters;                    
+
+                    _font = Graphics.Fonts.CreateFont(Path.GetFileNameWithoutExtension(this.Name), _settings);
+
 					return true;
 				}
 

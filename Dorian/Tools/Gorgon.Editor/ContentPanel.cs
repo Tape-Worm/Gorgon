@@ -42,13 +42,16 @@ namespace GorgonLibrary.Editor
 	public partial class ContentPanel : UserControl
 	{
 		#region Variables.
+        private ContentObject _content = null;
 		private bool _captionVisible = true;
+        private bool _contentChanged = false;
 		#endregion
 
 		#region Properties.
 		/// <summary>
 		/// Property to return the display panel.
 		/// </summary>
+        [Browsable(false)]
 		public Panel PanelDisplay
 		{
 			get
@@ -63,9 +66,16 @@ namespace GorgonLibrary.Editor
 		[Browsable(false)]
 		public ContentObject Content
 		{
-			get;
-			set;
-		}
+            get
+            {
+                return _content;
+            }
+            set
+            {
+                _content = value;
+                OnContentChanged();
+            }
+		}        
 
 		/// <summary>
 		/// Property to set or return the text caption for this control.
@@ -81,7 +91,7 @@ namespace GorgonLibrary.Editor
 			set
 			{
 				base.Text = value;
-				labelCaption.Text = base.Text;
+                UpdateCaption();
 			}
 		}
 
@@ -104,6 +114,19 @@ namespace GorgonLibrary.Editor
 		#endregion
 
 		#region Methods.
+        /// <summary>
+        /// Function to update the caption label.
+        /// </summary>
+        private void UpdateCaption()
+        {
+            labelCaption.Text = base.Text;
+
+            if (_contentChanged)
+            {
+                labelCaption.Text += "*";
+            }
+        }
+
 		/// <summary>
 		/// Handles the MouseEnter event of the labelClose control.
 		/// </summary>
@@ -141,7 +164,20 @@ namespace GorgonLibrary.Editor
 		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
 		private void labelClose_Click(object sender, EventArgs e)
 		{
-			OnCloseClicked();
+            Cursor.Current = Cursors.WaitCursor;
+
+            try
+            {
+                OnCloseClicked();
+            }
+            catch (Exception ex)
+            {
+                GorgonLibrary.UI.GorgonDialogs.ErrorBox(ParentForm, ex);
+            }
+            finally
+            {
+                Cursor.Current = Cursors.Default;
+            }
 		}
 
 		/// <summary>
@@ -159,6 +195,23 @@ namespace GorgonLibrary.Editor
 				}
 			}
 		}
+
+        /// <summary>
+        /// Function called when the content has changed.
+        /// </summary>
+        public virtual void OnContentChanged()
+        {
+            if (Content != null)
+            {
+                _contentChanged = Content.HasChanges;
+            }
+            else
+            {
+                _contentChanged = false;
+            }
+
+            UpdateCaption();
+        }
 		#endregion
 
 		#region Constructor/Destructor.
