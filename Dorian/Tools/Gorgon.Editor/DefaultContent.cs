@@ -83,7 +83,7 @@ namespace GorgonLibrary.Editor
 		}
 		#endregion
 
-		#region Methods.       
+		#region Methods.
 		/// <summary>
 		/// Handles the Click event of the checkPulse control.
 		/// </summary>

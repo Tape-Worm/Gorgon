@@ -81,6 +81,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Gorgon2.ico" />
+    <None Include="Resources\zoom_16x16.png" />
     <None Include="Resources\UnicodeData.txt" />
     <None Include="Resources\UnicodeBlocks.txt" />
     <None Include="Resources\ok_16x16.png" />
