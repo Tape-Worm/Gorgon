@@ -47,9 +47,27 @@ namespace GorgonLibrary.Editor
 	{
 		#region Properties.
         /// <summary>
-        /// Property to return a list of loaded content objects.
+        /// Property to return a list of disabled plug-ins.
+        /// </summary>
+        public static Dictionary<EditorPlugIn, string> DisabledPlugIns
+        {
+            get;
+            private set;
+        }
+
+        /// <summary>
+        /// Property to return a list of loaded content plug-ins.
         /// </summary>
         public static Dictionary<string, ContentPlugIn> ContentPlugIns
+        {
+            get;
+            private set;
+        }
+
+        /// <summary>
+        /// Property to return a list of loaded file writer plug-ins.
+        /// </summary>
+        public static Dictionary<string, FileWriterPlugIn> WriterPlugIns
         {
             get;
             private set;
@@ -129,6 +147,16 @@ namespace GorgonLibrary.Editor
 		#endregion
 
 		#region Methods.
+        /// <summary>
+        /// Function to save the editor file.
+        /// </summary>
+        /// <param name="path">Path to the new file.</param>
+        public static void SaveEditorFile(string path)
+        {
+            // TODO: We need to remember the last plug-in used to save this file.
+            Program.WriterPlugIns.First().Value.WriteFile(path);
+        }
+
 		/// <summary>
 		/// Function to allow the user to select a new scratch file location.
 		/// </summary>
@@ -219,8 +247,21 @@ namespace GorgonLibrary.Editor
 				Graphics = null;
 			}
 
-			//Graphics = new GorgonGraphics(DeviceFeatureLevel.SM2_a_b);			
-			Graphics = new GorgonGraphics();
+            // Find the best device in the system.
+            GorgonVideoDeviceEnumerator.Enumerate(false, false);
+
+            GorgonVideoDevice bestDevice = GorgonVideoDeviceEnumerator.VideoDevices[0];
+
+            // If we have more than one device, use the best available device.
+            if (GorgonVideoDeviceEnumerator.VideoDevices.Count > 1)
+            {
+                bestDevice = (from device in GorgonVideoDeviceEnumerator.VideoDevices
+                             orderby device.SupportedFeatureLevel descending, GorgonVideoDeviceEnumerator.VideoDevices.IndexOf(device)
+                             select device).First();
+            }
+
+			//Graphics = new GorgonGraphics(DeviceFeatureLevel.SM2_a_b);
+			Graphics = new GorgonGraphics(bestDevice);
 		}
 		#endregion
 
@@ -232,7 +273,10 @@ namespace GorgonLibrary.Editor
 		{
 			Settings = new GorgonEditorSettings();
             ContentPlugIns = new Dictionary<string, ContentPlugIn>();
+            WriterPlugIns = new Dictionary<string, FileWriterPlugIn>();
             ChangedItems = new Dictionary<string, bool>();
+            DisabledPlugIns = new Dictionary<EditorPlugIn, string>();
+
 			ProjectFile = "Untitled";
 		}
 		#endregion

@@ -38,7 +38,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 	/// Plug-in specific settings.
 	/// </summary>
 	class GorgonFontContentSettings
-		: ContentSettings
+		: EditorPlugInSettings
 	{
 		#region Variables.
 
@@ -85,7 +85,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		/// Initializes a new instance of the <see cref="GorgonFontContentSettings"/> class.
 		/// </summary>
 		public GorgonFontContentSettings()
-			: base("Gorgon.FontEditor.PlugIn", new Version(1, 0, 0, 0))
+			: base("FontEditor.PlugIn", new Version(1, 0, 0, 0))
 		{
 			FontTextureSize = new Size(256, 256);
 		}

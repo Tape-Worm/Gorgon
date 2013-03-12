@@ -82,8 +82,8 @@ namespace GorgonLibrary.Editor
 			// Set the path for the application settings.
 			base.Path = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData).FormatDirectory(System.IO.Path.DirectorySeparatorChar) 
 					  + "Tape_Worm".FormatDirectory(System.IO.Path.DirectorySeparatorChar)
-					  + this.ApplicationName.FormatDirectory(System.IO.Path.DirectorySeparatorChar)					  
-					  + "Content.config.xml";		
+					  + "Gorgon.Editor".FormatDirectory(System.IO.Path.DirectorySeparatorChar)					  
+					  + this.ApplicationName.FormatFileName() + ".config.xml";		
 		}
 		#endregion
 	}

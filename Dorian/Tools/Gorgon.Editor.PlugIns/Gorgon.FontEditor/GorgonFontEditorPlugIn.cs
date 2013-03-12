@@ -133,6 +133,25 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 			CachedFonts = fonts;
 		}
 
+        /// <summary>
+        /// Function to determine if a plug-in can be used.
+        /// </summary>
+        /// <returns>
+        /// A string containing a list of reasons why the plug-in is not valid for use, or an empty string if the control is not valid for use.
+        /// </returns>        
+        protected override string ValidatePlugIn()
+        {
+            StringBuilder invalidReasons = new StringBuilder(512);
+
+            // Currently we won't work on Direct 3D 9 video devices because of issues when saving texture data.
+            if (Graphics.VideoDevice.SupportedFeatureLevel == GorgonLibrary.Graphics.DeviceFeatureLevel.SM2_a_b)
+            {
+                invalidReasons.AppendFormat("This plug-in requires a video device with feature level SM4 or above, the current video device has a feature level of {0}.", Graphics.VideoDevice.SupportedFeatureLevel);
+            }
+
+            return invalidReasons.ToString();
+        }
+
 		/// <summary>
         /// Function to create a content object interface.
         /// </summary>

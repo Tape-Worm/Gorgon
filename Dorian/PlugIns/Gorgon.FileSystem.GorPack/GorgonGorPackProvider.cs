@@ -181,10 +181,12 @@ namespace GorgonLibrary.FileSystem.GorPack
 				{
 					string header = reader.ReadString();
 					int indexLength = reader.ReadInt32();
-					byte[] indexData = new byte[indexLength];
-					
+					byte[] indexData = null;
+                    string xmlData = string.Empty;
+
 					indexData = Decompress(reader.ReadBytes(indexLength));
-					ParseIndexXML(physicalPath, mountPoint, XDocument.Parse(Encoding.UTF8.GetString(indexData), LoadOptions.None), stream.Position);
+                    xmlData = Encoding.UTF8.GetString(indexData);
+					ParseIndexXML(physicalPath, mountPoint, XDocument.Parse(xmlData, LoadOptions.None), stream.Position);
 				}
 			}
 		}

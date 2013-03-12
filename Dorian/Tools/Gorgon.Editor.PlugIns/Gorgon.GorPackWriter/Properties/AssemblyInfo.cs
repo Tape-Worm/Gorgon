@@ -32,12 +32,12 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 #if DEBUG
-[assembly: AssemblyTitle("Gorgon Font Editor [DEBUG]")]
-[assembly: AssemblyDescription("A plug in for the Gorgon Editor that will create fonts. [DEBUG]")]
+[assembly: AssemblyTitle("Gorgon Packed File Writer [DEBUG]")]
+[assembly: AssemblyDescription("A plug in for the Gorgon Editor that will write Gorgon packed files. [DEBUG]")]
 [assembly: AssemblyConfiguration("DEBUG")]
 #else
-[assembly: AssemblyTitle("Gorgon Font Editor")]
-[assembly: AssemblyDescription("A plug in for the Gorgon Editor that will create fonts.")]
+[assembly: AssemblyTitle("Gorgon Packed File Writer")]
+[assembly: AssemblyDescription("A plug in for the Gorgon Editor that will write Gorgon packed files.")]
 [assembly: AssemblyConfiguration("RELEASE")]
 #endif
 [assembly: AssemblyCompany("Michael Winsor")]

@@ -97,9 +97,9 @@ namespace GorgonLibrary.Editor
             // No node is the same as selecting the root.
             if (treeFiles.SelectedNode == null)
             {
-                itemAdd.Enabled = true;
-                dropNewContent.Enabled = true;
-                popupItemAdd.Enabled = true;
+                itemAdd.Enabled = itemAdd.DropDownItems.Count > 0;
+                popupItemAdd.Enabled = itemAdd.Enabled;
+                dropNewContent.Enabled = dropNewContent.DropDownItems.Count > 0;
                 itemDelete.Visible = false;
                 toolStripSeparator4.Visible = false;
                 itemRenameFolder.Visible = false;
@@ -110,9 +110,9 @@ namespace GorgonLibrary.Editor
                                 
                 if (node.Tag is GorgonFileSystemDirectory)
                 {
-                    itemAdd.Enabled = true;
-                    dropNewContent.Enabled = true;
-                    popupItemAdd.Enabled = true;
+                    itemAdd.Enabled = itemAdd.DropDownItems.Count > 0;
+                    popupItemAdd.Enabled = itemAdd.Enabled;
+                    dropNewContent.Enabled = dropNewContent.DropDownItems.Count > 0;
                     itemOpen.Enabled = false;
                     itemCreateFolder.Enabled = true;
                     itemCreateFolder.Visible = true;
@@ -306,10 +306,12 @@ namespace GorgonLibrary.Editor
                                 e.Cancel = true;
                                 return;
                             }
+
                         }
                         
-                        // TODO:
-						// Program.Save(IsSaveAs);
+                        // TODO: We need to update this to show a save as dialog (or re-use the current file name).
+                        //       We also need to remember the last plug-in used to save this file.
+                        Program.SaveEditorFile(Path.GetFullPath(@"..\..\..\..\Resources\FileSystems\BZipFileSystem.gorPack"));
 					}
 
 					if (result == ConfirmationResult.Cancel)
@@ -639,7 +641,7 @@ namespace GorgonLibrary.Editor
             newNode.Tag = file;			
 			            
             directoryNode.Item2.Nodes.Add(newNode);
-
+                        
 			treeFiles.SelectedNode = treeFiles.FindNodeByTag(newNode);
         }
 
