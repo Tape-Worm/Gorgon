@@ -483,7 +483,7 @@ namespace GorgonLibrary.UI
 
             if (label != null)
             {
-                label.ForeColor = ForeColor;
+				label.ForeColor = (Form.ActiveForm == this) ? ForeColor : Color.FromKnownColor(KnownColor.DimGray);
             }
         }
 
@@ -904,19 +904,28 @@ namespace GorgonLibrary.UI
 		}
 
 		/// <summary>
+		/// Function to draw the border for the window.
+		/// </summary>
+		/// <param name="graphics">Graphics interface to use.</param>
+		private void DrawBorder(Graphics graphics)
+		{
+			if ((WindowState == FormWindowState.Normal) && (Border))
+			{
+				using (Pen pen = new Pen(Form.ActiveForm == this ? BorderColor : Color.FromKnownColor(KnownColor.DimGray), _borderWidth))
+				{
+					graphics.DrawRectangle(pen, new Rectangle(0, 0, Width - 1, Height - 1));
+				}
+			}
+		}
+
+		/// <summary>
 		/// Handles the Paint event of the ZuneForm control.
 		/// </summary>
 		/// <param name="sender">The source of the event.</param>
 		/// <param name="e">The <see cref="PaintEventArgs"/> instance containing the event data.</param>
 		private void ZuneForm_Paint(object sender, PaintEventArgs e)
 		{
-			if ((WindowState == FormWindowState.Normal) && (Border))
-			{
-				using (Pen pen = new Pen(BorderColor, _borderWidth))
-				{
-					e.Graphics.DrawRectangle(pen, new Rectangle(0, 0, Width - 1, Height - 1));
-				}
-			}
+			DrawBorder(e.Graphics);
 		}
 
 		/// <summary>
@@ -949,8 +958,42 @@ namespace GorgonLibrary.UI
 
 			InitializeComponent();
 
-			ValidateWindowControls();			
+			ValidateWindowControls();
 		}
 		#endregion
+
+		/// <summary>
+		/// Handles the Activated event of the ZuneForm control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+		private void ZuneForm_Activated(object sender, EventArgs e)
+		{
+			panelCaptionArea.ForeColor = this.ForeColor;
+			labelMinimize.ForeColor = this.ForeColor;
+			labelMaxRestore.ForeColor = this.ForeColor;
+			labelClose.ForeColor = this.ForeColor;
+			using (var graphics = this.CreateGraphics())
+			{
+				DrawBorder(graphics);
+			}
+		}
+
+		/// <summary>
+		/// Handles the Deactivate event of the ZuneForm control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+		private void ZuneForm_Deactivate(object sender, EventArgs e)
+		{
+			panelCaptionArea.ForeColor = Color.FromKnownColor(KnownColor.DimGray);
+			labelMinimize.ForeColor = Color.FromKnownColor(KnownColor.DimGray);
+			labelMaxRestore.ForeColor = Color.FromKnownColor(KnownColor.DimGray);
+			labelClose.ForeColor = Color.FromKnownColor(KnownColor.DimGray);
+			using (var graphics = this.CreateGraphics())
+			{
+				DrawBorder(graphics);
+			}
+		}
 	}
 }

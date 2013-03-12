@@ -54,10 +54,28 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
         private GorgonFontContentPanel _panel = null;               // Interface for editing the font.
         private bool _disposed = false;                             // Flag to indicate that the object was disposed.
 		private GorgonFontSettings _settings = null;				// Settings for the font.
-        private GorgonFont _font = null;                            // Our font object.
+		private GorgonSwapChain _swap = null;						// Swap chain for our display.
         #endregion
 
-        #region Properties.        
+        #region Properties.
+		/// <summary>
+		/// Property to return the renderer.
+		/// </summary>
+		public Gorgon2D Renderer
+		{
+			get;
+			private set;
+		}
+
+		/// <summary>
+		/// Property to return the font content.
+		/// </summary>
+		public GorgonFont Font
+		{
+			get;
+			private set;
+		}
+
         /// <summary>
         /// Property to return the type of content.
         /// </summary>
@@ -92,10 +110,21 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
             {
                 if (disposing)
                 {
-                    if (_font != null)
+                    if (Font != null)
                     {
-                        _font.Dispose();
+                        Font.Dispose();
                     }
+
+					if (Renderer != null)
+					{
+						Renderer.Dispose();
+					}
+
+					if (_swap != null)
+					{
+						_swap.Dispose();
+					}
+
 
 					if (_panel != null)
 					{
@@ -103,7 +132,9 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 					}
                 }
 
-                _font = null;
+				_swap = null;
+				Renderer = null;
+                Font = null;
 				_panel = null;
                 _disposed = true;
             }
@@ -127,11 +158,11 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
         /// </summary>
         protected override void OnPersist()
         {
-            if ((_font != null) && (File != null) && (HasChanges))
+            if ((Font != null) && (File != null) && (HasChanges))
             {
                 using (var stream = File.OpenStream(true))
                 {
-                    _font.Save(stream);
+                    Font.Save(stream);
                 }
             }            
         }
@@ -174,6 +205,8 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 
 				if (newFont.ShowDialog() == DialogResult.OK)
 				{
+					Cursor.Current = Cursors.WaitCursor;
+
 					this.Name = Path.ChangeExtension(newFont.FontName.FormatFileName(), ".gorFont");
 
 					_settings.FontFamilyName = newFont.FontFamilyName;
@@ -184,7 +217,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 					_settings.TextureSize = newFont.FontTextureSize;
 					_settings.Characters = newFont.FontCharacters;                    
 
-                    _font = Graphics.Fonts.CreateFont(Path.GetFileNameWithoutExtension(this.Name), _settings);
+                    Font = Graphics.Fonts.CreateFont(Path.GetFileNameWithoutExtension(this.Name), _settings);
 
 					return true;
 				}
@@ -198,12 +231,28 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 			}
 			finally
 			{
+				Cursor.Current = Cursors.Default;
+
 				if (newFont != null)
 				{
 					newFont.Dispose();
 					newFont = null;
 				}
 			}
+		}
+
+		/// <summary>
+		/// Function to draw the interface for the content editor.
+		/// </summary>
+		public override void Draw()
+		{
+			Renderer.Clear(_panel.panelTextures.BackColor);
+
+			Renderer.Drawing.SmoothingMode = SmoothingMode.None;
+
+			_panel.DrawFontTexture();			
+
+			Renderer.Render(2);
 		}
 
         /// <summary>
@@ -217,6 +266,14 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
             _panel = new GorgonFontContentPanel();
 			_panel.Content = this;
 			_panel.Text = "Gorgon Font - " + Name;
+
+			_swap = Graphics.Output.CreateSwapChain("FontEditor.SwapChain", new GorgonSwapChainSettings()
+			{
+				Window = _panel.panelTextures,
+				Format = BufferFormat.R8G8B8A8_UIntNormal
+			});
+
+			Renderer = Graphics.Output.Create2DRenderer(_swap);
 
             return _panel;
         }

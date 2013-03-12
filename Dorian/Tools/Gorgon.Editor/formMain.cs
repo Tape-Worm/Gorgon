@@ -223,19 +223,6 @@ namespace GorgonLibrary.Editor
 				content = new DefaultContent();				
 			}
 
-			// Create the content resources and such.
-			control = content.InitializeContent();
-
-			// We couldn't get an interface component, fall back to the default display.
-			if (control == null)
-			{
-				content.Dispose();
-				content = new DefaultContent();
-				control = content.InitializeContent();
-			}
-
-			control.Dock = DockStyle.Fill;
-
 			// If we have content loaded, ensure we get a chance to save it.
 			if (Program.CurrentContent != null)
 			{
@@ -255,9 +242,22 @@ namespace GorgonLibrary.Editor
 				Program.CurrentContent = null;
 			}
 
+			// Create the content resources and such.
+			control = content.InitializeContent();
+
+			// We couldn't get an interface component, fall back to the default display.
+			if (control == null)
+			{
+				content.Dispose();
+				content = new DefaultContent();
+				control = content.InitializeContent();
+			}
+
+			control.Dock = DockStyle.Fill;
+
 			// Add to the main interface.
 			Program.CurrentContent = content;
-			splitEdit.Panel1.Controls.Add(control);			
+			splitPanel1.Controls.Add(control);			
 
 			// If the current content has a renderer, then activate it.
 			// Otherwise, turn it off to conserve cycles.
@@ -636,9 +636,11 @@ namespace GorgonLibrary.Editor
             // Create the node.
             newNode = new Node(content.Name);
             newNode.Image = icon;
-            newNode.Tag = file;
-            
+            newNode.Tag = file;			
+			            
             directoryNode.Item2.Nodes.Add(newNode);
+
+			treeFiles.SelectedNode = treeFiles.FindNodeByTag(newNode);
         }
 
 		/// <summary>
@@ -774,10 +776,6 @@ namespace GorgonLibrary.Editor
 		public formMain()
 		{
 			InitializeComponent();
-
-			// Force the splitter width to stay at 4 pixels!
-			splitEdit.SplitterWidth = 4;
-
 			_unSavedFont = new Font(this.Font, FontStyle.Bold);
 		}
 		#endregion

@@ -229,6 +229,8 @@
 			this.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
 			this.Name = "ZuneForm";
 			this.Text = "Form";
+			this.Activated += new System.EventHandler(this.ZuneForm_Activated);
+			this.Deactivate += new System.EventHandler(this.ZuneForm_Deactivate);
 			this.Load += new System.EventHandler(this.ZuneForm_Load);
 			this.PaddingChanged += new System.EventHandler(this.ZuneForm_PaddingChanged);
 			this.Paint += new System.Windows.Forms.PaintEventHandler(this.ZuneForm_Paint);
