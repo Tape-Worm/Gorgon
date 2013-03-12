@@ -38,9 +38,9 @@ using GorgonLibrary.Configuration;
 namespace GorgonLibrary.Editor
 {
 	/// <summary>
-	/// Configuration settings for the content interfaces.
+	/// Configuration settings for the plug-in interfaces.
 	/// </summary>
-	public abstract class ContentSettings
+	public abstract class EditorPlugInSettings
 		: GorgonApplicationSettings
 	{
 		#region Properties.
@@ -76,7 +76,7 @@ namespace GorgonLibrary.Editor
 		/// </summary>
 		/// <param name="contentType">Type of the content.</param>
 		/// <param name="version">The version of the settings file.</param>
-		protected ContentSettings(string contentType, Version version)
+		protected EditorPlugInSettings(string contentType, Version version)
 			: base("Gorgon.Editor." + contentType, version)
 		{
 			// Set the path for the application settings.
