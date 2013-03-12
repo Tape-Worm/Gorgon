@@ -262,7 +262,14 @@ namespace GorgonLibrary.FileSystem.GorPack
 		/// <exception cref="T:System.ObjectDisposedException">Methods were called after the stream was closed. </exception>
 		public override int Read(byte[] buffer, int offset, int count)
 		{
-			int result = _bzipStream.Read(buffer, offset, count);
+            // If we're at the end of the stream, then leave.
+            if (_position >= Length)
+            {
+                return 0;
+            }
+
+            int actualCount = (int)(Length - Position);
+			int result = _bzipStream.Read(buffer, offset, count > actualCount ? actualCount : count);
 
 			_position += result;
 
@@ -301,7 +308,7 @@ namespace GorgonLibrary.FileSystem.GorPack
 			if (_position < 0)
 				throw new EndOfStreamException("At the beginning of the stream.");
 
-			_bzipStream.Seek(_basePosition + _position, origin);
+			_bzipStream.Position = _basePosition + _position;
 
 			return _position;
 		}
@@ -316,6 +323,11 @@ namespace GorgonLibrary.FileSystem.GorPack
 		/// <exception cref="T:System.ObjectDisposedException">Methods were called after the stream was closed. </exception>
 		public override int ReadByte()
 		{
+            if (_position >= Length)
+            {
+                return -1;
+            }
+
 			int result = _bzipStream.ReadByte();
 
 			_position += result;

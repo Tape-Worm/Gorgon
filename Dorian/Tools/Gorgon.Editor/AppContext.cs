@@ -100,7 +100,7 @@ namespace GorgonLibrary.Editor
                     foreach (var plugIn in plugIns)
                     {
                         var fileSystemProvider = plugIn as GorgonFileSystemProviderPlugIn;
-                        var editorPlugIn = plugIn as EditorPlugIn;
+                        var editorPlugIn = plugIn as EditorPlugIn;                        
 
                         if (fileSystemProvider != null)
                         {
@@ -109,6 +109,19 @@ namespace GorgonLibrary.Editor
 
                         if (editorPlugIn == null)
                         {
+                            continue;
+                        }
+
+                        var validationData = editorPlugIn.ValidatePlugIn();
+
+                        // Validate the plug-in.
+                        if (!string.IsNullOrWhiteSpace(validationData))
+                        {
+                            Program.LogFile.Print("Found a {0} plug-in: \"{1}\".  But it is disabled for the following reasons:", LoggingLevel.Verbose, editorPlugIn.PlugInType, editorPlugIn.Description);
+                            Program.LogFile.Print("{0}", LoggingLevel.Verbose, validationData);
+
+                            // Add to the disabled plug-ins list.
+                            Program.DisabledPlugIns[editorPlugIn] = validationData;
                             continue;
                         }
 
@@ -126,7 +139,12 @@ namespace GorgonLibrary.Editor
                                 }
                                 break;
                             case PlugInType.FileWriter:
-                                // TODO: Write this.
+                                FileWriterPlugIn writerPlugIn = editorPlugIn as FileWriterPlugIn;
+
+                                if (writerPlugIn != null)
+                                {
+                                    Program.WriterPlugIns[editorPlugIn.Name] = writerPlugIn;
+                                }
                                 break;
                         }
                     }
@@ -242,6 +260,10 @@ namespace GorgonLibrary.Editor
 					// Do nothing.
 				}
 #endif
+                // Initialize our graphics interface.
+                _splash.UpdateVersion("Initializing graphics...");
+                Program.InitializeGraphics();
+
                 Program.LogFile.Print("Loading plug-ins...", LoggingLevel.Verbose);
                 _splash.UpdateVersion("Loading plug-ins...");
                 LoadPlugIns();
@@ -291,12 +313,12 @@ namespace GorgonLibrary.Editor
 				// TODO: Remove this, just here for testes.
 				Program.ScratchFiles.Mount(@"..\..\..\..\Resources\FileSystems\BZipFileSystem.gorPack");
 
-				_splash.UpdateVersion("Initializing graphics...");
-				Program.InitializeGraphics();
+                // Set up the default pane.
 				mainForm.LoadContentPane<DefaultContent>();
 
 				_splash.UpdateVersion(string.Empty);
 
+                // Keep showing the splash screen.
 				while (timer.Milliseconds < 3000)
 					System.Threading.Thread.Sleep(1);
 

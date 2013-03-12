@@ -31,6 +31,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Drawing;
 using System.Windows.Forms;
+using GorgonLibrary.FileSystem;
 using GorgonLibrary.PlugIns;
 using GorgonLibrary.Graphics;
 using GorgonLibrary.Renderers;
@@ -60,6 +61,17 @@ namespace GorgonLibrary.Editor
 		: GorgonPlugIn
 	{
 		#region Properties.
+        /// <summary>
+        /// Property to return the graphics interface for the application.
+        /// </summary>
+        public GorgonGraphics Graphics
+        {
+            get
+            {
+                return Program.Graphics;
+            }
+        }
+
 		/// <summary>
 		/// Property to return the type of plug-in.
 		/// </summary>
@@ -67,25 +79,15 @@ namespace GorgonLibrary.Editor
 		public abstract PlugInType PlugInType
 		{
 			get;
-		}
+		}        
 		#endregion
 
 		#region Methods.
-		/// <summary>
-		/// Function to create a tool strip menu item.
-		/// </summary>
-		/// <param name="name">Name of the menu item.</param>
-		/// <param name="text">Text to display on the menu item.</param>
-		/// <param name="icon">Icon to show on the menu item.</param>
-		/// <returns>A new tool strip menu item.</returns>
-		protected ToolStripMenuItem CreateMenuItem(string name, string text, Image icon)
-		{
-			ToolStripMenuItem result = new ToolStripMenuItem(text, icon);
-			result.Name = name;
-			result.Tag = this;
-
-			return result;
-		}
+        /// <summary>
+        /// Function to determine if a plug-in can be used.
+        /// </summary>
+        /// <returns>A string containing a list of reasons why the plug-in is not valid for use, or an empty string if the control is not valid for use.</returns>
+        protected internal abstract string ValidatePlugIn();
 		#endregion
 
 		#region Constructor/Destructor.
@@ -160,7 +162,23 @@ namespace GorgonLibrary.Editor
         /// <returns>A new content object interface.</returns>
         protected internal abstract ContentObject CreateContentObject();
 
-		/// <summary>
+        /// <summary>
+        /// Function to create a tool strip menu item.
+        /// </summary>
+        /// <param name="name">Name of the menu item.</param>
+        /// <param name="text">Text to display on the menu item.</param>
+        /// <param name="icon">Icon to show on the menu item.</param>
+        /// <returns>A new tool strip menu item.</returns>
+        protected ToolStripMenuItem CreateMenuItem(string name, string text, Image icon)
+        {
+            ToolStripMenuItem result = new ToolStripMenuItem(text, icon);
+            result.Name = name;
+            result.Tag = this;
+
+            return result;
+        }
+        
+        /// <summary>
 		/// Function to return the icon for the content.
 		/// </summary>
 		/// <returns>The 16x16 image for the content.</returns>
@@ -213,4 +231,103 @@ namespace GorgonLibrary.Editor
 		}
 		#endregion
 	}
+
+    /// <summary>
+    /// An interface for file output plug-ins.
+    /// </summary>
+    public abstract class FileWriterPlugIn
+        : EditorPlugIn, IDisposable
+    {
+        #region Variables.
+
+        #endregion
+
+        #region Properties.
+        /// <summary>
+        /// Property to return the file extensions (and descriptions) for this content type.
+        /// </summary>
+        /// <remarks>This dictionary contains the file extension including the leading period as the key (in lowercase), and a tuple containing the file extension, and a description of the file (for display).</remarks>
+        public IDictionary<string, Tuple<string, string>> FileExtensions
+        {
+            get;
+            private set;
+        }
+
+        /// <summary>
+        /// Property to return the path to the scratch area.
+        /// </summary>
+        public string ScratchPath
+        {
+            get
+            {
+                return Program.Settings.ScratchPath;
+            }
+        }
+
+        /// <summary>
+        /// Property to return the file system for the scratch files.
+        /// </summary>
+        public GorgonFileSystem ScratchFileSystem
+        {
+            get
+            {
+                return Program.ScratchFiles;
+            }
+        }
+
+        /// <summary>
+        /// Property to return the type of plug-in.
+        /// </summary>
+        /// <remarks>Implementors must provide one of the PlugInType enumeration values.</remarks>
+        public override PlugInType PlugInType
+        {
+            get
+            {
+                return Editor.PlugInType.FileWriter;
+            }
+        }
+        #endregion
+
+        #region Methods.
+        /// <summary>
+        /// Function to write the file to the specified path.
+        /// </summary>
+        /// <param name="path">Path to the file.</param>
+        public abstract void WriteFile(string path);
+        #endregion
+
+        #region Constructor/Destructor.
+        /// <summary>
+        /// Initializes a new instance of the <see cref="FileWriterPlugIn"/> class.
+        /// </summary>
+        /// <param name="description">Optional description of the plug-in.</param>
+        /// <remarks>
+        /// Objects that implement this base class should pass in a hard coded description on the base constructor.
+        /// </remarks>
+        protected FileWriterPlugIn(string description)
+            : base(description)
+        {
+            FileExtensions = new Dictionary<string, Tuple<string, string>>();
+        }
+        #endregion
+
+        #region IDisposable Members
+        /// <summary>
+        /// Releases unmanaged and - optionally - managed resources.
+        /// </summary>
+        /// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
+        protected virtual void Dispose(bool disposing)
+        {
+        }
+
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+        #endregion
+    }
 }

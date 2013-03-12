@@ -296,7 +296,14 @@ namespace GorgonLibrary.FileSystem.Zip
 		/// <exception cref="T:System.ObjectDisposedException">Methods were called after the stream was closed. </exception>
 		public override int Read(byte[] buffer, int offset, int count)
 		{
-			int result = _zipStream.Read(buffer, offset, count);
+            if (_position >= Length)
+            {
+                return 0;
+            }
+
+            int actualCount = (int)(Length - Position);
+			int result = _zipStream.Read(buffer, offset, count > actualCount ? actualCount : count);
+
 			_position += result;
 			return result;
 		}
@@ -333,7 +340,7 @@ namespace GorgonLibrary.FileSystem.Zip
 			if (_position < 0)
 				throw new IOException("At the beginning of the stream.");
 
-			_zipStream.Seek(_position + _basePosition, origin);
+            _zipStream.Position = _position + _basePosition;
 
 			return _position;
 		}
@@ -348,6 +355,11 @@ namespace GorgonLibrary.FileSystem.Zip
 		/// <exception cref="T:System.ObjectDisposedException">Methods were called after the stream was closed. </exception>
 		public override int ReadByte()
 		{
+            if (_position >= Length)
+            {
+                return -1;
+            }
+
 			int result = _zipStream.ReadByte();
 
 			_position += result;

@@ -172,6 +172,11 @@ namespace GorgonLibrary.Editor
                 PlugIns.Add(Gorgon.ApplicationDirectory + "Gorgon.FileSystem.GorPack.dll");
             }
 
+            if (File.Exists(Gorgon.ApplicationDirectory + "Gorgon.GorPackWriter.dll"))
+            {
+                PlugIns.Add(Gorgon.ApplicationDirectory + "Gorgon.GorPackWriter.dll");
+            }
+
 			// Set the default size, but ensure that it fits within the primary monitor.
 			// Do not go larger than 1280x800 by default.
 			if (Screen.PrimaryScreen.WorkingArea.Width < 1280)

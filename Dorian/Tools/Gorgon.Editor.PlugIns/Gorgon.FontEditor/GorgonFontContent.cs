@@ -110,6 +110,9 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
             {
                 if (disposing)
                 {
+                    // Save our settings.
+                    GorgonFontEditorPlugIn.Settings.Save();
+
                     if (Font != null)
                     {
                         Font.Dispose();
@@ -180,9 +183,6 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
                 // Write the changes to the file.
                 OnPersist();
             }
-
-			// Save our settings.
-			GorgonFontEditorPlugIn.Settings.Save();
 
             return true;
         }

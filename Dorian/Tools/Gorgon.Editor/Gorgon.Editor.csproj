@@ -102,7 +102,6 @@
     <Compile Include="Controls\panelEx.Designer.cs">
       <DependentUpon>panelEx.cs</DependentUpon>
     </Compile>
-    <Compile Include="ContentSettings.cs" />
     <Compile Include="DefaultContent.cs" />
     <Compile Include="DefaultContentPanel.cs">
       <SubType>UserControl</SubType>
@@ -117,6 +116,7 @@
       <DependentUpon>formProjectFolderSelector.cs</DependentUpon>
     </Compile>
     <Compile Include="PlugIn\EditorPlugIn.cs" />
+    <Compile Include="PlugIn\EditorPlugInSettings.cs" />
     <Compile Include="VisualStyle\DarkFormsRenderer.cs" />
     <Compile Include="formMain.cs">
       <SubType>Form</SubType>
