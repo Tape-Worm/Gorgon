@@ -65,17 +65,6 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		}
 
 		/// <summary>
-		/// Property to return whether the plug-in supports exporting of content data.
-		/// </summary>
-		public override bool SupportsExport
-		{
-			get 
-			{
-				return true;
-			}
-		}
-
-		/// <summary>
 		/// Property to return whether the plug-in supports importing of external data.
 		/// </summary>
 		public override bool SupportsImport

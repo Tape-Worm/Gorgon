@@ -145,14 +145,6 @@ namespace GorgonLibrary.Editor
 		{
 			get;
 		}
-
-		/// <summary>
-		/// Property to return whether the plug-in supports exporting of content data.
-		/// </summary>
-		public abstract bool SupportsExport
-		{
-			get;
-		}
         #endregion
 
         #region Methods.

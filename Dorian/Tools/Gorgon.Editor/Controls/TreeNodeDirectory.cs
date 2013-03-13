@@ -41,10 +41,71 @@ namespace GorgonLibrary.Editor
 		: EditorTreeNode
 	{
 		#region Variables.
-
+        private bool _isUpdated = false;
 		#endregion
 
 		#region Properties.
+        /// <summary>
+        /// Property to set or return whether this directory is new or not.
+        /// </summary>
+        public virtual bool IsNew
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Property to set or return whether this directory has been updated or not.
+        /// </summary>
+        public virtual bool IsUpdated
+        {
+            get
+            {
+                return _isUpdated;
+            }
+            set
+            {
+                if (!IsNew)
+                {
+                    _isUpdated = value;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the foreground color of the tree node.
+        /// </summary>
+        /// <returns>The foreground <see cref="T:System.Drawing.Color" /> of the tree node.</returns>
+        ///   <PermissionSet>
+        ///   <IPermission class="System.Security.Permissions.FileIOPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        ///   </PermissionSet>
+        public override Color ForeColor
+        {
+            get
+            {
+                if (IsSelected)
+                {
+                    return DarkFormsRenderer.MenuHilightForeground;
+                }
+
+                if (IsNew)
+                {
+                    return Color.LightGreen;
+                }
+
+                if (IsUpdated)
+                {
+                    return Color.FromArgb(94, 126, 255);
+                }
+
+                return base.ForeColor;
+            }
+            set
+            {
+                
+            }
+        }
+
 		/// <summary>
 		/// Property to return the directory associated with this node.
 		/// </summary>
@@ -87,6 +148,63 @@ namespace GorgonLibrary.Editor
 		#endregion
 
 		#region Properties.
+        /// <summary>
+        /// Property to set or return whether this directory is new or not.
+        /// </summary>
+        public override bool IsNew
+        {
+            get
+            {
+                return false;
+            }
+            set
+            {                
+            }
+        }
+
+        /// <summary>
+        /// Property to set or return whether this directory has been updated or not.
+        /// </summary>
+        public override bool IsUpdated
+        {
+            get
+            {
+                return Program.ChangedItems.Count > 0;
+            }
+            set
+            {
+                
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the foreground color of the tree node.
+        /// </summary>
+        /// <returns>The foreground <see cref="T:System.Drawing.Color" /> of the tree node.</returns>
+        ///   <PermissionSet>
+        ///   <IPermission class="System.Security.Permissions.FileIOPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        ///   </PermissionSet>
+        public override Color ForeColor
+        {
+            get
+            {
+                if (IsSelected)
+                {
+                    return DarkFormsRenderer.MenuHilightForeground;
+                }
+
+                if (IsUpdated)
+                {
+                    return Color.FromArgb(94, 126, 255);
+                }
+
+                return Color.White;
+            }
+            set
+            {                
+            }
+        }
+
 		/// <summary>
 		/// Gets or sets the name of the tree node.
 		/// </summary>
@@ -95,7 +213,7 @@ namespace GorgonLibrary.Editor
 		{
 			get
 			{
-				return Program.ProjectFile;
+				return Program.EditorFile;
 			}
 			set
 			{

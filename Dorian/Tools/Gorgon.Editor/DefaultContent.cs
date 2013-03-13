@@ -59,7 +59,7 @@ namespace GorgonLibrary.Editor
 		private string _name = string.Empty;					// Name of the document.
 		#endregion
 
-		#region Properties.
+		#region Properties.        
 		/// <summary>
 		/// Property to return the type of content.
 		/// </summary>
@@ -70,6 +70,17 @@ namespace GorgonLibrary.Editor
 				return "Default Content";
 			}		
 		}
+
+        /// <summary>
+        /// Property to return whether the content can be exported.
+        /// </summary>
+        public override bool CanExport
+        {
+            get 
+            {
+                return false;
+            }
+        }
 
 		/// <summary>
 		/// Property to return whether the content uses a renderer.

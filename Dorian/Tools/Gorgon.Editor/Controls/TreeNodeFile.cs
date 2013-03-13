@@ -40,7 +40,7 @@ namespace GorgonLibrary.Editor
 	class TreeNodeFile
 		: EditorTreeNode
 	{
-		#region Variables.		
+		#region Variables.
 		#endregion
 
 		#region Properties.
@@ -64,6 +64,11 @@ namespace GorgonLibrary.Editor
 		{
 			get
 			{
+                if (IsSelected)
+                {
+                    return DarkFormsRenderer.MenuHilightForeground;
+                }
+
 				// Draw the text as disabled.
 				if (PlugIn == null)
 				{
@@ -74,7 +79,7 @@ namespace GorgonLibrary.Editor
 				{
 					bool state = Program.ChangedItems[File.FullPath.ToLower()];
 
-					return state ? Color.LightGreen : Color.LightBlue;
+					return state ? Color.LightGreen : Color.FromArgb(94, 126, 255);
 				}
 
 				return Color.White;

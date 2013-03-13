@@ -92,13 +92,22 @@ namespace GorgonLibrary.Editor
         }
         
 		/// <summary>
-		/// Property to return the name of the project file.
+		/// Property to return the name of the editor file.
 		/// </summary>
-		public static string ProjectFile
+		public static string EditorFile
 		{
 			get;
 			private set;
 		}
+
+        /// <summary>
+        /// Property to return the path to the editor file.
+        /// </summary>
+        public static string EditorFilePath
+        {
+            get;
+            private set;
+        }
 
 		/// <summary>
 		/// Property to return the logging interface for the application.
@@ -157,13 +166,30 @@ namespace GorgonLibrary.Editor
 
 		#region Methods.
         /// <summary>
+        /// Function to open the editor file.
+        /// </summary>
+        /// <param name="path">Path to the editor file.</param>
+        public static void OpenEditorFile(string path)
+        {
+            // TODO: Actually open the file.
+
+            Program.EditorFilePath = path;
+            Program.EditorFile = Path.GetFileName(Program.EditorFilePath);
+            Program.Settings.LastEditorFile = path;
+        }
+
+        /// <summary>
         /// Function to save the editor file.
         /// </summary>
         /// <param name="path">Path to the new file.</param>
         public static void SaveEditorFile(string path)
-        {
-            // TODO: We need to remember the last plug-in used to save this file.
+        {            
             Program.WriterPlugIns.First().Value.WriteFile(path);
+            EditorFile = Path.GetFileName(path);
+            EditorFilePath = path;
+
+            // Remove all changed items.
+            ChangedItems.Clear();
         }
 
 		/// <summary>
@@ -206,6 +232,22 @@ namespace GorgonLibrary.Editor
 			}
 		}
 
+        /// <summary>
+        /// Function to intialize the scratch area.
+        /// </summary>
+        public static void InitializeScratch()
+        {
+            Program.ScratchFiles.WriteLocation = Program.Settings.ScratchPath;
+
+            // Set the directory to hidden.  We don't want users really messing around in here if we can help it.
+            var scratchDir = new System.IO.DirectoryInfo(Program.Settings.ScratchPath);
+            if (((scratchDir.Attributes & FileAttributes.Hidden) != FileAttributes.Hidden)
+                || ((scratchDir.Attributes & FileAttributes.NotContentIndexed) != FileAttributes.NotContentIndexed))
+            {
+                scratchDir.Attributes = System.IO.FileAttributes.NotContentIndexed | System.IO.FileAttributes.Hidden;
+            }
+        }
+
 		/// <summary>
 		/// Function to clean up the scratch area when the program exits.
 		/// </summary>
@@ -216,18 +258,26 @@ namespace GorgonLibrary.Editor
 			{
 				throw new ApplicationException("The application settings were not loaded.");
 			}
-
-			// The scratch directory is gone, nothing to clean up.
-			if (!Directory.Exists(Settings.ScratchPath))
-			{
-				return true;
-			}
-
+            			
 			try
 			{
-				LogFile.Print("Cleaning up scratch area at \"{0}\".", LoggingLevel.Simple, Settings.ScratchPath);
+                string scratchLocation = Settings.ScratchPath;
 
-				DirectoryInfo directory = new DirectoryInfo(Settings.ScratchPath);
+                // Use the write location of the currently mounted file system if possible.
+                if ((ScratchFiles != null) && (!string.IsNullOrWhiteSpace(ScratchFiles.WriteLocation)))
+                {
+                    scratchLocation = ScratchFiles.WriteLocation;
+                }
+
+                // The scratch directory is gone, nothing to clean up.
+                if (!Directory.Exists(scratchLocation))
+                {
+                    return true;
+                }
+
+				LogFile.Print("Cleaning up scratch area at \"{0}\".", LoggingLevel.Simple, scratchLocation);
+
+				DirectoryInfo directory = new DirectoryInfo(scratchLocation);
 
 				// Wipe out everything in this directory and the directory proper.
 				directory.Delete(true);
@@ -286,7 +336,8 @@ namespace GorgonLibrary.Editor
             ChangedItems = new Dictionary<string, bool>();
             DisabledPlugIns = new Dictionary<EditorPlugIn, string>();
 
-			ProjectFile = "Untitled";
+			EditorFile = "Untitled";
+            EditorFilePath = string.Empty;
 		}
 		#endregion
 

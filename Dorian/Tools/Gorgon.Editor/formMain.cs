@@ -48,15 +48,12 @@ namespace GorgonLibrary.Editor
 	/// </summary>
 	public partial class formMain
 		: ZuneForm
-	{
-		#region Variables.		
-		private Font _unSavedFont = null;									// Font for unsaved documents.
-		private bool _wasSaved = false;										// Flag to indicate that the project was previously saved.
-        private string _editorFile = "Untitled";                            // Editor file file name.
-        private string _editorFilePath = string.Empty;                      // Editor file file path.
-		#endregion
+    {
+        #region Variables.
+        private RootNodeDirectory _rootNode = null;             // Our root node for the tree.
+        #endregion
 
-		#region Properties.
+        #region Properties.
         /// <summary>
         /// Property to return whether we need the save as... dialog or not.
         /// </summary>
@@ -64,7 +61,7 @@ namespace GorgonLibrary.Editor
         {
             get
             {
-                return string.IsNullOrWhiteSpace(_editorFilePath);
+                return string.IsNullOrWhiteSpace(Program.EditorFilePath);
             }
         }
 		#endregion
@@ -75,8 +72,16 @@ namespace GorgonLibrary.Editor
         /// </summary>
         private void ValidateControls()
         {
+            Text = Program.EditorFile + " - Gorgon Editor";
+
+            itemOpen.Enabled = Program.ScratchFiles.Providers.Count > 0;
+            itemSaveAs.Enabled = (Program.WriterPlugIns.Count > 0) && (Program.ChangedItems.Count > 0);
+            itemSave.Enabled = !string.IsNullOrWhiteSpace(Program.EditorFilePath) && (Program.ChangedItems.Count > 0);
+
+            // Ensure we have plug-ins that can import.
 			itemImport.Enabled = Program.ContentPlugIns.Any(item => item.Value.SupportsImport);
-			itemExport.Enabled = Program.ContentPlugIns.Any(item => item.Value.SupportsExport);
+            // Check to see if the current content can export.
+            itemExport.Enabled = ((Program.CurrentContent != null) && (Program.CurrentContent.CanExport));
 
             itemAdd.Enabled = false;
             popupItemAdd.Enabled = false;
@@ -115,7 +120,7 @@ namespace GorgonLibrary.Editor
                     itemOpen.Enabled = false;
                     itemCreateFolder.Enabled = true;
                     itemCreateFolder.Visible = true;
-                    if (!(node is RootNodeDirectory))
+                    if (node != _rootNode)
                     {
                         itemDelete.Enabled = true;
                         itemDelete.Text = "Delete Folder...";
@@ -227,108 +232,6 @@ namespace GorgonLibrary.Editor
 						break;
 					}
 			}
-		}
-
-		/// <summary>
-		/// Handles the NodeMouseClick event of the treeFiles control.
-		/// </summary>
-		/// <param name="sender">The source of the event.</param>
-		/// <param name="e">The <see cref="TreeNodeMouseClickEventArgs"/> instance containing the event data.</param>
-		private void treeFiles_NodeMouseClick(object sender, TreeNodeMouseClickEventArgs e)
-		{
-			if (e.Node != null)
-			{
-				treeFiles.SelectedNode = e.Node;
-			}
-		}
-
-		/// <summary>
-		/// Handles the DrawNode event of the treeFiles control.
-		/// </summary>
-		/// <param name="sender">The source of the event.</param>
-		/// <param name="e">The <see cref="DrawTreeNodeEventArgs"/> instance containing the event data.</param>
-		private void treeFiles_DrawNode(object sender, DrawTreeNodeEventArgs e)
-		{
-			Image currentImage = null;
-			Image plusMinusImage = null;
-			Font font = null;
-			EditorTreeNode node = e.Node as EditorTreeNode;
-			TreeNodeFile nodeFile = e.Node as TreeNodeFile;
-			Point position = e.Bounds.Location;
-			Size size = e.Bounds.Size;
-
-			if ((e.Bounds.Width == 0) || (e.Bounds.Height == 0))
-			{
-				return;
-			}
-
-			if (node == null)
-			{
-				e.DrawDefault = true;				
-				return;
-			}
-
-			font = node.NodeFont;
-
-			// Use parent font if no font is assigned.
-			if (font == null)
-			{
-				font = treeFiles.Font;
-			}
-
-			// Shift the position.
-			position.X = position.X + (e.Node.Level * 16);
-
-			if (node.IsExpanded)
-			{
-				currentImage = node.ExpandedImage;
-				plusMinusImage = Properties.Resources.tree_expand_16x16;
-
-				if (currentImage == null)
-				{
-					currentImage = node.CollapsedImage;
-				}				
-			}
-			else
-			{
-				plusMinusImage = Properties.Resources.tree_collapse_16x16;
-				currentImage = node.CollapsedImage;
-			}
-
-			if ((Program.CurrentContent != null) && (nodeFile != null) && (Program.CurrentContent.File == nodeFile.File))
-			{
-				font = _unSavedFont;
-			}
-
-			var textColor = node.ForeColor;
-
-			// Draw selection rectangle.
-			if ((e.State & TreeNodeStates.Selected) == TreeNodeStates.Selected)
-			{
-				using (var brush = new SolidBrush(DarkFormsRenderer.MenuHilightBackground))
-				{
-					e.Graphics.FillRectangle(brush, e.Bounds);
-					textColor = DarkFormsRenderer.MenuHilightForeground;
-				}
-			}
-
-			// Check for child nodes.
-			position.X = position.X + 8;
-
-			if (node.Nodes.Count > 0)
-			{
-				e.Graphics.DrawImage(plusMinusImage, new Rectangle(position, plusMinusImage.Size));
-			}
-
-			position.X = position.X + 16;
-
-			// Draw the icon.
-			e.Graphics.DrawImage(currentImage, new Rectangle(position, currentImage.Size));
-
-			// Offset.
-			position.X = position.X + currentImage.Width + 2;
-
-			TextRenderer.DrawText(e.Graphics, node.Text, font, position, textColor);
 		}
 
 		/// <summary>
@@ -485,7 +388,7 @@ namespace GorgonLibrary.Editor
 				{
 					ConfirmationResult result = ConfirmationResult.None;
 
-					result = GorgonDialogs.ConfirmBox(this, "The editor file '" + _editorFile + "' has unsaved changes.  Would you like to save these changes?", true, false);
+					result = GorgonDialogs.ConfirmBox(this, "The editor file '" + Program.EditorFile + "' has unsaved changes.  Would you like to save these changes?", true, false);
 
 					if (result == ConfirmationResult.Yes)
 					{
@@ -517,12 +420,6 @@ namespace GorgonLibrary.Editor
 					Program.CurrentContent = null;
 				}
 				
-				if (_unSavedFont != null)
-				{
-					_unSavedFont.Dispose();
-					_unSavedFont = null;
-				}
-
 				if (this.WindowState != FormWindowState.Minimized)
 				{
 					Program.Settings.FormState = this.WindowState;
@@ -536,6 +433,12 @@ namespace GorgonLibrary.Editor
 				{
 					Program.Settings.WindowDimensions = this.DesktopBounds;
 				}
+                
+                // Remember the last file we had open.
+                if (!string.IsNullOrWhiteSpace(Program.EditorFilePath))
+                {
+                    Program.Settings.LastEditorFile = Program.EditorFilePath;
+                }
 
 				Program.Settings.Save();
 			}
@@ -626,17 +529,20 @@ namespace GorgonLibrary.Editor
 		/// </summary>
 		private void InitializeTree()
 		{
-			RootNodeDirectory rootNode = new RootNodeDirectory();
+			_rootNode = new RootNodeDirectory();
 
 			// If we have files or sub directories, dump them in here.
 			if ((Program.ScratchFiles.RootDirectory.Directories.Count > 0) || (Program.ScratchFiles.RootDirectory.Files.Count > 0))
 			{
-				rootNode.Nodes.Add(new TreeNode("DummyNode"));
+				_rootNode.Nodes.Add(new TreeNode("DummyNode"));
 			}
 
 			treeFiles.BeginUpdate();
-			treeFiles.Nodes.Add(rootNode);
-			rootNode.Expand();
+			treeFiles.Nodes.Add(_rootNode);
+            if (_rootNode.Nodes.Count > 0)
+            {
+                _rootNode.Expand();
+            }
 			treeFiles.EndUpdate();
 		}
 
@@ -705,6 +611,7 @@ namespace GorgonLibrary.Editor
 
 			// Add to tree and select.
 			directoryNode.Nodes.Add(newNode);
+            directoryNode.IsUpdated = true;
 			treeFiles.SelectedNode = newNode;
 
 			newNode.Redraw();
@@ -774,8 +681,58 @@ namespace GorgonLibrary.Editor
 			finally
 			{
 				Cursor.Current = Cursors.Default;
+                ValidateControls();
 			}
 		}
+
+        /// <summary>
+        /// Handles the Click event of the itemOpen control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void itemOpen_Click(object sender, EventArgs e)
+        {
+            StringBuilder extensions = new StringBuilder(512);
+
+            try
+            {
+                // TODO: Check to see if the current file needs saving and prompt to save.
+
+                if (!string.IsNullOrWhiteSpace(Program.Settings.LastEditorFile))
+                {
+                    dialogOpenFile.InitialDirectory = Path.GetDirectoryName(Program.Settings.LastEditorFile);
+                }
+
+                // Add extensions from file system providers.
+                foreach (var provider in Program.ScratchFiles.Providers)
+                {
+                    foreach (var extension in provider.PreferredExtensions)
+                    {
+                        if (extensions.Length > 0)
+                        {
+                            extensions.Append("|");
+                        }
+                        extensions.Append(extension);
+                    }
+                }
+                                
+                dialogOpenFile.Filter = extensions.ToString();
+
+                if (dialogOpenFile.ShowDialog(this) == System.Windows.Forms.DialogResult.OK)
+                {
+                    Program.OpenEditorFile(dialogOpenFile.FileName);
+                }
+            }
+            catch (Exception ex)
+            {
+                GorgonDialogs.ErrorBox(this, ex);
+            }
+            finally
+            {
+                Cursor.Current = Cursors.Default;
+                ValidateControls();
+            }
+        }
 
 		/// <summary>
 		/// Function to initialize the global interface commands for each content plug-in.
@@ -846,7 +803,6 @@ namespace GorgonLibrary.Editor
 		public formMain()
 		{
 			InitializeComponent();
-			_unSavedFont = new Font(this.Font, FontStyle.Bold);
 		}
 		#endregion
 	}
