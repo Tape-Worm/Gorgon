@@ -57,7 +57,7 @@ namespace GorgonLibrary.Editor.GorPackWriterPlugIn
 		#region Properties.
 		#endregion
 
-		#region Methods.        
+		#region Methods.
         /// <summary>
         /// Function to create a new path node.
         /// </summary>
@@ -66,7 +66,7 @@ namespace GorgonLibrary.Editor.GorPackWriterPlugIn
         private XElement CreatePathNode(GorgonFileSystemDirectory directory)
         {
             return new XElement("Path", 
-                                new XAttribute("Name", directory.Name), 
+                                new XAttribute("Name", (directory.Name == "/") ? @"\" : directory.Name), 
                                 new XAttribute("FullPath", directory.FullPath.FormatDirectory(Path.DirectorySeparatorChar)));
         }
 
@@ -76,15 +76,16 @@ namespace GorgonLibrary.Editor.GorPackWriterPlugIn
         /// <param name="file">File to retrieve information from.</param>
         /// <param name="position">Position of the file in the packed data.</param>
         /// <param name="size">Size of the compressed file in the packed data.</param>
+		/// <param name="compressedSize">Compressed size of the file.</param>
         /// <returns>A new node element with the file information.</returns>
-        private XElement CreateFileNode(GorgonFileSystemFileEntry file, long position, long size)
+        private XElement CreateFileNode(GorgonFileSystemFileEntry file, long position, long size, long compressedSize)
         {
             return new XElement("File",
                                 new XElement("Filename", file.BaseFileName),
                                 new XElement("Extension", file.Extension),
                                 new XElement("Offset", position),
-                                new XElement("Size", file.Size),
-                                new XElement("CompressedSize", size),
+                                new XElement("Size", size),
+                                new XElement("CompressedSize", compressedSize),
                                 new XElement("FileDate", file.CreateDate.ToString(System.Globalization.CultureInfo.InvariantCulture.DateTimeFormat)),
                                 new XElement("Encrypted", false),
                                 new XElement("Comment", "Gorgon.Editor"));
@@ -118,6 +119,7 @@ namespace GorgonLibrary.Editor.GorPackWriterPlugIn
                 // Load the file into a buffer for compression.
                 long fileStart = output.Position;
                 long fileSize = 0;
+				long compressedSize = 0;
 
                 using (var sourceData = fileEntry.OpenStream(false))
                 {
@@ -125,32 +127,32 @@ namespace GorgonLibrary.Editor.GorPackWriterPlugIn
                     using (var fileData = new GorgonDataStream((int)sourceData.Length))
                     {
                         sourceData.CopyTo(fileData);
+						fileSize = fileData.Length;
                         fileData.Position = 0;
 
                         using (var compressedData = new MemoryStream())
                         {
                             BZip2.Compress(fileData, compressedData, false, 9);                    
-                            compressedData.Position = 0;
+                            compressedData.Position = 0;							
                             fileData.Position = 0;
 
                             // Write the compressed data out to our blob file.
-                            if (compressedData.Length < fileData.Length)
+                            if (compressedData.Length < fileSize)
                             {
                                 compressedData.CopyTo(output);
-                                fileSize = compressedData.Length;
+                                compressedSize = compressedData.Length;
                             }
                             else
                             {
                                 // We didn't compress anything, so just dump the file.
                                 fileData.CopyTo(output);
-                                fileSize = 0;
                             }
                         }
                     }
                 }
 
                 // Add to our directory.
-                rootNode.Add(CreateFileNode(fileEntry, fileStart, fileSize));
+                rootNode.Add(CreateFileNode(fileEntry, fileStart, fileSize, compressedSize));
             }
         }
 
@@ -213,11 +215,8 @@ namespace GorgonLibrary.Editor.GorPackWriterPlugIn
                             writer.Write("GORPACK1.SharpZip.BZ2");
                                                         
                             // Copy FAT.
-                            using (var fatData = new MemoryStream())
+							using (var fatData = new GorgonDataStream(Encoding.UTF8.GetBytes(_fat.ToStringWithDeclaration())))
                             {
-                                _fat.Save(fatData);
-                                fatData.Position = 0;
-
                                 using (var compressData = new MemoryStream())
                                 {
                                     BZip2.Compress(fatData, compressData, false, 9);

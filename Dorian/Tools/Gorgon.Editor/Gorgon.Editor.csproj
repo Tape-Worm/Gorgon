@@ -62,9 +62,6 @@
     <StartupObject>GorgonLibrary.Editor.Program</StartupObject>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Aga.Controls">
-      <HintPath>..\..\Dependencies\treeviewadv\Aga.Controls.dll</HintPath>
-    </Reference>
     <Reference Include="KRBTabControl">
       <HintPath>..\..\Dependencies\KRBTabControl\KRBTabControl.dll</HintPath>
     </Reference>
@@ -96,12 +93,15 @@
     <Compile Include="ContentPanel.Designer.cs">
       <DependentUpon>ContentPanel.cs</DependentUpon>
     </Compile>
+    <Compile Include="Controls\TreeNodeFile.cs" />
+    <Compile Include="Controls\EditorTreeNode.cs" />
     <Compile Include="Controls\panelEx.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Controls\panelEx.Designer.cs">
       <DependentUpon>panelEx.cs</DependentUpon>
     </Compile>
+    <Compile Include="Controls\TreeNodeDirectory.cs" />
     <Compile Include="DefaultContent.cs" />
     <Compile Include="DefaultContentPanel.cs">
       <SubType>UserControl</SubType>
@@ -187,6 +187,8 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Gorgon2.ico" />
+    <None Include="Resources\tree_expand_16x16.png" />
+    <None Include="Resources\tree_collapse_16x16.png" />
     <None Include="Resources\new_item_16x16.png" />
     <None Include="Resources\delete_item_16x16.png" />
     <None Include="Resources\edit_16x16.png" />

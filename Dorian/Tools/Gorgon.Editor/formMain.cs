@@ -35,7 +35,6 @@ using System.Text;
 using System.Windows.Forms;
 using System.IO;
 using KRBTabControl;
-using Aga.Controls.Tree;
 using GorgonLibrary.FileSystem;
 using GorgonLibrary.Diagnostics;
 using GorgonLibrary.UI;
@@ -50,7 +49,7 @@ namespace GorgonLibrary.Editor
 	public partial class formMain
 		: ZuneForm
 	{
-		#region Variables.
+		#region Variables.		
 		private Font _unSavedFont = null;									// Font for unsaved documents.
 		private bool _wasSaved = false;										// Flag to indicate that the project was previously saved.
         private string _editorFile = "Untitled";                            // Editor file file name.
@@ -106,9 +105,9 @@ namespace GorgonLibrary.Editor
             }
             else
             {
-                var node = treeFiles.SelectedNode.Tag as Node;
+				var node = treeFiles.SelectedNode as EditorTreeNode;
                                 
-                if (node.Tag is GorgonFileSystemDirectory)
+                if (node is TreeNodeDirectory)
                 {
                     itemAdd.Enabled = itemAdd.DropDownItems.Count > 0;
                     popupItemAdd.Enabled = itemAdd.Enabled;
@@ -116,7 +115,7 @@ namespace GorgonLibrary.Editor
                     itemOpen.Enabled = false;
                     itemCreateFolder.Enabled = true;
                     itemCreateFolder.Visible = true;
-                    if (node.Tag != Program.ScratchFiles.RootDirectory)
+                    if (!(node is RootNodeDirectory))
                     {
                         itemDelete.Enabled = true;
                         itemDelete.Text = "Delete Folder...";
@@ -131,9 +130,9 @@ namespace GorgonLibrary.Editor
                     }                    
                 }
 
-                if (node.Tag is GorgonFileSystemFileEntry)
+                if (node is TreeNodeFile)
                 {
-                    GorgonFileSystemFileEntry file = (GorgonFileSystemFileEntry)node.Tag;
+					GorgonFileSystemFileEntry file = ((TreeNodeFile)node).File;
 
 					buttonDeleteContent.Enabled = true;
 					buttonEditContent.Enabled = itemEdit.Visible = itemEdit.Enabled = Program.ContentPlugIns.Any(item => item.Value.FileExtensions.ContainsKey(file.Extension.ToLower()));
@@ -143,15 +142,204 @@ namespace GorgonLibrary.Editor
             }
         }
 
-        /// <summary>
-        /// Handles the SelectionChanged event of the treeFiles control.
-        /// </summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-        private void treeFiles_SelectionChanged(object sender, EventArgs e)
-        {
-            ValidateControls();
-        }
+		/// <summary>
+		/// Function to handle the content "open/edit" event.
+		/// </summary>
+		private void ContentOpen()
+		{
+			TreeNodeFile fileNode = null;
+			
+			// If we have no node selected, then assume it's the top of the chain.
+			if ((treeFiles.SelectedNode != null) && (!(treeFiles.SelectedNode is TreeNodeDirectory)))
+			{
+				fileNode = treeFiles.SelectedNode as TreeNodeFile;
+			}
+			else
+			{
+				return;
+			}
+
+			// Otherwise, we need to open this file.
+			if (fileNode.PlugIn == null)
+			{
+				throw new IOException("Cannot open '" + fileNode.File.FullPath + "'.  There are no content plug-ins loaded that can open '" + fileNode.File.Extension + "' files.");
+			}
+
+			var content = fileNode.PlugIn.CreateContentObject();
+
+			// Open the content from the file system.
+			content.OpenContent(fileNode.File);
+
+			LoadContentPane(ref content);
+
+			fileNode.Redraw();
+		}
+
+		/// <summary>
+		/// Handles the NodeMouseDoubleClick event of the treeFiles control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="TreeNodeMouseClickEventArgs"/> instance containing the event data.</param>
+		private void treeFiles_NodeMouseDoubleClick(object sender, TreeNodeMouseClickEventArgs e)
+		{
+			Cursor.Current = Cursors.WaitCursor;
+
+			try
+			{
+				ContentOpen();
+			}
+			catch (Exception ex)
+			{
+				GorgonDialogs.ErrorBox(this, ex);
+			}
+			finally
+			{
+				Cursor.Current = Cursors.Default;
+			}
+		}
+
+		/// <summary>
+		/// Handles the KeyDown event of the treeFiles control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="KeyEventArgs"/> instance containing the event data.</param>
+		private void treeFiles_KeyDown(object sender, KeyEventArgs e)
+		{			
+			switch(e.KeyCode)
+			{
+				case Keys.Enter:
+					{
+						Cursor.Current = Cursors.WaitCursor;
+
+						try
+						{
+							ContentOpen();
+						}
+						catch (Exception ex)
+						{
+							GorgonDialogs.ErrorBox(this, ex);
+						}
+						finally
+						{
+							Cursor.Current = Cursors.Default;
+						}
+
+						break;
+					}
+			}
+		}
+
+		/// <summary>
+		/// Handles the NodeMouseClick event of the treeFiles control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="TreeNodeMouseClickEventArgs"/> instance containing the event data.</param>
+		private void treeFiles_NodeMouseClick(object sender, TreeNodeMouseClickEventArgs e)
+		{
+			if (e.Node != null)
+			{
+				treeFiles.SelectedNode = e.Node;
+			}
+		}
+
+		/// <summary>
+		/// Handles the DrawNode event of the treeFiles control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="DrawTreeNodeEventArgs"/> instance containing the event data.</param>
+		private void treeFiles_DrawNode(object sender, DrawTreeNodeEventArgs e)
+		{
+			Image currentImage = null;
+			Image plusMinusImage = null;
+			Font font = null;
+			EditorTreeNode node = e.Node as EditorTreeNode;
+			TreeNodeFile nodeFile = e.Node as TreeNodeFile;
+			Point position = e.Bounds.Location;
+			Size size = e.Bounds.Size;
+
+			if ((e.Bounds.Width == 0) || (e.Bounds.Height == 0))
+			{
+				return;
+			}
+
+			if (node == null)
+			{
+				e.DrawDefault = true;				
+				return;
+			}
+
+			font = node.NodeFont;
+
+			// Use parent font if no font is assigned.
+			if (font == null)
+			{
+				font = treeFiles.Font;
+			}
+
+			// Shift the position.
+			position.X = position.X + (e.Node.Level * 16);
+
+			if (node.IsExpanded)
+			{
+				currentImage = node.ExpandedImage;
+				plusMinusImage = Properties.Resources.tree_expand_16x16;
+
+				if (currentImage == null)
+				{
+					currentImage = node.CollapsedImage;
+				}				
+			}
+			else
+			{
+				plusMinusImage = Properties.Resources.tree_collapse_16x16;
+				currentImage = node.CollapsedImage;
+			}
+
+			if ((Program.CurrentContent != null) && (nodeFile != null) && (Program.CurrentContent.File == nodeFile.File))
+			{
+				font = _unSavedFont;
+			}
+
+			var textColor = node.ForeColor;
+
+			// Draw selection rectangle.
+			if ((e.State & TreeNodeStates.Selected) == TreeNodeStates.Selected)
+			{
+				using (var brush = new SolidBrush(DarkFormsRenderer.MenuHilightBackground))
+				{
+					e.Graphics.FillRectangle(brush, e.Bounds);
+					textColor = DarkFormsRenderer.MenuHilightForeground;
+				}
+			}
+
+			// Check for child nodes.
+			position.X = position.X + 8;
+
+			if (node.Nodes.Count > 0)
+			{
+				e.Graphics.DrawImage(plusMinusImage, new Rectangle(position, plusMinusImage.Size));
+			}
+
+			position.X = position.X + 16;
+
+			// Draw the icon.
+			e.Graphics.DrawImage(currentImage, new Rectangle(position, currentImage.Size));
+
+			// Offset.
+			position.X = position.X + currentImage.Width + 2;
+
+			TextRenderer.DrawText(e.Graphics, node.Text, font, position, textColor);
+		}
+
+		/// <summary>
+		/// Handles the AfterSelect event of the treeFiles control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="TreeViewEventArgs"/> instance containing the event data.</param>
+		private void treeFiles_AfterSelect(object sender, TreeViewEventArgs e)
+		{
+			ValidateControls();
+		}
         
         /// <summary>
 		/// Handles the Click event of the itemExit control.
@@ -210,9 +398,10 @@ namespace GorgonLibrary.Editor
 		/// <summary>
 		/// Function to load a content object into the main interface.
 		/// </summary>
-		/// <param name="content">Content object to load in.</param>
-		private void LoadContentPane(ref ContentObject content)
+		/// <param name="contentPreLoad">Content object to load in.</param>
+		private void LoadContentPane(ref ContentObject contentPreLoad)
 		{
+			ContentObject content = contentPreLoad;
 			Control control = null;
 
 			// Turn off rendering.
@@ -220,7 +409,7 @@ namespace GorgonLibrary.Editor
 
 			if (content == null)
 			{
-				content = new DefaultContent();				
+				content = new DefaultContent();		
 			}
 
 			// If we have content loaded, ensure we get a chance to save it.
@@ -228,10 +417,10 @@ namespace GorgonLibrary.Editor
 			{
 				if (!Program.CurrentContent.Close())
 				{
-					if (content != null)
+					if (contentPreLoad != null)
 					{
-						content.Dispose();
-						content = null;
+						contentPreLoad.Dispose();
+						contentPreLoad = null;
 					}
 
 					return;
@@ -240,6 +429,8 @@ namespace GorgonLibrary.Editor
 				// Destroy the previous content.
 				Program.CurrentContent.Dispose();
 				Program.CurrentContent = null;
+
+				treeFiles.Refresh();
 			}
 
 			// Create the content resources and such.
@@ -251,6 +442,7 @@ namespace GorgonLibrary.Editor
 				content.Dispose();
 				content = new DefaultContent();
 				control = content.InitializeContent();
+				contentPreLoad = null;
 			}
 
 			control.Dock = DockStyle.Fill;
@@ -331,8 +523,6 @@ namespace GorgonLibrary.Editor
 					_unSavedFont = null;
 				}
 
-				_nodeText.DrawText -= new EventHandler<Aga.Controls.Tree.NodeControls.DrawEventArgs>(_nodeText_DrawText);
-
 				if (this.WindowState != FormWindowState.Minimized)
 				{
 					Program.Settings.FormState = this.WindowState;
@@ -373,68 +563,22 @@ namespace GorgonLibrary.Editor
 		}
 
 		/// <summary>
-		/// Handles the Collapsed event of the treeFiles control.
+		/// Handles the BeforeExpand event of the treeFiles control.
 		/// </summary>
 		/// <param name="sender">The source of the event.</param>
-		/// <param name="e">The <see cref="TreeViewAdvEventArgs"/> instance containing the event data.</param>
-		private void treeFiles_Collapsed(object sender, TreeViewAdvEventArgs e)
+		/// <param name="e">The <see cref="TreeViewCancelEventArgs"/> instance containing the event data.</param>
+		private void treeFiles_BeforeExpand(object sender, TreeViewCancelEventArgs e)
 		{
 			Cursor.Current = Cursors.WaitCursor;
 
 			try
 			{
-				Node node = e.Node.Tag as Node;
-
-				if (node == null)
-				{
-					return;
-				}
-
-				if (node.Tag is GorgonFileSystemDirectory)
-				{
-					if (node.Tag != Program.ScratchFiles.RootDirectory)
-					{
-						node.Image = Properties.Resources.folder_16x16;
-					}
-					return;
-				}
-			}
-			catch (Exception ex)
-			{
-				GorgonDialogs.ErrorBox(this, ex);
-			}
-			finally
-			{
-				Cursor.Current = Cursors.Default;
-			}
-		}
-
-		/// <summary>
-		/// Handles the Expanding event of the treeFiles control.
-		/// </summary>
-		/// <param name="sender">The source of the event.</param>
-		/// <param name="e">The <see cref="TreeViewAdvEventArgs"/> instance containing the event data.</param>
-		private void treeFiles_Expanding(object sender, TreeViewAdvEventArgs e)
-		{
-			Cursor.Current = Cursors.WaitCursor;
-
-			try
-			{
-				Node node = e.Node.Tag as Node;
-
-				if (node == null)
-				{
-					return;
-				}
+				TreeNodeDirectory directoryNode = e.Node as TreeNodeDirectory;
 
 				// Expand sub folders.
-				if (node.Tag is GorgonFileSystemDirectory)
+				if (directoryNode != null)
 				{
-					GetFolders(node);
-					if (node.Tag != Program.ScratchFiles.RootDirectory)
-					{
-						node.Image = Properties.Resources.folder_open_16x16;
-					}
+					GetFolders(directoryNode);
 					return;
 				}
 			}
@@ -445,48 +589,6 @@ namespace GorgonLibrary.Editor
 			finally
 			{
 				Cursor.Current = Cursors.Default;
-			}
-		}
-
-		/// <summary>
-		/// Handles the DrawText event of the _nodeText control.
-		/// </summary>
-		/// <param name="sender">The source of the event.</param>
-		/// <param name="e">The <see cref="Aga.Controls.Tree.NodeControls.DrawEventArgs"/> instance containing the event data.</param>
-		private void _nodeText_DrawText(object sender, Aga.Controls.Tree.NodeControls.DrawEventArgs e)
-		{
-			Node node = e.Node.Tag as Node;
-
-			e.TextColor = Color.White;
-
-			if (node != null)
-			{
-				var file = node.Tag as GorgonFileSystemFileEntry;
-
-				// Check to see if we have any content editors that can open this type of file.
-				if (file != null)
-				{
-                    string filePath = file.FullPath.ToLower();
-
-					if (!Program.ContentPlugIns.Any(item => item.Value.FileExtensions.ContainsKey(file.Extension.ToLower())))
-					{
-						e.TextColor = DarkFormsRenderer.DisabledColor;
-					}
-
-                    // This node contains a file that's been changed, update the text accordingly.
-                    if (Program.ChangedItems.ContainsKey(filePath))
-                    {
-                        bool state = Program.ChangedItems.ContainsKey(filePath);
-                        e.Font = _unSavedFont;
-
-                        // If this is a new file, then change the text color to indicate that.
-                        if (state)
-                        {
-                            e.TextColor = Color.LightGreen;
-                        }
-                    }
-					return;
-				}
 			}
 		}
 
@@ -494,48 +596,27 @@ namespace GorgonLibrary.Editor
 		/// Function to retrieve the folder nodes.
 		/// </summary>
 		/// <param name="rootNode">Node to add folder information into.</param>
-		private void GetFolders(Node rootNode)
+		private void GetFolders(TreeNodeDirectory rootNode)
 		{
-			GorgonFileSystemDirectory directory = rootNode.Tag as GorgonFileSystemDirectory;
-
 			// Get the sub directories.
 			rootNode.Nodes.Clear();
 
-			foreach (var subDirectory in directory.Directories.OrderBy(item => item.Name))
+			foreach (var subDirectory in rootNode.Directory.Directories.OrderBy(item => item.Name))
 			{
-				Node subNode = new Node(subDirectory.Name);
-				subNode.Tag = subDirectory;
-				subNode.Image = Properties.Resources.folder_16x16;				
+				TreeNodeDirectory subNode = new TreeNodeDirectory(subDirectory);
 
 				if ((subDirectory.Directories.Count > 0) || (subDirectory.Files.Count > 0))
 				{
-					subNode.Nodes.Add(new Node("DummyNode"));
+					subNode.Nodes.Add(new TreeNode("DummyNode"));
 				}
 
 				rootNode.Nodes.Add(subNode);
 			}
 
 			// Add file nodes.
-			foreach (var file in directory.Files.OrderBy(item => item.Name))
+			foreach (var file in rootNode.Directory.Files.OrderBy(item => item.Name))
 			{
-				Node fileNode = new Node(file.Name);
-				fileNode.Tag = file;
-				fileNode.Image = Properties.Resources.unknown_document_16x16;
-
-				// Look through content providers to get content icon.
-				if (!string.IsNullOrWhiteSpace(file.Extension))
-				{
-					var contentPlugIn = (from plugIn in Program.ContentPlugIns
-										where plugIn.Value.FileExtensions.ContainsKey(file.Extension.ToLower())
-										select plugIn.Value).FirstOrDefault();
-
-					if (contentPlugIn != null)
-					{
-						fileNode.Image = contentPlugIn.GetContentIcon();
-					}
-				}
-
-
+				TreeNodeFile fileNode = new TreeNodeFile(file);
 				rootNode.Nodes.Add(fileNode);
 			}
 		}
@@ -545,58 +626,59 @@ namespace GorgonLibrary.Editor
 		/// </summary>
 		private void InitializeTree()
 		{
-			Node rootNode = new Node(Program.ProjectFile);
-			rootNode.Image = Properties.Resources.project_node_16x16;
-			rootNode.Tag = Program.ScratchFiles.RootDirectory;
+			RootNodeDirectory rootNode = new RootNodeDirectory();
 
 			// If we have files or sub directories, dump them in here.
 			if ((Program.ScratchFiles.RootDirectory.Directories.Count > 0) || (Program.ScratchFiles.RootDirectory.Files.Count > 0))
 			{
-				rootNode.Nodes.Add(new Node("DummyNode"));
+				rootNode.Nodes.Add(new TreeNode("DummyNode"));
 			}
 
-			_nodeText.DrawText += new EventHandler<Aga.Controls.Tree.NodeControls.DrawEventArgs>(_nodeText_DrawText);
-			treeFiles.Model = new TreeModel();
-
 			treeFiles.BeginUpdate();
-			((TreeModel)treeFiles.Model).Nodes.Add(rootNode);
+			treeFiles.Nodes.Add(rootNode);
+			rootNode.Expand();
 			treeFiles.EndUpdate();
-
-			treeFiles.Root.Children[0].Expand();
 		}
 
         /// <summary>
         /// Function to retrieve the directory from the selected node.
         /// </summary>
-        /// <returns>The file system directory and the node for that directory.</returns>
-        private Tuple<GorgonFileSystemDirectory, Node> GetDirectoryFromNode()
+        /// <returns>The selected node.</returns>
+        private TreeNodeDirectory GetDirectoryFromNode()
         {
-            GorgonFileSystemDirectory result = Program.ScratchFiles.RootDirectory;
-            Node currentNode = (Node)treeFiles.Root.Children[0].Tag;
+			TreeNodeDirectory directory = null;
 
             if (treeFiles.SelectedNode != null)
             {
-                currentNode = treeFiles.SelectedNode.Tag as Node;
+				directory = treeFiles.SelectedNode as TreeNodeDirectory;		
 
-                if (currentNode.Tag is GorgonFileSystemFileEntry)
-                {
-                    // If we've got a file hilighted, then add to the same directory.
-                    result = ((GorgonFileSystemFileEntry)currentNode.Tag).Directory;
+				if (directory == null)
+                {					
+                    // If we've got a file hilighted, then add to the same directory that we're in.
+					TreeNode parentNode = treeFiles.SelectedNode.Parent;
+
+					while (!(parentNode is TreeNodeDirectory))
+					{
+						parentNode = parentNode.Parent;
+
+						if (parentNode == null)
+						{
+							break;
+						}
+					}
+
+					directory = (TreeNodeDirectory)parentNode;
                 }
 
-                if (currentNode.Tag is GorgonFileSystemDirectory)
-                {
-                    result = ((GorgonFileSystemDirectory)currentNode.Tag);
-                }
-                
-                treeFiles.SelectedNode.Expand();
+				directory.Expand();
             }
             else
             {
-                treeFiles.Root.Children[0].Expand();
+				treeFiles.Nodes[0].Expand();
+				directory = ((TreeNodeDirectory)treeFiles.Nodes[0]);
             }
 
-            return new Tuple<GorgonFileSystemDirectory,Node>(result, currentNode);
+            return directory;
         }
 
         /// <summary>
@@ -607,43 +689,26 @@ namespace GorgonLibrary.Editor
         {
             var directoryNode = GetDirectoryFromNode();
             GorgonFileSystemFileEntry file = null;
-            Node newNode = null;
-            Image icon = null;
-            ContentPlugIn plugIn = null;
+            TreeNodeFile newNode = null;
             string extension = Path.GetExtension(content.Name).ToLower();
 
-            if (!extension.StartsWith("."))
-            {
-                extension = "." + extension;
-            }            
+			// Write the file.
+			file = Program.ScratchFiles.WriteFile(directoryNode.Directory.FullPath + content.Name, null);
+			newNode = new TreeNodeFile(file);
 
-            plugIn = (from contentPlugIn in Program.ContentPlugIns
-                     where contentPlugIn.Value.FileExtensions.ContainsKey(extension)
-                     select contentPlugIn.Value).FirstOrDefault();
-
-            if (plugIn != null)
-            {
-                icon = plugIn.GetContentIcon();
-            }
-
-            // Write the file.
-            file = Program.ScratchFiles.WriteFile(directoryNode.Item1.FullPath + content.Name, null);
-            content.HasChanges = true;
-            content.Persist(file);
+			content.HasChanges = true;
+			content.Persist(file);
 
             // Add to our changed item list.
             // We set this to true to indicate that this is a new file.
             Program.ChangedItems[file.FullPath.ToLower()] = true;
 
-            // Create the node.
-            newNode = new Node(content.Name);
-            newNode.Image = icon;
-            newNode.Tag = file;			
-			            
-            directoryNode.Item2.Nodes.Add(newNode);
-                        
-			treeFiles.SelectedNode = treeFiles.FindNodeByTag(newNode);
-        }
+			// Add to tree and select.
+			directoryNode.Nodes.Add(newNode);
+			treeFiles.SelectedNode = newNode;
+
+			newNode.Redraw();
+		}
 
 		/// <summary>
 		/// Function to add content to the interface.
@@ -684,11 +749,14 @@ namespace GorgonLibrary.Editor
                 // Reset to a wait cursor.
                 Cursor.Current = Cursors.WaitCursor;
 
-                // Create the node in the tree.
-                CreateNewFileNode(content);
-
                 // Show the content in the editor.
 				LoadContentPane(ref content);
+
+				if (content != null)
+				{
+					// Create the node in the tree.
+					CreateNewFileNode(content);
+				}
 			}
 			catch (Exception ex)
 			{

@@ -188,6 +188,31 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
         }
 
 		/// <summary>
+		/// Function to open the content from the file system.
+		/// </summary>
+		protected override void OnOpenContent()
+		{
+			if (File == null)
+			{
+				return;
+			}
+
+			// Open the file.
+			using (var stream = File.OpenStream(false))
+			{
+				using (var buffer = new GorgonDataStream((int)stream.Length))
+				{
+					stream.CopyTo(buffer);
+					buffer.Position = 0;
+					Font = Graphics.Fonts.FromStream(File.BaseFileName, buffer);
+				}
+			}
+
+			// Get the settings.
+			_settings = Font.Settings;
+		}
+
+		/// <summary>
 		/// Function to create new content.
 		/// </summary>
 		/// <returns>
@@ -217,7 +242,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 					_settings.TextureSize = newFont.FontTextureSize;
 					_settings.Characters = newFont.FontCharacters;                    
 
-                    Font = Graphics.Fonts.CreateFont(Path.GetFileNameWithoutExtension(this.Name), _settings);
+                    Font = Graphics.Fonts.CreateFont(this.Name, _settings);
 
 					return true;
 				}

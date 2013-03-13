@@ -155,7 +155,7 @@ namespace Tester_Graphics
 				});
 
 				//GorgonImageCodecs.DDS.LegacyConversionFlags = DDSFlags.NoR10B10G10A2Fix;
-                string fileName = @"c:\mike\unpak\rain_test.gif";
+                string fileName = @"d:\images\rain_test.gif";
 				//GorgonImageCodecs.TIFF.UseAllFrames = true;
 				var codec = new GorgonCodecGIF();
 				codec.Clip = true;	// Clip this image because animated gifs can have varying frame sizes and resizing the frames can cause issues.				

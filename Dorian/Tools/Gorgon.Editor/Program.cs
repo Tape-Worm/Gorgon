@@ -46,6 +46,15 @@ namespace GorgonLibrary.Editor
 	static class Program
 	{
 		#region Properties.
+		/// <summary>
+		/// Property to set or return the file writer plug-in for the currently loaded file.
+		/// </summary>
+		public static FileWriterPlugIn CurrentWriterPlugIn
+		{
+			get;
+			set;
+		}
+
         /// <summary>
         /// Property to return a list of disabled plug-ins.
         /// </summary>
