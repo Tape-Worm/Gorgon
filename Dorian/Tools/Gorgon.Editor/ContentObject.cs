@@ -48,7 +48,7 @@ namespace GorgonLibrary.Editor
 		private string _name = "Content";			// Name of the content.
 		#endregion
 
-		#region Properties.
+		#region Properties.		
 		/// <summary>
 		/// Property to return whether the content has unsaved changes.
 		/// </summary>
@@ -142,12 +142,29 @@ namespace GorgonLibrary.Editor
 		protected abstract bool OnClose();
 
 		/// <summary>
+		/// Function to open the content from the file system.
+		/// </summary>
+		protected internal virtual void OnOpenContent()
+		{
+		}
+
+		/// <summary>
 		/// Function to create new content.
 		/// </summary>
 		/// <returns>TRUE if successful, FALSE if not or canceled.</returns>
 		protected internal virtual bool CreateNew()
 		{
 			return true;
+		}
+
+		/// <summary>
+		/// Function to open the content from the file system.
+		/// </summary>
+		/// <param name="file">File containing the content to open.</param>
+		internal void OpenContent(GorgonFileSystemFileEntry file)
+		{
+			File = file;
+			OnOpenContent();
 		}
 
         /// <summary>

@@ -474,61 +474,71 @@ namespace GorgonLibrary.IO
 			Guid bestFormat = Guid.Empty;
 
 			// Get our WIC interface.
-			using (var wic = new GorgonWICImage())
+			using (var wrapperStream = new GorgonStreamWrapper(stream))
 			{
-				using (var decoder = new WIC.BitmapDecoder(wic.Factory, SupportedFormat))
+				using (var wic = new GorgonWICImage())
 				{
-					using (var wicStream = new WIC.WICStream(wic.Factory, stream))
+					using (var decoder = new WIC.BitmapDecoder(wic.Factory, SupportedFormat))
 					{
-						try
+						using (var wicStream = new WIC.WICStream(wic.Factory, wrapperStream))
 						{
-							decoder.Initialize(wicStream, WIC.DecodeOptions.CacheOnDemand);
-						}
-						catch (SharpDX.SharpDXException sdex)
-						{
-							// Repackage this exception to keep in line with our API.
-							throw new System.IO.IOException("Cannot decode the " + Codec + " file. " + sdex.Descriptor.Description, sdex);
-						}
-
-						using (var frame = decoder.GetFrame(0))
-						{
-							var settings = ReadMetaData(wic, decoder, frame, ref bestFormat);
-
-							if (settings.Format == BufferFormat.Unknown)
-							{
-								throw new System.IO.IOException("Cannot decode the " + Codec + " file.  Format is not supported.");
-							}
-
-							// Create our image data.
 							try
 							{
-								_actualArrayCount = settings.ArrayCount;
-								if (ArrayCount > 0)
-								{
-									settings.ArrayCount = ArrayCount;
-								}
-
-								result = new GorgonImageData(settings);
-
-								if ((settings.ArrayCount > 1) && (_actualArrayCount > 1))
-								{
-									ReadFrames(wic, result, decoder);
-								}
-								else
-								{
-									ReadFrame(wic, result, frame.PixelFormat, bestFormat, frame);
-								}
+								decoder.Initialize(wicStream, WIC.DecodeOptions.CacheOnDemand);
 							}
-							catch
+							catch (SharpDX.SharpDXException sdex)
 							{
-								// If we run into a problem, dump the memory buffer.
-								if (result != null)
-								{
-									result.Dispose();
-								}
-								result = null;
+								// Repackage this exception to keep in line with our API.
+								throw new System.IO.IOException("Cannot decode the " + Codec + " file. " + sdex.Descriptor.Description, sdex);
+							}
 
-								throw;
+							using (var frame = decoder.GetFrame(0))
+							{
+								var settings = ReadMetaData(wic, decoder, frame, ref bestFormat);
+
+								if (settings.Format == BufferFormat.Unknown)
+								{
+									throw new System.IO.IOException("Cannot decode the " + Codec + " file.  Format is not supported.");
+								}
+
+								// Create our image data.
+								try
+								{
+									_actualArrayCount = settings.ArrayCount;
+									if (ArrayCount > 0)
+									{
+										settings.ArrayCount = ArrayCount;
+									}
+
+									result = new GorgonImageData(settings);
+
+									if ((settings.ArrayCount > 1) && (_actualArrayCount > 1))
+									{
+										ReadFrames(wic, result, decoder);
+									}
+									else
+									{
+										ReadFrame(wic, result, frame.PixelFormat, bestFormat, frame);
+									}
+
+									// If we've not read the full length of the data (WIC seems to ignore the CRC on the IEND chunk for PNG files for example),
+									// then we need to move the pointer up by however many bytes we've missed.
+									if (wrapperStream.Position < size)
+									{
+										wrapperStream.Position = size;
+									}
+								}
+								catch
+								{
+									// If we run into a problem, dump the memory buffer.
+									if (result != null)
+									{
+										result.Dispose();
+									}
+									result = null;
+
+									throw;
+								}
 							}
 						}
 					}

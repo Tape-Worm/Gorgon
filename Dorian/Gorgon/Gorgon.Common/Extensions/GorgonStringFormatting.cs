@@ -24,6 +24,9 @@
 // 
 #endregion
 
+using System;
+using System.IO;
+using System.Xml.Linq;
 using System.Collections.Generic;
 using System.Text;
 
@@ -34,6 +37,30 @@ namespace GorgonLibrary
 	/// </summary>
 	public static class GorgonStringFormattingExtension
 	{
+		/// <summary>
+		/// Function to convert a Linq to XML document into a string including a declaration element.
+		/// </summary>
+		/// <param name="document">The document to convert.</param>
+		/// <returns>The XML document serialized as a string.</returns>
+		/// <remarks>This method addresses a shortcoming of the Linq-to-XML XDocument ToString() method.  The original method leaves out the declaration element when converted to 
+		/// a string.</remarks>
+		public static string ToStringWithDeclaration(this XDocument document)
+		{
+			if (document == null)
+			{
+				throw new ArgumentNullException("document");
+			}
+
+			StringBuilder serializedXML = new StringBuilder();
+
+			using (TextWriter writer = new StringWriter(serializedXML))
+			{
+				document.Save(writer);
+			}
+
+			return serializedXML.ToString();
+		}
+
         /// <summary>
         /// Function to shorten a string and prefix an ellipses to the string.
         /// </summary>
