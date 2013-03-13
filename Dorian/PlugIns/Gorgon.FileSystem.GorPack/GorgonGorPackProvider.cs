@@ -282,7 +282,7 @@ namespace GorgonLibrary.FileSystem.GorPack
 			: base(fileSystem)
 		{
             _description = description;
-            PreferredExtensions = new List<string>() { "gorPack files (*.gorPack)|*.gorPack" };
+            PreferredExtensions = new List<string>() { "Gorgon Packed Files (*.gorPack)|*.gorPack" };
 		}
 		#endregion
 	}

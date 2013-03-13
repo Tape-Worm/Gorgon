@@ -113,6 +113,16 @@ namespace GorgonLibrary.Editor
 			}
 		}
 
+        /// <summary>
+        /// Property to set or return the path to the last editor file.
+        /// </summary>
+        [ApplicationSetting("LastEditorFile", "", typeof(string), "MainApplication")]
+        public string LastEditorFile
+        {
+            get;
+            set;
+        }
+
 		/// <summary>
 		/// Property to set or return the last import file path.
 		/// </summary>

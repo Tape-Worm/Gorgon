@@ -45,6 +45,30 @@ namespace GorgonLibrary.Editor
 		#endregion
 
 		#region Properties.
+        /// <summary>
+        /// Gets or sets the background color of the tree node.
+        /// </summary>
+        /// <returns>The background <see cref="T:System.Drawing.Color" /> of the tree node. The default is <see cref="F:System.Drawing.Color.Empty" />.</returns>
+        ///   <PermissionSet>
+        ///   <IPermission class="System.Security.Permissions.FileIOPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
+        ///   </PermissionSet>
+        public virtual new Color BackColor
+        {
+            get
+            {
+                if (IsSelected)
+                {
+                    return DarkFormsRenderer.MenuHilightBackground;
+                }
+                
+                return base.BackColor;
+            }
+            set
+            {
+                base.BackColor = value;
+            }
+        }
+
 		/// <summary>
 		/// Gets or sets the foreground color of the tree node.
 		/// </summary>
@@ -56,6 +80,11 @@ namespace GorgonLibrary.Editor
 		{
 			get
 			{
+                if (IsSelected)
+                {
+                    return DarkFormsRenderer.MenuHilightForeground;
+                }
+
 				return base.ForeColor;
 			}
 			set

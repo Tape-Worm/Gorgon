@@ -93,6 +93,9 @@
     <Compile Include="ContentPanel.Designer.cs">
       <DependentUpon>ContentPanel.cs</DependentUpon>
     </Compile>
+    <Compile Include="Controls\EditorTreeView.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Controls\TreeNodeFile.cs" />
     <Compile Include="Controls\EditorTreeNode.cs" />
     <Compile Include="Controls\panelEx.cs">

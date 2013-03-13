@@ -296,22 +296,19 @@ namespace GorgonLibrary.Editor
 					// Update with the new scratch path.
 					Program.Settings.Save();
 				}
-
-				Program.ScratchFiles.WriteLocation = Program.Settings.ScratchPath;
-
-				// Set the directory to hidden.  We don't want users really messing around in here if we can help it.
-				var scratchDir = new System.IO.DirectoryInfo(Program.Settings.ScratchPath);
-				if (((scratchDir.Attributes & FileAttributes.Hidden) != FileAttributes.Hidden)
-					|| ((scratchDir.Attributes & FileAttributes.NotContentIndexed) != FileAttributes.NotContentIndexed))
-				{
-					scratchDir.Attributes = System.IO.FileAttributes.NotContentIndexed | System.IO.FileAttributes.Hidden;
-				}
+                
+                Program.InitializeScratch();
 
                 _splash.UpdateVersion("Loading file system providers...");
                 // Get any file system providers.
                 Program.ScratchFiles.AddAllProviders();
-				// TODO: Remove this, just here for testes.
-				Program.ScratchFiles.Mount(@"..\..\..\..\Resources\FileSystems\BZipFileSystem.gorPack");
+
+                _splash.UpdateVersion("Loading previous editor file...");
+                // Load the last opened file.
+                if ((!string.IsNullOrWhiteSpace(Program.Settings.LastEditorFile)) && (File.Exists(Program.Settings.LastEditorFile)))
+                {
+                    // TODO: Open the file.
+                }
 
                 // Set up the default pane.
 				mainForm.LoadContentPane<DefaultContent>();

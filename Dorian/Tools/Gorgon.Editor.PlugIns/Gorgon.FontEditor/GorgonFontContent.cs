@@ -58,6 +58,17 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
         #endregion
 
         #region Properties.
+        /// <summary>
+        /// Property to return whether the content can be exported.
+        /// </summary>
+        public override bool CanExport
+        {
+            get 
+            {
+                return true;
+            }
+        }
+
 		/// <summary>
 		/// Property to return the renderer.
 		/// </summary>

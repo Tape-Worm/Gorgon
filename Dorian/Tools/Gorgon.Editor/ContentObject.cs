@@ -48,7 +48,7 @@ namespace GorgonLibrary.Editor
 		private string _name = "Content";			// Name of the content.
 		#endregion
 
-		#region Properties.		
+		#region Properties.
 		/// <summary>
 		/// Property to return whether the content has unsaved changes.
 		/// </summary>
@@ -64,6 +64,14 @@ namespace GorgonLibrary.Editor
                 OnHasChangesUpdated();
             }
 		}
+
+        /// <summary>
+        /// Property to return whether the content can be exported.
+        /// </summary>
+        public abstract bool CanExport
+        {
+            get;
+        }
 
 		/// <summary>
 		/// Property to return the type of content.
