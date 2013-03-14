@@ -508,7 +508,9 @@ namespace GorgonLibrary.Editor
 			{
 				TreeNodeDirectory subNode = new TreeNodeDirectory(subDirectory);
 
-				if ((subDirectory.Directories.Count > 0) || (subDirectory.Files.Count > 0))
+				if (((subDirectory.Directories.Count > 0) 
+                    || (subDirectory.Files.Count > 0))
+                    && (CanShowDirectoryFiles(subDirectory)))
 				{
 					subNode.Nodes.Add(new TreeNode("DummyNode"));
 				}
@@ -519,25 +521,44 @@ namespace GorgonLibrary.Editor
 			// Add file nodes.
 			foreach (var file in rootNode.Directory.Files.OrderBy(item => item.Name))
 			{
+                // Do not display the blocked file.
+                if (Program.BlockedFiles.Contains(file.Name))
+                {
+                    continue;
+                }
+
 				TreeNodeFile fileNode = new TreeNodeFile(file);
 				rootNode.Nodes.Add(fileNode);
 			}
 		}
 
+        /// <summary>
+        /// Function to determine if all the files in this directory are blocked or not.
+        /// </summary>
+        /// <param name="directory">Directory to evaluate.</param>
+        /// <returns>TRUE if some files can be shown, FALSE if not.</returns>
+        private bool CanShowDirectoryFiles(GorgonFileSystemDirectory directory)
+        {
+            return Program.ScratchFiles.RootDirectory.Files.Count(item => Program.BlockedFiles.Contains(item.Name)) < Program.ScratchFiles.RootDirectory.Files.Count;
+        }
+
 		/// <summary>
 		/// Function to initialize the files tree.
 		/// </summary>
 		private void InitializeTree()
-		{
+		{            
 			_rootNode = new RootNodeDirectory();
 
 			// If we have files or sub directories, dump them in here.
-			if ((Program.ScratchFiles.RootDirectory.Directories.Count > 0) || (Program.ScratchFiles.RootDirectory.Files.Count > 0))
+			if (((Program.ScratchFiles.RootDirectory.Directories.Count > 0) 
+                || (Program.ScratchFiles.RootDirectory.Files.Count > 0))
+                && (CanShowDirectoryFiles(Program.ScratchFiles.RootDirectory)))
 			{
-				_rootNode.Nodes.Add(new TreeNode("DummyNode"));
+                _rootNode.Nodes.Add(new TreeNode("DummyNode"));
 			}
 
 			treeFiles.BeginUpdate();
+            treeFiles.Nodes.Clear();
 			treeFiles.Nodes.Add(_rootNode);
             if (_rootNode.Nodes.Count > 0)
             {
@@ -720,7 +741,17 @@ namespace GorgonLibrary.Editor
 
                 if (dialogOpenFile.ShowDialog(this) == System.Windows.Forms.DialogResult.OK)
                 {
+                    // If this file is already opened, then do nothing.
+                    if (string.Compare(Program.EditorFilePath, dialogOpenFile.FileName, true) == 0)
+                    {
+                        return;
+                    }
+
+                    // Open the file.
                     Program.OpenEditorFile(dialogOpenFile.FileName);
+
+                    // Update the tree.
+                    InitializeTree();
                 }
             }
             catch (Exception ex)

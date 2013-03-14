@@ -305,9 +305,17 @@ namespace GorgonLibrary.Editor
 
                 _splash.UpdateVersion("Loading previous editor file...");
                 // Load the last opened file.
-                if ((!string.IsNullOrWhiteSpace(Program.Settings.LastEditorFile)) && (File.Exists(Program.Settings.LastEditorFile)))
+                if (!string.IsNullOrWhiteSpace(Program.Settings.LastEditorFile))
                 {
-                    // TODO: Open the file.
+                    try
+                    {
+                        Program.OpenEditorFile(Program.Settings.LastEditorFile);
+                    }
+                    catch (Exception ex)
+                    {
+                        GorgonDialogs.ErrorBox(null, "There was an error opening '" + Program.Settings.LastEditorFile + "'", ex);
+                        Program.Settings.LastEditorFile = string.Empty;
+                    }
                 }
 
                 // Set up the default pane.
