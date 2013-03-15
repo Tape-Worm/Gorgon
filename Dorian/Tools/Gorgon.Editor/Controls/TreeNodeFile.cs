@@ -64,9 +64,9 @@ namespace GorgonLibrary.Editor
 		{
 			get
 			{
-                if (IsSelected)
+                if ((IsSelected) && (PlugIn != null))
                 {
-                    return DarkFormsRenderer.MenuHilightForeground;
+					return DarkFormsRenderer.MenuHilightForeground;
                 }
 
 				// Draw the text as disabled.
@@ -104,8 +104,15 @@ namespace GorgonLibrary.Editor
 		/// </summary>
 		public GorgonFileSystemFileEntry File
 		{
-			get;
-			private set;
+			get
+			{
+				if (Program.ScratchFiles == null)
+				{
+					return null;
+				}
+
+				return Program.ScratchFiles.GetFile(Name);
+			}			
 		}
 		#endregion
 
@@ -144,7 +151,6 @@ namespace GorgonLibrary.Editor
 		{
 			this.Name = file.FullPath;
 			this.Text = file.Name;
-			File = file;
 			GetFileData();
 		}
 		#endregion

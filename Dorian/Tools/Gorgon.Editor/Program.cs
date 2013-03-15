@@ -203,15 +203,6 @@ namespace GorgonLibrary.Editor
 		}
 
 		/// <summary>
-		/// Property to return the list of cached fonts on the system.
-		/// </summary>
-		public static IDictionary<string, Font> CachedFonts
-		{
-			get;
-			private set;
-		}
-
-		/// <summary>
 		/// Property to return the graphics interface.
 		/// </summary>
 		public static GorgonGraphics Graphics
@@ -308,6 +299,12 @@ namespace GorgonLibrary.Editor
         {
             IList<GorgonFileSystemMountPoint> mountPoints = new List<GorgonFileSystemMountPoint>();
 
+			ChangedItems.Clear();
+
+			// Remove our scratch data.
+			CleanUpScratchArea();
+			InitializeScratch();
+
             // Get the currently mounted file systems.
             foreach(var mountPoint in ScratchFiles.MountPoints)
             {
@@ -337,6 +334,30 @@ namespace GorgonLibrary.Editor
             }
         }
 
+		/// <summary>
+		/// Function to create a new editor file.
+		/// </summary>
+		public static void NewEditorFile()
+		{
+			// Unmount all the file systems.
+			foreach (var mountPoint in ScratchFiles.MountPoints.ToArray())
+			{
+				ScratchFiles.Unmount(mountPoint);
+			}
+
+			// Initialize the scratch area.
+			CleanUpScratchArea();
+			InitializeScratch();
+
+			Program.EditorFile = "Untitled";
+			Program.EditorFilePath = string.Empty;
+			_metadataRootNode.Descendants().Remove();
+
+			Program.Settings.LastEditorFile = string.Empty;
+
+			Program.ChangedItems.Clear();
+		}
+
         /// <summary>
         /// Function to save the editor file.
         /// </summary>
@@ -359,10 +380,15 @@ namespace GorgonLibrary.Editor
             CurrentWriterPlugIn.WriteFile(path);
             
             EditorFile = Path.GetFileName(path);
-            EditorFilePath = path;            
+            EditorFilePath = path;
+			Program.Settings.LastEditorFile = path;
 
             // Remove all changed items.
             ChangedItems.Clear();
+
+			// Clean up and reinitialize our scratch data.
+			CleanUpScratchArea();
+			InitializeScratch();
         }
 
 		/// <summary>

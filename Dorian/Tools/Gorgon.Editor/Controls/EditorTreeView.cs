@@ -225,7 +225,7 @@ namespace GorgonLibrary.Editor
             // Draw selection rectangle.
             if ((e.State & TreeNodeStates.Selected) == TreeNodeStates.Selected)
             {
-                e.Graphics.FillRectangle(_selectBrush, e.Bounds);
+                e.Graphics.FillRectangle(_selectBrush, e.Bounds);				
             }
 
             // Draw a focus rectangle only when focused, not when selected.
@@ -249,13 +249,15 @@ namespace GorgonLibrary.Editor
             e.Graphics.DrawImage(currentImage, new Rectangle(position, currentImage.Size));
 
             // Offset.
-            position.X = position.X + currentImage.Width + 2;
+            position.X = position.X + currentImage.Width + 2;			
 
             // Do not re-draw text when in focus mode only (it looks awful).
             if (e.State != TreeNodeStates.Focused)
             {
                 TextRenderer.DrawText(e.Graphics, node.Text, font, position, node.ForeColor);
             }
+
+			//return;
         }
         #endregion
 

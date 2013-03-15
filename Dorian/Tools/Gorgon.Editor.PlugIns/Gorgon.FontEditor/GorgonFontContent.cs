@@ -216,10 +216,11 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 					stream.CopyTo(buffer);
 					buffer.Position = 0;
 					Font = Graphics.Fonts.FromStream(File.BaseFileName, buffer);
-				}
+				}				
 			}
 
 			// Get the settings.
+			this.Name = File.Name;
 			_settings = Font.Settings;
 		}
 
@@ -243,7 +244,11 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 				{
 					Cursor.Current = Cursors.WaitCursor;
 
-					this.Name = Path.ChangeExtension(newFont.FontName.FormatFileName(), ".gorFont");
+					Name = newFont.FontName.FormatFileName();
+					if (!Name.EndsWith(".gorFont", StringComparison.CurrentCultureIgnoreCase))
+					{
+						Name = Name + ".gorFont";
+					}
 
 					_settings.FontFamilyName = newFont.FontFamilyName;
 					_settings.Size = newFont.FontSize;

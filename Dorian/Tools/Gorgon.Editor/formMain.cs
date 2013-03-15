@@ -53,19 +53,6 @@ namespace GorgonLibrary.Editor
         private RootNodeDirectory _rootNode = null;             // Our root node for the tree.
         #endregion
 
-        #region Properties.
-        /// <summary>
-        /// Property to return whether we need the save as... dialog or not.
-        /// </summary>
-        private bool IsSaveAs
-        {
-            get
-            {
-                return string.IsNullOrWhiteSpace(Program.EditorFilePath);
-            }
-        }
-		#endregion
-
 		#region Methods.
         /// <summary>
         /// Function to validate the controls on the display.
@@ -75,8 +62,8 @@ namespace GorgonLibrary.Editor
             Text = Program.EditorFile + " - Gorgon Editor";
 
             itemOpen.Enabled = Program.ScratchFiles.Providers.Count > 0;
-            itemSaveAs.Enabled = (Program.WriterPlugIns.Count > 0) && (Program.ChangedItems.Count > 0);
-            itemSave.Enabled = !string.IsNullOrWhiteSpace(Program.EditorFilePath) && (Program.ChangedItems.Count > 0);
+            itemSaveAs.Enabled = (Program.WriterPlugIns.Count > 0);
+            itemSave.Enabled = !string.IsNullOrWhiteSpace(Program.EditorFilePath) && (Program.ChangedItems.Count > 0) && itemSaveAs.Enabled;
 
             // Ensure we have plug-ins that can import.
 			itemImport.Enabled = Program.ContentPlugIns.Any(item => item.Value.SupportsImport);
@@ -104,7 +91,6 @@ namespace GorgonLibrary.Editor
                 itemAdd.Enabled = itemAdd.DropDownItems.Count > 0;
                 popupItemAdd.Enabled = itemAdd.Enabled;
                 dropNewContent.Enabled = dropNewContent.DropDownItems.Count > 0;
-                itemDelete.Visible = false;
                 toolStripSeparator4.Visible = false;
                 itemRenameFolder.Visible = false;
             }
@@ -117,19 +103,23 @@ namespace GorgonLibrary.Editor
                     itemAdd.Enabled = itemAdd.DropDownItems.Count > 0;
                     popupItemAdd.Enabled = itemAdd.Enabled;
                     dropNewContent.Enabled = dropNewContent.DropDownItems.Count > 0;
-                    itemOpen.Enabled = false;
+					buttonDeleteContent.Enabled = true;
                     itemCreateFolder.Enabled = true;
                     itemCreateFolder.Visible = true;
-                    if (node != _rootNode)
+					itemDelete.Enabled = true;
+					itemDelete.Text = "Delete Folder...";
+					if (node != _rootNode)
                     {
-                        itemDelete.Enabled = true;
-                        itemDelete.Text = "Delete Folder...";
                         itemRenameFolder.Enabled = true;
                         itemRenameFolder.Text = "Rename Folder...";
                     }
                     else
                     {
-                        itemDelete.Visible = false;
+						if (_rootNode.Nodes.Count == 0)
+						{
+							itemDelete.Visible = false;
+						}
+
                         toolStripSeparator4.Visible = false;
                         itemRenameFolder.Visible = false;
                     }                    
@@ -177,7 +167,7 @@ namespace GorgonLibrary.Editor
 
 			LoadContentPane(ref content);
 
-			fileNode.Redraw();
+			treeFiles.Refresh();
 		}
 
 		/// <summary>
@@ -242,6 +232,29 @@ namespace GorgonLibrary.Editor
 		private void treeFiles_AfterSelect(object sender, TreeViewEventArgs e)
 		{
 			ValidateControls();
+		}
+
+		/// <summary>
+		/// Handles the Click event of the buttonEditContent control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+		private void buttonEditContent_Click(object sender, EventArgs e)
+		{
+			Cursor.Current = Cursors.WaitCursor;
+
+			try
+			{
+				ContentOpen();
+			}
+			catch (Exception ex)
+			{
+				GorgonDialogs.ErrorBox(this, ex);
+			}
+			finally
+			{
+				Cursor.Current = Cursors.Default;
+			}
 		}
         
         /// <summary>
@@ -363,15 +376,99 @@ namespace GorgonLibrary.Editor
 		}
 
 		/// <summary>
+		/// Handles the Click event of the itemNew control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+		private void itemNew_Click(object sender, EventArgs e)
+		{
+			Cursor.Current = Cursors.WaitCursor;
+			try
+			{
+				// Save any changes we have.
+				if (ConfirmSave())
+				{
+					return;
+				}
+
+				Program.NewEditorFile();
+
+				// Rebuild our tree.
+				InitializeTree();
+				
+				// Load the default content panel.
+				LoadContentPane<DefaultContent>();
+			}
+			catch (Exception ex)
+			{
+				GorgonDialogs.ErrorBox(this, ex);
+			}
+			finally
+			{
+				ValidateControls();
+				Cursor.Current = Cursors.Default;
+			}
+		}
+
+		/// <summary>
 		/// Function to load content into the interface.
 		/// </summary>
 		/// <typeparam name="T">Type of content object to load.</typeparam>
 		internal void LoadContentPane<T>()
 			where T : ContentObject, new()
 		{
+			// Don't re-open the same screen.
+			if ((Program.CurrentContent != null) && (typeof(T) == Program.CurrentContent.GetType()))
+			{
+				return;
+			}
+
 			// Load the content.
 			ContentObject result = new T();
 			LoadContentPane(ref result);
+		}
+
+		/// <summary>
+		/// Function to pop up the save confirmation dialog.
+		/// </summary>
+		/// <returns>TRUE if canceled, FALSE if not.</returns>
+		private bool ConfirmSave()
+		{
+			if ((Program.ChangedItems.Count > 0) && (Program.WriterPlugIns.Count > 0))
+			{
+				var result = GorgonDialogs.ConfirmBox(this, "The editor file '" + Program.EditorFile + "' has unsaved changes.  Would you like to save these changes?", true, false);
+
+				if (result == ConfirmationResult.Cancel)
+				{
+					return true;
+				}
+
+				if (result == ConfirmationResult.Yes)
+				{
+					// If we have content open and it hasn't been persisted to the file system, 
+					// then persist those changes.
+					if ((Program.CurrentContent != null) && (Program.CurrentContent.HasChanges))
+					{
+						if (!Program.CurrentContent.Close())
+						{
+							return true;
+						}
+
+					}
+
+					// If we haven't saved the file yet, then prompt us with a file name.
+					if (string.IsNullOrWhiteSpace(Program.EditorFilePath))
+					{
+						itemSaveAs_Click(this, EventArgs.Empty);
+					}
+					else
+					{
+						itemSave_Click(this, EventArgs.Empty);
+					}
+				}
+			}
+
+			return false;
 		}
 
 		/// <summary>
@@ -384,41 +481,15 @@ namespace GorgonLibrary.Editor
 
 			try
 			{
-				if (Program.ChangedItems.Count > 0)
+				if (ConfirmSave())
 				{
-					ConfirmationResult result = ConfirmationResult.None;
-
-					result = GorgonDialogs.ConfirmBox(this, "The editor file '" + Program.EditorFile + "' has unsaved changes.  Would you like to save these changes?", true, false);
-
-					if (result == ConfirmationResult.Yes)
-					{
-                        // If we have content open and it hasn't been persisted to the file system, 
-                        // then persist those changes.
-                        if ((Program.CurrentContent != null) && (Program.CurrentContent.HasChanges))
-                        {
-                            if (!Program.CurrentContent.Close())
-                            {
-                                e.Cancel = true;
-                                return;
-                            }
-
-                        }
-                        
-                        // TODO: We need to update this to show a save as dialog (or re-use the current file name).
-                        //       We also need to remember the last plug-in used to save this file.
-                        Program.SaveEditorFile(Path.GetFullPath(@"..\..\..\..\Resources\FileSystems\BZipFileSystem.gorPack"));
-					}
-
-					if (result == ConfirmationResult.Cancel)
-					{
-						e.Cancel = true;
-						return;
-					}
-
-					// Destroy the current content.
-					Program.CurrentContent.Dispose();
-					Program.CurrentContent = null;
+					e.Cancel = true;
+					return;
 				}
+
+				// Destroy the current content.
+				Program.CurrentContent.Dispose();
+				Program.CurrentContent = null;
 				
 				if (this.WindowState != FormWindowState.Minimized)
 				{
@@ -615,9 +686,15 @@ namespace GorgonLibrary.Editor
         private void CreateNewFileNode(ContentObject content)
         {
             var directoryNode = GetDirectoryFromNode();
-            GorgonFileSystemFileEntry file = null;
+			string filePath = directoryNode.Directory.FullPath + content.Name;
+            GorgonFileSystemFileEntry file = Program.ScratchFiles.GetFile(filePath);
             TreeNodeFile newNode = null;
             string extension = Path.GetExtension(content.Name).ToLower();
+
+			if (file != null)
+			{
+				throw new IOException("The " + content.ContentType + " '" + filePath + "' already exists.");
+			}
 
 			// Write the file.
 			file = Program.ScratchFiles.WriteFile(directoryNode.Directory.FullPath + content.Name, null);
@@ -626,16 +703,14 @@ namespace GorgonLibrary.Editor
 			content.HasChanges = true;
 			content.Persist(file);
 
-            // Add to our changed item list.
-            // We set this to true to indicate that this is a new file.
-            Program.ChangedItems[file.FullPath.ToLower()] = true;
+            // Add to our changed item list.            
 
 			// Add to tree and select.
 			directoryNode.Nodes.Add(newNode);
-            directoryNode.IsUpdated = true;
 			treeFiles.SelectedNode = newNode;
 
-			newNode.Redraw();
+			// We set this to true to indicate that this is a new file.
+			MarkChanged(newNode, true);
 		}
 
 		/// <summary>
@@ -675,7 +750,7 @@ namespace GorgonLibrary.Editor
 				}
 
                 // Reset to a wait cursor.
-                Cursor.Current = Cursors.WaitCursor;
+                Cursor.Current = Cursors.WaitCursor;				
 
                 // Show the content in the editor.
 				LoadContentPane(ref content);
@@ -701,8 +776,295 @@ namespace GorgonLibrary.Editor
 			}
 			finally
 			{
+				treeFiles.Refresh();
 				Cursor.Current = Cursors.Default;
                 ValidateControls();
+			}
+		}
+
+		/// <summary>
+		/// Handles the Click event of the itemSave control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+		private void itemSave_Click(object sender, EventArgs e)
+		{
+			Cursor.Current = Cursors.WaitCursor;
+
+			try
+			{
+				// Ensure we can actually write the file.
+				if ((Program.CurrentWriterPlugIn == null) || (string.IsNullOrWhiteSpace(Program.EditorFilePath)))
+				{
+					return;
+				}
+
+				Program.SaveEditorFile(Program.EditorFilePath);
+
+				treeFiles.Refresh();
+			}
+			catch (Exception ex)
+			{
+				GorgonDialogs.ErrorBox(this, ex);
+			}
+			finally
+			{
+				ValidateControls();
+				Cursor.Current = Cursors.Default;
+			}
+		}
+
+		/// <summary>
+		/// Function to mark a tree directory node and its parent(s) as changed.
+		/// </summary>
+		/// <param name="directory">Directory to mark as changed.</param>
+		/// <param name="changeState">State for change.</param>
+		private void MarkChanged(TreeNodeDirectory directory, bool? changeState)
+		{
+			string path = directory.Name.ToLower();
+
+			if (changeState == null)
+			{
+				if (Program.ChangedItems.ContainsKey(path))
+				{
+					Program.ChangedItems.Remove(path);
+				}
+				return;
+			}
+
+			if ((!Program.ChangedItems.ContainsKey(path)) || (!Program.ChangedItems[path]))
+			{
+				Program.ChangedItems[path] = changeState.Value;
+			}
+
+			if ((directory.Parent != null) && (directory.Parent is TreeNodeDirectory))
+			{
+				MarkChanged((TreeNodeDirectory)directory.Parent, changeState);
+			}
+		}
+
+		/// <summary>
+		/// Function to mark a file and its parent directories as changed.
+		/// </summary>
+		/// <param name="file">File to mark as changed.</param>
+		/// <param name="changeState">State for change.</param>
+		private void MarkChanged(TreeNodeFile file, bool? changeState)
+		{
+			string path = file.Name.ToLower();
+
+			if (changeState == null)
+			{
+				if (Program.ChangedItems.ContainsKey(path))
+				{
+					Program.ChangedItems.Remove(path);
+				}
+				return;
+			}
+
+			Program.ChangedItems[path] = changeState.Value;
+
+			if ((file.Parent != null) && (file.Parent is TreeNodeDirectory))
+			{
+				MarkChanged((TreeNodeDirectory)file.Parent, false);
+			}
+		}
+
+		/// <summary>
+		/// Function to delete a directory and all the files and subdirectories underneath it.
+		/// </summary>
+		/// <param name="directoryNode">The node for the directory.</param>
+		private void DeleteDirectory(TreeNodeDirectory directoryNode)
+		{
+			if (GorgonDialogs.ConfirmBox(this, "This will delete '" + directoryNode.Directory.FullPath + "' and any files and/or directories it contains.  Are you sure you wish to do this?") == ConfirmationResult.No)
+			{
+				return;
+			}
+			
+
+			Cursor.Current = Cursors.WaitCursor;
+
+			// If we've selected the root node, then we need to destroy everything.
+			if (directoryNode == _rootNode)
+			{
+				// Wipe out all the files/subdirs under the root.
+				Program.ScratchFiles.DeleteDirectory("/");
+
+				LoadContentPane<DefaultContent>();
+
+				_rootNode.Nodes.Clear();
+				Program.ChangedItems["/"] = false;
+				return;
+			}
+
+			if ((Program.CurrentContent != null) && (Program.CurrentContent.File != null))
+			{
+				// If we have this file open, then close it.
+				var files = Program.ScratchFiles.FindFiles(directoryNode.Directory.FullPath, Program.CurrentContent.File.Name, true);
+
+				if (files.Count() > 0)
+				{
+					Program.CurrentContent.Dispose();
+					Program.CurrentContent = null;
+
+					LoadContentPane<DefaultContent>();
+				}
+			}
+
+			Program.ScratchFiles.DeleteDirectory(directoryNode.Directory.FullPath);
+			MarkChanged(directoryNode, false);
+			directoryNode.Remove();
+			treeFiles.Refresh();
+		}
+
+		/// <summary>
+		/// Function to delete a file.
+		/// </summary>
+		/// <param name="fileNode">The node for the file.</param>
+		private void DeleteFile(TreeNodeFile fileNode)
+		{
+			if (GorgonDialogs.ConfirmBox(this, "This will delete '" + fileNode.File.FullPath + "'.  Are you sure you wish to do this?") == ConfirmationResult.No)
+			{
+				return;
+			}
+
+			Cursor.Current = Cursors.WaitCursor;
+
+			if ((Program.CurrentContent != null) && (Program.CurrentContent.File == fileNode.File))
+			{
+				Program.CurrentContent.Dispose();
+				Program.CurrentContent = null;
+
+				LoadContentPane<DefaultContent>();
+			}
+
+			Program.ScratchFiles.DeleteFile(fileNode.File.FullPath);
+			MarkChanged(fileNode, true);
+			fileNode.Remove();
+			treeFiles.Refresh();
+		}
+
+		/// <summary>
+		/// Handles the Click event of the itemDelete control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+		private void itemDelete_Click(object sender, EventArgs e)
+		{
+			try
+			{
+				if (treeFiles.SelectedNode == null)
+				{
+					return;
+				}
+
+				TreeNodeDirectory directory = treeFiles.SelectedNode as TreeNodeDirectory;
+
+				if (directory != null)
+				{
+					DeleteDirectory(directory);
+				}
+				else
+				{
+					TreeNodeFile file = treeFiles.SelectedNode as TreeNodeFile;
+
+					if (file != null)
+					{
+						DeleteFile(file);
+					}
+				}
+			}
+			catch (Exception ex)
+			{
+				GorgonDialogs.ErrorBox(this, ex);
+			}
+			finally
+			{
+				Cursor.Current = Cursors.Default;
+			}
+		}
+
+		/// <summary>
+		/// Handles the Click event of the itemSaveAs control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+		private void itemSaveAs_Click(object sender, EventArgs e)
+		{
+			List<FileWriterPlugIn> plugIns = new List<FileWriterPlugIn>();
+			StringBuilder extensions = new StringBuilder(512);
+			int counter = 0;
+			int filterIndex = 0;
+			string extension = string.Empty;
+
+			try
+			{
+				foreach (var writerPlugIn in Program.WriterPlugIns)
+				{
+					// Create extensions for the dialog.
+					foreach (var extensionValue in writerPlugIn.Value.FileExtensions)
+					{
+						if (extensions.Length > 0)
+						{
+							extensions.Append("|");
+						}
+
+						var wildCardExtension = extensionValue.Value.Item1;
+						if (!wildCardExtension.StartsWith("*."))
+						{
+							wildCardExtension = "*." + wildCardExtension;
+						}
+						
+						extensions.AppendFormat("{0}|{1}", extensionValue.Value.Item2, wildCardExtension);
+
+						// If we have a current writer plug-in selected, then pick it as the default extension and index.
+						if (Program.CurrentWriterPlugIn == writerPlugIn.Value)
+						{
+							extension = writerPlugIn.Value.FileExtensions.First().Value.Item2;
+
+							if (extension.StartsWith("."))
+							{
+								extension = extension.Substring(1);						
+							}
+
+							filterIndex = counter;
+						}
+
+						plugIns.Add(writerPlugIn.Value);
+						counter++;
+					}					
+				}
+
+				// Set default extension and correct filter.
+				if (string.IsNullOrWhiteSpace(extension))
+				{
+					dialogSaveFile.DefaultExt = Program.WriterPlugIns.First().Value.FileExtensions.First().Value.Item2;
+					dialogSaveFile.FilterIndex = 1;
+				}
+				else
+				{
+					dialogSaveFile.DefaultExt = extension;
+					dialogSaveFile.FilterIndex = filterIndex + 1;
+				}
+				dialogSaveFile.Filter = extensions.ToString();
+
+				// Open dialog.
+				if (dialogSaveFile.ShowDialog(this) == System.Windows.Forms.DialogResult.OK)
+				{					
+					Cursor.Current = Cursors.WaitCursor;
+					Program.CurrentWriterPlugIn = plugIns[dialogSaveFile.FilterIndex - 1];
+					Program.SaveEditorFile(dialogSaveFile.FileName);
+
+					treeFiles.Refresh();
+				}
+			}
+			catch (Exception ex)
+			{
+				GorgonDialogs.ErrorBox(this, ex);
+			}
+			finally
+			{
+				ValidateControls();
+				Cursor.Current = Cursors.Default;
 			}
 		}
 
@@ -717,7 +1079,11 @@ namespace GorgonLibrary.Editor
 
             try
             {
-                // TODO: Check to see if the current file needs saving and prompt to save.
+				// Save the file if it's changed.
+				if (ConfirmSave())
+				{
+					return;
+				}
 
                 if (!string.IsNullOrWhiteSpace(Program.Settings.LastEditorFile))
                 {
@@ -739,20 +1105,25 @@ namespace GorgonLibrary.Editor
                                 
                 dialogOpenFile.Filter = extensions.ToString();
 
-                if (dialogOpenFile.ShowDialog(this) == System.Windows.Forms.DialogResult.OK)
-                {
-                    // If this file is already opened, then do nothing.
-                    if (string.Compare(Program.EditorFilePath, dialogOpenFile.FileName, true) == 0)
-                    {
-                        return;
-                    }
+				if (dialogOpenFile.ShowDialog(this) == System.Windows.Forms.DialogResult.OK)
+				{
+					Cursor.Current = Cursors.WaitCursor;
 
-                    // Open the file.
-                    Program.OpenEditorFile(dialogOpenFile.FileName);
+					// If this file is already opened, then do nothing.
+					if (string.Compare(Program.EditorFilePath, dialogOpenFile.FileName, true) == 0)
+					{
+						return;
+					}
 
-                    // Update the tree.
-                    InitializeTree();
-                }
+					// Close the current content.
+					LoadContentPane<DefaultContent>();
+
+					// Open the file.
+					Program.OpenEditorFile(dialogOpenFile.FileName);
+
+					// Update the tree.
+					InitializeTree();
+				}
             }
             catch (Exception ex)
             {
@@ -836,5 +1207,6 @@ namespace GorgonLibrary.Editor
 			InitializeComponent();
 		}
 		#endregion
+
 	}
 }

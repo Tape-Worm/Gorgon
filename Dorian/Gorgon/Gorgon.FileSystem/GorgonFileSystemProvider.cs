@@ -133,7 +133,7 @@ namespace GorgonLibrary.FileSystem
 
 			// Write the file out to the write location.
 			FileStream stream = File.Open(newPath, FileMode.Create, FileAccess.ReadWrite, FileShare.ReadWrite);
-			UpdateFileInfo(file, null, null, null, newPath, this);
+			UpdateFileInfo(file, null, null, null, FileSystem.WriteLocation, newPath, FileSystem.Providers[FileSystem.DefaultProviderType.FullName]);
 
 			return new GorgonFileSystemStream(file, stream);
 		}
@@ -227,7 +227,7 @@ namespace GorgonLibrary.FileSystem
                 OnWriteFile(file, data);
 
                 info = new FileInfo(file.PhysicalFileSystemPath);
-                UpdateFileInfo(file, info.Length, null, info.CreationTime, null, this);
+                UpdateFileInfo(file, info.Length, null, info.CreationTime, FileSystem.WriteLocation, file.PhysicalFileSystemPath, FileSystem.Providers[FileSystem.DefaultProviderType.FullName]);
             }
         }
 
@@ -292,24 +292,44 @@ namespace GorgonLibrary.FileSystem
 		/// <param name="fileSize">The file size.  Pass NULL (Nothing in VB.Net) to leave unchanged.</param>
 		/// <param name="fileOffset">The offset of the file within a packed file.  Pass NULL (Nothing in VB.Net) to leave unchanged.</param>
 		/// <param name="createDate">The date/time the file was created.  Pass NULL (Nothing in VB.Net) to leave unchanged.</param>
+		/// <param name="mountPoint">The new mount point for the file.  Pass NULL (Nothing in VB.Net) to leave unchanged.</param>
 		/// <param name="physicalPath">A new file system provider for the file.  Pass NULL (Nothing in VB.Net) or an empty string to leave unchanged.</param>
 		/// <param name="provider">A new file system provider for the file.  Pass NULL (Nothing in VB.Net) to leave unchanged.</param>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="file"/> parameter is NULL (Nothing in VB.Net).</exception>
-		protected void UpdateFileInfo(GorgonFileSystemFileEntry file, long? fileSize, int? fileOffset, DateTime? createDate, string physicalPath, GorgonFileSystemProvider provider )
+		protected void UpdateFileInfo(GorgonFileSystemFileEntry file, long? fileSize, int? fileOffset, DateTime? createDate, string mountPoint, string physicalPath, GorgonFileSystemProvider provider )
 		{
 			if (file == null)
 				throw new ArgumentNullException("file");
 
 			if (fileSize.HasValue)
+			{
 				file.Size = fileSize.Value;
+			}
+
 			if (fileOffset.HasValue)
+			{
 				file.Offset = fileOffset.Value;
+			}
+
 			if (createDate.HasValue)
+			{
 				file.CreateDate = createDate.Value;
+			}
+
+			if (!string.IsNullOrWhiteSpace(mountPoint))
+			{
+				file.MountPoint = mountPoint;
+			}
+
 			if (provider != null)
+			{
 				file.Provider = provider;
+			}
+
 			if (!string.IsNullOrWhiteSpace(physicalPath))
+			{
 				file.PhysicalFileSystemPath = physicalPath;
+			}
 		}
 
 		/// <summary>

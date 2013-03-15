@@ -150,8 +150,12 @@ namespace GorgonLibrary.FileSystem.GorPack
 					fileName = file.Element("Filename").Value;
 					if (file.Element("Extension") != null)
 					{
-						if (!string.IsNullOrEmpty(fileName))
-							fileName = Path.ChangeExtension(fileName, file.Element("Extension").Value);
+						var fileExtension = file.Element("Extension").Value;
+
+						if ((!string.IsNullOrWhiteSpace(fileName)) && (!string.IsNullOrWhiteSpace(fileExtension)))
+						{
+							fileName += file.Element("Extension").Value;
+						}
 					}
 
 					fileOffset = Convert.ToInt64(file.Element("Offset").Value) + physicalOffset;
