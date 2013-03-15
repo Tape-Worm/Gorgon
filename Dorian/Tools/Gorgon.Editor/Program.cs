@@ -58,6 +58,27 @@ namespace GorgonLibrary.Editor
         #endregion
 
         #region Variables.
+		static List<string> _systemDirs = new List<string>
+		{
+			Environment.GetFolderPath(Environment.SpecialFolder.CommonProgramFiles),
+			Environment.GetFolderPath(Environment.SpecialFolder.CommonProgramFilesX86),
+			Environment.GetFolderPath(Environment.SpecialFolder.CommonPrograms),
+			Environment.GetFolderPath(Environment.SpecialFolder.CommonStartMenu),
+			Environment.GetFolderPath(Environment.SpecialFolder.CommonStartup),
+			Environment.GetFolderPath(Environment.SpecialFolder.Fonts),
+			Environment.GetFolderPath(Environment.SpecialFolder.NetworkShortcuts),
+			Environment.GetFolderPath(Environment.SpecialFolder.PrinterShortcuts),
+			Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles),
+			Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86),
+			Environment.GetFolderPath(Environment.SpecialFolder.Resources),
+			Environment.GetFolderPath(Environment.SpecialFolder.StartMenu),
+			Environment.GetFolderPath(Environment.SpecialFolder.Startup),
+			Environment.GetFolderPath(Environment.SpecialFolder.System),
+			Environment.GetFolderPath(Environment.SpecialFolder.SystemX86),
+			Environment.GetFolderPath(Environment.SpecialFolder.Templates),
+			Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
+			Environment.GetFolderPath(Environment.SpecialFolder.Windows),
+		};
         private static XElement _metadataRootNode = null;
         private static FileWriterPlugIn _writerPlugIn = null;
         #endregion
@@ -291,7 +312,24 @@ namespace GorgonLibrary.Editor
             return firstPlugIn;
         }
 
-        /// <summary>
+		/// <summary>
+		/// Function to determine if the path is a root path or system location.
+		/// </summary>
+		/// <param name="path">Path to evaluate.</param>
+		/// <returns>TRUE if a system location or root directory.</returns>
+		public static bool IsSystemLocation(string path)
+		{
+			DirectoryInfo info = new DirectoryInfo(path);
+
+			if (info.Parent == null)
+			{
+				return true;
+			}
+
+			return (_systemDirs.Any(item => string.Compare(path, item, true) == 0));
+		}
+		
+		/// <summary>
         /// Function to open the editor file.
         /// </summary>
         /// <param name="path">Path to the editor file.</param>
@@ -411,6 +449,13 @@ namespace GorgonLibrary.Editor
 
 				if (dialog.ShowDialog() == DialogResult.OK)
 				{
+					// We chose poorly.
+					if (IsSystemLocation(dialog.SelectedPath))
+					{
+						GorgonDialogs.ErrorBox(null, "Cannot use a system location or a drive root for scratch data.");
+						return null;
+					}
+
 					// Append the scratch directory.
 					return dialog.SelectedPath.FormatDirectory(Path.DirectorySeparatorChar) + "Gorgon.Editor." + Guid.NewGuid().ToString("N").FormatDirectory(Path.DirectorySeparatorChar);
 				}

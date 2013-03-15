@@ -169,11 +169,17 @@ namespace GorgonLibrary.Editor
 			if (!Directory.Exists(Path.GetPathRoot(Program.Settings.ScratchPath)))
 			{
 				return false;
-			}
+			}			
 
 			try
 			{
 				DirectoryInfo directoryInfo = null;
+
+				// Do not allow access to a system location.
+				if (Program.IsSystemLocation(Program.Settings.ScratchPath))
+				{
+					return false;
+				}
 
 				if (!Directory.Exists(Program.Settings.ScratchPath))
 				{
@@ -273,6 +279,32 @@ namespace GorgonLibrary.Editor
 				_splash.UpdateVersion("Creating scratch area...");
 
 				Program.ScratchFiles = new FileSystem.GorgonFileSystem();
+								
+				// Ensure that we're not being clever and trying to mess up our system.
+				if (Program.IsSystemLocation(Program.Settings.ScratchPath))
+				{
+					GorgonDialogs.ErrorBox(null, "Cannot use a system location or a drive root for scratch data.");
+
+					// Ensure we can actually access the scratch area.
+					while (!CanAccessScratch())
+					{
+						Program.LogFile.Print("Could not access scratch area at \"{0}\"", LoggingLevel.Verbose, Program.Settings.ScratchPath);
+						Program.Settings.ScratchPath = Program.SetScratchLocation();
+
+						if (Program.Settings.ScratchPath == null)
+						{
+							// Exit the application if we cancel.
+							MainForm.Dispose();
+							Gorgon.Quit();
+							return;
+						}
+
+						Program.LogFile.Print("Setting scratch area to \"{0}\".", LoggingLevel.Verbose, Program.Settings.ScratchPath);
+
+						// Update with the new scratch path.
+						Program.Settings.Save();
+					}
+				}
 
 				// Destroy previous files.
 				Program.CleanUpScratchArea();
