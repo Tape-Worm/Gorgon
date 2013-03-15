@@ -119,8 +119,11 @@ namespace GorgonLibrary.FileSystem
 				{
 					_writeLocation = _writeLocation.FormatDirectory(Path.DirectorySeparatorChar);
 
-					if (!Directory.Exists(_writeLocation))
-						Directory.CreateDirectory(_writeLocation);
+					DirectoryInfo info = new DirectoryInfo(_writeLocation);
+					if (!info.Exists)
+					{
+						info.Create();
+					}
 				}
 
 				// Query the files/sub directories in the write location.
