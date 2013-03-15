@@ -46,33 +46,6 @@ namespace GorgonLibrary.Editor
 
 		#region Properties.
         /// <summary>
-        /// Property to set or return whether this directory is new or not.
-        /// </summary>
-        public virtual bool IsNew
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Property to set or return whether this directory has been updated or not.
-        /// </summary>
-        public virtual bool IsUpdated
-        {
-            get
-            {
-                return _isUpdated;
-            }
-            set
-            {
-                if (!IsNew)
-                {
-                    _isUpdated = value;
-                }
-            }
-        }
-
-        /// <summary>
         /// Gets or sets the foreground color of the tree node.
         /// </summary>
         /// <returns>The foreground <see cref="T:System.Drawing.Color" /> of the tree node.</returns>
@@ -88,17 +61,21 @@ namespace GorgonLibrary.Editor
                     return DarkFormsRenderer.MenuHilightForeground;
                 }
 
-                if (IsNew)
-                {
-                    return Color.LightGreen;
-                }
+				var nodeName = Name.ToLower();
 
-                if (IsUpdated)
-                {
-                    return Color.FromArgb(94, 126, 255);
-                }
+				if (Program.ChangedItems.ContainsKey(nodeName))
+				{
+					if (Program.ChangedItems[nodeName])
+					{
+						return Color.LightGreen;
+					}
+					else
+					{
+						return Color.FromArgb(94, 126, 255);
+					}
+				}
 
-                return base.ForeColor;
+                return Color.White;
             }
             set
             {
@@ -109,10 +86,17 @@ namespace GorgonLibrary.Editor
 		/// <summary>
 		/// Property to return the directory associated with this node.
 		/// </summary>
-		public GorgonFileSystemDirectory Directory
+		public virtual GorgonFileSystemDirectory Directory
 		{
-			get;
-			private set;
+			get
+			{
+				if (Program.ScratchFiles == null)
+				{
+					return null;
+				}
+
+				return Program.ScratchFiles.GetDirectory(Name);
+			}			
 		}
 		#endregion
 
@@ -132,7 +116,6 @@ namespace GorgonLibrary.Editor
 			this.Text = directory.Name;
 			ExpandedImage = Properties.Resources.folder_open_16x16;
 			CollapsedImage = Properties.Resources.folder_16x16;
-			Directory = directory;
 		}
 		#endregion
 	}
@@ -149,35 +132,6 @@ namespace GorgonLibrary.Editor
 
 		#region Properties.
         /// <summary>
-        /// Property to set or return whether this directory is new or not.
-        /// </summary>
-        public override bool IsNew
-        {
-            get
-            {
-                return false;
-            }
-            set
-            {                
-            }
-        }
-
-        /// <summary>
-        /// Property to set or return whether this directory has been updated or not.
-        /// </summary>
-        public override bool IsUpdated
-        {
-            get
-            {
-                return Program.ChangedItems.Count > 0;
-            }
-            set
-            {
-                
-            }
-        }
-
-        /// <summary>
         /// Gets or sets the foreground color of the tree node.
         /// </summary>
         /// <returns>The foreground <see cref="T:System.Drawing.Color" /> of the tree node.</returns>
@@ -193,7 +147,7 @@ namespace GorgonLibrary.Editor
                     return DarkFormsRenderer.MenuHilightForeground;
                 }
 
-                if (IsUpdated)
+                if (Program.ChangedItems.ContainsKey("/"))
                 {
                     return Color.FromArgb(94, 126, 255);
                 }
@@ -204,6 +158,22 @@ namespace GorgonLibrary.Editor
             {                
             }
         }
+
+		/// <summary>
+		/// Property to return the directory associated with this node.
+		/// </summary>
+		public override GorgonFileSystemDirectory Directory
+		{
+			get
+			{
+				if (Program.ScratchFiles == null)
+				{
+					return null;
+				}
+
+				return Program.ScratchFiles.RootDirectory;
+			}
+		}
 
 		/// <summary>
 		/// Gets or sets the name of the tree node.

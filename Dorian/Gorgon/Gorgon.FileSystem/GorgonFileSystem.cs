@@ -57,10 +57,18 @@ namespace GorgonLibrary.FileSystem
 		private ReadOnlyCollection<GorgonFileSystemMountPoint> _mountPointList = null;			// The list of mount points to expose to the user.
 		private IList<GorgonFileSystemMountPoint> _mountPoints = null;							// Mount points.
 		private string _writeLocation = string.Empty;							// The area on the physical file system that we can write into.
-		private Type _defaultProviderType = null;								// Type for the default file system provider (folder file system).
 		#endregion
 
 		#region Properties.
+		/// <summary>
+		/// Property to return the default file system provider.
+		/// </summary>
+		internal Type DefaultProviderType
+		{
+			get;
+			private set;
+		}
+
 		/// <summary>
 		/// Property to return a list of current mount points.
 		/// </summary>
@@ -145,7 +153,7 @@ namespace GorgonLibrary.FileSystem
 		/// </summary>
 		private void QueryWriteLocation()
 		{
-			var folderProvider = Providers[_defaultProviderType.FullName];
+			var folderProvider = Providers[DefaultProviderType.FullName];
 
 			// If we've not included a write location, then leave.
 			if ((string.IsNullOrEmpty(WriteLocation)) || (folderProvider == null))
@@ -609,7 +617,7 @@ namespace GorgonLibrary.FileSystem
 			file = GetFile(path);
 
 			if (file == null)
-				file = AddFileEntry(Providers[_defaultProviderType.FullName], path, Path.GetDirectoryName(GetWritePath(path)) + Path.DirectorySeparatorChar.ToString(), GetWritePath(path), 0, 0, DateTime.Now);
+				file = AddFileEntry(Providers[DefaultProviderType.FullName], path, Path.GetDirectoryName(GetWritePath(path)) + Path.DirectorySeparatorChar.ToString(), GetWritePath(path), 0, 0, DateTime.Now);
 
             // If we're not passing any data, then do nothing.
             if (data != null)
@@ -647,7 +655,7 @@ namespace GorgonLibrary.FileSystem
 				if (!writeable)
 					throw new FileNotFoundException("Could not find the file '" + path + "'.", path);
 				else
-					file = AddFileEntry(Providers[_defaultProviderType.FullName], path, Path.GetDirectoryName(GetWritePath(path)) + Path.DirectorySeparatorChar.ToString(), GetWritePath(path), 0, 0, DateTime.Now);
+					file = AddFileEntry(Providers[DefaultProviderType.FullName], path, Path.GetDirectoryName(GetWritePath(path)) + Path.DirectorySeparatorChar.ToString(), GetWritePath(path), 0, 0, DateTime.Now);
 			}
 			
 			return file.Provider.OpenStream(file, writeable);
@@ -762,23 +770,28 @@ namespace GorgonLibrary.FileSystem
 				if (Directory.Exists(newPath))
 				{
 					// Remove from the write area if the directory exists.
-					var directories = Directory.GetDirectories(newPath, "*", SearchOption.AllDirectories).OrderByDescending(directoryName => directoryName);
-					var files = Directory.GetFiles(newPath, "*", SearchOption.AllDirectories);
-
-					foreach (var filePath in files)
+					if (directory.Name != "/")
 					{
-						if (File.Exists(filePath))
-							File.Delete(filePath);
+						DirectoryInfo dirInfo = new DirectoryInfo(newPath);
+						dirInfo.Delete(true);
 					}
-
-					foreach (var directoryPath in directories)
+					else
 					{
-						if (Directory.Exists(directoryPath))
-							Directory.Delete(directoryPath);
-					}
+						var directories = Directory.GetDirectories(newPath, "*", SearchOption.TopDirectoryOnly);
+						var files = Directory.GetFiles(newPath, "*", SearchOption.TopDirectoryOnly);
 
-					if ((directory.Name != "/") && (Directory.Exists(newPath)))						
-						Directory.Delete(newPath);
+						foreach (var directoryPath in directories)
+						{
+							DirectoryInfo dirInfo = new DirectoryInfo(directoryPath);
+							dirInfo.Delete(true);
+						}
+
+						foreach (var file in files)
+						{
+							FileInfo fileInfo = new FileInfo(file);
+							fileInfo.Delete();
+						}
+					}
 				}
 			}
 		}
@@ -942,7 +955,7 @@ namespace GorgonLibrary.FileSystem
 				directory = directory.FormatDirectory(Path.DirectorySeparatorChar);
 
 				// Use the default folder provider.
-				provider = Providers[_defaultProviderType.FullName];
+				provider = Providers[DefaultProviderType.FullName];
 				if (!Directory.Exists(directory))
 					throw new ArgumentException("The path '" + directory + "' does not exist.", "physicalPath");
 				
@@ -1018,7 +1031,7 @@ namespace GorgonLibrary.FileSystem
 		/// </summary>
 		public GorgonFileSystem()
 		{
-			_defaultProviderType = typeof(GorgonFolderFileSystemProvider);
+			DefaultProviderType = typeof(GorgonFolderFileSystemProvider);
 			_mountPoints = new List<GorgonFileSystemMountPoint>();
 			_mountPointList = new ReadOnlyCollection<GorgonFileSystemMountPoint>(_mountPoints);
 
