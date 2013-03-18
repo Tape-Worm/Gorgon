@@ -311,7 +311,7 @@ namespace GorgonLibrary.FileSystem
 		{
 			string fileName = string.Empty;						// Filename to create.
 			string directoryName = string.Empty;				// Directory for the path.
-			GorgonFileSystemDirectory directory = null;		// Directory to create the file in.
+			GorgonFileSystemDirectory directory = null;			// Directory to create the file in.
 			GorgonFileSystemFileEntry result = null;			// The new file.
 
 			GorgonDebug.AssertParamString(path, "path");
@@ -902,9 +902,10 @@ namespace GorgonLibrary.FileSystem
 		/// <para>-or-</para><para>Thrown when the path in the <paramref name="source"/> parameter is not valid.</para>
 		/// </exception>
 		/// <exception cref="System.IO.IOException">Thrown when the file pointed to by the physicalPath parameter could not be read by any of the file system providers.</exception>
-		public void Mount(string source)
+		/// <returns>A mount point value for the currently mounted physical path and its mount point in the virtual file system.</returns>
+		public GorgonFileSystemMountPoint Mount(string source)
 		{
-			Mount(source, "/");
+			return Mount(source, "/");
 		}
 
 		/// <summary>
@@ -930,10 +931,12 @@ namespace GorgonLibrary.FileSystem
 		/// <para>-or-</para><para>Thrown when the path in the <paramref name="physicalPath"/> parameter is not valid.</para>
 		/// </exception>
 		/// <exception cref="System.IO.IOException">Thrown when the file pointed to by the physicalPath parameter could not be read by any of the file system providers.</exception>
-		public void Mount(string physicalPath, string mountPath)
+		/// <returns>A mount point value for the currently mounted physical path and its mount point in the virtual file system.</returns>
+		public GorgonFileSystemMountPoint Mount(string physicalPath, string mountPath)
 		{
 			string fileName = string.Empty;
 			string directory = string.Empty;
+			string writeLocation = _writeLocation;
 			GorgonFileSystemProvider provider = null;
 
 			GorgonDebug.AssertParamString(physicalPath, "physicalPath");
@@ -942,7 +945,10 @@ namespace GorgonLibrary.FileSystem
 			// Don't mount the write location.  It will be automatically queried every time we mount a physical location.
 			if ((!string.IsNullOrEmpty(WriteLocation)) && (string.Compare(physicalPath, WriteLocation, true) == 0))
 			{
-				return;
+				// Requery the write location if it exists.
+				QueryWriteLocation();
+
+				return new GorgonFileSystemMountPoint(physicalPath, "/");
 			}
 
 			physicalPath = Path.GetFullPath(physicalPath);
@@ -970,7 +976,9 @@ namespace GorgonLibrary.FileSystem
 					_mountPoints.Add(mountPoint);
 					_mountListChanged = true;
 				}
-				return;
+
+				QueryWriteLocation();
+				return mountPoint;
 			}
 
 			fileName = fileName.FormatFileName();
@@ -993,12 +1001,11 @@ namespace GorgonLibrary.FileSystem
 						_mountPoints.Add(mountPoint);
 						_mountListChanged = true;
 					}
-					return;
+
+					QueryWriteLocation();
+					return mountPoint;
 				}
 			}
-
-			// Requery the write location if it exists.
-			QueryWriteLocation();
 
 			throw new IOException("The file '" + directory + fileName + "' could not be read by any of the loaded file system providers.");
 		}

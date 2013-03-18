@@ -246,17 +246,6 @@ namespace GorgonLibrary.Editor
         }
 
         /// <summary>
-        /// Property to return the path to the scratch area.
-        /// </summary>
-        public string ScratchPath
-        {
-            get
-            {
-                return Program.Settings.ScratchPath;
-            }
-        }
-
-        /// <summary>
         /// Property to return the file system for the scratch files.
         /// </summary>
         public GorgonFileSystem ScratchFileSystem

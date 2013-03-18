@@ -70,7 +70,7 @@ namespace GorgonLibrary.Editor
                 }
 
 				// Draw the text as disabled.
-				if (PlugIn == null)
+				if ((PlugIn == null) || (File == null))
 				{
 					return DarkFormsRenderer.DisabledColor;
 				}
@@ -124,21 +124,30 @@ namespace GorgonLibrary.Editor
 		{
 			ExpandedImage = Properties.Resources.unknown_document_16x16;
 			CollapsedImage = ExpandedImage;
+			PlugIn = null;
 						
 			if (!string.IsNullOrWhiteSpace(File.Extension))
 			{
-				if (PlugIn == null)
-				{
-					PlugIn = (from plugIn in Program.ContentPlugIns
-							  where plugIn.Value.FileExtensions.ContainsKey(File.Extension.ToLower())
-							  select plugIn.Value).FirstOrDefault();
-				}
+				PlugIn = (from plugIn in Program.ContentPlugIns
+							where plugIn.Value.FileExtensions.ContainsKey(File.Extension.ToLower())
+							select plugIn.Value).FirstOrDefault();
 
 				if (PlugIn != null)
 				{
 					ExpandedImage = CollapsedImage = PlugIn.GetContentIcon();
 				}
 			}
+		}
+
+		/// <summary>
+		/// Function to update the file information.
+		/// </summary>
+		/// <param name="file">File system file entry to use.</param>
+		public void UpdateFile(GorgonFileSystemFileEntry file)
+		{
+			this.Name = file.FullPath;
+			this.Text = file.Name;
+			GetFileData();
 		}
 		#endregion
 

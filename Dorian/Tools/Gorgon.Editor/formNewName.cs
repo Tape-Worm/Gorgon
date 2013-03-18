@@ -1,7 +1,7 @@
 ﻿#region MIT.
 // 
 // Gorgon.
-// Copyright (C) 2012 Michael Winsor
+// Copyright (C) 2013 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -20,7 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: Wednesday, June 06, 2012 8:20:08 AM
+// Created: Sunday, March 17, 2013 4:46:11 PM
 // 
 #endregion
 
@@ -31,21 +31,56 @@ using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using System.Windows.Forms;
+using GorgonLibrary;
+using GorgonLibrary.Diagnostics;
 using GorgonLibrary.UI;
 
 namespace GorgonLibrary.Editor
 {
 	/// <summary>
-	/// Project folder selection tree.
+	/// Form to allow entry of a new name for an object.
 	/// </summary>
-	public partial class formProjectFolderSelector : Form
+	public partial class formNewName 
+		: ZuneForm
 	{
+		#region Methods.
+		/// <summary>
+		/// Handles the TextChanged event of the textName control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+		private void textName_TextChanged(object sender, EventArgs e)
+		{
+			ValidateControls();
+		}
+
+		/// <summary>
+		/// Function to validate the controls on the form.
+		/// </summary>
+		private void ValidateControls()
+		{
+			buttonOK.Enabled = !string.IsNullOrWhiteSpace(textName.Text);
+		}
+
+		/// <summary>
+		/// Raises the <see cref="E:System.Windows.Forms.Form.Load" /> event.
+		/// </summary>
+		/// <param name="e">An <see cref="T:System.EventArgs" /> that contains the event data.</param>
+		protected override void OnLoad(EventArgs e)
+		{
+			base.OnLoad(e);
+
+			ValidateControls();
+		}
+		#endregion
+
 		#region Constructor/Destructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="formProjectFolderSelector"/> class.
+		/// Initializes a new instance of the <see cref="formNewName"/> class.
 		/// </summary>
-		public formProjectFolderSelector()
+		public formNewName()
 		{
 			InitializeComponent();
 		}

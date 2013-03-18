@@ -163,6 +163,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
         {
             if (_panel != null)
             {
+				_panel.Text = "Gorgon Font - " + Name;
                 _panel.OnContentChanged();
             }
         }
