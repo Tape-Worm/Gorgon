@@ -58,27 +58,8 @@ namespace GorgonLibrary.Editor
         #endregion
 
         #region Variables.
-		static List<string> _systemDirs = new List<string>
-		{
-			Environment.GetFolderPath(Environment.SpecialFolder.CommonProgramFiles),
-			Environment.GetFolderPath(Environment.SpecialFolder.CommonProgramFilesX86),
-			Environment.GetFolderPath(Environment.SpecialFolder.CommonPrograms),
-			Environment.GetFolderPath(Environment.SpecialFolder.CommonStartMenu),
-			Environment.GetFolderPath(Environment.SpecialFolder.CommonStartup),
-			Environment.GetFolderPath(Environment.SpecialFolder.Fonts),
-			Environment.GetFolderPath(Environment.SpecialFolder.NetworkShortcuts),
-			Environment.GetFolderPath(Environment.SpecialFolder.PrinterShortcuts),
-			Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles),
-			Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86),
-			Environment.GetFolderPath(Environment.SpecialFolder.Resources),
-			Environment.GetFolderPath(Environment.SpecialFolder.StartMenu),
-			Environment.GetFolderPath(Environment.SpecialFolder.Startup),
-			Environment.GetFolderPath(Environment.SpecialFolder.System),
-			Environment.GetFolderPath(Environment.SpecialFolder.SystemX86),
-			Environment.GetFolderPath(Environment.SpecialFolder.Templates),
-			Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
-			Environment.GetFolderPath(Environment.SpecialFolder.Windows),
-		};
+		private static Guid _scratchID = Guid.NewGuid();
+		private static string[] _systemDirs = null;
         private static XElement _metadataRootNode = null;
         private static FileWriterPlugIn _writerPlugIn = null;
         #endregion
@@ -321,12 +302,44 @@ namespace GorgonLibrary.Editor
 		{
 			DirectoryInfo info = new DirectoryInfo(path);
 
+			// Don't allow the root of a drive as a scratch area.
 			if (info.Parent == null)
 			{
 				return true;
 			}
 
+			// Ensure the system files are not accessible.
 			return (_systemDirs.Any(item => string.Compare(path, item, true) == 0));
+		}
+
+		/// <summary>
+		/// Function to move a directory from one location to another.
+		/// </summary>
+		/// <param name="directory">Directory to move.</param>
+		/// <param name="newLocation">Destination path for the directory.</param>
+		/// <returns>The new directory entry.</returns>
+		public static GorgonFileSystemDirectory MoveDirectory(GorgonFileSystemDirectory directory, string newLocation)
+		{
+			GorgonFileSystemDirectory parent = directory.Parent;
+			string destPath = ScratchFiles.WriteLocation + newLocation.FormatDirectory(Path.DirectorySeparatorChar);
+
+			if (ScratchFiles.GetDirectory(newLocation) != null)
+			{
+				throw new IOException("The path '" + newLocation + "' already exists.");				
+			}
+
+			DirectoryInfo sourceDir = new DirectoryInfo((ScratchFiles.WriteLocation + directory.FullPath).FormatDirectory(Path.DirectorySeparatorChar));
+
+			// Move the directories/files to the new location.
+			sourceDir.MoveTo(destPath);
+
+			// Remove from the file system.
+			ScratchFiles.DeleteDirectory(directory.FullPath);
+			
+			// Mount the new directory.
+			ScratchFiles.Mount(destPath, newLocation);
+
+			return ScratchFiles.GetDirectory(newLocation);
 		}
 		
 		/// <summary>
@@ -335,41 +348,73 @@ namespace GorgonLibrary.Editor
         /// <param name="path">Path to the editor file.</param>
         public static void OpenEditorFile(string path)
         {
-            IList<GorgonFileSystemMountPoint> mountPoints = new List<GorgonFileSystemMountPoint>();
+			GorgonFileSystem packFileSystem = new GorgonFileSystem();
 
 			ChangedItems.Clear();
 
-			// Remove our scratch data.
-			CleanUpScratchArea();
-			InitializeScratch();
+			try
+			{
+				// Remove our scratch data.
+				CleanUpScratchArea();
+				InitializeScratch();
 
-            // Get the currently mounted file systems.
-            foreach(var mountPoint in ScratchFiles.MountPoints)
-            {
-                mountPoints.Add(mountPoint);
-            }
+				// Add the new file system as a mount point.
+				packFileSystem.AddAllProviders();
+				packFileSystem.Mount(path);
 
-            // Add the new file system as a mount point.
-            ScratchFiles.Mount(path);
+				// At this point we should have a clean scratch area, so all files will exist in the packed file.
+				// Unpack the file structure so we can work with it.
+				var directories = packFileSystem.FindDirectories("*", true);
+				var files = packFileSystem.FindFiles("*", true);
 
-            // Remove the mount point.
-            foreach (var mountPoint in mountPoints)
-            {
-                ScratchFiles.Unmount(mountPoint);
-            }
+				// Create our directories.
+				foreach (var directory in directories)
+				{
+					ScratchFiles.CreateDirectory(directory.FullPath);
+				}
 
-            Program.EditorFilePath = string.Empty;
-            Program.EditorFile = Path.GetFileName(path);
-            Program.Settings.LastEditorFile = path;
-                        
-            // Find the writer plug-in that can write this file.
-            CurrentWriterPlugIn = GetWriterPlugIn(path);
+				// Copy our files.
+				foreach (var file in files)
+				{
+					using (var inputStream = file.OpenStream(false))
+					{
+						using (var outputStream = ScratchFiles.OpenStream(file.FullPath, true))
+						{
+							inputStream.CopyTo(outputStream);
+						}
+					}
+				}
 
-            // If we can't write the file, then leave the editor file path as blank.
-            if (CurrentWriterPlugIn != null)
-            {
-                Program.EditorFilePath = path;
-            }
+				// At this point we have no 
+				Program.EditorFilePath = string.Empty;
+				Program.EditorFile = Path.GetFileName(path);
+				Program.Settings.LastEditorFile = path;
+
+				// Find the writer plug-in that can write this file.
+				CurrentWriterPlugIn = GetWriterPlugIn(path);
+
+				// If we can't write the file, then leave the editor file path as blank.
+				if (CurrentWriterPlugIn != null)
+				{
+					Program.EditorFilePath = path;
+				}
+			}
+			catch
+			{
+				// We have a problem, reset whatever changes we've made.
+				CleanUpScratchArea();
+				InitializeScratch();
+				throw;
+			}
+			finally
+			{
+				// At this point we don't need this file system any more.  We'll 
+				// be using our scratch system instead.
+				if (packFileSystem != null)
+				{
+					packFileSystem.Clear();
+				}
+			}
         }
 
 		/// <summary>
@@ -423,10 +468,6 @@ namespace GorgonLibrary.Editor
 
             // Remove all changed items.
             ChangedItems.Clear();
-
-			// Clean up and reinitialize our scratch data.
-			CleanUpScratchArea();
-			InitializeScratch();
         }
 
 		/// <summary>
@@ -457,7 +498,7 @@ namespace GorgonLibrary.Editor
 					}
 
 					// Append the scratch directory.
-					return dialog.SelectedPath.FormatDirectory(Path.DirectorySeparatorChar) + "Gorgon.Editor." + Guid.NewGuid().ToString("N").FormatDirectory(Path.DirectorySeparatorChar);
+					return dialog.SelectedPath.FormatDirectory(Path.DirectorySeparatorChar);
 				}
 
 				return null;
@@ -481,10 +522,11 @@ namespace GorgonLibrary.Editor
         /// </summary>
         public static void InitializeScratch()
         {
-            Program.ScratchFiles.WriteLocation = Program.Settings.ScratchPath;
+			_scratchID = Guid.NewGuid();
+            Program.ScratchFiles.WriteLocation = Program.Settings.ScratchPath + ("Gorgon.Editor." + _scratchID.ToString("N")).FormatDirectory(Path.DirectorySeparatorChar); 
 
             // Set the directory to hidden.  We don't want users really messing around in here if we can help it.
-            var scratchDir = new System.IO.DirectoryInfo(Program.Settings.ScratchPath);
+            var scratchDir = new System.IO.DirectoryInfo(Program.ScratchFiles.WriteLocation);
             if (((scratchDir.Attributes & FileAttributes.Hidden) != FileAttributes.Hidden)
                 || ((scratchDir.Attributes & FileAttributes.NotContentIndexed) != FileAttributes.NotContentIndexed))
             {
@@ -505,7 +547,7 @@ namespace GorgonLibrary.Editor
             			
 			try
 			{
-                string scratchLocation = Settings.ScratchPath;
+                string scratchLocation = Settings.ScratchPath + _scratchID.ToString("N").FormatDirectory(Path.DirectorySeparatorChar);
 
                 // Use the write location of the currently mounted file system if possible.
                 if ((ScratchFiles != null) && (!string.IsNullOrWhiteSpace(ScratchFiles.WriteLocation)))
@@ -523,7 +565,7 @@ namespace GorgonLibrary.Editor
 
 				DirectoryInfo directory = new DirectoryInfo(scratchLocation);
 
-				// Wipe out everything in this directory and the directory proper.
+				// Wipe out everything in this directory and the directory proper.				
 				directory.Delete(true);
 			}
 			catch (Exception ex)
@@ -574,6 +616,9 @@ namespace GorgonLibrary.Editor
 		/// </summary>
 		static Program()
 		{
+			_systemDirs = ((Environment.SpecialFolder[])Enum.GetValues(typeof(Environment.SpecialFolder)))
+							.Select(item => Environment.GetFolderPath(item))
+							.ToArray();
 			Settings = new GorgonEditorSettings();
             ContentPlugIns = new Dictionary<string, ContentPlugIn>();
             WriterPlugIns = new Dictionary<string, FileWriterPlugIn>();

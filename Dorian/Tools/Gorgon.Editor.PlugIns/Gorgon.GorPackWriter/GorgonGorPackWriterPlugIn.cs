@@ -114,7 +114,7 @@ namespace GorgonLibrary.Editor.GorPackWriterPlugIn
             // Compress the files.
             for (int i = 0; i < directory.Files.Count; i++)
             {
-                var fileEntry = directory.Files[i];                
+                var fileEntry = directory.Files[i];
 
                 // Load the file into a buffer for compression.
                 long fileStart = output.Position;
@@ -198,7 +198,14 @@ namespace GorgonLibrary.Editor.GorPackWriterPlugIn
             // Don't allow other threads in here.
             lock (_syncLock)
             {
-                _tempPath = ScratchPath + Path.ChangeExtension(Path.GetFileName(Path.GetTempFileName()), ".gorPack");
+				string fileName = Path.GetFileName(path);
+				_tempPath = ScratchFileSystem.WriteLocation;
+
+				if (!fileName.EndsWith(".gorFont", StringComparison.CurrentCultureIgnoreCase))
+				{
+					fileName += ".gorFont";
+				}
+				_tempPath += fileName;
 
                 try
                 {

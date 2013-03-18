@@ -112,11 +112,11 @@
     <Compile Include="DefaultContentPanel.Designer.cs">
       <DependentUpon>DefaultContentPanel.cs</DependentUpon>
     </Compile>
-    <Compile Include="formProjectFolderSelector.cs">
+    <Compile Include="formNewName.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="formProjectFolderSelector.Designer.cs">
-      <DependentUpon>formProjectFolderSelector.cs</DependentUpon>
+    <Compile Include="formNewName.Designer.cs">
+      <DependentUpon>formNewName.cs</DependentUpon>
     </Compile>
     <Compile Include="PlugIn\EditorPlugIn.cs" />
     <Compile Include="PlugIn\EditorPlugInSettings.cs" />
@@ -148,8 +148,8 @@
     <EmbeddedResource Include="formMain.resx">
       <DependentUpon>formMain.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="formProjectFolderSelector.resx">
-      <DependentUpon>formProjectFolderSelector.cs</DependentUpon>
+    <EmbeddedResource Include="formNewName.resx">
+      <DependentUpon>formNewName.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="formSplash.resx">
       <DependentUpon>formSplash.cs</DependentUpon>

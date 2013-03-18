@@ -177,6 +177,7 @@ namespace GorgonLibrary.Editor
 			// popupAddContentMenu
 			// 
 			this.popupAddContentMenu.Name = "popupAddContentMenu";
+			this.popupAddContentMenu.OwnerItem = this.popupItemAdd;
 			this.popupAddContentMenu.Size = new System.Drawing.Size(61, 4);
 			// 
 			// dropNewContent
@@ -330,6 +331,8 @@ namespace GorgonLibrary.Editor
 			this.treeFiles.ShowLines = false;
 			this.treeFiles.Size = new System.Drawing.Size(232, 631);
 			this.treeFiles.TabIndex = 0;
+			this.treeFiles.BeforeLabelEdit += new System.Windows.Forms.NodeLabelEditEventHandler(this.treeFiles_BeforeLabelEdit);
+			this.treeFiles.AfterLabelEdit += new System.Windows.Forms.NodeLabelEditEventHandler(this.treeFiles_AfterLabelEdit);
 			this.treeFiles.BeforeExpand += new System.Windows.Forms.TreeViewCancelEventHandler(this.treeFiles_BeforeExpand);
 			this.treeFiles.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treeFiles_AfterSelect);
 			this.treeFiles.NodeMouseDoubleClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.treeFiles_NodeMouseDoubleClick);
@@ -345,7 +348,7 @@ namespace GorgonLibrary.Editor
             this.toolStripSeparator4,
             this.itemRenameFolder});
 			this.popupFileSystem.Name = "popupFileSystem";
-			this.popupFileSystem.Size = new System.Drawing.Size(182, 120);
+			this.popupFileSystem.Size = new System.Drawing.Size(182, 142);
 			// 
 			// itemEdit
 			// 
@@ -360,6 +363,7 @@ namespace GorgonLibrary.Editor
 			this.itemCreateFolder.Name = "itemCreateFolder";
 			this.itemCreateFolder.Size = new System.Drawing.Size(181, 22);
 			this.itemCreateFolder.Text = "&Create Folder...";
+			this.itemCreateFolder.Click += new System.EventHandler(this.itemCreateFolder_Click);
 			// 
 			// itemDelete
 			// 
@@ -382,6 +386,7 @@ namespace GorgonLibrary.Editor
 			this.itemRenameFolder.ShortcutKeys = System.Windows.Forms.Keys.F2;
 			this.itemRenameFolder.Size = new System.Drawing.Size(181, 22);
 			this.itemRenameFolder.Text = "&Rename Folder...";
+			this.itemRenameFolder.Click += new System.EventHandler(this.itemRenameFolder_Click);
 			// 
 			// stripContent
 			// 

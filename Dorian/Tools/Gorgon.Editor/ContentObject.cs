@@ -109,7 +109,7 @@ namespace GorgonLibrary.Editor
 			{
 				return _name;
 			}
-			protected set
+			protected internal set
 			{
 				if (string.IsNullOrWhiteSpace(value))
 				{
@@ -126,7 +126,7 @@ namespace GorgonLibrary.Editor
 		public GorgonFileSystemFileEntry File
 		{
 			get;
-			private set;
+			internal set;
 		}
 		#endregion
 

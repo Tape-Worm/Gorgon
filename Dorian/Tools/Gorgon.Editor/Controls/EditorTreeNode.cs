@@ -40,11 +40,16 @@ namespace GorgonLibrary.Editor
 	class EditorTreeNode
 		: TreeNode
 	{
-		#region Variables.
-
-		#endregion
-
 		#region Properties.
+		/// <summary>
+		/// Property to set or return the node editing state.
+		/// </summary>
+		public NodeEditState EditState
+		{
+			get;
+			set;
+		}
+
         /// <summary>
         /// Gets or sets the background color of the tree node.
         /// </summary>
@@ -158,6 +163,28 @@ namespace GorgonLibrary.Editor
 		#endregion
 
 		#region Methods.
+		/// <summary>
+		/// Function to begin the edit process.
+		/// </summary>
+		public new void BeginEdit()
+		{
+			var treeView = ((EditorTreeView)TreeView);
+
+			treeView.ShowRenameBox(this);			
+		}
+
+		/// <summary>
+		/// Function to end the edit process.
+		/// </summary>
+		/// <param name="cancel">TRUE to cancel the edit, FALSE to commit it.</param>
+		public new void EndEdit(bool cancel)
+		{
+			var treeView = ((EditorTreeView)TreeView);
+			
+			treeView.HideRenameBox(!cancel);
+			EditState = NodeEditState.None;
+		}
+
 		/// <summary>
 		/// Function to refresh this node.
 		/// </summary>

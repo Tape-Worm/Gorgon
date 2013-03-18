@@ -50,8 +50,10 @@ namespace GorgonLibrary.Editor
 		: ZuneForm
     {
         #region Variables.
-        private RootNodeDirectory _rootNode = null;             // Our root node for the tree.
-        #endregion
+        private RootNodeDirectory _rootNode = null;						// Our root node for the tree.
+		private char[] _pathChars = Path.GetInvalidPathChars();			// Invalid path characters.
+		private char[] _fileChars = Path.GetInvalidFileNameChars();		// Invalid filename characters.
+		#endregion
 
 		#region Methods.
         /// <summary>
@@ -108,6 +110,7 @@ namespace GorgonLibrary.Editor
                     itemCreateFolder.Visible = true;
 					itemDelete.Enabled = true;
 					itemDelete.Text = "Delete Folder...";
+					
 					if (node != _rootNode)
                     {
                         itemRenameFolder.Enabled = true;
@@ -118,6 +121,10 @@ namespace GorgonLibrary.Editor
 						if (_rootNode.Nodes.Count == 0)
 						{
 							itemDelete.Visible = false;
+						}
+						else
+						{
+							itemDelete.Text = "Delete all files and folders...";
 						}
 
                         toolStripSeparator4.Visible = false;
@@ -221,6 +228,12 @@ namespace GorgonLibrary.Editor
 
 						break;
 					}
+				case Keys.F2:
+					if ((treeFiles.SelectedNode != null) && (itemRenameFolder.Enabled))
+					{
+						treeFiles.SelectedNode.BeginEdit();
+					}
+					break;
 			}
 		}
 
@@ -579,9 +592,9 @@ namespace GorgonLibrary.Editor
 			{
 				TreeNodeDirectory subNode = new TreeNodeDirectory(subDirectory);
 
-				if (((subDirectory.Directories.Count > 0) 
-                    || (subDirectory.Files.Count > 0))
-                    && (CanShowDirectoryFiles(subDirectory)))
+				if ((subDirectory.Directories.Count > 0) 
+                    || ((subDirectory.Files.Count > 0)
+                    && (CanShowDirectoryFiles(subDirectory))))
 				{
 					subNode.Nodes.Add(new TreeNode("DummyNode"));
 				}
@@ -610,7 +623,7 @@ namespace GorgonLibrary.Editor
         /// <returns>TRUE if some files can be shown, FALSE if not.</returns>
         private bool CanShowDirectoryFiles(GorgonFileSystemDirectory directory)
         {
-            return Program.ScratchFiles.RootDirectory.Files.Count(item => Program.BlockedFiles.Contains(item.Name)) < Program.ScratchFiles.RootDirectory.Files.Count;
+			return directory.Files.Count(item => Program.BlockedFiles.Contains(item.Name)) < directory.Files.Count;
         }
 
 		/// <summary>
@@ -621,9 +634,9 @@ namespace GorgonLibrary.Editor
 			_rootNode = new RootNodeDirectory();
 
 			// If we have files or sub directories, dump them in here.
-			if (((Program.ScratchFiles.RootDirectory.Directories.Count > 0) 
-                || (Program.ScratchFiles.RootDirectory.Files.Count > 0))
-                && (CanShowDirectoryFiles(Program.ScratchFiles.RootDirectory)))
+			if ((Program.ScratchFiles.RootDirectory.Directories.Count > 0) 
+                || ((Program.ScratchFiles.RootDirectory.Files.Count > 0)
+                && (CanShowDirectoryFiles(Program.ScratchFiles.RootDirectory))))
 			{
                 _rootNode.Nodes.Add(new TreeNode("DummyNode"));
 			}
@@ -839,7 +852,7 @@ namespace GorgonLibrary.Editor
 
 			if ((directory.Parent != null) && (directory.Parent is TreeNodeDirectory))
 			{
-				MarkChanged((TreeNodeDirectory)directory.Parent, changeState);
+				MarkChanged((TreeNodeDirectory)directory.Parent, false);
 			}
 		}
 
@@ -1068,6 +1081,341 @@ namespace GorgonLibrary.Editor
 			}
 		}
 
+		/// <summary>
+		/// Handles the AfterLabelEdit event of the treeFiles control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="NodeLabelEditEventArgs"/> instance containing the event data.</param>
+		private void treeFiles_AfterLabelEdit(object sender, NodeLabelEditEventArgs e)
+		{
+			EditorTreeNode node = e.Node as EditorTreeNode;
+			NodeEditState currentState = NodeEditState.None;
+			string label = e.Label;
+
+			Cursor.Current = Cursors.WaitCursor;
+
+			try
+			{
+				e.CancelEdit = true;
+
+				// This node isn't an editor node, we should get rid of it.
+				if (node == null)
+				{
+					if (e.Node != null)
+					{
+						e.Node.Remove();
+					}
+					return;
+				}
+
+				// Ensure that whatever we type will work in the file system.
+				if ((label.IndexOfAny(_fileChars) > -1) || (label.IndexOf('/') > -1) || (label.IndexOf('\\') > -1))
+				{
+					GorgonDialogs.ErrorBox(this, "The directory name contains invalid characters.\nThe following characters are not allowed:\n" + string.Join<char>(" ", _fileChars.Where(item => item > 32)));
+					node.BeginEdit();
+					return;
+				}
+
+				if ((node.EditState == NodeEditState.CreateDirectory) || (node.EditState == NodeEditState.RenameDirectory))
+				{
+					currentState = node.EditState;
+
+					// Create the directory in the scratch area.
+					if (currentState == NodeEditState.CreateDirectory)
+					{
+						// Empty strings can't be used.
+						if (string.IsNullOrWhiteSpace(label))
+						{
+							e.Node.Remove();
+							return;
+						}
+
+						label = label.FormatDirectory('/');
+
+						TreeNodeDirectory parentNode = node.Parent as TreeNodeDirectory;
+						var newDirectory = Program.ScratchFiles.CreateDirectory(parentNode.Directory.FullPath + label);
+
+						// Set up a new node for the directory since our current node is here as a proxy.
+						var treeNode = new TreeNodeDirectory(newDirectory);
+
+						// Remove proxy node.						
+						e.Node.Remove();
+
+						parentNode.Nodes.Add(treeNode);
+						this.MarkChanged(treeNode, true);
+					}
+					else
+					{
+						if (string.IsNullOrWhiteSpace(label))
+						{
+							return;
+						}
+
+						// Rename the directory by moving it.
+						string contentPath = string.Empty;
+						TreeNodeDirectory selectedNode = node as TreeNodeDirectory;
+						TreeNodeDirectory parentNode = selectedNode.Parent as TreeNodeDirectory;
+
+						if ((Program.CurrentContent.File != null)
+							&& (Program.CurrentContent.File.Directory.FullPath.StartsWith(selectedNode.Directory.FullPath, StringComparison.CurrentCultureIgnoreCase)))
+						{
+							contentPath = Program.CurrentContent.File.Name;
+						}
+
+						// Create the new path.
+						label = (parentNode.FullPath + label).FormatDirectory('/');
+
+						if (string.Compare(label, selectedNode.Directory.FullPath, true) == 0)
+						{
+							return;
+						}
+
+						var newDirectory = Program.MoveDirectory(selectedNode.Directory, label);
+
+						// Update the node with the new name.
+						selectedNode.UpdateNode(newDirectory);
+
+						if (!string.IsNullOrWhiteSpace(contentPath))
+						{
+							var file = Program.ScratchFiles.GetFile(newDirectory.FullPath + contentPath);
+
+							if (file == null)
+							{
+								GorgonDialogs.ErrorBox(this, "Error updating open content pane.");
+
+								Program.CurrentContent.Dispose();
+								Program.CurrentContent = null;
+								LoadContentPane<DefaultContent>();
+							}
+							else
+							{
+								// Reassign the file entry.
+								Program.CurrentContent.File = file;
+							}
+						}
+
+						this.MarkChanged(selectedNode, false);
+					}
+
+					return;
+				}
+				else
+				{
+					if (string.IsNullOrWhiteSpace(label))
+					{
+						return;
+					}
+					
+					// Rename the file by moving it.
+					TreeNodeFile selectedNode = node as TreeNodeFile;
+					TreeNodeDirectory parentNode = selectedNode.Parent as TreeNodeDirectory;
+					bool openFile = false;
+					string fileExtension = selectedNode.File.Extension;
+
+					if ((Program.CurrentContent != null) && (Program.CurrentContent.File == selectedNode.File))
+					{
+						openFile = true;
+					}
+					
+					if (Program.ScratchFiles.GetFile(label) != null)
+					{
+						GorgonDialogs.ErrorBox(this, "The file '" + label + "' already exists.");
+						return;
+					}
+
+					// Ensure that we keep the same extension.
+					if (!label.EndsWith(fileExtension))
+					{
+						//label += fileExtension;
+					}
+
+					// Get the physical file.					
+					FileInfo fileInfo = new FileInfo((Program.ScratchFiles.WriteLocation + parentNode.Directory.FullPath).FormatDirectory(Path.DirectorySeparatorChar) 
+														+ selectedNode.File.Name);
+					string destPath = (Program.ScratchFiles.WriteLocation + parentNode.Directory.FullPath).FormatDirectory(Path.DirectorySeparatorChar)
+														+ label.FormatFileName();
+
+					label = parentNode.Directory.FullPath + label.FormatFileName();
+
+					// Do nothing if the file names are the same.
+					if (string.Compare(label, selectedNode.File.FullPath, true) == 0)
+					{
+						return;
+					}
+
+					fileInfo.MoveTo(destPath);
+										
+					Program.ScratchFiles.DeleteFile(selectedNode.File.FullPath);
+					Program.ScratchFiles.Mount((Program.ScratchFiles.WriteLocation + parentNode.Directory.FullPath).FormatDirectory(Path.DirectorySeparatorChar), parentNode.Directory.FullPath);
+
+					var file = Program.ScratchFiles.GetFile(label);
+
+					selectedNode.UpdateFile(file);
+					selectedNode.Redraw();
+
+					if (openFile)
+					{
+						Program.CurrentContent.File = file;
+						Program.CurrentContent.Name = file.Name;
+						Program.CurrentContent.HasChanges = true;
+					}
+
+					this.MarkChanged(selectedNode, false);
+
+					return;
+				}
+
+				e.Node.Remove();
+			}
+			catch (Exception ex)
+			{
+				// If we get an error, just remove any new nodes.
+				if (((currentState == NodeEditState.CreateDirectory) || (currentState == NodeEditState.CreateFile))
+					&& (node != null))
+				{
+					node.Remove();
+				}
+
+				e.CancelEdit = true;
+				GorgonDialogs.ErrorBox(this, ex);
+			}
+			finally
+			{
+				Cursor.Current = Cursors.Default;
+			}
+		}
+
+		/// <summary>
+		/// Handles the BeforeLabelEdit event of the treeFiles control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="NodeLabelEditEventArgs"/> instance containing the event data.</param>
+		private void treeFiles_BeforeLabelEdit(object sender, NodeLabelEditEventArgs e)
+		{
+			try
+			{
+				if (e.Node == null)
+				{
+					return;
+				}
+
+				// We're being clever, don't allow that.
+				if (string.IsNullOrWhiteSpace(e.Label))
+				{					
+					e.CancelEdit = true;
+					e.Node.Remove();
+					return;
+				}
+
+				// Do not attempt to rename the top level.
+				if ((e.Node == _rootNode) || (e.Node.Parent == null))
+				{
+					e.CancelEdit = true;
+					return;
+				}
+			}
+			catch (Exception ex)
+			{
+				GorgonDialogs.ErrorBox(this, ex);
+			}
+			finally
+			{
+				Cursor.Current = Cursors.Default;
+			}
+		}
+
+		/// <summary>
+		/// Handles the Click event of the itemRenameFolder control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+		private void itemRenameFolder_Click(object sender, EventArgs e)
+		{
+			EditorTreeNode selectedNode = treeFiles.SelectedNode as EditorTreeNode;
+
+			try
+			{
+				if (selectedNode == null)
+				{
+					return;
+				}
+
+				if (selectedNode is TreeNodeDirectory)
+				{
+					selectedNode.EditState = NodeEditState.RenameDirectory;
+				}
+				else
+				{
+					selectedNode.EditState = NodeEditState.RenameFile;
+				}
+
+				selectedNode.BeginEdit();
+			}
+			catch (Exception ex)
+			{
+				GorgonDialogs.ErrorBox(this, ex);
+			}
+			finally
+			{
+				Cursor.Current = Cursors.Default;
+			}
+		}
+
+		/// <summary>
+		/// Handles the Click event of the itemCreateFolder control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+		private void itemCreateFolder_Click(object sender, EventArgs e)
+		{
+			EditorTreeNode tempNode = new EditorTreeNode();
+
+			try
+			{
+				int nameIndex = -1;
+				string defaultName = "Untitled";
+				TreeNodeDirectory selectedNode = treeFiles.SelectedNode as TreeNodeDirectory;
+
+				if (selectedNode == null)
+				{
+					return;
+				}
+
+				// Expand the node if it's not already done.
+				if (!selectedNode.IsExpanded)
+				{
+					selectedNode.Expand();
+				}
+
+				tempNode.CollapsedImage = Properties.Resources.folder_16x16;
+
+				// Update the name.
+				while ((selectedNode.Directory.Directories.Contains(defaultName))
+						|| (selectedNode.Directory.Files.Contains(defaultName)))
+				{
+					nameIndex++;
+					defaultName = "Untitled_" + nameIndex.ToString();
+				}
+
+				tempNode.Text = defaultName;
+
+				selectedNode.Nodes.Add(tempNode);
+
+				tempNode.BeginEdit();
+				tempNode.EditState = NodeEditState.CreateDirectory;
+			}
+			catch (Exception ex)
+			{
+				tempNode.EndEdit(true);
+
+				GorgonDialogs.ErrorBox(this, ex);
+			}
+			finally
+			{
+				Cursor.Current = Cursors.Default;
+			}
+		}
+
         /// <summary>
         /// Handles the Click event of the itemOpen control.
         /// </summary>
@@ -1207,6 +1555,5 @@ namespace GorgonLibrary.Editor
 			InitializeComponent();
 		}
 		#endregion
-
 	}
 }

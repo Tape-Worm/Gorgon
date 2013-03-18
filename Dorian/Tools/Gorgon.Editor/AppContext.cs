@@ -205,6 +205,46 @@ namespace GorgonLibrary.Editor
 		}
 
 		/// <summary>
+		/// Function to clean up all scratch file locations.
+		/// </summary>
+		private void CleanAllScratchFiles()
+		{
+			if (string.IsNullOrWhiteSpace(Program.Settings.ScratchPath))
+			{
+				return;
+			}
+
+			DirectoryInfo scratchInfo = new DirectoryInfo(Program.Settings.ScratchPath);
+
+			if (!scratchInfo.Exists)
+			{
+				return;
+			}
+
+			// Get all the directories in the scratch area.
+			var directories = scratchInfo.GetDirectories("Gorgon.Editor.*", SearchOption.TopDirectoryOnly).Where(item =>
+			{
+				// Find only directories that have a hidden attribute and that are non-indexable.
+				return (((item.Attributes & FileAttributes.Hidden) == FileAttributes.Hidden)
+						&& ((item.Attributes & FileAttributes.NotContentIndexed) == FileAttributes.NotContentIndexed));
+			});
+				
+			foreach(var directory in directories)
+			{
+				try
+				{
+					directory.Delete(true);
+				}
+				catch(Exception ex)
+				{
+					// If we can't delete, then something else is amiss and we'll have to try again later.
+					// So just eat the exception and move on to the next directory.
+					GorgonException.Catch(ex);
+				}
+			}
+		}
+
+		/// <summary>
 		/// Calls <see cref="M:System.Windows.Forms.ApplicationContext.ExitThreadCore"/>, which raises the <see cref="E:System.Windows.Forms.ApplicationContext.ThreadExit"/> event.
 		/// </summary>
 		/// <param name="sender">The object that raised the event.</param>
@@ -306,8 +346,8 @@ namespace GorgonLibrary.Editor
 					}
 				}
 
-				// Destroy previous files.
-				Program.CleanUpScratchArea();
+				// Destroy previous scratch areas if possible.
+				CleanAllScratchFiles();
 
 				// Ensure we can actually access the scratch area.
 				while (!CanAccessScratch())
@@ -329,11 +369,7 @@ namespace GorgonLibrary.Editor
 					Program.Settings.Save();
 				}
                 
-                Program.InitializeScratch();
-
-                _splash.UpdateVersion("Loading file system providers...");
-                // Get any file system providers.
-                Program.ScratchFiles.AddAllProviders();
+                Program.InitializeScratch();                
 
                 _splash.UpdateVersion("Loading previous editor file...");
                 // Load the last opened file.

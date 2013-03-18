@@ -61,6 +61,11 @@ namespace GorgonLibrary.Editor
                     return DarkFormsRenderer.MenuHilightForeground;
                 }
 
+				if (Directory == null)
+				{
+					return DarkFormsRenderer.DisabledColor;
+				}
+
 				var nodeName = Name.ToLower();
 
 				if (Program.ChangedItems.ContainsKey(nodeName))
@@ -101,7 +106,20 @@ namespace GorgonLibrary.Editor
 		#endregion
 
 		#region Methods.
+		/// <summary>
+		/// Function to update the node with new directory information.
+		/// </summary>
+		/// <param name="newDir">New directory info.</param>
+		public void UpdateNode(GorgonFileSystemDirectory newDir)
+		{
+			this.Name = newDir.FullPath;
+			this.Text = newDir.Name;
 
+			if ((Nodes.Count > 0) && (IsExpanded))
+			{
+				Collapse();
+			}
+		}
 		#endregion
 
 		#region Constructor/Destructor.
