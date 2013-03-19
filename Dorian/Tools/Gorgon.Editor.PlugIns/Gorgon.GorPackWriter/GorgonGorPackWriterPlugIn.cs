@@ -51,7 +51,6 @@ namespace GorgonLibrary.Editor.GorPackWriterPlugIn
         private static readonly object _syncLock = new object();
         private XDocument _fat = null;
         private string _tempPath = string.Empty;
-        private bool _disposed = false;
 		#endregion
 
 		#region Properties.

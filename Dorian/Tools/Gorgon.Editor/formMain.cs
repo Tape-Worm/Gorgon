@@ -63,9 +63,9 @@ namespace GorgonLibrary.Editor
         {
             Text = Program.EditorFile + " - Gorgon Editor";
 
-            itemOpen.Enabled = Program.ScratchFiles.Providers.Count > 0;
+            itemOpen.Enabled = Program.ScratchFiles.Providers.Count > 1;
             itemSaveAs.Enabled = (Program.WriterPlugIns.Count > 0);
-            itemSave.Enabled = !string.IsNullOrWhiteSpace(Program.EditorFilePath) && (Program.ChangedItems.Count > 0) && itemSaveAs.Enabled;
+            itemSave.Enabled = !string.IsNullOrWhiteSpace(Program.EditorFilePath) && (Program.EditorFileChanged) && itemSaveAs.Enabled;
 
             // Ensure we have plug-ins that can import.
 			itemImport.Enabled = Program.ContentPlugIns.Any(item => item.Value.SupportsImport);
@@ -197,6 +197,7 @@ namespace GorgonLibrary.Editor
 			finally
 			{
 				Cursor.Current = Cursors.Default;
+				ValidateControls();
 			}
 		}
 
@@ -266,6 +267,7 @@ namespace GorgonLibrary.Editor
 			}
 			finally
 			{
+				ValidateControls();
 				Cursor.Current = Cursors.Default;
 			}
 		}
@@ -447,7 +449,7 @@ namespace GorgonLibrary.Editor
 		/// <returns>TRUE if canceled, FALSE if not.</returns>
 		private bool ConfirmSave()
 		{
-			if ((Program.ChangedItems.Count > 0) && (Program.WriterPlugIns.Count > 0))
+			if ((Program.EditorFileChanged) && (Program.WriterPlugIns.Count > 0))
 			{
 				var result = GorgonDialogs.ConfirmBox(this, "The editor file '" + Program.EditorFile + "' has unsaved changes.  Would you like to save these changes?", true, false);
 
@@ -575,6 +577,7 @@ namespace GorgonLibrary.Editor
 			}
 			finally
 			{
+				ValidateControls();
 				Cursor.Current = Cursors.Default;
 			}
 		}
@@ -723,7 +726,7 @@ namespace GorgonLibrary.Editor
 			treeFiles.SelectedNode = newNode;
 
 			// We set this to true to indicate that this is a new file.
-			MarkChanged(newNode, true);
+			Program.EditorFileChanged = true;
 		}
 
 		/// <summary>
@@ -828,61 +831,6 @@ namespace GorgonLibrary.Editor
 		}
 
 		/// <summary>
-		/// Function to mark a tree directory node and its parent(s) as changed.
-		/// </summary>
-		/// <param name="directory">Directory to mark as changed.</param>
-		/// <param name="changeState">State for change.</param>
-		private void MarkChanged(TreeNodeDirectory directory, bool? changeState)
-		{
-			string path = directory.Name.ToLower();
-
-			if (changeState == null)
-			{
-				if (Program.ChangedItems.ContainsKey(path))
-				{
-					Program.ChangedItems.Remove(path);
-				}
-				return;
-			}
-
-			if ((!Program.ChangedItems.ContainsKey(path)) || (!Program.ChangedItems[path]))
-			{
-				Program.ChangedItems[path] = changeState.Value;
-			}
-
-			if ((directory.Parent != null) && (directory.Parent is TreeNodeDirectory))
-			{
-				MarkChanged((TreeNodeDirectory)directory.Parent, false);
-			}
-		}
-
-		/// <summary>
-		/// Function to mark a file and its parent directories as changed.
-		/// </summary>
-		/// <param name="file">File to mark as changed.</param>
-		/// <param name="changeState">State for change.</param>
-		private void MarkChanged(TreeNodeFile file, bool? changeState)
-		{
-			string path = file.Name.ToLower();
-
-			if (changeState == null)
-			{
-				if (Program.ChangedItems.ContainsKey(path))
-				{
-					Program.ChangedItems.Remove(path);
-				}
-				return;
-			}
-
-			Program.ChangedItems[path] = changeState.Value;
-
-			if ((file.Parent != null) && (file.Parent is TreeNodeDirectory))
-			{
-				MarkChanged((TreeNodeDirectory)file.Parent, false);
-			}
-		}
-
-		/// <summary>
 		/// Function to delete a directory and all the files and subdirectories underneath it.
 		/// </summary>
 		/// <param name="directoryNode">The node for the directory.</param>
@@ -891,8 +839,7 @@ namespace GorgonLibrary.Editor
 			if (GorgonDialogs.ConfirmBox(this, "This will delete '" + directoryNode.Directory.FullPath + "' and any files and/or directories it contains.  Are you sure you wish to do this?") == ConfirmationResult.No)
 			{
 				return;
-			}
-			
+			}			
 
 			Cursor.Current = Cursors.WaitCursor;
 
@@ -905,7 +852,7 @@ namespace GorgonLibrary.Editor
 				LoadContentPane<DefaultContent>();
 
 				_rootNode.Nodes.Clear();
-				Program.ChangedItems["/"] = false;
+				Program.EditorFileChanged = true;
 				return;
 			}
 
@@ -924,7 +871,7 @@ namespace GorgonLibrary.Editor
 			}
 
 			Program.ScratchFiles.DeleteDirectory(directoryNode.Directory.FullPath);
-			MarkChanged(directoryNode, false);
+			Program.EditorFileChanged = true;
 			directoryNode.Remove();
 			treeFiles.Refresh();
 		}
@@ -951,7 +898,7 @@ namespace GorgonLibrary.Editor
 			}
 
 			Program.ScratchFiles.DeleteFile(fileNode.File.FullPath);
-			MarkChanged(fileNode, true);
+			Program.EditorFileChanged = true;
 			fileNode.Remove();
 			treeFiles.Refresh();
 		}
@@ -1082,6 +1029,52 @@ namespace GorgonLibrary.Editor
 		}
 
 		/// <summary>
+		/// Handles the MouseMove event of the treeFiles control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="MouseEventArgs"/> instance containing the event data.</param>
+		private void treeFiles_MouseMove(object sender, MouseEventArgs e)
+		{
+			if (treeFiles.SelectedNode == null)
+			{
+				return;
+			}
+
+			try
+			{
+				var node = (EditorTreeNode)treeFiles.SelectedNode;
+
+				if (e.Button == System.Windows.Forms.MouseButtons.Left)
+				{
+					
+
+					treeFiles.DoDragDrop("This is a test", DragDropEffects.None);
+				}
+			}
+			catch (Exception ex)
+			{
+				GorgonDialogs.ErrorBox(this, ex);
+			}
+		}
+
+		/// <summary>
+		/// Handles the ItemDrag event of the treeFiles control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="ItemDragEventArgs"/> instance containing the event data.</param>
+		private void treeFiles_ItemDrag(object sender, ItemDragEventArgs e)
+		{
+			try
+			{
+
+			}
+			catch (Exception ex)
+			{
+				GorgonDialogs.ErrorBox(this, ex);
+			}
+		}
+
+		/// <summary>
 		/// Handles the AfterLabelEdit event of the treeFiles control.
 		/// </summary>
 		/// <param name="sender">The source of the event.</param>
@@ -1138,11 +1131,12 @@ namespace GorgonLibrary.Editor
 						// Set up a new node for the directory since our current node is here as a proxy.
 						var treeNode = new TreeNodeDirectory(newDirectory);
 
+						int nodeIndex = parentNode.Nodes.IndexOf(e.Node);
+						parentNode.Nodes.Insert(nodeIndex, treeNode);
 						// Remove proxy node.						
 						e.Node.Remove();
 
-						parentNode.Nodes.Add(treeNode);
-						this.MarkChanged(treeNode, true);
+						Program.EditorFileChanged = true;
 					}
 					else
 					{
@@ -1163,13 +1157,15 @@ namespace GorgonLibrary.Editor
 						}
 
 						// Create the new path.
-						label = (parentNode.FullPath + label).FormatDirectory('/');
+						label = (parentNode.Directory.FullPath + label).FormatDirectory('/');
 
 						if (string.Compare(label, selectedNode.Directory.FullPath, true) == 0)
 						{
 							return;
 						}
 
+						// We've changed this item.
+						bool wasExpanded = selectedNode.IsExpanded;
 						var newDirectory = Program.MoveDirectory(selectedNode.Directory, label);
 
 						// Update the node with the new name.
@@ -1194,7 +1190,7 @@ namespace GorgonLibrary.Editor
 							}
 						}
 
-						this.MarkChanged(selectedNode, false);
+						Program.EditorFileChanged = true;
 					}
 
 					return;
@@ -1215,6 +1211,12 @@ namespace GorgonLibrary.Editor
 					if ((Program.CurrentContent != null) && (Program.CurrentContent.File == selectedNode.File))
 					{
 						openFile = true;
+					}
+
+					// If the name hasn't changed, then do nothing.
+					if (string.Compare(label, selectedNode.File.Name, true) == 0)
+					{
+						return;
 					}
 					
 					if (Program.ScratchFiles.GetFile(label) != null)
@@ -1260,12 +1262,10 @@ namespace GorgonLibrary.Editor
 						Program.CurrentContent.HasChanges = true;
 					}
 
-					this.MarkChanged(selectedNode, false);
+					Program.EditorFileChanged = true;
 
 					return;
 				}
-
-				e.Node.Remove();
 			}
 			catch (Exception ex)
 			{
@@ -1282,6 +1282,7 @@ namespace GorgonLibrary.Editor
 			finally
 			{
 				Cursor.Current = Cursors.Default;
+				ValidateControls();
 			}
 		}
 
@@ -1321,6 +1322,7 @@ namespace GorgonLibrary.Editor
 			finally
 			{
 				Cursor.Current = Cursors.Default;
+				ValidateControls();
 			}
 		}
 
@@ -1368,6 +1370,7 @@ namespace GorgonLibrary.Editor
 		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
 		private void itemCreateFolder_Click(object sender, EventArgs e)
 		{
+			bool expandDisabled = false;
 			EditorTreeNode tempNode = new EditorTreeNode();
 
 			try
@@ -1399,7 +1402,35 @@ namespace GorgonLibrary.Editor
 
 				tempNode.Text = defaultName;
 
-				selectedNode.Nodes.Add(tempNode);
+				// Add after other folders.
+				var lastFolder = (from node in selectedNode.Nodes.Cast<EditorTreeNode>()
+								 where node is TreeNodeDirectory
+								 select node).LastOrDefault();
+
+				if (lastFolder != null)
+				{
+					int index = selectedNode.Nodes.IndexOf(lastFolder);
+					if (index + 1 < selectedNode.Nodes.Count)
+					{
+						selectedNode.Nodes.Insert(index + 1, tempNode);
+					}
+					else
+					{
+						selectedNode.Nodes.Add(tempNode);
+					}
+				}
+				else
+				{
+					selectedNode.Nodes.Insert(0, tempNode);
+				}
+
+				if ((!selectedNode.IsExpanded) && (selectedNode.Nodes.Count == 1))
+				{
+					treeFiles.BeforeExpand -= treeFiles_BeforeExpand;
+					expandDisabled = true;
+				}
+
+				selectedNode.Expand();
 
 				tempNode.BeginEdit();
 				tempNode.EditState = NodeEditState.CreateDirectory;
@@ -1412,6 +1443,10 @@ namespace GorgonLibrary.Editor
 			}
 			finally
 			{
+				if (expandDisabled)
+				{
+					treeFiles.BeforeExpand += treeFiles_BeforeExpand;
+				}
 				Cursor.Current = Cursors.Default;
 			}
 		}
@@ -1438,7 +1473,7 @@ namespace GorgonLibrary.Editor
                     dialogOpenFile.InitialDirectory = Path.GetDirectoryName(Program.Settings.LastEditorFile);
                 }
 
-                // Add extensions from file system providers.
+                // Add extensions from file system providers.				
                 foreach (var provider in Program.ScratchFiles.Providers)
                 {
                     foreach (var extension in provider.PreferredExtensions)

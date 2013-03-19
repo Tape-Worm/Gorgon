@@ -40,10 +40,6 @@ namespace GorgonLibrary.Editor
 	class TreeNodeDirectory
 		: EditorTreeNode
 	{
-		#region Variables.
-        private bool _isUpdated = false;
-		#endregion
-
 		#region Properties.
         /// <summary>
         /// Gets or sets the foreground color of the tree node.
@@ -64,20 +60,6 @@ namespace GorgonLibrary.Editor
 				if (Directory == null)
 				{
 					return DarkFormsRenderer.DisabledColor;
-				}
-
-				var nodeName = Name.ToLower();
-
-				if (Program.ChangedItems.ContainsKey(nodeName))
-				{
-					if (Program.ChangedItems[nodeName])
-					{
-						return Color.LightGreen;
-					}
-					else
-					{
-						return Color.FromArgb(94, 126, 255);
-					}
 				}
 
                 return Color.White;
@@ -165,7 +147,7 @@ namespace GorgonLibrary.Editor
                     return DarkFormsRenderer.MenuHilightForeground;
                 }
 
-                if (Program.ChangedItems.ContainsKey("/"))
+                if (Program.EditorFileChanged)
                 {
                     return Color.FromArgb(94, 126, 255);
                 }

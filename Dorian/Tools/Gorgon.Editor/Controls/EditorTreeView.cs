@@ -75,6 +75,10 @@ namespace GorgonLibrary.Editor
         private Pen _focusPen = null;                   // Pen used for focus.
 		private TextBox _renameBox = null;				// Text box used to rename a node.
 		private EditorTreeNode _editNode = null;		// Node being edited.
+		private Point _renameCursorPos = Point.Empty;	// Cursor position for renaming.
+		private Timer renameTimer;						// Renaming timer.
+		private IContainer components;					// Timer used to see if the cursor moved for a rename operation.
+		private bool _beginRename = false;				// Flag to indicate that renaming should begin.
         #endregion
 
 		#region Properties.
@@ -109,6 +113,12 @@ namespace GorgonLibrary.Editor
             {
                 if (disposing)
                 {
+					if (components != null)
+					{
+						components.Dispose();
+						components = null;
+					}
+
 					if (_renameBox != null)
 					{
 						_renameBox.KeyDown -= _renameBox_KeyDown;
@@ -140,6 +150,49 @@ namespace GorgonLibrary.Editor
             base.Dispose(disposing);
         }
 
+		/// <summary>
+		/// Handles the Tick event of the _renameTimer control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+		private void _renameTimer_Tick(object sender, EventArgs e)
+		{
+			try
+			{
+				// Don't fire any more.
+				renameTimer.Stop();
+
+				Point clientPos = this.PointToClient(Cursor.Position);
+				Rectangle pos = new Rectangle(clientPos.X - 1, clientPos.Y - 1, 2, 2);
+
+				if (pos.Contains(_renameCursorPos))
+				{
+
+					EditorTreeNode node = SelectedNode as EditorTreeNode;
+
+					if (node != null)
+					{
+						if (node is TreeNodeDirectory)
+						{
+							node.EditState = NodeEditState.RenameDirectory;
+						}
+
+						if (node is TreeNodeFile)
+						{
+							node.EditState = NodeEditState.RenameFile;
+						}
+
+						node.BeginEdit();
+						return;
+					}
+				}
+			}
+			catch (Exception ex)
+			{
+				GorgonLibrary.UI.GorgonDialogs.ErrorBox(FindForm(), ex);
+			}
+		}
+
         /// <summary>
         /// Raises the <see cref="E:System.Windows.Forms.Control.FontChanged" /> event.
         /// </summary>
@@ -157,24 +210,67 @@ namespace GorgonLibrary.Editor
             _openContent = new Font(this.Font, FontStyle.Bold);
         }
 
-        /// <summary>
-        /// Raises the <see cref="E:System.Windows.Forms.Control.MouseDown" /> event.
-        /// </summary>
-        /// <param name="e">A <see cref="T:System.Windows.Forms.MouseEventArgs" /> that contains the event data.</param>
-        protected override void OnMouseDown(MouseEventArgs e)
-        {
-            base.OnMouseDown(e);
+		/// <summary>
+		/// Raises the <see cref="E:System.Windows.Forms.Control.MouseUp" /> event.
+		/// </summary>
+		/// <param name="e">A <see cref="T:System.Windows.Forms.MouseEventArgs" /> that contains the event data.</param>
+		protected override void OnMouseUp(MouseEventArgs e)
+		{
+			base.OnMouseUp(e);
+						
+			var node = ((EditorTreeNode)this.GetNodeAt(e.Location));
 
-            if (e.Button == System.Windows.Forms.MouseButtons.Right)
-            {
-                var node = this.GetNodeAt(e.Location);
+			if ((node == this.SelectedNode) && (node != null) && (SelectedNode != null) && (_beginRename) && (!renameTimer.Enabled))
+			{
+				_renameCursorPos = e.Location;
 
-                if (node != null)
-                {
-                    this.SelectedNode = node;
-                }
-            }
-        }
+				_beginRename = false;
+				renameTimer.Start();
+				return;
+			}
+		}
+
+		/// <summary>
+		/// Raises the <see cref="E:System.Windows.Forms.Control.MouseMove" /> event.
+		/// </summary>
+		/// <param name="e">A <see cref="T:System.Windows.Forms.MouseEventArgs" /> that contains the event data.</param>
+		protected override void OnMouseMove(MouseEventArgs e)
+		{
+			base.OnMouseMove(e);
+
+			if (renameTimer.Enabled)
+			{
+				renameTimer.Stop();
+			}
+		}
+
+		/// <summary>
+		/// Raises the <see cref="E:System.Windows.Forms.Control.MouseDown" /> event.
+		/// </summary>
+		/// <param name="e">A <see cref="T:System.Windows.Forms.MouseEventArgs" /> that contains the event data.</param>
+		protected override void OnMouseDown(MouseEventArgs e)
+		{
+			base.OnMouseDown(e);
+
+			if (renameTimer.Enabled)
+			{
+				renameTimer.Stop();
+			}
+
+			var node = ((EditorTreeNode)this.GetNodeAt(e.Location));
+
+			if ((node != null) && (this.SelectedNode != node))
+			{
+				this.SelectedNode = node;
+			}
+			else
+			{
+				if ((this.SelectedNode == node) && (node != null))
+				{
+					_beginRename = true;
+				}
+			}
+		}
 
         /// <summary>
         /// Raises the <see cref="E:System.Windows.Forms.TreeView.DrawNode" /> event.
@@ -294,7 +390,7 @@ namespace GorgonLibrary.Editor
             {
                 TextRenderer.DrawText(e.Graphics, node.Text, font, position, node.ForeColor);
             }
-        }
+        }		
 
 		/// <summary>
 		/// Function to show the rename text box.
@@ -441,6 +537,23 @@ namespace GorgonLibrary.Editor
 				}
 			}
 		}
+
+		/// <summary>
+		/// Initializes the component.
+		/// </summary>
+		private void InitializeComponent()
+		{
+			this.components = new System.ComponentModel.Container();
+			this.renameTimer = new System.Windows.Forms.Timer(this.components);
+			this.SuspendLayout();
+			// 
+			// renameTimer
+			// 
+			this.renameTimer.Interval = 500;
+			this.renameTimer.Tick += new System.EventHandler(this._renameTimer_Tick);
+			this.ResumeLayout(false);
+
+		}
         #endregion
 
         #region Constructor/Destructor.
@@ -449,6 +562,8 @@ namespace GorgonLibrary.Editor
         /// </summary>
         public EditorTreeView()
         {
+			InitializeComponent();
+
             SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.OptimizedDoubleBuffer, true);
             base.DrawMode = TreeViewDrawMode.OwnerDrawAll;
         }
