@@ -139,6 +139,9 @@
     <EmbeddedResource Include="ContentPanel.resx">
       <DependentUpon>ContentPanel.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Controls\EditorTreeView.resx">
+      <DependentUpon>EditorTreeView.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Controls\panelEx.resx">
       <DependentUpon>panelEx.cs</DependentUpon>
     </EmbeddedResource>

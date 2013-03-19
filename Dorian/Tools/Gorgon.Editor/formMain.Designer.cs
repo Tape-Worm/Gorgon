@@ -63,7 +63,7 @@ namespace GorgonLibrary.Editor
 			this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
 			this.itemAdd = new System.Windows.Forms.ToolStripMenuItem();
 			this.popupAddContentMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
-			this.dropNewContent = new System.Windows.Forms.ToolStripDropDownButton();
+			this.popupItemAdd = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
 			this.itemSave = new System.Windows.Forms.ToolStripMenuItem();
 			this.itemSaveAs = new System.Windows.Forms.ToolStripMenuItem();
@@ -72,7 +72,7 @@ namespace GorgonLibrary.Editor
 			this.itemExport = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
 			this.itemExit = new System.Windows.Forms.ToolStripMenuItem();
-			this.popupItemAdd = new System.Windows.Forms.ToolStripMenuItem();
+			this.dropNewContent = new System.Windows.Forms.ToolStripDropDownButton();
 			this.tabDocumentManager = new KRBTabControl.KRBTabControl();
 			this.pageItems = new KRBTabControl.TabPageEx();
 			this.containerFiles = new System.Windows.Forms.ToolStripContainer();
@@ -177,19 +177,16 @@ namespace GorgonLibrary.Editor
 			// popupAddContentMenu
 			// 
 			this.popupAddContentMenu.Name = "popupAddContentMenu";
-			this.popupAddContentMenu.OwnerItem = this.popupItemAdd;
+			this.popupAddContentMenu.OwnerItem = this.dropNewContent;
 			this.popupAddContentMenu.Size = new System.Drawing.Size(61, 4);
 			// 
-			// dropNewContent
+			// popupItemAdd
 			// 
-			this.dropNewContent.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-			this.dropNewContent.DropDown = this.popupAddContentMenu;
-			this.dropNewContent.Enabled = false;
-			this.dropNewContent.Image = global::GorgonLibrary.Editor.Properties.Resources.new_item_16x16;
-			this.dropNewContent.ImageTransparentColor = System.Drawing.Color.Magenta;
-			this.dropNewContent.Name = "dropNewContent";
-			this.dropNewContent.Size = new System.Drawing.Size(29, 22);
-			this.dropNewContent.Text = "New content item";
+			this.popupItemAdd.DropDown = this.popupAddContentMenu;
+			this.popupItemAdd.Enabled = false;
+			this.popupItemAdd.Name = "popupItemAdd";
+			this.popupItemAdd.Size = new System.Drawing.Size(181, 22);
+			this.popupItemAdd.Text = "Add Content";
 			// 
 			// toolStripSeparator3
 			// 
@@ -245,13 +242,16 @@ namespace GorgonLibrary.Editor
 			this.itemExit.Text = "E&xit";
 			this.itemExit.Click += new System.EventHandler(this.itemExit_Click);
 			// 
-			// popupItemAdd
+			// dropNewContent
 			// 
-			this.popupItemAdd.DropDown = this.popupAddContentMenu;
-			this.popupItemAdd.Enabled = false;
-			this.popupItemAdd.Name = "popupItemAdd";
-			this.popupItemAdd.Size = new System.Drawing.Size(181, 22);
-			this.popupItemAdd.Text = "Add Content";
+			this.dropNewContent.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.dropNewContent.DropDown = this.popupAddContentMenu;
+			this.dropNewContent.Enabled = false;
+			this.dropNewContent.Image = global::GorgonLibrary.Editor.Properties.Resources.new_item_16x16;
+			this.dropNewContent.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.dropNewContent.Name = "dropNewContent";
+			this.dropNewContent.Size = new System.Drawing.Size(29, 22);
+			this.dropNewContent.Text = "New content item";
 			// 
 			// tabDocumentManager
 			// 
@@ -320,6 +320,7 @@ namespace GorgonLibrary.Editor
 			// 
 			// treeFiles
 			// 
+			this.treeFiles.AllowDrop = true;
 			this.treeFiles.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(68)))), ((int)(((byte)(68)))), ((int)(((byte)(68)))));
 			this.treeFiles.ContextMenuStrip = this.popupFileSystem;
 			this.treeFiles.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -334,9 +335,11 @@ namespace GorgonLibrary.Editor
 			this.treeFiles.BeforeLabelEdit += new System.Windows.Forms.NodeLabelEditEventHandler(this.treeFiles_BeforeLabelEdit);
 			this.treeFiles.AfterLabelEdit += new System.Windows.Forms.NodeLabelEditEventHandler(this.treeFiles_AfterLabelEdit);
 			this.treeFiles.BeforeExpand += new System.Windows.Forms.TreeViewCancelEventHandler(this.treeFiles_BeforeExpand);
+			this.treeFiles.ItemDrag += new System.Windows.Forms.ItemDragEventHandler(this.treeFiles_ItemDrag);
 			this.treeFiles.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treeFiles_AfterSelect);
 			this.treeFiles.NodeMouseDoubleClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.treeFiles_NodeMouseDoubleClick);
 			this.treeFiles.KeyDown += new System.Windows.Forms.KeyEventHandler(this.treeFiles_KeyDown);
+			this.treeFiles.MouseMove += new System.Windows.Forms.MouseEventHandler(this.treeFiles_MouseMove);
 			// 
 			// popupFileSystem
 			// 
@@ -348,7 +351,7 @@ namespace GorgonLibrary.Editor
             this.toolStripSeparator4,
             this.itemRenameFolder});
 			this.popupFileSystem.Name = "popupFileSystem";
-			this.popupFileSystem.Size = new System.Drawing.Size(182, 142);
+			this.popupFileSystem.Size = new System.Drawing.Size(182, 120);
 			// 
 			// itemEdit
 			// 

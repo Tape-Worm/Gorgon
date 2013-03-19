@@ -369,7 +369,8 @@ namespace GorgonLibrary.Editor
 					Program.Settings.Save();
 				}
                 
-                Program.InitializeScratch();                
+                Program.InitializeScratch();
+				Program.ScratchFiles.AddAllProviders();
 
                 _splash.UpdateVersion("Loading previous editor file...");
                 // Load the last opened file.

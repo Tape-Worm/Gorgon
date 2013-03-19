@@ -140,15 +140,15 @@ namespace GorgonLibrary.Editor
             get;
             private set;
         }
-        
-        /// <summary>
-        /// Property to return a list of items that have been changed since the file was opened.
-        /// </summary>
-        public static Dictionary<string, bool> ChangedItems
-        {
-            get;
-            private set;
-        }
+
+		/// <summary>
+		/// Property to set or return whether the editor file has been changed.
+		/// </summary>
+		public static bool EditorFileChanged
+		{
+			get;
+			set;
+		}
         
 		/// <summary>
 		/// Property to return the name of the editor file.
@@ -350,7 +350,7 @@ namespace GorgonLibrary.Editor
         {
 			GorgonFileSystem packFileSystem = new GorgonFileSystem();
 
-			ChangedItems.Clear();
+			EditorFileChanged = false;
 
 			try
 			{
@@ -438,7 +438,7 @@ namespace GorgonLibrary.Editor
 
 			Program.Settings.LastEditorFile = string.Empty;
 
-			Program.ChangedItems.Clear();
+			EditorFileChanged = false;
 		}
 
         /// <summary>
@@ -467,7 +467,7 @@ namespace GorgonLibrary.Editor
 			Program.Settings.LastEditorFile = path;
 
             // Remove all changed items.
-            ChangedItems.Clear();
+			EditorFileChanged = false;
         }
 
 		/// <summary>
@@ -521,9 +521,10 @@ namespace GorgonLibrary.Editor
         /// Function to intialize the scratch area.
         /// </summary>
         public static void InitializeScratch()
-        {
+        {			
 			_scratchID = Guid.NewGuid();
-            Program.ScratchFiles.WriteLocation = Program.Settings.ScratchPath + ("Gorgon.Editor." + _scratchID.ToString("N")).FormatDirectory(Path.DirectorySeparatorChar); 
+			ScratchFiles.Clear();
+            ScratchFiles.WriteLocation = Program.Settings.ScratchPath + ("Gorgon.Editor." + _scratchID.ToString("N")).FormatDirectory(Path.DirectorySeparatorChar); 
 
             // Set the directory to hidden.  We don't want users really messing around in here if we can help it.
             var scratchDir = new System.IO.DirectoryInfo(Program.ScratchFiles.WriteLocation);
@@ -622,7 +623,7 @@ namespace GorgonLibrary.Editor
 			Settings = new GorgonEditorSettings();
             ContentPlugIns = new Dictionary<string, ContentPlugIn>();
             WriterPlugIns = new Dictionary<string, FileWriterPlugIn>();
-            ChangedItems = new Dictionary<string, bool>();
+			EditorFileChanged = false;
             DisabledPlugIns = new Dictionary<EditorPlugIn, string>();
             EditorFileMetaData = new XDocument(new XDeclaration("1.0", "utf-8", "yes"));
             BlockedFiles = new HashSet<string>();

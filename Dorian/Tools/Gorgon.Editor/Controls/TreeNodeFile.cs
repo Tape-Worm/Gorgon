@@ -75,13 +75,6 @@ namespace GorgonLibrary.Editor
 					return DarkFormsRenderer.DisabledColor;
 				}
 
-				if (Program.ChangedItems.ContainsKey(File.FullPath.ToLower()))
-				{
-					bool state = Program.ChangedItems[File.FullPath.ToLower()];
-
-					return state ? Color.LightGreen : Color.FromArgb(94, 126, 255);
-				}
-
 				return Color.White;
 			}
 			set
