@@ -1461,6 +1461,7 @@ namespace GorgonLibrary.Editor
 				// If we're moving one of our directories or files, then process those items.
 				if (e.Data.GetDataPresent(typeof(Tuple<EditorTreeNode, MouseButtons>)))
 				{
+					// TODO: Refactor this mess.  Also see if we can't refactor the mess in AfterLabelEdit as well.
 					var data = (Tuple<EditorTreeNode, MouseButtons>)e.Data.GetData(typeof(Tuple<EditorTreeNode, MouseButtons>));
 
 					// Perform a move.
