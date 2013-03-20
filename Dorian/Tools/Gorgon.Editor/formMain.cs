@@ -1029,35 +1029,6 @@ namespace GorgonLibrary.Editor
 		}
 
 		/// <summary>
-		/// Handles the MouseMove event of the treeFiles control.
-		/// </summary>
-		/// <param name="sender">The source of the event.</param>
-		/// <param name="e">The <see cref="MouseEventArgs"/> instance containing the event data.</param>
-		private void treeFiles_MouseMove(object sender, MouseEventArgs e)
-		{
-			if (treeFiles.SelectedNode == null)
-			{
-				return;
-			}
-
-			try
-			{
-				var node = (EditorTreeNode)treeFiles.SelectedNode;
-
-				if (e.Button == System.Windows.Forms.MouseButtons.Left)
-				{
-					
-
-					treeFiles.DoDragDrop("This is a test", DragDropEffects.None);
-				}
-			}
-			catch (Exception ex)
-			{
-				GorgonDialogs.ErrorBox(this, ex);
-			}
-		}
-
-		/// <summary>
 		/// Handles the ItemDrag event of the treeFiles control.
 		/// </summary>
 		/// <param name="sender">The source of the event.</param>
@@ -1066,7 +1037,12 @@ namespace GorgonLibrary.Editor
 		{
 			try
 			{
-
+				var node = e.Item as EditorTreeNode;
+				
+				if ((node != null) && (node != _rootNode))
+				{
+					treeFiles.DoDragDrop(new Tuple<EditorTreeNode, MouseButtons>(node, e.Button), DragDropEffects.Copy | DragDropEffects.Move | DragDropEffects.Link);
+				}
 			}
 			catch (Exception ex)
 			{
@@ -1153,7 +1129,8 @@ namespace GorgonLibrary.Editor
 						if ((Program.CurrentContent.File != null)
 							&& (Program.CurrentContent.File.Directory.FullPath.StartsWith(selectedNode.Directory.FullPath, StringComparison.CurrentCultureIgnoreCase)))
 						{
-							contentPath = Program.CurrentContent.File.Name;
+							// Remove the common path part.
+							contentPath = Program.CurrentContent.File.FullPath.Replace(selectedNode.Directory.FullPath, string.Empty);
 						}
 
 						// Create the new path.
@@ -1364,6 +1341,36 @@ namespace GorgonLibrary.Editor
 		}
 
 		/// <summary>
+		/// Function to add a directory to the after the last directory in the parent, but before any files.
+		/// </summary>
+		/// <param name="parent">Parent node.</param>		
+		/// <param name="newNode">New Node to add.</param>
+		private void AddAfterLastFolder(EditorTreeNode parent, EditorTreeNode newNode)
+		{
+			// Add after other folders.
+			var lastFolder = (from node in parent.Nodes.Cast<EditorTreeNode>()
+							  where node is TreeNodeDirectory
+							  select node).LastOrDefault();
+
+			if (lastFolder != null)
+			{
+				int index = parent.Nodes.IndexOf(lastFolder);
+				if (index + 1 < parent.Nodes.Count)
+				{
+					parent.Nodes.Insert(index + 1, newNode);
+				}
+				else
+				{
+					parent.Nodes.Add(newNode);
+				}
+			}
+			else
+			{
+				parent.Nodes.Insert(0, newNode);
+			}			
+		}
+
+		/// <summary>
 		/// Handles the Click event of the itemCreateFolder control.
 		/// </summary>
 		/// <param name="sender">The source of the event.</param>
@@ -1402,27 +1409,7 @@ namespace GorgonLibrary.Editor
 
 				tempNode.Text = defaultName;
 
-				// Add after other folders.
-				var lastFolder = (from node in selectedNode.Nodes.Cast<EditorTreeNode>()
-								 where node is TreeNodeDirectory
-								 select node).LastOrDefault();
-
-				if (lastFolder != null)
-				{
-					int index = selectedNode.Nodes.IndexOf(lastFolder);
-					if (index + 1 < selectedNode.Nodes.Count)
-					{
-						selectedNode.Nodes.Insert(index + 1, tempNode);
-					}
-					else
-					{
-						selectedNode.Nodes.Add(tempNode);
-					}
-				}
-				else
-				{
-					selectedNode.Nodes.Insert(0, tempNode);
-				}
+				AddAfterLastFolder(selectedNode, tempNode);
 
 				if ((!selectedNode.IsExpanded) && (selectedNode.Nodes.Count == 1))
 				{
@@ -1448,6 +1435,221 @@ namespace GorgonLibrary.Editor
 					treeFiles.BeforeExpand += treeFiles_BeforeExpand;
 				}
 				Cursor.Current = Cursors.Default;
+			}
+		}
+
+		/// <summary>
+		/// Handles the DragDrop event of the treeFiles control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="DragEventArgs"/> instance containing the event data.</param>
+		private void treeFiles_DragDrop(object sender, DragEventArgs e)
+		{
+			try
+			{
+				if (e.Effect == DragDropEffects.None)
+				{
+					return;
+				}
+
+				Cursor.Current = Cursors.WaitCursor;
+
+				EditorTreeNode overNode = (EditorTreeNode)treeFiles.GetNodeAt(treeFiles.PointToClient(new Point(e.X, e.Y)));
+				TreeNodeDirectory destDir = overNode as TreeNodeDirectory;
+				TreeNodeFile destFile = overNode as TreeNodeFile;
+				
+				// If we're moving one of our directories or files, then process those items.
+				if (e.Data.GetDataPresent(typeof(Tuple<EditorTreeNode, MouseButtons>)))
+				{
+					var data = (Tuple<EditorTreeNode, MouseButtons>)e.Data.GetData(typeof(Tuple<EditorTreeNode, MouseButtons>));
+
+					// Perform a move.
+					if (data.Item2 == System.Windows.Forms.MouseButtons.Left)
+					{
+						TreeNodeDirectory directory = data.Item1 as TreeNodeDirectory;
+
+						// Our source data is a directory, so move it.
+						if ((directory != null) && (destDir != null))
+						{
+							string contentPath = string.Empty;
+
+							if ((Program.CurrentContent != null)
+								&& (Program.CurrentContent.File != null)
+								&& (Program.CurrentContent.File.Directory.FullPath.StartsWith(directory.Directory.FullPath, StringComparison.CurrentCultureIgnoreCase)))
+							{
+								// Remove the common path part.
+								contentPath = Program.CurrentContent.File.FullPath.Replace(directory.Directory.FullPath, string.Empty);
+							}
+
+							var newDir = Program.MoveDirectory(directory.Directory, destDir.Directory.FullPath + directory.Directory.Name + "/");
+							directory.Remove();
+							directory.UpdateNode(newDir);
+							if (!destDir.IsExpanded)
+							{
+								destDir.Expand();
+							}
+							else
+							{
+								AddAfterLastFolder(destDir, directory);
+							}
+
+							// Update our current content, we have changed its path.
+							if (!string.IsNullOrWhiteSpace(contentPath))
+							{
+								var movedFile = Program.ScratchFiles.GetFile(newDir.FullPath + contentPath);
+
+								if (movedFile == null)
+								{
+									GorgonDialogs.ErrorBox(this, "Error updating open content pane.");
+
+									Program.CurrentContent.Dispose();
+									Program.CurrentContent = null;
+									LoadContentPane<DefaultContent>();
+								}
+								else
+								{
+									// Reassign the file entry.
+									Program.CurrentContent.File = movedFile;
+								}
+							}
+
+							Program.EditorFileChanged = true;
+							return;
+						}
+
+						// We didn't have a directory, so move the file.
+						TreeNodeFile file = data.Item1 as TreeNodeFile;
+
+						if ((destDir != null) && (file != null))
+						{
+							bool contentNeedsUpdate = ((Program.CurrentContent != null) && (Program.CurrentContent.File == file.File));
+							GorgonFileSystemFileEntry newFile = null;
+							string destPath = destDir.Directory.FullPath + file.File.Name;
+							string destPhysicalPath = (Program.ScratchFiles.WriteLocation + destDir.FullPath).FormatDirectory(Path.DirectorySeparatorChar) + file.File.Name;
+
+							newFile = Program.ScratchFiles.GetFile(destPath);
+
+							if ((newFile != null) || (File.Exists(destPhysicalPath)))
+							{
+								// If the file already exists, then ask if we want to overwrite it.
+								if (GorgonDialogs.ConfirmBox(this, "The file '" + newFile.FullPath + "' already exists.  Would you like to overwrite it?") == ConfirmationResult.No)
+								{
+									return;
+								}
+							}
+
+							// Copy into the new file.
+							using (var sourceStream = file.File.OpenStream(false))
+							{
+								using (var destStream = Program.ScratchFiles.OpenStream(destPath, true))
+								{
+									sourceStream.CopyTo(destStream);
+								}
+							}
+
+							Program.ScratchFiles.DeleteFile(file.File.FullPath);
+
+							newFile = Program.ScratchFiles.GetFile(destPath);
+							file.Remove();
+							file.UpdateFile(newFile);
+
+							if (!destDir.IsExpanded)
+							{
+								destDir.Expand();
+							}
+							else
+							{
+								destDir.Nodes.Add(file);
+							}
+							
+							// If the dest file exists, then get rid of it.
+							if ((newFile != null) && (contentNeedsUpdate))
+							{
+								Program.CurrentContent.File = newFile;
+							}
+
+							Program.EditorFileChanged = true;
+							return;
+						}
+					}
+				}
+			}
+			catch (Exception ex)
+			{
+				GorgonDialogs.ErrorBox(this, ex);
+			}
+			finally
+			{
+				ValidateControls();
+				Cursor.Current = Cursors.Default;
+			}
+		}
+
+		/// <summary>
+		/// Handles the DragOver event of the treeFiles control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="DragEventArgs"/> instance containing the event data.</param>
+		private void treeFiles_DragOver(object sender, DragEventArgs e)
+		{
+			try
+			{
+				EditorTreeNode overNode = treeFiles.GetNodeAt(treeFiles.PointToClient(new Point(e.X, e.Y))) as EditorTreeNode;
+				TreeNodeDirectory destDirectory = overNode as TreeNodeDirectory;
+				TreeNodeFile destFile = overNode as TreeNodeFile;
+
+				e.Effect = DragDropEffects.None;
+
+				// If we're over nothing, then assume we're over the root node.
+				if (overNode == null)
+				{
+					overNode = _rootNode;
+				}
+
+				if (e.Data.GetDataPresent(typeof(Tuple<EditorTreeNode, MouseButtons>)))
+				{
+					// Get our source data.
+					Tuple<EditorTreeNode, MouseButtons> dragData = (Tuple<EditorTreeNode, MouseButtons>)e.Data.GetData(typeof(Tuple<EditorTreeNode, MouseButtons>));
+					TreeNodeDirectory sourceDirectory = dragData.Item1 as TreeNodeDirectory;
+					TreeNodeFile sourceFile = dragData.Item1 as TreeNodeFile;
+
+					// Don't drag into ourselves, that's just dumb.
+					// Likewise, if we're over our current parent, do nothing.
+					if ((sourceDirectory == overNode) || (overNode == dragData.Item1.Parent))
+					{
+						return;
+					}
+
+					// If we drag a directory over a file, then we can't do use that.
+					if (destFile != null)
+					{
+						if (sourceDirectory != null)
+						{
+							return;
+						}
+
+						// In the future, we may allow file linking, but we'll need to test for it.
+						// Until that time, just disable the drag/drop.
+						if (sourceFile != null)
+						{
+							return;
+						}
+					}
+
+					treeFiles.SelectedNode = overNode;
+					if (dragData.Item2 == System.Windows.Forms.MouseButtons.Left)
+					{
+						e.Effect = DragDropEffects.Move;
+					}
+					else
+					{
+						e.Effect = DragDropEffects.Copy;
+					}
+				}
+			}
+			catch (Exception ex)
+			{
+				GorgonDialogs.ErrorBox(this, ex);
 			}
 		}
 
