@@ -141,6 +141,22 @@ namespace GorgonLibrary.Editor
             base.Dispose(disposing);
         }
 
+		/// <summary>
+		/// Raises the <see cref="E:System.Windows.Forms.Control.MouseDown" /> event.
+		/// </summary>
+		/// <param name="e">A <see cref="T:System.Windows.Forms.MouseEventArgs" /> that contains the event data.</param>
+		protected override void OnMouseDown(MouseEventArgs e)
+		{
+			base.OnMouseDown(e);
+
+			var node = GetNodeAt(e.Location) as EditorTreeNode;
+
+			if ((node != null) && (node != SelectedNode))
+			{
+				SelectedNode = node;
+			}
+		}
+
         /// <summary>
         /// Raises the <see cref="E:System.Windows.Forms.Control.FontChanged" /> event.
         /// </summary>

@@ -46,6 +46,7 @@ namespace GorgonLibrary.Editor
 		#region Variables.
         private bool _hasChanged = false;           // Flag to indicate that the object was changed.
 		private string _name = "Content";			// Name of the content.
+		private string _filePath = string.Empty;	// Path to the file for the content.
 		#endregion
 
 		#region Properties.
@@ -125,8 +126,25 @@ namespace GorgonLibrary.Editor
 		/// </summary>
 		public GorgonFileSystemFileEntry File
 		{
-			get;
-			internal set;
+			get
+			{
+				if (string.IsNullOrWhiteSpace(_filePath))
+				{
+					return null;
+				}
+
+				return Program.ScratchFiles.GetFile(_filePath);
+			}
+			internal set
+			{
+				if (value == null)
+				{
+					_filePath = string.Empty;
+					return;
+				}
+
+				_filePath = value.FullPath;
+			}
 		}
 		#endregion
 
