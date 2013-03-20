@@ -1164,6 +1164,7 @@ namespace GorgonLibrary.Editor
 							{
 								// Reassign the file entry.
 								Program.CurrentContent.File = file;
+                                Program.CurrentContent.HasChanges = true;
 							}
 						}
 
@@ -1182,7 +1183,7 @@ namespace GorgonLibrary.Editor
 					// Rename the file by moving it.
 					TreeNodeFile selectedNode = node as TreeNodeFile;
 					TreeNodeDirectory parentNode = selectedNode.Parent as TreeNodeDirectory;
-					bool openFile = false;
+					bool openFile = (Program.CurrentContent != null) && (Program.CurrentContent.File == selectedNode.File);
 					string fileExtension = selectedNode.File.Extension;
 
 					if ((Program.CurrentContent != null) && (Program.CurrentContent.File == selectedNode.File))
@@ -1205,15 +1206,10 @@ namespace GorgonLibrary.Editor
 					// Ensure that we keep the same extension.
 					if (!label.EndsWith(fileExtension))
 					{
-						//label += fileExtension;
+						label += fileExtension;
 					}
 
 					// Get the physical file.					
-					FileInfo fileInfo = new FileInfo((Program.ScratchFiles.WriteLocation + parentNode.Directory.FullPath).FormatDirectory(Path.DirectorySeparatorChar) 
-														+ selectedNode.File.Name);
-					string destPath = (Program.ScratchFiles.WriteLocation + parentNode.Directory.FullPath).FormatDirectory(Path.DirectorySeparatorChar)
-														+ label.FormatFileName();
-
 					label = parentNode.Directory.FullPath + label.FormatFileName();
 
 					// Do nothing if the file names are the same.
@@ -1222,11 +1218,15 @@ namespace GorgonLibrary.Editor
 						return;
 					}
 
-					fileInfo.MoveTo(destPath);
+                    using (var sourceStream = selectedNode.File.OpenStream(false))
+                    {
+                        using (var destStream = Program.ScratchFiles.OpenStream(label, true))
+                        {
+                            sourceStream.CopyTo(destStream);
+                        }
+                    }
 										
 					Program.ScratchFiles.DeleteFile(selectedNode.File.FullPath);
-					Program.ScratchFiles.Mount((Program.ScratchFiles.WriteLocation + parentNode.Directory.FullPath).FormatDirectory(Path.DirectorySeparatorChar), parentNode.Directory.FullPath);
-
 					var file = Program.ScratchFiles.GetFile(label);
 
 					selectedNode.UpdateFile(file);
@@ -1511,6 +1511,7 @@ namespace GorgonLibrary.Editor
 								{
 									// Reassign the file entry.
 									Program.CurrentContent.File = movedFile;
+                                    Program.CurrentContent.HasChanges = true;
 								}
 							}
 
@@ -1567,6 +1568,7 @@ namespace GorgonLibrary.Editor
 							if ((newFile != null) && (contentNeedsUpdate))
 							{
 								Program.CurrentContent.File = newFile;
+                                Program.CurrentContent.HasChanges = true;
 							}
 
 							Program.EditorFileChanged = true;
