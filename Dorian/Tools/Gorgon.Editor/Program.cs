@@ -313,19 +313,69 @@ namespace GorgonLibrary.Editor
 		}
 
 		/// <summary>
+		/// Function to move a file from one location to another.
+		/// </summary>
+		/// <param name="file">File to move.</param>
+		/// <param name="newPath">New path for the file.</param>
+		/// <returns>The updated file entry.</returns>
+		public static GorgonFileSystemFileEntry MoveFile(GorgonFileSystemFileEntry file, string newPath)
+		{
+			bool openFile = (Program.CurrentContent != null) && (Program.CurrentContent.File == file);			
+
+			using (var sourceStream = file.OpenStream(false))
+			{
+				using (var destStream = Program.ScratchFiles.OpenStream(newPath, true))
+				{
+					sourceStream.CopyTo(destStream);
+				}
+			}			
+
+			ScratchFiles.DeleteFile(file.FullPath);
+			file = ScratchFiles.GetFile(newPath);
+
+			if (openFile)
+			{
+				if (file == null)
+				{
+					CurrentContent.Dispose();
+					CurrentContent = null;
+					throw new GorgonException("Error updating the currently open content.");
+				}
+				else
+				{
+					CurrentContent.File = file;
+					CurrentContent.Name = file.Name;
+					CurrentContent.HasChanges = true;
+				}
+			}
+
+			return file;
+		}
+
+		/// <summary>
 		/// Function to move a directory from one location to another.
 		/// </summary>
 		/// <param name="directory">Directory to move.</param>
 		/// <param name="newLocation">Destination path for the directory.</param>
-		/// <returns>The new directory entry.</returns>
+		/// <returns>The updated directory entry.</returns>
 		public static GorgonFileSystemDirectory MoveDirectory(GorgonFileSystemDirectory directory, string newLocation)
 		{
+			string openFilePath = string.Empty;
 			GorgonFileSystemDirectory parent = directory.Parent;
 			string destPath = ScratchFiles.WriteLocation + newLocation.FormatDirectory(Path.DirectorySeparatorChar);
 
 			if (ScratchFiles.GetDirectory(newLocation) != null)
 			{
 				throw new IOException("The path '" + newLocation + "' already exists.");				
+			}
+
+			// Check and see if we have a file under this path open.
+			if ((Program.CurrentContent != null)
+				&& (Program.CurrentContent.File != null)
+				&& (Program.CurrentContent.File.FullPath.StartsWith(directory.FullPath, StringComparison.CurrentCultureIgnoreCase)))
+			{
+				// Remove the beginning of the path so we can re-attach it later.
+				openFilePath = Program.CurrentContent.File.FullPath.Substring(directory.FullPath.Length);
 			}
 
 			DirectoryInfo sourceDir = new DirectoryInfo((ScratchFiles.WriteLocation + directory.FullPath).FormatDirectory(Path.DirectorySeparatorChar));
@@ -336,8 +386,27 @@ namespace GorgonLibrary.Editor
 			// Remove from the file system.
 			ScratchFiles.DeleteDirectory(directory.FullPath);
 			
-			// Mount the new directory.
-			ScratchFiles.Mount(destPath, newLocation);
+			// Refresh the currently loaded directories/files.
+			ScratchFiles.Refresh();
+
+			// If we've previously had this file open, then attempt to assign it to the new file path.
+			if (!string.IsNullOrWhiteSpace(openFilePath))
+			{
+				var file = ScratchFiles.GetFile(newLocation + openFilePath);
+
+				if (file == null)
+				{
+					CurrentContent.Dispose();
+					CurrentContent = null;					
+					throw new GorgonException("Error updating the currently open content.");
+				}
+				else
+				{
+					// Reassign the file.
+					CurrentContent.File = file;
+					CurrentContent.HasChanges = true;
+				}
+			}
 
 			return ScratchFiles.GetDirectory(newLocation);
 		}
