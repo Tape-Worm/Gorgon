@@ -157,7 +157,7 @@ namespace GorgonLibrary.Editor
 			if (!(strip is ToolStripDropDown))
 			{
 				if (e.Item.AutoSize)
-					e.TextRectangle = new Rectangle(e.TextRectangle.Location, Size.Round(e.Graphics.MeasureString(e.Text, e.TextFont)));
+					e.TextRectangle = new Rectangle(e.TextRectangle.Location, TextRenderer.MeasureText(e.Text, e.TextFont, e.TextRectangle.Size, e.TextFormat));
 			}
                         
 			TextRenderer.DrawText(e.Graphics, e.Text, e.TextFont, e.TextRectangle, textColor, e.TextFormat);
