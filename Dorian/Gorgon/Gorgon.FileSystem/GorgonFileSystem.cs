@@ -277,6 +277,11 @@ namespace GorgonLibrary.FileSystem
 			directory = RootDirectory;
 			foreach (string item in directories)
 			{
+                if (directory.Files.Contains(item))
+                {
+                    throw new ArgumentException("There is a file named '" + item + "' in the directory '" + directory.FullPath + "'.", "path");
+                }
+
 				if (directory.Directories.Contains(item))
 					directory = directory.Directories[item];
 				else
@@ -316,7 +321,7 @@ namespace GorgonLibrary.FileSystem
 
 			GorgonDebug.AssertParamString(path, "path");
 			GorgonDebug.AssertParamString(mountPoint, "mountPoint");
-			GorgonDebug.AssertParamString(physicalLocation, "physicalLocation");
+			GorgonDebug.AssertParamString(physicalLocation, "physicalLocation");            
 
 			directoryName = Path.GetDirectoryName(path).FormatDirectory('/');
 
@@ -331,6 +336,11 @@ namespace GorgonLibrary.FileSystem
 
 			if (directory == null)
 				throw new ArgumentException("The path '" + directoryName + "' could not be found.", "path");
+
+            if (directory.Directories.Contains(fileName))
+            {
+                throw new ArgumentException("The directory already contains a sub directory named '" + fileName + "'.", "path");
+            }
 
 			// If the file exists, then override it.
 			result = new GorgonFileSystemFileEntry(provider, directory, fileName, mountPoint, physicalLocation, size, offset, createDate);

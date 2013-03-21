@@ -75,11 +75,11 @@ namespace GorgonLibrary.Editor
             itemAdd.Enabled = false;
             popupItemAdd.Enabled = false;
             dropNewContent.Enabled = false;
-            itemDelete.Visible = true;
-            itemDelete.Enabled = false;
-            itemDelete.Text = "Delete...";
+            itemDelete.Enabled = popupItemDelete.Enabled = false;
+            itemDelete.Text = popupItemDelete.Text = "Delete...";
+            itemDelete.Visible = popupItemDelete.Visible = true;
             itemEdit.Visible = false;
-            toolStripSeparator4.Visible = true;
+            toolStripSeparator5.Visible = true;
             itemRenameFolder.Visible = true;
             itemRenameFolder.Enabled = false;
             itemRenameFolder.Text = "Rename...";
@@ -93,7 +93,7 @@ namespace GorgonLibrary.Editor
                 itemAdd.Enabled = itemAdd.DropDownItems.Count > 0;
                 popupItemAdd.Enabled = itemAdd.Enabled;
                 dropNewContent.Enabled = dropNewContent.DropDownItems.Count > 0;
-                toolStripSeparator4.Visible = false;
+                toolStripSeparator5.Visible = false;
                 itemRenameFolder.Visible = false;
             }
             else
@@ -108,8 +108,8 @@ namespace GorgonLibrary.Editor
 					buttonDeleteContent.Enabled = true;
                     itemCreateFolder.Enabled = true;
                     itemCreateFolder.Visible = true;
-					itemDelete.Enabled = true;
-					itemDelete.Text = "Delete Folder...";
+					itemDelete.Enabled = popupItemDelete.Enabled = true;
+					itemDelete.Text = popupItemDelete.Text = "Delete Folder...";
 					
 					if (node != _rootNode)
                     {
@@ -117,17 +117,18 @@ namespace GorgonLibrary.Editor
                         itemRenameFolder.Text = "Rename Folder...";
                     }
                     else
-                    {
+                    {                        
 						if (_rootNode.Nodes.Count == 0)
 						{
-							itemDelete.Visible = false;
+                            buttonDeleteContent.Enabled = false;
+							itemDelete.Visible = popupItemDelete.Visible = false;
 						}
 						else
 						{
-							itemDelete.Text = "Delete all files and folders...";
+							itemDelete.Text = popupItemDelete.Text = "Delete all files and folders...";
 						}
 
-                        toolStripSeparator4.Visible = false;
+                        toolStripSeparator5.Visible = false;
                         itemRenameFolder.Visible = false;
                     }                    
                 }
@@ -138,7 +139,7 @@ namespace GorgonLibrary.Editor
 
 					buttonDeleteContent.Enabled = true;
 					buttonEditContent.Enabled = itemEdit.Visible = itemEdit.Enabled = Program.ContentPlugIns.Any(item => item.Value.FileExtensions.ContainsKey(file.Extension.ToLower()));
-                    itemDelete.Enabled = true;
+                    itemDelete.Enabled = popupItemDelete.Enabled = true;
                     itemRenameFolder.Enabled = true;
                 }
             }
@@ -836,11 +837,6 @@ namespace GorgonLibrary.Editor
 		/// <param name="directoryNode">The node for the directory.</param>
 		private void DeleteDirectory(TreeNodeDirectory directoryNode)
 		{
-			if (GorgonDialogs.ConfirmBox(this, "This will delete '" + directoryNode.Directory.FullPath + "' and any files and/or directories it contains.  Are you sure you wish to do this?") == ConfirmationResult.No)
-			{
-				return;
-			}			
-
 			Cursor.Current = Cursors.WaitCursor;
 
 			// If we've selected the root node, then we need to destroy everything.
@@ -859,9 +855,9 @@ namespace GorgonLibrary.Editor
 			if ((Program.CurrentContent != null) && (Program.CurrentContent.File != null))
 			{
 				// If we have this file open, then close it.
-				var files = Program.ScratchFiles.FindFiles(directoryNode.Directory.FullPath, Program.CurrentContent.File.Name, true);
+				var files = Program.ScratchFiles.FindFiles(directoryNode.Directory.FullPath, Program.CurrentContent.File.Name, true).Any(item => item == Program.CurrentContent.File);
 
-				if (files.Count() > 0)
+				if (files)
 				{
 					Program.CurrentContent.Dispose();
 					Program.CurrentContent = null;
@@ -886,11 +882,6 @@ namespace GorgonLibrary.Editor
 		/// <param name="fileNode">The node for the file.</param>
 		private void DeleteFile(TreeNodeFile fileNode)
 		{
-			if (GorgonDialogs.ConfirmBox(this, "This will delete '" + fileNode.File.FullPath + "'.  Are you sure you wish to do this?") == ConfirmationResult.No)
-			{
-				return;
-			}
-
 			Cursor.Current = Cursors.WaitCursor;
 
 			if ((Program.CurrentContent != null) && (Program.CurrentContent.File == fileNode.File))
@@ -929,6 +920,11 @@ namespace GorgonLibrary.Editor
 
 				if (directory != null)
 				{
+                    if (GorgonDialogs.ConfirmBox(this, "This will delete '" + directory.Directory.FullPath + "' and any files and/or directories it contains.  Are you sure you wish to do this?") == ConfirmationResult.No)
+                    {
+                        return;
+                    }			
+
 					DeleteDirectory(directory);
 				}
 				else
@@ -937,6 +933,11 @@ namespace GorgonLibrary.Editor
 
 					if (file != null)
 					{
+                        if (GorgonDialogs.ConfirmBox(this, "This will delete '" + file.File.FullPath + "'.  Are you sure you wish to do this?") == ConfirmationResult.No)
+                        {
+                            return;
+                        }
+
 						DeleteFile(file);
 					}
 				}
@@ -1133,7 +1134,7 @@ namespace GorgonLibrary.Editor
 						TreeNodeDirectory selectedNode = node as TreeNodeDirectory;
 						TreeNodeDirectory parentNode = selectedNode.Parent as TreeNodeDirectory;
 
-						MoveDirectoryNode(selectedNode, parentNode, label);
+                        CopyDirectoryNode(selectedNode, parentNode, label, true);
 					}
 
 					return;
@@ -1149,7 +1150,7 @@ namespace GorgonLibrary.Editor
 					TreeNodeFile selectedNode = node as TreeNodeFile;
 					TreeNodeDirectory parentNode = selectedNode.Parent as TreeNodeDirectory;
 
-					MoveFileNode(selectedNode, parentNode, label);
+                    CopyFileNode(selectedNode, parentNode, label, true);
 					return;
 				}
 			}
@@ -1352,131 +1353,240 @@ namespace GorgonLibrary.Editor
 			}
 		}
 
-		/// <summary>
-		/// Function to move a file node to another parent.
-		/// </summary>
-		/// <param name="sourceFile">File node to move.</param>
-		/// <param name="destDirectory">Destination parent node.</param>
-		/// <param name="name">New name for the file node.</param>
-		private void MoveFileNode(TreeNodeFile sourceFile, TreeNodeDirectory destDirectory, string name)
-		{			
-			if (string.IsNullOrWhiteSpace(name))
-			{
-				name = sourceFile.Name;
-			}
+        /// <summary>
+        /// Function to copy a file node to another location.
+        /// </summary>
+        /// <param name="sourceFile">The file to copy.</param>
+        /// <param name="destDirectory">The destination directory.</param>
+        /// <param name="name">The new name for the file.</param>
+        /// <param name="deleteSource">TRUE to delete the source file, FALSE to leave alone.</param>
+        private void CopyFileNode(TreeNodeFile sourceFile, TreeNodeDirectory destDirectory, string name, bool deleteSource)
+        {
+            ConfirmationResult result = ConfirmationResult.None;            
 
-			// If we try to chop off the extension, then re-add it.
-			if (!name.EndsWith(sourceFile.File.Extension, StringComparison.CurrentCultureIgnoreCase))
-			{
-				name += sourceFile.File.Extension;
-			}
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                name = sourceFile.File.Name;
+            }
 
-			name = name.FormatFileName();
+            // If we dropped the extension, then replace it.
+            if (!name.EndsWith(sourceFile.File.Extension, StringComparison.CurrentCultureIgnoreCase))
+            {
+                name += sourceFile.File.Extension;
+            }
 
-			// Check to see if we're renaming the file.
-			bool isRename = (string.Compare(name, sourceFile.Name, true) != 0);
+            var newFilePath = destDirectory.Directory.FullPath + name.FormatFileName();      
 
-			name = destDirectory.Directory.FullPath + name.FormatFileName();
+            if (Program.ScratchFiles.GetFile(newFilePath) != null)
+            {
+                // If the file exists and we're renaming (not moving), then throw up an error and leave.
+                if (deleteSource)
+                {
+                    if (string.Compare(name, sourceFile.File.Name, true) != 0)
+                    {
+                        GorgonDialogs.ErrorBox(this, "The file '" + newFilePath + "' already exists.");
+                        return;
+                    }
+                    else
+                    {
+                        // We're trying to copy over ourselves, do nothing.
+                        return;
+                    }
+                }
 
-			// Don't move us to the same place.
-			if (string.Compare(name, sourceFile.File.FullPath, true) == 0)
-			{
-				return;
-			}
+                result = GorgonDialogs.ConfirmBox(this, "The file '" + newFilePath + "' already exists.  Would you like to overwrite it?", true, false);
 
-			// If the file names are different, check to see if the new file name is not in the same directory.
-			if (Program.ScratchFiles.GetFile(name) != null)
-			{
-				if (isRename)
-				{
-					GorgonDialogs.ErrorBox(this, "The file '" + name + "' already exists.");
-					return;
-				}
-				else
-				{
-					// If the file already exists, then ask if we want to overwrite it.
-					if (GorgonDialogs.ConfirmBox(this, "The file '" + name + "' already exists.  Would you like to overwrite it?") == ConfirmationResult.No)
-					{
-						return;
-					}
-				}
-			}
+                if (result == ConfirmationResult.Cancel)
+                {
+                    return;
+                }
 
-			var file = Program.MoveFile(sourceFile.File, name);
+                // If we specified no, then we have to create a new name.
+                if (result == ConfirmationResult.No)
+                {
+                    int counter = 1;
+                    string newName = sourceFile.File.BaseFileName + " (" + counter.ToString() + ")" + sourceFile.File.Extension;
 
-			// If we're moving the only file in the parent node, then collapse it.
-			if (sourceFile.Parent.Nodes.Count == 1)
-			{
-				sourceFile.Parent.Collapse();
-			}
+                    while (Program.ScratchFiles.GetFile(newName) != null)
+                    {
+                        newName = sourceFile.File.BaseFileName + " (" + (++counter).ToString() + ")" + sourceFile.File.Extension;
+                    }
 
-			sourceFile.Remove();
-			sourceFile.UpdateFile(file);
+                    newFilePath = destDirectory.Directory.FullPath + newName;
+                }
+            }
 
-			if (!destDirectory.IsExpanded)
-			{
-				if (destDirectory.Nodes.Count == 0)
-				{
-					destDirectory.Nodes.Add(new TreeNode("DUMMYNODE"));
-				}
-				destDirectory.Expand();
-			}
-			else
-			{
-				destDirectory.Nodes.Add(sourceFile);
-			}
+            using (var inputStream = sourceFile.File.OpenStream(false))
+            {
+                using (var outputStream = Program.ScratchFiles.OpenStream(newFilePath, true))
+                {
+                    inputStream.CopyTo(outputStream);
+                }
+            }
 
-			Program.EditorFileChanged = true;
-		}
+            // If this file is open, then update its handle.
+            if ((deleteSource) 
+                && (Program.CurrentContent != null)
+                && (Program.CurrentContent.File == sourceFile.File))
+            {
+                var newFile = Program.ScratchFiles.GetFile(newFilePath);
+                Program.CurrentContent.File = newFile;
+                Program.CurrentContent.Name = newFile.Name;
+                Program.CurrentContent.HasChanges = true;
+            }
 
-		/// <summary>
-		/// Function to move a directory node to another parent.
-		/// </summary>
-		/// <param name="sourceDirectory">Directory node to move.</param>
-		/// <param name="destDirectory">Destination parent node.</param>
-		/// <param name="name">New name of the directory node.</param>
-		private void MoveDirectoryNode(TreeNodeDirectory sourceDirectory, TreeNodeDirectory destDirectory, string name)
-		{
-			if (string.IsNullOrWhiteSpace(name))
-			{
-				name = sourceDirectory.Directory.Name;
-			}
+            destDirectory.Collapse();
 
-			// Create new path.
-			name = (destDirectory.Directory.FullPath + name).FormatDirectory('/');
+            if (destDirectory.Nodes.Count == 0)
+            {
+                destDirectory.Nodes.Add(new TreeNode("DUMMYNODE"));
+            }
 
-			// We're moving to the same place... leave.
-			if (string.Compare(name, sourceDirectory.Directory.FullPath, true) == 0)
-			{
-				return;
-			}
+            if (deleteSource)
+            {
+                DeleteFile(sourceFile);
+            }
 
-			var newDirectory = Program.MoveDirectory(sourceDirectory.Directory, name);
+            destDirectory.Expand();
 
-			// If we're moving the only directory in the parent node, then collapse it.
-			if (sourceDirectory.Parent.Nodes.Count == 1)
-			{
-				sourceDirectory.Parent.Collapse();
-			}
+            treeFiles.SelectedNode = destDirectory.Nodes[newFilePath];
 
-			sourceDirectory.Remove();
-			sourceDirectory.UpdateNode(newDirectory);
+            Program.EditorFileChanged = true;
+        }
 
-			if (!destDirectory.IsExpanded)
-			{
-				if (destDirectory.Nodes.Count == 0)
-				{
-					destDirectory.Nodes.Add(new TreeNode("DUMMYNODE"));
-				}
-				destDirectory.Expand();
-			}
-			else
-			{
-				AddAfterLastFolder(destDirectory, sourceDirectory);
-			}
+        /// <summary>
+        /// Function to copy a directory node to another location.
+        /// </summary>
+        /// <param name="sourceDirectory">Directory to copy.</param>
+        /// <param name="destDirectory">Directory to copy into.</param>
+        /// <param name="name">The new name for the directory.</param>
+        /// <param name="deleteSource">TRUE to delete the source directory, FALSE to leave alone.</param>
+        private void CopyDirectoryNode(TreeNodeDirectory sourceDirectory, TreeNodeDirectory destDirectory, string name, bool deleteSource)
+        {
+            GorgonFileSystemFileEntry currentFile = null;
+            ConfirmationResult result = ConfirmationResult.None;
+            bool wasExpanded = sourceDirectory.IsExpanded;
 
-			Program.EditorFileChanged = true;
-		}
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                name = sourceDirectory.Directory.Name;
+            }
+
+            // We're moving to the same place... leave.
+            if ((deleteSource) && (sourceDirectory.Parent == destDirectory) && (string.Compare(name, sourceDirectory.Directory.Name, true) == 0))
+            {
+                return;
+            }
+
+
+            name = (destDirectory.Directory.FullPath + name).FormatDirectory('/');
+
+            // We have a directory with this new name already, throw an error.
+            if ((deleteSource) && (string.Compare(name, sourceDirectory.Directory.Name, true) != 0) && (Program.ScratchFiles.GetDirectory(name) != null))
+            {
+                GorgonDialogs.ErrorBox(this, "The directory '" + name + "' already exists.");
+                return;
+            }
+
+            // Get the currently open file.
+            if (Program.CurrentContent != null)
+            {
+                currentFile = Program.CurrentContent.File;
+            }
+
+            var directories = new List<GorgonFileSystemDirectory>(Program.ScratchFiles.FindDirectories(sourceDirectory.Directory.FullPath, "*", true));
+            directories.Add(sourceDirectory.Directory);            
+            
+            foreach (var directory in directories)
+            {
+                // Update the path to point at the new parent.
+                var newDirPath = name + directory.FullPath.Substring(directory.FullPath.Length);
+                var newDirectory = Program.ScratchFiles.CreateDirectory(newDirPath);
+
+                // Copy each file.
+                foreach (var file in directory.Files)
+                {
+                    var newFilePath = newDirPath + file.Name;
+
+                    // The file exists in the destination.  Ask the user what to do.
+                    if (Program.ScratchFiles.GetFile(newFilePath) != null)
+                    {
+                        if ((result & ConfirmationResult.ToAll) == 0)
+                        {
+                            result = GorgonDialogs.ConfirmBox(this, "The file '" + newFilePath + "' already exists.  Would you like to overwrite it?", true, true);
+                        }
+
+                        // If we specified no, then we have to create a new name.
+                        if ((result & ConfirmationResult.No) == ConfirmationResult.No)
+                        {
+                            int counter = 1;
+                            string newName = file.BaseFileName + " (" + counter.ToString() + ")" + file.Extension;
+
+                            while (Program.ScratchFiles.GetFile(newName) != null)
+                            {
+                                newName = file.BaseFileName + " (" + (++counter).ToString() + ")" + file.Extension;
+                            }
+
+                            newFilePath = newDirPath + newName;
+                        }
+                            
+                        if (result == ConfirmationResult.Cancel)
+                        {
+                            break;
+                        }
+                    }
+
+                    using (var inputStream = file.OpenStream(false))
+                    {
+                        using (var outputStream = Program.ScratchFiles.OpenStream(newFilePath, true))
+                        {
+                            inputStream.CopyTo(outputStream);
+                        }
+                    }
+
+                    // If we have this file open, and we're moving the file, then relink it.
+                    if ((file == currentFile) && (deleteSource))
+                    {
+                        var newFile = Program.ScratchFiles.GetFile(newFilePath);
+                        Program.CurrentContent.File = newFile;
+                        Program.CurrentContent.Name = newFile.Name;
+                        Program.CurrentContent.HasChanges = true;
+                    }
+                }
+
+                // We cancelled our copy, so leave.
+                if (result == ConfirmationResult.Cancel)
+                {
+                    break;
+                }
+            }
+
+            destDirectory.Collapse();
+            if (destDirectory.Nodes.Count == 0)
+            {
+                destDirectory.Nodes.Add(new TreeNode("DUMMYNODE"));
+            }
+
+            // Wipe out the source.
+            if (deleteSource)
+            {
+                DeleteDirectory(sourceDirectory);
+            }
+
+            // Copy is done, update our tree nodes.            
+            destDirectory.Expand();
+
+            sourceDirectory = (TreeNodeDirectory)destDirectory.Nodes[name];
+            treeFiles.SelectedNode = sourceDirectory;
+
+            if (wasExpanded)
+            {
+                // Get the node and expand it if it was previously open.
+                destDirectory.Nodes[name].Expand();
+            }
+
+            Program.EditorFileChanged = true;
+        }
 
 		/// <summary>
 		/// Handles the DragDrop event of the treeFiles control.
@@ -1504,25 +1614,29 @@ namespace GorgonLibrary.Editor
 					var data = (Tuple<EditorTreeNode, MouseButtons>)e.Data.GetData(typeof(Tuple<EditorTreeNode, MouseButtons>));
 
 					// Perform a move.
-					if (data.Item2 == System.Windows.Forms.MouseButtons.Left)
+					TreeNodeDirectory directory = data.Item1 as TreeNodeDirectory;
+
+					// Our source data is a directory, so move it.
+					if ((directory != null) && (destDir != null))
 					{
-						TreeNodeDirectory directory = data.Item1 as TreeNodeDirectory;
+                        CopyDirectoryNode(directory, destDir, directory.Directory.Name, (data.Item2 == MouseButtons.Left));
+						return;
+					}
 
-						// Our source data is a directory, so move it.
-						if ((directory != null) && (destDir != null))
-						{
-							MoveDirectoryNode(directory, destDir, directory.Directory.Name);
-							return;
-						}
+					// We didn't have a directory, so move the file.
+					TreeNodeFile file = data.Item1 as TreeNodeFile;
 
-						// We didn't have a directory, so move the file.
-						TreeNodeFile file = data.Item1 as TreeNodeFile;
-
-						if ((destDir != null) && (file != null))
-						{
-							MoveFileNode(file, destDir, file.Name);
-							return;
-						}
+					if ((destDir != null) && (file != null))
+					{
+                        if (data.Item2 == System.Windows.Forms.MouseButtons.Left)
+                        {
+                            CopyFileNode(file, destDir, file.Name, true);
+                        }
+                        else
+                        {
+                            CopyFileNode(file, destDir, file.Name, false);
+                        }
+						return;
 					}
 				}
 			}
