@@ -1,4 +1,4 @@
-﻿namespace GorgonLibrary.GorgonEditor
+﻿namespace GorgonLibrary.Editor.FontEditorPlugIn
 {
 	partial class controlFontDisplay
 	{
