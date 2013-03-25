@@ -338,6 +338,7 @@ namespace GorgonLibrary.Editor
             this.tabDocumentManager.TabHOffset = -1;
             this.tabDocumentManager.TabIndex = 1;
             this.tabDocumentManager.UpDownStyle = KRBTabControl.KRBTabControl.UpDown32Style.BlackGlass;
+            this.tabDocumentManager.SelectedIndexChanged += new System.EventHandler(this.tabDocumentManager_SelectedIndexChanged);
             // 
             // pageItems
             // 
@@ -571,6 +572,7 @@ namespace GorgonLibrary.Editor
             this.propertyItem.ViewBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(51)))), ((int)(((byte)(51)))), ((int)(((byte)(51)))));
             this.propertyItem.ViewBorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(51)))), ((int)(((byte)(51)))), ((int)(((byte)(51)))));
             this.propertyItem.ViewForeColor = System.Drawing.Color.White;
+            this.propertyItem.PropertyValueChanged += new System.Windows.Forms.PropertyValueChangedEventHandler(this.propertyItem_PropertyValueChanged);
             // 
             // popupProperties
             // 

@@ -36,7 +36,7 @@ namespace GorgonLibrary.Editor
 	/// <summary>
 	/// A collection of properties.
 	/// </summary>
-	class ContentTypeDescriptor
+	public class ContentTypeDescriptor
 		: GorgonBaseNamedObjectList<ContentProperty>, ICustomTypeDescriptor
 	{
 		#region Properties.

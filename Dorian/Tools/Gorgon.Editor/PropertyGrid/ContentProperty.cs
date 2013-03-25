@@ -35,7 +35,7 @@ namespace GorgonLibrary.Editor
 	/// <summary>
 	/// A property for content.
 	/// </summary>
-	class ContentProperty
+	public class ContentProperty
 		: GorgonNamedObject
 	{
 		#region Variables.
@@ -290,7 +290,7 @@ namespace GorgonLibrary.Editor
 		/// </summary>
 		/// <param name="descriptor">The property descriptor.</param>
 		/// <param name="owner">Content that owns this property.</param>
-		public ContentProperty(PropertyDescriptor descriptor, ContentObject owner)
+		internal ContentProperty(PropertyDescriptor descriptor, ContentObject owner)
 			: base(descriptor.Name)
 		{
 			_owner = owner;

@@ -31,6 +31,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Drawing;
+using System.Drawing.Design;
 using System.ComponentModel;
 using System.Windows.Forms;
 using SlimMath;
@@ -59,6 +60,245 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
         #endregion
 
         #region Properties.
+        /// <summary>
+        /// Function to set the base color for the font glyphs.
+        /// </summary>
+        [Category("Appearance"), Description("Sets a base color for the glyphs on the texture."), Editor(typeof(RGBAEditor), typeof(UITypeEditor)), TypeConverter(typeof(RGBATypeConverter))]
+        public Color BaseColor
+        {
+            get
+            {
+                return _settings.BaseColors[0];
+            }
+            set
+            {
+                if (_settings.BaseColors[0].ToColor() != value)
+                {
+                    _settings.BaseColors = new GorgonColor[] { value };
+                    OnContentPropertyChanged("BaseColor", value);
+                    UpdateContent();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Property to set or return the outline size.
+        /// </summary>
+        [Category("Appearance"), Description("Sets the size, in pixels, of an outline to apply to each glyph.  Please note that the outline color must have an alpha greater than 0 before the outline is applied."), DefaultValue(0)]
+        public int OutlineSize
+        {
+            get
+            {
+                return _settings.OutlineSize;
+            }
+            set
+            {
+                if (value < 0)
+                    value = 0;
+                if (value > 16)
+                    value = 16;
+
+                if (_settings.OutlineSize != value)
+                {
+                    _settings.OutlineSize = value;
+                    OnContentPropertyChanged("OutlineSize", value);
+                    UpdateContent();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Function to set the base color for the font glyphs.
+        /// </summary>
+        [Category("Appearance"), Description("Sets the outline color for the glyphs with outlines.  Note that the outline size must be greater than 0 before it is applied to the glyph."), DefaultValue(0), Editor(typeof(RGBAEditor), typeof(UITypeEditor)), TypeConverter(typeof(RGBATypeConverter))]
+        public Color OutlineColor
+        {
+            get
+            {
+                return _settings.OutlineColor;
+            }
+            set
+            {
+                if (_settings.OutlineColor.ToColor() != value)
+                {
+                    _settings.OutlineColor = value;
+                    OnContentPropertyChanged("OutlineColor", value);
+                    UpdateContent();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Property to set or return the font size.
+        /// </summary>
+        [Category("Design"), Description("The size of the font.  This value may be in Points or in Pixels depending on the font height mode."), DefaultValue(9.0f)]
+        public float FontSize
+        {
+            get
+            {
+                return _settings.Size;
+            }
+            set
+            {
+                if (value < 1.0f)
+                    value = 1.0f;
+
+                if (_settings.Size != value)
+                {
+                    _settings.Size = value;
+                    CheckTextureSize();
+                    OnContentPropertyChanged("FontSize", value);
+                    UpdateContent();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Property to set or return the texture size for the font.
+        /// </summary>
+        [Category("Design"), Description("The size of the textures used to hold the sprite glyphs."), DefaultValue(typeof(Size), "256,256")]
+        public Size FontTextureSize
+        {
+            get
+            {
+                return _settings.TextureSize;
+            }
+            set
+            {
+                if (value.Width < 16)
+                    value.Width = 16;
+                if (value.Height < 16)
+                    value.Height = 16;
+                if (value.Width >= Graphics.Textures.MaxWidth)
+                    value.Width = Graphics.Textures.MaxWidth - 1;
+                if (value.Height >= Graphics.Textures.MaxHeight)
+                    value.Height = Graphics.Textures.MaxHeight - 1;
+
+                if (_settings.TextureSize != value)
+                {
+                    _settings.TextureSize = value;
+                    CheckTextureSize();
+                    OnContentPropertyChanged("FontTextureSize", value);
+                    UpdateContent();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Property to set or return the anti-alias mode.
+        /// </summary>
+        [Category("Appearance"), Description("Sets the type of anti-aliasing to use for the font.  High Quality (HQ) produces the best output, but doesn't get applied to fonts at certain sizes.  Non HQ, will attempt to anti-alias regardless, but the result will be worse."), DefaultValue(FontAntiAliasMode.AntiAliasHQ)]
+        public FontAntiAliasMode FontAntiAliasMode
+        {
+            get
+            {
+                return _settings.AntiAliasingMode;
+            }
+            set
+            {
+                if (_settings.AntiAliasingMode != value)
+                {
+                    _settings.AntiAliasingMode = value;
+                    OnContentPropertyChanged("FontAntiAliasMode", value);
+                    UpdateContent();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Property to set or return whether the font size should be in point size or pixel size.
+        /// </summary>
+        [DisplayName("FontHeightMode"), Category("Design"), Description("Sets whether to use points or pixels to determine the size of the font."), DefaultValue(typeof(FontHeightMode), "Points")]
+        public FontHeightMode UsePointSize
+        {
+            get
+            {
+                return _settings.FontHeightMode;
+            }
+            set
+            {
+                if (value != _settings.FontHeightMode)
+                {
+                    _settings.FontHeightMode = value;
+                    CheckTextureSize();
+                    OnContentPropertyChanged("UsePointSize", value);
+                    UpdateContent();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Property to set or return the name of the font family.
+        /// </summary>
+        [Editor(typeof(FontFamilyEditor), typeof(UITypeEditor)), RefreshProperties(System.ComponentModel.RefreshProperties.Repaint), Category("Design"), Description("The font family to use for the font.")]
+        public string FontFamily
+        {
+            get
+            {
+                return _settings.FontFamilyName;
+            }
+            set
+            {
+                if (value == null)
+                    value = string.Empty;
+
+                if (string.Compare(_settings.FontFamilyName, value, true) != 0)
+                {
+                    _settings.FontFamilyName = value;
+                    CheckTextureSize();
+                    OnContentPropertyChanged("FontFamily", value);
+                    UpdateContent();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Property to set or return the list of characters that need to be turned into glyphs.
+        /// </summary>
+        [Category("Design"), Description("Sets the list of characters to convert into glyphs."), TypeConverter(typeof(CharacterSetTypeConverter)), Editor(typeof(CharacterSetEditor), typeof(UITypeEditor))]
+        public IEnumerable<char> Characters
+        {
+            get
+            {
+                return _settings.Characters;
+            }
+            set
+            {
+                if ((value == null) || (value.Count() == 0))
+                    value = new char[] { ' ' };
+
+                if (_settings.Characters != value)
+                {
+                    _settings.Characters = value;
+                    CheckTextureSize();
+                    OnContentPropertyChanged("Characters", value);
+                    UpdateContent();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Property to set or return the font style.
+        /// </summary>
+        [Editor(typeof(FontStyleEditor), typeof(UITypeEditor)), Category("Appearance"), Description("Sets whether the font should be bolded, underlined, italicized, or strike through"), DefaultValue(FontStyle.Regular)]
+        public FontStyle FontStyle
+        {
+            get
+            {
+                return _settings.FontStyle;
+            }
+            set
+            {
+                if (_settings.FontStyle != value)
+                {
+                    _settings.FontStyle = value;
+                    CheckTextureSize();
+                    OnContentPropertyChanged("FontStyle", value);
+                    UpdateContent();
+                }
+            }
+        }
+
         /// <summary>
         /// Property to return whether this content has properties that can be manipulated in the properties tab.
         /// </summary>
@@ -125,6 +365,32 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
         #endregion
 
         #region Methods.
+        /// <summary>
+        /// Function to limit the font texture size based on the font size.
+        /// </summary>
+        private void CheckTextureSize()
+        {
+            float fontSize = FontSize;
+            if (UsePointSize == FontHeightMode.Points)
+                fontSize = (float)System.Math.Ceiling(GorgonFontSettings.GetFontHeight(fontSize, OutlineSize));
+            else
+                fontSize += OutlineSize;
+
+            if ((fontSize > FontTextureSize.Width) || (fontSize > FontTextureSize.Height))
+                FontTextureSize = new Size((int)fontSize, (int)fontSize);
+        }
+
+        /// <summary>
+        /// Function to update the content.
+        /// </summary>
+        protected override void UpdateContent()
+        {
+            // TODO: Add some error checking and such.
+            Font.Update(_settings);
+
+            base.UpdateContent();
+        }
+
         /// <summary>
         /// Releases unmanaged and - optionally - managed resources.
         /// </summary>

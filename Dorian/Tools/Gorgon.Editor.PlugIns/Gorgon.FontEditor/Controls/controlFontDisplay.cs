@@ -33,11 +33,10 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using SlimMath;
-using GorgonLibrary.Input;
 using GorgonLibrary.UI;
 using GorgonLibrary.Graphics;
 
-namespace GorgonLibrary.GorgonEditor
+namespace GorgonLibrary.Editor.FontEditorPlugIn
 {
 	/// <summary>
 	/// Main font editor interface.

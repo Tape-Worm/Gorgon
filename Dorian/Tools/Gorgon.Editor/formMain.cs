@@ -63,6 +63,26 @@ namespace GorgonLibrary.Editor
 
 		#region Methods.
         /// <summary>
+        /// Handles the PropertyValueChanged event of the propertyItem control.
+        /// </summary>
+        /// <param name="s">The source of the event.</param>
+        /// <param name="e">The <see cref="PropertyValueChangedEventArgs"/> instance containing the event data.</param>
+        private void propertyItem_PropertyValueChanged(object s, PropertyValueChangedEventArgs e)
+        {
+            try
+            {
+                if ((Program.CurrentContent != null) && (Program.CurrentContent.HasProperties))
+                {
+                    Program.CurrentContent.PropertyChanged(e);
+                }
+            }
+            catch (Exception ex)
+            {
+                GorgonDialogs.ErrorBox(this, ex);
+            }
+        }
+
+        /// <summary>
         /// Function to validate the controls on the display.
         /// </summary>
         private void ValidateControls()
@@ -99,65 +119,59 @@ namespace GorgonLibrary.Editor
 			buttonDeleteContent.Enabled = false;
 			popupItemCut.Enabled = popupItemCopy.Enabled = popupItemPaste.Enabled = itemCopy.Enabled = itemCut.Enabled = itemPaste.Enabled = false;
 
+            EditorTreeNode node = treeFiles.SelectedNode as EditorTreeNode;
+
             // No node is the same as selecting the root.
             if (treeFiles.SelectedNode == null)
+            {
+                node = _rootNode;
+            }
+                                
+            if (node is TreeNodeDirectory)
             {
                 itemAdd.Enabled = itemAdd.DropDownItems.Count > 0;
                 popupItemAdd.Enabled = itemAdd.Enabled;
                 dropNewContent.Enabled = dropNewContent.DropDownItems.Count > 0;
-                toolStripSeparator5.Visible = false;
-                itemRenameFolder.Visible = false;
-            }
-            else
-            {
-				var node = treeFiles.SelectedNode as EditorTreeNode;
-                                
-                if (node is TreeNodeDirectory)
-                {
-                    itemAdd.Enabled = itemAdd.DropDownItems.Count > 0;
-                    popupItemAdd.Enabled = itemAdd.Enabled;
-                    dropNewContent.Enabled = dropNewContent.DropDownItems.Count > 0;
-					buttonDeleteContent.Enabled = true;
-                    itemCreateFolder.Enabled = true;
-                    itemCreateFolder.Visible = true;
-					itemDelete.Enabled = popupItemDelete.Enabled = true;
-					itemDelete.Text = popupItemDelete.Text = "Delete Folder...";
-					popupItemPaste.Enabled = itemPaste.Enabled = (_cutCopyObject != null);
+				buttonDeleteContent.Enabled = true;
+                itemCreateFolder.Enabled = true;
+                itemCreateFolder.Visible = true;
+				itemDelete.Enabled = popupItemDelete.Enabled = (tabDocumentManager.SelectedTab == pageItems);
+				itemDelete.Text = popupItemDelete.Text = "Delete Folder...";
+				popupItemPaste.Enabled = itemPaste.Enabled = (_cutCopyObject != null);
 					
-					if (node != _rootNode)
-                    {
-						popupItemCut.Enabled = popupItemCopy.Enabled = itemCopy.Enabled = itemCut.Enabled = true;
-						itemRenameFolder.Enabled = true;
-                        itemRenameFolder.Text = "Rename Folder...";
-                    }
-                    else
-                    {                        
-						if (_rootNode.Nodes.Count == 0)
-						{
-                            buttonDeleteContent.Enabled = false;
-							itemDelete.Visible = popupItemDelete.Visible = false;
-						}
-						else
-						{
-							itemDelete.Text = popupItemDelete.Text = "Delete all files and folders...";
-						}
-
-                        toolStripSeparator5.Visible = false;
-                        itemRenameFolder.Visible = false;
-                    }                    
-                }
-
-                if (node is TreeNodeFile)
+				if (node != _rootNode)
                 {
-					GorgonFileSystemFileEntry file = ((TreeNodeFile)node).File;
-
-					popupItemPaste.Enabled = itemPaste.Enabled = (_cutCopyObject != null);
 					popupItemCut.Enabled = popupItemCopy.Enabled = itemCopy.Enabled = itemCut.Enabled = true;
-					buttonDeleteContent.Enabled = true;
-					buttonEditContent.Enabled = itemEdit.Visible = itemEdit.Enabled = Program.ContentPlugIns.Any(item => item.Value.FileExtensions.ContainsKey(file.Extension.ToLower()));
-                    itemDelete.Enabled = popupItemDelete.Enabled = true;
-                    itemRenameFolder.Enabled = true;
+					itemRenameFolder.Enabled = true;
+                    itemRenameFolder.Text = "Rename Folder...";
                 }
+                else
+                {                        
+					if (_rootNode.Nodes.Count == 0)
+					{
+                        buttonDeleteContent.Enabled = false;
+						itemDelete.Visible = popupItemDelete.Visible = false;
+					}
+					else
+					{
+						itemDelete.Text = popupItemDelete.Text = "Delete all files and folders...";
+					}
+
+                    toolStripSeparator5.Visible = false;
+                    itemRenameFolder.Visible = false;
+                }                    
+            }
+
+            if (node is TreeNodeFile)
+            {
+				GorgonFileSystemFileEntry file = ((TreeNodeFile)node).File;
+
+				popupItemPaste.Enabled = itemPaste.Enabled = (_cutCopyObject != null);
+				popupItemCut.Enabled = popupItemCopy.Enabled = itemCopy.Enabled = itemCut.Enabled = true;
+				buttonDeleteContent.Enabled = true;
+				buttonEditContent.Enabled = itemEdit.Visible = itemEdit.Enabled = Program.ContentPlugIns.Any(item => item.Value.FileExtensions.ContainsKey(file.Extension.ToLower()));
+                itemDelete.Enabled = popupItemDelete.Enabled = (tabDocumentManager.SelectedTab == pageItems);
+                itemRenameFolder.Enabled = true;
             }
         }
 
@@ -375,6 +389,7 @@ namespace GorgonLibrary.Editor
 				}
 
 				// Destroy the previous content.
+                Program.CurrentContent.ContentPropertyChanged -= CurrentContent_ContentPropertyChanged;
 				Program.CurrentContent.Dispose();
 				Program.CurrentContent = null;
 
@@ -412,6 +427,9 @@ namespace GorgonLibrary.Editor
                 propertyItem.SelectedObject = Program.CurrentContent.TypeDescriptor;
                 propertyItem.Refresh();
                 tabDocumentManager.SelectedTab = pageProperties;
+    
+                // Set up event.
+                content.ContentPropertyChanged += CurrentContent_ContentPropertyChanged;
             }
             else
             {                
@@ -419,6 +437,41 @@ namespace GorgonLibrary.Editor
                 pageProperties.Enabled = false;
             }
 		}
+
+        /// <summary>
+        /// Handles the ContentPropertyChanged event of the CurrentContent control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="ContentPropertyChangedEventArgs"/> instance containing the event data.</param>
+        private void CurrentContent_ContentPropertyChanged(object sender, ContentPropertyChangedEventArgs e)
+        {
+            ContentObject content = sender as ContentObject;
+
+            try
+            {
+                // If we change the name of an item, we must rename it.
+                switch (e.PropertyName.ToLower())
+                {
+                    case "name":
+                        // Find our node that corresponds to this content.
+                        var sourceNode = FindNode(content.File.FullPath) as TreeNodeFile;
+                        var destNode = sourceNode.Parent as TreeNodeDirectory;
+
+                        if ((sourceNode != null) && (destNode != null))
+                        {
+                            CopyFileNode(sourceNode, destNode, e.Value.ToString(), true);
+                        }
+                        break;
+                    default:
+                        Program.EditorFileChanged = true;
+                        break;
+                }
+            }
+            catch (Exception ex)
+            {
+                GorgonDialogs.ErrorBox(this, ex);
+            }
+        }
 
 		/// <summary>
 		/// Function to find the editor node.
@@ -763,6 +816,7 @@ namespace GorgonLibrary.Editor
 				}
 
 				// Destroy the current content.
+                Program.CurrentContent.ContentPropertyChanged -= CurrentContent_ContentPropertyChanged;
 				Program.CurrentContent.Dispose();
 				Program.CurrentContent = null;
 				
@@ -1123,6 +1177,7 @@ namespace GorgonLibrary.Editor
 
 				if (files)
 				{
+                    Program.CurrentContent.ContentPropertyChanged -= CurrentContent_ContentPropertyChanged;
 					Program.CurrentContent.Dispose();
 					Program.CurrentContent = null;
 
@@ -1155,6 +1210,7 @@ namespace GorgonLibrary.Editor
 
 			if ((Program.CurrentContent != null) && (Program.CurrentContent.File == fileNode.File))
 			{
+                Program.CurrentContent.ContentPropertyChanged -= CurrentContent_ContentPropertyChanged;
 				Program.CurrentContent.Dispose();
 				Program.CurrentContent = null;
 
@@ -1722,8 +1778,6 @@ namespace GorgonLibrary.Editor
 				{
 					var newFile = Program.ScratchFiles.GetFile(newFilePath);
 					Program.CurrentContent.File = newFile;
-					Program.CurrentContent.Name = newFile.Name;
-					Program.CurrentContent.HasChanges = true;
 				}
 			}
 
@@ -1859,8 +1913,6 @@ namespace GorgonLibrary.Editor
 						{
 							var newFile = Program.ScratchFiles.GetFile(newFilePath);
 							Program.CurrentContent.File = newFile;
-							Program.CurrentContent.Name = newFile.Name;
-							Program.CurrentContent.HasChanges = true;
 						}
 					}
                 }
@@ -2510,7 +2562,17 @@ namespace GorgonLibrary.Editor
             }
         }
 
-		/// <summary>
+        /// <summary>
+        /// Handles the SelectedIndexChanged event of the tabDocumentManager control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void tabDocumentManager_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            ValidateControls();
+        }
+        
+        /// <summary>
 		/// Function to initialize the global interface commands for each content plug-in.
 		/// </summary>
 		private void InitializeInterface()

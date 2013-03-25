@@ -50,6 +50,16 @@
     <Compile Include="Controls\comboFonts.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Controls\listBoxFont.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Controls\listBoxFontStyle.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Design\CharacterSetEditor.cs" />
+    <Compile Include="Design\CharacterSetTypeConverter.cs" />
+    <Compile Include="Design\FontFamilyEditor.cs" />
+    <Compile Include="Design\FontStyleEditor.cs" />
     <Compile Include="formCharacterPicker.cs">
       <SubType>Form</SubType>
     </Compile>

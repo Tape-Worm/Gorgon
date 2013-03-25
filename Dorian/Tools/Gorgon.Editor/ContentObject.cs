@@ -38,7 +38,51 @@ using GorgonLibrary.Graphics;
 
 namespace GorgonLibrary.Editor
 {
-	/// <summary>
+    /// <summary>
+    /// Content property changed event arguments.
+    /// </summary>
+    class ContentPropertyChangedEventArgs
+        : EventArgs
+    {
+        #region Variables.
+
+        #endregion
+
+        #region Properties.
+        /// <summary>
+        /// Property to set or return the name of the property that was updated.
+        /// </summary>
+        public string PropertyName
+        {
+            get;
+            private set;
+        }
+
+        /// <summary>
+        /// Property to return the value for the property that was updated.
+        /// </summary>
+        public object Value
+        {
+            get;
+            private set;
+        }
+        #endregion
+
+        #region Constructor/Destructor.
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ContentPropertyChangedEventArgs"/> class.
+        /// </summary>
+        /// <param name="propertyName">Name of the property.</param>
+        /// <param name="value">The value.</param>
+        public ContentPropertyChangedEventArgs(string propertyName, object value)
+        {
+            PropertyName = propertyName;
+            Value = value;
+        }
+        #endregion
+    }
+
+    /// <summary>
 	/// Base object for content that can be created/modified by the editor.
 	/// </summary>
 	public abstract class ContentObject
@@ -49,6 +93,14 @@ namespace GorgonLibrary.Editor
 		private string _name = "Content";			// Name of the content.
 		private string _filePath = string.Empty;	// Path to the file for the content.
 		#endregion
+
+        #region Events.
+        /// <summary>
+        /// Event fired when the content has had a property change.
+        /// </summary>
+        [Browsable(false)]
+        internal event EventHandler<ContentPropertyChangedEventArgs> ContentPropertyChanged;
+        #endregion
 
         #region Properties.
         /// <summary>
@@ -146,6 +198,7 @@ namespace GorgonLibrary.Editor
                 {
                     _name = ValidateName(value);
                     HasChanges = true;
+                    OnContentPropertyChanged("Name", _name);
                 }
 			}
 		}
@@ -167,13 +220,19 @@ namespace GorgonLibrary.Editor
 			}
 			internal set
 			{
-				if (value == null)
+				if ((value == null) && (!string.IsNullOrWhiteSpace(_filePath)))
 				{
 					_filePath = string.Empty;
+                    _name = string.Empty;
 					return;
 				}
 
-				_filePath = value.FullPath;
+                if (string.Compare(value.FullPath, _filePath, true) != 0)
+                {
+                    _filePath = value.FullPath;
+                    _name = File.Name;
+                    HasChanges = true;
+                }
 			}
 		}
 		#endregion
@@ -184,6 +243,14 @@ namespace GorgonLibrary.Editor
         /// </summary>
         protected virtual void OnHasChangesUpdated()
         {
+        }
+
+        /// <summary>
+        /// Function to update the content.
+        /// </summary>
+        protected virtual void UpdateContent()
+        {
+            HasChanges = true;
         }
 
         /// <summary>
@@ -223,21 +290,63 @@ namespace GorgonLibrary.Editor
             return proposedName;
         }
 
-		/// <summary>
+        /// <summary>
+        /// Function to notify the application that a property on the content object was changed.
+        /// </summary>
+        /// <param name="propertyName">Name of the property that was updated.</param>
+        /// <param name="value">Value assigned to the property.</param>
+        protected void OnContentPropertyChanged(string propertyName, object value)
+        {
+            if (string.IsNullOrWhiteSpace(propertyName))
+            {
+                throw new ArgumentException("The parameter must not be NULL or empty.", "propertyName");
+            }
+
+            if (ContentPropertyChanged != null)
+            {
+                ContentPropertyChanged(this, new ContentPropertyChangedEventArgs(propertyName, value));
+            }
+        }
+
+        /// <summary>
+        /// Function to retrieve default values for properties with the DefaultValue attribute.
+        /// </summary>
+        internal void SetDefaults()
+        {
+            foreach (var descriptor in TypeDescriptor)
+            {
+                if (descriptor.HasDefaultValue)
+                    descriptor.DefaultValue = descriptor.GetValue<object>();
+            }
+        }
+        
+        /// <summary>
 		/// Function to open the content from the file system.
 		/// </summary>
 		/// <param name="file">File containing the content to open.</param>
 		internal void OpenContent(GorgonFileSystemFileEntry file)
 		{
-			File = file;
-			OnOpenContent();
+            try
+            {
+                File = file;
+                OnOpenContent();
+
+                // Update the properties.
+                SetDefaults();
+            }
+            finally
+            {
+                HasChanges = false;
+            }
 		}
 
         /// <summary>
         /// Function called when a property is changed from the property grid.
         /// </summary>
-        public void PropertyChange()
+        /// <param name="e">Event parameters called when a property is changed.</param>
+        public virtual void PropertyChanged(PropertyValueChangedEventArgs e)
         {
+            
         }
 
         /// <summary>

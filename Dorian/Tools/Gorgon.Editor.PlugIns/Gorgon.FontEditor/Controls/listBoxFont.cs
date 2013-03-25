@@ -32,7 +32,7 @@ using System.Windows.Forms;
 using System.Windows.Forms.Design;
 using System.Drawing;
 
-namespace GorgonLibrary.GorgonEditor
+namespace GorgonLibrary.Editor.FontEditorPlugIn
 {
 	/// <summary>
 	/// Font list box control.
@@ -73,14 +73,14 @@ namespace GorgonLibrary.GorgonEditor
 			if ((e.State & DrawItemState.Focus) == DrawItemState.Focus)
 				e.DrawFocusRectangle();
 
-			string fontName = Items[e.Index].ToString();
-			if (Program.CachedFonts.ContainsKey(fontName))
+			string fontName = Items[e.Index].ToString();            
+			if (GorgonFontEditorPlugIn.CachedFonts.ContainsKey(fontName))
 			{
 				e.Graphics.TextRenderingHint = System.Drawing.Text.TextRenderingHint.ClearTypeGridFit;
 				Size measure = TextRenderer.MeasureText(e.Graphics, fontName, this.Font, e.Bounds.Size, flags);
 				Rectangle textBounds = new Rectangle(e.Bounds.Width - measure.Width + e.Bounds.Left, e.Bounds.Top, e.Bounds.Width, e.Bounds.Height);
 				Rectangle fontBounds = new Rectangle(e.Bounds.Left, e.Bounds.Top, textBounds.X - 2, e.Bounds.Height);
-				TextRenderer.DrawText(e.Graphics, fontName, Program.CachedFonts[fontName], fontBounds, e.ForeColor, e.BackColor, flags);
+				TextRenderer.DrawText(e.Graphics, fontName, GorgonFontEditorPlugIn.CachedFonts[fontName], fontBounds, e.ForeColor, e.BackColor, flags);
 				TextRenderer.DrawText(e.Graphics, fontName, this.Font, textBounds, e.ForeColor, e.BackColor, flags);
 			}
 		}
@@ -105,7 +105,7 @@ namespace GorgonLibrary.GorgonEditor
 		{
 			Items.Clear();
 
-			foreach (var font in Program.CachedFonts)
+			foreach (var font in GorgonFontEditorPlugIn.CachedFonts)
 				Items.Add(font.Key);
 
 			this.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawVariable;

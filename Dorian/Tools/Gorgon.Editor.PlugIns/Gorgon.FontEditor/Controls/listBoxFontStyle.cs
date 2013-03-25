@@ -32,7 +32,7 @@ using System.Windows.Forms;
 using System.Windows.Forms.Design;
 using System.Drawing;
 
-namespace GorgonLibrary.GorgonEditor
+namespace GorgonLibrary.Editor.FontEditorPlugIn
 {
 	/// <summary>
 	/// Listbox for font styles.
@@ -141,7 +141,7 @@ namespace GorgonLibrary.GorgonEditor
 			: this()
 		{
 			FontStyle[] fontStyles = ((FontStyle[])Enum.GetValues(typeof(FontStyle))).Where(item => item != FontStyle.Regular).ToArray();
-			Font cachedFont = Program.CachedFonts[fontFamily];
+			Font cachedFont = GorgonFontEditorPlugIn.CachedFonts[fontFamily];
 
 			Items.Clear();
 			
@@ -154,7 +154,7 @@ namespace GorgonLibrary.GorgonEditor
 			}
 
 			CheckOnClick = true;
-			BackColor = Color.FromArgb(255, 160, 160, 160);
+			BackColor = Color.FromArgb(255, 58, 58, 58);
 			ForeColor = Color.White;
 		}
 		#endregion
