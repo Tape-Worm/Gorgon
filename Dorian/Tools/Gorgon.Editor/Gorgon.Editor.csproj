@@ -137,9 +137,9 @@
     </Compile>
     <Compile Include="PlugIn\EditorPlugIn.cs" />
     <Compile Include="PlugIn\EditorPlugInSettings.cs" />
-    <Compile Include="PropertyGrid\DocumentProperty.cs" />
-    <Compile Include="PropertyGrid\DocumentPropertyDescriptor.cs" />
-    <Compile Include="PropertyGrid\DocumentTypeDescriptor.cs" />
+    <Compile Include="PropertyGrid\ContentProperty.cs" />
+    <Compile Include="PropertyGrid\ContentPropertyDescriptor.cs" />
+    <Compile Include="PropertyGrid\ContentTypeDescriptor.cs" />
     <Compile Include="VisualStyle\DarkFormsRenderer.cs" />
     <Compile Include="formMain.cs">
       <SubType>Form</SubType>
