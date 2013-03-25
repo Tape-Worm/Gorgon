@@ -64,10 +64,23 @@ namespace GorgonLibrary.Editor
 		{
 			get
 			{
-                if ((IsSelected) && (PlugIn != null))
+			
+				if ((IsSelected) && (PlugIn != null))
                 {
-					return DarkFormsRenderer.MenuHilightForeground;
+					if (!IsCut)
+					{
+						return DarkFormsRenderer.MenuHilightForeground;
+					}
+					else
+					{
+						return Color.Black;
+					}
                 }
+
+				if (IsCut)
+				{
+					return Color.Silver;
+				}
 
 				// Draw the text as disabled.
 				if ((PlugIn == null) || (File == null))

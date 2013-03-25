@@ -29,6 +29,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Drawing;
 using System.Windows.Forms;
@@ -51,9 +52,22 @@ namespace GorgonLibrary.Editor.GorPackWriterPlugIn
         private static readonly object _syncLock = new object();
         private XDocument _fat = null;
         private string _tempPath = string.Empty;
+		private int _compressionRatio = 0;
+		private CancellationToken _token = default(CancellationToken);
+		private byte[] _writeBuffer = null;
 		#endregion
 
 		#region Properties.
+		/// <summary>
+		/// Property to return whether the plug-in supports writing compressed files.
+		/// </summary>
+		public override bool SupportsCompression
+		{
+			get 
+			{
+				return true;
+			}
+		}
 		#endregion
 
 		#region Methods.
@@ -90,6 +104,57 @@ namespace GorgonLibrary.Editor.GorPackWriterPlugIn
                                 new XElement("Comment", "Gorgon.Editor"));
         }
 
+		/// <summary>
+		/// Function to compress data.
+		/// </summary>
+		/// <param name="inStream">Input stream.</param>
+		/// <param name="outStream">Output stream.</param>
+		private void CompressData(Stream inStream, Stream outStream)
+		{
+			if (_writeBuffer == null)
+			{
+				_writeBuffer = new byte[81920];
+			}
+
+			using (BZip2OutputStream bzStream = new BZip2OutputStream(outStream, _compressionRatio))
+			{
+				long streamSize = inStream.Length;
+				bzStream.IsStreamOwner = false;
+
+				while (streamSize > 0)
+				{
+					if (_token.IsCancellationRequested)
+					{
+						return;
+					}
+
+					int readSize = inStream.Read(_writeBuffer, 0, 81920);
+
+					if (_token.IsCancellationRequested)
+					{
+						return;
+					}
+
+					if (readSize > 0)
+					{
+						if (_token.IsCancellationRequested)
+						{
+							return;
+						}
+
+						bzStream.Write(_writeBuffer, 0, readSize);
+
+						if (_token.IsCancellationRequested)
+						{
+							return;
+						}
+					}
+
+					streamSize -= readSize;
+				}
+			}			
+		}
+
         /// <summary>
         /// Function to compress the files in a given directory.
         /// </summary>
@@ -104,7 +169,17 @@ namespace GorgonLibrary.Editor.GorPackWriterPlugIn
                 var subDir = directory.Directories[i];
                 var dirNode = CreatePathNode(subDir);
 
+				if (_token.IsCancellationRequested)
+				{
+					return;
+				}
+
                 CompressFiles(output, subDir, dirNode);
+
+				if (_token.IsCancellationRequested)
+				{
+					return;
+				}
 
                 // Attach to the root.
                 rootNode.Add(dirNode);
@@ -120,32 +195,82 @@ namespace GorgonLibrary.Editor.GorPackWriterPlugIn
                 long fileSize = 0;
 				long compressedSize = 0;
 
+				UpdateStatus("Saving " + fileEntry.FullPath.Ellipses(45, true), 0);
+
+				if (_token.IsCancellationRequested)
+				{
+					return;
+				}
+
                 using (var sourceData = fileEntry.OpenStream(false))
                 {
                     // Load the data into memory.
                     using (var fileData = new GorgonDataStream((int)sourceData.Length))
                     {
+						if (_token.IsCancellationRequested)
+						{
+							return;
+						}
+
                         sourceData.CopyTo(fileData);
+
+						if (_token.IsCancellationRequested)
+						{
+							return;
+						}
+
 						fileSize = fileData.Length;
                         fileData.Position = 0;
 
                         using (var compressedData = new MemoryStream())
                         {
-                            BZip2.Compress(fileData, compressedData, false, 9);                    
+							if (_token.IsCancellationRequested)
+							{
+								return;
+							}
+
+							CompressData(fileData, compressedData);
+
+							if (_token.IsCancellationRequested)
+							{
+								return;
+							}
+
                             compressedData.Position = 0;							
                             fileData.Position = 0;
 
                             // Write the compressed data out to our blob file.
                             if (compressedData.Length < fileSize)
                             {
+								if (_token.IsCancellationRequested)
+								{
+									return;
+								}
+
                                 compressedData.CopyTo(output);
+
+								if (_token.IsCancellationRequested)
+								{
+									return;
+								}
+
                                 compressedSize = compressedData.Length;
                             }
                             else
                             {
-                                // We didn't compress anything, so just dump the file.
+								if (_token.IsCancellationRequested)
+								{
+									return;
+								}
+								
+								// We didn't compress anything, so just dump the file.
                                 fileData.CopyTo(output);
-                            }
+
+								if (_token.IsCancellationRequested)
+								{
+									return;
+								}
+                            }							
                         }
                     }
                 }
@@ -158,7 +283,7 @@ namespace GorgonLibrary.Editor.GorPackWriterPlugIn
         /// <summary>
         /// Function to build the file system.
         /// </summary>
-        private void BuildFileSystem()
+        public void BuildFileSystem()
         {            
             // Create our root directory.
             var root = CreatePathNode(ScratchFileSystem.RootDirectory);
@@ -168,6 +293,11 @@ namespace GorgonLibrary.Editor.GorPackWriterPlugIn
                                  new XElement("FileSystem",
                                      new XElement("Header", "GORFS1.0"),
                                      root));
+
+			if (_token.IsCancellationRequested)
+			{
+				return;
+			}
 
             // Create a temporary blob file to hold our compressed data.
             using (var outputFile = File.Open(_tempPath, FileMode.Create, FileAccess.Write, FileShare.None))
@@ -188,28 +318,43 @@ namespace GorgonLibrary.Editor.GorPackWriterPlugIn
             return null;
         }
 
-        /// <summary>
-        /// Function to write the file to the specified path.
-        /// </summary>
-        /// <param name="path">Path to the file.</param>
-        public override void WriteFile(string path)
+		/// <summary>
+		/// Function to write the file to the specified path.
+		/// </summary>
+		/// <param name="path">Path to the file.</param>
+		/// <param name="token">Token used to cancel the task.</param>
+        protected override void WriteFile(string path, CancellationToken token)
         {
             // Don't allow other threads in here.
             lock (_syncLock)
             {
-				string fileName = Path.GetFileName(path);
-				_tempPath = ScratchFileSystem.WriteLocation;
+				_token = token;
 
-				if (!fileName.EndsWith(".gorFont", StringComparison.CurrentCultureIgnoreCase))
-				{
-					fileName += ".gorFont";
-				}
-				_tempPath += fileName;
+				_tempPath = ScratchFileSystem.WriteLocation + Path.GetFileName(Path.GetTempFileName());
+
+				// Calculate compression ratio.  9 is the max compression level for bzip 2.
+				_compressionRatio = (int)System.Math.Round(Compression * 9.0f, 0, MidpointRounding.AwayFromZero);
 
                 try
                 {
-                    // Build file system.
+					// Turn off cancellation at this point.
+					CanCancel(false);
+					
+					// Build file system.
                     BuildFileSystem();
+
+					if (_token.IsCancellationRequested)
+					{
+						return;
+					}
+
+					// Turn off cancellation at this point.
+					CanCancel(false);
+
+					if (_token.IsCancellationRequested)
+					{
+						return;
+					}
 
                     // Write out our file.
                     using (var outputFile = File.Open(path, FileMode.Create, FileAccess.Write, FileShare.Read))
@@ -225,7 +370,7 @@ namespace GorgonLibrary.Editor.GorPackWriterPlugIn
                             {
                                 using (var compressData = new MemoryStream())
                                 {
-                                    BZip2.Compress(fatData, compressData, false, 9);
+									CompressData(fatData, compressData);
                                     compressData.Position = 0;
 
                                     writer.Write((int)compressData.Length);

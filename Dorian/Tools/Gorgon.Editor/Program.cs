@@ -529,7 +529,10 @@ namespace GorgonLibrary.Editor
             }
 
             // Write the file.
-            CurrentWriterPlugIn.WriteFile(path);
+			if (!CurrentWriterPlugIn.Save(path))
+			{
+				return;
+			}
             
             EditorFile = Path.GetFileName(path);
             EditorFilePath = path;

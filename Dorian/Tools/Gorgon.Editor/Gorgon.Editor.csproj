@@ -118,6 +118,12 @@
     <Compile Include="formNewName.Designer.cs">
       <DependentUpon>formNewName.cs</DependentUpon>
     </Compile>
+    <Compile Include="formProcess.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="formProcess.Designer.cs">
+      <DependentUpon>formProcess.cs</DependentUpon>
+    </Compile>
     <Compile Include="PlugIn\EditorPlugIn.cs" />
     <Compile Include="PlugIn\EditorPlugInSettings.cs" />
     <Compile Include="VisualStyle\DarkFormsRenderer.cs" />
@@ -153,6 +159,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="formNewName.resx">
       <DependentUpon>formNewName.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="formProcess.resx">
+      <DependentUpon>formProcess.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="formSplash.resx">
       <DependentUpon>formSplash.cs</DependentUpon>

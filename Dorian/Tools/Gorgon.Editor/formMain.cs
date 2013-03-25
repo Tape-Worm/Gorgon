@@ -34,6 +34,8 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
 using KRBTabControl;
 using GorgonLibrary.FileSystem;
 using GorgonLibrary.Diagnostics;
@@ -50,9 +52,13 @@ namespace GorgonLibrary.Editor
 		: ZuneForm
     {
         #region Variables.
+		private static int _syncCounter = 0;							// Synchronization counter for multiple threads.
+		private static readonly object _syncLock = new object();		// Synchronization lock.
         private RootNodeDirectory _rootNode = null;						// Our root node for the tree.
 		private char[] _pathChars = Path.GetInvalidPathChars();			// Invalid path characters.
 		private char[] _fileChars = Path.GetInvalidFileNameChars();		// Invalid filename characters.
+		private object _cutCopyObject = null;							// Object being cut/copied.
+		private bool? _isCutOperation = null;							// Flag for cut/copy operation.
 		#endregion
 
 		#region Methods.
@@ -62,6 +68,11 @@ namespace GorgonLibrary.Editor
         private void ValidateControls()
         {
             Text = Program.EditorFile + " - Gorgon Editor";
+
+			if (_rootNode != null)
+			{
+				_rootNode.Redraw();
+			}
 
             itemOpen.Enabled = Program.ScratchFiles.Providers.Count > 1;
             itemSaveAs.Enabled = (Program.WriterPlugIns.Count > 0);
@@ -86,6 +97,7 @@ namespace GorgonLibrary.Editor
             itemCreateFolder.Visible = false;
 			buttonEditContent.Enabled = false;
 			buttonDeleteContent.Enabled = false;
+			popupItemCut.Enabled = popupItemCopy.Enabled = popupItemPaste.Enabled = itemCopy.Enabled = itemCut.Enabled = itemPaste.Enabled = false;
 
             // No node is the same as selecting the root.
             if (treeFiles.SelectedNode == null)
@@ -110,10 +122,12 @@ namespace GorgonLibrary.Editor
                     itemCreateFolder.Visible = true;
 					itemDelete.Enabled = popupItemDelete.Enabled = true;
 					itemDelete.Text = popupItemDelete.Text = "Delete Folder...";
+					popupItemPaste.Enabled = itemPaste.Enabled = (_cutCopyObject != null);
 					
 					if (node != _rootNode)
                     {
-                        itemRenameFolder.Enabled = true;
+						popupItemCut.Enabled = popupItemCopy.Enabled = itemCopy.Enabled = itemCut.Enabled = true;
+						itemRenameFolder.Enabled = true;
                         itemRenameFolder.Text = "Rename Folder...";
                     }
                     else
@@ -137,6 +151,8 @@ namespace GorgonLibrary.Editor
                 {
 					GorgonFileSystemFileEntry file = ((TreeNodeFile)node).File;
 
+					popupItemPaste.Enabled = itemPaste.Enabled = (_cutCopyObject != null);
+					popupItemCut.Enabled = popupItemCopy.Enabled = itemCopy.Enabled = itemCut.Enabled = true;
 					buttonDeleteContent.Enabled = true;
 					buttonEditContent.Enabled = itemEdit.Visible = itemEdit.Enabled = Program.ContentPlugIns.Any(item => item.Value.FileExtensions.ContainsKey(file.Extension.ToLower()));
                     itemDelete.Enabled = popupItemDelete.Enabled = true;
@@ -388,6 +404,236 @@ namespace GorgonLibrary.Editor
 			if (content.HasRenderer)
 			{
 				Gorgon.ApplicationIdleLoopMethod = Idle;
+			}
+		}
+
+		/// <summary>
+		/// Function to find the editor node.
+		/// </summary>
+		/// <param name="name">Name of the node to find.</param>
+		/// <returns>The node if found, NULL if not.</returns>
+		private EditorTreeNode FindNode(string name)
+		{
+			EditorTreeNode result = null;
+			EditorTreeNode current = null;
+			IList<string> parts = name.Split(new[] { '/' }, StringSplitOptions.RemoveEmptyEntries);
+
+			// Start at the root.
+			if (!_rootNode.IsExpanded)
+			{
+				_rootNode.Expand();
+			}
+
+			current = _rootNode;
+			while (result == null)
+			{
+				if (!current.IsExpanded)
+				{
+					current.Expand();
+				}
+
+				// We can't find a node in here, leave.
+				if (current.Nodes.Count == 0)
+				{
+					break;
+				}
+
+				// Find the parts.
+				for (int i = 0; i < current.Nodes.Count; i++)
+				{
+					EditorTreeNode nodePart = current.Nodes[i] as EditorTreeNode;
+					int index = parts.IndexOf(nodePart.Text);
+
+					// This node type is invalid, skip it.
+					if (nodePart == null)
+					{
+						continue;
+					}
+
+					// We found our node, exit the loop.
+					if (string.Compare(nodePart.Name, name, true) == 0)
+					{
+						result = nodePart;
+						break;
+					}
+
+					if (index > -1)
+					{
+						current = current.Nodes[i] as EditorTreeNode;
+						if (current != null)
+						{
+							break;
+						}
+					}
+				}
+			}
+
+			return result;
+		}
+
+		/// <summary>
+		/// Function to determine if the specified node is an ancestor of the parent node.
+		/// </summary>
+		/// <param name="childNode">Child node.</param>
+		/// <param name="parentNode">Root parent node.</param>
+		/// <returns>TRUE if the child is ancestor of parent, FALSE if not.</returns>
+		private bool IsAncestor(EditorTreeNode childNode, EditorTreeNode parentNode)
+		{
+			TreeNode node = childNode.Parent;
+
+			// Walk up the chain.
+			while (node != null)
+			{
+				if (node == parentNode)
+				{
+					return true;
+				}
+
+				node = node.Parent;
+			}
+
+			return false;
+		}
+
+		/// <summary>
+		/// Handles the Click event of the itemPaste control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+		private void itemPaste_Click(object sender, EventArgs e)
+		{
+			try
+			{
+				// Use a lockless pattern to keep this method from becoming reentrant.
+				if (Interlocked.Increment(ref _syncCounter) == 1)
+				{
+					Cursor.Current = Cursors.WaitCursor;
+
+					try
+					{
+						if ((_cutCopyObject == null) || (_isCutOperation == null))
+						{
+							return;
+						}
+
+						// If we're cutting/copying some tree node, then find the current node
+						// and perform the operation.
+						var node = FindNode(_cutCopyObject.ToString());
+
+						node.IsCut = false;
+						node.Redraw();
+
+						if (node != null)
+						{
+							TreeNodeDirectory dest = treeFiles.SelectedNode as TreeNodeDirectory;
+
+							if (dest == null)
+							{
+								GorgonDialogs.ErrorBox(this, "Cannot paste into a non-directory node.");
+								return;
+							}
+
+							// If we're moving, there are some restrictions.
+							if ((dest == node) && (_isCutOperation.Value))
+							{
+								GorgonDialogs.ErrorBox(this, "Cannot cut and paste this item onto itself.");
+								return;
+							}
+
+							if ((_isCutOperation.Value) && (IsAncestor(dest, node)))
+							{
+								GorgonDialogs.ErrorBox(this, "Cannot cut and paste this item onto its child directories.");
+								return;
+							}
+
+							if (node is TreeNodeDirectory)
+							{
+								CopyDirectoryNode((TreeNodeDirectory)node, dest, node.Text, _isCutOperation.Value);
+							}
+
+							if (node is TreeNodeFile)
+							{
+								// Don't copy over the same file.
+								if ((dest == node.Parent) && (_isCutOperation.Value))
+								{
+									return;
+								}
+
+								CopyFileNode((TreeNodeFile)node, dest, node.Text, _isCutOperation.Value);
+							}
+						}
+					}
+					catch (Exception ex)
+					{
+						GorgonDialogs.ErrorBox(this, ex);
+					}
+					finally
+					{
+						if ((_isCutOperation != null) && (_isCutOperation.Value))
+						{
+							_cutCopyObject = null;
+							_isCutOperation = null;
+						}
+						ValidateControls();
+						Cursor.Current = Cursors.Default;
+					}
+				}
+			}
+			finally
+			{
+				Interlocked.Decrement(ref _syncCounter);
+			}
+		}
+
+		/// <summary>
+		/// Handles the Click event of the itemCopy control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+		private void itemCopy_Click(object sender, EventArgs e)
+		{
+			try
+			{
+				if ((treeFiles.SelectedNode == null) || (treeFiles.SelectedNode == _rootNode))
+				{
+					return;
+				}
+
+				EditorTreeNode node = (EditorTreeNode)treeFiles.SelectedNode;
+				node.IsCut = false;
+				node.Redraw();
+				_isCutOperation = false;
+				_cutCopyObject = node.Name;
+			}
+			finally
+			{
+				ValidateControls();
+			}
+		}
+
+		/// <summary>
+		/// Handles the Click event of the itemCut control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+		private void itemCut_Click(object sender, EventArgs e)
+		{
+			try
+			{
+				if ((treeFiles.SelectedNode == null) || (treeFiles.SelectedNode == _rootNode))
+				{
+					return;
+				}
+
+				EditorTreeNode node = (EditorTreeNode)treeFiles.SelectedNode;
+				node.IsCut = true;
+				node.Redraw();
+				_isCutOperation = true;
+				_cutCopyObject = node.Name;
+			}
+			finally
+			{
+				ValidateControls();
 			}
 		}
 
@@ -839,6 +1085,11 @@ namespace GorgonLibrary.Editor
 		{
 			Cursor.Current = Cursors.WaitCursor;
 
+			if ((_cutCopyObject != null) && (_cutCopyObject.ToString() == directoryNode.Name))
+			{
+				_cutCopyObject = null;
+			}
+
 			// If we've selected the root node, then we need to destroy everything.
 			if (directoryNode == _rootNode)
 			{
@@ -884,6 +1135,11 @@ namespace GorgonLibrary.Editor
 		{
 			Cursor.Current = Cursors.WaitCursor;
 
+			if ((_cutCopyObject != null) && (_cutCopyObject.ToString() == fileNode.Name))
+			{
+				_cutCopyObject = null;
+			}
+
 			if ((Program.CurrentContent != null) && (Program.CurrentContent.File == fileNode.File))
 			{
 				Program.CurrentContent.Dispose();
@@ -924,7 +1180,7 @@ namespace GorgonLibrary.Editor
                     {
                         return;
                     }			
-
+										
 					DeleteDirectory(directory);
 				}
 				else
@@ -1015,6 +1271,11 @@ namespace GorgonLibrary.Editor
 					dialogSaveFile.FilterIndex = filterIndex + 1;
 				}
 				dialogSaveFile.Filter = extensions.ToString();
+
+				if (!string.IsNullOrWhiteSpace(Program.Settings.LastEditorFile))
+				{
+					dialogSaveFile.FileName = Path.GetFileName(Program.Settings.LastEditorFile);
+				}
 
 				// Open dialog.
 				if (dialogSaveFile.ShowDialog(this) == System.Windows.Forms.DialogResult.OK)
@@ -1362,7 +1623,7 @@ namespace GorgonLibrary.Editor
         /// <param name="deleteSource">TRUE to delete the source file, FALSE to leave alone.</param>
         private void CopyFileNode(TreeNodeFile sourceFile, TreeNodeDirectory destDirectory, string name, bool deleteSource)
         {
-            ConfirmationResult result = ConfirmationResult.None;            
+            ConfirmationResult result = ConfirmationResult.None;
 
             if (string.IsNullOrWhiteSpace(name))
             {
@@ -1375,7 +1636,7 @@ namespace GorgonLibrary.Editor
                 name += sourceFile.File.Extension;
             }
 
-            var newFilePath = destDirectory.Directory.FullPath + name.FormatFileName();      
+            var newFilePath = destDirectory.Directory.FullPath + name.FormatFileName();
 
             if (Program.ScratchFiles.GetFile(newFilePath) != null)
             {
@@ -1402,19 +1663,29 @@ namespace GorgonLibrary.Editor
                 }
 
                 // If we specified no, then we have to create a new name.
-                if (result == ConfirmationResult.No)
-                {
-                    int counter = 1;
-                    string newName = sourceFile.File.BaseFileName + " (" + counter.ToString() + ")" + sourceFile.File.Extension;
+				if (result == ConfirmationResult.No)
+				{
+					int counter = 1;
+					string newName = sourceFile.File.BaseFileName + " (" + counter.ToString() + ")" + sourceFile.File.Extension;
 
-                    while (Program.ScratchFiles.GetFile(newName) != null)
-                    {
-                        newName = sourceFile.File.BaseFileName + " (" + (++counter).ToString() + ")" + sourceFile.File.Extension;
-                    }
+					while (Program.ScratchFiles.GetFile(newName) != null)
+					{
+						newName = sourceFile.File.BaseFileName + " (" + (++counter).ToString() + ")" + sourceFile.File.Extension;
+					}
 
-                    newFilePath = destDirectory.Directory.FullPath + newName;
-                }
+					newFilePath = destDirectory.Directory.FullPath + newName;
+				}
+				else
+				{
+					// Do not copy over ourselves.
+					if (string.Compare(newFilePath, sourceFile.File.FullPath, true) == 0)
+					{
+						return;
+					}
+				}
             }
+
+			Cursor.Current = Cursors.WaitCursor;
 
             using (var inputStream = sourceFile.File.OpenStream(false))
             {
@@ -1424,16 +1695,24 @@ namespace GorgonLibrary.Editor
                 }
             }
 
-            // If this file is open, then update its handle.
-            if ((deleteSource) 
-                && (Program.CurrentContent != null)
-                && (Program.CurrentContent.File == sourceFile.File))
-            {
-                var newFile = Program.ScratchFiles.GetFile(newFilePath);
-                Program.CurrentContent.File = newFile;
-                Program.CurrentContent.Name = newFile.Name;
-                Program.CurrentContent.HasChanges = true;
-            }
+			// Reroute any cut/copy operation.
+			if (deleteSource)
+			{
+				if ((_cutCopyObject != null) && (_cutCopyObject.ToString() == sourceFile.Name))
+				{
+					_cutCopyObject = newFilePath;
+				}
+
+				// If this file is open, then update its handle.
+				if ((Program.CurrentContent != null)
+					&& (Program.CurrentContent.File == sourceFile.File))
+				{
+					var newFile = Program.ScratchFiles.GetFile(newFilePath);
+					Program.CurrentContent.File = newFile;
+					Program.CurrentContent.Name = newFile.Name;
+					Program.CurrentContent.HasChanges = true;
+				}
+			}
 
             destDirectory.Collapse();
 
@@ -1514,26 +1793,35 @@ namespace GorgonLibrary.Editor
                         if ((result & ConfirmationResult.ToAll) == 0)
                         {
                             result = GorgonDialogs.ConfirmBox(this, "The file '" + newFilePath + "' already exists.  Would you like to overwrite it?", true, true);
+							Cursor.Current = Cursors.WaitCursor;
                         }
+
+						if (result == ConfirmationResult.Cancel)
+						{
+							break;
+						}
 
                         // If we specified no, then we have to create a new name.
-                        if ((result & ConfirmationResult.No) == ConfirmationResult.No)
-                        {
-                            int counter = 1;
-                            string newName = file.BaseFileName + " (" + counter.ToString() + ")" + file.Extension;
+						if ((result & ConfirmationResult.No) == ConfirmationResult.No)
+						{
+							int counter = 1;
+							string newName = file.BaseFileName + " (" + counter.ToString() + ")" + file.Extension;
 
-                            while (Program.ScratchFiles.GetFile(newName) != null)
-                            {
-                                newName = file.BaseFileName + " (" + (++counter).ToString() + ")" + file.Extension;
-                            }
+							while (Program.ScratchFiles.GetFile(newName) != null)
+							{
+								newName = file.BaseFileName + " (" + (++counter).ToString() + ")" + file.Extension;
+							}
 
-                            newFilePath = newDirPath + newName;
-                        }
-                            
-                        if (result == ConfirmationResult.Cancel)
-                        {
-                            break;
-                        }
+							newFilePath = newDirPath + newName;
+						}
+						else
+						{
+							// Don't overwrite ourselves.
+							if (string.Compare(newFilePath, file.FullPath, true) == 0)
+							{
+								continue;
+							}
+						}                            
                     }
 
                     using (var inputStream = file.OpenStream(false))
@@ -1544,14 +1832,24 @@ namespace GorgonLibrary.Editor
                         }
                     }
 
-                    // If we have this file open, and we're moving the file, then relink it.
-                    if ((file == currentFile) && (deleteSource))
-                    {
-                        var newFile = Program.ScratchFiles.GetFile(newFilePath);
-                        Program.CurrentContent.File = newFile;
-                        Program.CurrentContent.Name = newFile.Name;
-                        Program.CurrentContent.HasChanges = true;
-                    }
+										
+					if (deleteSource)
+					{
+						// Reroute any cut/copy operation.
+						if ((_cutCopyObject != null) && (_cutCopyObject.ToString() == file.FullPath))
+						{
+							_cutCopyObject = newFilePath;
+						}
+
+						// If we have this file open, and we're moving the file, then relink it.
+						if (file == currentFile)
+						{
+							var newFile = Program.ScratchFiles.GetFile(newFilePath);
+							Program.CurrentContent.File = newFile;
+							Program.CurrentContent.Name = newFile.Name;
+							Program.CurrentContent.HasChanges = true;
+						}
+					}
                 }
 
                 // We cancelled our copy, so leave.
@@ -1560,6 +1858,13 @@ namespace GorgonLibrary.Editor
                     break;
                 }
             }
+
+
+			// Reroute cut/copy operation.
+			if ((deleteSource) && (_cutCopyObject != null) && (_cutCopyObject.ToString() == sourceDirectory.Name))
+			{
+				_cutCopyObject = name;
+			}
 
             destDirectory.Collapse();
             if (destDirectory.Nodes.Count == 0)
@@ -1589,6 +1894,347 @@ namespace GorgonLibrary.Editor
         }
 
 		/// <summary>
+		/// Function to retrieve files/sub directories from windows explorer.
+		/// </summary>
+		/// <param name="directoryInfo">Root directory information.</param>
+		/// <param name="destPath">New destination path.</param>
+		/// <returns>The list of enumerated files/folders.</returns>
+		private List<Tuple<string, string>> GetExplorerFiles(DirectoryInfo directoryInfo, string destPath)
+		{
+			List<Tuple<string, string>> result = new List<Tuple<string, string>>();
+
+			foreach (var directory in directoryInfo.EnumerateDirectories())
+			{
+				// Don't add hidden, encrypted or system paths.
+				if (((directory.Attributes & FileAttributes.Encrypted) == FileAttributes.Encrypted)
+					|| ((directory.Attributes & FileAttributes.Hidden) == FileAttributes.Hidden)
+					|| ((directory.Attributes & FileAttributes.System) == FileAttributes.System))
+				{
+					continue;
+				}
+
+				result.AddRange(GetExplorerFiles(directory, (destPath + directory.Name).FormatDirectory('/')));
+
+				result.Add(new Tuple<string, string>(directory.FullName.FormatDirectory(Path.DirectorySeparatorChar), destPath + directory.Name.FormatDirectory('/')));
+			}
+
+			foreach (var file in directoryInfo.EnumerateFiles())
+			{
+				// Don't add hidden, encrypted or system paths.
+				if (((file.Attributes & FileAttributes.Encrypted) == FileAttributes.Encrypted)
+					|| ((file.Attributes & FileAttributes.Hidden) == FileAttributes.Hidden)
+					|| ((file.Attributes & FileAttributes.System) == FileAttributes.System))
+				{
+					continue;
+				}
+				
+				result.Add(new Tuple<string, string>(file.FullName, destPath + file.Name));
+			}
+
+			return result;
+		}
+
+		/// <summary>
+		/// Function to asynchronously gather the files and directories for import from explorer.
+		/// </summary>		
+		/// <param name="destDir">Destination directory.</param>
+		/// <param name="files">List of files to import.</param>
+		/// <param name="sourceDirectories">Directories to copy.</param>
+		/// <param name="sourceFiles">Files to copy.</param>
+		/// <param name="ct">Cancellation token.</param>
+		/// <returns>The list of directories and files.</returns>		
+		private void GetFilesAndDirectories(GorgonFileSystemDirectory destDir, List<string> files, List<Tuple<string, string>> sourceDirectories, List<Tuple<string, string>> sourceFiles, CancellationToken ct)
+		{
+			foreach (string filePath in files)
+			{
+				DirectoryInfo pathInfo = new DirectoryInfo(filePath);
+				string newPath = (destDir.FullPath + pathInfo.Name).FormatDirectory('/');
+
+				if (ct.IsCancellationRequested)
+				{
+					sourceDirectories.Clear();
+					sourceFiles.Clear();
+					return;
+				}
+
+				// Don't add hidden, encrypted or system paths.
+				if (((pathInfo.Attributes & FileAttributes.Encrypted) == FileAttributes.Encrypted)
+					|| ((pathInfo.Attributes & FileAttributes.Hidden) == FileAttributes.Hidden)
+					|| ((pathInfo.Attributes & FileAttributes.System) == FileAttributes.System))
+				{
+					continue;
+				}
+
+				// Do not copy files under our write folder.
+				if (filePath.StartsWith(Program.ScratchFiles.WriteLocation, StringComparison.CurrentCultureIgnoreCase))
+				{
+					continue;
+				}
+
+				// If this is a sub directory, then create it.
+				if ((pathInfo.Attributes & FileAttributes.Directory) == FileAttributes.Directory)
+				{
+
+					var paths = GetExplorerFiles(pathInfo, newPath);
+					var directories = (from path in paths
+									  select new Tuple<string, string>(Path.GetDirectoryName(path.Item1).FormatDirectory(Path.DirectorySeparatorChar), 
+										  Path.GetDirectoryName(path.Item2).FormatDirectory('/'))).Distinct();
+					var filePaths = from path in paths
+									where !string.IsNullOrWhiteSpace(Path.GetFileName(path.Item2))
+										&& (!path.Item1.StartsWith(Program.ScratchFiles.WriteLocation))
+									select path;
+
+					if (directories.Count() > 0)
+					{
+						sourceDirectories.AddRange(directories);
+					}
+					if (filePaths.Count() > 0)
+					{
+						sourceFiles.AddRange(filePaths);
+					}
+				}
+				else
+				{					
+					// Don't add hidden, encrypted or system paths.
+					if (((pathInfo.Attributes & FileAttributes.Encrypted) == FileAttributes.Encrypted)
+						|| ((pathInfo.Attributes & FileAttributes.Hidden) == FileAttributes.Hidden)
+						|| ((pathInfo.Attributes & FileAttributes.System) == FileAttributes.System))
+					{
+						continue;
+					}
+
+					// Add this directory to the list.
+					sourceFiles.Add(new Tuple<string, string>(pathInfo.FullName, destDir.FullPath + pathInfo.Name));
+				}
+
+				if (ct.IsCancellationRequested)
+				{
+					sourceDirectories.Clear();
+					sourceFiles.Clear();
+					return;
+				}
+			}
+		}
+
+		/// <summary>
+		/// Function to copy files from windows explorer into our file system.
+		/// </summary>
+		/// <param name="destDir">Destination directory node.</param>
+		/// <param name="files">Paths to the files/directories to copy.</param>
+		private void AddFilesFromExplorer(TreeNodeDirectory destDir, List<string> files)
+		{			
+			List<Tuple<string, string>> sourceDirectories = new List<Tuple<string, string>>();
+			List<Tuple<string, string>> sourceFiles = new List<Tuple<string, string>>();
+			
+			using (var progForm = new formProcess())
+			{
+				using (var tokenSource = new CancellationTokenSource(Int32.MaxValue))
+				{
+					CancellationToken token = tokenSource.Token;
+
+					progForm.labelStatus.Text = "Getting file info...";
+					progForm.progressMeter.Style = ProgressBarStyle.Marquee;
+					progForm.progressMeter.Value = 0;
+					progForm.Text = "Scanning files";
+					progForm.Task = Task.Factory.StartNew(() =>
+						{
+							GetFilesAndDirectories(destDir.Directory, files, sourceDirectories, sourceFiles, token);
+						}, token);
+
+					if (progForm.ShowDialog(this) == System.Windows.Forms.DialogResult.Cancel)
+					{
+						tokenSource.Cancel();
+						return;
+					}
+				}
+			}
+
+			// If we have nothing to import, then we should leave.
+			if ((sourceFiles.Count == 0) && (sourceDirectories.Count == 0))
+			{
+				GorgonDialogs.InfoBox(this, "There were no files/directories found that could be imported.");
+				return;
+			}
+			
+			// Don't just assume we want this.
+			if (GorgonDialogs.ConfirmBox(this, sourceFiles.Count.ToString() + " files and " + sourceDirectories.Count.ToString() + " directories will be imported.  Are you sure you wish to do this?") == ConfirmationResult.No)
+			{
+				return;
+			}
+
+			using (var progForm = new formProcess())
+			{
+				using (var tokenSource = new CancellationTokenSource(Int32.MaxValue))
+				{
+					int counter = 0;
+					CancellationToken token = tokenSource.Token;
+
+					progForm.progressMeter.Style = ProgressBarStyle.Continuous;
+					progForm.progressMeter.Value = 0;
+					progForm.progressMeter.Maximum = 100;
+					progForm.progressMeter.Minimum = 0;
+					progForm.labelStatus.Text = string.Empty;
+					progForm.Text = "Importing files";
+
+					progForm.Task = Task.Factory.StartNew(() =>
+						{
+							// Begin copy procedure.
+							ConfirmationResult result = ConfirmationResult.None;
+							decimal max = sourceFiles.Count + sourceDirectories.Count;
+
+							for (int i = 0; i < sourceDirectories.Count; i++)
+							{
+								if (token.IsCancellationRequested)
+								{
+									return;
+								}
+
+								var directory = sourceDirectories[i];
+
+								progForm.UpdateStatusText("Creating '" + directory.Item2.Ellipses(45, true) + "'");
+								Program.ScratchFiles.CreateDirectory(directory.Item2);
+								progForm.SetProgress((int)(((decimal)i / max) * 100M));
+
+								if (token.IsCancellationRequested)
+								{
+									return;
+								}
+							}
+
+							for (int i = 0; i < sourceFiles.Count; i++)
+							{
+								if (token.IsCancellationRequested)
+								{
+									return;
+								}
+								var sourceFile = sourceFiles[i];
+
+								progForm.UpdateStatusText("Copying '" + sourceFile.Item2.Ellipses(45, true) + "'");
+								progForm.SetProgress((int)(((decimal)(i + sourceDirectories.Count) / max) * 100M));
+
+								// Find out if this file already exists.
+								var fileEntry = Program.ScratchFiles.GetFile(sourceFile.Item2);
+
+								if (fileEntry != null)
+								{
+									if ((result & ConfirmationResult.ToAll) != ConfirmationResult.ToAll)
+									{
+										if (progForm.InvokeRequired)
+										{
+											progForm.Invoke(new MethodInvoker(() =>
+												{
+													result = GorgonDialogs.ConfirmBox(progForm, "The file '" + sourceFile.Item2 + "' already exists.  Would you like to overwrite it?", true, true);
+												}));
+										}
+										else
+										{
+											result = GorgonDialogs.ConfirmBox(progForm, "The file '" + sourceFile.Item2 + "' already exists.  Would you like to overwrite it?", true, true);
+										}
+									}
+
+									if (token.IsCancellationRequested)
+									{
+										return;
+									}
+
+									// Stop copying.
+									if (result == ConfirmationResult.Cancel)
+									{
+										return;
+									}
+
+									// Skip this file.
+									if ((result & ConfirmationResult.No) == ConfirmationResult.No)
+									{
+										continue;
+									}
+
+									// If we have the file opened, then we have a problem.
+									if ((Program.CurrentContent != null)
+										&& (Program.CurrentContent.File == fileEntry))
+									{
+										if (progForm.InvokeRequired)
+										{
+											progForm.Invoke(new MethodInvoker(() =>
+												{
+													GorgonDialogs.ErrorBox(progForm, "The file '" + fileEntry.FullPath + "' is opened for editing.  You must close this file and reimport it if you wish to overwrite it.");
+												}));
+										}
+										else
+										{
+											GorgonDialogs.ErrorBox(progForm, "The file '" + fileEntry.FullPath + "' is opened for editing.  You must close this file and reimport it if you wish to over write it.");
+										}
+										continue;
+									}
+								}
+
+								if (token.IsCancellationRequested)
+								{
+									return;
+								}
+
+								try
+								{
+									using (var inputStream = File.Open(sourceFile.Item1, FileMode.Open, FileAccess.Read, FileShare.Read))
+									{
+										using (var outputStream = Program.ScratchFiles.OpenStream(sourceFile.Item2, true))
+										{
+											inputStream.CopyTo(outputStream);
+										}
+									}
+								}
+								catch(Exception ex)
+								{
+									// Record the error and move on.
+									if (progForm.InvokeRequired)
+									{
+										progForm.Invoke(new MethodInvoker(() =>
+											{
+												GorgonDialogs.ErrorBox(progForm, ex);
+											}));
+									}
+									else
+									{
+										GorgonDialogs.ErrorBox(progForm, ex);
+									}
+								}
+
+								// Increment the file counter.
+								counter++;
+
+								if (token.IsCancellationRequested)
+								{
+									return;
+								}
+							}
+						}, token);
+
+					if (progForm.ShowDialog(this) == System.Windows.Forms.DialogResult.Cancel)
+					{
+						tokenSource.Cancel();
+					}
+
+					if (destDir.IsExpanded)
+					{
+						destDir.Collapse();
+					}
+
+					if (destDir.Nodes.Count == 0)
+					{
+						destDir.Nodes.Add(new TreeNode("DUMMYNODE"));
+					}
+
+					destDir.Expand();
+					treeFiles.SelectedNode = destDir;
+
+					Program.EditorFileChanged = true;
+
+					GorgonDialogs.InfoBox(this, counter.ToString() + " files successfully imported.\n" + (sourceFiles.Count - counter).ToString() + " files were skipped.");
+				}
+			}			
+		}
+
+		/// <summary>
 		/// Handles the DragDrop event of the treeFiles control.
 		/// </summary>
 		/// <param name="sender">The source of the event.</param>
@@ -1607,7 +2253,29 @@ namespace GorgonLibrary.Editor
 				EditorTreeNode overNode = (EditorTreeNode)treeFiles.GetNodeAt(treeFiles.PointToClient(new Point(e.X, e.Y)));
 				TreeNodeDirectory destDir = overNode as TreeNodeDirectory;
 				TreeNodeFile destFile = overNode as TreeNodeFile;
-				
+
+				// Handle explorer files.
+				if (e.Data.GetDataPresent(DataFormats.FileDrop, false))
+				{
+					List<string> files = new List<string>((IEnumerable<string>)e.Data.GetData(DataFormats.FileDrop));
+					var excludedFiles = files.Where(item => item.StartsWith(Program.ScratchFiles.WriteLocation, StringComparison.CurrentCultureIgnoreCase));
+
+					// Don't allow files in our write path to be imported.
+					if (excludedFiles.Count() > 0)
+					{
+						foreach(var filePath in excludedFiles)
+						{
+							files.Remove(filePath);
+						}
+					}
+
+					if (files.Count > 0)
+					{
+						AddFilesFromExplorer(destDir, files);						
+					}					
+					return;
+				}
+
 				// If we're moving one of our directories or files, then process those items.
 				if (e.Data.GetDataPresent(typeof(Tuple<EditorTreeNode, MouseButtons>)))
 				{
@@ -1636,6 +2304,7 @@ namespace GorgonLibrary.Editor
                         {
                             CopyFileNode(file, destDir, file.Name, false);
                         }
+
 						return;
 					}
 				}
@@ -1653,6 +2322,28 @@ namespace GorgonLibrary.Editor
 			{
 				ValidateControls();
 				Cursor.Current = Cursors.Default;
+			}
+		}
+
+		/// <summary>
+		/// Handles the DragEnter event of the treeFiles control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="DragEventArgs"/> instance containing the event data.</param>
+		private void treeFiles_DragEnter(object sender, DragEventArgs e)
+		{
+			try
+			{
+				e.Effect = DragDropEffects.None;
+
+				if (e.Data.GetDataPresent(DataFormats.FileDrop, false)) 
+				{
+					e.Effect = DragDropEffects.Copy;
+				}
+			}
+			catch (Exception ex)
+			{
+				GorgonDialogs.ErrorBox(this, ex);
 			}
 		}
 
@@ -1675,6 +2366,19 @@ namespace GorgonLibrary.Editor
 				if (overNode == null)
 				{
 					overNode = _rootNode;
+				}
+
+				// Handle files from explorer.
+				if (e.Data.GetDataPresent(DataFormats.FileDrop, false))
+				{
+					if (destDirectory == null)
+					{
+						return;
+					}
+
+					e.Effect = DragDropEffects.Copy;
+
+					return;
 				}
 
 				if (e.Data.GetDataPresent(typeof(Tuple<EditorTreeNode, MouseButtons>)))
@@ -1746,17 +2450,18 @@ namespace GorgonLibrary.Editor
                     dialogOpenFile.InitialDirectory = Path.GetDirectoryName(Program.Settings.LastEditorFile);
                 }
 
+				var distinctExtensions = (from provider in Program.ScratchFiles.Providers
+								  from extension in provider.PreferredExtensions
+								  select extension).Distinct();
+
                 // Add extensions from file system providers.				
-                foreach (var provider in Program.ScratchFiles.Providers)
+                foreach (var extension in distinctExtensions)
                 {
-                    foreach (var extension in provider.PreferredExtensions)
+                    if (extensions.Length > 0)
                     {
-                        if (extensions.Length > 0)
-                        {
-                            extensions.Append("|");
-                        }
-                        extensions.Append(extension);
+                        extensions.Append("|");
                     }
+                    extensions.Append(extension);
                 }
                                 
                 dialogOpenFile.Filter = extensions.ToString();
