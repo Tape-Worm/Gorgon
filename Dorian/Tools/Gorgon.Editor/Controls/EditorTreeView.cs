@@ -30,6 +30,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Drawing;
+using System.Drawing.Imaging;
+using System.Drawing.Drawing2D;
 using System.ComponentModel;
 using System.Windows.Forms;
 using System.Threading;
@@ -76,6 +78,8 @@ namespace GorgonLibrary.Editor
         private Pen _focusPen = null;                       // Pen used for focus.
 		private TextBox _renameBox = null;				    // Text box used to rename a node.
 		private EditorTreeNode _editNode = null;		    // Node being edited.
+		private ColorMatrix _fadeMatrix = null;				// Fade matrix.
+		private ImageAttributes _fadeAttributes = null;		// Attributes for faded items.
         #endregion
 
 		#region Properties.
@@ -110,6 +114,12 @@ namespace GorgonLibrary.Editor
             {
                 if (disposing)
                 {
+					if (_fadeAttributes != null)
+					{
+						_fadeAttributes.Dispose();
+						_fadeAttributes = null;
+					}
+
 					if (_renameBox != null)
 					{
 						_renameBox.KeyDown -= _renameBox_KeyDown;
@@ -187,6 +197,7 @@ namespace GorgonLibrary.Editor
             TreeNodeFile nodeFile = null;
             Point position = e.Bounds.Location;
             Size size = e.Bounds.Size;
+			ImageAttributes attribs = null;
 
             if ((e.Bounds.Width == 0) || (e.Bounds.Height == 0) && ((e.Bounds.X == 0) && (e.Bounds.Y == 0)))
             {
@@ -240,6 +251,11 @@ namespace GorgonLibrary.Editor
 
             nodeFile = e.Node as TreeNodeFile;
 
+			if (node.IsCut)
+			{
+				attribs = _fadeAttributes;
+			}
+
             if ((Program.CurrentContent != null) && (nodeFile != null) && (Program.CurrentContent.File == nodeFile.File))
             {
                 // Create the open content font if it's been changed or doesn't exist.
@@ -277,9 +293,9 @@ namespace GorgonLibrary.Editor
             }
 
             position.X = position.X + 16;
-
+			
             // Draw the icon.
-            e.Graphics.DrawImage(currentImage, new Rectangle(position, currentImage.Size));
+            e.Graphics.DrawImage(currentImage, new Rectangle(position, currentImage.Size), 0, 0, currentImage.Width, currentImage.Height, GraphicsUnit.Pixel, attribs);
 
             // Offset.
 			if (currentImage != null)
@@ -449,6 +465,15 @@ namespace GorgonLibrary.Editor
         {
             SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.OptimizedDoubleBuffer, true);
             base.DrawMode = TreeViewDrawMode.OwnerDrawAll;
+
+			_fadeMatrix = new ColorMatrix(new float[][] {	new [] {1.0f, 0.0f, 0.0f, 0.0f, 0.0f}, 
+															new [] {0.0f, 1.0f, 0.0f, 0.0f, 0.0f},
+															new [] {0.0f, 0.0f, 1.0f, 0.0f, 0.0f},
+															new [] {0.0f, 0.0f, 0.0f, 0.25f, 0.0f},
+															new [] {0.0f, 0.0f, 0.0f, 0.0f, 1.0f}});
+
+			_fadeAttributes = new ImageAttributes();
+			_fadeAttributes.SetColorMatrix(_fadeMatrix, ColorMatrixFlag.Default, ColorAdjustType.Bitmap);
         }
         #endregion
     }

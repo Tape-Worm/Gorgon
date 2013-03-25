@@ -666,9 +666,14 @@ namespace GorgonLibrary.FileSystem
 			if (file == null)
 			{
 				if (!writeable)
+				{
 					throw new FileNotFoundException("Could not find the file '" + path + "'.", path);
+				}
 				else
-					file = AddFileEntry(Providers[DefaultProviderType.FullName], path, Path.GetDirectoryName(GetWritePath(path)) + Path.DirectorySeparatorChar.ToString(), GetWritePath(path), 0, 0, DateTime.Now);
+				{
+					string writePath = GetWritePath(path);
+					file = AddFileEntry(Providers[DefaultProviderType.FullName], path, Path.GetDirectoryName(writePath).FormatDirectory(Path.DirectorySeparatorChar), writePath, 0, 0, DateTime.Now);
+				}
 			}
 			
 			return file.Provider.OpenStream(file, writeable);

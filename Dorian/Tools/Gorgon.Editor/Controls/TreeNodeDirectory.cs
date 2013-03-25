@@ -54,8 +54,20 @@ namespace GorgonLibrary.Editor
             {
                 if (IsSelected)
                 {
-                    return DarkFormsRenderer.MenuHilightForeground;
+					if (!IsCut)
+					{
+						return DarkFormsRenderer.MenuHilightForeground;
+					}
+					else
+					{
+						return Color.Black;
+					}
                 }
+
+				if (IsCut)
+				{
+					return Color.Silver;
+				}
 
 				if (Directory == null)
 				{

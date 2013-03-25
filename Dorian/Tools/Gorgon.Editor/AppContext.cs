@@ -372,13 +372,16 @@ namespace GorgonLibrary.Editor
                 Program.InitializeScratch();
 				Program.ScratchFiles.AddAllProviders();
 
-                _splash.UpdateVersion("Loading previous editor file...");
                 // Load the last opened file.
                 if (!string.IsNullOrWhiteSpace(Program.Settings.LastEditorFile))
                 {
                     try
                     {
-                        Program.OpenEditorFile(Program.Settings.LastEditorFile);
+						if (Program.ScratchFiles.Providers.Any(item => item.CanReadFile(Program.Settings.LastEditorFile)))
+						{
+							_splash.UpdateVersion("Loading previous editor file...");
+							Program.OpenEditorFile(Program.Settings.LastEditorFile);
+						}
                     }
                     catch (Exception ex)
                     {

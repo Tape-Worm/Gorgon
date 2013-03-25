@@ -42,6 +42,15 @@ namespace GorgonLibrary.Editor
 	{
 		#region Properties.
 		/// <summary>
+		/// Property to set or return whether this node is active in a cut operation.
+		/// </summary>
+		public bool IsCut
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
 		/// Property to set or return the node editing state.
 		/// </summary>
 		public NodeEditState EditState
