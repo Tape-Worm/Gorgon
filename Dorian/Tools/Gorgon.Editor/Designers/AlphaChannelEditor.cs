@@ -34,12 +34,12 @@ using System.Linq;
 using System.Text;
 using System.Drawing;
 
-namespace GorgonLibrary.GorgonEditor
+namespace GorgonLibrary.Editor
 {
 	/// <summary>
 	/// Editor for the alpha channel.
 	/// </summary>
-	class AlphaChannelEditor
+	public class AlphaChannelEditor
 		: UITypeEditor
 	{
 		#region Properties.

@@ -32,12 +32,12 @@ using System.ComponentModel;
 using System.Drawing;
 using System.Globalization;
 
-namespace GorgonLibrary.GorgonEditor
+namespace GorgonLibrary.Editor
 {
 	/// <summary>
 	/// Type converter for the Alpha channel in a color.
 	/// </summary>
-	class AlphaChannelTypeConverter
+	public class AlphaChannelTypeConverter
 		: ColorConverter
 	{
 		#region Properties.

@@ -60,6 +60,17 @@ namespace GorgonLibrary.Editor
 		#endregion
 
 		#region Properties.        
+        /// <summary>
+        /// Property to return whether this content has properties that can be manipulated in the properties tab.
+        /// </summary>
+        public override bool HasProperties
+        {
+            get 
+            {
+                return false;
+            }
+        }
+
 		/// <summary>
 		/// Property to return the type of content.
 		/// </summary>

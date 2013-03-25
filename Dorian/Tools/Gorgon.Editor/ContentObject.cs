@@ -30,6 +30,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.ComponentModel;
 using System.Windows.Forms;
 using System.Drawing;
 using GorgonLibrary.FileSystem;
@@ -49,8 +50,8 @@ namespace GorgonLibrary.Editor
 		private string _filePath = string.Empty;	// Path to the file for the content.
 		#endregion
 
-		#region Properties.
-		/// <summary>
+        #region Properties.
+        /// <summary>
 		/// Property to return whether the content has unsaved changes.
 		/// </summary>
 		protected internal bool HasChanges
@@ -67,8 +68,28 @@ namespace GorgonLibrary.Editor
 		}
 
         /// <summary>
+        /// Property to return the type descriptor for this content.
+        /// </summary>
+        [Browsable(false)]
+        internal ContentTypeDescriptor TypeDescriptor
+        {
+            get;
+            private set;
+        }
+
+        /// <summary>
+        /// Property to return whether this content has properties that can be manipulated in the properties tab.
+        /// </summary>
+        [Browsable(false)]
+        public abstract bool HasProperties
+        {
+            get;
+        }
+
+        /// <summary>
         /// Property to return whether the content can be exported.
         /// </summary>
+        [Browsable(false)]
         public abstract bool CanExport
         {
             get;
@@ -77,6 +98,7 @@ namespace GorgonLibrary.Editor
 		/// <summary>
 		/// Property to return the type of content.
 		/// </summary>
+        [Browsable(false)]
 		public abstract string ContentType
 		{
 			get;
@@ -85,6 +107,7 @@ namespace GorgonLibrary.Editor
 		/// <summary>
 		/// Property to return the graphics interface for the application.
 		/// </summary>
+        [Browsable(false)]
 		public GorgonGraphics Graphics
 		{
 			get
@@ -96,6 +119,7 @@ namespace GorgonLibrary.Editor
 		/// <summary>
 		/// Property to return whether the content object supports a renderer interface.
 		/// </summary>
+        [Browsable(false)]
 		public abstract bool HasRenderer
 		{
 			get;
@@ -104,26 +128,32 @@ namespace GorgonLibrary.Editor
 		/// <summary>
 		/// Property to return the name of the content object.
 		/// </summary>
+        [Browsable(true), Category("Design"), Description("Provides a name for the content.  The name should conform to a standard file name.")]
 		public virtual string Name
 		{
 			get
 			{
 				return _name;
 			}
-			protected internal set
+			set
 			{
 				if (string.IsNullOrWhiteSpace(value))
 				{
 					return;
 				}
 
-				_name = value;
+                if (string.Compare(value, _name, true) != 0)
+                {
+                    _name = ValidateName(value);
+                    HasChanges = true;
+                }
 			}
 		}
 
 		/// <summary>
 		/// Property to return the file system file that contains this content.
 		/// </summary>
+        [Browsable(false)]
 		public GorgonFileSystemFileEntry File
 		{
 			get
@@ -183,6 +213,16 @@ namespace GorgonLibrary.Editor
 			return true;
 		}
 
+        /// <summary>
+        /// Function called when the name is about to be changed.
+        /// </summary>
+        /// <param name="proposedName">The proposed name for the content.</param>
+        /// <returns>A valid name for the content.</returns>
+        protected virtual string ValidateName(string proposedName)
+        {
+            return proposedName;
+        }
+
 		/// <summary>
 		/// Function to open the content from the file system.
 		/// </summary>
@@ -192,6 +232,13 @@ namespace GorgonLibrary.Editor
 			File = file;
 			OnOpenContent();
 		}
+
+        /// <summary>
+        /// Function called when a property is changed from the property grid.
+        /// </summary>
+        public void PropertyChange()
+        {
+        }
 
         /// <summary>
         /// Function to persist the content to a file in the file system.
@@ -243,7 +290,10 @@ namespace GorgonLibrary.Editor
 		/// </summary>
 		protected ContentObject()
 		{
-			HasChanges = false;			
+			HasChanges = false;
+
+            TypeDescriptor = new ContentTypeDescriptor(this);
+            TypeDescriptor.Enumerate(GetType());
 		}
 		#endregion
 

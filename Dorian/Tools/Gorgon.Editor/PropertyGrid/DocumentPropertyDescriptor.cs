@@ -30,16 +30,16 @@ using System.Linq;
 using System.Text;
 using System.ComponentModel;
 
-namespace GorgonLibrary.GorgonEditor
+namespace GorgonLibrary.Editor
 {
 	/// <summary>
-	/// Document property descriptor.
+	/// Content property descriptor.
 	/// </summary>
-	class DocumentPropertyDescriptor
+	class ContentPropertyDescriptor
 		: PropertyDescriptor
 	{
 		#region Variables.
-		private DocumentProperty _property = null;			// Property that is bound to the descriptor.
+		private ContentProperty _property = null;			// Property that is bound to the descriptor.
 		#endregion
 
 		#region Properties.
@@ -51,7 +51,7 @@ namespace GorgonLibrary.GorgonEditor
 		{
 			get 
 			{
-				return typeof(DocumentProperty);
+				return typeof(ContentProperty);
 			}
 		}
 
@@ -149,10 +149,10 @@ namespace GorgonLibrary.GorgonEditor
 
 		#region Constructor/Destructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="DocumentPropertyDescriptor"/> class.
+		/// Initializes a new instance of the <see cref="ContentPropertyDescriptor"/> class.
 		/// </summary>
 		/// <param name="property">The property to bind to the descriptor..</param>
-		public DocumentPropertyDescriptor(DocumentProperty property)
+		public ContentPropertyDescriptor(ContentProperty property)
 			: base(property.Name, property.RetrieveAttributes())
 		{
 			_property = property;

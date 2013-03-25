@@ -30,16 +30,16 @@ using System.Linq;
 using System.Text;
 using System.ComponentModel;
 
-namespace GorgonLibrary.GorgonEditor
+namespace GorgonLibrary.Editor
 {
 	/// <summary>
-	/// A property for a document.
+	/// A property for content.
 	/// </summary>
-	class DocumentProperty
+	class ContentProperty
 		: GorgonNamedObject
 	{
 		#region Variables.
-		private Document _owner = null;
+		private ContentObject _owner = null;
 		private PropertyDescriptor _descriptor = null;
 		private string _editorBase = string.Empty;
 		private object _defaultValue = null;
@@ -286,11 +286,11 @@ namespace GorgonLibrary.GorgonEditor
 
 		#region Constructor/Destructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="DocumentProperty"/> class.
+		/// Initializes a new instance of the <see cref="ContentProperty"/> class.
 		/// </summary>
 		/// <param name="descriptor">The property descriptor.</param>
-		/// <param name="owner">Document that owns this property.</param>
-		public DocumentProperty(PropertyDescriptor descriptor, Document owner)
+		/// <param name="owner">Content that owns this property.</param>
+		public ContentProperty(PropertyDescriptor descriptor, ContentObject owner)
 			: base(descriptor.Name)
 		{
 			_owner = owner;
