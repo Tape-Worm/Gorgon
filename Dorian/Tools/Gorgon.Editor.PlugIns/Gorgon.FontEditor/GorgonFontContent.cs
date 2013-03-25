@@ -31,6 +31,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Drawing;
+using System.ComponentModel;
 using System.Windows.Forms;
 using SlimMath;
 using GorgonLibrary;
@@ -59,6 +60,17 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 
         #region Properties.
         /// <summary>
+        /// Property to return whether this content has properties that can be manipulated in the properties tab.
+        /// </summary>
+        public override bool HasProperties
+        {
+            get 
+            {
+                return true;
+            }
+        }
+
+        /// <summary>
         /// Property to return whether the content can be exported.
         /// </summary>
         public override bool CanExport
@@ -72,6 +84,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		/// <summary>
 		/// Property to return the renderer.
 		/// </summary>
+        [Browsable(false)]
 		public Gorgon2D Renderer
 		{
 			get;
@@ -81,6 +94,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		/// <summary>
 		/// Property to return the font content.
 		/// </summary>
+        [Browsable(false)]
 		public GorgonFont Font
 		{
 			get;
@@ -224,6 +238,23 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 			this.Name = File.Name;
 			_settings = Font.Settings;
 		}
+
+        /// <summary>
+        /// Function called when the name is about to be changed.
+        /// </summary>
+        /// <param name="proposedName">The proposed name for the content.</param>
+        /// <returns>
+        /// A valid name for the content.
+        /// </returns>
+        protected override string ValidateName(string proposedName)
+        {
+            if (!proposedName.EndsWith(".gorFont", StringComparison.CurrentCultureIgnoreCase))
+            {
+                return proposedName + ".gorFont";
+            }
+
+            return proposedName;
+        }
 
 		/// <summary>
 		/// Function to create new content.

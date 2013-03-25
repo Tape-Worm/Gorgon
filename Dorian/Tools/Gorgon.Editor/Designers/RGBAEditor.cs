@@ -34,12 +34,12 @@ using System.Linq;
 using System.Text;
 using System.Drawing;
 
-namespace GorgonLibrary.GorgonEditor
+namespace GorgonLibrary.Editor
 {
 	/// <summary>
 	/// Editor for RGBA colors.
 	/// </summary>
-	class RGBAEditor
+	public class RGBAEditor
 		: UITypeEditor
 	{
 		#region Properties.

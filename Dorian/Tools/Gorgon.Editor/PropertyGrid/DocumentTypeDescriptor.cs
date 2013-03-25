@@ -31,19 +31,19 @@ using System.Text;
 using System.ComponentModel;
 using GorgonLibrary.Collections;
 
-namespace GorgonLibrary.GorgonEditor
+namespace GorgonLibrary.Editor
 {	
 	/// <summary>
 	/// A collection of properties.
 	/// </summary>
-	class DocumentTypeDescriptor
-		: GorgonBaseNamedObjectList<DocumentProperty>, ICustomTypeDescriptor
+	class ContentTypeDescriptor
+		: GorgonBaseNamedObjectList<ContentProperty>, ICustomTypeDescriptor
 	{
 		#region Properties.
 		/// <summary>
-		/// Property to return the document for this type descriptor.
+		/// Property to return the content for this type descriptor.
 		/// </summary>
-		public Document Document
+		public ContentObject Content
 		{
 			get;
 			private set;
@@ -66,7 +66,7 @@ namespace GorgonLibrary.GorgonEditor
 		/// <summary>
 		/// Property to return the property at the specified index.
 		/// </summary>
-		public DocumentProperty this[int index]
+		public ContentProperty this[int index]
 		{
 			get
 			{
@@ -77,7 +77,7 @@ namespace GorgonLibrary.GorgonEditor
 		/// <summary>
 		/// Property to return a property by its name.
 		/// </summary>
-		public DocumentProperty this[string name]
+		public ContentProperty this[string name]
 		{
 			get
 			{
@@ -93,8 +93,10 @@ namespace GorgonLibrary.GorgonEditor
 		/// <param name="type">Type of object to retrieve properties from.</param>
 		public void Enumerate(Type type)			
 		{
-			if ((type != typeof(Document)) && (!type.IsSubclassOf(typeof(Document))))
-				throw new ArgumentException("Must be of type 'Document'.", "type");
+            if (!type.IsSubclassOf(typeof(ContentObject)))
+            {
+                throw new InvalidCastException("The type is not a content type.");
+            }
 
 			var properties = TypeDescriptor.GetProperties(type).Cast<PropertyDescriptor>();
 
@@ -106,20 +108,20 @@ namespace GorgonLibrary.GorgonEditor
 				if (property.Attributes.Matches(BrowsableAttribute.No))
 					continue;
 
-				this.AddItem(new DocumentProperty(property, Document));
+				this.AddItem(new ContentProperty(property, Content));
 			}
 		}
 		#endregion
 
 		#region Constructor/Destructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="DocumentTypeDescriptor"/> class.
+		/// Initializes a new instance of the <see cref="ContentTypeDescriptor"/> class.
 		/// </summary>
 		/// <param name="owner">Owner of this type descriptor.</param>
-		public DocumentTypeDescriptor(Document owner)
+		public ContentTypeDescriptor(ContentObject owner)
 			: base(true)
 		{
-			Document = owner;	
+			Content = owner;	
 		}
 		#endregion
 
@@ -243,7 +245,7 @@ namespace GorgonLibrary.GorgonEditor
 			foreach (var propValue in visibleProperties)
 			{
 				Attribute[] propertyAttributes = propValue.RetrieveAttributes();
-				descriptors.Add(new DocumentPropertyDescriptor(propValue));
+				descriptors.Add(new ContentPropertyDescriptor(propValue));
 			}
 
 			return new PropertyDescriptorCollection(descriptors.ToArray());

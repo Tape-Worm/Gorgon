@@ -405,6 +405,19 @@ namespace GorgonLibrary.Editor
 			{
 				Gorgon.ApplicationIdleLoopMethod = Idle;
 			}
+
+            if (content.HasProperties)
+            {
+                pageProperties.Enabled = true;
+                propertyItem.SelectedObject = Program.CurrentContent.TypeDescriptor;
+                propertyItem.Refresh();
+                tabDocumentManager.SelectedTab = pageProperties;
+            }
+            else
+            {                
+                tabDocumentManager.SelectedTab = pageItems;
+                pageProperties.Enabled = false;
+            }
 		}
 
 		/// <summary>

@@ -32,12 +32,12 @@ using System.ComponentModel;
 using System.Drawing;
 using System.Globalization;
 
-namespace GorgonLibrary.GorgonEditor
+namespace GorgonLibrary.Editor
 {
 	/// <summary>
 	/// Type converter for the RGBA color scheme.
 	/// </summary>
-	class RGBATypeConverter
+	public class RGBATypeConverter
 		: ColorConverter
 	{
 		#region Properties.

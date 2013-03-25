@@ -93,6 +93,12 @@
     <Compile Include="ContentPanel.Designer.cs">
       <DependentUpon>ContentPanel.cs</DependentUpon>
     </Compile>
+    <Compile Include="Controls\controlColorPicker.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\controlColorPicker.Designer.cs">
+      <DependentUpon>controlColorPicker.cs</DependentUpon>
+    </Compile>
     <Compile Include="Controls\EditorTreeView.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -112,6 +118,11 @@
     <Compile Include="DefaultContentPanel.Designer.cs">
       <DependentUpon>DefaultContentPanel.cs</DependentUpon>
     </Compile>
+    <Compile Include="Designers\AlphaChannelEditor.cs" />
+    <Compile Include="Designers\AlphaChannelTypeConverter.cs" />
+    <Compile Include="Designers\PointFConverter.cs" />
+    <Compile Include="Designers\RGBAEditor.cs" />
+    <Compile Include="Designers\RGBATypeConverter.cs" />
     <Compile Include="formNewName.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -126,6 +137,9 @@
     </Compile>
     <Compile Include="PlugIn\EditorPlugIn.cs" />
     <Compile Include="PlugIn\EditorPlugInSettings.cs" />
+    <Compile Include="PropertyGrid\DocumentProperty.cs" />
+    <Compile Include="PropertyGrid\DocumentPropertyDescriptor.cs" />
+    <Compile Include="PropertyGrid\DocumentTypeDescriptor.cs" />
     <Compile Include="VisualStyle\DarkFormsRenderer.cs" />
     <Compile Include="formMain.cs">
       <SubType>Form</SubType>
@@ -144,6 +158,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="ContentPanel.resx">
       <DependentUpon>ContentPanel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\controlColorPicker.resx">
+      <DependentUpon>controlColorPicker.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Controls\EditorTreeView.resx">
       <DependentUpon>EditorTreeView.cs</DependentUpon>
@@ -202,6 +219,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Gorgon2.ico" />
+    <None Include="Resources\Expando.png" />
     <None Include="Resources\tree_expand_16x16.png" />
     <None Include="Resources\tree_collapse_16x16.png" />
     <None Include="Resources\new_item_16x16.png" />
@@ -241,9 +259,7 @@
       <Install>true</Install>
     </BootstrapperPackage>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Designers\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PreBuildEvent>

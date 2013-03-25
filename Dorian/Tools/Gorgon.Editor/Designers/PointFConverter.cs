@@ -36,7 +36,7 @@ using System.Windows.Forms.ComponentModel;
 using System.Windows.Forms.Design;
 using System.Reflection;
 
-namespace GorgonLibrary.GorgonEditor
+namespace GorgonLibrary.Editor
 {
 	/// <summary>
 	/// Class to extend the PointConverter class to handle floating point point values.
