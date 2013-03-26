@@ -89,6 +89,7 @@ namespace GorgonLibrary.Editor
 		: IDisposable, INamedObject
 	{
 		#region Variables.
+        private Control _contentControl = null;     // Control used to edit/display the content.
         private bool _hasChanged = false;           // Flag to indicate that the object was changed.
 		private string _name = "Content";			// Name of the content.
 		private string _filePath = string.Empty;	// Path to the file for the content.
@@ -127,6 +128,18 @@ namespace GorgonLibrary.Editor
         {
             get;
             private set;
+        }
+
+        /// <summary>
+        /// Property to return whether the content has been initialized or not.
+        /// </summary>
+        [Browsable(false)]
+        public bool IsInitialized
+        {
+            get
+            {
+                return _contentControl != null;
+            }
         }
 
         /// <summary>
@@ -309,6 +322,12 @@ namespace GorgonLibrary.Editor
         }
 
         /// <summary>
+        /// Function called when the content is being initialized.
+        /// </summary>
+        /// <returns>A control to place in the primary interface window.</returns>
+        protected abstract Control OnInitialize();
+
+        /// <summary>
         /// Function to retrieve default values for properties with the DefaultValue attribute.
         /// </summary>
         internal void SetDefaults()
@@ -376,7 +395,7 @@ namespace GorgonLibrary.Editor
 		/// <returns>TRUE to continue closing the window, FALSE to cancel the close.</returns>
 		public bool Close()
 		{
-			return OnClose();
+            return OnClose();
 		}
 
 		/// <summary>
@@ -390,7 +409,15 @@ namespace GorgonLibrary.Editor
 		/// Function to initialize the content editor.
 		/// </summary>
 		/// <returns>A control to place in the primary interface window.</returns>
-		public abstract Control InitializeContent();
+        public Control InitializeContent()
+        {
+            if (_contentControl == null)
+            {
+                _contentControl = OnInitialize();
+            }
+
+            return _contentControl;
+        }
 		#endregion
 
 		#region Constructor/Destructor.
@@ -426,7 +453,7 @@ namespace GorgonLibrary.Editor
 		/// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
 		protected virtual void Dispose(bool disposing)
 		{
-			// Nothing in here to use.
+            _contentControl = null;
 		}
 
 		/// <summary>

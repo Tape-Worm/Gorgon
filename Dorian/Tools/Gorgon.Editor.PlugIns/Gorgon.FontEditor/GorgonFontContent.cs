@@ -57,6 +57,9 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
         private bool _disposed = false;                             // Flag to indicate that the object was disposed.
 		private GorgonFontSettings _settings = null;				// Settings for the font.
 		private GorgonSwapChain _swap = null;						// Swap chain for our display.
+        private GorgonSwapChain _textDisplay = null;                // Swap chain for sample text display.
+        private GorgonText _text = null;                            // Text object.
+        private StringBuilder _sampleText = new StringBuilder(256); // Sample text.
         #endregion
 
         #region Properties.
@@ -386,7 +389,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
         protected override void UpdateContent()
         {
             // TODO: Add some error checking and such.
-            Font.Update(_settings);
+            Font.Update(_settings);            
 
             base.UpdateContent();
         }
@@ -414,11 +417,15 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 						Renderer.Dispose();
 					}
 
-					if (_swap != null)
+                    if (_textDisplay != null)
+                    {
+                        _textDisplay.Dispose();
+                    }
+
+                    if (_swap != null)
 					{
 						_swap.Dispose();
 					}
-
 
 					if (_panel != null)
 					{
@@ -430,6 +437,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 				Renderer = null;
                 Font = null;
 				_panel = null;
+                _textDisplay = null;
                 _disposed = true;
             }
 
@@ -492,16 +500,11 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 			// Open the file.
 			using (var stream = File.OpenStream(false))
 			{
-				using (var buffer = new GorgonDataStream((int)stream.Length))
-				{
-					stream.CopyTo(buffer);
-					buffer.Position = 0;
-					Font = Graphics.Fonts.FromStream(File.BaseFileName, buffer);
-				}				
-			}
+				Font = Graphics.Fonts.FromStream(File.Name, stream);
+                //_text.Font = Font;
+			}            
 
 			// Get the settings.
-			this.Name = File.Name;
 			_settings = Font.Settings;
 		}
 
@@ -554,9 +557,10 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 					_settings.AntiAliasingMode = newFont.FontAntiAliasMode;
 					_settings.FontStyle = newFont.FontStyle;
 					_settings.TextureSize = newFont.FontTextureSize;
-					_settings.Characters = newFont.FontCharacters;                    
+					_settings.Characters = newFont.FontCharacters;
 
                     Font = Graphics.Fonts.CreateFont(this.Name, _settings);
+                    //_text.Font = Font;
 
 					return true;
 				}
@@ -585,12 +589,22 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		/// </summary>
 		public override void Draw()
 		{
-			Renderer.Clear(_panel.panelTextures.BackColor);
+            Renderer.Target = _swap;
+			Renderer.Clear(_panel.panelTextures.BackColor);           
 
 			Renderer.Drawing.SmoothingMode = SmoothingMode.None;
 
-			_panel.DrawFontTexture();			
+			_panel.DrawFontTexture();
 
+            Renderer.Render(2);
+
+            Renderer.Target = _textDisplay;
+            Renderer.Clear(_panel.panelText.BackColor);
+            Renderer.Drawing.SmoothingMode = SmoothingMode.Smooth;
+            
+            _text.Text = _sampleText.ToString();
+            _text.Draw();
+            
 			Renderer.Render(2);
 		}
 
@@ -600,7 +614,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
         /// <returns>
         /// A control to place in the primary interface window.
         /// </returns>        
-        public override System.Windows.Forms.Control InitializeContent()
+        protected override Control OnInitialize()
         {
             _panel = new GorgonFontContentPanel();
 			_panel.Content = this;
@@ -613,6 +627,23 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 			});
 
 			Renderer = Graphics.Output.Create2DRenderer(_swap);
+
+            // TODO:
+            // If a previous renderer is active at this point, our system fucks up.
+            // Need to find a way to create a new renderer without breaking the current one.
+            Renderer.End2D();
+
+            _textDisplay = Graphics.Output.CreateSwapChain("FontEditor.TextDisplay", new GorgonSwapChainSettings()
+            {
+                Window = _panel.panelText,
+                Format = BufferFormat.R8G8B8A8_UIntNormal
+            });
+
+            _sampleText.Length = 0;
+            _sampleText.Append(GorgonFontEditorPlugIn.Settings.SampleText);
+
+            _text = Renderer.Renderables.CreateText("Sample.Text", Font, _sampleText.ToString());
+            _text.Color = Color.Black;
 
             return _panel;
         }

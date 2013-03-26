@@ -203,12 +203,24 @@ namespace GorgonLibrary.Editor
 			// Open the content from the file system.
 			content.OpenContent(fileNode.File);
 
-			LoadContentPane(ref content);
+            // Open the content pane.
+            LoadContentPane(ref content);
 
 			treeFiles.Refresh();
 		}
 
-		/// <summary>
+        /// <summary>
+        /// Handles the Click event of the itemEdit control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void itemEdit_Click(object sender, EventArgs e)
+        {
+            Point pos = treeFiles.PointToClient(Cursor.Position);
+            treeFiles_NodeMouseDoubleClick(this, new TreeNodeMouseClickEventArgs(treeFiles.SelectedNode, System.Windows.Forms.MouseButtons.Left, 1, pos.X, pos.Y));
+        }
+        
+        /// <summary>
 		/// Handles the NodeMouseDoubleClick event of the treeFiles control.
 		/// </summary>
 		/// <param name="sender">The source of the event.</param>
@@ -396,7 +408,7 @@ namespace GorgonLibrary.Editor
 				treeFiles.Refresh();
 			}
 
-			// Create the content resources and such.
+			// Create the content resources.
 			control = content.InitializeContent();
 
 			// We couldn't get an interface component, fall back to the default display.
@@ -1080,7 +1092,7 @@ namespace GorgonLibrary.Editor
 				}
 
                 // Reset to a wait cursor.
-                Cursor.Current = Cursors.WaitCursor;				
+                Cursor.Current = Cursors.WaitCursor;
 
                 // Show the content in the editor.
 				LoadContentPane(ref content);
@@ -1093,10 +1105,10 @@ namespace GorgonLibrary.Editor
 			}
 			catch (Exception ex)
 			{
-				GorgonDialogs.ErrorBox(this, ex);
+                // Load the default pane.
+                LoadContentPane<DefaultContent>();
 
-				// Load the default pane.
-				LoadContentPane<DefaultContent>();
+                GorgonDialogs.ErrorBox(this, ex);
 
 				if (content != null)
 				{
@@ -2553,6 +2565,10 @@ namespace GorgonLibrary.Editor
             }
             catch (Exception ex)
             {
+                if (!(Program.CurrentContent is DefaultContent))
+                {
+                    LoadContentPane<DefaultContent>();
+                }
                 GorgonDialogs.ErrorBox(this, ex);
             }
             finally

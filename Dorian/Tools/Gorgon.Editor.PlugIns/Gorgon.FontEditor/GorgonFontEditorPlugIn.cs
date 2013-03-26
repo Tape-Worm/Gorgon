@@ -148,7 +148,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
         /// <returns>
         /// A new content object interface.
         /// </returns>
-        protected override ContentObject CreateContentObject()
+        protected override ContentObject OnCreateContentObject()
         {
             return new GorgonFontContent(this);
         }
