@@ -144,8 +144,6 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 			Font cachedFont = GorgonFontEditorPlugIn.CachedFonts[fontFamily];
 
 			Items.Clear();
-			
-			//this.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawVariable;
 
 			for (int i = 0; i < fontStyles.Length; i++)
 			{

@@ -234,7 +234,7 @@ namespace GorgonLibrary.Editor
 		/// Function to perform initialization on the content.
 		/// </summary>
 		/// <returns>A control to embed into the container interface.</returns>
-		public override Control InitializeContent()
+        protected override Control OnInitialize()
 		{		
 			_container = new DefaultContentPanel();
 			_container.BackColor = DarkFormsRenderer.DarkBackground;

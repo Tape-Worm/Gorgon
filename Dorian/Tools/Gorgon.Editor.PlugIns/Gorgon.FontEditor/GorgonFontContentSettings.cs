@@ -45,6 +45,16 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		#endregion
 
 		#region Properties.
+        /// <summary>
+        /// Property to set or return the sample text.
+        /// </summary>
+        [ApplicationSetting("FontSampleText", typeof(string), "FontEditor")]
+        public string SampleText
+        {
+            get;
+            set;
+        }
+
 		/// <summary>
 		/// Property to set or return the default size type.
 		/// </summary>
@@ -88,6 +98,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 			: base("FontEditor.PlugIn", new Version(1, 0, 0, 0))
 		{
 			FontTextureSize = new Size(256, 256);
+            SampleText = "The quick brown fox jumps over the lazy dog.\n1234567890 !@#$%^&*() ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz";
 		}
 		#endregion
 	}

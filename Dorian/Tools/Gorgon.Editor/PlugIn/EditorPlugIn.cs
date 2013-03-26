@@ -153,7 +153,24 @@ namespace GorgonLibrary.Editor
         /// Function to create a content object interface.
         /// </summary>
         /// <returns>A new content object interface.</returns>
-        protected internal abstract ContentObject CreateContentObject();
+        protected abstract ContentObject OnCreateContentObject();
+
+        /// <summary>
+        /// Function to create a content object interface.
+        /// </summary>
+        /// <returns>A new content object interface.</returns>
+        internal ContentObject CreateContentObject()
+        {
+            ContentObject result = OnCreateContentObject();
+
+            if (result != null)
+            {
+                result.InitializeContent();
+            }
+
+            return result;
+        }
+
 
         /// <summary>
         /// Function to create a tool strip menu item.
@@ -231,7 +248,7 @@ namespace GorgonLibrary.Editor
     public abstract class FileWriterPlugIn
         : EditorPlugIn, IDisposable
     {
-        #region Variables.		
+        #region Variables.
 		private float _compressAmount = 0.05f;			// Compression amount.
 		private formProcess _processForm = null;		// Processing form.
         #endregion
@@ -317,7 +334,7 @@ namespace GorgonLibrary.Editor
         }
         #endregion
 
-        #region Methods.		
+        #region Methods.
 		/// <summary>
 		/// Function to write the file to the specified path.
 		/// </summary>

@@ -51,7 +51,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
         #region Variables.
 		private float _currentZoom = -1;
 		private int _currentTextureIndex = 0;
-		private GorgonFontContent _content = null;
+		private GorgonFontContent _content = null;        
         #endregion
 
         #region Properties.
@@ -64,10 +64,19 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		/// </summary>
 		private void ValidateControls()
 		{
-			labelPrevTexture.Enabled = _currentTextureIndex > 0;
-			labelNextTexture.Enabled = _currentTextureIndex < _content.Font.Textures.Count - 1;
-						
-			labelTextureCount.Text = string.Format("Texture: {0}/{1}", _currentTextureIndex + 1, _content.Font.Textures.Count);
+            if (_content.Font != null)
+            {
+                labelPrevTexture.Enabled = _currentTextureIndex > 0;
+                labelNextTexture.Enabled = _currentTextureIndex < _content.Font.Textures.Count - 1;
+
+                labelTextureCount.Text = string.Format("Texture: {0}/{1}", _currentTextureIndex + 1, _content.Font.Textures.Count);
+            }
+            else
+            {
+                labelPrevTexture.Enabled = false;
+                labelNextTexture.Enabled = false;
+                labelTextureCount.Text = "Texture: N/A";
+            }
 		}
 
 		/// <summary>
