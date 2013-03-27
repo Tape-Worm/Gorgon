@@ -49,18 +49,27 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		: ContentPanel
     {
         #region Variables.
+        private bool _disposed = false;
+        private GorgonTexture2D _pattern = null;
 		private float _currentZoom = -1;
 		private int _currentTextureIndex = 0;
 		private GorgonFontContent _content = null;
 		private GorgonText _text = null;                            
-		private StringBuilder _sampleText = new StringBuilder(256); 		
+		private StringBuilder _sampleText = new StringBuilder(256);
+        private GorgonSprite _patternSprite = null;
+        private Dictionary<GorgonGlyph, RectangleF> _glyphRegions = null;
+        private Vector2 _textureOffset = Vector2.Zero;
+        private RectangleF _textureRegion = RectangleF.Empty;
+        private GorgonGlyph _hoverGlyph = null;
+        private Vector2 _selectorBGPos = Vector2.Zero;
+        private GorgonGlyph _selectedGlyph = null;
         #endregion
 
         #region Properties.
 		
         #endregion
 
-        #region Methods.
+        #region Methods.        
 		/// <summary>
 		/// Function to perform validation of the form controls.
 		/// </summary>
@@ -89,7 +98,50 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 				buttonNextTexture.Enabled = false;
                 labelTextureCount.Text = "Texture: N/A";
             }
+
+            UpdateGlyphInfo();
 		}
+
+        /// <summary>
+        /// Function to update the glyph information.
+        /// </summary>
+        private void UpdateGlyphInfo()
+        {
+            if (_selectedGlyph != null)
+            {
+                labelSelectedGlyphInfo.Text = string.Format("Selected Glyph: {0} (U+{1})",
+                    _selectedGlyph.Character,
+                    ((ushort)_selectedGlyph.Character).FormatHex());
+            }
+            else
+            {
+                labelSelectedGlyphInfo.Text = string.Empty;
+            }
+
+            if (_hoverGlyph != null)
+            {
+                if (_selectedGlyph != null)
+                {
+                    separatorGlyphInfo.Visible = true;
+                }
+
+                labelHoverGlyphInfo.Text = string.Format("Glyph: {0} (U+{1}) Location: {2}, {3} Size: {4},{5} A:{6} B:{7}: C:{8}",
+                    _hoverGlyph.Character,
+                    ((ushort)_hoverGlyph.Character).FormatHex(),
+                    _hoverGlyph.GlyphCoordinates.X,
+                    _hoverGlyph.GlyphCoordinates.Y,
+                    _hoverGlyph.GlyphCoordinates.Width,
+                    _hoverGlyph.GlyphCoordinates.Height,
+                    _hoverGlyph.Advance.X,
+                    _hoverGlyph.Advance.Y,
+                    _hoverGlyph.Advance.Z);
+            }
+            else
+            {
+                labelHoverGlyphInfo.Text = string.Empty;
+                separatorGlyphInfo.Visible = false;
+            }
+        }
 
 		/// <summary>
 		/// Handles the Resize event of the panelText control.
@@ -115,6 +167,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 			{
 				_currentTextureIndex++;
 				ActiveControl = panelTextures;
+                GorgonFontContentPanel_Resize(this, e);
 			}
 			finally
 			{
@@ -133,6 +186,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 			{
 				_currentTextureIndex--;
 				ActiveControl = panelTextures;
+                GorgonFontContentPanel_Resize(this, e);
 			}
 			finally
 			{
@@ -163,41 +217,53 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 
 				if (_currentZoom == -1)
 				{
-					Vector2 zoomValue = _content.Font.Textures[_currentTextureIndex].Settings.Size;
-
-					// Calculate actual zoom based on window size.
-					if (panelTextures.ClientSize.Width != 0)
-					{
-						zoomValue.X = panelTextures.ClientSize.Width / zoomValue.X;
-					}
-					else
-					{
-						zoomValue.X = 1e-6f;
-					}
-
-					if (panelTextures.ClientSize.Height != 0)
-					{
-						zoomValue.Y = panelTextures.ClientSize.Height / zoomValue.Y;
-					}
-					else
-					{
-						zoomValue.Y = 1e-6f;
-					}
-
-					_currentZoom = (zoomValue.Y < zoomValue.X) ? zoomValue.Y : zoomValue.X;
-
 					dropDownZoom.Text = "Zoom: To Window";
 				}
 				else
 				{
 					dropDownZoom.Text = string.Format("Zoom: {0}%", _currentZoom * 100.0f);
 				}
+
+                GorgonFontContentPanel_Resize(this, EventArgs.Empty);
 			}
 			catch (Exception ex)
 			{
 				GorgonDialogs.ErrorBox(ParentForm, ex);
 			}
 		}
+
+        /// <summary>
+        /// Handles the MouseDown event of the panelTextures control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="MouseEventArgs"/> instance containing the event data.</param>
+        private void panelTextures_MouseDown(object sender, MouseEventArgs e)
+        {
+            try
+            {
+                // If we're inside the texture, find the glyph that we're hovering over.
+                _selectedGlyph = null;
+                if (_textureRegion.Contains(e.Location))
+                {                    
+                    foreach (var glyph in _glyphRegions)
+                    {
+                        var rect = glyph.Value;
+                        rect.X += _textureOffset.X;
+                        rect.Y += _textureOffset.Y;
+
+                        if (rect.Contains(e.Location))
+                        {
+                            _selectedGlyph = glyph.Key;
+                            break;
+                        }
+                    }
+                }
+            }
+            finally
+            {
+                ValidateControls();
+            }
+        }
 
 		/// <summary>
 		/// Handles the MouseMove event of the panelTextures control.
@@ -206,21 +272,26 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		/// <param name="e">The <see cref="MouseEventArgs"/> instance containing the event data.</param>
 		private void panelTextures_MouseMove(object sender, MouseEventArgs e)
 		{
-			var pos = panelToolbar.PointToClient(Cursor.Position);
+            _hoverGlyph = null;
 
-			if (panelToolbar.DisplayRectangle.Contains(pos))
-			{
-				panelToolbar.BringToFront();
-				panelToolbar.Enabled = true;
-			}
-			else
-			{
-				if (panelToolbar.Enabled)
-				{
-					panelToolbar.SendToBack();
-					panelToolbar.Enabled = false;
-				}
-			}
+            // If we're inside the texture, find the glyph that we're hovering over.
+            if (_textureRegion.Contains(e.Location))
+            {
+                foreach (var glyph in _glyphRegions)
+                {
+                    var rect = glyph.Value;
+                    rect.X += _textureOffset.X;
+                    rect.Y += _textureOffset.Y;
+
+                    if (rect.Contains(e.Location))
+                    {
+                        _hoverGlyph = glyph.Key;
+                        break;
+                    }
+                }
+            }
+
+            UpdateGlyphInfo();
 		}
 
 		/// <summary>
@@ -230,6 +301,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
 		private void GorgonFontContentPanel_Resize(object sender, EventArgs e)
 		{
+            GorgonTexture2D currentTexture = null;
 			try
 			{
 				if ((_content == null) || (_content.Font == null))
@@ -237,11 +309,13 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 					return;
 				}
 
+                currentTexture = _content.Font.Textures[_currentTextureIndex];
+
 				if (menuItemToWindow.Checked)
 				{
 					ValidateControls();
 
-					Vector2 zoomValue = _content.Font.Textures[_currentTextureIndex].Settings.Size;
+					Vector2 zoomValue = currentTexture.Settings.Size;
 
 					if (panelTextures.ClientSize.Width != 0)
 					{
@@ -263,6 +337,24 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 
 					_currentZoom = (zoomValue.Y < zoomValue.X) ? zoomValue.Y : zoomValue.X;
 				}
+
+                // Recalculate 
+                var glyphs = from GorgonGlyph fontGlyph in _content.Font.Glyphs
+                             where fontGlyph.Texture == currentTexture && !char.IsWhiteSpace(fontGlyph.Character)
+                             select fontGlyph;
+                
+                // Find the regions for the glyph.
+                _glyphRegions = new Dictionary<GorgonGlyph,RectangleF>();
+
+                foreach (var glyph in glyphs)
+                {
+                    var glyphRect = new RectangleF((glyph.GlyphCoordinates.Left - 1) * _currentZoom, 
+                                                    (glyph.GlyphCoordinates.Top - 1) * _currentZoom, 
+                                                    (glyph.GlyphCoordinates.Width + 1) * _currentZoom, 
+                                                    (glyph.GlyphCoordinates.Height + 1) * _currentZoom);
+
+                    _glyphRegions[glyph] = glyphRect;
+                }
 			}
 			catch (Exception ex)
 			{
@@ -284,7 +376,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 			base.OnContentPropertyChanged(propertyName, value);
 
 			// Refresh the scale.
-			GorgonFontContentPanel_Resize(this, EventArgs.Empty);
+			GorgonFontContentPanel_Resize(this, EventArgs.Empty);            
 
 			ValidateControls();
 		}
@@ -320,6 +412,20 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 			_text.Color = Color.Black;
 			_text.WordWrap = true;
 			_text.TextRectangle = new RectangleF(PointF.Empty, panelText.ClientSize);
+
+            _pattern = _content.Graphics.Textures.Create2DTextureFromGDIImage("Background.Pattern", Properties.Resources.Pattern);
+
+            _patternSprite = _content.Renderer.Renderables.CreateSprite("Pattern", new GorgonSpriteSettings()
+            {
+                Color = new GorgonColor(1, 0, 0, 0.4f),
+                Texture = _pattern,
+                TextureRegion = new RectangleF(0, 0, 1, 1),
+                Size = _pattern.Settings.Size
+            });
+
+            // Set the sprite up for wrapping the texture.
+            _patternSprite.TextureSampler.HorizontalWrapping = TextureAddressing.Wrap;
+            _patternSprite.TextureSampler.VerticalWrapping = TextureAddressing.Wrap;
 		}
 
 		/// <summary>
@@ -362,43 +468,76 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 
 			_content.Renderer.Drawing.SmoothingMode = SmoothingMode.None;
 
+            _selectorBGPos.X += (GorgonTiming.Delta * 16.0f) / _pattern.Settings.Width;
+            _selectorBGPos.Y += (GorgonTiming.Delta * 16.0f) / _pattern.Settings.Height;
+
+            if (_selectorBGPos.X > 1.0f)
+            {
+                _selectorBGPos.X = 0.0f;
+            }
+
+            if (_selectorBGPos.Y > 1.0f)
+            {
+                _selectorBGPos.Y = 0.0f;
+            }
+            _patternSprite.TextureRegion = new RectangleF(_selectorBGPos.X, _selectorBGPos.Y, _patternSprite.Size.X / _pattern.Settings.Width, _patternSprite.Size.Y / _pattern.Settings.Height);
 
 			panelTextures.AutoScrollMinSize = new Size((int)System.Math.Ceiling(_currentZoom * currentTexture.Settings.Width), (int)System.Math.Ceiling(_currentZoom * currentTexture.Settings.Height));
 
-			Vector2 textureLocation = new Vector2(panelTextures.ClientSize.Width / 2.0f - (currentTexture.Settings.Width * _currentZoom) / 2.0f,
-													panelTextures.ClientSize.Height / 2.0f - (currentTexture.Settings.Height * _currentZoom) / 2.0f);
+			_textureOffset = new Vector2(panelTextures.ClientSize.Width / 2.0f - (currentTexture.Settings.Width * _currentZoom) / 2.0f,
+								         panelTextures.ClientSize.Height / 2.0f - (currentTexture.Settings.Height * _currentZoom) / 2.0f);
 
 			if (panelTextures.HorizontalScroll.Visible)
 			{
-				textureLocation.X = panelTextures.AutoScrollPosition.X;
+				_textureOffset.X = panelTextures.AutoScrollPosition.X;
 			}
 
 			if (panelTextures.VerticalScroll.Visible)
 			{
-				textureLocation.Y = panelTextures.AutoScrollPosition.Y;
+                _textureOffset.Y = panelTextures.AutoScrollPosition.Y;
 			}
 
-			RectangleF region = new RectangleF(textureLocation.X,
-												textureLocation.Y,
-												currentTexture.Settings.Width * _currentZoom, currentTexture.Settings.Height * _currentZoom);
+            _textureRegion = new RectangleF(_textureOffset, ((Vector2)currentTexture.Settings.Size) * _currentZoom);
 
 			// Fill the background so we can clearly see the first page.
-			_content.Renderer.Drawing.FilledRectangle(region, Color.Black);
+			_content.Renderer.Drawing.FilledRectangle(_textureRegion, Color.Black);
 
 			// Draw the borders around each glyph.
-			foreach (var glyph in _content.Font.Glyphs.Where((GorgonGlyph item) => item.Texture == currentTexture && !char.IsWhiteSpace(item.Character)))
+			foreach (var glyph in _glyphRegions)
 			{
-				var glyphRect = new RectangleF(glyph.GlyphCoordinates.Left - 1, glyph.GlyphCoordinates.Top - 1, glyph.GlyphCoordinates.Width + 1, glyph.GlyphCoordinates.Height + 1);
-				glyphRect.X = glyphRect.X * _currentZoom + textureLocation.X;
-				glyphRect.Y = glyphRect.Y * _currentZoom + textureLocation.Y;
-				glyphRect.Width *= _currentZoom;
-				glyphRect.Height *= _currentZoom;
+                var glyphRect = glyph.Value;
+				glyphRect.X += _textureOffset.X;
+                glyphRect.Y += _textureOffset.Y;
 
 				_content.Renderer.Drawing.DrawRectangle(glyphRect, Color.Red);
 			}
 
 			// Draw the texture.
-			_content.Renderer.Drawing.Blit(currentTexture, region);
+            _content.Renderer.Drawing.Blit(currentTexture, _textureRegion);
+
+            if (_hoverGlyph != null)
+            {
+                var rect = _glyphRegions[_hoverGlyph];
+                rect.X += _textureOffset.X;
+                rect.Y += _textureOffset.Y;
+
+                _patternSprite.Position = rect.Location;
+                _patternSprite.Size = rect.Size;
+                _patternSprite.Color = new GorgonColor(1, 0, 0, 0.4f);
+                _patternSprite.Draw();
+            }
+
+            if ((_selectedGlyph != null) && (_selectedGlyph.Texture == currentTexture))
+            {
+                var rect = _glyphRegions[_selectedGlyph];
+                rect.X += _textureOffset.X;
+                rect.Y += _textureOffset.Y;
+
+                _patternSprite.Position = rect.Location;
+                _patternSprite.Size = rect.Size;
+                _patternSprite.Color = new GorgonColor(0.25f, 0.25f, 1.0f, 0.4f);
+                _patternSprite.Draw();
+            }
 		}		
 		#endregion
 
@@ -409,9 +548,6 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
         public GorgonFontContentPanel()
         {
             InitializeComponent();
-
-			// Move the toolbar to the rear.
-			panelToolbar.SendToBack();
         }
         #endregion
     }
