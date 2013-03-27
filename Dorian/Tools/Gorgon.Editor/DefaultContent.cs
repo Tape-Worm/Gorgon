@@ -59,7 +59,7 @@ namespace GorgonLibrary.Editor
 		private string _name = string.Empty;					// Name of the document.
 		#endregion
 
-		#region Properties.        
+		#region Properties.
         /// <summary>
         /// Property to return whether this content has properties that can be manipulated in the properties tab.
         /// </summary>
@@ -152,6 +152,18 @@ namespace GorgonLibrary.Editor
 		protected override bool OnClose()
 		{
 			return true;
+		}
+
+		/// <summary>
+		/// Function called when the content is shown for the first time.
+		/// </summary>
+		public override void Activate()
+		{
+			if (_2D != null)
+			{
+				_2D.End2D();
+				_2D.Begin2D();
+			}
 		}
 
 		/// <summary>

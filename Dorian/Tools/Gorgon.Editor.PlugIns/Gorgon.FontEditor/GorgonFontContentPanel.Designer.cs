@@ -32,10 +32,6 @@
 			this.panelText = new System.Windows.Forms.Panel();
 			this.splitContent = new System.Windows.Forms.Splitter();
 			this.panel1 = new System.Windows.Forms.Panel();
-			this.panelControls = new System.Windows.Forms.Panel();
-			this.labelNextTexture = new System.Windows.Forms.Label();
-			this.labelTextureCount = new System.Windows.Forms.Label();
-			this.labelPrevTexture = new System.Windows.Forms.Label();
 			this.panelToolbar = new System.Windows.Forms.Panel();
 			this.stripFontDisplay = new System.Windows.Forms.ToolStrip();
 			this.dropDownZoom = new System.Windows.Forms.ToolStripDropDownButton();
@@ -44,16 +40,20 @@
 			this.menuItem400 = new System.Windows.Forms.ToolStripMenuItem();
 			this.menuItem200 = new System.Windows.Forms.ToolStripMenuItem();
 			this.menuItem100 = new System.Windows.Forms.ToolStripMenuItem();
-			this.menuItemToWindow = new System.Windows.Forms.ToolStripMenuItem();
 			this.menuItem75 = new System.Windows.Forms.ToolStripMenuItem();
 			this.menuItem50 = new System.Windows.Forms.ToolStripMenuItem();
 			this.menuItem25 = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+			this.menuItemToWindow = new System.Windows.Forms.ToolStripMenuItem();
+			this.panelControls = new System.Windows.Forms.Panel();
+			this.buttonNextTexture = new System.Windows.Forms.Button();
+			this.labelTextureCount = new System.Windows.Forms.Label();
+			this.buttonPrevTexture = new System.Windows.Forms.Button();
 			this.PanelDisplay.SuspendLayout();
 			this.panel1.SuspendLayout();
-			this.panelControls.SuspendLayout();
 			this.panelToolbar.SuspendLayout();
 			this.stripFontDisplay.SuspendLayout();
+			this.panelControls.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// PanelDisplay
@@ -81,7 +81,8 @@
 			this.panelText.Location = new System.Drawing.Point(0, 456);
 			this.panelText.Name = "panelText";
 			this.panelText.Size = new System.Drawing.Size(806, 150);
-			this.panelText.TabIndex = 1;
+			this.panelText.TabIndex = 0;
+			this.panelText.Resize += new System.EventHandler(this.panelText_Resize);
 			// 
 			// splitContent
 			// 
@@ -107,61 +108,6 @@
 			this.panel1.Size = new System.Drawing.Size(806, 452);
 			this.panel1.TabIndex = 3;
 			// 
-			// panelControls
-			// 
-			this.panelControls.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(102)))), ((int)(((byte)(102)))), ((int)(((byte)(102)))));
-			this.panelControls.Controls.Add(this.labelNextTexture);
-			this.panelControls.Controls.Add(this.labelTextureCount);
-			this.panelControls.Controls.Add(this.labelPrevTexture);
-			this.panelControls.Dock = System.Windows.Forms.DockStyle.Bottom;
-			this.panelControls.ForeColor = System.Drawing.Color.White;
-			this.panelControls.Location = new System.Drawing.Point(0, 426);
-			this.panelControls.Name = "panelControls";
-			this.panelControls.Size = new System.Drawing.Size(806, 26);
-			this.panelControls.TabIndex = 1;
-			// 
-			// labelNextTexture
-			// 
-			this.labelNextTexture.Dock = System.Windows.Forms.DockStyle.Left;
-			this.labelNextTexture.Font = new System.Drawing.Font("Marlett", 9F);
-			this.labelNextTexture.ForeColor = System.Drawing.Color.Silver;
-			this.labelNextTexture.Location = new System.Drawing.Point(120, 0);
-			this.labelNextTexture.Name = "labelNextTexture";
-			this.labelNextTexture.Size = new System.Drawing.Size(22, 26);
-			this.labelNextTexture.TabIndex = 1;
-			this.labelNextTexture.Text = "4";
-			this.labelNextTexture.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-			this.labelNextTexture.MouseEnter += new System.EventHandler(this.labelNextTexture_MouseEnter);
-			this.labelNextTexture.MouseLeave += new System.EventHandler(this.labelNextTexture_MouseLeave);
-			this.labelNextTexture.MouseHover += new System.EventHandler(this.labelNextTexture_MouseEnter);
-			this.labelNextTexture.MouseMove += new System.Windows.Forms.MouseEventHandler(this.labelNextTexture_MouseMove);
-			// 
-			// labelTextureCount
-			// 
-			this.labelTextureCount.Dock = System.Windows.Forms.DockStyle.Left;
-			this.labelTextureCount.Location = new System.Drawing.Point(22, 0);
-			this.labelTextureCount.Name = "labelTextureCount";
-			this.labelTextureCount.Size = new System.Drawing.Size(98, 26);
-			this.labelTextureCount.TabIndex = 2;
-			this.labelTextureCount.Text = "Texture 0/0";
-			this.labelTextureCount.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-			// 
-			// labelPrevTexture
-			// 
-			this.labelPrevTexture.Dock = System.Windows.Forms.DockStyle.Left;
-			this.labelPrevTexture.Font = new System.Drawing.Font("Marlett", 9F);
-			this.labelPrevTexture.ForeColor = System.Drawing.Color.Silver;
-			this.labelPrevTexture.Location = new System.Drawing.Point(0, 0);
-			this.labelPrevTexture.Name = "labelPrevTexture";
-			this.labelPrevTexture.Size = new System.Drawing.Size(22, 26);
-			this.labelPrevTexture.TabIndex = 0;
-			this.labelPrevTexture.Text = "3";
-			this.labelPrevTexture.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-			this.labelPrevTexture.MouseEnter += new System.EventHandler(this.labelPrevTexture_MouseEnter);
-			this.labelPrevTexture.MouseLeave += new System.EventHandler(this.labelPrevTexture_MouseLeave);
-			this.labelPrevTexture.MouseHover += new System.EventHandler(this.labelPrevTexture_MouseEnter);
-			this.labelPrevTexture.MouseMove += new System.Windows.Forms.MouseEventHandler(this.labelPrevTexture_MouseMove);
-			// 
 			// panelToolbar
 			// 
 			this.panelToolbar.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
@@ -184,7 +130,7 @@
 			this.stripFontDisplay.Name = "stripFontDisplay";
 			this.stripFontDisplay.Size = new System.Drawing.Size(804, 25);
 			this.stripFontDisplay.Stretch = true;
-			this.stripFontDisplay.TabIndex = 2;
+			this.stripFontDisplay.TabIndex = 0;
 			this.stripFontDisplay.Text = "toolStrip1";
 			// 
 			// dropDownZoom
@@ -210,46 +156,83 @@
 			// 
 			this.menuItem1600.CheckOnClick = true;
 			this.menuItem1600.Name = "menuItem1600";
-			this.menuItem1600.Size = new System.Drawing.Size(152, 22);
+			this.menuItem1600.Size = new System.Drawing.Size(135, 22);
 			this.menuItem1600.Tag = "16";
 			this.menuItem1600.Text = "1600%";
 			this.menuItem1600.TextDirection = System.Windows.Forms.ToolStripTextDirection.Horizontal;
+			this.menuItem1600.Click += new System.EventHandler(this.zoomItem_Click);
 			// 
 			// menuItem800
 			// 
 			this.menuItem800.CheckOnClick = true;
 			this.menuItem800.Name = "menuItem800";
-			this.menuItem800.Size = new System.Drawing.Size(152, 22);
+			this.menuItem800.Size = new System.Drawing.Size(135, 22);
 			this.menuItem800.Tag = "8";
 			this.menuItem800.Text = "800%";
 			this.menuItem800.TextDirection = System.Windows.Forms.ToolStripTextDirection.Horizontal;
+			this.menuItem800.Click += new System.EventHandler(this.zoomItem_Click);
 			// 
 			// menuItem400
 			// 
 			this.menuItem400.CheckOnClick = true;
 			this.menuItem400.Name = "menuItem400";
-			this.menuItem400.Size = new System.Drawing.Size(152, 22);
+			this.menuItem400.Size = new System.Drawing.Size(135, 22);
 			this.menuItem400.Tag = "4";
 			this.menuItem400.Text = "400%";
 			this.menuItem400.TextDirection = System.Windows.Forms.ToolStripTextDirection.Horizontal;
+			this.menuItem400.Click += new System.EventHandler(this.zoomItem_Click);
 			// 
 			// menuItem200
 			// 
 			this.menuItem200.CheckOnClick = true;
 			this.menuItem200.Name = "menuItem200";
-			this.menuItem200.Size = new System.Drawing.Size(152, 22);
+			this.menuItem200.Size = new System.Drawing.Size(135, 22);
 			this.menuItem200.Tag = "2";
 			this.menuItem200.Text = "200%";
 			this.menuItem200.TextDirection = System.Windows.Forms.ToolStripTextDirection.Horizontal;
+			this.menuItem200.Click += new System.EventHandler(this.zoomItem_Click);
 			// 
 			// menuItem100
 			// 
 			this.menuItem100.CheckOnClick = true;
 			this.menuItem100.Name = "menuItem100";
-			this.menuItem100.Size = new System.Drawing.Size(152, 22);
+			this.menuItem100.Size = new System.Drawing.Size(135, 22);
 			this.menuItem100.Tag = "1";
 			this.menuItem100.Text = "100%";
 			this.menuItem100.TextDirection = System.Windows.Forms.ToolStripTextDirection.Horizontal;
+			this.menuItem100.Click += new System.EventHandler(this.zoomItem_Click);
+			// 
+			// menuItem75
+			// 
+			this.menuItem75.CheckOnClick = true;
+			this.menuItem75.Name = "menuItem75";
+			this.menuItem75.Size = new System.Drawing.Size(135, 22);
+			this.menuItem75.Tag = "0.75";
+			this.menuItem75.Text = "75%";
+			this.menuItem75.Click += new System.EventHandler(this.zoomItem_Click);
+			// 
+			// menuItem50
+			// 
+			this.menuItem50.CheckOnClick = true;
+			this.menuItem50.Name = "menuItem50";
+			this.menuItem50.Size = new System.Drawing.Size(135, 22);
+			this.menuItem50.Tag = "0.5";
+			this.menuItem50.Text = "50%";
+			this.menuItem50.Click += new System.EventHandler(this.zoomItem_Click);
+			// 
+			// menuItem25
+			// 
+			this.menuItem25.CheckOnClick = true;
+			this.menuItem25.Name = "menuItem25";
+			this.menuItem25.Size = new System.Drawing.Size(135, 22);
+			this.menuItem25.Tag = "0.25";
+			this.menuItem25.Text = "25%";
+			this.menuItem25.Click += new System.EventHandler(this.zoomItem_Click);
+			// 
+			// toolStripSeparator1
+			// 
+			this.toolStripSeparator1.Name = "toolStripSeparator1";
+			this.toolStripSeparator1.Size = new System.Drawing.Size(132, 6);
 			// 
 			// menuItemToWindow
 			// 
@@ -257,36 +240,68 @@
 			this.menuItemToWindow.CheckOnClick = true;
 			this.menuItemToWindow.CheckState = System.Windows.Forms.CheckState.Checked;
 			this.menuItemToWindow.Name = "menuItemToWindow";
-			this.menuItemToWindow.Size = new System.Drawing.Size(152, 22);
+			this.menuItemToWindow.Size = new System.Drawing.Size(135, 22);
 			this.menuItemToWindow.Tag = "-1";
 			this.menuItemToWindow.Text = "To Window";
 			this.menuItemToWindow.TextDirection = System.Windows.Forms.ToolStripTextDirection.Horizontal;
+			this.menuItemToWindow.Click += new System.EventHandler(this.zoomItem_Click);
 			// 
-			// menuItem75
+			// panelControls
 			// 
-			this.menuItem75.Name = "menuItem75";
-			this.menuItem75.Size = new System.Drawing.Size(152, 22);
-			this.menuItem75.Tag = "0.75";
-			this.menuItem75.Text = "75%";
+			this.panelControls.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(102)))), ((int)(((byte)(102)))), ((int)(((byte)(102)))));
+			this.panelControls.Controls.Add(this.buttonNextTexture);
+			this.panelControls.Controls.Add(this.labelTextureCount);
+			this.panelControls.Controls.Add(this.buttonPrevTexture);
+			this.panelControls.Dock = System.Windows.Forms.DockStyle.Bottom;
+			this.panelControls.ForeColor = System.Drawing.Color.White;
+			this.panelControls.Location = new System.Drawing.Point(0, 426);
+			this.panelControls.Name = "panelControls";
+			this.panelControls.Size = new System.Drawing.Size(806, 26);
+			this.panelControls.TabIndex = 0;
 			// 
-			// menuItem50
+			// buttonNextTexture
 			// 
-			this.menuItem50.Name = "menuItem50";
-			this.menuItem50.Size = new System.Drawing.Size(152, 22);
-			this.menuItem50.Tag = "0.5";
-			this.menuItem50.Text = "50%";
+			this.buttonNextTexture.Dock = System.Windows.Forms.DockStyle.Left;
+			this.buttonNextTexture.FlatAppearance.BorderSize = 0;
+			this.buttonNextTexture.FlatAppearance.MouseDownBackColor = System.Drawing.Color.White;
+			this.buttonNextTexture.FlatAppearance.MouseOverBackColor = System.Drawing.Color.White;
+			this.buttonNextTexture.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			this.buttonNextTexture.Font = new System.Drawing.Font("Marlett", 9F);
+			this.buttonNextTexture.ForeColor = System.Drawing.Color.Silver;
+			this.buttonNextTexture.Location = new System.Drawing.Point(120, 0);
+			this.buttonNextTexture.Name = "buttonNextTexture";
+			this.buttonNextTexture.Size = new System.Drawing.Size(22, 26);
+			this.buttonNextTexture.TabIndex = 2;
+			this.buttonNextTexture.Text = "4";
+			this.buttonNextTexture.UseVisualStyleBackColor = true;
+			this.buttonNextTexture.Click += new System.EventHandler(this.buttonNextTexture_Click);
 			// 
-			// menuItem25
+			// labelTextureCount
 			// 
-			this.menuItem25.Name = "menuItem25";
-			this.menuItem25.Size = new System.Drawing.Size(152, 22);
-			this.menuItem25.Tag = "0.25";
-			this.menuItem25.Text = "25%";
+			this.labelTextureCount.Dock = System.Windows.Forms.DockStyle.Left;
+			this.labelTextureCount.Location = new System.Drawing.Point(22, 0);
+			this.labelTextureCount.Name = "labelTextureCount";
+			this.labelTextureCount.Size = new System.Drawing.Size(98, 26);
+			this.labelTextureCount.TabIndex = 1;
+			this.labelTextureCount.Text = "Texture 0/0";
+			this.labelTextureCount.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
 			// 
-			// toolStripSeparator1
+			// buttonPrevTexture
 			// 
-			this.toolStripSeparator1.Name = "toolStripSeparator1";
-			this.toolStripSeparator1.Size = new System.Drawing.Size(149, 6);
+			this.buttonPrevTexture.Dock = System.Windows.Forms.DockStyle.Left;
+			this.buttonPrevTexture.FlatAppearance.BorderSize = 0;
+			this.buttonPrevTexture.FlatAppearance.MouseDownBackColor = System.Drawing.Color.White;
+			this.buttonPrevTexture.FlatAppearance.MouseOverBackColor = System.Drawing.Color.White;
+			this.buttonPrevTexture.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			this.buttonPrevTexture.Font = new System.Drawing.Font("Marlett", 9F);
+			this.buttonPrevTexture.ForeColor = System.Drawing.Color.Silver;
+			this.buttonPrevTexture.Location = new System.Drawing.Point(0, 0);
+			this.buttonPrevTexture.Name = "buttonPrevTexture";
+			this.buttonPrevTexture.Size = new System.Drawing.Size(22, 26);
+			this.buttonPrevTexture.TabIndex = 0;
+			this.buttonPrevTexture.Text = "3";
+			this.buttonPrevTexture.UseVisualStyleBackColor = true;
+			this.buttonPrevTexture.Click += new System.EventHandler(this.buttonPrevTexture_Click);
 			// 
 			// GorgonFontContentPanel
 			// 
@@ -295,13 +310,14 @@
 			this.Name = "GorgonFontContentPanel";
 			this.Size = new System.Drawing.Size(806, 636);
 			this.Text = "Gorgon Font - Untitled";
+			this.Resize += new System.EventHandler(this.GorgonFontContentPanel_Resize);
 			this.PanelDisplay.ResumeLayout(false);
 			this.panel1.ResumeLayout(false);
-			this.panelControls.ResumeLayout(false);
 			this.panelToolbar.ResumeLayout(false);
 			this.panelToolbar.PerformLayout();
 			this.stripFontDisplay.ResumeLayout(false);
 			this.stripFontDisplay.PerformLayout();
+			this.panelControls.ResumeLayout(false);
 			this.ResumeLayout(false);
 
         }
@@ -311,8 +327,6 @@
 		private System.Windows.Forms.Splitter splitContent;
 		private System.Windows.Forms.Panel panel1;
 		private System.Windows.Forms.Panel panelControls;
-		private System.Windows.Forms.Label labelNextTexture;
-		private System.Windows.Forms.Label labelPrevTexture;
 		private System.Windows.Forms.Label labelTextureCount;
 		internal System.Windows.Forms.Panel panelTextures;
 		internal System.Windows.Forms.Panel panelText;
@@ -329,6 +343,8 @@
 		private System.Windows.Forms.ToolStripMenuItem menuItem50;
 		private System.Windows.Forms.ToolStripMenuItem menuItem25;
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
+		private System.Windows.Forms.Button buttonNextTexture;
+		private System.Windows.Forms.Button buttonPrevTexture;
 
     }
 }

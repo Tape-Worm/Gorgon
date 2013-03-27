@@ -30,6 +30,7 @@ using System.Linq;
 using System.Text;
 using System.Drawing;
 using System.Runtime.InteropServices;
+using System.Threading;
 using SlimMath;
 using GorgonLibrary.Native;
 using GorgonLibrary.Diagnostics;
@@ -82,9 +83,12 @@ namespace GorgonLibrary.Renderers
 	/// <summary>
 	/// The renderer for 2D graphics.
 	/// </summary>
-	/// <remarks>This is the interface to handle sprites, primitives like lines, circles, ellipses, etc... and text.  The 2D renderer allows for using sprites in a 3D space.  
+	/// <remarks>This is the interface that renders 2D graphics such as sprites, lines, circles, etc...  This object is also a factory for various types of 2D renderable objects such as a <see cref="GorgonLibrary.Renderers.GorgonSprite">Sprite</see>.
+	/// <para>This renderer also handles state management for the various 2D objects through the exposed properties on the renderer object and automatically through the states from the properties on each object being rendered.</para>
 	/// <para>A developer can initialize this object with any render target as the default render target, or one will be created automatically when this object is initialized.  
-	/// Note that this does not mean that this interface is limited to one target, the target can be changed at will via the <see cref="P:GorgonLibrary.Renderers.Gorgon2D.Target">Target</see> property.</para>
+	/// Note that this does not mean that this interface is limited to one target, the target can be changed at will via the <see cref="P:GorgonLibrary.Renderers.Gorgon2D.Target">Target</see> property.  
+	/// It is important to use the 2D interface Target property as it will perform state checking to keep rendering consistent.
+	/// </para>
 	/// </remarks>
 	public class Gorgon2D
 		: IDisposable
@@ -317,6 +321,7 @@ namespace GorgonLibrary.Renderers
 		#endregion
 
 		#region Variables.
+		private PreviousStates _stateRecall = null;													// State recall cache.
 		private GorgonSwapChain _swapChain = null;													// Swap chain target.
 		private int _baseVertex = 0;																// Base vertex.		
 		private Gorgon2DVertex[] _vertexCache = null;												// List of vertices to cache.
@@ -331,8 +336,6 @@ namespace GorgonLibrary.Renderers
 		private GorgonRenderTarget _defaultTarget = null;											// Default render target.
 		private GorgonRenderTarget _target = null;													// Current render target.	
 		private GorgonInputLayout _layout = null;													// Input layout.
-		private PreviousStates[] _stateRecall = null;												// State recall.
-		private int _stateRecallPointer = 0;														// State recall pointer index.
 		private bool _multiSampleEnable = false;													// Flag to indicate that multi sampling is enabled.
 		private GorgonViewport? _viewPort = null;													// Viewport to use.
 		private Rectangle? _clip = null;															// Clipping rectangle.
@@ -890,6 +893,23 @@ namespace GorgonLibrary.Renderers
 					Graphics.Input.VertexBuffers[0] = vbBinding;
 				}
 
+#if DEBUG
+				if (Graphics.Shaders.PixelShader.Current == null)
+				{
+					throw new NullReferenceException("No pixel shader was bound to the pipeline.  Cannot render.");
+				}
+
+				if (Graphics.Shaders.VertexShader.Current == null)
+				{
+					throw new NullReferenceException("No vertex shader was bound to the pipeline.  Cannot render.");
+				}
+
+				if ((Graphics.Input.VertexBuffers[0].Stride == 0) || (Graphics.Input.VertexBuffers[0].VertexBuffer == null))
+				{
+					throw new NullReferenceException("No vertex buffer was bound to the pipeline.  Cannot render.");
+				}
+#endif
+
 				// Update buffers depending on type.
 				switch (vbBinding.VertexBuffer.BufferUsage)
 				{
@@ -1097,11 +1117,19 @@ namespace GorgonLibrary.Renderers
 		/// Function to start 2D rendering.
 		/// </summary>
 		/// <remarks>This is used to remember previous states, and set the default states for the 2D renderer.
-		/// <para>The 2D renderer uses a LIFO stack to remember the last set of states, so calling this method multiple times and calling <see cref="M:GorgonLibrary.Renderers.Gorgon2D.End2D">End2D</see> will restore the last set of render states prior to the Begin2D call.</para>
+		/// <para>Calling the <see cref="M:GorgonLibrary.Renderers.Gorgon2D.End2D">End2D</see> method will restore the last set of render states prior to the Begin2D call.</para>
+		/// <para>If this method is called more than once in succession (i.e. without a corresponding End2D), then it will do nothing.</para>
 		/// <para>This is implicitly called by the constructor and does not need to be called after creating an instance of the 2D interface.</para>
+		/// <para>If using multiple 2D renderers, this method should be called on the additional renderer before drawing anything with the additonal renderer.</para>
 		/// </remarks>
 		public void Begin2D()
 		{
+			// Do not call this if we have already cached the previous state.
+			if (_stateRecall != null)
+			{
+				return;
+			}
+
 			// Reset the cache values.
 			_baseVertex = 0;
 			_cacheStart = 0;
@@ -1111,23 +1139,8 @@ namespace GorgonLibrary.Renderers
 			_cacheWritten = 0;
 
 			// Initialize the state.
-			if (_stateRecall == null)
-			{
-				_stateRecall = new PreviousStates[16];
-				for (int i = 0; i < _stateRecall.Length; i++)
-				{
-					_stateRecall[i] = new PreviousStates();
-				}
-			}
-
-			// Resize the array if necessary.
-			if (_stateRecallPointer >= _stateRecall.Length)
-			{
-				Array.Resize<PreviousStates>(ref _stateRecall, _stateRecall.Length * 2);
-			}
-
-			_stateRecall[_stateRecallPointer].Save(Graphics);
-			_stateRecallPointer++;
+			_stateRecall = new PreviousStates();
+			_stateRecall.Save(Graphics);
 
 			// Set our default shaders.
 			VertexShader.Current = VertexShader.DefaultVertexShader;
@@ -1140,8 +1153,13 @@ namespace GorgonLibrary.Renderers
 			IsMultisamplingEnabled = Graphics.Rasterizer.States.IsMultisamplingEnabled;
 
 			// By default, turn on multi sampling over a count of 2.
-			if ((!IsMultisamplingEnabled) && (Target.Settings.MultiSample.Count > 1) && ((Graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM4_1) || (Graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM5)))
-			    IsMultisamplingEnabled = true;
+			if ((!IsMultisamplingEnabled)
+				&& (Target.Settings.MultiSample.Count > 1)
+				&& ((Graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM4_1)
+					|| (Graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM5)))
+			{
+				IsMultisamplingEnabled = true;
+			}
 
 			IsBlendingEnabled = true;
 			IsAlphaTestEnabled = true;
@@ -1175,25 +1193,24 @@ namespace GorgonLibrary.Renderers
 		/// <summary>
 		/// Function to end 2D rendering.
 		/// </summary>
-		/// <remarks>This will restore the states to their original values before the 2D renderer was started, or to when the last <see cref="M:GorgonLibrary.Renderers.Gorgon2D.Begin2D">Begin2D</see> method called.
-		/// <para>The 2D renderer uses a LIFO stack to remember the last set of states, so calling this method multiple times will rewind the stack for each Begin2D call.</para>
+		/// <remarks>This will restore the states to their original values before a 2D renderer was started, or to before the last call of the <see cref="M:GorgonLibrary.Renderers.Gorgon2D.Begin2D">Begin2D</see> method.
 		/// <para>When restoring, the viewport may not be reset when the initial render target is NULL (Nothing in VB.Net), and consequently will need to be set when a new render target is assigned to the <see cref="GorgonLibrary.Graphics.GorgonGraphics">Graphics</see> interface.</para>
 		/// </remarks>		
 		public void End2D()
 		{
-			if (_stateRecallPointer > 0)
+			if (_stateRecall != null)
 			{
-				PreviousStates states = _stateRecall[--_stateRecallPointer];
-				states.Restore(Graphics);
-
-				// Reset the cache values.
-				_baseVertex = 0;
-				_cacheStart = 0;
-				_cacheEnd = 0;
-				_renderIndexCount = 0;
-				_renderIndexStart = 0;
-				_cacheWritten = 0;
+				_stateRecall.Restore(Graphics);
+				_stateRecall = null;
 			}
+
+			// Reset the cache values.
+			_baseVertex = 0;
+			_cacheStart = 0;
+			_cacheEnd = 0;
+			_renderIndexCount = 0;
+			_renderIndexStart = 0;
+			_cacheWritten = 0;
 		}
 
 		/// <summary>
@@ -1213,8 +1230,8 @@ namespace GorgonLibrary.Renderers
 		/// <remarks>Call this method to draw the renderable objects to the target.  If this method is not called, then nothing will appear on screen.
 		/// <para>Gorgon uses a cache of vertex data to queue up what needs to be drawn in order to maintain performance.  However, if this queue gets 
 		/// full or the state (i.e. Texture, Blending mode, etc...) changes then this method is called implicitly.</para>
-		/// <para>In previous versions of Gorgon, this was automatic (on the primary screen) since the graphics library had control over the main loop.  Since it does not any more, the 
-		/// user is now responsible for calling this method.</para>
+		/// <para>In previous versions of Gorgon, this was automatic (on the primary screen) because the graphics library had control over the main loop.  
+		/// Since it does not any more, the user is now responsible for calling this method.</para>
 		/// <para>The <paramref name="interval"/> parameter is the number of vertical retraces to wait.  If the <paramref name="flip"/> parameter is FALSE, then the interval parameter has no effect.</para>
 		/// </remarks>
 		public void Render(bool flip, int interval)

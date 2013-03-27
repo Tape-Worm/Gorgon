@@ -96,7 +96,10 @@ namespace GorgonLibrary.Editor
 
             itemOpen.Enabled = Program.ScratchFiles.Providers.Count > 1;
             itemSaveAs.Enabled = (Program.WriterPlugIns.Count > 0);
-            itemSave.Enabled = !string.IsNullOrWhiteSpace(Program.EditorFilePath) && (Program.EditorFileChanged) && itemSaveAs.Enabled;
+            itemSave.Enabled = !string.IsNullOrWhiteSpace(Program.EditorFilePath) 
+								&& ((Program.EditorFileChanged) 
+									|| ((Program.CurrentContent != null) && (Program.CurrentContent.HasChanges)))
+								&& itemSaveAs.Enabled;
 
             // Ensure we have plug-ins that can import.
 			itemImport.Enabled = Program.ContentPlugIns.Any(item => item.Value.SupportsImport);
@@ -424,7 +427,10 @@ namespace GorgonLibrary.Editor
 
 			// Add to the main interface.
 			Program.CurrentContent = content;
-			splitPanel1.Controls.Add(control);			
+			splitPanel1.Controls.Add(control);
+
+			// Activate the content.
+			content.Activate();
 
 			// If the current content has a renderer, then activate it.
 			// Otherwise, turn it off to conserve cycles.
@@ -459,30 +465,34 @@ namespace GorgonLibrary.Editor
         {
             ContentObject content = sender as ContentObject;
 
-            try
-            {
-                // If we change the name of an item, we must rename it.
-                switch (e.PropertyName.ToLower())
-                {
-                    case "name":
-                        // Find our node that corresponds to this content.
-                        var sourceNode = FindNode(content.File.FullPath) as TreeNodeFile;
-                        var destNode = sourceNode.Parent as TreeNodeDirectory;
+			try
+			{
+				// If we change the name of an item, we must rename it.
+				switch (e.PropertyName.ToLower())
+				{
+					case "name":
+						// Find our node that corresponds to this content.
+						var sourceNode = FindNode(content.File.FullPath) as TreeNodeFile;
+						var destNode = sourceNode.Parent as TreeNodeDirectory;
 
-                        if ((sourceNode != null) && (destNode != null))
-                        {
-                            CopyFileNode(sourceNode, destNode, e.Value.ToString(), true);
-                        }
-                        break;
-                    default:
-                        Program.EditorFileChanged = true;
-                        break;
-                }
-            }
-            catch (Exception ex)
-            {
-                GorgonDialogs.ErrorBox(this, ex);
-            }
+						if ((sourceNode != null) && (destNode != null))
+						{
+							CopyFileNode(sourceNode, destNode, e.Value.ToString(), true);
+						}
+						break;
+					default:
+						Program.EditorFileChanged = true;
+						break;
+				}
+			}
+			catch (Exception ex)
+			{
+				GorgonDialogs.ErrorBox(this, ex);
+			}
+			finally
+			{
+				ValidateControls();
+			}
         }
 
 		/// <summary>

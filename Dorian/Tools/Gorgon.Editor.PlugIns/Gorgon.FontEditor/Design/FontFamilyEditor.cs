@@ -78,7 +78,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 
 				editorSerivce.DropDownControl(fonts);
 
-				if (string.Compare(fonts.SelectedItem.ToString(), value.ToString(), true) != 0)
+				if ((fonts.SelectedItem != null) && (string.Compare(fonts.SelectedItem.ToString(), value.ToString(), true) != 0))
 					return fonts.SelectedItem.ToString();
 
 				return value;

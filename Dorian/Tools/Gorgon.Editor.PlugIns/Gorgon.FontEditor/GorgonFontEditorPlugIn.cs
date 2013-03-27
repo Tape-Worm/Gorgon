@@ -98,7 +98,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 			{
 				Font newFont = null;
 
-				if (!fonts.ContainsKey(family.Name))
+				if (!fonts.ContainsKey(family.Name.ToLower()))
 				{
 					if (family.IsStyleAvailable(FontStyle.Regular))
 						newFont = new Font(family, 16.0f, FontStyle.Regular, GraphicsUnit.Pixel);
@@ -115,7 +115,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 
 					// Only add if we could use the regular, bold or italic style.
 					if (newFont != null)
-						fonts.Add(family.Name, newFont);
+						fonts.Add(family.Name.ToLower(), newFont);
 				}
 			}
 

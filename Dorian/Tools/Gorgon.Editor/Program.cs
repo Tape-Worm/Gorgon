@@ -423,6 +423,12 @@ namespace GorgonLibrary.Editor
                 throw new IOException("Cannot write the file '" + path + "'.  There is no plug-in available to write the file with.");                
             }
 
+			// Save any outstanding edits on the current content.
+			if ((Program.CurrentContent != null) && (Program.CurrentContent.HasChanges))
+			{
+				Program.CurrentContent.Persist(Program.CurrentContent.File);
+			}
+
             // Write the meta data file to the file system.
             using (var metaDataStream = ScratchFiles.OpenStream(MetaDataFilePath, true))
             {

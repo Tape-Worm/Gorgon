@@ -58,8 +58,6 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		private GorgonFontSettings _settings = null;				// Settings for the font.
 		private GorgonSwapChain _swap = null;						// Swap chain for our display.
         private GorgonSwapChain _textDisplay = null;                // Swap chain for sample text display.
-        private GorgonText _text = null;                            // Text object.
-        private StringBuilder _sampleText = new StringBuilder(256); // Sample text.
         #endregion
 
         #region Properties.
@@ -78,9 +76,9 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
                 if (_settings.BaseColors[0].ToColor() != value)
                 {
                     _settings.BaseColors = new GorgonColor[] { value };
-                    OnContentPropertyChanged("BaseColor", value);
                     UpdateContent();
-                }
+					OnContentPropertyChanged("BaseColor", value);
+				}
             }
         }
 
@@ -104,9 +102,9 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
                 if (_settings.OutlineSize != value)
                 {
                     _settings.OutlineSize = value;
-                    OnContentPropertyChanged("OutlineSize", value);
                     UpdateContent();
-                }
+					OnContentPropertyChanged("OutlineSize", value);
+				}
             }
         }
 
@@ -125,9 +123,9 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
                 if (_settings.OutlineColor.ToColor() != value)
                 {
                     _settings.OutlineColor = value;
-                    OnContentPropertyChanged("OutlineColor", value);
                     UpdateContent();
-                }
+					OnContentPropertyChanged("OutlineColor", value);
+				}
             }
         }
 
@@ -150,11 +148,38 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
                 {
                     _settings.Size = value;
                     CheckTextureSize();
-                    OnContentPropertyChanged("FontSize", value);
                     UpdateContent();
-                }
+					OnContentPropertyChanged("FontSize", value);
+				}
             }
         }
+
+		/// <summary>
+		/// Property to set or return the packing space between glyphs on the texture.
+		/// </summary>
+		[Category("Design"), Description("Specifies the number of pixels between each glyph on the texture."), DefaultValue(1)]
+		public int PackingSpace
+		{
+			get
+			{
+				return _settings.PackingSpacing;
+			}
+			set
+			{
+				if (value < 0)
+				{
+					value = 0;
+				}
+
+				if (_settings.PackingSpacing != value)
+				{
+					_settings.PackingSpacing = value;
+					CheckTextureSize();
+					UpdateContent();
+					OnContentPropertyChanged("PackingSpace", value);
+				}
+			}
+		}
 
         /// <summary>
         /// Property to set or return the texture size for the font.
@@ -181,9 +206,9 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
                 {
                     _settings.TextureSize = value;
                     CheckTextureSize();
-                    OnContentPropertyChanged("FontTextureSize", value);
                     UpdateContent();
-                }
+					OnContentPropertyChanged("FontTextureSize", value);
+				}
             }
         }
 
@@ -202,13 +227,39 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
                 if (_settings.AntiAliasingMode != value)
                 {
                     _settings.AntiAliasingMode = value;
-                    OnContentPropertyChanged("FontAntiAliasMode", value);
                     UpdateContent();
-                }
+					OnContentPropertyChanged("FontAntiAliasMode", value);
+				}
             }
         }
 
-        /// <summary>
+		/// <summary>
+		/// Property to set or return the contrast of the glyphs.
+		/// </summary>
+		[Category("Appearance"), Description("Sets the contrast for anti-aliased glyphs."), DefaultValue(4)]
+		public int TextContrast
+		{
+			get
+			{
+				return _settings.TextContrast;
+			}
+			set
+			{
+				if (value < 0)
+					value = 0;
+				if (value > 12)
+					value = 12;
+
+				if (value != _settings.TextContrast)
+				{
+					_settings.TextContrast = value;
+					UpdateContent();
+					OnContentPropertyChanged("TextContrast", value);
+				}
+			}
+		}
+		
+		/// <summary>
         /// Property to set or return whether the font size should be in point size or pixel size.
         /// </summary>
         [DisplayName("FontHeightMode"), Category("Design"), Description("Sets whether to use points or pixels to determine the size of the font."), DefaultValue(typeof(FontHeightMode), "Points")]
@@ -224,9 +275,9 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
                 {
                     _settings.FontHeightMode = value;
                     CheckTextureSize();
-                    OnContentPropertyChanged("UsePointSize", value);
                     UpdateContent();
-                }
+					OnContentPropertyChanged("UsePointSize", value);
+				}
             }
         }
 
@@ -249,9 +300,9 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
                 {
                     _settings.FontFamilyName = value;
                     CheckTextureSize();
-                    OnContentPropertyChanged("FontFamily", value);
                     UpdateContent();
-                }
+					OnContentPropertyChanged("FontFamily", value);
+				}
             }
         }
 
@@ -274,9 +325,9 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
                 {
                     _settings.Characters = value;
                     CheckTextureSize();
-                    OnContentPropertyChanged("Characters", value);
                     UpdateContent();
-                }
+					OnContentPropertyChanged("Characters", value);
+				}
             }
         }
 
@@ -296,9 +347,9 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
                 {
                     _settings.FontStyle = value;
                     CheckTextureSize();
-                    OnContentPropertyChanged("FontStyle", value);
                     UpdateContent();
-                }
+					OnContentPropertyChanged("FontStyle", value);
+				}
             }
         }
 
@@ -388,8 +439,75 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
         /// </summary>
         protected override void UpdateContent()
         {
-            // TODO: Add some error checking and such.
-            Font.Update(_settings);            
+			GorgonFont newFont = null;
+
+			if (!GorgonFontEditorPlugIn.CachedFonts.ContainsKey(FontFamily.ToLower()))
+			{
+				throw new KeyNotFoundException("The font family '" + FontFamily + "' could not be found.");
+			}
+
+			Font cachedFont = GorgonFontEditorPlugIn.CachedFonts[FontFamily.ToLower()];
+			FontStyle[] styles = Enum.GetValues(typeof(FontStyle)) as FontStyle[];
+
+			// Remove styles that won't work.
+			for (int i = 0; i < styles.Length; i++)
+			{
+				if ((!cachedFont.FontFamily.IsStyleAvailable(styles[i])) && ((_settings.FontStyle & styles[i]) == styles[i]))
+					_settings.FontStyle &= ~styles[i];
+			}
+
+			// If we're left with regular and the font doesn't support it, then use the next available style.
+			if ((!cachedFont.FontFamily.IsStyleAvailable(System.Drawing.FontStyle.Regular)) && (_settings.FontStyle == System.Drawing.FontStyle.Regular))
+			{
+				for (int i = 0; i < styles.Length; i++)
+				{
+					if (cachedFont.FontFamily.IsStyleAvailable(styles[i]))
+					{
+						_settings.FontStyle |= styles[i];
+						break;
+					}
+				}
+			}
+
+			try
+			{
+				newFont = Graphics.Fonts.CreateFont(Name, new GorgonFontSettings()
+				{
+					AntiAliasingMode = _settings.AntiAliasingMode,
+					BaseColors = _settings.BaseColors,
+					Brush = _settings.Brush,
+					Characters = _settings.Characters,
+					DefaultCharacter = _settings.DefaultCharacter,
+					FontFamilyName = _settings.FontFamilyName,
+					FontHeightMode = _settings.FontHeightMode,
+					FontStyle = _settings.FontStyle,
+					OutlineColor = _settings.OutlineColor,
+					OutlineSize = _settings.OutlineSize,
+					PackingSpacing = _settings.PackingSpacing,
+					Size = _settings.Size,
+					TextContrast = _settings.TextContrast,
+					TextureSize = _settings.TextureSize
+				});
+			}
+			catch
+			{
+				// Restore the settings.
+				if (Font != null)
+				{
+					_settings = Font.Settings;
+				}
+
+				throw;
+			}
+
+			// Wipe out the font.
+			if (Font != null)
+			{
+				Font.Dispose();
+				Font = null;
+			}
+
+			Font = newFont;
 
             base.UpdateContent();
         }
@@ -449,6 +567,8 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
         /// </summary>
         protected override void OnHasChangesUpdated()
         {
+			base.OnHasChangesUpdated();
+
             if (_panel != null)
             {
 				_panel.Text = "Gorgon Font - " + Name;
@@ -501,7 +621,6 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 			using (var stream = File.OpenStream(false))
 			{
 				Font = Graphics.Fonts.FromStream(File.Name, stream);
-                //_text.Font = Font;
 			}            
 
 			// Get the settings.
@@ -560,7 +679,6 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 					_settings.Characters = newFont.FontCharacters;
 
                     Font = Graphics.Fonts.CreateFont(this.Name, _settings);
-                    //_text.Font = Font;
 
 					return true;
 				}
@@ -585,38 +703,14 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		}
 
 		/// <summary>
-		/// Function to draw the interface for the content editor.
+		/// Function to initialize the content editor.
 		/// </summary>
-		public override void Draw()
+		/// <returns>
+		/// A control to place in the primary interface window.
+		/// </returns>        
+		protected override Control OnInitialize()
 		{
-            Renderer.Target = _swap;
-			Renderer.Clear(_panel.panelTextures.BackColor);           
-
-			Renderer.Drawing.SmoothingMode = SmoothingMode.None;
-
-			_panel.DrawFontTexture();
-
-            Renderer.Render(2);
-
-            Renderer.Target = _textDisplay;
-            Renderer.Clear(_panel.panelText.BackColor);
-            Renderer.Drawing.SmoothingMode = SmoothingMode.Smooth;
-            
-            _text.Text = _sampleText.ToString();
-            _text.Draw();
-            
-			Renderer.Render(2);
-		}
-
-        /// <summary>
-        /// Function to initialize the content editor.
-        /// </summary>
-        /// <returns>
-        /// A control to place in the primary interface window.
-        /// </returns>        
-        protected override Control OnInitialize()
-        {
-            _panel = new GorgonFontContentPanel();
+			_panel = new GorgonFontContentPanel();
 			_panel.Content = this;
 			_panel.Text = "Gorgon Font - " + Name;
 
@@ -628,25 +722,47 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 
 			Renderer = Graphics.Output.Create2DRenderer(_swap);
 
-            // TODO:
-            // If a previous renderer is active at this point, our system fucks up.
-            // Need to find a way to create a new renderer without breaking the current one.
-            Renderer.End2D();
+			_textDisplay = Graphics.Output.CreateSwapChain("FontEditor.TextDisplay", new GorgonSwapChainSettings()
+			{
+				Window = _panel.panelText,
+				Format = BufferFormat.R8G8B8A8_UIntNormal
+			});
 
-            _textDisplay = Graphics.Output.CreateSwapChain("FontEditor.TextDisplay", new GorgonSwapChainSettings()
-            {
-                Window = _panel.panelText,
-                Format = BufferFormat.R8G8B8A8_UIntNormal
-            });
+			_panel.CreateResources();
 
-            _sampleText.Length = 0;
-            _sampleText.Append(GorgonFontEditorPlugIn.Settings.SampleText);
+			return _panel;
+		}
 
-            _text = Renderer.Renderables.CreateText("Sample.Text", Font, _sampleText.ToString());
-            _text.Color = Color.Black;
+		/// <summary>
+		/// Function called when the content is shown for the first time.
+		/// </summary>
+		public override void Activate()
+		{
+			if (Renderer != null)
+			{
+				Renderer.End2D();
+				Renderer.Begin2D();
+			}
+		}
 
-            return _panel;
-        }
+		/// <summary>
+		/// Function to draw the interface for the content editor.
+		/// </summary>
+		public override void Draw()
+		{
+            Renderer.Target = _swap;
+			Renderer.Clear(_panel.panelTextures.BackColor);           
+
+			_panel.DrawFontTexture();
+
+            Renderer.Render(2);
+
+            Renderer.Target = _textDisplay;
+
+			_panel.DrawText();
+            
+			Renderer.Render(2);
+		}
         #endregion
 
         #region Constructor/Destructor.
