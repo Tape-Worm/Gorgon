@@ -484,10 +484,14 @@ namespace GorgonLibrary.Renderers
 			Color = settings.Color;
 			Angle = settings.InitialAngle;
 			// Ensure scale is not set to 0.
-			if (settings.InitialScale.X == 0.0f)
-				settings.InitialScale.X = 1.0f;
-			if (settings.InitialScale.Y == 0.0f)
-				settings.InitialScale.Y = 1.0f;
+            if (settings.InitialScale.X == 0.0f)
+            {
+                settings.InitialScale = new Vector2(1.0f, settings.InitialScale.Y);
+            }
+            if (settings.InitialScale.Y == 0.0f)
+            {
+                settings.InitialScale = new Vector2(settings.InitialScale.X, 1.0f);
+            }
 			Scale = settings.InitialScale;
 			Position = settings.InitialPosition;
 			Texture = settings.Texture;

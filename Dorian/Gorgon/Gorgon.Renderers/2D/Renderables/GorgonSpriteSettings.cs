@@ -37,42 +37,133 @@ namespace GorgonLibrary.Renderers
 	/// <summary>
 	/// Settings for a sprite object.
 	/// </summary>
-	public struct GorgonSpriteSettings
-	{
-		#region Variables.
-		/// <summary>
-		/// Initial anchor for pivoting the sprite.
+	public class GorgonSpriteSettings
+    {
+        #region Variables.
+        private Vector2 _initialScale = new Vector2(1);
+        private Vector2 _size = Vector2.Zero;
+        #endregion
+
+        #region Properties.
+        /// <summary>
+		/// Property to set or return the initial anchor for pivoting the sprite.
 		/// </summary>
-		public Vector2 Anchor;
+        public Vector2 Anchor
+        {
+            get;
+            set;
+        }
+
 		/// <summary>
-		/// Initial color of the sprite.
+		/// Property to set or return the initial color of the sprite.
 		/// </summary>
-		public GorgonColor Color;
+        /// <remarks>The default value is White (ARGB = 1,1,1,1).</remarks>
+        public GorgonColor Color
+        {
+            get;
+            set;
+        }
+
 		/// <summary>
-		/// Initial size of the sprite.
+		/// Property to set or return the initial size of the sprite.
 		/// </summary>
-		public Vector2 Size;
+        public Vector2 Size
+        {
+            get
+            {
+                return _size;
+            }
+            set
+            {
+                if (value.X < 0)
+                {
+                    value.X = 0;
+                }
+                if (value.Y < 0)
+                {
+                    value.Y = 0;
+                }
+
+                _size = value;
+            }
+        }
+
 		/// <summary>
-		/// Texture to apply to the sprite.
+		/// Property to set or return the texture to apply to the sprite.
 		/// </summary>
-		public GorgonTexture2D Texture;
+        public GorgonTexture2D Texture
+        {
+            get;
+            set;
+        }
+
 		/// <summary>
-		/// Texture region to map to the sprite.
+		/// Property to set or return the texture region to map to the sprite.
 		/// </summary>
 		/// <remarks>This value is in texture space (0..1).</remarks>
-		public RectangleF TextureRegion;
+        public RectangleF TextureRegion
+        {
+            get;
+            set;
+        }
+
 		/// <summary>
-		/// Initial position of the sprite.
+		/// Property to set or return the initial position of the sprite.
 		/// </summary>
-		public Vector2 InitialPosition;
+        public Vector2 InitialPosition
+        {
+            get;
+            set;
+        }
+
 		/// <summary>
-		/// Initial scale of the sprite.
+		/// Property to set or return the initial scale of the sprite.
 		/// </summary>
-		public Vector2 InitialScale;
+        public Vector2 InitialScale
+        {
+            get
+            {
+                return _initialScale;
+            }
+            set
+            {
+                if (value.X == 0.0f)
+                {
+                    value.X = 1e-6f;
+                }
+
+                if (value.Y == 0.0f)
+                {
+                    value.Y = 1e-6f;
+                }
+
+                _initialScale = value;
+            }
+        }
+
 		/// <summary>
-		/// Initial angle of the sprite.
+		/// Property to set or return the initial angle of the sprite.
 		/// </summary>
-		public float InitialAngle;
+        public float InitialAngle
+        {
+            get;
+            set;
+        }
 		#endregion
-	}
+
+        #region Constructor.
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GorgonSpriteSettings"/> class.
+        /// </summary>
+        public GorgonSpriteSettings()
+        {
+            Color = GorgonColor.White;
+            InitialPosition = Vector2.Zero;
+            InitialAngle = 0.0f;
+            TextureRegion = new RectangleF(0, 0, 1.0f, 1.0f);
+            Texture = null;
+            Anchor = Vector2.Zero;
+        }
+        #endregion
+    }
 }
