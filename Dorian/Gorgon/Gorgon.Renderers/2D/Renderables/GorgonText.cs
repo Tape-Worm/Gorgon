@@ -711,18 +711,35 @@ namespace GorgonLibrary.Renderers
 			GorgonGlyph glyph = null;
 			float pos = 0;
 			int outlineSize = 0;
+			RectangleF region = ClipRegion;
+
+			// If we don't have a font, then we have nothing to wrap.  Yet.
+			if (_font == null)
+			{
+				return;
+			}
 
 			if (_font.Settings.OutlineColor.Alpha > 0)
 				outlineSize = _font.Settings.OutlineSize;
 
-			if (pos >= _textRect.Value.Width)
+			if (pos >= region.Width)
 				return;
 
 			_formattedText.Append(_text);
+			_formattedText.Replace("\n\r", "\n");
+			_formattedText.Replace("\r\n", "\n");
+			_formattedText.Replace("\r", "\n");
 
 			while (i < _formattedText.Length)
 			{
 				character = _formattedText[i];
+
+				if (character == '\n')
+				{
+					pos = 0;
+					i++;
+					continue;
+				}
 
 				if (!_font.Glyphs.Contains(character))
 					character = _font.Settings.DefaultCharacter;
@@ -730,23 +747,16 @@ namespace GorgonLibrary.Renderers
 				glyph = _font.Glyphs[character];
 
 				// If we can't fit a single glyph into the boundaries, then just leave.  Else we'll have an infinite loop on our hands.
-				if (glyph.GlyphCoordinates.Width > _textRect.Value.Width)
+				if (glyph.GlyphCoordinates.Width > region.Width)
 					return;
-
-				if (character == '\n')
-				{
-					pos = _textRect.Value.Left;
-					i++;
-					continue;
-				}
 
 				switch (character)
 				{
 					case ' ':
-						pos += glyph.GlyphCoordinates.Width;
+						pos += glyph.GlyphCoordinates.Width - 1;
 						break;
 					case '\t':
-						pos += glyph.GlyphCoordinates.Width * TabSpaces;
+						pos += (glyph.GlyphCoordinates.Width - 1) * TabSpaces;
 						break;
 					default:
 						float kernValue = glyph.Advance.Z;
@@ -768,7 +778,7 @@ namespace GorgonLibrary.Renderers
 						break;
 				}
 
-				if (pos > ClipRegion.Right)
+				if (pos > region.Width)
 				{
 					int j = i;
 
@@ -810,13 +820,17 @@ namespace GorgonLibrary.Renderers
 		{
 			_formattedText.Length = 0;
 			if ((!_textRect.HasValue) || (!_wordWrap))
+			{
 				_formattedText.Append(_text);
+				_formattedText.Replace("\n\r", "\n");
+				_formattedText.Replace("\r\n", "\n");
+				_formattedText.Replace("\r", "\n");
+			}
 			else
+			{
 				WordWrapText();
+			}
 
-			_formattedText.Replace("\n\r", "\n");
-			_formattedText.Replace("\r\n", "\n");
-			_formattedText.Replace("\r", "\n");
 			_lines.Clear();
 			_lines.AddRange(_formattedText.ToString().Split('\n'));
 			_size = GetTextSize();
@@ -894,7 +908,7 @@ namespace GorgonLibrary.Renderers
 			Vector2 result = Vector2.Zero;
 			float outlineSize = 0;
 
-			if ((_text.Length == 0) || (_formattedText.Length == 0) || (_lines.Count == 0))
+			if ((_text.Length == 0) || (_formattedText.Length == 0) || (_lines.Count == 0) || (_font == null))
 				return result;
 
 			if (_font.Settings.OutlineColor.Alpha > 0)

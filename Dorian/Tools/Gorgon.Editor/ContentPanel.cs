@@ -72,10 +72,21 @@ namespace GorgonLibrary.Editor
             }
             set
             {
+				if (_content != null)
+				{
+					_content.ContentPropertyChanged -= _content_ContentPropertyChanged;
+				}
+
                 _content = value;
+
+				if (_content != null)
+				{
+					_content.ContentPropertyChanged += _content_ContentPropertyChanged;
+				}
+
                 OnContentChanged();
             }
-		}        
+		}
 
 		/// <summary>
 		/// Property to set or return the text caption for this control.
@@ -181,6 +192,16 @@ namespace GorgonLibrary.Editor
 		}
 
 		/// <summary>
+		/// Function called when a property is changed on the related content for this panel.
+		/// </summary>
+		/// <param name="sender">Content that sent the event</param>
+		/// <param name="e">Event parameters.</param>
+		private void _content_ContentPropertyChanged(object sender, ContentPropertyChangedEventArgs e)
+		{
+			OnContentPropertyChanged(e.PropertyName, e.Value);
+		}        
+
+		/// <summary>
 		/// Function called when the close button is clicked.
 		/// </summary>
 		protected virtual void OnCloseClicked()
@@ -194,6 +215,15 @@ namespace GorgonLibrary.Editor
 					form.LoadContentPane<DefaultContent>();
 				}
 			}
+		}
+
+		/// <summary>
+		/// Function called when a property is changed on the related content.
+		/// </summary>
+		/// <param name="propertyName">Name of the property.</param>
+		/// <param name="value">New value assigned to the property.</param>
+		protected internal virtual void OnContentPropertyChanged(string propertyName, object value)
+		{
 		}
 
         /// <summary>

@@ -337,9 +337,6 @@ namespace GorgonLibrary.Editor.GorPackWriterPlugIn
 
                 try
                 {
-					// Turn off cancellation at this point.
-					CanCancel(false);
-					
 					// Build file system.
                     BuildFileSystem();
 

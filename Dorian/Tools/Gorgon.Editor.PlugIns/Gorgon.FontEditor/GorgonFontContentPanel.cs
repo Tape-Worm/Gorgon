@@ -51,7 +51,9 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
         #region Variables.
 		private float _currentZoom = -1;
 		private int _currentTextureIndex = 0;
-		private GorgonFontContent _content = null;        
+		private GorgonFontContent _content = null;
+		private GorgonText _text = null;                            
+		private StringBuilder _sampleText = new StringBuilder(256); 		
         #endregion
 
         #region Properties.
@@ -64,79 +66,137 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		/// </summary>
 		private void ValidateControls()
 		{
-            if (_content.Font != null)
+            if ((_content != null) && (_content.Font != null))
             {
-                labelPrevTexture.Enabled = _currentTextureIndex > 0;
-                labelNextTexture.Enabled = _currentTextureIndex < _content.Font.Textures.Count - 1;
+				if (_currentTextureIndex < 0)
+				{
+					_currentTextureIndex = 0;
+				}
+
+				if (_currentTextureIndex >= _content.Font.Textures.Count)
+				{
+					_currentTextureIndex = _content.Font.Textures.Count - 1;
+				}
+
+				buttonPrevTexture.Enabled = _currentTextureIndex > 0;
+				buttonNextTexture.Enabled = _currentTextureIndex < _content.Font.Textures.Count - 1;
 
                 labelTextureCount.Text = string.Format("Texture: {0}/{1}", _currentTextureIndex + 1, _content.Font.Textures.Count);
             }
             else
             {
-                labelPrevTexture.Enabled = false;
-                labelNextTexture.Enabled = false;
+				buttonPrevTexture.Enabled = false;
+				buttonNextTexture.Enabled = false;
                 labelTextureCount.Text = "Texture: N/A";
             }
 		}
 
 		/// <summary>
-		/// Handles the MouseEnter event of the labelNextTexture control.
+		/// Handles the Resize event of the panelText control.
 		/// </summary>
 		/// <param name="sender">The source of the event.</param>
 		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-		private void labelNextTexture_MouseEnter(object sender, EventArgs e)
+		private void panelText_Resize(object sender, EventArgs e)
 		{
-			labelNextTexture.ForeColor = Color.White;
+			if (_text != null)
+			{
+				_text.TextRectangle = new RectangleF(PointF.Empty, panelText.ClientSize);
+			}
 		}
 
 		/// <summary>
-		/// Handles the MouseMove event of the labelNextTexture control.
-		/// </summary>
-		/// <param name="sender">The source of the event.</param>
-		/// <param name="e">The <see cref="MouseEventArgs"/> instance containing the event data.</param>
-		private void labelNextTexture_MouseMove(object sender, MouseEventArgs e)
-		{
-			labelNextTexture.ForeColor = Color.White;
-		}
-
-		/// <summary>
-		/// Handles the MouseLeave event of the labelNextTexture control.
+		/// Handles the Click event of the buttonNextTexture control.
 		/// </summary>
 		/// <param name="sender">The source of the event.</param>
 		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-		private void labelNextTexture_MouseLeave(object sender, EventArgs e)
+		private void buttonNextTexture_Click(object sender, EventArgs e)
 		{
-			labelNextTexture.ForeColor = Color.Silver;
+			try
+			{
+				_currentTextureIndex++;
+				ActiveControl = panelTextures;
+			}
+			finally
+			{
+				ValidateControls();
+			}
 		}
 
 		/// <summary>
-		/// Handles the MouseEnter event of the labelPrevTexture control.
+		/// Handles the Click event of the buttonPrevTexture control.
 		/// </summary>
 		/// <param name="sender">The source of the event.</param>
 		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-		private void labelPrevTexture_MouseEnter(object sender, EventArgs e)
+		private void buttonPrevTexture_Click(object sender, EventArgs e)
 		{
-			labelPrevTexture.ForeColor = Color.White;
+			try
+			{
+				_currentTextureIndex--;
+				ActiveControl = panelTextures;
+			}
+			finally
+			{
+				ValidateControls();
+			}
 		}
 
 		/// <summary>
-		/// Handles the MouseMove event of the labelPrevTexture control.
-		/// </summary>
-		/// <param name="sender">The source of the event.</param>
-		/// <param name="e">The <see cref="MouseEventArgs"/> instance containing the event data.</param>
-		private void labelPrevTexture_MouseMove(object sender, MouseEventArgs e)
-		{
-			labelPrevTexture.ForeColor = Color.White;
-		}
-
-		/// <summary>
-		/// Handles the MouseLeave event of the labelPrevTexture control.
+		/// Handles the Click event of the zoomItem control.
 		/// </summary>
 		/// <param name="sender">The source of the event.</param>
 		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-		private void labelPrevTexture_MouseLeave(object sender, EventArgs e)
+		private void zoomItem_Click(object sender, EventArgs e)
 		{
-			labelPrevTexture.ForeColor = Color.Silver;
+			try
+			{
+				var items = dropDownZoom.DropDownItems.Cast<ToolStripItem>().Where(item => item is ToolStripMenuItem);
+					
+				foreach (ToolStripMenuItem control in items)
+				{
+					if (control != sender)
+					{
+						control.Checked = false;
+					}
+				}
+
+				_currentZoom = float.Parse(((ToolStripMenuItem)sender).Tag.ToString(), System.Globalization.NumberStyles.Float, System.Globalization.NumberFormatInfo.InvariantInfo);
+
+				if (_currentZoom == -1)
+				{
+					Vector2 zoomValue = _content.Font.Textures[_currentTextureIndex].Settings.Size;
+
+					// Calculate actual zoom based on window size.
+					if (panelTextures.ClientSize.Width != 0)
+					{
+						zoomValue.X = panelTextures.ClientSize.Width / zoomValue.X;
+					}
+					else
+					{
+						zoomValue.X = 1e-6f;
+					}
+
+					if (panelTextures.ClientSize.Height != 0)
+					{
+						zoomValue.Y = panelTextures.ClientSize.Height / zoomValue.Y;
+					}
+					else
+					{
+						zoomValue.Y = 1e-6f;
+					}
+
+					_currentZoom = (zoomValue.Y < zoomValue.X) ? zoomValue.Y : zoomValue.X;
+
+					dropDownZoom.Text = "Zoom: To Window";
+				}
+				else
+				{
+					dropDownZoom.Text = string.Format("Zoom: {0}%", _currentZoom * 100.0f);
+				}
+			}
+			catch (Exception ex)
+			{
+				GorgonDialogs.ErrorBox(ParentForm, ex);
+			}
 		}
 
 		/// <summary>
@@ -164,6 +224,72 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		}
 
 		/// <summary>
+		/// Handles the Resize event of the GorgonFontContentPanel control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+		private void GorgonFontContentPanel_Resize(object sender, EventArgs e)
+		{
+			try
+			{
+				if ((_content == null) || (_content.Font == null))
+				{
+					return;
+				}
+
+				if (menuItemToWindow.Checked)
+				{
+					ValidateControls();
+
+					Vector2 zoomValue = _content.Font.Textures[_currentTextureIndex].Settings.Size;
+
+					if (panelTextures.ClientSize.Width != 0)
+					{
+						zoomValue.X = panelTextures.ClientSize.Width / zoomValue.X;
+					}
+					else
+					{
+						zoomValue.X = 1e-6f;
+					}
+
+					if (panelTextures.ClientSize.Height != 0)
+					{
+						zoomValue.Y = panelTextures.ClientSize.Height / zoomValue.Y;
+					}
+					else
+					{
+						zoomValue.Y = 1e-6f;
+					}
+
+					_currentZoom = (zoomValue.Y < zoomValue.X) ? zoomValue.Y : zoomValue.X;
+				}
+			}
+			catch (Exception ex)
+			{
+				GorgonDialogs.ErrorBox(ParentForm, ex);
+			}
+			finally
+			{
+				ValidateControls();
+			}
+		}
+
+		/// <summary>
+		/// Function called when a property is changed on the related content.
+		/// </summary>
+		/// <param name="propertyName">Name of the property.</param>
+		/// <param name="value">New value assigned to the property.</param>
+		protected override void OnContentPropertyChanged(string propertyName, object value)
+		{
+			base.OnContentPropertyChanged(propertyName, value);
+
+			// Refresh the scale.
+			GorgonFontContentPanel_Resize(this, EventArgs.Empty);
+
+			ValidateControls();
+		}
+
+		/// <summary>
 		/// Function called when the content has changed.
 		/// </summary>
 		public override void OnContentChanged()
@@ -172,7 +298,58 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 
 			_content = Content as GorgonFontContent;
 
+			if (_content == null)
+			{
+				throw new InvalidCastException("The content is not font content.");
+			}
+
+			GorgonFontContentPanel_Resize(this, EventArgs.Empty);
+
 			ValidateControls();
+		}
+
+		/// <summary>
+		/// Function to create the resources for the content.
+		/// </summary>
+		public void CreateResources()
+		{
+			_sampleText.Length = 0;
+			_sampleText.Append(GorgonFontEditorPlugIn.Settings.SampleText);
+
+			_text = _content.Renderer.Renderables.CreateText("Sample.Text", _content.Font, _sampleText.ToString());
+			_text.Color = Color.Black;
+			_text.WordWrap = true;
+			_text.TextRectangle = new RectangleF(PointF.Empty, panelText.ClientSize);
+		}
+
+		/// <summary>
+		/// Function to draw the sample text for the font.
+		/// </summary>
+		public void DrawText()
+		{
+			Vector2 textPosition = Vector2.Zero;			
+
+			_content.Renderer.Clear(panelText.BackColor);
+
+			_content.Renderer.Drawing.SmoothingMode = SmoothingMode.Smooth;
+
+			// If the font object has changed, then reassign it.
+			if (_text.Font != _content.Font)
+			{
+				_text.Font = _content.Font;
+			}
+
+			_text.Text = _sampleText.ToString();
+
+			panelText.AutoScrollMinSize = new Size((int)System.Math.Ceiling(_text.Size.X - (SystemInformation.VerticalScrollBarWidth * 1.5f)), (int)System.Math.Ceiling(_text.Size.Y));
+
+			if (panelText.VerticalScroll.Visible)
+			{
+				textPosition.Y = panelText.AutoScrollPosition.Y;
+			}
+
+			_text.Position = textPosition;
+			_text.Draw();
 		}
 
 		/// <summary>
@@ -181,39 +358,46 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		public void DrawFontTexture()
 		{
 			GorgonTexture2D currentTexture = _content.Font.Textures[_currentTextureIndex];
-			float scale = 1.0f;
+			_content.Renderer.Clear(PanelDisplay.BackColor);
 
-			if (_currentZoom == -1.0f)
+			_content.Renderer.Drawing.SmoothingMode = SmoothingMode.None;
+
+
+			panelTextures.AutoScrollMinSize = new Size((int)System.Math.Ceiling(_currentZoom * currentTexture.Settings.Width), (int)System.Math.Ceiling(_currentZoom * currentTexture.Settings.Height));
+
+			Vector2 textureLocation = new Vector2(panelTextures.ClientSize.Width / 2.0f - (currentTexture.Settings.Width * _currentZoom) / 2.0f,
+													panelTextures.ClientSize.Height / 2.0f - (currentTexture.Settings.Height * _currentZoom) / 2.0f);
+
+			if (panelTextures.HorizontalScroll.Visible)
 			{
-				Vector2 zoomValue = currentTexture.Settings.Size;
-
-				if (panelTextures.ClientSize.Width != 0)
-				{
-					zoomValue.X = panelTextures.ClientSize.Width / zoomValue.X;
-				}
-				else
-				{
-					zoomValue.X = 1e-6f;
-				}
-
-				if (panelTextures.ClientSize.Height != 0)
-				{
-					zoomValue.Y = panelTextures.ClientSize.Height / zoomValue.Y;
-				}
-				else
-				{
-					zoomValue.Y = 1e-6f;
-				}
-
-				scale = (zoomValue.Y < zoomValue.X) ? zoomValue.Y : zoomValue.X;
+				textureLocation.X = panelTextures.AutoScrollPosition.X;
 			}
 
-			RectangleF region = new RectangleF(panelTextures.ClientSize.Width / 2.0f -(currentTexture.Settings.Width * scale) / 2.0f,
-												panelTextures.ClientSize.Height / 2.0f - (currentTexture.Settings.Height * scale) / 2.0f,
-												currentTexture.Settings.Width * scale, currentTexture.Settings.Height * scale);
+			if (panelTextures.VerticalScroll.Visible)
+			{
+				textureLocation.Y = panelTextures.AutoScrollPosition.Y;
+			}
+
+			RectangleF region = new RectangleF(textureLocation.X,
+												textureLocation.Y,
+												currentTexture.Settings.Width * _currentZoom, currentTexture.Settings.Height * _currentZoom);
 
 			// Fill the background so we can clearly see the first page.
 			_content.Renderer.Drawing.FilledRectangle(region, Color.Black);
+
+			// Draw the borders around each glyph.
+			foreach (var glyph in _content.Font.Glyphs.Where((GorgonGlyph item) => item.Texture == currentTexture && !char.IsWhiteSpace(item.Character)))
+			{
+				var glyphRect = new RectangleF(glyph.GlyphCoordinates.Left - 1, glyph.GlyphCoordinates.Top - 1, glyph.GlyphCoordinates.Width + 1, glyph.GlyphCoordinates.Height + 1);
+				glyphRect.X = glyphRect.X * _currentZoom + textureLocation.X;
+				glyphRect.Y = glyphRect.Y * _currentZoom + textureLocation.Y;
+				glyphRect.Width *= _currentZoom;
+				glyphRect.Height *= _currentZoom;
+
+				_content.Renderer.Drawing.DrawRectangle(glyphRect, Color.Red);
+			}
+
+			// Draw the texture.
 			_content.Renderer.Drawing.Blit(currentTexture, region);
 		}		
 		#endregion

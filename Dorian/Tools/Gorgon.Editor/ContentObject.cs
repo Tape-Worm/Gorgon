@@ -115,7 +115,7 @@ namespace GorgonLibrary.Editor
             }
             internal set
             {
-                _hasChanged = value;
+                _hasChanged = value;				
                 OnHasChangesUpdated();
             }
 		}
@@ -308,7 +308,7 @@ namespace GorgonLibrary.Editor
         /// </summary>
         /// <param name="propertyName">Name of the property that was updated.</param>
         /// <param name="value">Value assigned to the property.</param>
-        protected void OnContentPropertyChanged(string propertyName, object value)
+        protected virtual void OnContentPropertyChanged(string propertyName, object value)
         {
             if (string.IsNullOrWhiteSpace(propertyName))
             {
@@ -326,6 +326,11 @@ namespace GorgonLibrary.Editor
         /// </summary>
         /// <returns>A control to place in the primary interface window.</returns>
         protected abstract Control OnInitialize();
+
+		/// <summary>
+		/// Function called when the content is shown for the first time.
+		/// </summary>
+		public abstract void Activate();
 
         /// <summary>
         /// Function to retrieve default values for properties with the DefaultValue attribute.
