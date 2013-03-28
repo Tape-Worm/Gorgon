@@ -225,11 +225,11 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 
 				buttonCharacterList.Enabled = true;
 
-				if ((family == null) || (!GorgonFontEditorPlugIn.CachedFonts.ContainsKey(family.Name)))
+				if ((family == null) || (!GorgonFontEditorPlugIn.CachedFonts.ContainsKey(family.Name.ToLower())))
 					checkBold.Checked = checkUnderline.Checked = checkItalic.Checked = checkStrikeThrough.Checked = false;
 				else
 				{
-					Font font = GorgonFontEditorPlugIn.CachedFonts[family.Name];
+					Font font = GorgonFontEditorPlugIn.CachedFonts[family.Name.ToLower()];
 
 					checkBold.Enabled = family.IsStyleAvailable(FontStyle.Bold) && family.IsStyleAvailable(FontStyle.Regular);
 					checkUnderline.Enabled = family.IsStyleAvailable(FontStyle.Underline) && family.IsStyleAvailable(FontStyle.Regular);
@@ -310,6 +310,10 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 			catch (Exception ex)
 			{
 				GorgonDialogs.ErrorBox(this, ex);
+			}
+			finally
+			{
+				ValidateControls();
 			}
 		}
 

@@ -141,7 +141,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 			: this()
 		{
 			FontStyle[] fontStyles = ((FontStyle[])Enum.GetValues(typeof(FontStyle))).Where(item => item != FontStyle.Regular).ToArray();
-			Font cachedFont = GorgonFontEditorPlugIn.CachedFonts[fontFamily];
+			Font cachedFont = GorgonFontEditorPlugIn.CachedFonts[fontFamily.ToLower()];
 
 			Items.Clear();
 

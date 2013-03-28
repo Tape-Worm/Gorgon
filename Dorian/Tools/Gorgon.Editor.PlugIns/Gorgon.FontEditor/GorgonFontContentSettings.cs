@@ -56,6 +56,16 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
         }
 
 		/// <summary>
+		/// Property to set or return the color of the preview text in the editor.
+		/// </summary>
+		[ApplicationSetting("PreviewTextColor", typeof(int), "PreviewText")]
+		public int TextColor
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
 		/// Property to set or return the default size type.
 		/// </summary>
 		[ApplicationSetting("FontSizeType", Graphics.FontHeightMode.Points, typeof(Graphics.FontHeightMode), "FontEditor")]
@@ -98,6 +108,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 			: base("FontEditor.PlugIn", new Version(1, 0, 0, 0))
 		{
 			FontTextureSize = new Size(256, 256);
+			TextColor = Color.Black.ToArgb();
             SampleText = "The quick brown fox jumps over the lazy dog.\n1234567890 !@#$%^&*() ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz";
 		}
 		#endregion
