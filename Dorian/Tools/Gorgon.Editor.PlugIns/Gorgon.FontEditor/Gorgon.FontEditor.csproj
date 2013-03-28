@@ -95,6 +95,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Gorgon2.ico" />
+    <None Include="Resources\shadow_16x16.png" />
     <None Include="Resources\Color.png" />
     <None Include="Resources\Pattern.bmp" />
     <None Include="Resources\zoom_16x16.png" />

@@ -111,6 +111,16 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap shadow_16x16 {
+            get {
+                object obj = ResourceManager.GetObject("shadow_16x16", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to 0000..007F; Basic Latin
         ///0080..00FF; Latin-1 Supplement
         ///0100..017F; Latin Extended-A
