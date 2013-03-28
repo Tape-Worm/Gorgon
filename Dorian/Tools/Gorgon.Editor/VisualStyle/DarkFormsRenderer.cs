@@ -204,14 +204,32 @@ namespace GorgonLibrary.Editor
 		/// </summary>
 		/// <param name="e">A <see cref="T:System.Windows.Forms.ToolStripRenderEventArgs"/> that contains the event data.</param>
 		protected override void OnRenderButtonBackground(ToolStripItemRenderEventArgs e)
-		{			
+		{
+			ToolStripButton button = e.Item as ToolStripButton;
+
 			if (e.Item.Selected)
 			{
-				using (Brush backBrush = new SolidBrush(MenuHilightBackground))
+				using (Brush backBrush = new SolidBrush(((button == null) || (!button.Checked)) ? MenuHilightBackground : Color.CornflowerBlue))
 					e.Graphics.FillRectangle(backBrush, new Rectangle(1, 1, e.Item.Width - 2, e.Item.Height - 2));
 			}
-			else			
+			else
+			{
+				
+
+				if (button != null)
+				{
+					if (button.Checked)
+					{
+						using (Brush backBrush = new SolidBrush(Color.SteelBlue))
+						{
+							e.Graphics.FillRectangle(backBrush, new Rectangle(1, 1, e.Item.Width - 2, e.Item.Height - 2));
+						}
+					}
+					return;
+				}
+
 				base.OnRenderButtonBackground(e);
+			}
 		}
 
 		/// <summary>

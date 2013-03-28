@@ -73,6 +73,19 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 
         #region Methods.
 		/// <summary>
+		/// Handles the Click event of the checkShadow control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+		private void checkShadow_Click(object sender, EventArgs e)
+		{
+			if (_text != null)
+			{
+				_text.ShadowEnabled = checkShadow.Checked;
+			}
+		}
+
+		/// <summary>
 		/// Handles the Click event of the buttonTextColor control.
 		/// </summary>
 		/// <param name="sender">The source of the event.</param>
@@ -477,6 +490,8 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 			_text.Color = Color.Black;
 			_text.WordWrap = true;
 			_text.TextRectangle = new RectangleF(PointF.Empty, panelText.ClientSize);
+			_text.ShadowOpacity = 0.5f;
+			_text.ShadowOffset = new Vector2(1, 1);
 
             _pattern = _content.Graphics.Textures.Create2DTextureFromGDIImage("Background.Pattern", Properties.Resources.Pattern);
 

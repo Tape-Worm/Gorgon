@@ -47,6 +47,7 @@
 			this.panelToolbar = new System.Windows.Forms.Panel();
 			this.stripCommands = new System.Windows.Forms.ToolStrip();
 			this.buttonTextColor = new System.Windows.Forms.ToolStripButton();
+			this.checkShadow = new System.Windows.Forms.ToolStripButton();
 			this.panelControls = new System.Windows.Forms.Panel();
 			this.stripFontDisplay = new System.Windows.Forms.ToolStrip();
 			this.buttonPrevTexture = new System.Windows.Forms.ToolStripButton();
@@ -78,8 +79,8 @@
 			// 
 			// PanelDisplay
 			// 
-			this.PanelDisplay.Controls.Add(this.panel1);
 			this.PanelDisplay.Controls.Add(this.splitContent);
+			this.PanelDisplay.Controls.Add(this.panel1);
 			this.PanelDisplay.Controls.Add(this.panelText);
 			this.PanelDisplay.Size = new System.Drawing.Size(806, 606);
 			// 
@@ -89,10 +90,11 @@
 			this.panelTextures.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.panelTextures.Location = new System.Drawing.Point(0, 25);
 			this.panelTextures.Name = "panelTextures";
-			this.panelTextures.Size = new System.Drawing.Size(806, 401);
+			this.panelTextures.Size = new System.Drawing.Size(806, 405);
 			this.panelTextures.TabIndex = 0;
 			this.panelTextures.MouseDown += new System.Windows.Forms.MouseEventHandler(this.panelTextures_MouseDown);
 			this.panelTextures.MouseMove += new System.Windows.Forms.MouseEventHandler(this.panelTextures_MouseMove);
+			this.panelTextures.Resize += new System.EventHandler(this.GorgonFontContentPanel_Resize);
 			// 
 			// panelText
 			// 
@@ -126,7 +128,7 @@
 			this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.panel1.Location = new System.Drawing.Point(0, 0);
 			this.panel1.Name = "panel1";
-			this.panel1.Size = new System.Drawing.Size(806, 452);
+			this.panel1.Size = new System.Drawing.Size(806, 456);
 			this.panel1.TabIndex = 3;
 			// 
 			// panelToolbar
@@ -144,7 +146,8 @@
 			// 
 			this.stripCommands.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
 			this.stripCommands.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.buttonTextColor});
+            this.buttonTextColor,
+            this.checkShadow});
 			this.stripCommands.Location = new System.Drawing.Point(0, 0);
 			this.stripCommands.Name = "stripCommands";
 			this.stripCommands.Size = new System.Drawing.Size(804, 25);
@@ -162,12 +165,23 @@
 			this.buttonTextColor.Text = "Select preview text color";
 			this.buttonTextColor.Click += new System.EventHandler(this.buttonTextColor_Click);
 			// 
+			// checkShadow
+			// 
+			this.checkShadow.CheckOnClick = true;
+			this.checkShadow.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.checkShadow.Image = global::GorgonLibrary.Editor.FontEditorPlugIn.Properties.Resources.shadow_16x16;
+			this.checkShadow.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.checkShadow.Name = "checkShadow";
+			this.checkShadow.Size = new System.Drawing.Size(23, 22);
+			this.checkShadow.Text = "Draw shadow on preview text";
+			this.checkShadow.Click += new System.EventHandler(this.checkShadow_Click);
+			// 
 			// panelControls
 			// 
 			this.panelControls.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(102)))), ((int)(((byte)(102)))), ((int)(((byte)(102)))));
 			this.panelControls.Controls.Add(this.stripFontDisplay);
 			this.panelControls.Dock = System.Windows.Forms.DockStyle.Bottom;
-			this.panelControls.Location = new System.Drawing.Point(0, 426);
+			this.panelControls.Location = new System.Drawing.Point(0, 430);
 			this.panelControls.Name = "panelControls";
 			this.panelControls.Size = new System.Drawing.Size(806, 26);
 			this.panelControls.TabIndex = 0;
@@ -372,7 +386,6 @@
 			this.Name = "GorgonFontContentPanel";
 			this.Size = new System.Drawing.Size(806, 636);
 			this.Text = "Gorgon Font - Untitled";
-			this.Resize += new System.EventHandler(this.GorgonFontContentPanel_Resize);
 			this.PanelDisplay.ResumeLayout(false);
 			this.panel1.ResumeLayout(false);
 			this.panelToolbar.ResumeLayout(false);
@@ -417,6 +430,7 @@
         private System.Windows.Forms.ToolStripLabel labelHoverGlyphInfo;
         private System.Windows.Forms.ToolStripSeparator separatorGlyphInfo;
 		private System.Windows.Forms.ToolStripButton buttonTextColor;
+		private System.Windows.Forms.ToolStripButton checkShadow;
 
     }
 }
