@@ -355,6 +355,11 @@ namespace GorgonLibrary.UI
 		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
 		private void panelCaptionArea_DoubleClick(object sender, EventArgs e)
 		{
+			if (!MaximizeBox)
+			{
+				return;
+			}
+
 			if (WindowState == FormWindowState.Maximized)
 			{
 				WindowState = FormWindowState.Normal;
@@ -768,7 +773,10 @@ namespace GorgonLibrary.UI
 			{
 				if ((e.Button == System.Windows.Forms.MouseButtons.Left) && (e.Clicks > 1))
 				{
-					panelCaptionArea_DoubleClick(this, EventArgs.Empty);
+					if (panelCaptionArea.ClientRectangle.Contains(panelCaptionArea.PointToClient(e.Location)))
+					{
+						panelCaptionArea_DoubleClick(this, EventArgs.Empty);
+					}
 					return;
 				}
 

@@ -34,7 +34,9 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using SlimMath;
+using Fetze.WinFormsColor;
 using GorgonLibrary;
+using GorgonLibrary.Math;
 using GorgonLibrary.Diagnostics;
 using GorgonLibrary.UI;
 using GorgonLibrary.Graphics;
@@ -69,7 +71,37 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		
         #endregion
 
-        #region Methods.        
+        #region Methods.
+		/// <summary>
+		/// Handles the Click event of the buttonTextColor control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+		private void buttonTextColor_Click(object sender, EventArgs e)
+		{
+			ColorPickerDialog picker = null;
+
+			try
+			{
+				picker = new ColorPickerDialog();
+				picker.Text = "Select a color for the preview text";
+				picker.OldColor = Color.FromArgb(GorgonFontEditorPlugIn.Settings.TextColor);
+				if (picker.ShowDialog() == DialogResult.OK)
+				{
+					GorgonFontEditorPlugIn.Settings.TextColor = picker.SelectedColor.ToArgb();
+				}
+			}
+			catch (Exception ex)
+			{
+				GorgonDialogs.ErrorBox(null, ex);
+			}
+			finally
+			{
+				if (picker != null)
+					picker.Dispose();
+			}
+		}
+
 		/// <summary>
 		/// Function to perform validation of the form controls.
 		/// </summary>
@@ -309,6 +341,22 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 					return;
 				}
 
+				if (_currentTextureIndex < 0)
+				{
+					_currentTextureIndex = 0;
+				}
+
+				if (_currentTextureIndex >= _content.Font.Textures.Count)
+				{
+					_currentTextureIndex = _content.Font.Textures.Count - 1;
+
+					// If for some reason we don't have textures, then leave.
+					if (_currentTextureIndex < 0)
+					{
+						return;
+					}
+				}
+
                 currentTexture = _content.Font.Textures[_currentTextureIndex];
 
 				if (menuItemToWindow.Checked)
@@ -344,8 +392,10 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
                              select fontGlyph;
                 
                 // Find the regions for the glyph.
+				_hoverGlyph = null;
                 _glyphRegions = new Dictionary<GorgonGlyph,RectangleF>();
 
+			
                 foreach (var glyph in glyphs)
                 {
                     var glyphRect = new RectangleF((glyph.GlyphCoordinates.Left - 1) * _currentZoom, 
@@ -355,6 +405,8 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 
                     _glyphRegions[glyph] = glyphRect;
                 }
+
+				_text.Font = _content.Font;
 			}
 			catch (Exception ex)
 			{
@@ -374,6 +426,19 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		protected override void OnContentPropertyChanged(string propertyName, object value)
 		{
 			base.OnContentPropertyChanged(propertyName, value);
+
+			// If we had a previously selected glyph, then try and find it in the updated glyphs from
+			// the new font.  Otherwise, deselect it.
+			if (_selectedGlyph != null)
+			{
+				_selectedGlyph = _content.Font.Glyphs.Where((GorgonGlyph item) => item.Character == _selectedGlyph.Character).FirstOrDefault();
+
+				// We found the glyph, let's see if we can't focus on the texture it was on.
+				if (_selectedGlyph != null)
+				{
+					_currentTextureIndex = _content.Font.Textures.IndexOf(_selectedGlyph.Texture);
+				}
+			}
 
 			// Refresh the scale.
 			GorgonFontContentPanel_Resize(this, EventArgs.Empty);            
@@ -439,12 +504,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 
 			_content.Renderer.Drawing.SmoothingMode = SmoothingMode.Smooth;
 
-			// If the font object has changed, then reassign it.
-			if (_text.Font != _content.Font)
-			{
-				_text.Font = _content.Font;
-			}
-
+			_text.Color = new GorgonColor(GorgonFontEditorPlugIn.Settings.TextColor);
 			_text.Text = _sampleText.ToString();
 
 			panelText.AutoScrollMinSize = new Size((int)System.Math.Ceiling(_text.Size.X - (SystemInformation.VerticalScrollBarWidth * 1.5f)), (int)System.Math.Ceiling(_text.Size.Y));
@@ -465,6 +525,48 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		{
 			GorgonTexture2D currentTexture = _content.Font.Textures[_currentTextureIndex];
 			_content.Renderer.Clear(PanelDisplay.BackColor);
+
+			_content.Renderer.Drawing.SmoothingMode = SmoothingMode.Smooth;
+
+			float alpha = 0.0f;
+
+			Vector2 texturePos = new Vector2(((panelTextures.ClientSize.Width / 2.0f) - (currentTexture.Settings.Width * _currentZoom) / 2.0f), 0);
+
+			for (int i = _currentTextureIndex - 1; i >= 0; i--)
+			{
+				var displayTexture = _content.Font.Textures[i];
+				float range = _currentTextureIndex;
+				float index = (_currentTextureIndex - 1) - i;
+
+				alpha = (range - index) / range;
+
+				Vector2 textureSize = new Vector2((_currentZoom * 0.75f * alpha) * currentTexture.Settings.Width, (_currentZoom * 0.75f * alpha) * currentTexture.Settings.Height);
+
+				texturePos.Y = panelTextures.ClientSize.Height / 2.0f - textureSize.Y / 2.0f;
+				texturePos.X -= textureSize.X + 8.0f;				
+
+				_content.Renderer.Drawing.FilledRectangle(new RectangleF(texturePos, textureSize), Color.FromArgb((int)(alpha * 128.0f), 192, 192, 192), displayTexture);
+			}
+
+			// Set to the middle.
+			texturePos.X = ((panelTextures.ClientSize.Width / 2.0f) + (currentTexture.Settings.Width * _currentZoom) / 2.0f) + 8.0f;
+
+			for (int i = _currentTextureIndex + 1; i < _content.Font.Textures.Count; i++)
+			{
+				var displayTexture = _content.Font.Textures[i];
+				float range = _content.Font.Textures.Count - (_currentTextureIndex + 1);
+				float index = i - (_currentTextureIndex + 1);
+
+				alpha = (range - index) / range;
+
+				Vector2 textureSize = new Vector2((_currentZoom * 0.75f * alpha) * currentTexture.Settings.Width, (_currentZoom * 0.75f * alpha) * currentTexture.Settings.Height);
+
+				texturePos.Y = panelTextures.ClientSize.Height / 2.0f - textureSize.Y / 2.0f;
+
+				_content.Renderer.Drawing.FilledRectangle(new RectangleF(texturePos, textureSize), Color.FromArgb((int)(alpha * 128.0f), 192, 192, 192), displayTexture);
+
+				texturePos.X += textureSize.X + 8.0f;
+			}
 
 			_content.Renderer.Drawing.SmoothingMode = SmoothingMode.None;
 
