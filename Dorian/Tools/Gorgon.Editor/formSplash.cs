@@ -25,6 +25,20 @@ namespace GorgonLibrary.Editor
 		}
 
 		/// <summary>
+		/// Raises the <see cref="E:System.Windows.Forms.Form.FormClosing" /> event.
+		/// </summary>
+		/// <param name="e">A <see cref="T:System.Windows.Forms.FormClosingEventArgs" /> that contains the event data.</param>
+		protected override void OnFormClosing(FormClosingEventArgs e)
+		{
+			base.OnFormClosing(e);
+
+			if (e.CloseReason == CloseReason.UserClosing)
+			{
+				e.Cancel = true;
+			}
+		}
+
+		/// <summary>
 		/// Raises the <see cref="E:System.Windows.Forms.Form.Load"/> event.
 		/// </summary>
 		/// <param name="e">An <see cref="T:System.EventArgs"/> that contains the event data.</param>
