@@ -453,7 +453,10 @@ namespace GorgonLibrary.Editor
             {                
                 tabDocumentManager.SelectedTab = pageItems;
                 pageProperties.Enabled = false;
-            }
+			}
+
+			// Set the focus to the new control.
+			control.Focus();
 		}
 
         /// <summary>
