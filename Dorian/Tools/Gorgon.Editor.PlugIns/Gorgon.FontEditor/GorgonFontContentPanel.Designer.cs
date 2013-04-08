@@ -20,6 +20,8 @@
 
             if (!_disposed)
             {
+				this.MouseWheel -= PanelDisplay_MouseWheel;
+
                 if (_pattern != null)
                 {
                     _pattern.Dispose();
@@ -46,8 +48,14 @@
 			this.panel1 = new System.Windows.Forms.Panel();
 			this.panelToolbar = new System.Windows.Forms.Panel();
 			this.stripCommands = new System.Windows.Forms.ToolStrip();
-			this.buttonTextColor = new System.Windows.Forms.ToolStripButton();
-			this.checkShadow = new System.Windows.Forms.ToolStripButton();
+			this.menuTextColor = new System.Windows.Forms.ToolStripDropDownButton();
+			this.itemSampleTextForeground = new System.Windows.Forms.ToolStripMenuItem();
+			this.itemSampleTextBackground = new System.Windows.Forms.ToolStripMenuItem();
+			this.menuShadow = new System.Windows.Forms.ToolStripDropDownButton();
+			this.itemPreviewShadowEnable = new System.Windows.Forms.ToolStripMenuItem();
+			this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
+			this.itemShadowOpacity = new System.Windows.Forms.ToolStripMenuItem();
+			this.itemShadowOffset = new System.Windows.Forms.ToolStripMenuItem();
 			this.panelControls = new System.Windows.Forms.Panel();
 			this.stripFontDisplay = new System.Windows.Forms.ToolStrip();
 			this.buttonPrevTexture = new System.Windows.Forms.ToolStripButton();
@@ -92,19 +100,21 @@
 			this.panelTextures.Name = "panelTextures";
 			this.panelTextures.Size = new System.Drawing.Size(806, 405);
 			this.panelTextures.TabIndex = 0;
+			this.panelTextures.MouseClick += new System.Windows.Forms.MouseEventHandler(this.GorgonFontContentPanel_MouseClick);
 			this.panelTextures.MouseDown += new System.Windows.Forms.MouseEventHandler(this.panelTextures_MouseDown);
 			this.panelTextures.MouseMove += new System.Windows.Forms.MouseEventHandler(this.panelTextures_MouseMove);
 			this.panelTextures.Resize += new System.EventHandler(this.GorgonFontContentPanel_Resize);
 			// 
 			// panelText
 			// 
-			this.panelText.BackColor = System.Drawing.Color.White;
+			this.panelText.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(58)))), ((int)(((byte)(58)))), ((int)(((byte)(58)))));
 			this.panelText.Dock = System.Windows.Forms.DockStyle.Bottom;
 			this.panelText.ForeColor = System.Drawing.Color.Black;
 			this.panelText.Location = new System.Drawing.Point(0, 456);
 			this.panelText.Name = "panelText";
 			this.panelText.Size = new System.Drawing.Size(806, 150);
 			this.panelText.TabIndex = 0;
+			this.panelText.MouseClick += new System.Windows.Forms.MouseEventHandler(this.GorgonFontContentPanel_MouseClick);
 			this.panelText.Resize += new System.EventHandler(this.panelText_Resize);
 			// 
 			// splitContent
@@ -146,8 +156,8 @@
 			// 
 			this.stripCommands.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
 			this.stripCommands.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.buttonTextColor,
-            this.checkShadow});
+            this.menuTextColor,
+            this.menuShadow});
 			this.stripCommands.Location = new System.Drawing.Point(0, 0);
 			this.stripCommands.Name = "stripCommands";
 			this.stripCommands.Size = new System.Drawing.Size(804, 25);
@@ -155,26 +165,71 @@
 			this.stripCommands.TabIndex = 0;
 			this.stripCommands.Text = "toolStrip1";
 			// 
-			// buttonTextColor
+			// menuTextColor
 			// 
-			this.buttonTextColor.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-			this.buttonTextColor.Image = global::GorgonLibrary.Editor.FontEditorPlugIn.Properties.Resources.Color;
-			this.buttonTextColor.ImageTransparentColor = System.Drawing.Color.Magenta;
-			this.buttonTextColor.Name = "buttonTextColor";
-			this.buttonTextColor.Size = new System.Drawing.Size(23, 22);
-			this.buttonTextColor.Text = "Select preview text color";
-			this.buttonTextColor.Click += new System.EventHandler(this.buttonTextColor_Click);
+			this.menuTextColor.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.menuTextColor.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.itemSampleTextForeground,
+            this.itemSampleTextBackground});
+			this.menuTextColor.Image = global::GorgonLibrary.Editor.FontEditorPlugIn.Properties.Resources.Color;
+			this.menuTextColor.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.menuTextColor.Name = "menuTextColor";
+			this.menuTextColor.Size = new System.Drawing.Size(29, 22);
 			// 
-			// checkShadow
+			// itemSampleTextForeground
 			// 
-			this.checkShadow.CheckOnClick = true;
-			this.checkShadow.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-			this.checkShadow.Image = global::GorgonLibrary.Editor.FontEditorPlugIn.Properties.Resources.shadow_16x16;
-			this.checkShadow.ImageTransparentColor = System.Drawing.Color.Magenta;
-			this.checkShadow.Name = "checkShadow";
-			this.checkShadow.Size = new System.Drawing.Size(23, 22);
-			this.checkShadow.Text = "Draw shadow on preview text";
-			this.checkShadow.Click += new System.EventHandler(this.checkShadow_Click);
+			this.itemSampleTextForeground.Name = "itemSampleTextForeground";
+			this.itemSampleTextForeground.Size = new System.Drawing.Size(248, 22);
+			this.itemSampleTextForeground.Text = "Preview Text &Foreground Color...";
+			this.itemSampleTextForeground.Click += new System.EventHandler(this.buttonTextColor_Click);
+			// 
+			// itemSampleTextBackground
+			// 
+			this.itemSampleTextBackground.Name = "itemSampleTextBackground";
+			this.itemSampleTextBackground.Size = new System.Drawing.Size(248, 22);
+			this.itemSampleTextBackground.Text = "Preview Text &Background Color...";
+			this.itemSampleTextBackground.Click += new System.EventHandler(this.itemSampleTextBackground_Click);
+			// 
+			// menuShadow
+			// 
+			this.menuShadow.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.menuShadow.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.itemPreviewShadowEnable,
+            this.toolStripSeparator4,
+            this.itemShadowOpacity,
+            this.itemShadowOffset});
+			this.menuShadow.Image = global::GorgonLibrary.Editor.FontEditorPlugIn.Properties.Resources.shadow_16x16;
+			this.menuShadow.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.menuShadow.Name = "menuShadow";
+			this.menuShadow.Size = new System.Drawing.Size(29, 22);
+			// 
+			// itemPreviewShadowEnable
+			// 
+			this.itemPreviewShadowEnable.CheckOnClick = true;
+			this.itemPreviewShadowEnable.Name = "itemPreviewShadowEnable";
+			this.itemPreviewShadowEnable.Size = new System.Drawing.Size(223, 22);
+			this.itemPreviewShadowEnable.Text = "Enable Preview Text Shadow";
+			this.itemPreviewShadowEnable.Click += new System.EventHandler(this.itemPreviewShadowEnable_Click);
+			// 
+			// toolStripSeparator4
+			// 
+			this.toolStripSeparator4.Name = "toolStripSeparator4";
+			this.toolStripSeparator4.Size = new System.Drawing.Size(220, 6);
+			// 
+			// itemShadowOpacity
+			// 
+			this.itemShadowOpacity.Enabled = false;
+			this.itemShadowOpacity.Name = "itemShadowOpacity";
+			this.itemShadowOpacity.Size = new System.Drawing.Size(223, 22);
+			this.itemShadowOpacity.Text = "Shadow &Opacity...";
+			this.itemShadowOpacity.Click += new System.EventHandler(this.itemShadowOpacity_Click);
+			// 
+			// itemShadowOffset
+			// 
+			this.itemShadowOffset.Enabled = false;
+			this.itemShadowOffset.Name = "itemShadowOffset";
+			this.itemShadowOffset.Size = new System.Drawing.Size(223, 22);
+			this.itemShadowOffset.Text = "Shadow O&ffset...";
 			// 
 			// panelControls
 			// 
@@ -386,6 +441,7 @@
 			this.Name = "GorgonFontContentPanel";
 			this.Size = new System.Drawing.Size(806, 636);
 			this.Text = "Gorgon Font - Untitled";
+			this.MouseClick += new System.Windows.Forms.MouseEventHandler(this.GorgonFontContentPanel_MouseClick);
 			this.PanelDisplay.ResumeLayout(false);
 			this.panel1.ResumeLayout(false);
 			this.panelToolbar.ResumeLayout(false);
@@ -428,9 +484,15 @@
         private System.Windows.Forms.ToolStripLabel labelSelectedGlyphInfo;
 		private System.Windows.Forms.ToolStrip stripCommands;
         private System.Windows.Forms.ToolStripLabel labelHoverGlyphInfo;
-        private System.Windows.Forms.ToolStripSeparator separatorGlyphInfo;
-		private System.Windows.Forms.ToolStripButton buttonTextColor;
-		private System.Windows.Forms.ToolStripButton checkShadow;
+		private System.Windows.Forms.ToolStripSeparator separatorGlyphInfo;
+		private System.Windows.Forms.ToolStripDropDownButton menuTextColor;
+		private System.Windows.Forms.ToolStripMenuItem itemSampleTextForeground;
+		private System.Windows.Forms.ToolStripMenuItem itemSampleTextBackground;
+		private System.Windows.Forms.ToolStripDropDownButton menuShadow;
+		private System.Windows.Forms.ToolStripMenuItem itemPreviewShadowEnable;
+		private System.Windows.Forms.ToolStripSeparator toolStripSeparator4;
+		private System.Windows.Forms.ToolStripMenuItem itemShadowOpacity;
+		private System.Windows.Forms.ToolStripMenuItem itemShadowOffset;
 
     }
 }

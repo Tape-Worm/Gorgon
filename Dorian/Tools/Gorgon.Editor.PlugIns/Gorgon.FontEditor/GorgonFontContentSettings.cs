@@ -30,6 +30,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Drawing;
+using SlimMath;
 using GorgonLibrary.Configuration;
 
 namespace GorgonLibrary.Editor.FontEditorPlugIn
@@ -60,6 +61,46 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		/// </summary>
 		[ApplicationSetting("PreviewTextColor", typeof(int), "PreviewText")]
 		public int TextColor
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Property to set or return the background color of the preview text in the editor.
+		/// </summary>
+		[ApplicationSetting("PreviewBackgroundColor", typeof(int), "PreviewText")]
+		public int BackgroundColor
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Property to set or return whether the preview text should have a shadow or not.
+		/// </summary>
+		[ApplicationSetting("PreviewShadowEnabled", typeof(bool), "PreviewText")]
+		public bool ShadowEnabled
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Property to set or return the offset of the shadow on the preview text.
+		/// </summary>
+		[ApplicationSetting("PreviewShadowOffset", typeof(Point), "PreviewText")]
+		public Point ShadowOffset
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Property to set or return the opacity of the shadow on the preview text.
+		/// </summary>
+		[ApplicationSetting("PreviewShadowOpacity", typeof(float), "PreviewText")]
+		public float ShadowOpacity
 		{
 			get;
 			set;
@@ -109,6 +150,10 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		{
 			FontTextureSize = new Size(256, 256);
 			TextColor = Color.Black.ToArgb();
+			BackgroundColor = Color.FromArgb(255, 68, 68, 68).ToArgb();
+			ShadowEnabled = false;
+			ShadowOffset = new Point(1, 1);
+			ShadowOpacity = 0.5f;
             SampleText = "The quick brown fox jumps over the lazy dog.\n1234567890 !@#$%^&*() ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz";
 		}
 		#endregion

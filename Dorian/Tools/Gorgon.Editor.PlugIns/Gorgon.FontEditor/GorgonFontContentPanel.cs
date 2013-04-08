@@ -71,18 +71,110 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		
         #endregion
 
-        #region Methods.
+        #region Methods.		
 		/// <summary>
-		/// Handles the Click event of the checkShadow control.
+		/// Handles the MouseClick event of the GorgonFontContentPanel control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="MouseEventArgs"/> instance containing the event data.</param>
+		private void GorgonFontContentPanel_MouseClick(object sender, MouseEventArgs e)
+		{
+			this.Focus();
+		}
+
+		/// <summary>
+		/// Handles the MouseWheel event of the PanelDisplay control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="MouseEventArgs"/> instance containing the event data.</param>
+		private void PanelDisplay_MouseWheel(object sender, MouseEventArgs e)
+		{
+			if (e.Delta > 0)
+			{
+				buttonNextTexture.PerformClick();
+			}
+
+			if (e.Delta < 0)
+			{
+				buttonPrevTexture.PerformClick();
+			}
+		}
+
+		/// <summary>
+		/// Handles the Click event of the itemShadowOpacity control.
 		/// </summary>
 		/// <param name="sender">The source of the event.</param>
 		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-		private void checkShadow_Click(object sender, EventArgs e)
+		private void itemShadowOpacity_Click(object sender, EventArgs e)
+		{
+			int opacity = (int)(GorgonFontEditorPlugIn.Settings.ShadowOpacity * 255.0f);
+			formAlphaPicker picker = null;
+
+			try
+			{
+				picker = new formAlphaPicker();
+				picker.Text = "Select the opacity for the preview text shadow";
+				picker.SelectedAlphaValue = GorgonFontEditorPlugIn.Settings.ShadowOpacity;
+				if (picker.ShowDialog() == DialogResult.OK)
+				{
+					GorgonFontEditorPlugIn.Settings.ShadowOpacity = _text.ShadowOpacity = picker.SelectedAlphaValue;
+				}
+			}
+			catch (Exception ex)
+			{
+				GorgonDialogs.ErrorBox(null, ex);
+			}
+			finally
+			{
+				if (picker != null)
+					picker.Dispose();
+			}
+		}
+
+		/// <summary>
+		/// Handles the Click event of the itemPreviewShadowEnable control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+		private void itemPreviewShadowEnable_Click(object sender, EventArgs e)
 		{
 			if (_text != null)
 			{
-				_text.ShadowEnabled = checkShadow.Checked;
+				_text.ShadowEnabled = GorgonFontEditorPlugIn.Settings.ShadowEnabled = itemPreviewShadowEnable.Checked;
+				ValidateControls();
 			}
+		}
+
+		/// <summary>
+		/// Handles the Click event of the itemSampleTextBackground control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+		private void itemSampleTextBackground_Click(object sender, EventArgs e)
+		{
+			ColorPickerDialog picker = null;
+
+			try
+			{
+				picker = new ColorPickerDialog();
+				picker.Text = "Select a background color for the preview text";
+				picker.AlphaEnabled = false;
+				picker.OldColor = Color.FromArgb(GorgonFontEditorPlugIn.Settings.BackgroundColor);
+				if (picker.ShowDialog() == DialogResult.OK)
+				{
+					panelText.BackColor = picker.SelectedColor;
+					GorgonFontEditorPlugIn.Settings.BackgroundColor = picker.SelectedColor.ToArgb();
+				}
+			}
+			catch (Exception ex)
+			{
+				GorgonDialogs.ErrorBox(null, ex);
+			}
+			finally
+			{
+				if (picker != null)
+					picker.Dispose();
+			}	
 		}
 
 		/// <summary>
@@ -143,6 +235,8 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 				buttonNextTexture.Enabled = false;
                 labelTextureCount.Text = "Texture: N/A";
             }
+
+			itemShadowOffset.Enabled = itemShadowOpacity.Enabled = GorgonFontEditorPlugIn.Settings.ShadowEnabled;
 
             UpdateGlyphInfo();
 		}
@@ -483,6 +577,9 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		/// </summary>
 		public void CreateResources()
 		{
+			itemPreviewShadowEnable.Checked = GorgonFontEditorPlugIn.Settings.ShadowEnabled;
+			panelText.BackColor = Color.FromArgb(GorgonFontEditorPlugIn.Settings.BackgroundColor);
+
 			_sampleText.Length = 0;
 			_sampleText.Append(GorgonFontEditorPlugIn.Settings.SampleText);
 
@@ -490,8 +587,9 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 			_text.Color = Color.Black;
 			_text.WordWrap = true;
 			_text.TextRectangle = new RectangleF(PointF.Empty, panelText.ClientSize);
-			_text.ShadowOpacity = 0.5f;
-			_text.ShadowOffset = new Vector2(1, 1);
+			_text.ShadowOpacity = GorgonFontEditorPlugIn.Settings.ShadowOpacity;
+			_text.ShadowOffset = GorgonFontEditorPlugIn.Settings.ShadowOffset;
+			_text.ShadowEnabled = itemPreviewShadowEnable.Checked;
 
             _pattern = _content.Graphics.Textures.Create2DTextureFromGDIImage("Background.Pattern", Properties.Resources.Pattern);
 
@@ -506,6 +604,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
             // Set the sprite up for wrapping the texture.
             _patternSprite.TextureSampler.HorizontalWrapping = TextureAddressing.Wrap;
             _patternSprite.TextureSampler.VerticalWrapping = TextureAddressing.Wrap;
+
 		}
 
 		/// <summary>
@@ -655,7 +754,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
                 _patternSprite.Color = new GorgonColor(0.25f, 0.25f, 1.0f, 0.4f);
                 _patternSprite.Draw();
             }
-		}		
+		}
 		#endregion
 
         #region Constructor/Destructor.
@@ -665,7 +764,9 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
         public GorgonFontContentPanel()
         {
             InitializeComponent();
+
+			this.MouseWheel += PanelDisplay_MouseWheel;
         }
         #endregion
-    }
+	}
 }
