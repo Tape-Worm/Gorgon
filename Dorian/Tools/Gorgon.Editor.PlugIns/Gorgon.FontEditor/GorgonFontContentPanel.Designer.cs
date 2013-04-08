@@ -47,15 +47,6 @@
 			this.splitContent = new System.Windows.Forms.Splitter();
 			this.panel1 = new System.Windows.Forms.Panel();
 			this.panelToolbar = new System.Windows.Forms.Panel();
-			this.stripCommands = new System.Windows.Forms.ToolStrip();
-			this.menuTextColor = new System.Windows.Forms.ToolStripDropDownButton();
-			this.itemSampleTextForeground = new System.Windows.Forms.ToolStripMenuItem();
-			this.itemSampleTextBackground = new System.Windows.Forms.ToolStripMenuItem();
-			this.menuShadow = new System.Windows.Forms.ToolStripDropDownButton();
-			this.itemPreviewShadowEnable = new System.Windows.Forms.ToolStripMenuItem();
-			this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
-			this.itemShadowOpacity = new System.Windows.Forms.ToolStripMenuItem();
-			this.itemShadowOffset = new System.Windows.Forms.ToolStripMenuItem();
 			this.panelControls = new System.Windows.Forms.Panel();
 			this.stripFontDisplay = new System.Windows.Forms.ToolStrip();
 			this.buttonPrevTexture = new System.Windows.Forms.ToolStripButton();
@@ -77,19 +68,32 @@
 			this.labelSelectedGlyphInfo = new System.Windows.Forms.ToolStripLabel();
 			this.separatorGlyphInfo = new System.Windows.Forms.ToolStripSeparator();
 			this.labelHoverGlyphInfo = new System.Windows.Forms.ToolStripLabel();
+			this.stripCommands = new System.Windows.Forms.ToolStrip();
+			this.menuTextColor = new System.Windows.Forms.ToolStripDropDownButton();
+			this.itemSampleTextForeground = new System.Windows.Forms.ToolStripMenuItem();
+			this.itemSampleTextBackground = new System.Windows.Forms.ToolStripMenuItem();
+			this.menuShadow = new System.Windows.Forms.ToolStripDropDownButton();
+			this.itemPreviewShadowEnable = new System.Windows.Forms.ToolStripMenuItem();
+			this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
+			this.itemShadowOpacity = new System.Windows.Forms.ToolStripMenuItem();
+			this.itemShadowOffset = new System.Windows.Forms.ToolStripMenuItem();
+			this.toolStripSeparator5 = new System.Windows.Forms.ToolStripSeparator();
+			this.toolStripLabel1 = new System.Windows.Forms.ToolStripLabel();
+			this.textPreviewText = new System.Windows.Forms.ToolStripTextBox();
+			this.panel2 = new System.Windows.Forms.Panel();
 			this.PanelDisplay.SuspendLayout();
 			this.panel1.SuspendLayout();
-			this.panelToolbar.SuspendLayout();
-			this.stripCommands.SuspendLayout();
 			this.panelControls.SuspendLayout();
 			this.stripFontDisplay.SuspendLayout();
+			this.stripCommands.SuspendLayout();
+			this.panel2.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// PanelDisplay
 			// 
 			this.PanelDisplay.Controls.Add(this.splitContent);
 			this.PanelDisplay.Controls.Add(this.panel1);
-			this.PanelDisplay.Controls.Add(this.panelText);
+			this.PanelDisplay.Controls.Add(this.panel2);
 			this.PanelDisplay.Size = new System.Drawing.Size(806, 606);
 			// 
 			// panelTextures
@@ -98,7 +102,7 @@
 			this.panelTextures.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.panelTextures.Location = new System.Drawing.Point(0, 25);
 			this.panelTextures.Name = "panelTextures";
-			this.panelTextures.Size = new System.Drawing.Size(806, 405);
+			this.panelTextures.Size = new System.Drawing.Size(806, 347);
 			this.panelTextures.TabIndex = 0;
 			this.panelTextures.MouseClick += new System.Windows.Forms.MouseEventHandler(this.GorgonFontContentPanel_MouseClick);
 			this.panelTextures.MouseDown += new System.Windows.Forms.MouseEventHandler(this.panelTextures_MouseDown);
@@ -108,11 +112,11 @@
 			// panelText
 			// 
 			this.panelText.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(58)))), ((int)(((byte)(58)))), ((int)(((byte)(58)))));
-			this.panelText.Dock = System.Windows.Forms.DockStyle.Bottom;
+			this.panelText.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.panelText.ForeColor = System.Drawing.Color.Black;
-			this.panelText.Location = new System.Drawing.Point(0, 456);
+			this.panelText.Location = new System.Drawing.Point(0, 25);
 			this.panelText.Name = "panelText";
-			this.panelText.Size = new System.Drawing.Size(806, 150);
+			this.panelText.Size = new System.Drawing.Size(806, 183);
 			this.panelText.TabIndex = 0;
 			this.panelText.MouseClick += new System.Windows.Forms.MouseEventHandler(this.GorgonFontContentPanel_MouseClick);
 			this.panelText.Resize += new System.EventHandler(this.panelText_Resize);
@@ -121,7 +125,7 @@
 			// 
 			this.splitContent.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(68)))), ((int)(((byte)(68)))), ((int)(((byte)(68)))));
 			this.splitContent.Dock = System.Windows.Forms.DockStyle.Bottom;
-			this.splitContent.Location = new System.Drawing.Point(0, 452);
+			this.splitContent.Location = new System.Drawing.Point(0, 394);
 			this.splitContent.MinExtra = 320;
 			this.splitContent.MinSize = 150;
 			this.splitContent.Name = "splitContent";
@@ -138,105 +142,25 @@
 			this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.panel1.Location = new System.Drawing.Point(0, 0);
 			this.panel1.Name = "panel1";
-			this.panel1.Size = new System.Drawing.Size(806, 456);
+			this.panel1.Size = new System.Drawing.Size(806, 398);
 			this.panel1.TabIndex = 3;
 			// 
 			// panelToolbar
 			// 
 			this.panelToolbar.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(58)))), ((int)(((byte)(58)))), ((int)(((byte)(58)))));
 			this.panelToolbar.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-			this.panelToolbar.Controls.Add(this.stripCommands);
 			this.panelToolbar.Dock = System.Windows.Forms.DockStyle.Top;
 			this.panelToolbar.Location = new System.Drawing.Point(0, 0);
 			this.panelToolbar.Name = "panelToolbar";
 			this.panelToolbar.Size = new System.Drawing.Size(806, 25);
 			this.panelToolbar.TabIndex = 3;
 			// 
-			// stripCommands
-			// 
-			this.stripCommands.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
-			this.stripCommands.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.menuTextColor,
-            this.menuShadow});
-			this.stripCommands.Location = new System.Drawing.Point(0, 0);
-			this.stripCommands.Name = "stripCommands";
-			this.stripCommands.Size = new System.Drawing.Size(804, 25);
-			this.stripCommands.Stretch = true;
-			this.stripCommands.TabIndex = 0;
-			this.stripCommands.Text = "toolStrip1";
-			// 
-			// menuTextColor
-			// 
-			this.menuTextColor.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-			this.menuTextColor.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.itemSampleTextForeground,
-            this.itemSampleTextBackground});
-			this.menuTextColor.Image = global::GorgonLibrary.Editor.FontEditorPlugIn.Properties.Resources.Color;
-			this.menuTextColor.ImageTransparentColor = System.Drawing.Color.Magenta;
-			this.menuTextColor.Name = "menuTextColor";
-			this.menuTextColor.Size = new System.Drawing.Size(29, 22);
-			// 
-			// itemSampleTextForeground
-			// 
-			this.itemSampleTextForeground.Name = "itemSampleTextForeground";
-			this.itemSampleTextForeground.Size = new System.Drawing.Size(248, 22);
-			this.itemSampleTextForeground.Text = "Preview Text &Foreground Color...";
-			this.itemSampleTextForeground.Click += new System.EventHandler(this.buttonTextColor_Click);
-			// 
-			// itemSampleTextBackground
-			// 
-			this.itemSampleTextBackground.Name = "itemSampleTextBackground";
-			this.itemSampleTextBackground.Size = new System.Drawing.Size(248, 22);
-			this.itemSampleTextBackground.Text = "Preview Text &Background Color...";
-			this.itemSampleTextBackground.Click += new System.EventHandler(this.itemSampleTextBackground_Click);
-			// 
-			// menuShadow
-			// 
-			this.menuShadow.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-			this.menuShadow.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.itemPreviewShadowEnable,
-            this.toolStripSeparator4,
-            this.itemShadowOpacity,
-            this.itemShadowOffset});
-			this.menuShadow.Image = global::GorgonLibrary.Editor.FontEditorPlugIn.Properties.Resources.shadow_16x16;
-			this.menuShadow.ImageTransparentColor = System.Drawing.Color.Magenta;
-			this.menuShadow.Name = "menuShadow";
-			this.menuShadow.Size = new System.Drawing.Size(29, 22);
-			// 
-			// itemPreviewShadowEnable
-			// 
-			this.itemPreviewShadowEnable.CheckOnClick = true;
-			this.itemPreviewShadowEnable.Name = "itemPreviewShadowEnable";
-			this.itemPreviewShadowEnable.Size = new System.Drawing.Size(223, 22);
-			this.itemPreviewShadowEnable.Text = "Enable Preview Text Shadow";
-			this.itemPreviewShadowEnable.Click += new System.EventHandler(this.itemPreviewShadowEnable_Click);
-			// 
-			// toolStripSeparator4
-			// 
-			this.toolStripSeparator4.Name = "toolStripSeparator4";
-			this.toolStripSeparator4.Size = new System.Drawing.Size(220, 6);
-			// 
-			// itemShadowOpacity
-			// 
-			this.itemShadowOpacity.Enabled = false;
-			this.itemShadowOpacity.Name = "itemShadowOpacity";
-			this.itemShadowOpacity.Size = new System.Drawing.Size(223, 22);
-			this.itemShadowOpacity.Text = "Shadow &Opacity...";
-			this.itemShadowOpacity.Click += new System.EventHandler(this.itemShadowOpacity_Click);
-			// 
-			// itemShadowOffset
-			// 
-			this.itemShadowOffset.Enabled = false;
-			this.itemShadowOffset.Name = "itemShadowOffset";
-			this.itemShadowOffset.Size = new System.Drawing.Size(223, 22);
-			this.itemShadowOffset.Text = "Shadow O&ffset...";
-			// 
 			// panelControls
 			// 
 			this.panelControls.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(102)))), ((int)(((byte)(102)))), ((int)(((byte)(102)))));
 			this.panelControls.Controls.Add(this.stripFontDisplay);
 			this.panelControls.Dock = System.Windows.Forms.DockStyle.Bottom;
-			this.panelControls.Location = new System.Drawing.Point(0, 430);
+			this.panelControls.Location = new System.Drawing.Point(0, 372);
 			this.panelControls.Name = "panelControls";
 			this.panelControls.Size = new System.Drawing.Size(806, 26);
 			this.panelControls.TabIndex = 0;
@@ -434,6 +358,120 @@
 			this.labelHoverGlyphInfo.Size = new System.Drawing.Size(13, 22);
 			this.labelHoverGlyphInfo.Text = "  ";
 			// 
+			// stripCommands
+			// 
+			this.stripCommands.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
+			this.stripCommands.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.menuTextColor,
+            this.menuShadow,
+            this.toolStripSeparator5,
+            this.toolStripLabel1,
+            this.textPreviewText});
+			this.stripCommands.Location = new System.Drawing.Point(0, 0);
+			this.stripCommands.Name = "stripCommands";
+			this.stripCommands.Size = new System.Drawing.Size(806, 25);
+			this.stripCommands.Stretch = true;
+			this.stripCommands.TabIndex = 0;
+			this.stripCommands.Text = "toolStrip1";
+			// 
+			// menuTextColor
+			// 
+			this.menuTextColor.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.menuTextColor.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.itemSampleTextForeground,
+            this.itemSampleTextBackground});
+			this.menuTextColor.Image = global::GorgonLibrary.Editor.FontEditorPlugIn.Properties.Resources.Color;
+			this.menuTextColor.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.menuTextColor.Name = "menuTextColor";
+			this.menuTextColor.Size = new System.Drawing.Size(29, 22);
+			// 
+			// itemSampleTextForeground
+			// 
+			this.itemSampleTextForeground.Name = "itemSampleTextForeground";
+			this.itemSampleTextForeground.Size = new System.Drawing.Size(179, 22);
+			this.itemSampleTextForeground.Text = "&Foreground Color...";
+			this.itemSampleTextForeground.Click += new System.EventHandler(this.buttonTextColor_Click);
+			// 
+			// itemSampleTextBackground
+			// 
+			this.itemSampleTextBackground.Name = "itemSampleTextBackground";
+			this.itemSampleTextBackground.Size = new System.Drawing.Size(179, 22);
+			this.itemSampleTextBackground.Text = "&Background Color...";
+			this.itemSampleTextBackground.Click += new System.EventHandler(this.itemSampleTextBackground_Click);
+			// 
+			// menuShadow
+			// 
+			this.menuShadow.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.menuShadow.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.itemPreviewShadowEnable,
+            this.toolStripSeparator4,
+            this.itemShadowOpacity,
+            this.itemShadowOffset});
+			this.menuShadow.Image = global::GorgonLibrary.Editor.FontEditorPlugIn.Properties.Resources.shadow_16x16;
+			this.menuShadow.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.menuShadow.Name = "menuShadow";
+			this.menuShadow.Size = new System.Drawing.Size(29, 22);
+			// 
+			// itemPreviewShadowEnable
+			// 
+			this.itemPreviewShadowEnable.CheckOnClick = true;
+			this.itemPreviewShadowEnable.Name = "itemPreviewShadowEnable";
+			this.itemPreviewShadowEnable.Size = new System.Drawing.Size(179, 22);
+			this.itemPreviewShadowEnable.Text = "Enable Text Shadow";
+			this.itemPreviewShadowEnable.Click += new System.EventHandler(this.itemPreviewShadowEnable_Click);
+			// 
+			// toolStripSeparator4
+			// 
+			this.toolStripSeparator4.Name = "toolStripSeparator4";
+			this.toolStripSeparator4.Size = new System.Drawing.Size(176, 6);
+			// 
+			// itemShadowOpacity
+			// 
+			this.itemShadowOpacity.Enabled = false;
+			this.itemShadowOpacity.Name = "itemShadowOpacity";
+			this.itemShadowOpacity.Size = new System.Drawing.Size(179, 22);
+			this.itemShadowOpacity.Text = "Shadow &Opacity...";
+			this.itemShadowOpacity.Click += new System.EventHandler(this.itemShadowOpacity_Click);
+			// 
+			// itemShadowOffset
+			// 
+			this.itemShadowOffset.Enabled = false;
+			this.itemShadowOffset.Name = "itemShadowOffset";
+			this.itemShadowOffset.Size = new System.Drawing.Size(179, 22);
+			this.itemShadowOffset.Text = "Shadow O&ffset...";
+			this.itemShadowOffset.Click += new System.EventHandler(this.itemShadowOffset_Click);
+			// 
+			// toolStripSeparator5
+			// 
+			this.toolStripSeparator5.Name = "toolStripSeparator5";
+			this.toolStripSeparator5.Size = new System.Drawing.Size(6, 25);
+			// 
+			// toolStripLabel1
+			// 
+			this.toolStripLabel1.Name = "toolStripLabel1";
+			this.toolStripLabel1.Size = new System.Drawing.Size(76, 22);
+			this.toolStripLabel1.Text = "Preview Text:";
+			// 
+			// textPreviewText
+			// 
+			this.textPreviewText.AcceptsReturn = true;
+			this.textPreviewText.AutoToolTip = true;
+			this.textPreviewText.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			this.textPreviewText.MaxLength = 4096;
+			this.textPreviewText.Name = "textPreviewText";
+			this.textPreviewText.Size = new System.Drawing.Size(256, 25);
+			this.textPreviewText.TextChanged += new System.EventHandler(this.textPreviewText_TextChanged);
+			// 
+			// panel2
+			// 
+			this.panel2.Controls.Add(this.panelText);
+			this.panel2.Controls.Add(this.stripCommands);
+			this.panel2.Dock = System.Windows.Forms.DockStyle.Bottom;
+			this.panel2.Location = new System.Drawing.Point(0, 398);
+			this.panel2.Name = "panel2";
+			this.panel2.Size = new System.Drawing.Size(806, 208);
+			this.panel2.TabIndex = 4;
+			// 
 			// GorgonFontContentPanel
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
@@ -444,14 +482,14 @@
 			this.MouseClick += new System.Windows.Forms.MouseEventHandler(this.GorgonFontContentPanel_MouseClick);
 			this.PanelDisplay.ResumeLayout(false);
 			this.panel1.ResumeLayout(false);
-			this.panelToolbar.ResumeLayout(false);
-			this.panelToolbar.PerformLayout();
-			this.stripCommands.ResumeLayout(false);
-			this.stripCommands.PerformLayout();
 			this.panelControls.ResumeLayout(false);
 			this.panelControls.PerformLayout();
 			this.stripFontDisplay.ResumeLayout(false);
 			this.stripFontDisplay.PerformLayout();
+			this.stripCommands.ResumeLayout(false);
+			this.stripCommands.PerformLayout();
+			this.panel2.ResumeLayout(false);
+			this.panel2.PerformLayout();
 			this.ResumeLayout(false);
 
         }
@@ -493,6 +531,10 @@
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparator4;
 		private System.Windows.Forms.ToolStripMenuItem itemShadowOpacity;
 		private System.Windows.Forms.ToolStripMenuItem itemShadowOffset;
+		private System.Windows.Forms.Panel panel2;
+		private System.Windows.Forms.ToolStripSeparator toolStripSeparator5;
+		private System.Windows.Forms.ToolStripLabel toolStripLabel1;
+		private System.Windows.Forms.ToolStripTextBox textPreviewText;
 
     }
 }
