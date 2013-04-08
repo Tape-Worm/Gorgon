@@ -45,6 +45,7 @@ namespace GorgonLibrary.Renderers
 		: GorgonNamedObject, IRenderable, IMoveable, I2DCollisionObject
 	{
 		#region Variables.
+		private StringBuilder _tabText = null;											// Tab spacing text.
 		private Gorgon2DCollider _collider = null;                                      // Collision object.
 		private int _colliderVertexCount = 0;                                           // Collider vertex count.
 		private RectangleF? _textRect = null;											// Text rectangle.
@@ -258,6 +259,8 @@ namespace GorgonLibrary.Renderers
 					value = 1;
 
 				_tabSpace = value;
+				_tabText.Length = 0;
+				_tabText.Append(' ', value);
 			}
 		}
 
@@ -598,21 +601,17 @@ namespace GorgonLibrary.Renderers
 
 				for (int i = 0; i < currentLine.Length; i++)
 				{
-					char c = currentLine[i];
+					char c = currentLine[i];									
 
 					if (!_font.Glyphs.Contains(c))
 						c = _font.Settings.DefaultCharacter;
 
 					glyph = _font.Glyphs[c];
 
-					switch (c)
+					if (c == ' ')
 					{
-						case ' ':
-							pos.X += glyph.GlyphCoordinates.Width - 1;
-							continue;
-						case '\t':
-							pos.X += (glyph.GlyphCoordinates.Width - 1) * TabSpaces;
-							continue;
+						pos.X += glyph.GlyphCoordinates.Width - 1;
+						continue;
 					}
 
 					// Add shadow character.
@@ -729,6 +728,7 @@ namespace GorgonLibrary.Renderers
 			_formattedText.Replace("\n\r", "\n");
 			_formattedText.Replace("\r\n", "\n");
 			_formattedText.Replace("\r", "\n");
+			_formattedText.Replace("\t", _tabText.ToString());
 
 			while (i < _formattedText.Length)
 			{
@@ -742,7 +742,9 @@ namespace GorgonLibrary.Renderers
 				}
 
 				if (!_font.Glyphs.Contains(character))
+				{
 					character = _font.Settings.DefaultCharacter;
+				}
 
 				glyph = _font.Glyphs[character];
 
@@ -754,9 +756,6 @@ namespace GorgonLibrary.Renderers
 				{
 					case ' ':
 						pos += glyph.GlyphCoordinates.Width - 1;
-						break;
-					case '\t':
-						pos += (glyph.GlyphCoordinates.Width - 1) * TabSpaces;
 						break;
 					default:
 						float kernValue = glyph.Advance.Z;
@@ -825,6 +824,7 @@ namespace GorgonLibrary.Renderers
 				_formattedText.Replace("\n\r", "\n");
 				_formattedText.Replace("\r\n", "\n");
 				_formattedText.Replace("\r", "\n");
+				_formattedText.Replace("\t", _tabText.ToString());
 			}
 			else
 			{
@@ -861,9 +861,6 @@ namespace GorgonLibrary.Renderers
 				{
 					case ' ':
 						size += glyph.GlyphCoordinates.Width - 1;
-						continue;
-					case '\t':
-						size += (glyph.GlyphCoordinates.Width - 1) * TabSpaces;
 						continue;
 					case '\r':
 					case '\n':
@@ -1165,6 +1162,7 @@ namespace GorgonLibrary.Renderers
 			CullingMode = Graphics.CullingMode.Back;
 			AlphaTestValues = GorgonMinMaxF.Empty;
 			BlendingMode = BlendingMode.Modulate;
+			_tabText = new StringBuilder("   ", 8);
 
 			UpdateText();
 		}

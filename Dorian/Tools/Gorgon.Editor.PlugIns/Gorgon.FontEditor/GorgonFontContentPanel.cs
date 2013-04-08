@@ -57,7 +57,6 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		private int _currentTextureIndex = 0;
 		private GorgonFontContent _content = null;
 		private GorgonText _text = null;                            
-		private StringBuilder _sampleText = new StringBuilder(256);
         private GorgonSprite _patternSprite = null;
         private Dictionary<GorgonGlyph, RectangleF> _glyphRegions = null;
         private Vector2 _textureOffset = Vector2.Zero;
@@ -72,6 +71,33 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
         #endregion
 
         #region Methods.		
+		/// <summary>
+		/// Handles the TextChanged event of the textPreviewText control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+		private void textPreviewText_TextChanged(object sender, EventArgs e)
+		{
+			string formattedText = textPreviewText.Text;
+
+			if (_text == null)
+			{
+				return;
+			}
+
+			if (string.IsNullOrWhiteSpace(textPreviewText.Text))
+			{
+				formattedText = "The quick brown fox jumps over the lazy dog.\\n1234567890 !@#$%^&*() ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz";
+			}
+
+			GorgonFontEditorPlugIn.Settings.SampleText = formattedText;
+
+			formattedText = formattedText.Replace("\\n", "\n");
+			formattedText = formattedText.Replace("\\t", "\t");
+
+			_text.Text = formattedText;
+		}
+
 		/// <summary>
 		/// Handles the MouseClick event of the GorgonFontContentPanel control.
 		/// </summary>
@@ -98,6 +124,65 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 			{
 				buttonPrevTexture.PerformClick();
 			}
+		}
+
+		/// <summary>
+		/// Handles the Click event of the itemShadowOffset control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+		private void itemShadowOffset_Click(object sender, EventArgs e)
+		{
+			formValueComponentEditDialog componentEdit = null;
+
+			try
+			{
+				componentEdit = new formValueComponentEditDialog();
+				componentEdit.ValueComponents = 2;
+				componentEdit.DecimalPlaces = 0;
+				componentEdit.MaxValue = 8;
+				componentEdit.MinValue = -8;
+				componentEdit.Value1 = GorgonFontEditorPlugIn.Settings.ShadowOffset.X;
+				componentEdit.Value2 = GorgonFontEditorPlugIn.Settings.ShadowOffset.Y;
+				componentEdit.Text = "Edit preview text shadow offset";
+				componentEdit.ValueChanged += componentEdit_ValueChanged;
+
+				if (componentEdit.ShowDialog() == DialogResult.OK)
+				{
+					_text.ShadowOffset = GorgonFontEditorPlugIn.Settings.ShadowOffset = new Point((int)componentEdit.Value1, (int)componentEdit.Value2);
+				}
+				else
+				{
+					_text.ShadowOffset = GorgonFontEditorPlugIn.Settings.ShadowOffset;
+				}
+			}
+			catch (Exception ex)
+			{
+				GorgonDialogs.ErrorBox(ParentForm, ex);
+			}
+			finally
+			{
+				if (componentEdit != null)
+				{
+					componentEdit.ValueChanged -= componentEdit_ValueChanged;
+					componentEdit.Dispose();
+				}
+				componentEdit = null;
+			}
+		}
+
+		/// <summary>
+		/// Handles the ValueChanged event of the componentEdit control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+		private void componentEdit_ValueChanged(object sender, EventArgs e)
+		{
+			formValueComponentEditDialog dialog = sender as formValueComponentEditDialog;
+						
+			_text.ShadowOffset = new Point((int)dialog.Value1, (int)dialog.Value2);
+			DrawText();
+			_content.Renderer.Render();
 		}
 
 		/// <summary>
@@ -580,10 +665,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 			itemPreviewShadowEnable.Checked = GorgonFontEditorPlugIn.Settings.ShadowEnabled;
 			panelText.BackColor = Color.FromArgb(GorgonFontEditorPlugIn.Settings.BackgroundColor);
 
-			_sampleText.Length = 0;
-			_sampleText.Append(GorgonFontEditorPlugIn.Settings.SampleText);
-
-			_text = _content.Renderer.Renderables.CreateText("Sample.Text", _content.Font, _sampleText.ToString());
+			_text = _content.Renderer.Renderables.CreateText("Sample.Text", _content.Font, string.Empty);
 			_text.Color = Color.Black;
 			_text.WordWrap = true;
 			_text.TextRectangle = new RectangleF(PointF.Empty, panelText.ClientSize);
@@ -605,6 +687,9 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
             _patternSprite.TextureSampler.HorizontalWrapping = TextureAddressing.Wrap;
             _patternSprite.TextureSampler.VerticalWrapping = TextureAddressing.Wrap;
 
+			textPreviewText.Text = GorgonFontEditorPlugIn.Settings.SampleText;
+			textPreviewText.Select();
+			textPreviewText.Select(0, textPreviewText.Text.Length); 
 		}
 
 		/// <summary>
@@ -618,8 +703,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 
 			_content.Renderer.Drawing.SmoothingMode = SmoothingMode.Smooth;
 
-			_text.Color = new GorgonColor(GorgonFontEditorPlugIn.Settings.TextColor);
-			_text.Text = _sampleText.ToString();
+			_text.Color = new GorgonColor(GorgonFontEditorPlugIn.Settings.TextColor);		
 
 			panelText.AutoScrollMinSize = new Size((int)System.Math.Ceiling(_text.Size.X - (SystemInformation.VerticalScrollBarWidth * 1.5f)), (int)System.Math.Ceiling(_text.Size.Y));
 
@@ -646,6 +730,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 
 			Vector2 texturePos = new Vector2(((panelTextures.ClientSize.Width / 2.0f) - (currentTexture.Settings.Width * _currentZoom) / 2.0f), 0);
 
+			// Show the textures that come before the current texture.
 			for (int i = _currentTextureIndex - 1; i >= 0; i--)
 			{
 				var displayTexture = _content.Font.Textures[i];
@@ -665,6 +750,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 			// Set to the middle.
 			texturePos.X = ((panelTextures.ClientSize.Width / 2.0f) + (currentTexture.Settings.Width * _currentZoom) / 2.0f) + 8.0f;
 
+			// Show the textures that come after the current texture.
 			for (int i = _currentTextureIndex + 1; i < _content.Font.Textures.Count; i++)
 			{
 				var displayTexture = _content.Font.Textures[i];
@@ -696,7 +782,6 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
             {
                 _selectorBGPos.Y = 0.0f;
             }
-            _patternSprite.TextureRegion = new RectangleF(_selectorBGPos.X, _selectorBGPos.Y, _patternSprite.Size.X / _pattern.Settings.Width, _patternSprite.Size.Y / _pattern.Settings.Height);
 
 			panelTextures.AutoScrollMinSize = new Size((int)System.Math.Ceiling(_currentZoom * currentTexture.Settings.Width), (int)System.Math.Ceiling(_currentZoom * currentTexture.Settings.Height));
 
@@ -740,6 +825,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
                 _patternSprite.Position = rect.Location;
                 _patternSprite.Size = rect.Size;
                 _patternSprite.Color = new GorgonColor(1, 0, 0, 0.4f);
+				_patternSprite.TextureRegion = new RectangleF(_selectorBGPos.X, _selectorBGPos.Y, rect.Width / _pattern.Settings.Width, rect.Height / _pattern.Settings.Height);
                 _patternSprite.Draw();
             }
 
@@ -752,6 +838,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
                 _patternSprite.Position = rect.Location;
                 _patternSprite.Size = rect.Size;
                 _patternSprite.Color = new GorgonColor(0.25f, 0.25f, 1.0f, 0.4f);
+				_patternSprite.TextureRegion = new RectangleF(_selectorBGPos.X, _selectorBGPos.Y, rect.Width / _pattern.Settings.Width, rect.Height / _pattern.Settings.Height);
                 _patternSprite.Draw();
             }
 		}

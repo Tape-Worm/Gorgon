@@ -154,7 +154,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 			ShadowEnabled = false;
 			ShadowOffset = new Point(1, 1);
 			ShadowOpacity = 0.5f;
-            SampleText = "The quick brown fox jumps over the lazy dog.\n1234567890 !@#$%^&*() ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz";
+            SampleText = "The quick brown fox jumps over the lazy dog.\\n1234567890 !@#$%^&*() ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz";
 		}
 		#endregion
 	}
