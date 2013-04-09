@@ -156,7 +156,7 @@ namespace GorgonLibrary.Editor
                     Cursor.Current = Cursors.WaitCursor;
                     AddFilesFromExplorer(directoryNode, dialogImport.FileNames.ToList());
                     
-                    Program.Settings.ImportLastFilePath = Path.GetDirectoryName(dialogImport.FileNames[0].FormatDirectory(Path.DirectorySeparatorChar));
+                    Program.Settings.ImportLastFilePath = Path.GetDirectoryName(dialogImport.FileNames[0]).FormatDirectory(Path.DirectorySeparatorChar);
                 }
             }
             catch (Exception ex)
