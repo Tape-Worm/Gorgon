@@ -63,6 +63,184 @@ namespace GorgonLibrary.Editor
 
 		#region Methods.
         /// <summary>
+        /// Handles the Click event of the itemImport control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void itemImport_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                Dictionary<string, Tuple<string, string>> contentExtensions = new Dictionary<string, Tuple<string, string>>();
+
+                var extensions = (from plugIn in Program.ContentPlugIns
+                                  from extension in plugIn.Value.FileExtensions                            
+                                  select extension.Value).Distinct();
+
+                dialogImport.Filter = string.Empty;
+
+                // Add extension filter(s) to import dialog.
+                if (extensions.Count() > 0)
+                {
+                    StringBuilder allExtensions = new StringBuilder(256);
+                    StringBuilder filter = new StringBuilder(1024);
+
+                    // Add each extension.
+                    foreach (var extension in extensions)
+                    {
+                        if (filter.Length > 0)
+                        {
+                            filter.Append("|");
+                        }
+
+                        if (allExtensions.Length > 0)
+                        {
+                            allExtensions.Append(";");
+                        }
+
+                        filter.AppendFormat("{0}|*.{1}", extension.Item2, extension.Item1);
+                        allExtensions.Append(extension.Item1);
+                    }
+
+                    if (extensions.Count() > 1)
+                    {
+                        dialogImport.Filter = string.Format("All Content Types|*.{0}|{1}", allExtensions.ToString(), filter.ToString());
+                        dialogImport.FilterIndex = 1;
+                    }
+                    else
+                    {
+                        dialogImport.Filter = filter.ToString();
+                        dialogImport.FilterIndex = 2;
+                    }
+                }
+
+                if (dialogImport.Filter.Length > 0)
+                {
+                    dialogImport.Filter += "|All Files (*.*)|*.*";
+                }
+                else
+                {
+                    dialogImport.Filter = "All Files (*.*)|*.*";                    
+                }
+
+                dialogImport.InitialDirectory = Program.Settings.ImportLastFilePath;                
+
+                // Perform import.
+                if (dialogImport.ShowDialog(this) == System.Windows.Forms.DialogResult.OK)
+                {
+                    TreeNodeDirectory directoryNode = null;
+
+                    // Find our destination directory node.
+                    if (treeFiles.SelectedNode == null)
+                    {
+                        directoryNode = _rootNode;
+                    }
+                    else
+                    {
+                        EditorTreeNode parentNode = treeFiles.SelectedNode.Parent as EditorTreeNode;
+                        directoryNode = treeFiles.SelectedNode as TreeNodeDirectory;
+                                                
+                        while ((directoryNode == null) && (parentNode != null))
+                        {                            
+                            directoryNode = parentNode as TreeNodeDirectory;
+                            parentNode = parentNode.Parent as EditorTreeNode;
+                        }
+                    }
+
+                    if (directoryNode == null)
+                    {
+                        GorgonDialogs.ErrorBox(this, "Cannot retrieve destination directory.");
+                        return;
+                    }
+                    
+                    Cursor.Current = Cursors.WaitCursor;
+                    AddFilesFromExplorer(directoryNode, dialogImport.FileNames.ToList());
+                    
+                    Program.Settings.ImportLastFilePath = Path.GetDirectoryName(dialogImport.FileNames[0].FormatDirectory(Path.DirectorySeparatorChar));
+                }
+            }
+            catch (Exception ex)
+            {
+                GorgonDialogs.ErrorBox(this, ex);
+            }
+            finally
+            {
+                ValidateControls();
+                Cursor.Current = Cursors.Default;
+            }
+        }
+
+        /// <summary>
+        /// Handles the Click event of the itemExport control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void itemExport_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                string fileExtension = Program.CurrentContent.File.Extension;
+                ContentPlugIn contentPlugIn = null;
+
+                // Find the plug-in for this content.
+                if (!string.IsNullOrWhiteSpace(fileExtension))
+                {
+                    contentPlugIn = (from plugIn in Program.ContentPlugIns
+                                     where plugIn.Value.FileExtensions.ContainsKey(fileExtension.ToLower())
+                                     select plugIn.Value).FirstOrDefault();
+                }
+
+                if (contentPlugIn != null)
+                {
+                    StringBuilder extensions = new StringBuilder(512);
+
+                    // Build our filter.
+                    int index = 1;
+                    dialogExport.Filter = string.Empty;
+
+                    foreach (var extension in contentPlugIn.FileExtensions)
+                    {
+                        if (extensions.Length > 0)
+                        {
+                            extensions.Append("|");
+                        }
+
+                        if (string.Compare(fileExtension, extension.Key, true) == 0)
+                        {
+                            dialogExport.FilterIndex = index;
+                            dialogExport.DefaultExt = extension.Value.Item1;
+                        }
+
+                        extensions.AppendFormat("{0}|*.{1}", extension.Value.Item2, extension.Value.Item1);
+                        index++;
+                    }
+
+                    dialogExport.Filter = extensions.ToString();
+                }                
+
+                dialogExport.Title = "Export " + Program.CurrentContent.ContentType;
+                dialogExport.InitialDirectory = Program.Settings.ExportLastFilePath;
+
+                // Export the content data.
+                if (dialogExport.ShowDialog(this) == System.Windows.Forms.DialogResult.OK)
+                {
+                    Cursor.Current = Cursors.WaitCursor;
+                    Program.CurrentContent.Export(dialogExport.FileName);
+                    Program.Settings.ExportLastFilePath = Path.GetDirectoryName(dialogExport.FileName).FormatDirectory(Path.DirectorySeparatorChar);
+                }
+            }
+            catch (Exception ex)
+            {
+                GorgonDialogs.ErrorBox(this, ex);
+            }
+            finally
+            {
+                Cursor.Current = Cursors.Default;
+                ValidateControls();
+            }
+        }
+
+        /// <summary>
         /// Handles the PropertyValueChanged event of the propertyItem control.
         /// </summary>
         /// <param name="s">The source of the event.</param>
@@ -2209,9 +2387,9 @@ namespace GorgonLibrary.Editor
 								{
 									if ((result & ConfirmationResult.ToAll) != ConfirmationResult.ToAll)
 									{
-										if (progForm.InvokeRequired)
+										if (this.InvokeRequired)
 										{
-											progForm.Invoke(new MethodInvoker(() =>
+											this.Invoke(new MethodInvoker(() =>
 												{
 													result = GorgonDialogs.ConfirmBox(progForm, "The file '" + sourceFile.Item2 + "' already exists.  Would you like to overwrite it?", true, true);
 												}));
@@ -2243,9 +2421,9 @@ namespace GorgonLibrary.Editor
 									if ((Program.CurrentContent != null)
 										&& (Program.CurrentContent.File == fileEntry))
 									{
-										if (progForm.InvokeRequired)
+										if (this.InvokeRequired)
 										{
-											progForm.Invoke(new MethodInvoker(() =>
+											this.Invoke(new MethodInvoker(() =>
 												{
 													GorgonDialogs.ErrorBox(progForm, "The file '" + fileEntry.FullPath + "' is opened for editing.  You must close this file and reimport it if you wish to overwrite it.");
 												}));
@@ -2276,9 +2454,9 @@ namespace GorgonLibrary.Editor
 								catch(Exception ex)
 								{
 									// Record the error and move on.
-									if (progForm.InvokeRequired)
+									if (this.InvokeRequired)
 									{
-										progForm.Invoke(new MethodInvoker(() =>
+										this.Invoke(new MethodInvoker(() =>
 											{
 												GorgonDialogs.ErrorBox(progForm, ex);
 											}));
@@ -2317,7 +2495,10 @@ namespace GorgonLibrary.Editor
 					destDir.Expand();
 					treeFiles.SelectedNode = destDir;
 
-					Program.EditorFileChanged = true;
+                    if (counter > 0)
+                    {
+                        Program.EditorFileChanged = true;
+                    }
 
 					GorgonDialogs.InfoBox(this, counter.ToString() + " files successfully imported.\n" + (sourceFiles.Count - counter).ToString() + " files were skipped.");
 				}

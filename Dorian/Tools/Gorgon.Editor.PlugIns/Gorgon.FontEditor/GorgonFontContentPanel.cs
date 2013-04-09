@@ -70,7 +70,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		
         #endregion
 
-        #region Methods.		
+        #region Methods.
 		/// <summary>
 		/// Handles the TextChanged event of the textPreviewText control.
 		/// </summary>

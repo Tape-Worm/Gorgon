@@ -40,6 +40,10 @@ namespace GorgonLibrary.Editor
 		: ToolStripRenderer
 	{
         /// <summary>
+        /// Normal window background.
+        /// </summary>
+        public static readonly Color WindowBackground = Color.FromArgb(68, 68, 68);
+        /// <summary>
         /// Dark background color for most items.
         /// </summary>
         public static readonly Color DarkBackground = Color.FromArgb(58, 58, 58);
