@@ -63,7 +63,7 @@ namespace GorgonLibrary.Editor
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.itemAdd = new System.Windows.Forms.ToolStripMenuItem();
             this.popupAddContentMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.dropNewContent = new System.Windows.Forms.ToolStripDropDownButton();
+            this.popupItemAdd = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.itemSave = new System.Windows.Forms.ToolStripMenuItem();
             this.itemSaveAs = new System.Windows.Forms.ToolStripMenuItem();
@@ -77,7 +77,7 @@ namespace GorgonLibrary.Editor
             this.itemCopy = new System.Windows.Forms.ToolStripMenuItem();
             this.itemPaste = new System.Windows.Forms.ToolStripMenuItem();
             this.itemDelete = new System.Windows.Forms.ToolStripMenuItem();
-            this.popupItemAdd = new System.Windows.Forms.ToolStripMenuItem();
+            this.dropNewContent = new System.Windows.Forms.ToolStripDropDownButton();
             this.tabDocumentManager = new KRBTabControl.KRBTabControl();
             this.pageItems = new KRBTabControl.TabPageEx();
             this.containerFiles = new System.Windows.Forms.ToolStripContainer();
@@ -109,6 +109,7 @@ namespace GorgonLibrary.Editor
             this.stripStatus = new System.Windows.Forms.StatusStrip();
             this.dialogOpenFile = new System.Windows.Forms.OpenFileDialog();
             this.dialogSaveFile = new System.Windows.Forms.SaveFileDialog();
+            this.dialogImport = new System.Windows.Forms.OpenFileDialog();
             this.menuMain.SuspendLayout();
             this.tabDocumentManager.SuspendLayout();
             this.pageItems.SuspendLayout();
@@ -187,19 +188,16 @@ namespace GorgonLibrary.Editor
             // popupAddContentMenu
             // 
             this.popupAddContentMenu.Name = "popupAddContentMenu";
-            this.popupAddContentMenu.OwnerItem = this.popupItemAdd;
+            this.popupAddContentMenu.OwnerItem = this.dropNewContent;
             this.popupAddContentMenu.Size = new System.Drawing.Size(61, 4);
             // 
-            // dropNewContent
+            // popupItemAdd
             // 
-            this.dropNewContent.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.dropNewContent.DropDown = this.popupAddContentMenu;
-            this.dropNewContent.Enabled = false;
-            this.dropNewContent.Image = global::GorgonLibrary.Editor.Properties.Resources.new_item_16x16;
-            this.dropNewContent.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.dropNewContent.Name = "dropNewContent";
-            this.dropNewContent.Size = new System.Drawing.Size(29, 22);
-            this.dropNewContent.Text = "New content item";
+            this.popupItemAdd.DropDown = this.popupAddContentMenu;
+            this.popupItemAdd.Enabled = false;
+            this.popupItemAdd.Name = "popupItemAdd";
+            this.popupItemAdd.Size = new System.Drawing.Size(181, 22);
+            this.popupItemAdd.Text = "Add Content";
             // 
             // toolStripSeparator3
             // 
@@ -234,6 +232,7 @@ namespace GorgonLibrary.Editor
             this.itemImport.Name = "itemImport";
             this.itemImport.Size = new System.Drawing.Size(155, 22);
             this.itemImport.Text = "Import...";
+            this.itemImport.Click += new System.EventHandler(this.itemImport_Click);
             // 
             // itemExport
             // 
@@ -241,6 +240,7 @@ namespace GorgonLibrary.Editor
             this.itemExport.Name = "itemExport";
             this.itemExport.Size = new System.Drawing.Size(155, 22);
             this.itemExport.Text = "&Export...";
+            this.itemExport.Click += new System.EventHandler(this.itemExport_Click);
             // 
             // toolStripSeparator2
             // 
@@ -302,13 +302,16 @@ namespace GorgonLibrary.Editor
             this.itemDelete.Text = "Delete";
             this.itemDelete.Click += new System.EventHandler(this.itemDelete_Click);
             // 
-            // popupItemAdd
+            // dropNewContent
             // 
-            this.popupItemAdd.DropDown = this.popupAddContentMenu;
-            this.popupItemAdd.Enabled = false;
-            this.popupItemAdd.Name = "popupItemAdd";
-            this.popupItemAdd.Size = new System.Drawing.Size(181, 22);
-            this.popupItemAdd.Text = "Add Content";
+            this.dropNewContent.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.dropNewContent.DropDown = this.popupAddContentMenu;
+            this.dropNewContent.Enabled = false;
+            this.dropNewContent.Image = global::GorgonLibrary.Editor.Properties.Resources.new_item_16x16;
+            this.dropNewContent.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.dropNewContent.Name = "dropNewContent";
+            this.dropNewContent.Size = new System.Drawing.Size(29, 22);
+            this.dropNewContent.Text = "New content item";
             // 
             // tabDocumentManager
             // 
@@ -415,7 +418,7 @@ namespace GorgonLibrary.Editor
             this.toolStripSeparator5,
             this.itemRenameFolder});
             this.popupFileSystem.Name = "popupFileSystem";
-            this.popupFileSystem.Size = new System.Drawing.Size(182, 214);
+            this.popupFileSystem.Size = new System.Drawing.Size(182, 192);
             // 
             // itemEdit
             // 
@@ -593,7 +596,7 @@ namespace GorgonLibrary.Editor
             // dialogExport
             // 
             this.dialogExport.Filter = "All files (*.*)|*.*";
-            this.dialogExport.Title = "Export current document.";
+            this.dialogExport.Title = "Export";
             // 
             // panelEditor
             // 
@@ -663,6 +666,11 @@ namespace GorgonLibrary.Editor
             // dialogSaveFile
             // 
             this.dialogSaveFile.Title = "Save Gorgon  editor file as...";
+            // 
+            // dialogImport
+            // 
+            this.dialogImport.Multiselect = true;
+            this.dialogImport.Title = "Import";
             // 
             // formMain
             // 
@@ -759,6 +767,7 @@ namespace GorgonLibrary.Editor
         private System.Windows.Forms.ToolStripMenuItem popupItemPaste;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator5;
 		private System.Windows.Forms.ToolStripMenuItem itemDelete;
+        private System.Windows.Forms.OpenFileDialog dialogImport;
 	}
 }
 

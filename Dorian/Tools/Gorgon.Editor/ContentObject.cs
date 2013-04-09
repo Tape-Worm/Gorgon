@@ -333,6 +333,14 @@ namespace GorgonLibrary.Editor
 		public abstract void Activate();
 
         /// <summary>
+        /// Function to export the content to an external file.
+        /// </summary>
+        /// <param name="filePath">Path to the file.</param>
+        public virtual void Export(string filePath)
+        {
+        }
+
+        /// <summary>
         /// Function to retrieve default values for properties with the DefaultValue attribute.
         /// </summary>
         internal void SetDefaults()

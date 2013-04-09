@@ -435,6 +435,24 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
         }
 
         /// <summary>
+        /// Function to export the content to an external file.
+        /// </summary>
+        /// <param name="filePath">Path to the file.</param>
+        public override void Export(string filePath)
+        {
+            if (Font == null)
+            {
+                UpdateContent();
+            }
+
+            // Update the file in our file system first.
+            Persist(File);
+
+            // Export.
+            Font.Save(filePath);
+        }
+
+        /// <summary>
         /// Function to update the content.
         /// </summary>
         protected override void UpdateContent()

@@ -137,10 +137,6 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		}
 		#endregion
 
-		#region Methods.
-
-		#endregion
-
 		#region Constructor/Destructor.
 		/// <summary>
 		/// Initializes a new instance of the <see cref="GorgonFontContentSettings"/> class.
@@ -149,8 +145,8 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 			: base("FontEditor.PlugIn", new Version(1, 0, 0, 0))
 		{
 			FontTextureSize = new Size(256, 256);
-			TextColor = Color.Black.ToArgb();
-			BackgroundColor = Color.FromArgb(255, 68, 68, 68).ToArgb();
+			TextColor = Color.White.ToArgb();            
+			BackgroundColor = Color.FromArgb(255, DarkFormsRenderer.WindowBackground).ToArgb();
 			ShadowEnabled = false;
 			ShadowOffset = new Point(1, 1);
 			ShadowOpacity = 0.5f;
