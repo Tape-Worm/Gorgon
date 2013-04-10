@@ -121,6 +121,17 @@ namespace GorgonLibrary.Editor
 		}
 
         /// <summary>
+        /// Property to return whether this is an internal content object only.
+        /// </summary>
+        internal virtual bool IsInternal
+        {
+            get
+            {
+                return false;
+            }
+        }
+
+        /// <summary>
         /// Property to return the type descriptor for this content.
         /// </summary>
         [Browsable(false)]

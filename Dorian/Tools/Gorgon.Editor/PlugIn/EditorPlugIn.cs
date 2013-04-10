@@ -138,14 +138,6 @@ namespace GorgonLibrary.Editor
                 return Editor.PlugInType.Content;
             }
         }
-
-		/// <summary>
-		/// Property to return whether the plug-in supports importing of external data.
-		/// </summary>
-		public abstract bool SupportsImport
-		{
-			get;
-		}
         #endregion
 
         #region Methods.
