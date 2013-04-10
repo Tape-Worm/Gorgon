@@ -135,6 +135,12 @@
     <Compile Include="formNewName.Designer.cs">
       <DependentUpon>formNewName.cs</DependentUpon>
     </Compile>
+    <Compile Include="formPrefs.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="formPrefs.Designer.cs">
+      <DependentUpon>formPrefs.cs</DependentUpon>
+    </Compile>
     <Compile Include="formValueComponentEditDialog.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -191,6 +197,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="formNewName.resx">
       <DependentUpon>formNewName.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="formPrefs.resx">
+      <DependentUpon>formPrefs.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="formValueComponentEditDialog.resx">
       <DependentUpon>formValueComponentEditDialog.cs</DependentUpon>

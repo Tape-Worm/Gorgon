@@ -61,6 +61,17 @@ namespace GorgonLibrary.Editor
 
 		#region Properties.
         /// <summary>
+        /// Property to return whether this is an internal content object only.
+        /// </summary>
+        internal override bool IsInternal
+        {
+            get
+            {
+                return true;
+            }
+        }
+
+        /// <summary>
         /// Property to return whether this content has properties that can be manipulated in the properties tab.
         /// </summary>
         public override bool HasProperties

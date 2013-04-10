@@ -63,17 +63,6 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 			get;
 			private set;
 		}
-
-		/// <summary>
-		/// Property to return whether the plug-in supports importing of external data.
-		/// </summary>
-		public override bool SupportsImport
-		{
-			get 
-			{
-				return true;
-			}
-		}
 		#endregion
 
 		#region Methods.

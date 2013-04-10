@@ -279,11 +279,10 @@ namespace GorgonLibrary.Editor
 									|| ((Program.CurrentContent != null) && (Program.CurrentContent.HasChanges)))
 								&& itemSaveAs.Enabled;
 
-            // Ensure we have plug-ins that can import.
-			itemImport.Enabled = Program.ContentPlugIns.Any(item => item.Value.SupportsImport);
             // Check to see if the current content can export.
             itemExport.Enabled = ((Program.CurrentContent != null) && (Program.CurrentContent.CanExport));
 
+            popupItemAdd.Visible = true;
             itemAdd.Enabled = false;
             popupItemAdd.Enabled = false;
             dropNewContent.Enabled = false;
@@ -310,7 +309,8 @@ namespace GorgonLibrary.Editor
                                 
             if (node is TreeNodeDirectory)
             {
-                itemAdd.Enabled = itemAdd.DropDownItems.Count > 0;
+                toolStripSeparator4.Visible = true;
+                popupItemAdd.Visible = itemAdd.Enabled = itemAdd.DropDownItems.Count > 0;
                 popupItemAdd.Enabled = itemAdd.Enabled;
                 dropNewContent.Enabled = dropNewContent.DropDownItems.Count > 0;
 				buttonDeleteContent.Enabled = true;
@@ -347,10 +347,11 @@ namespace GorgonLibrary.Editor
             {
 				GorgonFileSystemFileEntry file = ((TreeNodeFile)node).File;
 
+                popupItemAdd.Visible = false;
 				popupItemPaste.Enabled = itemPaste.Enabled = (_cutCopyObject != null);
 				popupItemCut.Enabled = popupItemCopy.Enabled = itemCopy.Enabled = itemCut.Enabled = true;
 				buttonDeleteContent.Enabled = true;
-				buttonEditContent.Enabled = itemEdit.Visible = itemEdit.Enabled = Program.ContentPlugIns.Any(item => item.Value.FileExtensions.ContainsKey(file.Extension.ToLower()));
+                toolStripSeparator4.Visible = buttonEditContent.Enabled = itemEdit.Visible = itemEdit.Enabled = Program.ContentPlugIns.Any(item => item.Value.FileExtensions.ContainsKey(file.Extension.ToLower()));
                 itemDelete.Enabled = popupItemDelete.Enabled = (tabDocumentManager.SelectedTab == pageItems);
                 itemRenameFolder.Enabled = true;
             }
@@ -1439,12 +1440,12 @@ namespace GorgonLibrary.Editor
 		{
 			try
 			{
-				if (treeFiles.SelectedNode == null)
-				{
-					return;
-				}
-
 				TreeNodeDirectory directory = treeFiles.SelectedNode as TreeNodeDirectory;
+
+                if (treeFiles.SelectedNode == null)
+                {
+                    directory = _rootNode;
+                }
 
 				if (directory != null)
 				{
