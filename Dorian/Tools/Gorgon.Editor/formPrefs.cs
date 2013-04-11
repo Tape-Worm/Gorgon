@@ -33,6 +33,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.IO;
+using KRBTabControl;
+using GorgonLibrary.IO;
 using GorgonLibrary.UI;
 
 namespace GorgonLibrary.Editor
@@ -44,7 +47,7 @@ namespace GorgonLibrary.Editor
         : ZuneForm
     {
         #region Variables.
-
+        private List<PreferencePanel> _prefPanels = null;               // A list of our loaded preference panels.
         #endregion
 
         #region Properties.
@@ -52,7 +55,84 @@ namespace GorgonLibrary.Editor
         #endregion
 
         #region Methods.
+        /// <summary>
+        /// Function to populate the values for tabs.
+        /// </summary>
+        private void PopulateTabValues()
+        {
+            for (int i = 0; i < _prefPanels.Count; i++)
+            {
+                PreferencePanel panel = _prefPanels[i];
+                TabPageEx page = new TabPageEx(panel.Text);
 
+                panel.InitializeSettings();
+
+                page.BackColor = DarkFormsRenderer.WindowBackground;
+                page.ForeColor = Color.White;
+                page.Text = panel.Text;
+                page.Font = tabPrefs.Font;
+                page.IsClosable = false;
+
+                tabPrefs.TabPages.Add(page);
+
+                page.Controls.Add(panel);
+                panel.Dock = DockStyle.Fill;
+            }
+        }
+
+        /// <summary>
+        /// Handles the Click event of the buttonOK control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void buttonOK_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                for (int i = 0; i < _prefPanels.Count; i++)
+                {
+                    PreferencePanel panel = _prefPanels[i];
+
+                    if (!panel.ValidateSettings())
+                    {
+                        DialogResult = System.Windows.Forms.DialogResult.None;
+                    }
+                    else
+                    {
+                        panel.CommitSettings();
+                    }
+                }
+            }
+            catch (Exception ex)          {
+                GorgonDialogs.ErrorBox(this, ex);
+            }
+        }
+
+        /// <summary>
+        /// Raises the <see cref="E:System.Windows.Forms.Form.Load" /> event.
+        /// </summary>
+        /// <param name="e">An <see cref="T:System.EventArgs" /> that contains the event data.</param>
+        protected override void OnLoad(EventArgs e)
+        {
+            base.OnLoad(e);
+
+            try
+            {
+                _prefPanels = new List<PreferencePanel>();
+
+                // Add our default panel.
+                _prefPanels.Add(new EditorPreferencePanel());
+
+                // TODO: Get preference panels from plug-ins.
+                
+                PopulateTabValues();
+            }
+            catch (Exception ex)
+            {
+                GorgonDialogs.ErrorBox(this, ex);
+                Close();
+            }            
+        }
         #endregion
 
         #region Constructor/Destructor.

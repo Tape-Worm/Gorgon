@@ -63,6 +63,33 @@ namespace GorgonLibrary.Editor
 
 		#region Methods.
         /// <summary>
+        /// Handles the Click event of the itemPreferences control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void itemPreferences_Click(object sender, EventArgs e)
+        {
+            formPrefs prefs = null;
+
+            try
+            {
+                prefs = new formPrefs();
+                prefs.ShowDialog(this);
+            }
+            catch (Exception ex)
+            {
+                GorgonDialogs.ErrorBox(this, ex);
+            }
+            finally
+            {
+                if (prefs != null)
+                {
+                    prefs.Dispose();
+                }
+            }        
+        }
+
+        /// <summary>
         /// Handles the Click event of the itemImport control.
         /// </summary>
         /// <param name="sender">The source of the event.</param>

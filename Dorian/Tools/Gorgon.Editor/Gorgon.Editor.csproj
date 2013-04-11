@@ -72,6 +72,7 @@
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Design" />
+    <Reference Include="System.Messaging" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -87,10 +88,10 @@
   <ItemGroup>
     <Compile Include="AppContext.cs" />
     <Compile Include="ContentObject.cs" />
-    <Compile Include="ContentPanel.cs">
+    <Compile Include="Controls\ContentPanel.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="ContentPanel.Designer.cs">
+    <Compile Include="Controls\ContentPanel.Designer.cs">
       <DependentUpon>ContentPanel.cs</DependentUpon>
     </Compile>
     <Compile Include="Controls\controlColorPicker.cs">
@@ -99,8 +100,26 @@
     <Compile Include="Controls\controlColorPicker.Designer.cs">
       <DependentUpon>controlColorPicker.cs</DependentUpon>
     </Compile>
+    <Compile Include="Controls\DefaultContentPanel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\DefaultContentPanel.Designer.cs">
+      <DependentUpon>DefaultContentPanel.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\EditorPreferencePanel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\EditorPreferencePanel.Designer.cs">
+      <DependentUpon>EditorPreferencePanel.cs</DependentUpon>
+    </Compile>
     <Compile Include="Controls\EditorTreeView.cs">
       <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Controls\PreferencePanel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\PreferencePanel.Designer.cs">
+      <DependentUpon>PreferencePanel.cs</DependentUpon>
     </Compile>
     <Compile Include="Controls\TreeNodeFile.cs" />
     <Compile Include="Controls\EditorTreeNode.cs" />
@@ -112,12 +131,6 @@
     </Compile>
     <Compile Include="Controls\TreeNodeDirectory.cs" />
     <Compile Include="DefaultContent.cs" />
-    <Compile Include="DefaultContentPanel.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="DefaultContentPanel.Designer.cs">
-      <DependentUpon>DefaultContentPanel.cs</DependentUpon>
-    </Compile>
     <Compile Include="Designers\AlphaChannelEditor.cs" />
     <Compile Include="Designers\AlphaChannelTypeConverter.cs" />
     <Compile Include="Designers\PointFConverter.cs" />
@@ -174,11 +187,17 @@
     <Compile Include="GorgonEditorSettings.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <EmbeddedResource Include="ContentPanel.resx">
+    <EmbeddedResource Include="Controls\ContentPanel.resx">
       <DependentUpon>ContentPanel.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Controls\controlColorPicker.resx">
       <DependentUpon>controlColorPicker.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\DefaultContentPanel.resx">
+      <DependentUpon>DefaultContentPanel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\EditorPreferencePanel.resx">
+      <DependentUpon>EditorPreferencePanel.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Controls\EditorTreeView.resx">
       <DependentUpon>EditorTreeView.cs</DependentUpon>
@@ -186,8 +205,8 @@
     <EmbeddedResource Include="Controls\panelEx.resx">
       <DependentUpon>panelEx.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="DefaultContentPanel.resx">
-      <DependentUpon>DefaultContentPanel.cs</DependentUpon>
+    <EmbeddedResource Include="Controls\PreferencePanel.resx">
+      <DependentUpon>PreferencePanel.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="formAlphaPicker.resx">
       <DependentUpon>formAlphaPicker.cs</DependentUpon>
@@ -246,6 +265,10 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Gorgon2.ico" />
+    <None Include="Resources\remove_16x16.png" />
+    <None Include="Resources\add_16x16.png" />
+    <None Include="Resources\down_16x16.png" />
+    <None Include="Resources\up_16x16.png" />
     <None Include="Resources\Expando.png" />
     <None Include="Resources\tree_expand_16x16.png" />
     <None Include="Resources\tree_collapse_16x16.png" />

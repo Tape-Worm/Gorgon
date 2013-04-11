@@ -63,6 +63,16 @@ namespace GorgonLibrary.Editor.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap add_16x16 {
+            get {
+                object obj = ResourceManager.GetObject("add_16x16", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap cancel_16x16 {
             get {
                 object obj = ResourceManager.GetObject("cancel_16x16", resourceCulture);
@@ -96,6 +106,16 @@ namespace GorgonLibrary.Editor.Properties {
         internal static System.Drawing.Bitmap delete_item_16x16 {
             get {
                 object obj = ResourceManager.GetObject("delete_item_16x16", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap down_16x16 {
+            get {
+                object obj = ResourceManager.GetObject("down_16x16", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -203,6 +223,16 @@ namespace GorgonLibrary.Editor.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap remove_16x16 {
+            get {
+                object obj = ResourceManager.GetObject("remove_16x16", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap tree_collapse_16x16 {
             get {
                 object obj = ResourceManager.GetObject("tree_collapse_16x16", resourceCulture);
@@ -226,6 +256,16 @@ namespace GorgonLibrary.Editor.Properties {
         internal static System.Drawing.Bitmap unknown_document_16x16 {
             get {
                 object obj = ResourceManager.GetObject("unknown_document_16x16", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap up_16x16 {
+            get {
+                object obj = ResourceManager.GetObject("up_16x16", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
