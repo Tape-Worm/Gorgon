@@ -30,6 +30,7 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using System.IO;
+using GorgonLibrary.IO;
 using GorgonLibrary.UI;
 using GorgonLibrary.FileSystem;
 using GorgonLibrary.Diagnostics;
@@ -165,8 +166,10 @@ namespace GorgonLibrary.Editor
         /// <returns>TRUE if accessible, FALSE if not.</returns>
         private bool CanAccessScratch()
 		{
+            string directoryName = Program.Settings.ScratchPath.FormatDirectory(Path.DirectorySeparatorChar);
+
 			// Ensure that the device exists or is ready.
-			if (!Directory.Exists(Path.GetPathRoot(Program.Settings.ScratchPath)))
+			if (!Directory.Exists(Path.GetPathRoot(directoryName)))
 			{
 				return false;
 			}			
@@ -176,22 +179,28 @@ namespace GorgonLibrary.Editor
 				DirectoryInfo directoryInfo = null;
 
 				// Do not allow access to a system location.
-				if (Program.IsSystemLocation(Program.Settings.ScratchPath))
+                if (Program.IsSystemLocation(directoryName))
 				{
 					return false;
 				}
 
-				if (!Directory.Exists(Program.Settings.ScratchPath))
+                directoryInfo = new DirectoryInfo(directoryName);
+				if (!directoryInfo.Exists)
 				{
 					// If we created the directory, then hide it.
-					directoryInfo = new DirectoryInfo(Program.Settings.ScratchPath);
-					directoryInfo.Create();
-					directoryInfo.Attributes = FileAttributes.Hidden | FileAttributes.NotContentIndexed;
+					directoryInfo.Create();					
 					return true;
 				}
-
-				directoryInfo = new DirectoryInfo(Program.Settings.ScratchPath);
+                
 				var acl = directoryInfo.GetAccessControl();				
+
+                // Ensure that we can actually write to this directory.
+                FileInfo testWrite = new FileInfo(directoryName + "TestWrite.tst");
+                using (Stream stream = testWrite.OpenWrite())
+                {
+                    stream.WriteByte(127);
+                }
+                testWrite.Delete();
 			}
 			catch(Exception ex)
 			{
