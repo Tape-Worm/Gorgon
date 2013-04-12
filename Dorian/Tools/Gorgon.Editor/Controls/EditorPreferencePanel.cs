@@ -136,6 +136,23 @@ namespace GorgonLibrary.Editor
         }
 
         /// <summary>
+        /// Handles the DoubleClick event of the listDisabledPlugIns control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void listDisabledPlugIns_DoubleClick(object sender, EventArgs e)
+        {
+            Point cursorLocation = listDisabledPlugIns.PointToClient(Cursor.Position);
+            ListViewHitTestInfo hitTest = listDisabledPlugIns.HitTest(cursorLocation);
+
+            if ((hitTest != null) && (hitTest.Item != null))
+            {
+                GorgonDialogs.ErrorBox(ParentForm, "Plug-In '" + hitTest.Item.Text + "' failed to load.  See details for information.", hitTest.Item.SubItems[1].Text, true);
+            }
+
+        }
+
+        /// <summary>
         /// Function to validate the controls on the panel.
         /// </summary>
         private void ValidateControls()
@@ -274,6 +291,15 @@ namespace GorgonLibrary.Editor
         }
 
         /// <summary>
+        /// Handles the DoubleClick event of the tabPlugIns control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void tabPlugIns_DoubleClick(object sender, EventArgs e)
+        {
+        }
+        
+        /// <summary>
         /// Function to read the current settings into their respective controls.
         /// </summary>
         public override void InitializeSettings()
@@ -341,6 +367,24 @@ namespace GorgonLibrary.Editor
             listReaderPlugIns.EndUpdate();
             listReaderPlugIns.AutoResizeColumns(ColumnHeaderAutoResizeStyle.HeaderSize);
 
+            listDisabledPlugIns.BeginUpdate();
+            listDisabledPlugIns.Items.Clear();
+            foreach (var plugIn in Program.DisabledPlugIns)
+            {
+                ListViewItem item = new ListViewItem();
+
+                item.Name = plugIn.Key.Name;
+                item.Text = plugIn.Key.Description;
+                item.SubItems.Add(plugIn.Value);
+                item.SubItems.Add(plugIn.Key.PlugInPath);
+                item.Tag = plugIn;
+
+                listDisabledPlugIns.Items.Add(item);
+            }
+
+            listDisabledPlugIns.EndUpdate();
+            listDisabledPlugIns.AutoResizeColumns(ColumnHeaderAutoResizeStyle.HeaderSize);
+
             _moveBuffer = new ListViewItem[64];
         }
 
@@ -385,37 +429,5 @@ namespace GorgonLibrary.Editor
             InitializeComponent();
         }
         #endregion
-
-        /// <summary>
-        /// Handles the MouseMove event of the listContentPlugIns control.
-        /// </summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="MouseEventArgs"/> instance containing the event data.</param>
-        private void listContentPlugIns_MouseMove(object sender, MouseEventArgs e)
-        {
-            ListView listView = (ListView)sender;
-            ListViewHitTestInfo hitTest = listView.HitTest(e.Location);
-
-            // If we're over a disabled plug-in, show the tool tip with the reason why it's disabled.
-            if ((hitTest.Item != null) && (hitTest.Item.ForeColor == Color.FromKnownColor(KnownColor.DimGray)))
-            {
-                var plugIn = (EditorPlugIn)hitTest.Item.Tag;
-
-                if (Program.DisabledPlugIns.ContainsKey(plugIn))
-                {
-                    tipError.Show(Program.DisabledPlugIns[plugIn], listView, e.Location);
-                }
-            }
-        }
-
-        /// <summary>
-        /// Handles the MouseLeave event of the listContentPlugIns control.
-        /// </summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-        private void listContentPlugIns_MouseLeave(object sender, EventArgs e)
-        {
-            tipError.Hide((IWin32Window)sender);
-        }
     }
 }

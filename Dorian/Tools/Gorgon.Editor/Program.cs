@@ -584,9 +584,8 @@ namespace GorgonLibrary.Editor
                              orderby device.SupportedFeatureLevel descending, GorgonVideoDeviceEnumerator.VideoDevices.IndexOf(device)
                              select device).First();
             }
-
-			//Graphics = new GorgonGraphics(DeviceFeatureLevel.SM2_a_b);
-			Graphics = new GorgonGraphics(bestDevice);
+                        
+			Graphics = new GorgonGraphics(bestDevice, DeviceFeatureLevel.SM2_a_b);
 		}
 		#endregion
 

@@ -40,6 +40,15 @@ namespace GorgonLibrary.UI
 		#endregion
 
 		#region Properties.
+        /// <summary>
+        /// Property to set or return whether to open the detail panel when the dialog is shown.
+        /// </summary>
+        public bool ShowDetailPanel
+        {
+            get;
+            set;
+        }
+
 		/// <summary>
 		/// Property to return or set the details of the error.
 		/// </summary>
@@ -123,6 +132,12 @@ namespace GorgonLibrary.UI
 			_lastWidth = Width;
 			buttonOK.Focus();
 			ValidateFunctions();
+
+            if (ShowDetailPanel)
+            {
+                checkDetail.Checked = ShowDetailPanel;
+                detailsButton_Click(this, EventArgs.Empty);
+            }
 		}
 
 		/// <summary>
@@ -168,6 +183,7 @@ namespace GorgonLibrary.UI
 			// Initial height = 134.
 			// Expanded height = 334.
 			InitializeComponent();
+            ShowDetailPanel = false;
 			_errorDetails = "";
 		}
 		#endregion

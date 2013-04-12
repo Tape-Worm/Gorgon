@@ -199,8 +199,9 @@ namespace GorgonLibrary.UI
 		/// <param name="owner">Owning window of this dialog.</param>
 		/// <param name="description">Error description.</param>
 		/// <param name="details">Details for the error.</param>
+        /// <param name="showDetail">TRUE to open the window with the detail panel open, FALSE to open it with the detail panel closed.</param>
 		/// <param name="caption">Caption for the error box.</param>
-		public static void ErrorBox(Form owner, string description, string details, string caption)
+		public static void ErrorBox(Form owner, string description, string details, bool showDetail, string caption)
 		{
 			ErrorDialog errorDialog;		// Error dialog.
 
@@ -211,6 +212,7 @@ namespace GorgonLibrary.UI
 			errorDialog.Message = description;
 			errorDialog.ErrorDetails = details;
 			errorDialog.Text = caption;
+            errorDialog.ShowDetailPanel = showDetail;
 			errorDialog.ShowDialog(owner);
 			errorDialog.Dispose();
 			errorDialog = null;
@@ -222,10 +224,22 @@ namespace GorgonLibrary.UI
 		/// <param name="owner">Owning window of this dialog.</param>
 		/// <param name="description">Error description.</param>
 		/// <param name="details">Details for the error.</param>
-		public static void ErrorBox(Form owner, string description, string details)
+        /// <param name="showDetail">TRUE to open the window with the detail panel open, FALSE to open it with the detail panel closed.</param>
+		public static void ErrorBox(Form owner, string description, string details, bool showDetail)
 		{
-			ErrorBox(owner, description, details,"Error");
+			ErrorBox(owner, description, details, showDetail, "Error");
 		}
+
+        /// <summary>
+        /// Function to display the enhanced error dialog.
+        /// </summary>
+        /// <param name="owner">Owning window of this dialog.</param>
+        /// <param name="description">Error description.</param>
+        /// <param name="details">Details for the error.</param>
+        public static void ErrorBox(Form owner, string description, string details)
+        {
+            ErrorBox(owner, description, details, false, "Error");
+        }
 
 		/// <summary>
 		/// Function to display the enhanced error dialog.
@@ -234,7 +248,7 @@ namespace GorgonLibrary.UI
 		/// <param name="description">Error description.</param>		
 		public static void ErrorBox(Form owner, string description)
 		{
-			ErrorBox(owner, description, string.Empty,"Error");
+			ErrorBox(owner, description, string.Empty, false, "Error");
 		}
 
 		/// <summary>
