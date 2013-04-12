@@ -124,7 +124,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
             // Currently we won't work on Direct 3D 9 video devices because of issues when saving texture data.
             if (Graphics.VideoDevice.SupportedFeatureLevel == GorgonLibrary.Graphics.DeviceFeatureLevel.SM2_a_b)
             {
-                invalidReasons.AppendFormat("This plug-in requires a video device with feature level SM4 or above, the current video device has a feature level of {0}.", Graphics.VideoDevice.SupportedFeatureLevel);
+                invalidReasons.AppendFormat("This plug-in requires a video device with feature level SM4 or above.\nThe current video device '" + Graphics.VideoDevice.Name + "' has a feature level of {0}.", Graphics.VideoDevice.SupportedFeatureLevel);
             }
 
             return invalidReasons.ToString();

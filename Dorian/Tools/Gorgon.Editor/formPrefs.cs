@@ -65,8 +65,6 @@ namespace GorgonLibrary.Editor
                 PreferencePanel panel = _prefPanels[i];
                 TabPageEx page = new TabPageEx(panel.Text);
 
-                panel.InitializeSettings();
-
                 page.BackColor = DarkFormsRenderer.WindowBackground;
                 page.ForeColor = Color.White;
                 page.Text = panel.Text;
@@ -85,7 +83,10 @@ namespace GorgonLibrary.Editor
                 else
                 {
                     panel.Width = page.ClientSize.Width;
+                    panel.Height = page.ClientSize.Height;
                 }
+
+                panel.InitializeSettings();
             }
         }
 
@@ -112,7 +113,8 @@ namespace GorgonLibrary.Editor
                     }
                 }
             }
-            catch (Exception ex)          {
+            catch (Exception ex)          
+            {
                 GorgonDialogs.ErrorBox(this, ex);
             }
         }
