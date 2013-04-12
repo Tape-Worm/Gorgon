@@ -31,7 +31,10 @@ using System.Text;
 using System.Threading.Tasks;
 using System.IO;
 using System.Windows.Forms;
+using System.Drawing;
 using GorgonLibrary.IO;
+using GorgonLibrary.FileSystem;
+using GorgonLibrary.PlugIns;
 using GorgonLibrary.UI;
 
 namespace GorgonLibrary.Editor
@@ -137,6 +140,7 @@ namespace GorgonLibrary.Editor
         /// </summary>
         private void ValidateControls()
         {
+            // Content plug-in.
             buttonDeleteContentPlugIn.Enabled = listContentPlugIns.SelectedItems.Count > 0;
             buttonContentPlugInDown.Enabled = buttonContentPlugInUp.Enabled = (listContentPlugIns.SelectedItems.Count > 0) 
                                                                                 && (listContentPlugIns.Items.Count > 0) 
@@ -147,6 +151,31 @@ namespace GorgonLibrary.Editor
 
             buttonContentPlugInDown.Enabled = buttonContentPlugInDown.Enabled
                                             && (listContentPlugIns.SelectedItems[listContentPlugIns.SelectedItems.Count - 1].Index < listContentPlugIns.Items.Count - 1);
+
+
+            // File writer plug-in.
+            buttonDeleteWriterPlugIn.Enabled = listWriterPlugIns.SelectedItems.Count > 0;
+            buttonWriterPlugInDown.Enabled = buttonWriterPlugInUp.Enabled = (listWriterPlugIns.SelectedItems.Count > 0)
+                                                                                && (listWriterPlugIns.Items.Count > 0)
+                                                                                && (listWriterPlugIns.SelectedItems.Count < listWriterPlugIns.Items.Count);
+
+            buttonWriterPlugInUp.Enabled = buttonWriterPlugInUp.Enabled
+                                            && (listWriterPlugIns.SelectedItems[0].Index > 0);
+
+            buttonWriterPlugInDown.Enabled = buttonWriterPlugInDown.Enabled
+                                            && (listWriterPlugIns.SelectedItems[listWriterPlugIns.SelectedItems.Count - 1].Index < listWriterPlugIns.Items.Count - 1);
+
+            // File reader plug-in.
+            buttonDeleteReaderPlugIn.Enabled = listReaderPlugIns.SelectedItems.Count > 0;
+            buttonReaderPlugInDown.Enabled = buttonReaderPlugInUp.Enabled = (listReaderPlugIns.SelectedItems.Count > 0)
+                                                                                && (listReaderPlugIns.Items.Count > 0)
+                                                                                && (listReaderPlugIns.SelectedItems.Count < listReaderPlugIns.Items.Count);
+
+            buttonReaderPlugInUp.Enabled = buttonReaderPlugInUp.Enabled
+                                            && (listReaderPlugIns.SelectedItems[0].Index > 0);
+
+            buttonReaderPlugInDown.Enabled = buttonReaderPlugInDown.Enabled
+                                            && (listReaderPlugIns.SelectedItems[listReaderPlugIns.SelectedItems.Count - 1].Index < listReaderPlugIns.Items.Count - 1);
         }
 
         /// <summary>
@@ -157,6 +186,7 @@ namespace GorgonLibrary.Editor
         private void MoveSelectedItems(ListView.SelectedListViewItemCollection items, bool down)
         {
             int moveCount = items.Count;
+            int currentIndex = -1;
 
             if (items.Count > _moveBuffer.Length)
             {
@@ -165,14 +195,29 @@ namespace GorgonLibrary.Editor
 
             items.CopyTo(_moveBuffer, 0);
 
-            for (int i = 0; i < moveCount; i++)
+            if (!down)
             {
-                ListViewItem item = _moveBuffer[i];
-                int currentIndex = (down ? item.Index + 1 : item.Index - 1);
+                for (int i = 0; i < moveCount; i++)
+                {
+                    ListViewItem item = _moveBuffer[i];
+                    currentIndex = item.Index - 1;
 
-                listContentPlugIns.Items.Remove(item);
-                listContentPlugIns.Items.Insert(currentIndex, item);
-                item.Selected = true;
+                    listContentPlugIns.Items.Remove(item);
+                    listContentPlugIns.Items.Insert(currentIndex, item);
+                    item.Selected = true;
+                }
+            }
+            else
+            {
+                for (int i = moveCount - 1; i >= 0; i--)
+                {
+                    ListViewItem item = _moveBuffer[i];
+                    currentIndex = item.Index + 1;
+
+                    listContentPlugIns.Items.Remove(item);
+                    listContentPlugIns.Items.Insert(currentIndex, item);
+                    item.Selected = true;
+                }
             }
         }
 
@@ -185,7 +230,7 @@ namespace GorgonLibrary.Editor
         {
             try
             {
-                MoveSelectedItems(listContentPlugIns.SelectedItems, true);
+                MoveSelectedItems(((ListView)sender).SelectedItems, true);
             }
             catch (Exception ex)
             {
@@ -206,7 +251,7 @@ namespace GorgonLibrary.Editor
         {
             try
             {
-                MoveSelectedItems(listContentPlugIns.SelectedItems, false);
+                MoveSelectedItems(((ListView)sender).SelectedItems, false);
             }
             catch (Exception ex)
             {
@@ -235,9 +280,8 @@ namespace GorgonLibrary.Editor
         {
             textScratchLocation.Text = Program.Settings.ScratchPath;
 
-            listContentPlugIns.Items.Clear();
-
             listContentPlugIns.BeginUpdate();
+            listContentPlugIns.Items.Clear();
             foreach (var plugIn in Program.ContentPlugIns)
             {
                 ListViewItem item = new ListViewItem();
@@ -245,20 +289,59 @@ namespace GorgonLibrary.Editor
                 item.Name = plugIn.Key;
                 item.Text = plugIn.Value.Description;
                 item.SubItems.Add(plugIn.Value.PlugInPath);
+                item.Tag = plugIn;
+
+                if (Program.DisabledPlugIns.ContainsKey(plugIn.Value))
+                {                    
+                    item.ForeColor = Color.FromKnownColor(KnownColor.DimGray);
+                }
 
                 listContentPlugIns.Items.Add(item);
             }
 
-            listContentPlugIns.Items.Add("Dummy 1");
-            listContentPlugIns.Items.Add("Dummy 2");
-            listContentPlugIns.Items.Add("Dummy 3");
-            listContentPlugIns.Items.Add("Dummy 4");
-            listContentPlugIns.Items.Add("Dummy 5");
-
             listContentPlugIns.EndUpdate();
             listContentPlugIns.AutoResizeColumns(ColumnHeaderAutoResizeStyle.HeaderSize);
 
-            _moveBuffer = new ListViewItem[listContentPlugIns.Items.Count * 2];
+            listWriterPlugIns.BeginUpdate();
+            listWriterPlugIns.Items.Clear();
+            foreach (var plugIn in Program.WriterPlugIns)
+            {
+                ListViewItem item = new ListViewItem();
+
+                item.Name = plugIn.Key;
+                item.Text = plugIn.Value.Description;
+                item.SubItems.Add(plugIn.Value.PlugInPath);
+                item.Tag = plugIn;
+
+                if (Program.DisabledPlugIns.ContainsKey(plugIn.Value))
+                {
+                    item.ForeColor = Color.FromKnownColor(KnownColor.DimGray);
+                }
+
+                listWriterPlugIns.Items.Add(item);
+            }
+
+            listWriterPlugIns.EndUpdate();
+            listWriterPlugIns.AutoResizeColumns(ColumnHeaderAutoResizeStyle.HeaderSize);
+
+            listReaderPlugIns.BeginUpdate();
+            listReaderPlugIns.Items.Clear();
+            foreach (var plugIn in Gorgon.PlugIns.Where(item => item is GorgonFileSystemProviderPlugIn))
+            {
+                ListViewItem item = new ListViewItem();
+
+                item.Name = plugIn.Name;
+                item.Text = plugIn.Description;
+                item.SubItems.Add(Gorgon.PlugIns[plugIn.Name].PlugInPath);
+                item.Tag = plugIn;
+
+                listReaderPlugIns.Items.Add(item);
+            }
+
+            listReaderPlugIns.EndUpdate();
+            listReaderPlugIns.AutoResizeColumns(ColumnHeaderAutoResizeStyle.HeaderSize);
+
+            _moveBuffer = new ListViewItem[64];
         }
 
         /// <summary>
@@ -302,5 +385,37 @@ namespace GorgonLibrary.Editor
             InitializeComponent();
         }
         #endregion
+
+        /// <summary>
+        /// Handles the MouseMove event of the listContentPlugIns control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="MouseEventArgs"/> instance containing the event data.</param>
+        private void listContentPlugIns_MouseMove(object sender, MouseEventArgs e)
+        {
+            ListView listView = (ListView)sender;
+            ListViewHitTestInfo hitTest = listView.HitTest(e.Location);
+
+            // If we're over a disabled plug-in, show the tool tip with the reason why it's disabled.
+            if ((hitTest.Item != null) && (hitTest.Item.ForeColor == Color.FromKnownColor(KnownColor.DimGray)))
+            {
+                var plugIn = (EditorPlugIn)hitTest.Item.Tag;
+
+                if (Program.DisabledPlugIns.ContainsKey(plugIn))
+                {
+                    tipError.Show(Program.DisabledPlugIns[plugIn], listView, e.Location);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Handles the MouseLeave event of the listContentPlugIns control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void listContentPlugIns_MouseLeave(object sender, EventArgs e)
+        {
+            tipError.Hide((IWin32Window)sender);
+        }
     }
 }

@@ -28,7 +28,16 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
+            this.toolHelp = new System.Windows.Forms.ToolTip(this.components);
             this.SuspendLayout();
+            // 
+            // toolHelp
+            // 
+            this.toolHelp.BackColor = System.Drawing.Color.White;
+            this.toolHelp.ForeColor = System.Drawing.Color.Black;
+            this.toolHelp.ToolTipIcon = System.Windows.Forms.ToolTipIcon.Info;
+            this.toolHelp.ToolTipTitle = "Help";
             // 
             // PreferencePanel
             // 
@@ -44,5 +53,8 @@
         }
 
         #endregion
+
+        protected System.Windows.Forms.ToolTip toolHelp;
+
     }
 }

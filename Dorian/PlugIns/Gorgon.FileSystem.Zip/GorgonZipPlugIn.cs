@@ -42,14 +42,14 @@ namespace GorgonLibrary.FileSystem
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="fileSystem"/> parameter is NULL (Nothing in VB.Net).</exception>
 		public override GorgonFileSystemProvider CreateProvider(GorgonFileSystem fileSystem)
 		{
-			return new Zip.GorgonZipProvider(fileSystem, Description);
+			return new Zip.GorgonZipProvider(fileSystem, "A provider to mount a zip file as a file system.");
 		}
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="GorgonZipPlugIn"/> class.
 		/// </summary>
 		public GorgonZipPlugIn()
-            : base("A provider to mount a zip file as a file system.")
+            : base("Zip compressed file.")
 		{
 		}
 	}
