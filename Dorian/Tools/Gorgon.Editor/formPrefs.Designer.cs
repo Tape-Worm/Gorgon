@@ -28,13 +28,11 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(formPrefs));
             this.buttonCancel = new System.Windows.Forms.Button();
             this.buttonOK = new System.Windows.Forms.Button();
             this.panel1 = new System.Windows.Forms.Panel();
             this.tabPrefs = new KRBTabControl.KRBTabControl();
-            this.toolHelp = new System.Windows.Forms.ToolTip(this.components);
             this.panel1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -51,7 +49,7 @@
             this.buttonCancel.ForeColor = System.Drawing.Color.White;
             this.buttonCancel.Image = global::GorgonLibrary.Editor.Properties.Resources.cancel_16x16;
             this.buttonCancel.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.buttonCancel.Location = new System.Drawing.Point(617, 5);
+            this.buttonCancel.Location = new System.Drawing.Point(708, 5);
             this.buttonCancel.Name = "buttonCancel";
             this.buttonCancel.Size = new System.Drawing.Size(87, 28);
             this.buttonCancel.TabIndex = 1;
@@ -72,7 +70,7 @@
             this.buttonOK.ForeColor = System.Drawing.Color.White;
             this.buttonOK.Image = global::GorgonLibrary.Editor.Properties.Resources.ok_16x16;
             this.buttonOK.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.buttonOK.Location = new System.Drawing.Point(524, 5);
+            this.buttonOK.Location = new System.Drawing.Point(615, 5);
             this.buttonOK.Name = "buttonOK";
             this.buttonOK.Size = new System.Drawing.Size(87, 28);
             this.buttonOK.TabIndex = 0;
@@ -88,9 +86,9 @@
             this.panel1.Controls.Add(this.buttonCancel);
             this.panel1.Controls.Add(this.buttonOK);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.panel1.Location = new System.Drawing.Point(1, 429);
+            this.panel1.Location = new System.Drawing.Point(1, 563);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(707, 36);
+            this.panel1.Size = new System.Drawing.Size(798, 36);
             this.panel1.TabIndex = 1;
             // 
             // tabPrefs
@@ -113,7 +111,7 @@
             this.tabPrefs.ItemSize = new System.Drawing.Size(0, 26);
             this.tabPrefs.Location = new System.Drawing.Point(1, 25);
             this.tabPrefs.Name = "tabPrefs";
-            this.tabPrefs.Size = new System.Drawing.Size(707, 404);
+            this.tabPrefs.Size = new System.Drawing.Size(798, 538);
             this.tabPrefs.TabBorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(68)))), ((int)(((byte)(68)))), ((int)(((byte)(68)))));
             this.tabPrefs.TabGradient.ColorEnd = System.Drawing.Color.FromArgb(((int)(((byte)(68)))), ((int)(((byte)(68)))), ((int)(((byte)(68)))));
             this.tabPrefs.TabGradient.ColorStart = System.Drawing.Color.FromArgb(((int)(((byte)(68)))), ((int)(((byte)(68)))), ((int)(((byte)(68)))));
@@ -125,13 +123,6 @@
             this.tabPrefs.TabPageCloseIconColor = System.Drawing.Color.White;
             this.tabPrefs.UpDownStyle = KRBTabControl.KRBTabControl.UpDown32Style.Default;
             // 
-            // toolHelp
-            // 
-            this.toolHelp.BackColor = System.Drawing.Color.White;
-            this.toolHelp.ForeColor = System.Drawing.Color.Black;
-            this.toolHelp.ToolTipIcon = System.Windows.Forms.ToolTipIcon.Info;
-            this.toolHelp.ToolTipTitle = "Help";
-            // 
             // formPrefs
             // 
             this.AcceptButton = this.buttonOK;
@@ -141,7 +132,7 @@
             this.Border = true;
             this.BorderColor = System.Drawing.Color.SteelBlue;
             this.CancelButton = this.buttonCancel;
-            this.ClientSize = new System.Drawing.Size(709, 466);
+            this.ClientSize = new System.Drawing.Size(800, 600);
             this.Controls.Add(this.tabPrefs);
             this.Controls.Add(this.panel1);
             this.ForeColor = System.Drawing.Color.Silver;
@@ -169,6 +160,5 @@
         private System.Windows.Forms.Button buttonOK;
         private System.Windows.Forms.Panel panel1;
         private KRBTabControl.KRBTabControl tabPrefs;
-        private System.Windows.Forms.ToolTip toolHelp;
     }
 }

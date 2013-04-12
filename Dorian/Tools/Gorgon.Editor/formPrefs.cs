@@ -71,12 +71,21 @@ namespace GorgonLibrary.Editor
                 page.ForeColor = Color.White;
                 page.Text = panel.Text;
                 page.Font = tabPrefs.Font;
-                page.IsClosable = false;
+                page.IsClosable = false;                
 
                 tabPrefs.TabPages.Add(page);
 
                 page.Controls.Add(panel);
-                panel.Dock = DockStyle.Fill;
+
+                if (panel.Height > page.ClientSize.Height)
+                {
+                    panel.Width = page.ClientSize.Width - (SystemInformation.VerticalScrollBarWidth + 2);
+                    page.AutoScrollMinSize = new Size(panel.Width, panel.Height);                    
+                }
+                else
+                {
+                    panel.Width = page.ClientSize.Width;
+                }
             }
         }
 
