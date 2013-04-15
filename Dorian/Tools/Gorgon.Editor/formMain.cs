@@ -37,6 +37,7 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using KRBTabControl;
+using GorgonLibrary.Math;
 using GorgonLibrary.FileSystem;
 using GorgonLibrary.Diagnostics;
 using GorgonLibrary.UI;
@@ -325,6 +326,8 @@ namespace GorgonLibrary.Editor
 			buttonEditContent.Enabled = false;
 			buttonDeleteContent.Enabled = false;
 			popupItemCut.Enabled = popupItemCopy.Enabled = popupItemPaste.Enabled = itemCopy.Enabled = itemCut.Enabled = itemPaste.Enabled = false;
+
+            menuRecent.Enabled = Program.Settings.RecentFiles.Count > 0;
 
             EditorTreeNode node = treeFiles.SelectedNode as EditorTreeNode;
 
@@ -1362,6 +1365,8 @@ namespace GorgonLibrary.Editor
 
 				Program.SaveEditorFile(Program.EditorFilePath);
 
+                AddToRecent(Program.EditorFilePath);
+
 				treeFiles.Refresh();
 			}
 			catch (Exception ex)
@@ -1585,6 +1590,8 @@ namespace GorgonLibrary.Editor
 					Program.SaveEditorFile(dialogSaveFile.FileName);
 
 					treeFiles.Refresh();
+
+                    AddToRecent(dialogSaveFile.FileName);
 				}
 			}
 			catch (Exception ex)
@@ -2769,20 +2776,7 @@ namespace GorgonLibrary.Editor
 				{
 					Cursor.Current = Cursors.WaitCursor;
 
-					// If this file is already opened, then do nothing.
-					if (string.Compare(Program.EditorFilePath, dialogOpenFile.FileName, true) == 0)
-					{
-						return;
-					}
-
-					// Close the current content.
-					LoadContentPane<DefaultContent>();
-
-					// Open the file.
-					Program.OpenEditorFile(dialogOpenFile.FileName);
-
-					// Update the tree.
-					InitializeTree();
+                    OpenFile(dialogOpenFile.FileName);
 				}
             }
             catch (Exception ex)
@@ -2798,6 +2792,28 @@ namespace GorgonLibrary.Editor
                 Cursor.Current = Cursors.Default;
                 ValidateControls();
             }
+        }
+
+        /// <summary>
+        /// Function to add a file to the recent files list.
+        /// </summary>
+        /// <param name="filePath">Path to the file.</param>
+        private void AddToRecent(string filePath)
+        {
+            var existing = Program.Settings.RecentFiles.Where(item => string.Compare(item, filePath, true) == 0).FirstOrDefault();
+
+            // It already exists, move it to the top of the list.
+            if (!string.IsNullOrWhiteSpace(existing))
+            {
+                Program.Settings.RecentFiles.Remove(existing);
+                Program.Settings.RecentFiles.Insert(0, filePath);
+                return;
+            }
+
+            Program.Settings.RecentFiles.Insert(0, filePath);
+
+            FillRecent();
+            ValidateControls();
         }
 
         /// <summary>
@@ -2834,6 +2850,110 @@ namespace GorgonLibrary.Editor
 			popupItemAdd.Enabled = dropNewContent.Enabled = itemAdd.Enabled = itemAdd.DropDownItems.Count > 0;
 		}
 
+        /// <summary>
+        /// Function to fill the recent files list.
+        /// </summary>
+        private void FillRecent()
+        {
+            foreach (ToolStripMenuItem item in menuRecent.DropDownItems)
+            {
+                item.Click -= recentItem_Click;
+            }
+
+            menuRecent.DropDownItems.Clear();
+
+            for (int i = 0; i < Program.Settings.RecentFiles.Count.Min(10); i++)
+            {
+                var file = Path.GetFullPath(Program.Settings.RecentFiles[i]);
+                var directory = Path.GetDirectoryName(file).FormatDirectory(Path.DirectorySeparatorChar);
+                var fileName = Path.GetFileName(file);
+                var root = Path.GetPathRoot(directory);
+                ToolStripMenuItem item = new ToolStripMenuItem();
+
+                directory = directory.Substring(root.Length);
+                if (directory.Length > 0)
+                {
+                    directory = directory.Ellipses(35, true);
+                }
+
+                item.Text = (i + 1).ToString() + " " + root + directory + fileName;
+
+                item.Tag = file;
+                item.AutoToolTip = true;
+                item.ToolTipText = file;
+
+                menuRecent.DropDownItems.Add(item);
+
+                item.Click += recentItem_Click;
+            }
+        }
+
+        /// <summary>
+        /// Function to open a file in the editor.
+        /// </summary>
+        /// <param name="filePath">Path to the file.</param>
+        private void OpenFile(string filePath)
+        {
+            // If this file is already opened, then do nothing.
+            if (string.Compare(Program.EditorFilePath, filePath, true) == 0)
+            {
+                return;
+            }
+
+            // Close the current content.
+            LoadContentPane<DefaultContent>();
+
+            // Open the file.
+            Program.OpenEditorFile(filePath);
+
+            // Update the tree.
+            InitializeTree();
+
+            AddToRecent(filePath);
+            FillRecent();
+        }
+
+        /// <summary>
+        /// Handles the Click event of the recentItem control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void recentItem_Click(object sender, EventArgs e)
+        {
+            ToolStripMenuItem item = sender as ToolStripMenuItem;
+
+            if (item == null)
+            {
+                return;
+            }
+            
+            Cursor.Current = Cursors.WaitCursor;
+            try
+            {
+                // Save the file if it's changed.
+                if (ConfirmSave())
+                {
+                    return;
+                }
+
+                if ((item.Tag == null) || (string.IsNullOrWhiteSpace(item.Tag.ToString())))
+                {
+                    return;
+                }
+
+                OpenFile((string)item.Tag);
+            }
+            catch (Exception ex)
+            {
+                GorgonDialogs.ErrorBox(this, ex);
+            }
+            finally
+            {
+                ValidateControls();
+                Cursor.Current = Cursors.Default;
+            }
+        }
+
 		/// <summary>
 		/// Raises the <see cref="E:System.Windows.Forms.Form.Load"/> event.
 		/// </summary>
@@ -2860,6 +2980,31 @@ namespace GorgonLibrary.Editor
 				InitializeInterface();
 
 				InitializeTree();
+
+                // Check recent files.
+                for (int i = 0; i < Program.Settings.RecentFiles.Count; i++)
+                {
+                    try
+                    {
+                        var file = Path.GetFullPath(Program.Settings.RecentFiles[i]);
+                        var directory = Path.GetDirectoryName(file).FormatDirectory(Path.DirectorySeparatorChar);
+
+                        if ((!Directory.Exists(directory)) || (!File.Exists(file)))
+                        {
+                            Program.Settings.RecentFiles[i] = string.Empty;
+                        }
+                    }
+                    catch
+                    {
+                        // We don't want files that cause exceptions to show up in our recent list.                    
+                        Program.Settings.RecentFiles[i] = string.Empty;
+                    }
+                }
+
+                // Remove all empty entries.
+                Program.Settings.RecentFiles.Remove(string.Empty);
+
+                FillRecent();
 			}
 			catch (Exception ex)
 			{

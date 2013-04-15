@@ -48,6 +48,16 @@ namespace GorgonLibrary.Editor
 		#endregion
 
 		#region Properties.
+        /// <summary>
+        /// Property to set or return the directory that holds the plug-ins.
+        /// </summary>
+        [ApplicationSetting("PlugInDirectory", typeof(string), "MainApplication")]
+        public string PlugInDirectory
+        {
+            get;
+            set;
+        }
+
 		/// <summary>
 		/// Property to set or return the main form state.
 		/// </summary>
@@ -143,15 +153,15 @@ namespace GorgonLibrary.Editor
 			set;
 		}
 
-		/// <summary>
-		/// Property to return the list of plug-ins to load.
-		/// </summary>
-		[ApplicationSetting("PlugIns", null, typeof(IList<string>), "PlugInLocations")]
-		public IList<string> PlugIns
-		{
-			get;
-			private set;
-		}
+        /// <summary>
+        /// Property to set or return the recent files.
+        /// </summary>
+        [ApplicationSetting("RecentFiles", typeof(IList<string>), "MainApplication")]
+        public IList<string> RecentFiles
+        {
+            get;
+            private set;
+        }
 		#endregion
 
 		#region Constructor/Destructor.
@@ -165,27 +175,13 @@ namespace GorgonLibrary.Editor
 			this.Path = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData).FormatDirectory(System.IO.Path.DirectorySeparatorChar) 
 					  + "Tape_Worm".FormatDirectory(System.IO.Path.DirectorySeparatorChar)
 					  + this.ApplicationName.FormatDirectory(System.IO.Path.DirectorySeparatorChar)
+#if !DEBUG
 					  + "Gorgon.Editor.config.xml";
+#else
+                      + "Gorgon.Editor.DEBUG.config.xml";
+#endif
 
 			Size baseSize = new Size(1280, 800);
-
-			PlugIns = new List<string>();
-
-            // Set up default plug-ins.
-            if (File.Exists(Gorgon.ApplicationDirectory + "Gorgon.FontEditor.dll"))
-            {
-                PlugIns.Add(Gorgon.ApplicationDirectory + "Gorgon.FontEditor.dll");
-            }
-
-            if (File.Exists(Gorgon.ApplicationDirectory + "Gorgon.FileSystem.GorPack.dll"))
-            {
-                PlugIns.Add(Gorgon.ApplicationDirectory + "Gorgon.FileSystem.GorPack.dll");
-            }
-
-            if (File.Exists(Gorgon.ApplicationDirectory + "Gorgon.GorPackWriter.dll"))
-            {
-                PlugIns.Add(Gorgon.ApplicationDirectory + "Gorgon.GorPackWriter.dll");
-            }
 
 			// Set the default size, but ensure that it fits within the primary monitor.
 			// Do not go larger than 1280x800 by default.
@@ -195,6 +191,9 @@ namespace GorgonLibrary.Editor
 				baseSize.Height = Screen.PrimaryScreen.WorkingArea.Height;
 			
 			WindowDimensions = new Rectangle(Screen.PrimaryScreen.WorkingArea.Width / 2 - baseSize.Width / 2, Screen.PrimaryScreen.WorkingArea.Height / 2 - baseSize.Height / 2, 1280, 800);
+
+            RecentFiles = new List<string>();
+            PlugInDirectory = Gorgon.ApplicationDirectory + "PlugIns";
 
 			DriveInfo biggestDrive = null;		// Biggest writable drive on the system.
 

@@ -63,7 +63,7 @@ namespace GorgonLibrary.Editor
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.itemAdd = new System.Windows.Forms.ToolStripMenuItem();
             this.popupAddContentMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.popupItemAdd = new System.Windows.Forms.ToolStripMenuItem();
+            this.dropNewContent = new System.Windows.Forms.ToolStripDropDownButton();
             this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.itemSave = new System.Windows.Forms.ToolStripMenuItem();
             this.itemSaveAs = new System.Windows.Forms.ToolStripMenuItem();
@@ -78,7 +78,9 @@ namespace GorgonLibrary.Editor
             this.itemPaste = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator6 = new System.Windows.Forms.ToolStripSeparator();
             this.itemDelete = new System.Windows.Forms.ToolStripMenuItem();
-            this.dropNewContent = new System.Windows.Forms.ToolStripDropDownButton();
+            this.toolStripSeparator7 = new System.Windows.Forms.ToolStripSeparator();
+            this.itemPreferences = new System.Windows.Forms.ToolStripMenuItem();
+            this.popupItemAdd = new System.Windows.Forms.ToolStripMenuItem();
             this.tabDocumentManager = new KRBTabControl.KRBTabControl();
             this.pageItems = new KRBTabControl.TabPageEx();
             this.containerFiles = new System.Windows.Forms.ToolStripContainer();
@@ -111,8 +113,8 @@ namespace GorgonLibrary.Editor
             this.dialogOpenFile = new System.Windows.Forms.OpenFileDialog();
             this.dialogSaveFile = new System.Windows.Forms.SaveFileDialog();
             this.dialogImport = new System.Windows.Forms.OpenFileDialog();
-            this.toolStripSeparator7 = new System.Windows.Forms.ToolStripSeparator();
-            this.itemPreferences = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator8 = new System.Windows.Forms.ToolStripSeparator();
+            this.menuRecent = new System.Windows.Forms.ToolStripMenuItem();
             this.menuMain.SuspendLayout();
             this.tabDocumentManager.SuspendLayout();
             this.pageItems.SuspendLayout();
@@ -153,6 +155,8 @@ namespace GorgonLibrary.Editor
             this.itemImport,
             this.itemExport,
             this.toolStripSeparator2,
+            this.menuRecent,
+            this.toolStripSeparator8,
             this.itemExit});
             this.menuFile.Name = "menuFile";
             this.menuFile.Size = new System.Drawing.Size(37, 20);
@@ -191,16 +195,19 @@ namespace GorgonLibrary.Editor
             // popupAddContentMenu
             // 
             this.popupAddContentMenu.Name = "popupAddContentMenu";
-            this.popupAddContentMenu.OwnerItem = this.dropNewContent;
+            this.popupAddContentMenu.OwnerItem = this.popupItemAdd;
             this.popupAddContentMenu.Size = new System.Drawing.Size(61, 4);
             // 
-            // popupItemAdd
+            // dropNewContent
             // 
-            this.popupItemAdd.DropDown = this.popupAddContentMenu;
-            this.popupItemAdd.Enabled = false;
-            this.popupItemAdd.Name = "popupItemAdd";
-            this.popupItemAdd.Size = new System.Drawing.Size(181, 22);
-            this.popupItemAdd.Text = "Add Content";
+            this.dropNewContent.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.dropNewContent.DropDown = this.popupAddContentMenu;
+            this.dropNewContent.Enabled = false;
+            this.dropNewContent.Image = global::GorgonLibrary.Editor.Properties.Resources.new_item_16x16;
+            this.dropNewContent.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.dropNewContent.Name = "dropNewContent";
+            this.dropNewContent.Size = new System.Drawing.Size(29, 22);
+            this.dropNewContent.Text = "New content item";
             // 
             // toolStripSeparator3
             // 
@@ -312,16 +319,27 @@ namespace GorgonLibrary.Editor
             this.itemDelete.Text = "Delete";
             this.itemDelete.Click += new System.EventHandler(this.itemDelete_Click);
             // 
-            // dropNewContent
+            // toolStripSeparator7
             // 
-            this.dropNewContent.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.dropNewContent.DropDown = this.popupAddContentMenu;
-            this.dropNewContent.Enabled = false;
-            this.dropNewContent.Image = global::GorgonLibrary.Editor.Properties.Resources.new_item_16x16;
-            this.dropNewContent.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.dropNewContent.Name = "dropNewContent";
-            this.dropNewContent.Size = new System.Drawing.Size(29, 22);
-            this.dropNewContent.Text = "New content item";
+            this.toolStripSeparator7.Name = "toolStripSeparator7";
+            this.toolStripSeparator7.Size = new System.Drawing.Size(205, 6);
+            // 
+            // itemPreferences
+            // 
+            this.itemPreferences.Name = "itemPreferences";
+            this.itemPreferences.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Alt) 
+            | System.Windows.Forms.Keys.P)));
+            this.itemPreferences.Size = new System.Drawing.Size(208, 22);
+            this.itemPreferences.Text = "&Preferences...";
+            this.itemPreferences.Click += new System.EventHandler(this.itemPreferences_Click);
+            // 
+            // popupItemAdd
+            // 
+            this.popupItemAdd.DropDown = this.popupAddContentMenu;
+            this.popupItemAdd.Enabled = false;
+            this.popupItemAdd.Name = "popupItemAdd";
+            this.popupItemAdd.Size = new System.Drawing.Size(181, 22);
+            this.popupItemAdd.Text = "Add Content";
             // 
             // tabDocumentManager
             // 
@@ -682,19 +700,17 @@ namespace GorgonLibrary.Editor
             this.dialogImport.Multiselect = true;
             this.dialogImport.Title = "Import";
             // 
-            // toolStripSeparator7
+            // toolStripSeparator8
             // 
-            this.toolStripSeparator7.Name = "toolStripSeparator7";
-            this.toolStripSeparator7.Size = new System.Drawing.Size(205, 6);
+            this.toolStripSeparator8.Name = "toolStripSeparator8";
+            this.toolStripSeparator8.Size = new System.Drawing.Size(152, 6);
             // 
-            // itemPreferences
+            // menuRecent
             // 
-            this.itemPreferences.Name = "itemPreferences";
-            this.itemPreferences.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Alt) 
-            | System.Windows.Forms.Keys.P)));
-            this.itemPreferences.Size = new System.Drawing.Size(208, 22);
-            this.itemPreferences.Text = "&Preferences...";
-            this.itemPreferences.Click += new System.EventHandler(this.itemPreferences_Click);
+            this.menuRecent.Enabled = false;
+            this.menuRecent.Name = "menuRecent";
+            this.menuRecent.Size = new System.Drawing.Size(155, 22);
+            this.menuRecent.Text = "Recent Files";
             // 
             // formMain
             // 
@@ -795,6 +811,8 @@ namespace GorgonLibrary.Editor
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator6;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator7;
         private System.Windows.Forms.ToolStripMenuItem itemPreferences;
+        private System.Windows.Forms.ToolStripMenuItem menuRecent;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator8;
 	}
 }
 

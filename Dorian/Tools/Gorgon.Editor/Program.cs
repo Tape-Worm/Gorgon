@@ -585,7 +585,7 @@ namespace GorgonLibrary.Editor
                              select device).First();
             }
                         
-			Graphics = new GorgonGraphics(bestDevice, DeviceFeatureLevel.SM2_a_b);
+			Graphics = new GorgonGraphics(bestDevice);
 		}
 		#endregion
 

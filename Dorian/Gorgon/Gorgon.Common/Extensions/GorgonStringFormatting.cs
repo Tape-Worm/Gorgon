@@ -77,7 +77,7 @@ namespace GorgonLibrary
         /// </remarks>        
         public static string Ellipses(this string theString, int maxWidth)
         {
-            return Ellipses(theString, maxWidth);
+            return Ellipses(theString, maxWidth, false);
         }
 
         /// <summary>

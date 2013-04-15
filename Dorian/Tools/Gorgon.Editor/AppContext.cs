@@ -54,108 +54,95 @@ namespace GorgonLibrary.Editor
         /// </summary>
         private void LoadPlugIns()
         {
-            int i = 0;
+            DirectoryInfo plugInDir = new DirectoryInfo(Program.Settings.PlugInDirectory);
+
+            if (!plugInDir.Exists)
+            {
+                plugInDir.Create();
+            }
+
+            // Get a list of plug-in assemblies.
+            var plugInAssemblies = plugInDir.GetFiles("*.dll", SearchOption.AllDirectories).ToArray();
 
             // Load plug-ins.
-            while (i < Program.Settings.PlugIns.Count)
+            for(int i = 0; i < plugInAssemblies.Length; i++)
             {
-                string plugInPath = Program.Settings.PlugIns[i];
+                string plugInPath = plugInAssemblies[i].FullName;
 
                 Program.LogFile.Print("Loading plug-in assembly \"{0}\".", LoggingLevel.Verbose, plugInPath);
-                if (File.Exists(Program.Settings.PlugIns[i]))
+
+                _splash.UpdateVersion("Plug-in: " + Path.GetFileNameWithoutExtension(plugInPath));
+
+                // Ensure that we can load this assembly.
+                if (!Gorgon.PlugIns.IsPlugInAssembly(plugInPath))
                 {
-                    _splash.UpdateVersion("Plug-in: " + Path.GetFileNameWithoutExtension(plugInPath));
-
-                    // Ensure that we can load this assembly.
-                    if (!Gorgon.PlugIns.IsPlugInAssembly(plugInPath))
-                    {
-                        Program.LogFile.Print("Assembly \"{0}\" is not a valid plug-in assembly.", LoggingLevel.Verbose, plugInPath);
-                        GorgonDialogs.ErrorBox(null, "The assembly '" + plugInPath + "' is not a plug-in assembly.");
-                        Program.Settings.PlugIns.RemoveAt(i);
-                        continue;
-                    }
-
-                    // Make sure there are types that we can use in here.
-                    var plugInTypes = Gorgon.PlugIns.EnumeratePlugIns(plugInPath);
-                    if (plugInTypes.Count == 0)
-                    {
-                        Program.LogFile.Print("Assembly \"{0}\" does not contain any plug-ins.", LoggingLevel.Verbose, plugInPath);
-                        GorgonDialogs.ErrorBox(null, "The assembly '" + plugInPath + "' does not contain any plug-ins.");
-                        Program.Settings.PlugIns.RemoveAt(i);
-                        continue;
-                    }
-
-                    // Finally load the assembly.
-                    var assemblyName = Gorgon.PlugIns.LoadPlugInAssembly(Program.Settings.PlugIns[i]);
-                    // Get the plug-ins from the assembly.
-                    var plugIns = Gorgon.PlugIns.EnumeratePlugIns(assemblyName).Where(item => item is EditorPlugIn || item is GorgonFileSystemProviderPlugIn);
-
-                    if (plugIns.Count() == 0)
-                    {
-                        Program.LogFile.Print("Assembly \"{0}\" does not contain any editor compatible plug-ins.", LoggingLevel.Verbose, plugInPath);
-                        GorgonDialogs.ErrorBox(null, "The assembly '" + plugInPath + "' does not contain any editor compatible plug-ins.");
-                        Program.Settings.PlugIns.RemoveAt(i);
-                        continue;
-                    }
-
-                    foreach (var plugIn in plugIns)
-                    {
-                        var fileSystemProvider = plugIn as GorgonFileSystemProviderPlugIn;
-                        var editorPlugIn = plugIn as EditorPlugIn;                        
-
-                        if (fileSystemProvider != null)
-                        {
-                            Program.LogFile.Print("Found a file system provider plug-in: \"{0}\".", LoggingLevel.Verbose, fileSystemProvider.Name);
-                        }
-
-                        if (editorPlugIn == null)
-                        {
-                            continue;
-                        }
-
-                        var validationData = editorPlugIn.ValidatePlugIn();
-
-                        // Validate the plug-in.
-                        if (!string.IsNullOrWhiteSpace(validationData))
-                        {
-                            Program.LogFile.Print("Found a {0} plug-in: \"{1}\".  But it is disabled for the following reasons:", LoggingLevel.Verbose, editorPlugIn.PlugInType, editorPlugIn.Description);
-                            Program.LogFile.Print("{0}", LoggingLevel.Verbose, validationData);
-
-                            // Add to the disabled plug-ins list.
-                            Program.DisabledPlugIns[editorPlugIn] = validationData;
-                            continue;
-                        }
-
-                        Program.LogFile.Print("Found a {0} plug-in: \"{1}\".", LoggingLevel.Verbose, editorPlugIn.PlugInType.ToString(), editorPlugIn.Description);
-
-                        // Categorize the editor plug-ins.
-                        switch (editorPlugIn.PlugInType)
-                        {
-                            case PlugInType.Content:
-                                ContentPlugIn contentPlugIn = editorPlugIn as ContentPlugIn;
-
-                                if (contentPlugIn != null)
-                                {
-                                    Program.ContentPlugIns[editorPlugIn.Name] = contentPlugIn;
-                                }
-                                break;
-                            case PlugInType.FileWriter:
-                                FileWriterPlugIn writerPlugIn = editorPlugIn as FileWriterPlugIn;
-
-                                if (writerPlugIn != null)
-                                {
-                                    Program.WriterPlugIns[editorPlugIn.Name] = writerPlugIn;
-                                }
-                                break;
-                        }
-                    }
-                }
-                else
-                {
-                    Program.LogFile.Print("Plug-in assembly \"{0}\" was not found.", LoggingLevel.Verbose, plugInPath);
+                    Program.LogFile.Print("Assembly \"{0}\" is not a valid plug-in assembly.", LoggingLevel.Verbose, plugInPath);
+                    continue;
                 }
 
-                i++;
+                // Finally load the assembly.
+                var assemblyName = Gorgon.PlugIns.LoadPlugInAssembly(plugInPath);
+                // Get the plug-ins from the assembly.
+                var plugIns = Gorgon.PlugIns.EnumeratePlugIns(assemblyName).Where(item => item is EditorPlugIn || item is GorgonFileSystemProviderPlugIn);
+
+                if (plugIns.Count() == 0)
+                {
+                    Program.LogFile.Print("Assembly \"{0}\" does not contain any editor compatible plug-ins.", LoggingLevel.Verbose, plugInPath);
+                    GorgonDialogs.ErrorBox(null, "The assembly '" + plugInPath + "' does not contain any editor compatible plug-ins.");
+                    continue;
+                }
+
+                foreach (var plugIn in plugIns)
+                {
+                    var fileSystemProvider = plugIn as GorgonFileSystemProviderPlugIn;
+                    var editorPlugIn = plugIn as EditorPlugIn;                        
+
+                    if (fileSystemProvider != null)
+                    {
+                        Program.LogFile.Print("Found a file system provider plug-in: \"{0}\".", LoggingLevel.Verbose, fileSystemProvider.Name);
+                    }
+
+                    if (editorPlugIn == null)
+                    {
+                        continue;
+                    }
+
+                    var validationData = editorPlugIn.ValidatePlugIn();
+
+                    // Validate the plug-in.
+                    if (!string.IsNullOrWhiteSpace(validationData))
+                    {
+                        Program.LogFile.Print("Found a {0} plug-in: \"{1}\".  But it is disabled for the following reasons:", LoggingLevel.Verbose, editorPlugIn.PlugInType, editorPlugIn.Description);
+                        Program.LogFile.Print("{0}", LoggingLevel.Verbose, validationData);
+
+                        // Add to the disabled plug-ins list.
+                        Program.DisabledPlugIns[editorPlugIn] = validationData;
+                        continue;
+                    }
+
+                    Program.LogFile.Print("Found a {0} plug-in: \"{1}\".", LoggingLevel.Verbose, editorPlugIn.PlugInType.ToString(), editorPlugIn.Description);
+
+                    // Categorize the editor plug-ins.
+                    switch (editorPlugIn.PlugInType)
+                    {
+                        case PlugInType.Content:
+                            ContentPlugIn contentPlugIn = editorPlugIn as ContentPlugIn;
+
+                            if (contentPlugIn != null)
+                            {
+                                Program.ContentPlugIns[editorPlugIn.Name] = contentPlugIn;
+                            }
+                            break;
+                        case PlugInType.FileWriter:
+                            FileWriterPlugIn writerPlugIn = editorPlugIn as FileWriterPlugIn;
+
+                            if (writerPlugIn != null)
+                            {
+                                Program.WriterPlugIns[editorPlugIn.Name] = writerPlugIn;
+                            }
+                            break;
+                    }
+                }
             }
         }
 

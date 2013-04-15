@@ -142,6 +142,16 @@ namespace GorgonLibrary.Editor
         }
 
         /// <summary>
+        /// Property to return the plug-in that can create this content.
+        /// </summary>
+        [Browsable(false)]
+        public ContentPlugIn PlugIn
+        {
+            get;
+            protected set;
+        }
+
+        /// <summary>
         /// Property to return whether the content has been initialized or not.
         /// </summary>
         [Browsable(false)]

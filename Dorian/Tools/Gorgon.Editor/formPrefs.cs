@@ -43,7 +43,7 @@ namespace GorgonLibrary.Editor
     /// <summary>
     /// Handles the preferences and plug-ins management for the application.
     /// </summary>
-    public partial class formPrefs 
+    partial class formPrefs 
         : ZuneForm
     {
         #region Variables.
