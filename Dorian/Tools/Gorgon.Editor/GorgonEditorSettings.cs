@@ -156,11 +156,21 @@ namespace GorgonLibrary.Editor
         /// <summary>
         /// Property to set or return the recent files.
         /// </summary>
-        [ApplicationSetting("RecentFiles", typeof(IList<string>), "MainApplication")]
+        [ApplicationSetting("RecentFiles", typeof(IList<string>), "Recent")]
         public IList<string> RecentFiles
         {
             get;
             private set;
+        }
+
+        /// <summary>
+        /// Property set or return whether to automatically load the last file opened by the editor on start up.
+        /// </summary>
+        [ApplicationSetting("AutoLoadLastFile", true, typeof(bool), "Options")]        
+        public bool AutoLoadLastFile
+        {
+            get;
+            set;
         }
 		#endregion
 

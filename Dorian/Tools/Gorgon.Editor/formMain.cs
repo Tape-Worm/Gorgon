@@ -2864,27 +2864,36 @@ namespace GorgonLibrary.Editor
 
             for (int i = 0; i < Program.Settings.RecentFiles.Count.Min(10); i++)
             {
-                var file = Path.GetFullPath(Program.Settings.RecentFiles[i]);
-                var directory = Path.GetDirectoryName(file).FormatDirectory(Path.DirectorySeparatorChar);
-                var fileName = Path.GetFileName(file);
-                var root = Path.GetPathRoot(directory);
-                ToolStripMenuItem item = new ToolStripMenuItem();
-
-                directory = directory.Substring(root.Length);
-                if (directory.Length > 0)
+                try
                 {
-                    directory = directory.Ellipses(35, true);
+                    var file = Path.GetFullPath(Program.Settings.RecentFiles[i]);
+                    var directory = Path.GetDirectoryName(file).FormatDirectory(Path.DirectorySeparatorChar);
+                    var fileName = Path.GetFileName(file);
+                    var root = Path.GetPathRoot(directory);
+                    ToolStripMenuItem item = new ToolStripMenuItem();
+
+                    directory = directory.Substring(root.Length);
+                    if (directory.Length > 0)
+                    {
+                        directory = directory.Ellipses(35, true);
+                    }
+
+                    item.Text = (i + 1).ToString() + " " + root + directory + fileName;
+
+                    item.Tag = file;
+                    item.AutoToolTip = true;
+                    item.ToolTipText = file;
+
+                    menuRecent.DropDownItems.Add(item);
+
+                    item.Click += recentItem_Click;
                 }
-
-                item.Text = (i + 1).ToString() + " " + root + directory + fileName;
-
-                item.Tag = file;
-                item.AutoToolTip = true;
-                item.ToolTipText = file;
-
-                menuRecent.DropDownItems.Add(item);
-
-                item.Click += recentItem_Click;
+                catch(Exception ex)
+                {
+                    GorgonException.Log = Program.LogFile;
+                    GorgonException.Catch(ex);
+                    GorgonException.Log = Gorgon.Log;
+                }
             }
         }
 

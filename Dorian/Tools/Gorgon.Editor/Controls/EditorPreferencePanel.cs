@@ -110,6 +110,16 @@ namespace GorgonLibrary.Editor
         }
 
         /// <summary>
+        /// Handles the Enter event of the textPlugInLocation control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void textPlugInLocation_Enter(object sender, EventArgs e)
+        {
+            textPlugInLocation.Select(0, textPlugInLocation.Text.Length);
+        }
+
+        /// <summary>
         /// Handles the Enter event of the textScratchLocation control.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
@@ -117,6 +127,33 @@ namespace GorgonLibrary.Editor
         private void textScratchLocation_Enter(object sender, EventArgs e)
         {
             textScratchLocation.Select(0, textScratchLocation.Text.Length);
+        }
+
+        /// <summary>
+        /// Handles the Click event of the buttonPlugInLocation control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void buttonPlugInLocation_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                if ((!string.IsNullOrWhiteSpace(Program.Settings.PlugInDirectory))
+                    && (Directory.Exists(Program.Settings.PlugInDirectory)))
+                {
+                    dialogPlugInLocation.SelectedPath = Program.Settings.PlugInDirectory;
+                }
+
+                if (dialogPlugInLocation.ShowDialog(ParentForm) == DialogResult.OK)
+                {
+                    textPlugInLocation.Text = dialogPlugInLocation.SelectedPath.FormatDirectory(Path.DirectorySeparatorChar);
+                    textPlugInLocation.Select(0, textPlugInLocation.Text.Length);
+                }
+            }
+            catch (Exception ex)
+            {
+                GorgonDialogs.ErrorBox(ParentForm, ex);
+            }
         }
 
         /// <summary>
@@ -151,36 +188,6 @@ namespace GorgonLibrary.Editor
             }
 
         }
-
-        /// <summary>
-        /// Handles the ItemChecked event of the listContentPlugIns control.
-        /// </summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="ItemCheckedEventArgs"/> instance containing the event data.</param>
-        private void listContentPlugIns_ItemChecked(object sender, ItemCheckedEventArgs e)
-        {
-            try
-            {
-                if (e.Item == null)
-                {
-                    return;
-                }
-
-                // Don't allow the item to be checked if it's disabled.
-                if (e.Item.Tag == null)
-                {
-                    if (e.Item.Checked)
-                    {
-                        e.Item.Checked = false;
-                    }
-                    return;
-                }
-            }
-            catch (Exception ex)
-            {
-                GorgonDialogs.ErrorBox(ParentForm, ex);
-            }
-        }
         
         /// <summary>
         /// Function to read the current settings into their respective controls.
@@ -188,6 +195,8 @@ namespace GorgonLibrary.Editor
         public override void InitializeSettings()
         {
             textScratchLocation.Text = Program.Settings.ScratchPath;
+            textPlugInLocation.Text = Program.Settings.PlugInDirectory;
+            checkAutoLoadFile.Checked = Program.Settings.AutoLoadLastFile;
 
             listContentPlugIns.BeginUpdate();
             listContentPlugIns.Items.Clear();
@@ -222,11 +231,9 @@ namespace GorgonLibrary.Editor
                         item.SubItems[1].Text = "Disabled";
                         item.ForeColor = Color.FromKnownColor(KnownColor.DimGray);
                         item.Tag = null;
-                        item.Checked = false;
                     }
                     else
                     {
-                        item.Checked = true;
                         item.Tag = plugIn;
                     }
 
@@ -235,8 +242,6 @@ namespace GorgonLibrary.Editor
 
                 listContentPlugIns.Items.Add(item);                
             }
-
-            listContentPlugIns.ItemChecked += listContentPlugIns_ItemChecked;
 
             listContentPlugIns.EndUpdate();
             listContentPlugIns.AutoResizeColumns(ColumnHeaderAutoResizeStyle.HeaderSize);
@@ -267,7 +272,17 @@ namespace GorgonLibrary.Editor
         /// </summary>
         public override void CommitSettings()
         {
-            Program.Settings.ScratchPath = textScratchLocation.Text;
+            if (!string.IsNullOrWhiteSpace(textScratchLocation.Text))                
+            {
+                Program.Settings.ScratchPath = textScratchLocation.Text.FormatDirectory(Path.DirectorySeparatorChar);
+            }
+
+            if (!string.IsNullOrWhiteSpace(textPlugInLocation.Text))
+            {
+                Program.Settings.PlugInDirectory = textPlugInLocation.Text.FormatDirectory(Path.DirectorySeparatorChar);
+            }
+
+            Program.Settings.AutoLoadLastFile = checkAutoLoadFile.Checked;
         }
 
         /// <summary>
@@ -284,10 +299,30 @@ namespace GorgonLibrary.Editor
             }
             else
             {
-                if (string.Compare(textScratchLocation.Text, Program.Settings.ScratchPath, true) != 0)
+                if (string.Compare(textScratchLocation.Text.FormatDirectory(Path.DirectorySeparatorChar), Program.Settings.ScratchPath, true) != 0)
                 {
                     GorgonDialogs.InfoBox(ParentForm, "The scratch location has changed.  This will require that the application be restarted before this setting takes effect.");
                 }
+            }
+
+            try
+            {
+                if (!Directory.Exists(textPlugInLocation.Text.FormatDirectory(Path.DirectorySeparatorChar)))
+                {
+                    return false;
+                }
+                else
+                {
+                    if (string.Compare(textPlugInLocation.Text.FormatDirectory(Path.DirectorySeparatorChar), Program.Settings.PlugInDirectory, true) != 0)
+                    {
+                        GorgonDialogs.InfoBox(ParentForm, "The plug-in location has changed.  This will require that the application be restarted before this setting takes effect.");
+                    }
+                }
+            }
+            catch
+            {
+                // We don't care about exceptions at this point.
+                return false;
             }
 
             return true;
