@@ -1,0 +1,3 @@
+Place any plug-ins (and their local dependencies) for the editor into this directory. 
+
+The editor will scan this directory and load any plug-ins it finds.
