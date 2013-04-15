@@ -13,6 +13,7 @@
             this.panelContentPlugIns = new System.Windows.Forms.Panel();
             this.listContentPlugIns = new System.Windows.Forms.ListView();
             this.columnDesc = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnType = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnPath = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.buttonScratch = new System.Windows.Forms.Button();
             this.tabPlugIns = new KRBTabControl.KRBTabControl();
@@ -23,7 +24,11 @@
             this.columnDisabledReason = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnDisablePath = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.miniToolStrip = new System.Windows.Forms.ToolStrip();
-            this.columnType = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.buttonPlugInLocation = new System.Windows.Forms.Button();
+            this.textPlugInLocation = new System.Windows.Forms.TextBox();
+            this.label2 = new System.Windows.Forms.Label();
+            this.dialogPlugInLocation = new System.Windows.Forms.FolderBrowserDialog();
+            this.checkAutoLoadFile = new System.Windows.Forms.CheckBox();
             this.panelContentPlugIns.SuspendLayout();
             this.tabPlugIns.SuspendLayout();
             this.pagePlugIns.SuspendLayout();
@@ -40,7 +45,7 @@
             this.textScratchLocation.Location = new System.Drawing.Point(6, 21);
             this.textScratchLocation.Name = "textScratchLocation";
             this.textScratchLocation.Size = new System.Drawing.Size(695, 23);
-            this.textScratchLocation.TabIndex = 5;
+            this.textScratchLocation.TabIndex = 0;
             this.toolHelp.SetToolTip(this.textScratchLocation, "Selects a new working area for the content in the editor.\r\n\r\nChanging this value " +
         "will require a restart of the application.");
             this.textScratchLocation.Enter += new System.EventHandler(this.textScratchLocation_Enter);
@@ -60,13 +65,12 @@
             this.panelContentPlugIns.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panelContentPlugIns.Location = new System.Drawing.Point(0, 0);
             this.panelContentPlugIns.Name = "panelContentPlugIns";
-            this.panelContentPlugIns.Size = new System.Drawing.Size(721, 232);
+            this.panelContentPlugIns.Size = new System.Drawing.Size(721, 165);
             this.panelContentPlugIns.TabIndex = 9;
             // 
             // listContentPlugIns
             // 
             this.listContentPlugIns.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.listContentPlugIns.CheckBoxes = true;
             this.listContentPlugIns.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.columnDesc,
             this.columnType,
@@ -76,7 +80,7 @@
             this.listContentPlugIns.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
             this.listContentPlugIns.Location = new System.Drawing.Point(0, 0);
             this.listContentPlugIns.Name = "listContentPlugIns";
-            this.listContentPlugIns.Size = new System.Drawing.Size(721, 232);
+            this.listContentPlugIns.Size = new System.Drawing.Size(721, 165);
             this.listContentPlugIns.TabIndex = 0;
             this.toolHelp.SetToolTip(this.listContentPlugIns, "Manages plug-ins that are responsible for creating/editing \r\nspecific types of co" +
         "ntent.");
@@ -86,6 +90,10 @@
             // columnDesc
             // 
             this.columnDesc.Text = "Description";
+            // 
+            // columnType
+            // 
+            this.columnType.Text = "Type";
             // 
             // columnPath
             // 
@@ -105,7 +113,7 @@
             this.buttonScratch.Location = new System.Drawing.Point(707, 20);
             this.buttonScratch.Name = "buttonScratch";
             this.buttonScratch.Size = new System.Drawing.Size(26, 26);
-            this.buttonScratch.TabIndex = 7;
+            this.buttonScratch.TabIndex = 1;
             this.buttonScratch.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             this.toolHelp.SetToolTip(this.buttonScratch, "Selects a new working area for the content in the editor.\r\n\r\nChanging this value " +
         "will require a restart of the application.");
@@ -128,17 +136,17 @@
             this.tabPlugIns.IsDrawEdgeBorder = true;
             this.tabPlugIns.IsUserInteraction = false;
             this.tabPlugIns.ItemSize = new System.Drawing.Size(0, 24);
-            this.tabPlugIns.Location = new System.Drawing.Point(7, 52);
+            this.tabPlugIns.Location = new System.Drawing.Point(7, 119);
             this.tabPlugIns.Name = "tabPlugIns";
             this.tabPlugIns.SelectedIndex = 0;
-            this.tabPlugIns.Size = new System.Drawing.Size(731, 267);
+            this.tabPlugIns.Size = new System.Drawing.Size(731, 200);
             this.tabPlugIns.TabBorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(68)))), ((int)(((byte)(68)))), ((int)(((byte)(68)))));
             this.tabPlugIns.TabGradient.ColorEnd = System.Drawing.Color.FromArgb(((int)(((byte)(68)))), ((int)(((byte)(68)))), ((int)(((byte)(68)))));
             this.tabPlugIns.TabGradient.ColorStart = System.Drawing.Color.FromArgb(((int)(((byte)(68)))), ((int)(((byte)(68)))), ((int)(((byte)(68)))));
             this.tabPlugIns.TabGradient.SelectedTabFontStyle = System.Drawing.FontStyle.Bold;
             this.tabPlugIns.TabGradient.TabPageSelectedTextColor = System.Drawing.Color.White;
             this.tabPlugIns.TabGradient.TabPageTextColor = System.Drawing.Color.White;
-            this.tabPlugIns.TabIndex = 14;
+            this.tabPlugIns.TabIndex = 5;
             this.tabPlugIns.TabPageCloseIconColor = System.Drawing.Color.White;
             this.tabPlugIns.UpDownStyle = KRBTabControl.KRBTabControl.UpDown32Style.Default;
             // 
@@ -150,7 +158,7 @@
             this.pagePlugIns.IsClosable = false;
             this.pagePlugIns.Location = new System.Drawing.Point(5, 30);
             this.pagePlugIns.Name = "pagePlugIns";
-            this.pagePlugIns.Size = new System.Drawing.Size(721, 232);
+            this.pagePlugIns.Size = new System.Drawing.Size(721, 165);
             this.pagePlugIns.TabIndex = 0;
             this.pagePlugIns.Text = "Plug-Ins";
             // 
@@ -162,7 +170,7 @@
             this.pageDisabled.IsClosable = false;
             this.pageDisabled.Location = new System.Drawing.Point(5, 30);
             this.pageDisabled.Name = "pageDisabled";
-            this.pageDisabled.Size = new System.Drawing.Size(721, 232);
+            this.pageDisabled.Size = new System.Drawing.Size(721, 165);
             this.pageDisabled.TabIndex = 3;
             this.pageDisabled.Text = "Disabled Plug-Ins";
             // 
@@ -178,7 +186,7 @@
             this.listDisabledPlugIns.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
             this.listDisabledPlugIns.Location = new System.Drawing.Point(0, 0);
             this.listDisabledPlugIns.Name = "listDisabledPlugIns";
-            this.listDisabledPlugIns.Size = new System.Drawing.Size(721, 232);
+            this.listDisabledPlugIns.Size = new System.Drawing.Size(721, 165);
             this.listDisabledPlugIns.TabIndex = 1;
             this.listDisabledPlugIns.UseCompatibleStateImageBehavior = false;
             this.listDisabledPlugIns.View = System.Windows.Forms.View.Details;
@@ -210,13 +218,78 @@
             this.toolHelp.SetToolTip(this.miniToolStrip, "Manages plug-ins that write out the editor content items into a\r\nspecific file fo" +
         "rmat (e.g. Zip)");
             // 
-            // columnType
+            // buttonPlugInLocation
             // 
-            this.columnType.Text = "Type";
+            this.buttonPlugInLocation.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.buttonPlugInLocation.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(68)))), ((int)(((byte)(68)))), ((int)(((byte)(68)))));
+            this.buttonPlugInLocation.FlatAppearance.CheckedBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(68)))), ((int)(((byte)(68)))), ((int)(((byte)(68)))));
+            this.buttonPlugInLocation.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(68)))), ((int)(((byte)(68)))), ((int)(((byte)(68)))));
+            this.buttonPlugInLocation.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(189)))), ((int)(((byte)(189)))), ((int)(((byte)(189)))));
+            this.buttonPlugInLocation.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.buttonPlugInLocation.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.buttonPlugInLocation.ForeColor = System.Drawing.Color.White;
+            this.buttonPlugInLocation.Image = global::GorgonLibrary.Editor.Properties.Resources.folder_open_16x16;
+            this.buttonPlugInLocation.Location = new System.Drawing.Point(707, 64);
+            this.buttonPlugInLocation.Name = "buttonPlugInLocation";
+            this.buttonPlugInLocation.Size = new System.Drawing.Size(26, 26);
+            this.buttonPlugInLocation.TabIndex = 3;
+            this.buttonPlugInLocation.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.toolHelp.SetToolTip(this.buttonPlugInLocation, "Selects a location for plug-ins to use with the editor.\r\n\r\nChanging this value wi" +
+        "ll require a restart of the application.");
+            this.buttonPlugInLocation.UseVisualStyleBackColor = false;
+            this.buttonPlugInLocation.Click += new System.EventHandler(this.buttonPlugInLocation_Click);
+            // 
+            // textPlugInLocation
+            // 
+            this.textPlugInLocation.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.textPlugInLocation.AutoCompleteMode = System.Windows.Forms.AutoCompleteMode.SuggestAppend;
+            this.textPlugInLocation.AutoCompleteSource = System.Windows.Forms.AutoCompleteSource.FileSystemDirectories;
+            this.textPlugInLocation.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.textPlugInLocation.Location = new System.Drawing.Point(6, 65);
+            this.textPlugInLocation.Name = "textPlugInLocation";
+            this.textPlugInLocation.Size = new System.Drawing.Size(695, 23);
+            this.textPlugInLocation.TabIndex = 2;
+            this.toolHelp.SetToolTip(this.textPlugInLocation, "Selects a location for plug-ins to use with the editor.\r\n\r\nChanging this value wi" +
+        "ll require a restart of the application.");
+            this.textPlugInLocation.Enter += new System.EventHandler(this.textPlugInLocation_Enter);
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(3, 47);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(93, 15);
+            this.label2.TabIndex = 16;
+            this.label2.Text = "Plug in location:";
+            // 
+            // dialogPlugInLocation
+            // 
+            this.dialogPlugInLocation.Description = "Select a plug-in location";
+            this.dialogPlugInLocation.ShowNewFolderButton = false;
+            // 
+            // checkAutoLoadFile
+            // 
+            this.checkAutoLoadFile.AutoSize = true;
+            this.checkAutoLoadFile.FlatAppearance.BorderColor = System.Drawing.Color.Black;
+            this.checkAutoLoadFile.FlatAppearance.CheckedBackColor = System.Drawing.Color.DimGray;
+            this.checkAutoLoadFile.FlatAppearance.MouseDownBackColor = System.Drawing.Color.SteelBlue;
+            this.checkAutoLoadFile.FlatAppearance.MouseOverBackColor = System.Drawing.Color.SteelBlue;
+            this.checkAutoLoadFile.ForeColor = System.Drawing.Color.White;
+            this.checkAutoLoadFile.Location = new System.Drawing.Point(6, 94);
+            this.checkAutoLoadFile.Name = "checkAutoLoadFile";
+            this.checkAutoLoadFile.Padding = new System.Windows.Forms.Padding(3, 0, 0, 0);
+            this.checkAutoLoadFile.Size = new System.Drawing.Size(203, 19);
+            this.checkAutoLoadFile.TabIndex = 4;
+            this.checkAutoLoadFile.Text = "Load last opened file on start up?";
             // 
             // EditorPreferencePanel
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
+            this.Controls.Add(this.checkAutoLoadFile);
+            this.Controls.Add(this.buttonPlugInLocation);
+            this.Controls.Add(this.textPlugInLocation);
+            this.Controls.Add(this.label2);
             this.Controls.Add(this.tabPlugIns);
             this.Controls.Add(this.buttonScratch);
             this.Controls.Add(this.textScratchLocation);
@@ -246,5 +319,10 @@
         private System.Windows.Forms.ColumnHeader columnDisabledReason;
         private System.Windows.Forms.ColumnHeader columnDisablePath;
         private System.Windows.Forms.ColumnHeader columnType;
+        private System.Windows.Forms.Button buttonPlugInLocation;
+        private System.Windows.Forms.TextBox textPlugInLocation;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.FolderBrowserDialog dialogPlugInLocation;
+        private System.Windows.Forms.CheckBox checkAutoLoadFile;
     }
 }

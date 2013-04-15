@@ -369,7 +369,7 @@ namespace GorgonLibrary.Editor
 				Program.ScratchFiles.AddAllProviders();
 
                 // Load the last opened file.
-                if (!string.IsNullOrWhiteSpace(Program.Settings.LastEditorFile))
+                if ((Program.Settings.AutoLoadLastFile) && (!string.IsNullOrWhiteSpace(Program.Settings.LastEditorFile)))
                 {
                     try
                     {
