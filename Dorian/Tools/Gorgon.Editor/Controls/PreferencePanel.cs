@@ -66,6 +66,16 @@ namespace GorgonLibrary.Editor
                 base.Text = value;
             }
         }
+
+        /// <summary>
+        /// Property to return whether to refresh the tree after the preferences are committed.
+        /// </summary>
+        [Browsable(false)]
+        public bool RefreshTree
+        {
+            get;
+            protected set;
+        }
         #endregion
 
         #region Methods.

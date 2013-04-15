@@ -297,7 +297,7 @@ namespace GorgonLibrary.Configuration
 						for (int i = 0; i < values.Length; i++)
 							addMethod.Invoke(collection, new object[] { values[i] });
 					}
-				}
+				}                
 				else
 				{
 					string settingName = (string.IsNullOrEmpty(property.Value.SettingName) ? property.Key.Name : property.Value.SettingName);

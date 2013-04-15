@@ -52,7 +52,6 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
         : ContentObject
     {
         #region Variables.
-		private ContentPlugIn _plugIn = null;						// The plug-in that interfaces the content with the main system.
         private GorgonFontContentPanel _panel = null;               // Interface for editing the font.
         private bool _disposed = false;                             // Flag to indicate that the object was disposed.
 		private GorgonFontSettings _settings = null;				// Settings for the font.
@@ -791,7 +790,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
         public GorgonFontContent(ContentPlugIn plugIn)
             : base()
         {
-			_plugIn = plugIn;
+			PlugIn = plugIn;
 			_settings = new GorgonFontSettings();
         }
         #endregion
