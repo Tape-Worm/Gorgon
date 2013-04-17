@@ -25,11 +25,8 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Drawing;
 using System.Windows.Forms;
-using GorgonLibrary;
 using GorgonLibrary.Diagnostics;
 using GorgonLibrary.UI;
 
@@ -43,12 +40,12 @@ namespace GorgonLibrary.Examples
 	static class Program
 	{
 		#region Variables.
-		private static Random _rnd = new Random();			// Random number generator.
-		private static int _lastX = 0;						// Last horizontal coordinate.
-		private static int _lastY = 0;						// Last vertical coordinate.
-		private static float _lastTime = 0;					// Last time we drew.
-		private static int _color = 0;						// Color for the bars.
-		private static int _component = 0;					// Color component.
+		private static readonly Random _rnd = new Random();	// Random number generator.
+		private static int _lastX;						    // Last horizontal coordinate.
+		private static int _lastY;						    // Last vertical coordinate.
+		private static float _lastTime;					    // Last time we drew.
+		private static int _color;						    // Color for the bars.
+		private static int _component;					    // Color component.
 		#endregion
 
 		#region Methods.

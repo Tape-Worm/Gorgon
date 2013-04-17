@@ -24,13 +24,6 @@
 // 
 #endregion
 
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
 using System.Windows.Forms;
 
 namespace GorgonLibrary.Examples
@@ -47,16 +40,7 @@ namespace GorgonLibrary.Examples
 			labelText.Refresh();
 		}
 
-		/// <summary>
-		/// Raises the <see cref="E:System.Windows.Forms.Form.Load"/> event.
-		/// </summary>
-		/// <param name="e">An <see cref="T:System.EventArgs"/> that contains the event data.</param>
-		protected override void OnLoad(EventArgs e)
-		{
-			base.OnLoad(e);			
-		}
-
-		/// <summary>
+	    /// <summary>
 		/// Initializes a new instance of the <see cref="formSplash" /> class.
 		/// </summary>
 		public formSplash()

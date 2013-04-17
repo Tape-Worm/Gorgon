@@ -26,13 +26,9 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.IO;
+using System.Linq;
 using System.Reflection;
-using GorgonLibrary;
-using GorgonLibrary.Diagnostics;
-using GorgonLibrary.UI;
-using GorgonLibrary.PlugIns;
 using GorgonLibrary.Input;
 
 namespace GorgonLibrary.Examples

@@ -40,11 +40,11 @@ namespace GorgonLibrary.Examples
 	static class Program
 	{
 		#region Variables.
-		private static formMain _form = null;				// Our application form.
-		private static Random _rnd = new Random();			// Random number generator.
-		private static int _lastX = 0;						// Last horizontal coordinate.
-		private static int _lastY = 0;						// Last vertical coordinate.
-		private static float _lastTime = 0;					// Last time we drew.
+        private static readonly Random _rnd = new Random();			// Random number generator.
+        private static formMain _form;				                // Our application form.
+		private static int _lastX;						            // Last horizontal coordinate.
+		private static int _lastY;						            // Last vertical coordinate.
+		private static float _lastTime;					            // Last time we drew.
 		#endregion
 
 		#region Methods.
@@ -88,10 +88,12 @@ namespace GorgonLibrary.Examples
 				Application.EnableVisualStyles();
 				Application.SetCompatibleTextRenderingDefault(false);
 
-				_form = new formMain();
-				_form.ClientSize = new Size(640, 480);
+				_form = new formMain
+				    {
+				        ClientSize = new Size(640, 480)
+				    };
 
-				// Get the initial time.
+			    // Get the initial time.
 				_lastTime = GorgonTiming.MillisecondsSinceStart;
 
 				// Run the application with an idle loop.

@@ -24,9 +24,8 @@
 // 
 #endregion
 
-using System.Drawing;
-using SlimMath;
 using GorgonLibrary.Math;
+using SlimMath;
 
 namespace GorgonLibrary.Graphics.Example
 {

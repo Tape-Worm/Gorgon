@@ -25,10 +25,8 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
-using System.Windows.Forms;
 using System.IO;
-using GorgonLibrary;
+using System.Windows.Forms;
 using GorgonLibrary.IO;
 using GorgonLibrary.UI;
 

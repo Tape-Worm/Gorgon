@@ -25,10 +25,6 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace GorgonLibrary.Examples
 {
@@ -63,15 +59,6 @@ namespace GorgonLibrary.Examples
 		{
 			Console.ForegroundColor = TextColor;
 			Console.WriteLine(text);
-		}
-		#endregion
-
-		#region Constructor/Destructor.
-		/// <summary>
-		/// Initializes a new instance of the <see cref="TextColor" /> class.
-		/// </summary>
-		protected TextColorWriter()
-		{
 		}
 		#endregion
 	}

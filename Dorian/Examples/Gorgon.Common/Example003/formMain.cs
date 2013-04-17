@@ -37,9 +37,9 @@ namespace GorgonLibrary.Examples
 	public partial class formMain : Form
 	{
 		#region Variables.
-		private Graphics _formGraphics = null;		// GDI+ form graphics interface.
-		private Graphics _graphics = null;			// GDI+ graphics interface.
-		private Bitmap _bitmap = null;				// Image for our form.
+		private Graphics _formGraphics;		// GDI+ form graphics interface.
+		private Graphics _graphics;			// GDI+ graphics interface.
+		private Bitmap _bitmap;				// Image for our form.
 		#endregion
 
 		#region Properties.
@@ -181,7 +181,6 @@ namespace GorgonLibrary.Examples
 		/// </summary>
 		public formMain()
 		{
-			DoubleBuffered = true;
 			InitializeComponent();
 		}
 		#endregion

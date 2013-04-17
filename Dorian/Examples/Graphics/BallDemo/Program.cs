@@ -25,16 +25,15 @@
 #endregion
 
 using System;
-using System.Linq;
 using System.Collections.Generic;
-using System.Windows.Forms;
 using System.Drawing;
-using System.Text;
 using System.IO;
-using SlimMath;
-using GorgonLibrary.IO;
+using System.Text;
+using System.Windows.Forms;
 using GorgonLibrary.Diagnostics;
+using GorgonLibrary.IO;
 using GorgonLibrary.Renderers;
+using SlimMath;
 
 namespace GorgonLibrary.Graphics.Example
 {

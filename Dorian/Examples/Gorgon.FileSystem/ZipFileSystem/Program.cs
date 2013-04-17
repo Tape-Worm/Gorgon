@@ -25,14 +25,11 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Reflection;
 using System.IO;
-using GorgonLibrary;
-using GorgonLibrary.IO;
+using System.Linq;
+using System.Reflection;
 using GorgonLibrary.FileSystem;
+using GorgonLibrary.IO;
 
 namespace GorgonLibrary.Examples
 {
@@ -60,7 +57,7 @@ namespace GorgonLibrary.Examples
 	static class Program
     {
         #region Variables.
-        private static GorgonFileSystem _fileSystem = null;         // File system.
+        private static GorgonFileSystem _fileSystem;         // File system.
         #endregion
 
         #region Properties.
@@ -185,11 +182,10 @@ namespace GorgonLibrary.Examples
             return true;
         }
 
-        /// <summary>
-		/// The main entry point for the application.
-		/// </summary>
-        /// <param name="args">Command line arguments.</param>
-		static void Main(string[] args)
+	    /// <summary>
+	    /// The main entry point for the application.
+	    /// </summary>
+	    static void Main()
 		{
             try
             {
