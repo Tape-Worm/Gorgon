@@ -24,6 +24,8 @@
 // 
 #endregion
 
+using System;
+
 namespace GorgonLibrary.Examples
 {
 	/// <summary>
@@ -36,12 +38,12 @@ namespace GorgonLibrary.Examples
 	{
 		#region Methods.
 		/// <summary>
-		/// We won't be using this method in this case.
+		/// Function to create the writer that will output our text with a specified color.
 		/// </summary>
-		/// <returns></returns>
+		/// <returns>The writer interface.</returns>
 		public override TextColorWriter CreateWriter()
 		{
-			return new GreenTextColorWriter();
+			return new TextMultiColorWriter(ConsoleColor.Green);
 		}
 		#endregion
 

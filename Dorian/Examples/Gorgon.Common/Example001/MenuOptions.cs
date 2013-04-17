@@ -35,15 +35,7 @@ namespace GorgonLibrary.Examples
 	/// </summary>
 	static class MenuOptions
 	{
-		#region Variables.
-
-		#endregion
-
-		#region Properties.
-
-		#endregion
-
-		#region Methods.
+	    #region Methods.
 		/// <summary>
 		/// Function to throw the inner exception.
 		/// </summary>
@@ -161,15 +153,6 @@ namespace GorgonLibrary.Examples
 			{
 				GorgonDialogs.ErrorBox(null, ex);
 			}
-		}
-		#endregion
-
-		#region Constructor/Destructor.
-		/// <summary>
-		/// Initializes the <see cref="MenuOptions" /> class.
-		/// </summary>
-		static MenuOptions()
-		{
 		}
 		#endregion
 	}

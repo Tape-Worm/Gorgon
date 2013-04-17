@@ -25,11 +25,8 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Windows.Forms;
 using System.Drawing;
+using System.Windows.Forms;
 using GorgonLibrary.Diagnostics;
 using GorgonLibrary.UI;
 
@@ -43,8 +40,8 @@ namespace GorgonLibrary.Examples
 		: ApplicationContext
 	{
 		#region Variables.
-		private GorgonTimer _timer = null;				// A timer for the splash screen.
-		private formSplash _splashScreen = null;		// A splash screen.
+		private readonly GorgonTimer _timer;		// A timer for the splash screen.
+		private formSplash _splashScreen;		    // A splash screen.
 		#endregion
 
 		#region Methods.
@@ -128,7 +125,7 @@ namespace GorgonLibrary.Examples
 				}
 
 				// Resize the main form to 640 x 480.
-				MainForm.KeyDown += new KeyEventHandler(MainForm_KeyDown);
+				MainForm.KeyDown += MainForm_KeyDown;
 				MainForm.ClientSize = new Size(640, 480);
 				MainForm.Show();
 			}

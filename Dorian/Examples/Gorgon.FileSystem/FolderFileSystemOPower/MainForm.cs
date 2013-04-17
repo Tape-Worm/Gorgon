@@ -26,18 +26,16 @@
 
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
-using SlimMath;
-using GorgonLibrary;
-using GorgonLibrary.IO;
 using GorgonLibrary.Diagnostics;
-using GorgonLibrary.UI;
-using GorgonLibrary.Graphics;
-using GorgonLibrary.Renderers;
 using GorgonLibrary.FileSystem;
+using GorgonLibrary.Graphics;
+using GorgonLibrary.IO;
+using GorgonLibrary.Renderers;
+using GorgonLibrary.UI;
+using SlimMath;
 
 namespace GorgonLibrary.Examples
 {

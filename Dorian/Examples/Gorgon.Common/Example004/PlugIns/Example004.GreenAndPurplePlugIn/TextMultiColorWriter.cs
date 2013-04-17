@@ -29,23 +29,34 @@ using System;
 namespace GorgonLibrary.Examples
 {
 	/// <summary>
-	/// Our blue text color writer.
+	/// Our writer that uses multiple colors.
 	/// 
-	/// So now we can implement our green text color writer by overloading its color method and
-	/// return the green color.
+	/// So now we can implement our green/purple text color writer by passing in the color 
+	/// on the constructor from the plug-in interface.
 	/// </summary>
-	class GreenTextColorWriter
+	class TextMultiColorWriter
 		: TextColorWriter
 	{
+        private readonly ConsoleColor _color = ConsoleColor.Black;           // Our color.
+
 		/// <summary>
 		/// We'll use this property to advertise the text color.
 		/// </summary>
 		public override ConsoleColor TextColor
 		{
-			get 
+			get
 			{
-				return ConsoleColor.Green;
+				return _color;
 			}
 		}
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TextMultiColorWriter"/> class.
+        /// </summary>
+        /// <param name="color">The color to use when printing the text.</param>
+	    public TextMultiColorWriter(ConsoleColor color)
+	    {
+	        _color = color;
+	    }
 	}
 }

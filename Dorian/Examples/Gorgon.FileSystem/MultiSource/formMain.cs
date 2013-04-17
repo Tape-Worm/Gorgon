@@ -25,12 +25,12 @@
 #endregion
 
 using System;
-using System.Text;
+using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Drawing;
+using System.Text;
 using System.Windows.Forms;
-using System.IO;
 using GorgonLibrary.FileSystem;
 using GorgonLibrary.UI;
 

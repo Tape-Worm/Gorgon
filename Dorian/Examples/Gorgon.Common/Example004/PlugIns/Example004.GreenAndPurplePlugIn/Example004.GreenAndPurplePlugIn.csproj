@@ -48,10 +48,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="PurplePlugIn.cs" />
-    <Compile Include="PurpleTextColorWriter.cs" />
-    <Compile Include="GreenTextColorWriter.cs" />
     <Compile Include="GreenPlugIn.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TextMultiColorWriter.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Gorgon2.ico" />

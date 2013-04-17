@@ -25,13 +25,9 @@
 #endregion
 
 using System;
-using System.Text;
-using System.Linq;
-using System.Reflection;
-using System.Drawing;
-using System.Windows.Forms;
 using System.IO;
-using GorgonLibrary.Diagnostics;
+using System.Text;
+using System.Windows.Forms;
 using GorgonLibrary.FileSystem;
 using GorgonLibrary.UI;
 
@@ -60,7 +56,7 @@ namespace GorgonLibrary.Examples
 	public partial class formMain : Form
 	{
 		#region Variables.
-		private GorgonFileSystem _fileSystem = null;			// Our file system.
+		private GorgonFileSystem _fileSystem;			        // Our file system.
 		private string _writePath = string.Empty;				// Write path.
 		private string _originalText = string.Empty;			// Original text.
 		#endregion
@@ -75,7 +71,7 @@ namespace GorgonLibrary.Examples
 		{
 			try
 			{
-				IsCommandEnabled = false;
+				CommandEnable(false);
 				buttonSave.Enabled = false;
 				textDisplay.Enabled = false;
 				byte[] data = Encoding.UTF8.GetBytes(textDisplay.Text);
@@ -87,8 +83,8 @@ namespace GorgonLibrary.Examples
 			}
 			finally
 			{
-				IsCommandEnabled = true;
-				itemLoadChanged.Enabled = string.Compare(textDisplay.Text, _originalText) != 0;
+				CommandEnable(true);
+				itemLoadChanged.Enabled = String.CompareOrdinal(textDisplay.Text, _originalText) != 0;
 				UpdateInfo();
 			}
 		}
@@ -102,7 +98,7 @@ namespace GorgonLibrary.Examples
 		{
 			try
 			{
-				IsCommandEnabled = false;
+				CommandEnable(false);
 				LoadText();
 			}
 			catch (Exception ex)
@@ -111,7 +107,7 @@ namespace GorgonLibrary.Examples
 			}
 			finally
 			{
-				IsCommandEnabled = true;
+				CommandEnable(true);
 				UpdateInfo();
 			}
 		}
@@ -125,7 +121,7 @@ namespace GorgonLibrary.Examples
 		{
 			try
 			{
-				IsCommandEnabled = false;
+				CommandEnable(false);
 				LoadText();
 				textDisplay.Text = _originalText;
 			}
@@ -135,34 +131,28 @@ namespace GorgonLibrary.Examples
 			}
 			finally
 			{
-				IsCommandEnabled = true;
+				CommandEnable(true);
 				UpdateInfo();
-			}
-		}
-
-		/// <summary>
-		/// Property to enable or disable the command buttons.
-		/// </summary>
-		private bool IsCommandEnabled
-		{
-			get
-			{
-				return buttonSave.Enabled && buttonReload.Enabled && textDisplay.Enabled;
-			}
-			set
-			{
-				buttonSave.Enabled = buttonReload.Enabled = textDisplay.Enabled = value;
 			}
 		}
 		#endregion
 
 		#region Methods.
-		/// <summary>
+        /// <summary>
+        /// Function to enable or disable the command buttons.
+        /// </summary>
+        /// <param name="value">TRUE to enable the command buttons, FALSE to disable.</param>
+        private void CommandEnable(bool value)
+        {
+            buttonSave.Enabled = buttonReload.Enabled = textDisplay.Enabled = value;
+        }
+
+        /// <summary>
 		/// Function to update the information label.
 		/// </summary>
 		private void UpdateInfo()
 		{
-			if (string.Compare(_originalText, textDisplay.Text, false) == 0)
+			if (String.CompareOrdinal(_originalText, textDisplay.Text) == 0)
 			{
 				labelInfo.Text = string.Format("Using original text from {0}", Program.GetResourcePath(@"FolderSystem\").Ellipses(100, true));
 			}
@@ -193,14 +183,7 @@ namespace GorgonLibrary.Examples
 			textData = _fileSystem.ReadFile("/SomeText.txt");
 			string modifiedText = Encoding.UTF8.GetString(textData);
 
-			if (string.Compare(modifiedText, _originalText) == 0)
-			{
-				textDisplay.Text = _originalText;
-			}
-			else
-			{
-				textDisplay.Text = modifiedText;
-			}
+			textDisplay.Text = String.CompareOrdinal(modifiedText, _originalText) == 0 ? _originalText : modifiedText;
 		}
 
 		/// <summary>
@@ -230,7 +213,7 @@ namespace GorgonLibrary.Examples
 			}
 			finally
 			{
-				itemLoadChanged.Enabled = string.Compare(textDisplay.Text, _originalText) != 0;
+				itemLoadChanged.Enabled = String.CompareOrdinal(textDisplay.Text, _originalText) != 0;
 				UpdateInfo();
 			}
 		}

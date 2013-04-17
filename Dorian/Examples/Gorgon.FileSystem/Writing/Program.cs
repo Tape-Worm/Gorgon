@@ -25,11 +25,9 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 using System.IO;
+using System.Windows.Forms;
+using GorgonLibrary.Examples.Properties;
 using GorgonLibrary.IO;
 using GorgonLibrary.UI;
 
@@ -49,11 +47,11 @@ namespace GorgonLibrary.Examples
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="resourceItem"/> was NULL (Nothing in VB.Net) or empty.</exception>
 		public static string GetResourcePath(string resourceItem)
 		{
-			string path = Properties.Settings.Default.ResourceLocation;
-
-			if (string.IsNullOrEmpty(resourceItem))
+			string path = Settings.Default.ResourceLocation;
+		    
+            if (string.IsNullOrEmpty(resourceItem))
 			{
-				throw new ArgumentException("The resource was not specified.", "resourceItem");
+				throw new ArgumentException(Resources.RESOURCE_NOT_SPECIFIED, "resourceItem");
 			}
 
 			if (!path.EndsWith(Path.DirectorySeparatorChar.ToString()))

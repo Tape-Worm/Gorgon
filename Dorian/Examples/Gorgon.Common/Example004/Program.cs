@@ -26,11 +26,8 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.IO;
-using GorgonLibrary;
-using GorgonLibrary.Diagnostics;
-using GorgonLibrary.UI;
+using System.Linq;
 
 namespace GorgonLibrary.Examples
 {
@@ -77,14 +74,9 @@ namespace GorgonLibrary.Examples
 		[STAThread]
 		static void Main()
 		{
-			IList<TextColorWriter> writers = null;			// Our text writer plug-in interfaces.
-
-			try
+		    try
 			{
-				int cursorX = 0;		// Cursor position.
-				int cursorY = 0;
-
-				Console.Title = "Example #4 - Gorgon Plug-Ins.";
+			    Console.Title = "Example #4 - Gorgon Plug-Ins.";
 				Console.ForegroundColor = ConsoleColor.White;
 
 				Console.WriteLine("This is an example to show how to create and use custom plug-ins.");
@@ -93,16 +85,16 @@ namespace GorgonLibrary.Examples
 
 				Console.ResetColor();
 
-				var plugInFiles = GetPlugInAssemblies();
+				var plugInFiles = GetPlugInAssemblies().ToArray();
 
-				Console.WriteLine("{0} plug-in assemblies found.", plugInFiles.Count());
-				if (plugInFiles.Count() == 0)
+			    Console.WriteLine("{0} plug-in assemblies found.", plugInFiles.Count());
+				if (plugInFiles.Length == 0)
 				{					
 					return;
 				}
 
 				// Load the plug-ins into Gorgon (only take the first 9).
-				writers = new List<TextColorWriter>();
+				IList<TextColorWriter> writers = new List<TextColorWriter>();			// Our text writer plug-in interfaces.
 				foreach (var path in plugInFiles)
 				{
 					Gorgon.PlugIns.LoadPlugInAssembly(path);
@@ -113,14 +105,14 @@ namespace GorgonLibrary.Examples
 				var plugIns = (from plugIn in Gorgon.PlugIns
 								let textPlugIn = plugIn as TextColorPlugIn
 								where textPlugIn != null
-								select textPlugIn).Take(9);
+								select textPlugIn).Take(9).ToArray();
 
 				// Display a list of the available plug-ins.
-				Console.WriteLine("\n{0} Plug-ins loaded:\n", plugIns.Count());
-				for (int i = 0; i < plugIns.Count(); i++)
+				Console.WriteLine("\n{0} Plug-ins loaded:\n", plugIns.Length);
+                for (int i = 0; i < plugIns.Length; i++)
 				{
 					// Here's where we make use of our description.
-					Console.WriteLine("{0}. {1} ({2})", i + 1, plugIns.ElementAt(i).Description, plugIns.ElementAt(i).GetType().FullName);
+					Console.WriteLine("{0}. {1} ({2})", i + 1, plugIns[i].Description, plugIns[i].GetType().FullName);
 
 					// Create the text writer interface and add it to the list.
 					writers.Add(plugIns.ElementAt(i).CreateWriter());
@@ -131,36 +123,38 @@ namespace GorgonLibrary.Examples
 				// Loop until we quit.
 				while (true)
 				{
-					if (Console.KeyAvailable)
-					{
-						Console.ResetColor();
+				    if (!Console.KeyAvailable)
+				    {
+				        continue;
+				    }
 
-						// Remember our cursor coordinates.
-						cursorX = Console.CursorLeft;
-						cursorY = Console.CursorTop;
+				    Console.ResetColor();
 
-						var keyValue = Console.ReadKey(false);
+				    // Remember our cursor coordinates.
+				    int cursorX = Console.CursorLeft;		// Cursor position.
+				    int cursorY = Console.CursorTop;
 
-						if (char.IsNumber(keyValue.KeyChar))
-						{
-							if (keyValue.KeyChar == '0')
-							{
-								break;
-							}
+				    var keyValue = Console.ReadKey(false);
 
-							// Move to the next line and clear the previous line of text.
-							Console.WriteLine();
-							Console.Write(new string(' ', Console.BufferWidth - 1));
-							Console.CursorLeft = 0;
+				    if (char.IsNumber(keyValue.KeyChar))
+				    {
+				        if (keyValue.KeyChar == '0')
+				        {
+				            break;
+				        }
 
-							// Call our text color writer to print the text in the plug-in color.
-							int writerIndex = Convert.ToInt32(keyValue.KeyChar.ToString()) - 1;
-							writers[writerIndex].WriteString("You pressed #" + keyValue.KeyChar.ToString() + ".");
-						}
+				        // Move to the next line and clear the previous line of text.
+				        Console.WriteLine();
+				        Console.Write(new string(' ', Console.BufferWidth - 1));
+				        Console.CursorLeft = 0;
 
-						Console.CursorTop = cursorY;
-						Console.CursorLeft = cursorX;
-					}
+				        // Call our text color writer to print the text in the plug-in color.
+				        int writerIndex = keyValue.KeyChar - '0';
+				        writers[writerIndex - 1].WriteString(string.Format("You pressed #{0}.", writerIndex));
+				    }
+
+				    Console.CursorTop = cursorY;
+				    Console.CursorLeft = cursorX;
 				}
 			}
 			catch (Exception ex)

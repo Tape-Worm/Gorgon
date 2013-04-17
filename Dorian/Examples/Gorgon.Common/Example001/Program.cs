@@ -35,7 +35,7 @@ namespace GorgonLibrary.Examples
 	class Program
 	{
 		#region Variables.
-		private static bool _quit = false;			// Flag to quit the application.
+		private static bool _quit;			// Flag to quit the application.
 		#endregion
 
 		#region Methods.
@@ -103,14 +103,9 @@ namespace GorgonLibrary.Examples
 		/// </summary>
 		private static void ReadValue()
 		{
-			ConsoleKeyInfo key = default(ConsoleKeyInfo);
-
-			while (!_quit)
+		    while (!_quit)
 			{
-				if (Console.KeyAvailable)
-					key = Console.ReadKey(true);
-				else
-					key = default(ConsoleKeyInfo);
+				ConsoleKeyInfo key = Console.KeyAvailable ? Console.ReadKey(true) : default(ConsoleKeyInfo);
 
 				switch (key.Key)
 				{
@@ -165,11 +160,10 @@ namespace GorgonLibrary.Examples
 			}
 		}
 
-		/// <summary>
-		/// The entry point for the application.
-		/// </summary>
-		/// <param name="args">Command line arguments.</param>
-		static void Main(string[] args)
+	    /// <summary>
+	    /// The entry point for the application.
+	    /// </summary>
+	    static void Main()
 		{
 			// This is here for any windows forms elements that get displayed.
 			// Without this, the elements will not use the visual styles and will 
