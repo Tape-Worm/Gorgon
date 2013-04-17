@@ -24,13 +24,6 @@
 // 
 #endregion
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using GorgonLibrary.PlugIns;
-
 namespace GorgonLibrary.Examples
 {
 	/// <summary>
@@ -54,7 +47,7 @@ namespace GorgonLibrary.Examples
 
 		#region Constructor/Destructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="PlugIn" /> class.
+		/// Initializes a new instance of the <see cref="GreenPlugIn" /> class.
 		/// </summary>
 		public GreenPlugIn()
 			: base("This plug-in will print green text.")
