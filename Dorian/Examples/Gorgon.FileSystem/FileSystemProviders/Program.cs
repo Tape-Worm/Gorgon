@@ -25,7 +25,6 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -61,7 +60,7 @@ namespace GorgonLibrary.Examples
 	static class Program
     {
         #region Variables.
-        private static GorgonFileSystem _fileSystem = null;         // File system.
+        private static GorgonFileSystem _fileSystem;         // File system.
         #endregion
 
         #region Properties.
@@ -101,7 +100,6 @@ namespace GorgonLibrary.Examples
         private static int LoadFileSystemProviders()
         {
             int result = 0;
-            IList<Tuple<GorgonFileSystemProviderPlugIn, GorgonFileSystemProvider>> providers = new Tuple<GorgonFileSystemProviderPlugIn, GorgonFileSystemProvider>[] { };
             var files = Directory.GetFiles(PlugInPath, "*.dll", SearchOption.TopDirectoryOnly);
             
             // Load each assembly.
@@ -115,7 +113,7 @@ namespace GorgonLibrary.Examples
                 // a native DLL, then it'll throw an exception.  And since
                 // we can't load native DLLs as our plug-in, then we should
                 // skip it.
-                AssemblyName name = null;
+                AssemblyName name;
                 try
                 {
                     name = AssemblyName.GetAssemblyName(file);
@@ -146,7 +144,7 @@ namespace GorgonLibrary.Examples
                 // types and retrieve their type information.
                 var providerPlugIns = Gorgon.PlugIns.EnumeratePlugIns(name)
                                     .Where(item => item is GorgonFileSystemProviderPlugIn)
-                                    .Select(item => item.GetType());                
+                                    .Select(item => item.GetType()).ToArray();
 
                 // Add each file system provider and plug-in to our list.                
                 foreach (var providerPlugIn in providerPlugIns)
@@ -156,17 +154,16 @@ namespace GorgonLibrary.Examples
                     _fileSystem.AddProvider(providerPlugIn);
                 }
 
-                result += providerPlugIns.Count();
+                result += providerPlugIns.Length;
             }
 
             return result;
         }
 
-        /// <summary>
-		/// The main entry point for the application.
-		/// </summary>
-        /// <param name="args">Command line arguments.</param>
-		static void Main(string[] args)
+	    /// <summary>
+	    /// The main entry point for the application.
+	    /// </summary>
+	    static void Main()
 		{
             try
             {
@@ -204,8 +201,6 @@ namespace GorgonLibrary.Examples
                     Console.ForegroundColor = ConsoleColor.Gray;
                     Console.WriteLine("    Description: {0}", provider.Description);
                     
-                    IList<string> extensionList = new List<string>();
-
                     // Gather the preferred extensions.
 					// File system providers that use a file (like a Zip file) as its root
 					// have a list of file extensions that are preferred.  For example, the
@@ -216,21 +211,16 @@ namespace GorgonLibrary.Examples
 					// concatenate each preferred extension description into a single string.  
 					//
 					// Note that a provider may have multiple preferred extensions.
-                    foreach(var preferred in provider.PreferredExtensions)
+                    var extensionList = (from preferred in provider.PreferredExtensions 
+                                         select preferred.Split(new[] { '|' }) 
+                                         into splitString 
+                                            where splitString.Length > 0 
+                                            select splitString[0]).ToArray();
+
+                    if (extensionList.Length > 0)
                     {
-                        var splitString = preferred.Split(new char[] {'|'});
-
-                        if (splitString.Length > 0)
-                        {
-                            extensionList.Add(splitString[0]);
-                        }
+                        Console.WriteLine("    Preferred Extensions: {0}", string.Join(", ", extensionList));
                     }
-
-					string extensions = string.Join(", ", extensionList);
-					if (!string.IsNullOrEmpty(extensions))
-					{
-						Console.WriteLine("    Preferred Extensions: {0}", string.Join(", ", extensionList));
-					}
                 }
 
 				Console.ResetColor();
