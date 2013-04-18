@@ -276,6 +276,16 @@ namespace GorgonLibrary.GUI
 		}
 
 		/// <summary>
+		/// Function called when the font is changed.
+		/// </summary>
+		protected override void OnFontChanged()
+		{
+			base.OnFontChanged();
+
+			_captionTextLabel.Font = Font;
+		}
+
+		/// <summary>
 		/// Function called when a keyboard event has taken place in this window.
 		/// </summary>
 		/// <param name="isDown">TRUE if the button was pressed, FALSE if released.</param>
@@ -496,7 +506,7 @@ namespace GorgonLibrary.GUI
 			WindowDimensions = new System.Drawing.Rectangle(x, y, width, height);			
 			Font = null;
 			Visible = true;
-			_captionTextLabel = new TextSprite("WindowCaptionLabel", Name, Font, Drawing.Color.White);
+			_captionTextLabel = new TextSprite("WindowCaptionLabel", name, Font, Drawing.Color.White);
 			_clipView = new Viewport(0, 0, 1, 1);
 		}
 		#endregion

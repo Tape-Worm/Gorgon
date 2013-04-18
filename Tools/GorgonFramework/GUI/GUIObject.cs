@@ -147,6 +147,11 @@ namespace GorgonLibrary.GUI
 			}
 			set
 			{
+				if (_font == value)
+				{
+					return;
+				}
+
 				if ((_font != null) && (_font != Desktop.DefaultFont))
 					_font.Dispose();
 				_font = null;
@@ -155,6 +160,8 @@ namespace GorgonLibrary.GUI
 					_font = Desktop.DefaultFont;
 				else
 					_font = value;
+
+				OnFontChanged();
 			}
 		}
 
@@ -326,7 +333,7 @@ namespace GorgonLibrary.GUI
 		}
 		#endregion
 
-		#region Methods.		
+		#region Methods.
 		/// <summary>
 		/// Function to set the active clipping region.
 		/// </summary>
@@ -414,6 +421,14 @@ namespace GorgonLibrary.GUI
 		{
 			if (KeyUp != null)
 				KeyUp(sender, e);
+		}
+
+		/// <summary>
+		/// Function called when the font is changed.
+		/// </summary>
+		protected virtual void OnFontChanged()
+		{
+			// This should be override by custom types.
 		}
 
 		/// <summary>

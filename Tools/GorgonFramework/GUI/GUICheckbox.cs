@@ -121,6 +121,16 @@ namespace GorgonLibrary.GUI
 
 		#region Methods.
 		/// <summary>
+		/// Function called when the font is changed.
+		/// </summary>
+		protected override void OnFontChanged()
+		{
+			base.OnFontChanged();
+
+			_textLabel.Font = Font;
+		}
+
+		/// <summary>
 		/// Function called when the checked value is changed.
 		/// </summary>
 		/// <param name="sender">Sender of the event.</param>
