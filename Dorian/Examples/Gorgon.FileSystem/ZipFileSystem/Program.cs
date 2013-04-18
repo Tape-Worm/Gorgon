@@ -56,6 +56,10 @@ namespace GorgonLibrary.Examples
 	/// </remarks>
 	static class Program
     {
+        #region Constants.
+        private const string PlugInName = "GorgonLibrary.FileSystem.GorgonZipPlugIn";
+        #endregion
+
         #region Variables.
         private static GorgonFileSystem _fileSystem;         // File system.
         #endregion
@@ -101,7 +105,7 @@ namespace GorgonLibrary.Examples
 
 			if (string.IsNullOrEmpty(resourceItem))
 			{
-				throw new ArgumentException("The resource was not specified.", "resourceItem");
+                throw new ArgumentException("The resource was not specified.", "resourceItem");
 			}
 
 			if (!path.EndsWith(Path.DirectorySeparatorChar.ToString()))
@@ -133,7 +137,6 @@ namespace GorgonLibrary.Examples
         static bool LoadZipProviderPlugIn()
         {
             string zipProviderPath = PlugInPath + "Gorgon.FileSystem.Zip.dll";
-            string plugInName = "GorgonLibrary.FileSystem.GorgonZipPlugIn";
 
             if (!File.Exists(zipProviderPath))
             {
@@ -151,10 +154,10 @@ namespace GorgonLibrary.Examples
             Gorgon.PlugIns.LoadPlugInAssembly(assembly);
 
             // Add the provider.
-            if (!Gorgon.PlugIns.Contains(plugInName))
+            if (!Gorgon.PlugIns.Contains(PlugInName))
             {
                 Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine("The plug-in assembly file:\n'{0}' does not contain a file system plug in named '{1}'.", zipProviderPath, plugInName);
+                Console.WriteLine("The plug-in assembly file:\n'{0}' does not contain a file system plug in named '{1}'.", zipProviderPath, PlugInName);
                 Console.ResetColor();
 #if DEBUG
                 Console.ReadKey();
@@ -163,12 +166,12 @@ namespace GorgonLibrary.Examples
             }
 
             // Ensure this plug in is a file system provider.
-            GorgonFileSystemProviderPlugIn plugIn = Gorgon.PlugIns[plugInName] as GorgonFileSystemProviderPlugIn;
+            GorgonFileSystemProviderPlugIn plugIn = Gorgon.PlugIns[PlugInName] as GorgonFileSystemProviderPlugIn;
 
             if (plugIn == null)
             {
                 Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine("The plug in: '{0}'\nis not a file system provider plug-in.", plugInName);
+                Console.WriteLine("The plug in: '{0}'\nis not a file system provider plug-in.", PlugInName);
                 Console.ResetColor();
 #if DEBUG
                 Console.ReadKey();
@@ -176,7 +179,7 @@ namespace GorgonLibrary.Examples
                 return false;
             }
 
-            _fileSystem.AddProvider(plugInName);
+            _fileSystem.AddProvider(PlugInName);
 
             Console.WriteLine("\nThe zip file file system provider was loaded successfully.");
             return true;
