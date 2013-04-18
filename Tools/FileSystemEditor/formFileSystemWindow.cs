@@ -250,7 +250,7 @@ namespace GorgonLibrary.FileSystems.Tools
 
 			foreach (TreeNode node in root)
 			{
-				if (node.Nodes.Count > 0)
+				if ((node.IsExpanded) && (node.Nodes.Count > 0))
 					UpdateNodeTags(node.Nodes);
 
 				path = _fileSystem.GetPath(FixNodePath(node));
