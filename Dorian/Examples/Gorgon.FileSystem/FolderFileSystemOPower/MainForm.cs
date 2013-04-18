@@ -52,19 +52,19 @@ namespace GorgonLibrary.Examples
 		: Form
 	{
 		#region Variables.
-		private GorgonFileSystem _fileSystem = null;		// The file system.
-		private GorgonGraphics _graphics = null;			// The graphics interface.		
-		private Gorgon2D _2D = null;						// The 2D renderer interface.
-		private GorgonTexture2D _spriteImage = null;		// The sprite image texture.
-		private GorgonFont _textFont = null;				// Font for text display.
-		private GorgonFont _helpFont = null;				// Font for help screen.
-		private IList<GorgonSprite> _sprites = null;		// Sprites.
-		private GorgonText _helpText = null;				// Help text.
-		private GorgonText _poetry = null;					// Poetry text.
+		private GorgonFileSystem _fileSystem;		        // The file system.
+		private GorgonGraphics _graphics;			        // The graphics interface.		
+		private Gorgon2D _2D;						        // The 2D renderer interface.
+		private GorgonTexture2D _spriteImage;		        // The sprite image texture.
+		private GorgonFont _textFont;				        // Font for text display.
+		private GorgonFont _helpFont;				        // Font for help screen.
+		private IList<GorgonSprite> _sprites;		        // Sprites.
+		private GorgonText _helpText;				        // Help text.
+		private GorgonText _poetry;					        // Poetry text.
 		private Vector2 _textPosition = Vector2.Zero;		// Text position.
 		private float _blurDelta = -2.0f;					// Blur delta.
 		private bool _showHelp = true;						// Flag to show help.
-		private bool _showStats = false;					// Show rendering statistics.	
+		private bool _showStats;					        // Show rendering statistics.	
 		#endregion
 
 		#region Methods.
@@ -115,7 +115,7 @@ namespace GorgonLibrary.Examples
 			_sprites[1].Draw();
 
             // Draw the blurred sprite.
-			_2D.Effects.GaussianBlur.Render((int passIndex) =>
+			_2D.Effects.GaussianBlur.Render(passIndex =>
 				{
 					if (passIndex == 0)
 					{
@@ -176,7 +176,7 @@ namespace GorgonLibrary.Examples
 		private void Initialize()
 		{
 			// Resize and center the screen.
-			var screen = Screen.FromHandle(this.Handle);
+			var screen = Screen.FromHandle(Handle);
 			ClientSize = Properties.Settings.Default.Resolution;
 			Location = new Point(screen.Bounds.Left + screen.WorkingArea.Width / 2 - ClientSize.Width / 2, screen.Bounds.Top + screen.WorkingArea.Height / 2 - ClientSize.Height / 2);
 
@@ -188,8 +188,8 @@ namespace GorgonLibrary.Examples
 			_2D.IsLogoVisible = true;
 
 			// Create fonts.
-			_textFont = _graphics.Fonts.CreateFont("GiGi_24pt", new GorgonFontSettings()
-			{
+			_textFont = _graphics.Fonts.CreateFont("GiGi_24pt", new GorgonFontSettings
+			    {
 				FontFamilyName = "GiGi",
 				AntiAliasingMode = FontAntiAliasMode.AntiAliasHQ,
 				Size = 24.0f,
@@ -198,12 +198,12 @@ namespace GorgonLibrary.Examples
 			});
 
 			// Use the form font for this one.
-			_helpFont = _graphics.Fonts.CreateFont("FormFont", new GorgonFontSettings()
-			{
-				FontFamilyName = this.Font.FontFamily.Name,
+			_helpFont = _graphics.Fonts.CreateFont("FormFont", new GorgonFontSettings
+			    {
+				FontFamilyName = Font.FontFamily.Name,
 				FontStyle = FontStyle.Bold,
 				AntiAliasingMode = FontAntiAliasMode.AntiAliasHQ,
-				Size = this.Font.Size,
+				Size = Font.Size,
 				FontHeightMode = FontHeightMode.Points
 			});
 
@@ -270,7 +270,7 @@ namespace GorgonLibrary.Examples
 
 			try
 			{
-				this.Cursor = Cursors.WaitCursor;
+				Cursor = Cursors.WaitCursor;
 
 				// Initialize.
 				Initialize();
@@ -282,7 +282,7 @@ namespace GorgonLibrary.Examples
 			}
 			finally
 			{
-				this.Cursor = Cursors.Default;
+				Cursor = Cursors.Default;
 			}
 		}
 		#endregion

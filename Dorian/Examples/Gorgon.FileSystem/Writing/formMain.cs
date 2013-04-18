@@ -167,13 +167,11 @@ namespace GorgonLibrary.Examples
 		/// </summary>
 		private void LoadText()
 		{
-			byte[] textData = null;
-
-			_fileSystem.Clear();
+		    _fileSystem.Clear();
 			_fileSystem.Mount(Program.GetResourcePath(@"FolderSystem\"));
 
 			// Load the original before we mount the write directory.
-			textData = _fileSystem.ReadFile("/SomeText.txt");
+			byte[] textData = _fileSystem.ReadFile("/SomeText.txt");
 			_originalText = Encoding.UTF8.GetString(textData);
 
 			// Set the write location to the users app data folder.

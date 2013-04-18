@@ -64,12 +64,12 @@ namespace GorgonLibrary.Examples
 	public partial class formMain : Form
 	{
 		#region Variables.
-		private GorgonFileSystem _fileSystem = null;			// Our file system.
-		private PictureBox _picture = null;						// Our picture box.
-		private Image _image = null;							// Loaded image.
-		private TextBox _textDisplay = null;					// Loaded text/binary info.
-		private Font _textFont = null;							// Textbox font.
-		private Label _instructions = null;						// Instructions label.
+		private GorgonFileSystem _fileSystem;			// Our file system.
+		private PictureBox _picture;					// Our picture box.
+		private Image _image;							// Loaded image.
+		private TextBox _textDisplay;					// Loaded text/binary info.
+		private Font _textFont;							// Textbox font.
+		private Label _instructions;					// Instructions label.
 		#endregion
 
 		#region Methods.
@@ -80,10 +80,7 @@ namespace GorgonLibrary.Examples
 		/// <param name="e">The <see cref="TreeNodeMouseClickEventArgs" /> instance containing the event data.</param>
 		private void treeFileSystem_NodeMouseDoubleClick(object sender, TreeNodeMouseClickEventArgs e)
 		{
-			GorgonFileSystemFileEntry file = null;
-			byte[] textData = null;
-
-			if (splitFileSystem.Panel2.Controls.Count > 0)
+		    if (splitFileSystem.Panel2.Controls.Count > 0)
 			{
 				splitFileSystem.Panel2.Controls.RemoveAt(0);
 			}
@@ -98,7 +95,7 @@ namespace GorgonLibrary.Examples
 
 				_picture.Image = null;
 				_textDisplay.Text = string.Empty;
-				file = (GorgonFileSystemFileEntry)e.Node.Tag;
+				GorgonFileSystemFileEntry file = (GorgonFileSystemFileEntry)e.Node.Tag;
 
 				// Here we load the image from the file system.
 				// Note that we don't care if it's from the zip file
@@ -118,7 +115,7 @@ namespace GorgonLibrary.Examples
 								_image = null;
 							}
 
-							_image = Bitmap.FromStream(fileStream);
+							_image = Image.FromStream(fileStream);
 							_picture.Image = _image;
 							_picture.SizeMode = PictureBoxSizeMode.Zoom;
 
@@ -128,7 +125,7 @@ namespace GorgonLibrary.Examples
 							break;
 						default:
 							// Get data in the file stream.
-							textData = new byte[fileStream.Length];
+							byte[] textData = new byte[fileStream.Length];
 							fileStream.Read(textData, 0, textData.Length);
 
 							// Convert to a string.
@@ -189,7 +186,6 @@ namespace GorgonLibrary.Examples
 				if (directory == _fileSystem.RootDirectory)
 				{
 					e.Cancel = true;
-					return;
 				}
 			}
 			catch (Exception ex)
@@ -218,27 +214,24 @@ namespace GorgonLibrary.Examples
 		/// <param name="directory">Parent directory to fill, or NULL (Nothing in VB.Net) to fill the root directory.</param>
 		private void FillTree(GorgonFileSystemDirectory directory)
 		{
-			TreeNodeCollection nodes = null;
-			TreeNode parentNode = null;
-			TreeNode directoryNode = null;
-			TreeNode fileNode = null;
+			TreeNodeCollection nodes;
+			TreeNode parentNode;
 
-			if (directory == null)
+		    if (directory == null)
 			{
 				directory = _fileSystem.RootDirectory;
 				nodes = treeFileSystem.Nodes;
 				
 				// Set root node.
-				parentNode = new TreeNode("/");
-				parentNode.Name = "/";
-				parentNode.SelectedImageIndex = parentNode.ImageIndex = 0;
+				parentNode = new TreeNode("/") {Name = "/"};
+			    parentNode.SelectedImageIndex = parentNode.ImageIndex = 0;
 			}
 			else
 			{
 				// Find the node with the directory.
 				var searchNodes = treeFileSystem.Nodes.Find(directory.FullPath, true);
 
-				if ((searchNodes != null) && (searchNodes.Length > 0))
+				if (searchNodes.Length > 0)
 				{					
 					parentNode = searchNodes[0];					
 					nodes = parentNode.Nodes;
@@ -274,11 +267,13 @@ namespace GorgonLibrary.Examples
 				// Get directories.
 				foreach (var subDirectory in directories)
 				{
-					directoryNode = new TreeNode(subDirectory.Name);
-					directoryNode.Name = subDirectory.FullPath;
-					directoryNode.Tag = subDirectory;
+					TreeNode directoryNode = new TreeNode(subDirectory.Name)
+					    {
+					        Name = subDirectory.FullPath, 
+                            Tag = subDirectory
+					    };
 
-					// Put a special icon on the zip file so we have a visual representation
+				    // Put a special icon on the zip file so we have a visual representation
 					// of where it is in our VFS.
 					// The VFS does not care if the data is in a zip file or folder, and Gorgon
 					// does very little to differentiate it.  After all, the whole point of
@@ -306,10 +301,12 @@ namespace GorgonLibrary.Examples
 				{
 					if (file.Extension != ".gorSprite")
 					{
-						fileNode = new TreeNode(file.Name);
-						fileNode.Name = file.FullPath;
-						fileNode.Tag = file;
-						fileNode.SelectedImageIndex = fileNode.ImageIndex = 1;
+						TreeNode fileNode = new TreeNode(file.Name)
+						    {
+						        Name = file.FullPath, 
+                                Tag = file
+						    };
+					    fileNode.SelectedImageIndex = fileNode.ImageIndex = 1;
 						parentNode.Nodes.Add(fileNode);
 					}
 				}
@@ -374,24 +371,24 @@ namespace GorgonLibrary.Examples
 			try
 			{
 				// Picture box.
-				_picture = new PictureBox();
-				_picture.Name = "pictureImage";
+				_picture = new PictureBox {Name = "pictureImage"};
 
-				// Text display.
-				_textDisplay = new TextBox();
-				_textDisplay.Name = "textDisplay";
-				_textFont = new Font("Consolas", 10.0f, FontStyle.Regular, GraphicsUnit.Point);
+			    // Text display.
+				_textDisplay = new TextBox {Name = "textDisplay"};
+			    _textFont = new Font("Consolas", 10.0f, FontStyle.Regular, GraphicsUnit.Point);
 				_textDisplay.Font = _textFont;
 
-				_instructions = new Label();
-				_instructions.Name = "labelInstructions";
-				_instructions.Text = "Double click on a file node in the tree to display it.";
-				_instructions.AutoSize = false;
-				_instructions.TextAlign = ContentAlignment.MiddleCenter;
-				_instructions.Dock = DockStyle.Fill;
-				_instructions.Font = this.Font;
+				_instructions = new Label
+				    {
+				        Name = "labelInstructions",
+				        Text = "Double click on a file node in the tree to display it.",
+				        AutoSize = false,
+				        TextAlign = ContentAlignment.MiddleCenter,
+				        Dock = DockStyle.Fill,
+				        Font = Font
+				    };
 
-				// Add the instructions.
+			    // Add the instructions.
 				splitFileSystem.Panel2.Controls.Add(_instructions);
 
 				// Create the file system.

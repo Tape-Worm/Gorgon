@@ -91,15 +91,6 @@ namespace GorgonLibrary.Examples.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The resource was not specified..
-        /// </summary>
-        internal static string RESOURCE_NOT_SPECIFIED {
-            get {
-                return ResourceManager.GetString("RESOURCE_NOT_SPECIFIED", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
         internal static System.Drawing.Bitmap save_as_16x16 {

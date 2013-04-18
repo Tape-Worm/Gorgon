@@ -51,7 +51,7 @@ namespace GorgonLibrary.Examples
 		    
             if (string.IsNullOrEmpty(resourceItem))
 			{
-				throw new ArgumentException(Resources.RESOURCE_NOT_SPECIFIED, "resourceItem");
+                throw new ArgumentException("The resource was not specified.", "resourceItem");
 			}
 
 			if (!path.EndsWith(Path.DirectorySeparatorChar.ToString()))

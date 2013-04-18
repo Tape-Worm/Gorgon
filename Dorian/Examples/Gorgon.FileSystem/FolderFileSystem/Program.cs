@@ -56,7 +56,7 @@ namespace GorgonLibrary.Examples
 	static class Program
     {
         #region Variables.
-        private static GorgonFileSystem _fileSystem = null;         // File system.
+        private static GorgonFileSystem _fileSystem;         // File system.
         #endregion
 
         #region Methods.
@@ -71,7 +71,7 @@ namespace GorgonLibrary.Examples
 
 			if (string.IsNullOrEmpty(resourceItem))
 			{
-				throw new ArgumentException("The resource was not specified.", "resourceItem");
+                throw new ArgumentException("The resource was not specified.", "resourceItem");
 			}
 
 			if (!path.EndsWith(Path.DirectorySeparatorChar.ToString()))
@@ -96,11 +96,10 @@ namespace GorgonLibrary.Examples
 			return Path.GetFullPath(path);
 		}
 
-        /// <summary>
-		/// The main entry point for the application.
-		/// </summary>
-        /// <param name="args">Command line arguments.</param>
-		static void Main(string[] args)
+	    /// <summary>
+	    /// The main entry point for the application.
+	    /// </summary>
+	    static void Main()
 		{
             try
             {
