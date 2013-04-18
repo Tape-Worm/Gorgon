@@ -83,15 +83,15 @@ namespace GorgonLibrary.Examples
 	public partial class formMain : Form
 	{
 		#region Variables.
-        private Spray _spray = null;                                    // The spray effect.
-        private MouseCursor _cursor = null;                             // Our mouse cursor.
-		private GorgonInputFactory _factory = null;						// Our input factory.
-		private GorgonPointingDevice _mouse = null;						// Our mouse interface.
-		private GorgonJoystick _joystick = null;						// A joystick interface.
-		private GorgonKeyboard _keyboard = null;						// Our keyboard interface.
-		private Point _mousePosition = Point.Empty;						// Mouse position.
-		private Image _currentCursor = null;							// Current image for the cursor.
-		private bool _usePolling = false;								// Flag to indicate whether to use polling or events.
+        private Spray _spray;                                   // The spray effect.
+        private MouseCursor _cursor;                            // Our mouse cursor.
+		private GorgonInputFactory _factory;					// Our input factory.
+		private GorgonPointingDevice _mouse;					// Our mouse interface.
+		private GorgonJoystick _joystick;						// A joystick interface.
+		private GorgonKeyboard _keyboard;						// Our keyboard interface.
+		private Point _mousePosition = Point.Empty;				// Mouse position.
+		private Image _currentCursor;							// Current image for the cursor.
+		private bool _usePolling;								// Flag to indicate whether to use polling or events.
 		#endregion
 
 		#region Properties.
@@ -121,11 +121,11 @@ namespace GorgonLibrary.Examples
                     // Get our joystick data and constrain it.
                     // First get the normalized joystick value.
                     // Do this by first shifting the coordinates to the minimum range value.
-					PointF stickNormalized = new PointF((float)_joystick.X - (float)_joystick.Capabilities.XAxisRange.Minimum,
-														(float)_joystick.Y - (float)_joystick.Capabilities.YAxisRange.Minimum);
+					PointF stickNormalized = new PointF(_joystick.X - (float)_joystick.Capabilities.XAxisRange.Minimum,
+														_joystick.Y - (float)_joystick.Capabilities.YAxisRange.Minimum);
 					// Then normalize.
-                    stickNormalized = new PointF(stickNormalized.X / (float)(_joystick.Capabilities.XAxisRange.Range + 1), 
-												stickNormalized.Y / (float)(_joystick.Capabilities.YAxisRange.Range + 1));
+                    stickNormalized = new PointF(stickNormalized.X / (_joystick.Capabilities.XAxisRange.Range + 1), 
+												stickNormalized.Y / (_joystick.Capabilities.YAxisRange.Range + 1));
 
                     // Now transform the normalized point into display space.
                     screenPosition = new Point((int)(stickNormalized.X * (panelDisplay.ClientSize.Width - 1)) 
@@ -160,7 +160,7 @@ namespace GorgonLibrary.Examples
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="PaintEventArgs" /> instance containing the event data.</param>
-        private void devicePanelsPaint(object sender, PaintEventArgs e)
+        private void DevicePanelsPaint(object sender, PaintEventArgs e)
         {
             Control control = sender as Control;
 
@@ -250,15 +250,16 @@ namespace GorgonLibrary.Examples
                                 (_usePolling ? "Polling" : "Events"));
         }
 
-		/// <summary>
-		/// Function to update the keyboard label.
-		/// </summary>
-		/// <param name="key">Key that's currently pressed.</param>
-		private void UpdateKeyboardLabel(KeyboardKeys key, KeyboardKeys shift)
+	    /// <summary>
+	    /// Function to update the keyboard label.
+	    /// </summary>
+	    /// <param name="key">Key that's currently pressed.</param>
+	    /// <param name="shift">Shifted keys.</param>
+	    private void UpdateKeyboardLabel(KeyboardKeys key, KeyboardKeys shift)
 		{
 			KeyboardKeys shiftKey = KeyboardKeys.None;
 
-			if ((shift & KeyboardKeys.Alt) == KeyboardKeys.Alt)
+			if ((KeyboardKeys.Alt & shift) == KeyboardKeys.Alt)
 			{
 				if ((shift & KeyboardKeys.LeftVersion) == KeyboardKeys.LeftVersion)
 				{

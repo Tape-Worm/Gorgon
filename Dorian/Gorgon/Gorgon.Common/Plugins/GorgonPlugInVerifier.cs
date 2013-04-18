@@ -38,7 +38,7 @@ namespace GorgonLibrary.PlugIns
 		: MarshalByRefObject
 	{
 		#region Variables.
-		private Type _plugInType = null;				// Type info for the Gorgon Plug-In type.
+		private Type _plugInType;				// Type info for the Gorgon Plug-In type.
 		#endregion
 
 		#region Methods.
@@ -55,9 +55,7 @@ namespace GorgonLibrary.PlugIns
 				Assembly gorgonReflection = Assembly.ReflectionOnlyLoad(gorgonAssemblyName.FullName);
 
 				// Get the Gorgon reflection only plug-in type.
-				_plugInType = gorgonReflection.GetTypes()
-								.Where(item => typeof(GorgonPlugIn).FullName == item.FullName)
-								.Single();
+				_plugInType = gorgonReflection.GetTypes().Single(item => typeof(GorgonPlugIn).FullName == item.FullName);
 			}
 		}
 
@@ -136,15 +134,6 @@ namespace GorgonLibrary.PlugIns
 			{
 				AppDomain.CurrentDomain.ReflectionOnlyAssemblyResolve -= CurrentDomain_ReflectionOnlyAssemblyResolve;
 			}
-		}
-		#endregion
-
-		#region Constructor/Destructor.
-		/// <summary>
-		/// Prevents a default instance of the <see cref="GorgonPlugInVerifier" /> class from being created.
-		/// </summary>
-		public GorgonPlugInVerifier()
-		{			
 		}
 		#endregion
 	}

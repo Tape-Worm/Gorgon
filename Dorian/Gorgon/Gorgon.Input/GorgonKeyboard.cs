@@ -34,6 +34,7 @@ namespace GorgonLibrary.Input
 	/// <summary>
 	/// Enumeration for keyboard keys.
 	/// </summary>
+	[Flags]
 	public enum KeyboardKeys
 		: uint
 	{
@@ -480,11 +481,11 @@ namespace GorgonLibrary.Input
 		{
 			#region Variables.
 			/// <summary>Key that the character represents.</summary>
-			KeyboardKeys Key;
+			public readonly KeyboardKeys Key;
 			/// <summary>Character representation.</summary>
-			public char Character;
+            public readonly char Character;
 			/// <summary>Character representation with shift modifier.</summary>
-			public char Shifted;
+            public readonly char Shifted;
 			#endregion
 
 			#region Constructor.
@@ -512,7 +513,7 @@ namespace GorgonLibrary.Input
 			: IEnumerable<KeyCharMap>
 		{
 			#region Variables.
-			private SortedDictionary<KeyboardKeys, KeyCharMap> _keys = null;    // Keyboard mappings.
+			private SortedDictionary<KeyboardKeys, KeyCharMap> _keys;    // Keyboard mappings.
 			#endregion
 
 			#region Properties.
@@ -606,8 +607,10 @@ namespace GorgonLibrary.Input
 			/// </returns>
 			public IEnumerator<KeyCharMap> GetEnumerator()
 			{
-				foreach (KeyValuePair<KeyboardKeys, KeyCharMap> value in _keys)
-					yield return value.Value;
+			    foreach (KeyValuePair<KeyboardKeys, KeyCharMap> value in _keys)
+			    {
+			        yield return value.Value;
+			    }
 			}
 			#endregion
 
@@ -621,7 +624,7 @@ namespace GorgonLibrary.Input
 			/// </returns>
 			System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
 			{
-				return this.GetEnumerator();
+				return GetEnumerator();
 			}
 			#endregion
 		}
@@ -632,7 +635,7 @@ namespace GorgonLibrary.Input
 		public class KeyStateCollection
 		{
 			#region Variables.
-			private SortedDictionary<KeyboardKeys, KeyState> _keys = null;      // Keyboard key state.
+			private SortedDictionary<KeyboardKeys, KeyState> _keys;      // Keyboard key state.
 			#endregion
 
 			#region Properties.
@@ -705,8 +708,8 @@ namespace GorgonLibrary.Input
 		#endregion
 		
 		#region Variables.
-		private KeyMapCollection _keyMap = null;		                    // Key->character mapping.
-		private KeyStateCollection _keyStates = null;                       // Key states.
+		private KeyMapCollection _keyMap;		                   // Key->character mapping.
+		private KeyStateCollection _keyStates;                     // Key states.
 		#endregion
 
 		#region Events.
@@ -761,21 +764,6 @@ namespace GorgonLibrary.Input
 			get
 			{
 				return _keyMap;
-			}
-		}
-
-		/// <summary>
-		/// Property to set or return whether the window has exclusive access or not.
-		/// </summary>
-		public override bool Exclusive
-		{
-			get
-			{
-				return base.Exclusive;
-			}
-			set
-			{
-				base.Exclusive = value;
 			}
 		}
 
@@ -835,12 +823,7 @@ namespace GorgonLibrary.Input
 		{
 			if (KeyDown != null)
 			{
-				KeyCharMap character;			// Character representation of the key.
-
-				if (this.KeyMappings.Contains(key))
-					character = KeyMappings[key];
-				else
-					character = default(KeyCharMap);
+			    KeyCharMap character = KeyMappings.Contains(key) ? KeyMappings[key] : default(KeyCharMap);
 
 				KeyboardEventArgs e = new KeyboardEventArgs(key, GetModifiers(), character, scan);
 				KeyDown(this, e);
@@ -856,12 +839,7 @@ namespace GorgonLibrary.Input
 		{
 			if (KeyUp != null)
 			{
-				KeyCharMap character;			// Character representation of the key.
-
-				if (this.KeyMappings.Contains(key))
-					character = KeyMappings[key];
-				else
-					character = default(KeyCharMap);
+			    KeyCharMap character = KeyMappings.Contains(key) ? KeyMappings[key] : default(KeyCharMap);
 
 				KeyboardEventArgs e = new KeyboardEventArgs(key, GetModifiers(), character, scan);
 				KeyUp(this, e);
@@ -878,10 +856,10 @@ namespace GorgonLibrary.Input
 			// If we lose focus, then remove any modifiers.
 			switch(KeyStateResetMode)
 			{
-				case Input.KeyStateResetMode.ResetAll:
+				case KeyStateResetMode.ResetAll:
 					KeyStates.Reset();
 					break;
-				case Input.KeyStateResetMode.ResetModifiers:
+				case KeyStateResetMode.ResetModifiers:
 					KeyStates.ResetModifiers();
 					break;
 			}
@@ -977,7 +955,7 @@ namespace GorgonLibrary.Input
 		{
 			_keyMap = new KeyMapCollection();
 			_keyStates = new KeyStateCollection();
-			KeyStateResetMode = Input.KeyStateResetMode.ResetAll;
+			KeyStateResetMode = KeyStateResetMode.ResetAll;
 			GetDefaultKeyMapping();
 		}
 		#endregion
