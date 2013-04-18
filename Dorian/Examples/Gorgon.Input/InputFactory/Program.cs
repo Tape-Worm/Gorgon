@@ -123,7 +123,7 @@ namespace GorgonLibrary.Examples
 				// a native DLL, then it'll throw an exception.  And since
 				// we can't load native DLLs as our plug-in, then we should
 				// skip it.
-				AssemblyName name = null;
+				AssemblyName name;
 				try
 				{
 					name = AssemblyName.GetAssemblyName(file);
@@ -154,10 +154,10 @@ namespace GorgonLibrary.Examples
                 // types and retrieve their type information.
 				var inputPlugIns = Gorgon.PlugIns.EnumeratePlugIns(name)
 									.Where(item => item is GorgonInputPlugIn)
-									.Select(item => item.GetType());
+									.Select(item => item.GetType()).ToArray();
 
 				// If we have input plug-ins, and we haven't initialized our list, then do so now.
-				if ((result.Count == 0) && (inputPlugIns.Count() > 0))
+				if ((result.Count == 0) && (inputPlugIns.Length > 0))
 				{
 					result = new List<Tuple<GorgonInputPlugIn, GorgonInputFactory>>();
 				}
@@ -215,34 +215,32 @@ namespace GorgonLibrary.Examples
 					Console.WriteLine("Could not find any input factory plug-ins.");
 					return;
 				}
-				else
-				{
-                    // Display the plug-in information.
-					Console.WriteLine();
-					Console.WriteLine("{0} input factory plug-ins found:", inputPlugIns.Count);					
-					foreach (var plugIn in inputPlugIns)
-					{
-                        Console.ForegroundColor = ConsoleColor.Cyan;
 
-                        // Enumerate the devices available on the system.
-                        plugIn.Item2.EnumerateDevices();
+			    // Display the plug-in information.
+			    Console.WriteLine();
+			    Console.WriteLine("{0} input factory plug-ins found:", inputPlugIns.Count);					
+			    foreach (var plugIn in inputPlugIns)
+			    {
+			        Console.ForegroundColor = ConsoleColor.Cyan;
 
-                        // The XBox Controller plug-in always registers multiple devices, even when none
-                        // are physically attached to the system.  So in this case, we'll disregard those.
-                        Console.WriteLine("{0}", plugIn.Item1.Description);
-                        Console.ForegroundColor = ConsoleColor.Gray;
-                        Console.WriteLine("\t{0} keyboards, {1} mice, {2} joysticks found.", 
-                            plugIn.Item2.KeyboardDevices.Count, 
-                            plugIn.Item2.PointingDevices.Count, 
-                            plugIn.Item2.JoystickDevices.Where(item => item.IsConnected).Count());  
+			        // Enumerate the devices available on the system.
+			        plugIn.Item2.EnumerateDevices();
 
-                        // Note that we're checking for connected joysticks, this is because a joystick
-                        // like the XBox Controller is always present, but in a disconnected state.
-					}
-                    Console.ResetColor();
-				}
+			        // The XBox Controller plug-in always registers multiple devices, even when none
+			        // are physically attached to the system.  So in this case, we'll disregard those.
+			        Console.WriteLine("{0}", plugIn.Item1.Description);
+			        Console.ForegroundColor = ConsoleColor.Gray;
+			        Console.WriteLine("\t{0} keyboards, {1} mice, {2} joysticks found.", 
+			                          plugIn.Item2.KeyboardDevices.Count, 
+			                          plugIn.Item2.PointingDevices.Count, 
+			                          plugIn.Item2.JoystickDevices.Count(item => item.IsConnected));  
 
-                Console.WriteLine();
+			        // Note that we're checking for connected joysticks, this is because a joystick
+			        // like the XBox Controller is always present, but in a disconnected state.
+			    }
+			    Console.ResetColor();
+
+			    Console.WriteLine();
                 Console.WriteLine("Press any key...");
 				Console.ReadKey();
 			}

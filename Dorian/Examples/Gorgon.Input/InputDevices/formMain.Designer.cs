@@ -91,7 +91,7 @@
 			this.labelMouse.TabIndex = 0;
 			this.labelMouse.Text = "Mouse";
 			this.labelMouse.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.labelMouse.Paint += new System.Windows.Forms.PaintEventHandler(this.devicePanelsPaint);
+			this.labelMouse.Paint += new System.Windows.Forms.PaintEventHandler(this.DevicePanelsPaint);
 			// 
 			// pictureBox3
 			// 
@@ -104,7 +104,7 @@
 			this.pictureBox3.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
 			this.pictureBox3.TabIndex = 1;
 			this.pictureBox3.TabStop = false;
-			this.pictureBox3.Paint += new System.Windows.Forms.PaintEventHandler(this.devicePanelsPaint);
+			this.pictureBox3.Paint += new System.Windows.Forms.PaintEventHandler(this.DevicePanelsPaint);
 			// 
 			// panelKeyboard
 			// 

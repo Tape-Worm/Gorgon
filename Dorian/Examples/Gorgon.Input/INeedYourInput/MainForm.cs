@@ -62,18 +62,18 @@ namespace GorgonLibrary.Examples
 		: Form
 	{
 		#region Variables.
-		private GorgonGraphics _graphics = null;					// The graphics interface.
-		private GorgonSwapChain _screen = null;						// Primary swap chain.
-		private Gorgon2D _2D = null;								// The 2D renderer.
-		private GorgonFont _font = null;							// Text font. 
-		private GorgonInputFactory _input = null;					// Input factory.
-		private GorgonPointingDevice _mouse = null;					// Mouse object.
-		private GorgonJoystick[] _joystickList = null;				// Joystick list.
-		private GorgonJoystick _joystick = null;					// Joystick.
-		private GorgonKeyboard _keyboard = null;					// Keyboard object.
-		private GorgonText _messageSprite = null;					// Text sprite object.
-		private GorgonRenderTarget _backBuffer = null;				// Back buffer.
-		private GorgonTexture2D _backupImage = null;				// Backup image.
+		private GorgonGraphics _graphics;					        // The graphics interface.
+		private GorgonSwapChain _screen;						    // Primary swap chain.
+		private Gorgon2D _2D;								        // The 2D renderer.
+		private GorgonFont _font;							        // Text font. 
+		private GorgonInputFactory _input;					        // Input factory.
+		private GorgonPointingDevice _mouse;					    // Mouse object.
+		private GorgonJoystick[] _joystickList;				        // Joystick list.
+		private GorgonJoystick _joystick;					        // Joystick.
+		private GorgonKeyboard _keyboard;					        // Keyboard object.
+		private GorgonText _messageSprite;					        // Text sprite object.
+		private GorgonRenderTarget _backBuffer;				        // Back buffer.
+		private GorgonTexture2D _backupImage;				        // Backup image.
 		private float _radius = 6.0f;								// Pen radius.
 		private BlendingMode _blendMode = BlendingMode.Modulate;	// Blend mode.
 		private int _counter = -1;									// Joystick index counter.
@@ -140,7 +140,6 @@ namespace GorgonLibrary.Examples
 						// Move to the next joystick.
 						_joystick = _joystickList[_counter];
 						_messageSprite.Text = "Using joystick " + _joystick.Name;
-						break;
 					}
 					break;
 			}			
@@ -348,7 +347,8 @@ namespace GorgonLibrary.Examples
 
 				// Create the graphics interface.
 				_graphics = new GorgonGraphics();
-				_screen = _graphics.Output.CreateSwapChain("Screen", new GorgonSwapChainSettings() {
+				_screen = _graphics.Output.CreateSwapChain("Screen", new GorgonSwapChainSettings
+				    {
 					Size = Properties.Settings.Default.Resolution,
 					Format = BufferFormat.R8G8B8A8_UIntNormal,
 					IsWindowed = Properties.Settings.Default.IsWindowed
@@ -358,8 +358,8 @@ namespace GorgonLibrary.Examples
 				_2D = _graphics.Output.Create2DRenderer(_screen);
 
 				// Create the text font.
-				_font = _graphics.Fonts.CreateFont("Arial_9pt", new GorgonFontSettings()
-				{
+				_font = _graphics.Fonts.CreateFont("Arial_9pt", new GorgonFontSettings
+				    {
 					FontFamilyName = "Arial",
 					FontStyle = FontStyle.Bold,
 					AntiAliasingMode = FontAntiAliasMode.AntiAliasHQ,
@@ -385,17 +385,18 @@ namespace GorgonLibrary.Examples
 				_messageSprite.Color = Color.Black;
 
 				// Create a back buffer.
-				_backBuffer = _graphics.Output.CreateRenderTarget("BackBuffer", new GorgonRenderTargetSettings() {
+				_backBuffer = _graphics.Output.CreateRenderTarget("BackBuffer", new GorgonRenderTargetSettings
+				    {
 					Size = _screen.Settings.Size,
 					Format = BufferFormat.R8G8B8A8_UIntNormal
 				});
 				_backBuffer.Clear(Color.White);
 
 				// Create the backup image.  Make it as large as the monitor that we're on.
-				Screen currentScreen = Screen.FromHandle(this.Handle);				
+				Screen currentScreen = Screen.FromHandle(Handle);				
 
-				var settings = new GorgonTexture2DSettings()
-				{
+				var settings = new GorgonTexture2DSettings
+				    {
 					Width = currentScreen.Bounds.Width,
 					Height = currentScreen.Bounds.Height,
 					Format = BufferFormat.R8G8B8A8_UIntNormal,
@@ -425,7 +426,7 @@ namespace GorgonLibrary.Examples
 						// Reposition after a state change.
 						if (args.IsWindowed)
 						{
-							Screen monitor = Screen.FromHandle(this.Handle);
+							Screen monitor = Screen.FromHandle(Handle);
 							Location = new Point(monitor.Bounds.Left + (monitor.WorkingArea.Width / 2) - args.Width / 2,
 												 monitor.Bounds.Top + (monitor.WorkingArea.Height / 2) - args.Height / 2);
 							Cursor.Position = PointToScreen(Point.Round(_mouse.Position));
