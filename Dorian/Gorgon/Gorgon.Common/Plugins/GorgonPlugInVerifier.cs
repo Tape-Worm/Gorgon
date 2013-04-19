@@ -38,6 +38,7 @@ namespace GorgonLibrary.PlugIns
 		: MarshalByRefObject
 	{
 		#region Variables.
+	    private Assembly _assembly;             // The assembly for this type.
 		private Type _plugInType;				// Type info for the Gorgon Plug-In type.
 		#endregion
 
@@ -56,28 +57,101 @@ namespace GorgonLibrary.PlugIns
 
 				// Get the Gorgon reflection only plug-in type.
 				_plugInType = gorgonReflection.GetTypes().Single(item => typeof(GorgonPlugIn).FullName == item.FullName);
+
+			    _assembly = _plugInType.Assembly;
 			}
 		}
 
-		/// <summary>
-		/// Handles the ReflectionOnlyAssemblyResolve event of the CurrentDomain control.
-		/// </summary>
-		/// <param name="sender">The source of the event.</param>
-		/// <param name="args">The <see cref="ResolveEventArgs" /> instance containing the event data.</param>
-		/// <returns></returns>
-		private Assembly CurrentDomain_ReflectionOnlyAssemblyResolve(object sender, ResolveEventArgs args)
-		{
-			Assembly assembly = null;
-			try
-			{
-				assembly = Assembly.ReflectionOnlyLoad(args.Name);
-			}
-			catch(FileNotFoundException)
-			{
-				// Do nothing here.
-			}
+        /// <summary>
+        /// Function to retrieve the assembly from the same directory as the requesting assembly.
+        /// </summary>
+        /// <param name="name">Name of the assembly.</param>
+        /// <param name="requesting">Requesting assembly.</param>
+        /// <returns>The assembly if found, NULL if not.</returns>
+        private Assembly GetFromRequestedDir(AssemblyName name, Assembly requesting)
+        {
+            string location = string.Format("{0}{1}{2}", 
+                                    Path.GetDirectoryName(requesting.Location), 
+                                    Path.DirectorySeparatorChar,
+                                    name.Name);
 
-			return assembly;
+            // Search for DLLs.
+            location = Path.ChangeExtension(location, "dll");
+
+            if (File.Exists(location))
+            {
+                return Assembly.ReflectionOnlyLoadFrom(location);
+            }
+
+            // Search for executables.
+            location = Path.ChangeExtension(location, "exe");
+
+            if (File.Exists(location))
+            {
+                return Assembly.ReflectionOnlyLoadFrom(location);
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// Function to retrieve the assembly from the same directory as assembly that holds this type.
+        /// </summary>
+        /// <param name="name">Name of the assembly.</param>
+        /// <returns>The assembly if found, NULL if not.</returns>
+        private Assembly GetFromLocalDir(AssemblyName name)
+        {
+            string location = string.Format("{0}{1}{2}",
+                                    Path.GetDirectoryName(_assembly.Location),
+                                    Path.DirectorySeparatorChar,
+                                    name.Name);
+
+            // Search for DLLs.
+            location = Path.ChangeExtension(location, "dll");
+
+            if (File.Exists(location))
+            {
+                return Assembly.ReflectionOnlyLoadFrom(location);
+            }
+
+            // Search for executables.
+            location = Path.ChangeExtension(location, "exe");
+
+            if (File.Exists(location))
+            {
+                return Assembly.ReflectionOnlyLoadFrom(location);
+            }
+
+            return null;
+        }
+        
+        /// <summary>
+	    /// Handles the ReflectionOnlyAssemblyResolve event of the CurrentDomain control.
+	    /// </summary>
+	    /// <param name="sender">The source of the event.</param>
+	    /// <param name="args">The <see cref="ResolveEventArgs" /> instance containing the event data.</param>
+	    /// <returns></returns>
+	    private Assembly CurrentDomain_ReflectionOnlyAssemblyResolve(object sender, ResolveEventArgs args)
+	    {
+            AssemblyName name = new AssemblyName(args.Name);
+            Assembly result = null;
+
+            // Try from the GAC first.
+            try
+            {
+                result = Assembly.ReflectionOnlyLoad(args.Name);
+
+                return result;
+            }
+            catch (FileNotFoundException)
+            {
+                // Eat this exception.
+            }
+
+            result = GetFromRequestedDir(name, args.RequestingAssembly) ?? GetFromLocalDir(name);
+
+            // We couldn't find the assembly in the requesting assembly directory, move on the to current.
+            return result;
 		}
 
 		/// <summary>

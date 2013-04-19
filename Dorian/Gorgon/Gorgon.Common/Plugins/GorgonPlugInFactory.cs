@@ -33,11 +33,12 @@ using System.Security.Policy;
 using GorgonLibrary.Collections;
 using GorgonLibrary.Collections.Specialized;
 using GorgonLibrary.Diagnostics;
+using GorgonLibrary.Properties;
 
 namespace GorgonLibrary.PlugIns
 {
 	/// <summary>
-	/// The return values for the <see cref="M:GorgonLibrary.PlugIns.GorgonPlugInFactory.IsPlugInSigned">IsPlugInSigned</see> method.
+    /// The return values for the <see cref="GorgonLibrary.PlugIns.GorgonPlugInFactory.IsPlugInSigned(string)">IsPlugInSigned</see> method.
 	/// </summary>
 	[Flags]
 	public enum PlugInSigningResult
@@ -57,9 +58,10 @@ namespace GorgonLibrary.PlugIns
 	}
 
 	/// <summary>
-	/// A collection to add, remove and keep track of plug-in interfaces.
+	/// A factory to load, unload and keep track of plug-in interfaces.
 	/// </summary>
-	/// <remarks>Use this object to control loading and unloading of plug-ins.
+	/// <remarks>Use this object to control loading and unloading of plug-ins.  It is exposed as the <see cref="P:GorgonLibrary.Gorgon.PlugIns">PlugIns</see> parameter on the primary 
+	/// <seealso cref="GorgonLibrary.Gorgon">Gorgon</seealso> object and cannot be created by the user.
 	/// <para>This collection is not case-sensitive.</para></remarks>
 	public class GorgonPlugInFactory
 		: GorgonBaseNamedObjectCollection<GorgonPlugIn>
@@ -88,10 +90,7 @@ namespace GorgonLibrary.PlugIns
 		{
 			get
 			{
-				if (_paths == null)
-					_paths = new GorgonPlugInPathCollection();
-
-				return _paths;
+			    return _paths ?? (_paths = new GorgonPlugInPathCollection());
 			}
 		}
 
@@ -448,7 +447,7 @@ namespace GorgonLibrary.PlugIns
 
 			if (string.IsNullOrEmpty(assemblyPath))
 			{
-				throw new ArgumentException("The parameter must not be empty.", "assemblyPath");
+				throw new ArgumentException(Resources.GOR_PARAMETER_MUST_NOT_BE_EMPTY, "assemblyPath");
 			}
 
 			AssemblyName assemblyName = null;
