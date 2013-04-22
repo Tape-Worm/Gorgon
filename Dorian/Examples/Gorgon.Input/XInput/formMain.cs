@@ -60,11 +60,11 @@ namespace GorgonLibrary.Examples
 	public partial class formMain : Form
 	{
 		#region Variables.
-		private GorgonInputFactory _factory = null;					// Our input factory.
-		private IList<GorgonJoystick> _joystick = null;				// Our XBox controllers.
-		private PointF[] _stickPosition = null;						// Current stick positon point for the spray.
-		private SprayCan[] _sprayStates = null;					// Spray states.
-		private DrawingSurface _surface = null;						// Surface to draw on.
+		private GorgonInputFactory _factory;					// Our input factory.
+		private IList<GorgonJoystick> _joystick;				// Our XBox controllers.
+		private PointF[] _stickPosition;						// Current stick positon point for the spray.
+		private SprayCan[] _sprayStates;					    // Spray states.
+		private DrawingSurface _surface;						// Surface to draw on.
 		#endregion
 
 		#region Properties.
@@ -76,11 +76,11 @@ namespace GorgonLibrary.Examples
 		/// </summary>
 		/// <param name="sender">The sender.</param>
 		/// <param name="e">The <see cref="PaintEventArgs" /> instance containing the event data.</param>
-		private void controllerControlsPaint(object sender, PaintEventArgs e)
+		private void ControllerControlsPaint(object sender, PaintEventArgs e)
 		{
 			Control control = sender as Control;
 
-			if (sender != null)
+			if (control != null)
 			{
 				e.Graphics.DrawLine(Pens.Black, Point.Empty, new Point(control.ClientRectangle.Right, 0));
 			}
@@ -93,8 +93,8 @@ namespace GorgonLibrary.Examples
 		/// <param name="index">Index of the joystick.</param>
 		private void UpdateControllerLabels(GorgonJoystick joystick, int index)
 		{			
-			Panel panel = panelControllers.Controls["panelController" + index.ToString()] as Panel;
-			Label label = panel.Controls["labelController" + index.ToString()] as Label;			
+			Panel panel = (Panel)panelControllers.Controls["panelController" + index.ToString()];
+			Label label = (Label)panel.Controls["labelController" + index.ToString()];			
 
 			// Update the label visibility for the controller.
 			if (joystick.IsConnected)
@@ -129,18 +129,16 @@ namespace GorgonLibrary.Examples
 									_factory.JoystickDevices[index].ClassName);
 		}
 
-		/// <summary>
-		/// Function to draw a spray on the screen.
-		/// </summary>
-		/// <param name="joystick">Joystick to use for the spray.</param>
-		/// <param name="index">Index of the joystick.</param>
-		/// <param name="position">Position of the spray.</param>
-		private void DrawSpray(GorgonJoystick joystick, int index, Point position)
+	    /// <summary>
+	    /// Function to draw a spray on the screen.
+	    /// </summary>
+	    /// <param name="joystick">Joystick to use for the spray.</param>
+	    /// <param name="index">Index of the joystick.</param>
+	    private void DrawSpray(GorgonJoystick joystick, int index)
 		{
 			SprayCan state = _sprayStates[index];
-			PointF sprayVector = PointF.Empty;
 
-			// Update the origin of the spray.
+	        // Update the origin of the spray.
 			state.Origin = _stickPosition[index];
 
 			// Find out if we're spraying.
@@ -184,8 +182,8 @@ namespace GorgonLibrary.Examples
 			Size cursorSize = new Size(_surface.CursorSize.Width / 2, _surface.CursorSize.Height / 2);	// Get the cursor size with offset.
 
 			// Transform the axis into a -1 .. 1 range.				
-			PointF moveVector = new PointF((float)joystick.X - (float)joystick.Capabilities.XAxisRange.Minimum,
-											(float)joystick.Y - (float)joystick.Capabilities.YAxisRange.Minimum);
+			PointF moveVector = new PointF(joystick.X - (float)joystick.Capabilities.XAxisRange.Minimum,
+											joystick.Y - (float)joystick.Capabilities.YAxisRange.Minimum);
 
 			moveVector = new PointF((moveVector.X / (joystick.Capabilities.XAxisRange.Range + 1) * 2.0f) - 1.0f,
 									(moveVector.Y / (joystick.Capabilities.YAxisRange.Range + 1) * 2.0f) - 1.0f);
@@ -254,7 +252,7 @@ namespace GorgonLibrary.Examples
 				DrawJoystickCursor(joystick, i);
 
 				// Begin drawing.	
-				DrawSpray(joystick, i, Point.Round(_stickPosition[i]));
+				DrawSpray(joystick, i);
 
 				UpdateControllerLabels(joystick, i);
 			}

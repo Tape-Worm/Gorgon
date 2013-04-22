@@ -63,31 +63,27 @@ namespace GorgonLibrary.Graphics.Example
 		#endregion
 
 		#region Constructor/Destructor.
-		/// <summary>
-		/// Initializes a new instance of the <see cref="Sphere" /> class.
-		/// </summary>
-		/// <param name="radius">Radius of the sphere</param>
-		/// <param name="textureOffset">Offset of the texture.</param>
-		/// <param name="textureScale">Scale of the texture.</param>
-		public Sphere(float radius, Vector2 textureOffset, Vector2 textureScale)
-			: base()
-		{
-			int ringCount = 8;						// Number of rings.
-			int segmentCount = 16;					// Number of segments.
-			float deltaRingAngle = 0;				// Delta angle between rings.
-			float deltaSegAngle = 0;				// Delta angle between segments.
-			int index = 0;							// Current index.
-			int vertexIndex = 0;					// Current vertex index.
-			int indexIndex = 0;						// Current index array index.
-			int vertexCount = 0;					// Number of vertices.
-			int indexCount = 0;						// Number of indices.
 
-			deltaRingAngle = ((float)System.Math.PI) / (float)ringCount;
-			deltaSegAngle = (((float)System.Math.PI) * 2.0f) / (float)segmentCount;
+	    /// <summary>
+	    /// Initializes a new instance of the <see cref="Sphere" /> class.
+	    /// </summary>
+	    /// <param name="radius">Radius of the sphere</param>
+	    /// <param name="textureOffset">Offset of the texture.</param>
+	    /// <param name="textureScale">Scale of the texture.</param>
+	    /// <param name="ringCount">Number of rings in the sphere.</param>
+	    /// <param name="segmentCount">Number of segments in the sphere.</param>
+	    public Sphere(float radius, Vector2 textureOffset, Vector2 textureScale, int ringCount = 8, int segmentCount = 16)
+		{
+	        int index = 0;						// Current index.
+			int vertexIndex = 0;				// Current vertex index.
+			int indexIndex = 0;					// Current index array index.
+
+	        float deltaRingAngle = ((float)System.Math.PI) / ringCount;
+			float deltaSegAngle = (((float)System.Math.PI) * 2.0f) / segmentCount;
 
 			// Calculate number of vertices and indices required for our sphere.
-			vertexCount = (ringCount + 1) * (segmentCount + 1);
-			indexCount = 6 * ringCount * (segmentCount + 1);
+			int vertexCount = (ringCount + 1) * (segmentCount + 1);
+			int indexCount = 6 * ringCount * (segmentCount + 1);
 
 			Vertices = new BoingerVertex[vertexCount];
 			Indices = new int[indexCount];
@@ -97,14 +93,14 @@ namespace GorgonLibrary.Graphics.Example
 			// Build our sphere.
 			for (int ring = 0; ring <= ringCount; ring++)
 			{
-				float angle = deltaRingAngle * (float)ring;
+				float angle = deltaRingAngle * ring;
 				float ringSin = angle.Sin();
 				Vector3 position = new Vector3(0, angle.Cos() * radius, 0);
 
 				for (int segment = 0; segment <= segmentCount; segment++)
 				{
-					Vector2 textureDelta = new Vector2(1.0f - (float)segment / (float)segmentCount, 1.0f - (float)ring / (float)ringCount);
-					float segmentAngle = deltaSegAngle * (float)segment;
+					Vector2 textureDelta = new Vector2(1.0f - segment / (float)segmentCount, 1.0f - ring / (float)ringCount);
+					float segmentAngle = deltaSegAngle * segment;
 
 					position.X = ringSin * segmentAngle.Sin() * radius;
 					position.Z = ringSin * segmentAngle.Cos() * radius;
@@ -135,8 +131,8 @@ namespace GorgonLibrary.Graphics.Example
 			}
 			
 			// Create our buffers.
-			VertexBuffer = Program.Graphics.Input.CreateVertexBuffer<BoingerVertex>(BufferUsage.Immutable, Vertices);
-			IndexBuffer = Program.Graphics.Input.CreateIndexBuffer<int>(BufferUsage.Immutable, true, Indices);
+			VertexBuffer = Program.Graphics.Input.CreateVertexBuffer(BufferUsage.Immutable, Vertices);
+			IndexBuffer = Program.Graphics.Input.CreateIndexBuffer(BufferUsage.Immutable, true, Indices);
 		}
 		#endregion
 	}

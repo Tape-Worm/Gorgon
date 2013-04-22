@@ -37,16 +37,16 @@ namespace GorgonLibrary.Examples
 	class SprayCan
 	{
 		#region Variables.
-		private float _time = 0.0f;					// Current time.
-		private float _maxTime = 0.0f;				// Maximum time.
-		private bool _isActive = false;				// Flag to indicate that the spray is active.
-		private float _activeStartTime = 0.0f;		// Time at which the spray became active.
-		private float _alpha = 0.0f;				// Current alpha.
-		private float _maxAlpha = 0.0f;				// Maximum alpha.
-		private float _vibAmount = 0.0f;			// Vibration amount.
-		private float _vibMax = 0.0f;				// Maximum vibration.
-		private float _sprayAmount = 0.0f;			// Spray amount.
-		private float _sprayMax = 0.0f;				// Maximum spray amount.			
+		private float _time;					// Current time.
+		private float _maxTime;				    // Maximum time.
+		private bool _isActive;				    // Flag to indicate that the spray is active.
+		private float _activeStartTime;		    // Time at which the spray became active.
+		private float _alpha;				    // Current alpha.
+		private float _maxAlpha;				// Maximum alpha.
+		private float _vibAmount;			    // Vibration amount.
+		private float _vibMax;				    // Maximum vibration.
+		private float _sprayAmount;			    // Spray amount.
+		private float _sprayMax;				// Maximum spray amount.			
 		#endregion
 
 		#region Properties.
@@ -253,9 +253,7 @@ namespace GorgonLibrary.Examples
 		public void Update()
 		{
 			float throttleValue = Joystick.Throttle;
-			float throttleMin = Joystick.Capabilities.ThrottleAxisRange.Minimum;
-			float throttleRange = Joystick.Capabilities.ThrottleAxisRange.Range;
-			float appTime = GorgonTiming.SecondsSinceStart - _activeStartTime;
+		    float appTime = GorgonTiming.SecondsSinceStart - _activeStartTime;
 
 			// Get unit time.
 			float unitTime = appTime / _maxTime;
@@ -321,8 +319,7 @@ namespace GorgonLibrary.Examples
 			}
 
 			// Decrease the amount over time and by throttle pressure.
-			float throttleDelta = (throttleValue - throttleMin) / throttleRange;
-			_sprayAmount = _sprayMax * unitTime;
+		    _sprayAmount = _sprayMax * unitTime;
 
 			SprayPointSize = (unitTime * 30.0f) + 10.0f;
 

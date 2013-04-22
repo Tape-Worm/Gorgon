@@ -96,7 +96,7 @@
 			this.labelController0.TabIndex = 0;
 			this.labelController0.Text = "XBox Controller";
 			this.labelController0.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.labelController0.Paint += new System.Windows.Forms.PaintEventHandler(this.controllerControlsPaint);
+			this.labelController0.Paint += new System.Windows.Forms.PaintEventHandler(this.ControllerControlsPaint);
 			// 
 			// pictureBox1
 			// 
@@ -108,7 +108,7 @@
 			this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
 			this.pictureBox1.TabIndex = 1;
 			this.pictureBox1.TabStop = false;
-			this.pictureBox1.Paint += new System.Windows.Forms.PaintEventHandler(this.controllerControlsPaint);
+			this.pictureBox1.Paint += new System.Windows.Forms.PaintEventHandler(this.ControllerControlsPaint);
 			// 
 			// panelController1
 			// 
@@ -131,7 +131,7 @@
 			this.labelController1.TabIndex = 0;
 			this.labelController1.Text = "XBox Controller";
 			this.labelController1.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.labelController1.Paint += new System.Windows.Forms.PaintEventHandler(this.controllerControlsPaint);
+			this.labelController1.Paint += new System.Windows.Forms.PaintEventHandler(this.ControllerControlsPaint);
 			// 
 			// pictureBox2
 			// 
@@ -143,7 +143,7 @@
 			this.pictureBox2.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
 			this.pictureBox2.TabIndex = 1;
 			this.pictureBox2.TabStop = false;
-			this.pictureBox2.Paint += new System.Windows.Forms.PaintEventHandler(this.controllerControlsPaint);
+			this.pictureBox2.Paint += new System.Windows.Forms.PaintEventHandler(this.ControllerControlsPaint);
 			// 
 			// panelController2
 			// 
@@ -166,7 +166,7 @@
 			this.labelController2.TabIndex = 0;
 			this.labelController2.Text = "XBox Controller";
 			this.labelController2.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.labelController2.Paint += new System.Windows.Forms.PaintEventHandler(this.controllerControlsPaint);
+			this.labelController2.Paint += new System.Windows.Forms.PaintEventHandler(this.ControllerControlsPaint);
 			// 
 			// pictureBox3
 			// 
@@ -178,7 +178,7 @@
 			this.pictureBox3.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
 			this.pictureBox3.TabIndex = 1;
 			this.pictureBox3.TabStop = false;
-			this.pictureBox3.Paint += new System.Windows.Forms.PaintEventHandler(this.controllerControlsPaint);
+			this.pictureBox3.Paint += new System.Windows.Forms.PaintEventHandler(this.ControllerControlsPaint);
 			// 
 			// panelController3
 			// 
@@ -201,7 +201,7 @@
 			this.labelController3.TabIndex = 0;
 			this.labelController3.Text = "XBox Controller";
 			this.labelController3.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.labelController3.Paint += new System.Windows.Forms.PaintEventHandler(this.controllerControlsPaint);
+			this.labelController3.Paint += new System.Windows.Forms.PaintEventHandler(this.ControllerControlsPaint);
 			// 
 			// pictureBox4
 			// 
@@ -213,7 +213,7 @@
 			this.pictureBox4.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
 			this.pictureBox4.TabIndex = 1;
 			this.pictureBox4.TabStop = false;
-			this.pictureBox4.Paint += new System.Windows.Forms.PaintEventHandler(this.controllerControlsPaint);
+			this.pictureBox4.Paint += new System.Windows.Forms.PaintEventHandler(this.ControllerControlsPaint);
 			// 
 			// formMain
 			// 

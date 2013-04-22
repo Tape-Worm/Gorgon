@@ -30,6 +30,7 @@ using System.Drawing;
 using System.IO;
 using System.Text;
 using System.Windows.Forms;
+using GorgonLibrary.Math;
 using GorgonLibrary.Diagnostics;
 using GorgonLibrary.IO;
 using GorgonLibrary.Renderers;
@@ -42,25 +43,24 @@ namespace GorgonLibrary.Graphics.Example
 	/// </summary>
 	static class Program
 	{
-		private static Random _rnd = new Random();															// Random number generator.
-		private static MainForm _form = null;																// Our application form.
-		private static GorgonGraphics _graphics = null;														// Our main graphics interface.
-		private static Gorgon2D _2D = null;																	// Our 2D interface.
-		private static GorgonSwapChain _mainScreen = null;													// The swap chain for our primary display.
-		private static GorgonTexture2D _ballTexture = null;													// Texture for the balls.
-		private static GorgonSprite _wall = null;															// Background checked wall sprite.
-		private static GorgonSprite _ball = null;															// Ball sprite.		
-		private static IList<Ball> _ballList = null;														// Our list of balls.
-		private static int _ballCount = 0;																	// Number of balls.
-		private static float _accumulator = 0;																// Our accumulator for running at a fixed frame rate.
-		private static float _maxSimulationFPS = (float)GorgonTiming.FpsToMilliseconds(60) / 1000.0f;		// Maximum FPS for our ball simulation.
-		private static GorgonFont _ballFont = null;															// Font to display our FPS, etc...
-		private static GorgonRenderTarget _ballTarget = null;												// Render target for the balls.
-		private static GorgonRenderTarget _statsTarget = null;												// Render target for statistics.
-		private static GorgonOrthoCamera _camera = null;													// Camera.
-		private static StringBuilder _fpsText = null;														// Frames per second text.
-		private static StringBuilder _helpText = null;														// Help text.
-		private static bool _showHelp = true;																// Flag to indicate that the help text should be shown.
+        private static readonly float _maxSimulationFPS = (float)GorgonTiming.FpsToMilliseconds(60) / 1000.0f;  // Maximum FPS for our ball simulation.
+		private static MainForm _form;																            // Our application form.
+		private static GorgonGraphics _graphics;														        // Our main graphics interface.
+		private static Gorgon2D _2D;																	        // Our 2D interface.
+		private static GorgonSwapChain _mainScreen;													            // The swap chain for our primary display.
+		private static GorgonTexture2D _ballTexture;													        // Texture for the balls.
+		private static GorgonSprite _wall;															            // Background checked wall sprite.
+		private static GorgonSprite _ball;															            // Ball sprite.		
+		private static IList<Ball> _ballList;														            // Our list of balls.
+		private static int _ballCount;																	        // Number of balls.
+		private static float _accumulator;																        // Our accumulator for running at a fixed frame rate.
+		private static GorgonFont _ballFont;															        // Font to display our FPS, etc...
+		private static GorgonRenderTarget _ballTarget;												            // Render target for the balls.
+		private static GorgonRenderTarget _statsTarget;												            // Render target for statistics.
+		private static GorgonOrthoCamera _camera;													            // Camera.
+		private static StringBuilder _fpsText;														            // Frames per second text.
+		private static StringBuilder _helpText;														            // Help text.
+		private static bool _showHelp = true;																    // Flag to indicate that the help text should be shown.
 
 		/// <summary>
 		/// Property to return the path to the resources for the example.
@@ -121,21 +121,24 @@ namespace GorgonLibrary.Graphics.Example
 			// Generate balls.
 			for (int i = start; i < _ballCount; i++)
 			{
-				Ball ball = new Ball();
-				ball.Position = new Vector2(halfWidth - (_ball.Size.X / 2.0f), halfHeight - (_ball.Size.Y / 2.0f));
-				ball.PositionDelta = new Vector2(((float)_rnd.NextDouble() * _mainScreen.Settings.Width) - (halfWidth), ((float)_rnd.NextDouble() * _mainScreen.Settings.Height) - (halfHeight));
-				ball.Scale = ((float)_rnd.NextDouble() * 1.5f) + 0.5f;
-				ball.ScaleDelta = ((float)_rnd.NextDouble() * 2.0f) - 1.0f;
-				ball.Rotation = ((float)_rnd.NextDouble() * 360.0f);
-				ball.RotationDelta = ((float)_rnd.NextDouble() * 360.0f) - 180.0f;
-				ball.Color = Color.FromArgb(255, _rnd.Next(0, 255), _rnd.Next(0, 255), _rnd.Next(0, 255));
-				ball.Opacity = ((float)(_rnd.NextDouble())) + 0.4f;
-				ball.OpacityDelta = (float)(_rnd.NextDouble()) - 0.5f;
-				if (_rnd.Next(_ballCount) > (_ballCount / 2))
-					ball.Checkered = false;
-				else
-					ball.Checkered = true;
-				_ballList[i] = ball;
+				Ball ball = new Ball
+				    {
+				        Position = new Vector2(halfWidth - (_ball.Size.X/2.0f), halfHeight - (_ball.Size.Y/2.0f)),
+				        PositionDelta = new Vector2((GorgonRandom.RandomSingle()*_mainScreen.Settings.Width) - (halfWidth),
+				                                    (GorgonRandom.RandomSingle()*_mainScreen.Settings.Height) - (halfHeight)),
+				        Scale = (GorgonRandom.RandomSingle()*1.5f) + 0.5f,
+				        ScaleDelta = (GorgonRandom.RandomSingle()*2.0f) - 1.0f,
+				        Rotation = (GorgonRandom.RandomSingle()*360.0f),
+				        RotationDelta = (GorgonRandom.RandomSingle()*360.0f) - 180.0f,
+				        Color =
+				            Color.FromArgb(255, GorgonRandom.RandomInt32(0, 255), GorgonRandom.RandomInt32(0, 255),
+				                           GorgonRandom.RandomInt32(0, 255)),
+				        Opacity = GorgonRandom.RandomSingle() + 0.4f,
+				        OpacityDelta = GorgonRandom.RandomSingle() - 0.5f,
+				        Checkered = GorgonRandom.RandomInt32(_ballCount) <= (_ballCount/2)
+				    };
+
+			    _ballList[i] = ball;
 			}
 		}
 
@@ -149,9 +152,8 @@ namespace GorgonLibrary.Graphics.Example
 			for (int i = 0; i < _ballCount; i++)
 			{
 				Ball currentBall = _ballList[i];
-				Vector2 posDelta = Vector2.Zero;
 
-				currentBall.Position = Vector2.Add(currentBall.Position, Vector2.Multiply(currentBall.PositionDelta, frameTime));
+			    currentBall.Position = Vector2.Add(currentBall.Position, Vector2.Multiply(currentBall.PositionDelta, frameTime));
 				currentBall.Scale += currentBall.ScaleDelta * frameTime;
 				currentBall.Rotation += currentBall.RotationDelta * frameTime;
 				currentBall.Opacity += currentBall.OpacityDelta * frameTime;
@@ -235,10 +237,7 @@ namespace GorgonLibrary.Graphics.Example
 				_ball.Opacity = _ballList[i].Opacity;
 				_ball.Scale = new Vector2(_ballList[i].Scale, _ballList[i].Scale);
 
-				if (_ballList[i].Checkered)
-					_ball.TextureOffset = new Vector2(0.5f, 0);
-				else
-					_ball.TextureOffset = new Vector2(0, 0.5f);
+				_ball.TextureOffset = _ballList[i].Checkered ? new Vector2(0.5f, 0) : new Vector2(0, 0.5f);
 
 				_ball.Draw();
 			}
@@ -248,7 +247,7 @@ namespace GorgonLibrary.Graphics.Example
 				_2D.Target = null;
 				_2D.Camera = null;
 
-				_2D.Effects.GaussianBlur.Render((int passIndex) =>
+				_2D.Effects.GaussianBlur.Render(passIndex =>
 				{
 					if (passIndex == 0)
 					{
@@ -325,8 +324,8 @@ namespace GorgonLibrary.Graphics.Example
 			_graphics = new GorgonGraphics();
 
 			// Create the primary swap chain.
-			_mainScreen = _graphics.Output.CreateSwapChain("MainScreen", new GorgonSwapChainSettings()
-			{
+			_mainScreen = _graphics.Output.CreateSwapChain("MainScreen", new GorgonSwapChainSettings
+			    {
 				Width = Properties.Settings.Default.ScreenWidth,
 				Height = Properties.Settings.Default.ScreenHeight,
 				Format = BufferFormat.R8G8B8A8_UIntNormal,
@@ -358,8 +357,8 @@ namespace GorgonLibrary.Graphics.Example
 			_ball.Anchor = new Vector2(32, 32);
 
 			// Create the ball render target.
-			_ballTarget = _graphics.Output.CreateRenderTarget("BallTarget", new GorgonRenderTargetSettings()
-			{
+			_ballTarget = _graphics.Output.CreateRenderTarget("BallTarget", new GorgonRenderTargetSettings
+			    {
 				DepthStencilFormat = BufferFormat.Unknown,
 				Width = 512,
 				Height = 512,
@@ -375,12 +374,12 @@ namespace GorgonLibrary.Graphics.Example
 			GenerateBalls(Properties.Settings.Default.BallCount);
 
 			// Assign event handlers.
-			_form.KeyDown += new KeyEventHandler(_form_KeyDown);
-			_form.Resize += new EventHandler(_form_Resize);
+			_form.KeyDown += _form_KeyDown;
+			_form.Resize += _form_Resize;
 
 			// Create statistics render target.
-			_statsTarget = _graphics.Output.CreateRenderTarget("Statistics", new GorgonRenderTargetSettings()
-			{
+			_statsTarget = _graphics.Output.CreateRenderTarget("Statistics", new GorgonRenderTargetSettings
+			    {
 				Width = 140,
 				Height = 66,
 				Format = BufferFormat.R8G8B8A8_UIntNormal
@@ -393,8 +392,8 @@ namespace GorgonLibrary.Graphics.Example
 			_2D.Target = null;
 
 			// Create our font.
-			_ballFont = _graphics.Fonts.CreateFont("Arial 9pt Bold", new GorgonFontSettings()
-			{
+			_ballFont = _graphics.Fonts.CreateFont("Arial 9pt Bold", new GorgonFontSettings 
+            {
 				AntiAliasingMode = FontAntiAliasMode.AntiAliasHQ,
 				FontStyle = FontStyle.Bold,
 				FontFamilyName = "Arial",
