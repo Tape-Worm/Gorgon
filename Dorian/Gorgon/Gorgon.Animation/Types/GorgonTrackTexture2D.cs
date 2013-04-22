@@ -40,10 +40,9 @@ namespace GorgonLibrary.Animation
 		where T : class
 	{
 		#region Variables.
-		private Func<T, GorgonTexture2D> _getTextureProperty = null;			// Get property method.
-		private Action<T, GorgonTexture2D> _setTextureProperty = null;			// Set property method.
-		private Func<T, RectangleF> _getTextureRegionProperty = null;			// Get property method.
-		private Action<T, RectangleF> _setTextureRegionProperty = null;			// Set property method.
+		private readonly Func<T, GorgonTexture2D> _getTextureProperty;		// Get property method.
+		private readonly Action<T, GorgonTexture2D> _setTextureProperty;	// Set property method.
+	    private readonly Action<T, RectangleF> _setTextureRegionProperty;	// Set property method.
 		#endregion
 
 		#region Properties.
@@ -78,7 +77,7 @@ namespace GorgonLibrary.Animation
 		/// <returns>
 		/// The interpolated key frame containing the interpolated values.
 		/// </returns>
-		protected override IKeyFrame GetTweenKey(ref GorgonAnimationTrack<T>.NearestKeys keyValues, float keyTime, float unitTime)
+		protected override IKeyFrame GetTweenKey(ref NearestKeys keyValues, float keyTime, float unitTime)
 		{
 			GorgonKeyTexture2D prev = (GorgonKeyTexture2D)keyValues.PreviousKey;
 
@@ -87,7 +86,7 @@ namespace GorgonLibrary.Animation
 				GorgonKeyTexture2D next = (GorgonKeyTexture2D)keyValues.NextKey;
 				Vector4 regionStart = new Vector4(prev.TextureRegion.X, prev.TextureRegion.Y, prev.TextureRegion.Width, prev.TextureRegion.Height);
 				Vector4 regionEnd = new Vector4(next.TextureRegion.X, next.TextureRegion.Y, next.TextureRegion.Width, next.TextureRegion.Height);
-				Vector4 result = Vector4.Zero;
+				Vector4 result;
 
 				Vector4.Lerp(ref regionStart, ref regionEnd, unitTime, out result);
 				return new GorgonKeyTexture2D(keyTime, prev.Value, new RectangleF(result.X, result.Y, result.Z, result.W));
@@ -106,18 +105,17 @@ namespace GorgonLibrary.Animation
 			GorgonTexture2D currentTexture = _getTextureProperty(Animation.AnimationController.AnimatedObject);
 
 			// If there's no texture on this key, then try to find it.
-			if (value.Value == null)
+			if ((value.Value == null) && (!value.GetTexture()))
 			{
-				value.GetTexture();
+                value = new GorgonKeyTexture2D(value.Time, currentTexture, value.TextureRegion);
+            }
 
-				// If we couldn't defer load the texture, then re-use the current.
-				if (value.Value == null)
-					value = new GorgonKeyTexture2D(value.Time, currentTexture, value.TextureRegion);
-			}
+		    if (currentTexture != value.Value)
+		    {
+		        _setTextureProperty(Animation.AnimationController.AnimatedObject, value.Value);
+		    }
 
-			if (currentTexture != value.Value)
-				_setTextureProperty(Animation.AnimationController.AnimatedObject, value.Value);
-			_setTextureRegionProperty(Animation.AnimationController.AnimatedObject, value.TextureRegion);
+		    _setTextureRegionProperty(Animation.AnimationController.AnimatedObject, value.TextureRegion);
 		}
 		#endregion
 
@@ -132,7 +130,6 @@ namespace GorgonLibrary.Animation
 		{
 			_getTextureProperty = BuildGetAccessor<GorgonTexture2D>();
 			_setTextureProperty = BuildSetAccessor<GorgonTexture2D>();
-			_getTextureRegionProperty = BuildGetAccessor<RectangleF>(regionProperty.Property.GetGetMethod());
 			_setTextureRegionProperty = BuildSetAccessor<RectangleF>(regionProperty.Property.GetSetMethod());
 
 			InterpolationMode = TrackInterpolationMode.None;

@@ -98,8 +98,10 @@ namespace GorgonLibrary.Collections
 		/// <param name="items">IEnumerable containing the items to copy.</param>
 		protected virtual void AddItems(IEnumerable<T> items)
 		{
-			foreach (T item in items)
-				AddItem(item);
+		    foreach (T item in items)
+		    {
+		        AddItem(item);
+		    }
 		}
 
 		/// <summary>

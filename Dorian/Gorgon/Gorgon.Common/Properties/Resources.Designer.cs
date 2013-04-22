@@ -101,6 +101,53 @@ namespace GorgonLibrary.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The application is already running..
+        /// </summary>
+        internal static string GOR_APPLICATION_ALREADY_RUNNING {
+            get {
+                return ResourceManager.GetString("GOR_APPLICATION_ALREADY_RUNNING", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Named object: {0}.
+        /// </summary>
+        internal static string GOR_GORGONNAMEDOBJECT_TOSTRING {
+            get {
+                return ResourceManager.GetString("GOR_GORGONNAMEDOBJECT_TOSTRING", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Min: {0}  Max: {1}  Range: {2}.
+        /// </summary>
+        internal static string GOR_GORGONRANGE_TOSTRING {
+            get {
+                return ResourceManager.GetString("GOR_GORGONRANGE_TOSTRING", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0}
+        ///Result: &quot;{1}&quot;
+        ///Code: 0x{2}.
+        /// </summary>
+        internal static string GOR_GORGONRESULT_TOSTRING {
+            get {
+                return ResourceManager.GetString("GOR_GORGONRESULT_TOSTRING", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cannot run an application without either a main form, or a idle method..
+        /// </summary>
+        internal static string GOR_NOCONTEXT {
+            get {
+                return ResourceManager.GetString("GOR_NOCONTEXT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The parameter must not be empty..
         /// </summary>
         internal static string GOR_PARAMETER_MUST_NOT_BE_EMPTY {

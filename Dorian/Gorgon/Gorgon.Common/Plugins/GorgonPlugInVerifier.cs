@@ -134,7 +134,7 @@ namespace GorgonLibrary.PlugIns
 	    private Assembly CurrentDomain_ReflectionOnlyAssemblyResolve(object sender, ResolveEventArgs args)
 	    {
             AssemblyName name = new AssemblyName(args.Name);
-            Assembly result = null;
+            Assembly result;
 
             // Try from the GAC first.
             try
@@ -148,9 +148,9 @@ namespace GorgonLibrary.PlugIns
                 // Eat this exception.
             }
 
-            result = GetFromRequestedDir(name, args.RequestingAssembly) ?? GetFromLocalDir(name);
-
             // We couldn't find the assembly in the requesting assembly directory, move on the to current.
+            result = GetFromLocalDir(name) ?? GetFromRequestedDir(name, args.RequestingAssembly);
+            
             return result;
 		}
 

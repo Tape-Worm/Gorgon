@@ -38,8 +38,7 @@ namespace GorgonLibrary.Animation
 		where T : class
 	{
 		#region Variables.
-		private Func<T, Vector2> _getProperty = null;				// Get property method.
-		private Action<T, Vector2> _setProperty = null;			// Set property method.
+	    private readonly Action<T, Vector2> _setProperty;			// Set property method.
 		#endregion
 
 		#region Properties.
@@ -87,7 +86,7 @@ namespace GorgonLibrary.Animation
 		/// <returns>
 		/// The interpolated key frame containing the interpolated values.
 		/// </returns>
-		protected override IKeyFrame GetTweenKey(ref GorgonAnimationTrack<T>.NearestKeys keyValues, float keyTime, float unitTime)
+		protected override IKeyFrame GetTweenKey(ref NearestKeys keyValues, float keyTime, float unitTime)
 		{
 			GorgonKeyVector2 next = (GorgonKeyVector2)keyValues.NextKey;
 			GorgonKeyVector2 prev = (GorgonKeyVector2)keyValues.PreviousKey;
@@ -122,7 +121,6 @@ namespace GorgonLibrary.Animation
 		internal GorgonTrackVector2(GorgonAnimatedProperty property)
 			: base(property)
 		{
-			_getProperty = BuildGetAccessor<Vector2>();
 			_setProperty = BuildSetAccessor<Vector2>();
 
 			InterpolationMode = TrackInterpolationMode.Linear;

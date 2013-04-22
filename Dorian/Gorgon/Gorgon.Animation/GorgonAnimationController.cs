@@ -28,7 +28,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
+using GorgonLibrary.Animation.Properties;
 using GorgonLibrary.Collections;
 using GorgonLibrary.Diagnostics;
 using GorgonLibrary.IO;
@@ -41,8 +41,8 @@ namespace GorgonLibrary.Animation
 	/// </summary>
 	/// <typeparam name="T">The type of object that this controller will use.  The type passed in must be a reference type (i.e. a class).</typeparam>
 	/// <remarks>
-	/// A controller will force the object to update its properties over a certain time frame (or continously if looped).  It does this by placing its animated properties into the <see cref="P:GorgonLibrary.Animation.GorgonAnimation.Tracks">Tracks</see> of an 
-	/// <see cref="GorgonLibrary.Animation.GorgonAnimation{T}">Animation</see>.  These tracks will take <see cref="P:GorgonLibrary.Animation.GorgonAnimationTrack.KeyFrames">key frames</see> which correspond to the type of the property.  For example, the Angle property
+	/// A controller will force the object to update its properties over a certain time frame (or continously if looped).  It does this by placing its animated properties into the <see cref="GorgonLibrary.Animation.GorgonAnimation{T}.Tracks">Tracks</see> of an 
+	/// <see cref="GorgonLibrary.Animation.GorgonAnimation{T}">Animation</see>.  These tracks will take <see cref="GorgonLibrary.Animation.GorgonAnimationTrack{T}.KeyFrames">key frames</see> which correspond to the type of the property.  For example, the Angle property
 	/// of a sprite uses a floating point value, so a <see cref="GorgonLibrary.Animation.GorgonKeySingle">GorgonKeySingle</see>, or floating point key frame should be added to the Angle track.
 	/// <para>To ensure the object will animate, it should have a <see cref="GorgonLibrary.Animation.AnimatedPropertyAttribute">AnimatedPropertyAttribute</see> applied to one of its properties.  Otherwise, no animations will play.  Currently, Gorgon's graphical objects (e.g. sprites, text, etc...)
 	/// all have appropriate attributes assigned to their properties.</para>
@@ -153,10 +153,13 @@ namespace GorgonLibrary.Animation
 				Stop();
 
 			// Remove the clip from the other 
-			if ((value != null) && (value.AnimationController != null) && (value.AnimationController != this) && (value.AnimationController.Contains(value)))
-				value.AnimationController.Remove(value);
+		    if ((value != null) && (value.AnimationController != null) && (value.AnimationController != this) &&
+		        (value.AnimationController.Contains(value)))
+		    {
+		        value.AnimationController.Remove(value);
+		    }
 
-			this[name].AnimationController = this;
+		    this[name].AnimationController = this;
 
 			base.SetItem(name, value);
 		}
@@ -167,10 +170,15 @@ namespace GorgonLibrary.Animation
 		/// <param name="value">Animation to add.</param>
 		protected override void AddItem(GorgonAnimation<T> value)
 		{
-			if ((value != null) && (value.AnimationController != null) && (value.AnimationController != this) && (value.AnimationController.Contains(value)))
-				value.AnimationController.Remove(value);
+            GorgonDebug.AssertNull(value, "value");
 
-			value.AnimationController = this;
+		    if ((value.AnimationController != null) && (value.AnimationController != this) &&
+		        (value.AnimationController.Contains(value)))
+		    {
+		        value.AnimationController.Remove(value);
+                value.AnimationController = this;
+		    }
+		    
 			base.AddItem(value);
 		}
 
@@ -201,8 +209,8 @@ namespace GorgonLibrary.Animation
 		/// <exception cref="System.InvalidCastException">Thrown when the animation being loaded is for a different type than the controller was declared with.</exception>
 		public GorgonAnimation<T> FromStream(Stream stream)
 		{
-			GorgonAnimation<T> animation = null;
-			GorgonDebug.AssertNull<Stream>(stream, "stream");
+			GorgonAnimation<T> animation;
+			GorgonDebug.AssertNull(stream, "stream");
 
 			using (GorgonChunkReader chunk = new GorgonChunkReader(stream))
 			{
@@ -213,18 +221,26 @@ namespace GorgonLibrary.Animation
 				// Get the type data.
 				string typeString = chunk.ReadString();
 
-				if (typeString != AnimatedObjectType.FullName)
-					throw new InvalidCastException("This animation is for type '" + typeString + "' and is not compatible with a controller bound to type '" + AnimatedObjectType.FullName + "'.");
+			    if (typeString != AnimatedObjectType.FullName)
+			    {
+			        throw new InvalidCastException(string.Format(Resources.GORANM_ANIMATION_TYPE_MISMATCH, typeString,
+			                                                     AnimatedObjectType.FullName));
+			    }
 
-				// Get the name.
+			    // Get the name.
 				string animationName = chunk.ReadString();
-				if (Contains(animationName))
-					throw new ArgumentException("The animation '" + animationName + "' already exists in this collection.", "stream");
-								
-				animation = new GorgonAnimation<T>(this, animationName, chunk.ReadFloat());
-				animation.IsLooped = chunk.ReadBoolean();
+			    if (Contains(animationName))
+			    {
+			        throw new ArgumentException(string.Format(Resources.GORANM_ANIMATION_ALREADY_EXISTS, animationName),
+			                                    "stream");
+			    }
 
-				chunk.End();
+			    animation = new GorgonAnimation<T>(this, animationName, chunk.ReadFloat())
+				    {
+				        IsLooped = chunk.ReadBoolean()
+				    };
+
+			    chunk.End();
 
 				// Get all the tracks.
 				while (chunk.HasChunk("TRCKDATA"))
@@ -233,10 +249,13 @@ namespace GorgonLibrary.Animation
 
 					string trackName = chunk.ReadString();			// Get the name of the track.
 
-					if (!animation.Tracks.Contains(trackName))
-						throw new ArgumentException("There is no track named '" + trackName + "' that matches a property on the type '" + AnimatedObjectType.FullName + "'.", "stream");
+				    if (!animation.Tracks.Contains(trackName))
+				    {
+				        throw new ArgumentException(
+				            string.Format(Resources.GORANM_TRACK_DOES_NOT_EXIST, trackName, AnimatedObjectType.FullName), "stream");
+				    }
 
-					animation.Tracks[trackName].FromChunk(chunk);
+				    animation.Tracks[trackName].FromChunk(chunk);
 
 					chunk.End();
 				}
@@ -266,8 +285,10 @@ namespace GorgonLibrary.Animation
 		{
 			GorgonDebug.AssertParamString(fileName, "fileName");
 
-			using (FileStream file = File.Open(fileName, FileMode.Open, FileAccess.Read, FileShare.Read))
-				return FromStream(file);
+		    using (FileStream file = File.Open(fileName, FileMode.Open, FileAccess.Read, FileShare.Read))
+		    {
+		        return FromStream(file);
+		    }
 		}
 
 		/// <summary>
@@ -276,14 +297,11 @@ namespace GorgonLibrary.Animation
 		/// <remarks>This will update the animation time using the <see cref="P:GorgonLibrary.Diagnostics.GorgonTiming.Delta">Delta</see> time.  Note that the animation time is not affected by <see cref="P:GorgonLibrary.Diagnostics.GorgonTiming.ScaledDelta">ScaledDelta</see>.</remarks>
 		public void Update()
 		{
-			float increment = 0;
-			float lastTime = 0;
-
-			if ((Count == 0) || (CurrentAnimation == null))
+		    if ((Count == 0) || (CurrentAnimation == null))
 				return;
 
-			lastTime = CurrentAnimation.Time;
-			increment = (CurrentAnimation.Speed * GorgonTiming.Delta) * 1000.0f;       // We modify this value by 1000 because delta time is in seconds, and our animation uses milliseconds.
+			float lastTime = CurrentAnimation.Time;
+			float increment = (CurrentAnimation.Speed * GorgonTiming.Delta) * 1000.0f;
 
 			// Push the animation time forward (or backward, depending on the Speed modifier).
 			CurrentAnimation.Time += increment;
@@ -292,8 +310,10 @@ namespace GorgonLibrary.Animation
 			CurrentAnimation.UpdateObject();
 
 			// If we're not looping, put the animation into a stopped state.
-			if ((!CurrentAnimation.IsLooped) && ((lastTime + increment) > CurrentAnimation.Length))
-				Stop();
+		    if ((!CurrentAnimation.IsLooped) && ((lastTime + increment) > CurrentAnimation.Length))
+		    {
+		        Stop();
+		    }
 		}
 		
 		/// <summary>
@@ -305,23 +325,29 @@ namespace GorgonLibrary.Animation
 		/// <exception cref="System.Collections.Generic.KeyNotFoundException">Thrown when the animation could not be found in the collection.</exception>
 		public void Play(T animatedObject, GorgonAnimation<T> animation)
 		{
-			GorgonDebug.AssertNull<GorgonAnimation<T>>(animation, "animation");
-			GorgonDebug.AssertNull<T>(animatedObject, "animatedObject");
+			GorgonDebug.AssertNull(animation, "animation");
+			GorgonDebug.AssertNull(animatedObject, "animatedObject");
 
 #if DEBUG
-			if (!Contains(animation))
-				throw new KeyNotFoundException("The animation '" + animation.Name + "' was not found in this collection");
+		    if (!Contains(animation))
+		    {
+		        throw new KeyNotFoundException(string.Format(Resources.GORANM_ANIMATION_DOES_NOT_EXIST, animation.Name));
+		    }
 #endif
 
 			// This animation is already playing.
-			if (animation == CurrentAnimation)
-				return;
+		    if (animation == CurrentAnimation)
+		    {
+		        return;
+		    }
 
-			// Stop the current animation.
-			if (CurrentAnimation != null)
-				Stop();
+		    // Stop the current animation.
+		    if (CurrentAnimation != null)
+		    {
+		        Stop();
+		    }
 
-			AnimatedObject = animatedObject;
+		    AnimatedObject = animatedObject;
 			CurrentAnimation = animation;
 
 			// Update to the first frame.
@@ -341,8 +367,10 @@ namespace GorgonLibrary.Animation
 			GorgonDebug.AssertParamString(animation, animation);
 
 #if DEBUG
-			if (!Contains(animation))
-				throw new KeyNotFoundException("The animation '" + animation + "' was not found in this collection");
+            if (!Contains(animation))
+            {
+                throw new KeyNotFoundException(string.Format(Resources.GORANM_ANIMATION_DOES_NOT_EXIST, animation));
+            }
 #endif            
 			Play(animatedObject, this[animation]);
 		}
@@ -379,12 +407,16 @@ namespace GorgonLibrary.Animation
 		/// <exception cref="System.ArgumentException">Thrown when an animation in the list already exists in this collection.</exception>
 		public void AddRange(IEnumerable<GorgonAnimation<T>> animations)
 		{
-			GorgonDebug.AssertNull<IEnumerable<GorgonAnimation<T>>>(animations, "animations");
-			
-			if (animations.Count() == 0)
-				return;
+            var animationList = animations.ToArray();
 
-			AddItems(animations);
+			GorgonDebug.AssertNull(animationList, "animations");
+
+		    if (animationList.Length == 0)
+		    {
+		        return;
+		    }
+
+		    AddItems(animationList);
 		}
 
 		/// <summary>
@@ -395,12 +427,16 @@ namespace GorgonLibrary.Animation
 		/// <exception cref="System.ArgumentException">Thrown when the animation already exists in this collection.</exception>
 		public void Add(GorgonAnimation<T> animation)
 		{
-			GorgonDebug.AssertNull<GorgonAnimation<T>>(animation, "animation");
+			GorgonDebug.AssertNull(animation, "animation");
 
-			if (Contains(animation.Name))
-				throw new ArgumentException("'" + animation.Name + "' already exists in this collection.", "animation");
+#if DEBUG
+		    if (Contains(animation.Name))
+		    {
+                throw new ArgumentException(string.Format(Resources.GORANM_ANIMATION_ALREADY_EXISTS, animation.Name), "animation");
+		    }
+#endif
 
-			AddItem(animation);
+		    AddItem(animation);
 		}
 
 		/// <summary>
@@ -415,14 +451,16 @@ namespace GorgonLibrary.Animation
 		/// <para>Thrown when the animation already exists in this collection.</para></exception>
 		public GorgonAnimation<T> Add(string name, float length)
 		{
-			GorgonAnimation<T> result = null;
+		    GorgonDebug.AssertParamString(name, "name");
 
-			GorgonDebug.AssertParamString(name, "name");
+#if DEBUG
+		    if (Contains(name))
+		    {
+		        throw new ArgumentException(string.Format(Resources.GORANM_ANIMATION_ALREADY_EXISTS, name), "name");
+		    }
+#endif
 
-			if (Contains(name))
-				throw new ArgumentException("'" + name + "' already exists in this collection.", "animation");
-
-			result = new GorgonAnimation<T>(this, name, length);
+		    GorgonAnimation<T> result = new GorgonAnimation<T>(this, name, length);
 			AddItem(result);
 
 			return result;
@@ -450,11 +488,15 @@ namespace GorgonLibrary.Animation
 		/// <exception cref="System.Collections.Generic.KeyNotFoundException">Thrown when the animation was not found in the collection.</exception>
 		public void Remove(GorgonAnimation<T> animation)
 		{
-			GorgonDebug.AssertNull<GorgonAnimation<T>>(animation, "animation");
-			if (!Contains(animation))
-				throw new KeyNotFoundException("The animation '" + animation.Name + "' was not found in this collection.");
+			GorgonDebug.AssertNull(animation, "animation");
+#if DEBUG
+		    if (!Contains(animation))
+		    {
+		        throw new KeyNotFoundException(string.Format(Resources.GORANM_ANIMATION_DOES_NOT_EXIST, animation.Name));
+		    }
+#endif
 
-			RemoveItem(animation);
+		    RemoveItem(animation);
 		}
 
 		/// <summary>
@@ -467,10 +509,14 @@ namespace GorgonLibrary.Animation
 		public void Remove(string animation)
 		{
 			GorgonDebug.AssertParamString(animation, "animation");
-			if (!Contains(animation))
-				throw new KeyNotFoundException("The animation '" + animation + "' was not found in this collection.");
+#if DEBUG
+		    if (!Contains(animation))
+		    {
+		        throw new KeyNotFoundException(string.Format(Resources.GORANM_ANIMATION_DOES_NOT_EXIST, animation));
+		    }
+#endif
 
-			RemoveItem(this[animation]);
+		    RemoveItem(this[animation]);
 		}
 
 		/// <summary>
@@ -498,12 +544,10 @@ namespace GorgonLibrary.Animation
 			AnimatedProperties = (from property in AnimatedObjectType.GetProperties()
 								  let attribs = property.GetCustomAttributes(typeof(AnimatedPropertyAttribute), true) as IList<AnimatedPropertyAttribute>
 								  where attribs != null && attribs.Count == 1
-								  select new GorgonAnimatedProperty
-								  {
-									  Property = property,
-									  DisplayName = string.IsNullOrEmpty(attribs[0].DisplayName) ? property.Name : attribs[0].DisplayName,
-									  DataType = attribs[0].DataType == null ? property.PropertyType : attribs[0].DataType
-								  }).ToDictionary((key) => key.Property.Name, (value) => value);
+								  select new GorgonAnimatedProperty(
+                                      string.IsNullOrEmpty(attribs[0].DisplayName) ? property.Name : attribs[0].DisplayName, 
+                                      attribs[0].DataType ?? property.PropertyType, property))
+                                        .ToDictionary(key => key.Property.Name, value => value);
 		}
 		#endregion
 	}

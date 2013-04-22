@@ -35,7 +35,7 @@ namespace GorgonLibrary.Animation
 		: IKeyFrame
 	{
 		#region Variables.
-		private Type _dataType;								// Type of data for the key frame.
+		private readonly Type _dataType;								// Type of data for the key frame.
 
 		/// <summary>
 		/// Value to store in the key frame.

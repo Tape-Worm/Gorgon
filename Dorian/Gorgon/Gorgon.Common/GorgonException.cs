@@ -70,19 +70,17 @@ namespace GorgonLibrary
 		/// <param name="logLevel">Logging level to use.</param>
 		private static void FormatStackTrace(string stack, string indicator, LoggingLevel logLevel)
 		{
-			string[] lines = null;		// List of lines.
-
-			if (string.IsNullOrEmpty(stack))
+		    if (string.IsNullOrEmpty(stack))
 				return;
 
 			stack = stack.Replace('\t', ' ');
-			lines = stack.Split(new char[] { '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries);
+			string[] lines = stack.Split(new[] { '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries);
 
 			Log.Print("{0}Stack trace:", logLevel, indicator);
 			for (int i = lines.Length - 1; i >= 0; i--)
 			{
-				int inIndex = lines[i].LastIndexOf(") in ");
-				int pathIndex = lines[i].LastIndexOf(@"\");
+				int inIndex = lines[i].LastIndexOf(") in ", StringComparison.Ordinal);
+				int pathIndex = lines[i].LastIndexOf(@"\", StringComparison.Ordinal);
 
 				if ((inIndex > -1) && (pathIndex > -1))
 					lines[i] = lines[i].Substring(0, inIndex + 5) + lines[i].Substring(pathIndex + 1);
@@ -101,20 +99,15 @@ namespace GorgonLibrary
 		/// <param name="logLevel">Logging level to use.</param>
 		private static void FormatMessage(string message, string indicator, LoggingLevel logLevel)
 		{
-			string[] lines = null;		// List of lines.
-
-			if (string.IsNullOrEmpty(message))
+		    if (string.IsNullOrEmpty(message))
 				return;
 
 			message = message.Replace('\t', ' ');
-			lines = message.Split(new char[] { '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries);
+			string[] lines = message.Split(new[] { '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries);
 
 			for (int i = 0; i < lines.Length; i++)
 			{
-				if (i == 0)
-					Log.Print("{1}Exception: {0}", logLevel, lines[i], indicator);
-				else
-					Log.Print("{1}           {0}", logLevel, lines[i], indicator);
+			    Log.Print(i == 0 ? "{1}Exception: {0}" : "{1}           {0}", logLevel, lines[i], indicator);
 			}
 		}
 
@@ -123,8 +116,7 @@ namespace GorgonLibrary
 		/// </summary>
 		private static void LogException(Exception ex)
 		{
-			Exception inner = null;				// Inner exception.
-			string indicator = string.Empty;	// Inner exception indicator.
+		    string indicator = string.Empty;	// Inner exception indicator.
 			string branch = string.Empty;		// Branching character.
 
 			if (Log == null)
@@ -138,32 +130,45 @@ namespace GorgonLibrary
 			Log.Print("\tEXCEPTION!!", LoggingLevel.All);
 			Log.Print("================================================", LoggingLevel.All);
 
-			inner = ex;
+			Exception inner = ex;
+
 			while (inner != null)
 			{
 				GorgonException gorgonException = inner as GorgonException;
 
 				FormatMessage(inner.Message, indicator, (inner == ex) ? LoggingLevel.All : LoggingLevel.Verbose);
 				Log.Print("{1}Type: {0}", (inner == ex) ? LoggingLevel.All : LoggingLevel.Verbose, inner.GetType().FullName, indicator);
-				if (inner.Source != null)
-					Log.Print("{1}Source: {0}", (inner == ex) ? LoggingLevel.All : LoggingLevel.Verbose, inner.Source, indicator);
-				if (inner.TargetSite != null)
-					Log.Print("{1}Target site: {0}", (inner == ex) ? LoggingLevel.All : LoggingLevel.Verbose, inner.TargetSite.DeclaringType.FullName + "." + inner.TargetSite.Name, indicator);
-				if (gorgonException != null)
-					Log.Print("{2}Result Code: {0} (0x{1:X})", (inner == ex) ? LoggingLevel.All : LoggingLevel.Verbose, gorgonException.ResultCode.Name, gorgonException.ResultCode.Code, indicator);
+			    if (inner.Source != null)
+			    {
+			        Log.Print("{1}Source: {0}", (inner == ex) ? LoggingLevel.All : LoggingLevel.Verbose, inner.Source, indicator);
+			    }
 
-				System.Collections.IDictionary extraInfo = inner.Data;
+			    if ((inner.TargetSite != null) && (inner.TargetSite.DeclaringType != null))
+			    {
+			        Log.Print("{1}Target site: {0}", (inner == ex) ? LoggingLevel.All : LoggingLevel.Verbose,
+			                  inner.TargetSite.DeclaringType.FullName + "." + inner.TargetSite.Name, indicator);
+			    }
+
+			    if (gorgonException != null)
+			    {
+			        Log.Print("{2}Result Code: {0} (0x{1:X})", (inner == ex) ? LoggingLevel.All : LoggingLevel.Verbose,
+			                  gorgonException.ResultCode.Name, gorgonException.ResultCode.Code, indicator);
+			    }
+
+			    System.Collections.IDictionary extraInfo = inner.Data;
 
 				// Print custom information.
-				if ((extraInfo != null) && (extraInfo.Count > 0))
+				if (extraInfo.Count > 0)
 				{
 					Log.Print("{0}", LoggingLevel.Verbose, indicator);
 					Log.Print("{0}Custom Information:", LoggingLevel.Verbose, indicator);
 					Log.Print("{0}------------------------------------------------------------", LoggingLevel.Verbose, indicator);
 					foreach (System.Collections.DictionaryEntry item in extraInfo)
 					{
-						if ((item.Value != null) && (item.Key != null))
-							Log.Print("{0}{1}:  {2}", LoggingLevel.Verbose, indicator, item.Key, item.Value);
+					    if (item.Value != null)
+					    {
+					        Log.Print("{0}{1}:  {2}", LoggingLevel.Verbose, indicator, item.Key, item.Value);
+					    }
 					}
 					Log.Print("{0}------------------------------------------------------------", LoggingLevel.Verbose, indicator);
 					Log.Print("{0}", LoggingLevel.Verbose, indicator);
@@ -307,7 +312,7 @@ namespace GorgonLibrary
 		public GorgonException(string errorMessage, Exception innerException)
 			: base(errorMessage, innerException)
 		{
-			ResultCode = new GorgonResult("GorgonException", this.HResult, errorMessage);
+			ResultCode = new GorgonResult("GorgonException", HResult, errorMessage);
 		}
 
 		/// <summary>
@@ -317,7 +322,7 @@ namespace GorgonLibrary
 		public GorgonException(string errorMessage)
 			: base(errorMessage)
 		{
-			ResultCode = new GorgonResult("GorgonException", this.HResult, errorMessage);
+			ResultCode = new GorgonResult("GorgonException", HResult, errorMessage);
 		}
 
 		/// <summary>

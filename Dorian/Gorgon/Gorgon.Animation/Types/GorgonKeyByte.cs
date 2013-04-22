@@ -35,7 +35,7 @@ namespace GorgonLibrary.Animation
 		: IKeyFrame
 	{
 		#region Variables.
-		private Type _dataType;								// Type of data for the key frame.
+		private readonly Type _dataType;								// Type of data for the key frame.
 
 		/// <summary>
 		/// Value to store in the key frame.
@@ -99,8 +99,8 @@ namespace GorgonLibrary.Animation
 		/// <param name="chunk">Chunk to read.</param>
 		void IKeyFrame.FromChunk(IO.GorgonChunkReader chunk)
 		{
-			this.Time = chunk.ReadFloat();
-			this.Value = chunk.ReadByte();
+			Time = chunk.ReadFloat();
+			Value = chunk.ReadByte();
 		}
 
 		/// <summary>

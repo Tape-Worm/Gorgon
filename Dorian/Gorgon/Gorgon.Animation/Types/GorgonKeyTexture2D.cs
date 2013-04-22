@@ -27,6 +27,7 @@
 using System;
 using System.Drawing;
 using System.Linq;
+using GorgonLibrary.Animation.Properties;
 using GorgonLibrary.Graphics;
 
 namespace GorgonLibrary.Animation
@@ -38,7 +39,8 @@ namespace GorgonLibrary.Animation
 		: IKeyFrame
 	{
 		#region Variables.
-		private Type _dataType;								// Type of data for the key frame.
+		private readonly Type _dataType;					// Type of data for the key frame.
+
 		private String _textureName;						// Texture name.
 		private GorgonTexture2DSettings _settings;			// Texture settings.
 
@@ -60,11 +62,12 @@ namespace GorgonLibrary.Animation
 		/// <summary>
 		/// Function to retrieve the texture if it's not assigned.
 		/// </summary>
-		internal void GetTexture()
+		/// <returns>TRUE if the texture was found, FALSE if not.</returns>
+		internal bool  GetTexture()
 		{
 			if (!string.IsNullOrEmpty(_textureName))
 			{
-				// Copy to local values because LINQ can't seem to work with members
+				// Copy to local values because LINQ doesn't seem to work with members
 				// of a struct.
 				string textureName = _textureName;
 				GorgonTexture2DSettings settings = _settings;
@@ -75,13 +78,15 @@ namespace GorgonLibrary.Animation
 				var graphics = Gorgon.GetTrackedObjectsOfType<GorgonGraphics>();
 
 				// We have no graphics, then we can't do display a texture anyway, so throw an exception.
-				if (graphics.Count == 0)
-					throw new ArgumentException("Cannot load a 2D texture key frame without a graphics instance.", "reader");
+			    if (graphics.Count == 0)
+			    {
+			        throw new GorgonException(GorgonResult.NotInitialized, Resources.GORANM_KEYFRAME_TEXTURE_NOGFX);
+			    }
 
-				// Then, we begin our search by looking at -all- the texture information we have:
+			    // Then, we begin our search by looking at -all- the texture information we have:
 				Value = (from graphicsObject in graphics
 						 from graphicsTexture in graphicsObject.GetGraphicsObjectOfType<GorgonTexture2D>()
-						 where (string.Compare(graphicsTexture.Name, textureName, true) == 0) &&
+						 where (String.Compare(graphicsTexture.Name, textureName, StringComparison.OrdinalIgnoreCase) == 0) &&
 						  (graphicsTexture.Settings.ArrayCount == settings.ArrayCount) &&
 						  (graphicsTexture.Settings.Format == settings.Format) &&
 						  (graphicsTexture.Settings.Height == settings.Height) &&
@@ -95,28 +100,26 @@ namespace GorgonLibrary.Animation
 				{
 					// That one failed, so just try and look it up by name, width, height and format.
 					Value = (from graphicsObject in graphics
-							 from graphicsTexture in graphicsObject.GetGraphicsObjectOfType<GorgonTexture2D>()
-							 where (string.Compare(graphicsTexture.Name, textureName, true) == 0) &&
-							  (graphicsTexture.Settings.Format == settings.Format) &&
-							  (graphicsTexture.Settings.Height == settings.Height) &&
-							  (graphicsTexture.Settings.Width == settings.Width)
-							 select graphicsTexture).FirstOrDefault();
-
-					if (Value == null)
-					{
-						// OK, that one failed too, just look by name.
-						Value = (from graphicsObject in graphics
-								 from graphicsTexture in graphicsObject.GetGraphicsObjectOfType<GorgonTexture2D>()
-								 where (string.Compare(graphicsTexture.Name, textureName, true) == 0)
-								 select graphicsTexture).FirstOrDefault();
-
-					}
+					         from graphicsTexture in graphicsObject.GetGraphicsObjectOfType<GorgonTexture2D>()
+					         where (String.Compare(graphicsTexture.Name, textureName, StringComparison.OrdinalIgnoreCase) == 0) &&
+					               (graphicsTexture.Settings.Format == settings.Format) &&
+					               (graphicsTexture.Settings.Height == settings.Height) &&
+					               (graphicsTexture.Settings.Width == settings.Width)
+					         select graphicsTexture).FirstOrDefault() ?? (from graphicsObject in graphics
+					                                                      from graphicsTexture in graphicsObject.GetGraphicsObjectOfType<GorgonTexture2D>()
+					                                                      where (String.Compare(graphicsTexture.Name, textureName, StringComparison.OrdinalIgnoreCase) == 0)
+					                                                      select graphicsTexture).FirstOrDefault();
 				}
 			}
 
 			// We have our texture, stop deferring.
-			if (Value != null)
-				_textureName = string.Empty;
+		    if (Value != null)
+		    {
+		        _textureName = string.Empty;
+		        return true;
+		    }
+
+		    return false;
 		}
 		#endregion
 
@@ -179,13 +182,15 @@ namespace GorgonLibrary.Animation
 			return new GorgonKeyTexture2D(Time, Value, TextureRegion);
 		}
 
+        /// <summary>
+        /// Function to read a keyframe from a chunk.
+        /// </summary>
+        /// <param name="chunk">Chunk to read from.</param>
 		void IKeyFrame.FromChunk(IO.GorgonChunkReader chunk)
 		{
-			bool hasTexture = false;
-
-			Value = null;
+            Value = null;
 			Time = chunk.ReadFloat();
-			hasTexture = chunk.ReadBoolean();
+			bool hasTexture = chunk.ReadBoolean();
 
 			// Get the texture region we're using.
 			TextureRegion = chunk.ReadRectangleF();
@@ -196,17 +201,19 @@ namespace GorgonLibrary.Animation
 				_textureName = chunk.ReadString();
 
 				// Read in our texture information.
-				_settings = new GorgonTexture2DSettings();
-				_settings.ArrayCount = chunk.ReadInt32();
-				_settings.Format = chunk.Read<BufferFormat>();
-				_settings.Size = chunk.ReadSize();
-				_settings.IsTextureCube = chunk.ReadBoolean();
-				_settings.MipCount = chunk.ReadInt32();
-				_settings.Multisampling = new GorgonMultisampling(chunk.ReadInt32(), chunk.ReadInt32());
-				_settings.Usage = BufferUsage.Default;
-				_settings.ViewFormat = BufferFormat.Unknown;
+				_settings = new GorgonTexture2DSettings
+				    {
+				        ArrayCount = chunk.ReadInt32(),
+				        Format = chunk.Read<BufferFormat>(),
+				        Size = chunk.ReadSize(),
+				        IsTextureCube = chunk.ReadBoolean(),
+				        MipCount = chunk.ReadInt32(),
+				        Multisampling = new GorgonMultisampling(chunk.ReadInt32(), chunk.ReadInt32()),
+				        Usage = BufferUsage.Default,
+				        ViewFormat = BufferFormat.Unknown
+				    };
 
-				// Defer load the texture.
+			    // Defer load the texture.
 				GetTexture();
 			}
 		}
@@ -225,7 +232,7 @@ namespace GorgonLibrary.Animation
 			{
 				chunk.WriteString(Value.Name);
 				chunk.WriteInt32(Value.Settings.ArrayCount);
-				chunk.Write<BufferFormat>(Value.Settings.Format);
+				chunk.Write(Value.Settings.Format);
 				chunk.WriteSize(Value.Settings.Size);
 				chunk.WriteBoolean(Value.Settings.IsTextureCube);
 				chunk.WriteInt32(Value.Settings.MipCount);

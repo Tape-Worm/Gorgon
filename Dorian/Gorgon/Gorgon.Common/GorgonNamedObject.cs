@@ -24,7 +24,7 @@
 // 
 #endregion
 
-using System;
+using GorgonLibrary.Properties;
 using GorgonLibrary.Diagnostics;
 
 namespace GorgonLibrary
@@ -34,9 +34,13 @@ namespace GorgonLibrary
 	/// </summary>
 	public abstract class GorgonNamedObject
 		: INamedObject
-	{
-		#region Methods.
-		/// <summary>
+    {
+        #region Variables.
+	    private string _name = string.Empty;            // The name.
+        #endregion
+
+        #region Methods.
+        /// <summary>
 		/// Serves as a hash method for a particular type.
 		/// </summary>
 		/// <returns>
@@ -55,7 +59,7 @@ namespace GorgonLibrary
 		/// </returns>
 		public override string ToString()
 		{
-			return string.Format("Named object: {0}", Name);
+			return string.Format(Resources.GOR_GORGONNAMEDOBJECT_TOSTRING, Name);
 		}
 		#endregion
 
@@ -69,8 +73,7 @@ namespace GorgonLibrary
 		protected GorgonNamedObject(string name)
 		{
 			GorgonDebug.AssertParamString(name, "name");
-
-			Name = name;
+			_name = name;
 		}
 		#endregion
 
@@ -80,8 +83,14 @@ namespace GorgonLibrary
 		/// </summary>
 		public virtual string Name
 		{
-			get;
-			protected set;
+			get
+			{
+			    return _name;
+			}
+			protected set
+			{
+			    _name = value;
+			}
 		}
 		#endregion
 	}
