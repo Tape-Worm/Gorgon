@@ -146,7 +146,7 @@
   <data name="GorgonLogo3" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         iVBORw0KGgoAAAANSUhEUgAAAMgAAAA4CAYAAAC4yreHAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6
-        JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAACXBIWXMAAAsSAAALEgHS3X78AABVuUlE
+        JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAACXBIWXMAAAsPAAALDwGS+QOlAABVuUlE
         QVR4Xu29BXhUV9c2HFoq0JYWSinuEpwElxBDSnFa3N2Ku7sFd3dI8BAjBvGEuLu720wyLvtf905OmeYJ
         T/s+3/e+1/f27+61OpOZc86cs/e617rvtfc56JmYmPxXrY6pqWldsvr0vomZ+YiOvXp0NmjfvP6w4cMG
         mfXr1WFEuxYNzNs0+8a4S/sWA0xMjLsNNxranF6/MTU1+7x6f73/xEaMGKFnaGio9z/U6tRi/7T/vzUd
@@ -539,5 +539,22 @@
   </data>
   <data name="GOR_PARAMETER_MUST_NOT_BE_EMPTY" xml:space="preserve">
     <value>The parameter must not be empty.</value>
+  </data>
+  <data name="GOR_GORGONRESULT_TOSTRING" xml:space="preserve">
+    <value>{0}
+Result: "{1}"
+Code: 0x{2}</value>
+  </data>
+  <data name="GOR_GORGONNAMEDOBJECT_TOSTRING" xml:space="preserve">
+    <value>Named object: {0}</value>
+  </data>
+  <data name="GOR_GORGONRANGE_TOSTRING" xml:space="preserve">
+    <value>Min: {0}  Max: {1}  Range: {2}</value>
+  </data>
+  <data name="GOR_APPLICATION_ALREADY_RUNNING" xml:space="preserve">
+    <value>The application is already running.</value>
+  </data>
+  <data name="GOR_NOCONTEXT" xml:space="preserve">
+    <value>Cannot run an application without either a main form, or a idle method.</value>
   </data>
 </root>

@@ -40,8 +40,8 @@ namespace GorgonLibrary.Animation
 		where T : class
 	{
 		#region Variables.
-		private List<IKeyFrame> _keyFrames = null;			// List of key frames.
-		private GorgonAnimationTrack<T> _track = null;		// Track that owns this collection.
+		private readonly List<IKeyFrame> _keyFrames;			// List of key frames.
+		private readonly GorgonAnimationTrack<T> _track;		// Track that owns this collection.
 		#endregion
 
 		#region Properties.
@@ -73,11 +73,17 @@ namespace GorgonLibrary.Animation
 		/// <exception cref="System.ArgumentException">Thrown when a key frame already exists in the collection with the specified time index.</exception>
 		public void AddRange(IEnumerable<IKeyFrame> keyFrames)
 		{
-			if ((keyFrames == null) || (keyFrames.Count() == 0))
-				return;
+		    IKeyFrame[] frames = keyFrames.ToArray();
 
-			foreach (var item in keyFrames)
-				Add(item);
+		    if (frames.Length == 0)
+		    {
+		        return;
+		    }
+
+		    foreach (var item in frames)
+		    {
+		        Add(item);
+		    }
 		}
 
 		/// <summary>
@@ -88,17 +94,21 @@ namespace GorgonLibrary.Animation
 		/// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="index"/> parameter is less than 0, or greater than the number of elements in the collection.</exception>
 		public void InsertRange(int index, IEnumerable<IKeyFrame> keyFrames)
 		{
+		    IKeyFrame[] frames = keyFrames.ToArray();
+
 			GorgonDebug.AssertParamRange(index, 0, Count, "index");
 
-			foreach (var key in keyFrames)
+			foreach (var key in frames)
 			{
-				if (Contains(key.Time))
-					throw new ArgumentException("There's already a key frame at the time '" + key.Time.ToString("0.0#####") + "'.");
+			    if (Contains(key.Time))
+                {
+			        throw new ArgumentException(string.Format(Properties.Resources.GORANM_KEY_EXISTS_AT_TIME, key.Time));
+			    }
 
-				Times.Add(key.Time, key);
+			    Times.Add(key.Time, key);
 			}
 
-			_keyFrames.InsertRange(index, keyFrames);
+			_keyFrames.InsertRange(index, frames);
 			if (_track != null)
 				_track.SetupSpline();
 		}
@@ -158,10 +168,12 @@ namespace GorgonLibrary.Animation
 		/// <exception cref="System.ArgumentException">Thrown when a key frame already exists in the collection with the specified time index.</exception>
 		public void Insert(int index, IKeyFrame item)
 		{
-			if (Contains(item.Time))
-				throw new ArgumentException("There's already a key frame at the time '" + item.Time.ToString("0.0#####") + "'.");
+		    if (Contains(item.Time))
+		    {
+                throw new ArgumentException(string.Format(Properties.Resources.GORANM_KEY_EXISTS_AT_TIME, item.Time));
+		    }
 
-			_keyFrames.Insert(index, item);
+		    _keyFrames.Insert(index, item);
 			Times.Add(item.Time, item);
 			if (_track != null)
 				_track.SetupSpline();
@@ -216,12 +228,18 @@ namespace GorgonLibrary.Animation
 		/// <exception cref="System.ArgumentException">Thrown when a key frame already exists in the collection with the specified time index.</exception>
 		public void Add(IKeyFrame item)
 		{
-			if (item.DataType != _track.DataType)
-				throw new InvalidCastException("Cannot use a type '" + item.GetType().ToString() + "' in a track with a type of '" + _track.GetType().ToString() + "'.");
-			if (Contains(item.Time))
-				throw new ArgumentException("There's already a key frame at the time '" + item.Time.ToString("0.0#####") + "'.");
+		    if (item.DataType != _track.DataType)
+		    {
+		        throw new InvalidCastException(string.Format(Properties.Resources.GORANM_KEY_TRACK_TYPE_MISMATCH, 
+                                                    item.GetType().FullName, _track.GetType().FullName));
+		    }
 
-			_keyFrames.Add(item);
+		    if (Contains(item.Time))
+		    {
+		        throw new ArgumentException(string.Format(Properties.Resources.GORANM_KEY_EXISTS_AT_TIME, item.Time));
+		    }
+
+		    _keyFrames.Add(item);
 			Times.Add(item.Time, item);
 			if (_track != null)
 				_track.SetupSpline();
@@ -286,11 +304,10 @@ namespace GorgonLibrary.Animation
 		/// </returns>
 		public IEnumerator<IKeyFrame> GetEnumerator()
 		{
-			foreach (var item in _keyFrames)
-				yield return item;
+		    return _keyFrames.GetEnumerator();
 		}
 
-		#endregion
+	    #endregion
 
 		#region IEnumerable Members
 		/// <summary>

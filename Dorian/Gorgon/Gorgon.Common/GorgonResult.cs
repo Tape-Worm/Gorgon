@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using GorgonLibrary.Properties;
 using GorgonLibrary.Diagnostics;
 
 namespace GorgonLibrary
@@ -161,9 +162,9 @@ namespace GorgonLibrary
 		#endregion
 
 		#region Variables.
-		private string _description;				// Description of th error.
-		private int _code;							// Error code.
-		private string _name;						// Name of the error.
+		private readonly string _description;				// Description of th error.
+		private readonly int _code;							// Error code.
+		private readonly string _name;						// Name of the error.
 		#endregion
 
 		#region Properties.
@@ -213,8 +214,8 @@ namespace GorgonLibrary
 		{
 			if (obj is GorgonResult)
 			{
-				GorgonResult error = (GorgonResult)obj;
-				return ((string.Compare(error.Name, this.Name, true) == 0) && (error.Code == this.Code));
+				var error = (GorgonResult)obj;
+				return String.Compare(error.Name, Name, StringComparison.OrdinalIgnoreCase) == 0 && (error.Code == Code);
 			}
 
 			return false;
@@ -228,7 +229,7 @@ namespace GorgonLibrary
 		/// </returns>
 		public override string ToString()
 		{
-			return string.Format("{0} Result: \"{1}\"\nCode: 0x{2:X}", Name, Description, Code);
+			return string.Format(Resources.GOR_GORGONRESULT_TOSTRING, Name, Description, Code.FormatHex());
 		}
 
 		/// <summary>
@@ -239,7 +240,7 @@ namespace GorgonLibrary
 		/// </returns>
 		public override int GetHashCode()
 		{
-			return Code.GetHashCode() ^ Name.GetHashCode();
+		    return 281.GenerateHash(Code.GenerateHash(Name));
 		}
 		#endregion
 
@@ -252,7 +253,7 @@ namespace GorgonLibrary
 		/// <returns>TRUE if equal, FALSE if not.</returns>
 		public static bool operator ==(GorgonResult left, GorgonResult right)
 		{
-			return ((left.Code == right.Code) && (string.Compare(left.Name, right.Name, true) == 0));
+			return ((left.Code == right.Code) && (String.Compare(left.Name, right.Name, StringComparison.OrdinalIgnoreCase) == 0));
 		}
 
 		/// <summary>

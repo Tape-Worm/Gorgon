@@ -27,6 +27,7 @@
 using System;
 using System.Linq.Expressions;
 using System.Reflection;
+using GorgonLibrary.Animation.Properties;
 using GorgonLibrary.Math;
 
 namespace GorgonLibrary.Animation
@@ -34,7 +35,7 @@ namespace GorgonLibrary.Animation
 	/// <summary>
 	/// Interpolation mode for animating between key frames.
 	/// </summary>    
-	[Flags()]
+	[Flags]
 	public enum TrackInterpolationMode
 	{
 		/// <summary>
@@ -55,7 +56,7 @@ namespace GorgonLibrary.Animation
 	/// A track for an animated property on an animated object.
 	/// </summary>
 	/// <remarks>Custom tracks may be built by the user by inheriting from this object.  When a custom track is built, the user will need to add that track to the 
-	/// <see cref="P:GorgonLibrary.Animation.GorgonAnimation.Tracks">GorgonAnimation.Tracks</see> collection.  Please note that when a custom track is built a custom 
+    /// <see cref="GorgonLibrary.Animation.GorgonAnimation{T}.Tracks">GorgonAnimation.Tracks</see> collection.  Please note that when a custom track is built a custom 
 	/// <see cref="GorgonLibrary.Animation.IKeyFrame">key frame</see> type must be built to accompany the track.</remarks>
 	/// <typeparam name="T">The type of object being animated.</typeparam>
 	public abstract class GorgonAnimationTrack<T>
@@ -69,80 +70,30 @@ namespace GorgonLibrary.Animation
 		public struct NearestKeys
 		{
 			#region Variables.
-			private float _timePosition;            // Time position within the track that lies between the two keys.
-			private IKeyFrame _previousKey;			// Keyframe prior to the time position.
-			private IKeyFrame _nextKey;				// Keyframe after the time position.
-			private float _keyTimeDelta;            // Distance between the previous and next keyframes, 0 if equal to the previous, 1 if equal to the next.
-			private int _previousKeyIndex;          // Previous key index.
-			private int _nextKeyIndex;              // Next key index.
-			#endregion
-
-			#region Properties.
-			/// <summary>
-			/// Property to return the track time position requested.
-			/// </summary>
-			public float TrackTimePosition
-			{
-				get
-				{
-					return _timePosition;
-				}
-			}
-
-			/// <summary>
-			/// Property to return the previous key to the time position.
-			/// </summary>
-			public IKeyFrame PreviousKey
-			{
-				get
-				{
-					return _previousKey;
-				}
-			}
-
-			/// <summary>
-			/// Property to return the next key from the time position.
-			/// </summary>
-			public IKeyFrame NextKey
-			{
-				get
-				{
-					return _nextKey;
-				}
-			}
-
-			/// <summary>
-			/// Property to return the previous key index.
-			/// </summary>
-			public int PreviousKeyIndex
-			{
-				get
-				{
-					return _previousKeyIndex;
-				}
-			}
-
-			/// <summary>
-			/// Property to return the next key index.
-			/// </summary>
-			public int NextKeyIndex
-			{
-				get
-				{
-					return _nextKeyIndex;
-				}
-			}
-
-			/// <summary>
-			/// Property to return the delta between the previous and next frames.  0 if equal to the previous keyframe, 1.0 if equal to the next keyframe.
-			/// </summary>
-			public float KeyTimeDelta
-			{
-				get
-				{
-					return _keyTimeDelta;
-				}
-			}
+            /// <summary>
+            /// Time position within the track that lies between the two keys.
+            /// </summary>
+			public readonly float TrackTimePosition;
+            /// <summary>
+            /// Keyframe prior to the time position.
+            /// </summary>
+			public readonly IKeyFrame PreviousKey;
+            /// <summary>
+            /// Keyframe after the time position.
+            /// </summary>
+			public readonly IKeyFrame NextKey;
+            /// <summary>
+            /// Distance between the previous and next keyframes, 0 if equal to the previous, 1 if equal to the next.
+            /// </summary>
+			public readonly float KeyTimeDelta;
+            /// <summary>
+            /// Previous key index.
+            /// </summary>
+			public readonly int PreviousKeyIndex;
+            /// <summary>
+            /// Next key index.
+            /// </summary>
+			public readonly int NextKeyIndex;
 			#endregion
 
 			#region Constructor.
@@ -154,19 +105,21 @@ namespace GorgonLibrary.Animation
 			internal NearestKeys(GorgonAnimationTrack<T> owner, float requestedTime)
 			{
 				float animationLength = owner.Animation.Length;     // Animation length.
-				int i = 0;											// Loop.
+				int i;											    // Loop.
 
 #if DEBUG
-				if (owner.KeyFrames.Count < 1)
-					throw new ArgumentException("Track has no keys.", "owner");
+			    if (owner.KeyFrames.Count < 1)
+			    {
+			        throw new ArgumentException(Resources.GORANM_TRACK_HAS_NO_KEYS, "owner");
+			    }
 #endif
 
 				// Initialize.
-				_previousKeyIndex = 0;
-				_previousKey = owner.KeyFrames[0];
-				_nextKeyIndex = -1;                
-				_nextKey = null;
-				_keyTimeDelta = 0;                
+				PreviousKeyIndex = 0;
+				PreviousKey = owner.KeyFrames[0];
+				NextKeyIndex = -1;                
+				NextKey = null;
+				KeyTimeDelta = 0;                
 
 				// Wrap around.
 				while (requestedTime > animationLength)
@@ -179,8 +132,8 @@ namespace GorgonLibrary.Animation
 					{
 						if ((owner.KeyFrames[i].Time > requestedTime) && (i > 0))
 						{
-							_previousKey = owner.KeyFrames[i - 1];
-							_previousKeyIndex = i - 1;
+							PreviousKey = owner.KeyFrames[i - 1];
+							PreviousKeyIndex = i - 1;
 							break;
 						}
 					}
@@ -193,33 +146,33 @@ namespace GorgonLibrary.Animation
 				{
 					if (!owner.Animation.IsLooped)
 					{
-						_nextKey = owner.KeyFrames[owner.KeyFrames.Count - 1];
-						_nextKeyIndex = owner.KeyFrames.Count - 1;
+						NextKey = owner.KeyFrames[owner.KeyFrames.Count - 1];
+						NextKeyIndex = owner.KeyFrames.Count - 1;
 					}
 					else
 					{
-						_nextKey = owner.KeyFrames[0];
-						_nextKeyIndex = 0;
+						NextKey = owner.KeyFrames[0];
+						NextKeyIndex = 0;
 					}
-					_keyTimeDelta = animationLength;
+					KeyTimeDelta = animationLength;
 				}
 				else
 				{
-					_nextKey = owner.KeyFrames[i];
-					_nextKeyIndex = i;
-					_keyTimeDelta = _nextKey.Time;
+					NextKey = owner.KeyFrames[i];
+					NextKeyIndex = i;
+					KeyTimeDelta = NextKey.Time;
 				}
 
 				// Same frame.				
-				if (_previousKey.Time.EqualsEpsilon(_keyTimeDelta, 0.001f))
-					_keyTimeDelta = 0;
+				if (PreviousKey.Time.EqualsEpsilon(KeyTimeDelta, 0.001f))
+					KeyTimeDelta = 0;
 				else
-					_keyTimeDelta = (requestedTime - _previousKey.Time) / (_keyTimeDelta - _previousKey.Time);
+					KeyTimeDelta = (requestedTime - PreviousKey.Time) / (KeyTimeDelta - PreviousKey.Time);
 
 				// We can't have negative time.
-				if (_keyTimeDelta < 0)
-					_keyTimeDelta = 0;
-				_timePosition = requestedTime;
+				if (KeyTimeDelta < 0)
+					KeyTimeDelta = 0;
+				TrackTimePosition = requestedTime;
 			}
 			#endregion
 		}
@@ -308,35 +261,35 @@ namespace GorgonLibrary.Animation
 		/// <summary>
 		/// Function to build a get accessor for the property that will be manipulated by the track.
 		/// </summary>
-		/// <typeparam name="O">Type of output.</typeparam>
+		/// <typeparam name="TO">Type of output.</typeparam>
 		/// <returns>The get accessor method.</returns>
-		protected Func<T, O> BuildGetAccessor<O>()
+		protected Func<T, TO> BuildGetAccessor<TO>()
 		{
-			return BuildGetAccessor<O>(AnimatedProperty.Property.GetGetMethod());
+			return BuildGetAccessor<TO>(AnimatedProperty.Property.GetGetMethod());
 		}
 
 		/// <summary>
 		/// Function to build a set accessor for the property that will be manipulated by the track.
 		/// </summary>
-		/// <typeparam name="O">Type of output.</typeparam>
+		/// <typeparam name="TO">Type of output.</typeparam>
 		/// <returns>The get accessor method.</returns>
-		protected Action<T, O> BuildSetAccessor<O>()
+		protected Action<T, TO> BuildSetAccessor<TO>()
 		{
-			return BuildSetAccessor<O>(AnimatedProperty.Property.GetSetMethod());
+			return BuildSetAccessor<TO>(AnimatedProperty.Property.GetSetMethod());
 		}
 		
 		/// <summary>
 		/// Function to build a get accessor for the property that will be manipulated by the track.
 		/// </summary>
 		/// <param name="getMethod">Method information.</param>
-		/// <typeparam name="O">Type of output.</typeparam>
+		/// <typeparam name="TO">Type of output.</typeparam>
 		/// <returns>The get accessor method.</returns>
-		protected Func<T, O> BuildGetAccessor<O>(MethodInfo getMethod)
+		protected Func<T, TO> BuildGetAccessor<TO>(MethodInfo getMethod)
 		{
 			var instance = Expression.Parameter(typeof(T), "Inst");
 
-			Expression<Func<T, O>> expression =
-				Expression.Lambda<Func<T, O>>(
+			Expression<Func<T, TO>> expression =
+				Expression.Lambda<Func<T, TO>>(
 					Expression.Call(instance, getMethod),
 				instance);
 
@@ -347,15 +300,15 @@ namespace GorgonLibrary.Animation
 		/// Function to build a set accessor for the property that will be manipulated by the track.
 		/// </summary>
 		/// <param name="setMethod">Method information.</param>
-		/// <typeparam name="O">Type of output.</typeparam>
+		/// <typeparam name="TO">Type of output.</typeparam>
 		/// <returns>The get accessor method.</returns>
-		protected Action<T, O> BuildSetAccessor<O>(MethodInfo setMethod)
+		protected Action<T, TO> BuildSetAccessor<TO>(MethodInfo setMethod)
 		{
 			var instance = Expression.Parameter(typeof(T), "Inst");
-			var value = Expression.Parameter(typeof(O));
+			var value = Expression.Parameter(typeof(TO));
 
-			Expression<Action<T, O>> expression =
-				Expression.Lambda<Action<T, O>>(
+			Expression<Action<T, TO>> expression =
+				Expression.Lambda<Action<T, TO>>(
 					Expression.Call(instance, setMethod, value),
 				instance, value);
 
@@ -383,7 +336,7 @@ namespace GorgonLibrary.Animation
 		/// <param name="keyTime">The time to assign to the key.</param>
 		/// <param name="unitTime">The time, expressed in unit time.</param>
 		/// <returns>The interpolated key frame containing the interpolated values.</returns>
-		protected abstract IKeyFrame GetTweenKey(ref GorgonAnimationTrack<T>.NearestKeys keyValues, float keyTime, float unitTime);
+		protected abstract IKeyFrame GetTweenKey(ref NearestKeys keyValues, float keyTime, float unitTime);
 
 		/// <summary>
 		/// Function to apply the key value to the object properties.
@@ -395,7 +348,7 @@ namespace GorgonLibrary.Animation
 		/// Function to read the track data from a data chunk.
 		/// </summary>
 		/// <param name="chunk">Chunk to read.</param>
-		internal void FromChunk(GorgonLibrary.IO.GorgonChunkReader chunk)
+		internal void FromChunk(IO.GorgonChunkReader chunk)
 		{
 			InterpolationMode = chunk.Read<TrackInterpolationMode>();
 
@@ -416,10 +369,10 @@ namespace GorgonLibrary.Animation
 		/// Function to write the track data to a data chunk.
 		/// </summary>
 		/// <param name="chunk">Chunk to write.</param>
-		internal void ToChunk(GorgonLibrary.IO.GorgonChunkWriter chunk)
+		internal void ToChunk(IO.GorgonChunkWriter chunk)
 		{
 			chunk.WriteString(Name);
-			chunk.Write<TrackInterpolationMode>(InterpolationMode);
+			chunk.Write(InterpolationMode);
 
 			for (int i = 0; i < KeyFrames.Count; i++)
 			{
@@ -433,12 +386,10 @@ namespace GorgonLibrary.Animation
 		/// Function to retrieve a key frame for a given time.
 		/// </summary>
 		/// <param name="time">Time to look up.</param>
-		/// <returns>A keyframe at that time.  Note that this can return an interpolated key frame and therefore not actually exist in the <see cref="P:GorgonLibrary.Animation.GorgonAnimationTrack.KeyFrames">key frames collection</see>.</returns>
+		/// <returns>A keyframe at that time.  Note that this can return an interpolated key frame and therefore not actually exist in the <see cref="GorgonLibrary.Animation.GorgonAnimationTrack{T}.KeyFrames">key frames collection</see>.</returns>
 		public IKeyFrame GetKeyAtTime(float time)
 		{
-			NearestKeys keys = default(NearestKeys);
-
-			if (KeyFrames.Times.ContainsKey(time))
+		    if (KeyFrames.Times.ContainsKey(time))
 				return KeyFrames.Times[time];
 
 			if (time >= KeyFrames[KeyFrames.Count - 1].Time)
@@ -447,12 +398,14 @@ namespace GorgonLibrary.Animation
 			if (time <= 0)
 				return KeyFrames[0];
 
-			keys = new NearestKeys(this, time);
+			NearestKeys keys = new NearestKeys(this, time);
 
-			if (keys.KeyTimeDelta == 0.0f)
-				return keys.PreviousKey;
+		    if (keys.KeyTimeDelta == 0.0f)
+		    {
+		        return keys.PreviousKey;
+		    }
 
-			return GetTweenKey(ref keys, time, keys.KeyTimeDelta);
+		    return GetTweenKey(ref keys, time, keys.KeyTimeDelta);
 		}
 
 		/// <summary>
@@ -460,7 +413,7 @@ namespace GorgonLibrary.Animation
 		/// </summary>
 		/// <param name="time">Time interval to look up.</param>
 		/// <returns>The nearest keys to the interval.</returns>
-		public GorgonAnimationTrack<T>.NearestKeys GetNearestKeys(float time)
+		public NearestKeys GetNearestKeys(float time)
 		{
 			return new NearestKeys(this, time);
 		}

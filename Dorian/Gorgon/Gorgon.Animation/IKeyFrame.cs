@@ -57,13 +57,13 @@ namespace GorgonLibrary.Animation
 		/// Function to retrieve key frame data from data chunk.
 		/// </summary>
 		/// <param name="chunk">Chunk to read.</param>
-		void FromChunk(GorgonLibrary.IO.GorgonChunkReader chunk);
+		void FromChunk(IO.GorgonChunkReader chunk);
 
 		/// <summary>
 		/// Function to send the key frame data to the data chunk.
 		/// </summary>
 		/// <param name="chunk">Chunk to write.</param>
-		void ToChunk(GorgonLibrary.IO.GorgonChunkWriter chunk);
+		void ToChunk(IO.GorgonChunkWriter chunk);
 		#endregion
 	}
 }

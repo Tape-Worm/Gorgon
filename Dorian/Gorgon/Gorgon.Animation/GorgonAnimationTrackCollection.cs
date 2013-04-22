@@ -40,7 +40,7 @@ namespace GorgonLibrary.Animation
 		where T : class
 	{
 		#region Variables.
-		private GorgonAnimation<T> _animation = null;          // Animation that owns this collection.
+		private readonly GorgonAnimation<T> _animation;          // Animation that owns this collection.
 		#endregion
 
 		#region Properties.
@@ -186,21 +186,24 @@ namespace GorgonLibrary.Animation
 				}
 			}
 		}
-		
-		/// <summary>
-		/// Function to add a track to the collection.
-		/// </summary>
-		/// <param name="track">Track to add.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="track"/> parameter is NULL (Nothing in VB.Net).</exception>
-		/// <exception cref="System.ArgumentException">Thrown when the track parameter already exists in the collection.</exception>
-		public void Add(GorgonAnimationTrack<T> track)
+
+	    /// <summary>
+	    /// Function to add a track to the collection.
+	    /// </summary>
+	    /// <param name="track">Track to add.</param>
+	    /// <exception cref="ArgumentException"></exception>
+	    /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="track"/> parameter is NULL (Nothing in VB.Net).</exception>
+	    /// <exception cref="System.ArgumentException">Thrown when the track parameter already exists in the collection.</exception>
+	    public void Add(GorgonAnimationTrack<T> track)
 		{
-			GorgonDebug.AssertNull<GorgonAnimationTrack<T>>(track, "track");
+			GorgonDebug.AssertNull(track, "track");
 
-			if (Contains(track.Name))
-				throw new ArgumentException("The track '" + track.Name + "' already exists in this collection.", "track");
+		    if (Contains(track.Name))
+		    {
+		        throw new ArgumentException(string.Format(Properties.Resources.GORANM_TRACK_ALREADY_EXISTS, track.Name), "track");
+		    }
 
-			AddItem(track);
+		    AddItem(track);
 		}
 
 		/// <summary>

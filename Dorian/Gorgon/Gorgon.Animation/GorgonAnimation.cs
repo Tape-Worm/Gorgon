@@ -25,7 +25,6 @@
 #endregion
 
 using System.IO;
-using System.Text;
 using System.Linq;
 using GorgonLibrary.Diagnostics;
 using GorgonLibrary.IO;
@@ -40,11 +39,11 @@ namespace GorgonLibrary.Animation
 		where T : class
 	{        
 		#region Variables.
-		private float _length = 0;                                  // Length of the animation, in milliseconds.
-		private float _time = 0;                                    // Current time for the animation, in milliseconds.
-		private int _loopCount = 0;                                 // Number of loops for the animation.
-		private int _looped = 0;                                    // Number of times the animation has currently looped.
-		private GorgonAnimationController<T> _controller = null;    // Animation controller.
+		private float _length;                                  // Length of the animation, in milliseconds.
+		private float _time;                                    // Current time for the animation, in milliseconds.
+		private int _loopCount;                                 // Number of loops for the animation.
+		private int _looped;                                    // Number of times the animation has currently looped.
+		private GorgonAnimationController<T> _controller;       // Animation controller.
 		#endregion
 
 		#region Properties.
@@ -209,7 +208,7 @@ namespace GorgonLibrary.Animation
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="stream"/> parameter is NULL (Nothing in VB.Net).</exception>
 		public void Save(Stream stream)
 		{
-			GorgonDebug.AssertNull<Stream>(stream, "stream");
+			GorgonDebug.AssertNull(stream, "stream");
 
 			using (GorgonChunkWriter chunk = new GorgonChunkWriter(stream))
 			{
@@ -251,8 +250,10 @@ namespace GorgonLibrary.Animation
 		{
 			GorgonDebug.AssertParamString(fileName, "fileName");
 
-			using (FileStream stream = File.Open(fileName, FileMode.Create, FileAccess.Write, FileShare.None))
-				Save(stream);
+		    using (FileStream stream = File.Open(fileName, FileMode.Create, FileAccess.Write, FileShare.None))
+		    {
+		        Save(stream);
+		    }
 		}
 		
 		/// <summary>
@@ -293,14 +294,16 @@ namespace GorgonLibrary.Animation
 		/// <returns>A clone of the animation.</returns>		
 		public GorgonAnimation<T> Clone()
 		{
-			GorgonAnimation<T> clone = new GorgonAnimation<T>(AnimationController, Name, Length);
-			clone.IsLooped = IsLooped;
-			clone.Length = Length;
-			clone.LoopCount = LoopCount;
-			clone.Speed = Speed;
-			clone.Time = Time;
+			GorgonAnimation<T> clone = new GorgonAnimation<T>(AnimationController, Name, Length)
+			    {
+			        IsLooped = IsLooped,
+			        Length = Length,
+			        LoopCount = LoopCount,
+			        Speed = Speed,
+			        Time = Time
+			    };
 
-			foreach (var track in Tracks)
+		    foreach (var track in Tracks)
 			{
 				if (clone.Tracks.Contains(track.Name))
 				{

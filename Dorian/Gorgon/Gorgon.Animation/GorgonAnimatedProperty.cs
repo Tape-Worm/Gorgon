@@ -39,16 +39,16 @@ namespace GorgonLibrary.Animation
 		/// Property information.
 		/// </summary>
 		/// The property reflection information.
-		public PropertyInfo Property;
+		public readonly PropertyInfo Property;
 		/// <summary>
 		/// Display name for the property.
 		/// </summary>
 		/// <remarks>This is used to rename the property to something else.</remarks>
-		public string DisplayName;
+        public readonly string DisplayName;
 		/// <summary>
 		/// Type of data in the property.
 		/// </summary>
-		public Type DataType;
+        public readonly Type DataType;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="GorgonAnimatedProperty" /> struct.
@@ -61,8 +61,8 @@ namespace GorgonLibrary.Animation
 		public GorgonAnimatedProperty(string displayName, Type dataType, PropertyInfo propertyInfo)
 		{
 			GorgonDebug.AssertParamString(displayName, "displayName");
-			GorgonDebug.AssertNull<Type>(dataType, "dataType");
-			GorgonDebug.AssertNull<PropertyInfo>(propertyInfo, "propertyInfo");
+			GorgonDebug.AssertNull(dataType, "dataType");
+			GorgonDebug.AssertNull(propertyInfo, "propertyInfo");
 
 			DisplayName = displayName;
 			DataType = dataType;
@@ -79,7 +79,7 @@ namespace GorgonLibrary.Animation
 		public GorgonAnimatedProperty(string displayName, PropertyInfo propertyInfo)
 		{
 			GorgonDebug.AssertParamString(displayName, "displayName");
-			GorgonDebug.AssertNull<PropertyInfo>(propertyInfo, "propertyInfo");
+			GorgonDebug.AssertNull(propertyInfo, "propertyInfo");
 
 			DisplayName = displayName;
 			DataType = propertyInfo.PropertyType;
@@ -93,7 +93,7 @@ namespace GorgonLibrary.Animation
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="propertyInfo"/> parameter is NULL (Nothing in VB.Net).</exception>
 		public GorgonAnimatedProperty(PropertyInfo propertyInfo)
 		{
-			GorgonDebug.AssertNull<PropertyInfo>(propertyInfo, "propertyInfo");
+			GorgonDebug.AssertNull(propertyInfo, "propertyInfo");
 
 			Property = propertyInfo;
 			DisplayName = propertyInfo.Name;

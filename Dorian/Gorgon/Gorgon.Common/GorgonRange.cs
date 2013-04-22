@@ -26,7 +26,7 @@
 
 using System;
 using System.Runtime.InteropServices;
-using GorgonLibrary.Math;
+using GorgonLibrary.Properties;
 
 namespace GorgonLibrary
 {
@@ -34,7 +34,7 @@ namespace GorgonLibrary
 	/// Interface used to define a range type.
 	/// </summary>
 	/// <typeparam name="T">Type of values stored in the range.</typeparam>
-	internal interface IRange<T>
+	internal interface IRange<out T>
 	{
 		/// <summary>
 		/// Property to return the range between the two values.
@@ -372,7 +372,9 @@ namespace GorgonLibrary
 		/// </returns>
 		public override int GetHashCode()
 		{
+// ReSharper disable NonReadonlyFieldInGetHashCode
 			return 281.GenerateHash(Minimum).GenerateHash(Maximum);
+// ReSharper restore NonReadonlyFieldInGetHashCode
 		}
 
 		/// <summary>
@@ -911,7 +913,9 @@ namespace GorgonLibrary
 		/// </returns>
 		public override int GetHashCode()
 		{
+// ReSharper disable NonReadonlyFieldInGetHashCode
 			return 281.GenerateHash(Minimum).GenerateHash(Maximum);
+// ReSharper restore NonReadonlyFieldInGetHashCode
 		}
 
 		/// <summary>
@@ -1125,7 +1129,7 @@ namespace GorgonLibrary
 		/// </returns>
 		public bool Equals(GorgonMinMaxF other)
 		{
-			return other.Minimum == this.Minimum && other.Maximum == this.Maximum;
+			return other.Minimum == Minimum && other.Maximum == Maximum;
 		}
 		#endregion
 	}
@@ -1434,12 +1438,14 @@ namespace GorgonLibrary
 		/// </returns>
 		public override bool Equals(object obj)
 		{
-			IEquatable<GorgonMinMax> equate = obj as IEquatable<GorgonMinMax>;
+			var equate = obj as IEquatable<GorgonMinMax>;
 
-			if (equate != null)
-				return equate.Equals(this);
+		    if (equate != null)
+		    {
+		        return equate.Equals(this);
+		    }
 
-			return false;
+		    return false;
 		}
 
 		/// <summary>
@@ -1450,7 +1456,9 @@ namespace GorgonLibrary
 		/// </returns>
 		public override int GetHashCode()
 		{
+            // ReSharper disable NonReadonlyFieldInGetHashCode
 			return 281.GenerateHash(Maximum).GenerateHash(Minimum);
+            // ReSharper restore NonReadonlyFieldInGetHashCode
 		}
 
 		/// <summary>
@@ -1461,7 +1469,7 @@ namespace GorgonLibrary
 		/// </returns>
 		public override string ToString()
 		{
-			return string.Format("Min: {0}  Max: {1}  Range: {2}", Minimum, Maximum, Range);
+			return string.Format(Resources.GOR_GORGONRANGE_TOSTRING, Minimum, Maximum, Range);
 		}
 		#endregion
 

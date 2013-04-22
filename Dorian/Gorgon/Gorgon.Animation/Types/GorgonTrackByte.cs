@@ -38,8 +38,7 @@ namespace GorgonLibrary.Animation
 		where T : class
 	{
 		#region Variables.
-		private Func<T, Byte> _getProperty = null;			// Get property method.
-		private Action<T, Byte> _setProperty = null;		// Set property method.
+	    private readonly Action<T, Byte> _setProperty;		// Set property method.
 		#endregion
 
 		#region Properties.
@@ -87,15 +86,15 @@ namespace GorgonLibrary.Animation
 		/// <returns>
 		/// The interpolated key frame containing the interpolated values.
 		/// </returns>
-		protected override IKeyFrame GetTweenKey(ref GorgonAnimationTrack<T>.NearestKeys keyValues, float keyTime, float unitTime)
+		protected override IKeyFrame GetTweenKey(ref NearestKeys keyValues, float keyTime, float unitTime)
 		{
-			GorgonKeyByte next = (GorgonKeyByte)keyValues.NextKey;
-			GorgonKeyByte prev = (GorgonKeyByte)keyValues.PreviousKey;				
+			var next = (GorgonKeyByte)keyValues.NextKey;
+			var prev = (GorgonKeyByte)keyValues.PreviousKey;				
 
 			switch (InterpolationMode)
 			{
 				case TrackInterpolationMode.Linear:
-					return new GorgonKeyByte(keyTime, (Byte)((float)prev.Value + (float)(next.Value - prev.Value) * unitTime));
+					return new GorgonKeyByte(keyTime, (Byte)(prev.Value + (next.Value - prev.Value) * unitTime));
 				case TrackInterpolationMode.Spline:
 					return new GorgonKeyByte(keyTime, (Byte)Spline.GetInterpolatedValue(keyValues.PreviousKeyIndex, unitTime).X);
 				default:
@@ -122,8 +121,7 @@ namespace GorgonLibrary.Animation
 		internal GorgonTrackByte(GorgonAnimatedProperty property)
 			: base(property)
 		{
-			_getProperty = BuildGetAccessor<Byte>();
-			_setProperty = BuildSetAccessor<Byte>();
+			_setProperty = BuildSetAccessor<byte>();
 
 			InterpolationMode = TrackInterpolationMode.Linear;
 		}
