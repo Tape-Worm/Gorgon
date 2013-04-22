@@ -261,38 +261,17 @@ namespace GorgonLibrary.Examples
 
 			if ((KeyboardKeys.Alt & shift) == KeyboardKeys.Alt)
 			{
-				if ((shift & KeyboardKeys.LeftVersion) == KeyboardKeys.LeftVersion)
-				{
-					shiftKey = KeyboardKeys.LMenu;
-				}
-				else
-				{
-					shiftKey = KeyboardKeys.RMenu;
-				}
+				shiftKey = (shift & KeyboardKeys.LeftVersion) == KeyboardKeys.LeftVersion ? KeyboardKeys.LMenu : KeyboardKeys.RMenu;
 			}
 
 			if ((shift & KeyboardKeys.Control) == KeyboardKeys.Control)
 			{
-				if ((shift & KeyboardKeys.LeftVersion) == KeyboardKeys.LeftVersion)
-				{
-					shiftKey = KeyboardKeys.LControlKey;
-				}
-				else
-				{
-					shiftKey = KeyboardKeys.RControlKey;
-				}
+				shiftKey = (shift & KeyboardKeys.LeftVersion) == KeyboardKeys.LeftVersion ? KeyboardKeys.LControlKey : KeyboardKeys.RControlKey;
 			}
 
 			if ((shift & KeyboardKeys.Shift) == KeyboardKeys.Shift)
 			{
-				if ((shift & KeyboardKeys.LeftVersion) == KeyboardKeys.LeftVersion)
-				{
-					shiftKey = KeyboardKeys.LShiftKey;
-				}
-				else
-				{
-					shiftKey = KeyboardKeys.RShiftKey;
-				}
+				shiftKey = (shift & KeyboardKeys.LeftVersion) == KeyboardKeys.LeftVersion ? KeyboardKeys.LShiftKey : KeyboardKeys.RShiftKey;
 			}
 
 
@@ -525,10 +504,12 @@ namespace GorgonLibrary.Examples
 
                 // Set up our spray object.
                 _spray = new Spray(panelDisplay.ClientSize);
-                _cursor = new MouseCursor(panelDisplay);
-				_cursor.Hotspot = new Point(-16, -3);
-				
-				// Set up our idle method.
+                _cursor = new MouseCursor(panelDisplay)
+                    {
+                        Hotspot = new Point(-16, -3)
+                    };
+
+			    // Set up our idle method.
                 Gorgon.ApplicationIdleLoopMethod = Idle;                
 			}
 			catch (Exception ex)

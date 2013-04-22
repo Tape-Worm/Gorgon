@@ -26,14 +26,14 @@ BoingerVertex BoingerVS(BoingerVertex vertex)
 	return output;
 }
 
-// Our default pixel shader.
+// Our pixel shader that will render objects with textures.
 float4 BoingerPS(BoingerVertex vertex) : SV_Target
 {
 	return _texture.Sample(_sampler, vertex.uv);
 }
 
-// Our default pixel shader.
-float4 BoingerDiffusePS(BoingerVertex vertex) : SV_Target
+// Our pixel shader that will render our "shadow".
+float4 BoingerShadowPS(BoingerVertex vertex) : SV_Target
 {
 	return float4(0, 0, 0, 0.5f);
 }

@@ -35,7 +35,7 @@ namespace GorgonLibrary.Graphics.Example
 	class Plane
 		: Model
 	{
-		#region Properties.		
+		#region Properties.
 		/// <summary>
 		/// Property to return the size of the plane.
 		/// </summary>
@@ -69,7 +69,6 @@ namespace GorgonLibrary.Graphics.Example
 		/// <param name="size">The width and height of the plane.</param>
 		/// <param name="textureCoordinates">Texture coordinates.</param>
 		public Plane(Vector2 size, RectangleF textureCoordinates)
-			: base()
 		{
 			Size = size;
 			
@@ -81,7 +80,7 @@ namespace GorgonLibrary.Graphics.Example
 				new BoingerVertex(new Vector3(size.X, -size.Y, 0.0f), new Vector2(textureCoordinates.Right, textureCoordinates.Bottom))
 			};
 
-			VertexBuffer = Program.Graphics.Input.CreateVertexBuffer<BoingerVertex>(BufferUsage.Immutable, Vertices);
+			VertexBuffer = Program.Graphics.Input.CreateVertexBuffer(BufferUsage.Immutable, Vertices);
 
 			// Create our indices.
 			Indices = new[] {
@@ -93,7 +92,7 @@ namespace GorgonLibrary.Graphics.Example
 				3
 			};
 
-			IndexBuffer = Program.Graphics.Input.CreateIndexBuffer<int>(BufferUsage.Immutable, true, Indices);
+			IndexBuffer = Program.Graphics.Input.CreateIndexBuffer(BufferUsage.Immutable, true, Indices);
 		}
 		#endregion
 	}

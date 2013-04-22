@@ -48,7 +48,7 @@ namespace GorgonLibrary.Graphics.Example
 		{
 			get
 			{
-				return GorgonLibrary.Native.DirectAccess.SizeOf<BoingerVertex>();
+				return Native.DirectAccess.SizeOf<BoingerVertex>();
 			}
 		}
 
@@ -118,28 +118,28 @@ namespace GorgonLibrary.Graphics.Example
 	static class Program
 	{
 		#region Variables.
-		private static formMain _mainForm = null;						// Main application form.
-		private static GorgonGraphics _graphics = null;					// Graphics interface.		
-		private static GorgonSwapChain _swap = null;					// Our primary swap chain.
-		private static GorgonVertexShader _vertexShader = null;			// Our primary vertex shader.
-		private static GorgonPixelShader _pixelShader = null;			// Our primary pixel shader.	
-		private static GorgonPixelShader _pixelShaderDiffuse = null;	// Our diffuse only pixel shader.	
-		private static GorgonInputLayout _inputLayout = null;			// Input layout.
-		private static GorgonTexture2D _texture = null;					// Our texture.
-		private static GorgonConstantBuffer _wvpBuffer = null;			// Our world/view/project matrix buffer.
-		private static GorgonDataStream _wvpBufferStream = null;		// Stream to our buffer.
-		private static Gorgon2D _2D = null;								// 2D interface.
-		private static Matrix _viewMatrix = Matrix.Identity;			// Our view matrix.
-		private static Matrix _projMatrix = Matrix.Identity;			// Our projection matrix.
-		private static Plane[] _planes = null;							// Our walls.
-		private static Sphere _sphere = null;							// Our sphere.
-		private static GorgonDepthStencilStates _depth;					// Depth enabled.
-		private static GorgonDepthStencilStates _noDepth;				// No depth enabled.
-		private static bool _bounceH = false;							// Horizontal bounce.
-		private static bool _bounceV = true;							// Vertical bounce.
-		private static float _rotate = -45.0f;							// Ball rotation.
-		private static float _rotateSpeed = 1.0f;						// Rotation speed.
-		private static float _dropSpeed = 0.01f;						// Drop speed.
+		private static formMain _mainForm;						    // Main application form.
+		private static GorgonGraphics _graphics;					// Graphics interface.		
+		private static GorgonSwapChain _swap;					    // Our primary swap chain.
+		private static GorgonVertexShader _vertexShader;			// Our primary vertex shader.
+		private static GorgonPixelShader _pixelShader;			    // Our primary pixel shader.	
+		private static GorgonPixelShader _pixelShaderShadow;	    // Our "shadow" pixel shader.	
+		private static GorgonInputLayout _inputLayout;			    // Input layout.
+		private static GorgonTexture2D _texture;					// Our texture.
+		private static GorgonConstantBuffer _wvpBuffer;			    // Our world/view/project matrix buffer.
+		private static GorgonDataStream _wvpBufferStream;		    // Stream to our buffer.
+		private static Gorgon2D _2D;								// 2D interface.
+		private static Matrix _viewMatrix = Matrix.Identity;		// Our view matrix.
+		private static Matrix _projMatrix = Matrix.Identity;		// Our projection matrix.
+		private static Plane[] _planes;							    // Our walls.
+		private static Sphere _sphere;							    // Our sphere.
+		private static GorgonDepthStencilStates _depth;				// Depth enabled.
+		private static GorgonDepthStencilStates _noDepth;			// No depth enabled.
+		private static bool _bounceH;							    // Horizontal bounce.
+		private static bool _bounceV = true;						// Vertical bounce.
+		private static float _rotate = -45.0f;						// Ball rotation.
+		private static float _rotateSpeed = 1.0f;					// Rotation speed.
+		private static float _dropSpeed = 0.01f;					// Drop speed.
 		#endregion
 
 		#region Properties.
@@ -244,7 +244,7 @@ namespace GorgonLibrary.Graphics.Example
 			// Draw the sphere shadow first.
 			var spherePosition = _sphere.Position;
 			_graphics.Output.DepthStencilState.States = _noDepth;
-			_graphics.Shaders.PixelShader.Current = _pixelShaderDiffuse;
+			_graphics.Shaders.PixelShader.Current = _pixelShaderShadow;
 			_sphere.Position = new Vector3(spherePosition.X + 0.25f, spherePosition.Y - 0.125f, spherePosition.Z);
 			_sphere.Draw();
 
@@ -289,8 +289,8 @@ namespace GorgonLibrary.Graphics.Example
 		/// <param name="world">The world matrix to update.</param>
 		public static void UpdateWVP(ref Matrix world)
 		{
-			Matrix temp = Matrix.Identity;
-			Matrix wvp = Matrix.Identity;
+			Matrix temp;
+			Matrix wvp;
 
 			// Build our world/view/projection matrix to send to
 			// the shader.
@@ -302,7 +302,7 @@ namespace GorgonLibrary.Graphics.Example
 			Matrix.Transpose(ref wvp, out wvp);
 
 			// Update the constant buffer.
-			_wvpBufferStream.Write<Matrix>(wvp);
+			_wvpBufferStream.Write(wvp);
 			_wvpBufferStream.Position = 0;
 			_wvpBuffer.Update(_wvpBufferStream);
 		}
@@ -312,8 +312,7 @@ namespace GorgonLibrary.Graphics.Example
 		/// </summary>
 		private static void Initialize()
 		{
-			GorgonViewport view;													// Our rendering viewport.
-			BufferFormat depthFormat = BufferFormat.D24_UIntNormal_S8_UInt;			// Depth buffer format.
+		    BufferFormat depthFormat = BufferFormat.D24_UIntNormal_S8_UInt;			// Depth buffer format.
 
 			// Create our form.
 			_mainForm = new formMain();			
@@ -340,8 +339,8 @@ namespace GorgonLibrary.Graphics.Example
 			// Create a 1280x800 window with a depth buffer.
 			// We can modify the resolution in the config file for the application, but
 			// like other Gorgon examples, the default is 1280x800.
-			_swap = _graphics.Output.CreateSwapChain("Main", new GorgonSwapChainSettings()
-			{
+			_swap = _graphics.Output.CreateSwapChain("Main", new GorgonSwapChainSettings
+			    {
 				Window = _mainForm,										// Assign to our form.
 				Format = BufferFormat.R8G8B8A8_UIntNormal,				// Set up for 32 bit RGBA normalized display.
 				Size = Properties.Settings.Default.Resolution,			// Get the resolution from the config file.
@@ -363,10 +362,10 @@ namespace GorgonLibrary.Graphics.Example
 			_2D = _graphics.Output.Create2DRenderer(_swap);									
 
 			// Turn off the 2D stuff for now.
-			// We do this so we can have a clean slate for our state... *facepalm*.
-			// Anyway, the 2D renderer initially sets up a bunch of state values for
-			// us and these may interfere with our 3D display, so we'll just restore
-			// the defaults (i.e. the previous states before the renderer was created)
+			// We do this so we can have a clean slate for our state.
+			// The 2D renderer initially sets up a bunch of state values for us and
+			// these may interfere with our 3D display, so we'll just restore the
+			// defaults (i.e. the previous states before the renderer was created)
 			// by calling End2D.
 			_2D.End2D();
 
@@ -377,8 +376,8 @@ namespace GorgonLibrary.Graphics.Example
 			// Our main pixel shader.  This is a very simple shader, it just reads a texture and spits it back out.  Has no
 			// diffuse capability.
 			_pixelShader = _graphics.Shaders.CreateShader<GorgonPixelShader>("PixelShader", "BoingerPS", Properties.Resources.Shader, true);
-			// Our diffuse shader for our ball "shadow".  This is hard coded to send back black (R:0, G:0, B:0) at 50% opacity (A: 0.5).
-			_pixelShaderDiffuse = _graphics.Shaders.CreateShader<GorgonPixelShader>("DiffuseShader", "BoingerDiffusePS", Properties.Resources.Shader, true);
+			// Our shadow shader for our ball "shadow".  This is hard coded to send back black (R:0, G:0, B:0) at 50% opacity (A: 0.5).
+			_pixelShaderShadow = _graphics.Shaders.CreateShader<GorgonPixelShader>("ShadowShader", "BoingerShadowPS", Properties.Resources.Shader, true);
 
 			// Create the vertex input layout.
 			// We need to create a layout for our vertex type because the shader won't know
@@ -388,7 +387,7 @@ namespace GorgonLibrary.Graphics.Example
 
 			// Create the view port.
 			// This just tells the renderer how big our display is.
-			view = new GorgonViewport(0, 0, _mainForm.ClientSize.Width, _mainForm.ClientSize.Height, 0.0f, 1.0f);
+			GorgonViewport view = new GorgonViewport(0, 0, _mainForm.ClientSize.Width, _mainForm.ClientSize.Height, 0.0f, 1.0f);
 
 			// Load our textures from the resources.
 			// This contains our textures for the walls and ball.  
@@ -404,7 +403,7 @@ namespace GorgonLibrary.Graphics.Example
 			// Basically we're telling the renderer that we want to have a vertical FOV of 75 degrees, with the aspect ratio
 			// based on our form width and height.  The final values indicate how to distribute Z values across depth (tip: 
 			// it's not linear).
-			_projMatrix = Matrix.PerspectiveFovLH((75.0f).Radians(), (float)_mainForm.Width / (float)_mainForm.Height, 0.125f, 500.0f);
+			_projMatrix = Matrix.PerspectiveFovLH((75.0f).Radians(), _mainForm.Width / (float)_mainForm.Height, 0.125f, 500.0f);
 
 			// Create our constant buffer and backing store.			
 			// Our constant buffers are how we send data to our shaders.  This one in particular will be responsible
@@ -438,11 +437,14 @@ namespace GorgonLibrary.Graphics.Example
 			// (256x256) than the full texture (1024x512).
 			textureSize.X = 0.245f;
 			textureSize.Y = 0.5f;
-			_sphere = new Sphere(1.0f, textureOffset, textureSize);
-			// Give the sphere a place to live.
-			_sphere.Position = new Vector3(2.2f, 1.5f, 2.5f);
+            // Give the sphere a place to live.
+			_sphere = new Sphere(1.0f, textureOffset, textureSize)
+			    {
+			        Position = new Vector3(2.2f, 1.5f, 2.5f)
+			    };
+			
 
-			// Bind our objects to the pipeline and set default states.
+		    // Bind our objects to the pipeline and set default states.
 			// At this point we need to give the graphics card a bunch of things
 			// it needs to do its job.  
 
@@ -466,10 +468,10 @@ namespace GorgonLibrary.Graphics.Example
 
 			// Turn on alpha blending.
 			// Pretty much what this is.  Turning on alpha blending (for our shadow).
-			_graphics.Output.BlendingState.States = new GorgonBlendStates()
-			{
-				RenderTarget0 = new GorgonRenderTargetBlendState()
-				{
+			_graphics.Output.BlendingState.States = new GorgonBlendStates
+			    {
+				RenderTarget0 = new GorgonRenderTargetBlendState
+				    {
 					AlphaOperation = BlendOperation.Add,
 					DestinationAlphaBlend = BlendType.Zero,
 					BlendingOperation = BlendOperation.Add,
@@ -486,8 +488,8 @@ namespace GorgonLibrary.Graphics.Example
 			// This is our depth writing state.  When this is on, all polygon data sent to the card
 			// will write to our depth buffer.  Normally we want this, but for translucent objects, it's
 			// problematic....
-			_depth = new GorgonDepthStencilStates()
-			{
+			_depth = new GorgonDepthStencilStates
+			    {
 				DepthComparison = ComparisonOperators.LessEqual,
 				IsDepthEnabled = true,
 				IsDepthWriteEnabled = true,
@@ -507,8 +509,8 @@ namespace GorgonLibrary.Graphics.Example
 			_graphics.Rasterizer.States = GorgonRasterizerStates.DefaultStates;
 			_graphics.Rasterizer.SetViewport(view);
 
-			// I know, there's a lot in here.  Thing is, if this were Direct 3D 11 code, it'd probably MUCH 
-			// more code and that's even before creating our planes and sphere.
+		    // I know, there's a lot in here.  Thing is, if this were Direct 3D 11 code, it'd probably MUCH 
+		    // more code and that's even before creating our planes and sphere.
 		}
 
 		/// <summary>
@@ -534,7 +536,7 @@ namespace GorgonLibrary.Graphics.Example
 		static void _swap_Resized(object sender, EventArgs e)
 		{
 			// Reset our projection matrix to match our new size.
-			_projMatrix = Matrix.PerspectiveFovLH((75.0f).Radians(), (float)_mainForm.Width / (float)_mainForm.Height, 0.125f, 500.0f);
+			_projMatrix = Matrix.PerspectiveFovLH((75.0f).Radians(), _mainForm.Width / (float)_mainForm.Height, 0.125f, 500.0f);
 			// Update our viewport to reflect the new size.
 			_graphics.Rasterizer.SetViewport(
 				new GorgonViewport(0, 0, _mainForm.ClientSize.Width, _mainForm.ClientSize.Height, 0.0f, 1.0f)

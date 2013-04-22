@@ -37,13 +37,13 @@ namespace GorgonLibrary.Examples
         : IDisposable
     {
         #region Variables.
-        private bool _disposed = false;                                 // Flag to indicate that the object was disposed.
-        private BufferedGraphicsContext _graphicsContext = null;		// Buffered graphics context.
-        private BufferedGraphics _buffer = null;						// Buffered graphics page.
-        private Image _mouseImage = null;								// Image to use for double buffering our mouse.
-        private Graphics _imageGraphics = null;							// Graphics interface for the mouse double buffer image.
-        private Graphics _graphics = null;								// GDI+ graphics interface.
-        private Color _clearColor = Color.White;                        // Color to clear the surface with.
+        private bool _disposed;                                 // Flag to indicate that the object was disposed.
+        private BufferedGraphicsContext _graphicsContext;		// Buffered graphics context.
+        private BufferedGraphics _buffer;						// Buffered graphics page.
+        private Image _mouseImage;								// Image to use for double buffering our mouse.
+        private Graphics _imageGraphics;						// Graphics interface for the mouse double buffer image.
+        private Graphics _graphics;								// GDI+ graphics interface.
+        private Color _clearColor = Color.White;                // Color to clear the surface with.
         #endregion
 
 		#region Properties.
@@ -116,17 +116,14 @@ namespace GorgonLibrary.Examples
         /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
         private void displayControl_Resize(object sender, EventArgs e)
         {
-            Control displayControl = sender as Control;
+            Control displayControl = (Control)sender;
             Form ownerForm = displayControl.FindForm();
             
             CleanUp();
 
-            if (displayControl != null)
+            if ((ownerForm != null) && (ownerForm.WindowState != FormWindowState.Minimized))
             {
-                if ((ownerForm != null) && (ownerForm.WindowState != FormWindowState.Minimized))
-                {
-                    CreateDoubleBufferSurface(displayControl);
-                }
+                CreateDoubleBufferSurface(displayControl);
             }
         }
 

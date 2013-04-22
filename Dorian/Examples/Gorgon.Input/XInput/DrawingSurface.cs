@@ -39,20 +39,20 @@ namespace GorgonLibrary.Examples
 		: IDisposable
 	{
 		#region Variables.
-		private Control _control = null;						// Control we're drawing on.
-		private bool _disposed = false;							// Flag to indicate that the object was disposed.
-		private Graphics _controlGraphics = null;				// Graphics interface for the control.
-		private Graphics _surfaceGraphics = null;				// Graphics interface for the surface.
-		private Image _sufaceBuffer = null;						// Buffer for the surface.
-		private Image _drawing = null;							// Image that will contain the drawing.
-		private Graphics _imageGraphics = null;					// Graphics interface for the drawing image.
-		private BufferedGraphicsContext _context = null;		// Buffered context.
-		private BufferedGraphics _buffer = null;				// Buffered graphics.
-		private float _cursorFlash = 256.0f;					// Cursor flash direction.
-		private float _cursorTint = 0.0f;						// Cursor tinting.
-		private Image _cursor = null;							// Cursor image.
-		private ColorMatrix _colorMatrix = null;				// Color matrix.
-		private ImageAttributes _cursorAttribs = null;			// Cursor image attributes.
+		private Control _control;						// Control we're drawing on.
+		private bool _disposed;							// Flag to indicate that the object was disposed.
+		private Graphics _controlGraphics;				// Graphics interface for the control.
+		private Graphics _surfaceGraphics;				// Graphics interface for the surface.
+		private Image _sufaceBuffer;					// Buffer for the surface.
+		private Image _drawing;							// Image that will contain the drawing.
+		private Graphics _imageGraphics;				// Graphics interface for the drawing image.
+		private BufferedGraphicsContext _context;		// Buffered context.
+		private BufferedGraphics _buffer;				// Buffered graphics.
+		private float _cursorFlash = 256.0f;			// Cursor flash direction.
+		private float _cursorTint;						// Cursor tinting.
+		private Image _cursor;							// Cursor image.
+		private ColorMatrix _colorMatrix;				// Color matrix.
+		private ImageAttributes _cursorAttribs;			// Cursor image attributes.
 		#endregion
 
 		#region Properties.
@@ -74,10 +74,10 @@ namespace GorgonLibrary.Examples
 		/// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
 		private void surfaceControl_Resize(object sender, EventArgs e)
 		{
-			Image tempImage = null;
+			Image tempImage;
 			Form parentForm = _control.FindForm();
 
-			if (parentForm.WindowState == FormWindowState.Minimized)
+			if ((parentForm == null) || (parentForm.WindowState == FormWindowState.Minimized))
 			{
 				return;
 			}

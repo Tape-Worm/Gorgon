@@ -42,9 +42,9 @@ namespace GorgonLibrary.Graphics.Example
 		private Vector3 _position = Vector3.Zero;					// Our position.
 		private Vector3 _scale = new Vector3(1);					// Our scale.
 		private Vector3 _rotation = Vector3.Zero;					// Our rotation.
-		private bool _isPositionChanged = false;					// Flag to indicate that our position has been updated.
-		private bool _isScaleChanged = false;						// Flag to indicate that our scale has been updated.
-		private bool _isRotationChanged = false;					// Flag to inidcate that our rotation has been updated.
+		private bool _isPositionChanged;					        // Flag to indicate that our position has been updated.
+		private bool _isScaleChanged;						        // Flag to indicate that our scale has been updated.
+		private bool _isRotationChanged;					        // Flag to inidcate that our rotation has been updated.
 		#endregion
 
 		#region Properties.
@@ -172,17 +172,18 @@ namespace GorgonLibrary.Graphics.Example
 					_scaleMatrix.ScaleVector = Scale;
 				}
 
-				if (_isRotationChanged)
+			    if (_isRotationChanged)
 				{
-					Quaternion quatRotation = Quaternion.Identity;		// Quaternion for rotation.
+                    Quaternion quatRotation;		// Quaternion for rotation.
 
-					// Convert degrees to radians.
+				    // Convert degrees to radians.
 					Vector3 rotRads = new Vector3(_rotation.X.Radians(), _rotation.Y.Radians(), _rotation.Z.Radians());
-					Quaternion.RotationYawPitchRoll(rotRads.Y, rotRads.X, rotRads.Z, out quatRotation);
+				    
+				    Quaternion.RotationYawPitchRoll(rotRads.Y, rotRads.X, rotRads.Z, out quatRotation);
 					Matrix.RotationQuaternion(ref quatRotation, out _rotationMatrix);
 				}
 
-				Matrix temp = Matrix.Identity;
+				Matrix temp;
 
 				// Build our world matrix.
 				Matrix.Multiply(ref _scaleMatrix, ref _rotationMatrix, out temp);

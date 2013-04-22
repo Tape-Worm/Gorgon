@@ -37,8 +37,8 @@ namespace GorgonLibrary.Examples
         : IDisposable
     {
         #region Variables.
-        private bool _disposed = false;             // Flag to indicate that the object was disposed.
-        private Graphics _graphics = null;          // Graphics interface.
+        private bool _disposed;                 // Flag to indicate that the object was disposed.
+        private Graphics _graphics;             // Graphics interface.
         #endregion
 
         #region Properties.
