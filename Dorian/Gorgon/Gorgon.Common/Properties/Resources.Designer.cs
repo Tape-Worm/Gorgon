@@ -110,6 +110,15 @@ namespace GorgonLibrary.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The collection is read only..
+        /// </summary>
+        internal static string GOR_COLLECTION_READ_ONLY {
+            get {
+                return ResourceManager.GetString("GOR_COLLECTION_READ_ONLY", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Named object: {0}.
         /// </summary>
         internal static string GOR_GORGONNAMEDOBJECT_TOSTRING {
@@ -135,6 +144,24 @@ namespace GorgonLibrary.Properties {
         internal static string GOR_GORGONRESULT_TOSTRING {
             get {
                 return ResourceManager.GetString("GOR_GORGONRESULT_TOSTRING", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The item &apos;{0}&apos; already exists in this collection..
+        /// </summary>
+        internal static string GOR_ITEM_ALREADY_EXISTS {
+            get {
+                return ResourceManager.GetString("GOR_ITEM_ALREADY_EXISTS", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The key &apos;{0}&apos; does not exist in this collection..
+        /// </summary>
+        internal static string GOR_KEY_NOT_FOUND {
+            get {
+                return ResourceManager.GetString("GOR_KEY_NOT_FOUND", resourceCulture);
             }
         }
         

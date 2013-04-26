@@ -30,7 +30,7 @@ using System.Collections.Generic;
 namespace GorgonLibrary.Collections
 {
 	/// <summary>
-	/// Base collection for Gorgon library named objects.
+	/// Base keyed collection for Gorgon library named objects.
 	/// </summary>
 	/// <typeparam name="T">Type of object, must implement <see cref="GorgonLibrary.INamedObject">INamedObject</see>.</typeparam>
 	public abstract class GorgonBaseNamedObjectCollection<T>
@@ -38,7 +38,7 @@ namespace GorgonLibrary.Collections
 		where T : INamedObject
 	{
 		#region Variables.
-		private SortedList<string, T> _list = null;				// Internal collection to hold our objects.
+		private readonly SortedList<string, T> _list;				// Internal collection to hold our objects.
 		#endregion
 
 		#region Properties.

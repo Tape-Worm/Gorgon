@@ -26,6 +26,7 @@
 
 using System;
 using System.Collections.Generic;
+using GorgonLibrary.Properties;
 
 namespace GorgonLibrary.Collections
 {
@@ -38,7 +39,8 @@ namespace GorgonLibrary.Collections
 		where T : INamedObject
 	{
 		#region Variables.
-		private List<T> _list = null;
+		private readonly List<T> _list;
+        private readonly StringComparison _stringComparison = StringComparison.Ordinal;
 		#endregion
 
 		#region Properties.
@@ -79,16 +81,18 @@ namespace GorgonLibrary.Collections
 		/// </summary>
 		/// <param name="name">Name of the item to find.</param>
 		/// <returns>The item with the specified name.</returns>
-		protected virtual T GetItem(string name)
+        protected virtual T GetItem(string name)
 		{
 			for (int i = 0; i < Count; i++)
 			{
 				T item = GetItem(i);
-				if (string.Compare(name, item.Name, !KeysAreCaseSensitive) == 0)
-					return item;
+			    if (string.Compare(name, item.Name, !KeysAreCaseSensitive) == 0)
+			    {
+			        return item;
+			    }
 			}
 
-			throw new KeyNotFoundException("Could not find an object in the collection with the name '" + name + "'.");
+			throw new KeyNotFoundException(string.Format(Resources.GOR_KEY_NOT_FOUND, name));
 		}
 
 		/// <summary>
@@ -96,23 +100,26 @@ namespace GorgonLibrary.Collections
 		/// </summary>
 		/// <param name="index">Index of the item to set.</param>
 		/// <param name="value">Value to set the item.</param>
-		protected virtual void SetItem(int index, T value)
+        protected virtual void SetItem(int index, T value)
 		{
-			_list[index] = value;
+            _list[index] = value;
 		}
 
 		/// <summary>
 		/// Function to set an item at the specified index.
 		/// </summary>
 		/// <param name="value">Value used to set the item with.</param>
+        /// <exception cref="System.Collections.Generic.KeyNotFoundException">Thrown when the Name property of the <paramref name="value"/> parameter was not found in the collection.</exception>
 		protected virtual void SetItem(T value)
 		{
-			int i = IndexOf(value.Name);
+            int i = IndexOf(value.Name);
 
-			if (i == -1)
-				throw new KeyNotFoundException("The key '" + value.Name + "' does not exist in this collection.");
+		    if (i == -1)
+		    {
+		        throw new KeyNotFoundException(string.Format(Resources.GOR_KEY_NOT_FOUND, value.Name));
+		    }
 
-			SetItem(i, value);
+		    SetItem(i, value);
 		}
 
 		/// <summary>
@@ -120,11 +127,8 @@ namespace GorgonLibrary.Collections
 		/// </summary>
 		/// <param name="value">Value to add.</param>
 		protected virtual void AddItem(T value)
-		{			
-			if (Contains(value))
-				throw new ArgumentException("The item '" + value.Name + "' already exists in this collection.");
-
-			_list.Add(value);
+		{
+		    _list.Add(value);
 		}
 
 		/// <summary>
@@ -198,12 +202,14 @@ namespace GorgonLibrary.Collections
 		/// <returns>TRUE if found, FALSE if not.</returns>
 		public virtual bool Contains(string name)
 		{
-			foreach(T item in _list)
-			{
-				if (string.Compare(item.Name, name, !KeysAreCaseSensitive) == 0)
-					return true;
-			}
-
+		    for (int i = 0; i < _list.Count; i++)
+		    {
+		        if (string.Compare(_list[i].Name, name, _stringComparison) == 0)
+		        {
+    		        return true;
+		        }
+		    }
+	
 			return false;
 		}
 
@@ -220,8 +226,10 @@ namespace GorgonLibrary.Collections
 			{
 				T item = GetItem(i);
 
-				if (string.Compare(item.Name, name, !KeysAreCaseSensitive) == 0)
-					return i;
+			    if (string.Compare(item.Name, name, _stringComparison) == 0)
+			    {
+			        return i;
+			    }
 			}
 
 			return -1;
@@ -236,6 +244,12 @@ namespace GorgonLibrary.Collections
 		protected GorgonBaseNamedObjectList(bool isCaseSensitive)			
 		{
 			KeysAreCaseSensitive = isCaseSensitive;
+            
+            if (KeysAreCaseSensitive)
+            {
+                _stringComparison = StringComparison.OrdinalIgnoreCase;
+            }
+
 			_list = new List<T>();
 		}
 
@@ -274,9 +288,12 @@ namespace GorgonLibrary.Collections
 		/// </exception>
 		void IList<T>.Insert(int index, T item)
 		{
-			if (IsReadOnly)
-				throw new NotSupportedException("List is read-only.");
-			InsertItem(index, item);
+		    if (IsReadOnly)
+		    {
+		        throw new NotSupportedException(Resources.GOR_COLLECTION_READ_ONLY);
+		    }
+
+		    InsertItem(index, item);
 		}
 
 		/// <summary>
@@ -291,9 +308,12 @@ namespace GorgonLibrary.Collections
 		/// </exception>
 		void IList<T>.RemoveAt(int index)
 		{
-			if (IsReadOnly)
-				throw new NotSupportedException("List is read-only.");
-			RemoveItem(index);
+		    if (IsReadOnly)
+		    {
+		        throw new NotSupportedException(Resources.GOR_COLLECTION_READ_ONLY);
+		    }
+
+		    RemoveItem(index);
 		}
 
 		/// <summary>
@@ -307,9 +327,12 @@ namespace GorgonLibrary.Collections
 			}
 			set
 			{
-				if (IsReadOnly)
-					throw new NotSupportedException("List is read-only.");
-				SetItem(index, value);
+			    if (IsReadOnly)
+			    {
+			        throw new NotSupportedException(Resources.GOR_COLLECTION_READ_ONLY);
+			    }
+
+			    SetItem(index, value);
 			}
 		}
 		#endregion
@@ -439,8 +462,7 @@ namespace GorgonLibrary.Collections
 		/// </returns>
 		public virtual IEnumerator<T> GetEnumerator()
 		{
-			foreach (T item in _list)
-				yield return item;
+		    return _list.GetEnumerator();
 		}
 		#endregion
 
@@ -453,7 +475,7 @@ namespace GorgonLibrary.Collections
 		/// </returns>
 		System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
 		{
-			return GetEnumerator();
+			return ((System.Collections.IEnumerable)_list).GetEnumerator();
 		}
 		#endregion
 	}
