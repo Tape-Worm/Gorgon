@@ -26,6 +26,7 @@
 
 using System;
 using System.Collections.Generic;
+using GorgonLibrary.Properties;
 
 namespace GorgonLibrary.Collections
 {
@@ -38,7 +39,7 @@ namespace GorgonLibrary.Collections
 		where T : INamedObject
 	{
 		#region Variables.
-		private Dictionary<string, T> _list = null;			// Internal collection to hold our objects.
+		private readonly Dictionary<string, T> _list;			// Internal collection to hold our objects.
 		#endregion
 
 		#region Properties.
@@ -95,17 +96,18 @@ namespace GorgonLibrary.Collections
 		/// </summary>
 		/// <param name="value">Value to add.</param>
 		protected virtual void AddItem(T value)
-		{			
-			if (Contains(value.Name))
-				throw new ArgumentException("The item with the name '" + value.Name + "' already exists in this collection.");
+		{
+		    if (Contains(value.Name))
+		    {
+                throw new ArgumentException(string.Format(Resources.GOR_ITEM_ALREADY_EXISTS, value.Name), "value");
+		    }
 
-			if (string.IsNullOrEmpty(value.Name))
-				throw new ArgumentException("The name for this item is empty.");
+		    if (string.IsNullOrEmpty(value.Name))
+		    {
+		        throw new ArgumentException(Resources.GOR_PARAMETER_MUST_NOT_BE_EMPTY, "value");
+		    }
 
-			if (!KeysAreCaseSensitive)
-				_list.Add(value.Name.ToLower(), value);
-			else
-				_list.Add(value.Name, value);
+		    _list.Add(!KeysAreCaseSensitive ? value.Name.ToLower() : value.Name, value);
 		}
 
 		/// <summary>
@@ -125,10 +127,12 @@ namespace GorgonLibrary.Collections
 		/// <returns>Item with the specified key.</returns>
 		protected virtual T GetItem(string name)
 		{
-			if (!KeysAreCaseSensitive)
-				return _list[name.ToLower()];
-			else
-				return _list[name];
+		    if (!KeysAreCaseSensitive)
+		    {
+		        return _list[name.ToLower()];
+		    }
+            
+		    return _list[name];
 		}
 
 		/// <summary>
@@ -162,13 +166,10 @@ namespace GorgonLibrary.Collections
 		/// <param name="name">Name of the item to remove.</param>
 		protected virtual void RemoveItem(string name)
 		{
-			if (!KeysAreCaseSensitive)
-				_list.Remove(name.ToLower());
-			else
-				_list.Remove(name);
+		    _list.Remove(!KeysAreCaseSensitive ? name.ToLower() : name);
 		}
 
-		/// <summary>
+	    /// <summary>
 		/// Function to remove an item from the collection.
 		/// </summary>
 		/// <param name="item">Item to remove.</param>
@@ -192,13 +193,15 @@ namespace GorgonLibrary.Collections
 		/// <returns>TRUE if found, FALSE if not.</returns>
 		public virtual bool Contains(string name)
 		{
-			if (!KeysAreCaseSensitive)
-				return _list.ContainsKey(name.ToLower());
-			else
-				return _list.ContainsKey(name);
+		    if (!KeysAreCaseSensitive)
+		    {
+		        return _list.ContainsKey(name.ToLower());
+		    }
+
+		    return _list.ContainsKey(name);
 		}
 
-		/// <summary>
+	    /// <summary>
 		/// Function to return whether the specified object exists in the collection.
 		/// </summary>
 		/// <param name="value">The value to find.</param>
@@ -248,8 +251,10 @@ namespace GorgonLibrary.Collections
 		/// </returns>
 		public virtual IEnumerator<T> GetEnumerator()
 		{
-			foreach (KeyValuePair<string, T> item in _list)
-				yield return item.Value;
+		    foreach (KeyValuePair<string, T> item in _list)
+		    {
+		        yield return item.Value;
+		    }
 		}
 		#endregion
 
@@ -283,9 +288,12 @@ namespace GorgonLibrary.Collections
 		/// </exception>
 		void IDictionary<string, T>.Add(string key, T value)
 		{
-			if (IsReadOnly)
-				throw new NotSupportedException("List is read-only.");
-			AddItem(value);
+		    if (IsReadOnly)
+		    {
+		        throw new NotSupportedException(Resources.GOR_COLLECTION_READ_ONLY);
+		    }
+
+		    AddItem(value);
 		}
 
 		/// <summary>
@@ -333,9 +341,12 @@ namespace GorgonLibrary.Collections
 		/// </exception>
 		bool IDictionary<string, T>.Remove(string key)
 		{
-			if (IsReadOnly)
-				throw new NotSupportedException("List is read-only.");
-			RemoveItem(key);
+		    if (IsReadOnly)
+		    {
+                throw new NotSupportedException(Resources.GOR_COLLECTION_READ_ONLY);
+		    }
+
+		    RemoveItem(key);
 			return true;
 		}
 
@@ -388,9 +399,12 @@ namespace GorgonLibrary.Collections
 			}
 			set
 			{
-				if (IsReadOnly)
-					throw new NotSupportedException("List is read-only.");
-				SetItem(key, value);
+			    if (IsReadOnly)
+			    {
+                    throw new NotSupportedException(Resources.GOR_COLLECTION_READ_ONLY);
+			    }
+
+			    SetItem(key, value);
 			}
 		}
 		#endregion
@@ -405,9 +419,12 @@ namespace GorgonLibrary.Collections
 		/// </exception>
 		void ICollection<KeyValuePair<string, T>>.Add(KeyValuePair<string, T> item)
 		{
-			if (IsReadOnly)
-				throw new NotSupportedException("List is read-only.");
-			AddItem(item.Value);
+		    if (IsReadOnly)
+		    {
+                throw new NotSupportedException(Resources.GOR_COLLECTION_READ_ONLY);
+		    }
+
+		    AddItem(item.Value);
 		}
 
 		/// <summary>
@@ -418,9 +435,12 @@ namespace GorgonLibrary.Collections
 		/// </exception>
 		void ICollection<KeyValuePair<string, T>>.Clear()
 		{
-			if (IsReadOnly)
-				throw new NotSupportedException("List is read-only.");
-			ClearItems();
+		    if (IsReadOnly)
+		    {
+                throw new NotSupportedException(Resources.GOR_COLLECTION_READ_ONLY);
+		    }
+
+		    ClearItems();
 		}
 
 		/// <summary>
@@ -435,27 +455,28 @@ namespace GorgonLibrary.Collections
 			return Contains(item.Key);
 		}
 
-		/// <summary>
-		/// Copies the elements of the <see cref="T:System.Collections.Generic.ICollection`1"/> to an <see cref="T:System.Array"/>, starting at a particular <see cref="T:System.Array"/> index.
-		/// </summary>
-		/// <param name="array">The one-dimensional <see cref="T:System.Array"/> that is the destination of the elements copied from <see cref="T:System.Collections.Generic.ICollection`1"/>. The <see cref="T:System.Array"/> must have zero-based indexing.</param>
-		/// <param name="arrayIndex">The zero-based index in <paramref name="array"/> at which copying begins.</param>
-		/// <exception cref="T:System.ArgumentNullException">
-		/// 	<paramref name="array"/> is null.
-		/// </exception>
-		/// <exception cref="T:System.ArgumentOutOfRangeException">
-		/// 	<paramref name="arrayIndex"/> is less than 0.
-		/// </exception>
-		/// <exception cref="T:System.ArgumentException">
-		/// 	<paramref name="array"/> is multidimensional.
-		/// -or-
-		/// <paramref name="arrayIndex"/> is equal to or greater than the length of <paramref name="array"/>.
-		/// -or-
-		/// The number of elements in the source <see cref="T:System.Collections.Generic.ICollection`1"/> is greater than the available space from <paramref name="arrayIndex"/> to the end of the destination <paramref name="array"/>.
-		/// -or-
-		/// Type <paramref name="array"/> cannot be cast automatically to the type of the destination <paramref name="array"/>.
-		/// </exception>
-		void ICollection<KeyValuePair<string, T>>.CopyTo(KeyValuePair<string, T>[] array, int arrayIndex)
+	    /// <summary>
+	    /// Copies the elements of the <see cref="T:System.Collections.Generic.ICollection`1"/> to an <see cref="T:System.Array"/>, starting at a particular <see cref="T:System.Array"/> index.
+	    /// </summary>
+	    /// <param name="array">The one-dimensional <see cref="T:System.Array"/> that is the destination of the elements copied from <see cref="T:System.Collections.Generic.ICollection`1"/>. The <see cref="T:System.Array"/> must have zero-based indexing.</param>
+	    /// <param name="arrayIndex">The zero-based index in <paramref name="array"/> at which copying begins.</param>
+	    /// <exception cref="NotImplementedException">This method is not implemented.</exception>
+	    /// <exception cref="T:System.ArgumentNullException">
+	    /// 	<paramref name="array"/> is null.
+	    /// </exception>
+	    /// <exception cref="T:System.ArgumentOutOfRangeException">
+	    /// 	<paramref name="arrayIndex"/> is less than 0.
+	    /// </exception>
+	    /// <exception cref="T:System.ArgumentException">
+	    /// 	<paramref name="array"/> is multidimensional.
+	    /// -or-
+	    /// <paramref name="arrayIndex"/> is equal to or greater than the length of <paramref name="array"/>.
+	    /// -or-
+	    /// The number of elements in the source <see cref="T:System.Collections.Generic.ICollection`1"/> is greater than the available space from <paramref name="arrayIndex"/> to the end of the destination <paramref name="array"/>.
+	    /// -or-
+	    /// Type <paramref name="array"/> cannot be cast automatically to the type of the destination <paramref name="array"/>.
+	    /// </exception>
+	    void ICollection<KeyValuePair<string, T>>.CopyTo(KeyValuePair<string, T>[] array, int arrayIndex)
 		{
 			throw new NotImplementedException();
 		}
@@ -472,10 +493,12 @@ namespace GorgonLibrary.Collections
 		/// </exception>
 		bool ICollection<KeyValuePair<string, T>>.Remove(KeyValuePair<string, T> item)
 		{
-			if (IsReadOnly)
-				throw new NotSupportedException("List is read-only.");
+		    if (IsReadOnly)
+		    {
+		        throw new NotSupportedException(Resources.GOR_COLLECTION_READ_ONLY);
+		    }
 
-			RemoveItem(item.Key);
+		    RemoveItem(item.Key);
 			return true;
 		}
 		#endregion
@@ -489,8 +512,10 @@ namespace GorgonLibrary.Collections
 		/// </returns>
 		IEnumerator<KeyValuePair<string, T>> IEnumerable<KeyValuePair<string, T>>.GetEnumerator()
 		{
-			foreach (KeyValuePair<string, T> item in _list)
-				yield return item;
+		    foreach (KeyValuePair<string, T> item in _list)
+		    {
+		        yield return item;
+		    }
 		}
 		#endregion
 	}

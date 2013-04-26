@@ -146,7 +146,7 @@
   <data name="GorgonLogo3" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         iVBORw0KGgoAAAANSUhEUgAAAMgAAAA4CAYAAAC4yreHAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6
-        JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAACXBIWXMAAAsPAAALDwGS+QOlAABVuUlE
+        JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAACXBIWXMAAAsOAAALDgFAvuFBAABVuUlE
         QVR4Xu29BXhUV9c2HFoq0JYWSinuEpwElxBDSnFa3N2Ku7sFd3dI8BAjBvGEuLu720wyLvtf905OmeYJ
         T/s+3/e+1/f27+61OpOZc86cs/e617rvtfc56JmYmPxXrY6pqWldsvr0vomZ+YiOvXp0NmjfvP6w4cMG
         mfXr1WFEuxYNzNs0+8a4S/sWA0xMjLsNNxranF6/MTU1+7x6f73/xEaMGKFnaGio9z/U6tRi/7T/vzUd
@@ -556,5 +556,14 @@ Code: 0x{2}</value>
   </data>
   <data name="GOR_NOCONTEXT" xml:space="preserve">
     <value>Cannot run an application without either a main form, or a idle method.</value>
+  </data>
+  <data name="GOR_COLLECTION_READ_ONLY" xml:space="preserve">
+    <value>The collection is read only.</value>
+  </data>
+  <data name="GOR_ITEM_ALREADY_EXISTS" xml:space="preserve">
+    <value>The item '{0}' already exists in this collection.</value>
+  </data>
+  <data name="GOR_KEY_NOT_FOUND" xml:space="preserve">
+    <value>The key '{0}' does not exist in this collection.</value>
   </data>
 </root>
