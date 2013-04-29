@@ -1,7 +1,32 @@
-﻿using System;
+﻿#region MIT.
+// 
+// Gorgon.
+// Copyright (C) 2013 Michael Winsor
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
+// 
+// Created: Monday, April 29, 2013 8:29:54 PM
+// 
+#endregion
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace GorgonLibrary.Collections.Specialized
 {
@@ -9,11 +34,11 @@ namespace GorgonLibrary.Collections.Specialized
 	/// A collection of custom objects that are managed by the another interface.
 	/// </summary>
 	/// <remarks>This collection is intended for use by objects that manage the lifetimes of any child objects created from it.</remarks>
-	public class GorgonTrackedObjectCollection
+	public class GorgonDisposableObjectCollection
 		: IList<IDisposable>
 	{
 		#region Variables.
-		private IList<IDisposable> _objects = null;			// List of tracked objects.
+		private readonly IList<IDisposable> _objects;			// List of tracked objects.
 		#endregion
 
 		#region Methods.
@@ -33,9 +58,9 @@ namespace GorgonLibrary.Collections.Specialized
 
 		#region Constructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonTrackedObjectCollection"/> class.
+		/// Initializes a new instance of the <see cref="GorgonDisposableObjectCollection"/> class.
 		/// </summary>
-		public GorgonTrackedObjectCollection()
+		public GorgonDisposableObjectCollection()
 		{
 			_objects = new List<IDisposable>();
 		}
@@ -221,8 +246,7 @@ namespace GorgonLibrary.Collections.Specialized
 		/// </returns>
 		public IEnumerator<IDisposable> GetEnumerator()
 		{
-			foreach (IDisposable item in _objects)
-				yield return item;
+		    return _objects.GetEnumerator();
 		}
 		#endregion
 
