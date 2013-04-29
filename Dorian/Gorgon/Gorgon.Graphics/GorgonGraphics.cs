@@ -103,7 +103,7 @@ namespace GorgonLibrary.Graphics
 		private static bool _isDWMEnabled = true;						// Flag to indicate that the desktop window manager compositor is enabled.
 		private static bool _dontEnableDWM = false;						// Flag to indicate that we should not enable the DWM.
 		private bool _disposed = false;									// Flag to indicate that the object was disposed.
-		private GorgonTrackedObjectCollection _trackedObjects = null;	// Tracked objects.
+		private GorgonDisposableObjectCollection _trackedObjects = null;	// Tracked objects.
 		#endregion
 
 		#region Properties.
@@ -388,7 +388,7 @@ namespace GorgonLibrary.Graphics
 			if (GorgonComputerInfo.OperatingSystemVersion.Major < 6)
 				throw new GorgonException(GorgonResult.CannotCreate, "The Gorgon Graphics interface requires Windows Vista Service Pack 2 or greater.");
 
-			_trackedObjects = new GorgonTrackedObjectCollection();
+			_trackedObjects = new GorgonDisposableObjectCollection();
 			ResetFullscreenOnFocus = true;
 
 			Gorgon.Log.Print("Gorgon Graphics initializing...", Diagnostics.LoggingLevel.Simple);

@@ -267,7 +267,7 @@ namespace GorgonLibrary.Collections
 		/// </returns>
 		System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
 		{
-			return GetEnumerator();
+			return ((System.Collections.IEnumerable)_list).GetEnumerator();
 		}
 		#endregion
 
@@ -512,10 +512,7 @@ namespace GorgonLibrary.Collections
 		/// </returns>
 		IEnumerator<KeyValuePair<string, T>> IEnumerable<KeyValuePair<string, T>>.GetEnumerator()
 		{
-		    foreach (KeyValuePair<string, T> item in _list)
-		    {
-		        yield return item;
-		    }
+		    return _list.GetEnumerator();
 		}
 		#endregion
 	}

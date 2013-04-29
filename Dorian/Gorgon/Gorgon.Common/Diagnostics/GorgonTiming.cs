@@ -24,8 +24,6 @@
 // 
 #endregion
 
-using GorgonLibrary.Math;
-
 namespace GorgonLibrary.Diagnostics
 {	
 	/// <summary>
@@ -38,18 +36,18 @@ namespace GorgonLibrary.Diagnostics
 	public static class GorgonTiming
 	{
 		#region Variables.
-		private static float _baseTime = 0;							// Base time at which the system started.
-		private static bool _useHRTimer = true;						// Flag to indicate that we're using a high resolution timer.
-		private static GorgonTimer _timer = null;					// Timer used in calculations.
-		private static long _frameCounter = 0;						// Frame counter.
-		private static long _averageCounter = 0;					// Counter for averages.
-		private static double _lastTime = 0.0;						// Last recorded time since update.
-		private static double _lastTimerValue = 0.0;				// Last timer value.
-		private static float _averageFPSTotal = 0.0f;				// Average FPS total.
-		private static float _averageSDTTotal = 0.0f;				// Average draw time total.
-		private static float _averageDTTotal = 0.0f;				// Average draw time total.
-		private static long _maxAverageCount = 500;					// Maximum number of iterations for average reset.
-		private static bool _firstCall = true;						// Flag to indicate that this is the first call.
+		private static float _baseTime;						// Base time at which the system started.
+		private static bool _useHighResTimer = true;        // Flag to indicate that we're using a high resolution timer.
+		private static GorgonTimer _timer;					// Timer used in calculations.
+		private static long _frameCounter;					// Frame counter.
+		private static long _averageCounter;				// Counter for averages.
+		private static double _lastTime;					// Last recorded time since update.
+		private static double _lastTimerValue;				// Last timer value.
+		private static float _averageFPSTotal;				// Average FPS total.
+		private static float _averageScaledDeltaTotal;		// Average scaled delta draw time total.
+		private static float _averageDeltaTotal;			// Average delta draw time total.
+		private static long _maxAverageCount = 500;			// Maximum number of iterations for average reset.
+		private static bool _firstCall = true;				// Flag to indicate that this is the first call.
 		#endregion
 
 		#region Properties.
@@ -94,7 +92,7 @@ namespace GorgonLibrary.Diagnostics
 		/// <summary>
 		/// Property to return the number of seconds to run the idle loop for a single iteration.
 		/// </summary>
-		/// <remarks>This is the same as the <see cref="P:GorgonLibrary.Diagnostics.GorgonTiming.FrameDelta">FrameDelta</see> property when the <see cref="P:GorgonLibrary.Diagnostics.GorgonTiming.TimeScale">TimeScale</see> is set to 1.0f, otherwise, this value is not affected by TimeScale.  
+		/// <remarks>This is the same as the <see cref="P:GorgonLibrary.Diagnostics.GorgonTiming.ScaledDelta">ScaledDelta</see> property when the <see cref="P:GorgonLibrary.Diagnostics.GorgonTiming.TimeScale">TimeScale</see> is set to 1.0f, otherwise, this value is not affected by TimeScale.  
 		/// <para>Because it is unaffected by TimeScale, this value is the one that should be used when measuring performance.</para></remarks>
 		public static float Delta
 		{
@@ -232,12 +230,12 @@ namespace GorgonLibrary.Diagnostics
 		{
 			get
 			{
-				return _useHRTimer;
+				return _useHighResTimer;
 			}
 
 			set
 			{
-				_useHRTimer = value;
+				_useHighResTimer = value;
 				Reset();
 			}
 		}
@@ -250,8 +248,8 @@ namespace GorgonLibrary.Diagnostics
 		/// <remarks>You do not need to call this method unless you've got your own mechanism for handling an idle time loop.</remarks>
 		public static void Update()
 		{
-			double theTime = 0.0;				// Time value.
-			double delta = 0.0;					// Frame delta.
+			double theTime;				// Time value.
+			double delta;					// Frame delta.
 
 			if (!_firstCall)
 			{
@@ -311,8 +309,8 @@ namespace GorgonLibrary.Diagnostics
 				if (_averageCounter > 0)
 				{
 					AverageFPS = _averageFPSTotal / _averageCounter;
-					AverageScaledDelta = _averageSDTTotal / _averageCounter;
-					AverageDelta = _averageDTTotal / _averageCounter;
+					AverageScaledDelta = _averageScaledDeltaTotal / _averageCounter;
+					AverageDelta = _averageDeltaTotal / _averageCounter;
 				}
 				else
 				{
@@ -322,8 +320,8 @@ namespace GorgonLibrary.Diagnostics
 				}
 
 				_averageFPSTotal += FPS;
-				_averageSDTTotal += ScaledDelta;
-				_averageDTTotal += Delta;
+				_averageScaledDeltaTotal += ScaledDelta;
+				_averageDeltaTotal += Delta;
 				_averageCounter++;
 
 				// Reset the average.
@@ -331,8 +329,8 @@ namespace GorgonLibrary.Diagnostics
 				{
 					_averageCounter = 0;
 					_averageFPSTotal = 0;
-					_averageDTTotal = 0;
-					_averageSDTTotal = 0;
+					_averageDeltaTotal = 0;
+					_averageScaledDeltaTotal = 0;
 				}
 			}
 		}
@@ -349,7 +347,7 @@ namespace GorgonLibrary.Diagnostics
 			if ((_timer == null) || (UseHighResolutionTimer != _timer.IsHighResolution))
 				_timer = new GorgonTimer(UseHighResolutionTimer);
 
-			_useHRTimer = _timer.IsHighResolution;
+			_useHighResTimer = _timer.IsHighResolution;
 			HighestFPS = float.MinValue;
 			LowestFPS = float.MaxValue;
 			AverageFPS = 0.0f;
@@ -366,7 +364,7 @@ namespace GorgonLibrary.Diagnostics
 			_lastTime = 0.0;
 			_lastTimerValue = 0.0;
 			_averageFPSTotal = 0.0f;
-			_averageSDTTotal = 0.0f;
+			_averageScaledDeltaTotal = 0.0f;
 			_timer.Reset();
 			_baseTime = (float)_timer.Milliseconds;
 		}
@@ -379,25 +377,20 @@ namespace GorgonLibrary.Diagnostics
 		/// <returns>Frames per second in milliseconds.</returns>
 		public static double FpsToMilliseconds(double fps)
 		{
-			if (fps > 0)
-				return 1000 / fps;
-			else
-				return 0;
+		    return fps > 0 ? 1000/fps : 0;
 		}
 
-		/// <summary>
+	    /// <summary>
 		/// Function to convert the desired frames per second to microseconds.
 		/// </summary>
 		/// <param name="fps">Desired frames per second.</param>
 		/// <returns>Frames per second in microseconds.</returns>
 		public static double FpsToMicroseconds(double fps)
-		{
-			if (fps > 0)
-				return 1000000 / fps;
-			else
-				return 0;
-		}
-		#endregion
+	    {
+	        return fps > 0 ? 1000000/fps : 0;
+	    }
+
+	    #endregion
 
 		#region Constructor/Destructor.
 		/// <summary>

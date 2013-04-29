@@ -37,7 +37,7 @@ namespace GorgonLibrary.Diagnostics
 	public static class GorgonProcess
 	{
 		#region Variables.
-		private static IDictionary<string, string> _processVariables = null;		// List of process specific environment variables.
+		private static IDictionary<string, string> _processVariables;		// List of process specific environment variables.
 		#endregion
 
 		#region Properties.
@@ -89,14 +89,16 @@ namespace GorgonLibrary.Diagnostics
 		/// <returns>The process for the foreground window, or NULL if not found.</returns>
 		public static Process GetActiveProcess()
 		{
-			uint processID = 0;
-			IntPtr foregroundWindow = IntPtr.Zero;
+			uint processID;
 
-			foregroundWindow = Win32API.GetForegroundWindow();
-			if (foregroundWindow == IntPtr.Zero)
-				return null;
+		    IntPtr foregroundWindow = Win32API.GetForegroundWindow();
 
-			Win32API.GetWindowThreadProcessId(foregroundWindow, out processID);
+		    if (foregroundWindow == IntPtr.Zero)
+		    {
+		        return null;
+		    }
+
+		    Win32API.GetWindowThreadProcessId(foregroundWindow, out processID);
 
 			return Process.GetProcessById((int)processID);
 		}
@@ -108,10 +110,12 @@ namespace GorgonLibrary.Diagnostics
 		/// <returns>The process for the specified window, or NULL if not found.</returns>
 		public static Process GetProcessByWindow(IntPtr windowHandle)
 		{
-			if (windowHandle == IntPtr.Zero)
-				return null;
+		    if (windowHandle == IntPtr.Zero)
+		    {
+		        return null;
+		    }
 
-			uint processID = 0;
+		    uint processID;
 			Win32API.GetWindowThreadProcessId(windowHandle, out processID);
 
 			return Process.GetProcessById((int)processID);
@@ -126,8 +130,10 @@ namespace GorgonLibrary.Diagnostics
 
 			_processVariables = new Dictionary<string, string>();
 
-			foreach (System.Collections.DictionaryEntry variable in oldVariables)
-				_processVariables.Add(variable.Key.ToString(), variable.Value.ToString());
+		    foreach (System.Collections.DictionaryEntry variable in oldVariables)
+		    {
+		        _processVariables.Add(variable.Key.ToString(), variable.Value.ToString());
+		    }
 		}
 		#endregion
 

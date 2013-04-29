@@ -26,7 +26,7 @@
 
 using System;
 using System.Runtime.InteropServices;
-using GorgonLibrary.Diagnostics;
+using GorgonLibrary.Properties;
 
 namespace GorgonLibrary.Native
 {
@@ -46,7 +46,7 @@ namespace GorgonLibrary.Native
 		/// <param name="size">Size of the data to copy, in bytes.</param>
 		/// <remarks>Since a pointer doesn't have a size associated with it, care must be taken to not overstep the bounds of the data pointed at by the pointer.</remarks>
 		/// <exception cref="System.ArgumentNullException">Thrown when the destination pointer is NULL (Nothing in VB.Net).</exception>
-		public unsafe static void CopyTo(this IntPtr source, IntPtr destination, int size)
+		public static void CopyTo(this IntPtr source, IntPtr destination, int size)
 		{
 			DirectAccess.MemoryCopy(destination, source, size);
 		}
@@ -66,20 +66,30 @@ namespace GorgonLibrary.Native
 		/// </exception>
 		public static void CopyTo(this IntPtr source, byte[] destination, int destinationIndex, int size)
 		{
-			if (source == IntPtr.Zero)
-				return;
+		    if (source == IntPtr.Zero)
+		    {
+		        return;
+		    }
 
 #if DEBUG
-			if (destination == null)
-				throw new ArgumentNullException("destination");
+		    if (destination == null)
+		    {
+		        throw new ArgumentNullException("destination");
+		    }
 
-			if (destinationIndex < 0)
-				throw new ArgumentOutOfRangeException("destinationIndex", "Index cannot be less than zero.");
+		    if (destinationIndex < 0)
+		    {
+		        throw new ArgumentOutOfRangeException("destinationIndex", 
+                    string.Format(Resources.GOR_INDEX_OUT_OF_RANGE, destinationIndex, destination.Length));
+		    }
 
-			if (destinationIndex + size > destination.Length)
-				throw new ArgumentOutOfRangeException("destinationIndex", "Index and size cannot be larger than the array.");
+		    if (destinationIndex + size > destination.Length)
+		    {
+                throw new ArgumentOutOfRangeException("destinationIndex",
+                    string.Format(Resources.GOR_INDEX_OUT_OF_RANGE, destinationIndex + size, destination.Length));
+            }
 #endif
-			DirectAccess.ReadArray<byte>(source, destination, destinationIndex, size);
+			DirectAccess.ReadArray(source, destination, destinationIndex, size);
 		}
 
 		/// <summary>
@@ -127,7 +137,7 @@ namespace GorgonLibrary.Native
 		/// <param name="source">Source pointer.</param>
 		/// <param name="destination">Destination array of bytes.</param>
 		/// <param name="destinationIndex">Index in the array to start writing at.</param>
-		/// <param name="size">Size of the data to copy in bytes.</param>
+		/// <param name="size">Size of the data to copy, in bytes.</param>
 		/// <remarks>Since a pointer doesn't have a size associated with it, care must be taken to not overstep the bounds of the data pointed at by the pointer.</remarks>
 		/// <exception cref="System.ArgumentNullException">Thrown if the <paramref name="destination"/> parameter is NULL (Nothing in VB.Net).</exception>
 		/// <exception cref="System.ArgumentOutOfRangeException">Thrown if the size + destinationIndex is greater than the number of elements in the destination parameter.
@@ -138,20 +148,32 @@ namespace GorgonLibrary.Native
 			where T : struct
 		{
 #if DEBUG
-			if (source == IntPtr.Zero)
-				return;
+		    int sizeInBytes = DirectAccess.SizeOf<T>();
 
-			if (destination == null)
-				throw new ArgumentNullException("destination");
+		    if (source == IntPtr.Zero)
+		    {
+		        throw new ArgumentNullException("source");
+		    }
 
-			if (destinationIndex < 0)
-				throw new ArgumentOutOfRangeException("destinationIndex", "Index cannot be less than zero.");
+		    if (destination == null)
+		    {
+		        throw new ArgumentNullException("destination");
+		    }
 
-			if (destinationIndex + size > destination.Length * DirectAccess.SizeOf<T>())
-				throw new ArgumentOutOfRangeException("destinationIndex", "Index and size cannot be larger than the array.");
+		    if (destinationIndex < 0)
+            {
+                throw new ArgumentOutOfRangeException("destinationIndex",
+                    string.Format(Resources.GOR_INDEX_OUT_OF_RANGE, destinationIndex, destination.Length * sizeInBytes));
+            }
+
+            if ((destinationIndex * sizeInBytes) + size > destination.Length * DirectAccess.SizeOf<T>())
+            {
+                throw new ArgumentOutOfRangeException("destinationIndex",
+                    string.Format(Resources.GOR_INDEX_OUT_OF_RANGE, destinationIndex + size, destination.Length * sizeInBytes));
+            }
 #endif
 
-			DirectAccess.ReadArray<T>(source, destination, destinationIndex, size);
+			DirectAccess.ReadArray(source, destination, destinationIndex, size);
 		}
 
 		/// <summary>
@@ -170,11 +192,18 @@ namespace GorgonLibrary.Native
 			where T : struct
 		{
 #if DEBUG
-			if (destination == null)
-				throw new ArgumentNullException("destination");
+		    if (source == IntPtr.Zero)
+		    {
+                throw new ArgumentNullException("source");
+		    }
+
+		    if (destination == null)
+		    {
+		        throw new ArgumentNullException("destination");
+		    }
 #endif
 
-			CopyTo<T>(source, destination, 0, destination.Length * DirectAccess.SizeOf<T>());
+			CopyTo(source, destination, 0, destination.Length * DirectAccess.SizeOf<T>());
 		}
 
 		/// <summary>
@@ -193,7 +222,7 @@ namespace GorgonLibrary.Native
 		public static void CopyTo<T>(this IntPtr source, T[] destination, int size)
 			where T : struct
 		{
-			CopyTo<T>(source, destination, 0, size);
+			CopyTo(source, destination, 0, size);
 		}
 
 		/// <summary>
@@ -228,17 +257,32 @@ namespace GorgonLibrary.Native
 				return;
 
 #if DEBUG
-			if (source == null)
-				throw new ArgumentNullException("destination");
+            if (destination == IntPtr.Zero)
+            {
+                throw new ArgumentNullException("destination");    
+            }
 
-			if (sourceIndex < 0)
-				throw new ArgumentOutOfRangeException("sourceIndex", "Index cannot be less than zero.");
+		    if (source == null)
+		    {
+		        throw new ArgumentNullException("destination");
+		    }
 
-			if (sourceIndex + size > source.Length)
-				throw new ArgumentOutOfRangeException("sourceIndex", "Index and size cannot be larger than the array.");
+		    if (sourceIndex < 0)
+		    {
+		        throw new ArgumentOutOfRangeException("sourceIndex",
+		                                              string.Format(Resources.GOR_INDEX_OUT_OF_RANGE, sourceIndex,
+		                                                            source.Length));
+		    }
+
+		    if (sourceIndex + size > source.Length)
+		    {
+		        throw new ArgumentOutOfRangeException("sourceIndex",
+		                                              string.Format(Resources.GOR_INDEX_OUT_OF_RANGE, sourceIndex + size,
+		                                                            source.Length));
+		    }
 #endif
 
-			DirectAccess.WriteArray<byte>(destination, source, sourceIndex, size);
+			DirectAccess.WriteArray(destination, source, sourceIndex, size);
 		}
 
 		/// <summary>
@@ -296,23 +340,37 @@ namespace GorgonLibrary.Native
 		public static void CopyFrom<T>(this IntPtr destination, T[] source, int sourceIndex, int size)
 			where T : struct
 		{
-			int typeSize = DirectAccess.SizeOf<T>();
 
 #if DEBUG
-			if (destination == IntPtr.Zero)
-				return;
+            int typeSize = DirectAccess.SizeOf<T>();
+            
+            if (destination == IntPtr.Zero)
+		    {
+		        throw new ArgumentNullException("destination");
+		    }
 
-			if (source == null)
-				throw new ArgumentNullException("destination");
+		    if (source == null)
+		    {
+		        throw new ArgumentNullException("source");
+		    }
 
-			if (sourceIndex < 0)
-				throw new ArgumentOutOfRangeException("sourceIndex", "Index cannot be less than zero.");
+		    if (sourceIndex < 0)
+		    {
+                throw new ArgumentOutOfRangeException("sourceIndex",
+                                                      string.Format(Resources.GOR_INDEX_OUT_OF_RANGE, sourceIndex,
+                                                                    source.Length));
+            }
 
-			if (sourceIndex + size > source.Length * typeSize)
-				throw new ArgumentOutOfRangeException("sourceIndex", "Index and size cannot be larger than the array.");
+		    if ((sourceIndex*typeSize) + size > source.Length*typeSize)
+		    {
+		        throw new ArgumentOutOfRangeException("sourceIndex",
+		                                              string.Format(Resources.GOR_INDEX_OUT_OF_RANGE,
+		                                                            sourceIndex*typeSize + size,
+		                                                            source.Length));
+		    }
 #endif
 
-			DirectAccess.WriteArray<T>(destination, source, sourceIndex, size);
+			DirectAccess.WriteArray(destination, source, sourceIndex, size);
 		}
 
 		/// <summary>
@@ -331,7 +389,7 @@ namespace GorgonLibrary.Native
 		public static void CopyFrom<T>(this IntPtr destination, T[] source, int size)
 			where T : struct
 		{
-			CopyFrom<T>(destination, source, 0, size);
+			CopyFrom(destination, source, 0, size);
 		}
 
 		/// <summary>
@@ -375,7 +433,7 @@ namespace GorgonLibrary.Native
 		/// <param name="fillValue">Value to fill the memory with.</param>
 		/// <param name="size">Amount of memory to fill.</param>
 		/// <remarks>Since a pointer doesn't have a size associated with it, care must be taken to not overstep the bounds of the data pointed at by the pointer.</remarks>
-		public static void FillMemory<T>(this IntPtr destination, byte fillValue, int size)
+		public static void FillMemory(this IntPtr destination, byte fillValue, int size)
 		{
 			DirectAccess.FillMemory(destination, fillValue, size);
 		}
@@ -388,7 +446,7 @@ namespace GorgonLibrary.Native
 		/// <param name="deleteContents">TRUE to remove any pre-allocated data, FALSE to leave alone.</param>
 		/// <remarks>This method will marshal a structure (object or value type) into unmanaged memory.
 		/// <para>Passing FALSE to <paramref name="deleteContents"/> may result in a memory leak if the data was previously initialized.</para>
-		/// <para>For more information, see the <see cref="M:System.RunTime.InteropServices.Marshal.StructureToPtr">Marshal.StructureToPtr</see> method.</para>
+		/// <para>For more information, see the <see cref="System.Runtime.InteropServices.Marshal.StructureToPtr">Marshal.StructureToPtr</see> method.</para>
 		/// </remarks>
 		public static void MarshalFrom(this IntPtr destination, object value, bool deleteContents)
 		{
@@ -402,7 +460,7 @@ namespace GorgonLibrary.Native
 		/// <param name="source">Pointer to read from.</param>
 		/// <returns>The data converted into a new value type or object.</returns>
 		/// <remarks>This method will marshal unmanaged data back into a new structure (object or value type).
-		/// <para>For more information, see the <see cref="M:System.RunTime.InteropServices.Marshal.PtrToStructure">Marshal.PtrToStructure</see> method.</para>
+		/// <para>For more information, see the <see cref="System.Runtime.InteropServices.Marshal.PtrToStructure(IntPtr, Type)">Marshal.PtrToStructure</see> method.</para>
 		/// </remarks>
 		public static T MarshalTo<T>(this IntPtr source)
 		{
@@ -418,7 +476,7 @@ namespace GorgonLibrary.Native
 		/// <returns>The data converted and copied into a value type or object.</returns>
 		/// <remarks>This method will marshal unmanaged data back into an existing structure (object or value type).
 		/// <para>The user must pre-allocate the object before calling this method.</para>
-		/// <para>For more information, see the <see cref="M:System.RunTime.InteropServices.Marshal.PtrToStructure">Marshal.PtrToStructure</see> method.</para>
+		/// <para>For more information, see the <see cref="System.Runtime.InteropServices.Marshal.PtrToStructure(IntPtr, Type)">Marshal.PtrToStructure</see> method.</para>
 		/// </remarks>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="value"/> parameter is NULL (Nothing in VB.Net).</exception>
 		public static void MarshalTo<T>(this IntPtr source, ref T value)
@@ -439,7 +497,7 @@ namespace GorgonLibrary.Native
 		public static void Write<T>(this IntPtr destination, ref T value)
 			where T : struct
 		{
-			DirectAccess.WriteValue<T>(destination, ref value);
+			DirectAccess.WriteValue(destination, ref value);
 		}
 
 		/// <summary>
@@ -455,7 +513,7 @@ namespace GorgonLibrary.Native
 		public static void Read<T>(this IntPtr source, out T value)
 			where T : struct
 		{
-			DirectAccess.ReadValue<T>(source, out value);
+			DirectAccess.ReadValue(source, out value);
 		}
 	}
 }

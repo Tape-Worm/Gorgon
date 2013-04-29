@@ -44,14 +44,5 @@ namespace GorgonLibrary
 			set;
 		}
 		#endregion
-
-		#region Constructor/Destructor.
-		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonHandledEventArgs"/> class.
-		/// </summary>
-		public GorgonHandledEventArgs()
-		{
-		}
-		#endregion
 	}
 }

@@ -31,7 +31,9 @@ using GorgonLibrary.Native;
 namespace GorgonLibrary.Diagnostics
 {
 	#region Enumerations.
-	/// <summary>
+    // ReSharper disable InconsistentNaming
+
+    /// <summary>
 	/// CPU/OS platform type.
 	/// </summary>
 	/// <remarks>This is a replacement for the old PlatformID code in the 1.x version of </remarks>
@@ -46,7 +48,9 @@ namespace GorgonLibrary.Diagnostics
 		/// </summary>
 		x64 = 1
 	}
-	#endregion
+
+    // ReSharper restore InconsistentNaming
+    #endregion
 
 	/// <summary>
 	/// Information about the computer and operating system that is running Gorgon.
@@ -54,8 +58,8 @@ namespace GorgonLibrary.Diagnostics
 	public static class GorgonComputerInfo
 	{
 		#region Variables.
-		private static IDictionary<string, string> _machineVariables = null;		// List of machine specific environment variables.
-		private static IDictionary<string, string> _userVariables = null;			// List of user specific environment variables.
+		private static IDictionary<string, string> _machineVariables;		// List of machine specific environment variables.
+		private static IDictionary<string, string> _userVariables;			// List of user specific environment variables.
 		#endregion
 
 		#region Properties.
@@ -89,10 +93,7 @@ namespace GorgonLibrary.Diagnostics
 		{
 			get
 			{
-				if (Environment.Is64BitProcess)
-					return PlatformArchitecture.x64;
-				else
-					return PlatformArchitecture.x86;
+			    return Environment.Is64BitProcess ? PlatformArchitecture.x64 : PlatformArchitecture.x86;
 			}
 		}
 
@@ -103,10 +104,7 @@ namespace GorgonLibrary.Diagnostics
 		{
 			get
 			{
-				if (Environment.Is64BitOperatingSystem)
-					return Diagnostics.PlatformArchitecture.x64;
-				else
-					return Diagnostics.PlatformArchitecture.x86;
+			    return Environment.Is64BitOperatingSystem ? PlatformArchitecture.x64 : PlatformArchitecture.x86;
 			}
 		}
 

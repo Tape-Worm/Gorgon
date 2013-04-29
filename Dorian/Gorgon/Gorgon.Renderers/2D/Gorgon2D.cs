@@ -421,7 +421,7 @@ namespace GorgonLibrary.Renderers
 		/// <summary>
 		/// Property to return the tracked objects interface.
 		/// </summary>
-		internal GorgonTrackedObjectCollection TrackedObjects
+		internal GorgonDisposableObjectCollection TrackedObjects
 		{
 			get;
 			private set;
@@ -1326,7 +1326,7 @@ namespace GorgonLibrary.Renderers
 		/// <param name="target">The primary render target to use.</param>		
 		internal Gorgon2D(GorgonRenderTarget target)
 		{						
-			TrackedObjects = new GorgonTrackedObjectCollection();
+			TrackedObjects = new GorgonDisposableObjectCollection();
 			Graphics = target.Graphics;
 			_defaultTarget = target;
 			_swapChain = target as GorgonSwapChain;

@@ -27,6 +27,7 @@
 using System;
 using System.Text;
 using GorgonLibrary.Native;
+using GorgonLibrary.Properties;
 
 namespace GorgonLibrary.IO
 {
@@ -39,8 +40,8 @@ namespace GorgonLibrary.IO
 		: System.IO.BinaryWriter
 	{
 		#region Variables.
-		private byte[] _tempBuffer = null;		// Temporary buffer.
-		private bool _keepOpen = false;			// Flag to keep the underlying stream open.
+		private byte[] _tempBuffer;		// Temporary buffer.
+		private bool _keepOpen;			// Flag to keep the underlying stream open.
 		#endregion
 
 		#region Properties.
@@ -69,8 +70,10 @@ namespace GorgonLibrary.IO
 		{
 			if (disposing)
 			{
-				if (!_keepOpen)
-					this.BaseStream.Dispose();
+			    if (!_keepOpen)
+			    {
+			        BaseStream.Dispose();
+			    }
 			}
 
 			// Force the dispose to -not- destroy the underlying stream.
@@ -143,7 +146,7 @@ namespace GorgonLibrary.IO
 			int size = DirectAccess.SizeOf<T>();
 			byte* pointer = stackalloc byte[size];
 
-			DirectAccess.WriteValue<T>(pointer, ref value);
+			DirectAccess.WriteValue(pointer, ref value);
 
 			while (size > 0)
 			{
@@ -204,17 +207,17 @@ namespace GorgonLibrary.IO
 
 			if (startIndex < 0)
 			{
-				throw new ArgumentOutOfRangeException("The start index must be greater than or equal to 0.", "startIndex");
+                throw new ArgumentOutOfRangeException(string.Format(Resources.GOR_VALUE_IS_LESS_THAN, startIndex, 0));
 			}
 
 			if (startIndex >= value.Length)
 			{
-				throw new ArgumentOutOfRangeException("The start index must be less than the number of elements in the array.", "startIndex");
+                throw new ArgumentOutOfRangeException(string.Format(Resources.GOR_VALUE_IS_GREATER_THAN, startIndex, value.Length));
 			}
 
 			if (startIndex + count > value.Length)
 			{
-				throw new ArgumentOutOfRangeException("The sum of start index and count is larger than the number of elements in the array");
+                throw new ArgumentOutOfRangeException(string.Format(Resources.GOR_VALUE_IS_LESS_THAN, startIndex + count, value.Length));
 			}
 
 			int typeSize = DirectAccess.SizeOf<T>();
@@ -234,7 +237,7 @@ namespace GorgonLibrary.IO
 					int blockSize = size > GorgonChunkedFormat.TempBufferSize ? GorgonChunkedFormat.TempBufferSize : size;
 
 					// Read our array into our temporary byte buffer.
-					DirectAccess.ReadArray<T>(tempBufferPointer, value, offset, blockSize);
+					DirectAccess.ReadArray(tempBufferPointer, value, offset, blockSize);
 
 					offset += blockSize;
 					size -= size;
@@ -258,7 +261,7 @@ namespace GorgonLibrary.IO
 		public void WriteRange<T>(T[] value, int count)
 			where T : struct
 		{
-			WriteRange<T>(value, 0, count);
+			WriteRange(value, 0, count);
 		}
 
 		/// <summary>
@@ -276,7 +279,7 @@ namespace GorgonLibrary.IO
 				throw new ArgumentNullException("value");
 			}
 
-			WriteRange<T>(value, 0, value.Length);
+			WriteRange(value, 0, value.Length);
 		}
 		#endregion
 

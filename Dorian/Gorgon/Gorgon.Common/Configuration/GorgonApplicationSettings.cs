@@ -28,12 +28,14 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Xml.Linq;
 using GorgonLibrary.Diagnostics;
 using GorgonLibrary.IO;
+using GorgonLibrary.Properties;
 
 namespace GorgonLibrary.Configuration
 {
@@ -43,9 +45,9 @@ namespace GorgonLibrary.Configuration
 	public abstract class GorgonApplicationSettings
 	{
 		#region Variables.
-		private XDocument _xmlSettings = null;															// XML document containing application settings.
-		private string _path = string.Empty;															// Path to the XML settings.
-		private IDictionary<PropertyInfo, ApplicationSettingAttribute> _properties = null;		// List of properties to serialize.
+		private XDocument _xmlSettings;													            // XML document containing application settings.
+		private string _path = string.Empty;											            // Path to the XML settings.
+		private readonly IDictionary<PropertyInfo, ApplicationSettingAttribute> _properties;		// List of properties to serialize.
 		#endregion
 
 		#region Properties.
@@ -105,13 +107,17 @@ namespace GorgonLibrary.Configuration
 		/// </summary>
 		private void ResetXML()
 		{
-			if (Version != null)
-				_xmlSettings = new XDocument(new XDeclaration("1.0", "utf-8", "yes"),
-										new XElement("ApplicationSettings",
-										new XAttribute("Version", Version.ToString())));
-			else
-				_xmlSettings = new XDocument(new XDeclaration("1.0", "utf-8", "yes"),
-										new XElement("ApplicationSettings"));
+		    if (Version != null)
+		    {
+		        _xmlSettings = new XDocument(new XDeclaration("1.0", "utf-8", "yes"),
+		                                     new XElement("ApplicationSettings",
+		                                                  new XAttribute("Version", Version.ToString())));
+		    }
+		    else
+		    {
+		        _xmlSettings = new XDocument(new XDeclaration("1.0", "utf-8", "yes"),
+		                                     new XElement("ApplicationSettings"));
+		    }
 		}
 
 		/// <summary>
@@ -121,26 +127,30 @@ namespace GorgonLibrary.Configuration
 		/// <returns>The string value for the object.</returns>
 		private string ConvertValue(object value)
 		{
-			IList<TypeConverterAttribute> attrib = null;
-			TypeConverter converter = null;
-			Type type = null;
+		    if (value == null)
+		    {
+		        return null;
+		    }
 
-			if (value == null)
-				return null;
+		    var type = value.GetType();
+			var attrib = type.GetCustomAttributes(typeof(TypeConverterAttribute), true) as IList<TypeConverterAttribute>;
 
-			type = value.GetType();
-
-			attrib = type.GetCustomAttributes(typeof(TypeConverterAttribute), true) as IList<TypeConverterAttribute>;
-
-			if (attrib.Count > 0)
+			if ((attrib != null) && (attrib.Count > 0))
 			{
-				converter = Activator.CreateInstance(Type.GetType(attrib[0].ConverterTypeName)) as TypeConverter;
+			    Type converterType = Type.GetType(attrib[0].ConverterTypeName);
 
-				if (converter.CanConvertTo(typeof(string)))
-					return converter.ConvertToInvariantString(value);
+			    if (converterType != null)
+			    {
+			        var converter = Activator.CreateInstance(converterType) as TypeConverter;
+
+			        if ((converter != null) && (converter.CanConvertTo(typeof (string))))
+			        {
+			            return converter.ConvertToInvariantString(value);
+			        }
+			    }
 			}
 
-			return value.ToString();
+		    return value.ToString();
 		}
 
 		/// <summary>
@@ -151,34 +161,46 @@ namespace GorgonLibrary.Configuration
 		/// <returns>The value for the object.</returns>
 		private object UnconvertValue(string value, Type type)
 		{
-			IList<TypeConverterAttribute> attrib = null;
-			TypeConverter converter = null;
+		    if (value == null)
+		    {
+		        return null;
+		    }
 
-			if (value == null)
-				return null;
+		    if (type != typeof (string))
+		    {
+		        if (value == string.Empty)
+		        {
+		            return null;
+		        }
+		    }
+		    else
+		    {
+		        return value;
+		    }
 
-			if (type != typeof(string))
+		    if (type.IsEnum)
+		    {
+		        return Enum.Parse(type, value);
+		    }
+
+		    var attrib = type.GetCustomAttributes(typeof(TypeConverterAttribute), true) as IList<TypeConverterAttribute>;
+
+			if ((attrib != null) && (attrib.Count > 0))
 			{
-				if (value == string.Empty)
-					return null;
-			}
-			else
-				return value;
+			    Type converterType = Type.GetType(attrib[0].ConverterTypeName);
 
-			if (type.IsEnum)
-				return Enum.Parse(type, value);
+			    if (converterType != null)
+			    {
+			        TypeConverter converter = Activator.CreateInstance(converterType) as TypeConverter;
 
-			attrib = type.GetCustomAttributes(typeof(TypeConverterAttribute), true) as IList<TypeConverterAttribute>;
-
-			if (attrib.Count > 0)
-			{
-				converter = Activator.CreateInstance(Type.GetType(attrib[0].ConverterTypeName)) as TypeConverter;
-
-				if (converter.CanConvertFrom(typeof(string)))
-					return converter.ConvertFromInvariantString(value);
+			        if ((converter != null) && (converter.CanConvertFrom(typeof(string))))
+			        {
+			            return converter.ConvertFromInvariantString(value);
+			        }
+			    }
 			}
 
-			return Convert.ChangeType(value, type);
+		    return Convert.ChangeType(value, type);
 		}
 
 		/// <summary>
@@ -188,65 +210,67 @@ namespace GorgonLibrary.Configuration
 		{
 			ResetXML();
 
-			if (_properties == null)
-				GetProperties();
+            // If we haven't gotten the properties yet, cache them now.
+		    if (_properties.Count == 0)
+		    {
+		        GetProperties();
+		    }
 
-			// Get the unique sections.
+		    // Get the unique sections.
 			var sections = (from property in _properties
 							where !string.IsNullOrEmpty(property.Value.Section)
 							select property.Value.Section).Distinct();
 
 			// Create section elements.
-			foreach (var section in sections)
-				AddSection(string.Empty, section);
+		    foreach (var section in sections)
+		    {
+		        AddSection(string.Empty, section);
+		    }
 
-			foreach (KeyValuePair<PropertyInfo, ApplicationSettingAttribute> property in _properties)
+		    foreach (KeyValuePair<PropertyInfo, ApplicationSettingAttribute> property in _properties)
 			{
 				XElement section = GetSectionElement(property.Value.Section);
 
 				if ((property.Key.PropertyType.IsGenericType) || (property.Key.PropertyType == typeof(IList)))
 				{
-					Type valueType = null;
-					object collection = null;
-					PropertyInfo collectionIndex = null;
-					PropertyInfo countProperty = null;
-					int count = 0;
-
-					if (property.Key.PropertyType.IsGenericType)
+				    if (property.Key.PropertyType.IsGenericType)
 					{
 						Type[] genericType = property.Key.PropertyType.GetGenericArguments();
 
-						valueType = genericType[0];
+						Type valueType = genericType[0];
 
-						if ((!valueType.IsPrimitive) && (valueType != typeof(string)) && (valueType != typeof(object)))
-							throw new GorgonException(GorgonResult.CannotEnumerate, "Cannot enumerate the property '" + property.Key.Name + "' the generic parameter type is not a primitive or string type.");
+					    if ((!valueType.IsPrimitive) && (valueType != typeof (string)) && (valueType != typeof (object)))
+					    {
+					        throw new GorgonException(GorgonResult.CannotEnumerate,
+					                                  string.Format(Resources.GOR_PROPERTY_NOT_PRIMITIVE_OR_STRING, property.Key.Name));
+					    }
 					}
-					else
-						valueType = typeof(object);
 
-					collection = property.Key.GetValue(this, null);
-					collectionIndex = collection.GetType().GetProperty("Item");
-					countProperty = collection.GetType().GetProperty("Count");
+					object collection = property.Key.GetValue(this, null);
+					PropertyInfo collectionIndex = collection.GetType().GetProperty("Item");
+					PropertyInfo countProperty = collection.GetType().GetProperty("Count");
 
-					count = Convert.ToInt32(countProperty.GetValue(collection, null));
+					int count = Convert.ToInt32(countProperty.GetValue(collection, null));
 
 					for (int i = 0; i < count; i++)
 					{
-						string name = string.Empty;
-
-						name = (string.IsNullOrEmpty(property.Value.SettingName) ? property.Key.Name + "_item" : property.Value.SettingName + "_item");
-
-						section.Add(new XElement("Setting",
-									new XAttribute(property.Value.SettingName, ConvertValue(collectionIndex.GetValue(collection, new object[] { i })))));
+					    section.Add(new XElement("Setting",
+					                             new XAttribute(property.Value.SettingName,
+					                                            ConvertValue(collectionIndex.GetValue(collection, new object[]
+					                                                {
+					                                                    i
+					                                                })
+                                                                )
+                                                            )
+                                                        )
+                                                    );
 					}
 				}
 				else
 				{
-					string name = string.Empty;
-
-					name = (string.IsNullOrEmpty(property.Value.SettingName) ? property.Key.Name : property.Value.SettingName);
-					section.Add(new XElement("Setting",
-								new XAttribute(name, ConvertValue(property.Key.GetValue(this, null)))));
+				    string name = (string.IsNullOrEmpty(property.Value.SettingName) ? property.Key.Name : property.Value.SettingName);
+				    section.Add(new XElement("Setting",
+				                             new XAttribute(name, ConvertValue(property.Key.GetValue(this, null)))));
 				}
 			}
 		}
@@ -262,40 +286,42 @@ namespace GorgonLibrary.Configuration
 			{
 				if ((property.Value.PropertyType.IsGenericType) || (property.Value.PropertyType == typeof(IList)))
 				{
-					Type valueType = null;
-					object collection = null;
-					MethodInfo addMethod = null;
-					MethodInfo clearMethod = null;
-					object[] values = null;
-					
-					if (property.Key.PropertyType.IsGenericType)
+					Type valueType;
+
+				    if (property.Key.PropertyType.IsGenericType)
 					{
 						Type[] genericType = property.Key.PropertyType.GetGenericArguments();
 						valueType = genericType[0];
 
-						if ((!valueType.IsPrimitive) && (valueType != typeof(string)) && (valueType != typeof(object)))
-							throw new GorgonException(GorgonResult.CannotEnumerate, "Cannot enumerate the property '" + property.Key.Name + "' the generic parameter type is not a primitive or string type.");
+					    if ((!valueType.IsPrimitive) && (valueType != typeof (string)) && (valueType != typeof (object)))
+					    {
+                            throw new GorgonException(GorgonResult.CannotEnumerate,
+                                                        string.Format(Resources.GOR_PROPERTY_NOT_PRIMITIVE_OR_STRING, property.Key.Name));
+					    }
 					}
 					else
 						valueType = typeof(object);
 
-					string settingName = string.Empty;
-
-					settingName = (string.IsNullOrEmpty(property.Value.SettingName) ? property.Key.Name + "_item" : property.Value.SettingName);
-					values = GetSettings(property.Value.Section, settingName, valueType);
+				    string settingName = (string.IsNullOrEmpty(property.Value.SettingName) ? property.Key.Name + "_item" : property.Value.SettingName);
+					object[] values = GetSettings(property.Value.Section, settingName, valueType);
 
 					// If the list setting doesn't exist, then use a default (if any).
 					// If there are no settings in the list, then we can overwrite the default list.
 					if (values != null)
 					{
-						collection = property.Key.GetValue(this, null);
-						addMethod = collection.GetType().GetMethod("Add");
-						clearMethod = collection.GetType().GetMethod("Clear");
+						object collection = property.Key.GetValue(this, null);
+						MethodInfo addMethod = collection.GetType().GetMethod("Add");
+						MethodInfo clearMethod = collection.GetType().GetMethod("Clear");
 
 						clearMethod.Invoke(collection, null);
 
-						for (int i = 0; i < values.Length; i++)
-							addMethod.Invoke(collection, new object[] { values[i] });
+					    for (int i = 0; i < values.Length; i++)
+					    {
+					        addMethod.Invoke(collection, new[]
+					            {
+					                values[i]
+					            });
+					    }
 					}
 				}                
 				else
@@ -303,12 +329,16 @@ namespace GorgonLibrary.Configuration
 					string settingName = (string.IsNullOrEmpty(property.Value.SettingName) ? property.Key.Name : property.Value.SettingName);
 					object value = GetSetting(property.Value.Section, settingName, property.Value.PropertyType);
 
-					if ((value == null) && (property.Value.HasDefault))
-						value = property.Value.DefaultValue;
+				    if ((value == null) && (property.Value.HasDefault))
+				    {
+				        value = property.Value.DefaultValue;
+				    }
 
-					// Use application setting if we still don't have a value.
-					if (value != null)
-						property.Key.SetValue(this, value, null);
+				    // Use application setting if we still don't have a value.
+				    if (value != null)
+				    {
+				        property.Key.SetValue(this, value, null);
+				    }
 				}
 			}
 		}
@@ -318,22 +348,23 @@ namespace GorgonLibrary.Configuration
 		/// </summary>
 		private void GetProperties()
 		{
-			Type settingsType = this.GetType();
-			PropertyInfo[] properties = null;
+			Type settingsType = GetType();
 
-			_properties = new Dictionary<PropertyInfo, ApplicationSettingAttribute>();
+			PropertyInfo[] properties = settingsType.GetProperties();
 
-			properties = settingsType.GetProperties();
+            _properties.Clear();
 
 			foreach (PropertyInfo info in properties)
 			{
-				ApplicationSettingAttribute[] attributes = (ApplicationSettingAttribute[])info.GetCustomAttributes(typeof(ApplicationSettingAttribute), true);
+				var attributes = (ApplicationSettingAttribute[])info.GetCustomAttributes(typeof(ApplicationSettingAttribute), true);
 
-				if ((attributes != null) && (attributes.Length > 0))
+				if (attributes.Length > 0)
 				{
 					_properties.Add(info, attributes[0]);
-					if (!(info.PropertyType.IsGenericType) && (info.PropertyType != typeof(IList)) && (attributes[0].HasDefault))
-						info.SetValue(this, attributes[0].DefaultValue, null);
+				    if (!(info.PropertyType.IsGenericType) && (info.PropertyType != typeof (IList)) && (attributes[0].HasDefault))
+				    {
+				        info.SetValue(this, attributes[0].DefaultValue, null);
+				    }
 				}
 			}
 		}
@@ -345,22 +376,33 @@ namespace GorgonLibrary.Configuration
 		private bool CheckVersion()
 		{
 			XElement rootElement = _xmlSettings.Element("ApplicationSettings");
-			Version compareVersion = null;
+			Version compareVersion;
 
-			if (Version == null)
-				return true;
+		    if (Version == null)
+		    {
+		        return true;
+		    }
 
-			if (rootElement == null)
-				throw new GorgonException(GorgonResult.InvalidFileFormat, "Not a Gorgon application settings file.");
+		    if (rootElement == null)
+		    {
+		        throw new GorgonException(GorgonResult.InvalidFileFormat, 
+                                            string.Format(Resources.GOR_INVALID_SETTING_FILE, _path));
+		    }
 
-			// If we don't have a version attribute, then we're not versioning this file.
-			if (rootElement.Attribute("Version") == null)
-				return true;
+		    // If we don't have a version attribute, then we're not versioning this file.
+		    if (rootElement.Attribute("Version") == null)
+		    {
+		        return true;
+		    }
 
-			if (!Version.TryParse(rootElement.Attribute("Version").Value, out compareVersion))
-				throw new GorgonException(GorgonResult.InvalidFileFormat, "The settings version number cannot be read.");
+		    if (!Version.TryParse(rootElement.Attribute("Version").Value, out compareVersion))
+		    {
+                throw new GorgonException(GorgonResult.InvalidFileFormat,
+                                            string.Format(Resources.GOR_INVALID_SETTING_FILE, _path),
+                                            new InvalidCastException("Version type string could not be converted to a version type."));
+            }
 
-			return compareVersion == Version;
+		    return compareVersion == Version;
 		}
 
 		/// <summary>
@@ -370,11 +412,13 @@ namespace GorgonLibrary.Configuration
 		/// <returns>The element with the section name.</returns>
 		private XElement GetSectionElement(string sectionName)
 		{
-			if (string.IsNullOrEmpty(sectionName))
-				return _xmlSettings.Element("ApplicationSettings");
+		    if (string.IsNullOrEmpty(sectionName))
+		    {
+		        return _xmlSettings.Element("ApplicationSettings");
+		    }
 
-			return (from section in _xmlSettings.Descendants("Section")
-					where ((section != null) && (string.Compare(section.Attribute("SectionName").Value, sectionName) == 0))
+		    return (from section in _xmlSettings.Descendants("Section")
+					where ((section != null) && (String.CompareOrdinal(section.Attribute("SectionName").Value, sectionName) == 0))
 					select section).FirstOrDefault();
 		}
 
@@ -387,11 +431,9 @@ namespace GorgonLibrary.Configuration
 		/// <exception cref="System.ArgumentException">Thrown when the applicationName parameter is empty or the <paramref name="section"/> does not exist.</exception>
 		private void AddSection(string section, string name)
 		{
-			XElement currentSection = null;
-				
-			GorgonDebug.AssertParamString(name, "name");
+		    GorgonDebug.AssertParamString(name, "name");
 
-			currentSection = GetSectionElement(section);
+			XElement currentSection = GetSectionElement(section);
 			currentSection.Add(new XElement("Section", 
 							new XAttribute("SectionName", name)));
 		}
@@ -408,12 +450,9 @@ namespace GorgonLibrary.Configuration
 		/// <exception cref="System.ArgumentException">Thrown when the settingName parameter is empty or the <paramref name="section"/> or the <paramref name="settingName"/> could not be found.</exception>
 		private object[] GetSettings(string section, string settingName, Type valueType)
 		{
-			XElement currentSection = null;
-			object[] settings = null;
+		    GorgonDebug.AssertParamString(settingName, "settingName");
 
-			GorgonDebug.AssertParamString(settingName, "settingName");
-
-			currentSection = GetSectionElement(section);
+			XElement currentSection = GetSectionElement(section);
 			if (currentSection == null)
 			{
 				return null;
@@ -421,18 +460,15 @@ namespace GorgonLibrary.Configuration
 			
 			var currentSetting = (from setting in currentSection.Descendants("Setting")
 								  where ((setting != null) && (setting.Attribute(settingName) != null))
-								  select setting);
+								  select setting).ToArray();
 
-			settings = new object[currentSetting.Count()];
-			if (currentSetting != null)
-			{
-				int i = 0;
-				foreach (var settingItem in currentSetting)
-				{
-					settings[i] = UnconvertValue(settingItem.Attribute(settingName).Value, valueType);
-					i++;
-				}
-			}
+			var settings = new object[currentSetting.Count()];
+
+            for (int i = 0; i < currentSetting.Length; i++)
+            {
+                settings[i] = UnconvertValue(currentSetting[i].Attribute(settingName).Value, valueType);
+                i++;
+            }
 
 			return settings;
 		}
@@ -448,57 +484,28 @@ namespace GorgonLibrary.Configuration
 		/// <exception cref="System.ArgumentException">Thrown when the settingName parameter is empty or the <paramref name="section"/> or the <paramref name="settingName"/> could not be found.</exception>
 		private object GetSetting(string section, string settingName, Type valueType)
 		{
-			XElement currentSection = null;
+		    GorgonDebug.AssertParamString(settingName, "settingName");
 
-			GorgonDebug.AssertParamString(settingName, "settingName");
+			XElement currentSection = GetSectionElement(section);
 
-			currentSection = GetSectionElement(section);
-			if (currentSection == null)
-				return null;
+		    if (currentSection == null)
+		    {
+		        return null;
+		    }
 
-			var currentSetting = (from settings in currentSection.Descendants("Setting")
+		    var currentSetting = (from settings in currentSection.Descendants("Setting")
 								  where ((settings != null) && (settings.Attribute(settingName) != null))
 								  select settings).FirstOrDefault();
 
-			if (currentSetting == null)
-				return null;
+		    if (currentSetting == null)
+		    {
+		        return null;
+		    }
 
-			return UnconvertValue(currentSetting.Attribute(settingName).Value, valueType);
+		    return UnconvertValue(currentSetting.Attribute(settingName).Value, valueType);
 		}
 
-		/// <summary>
-		/// Function to update an existing setting.
-		/// </summary>
-		/// <param name="section">Section that the setting belongs in.</param>
-		/// <param name="settingName">Name of the setting.</param>
-		/// <param name="value">Value for the setting.</param>
-		/// <remarks>If the setting does not exist, it will be added.</remarks>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="settingName"/> parameter was NULL (Nothing in VB.Net).</exception>
-		/// <exception cref="System.ArgumentException">Thrown when the settingName parameter is empty or the <paramref name="section"/> could not be found.</exception>
-		private void UpdateSetting(string section, string settingName, string value)
-		{
-			XElement currentSection = null;
-
-			GorgonDebug.AssertParamString(settingName, "settingName");
-
-			currentSection = GetSectionElement(section);
-			if (currentSection == null)
-			{
-				AddSection(string.Empty, section);
-				currentSection = GetSectionElement(section);
-			}
-						
-			var currentSetting = (from settings in currentSection.Descendants("Setting")
-								  where ((settings != null) && (settings.Attribute(settingName) != null))
-								  select settings).FirstOrDefault();
-
-			if (currentSetting != null)
-				currentSetting.Attribute(settingName).Value = value;
-			else
-				currentSection.Add(new XElement("Setting", new XAttribute(settingName, value)));
-		}
-
-		/// <summary>
+	    /// <summary>
 		/// Function to save the settings to a file.
 		/// </summary>
 		/// <remarks>No versioning will be applied to the settings file when the <see cref="P:GorgonLibrary.Configuration.GorgonApplicationSettings.Version">Version</see> property is NULL (Nothing in VB.Net).</remarks>
@@ -511,19 +518,33 @@ namespace GorgonLibrary.Configuration
 			{
 				XElement rootElement = _xmlSettings.Element("ApplicationSettings");
 
-				if (rootElement == null)
-					throw new GorgonException(GorgonResult.InvalidFileFormat, "The file is not a Gorgon application settings file.");
+			    if (rootElement == null)
+			    {
+                    throw new GorgonException(GorgonResult.InvalidFileFormat, 
+                                                string.Format(Resources.GOR_INVALID_SETTING_FILE, _path));
+			    }
 
-				if (rootElement.Attribute("Version") != null)
+			    if (rootElement.Attribute("Version") != null)
 					rootElement.Attribute("Version").Value = Version.ToString();
 				else
 					rootElement.Add(new XAttribute("Version", Version.ToString()));
 			}
 
+	        string directory = System.IO.Path.GetDirectoryName(_path)
+	                                 .FormatDirectory(System.IO.Path.DirectorySeparatorChar);
 
-			if (!Directory.Exists(System.IO.Path.GetDirectoryName(_path)))
-				Directory.CreateDirectory(System.IO.Path.GetDirectoryName(_path));
-			_xmlSettings.Save(_path);
+            // Ensure we have a directory to work with.
+            if (string.IsNullOrWhiteSpace(directory))
+            {
+                throw new DirectoryNotFoundException();
+            }
+
+	        if (!Directory.Exists(directory))
+	        {
+	            Directory.CreateDirectory(directory);
+	        }
+
+	        _xmlSettings.Save(_path);
 		}
 		
 		/// <summary>
@@ -533,16 +554,22 @@ namespace GorgonLibrary.Configuration
 		/// is not the same, then the settings are reset to their initial values.</remarks>
 		public void Load()
 		{
-			if (File.Exists(_path))
-			{
-				_xmlSettings = XDocument.Load(_path);
-				if (CheckVersion())
-					DeserializeSettings();
-				else
-					Clear();
-			}
-			else
-				Clear();
+		    if (File.Exists(_path))
+		    {
+		        _xmlSettings = XDocument.Load(_path);
+		        if (CheckVersion())
+		        {
+		            DeserializeSettings();
+		        }
+		        else
+		        {
+		            Clear();
+		        }
+		    }
+		    else
+		    {
+		        Clear();
+		    }
 		}
 
 		/// <summary>
@@ -568,12 +595,14 @@ namespace GorgonLibrary.Configuration
 		{
 			GorgonDebug.AssertParamString(applicationName, "applicationName");
 
+            _properties = new Dictionary<PropertyInfo, ApplicationSettingAttribute>();
+
 			ApplicationName = applicationName;
 			Version = settingsVersion;
 
 			_path = GorgonComputerInfo.FolderPath(Environment.SpecialFolder.ApplicationData);
-			_path += System.IO.Path.DirectorySeparatorChar.ToString();
-			_path += applicationName.RemoveIllegalFilenameChars() + System.IO.Path.DirectorySeparatorChar.ToString();
+			_path += System.IO.Path.DirectorySeparatorChar.ToString(CultureInfo.InvariantCulture);
+			_path += applicationName.RemoveIllegalFilenameChars() + System.IO.Path.DirectorySeparatorChar.ToString(CultureInfo.InvariantCulture);
 			_path += System.IO.Path.ChangeExtension(GetType().Assembly.GetName().Name.RemoveIllegalFilenameChars(), "config.xml");
 
 			Clear();

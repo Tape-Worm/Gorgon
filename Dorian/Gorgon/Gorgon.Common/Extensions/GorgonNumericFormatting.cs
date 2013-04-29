@@ -25,7 +25,9 @@
 #endregion
 
 using System;
+using System.Globalization;
 using GorgonLibrary.Diagnostics;
+using GorgonLibrary.Properties;
 
 namespace GorgonLibrary
 {
@@ -35,6 +37,17 @@ namespace GorgonLibrary
 	public static class GorgonNumericFormattingExtension
 	{
 		#region Methods.
+        /// <summary>
+        /// FUnction to return a string formatted to the current culture.
+        /// </summary>
+        /// <param name="value">Value to format.</param>
+        /// <param name="sizeType">Size value to use.</param>
+        /// <returns>The string formatted to the current UI culture.</returns>
+        private static string GetCultureUIString(double value, string sizeType)
+        {
+            return string.Format(CultureInfo.CurrentUICulture, "{0:0.0} {1}", value, sizeType);
+        }
+
 		/// <summary>
 		/// Function to return a formatted string containing the memory amount.
 		/// </summary>
@@ -42,7 +55,7 @@ namespace GorgonLibrary
 		/// <returns>A string containing the formatted amount of memory.</returns>
 		public static string FormatMemory(this byte amount)
 		{
-			return amount.ToString() + " bytes";
+		    return GetCultureUIString(amount, Resources.GOR_BYTES);
 		}
 
 		/// <summary>
@@ -52,15 +65,9 @@ namespace GorgonLibrary
 		/// <returns>A string containing the formatted amount of memory.</returns>
 		public static string FormatMemory(this short amount)
 		{
-			double scale = amount;
-			string result = string.Empty;
+		    double scale = System.Math.Abs(amount) / 1024.0;
 
-			scale = amount / 1024.0;
-
-			if (scale >= 1.0)
-				return scale.ToString("0.0") + " KB";
-
-			return amount.ToString() + " bytes";
+		    return GetCultureUIString(scale, scale >= 1.0 ? Resources.GOR_KB : Resources.GOR_BYTES);
 		}
 
 		/// <summary>
@@ -70,15 +77,9 @@ namespace GorgonLibrary
 		/// <returns>A string containing the formatted amount of memory.</returns>
 		public static string FormatMemory(this ushort amount)
 		{
-			double scale = amount;
-			string result = string.Empty;
+		    double scale = amount / 1024.0;
 
-			scale = amount / 1024.0;
-
-			if (scale >= 1.0)
-				return scale.ToString("0.0") + " KB";
-
-			return amount.ToString() + " bytes";
+		    return GetCultureUIString(scale, scale >= 1.0 ? Resources.GOR_KB : Resources.GOR_BYTES);
 		}
 
 		/// <summary>
@@ -88,28 +89,23 @@ namespace GorgonLibrary
 		/// <returns>A string containing the formatted amount of memory.</returns>
 		public static string FormatMemory(this int amount)
 		{
-			double scale = amount;
-			string result = string.Empty;
+		    double scale = System.Math.Abs(amount) / 1073741824.0;
 
-			if (amount < 0)
-				return "Unknown.";
+		    if (scale >= 1.0)
+		    {
+                return GetCultureUIString(scale, Resources.GOR_GB);
+		    }
 
-			scale = amount / 1073741824.0;
+		    scale = amount / 1048576.0;
 
-			if (scale >= 1.0)
-				return scale.ToString("0.0") + " GB";
+		    if (scale >= 1.0)
+		    {
+                return GetCultureUIString(scale, Resources.GOR_MB);
+		    }
 
-			scale = amount / 1048576.0;
+		    scale = amount / 1024.0;
 
-			if (scale >= 1.0)
-				return scale.ToString("0.0") + " MB";
-
-			scale = amount / 1024.0;
-
-			if (scale >= 1.0)
-				return scale.ToString("0.0") + " KB";
-
-			return amount.ToString() + " bytes";
+		    return GetCultureUIString(scale, scale >= 1.0 ? Resources.GOR_KB : Resources.GOR_BYTES);
 		}
 
 		/// <summary>
@@ -119,28 +115,23 @@ namespace GorgonLibrary
 		/// <returns>A string containing the formatted amount of memory.</returns>
 		public static string FormatMemory(this uint amount)
 		{
-			double scale = amount;
-			string result = string.Empty;
+            double scale = amount / 1073741824.0;
 
-			if (amount < 0)
-				return "Unknown.";
+            if (scale >= 1.0)
+            {
+                return GetCultureUIString(scale, Resources.GOR_GB);
+            }
 
-			scale = amount / 1073741824.0;
+            scale = amount / 1048576.0;
 
-			if (scale >= 1.0)
-				return scale.ToString("0.0") + " GB";
+            if (scale >= 1.0)
+            {
+                return GetCultureUIString(scale, Resources.GOR_MB);
+            }
 
-			scale = amount / 1048576.0;
+            scale = amount / 1024.0;
 
-			if (scale >= 1.0)
-				return scale.ToString("0.0") + " MB";
-
-			scale = amount / 1024.0;
-
-			if (scale >= 1.0)
-				return scale.ToString("0.0") + " KB";
-
-			return amount.ToString() + " bytes";
+		    return GetCultureUIString(scale, scale >= 1.0 ? Resources.GOR_KB : Resources.GOR_BYTES);
 		}
 
 		/// <summary>
@@ -150,38 +141,37 @@ namespace GorgonLibrary
 		/// <returns>A string containing the formatted amount of memory.</returns>
 		public static string FormatMemory(this long amount)
 		{
-			double scale = amount;
-			string result = string.Empty;
+		    double scale = System.Math.Abs(amount) / 1125899906842624.0;
 
-			if (amount < 0)
-				return "Unknown.";
+		    if (scale >= 1.0)
+		    {
+                return GetCultureUIString(scale, Resources.GOR_PB);
+		    }
 
-			scale = amount / 1125899906842624.0;
+		    scale = amount / 1099511627776.0;
 
-			if (scale >= 1.0)
-				return scale.ToString("0.0") + " PB";
-
-			scale = amount / 1099511627776.0;
-
-			if (scale >= 1.0)
-				return scale.ToString("0.0") + " TB";
+		    if (scale >= 1.0)
+		    {
+                return GetCultureUIString(scale, Resources.GOR_TB);
+		    }
 
 			scale = amount / 1073741824.0;
 
-			if (scale >= 1.0)
-				return scale.ToString("0.0") + " GB";
+		    if (scale >= 1.0)
+		    {
+                return GetCultureUIString(scale, Resources.GOR_GB);
+		    }
 
-			scale = amount / 1048576.0;
+		    scale = amount / 1048576.0;
 
 			if (scale >= 1.0)
-				return scale.ToString("0.0") + " MB";
+			{
+                return GetCultureUIString(scale, Resources.GOR_MB);
+			}
 
 			scale = amount / 1024.0;
 
-			if (scale >= 1.0)
-				return scale.ToString("0.0") + " KB";
-
-			return amount.ToString() + " bytes";
+		    return GetCultureUIString(scale, scale >= 1.0 ? Resources.GOR_KB : Resources.GOR_BYTES);
 		}
 
 		/// <summary>
@@ -191,38 +181,37 @@ namespace GorgonLibrary
 		/// <returns>A string containing the formatted amount of memory.</returns>
 		public static string FormatMemory(this ulong amount)
 		{
-			double scale = amount;
-			string result = string.Empty;
+		    double scale = amount / 1125899906842624.0;
 
-			if (amount < 0)
-				return "Unknown.";
+		    if (scale >= 1.0)
+		    {
+                return GetCultureUIString(scale, Resources.GOR_PB);
+		    }
 
-			scale = amount / 1125899906842624.0;
+		    scale = amount / 1099511627776.0;
 
-			if (scale >= 1.0)
-				return scale.ToString("0.0") + " PB";
-
-			scale = amount / 1099511627776.0;
-
-			if (scale >= 1.0)
-				return scale.ToString("0.0") + " TB";
+		    if (scale >= 1.0)
+		    {
+                return GetCultureUIString(scale, Resources.GOR_TB);
+		    }
 
 			scale = amount / 1073741824.0;
 
-			if (scale >= 1.0)
-				return scale.ToString("0.0") + " GB";
+		    if (scale >= 1.0)
+		    {
+                return GetCultureUIString(scale, Resources.GOR_GB);
+		    }
 
-			scale = amount / 1048576.0;
+		    scale = amount / 1048576.0;
 
 			if (scale >= 1.0)
-				return scale.ToString("0.0") + " MB";
+			{
+                return GetCultureUIString(scale, Resources.GOR_MB);
+			}
 
 			scale = amount / 1024.0;
 
-			if (scale >= 1.0)
-				return scale.ToString("0.0") + " KB";
-
-			return amount.ToString() + " bytes";
+		    return GetCultureUIString(scale, scale >= 1.0 ? Resources.GOR_KB : Resources.GOR_BYTES);
 		}
 
 		/// <summary>
@@ -232,39 +221,38 @@ namespace GorgonLibrary
 		/// <returns>A string containing the formatted amount of memory.</returns>
 		public static string FormatMemory(this float amount)
 		{
-			double scale = amount;
-			string result = string.Empty;
+		    double scale = System.Math.Abs(amount) / 1125899906842624.0;
 
-			if (amount < 0)
-				return "Unknown.";
+            if (scale >= 1.0)
+            {
+                return GetCultureUIString(scale, Resources.GOR_PB);
+            }
 
-			scale = amount / 1125899906842624.0;
+            scale = amount / 1099511627776.0;
 
-			if (scale >= 1.0)
-				return scale.ToString("0.0") + " PB";
+            if (scale >= 1.0)
+            {
+                return GetCultureUIString(scale, Resources.GOR_TB);
+            }
 
-			scale = amount / 1099511627776.0;
+            scale = amount / 1073741824.0;
 
-			if (scale >= 1.0)
-				return scale.ToString("0.0") + " TB";
+            if (scale >= 1.0)
+            {
+                return GetCultureUIString(scale, Resources.GOR_GB);
+            }
 
-			scale = amount / 1073741824.0;
+            scale = amount / 1048576.0;
 
-			if (scale >= 1.0)
-				return scale.ToString("0.0") + " GB";
+            if (scale >= 1.0)
+            {
+                return GetCultureUIString(scale, Resources.GOR_MB);
+            }
 
-			scale = amount / 1048576.0;
+            scale = amount / 1024.0;
 
-			if (scale >= 1.0)
-				return scale.ToString("0.0") + " MB";
-
-			scale = amount / 1024.0;
-
-			if (scale >= 1.0)
-				return scale.ToString("0.0") + " KB";
-
-			return amount.ToString() + " bytes";
-		}
+            return GetCultureUIString(scale, scale >= 1.0 ? Resources.GOR_KB : Resources.GOR_BYTES);
+        }
 
 		/// <summary>
 		/// Function to return a formatted string containing the memory amount.
@@ -273,39 +261,38 @@ namespace GorgonLibrary
 		/// <returns>A string containing the formatted amount of memory.</returns>
 		public static string FormatMemory(this double amount)
 		{
-			double scale = amount;
-			string result = string.Empty;
+		    double scale = System.Math.Abs(amount) / 1125899906842624.0;
 
-			if (amount < 0)
-				return "Unknown.";
+            if (scale >= 1.0)
+            {
+                return GetCultureUIString(scale, Resources.GOR_PB);
+            }
 
-			scale = amount / 1125899906842624.0;
+            scale = amount / 1099511627776.0;
 
-			if (scale >= 1.0)
-				return scale.ToString("0.0") + " PB";
+            if (scale >= 1.0)
+            {
+                return GetCultureUIString(scale, Resources.GOR_TB);
+            }
 
-			scale = amount / 1099511627776.0;
+            scale = amount / 1073741824.0;
 
-			if (scale >= 1.0)
-				return scale.ToString("0.0") + " TB";
+            if (scale >= 1.0)
+            {
+                return GetCultureUIString(scale, Resources.GOR_GB);
+            }
 
-			scale = amount / 1073741824.0;
+            scale = amount / 1048576.0;
 
-			if (scale >= 1.0)
-				return scale.ToString("0.0") + " GB";
+            if (scale >= 1.0)
+            {
+                return GetCultureUIString(scale, Resources.GOR_MB);
+            }
 
-			scale = amount / 1048576.0;
+            scale = amount / 1024.0;
 
-			if (scale >= 1.0)
-				return scale.ToString("0.0") + " MB";
-
-			scale = amount / 1024.0;
-
-			if (scale >= 1.0)
-				return scale.ToString("0.0") + " KB";
-
-			return amount.ToString() + " bytes";
-		}
+            return GetCultureUIString(scale, scale >= 1.0 ? Resources.GOR_KB : Resources.GOR_BYTES);
+        }
 
 		/// <summary>
 		/// Function to format a byte value into a hexadecimal string.
@@ -385,11 +372,10 @@ namespace GorgonLibrary
 		/// <remarks>This method will take into account whether the application is x64 or x86 and will format accordingly.</remarks>
 		public static string FormatHex(this IntPtr pointer)
 		{
-			if (GorgonComputerInfo.PlatformArchitecture == PlatformArchitecture.x64)
-				return pointer.ToInt64().ToString("x").PadLeft(16, '0');
-			else
-				return pointer.ToInt32().ToString("x").PadLeft(8, '0');
+		    return GorgonComputerInfo.PlatformArchitecture == PlatformArchitecture.x64
+		               ? pointer.ToInt64().ToString("x").PadLeft(16, '0')
+		               : pointer.ToInt32().ToString("x").PadLeft(8, '0');
 		}
-		#endregion
+	    #endregion
 	}
 }

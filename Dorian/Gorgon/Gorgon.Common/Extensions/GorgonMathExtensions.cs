@@ -34,8 +34,8 @@ namespace GorgonLibrary.Math
 	public static class GorgonMathExtensions
 	{
 		#region Constants.
-		private const float degConvert = ((float)System.Math.PI / 180.0f);		// Constant containing the value used to convert degrees to radians.
-		private const float radConvert = (180.0f / (float)System.Math.PI);		// Constant containing the value used to convert radians to degrees.
+		private const float DegConvert = ((float)System.Math.PI / 180.0f);		// Constant containing the value used to convert degrees to radians.
+		private const float RadConvert = (180.0f / (float)System.Math.PI);		// Constant containing the value used to convert radians to degrees.
 		#endregion
 
 		#region Methods.
@@ -431,7 +431,7 @@ namespace GorgonLibrary.Math
 		/// <returns>The angle in degrees.</returns>
 		public static float Degrees(this float radians)
 		{
-			return radians * GorgonMathExtensions.radConvert;
+			return radians * RadConvert;
 		}
 
 		/// <summary>
@@ -441,7 +441,7 @@ namespace GorgonLibrary.Math
 		/// <returns>The angle in radians.</returns>
 		public static float Radians(this float degrees)
 		{
-			return degrees * GorgonMathExtensions.degConvert;
+			return degrees * DegConvert;
 		}
 
 		/// <summary>
@@ -451,7 +451,7 @@ namespace GorgonLibrary.Math
 		/// <returns>The angle in degrees.</returns>
 		public static decimal Degrees(this decimal radians)
 		{
-			return radians * (decimal)GorgonMathExtensions.radConvert;
+			return radians * (decimal)RadConvert;
 		}
 
 		/// <summary>
@@ -461,7 +461,7 @@ namespace GorgonLibrary.Math
 		/// <returns>The angle in radians.</returns>
 		public static decimal Radians(this decimal degrees)
 		{
-			return degrees * (decimal)GorgonMathExtensions.degConvert;
+			return degrees * (decimal)DegConvert;
 		}
 
 
@@ -472,7 +472,7 @@ namespace GorgonLibrary.Math
 		/// <returns>The angle in degrees.</returns>
 		public static double Degrees(this double radians)
 		{
-			return radians * GorgonMathExtensions.radConvert;
+			return radians * RadConvert;
 		}
 
 		/// <summary>
@@ -482,7 +482,7 @@ namespace GorgonLibrary.Math
 		/// <returns>The angle in radians.</returns>
 		public static double Radians(this double degrees)
 		{
-			return degrees * GorgonMathExtensions.degConvert;
+			return degrees * DegConvert;
 		}
 
 		/// <summary>
@@ -844,14 +844,5 @@ namespace GorgonLibrary.Math
             return (value < 0) ? (int)value : ((int)value) + 1;
         }
         #endregion
-
-		#region Constructor.
-		/// <summary>
-		/// Initializes the <see cref="GorgonMathExtensions"/> class.
-		/// </summary>
-		static GorgonMathExtensions()
-		{
-		}
-		#endregion
 	}
 }

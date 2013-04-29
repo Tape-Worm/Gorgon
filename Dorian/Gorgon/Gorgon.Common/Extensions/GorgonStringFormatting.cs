@@ -66,25 +66,6 @@ namespace GorgonLibrary
         /// </summary>
         /// <param name="theString">The string to shorten.</param>
         /// <param name="maxWidth">The maximum width, in characters, of the string.</param>
-        /// <returns>The shortened string with ellipses.</returns>
-        /// <remarks>This overload will output a shorted version of <paramref name="theString"/> and will prefix an ellipses '...' to it. 
-        /// <para>This function will do formatting on the string, such as tab replacement and split the newline characters into new lines before processing. 
-        /// This way it will get the true length of the string.</para>
-        /// <para>If the <paramref name='maxWidth'/> is less than the length of a line, then the ellipses will be added to the string, and the string will 
-        /// be truncated to the max width plus the length of the ellipses, otherwise it will just output the line.</para>
-        /// <para>If the maxwidth is less than the length of the string plus the ellipses length, then just the first few characters (up to the width 
-        /// specified by max width) will be output without ellipses.</para>
-        /// </remarks>        
-        public static string Ellipses(this string theString, int maxWidth)
-        {
-            return Ellipses(theString, maxWidth, false);
-        }
-
-        /// <summary>
-        /// Function to shorten a string and prefix an ellipses to the string.
-        /// </summary>
-        /// <param name="theString">The string to shorten.</param>
-        /// <param name="maxWidth">The maximum width, in characters, of the string.</param>
         /// <param name="values">Values to put into the string placeholders.</param>
         /// <returns>The shortened string with ellipses.</returns>
         /// <remarks>This overload will output a shorted version of <paramref name="theString"/> and will prefix an ellipses '...' to it. 
@@ -98,27 +79,6 @@ namespace GorgonLibrary
         public static string Ellipses(this string theString, int maxWidth, params object[] values)
         {
             return Ellipses(theString, maxWidth, false, 4, values);
-        }
-
-        /// <summary>
-        /// Function to shorten a string and prefix or postfix an ellipses to the string.
-        /// </summary>
-        /// <param name="theString">The string to shorten.</param>
-        /// <param name="maxWidth">The maximum width, in characters, of the string.</param>
-        /// <param name="prefix">TRUE to put the ellipses on the beginning of the string, or FALSE to put on the end.</param>
-        /// <returns>The shortened string with ellipses.</returns>
-        /// <remarks>This will output a shorted version of <paramref name="theString"/> and will prefix or postfix an ellipses '...' to it. 
-        /// <para>This function will do formatting on the string, such as tab replacement and split the newline characters into new lines before processing. 
-        /// This way it will get the true length of the string.</para>
-        /// <para>If the <paramref name='maxWidth'/> is less than the length of a line, then the ellipses will be added to the string, and the string will 
-        /// be truncated to the max width plus the length of the ellipses, otherwise it will just output the line.</para>
-        /// <para>If the maxwidth is less than the length of the string plus the ellipses length, then just the first few characters (up to the width 
-        /// specified by max width) will be output without ellipses.</para>
-        /// <para>Specifying TRUE for <paramref name="prefix"/> will put the ellipses on the beginning of the string, FALSE will put it on the end.</para>
-        /// </remarks>        
-        public static string Ellipses(this string theString, int maxWidth, bool prefix)
-        {
-            return Ellipses(theString, maxWidth, prefix, 4, null);
         }
 
         /// <summary>
@@ -143,27 +103,6 @@ namespace GorgonLibrary
             return Ellipses(theString, maxWidth, prefix, 4, values);
         }
 
-        /// <summary>
-        /// Function to shorten a string and prefix or postfix an ellipses to the string.
-        /// </summary>
-        /// <param name="theString">The string to shorten.</param>
-        /// <param name="maxWidth">The maximum width, in characters, of the string.</param>
-        /// <param name="prefix">TRUE to put the ellipses on the beginning of the string, or FALSE to put on the end.</param>
-        /// <param name="tabSpaceCount">Number of spaces to insert for the tab character.</param>
-        /// <returns>The shortened string with ellipses.</returns>
-        /// <remarks>This will output a shorted version of <paramref name="theString"/> and will prefix or postfix an ellipses '...' to it. 
-        /// <para>This function will do formatting on the string, such as tab replacement and split the newline characters into new lines before processing.  
-        /// This way it will get the true length of the string.</para>
-        /// <para>If the <paramref name='maxWidth'/> is less than the length of a line, then the ellipses will be added to the string, and the string will 
-        /// be truncated to the max width plus the length of the ellipses, otherwise it will just output the line.</para>
-        /// <para>If the maxwidth is less than the length of the string plus the ellipses length, then just the first few characters (up to the width 
-        /// specified by max width) will be output without ellipses.</para>
-        /// <para>Specifying TRUE for <paramref name="prefix"/> will put the ellipses on the beginning of the string, FALSE will put it on the end.</para>
-        /// </remarks>        
-        public static string Ellipses(this string theString, int maxWidth, bool prefix, int tabSpaceCount)
-        {
-            return Ellipses(theString, maxWidth, prefix, tabSpaceCount, null);
-        }
 
         /// <summary>
         /// Function to shorten a string and prefix or postfix an ellipses to the string.
@@ -186,9 +125,8 @@ namespace GorgonLibrary
         public static string Ellipses(this string theString, int maxWidth, bool prefix, int tabSpaceCount, params object[] values)
         {
             string result = string.Empty;
-            IList<string> lines = null;
             string tabSpaces = string.Empty;
-            string ellipses = "...";
+            const string ellipses = "...";
 
             if (string.IsNullOrEmpty(theString))
             {
@@ -214,7 +152,7 @@ namespace GorgonLibrary
             theString = theString.Replace("\t", tabSpaces);
 
             // Split into multiple lines.            
-            lines = theString.Split(new char[] { '\n' });
+            IList<string> lines = theString.Split(new[] { '\n' });
 
             // Process the string.
             for (int i = 0; i < lines.Count; i++)
@@ -227,7 +165,6 @@ namespace GorgonLibrary
 
                 if (lines[i].Length >= maxWidth)
                 {
-                    string shortenedLine = string.Empty;
                     int overrun = lines[i].Length - maxWidth;
                     int difference = lines[i].Length - overrun;
 
@@ -320,13 +257,5 @@ namespace GorgonLibrary
 
             return result;
         }
-
-        /// <summary>
-        /// Initializes the <see cref="GorgonStringFormattingExtension"/> class.
-        /// </summary>
-        static GorgonStringFormattingExtension()
-		{
-			
-		}
 	}
 }

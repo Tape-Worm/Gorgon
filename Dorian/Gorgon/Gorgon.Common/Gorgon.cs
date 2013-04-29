@@ -151,7 +151,7 @@ namespace GorgonLibrary
 		#endregion
 
 		#region Variables.
-        private static readonly GorgonTrackedObjectCollection _trackedObjects;	// Tracked objects.
+        private static readonly GorgonDisposableObjectCollection _trackedObjects;	// Tracked objects.
         private static Form _mainForm;									        // Main application form.
 		private static bool _quitSignalled;								        // Flag to indicate that the application needs to close.
 		private static Func<bool> _loop;									    // Application loop method.
@@ -660,7 +660,7 @@ namespace GorgonLibrary
 		/// </summary>
 		static Gorgon()		
 		{			
-			_trackedObjects = new GorgonTrackedObjectCollection();
+			_trackedObjects = new GorgonDisposableObjectCollection();
 			PlugIns = new GorgonPlugInFactory();
 			Log = new GorgonLogFile(LogFile, "Tape_Worm");
 

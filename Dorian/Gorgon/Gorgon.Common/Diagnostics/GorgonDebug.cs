@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using GorgonLibrary.Properties;
 
 namespace GorgonLibrary.Diagnostics
 {
@@ -43,10 +44,15 @@ namespace GorgonLibrary.Diagnostics
 		public static void AssertParamString(string value, string paramName)
 		{
 #if DEBUG
-			if (value == null)
-				throw new ArgumentNullException(paramName);
-			if (value == string.Empty)
-				throw new ArgumentException("The parameter must not be a zero-length string.", paramName);
+		    if (value == null)
+		    {
+		        throw new ArgumentNullException(paramName);
+		    }
+
+		    if (value == string.Empty)
+		    {
+		        throw new ArgumentException(Resources.GOR_PARAMETER_MUST_NOT_BE_EMPTY, paramName);
+		    }
 #endif
 		}
 
@@ -62,11 +68,15 @@ namespace GorgonLibrary.Diagnostics
 		public static void AssertParamRange(int value, int min, int max, bool minInclusive, bool maxInclusive, string paramName)
 		{
 #if DEBUG
-			if (((minInclusive) && (value < min)) || ((!minInclusive) && (value <= min)))
-				throw new ArgumentOutOfRangeException(paramName, "The value '" + value.ToString() + "' is less than the minimum value '" + min.ToString() + "'");
+		    if (((minInclusive) && (value < min)) || ((!minInclusive) && (value <= min)))
+		    {
+		        throw new ArgumentOutOfRangeException(paramName, string.Format(Resources.GOR_VALUE_IS_LESS_THAN, value, min));
+		    }
 
-			if (((maxInclusive) && (value > max)) || ((!maxInclusive) && (value >= max)))
-				throw new ArgumentOutOfRangeException(paramName, "The value '" + value.ToString() + "' is greater than the maximum value '" + max.ToString() + "'");
+		    if (((maxInclusive) && (value > max)) || ((!maxInclusive) && (value >= max)))
+		    {
+                throw new ArgumentOutOfRangeException(paramName, string.Format(Resources.GOR_VALUE_IS_GREATER_THAN, value, min));
+            }
 #endif
 		}
 
@@ -94,7 +104,9 @@ namespace GorgonLibrary.Diagnostics
 		{
 #if DEBUG
 			if ((index < 0) || (index >= count))
-				throw new IndexOutOfRangeException("Out of range.  The index '" + index.ToString() + "' must be between 0 and " + count + ".");
+			{
+                throw new IndexOutOfRangeException(string.Format(Resources.GOR_INDEX_OUT_OF_RANGE, index, count));
+			}
 #endif
 		}
 
@@ -107,8 +119,10 @@ namespace GorgonLibrary.Diagnostics
 		public static void AssertNull<T>(T value, string paramName) where T : class
 		{
 #if DEBUG
-			if (value == null)
-				throw new ArgumentNullException(paramName);
+		    if (value == null)
+		    {
+		        throw new ArgumentNullException(paramName);
+		    }
 #endif
 		}
 		#endregion

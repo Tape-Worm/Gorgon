@@ -110,11 +110,29 @@ namespace GorgonLibrary.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to bytes.
+        /// </summary>
+        internal static string GOR_BYTES {
+            get {
+                return ResourceManager.GetString("GOR_BYTES", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The collection is read only..
         /// </summary>
         internal static string GOR_COLLECTION_READ_ONLY {
             get {
                 return ResourceManager.GetString("GOR_COLLECTION_READ_ONLY", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to GB.
+        /// </summary>
+        internal static string GOR_GB {
+            get {
+                return ResourceManager.GetString("GOR_GB", resourceCulture);
             }
         }
         
@@ -148,6 +166,24 @@ namespace GorgonLibrary.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The index is out of range.  The index value [{0}] must be between 0 and {1}..
+        /// </summary>
+        internal static string GOR_INDEX_OUT_OF_RANGE {
+            get {
+                return ResourceManager.GetString("GOR_INDEX_OUT_OF_RANGE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &apos;{0}&apos; is not a Gorgon application settings file..
+        /// </summary>
+        internal static string GOR_INVALID_SETTING_FILE {
+            get {
+                return ResourceManager.GetString("GOR_INVALID_SETTING_FILE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The item &apos;{0}&apos; already exists in this collection..
         /// </summary>
         internal static string GOR_ITEM_ALREADY_EXISTS {
@@ -157,11 +193,29 @@ namespace GorgonLibrary.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to KB.
+        /// </summary>
+        internal static string GOR_KB {
+            get {
+                return ResourceManager.GetString("GOR_KB", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The key &apos;{0}&apos; does not exist in this collection..
         /// </summary>
         internal static string GOR_KEY_NOT_FOUND {
             get {
                 return ResourceManager.GetString("GOR_KEY_NOT_FOUND", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to MB.
+        /// </summary>
+        internal static string GOR_MB {
+            get {
+                return ResourceManager.GetString("GOR_MB", resourceCulture);
             }
         }
         
@@ -180,6 +234,69 @@ namespace GorgonLibrary.Properties {
         internal static string GOR_PARAMETER_MUST_NOT_BE_EMPTY {
             get {
                 return ResourceManager.GetString("GOR_PARAMETER_MUST_NOT_BE_EMPTY", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to PB.
+        /// </summary>
+        internal static string GOR_PB {
+            get {
+                return ResourceManager.GetString("GOR_PB", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cannot enumerate the property &apos;{0}&apos; the generic parameter type is not a primitive or string type..
+        /// </summary>
+        internal static string GOR_PROPERTY_NOT_PRIMITIVE_OR_STRING {
+            get {
+                return ResourceManager.GetString("GOR_PROPERTY_NOT_PRIMITIVE_OR_STRING", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cannot read beyond the end of the stream..
+        /// </summary>
+        internal static string GOR_STREAM_EOF {
+            get {
+                return ResourceManager.GetString("GOR_STREAM_EOF", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The stream is read-only..
+        /// </summary>
+        internal static string GOR_STREAM_IS_READONLY {
+            get {
+                return ResourceManager.GetString("GOR_STREAM_IS_READONLY", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to TB.
+        /// </summary>
+        internal static string GOR_TB {
+            get {
+                return ResourceManager.GetString("GOR_TB", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The value &apos;{0}&apos; is greater than or equal to the maximum value &apos;{1}&apos;.
+        /// </summary>
+        internal static string GOR_VALUE_IS_GREATER_THAN {
+            get {
+                return ResourceManager.GetString("GOR_VALUE_IS_GREATER_THAN", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The value &apos;{0}&apos; is less than or equal to the minimum value &apos;{1}&apos;.
+        /// </summary>
+        internal static string GOR_VALUE_IS_LESS_THAN {
+            get {
+                return ResourceManager.GetString("GOR_VALUE_IS_LESS_THAN", resourceCulture);
             }
         }
         
