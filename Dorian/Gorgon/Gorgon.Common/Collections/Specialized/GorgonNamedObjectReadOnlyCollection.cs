@@ -26,7 +26,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace GorgonLibrary.Collections.Specialized
 {
@@ -34,7 +33,7 @@ namespace GorgonLibrary.Collections.Specialized
 	/// Read-only collection for Gorgon library named objects.
 	/// </summary>
 	/// <typeparam name="T">Type of object, must implement <see cref="GorgonLibrary.INamedObject">INamedObject</see>.</typeparam>
-	public class GorgonNamedObjectReadOnlyCollection<T>
+	public sealed class GorgonNamedObjectReadOnlyCollection<T>
 		: GorgonBaseNamedObjectList<T>
 		where T : INamedObject
 	{
@@ -87,14 +86,15 @@ namespace GorgonLibrary.Collections.Specialized
 		public GorgonNamedObjectReadOnlyCollection(bool caseSensitive, IEnumerable<T> source)
 			: base(caseSensitive)
 		{
-			if (source == null)
-				throw new ArgumentNullException("source");
+		    if (source == null)
+		    {
+		        throw new ArgumentNullException("source");
+		    }
 
-			if (source.Count() != 0)
-			{
-				foreach (T item in source)
-					AddItem(item);
-			}
+		    foreach (T item in source)
+		    {
+		        AddItem(item);
+		    }
 		}
 		#endregion
 	}

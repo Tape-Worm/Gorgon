@@ -146,7 +146,7 @@
   <data name="GorgonLogo3" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         iVBORw0KGgoAAAANSUhEUgAAAMgAAAA4CAYAAAC4yreHAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6
-        JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAACXBIWXMAAAsOAAALDgFAvuFBAABVuUlE
+        JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAACXBIWXMAAAsMAAALDAE/QCLIAABVuUlE
         QVR4Xu29BXhUV9c2HFoq0JYWSinuEpwElxBDSnFa3N2Ku7sFd3dI8BAjBvGEuLu720wyLvtf905OmeYJ
         T/s+3/e+1/f27+61OpOZc86cs/e617rvtfc56JmYmPxXrY6pqWldsvr0vomZ+YiOvXp0NmjfvP6w4cMG
         mfXr1WFEuxYNzNs0+8a4S/sWA0xMjLsNNxranF6/MTU1+7x6f73/xEaMGKFnaGio9z/U6tRi/7T/vzUd
@@ -565,5 +565,44 @@ Code: 0x{2}</value>
   </data>
   <data name="GOR_KEY_NOT_FOUND" xml:space="preserve">
     <value>The key '{0}' does not exist in this collection.</value>
+  </data>
+  <data name="GOR_INVALID_SETTING_FILE" xml:space="preserve">
+    <value>'{0}' is not a Gorgon application settings file.</value>
+  </data>
+  <data name="GOR_PROPERTY_NOT_PRIMITIVE_OR_STRING" xml:space="preserve">
+    <value>Cannot enumerate the property '{0}' the generic parameter type is not a primitive or string type.</value>
+  </data>
+  <data name="GOR_BYTES" xml:space="preserve">
+    <value>bytes</value>
+  </data>
+  <data name="GOR_GB" xml:space="preserve">
+    <value>GB</value>
+  </data>
+  <data name="GOR_INDEX_OUT_OF_RANGE" xml:space="preserve">
+    <value>The index is out of range.  The index value [{0}] must be between 0 and {1}.</value>
+  </data>
+  <data name="GOR_KB" xml:space="preserve">
+    <value>KB</value>
+  </data>
+  <data name="GOR_MB" xml:space="preserve">
+    <value>MB</value>
+  </data>
+  <data name="GOR_PB" xml:space="preserve">
+    <value>PB</value>
+  </data>
+  <data name="GOR_STREAM_EOF" xml:space="preserve">
+    <value>Cannot read beyond the end of the stream.</value>
+  </data>
+  <data name="GOR_STREAM_IS_READONLY" xml:space="preserve">
+    <value>The stream is read-only.</value>
+  </data>
+  <data name="GOR_TB" xml:space="preserve">
+    <value>TB</value>
+  </data>
+  <data name="GOR_VALUE_IS_GREATER_THAN" xml:space="preserve">
+    <value>The value '{0}' is greater than or equal to the maximum value '{1}'</value>
+  </data>
+  <data name="GOR_VALUE_IS_LESS_THAN" xml:space="preserve">
+    <value>The value '{0}' is less than or equal to the minimum value '{1}'</value>
   </data>
 </root>

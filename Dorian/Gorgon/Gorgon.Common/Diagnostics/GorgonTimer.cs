@@ -35,13 +35,13 @@ namespace GorgonLibrary.Diagnostics
 	public class GorgonTimer
 	{
 		#region Variables.
-		private static bool _usingLowRes = false;		// Flag to indicate that we're using low resolution timers.
-		private bool _isQPFtimer = false;				// Flag to indicate that this is a Query Performance timer.
-		private long _frequency = 0;					// Frequency for the timer.
-		private long _startTime = 0;					// Starting timer time.
-		private long _startTick = 0;					// Starting tick.
-		private long _currentTicks = 0;					// Current number of ticks elapsed.
-		private double _microSeconds = 0.0;				// Number of microseconds elapsed.
+		private static bool _usingLowRes;		// Flag to indicate that we're using low resolution timers.
+		private bool _isHighResTimer;			// Flag to indicate that this is a Query Performance timer.
+		private long _frequency;				// Frequency for the timer.
+		private long _startTime;				// Starting timer time.
+		private long _startTick;				// Starting tick.
+		private long _currentTicks;				// Current number of ticks elapsed.
+		private double _microSeconds;			// Number of microseconds elapsed.
 		#endregion
 
 		#region Properties.
@@ -143,11 +143,11 @@ namespace GorgonLibrary.Diagnostics
 		{
 			get
 			{
-				return _isQPFtimer;
+				return _isHighResTimer;
 			}
 			set
 			{
-				_isQPFtimer = value;
+				_isHighResTimer = value;
 				Reset();
 			}
 		}
@@ -157,13 +157,13 @@ namespace GorgonLibrary.Diagnostics
 		/// <summary>
 		/// Function to return the Query Performance Counter time.
 		/// </summary>
-		private void GetQPFTime()
+		private void GetHighResolutionTime()
 		{
-			long currentTime = 0;
-
-			unchecked
+		    unchecked
 			{
-				Win32API.QueryPerformanceCounter(out currentTime);
+			    long currentTime;
+
+			    Win32API.QueryPerformanceCounter(out currentTime);
 				_currentTicks =  currentTime - _startTime;
 				_microSeconds = (_currentTicks * 1000000.0) / _frequency;
 			}
@@ -205,8 +205,8 @@ namespace GorgonLibrary.Diagnostics
 		/// <returns>The number of clock ticks since the timer was started.</returns>
 		private void GetTime()
 		{
-			if (_isQPFtimer)
-				GetQPFTime();
+			if (_isHighResTimer)
+				GetHighResolutionTime();
 			else
 				GetWin32Time();
 		}
@@ -228,15 +228,15 @@ namespace GorgonLibrary.Diagnostics
 		/// </summary>
 		public void Reset()
 		{
-			if (_isQPFtimer)
+			if (_isHighResTimer)
 			{
 				if (Win32API.QueryPerformanceFrequency(out _frequency))
 					Win32API.QueryPerformanceCounter(out _startTime);
 				else
-					_isQPFtimer = false;
+					_isHighResTimer = false;
 			}
 
-			if (!_isQPFtimer)
+			if (!_isHighResTimer)
 			{
 				if (_usingLowRes)
 				{
@@ -261,7 +261,7 @@ namespace GorgonLibrary.Diagnostics
 			if (useHighResolution)
 			{
 				if (Win32API.QueryPerformanceFrequency(out _frequency))
-					_isQPFtimer = true;
+					_isHighResTimer = true;
 			}
 			else
 			{

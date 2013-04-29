@@ -26,6 +26,7 @@
 
 using System;
 using System.Collections.Generic;
+using GorgonLibrary.Properties;
 
 namespace GorgonLibrary.Collections
 {
@@ -78,18 +79,23 @@ namespace GorgonLibrary.Collections
 		/// Function to add an item to the collection.
 		/// </summary>
 		/// <param name="value">Value to add.</param>
+		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="value"/> parameter already exists in the collection.
+		/// <para>-or-</para>
+		/// <para>Thrown when the value parameter Name is empty or NULL (Nothing in VB.Net).</para>
+		/// </exception>
 		protected virtual void AddItem(T value)
-		{			
-			if (Contains(value.Name))
-				throw new ArgumentException("The item with the name '" + value.Name + "' already exists in this collection.");
+		{
+		    if (Contains(value.Name))
+		    {
+                throw new ArgumentException(string.Format(Resources.GOR_ITEM_ALREADY_EXISTS, value.Name), "value");
+		    }
 
-			if (string.IsNullOrEmpty(value.Name))
-				throw new ArgumentException("The name for this item is empty.");
+		    if (string.IsNullOrEmpty(value.Name))
+		    {
+		        throw new ArgumentException(Resources.GOR_PARAMETER_MUST_NOT_BE_EMPTY, "value");
+		    }
 
-			if (!KeysAreCaseSensitive)
-				_list.Add(value.Name.ToLower(), value);
-			else
-				_list.Add(value.Name, value);
+		    _list.Add(!KeysAreCaseSensitive ? value.Name.ToLower() : value.Name, value);
 		}
 
 		/// <summary>
@@ -111,13 +117,10 @@ namespace GorgonLibrary.Collections
 		/// <returns>Item with the specified key.</returns>
 		protected virtual T GetItem(string name)
 		{
-			if (!KeysAreCaseSensitive)
-				return _list[name.ToLower()];
-			else
-				return _list[name];
+		    return !KeysAreCaseSensitive ? _list[name.ToLower()] : _list[name];
 		}
 
-		/// <summary>
+	    /// <summary>
 		/// Function to set an item with the specified name.
 		/// </summary>
 		/// <param name="name">Name of the item to set.</param>
@@ -157,13 +160,10 @@ namespace GorgonLibrary.Collections
 		/// <param name="name">Name of the item to remove.</param>
 		protected virtual void RemoveItem(string name)
 		{
-			if (!KeysAreCaseSensitive)
-				_list.Remove(name.ToLower());
-			else
-				_list.Remove(name);
+		    _list.Remove(!KeysAreCaseSensitive ? name.ToLower() : name);
 		}
 
-		/// <summary>
+	    /// <summary>
 		/// Function to remove an item from the collection.
 		/// </summary>
 		/// <param name="item">Item to remove.</param>
@@ -200,13 +200,10 @@ namespace GorgonLibrary.Collections
 		/// <returns>TRUE if found, FALSE if not.</returns>
 		public virtual bool Contains(string name)
 		{
-			if (!KeysAreCaseSensitive)
-				return _list.ContainsKey(name.ToLower());
-			else
-				return _list.ContainsKey(name);
+		    return _list.ContainsKey(!KeysAreCaseSensitive ? name.ToLower() : name);
 		}
 
-		/// <summary>
+	    /// <summary>
 		/// Function to copy the contents of the collection to an array.
 		/// </summary>
 		/// <returns>Array containing the contents of this collection.</returns>
@@ -244,18 +241,19 @@ namespace GorgonLibrary.Collections
 			return _list.IndexOfValue(item);
 		}
 
-		/// <summary>
-		/// Inserts an item to the <see cref="T:System.Collections.Generic.IList`1"/> at the specified index.
-		/// </summary>
-		/// <param name="index">The zero-based index at which <paramref name="item"/> should be inserted.</param>
-		/// <param name="item">The object to insert into the <see cref="T:System.Collections.Generic.IList`1"/>.</param>
-		/// <exception cref="T:System.ArgumentOutOfRangeException">
-		/// 	<paramref name="index"/> is not a valid index in the <see cref="T:System.Collections.Generic.IList`1"/>.
-		/// </exception>
-		/// <exception cref="T:System.NotSupportedException">
-		/// The <see cref="T:System.Collections.Generic.IList`1"/> is read-only.
-		/// </exception>
-		void IList<T>.Insert(int index, T item)
+	    /// <summary>
+	    /// Inserts an item to the <see cref="T:System.Collections.Generic.IList`1"/> at the specified index.
+	    /// </summary>
+	    /// <param name="index">The zero-based index at which <paramref name="item"/> should be inserted.</param>
+	    /// <param name="item">The object to insert into the <see cref="T:System.Collections.Generic.IList`1"/>.</param>
+	    /// <exception cref="NotImplementedException">Method is not implemented.</exception>
+	    /// <exception cref="T:System.ArgumentOutOfRangeException">
+	    /// 	<paramref name="index"/> is not a valid index in the <see cref="T:System.Collections.Generic.IList`1"/>.
+	    /// </exception>
+	    /// <exception cref="T:System.NotSupportedException">
+	    /// The <see cref="T:System.Collections.Generic.IList`1"/> is read-only.
+	    /// </exception>
+	    void IList<T>.Insert(int index, T item)
 		{
 			throw new NotImplementedException();
 		}
@@ -272,9 +270,12 @@ namespace GorgonLibrary.Collections
 		/// </exception>
 		void IList<T>.RemoveAt(int index)
 		{
-			if (IsReadOnly)
-				throw new NotSupportedException("List is read-only.");
-			RemoveItem(index);
+		    if (IsReadOnly)
+            {
+                throw new NotSupportedException(Resources.GOR_COLLECTION_READ_ONLY);
+            }
+
+            RemoveItem(index);
 		}
 
 		/// <summary>
@@ -288,10 +289,12 @@ namespace GorgonLibrary.Collections
 			}
 			set
 			{
-				if (IsReadOnly)
-					throw new NotSupportedException("List is read-only.");
+			    if (IsReadOnly)
+			    {
+                    throw new NotSupportedException(Resources.GOR_COLLECTION_READ_ONLY);
+			    }
 
-				SetItem(GetItem(index).Name, value);
+			    SetItem(GetItem(index).Name, value);
 			}
 		}
 		#endregion
@@ -307,8 +310,11 @@ namespace GorgonLibrary.Collections
 		void ICollection<T>.Add(T item)
 		{
 			if (IsReadOnly)
-				throw new NotSupportedException("List is read-only.");
-			AddItem(item);
+            {
+                throw new NotSupportedException(Resources.GOR_COLLECTION_READ_ONLY);
+            }
+            
+            AddItem(item);
 		}
 
 		/// <summary>
@@ -320,8 +326,11 @@ namespace GorgonLibrary.Collections
 		void ICollection<T>.Clear()
 		{
 			if (IsReadOnly)
-				throw new NotSupportedException("List is read-only.");
-			ClearItems();
+            {
+                throw new NotSupportedException(Resources.GOR_COLLECTION_READ_ONLY);
+            }
+            
+            ClearItems();
 		}
 
 		/// <summary>
@@ -406,7 +415,9 @@ namespace GorgonLibrary.Collections
 		bool ICollection<T>.Remove(T item)
 		{
 			if (IsReadOnly)
-				throw new NotSupportedException("List is read-only.");
+            {
+                throw new NotSupportedException(Resources.GOR_COLLECTION_READ_ONLY);
+            }
 
 			RemoveItem(item);
 			return true;
@@ -422,8 +433,10 @@ namespace GorgonLibrary.Collections
 		/// </returns>
 		public virtual IEnumerator<T> GetEnumerator()
 		{
-			foreach (KeyValuePair<string, T> item in _list)
-				yield return item.Value;
+		    foreach (KeyValuePair<string, T> item in _list)
+		    {
+		        yield return item.Value;
+		    }
 		}
 		#endregion
 
@@ -436,7 +449,7 @@ namespace GorgonLibrary.Collections
 		/// </returns>
 		System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
 		{
-			return GetEnumerator();
+		    return ((System.Collections.IEnumerable) _list).GetEnumerator();
 		}
 		#endregion
 	}

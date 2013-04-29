@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.Globalization;
 using System.IO;
 using System.Text;
 using GorgonLibrary.IO;
@@ -55,7 +56,7 @@ namespace GorgonLibrary.Diagnostics
 		: IDisposable
 	{
 		#region Variables.
-		private StreamWriter _stream = null;								// File stream object.
+		private StreamWriter _stream;							// File stream object.
 		private LoggingLevel _filterLevel = LoggingLevel.All;	// Logging filter.
 		#endregion
 
@@ -119,35 +120,37 @@ namespace GorgonLibrary.Diagnostics
 		/// <param name="arguments">List of optional arguments.</param>
 		public void Print(string formatSpecifier, LoggingLevel level, params object[] arguments)
 		{
-			if (((LogFilterLevel == LoggingLevel.NoLogging) && (level != LoggingLevel.All)) || (IsClosed))
-				return;
+		    if (((LogFilterLevel == LoggingLevel.NoLogging) && (level != LoggingLevel.All)) || (IsClosed))
+		    {
+		        return;
+		    }
 
-			StringBuilder outputLine = new StringBuilder(512);			// Output string 
-			string[] lines = null;										// List of lines.
+		    var outputLine = new StringBuilder(512);			// Output string 
 
-			if ((level <= LogFilterLevel) || (level == LoggingLevel.All))
+		    if ((level <= LogFilterLevel) || (level == LoggingLevel.All))
 			{
 				if (string.IsNullOrEmpty(formatSpecifier) || (formatSpecifier == "\n") || (formatSpecifier == "\r"))
 				{
 					outputLine.Append("[");
-					outputLine.Append(System.DateTime.Now.ToString("MM/dd/yyyy hh:mm:ss tt"));
+					outputLine.Append(DateTime.Now.ToString("MM/dd/yyyy hh:mm:ss tt"));
 					outputLine.Append("]\r\n");
 				}
 				else
 				{
-					lines = formatSpecifier.Split(new char[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
+                    // Get a list of lines.
+				    string[] lines = formatSpecifier.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
 
-					for (int i = 0; i < lines.Length; i++)
+				    for (int i = 0; i < lines.Length; i++)
 					{
 						outputLine.Append("[");
-						outputLine.Append(System.DateTime.Now.ToString("MM/dd/yyyy hh:mm:ss tt"));
+						outputLine.Append(DateTime.Now.ToString("MM/dd/yyyy hh:mm:ss tt"));
 						outputLine.Append("] ");
 
 						outputLine.Append(string.Format(lines[i] + "\r\n", arguments));
 					}
 				}
-		
-				_stream.Write(outputLine.ToString());
+
+			    _stream.Write(outputLine.ToString());
 				_stream.Flush();
 			}
 		}
@@ -182,11 +185,21 @@ namespace GorgonLibrary.Diagnostics
 		{
 			if (IsClosed)
 			{
-				// Create the directory if it doesn't exist.
-				if (!Directory.Exists(Path.GetDirectoryName(LogPath)))
-					Directory.CreateDirectory(Path.GetDirectoryName(LogPath));
+			    string directory = Path.GetDirectoryName(LogPath);
 
-				// Open the stream.
+                // If we can't get a directory, then leave.
+                if (string.IsNullOrWhiteSpace(directory))
+                {
+                    return;
+                }
+
+				// Create the directory if it doesn't exist.
+			    if (!Directory.Exists(directory))
+			    {
+			        Directory.CreateDirectory(directory);
+			    }
+
+			    // Open the stream.
 				_stream = new StreamWriter(File.Open(LogPath, FileMode.Create, FileAccess.ReadWrite, FileShare.Read), Encoding.UTF8);
 				_stream.Flush();
 
@@ -216,27 +229,36 @@ namespace GorgonLibrary.Diagnostics
 			LogApplication = appname;
 
 			LogPath = GorgonComputerInfo.FolderPath(Environment.SpecialFolder.ApplicationData);
-			LogPath += Path.DirectorySeparatorChar.ToString();
+			LogPath += Path.DirectorySeparatorChar.ToString(CultureInfo.InvariantCulture);
 
 			// Verify the extra path information.
 			if (!string.IsNullOrEmpty(extraPath))
 			{
 				// Remove any text up to and after the volume separator character.
-				if (extraPath.Contains(Path.VolumeSeparatorChar.ToString()))
+				if (extraPath.Contains(Path.VolumeSeparatorChar.ToString(CultureInfo.InvariantCulture)))
 				{
-					if (extraPath.IndexOf(Path.VolumeSeparatorChar) < (extraPath.Length - 1))
-						extraPath = extraPath.Substring(extraPath.IndexOf(Path.VolumeSeparatorChar) + 1);
-					else
-						extraPath = string.Empty;
+				    if (extraPath.IndexOf(Path.VolumeSeparatorChar) < (extraPath.Length - 1))
+				    {
+				        extraPath = extraPath.Substring(extraPath.IndexOf(Path.VolumeSeparatorChar) + 1);
+				    }
+				    else
+				    {
+				        extraPath = string.Empty;
+				    }
 				}
 
-				if ((extraPath.StartsWith(Path.AltDirectorySeparatorChar.ToString())) || (extraPath.StartsWith(Path.DirectorySeparatorChar.ToString())))
-					extraPath = extraPath.Substring(1);
+			    if ((extraPath.StartsWith(Path.AltDirectorySeparatorChar.ToString(CultureInfo.InvariantCulture)))
+			        || (extraPath.StartsWith(Path.DirectorySeparatorChar.ToString(CultureInfo.InvariantCulture))))
+			    {
+			        extraPath = extraPath.Substring(1);
+			    }
 
-				if (!extraPath.EndsWith(Path.DirectorySeparatorChar.ToString()))
-					extraPath += Path.DirectorySeparatorChar.ToString();
+			    if (!extraPath.EndsWith(Path.DirectorySeparatorChar.ToString(CultureInfo.InvariantCulture)))
+			    {
+			        extraPath += Path.DirectorySeparatorChar.ToString(CultureInfo.InvariantCulture);
+			    }
 
-				if (!string.IsNullOrEmpty(extraPath))
+			    if (!string.IsNullOrEmpty(extraPath))
 				{
 					LogPath += extraPath;					
 				}
@@ -245,9 +267,6 @@ namespace GorgonLibrary.Diagnostics
 			LogPath += appname;
 			LogPath = LogPath.FormatDirectory(Path.DirectorySeparatorChar);
 			LogPath += "ApplicationLogging.txt";
-
-			if (string.IsNullOrEmpty(LogPath))
-				throw new IOException("The assembly name is not valid for a file name.");
 		}
 		#endregion
 

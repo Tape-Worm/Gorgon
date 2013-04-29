@@ -26,9 +26,11 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
+using GorgonLibrary.Properties;
 
 namespace GorgonLibrary.IO
 {
@@ -38,7 +40,9 @@ namespace GorgonLibrary.IO
     public static class GorgonIOExtensions
     {
         #region Variables.
-        private static List<string> _pathParts = null;			// Parts for a path.
+        private static readonly string _directoryPathSeparator = Path.DirectorySeparatorChar.ToString(CultureInfo.InvariantCulture);
+
+        private static readonly List<string> _pathParts;			// Parts for a path.
         #endregion
 
         #region Methods.
@@ -73,9 +77,6 @@ namespace GorgonLibrary.IO
         /// <exception cref="System.ArgumentNullException">Thrown when the stream parameter is NULL.</exception>
         public static int WriteToStream(this string value, Stream stream, Encoding encoding)
         {
-            int size = 0;
-            int result = 0;
-
             if (string.IsNullOrEmpty(value))
             {
                 return 0;
@@ -88,7 +89,7 @@ namespace GorgonLibrary.IO
 
             if (!stream.CanWrite)
             {
-                throw new IOException("The stream is read-only.");
+                throw new IOException(Resources.GOR_STREAM_IS_READONLY);
             }
 
             if (encoding == null)
@@ -97,8 +98,8 @@ namespace GorgonLibrary.IO
             }
 
             byte[] stringData = encoding.GetBytes(value);
-            size = stringData.Length;
-            result = size + 1;          // Length of the string + one byte for length.
+            int size = stringData.Length;
+            int result = size + 1;
 
             // Build the 7 bit encoded length.
             while (size >= 0x80)
@@ -174,7 +175,6 @@ namespace GorgonLibrary.IO
         public static string ReadString(this Stream stream, Encoding encoding)
         {
             int stringLength = 0;
-            string result = string.Empty;
 
             if (stream == null)
             {
@@ -195,7 +195,7 @@ namespace GorgonLibrary.IO
 
                 if (value == -1)
                 {
-                    throw new IOException("Cannot read beyond the end of the stream.");
+                    throw new IOException(Resources.GOR_STREAM_EOF);
                 }
 
                 stringLength |= (value & 0x7F) << counter;
@@ -222,16 +222,19 @@ namespace GorgonLibrary.IO
             if (string.IsNullOrEmpty(path))
                 return false;
 
-            int lastIndexOfSep = -1;
             string fileName = string.Empty;
             string directory = string.Empty;
 
             var illegalChars = Path.GetInvalidFileNameChars();
 
-            lastIndexOfSep = path.LastIndexOf(Path.DirectorySeparatorChar.ToString());
+            int lastIndexOfSep = path.LastIndexOf(_directoryPathSeparator,
+                                                  StringComparison.Ordinal);
 
             if (lastIndexOfSep == -1)
-                lastIndexOfSep = path.LastIndexOf(Path.AltDirectorySeparatorChar.ToString());
+            {
+                lastIndexOfSep = path.LastIndexOf(
+                    Path.AltDirectorySeparatorChar.ToString(CultureInfo.InvariantCulture), StringComparison.Ordinal);
+            }
 
             if (lastIndexOfSep == -1)
                 fileName = path;
@@ -246,19 +249,15 @@ namespace GorgonLibrary.IO
             if (!string.IsNullOrEmpty(directory))
             {
                 directory = directory.Replace(Path.AltDirectorySeparatorChar, Path.DirectorySeparatorChar);
-                _pathParts.AddRange(directory.Split(new char[] { Path.DirectorySeparatorChar }, StringSplitOptions.RemoveEmptyEntries));
+                _pathParts.AddRange(directory.Split(new[] { Path.DirectorySeparatorChar }, StringSplitOptions.RemoveEmptyEntries));
             }
 
             if (!string.IsNullOrEmpty(fileName))
-                _pathParts.Add(fileName);
-
-            foreach (var part in _pathParts)
             {
-                if (illegalChars.Any(item => part.Contains(item)))
-                    return false;
+                _pathParts.Add(fileName);
             }
 
-            return true;
+            return _pathParts.All(part => !illegalChars.Any(part.Contains));
         }
 
         /// <summary>
@@ -268,14 +267,7 @@ namespace GorgonLibrary.IO
         /// <returns>The formatted path to the file.</returns>
         public static string FormatFileName(this string path)
         {
-            string filename = string.Empty;
-
-            if (string.IsNullOrEmpty(path))
-                return string.Empty;
-
-            filename = RemoveIllegalFilenameChars(Path.GetFileName(path));
-
-            return filename;
+            return string.IsNullOrEmpty(path) ? string.Empty : RemoveIllegalFilenameChars(Path.GetFileName(path));
         }
 
         /// <summary>
@@ -288,29 +280,41 @@ namespace GorgonLibrary.IO
         public static string FormatDirectory(this string path, char directorySeparator)
         {
             char[] illegalChars = Path.GetInvalidPathChars();
-            string doubleSeparator = directorySeparator.ToString() + directorySeparator.ToString();
+            var doubleSeparator = (directorySeparator + directorySeparator).ToString(CultureInfo.InvariantCulture);
 
             if (string.IsNullOrEmpty(path))
+            {
                 return string.Empty;
+            }
 
             if ((char.IsWhiteSpace(directorySeparator)) || (illegalChars.Contains(directorySeparator)))
+            {
                 directorySeparator = Path.DirectorySeparatorChar;
+            }
 
             path = RemoveIllegalPathChars(path);
 
-            StringBuilder output = new StringBuilder(path);
+            var output = new StringBuilder(path);
 
             if (directorySeparator != Path.AltDirectorySeparatorChar)
+            {
                 output = output.Replace(Path.AltDirectorySeparatorChar, directorySeparator);
+            }
+
             if (directorySeparator != Path.DirectorySeparatorChar)
+            {
                 output = output.Replace(Path.DirectorySeparatorChar, directorySeparator);
+            }
+
             if (output[output.Length - 1] != directorySeparator)
+            {
                 output.Append(directorySeparator);
+            }
 
             // Remove doubled up separators.
-            while (output.ToString().LastIndexOf(doubleSeparator) > -1)
+            while (output.ToString().LastIndexOf(doubleSeparator, StringComparison.Ordinal) > -1)
             {
-                output = output.Replace(doubleSeparator, directorySeparator.ToString());
+                output = output.Replace(doubleSeparator, _directoryPathSeparator);
             }
 
             return output.ToString();
@@ -328,15 +332,18 @@ namespace GorgonLibrary.IO
             char[] illegalChars = Path.GetInvalidPathChars();
 
             if (path == null)
+            {
                 throw new ArgumentNullException("path");
+            }
 
             if (path.Length == 0)
+            {
                 return string.Empty;
+            }
 
-            StringBuilder output = new StringBuilder(path);
+            var output = new StringBuilder(path);
 
-            foreach (char illegalChar in illegalChars)
-                output = output.Replace(illegalChar, '_');
+            output = illegalChars.Aggregate(output, (current, illegalChar) => current.Replace(illegalChar, '_'));
 
             return output.ToString();
         }
@@ -353,16 +360,19 @@ namespace GorgonLibrary.IO
             char[] illegalChars = Path.GetInvalidFileNameChars();
 
             if (path == null)
+            {
                 throw new ArgumentNullException("path");
+            }
 
             if (path.Length == 0)
+            {
                 return string.Empty;
+            }
 
-            StringBuilder filePath = new StringBuilder(FormatDirectory(Path.GetDirectoryName(path), Path.DirectorySeparatorChar));
-            StringBuilder output = new StringBuilder(Path.GetFileName(path));
+            var filePath = new StringBuilder(FormatDirectory(Path.GetDirectoryName(path), Path.DirectorySeparatorChar));
+            var output = new StringBuilder(Path.GetFileName(path));
 
-            foreach (char illegalChar in illegalChars)
-                output = output.Replace(illegalChar, '_');
+            output = illegalChars.Aggregate(output, (current, illegalChar) => current.Replace(illegalChar, '_'));
 
             filePath.Append(output);
 
