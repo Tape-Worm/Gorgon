@@ -285,8 +285,7 @@ namespace GorgonLibrary.UI
 		    }
 		}
 
-	    /// <summary>
-        /// Raises the <see cref="System.Windows.Forms.Form.Paint" /> event.
+        /// <summary>
         /// </summary>
         /// <param name="e">The <see cref="System.Windows.Forms.PaintEventArgs" /> instance containing the event data.</param>
 		protected override void OnPaint(PaintEventArgs e)

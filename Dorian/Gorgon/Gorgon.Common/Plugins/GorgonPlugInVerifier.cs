@@ -157,30 +157,32 @@ namespace GorgonLibrary.PlugIns
 		/// <summary>
 		/// Function to load plug-in type names from the specified assembly file.
 		/// </summary>
-		/// <param name="plugInPath">Path to the assembly file.</param>
+		/// <param name="name">Name of the assembly to check.</param>
 		/// <returns>A list of plug-in type names.</returns>
-		public string[] GetPlugInTypes(string plugInPath)
+		public string[] GetPlugInTypes(AssemblyName name)
 		{
-			string[] types = { };
+            AppDomain.CurrentDomain.ReflectionOnlyAssemblyResolve += CurrentDomain_ReflectionOnlyAssemblyResolve;
 
-			try
-			{
-				GetGorgonPlugInType();
+            try
+            {
+                GetGorgonPlugInType();
 
-				var assembly = Assembly.ReflectionOnlyLoadFrom(plugInPath);
+                var assembly = Assembly.ReflectionOnlyLoadFrom(name.CodeBase);
+                var types = assembly.GetTypes();
 
-				types = assembly.GetTypes()
-								.Where(item => item.IsSubclassOf(_plugInType) && !item.IsAbstract)
-								.Select(item => item.FullName)
-								.ToArray();
-			}
-			catch (ReflectionTypeLoadException)
-			{
-				// Do nothing here.
-			}
-
-			return types;
-		}
+                return (from type in types
+                        where type.IsSubclassOf(_plugInType) && !type.IsAbstract
+                        select type.FullName).ToArray();
+            }
+            catch (ReflectionTypeLoadException)
+            {
+                return new string[] { };
+            }
+            finally
+            {
+                AppDomain.CurrentDomain.ReflectionOnlyAssemblyResolve -= CurrentDomain_ReflectionOnlyAssemblyResolve;
+            }
+        }
 
 		/// <summary>
 		/// Function to determine if an assembly contains plug-ins.
@@ -189,26 +191,8 @@ namespace GorgonLibrary.PlugIns
 		/// <returns>TRUE if plug-ins are found, FALSE if not.</returns>
 		public bool IsPlugInAssembly(AssemblyName name)
 		{
-			AppDomain.CurrentDomain.ReflectionOnlyAssemblyResolve += CurrentDomain_ReflectionOnlyAssemblyResolve;
-
-			try
-			{
-				GetGorgonPlugInType();
-
-				var assembly = Assembly.ReflectionOnlyLoadFrom(name.CodeBase);
-				var types = assembly.GetTypes();
-
-				return types.Any(item => item.IsSubclassOf(_plugInType) && !item.IsAbstract);
-			}
-			catch(ReflectionTypeLoadException)
-			{
-				return false;
-			}
-			finally
-			{
-				AppDomain.CurrentDomain.ReflectionOnlyAssemblyResolve -= CurrentDomain_ReflectionOnlyAssemblyResolve;
-			}
-		}
+            return GetPlugInTypes(name).Length > 0;
+        }
 		#endregion
 	}
 }
