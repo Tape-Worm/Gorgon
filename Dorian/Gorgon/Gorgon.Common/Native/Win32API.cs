@@ -30,12 +30,13 @@ using System.Runtime.InteropServices;
 
 namespace GorgonLibrary.Native
 {
+    // ReSharper disable InconsistentNaming
 	#region Value types.
 	/// <summary>
 	/// Header item structure.
 	/// </summary>
 	[StructLayout(LayoutKind.Sequential)]
-	internal struct HDITEM
+	struct HDITEM
 	{
 		/// <summary>
 		/// 
@@ -92,7 +93,7 @@ namespace GorgonLibrary.Native
 	/// Used with GlobalMemoryStatusEx.
 	/// </summary>
 	[StructLayout(LayoutKind.Sequential)]
-	internal struct MemoryStatusEx
+	struct MemoryStatusEx
 	{
 		/// <summary/>
 		public uint dwLength;
@@ -124,7 +125,7 @@ namespace GorgonLibrary.Native
 	/// </para>
 	/// </remarks>
 	[StructLayout(LayoutKind.Sequential)]
-	internal struct MSG
+	struct MSG
 	{
 		/// <summary>Window handle.</summary>
 		public IntPtr hwnd;
@@ -157,7 +158,7 @@ namespace GorgonLibrary.Native
 	/// </para>
 	/// </remarks>	
 	[System.Security.SuppressUnmanagedCodeSecurity]
-	internal static class Win32API
+	static class Win32API
 	{
 		#region Properties.
 		/// <summary>
@@ -167,13 +168,17 @@ namespace GorgonLibrary.Native
 		{
 			get
 			{
-				MemoryStatusEx memory = new MemoryStatusEx();
+				MemoryStatusEx memory = new MemoryStatusEx
+				    {
+				        dwLength = (uint) Marshal.SizeOf(typeof (MemoryStatusEx))
+				    };
 
-				memory.dwLength = (uint)Marshal.SizeOf(typeof(MemoryStatusEx));
-				if (GlobalMemoryStatusEx(ref memory))
-					return memory.ullTotalPhysical;
+			    if (GlobalMemoryStatusEx(ref memory))
+			    {
+			        return memory.ullTotalPhysical;
+			    }
 
-				return -1;
+			    return -1;
 			}
 		}
 
@@ -184,13 +189,17 @@ namespace GorgonLibrary.Native
 		{
 			get
 			{
-				MemoryStatusEx memory = new MemoryStatusEx();
+				MemoryStatusEx memory = new MemoryStatusEx
+				    {
+				        dwLength = (uint) Marshal.SizeOf(typeof (MemoryStatusEx))
+				    };
 
-				memory.dwLength = (uint)Marshal.SizeOf(typeof(MemoryStatusEx));
-				if (GlobalMemoryStatusEx(ref memory))
-					return memory.ullAvailablePhysical;
+			    if (GlobalMemoryStatusEx(ref memory))
+			    {
+			        return memory.ullAvailablePhysical;
+			    }
 
-				return -1;
+			    return -1;
 			}
 		}
 		#endregion
@@ -533,5 +542,6 @@ namespace GorgonLibrary.Native
 		/// </summary>
 		public IntPtr LPWindowPos;
 	}
+    // ReSharper restore InconsistentNaming
 }
 

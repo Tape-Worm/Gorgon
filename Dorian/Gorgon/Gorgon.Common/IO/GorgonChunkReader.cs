@@ -25,14 +25,11 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using System.IO;
 using System.Drawing;
-using SlimMath;
 using GorgonLibrary.Native;
+using GorgonLibrary.Properties;
 
 namespace GorgonLibrary.IO
 {
@@ -59,7 +56,7 @@ namespace GorgonLibrary.IO
         {
             if (chunkName.Length < 8)
             {
-                throw new ArgumentException("The name must be at least 8 characters in length.", "chunkName");
+                throw new ArgumentException(Resources.GOR_CHUNK_NAME_TOO_SMALL, "chunkName");
             }
 
             if (chunkName.Length > 8)
@@ -274,7 +271,7 @@ namespace GorgonLibrary.IO
 
             if (data == null)
             {
-                throw new ArgumentNullException("value");
+                throw new ArgumentNullException("data");
             }
 
             if ((data.Length == 0) || (count <= 0))
@@ -282,19 +279,16 @@ namespace GorgonLibrary.IO
                 return;
             }
 
-            if (startIndex < 0)
+            if ((startIndex < 0) || (startIndex >= data.Length))
             {
-                throw new ArgumentOutOfRangeException("The start index must be greater than or equal to 0.", "startIndex");
-            }
-
-            if (startIndex >= data.Length)
-            {
-                throw new ArgumentOutOfRangeException("The start index must be less than the number of elements in the array.", "startIndex");
+                throw new ArgumentOutOfRangeException(string.Format(Resources.GOR_INDEX_OUT_OF_RANGE, startIndex,
+                                                                    data.Length));
             }
 
             if (startIndex + count > data.Length)
             {
-                throw new ArgumentOutOfRangeException("The sum of start index and count is larger than the number of elements in the array");
+                throw new ArgumentOutOfRangeException(string.Format(Resources.GOR_INDEX_OUT_OF_RANGE, startIndex + count,
+                                                                    data.Length));
             }            
 
 			Reader.Read(data, startIndex, count);
@@ -330,19 +324,16 @@ namespace GorgonLibrary.IO
                 return;
             }
 
-            if (startIndex < 0)
+            if ((startIndex < 0) || (startIndex >= value.Length))
             {
-                throw new ArgumentOutOfRangeException("The start index must be greater than or equal to 0.", "startIndex");
-            }
-
-            if (startIndex >= value.Length)
-            {
-                throw new ArgumentOutOfRangeException("The start index must be less than the number of elements in the array.", "startIndex");
+                throw new ArgumentOutOfRangeException(string.Format(Resources.GOR_INDEX_OUT_OF_RANGE, startIndex,
+                                                                    value.Length));
             }
 
             if (startIndex + count > value.Length)
             {
-                throw new ArgumentOutOfRangeException("The sum of start index and count is larger than the number of elements in the array");
+                throw new ArgumentOutOfRangeException(string.Format(Resources.GOR_INDEX_OUT_OF_RANGE, startIndex + count,
+                                                                    value.Length));
             }
 
             int typeSize = DirectAccess.SizeOf<T>();
@@ -364,7 +355,7 @@ namespace GorgonLibrary.IO
                     Read(TempBuffer, 0, blockSize);
                     
                     // Copy into our array.
-                    DirectAccess.ReadArray<T>(tempBufferPointer, value, offset, blockSize);
+                    DirectAccess.ReadArray(tempBufferPointer, value, offset, blockSize);
 
                     offset += blockSize;
                     size -= blockSize;                    
@@ -385,7 +376,7 @@ namespace GorgonLibrary.IO
         public void ReadRange<T>(T[] value, int count)
             where T : struct
         {
-            ReadRange<T>(value, 0, count);
+            ReadRange(value, 0, count);
         }
 
         /// <summary>
@@ -403,7 +394,7 @@ namespace GorgonLibrary.IO
                 throw new ArgumentNullException("value");
             }
 
-            ReadRange<T>(value, 0, value.Length);
+            ReadRange(value, 0, value.Length);
         }
 
         /// <summary>
@@ -415,9 +406,9 @@ namespace GorgonLibrary.IO
         public T[] ReadRange<T>(int count)
             where T : struct
         {
-            T[] array = new T[count];
+            var array = new T[count];
 
-            ReadRange<T>(array, 0, count);
+            ReadRange(array, 0, count);
 
             return array;
         }
@@ -430,7 +421,7 @@ namespace GorgonLibrary.IO
 		public unsafe T Read<T>()
 			where T : struct
 		{
-			T returnVal = default(T);
+			T returnVal;
 			int size = DirectAccess.SizeOf<T>();
 			byte* pointer = stackalloc byte[size];
 			byte* bytes = pointer;
@@ -463,7 +454,7 @@ namespace GorgonLibrary.IO
 				}
 			}
 
-			DirectAccess.ReadValue<T>(pointer, out returnVal);
+			DirectAccess.ReadValue(pointer, out returnVal);
 
 			return returnVal;
 		}

@@ -30,6 +30,7 @@ using System.Collections.Generic;
 using System.IO;
 using GorgonLibrary.Diagnostics;
 using GorgonLibrary.IO;
+using GorgonLibrary.Properties;
 
 namespace GorgonLibrary.PlugIns
 {
@@ -50,9 +51,9 @@ namespace GorgonLibrary.PlugIns
 	/// </remarks>
 	public class GorgonPlugInPathCollection
 		: IList<string>
-	{
-		#region Variables.
-		private List<string> _paths = null;
+    {
+        #region Variables.
+        private readonly List<string> _paths;
 		#endregion
 
 		#region Methods.
@@ -63,14 +64,17 @@ namespace GorgonLibrary.PlugIns
 		/// <returns>The validated path.</returns>
 		private string ValidatePath(string path)
 		{
-			GorgonDebug.AssertParamString(path, "path");
+            if (path == null)
+            {
+                throw new ArgumentNullException("path");
+            }
 
-			path = Path.GetFullPath(path);
-
-			if (!path.EndsWith(Path.DirectorySeparatorChar.ToString()))
-				path += Path.DirectorySeparatorChar.ToString();
-
-			return path.FormatDirectory(Path.DirectorySeparatorChar);
+            if (string.IsNullOrWhiteSpace(path))
+            {
+                throw new ArgumentException(Resources.GOR_PARAMETER_MUST_NOT_BE_EMPTY, "path");
+            }
+			
+			return Path.GetFullPath(path).FormatDirectory(Path.DirectorySeparatorChar);
 		}
 
 		/// <summary>
@@ -109,13 +113,20 @@ namespace GorgonLibrary.PlugIns
 			Add(Environment.GetFolderPath(Environment.SpecialFolder.SystemX86));
 			// 5. PATH.
 			var variables = Environment.GetEnvironmentVariables(EnvironmentVariableTarget.Process);
-			if (variables.Contains("Path"))
-			{
-				var path = variables["Path"].ToString().Split(new char[] { ';' }, StringSplitOptions.RemoveEmptyEntries);
+		    if (!variables.Contains("Path"))
+		    {
+		        return;
+		    }
 
-				foreach (var pathEntry in path)
-					Add(pathEntry);
-			}
+		    var path = variables["Path"].ToString().Split(new[]
+		        {
+		            ';'
+		        }, StringSplitOptions.RemoveEmptyEntries);
+
+		    foreach (var pathEntry in path)
+		    {
+		        Add(pathEntry);
+		    }
 		}
 		#endregion
 
@@ -218,12 +229,13 @@ namespace GorgonLibrary.PlugIns
 		#endregion
 
 		#region Methods.
-		/// <summary>
-		/// Removes the specified item.
-		/// </summary>
-		/// <param name="item">The item.</param>
-		/// <returns></returns>
-		bool ICollection<string>.Remove(string item)
+	    /// <summary>
+	    /// Removes the specified item.
+	    /// </summary>
+	    /// <param name="item">The item.</param>
+	    /// <exception cref="NotImplementedException">Method is not implemented.</exception>
+	    /// <returns></returns>
+	    bool ICollection<string>.Remove(string item)
 		{
 			throw new NotImplementedException();
 		}
@@ -267,6 +279,7 @@ namespace GorgonLibrary.PlugIns
 		/// </summary>
 		/// <param name="array">The array.</param>
 		/// <param name="arrayIndex">Index of the array.</param>
+        /// <exception cref="NotImplementedException">Method is not implemented.</exception>
 		void ICollection<string>.CopyTo(string[] array, int arrayIndex)
 		{
 			throw new NotImplementedException();
@@ -281,10 +294,8 @@ namespace GorgonLibrary.PlugIns
 		/// <returns></returns>
 		public IEnumerator<string> GetEnumerator()
 		{
-			foreach(string item in _paths)
-				yield return item;
+		    return _paths.GetEnumerator();
 		}
-
 		#endregion
 
 		#region IEnumerable Members
@@ -296,7 +307,7 @@ namespace GorgonLibrary.PlugIns
 		/// </returns>
 		IEnumerator IEnumerable.GetEnumerator()
 		{
-			return GetEnumerator();
+		    return ((IEnumerable) _paths).GetEnumerator();
 		}
 		#endregion
 	}

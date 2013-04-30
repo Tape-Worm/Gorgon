@@ -38,7 +38,7 @@ namespace GorgonLibrary.Math
 	public static class GorgonRandom
 	{
 		#region Variables.
-        private static byte[] _permutations = new byte[]        // Perlin noise permutations for gradients.
+        private static readonly byte[] _permutations = new byte[]        // Perlin noise permutations for gradients.
               {
                 131,13,201,95,96,53,194,233,7,225,140,36,103,30,69,142,8,99,37,240,21,10,23,
                 190, 6,148,247,120,234,75,0,26,197,62,94,252,219,203,117,35,11,32,57,177,33,
@@ -67,7 +67,7 @@ namespace GorgonLibrary.Math
                 138,236,205,93,222,114,67,29,24,72,243,141,128,195,78,66,215,61,156,180 
               };			
 		private static int _seed;
-		private static Random _rnd = null;
+		private static Random _rnd;
 		#endregion
 
 		#region Properties.
@@ -98,18 +98,17 @@ namespace GorgonLibrary.Math
 			}
 			set
 			{
-				int length = 0;
+			    if (value == null)
+			    {
+			        return;
+			    }
 
-				if (value == null)
-					return;
+			    int length = value.Length > _permutations.Length ? _permutations.Length : value.Length;
 
-				if (value.Length > _permutations.Length)
-					length = _permutations.Length;
-				else
-					length = value.Length;
-
-				for (int i = 0; i < length; i++)
-					_permutations[i] = value[i];
+			    for (int i = 0; i < length; i++)
+			    {
+			        _permutations[i] = value[i];
+			    }
 			}
 		}
 		#endregion
@@ -154,15 +153,14 @@ namespace GorgonLibrary.Math
 			int index1 = index0 + 1;
 			float x0 = value - index0;
 			float x1 = x0 - 1.0f;
-			float n0, n1;
-			float t0 = 1.0f - x0 * x0;
+		    float t0 = 1.0f - x0 * x0;
 
 			t0 *= t0;
-			n0 = t0 * t0 * PerlinGradient(_permutations[index0 & 0xff], x0);
+			float n0 = t0 * t0 * PerlinGradient(_permutations[index0 & 0xff], x0);
 
 			float t1 = 1.0f - x1 * x1;
 			t1 *= t1;
-			n1 = t1 * t1 * PerlinGradient(_permutations[index1 & 0xff], x1);
+			float n1 = t1 * t1 * PerlinGradient(_permutations[index1 & 0xff], x1);
 
 			// The maximum value of this noise is 8*(3/4)^4 = 2.53125
 			// A factor of 0.395 scales to fit exactly within [-1,1]
@@ -176,21 +174,21 @@ namespace GorgonLibrary.Math
 		/// <returns>The Perlin noise value.</returns>
 		public static float Perlin(Vector2 value)
 		{
-			const float F2 = 0.366025403f; // F2 = 0.5*(sqrt(3.0)-1.0)
-			const float G2 = 0.211324865f; // G2 = (3.0-Math.sqrt(3.0))/6.0
+			const float f2 = 0.366025403f; // F2 = 0.5*(sqrt(3.0)-1.0)
+			const float g2 = 0.211324865f; // G2 = (3.0-Math.sqrt(3.0))/6.0
 
 			float n0 = 0.0f;		// Noise contributions from the three corners
 			float n1 = 0.0f;
 			float n2 = 0.0f;
 
 			// Skew the input space to determine which simplex cell we're in
-			float s = (value.X + value.Y) * F2; // Hairy factor for 2D
-			Vector2 values = new Vector2(value.X + s, value.Y + s);
-			int i = (int)values.X.FastFloor();
-			int j = (int)values.Y.FastFloor();
-			float t = (float)(i + j) * G2;
-			Vector2 unskew = new Vector2(i - t, j - t);
-			Vector2 distance = new Vector2(value.X - unskew.X, value.Y - unskew.Y);
+			float s = (value.X + value.Y) * f2; // Hairy factor for 2D
+			var values = new Vector2(value.X + s, value.Y + s);
+			var i = (int)values.X.FastFloor();
+			var j = (int)values.Y.FastFloor();
+			float t = (i + j) * g2;
+			var unskew = new Vector2(i - t, j - t);
+			var distance = new Vector2(value.X - unskew.X, value.Y - unskew.Y);
 
 			int offset1 = 0;  // upper triangle, YX order: (0,0)->(0,1)->(1,1)
 			int offset2 = 1;
@@ -207,8 +205,8 @@ namespace GorgonLibrary.Math
 			// A step of (1,0) in (i,j) means a step of (1-c,-c) in (x,y), and
 			// a step of (0,1) in (i,j) means a step of (-c,1-c) in (x,y), where
 			// c = (3-sqrt(3))/6
-			Vector2 value1 = new Vector2(distance.X - offset1 + G2, distance.Y - offset2 + G2);					// Offsets for middle corner in (x,y) unskewed coords
-			Vector2 value2 = new Vector2(distance.X - 1.0f + 2.0f * G2, distance.Y - 1.0f + 2.0f * G2);			// Offsets for last corner in (x,y) unskewed coords
+			Vector2 value1 = new Vector2(distance.X - offset1 + g2, distance.Y - offset2 + g2);					// Offsets for middle corner in (x,y) unskewed coords
+			Vector2 value2 = new Vector2(distance.X - 1.0f + 2.0f * g2, distance.Y - 1.0f + 2.0f * g2);			// Offsets for last corner in (x,y) unskewed coords
 
 			// Wrap the integer indices at 256, to avoid indexing _permutations[] out of bounds
 			int index0 = i % 256;
@@ -251,13 +249,12 @@ namespace GorgonLibrary.Math
 		/// <returns>The random number from <paramref name="start"/> to <paramref name="end"/>.</returns>
 		public static float RandomSingle(float start, float end)
 		{
-			if (start < end)
-				return (float)_rnd.NextDouble() * (end - start) + start;
-			else
-				return (float)_rnd.NextDouble() * (start - end) + end;
+		    return start < end
+		               ? (float) _rnd.NextDouble()*(end - start) + start
+		               : (float) _rnd.NextDouble()*(start - end) + end;
 		}
 
-		/// <summary>
+	    /// <summary>
 		/// Function to return a random floating point number.
 		/// </summary>
 		/// <param name="maxValue">The highest number for random values, this value is inclusive.</param>

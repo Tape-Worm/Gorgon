@@ -72,10 +72,7 @@ namespace GorgonLibrary.PlugIns
 		/// <remarks>Objects that implement this base class should pass in a hard coded description on the base constructor.</remarks>
 		protected GorgonPlugIn(string description)
 		{
-			if (description == null)
-				Description = string.Empty;
-			else
-				Description = description;
+			Description = description ?? string.Empty;
 
 			Assembly = GetType().Assembly.GetName();
 			PlugInPath = GetType().Assembly.ManifestModule.FullyQualifiedName;

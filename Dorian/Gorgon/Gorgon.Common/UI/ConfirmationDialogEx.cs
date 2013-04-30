@@ -53,8 +53,10 @@ namespace GorgonLibrary.UI
 			base.OnFormClosing(e);
 
 			// Apply to all to result.
-			if ((checkToAll.Checked) && (_result != ConfirmationResult.Cancel))
-				_result |= ConfirmationResult.ToAll;
+		    if ((checkToAll.Checked) && (ConfirmationResult != ConfirmationResult.Cancel))
+		    {
+		        ConfirmationResult |= ConfirmationResult.ToAll;
+		    }
 		}
 
 		/// <summary>
@@ -65,7 +67,7 @@ namespace GorgonLibrary.UI
 		{			
 			base.OnLoad(e);
 
-			MessageHeight = 256 - this.checkToAll.Height;
+			MessageHeight = 256 - checkToAll.Height;
 		}
 
 		/// <summary>
@@ -74,10 +76,8 @@ namespace GorgonLibrary.UI
 		/// <param name="g">Graphics object to use.</param>
 		protected override void DrawDialog(System.Drawing.Graphics g)
 		{
-			float maxTextHeight;                // Maximum text height.
-
-			// Get size.
-			maxTextHeight = AdjustSize(g, checkToAll.Height);
+		    // Get size.
+			float maxTextHeight = AdjustSize(g, checkToAll.Height);
 
 			// Adjust buttons.
 			if (ShowCancel)

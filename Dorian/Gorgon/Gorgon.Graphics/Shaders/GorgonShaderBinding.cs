@@ -258,7 +258,7 @@ namespace GorgonLibrary.Graphics
 		public GorgonConstantBuffer CreateConstantBuffer<T>(T value, bool allowCPUWrite)
 			where T : struct
 		{
-			using (GorgonDataStream stream = GorgonDataStream.ValueTypeToStream<T>(value))
+			using (GorgonDataStream stream = GorgonDataStream.ValueToStream<T>(value))
 			{
 				GorgonConstantBuffer buffer = new GorgonConstantBuffer(_graphics, (int)stream.Length, allowCPUWrite);
 				buffer.Initialize(stream);
@@ -281,7 +281,7 @@ namespace GorgonLibrary.Graphics
 		{
 			GorgonDebug.AssertNull<T[]>(value, "value");
 						
-			using (GorgonDataStream stream = GorgonDataStream.EnumerableValueTypeToStream<T>(value))
+			using (GorgonDataStream stream = GorgonDataStream.ArrayToStream<T>(value))
 			{
 				return CreateStructuredBuffer(value.Count(), DirectAccess.SizeOf<T>(), allowCPUWrite);
 			}
@@ -297,7 +297,7 @@ namespace GorgonLibrary.Graphics
 		public GorgonStructuredBuffer CreateStructuredBuffer<T>(T value, bool allowCPUWrite)
 			where T : struct
 		{
-			using (GorgonDataStream stream = GorgonDataStream.ValueTypeToStream<T>(value))
+			using (GorgonDataStream stream = GorgonDataStream.ValueToStream<T>(value))
 			{
 				return CreateStructuredBuffer(1, DirectAccess.SizeOf<T>(), allowCPUWrite);
 			}			

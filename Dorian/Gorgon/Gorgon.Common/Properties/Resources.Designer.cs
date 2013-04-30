@@ -110,11 +110,29 @@ namespace GorgonLibrary.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to bytes.
+        ///   Looks up a localized string similar to Cannot write surrogate character &apos;{0}&apos; as a single character..
         /// </summary>
-        internal static string GOR_BYTES {
+        internal static string GOR_CHUNK_CANNOT_WRITE_SURROGATE {
             get {
-                return ResourceManager.GetString("GOR_BYTES", resourceCulture);
+                return ResourceManager.GetString("GOR_CHUNK_CANNOT_WRITE_SURROGATE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The reader was expecting [0x{0}], but got [0x{1}] instead.  Chunked data is not valid..
+        /// </summary>
+        internal static string GOR_CHUNK_INVALID {
+            get {
+                return ResourceManager.GetString("GOR_CHUNK_INVALID", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The chunk name must be 8 characters exactly..
+        /// </summary>
+        internal static string GOR_CHUNK_NAME_TOO_SMALL {
+            get {
+                return ResourceManager.GetString("GOR_CHUNK_NAME_TOO_SMALL", resourceCulture);
             }
         }
         
@@ -124,15 +142,6 @@ namespace GorgonLibrary.Properties {
         internal static string GOR_COLLECTION_READ_ONLY {
             get {
                 return ResourceManager.GetString("GOR_COLLECTION_READ_ONLY", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to GB.
-        /// </summary>
-        internal static string GOR_GB {
-            get {
-                return ResourceManager.GetString("GOR_GB", resourceCulture);
             }
         }
         
@@ -193,29 +202,11 @@ namespace GorgonLibrary.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to KB.
-        /// </summary>
-        internal static string GOR_KB {
-            get {
-                return ResourceManager.GetString("GOR_KB", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to The key &apos;{0}&apos; does not exist in this collection..
         /// </summary>
         internal static string GOR_KEY_NOT_FOUND {
             get {
                 return ResourceManager.GetString("GOR_KEY_NOT_FOUND", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to MB.
-        /// </summary>
-        internal static string GOR_MB {
-            get {
-                return ResourceManager.GetString("GOR_MB", resourceCulture);
             }
         }
         
@@ -238,11 +229,48 @@ namespace GorgonLibrary.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to PB.
+        ///   Looks up a localized string similar to Could not create the plug-in.  &apos;{0}&apos; in assembly &apos;{1}&apos; is not inherited from type &apos;GorgonLibrary.PlugIns.GorgonPlugIn&apos;..
         /// </summary>
-        internal static string GOR_PB {
+        internal static string GOR_PLUGIN_CANNOT_CREATE {
             get {
-                return ResourceManager.GetString("GOR_PB", resourceCulture);
+                return ResourceManager.GetString("GOR_PLUGIN_CANNOT_CREATE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The could not find the assembly file &apos;{0}&apos; on any of the plug-in search paths..
+        /// </summary>
+        internal static string GOR_PLUGIN_CANNOT_FIND_FILE {
+            get {
+                return ResourceManager.GetString("GOR_PLUGIN_CANNOT_FIND_FILE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The plug-in &apos;{0}&apos; in assembly &apos;{1}&apos; already exists in another plug-in assembly &apos;{2}&apos; and is not the same type..
+        /// </summary>
+        internal static string GOR_PLUGIN_CONFLICT {
+            get {
+                return ResourceManager.GetString("GOR_PLUGIN_CONFLICT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Not a valid plug-in assembly.  There are no plug-ins in the assembly &apos;{0}&apos;..
+        /// </summary>
+        internal static string GOR_PLUGIN_NOT_PLUGIN_ASSEMBLY {
+            get {
+                return ResourceManager.GetString("GOR_PLUGIN_NOT_PLUGIN_ASSEMBLY", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cannot read types from the assembly &apos;{0}&apos;
+        ///{1}.
+        /// </summary>
+        internal static string GOR_PLUGIN_TYPE_LOAD_FAILURE {
+            get {
+                return ResourceManager.GetString("GOR_PLUGIN_TYPE_LOAD_FAILURE", resourceCulture);
             }
         }
         
@@ -256,11 +284,29 @@ namespace GorgonLibrary.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Cannot read beyond the beginning of the stream..
+        /// </summary>
+        internal static string GOR_STREAM_BOS {
+            get {
+                return ResourceManager.GetString("GOR_STREAM_BOS", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The count [{0}] must be greater than or equal to 0..
+        /// </summary>
+        internal static string GOR_STREAM_COUNT_OUT_OF_RANGE {
+            get {
+                return ResourceManager.GetString("GOR_STREAM_COUNT_OUT_OF_RANGE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Cannot read beyond the end of the stream..
         /// </summary>
-        internal static string GOR_STREAM_EOF {
+        internal static string GOR_STREAM_EOS {
             get {
-                return ResourceManager.GetString("GOR_STREAM_EOF", resourceCulture);
+                return ResourceManager.GetString("GOR_STREAM_EOS", resourceCulture);
             }
         }
         
@@ -274,11 +320,146 @@ namespace GorgonLibrary.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The stream is write only..
+        /// </summary>
+        internal static string GOR_STREAM_IS_WRITEONLY {
+            get {
+                return ResourceManager.GetString("GOR_STREAM_IS_WRITEONLY", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unable to seek within this stream..
+        /// </summary>
+        internal static string GOR_STREAM_NOT_SEEKABLE {
+            get {
+                return ResourceManager.GetString("GOR_STREAM_NOT_SEEKABLE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The offset plus the count is too large for this stream..
+        /// </summary>
+        internal static string GOR_STREAM_OFFSET_COUNT_TOO_LARGE {
+            get {
+                return ResourceManager.GetString("GOR_STREAM_OFFSET_COUNT_TOO_LARGE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The offset [{0}] must be greater than or equal to 0 and less than {1}..
+        /// </summary>
+        internal static string GOR_STREAM_OFFSET_OUT_OF_RANGE {
+            get {
+                return ResourceManager.GetString("GOR_STREAM_OFFSET_OUT_OF_RANGE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Confirmation.
+        /// </summary>
+        internal static string GOR_UI_CAPTION_CONFIRM {
+            get {
+                return ResourceManager.GetString("GOR_UI_CAPTION_CONFIRM", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Error.
+        /// </summary>
+        internal static string GOR_UI_CAPTION_ERROR {
+            get {
+                return ResourceManager.GetString("GOR_UI_CAPTION_ERROR", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Information.
+        /// </summary>
+        internal static string GOR_UI_CAPTION_INFO {
+            get {
+                return ResourceManager.GetString("GOR_UI_CAPTION_INFO", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Warning.
+        /// </summary>
+        internal static string GOR_UI_CAPTION_WARNING {
+            get {
+                return ResourceManager.GetString("GOR_UI_CAPTION_WARNING", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to bytes.
+        /// </summary>
+        internal static string GOR_UNIT_MEM_BYTES {
+            get {
+                return ResourceManager.GetString("GOR_UNIT_MEM_BYTES", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to GB.
+        /// </summary>
+        internal static string GOR_UNIT_MEM_GB {
+            get {
+                return ResourceManager.GetString("GOR_UNIT_MEM_GB", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to KB.
+        /// </summary>
+        internal static string GOR_UNIT_MEM_KB {
+            get {
+                return ResourceManager.GetString("GOR_UNIT_MEM_KB", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to MB.
+        /// </summary>
+        internal static string GOR_UNIT_MEM_MB {
+            get {
+                return ResourceManager.GetString("GOR_UNIT_MEM_MB", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to PB.
+        /// </summary>
+        internal static string GOR_UNIT_MEM_PB {
+            get {
+                return ResourceManager.GetString("GOR_UNIT_MEM_PB", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to TB.
         /// </summary>
-        internal static string GOR_TB {
+        internal static string GOR_UNIT_MEM_TB {
             get {
-                return ResourceManager.GetString("GOR_TB", resourceCulture);
+                return ResourceManager.GetString("GOR_UNIT_MEM_TB", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The pointer is from an external source and cannot be modified..
+        /// </summary>
+        internal static string GOR_UNSAFE_EXTERN_PTR {
+            get {
+                return ResourceManager.GetString("GOR_UNSAFE_EXTERN_PTR", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The type &apos;{0}&apos; is not explicitly laid out using the StructLayout attribute..
+        /// </summary>
+        internal static string GOR_UNSAFE_STRUCT_NOT_EXPLICIT_LAYOUT {
+            get {
+                return ResourceManager.GetString("GOR_UNSAFE_STRUCT_NOT_EXPLICIT_LAYOUT", resourceCulture);
             }
         }
         

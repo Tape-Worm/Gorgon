@@ -30,6 +30,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Security.Policy;
+using System.Text;
 using GorgonLibrary.Collections;
 using GorgonLibrary.Collections.Specialized;
 using GorgonLibrary.Diagnostics;
@@ -38,7 +39,7 @@ using GorgonLibrary.Properties;
 namespace GorgonLibrary.PlugIns
 {
 	/// <summary>
-    /// The return values for the <see cref="GorgonLibrary.PlugIns.GorgonPlugInFactory.IsPlugInSigned(string)">IsPlugInSigned</see> method.
+    /// The return values for the <see cref="GorgonLibrary.PlugIns.GorgonPlugInFactory.IsAssemblySigned(string)">IsAssemblySigned</see> method.
 	/// </summary>
 	[Flags]
 	public enum PlugInSigningResult
@@ -67,9 +68,9 @@ namespace GorgonLibrary.PlugIns
 		: GorgonBaseNamedObjectCollection<GorgonPlugIn>
 	{
 		#region Variables.
-		private GorgonPlugInPathCollection _paths = null;	// Search paths for the plug-in assemblies.
-		private AppDomain _discoveryDomain = null;			// An application domain used for plug-in information discovery.
-		private GorgonPlugInVerifier _verifier = null;		// Plug-in verifier.
+		private GorgonPlugInPathCollection _paths;	// Search paths for the plug-in assemblies.
+		private AppDomain _discoveryDomain;			// An application domain used for plug-in information discovery.
+		private GorgonPlugInVerifier _verifier;		// Plug-in verifier.
 		#endregion
 
 		#region Properties.
@@ -120,14 +121,56 @@ namespace GorgonLibrary.PlugIns
 		#endregion
 
 		#region Methods.
-		/// <summary>
+        /// <summary>
+        /// Function to find a plug-in assembly on a given path.
+        /// </summary>
+        /// <param name="plugInPath">Initial path to the plug-in</param>
+        /// <returns>The assembly name for the plug-in assembly.</returns>
+        private AssemblyName FindPlugInAssembly(string plugInPath)
+        {
+            if (plugInPath == null)
+            {
+                throw new ArgumentNullException("plugInPath");
+            }
+
+            if (string.IsNullOrWhiteSpace(plugInPath))
+            {
+                throw new ArgumentException(Resources.GOR_PARAMETER_MUST_NOT_BE_EMPTY, "plugInPath");
+            }
+
+            plugInPath = Path.GetFullPath(plugInPath);
+
+            if (string.IsNullOrWhiteSpace(plugInPath))
+            {
+                throw new FileNotFoundException();
+            }
+
+            // We can't find the plug-in assembly on the initial path, so check the path list.
+            if (!File.Exists(plugInPath))
+            {
+                var assemblyFile = Path.GetFileName(plugInPath);
+
+                plugInPath = SearchPaths.FirstOrDefault(path => File.Exists(path + assemblyFile));
+
+                if (string.IsNullOrWhiteSpace(plugInPath))
+                {
+                    throw new FileNotFoundException(string.Format(Resources.GOR_PLUGIN_CANNOT_FIND_FILE,
+                                                                  assemblyFile));
+                }
+
+                plugInPath += assemblyFile;
+            }
+
+            return AssemblyName.GetAssemblyName(plugInPath);
+        }
+
+        
+        /// <summary>
 		/// Function to create any additional application domains we may need.
 		/// </summary>
 		private void CreateAppDomains()
 		{
-			Type verifierType = null;
-
-			if (_discoveryDomain != null)
+		    if (_discoveryDomain != null)
 			{
 				return;
 			}
@@ -137,7 +180,7 @@ namespace GorgonLibrary.PlugIns
 
 			// Create our domain.
 			_discoveryDomain = AppDomain.CreateDomain("GorgonLibrary.PlugIns.Discovery", evidence, setup);
-			verifierType = typeof(GorgonPlugInVerifier);
+			Type verifierType = typeof(GorgonPlugInVerifier);
 			_verifier = (GorgonPlugInVerifier)(_discoveryDomain.CreateInstanceFrom(verifierType.Assembly.Location, verifierType.FullName).Unwrap());
 		}
 
@@ -250,7 +293,7 @@ namespace GorgonLibrary.PlugIns
 		{
 			// Unload our discovery domain.
 			PurgeCachedPlugInInfo();
-			this.ClearItems();
+			ClearItems();
 		}
 
 		/// <summary>
@@ -262,17 +305,16 @@ namespace GorgonLibrary.PlugIns
 		public void Unload(string name)
 		{
 			GorgonDebug.AssertParamString(name, "name");
-			this.RemoveItem(name);
+			RemoveItem(name);
 		}
 
 		/// <summary>
 		/// Function to remove a plug-in by index.
 		/// </summary>
 		/// <param name="index">Index of the plug-in to remove.</param>
-		/// <exception cref="System.IndexOutOfRangeException">The <paramRef name="index"/> parameter was less than 0 or greater than or equal to <see cref="P:Engine.PlugIns.EnginePlugInList.Count">Count</see>.</exception>
 		public void Unload(int index)
 		{
-			this.RemoveItem(index);
+			RemoveItem(index);
 		}
 
 		/// <summary>
@@ -282,65 +324,72 @@ namespace GorgonLibrary.PlugIns
 		/// <exception cref="System.ArgumentNullException">The <paramRef name="plugIn"/> parameter was NULL (Nothing in VB.Net).</exception>
 		public void Unload(GorgonPlugIn plugIn)
 		{
-			if (plugIn == null)
-				throw new ArgumentNullException("plugIn");
+		    if (plugIn == null)
+		    {
+		        throw new ArgumentNullException("plugIn");
+		    }
 
-			this.RemoveItem(plugIn);
+		    RemoveItem(plugIn);
 		}
 
 		/// <summary>
-		/// Function to determine if a plug-in is signed, and optionally, signed with the correct public key.
+		/// Function to determine if an assembly is signed, and optionally, signed with the correct public key.
 		/// </summary>
 		/// <param name="assemblyName">Name of the assembly to check.</param>
 		/// <param name="publicKey">Public key to compare, or NULL (Nothing in VB.Net) to bypass the key comparison.</param>
 		/// <returns>One of the values in the <seealso cref="GorgonLibrary.PlugIns.PlugInSigningResult">PlugInSigningResult</seealso> enumeration.</returns>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="assemblyName"/> parameter is NULL (Nothing in VB.Net).</exception>
-		public PlugInSigningResult IsPlugInSigned(AssemblyName assemblyName, byte[] publicKey)
+		public PlugInSigningResult IsAssemblySigned(AssemblyName assemblyName, byte[] publicKey)
 		{
-			byte[] plugInPublicKey = null;
-			PlugInSigningResult result = PlugInSigningResult.Signed;
+		    var result = PlugInSigningResult.Signed;
 
-			if (assemblyName == null)
-				throw new ArgumentNullException("assemblyName");
-			
-			plugInPublicKey = assemblyName.GetPublicKey();
+		    if (assemblyName == null)
+		    {
+		        throw new ArgumentNullException("assemblyName");
+		    }
 
-			if ((plugInPublicKey == null) || (plugInPublicKey.Length < 1))
-				return PlugInSigningResult.NotSigned;
+		    byte[] plugInPublicKey = assemblyName.GetPublicKey();
 
-			if (publicKey != null) 
+		    if ((plugInPublicKey == null) || (plugInPublicKey.Length < 1))
+		    {
+		        return PlugInSigningResult.NotSigned;
+		    }
+
+		    if (publicKey != null) 
 			{
-				if (publicKey.Length != plugInPublicKey.Length)
-					result |= PlugInSigningResult.KeyMismatch;
-				else
-				{
-					for (int i = 0; i < publicKey.Length - 1; i++)
-					{
-						if (publicKey[i] != plugInPublicKey[i])
-						{
-							result |= PlugInSigningResult.KeyMismatch;
-							break;
-						}
-					}
-				}
+			    if (publicKey.Length != plugInPublicKey.Length)
+			    {
+			        result |= PlugInSigningResult.KeyMismatch;
+			    }
+			    else
+			    {
+			        for (int i = 0; i < publicKey.Length - 1; i++)
+			        {
+			            if (publicKey[i] != plugInPublicKey[i])
+			            {
+			                result |= PlugInSigningResult.KeyMismatch;
+			                break;
+			            }
+			        }
+			    }
 			}
 
 			return result;
 		}
 
 		/// <summary>
-		/// Function to determine if a plug-in is signed, and optionally, signed with the correct public key.
+		/// Function to determine if an assembly is signed, and optionally, signed with the correct public key.
 		/// </summary>
 		/// <param name="assemblyName">Name of the assembly to check.</param>
 		/// <returns>One of the values in the <seealso cref="GorgonLibrary.PlugIns.PlugInSigningResult">PlugInSigningResult</seealso> enumeration.</returns>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="assemblyName"/> parameter is NULL (Nothing in VB.Net).</exception>
-		public PlugInSigningResult IsPlugInSigned(AssemblyName assemblyName)
+		public PlugInSigningResult IsAssemblySigned(AssemblyName assemblyName)
 		{
-			return IsPlugInSigned(assemblyName, null);
+			return IsAssemblySigned(assemblyName, null);
 		}
 
 		/// <summary>
-		/// Function to determine if a plug-in is signed, and optionally, signed with the correct public key.
+		/// Function to determine if an assembly is signed, and optionally, signed with the correct public key.
 		/// </summary>
 		/// <param name="assemblyPath">Path to the assembly to check.</param>
 		/// <param name="publicKey">Public key to compare, or NULL (Nothing in VB.Net) to bypass the key comparison.</param>
@@ -348,46 +397,22 @@ namespace GorgonLibrary.PlugIns
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="assemblyPath"/> parameter is NULL (Nothing in VB.Net).</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="assemblyPath"/> parameter is an empty string.</exception>
 		/// <exception cref="System.IO.FileNotFoundException">Thrown when the file could not be located on any of the <see cref="P:GorgonLibrary.PlugIns.GorgonPlugInFactory.SearchPaths">search paths</see> (including the path provided in the parameter).</exception>
-		public PlugInSigningResult IsPlugInSigned(string assemblyPath, byte[] publicKey)
+		public PlugInSigningResult IsAssemblySigned(string assemblyPath, byte[] publicKey)
 		{
-			AssemblyName plugInAssemblyName = null;
-
-			GorgonDebug.AssertParamString(assemblyPath, "assemblyPath");
-
-			assemblyPath = Path.GetFullPath(assemblyPath);
-
-			if (!File.Exists(assemblyPath))
-			{
-				assemblyPath = Path.GetFileName(assemblyPath);
-				foreach (var path in SearchPaths)
-				{
-					if (File.Exists(path + assemblyPath))
-					{
-						assemblyPath = path + assemblyPath;
-						break;
-					}
-				}
-
-				if (!File.Exists(assemblyPath))
-					throw new FileNotFoundException("Could not find the plug-in '" + Path.GetFileName(assemblyPath) + "' on any of the search paths.", assemblyPath);
-			}
-
-			plugInAssemblyName = AssemblyName.GetAssemblyName(assemblyPath);
-
-			return IsPlugInSigned(plugInAssemblyName, publicKey);
+			return IsAssemblySigned(FindPlugInAssembly(assemblyPath), publicKey);
 		}
 
 		/// <summary>
-		/// Function to determine if a plug-in is signed, and optionally, signed with the correct public key.
+		/// Function to determine if an assembly is signed, and optionally, signed with the correct public key.
 		/// </summary>
 		/// <param name="assemblyPath">Path to the assembly to check.</param>
 		/// <returns>One of the values in the <seealso cref="GorgonLibrary.PlugIns.PlugInSigningResult">PlugInSigningResult</seealso> enumeration.</returns>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="assemblyPath"/> parameter is NULL (Nothing in VB.Net).</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="assemblyPath"/> parameter is an empty string.</exception>
 		/// <exception cref="System.IO.FileNotFoundException">Thrown when the file could not be located on any of the <see cref="P:GorgonLibrary.PlugIns.GorgonPlugInFactory.SearchPaths">search paths</see> (including the path provided in the parameter).</exception>
-		public PlugInSigningResult IsPlugInSigned(string assemblyPath)		
+		public PlugInSigningResult IsAssemblySigned(string assemblyPath)		
 		{
-			return IsPlugInSigned(assemblyPath, null);
+			return IsAssemblySigned(assemblyPath, null);
 		}
 
 		/// <summary>
@@ -402,29 +427,7 @@ namespace GorgonLibrary.PlugIns
 		/// <returns>The fully qualified assembly name object for the assembly being loaded.</returns>
 		public AssemblyName LoadPlugInAssembly(string assemblyPath)
 		{
-			AssemblyName plugInAssemblyName = null;
-
-			GorgonDebug.AssertParamString(assemblyPath, "assemblyPath");
-
-			assemblyPath = Path.GetFullPath(assemblyPath);
-
-			if (!File.Exists(assemblyPath))
-			{
-				assemblyPath = Path.GetFileName(assemblyPath);
-				foreach (var path in SearchPaths)
-				{
-					if (File.Exists(path + assemblyPath))
-					{
-						assemblyPath = path + assemblyPath;
-						break;
-					}
-				}
-
-				if (!File.Exists(assemblyPath))
-					throw new FileNotFoundException("Could not find the plug-in assembly '" + Path.GetFileName(assemblyPath) + "' on any of the search paths.", assemblyPath);
-			}
-
-			plugInAssemblyName = AssemblyName.GetAssemblyName(assemblyPath);
+		    AssemblyName plugInAssemblyName = FindPlugInAssembly(assemblyPath);
 
 			LoadPlugInAssembly(plugInAssemblyName);
 
@@ -450,13 +453,16 @@ namespace GorgonLibrary.PlugIns
 				throw new ArgumentException(Resources.GOR_PARAMETER_MUST_NOT_BE_EMPTY, "assemblyPath");
 			}
 
-			AssemblyName assemblyName = null;
+			AssemblyName assemblyName;
+
 			try
 			{
 				assemblyName = AssemblyName.GetAssemblyName(assemblyPath);
 			}
 			catch (BadImageFormatException)
 			{
+                // If a DLL/EXE is not a .NET assembly, then it will throw BadImageFormatException.
+                // Catch it here and assume it's not going to load.
 				return false;
 			}
 
@@ -505,56 +511,72 @@ namespace GorgonLibrary.PlugIns
 		/// <exception cref="GorgonLibrary.GorgonException">The assembly contains a plug-in type that was already loaded by another assembly.</exception>
 		public void LoadPlugInAssembly(AssemblyName assemblyName)
 		{
-			Assembly plugInAssembly = null;
+		    if (assemblyName == null)
+		    {
+		        throw new ArgumentNullException("assemblyName");
+		    }
 
-			if (assemblyName == null)
-				throw new ArgumentNullException("assemblyName");
-
-			plugInAssembly = AssemblyCache.LoadAssembly(assemblyName);
+		    Assembly plugInAssembly = AssemblyCache.LoadAssembly(assemblyName);
 
 			try
 			{
-				var plugInTypes = from plugInType in plugInAssembly.GetTypes()
+                // Get all plug-in types from the assembly.
+				var plugInTypes = (from plugInType in plugInAssembly.GetTypes()
 								  where (plugInType.IsSubclassOf(typeof(GorgonPlugIn)) && (!plugInType.IsAbstract))
-								  select plugInType;
+								  select plugInType).ToArray();
 
-				if ((plugInTypes == null) || (plugInTypes.Count() == 0))
-					throw new ArgumentException("Not a valid plug-in assembly.  There are no plug-ins in the assembly '" + assemblyName.FullName + "'.", "assemblyName");
+			    if (plugInTypes.Length == 0)
+			    {
+			        throw new ArgumentException(string.Format(Resources.GOR_PLUGIN_NOT_PLUGIN_ASSEMBLY, assemblyName.FullName),
+			                                    "assemblyName");
+			    }
 
-				foreach (Type plugInType in plugInTypes)
+                // Create an instance of each plug-in object.
+			    foreach (Type plugInType in plugInTypes)
 				{
-					GorgonPlugIn plugIn = plugInType.Assembly.CreateInstance(plugInType.FullName, false, BindingFlags.CreateInstance, null, null, null, null) as GorgonPlugIn;
-					if (plugIn == null)
-						throw new GorgonException(GorgonResult.CannotCreate, "Could not create the plug-in type '" + plugInType.FullName + "' in assembly '" + plugInType.Assembly.FullName + "'.  It was not of type EnginePlugIn.");
-					if (!this.Contains(plugIn.Name))
+					var plugIn = (GorgonPlugIn)plugInType.Assembly.CreateInstance(plugInType.FullName, false, BindingFlags.CreateInstance, null, null, null, null);
+
+				    if (plugIn == null)
+				    {
+				        throw new GorgonException(GorgonResult.CannotCreate,
+				                                  string.Format(Resources.GOR_PLUGIN_CANNOT_CREATE, plugInType.FullName,
+				                                                plugInType.Assembly.FullName));
+				    }
+
+				    if (!Contains(plugIn.Name))
 					{
-						Gorgon.Log.Print("Plug-in '{0}' created.", Diagnostics.LoggingLevel.Simple, plugIn.Name);
-						this.AddItem(plugIn);
+						Gorgon.Log.Print("Plug-in '{0}' created.", LoggingLevel.Simple, plugIn.Name);
+						AddItem(plugIn);
 					}
 					else
 					{
-						if (plugIn.GetType() != this[plugIn.Name].GetType())
+						if (plugInType != this[plugIn.Name].GetType())
 						{
-							throw new GorgonException(GorgonResult.CannotCreate, "The plug-in '" + plugIn.Name + "' in assembly '" + plugInType.Assembly.FullName +
-									"' already exists in another plug-in assembly '" + this[plugIn.Name].GetType().Assembly.FullName + "' and is not the same type.");
+						    throw new GorgonException(GorgonResult.CannotCreate,
+						                              string.Format(Resources.GOR_PLUGIN_CONFLICT, plugIn.Name,
+						                                            plugInType.Assembly.FullName,
+						                                            this[plugIn.Name].GetType().Assembly.FullName));
 						}
-						else
-							Gorgon.Log.Print("Plug-in '{0}' already created.  Using this instance.", Diagnostics.LoggingLevel.Simple, plugIn.Name);
+
+						Gorgon.Log.Print("Plug-in '{0}' already created.  Using this instance.", LoggingLevel.Simple, plugIn.Name);
 					}
 				}
 			}
 			catch (ReflectionTypeLoadException ex)
 			{
-				string errorMessage = string.Empty;
+			    var errorMessage = new StringBuilder(512);
 
 				foreach (Exception loadEx in ex.LoaderExceptions)
 				{
-					if (!string.IsNullOrEmpty(errorMessage))
-						errorMessage += "\n\r";
-					errorMessage += loadEx.Message;
+                    if (errorMessage.Length > 0)
+                    {
+                        errorMessage.Append("\n\r");
+                    }
+
+				    errorMessage.Append(loadEx.Message);
 				}
 
-				throw new GorgonException(GorgonResult.CannotRead, "Cannot read types from the assembly '" + plugInAssembly.FullName + "'\n\r" + errorMessage);
+                throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GOR_PLUGIN_TYPE_LOAD_FAILURE, plugInAssembly.FullName, errorMessage));
 			}
 		}
 		#endregion

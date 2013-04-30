@@ -28,14 +28,8 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using GorgonLibrary.Native;
 
@@ -92,13 +86,12 @@ namespace GorgonLibrary.UI
 		#endregion
 
 		#region Variables.
-		private Padding? _currentPadding = null;
-		private MARGINS _dwmMargins = default(MARGINS);
-		private ResizeDirection _resizeDirection = ResizeDirection.None;
-		private Image _iconImage = null;
+		private Padding? _currentPadding;
+	    private ResizeDirection _resizeDirection = ResizeDirection.None;
+		private Image _iconImage;
 		private bool _showWindowCaption = true;
 		private int _borderWidth = 1;
-		private bool _border = false;
+		private bool _border;
 		private Color _borderColor = Color.Black;
 		#endregion
 
@@ -145,7 +138,7 @@ namespace GorgonLibrary.UI
 		/// Property to set or return the color of the border.
 		/// </summary>
 		[Browsable(true), Category("Appearance"), Description("Sets the color of the border on the form when Border is set to true."), 
-		RefreshProperties(System.ComponentModel.RefreshProperties.All)]
+		RefreshProperties(RefreshProperties.All)]
 		public Color BorderColor
 		{
 			get
@@ -174,11 +167,11 @@ namespace GorgonLibrary.UI
 		{
 			get
 			{
-				return System.Windows.Forms.FormBorderStyle.None;
+				return FormBorderStyle.None;
 			}
 			set
 			{
-				base.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
+				base.FormBorderStyle = FormBorderStyle.None;
 			}
 		}
 
@@ -186,7 +179,7 @@ namespace GorgonLibrary.UI
 		/// Property to set or return whether a single pixel width border will be drawn on the form.
 		/// </summary>
 		[Browsable(true), Category("Appearance"), Description("When set to true, a border will be drawn on the form."), DefaultValue(false), 
-		RefreshProperties(System.ComponentModel.RefreshProperties.All)]
+		RefreshProperties(RefreshProperties.All)]
 		public bool Border
 		{
 			get
@@ -206,7 +199,7 @@ namespace GorgonLibrary.UI
 		/// </summary>
 		/// <remarks>This is only valid when <see cref="GorgonLibrary.UI.ZuneForm.Resizable">Resizable</see> is set to TRUE.</remarks>
 		[Browsable(true), Description("The size, in pixels, of the window border when the Border property is set to true."), Category("Appearance"),
-		RefreshProperties(System.ComponentModel.RefreshProperties.All), DefaultValue(1)]
+		RefreshProperties(RefreshProperties.All), DefaultValue(1)]
 		public int BorderSize
 		{
 			get
@@ -241,7 +234,7 @@ namespace GorgonLibrary.UI
 		/// </summary>
 		/// <remarks>This is only valid when <see cref="GorgonLibrary.UI.ZuneForm.Resizable">Resizable</see> is set to TRUE.</remarks>
 		[Browsable(true), Description("The size, in pixels, of the resizable handles on the window border."), Category("Design"),
-		RefreshProperties(System.ComponentModel.RefreshProperties.All), DefaultValue(6)]
+		RefreshProperties(RefreshProperties.All), DefaultValue(6)]
 		public int ResizeHandleSize
 		{
 			get;
@@ -378,7 +371,7 @@ namespace GorgonLibrary.UI
 		private void itemMove_Click(object sender, EventArgs e)
 		{
 			Win32API.ReleaseCapture();										// SC_MOVE
-			Win32API.SendMessage(this.Handle, (int)WindowMessages.SysCommand, new IntPtr(0xF010), IntPtr.Zero);
+			Win32API.SendMessage(Handle, (int)WindowMessages.SysCommand, new IntPtr(0xF010), IntPtr.Zero);
 		}
 
 		/// <summary>
@@ -389,7 +382,7 @@ namespace GorgonLibrary.UI
 		private void itemSize_Click(object sender, EventArgs e)
 		{
 			Win32API.ReleaseCapture();										// SC_SIZE
-			Win32API.SendMessage(this.Handle, (int)WindowMessages.SysCommand, new IntPtr(0xF000), IntPtr.Zero);
+			Win32API.SendMessage(Handle, (int)WindowMessages.SysCommand, new IntPtr(0xF000), IntPtr.Zero);
 		}
 
 		/// <summary>
@@ -452,7 +445,7 @@ namespace GorgonLibrary.UI
 		/// <param name="e">The <see cref="MouseEventArgs"/> instance containing the event data.</param>
 		private void pictureIcon_MouseDown(object sender, MouseEventArgs e)
 		{
-			if ((e.Clicks > 1) && (e.Button == System.Windows.Forms.MouseButtons.Left))
+			if ((e.Clicks > 1) && (e.Button == MouseButtons.Left))
 			{
 				Close();
 				return;
@@ -488,7 +481,7 @@ namespace GorgonLibrary.UI
 
             if (label != null)
             {
-				label.ForeColor = (Form.ActiveForm == this) ? ForeColor : Color.FromKnownColor(KnownColor.DimGray);
+				label.ForeColor = (ActiveForm == this) ? ForeColor : Color.FromKnownColor(KnownColor.DimGray);
             }
         }
 
@@ -528,6 +521,7 @@ namespace GorgonLibrary.UI
             {
                 WindowState = FormWindowState.Normal;
             }
+
             ValidateWindowControls();
         }
 
@@ -590,7 +584,7 @@ namespace GorgonLibrary.UI
 					itemMinimize.Enabled = true;
 					itemMove.Enabled = false;
 					itemSize.Enabled = false;
-					labelMaxRestore.Text = "2";
+					labelMaxRestore.Text = @"2";
 					break;
 				case FormWindowState.Minimized:
 					itemRestore.Enabled = true;
@@ -600,7 +594,7 @@ namespace GorgonLibrary.UI
 					itemMinimize.Enabled = false;
 					break;
 				case FormWindowState.Normal:
-					labelMaxRestore.Text = "1";
+					labelMaxRestore.Text = @"1";
 					itemMove.Enabled = true;
 					itemSize.Enabled = true;
 					itemRestore.Enabled = false;
@@ -610,76 +604,7 @@ namespace GorgonLibrary.UI
 			}
 		}
 
-		/// <summary>
-		/// Function to perform hit testing on the non-client area.
-		/// </summary>
-		/// <param name="hwnd">Window handle.</param>
-		/// <param name="wParam">Message parameter.</param>
-		/// <param name="lParam">Message parameter.</param>
-		/// <returns>A pointer.</returns>
-		private HitTests HitTestNonClient(IntPtr hwnd, IntPtr wParam, IntPtr lParam)
-		{			
-			Point point = new Point(lParam.ToInt32() & 0xFFFF, (lParam.ToInt32() >> 16) & 0xFFFF);
-			Rectangle caption = RectangleToScreen(new Rectangle(0, _dwmMargins.cxLeftWidth, Width, _dwmMargins.cyTopHeight - _dwmMargins.cxLeftWidth));
-			Rectangle top = RectangleToScreen(new Rectangle(0, 0, Width, _dwmMargins.cxLeftWidth));
-			Rectangle left = RectangleToScreen(new Rectangle(0, 0, _dwmMargins.cxLeftWidth, Height));
-			Rectangle right = RectangleToScreen(new Rectangle(Width - _dwmMargins.cxRightWidth, 0, _dwmMargins.cxRightWidth, Height));
-			Rectangle bottom = RectangleToScreen(new Rectangle(0, Height - _dwmMargins.cyBottomHeight, Width, _dwmMargins.cyBottomHeight));
-			Rectangle topLeft = RectangleToScreen(new Rectangle(0, 0, _dwmMargins.cxLeftWidth, _dwmMargins.cxLeftWidth));
-			Rectangle topRight = RectangleToScreen(new Rectangle(Width - _dwmMargins.cxRightWidth, 0, _dwmMargins.cxRightWidth, _dwmMargins.cxRightWidth));
-			Rectangle bottomLeft = RectangleToScreen(new Rectangle(0, Height - _dwmMargins.cyBottomHeight, _dwmMargins.cxLeftWidth, _dwmMargins.cyBottomHeight));
-			Rectangle bottomRight = RectangleToScreen(new Rectangle(Width - _dwmMargins.cxRightWidth, Height - _dwmMargins.cyBottomHeight, _dwmMargins.cxRightWidth, _dwmMargins.cyBottomHeight));
-
-			if (topLeft.Contains(point))
-			{
-				return HitTests.TopLeft;
-			}
-
-			if (topRight.Contains(point))
-			{
-				return HitTests.TopRight;
-			}
-
-            if (bottomLeft.Contains(point))
-            {
-                return HitTests.BottomLeft;
-            }
-
-            if (bottomRight.Contains(point))
-            {
-                return HitTests.BottomRight;
-            }
-            
-            if (top.Contains(point))
-			{
-				return HitTests.Top;
-			}
-
-			if (left.Contains(point))
-			{
-				return HitTests.Left;
-			}
-
-			if (right.Contains(point))
-			{
-				return HitTests.Right;
-			}
-
-			if (bottom.Contains(point))
-			{
-				return HitTests.Bottom;
-			}
-
-			if (caption.Contains(point))
-			{
-				return HitTests.Caption;
-			}
-
-			return HitTests.Client;
-		}
-			
-
-		/// <summary>
+	    /// <summary>
 		/// Processes a command key.
 		/// </summary>
 		/// <param name="msg">A <see cref="T:System.Windows.Forms.Message" />, passed by reference, that represents the Win32 message to process.</param>
@@ -689,9 +614,7 @@ namespace GorgonLibrary.UI
 		/// </returns>
 		protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
 		{
-			WindowMessages message = (WindowMessages)msg.Msg;
-
-			if (keyData == (Keys.Alt | Keys.Space))
+	        if (keyData == (Keys.Alt | Keys.Space))
 			{
 				ShowSysMenu();
 				return true;
@@ -718,15 +641,15 @@ namespace GorgonLibrary.UI
 				{
 					ResizeDir = ResizeDirection.TopLeft;
 				}
-				else if ((e.Location.X < ResizeHandleSize) && (e.Location.Y > this.Height - ResizeHandleSize))
+				else if ((e.Location.X < ResizeHandleSize) && (e.Location.Y > Height - ResizeHandleSize))
 				{
 					ResizeDir = ResizeDirection.BottomLeft;
 				}
-				else if ((e.Location.X > this.Width - ResizeHandleSize) && (e.Location.Y > this.Height - ResizeHandleSize))
+				else if ((e.Location.X > Width - ResizeHandleSize) && (e.Location.Y > Height - ResizeHandleSize))
 				{
 					ResizeDir = ResizeDirection.BottomRight;
 				}
-				else if ((e.Location.X > this.Width - ResizeHandleSize) && (e.Location.Y < ResizeHandleSize))
+				else if ((e.Location.X > Width - ResizeHandleSize) && (e.Location.Y < ResizeHandleSize))
 				{
 					ResizeDir = ResizeDirection.TopRight;
 				}
@@ -734,7 +657,7 @@ namespace GorgonLibrary.UI
 				{
 					ResizeDir = ResizeDirection.Left;
 				}
-				else if ((e.Location.X > this.Width - ResizeHandleSize))
+				else if ((e.Location.X > Width - ResizeHandleSize))
 				{
 					ResizeDir = ResizeDirection.Right;
 				}
@@ -742,7 +665,7 @@ namespace GorgonLibrary.UI
 				{
 					ResizeDir = ResizeDirection.Top;
 				}
-				else if ((e.Location.Y > this.Height - ResizeHandleSize))
+				else if ((e.Location.Y > Height - ResizeHandleSize))
 				{
 					ResizeDir = ResizeDirection.Bottom;
 				}
@@ -771,7 +694,7 @@ namespace GorgonLibrary.UI
 
 			try
 			{
-				if ((e.Button == System.Windows.Forms.MouseButtons.Left) && (e.Clicks > 1))
+				if ((e.Button == MouseButtons.Left) && (e.Clicks > 1))
 				{
 					if (panelCaptionArea.ClientRectangle.Contains(panelCaptionArea.PointToClient(e.Location)))
 					{
@@ -780,7 +703,7 @@ namespace GorgonLibrary.UI
 					return;
 				}
 
-				if (e.Button == System.Windows.Forms.MouseButtons.Left)
+				if (e.Button == MouseButtons.Left)
 				{
 					if ((Width - ResizeHandleSize > e.X) && (e.X > ResizeHandleSize) && (e.Y > ResizeHandleSize) && (e.Y < Height - ResizeHandleSize))
 					{
@@ -889,21 +812,20 @@ namespace GorgonLibrary.UI
 		{
 			try
 			{
-				if ((!DesignMode) && (_currentPadding != null))
-				{
-					if (this.WindowState == FormWindowState.Maximized)
-					{
-						_currentPadding = Padding;
-						Padding = new Padding(0);
-					}
-					else
-					{
-						if (Padding != _currentPadding.Value)
-						{
-							Padding = _currentPadding.Value;
-						}
-					}
-				}
+			    if ((DesignMode) || (_currentPadding == null))
+			    {
+			        return;
+			    }
+
+			    if (WindowState == FormWindowState.Maximized)
+			    {
+			        _currentPadding = Padding;
+			        Padding = new Padding(0);
+			    }
+			    else
+			    {
+		            Padding = _currentPadding.Value;
+			    }
 			}
 			finally
 			{
@@ -919,7 +841,7 @@ namespace GorgonLibrary.UI
 		{
 			if ((WindowState == FormWindowState.Normal) && (Border))
 			{
-				using (Pen pen = new Pen(Form.ActiveForm == this ? BorderColor : Color.FromKnownColor(KnownColor.DimGray), _borderWidth))
+				using (Pen pen = new Pen(ActiveForm == this ? BorderColor : Color.FromKnownColor(KnownColor.DimGray), _borderWidth))
 				{
 					graphics.DrawRectangle(pen, new Rectangle(0, 0, Width - 1, Height - 1));
 				}
@@ -977,11 +899,12 @@ namespace GorgonLibrary.UI
 		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
 		private void ZuneForm_Activated(object sender, EventArgs e)
 		{
-			panelCaptionArea.ForeColor = this.ForeColor;
-			labelMinimize.ForeColor = this.ForeColor;
-			labelMaxRestore.ForeColor = this.ForeColor;
-			labelClose.ForeColor = this.ForeColor;
-			using (var graphics = this.CreateGraphics())
+			panelCaptionArea.ForeColor = ForeColor;
+			labelMinimize.ForeColor = ForeColor;
+			labelMaxRestore.ForeColor = ForeColor;
+			labelClose.ForeColor = ForeColor;
+
+			using (var graphics = CreateGraphics())
 			{
 				DrawBorder(graphics);
 			}
@@ -998,7 +921,7 @@ namespace GorgonLibrary.UI
 			labelMinimize.ForeColor = Color.FromKnownColor(KnownColor.DimGray);
 			labelMaxRestore.ForeColor = Color.FromKnownColor(KnownColor.DimGray);
 			labelClose.ForeColor = Color.FromKnownColor(KnownColor.DimGray);
-			using (var graphics = this.CreateGraphics())
+			using (var graphics = CreateGraphics())
 			{
 				DrawBorder(graphics);
 			}
