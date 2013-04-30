@@ -282,7 +282,7 @@ namespace GorgonLibrary.IO
             char[] illegalChars = Path.GetInvalidPathChars();
             var doubleSeparator = (directorySeparator + directorySeparator).ToString(CultureInfo.InvariantCulture);
 
-            if (string.IsNullOrEmpty(path))
+            if (string.IsNullOrWhiteSpace(path))
             {
                 return string.Empty;
             }
