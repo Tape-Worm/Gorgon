@@ -253,7 +253,7 @@ namespace GorgonLibrary.PlugIns
 			CreateAppDomains();
 
 			// Function to load a list of type names from an assembly.
-			return _verifier.GetPlugInTypes(assemblyFile);
+			return _verifier.GetPlugInTypes(FindPlugInAssembly(assemblyFile));
 		}
 
 		/// <summary>
@@ -457,7 +457,7 @@ namespace GorgonLibrary.PlugIns
 
 			try
 			{
-				assemblyName = AssemblyName.GetAssemblyName(assemblyPath);
+				assemblyName = FindPlugInAssembly(assemblyPath);
 			}
 			catch (BadImageFormatException)
 			{
