@@ -237,7 +237,8 @@ namespace GorgonLibrary.PlugIns
 	    /// <returns></returns>
 	    bool ICollection<string>.Remove(string item)
 		{
-			throw new NotImplementedException();
+			Remove(item);
+	        return true;
 		}
 
 		/// <summary>
