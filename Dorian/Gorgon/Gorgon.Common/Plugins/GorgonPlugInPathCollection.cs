@@ -275,17 +275,17 @@ namespace GorgonLibrary.PlugIns
 			return _paths.Contains(item);
 		}
 
-		/// <summary>
-		/// Copies to.
-		/// </summary>
-		/// <param name="array">The array.</param>
-		/// <param name="arrayIndex">Index of the array.</param>
+        /// <summary>
+        /// Copies to.
+        /// </summary>
+        /// <param name="array">The array.</param>
+        /// <param name="arrayIndex">Index of the array.</param>
         /// <exception cref="NotImplementedException">Method is not implemented.</exception>
-		void ICollection<string>.CopyTo(string[] array, int arrayIndex)
-		{
-			throw new NotImplementedException();
-		}		
-		#endregion
+        public void CopyTo(string[] array, int arrayIndex)
+        {
+            _paths.CopyTo(array, arrayIndex);
+        }
+        #endregion
 		#endregion
 
 		#region IEnumerable<string> Members
