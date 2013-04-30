@@ -25,14 +25,11 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using System.IO;
 using System.Drawing;
-using SlimMath;
 using GorgonLibrary.Native;
+using GorgonLibrary.Properties;
 
 namespace GorgonLibrary.IO
 {
@@ -158,7 +155,7 @@ namespace GorgonLibrary.IO
 			ValidateAccess(true);
 			if (char.IsSurrogate(value))
 			{
-				throw new ArgumentException("Cannot write out surrogate to a single character.", "value");
+			    throw new ArgumentException(string.Format(Resources.GOR_CHUNK_CANNOT_WRITE_SURROGATE, value), "value");
 			}
 
 			WriteInt16((short)value);
@@ -241,7 +238,7 @@ namespace GorgonLibrary.IO
 
             if (data == null)
             {
-                throw new ArgumentNullException("value");
+                throw new ArgumentNullException("data");
             }
 
             if ((data.Length == 0) || (count <= 0))
@@ -249,19 +246,16 @@ namespace GorgonLibrary.IO
                 return;
             }
 
-            if (startIndex < 0)
+            if ((startIndex < 0) || (startIndex >= data.Length))
             {
-                throw new ArgumentOutOfRangeException("The start index must be greater than or equal to 0.", "startIndex");
-            }
-
-            if (startIndex >= data.Length)
-            {
-                throw new ArgumentOutOfRangeException("The start index must be less than the number of elements in the array.", "startIndex");
+                throw new ArgumentOutOfRangeException(string.Format(Resources.GOR_INDEX_OUT_OF_RANGE, startIndex,
+                                                                    data.Length));
             }
 
             if (startIndex + count > data.Length)
             {
-                throw new ArgumentOutOfRangeException("The sum of start index and count is larger than the number of elements in the array");
+                throw new ArgumentOutOfRangeException(string.Format(Resources.GOR_INDEX_OUT_OF_RANGE, startIndex + count,
+                                                                    data.Length));
             }            
 
 			Writer.Write(data, startIndex, count);
@@ -379,19 +373,16 @@ namespace GorgonLibrary.IO
                 return;
             }
 
-            if (startIndex < 0)
+            if ((startIndex < 0) || (startIndex >= value.Length))
             {
-                throw new ArgumentOutOfRangeException("The start index must be greater than or equal to 0.", "startIndex");
-            }
-
-            if (startIndex >= value.Length)
-            {
-                throw new ArgumentOutOfRangeException("The start index must be less than the number of elements in the array.", "startIndex");
+                throw new ArgumentOutOfRangeException(string.Format(Resources.GOR_INDEX_OUT_OF_RANGE, startIndex,
+                                                                    value.Length));
             }
 
             if (startIndex + count > value.Length)
             {
-                throw new ArgumentOutOfRangeException("The sum of start index and count is larger than the number of elements in the array");
+                throw new ArgumentOutOfRangeException(string.Format(Resources.GOR_INDEX_OUT_OF_RANGE, startIndex + count,
+                                                                    value.Length));
             }            
 
             int typeSize = DirectAccess.SizeOf<T>();
@@ -411,7 +402,7 @@ namespace GorgonLibrary.IO
                     int blockSize = size > TempBufferSize ? TempBufferSize : size;
 
                     // Read our array into our temporary byte buffer.
-                    DirectAccess.ReadArray<T>(tempBufferPointer, value, offset, blockSize);
+                    DirectAccess.ReadArray(tempBufferPointer, value, offset, blockSize);
 
                     offset += blockSize;
                     size -= size;
@@ -435,7 +426,7 @@ namespace GorgonLibrary.IO
         public void WriteRange<T>(T[] value, int count)
             where T : struct
         {
-            WriteRange<T>(value, 0, count);
+            WriteRange(value, 0, count);
         }
 
         /// <summary>
@@ -453,7 +444,7 @@ namespace GorgonLibrary.IO
                 throw new ArgumentNullException("value");
             }
 
-            WriteRange<T>(value, 0, value.Length);
+            WriteRange(value, 0, value.Length);
         }
 
 		/// <summary>
@@ -470,7 +461,7 @@ namespace GorgonLibrary.IO
 			int size = DirectAccess.SizeOf<T>();
 			byte* pointer = stackalloc byte[size];
 
-			DirectAccess.WriteValue<T>(pointer, ref value);
+			DirectAccess.WriteValue(pointer, ref value);
 
 			while (size > 0)
 			{

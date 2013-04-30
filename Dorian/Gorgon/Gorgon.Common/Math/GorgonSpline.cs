@@ -33,19 +33,19 @@ namespace GorgonLibrary.Math
     /// <summary>
     /// Used to return spline interpolated values across a set of points.
     /// </summary>
-    /// <remarks>When adding or removing <see cref="P:GorgonLibrary.Math.GorgonSpline.Points">points</see> from the spline, remember to call <see cref="M:GorgonLibrary.Math.GorgonSpline.UpdateSpline">UpdateSpline</see> to recalculate the tangents.</remarks>
+    /// <remarks>When adding or removing <see cref="P:GorgonLibrary.Math.GorgonSpline.Points">points</see> from the spline, remember to call <see cref="M:GorgonLibrary.Math.GorgonSpline.UpdateTangents">UpdateTangents</see> to recalculate the tangents.</remarks>
     public class GorgonSpline
     {
         #region Variables.
         private Matrix _coefficients = Matrix.Identity;         // Spline coefficients.
-        private Vector4[] _tangents = null;                     // Tangents.
+        private Vector4[] _tangents;                            // Tangents.
         #endregion
 
         #region Properties.
         /// <summary>
         /// Property to return the list of points for the spline.
         /// </summary>
-        /// <remarks>When adding or removing <see cref="P:GorgonLibrary.Math.GorgonSpline.Points">points</see> from the spline, remember to call <see cref="M:GorgonLibrary.Math.GorgonSpline.UpdateSpline">UpdateSpline</see> to recalculate the tangents.</remarks>
+        /// <remarks>When adding or removing <see cref="P:GorgonLibrary.Math.GorgonSpline.Points">points</see> from the spline, remember to call <see cref="M:GorgonLibrary.Math.GorgonSpline.UpdateTangents">UpdateTangents</see> to recalculate the tangents.</remarks>
         public IList<Vector4> Points
         {
             get;
@@ -64,18 +64,21 @@ namespace GorgonLibrary.Math
         /// <remarks>The delta parameter is a unit value where 0 is the first point in the spline (referenced by startPointIndex) and 1 is the next point from the startPointIndex in the spline.</remarks>
         public Vector4 GetInterpolatedValue(int startPointIndex, float delta)
         {
-            Vector4 result = Vector4.Zero;
             Matrix calculations = Matrix.Identity;
 
             GorgonDebug.AssertParamRange(startPointIndex, 0, Points.Count - 1, "startPointIndex");
 
-            if (delta == 0.0f)
+            if (delta.EqualsEpsilon(0.0f))
+            {
                 return Points[startPointIndex];
+            }
 
-            if (delta == 1.0f)
+            if (delta.EqualsEpsilon(1.0f))
+            {
                 return Points[startPointIndex + 1];
+            }
 
-            result = new Vector4(delta * delta * delta, delta * delta, delta * delta, 1.0f);
+            var result = new Vector4(delta * delta * delta, delta * delta, delta * delta, 1.0f);
 
             calculations.Row1 = Points[startPointIndex];
             calculations.Row2 = Points[startPointIndex + 1];
@@ -98,10 +101,14 @@ namespace GorgonLibrary.Math
         {
             // Wrap to 0 and 1.
             while (delta < 0.0f)
+            {
                 delta += 1.0f;
+            }
 
             while (delta > 1.0f)
+            {
                 delta -= 1.0f;
+            }
 
             float segment = delta * (Points.Count - 1);
             float index = (int)segment;
@@ -118,7 +125,9 @@ namespace GorgonLibrary.Math
 
             // Need 2 or more points.
             if (Points.Count < 2)
+            {
                 return;
+            }
 
             // Closed or open?
             if (Points[0] == Points[Points.Count - 1])
@@ -130,16 +139,14 @@ namespace GorgonLibrary.Math
             // Calculate...
             for (int i = 0; i < Points.Count; i++)
             {
-                Vector4 prev = Vector4.Zero;
-                Vector4 next = Vector4.Zero;
+                Vector4 prev;
+                Vector4 next;
                 
                 if (i == 0)
                 {
                     prev = Points[1];
-                    if (closed)
-                        next = Points[Points.Count - 2];
-                    else
-                        next = Points[0];
+
+                    next = closed ? Points[Points.Count - 2] : Points[0];
                 }
                 else
                 {
@@ -151,11 +158,9 @@ namespace GorgonLibrary.Math
                             _tangents[i] = _tangents[0];
                             continue;
                         }
-                        else
-                        {
-                            prev = Points[i];
-                            next = Points[i - 1];
-                        }
+
+                        prev = Points[i];
+                        next = Points[i - 1];
                     }
                     else
                     {
@@ -164,7 +169,7 @@ namespace GorgonLibrary.Math
                     }
                 }
                                 
-                Vector4 diff = Vector4.Zero;
+                Vector4 diff;
                 Vector4.Subtract(ref prev, ref next, out diff);
                 Vector4.Multiply(ref diff, 0.5f, out diff);
                 _tangents[i] = diff;

@@ -572,31 +572,31 @@ Code: 0x{2}</value>
   <data name="GOR_PROPERTY_NOT_PRIMITIVE_OR_STRING" xml:space="preserve">
     <value>Cannot enumerate the property '{0}' the generic parameter type is not a primitive or string type.</value>
   </data>
-  <data name="GOR_BYTES" xml:space="preserve">
+  <data name="GOR_UNIT_MEM_BYTES" xml:space="preserve">
     <value>bytes</value>
   </data>
-  <data name="GOR_GB" xml:space="preserve">
+  <data name="GOR_UNIT_MEM_GB" xml:space="preserve">
     <value>GB</value>
   </data>
   <data name="GOR_INDEX_OUT_OF_RANGE" xml:space="preserve">
     <value>The index is out of range.  The index value [{0}] must be between 0 and {1}.</value>
   </data>
-  <data name="GOR_KB" xml:space="preserve">
+  <data name="GOR_UNIT_MEM_KB" xml:space="preserve">
     <value>KB</value>
   </data>
-  <data name="GOR_MB" xml:space="preserve">
+  <data name="GOR_UNIT_MEM_MB" xml:space="preserve">
     <value>MB</value>
   </data>
-  <data name="GOR_PB" xml:space="preserve">
+  <data name="GOR_UNIT_MEM_PB" xml:space="preserve">
     <value>PB</value>
   </data>
-  <data name="GOR_STREAM_EOF" xml:space="preserve">
+  <data name="GOR_STREAM_EOS" xml:space="preserve">
     <value>Cannot read beyond the end of the stream.</value>
   </data>
   <data name="GOR_STREAM_IS_READONLY" xml:space="preserve">
     <value>The stream is read-only.</value>
   </data>
-  <data name="GOR_TB" xml:space="preserve">
+  <data name="GOR_UNIT_MEM_TB" xml:space="preserve">
     <value>TB</value>
   </data>
   <data name="GOR_VALUE_IS_GREATER_THAN" xml:space="preserve">
@@ -604,5 +604,66 @@ Code: 0x{2}</value>
   </data>
   <data name="GOR_VALUE_IS_LESS_THAN" xml:space="preserve">
     <value>The value '{0}' is less than or equal to the minimum value '{1}'</value>
+  </data>
+  <data name="GOR_CHUNK_INVALID" xml:space="preserve">
+    <value>The reader was expecting [0x{0}], but got [0x{1}] instead.  Chunked data is not valid.</value>
+  </data>
+  <data name="GOR_CHUNK_NAME_TOO_SMALL" xml:space="preserve">
+    <value>The chunk name must be 8 characters exactly.</value>
+  </data>
+  <data name="GOR_STREAM_IS_WRITEONLY" xml:space="preserve">
+    <value>The stream is write only.</value>
+  </data>
+  <data name="GOR_STREAM_NOT_SEEKABLE" xml:space="preserve">
+    <value>Unable to seek within this stream.</value>
+  </data>
+  <data name="GOR_CHUNK_CANNOT_WRITE_SURROGATE" xml:space="preserve">
+    <value>Cannot write surrogate character '{0}' as a single character.</value>
+  </data>
+  <data name="GOR_STREAM_BOS" xml:space="preserve">
+    <value>Cannot read beyond the beginning of the stream.</value>
+  </data>
+  <data name="GOR_UNSAFE_STRUCT_NOT_EXPLICIT_LAYOUT" xml:space="preserve">
+    <value>The type '{0}' is not explicitly laid out using the StructLayout attribute.</value>
+  </data>
+  <data name="GOR_STREAM_COUNT_OUT_OF_RANGE" xml:space="preserve">
+    <value>The count [{0}] must be greater than or equal to 0.</value>
+  </data>
+  <data name="GOR_STREAM_OFFSET_COUNT_TOO_LARGE" xml:space="preserve">
+    <value>The offset plus the count is too large for this stream.</value>
+  </data>
+  <data name="GOR_STREAM_OFFSET_OUT_OF_RANGE" xml:space="preserve">
+    <value>The offset [{0}] must be greater than or equal to 0 and less than {1}.</value>
+  </data>
+  <data name="GOR_UNSAFE_EXTERN_PTR" xml:space="preserve">
+    <value>The pointer is from an external source and cannot be modified.</value>
+  </data>
+  <data name="GOR_PLUGIN_CANNOT_CREATE" xml:space="preserve">
+    <value>Could not create the plug-in.  '{0}' in assembly '{1}' is not inherited from type 'GorgonLibrary.PlugIns.GorgonPlugIn'.</value>
+  </data>
+  <data name="GOR_PLUGIN_CANNOT_FIND_FILE" xml:space="preserve">
+    <value>The could not find the assembly file '{0}' on any of the plug-in search paths.</value>
+  </data>
+  <data name="GOR_PLUGIN_CONFLICT" xml:space="preserve">
+    <value>The plug-in '{0}' in assembly '{1}' already exists in another plug-in assembly '{2}' and is not the same type.</value>
+  </data>
+  <data name="GOR_PLUGIN_NOT_PLUGIN_ASSEMBLY" xml:space="preserve">
+    <value>Not a valid plug-in assembly.  There are no plug-ins in the assembly '{0}'.</value>
+  </data>
+  <data name="GOR_PLUGIN_TYPE_LOAD_FAILURE" xml:space="preserve">
+    <value>Cannot read types from the assembly '{0}'
+{1}</value>
+  </data>
+  <data name="GOR_UI_CAPTION_CONFIRM" xml:space="preserve">
+    <value>Confirmation</value>
+  </data>
+  <data name="GOR_UI_CAPTION_ERROR" xml:space="preserve">
+    <value>Error</value>
+  </data>
+  <data name="GOR_UI_CAPTION_INFO" xml:space="preserve">
+    <value>Information</value>
+  </data>
+  <data name="GOR_UI_CAPTION_WARNING" xml:space="preserve">
+    <value>Warning</value>
   </data>
 </root>

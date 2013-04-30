@@ -27,6 +27,7 @@
 using System;
 using System.Text;
 using System.Windows.Forms;
+using GorgonLibrary.Properties;
 
 namespace GorgonLibrary.UI
 {
@@ -72,24 +73,25 @@ namespace GorgonLibrary.UI
 		private static string FormatStackTrace(string stackTrace)
 		{
 			StringBuilder result = new StringBuilder(8192);
-			string[] lines = null;
 
-			if (string.IsNullOrEmpty(stackTrace))
+		    if (string.IsNullOrEmpty(stackTrace))
 				return string.Empty;
 
-			lines = stackTrace.Split(new char[] { '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries);
+			string[] lines = stackTrace.Split(new[] { '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries);
 
 			result.Append("\nStack trace:\n");
 
 			for (int i = lines.Length - 1; i >= 0; i--)
 			{
-				int inIndex = lines[i].LastIndexOf(") in ");
-				int pathIndex = lines[i].LastIndexOf(@"\");
+				int inIndex = lines[i].LastIndexOf(") in ", StringComparison.Ordinal);
+				int pathIndex = lines[i].LastIndexOf(@"\", StringComparison.Ordinal);
 
-				if ((inIndex > -1) && (pathIndex > -1))
-					lines[i] = lines[i].Substring(0, inIndex + 5) + lines[i].Substring(pathIndex + 1);
+			    if ((inIndex > -1) && (pathIndex > -1))
+			    {
+			        lines[i] = lines[i].Substring(0, inIndex + 5) + lines[i].Substring(pathIndex + 1);
+			    }
 
-				result.Append(lines[i]);
+			    result.Append(lines[i]);
 				result.Append("\n");
 			}
 
@@ -106,42 +108,53 @@ namespace GorgonLibrary.UI
 		/// <param name="caption">Caption for the error box.</param>
 		public static void ErrorBox(Form owner, string message, Exception innerException, string caption)
 		{
-			ErrorDialog errorDialog;			// Error dialog.
-			Exception nextException;			// Next exception.			
-
-			errorDialog = new ErrorDialog();
+		    ErrorDialog errorDialog = new ErrorDialog();
 			// If the owner form is NULL or not available, center on screen.
 			if ((owner == null) || (owner.WindowState == FormWindowState.Minimized) || (!owner.Visible))
 				errorDialog.StartPosition = FormStartPosition.CenterScreen;
 
 			// Find all inner exceptions.
-			nextException = innerException;
+			Exception nextException = innerException;
 			while (nextException != null)
 			{
 				errorDialog.ErrorDetails += "Error message:  " + nextException.Message + "\n";
 				errorDialog.ErrorDetails += "Exception type:  " + nextException.GetType().Name + "\n";
-				if (nextException.Source != null)
-					errorDialog.ErrorDetails += "Source:  " + nextException.Source + "\n";
-				if (nextException.TargetSite != null)
-					errorDialog.ErrorDetails += "Target site:  " + nextException.TargetSite.DeclaringType.FullName + "." + nextException.TargetSite.Name + "\n";
+			    if (nextException.Source != null)
+			    {
+			        errorDialog.ErrorDetails += "Source:  " + nextException.Source + "\n";
+			    }
 
-				System.Collections.IDictionary extraInfo = nextException.Data;
+			    if ((nextException.TargetSite != null) && (nextException.TargetSite.DeclaringType != null))
+			    {
+			        errorDialog.ErrorDetails += "Target site:  " + nextException.TargetSite.DeclaringType.FullName + "." +
+			                                    nextException.TargetSite.Name + "\n";
+			    }
+
+			    System.Collections.IDictionary extraInfo = nextException.Data;
 
 				// Print custom information.
-				if ((extraInfo != null) && (extraInfo.Count > 0))
+				if (extraInfo.Count > 0)
 				{
 					string customData = string.Empty;	// Custom exception data.
 
 					foreach (System.Collections.DictionaryEntry item in extraInfo)
 					{
-						if (customData.Length > 0)
-							customData += "\n";
-						if ((item.Value != null) && (item.Key != null))
-							customData += item.Key.ToString() + ": " + item.Value.ToString();
+					    if (customData.Length > 0)
+					    {
+					        customData += "\n";
+					    }
+
+					    if (item.Value != null)
+					    {
+					        customData += item.Key + ": " + item.Value;
+					    }
 					}
 
-					if (customData.Length > 0)
-						errorDialog.ErrorDetails += "\nCustom Information:\n-------------------\n" + customData + "\n-------------------\n";				
+				    if (customData.Length > 0)
+				    {
+				        errorDialog.ErrorDetails += "\nCustom Information:\n-------------------\n" + customData +
+				                                    "\n-------------------\n";
+				    }
 				}
 
 				string stackTrace = FormatStackTrace(nextException.StackTrace);
@@ -157,19 +170,18 @@ namespace GorgonLibrary.UI
 				}
 			}
 
-			if (string.IsNullOrEmpty(message))
-			{
-				if (innerException != null)
-					errorDialog.Message = innerException.Message;
-				else
-					errorDialog.Message = "No message given.";
-			}
-			else
-				errorDialog.Message = message;
-			errorDialog.Text = caption;
+		    if (string.IsNullOrEmpty(message))
+		    {
+		        errorDialog.Message = innerException != null ? innerException.Message : "No message given.";
+		    }
+		    else
+		    {
+		        errorDialog.Message = message;
+		    }
+
+		    errorDialog.Text = caption;
 			errorDialog.ShowDialog(owner);
 			errorDialog.Dispose();
-			errorDialog = null;
 		}
 
 		/// <summary>
@@ -180,7 +192,7 @@ namespace GorgonLibrary.UI
 		/// <param name="innerException">Exception that was thrown.</param>
 		public static void ErrorBox(Form owner, string message, Exception innerException)
 		{
-			ErrorBox(owner, message, innerException, "Error.");
+			ErrorBox(owner, message, innerException, Resources.GOR_UI_CAPTION_ERROR);
 		}
 
 		/// <summary>
@@ -190,7 +202,7 @@ namespace GorgonLibrary.UI
 		/// <param name="innerException">Exception that was thrown.</param>
 		public static void ErrorBox(Form owner, Exception innerException)
 		{
-			ErrorBox(owner, null, innerException, "Error.");
+			ErrorBox(owner, null, innerException, Resources.GOR_UI_CAPTION_ERROR);
 		}
 
 		/// <summary>
@@ -203,19 +215,19 @@ namespace GorgonLibrary.UI
 		/// <param name="caption">Caption for the error box.</param>
 		public static void ErrorBox(Form owner, string description, string details, bool showDetail, string caption)
 		{
-			ErrorDialog errorDialog;		// Error dialog.
-
-			errorDialog = new ErrorDialog();
+		    ErrorDialog errorDialog = new ErrorDialog();
 			// If the owner form is NULL or not available, center on screen.
-			if ((owner == null) || (owner.WindowState == FormWindowState.Minimized) || (!owner.Visible))
-				errorDialog.StartPosition = FormStartPosition.CenterScreen;
-			errorDialog.Message = description;
+		    if ((owner == null) || (owner.WindowState == FormWindowState.Minimized) || (!owner.Visible))
+		    {
+		        errorDialog.StartPosition = FormStartPosition.CenterScreen;
+		    }
+
+		    errorDialog.Message = description;
 			errorDialog.ErrorDetails = details;
 			errorDialog.Text = caption;
             errorDialog.ShowDetailPanel = showDetail;
 			errorDialog.ShowDialog(owner);
 			errorDialog.Dispose();
-			errorDialog = null;
 		}
 
 		/// <summary>
@@ -227,7 +239,7 @@ namespace GorgonLibrary.UI
         /// <param name="showDetail">TRUE to open the window with the detail panel open, FALSE to open it with the detail panel closed.</param>
 		public static void ErrorBox(Form owner, string description, string details, bool showDetail)
 		{
-			ErrorBox(owner, description, details, showDetail, "Error");
+			ErrorBox(owner, description, details, showDetail, Resources.GOR_UI_CAPTION_ERROR);
 		}
 
         /// <summary>
@@ -238,7 +250,7 @@ namespace GorgonLibrary.UI
         /// <param name="details">Details for the error.</param>
         public static void ErrorBox(Form owner, string description, string details)
         {
-            ErrorBox(owner, description, details, false, "Error");
+            ErrorBox(owner, description, details, false, Resources.GOR_UI_CAPTION_ERROR);
         }
 
 		/// <summary>
@@ -248,7 +260,7 @@ namespace GorgonLibrary.UI
 		/// <param name="description">Error description.</param>		
 		public static void ErrorBox(Form owner, string description)
 		{
-			ErrorBox(owner, description, string.Empty, false, "Error");
+			ErrorBox(owner, description, string.Empty, false, Resources.GOR_UI_CAPTION_ERROR);
 		}
 
 		/// <summary>
@@ -263,28 +275,33 @@ namespace GorgonLibrary.UI
 
 			try
 			{
-				dialog = new BaseDialog();
-				dialog.Icon = Properties.Resources.GorgonInfo;
-				dialog.DialogImage = Properties.Resources.Info_48x48;
-				dialog.Message = message;
-				dialog.ButtonAction = DialogResult.OK;
-				if (owner != null)
-					dialog.MessageHeight = Screen.FromControl(owner).WorkingArea.Height / 2;
-				else
-					dialog.MessageHeight = Screen.FromControl(dialog).WorkingArea.Height / 2;
+				dialog = new BaseDialog
+				    {
+				        Icon = Resources.GorgonInfo,
+				        DialogImage = Resources.Info_48x48,
+				        Message = message,
+				        ButtonAction = DialogResult.OK
+				    };
 
-				if (!string.IsNullOrEmpty(caption))
-					dialog.Text = caption;
-				else
-					dialog.Text = "Information.";
+			    if (owner != null)
+			    {
+			        dialog.MessageHeight = Screen.FromControl(owner).WorkingArea.Height/2;
+			    }
+			    else
+			    {
+			        dialog.MessageHeight = Screen.FromControl(dialog).WorkingArea.Height/2;
+			    }
 
-				dialog.ShowDialog(owner);
+			    dialog.Text = !string.IsNullOrEmpty(caption) ? caption : Resources.GOR_UI_CAPTION_INFO;
+
+			    dialog.ShowDialog(owner);
 			}
 			finally
 			{
-				if (dialog != null)
-					dialog.Dispose();
-				dialog = null;
+			    if (dialog != null)
+			    {
+			        dialog.Dispose();
+			    }
 			}
 		}
 
@@ -295,7 +312,7 @@ namespace GorgonLibrary.UI
 		/// <param name="message">Message to display.</param>
 		public static void InfoBox(Form owner, string message)
 		{
-			InfoBox(owner, message, "Information.");
+            InfoBox(owner, message, Resources.GOR_UI_CAPTION_INFO);
 		}
 
 		/// <summary>
@@ -308,31 +325,36 @@ namespace GorgonLibrary.UI
 		{
 			BaseDialog dialog = null;
 
-			try
-			{
-				dialog = new BaseDialog();
-				dialog.Icon = Properties.Resources.GorgonWarning;
-				dialog.DialogImage = Properties.Resources.Warning_48x48;
-				dialog.Message = message;
-				dialog.ButtonAction = DialogResult.OK;
-				if (owner != null)
-					dialog.MessageHeight = Screen.FromControl(owner).WorkingArea.Height / 2;
-				else
-					dialog.MessageHeight = Screen.FromControl(dialog).WorkingArea.Height / 2;
+		    try
+		    {
+		        dialog = new BaseDialog
+		            {
+		                Icon = Resources.GorgonWarning,
+		                DialogImage = Resources.Warning_48x48,
+		                Message = message,
+		                ButtonAction = DialogResult.OK
+		            };
 
-				if (!string.IsNullOrEmpty(caption))
-					dialog.Text = caption;
-				else
-					dialog.Text = "Warning.";
+		        if (owner != null)
+		        {
+		            dialog.MessageHeight = Screen.FromControl(owner).WorkingArea.Height/2;
+		        }
+		        else
+		        {
+		            dialog.MessageHeight = Screen.FromControl(dialog).WorkingArea.Height/2;
+		        }
 
-				dialog.ShowDialog(owner);
-			}
-			finally
-			{
-				if (dialog != null)
-					dialog.Dispose();
-				dialog = null;
-			}
+		        dialog.Text = !string.IsNullOrEmpty(caption) ? caption : Resources.GOR_UI_CAPTION_WARNING;
+
+		        dialog.ShowDialog(owner);
+		    }
+		    finally
+		    {
+		        if (dialog != null)
+		        {
+		            dialog.Dispose();
+		        }
+		    }
 		}
 
 		/// <summary>
@@ -342,7 +364,7 @@ namespace GorgonLibrary.UI
 		/// <param name="message">Message to display.</param>
 		public static void WarningBox(Form owner, string message)
 		{
-			WarningBox(owner, message, "Warning.");
+            WarningBox(owner, message, Resources.GOR_UI_CAPTION_WARNING);
 		}
 
 		/// <summary>
@@ -356,23 +378,15 @@ namespace GorgonLibrary.UI
 		/// <returns>Any member of ConfirmationResult except ConfirmationResult.None.</returns>
 		public static ConfirmationResult ConfirmBox(Form owner, string message, string caption, bool allowCancel, bool allowToAll)
 		{
-			ConfirmationDialog confirm = null;						// Confirmation box.			
-			ConfirmationResult result = ConfirmationResult.None;	// Result.
+		    ConfirmationDialog confirm = allowToAll ? new ConfirmationDialogEx() : new ConfirmationDialog();
 
-			if (allowToAll)
-				confirm = new ConfirmationDialogEx();
-			else
-				confirm = new ConfirmationDialog();
+		    confirm.Text = !string.IsNullOrEmpty(caption) ? caption : Resources.GOR_UI_CAPTION_CONFIRM;
 
-			if ((caption != string.Empty) && (caption != null))
-				confirm.Text = caption;
-			else
-				confirm.Text = "Confirmation.";
-
-			confirm.Message = message;
+		    confirm.Message = message;
 			confirm.ShowCancel = allowCancel;
 			confirm.ShowDialog(owner);
-			result = confirm.ConfirmationResult;
+
+			ConfirmationResult result = confirm.ConfirmationResult;
 
 			confirm.Dispose();
 

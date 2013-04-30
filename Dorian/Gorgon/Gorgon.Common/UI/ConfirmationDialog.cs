@@ -37,12 +37,7 @@ namespace GorgonLibrary.UI
 		: BaseDialog
 	{		
 		#region Variables.
-		private bool _showCancel = false;								// Don't show the cancel button.
-
-		/// <summary>
-		/// Result of the dialog.
-		/// </summary>
-		protected ConfirmationResult _result = ConfirmationResult.None;	
+		private bool _showCancel;								// Don't show the cancel button.
 		#endregion
 
 		#region Properties.
@@ -78,10 +73,8 @@ namespace GorgonLibrary.UI
 		/// </summary>
 		public ConfirmationResult ConfirmationResult
 		{
-			get
-			{
-				return _result;
-			}
+			get;
+            protected set;
 		}
 		#endregion
 
@@ -95,13 +88,12 @@ namespace GorgonLibrary.UI
 			base.OnFormClosing(e);
 
 			// Assume cancel.
-			if (_result == ConfirmationResult.None)
-			{
-				if (_showCancel)
-					_result = ConfirmationResult.Cancel;
-				else
-					_result = ConfirmationResult.No;
-			}
+		    if (ConfirmationResult != ConfirmationResult.None)
+		    {
+		        return;
+		    }
+
+		    ConfirmationResult = _showCancel ? ConfirmationResult.Cancel : ConfirmationResult.No;
 		}		
 
 		/// <summary>
@@ -111,7 +103,7 @@ namespace GorgonLibrary.UI
 		/// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
 		private void OKButton_Click(object sender, EventArgs e)
 		{
-			_result = ConfirmationResult.Yes;
+			ConfirmationResult = ConfirmationResult.Yes;
 			Close();
 		}
 
@@ -122,7 +114,7 @@ namespace GorgonLibrary.UI
 		/// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
 		private void buttonCancel_Click(object sender, EventArgs e)
 		{
-			_result = ConfirmationResult.Cancel;
+			ConfirmationResult = ConfirmationResult.Cancel;
 			Close();
 		}
 
@@ -133,7 +125,7 @@ namespace GorgonLibrary.UI
 		/// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
 		private void buttonNo_Click(object sender, EventArgs e)
 		{
-			_result = ConfirmationResult.No;
+			ConfirmationResult = ConfirmationResult.No;
 			Close();
 		}
 				
@@ -143,10 +135,8 @@ namespace GorgonLibrary.UI
 		/// <param name="g">Graphics object to use.</param>
 		protected override void DrawDialog(System.Drawing.Graphics g)
 		{
-			float maxTextHeight;                // Maximum text height.
-
-			// Get size.
-			maxTextHeight = AdjustSize(g,0);
+		    // Get size.
+			float maxTextHeight = AdjustSize(g,0);
 
 			// Adjust buttons.
 			if (_showCancel)
@@ -190,7 +180,8 @@ namespace GorgonLibrary.UI
 		/// </summary>
 		public ConfirmationDialog()
 		{
-			InitializeComponent();
+            ConfirmationResult = ConfirmationResult.None;
+		    InitializeComponent();
 		}
 		#endregion
 	}

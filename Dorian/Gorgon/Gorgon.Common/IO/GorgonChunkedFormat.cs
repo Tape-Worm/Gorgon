@@ -25,13 +25,8 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Drawing;
-using SlimMath;
-using GorgonLibrary.Native;
+using GorgonLibrary.Properties;
 
 namespace GorgonLibrary.IO
 {
@@ -68,11 +63,11 @@ namespace GorgonLibrary.IO
         #endregion
 
         #region Variables.
-        private bool _disposed = false;                                                 // Flag to indicate that the object was disposed.
-		private ulong _currentChunk = 0;												// Our current chunk.
-		private long _chunkStart = 0;													// The start of the current chunk.
-		private long _chunkEnd = 0;														// The end of the current chunk.
-		private uint _chunkSize = 0;													// Size of the chunk.
+        private bool _disposed;                                                 // Flag to indicate that the object was disposed.
+		private ulong _currentChunk;											// Our current chunk.
+		private long _chunkStart;												// The start of the current chunk.
+		private long _chunkEnd;													// The end of the current chunk.
+		private uint _chunkSize;												// Size of the chunk.
         #endregion
 
         #region Properties.
@@ -122,12 +117,12 @@ namespace GorgonLibrary.IO
 		{
 			if ((isWrite) && (Writer == null))
 			{
-				throw new IOException("Cannot write to the stream.  The stream is read-only.");
+				throw new IOException(Resources.GOR_STREAM_IS_READONLY);
 			}
 
 			if ((!isWrite) && (Reader == null))
 			{
-				throw new IOException("Cannot read from the stream.  The stream is write-only.");
+                throw new IOException(Resources.GOR_STREAM_IS_READONLY);
 			}
 		}
 
@@ -140,12 +135,12 @@ namespace GorgonLibrary.IO
         {
             if (chunkName.Length != 8)
             {
-                throw new ArgumentException("The name must be 8 characters exactly.", "chunkName");
+                throw new ArgumentException(Resources.GOR_CHUNK_NAME_TOO_SMALL, "chunkName");
             }
             chunkName = chunkName.ToUpper();
 
             return ((ulong)chunkName[7] << 56) | ((ulong)chunkName[6] << 48) | ((ulong)chunkName[5] << 40) | ((ulong)chunkName[4] << 32)
-                   | ((ulong)chunkName[3] << 24) | ((ulong)chunkName[2] << 16) | ((ulong)chunkName[1] << 8) | ((ulong)chunkName[0]);
+                   | ((ulong)chunkName[3] << 24) | ((ulong)chunkName[2] << 16) | ((ulong)chunkName[1] << 8) | chunkName[0];
         }
 
 		/// <summary>
@@ -154,7 +149,7 @@ namespace GorgonLibrary.IO
 		/// <returns>The stream used to read/write chunks.</returns>
 		public Stream GetStream()
 		{
-			if (ChunkAccessMode == IO.ChunkAccessMode.Write)
+			if (ChunkAccessMode == ChunkAccessMode.Write)
 			{
 				return Writer.BaseStream;
 			}
@@ -184,14 +179,11 @@ namespace GorgonLibrary.IO
 				throw new ArgumentNullException("chunkName");
 			}
 
+            chunkName = chunkName.Trim();
+
 			if (chunkName.Length < 8)
 			{
-				throw new ArgumentException("The name must be at least 8 characters in length.", "chunkName");
-			}
-
-			if (string.IsNullOrWhiteSpace(chunkName))
-			{
-				throw new ArgumentException("The parameter must not be empty.", "chunkName");
+				throw new ArgumentException(Resources.GOR_CHUNK_NAME_TOO_SMALL, "chunkName");
 			}
 
             // Truncate to 8 characters.
@@ -233,7 +225,8 @@ namespace GorgonLibrary.IO
 
 				if (chunkHeader != _currentChunk)
 				{
-					throw new InvalidDataException("The reader was expecting [" + _currentChunk.FormatHex() + "], but got [" + chunkHeader.FormatHex() + "] instead.  Chunked data is not valid.");
+				    throw new InvalidDataException(string.Format(Resources.GOR_CHUNK_INVALID, _currentChunk.FormatHex(),
+				                                                 chunkHeader.FormatHex()));
 				}
 
 				// Read the size of this chunk.
@@ -292,7 +285,7 @@ namespace GorgonLibrary.IO
         /// <param name="byteCount">Number of bytes in the stream to skip.</param>
         public void SkipBytes(long byteCount)
         {
-            if (ChunkAccessMode == IO.ChunkAccessMode.Write)
+            if (ChunkAccessMode == ChunkAccessMode.Write)
             {
                 Reader.BaseStream.Seek(byteCount, SeekOrigin.Current);
             }
@@ -327,14 +320,14 @@ namespace GorgonLibrary.IO
 
             if (!stream.CanSeek)
             {
-                throw new ArgumentException("The stream is not seekable.", "stream");
+                throw new ArgumentException(Resources.GOR_STREAM_NOT_SEEKABLE, "stream");
             }
 
 			if (accessMode == ChunkAccessMode.Write)
 			{
 				if (!stream.CanWrite)
 				{
-					throw new ArgumentException("The stream is write-only.", "accessMode");
+					throw new ArgumentException(Resources.GOR_STREAM_IS_READONLY, "accessMode");
 				}
 
 				Writer = new GorgonBinaryWriter(stream, true);
@@ -343,7 +336,7 @@ namespace GorgonLibrary.IO
 			{
 				if (!stream.CanRead)
 				{
-					throw new ArgumentException("The stream is write-only.", "accessMode");
+					throw new ArgumentException(Resources.GOR_STREAM_IS_WRITEONLY, "accessMode");
 				}
 
 				Reader = new GorgonBinaryReader(stream, true);

@@ -31,8 +31,7 @@ namespace GorgonLibrary.UI
 	/// <summary>
 	/// Dialog for error messages.
 	/// </summary>
-	internal partial class ErrorDialog 
-		: BaseDialog
+	internal partial class ErrorDialog
 	{
 		#region Variables.
 		private int _lastWidth;                 // Last used width.
@@ -95,8 +94,8 @@ namespace GorgonLibrary.UI
 				Height -= 202;
 			}
 
-			this.Refresh();
-			this.Invalidate();
+			Refresh();
+			Invalidate();
 		}
 
 		/// <summary>
@@ -114,13 +113,10 @@ namespace GorgonLibrary.UI
 		/// </summary>
 		protected override void ValidateFunctions()
 		{
-			if (_errorDetails == string.Empty)
-				checkDetail.Enabled = false;
-			else
-				checkDetail.Enabled = true;
+		    checkDetail.Enabled = _errorDetails != string.Empty;
 		}
 
-		/// <summary>
+	    /// <summary>
 		/// Raises the <see cref="E:System.Windows.Forms.Form.Load"></see> event.
 		/// </summary>
 		/// <param name="e">An <see cref="T:System.EventArgs"></see> that contains the event data.</param>
@@ -146,10 +142,8 @@ namespace GorgonLibrary.UI
 		/// <param name="g">Graphics object to use.</param>
 		protected override void DrawDialog(System.Drawing.Graphics g)
 		{
-			float maxTextHeight;                // Maximum text height.
-
-			// Get size.
-			maxTextHeight = AdjustSize(g,0);
+		    // Get size.
+			float maxTextHeight = AdjustSize(g,0);
 
 			// Relocate buttons.
 			buttonOK.Left = ClientSize.Width - buttonOK.Width - checkDetail.Left;

@@ -28,12 +28,13 @@ using System;
 
 namespace GorgonLibrary.Native
 {
+    // ReSharper disable InconsistentNaming
 	#region Enumerations
 	/// <summary>
 	/// 
 	/// </summary>
 	[Flags]
-	internal enum DWM_BB
+	enum DWM_BB
 	{
 		/// <summary>
 		/// 
@@ -52,7 +53,7 @@ namespace GorgonLibrary.Native
 	/// <summary>
 	/// Hit tests for non-client areas.
 	/// </summary>
-	internal enum HitTests
+	enum HitTests
 	{
 		/// <summary>
 		/// Border.
@@ -104,7 +105,7 @@ namespace GorgonLibrary.Native
 	/// Types of messages that passed to a window.
 	/// </summary>
 	/// <remarks>See the MSDN documentation for more detail.</remarks>
-	internal enum WindowMessages
+	enum WindowMessages
 	{
 		/// <summary>System command (WM_SYSCOMMAND)</summary>
 		SysCommand = 0x0112,
@@ -511,7 +512,7 @@ namespace GorgonLibrary.Native
 	/// <summary>
 	/// Popup menu tracking constants.
 	/// </summary>
-	internal enum TrackPopupMenu
+	enum TrackPopupMenu
 	{
 		/// <summary>
 		/// Left button.
@@ -536,7 +537,7 @@ namespace GorgonLibrary.Native
 	/// These are often used with the WM_SYSCOMMAND message.
 	/// </para>
 	/// </remarks>
-	internal enum SysCommands
+	enum SysCommands
 	{
 		/// <summary>Screen saver. (SC_SCREENSAVE)</summary>
 		ScreenSave = 0xF140,
@@ -548,7 +549,7 @@ namespace GorgonLibrary.Native
 	/// Flags for PeekMessage method.
 	/// </summary>
 	/// <remarks>See the MSDN documentation for more detail.</remarks>
-	internal enum PeekMessageFlags
+	enum PeekMessageFlags
 	{
 		/// <summary>Keep message on the message queue.</summary>
 		NoRemove = 0,
@@ -561,7 +562,7 @@ namespace GorgonLibrary.Native
 	/// <summary>
 	/// List view flags.
 	/// </summary>
-	internal enum ListViewMessages
+	enum ListViewMessages
 	{
 		/// <summary>
 		/// 
@@ -576,7 +577,7 @@ namespace GorgonLibrary.Native
 	/// <summary>
 	/// Header column flags.
 	/// </summary>
-	internal enum HeaderMessages
+	enum HeaderMessages
 	{
 		/// <summary>
 		/// 
@@ -596,7 +597,7 @@ namespace GorgonLibrary.Native
 	/// Mask values for header.
 	/// </summary>
 	[Flags]
-	public enum HeaderMask
+	enum HeaderMask
 	{
 		/// <summary>
 		/// HDI_FORMAT
@@ -608,7 +609,7 @@ namespace GorgonLibrary.Native
 	/// Format values for header.
 	/// </summary>
 	[Flags]
-	public enum HeaderFormat
+	enum HeaderFormat
 	{
 		/// <summary>
 		/// HDF_SORTDOWN
@@ -620,4 +621,5 @@ namespace GorgonLibrary.Native
 		SortUp = 0x400,     
 	};
 	#endregion
+    // ReSharper restore InconsistentNaming
 }

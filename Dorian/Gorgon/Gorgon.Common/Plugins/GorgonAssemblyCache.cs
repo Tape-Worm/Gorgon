@@ -26,6 +26,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 
 namespace GorgonLibrary.PlugIns
@@ -33,10 +34,10 @@ namespace GorgonLibrary.PlugIns
 	/// <summary>
 	/// A cache to hold recently loaded assemblies so we don't load them over and over.
 	/// </summary>
-	internal static class AssemblyCache
+	static class AssemblyCache
 	{
 		#region Variables.
-		private static Dictionary<string, Assembly> _assemblies = null;			// List of loaded assemblies.
+		private static readonly Dictionary<string, Assembly> _assemblies;			// List of loaded assemblies.
 		#endregion
 
 		#region Methods.
@@ -45,22 +46,21 @@ namespace GorgonLibrary.PlugIns
 		/// </summary>
 		private static void GetAssemblies()
 		{
-			Assembly[] assemblies = null;
+		    Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
 
-			assemblies = AppDomain.CurrentDomain.GetAssemblies();
+		    if (assemblies.Length == 0)
+		    {
+		        return;
+		    }
 
-			if ((assemblies == null) || (assemblies.Length == 0))
-				return;
+		    Gorgon.Log.Print("Assembly list is empty.  Retrieving assembly list...", Diagnostics.LoggingLevel.Verbose);
 
-			Gorgon.Log.Print("Assembly list is empty.  Retrieving assembly list...", Diagnostics.LoggingLevel.Verbose);
-			foreach (Assembly assembly in assemblies)
+			foreach (Assembly assembly in assemblies.Where(assembly => !_assemblies.ContainsKey(assembly.FullName)))
 			{
-				if (!_assemblies.ContainsKey(assembly.FullName))
-				{
-					_assemblies.Add(assembly.FullName, assembly);
-					Gorgon.Log.Print("Added Assembly '{0}' from {1}", Diagnostics.LoggingLevel.Verbose, assembly.FullName, assembly.EscapedCodeBase);
-				}
+			    _assemblies.Add(assembly.FullName, assembly);
+			    Gorgon.Log.Print("Added Assembly '{0}' from {1}", Diagnostics.LoggingLevel.Verbose, assembly.FullName, assembly.EscapedCodeBase);
 			}
+
 			Gorgon.Log.Print("{0} assemblies available.", Diagnostics.LoggingLevel.Verbose, _assemblies.Count);
 		}
 
@@ -71,9 +71,7 @@ namespace GorgonLibrary.PlugIns
 		/// <returns>The loaded assembly.</returns>
 		public static Assembly LoadAssembly(AssemblyName assemblyName)
 		{
-			Assembly assembly = null;
-
-			if (assemblyName == null)
+		    if (assemblyName == null)
 				throw new ArgumentNullException("assemblyName");
 
 			if (_assemblies.ContainsKey(assemblyName.FullName))
@@ -83,12 +81,14 @@ namespace GorgonLibrary.PlugIns
 			}
 
 			Gorgon.Log.Print("Loading plug-in assembly '{0}' from {1}", Diagnostics.LoggingLevel.Simple, assemblyName.FullName, assemblyName.EscapedCodeBase);
-			assembly = Assembly.Load(assemblyName);
+			Assembly assembly = Assembly.Load(assemblyName);
 
-			if (!_assemblies.ContainsKey(assembly.FullName))
-				_assemblies.Add(assembly.FullName, assembly);
+		    if (!_assemblies.ContainsKey(assembly.FullName))
+		    {
+		        _assemblies.Add(assembly.FullName, assembly);
+		    }
 
-			Gorgon.Log.Print("Plug-in assembly '{0}' loaded successfully.", Diagnostics.LoggingLevel.Simple, assemblyName.FullName);
+		    Gorgon.Log.Print("Plug-in assembly '{0}' loaded successfully.", Diagnostics.LoggingLevel.Simple, assemblyName.FullName);
 
 			return assembly;
 		}

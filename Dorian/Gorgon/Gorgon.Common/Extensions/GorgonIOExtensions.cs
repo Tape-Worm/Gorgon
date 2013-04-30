@@ -195,7 +195,7 @@ namespace GorgonLibrary.IO
 
                 if (value == -1)
                 {
-                    throw new IOException(Resources.GOR_STREAM_EOF);
+                    throw new IOException(Resources.GOR_STREAM_EOS);
                 }
 
                 stringLength |= (value & 0x7F) << counter;

@@ -34,7 +34,8 @@ namespace GorgonLibrary.UI
 	/// <summary>
 	/// Base form for common dialogs.
 	/// </summary>
-	internal partial class BaseDialog : Form
+	internal partial class BaseDialog 
+        : Form
 	{
 		#region Variables.
 		private string _message = string.Empty;             // Message to be displayed.
@@ -131,8 +132,10 @@ namespace GorgonLibrary.UI
 		{
 			base.OnKeyDown(e);
 
-			if (e.KeyCode == Keys.Escape)
-				Close();
+		    if (e.KeyCode == Keys.Escape)
+		    {
+		        Close();
+		    }
 		}
 
 		/// <summary>
@@ -148,16 +151,20 @@ namespace GorgonLibrary.UI
 		/// <param name="e">Event arguments.</param>
 		protected override void OnLoad(EventArgs e)
 		{
-			if (!DesignMode)
-			{
-				// Inherit the parent icon.
-				if (Owner != null)
-					Icon = Owner.Icon;
+		    if (DesignMode)
+		    {
+		        return;
+		    }
 
-				ValidateFunctions();
-				OnSizeChanged(EventArgs.Empty);
-				Visible = true;
-			}
+		    // Inherit the parent icon.
+		    if (Owner != null)
+		    {
+		        Icon = Owner.Icon;
+		    }
+
+		    ValidateFunctions();
+		    OnSizeChanged(EventArgs.Empty);
+		    Visible = true;
 		}
 
 		/// <summary>
@@ -168,20 +175,20 @@ namespace GorgonLibrary.UI
 		{
 			base.OnShown(e);
 
-			if ((!DesignMode) && (Owner != null))
-				Icon = Owner.Icon;
+		    if ((!DesignMode) && (Owner != null))
+		    {
+		        Icon = Owner.Icon;
+		    }
 		}
 
 		/// <summary>
 		/// Function to perform the actual drawing of the dialog.
 		/// </summary>
 		/// <param name="g">Graphics object to use.</param>
-		protected virtual void DrawDialog(System.Drawing.Graphics g)
+		protected virtual void DrawDialog(Graphics g)
 		{
-			float maxTextHeight;                // Maximum text height.
-
-			// Get size.
-			maxTextHeight = AdjustSize(g, 0);
+		    // Get size.
+			float maxTextHeight = AdjustSize(g, 0);
 
 			// Relocate buttons.
 			buttonOK.Left = ClientSize.Width - buttonOK.Width - 8;
@@ -195,50 +202,55 @@ namespace GorgonLibrary.UI
 		/// <param name="g">Graphics interface.</param>
 		/// <param name="margin">Places a margin at the bottom of the form.</param>
 		/// <returns>The new maximum height of the client area.</returns>
-		protected float AdjustSize(System.Drawing.Graphics g, int margin) 
+		protected float AdjustSize(Graphics g, int margin) 
 		{
-			SizeF textDimensions = SizeF.Empty;                     // Text dimensions
-			float maxTextHeight;                                    // Maximum text height
-			Size newClientSize = Size.Empty;                        // New client size.
-			
-			g.PageUnit = GraphicsUnit.Pixel;
-			textDimensions = g.MeasureString(_message, Font, _maxTextSize.Width);
+		    g.PageUnit = GraphicsUnit.Pixel;
+			SizeF textDimensions = g.MeasureString(_message, Font, _maxTextSize.Width);
 
 			// Resize the form if needed.
-			newClientSize = ClientSize;
+			Size newClientSize = ClientSize;
 
 			if (textDimensions.Width + _textPosition.X > newClientSize.Width)
 				newClientSize.Width = (int)textDimensions.Width + _textPosition.X + 8;
 			
-			maxTextHeight = textDimensions.Height;
-			if (maxTextHeight > _maxTextSize.Height) 
-				maxTextHeight = _maxTextSize.Height;
+			float maxTextHeight = textDimensions.Height;
 
-			if (maxTextHeight + 2 > newClientSize.Height - buttonOK.Height - (10 + margin))
-				newClientSize.Height = ((int)maxTextHeight) + 2 + buttonOK.Height + 10 + margin;
-			
-			
-			if ((ClientSize.Width != newClientSize.Width) || (ClientSize.Height != newClientSize.Height))
-				ClientSize = newClientSize;
+		    if (maxTextHeight > _maxTextSize.Height)
+		    {
+		        maxTextHeight = _maxTextSize.Height;
+		    }
 
-			return maxTextHeight;
+		    if (maxTextHeight + 2 > newClientSize.Height - buttonOK.Height - (10 + margin))
+		    {
+		        newClientSize.Height = ((int) maxTextHeight) + 2 + buttonOK.Height + 10 + margin;
+		    }
+            
+		    if ((ClientSize.Width != newClientSize.Width) || (ClientSize.Height != newClientSize.Height))
+		    {
+		        ClientSize = newClientSize;
+		    }
+
+		    return maxTextHeight;
 		}
 
 		/// <summary>
 		/// Function to draw the dialog box message.
-		/// </summary>    /// 
+		/// </summary>
 		/// <param name="g">Graphics interface.</param>
 		/// <param name="maxTextHeight">Maximum height that the text will fit into.</param>
-		protected void DrawMessage(System.Drawing.Graphics g, float maxTextHeight)
+		protected void DrawMessage(Graphics g, float maxTextHeight)
 		{
-			SizeF textDimensions = SizeF.Empty;         // Text dimensions
-			int borderHeight = buttonOK.Top - 5;
+		    int borderHeight = buttonOK.Top - 5;
 
 			g.TextRenderingHint = System.Drawing.Text.TextRenderingHint.ClearTypeGridFit;
-			textDimensions = g.MeasureString(_message, Font, new SizeF(_maxTextSize.Width - 2, maxTextHeight));
-			using (Brush backBrush = new SolidBrush(Color.FromArgb(255, 240, 240, 240)))
-				g.FillRectangle(backBrush, 0, 0, Size.Width, borderHeight);
-			g.FillRectangle(Brushes.White, 0, borderHeight + 1, Size.Width, DisplayRectangle.Bottom - borderHeight + 1);
+			SizeF textDimensions = g.MeasureString(_message, Font, new SizeF(_maxTextSize.Width - 2, maxTextHeight));
+		    
+            using (Brush backBrush = new SolidBrush(Color.FromArgb(255, 240, 240, 240)))
+		    {
+		        g.FillRectangle(backBrush, 0, 0, Size.Width, borderHeight);
+		    }
+
+		    g.FillRectangle(Brushes.White, 0, borderHeight + 1, Size.Width, DisplayRectangle.Bottom - borderHeight + 1);
 			pictureDialog.Refresh();
 			g.DrawLine(Pens.Black, new Point(0, borderHeight), new Point(Size.Width, borderHeight));
 			g.DrawString(_message, Font, Brushes.Black, new RectangleF(_textPosition.X, 2, textDimensions.Width, maxTextHeight));
@@ -250,34 +262,41 @@ namespace GorgonLibrary.UI
 		/// <param name="e">Event arguments.</param>
 		protected override void OnSizeChanged(EventArgs e)
 		{
-			if (!DesignMode) 
-			{
-				// Reposition.
-				if ((StartPosition == FormStartPosition.CenterScreen) || (StartPosition == FormStartPosition.CenterParent)) 
-				{
-					if (Parent == null) 
-					{
-						Left = (Screen.FromControl(this).WorkingArea.Width / 2) - (Width / 2);
-						Top = (Screen.FromControl(this).WorkingArea.Height / 2) - (Height / 2);
-					} else
-					{
-						Left = (Parent.Width / 2) - (Width / 2);
-						Top = (Parent.Height / 2) - (Height / 2);
-					}
-				}
-			}
+		    if (DesignMode)
+		    {
+		        return;
+		    }
+
+		    // Reposition.
+		    if ((StartPosition != FormStartPosition.CenterScreen) && (StartPosition != FormStartPosition.CenterParent))
+		    {
+		        return;
+		    }
+
+		    if (Parent == null) 
+		    {
+		        Left = (Screen.FromControl(this).WorkingArea.Width / 2) - (Width / 2);
+		        Top = (Screen.FromControl(this).WorkingArea.Height / 2) - (Height / 2);
+		    } 
+            else
+		    {
+		        Left = (Parent.Width / 2) - (Width / 2);
+		        Top = (Parent.Height / 2) - (Height / 2);
+		    }
 		}
 
-		/// <summary>
-		/// Raises the <see cref="E:Paint"/> event.
-		/// </summary>
-		/// <param name="e">The <see cref="System.Windows.Forms.PaintEventArgs"/> instance containing the event data.</param>
+	    /// <summary>
+        /// Raises the <see cref="System.Windows.Forms.Form.Paint" /> event.
+        /// </summary>
+        /// <param name="e">The <see cref="System.Windows.Forms.PaintEventArgs" /> instance containing the event data.</param>
 		protected override void OnPaint(PaintEventArgs e)
 		{
 			base.OnPaint(e);
 
-			if (!DesignMode)
-				DrawDialog(e.Graphics);
+            if (!DesignMode)
+            {
+                DrawDialog(e.Graphics);
+            }
 		}
 		#endregion
 
