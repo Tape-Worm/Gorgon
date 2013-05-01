@@ -139,21 +139,12 @@ namespace GorgonLibrary.FileSystem
 		/// Function called when a file is opened as a file stream.
 		/// </summary>
 		/// <param name="file">File to open.</param>
-		/// <param name="writeable">TRUE if the file can be written to, FALSE if not.</param>
 		/// <returns>
 		/// The open <see cref="GorgonLibrary.FileSystem.GorgonFileSystemStream"/> file stream object.
 		/// </returns>
-		protected override GorgonFileSystemStream OnOpenFileStream(GorgonFileSystemFileEntry file, bool writeable)
+		protected override GorgonFileSystemStream OnOpenFileStream(GorgonFileSystemFileEntry file)
 		{
-			// If we're opening for writing, then send it to the writeable directory.
-			if (writeable)
-			{
-				return new GorgonFileSystemStream(file, WriteToWriteLocation(file));
-			}
-			else
-			{
-				return new GorgonFileSystemStream(file, File.Open(file.PhysicalFileSystemPath, FileMode.Open, FileAccess.Read, FileShare.Read));
-			}
+			return new GorgonFileSystemStream(file, File.Open(file.PhysicalFileSystemPath, FileMode.Open, FileAccess.Read, FileShare.Read));
 		}
 
 		/// <summary>
