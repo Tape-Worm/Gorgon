@@ -44,7 +44,7 @@ namespace GorgonLibrary.FileSystem
 		public GorgonFileSystemProvider Provider
 		{
 			get;
-			internal set;
+			private set;
 		}
 
 		/// <summary>
@@ -66,7 +66,7 @@ namespace GorgonLibrary.FileSystem
 		public string PhysicalFileSystemPath
 		{
 			get;
-			internal set;
+			private set;
 		}
 
 		/// <summary>
@@ -75,7 +75,7 @@ namespace GorgonLibrary.FileSystem
 		public string MountPoint
 		{
 			get;
-			internal set;
+			private set;
 		}
 
 		/// <summary>
@@ -84,7 +84,7 @@ namespace GorgonLibrary.FileSystem
 		public GorgonFileSystemDirectory Directory
 		{
 			get;
-			internal set;
+			private set;
 		}
 
 		/// <summary>
@@ -111,7 +111,7 @@ namespace GorgonLibrary.FileSystem
 		public long Size
 		{
 			get;
-			internal set;
+			private set;
 		}
 
 		/// <summary>
@@ -120,7 +120,7 @@ namespace GorgonLibrary.FileSystem
 		public DateTime CreateDate
 		{
 			get;
-			internal set;
+			private set;
 		}
 
 		/// <summary>
@@ -130,11 +130,54 @@ namespace GorgonLibrary.FileSystem
 		public long Offset
 		{
 			get;
-			internal set;
+			private set;
 		}
 		#endregion
 
 		#region Methods.
+        /// <summary>
+        /// Function to update the information about this file.
+        /// </summary>
+        /// <param name="fileSize">Size of the file.</param>
+        /// <param name="fileOffset">Offset of the file in a packed file file system.</param>
+        /// <param name="createDate">Date of creation for the file.</param>
+        /// <param name="mountPoint">Mount point for the file.</param>
+        /// <param name="physicalPath">Physical path for the file.</param>
+        /// <param name="provider">Provider that can access the file.</param>
+        internal void Update(long? fileSize, int? fileOffset, DateTime? createDate, string mountPoint,
+                             string physicalPath, GorgonFileSystemProvider provider)
+        {
+            if (fileSize.HasValue)
+            {
+                Size = fileSize.Value;
+            }
+
+            if (fileOffset.HasValue)
+            {
+                Offset = fileOffset.Value;
+            }
+
+            if (createDate.HasValue)
+            {
+                CreateDate = createDate.Value;
+            }
+
+            if (!string.IsNullOrWhiteSpace(mountPoint))
+            {
+                MountPoint = mountPoint;
+            }
+
+            if (provider != null)
+            {
+                Provider = provider;
+            }
+
+            if (!string.IsNullOrWhiteSpace(physicalPath))
+            {
+                PhysicalFileSystemPath = physicalPath;
+            }
+        }
+
 		/// <summary>
 		/// Function to read the file.
 		/// </summary>

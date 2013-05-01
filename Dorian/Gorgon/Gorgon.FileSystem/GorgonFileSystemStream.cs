@@ -25,9 +25,6 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.IO;
 
 namespace GorgonLibrary.FileSystem
@@ -36,10 +33,10 @@ namespace GorgonLibrary.FileSystem
 	/// A file stream for the Gorgon file system.
 	/// </summary>
 	public class GorgonFileSystemStream
-		: System.IO.Stream
+		: Stream
 	{
 		#region Variables.
-		private Stream _baseStream = null;					// Base stream to use.
+		private Stream _baseStream;					// Base stream to use.
 		#endregion
 
 		#region Properties.
@@ -196,19 +193,35 @@ namespace GorgonLibrary.FileSystem
 		/// <param name="provider">A new file system provider for the file.  Pass NULL (Nothing in VB.Net) to leave unchanged.</param>
 		protected void UpdateFileInfo(long? fileSize, int? fileOffset, DateTime? createDate, string physicalPath, GorgonFileSystemProvider provider)
 		{
-			if (FileEntry == null)
-				return;
+		    if (FileEntry == null)
+		    {
+		        return;
+		    }
 
-			if (fileSize.HasValue)
-				FileEntry.Size = fileSize.Value;
-			if (fileOffset.HasValue)
-				FileEntry.Offset = fileOffset.Value;
-			if (createDate.HasValue)
+		    if (fileSize.HasValue)
+		    {
+		        FileEntry.Size = fileSize.Value;
+		    }
+
+		    if (fileOffset.HasValue)
+		    {
+		        FileEntry.Offset = fileOffset.Value;
+		    }
+
+		    if (createDate.HasValue)
+            {
 				FileEntry.CreateDate = createDate.Value;
-			if (provider != null)
-				FileEntry.Provider = provider;
-			if (!string.IsNullOrEmpty(physicalPath))
-				FileEntry.PhysicalFileSystemPath = physicalPath;
+            }
+
+		    if (provider != null)
+		    {
+		        FileEntry.Provider = provider;
+		    }
+
+		    if (!string.IsNullOrEmpty(physicalPath))
+		    {
+		        FileEntry.PhysicalFileSystemPath = physicalPath;
+		    }
 		}
 
 		/// <summary>

@@ -30,25 +30,21 @@ using System.IO;
 using System.Linq;
 using GorgonLibrary.Diagnostics;
 using GorgonLibrary.IO;
+using GorgonLibrary.FileSystem.Properties;
 
 namespace GorgonLibrary.FileSystem
 {
 	/// <summary>
-	/// Interface for an Gorgon file system provider.
+	/// The base Gorgon file system provider.
 	/// </summary>
+	/// <returns>File system providers are used to read in file information from various sources.  For example, to read files from a WinZip file all one needs to do is derive 
+	/// a provider from this one.
+	/// <remarks>File system providers are read-only systems, so writing via the provider is not allowed or available.</remarks>
+	/// </returns>
 	public abstract class GorgonFileSystemProvider
 		: INamedObject
 	{
 		#region Properties.
-		/// <summary>
-		/// Property to return the file system that owns this provider.
-		/// </summary>
-		public GorgonFileSystem FileSystem
-		{
-			get;
-			private set;
-		}
-
 		/// <summary>
 		/// Property to return a list of preferred file extensions (if applicable).
 		/// </summary>
@@ -69,82 +65,12 @@ namespace GorgonLibrary.FileSystem
 
 		#region Methods.
 		/// <summary>
-		/// Function to add a file entry to the list of files.
-		/// </summary>
-		/// <param name="path">Path to the file entry.</param>
-		/// <param name="mountPoint">The mount point that contains the file.</param>
-		/// <param name="physicalLocation">Location of the file in the physical file system.</param>
-		/// <param name="size">Size of the file in bytes.</param>
-		/// <param name="offset">Offset of the file within a packed file.</param>
-		/// <param name="createDate">Date the file was created.</param>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="path"/> parameter is NULL (Nothing in VB.Net).</exception>
-		/// <exception cref="ArgumentException">Thrown when the path parameter is an empty string.
-		/// <para>-or-</para><para>The file already exists.</para>
-		/// <para>-or-</para><para>The file name is missing from the path.</para>
-		/// <para>-or-</para><para>The path was not found in the file system.</para>
-		/// </exception>
-		/// <returns>A new file system entry.</returns>
-		protected GorgonFileSystemFileEntry AddFileEntry(string path, string mountPoint, string physicalLocation, long size, long offset, DateTime createDate)
-		{
-			return FileSystem.AddFileEntry(this, path, mountPoint, physicalLocation, size, offset, createDate);
-		}
-		
-		/// <summary>
-		/// Function to add a directory entry to the list of directories.
-		/// </summary>
-		/// <param name="path">Path to the directory entry.</param>
-		/// <exception cref="ArgumentNullException">Thrown when the <paramref name="path"/> parameter is NULL (Nothing in VB.Net).</exception>
-		/// <exception cref="ArgumentException">Thrown when the path parameter is an empty string.
-		/// <para>-or-</para><para>The directory already exists.</para>
-		/// <para>-or-</para><para>The driectory path is not valid.</para></exception>
-		/// <returns>A new virtual directory entry.</returns>
-		protected GorgonFileSystemDirectory AddDirectoryEntry(string path)
-		{
-			return FileSystem.AddDirectoryEntry(path);
-		}
-
-		/// <summary>
-		/// Function to return the writeable path including the virtual path passed in.
-		/// </summary>
-		/// <param name="path">Virtual path.</param>
-		/// <returns>The physical writeable path.</returns>
-		protected string GetWritePath(string path)
-		{
-			return FileSystem.GetWritePath(path);
-		}
-
-		/// <summary>
-		/// Function to write a file into the write location.
-		/// </summary>
-		/// <param name="file">File to write to the write location.</param>
-		/// <returns>The writable stream for the file.</returns>
-		/// <exception cref="System.InvalidOperationException">Thrown when the <see cref="P:GorgonLibrary.FileSystem.GorgonFileSystem.WriteLocation">WriteLocation</see> property is not set.</exception>
-		protected GorgonFileSystemStream WriteToWriteLocation(GorgonFileSystemFileEntry file)
-		{			
-			if (string.IsNullOrEmpty(FileSystem.WriteLocation))
-				throw new InvalidOperationException("Cannot write to the file '" + file.FullPath + "' because the there is no write path set.");
-
-			string newPath = GetWritePath(file.FullPath);
-
-			if (!Directory.Exists(Path.GetDirectoryName(newPath)))
-			{
-				Directory.CreateDirectory(Path.GetDirectoryName(newPath));
-			}
-
-			// Write the file out to the write location.
-			FileStream stream = File.Open(newPath, FileMode.Create, FileAccess.ReadWrite, FileShare.ReadWrite);
-			UpdateFileInfo(file, null, null, null, FileSystem.WriteLocation, newPath, FileSystem.Providers[FileSystem.DefaultProviderType.FullName]);
-
-			return new GorgonFileSystemStream(file, stream);
-		}
-
-
-		/// <summary>
 		/// Function to enumerate the files and directories for a mount point.
 		/// </summary>
+		/// <param name="fileSystem">The file system that needs to be populated with information.</param>
 		/// <param name="physicalMountPoint">Mount point being enumerated.</param>
 		/// <param name="mountPoint">Directory to hold the sub directories and files.</param>		
-		protected abstract void Enumerate(string physicalMountPoint, GorgonFileSystemDirectory mountPoint);
+		protected abstract void Enumerate(GorgonFileSystem fileSystem, string physicalMountPoint, GorgonFileSystemDirectory mountPoint);
 
 		/// <summary>
 		/// Function called when a file is read from the provider.
@@ -152,99 +78,20 @@ namespace GorgonLibrary.FileSystem
 		/// <param name="file">File to read.</param>
 		/// <returns>The file data stored in a byte array or NULL if the file could not be read.</returns>
 		/// <remarks>Implementors must implement this method to read the file from the physical file system.</remarks>
-		protected abstract byte[] OnReadFile(GorgonFileSystemFileEntry file);
-
-		/// <summary>
-		/// Function called when a file is written to the provider.
-		/// </summary>
-		/// <param name="file">File to read.</param>
-		/// <param name="data">Data to write to the file.</param>
-		/// <exception cref="System.InvalidOperationException">Thrown when the <see cref="P:GorgonLibrary.FileSystem.GorgonFileSystem.WriteLocation">WriteLocation</see> on the file system is empty.</exception>
-		protected virtual void OnWriteFile(GorgonFileSystemFileEntry file, byte[] data)
-		{
-            if (data != null)
-            {
-                throw new ArgumentNullException("data");                
-            }
-
-			using (Stream stream = WriteToWriteLocation(file))
-			{
-				stream.Write(data, 0, data.Length);
-			}
-		}
+		protected internal abstract byte[] OnReadFile(GorgonFileSystemFileEntry file);
 
 		/// <summary>
 		/// Function called when a file is opened as a file stream.
 		/// </summary>
 		/// <param name="file">File to open.</param>
-		/// <param name="writeable">TRUE if the file can be written to, FALSE if not.</param>
 		/// <returns>The open <see cref="GorgonLibrary.FileSystem.GorgonFileSystemStream"/> file stream object.</returns>
-		/// <remarks>Some providers cannot write, and should throw an exception.</remarks>
-		protected abstract GorgonFileSystemStream OnOpenFileStream(GorgonFileSystemFileEntry file, bool writeable);
+		protected internal abstract GorgonFileSystemStream OnOpenFileStream(GorgonFileSystemFileEntry file);
 
 		/// <summary>
 		/// Function called when a file system is unloaded.
 		/// </summary>
 		protected virtual internal void OnUnload()
 		{
-			var files = FileSystem.FindFiles("*", true).Where(file => file.Provider == this);
-
-			// Remove any files attached to this provider.
-			foreach (GorgonFileSystemFileEntry file in files)
-				file.Directory.Files.Remove(file);
-		}
-
-		/// <summary>
-		/// Function to read a file from the
-		/// </summary>
-		/// <param name="file">File to read.</param>
-		/// <returns>An array of bytes containing the data in the file.</returns>
-		internal byte[] ReadFile(GorgonFileSystemFileEntry file)
-		{
-			if (file == null)
-				throw new ArgumentNullException("file");
-
-			return OnReadFile(file);
-		}
-
-		/// <summary>
-		/// Function to read a file from the
-		/// </summary>
-		/// <param name="file">File to read.</param>
-		/// <param name="data">Data to write.</param>
-		internal void WriteFile(GorgonFileSystemFileEntry file, byte[] data)
-		{
-            FileInfo info = null;
-            string newPath = string.Empty;
-
-            if (file == null)
-            {
-                throw new ArgumentNullException("file");
-            }
-
-            if (data != null)
-            {
-                OnWriteFile(file, data);
-
-                info = new FileInfo(file.PhysicalFileSystemPath);
-                UpdateFileInfo(file, info.Length, null, info.CreationTime, FileSystem.WriteLocation, file.PhysicalFileSystemPath, FileSystem.Providers[FileSystem.DefaultProviderType.FullName]);
-            }
-        }
-
-		/// <summary>
-		/// Function to open a file stream.
-		/// </summary>
-		/// <param name="file">File to open.</param>
-		/// <param name="writeable">TRUE to write to the file, FALSE to make read-only.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="file"/> parameter is NULL (Nothing in VB.Net).</exception>
-		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="writeable"/> parameter is TRUE and the <see cref="P:GorgonLibrary.FileSystem.GorgonFileSystem.WriteLocation">WriteLocation</see> property has not been set.</exception>
-		/// <returns>The open <see cref="GorgonLibrary.FileSystem.GorgonFileSystemStream"/> file stream object.</returns>
-		internal GorgonFileSystemStream OpenStream(GorgonFileSystemFileEntry file, bool writeable)
-		{
-			if (file == null)
-				throw new ArgumentNullException("file");
-
-			return OnOpenFileStream(file, writeable);
 		}
 
 		/// <summary>
@@ -283,53 +130,6 @@ namespace GorgonLibrary.FileSystem
 
 			Gorgon.Log.Print("{0} directories parsed, and {1} files processed.", Diagnostics.LoggingLevel.Verbose, dirCount, fileCount);
 #endif
-		}
-
-		/// <summary>
-		/// Function to update the file information for a file.
-		/// </summary>
-		/// <param name="file">File to update.</param>
-		/// <param name="fileSize">The file size.  Pass NULL (Nothing in VB.Net) to leave unchanged.</param>
-		/// <param name="fileOffset">The offset of the file within a packed file.  Pass NULL (Nothing in VB.Net) to leave unchanged.</param>
-		/// <param name="createDate">The date/time the file was created.  Pass NULL (Nothing in VB.Net) to leave unchanged.</param>
-		/// <param name="mountPoint">The new mount point for the file.  Pass NULL (Nothing in VB.Net) to leave unchanged.</param>
-		/// <param name="physicalPath">A new file system provider for the file.  Pass NULL (Nothing in VB.Net) or an empty string to leave unchanged.</param>
-		/// <param name="provider">A new file system provider for the file.  Pass NULL (Nothing in VB.Net) to leave unchanged.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="file"/> parameter is NULL (Nothing in VB.Net).</exception>
-		protected void UpdateFileInfo(GorgonFileSystemFileEntry file, long? fileSize, int? fileOffset, DateTime? createDate, string mountPoint, string physicalPath, GorgonFileSystemProvider provider )
-		{
-			if (file == null)
-				throw new ArgumentNullException("file");
-
-			if (fileSize.HasValue)
-			{
-				file.Size = fileSize.Value;
-			}
-
-			if (fileOffset.HasValue)
-			{
-				file.Offset = fileOffset.Value;
-			}
-
-			if (createDate.HasValue)
-			{
-				file.CreateDate = createDate.Value;
-			}
-
-			if (!string.IsNullOrWhiteSpace(mountPoint))
-			{
-				file.MountPoint = mountPoint;
-			}
-
-			if (provider != null)
-			{
-				file.Provider = provider;
-			}
-
-			if (!string.IsNullOrWhiteSpace(physicalPath))
-			{
-				file.PhysicalFileSystemPath = physicalPath;
-			}
 		}
 
 		/// <summary>
