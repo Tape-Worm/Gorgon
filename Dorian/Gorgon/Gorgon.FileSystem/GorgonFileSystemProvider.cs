@@ -126,6 +126,7 @@ namespace GorgonLibrary.IO
 		/// <returns>The virtual file system path.</returns>
 		private string MapToVirtualPath(string physicalPath, string physicalRoot, string mountPoint)
 		{
+
 			if (!Path.IsPathRooted(physicalPath))
 			{
 				physicalPath = Path.GetFullPath(physicalPath);

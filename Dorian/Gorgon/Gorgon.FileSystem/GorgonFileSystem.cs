@@ -991,7 +991,7 @@ namespace GorgonLibrary.IO
 	                return;
 	            }
 
-	            DirectoryInfo dirInfo = new DirectoryInfo(newPath);
+	            var dirInfo = new DirectoryInfo(newPath);
 
 	            // Remove from the write area if the directory exists.
 	            if (directory.Name == "/")
@@ -1199,7 +1199,7 @@ namespace GorgonLibrary.IO
 		/// <returns>A mount point value for the currently mounted physical path and its mount point in the virtual file system.</returns>
 		public GorgonFileSystemMountPoint Mount(string physicalPath, string mountPath)
 		{
-            if (physicalPath == null)
+			if (physicalPath == null)
             {
                 throw new ArgumentNullException("physicalPath");
             }
@@ -1219,70 +1219,43 @@ namespace GorgonLibrary.IO
                 throw new ArgumentException(Resources.GORFS_PARAMETER_EMPTY, "mountPath");
             }
 
-			// Don't mount the write location.  It will be automatically queried every time we mount a physical location.
-			if ((!string.IsNullOrWhiteSpace(WriteLocation)) && (String.Compare(physicalPath, WriteLocation, StringComparison.OrdinalIgnoreCase) == 0))
+			lock(_syncLock)
 			{
-				// Requery the write location if it exists.
-				QueryWriteLocation();
-
-				return new GorgonFileSystemMountPoint(physicalPath, "/");
-			}
-
-			physicalPath = Path.GetFullPath(physicalPath);
-			string fileName = Path.GetFileName(physicalPath);
-			string directory = Path.GetDirectoryName(physicalPath);
-
-			// If we have no file name, assume we're mounting a folder from the OS filesystem.
-			if (string.IsNullOrWhiteSpace(fileName))
-			{
-				if (string.IsNullOrWhiteSpace(directory))
+				// Don't mount the write location.  It will be automatically queried every time we mount a physical location.
+				if ((!string.IsNullOrWhiteSpace(WriteLocation)) &&
+				    (String.Compare(physicalPath, WriteLocation, StringComparison.OrdinalIgnoreCase) == 0))
 				{
-                    throw new DirectoryNotFoundException(string.Format(Resources.GORFS_DIRECTORY_NOT_FOUND, physicalPath));
+					// Requery the write location if it exists.
+					QueryWriteLocation();
+
+					return new GorgonFileSystemMountPoint(physicalPath, "/");
 				}
 
-				directory = directory.FormatDirectory(Path.DirectorySeparatorChar);
+				physicalPath = Path.GetFullPath(physicalPath);
+				string fileName = Path.GetFileName(physicalPath);
+				string directory = Path.GetDirectoryName(physicalPath);
 
-				// Use the default folder provider.
-				if (!Directory.Exists(directory))
+				// If we have no file name, assume we're mounting a folder from the OS filesystem.
+				GorgonFileSystemMountPoint mountPoint;
+
+				if (string.IsNullOrWhiteSpace(fileName))
 				{
-                    throw new DirectoryNotFoundException(string.Format(Resources.GORFS_DIRECTORY_NOT_FOUND, directory));
-				}
+					if (string.IsNullOrWhiteSpace(directory))
+					{
+						throw new DirectoryNotFoundException(string.Format(Resources.GORFS_DIRECTORY_NOT_FOUND, physicalPath));
+					}
 
-				GetFileSystemObjects(_defaultProvider, physicalPath, mountPath);
+					directory = directory.FormatDirectory(Path.DirectorySeparatorChar);
 
-				var mountPoint = new GorgonFileSystemMountPoint(physicalPath, mountPath);
-				if (!_mountPoints.Contains(mountPoint))
-				{
-					_mountPoints.Add(mountPoint);
-					_mountListChanged = true;
-				}
+					// Use the default folder provider.
+					if (!Directory.Exists(directory))
+					{
+						throw new DirectoryNotFoundException(string.Format(Resources.GORFS_DIRECTORY_NOT_FOUND, directory));
+					}
 
-				QueryWriteLocation();
-				return mountPoint;
-			}
+					GetFileSystemObjects(_defaultProvider, physicalPath, mountPath);
 
-			fileName = fileName.FormatFileName();
-			if (!string.IsNullOrWhiteSpace(directory))
-			{
-				directory = directory.FormatDirectory(Path.DirectorySeparatorChar);
-			}
-
-            // Rebuild the file path.
-		    fileName = directory + fileName;
-
-			if (!File.Exists(fileName))
-			{
-                throw new FileNotFoundException(string.Format(Resources.GORFS_FILE_NOT_FOUND, fileName));
-			}
-
-			// Find the file system provider that can read this file type.
-			foreach (GorgonFileSystemProvider fileSystemProvider in Providers)
-			{
-				if (fileSystemProvider.CanReadFile(fileName))
-				{					
-					GetFileSystemObjects(fileSystemProvider, physicalPath, mountPath);
-
-					var mountPoint = new GorgonFileSystemMountPoint(physicalPath, mountPath);
+					mountPoint = new GorgonFileSystemMountPoint(physicalPath, mountPath);
 					if (!_mountPoints.Contains(mountPoint))
 					{
 						_mountPoints.Add(mountPoint);
@@ -1292,9 +1265,41 @@ namespace GorgonLibrary.IO
 					QueryWriteLocation();
 					return mountPoint;
 				}
-			}
 
-			throw new IOException(string.Format(Resources.GORFS_CANNOT_READ_FILESYSTEM, fileName));
+				fileName = fileName.FormatFileName();
+				if (!string.IsNullOrWhiteSpace(directory))
+				{
+					directory = directory.FormatDirectory(Path.DirectorySeparatorChar);
+				}
+
+				// Rebuild the file path.
+				fileName = directory + fileName;
+
+				if (!File.Exists(fileName))
+				{
+					throw new FileNotFoundException(string.Format(Resources.GORFS_FILE_NOT_FOUND, fileName));
+				}
+
+				// Find the file system provider that can read this file type.
+				var provider = Providers.FirstOrDefault(item => item.CanReadFile(fileName));
+
+				if (provider == null)
+				{
+					throw new IOException(string.Format(Resources.GORFS_CANNOT_READ_FILESYSTEM, fileName));	
+				}
+
+				GetFileSystemObjects(provider, physicalPath, mountPath);
+
+				mountPoint = new GorgonFileSystemMountPoint(physicalPath, mountPath);
+				if (!_mountPoints.Contains(mountPoint))
+				{
+					_mountPoints.Add(mountPoint);
+					_mountListChanged = true;
+				}
+
+				QueryWriteLocation();
+				return mountPoint;
+			}
 		}
 
 		/// <summary>
