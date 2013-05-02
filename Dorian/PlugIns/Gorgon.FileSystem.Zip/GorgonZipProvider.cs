@@ -105,20 +105,12 @@ namespace GorgonLibrary.FileSystem.Zip
 		/// Function called when a file is opened as a file stream.
 		/// </summary>
 		/// <param name="file">File to open.</param>
-		/// <param name="writeable">TRUE if the file can be written to, FALSE if not.</param>
 		/// <returns>
-		/// The open <see cref="GorgonLibrary.FileSystem.GorgonFileSystemStream"/> file stream object.
+		/// The open <see cref="GorgonLibrary.FileSystem.GorgonFileSystemStream" /> file stream object.
 		/// </returns>
-		protected override GorgonFileSystemStream OnOpenFileStream(GorgonFileSystemFileEntry file, bool writeable)
+		protected override GorgonFileSystemStream OnOpenFileStream(GorgonFileSystemFileEntry file)
 		{
-			if (writeable)
-			{
-				return WriteToWriteLocation(file);
-			}
-			else
-			{
-				return new GorgonZipFileStream(file, File.Open(file.MountPoint, FileMode.Open, FileAccess.Read, FileShare.Read));
-			}
+			return new GorgonZipFileStream(file, File.Open(file.MountPoint, FileMode.Open, FileAccess.Read, FileShare.Read));
 		} 
 
 		/// <summary>

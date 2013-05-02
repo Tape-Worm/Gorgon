@@ -26,9 +26,10 @@
 
 using System;
 using System.Linq;
+using System.Threading;
 using GorgonLibrary.Collections;
-using GorgonLibrary.Diagnostics;
 using GorgonLibrary.FileSystem.Properties;
+
 
 namespace GorgonLibrary.FileSystem
 {
@@ -39,7 +40,9 @@ namespace GorgonLibrary.FileSystem
 		: GorgonBaseNamedObjectCollection<GorgonFileSystemProvider>
 	{
 		#region Variables.
+		private static readonly object _syncLock = new object();	// Synchronization lock.
 		private readonly GorgonFileSystem _fileSystem;			    // File system that owns this collection.
+		private int _incVar;										// Synchronization increment.
 		#endregion
 
 		#region Properties.
@@ -70,141 +73,173 @@ namespace GorgonLibrary.FileSystem
         /// <summary>
         /// Function to remove an item from the collection by index.
         /// </summary>
-        /// <param name="index">The index of the item to remove.</param>
-        protected override void RemoveItem(int index)
+        /// <param name="provider">The provider to remove.</param>
+        protected override void RemoveItem(GorgonFileSystemProvider provider)
         {
-            GorgonFileSystemProvider provider = this[index];
+		    // Perform any special clean up.
+		    provider.OnUnload();
 
-            // Perform any special clean up.
-            provider.OnUnload();
+		    // Remove any files attached to this provider.
+		    var files = _fileSystem.FindFiles("*", true).Where(file => file.Provider == provider);
 
-            // Remove all files.
-            var files = _fileSystem.FindFiles("*", true).Where(file => file.Provider == provider);
+		    foreach (GorgonFileSystemFileEntry file in files)
+		    {
+			    file.Directory.Files.Remove(file);
+		    }
 
-            // Remove any files attached to this provider.
-            foreach (GorgonFileSystemFileEntry file in files)
-            {
-                file.Directory.Files.Remove(file);
-            }
-
-            // Don't unload the primary provider.
-            if (provider is GorgonFolderFileSystemProvider)
-            {
-                return;
-            }
-
-            base.RemoveItem(index);
+		    base.RemoveItem(provider);
         }
 
-        /// <summary>
-        /// Function to add the default folder file system provider.
-        /// </summary>
-        /// <param name="fileSystem">File system that owns the provider.</param>
-        internal void AddDefault(GorgonFileSystem fileSystem)
-        {
-            AddItem(new GorgonFolderFileSystemProvider(fileSystem));
-        }
+		/// <summary>
+		/// Function to search through the plug-in list and load any providers that haven't already been loaded.
+		/// </summary>
+		/// <remarks>This is a convenience method to allow mass loading of file system providers.</remarks>
+		public void LoadAllProviders()
+		{
+			var plugIns = from plugInList in Gorgon.PlugIns
+						  where plugInList is GorgonFileSystemProviderPlugIn
+						  select plugInList;
+
+			foreach (var plugIn in plugIns)
+			{
+				LoadProvider(plugIn.Name);
+			}
+		}
 
 		/// <summary>
 		/// Function to add a new provider based on the provider type name.
 		/// </summary>
-		/// <param name="providerTypeName">Fully qualified type name of the provider to add.</param>
-		/// <returns>The new instance of the provider interface.</returns>
-		internal GorgonFileSystemProvider Add(string providerTypeName)
+		/// <param name="providerName">The fully qualified type name of the provider plug-in.</param>
+		public void LoadProvider(string providerName)
 		{
-			// Check to see if we've already loaded this type.
-		    if (Contains(providerTypeName))
-		    {
-		        return this[providerTypeName];
-		    }
+			if (providerName == null)
+			{
+				throw new ArgumentNullException("providerName");
+			}
 
-		    var plugIn =
-		        Gorgon.PlugIns.SingleOrDefault(
-		            item => string.Compare(providerTypeName, item.Name, StringComparison.OrdinalIgnoreCase) == 0) as
-		        GorgonFileSystemProviderPlugIn;
+			if (string.IsNullOrWhiteSpace(providerName))
+			{
+				throw new ArgumentException(Resources.GORFS_PARAMETER_EMPTY, "providerName");
+			}
 
-            // Look for the plug-in.
-		    if (plugIn == null)
-		    {
-		        throw new GorgonException(GorgonResult.CannotCreate,
-		                                  string.Format(Resources.GORFS_NO_PROVIDER_PLUGIN, "providerTypeName"));
-		    }
-		    
-		    GorgonFileSystemProvider provider = plugIn.CreateProvider(_fileSystem);
+			// Don't allow two threads to add the same thing.
+			lock(_syncLock)
+			{
+				// Check to see if we've already loaded this type.
+				if (Contains(providerName))
+				{
+					return;
+				}
 
-            if (provider == null)
-            {
-                throw new GorgonException(GorgonResult.CannotCreate,
-                                          string.Format(Resources.GORFS_PROVIDER_INVALID, providerTypeName));
-            }
+				// Find the plug-in.
+				var plugIn =
+					Gorgon.PlugIns.SingleOrDefault(
+						item => string.Compare(providerName, item.Name, StringComparison.OrdinalIgnoreCase) == 0) as
+					GorgonFileSystemProviderPlugIn;
 
-			AddItem(provider);
+				if (plugIn == null)
+				{
+					throw new GorgonException(GorgonResult.CannotCreate,
+					                          string.Format(Resources.GORFS_NO_PROVIDER_PLUGIN, providerName));
+				}
 
-			return provider;
+				GorgonFileSystemProvider provider = plugIn.CreateProvider(_fileSystem);
+
+				if (provider == null)
+				{
+					throw new GorgonException(GorgonResult.CannotCreate,
+					                          string.Format(Resources.GORFS_PROVIDER_INVALID, providerName));
+				}
+
+				AddItem(provider);
+			}
 		}
 
 		/// <summary>
-		/// Function to remove a provider by name.
+		/// Function to unload the file system provider from the file system.
 		/// </summary>
-		/// <param name="providerTypeName">Fully qualified type name of the provider to remove.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="providerTypeName"/> parameter is NULL (Nothing in VB.Net).</exception>
-		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="providerTypeName"/> parameter is an empty string.</exception>
-		internal void Remove(string providerTypeName)
-		{
-			GorgonDebug.AssertParamString(providerTypeName, "providerTypeName");
-
-			this[providerTypeName].OnUnload();
-            
-			// Don't unload the primary provider.
-            if (this[providerTypeName] is GorgonFolderFileSystemProvider)
-		    {
-		        return;
-		    }
-
-		    RemoveItem(providerTypeName);
-		}
-
-		/// <summary>
-		/// Function to remove a provider by its index in the collection.
-		/// </summary>
-		/// <param name="index">Index of the provider to remove.</param>
-		internal void Remove(int index)
-		{
-
-		    RemoveItem(index);
-		}
-
-		/// <summary>
-		/// Function to remove a specific provider instance.
-		/// </summary>
-		/// <param name="provider">Provider to remove.</param>
+		/// <param name="provider">The provider to remove.</param>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="provider"/> parameter is NULL (Nothing in VB.Net).</exception>
-		internal void Remove(GorgonFileSystemProvider provider)
+		public void Unload(GorgonFileSystemProvider provider)
 		{
-		    if (provider == null)
-		    {
-		        throw new ArgumentNullException("provider");
-		    }
+			if (provider == null)
+			{
+				throw new ArgumentNullException("provider");
+			}
 
-		    provider.OnUnload();
+			lock(_syncLock)
+			{
+				if (!Contains(provider))
+				{
+					throw new ArgumentException(string.Format(Resources.GORFS_PROVIDER_NOT_FOUND, provider.GetType().FullName),
+					                            "provider");
+				}
 
-			// Don't unload the primary provider.
-		    if (provider is GorgonFolderFileSystemProvider)
-		    {
-		        return;
-		    }
+				RemoveItem(provider);
+			}
+		}
 
-		    RemoveItem(provider);
+		/// <summary>
+		/// Function to unload a file system provider by index in the collection.
+		/// </summary>
+		/// <param name="index">Index of the file system provider to unload.</param>
+		/// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="index"/> is less than 0 or greater than or equal to the <see cref="GorgonLibrary.Collections.GorgonBaseNamedObjectCollection{T}.Count">Count</see>.</exception>
+		public void Unload(int index)
+		{
+			lock(_syncLock)
+			{
+				if ((index < 0) || (index >= Count))
+				{
+					throw new ArgumentOutOfRangeException("index", string.Format(Resources.GORFS_INDEX_OUT_OF_RANGE, index, Count));
+				}
+
+				Unload(GetItem(index));
+			}
+		}
+
+		/// <summary>
+		/// Function to unload a file system provider by its type name.
+		/// </summary>
+		/// <param name="providerTypeName">Name of the file system provider type.</param>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="providerTypeName"/> is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="providerTypeName"/> is empty.</exception>
+		/// <exception cref="System.Collections.Generic.KeyNotFoundException">Thrown when the name in <paramref name="providerTypeName"/> was not found in the collection.</exception>
+		public void Unload(string providerTypeName)
+		{
+			if (providerTypeName == null)
+			{
+				throw new ArgumentNullException("providerTypeName");
+			}
+
+			if (string.IsNullOrWhiteSpace(providerTypeName))
+			{
+				throw new ArgumentException(Resources.GORFS_PARAMETER_EMPTY, "providerTypeName");
+			}
+
+			lock(_syncLock)
+			{
+				int index = IndexOf(providerTypeName);
+
+				if (index < 0)
+				{
+					throw new ArgumentException(string.Format(Resources.GORFS_PROVIDER_NOT_FOUND, providerTypeName), "providerTypeName");
+				}
+
+				Unload(GetItem(index));
+			}
 		}
 
 		/// <summary>
 		/// Function to remove all of the providers.
 		/// </summary>
-		internal void Clear()
+		public void UnloadAll()
 		{
-		    var folderSystem = this[typeof(GorgonFolderFileSystemProvider).FullName];   // Get the folder file system.
+			if (Interlocked.Increment(ref _incVar) > 1)
+			{
+				return;
+			}
 
-            // Remove file system provider data.
+			// Remove file system provider data.
 		    foreach (GorgonFileSystemProvider provider in this)
 		    {
 		        provider.OnUnload();
@@ -213,8 +248,9 @@ namespace GorgonLibrary.FileSystem
 		    ClearItems();
 
 			// Clear any left over items and reset to the root directory.  Add the default folder file system provider.
-			AddItem(folderSystem);
 			_fileSystem.Clear();
+
+			Interlocked.Decrement(ref _incVar);
 		}
 		#endregion
 

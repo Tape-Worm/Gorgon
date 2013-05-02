@@ -309,8 +309,7 @@
         private System.Windows.Forms.ListView listContentPlugIns;
         private System.Windows.Forms.ColumnHeader columnPath;
         private System.Windows.Forms.ColumnHeader columnDesc;
-        private System.ComponentModel.IContainer components;
-        private KRBTabControl.KRBTabControl tabPlugIns;
+	    private KRBTabControl.KRBTabControl tabPlugIns;
         private KRBTabControl.TabPageEx pagePlugIns;
         private System.Windows.Forms.ToolStrip miniToolStrip;
         private KRBTabControl.TabPageEx pageDisabled;

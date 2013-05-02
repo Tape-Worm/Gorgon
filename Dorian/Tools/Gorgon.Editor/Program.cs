@@ -259,7 +259,7 @@ namespace GorgonLibrary.Editor
             }
 
             // Read in the meta data file.
-            using (var stream = file.OpenStream(false))
+            using (var stream = ScratchFiles.OpenStream(file, false))
             {
                 EditorFileMetaData = XDocument.Load(stream);
             }
@@ -329,7 +329,7 @@ namespace GorgonLibrary.Editor
 				InitializeScratch();
 
 				// Add the new file system as a mount point.
-				packFileSystem.AddAllProviders();
+				packFileSystem.Providers.LoadAllProviders();
 				packFileSystem.Mount(path);
 
 				// At this point we should have a clean scratch area, so all files will exist in the packed file.
@@ -346,7 +346,7 @@ namespace GorgonLibrary.Editor
 				// Copy our files.
 				foreach (var file in files)
 				{
-					using (var inputStream = file.OpenStream(false))
+					using (var inputStream = packFileSystem.OpenStream(file, false))
 					{
 						using (var outputStream = ScratchFiles.OpenStream(file.FullPath, true))
 						{

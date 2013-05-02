@@ -198,30 +198,7 @@ namespace GorgonLibrary.FileSystem
 		        return;
 		    }
 
-		    if (fileSize.HasValue)
-		    {
-		        FileEntry.Size = fileSize.Value;
-		    }
-
-		    if (fileOffset.HasValue)
-		    {
-		        FileEntry.Offset = fileOffset.Value;
-		    }
-
-		    if (createDate.HasValue)
-            {
-				FileEntry.CreateDate = createDate.Value;
-            }
-
-		    if (provider != null)
-		    {
-		        FileEntry.Provider = provider;
-		    }
-
-		    if (!string.IsNullOrEmpty(physicalPath))
-		    {
-		        FileEntry.PhysicalFileSystemPath = physicalPath;
-		    }
+			FileEntry.Update(fileSize, fileOffset, createDate, null, physicalPath, provider);
 		}
 
 		/// <summary>
@@ -229,11 +206,13 @@ namespace GorgonLibrary.FileSystem
 		/// </summary>
 		protected virtual void OnUpdateFileEntry()
 		{
-			if ((FileEntry != null) && (File.Exists(FileEntry.PhysicalFileSystemPath)))
+			if ((FileEntry == null) || (!File.Exists(FileEntry.PhysicalFileSystemPath)))
 			{
-				FileInfo info = new FileInfo(FileEntry.PhysicalFileSystemPath);
-				UpdateFileInfo(info.Length, 0, info.CreationTime, info.FullName, FileEntry.Provider);
-			}			
+				return;
+			}
+
+			var info = new FileInfo(FileEntry.PhysicalFileSystemPath);
+			UpdateFileInfo(info.Length, 0, info.CreationTime, info.FullName, FileEntry.Provider);
 		}
 
 		/// <summary>

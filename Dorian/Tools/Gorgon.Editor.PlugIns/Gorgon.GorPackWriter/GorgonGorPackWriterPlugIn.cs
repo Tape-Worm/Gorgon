@@ -192,7 +192,7 @@ namespace GorgonLibrary.Editor.GorPackWriterPlugIn
 
                 // Load the file into a buffer for compression.
                 long fileStart = output.Position;
-                long fileSize = 0;
+                long fileSize;
 				long compressedSize = 0;
 
 				UpdateStatus("Saving " + fileEntry.FullPath.Ellipses(45, true), 0);
@@ -202,7 +202,7 @@ namespace GorgonLibrary.Editor.GorPackWriterPlugIn
 					return;
 				}
 
-                using (var sourceData = fileEntry.OpenStream(false))
+                using (var sourceData = ScratchFileSystem.OpenStream(fileEntry, false))
                 {
                     // Load the data into memory.
                     using (var fileData = new GorgonDataStream((int)sourceData.Length))

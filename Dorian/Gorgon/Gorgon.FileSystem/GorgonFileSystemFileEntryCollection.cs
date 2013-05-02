@@ -24,8 +24,6 @@
 // 
 #endregion
 
-using System;
-using GorgonLibrary;
 using GorgonLibrary.Collections;
 using GorgonLibrary.IO;
 
@@ -39,7 +37,7 @@ namespace GorgonLibrary.FileSystem
 		: GorgonBaseNamedObjectCollection<GorgonFileSystemFileEntry>
 	{
 		#region Variables.
-		private GorgonFileSystemDirectory _parent = null;					// File system directory parent.
+		private readonly GorgonFileSystemDirectory _parent;					// File system directory parent.
 		#endregion
 
 		#region Properties.
@@ -109,16 +107,8 @@ namespace GorgonLibrary.FileSystem
 		/// Function to add a file system file entry to the collection.
 		/// </summary>
 		/// <param name="fileEntry">File entry to add.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="fileEntry"/> parameter is NULL (or Nothing in VB.NET).</exception>
-		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="fileEntry"/> parameter already exists in the collection.</exception>
 		internal void Add(GorgonFileSystemFileEntry fileEntry)
 		{
-			if (fileEntry == null)
-				throw new ArgumentNullException("fileEntry");
-
-			if (Contains(fileEntry.Name))
-				throw new ArgumentException("The file entry '" + fileEntry.Name + "' already exists in this collection.", "fileEntry");
-
 			fileEntry.Directory = _parent;
 			AddItem(fileEntry);
 		}
@@ -129,7 +119,10 @@ namespace GorgonLibrary.FileSystem
 		internal void Clear()
 		{
 			foreach (GorgonFileSystemFileEntry fileEntry in this)
+			{
 				fileEntry.Directory = null;
+			}
+
 			ClearItems();
 		}
 			
@@ -149,13 +142,9 @@ namespace GorgonLibrary.FileSystem
 		/// Initializes a new instance of the <see cref="GorgonFileSystemFileEntryCollection"/> class.
 		/// </summary>
 		/// <param name="parent">The parent directory that owns this collection.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="parent"/> argument is NULL.</exception>
 		internal GorgonFileSystemFileEntryCollection(GorgonFileSystemDirectory parent)			
 			: base(false)
 		{
-			if (parent == null)
-				throw new ArgumentNullException("parent");
-
 			_parent = parent;
 		}
 		#endregion

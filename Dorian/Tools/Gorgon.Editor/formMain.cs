@@ -1994,7 +1994,7 @@ namespace GorgonLibrary.Editor
 
 			Cursor.Current = Cursors.WaitCursor;
 
-            using (var inputStream = sourceFile.File.OpenStream(false))
+            using (var inputStream = Program.ScratchFiles.OpenStream(sourceFile.File, false))
             {
                 using (var outputStream = Program.ScratchFiles.OpenStream(newFilePath, true))
                 {
@@ -2078,14 +2078,17 @@ namespace GorgonLibrary.Editor
                 currentFile = Program.CurrentContent.File;
             }
 
-            var directories = new List<GorgonFileSystemDirectory>(Program.ScratchFiles.FindDirectories(sourceDirectory.Directory.FullPath, "*", true));
-            directories.Add(sourceDirectory.Directory);            
-            
-            foreach (var directory in directories)
+            var directories = new List<GorgonFileSystemDirectory>(Program.ScratchFiles.FindDirectories(sourceDirectory.Directory.FullPath, "*", true))
+	            {
+		            sourceDirectory.Directory
+	            };
+
+	        foreach (var directory in directories)
             {
                 // Update the path to point at the new parent.
                 var newDirPath = name + directory.FullPath.Substring(directory.FullPath.Length);
-                var newDirectory = Program.ScratchFiles.CreateDirectory(newDirPath);
+                
+				Program.ScratchFiles.CreateDirectory(newDirPath);
 
                 // Copy each file.
                 foreach (var file in directory.Files)
@@ -2122,14 +2125,14 @@ namespace GorgonLibrary.Editor
 						else
 						{
 							// Don't overwrite ourselves.
-							if (string.Compare(newFilePath, file.FullPath, true) == 0)
+							if (String.Compare(newFilePath, file.FullPath, StringComparison.OrdinalIgnoreCase) == 0)
 							{
 								continue;
 							}
 						}                            
                     }
 
-                    using (var inputStream = file.OpenStream(false))
+                    using (var inputStream = Program.ScratchFiles.OpenStream(file, false))
                     {
                         using (var outputStream = Program.ScratchFiles.OpenStream(newFilePath, true))
                         {
@@ -2137,22 +2140,25 @@ namespace GorgonLibrary.Editor
                         }
                     }
 
-										
-					if (deleteSource)
-					{
-						// Reroute any cut/copy operation.
-						if ((_cutCopyObject != null) && (_cutCopyObject.ToString() == file.FullPath))
-						{
-							_cutCopyObject = newFilePath;
-						}
+	                if (!deleteSource)
+	                {
+		                continue;
+	                }
 
-						// If we have this file open, and we're moving the file, then relink it.
-						if (file == currentFile)
-						{
-							var newFile = Program.ScratchFiles.GetFile(newFilePath);
-							Program.CurrentContent.File = newFile;
-						}
-					}
+	                // Reroute any cut/copy operation.
+	                if ((_cutCopyObject != null) && (_cutCopyObject.ToString() == file.FullPath))
+	                {
+		                _cutCopyObject = newFilePath;
+	                }
+
+	                // If we have this file open, and we're moving the file, then relink it.
+	                if (file != currentFile)
+	                {
+		                continue;
+	                }
+
+	                var newFile = Program.ScratchFiles.GetFile(newFilePath);
+	                Program.CurrentContent.File = newFile;
                 }
 
                 // We cancelled our copy, so leave.

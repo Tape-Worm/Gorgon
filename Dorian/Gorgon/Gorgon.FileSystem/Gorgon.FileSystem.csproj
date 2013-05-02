@@ -53,7 +53,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="FolderFileSystem\GorgonFolderFileSystemProvider.cs" />
     <Compile Include="GorgonFileSystem.cs" />
     <Compile Include="GorgonFileSystemDirectory.cs" />
     <Compile Include="GorgonFileSystemDirectoryCollection.cs" />
