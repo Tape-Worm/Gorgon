@@ -25,20 +25,13 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Xml.Linq;
 using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
-using System.Drawing;
-using System.Windows.Forms;
 using System.IO;
-using ICSharpCode.SharpZipLib;
 using ICSharpCode.SharpZipLib.BZip2;
 using GorgonLibrary.IO;
-using GorgonLibrary.Native;
 
 namespace GorgonLibrary.Editor.GorPackWriterPlugIn
 {
@@ -50,11 +43,11 @@ namespace GorgonLibrary.Editor.GorPackWriterPlugIn
 	{
 		#region Variables.
         private static readonly object _syncLock = new object();
-        private XDocument _fat = null;
+        private XDocument _fat;
         private string _tempPath = string.Empty;
-		private int _compressionRatio = 0;
+		private int _compressionRatio;
 		private CancellationToken _token = default(CancellationToken);
-		private byte[] _writeBuffer = null;
+		private byte[] _writeBuffer;
 		#endregion
 
 		#region Properties.
@@ -359,7 +352,7 @@ namespace GorgonLibrary.Editor.GorPackWriterPlugIn
                     using (var outputFile = File.Open(path, FileMode.Create, FileAccess.Write, FileShare.Read))
                     {                        
                         // Combine the file system parts into a single packed file.
-                        using (GorgonBinaryWriter writer = new GorgonBinaryWriter(outputFile, true))
+                        using (var writer = new GorgonBinaryWriter(outputFile, true))
                         {
                             // Write the file header.
                             writer.Write("GORPACK1.SharpZip.BZ2");

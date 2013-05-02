@@ -37,18 +37,10 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\Dependencies\SharpZipLib_0860\ICSharpCode.SharpZipLib.dll</HintPath>
     </Reference>
-    <Reference Include="SlimMath">
-      <HintPath>..\..\..\Dependencies\SlimMath\SlimMath\bin\Release\SlimMath.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Drawing" />
-    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.XML" />
     <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="GorgonGorPackWriterPlugIn.cs" />

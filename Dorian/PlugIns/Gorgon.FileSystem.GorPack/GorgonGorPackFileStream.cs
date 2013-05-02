@@ -269,7 +269,7 @@ namespace GorgonLibrary.IO.GorPack
                 return 0;
             }
 
-            int actualCount = (int)(Length - Position);
+            var actualCount = (int)(Length - Position);
 			int result = _bzipStream.Read(buffer, offset, count > actualCount ? actualCount : count);
 
 			_position += result;

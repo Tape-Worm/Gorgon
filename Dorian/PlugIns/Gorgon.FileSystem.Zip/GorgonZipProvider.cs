@@ -136,7 +136,7 @@ namespace GorgonLibrary.IO.Zip
 		{
 			GorgonDebug.AssertParamString(physicalPath, "physicalPath");
 
-			byte[] headerBytes = new byte[4];
+			var headerBytes = new byte[4];
 
 			using (FileStream stream = File.Open(physicalPath, FileMode.Open, FileAccess.Read, FileShare.Read))
 			{

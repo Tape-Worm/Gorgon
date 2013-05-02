@@ -38,6 +38,64 @@ namespace GorgonLibrary
 	public static class GorgonStringFormattingExtension
 	{
 		/// <summary>
+		/// Function to find the index of a character in a string builder string.
+		/// </summary>
+		/// <param name="theString">The string to search.</param>
+		/// <param name="character">Character to search for.</param>
+		/// <returns>The index of the character, or -1 if not found.</returns>
+		public static int IndexOf(this StringBuilder theString, char character)
+		{
+			if (theString == null)
+			{
+				throw new ArgumentNullException("theString");
+			}
+
+			if (theString.Length < 1)
+			{
+				return -1;
+			}
+
+			for (int i = 0; i < theString.Length; i++)
+			{
+				if (theString[i] == character)
+				{
+					return i;
+				}
+			}
+
+			return -1;
+		}
+
+		/// <summary>
+		/// Function to find the last index of a character in a string builder string.
+		/// </summary>
+		/// <param name="theString">The string to search.</param>
+		/// <param name="character">Character to search for.</param>
+		/// <returns>The index of the character, or -1 if not found.</returns>
+		public static int LastIndexOf(this StringBuilder theString, char character)
+		{
+			if (theString == null)
+			{
+				throw new ArgumentNullException("theString");
+			}
+
+			if (theString.Length < 1)
+			{
+				return -1;
+			}
+
+			for (int i = theString.Length - 1; i >= 0; i--)
+			{
+				if (theString[i] == character)
+				{
+					return i;
+				}
+			}
+
+			return -1;
+		}
+
+		/// <summary>
 		/// Function to convert a Linq to XML document into a string including a declaration element.
 		/// </summary>
 		/// <param name="document">The document to convert.</param>
