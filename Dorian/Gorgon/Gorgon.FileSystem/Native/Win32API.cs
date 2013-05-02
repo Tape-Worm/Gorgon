@@ -26,14 +26,13 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Security;
 using System.Runtime.InteropServices;
 
 namespace GorgonLibrary.FileSystem
 {
+    // ReSharper disable InconsistentNaming
+
 	/// <summary>
 	/// Shell file info.
 	/// </summary>
@@ -67,7 +66,7 @@ namespace GorgonLibrary.FileSystem
 	/// <summary>
 	/// File attributes flags.
 	/// </summary>
-	[Flags()]
+	[Flags]
 	enum ShellFileAttributes
 	{
 		/// <summary>
@@ -84,7 +83,7 @@ namespace GorgonLibrary.FileSystem
 	/// <summary>
 	/// Shell flags.
 	/// </summary>
-	[Flags()]
+	[Flags]
 	enum ShellFlags
 	{
 		/// <summary>
@@ -164,7 +163,7 @@ namespace GorgonLibrary.FileSystem
 	/// <summary>
 	/// Browsing flags.
 	/// </summary>
-	[Flags()]
+	[Flags]
 	enum ShellBrowseFlags
 	{
 		/// <summary>
@@ -224,12 +223,9 @@ namespace GorgonLibrary.FileSystem
 	/// <summary>
 	/// Win 32 API functionality.
 	/// </summary>
-	[SuppressUnmanagedCodeSecurity()]
+	[SuppressUnmanagedCodeSecurity]
 	static class Win32API
 	{
-
-
-
 		/// <summary>
 		/// 
 		/// </summary>
@@ -265,11 +261,11 @@ namespace GorgonLibrary.FileSystem
 		public static string GetFileType(string path)
 		{
 			// Need to add size check, although errors generated at present!
-			ShellFlags flags = ShellFlags.SHGFI_USEFILEATTRIBUTES | ShellFlags.SHGFI_TYPENAME;
+			const ShellFlags flags = ShellFlags.SHGFI_USEFILEATTRIBUTES | ShellFlags.SHGFI_TYPENAME;
 
 			// Get the folder icon
 			SHFILEINFO shfi = new SHFILEINFO();
-			SHGetFileInfo(path, ShellFileAttributes.FILE_ATTRIBUTE_NORMAL, ref shfi, (uint)System.Runtime.InteropServices.Marshal.SizeOf(shfi), flags);
+			SHGetFileInfo(path, ShellFileAttributes.FILE_ATTRIBUTE_NORMAL, ref shfi, (uint)Marshal.SizeOf(shfi), flags);
 
 			return shfi.szTypeName;
 		}
@@ -292,7 +288,7 @@ namespace GorgonLibrary.FileSystem
 
 			// Get the folder icon
 			SHFILEINFO shfi = new SHFILEINFO();
-			SHGetFileInfo(path, ShellFileAttributes.FILE_ATTRIBUTE_NORMAL, ref shfi, (uint)System.Runtime.InteropServices.Marshal.SizeOf(shfi), flags);
+			SHGetFileInfo(path, ShellFileAttributes.FILE_ATTRIBUTE_NORMAL, ref shfi, (uint)Marshal.SizeOf(shfi), flags);
 
 			System.Drawing.Icon.FromHandle(shfi.hIcon);	// Load the icon from an HICON handle
 
@@ -323,8 +319,8 @@ namespace GorgonLibrary.FileSystem
 				flags |= ShellFlags.SHGFI_LARGEICON;
 
 			// Get the folder icon
-			SHFILEINFO shfi = new SHFILEINFO();
-			SHGetFileInfo(" ", ShellFileAttributes.FILE_ATTRIBUTE_DIRECTORY, ref shfi, (uint) System.Runtime.InteropServices.Marshal.SizeOf(shfi), flags );
+			var shfi = new SHFILEINFO();
+			SHGetFileInfo(" ", ShellFileAttributes.FILE_ATTRIBUTE_DIRECTORY, ref shfi, (uint) Marshal.SizeOf(shfi), flags );
 
 			System.Drawing.Icon.FromHandle(shfi.hIcon);	// Load the icon from an HICON handle
 
@@ -335,4 +331,6 @@ namespace GorgonLibrary.FileSystem
 			return icon;
 		}	
 	}
+
+    // ReSharper restore InconsistentNaming
 }
