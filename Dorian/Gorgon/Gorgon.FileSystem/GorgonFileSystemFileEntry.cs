@@ -26,10 +26,8 @@
 
 using System;
 using System.IO;
-using GorgonLibrary.Diagnostics;
-using GorgonLibrary.IO;
 
-namespace GorgonLibrary.FileSystem
+namespace GorgonLibrary.IO
 {
 	/// <summary>
 	/// A file entry corresponding to a file on the physical file system.
@@ -38,8 +36,24 @@ namespace GorgonLibrary.FileSystem
 		: GorgonNamedObject
 	{
 		#region Properties.
+        /// <summary>
+        /// Property to return the file system that owns this file.
+        /// </summary>
+        public GorgonFileSystem FileSystem
+        {
+            get
+            {
+                if (Directory == null)
+                {
+                    return null;
+                }
+
+                return Directory.FileSystem;
+            }
+        }
+
 		/// <summary>
-		/// Property to return the file system that owns this file.
+		/// Property to return the file system that can access this file.
 		/// </summary>
 		public GorgonFileSystemProvider Provider
 		{
@@ -54,9 +68,12 @@ namespace GorgonLibrary.FileSystem
 		{
 			get
 			{
-				if (Directory == null)
-					return Name;
-				return Directory.FullPath + Name;
+			    if (Directory == null)
+			    {
+			        return Name;
+			    }
+
+			    return Directory.FullPath + Name;
 			}
 		}
 
@@ -177,6 +194,42 @@ namespace GorgonLibrary.FileSystem
                 PhysicalFileSystemPath = physicalPath;
             }
         }
+
+        /// <summary>
+        /// Function to read the file.
+        /// </summary>
+        /// <returns>An array of bytes containing the file data.</returns>
+        public byte[] Read()
+        {
+            return FileSystem.ReadFile(this);
+        }
+
+        /// <summary>
+        /// Function to write to the file.
+        /// </summary>
+        /// <param name="data">The data to write to the file.</param>
+        public void Write(byte[] data)
+        {
+            FileSystem.WriteFile(this, data);
+        }
+
+        /// <summary>
+        /// Function to delete this file.
+        /// </summary>
+        public void Delete()
+        {
+            FileSystem.DeleteFile(this);
+        }
+
+        /// <summary>
+        /// Function to open a stream to the file on the physical file system.
+        /// </summary>
+        /// <param name="writeable">TRUE to write to the file, FALSE to make read-only.</param>
+        /// <returns>The open <see cref="GorgonFileSystemStream"/> file stream object.</returns>
+        public GorgonFileSystemStream OpenStream(bool writeable)
+        {
+            return FileSystem.OpenStream(this, writeable);
+        }
 		#endregion
 
 		#region Constructor/Destructor.
@@ -195,13 +248,6 @@ namespace GorgonLibrary.FileSystem
 		internal GorgonFileSystemFileEntry(GorgonFileSystemProvider provider, GorgonFileSystemDirectory directory, string fileName, string mountPoint, string physicalPath, long fileSize, long offset, DateTime createDate)
 			: base(fileName.RemoveIllegalFilenameChars())
 		{
-			GorgonDebug.AssertParamString(mountPoint, "mountPoint");
-
-			if (provider == null)
-				throw new ArgumentNullException("provider");
-			if (directory == null)
-				throw new ArgumentNullException("directory");
-
 			Provider = provider;
 			Directory = directory;
 			Extension = Path.GetExtension(Name);

@@ -25,9 +25,9 @@
 #endregion
 
 using System;
-using GorgonLibrary.FileSystem.Properties;
+using GorgonLibrary.IO.Properties;
 
-namespace GorgonLibrary.FileSystem
+namespace GorgonLibrary.IO
 {
 	/// <summary>
 	/// A mount point for the virtual file system.

@@ -24,33 +24,47 @@
 // 
 #endregion
 
-using GorgonLibrary.PlugIns;
+using GorgonLibrary.IO.GorPack.Properties;
 
-namespace GorgonLibrary.FileSystem
+namespace GorgonLibrary.IO
 {
 	/// <summary>
 	/// Plug-in entry point for the Gorgon packed file file system provider plug-in.
 	/// </summary>
 	public class GorgonGorPackPlugIn
-		: GorgonFileSystemProviderPlugIn 
-	{
-		/// <summary>
-		/// Function to create a new file system provider plug-in instance.
-		/// </summary>
-		/// <param name="fileSystem">File system that owns this provider.</param>
-		/// <returns>The file system provider plug-in.</returns>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="fileSystem"/> parameter is NULL (Nothing in VB.Net).</exception>
-		public override GorgonFileSystemProvider CreateProvider(GorgonFileSystem fileSystem)
-		{
-			return new GorPack.GorgonGorPackProvider(fileSystem, "A provider to mount a v1.x Gorgon pack file as a file system.");
-		}
+		: GorgonFileSystemProviderPlugIn
+    {
+        #region Constants.
+        /// <summary>
+	    /// The pack file header.
+	    /// </summary>
+        public const string GorPackHeader = "GORPACK1.SharpZip.BZ2";
+        #endregion
 
-		/// <summary>
+        #region Variables.
+        #endregion
+
+        #region Methods.
+        /// <summary>
+        /// Function to create a new file system provider instance.
+        /// </summary>
+        /// <returns>
+        /// The file system provider.
+        /// </returns>
+        protected override GorgonFileSystemProvider OnCreateProvider()
+        {
+            return new GorPack.GorgonGorPackProvider(Resources.GORFS_DESC);
+        }
+        #endregion
+
+        #region Constructor.
+        /// <summary>
 		/// Initializes a new instance of the <see cref="GorgonGorPackPlugIn"/> class.
 		/// </summary>
 		public GorgonGorPackPlugIn()
-            : base("Gorgon 1.x BZip2 compressed packed file.")
+            : base(Resources.GORFS_PLUGIN_DESC)
 		{
-		}
-	}
+        }
+        #endregion
+    }
 }

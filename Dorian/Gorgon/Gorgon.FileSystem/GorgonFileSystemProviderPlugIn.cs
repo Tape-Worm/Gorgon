@@ -26,23 +26,35 @@
 
 using GorgonLibrary.PlugIns;
 
-namespace GorgonLibrary.FileSystem
+namespace GorgonLibrary.IO
 {
 	/// <summary>
 	/// The base entry point for an Gorgon file system provider plug-in.
 	/// </summary>
 	public abstract class GorgonFileSystemProviderPlugIn
 		: GorgonPlugIn
-	{		
-		#region Methods.
-		/// <summary>
-		/// Function to create a new file system provider plug-in instance.
-		/// </summary>
-		/// <param name="fileSystem">File system that owns this provider.</param>
-		/// <returns>The file system provider plug-in.</returns>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="fileSystem"/> parameter is NULL (Nothing in VB.Net).</exception>
-		public abstract GorgonFileSystemProvider CreateProvider(GorgonFileSystem fileSystem);
-		#endregion
+    {
+        #region Variables.
+	    private GorgonFileSystemProvider _provider;         // Cached provider instance.
+        #endregion
+
+        #region Methods.
+        /// <summary>
+        /// Function to create a new file system provider instance.
+        /// </summary>
+        /// <returns>The file system provider.</returns>
+        protected abstract GorgonFileSystemProvider OnCreateProvider();
+
+        /// <summary>
+        /// Function to create a new or return an existing file system provider instance.
+        /// </summary>
+        /// <returns>The file system provider.</returns>
+        public GorgonFileSystemProvider CreateProvider()
+        {
+            return _provider ?? (_provider = OnCreateProvider());
+        }
+
+	    #endregion
 
 		#region Constructor/Destructor.
 		/// <summary>

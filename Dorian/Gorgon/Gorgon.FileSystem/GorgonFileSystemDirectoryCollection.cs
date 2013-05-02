@@ -25,18 +25,17 @@
 #endregion
 
 using GorgonLibrary.Collections;
-using GorgonLibrary.IO;
 
-namespace GorgonLibrary.FileSystem
+namespace GorgonLibrary.IO
 {
 	/// <summary>
 	/// A collection of file system virtual directories.
 	/// </summary>
 	public class GorgonFileSystemDirectoryCollection
 		: GorgonBaseNamedObjectCollection<GorgonFileSystemDirectory>
-	{
-		#region Properties.
-		/// <summary>
+    {
+        #region Properties.
+        /// <summary>
 		/// Property to return a directory by index.
 		/// </summary>
 		public GorgonFileSystemDirectory this[int index]

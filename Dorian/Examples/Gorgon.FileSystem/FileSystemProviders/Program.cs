@@ -28,7 +28,7 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using GorgonLibrary.FileSystem;
+using GorgonLibrary.IO;
 
 namespace GorgonLibrary.Examples
 {
@@ -151,7 +151,7 @@ namespace GorgonLibrary.Examples
                 {
                     // Here we actually create the file system provider from the plug-in
                     // by passing the file system provider plug-in type.  
-                    _fileSystem.AddProvider(providerPlugIn);
+                    _fileSystem.Providers.LoadProvider(providerPlugIn.FullName);
                 }
 
                 result += providerPlugIns.Length;

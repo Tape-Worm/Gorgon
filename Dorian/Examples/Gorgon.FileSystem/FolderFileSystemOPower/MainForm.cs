@@ -30,7 +30,6 @@ using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
 using GorgonLibrary.Diagnostics;
-using GorgonLibrary.FileSystem;
 using GorgonLibrary.Graphics;
 using GorgonLibrary.IO;
 using GorgonLibrary.Renderers;

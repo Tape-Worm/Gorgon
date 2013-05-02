@@ -25,17 +25,16 @@
 #endregion
 
 using System;
+using System.Globalization;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using System.Xml.Linq;
 using System.IO;
-using ICSharpCode.SharpZipLib;
+using GorgonLibrary.IO.GorPack.Properties;
 using ICSharpCode.SharpZipLib.BZip2;
-using GorgonLibrary.IO;
 using GorgonLibrary.Diagnostics;
 
-namespace GorgonLibrary.FileSystem.GorPack
+namespace GorgonLibrary.IO.GorPack
 {
 	/// <summary>
 	/// A file system provider for Gorgon BZip2 compressed packed files.
@@ -77,8 +76,8 @@ namespace GorgonLibrary.FileSystem.GorPack
 		#endregion
 
 		#region Variables.
-        private string _description = string.Empty;                                         // Description of the provider.
-		private IDictionary<string, CompressedFileEntry> _compressedFiles = null;			// List of compressed files.
+        private readonly string _description = string.Empty;                        // Description of the provider.
+		private IDictionary<string, CompressedFileEntry> _compressedFiles;			// List of compressed files.
 		#endregion
 
         #region Properties.
@@ -102,9 +101,9 @@ namespace GorgonLibrary.FileSystem.GorPack
 		/// <returns>The uncompressed data.</returns>
 		private byte[] Decompress(byte[] data)
 		{
-			using (MemoryStream sourceStream = new MemoryStream(data))
+			using (var sourceStream = new MemoryStream(data))
 			{
-				using (MemoryStream decompressedStream = new MemoryStream())
+				using (var decompressedStream = new MemoryStream())
 				{			
 					BZip2.Decompress(sourceStream, decompressedStream, true);
 					return decompressedStream.ToArray();
@@ -119,121 +118,156 @@ namespace GorgonLibrary.FileSystem.GorPack
 		/// <param name="mountPoint">Directory to hold the sub directories and files.</param>
 		/// <param name="index">Index to parse.</param>
 		/// <param name="physicalOffset">Offset in the file to add to the file offsets.</param>
-		private void ParseIndexXML(string physicalPath, GorgonFileSystemDirectory mountPoint, XDocument index, long physicalOffset)
+		/// <param name="physicalDirectories">The list of directories in the physical file system.</param>
+		/// <param name="physicalFiles">The list of files in the physical file system.</param>
+		private void ParseIndexXML(string physicalPath, GorgonFileSystemDirectory mountPoint, XContainer index, long physicalOffset, out string[] physicalDirectories, out PhysicalFileInfo[] physicalFiles)
 		{
+            var dirNodeNames = new List<string>();
+            var fileNodeInfo = new List<PhysicalFileInfo>();
+
 			var directories = index.Descendants("Path");
 
-			if (mountPoint == null)
-				mountPoint = FileSystem.RootDirectory;
-
-			_compressedFiles = new Dictionary<string, CompressedFileEntry>();
+		    _compressedFiles = new Dictionary<string, CompressedFileEntry>();
 
 			foreach (var directoryNode in directories)
 			{
-				GorgonFileSystemDirectory directory = null;
-				string path = directoryNode.Attribute("FullPath").Value.FormatDirectory('/') ;
+			    var pathAttrib = directoryNode.Attribute("FullPath");
+
+                if ((pathAttrib == null)
+                    || (string.IsNullOrWhiteSpace(pathAttrib.Value)))
+                {
+                    throw new FileLoadException(Resources.GORFS_FILEINDEX_CORRUPT);
+                }
+                
+				string path = (mountPoint.FullPath + pathAttrib.Value).FormatDirectory('/') ;
 				var files = directoryNode.Elements("File");
-				
-				directory = this.FileSystem.GetDirectory(mountPoint.FullPath + path);				
-				if (directory == null)
-					directory = AddDirectoryEntry(mountPoint.FullPath + path);
+
+                // Add the directory.
+			    dirNodeNames.Add(path);
 
 				foreach (var file in files)
 				{
-					string fileName = string.Empty;
-					string extension = string.Empty;
-					long fileOffset = 0;
-					long fileSize = 0;
-					DateTime fileDate = DateTime.Now;
+				    var fileNameNode = file.Element("Filename");
+				    var fileExtensionNode = file.Element("Extension");
+				    var fileOffsetNode = file.Element("Offset");
+				    var fileCompressedSizeNode = file.Element("CompressedSize");
+                    var fileSizeNode = file.Element("Size");
+				    var fileDateNode = file.Element("FileDate");
 
-										
-					fileName = file.Element("Filename").Value;
-					if (file.Element("Extension") != null)
-					{
-						var fileExtension = file.Element("Extension").Value;
+                    // We need these nodes.
+                    if ((fileNameNode == null) || (fileOffsetNode == null)
+                        || (fileSizeNode == null) || (fileDateNode == null)
+                        || (string.IsNullOrWhiteSpace(fileNameNode.Value))
+                        || (string.IsNullOrWhiteSpace(fileDateNode.Value)))
+                    {
+                        throw new FileLoadException(Resources.GORFS_FILEINDEX_CORRUPT);
+                    }
 
-						if ((!string.IsNullOrWhiteSpace(fileName)) && (!string.IsNullOrWhiteSpace(fileExtension)))
-						{
-							fileName += file.Element("Extension").Value;
-						}
-					}
+				    string fileName = fileNameNode.Value;
+				    long fileOffset;
+				    long fileSize;
+                    DateTime fileDate;
 
-					fileOffset = Convert.ToInt64(file.Element("Offset").Value) + physicalOffset;
-					fileSize = Convert.ToInt64(file.Element("CompressedSize").Value);
-					if (fileSize < 1)
-						fileSize = Convert.ToInt64(file.Element("Size").Value);
-					else
-						_compressedFiles.Add(directory.FullPath + fileName, new CompressedFileEntry(Convert.ToInt64(file.Element("Size").Value), fileSize));
+                    // If we don't have a creation date, then don't allow the file to be processed.
+                    if (!DateTime.TryParse(fileDateNode.Value, CultureInfo.InvariantCulture, DateTimeStyles.None,  out fileDate))
+                    {
+                        throw new FileLoadException(Resources.GORFS_FILEINDEX_CORRUPT);
+                    }
 
-					DateTime.TryParse(file.Element("FileDate").Value, System.Globalization.CultureInfo.InvariantCulture.DateTimeFormat, System.Globalization.DateTimeStyles.None, out fileDate);
+				    if (!Int64.TryParse(fileOffsetNode.Value, out fileOffset))
+                    {
+                        throw new FileLoadException(Resources.GORFS_FILEINDEX_CORRUPT);
+                    }
 
-					AddFileEntry(directory.FullPath + fileName, physicalPath, physicalPath + "::/" + path, fileSize, fileOffset, fileDate);
+                    fileOffset += physicalOffset;
+
+                    if (!Int64.TryParse(fileSizeNode.Value, out fileSize))
+                    {
+                        throw new FileLoadException(Resources.GORFS_FILEINDEX_CORRUPT);
+                    }
+
+                    if (fileExtensionNode != null)
+                    {
+                        string fileExtension = fileExtensionNode.Value;
+
+                        if ((!string.IsNullOrWhiteSpace(fileExtension)) && (!string.IsNullOrWhiteSpace(fileName)))
+                        {
+                            fileName += fileExtension;
+                        }
+                    }
+                    
+                    // If the file is compressed, then add it to a special list.
+                    if (fileCompressedSizeNode != null)
+                    {
+                        long compressedSize;
+
+                        if (!Int64.TryParse(fileCompressedSizeNode.Value, out compressedSize))
+                        {
+                            throw new FileLoadException(Resources.GORFS_FILEINDEX_CORRUPT);
+                        }
+
+                        if (compressedSize > 0)
+                        {
+                            // Add to our list of compressed files for processing later.
+                            _compressedFiles.Add(path + fileName,
+                                                 new CompressedFileEntry(fileSize, compressedSize));
+                        }
+                    }
+
+				    fileNodeInfo.Add(new PhysicalFileInfo(physicalPath + "::/" + path + fileName, fileName, fileDate, fileOffset, fileSize, path + fileName));
 				}
 			}
+
+		    physicalDirectories = dirNodeNames.ToArray();
+		    physicalFiles = fileNodeInfo.ToArray();
+
+		    dirNodeNames.Clear();
+            fileNodeInfo.Clear();
 		}
 
-		/// <summary>
-		/// Function to enumerate the files and directories for a mount point.
-		/// </summary>
-		/// <param name="physicalPath">Path on the physical file system to enumerate.</param>
-		/// <param name="mountPoint">Directory to hold the sub directories and files.</param>
-		protected override void Enumerate(string physicalPath, GorgonFileSystemDirectory mountPoint)
-		{
-			using (FileStream stream = File.Open(physicalPath, FileMode.Open, FileAccess.Read, FileShare.Read))
-			{
-				using (GorgonBinaryReader reader = new GorgonBinaryReader(stream, true))
-				{
-					string header = reader.ReadString();
-					int indexLength = reader.ReadInt32();
-					byte[] indexData = null;
-                    string xmlData = string.Empty;
+        /// <summary>
+        /// Function to enumerate the files and directories for a mount point.
+        /// </summary>
+        /// <param name="physicalMountPoint">Mount point being enumerated.</param>
+        /// <param name="mountPoint">Directory to hold the sub directories and files.</param>
+        /// <param name="physicalDirectories">A list of directories in the physical file system (formatted to the virtual file system).</param>
+        /// <param name="physicalFiles">A list of files in the physical file system (formatted to the virtual file system).</param>
+        protected override void Enumerate(string physicalMountPoint, GorgonFileSystemDirectory mountPoint, 
+            out string[] physicalDirectories, out PhysicalFileInfo[] physicalFiles)
+        {
+            using (var stream = File.Open(physicalMountPoint, FileMode.Open, FileAccess.Read, FileShare.Read))
+            {
+                using (var reader = new GorgonBinaryReader(stream, true))
+                {
+                    // Skip the header.
+                    reader.ReadString();
 
-					indexData = Decompress(reader.ReadBytes(indexLength));
-                    xmlData = Encoding.UTF8.GetString(indexData);
-					ParseIndexXML(physicalPath, mountPoint, XDocument.Parse(xmlData, LoadOptions.None), stream.Position);
-				}
-			}
-		}
+                    int indexLength = reader.ReadInt32();
+
+                    byte[] indexData = Decompress(reader.ReadBytes(indexLength));
+                    string xmlData = Encoding.UTF8.GetString(indexData);
+
+                    ParseIndexXML(physicalMountPoint, mountPoint, XDocument.Parse(xmlData, LoadOptions.None),
+                                  stream.Position, out physicalDirectories, out physicalFiles);
+                }
+            }
+        }
 
 		/// <summary>
 		/// Function called when a file is opened as a file stream.
 		/// </summary>
 		/// <param name="file">File to open.</param>
 		/// <returns>
-		/// The open <see cref="GorgonLibrary.FileSystem.GorgonFileSystemStream" /> file stream object.
+		/// The open <see cref="GorgonFileSystemStream" /> file stream object.
 		/// </returns>
 		protected override GorgonFileSystemStream OnOpenFileStream(GorgonFileSystemFileEntry file)
 		{
-			return new GorgonGorPackFileStream(file, 
-												File.Open(file.MountPoint, FileMode.Open, FileAccess.Read, FileShare.Read), 
-												(_compressedFiles.ContainsKey(file.FullPath) ? new CompressedFileEntry?(_compressedFiles[file.FullPath]) : null));
+		    return new GorgonGorPackFileStream(file,
+		                                       File.Open(file.MountPoint, FileMode.Open, FileAccess.Read, FileShare.Read),
+		                                       (_compressedFiles.ContainsKey(file.FullPath)
+		                                            ? new CompressedFileEntry?(_compressedFiles[file.FullPath])
+		                                            : null));
 		} 
-
-		/// <summary>
-		/// Function called when a file is read from the provider.
-		/// </summary>
-		/// <param name="file">File to read.</param>
-		/// <returns></returns>
-		/// <remarks>Implementors must implement this method to read the file from the physical file system.</remarks>
-		protected override byte[] OnReadFile(GorgonFileSystemFileEntry file)
-		{
-			byte[] data = new byte[0];
-
-			using (FileStream stream = File.Open(file.MountPoint, FileMode.Open, FileAccess.Read, FileShare.Read))
-			{
-				using (GorgonBinaryReader reader = new GorgonBinaryReader(stream, true))
-				{
-
-					stream.Position = file.Offset;
-					if (_compressedFiles.ContainsKey(file.FullPath))
-						data = Decompress(reader.ReadBytes((int)file.Size));
-					else
-						data = reader.ReadBytes((int)file.Size);
-
-					return data;
-				}
-			}
-		}
 
 		/// <summary>
 		/// Function to determine if a file can be read by this provider.
@@ -249,21 +283,19 @@ namespace GorgonLibrary.FileSystem.GorPack
 		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="physicalPath"/> parameter is an empty string.</exception>
 		public override bool CanReadFile(string physicalPath)
 		{
-			string header = string.Empty;
+			string header;
 
 			GorgonDebug.AssertParamString(physicalPath, "physicalPath");
 
-			byte[] headerBytes = new byte[4];
-
-			using (FileStream stream = File.Open(physicalPath, FileMode.Open, FileAccess.Read, FileShare.Read))
+		    using (FileStream stream = File.Open(physicalPath, FileMode.Open, FileAccess.Read, FileShare.Read))
 			{
-				using (GorgonBinaryReader reader = new GorgonBinaryReader(stream, true))
+				using (var reader = new GorgonBinaryReader(stream, true))
 				{
 					header = reader.ReadString();
 				}
 			}
 
-			return (string.Compare(header, "GORPACK1.SharpZip.BZ2", false) == 0);
+			return (String.CompareOrdinal(header, GorgonGorPackPlugIn.GorPackHeader) == 0);
 		}
 		#endregion
 
@@ -271,14 +303,12 @@ namespace GorgonLibrary.FileSystem.GorPack
 		/// <summary>
 		/// Initializes a new instance of the <see cref="GorgonGorPackProvider"/> class.
 		/// </summary>
-		/// <param name="fileSystem">File system that owns this provider.</param>
         /// <param name="description">The description of the provider.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="fileSystem"/> parameter is NULL (Nothing in VB.Net).</exception>
-		internal GorgonGorPackProvider(GorgonFileSystem fileSystem, string description)
-			: base(fileSystem)
+		internal GorgonGorPackProvider(string description)
 		{
             _description = description;
-            PreferredExtensions = new List<string>() { "Gorgon Packed Files (*.gorPack)|*.gorPack" };
+            PreferredExtensions = new List<string>
+                { "Gorgon Packed Files (*.gorPack)|*.gorPack" };
 		}
 		#endregion
 	}

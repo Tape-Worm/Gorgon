@@ -33,7 +33,6 @@ using System.IO;
 using System.Windows.Forms;
 using System.Drawing;
 using GorgonLibrary.IO;
-using GorgonLibrary.FileSystem;
 using GorgonLibrary.PlugIns;
 using GorgonLibrary.UI;
 

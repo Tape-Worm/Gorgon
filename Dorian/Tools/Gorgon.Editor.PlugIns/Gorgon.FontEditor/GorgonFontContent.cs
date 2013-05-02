@@ -38,7 +38,6 @@ using SlimMath;
 using GorgonLibrary;
 using GorgonLibrary.UI;
 using GorgonLibrary.IO;
-using GorgonLibrary.FileSystem;
 using GorgonLibrary.Math;
 using GorgonLibrary.Graphics;
 using GorgonLibrary.Renderers;

@@ -28,7 +28,6 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using GorgonLibrary.FileSystem;
 using GorgonLibrary.IO;
 
 namespace GorgonLibrary.Examples
@@ -57,7 +56,7 @@ namespace GorgonLibrary.Examples
 	static class Program
     {
         #region Constants.
-        private const string PlugInName = "GorgonLibrary.FileSystem.GorgonZipPlugIn";
+        private const string PlugInName = "GorgonLibrary.IO.GorgonZipPlugIn";
         #endregion
 
         #region Variables.
@@ -179,7 +178,7 @@ namespace GorgonLibrary.Examples
                 return false;
             }
 
-            _fileSystem.AddProvider(PlugInName);
+            _fileSystem.Providers.LoadProvider(PlugInName);
 
             Console.WriteLine("\nThe zip file file system provider was loaded successfully.");
             return true;

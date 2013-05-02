@@ -28,10 +28,9 @@ using System;
 using System.Linq;
 using System.Threading;
 using GorgonLibrary.Collections;
-using GorgonLibrary.FileSystem.Properties;
+using GorgonLibrary.IO.Properties;
 
-
-namespace GorgonLibrary.FileSystem
+namespace GorgonLibrary.IO
 {
 	/// <summary>
 	/// A collection of file system providers.
@@ -106,6 +105,20 @@ namespace GorgonLibrary.FileSystem
 			}
 		}
 
+        /// <summary>
+        /// Function to load a new provider from its plug-in type.
+        /// </summary>
+        /// <param name="providerType">Plug-in type for the provider.</param>
+        public void LoadProvider(Type providerType)
+        {
+            if (providerType == null)
+            {
+                throw new ArgumentNullException("providerType");
+            }
+
+            LoadProvider(providerType.FullName);
+        }
+
 		/// <summary>
 		/// Function to add a new provider based on the provider type name.
 		/// </summary>
@@ -143,7 +156,7 @@ namespace GorgonLibrary.FileSystem
 					                          string.Format(Resources.GORFS_NO_PROVIDER_PLUGIN, providerName));
 				}
 
-				GorgonFileSystemProvider provider = plugIn.CreateProvider(_fileSystem);
+				GorgonFileSystemProvider provider = plugIn.CreateProvider();
 
 				if (provider == null)
 				{
@@ -195,6 +208,22 @@ namespace GorgonLibrary.FileSystem
 
 				Unload(GetItem(index));
 			}
+		}
+
+		/// <summary>
+		/// Function to unload a file system provider by its type name.
+		/// </summary>
+		/// <param name="providerType">Type of the file system provider.</param>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="providerType"/> is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.Collections.Generic.KeyNotFoundException">Thrown when the <paramref name="providerType"/> was not found in the collection.</exception>
+		public void Unload(Type providerType)
+		{
+            if (providerType == null)
+            {
+                throw new ArgumentNullException("providerType");
+            }
+
+		    Unload(providerType.FullName);
 		}
 
 		/// <summary>

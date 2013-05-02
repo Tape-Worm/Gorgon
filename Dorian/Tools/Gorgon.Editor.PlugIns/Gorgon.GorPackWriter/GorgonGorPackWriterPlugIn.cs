@@ -39,7 +39,6 @@ using ICSharpCode.SharpZipLib;
 using ICSharpCode.SharpZipLib.BZip2;
 using GorgonLibrary.IO;
 using GorgonLibrary.Native;
-using GorgonLibrary.FileSystem;
 
 namespace GorgonLibrary.Editor.GorPackWriterPlugIn
 {

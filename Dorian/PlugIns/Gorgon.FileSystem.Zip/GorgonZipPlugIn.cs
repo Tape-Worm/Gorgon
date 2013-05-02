@@ -24,25 +24,26 @@
 // 
 #endregion
 
-using GorgonLibrary.PlugIns;
-
-namespace GorgonLibrary.FileSystem
+namespace GorgonLibrary.IO
 {
-	/// <summary>
-	/// Plug-in entry point for the zip file file system provider plug-in.
-	/// </summary>
-	public class GorgonZipPlugIn
-		: GorgonFileSystemProviderPlugIn 
-	{
+    /// <summary>
+    /// Plug-in entry point for the zip file file system provider plug-in.
+    /// </summary>
+    public class GorgonZipPlugIn
+        : GorgonFileSystemProviderPlugIn
+    {
+        /// <summary>
+        /// Header bytes for a zip file.
+        /// </summary>
+        public static readonly byte[] ZipHeader = new byte[] { 0x50, 0x4B, 0x3, 0x4 };
+
 		/// <summary>
 		/// Function to create a new file system provider plug-in instance.
 		/// </summary>
-		/// <param name="fileSystem">File system that owns this provider.</param>
 		/// <returns>The file system provider plug-in.</returns>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="fileSystem"/> parameter is NULL (Nothing in VB.Net).</exception>
-		public override GorgonFileSystemProvider CreateProvider(GorgonFileSystem fileSystem)
+		protected override GorgonFileSystemProvider OnCreateProvider()
 		{
-			return new Zip.GorgonZipProvider(fileSystem, "A provider to mount a zip file as a file system.");
+			return new Zip.GorgonZipProvider("A provider to mount a zip file as a file system.");
 		}
 
 		/// <summary>

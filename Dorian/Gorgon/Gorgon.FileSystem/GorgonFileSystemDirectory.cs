@@ -24,17 +24,24 @@
 // 
 #endregion
 
-using GorgonLibrary.IO;
-
-namespace GorgonLibrary.FileSystem
+namespace GorgonLibrary.IO
 {
 	/// <summary>
-	/// A virtual directory in the <see cref="GorgonLibrary.FileSystem.GorgonFileSystem"/>.
+	/// A virtual directory in the <see cref="GorgonLibrary.IO.GorgonFileSystem"/>.
 	/// </summary>
 	public sealed class GorgonFileSystemDirectory
 		: GorgonNamedObject
 	{
 		#region Properties.
+        /// <summary>
+        /// Property to return the file system that owns this directory.
+        /// </summary>
+        public GorgonFileSystem FileSystem
+        {
+            get;
+            private set;
+        }
+
 		/// <summary>
 		/// Property to return the list of child directories for this directory.
 		/// </summary>
@@ -77,16 +84,28 @@ namespace GorgonLibrary.FileSystem
 		}
 		#endregion
 
-		#region Constructor/Destructor.
-		/// <summary>
+        #region Methods.
+        /// <summary>
+        /// Function to delete the directory.
+        /// </summary>
+        public void Delete()
+        {
+            FileSystem.DeleteDirectory(this);
+        }
+        #endregion
+
+        #region Constructor/Destructor.
+        /// <summary>
 		/// Initializes a new instance of the <see cref="GorgonFileSystemDirectory"/> class.
 		/// </summary>
+		/// <param name="fileSystem">The file system that owns this directory.</param>
 		/// <param name="name">The name of the directory.</param>
 		/// <param name="parent">Parent directory.</param>
-		internal GorgonFileSystemDirectory(string name, GorgonFileSystemDirectory parent)
+		internal GorgonFileSystemDirectory(GorgonFileSystem fileSystem, string name, GorgonFileSystemDirectory parent)
 			: base(name.RemoveIllegalPathChars())
 		{
 			Directories = new GorgonFileSystemDirectoryCollection();
+		    FileSystem = fileSystem;
 			Files = new GorgonFileSystemFileEntryCollection(this);
 			Parent = parent;			
 		}

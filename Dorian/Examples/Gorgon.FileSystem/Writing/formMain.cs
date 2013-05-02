@@ -28,7 +28,7 @@ using System;
 using System.IO;
 using System.Text;
 using System.Windows.Forms;
-using GorgonLibrary.FileSystem;
+using GorgonLibrary.IO;
 using GorgonLibrary.UI;
 
 namespace GorgonLibrary.Examples
