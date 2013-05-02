@@ -25,11 +25,7 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using GorgonLibrary.Diagnostics;
+using GorgonLibrary.FileSystem.Properties;
 
 namespace GorgonLibrary.FileSystem
 {
@@ -40,32 +36,14 @@ namespace GorgonLibrary.FileSystem
 		: IEquatable<GorgonFileSystemMountPoint>, IComparable<GorgonFileSystemMountPoint>, IComparable
 	{
 		#region Variables.
-		private string _physicalPath;
-		private string _mountLocation;
-		#endregion
-
-		#region Properties.
 		/// <summary>
-		/// Property to return the physical location of the mount point.
+		/// The physical location of the mount point.
 		/// </summary>
-		public string PhysicalPath
-		{
-			get
-			{
-				return _physicalPath;
-			}
-		}
-
+		public readonly string PhysicalPath;
 		/// <summary>
-		/// Property to return the virtual location of the mount point.
+		/// The virtual location of the mount point.
 		/// </summary>
-		public string MountLocation
-		{
-			get
-			{
-				return _mountLocation;
-			}
-		}
+		public readonly string MountLocation;
 		#endregion
 
 		#region Methods.
@@ -77,8 +55,8 @@ namespace GorgonLibrary.FileSystem
 		/// <returns>TRUE if equal, FALSE if not.</returns>
 		public static bool Equals(ref GorgonFileSystemMountPoint left, ref GorgonFileSystemMountPoint right)
 		{
-			return (string.Compare(left._mountLocation, right._mountLocation, true) == 0)
-					&& (string.Compare(left._physicalPath, right._physicalPath, true) == 0);
+			return (String.Compare(left.MountLocation, right.MountLocation, StringComparison.OrdinalIgnoreCase) == 0)
+					&& (String.Compare(left.PhysicalPath, right.PhysicalPath, StringComparison.OrdinalIgnoreCase) == 0);
 		}
 
 		/// <summary>
@@ -92,7 +70,7 @@ namespace GorgonLibrary.FileSystem
 		{
 			if (obj is GorgonFileSystemMountPoint)
 			{
-				return this.Equals((GorgonFileSystemMountPoint)obj);
+				return Equals((GorgonFileSystemMountPoint)obj);
 			}
 
 			return base.Equals(obj);
@@ -106,7 +84,7 @@ namespace GorgonLibrary.FileSystem
 		/// </returns>
 		public override string ToString()
 		{
-			return string.Format("Mount Point  Virtual Location: {0}, Physical Location: {1}", _mountLocation, _physicalPath);
+			return string.Format(Resources.GORFS_MOUNTPOINT_TOSTRING, MountLocation, PhysicalPath);
 		}
 
 		/// <summary>
@@ -117,7 +95,7 @@ namespace GorgonLibrary.FileSystem
 		/// </returns>
 		public override int GetHashCode()
 		{
-			return 281.GenerateHash(_physicalPath).GenerateHash(_mountLocation);
+			return 281.GenerateHash(PhysicalPath).GenerateHash(MountLocation);
 		}
 
 		/// <summary>
@@ -128,7 +106,7 @@ namespace GorgonLibrary.FileSystem
 		/// <returns>TRUE if equal, FALSE if not.</returns>
 		public static bool operator ==(GorgonFileSystemMountPoint left, GorgonFileSystemMountPoint right)
 		{
-			return GorgonFileSystemMountPoint.Equals(ref left, ref right);
+			return Equals(ref left, ref right);
 		}
 
 		/// <summary>
@@ -139,7 +117,7 @@ namespace GorgonLibrary.FileSystem
 		/// <returns>TRUE if not equal, FALSE if equal.</returns>
 		public static bool operator !=(GorgonFileSystemMountPoint left, GorgonFileSystemMountPoint right)
 		{
-			return !GorgonFileSystemMountPoint.Equals(ref left, ref right);
+			return !Equals(ref left, ref right);
 		}
 		#endregion
 
@@ -153,11 +131,28 @@ namespace GorgonLibrary.FileSystem
 		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="physicalPath"/> or the <paramref name="mountLocation"/> parameters are empty.</exception>
 		public GorgonFileSystemMountPoint(string physicalPath, string mountLocation)
 		{
-			GorgonDebug.AssertParamString(physicalPath, "physicalPath");
-			GorgonDebug.AssertParamString(mountLocation, "mountLocation");
+			if (physicalPath == null)
+			{
+				throw new ArgumentNullException("physicalPath");
+			}
 
-			_physicalPath = physicalPath;
-			_mountLocation = mountLocation;
+			if (string.IsNullOrWhiteSpace(physicalPath))
+			{
+				throw new ArgumentException(Resources.GORFS_PARAMETER_EMPTY, "physicalPath");
+			}
+
+			if (mountLocation == null)
+			{
+				throw new ArgumentNullException("mountLocation");
+			}
+
+			if (string.IsNullOrWhiteSpace(mountLocation))
+			{
+				throw new ArgumentException(Resources.GORFS_PARAMETER_EMPTY, "mountLocation");
+			}
+			
+			PhysicalPath = physicalPath;
+			MountLocation = mountLocation;
 		}
 		#endregion
 
@@ -169,7 +164,7 @@ namespace GorgonLibrary.FileSystem
 		/// <returns>TRUE if equal, FALSE if not.</returns>
 		public bool Equals(GorgonFileSystemMountPoint other)
 		{
-			return GorgonFileSystemMountPoint.Equals(ref this, ref other);
+			return Equals(ref this, ref other);
 		}
 		#endregion
 
@@ -183,13 +178,11 @@ namespace GorgonLibrary.FileSystem
 		/// </returns>
 		public int CompareTo(GorgonFileSystemMountPoint other)
 		{
-			int result = 0;
-
-			result = string.Compare(_physicalPath, other._physicalPath, true);
+			int result = String.Compare(PhysicalPath, other.PhysicalPath, StringComparison.OrdinalIgnoreCase);
 
 			if (result == 0)
 			{
-				result = string.Compare(_mountLocation, other._mountLocation, true);
+				result = String.Compare(MountLocation, other.MountLocation, StringComparison.OrdinalIgnoreCase);
 			}
 
 			return result;

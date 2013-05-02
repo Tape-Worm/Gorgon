@@ -579,7 +579,7 @@ Code: 0x{2}</value>
     <value>GB</value>
   </data>
   <data name="GOR_INDEX_OUT_OF_RANGE" xml:space="preserve">
-    <value>The index is out of range.  The index value [{0}] must be between 0 and {1}.</value>
+    <value>The index is out of range.  The index value [{0}] must be be 0 or less than {1}.</value>
   </data>
   <data name="GOR_UNIT_MEM_KB" xml:space="preserve">
     <value>KB</value>

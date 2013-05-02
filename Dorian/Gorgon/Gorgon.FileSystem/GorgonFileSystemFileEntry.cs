@@ -34,7 +34,7 @@ namespace GorgonLibrary.FileSystem
 	/// <summary>
 	/// A file entry corresponding to a file on the physical file system.
 	/// </summary>
-	public class GorgonFileSystemFileEntry
+	public sealed class GorgonFileSystemFileEntry
 		: GorgonNamedObject
 	{
 		#region Properties.
@@ -84,7 +84,7 @@ namespace GorgonLibrary.FileSystem
 		public GorgonFileSystemDirectory Directory
 		{
 			get;
-			private set;
+			internal set;
 		}
 
 		/// <summary>
@@ -177,34 +177,6 @@ namespace GorgonLibrary.FileSystem
                 PhysicalFileSystemPath = physicalPath;
             }
         }
-
-		/// <summary>
-		/// Function to read the file.
-		/// </summary>
-		/// <returns>An array of bytes containing the file data.</returns>
-		public byte[] Read()
-		{
-			return Provider.ReadFile(this);
-		}
-
-		/// <summary>
-		/// Function to write to the file.
-		/// </summary>
-		/// <param name="data">The data to write to the file.</param>
-		public void Write(byte[] data)
-		{
-			Provider.WriteFile(this, data);
-		}
-
-		/// <summary>
-		/// Function to open a stream to the file on the physical file system.
-		/// </summary>
-		/// <param name="writeable">TRUE to write to the file, FALSE to make read-only.</param>
-		/// <returns>The open <see cref="GorgonLibrary.FileSystem.GorgonFileSystemStream"/> file stream object.</returns>
-		public GorgonFileSystemStream OpenStream(bool writeable)
-		{
-			return Provider.OpenStream(this, writeable);
-		}
 		#endregion
 
 		#region Constructor/Destructor.

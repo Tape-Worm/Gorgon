@@ -24,8 +24,6 @@
 // 
 #endregion
 
-using System;
-using GorgonLibrary;
 using GorgonLibrary.IO;
 
 namespace GorgonLibrary.FileSystem
@@ -33,7 +31,7 @@ namespace GorgonLibrary.FileSystem
 	/// <summary>
 	/// A virtual directory in the <see cref="GorgonLibrary.FileSystem.GorgonFileSystem"/>.
 	/// </summary>
-	public class GorgonFileSystemDirectory
+	public sealed class GorgonFileSystemDirectory
 		: GorgonNamedObject
 	{
 		#region Properties.
