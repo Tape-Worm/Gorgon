@@ -27,8 +27,9 @@
 using System;
 using System.IO;
 using ICSharpCode.SharpZipLib.BZip2;
+using GorgonLibrary.IO.GorPack.Properties;
 
-namespace GorgonLibrary.FileSystem.GorPack
+namespace GorgonLibrary.IO.GorPack
 {
 	/// <summary>
 	/// A stream used to read Gorgon bzip2 pack files.
@@ -37,10 +38,10 @@ namespace GorgonLibrary.FileSystem.GorPack
 		: GorgonFileSystemStream 
 	{
 		#region Variables.
-		private Stream _bzipStream = null;				// Input stream for the bzip file.
-		private long _position = 0;						// Position in the stream.
-		private long _basePosition = 0;					// Base position in the stream.
-		private long _length = 0;						// Length of the stream in bytes.
+		private Stream _bzipStream;				    // Input stream for the bzip file.
+		private long _position;						// Position in the stream.
+		private readonly long _basePosition;		// Base position in the stream.
+		private readonly long _length;				// Length of the stream in bytes.
 		#endregion
 
 		#region Properties.
@@ -215,7 +216,7 @@ namespace GorgonLibrary.FileSystem.GorPack
 		/// <exception cref="T:System.ArgumentException">One or more of the arguments is invalid. </exception>
 		/// <exception cref="T:System.ObjectDisposedException">Methods were called after the stream was closed. </exception>
 		/// <exception cref="T:System.NotSupportedException">The current Stream implementation does not support the write operation. </exception>
-		public override System.IAsyncResult BeginWrite(byte[] buffer, int offset, int count, System.AsyncCallback callback, object state)
+		public override IAsyncResult BeginWrite(byte[] buffer, int offset, int count, AsyncCallback callback, object state)
 		{
 			throw new NotSupportedException();
 		}
@@ -229,7 +230,7 @@ namespace GorgonLibrary.FileSystem.GorPack
 		/// <exception cref="T:System.ArgumentException">
 		/// 	<paramref name="asyncResult"/> did not originate from a <see cref="M:System.IO.Stream.BeginWrite(System.Byte[],System.Int32,System.Int32,System.AsyncCallback,System.Object)"/> method on the current stream. </exception>
 		/// <exception cref="T:System.IO.IOException">The stream is closed or an internal error has occurred.</exception>
-		public override void EndWrite(System.IAsyncResult asyncResult)
+		public override void EndWrite(IAsyncResult asyncResult)
 		{
 			throw new NotSupportedException();
 		}
@@ -301,14 +302,19 @@ namespace GorgonLibrary.FileSystem.GorPack
 					_position = Length + offset;
 					break;
 			}
-			
-			
-			if (_position >= Length)
-				throw new EndOfStreamException("At the end of the stream.");
-			if (_position < 0)
-				throw new EndOfStreamException("At the beginning of the stream.");
 
-			_bzipStream.Position = _basePosition + _position;
+
+		    if (_position > Length)
+		    {
+		        throw new EndOfStreamException(Resources.GORFS_EOS);
+		    }
+
+		    if (_position < 0)
+		    {
+		        throw new EndOfStreamException(Resources.GORFS_BOS);
+		    }
+
+		    _bzipStream.Position = _basePosition + _position;
 
 			return _position;
 		}
@@ -395,7 +401,7 @@ namespace GorgonLibrary.FileSystem.GorPack
 		/// <param name="file">The file.</param>
 		/// <param name="stream">The stream.</param>
 		/// <param name="compressionInfo">Compression information for the file.</param>
-		internal GorgonGorPackFileStream(GorgonFileSystemFileEntry file, FileStream stream, GorgonGorPackProvider.CompressedFileEntry? compressionInfo)
+		internal GorgonGorPackFileStream(GorgonFileSystemFileEntry file, Stream stream, GorgonGorPackProvider.CompressedFileEntry? compressionInfo)
 			: base(file, stream)
 		{
 			stream.Position = file.Offset;		// Set the offset here.

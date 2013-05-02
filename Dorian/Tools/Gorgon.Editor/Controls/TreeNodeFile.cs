@@ -30,7 +30,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Drawing;
-using GorgonLibrary.FileSystem;
+using GorgonLibrary.IO;
 
 namespace GorgonLibrary.Editor
 {

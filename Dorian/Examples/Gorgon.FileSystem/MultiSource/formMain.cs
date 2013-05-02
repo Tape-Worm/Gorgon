@@ -31,7 +31,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Windows.Forms;
-using GorgonLibrary.FileSystem;
+using GorgonLibrary.IO;
 using GorgonLibrary.UI;
 
 namespace GorgonLibrary.Examples
@@ -95,7 +95,7 @@ namespace GorgonLibrary.Examples
 
 				_picture.Image = null;
 				_textDisplay.Text = string.Empty;
-				GorgonFileSystemFileEntry file = (GorgonFileSystemFileEntry)e.Node.Tag;
+				var file = (GorgonFileSystemFileEntry)e.Node.Tag;
 
 				// Here we load the image from the file system.
 				// Note that we don't care if it's from the zip file
@@ -205,7 +205,7 @@ namespace GorgonLibrary.Examples
 			Gorgon.PlugIns.LoadPlugInAssembly(plugInAssembly);
 
 			// Add the zip file provider.
-			_fileSystem.AddProvider("GorgonLibrary.FileSystem.GorgonZipPlugIn");
+			_fileSystem.Providers.LoadProvider("GorgonLibrary.IO.GorgonZipPlugIn");
 		}
 
 		/// <summary>

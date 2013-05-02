@@ -32,7 +32,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Drawing;
 using System.Windows.Forms;
-using GorgonLibrary.FileSystem;
+using GorgonLibrary.IO;
 using GorgonLibrary.PlugIns;
 using GorgonLibrary.Graphics;
 using GorgonLibrary.Renderers;

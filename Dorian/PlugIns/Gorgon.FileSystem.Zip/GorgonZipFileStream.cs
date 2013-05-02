@@ -27,8 +27,9 @@
 using System;
 using System.IO;
 using ICSharpCode.SharpZipLib.Zip;
+using GorgonLibrary.IO.Zip.Properties;
 
-namespace GorgonLibrary.FileSystem.Zip
+namespace GorgonLibrary.IO.Zip
 {
 	/// <summary>
 	/// A stream used to read zip files.
@@ -37,9 +38,9 @@ namespace GorgonLibrary.FileSystem.Zip
 		: GorgonFileSystemStream 
 	{
 		#region Variables.
-		private ZipInputStream _zipStream = null;		// Input stream for the zip file.
-		private long _position = 0;						// Position in the stream.
-		private long _basePosition = 0;					// Base position in the stream.
+		private ZipInputStream _zipStream;		// Input stream for the zip file.
+		private long _position;					// Position in the stream.
+		private long _basePosition;				// Base position in the stream.
 		#endregion
 
 		#region Properties.
@@ -126,12 +127,16 @@ namespace GorgonLibrary.FileSystem.Zip
 			}
 			set
 			{
-				if (value < 0)
-					value = 0;
-				if (value >= Length)
-					value = Length;
+			    if (value < 0)
+			    {
+			        value = 0;
+			    }
+			    if (value >= Length)
+			    {
+			        value = Length;
+			    }
 
-				_position = value;
+			    _position = value;
 
 				_zipStream.Position = _basePosition + _position;
 			}
@@ -180,34 +185,40 @@ namespace GorgonLibrary.FileSystem.Zip
 		/// </summary>
 		/// <param name="file">File in the zip file to read.</param>
 		/// <param name="stream">Stream to the zip file.</param>
-		private void GetZipEntryStream(GorgonFileSystemFileEntry file, FileStream stream)
+		private void GetZipEntryStream(GorgonFileSystemFileEntry file, Stream stream)
 		{
-			ZipEntry entry = null;
+			ZipEntry entry;
 
 			_zipStream = new ZipInputStream(stream);
 
 			while ((entry = _zipStream.GetNextEntry()) != null)
 			{
-				if (entry.IsFile)
-				{
-					string newPath = entry.Name;
-					string filePath = file.PhysicalFileSystemPath.Substring(file.PhysicalFileSystemPath.LastIndexOf(':') + 1);
-							
-					if (!newPath.StartsWith("/"))
-						newPath = "/" + newPath;
+			    if (!entry.IsFile)
+			    {
+			        continue;
+			    }
 
-					if (string.Compare(newPath, filePath, true) == 0)
-					{
-						_basePosition = _zipStream.Position;
-						return;
-					}
-				}
+			    string newPath = entry.Name;
+			    string filePath = file.PhysicalFileSystemPath.Substring(file.PhysicalFileSystemPath.LastIndexOf(':') + 1);
+
+			    if (!newPath.StartsWith("/"))
+			    {
+			        newPath = "/" + newPath;
+			    }
+
+			    if (String.Compare(newPath, filePath, StringComparison.OrdinalIgnoreCase) == 0)
+			    {
+			        _basePosition = _zipStream.Position;
+			        return;
+			    }
 			}
 
-			if (_zipStream != null)
-				_zipStream.Dispose();
+		    if (_zipStream != null)
+		    {
+		        _zipStream.Dispose();
+		    }
 
-			throw new GorgonException(GorgonResult.CannotRead, "Cannot find the file '" + file.PhysicalFileSystemPath + "'entry in the zip file.");
+            throw new FileNotFoundException(string.Format(Resources.GORFS_FILE_NOT_FOUND, file.PhysicalFileSystemPath));
 		}
 
 		/// <summary>
@@ -226,9 +237,12 @@ namespace GorgonLibrary.FileSystem.Zip
 		{
 			if (disposing)
 			{
-				if (_zipStream != null)
-					_zipStream.Dispose();
-				_zipStream = null;
+			    if (_zipStream != null)
+			    {
+			        _zipStream.Dispose();
+			    }
+
+			    _zipStream = null;
 			}
 
 			base.Dispose(disposing);
@@ -249,7 +263,7 @@ namespace GorgonLibrary.FileSystem.Zip
 		/// <exception cref="T:System.ArgumentException">One or more of the arguments is invalid. </exception>
 		/// <exception cref="T:System.ObjectDisposedException">Methods were called after the stream was closed. </exception>
 		/// <exception cref="T:System.NotSupportedException">The current Stream implementation does not support the write operation. </exception>
-		public override System.IAsyncResult BeginWrite(byte[] buffer, int offset, int count, System.AsyncCallback callback, object state)
+		public override IAsyncResult BeginWrite(byte[] buffer, int offset, int count, AsyncCallback callback, object state)
 		{
 			throw new NotSupportedException();
 		}
@@ -263,7 +277,7 @@ namespace GorgonLibrary.FileSystem.Zip
 		/// <exception cref="T:System.ArgumentException">
 		/// 	<paramref name="asyncResult"/> did not originate from a <see cref="M:System.IO.Stream.BeginWrite(System.Byte[],System.Int32,System.Int32,System.AsyncCallback,System.Object)"/> method on the current stream. </exception>
 		/// <exception cref="T:System.IO.IOException">The stream is closed or an internal error has occurred.</exception>
-		public override void EndWrite(System.IAsyncResult asyncResult)
+		public override void EndWrite(IAsyncResult asyncResult)
 		{
 			throw new NotSupportedException();
 		}
@@ -301,7 +315,7 @@ namespace GorgonLibrary.FileSystem.Zip
                 return 0;
             }
 
-            int actualCount = (int)(Length - Position);
+            var actualCount = (int)(Length - Position);
 			int result = _zipStream.Read(buffer, offset, count > actualCount ? actualCount : count);
 
 			_position += result;
@@ -333,14 +347,19 @@ namespace GorgonLibrary.FileSystem.Zip
 					_position = Length + offset;
 					break;
 			}
-			
-			
-			if (_position > Length)
-				throw new IOException("At the end of the stream.");
-			if (_position < 0)
-				throw new IOException("At the beginning of the stream.");
 
-            _zipStream.Position = _position + _basePosition;
+
+		    if (_position > Length)
+		    {
+		        throw new EndOfStreamException(Resources.GORFS_EOS);
+		    }
+
+		    if (_position < 0)
+		    {
+		        throw new EndOfStreamException(Resources.GORFS_BOS);
+		    }
+
+		    _zipStream.Position = _position + _basePosition;
 
 			return _position;
 		}
@@ -426,7 +445,7 @@ namespace GorgonLibrary.FileSystem.Zip
 		/// </summary>
 		/// <param name="file">The file.</param>
 		/// <param name="stream">The stream.</param>
-		internal GorgonZipFileStream(GorgonFileSystemFileEntry file, FileStream stream)
+		internal GorgonZipFileStream(GorgonFileSystemFileEntry file, Stream stream)
 			: base(file, stream)
 		{
 			GetZipEntryStream(file, stream);

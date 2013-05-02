@@ -35,7 +35,6 @@ using GorgonLibrary;
 using GorgonLibrary.IO;
 using GorgonLibrary.Diagnostics;
 using GorgonLibrary.UI;
-using GorgonLibrary.FileSystem;
 using GorgonLibrary.Graphics;
 using GorgonLibrary.Renderers;
 

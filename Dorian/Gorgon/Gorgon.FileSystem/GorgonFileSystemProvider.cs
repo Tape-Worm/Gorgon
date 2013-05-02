@@ -28,11 +28,9 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 using System.IO;
-using GorgonLibrary.Diagnostics;
-using GorgonLibrary.IO;
-using GorgonLibrary.FileSystem.Properties;
+using GorgonLibrary.IO.Properties;
 
-namespace GorgonLibrary.FileSystem
+namespace GorgonLibrary.IO
 {
 	/// <summary>
 	/// The base Gorgon file system provider.
@@ -78,15 +76,16 @@ namespace GorgonLibrary.FileSystem
 			/// <summary>
 			/// Initializes a new instance of the <see cref="PhysicalFileInfo"/> struct.
 			/// </summary>
-			/// <param name="fullPath">The full path.</param>
+			/// <param name="physicalPath">The full physical path.</param>
+			/// <param name="fileName">The name of the file (without directory).</param>
 			/// <param name="createDate">The create date.</param>
 			/// <param name="offset">The offset.</param>
 			/// <param name="size">The size.</param>
 			/// <param name="virtualPath">The virtual path.</param>
-			public PhysicalFileInfo(string fullPath, DateTime createDate, long offset, long size, string virtualPath)
+			public PhysicalFileInfo(string physicalPath, string fileName, DateTime createDate, long offset, long size, string virtualPath)
 			{
-				FullPath = fullPath;
-				Name = Path.GetFileName(FullPath).FormatFileName();
+				FullPath = physicalPath;
+				Name = fileName;
 				CreateDate = createDate;
 				Offset = offset;
 				Length = size;
@@ -188,7 +187,7 @@ namespace GorgonLibrary.FileSystem
 				FileInfo file = files[i];
 				string newPath = MapToVirtualPath(file.DirectoryName.FormatDirectory(Path.DirectorySeparatorChar) + file.Name, physicalMountPoint, mountPoint.FullPath);
 
-				physicalFiles[i] = new PhysicalFileInfo(file.FullName, file.CreationTime, 0, file.Length, newPath);
+				physicalFiles[i] = new PhysicalFileInfo(file.FullName, file.Name, file.CreationTime, 0, file.Length, newPath);
 			}
 		}
 
@@ -225,7 +224,7 @@ namespace GorgonLibrary.FileSystem
 		/// Function called when a file is opened as a file stream.
 		/// </summary>
 		/// <param name="file">File to open.</param>
-		/// <returns>The open <see cref="GorgonLibrary.FileSystem.GorgonFileSystemStream"/> file stream object.</returns>
+		/// <returns>The open <see cref="GorgonFileSystemStream"/> file stream object.</returns>
 		protected internal virtual GorgonFileSystemStream OnOpenFileStream(GorgonFileSystemFileEntry file)
 		{
 			return new GorgonFileSystemStream(file, File.Open(file.PhysicalFileSystemPath, FileMode.Open, FileAccess.Read, FileShare.Read));			
@@ -258,7 +257,7 @@ namespace GorgonLibrary.FileSystem
 		/// <summary>
 		/// Initializes a new instance of the <see cref="GorgonFileSystemProvider"/> class.
 		/// </summary>
-		internal GorgonFileSystemProvider()			
+		protected internal GorgonFileSystemProvider()			
 		{
 			PreferredExtensions = new List<string>();
 		}

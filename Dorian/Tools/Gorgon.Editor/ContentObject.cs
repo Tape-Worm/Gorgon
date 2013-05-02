@@ -33,7 +33,7 @@ using System.Threading.Tasks;
 using System.ComponentModel;
 using System.Windows.Forms;
 using System.Drawing;
-using GorgonLibrary.FileSystem;
+using GorgonLibrary.IO;
 using GorgonLibrary.Graphics;
 
 namespace GorgonLibrary.Editor

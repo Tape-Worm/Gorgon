@@ -25,9 +25,8 @@
 #endregion
 
 using GorgonLibrary.Collections;
-using GorgonLibrary.IO;
 
-namespace GorgonLibrary.FileSystem
+namespace GorgonLibrary.IO
 {
 	/// <summary>
 	/// A collection of files available from the file system.

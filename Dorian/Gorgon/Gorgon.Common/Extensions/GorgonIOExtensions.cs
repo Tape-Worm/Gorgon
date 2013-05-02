@@ -41,6 +41,7 @@ namespace GorgonLibrary.IO
     {
         #region Variables.
         private static readonly string _directoryPathSeparator = Path.DirectorySeparatorChar.ToString(CultureInfo.InvariantCulture);
+        private static readonly string _altPathSeparator = Path.AltDirectorySeparatorChar.ToString(CultureInfo.InvariantCulture);
 
         private static readonly List<string> _pathParts;			// Parts for a path.
         #endregion
@@ -227,13 +228,11 @@ namespace GorgonLibrary.IO
 
             var illegalChars = Path.GetInvalidFileNameChars();
 
-            int lastIndexOfSep = path.LastIndexOf(_directoryPathSeparator,
-                                                  StringComparison.Ordinal);
+            int lastIndexOfSep = path.LastIndexOf(_directoryPathSeparator, StringComparison.Ordinal);
 
             if (lastIndexOfSep == -1)
             {
-                lastIndexOfSep = path.LastIndexOf(
-                    Path.AltDirectorySeparatorChar.ToString(CultureInfo.InvariantCulture), StringComparison.Ordinal);
+                lastIndexOfSep = path.LastIndexOf(_altPathSeparator, StringComparison.Ordinal);
             }
 
             if (lastIndexOfSep == -1)
@@ -242,7 +241,9 @@ namespace GorgonLibrary.IO
             {
                 directory = path.Substring(0, lastIndexOfSep);
                 if (lastIndexOfSep < path.Length - 1)
+                {
                     fileName = path.Substring(lastIndexOfSep + 1);
+                }
             }
 
             _pathParts.Clear();
@@ -280,7 +281,8 @@ namespace GorgonLibrary.IO
         public static string FormatDirectory(this string path, char directorySeparator)
         {
             char[] illegalChars = Path.GetInvalidPathChars();
-            var doubleSeparator = (directorySeparator + directorySeparator).ToString(CultureInfo.InvariantCulture);
+            string directorySep = _directoryPathSeparator;
+            var doubleSeparator = new string(new [] { directorySeparator, directorySeparator});
 
             if (string.IsNullOrWhiteSpace(path))
             {
@@ -300,10 +302,10 @@ namespace GorgonLibrary.IO
             {
                 output = output.Replace(Path.AltDirectorySeparatorChar, directorySeparator);
             }
-
-            if (directorySeparator != Path.DirectorySeparatorChar)
+            else
             {
                 output = output.Replace(Path.DirectorySeparatorChar, directorySeparator);
+                directorySep = _altPathSeparator;
             }
 
             if (output[output.Length - 1] != directorySeparator)
@@ -314,7 +316,7 @@ namespace GorgonLibrary.IO
             // Remove doubled up separators.
             while (output.ToString().LastIndexOf(doubleSeparator, StringComparison.Ordinal) > -1)
             {
-                output = output.Replace(doubleSeparator, _directoryPathSeparator);
+                output = output.Replace(doubleSeparator, directorySep);
             }
 
             return output.ToString();

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Windows.Forms;
 using GorgonLibrary;
 using GorgonLibrary.UI;
-using GorgonLibrary.FileSystem;
+using GorgonLibrary.IO;
 
 namespace Tester_Graphics
 {

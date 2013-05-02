@@ -67,7 +67,7 @@ namespace GorgonLibrary
 		{
 		    double scale = System.Math.Abs(amount) / 1024.0;
 
-		    return GetCultureUIString(scale, scale >= 1.0 ? Resources.GOR_UNIT_MEM_KB : Resources.GOR_UNIT_MEM_BYTES);
+		    return GetCultureUIString(scale >= 1.0 ? scale : amount, scale >= 1.0 ? Resources.GOR_UNIT_MEM_KB : Resources.GOR_UNIT_MEM_BYTES);
 		}
 
 		/// <summary>
@@ -79,7 +79,7 @@ namespace GorgonLibrary
 		{
 		    double scale = amount / 1024.0;
 
-		    return GetCultureUIString(scale, scale >= 1.0 ? Resources.GOR_UNIT_MEM_KB : Resources.GOR_UNIT_MEM_BYTES);
+		    return GetCultureUIString(scale >= 1.0 ? scale : amount, scale >= 1.0 ? Resources.GOR_UNIT_MEM_KB : Resources.GOR_UNIT_MEM_BYTES);
 		}
 
 		/// <summary>
@@ -93,19 +93,19 @@ namespace GorgonLibrary
 
 		    if (scale >= 1.0)
 		    {
-                return GetCultureUIString(scale, Resources.GOR_UNIT_MEM_GB);
+                return GetCultureUIString(scale >= 1.0 ? scale : amount, Resources.GOR_UNIT_MEM_GB);
 		    }
 
 		    scale = amount / 1048576.0;
 
 		    if (scale >= 1.0)
 		    {
-                return GetCultureUIString(scale, Resources.GOR_UNIT_MEM_MB);
+                return GetCultureUIString(scale >= 1.0 ? scale : amount, Resources.GOR_UNIT_MEM_MB);
 		    }
 
 		    scale = amount / 1024.0;
 
-		    return GetCultureUIString(scale, scale >= 1.0 ? Resources.GOR_UNIT_MEM_KB : Resources.GOR_UNIT_MEM_BYTES);
+		    return GetCultureUIString(scale >= 1.0 ? scale : amount, scale >= 1.0 ? Resources.GOR_UNIT_MEM_KB : Resources.GOR_UNIT_MEM_BYTES);
 		}
 
 		/// <summary>
@@ -119,19 +119,19 @@ namespace GorgonLibrary
 
             if (scale >= 1.0)
             {
-                return GetCultureUIString(scale, Resources.GOR_UNIT_MEM_GB);
+                return GetCultureUIString(scale >= 1.0 ? scale : amount, Resources.GOR_UNIT_MEM_GB);
             }
 
             scale = amount / 1048576.0;
 
             if (scale >= 1.0)
             {
-                return GetCultureUIString(scale, Resources.GOR_UNIT_MEM_MB);
+                return GetCultureUIString(scale >= 1.0 ? scale : amount, Resources.GOR_UNIT_MEM_MB);
             }
 
             scale = amount / 1024.0;
 
-		    return GetCultureUIString(scale, scale >= 1.0 ? Resources.GOR_UNIT_MEM_KB : Resources.GOR_UNIT_MEM_BYTES);
+		    return GetCultureUIString(scale >= 1.0 ? scale : amount, scale >= 1.0 ? Resources.GOR_UNIT_MEM_KB : Resources.GOR_UNIT_MEM_BYTES);
 		}
 
 		/// <summary>
@@ -145,33 +145,33 @@ namespace GorgonLibrary
 
 		    if (scale >= 1.0)
 		    {
-                return GetCultureUIString(scale, Resources.GOR_UNIT_MEM_PB);
+                return GetCultureUIString(scale >= 1.0 ? scale : amount, Resources.GOR_UNIT_MEM_PB);
 		    }
 
 		    scale = amount / 1099511627776.0;
 
 		    if (scale >= 1.0)
 		    {
-                return GetCultureUIString(scale, Resources.GOR_UNIT_MEM_TB);
+                return GetCultureUIString(scale >= 1.0 ? scale : amount, Resources.GOR_UNIT_MEM_TB);
 		    }
 
 			scale = amount / 1073741824.0;
 
 		    if (scale >= 1.0)
 		    {
-                return GetCultureUIString(scale, Resources.GOR_UNIT_MEM_GB);
+                return GetCultureUIString(scale >= 1.0 ? scale : amount, Resources.GOR_UNIT_MEM_GB);
 		    }
 
 		    scale = amount / 1048576.0;
 
 			if (scale >= 1.0)
 			{
-                return GetCultureUIString(scale, Resources.GOR_UNIT_MEM_MB);
+                return GetCultureUIString(scale >= 1.0 ? scale : amount, Resources.GOR_UNIT_MEM_MB);
 			}
 
 			scale = amount / 1024.0;
 
-		    return GetCultureUIString(scale, scale >= 1.0 ? Resources.GOR_UNIT_MEM_KB : Resources.GOR_UNIT_MEM_BYTES);
+		    return GetCultureUIString(scale >= 1.0 ? scale : amount, scale >= 1.0 ? Resources.GOR_UNIT_MEM_KB : Resources.GOR_UNIT_MEM_BYTES);
 		}
 
 		/// <summary>
@@ -185,33 +185,33 @@ namespace GorgonLibrary
 
 		    if (scale >= 1.0)
 		    {
-                return GetCultureUIString(scale, Resources.GOR_UNIT_MEM_PB);
+                return GetCultureUIString(scale >= 1.0 ? scale : amount, Resources.GOR_UNIT_MEM_PB);
 		    }
 
 		    scale = amount / 1099511627776.0;
 
 		    if (scale >= 1.0)
 		    {
-                return GetCultureUIString(scale, Resources.GOR_UNIT_MEM_TB);
+                return GetCultureUIString(scale >= 1.0 ? scale : amount, Resources.GOR_UNIT_MEM_TB);
 		    }
 
 			scale = amount / 1073741824.0;
 
 		    if (scale >= 1.0)
 		    {
-                return GetCultureUIString(scale, Resources.GOR_UNIT_MEM_GB);
+                return GetCultureUIString(scale >= 1.0 ? scale : amount, Resources.GOR_UNIT_MEM_GB);
 		    }
 
 		    scale = amount / 1048576.0;
 
 			if (scale >= 1.0)
 			{
-                return GetCultureUIString(scale, Resources.GOR_UNIT_MEM_MB);
+                return GetCultureUIString(scale >= 1.0 ? scale : amount, Resources.GOR_UNIT_MEM_MB);
 			}
 
 			scale = amount / 1024.0;
 
-		    return GetCultureUIString(scale, scale >= 1.0 ? Resources.GOR_UNIT_MEM_KB : Resources.GOR_UNIT_MEM_BYTES);
+		    return GetCultureUIString(scale >= 1.0 ? scale : amount, scale >= 1.0 ? Resources.GOR_UNIT_MEM_KB : Resources.GOR_UNIT_MEM_BYTES);
 		}
 
 		/// <summary>
@@ -225,33 +225,33 @@ namespace GorgonLibrary
 
             if (scale >= 1.0)
             {
-                return GetCultureUIString(scale, Resources.GOR_UNIT_MEM_PB);
+                return GetCultureUIString(scale >= 1.0 ? scale : amount, Resources.GOR_UNIT_MEM_PB);
             }
 
             scale = amount / 1099511627776.0;
 
             if (scale >= 1.0)
             {
-                return GetCultureUIString(scale, Resources.GOR_UNIT_MEM_TB);
+                return GetCultureUIString(scale >= 1.0 ? scale : amount, Resources.GOR_UNIT_MEM_TB);
             }
 
             scale = amount / 1073741824.0;
 
             if (scale >= 1.0)
             {
-                return GetCultureUIString(scale, Resources.GOR_UNIT_MEM_GB);
+                return GetCultureUIString(scale >= 1.0 ? scale : amount, Resources.GOR_UNIT_MEM_GB);
             }
 
             scale = amount / 1048576.0;
 
             if (scale >= 1.0)
             {
-                return GetCultureUIString(scale, Resources.GOR_UNIT_MEM_MB);
+                return GetCultureUIString(scale >= 1.0 ? scale : amount, Resources.GOR_UNIT_MEM_MB);
             }
 
             scale = amount / 1024.0;
 
-            return GetCultureUIString(scale, scale >= 1.0 ? Resources.GOR_UNIT_MEM_KB : Resources.GOR_UNIT_MEM_BYTES);
+            return GetCultureUIString(scale >= 1.0 ? scale : amount, scale >= 1.0 ? Resources.GOR_UNIT_MEM_KB : Resources.GOR_UNIT_MEM_BYTES);
         }
 
 		/// <summary>
@@ -265,33 +265,33 @@ namespace GorgonLibrary
 
             if (scale >= 1.0)
             {
-                return GetCultureUIString(scale, Resources.GOR_UNIT_MEM_PB);
+                return GetCultureUIString(scale >= 1.0 ? scale : amount, Resources.GOR_UNIT_MEM_PB);
             }
 
             scale = amount / 1099511627776.0;
 
             if (scale >= 1.0)
             {
-                return GetCultureUIString(scale, Resources.GOR_UNIT_MEM_TB);
+                return GetCultureUIString(scale >= 1.0 ? scale : amount, Resources.GOR_UNIT_MEM_TB);
             }
 
             scale = amount / 1073741824.0;
 
             if (scale >= 1.0)
             {
-                return GetCultureUIString(scale, Resources.GOR_UNIT_MEM_GB);
+                return GetCultureUIString(scale >= 1.0 ? scale : amount, Resources.GOR_UNIT_MEM_GB);
             }
 
             scale = amount / 1048576.0;
 
             if (scale >= 1.0)
             {
-                return GetCultureUIString(scale, Resources.GOR_UNIT_MEM_MB);
+                return GetCultureUIString(scale >= 1.0 ? scale : amount, Resources.GOR_UNIT_MEM_MB);
             }
 
             scale = amount / 1024.0;
 
-            return GetCultureUIString(scale, scale >= 1.0 ? Resources.GOR_UNIT_MEM_KB : Resources.GOR_UNIT_MEM_BYTES);
+            return GetCultureUIString(scale >= 1.0 ? scale : amount, scale >= 1.0 ? Resources.GOR_UNIT_MEM_KB : Resources.GOR_UNIT_MEM_BYTES);
         }
 
 		/// <summary>

@@ -32,7 +32,6 @@ using System.Windows.Forms;
 using System.IO;
 using GorgonLibrary.IO;
 using GorgonLibrary.UI;
-using GorgonLibrary.FileSystem;
 using GorgonLibrary.Diagnostics;
 using GorgonLibrary.PlugIns;
 
@@ -314,7 +313,7 @@ namespace GorgonLibrary.Editor
 
 				_splash.UpdateVersion("Creating scratch area...");
 
-				Program.ScratchFiles = new FileSystem.GorgonFileSystem();
+				Program.ScratchFiles = new IO.GorgonFileSystem();
 								
 				// Ensure that we're not being clever and trying to mess up our system.
 				if (Program.IsSystemLocation(Program.Settings.ScratchPath))

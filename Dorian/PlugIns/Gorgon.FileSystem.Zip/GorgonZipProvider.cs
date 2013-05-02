@@ -24,17 +24,13 @@
 // 
 #endregion
 
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.IO;
-using ICSharpCode.SharpZipLib;
 using ICSharpCode.SharpZipLib.Zip;
 using GorgonLibrary.Diagnostics;
-using GorgonLibrary.IO;
 
-namespace GorgonLibrary.FileSystem.Zip
+namespace GorgonLibrary.IO.Zip
 {
 	/// <summary>
 	/// A file system provider for zip files.
@@ -43,7 +39,7 @@ namespace GorgonLibrary.FileSystem.Zip
 		: GorgonFileSystemProvider
     {
         #region Variables.
-        private string _description = string.Empty;             // The description of the provider.
+        private readonly string _description = string.Empty;             // The description of the provider.
         #endregion
 
         #region Properties.
@@ -65,40 +61,51 @@ namespace GorgonLibrary.FileSystem.Zip
 		/// </summary>
 		/// <param name="physicalMountPoint">Path on the physical file system to enumerate.</param>
 		/// <param name="mountPoint">Directory to hold the sub directories and files.</param>
-		protected override void Enumerate(string physicalMountPoint, GorgonFileSystemDirectory mountPoint)
+		/// <param name="physicalDirectories">The directories in the physical file system.</param>
+		/// <param name="physicalFiles">The files in the physical file system.</param>
+		protected override void Enumerate(string physicalMountPoint, GorgonFileSystemDirectory mountPoint, out string[] physicalDirectories, out PhysicalFileInfo[] physicalFiles)
 		{
-			if (mountPoint == null)
-				mountPoint = FileSystem.RootDirectory;					
+            var directories = new List<string>();
+            var files = new List<PhysicalFileInfo>();
 
 			using (FileStream stream = File.Open(physicalMountPoint, FileMode.Open, FileAccess.Read, FileShare.Read))
 			{
-				using (ZipInputStream zipStream = new ZipInputStream(stream))
+				using (var zipStream = new ZipInputStream(stream))
 				{
-					ZipEntry entry = null;
+					ZipEntry entry;
 
 					while ((entry = zipStream.GetNextEntry()) != null)
 					{
-						if (entry.IsDirectory)
-							AddDirectoryEntry(mountPoint.FullPath + entry.Name);
-						else
-						{
-							GorgonFileSystemDirectory directory = null;
-							string directoryName = Path.GetDirectoryName(entry.Name).FormatDirectory('/');
-							string fileName = Path.GetFileName(entry.Name).FormatFileName();
+					    if (!entry.IsDirectory)
+					    {
+					        string directoryName = Path.GetDirectoryName(entry.Name).FormatDirectory('/');
+					        string fileName = Path.GetFileName(entry.Name).FormatFileName();
 
-							directoryName = mountPoint.FullPath + directoryName;
-							if (string.IsNullOrEmpty(directoryName))
-								directoryName = "/";
+					        directoryName = mountPoint.FullPath + directoryName;
 
-							directory = FileSystem.GetDirectory(directoryName);
-							if (directory == null)
-								AddDirectoryEntry(directoryName);
-							
-							AddFileEntry(directory.FullPath + fileName, physicalMountPoint, physicalMountPoint + "::/" + entry.Name, entry.Size, entry.Offset, entry.DateTime);
-						}
+					        if (string.IsNullOrWhiteSpace(directoryName))
+					        {
+					            directoryName = "/";
+					        }
+
+					        directories.Add(directoryName);
+
+					        files.Add(new PhysicalFileInfo(physicalMountPoint + "::/" + entry.Name, fileName, entry.DateTime,
+					                                       entry.Offset, entry.Size, directoryName + fileName));
+					    }
+					    else
+					    {
+					        directories.Add(mountPoint.FullPath + entry.Name);
+					    }
 					}
 				}
 			}
+
+		    physicalDirectories = directories.ToArray();
+		    physicalFiles = files.ToArray();
+
+            directories.Clear();
+            files.Clear();
 		}
 
 		/// <summary>
@@ -106,55 +113,12 @@ namespace GorgonLibrary.FileSystem.Zip
 		/// </summary>
 		/// <param name="file">File to open.</param>
 		/// <returns>
-		/// The open <see cref="GorgonLibrary.FileSystem.GorgonFileSystemStream" /> file stream object.
+		/// The open <see cref="GorgonFileSystemStream" /> file stream object.
 		/// </returns>
 		protected override GorgonFileSystemStream OnOpenFileStream(GorgonFileSystemFileEntry file)
 		{
 			return new GorgonZipFileStream(file, File.Open(file.MountPoint, FileMode.Open, FileAccess.Read, FileShare.Read));
 		} 
-
-		/// <summary>
-		/// Function called when a file is read from the provider.
-		/// </summary>
-		/// <param name="file">File to read.</param>
-		/// <returns>The file data stored in a byte array or NULL if the file could not be read.</returns>
-		/// <remarks>Implementors must implement this method to read the file from the physical file system.</remarks>
-		protected override byte[] OnReadFile(GorgonFileSystemFileEntry file)
-		{
-			using (FileStream stream = File.Open(file.MountPoint, FileMode.Open, FileAccess.Read, FileShare.Read))
-			{
-				using (ZipInputStream zipStream = new ZipInputStream(stream))
-				{
-					ZipEntry entry = null;
-
-					while ((entry = zipStream.GetNextEntry()) != null)
-					{
-						if (entry.IsFile)
-						{
-							string newPath = entry.Name;
-							string physicalPath = file.PhysicalFileSystemPath.Substring(file.PhysicalFileSystemPath.LastIndexOf(':') + 1);
-
-							if (!newPath.StartsWith("/"))
-								newPath = "/" + newPath;
-
-							if (string.Compare(newPath, physicalPath, true) == 0)
-							{
-								byte[] chunk = new byte[entry.Size];
-								zipStream.Read(chunk, 0, chunk.Length);
-
-								using (MemoryStream decodedStream = new MemoryStream(chunk.Length))
-								{
-									decodedStream.Write(chunk, 0, chunk.Length);
-									return decodedStream.ToArray();
-								}
-							}
-						}
-					}
-				}
-			}
-
-			return null;
-		}
 
 		/// <summary>
 		/// Function to determine if a file can be read by this provider.
@@ -179,7 +143,7 @@ namespace GorgonLibrary.FileSystem.Zip
 				stream.Read(headerBytes, 0, headerBytes.Length);
 			}
 
-			return (string.Compare(Encoding.UTF8.GetString(headerBytes), "PK\x03\x04", false) == 0);
+		    return headerBytes.SequenceEqual(GorgonZipPlugIn.ZipHeader);
 		}
 		#endregion
 
@@ -187,14 +151,12 @@ namespace GorgonLibrary.FileSystem.Zip
 		/// <summary>
 		/// Initializes a new instance of the <see cref="GorgonZipProvider"/> class.
 		/// </summary>
-		/// <param name="fileSystem">File system that owns this provider.</param>
         /// <param name="description">The description of the provider.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="fileSystem"/> parameter is NULL (Nothing in VB.Net).</exception>
-		internal GorgonZipProvider(GorgonFileSystem fileSystem, string description)
-			: base(fileSystem)
+		internal GorgonZipProvider(string description)
 		{
             _description = description;
-			PreferredExtensions = new List<string>() { "Zip files (*.zip)|*.zip" };
+			PreferredExtensions = new List<string>
+			    { "Zip files (*.zip)|*.zip" };
 		}
 		#endregion
 	}

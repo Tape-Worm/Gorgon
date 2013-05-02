@@ -27,7 +27,6 @@
 using System;
 using System.IO;
 using System.Linq;
-using GorgonLibrary.FileSystem;
 using GorgonLibrary.IO;
 
 namespace GorgonLibrary.Examples
