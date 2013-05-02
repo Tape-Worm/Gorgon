@@ -26,6 +26,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Xml.Linq;
 using System.Text;
@@ -116,7 +117,9 @@ namespace GorgonLibrary.Editor.GorPackWriterPlugIn
 				_writeBuffer = new byte[81920];
 			}
 
-			using (BZip2OutputStream bzStream = new BZip2OutputStream(outStream, _compressionRatio))
+			Debug.Assert(outStream != null, "outStream != null");
+
+			using (var bzStream = new BZip2OutputStream(outStream, _compressionRatio))
 			{
 				long streamSize = inStream.Length;
 				bzStream.IsStreamOwner = false;
