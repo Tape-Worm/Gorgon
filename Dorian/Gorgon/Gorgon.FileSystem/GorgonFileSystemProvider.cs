@@ -132,14 +132,15 @@ namespace GorgonLibrary.IO
 				physicalPath = Path.GetFullPath(physicalPath);
 			}
 
+			physicalPath = mountPoint + physicalPath.Replace(physicalRoot, string.Empty);
+
 			if (physicalPath.EndsWith(GorgonFileSystem.PhysicalDirSeparator))
 			{
-				physicalPath = mountPoint + physicalPath.Replace(physicalRoot, string.Empty).FormatDirectory('/');
+				physicalPath = physicalPath.FormatDirectory('/');
 			}
 			else
 			{
-				physicalPath = physicalPath.Replace(physicalRoot, string.Empty);
-				physicalPath = mountPoint + Path.GetDirectoryName(physicalPath).FormatDirectory('/') +
+				physicalPath = Path.GetDirectoryName(physicalPath).FormatDirectory('/') +
 				               Path.GetFileName(physicalPath).FormatFileName();
 			}
 
