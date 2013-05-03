@@ -99,22 +99,6 @@ namespace GorgonLibrary.Input.Raw
 
 			return true;
 		}
-		
-		/// <summary>
-		/// Function that will hide the cursor and rewind the cursor visibility stack.
-		/// </summary>
-		protected override void ResetCursor()
-		{
-			int count = 0;
-
-			count = Win32API.ShowCursor(false);
-
-			// Turn off the cursor.
-			while (count >= 0)
-				count = Win32API.ShowCursor(false);
-
-			Win32API.ShowCursor(true);			
-		}
 
 		/// <summary>
 		/// Function to bind the input device.

@@ -25,9 +25,6 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using GorgonLibrary.Collections;
 
 namespace GorgonLibrary.Input
@@ -69,10 +66,12 @@ namespace GorgonLibrary.Input
 		/// <param name="property">Property to add.</param>
 		internal void Add(GorgonCustomHIDProperty property)
 		{
-			if (property == null)
-				throw new ArgumentNullException("property");
+		    if (property == null)
+		    {
+		        throw new ArgumentNullException("property");
+		    }
 
-			AddItem(property);
+		    AddItem(property);
 		}
 
 		/// <summary>

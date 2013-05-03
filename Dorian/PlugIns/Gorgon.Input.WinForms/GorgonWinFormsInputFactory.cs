@@ -26,12 +26,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.InteropServices;
-using Microsoft.Win32;
-using GorgonLibrary.Collections;
-using GorgonLibrary.Diagnostics;
-using GorgonLibrary.Input;
 using Forms = System.Windows.Forms;
 
 namespace GorgonLibrary.Input.WinForms
@@ -109,9 +103,12 @@ namespace GorgonLibrary.Input.WinForms
 		/// <para>Pass NULL to the <paramref name="window"/> parameter to use the <see cref="P:GorgonLibrary.Gorgon.ApplicationForm">Gorgon application window</see>.</para></remarks>
 		protected override GorgonKeyboard CreateKeyboardImpl(Forms.Control window, GorgonInputDeviceInfo keyboardInfo)
 		{
-			WinFormsKeyboard keyboard = new WinFormsKeyboard(this, window);
-			keyboard.Enabled = true;
-			return keyboard;
+			WinFormsKeyboard keyboard = new WinFormsKeyboard(this, window)
+			    {
+			        Enabled = true
+			    };
+
+		    return keyboard;
 		}
 
 		/// <summary>
@@ -125,9 +122,12 @@ namespace GorgonLibrary.Input.WinForms
 		/// </remarks>
 		protected override GorgonPointingDevice CreatePointingDeviceImpl(Forms.Control window, GorgonInputDeviceInfo pointingDeviceInfo)
 		{
-			WinFormsPointingDevice mouse = new WinFormsPointingDevice(this, window);
-			mouse.Enabled = true;
-			return mouse;
+			WinFormsPointingDevice mouse = new WinFormsPointingDevice(this, window)
+			    {
+			        Enabled = true
+			    };
+
+		    return mouse;
 		}
 
 		/// <summary>

@@ -24,11 +24,6 @@
 // 
 #endregion
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
 namespace GorgonLibrary.Input
 {
 	/// <summary>
@@ -38,7 +33,7 @@ namespace GorgonLibrary.Input
 		: GorgonNamedObject 
 	{
 		#region Variables.
-		private object _value = null;			// Data for the property.
+		private object _value;			// Data for the property.
 		#endregion
 
 		#region Methods.
@@ -54,11 +49,10 @@ namespace GorgonLibrary.Input
 		/// <summary>
 		/// Function to return the value for the property.
 		/// </summary>
-		/// <typeparam name="T">Type of data to convert the property into.</typeparam>
 		/// <returns>The value for the property.</returns>
-		public T GetValue<T>()
+		public object GetValue()
 		{
-			return (T)_value;
+			return _value;
 		}
 		#endregion
 

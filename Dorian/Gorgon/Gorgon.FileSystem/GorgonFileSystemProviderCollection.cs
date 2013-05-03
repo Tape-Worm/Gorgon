@@ -123,6 +123,10 @@ namespace GorgonLibrary.IO
 		/// Function to add a new provider based on the provider type name.
 		/// </summary>
 		/// <param name="providerName">The fully qualified type name of the provider plug-in.</param>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="providerName"/> parameter is NULL (Nothing in VB.Net).</exception>
+        /// <exception cref="System.ArgumentException">Thrown when the <paramref name="providerName"/> parameter is empty.</exception>
+        /// <exception cref="System.InvalidCastException">Thrown when the plug-in was not found or was not of the correct type.</exception>
+        /// <exception cref="GorgonLibrary.GorgonException">Thrown when the provider interface could not be created.</exception>
 		public void LoadProvider(string providerName)
 		{
 			if (providerName == null)
@@ -146,14 +150,13 @@ namespace GorgonLibrary.IO
 
 				// Find the plug-in.
 				var plugIn =
-					Gorgon.PlugIns.SingleOrDefault(
+					Gorgon.PlugIns.FirstOrDefault(
 						item => string.Compare(providerName, item.Name, StringComparison.OrdinalIgnoreCase) == 0) as
 					GorgonFileSystemProviderPlugIn;
 
 				if (plugIn == null)
 				{
-					throw new GorgonException(GorgonResult.CannotCreate,
-					                          string.Format(Resources.GORFS_NO_PROVIDER_PLUGIN, providerName));
+                    throw new InvalidCastException(string.Format(Resources.GORFS_NO_PROVIDER_PLUGIN, providerName));
 				}
 
 				GorgonFileSystemProvider provider = plugIn.CreateProvider();

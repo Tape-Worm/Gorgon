@@ -50,14 +50,6 @@ namespace GorgonLibrary.Native
 	{
 		#region Methods.
 		/// <summary>
-		/// Function to set the visibility of the mouse cursor.
-		/// </summary>
-		/// <param name="bShow">TRUE to show, FALSE to hide.</param>
-		/// <returns>-1 if no mouse is installed, 0 or greater for the number of times this function has been called with TRUE.</returns>
-		[DllImport("User32.dll")]
-		public static extern int ShowCursor(bool bShow);
-
-		/// <summary>
 		/// Function to retrieve the dead zone of the joystick.
 		/// </summary>
 		/// <param name="uJoyID">ID the joystick to query.</param>

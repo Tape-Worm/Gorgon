@@ -27,6 +27,7 @@
 using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
+using GorgonLibrary.Input.Properties;
 
 namespace GorgonLibrary.Input
 {
@@ -513,7 +514,7 @@ namespace GorgonLibrary.Input
 			: IEnumerable<KeyCharMap>
 		{
 			#region Variables.
-			private SortedDictionary<KeyboardKeys, KeyCharMap> _keys;    // Keyboard mappings.
+			private readonly SortedDictionary<KeyboardKeys, KeyCharMap> _keys;    // Keyboard mappings.
 			#endregion
 
 			#region Properties.
@@ -526,17 +527,21 @@ namespace GorgonLibrary.Input
 			{
 				get
 				{
-					if (!_keys.ContainsKey(key))
-						throw new KeyNotFoundException("Keyboard key '" + key.ToString() + "' has not been assigned to a mapping.");
+				    if (!_keys.ContainsKey(key))
+				    {
+                        throw new KeyNotFoundException(string.Format(Resources.GORINP_KEYBOARD_KEY_NO_MAPPING, key));
+				    }
 
-					return _keys[key];
+				    return _keys[key];
 				}
 				set
 				{
-					if (!_keys.ContainsKey(key))
-						throw new KeyNotFoundException("Keyboard key '" + key.ToString() + "' has not been assigned to a mapping.");
+				    if (!_keys.ContainsKey(key))
+				    {
+                        throw new KeyNotFoundException(string.Format(Resources.GORINP_KEYBOARD_KEY_NO_MAPPING, key));
+				    }
 
-					_keys[key] = value;
+				    _keys[key] = value;
 				}
 			}
 			#endregion
@@ -615,7 +620,6 @@ namespace GorgonLibrary.Input
 			#endregion
 
 			#region IEnumerable Members
-
 			/// <summary>
 			/// Returns an enumerator that iterates through a collection.
 			/// </summary>
@@ -635,7 +639,7 @@ namespace GorgonLibrary.Input
 		public class KeyStateCollection
 		{
 			#region Variables.
-			private SortedDictionary<KeyboardKeys, KeyState> _keys;      // Keyboard key state.
+			private readonly SortedDictionary<KeyboardKeys, KeyState> _keys;      // Keyboard key state.
 			#endregion
 
 			#region Properties.
@@ -648,17 +652,23 @@ namespace GorgonLibrary.Input
 			{
 				get
 				{
-					if (!_keys.ContainsKey(key))
-						_keys.Add(key, KeyState.Up);
+				    if (!_keys.ContainsKey(key))
+				    {
+				        _keys.Add(key, KeyState.Up);
+				    }
 
-					return _keys[key];
+				    return _keys[key];
 				}
 				set
 				{
-					if (!_keys.ContainsKey(key))
-						_keys.Add(key, value);
-					else
-						_keys[key] = value;
+				    if (!_keys.ContainsKey(key))
+				    {
+				        _keys.Add(key, value);
+				    }
+				    else
+				    {
+				        _keys[key] = value;
+				    }
 				}
 			}
 			#endregion
@@ -671,8 +681,10 @@ namespace GorgonLibrary.Input
 			{
 				var keys = (KeyboardKeys[])Enum.GetValues(typeof(KeyboardKeys));
 
-				foreach (var key in keys)
-					this[key] = KeyState.Up;
+			    foreach (var key in keys)
+			    {
+			        this[key] = KeyState.Up;
+			    }
 			}
 
 			/// <summary>
@@ -707,11 +719,6 @@ namespace GorgonLibrary.Input
 		}
 		#endregion
 		
-		#region Variables.
-		private KeyMapCollection _keyMap;		                   // Key->character mapping.
-		private KeyStateCollection _keyStates;                     // Key states.
-		#endregion
-
 		#region Events.
 		/// <summary>
 		/// Key down event.
@@ -761,10 +768,8 @@ namespace GorgonLibrary.Input
 		/// </summary>
 		public KeyMapCollection KeyMappings
 		{
-			get
-			{
-				return _keyMap;
-			}
+			get;
+            private set;
 		}
 
 		/// <summary>
@@ -772,10 +777,8 @@ namespace GorgonLibrary.Input
 		/// </summary>
 		public KeyStateCollection KeyStates
 		{
-			get
-			{
-				return _keyStates;
-			}
+			get;
+            private set;
 		}
 		#endregion
 
@@ -790,25 +793,40 @@ namespace GorgonLibrary.Input
 
 			if (KeyStates[KeyboardKeys.ControlKey] == KeyState.Down)
 			{
-				if (KeyStates[KeyboardKeys.LControlKey] == KeyState.Down)
-					result |= KeyboardKeys.Control | KeyboardKeys.LeftVersion;
-				if (KeyStates[KeyboardKeys.RControlKey] == KeyState.Down)
-					result |= KeyboardKeys.Control | KeyboardKeys.RightVersion;
+			    if (KeyStates[KeyboardKeys.LControlKey] == KeyState.Down)
+			    {
+			        result |= KeyboardKeys.Control | KeyboardKeys.LeftVersion;
+			    }
+
+			    if (KeyStates[KeyboardKeys.RControlKey] == KeyState.Down)
+			    {
+			        result |= KeyboardKeys.Control | KeyboardKeys.RightVersion;
+			    }
 			}
 			if (KeyStates[KeyboardKeys.Menu] == KeyState.Down)
 			{
-				if (KeyStates[KeyboardKeys.LMenu] == KeyState.Down)
-					result |= KeyboardKeys.Alt | KeyboardKeys.LeftVersion;	
-				if (KeyStates[KeyboardKeys.RMenu] == KeyState.Down)
-					result |= KeyboardKeys.Alt | KeyboardKeys.RightVersion;
-				
+			    if (KeyStates[KeyboardKeys.LMenu] == KeyState.Down)
+			    {
+			        result |= KeyboardKeys.Alt | KeyboardKeys.LeftVersion;
+			    }
+
+			    if (KeyStates[KeyboardKeys.RMenu] == KeyState.Down)
+			    {
+			        result |= KeyboardKeys.Alt | KeyboardKeys.RightVersion;
+			    }
+
 			}
 			if (KeyStates[KeyboardKeys.ShiftKey] == KeyState.Down)
 			{
-				if (KeyStates[KeyboardKeys.LShiftKey] == KeyState.Down)
-					result |= KeyboardKeys.Shift | KeyboardKeys.LeftVersion;
-				if (KeyStates[KeyboardKeys.RShiftKey] == KeyState.Down)
-					result |= KeyboardKeys.Shift | KeyboardKeys.RightVersion;				
+			    if (KeyStates[KeyboardKeys.LShiftKey] == KeyState.Down)
+			    {
+			        result |= KeyboardKeys.Shift | KeyboardKeys.LeftVersion;
+			    }
+
+			    if (KeyStates[KeyboardKeys.RShiftKey] == KeyState.Down)
+			    {
+			        result |= KeyboardKeys.Shift | KeyboardKeys.RightVersion;
+			    }
 			}
 
 			return result;
@@ -871,73 +889,73 @@ namespace GorgonLibrary.Input
 		public void GetDefaultKeyMapping()
 		{
 			// Add default key mapping.
-			_keyMap.Clear();
-			_keyMap.Add(KeyboardKeys.Tab, "\t", "\t");
-			_keyMap.Add(KeyboardKeys.Return, "\n", "\n");
-			_keyMap.Add(KeyboardKeys.Space, " ", " ");
-			_keyMap.Add(KeyboardKeys.D0, "0", ")");
-			_keyMap.Add(KeyboardKeys.D1, "1", "!");
-			_keyMap.Add(KeyboardKeys.D2, "2", "@");
-			_keyMap.Add(KeyboardKeys.D3, "3", "#");
-			_keyMap.Add(KeyboardKeys.D4, "4", "$");
-			_keyMap.Add(KeyboardKeys.D5, "5", "%");
-			_keyMap.Add(KeyboardKeys.D6, "6", "^");
-			_keyMap.Add(KeyboardKeys.D7, "7", "&");
-			_keyMap.Add(KeyboardKeys.D8, "8", "*");
-			_keyMap.Add(KeyboardKeys.D9, "9", "(");
-			_keyMap.Add(KeyboardKeys.A, "a", "A");
-			_keyMap.Add(KeyboardKeys.B, "b", "B");
-			_keyMap.Add(KeyboardKeys.C, "c", "C");
-			_keyMap.Add(KeyboardKeys.D, "d", "D");
-			_keyMap.Add(KeyboardKeys.E, "e", "E");
-			_keyMap.Add(KeyboardKeys.F, "f", "F");
-			_keyMap.Add(KeyboardKeys.G, "g", "G");
-			_keyMap.Add(KeyboardKeys.H, "h", "H");
-			_keyMap.Add(KeyboardKeys.I, "i", "I");
-			_keyMap.Add(KeyboardKeys.J, "j", "J");
-			_keyMap.Add(KeyboardKeys.K, "k", "K");
-			_keyMap.Add(KeyboardKeys.L, "l", "L");
-			_keyMap.Add(KeyboardKeys.M, "m", "M");
-			_keyMap.Add(KeyboardKeys.N, "n", "N");
-			_keyMap.Add(KeyboardKeys.O, "o", "O");
-			_keyMap.Add(KeyboardKeys.P, "p", "P");
-			_keyMap.Add(KeyboardKeys.Q, "q", "Q");
-			_keyMap.Add(KeyboardKeys.R, "r", "R");
-			_keyMap.Add(KeyboardKeys.S, "s", "S");
-			_keyMap.Add(KeyboardKeys.T, "t", "T");
-			_keyMap.Add(KeyboardKeys.U, "u", "U");
-			_keyMap.Add(KeyboardKeys.V, "v", "V");
-			_keyMap.Add(KeyboardKeys.W, "w", "W");
-			_keyMap.Add(KeyboardKeys.X, "x", "X");
-			_keyMap.Add(KeyboardKeys.Y, "y", "Y");
-			_keyMap.Add(KeyboardKeys.Z, "z", "Z");
-			_keyMap.Add(KeyboardKeys.NumPad0, "0", "0");
-			_keyMap.Add(KeyboardKeys.NumPad1, "1", "1");
-			_keyMap.Add(KeyboardKeys.NumPad2, "2", "2");
-			_keyMap.Add(KeyboardKeys.NumPad3, "3", "3");
-			_keyMap.Add(KeyboardKeys.NumPad4, "4", "4");
-			_keyMap.Add(KeyboardKeys.NumPad5, "5", "5");
-			_keyMap.Add(KeyboardKeys.NumPad6, "6", "6");
-			_keyMap.Add(KeyboardKeys.NumPad7, "7", "7");
-			_keyMap.Add(KeyboardKeys.NumPad8, "8", "8");
-			_keyMap.Add(KeyboardKeys.NumPad9, "9", "9");
-			_keyMap.Add(KeyboardKeys.Multiply, "*", "*");
-			_keyMap.Add(KeyboardKeys.Add, "+", "+");
-			_keyMap.Add(KeyboardKeys.Subtract, "-", "-");
-			_keyMap.Add(KeyboardKeys.Divide, "/", "/");
-			_keyMap.Add(KeyboardKeys.OemPipe, @"\", "|");
-			_keyMap.Add(KeyboardKeys.Oem1, ";", ":");
-			_keyMap.Add(KeyboardKeys.OemSemicolon, ";", ":");
-			_keyMap.Add(KeyboardKeys.Oemplus, "=", "+");
-			_keyMap.Add(KeyboardKeys.Oemcomma, ",", "<");
-			_keyMap.Add(KeyboardKeys.OemMinus, "-", "_");
-			_keyMap.Add(KeyboardKeys.OemPeriod, ".", ">");
-			_keyMap.Add(KeyboardKeys.OemQuestion, "/", "?");
-			_keyMap.Add(KeyboardKeys.Oemtilde, "`", "~");
-			_keyMap.Add(KeyboardKeys.OemOpenBrackets, "[", "{");
-			_keyMap.Add(KeyboardKeys.Oem6, "]", "}");
-			_keyMap.Add(KeyboardKeys.Oem7, "\'", "\"");
-			_keyMap.Add(KeyboardKeys.OemBackslash, "\\", "|");
+			KeyMappings.Clear();
+			KeyMappings.Add(KeyboardKeys.Tab, "\t", "\t");
+			KeyMappings.Add(KeyboardKeys.Return, "\n", "\n");
+			KeyMappings.Add(KeyboardKeys.Space, " ", " ");
+			KeyMappings.Add(KeyboardKeys.D0, "0", ")");
+			KeyMappings.Add(KeyboardKeys.D1, "1", "!");
+			KeyMappings.Add(KeyboardKeys.D2, "2", "@");
+			KeyMappings.Add(KeyboardKeys.D3, "3", "#");
+			KeyMappings.Add(KeyboardKeys.D4, "4", "$");
+			KeyMappings.Add(KeyboardKeys.D5, "5", "%");
+			KeyMappings.Add(KeyboardKeys.D6, "6", "^");
+			KeyMappings.Add(KeyboardKeys.D7, "7", "&");
+			KeyMappings.Add(KeyboardKeys.D8, "8", "*");
+			KeyMappings.Add(KeyboardKeys.D9, "9", "(");
+			KeyMappings.Add(KeyboardKeys.A, "a", "A");
+			KeyMappings.Add(KeyboardKeys.B, "b", "B");
+			KeyMappings.Add(KeyboardKeys.C, "c", "C");
+			KeyMappings.Add(KeyboardKeys.D, "d", "D");
+			KeyMappings.Add(KeyboardKeys.E, "e", "E");
+			KeyMappings.Add(KeyboardKeys.F, "f", "F");
+			KeyMappings.Add(KeyboardKeys.G, "g", "G");
+			KeyMappings.Add(KeyboardKeys.H, "h", "H");
+			KeyMappings.Add(KeyboardKeys.I, "i", "I");
+			KeyMappings.Add(KeyboardKeys.J, "j", "J");
+			KeyMappings.Add(KeyboardKeys.K, "k", "K");
+			KeyMappings.Add(KeyboardKeys.L, "l", "L");
+			KeyMappings.Add(KeyboardKeys.M, "m", "M");
+			KeyMappings.Add(KeyboardKeys.N, "n", "N");
+			KeyMappings.Add(KeyboardKeys.O, "o", "O");
+			KeyMappings.Add(KeyboardKeys.P, "p", "P");
+			KeyMappings.Add(KeyboardKeys.Q, "q", "Q");
+			KeyMappings.Add(KeyboardKeys.R, "r", "R");
+			KeyMappings.Add(KeyboardKeys.S, "s", "S");
+			KeyMappings.Add(KeyboardKeys.T, "t", "T");
+			KeyMappings.Add(KeyboardKeys.U, "u", "U");
+			KeyMappings.Add(KeyboardKeys.V, "v", "V");
+			KeyMappings.Add(KeyboardKeys.W, "w", "W");
+			KeyMappings.Add(KeyboardKeys.X, "x", "X");
+			KeyMappings.Add(KeyboardKeys.Y, "y", "Y");
+			KeyMappings.Add(KeyboardKeys.Z, "z", "Z");
+			KeyMappings.Add(KeyboardKeys.NumPad0, "0", "0");
+			KeyMappings.Add(KeyboardKeys.NumPad1, "1", "1");
+			KeyMappings.Add(KeyboardKeys.NumPad2, "2", "2");
+			KeyMappings.Add(KeyboardKeys.NumPad3, "3", "3");
+			KeyMappings.Add(KeyboardKeys.NumPad4, "4", "4");
+			KeyMappings.Add(KeyboardKeys.NumPad5, "5", "5");
+			KeyMappings.Add(KeyboardKeys.NumPad6, "6", "6");
+			KeyMappings.Add(KeyboardKeys.NumPad7, "7", "7");
+			KeyMappings.Add(KeyboardKeys.NumPad8, "8", "8");
+			KeyMappings.Add(KeyboardKeys.NumPad9, "9", "9");
+			KeyMappings.Add(KeyboardKeys.Multiply, "*", "*");
+			KeyMappings.Add(KeyboardKeys.Add, "+", "+");
+			KeyMappings.Add(KeyboardKeys.Subtract, "-", "-");
+			KeyMappings.Add(KeyboardKeys.Divide, "/", "/");
+			KeyMappings.Add(KeyboardKeys.OemPipe, @"\", "|");
+			KeyMappings.Add(KeyboardKeys.Oem1, ";", ":");
+			KeyMappings.Add(KeyboardKeys.OemSemicolon, ";", ":");
+			KeyMappings.Add(KeyboardKeys.Oemplus, "=", "+");
+			KeyMappings.Add(KeyboardKeys.Oemcomma, ",", "<");
+			KeyMappings.Add(KeyboardKeys.OemMinus, "-", "_");
+			KeyMappings.Add(KeyboardKeys.OemPeriod, ".", ">");
+			KeyMappings.Add(KeyboardKeys.OemQuestion, "/", "?");
+			KeyMappings.Add(KeyboardKeys.Oemtilde, "`", "~");
+			KeyMappings.Add(KeyboardKeys.OemOpenBrackets, "[", "{");
+			KeyMappings.Add(KeyboardKeys.Oem6, "]", "}");
+			KeyMappings.Add(KeyboardKeys.Oem7, "\'", "\"");
+			KeyMappings.Add(KeyboardKeys.OemBackslash, "\\", "|");
 		}
 		#endregion
 
@@ -953,8 +971,8 @@ namespace GorgonLibrary.Input
 		protected GorgonKeyboard(GorgonInputFactory owner, string deviceName, Control boundWindow)
 			: base(owner, deviceName, boundWindow)
 		{
-			_keyMap = new KeyMapCollection();
-			_keyStates = new KeyStateCollection();
+            KeyMappings = new KeyMapCollection();
+            KeyStates = new KeyStateCollection();
 			KeyStateResetMode = KeyStateResetMode.ResetAll;
 			GetDefaultKeyMapping();
 		}

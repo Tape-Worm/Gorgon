@@ -26,18 +26,17 @@
 
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Windows.Forms;
-using GorgonLibrary.Math;
 using GorgonLibrary.Collections;
 using GorgonLibrary.Diagnostics;
+using GorgonLibrary.Input.Properties;
 
 namespace GorgonLibrary.Input
 {
 	/// <summary>
 	/// Enumeration for joystick axis directions.
 	/// </summary>
-	[Flags()]
+	[Flags]
 	public enum JoystickDirections
 	{
 		/// <summary>
@@ -144,21 +143,14 @@ namespace GorgonLibrary.Input
 			: INamedObject
 		{
 			#region Variables.
-			private string _name;
-			private bool _state;
-			#endregion
-
-			#region Properties.
-			/// <summary>
-			/// Property to return whether the button is pressed or not.
-			/// </summary>
-			public bool IsPressed
-			{
-				get
-				{
-					return _state;
-				}
-			}
+            /// <summary>
+            /// Name of the button.
+            /// </summary>
+			public readonly string Name;
+            /// <summary>
+            /// TRUE if the button is pressed, FALSE if not.
+            /// </summary>
+			public readonly bool IsPressed;
 			#endregion
 
 			#region Constructor/Destructor.
@@ -169,9 +161,8 @@ namespace GorgonLibrary.Input
 			/// <param name="state">State of the button, TRUE for pressed, FALSE if not.</param>
 			public JoystickButtonState(string name, bool state)
 			{
-				GorgonDebug.AssertParamString(name, "name");
-				_name = name;
-				_state = state;
+				Name = name;
+				IsPressed = state;
 			}
 			#endregion
 
@@ -179,11 +170,11 @@ namespace GorgonLibrary.Input
 			/// <summary>
 			/// Property to return the name of the button.
 			/// </summary>
-			public string Name
+			string INamedObject.Name
 			{
 				get 
 				{
-					return _name;
+					return Name;
 				}
 			}
 			#endregion
@@ -731,11 +722,11 @@ namespace GorgonLibrary.Input
 		#endregion
 
 		#region Variables.
-		private bool _deviceLost = false;												// Flag to indicate that the device was in a lost state.
-		private JoystickAxisDirections _directions = null;								// Axis directions.
-		#endregion
+		private bool _deviceLost;												// Flag to indicate that the device was in a lost state.
 
-		#region Properties.		
+	    #endregion
+
+		#region Properties.
 		/// <summary>
 		/// Property to set or return flag to indicate that the device is in a lost state.
 		/// </summary>
@@ -743,36 +734,29 @@ namespace GorgonLibrary.Input
 		{
 			get
 			{
-				if (!AllowBackground)
-					return _deviceLost;
-				else
-					return false;
+			    if (!AllowBackground)
+			    {
+			        return _deviceLost;
+			    }
+			    
+			    return false;
 			}
 			set
 			{
-				if (AllowBackground)
-					_deviceLost = false;
-				else
-					_deviceLost = value;
+			    _deviceLost = !AllowBackground && value;
 			}
 		}
 
-		/// <summary>
-		/// Property to return the direction each axis (and POV) are pointed at.
-		/// </summary>
-		public JoystickAxisDirections Direction
-		{
-			get
-			{
-				return _directions;
-			}
-			private set
-			{
-				_directions = value;
-			}
-		}
+	    /// <summary>
+	    /// Property to return the direction each axis (and POV) are pointed at.
+	    /// </summary>
+	    public JoystickAxisDirections Direction
+	    {
+	        get;
+	        private set;
+	    }
 
-		/// <summary>
+	    /// <summary>
 		/// Property to return the dead zones for the axes of the joystick.
 		/// </summary>
 		public JoystickDeadZoneAxes DeadZone
@@ -903,14 +887,13 @@ namespace GorgonLibrary.Input
 		/// <exception cref="GorgonLibrary.GorgonException">Thrown when the joystick has not been initialized.</exception>
 		private int DeadZoneValue(int value, GorgonMinMax deadZone, int midRange)
 		{
-			if (Capabilities == null)
-				throw new GorgonException(GorgonResult.NotInitialized, "The joystick is not initialized.");
+		    // The dead zone range needs to be within the range of the axis.
+		    if ((!deadZone.Contains(value)) || (deadZone == GorgonMinMax.Empty))
+		    {
+		        return value;
+		    }
 
-			// The dead zone range needs to be within the range of the axis.
-			if ((!deadZone.Contains(value)) || (deadZone == GorgonMinMax.Empty))
-				return value;
-
-			return midRange;
+		    return midRange;
 		}
 
 		/// <summary>
@@ -921,42 +904,48 @@ namespace GorgonLibrary.Input
 		/// <param name="orientation">Orientation of the axis.</param>
 		/// <param name="midRange">Mid point for the range.</param>
 		/// <returns>The direction that the axis is pointed at.</returns>
-		/// <exception cref="GorgonLibrary.GorgonException">Thrown when the joystick has not been initialized.</exception>
 		private JoystickDirections GetDirection(int value, GorgonMinMax deadZone, JoystickDirections orientation, int midRange)
 		{
-			JoystickDirections result = JoystickDirections.Center;
-
-			if (Capabilities == null)
-				throw new GorgonException(GorgonResult.NotInitialized, "The joystick is not initialized.");
+			var result = JoystickDirections.Center;
 
 			if ((deadZone == GorgonMinMax.Empty) || (!deadZone.Contains(value)))
 			{
 				switch (orientation)
 				{
 					case JoystickDirections.Horizontal:
-						if (value > midRange)
-							result = JoystickDirections.Right;
-						if (value < midRange)
-							result = JoystickDirections.Left;
-						break;
+				        if (value > midRange)
+				        {
+				            result = JoystickDirections.Right;
+				        }
+
+				        if (value < midRange)
+				        {
+				            result = JoystickDirections.Left;
+				        }
+				        break;
 					case JoystickDirections.Vertical:
-						if (value < midRange)
-							result = JoystickDirections.Down;
-						if (value > midRange)
-							result = JoystickDirections.Up;
-						break;
+				        if (value < midRange)
+				        {
+				            result = JoystickDirections.Down;
+				        }
+
+				        if (value > midRange)
+				        {
+				            result = JoystickDirections.Up;
+				        }
+				        break;
 					default:
-						if (orientation != JoystickDirections.Vector)
-							orientation = JoystickDirections.Vector;
-						if (value > midRange)
-							result = JoystickDirections.MoreThanCenter;
-						if (value < midRange)
-							result = JoystickDirections.LessThanCenter;
-						break;
+				        if (value > midRange)
+				        {
+				            result = JoystickDirections.MoreThanCenter;
+				        }
+				        if (value < midRange)
+				        {
+				            result = JoystickDirections.LessThanCenter;
+				        }
+				        break;
 				}
 			}
-
-			//result |= orientation;
 
 			return result;
 		}
@@ -1006,9 +995,13 @@ namespace GorgonLibrary.Input
 			DeadZone = new JoystickDeadZoneAxes();
 			Capabilities = GetCapabilities();
 			Button = GetButtons();
-			if (Capabilities == null)
-				throw new GorgonException(GorgonResult.NotInitialized, "The device was not initialized successfully.");
-			SetDefaults();
+
+            if (Capabilities == null)
+            {
+                throw new GorgonException(GorgonResult.NotInitialized, Resources.GORINP_JOYSTICK_NOT_INITIALIZED);
+            }
+
+            SetDefaults();
 		}
 
 		/// <summary>
@@ -1031,17 +1024,25 @@ namespace GorgonLibrary.Input
 		/// <see cref="P:GorgonLibrary.Input.GorgonJoystick.JoystickCapabilities.ExtraCapabilities">ExtraCapabilities</see> property to see if vibration is supported by the device.
 		/// </remarks>
 		/// <exception cref="GorgonLibrary.GorgonException">Thrown when the device has not been initialized.</exception>
-		/// <exception cref="System.ArgumentException">Thrown when the motorIndex parameter is less than 0 or greater than or equal to the VibrationMotorCount range.</exception>
+		/// <exception cref="System.ArgumentOutOfRangeException">Thrown when the motorIndex parameter is less than 0 or greater than or equal to the VibrationMotorCount range.</exception>
 		public void Vibrate(int motorIndex, int value)
 		{
-			if (Capabilities == null)
-				throw new GorgonException(GorgonResult.NotInitialized, "The joystick device has not been initialized.");
+            if (Capabilities == null)
+            {
+                throw new GorgonException(GorgonResult.NotInitialized, Resources.GORINP_JOYSTICK_NOT_INITIALIZED);
+            }
 
-			if (((Capabilities.ExtraCapabilities & JoystickCapabilityFlags.SupportsVibration) != JoystickCapabilityFlags.SupportsVibration) || (motorIndex < 0) || (motorIndex >= Capabilities.VibrationMotorCount))
-				throw new ArgumentException("motorIndex", "There is no motor at index " + motorIndex.ToString());
+		    if (((Capabilities.ExtraCapabilities & JoystickCapabilityFlags.SupportsVibration) !=
+		         JoystickCapabilityFlags.SupportsVibration) || (motorIndex < 0) ||
+		        (motorIndex >= Capabilities.VibrationMotorCount))
+		    {
+                throw new ArgumentOutOfRangeException("motorIndex", string.Format(Resources.GORINP_JOYSTICK_MOTOR_NOT_FOUND, motorIndex));
+		    }
 
-			if (Capabilities.VibrationMotorRanges[motorIndex].Contains(value))
-				VibrateDevice(motorIndex, value);
+		    if (Capabilities.VibrationMotorRanges[motorIndex].Contains(value))
+		    {
+		        VibrateDevice(motorIndex, value);
+		    }
 		}
 
 		/// <summary>
@@ -1051,18 +1052,24 @@ namespace GorgonLibrary.Input
 		/// <exception cref="GorgonLibrary.GorgonException">Thrown when the device has not been initialized.</exception>
 		public void Poll()
 		{
-			if (Capabilities == null)
-				throw new GorgonException(GorgonResult.NotInitialized, "The joystick device has not been initialized.");
+            if (Capabilities == null)
+            {
+                throw new GorgonException(GorgonResult.NotInitialized, Resources.GORINP_JOYSTICK_NOT_INITIALIZED);
+            }
 
-			if ((DeviceLost) && (!BoundControl.Focused))
-				return;
-			else
-				_deviceLost = false;
+		    if ((DeviceLost) && (!BoundControl.Focused))
+		    {
+		        return;
+		    }
+		    
+		    _deviceLost = false;
 
-			if ((!Enabled) || (!Acquired))
-				return;
+		    if ((!Enabled) || (!Acquired))
+		    {
+		        return;
+		    }
 
-			// Set the values back to their defaults.
+		    // Set the values back to their defaults.
 			SetDefaults();
 			
 			// Get the data.
@@ -1120,33 +1127,53 @@ namespace GorgonLibrary.Input
 			}
 
 			// Wrap POV if it's higher than 359.99 degrees.
-			if (POV > 35999)
-				POV = -1;
+		    if (POV > 35999)
+		    {
+		        POV = -1;
+		    }
 
-			// Get POV direction.
-			if (POV == -1)
-				Direction.POV = JoystickDirections.Center;
-			else
-			{
-				// Determine direction.
-				if ((POV < 18000) && (POV > 9000))
-					Direction.POV = JoystickDirections.Down | JoystickDirections.Right;
-				if ((POV > 18000) && (POV < 27000))
-					Direction.POV = JoystickDirections.Down | JoystickDirections.Left;
-				if ((POV > 27000) && (POV < 36000))
-					Direction.POV = JoystickDirections.Up | JoystickDirections.Left;
-				if ((POV > 0) && (POV < 9000))
-					Direction.POV = JoystickDirections.Up | JoystickDirections.Right;
+		    // Get POV direction.
+		    if (POV != -1)
+		    {
+		        // Determine direction.
+		        if ((POV < 18000) && (POV > 9000))
+		        {
+		            Direction.POV = JoystickDirections.Down | JoystickDirections.Right;
+		        }
+		        if ((POV > 18000) && (POV < 27000))
+		        {
+		            Direction.POV = JoystickDirections.Down | JoystickDirections.Left;
+		        }
+		        if ((POV > 27000) && (POV < 36000))
+		        {
+		            Direction.POV = JoystickDirections.Up | JoystickDirections.Left;
+		        }
+		        if ((POV > 0) && (POV < 9000))
+		        {
+		            Direction.POV = JoystickDirections.Up | JoystickDirections.Right;
+		        }
 
-				if (POV == 18000)
-					Direction.POV = JoystickDirections.Down;
-				if (POV == 0)
-					Direction.POV = JoystickDirections.Up;
-				if (POV == 9000)
-					Direction.POV = JoystickDirections.Right;
-				if (POV == 27000)
-					Direction.POV = JoystickDirections.Left;
-			}
+		        if (POV == 18000)
+		        {
+		            Direction.POV = JoystickDirections.Down;
+		        }
+		        if (POV == 0)
+		        {
+		            Direction.POV = JoystickDirections.Up;
+		        }
+		        if (POV == 9000)
+		        {
+		            Direction.POV = JoystickDirections.Right;
+		        }
+		        if (POV == 27000)
+		        {
+		            Direction.POV = JoystickDirections.Left;
+		        }
+		    }
+		    else
+		    {
+		        Direction.POV = JoystickDirections.Center;
+		    }
 		}
 		#endregion
 

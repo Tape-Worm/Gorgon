@@ -36,13 +36,13 @@ namespace GorgonLibrary.Input
 		: EventArgs
 	{
 		#region Variables.
-		private PointingDeviceButtons _button;			// Buttons that are pressed while the mouse is being moved.
-		private PointingDeviceButtons _shiftButtons;		// Other buttons being held down.
-		private PointF _position;				// Mouse position.
-		private int _wheelPosition;				// Wheel position.
-		private PointF _relative;				// Relative mouse position.
-		private int _wheelDelta;				// Wheel delta.
-		private int _clickCount;				// Number of clicks in a timed period.
+		private readonly PointingDeviceButtons _button;			// Buttons that are pressed while the mouse is being moved.
+		private readonly PointingDeviceButtons _shiftButtons;	// Other buttons being held down.
+		private readonly PointF _position;				        // Mouse position.
+		private readonly int _wheelPosition;				    // Wheel position.
+		private readonly PointF _relative;				        // Relative mouse position.
+		private readonly int _wheelDelta;				        // Wheel delta.
+		private readonly int _clickCount;				        // Number of clicks in a timed period.
 		#endregion
 
 		#region Properties.
@@ -166,10 +166,10 @@ namespace GorgonLibrary.Input
 		: EventArgs
 	{
 		#region Variables.
-		private KeyboardKeys _key;						// Key that is pressed.
-		private KeyboardKeys _modifierKey;				// Other keys being held down.
-		private int _scan = 0;							// Scan code information.
-		private GorgonKeyboard.KeyCharMap _character;	// Character that the key represents.
+		private readonly KeyboardKeys _key;						// Key that is pressed.
+		private readonly KeyboardKeys _modifierKey;				// Other keys being held down.
+		private readonly int _scan;							    // Scan code information.
+		private readonly GorgonKeyboard.KeyCharMap _character;	// Character that the key represents.
 		#endregion
 
 		#region Properties.
