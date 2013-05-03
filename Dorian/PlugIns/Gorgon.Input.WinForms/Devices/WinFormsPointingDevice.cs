@@ -64,14 +64,6 @@ namespace GorgonLibrary.Input.WinForms
 
 		#region Methods.
 		/// <summary>
-		/// Function to set the visibility of the pointing device cursor.
-		/// </summary>
-		/// <param name="bShow">TRUE to show, FALSE to hide.</param>
-		/// <returns>-1 if no pointing device is installed, 0 or greater for the number of times this function has been called with TRUE.</returns>
-		[System.Runtime.InteropServices.DllImport("User32.dll"), System.Security.SuppressUnmanagedCodeSecurity()]
-		private static extern int ShowCursor(bool bShow);
-
-		/// <summary>
 		/// Handles the MouseDoubleClick event of the BoundWindow control.
 		/// </summary>
 		/// <param name="sender">The source of the event.</param>
@@ -175,23 +167,6 @@ namespace GorgonLibrary.Input.WinForms
 
 			OnPointingDeviceMove(e.Location, true);
 		}
-
-		/// <summary>
-		/// Function that will hide the cursor and rewind the cursor visibility stack.
-		/// </summary>
-		protected override void ResetCursor()
-		{
-			int count = 0;
-
-			count = ShowCursor(false);
-
-			// Turn off the cursor.
-			while (count >= 0)
-				count = ShowCursor(false);
-
-			ShowCursor(true);
-		}
-
 
 		/// <summary>
 		/// Function to bind the input device.

@@ -28,9 +28,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Forms = System.Windows.Forms;
-using GorgonLibrary.Collections;
-using GorgonLibrary.PlugIns;
-using GorgonLibrary.Diagnostics;
+using GorgonLibrary.Input.Properties;
 
 namespace GorgonLibrary.Input
 {
@@ -45,9 +43,8 @@ namespace GorgonLibrary.Input
 		: GorgonNamedObject, IDisposable
 	{
 		#region Variables.
-		private bool _disposed = false;											// Flag to indicate that the object was disposed.
-		private GorgonInputPlugIn _plugIn = null;								// Plug-in that created this interface.
-		#endregion
+		private bool _disposed;											// Flag to indicate that the object was disposed.
+	    #endregion
 
 		#region Properties.
 		/// <summary>
@@ -86,6 +83,7 @@ namespace GorgonLibrary.Input
 			private set;
 		}
 
+        // ReSharper disable InconsistentNaming
 		/// <summary>
 		/// Property to return the names of custom HIDs.
 		/// </summary>
@@ -94,6 +92,7 @@ namespace GorgonLibrary.Input
 			get;
 			private set;
 		}
+        // ReSharper restore InconsistentNaming
 
 		/// <summary>
 		/// Property to set or return whether devices will auto-reacquire once the owner control gains focus.
@@ -116,12 +115,14 @@ namespace GorgonLibrary.Input
 		{
 			string result = Guid.Empty.ToString();
 
-			if (name != null)
-				result = name.UUID.ToString();
+		    if (name != null)
+		    {
+		        result = name.UUID.ToString();
+		    }
 
-			result += "_" + deviceType.FullName;
+		    result += "_" + deviceType.FullName;
 
-			return result.ToString();
+			return result;
 		}
 
 		/// <summary>
@@ -130,10 +131,14 @@ namespace GorgonLibrary.Input
 		private void DestroyDevices()
 		{
 			// Destroy any existing device references.
-			var devices = Devices.ToArray<KeyValuePair<string, GorgonInputDevice>>();
-			foreach (var device in devices)
-				device.Value.Dispose();
-			Devices.Clear();
+			var devices = Devices.ToArray();
+
+		    foreach (var device in devices)
+		    {
+		        device.Value.Dispose();
+		    }
+
+		    Devices.Clear();
 		}
 
 		/// <summary>
@@ -144,15 +149,18 @@ namespace GorgonLibrary.Input
 		/// <returns>The input device if it was previously created, NULL (Nothing in VB.Net) if not.</returns>
 		private T GetInputDevice<T>(GorgonInputDeviceInfo name) where T : GorgonInputDevice
 		{
-			string UUID = GetDeviceUUID(name, typeof(T));
+		    Type devType = typeof(T);
+			string uuid = GetDeviceUUID(name, devType);
 			T device = null;
 
-			if (Devices.ContainsKey(UUID))
+			if (Devices.ContainsKey(uuid))
 			{
-				device = Devices[UUID] as T;
+				device = Devices[uuid] as T;
 
-				if (device == null)
-					throw new ArgumentException("The device requested already exists and is not of the type '" + typeof(T).FullName + "'.", "name");
+			    if (device == null)
+			    {
+			        throw new ArgumentException(string.Format(Resources.GORINP_DEVICE_ALREADY_EXISTS_TYPE_MISMATCH, devType.FullName), "name");
+			    }
 			}
 
 			return device;
@@ -176,13 +184,15 @@ namespace GorgonLibrary.Input
 		/// <returns>A list of joystick device names.</returns>
 		protected abstract IEnumerable<GorgonInputDeviceInfo> EnumerateJoysticksDevices();
 
-		/// <summary>
+        // ReSharper disable InconsistentNaming
+        /// <summary>
 		/// Function to enumerate device types for which there is no class wrapper and will return data in a custom property collection.
 		/// </summary>		
 		/// <returns>A list of custom HID types.</returns>
 		/// <remarks>Custom devices are devices that are unknown to Gorgon.  The user can provide a subclass that will take the data returned from the
 		/// device and parse it out and provide properties depending on the device.</remarks>
-		protected abstract IEnumerable<GorgonInputDeviceInfo> EnumerateCustomHIDs();
+        protected abstract IEnumerable<GorgonInputDeviceInfo> EnumerateCustomHIDs();
+        // ReSharper restore InconsistentNaming
 
 		/// <summary>
 		/// Function to create a keyboard interface.
@@ -237,25 +247,27 @@ namespace GorgonLibrary.Input
 		/// <para>Pass NULL to the <paramref name="window"/> parameter to use the <see cref="P:GorgonLibrary.Gorgon.ApplicationForm">Gorgon application form</see>.</para>
 		/// </remarks>		
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="hidName"/> is NULL (Nothing in VB.Net).</exception>
-		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="hidName"/> is empty.
-		/// <para>-or-</para>
-		/// <para>Thrown when the custom HID could not be found.</para>
-		/// </exception>
+		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="hidName"/> is empty.</exception>
+		/// <exception cref="System.Collections.Generic.KeyNotFoundException">Thrown when a device with the <paramref name="hidName"/> could not be found.</exception>
 		public GorgonCustomHID CreateCustomHID(Forms.Control window, string hidName)
 		{
-			GorgonDebug.AssertParamString(hidName, "hidInfo");
-
-			GorgonInputDeviceInfo deviceInfo = null;
-			GorgonCustomHID customHID = null;
-
-			if (!string.IsNullOrEmpty(hidName))
+			if (hidName == null)
 			{
-				if (!CustomHIDs.Contains(hidName))
-					throw new ArgumentException("Could not find the HID '" + hidName + "'.");
-				deviceInfo = CustomHIDs[hidName];
+			    throw new ArgumentNullException("hidName");
 			}
 
-			customHID = GetInputDevice<GorgonCustomHID>(deviceInfo);
+            if (string.IsNullOrWhiteSpace(hidName))
+            {
+                throw new ArgumentException(Resources.GORINP_PARAMETER_EMPTY, "hidName");
+            }
+
+		    if (!CustomHIDs.Contains(hidName))
+			{
+			    throw new KeyNotFoundException(string.Format(Resources.GORINP_HID_NOT_FOUND, hidName));
+			}
+
+			GorgonInputDeviceInfo deviceInfo = CustomHIDs[hidName];
+			var customHID = GetInputDevice<GorgonCustomHID>(deviceInfo);
 
 			if (customHID == null)
 			{
@@ -276,20 +288,22 @@ namespace GorgonLibrary.Input
 		/// <remarks>Passing an empty string for <paramref name="keyboardName"/> will use the system keyboard (i.e. data from all keyboards will be tracked by the same interface).
 		/// <para>Pass NULL to the <paramref name="window"/> parameter to use the <see cref="P:GorgonLibrary.Gorgon.ApplicationForm">Gorgon application form</see>.</para>
 		/// </remarks>		
-		/// <exception cref="System.ArgumentException">Thrown when the keyboard could not be found.</exception>
+        /// <exception cref="System.Collections.Generic.KeyNotFoundException">Thrown when a keyboard with the <paramref name="keyboardName"/> could not be found.</exception>
 		public GorgonKeyboard CreateKeyboard(Forms.Control window, string keyboardName)
 		{
 			GorgonInputDeviceInfo deviceInfo = null;
-			GorgonKeyboard keyboardDevice = null;
 
-			if (!string.IsNullOrEmpty(keyboardName))
+		    if (!string.IsNullOrWhiteSpace(keyboardName))
 			{
-				if (!KeyboardDevices.Contains(keyboardName))
-					throw new ArgumentException("Could not find the keyboard '" + keyboardName + "'.");
-				deviceInfo = KeyboardDevices[keyboardName];
+			    if (!KeyboardDevices.Contains(keyboardName))
+			    {
+                    throw new ArgumentException(string.Format(Resources.GORINP_KEYBOARD_NOT_FOUND, keyboardName), "keyboardName");
+			    }
+
+			    deviceInfo = KeyboardDevices[keyboardName];
 			}
 
-			keyboardDevice = GetInputDevice<GorgonKeyboard>(deviceInfo);
+			var keyboardDevice = GetInputDevice<GorgonKeyboard>(deviceInfo);
 
 			if (keyboardDevice == null)
 			{
@@ -321,19 +335,22 @@ namespace GorgonLibrary.Input
 		/// <remarks>Passing an empty string for <paramref name="pointingDeviceName"/> will use the system pointing device (i.e. data from all pointing devices will be tracked by the same interface).
 		/// <para>Pass NULL to the <paramref name="window"/> parameter to use the <see cref="P:GorgonLibrary.Gorgon.ApplicationForm">Gorgon application form</see>.</para>
 		/// </remarks>
+        /// <exception cref="System.Collections.Generic.KeyNotFoundException">Thrown when a pointing device with the <paramref name="pointingDeviceName"/> could not be found.</exception>
 		public GorgonPointingDevice CreatePointingDevice(Forms.Control window, string pointingDeviceName)
 		{
 			GorgonInputDeviceInfo deviceInfo = null;
-			GorgonPointingDevice pointingDevice = null;
 
-			if (!string.IsNullOrEmpty(pointingDeviceName))
+		    if (!string.IsNullOrWhiteSpace(pointingDeviceName))
 			{
-				if (!PointingDevices.Contains(pointingDeviceName))
-					throw new ArgumentException("Could not find the pointing device '" + pointingDeviceName + "'.");
-				deviceInfo = PointingDevices[pointingDeviceName];				
+			    if (!PointingDevices.Contains(pointingDeviceName))
+			    {
+                    throw new ArgumentException(string.Format(Resources.GORINP_POINTINGDEVICE_NOT_FOUND, pointingDeviceName), "pointingDeviceName");
+			    }
+
+			    deviceInfo = PointingDevices[pointingDeviceName];				
 			}
 
-			pointingDevice = GetInputDevice<GorgonPointingDevice>(deviceInfo);
+			var pointingDevice = GetInputDevice<GorgonPointingDevice>(deviceInfo);
 
 			if (pointingDevice == null)
 			{
@@ -364,26 +381,28 @@ namespace GorgonLibrary.Input
 		/// <param name="joystickName">Name of the joystick to use.</param>		
 		/// <returns>A new joystick interface.</returns>
 		/// <remarks>Pass NULL to the <paramref name="window"/> parameter to use the <see cref="P:GorgonLibrary.Gorgon.ApplicationForm">Gorgon application form</see>.</remarks>
-		/// <exception cref="System.ArgumentException">The <paramRef name="joystickInfo"/> is empty.</exception>
-		/// <exception cref="System.ArgumentNullException">The joystickInfo is NULL.
-		/// <para>-or-</para>
-		/// <para>Thrown when the joystick could not be found.</para>
-		/// </exception>
+		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="joystickName"/> is empty.</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="joystickName"/> is NULL (Nothing in VB.Net).</exception>
+        /// <exception cref="System.Collections.Generic.KeyNotFoundException">Thrown when a joystick with the <paramref name="joystickName"/> could not be found.</exception>
 		public GorgonJoystick CreateJoystick(Forms.Control window, string joystickName)
 		{
-			GorgonDebug.AssertParamString(joystickName, "joystickInfo");
+            if (joystickName == null)
+            {
+                throw new ArgumentNullException("joystickName");
+            }
 
-			GorgonInputDeviceInfo deviceInfo = null;
-			GorgonJoystick joystickDevice = null;
+            if (string.IsNullOrWhiteSpace(joystickName))
+            {
+                throw new ArgumentException(Resources.GORINP_PARAMETER_EMPTY, "joystickName");
+            }
 
-			if (!string.IsNullOrEmpty(joystickName))
+		    if (!JoystickDevices.Contains(joystickName))
 			{
-				if (!JoystickDevices.Contains(joystickName))
-					throw new ArgumentException("Could not find the joystick/gamepad '" + joystickName + "'.");
-				deviceInfo = JoystickDevices[joystickName];
+                throw new ArgumentException(string.Format(Resources.GORINP_JOYSTICK_NOT_FOUND, joystickName), "joystickName");
 			}
 
-			joystickDevice = GetInputDevice<GorgonJoystick>(deviceInfo);
+			GorgonInputDeviceInfo deviceInfo = JoystickDevices[joystickName];
+			GorgonJoystick joystickDevice = GetInputDevice<GorgonJoystick>(deviceInfo);
 
 			if (joystickDevice == null)
 			{
@@ -413,31 +432,41 @@ namespace GorgonLibrary.Input
 		/// </summary>
 		/// <param name="plugInType">Type name of the input device factory plug-in.</param>
 		/// <returns>The input device factory object.</returns>
-		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="plugInType"/> parameter is empty or NULL (Nothing in VB.Net).
-		/// <para>-or-</para>
-		/// <para>Thrown when the input device factory plug-in type was not found.</para>
-		/// <para>-or-</para>
-		/// <para>Thrown when the input device factory plug-in requested is not an input device factory.</para>
-		/// </exception>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="plugInType"/> parameter was NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="plugInType"/> parameter is empty.</exception>
+		/// <exception cref="System.InvalidCastException">Thrown when the input plug-in was not found or was not the correct type.</exception>
+		/// <exception cref="GorgonLibrary.GorgonException">Thrown when the input factory could not be created.</exception>
 		public static GorgonInputFactory CreateInputFactory(string plugInType)
 		{
-			GorgonInputPlugIn plugIn = null;
-			GorgonInputFactory factory = null;
+		    if (plugInType == null)
+			{
+			    throw new ArgumentNullException("plugInType");
+			}
 
-			GorgonDebug.AssertParamString(plugInType, "plugInType");
+            if (string.IsNullOrWhiteSpace(plugInType))
+            {
+                throw new ArgumentException(Resources.GORINP_PARAMETER_EMPTY, "plugInType");
+            }
 
-			if (!Gorgon.PlugIns.Contains(plugInType))
-				throw new ArgumentException("The plug-in '" + plugInType + "' was not found in any of the loaded plug-in assemblies.", "plugInType");
+		    GorgonInputPlugIn plugIn =
+		        Gorgon.PlugIns.FirstOrDefault(
+		            item => string.Compare(item.Name, plugInType, StringComparison.OrdinalIgnoreCase) == 0) as
+		        GorgonInputPlugIn;
 
-			plugIn = Gorgon.PlugIns[plugInType] as GorgonInputPlugIn;
+            if (plugIn == null)
+            {
+                throw new InvalidCastException(string.Format(Resources.GORINP_PLUGIN_NOT_FOUND, plugInType));
+            }
 
-			if (plugIn == null)
-				throw new ArgumentException("The plug-in '" + plugInType + "' is not an input plug-in.", "plugInType");
+		    GorgonInputFactory factory = plugIn.GetFactory();
 
-			factory = plugIn.GetFactory();
-			factory._plugIn = plugIn;
+            if (factory == null)
+            {
+                throw new GorgonException(GorgonResult.CannotCreate,
+                                          string.Format(Resources.GORINP_CANNOT_CREATE, plugInType));
+            }
 
-			Gorgon.AddTrackedObject(factory);
+		    Gorgon.AddTrackedObject(factory);
 
 			return factory;
 		}
@@ -492,6 +521,7 @@ namespace GorgonLibrary.Input
 					DestroyDevices();
 				}
 			}
+
 			_disposed = true;
 		}
 

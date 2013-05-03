@@ -34,7 +34,7 @@ namespace GorgonLibrary.Input
 	/// <summary>
 	/// Enumeration for pointing device buttons.
 	/// </summary>
-	[Flags()]
+	[Flags]
 	public enum PointingDeviceButtons
 	{
 		/// <summary>
@@ -83,16 +83,15 @@ namespace GorgonLibrary.Input
 		: GorgonInputDevice
 	{
 		#region Variables.
-		private bool _disposed = false;												// Flag to indicate that the object was disposed.
-		private bool _cursorHidden = false;											// Is the pointing device cursor visible?
-		private PointF _doubleClickRange = new PointF(2.0f, 2.0f);					// Range that a double click is valid within.
-		private PointF _position;													// Mouse horizontal and vertical position.
-		private int _wheel;															// Mouse wheel position.
-		private PointF _relativePosition = PointF.Empty;							// Mouse relative position.
-		private RectangleF _positionConstraint;										// Constraints for the pointing device position.
-		private Point _wheelConstraint;												// Constraints for the pointing device wheel.
-		private int _doubleClickDelay = 0;											// Double click delay in milliseconds.
-		#endregion
+		private bool _disposed;												// Flag to indicate that the object was disposed.
+		private bool _cursorHidden;											// Is the pointing device cursor visible?
+		private PointF _doubleClickRange = new PointF(2.0f, 2.0f);			// Range that a double click is valid within.
+		private PointF _position;											// Mouse horizontal and vertical position.
+		private int _wheel;													// Mouse wheel position.
+		private PointF _relativePosition = PointF.Empty;					// Mouse relative position.
+		private RectangleF _positionConstraint;								// Constraints for the pointing device position.
+		private Point _wheelConstraint;										// Constraints for the pointing device wheel.
+	    #endregion
 
 		#region Events.
 		/// <summary>
@@ -124,10 +123,7 @@ namespace GorgonLibrary.Input
 		{
 			get
 			{
-				if (BoundControl == null)
-					return Rectangle.Empty;
-
-				return new Rectangle(Point.Empty, BoundControl.ClientSize);
+			    return BoundControl == null ? Rectangle.Empty : new Rectangle(Point.Empty, BoundControl.ClientSize);
 			}
 		}
 
@@ -146,22 +142,16 @@ namespace GorgonLibrary.Input
 			}
 		}
 
-		/// <summary>
-		/// Property to set or return the double click delay in milliseconds.
-		/// </summary>
-		public int DoubleClickDelay
-		{
-			get
-			{
-				return _doubleClickDelay;
-			}
-			set
-			{
-				_doubleClickDelay = value;
-			}
-		}
+	    /// <summary>
+	    /// Property to set or return the double click delay in milliseconds.
+	    /// </summary>
+	    public int DoubleClickDelay
+	    {
+	        get;
+	        set;
+	    }
 
-		/// <summary>
+	    /// <summary>
 		/// Property to set or return whether the windows cursor is visible or not.
 		/// </summary>
 		public bool CursorVisible
@@ -172,10 +162,14 @@ namespace GorgonLibrary.Input
 			}
 			set
 			{
-				if (value)
-					ShowCursor();
-				else
-					HideCursor();
+			    if (value)
+			    {
+			        ShowCursor();
+			    }
+			    else
+			    {
+			        HideCursor();
+			    }
 			}
 		}
 
@@ -191,8 +185,11 @@ namespace GorgonLibrary.Input
 			set
 			{
 				base.Exclusive = value;
-				if (value)
-					CursorVisible = false;
+
+			    if (value)
+			    {
+			        CursorVisible = false;
+			    }
 			}
 		}
 
@@ -296,10 +293,29 @@ namespace GorgonLibrary.Input
 		#endregion
 
 		#region Methods.
-		/// <summary>
-		/// Function that will hide the cursor and rewind the cursor visibility stack.
-		/// </summary>
-		protected abstract void ResetCursor();
+        /// <summary>
+        /// Function to set the visibility of the pointing device cursor.
+        /// </summary>
+        /// <param name="bShow">TRUE to show, FALSE to hide.</param>
+        /// <returns>-1 if no pointing device is installed, 0 or greater for the number of times this function has been called with TRUE.</returns>
+        [System.Runtime.InteropServices.DllImport("User32.dll"), System.Security.SuppressUnmanagedCodeSecurity]
+        private static extern int ShowCursor(bool bShow);
+        
+        /// <summary>
+        /// Function that will hide the cursor and rewind the cursor visibility stack.
+        /// </summary>
+        private void ResetCursor()
+        {
+            int count = ShowCursor(false);
+
+            // Turn off the cursor.
+            while (count >= 0)
+            {
+                count = ShowCursor(false);
+            }
+
+            ShowCursor(true);
+        }
 
 		/// <summary>
 		/// Function called when the device is bound to a window.
@@ -307,7 +323,7 @@ namespace GorgonLibrary.Input
 		/// <param name="window">Window that was bound.</param>
 		protected override void OnWindowBound(Forms.Control window)
 		{
-			window.MouseLeave += new EventHandler(Owner_MouseLeave);
+			window.MouseLeave += Owner_MouseLeave;
 		}
 
 		/// <summary>
@@ -321,8 +337,10 @@ namespace GorgonLibrary.Input
 			// the button status or else the button(s) will remain in a pressed
 			// state upon re-entry.  Regardless of whether a button is physically
 			// pressed or not.
-			if (!Exclusive)
-				ResetButtons();
+		    if (!Exclusive)
+		    {
+		        ResetButtons();
+		    }
 		}
 
 		/// <summary>
@@ -362,24 +380,32 @@ namespace GorgonLibrary.Input
 
 			if (newPosition != _position)
 			{
-				if (setRelative)
-					RelativePosition = new PointF(newPosition.X - _position.X, newPosition.Y - _position.Y);
-				_position = newPosition;
+			    if (setRelative)
+			    {
+			        RelativePosition = new PointF(newPosition.X - _position.X, newPosition.Y - _position.Y);
+			    }
+
+			    _position = newPosition;
 			}
 			else
 			{
-				if (setRelative)
-					RelativePosition = PointF.Empty;
-				return;
+			    if (setRelative)
+			    {
+			        RelativePosition = PointF.Empty;
+			    }
+
+			    return;
 			}
 
 			ConstrainData();
 
-			if (PointingDeviceMove != null)
-			{
-				PointingDeviceEventArgs e = new PointingDeviceEventArgs(Button, PointingDeviceButtons.None, _position, _wheel, RelativePosition, WheelDelta, 0);
-				PointingDeviceMove(this, e);
-			}
+		    if (PointingDeviceMove == null)
+		    {
+		        return;
+		    }
+
+		    var e = new PointingDeviceEventArgs(Button, PointingDeviceButtons.None, _position, _wheel, RelativePosition, WheelDelta, 0);
+		    PointingDeviceMove(this, e);
 		}
 
 		/// <summary>
@@ -391,11 +417,13 @@ namespace GorgonLibrary.Input
 			ConstrainData();
 			Button |= button;
 
-			if (PointingDeviceDown != null)
-			{
-				PointingDeviceEventArgs e = new PointingDeviceEventArgs(button, Button, _position, _wheel, RelativePosition, WheelDelta, 0);
-				PointingDeviceDown(this, e);			
-			}
+		    if (PointingDeviceDown == null)
+		    {
+		        return;
+		    }
+
+		    var e = new PointingDeviceEventArgs(button, Button, _position, _wheel, RelativePosition, WheelDelta, 0);
+		    PointingDeviceDown(this, e);
 		}
 
 		/// <summary>
@@ -408,11 +436,13 @@ namespace GorgonLibrary.Input
 			ConstrainData();
 			Button &= ~button;
 
-			if (PointingDeviceUp != null)
-			{
-				PointingDeviceEventArgs e = new PointingDeviceEventArgs(button, Button, _position, _wheel, RelativePosition, WheelDelta, clickCount);
-				PointingDeviceUp(this, e);
-			}
+		    if (PointingDeviceUp == null)
+		    {
+		        return;
+		    }
+
+		    var e = new PointingDeviceEventArgs(button, Button, _position, _wheel, RelativePosition, WheelDelta, clickCount);
+		    PointingDeviceUp(this, e);
 		}
 
 		/// <summary>
@@ -421,8 +451,11 @@ namespace GorgonLibrary.Input
 		protected override void UnbindWindow()
 		{
 			base.UnbindWindow();
-			if ((BoundControl != null) && (!BoundControl.Disposing) && (!BoundControl.IsDisposed))
-				BoundControl.MouseLeave -= new EventHandler(Owner_MouseLeave);
+
+		    if ((BoundControl != null) && (!BoundControl.Disposing) && (!BoundControl.IsDisposed))
+		    {
+		        BoundControl.MouseLeave -= Owner_MouseLeave;
+		    }
 		}
 
 		/// <summary>
@@ -450,23 +483,39 @@ namespace GorgonLibrary.Input
 			if (_positionConstraint != RectangleF.Empty)
 			{
 				// Limit positioning.
-				if (_position.X < _positionConstraint.X)
-					_position.X = _positionConstraint.X;
-				if (_position.Y < _positionConstraint.Y)
-					_position.Y = _positionConstraint.Y;
-				if (_position.X > _positionConstraint.Right - 1)
-					_position.X = _positionConstraint.Right - 1;
-				if (_position.Y > _positionConstraint.Bottom - 1)
-					_position.Y = _positionConstraint.Bottom - 1;
+			    if (_position.X < _positionConstraint.X)
+			    {
+			        _position.X = _positionConstraint.X;
+			    }
+
+			    if (_position.Y < _positionConstraint.Y)
+			    {
+			        _position.Y = _positionConstraint.Y;
+			    }
+
+			    if (_position.X > _positionConstraint.Right - 1)
+			    {
+			        _position.X = _positionConstraint.Right - 1;
+			    }
+
+			    if (_position.Y > _positionConstraint.Bottom - 1)
+			    {
+			        _position.Y = _positionConstraint.Bottom - 1;
+			    }
 			}
 
 			if (_wheelConstraint != Point.Empty)
 			{
 				// Limit wheel.
-				if (_wheel < _wheelConstraint.X)
-					_wheel = _wheelConstraint.X;
-				if (_wheel > _wheelConstraint.Y - 1)
-					_wheel = _wheelConstraint.Y - 1;
+			    if (_wheel < _wheelConstraint.X)
+			    {
+			        _wheel = _wheelConstraint.X;
+			    }
+
+			    if (_wheel > _wheelConstraint.Y - 1)
+			    {
+			        _wheel = _wheelConstraint.Y - 1;
+			    }
 			}
 		}
 
@@ -475,9 +524,12 @@ namespace GorgonLibrary.Input
 		/// </summary>
 		public void ShowCursor()
 		{
-			if (_cursorHidden)
-				Forms.Cursor.Show();
-			_cursorHidden = false;
+		    if (_cursorHidden)
+		    {
+		        Forms.Cursor.Show();
+		    }
+
+		    _cursorHidden = false;
 		}
 
 		/// <summary>
@@ -485,9 +537,12 @@ namespace GorgonLibrary.Input
 		/// </summary>
 		public void HideCursor()
 		{
-			if (!_cursorHidden)
-				Forms.Cursor.Hide();
-			_cursorHidden = true;
+		    if (!_cursorHidden)
+		    {
+		        Forms.Cursor.Hide();
+		    }
+
+		    _cursorHidden = true;
 		}
 
 		/// <summary>
@@ -528,10 +583,14 @@ namespace GorgonLibrary.Input
 		/// <param name="height">Height limit.</param>
 		public void SetPositionRange(float left, float top, float width, float height)
 		{
-			if ((width == 0) || (height == 0))
-				PositionRange = RectangleF.Empty;
-			else
-				PositionRange = new RectangleF(left, top, width, height);
+		    if ((width.EqualsEpsilon(0)) || (height.EqualsEpsilon(0)))
+		    {
+		        PositionRange = RectangleF.Empty;
+		    }
+		    else
+		    {
+		        PositionRange = new RectangleF(left, top, width, height);
+		    }
 		}
 
 		/// <summary>
@@ -541,21 +600,24 @@ namespace GorgonLibrary.Input
 		/// <param name="max">Maximum value.</param>
 		public void SetWheelRange(int min, int max)
 		{
-			if (min == max)
-				WheelRange = Point.Empty;
-			else
-			{
-				// Swap values if necessary.
-				if (min > max)
-				{
-					int temp = min;
-					min = max;
-					max = temp;
-				}
-				WheelRange = new Point(min, max);
-			}
+		    if (min != max)
+		    {
+		        // Swap values if necessary.
+		        if (min > max)
+		        {
+		            int temp = min;
+		            min = max;
+		            max = temp;
+		        }
+
+		        WheelRange = new Point(min, max);
+		    }
+		    else
+		    {
+		        WheelRange = Point.Empty;
+		    }
 		}
-		#endregion
+	    #endregion
 
 		#region Constructor/Destructor.
 		/// <summary>

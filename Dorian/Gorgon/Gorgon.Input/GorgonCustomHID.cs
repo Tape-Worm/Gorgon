@@ -25,11 +25,7 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Windows.Forms;
-using GorgonLibrary.Collections;
 using GorgonLibrary.Diagnostics;
 
 namespace GorgonLibrary.Input
@@ -41,7 +37,7 @@ namespace GorgonLibrary.Input
 		: EventArgs
 	{
 		#region Variables.
-		private GorgonCustomHIDProperty _property = null;			// Property with the changed data.
+		private readonly GorgonCustomHIDProperty _property;			// Property with the changed data.
 		#endregion
 
 		#region Properties.
@@ -61,11 +57,10 @@ namespace GorgonLibrary.Input
 		/// <summary>
 		/// Function to return the data in the property.
 		/// </summary>
-		/// <typeparam name="T">Type to convert the data into.</typeparam>
 		/// <returns>The data in the property.</returns>
-		public T GetData<T>()
+		public object GetData()
 		{
-			return _property.GetValue<T>();
+			return _property.GetValue();
 		}
 		#endregion
 
@@ -76,10 +71,7 @@ namespace GorgonLibrary.Input
 		/// <param name="property">The property that has changed.</param>
 		internal GorgonCustomHIDDataChangedEventArgs(GorgonCustomHIDProperty property)
 		{
-			if (property == null)
-				throw new ArgumentNullException("property");
-
-			_property = property;
+		    _property = property;
 		}
 		#endregion
 	}
@@ -128,14 +120,21 @@ namespace GorgonLibrary.Input
 		protected void SetData(string propertyName, object value)
 		{
 			GorgonDebug.AssertParamString(propertyName, "propertyName");
+            GorgonDebug.AssertNull(Data[propertyName], "propertyName");
 
-			if (Data.Contains(propertyName))
-				Data[propertyName].SetValue(value);
-			else
-				Data.Add(new GorgonCustomHIDProperty(propertyName, value));
+		    if (Data.Contains(propertyName))
+		    {
+		        Data[propertyName].SetValue(value);
+		    }
+		    else
+		    {
+		        Data.Add(new GorgonCustomHIDProperty(propertyName, value));
+		    }
 
-			if (DataChanged != null)
-				DataChanged(this, new GorgonCustomHIDDataChangedEventArgs(Data[propertyName]));
+		    if (DataChanged != null)
+		    {
+		        DataChanged(this, new GorgonCustomHIDDataChangedEventArgs(Data[propertyName]));
+		    }
 		}
 		#endregion
 

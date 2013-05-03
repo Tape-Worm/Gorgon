@@ -24,10 +24,7 @@
 // 
 #endregion
 
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using GorgonLibrary.Collections;
 
 namespace GorgonLibrary.Input
@@ -36,7 +33,7 @@ namespace GorgonLibrary.Input
 	/// A collection containing device information for each input device.
 	/// </summary>
 	/// <remarks>This collection is not case sensitive.</remarks>
-	public class GorgonInputDeviceInfoCollection
+	public sealed class GorgonInputDeviceInfoCollection
 		: GorgonBaseNamedObjectCollection<GorgonInputDeviceInfo>
 	{
 		#region Variables.
@@ -88,7 +85,7 @@ namespace GorgonLibrary.Input
 		internal GorgonInputDeviceInfoCollection(IEnumerable<GorgonInputDeviceInfo> deviceInfo)
 			: base(false)
 		{
-			this.AddItems(deviceInfo);			
+			AddItems(deviceInfo);			
 		}
 		#endregion
 	}

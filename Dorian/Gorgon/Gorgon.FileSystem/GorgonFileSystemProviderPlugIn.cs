@@ -49,11 +49,10 @@ namespace GorgonLibrary.IO
         /// Function to create a new or return an existing file system provider instance.
         /// </summary>
         /// <returns>The file system provider.</returns>
-        public GorgonFileSystemProvider CreateProvider()
+        internal GorgonFileSystemProvider CreateProvider()
         {
             return _provider ?? (_provider = OnCreateProvider());
         }
-
 	    #endregion
 
 		#region Constructor/Destructor.

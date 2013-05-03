@@ -27,6 +27,7 @@
 using System;
 using System.Windows.Forms;
 using GorgonLibrary.Diagnostics;
+using GorgonLibrary.Input.Properties;
 
 namespace GorgonLibrary.Input
 {
@@ -41,7 +42,7 @@ namespace GorgonLibrary.Input
 		private bool _acquired;					// Flag to indicate whether the device is in an acquired state.
 		private bool _exclusive;				// Flag to indicate whether the device has exclusive access to the device.
 		private bool _background;				// Flag to indicate whether the device will poll in the background.
-		private bool _disposed = false;			// Flag to indicate whether the object is disposed or not.
+		private bool _disposed;			        // Flag to indicate whether the object is disposed or not.
 		#endregion
 
 		#region Properties.
@@ -251,22 +252,23 @@ namespace GorgonLibrary.Input
 		/// </summary>
 		protected virtual void UnbindWindow()
 		{
-			if ((!BoundControl.IsDisposed) && (!BoundControl.Disposing))
-				Gorgon.Log.Print("Unbinding input device object {1} from window 0x{0}.", LoggingLevel.Intermediate, BoundControl.Handle.FormatHex(), GetType().Name);
-			else
-				Gorgon.Log.Print("Owner window was disposed.", LoggingLevel.Intermediate);
+		    if ((BoundTopLevelForm != null) && (!BoundTopLevelForm.IsDisposed) && (!BoundTopLevelForm.Disposing))
+			{
+				BoundTopLevelForm.Activated -= BoundForm_Activated;
+				BoundTopLevelForm.Deactivate -= BoundForm_Deactivate;
+			}
 
-			if ((BoundTopLevelForm != null) && (!BoundTopLevelForm.IsDisposed) && (!BoundTopLevelForm.Disposing))
-			{
-				BoundTopLevelForm.Activated -= new EventHandler(BoundForm_Activated);
-				BoundTopLevelForm.Deactivate -= new EventHandler(BoundForm_Deactivate);
-			}
-			if ((BoundControl != null) && (!BoundControl.IsDisposed) && (!BoundControl.Disposing))
-			{
-				BoundControl.LostFocus -= new EventHandler(BoundWindow_LostFocus);
-				BoundControl.GotFocus -= new EventHandler(BoundWindow_GotFocus);
-			}
-		}
+		    if ((BoundControl == null) || (BoundControl.IsDisposed) || (BoundControl.Disposing))
+		    {
+		        return;
+		    }
+
+		    BoundControl.LostFocus -= BoundWindow_LostFocus;
+		    BoundControl.GotFocus -= BoundWindow_GotFocus;
+
+            Gorgon.Log.Print("Unbinding input device object {1} from window 0x{0}.", LoggingLevel.Intermediate,
+                             BoundControl.Handle.FormatHex(), GetType().Name);
+        }
 
 		/// <summary>
 		/// Function called when the device is bound to a window.
@@ -297,10 +299,12 @@ namespace GorgonLibrary.Input
 
 			if (boundWindow == null)
 			{
-				if (Gorgon.ApplicationForm == null)
-					throw new ArgumentException("There is no application window to bind with.", "boundWindow");
+			    if (Gorgon.ApplicationForm == null)
+			    {
+			        throw new ArgumentException(Resources.GORINP_NO_WINDOW_TO_BIND, "boundWindow");
+			    }
 
-				boundWindow = Gorgon.ApplicationForm;
+			    boundWindow = Gorgon.ApplicationForm;
 			}
 
 			Gorgon.Log.Print("Binding input device object {1} to window 0x{0}.", LoggingLevel.Intermediate, boundWindow.Handle.FormatHex(), GetType().Name);
@@ -308,13 +312,15 @@ namespace GorgonLibrary.Input
 			BoundControl = boundWindow;
 			BoundTopLevelForm = Gorgon.GetTopLevelForm(BoundControl);
 
-			if (BoundTopLevelForm == null)
-				throw new ArgumentException("Cannot bind to the window, no parent form was found.", "boundWindow");
+		    if (BoundTopLevelForm == null)
+		    {
+		        throw new ArgumentException(Resources.GORINP_NO_WINDOW_TO_BIND, "boundWindow");
+		    }
 
-			BoundTopLevelForm.Activated += new EventHandler(BoundForm_Activated);
-			BoundTopLevelForm.Deactivate += new EventHandler(BoundForm_Deactivate);
-			BoundControl.LostFocus += new EventHandler(BoundWindow_LostFocus);
-			BoundControl.GotFocus += new EventHandler(BoundWindow_GotFocus);
+		    BoundTopLevelForm.Activated += BoundForm_Activated;
+			BoundTopLevelForm.Deactivate += BoundForm_Deactivate;
+			BoundControl.LostFocus += BoundWindow_LostFocus;
+			BoundControl.GotFocus += BoundWindow_GotFocus;
 
 			OnWindowBound(boundWindow);
 		}

@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using GorgonLibrary.Input.Properties;
 
 namespace GorgonLibrary.Input
 {
@@ -55,7 +56,7 @@ namespace GorgonLibrary.Input
 	/// Name of an input device object.
 	/// </summary>
 	/// <remarks>Devices are often associated by strings, handles, GUIDs, or even integer IDs by the operating system and whatever back end library (Raw Input, DirectInput, WinForms, etc...) is being used, Gorgon uses this object to wrap up the handle and provide 
-	/// user friendly information about the device, such as its name, <see cref="P:GorgonLibrary.Input.GorgonInputDeviceName.HIDPath">HID path</see>, and <see cref="P:GorgonLibrary.Input.GorgonInputDeviceName.ClassName">class name</see>.
+	/// user friendly information about the device, such as its name, <see cref="GorgonLibrary.Input.GorgonInputDeviceInfo.HIDPath">HID path</see>, and <see cref="GorgonLibrary.Input.GorgonInputDeviceInfo.ClassName">class name</see>.
 	/// <para>Implementors of input plug-ins must implement this in the plug-in and return a handle of whatever type is required by the back end input library.  For example, DirectInput uses GUIDs to ID the devices, so the implementor must 
 	/// use a <see cref="System.Guid"/> type as a handle.  See the GoronRawInputDeviceName.cs file for an example of how to do this.</para>
 	/// </remarks>
@@ -117,7 +118,7 @@ namespace GorgonLibrary.Input
 		/// </returns>
 		public override string ToString()
 		{
-			return this.Name;
+			return Name;
 		}
 		#endregion
 
@@ -129,21 +130,25 @@ namespace GorgonLibrary.Input
 		/// <param name="deviceType">The type of device.</param>
 		/// <param name="className">Class name of the device.</param>
 		/// <param name="hidPath">Human interface device path.</param>
-		/// <exception cref="System.ArgumentException">The handle is set to 0.</exception>
-		/// <exception cref="System.ArgumentNullException">Either the name, className or hidPath are NULL or empty.</exception>
+        /// <exception cref="System.ArgumentException">Thrown when the <paramref name="name"/>, <paramref name="className"/> or <paramref name="hidPath"/> are NULL or empty.</exception>
+		/// <exception cref="System.ArgumentNullException"></exception>
 		protected GorgonInputDeviceInfo(string name, InputDeviceType deviceType, string className, string hidPath)
 			: base(name)
 		{
-			if (string.IsNullOrEmpty(className))
-				throw new ArgumentNullException("className");
-			if (string.IsNullOrEmpty(hidPath))
-				throw new ArgumentNullException("hidPath");
+		    if (string.IsNullOrWhiteSpace(className))
+		    {
+                throw new ArgumentException(Resources.GORINP_PARAMETER_NULL_EMPTY, "className");
+		    }
 
-			this.Name = name;
-			this.InputDeviceType = deviceType;
-			this.ClassName = className;
-			this.HIDPath = hidPath;
-			this.UUID = Guid.NewGuid();
+		    if (string.IsNullOrWhiteSpace(hidPath))
+		    {
+                throw new ArgumentException(Resources.GORINP_PARAMETER_NULL_EMPTY, "hidPath");
+		    }
+
+		    InputDeviceType = deviceType;
+			ClassName = className;
+			HIDPath = hidPath;
+			UUID = Guid.NewGuid();
 		}
 		#endregion
 	}
