@@ -27,20 +27,19 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Drawing;
 using System.Windows.Forms;
 using System.IO;
 using GorgonLibrary.IO;
-using GorgonLibrary.Diagnostics;
 using GorgonLibrary.Configuration;
+using GorgonLibrary.Editor.Properties;
 
 namespace GorgonLibrary.Editor
 {
 	/// <summary>
 	/// Configuration settings for the editor.
 	/// </summary>
-	public class GorgonEditorSettings
+	public sealed class GorgonEditorSettings
 		: GorgonApplicationSettings
 	{
 		#region Variables.
@@ -174,6 +173,57 @@ namespace GorgonLibrary.Editor
         }
 		#endregion
 
+		#region Methods.
+		/// <summary>
+		/// Function to find the best drive on the computer for use as temporary storage.
+		/// </summary>
+		/// <returns>The root directory of the best drive on the system.</returns>
+		private DirectoryInfo GetBestDrive()
+		{
+			DriveInfo biggestDrive = null;		// Biggest writable drive on the system.
+
+			// Find the drive with the most free space.
+			var driveList = (from drive in DriveInfo.GetDrives()
+							 where ((drive.DriveType == DriveType.Fixed) || (drive.DriveType == DriveType.Ram))
+									&& (drive.AvailableFreeSpace >= 157286400) && (drive.IsReady)
+							 orderby drive.AvailableFreeSpace descending
+							 select drive);
+
+			// Do not assume we can write to the root directory of the selected drive, fall back if we can't.
+			if (driveList.Any())
+			{
+				foreach (var drive in driveList)
+				{
+					try
+					{
+						// This function will fail if the root directory is read-only or we don't have
+						// permission to read the rights on the directory.
+						drive.RootDirectory.GetAccessControl();
+
+						// We made it this far, so we're good.
+						biggestDrive = drive;
+						break;
+					}
+					catch (UnauthorizedAccessException)
+					{
+						// We can't access this drive for whatever reason, so we move on.						
+					}
+				}
+
+				if (biggestDrive == null)
+				{
+					throw new IOException(Resources.GOREDIT_NO_DRIVE_AVAILABLE);
+				}
+			}
+			else
+			{
+				throw new IOException(Resources.GOREDIT_NO_DRIVE_AVAILABLE);
+			}
+			
+			return biggestDrive.RootDirectory;
+		}
+		#endregion
+
 		#region Constructor/Destructor.
 		/// <summary>
 		/// Initializes a new instance of the <see cref="GorgonEditorSettings"/> class.
@@ -182,16 +232,16 @@ namespace GorgonLibrary.Editor
 			: base("Gorgon.Editor", new Version(1, 0))
 		{
 			// Set the path for the application settings.
-			this.Path = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData).FormatDirectory(System.IO.Path.DirectorySeparatorChar) 
+			Path = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData).FormatDirectory(System.IO.Path.DirectorySeparatorChar) 
 					  + "Tape_Worm".FormatDirectory(System.IO.Path.DirectorySeparatorChar)
-					  + this.ApplicationName.FormatDirectory(System.IO.Path.DirectorySeparatorChar)
+					  + ApplicationName.FormatDirectory(System.IO.Path.DirectorySeparatorChar)
 #if !DEBUG
 					  + "Gorgon.Editor.config.xml";
 #else
                       + "Gorgon.Editor.DEBUG.config.xml";
 #endif
 
-			Size baseSize = new Size(1280, 800);
+			var baseSize = new Size(1280, 800);
 
 			// Set the default size, but ensure that it fits within the primary monitor.
 			// Do not go larger than 1280x800 by default.
@@ -205,65 +255,25 @@ namespace GorgonLibrary.Editor
             RecentFiles = new List<string>();
             PlugInDirectory = Gorgon.ApplicationDirectory + "PlugIns";
 
-			DriveInfo biggestDrive = null;		// Biggest writable drive on the system.
+			// Set the default scratch location.
+			ScratchPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)
+									 .FormatDirectory(System.IO.Path.DirectorySeparatorChar)
+						  + "Tape_Worm".FormatDirectory(System.IO.Path.DirectorySeparatorChar)
+						  + ApplicationName.FormatDirectory(System.IO.Path.DirectorySeparatorChar);
 
-			// Find the drive with the most free space.
-			var driveList = (from drive in DriveInfo.GetDrives()
-							 where ((drive.DriveType == DriveType.Fixed) || (drive.DriveType == DriveType.Ram))
-									&& (drive.AvailableFreeSpace >= 157286400) && (drive.IsReady)
-							 orderby drive.AvailableFreeSpace descending
-							 select drive);
-			
-			// Do not assume we can write to the root directory of the selected drive, fall back if we can't.
-			if ((driveList != null) && (driveList.Count() > 0))
+			var dirInfo = new DirectoryInfo(ScratchPath);
+
+			if (dirInfo.Exists)
 			{
-				foreach (var drive in driveList)
+				try
 				{
-					try
-					{
-						// This function will fail if the root directory is read-only or we don't have
-						// permission to read the rights on the directory.
-						var accessControl = drive.RootDirectory.GetAccessControl();
-
-						// We made it this far, so we're good.
-						biggestDrive = drive;
-						break;
-					}
-					catch (UnauthorizedAccessException)
-					{
-						// We can't access this drive for whatever reason, so we move on.						
-					}
+					// Attempt to find the directory and write to it.
+					dirInfo.GetAccessControl();
 				}
-
-                // If the drive is the same as the drive for our profile, then just stick the temp dir in there.
-                if (biggestDrive != null) 
-                {
-                    var rootPath = System.IO.Path.GetPathRoot(biggestDrive.RootDirectory.Name);
-                    var userPath = System.IO.Path.GetPathRoot(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData));
-                                        
-                    if (rootPath == userPath)
-                    {
-                        biggestDrive = null;
-                    }
-                }
-			}
-			else
-			{
-				throw new System.IO.IOException("There are no drives on the system with enough free space.  The Gorgon Editor requires a minimum of 150 MB of free space for temporary files.");
-			}
-
-			// Can't find a writable root directory for some reason, so make do with the user directory (if that's not writable, then you're shit out of luck).
-			if (biggestDrive == null)
-			{
-				// Get the default scratch location.
-				ScratchPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData).FormatDirectory(System.IO.Path.DirectorySeparatorChar)
-								+ "Tape_Worm".FormatDirectory(System.IO.Path.DirectorySeparatorChar)
-								+ this.ApplicationName.FormatDirectory(System.IO.Path.DirectorySeparatorChar)
-								+ "Gorgon.Editor." + Guid.NewGuid().ToString("N").FormatDirectory(System.IO.Path.DirectorySeparatorChar);
-			}
-			else
-			{
-				ScratchPath = biggestDrive.RootDirectory.Name + "Gorgon.Editor." + Guid.NewGuid().ToString("N").FormatDirectory(System.IO.Path.DirectorySeparatorChar);
+				catch (UnauthorizedAccessException)
+				{
+					ScratchPath = GetBestDrive().Name;
+				}
 			}
 		}
 		#endregion

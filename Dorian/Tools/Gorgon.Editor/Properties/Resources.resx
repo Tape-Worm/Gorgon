@@ -181,4 +181,19 @@
   <data name="remove_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\remove_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="GOREDIT_CANNOT_USESYS_SCRATCH" xml:space="preserve">
+    <value>Cannot use a system location or the root of the system drive for scratch data.</value>
+  </data>
+  <data name="GOREDIT_NO_APP_SETTINGS" xml:space="preserve">
+    <value>The application settings were not loaded.</value>
+  </data>
+  <data name="GOREDIT_NO_DRIVE_AVAILABLE" xml:space="preserve">
+    <value>There are no drives on the system with enough free space.  The Gorgon Editor requires a minimum of 150 MB of free space for temporary files.</value>
+  </data>
+  <data name="GOREDIT_NO_WRITER_PLUGIN" xml:space="preserve">
+    <value>Cannot write the file '{0}'.  There is no plug-in available to write the file with.</value>
+  </data>
+  <data name="GOREDIT_SCRATCH_PATH_DLG_DESC" xml:space="preserve">
+    <value>Select a new temporary scratch path.</value>
+  </data>
 </root>
