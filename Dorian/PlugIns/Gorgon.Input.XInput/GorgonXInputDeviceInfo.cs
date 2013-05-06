@@ -24,10 +24,6 @@
 // 
 #endregion
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using XI = SharpDX.XInput;
 
 namespace GorgonLibrary.Input.XInput
@@ -39,7 +35,7 @@ namespace GorgonLibrary.Input.XInput
 		: GorgonInputDeviceInfo
 	{
 		#region Variables.
-		private XI.Capabilities? _caps = null;						// Device capabilites.
+		private XI.Capabilities? _caps;						// Device capabilites.
 		#endregion
 
 		#region Properties.
@@ -50,14 +46,12 @@ namespace GorgonLibrary.Input.XInput
 		{
 			get
 			{
-				if ((IsConnected) && (_caps != null))
+			    if ((IsConnected) && (_caps != null))
 				{
 					return _caps.Value.SubType.ToString();
 				}
-				else
-				{
-					return "disconnected device";					
-				}
+
+			    return "disconnected device";
 			}
 		}
 

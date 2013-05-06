@@ -25,13 +25,10 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Windows.Forms;
-using System.Runtime.InteropServices;
 using GorgonLibrary.Native;
 using GorgonLibrary.Diagnostics;
+using GorgonLibrary.Input.Raw.Properties;
 
 namespace GorgonLibrary.Input.Raw
 {
@@ -42,8 +39,8 @@ namespace GorgonLibrary.Input.Raw
 		: GorgonCustomHID
 	{
 		#region Variables.
-		private GorgonRawInputDeviceInfo _deviceData = null;		// Device data.
-		private MessageFilter _messageFilter = null;				// Window message filter.
+		private readonly GorgonRawInputDeviceInfo _deviceData;		// Device data.
+		private MessageFilter _messageFilter;				        // Window message filter.
 		private RAWINPUTDEVICE _device;								// Input device.
 		#endregion
 
@@ -55,19 +52,27 @@ namespace GorgonLibrary.Input.Raw
 		/// <param name="e">Event argments.</param>
 		private void GetRawData(object sender, RawInputEventArgs e)
 		{
-			if ((BoundControl == null) || (BoundControl.Disposing))
-				return;
+		    if ((BoundControl == null) || (BoundControl.Disposing))
+		    {
+		        return;
+		    }
 
-			if ((e.Data.Header.Type != RawInputType.HID) || (_deviceData.Handle != e.Handle))
-				return;
+		    if ((e.Data.Header.Type != RawInputType.HID) || (_deviceData.Handle != e.Handle))
+		    {
+		        return;
+		    }
 
-			if ((Exclusive) && (!Acquired))
+		    if ((Exclusive) && (!Acquired))
 			{
 				// Attempt to recapture.
-				if (BoundControl.Focused)
-					Acquired = true;
-				else
-					return;
+			    if (BoundControl.Focused)
+			    {
+			        Acquired = true;
+			    }
+			    else
+			    {
+			        return;
+			    }
 			}
 
 			SetData("BinaryData", e.Data.HIDData);
@@ -80,32 +85,38 @@ namespace GorgonLibrary.Input.Raw
 		{
 			if (_messageFilter != null)
 			{
-				_messageFilter.RawInputData -= new EventHandler<RawInputEventArgs>(GetRawData);
-				System.Windows.Forms.Application.RemoveMessageFilter(_messageFilter);
+				_messageFilter.RawInputData -= GetRawData;
+				Application.RemoveMessageFilter(_messageFilter);
 				_messageFilter.Dispose();
 			}
 
 			_messageFilter = new MessageFilter();
-			_messageFilter.RawInputData += new EventHandler<RawInputEventArgs>(GetRawData);
-			System.Windows.Forms.Application.AddMessageFilter(_messageFilter);
+			_messageFilter.RawInputData += GetRawData;
+			Application.AddMessageFilter(_messageFilter);
 
 			_device.UsagePage = _deviceData.UsagePage;
 			_device.Usage = (ushort)_deviceData.Usage;
 			_device.Flags = RawInputDeviceFlags.None;
 
 			// Enable background access.
-			if ((AllowBackground) || (Exclusive))
-				_device.Flags |= RawInputDeviceFlags.InputSink;
+		    if ((AllowBackground) || (Exclusive))
+		    {
+		        _device.Flags |= RawInputDeviceFlags.InputSink;
+		    }
 
-			// Enable exclusive access.
-			if (Exclusive)
-				_device.Flags |= RawInputDeviceFlags.NoLegacy | RawInputDeviceFlags.AppKeys | RawInputDeviceFlags.NoHotKeys;
+		    // Enable exclusive access.
+		    if (Exclusive)
+		    {
+		        _device.Flags |= RawInputDeviceFlags.NoLegacy | RawInputDeviceFlags.AppKeys | RawInputDeviceFlags.NoHotKeys;
+		    }
 
-			_device.WindowHandle = BoundControl.Handle;
+		    _device.WindowHandle = BoundControl.Handle;
 
 			// Attempt to register the device.
-			if (!Win32API.RegisterRawInputDevices(_device))
-				throw new GorgonException(GorgonResult.DriverError, "Failed to bind the keyboard device.");			
+		    if (!Win32API.RegisterRawInputDevices(_device))
+		    {
+		        throw new GorgonException(GorgonResult.DriverError, Resources.GORINP_RAW_CANNOT_BIND_HID);
+		    }
 		}
 
 		/// <summary>
@@ -115,8 +126,8 @@ namespace GorgonLibrary.Input.Raw
 		{
 			if (_messageFilter != null)
 			{
-				_messageFilter.RawInputData -= new EventHandler<RawInputEventArgs>(GetRawData);
-				System.Windows.Forms.Application.RemoveMessageFilter(_messageFilter);
+				_messageFilter.RawInputData -= GetRawData;
+				Application.RemoveMessageFilter(_messageFilter);
 				_messageFilter.Dispose();
 				_messageFilter = null;
 			}
@@ -127,8 +138,10 @@ namespace GorgonLibrary.Input.Raw
 			_device.WindowHandle = IntPtr.Zero;
 
 			// Attempt to register the device.
-			if (!Win32API.RegisterRawInputDevices(_device))
-				throw new GorgonException(GorgonResult.DriverError, "Failed to unbind the keyboard device.");			
+		    if (!Win32API.RegisterRawInputDevices(_device))
+		    {
+		        throw new GorgonException(GorgonResult.DriverError, Resources.GORINP_RAW_CANNOT_UNBIND_HID);
+		    }
 		}
 		#endregion
 
@@ -144,6 +157,7 @@ namespace GorgonLibrary.Input.Raw
 			: base(owner, deviceData.Name, boundWindow)
 		{
 			Gorgon.Log.Print("Raw input HID interface created for handle 0x{0}.", LoggingLevel.Verbose, deviceData.Handle.FormatHex());
+
 			_deviceData = deviceData;
 			SetData("BinaryData", new byte[0]);
 		}

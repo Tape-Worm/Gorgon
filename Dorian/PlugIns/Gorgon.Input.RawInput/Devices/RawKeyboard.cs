@@ -25,10 +25,10 @@
 #endregion
 
 using System;
+using Forms = System.Windows.Forms;
 using GorgonLibrary.Diagnostics;
 using GorgonLibrary.Native;
-using Forms = System.Windows.Forms;
-using GorgonLibrary.Input;
+using GorgonLibrary.Input.Raw.Properties;
 
 namespace GorgonLibrary.Input.Raw
 {
@@ -39,9 +39,9 @@ namespace GorgonLibrary.Input.Raw
 		: GorgonKeyboard
 	{
 		#region Variables.
-		private MessageFilter _messageFilter = null;	// Window message filter.
-		private RAWINPUTDEVICE _device;					// Input device.
-		private IntPtr _deviceHandle = IntPtr.Zero;		// Device handle.
+		private MessageFilter _messageFilter;	                // Window message filter.
+		private RAWINPUTDEVICE _device;					        // Input device.
+		private readonly IntPtr _deviceHandle = IntPtr.Zero;	// Device handle.
 		#endregion
 
 		#region Methods.
@@ -52,67 +52,79 @@ namespace GorgonLibrary.Input.Raw
 		/// <param name="e">Event argments.</param>
 		private void GetRawData(object sender, RawInputEventArgs e)
 		{
-			KeyboardKeys keyCode = 0;					// Virtual key code.
-			KeyboardKeys version = KeyboardKeys.None;	// Version.
-			KeyState state = KeyState.Down;				// Key state.
+		    var state = KeyState.Down;				// Key state.
 
-			if ((BoundControl == null) || (BoundControl.Disposing))
-				return;
+		    if ((BoundControl == null) || (BoundControl.Disposing))
+		    {
+		        return;
+		    }
 
-			if ((e.Data.Header.Type != RawInputType.Keyboard) || ((_deviceHandle != IntPtr.Zero) && (_deviceHandle != e.Handle)))
-				return;
+		    if ((e.Data.Header.Type != RawInputType.Keyboard) ||
+		        ((_deviceHandle != IntPtr.Zero) && (_deviceHandle != e.Handle)))
+		    {
+		        return;
+		    }
 
-			if ((Exclusive) && (!Acquired))
+		    if ((Exclusive) && (!Acquired))
 			{
 				// Attempt to recapture.
-				if (BoundControl.Focused)
-					Acquired = true;
-				else
-					return;
+			    if (BoundControl.Focused)
+			    {
+			        Acquired = true;
+			    }
+			    else
+			    {
+			        return;
+			    }
 			}
 
 			// Get the key code.
-			keyCode = (KeyboardKeys)e.Data.Keyboard.VirtualKey;
+			var keyCode = (KeyboardKeys)e.Data.Keyboard.VirtualKey;
 
 			// Check for left/right versions.
-			version = ((e.Data.Keyboard.Flags & RawKeyboardFlags.KeyE0) == RawKeyboardFlags.KeyE0) ? KeyboardKeys.RightVersion : KeyboardKeys.LeftVersion;
+			KeyboardKeys version = ((e.Data.Keyboard.Flags & RawKeyboardFlags.KeyE0) == RawKeyboardFlags.KeyE0) ? KeyboardKeys.RightVersion : KeyboardKeys.LeftVersion;
 
-			if ((e.Data.Keyboard.Message == WindowMessages.KeyUp) || (e.Data.Keyboard.Message == WindowMessages.SysKeyUp) || (e.Data.Keyboard.Message == WindowMessages.IMEKeyUp))
-				state = KeyState.Up;				
+		    if ((e.Data.Keyboard.Message == WindowMessages.KeyUp) || (e.Data.Keyboard.Message == WindowMessages.SysKeyUp) ||
+		        (e.Data.Keyboard.Message == WindowMessages.IMEKeyUp))
+		    {
+		        state = KeyState.Up;
+		    }
 
-			// Determine right or left, and unifier key.
+		    // Determine right or left, and unifier key.
 			switch (keyCode)
 			{
 				case KeyboardKeys.ControlKey:	// CTRL.
-					if ((version & KeyboardKeys.RightVersion) == KeyboardKeys.RightVersion)
-						keyCode = KeyboardKeys.RControlKey;
-					else
-						keyCode = KeyboardKeys.LControlKey;
-					KeyStates[KeyboardKeys.ControlKey] = state;
+			        keyCode = (version & KeyboardKeys.RightVersion) == KeyboardKeys.RightVersion
+			                      ? KeyboardKeys.RControlKey
+			                      : KeyboardKeys.LControlKey;
+
+			        KeyStates[KeyboardKeys.ControlKey] = state;
 					break;
 				case KeyboardKeys.Menu:			// ALT.
-					if ((version & KeyboardKeys.RightVersion) == KeyboardKeys.RightVersion)
-						keyCode = KeyboardKeys.RMenu;
-					else
-						keyCode = KeyboardKeys.LMenu;
+			        keyCode = (version & KeyboardKeys.RightVersion) == KeyboardKeys.RightVersion
+			                      ? KeyboardKeys.RMenu
+			                      : KeyboardKeys.LMenu;
+
 					KeyStates[KeyboardKeys.Menu] = state;
 					break;
 				case KeyboardKeys.ShiftKey:		// Shift.
-					if (e.Data.Keyboard.MakeCode == 0x36)
-						keyCode = KeyboardKeys.RShiftKey;
-					else
-						keyCode = KeyboardKeys.LShiftKey;
+			        keyCode = e.Data.Keyboard.MakeCode == 0x36 ? KeyboardKeys.RShiftKey : KeyboardKeys.LShiftKey;
+
 					KeyStates[KeyboardKeys.ShiftKey] = state;
 					break;
 			}
 
 			// Dispatch the key.
 			KeyStates[keyCode] = state;
-			
-			if (state == KeyState.Down)
-				OnKeyDown(keyCode, e.Data.Keyboard.MakeCode);
-			else
-				OnKeyUp(keyCode, e.Data.Keyboard.MakeCode);
+
+		    if (state == KeyState.Down)
+		    {
+		        OnKeyDown(keyCode, e.Data.Keyboard.MakeCode);
+		    }
+		    else
+		    {
+		        OnKeyUp(keyCode, e.Data.Keyboard.MakeCode);
+		    }
 		}
 
 		/// <summary>
@@ -122,32 +134,38 @@ namespace GorgonLibrary.Input.Raw
 		{
 			if (_messageFilter != null)
 			{
-				_messageFilter.RawInputData -= new EventHandler<RawInputEventArgs>(GetRawData);
-				System.Windows.Forms.Application.RemoveMessageFilter(_messageFilter);
+				_messageFilter.RawInputData -= GetRawData;
+				Forms.Application.RemoveMessageFilter(_messageFilter);
 				_messageFilter.Dispose();
 			}
 
 			_messageFilter = new MessageFilter();
-			_messageFilter.RawInputData += new EventHandler<RawInputEventArgs>(GetRawData);
-			System.Windows.Forms.Application.AddMessageFilter(_messageFilter);
+			_messageFilter.RawInputData += GetRawData;
+			Forms.Application.AddMessageFilter(_messageFilter);
 
 			_device.UsagePage = HIDUsagePage.Generic;
 			_device.Usage = (ushort)HIDUsage.Keyboard;
 			_device.Flags = RawInputDeviceFlags.None;
 
 			// Enable background access.
-			if ((AllowBackground) || (Exclusive))
-				_device.Flags |= RawInputDeviceFlags.InputSink;
+		    if ((AllowBackground) || (Exclusive))
+		    {
+		        _device.Flags |= RawInputDeviceFlags.InputSink;
+		    }
 
-			// Enable exclusive access.
-			if (Exclusive)
-				_device.Flags |= RawInputDeviceFlags.NoLegacy | RawInputDeviceFlags.AppKeys | RawInputDeviceFlags.NoHotKeys;
+		    // Enable exclusive access.
+		    if (Exclusive)
+		    {
+		        _device.Flags |= RawInputDeviceFlags.NoLegacy | RawInputDeviceFlags.AppKeys | RawInputDeviceFlags.NoHotKeys;
+		    }
 
-			_device.WindowHandle = BoundControl.Handle;
+		    _device.WindowHandle = BoundControl.Handle;
 
 			// Attempt to register the device.
-			if (!Win32API.RegisterRawInputDevices(_device))
-				throw new GorgonException(GorgonResult.DriverError, "Failed to bind the keyboard device.");
+		    if (!Win32API.RegisterRawInputDevices(_device))
+		    {
+		        throw new GorgonException(GorgonResult.DriverError, Resources.GORINP_RAW_CANNOT_BIND_KEYBOARD);
+		    }
 		}
 
 		/// <summary>
@@ -157,8 +175,8 @@ namespace GorgonLibrary.Input.Raw
 		{
 			if (_messageFilter != null)
 			{
-				_messageFilter.RawInputData -= new EventHandler<RawInputEventArgs>(GetRawData);
-				System.Windows.Forms.Application.RemoveMessageFilter(_messageFilter);
+				_messageFilter.RawInputData -= GetRawData;
+				Forms.Application.RemoveMessageFilter(_messageFilter);
 				_messageFilter.Dispose();
 				_messageFilter = null;
 			}
@@ -169,8 +187,10 @@ namespace GorgonLibrary.Input.Raw
 			_device.WindowHandle = IntPtr.Zero;
 
 			// Attempt to register the device.
-			if (!Win32API.RegisterRawInputDevices(_device))
-				throw new GorgonException(GorgonResult.DriverError, "Failed to unbind the keyboard device.");
+		    if (!Win32API.RegisterRawInputDevices(_device))
+		    {
+		        throw new GorgonException(GorgonResult.DriverError, Resources.GORINP_RAW_CANNOT_UNBIND_KEYBOARD);
+		    }
 		}
 		#endregion
 
@@ -184,10 +204,11 @@ namespace GorgonLibrary.Input.Raw
 		/// <param name="boundWindow">The window to bind this device with.</param>
 		/// <exception cref="System.ArgumentNullException">Thrown when the owner parameter is NULL (or Nothing in VB.NET).</exception>
 		/// <remarks>Pass NULL (Nothing in VB.Net) to the <paramref name="boundWindow"/> parameter to use the <see cref="P:GorgonLibrary.Gorgon.ApplicationForm">Gorgon application window</see>.</remarks>
-		internal RawKeyboard(GorgonRawInputFactory owner, string deviceName, IntPtr handle, Forms.Control boundWindow)
+		internal RawKeyboard(GorgonInputFactory owner, string deviceName, IntPtr handle, Forms.Control boundWindow)
 			: base(owner, deviceName, boundWindow)
 		{
 			Gorgon.Log.Print("Raw input keyboard interface created for handle 0x{0}.", LoggingLevel.Verbose, handle.FormatHex());
+
 			_deviceHandle = handle;
 		}
 		#endregion

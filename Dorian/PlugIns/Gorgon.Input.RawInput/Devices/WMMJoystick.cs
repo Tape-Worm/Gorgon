@@ -28,23 +28,22 @@ using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using GorgonLibrary.Diagnostics;
 using GorgonLibrary.Native;
-using GorgonLibrary.Math;
-using GorgonLibrary.Input;
+using GorgonLibrary.Input.Raw.Properties;
 
 namespace GorgonLibrary.Input.Raw
 {
 	/// <summary>
 	/// Windows Multimedia based joystick interface.
 	/// </summary>
-	internal class WMMJoystick
+	internal class MultimediaJoystick
 		: GorgonJoystick
 	{
 		#region Classes.
 		/// <summary>
 		/// Defines the button states for the joystick.
 		/// </summary>
-		public class WMMJoystickButtons
-			: WMMJoystick.JoystickButtons
+		public class MultimediaJoystickButtons
+			: JoystickButtons
 		{
 			#region Methods.
 			/// <summary>
@@ -60,13 +59,15 @@ namespace GorgonLibrary.Input.Raw
 
 			#region Constructor/Destructor.
 			/// <summary>
-			/// Initializes a new instance of the <see cref="WMMJoystickButtons"/> class.
+			/// Initializes a new instance of the <see cref="MultimediaJoystickButtons"/> class.
 			/// </summary>
 			/// <param name="buttonCount">The button count.</param>
-			public WMMJoystickButtons(int buttonCount)
+			public MultimediaJoystickButtons(int buttonCount)
 			{
-				for (int i = 0; i < buttonCount; i++)
-					DefineButton("Button " + i.ToString());
+			    for (int i = 0; i < buttonCount; i++)
+			    {
+			        DefineButton("Button " + i);
+			    }
 			}
 			#endregion
 		}
@@ -74,8 +75,8 @@ namespace GorgonLibrary.Input.Raw
 		/// <summary>
 		/// Defines the capabilities of the joystick.
 		/// </summary>
-		public class WMMJoystickCapabilities
-			: WMMJoystick.JoystickCapabilities
+		public class MultimediaJoystickCapabilities
+			: JoystickCapabilities
 		{
 			#region Methods.
 			/// <summary>
@@ -85,20 +86,25 @@ namespace GorgonLibrary.Input.Raw
 			private void GetCaps(int joystickID)
 			{
 				JOYCAPS caps = default(JOYCAPS);									// Joystick capabilities.
-				int error = 0;
-				JoystickCapabilityFlags capsFlags = JoystickCapabilityFlags.None;	// Extra capability flags.
+			    JoystickCapabilityFlags capsFlags = JoystickCapabilityFlags.None;	// Extra capability flags.
 
-				error = Win32API.joyGetDevCaps(joystickID, ref caps, Marshal.SizeOf(typeof(JOYCAPS)));
+				int error = Win32API.joyGetDevCaps(joystickID, ref caps, Marshal.SizeOf(typeof(JOYCAPS)));
 
 				// If the joystick is disconnected then leave.
-				if (error == 0xA7)
-					return;
+			    if (error == 0xA7)
+			    {
+			        return;
+			    }
 
-				// If it's any other error, then throw an exception.
-				if (error > 0)
-					throw new GorgonException(GorgonResult.CannotRead, "Cannot read capabilities from joystick ID (" + joystickID.ToString() + ").\nError code:" + error.ToString());
+			    // If it's any other error, then throw an exception.
+			    if (error > 0)
+			    {
+			        throw new GorgonException(GorgonResult.CannotRead,
+			                                  string.Format(Resources.GORINP_RAW_CANNOT_GET_JOYSTICK_CAPS, joystickID,
+			                                                error.FormatHex()));
+			    }
 
-				// Gather device info.
+			    // Gather device info.
 				if ((caps.Capabilities & JoystickCaps.HasZ) == JoystickCaps.HasZ)
 				{
 					capsFlags |= JoystickCapabilityFlags.SupportsThrottle;
@@ -144,24 +150,25 @@ namespace GorgonLibrary.Input.Raw
 
 			#region Constructor/Destructor.
 			/// <summary>
-			/// Initializes a new instance of the <see cref="WMMJoystickCapabilities"/> class.
+			/// Initializes a new instance of the <see cref="MultimediaJoystickCapabilities"/> class.
 			/// </summary>
-			public WMMJoystickCapabilities(int joystickID)
-				: base()
+			public MultimediaJoystickCapabilities(int joystickID)
 			{
 				// Return an empty capabilities set.
-				if (joystickID < 0)
-					return;
+			    if (joystickID < 0)
+			    {
+			        return;
+			    }
 
-				GetCaps(joystickID);
+			    GetCaps(joystickID);
 			}
 			#endregion
 		}
 		#endregion
 
 		#region Variables.
-		private int _joystickID = 0;				// ID of the joystick.
-		WMMJoystickButtons _buttonStates = null;	// Button states.
+		private readonly int _joystickID;				// ID of the joystick.
+		MultimediaJoystickButtons _buttonStates;	    // Button states.
 		#endregion
 
 		#region Properties.
@@ -178,8 +185,10 @@ namespace GorgonLibrary.Input.Raw
 			{
 				base.Acquired = value;
 
-				if (value)
-					DeviceLost = false;
+			    if (value)
+			    {
+			        DeviceLost = false;
+			    }
 			}
 		}
 
@@ -216,30 +225,49 @@ namespace GorgonLibrary.Input.Raw
 		/// <returns></returns>
 		private JOYINFOEX GetWin32JoystickData()
 		{
-			JOYINFOEX joyInfo = new JOYINFOEX();		// Joystick information.
-			int error = 0;								// Error code.
+			var joyInfo = new JOYINFOEX
+			    {
+			        Size = DirectAccess.SizeOf<JOYINFOEX>(),
+			        Flags = JoystickInfoFlags.ReturnButtons | JoystickInfoFlags.ReturnX | JoystickInfoFlags.ReturnY
+			    };		// Joystick information.
 
-			// Set up joystick info.
-			joyInfo.Size = Marshal.SizeOf(typeof(JOYINFOEX));
-			joyInfo.Flags = JoystickInfoFlags.ReturnButtons | JoystickInfoFlags.ReturnX | JoystickInfoFlags.ReturnY;
+		    // Determine which data we want to return.
+		    if ((Capabilities.ExtraCapabilities & JoystickCapabilityFlags.SupportsThrottle) ==
+		        JoystickCapabilityFlags.SupportsThrottle)
+		    {
+		        joyInfo.Flags |= JoystickInfoFlags.ReturnZ;
+		    }
 
-			// Determine which data we want to return.
-			if ((Capabilities.ExtraCapabilities & JoystickCapabilityFlags.SupportsThrottle) == JoystickCapabilityFlags.SupportsThrottle)
-				joyInfo.Flags |= JoystickInfoFlags.ReturnZ;
-			if ((Capabilities.ExtraCapabilities & JoystickCapabilityFlags.SupportsSecondaryXAxis) == JoystickCapabilityFlags.SupportsSecondaryXAxis)
-				joyInfo.Flags |= JoystickInfoFlags.ReturnAxis5;
-			if ((Capabilities.ExtraCapabilities & JoystickCapabilityFlags.SupportsSecondaryYAxis) == JoystickCapabilityFlags.SupportsSecondaryYAxis)
-				joyInfo.Flags |= JoystickInfoFlags.ReturnAxis6;
-			if ((Capabilities.ExtraCapabilities & JoystickCapabilityFlags.SupportsRudder) == JoystickCapabilityFlags.SupportsRudder)
-			    joyInfo.Flags |= JoystickInfoFlags.ReturnRudder;
-			if ((Capabilities.ExtraCapabilities & JoystickCapabilityFlags.SupportsPOV) == JoystickCapabilityFlags.SupportsPOV)
+		    if ((Capabilities.ExtraCapabilities & JoystickCapabilityFlags.SupportsSecondaryXAxis) ==
+		        JoystickCapabilityFlags.SupportsSecondaryXAxis)
+		    {
+		        joyInfo.Flags |= JoystickInfoFlags.ReturnAxis5;
+		    }
+
+		    if ((Capabilities.ExtraCapabilities & JoystickCapabilityFlags.SupportsSecondaryYAxis) ==
+		        JoystickCapabilityFlags.SupportsSecondaryYAxis)
+		    {
+		        joyInfo.Flags |= JoystickInfoFlags.ReturnAxis6;
+		    }
+
+		    if ((Capabilities.ExtraCapabilities & JoystickCapabilityFlags.SupportsRudder) ==
+		        JoystickCapabilityFlags.SupportsRudder)
+		    {
+		        joyInfo.Flags |= JoystickInfoFlags.ReturnRudder;
+		    }
+
+		    if ((Capabilities.ExtraCapabilities & JoystickCapabilityFlags.SupportsPOV) == JoystickCapabilityFlags.SupportsPOV)
 			{
 				joyInfo.Flags |= JoystickInfoFlags.ReturnPOV;
-				if ((Capabilities.ExtraCapabilities & JoystickCapabilityFlags.SupportsContinuousPOV) == JoystickCapabilityFlags.SupportsContinuousPOV)
-					joyInfo.Flags |= JoystickInfoFlags.ReturnPOVContinuousDegreeBearings;
+
+			    if ((Capabilities.ExtraCapabilities & JoystickCapabilityFlags.SupportsContinuousPOV) ==
+			        JoystickCapabilityFlags.SupportsContinuousPOV)
+			    {
+			        joyInfo.Flags |= JoystickInfoFlags.ReturnPOVContinuousDegreeBearings;
+			    }
 			}
 
-			error = Win32API.joyGetPosEx(_joystickID, ref joyInfo);
+			int error = Win32API.joyGetPosEx(_joystickID, ref joyInfo);
 			
 			// If the joystick is disconnected then leave.
 			if (error == 0xA7)
@@ -249,10 +277,14 @@ namespace GorgonLibrary.Input.Raw
 			}
 			
 			// If it's any other error, then throw an exception.
-			if (error > 0)
-				throw new GorgonException(GorgonResult.CannotRead, "Cannot read data from joystick ID (" + _joystickID.ToString() + ").\nError code:" + error.ToString());
+		    if (error > 0)
+		    {
+		        throw new GorgonException(GorgonResult.CannotRead,
+		                                  string.Format(Resources.GORINP_RAW_CANNOT_READ_JOYSTICK_DATA, _joystickID,
+		                                                error.FormatHex()));
+		    }
 
-			IsConnected = true;
+		    IsConnected = true;
 
 			return joyInfo;
 		}
@@ -262,7 +294,7 @@ namespace GorgonLibrary.Input.Raw
 		/// </summary>
 		protected override JoystickCapabilities GetCapabilities()
 		{
-			return new WMMJoystick.WMMJoystickCapabilities(_joystickID);
+			return new MultimediaJoystickCapabilities(_joystickID);
 		}
 
 		/// <summary>
@@ -272,9 +304,9 @@ namespace GorgonLibrary.Input.Raw
 		/// The list of buttons for the joystick/gamepad.
 		/// </returns>
 		/// <remarks>Implementors must implement this method so the object can get the list of buttons for the device.</remarks>
-		protected override GorgonJoystick.JoystickButtons GetButtons()
+		protected override JoystickButtons GetButtons()
 		{
-			_buttonStates = new WMMJoystickButtons(Capabilities.ButtonCount);
+			_buttonStates = new MultimediaJoystickButtons(Capabilities.ButtonCount);
 			return _buttonStates;
 		}
 
@@ -283,41 +315,54 @@ namespace GorgonLibrary.Input.Raw
 		/// </summary>
 		protected override void PollJoystick()
 		{
-			JOYINFOEX joyInfo = new JOYINFOEX();		// Joystick information.
-
-			joyInfo = GetWin32JoystickData();
+		    JOYINFOEX joyInfo = GetWin32JoystickData();
 
 			// Do nothing if we're not connected.
-			if (!IsConnected)
-				return;
+		    if (!IsConnected)
+		    {
+		        return;
+		    }
 
-			// Get primary axis data.  Center between the range.
+		    // Get primary axis data.  Center between the range.
 			X = CenterValue((int)joyInfo.X, Capabilities.XAxisRange);
 			Y = -CenterValue((int)joyInfo.Y, Capabilities.YAxisRange);
 
 			// Get secondary axis data.
-			if ((Capabilities.ExtraCapabilities & JoystickCapabilityFlags.SupportsSecondaryXAxis) == JoystickCapabilityFlags.SupportsSecondaryXAxis)
-				SecondaryX = CenterValue((int)joyInfo.Axis5, Capabilities.SecondaryXAxisRange);
-			if ((Capabilities.ExtraCapabilities & JoystickCapabilityFlags.SupportsSecondaryYAxis) == JoystickCapabilityFlags.SupportsSecondaryYAxis)
-				SecondaryY = -CenterValue((int)joyInfo.Axis6, Capabilities.SecondaryYAxisRange);
+		    if ((Capabilities.ExtraCapabilities & JoystickCapabilityFlags.SupportsSecondaryXAxis) ==
+		        JoystickCapabilityFlags.SupportsSecondaryXAxis)
+		    {
+		        SecondaryX = CenterValue((int)joyInfo.Axis5, Capabilities.SecondaryXAxisRange);
+		    }
 
-			// Get throttle/rudder info.
-			if ((Capabilities.ExtraCapabilities & JoystickCapabilityFlags.SupportsThrottle) == JoystickCapabilityFlags.SupportsThrottle)
-				Throttle = CenterValue((int)joyInfo.Z, Capabilities.ThrottleAxisRange);
-			if ((Capabilities.ExtraCapabilities & JoystickCapabilityFlags.SupportsRudder) == JoystickCapabilityFlags.SupportsRudder)
-				Rudder = CenterValue((int)joyInfo.Rudder, Capabilities.RudderAxisRange);
-						
-			// Get POV data.
-			if ((Capabilities.ExtraCapabilities & JoystickCapabilityFlags.SupportsPOV) == JoystickCapabilityFlags.SupportsPOV)
-				POV = (int)joyInfo.POV;
+		    if ((Capabilities.ExtraCapabilities & JoystickCapabilityFlags.SupportsSecondaryYAxis) ==
+		        JoystickCapabilityFlags.SupportsSecondaryYAxis)
+		    {
+		        SecondaryY = -CenterValue((int)joyInfo.Axis6, Capabilities.SecondaryYAxisRange);
+		    }
 
-			// Update buttons.
+		    // Get throttle/rudder info.
+		    if ((Capabilities.ExtraCapabilities & JoystickCapabilityFlags.SupportsThrottle) ==
+		        JoystickCapabilityFlags.SupportsThrottle)
+		    {
+		        Throttle = CenterValue((int)joyInfo.Z, Capabilities.ThrottleAxisRange);
+		    }
+
+		    if ((Capabilities.ExtraCapabilities & JoystickCapabilityFlags.SupportsRudder) ==
+		        JoystickCapabilityFlags.SupportsRudder)
+		    {
+		        Rudder = CenterValue((int)joyInfo.Rudder, Capabilities.RudderAxisRange);
+		    }
+
+		    // Get POV data.
+		    if ((Capabilities.ExtraCapabilities & JoystickCapabilityFlags.SupportsPOV) == JoystickCapabilityFlags.SupportsPOV)
+		    {
+		        POV = (int)joyInfo.POV;
+		    }
+
+		    // Update buttons.
 			for (int i = 0; i < _buttonStates.Count; i++)
 			{
-				if ((joyInfo.Buttons & (JoystickButton)(1 << i)) != 0)
-					_buttonStates.SetButtonState(i, true);
-				else
-					_buttonStates.SetButtonState(i, false);
+			    _buttonStates.SetButtonState(i, (joyInfo.Buttons & (JoystickButton)(1 << i)) != 0);
 			}
 		}
 
@@ -338,20 +383,20 @@ namespace GorgonLibrary.Input.Raw
 
 		#region Constructor/Destructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="WMMJoystick"/> class.
+		/// Initializes a new instance of the <see cref="MultimediaJoystick"/> class.
 		/// </summary>
 		/// <param name="owner">The input factory that owns this device.</param>
-		/// <param name="ID">The ID of the joystick.</param>
+		/// <param name="joystickID">The ID of the joystick.</param>
 		/// <param name="name">The name of the joystick.</param>
 		/// <param name="boundWindow">The window to bind the joystick with.</param>
 		/// <exception cref="System.ArgumentNullException">Thrown when the owner parameter is NULL (or Nothing in VB.NET).</exception>
 		/// <remarks>Pass NULL (Nothing in VB.Net) to the <paramref name="boundWindow"/> parameter to use the <see cref="P:GorgonLibrary.Gorgon.ApplicationForm">Gorgon application window</see>.</remarks>
-		internal WMMJoystick(GorgonRawInputFactory owner, int ID, string name, Control boundWindow)
+		internal MultimediaJoystick(GorgonInputFactory owner, int joystickID, string name, Control boundWindow)
 			: base(owner, name, boundWindow)
 		{
-			_joystickID = ID;
+			_joystickID = joystickID;
 			Initialize();
-			Gorgon.Log.Print("Windows multimedia joystick device ID 0x{0} interface created.", LoggingLevel.Verbose, ID.ToString("x").PadLeft(8, '0'));
+			Gorgon.Log.Print("Windows multimedia joystick device ID 0x{0} interface created.", LoggingLevel.Verbose, joystickID.FormatHex());
 		}
 		#endregion
 	}

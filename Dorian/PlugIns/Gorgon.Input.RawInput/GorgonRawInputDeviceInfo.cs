@@ -25,9 +25,6 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using GorgonLibrary.Native;
 
 namespace GorgonLibrary.Input.Raw
@@ -51,7 +48,7 @@ namespace GorgonLibrary.Input.Raw
 		/// <summary>
 		/// Property to return the HID usage.
 		/// </summary>
-		public Native.HIDUsage Usage
+		public HIDUsage Usage
 		{
 			get;
 			private set;
@@ -60,7 +57,7 @@ namespace GorgonLibrary.Input.Raw
 		/// <summary>
 		/// Property to return the HID usage page.
 		/// </summary>
-		public Native.HIDUsagePage UsagePage
+		public HIDUsagePage UsagePage
 		{
 			get;
 			private set;

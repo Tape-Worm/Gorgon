@@ -27,13 +27,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.InteropServices;
-using Microsoft.Win32;
-using GorgonLibrary.Collections;
-using GorgonLibrary.Diagnostics;
-using GorgonLibrary.Input;
 using XI = SharpDX.XInput;
 using Forms = System.Windows.Forms;
+using GorgonLibrary.Input.XInput.Properties;
 
 namespace GorgonLibrary.Input.XInput
 {
@@ -68,23 +64,24 @@ namespace GorgonLibrary.Input.XInput
 		/// <returns>A list of joystick device names.</returns>
 		protected override IEnumerable<GorgonInputDeviceInfo> EnumerateJoysticksDevices()
 		{
-			XI.UserIndex[] controllerIndex = ((XI.UserIndex[])Enum.GetValues(typeof(XI.UserIndex))).OrderBy((item) => item).ToArray();
-			XI.Controller[] controllers = new XI.Controller[controllerIndex.Length];
-			IList<GorgonXInputDeviceInfo> devices = null;
+			var controllerIndex = ((XI.UserIndex[])Enum.GetValues(typeof(XI.UserIndex))).OrderBy(item => item).ToArray();
+			var controllers = new XI.Controller[controllerIndex.Length];
 
-			devices = new List<GorgonXInputDeviceInfo>();
+		    IList<GorgonXInputDeviceInfo> devices = new List<GorgonXInputDeviceInfo>();
 
 			// Enumerate all controllers.
 			for (int i = 0; i < controllerIndex.Length; i++)
 			{
-				if (controllerIndex[i] != XI.UserIndex.Any)
-				{
-					controllers[i] = new XI.Controller(controllerIndex[i]);
-					devices.Add(new GorgonXInputDeviceInfo(string.Format("{0}", i + 1) + ": XInput Controller", "XInput_" + controllerIndex[i].ToString(), controllers[i], i));
-				}
+			    if (controllerIndex[i] == XI.UserIndex.Any)
+			    {
+			        continue;
+			    }
+
+			    controllers[i] = new XI.Controller(controllerIndex[i]);
+			    devices.Add(new GorgonXInputDeviceInfo(string.Format("{0}", i + 1) + ": XInput Controller", "XInput_" + controllerIndex[i].ToString(), controllers[i], i));
 			}
 
-			return devices.OrderBy((item) => item.Name);
+			return devices.OrderBy(item => item.Name);
 		}
 
 		/// <summary>
@@ -106,7 +103,7 @@ namespace GorgonLibrary.Input.XInput
 		/// <returns></returns>
 		protected override GorgonCustomHID CreateCustomHIDImpl(Forms.Control window, GorgonInputDeviceInfo hidName)
 		{
-			throw new NotImplementedException("This plug-in only contains XBOX 360 controller devices.");
+			throw new NotImplementedException(Resources.GORINP_XINP_ONLY_360_CONTROLLERS);
 		}
 
 		/// <summary>
@@ -117,7 +114,7 @@ namespace GorgonLibrary.Input.XInput
 		/// <returns></returns>
 		protected override GorgonKeyboard CreateKeyboardImpl(Forms.Control window, GorgonInputDeviceInfo keyboardName)
 		{
-			throw new NotImplementedException("This plug-in only contains XBOX 360 controller devices.");
+            throw new NotImplementedException(Resources.GORINP_XINP_ONLY_360_CONTROLLERS);
 		}
 
 		/// <summary>
@@ -128,7 +125,7 @@ namespace GorgonLibrary.Input.XInput
 		/// <returns></returns>
 		protected override GorgonPointingDevice CreatePointingDeviceImpl(Forms.Control window, GorgonInputDeviceInfo pointingDeviceName)
 		{
-			throw new NotImplementedException("This plug-in only contains XBOX 360 controller devices.");
+            throw new NotImplementedException(Resources.GORINP_XINP_ONLY_360_CONTROLLERS);
 		}
 
 		/// <summary>
@@ -138,16 +135,16 @@ namespace GorgonLibrary.Input.XInput
 		/// <param name="joystickName">A <see cref="GorgonLibrary.Input.GorgonInputDeviceInfo">GorgonInputDeviceInfo</see> object containing the joystick information.</param>
 		/// <returns>A new joystick interface.</returns>
 		/// <remarks>Pass NULL to the <paramref name="window"/> parameter to use the <see cref="P:GorgonLibrary.Gorgon.ApplicationForm">Gorgon application form</see>.</remarks>
-		/// <exception cref="System.ArgumentNullException">The <paramRef name="joystickInfo"/> is NULL.</exception>
 		protected override GorgonJoystick CreateJoystickImpl(Forms.Control window, GorgonInputDeviceInfo joystickName)
 		{
-			GorgonJoystick joystick = null;
-			GorgonXInputDeviceInfo deviceName = joystickName as GorgonXInputDeviceInfo;
+		    var deviceName = joystickName as GorgonXInputDeviceInfo;
 
-			if (deviceName == null)
-				throw new ArgumentNullException("joystickInfo");
+		    if (deviceName == null)
+		    {
+                throw new InvalidCastException(Resources.GORINP_XINP_NOT_XINPUT_JOYSTICK);
+		    }
 
-			joystick = new XInputController(this, deviceName.Index, joystickName.Name, window, deviceName.Controller);
+		    GorgonJoystick joystick = new XInputController(this, deviceName.Index, joystickName.Name, window, deviceName.Controller);
 			joystick.Enabled = true;
 
 			return joystick;			
@@ -159,7 +156,7 @@ namespace GorgonLibrary.Input.XInput
 		/// Initializes a new instance of the <see cref="GorgonXInputFactory"/> class.
 		/// </summary>
 		public GorgonXInputFactory()
-			: base("Gorgon.Input.XInput")
+			: base("Gorgon XBox 360 Controller Input")
 		{
 		}
 		#endregion

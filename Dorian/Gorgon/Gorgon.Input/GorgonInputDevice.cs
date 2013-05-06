@@ -338,10 +338,12 @@ namespace GorgonLibrary.Input
 		protected internal GorgonInputDevice(GorgonInputFactory owner, string deviceName, Control boundWindow)
 			: base(deviceName)
 		{
-			if (owner == null)
-				throw new ArgumentNullException("owner");
+		    if (owner == null)
+		    {
+		        throw new ArgumentNullException("owner");
+		    }
 
-			DeviceFactory = owner;
+		    DeviceFactory = owner;
 			Bind(boundWindow);
 			UUID = Guid.Empty.ToString();
 		}

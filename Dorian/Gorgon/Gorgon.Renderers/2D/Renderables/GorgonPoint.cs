@@ -368,7 +368,10 @@ namespace GorgonLibrary.Renderers
 			}
 			set
 			{
-				_vertices[3].Color.Alpha = _vertices[2].Color.Alpha = _vertices[1].Color.Alpha = _vertices[0].Color.Alpha = value;
+                GorgonColor.SetAlpha(ref _vertices[3].Color, value, out _vertices[3].Color);
+                GorgonColor.SetAlpha(ref _vertices[2].Color, value, out _vertices[2].Color);
+                GorgonColor.SetAlpha(ref _vertices[1].Color, value, out _vertices[1].Color);
+                GorgonColor.SetAlpha(ref _vertices[0].Color, value, out _vertices[0].Color);
 			}
 		}
 

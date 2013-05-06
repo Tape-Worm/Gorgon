@@ -43,8 +43,8 @@ namespace GorgonLibrary.Input.Raw
 		#endregion
 
 		#region Variables.
-		private bool _isDisposed = false;					// Flag to indicate that the object has been disposed.
-		private RawInputData _data = null;					// Raw input data.
+		private bool _isDisposed;					// Flag to indicate that the object has been disposed.
+		private RawInputData _data;					// Raw input data.
 		#endregion
 
 		#region IMessageFilter Members
@@ -60,12 +60,16 @@ namespace GorgonLibrary.Input.Raw
 			// Handle raw input messages.
 			if ((WindowMessages)m.Msg == WindowMessages.RawInput)
 			{
-				if (_data == null)
-					_data = new RawInputData();
+			    if (_data == null)
+			    {
+			        _data = new RawInputData();
+			    }
 
-				_data.GetRawInputData(m.LParam);
-				if (RawInputData != null)
-					RawInputData(this, new RawInputEventArgs(_data));			
+			    _data.GetRawInputData(m.LParam);
+			    if (RawInputData != null)
+			    {
+			        RawInputData(this, new RawInputEventArgs(_data));
+			    }
 			}
 
 			return false;
@@ -81,9 +85,12 @@ namespace GorgonLibrary.Input.Raw
 		{
 			if (!_isDisposed)
 			{
-				if ((disposing) && (_data != null))
-					_data.Dispose();
-				_data = null;
+			    if ((disposing) && (_data != null))
+			    {
+			        _data.Dispose();
+			    }
+
+			    _data = null;
 			}
 			_isDisposed = true;
 		}

@@ -117,49 +117,37 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="GORINP_CANNOT_CREATE" xml:space="preserve">
-    <value>Could not create the input factory for '{0}'.</value>
+  <data name="GORINP_RAW_CANNOT_BIND_HID" xml:space="preserve">
+    <value>Failed to bind the HID.</value>
   </data>
-  <data name="GORINP_DEVICE_ALREADY_EXISTS_TYPE_MISMATCH" xml:space="preserve">
-    <value>The device requested already exists, but is not of the type '{0}'.</value>
+  <data name="GORINP_RAW_CANNOT_BIND_KEYBOARD" xml:space="preserve">
+    <value>Failed to bind the keyboard device.</value>
   </data>
-  <data name="GORINP_HID_NOT_FOUND" xml:space="preserve">
-    <value>Could not find the HID '{0}'.</value>
+  <data name="GORINP_RAW_CANNOT_BIND_POINTING_DEVICE" xml:space="preserve">
+    <value>Failed to bind the pointing device.</value>
   </data>
-  <data name="GORINP_JOYSTICK_MOTOR_NOT_FOUND" xml:space="preserve">
-    <value>There is no motor at index [{0}].</value>
+  <data name="GORINP_RAW_CANNOT_GET_JOYSTICK_CAPS" xml:space="preserve">
+    <value>Cannot read capabilities from joystick ID [{0}].\nError code: 0x{1}</value>
   </data>
-  <data name="GORINP_JOYSTICK_NOT_FOUND" xml:space="preserve">
-    <value>Could not find the joystick '{0}'.</value>
+  <data name="GORINP_RAW_CANNOT_READ_DATA" xml:space="preserve">
+    <value>Error reading raw input data.</value>
   </data>
-  <data name="GORINP_JOYSTICK_NOT_INITIALIZED" xml:space="preserve">
-    <value>The joystick was not initialized.</value>
+  <data name="GORINP_RAW_CANNOT_READ_JOYSTICK_DATA" xml:space="preserve">
+    <value>Cannot read data from joystick ID [{0}].\nError code: 0x{1}</value>
   </data>
-  <data name="GORINP_KEYBOARD_KEY_NO_MAPPING" xml:space="preserve">
-    <value>Keyboard key '{0}' has not been assigned to a mapping.</value>
+  <data name="GORINP_RAW_CANNOT_UNBIND_HID" xml:space="preserve">
+    <value>Failed to unbind the HID.</value>
   </data>
-  <data name="GORINP_KEYBOARD_NOT_FOUND" xml:space="preserve">
-    <value>Could not find the keyboard '{0}'.</value>
+  <data name="GORINP_RAW_CANNOT_UNBIND_KEYBOARD" xml:space="preserve">
+    <value>Failed to unbind the keyboard device.</value>
   </data>
-  <data name="GORINP_KEYCHARMAP_TOSTR" xml:space="preserve">
-    <value>Virtual Key: {0}, Character: {1}, Shift+Character: {2}</value>
+  <data name="GORINP_RAW_CANNOT_UNBIND_POINTING_DEVICE" xml:space="preserve">
+    <value>Failed to unbind the pointing device.</value>
   </data>
-  <data name="GORINP_KEY_NOT_FOUND" xml:space="preserve">
-    <value>Keyboard key '{0}' has not been assigned to a mapping.</value>
+  <data name="GORINP_RAW_HIDINFO_NOT_RAW" xml:space="preserve">
+    <value>The HID information object is not a raw HID object.</value>
   </data>
-  <data name="GORINP_NO_WINDOW_TO_BIND" xml:space="preserve">
-    <value>No window was found to bind with.</value>
-  </data>
-  <data name="GORINP_PARAMETER_EMPTY" xml:space="preserve">
-    <value>The parameter must not be empty.</value>
-  </data>
-  <data name="GORINP_PARAMETER_NULL_EMPTY" xml:space="preserve">
-    <value>The parameter must not be NULL or empty.</value>
-  </data>
-  <data name="GORINP_PLUGIN_NOT_FOUND" xml:space="preserve">
-    <value>The plug-in '{0}' was not found in any of the loaded plug-in assemblies or was not the correct type.</value>
-  </data>
-  <data name="GORINP_POINTINGDEVICE_NOT_FOUND" xml:space="preserve">
-    <value>Could not find the pointing device '{0}'.</value>
+  <data name="GORINP_RAW_NOT_MM_JOYSTICK" xml:space="preserve">
+    <value>The joystick information object is not Windows Multimedia specific.</value>
   </data>
 </root>

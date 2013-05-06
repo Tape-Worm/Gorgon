@@ -282,94 +282,101 @@ namespace GorgonLibrary.Graphics
 				SharpDX.Configuration.EnableObjectTracking = true;
 			}
 #endif
+		    try
+		    {
+		        // Create the DXGI factory object used to gather the information.
+		        if (Interlocked.Increment(ref _lockIncr) > 1)
+		        {
+		            return;
+		        }
 
-			// Create the DXGI factory object used to gather the information.
-			if (Interlocked.Increment(ref _lockIncr) == 1)
-			{
-				using (var factory = new DXGI.Factory1())
-				{
-					int adapterCount = factory.GetAdapterCount1();
+		        using(var factory = new DXGI.Factory1())
+		        {
+		            int adapterCount = factory.GetAdapterCount1();
 
-					devices = new List<GorgonVideoDevice>(adapterCount + 2);
+		            devices = new List<GorgonVideoDevice>(adapterCount + 2);
 
-					Gorgon.Log.Print("Enumerating video devices...", Diagnostics.LoggingLevel.Simple);
+		            Gorgon.Log.Print("Enumerating video devices...", Diagnostics.LoggingLevel.Simple);
 
-					// Begin gathering device information.
-					for (int i = 0; i < adapterCount; i++)
-					{
-						// Get the video device information.
-						using (var adapter = factory.GetAdapter1(i))
-						{
-							// Only enumerate local devices.
-							int outputCount = adapter.GetOutputCount();
+		            // Begin gathering device information.
+		            for (int i = 0; i < adapterCount; i++)
+		            {
+		                // Get the video device information.
+		                using(var adapter = factory.GetAdapter1(i))
+		                {
+		                    // Only enumerate local devices.
+		                    int outputCount = adapter.GetOutputCount();
 
-							if (((adapter.Description1.Flags & DXGI.AdapterFlags.Remote) == 0) && (outputCount > 0))
-							{
-								var videoDevice = new GorgonVideoDevice(adapter, VideoDeviceType.Hardware, i);
+		                    if (((adapter.Description1.Flags & DXGI.AdapterFlags.Remote) == 0) && (outputCount > 0))
+		                    {
+		                        var videoDevice = new GorgonVideoDevice(adapter, VideoDeviceType.Hardware, i);
 
-								// Don't allow unsupported devices.
-								if (videoDevice.HardwareFeatureLevel == DeviceFeatureLevel.Unsupported)
-								{
-									continue;
-								}
-								
-								// We create a D3D device here to filter out unsupported video modes from the format list.
-								using (var d3dDevice = new D3D.Device(adapter))
-								{
-									d3dDevice.DebugName = "Output enumerator device.";
-									PrintLog(videoDevice);
+		                        // Don't allow unsupported devices.
+		                        if (videoDevice.HardwareFeatureLevel == DeviceFeatureLevel.Unsupported)
+		                        {
+		                            continue;
+		                        }
 
-									GetOutputs(videoDevice, d3dDevice, adapter, outputCount);
+		                        // We create a D3D device here to filter out unsupported video modes from the format list.
+		                        using(var d3dDevice = new D3D.Device(adapter))
+		                        {
+		                            d3dDevice.DebugName = "Output enumerator device.";
+		                            PrintLog(videoDevice);
 
-									// Ensure we actually have outputs to use.
-									if (videoDevice.Outputs.Count > 0)
-									{										
-										devices.Add(videoDevice);
-									}
-									else
-									{
-										Gorgon.Log.Print("Video device {0} has no outputs!", Diagnostics.LoggingLevel.Verbose, videoDevice.Name);
-									}
-								}
-							}
-						}
-					}
+		                            GetOutputs(videoDevice, d3dDevice, adapter, outputCount);
 
-					// Get software devices.
-					if (enumerateWARPDevice)
-					{
-						var device = GetWARPSoftwareDevice(devices.Count);
+		                            // Ensure we actually have outputs to use.
+		                            if (videoDevice.Outputs.Count > 0)
+		                            {
+		                                devices.Add(videoDevice);
+		                            }
+		                            else
+		                            {
+		                                Gorgon.Log.Print("Video device {0} has no outputs!",
+		                                                    Diagnostics.LoggingLevel.Verbose, videoDevice.Name);
+		                            }
+		                        }
+		                    }
+		                }
+		            }
 
-						if (device.Outputs.Count > 0)
-						{
-							devices.Add(device);
-						}
-					}
+		            // Get software devices.
+		            if (enumerateWARPDevice)
+		            {
+		                var device = GetWARPSoftwareDevice(devices.Count);
+
+		                if (device.Outputs.Count > 0)
+		                {
+		                    devices.Add(device);
+		                }
+		            }
 
 #if DEBUG
-					if (enumerateREFDevice)
-					{
-						var device = GetRefSoftwareDevice(devices.Count);
+		            if (enumerateREFDevice)
+		            {
+		                var device = GetRefSoftwareDevice(devices.Count);
 
-						if (device.Outputs.Count > 0)
-						{
-							devices.Add(device);
-						}
-					}
+		                if (device.Outputs.Count > 0)
+		                {
+		                    devices.Add(device);
+		                }
+		            }
 #endif
-				}
-				
-				_devices = new GorgonNamedObjectReadOnlyCollection<GorgonVideoDevice>(false, devices);
+		        }
 
-				Gorgon.Log.Print("Found {0} video devices.", Diagnostics.LoggingLevel.Simple, _devices.Count);
-			}
+		        _devices = new GorgonNamedObjectReadOnlyCollection<GorgonVideoDevice>(false, devices);
 
-			Interlocked.Decrement(ref _lockIncr);
+                if (devices.Count == 0)
+                {
+                    throw new GorgonException(GorgonResult.CannotEnumerate, "Could not find any supported video devices.  Gorgon requires a device that can support a minimum of pixel shader model 2b and a vertex shader model of 2a.");
+                }
 
-			if (devices.Count == 0)
-			{
-				throw new GorgonException(GorgonResult.CannotEnumerate, "Could not find any supported video devices.  Gorgon requires a device that can support a minimum of pixel shader model 2b and a vertex shader model of 2a.");
-			}
+		        Gorgon.Log.Print("Found {0} video devices.", Diagnostics.LoggingLevel.Simple, _devices.Count);
+		    }
+		    finally
+		    {
+		        Interlocked.Decrement(ref _lockIncr);
+		    }
 		}
 		#pragma warning restore 0618
 		#endregion

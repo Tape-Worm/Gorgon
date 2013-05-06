@@ -125,7 +125,6 @@
     <Compile Include="States\GorgonBlendState.cs" />
     <Compile Include="States\GorgonDepthStencilState.cs" />
     <Compile Include="States\GorgonRasterizerState.cs" />
-    <Compile Include="IObjectTracker.cs" />
     <Compile Include="Native\Win32API.cs" />
     <Compile Include="Native\Win32Types.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -161,6 +160,11 @@
     <Compile Include="Textures\GorgonTextureSettings.cs" />
     <Compile Include="Textures\GorgonWICImage.cs" />
     <Compile Include="Textures\IImageSettings.cs" />
+    <Compile Include="Properties\Win32ResStr.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Win32ResStr.resx</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Content Include="Gorgon2.ico" />
@@ -176,6 +180,10 @@
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Win32ResStr.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Win32ResStr.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup />

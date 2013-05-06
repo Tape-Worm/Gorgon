@@ -26,12 +26,12 @@
 
 using System;
 using System.Runtime.InteropServices;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
 
 namespace GorgonLibrary.Native
 {
-	#region Value types.
+    // ReSharper disable InconsistentNaming
+    // ReSharper disable FieldCanBeMadeReadOnly.Local
+    #region Value types.
 	/// <summary>
 	/// HID device info.
 	/// </summary>
@@ -392,4 +392,6 @@ namespace GorgonLibrary.Native
 		public RAWINPUT_UNION Union;
 	}		
 	#endregion
+    // ReSharper restore InconsistentNaming
+    // ReSharper restore FieldCanBeMadeReadOnly.Local
 }

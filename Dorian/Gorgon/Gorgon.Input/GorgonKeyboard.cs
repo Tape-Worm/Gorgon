@@ -479,6 +479,7 @@ namespace GorgonLibrary.Input
 		/// Value type containing the code and text character mapping.
 		/// </summary>
 		public struct KeyCharMap
+            : IEquatable<KeyCharMap>
 		{
 			#region Variables.
 			/// <summary>Key that the character represents.</summary>
@@ -489,21 +490,109 @@ namespace GorgonLibrary.Input
             public readonly char Shifted;
 			#endregion
 
-			#region Constructor.
-			/// <summary>
+            #region Methods.
+            /// <summary>
+            /// Returns a hash code for this instance.
+            /// </summary>
+            /// <returns>
+            /// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table. 
+            /// </returns>
+            public override int GetHashCode()
+            {
+                return 281.GenerateHash(Key);
+            }
+
+            /// <summary>
+            /// Determines whether the specified <see cref="System.Object" /> is equal to this instance.
+            /// </summary>
+            /// <param name="obj">The <see cref="System.Object" /> to compare with this instance.</param>
+            /// <returns>
+            ///   <c>true</c> if the specified <see cref="System.Object" /> is equal to this instance; otherwise, <c>false</c>.
+            /// </returns>
+            public override bool Equals(object obj)
+            {
+                if (obj is KeyCharMap)
+                {
+                    return ((KeyCharMap)obj).Key == Key;
+                }
+
+                return base.Equals(obj);
+            }
+
+            /// <summary>
+            /// Function to determine if 2 instances are equal.
+            /// </summary>
+            /// <param name="left">The left instance to compare.</param>
+            /// <param name="right">The right instance to compare.</param>
+            /// <returns>TRUE if equal, FALSE if not.</returns>
+            public static bool Equals(ref KeyCharMap left, ref KeyCharMap right)
+            {
+                return left.Key == right.Key;
+            }
+
+            /// <summary>
+            /// Returns a <see cref="System.String" /> that represents this instance.
+            /// </summary>
+            /// <returns>
+            /// A <see cref="System.String" /> that represents this instance.
+            /// </returns>
+            public override string ToString()
+            {
+                return string.Format(Resources.GORINP_KEYCHARMAP_TOSTR, Key, Character, Shifted);
+            }
+
+            /// <summary>
+            /// Operator to compare 2 instances for equality.
+            /// </summary>
+            /// <param name="left">Left instance to compare.</param>
+            /// <param name="right">Right instance to compare.</param>
+            /// <returns>TRUE if equal, FALSE if not.</returns>
+            public static bool operator ==(KeyCharMap left, KeyCharMap right)
+            {
+                return Equals(ref left, ref right);
+            }
+
+            /// <summary>
+            /// Operator to compare 2 instances for inequality.
+            /// </summary>
+            /// <param name="left">Left instance to compare.</param>
+            /// <param name="right">Right instance to compare.</param>
+            /// <returns>TRUE if not equal, FALSE if equal.</returns>
+            public static bool operator !=(KeyCharMap left, KeyCharMap right)
+            {
+                return !Equals(ref left, ref right);
+            }
+            #endregion
+
+            #region Constructor.
+            /// <summary>
 			/// Constructor.
 			/// </summary>
 			/// <param name="key">Key that the character represents.</param>
 			/// <param name="character">Character representation.</param>
 			/// <param name="shifted">Character representation with shift modifier.</param>
-			public KeyCharMap(KeyboardKeys key, string character, string shifted)
+			public KeyCharMap(KeyboardKeys key, char character, char shifted)
 			{
 				Key = key;
-				Character = Convert.ToChar(character);
-				Shifted = Convert.ToChar(shifted);
+				Character = character;
+				Shifted = shifted;
 			}
 			#endregion
-		}
+
+            #region IEquatable<KeyCharMap> Members
+            /// <summary>
+            /// Indicates whether the current object is equal to another object of the same type.
+            /// </summary>
+            /// <param name="other">An object to compare with this object.</param>
+            /// <returns>
+            /// true if the current object is equal to the other parameter; otherwise, false.
+            /// </returns>
+            public bool Equals(KeyCharMap other)
+            {
+                return Equals(ref this, ref other);
+            }
+            #endregion
+        }
 		#endregion
 
 		#region Classes.
@@ -511,7 +600,7 @@ namespace GorgonLibrary.Input
 		/// Object representing the keyboard mappings.
 		/// </summary>
 		public class KeyMapCollection
-			: IEnumerable<KeyCharMap>
+			: ICollection<KeyCharMap>
 		{
 			#region Variables.
 			private readonly SortedDictionary<KeyboardKeys, KeyCharMap> _keys;    // Keyboard mappings.
@@ -553,12 +642,9 @@ namespace GorgonLibrary.Input
 			/// <param name="key">Key to map.</param>
 			/// <param name="value">Value to map to the key.</param>
 			/// <param name="shiftedValue">Value to map if the shift key is held down.</param>
-			public void Add(KeyboardKeys key, string value, string shiftedValue)
+			public void Add(KeyboardKeys key, char value, char shiftedValue)
 			{
-				if (_keys.ContainsKey(key))
-					_keys[key] = new KeyCharMap(key, value, shiftedValue);
-				else
-					_keys.Add(key, new KeyCharMap(key, value, shiftedValue));
+                Add(new KeyCharMap(key, value, shiftedValue));
 			}
 
 			/// <summary>
@@ -577,10 +663,12 @@ namespace GorgonLibrary.Input
 			/// <param name="key">Key to remove.</param>
 			public void Remove(KeyboardKeys key)
 			{
-				if (!_keys.ContainsKey(key))
-					throw new KeyNotFoundException("Keyboard key '" + key.ToString() + "' has not been assigned to a mapping.");
+			    if (!_keys.ContainsKey(key))
+			    {
+			        throw new KeyNotFoundException(string.Format(Resources.GORINP_KEY_NOT_FOUND, key));
+			    }
 
-				_keys.Remove(key);
+			    _keys.Remove(key);
 			}
 
 			/// <summary>
@@ -603,7 +691,6 @@ namespace GorgonLibrary.Input
 			#endregion
 
 			#region IEnumerable<KeyCharMap> Members
-
 			/// <summary>
 			/// Returns an enumerator that iterates through the collection.
 			/// </summary>
@@ -631,15 +718,103 @@ namespace GorgonLibrary.Input
 				return GetEnumerator();
 			}
 			#endregion
-		}
+
+            #region ICollection<KeyCharMap> Members
+            #region Properties.
+            /// <summary>
+            /// Gets the number of elements contained in the <see cref="T:System.Collections.Generic.ICollection`1"></see>.
+            /// </summary>
+            /// <returns>The number of elements contained in the <see cref="T:System.Collections.Generic.ICollection`1"></see>.</returns>
+            public int Count
+            {
+                get
+                {
+                    return _keys.Count;
+                }
+            }
+
+            /// <summary>
+            /// Gets a value indicating whether the <see cref="T:System.Collections.Generic.ICollection`1"></see> is read-only.
+            /// </summary>
+            /// <returns>true if the <see cref="T:System.Collections.Generic.ICollection`1"></see> is read-only; otherwise, false.</returns>
+            public bool IsReadOnly
+            {
+                get
+                {
+                    return true;
+                }
+            }
+            #endregion
+
+            #region Methods.
+            /// <summary>
+            /// Adds an item to the <see cref="T:System.Collections.Generic.ICollection`1"></see>.
+            /// </summary>
+            /// <param name="item">The object to add to the <see cref="T:System.Collections.Generic.ICollection`1"></see>.</param>
+            /// <exception cref="System.NotImplementedException"></exception>
+            public void Add(KeyCharMap item)
+            {
+                _keys[item.Key] = item;
+            }
+
+            /// <summary>
+            /// Determines whether the <see cref="T:System.Collections.Generic.ICollection`1"></see> contains a specific value.
+            /// </summary>
+            /// <param name="item">The object to locate in the <see cref="T:System.Collections.Generic.ICollection`1"></see>.</param>
+            /// <returns>
+            /// true if item is found in the <see cref="T:System.Collections.Generic.ICollection`1"></see>; otherwise, false.
+            /// </returns>
+            public bool Contains(KeyCharMap item)
+            {
+                return _keys.ContainsValue(item);
+            }
+
+            /// <summary>
+            /// Copies to.
+            /// </summary>
+            /// <param name="array">The array.</param>
+            /// <param name="arrayIndex">Index of the array.</param>
+            public void CopyTo(KeyCharMap[] array, int arrayIndex)
+            {
+                foreach (var item in _keys)
+                {
+                    array[arrayIndex] = item.Value;
+
+                    ++arrayIndex;
+                }
+            }
+
+            /// <summary>
+            /// Removes the first occurrence of a specific object from the <see cref="T:System.Collections.Generic.ICollection`1"></see>.
+            /// </summary>
+            /// <param name="item">The object to remove from the <see cref="T:System.Collections.Generic.ICollection`1"></see>.</param>
+            /// <returns>
+            /// true if item was successfully removed from the <see cref="T:System.Collections.Generic.ICollection`1"></see>; otherwise, false. This method also returns false if item is not found in the original <see cref="T:System.Collections.Generic.ICollection`1"></see>.
+            /// </returns>
+            /// <exception cref="System.NotImplementedException"></exception>
+            bool ICollection<KeyCharMap>.Remove(KeyCharMap item)
+            {
+                if (!_keys.ContainsKey(item.Key))
+                {
+                    return false;
+                }
+
+                Remove(item.Key);
+
+                return true;
+            }
+            #endregion
+            #endregion
+        }
 
 		/// <summary>
 		/// Object representing the keyboard state.
 		/// </summary>
 		public class KeyStateCollection
+            : ICollection<KeyState>
 		{
 			#region Variables.
-			private readonly SortedDictionary<KeyboardKeys, KeyState> _keys;      // Keyboard key state.
+			private readonly Dictionary<KeyboardKeys, KeyState> _keys;      // Keyboard key state.
 			#endregion
 
 			#region Properties.
@@ -711,12 +886,125 @@ namespace GorgonLibrary.Input
 			/// <summary>
 			/// Initializes a new instance of the <see cref="KeyStateCollection"/> class.
 			/// </summary>
-			public KeyStateCollection()
+			internal KeyStateCollection()
 			{
-				_keys = new SortedDictionary<KeyboardKeys, KeyState>();
+				_keys = new Dictionary<KeyboardKeys, KeyState>();
 			}
 			#endregion
-		}
+
+            #region ICollection<KeyState> Members
+            #region Properties.
+            /// <summary>
+            /// Gets the number of elements contained in the <see cref="T:System.Collections.Generic.ICollection`1"></see>.
+            /// </summary>
+            /// <returns>The number of elements contained in the <see cref="T:System.Collections.Generic.ICollection`1"></see>.</returns>
+            public int Count
+            {
+                get
+                {
+                    return _keys.Count;
+                }
+            }
+
+            /// <summary>
+            /// Gets a value indicating whether the <see cref="T:System.Collections.Generic.ICollection`1"></see> is read-only.
+            /// </summary>
+            /// <returns>true if the <see cref="T:System.Collections.Generic.ICollection`1"></see> is read-only; otherwise, false.</returns>
+            public bool IsReadOnly
+            {
+                get
+                {
+                    return true;
+                }
+            }
+            #endregion
+
+            #region Methods.
+            /// <summary>
+            /// Adds an item to the <see cref="T:System.Collections.Generic.ICollection`1"></see>.
+            /// </summary>
+            /// <param name="item">The object to add to the <see cref="T:System.Collections.Generic.ICollection`1"></see>.</param>
+            /// <exception cref="System.NotImplementedException"></exception>
+            void ICollection<KeyState>.Add(KeyState item)
+            {
+                throw new NotImplementedException();
+            }
+
+            /// <summary>
+            /// Removes all items from the <see cref="T:System.Collections.Generic.ICollection`1"></see>.
+            /// </summary>
+            void ICollection<KeyState>.Clear()
+            {
+                Reset();
+            }
+
+            /// <summary>
+            /// Determines whether the <see cref="T:System.Collections.Generic.ICollection`1"></see> contains a specific value.
+            /// </summary>
+            /// <param name="item">The object to locate in the <see cref="T:System.Collections.Generic.ICollection`1"></see>.</param>
+            /// <returns>
+            /// true if item is found in the <see cref="T:System.Collections.Generic.ICollection`1"></see>; otherwise, false.
+            /// </returns>
+            bool ICollection<KeyState>.Contains(KeyState item)
+            {
+                return _keys.ContainsValue(item);
+            }
+
+            /// <summary>
+            /// Copies to.
+            /// </summary>
+            /// <param name="array">The array.</param>
+            /// <param name="arrayIndex">Index of the array.</param>
+            /// <exception cref="System.NotImplementedException"></exception>
+            void ICollection<KeyState>.CopyTo(KeyState[] array, int arrayIndex)
+            {
+                throw new NotImplementedException();
+            }
+
+            /// <summary>
+            /// Removes the first occurrence of a specific object from the <see cref="T:System.Collections.Generic.ICollection`1"></see>.
+            /// </summary>
+            /// <param name="item">The object to remove from the <see cref="T:System.Collections.Generic.ICollection`1"></see>.</param>
+            /// <returns>
+            /// true if item was successfully removed from the <see cref="T:System.Collections.Generic.ICollection`1"></see>; otherwise, false. This method also returns false if item is not found in the original <see cref="T:System.Collections.Generic.ICollection`1"></see>.
+            /// </returns>
+            /// <exception cref="System.NotImplementedException"></exception>
+            bool ICollection<KeyState>.Remove(KeyState item)
+            {
+                return false;
+            }
+            #endregion
+            #endregion
+
+            #region IEnumerable<KeyState> Members
+            /// <summary>
+            /// Returns an enumerator that iterates through the collection.
+            /// </summary>
+            /// <returns>
+            /// A <see cref="T:System.Collections.Generic.IEnumerator`1"></see> that can be used to iterate through the collection.
+            /// </returns>
+            public IEnumerator<KeyState> GetEnumerator()
+            {
+                foreach (KeyValuePair<KeyboardKeys, KeyState> state in _keys)
+                {
+                    yield return state.Value;
+                }
+            }
+            #endregion
+
+            #region IEnumerable Members
+            /// <summary>
+            /// Returns an enumerator that iterates through a collection.
+            /// </summary>
+            /// <returns>
+            /// An <see cref="T:System.Collections.IEnumerator" /> object that can be used to iterate through the collection.
+            /// </returns>
+            System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+            {
+                return GetEnumerator();
+            }
+            #endregion
+        }
 		#endregion
 		
 		#region Events.
@@ -789,7 +1077,7 @@ namespace GorgonLibrary.Input
 		/// <returns>The modifier keys.</returns>
 		private KeyboardKeys GetModifiers()
 		{
-			KeyboardKeys result = KeyboardKeys.None;
+			var result = KeyboardKeys.None;
 
 			if (KeyStates[KeyboardKeys.ControlKey] == KeyState.Down)
 			{
@@ -839,13 +1127,15 @@ namespace GorgonLibrary.Input
 		/// <param name="scan">Scan code data.</param>
 		protected void OnKeyDown(KeyboardKeys key, int scan)
 		{
-			if (KeyDown != null)
-			{
-			    KeyCharMap character = KeyMappings.Contains(key) ? KeyMappings[key] : default(KeyCharMap);
+		    if (KeyDown == null)
+		    {
+		        return;
+		    }
 
-				KeyboardEventArgs e = new KeyboardEventArgs(key, GetModifiers(), character, scan);
-				KeyDown(this, e);
-			}
+		    KeyCharMap character = KeyMappings.Contains(key) ? KeyMappings[key] : default(KeyCharMap);
+		    var e = new KeyboardEventArgs(key, GetModifiers(), character, scan);
+
+		    KeyDown(this, e);
 		}
 
 		/// <summary>
@@ -855,13 +1145,15 @@ namespace GorgonLibrary.Input
 		/// <param name="scan">Scan code data.</param>
 		protected void OnKeyUp(KeyboardKeys key, int scan)
 		{
-			if (KeyUp != null)
-			{
-			    KeyCharMap character = KeyMappings.Contains(key) ? KeyMappings[key] : default(KeyCharMap);
+		    if (KeyUp == null)
+		    {
+		        return;
+		    }
 
-				KeyboardEventArgs e = new KeyboardEventArgs(key, GetModifiers(), character, scan);
-				KeyUp(this, e);
-			}
+		    KeyCharMap character = KeyMappings.Contains(key) ? KeyMappings[key] : default(KeyCharMap);
+		    var e = new KeyboardEventArgs(key, GetModifiers(), character, scan);
+
+		    KeyUp(this, e);
 		}
 
 		/// <summary>
@@ -890,72 +1182,72 @@ namespace GorgonLibrary.Input
 		{
 			// Add default key mapping.
 			KeyMappings.Clear();
-			KeyMappings.Add(KeyboardKeys.Tab, "\t", "\t");
-			KeyMappings.Add(KeyboardKeys.Return, "\n", "\n");
-			KeyMappings.Add(KeyboardKeys.Space, " ", " ");
-			KeyMappings.Add(KeyboardKeys.D0, "0", ")");
-			KeyMappings.Add(KeyboardKeys.D1, "1", "!");
-			KeyMappings.Add(KeyboardKeys.D2, "2", "@");
-			KeyMappings.Add(KeyboardKeys.D3, "3", "#");
-			KeyMappings.Add(KeyboardKeys.D4, "4", "$");
-			KeyMappings.Add(KeyboardKeys.D5, "5", "%");
-			KeyMappings.Add(KeyboardKeys.D6, "6", "^");
-			KeyMappings.Add(KeyboardKeys.D7, "7", "&");
-			KeyMappings.Add(KeyboardKeys.D8, "8", "*");
-			KeyMappings.Add(KeyboardKeys.D9, "9", "(");
-			KeyMappings.Add(KeyboardKeys.A, "a", "A");
-			KeyMappings.Add(KeyboardKeys.B, "b", "B");
-			KeyMappings.Add(KeyboardKeys.C, "c", "C");
-			KeyMappings.Add(KeyboardKeys.D, "d", "D");
-			KeyMappings.Add(KeyboardKeys.E, "e", "E");
-			KeyMappings.Add(KeyboardKeys.F, "f", "F");
-			KeyMappings.Add(KeyboardKeys.G, "g", "G");
-			KeyMappings.Add(KeyboardKeys.H, "h", "H");
-			KeyMappings.Add(KeyboardKeys.I, "i", "I");
-			KeyMappings.Add(KeyboardKeys.J, "j", "J");
-			KeyMappings.Add(KeyboardKeys.K, "k", "K");
-			KeyMappings.Add(KeyboardKeys.L, "l", "L");
-			KeyMappings.Add(KeyboardKeys.M, "m", "M");
-			KeyMappings.Add(KeyboardKeys.N, "n", "N");
-			KeyMappings.Add(KeyboardKeys.O, "o", "O");
-			KeyMappings.Add(KeyboardKeys.P, "p", "P");
-			KeyMappings.Add(KeyboardKeys.Q, "q", "Q");
-			KeyMappings.Add(KeyboardKeys.R, "r", "R");
-			KeyMappings.Add(KeyboardKeys.S, "s", "S");
-			KeyMappings.Add(KeyboardKeys.T, "t", "T");
-			KeyMappings.Add(KeyboardKeys.U, "u", "U");
-			KeyMappings.Add(KeyboardKeys.V, "v", "V");
-			KeyMappings.Add(KeyboardKeys.W, "w", "W");
-			KeyMappings.Add(KeyboardKeys.X, "x", "X");
-			KeyMappings.Add(KeyboardKeys.Y, "y", "Y");
-			KeyMappings.Add(KeyboardKeys.Z, "z", "Z");
-			KeyMappings.Add(KeyboardKeys.NumPad0, "0", "0");
-			KeyMappings.Add(KeyboardKeys.NumPad1, "1", "1");
-			KeyMappings.Add(KeyboardKeys.NumPad2, "2", "2");
-			KeyMappings.Add(KeyboardKeys.NumPad3, "3", "3");
-			KeyMappings.Add(KeyboardKeys.NumPad4, "4", "4");
-			KeyMappings.Add(KeyboardKeys.NumPad5, "5", "5");
-			KeyMappings.Add(KeyboardKeys.NumPad6, "6", "6");
-			KeyMappings.Add(KeyboardKeys.NumPad7, "7", "7");
-			KeyMappings.Add(KeyboardKeys.NumPad8, "8", "8");
-			KeyMappings.Add(KeyboardKeys.NumPad9, "9", "9");
-			KeyMappings.Add(KeyboardKeys.Multiply, "*", "*");
-			KeyMappings.Add(KeyboardKeys.Add, "+", "+");
-			KeyMappings.Add(KeyboardKeys.Subtract, "-", "-");
-			KeyMappings.Add(KeyboardKeys.Divide, "/", "/");
-			KeyMappings.Add(KeyboardKeys.OemPipe, @"\", "|");
-			KeyMappings.Add(KeyboardKeys.Oem1, ";", ":");
-			KeyMappings.Add(KeyboardKeys.OemSemicolon, ";", ":");
-			KeyMappings.Add(KeyboardKeys.Oemplus, "=", "+");
-			KeyMappings.Add(KeyboardKeys.Oemcomma, ",", "<");
-			KeyMappings.Add(KeyboardKeys.OemMinus, "-", "_");
-			KeyMappings.Add(KeyboardKeys.OemPeriod, ".", ">");
-			KeyMappings.Add(KeyboardKeys.OemQuestion, "/", "?");
-			KeyMappings.Add(KeyboardKeys.Oemtilde, "`", "~");
-			KeyMappings.Add(KeyboardKeys.OemOpenBrackets, "[", "{");
-			KeyMappings.Add(KeyboardKeys.Oem6, "]", "}");
-			KeyMappings.Add(KeyboardKeys.Oem7, "\'", "\"");
-			KeyMappings.Add(KeyboardKeys.OemBackslash, "\\", "|");
+			KeyMappings.Add(KeyboardKeys.Tab, '\t', '\t');
+			KeyMappings.Add(KeyboardKeys.Return, '\n', '\n');
+			KeyMappings.Add(KeyboardKeys.Space, ' ', ' ');
+			KeyMappings.Add(KeyboardKeys.D0, '0', ')');
+			KeyMappings.Add(KeyboardKeys.D1, '1', '!');
+			KeyMappings.Add(KeyboardKeys.D2, '2', '@');
+			KeyMappings.Add(KeyboardKeys.D3, '3', '#');
+			KeyMappings.Add(KeyboardKeys.D4, '4', '$');
+			KeyMappings.Add(KeyboardKeys.D5, '5', '%');
+			KeyMappings.Add(KeyboardKeys.D6, '6', '^');
+			KeyMappings.Add(KeyboardKeys.D7, '7', '&');
+			KeyMappings.Add(KeyboardKeys.D8, '8', '*');
+			KeyMappings.Add(KeyboardKeys.D9, '9', '(');
+			KeyMappings.Add(KeyboardKeys.A, 'a', 'A');
+			KeyMappings.Add(KeyboardKeys.B, 'b', 'B');
+			KeyMappings.Add(KeyboardKeys.C, 'c', 'C');
+			KeyMappings.Add(KeyboardKeys.D, 'd', 'D');
+			KeyMappings.Add(KeyboardKeys.E, 'e', 'E');
+			KeyMappings.Add(KeyboardKeys.F, 'f', 'F');
+			KeyMappings.Add(KeyboardKeys.G, 'g', 'G');
+			KeyMappings.Add(KeyboardKeys.H, 'h', 'H');
+			KeyMappings.Add(KeyboardKeys.I, 'i', 'I');
+			KeyMappings.Add(KeyboardKeys.J, 'j', 'J');
+			KeyMappings.Add(KeyboardKeys.K, 'k', 'K');
+			KeyMappings.Add(KeyboardKeys.L, 'l', 'L');
+			KeyMappings.Add(KeyboardKeys.M, 'm', 'M');
+			KeyMappings.Add(KeyboardKeys.N, 'n', 'N');
+			KeyMappings.Add(KeyboardKeys.O, 'o', 'O');
+			KeyMappings.Add(KeyboardKeys.P, 'p', 'P');
+			KeyMappings.Add(KeyboardKeys.Q, 'q', 'Q');
+			KeyMappings.Add(KeyboardKeys.R, 'r', 'R');
+			KeyMappings.Add(KeyboardKeys.S, 's', 'S');
+			KeyMappings.Add(KeyboardKeys.T, 't', 'T');
+			KeyMappings.Add(KeyboardKeys.U, 'u', 'U');
+			KeyMappings.Add(KeyboardKeys.V, 'v', 'V');
+			KeyMappings.Add(KeyboardKeys.W, 'w', 'W');
+			KeyMappings.Add(KeyboardKeys.X, 'x', 'X');
+			KeyMappings.Add(KeyboardKeys.Y, 'y', 'Y');
+			KeyMappings.Add(KeyboardKeys.Z, 'z', 'Z');
+			KeyMappings.Add(KeyboardKeys.NumPad0, '0', '0');
+			KeyMappings.Add(KeyboardKeys.NumPad1, '1', '1');
+			KeyMappings.Add(KeyboardKeys.NumPad2, '2', '2');
+			KeyMappings.Add(KeyboardKeys.NumPad3, '3', '3');
+			KeyMappings.Add(KeyboardKeys.NumPad4, '4', '4');
+			KeyMappings.Add(KeyboardKeys.NumPad5, '5', '5');
+			KeyMappings.Add(KeyboardKeys.NumPad6, '6', '6');
+			KeyMappings.Add(KeyboardKeys.NumPad7, '7', '7');
+			KeyMappings.Add(KeyboardKeys.NumPad8, '8', '8');
+			KeyMappings.Add(KeyboardKeys.NumPad9, '9', '9');
+			KeyMappings.Add(KeyboardKeys.Multiply, '*', '*');
+			KeyMappings.Add(KeyboardKeys.Add, '+', '+');
+			KeyMappings.Add(KeyboardKeys.Subtract, '-', '-');
+			KeyMappings.Add(KeyboardKeys.Divide, '/', '/');
+			KeyMappings.Add(KeyboardKeys.OemPipe, '\\', '|');
+			KeyMappings.Add(KeyboardKeys.Oem1, ';', ':');
+			KeyMappings.Add(KeyboardKeys.OemSemicolon, ';', ':');
+			KeyMappings.Add(KeyboardKeys.Oemplus, '=', '+');
+			KeyMappings.Add(KeyboardKeys.Oemcomma, ',', '<');
+			KeyMappings.Add(KeyboardKeys.OemMinus, '-', '_');
+			KeyMappings.Add(KeyboardKeys.OemPeriod, '.', '>');
+			KeyMappings.Add(KeyboardKeys.OemQuestion, '/', '?');
+			KeyMappings.Add(KeyboardKeys.Oemtilde, '`', '~');
+			KeyMappings.Add(KeyboardKeys.OemOpenBrackets, '[', '{');
+			KeyMappings.Add(KeyboardKeys.Oem6, ']', '}');
+			KeyMappings.Add(KeyboardKeys.Oem7, '\'', '\"');
+			KeyMappings.Add(KeyboardKeys.OemBackslash, '\\', '|');
 		}
 		#endregion
 

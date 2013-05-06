@@ -742,8 +742,10 @@ namespace GorgonLibrary.Renderers
 			}
 			set
 			{
-				if (value != Color.Alpha)
-					Color = new GorgonColor(Color.Red, Color.Green, Color.Blue, value);
+			    if (value != Color.Alpha)
+			    {
+			        Color = new GorgonColor(Color, value);
+			    }
 			}
 		}
 
@@ -760,12 +762,12 @@ namespace GorgonLibrary.Renderers
 			}
 			set
 			{
-				GorgonColor current = Vertices[0].Color;
-
-				if (value != current)
+				if (value != Vertices[0].Color)
 				{
-					for (int i = 0; i < Vertices.Length; i++)
-						Vertices[i].Color = value;
+				    for (int i = 0; i < Vertices.Length; i++)
+				    {
+				        Vertices[i].Color = value;
+				    }
 				}
 			}
 		}

@@ -29,12 +29,14 @@ using System.Drawing;
 using System.Runtime.InteropServices;
 using SlimMath;
 using GorgonLibrary.Math;
+using GorgonLibrary.Graphics.Properties;
 
 namespace GorgonLibrary.Graphics
 {
 	/// <summary>
 	/// 4 component (Red, Green, Blue, and Alpha) color value.
 	/// </summary>
+	/// <remarks>This type is immutable.</remarks>
 	[StructLayout(LayoutKind.Sequential)]
 	public struct GorgonColor
 		: IEquatable<GorgonColor>
@@ -43,19 +45,19 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Red color channel.
 		/// </summary>
-		public float Red;
+		public readonly float Red;
 		/// <summary>
 		/// Green color channel.
 		/// </summary>
-		public float Green;
+        public readonly float Green;
 		/// <summary>
 		/// Blue color channel.
 		/// </summary>
-		public float Blue;
+        public readonly float Blue;
 		/// <summary>
 		/// Alpha channel.
 		/// </summary>
-		public float Alpha;
+        public readonly float Alpha;
 
 		/// <summary>
 		/// A completely transparent color.
@@ -105,10 +107,12 @@ namespace GorgonLibrary.Graphics
 		/// </returns>
 		public override bool Equals(object obj)
 		{
-			if (obj is GorgonColor)
-				return Equals((GorgonColor)obj);
+		    if (obj is GorgonColor)
+		    {
+		        return Equals((GorgonColor)obj);
+		    }
 
-			return base.Equals(obj);
+		    return base.Equals(obj);
 		}
 
 		/// <summary>
@@ -156,7 +160,8 @@ namespace GorgonLibrary.Graphics
 		/// <returns>TRUE if equal, FALSE if not.</returns>
 		public static bool Equals(ref GorgonColor left, ref GorgonColor right)
 		{
-			return (left.Red == right.Red) && (left.Green == right.Green) && (left.Blue == right.Blue) && (left.Alpha == right.Alpha);
+		    return (left.Red.EqualsEpsilon(right.Red)) && (left.Green.EqualsEpsilon(right.Green)) &&
+		           (left.Blue.EqualsEpsilon(right.Blue)) && (left.Alpha.EqualsEpsilon(right.Alpha));
 		}
 
 		/// <summary>
@@ -181,8 +186,20 @@ namespace GorgonLibrary.Graphics
 		/// </returns>
 		public override string ToString()
 		{
-			return string.Format("Color Value: Red={0}, Green={1}, Blue={2}, Alpha={3}", Red, Green, Blue, Alpha);
+		    return string.Format(Resources.GORGFX_COLOR_TOSTR, Red, Green, Blue, Alpha);
 		}
+
+        /// <summary>
+        /// Function to apply an alpha value to the specified color.
+        /// </summary>
+        /// <param name="color">Color to update.</param>
+        /// <param name="alpha">Alpha value to set.</param>
+        /// <param name="result">The resulting updated color.</param>
+        /// <returns>A new color instance with the same RGB values but a modified alpha component.</returns>
+        public static void SetAlpha(ref GorgonColor color, float alpha, out GorgonColor result)
+        {
+            result = new GorgonColor(color, alpha);
+        }
 
 		/// <summary>
 		/// Function to perform linear interpolation between two colors.
@@ -192,12 +209,11 @@ namespace GorgonLibrary.Graphics
 		/// <param name="weight">Value between 0 and 1.0f to indicate weight.</param>
 		public static GorgonColor Lerp(GorgonColor start, GorgonColor end, float weight)
 		{
-			GorgonColor outColor = GorgonColor.Transparent;
-
-			outColor.Alpha = start.Alpha + ((end.Alpha - start.Alpha) * weight);
-			outColor.Red = start.Red + ((end.Red - start.Red) * weight);
-			outColor.Green = start.Green + ((end.Green - start.Green) * weight);
-			outColor.Blue = start.Blue + ((end.Blue - start.Blue) * weight);
+		    var outColor = new GorgonColor(
+		        start.Red + ((end.Red - start.Red) * weight),
+		        start.Green + ((end.Green - start.Green) * weight),
+		        start.Blue + ((end.Blue - start.Blue) * weight),
+		        start.Alpha + ((end.Alpha - start.Alpha) * weight));
 
 			return outColor;
 		}
@@ -211,10 +227,10 @@ namespace GorgonLibrary.Graphics
 		/// <param name="outColor">The resulting color.</param>
 		public static void Lerp(ref GorgonColor start, ref GorgonColor end, float weight, out GorgonColor outColor)
 		{
-			outColor.Alpha = start.Alpha + ((end.Alpha - start.Alpha) * weight);
-			outColor.Red = start.Red + ((end.Red - start.Red) * weight);
-			outColor.Green = start.Green + ((end.Green - start.Green) * weight);
-			outColor.Blue = start.Blue + ((end.Blue - start.Blue) * weight);
+            outColor = new GorgonColor(start.Red + ((end.Red - start.Red) * weight),
+                start.Green + ((end.Green - start.Green) * weight),
+                start.Blue + ((end.Blue - start.Blue) * weight),
+                start.Alpha + ((end.Alpha - start.Alpha) * weight));
 		}
 
 		/// <summary>
@@ -225,10 +241,10 @@ namespace GorgonLibrary.Graphics
 		/// <param name="outColor">Total of two colors.</param>
 		public static void Add(ref GorgonColor left, ref GorgonColor right, out GorgonColor outColor)
 		{
-			outColor.Alpha = left.Alpha + right.Alpha;
-			outColor.Red = left.Red + right.Red;
-			outColor.Green = left.Green + right.Green;
-			outColor.Blue = left.Blue + right.Blue;
+            outColor = new GorgonColor(left.Red + right.Red,
+                                        left.Green + right.Green,
+                                        left.Blue + right.Blue,
+                                        left.Alpha + right.Alpha);
 		}
 
 		/// <summary>
@@ -239,11 +255,11 @@ namespace GorgonLibrary.Graphics
 		/// <param name="outColor">Difference between the two colors.</param>
 		public static void Subtract(ref GorgonColor left, ref GorgonColor right, out GorgonColor outColor)
 		{
-			outColor.Alpha = left.Alpha - right.Alpha;
-			outColor.Red = left.Red - right.Red;
-			outColor.Green = left.Green - right.Green;
-			outColor.Blue = left.Blue - right.Blue;
-		}
+            outColor = new GorgonColor(left.Red - right.Red,
+                                        left.Green - right.Green,
+                                        left.Blue - right.Blue,
+                                        left.Alpha - right.Alpha);
+        }
 
 		/// <summary>
 		/// Function to multiply two colors.
@@ -253,10 +269,10 @@ namespace GorgonLibrary.Graphics
 		/// <param name="outColor">Product of the two colors.</param>
 		public static void Multiply(ref GorgonColor left, ref GorgonColor right, out GorgonColor outColor)
 		{
-			outColor.Alpha = left.Alpha * right.Alpha;
-			outColor.Red = left.Red * right.Red;
-			outColor.Green = left.Green * right.Green;
-			outColor.Blue = left.Blue * right.Blue;
+            outColor = new GorgonColor(left.Red * right.Red,
+                                        left.Green * right.Green,
+                                        left.Blue * right.Blue,
+                                        left.Alpha * right.Alpha);
 		}
 
 		/// <summary>
@@ -267,10 +283,10 @@ namespace GorgonLibrary.Graphics
 		/// <param name="outColor">Product of the color and the value.</param>
 		public static void Multiply(ref GorgonColor color, float value, out GorgonColor outColor)
 		{
-			outColor.Alpha = color.Alpha * value;
-			outColor.Red = color.Red * value;
-			outColor.Green = color.Green * value;
-			outColor.Blue = color.Blue * value;
+		    outColor = new GorgonColor(color.Red * value,
+		                               color.Green * value,
+		                               color.Blue * value,
+		                               color.Alpha * value);
 		}
 
 		/// <summary>
@@ -279,7 +295,8 @@ namespace GorgonLibrary.Graphics
 		/// <returns>The packed color value.</returns>
 		public int ToARGB()
 		{
-			uint result = (((uint)(Alpha * 255.0f)) & 0xff) << 24 | (((uint)(Red * 255.0f)) & 0xff) << 16 | (((uint)(Green * 255.0f)) & 0xff) << 8 | ((uint)(Blue * 255.0f)) & 0xff;
+		    uint result = (((uint)(Alpha * 255.0f)) & 0xff) << 24 | (((uint)(Red * 255.0f)) & 0xff) << 16 |
+		                  (((uint)(Green * 255.0f)) & 0xff) << 8 | ((uint)(Blue * 255.0f)) & 0xff;
 			return (int)result;
 		}
 
@@ -289,7 +306,8 @@ namespace GorgonLibrary.Graphics
 		/// <returns>The packed color value.</returns>
 		public int ToRGBA()
 		{
-			uint result = (((uint)(Red * 255.0f)) & 0xff) << 24 | (((uint)(Green * 255.0f)) & 0xff) << 16 | (((uint)(Blue * 255.0f)) & 0xff) << 8 | ((uint)(Alpha * 255.0f)) & 0xff;
+		    uint result = (((uint)(Red * 255.0f)) & 0xff) << 24 | (((uint)(Green * 255.0f)) & 0xff) << 16 |
+		                  (((uint)(Blue * 255.0f)) & 0xff) << 8 | ((uint)(Alpha * 255.0f)) & 0xff;
 			return (int)result;
 		}
 
@@ -299,7 +317,8 @@ namespace GorgonLibrary.Graphics
 		/// <returns>The packed color value.</returns>
 		public int ToBGRA()
 		{
-			uint result = (((uint)(Blue * 255.0f)) & 0xff) << 24 | (((uint)(Green * 255.0f)) & 0xff) << 16 | (((uint)(Red * 255.0f)) & 0xff) << 8 | ((uint)(Alpha * 255.0f)) & 0xff;
+		    uint result = (((uint)(Blue * 255.0f)) & 0xff) << 24 | (((uint)(Green * 255.0f)) & 0xff) << 16 |
+		                  (((uint)(Red * 255.0f)) & 0xff) << 8 | ((uint)(Alpha * 255.0f)) & 0xff;
 			return (int)result;
 		}
 
@@ -309,7 +328,8 @@ namespace GorgonLibrary.Graphics
 		/// <returns>The packed color value.</returns>
 		public int ToABGR()
 		{
-			uint result = (((uint)(Alpha * 255.0f)) & 0xff) << 24 | (((uint)(Blue * 255.0f)) & 0xff) << 16 | (((uint)(Green * 255.0f)) & 0xff) << 8 | ((uint)(Red * 255.0f)) & 0xff;
+		    uint result = (((uint)(Alpha * 255.0f)) & 0xff) << 24 | (((uint)(Blue * 255.0f)) & 0xff) << 16 |
+		                  (((uint)(Green * 255.0f)) & 0xff) << 8 | ((uint)(Red * 255.0f)) & 0xff;
 			return (int)result;
 		}
 
@@ -350,9 +370,9 @@ namespace GorgonLibrary.Graphics
 		/// <returns>The result of the operator.</returns>
 		public static GorgonColor operator +(GorgonColor left, GorgonColor right)
 		{
-			GorgonColor result = new GorgonColor();
+			GorgonColor result;
 
-			GorgonColor.Add(ref left, ref right, out result);
+			Add(ref left, ref right, out result);
 
 			return result;
 		}
@@ -365,9 +385,9 @@ namespace GorgonLibrary.Graphics
 		/// <returns>The result of the operator.</returns>
 		public static GorgonColor operator -(GorgonColor left, GorgonColor right)
 		{
-			GorgonColor result = new GorgonColor();
+			GorgonColor result;
 
-			GorgonColor.Subtract(ref left, ref right, out result);
+			Subtract(ref left, ref right, out result);
 
 			return result;
 		}
@@ -380,9 +400,9 @@ namespace GorgonLibrary.Graphics
 		/// <returns>The result of the operator.</returns>
 		public static GorgonColor operator *(GorgonColor left, GorgonColor right)
 		{
-			GorgonColor result = new GorgonColor();
+			GorgonColor result;
 
-			GorgonColor.Multiply(ref left, ref right, out result);
+			Multiply(ref left, ref right, out result);
 
 			return result;
 		}
@@ -395,9 +415,9 @@ namespace GorgonLibrary.Graphics
 		/// <returns>The result of the operator.</returns>
 		public static GorgonColor operator *(GorgonColor color, float value)
 		{
-			GorgonColor result = new GorgonColor();
+			GorgonColor result;
 
-			GorgonColor.Multiply(ref color, value, out result);
+			Multiply(ref color, value, out result);
 
 			return result;
 		}
@@ -410,7 +430,7 @@ namespace GorgonLibrary.Graphics
 		/// <returns>The result of the operator.</returns>
 		public static bool operator ==(GorgonColor left, GorgonColor right)
 		{
-			return GorgonColor.Equals(ref left, ref right);
+			return Equals(ref left, ref right);
 		}
 
 		/// <summary>
@@ -421,7 +441,7 @@ namespace GorgonLibrary.Graphics
 		/// <returns>The result of the operator.</returns>
 		public static bool operator !=(GorgonColor left, GorgonColor right)
 		{
-			return !GorgonColor.Equals(ref left, ref right);
+			return !Equals(ref left, ref right);
 		}
 
 		/// <summary>
@@ -557,10 +577,10 @@ namespace GorgonLibrary.Graphics
 		/// <param name="argb">Packed color components..</param>
 		public GorgonColor(int argb)			
 		{
-			Alpha = ((float)((argb >> 24) & 0xff)) / 255.0f;
-			Red = ((float)((argb >> 16) & 0xff)) / 255.0f;
-			Green = ((float)((argb >> 8) & 0xff)) / 255.0f;
-			Blue = ((float)(argb & 0xff)) / 255.0f;
+			Alpha = ((argb >> 24) & 0xff) / 255.0f;
+			Red = ((argb >> 16) & 0xff) / 255.0f;
+			Green = ((argb >> 8) & 0xff) / 255.0f;
+			Blue = (argb & 0xff) / 255.0f;
 		}
 
 		/// <summary>
@@ -569,10 +589,10 @@ namespace GorgonLibrary.Graphics
 		/// <param name="color">The .NET color value to convert.</param>
 		public GorgonColor(Color color)
 		{
-			Alpha = ((float)color.A) / 255.0f;
-			Red = ((float)color.R) / 255.0f;
-			Green = ((float)color.G) / 255.0f;
-			Blue = ((float)color.B) / 255.0f;
+			Alpha = color.A / 255.0f;
+			Red = color.R / 255.0f;
+			Green = color.G / 255.0f;
+			Blue = color.B / 255.0f;
 		}
 
 		/// <summary>
@@ -590,8 +610,21 @@ namespace GorgonLibrary.Graphics
 		/// <param name="color">The 3D vector to convert to a color.</param>
 		public GorgonColor(Vector4 color)
 			: this(color.X, color.Y, color.Z, color.W)
-		{
-		}
+		{}
+
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GorgonColor"/> struct.
+        /// </summary>
+        /// <param name="color">The base RGB color.</param>
+        /// <param name="alpha">The alpha value to assign to the color.</param>
+        public GorgonColor(GorgonColor color, float alpha)
+        {
+            Red = color.Red;
+            Green = color.Green;
+            Blue = color.Blue;
+            Alpha = alpha;
+        }
 		#endregion
 
 		#region IEquatable<GorgonColor> Members
@@ -604,7 +637,7 @@ namespace GorgonLibrary.Graphics
 		/// </returns>
 		public bool Equals(GorgonColor other)
 		{
-			return GorgonColor.Equals(ref this, ref other);
+			return Equals(ref this, ref other);
 		}
 		#endregion
 	}

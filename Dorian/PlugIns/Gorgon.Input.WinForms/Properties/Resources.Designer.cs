@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace GorgonLibrary.Graphics.Properties {
+namespace GorgonLibrary.Input.WinForms.Properties {
     using System;
     
     
@@ -39,7 +39,7 @@ namespace GorgonLibrary.Graphics.Properties {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("GorgonLibrary.Graphics.Properties.Resources", typeof(Resources).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("GorgonLibrary.Input.WinForms.Properties.Resources", typeof(Resources).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -61,57 +61,11 @@ namespace GorgonLibrary.Graphics.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Color Value: Red={0}, Green={1}, Blue={2}, Alpha={3}..
+        ///   Looks up a localized string similar to This plug-in only supports pointing devices and keyboards..
         /// </summary>
-        internal static string GORGFX_COLOR_TOSTR {
+        internal static string GORINP_WIN_KEYBOARD_MOUSE_ONLY {
             get {
-                return ResourceManager.GetString("GORGFX_COLOR_TOSTR", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Must supply a known feature level..
-        /// </summary>
-        internal static string GORGFX_FEATURE_LEVEL_UNKNOWN {
-            get {
-                return ResourceManager.GetString("GORGFX_FEATURE_LEVEL_UNKNOWN", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Image pitch information.  Width={0} bytes, Size={1} bytes.  Format is compressed. Block count width: {2}, Block count height: {3}.
-        /// </summary>
-        internal static string GORGFX_FMTPITCH_COMPRESSED_TOSTR {
-            get {
-                return ResourceManager.GetString("GORGFX_FMTPITCH_COMPRESSED_TOSTR", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Image pitch information.  Width={0} bytes, Size={1} bytes..
-        /// </summary>
-        internal static string GORGFX_FMTPITCH_TOSTR {
-            get {
-                return ResourceManager.GetString("GORGFX_FMTPITCH_TOSTR", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The Gorgon Graphics interface requires Windows Vista Service Pack 2 or greater..
-        /// </summary>
-        internal static string GORGFX_INVALID_OS {
-            get {
-                return ResourceManager.GetString("GORGFX_INVALID_OS", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap Gorgon_2_x_Logo_Small {
-            get {
-                object obj = ResourceManager.GetObject("Gorgon_2_x_Logo_Small", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
+                return ResourceManager.GetString("GORINP_WIN_KEYBOARD_MOUSE_ONLY", resourceCulture);
             }
         }
     }

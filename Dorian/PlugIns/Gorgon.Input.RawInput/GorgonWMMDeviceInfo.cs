@@ -24,10 +24,6 @@
 // 
 #endregion
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using GorgonLibrary.Native;
 
 namespace GorgonLibrary.Input.Raw
@@ -35,11 +31,11 @@ namespace GorgonLibrary.Input.Raw
 	/// <summary>
 	/// The WMM joystick implementation of a device name.
 	/// </summary>
-	internal class GorgonWMMDeviceInfo
+	internal class GorgonMultimediaDeviceInfo
 		: GorgonInputDeviceInfo
 	{
 		#region Variables.
-		private int _joyCapsSize = 0;			// Structure size of the JOYCAPS value type.
+		private readonly int _joyCapsSize;			// Structure size of the JOYCAPS value type.
 		#endregion
 
 		#region Properties.
@@ -75,7 +71,7 @@ namespace GorgonLibrary.Input.Raw
 		/// <param name="joystickID">The joystick ID.</param>
 		/// <exception cref="System.ArgumentException">The handle is set to 0.</exception>
 		/// <exception cref="System.ArgumentNullException">Either the name, className or hidPath are NULL or empty.</exception>
-		public GorgonWMMDeviceInfo(string name, string className, string hidPath, int joystickID)
+		public GorgonMultimediaDeviceInfo(string name, string className, string hidPath, int joystickID)
 			: base(name, InputDeviceType.Joystick, className, hidPath)
 		{
 			JoystickID = joystickID;

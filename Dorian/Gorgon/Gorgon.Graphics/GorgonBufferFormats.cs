@@ -26,18 +26,16 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Drawing;
-using SharpDX.DXGI;
-using GorgonLibrary;
+using System.Threading;
 using GorgonLibrary.Math;
-using GorgonLibrary.Collections;
+using GorgonLibrary.Graphics.Properties;
 
 namespace GorgonLibrary.Graphics
 {
+    // ReSharper disable InconsistentNaming
 	#region The Formats.
-	/// <summary>
+    /// <summary>
 	/// Various buffer formats supported for textures, rendertargets, swap chains and display modes.
 	/// </summary>
 	public enum BufferFormat
@@ -444,11 +442,12 @@ namespace GorgonLibrary.Graphics
 		BC7_UIntNormal_sRGB = 99
 	}
 	#endregion
+    // ReSharper restore InconsistentNaming
 
 	/// <summary>
 	/// Flags to handle legacy format types.
 	/// </summary>
-	[Flags()]
+	[Flags]
 	public enum PitchFlags
 	{
 		/// <summary>
@@ -481,8 +480,9 @@ namespace GorgonLibrary.Graphics
 	/// number of bytes required to move to the next depth slice in a 3D texture.</remarks>
 	public struct GorgonFormatPitch
 		: IEquatable<GorgonFormatPitch>
-	{
-		/// <summary>
+    {
+        #region Variables.
+        /// <summary>
 		/// The number of bytes per line of data.
 		/// </summary>
 		/// <remarks>In a texture, this would indicate the number of bytes necessary for one row of pixel data.</remarks>
@@ -498,8 +498,10 @@ namespace GorgonLibrary.Graphics
 		/// The number of blocks in a compressed format.
 		/// </summary>
 		public readonly Size BlockCount;
+        #endregion
 
-		/// <summary>
+        #region Methods.
+        /// <summary>
 		/// Function to compare two instances for equality.
 		/// </summary>
 		/// <param name="left">Left instance to compare.</param>
@@ -522,7 +524,7 @@ namespace GorgonLibrary.Graphics
 		{
 			if (obj is GorgonFormatPitch)
 			{
-				this.Equals((GorgonFormatPitch)obj);	
+				return Equals((GorgonFormatPitch)obj);	
 			}
 
 			return base.Equals(obj);
@@ -547,17 +549,15 @@ namespace GorgonLibrary.Graphics
 		/// </returns>
 		public override string ToString()
 		{
-			if (BlockCount.IsEmpty)
+		    if (BlockCount.IsEmpty)
 			{
-				return string.Format("Image pitch information.  Width={0} bytes, Size={1} bytes.", RowPitch, SlicePitch);
+				return string.Format(Resources.GORGFX_FMTPITCH_TOSTR, RowPitch, SlicePitch);
 			}
-			else
-			{
-				return string.Format("Image pitch information.  Width={0} bytes, Size={1} bytes.  Format is compressed. Block count width: {2}, Block count height: {3}", RowPitch, SlicePitch, BlockCount.Width, BlockCount.Height);
-			}
+
+		    return string.Format(Resources.GORGFX_FMTPITCH_COMPRESSED_TOSTR, RowPitch, SlicePitch, BlockCount.Width, BlockCount.Height);
 		}
 
-		/// <summary>
+	    /// <summary>
 		/// Equality operator.
 		/// </summary>
 		/// <param name="left">The left instance to compare.</param>
@@ -578,8 +578,10 @@ namespace GorgonLibrary.Graphics
 		{
 			return !Equals(ref left, ref right);
 		}
-		
-		/// <summary>
+        #endregion
+
+        #region Constructor.
+        /// <summary>
 		/// Initializes a new instance of the <see cref="GorgonFormatPitch" /> struct.
 		/// </summary>
 		/// <param name="rowPitch">The row pitch.</param>
@@ -603,9 +605,10 @@ namespace GorgonLibrary.Graphics
 			SlicePitch = slicePitch;
 			BlockCount = Size.Empty;
 		}
+        #endregion
 
-		#region IEquatable<GorgonFormatPitch> Members
-		/// <summary>
+        #region IEquatable<GorgonFormatPitch> Members
+        /// <summary>
 		/// Function to compare two instances for equality.
 		/// </summary>
 		/// <param name="other">The other instance to compare to this one.</param>
@@ -629,7 +632,7 @@ namespace GorgonLibrary.Graphics
 		public class GorgonFormatData
 		{
 			#region Variables.
-			private int _sizeInBytes = 0;
+			private int _sizeInBytes;
 			#endregion
 
 			#region Properties.
@@ -679,10 +682,14 @@ namespace GorgonLibrary.Graphics
 					if (_sizeInBytes == 0)
 					{
 						// Can't have a data type smaller than 1 byte.
-						if (BitDepth >= 8)
-							_sizeInBytes = BitDepth / 8;
-						else
-							_sizeInBytes = 1;
+					    if (BitDepth >= 8)
+					    {
+					        _sizeInBytes = BitDepth / 8;
+					    }
+					    else
+					    {
+					        _sizeInBytes = 1;
+					    }
 					}
 
 					return _sizeInBytes;
@@ -1180,7 +1187,7 @@ namespace GorgonLibrary.Graphics
 				GetDepthState(format);
 				GetBitDepth(format);
 
-				IsPacked = (format == BufferFormat.R8G8_B8G8_UIntNormal) || (format == BufferFormat.G8R8_G8B8_UIntNormal);
+			    IsPacked = (format == BufferFormat.R8G8_B8G8_UIntNormal) || (format == BufferFormat.G8R8_G8B8_UIntNormal);
 			}
 
 			/// <summary>
@@ -1192,14 +1199,12 @@ namespace GorgonLibrary.Graphics
 			/// <returns>The pitch information for the format.</returns>
 			public GorgonFormatPitch GetPitch(int width, int height, PitchFlags flags)
 			{
-				int rowPitch = 0;
-				int widthCounter = width;
-				int heightCounter = height;
+				int rowPitch;
 
-				// Do calculations for compressed formats.
+			    // Do calculations for compressed formats.
 				if (IsCompressed)
 				{
-					int bpb = 0;
+					int bpb;
 
 					switch (Format)
 					{
@@ -1216,9 +1221,10 @@ namespace GorgonLibrary.Graphics
 							break;
 					}
 
-					widthCounter = 1.Max((width + 3) / 4);
-					heightCounter = 1.Max((height + 3) / 4);
+					int widthCounter = 1.Max((width + 3) / 4);
+					int heightCounter = 1.Max((height + 3) / 4);
 					rowPitch = widthCounter * bpb;
+
 					return new GorgonFormatPitch(widthCounter * bpb, heightCounter * rowPitch, new Size(widthCounter, heightCounter));
 				}
 
@@ -1299,8 +1305,8 @@ namespace GorgonLibrary.Graphics
 		#endregion
 
 		#region Variables.
-		private static readonly object _syncLock = new object();
-		private static IDictionary<BufferFormat, GorgonFormatData> _formats = null;
+	    private static int _syncInc;  
+		private static readonly IDictionary<BufferFormat, GorgonFormatData> _formats;
 		#endregion
 
 		#region Methods.
@@ -1309,13 +1315,24 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		private static void GetFormatInfo()
 		{
-			lock (_syncLock)
-			{
-				BufferFormat[] formats = (BufferFormat[])Enum.GetValues(typeof(BufferFormat));
+		    try
+		    {
+		        if (Interlocked.Increment(ref _syncInc) > 1)
+		        {
+		            return;
+		        }
 
-				foreach (var format in formats)
-					_formats.Add(format, new GorgonFormatData(format));
-			}
+		        var formats = (BufferFormat[])Enum.GetValues(typeof(BufferFormat));
+
+		        foreach (var format in formats)
+		        {
+		            _formats.Add(format, new GorgonFormatData(format));
+		        }
+		    }
+		    finally
+		    {
+		        Interlocked.Decrement(ref _syncInc);
+		    }
 		}
 
 		/// <summary>
@@ -1325,10 +1342,12 @@ namespace GorgonLibrary.Graphics
 		/// <returns>The information for the format.  If the format is unknown, then the data for the Unknown GorgonBufferFormat will be returned.</returns>
 		public static GorgonFormatData GetInfo(BufferFormat format)
 		{
-			if (!_formats.ContainsKey(format))
-				return _formats[BufferFormat.Unknown];
+		    if (!_formats.ContainsKey(format))
+		    {
+		        return _formats[BufferFormat.Unknown];
+		    }
 
-			return _formats[format];
+		    return _formats[format];
 		}
 		#endregion
 

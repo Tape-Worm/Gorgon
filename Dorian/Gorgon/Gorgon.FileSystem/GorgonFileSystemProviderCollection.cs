@@ -266,23 +266,28 @@ namespace GorgonLibrary.IO
 		/// </summary>
 		public void UnloadAll()
 		{
-			if (Interlocked.Increment(ref _incVar) > 1)
-			{
-				return;
-			}
-
-			// Remove file system provider data.
-		    foreach (GorgonFileSystemProvider provider in this)
+		    try
 		    {
-		        provider.OnUnload();
+		        if (Interlocked.Increment(ref _incVar) > 1)
+		        {
+		            return;
+		        }
+
+		        // Remove file system provider data.
+		        foreach (GorgonFileSystemProvider provider in this)
+		        {
+		            provider.OnUnload();
+		        }
+
+		        ClearItems();
+
+		        // Clear any left over items and reset to the root directory.  Add the default folder file system provider.
+		        _fileSystem.Clear();
 		    }
-            
-		    ClearItems();
-
-			// Clear any left over items and reset to the root directory.  Add the default folder file system provider.
-			_fileSystem.Clear();
-
-			Interlocked.Decrement(ref _incVar);
+		    finally
+		    {
+		        Interlocked.Decrement(ref _incVar);
+		    }
 		}
 		#endregion
 
