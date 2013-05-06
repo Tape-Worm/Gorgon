@@ -119,8 +119,18 @@
 
 <div>
 	<pre>
-Apr 17/2013 - Version - Current
+May 6/2013 - Version - Current
 =============================================================================================== 
++ Added functionality to allow alpha blending (translucency) for GUILabel objects.  Set the
+  Alpha component to less than 255 (and greater than 0) to turn on the translucency. - TW
+  
+* Updated font property to no longer dispose of custom fonts.  It is now the responsibility of 
+  the user to dispose of the current custom font.
+  
++ Added font inheritance to GUI objects.  Now the GUI object will use the font of their owner
+  object (if there is an owner), or the desktop default font (if there is no owner).  This
+  allows real time updating to fonts that respects the control hierarchy in controls with text.
+  
 * Fixed design issue in GUI objects.  When the font was updated the existing captions weren't
   updated to reflect the new font. - TW
   
