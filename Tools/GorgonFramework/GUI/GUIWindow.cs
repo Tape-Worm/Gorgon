@@ -270,19 +270,10 @@ namespace GorgonLibrary.GUI
 				else
 					_captionTextLabel.Color = Drawing.Color.Gray;
 				_captionTextLabel.Position = new Vector2D(captionScreen.Left, captionScreen.Top);
+				_captionTextLabel.Font = Font;
 				_captionTextLabel.Draw();
 				Gorgon.CurrentClippingViewport = lastView;
 			}
-		}
-
-		/// <summary>
-		/// Function called when the font is changed.
-		/// </summary>
-		protected override void OnFontChanged()
-		{
-			base.OnFontChanged();
-
-			_captionTextLabel.Font = Font;
 		}
 
 		/// <summary>
@@ -504,7 +495,6 @@ namespace GorgonLibrary.GUI
 			_guiObjects = new GUIObjectCollection();
 			BackgroundColor = Drawing.Color.FromKnownColor(System.Drawing.KnownColor.Control);
 			WindowDimensions = new System.Drawing.Rectangle(x, y, width, height);			
-			Font = null;
 			Visible = true;
 			_captionTextLabel = new TextSprite("WindowCaptionLabel", name, Font, Drawing.Color.White);
 			_clipView = new Viewport(0, 0, 1, 1);
