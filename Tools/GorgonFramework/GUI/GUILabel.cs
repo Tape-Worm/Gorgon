@@ -110,16 +110,6 @@ namespace GorgonLibrary.GUI
 
 		#region Methods.
 		/// <summary>
-		/// Function called when the font is changed.
-		/// </summary>
-		protected override void OnFontChanged()
-		{
-			base.OnFontChanged();
-
-			_textLabel.Font = Font;
-		}
-
-		/// <summary>
 		/// Function called when a mouse event has taken place in this window.
 		/// </summary>
 		/// <param name="eventType">Type of event that should be fired.</param>
@@ -183,7 +173,25 @@ namespace GorgonLibrary.GUI
 
 			Gorgon.CurrentRenderTarget.BeginDrawing();
 			if (BackColor.A > 0)
-				Gorgon.CurrentRenderTarget.FilledRectangle(position.X, position.Y, WindowDimensions.Width, WindowDimensions.Height, BackColor);
+			{
+				var sourceMode = Gorgon.CurrentRenderTarget.SourceBlend;
+				var destMode = Gorgon.CurrentRenderTarget.DestinationBlend;
+
+				if (BackColor.A < 255)
+				{
+					Gorgon.CurrentRenderTarget.BlendingMode = BlendingModes.Modulated;
+				}
+
+				Gorgon.CurrentRenderTarget.FilledRectangle(position.X, position.Y, WindowDimensions.Width, WindowDimensions.Height,
+				                                           BackColor);
+
+				if (BackColor.A < 255)
+				{
+					Gorgon.CurrentRenderTarget.SourceBlend = sourceMode;
+					Gorgon.CurrentRenderTarget.DestinationBlend = destMode;
+				}
+			}
+
 			if (BorderStyle == PanelBorderStyle.Single)
 				Gorgon.CurrentRenderTarget.Rectangle(position.X, position.Y, WindowDimensions.Width, WindowDimensions.Height, Drawing.Color.Black);
 			Gorgon.CurrentRenderTarget.EndDrawing();
@@ -197,6 +205,7 @@ namespace GorgonLibrary.GUI
 			}
 
 			_textClipper.SetWindowDimensions(Gorgon.CurrentClippingViewport.Left, Gorgon.CurrentClippingViewport.Top, ClientArea.Width, ClientArea.Height);
+			_textLabel.Font = Font;
 			_textLabel.Draw();
 
 			if ((container != null) && (container.ClipChildren))
@@ -249,7 +258,6 @@ namespace GorgonLibrary.GUI
 		{
 			BackColor = Drawing.Color.Transparent;
 			Visible = true;
-			Font = null;
 			ForeColor = Drawing.Color.Black;
 			TextAlignment = Alignment.UpperLeft;
 			_textClipper = new Viewport(0, 0, 1, 1);
