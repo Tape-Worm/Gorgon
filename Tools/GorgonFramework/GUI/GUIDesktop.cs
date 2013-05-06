@@ -92,11 +92,17 @@ namespace GorgonLibrary.GUI
 			}
 			set
 			{
-				if (_defaultFont != null)
-					_defaultFont.Dispose();
-
 				if (value == null)
-					_defaultFont = new Font("DefaultGUIFont", "Arial", 9.0f, true, false, false, false);
+				{
+					if (!FontCache.Fonts.Contains("DefaultGUIFont"))
+					{
+						_defaultFont = new Font("DefaultGUIFont", "Arial", 9.0f, true, false, false, false);
+					}
+					else
+					{
+						_defaultFont = FontCache.Fonts["DefaultGUIFont"];
+					}
+				}
 				else
 					_defaultFont = value;
 			}
@@ -641,7 +647,7 @@ namespace GorgonLibrary.GUI
 				Cursor = new Sprite("DefaultCursor", Image.FromResource("DefaultCursorImage", GorgonLibrary.Framework.Properties.Resources.ResourceManager));
 			else
 				Cursor = _skin.Elements["Cursor.Default"].GetSprite();
-			_defaultFont = new Font("DefaultGUIFont", "Arial", 9.0f, true, false, false, false);
+			DefaultFont = null;
 		}
 		#endregion
 
@@ -663,8 +669,6 @@ namespace GorgonLibrary.GUI
 
 					_windows.Clear();
 
-					if (_defaultFont != null)
-						_defaultFont.Dispose();
 					if (_skin != null)
 						_skin.Dispose();
 				}
