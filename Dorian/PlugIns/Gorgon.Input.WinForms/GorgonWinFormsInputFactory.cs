@@ -27,6 +27,7 @@
 using System;
 using System.Collections.Generic;
 using Forms = System.Windows.Forms;
+using GorgonLibrary.Input.WinForms.Properties;
 
 namespace GorgonLibrary.Input.WinForms
 {
@@ -90,7 +91,7 @@ namespace GorgonLibrary.Input.WinForms
 		/// <exception cref="System.ArgumentNullException">The <paramRef name="hidInfo"/> is NULL.</exception>
 		protected override GorgonCustomHID CreateCustomHIDImpl(Forms.Control window, GorgonInputDeviceInfo hidInfo)
 		{
-			throw new NotImplementedException("This plug-in only supports mice and keyboards.");
+			throw new NotImplementedException(Resources.GORINP_WIN_KEYBOARD_MOUSE_ONLY);
 		}
 
 		/// <summary>
@@ -103,7 +104,7 @@ namespace GorgonLibrary.Input.WinForms
 		/// <para>Pass NULL to the <paramref name="window"/> parameter to use the <see cref="P:GorgonLibrary.Gorgon.ApplicationForm">Gorgon application window</see>.</para></remarks>
 		protected override GorgonKeyboard CreateKeyboardImpl(Forms.Control window, GorgonInputDeviceInfo keyboardInfo)
 		{
-			WinFormsKeyboard keyboard = new WinFormsKeyboard(this, window)
+			var keyboard = new WinFormsKeyboard(this, window)
 			    {
 			        Enabled = true
 			    };
@@ -122,7 +123,7 @@ namespace GorgonLibrary.Input.WinForms
 		/// </remarks>
 		protected override GorgonPointingDevice CreatePointingDeviceImpl(Forms.Control window, GorgonInputDeviceInfo pointingDeviceInfo)
 		{
-			WinFormsPointingDevice mouse = new WinFormsPointingDevice(this, window)
+			var mouse = new WinFormsPointingDevice(this, window)
 			    {
 			        Enabled = true
 			    };
@@ -140,7 +141,7 @@ namespace GorgonLibrary.Input.WinForms
 		/// <exception cref="System.ArgumentNullException">The <paramRef name="joystickInfo"/> is NULL.</exception>
 		protected override GorgonJoystick CreateJoystickImpl(Forms.Control window, GorgonInputDeviceInfo joystickInfo)
 		{
-			throw new NotImplementedException("This plug-in only supports mice and keyboards.");
+            throw new NotImplementedException(Resources.GORINP_WIN_KEYBOARD_MOUSE_ONLY);
 		}
 		#endregion
 
@@ -149,7 +150,7 @@ namespace GorgonLibrary.Input.WinForms
 		/// Initializes a new instance of the <see cref="GorgonWinFormsInputFactory"/> class.
 		/// </summary>
 		public GorgonWinFormsInputFactory()
-			: base("Gorgon.Input.WinForms")
+			: base("Gorgon Windows Forms Input")
 		{
 		}
 		#endregion

@@ -57,20 +57,26 @@ namespace GorgonLibrary.Graphics
 			get
 			{
 				// Keep other threads from creating this image multiple times.
-				if (Interlocked.Increment(ref _incrementCount) == 1)
-				{
-					if (_logo == null)
-					{
-						_logo = _graphics.Textures.Create2DTextureFromGDIImage("Gorgon.Logo", Properties.Resources.Gorgon_2_x_Logo_Small);
+			    try
+			    {
+			        if (Interlocked.Increment(ref _incrementCount) == 1)
+			        {
+			            if (_logo == null)
+			            {
+			                _logo = _graphics.Textures.Create2DTextureFromGDIImage("Gorgon.Logo",
+			                                                                       Properties.Resources.Gorgon_2_x_Logo_Small);
 
-						// Don't track this image.
-						_graphics.RemoveTrackedObject(GorgonLogo);
-				
-						Interlocked.Decrement(ref _incrementCount);
-					}
-				}
+			                // Don't track this image.
+			                _graphics.RemoveTrackedObject(GorgonLogo);
+			            }
+			        }
+			    }
+			    finally
+			    {
+                    Interlocked.Decrement(ref _incrementCount);
+			    }
 
-				return _logo;
+			    return _logo;
 			}
 		}
 

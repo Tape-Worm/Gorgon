@@ -117,6 +117,15 @@ namespace GorgonLibrary.Input.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Keyboard key &apos;{0}&apos; has not been assigned to a mapping..
         /// </summary>
+        internal static string GORINP_KEY_NOT_FOUND {
+            get {
+                return ResourceManager.GetString("GORINP_KEY_NOT_FOUND", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Keyboard key &apos;{0}&apos; has not been assigned to a mapping..
+        /// </summary>
         internal static string GORINP_KEYBOARD_KEY_NO_MAPPING {
             get {
                 return ResourceManager.GetString("GORINP_KEYBOARD_KEY_NO_MAPPING", resourceCulture);
@@ -129,6 +138,15 @@ namespace GorgonLibrary.Input.Properties {
         internal static string GORINP_KEYBOARD_NOT_FOUND {
             get {
                 return ResourceManager.GetString("GORINP_KEYBOARD_NOT_FOUND", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Virtual Key: {0}, Character: {1}, Shift+Character: {2}.
+        /// </summary>
+        internal static string GORINP_KEYCHARMAP_TOSTR {
+            get {
+                return ResourceManager.GetString("GORINP_KEYCHARMAP_TOSTR", resourceCulture);
             }
         }
         

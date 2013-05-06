@@ -24,10 +24,6 @@
 // 
 #endregion
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using D3D = SharpDX.Direct3D11;
 
 namespace GorgonLibrary.Graphics
@@ -70,7 +66,7 @@ namespace GorgonLibrary.Graphics
 		{
 			get
 			{
-				return new D3D.ResourceRegion()
+				return new D3D.ResourceRegion
 				{
 					Front = Front,
 					Back = Back,

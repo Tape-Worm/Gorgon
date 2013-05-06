@@ -24,14 +24,8 @@
 // 
 #endregion
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Drawing;
 using Forms = System.Windows.Forms;
 using GorgonLibrary.Diagnostics;
-using GorgonLibrary.Math;
 
 namespace GorgonLibrary.Input.WinForms
 {
@@ -120,49 +114,76 @@ namespace GorgonLibrary.Input.WinForms
 		/// <param name="doubleClick">TRUE if the event is from a double click, FALSE if not.</param>
 		/// <param name="state">The state for the button event.</param>
 		private void GetMouseData(Forms.MouseEventArgs e, bool doubleClick, ButtonState state)
-		{			 
-			if ((BoundControl == null) || (BoundControl.Disposing)) 
-				return;
-						
-			OnPointingDeviceWheelMove(e.Delta);
+		{
+		    if ((BoundControl == null) || (BoundControl.Disposing))
+		    {
+		        return;
+		    }
+
+		    OnPointingDeviceWheelMove(e.Delta);
 
 			// Get button data.
 			if ((e.Button & Forms.MouseButtons.Left) == Forms.MouseButtons.Left)
 			{
-				if (state == ButtonState.Down)
-					OnPointingDeviceDown(PointingDeviceButtons.Left);
-				if ((state == ButtonState.Up) || (doubleClick))
-					OnPointingDeviceUp(PointingDeviceButtons.Left, e.Clicks);
+			    if (state == ButtonState.Down)
+			    {
+			        OnPointingDeviceDown(PointingDeviceButtons.Left);
+			    }
+
+			    if ((state == ButtonState.Up) || (doubleClick))
+			    {
+			        OnPointingDeviceUp(PointingDeviceButtons.Left, e.Clicks);
+			    }
 			}
 
 			if ((e.Button & Forms.MouseButtons.Right) == Forms.MouseButtons.Right)
 			{
-				if (state == ButtonState.Down)
-					OnPointingDeviceDown(PointingDeviceButtons.Right);
-				if ((state == ButtonState.Up) || (doubleClick))
-					OnPointingDeviceUp(PointingDeviceButtons.Right, e.Clicks);
+			    if (state == ButtonState.Down)
+			    {
+			        OnPointingDeviceDown(PointingDeviceButtons.Right);
+			    }
+
+			    if ((state == ButtonState.Up) || (doubleClick))
+			    {
+			        OnPointingDeviceUp(PointingDeviceButtons.Right, e.Clicks);
+			    }
 			}
 
 			if ((e.Button & Forms.MouseButtons.Middle) == Forms.MouseButtons.Middle)
 			{
-				if (state == ButtonState.Down)
-					OnPointingDeviceDown(PointingDeviceButtons.Middle);
-				if ((state == ButtonState.Up) || (doubleClick))
-					OnPointingDeviceUp(PointingDeviceButtons.Middle, e.Clicks);
+			    if (state == ButtonState.Down)
+			    {
+			        OnPointingDeviceDown(PointingDeviceButtons.Middle);
+			    }
+
+			    if ((state == ButtonState.Up) || (doubleClick))
+			    {
+			        OnPointingDeviceUp(PointingDeviceButtons.Middle, e.Clicks);
+			    }
 			}
 			if ((e.Button & Forms.MouseButtons.XButton1) == Forms.MouseButtons.XButton1)
 			{
-				if (state == ButtonState.Down)
-					OnPointingDeviceDown(PointingDeviceButtons.Button4);
-				if ((state == ButtonState.Up) || (doubleClick))
-					OnPointingDeviceUp(PointingDeviceButtons.Button4, e.Clicks);
+			    if (state == ButtonState.Down)
+			    {
+			        OnPointingDeviceDown(PointingDeviceButtons.Button4);
+			    }
+
+			    if ((state == ButtonState.Up) || (doubleClick))
+			    {
+			        OnPointingDeviceUp(PointingDeviceButtons.Button4, e.Clicks);
+			    }
 			}
 			if ((e.Button & Forms.MouseButtons.XButton2) == Forms.MouseButtons.XButton2)
 			{
-				if (state == ButtonState.Down)
-					OnPointingDeviceDown(PointingDeviceButtons.Button5);
-				if ((state == ButtonState.Up) || (doubleClick))
-					OnPointingDeviceUp(PointingDeviceButtons.Button5, e.Clicks);
+			    if (state == ButtonState.Down)
+			    {
+			        OnPointingDeviceDown(PointingDeviceButtons.Button5);
+			    }
+
+			    if ((state == ButtonState.Up) || (doubleClick))
+			    {
+			        OnPointingDeviceUp(PointingDeviceButtons.Button5, e.Clicks);
+			    }
 			}
 
 			OnPointingDeviceMove(e.Location, true);
@@ -173,12 +194,12 @@ namespace GorgonLibrary.Input.WinForms
 		/// </summary>
 		protected override void BindDevice()
 		{
-			BoundControl.MouseMove += new Forms.MouseEventHandler(BoundWindow_MouseMove);
-			BoundControl.MouseDown += new Forms.MouseEventHandler(BoundWindow_MouseDown);
-			BoundControl.MouseUp += new Forms.MouseEventHandler(BoundWindow_MouseUp);
-			BoundControl.MouseDoubleClick += new Forms.MouseEventHandler(BoundWindow_MouseDoubleClick);
+			BoundControl.MouseMove += BoundWindow_MouseMove;
+			BoundControl.MouseDown += BoundWindow_MouseDown;
+			BoundControl.MouseUp += BoundWindow_MouseUp;
+			BoundControl.MouseDoubleClick += BoundWindow_MouseDoubleClick;
 			// Bind this to the form because some controls won't have focus and won't be able to fire the event.
-			BoundTopLevelForm.MouseWheel += new Forms.MouseEventHandler(BoundWindow_MouseWheel);
+			BoundTopLevelForm.MouseWheel += BoundWindow_MouseWheel;
 		}
 
 		/// <summary>
@@ -186,11 +207,11 @@ namespace GorgonLibrary.Input.WinForms
 		/// </summary>
 		protected override void UnbindDevice()
 		{
-			BoundControl.MouseMove -= new Forms.MouseEventHandler(BoundWindow_MouseMove);
-			BoundControl.MouseDown -= new Forms.MouseEventHandler(BoundWindow_MouseDown);
-			BoundControl.MouseUp -= new Forms.MouseEventHandler(BoundWindow_MouseUp);
-			BoundControl.MouseDoubleClick -= new Forms.MouseEventHandler(BoundWindow_MouseDoubleClick);
-			BoundTopLevelForm.MouseWheel -= new Forms.MouseEventHandler(BoundWindow_MouseWheel);
+			BoundControl.MouseMove -= BoundWindow_MouseMove;
+			BoundControl.MouseDown -= BoundWindow_MouseDown;
+			BoundControl.MouseUp -= BoundWindow_MouseUp;
+			BoundControl.MouseDoubleClick -= BoundWindow_MouseDoubleClick;
+			BoundTopLevelForm.MouseWheel -= BoundWindow_MouseWheel;
 		}
 		#endregion
 
@@ -202,7 +223,7 @@ namespace GorgonLibrary.Input.WinForms
 		/// <param name="boundWindow">The window to bind this device with.</param>
 		/// <exception cref="System.ArgumentNullException">Thrown when the owner parameter is NULL (or Nothing in VB.NET).</exception>
 		/// <remarks>Pass NULL (Nothing in VB.Net) to the <paramref name="boundWindow"/> parameter to use the <see cref="P:GorgonLibrary.Gorgon.ApplicationForm">Gorgon application window</see>.</remarks>
-		internal WinFormsPointingDevice(GorgonWinFormsInputFactory owner, Forms.Control boundWindow)
+		internal WinFormsPointingDevice(GorgonInputFactory owner, Forms.Control boundWindow)
 			: base(owner, "Win Forms Mouse", boundWindow)
 		{			
 			Gorgon.Log.Print("Raw input pointing device interface created.", LoggingLevel.Verbose);

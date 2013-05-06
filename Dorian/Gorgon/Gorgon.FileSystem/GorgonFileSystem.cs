@@ -1072,15 +1072,15 @@ namespace GorgonLibrary.IO
 		public void Refresh()
 		{
             // Don't allow multiple threads to refresh this file system more than once.
-		    if (Interlocked.Increment(ref _refreshSemaphore) > 1)
-		    {
-		        return;
-		    }
-
-		    string writeLocation = WriteLocation;
-
 		    try
 		    {
+		        if (Interlocked.Increment(ref _refreshSemaphore) > 1)
+		        {
+		            return;
+		        }
+
+		        string writeLocation = WriteLocation;
+
 		        RootDirectory.Directories.Clear();
 		        RootDirectory.Files.Clear();
 
@@ -1095,17 +1095,17 @@ namespace GorgonLibrary.IO
 		        {
 		            Mount(mountPoint.PhysicalPath, mountPoint.MountLocation);
 		        }
+
+                if (!string.IsNullOrWhiteSpace(writeLocation))
+                {
+                    _writeLocation = writeLocation;
+                    QueryWriteLocation();
+                }
 		    }
 		    finally
 		    {
-		        if (!string.IsNullOrWhiteSpace(writeLocation))
-		        {
-		            _writeLocation = writeLocation;
-		            QueryWriteLocation();
-		        }
+		        Interlocked.Decrement(ref _refreshSemaphore);
 		    }
-
-		    Interlocked.Decrement(ref _refreshSemaphore);
 		}
 
 		/// <summary>

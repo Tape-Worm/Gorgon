@@ -804,78 +804,80 @@ namespace GorgonLibrary.Editor
 			try
 			{
 				// Use a lockless pattern to keep this method from becoming reentrant.
-				if (Interlocked.Increment(ref _syncCounter) == 1)
-				{
-					Cursor.Current = Cursors.WaitCursor;
+			    if (Interlocked.Increment(ref _syncCounter) > 1)
+			    {
+			        return;
+			    }
 
-					try
+			    Cursor.Current = Cursors.WaitCursor;
+
+				try
+				{
+					if ((_cutCopyObject == null) || (_isCutOperation == null))
 					{
-						if ((_cutCopyObject == null) || (_isCutOperation == null))
+						return;
+					}
+
+					// If we're cutting/copying some tree node, then find the current node
+					// and perform the operation.
+					var node = FindNode(_cutCopyObject.ToString());
+
+					node.IsCut = false;
+					node.Redraw();
+
+					if (node != null)
+					{
+						TreeNodeDirectory dest = treeFiles.SelectedNode as TreeNodeDirectory;
+
+						if (dest == null)
 						{
+							GorgonDialogs.ErrorBox(this, "Cannot paste into a non-directory node.");
 							return;
 						}
 
-						// If we're cutting/copying some tree node, then find the current node
-						// and perform the operation.
-						var node = FindNode(_cutCopyObject.ToString());
-
-						node.IsCut = false;
-						node.Redraw();
-
-						if (node != null)
+						// If we're moving, there are some restrictions.
+						if ((dest == node) && (_isCutOperation.Value))
 						{
-							TreeNodeDirectory dest = treeFiles.SelectedNode as TreeNodeDirectory;
+							GorgonDialogs.ErrorBox(this, "Cannot cut and paste this item onto itself.");
+							return;
+						}
 
-							if (dest == null)
+						if ((_isCutOperation.Value) && (IsAncestor(dest, node)))
+						{
+							GorgonDialogs.ErrorBox(this, "Cannot cut and paste this item onto its child directories.");
+							return;
+						}
+
+						if (node is TreeNodeDirectory)
+						{
+							CopyDirectoryNode((TreeNodeDirectory)node, dest, node.Text, _isCutOperation.Value);
+						}
+
+						if (node is TreeNodeFile)
+						{
+							// Don't copy over the same file.
+							if ((dest == node.Parent) && (_isCutOperation.Value))
 							{
-								GorgonDialogs.ErrorBox(this, "Cannot paste into a non-directory node.");
 								return;
 							}
 
-							// If we're moving, there are some restrictions.
-							if ((dest == node) && (_isCutOperation.Value))
-							{
-								GorgonDialogs.ErrorBox(this, "Cannot cut and paste this item onto itself.");
-								return;
-							}
-
-							if ((_isCutOperation.Value) && (IsAncestor(dest, node)))
-							{
-								GorgonDialogs.ErrorBox(this, "Cannot cut and paste this item onto its child directories.");
-								return;
-							}
-
-							if (node is TreeNodeDirectory)
-							{
-								CopyDirectoryNode((TreeNodeDirectory)node, dest, node.Text, _isCutOperation.Value);
-							}
-
-							if (node is TreeNodeFile)
-							{
-								// Don't copy over the same file.
-								if ((dest == node.Parent) && (_isCutOperation.Value))
-								{
-									return;
-								}
-
-								CopyFileNode((TreeNodeFile)node, dest, node.Text, _isCutOperation.Value);
-							}
+							CopyFileNode((TreeNodeFile)node, dest, node.Text, _isCutOperation.Value);
 						}
 					}
-					catch (Exception ex)
+				}
+				catch (Exception ex)
+				{
+					GorgonDialogs.ErrorBox(this, ex);
+				}
+				finally
+				{
+					if ((_isCutOperation != null) && (_isCutOperation.Value))
 					{
-						GorgonDialogs.ErrorBox(this, ex);
+						_cutCopyObject = null;
+						_isCutOperation = null;
 					}
-					finally
-					{
-						if ((_isCutOperation != null) && (_isCutOperation.Value))
-						{
-							_cutCopyObject = null;
-							_isCutOperation = null;
-						}
-						ValidateControls();
-						Cursor.Current = Cursors.Default;
-					}
+					ValidateControls();
+					Cursor.Current = Cursors.Default;
 				}
 			}
 			finally

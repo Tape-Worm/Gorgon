@@ -28,12 +28,13 @@ using System;
 
 namespace GorgonLibrary.Native
 {
+    // ReSharper disable InconsistentNaming
 	#region Enumerations
 	/// <summary>
 	/// Enumeration containing the joystick information flags.
 	/// </summary>
-	[Flags()]
-	internal enum JoystickInfoFlags
+	[Flags]
+	enum JoystickInfoFlags
 	{
 		/// <summary></summary>
 		All = (ReturnX | ReturnY | ReturnZ | ReturnRudder | ReturnAxis5 | ReturnAxis6 | ReturnPOV | ReturnButtons),
@@ -90,7 +91,8 @@ namespace GorgonLibrary.Native
 	/// <summary>
 	/// Enumeration for joystick buttons.
 	/// </summary>
-	internal enum JoystickButton
+	[Flags]
+	enum JoystickButton
 		: uint
 	{
 		/// <summary></summary>
@@ -170,8 +172,8 @@ namespace GorgonLibrary.Native
 	/// <summary>
 	/// Enumeration for joystick capabilities.
 	/// </summary>
-	[Flags()]
-	internal enum JoystickCaps
+	[Flags]
+	enum JoystickCaps
 	{
 		/// <summary>Has a Z axis.</summary>
 		HasZ = 0x0001,
@@ -192,7 +194,7 @@ namespace GorgonLibrary.Native
 	/// <summary>
 	/// Enumeration containing HID usage page flags.
 	/// </summary>
-	internal enum HIDUsagePage
+	enum HIDUsagePage
 		: ushort
 	{
 		/// <summary>Unknown usage page.</summary>
@@ -256,7 +258,7 @@ namespace GorgonLibrary.Native
 	/// <summary>
 	/// Constants for HID usage flags.
 	/// </summary>
-	internal enum HIDUsage
+	enum HIDUsage
 		: ushort
 	{
 		/// <summary></summary>
@@ -562,8 +564,8 @@ namespace GorgonLibrary.Native
 	/// <summary>
 	/// Enumeration containing flags for a raw input device.
 	/// </summary>
-	[Flags()]
-	internal enum RawInputDeviceFlags
+	[Flags]
+	enum RawInputDeviceFlags
 	{
 		/// <summary>No flags.</summary>
 		None = 0,
@@ -588,7 +590,7 @@ namespace GorgonLibrary.Native
 	/// <summary>
 	/// Enumeration containing the type device the raw input is coming from.
 	/// </summary>
-	internal enum RawInputType
+	enum RawInputType
 	{
 		/// <summary>
 		/// Mouse input.
@@ -607,8 +609,8 @@ namespace GorgonLibrary.Native
 	/// <summary>
 	/// Enumeration containing the flags for raw mouse data.
 	/// </summary>
-	[Flags()]
-	internal enum RawMouseFlags
+	[Flags]
+	enum RawMouseFlags
 		: ushort
 	{
 		/// <summary>Relative to the last position.</summary>
@@ -624,8 +626,8 @@ namespace GorgonLibrary.Native
 	/// <summary>
 	/// Enumeration containing the button data for raw mouse input.
 	/// </summary>
-	[Flags()]
-	internal enum RawMouseButtons
+	[Flags]
+	enum RawMouseButtons
 		: ushort
 	{
 		/// <summary>No button.</summary>
@@ -657,8 +659,8 @@ namespace GorgonLibrary.Native
 	/// <summary>
 	/// Enumeration containing flags for raw keyboard input.
 	/// </summary>
-	[Flags()]
-	internal enum RawKeyboardFlags
+	[Flags]
+	enum RawKeyboardFlags
 		: ushort
 	{
 		/// <summary></summary>
@@ -678,7 +680,7 @@ namespace GorgonLibrary.Native
 	/// <summary>
 	/// Enumeration contanining the command types to issue.
 	/// </summary>
-	internal enum RawInputCommand
+	enum RawInputCommand
 	{
 		/// <summary>
 		/// Get input data.
@@ -705,7 +707,7 @@ namespace GorgonLibrary.Native
 	/// <summary>
 	/// Enumeration containing raw input device information.
 	/// </summary>
-	internal enum RawInputDeviceInfo
+	enum RawInputDeviceInfo
 	{
 		/// <summary>
 		/// 
@@ -724,7 +726,7 @@ namespace GorgonLibrary.Native
 	/// <summary>
 	/// Enumeration for virtual keys.
 	/// </summary>
-	internal enum VirtualKeys
+	enum VirtualKeys
 		: ushort
 	{
 		/// <summary>Key: None</summary>
@@ -1121,7 +1123,7 @@ namespace GorgonLibrary.Native
 	/// Types of messages that passed to a window.
 	/// </summary>
 	/// <remarks>See the MSDN documentation for more detail.</remarks>
-	internal enum WindowMessages
+	enum WindowMessages
 	{
 		/// <summary>System command (WM_SYSCOMMAND)</summary>
 		SysCommand = 0x0112,
@@ -1525,4 +1527,5 @@ namespace GorgonLibrary.Native
 		RawInput = 0x00FF
 	}
 	#endregion
+    // ReSharper restore InconsistentNaming
 }

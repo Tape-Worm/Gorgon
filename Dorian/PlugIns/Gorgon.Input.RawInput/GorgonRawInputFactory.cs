@@ -26,14 +26,14 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Runtime.InteropServices;
+using Forms = System.Windows.Forms;
 using Microsoft.Win32;
-using GorgonLibrary.Collections;
 using GorgonLibrary.Diagnostics;
 using GorgonLibrary.Native;
-using GorgonLibrary.Input;
-using Forms = System.Windows.Forms;
+using GorgonLibrary.Input.Raw.Properties;
 
 namespace GorgonLibrary.Input.Raw
 {
@@ -57,109 +57,132 @@ namespace GorgonLibrary.Input.Raw
 			RegistryKey deviceKey = null;
 			RegistryKey classKey = null;
 
-			if (Win32API.GetRawInputDeviceInfo(deviceHandle, (int)RawInputDeviceInfo.DeviceName, IntPtr.Zero, ref dataSize) >= 0)
-			{
-				IntPtr data = Marshal.AllocHGlobal(dataSize * 2);
+		    if (Win32API.GetRawInputDeviceInfo(deviceHandle, (int)RawInputDeviceInfo.DeviceName, IntPtr.Zero, ref dataSize) < 0)
+		    {
+		        throw new Win32Exception();
+		    }
+		    
+		    IntPtr data = Marshal.AllocHGlobal(dataSize * 2);
 
-				try
-				{					
-					if (Win32API.GetRawInputDeviceInfo(deviceHandle, (int)RawInputCommand.DeviceName, data, ref dataSize) >= 0)
-					{
-						string regPath = Marshal.PtrToStringAnsi(data);
-						string[] regValue = regPath.Split('#');
-						string baseName = string.Empty;
-						string className = string.Empty;
+		    try
+		    {
+		        if (Win32API.GetRawInputDeviceInfo(deviceHandle, (int)RawInputCommand.DeviceName, data, ref dataSize) < 0)
+		        {
+		            throw new Win32Exception();
+		        }
 
-						regValue[0] = regValue[0].Substring(4);
+                if (data == IntPtr.Zero)
+		        {
+		            throw new Win32Exception();
+		        }
 
-						// Don't add RDP devices.
-						if ((regValue.Length > 0) && (regValue[1].StartsWith("RDP_", StringComparison.CurrentCultureIgnoreCase)))
-							return;
+		        string regPath = Marshal.PtrToStringAnsi(data);
 
-						deviceKey = Registry.LocalMachine.OpenSubKey(string.Format(@"System\CurrentControlSet\Enum\{0}\{1}\{2}", regValue[0], regValue[1], regValue[2]), false);
-						
-						if (deviceKey != null)
-						{
-							int counter = 0;
-							string name = string.Empty;
+		        if (regPath == null)
+		        {
+		            throw new Win32Exception();
+		        }
 
-							regValue = deviceKey.GetValue("DeviceDesc").ToString().Split(';');
-							if (deviceKey.GetValue("Class") != null)
-							{
-								className = deviceKey.GetValue("Class").ToString();
-							}
-							else
-							{
-								// Windows 8 no longer has a "Class" value in this area, so we need to go elsewhere to get it.
-								if (deviceKey.GetValue("ClassGUID") != null)
-								{
-									var classGUID = deviceKey.GetValue("ClassGUID").ToString();
+		        string[] regValue = regPath.Split('#');
+		        string className = string.Empty;
 
-									if (!string.IsNullOrWhiteSpace(classGUID))
-									{
-										classKey = Registry.LocalMachine.OpenSubKey(string.Format(@"System\CurrentControlSet\Control\Class\{0}", classGUID));
+		        regValue[0] = regValue[0].Substring(4);
 
-										if (classKey != null)
-										{
-											if (classKey.GetValue("Class") != null)
-											{
-												className = classKey.GetValue("Class").ToString();
-											}
-										}
-									}
-								}
-							}
-							name = baseName = regValue[regValue.Length - 1];
+		        // Don't add RDP devices.
+		        if ((regValue.Length > 0) &&
+		            (regValue[1].StartsWith("RDP_", StringComparison.CurrentCultureIgnoreCase)))
+		        {
+		            return;
+		        }
 
-							while (deviceList.Find((item) => string.Compare(item.Name, name, true) == 0) != null)
-							{
-								counter++;
-								name = baseName + " #" + counter.ToString();
-							}
+		        deviceKey =
+		            Registry.LocalMachine.OpenSubKey(
+		                string.Format(@"System\CurrentControlSet\Enum\{0}\{1}\{2}", regValue[0], regValue[1],
+		                                regValue[2]),
+		                false);
 
-							deviceList.Add(new GorgonRawInputDeviceInfo(name, deviceType,className, regPath, deviceHandle));
-						}
-					}
-					else
-						throw new System.ComponentModel.Win32Exception();
-				}
-				finally
-				{
-					if (deviceKey != null)
-					{
-						deviceKey.Dispose();
-					}
+		        if (deviceKey == null)
+		        {
+		            return;
+		        }
 
-					if (classKey != null)
-					{
-						classKey.Dispose();
-					}
+		        int counter = 0;
 
-					if (data != IntPtr.Zero)
-						Marshal.FreeHGlobal(data);
-				}
-			}
-			else
-				throw new System.ComponentModel.Win32Exception();
+		        regValue = deviceKey.GetValue("DeviceDesc").ToString().Split(';');
+
+		        if (deviceKey.GetValue("Class") == null)
+		        {
+		            // Windows 8 no longer has a "Class" value in this area, so we need to go elsewhere to get it.
+		            if (deviceKey.GetValue("ClassGUID") != null)
+		            {
+		                var classGUID = deviceKey.GetValue("ClassGUID").ToString();
+
+		                if (!string.IsNullOrWhiteSpace(classGUID))
+		                {
+		                    classKey =
+		                        Registry.LocalMachine.OpenSubKey(
+		                            string.Format(@"System\CurrentControlSet\Control\Class\{0}", classGUID));
+
+		                    if (classKey != null)
+		                    {
+		                        if (classKey.GetValue("Class") != null)
+		                        {
+		                            className = classKey.GetValue("Class").ToString();
+		                        }
+		                    }
+		                }
+		            }
+		        }
+		        else
+		        {
+		            className = deviceKey.GetValue("Class").ToString();
+		        }
+
+		        string baseName;
+		        string name = baseName = regValue[regValue.Length - 1];
+
+		        while (deviceList.Find(item => String.Compare(item.Name, name, StringComparison.OrdinalIgnoreCase) == 0) != null)
+		        {
+		            counter++;
+		            name = baseName + " #" + counter;
+		        }
+
+		        deviceList.Add(new GorgonRawInputDeviceInfo(name, deviceType, className, regPath, deviceHandle));
+		    }
+		    finally
+		    {
+		        if (deviceKey != null)
+		        {
+		            deviceKey.Dispose();
+		        }
+
+		        if (classKey != null)
+		        {
+		            classKey.Dispose();
+		        }
+
+		        if (data != IntPtr.Zero)
+		        {
+		            Marshal.FreeHGlobal(data);
+		        }
+		    }
 		}
 
 		/// <summary>
 		/// Function to retrieve a joystick name from the registry.
 		/// </summary>
 		/// <param name="joystickData">Joystick capability data.</param>
-		/// <param name="ID">ID of the joystick to retrieve data for.</param>
+		/// <param name="joystickID">ID of the joystick to retrieve data for.</param>
 		/// <returns>The name of the joystick.</returns>
-		private string GetJoystickName(JOYCAPS joystickData, int ID)
+		private string GetJoystickName(JOYCAPS joystickData, int joystickID)
 		{
 			RegistryKey rootKey = null;			// Root registry key.
 			RegistryKey lookup = null;			// Look up key.
 			RegistryKey nameKey = null;			// Name key.
-			string key = string.Empty;			// Key name.
-			string defaultName = string.Empty;	// Default name.
 
-			try
+		    try
 			{
-				defaultName = joystickData.AxisCount.ToString() + "-axis, " + joystickData.ButtonCount.ToString() + "-button joystick.";
+				string defaultName = joystickData.AxisCount + "-axis, " + joystickData.ButtonCount + "-button joystick.";	// Default name.
 				rootKey = Registry.CurrentUser;
 
 				// Get the device ID.				
@@ -173,29 +196,43 @@ namespace GorgonLibrary.Input.Raw
 					lookup = rootKey.OpenSubKey(@"SYSTEM\CurrentControlSet\Control\MediaResources\Joystick\" + joystickData.RegistryKey + @"\CurrentJoystickSettings");
 				}
 
-				if (lookup != null)
-				{
-					key = lookup.GetValue("Joystick" + (ID + 1) + "OEMName", string.Empty).ToString();
+			    if (lookup != null)
+			    {
+                    // Key name.
+			        string key = lookup.GetValue("Joystick" + (joystickID + 1) + "OEMName", string.Empty).ToString();
+			            
+			        // If we have no name, then build one.
+			        if (string.IsNullOrWhiteSpace(key))
+			        {
+			            return defaultName;
+			        }
 
-					// If we have no name, then build one.
-					if (key == string.Empty)
-						return defaultName;
+			        // Get the name.
+			        nameKey =
+			            rootKey.OpenSubKey(@"SYSTEM\CurrentControlSet\Control\MediaProperties\PrivateProperties\Joystick\OEM\" +
+			                               key);
 
-					// Get the name.
-					nameKey = rootKey.OpenSubKey(@"SYSTEM\CurrentControlSet\Control\MediaProperties\PrivateProperties\Joystick\OEM\" + key);
-					return nameKey.GetValue("OEMName", defaultName).ToString();
-				}
-				else
-					return defaultName;
+			        return nameKey != null ? nameKey.GetValue("OEMName", defaultName).ToString() : defaultName;
+			    }
+			    else
+			    {
+			        return defaultName;
+			    }
 			}
 			finally
 			{
-				if (nameKey != null)
-					nameKey.Close();
-				if (lookup != null)
-					lookup.Close();
-				if (rootKey != null)
-					rootKey.Close();
+			    if (nameKey != null)
+			    {
+			        nameKey.Close();
+			    }
+			    if (lookup != null)
+			    {
+			        lookup.Close();
+			    }
+			    if (rootKey != null)
+			    {
+			        rootKey.Close();
+			    }
 			}
 		}
 
@@ -205,16 +242,15 @@ namespace GorgonLibrary.Input.Raw
 		/// <returns>A list of pointing device names.</returns>
 		protected override IEnumerable<GorgonInputDeviceInfo> EnumeratePointingDevices()
 		{
-			List<GorgonRawInputDeviceInfo> result = null;
-			IEnumerable<RAWINPUTDEVICELIST> devices = null;
+		    IEnumerable<RAWINPUTDEVICELIST> devices = Win32API.EnumerateInputDevices().Where(item => item.DeviceType == RawInputType.Mouse);
+			var result = new List<GorgonRawInputDeviceInfo>();
 
-			devices = Win32API.EnumerateInputDevices().Where((item) => item.DeviceType == RawInputType.Mouse);
-			result = new List<GorgonRawInputDeviceInfo>();
-			
-			foreach (var pointingDevice in devices)
-				this.GetRawInputDeviceInfo(pointingDevice.Device, InputDeviceType.PointingDevice, result);
+		    foreach (var pointingDevice in devices)
+		    {
+		        GetRawInputDeviceInfo(pointingDevice.Device, InputDeviceType.PointingDevice, result);
+		    }
 
-			return result;
+		    return result;
 		}
 
 		/// <summary>
@@ -223,16 +259,15 @@ namespace GorgonLibrary.Input.Raw
 		/// <returns>A list of keyboard device names.</returns>
 		protected override IEnumerable<GorgonInputDeviceInfo> EnumerateKeyboardDevices()
 		{
-			List<GorgonRawInputDeviceInfo> result = null;
-			IEnumerable<RAWINPUTDEVICELIST> devices = null;
+		    IEnumerable<RAWINPUTDEVICELIST> devices = Win32API.EnumerateInputDevices().Where(item => item.DeviceType == RawInputType.Keyboard);
+			var result = new List<GorgonRawInputDeviceInfo>();
 
-			devices = Win32API.EnumerateInputDevices().Where((item) => item.DeviceType == RawInputType.Keyboard);
-			result = new List<GorgonRawInputDeviceInfo>();
+		    foreach (var keyboardDevice in devices)
+		    {
+		        GetRawInputDeviceInfo(keyboardDevice.Device, InputDeviceType.Keyboard, result);
+		    }
 
-			foreach (var keyboardDevice in devices)
-				this.GetRawInputDeviceInfo(keyboardDevice.Device, InputDeviceType.Keyboard, result);
-
-			return result;
+		    return result;
 		}
 
 		/// <summary>
@@ -241,46 +276,51 @@ namespace GorgonLibrary.Input.Raw
 		/// <returns>A list of joystick device names.</returns>
 		protected override IEnumerable<GorgonInputDeviceInfo> EnumerateJoysticksDevices()
 		{
-			List<GorgonWMMDeviceInfo> result = null;
-			JOYCAPS capabilities = new JOYCAPS();	// Joystick capabilities.
-			string name = string.Empty;				// Name of the joystick.
-			int error = 0;							// Error code.
-			int deviceCount = 0;					// Number of devices.
-			int nameCount = 0;						// Name counter.
+		    var capabilities = new JOYCAPS();	    // Joystick capabilities.
+		    int nameCount = 0;						// Name counter.
 
-			result = new List<GorgonWMMDeviceInfo>();
-			deviceCount = Win32API.joyGetNumDevs();
+			var result = new List<GorgonMultimediaDeviceInfo>();
+			int deviceCount = Win32API.joyGetNumDevs();
 
 			Gorgon.Log.Print("Enumerating joysticks...", LoggingLevel.Intermediate);
+
 			for (int i = 0; i < deviceCount; i++)
 			{
-				error = Win32API.joyGetDevCaps(i, ref capabilities, Marshal.SizeOf(typeof(JOYCAPS)));
+			    int error = Win32API.joyGetDevCaps(i, ref capabilities, Marshal.SizeOf(typeof(JOYCAPS)));							// Error code.
 
-				// If the joystick has no registry key, then skip it.
-				if ((!string.IsNullOrEmpty(capabilities.RegistryKey)) && (!string.IsNullOrEmpty(capabilities.Name)))
-				{
-					// Check for error, stop enumeration.
-					if (error > 0)
-						throw new GorgonException(GorgonResult.DriverError, "Cannot get joystick information from index " + i.ToString() + "\nError code: 0x" + error.ToString("x"));
+			    // If the joystick has no registry key, then skip it.
+			    if ((string.IsNullOrEmpty(capabilities.RegistryKey)) || (string.IsNullOrEmpty(capabilities.Name)))
+			    {
+			        continue;
+			    }
 
-					// Get the name.
-					name = GetJoystickName(capabilities, i);
+			    // Check for error, stop enumeration.
+			    if (error > 0)
+			    {
+			        throw new GorgonException(GorgonResult.DriverError,
+			                                  string.Format(Resources.GORINP_RAW_CANNOT_GET_JOYSTICK_CAPS, i, error.FormatHex()));
+			    }
 
-					if (!string.IsNullOrEmpty(name))
-					{
-						string keyName = name;
+			    // Get the name.
+			    string name = GetJoystickName(capabilities, i);				// Name of the joystick.
 
-						while (result.Find((item) => string.Compare(item.Name, keyName, true) == 0) != null)
-						{
-							nameCount++;
-							keyName = name + " " + nameCount.ToString();
-						}
+			    if (string.IsNullOrWhiteSpace(name))
+			    {
+			        continue;
+			    }
 
-						result.Add(new GorgonWMMDeviceInfo(keyName, "Game device", "N/A", i));
-					}
-				}
+			    string keyName = name;
+
+			    while (result.Find(item => String.Compare(item.Name, keyName, StringComparison.OrdinalIgnoreCase) == 0) != null)
+			    {
+			        nameCount++;
+			        keyName = name + " " + nameCount;
+			    }
+
+			    result.Add(new GorgonMultimediaDeviceInfo(keyName, "Game device", "N/A", i));
 			}
-			Gorgon.Log.Print("{0} joysticks found.", LoggingLevel.Intermediate, result.Count);
+
+		    Gorgon.Log.Print("{0} joysticks found.", LoggingLevel.Intermediate, result.Count);
 
 			return result;
 		}
@@ -293,16 +333,17 @@ namespace GorgonLibrary.Input.Raw
 		/// </returns>
 		protected override IEnumerable<GorgonInputDeviceInfo> EnumerateCustomHIDs()
 		{
-			List<GorgonRawInputDeviceInfo> result = null;
-			IEnumerable<RAWINPUTDEVICELIST> devices = null;
+		    IEnumerable<RAWINPUTDEVICELIST> devices =
+		        Win32API.EnumerateInputDevices()
+		                .Where(item => item.DeviceType != RawInputType.Keyboard && item.DeviceType != RawInputType.Mouse);
+			var result = new List<GorgonRawInputDeviceInfo>();
 
-			devices = Win32API.EnumerateInputDevices().Where((item) => item.DeviceType != RawInputType.Keyboard && item.DeviceType != RawInputType.Mouse);
-			result = new List<GorgonRawInputDeviceInfo>();
+		    foreach (var hidDevice in devices)
+		    {
+		        GetRawInputDeviceInfo(hidDevice.Device, InputDeviceType.HID, result);
+		    }
 
-			foreach (var hidDevice in devices)
-				this.GetRawInputDeviceInfo(hidDevice.Device, InputDeviceType.HID, result);
-
-			return result;
+		    return result;
 		}
 
 		/// <summary>
@@ -313,18 +354,21 @@ namespace GorgonLibrary.Input.Raw
 		/// <returns>
 		/// A new custom HID interface.
 		/// </returns>
-		/// <exception cref="System.ArgumentNullException">The <paramRef name="hidInfo"/> is NULL.</exception>
 		protected override GorgonCustomHID CreateCustomHIDImpl(Forms.Control window, GorgonInputDeviceInfo hidInfo)
 		{
-			RawHIDDevice hidDevice = null;
+            GorgonRawInputDeviceInfo rawInfo = hidInfo as GorgonRawInputDeviceInfo;
 
-			if (hidInfo == null)
-				throw new ArgumentNullException("hidInfo");
+		    if (rawInfo == null)
+		    {
+                throw new InvalidCastException(Resources.GORINP_RAW_HIDINFO_NOT_RAW);
+		    }
 
-			hidDevice = new RawHIDDevice(this, ((GorgonRawInputDeviceInfo)hidInfo), window);
-			hidDevice.Enabled = true;
+		    var hidDevice = new RawHIDDevice(this, rawInfo, window)
+		        {
+		            Enabled = true
+		        };
 
-			return hidDevice;
+		    return hidDevice;
 		}
 
 		/// <summary>
@@ -337,12 +381,10 @@ namespace GorgonLibrary.Input.Raw
 		/// <para>Pass NULL to the <paramref name="window"/> parameter to use the <see cref="P:GorgonLibrary.Gorgon.ApplicationForm">Gorgon application window</see>.</para></remarks>
 		protected override GorgonKeyboard CreateKeyboardImpl(Forms.Control window, GorgonInputDeviceInfo keyboardInfo)
 		{
-			RawKeyboard keyboard = null;
+		    RawKeyboard keyboard = keyboardInfo == null
+		                               ? new RawKeyboard(this, "System Keyboard", IntPtr.Zero, window)
+		                               : new RawKeyboard(this, keyboardInfo.Name, ((GorgonRawInputDeviceInfo)keyboardInfo).Handle, window);
 
-			if (keyboardInfo == null)
-				keyboard = new RawKeyboard(this, "System Keyboard", IntPtr.Zero, window);
-			else
-				keyboard = new RawKeyboard(this, keyboardInfo.Name, ((GorgonRawInputDeviceInfo)keyboardInfo).Handle, window);
 			keyboard.Enabled = true;
 
 			return keyboard;
@@ -359,12 +401,11 @@ namespace GorgonLibrary.Input.Raw
 		/// </remarks>
 		protected override GorgonPointingDevice CreatePointingDeviceImpl(Forms.Control window, GorgonInputDeviceInfo pointingDeviceInfo)
 		{
-			RawPointingDevice mouse = null;
-
-			if (pointingDeviceInfo == null)
-				mouse = new RawPointingDevice(this, "System Mouse", IntPtr.Zero, window);
-			else
-				mouse = new RawPointingDevice(this, pointingDeviceInfo.Name, ((GorgonRawInputDeviceInfo)pointingDeviceInfo).Handle, window);
+		    RawPointingDevice mouse = pointingDeviceInfo == null
+		                                  ? new RawPointingDevice(this, "System Mouse", IntPtr.Zero, window)
+		                                  : new RawPointingDevice(this, pointingDeviceInfo.Name,
+		                                                          ((GorgonRawInputDeviceInfo)pointingDeviceInfo).Handle,
+		                                                          window);
 			mouse.Enabled = true;
 
 			return mouse;
@@ -380,15 +421,19 @@ namespace GorgonLibrary.Input.Raw
 		/// <exception cref="System.ArgumentNullException">The <paramRef name="joystickInfo"/> is NULL.</exception>
 		protected override GorgonJoystick CreateJoystickImpl(Forms.Control window, GorgonInputDeviceInfo joystickInfo)
 		{
-			WMMJoystick joystick = null;
+		    var mmJoystick = joystickInfo as GorgonMultimediaDeviceInfo;
 
-			if (joystickInfo == null)
-				throw new ArgumentNullException("joystickInfo");
+		    if (mmJoystick == null)
+		    {
+                throw new InvalidCastException(Resources.GORINP_RAW_NOT_MM_JOYSTICK);
+		    }
 
-			joystick = new WMMJoystick(this, ((GorgonWMMDeviceInfo)joystickInfo).JoystickID, joystickInfo.Name, window);
-			joystick.Enabled = true;
+		    var joystick = new MultimediaJoystick(this, mmJoystick.JoystickID, joystickInfo.Name, window)
+		        {
+		            Enabled = true
+		        };
 
-			return joystick;
+		    return joystick;
 		}
 		#endregion
 
@@ -397,7 +442,7 @@ namespace GorgonLibrary.Input.Raw
 		/// Initializes a new instance of the <see cref="GorgonRawInputFactory"/> class.
 		/// </summary>
 		public GorgonRawInputFactory()
-			: base("Gorgon.Input.Raw")
+			: base("Gorgon Raw Input")
 		{
 		}
 		#endregion

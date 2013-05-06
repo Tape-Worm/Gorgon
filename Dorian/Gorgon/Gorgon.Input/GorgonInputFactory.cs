@@ -448,7 +448,7 @@ namespace GorgonLibrary.Input
                 throw new ArgumentException(Resources.GORINP_PARAMETER_EMPTY, "plugInType");
             }
 
-		    GorgonInputPlugIn plugIn =
+		    var plugIn =
 		        Gorgon.PlugIns.FirstOrDefault(
 		            item => string.Compare(item.Name, plugInType, StringComparison.OrdinalIgnoreCase) == 0) as
 		        GorgonInputPlugIn;

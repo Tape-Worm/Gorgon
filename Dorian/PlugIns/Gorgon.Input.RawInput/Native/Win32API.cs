@@ -151,7 +151,7 @@ namespace GorgonLibrary.Native
 		/// <returns>TRUE if successful, FALSE if not.</returns>
 		public static bool RegisterRawInputDevices(RAWINPUTDEVICE device)
 		{
-			RAWINPUTDEVICE[] devices = new RAWINPUTDEVICE[1];		// Raw input devices.
+			var devices = new RAWINPUTDEVICE[1];		// Raw input devices.
 
 			devices[0] = device;
 			return RegisterRawInputDevices(devices, 1, Marshal.SizeOf(typeof(RAWINPUTDEVICE)));
@@ -172,23 +172,24 @@ namespace GorgonLibrary.Native
 
 				try
 				{
-					if (GetRawInputDeviceInfo(deviceHandle, (int)RawInputCommand.DeviceInfo, data, ref dataSize) >= 0)
-					{
-						RID_DEVICE_INFO result = default(RID_DEVICE_INFO);
-						result = (RID_DEVICE_INFO)(Marshal.PtrToStructure(data, typeof(RID_DEVICE_INFO)));
-						return result;
-					}
-					else
-						throw new System.ComponentModel.Win32Exception();
+				    if (GetRawInputDeviceInfo(deviceHandle, (int)RawInputCommand.DeviceInfo, data, ref dataSize) < 0)
+				    {
+				        throw new System.ComponentModel.Win32Exception();
+				    }
+				    
+				    var result = (RID_DEVICE_INFO)(Marshal.PtrToStructure(data, typeof(RID_DEVICE_INFO)));
+				    return result;
 				}
 				finally
 				{
-					if (data != IntPtr.Zero)
-						Marshal.FreeHGlobal(data);
+				    if (data != IntPtr.Zero)
+				    {
+				        Marshal.FreeHGlobal(data);
+				    }
 				}
 			}
-			else
-				throw new System.ComponentModel.Win32Exception();
+
+		    throw new System.ComponentModel.Win32Exception();
 		}
 
 		/// <summary>
@@ -197,45 +198,56 @@ namespace GorgonLibrary.Native
 		/// <returns>An array of raw input device structures.</returns>
 		public static RAWINPUTDEVICELIST[] EnumerateInputDevices()
 		{
-			RAWINPUTDEVICELIST[] result = null;
-			int deviceCount = 0;
+		    int deviceCount = 0;
 			int structSize = Marshal.SizeOf(typeof(RAWINPUTDEVICELIST));
 
 			if (GetRawInputDeviceList(IntPtr.Zero, ref deviceCount, structSize) >= 0)
 			{
-				if (deviceCount != 0)
+			    if (deviceCount != 0)
 				{
 					IntPtr deviceList = Marshal.AllocHGlobal(structSize * deviceCount);
 					try
 					{
-						if (GetRawInputDeviceList(deviceList, ref deviceCount, structSize) >= 0)
-						{
-							result = new RAWINPUTDEVICELIST[deviceCount];
+					    if (GetRawInputDeviceList(deviceList, ref deviceCount, structSize) < 0)
+					    {
+					        throw new System.ComponentModel.Win32Exception();
+					    }
 
-							for (int i = 0; i < result.Length; i++)
-							{
-								if (GorgonComputerInfo.PlatformArchitecture == PlatformArchitecture.x64)
-									result[i] = (RAWINPUTDEVICELIST)(Marshal.PtrToStructure(new IntPtr(deviceList.ToInt64() + (structSize * i)), typeof(RAWINPUTDEVICELIST)));
-								else
-									result[i] = (RAWINPUTDEVICELIST)(Marshal.PtrToStructure(new IntPtr(deviceList.ToInt32() + (structSize * i)), typeof(RAWINPUTDEVICELIST)));
-							}
+					    var result = new RAWINPUTDEVICELIST[deviceCount];
 
-							return result;
-						}
-						else
-							throw new System.ComponentModel.Win32Exception();
+					    for (int i = 0; i < result.Length; i++)
+					    {
+					        if (GorgonComputerInfo.PlatformArchitecture == PlatformArchitecture.x64)
+					        {
+					            result[i] =
+					                (RAWINPUTDEVICELIST)
+					                (Marshal.PtrToStructure(new IntPtr(deviceList.ToInt64() + (structSize * i)),
+					                                        typeof(RAWINPUTDEVICELIST)));
+					        }
+					        else
+					        {
+					            result[i] =
+					                (RAWINPUTDEVICELIST)
+					                (Marshal.PtrToStructure(new IntPtr(deviceList.ToInt32() + (structSize * i)),
+					                                        typeof(RAWINPUTDEVICELIST)));
+					        }
+					    }
+
+					    return result;
 					}
 					finally
 					{
-						if (deviceList != IntPtr.Zero)
-							Marshal.FreeHGlobal(deviceList);
+					    if (deviceList != IntPtr.Zero)
+					    {
+					        Marshal.FreeHGlobal(deviceList);
+					    }
 					}
 				}
-				else
-					return new RAWINPUTDEVICELIST[0];
+
+			    return new RAWINPUTDEVICELIST[0];
 			}
-			else
-				throw new System.ComponentModel.Win32Exception();
+
+		    throw new System.ComponentModel.Win32Exception();
 		}
 
 		#endregion

@@ -27,6 +27,7 @@
 using System;
 using System.Runtime.InteropServices;
 using GorgonLibrary.Native;
+using GorgonLibrary.Input.Raw.Properties;
 
 namespace GorgonLibrary.Input.Raw
 {
@@ -37,9 +38,9 @@ namespace GorgonLibrary.Input.Raw
 		: IDisposable
 	{
 		#region Variables.
-		private int _headerSize = 0;				// Size of the input data in bytes.
-		private bool _isDisposed = false;			// Flag to indicate that the object has been disposed of.
-		private IntPtr _rawData = IntPtr.Zero;		// Pointer to the raw input data.
+		private readonly int _headerSize;				// Size of the input data in bytes.
+		private bool _isDisposed;			            // Flag to indicate that the object has been disposed of.
+		private IntPtr _rawData = IntPtr.Zero;		    // Pointer to the raw input data.
 		#endregion
 
 		#region Properties.
@@ -97,23 +98,28 @@ namespace GorgonLibrary.Input.Raw
 		/// <returns>A structure used to return the RAW input data.</returns>
 		public void GetRawInputData(IntPtr handle)
 		{
-			int result = 0;
-			int dataSize = 0;
+		    int dataSize = 0;
 
 			// Get data size.			
-			result = Win32API.GetRawInputData(handle, RawInputCommand.Input, IntPtr.Zero, ref dataSize, _headerSize);
-			if (result == -1)
-				throw new GorgonException(GorgonResult.CannotRead, "Error reading raw input data.");
+			int result = Win32API.GetRawInputData(handle, RawInputCommand.Input, IntPtr.Zero, ref dataSize, _headerSize);
+
+		    if (result == -1)
+		    {
+                throw new GorgonException(GorgonResult.CannotRead, Resources.GORINP_RAW_CANNOT_READ_DATA);
+		    }
 
 			// Get actual data.
 			result = Win32API.GetRawInputData(handle, RawInputCommand.Input, _rawData, ref dataSize, _headerSize);
-			if ((result == -1) || (result != dataSize))
-				throw new GorgonException(GorgonResult.CannotRead, "Error reading raw input data.");
 
-			unsafe
+		    if ((result == -1) || (result != dataSize))
+		    {
+                throw new GorgonException(GorgonResult.CannotRead, Resources.GORINP_RAW_CANNOT_READ_DATA);
+		    }
+
+		    unsafe
 			{
 				// Get header info.
-				RAWINPUT* rawInputx64 = (RAWINPUT*)_rawData;
+				var rawInputx64 = (RAWINPUT*)_rawData;
 				Header = rawInputx64->Header;
 
 				// Get device data.
@@ -156,35 +162,27 @@ namespace GorgonLibrary.Input.Raw
 		/// </summary>
 		~RawInputData()
 		{
-			Dispose(false);
+			Dispose();
 		}
 		#endregion
 
 		#region IDisposable Members
 		/// <summary>
-		/// Releases unmanaged and - optionally - managed resources
-		/// </summary>
-		/// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
-		private void Dispose(bool disposing)
-		{
-			if (!_isDisposed)
-			{
-				if (_rawData != IntPtr.Zero)
-				{
-					Marshal.FreeHGlobal(_rawData);
-					_rawData = IntPtr.Zero;
-				}
-			}
-			_isDisposed = true;
-		}
-
-		/// <summary>
 		/// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
 		/// </summary>
 		public void Dispose()
 		{
-			Dispose(true);
-			GC.SuppressFinalize(this);
+            if (!_isDisposed)
+            {
+                if (_rawData != IntPtr.Zero)
+                {
+                    Marshal.FreeHGlobal(_rawData);
+                    _rawData = IntPtr.Zero;
+                }
+            }
+            _isDisposed = true;
+
+            GC.SuppressFinalize(this);
 		}
 		#endregion
 	}
