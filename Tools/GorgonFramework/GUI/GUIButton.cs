@@ -189,6 +189,7 @@ namespace GorgonLibrary.GUI
 				SetClippingRegion(GetClippingArea(this, clipperDimensions));
 			}
 			_textClipper.SetWindowDimensions(Gorgon.CurrentClippingViewport.Left, Gorgon.CurrentClippingViewport.Top, clipperDimensions.Width, clipperDimensions.Height);
+			_textLabel.Font = Font;
 			_textLabel.Draw();
 			if ((container != null) && (container.ClipChildren))
 				ResetClippingRegion();			
@@ -206,7 +207,6 @@ namespace GorgonLibrary.GUI
 		{
 			CanFocus = true;
 			Visible = true;
-			Font = null;
 			ForeColor = Drawing.Color.White;
 			TextAlignment = Alignment.Center;
 			_textClipper = new Viewport(0, 0, 1, 1);

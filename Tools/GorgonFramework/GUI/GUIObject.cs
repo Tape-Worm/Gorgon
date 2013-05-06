@@ -139,29 +139,35 @@ namespace GorgonLibrary.GUI
 		/// <summary>
 		/// Property to set or return the font to use with the object.
 		/// </summary>
+		/// <remarks>If this object does not have a font set (e.g. Font is set to null), then the owner of this object will provide the font to be used.  If 
+		/// this object has no owner and no font has been set, then the default desktop font will be used.</remarks>
 		public Font Font
 		{
 			get
 			{
+				if (_font == null)
+				{
+					if ((Owner != null) && (Owner.Font != null))
+					{
+						return Owner.Font;
+					}
+
+					return Desktop.DefaultFont;
+				}
+
 				return _font;
 			}
 			set
 			{
-				if (_font == value)
+				if (((Owner != null) && (value == Owner.Font)) || (value == Desktop.DefaultFont))
 				{
+					_font = null;
+					SetClientArea(_windowArea);
 					return;
 				}
 
-				if ((_font != null) && (_font != Desktop.DefaultFont))
-					_font.Dispose();
-				_font = null;
-
-				if (value == null)
-					_font = Desktop.DefaultFont;
-				else
-					_font = value;
-
-				OnFontChanged();
+				_font = value;
+				SetClientArea(_windowArea);
 			}
 		}
 
@@ -739,8 +745,11 @@ namespace GorgonLibrary.GUI
 					if (ownerContainer != null)
 						ownerContainer.GUIObjects.Remove(this);
 
-					if ((_font != null) && (_font != Desktop.DefaultFont))
+					if (_font != null)
+					{
 						_font.Dispose();
+					}
+
 					_font = null;
 				}
 				_disposed = true;
