@@ -65,7 +65,7 @@ namespace GorgonLibrary.Graphics
 	public class GorgonStructuredBuffer
 		: GorgonShaderBuffer
 	{
-		#region Properties.		
+		#region Properties.
 		/// <summary>
 		/// Property to return the type of structured buffer.
 		/// </summary>

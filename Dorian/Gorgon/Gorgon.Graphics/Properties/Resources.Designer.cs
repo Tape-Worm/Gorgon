@@ -61,6 +61,33 @@ namespace GorgonLibrary.Graphics.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The buffer is already locked..
+        /// </summary>
+        internal static string GORGFX_ALREADY_LOCKED {
+            get {
+                return ResourceManager.GetString("GORGFX_ALREADY_LOCKED", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This buffer is immutable and this cannot be updated..
+        /// </summary>
+        internal static string GORGFX_BUFFER_IMMUTABLE {
+            get {
+                return ResourceManager.GetString("GORGFX_BUFFER_IMMUTABLE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The size of the buffers do not match..
+        /// </summary>
+        internal static string GORGFX_BUFFER_SIZE_MISMATCH {
+            get {
+                return ResourceManager.GetString("GORGFX_BUFFER_SIZE_MISMATCH", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Color Value: Red={0}, Green={1}, Blue={2}, Alpha={3}..
         /// </summary>
         internal static string GORGFX_COLOR_TOSTR {
@@ -97,11 +124,38 @@ namespace GorgonLibrary.Graphics.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The index is out of range.  The index value [{0}] must be be 0 or less than {1}..
+        /// </summary>
+        internal static string GORGFX_INDEX_OUT_OF_RANGE {
+            get {
+                return ResourceManager.GetString("GORGFX_INDEX_OUT_OF_RANGE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The Gorgon Graphics interface requires Windows Vista Service Pack 2 or greater..
         /// </summary>
         internal static string GORGFX_INVALID_OS {
             get {
                 return ResourceManager.GetString("GORGFX_INVALID_OS", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The usage for this object must be set to &apos;Default&apos;..
+        /// </summary>
+        internal static string GORGFX_NOT_DEFAULT_USAGE {
+            get {
+                return ResourceManager.GetString("GORGFX_NOT_DEFAULT_USAGE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to A buffer with a usage of &apos;{0}&apos; cannot be locked..
+        /// </summary>
+        internal static string GORGFX_USAGE_CANT_LOCK {
+            get {
+                return ResourceManager.GetString("GORGFX_USAGE_CANT_LOCK", resourceCulture);
             }
         }
         
