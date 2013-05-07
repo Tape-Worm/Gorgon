@@ -25,14 +25,10 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using D3D11 = SharpDX.Direct3D11;
-using GorgonLibrary.Native;
-using GorgonLibrary.Math;
 using GorgonLibrary.Diagnostics;
 using GorgonLibrary.IO;
+using GorgonLibrary.Graphics.Properties;
 
 namespace GorgonLibrary.Graphics
 {
@@ -63,7 +59,7 @@ namespace GorgonLibrary.Graphics
 	/// <summary>
 	/// Flags used when locking the buffer for reading/writing.
 	/// </summary>
-	[Flags()]
+	[Flags]
 	public enum BufferLockFlags
 	{
 		/// <summary>
@@ -92,7 +88,7 @@ namespace GorgonLibrary.Graphics
 		: GorgonResource
 	{
 		#region Variables.
-		private int _size = 0;					// Size of the buffer, in bytes.
+		private readonly int _size;					// Size of the buffer, in bytes.
 		#endregion
 
 		#region Properties.
@@ -209,15 +205,19 @@ namespace GorgonLibrary.Graphics
 		/// <param name="buffer">Buffer to copy.</param>
 		/// <remarks>This is used to copy data from one GPU buffer to another.  The size of the buffers must be the same.</remarks>
 		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="buffer"/> size is not equal to the size of this buffer.</exception>
-		/// <exception cref="System.InvalidOperationException">Thrown when this buffer has a usage of Immutable.</exception>
+		/// <exception cref="GorgonLibrary.GorgonException">Thrown when this buffer has a usage of Immutable.</exception>
 		public void Copy(GorgonBaseBuffer buffer)
 		{
 #if DEBUG
-			if (buffer.SizeInBytes != SizeInBytes)
-				throw new ArgumentException("The size of the buffers do not match.", "buffer");
+		    if (buffer.SizeInBytes != SizeInBytes)
+		    {
+		        throw new ArgumentException(Resources.GORGFX_BUFFER_SIZE_MISMATCH, "buffer");
+		    }
 
-			if (BufferUsage == GorgonLibrary.Graphics.BufferUsage.Immutable)
-				throw new InvalidOperationException("This buffer is immutable and this cannot be updated.");
+		    if (BufferUsage == GorgonLibrary.Graphics.BufferUsage.Immutable)
+		    {
+                throw new GorgonException(GorgonResult.AccessDenied, Resources.GORGFX_BUFFER_IMMUTABLE);
+		    }
 #endif
 			Graphics.Context.CopyResource(buffer.D3DResource, D3DResource);
 		}
@@ -253,32 +253,31 @@ namespace GorgonLibrary.Graphics
 		/// <para>-or-</para>
 		/// <para>Thrown when the <paramref name="destOffset"/> + byteCount is greater than the size of this buffer, or less than 0.</para>
 		/// </exception>
-		/// <exception cref="System.InvalidOperationException">Thrown when this buffer has a usage of Immutable.</exception>
+		/// <exception cref="GorgonLibrary.GorgonException">Thrown when this buffer has a usage of Immutable.</exception>
 		public void Copy(GorgonBaseBuffer buffer, int sourceStartingIndex, int byteCount, int destOffset)
 		{
 			int endByteIndex = sourceStartingIndex + byteCount;
+
+            GorgonDebug.AssertNull(buffer, "buffer");
+            GorgonDebug.AssertParamRange(sourceStartingIndex, 0, buffer.SizeInBytes, "sourceStartingIndex");
+            GorgonDebug.AssertParamRange(endByteIndex, 0, buffer.SizeInBytes, "sourceStartingIndex");
+            GorgonDebug.AssertParamRange(destOffset, 0, SizeInBytes, "destOffset");
+
 #if DEBUG
-			if (BufferUsage == GorgonLibrary.Graphics.BufferUsage.Immutable)
-				throw new InvalidOperationException("This buffer is immutable and this cannot be updated.");
-
-			if ((sourceStartingIndex < 0) || (sourceStartingIndex >= buffer.SizeInBytes))
-				throw new ArgumentOutOfRangeException("sourceStartingIndex", "The start index is outside of the bounds of the buffer.");
-
-			if ((endByteIndex < 0) || (endByteIndex >= buffer.SizeInBytes))
-				throw new ArgumentOutOfRangeException("byteCount", "The byte count is less than 0 or greater than the size of the source buffer.");
-
-			if ((destOffset < 0) || (destOffset + byteCount >= SizeInBytes))
-				throw new ArgumentOutOfRangeException("destOffset", "The destination offset or the number of bytes + the destination offset are greater than the size of the destination buffer.");
+		    if (BufferUsage == GorgonLibrary.Graphics.BufferUsage.Immutable)
+		    {
+                throw new GorgonException(GorgonResult.AccessDenied, Resources.GORGFX_BUFFER_IMMUTABLE);
+		    }
 #endif
-			Graphics.Context.CopySubresourceRegion(buffer.D3DResource, 0, new D3D11.ResourceRegion()
-				{
+			Graphics.Context.CopySubresourceRegion(buffer.D3DResource, 0, new D3D11.ResourceRegion
+			    {
 					Top = 0,
 					Bottom = 1,
 					Left = sourceStartingIndex,
 					Right = endByteIndex,
 					Front = 0,
 					Back = 1
-				}, D3DResource, 0, destOffset, 0, 0);
+				}, D3DResource, 0, destOffset);
 		}
 
 		/// <summary>
@@ -289,19 +288,21 @@ namespace GorgonLibrary.Graphics
 		/// <param name="size">The number of bytes to write.</param>
 		/// <remarks>This method can only be used with buffers that have Default usage.  Other buffer usages will thrown an exception.
 		/// <para>Please note that constant buffers don't use the <paramref name="offset"/> and <paramref name="size"/> parameters.</para>
-		/// <para>This method will respect the <see cref="P:GorgonLibrary.GorgonDataStream.Position">Position</see> property of the data stream.  
+		/// <para>This method will respect the <see cref="GorgonLibrary.IO.GorgonDataStream.Position">Position</see> property of the data stream.  
 		/// This means that it will start reading from the stream at the current position.  To read from the beginning of the stream, set the position 
 		/// to 0.</para>
 		/// </remarks>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="stream"/> parameter is NULL (Nothing in VB.Net).</exception>
-		/// <exception cref="System.InvalidOperationException">Thrown when the buffer usage is not set to default.</exception>
+		/// <exception cref="GorgonLibrary.GorgonException">Thrown when the buffer usage is not set to default.</exception>
 		public void Update(GorgonDataStream stream, int offset, int size)
 		{
-			GorgonDebug.AssertNull<GorgonDataStream>(stream, "stream");
+			GorgonDebug.AssertNull(stream, "stream");
 
 #if DEBUG
-			if (BufferUsage != GorgonLibrary.Graphics.BufferUsage.Default)
-				throw new InvalidOperationException("Cannot use Update on a non-default buffer.");
+		    if (BufferUsage != GorgonLibrary.Graphics.BufferUsage.Default)
+		    {
+                throw new GorgonException(GorgonResult.AccessDenied, Resources.GORGFX_NOT_DEFAULT_USAGE);
+		    }
 #endif
 
 			UpdateImpl(stream, offset, size);
@@ -312,10 +313,12 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		public void Unlock()
 		{
-			if (!IsLocked)
-				return;
+		    if (!IsLocked)
+		    {
+		        return;
+		    }
 
-			UnlockImpl();
+		    UnlockImpl();
 
 			IsLocked = false;
 		}
@@ -332,30 +335,29 @@ namespace GorgonLibrary.Graphics
 		/// is made to lock them.</para>
 		/// <para>Some buffers may raise an exception with locking with certain <paramref name="lockFlags"/>.  This is dependant upon the type of buffer.</para>
 		/// </remarks>
-		/// <exception cref="System.InvalidOperationException">Thrown when the buffer is already locked.
+		/// <exception cref="GorgonLibrary.GorgonException">Thrown when the buffer is already locked.
 		/// <para>-or-</para>
 		/// <para>Thrown when the usage for the buffer does not allow the buffer to be locked.</para>		
 		/// </exception>		
-		/// <exception cref="System.ArgumentException">Thrown when a constant buffer is locked with any other flag other than Discard.
-		/// <para>-or-</para>
-		/// <para>Thrown when an index/vertex buffer is locked with with a read flag, or a write flag without discard or nooverwrite.</para>
-		/// </exception>
-		public GorgonDataStream Lock(BufferLockFlags lockFlags)
+        /// <exception cref="System.ArgumentException">Thrown when a constant buffer is locked with any other flag other than Discard.
+        /// <para>-or-</para>
+        /// <para>Thrown when an index/vertex buffer is locked with with a read flag, or a write flag without discard or nooverwrite.</para>
+        /// </exception>
+        public GorgonDataStream Lock(BufferLockFlags lockFlags)
 		{
-			GorgonDataStream result = null;
-
 #if DEBUG
-			if (IsLocked)
-				throw new InvalidOperationException("The buffer is already locked.");
+		    if (IsLocked)
+		    {
+                throw new GorgonException(GorgonResult.AccessDenied, Resources.GORGFX_ALREADY_LOCKED);
+		    }
 
-			if (BufferUsage == BufferUsage.Default)
-				throw new InvalidOperationException("A buffer with default usage cannot be locked.");
-
-			if (BufferUsage == BufferUsage.Immutable)
-				throw new InvalidOperationException("The buffer is immutable and cannot be locked.");
+		    if ((BufferUsage == BufferUsage.Default) || (BufferUsage == BufferUsage.Immutable))
+		    {
+		        throw new GorgonException(GorgonResult.AccessDenied, string.Format(Resources.GORGFX_USAGE_CANT_LOCK, BufferUsage));
+		    }
 #endif
 
-			result = LockImpl(lockFlags);
+			GorgonDataStream result = LockImpl(lockFlags);
 
 			IsLocked = true;
 

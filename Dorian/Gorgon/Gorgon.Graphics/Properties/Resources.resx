@@ -117,6 +117,15 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="GORGFX_ALREADY_LOCKED" xml:space="preserve">
+    <value>The buffer is already locked.</value>
+  </data>
+  <data name="GORGFX_BUFFER_IMMUTABLE" xml:space="preserve">
+    <value>This buffer is immutable and this cannot be updated.</value>
+  </data>
+  <data name="GORGFX_BUFFER_SIZE_MISMATCH" xml:space="preserve">
+    <value>The size of the buffers do not match.</value>
+  </data>
   <data name="GORGFX_COLOR_TOSTR" xml:space="preserve">
     <value>Color Value: Red={0}, Green={1}, Blue={2}, Alpha={3}.</value>
   </data>
@@ -129,8 +138,17 @@
   <data name="GORGFX_FMTPITCH_TOSTR" xml:space="preserve">
     <value>Image pitch information.  Width={0} bytes, Size={1} bytes.</value>
   </data>
+  <data name="GORGFX_INDEX_OUT_OF_RANGE" xml:space="preserve">
+    <value>The index is out of range.  The index value [{0}] must be be 0 or less than {1}.</value>
+  </data>
   <data name="GORGFX_INVALID_OS" xml:space="preserve">
     <value>The Gorgon Graphics interface requires Windows Vista Service Pack 2 or greater.</value>
+  </data>
+  <data name="GORGFX_NOT_DEFAULT_USAGE" xml:space="preserve">
+    <value>The usage for this object must be set to 'Default'.</value>
+  </data>
+  <data name="GORGFX_USAGE_CANT_LOCK" xml:space="preserve">
+    <value>A buffer with a usage of '{0}' cannot be locked.</value>
   </data>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   <data name="Gorgon_2_x_Logo_Small" type="System.Resources.ResXFileRef, System.Windows.Forms">
