@@ -27,9 +27,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using D3D = SharpDX.Direct3D11;
 using GorgonLibrary.Diagnostics;
+using D3D = SharpDX.Direct3D11;
 
 namespace GorgonLibrary.Graphics
 {

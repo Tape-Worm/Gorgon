@@ -26,13 +26,13 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Drawing;
-using System.Windows.Forms;
 using System.IO;
-using GorgonLibrary.IO;
+using System.Linq;
+using System.Windows.Forms;
 using GorgonLibrary.Configuration;
 using GorgonLibrary.Editor.Properties;
+using GorgonLibrary.IO;
 
 namespace GorgonLibrary.Editor
 {

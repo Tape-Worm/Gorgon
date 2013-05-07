@@ -26,8 +26,8 @@
 
 using System;
 using System.Runtime.InteropServices;
-using GorgonLibrary.Native;
 using GorgonLibrary.Input.Raw.Properties;
+using GorgonLibrary.Native;
 
 namespace GorgonLibrary.Input.Raw
 {

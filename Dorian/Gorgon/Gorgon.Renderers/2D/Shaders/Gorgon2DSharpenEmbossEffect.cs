@@ -24,13 +24,9 @@
 // 
 #endregion
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using SlimMath;
 using GorgonLibrary.Graphics;
 using GorgonLibrary.IO;
+using SlimMath;
 
 namespace GorgonLibrary.Renderers
 {

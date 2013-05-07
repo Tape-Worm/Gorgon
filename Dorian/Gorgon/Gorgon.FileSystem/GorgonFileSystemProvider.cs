@@ -25,9 +25,9 @@
 #endregion
 
 using System;
-using System.Linq;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using GorgonLibrary.IO.Properties;
 
 namespace GorgonLibrary.IO

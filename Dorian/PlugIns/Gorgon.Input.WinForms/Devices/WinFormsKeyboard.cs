@@ -26,7 +26,6 @@
 
 using System.Runtime.InteropServices;
 using GorgonLibrary.Diagnostics;
-using Forms = System.Windows.Forms;
 
 namespace GorgonLibrary.Input.WinForms
 {
@@ -47,7 +46,7 @@ namespace GorgonLibrary.Input.WinForms
 		/// <param name="nVirtKey">Virtual key code to retrieve.</param>
 		// <returns>A bitmask containing the state of the virtual key.</returns>
 		[DllImport("User32.dll"), System.Security.SuppressUnmanagedCodeSecurity]
-		private static extern short GetKeyState(Forms.Keys nVirtKey);
+		private static extern short GetKeyState(System.Windows.Forms.Keys nVirtKey);
 
 		/// <summary>
 		/// Function to retrieve the scan code for a virtual key.
@@ -63,7 +62,7 @@ namespace GorgonLibrary.Input.WinForms
 		/// </summary>
 		/// <param name="keyEventArgs">Event parameters from the keyboard events.</param>
 		/// <param name="state">State of the key, up or down.</param>
-		private void ProcessKeys(Forms.KeyEventArgs keyEventArgs, KeyState state)
+		private void ProcessKeys(System.Windows.Forms.KeyEventArgs keyEventArgs, KeyState state)
 		{
 		    if ((BoundControl == null) || (BoundControl.Disposing))
 		    {
@@ -81,12 +80,12 @@ namespace GorgonLibrary.Input.WinForms
 			switch(keyCode)
 			{
 				case KeyboardKeys.ControlKey:
-			        if ((GetKeyState(Forms.Keys.LControlKey) & 0x80) == 0x80)
+			        if ((GetKeyState(System.Windows.Forms.Keys.LControlKey) & 0x80) == 0x80)
 			        {
 			            keyCode = KeyboardKeys.LControlKey;
 			        }
 
-			        if ((GetKeyState(Forms.Keys.RControlKey) & 0x80) == 0x80)
+			        if ((GetKeyState(System.Windows.Forms.Keys.RControlKey) & 0x80) == 0x80)
 			        {
 			            keyCode = KeyboardKeys.RControlKey;
 			        }
@@ -94,12 +93,12 @@ namespace GorgonLibrary.Input.WinForms
 			        KeyStates[KeyboardKeys.ControlKey] = state;
 					break;
 				case KeyboardKeys.Menu:
-			        if ((GetKeyState(Forms.Keys.LMenu) & 0x80) == 0x80)
+			        if ((GetKeyState(System.Windows.Forms.Keys.LMenu) & 0x80) == 0x80)
 			        {
 			            keyCode = KeyboardKeys.LMenu;
 			        }
 
-			        if ((GetKeyState(Forms.Keys.RMenu) & 0x80) == 0x80)
+			        if ((GetKeyState(System.Windows.Forms.Keys.RMenu) & 0x80) == 0x80)
 			        {
 			            keyCode = KeyboardKeys.RMenu;
 			        }
@@ -107,12 +106,12 @@ namespace GorgonLibrary.Input.WinForms
 			        KeyStates[KeyboardKeys.Menu] = state;
 					break;
 				case KeyboardKeys.ShiftKey:
-			        if ((GetKeyState(Forms.Keys.LShiftKey) & 0x80) == 0x80)
+			        if ((GetKeyState(System.Windows.Forms.Keys.LShiftKey) & 0x80) == 0x80)
 			        {
 			            keyCode = KeyboardKeys.LShiftKey;
 			        }
 
-			        if ((GetKeyState(Forms.Keys.RShiftKey) & 0x80) == 0x80)
+			        if ((GetKeyState(System.Windows.Forms.Keys.RShiftKey) & 0x80) == 0x80)
 			        {
 			            keyCode = KeyboardKeys.RShiftKey;
 			        }
@@ -138,7 +137,7 @@ namespace GorgonLibrary.Input.WinForms
 		/// </summary>
 		/// <param name="sender">The source of the event.</param>
 		/// <param name="e">The <see cref="System.Windows.Forms.KeyEventArgs"/> instance containing the event data.</param>
-		private void BoundWindow_KeyDown(object sender, Forms.KeyEventArgs e)
+		private void BoundWindow_KeyDown(object sender, System.Windows.Forms.KeyEventArgs e)
 		{
 			ProcessKeys(e, KeyState.Down);
 		}
@@ -148,7 +147,7 @@ namespace GorgonLibrary.Input.WinForms
 		/// </summary>
 		/// <param name="sender">The source of the event.</param>
 		/// <param name="e">The <see cref="System.Windows.Forms.KeyEventArgs"/> instance containing the event data.</param>
-		private void BoundWindow_KeyUp(object sender, Forms.KeyEventArgs e)
+		private void BoundWindow_KeyUp(object sender, System.Windows.Forms.KeyEventArgs e)
 		{
 			ProcessKeys(e, KeyState.Up);
 		}
@@ -180,7 +179,7 @@ namespace GorgonLibrary.Input.WinForms
 		/// <param name="boundWindow">The window to bind this device with.</param>
 		/// <exception cref="System.ArgumentNullException">Thrown when the owner parameter is NULL (or Nothing in VB.NET).</exception>
 		/// <remarks>Pass NULL (Nothing in VB.Net) to the <paramref name="boundWindow"/> parameter to use the <see cref="P:GorgonLibrary.Gorgon.ApplicationForm">Gorgon application window</see>.</remarks>
-		internal WinFormsKeyboard(GorgonInputFactory owner, Forms.Control boundWindow)
+		internal WinFormsKeyboard(GorgonInputFactory owner, System.Windows.Forms.Control boundWindow)
 			: base(owner, "Win Forms Input Keyboard", boundWindow)
 		{
 			Gorgon.Log.Print("Win Forms input keyboard interface created.", LoggingLevel.Verbose);

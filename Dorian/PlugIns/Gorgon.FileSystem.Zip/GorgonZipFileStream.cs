@@ -26,8 +26,8 @@
 
 using System;
 using System.IO;
-using ICSharpCode.SharpZipLib.Zip;
 using GorgonLibrary.IO.Zip.Properties;
+using ICSharpCode.SharpZipLib.Zip;
 
 namespace GorgonLibrary.IO.Zip
 {

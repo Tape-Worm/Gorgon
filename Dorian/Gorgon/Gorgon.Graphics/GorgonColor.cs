@@ -27,9 +27,9 @@
 using System;
 using System.Drawing;
 using System.Runtime.InteropServices;
-using SlimMath;
-using GorgonLibrary.Math;
 using GorgonLibrary.Graphics.Properties;
+using GorgonLibrary.Math;
+using SlimMath;
 
 namespace GorgonLibrary.Graphics
 {

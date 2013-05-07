@@ -25,14 +25,14 @@
 #endregion
 
 using System;
-using System.Globalization;
 using System.Collections.Generic;
+using System.Globalization;
+using System.IO;
 using System.Text;
 using System.Xml.Linq;
-using System.IO;
+using GorgonLibrary.Diagnostics;
 using GorgonLibrary.IO.GorPack.Properties;
 using ICSharpCode.SharpZipLib.BZip2;
-using GorgonLibrary.Diagnostics;
 
 namespace GorgonLibrary.IO.GorPack
 {

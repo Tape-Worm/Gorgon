@@ -26,17 +26,13 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Drawing;
-using System.Runtime.InteropServices;
-using System.Threading;
-using SlimMath;
-using GorgonLibrary.Native;
-using GorgonLibrary.Diagnostics;
+using System.Text;
 using GorgonLibrary.Collections.Specialized;
 using GorgonLibrary.Graphics;
 using GorgonLibrary.IO;
+using GorgonLibrary.Native;
+using SlimMath;
 
 namespace GorgonLibrary.Renderers
 {

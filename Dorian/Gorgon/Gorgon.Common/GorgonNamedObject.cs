@@ -24,8 +24,8 @@
 // 
 #endregion
 
-using GorgonLibrary.Properties;
 using GorgonLibrary.Diagnostics;
+using GorgonLibrary.Properties;
 
 namespace GorgonLibrary
 {

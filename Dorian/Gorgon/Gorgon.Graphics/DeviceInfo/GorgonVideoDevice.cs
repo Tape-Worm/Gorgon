@@ -25,11 +25,7 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using GorgonLibrary.Collections.Specialized;
-using GorgonLibrary.Diagnostics;
 using GI = SharpDX.DXGI;
 using D3DCommon = SharpDX.Direct3D;
 using D3D = SharpDX.Direct3D11;

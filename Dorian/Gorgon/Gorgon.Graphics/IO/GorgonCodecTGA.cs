@@ -103,14 +103,9 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Runtime.InteropServices;
-using GorgonLibrary.Math;
-using GorgonLibrary.Native;
 using GorgonLibrary.Graphics;
+using GorgonLibrary.Native;
 
 namespace GorgonLibrary.IO
 {

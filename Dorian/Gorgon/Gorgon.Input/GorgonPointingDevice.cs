@@ -26,7 +26,6 @@
 
 using System;
 using System.Drawing;
-using Forms = System.Windows.Forms;
 using GorgonLibrary.Math;
 
 namespace GorgonLibrary.Input
@@ -321,7 +320,7 @@ namespace GorgonLibrary.Input
 		/// Function called when the device is bound to a window.
 		/// </summary>
 		/// <param name="window">Window that was bound.</param>
-		protected override void OnWindowBound(Forms.Control window)
+		protected override void OnWindowBound(System.Windows.Forms.Control window)
 		{
 			window.MouseLeave += Owner_MouseLeave;
 		}
@@ -526,7 +525,7 @@ namespace GorgonLibrary.Input
 		{
 		    if (_cursorHidden)
 		    {
-		        Forms.Cursor.Show();
+		        System.Windows.Forms.Cursor.Show();
 		    }
 
 		    _cursorHidden = false;
@@ -539,7 +538,7 @@ namespace GorgonLibrary.Input
 		{
 		    if (!_cursorHidden)
 		    {
-		        Forms.Cursor.Hide();
+		        System.Windows.Forms.Cursor.Hide();
 		    }
 
 		    _cursorHidden = true;
@@ -628,7 +627,7 @@ namespace GorgonLibrary.Input
 		/// <param name="boundWindow">The window to bind this device with.</param>
 		/// <exception cref="System.ArgumentNullException">Thrown when the owner parameter is NULL (or Nothing in VB.NET).</exception>
 		/// <remarks>Pass NULL (Nothing in VB.Net) to the <paramref name="boundWindow"/> parameter to use the <see cref="P:GorgonLibrary.Gorgon.ApplicationForm">Gorgon application window</see>.</remarks>
-		protected GorgonPointingDevice(GorgonInputFactory owner, string deviceName, Forms.Control boundWindow)
+		protected GorgonPointingDevice(GorgonInputFactory owner, string deviceName, System.Windows.Forms.Control boundWindow)
 			: base(owner, deviceName, boundWindow)
 		{
 			_position = new PointF(BoundControl.ClientSize.Width / 2, BoundControl.ClientSize.Height / 2);
@@ -639,10 +638,10 @@ namespace GorgonLibrary.Input
 			ResetCursor();
 			ShowCursor();
 
-			Forms.Cursor.Position = Point.Truncate(_position);
+			System.Windows.Forms.Cursor.Position = Point.Truncate(_position);
 
-			DoubleClickDelay = Forms.SystemInformation.DoubleClickTime;
-			DoubleClickRange = new PointF(Forms.SystemInformation.DoubleClickSize.Width, Forms.SystemInformation.DoubleClickSize.Height);
+			DoubleClickDelay = System.Windows.Forms.SystemInformation.DoubleClickTime;
+			DoubleClickRange = new PointF(System.Windows.Forms.SystemInformation.DoubleClickSize.Width, System.Windows.Forms.SystemInformation.DoubleClickSize.Height);
 		}
 		#endregion
 	}

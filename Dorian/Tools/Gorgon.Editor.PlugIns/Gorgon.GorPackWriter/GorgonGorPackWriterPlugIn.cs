@@ -26,12 +26,12 @@
 
 using System;
 using System.Diagnostics;
-using System.Xml.Linq;
+using System.IO;
 using System.Text;
 using System.Threading;
-using System.IO;
-using ICSharpCode.SharpZipLib.BZip2;
+using System.Xml.Linq;
 using GorgonLibrary.IO;
+using ICSharpCode.SharpZipLib.BZip2;
 
 namespace GorgonLibrary.Editor.GorPackWriterPlugIn
 {

@@ -25,9 +25,9 @@
 #endregion
 
 using System;
-using System.Text;
-using System.IO;
 using System.Drawing;
+using System.IO;
+using System.Text;
 using GorgonLibrary.Native;
 using GorgonLibrary.Properties;
 

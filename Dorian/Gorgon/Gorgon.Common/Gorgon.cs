@@ -28,12 +28,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
-using GorgonLibrary.Properties;
-using GorgonLibrary.IO;
 using GorgonLibrary.Collections.Specialized;
 using GorgonLibrary.Diagnostics;
+using GorgonLibrary.IO;
 using GorgonLibrary.Native;
 using GorgonLibrary.PlugIns;
+using GorgonLibrary.Properties;
 
 namespace GorgonLibrary
 {

@@ -27,12 +27,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Reflection;
-using D3D = SharpDX.Direct3D11;
-using SlimMath;
-using GorgonLibrary.Diagnostics;
 using GorgonLibrary.Collections;
+using GorgonLibrary.Diagnostics;
+using SlimMath;
+using D3D = SharpDX.Direct3D11;
 
 namespace GorgonLibrary.Graphics
 {

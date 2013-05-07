@@ -30,7 +30,6 @@ using System.Linq;
 using System.Text;
 using GorgonLibrary.Animation;
 using GorgonLibrary.Graphics;
-using GorgonLibrary.Native;
 using GorgonLibrary.IO;
 using GorgonLibrary.Math;
 using SlimMath;

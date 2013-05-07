@@ -27,12 +27,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using DX = SharpDX;
-using WIC = SharpDX.WIC;
-using GorgonLibrary.Math;
 using GorgonLibrary.Graphics;
+using GorgonLibrary.Math;
+using DX = SharpDX;
 
 namespace GorgonLibrary.IO
 {
@@ -177,7 +174,7 @@ namespace GorgonLibrary.IO
 		/// <param name="frameIndex">Index of the current frame.</param>
 		/// <param name="settings">Image data settings.</param>
 		/// <param name="paletteColors">Palette colors used to encode the images.</param>
-		internal override void AddCustomMetaData(WIC.BitmapEncoder encoder, WIC.BitmapFrameEncode frame, int frameIndex, IImageSettings settings, SharpDX.Color[] paletteColors)
+		internal override void AddCustomMetaData(SharpDX.WIC.BitmapEncoder encoder, SharpDX.WIC.BitmapFrameEncode frame, int frameIndex, IImageSettings settings, SharpDX.Color[] paletteColors)
 		{
 			// Do nothing.
 			if (FrameDelays == null)
@@ -220,7 +217,7 @@ namespace GorgonLibrary.IO
 		/// <returns>
 		/// The position of the offset.
 		/// </returns>
-		internal override System.Drawing.Point GetFrameOffset(WIC.BitmapFrameDecode frame)
+		internal override System.Drawing.Point GetFrameOffset(SharpDX.WIC.BitmapFrameDecode frame)
 		{
 			System.Drawing.Point offset = System.Drawing.Point.Empty;
 
@@ -256,9 +253,9 @@ namespace GorgonLibrary.IO
 		/// <returns>
 		/// A tuple containing the palette data, alpha percentage and the type of palette.
 		/// </returns>
-		internal override Tuple<WIC.Palette, double, WIC.BitmapPaletteType> GetPaletteInfo(GorgonWICImage wic, WIC.Bitmap bitmap)
+		internal override Tuple<SharpDX.WIC.Palette, double, SharpDX.WIC.BitmapPaletteType> GetPaletteInfo(GorgonWICImage wic, SharpDX.WIC.Bitmap bitmap)
 		{			
-			WIC.Palette palette = null;
+			SharpDX.WIC.Palette palette = null;
 
 			if (Palette == null)
 			{
@@ -269,10 +266,10 @@ namespace GorgonLibrary.IO
 				}
 				else
 				{
-					palette = new WIC.Palette(wic.Factory);
+					palette = new SharpDX.WIC.Palette(wic.Factory);
 					palette.Initialize(bitmap, 256, true);
 					
-					return new Tuple<WIC.Palette,double,WIC.BitmapPaletteType>(palette, AlphaThresholdPercent, WIC.BitmapPaletteType.Custom);
+					return new Tuple<SharpDX.WIC.Palette,double,SharpDX.WIC.BitmapPaletteType>(palette, AlphaThresholdPercent, SharpDX.WIC.BitmapPaletteType.Custom);
 				}
 			}
 
@@ -285,10 +282,10 @@ namespace GorgonLibrary.IO
 				paletteColors[i] = Palette[i].SharpDXColor4;
 			}
 
-			palette = new WIC.Palette(wic.Factory);
+			palette = new SharpDX.WIC.Palette(wic.Factory);
 			palette.Initialize(paletteColors);
 
-			return new Tuple<WIC.Palette, double, WIC.BitmapPaletteType>(palette, AlphaThresholdPercent, WIC.BitmapPaletteType.Custom);
+			return new Tuple<SharpDX.WIC.Palette, double, SharpDX.WIC.BitmapPaletteType>(palette, AlphaThresholdPercent, SharpDX.WIC.BitmapPaletteType.Custom);
 		}
 
         /// <summary>
@@ -372,13 +369,13 @@ namespace GorgonLibrary.IO
 					// Get our WIC interface.				
 					using (var wic = new GorgonWICImage())
 					{
-						using (var decoder = new WIC.BitmapDecoder(wic.Factory, SupportedFormat))
+						using (var decoder = new SharpDX.WIC.BitmapDecoder(wic.Factory, SupportedFormat))
 						{
-							using (var wicStream = new WIC.WICStream(wic.Factory, wrapperStream))
+							using (var wicStream = new SharpDX.WIC.WICStream(wic.Factory, wrapperStream))
 							{
 								try
 								{
-									decoder.Initialize(wicStream, WIC.DecodeOptions.CacheOnDemand);
+									decoder.Initialize(wicStream, SharpDX.WIC.DecodeOptions.CacheOnDemand);
 								}
 								catch (DX.SharpDXException sdex)
 								{
@@ -443,7 +440,7 @@ namespace GorgonLibrary.IO
 		/// Initializes a new instance of the <see cref="GorgonCodecWIC" /> class.
 		/// </summary>
 		public GorgonCodecGIF()
-			: base("GIF", "Graphics Interchange Format", new string[] { "gif" }, WIC.ContainerFormatGuids.Gif)
+			: base("GIF", "Graphics Interchange Format", new string[] { "gif" }, SharpDX.WIC.ContainerFormatGuids.Gif)
 		{
 			FrameDelays = null;
 		}

@@ -26,15 +26,15 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Windows.Forms;
-using System.IO;
 using System.Xml.Linq;
-using GorgonLibrary.IO;
 using GorgonLibrary.Diagnostics;
-using GorgonLibrary.UI;
-using GorgonLibrary.Graphics;
 using GorgonLibrary.Editor.Properties;
+using GorgonLibrary.Graphics;
+using GorgonLibrary.IO;
+using GorgonLibrary.UI;
 
 namespace GorgonLibrary.Editor
 {
