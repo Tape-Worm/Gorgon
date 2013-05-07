@@ -325,7 +325,7 @@ namespace GorgonLibrary.Renderers
 			{
 				// Direct 3D 9 used a value from 0..255 for alpha masking, we use
 				// a scalar value so convert to a scalar.
-				sprite.AlphaTestValues = new GorgonMinMaxF(0.0f, reader.ReadInt32() / 255.0f);
+				sprite.AlphaTestValues = new GorgonRangeF(0.0f, reader.ReadInt32() / 255.0f);
 			}
 
 			// Set the blending mode.

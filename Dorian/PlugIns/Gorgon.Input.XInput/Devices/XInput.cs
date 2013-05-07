@@ -99,17 +99,17 @@ namespace GorgonLibrary.Input.XInput
 				ButtonCount = buttonCount;
 
 				// Get ranges.
-				SecondaryYAxisRange = SecondaryXAxisRange = YAxisRange = XAxisRange = new GorgonMinMax(-32768, 32767);
-				ThrottleAxisRange = RudderAxisRange = new GorgonMinMax(0, 255);
+				SecondaryYAxisRange = SecondaryXAxisRange = YAxisRange = XAxisRange = new GorgonRange(-32768, 32767);
+				ThrottleAxisRange = RudderAxisRange = new GorgonRange(0, 255);
 
-				VibrationMotorRanges = new GorgonMinMax[2];
+				VibrationMotorRanges = new GorgonRange[2];
 				// BUG: As of this writing, there's a bug in XInputGetCapabilities in DirectX that's returning 255 even though
 				// they've documented the ranges (and I've tested these) to be 0..65535.
 				//VibrationMotorRanges[0] = new GorgonMinMax(0, caps.Vibration.LeftMotorSpeed);
 				//VibrationMotorRanges[1] = new GorgonMinMax(0, caps.Vibration.RightMotorSpeed);
 
-				VibrationMotorRanges[0] = new GorgonMinMax(0, 65535);
-				VibrationMotorRanges[1] = new GorgonMinMax(0, 65535);
+				VibrationMotorRanges[0] = new GorgonRange(0, 65535);
+				VibrationMotorRanges[1] = new GorgonRange(0, 65535);
 
 				ExtraCapabilities = JoystickCapabilityFlags.SupportsDiscreetPOV | JoystickCapabilityFlags.SupportsPOV | JoystickCapabilityFlags.SupportsRudder | JoystickCapabilityFlags.SupportsThrottle | JoystickCapabilityFlags.SupportsVibration | JoystickCapabilityFlags.SupportsSecondaryXAxis | JoystickCapabilityFlags.SupportsSecondaryYAxis;
 			}
@@ -313,12 +313,12 @@ namespace GorgonLibrary.Input.XInput
 		        IsConnected = true;
 
 		        // Restore the dead zone.
-		        DeadZone.Rudder = new GorgonMinMax(previousDeadZone.Rudder);
-		        DeadZone.Throttle = new GorgonMinMax(previousDeadZone.Throttle);
-		        DeadZone.X = new GorgonMinMax(previousDeadZone.X);
-		        DeadZone.Y = new GorgonMinMax(previousDeadZone.Y);
-		        DeadZone.SecondaryX = new GorgonMinMax(previousDeadZone.SecondaryX);
-		        DeadZone.SecondaryY = new GorgonMinMax(previousDeadZone.SecondaryY);
+		        DeadZone.Rudder = new GorgonRange(previousDeadZone.Rudder);
+		        DeadZone.Throttle = new GorgonRange(previousDeadZone.Throttle);
+		        DeadZone.X = new GorgonRange(previousDeadZone.X);
+		        DeadZone.Y = new GorgonRange(previousDeadZone.Y);
+		        DeadZone.SecondaryX = new GorgonRange(previousDeadZone.SecondaryX);
+		        DeadZone.SecondaryY = new GorgonRange(previousDeadZone.SecondaryY);
 #if DEBUG
 		        XI.Capabilities caps = _controller.GetCapabilities(XI.DeviceQueryType.Any);
 		        Gorgon.Log.Print("XInput Controller {0} (ID:{1}) re-connected.", LoggingLevel.Verbose, caps.SubType.ToString(), _controllerID);

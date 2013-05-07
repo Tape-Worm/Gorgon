@@ -40,7 +40,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 	static class Win32API
 	{
 		#region Variables.
-		private static IDictionary<string, GorgonMinMax> _ranges = null;		// List of ranges.
+		private static IDictionary<string, GorgonRange> _ranges = null;		// List of ranges.
 		private static IDictionary<int, string> _codePointNames = null;			// List of code point names.
 		#endregion
 
@@ -106,7 +106,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		{
 			IList<string> rangeLines = Properties.Resources.UnicodeBlocks.Split(new char[] { '\n' }, StringSplitOptions.RemoveEmptyEntries);
 			IList<string> items = null;
-			_ranges = new SortedDictionary<string, GorgonMinMax>();
+			_ranges = new SortedDictionary<string, GorgonRange>();
 
 			// Break out the lines.
 			foreach (var line in rangeLines)
@@ -116,14 +116,14 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 				// Get range.
 				if ((!string.IsNullOrEmpty(items[0])) && (!string.IsNullOrEmpty(items[1])))
 				{
-					var range = new GorgonMinMax(int.Parse(items[0].Substring(0, items[0].IndexOf('.')), System.Globalization.NumberStyles.HexNumber), 
+					var range = new GorgonRange(int.Parse(items[0].Substring(0, items[0].IndexOf('.')), System.Globalization.NumberStyles.HexNumber), 
 						int.Parse(items[0].Substring(items[0].LastIndexOf('.') + 1), System.Globalization.NumberStyles.HexNumber));
 
 					// Combine the first 2 latin categories into the one category.
 					if (range.Maximum <= 0xff) 
 					{
 						if (!_ranges.ContainsKey("Latin + Latin Supplement"))
-							_ranges.Add("Latin + Latin Supplement", new GorgonMinMax(0, 0xFF));
+							_ranges.Add("Latin + Latin Supplement", new GorgonRange(0, 0xFF));
 					}
 					else
 						_ranges.Add(items[1].Trim(), range);
@@ -197,9 +197,9 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		/// <param name="font">Font to look up.</param>
 		/// <param name="hDc">Device context.</param>
 		/// <returns>A list of ranges.</returns>
-		public static IDictionary<string, GorgonMinMax> GetUnicodeRanges(Font font, IntPtr hDc)
+		public static IDictionary<string, GorgonRange> GetUnicodeRanges(Font font, IntPtr hDc)
 		{
-			Dictionary<string, GorgonMinMax> result = null;
+			Dictionary<string, GorgonRange> result = null;
 
 			if (_ranges == null)
 				BuildUnicodeRangeList();
@@ -217,14 +217,13 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 				stream.Read<Int32>();
 
 				itemCount = stream.Read<int>();
-				result = new Dictionary<string, GorgonMinMax>(itemCount);
+				result = new Dictionary<string, GorgonRange>(itemCount);
 
 				for (int i = 0; i < itemCount; i++)
 				{
-					GorgonMinMax value = default(GorgonMinMax);
+					GorgonRange value = default(GorgonRange);
 
-					value.Minimum = stream.Read<ushort>();
-					value.Maximum = stream.Read<ushort>() + value.Minimum - 1;
+					value = new GorgonRange(stream.Read<ushort>(), stream.Read<ushort>() + value.Minimum - 1);
 
 					var rangeName = (from unicodeRange in _ranges
 									where unicodeRange.Value.Contains(value.Minimum) && unicodeRange.Value.Contains(value.Maximum)

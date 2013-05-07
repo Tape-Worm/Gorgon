@@ -294,7 +294,7 @@ namespace GorgonLibrary.Graphics
 		/// <exception cref="System.InvalidOperationException">Thrown when this texture is an immutable texture.
 		/// </exception>
         /// <exception cref="System.NotSupportedException">Thrown when the video device has a feature level of SM2_a_b and this texture or the source texture are not staging textures.</exception>
-		public void CopySubResource(GorgonTexture1D texture, int subResource, int destSubResource, GorgonMinMax? sourceRange, int destination)
+		public void CopySubResource(GorgonTexture1D texture, int subResource, int destSubResource, GorgonRange? sourceRange, int destination)
 		{
 			GorgonDebug.AssertNull<GorgonTexture1D>(texture, "texture");
 
@@ -352,7 +352,7 @@ namespace GorgonLibrary.Graphics
 		/// </exception>
 		/// <exception cref="System.InvalidOperationException">Thrown when this texture is an immutable texture.
 		/// </exception>
-		public void CopySubResource(GorgonTexture1D texture, GorgonMinMax sourceRange, int destination)
+		public void CopySubResource(GorgonTexture1D texture, GorgonRange sourceRange, int destination)
 		{
 #if DEBUG
 			if (texture == this)
@@ -425,7 +425,7 @@ namespace GorgonLibrary.Graphics
 		/// </remarks>
 		/// <exception cref="System.InvalidOperationException">Thrown when this texture has an Immutable, Dynamic or a Staging usage.
 		/// </exception>
-		public void UpdateSubResource(ISubResourceData data, int subResource, GorgonMinMax destRange)
+		public void UpdateSubResource(ISubResourceData data, int subResource, GorgonRange destRange)
 		{
 #if DEBUG
 			if ((Settings.Usage == BufferUsage.Dynamic) || (Settings.Usage == BufferUsage.Immutable))
@@ -433,13 +433,24 @@ namespace GorgonLibrary.Graphics
 #endif
 
 			if (destRange.Minimum < 0)
-				destRange.Minimum = 0;
-			if (destRange.Minimum >= Settings.Width) 
-				destRange.Minimum = Settings.Width - 1;
+			{
+				destRange = new GorgonRange(0, destRange.Maximum);
+			}
+
+			if (destRange.Minimum >= Settings.Width)
+			{
+				destRange = new GorgonRange(Settings.Width - 1, destRange.Maximum);
+			}
+
 			if (destRange.Maximum < 0)
-				destRange.Maximum = 0;
+			{
+				destRange = new GorgonRange(destRange.Minimum, 0);
+			}
+
 			if (destRange.Maximum >= Settings.Width)
-				destRange.Maximum = Settings.Width -1;
+			{
+				destRange = new GorgonRange(destRange.Minimum, Settings.Width - 1);
+			}
 
 			var box = new SharpDX.DataBox()
 			{

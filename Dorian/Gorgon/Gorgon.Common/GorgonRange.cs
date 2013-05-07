@@ -58,23 +58,23 @@ namespace GorgonLibrary
 	/// Value type to indicate a range of double values.
 	/// </summary>
     [StructLayout(LayoutKind.Sequential, Pack = 4)]
-	public struct GorgonMinMaxD
-		: IRange<double>, IEquatable<GorgonMinMaxD>
+	public struct GorgonRangeD
+		: IRange<double>, IEquatable<GorgonRangeD>
 	{
 		#region Variables.
 		/// <summary>
 		/// Minimum value in the range.
 		/// </summary>
-		public double Minimum;
+		public readonly double Minimum;
 		/// <summary>
 		/// Maximum value in the range.
 		/// </summary>
-		public double Maximum;
+		public readonly double Maximum;
 
 		/// <summary>
 		/// Empty range.
 		/// </summary>
-		public static readonly GorgonMinMaxD Empty = new GorgonMinMaxD(0.0, 0.0);
+		public static readonly GorgonRangeD Empty = new GorgonRangeD(0.0, 0.0);
 		#endregion
 
 		#region Methods.
@@ -94,7 +94,7 @@ namespace GorgonLibrary
 		/// <param name="range">Range to shrink.</param>
 		/// <param name="value">Amount to shrink the range.</param>
 		/// <param name="result">The smaller range.</param>
-		public static void Shrink(ref GorgonMinMaxD range, double value, out GorgonMinMaxD result)
+		public static void Shrink(ref GorgonRangeD range, double value, out GorgonRangeD result)
 		{
 			double min;
 			double max;
@@ -110,16 +110,7 @@ namespace GorgonLibrary
 				max = range.Maximum + value;
 			}
 
-			if (min < max)
-			{
-				result.Minimum = min;
-				result.Maximum = max;
-			}
-			else
-			{
-				result.Minimum = max;
-				result.Maximum = min;
-			}
+			result = new GorgonRangeD(min, max);
 		}
 
 		/// <summary>
@@ -127,7 +118,7 @@ namespace GorgonLibrary
 		/// </summary>
 		/// <param name="range">Range to shrink.</param>
 		/// <param name="value">Amount to shrink the range.</param>		
-		public static GorgonMinMaxD Shrink(GorgonMinMaxD range, double value)
+		public static GorgonRangeD Shrink(GorgonRangeD range, double value)
 		{
 			double min;
 			double max;
@@ -143,7 +134,7 @@ namespace GorgonLibrary
 				max = range.Maximum + value;
 			}
 
-			return new GorgonMinMaxD(min, max);
+			return new GorgonRangeD(min, max);
 		}
 
 		/// <summary>
@@ -152,7 +143,7 @@ namespace GorgonLibrary
 		/// <param name="range">Range to expand.</param>
 		/// <param name="value">Amount to expand the range.</param>
 		/// <param name="result">The larger range.</param>
-		public static void Expand(ref GorgonMinMaxD range, double value, out GorgonMinMaxD result)
+		public static void Expand(ref GorgonRangeD range, double value, out GorgonRangeD result)
 		{
 			double min;
 			double max;
@@ -168,16 +159,7 @@ namespace GorgonLibrary
 				max = range.Maximum - value;
 			}
 
-			if (min < max)
-			{
-				result.Minimum = min;
-				result.Maximum = max;
-			}
-			else
-			{
-				result.Minimum = max;
-				result.Maximum = min;
-			}
+			result = new GorgonRangeD(min, max);
 		}
 
 		/// <summary>
@@ -186,7 +168,7 @@ namespace GorgonLibrary
 		/// <param name="range">Range to expand.</param>
 		/// <param name="value">Amount to expand the range.</param>
 		/// <returns>The larger range.</returns>
-		public static GorgonMinMaxD Expand(GorgonMinMaxD range, double value)
+		public static GorgonRangeD Expand(GorgonRangeD range, double value)
 		{
 			double min;
 			double max;
@@ -202,7 +184,7 @@ namespace GorgonLibrary
 				max = range.Maximum - value;
 			}
 
-			return new GorgonMinMaxD(min, max);
+			return new GorgonRangeD(min, max);
 		}
 
 		/// <summary>
@@ -211,10 +193,9 @@ namespace GorgonLibrary
 		/// <param name="left">Left range to add</param>
 		/// <param name="right">Right range to add.</param>
 		/// <param name="result">The total of both ranges.</param>
-		public static void Add(ref GorgonMinMaxD left, ref GorgonMinMaxD right, out GorgonMinMaxD result)
+		public static void Add(ref GorgonRangeD left, ref GorgonRangeD right, out GorgonRangeD result)
 		{
-			result.Minimum = left.Minimum + right.Minimum;
-			result.Maximum = left.Maximum + right.Maximum;
+			result = new GorgonRangeD(left.Minimum + right.Minimum, left.Maximum + right.Maximum);
 		}
 
 		/// <summary>
@@ -223,9 +204,9 @@ namespace GorgonLibrary
 		/// <param name="left">Left range to add</param>
 		/// <param name="right">Right range to add.</param>
 		/// <returns>The total of both ranges.</returns>
-		public static GorgonMinMaxD Add(GorgonMinMaxD left, GorgonMinMaxD right)
+		public static GorgonRangeD Add(GorgonRangeD left, GorgonRangeD right)
 		{
-			return new GorgonMinMaxD(left.Minimum + right.Minimum, left.Maximum + right.Maximum);
+			return new GorgonRangeD(left.Minimum + right.Minimum, left.Maximum + right.Maximum);
 		}
 
 		/// <summary>
@@ -234,10 +215,9 @@ namespace GorgonLibrary
 		/// <param name="left">Left range to subtract.</param>
 		/// <param name="right">Right range to subtract.</param>
 		/// <param name="result">The difference of both ranges.</param>
-		public static void Subtract(ref GorgonMinMaxD left, ref GorgonMinMaxD right, out GorgonMinMaxD result)
+		public static void Subtract(ref GorgonRangeD left, ref GorgonRangeD right, out GorgonRangeD result)
 		{
-			result.Minimum = left.Minimum - right.Minimum;
-			result.Maximum = left.Maximum - right.Maximum;
+			result = new GorgonRangeD(left.Minimum - right.Minimum, left.Maximum - right.Maximum);
 		}
 
 		/// <summary>
@@ -246,9 +226,9 @@ namespace GorgonLibrary
 		/// <param name="left">Left range to subtract.</param>
 		/// <param name="right">Right range to subtract.</param>
 		/// <returns>The difference of both ranges.</returns>
-		public static GorgonMinMaxD Subtract(GorgonMinMaxD left, GorgonMinMaxD right)
+		public static GorgonRangeD Subtract(GorgonRangeD left, GorgonRangeD right)
 		{
-			return new GorgonMinMaxD(left.Minimum - right.Minimum, left.Maximum - right.Maximum);
+			return new GorgonRangeD(left.Minimum - right.Minimum, left.Maximum - right.Maximum);
 		}
 
 		/// <summary>
@@ -257,10 +237,9 @@ namespace GorgonLibrary
 		/// <param name="left">Left range to multiply</param>
 		/// <param name="right">Right range to multiply.</param>
 		/// <param name="result">The product of both ranges.</param>
-		public static void Multiply(ref GorgonMinMaxD left, ref GorgonMinMaxD right, out GorgonMinMaxD result)
+		public static void Multiply(ref GorgonRangeD left, ref GorgonRangeD right, out GorgonRangeD result)
 		{
-			result.Minimum = left.Minimum * right.Minimum;
-			result.Maximum = left.Maximum * right.Maximum;
+			result = new GorgonRangeD(left.Minimum * right.Minimum, left.Maximum * right.Maximum);
 		}
 
 		/// <summary>
@@ -269,9 +248,9 @@ namespace GorgonLibrary
 		/// <param name="left">Left range to multiply</param>
 		/// <param name="right">Right range to multiply.</param>
 		/// <returns>The product of both ranges.</returns>
-		public static GorgonMinMaxD Multiply(GorgonMinMaxD left, GorgonMinMaxD right)
+		public static GorgonRangeD Multiply(GorgonRangeD left, GorgonRangeD right)
 		{
-			return new GorgonMinMaxD(left.Minimum * right.Minimum, left.Maximum * right.Maximum);
+			return new GorgonRangeD(left.Minimum * right.Minimum, left.Maximum * right.Maximum);
 		}
 
 		/// <summary>
@@ -280,10 +259,9 @@ namespace GorgonLibrary
 		/// <param name="left">Left range to multiply</param>
 		/// <param name="scalar">Scalar value to multiply..</param>
 		/// <param name="result">The product of the range and the scalar.</param>
-		public static void Multiply(ref GorgonMinMaxD left, double scalar, out GorgonMinMaxD result)
+		public static void Multiply(ref GorgonRangeD left, double scalar, out GorgonRangeD result)
 		{
-			result.Minimum = left.Minimum * scalar;
-			result.Maximum = left.Maximum * scalar;
+			result = new GorgonRangeD(left.Minimum * scalar, left.Maximum * scalar);
 		}
 
 		/// <summary>
@@ -292,34 +270,9 @@ namespace GorgonLibrary
 		/// <param name="left">Left range to multiply</param>
 		/// <param name="scalar">Scalar value to multiply..</param>
 		/// <returns>The product of the range and the scalar.</returns>
-		public static GorgonMinMaxD Multiply(GorgonMinMaxD left, double scalar)
+		public static GorgonRangeD Multiply(GorgonRangeD left, double scalar)
 		{
-			return new GorgonMinMaxD(left.Minimum * scalar, left.Minimum * scalar);
-		}
-
-		/// <summary>
-		/// Function to divide two min-max ranges.
-		/// </summary>
-		/// <param name="left">Left range to divide</param>
-		/// <param name="right">Right range to divide.</param>
-		/// <param name="result">The quotient of both ranges.</param>
-		/// <exception cref="System.DivideByZeroException">Thrown if the right Minimum or Maximum value is zero.</exception>
-		public static void Divide(ref GorgonMinMaxD left, ref GorgonMinMaxD right, out GorgonMinMaxD result)
-		{
-			result.Minimum = left.Minimum / right.Minimum;
-			result.Maximum = left.Maximum / right.Maximum;
-		}
-
-		/// <summary>
-		/// Function to multiply two min-max ranges.
-		/// </summary>
-		/// <param name="left">Left range to divide.</param>
-		/// <param name="right">Right range to divide.</param>
-		/// <returns>The quotient of both ranges.</returns>
-		/// <exception cref="System.DivideByZeroException">Thrown if the right Minimum or Maximum value is zero.</exception>
-		public static GorgonMinMaxD Divide(GorgonMinMaxD left, GorgonMinMaxD right)
-		{
-			return new GorgonMinMaxD(left.Minimum / right.Minimum, left.Maximum / right.Maximum);
+			return new GorgonRangeD(left.Minimum * scalar, left.Minimum * scalar);
 		}
 
 		/// <summary>
@@ -329,10 +282,9 @@ namespace GorgonLibrary
 		/// <param name="scalar">Scalar value to divide.</param>
 		/// <param name="result">The quotient of the range and the scalar.</param>
 		/// <exception cref="System.DivideByZeroException">Thrown if the scalar value is zero.</exception>
-		public static void Divide(ref GorgonMinMaxD left, double scalar, out GorgonMinMaxD result)
+		public static void Divide(ref GorgonRangeD left, double scalar, out GorgonRangeD result)
 		{
-			result.Minimum = left.Minimum / scalar;
-			result.Maximum = left.Maximum / scalar;
+			result = new GorgonRangeD(left.Minimum / scalar, left.Maximum / scalar);
 		}
 
 		/// <summary>
@@ -342,9 +294,9 @@ namespace GorgonLibrary
 		/// <param name="scalar">Scalar value to divide.</param>
 		/// <returns>The quotient of the range and the scalar.</returns>
 		/// <exception cref="System.DivideByZeroException">Thrown if the scalar value is zero.</exception>
-		public static GorgonMinMaxD Divide(GorgonMinMaxD left, double scalar)
+		public static GorgonRangeD Divide(GorgonRangeD left, double scalar)
 		{
-			return new GorgonMinMaxD(left.Minimum / scalar, left.Minimum / scalar);
+			return new GorgonRangeD(left.Minimum / scalar, left.Minimum / scalar);
 		}
 
 		/// <summary>
@@ -356,12 +308,9 @@ namespace GorgonLibrary
 		/// </returns>
 		public override bool Equals(object obj)
 		{
-			var equate = obj as IEquatable<GorgonMinMaxD>;
+			var equate = obj as IEquatable<GorgonRangeD>;
 
-			if (equate != null)
-				return equate.Equals(this);
-
-			return false;
+			return equate != null && equate.Equals(this);
 		}
 
 		/// <summary>
@@ -372,9 +321,7 @@ namespace GorgonLibrary
 		/// </returns>
 		public override int GetHashCode()
 		{
-// ReSharper disable NonReadonlyFieldInGetHashCode
 			return 281.GenerateHash(Minimum).GenerateHash(Maximum);
-// ReSharper restore NonReadonlyFieldInGetHashCode
 		}
 
 		/// <summary>
@@ -391,20 +338,20 @@ namespace GorgonLibrary
 
 		#region Constructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonMinMaxD" /> struct.
+		/// Initializes a new instance of the <see cref="GorgonRangeD" /> struct.
 		/// </summary>
 		/// <param name="minMax">The min max value to copy.</param>
-		public GorgonMinMaxD(GorgonMinMaxD minMax)
+		public GorgonRangeD(GorgonRangeD minMax)
 			: this(minMax.Minimum, minMax.Maximum)
 		{		
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonMinMaxD"/> struct.
+		/// Initializes a new instance of the <see cref="GorgonRangeD"/> struct.
 		/// </summary>
 		/// <param name="min">The minimum value.</param>
 		/// <param name="max">The maximum value.</param>
-		public GorgonMinMaxD(double min, double max)
+		public GorgonRangeD(double min, double max)
 		{
 			if (min < max)
 			{
@@ -421,23 +368,23 @@ namespace GorgonLibrary
 
 		#region Operators.
 		/// <summary>
-		/// Performs an explicit conversion from <see cref="GorgonLibrary.GorgonMinMaxD"/> to <see cref="GorgonLibrary.GorgonMinMax"/>.
+		/// Performs an explicit conversion from <see cref="GorgonLibrary.GorgonRangeD"/> to <see cref="GorgonLibrary.GorgonRange"/>.
 		/// </summary>
 		/// <param name="range">The range.</param>
 		/// <returns>The result of the conversion.</returns>
-		public static explicit operator GorgonMinMax(GorgonMinMaxD range)
+		public static explicit operator GorgonRange(GorgonRangeD range)
 		{
-			return new GorgonMinMax((int)range.Minimum, (int)range.Maximum);
+			return new GorgonRange((int)range.Minimum, (int)range.Maximum);
 		}
 
 		/// <summary>
-		/// Performs an explicit conversion from <see cref="GorgonLibrary.GorgonMinMaxD"/> to <see cref="GorgonLibrary.GorgonMinMaxF"/>.
+		/// Performs an explicit conversion from <see cref="GorgonLibrary.GorgonRangeD"/> to <see cref="GorgonLibrary.GorgonRangeF"/>.
 		/// </summary>
 		/// <param name="range">The range.</param>
 		/// <returns>The result of the conversion.</returns>
-		public static explicit operator GorgonMinMaxF(GorgonMinMaxD range)
+		public static explicit operator GorgonRangeF(GorgonRangeD range)
 		{
-			return new GorgonMinMaxF((float)range.Minimum, (float)range.Maximum);
+			return new GorgonRangeF((float)range.Minimum, (float)range.Maximum);
 		}
 
 		/// <summary>
@@ -446,7 +393,7 @@ namespace GorgonLibrary
 		/// <param name="left">The left.</param>
 		/// <param name="right">The right.</param>
 		/// <returns>The result of the operator.</returns>
-		public static bool operator ==(GorgonMinMaxD left, GorgonMinMaxD right)
+		public static bool operator ==(GorgonRangeD left, GorgonRangeD right)
 		{
 			return left.Minimum.Equals(right.Minimum) && left.Maximum.Equals(right.Maximum);
 		}
@@ -457,7 +404,7 @@ namespace GorgonLibrary
 		/// <param name="left">The left.</param>
 		/// <param name="right">The right.</param>
 		/// <returns>The result of the operator.</returns>
-		public static bool operator !=(GorgonMinMaxD left, GorgonMinMaxD right)
+		public static bool operator !=(GorgonRangeD left, GorgonRangeD right)
 		{
 			return !(left.Minimum.Equals(right.Minimum) && left.Maximum.Equals(right.Maximum));
 		}
@@ -468,9 +415,9 @@ namespace GorgonLibrary
 		/// <param name="left">The left range.</param>
 		/// <param name="right">The right range.</param>
 		/// <returns>The result of the operator.</returns>
-		public static GorgonMinMaxD operator +(GorgonMinMaxD left, GorgonMinMaxD right)
+		public static GorgonRangeD operator +(GorgonRangeD left, GorgonRangeD right)
 		{
-			GorgonMinMaxD result;
+			GorgonRangeD result;
 			Add(ref left, ref right, out result);
 			return result;
 		}
@@ -481,9 +428,9 @@ namespace GorgonLibrary
 		/// <param name="left">The left range.</param>
 		/// <param name="right">The right range.</param>
 		/// <returns>The result of the operator.</returns>
-		public static GorgonMinMaxD operator -(GorgonMinMaxD left, GorgonMinMaxD right)
+		public static GorgonRangeD operator -(GorgonRangeD left, GorgonRangeD right)
 		{
-			GorgonMinMaxD result;
+			GorgonRangeD result;
 			Subtract(ref left, ref right, out result);
 			return result;
 		}
@@ -494,23 +441,10 @@ namespace GorgonLibrary
 		/// <param name="left">The left range.</param>
 		/// <param name="right">The right range.</param>
 		/// <returns>The result of the operator.</returns>
-		public static GorgonMinMaxD operator *(GorgonMinMaxD left, GorgonMinMaxD right)
+		public static GorgonRangeD operator *(GorgonRangeD left, GorgonRangeD right)
 		{
-			GorgonMinMaxD result;
+			GorgonRangeD result;
 			Multiply(ref left, ref right, out result);
-			return result;
-		}
-
-		/// <summary>
-		/// Implements the operator /.
-		/// </summary>
-		/// <param name="left">The left range.</param>
-		/// <param name="right">The right range.</param>
-		/// <returns>The result of the operator.</returns>
-		public static GorgonMinMaxD operator /(GorgonMinMaxD left, GorgonMinMaxD right)
-		{
-			GorgonMinMaxD result;
-			Divide(ref left, ref right, out result);
 			return result;
 		}
 
@@ -520,9 +454,9 @@ namespace GorgonLibrary
 		/// <param name="left">The left range.</param>
 		/// <param name="scalar">The right scalar value.</param>
 		/// <returns>The result of the operator.</returns>
-		public static GorgonMinMaxD operator *(GorgonMinMaxD left, double scalar)
+		public static GorgonRangeD operator *(GorgonRangeD left, double scalar)
 		{
-			GorgonMinMaxD result;
+			GorgonRangeD result;
 			Multiply(ref left, scalar, out result);
 			return result;
 		}
@@ -533,9 +467,9 @@ namespace GorgonLibrary
 		/// <param name="scalar">The scalar value.</param>
 		/// <param name="right">The right scalar value.</param>
 		/// <returns>The result of the operator.</returns>
-		public static GorgonMinMaxD operator *(double scalar, GorgonMinMaxD right)
+		public static GorgonRangeD operator *(double scalar, GorgonRangeD right)
 		{
-			GorgonMinMaxD result;
+			GorgonRangeD result;
 			Multiply(ref right, scalar, out result);
 			return result;
 		}
@@ -546,9 +480,9 @@ namespace GorgonLibrary
 		/// <param name="left">The left range.</param>
 		/// <param name="scalar">The right scalar value.</param>
 		/// <returns>The result of the operator.</returns>
-		public static GorgonMinMaxD operator /(GorgonMinMaxD left, double scalar)
+		public static GorgonRangeD operator /(GorgonRangeD left, double scalar)
 		{
-			GorgonMinMaxD result;
+			GorgonRangeD result;
 			Divide(ref left, scalar, out result);
 			return result;
 		}
@@ -586,7 +520,7 @@ namespace GorgonLibrary
 		/// <returns>
 		/// true if the current object is equal to the <paramref name="other"/> parameter; otherwise, false.
 		/// </returns>
-		public bool Equals(GorgonMinMaxD other)
+		public bool Equals(GorgonRangeD other)
 		{
 			return (Minimum == other.Minimum) && (Maximum == other.Maximum);
 		}
@@ -599,23 +533,23 @@ namespace GorgonLibrary
 	/// Value type to indicate a range of floating point values.
 	/// </summary>
     [StructLayout(LayoutKind.Sequential, Pack = 4)]
-	public struct GorgonMinMaxF
-		: IRange<float>, IEquatable<GorgonMinMaxF>
+	public struct GorgonRangeF
+		: IRange<float>, IEquatable<GorgonRangeF>
 	{
 		#region Variables.
 		/// <summary>
 		/// Minimum value in the range.
 		/// </summary>
-		public float Minimum;
+		public readonly float Minimum;
 		/// <summary>
 		/// Maximum value in the range.
 		/// </summary>
-		public float Maximum;
+		public readonly float Maximum;
 
 		/// <summary>
 		/// Empty range.
 		/// </summary>
-		public static readonly GorgonMinMaxF Empty = new GorgonMinMaxF(0.0f, 0.0f);
+		public static readonly GorgonRangeF Empty = new GorgonRangeF(0.0f, 0.0f);
 		#endregion
 
 		#region Methods.
@@ -635,7 +569,7 @@ namespace GorgonLibrary
 		/// <param name="range">Range to shrink.</param>
 		/// <param name="value">Amount to shrink the range.</param>
 		/// <param name="result">The smaller range.</param>
-		public static void Shrink(ref GorgonMinMaxF range, float value, out GorgonMinMaxF result)
+		public static void Shrink(ref GorgonRangeF range, float value, out GorgonRangeF result)
 		{
 			float min;
 			float max;
@@ -651,16 +585,7 @@ namespace GorgonLibrary
 				max = range.Maximum + value;
 			}
 
-			if (min < max)
-			{
-				result.Minimum = min;
-				result.Maximum = max;
-			}
-			else
-			{
-				result.Minimum = max;
-				result.Maximum = min;
-			}
+			result = new GorgonRangeF(min, max);
 		}
 
 		/// <summary>
@@ -668,7 +593,7 @@ namespace GorgonLibrary
 		/// </summary>
 		/// <param name="range">Range to shrink.</param>
 		/// <param name="value">Amount to shrink the range.</param>		
-		public static GorgonMinMaxF Shrink(GorgonMinMaxF range, float value)
+		public static GorgonRangeF Shrink(GorgonRangeF range, float value)
 		{
 			float min;
 			float max;
@@ -684,7 +609,7 @@ namespace GorgonLibrary
 				max = range.Maximum + value;
 			}
 
-			return new GorgonMinMaxF(min, max);
+			return new GorgonRangeF(min, max);
 		}
 
 		/// <summary>
@@ -693,7 +618,7 @@ namespace GorgonLibrary
 		/// <param name="range">Range to expand.</param>
 		/// <param name="value">Amount to expand the range.</param>
 		/// <param name="result">The larger range.</param>
-		public static void Expand(ref GorgonMinMaxF range, float value, out GorgonMinMaxF result)
+		public static void Expand(ref GorgonRangeF range, float value, out GorgonRangeF result)
 		{
 			float min;
 			float max;
@@ -709,16 +634,7 @@ namespace GorgonLibrary
 				max = range.Maximum - value;
 			}
 
-			if (min < max)
-			{
-				result.Minimum = min;
-				result.Maximum = max;
-			}
-			else
-			{
-				result.Minimum = max;
-				result.Maximum = min;
-			}
+			result = new GorgonRangeF(min, max);
 		}
 
 		/// <summary>
@@ -727,7 +643,7 @@ namespace GorgonLibrary
 		/// <param name="range">Range to expand.</param>
 		/// <param name="value">Amount to expand the range.</param>
 		/// <returns>The larger range.</returns>
-		public static GorgonMinMaxF Expand(GorgonMinMaxF range, float value)
+		public static GorgonRangeF Expand(GorgonRangeF range, float value)
 		{
 			float min;
 			float max;
@@ -743,7 +659,7 @@ namespace GorgonLibrary
 				max = range.Maximum - value;
 			}
 
-			return new GorgonMinMaxF(min, max);
+			return new GorgonRangeF(min, max);
 		}
 
 		/// <summary>
@@ -752,10 +668,9 @@ namespace GorgonLibrary
 		/// <param name="left">Left range to add</param>
 		/// <param name="right">Right range to add.</param>
 		/// <param name="result">The total of both ranges.</param>
-		public static void Add(ref GorgonMinMaxF left, ref GorgonMinMaxF right, out GorgonMinMaxF result)
+		public static void Add(ref GorgonRangeF left, ref GorgonRangeF right, out GorgonRangeF result)
 		{
-			result.Minimum = left.Minimum + right.Minimum;
-			result.Maximum = left.Maximum + right.Maximum;
+			result = new GorgonRangeF(left.Minimum + right.Minimum, left.Maximum + right.Maximum);
 		}
 
 		/// <summary>
@@ -764,9 +679,9 @@ namespace GorgonLibrary
 		/// <param name="left">Left range to add</param>
 		/// <param name="right">Right range to add.</param>
 		/// <returns>The total of both ranges.</returns>
-		public static GorgonMinMaxF Add(GorgonMinMaxF left, GorgonMinMaxF right)
+		public static GorgonRangeF Add(GorgonRangeF left, GorgonRangeF right)
 		{
-			return new GorgonMinMaxF(left.Minimum + right.Minimum, left.Maximum + right.Maximum);
+			return new GorgonRangeF(left.Minimum + right.Minimum, left.Maximum + right.Maximum);
 		}
 
 		/// <summary>
@@ -775,10 +690,9 @@ namespace GorgonLibrary
 		/// <param name="left">Left range to subtract.</param>
 		/// <param name="right">Right range to subtract.</param>
 		/// <param name="result">The difference of both ranges.</param>
-		public static void Subtract(ref GorgonMinMaxF left, ref GorgonMinMaxF right, out GorgonMinMaxF result)
+		public static void Subtract(ref GorgonRangeF left, ref GorgonRangeF right, out GorgonRangeF result)
 		{
-			result.Minimum = left.Minimum - right.Minimum;
-			result.Maximum = left.Maximum - right.Maximum;
+			result = new GorgonRangeF(left.Minimum - right.Minimum, left.Maximum - right.Maximum);
 		}
 
 		/// <summary>
@@ -787,9 +701,9 @@ namespace GorgonLibrary
 		/// <param name="left">Left range to subtract.</param>
 		/// <param name="right">Right range to subtract.</param>
 		/// <returns>The difference of both ranges.</returns>
-		public static GorgonMinMaxF Subtract(GorgonMinMaxF left, GorgonMinMaxF right)
+		public static GorgonRangeF Subtract(GorgonRangeF left, GorgonRangeF right)
 		{
-			return new GorgonMinMaxF(left.Minimum - right.Minimum, left.Maximum - right.Maximum);
+			return new GorgonRangeF(left.Minimum - right.Minimum, left.Maximum - right.Maximum);
 		}
 
 		/// <summary>
@@ -798,10 +712,9 @@ namespace GorgonLibrary
 		/// <param name="left">Left range to multiply</param>
 		/// <param name="right">Right range to multiply.</param>
 		/// <param name="result">The product of both ranges.</param>
-		public static void Multiply(ref GorgonMinMaxF left, ref GorgonMinMaxF right, out GorgonMinMaxF result)
+		public static void Multiply(ref GorgonRangeF left, ref GorgonRangeF right, out GorgonRangeF result)
 		{
-			result.Minimum = left.Minimum * right.Minimum;
-			result.Maximum = left.Maximum * right.Maximum;
+			result = new GorgonRangeF(left.Minimum * right.Minimum, left.Maximum * right.Maximum);
 		}
 
 		/// <summary>
@@ -810,9 +723,9 @@ namespace GorgonLibrary
 		/// <param name="left">Left range to multiply</param>
 		/// <param name="right">Right range to multiply.</param>
 		/// <returns>The product of both ranges.</returns>
-		public static GorgonMinMaxF Multiply(GorgonMinMaxF left, GorgonMinMaxF right)
+		public static GorgonRangeF Multiply(GorgonRangeF left, GorgonRangeF right)
 		{
-			return new GorgonMinMaxF(left.Minimum * right.Minimum, left.Maximum * right.Maximum);
+			return new GorgonRangeF(left.Minimum * right.Minimum, left.Maximum * right.Maximum);
 		}
 
 		/// <summary>
@@ -821,10 +734,9 @@ namespace GorgonLibrary
 		/// <param name="left">Left range to multiply</param>
 		/// <param name="scalar">Scalar value to multiply..</param>
 		/// <param name="result">The product of the range and the scalar.</param>
-		public static void Multiply(ref GorgonMinMaxF left, float scalar, out GorgonMinMaxF result)
+		public static void Multiply(ref GorgonRangeF left, float scalar, out GorgonRangeF result)
 		{
-			result.Minimum = left.Minimum * scalar;
-			result.Maximum = left.Maximum * scalar;
+			result = new GorgonRangeF(left.Minimum + scalar, left.Maximum + scalar);
 		}
 
 		/// <summary>
@@ -833,34 +745,9 @@ namespace GorgonLibrary
 		/// <param name="left">Left range to multiply</param>
 		/// <param name="scalar">Scalar value to multiply..</param>
 		/// <returns>The product of the range and the scalar.</returns>
-		public static GorgonMinMaxF Multiply(GorgonMinMaxF left, float scalar)
+		public static GorgonRangeF Multiply(GorgonRangeF left, float scalar)
 		{
-			return new GorgonMinMaxF(left.Minimum * scalar, left.Minimum * scalar);
-		}
-
-		/// <summary>
-		/// Function to divide two min-max ranges.
-		/// </summary>
-		/// <param name="left">Left range to divide</param>
-		/// <param name="right">Right range to divide.</param>
-		/// <param name="result">The quotient of both ranges.</param>
-		/// <exception cref="System.DivideByZeroException">Thrown if the right Minimum or Maximum value is zero.</exception>
-		public static void Divide(ref GorgonMinMaxF left, ref GorgonMinMaxF right, out GorgonMinMaxF result)
-		{
-			result.Minimum = left.Minimum / right.Minimum;
-			result.Maximum = left.Maximum / right.Maximum;
-		}
-
-		/// <summary>
-		/// Function to multiply two min-max ranges.
-		/// </summary>
-		/// <param name="left">Left range to divide.</param>
-		/// <param name="right">Right range to divide.</param>
-		/// <returns>The quotient of both ranges.</returns>
-		/// <exception cref="System.DivideByZeroException">Thrown if the right Minimum or Maximum value is zero.</exception>
-		public static GorgonMinMaxF Divide(GorgonMinMaxF left, GorgonMinMaxF right)
-		{
-			return new GorgonMinMaxF(left.Minimum / right.Minimum, left.Maximum / right.Maximum);
+			return new GorgonRangeF(left.Minimum * scalar, left.Minimum * scalar);
 		}
 
 		/// <summary>
@@ -870,10 +757,9 @@ namespace GorgonLibrary
 		/// <param name="scalar">Scalar value to divide.</param>
 		/// <param name="result">The quotient of the range and the scalar.</param>
 		/// <exception cref="System.DivideByZeroException">Thrown if the scalar value is zero.</exception>
-		public static void Divide(ref GorgonMinMaxF left, float scalar, out GorgonMinMaxF result)
+		public static void Divide(ref GorgonRangeF left, float scalar, out GorgonRangeF result)
 		{
-			result.Minimum = left.Minimum / scalar;
-			result.Maximum = left.Maximum / scalar;
+			result = new GorgonRangeF(left.Minimum / scalar, left.Maximum / scalar);
 		}
 
 		/// <summary>
@@ -883,9 +769,9 @@ namespace GorgonLibrary
 		/// <param name="scalar">Scalar value to divide.</param>
 		/// <returns>The quotient of the range and the scalar.</returns>
 		/// <exception cref="System.DivideByZeroException">Thrown if the scalar value is zero.</exception>
-		public static GorgonMinMaxF Divide(GorgonMinMaxF left, float scalar)
+		public static GorgonRangeF Divide(GorgonRangeF left, float scalar)
 		{
-			return new GorgonMinMaxF(left.Minimum / scalar, left.Minimum / scalar);
+			return new GorgonRangeF(left.Minimum / scalar, left.Minimum / scalar);
 		}
 
 		/// <summary>
@@ -897,12 +783,9 @@ namespace GorgonLibrary
 		/// </returns>
 		public override bool Equals(object obj)
 		{
-			var equate = obj as IEquatable<GorgonMinMaxF>;
+			var equate = obj as IEquatable<GorgonRangeF>;
 
-			if (equate != null)
-				return equate.Equals(this);
-
-			return false;
+			return equate != null && equate.Equals(this);
 		}
 
 		/// <summary>
@@ -913,9 +796,7 @@ namespace GorgonLibrary
 		/// </returns>
 		public override int GetHashCode()
 		{
-// ReSharper disable NonReadonlyFieldInGetHashCode
 			return 281.GenerateHash(Minimum).GenerateHash(Maximum);
-// ReSharper restore NonReadonlyFieldInGetHashCode
 		}
 
 		/// <summary>
@@ -932,20 +813,20 @@ namespace GorgonLibrary
 
 		#region Constructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonMinMaxF" /> struct.
+		/// Initializes a new instance of the <see cref="GorgonRangeF" /> struct.
 		/// </summary>
 		/// <param name="minMax">The min max value to copy.</param>
-		public GorgonMinMaxF(GorgonMinMaxF minMax)
+		public GorgonRangeF(GorgonRangeF minMax)
 			: this(minMax.Minimum, minMax.Maximum)
 		{		
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonMinMaxF"/> struct.
+		/// Initializes a new instance of the <see cref="GorgonRangeF"/> struct.
 		/// </summary>
 		/// <param name="min">The minimum value.</param>
 		/// <param name="max">The maximum value.</param>
-		public GorgonMinMaxF(float min, float max)
+		public GorgonRangeF(float min, float max)
 		{
 			if (min < max)
 			{
@@ -962,23 +843,23 @@ namespace GorgonLibrary
 
 		#region Operators.
 		/// <summary>
-		/// Performs an explicit conversion from <see cref="GorgonLibrary.GorgonMinMaxF"/> to <see cref="GorgonLibrary.GorgonMinMax"/>.
+		/// Performs an explicit conversion from <see cref="GorgonLibrary.GorgonRangeF"/> to <see cref="GorgonLibrary.GorgonRange"/>.
 		/// </summary>
 		/// <param name="range">The range.</param>
 		/// <returns>The result of the conversion.</returns>
-		public static explicit operator GorgonMinMax(GorgonMinMaxF range)
+		public static explicit operator GorgonRange(GorgonRangeF range)
 		{
-			return new GorgonMinMax((int)range.Minimum, (int)range.Maximum);
+			return new GorgonRange((int)range.Minimum, (int)range.Maximum);
 		}
 
 		/// <summary>
-		/// Performs an explicit conversion from <see cref="GorgonLibrary.GorgonMinMaxF"/> to <see cref="GorgonLibrary.GorgonMinMaxD"/>.
+		/// Performs an explicit conversion from <see cref="GorgonLibrary.GorgonRangeF"/> to <see cref="GorgonLibrary.GorgonRangeD"/>.
 		/// </summary>
 		/// <param name="range">The range.</param>
 		/// <returns>The result of the conversion.</returns>
-		public static implicit operator GorgonMinMaxD(GorgonMinMaxF range)
+		public static implicit operator GorgonRangeD(GorgonRangeF range)
 		{
-			return new GorgonMinMaxD(range.Minimum, range.Maximum);
+			return new GorgonRangeD(range.Minimum, range.Maximum);
 		}
 
 		/// <summary>
@@ -987,7 +868,7 @@ namespace GorgonLibrary
 		/// <param name="left">The left.</param>
 		/// <param name="right">The right.</param>
 		/// <returns>The result of the operator.</returns>
-		public static bool operator ==(GorgonMinMaxF left, GorgonMinMaxF right)
+		public static bool operator ==(GorgonRangeF left, GorgonRangeF right)
 		{
 			return left.Minimum.Equals(right.Minimum) && left.Maximum.Equals(right.Maximum);
 		}
@@ -998,7 +879,7 @@ namespace GorgonLibrary
 		/// <param name="left">The left.</param>
 		/// <param name="right">The right.</param>
 		/// <returns>The result of the operator.</returns>
-		public static bool operator !=(GorgonMinMaxF left, GorgonMinMaxF right)
+		public static bool operator !=(GorgonRangeF left, GorgonRangeF right)
 		{
 			return !(left.Minimum.Equals(right.Minimum) && left.Maximum.Equals(right.Maximum));
 		}
@@ -1009,9 +890,9 @@ namespace GorgonLibrary
 		/// <param name="left">The left range.</param>
 		/// <param name="right">The right range.</param>
 		/// <returns>The result of the operator.</returns>
-		public static GorgonMinMaxF operator +(GorgonMinMaxF left, GorgonMinMaxF right)
+		public static GorgonRangeF operator +(GorgonRangeF left, GorgonRangeF right)
 		{
-			GorgonMinMaxF result;
+			GorgonRangeF result;
 			Add(ref left, ref right, out result);
 			return result;
 		}
@@ -1022,9 +903,9 @@ namespace GorgonLibrary
 		/// <param name="left">The left range.</param>
 		/// <param name="right">The right range.</param>
 		/// <returns>The result of the operator.</returns>
-		public static GorgonMinMaxF operator -(GorgonMinMaxF left, GorgonMinMaxF right)
+		public static GorgonRangeF operator -(GorgonRangeF left, GorgonRangeF right)
 		{
-			GorgonMinMaxF result;
+			GorgonRangeF result;
 			Subtract(ref left, ref right, out result);
 			return result;
 		}
@@ -1035,23 +916,10 @@ namespace GorgonLibrary
 		/// <param name="left">The left range.</param>
 		/// <param name="right">The right range.</param>
 		/// <returns>The result of the operator.</returns>
-		public static GorgonMinMaxF operator *(GorgonMinMaxF left, GorgonMinMaxF right)
+		public static GorgonRangeF operator *(GorgonRangeF left, GorgonRangeF right)
 		{
-			GorgonMinMaxF result;
+			GorgonRangeF result;
 			Multiply(ref left, ref right, out result);
-			return result;
-		}
-
-		/// <summary>
-		/// Implements the operator /.
-		/// </summary>
-		/// <param name="left">The left range.</param>
-		/// <param name="right">The right range.</param>
-		/// <returns>The result of the operator.</returns>
-		public static GorgonMinMaxF operator /(GorgonMinMaxF left, GorgonMinMaxF right)
-		{
-			GorgonMinMaxF result;
-			Divide(ref left, ref right, out result);
 			return result;
 		}
 
@@ -1061,9 +929,9 @@ namespace GorgonLibrary
 		/// <param name="left">The left range.</param>
 		/// <param name="scalar">The right scalar value.</param>
 		/// <returns>The result of the operator.</returns>
-		public static GorgonMinMaxF operator *(GorgonMinMaxF left, float scalar)
+		public static GorgonRangeF operator *(GorgonRangeF left, float scalar)
 		{
-			GorgonMinMaxF result;
+			GorgonRangeF result;
 			Multiply(ref left, scalar, out result);
 			return result;
 		}
@@ -1074,9 +942,9 @@ namespace GorgonLibrary
 		/// <param name="scalar">The scalar value.</param>
 		/// <param name="right">The right scalar value.</param>
 		/// <returns>The result of the operator.</returns>
-		public static GorgonMinMaxF operator *(float scalar, GorgonMinMaxF right)
+		public static GorgonRangeF operator *(float scalar, GorgonRangeF right)
 		{
-			GorgonMinMaxF result;
+			GorgonRangeF result;
 			Multiply(ref right, scalar, out result);
 			return result;
 		}
@@ -1087,9 +955,9 @@ namespace GorgonLibrary
 		/// <param name="left">The left range.</param>
 		/// <param name="scalar">The right scalar value.</param>
 		/// <returns>The result of the operator.</returns>
-		public static GorgonMinMaxF operator /(GorgonMinMaxF left, float scalar)
+		public static GorgonRangeF operator /(GorgonRangeF left, float scalar)
 		{
-			GorgonMinMaxF result;
+			GorgonRangeF result;
 			Divide(ref left, scalar, out result);
 			return result;
 		}
@@ -1127,7 +995,7 @@ namespace GorgonLibrary
 		/// <returns>
 		/// true if the current object is equal to the <paramref name="other"/> parameter; otherwise, false.
 		/// </returns>
-		public bool Equals(GorgonMinMaxF other)
+		public bool Equals(GorgonRangeF other)
 		{
 			return other.Minimum == Minimum && other.Maximum == Maximum;
 		}
@@ -1140,23 +1008,23 @@ namespace GorgonLibrary
 	/// Value type to indicate a range of integer values.
 	/// </summary>
     [StructLayout(LayoutKind.Sequential, Pack=4)]
-	public struct GorgonMinMax
-		: IRange<int>, IEquatable<GorgonMinMax>
+	public struct GorgonRange
+		: IRange<int>, IEquatable<GorgonRange>
 	{
 		#region Variables.
 		/// <summary>
 		/// Minimum value in the range.
 		/// </summary>
-		public int Minimum;
+		public readonly int Minimum;
 		/// <summary>
 		/// Maximum value in the range.
 		/// </summary>
-		public int Maximum;
+		public readonly int Maximum;
 
 		/// <summary>
 		/// Empty range.
 		/// </summary>
-		public static readonly GorgonMinMax Empty = new GorgonMinMax(0, 0);
+		public static readonly GorgonRange Empty = new GorgonRange(0, 0);
 		#endregion
 
 		#region Methods.
@@ -1176,7 +1044,7 @@ namespace GorgonLibrary
 		/// <param name="range">Range to shrink.</param>
 		/// <param name="value">Amount to shrink the range.</param>
 		/// <param name="result">The smaller range.</param>
-		public static void Shrink(ref GorgonMinMax range, int value, out GorgonMinMax result)
+		public static void Shrink(ref GorgonRange range, int value, out GorgonRange result)
 		{
 			int min;
 			int max;
@@ -1192,16 +1060,7 @@ namespace GorgonLibrary
 				max = range.Maximum + value;
 			}
 
-			if (min < max)
-			{
-				result.Minimum = min;
-				result.Maximum = max;
-			}
-			else
-			{
-				result.Minimum = max;
-				result.Maximum = min;
-			}
+			result = new GorgonRange(min, max);
 		}
 
 		/// <summary>
@@ -1209,7 +1068,7 @@ namespace GorgonLibrary
 		/// </summary>
 		/// <param name="range">Range to shrink.</param>
 		/// <param name="value">Amount to shrink the range.</param>		
-		public static GorgonMinMax Shrink(GorgonMinMax range, int value)
+		public static GorgonRange Shrink(GorgonRange range, int value)
 		{
 			int min;
 			int max;
@@ -1225,7 +1084,7 @@ namespace GorgonLibrary
 				max = range.Maximum + value;
 			}
 
-			return new GorgonMinMax(min, max);
+			return new GorgonRange(min, max);
 		}
 
 		/// <summary>
@@ -1234,7 +1093,7 @@ namespace GorgonLibrary
 		/// <param name="range">Range to expand.</param>
 		/// <param name="value">Amount to expand the range.</param>
 		/// <param name="result">The larger range.</param>
-		public static void Expand(ref GorgonMinMax range, int value, out GorgonMinMax result)
+		public static void Expand(ref GorgonRange range, int value, out GorgonRange result)
 		{
 			int min;
 			int max;
@@ -1250,16 +1109,7 @@ namespace GorgonLibrary
 				max = range.Maximum - value;
 			}
 
-			if (min < max)
-			{
-				result.Minimum = min;
-				result.Maximum = max;
-			}
-			else
-			{
-				result.Minimum = max;
-				result.Maximum = min;
-			}
+			result = new GorgonRange(min, max);
 		}
 
 		/// <summary>
@@ -1268,7 +1118,7 @@ namespace GorgonLibrary
 		/// <param name="range">Range to expand.</param>
 		/// <param name="value">Amount to expand the range.</param>
 		/// <returns>The larger range.</returns>
-		public static GorgonMinMax Expand(GorgonMinMax range, int value)
+		public static GorgonRange Expand(GorgonRange range, int value)
 		{
 			int min;
 			int max;
@@ -1284,7 +1134,7 @@ namespace GorgonLibrary
 				max = range.Maximum - value;
 			}
 
-			return new GorgonMinMax(min, max);
+			return new GorgonRange(min, max);
 		}
 
 		/// <summary>
@@ -1293,10 +1143,9 @@ namespace GorgonLibrary
 		/// <param name="left">Left range to add</param>
 		/// <param name="right">Right range to add.</param>
 		/// <param name="result">The total of both ranges.</param>
-		public static void Add(ref GorgonMinMax left, ref GorgonMinMax right, out GorgonMinMax result)
+		public static void Add(ref GorgonRange left, ref GorgonRange right, out GorgonRange result)
 		{
-			result.Minimum = left.Minimum + right.Minimum;
-			result.Maximum = left.Maximum + right.Maximum;
+			result = new GorgonRange(left.Minimum + right.Minimum, left.Maximum + right.Maximum);
 		}
 
 		/// <summary>
@@ -1305,9 +1154,9 @@ namespace GorgonLibrary
 		/// <param name="left">Left range to add</param>
 		/// <param name="right">Right range to add.</param>
 		/// <returns>The total of both ranges.</returns>
-		public static GorgonMinMax Add(GorgonMinMax left, GorgonMinMax right)
+		public static GorgonRange Add(GorgonRange left, GorgonRange right)
 		{
-			return new GorgonMinMax(left.Minimum + right.Minimum, left.Maximum + right.Maximum);
+			return new GorgonRange(left.Minimum + right.Minimum, left.Maximum + right.Maximum);
 		}
 
 		/// <summary>
@@ -1316,10 +1165,9 @@ namespace GorgonLibrary
 		/// <param name="left">Left range to subtract.</param>
 		/// <param name="right">Right range to subtract.</param>
 		/// <param name="result">The difference of both ranges.</param>
-		public static void Subtract(ref GorgonMinMax left, ref GorgonMinMax right, out GorgonMinMax result)
+		public static void Subtract(ref GorgonRange left, ref GorgonRange right, out GorgonRange result)
 		{
-			result.Minimum = left.Minimum - right.Minimum;
-			result.Maximum = left.Maximum - right.Maximum;
+			result = new GorgonRange(left.Minimum - right.Minimum, left.Maximum - right.Maximum);
 		}
 
 		/// <summary>
@@ -1328,9 +1176,9 @@ namespace GorgonLibrary
 		/// <param name="left">Left range to subtract.</param>
 		/// <param name="right">Right range to subtract.</param>
 		/// <returns>The difference of both ranges.</returns>
-		public static GorgonMinMax Subtract(GorgonMinMax left, GorgonMinMax right)
+		public static GorgonRange Subtract(GorgonRange left, GorgonRange right)
 		{
-			return new GorgonMinMax(left.Minimum - right.Minimum, left.Maximum - right.Maximum);
+			return new GorgonRange(left.Minimum - right.Minimum, left.Maximum - right.Maximum);
 		}
 
 		/// <summary>
@@ -1339,10 +1187,9 @@ namespace GorgonLibrary
 		/// <param name="left">Left range to multiply</param>
 		/// <param name="right">Right range to multiply.</param>
 		/// <param name="result">The product of both ranges.</param>
-		public static void Multiply(ref GorgonMinMax left, ref GorgonMinMax right, out GorgonMinMax result)
+		public static void Multiply(ref GorgonRange left, ref GorgonRange right, out GorgonRange result)
 		{
-			result.Minimum = left.Minimum * right.Minimum;
-			result.Maximum = left.Maximum * right.Maximum;
+			result = new GorgonRange(left.Minimum * right.Minimum, left.Maximum * right.Maximum);
 		}
 
 		/// <summary>
@@ -1351,9 +1198,9 @@ namespace GorgonLibrary
 		/// <param name="left">Left range to multiply</param>
 		/// <param name="right">Right range to multiply.</param>
 		/// <returns>The product of both ranges.</returns>
-		public static GorgonMinMax Multiply(GorgonMinMax left, GorgonMinMax right)
+		public static GorgonRange Multiply(GorgonRange left, GorgonRange right)
 		{
-			return new GorgonMinMax(left.Minimum * right.Minimum, left.Maximum * right.Maximum);
+			return new GorgonRange(left.Minimum * right.Minimum, left.Maximum * right.Maximum);
 		}
 
 		/// <summary>
@@ -1362,10 +1209,9 @@ namespace GorgonLibrary
 		/// <param name="left">Left range to multiply</param>
 		/// <param name="scalar">Scalar value to multiply..</param>
 		/// <param name="result">The product of the range and the scalar.</param>
-		public static void Multiply(ref GorgonMinMax left, int scalar, out GorgonMinMax result)
+		public static void Multiply(ref GorgonRange left, int scalar, out GorgonRange result)
 		{
-			result.Minimum = left.Minimum * scalar;
-			result.Maximum = left.Maximum * scalar;
+			result = new GorgonRange(left.Minimum + scalar, left.Maximum + scalar);
 		}
 
 		/// <summary>
@@ -1374,34 +1220,9 @@ namespace GorgonLibrary
 		/// <param name="left">Left range to multiply</param>
 		/// <param name="scalar">Scalar value to multiply..</param>
 		/// <returns>The product of the range and the scalar.</returns>
-		public static GorgonMinMax Multiply(GorgonMinMax left, int scalar)
+		public static GorgonRange Multiply(GorgonRange left, int scalar)
 		{
-			return new GorgonMinMax(left.Minimum * scalar, left.Minimum * scalar);
-		}
-
-		/// <summary>
-		/// Function to divide two min-max ranges.
-		/// </summary>
-		/// <param name="left">Left range to divide</param>
-		/// <param name="right">Right range to divide.</param>
-		/// <param name="result">The quotient of both ranges.</param>
-		/// <exception cref="System.DivideByZeroException">Thrown if the right Minimum or Maximum value is zero.</exception>
-		public static void Divide(ref GorgonMinMax left, ref GorgonMinMax right, out GorgonMinMax result)
-		{
-			result.Minimum = left.Minimum / right.Minimum;
-			result.Maximum = left.Maximum / right.Maximum;
-		}
-
-		/// <summary>
-		/// Function to multiply two min-max ranges.
-		/// </summary>
-		/// <param name="left">Left range to divide.</param>
-		/// <param name="right">Right range to divide.</param>
-		/// <returns>The quotient of both ranges.</returns>
-		/// <exception cref="System.DivideByZeroException">Thrown if the right Minimum or Maximum value is zero.</exception>
-		public static GorgonMinMax Divide(GorgonMinMax left, GorgonMinMax right)
-		{
-			return new GorgonMinMax(left.Minimum / right.Minimum, left.Maximum / right.Maximum);
+			return new GorgonRange(left.Minimum * scalar, left.Minimum * scalar);
 		}
 
 		/// <summary>
@@ -1411,10 +1232,9 @@ namespace GorgonLibrary
 		/// <param name="scalar">Scalar value to divide.</param>
 		/// <param name="result">The quotient of the range and the scalar.</param>
 		/// <exception cref="System.DivideByZeroException">Thrown if the scalar value is zero.</exception>
-		public static void Divide(ref GorgonMinMax left, int scalar, out GorgonMinMax result)
+		public static void Divide(ref GorgonRange left, int scalar, out GorgonRange result)
 		{
-			result.Minimum = left.Minimum / scalar;
-			result.Maximum = left.Maximum / scalar;
+			result = new GorgonRange(left.Minimum / scalar, left.Maximum / scalar);
 		}
 
 		/// <summary>
@@ -1424,9 +1244,9 @@ namespace GorgonLibrary
 		/// <param name="scalar">Scalar value to divide.</param>
 		/// <returns>The quotient of the range and the scalar.</returns>
 		/// <exception cref="System.DivideByZeroException">Thrown if the scalar value is zero.</exception>
-		public static GorgonMinMax Divide(GorgonMinMax left, int scalar)
+		public static GorgonRange Divide(GorgonRange left, int scalar)
 		{
-			return new GorgonMinMax(left.Minimum / scalar, left.Minimum / scalar);
+			return new GorgonRange(left.Minimum / scalar, left.Minimum / scalar);
 		}
 
 		/// <summary>
@@ -1438,14 +1258,9 @@ namespace GorgonLibrary
 		/// </returns>
 		public override bool Equals(object obj)
 		{
-			var equate = obj as IEquatable<GorgonMinMax>;
+			var equate = obj as IEquatable<GorgonRange>;
 
-		    if (equate != null)
-		    {
-		        return equate.Equals(this);
-		    }
-
-		    return false;
+		    return equate != null && equate.Equals(this);
 		}
 
 		/// <summary>
@@ -1456,9 +1271,7 @@ namespace GorgonLibrary
 		/// </returns>
 		public override int GetHashCode()
 		{
-            // ReSharper disable NonReadonlyFieldInGetHashCode
 			return 281.GenerateHash(Maximum).GenerateHash(Minimum);
-            // ReSharper restore NonReadonlyFieldInGetHashCode
 		}
 
 		/// <summary>
@@ -1475,20 +1288,20 @@ namespace GorgonLibrary
 
 		#region Constructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonMinMax" /> struct.
+		/// Initializes a new instance of the <see cref="GorgonRange" /> struct.
 		/// </summary>
 		/// <param name="minMax">The min max value to copy.</param>
-		public GorgonMinMax(GorgonMinMax minMax)
+		public GorgonRange(GorgonRange minMax)
 			: this(minMax.Minimum, minMax.Maximum)
 		{		
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonMinMax"/> struct.
+		/// Initializes a new instance of the <see cref="GorgonRange"/> struct.
 		/// </summary>
 		/// <param name="min">The minimum value.</param>
 		/// <param name="max">The maximum value.</param>
-		public GorgonMinMax(int min, int max)
+		public GorgonRange(int min, int max)
 		{
 			if (min < max)
 			{
@@ -1505,23 +1318,23 @@ namespace GorgonLibrary
 
 		#region Operators.
 		/// <summary>
-		/// Performs an explicit conversion from <see cref="GorgonLibrary.GorgonMinMax"/> to <see cref="GorgonLibrary.GorgonMinMaxF"/>.
+		/// Performs an explicit conversion from <see cref="GorgonLibrary.GorgonRange"/> to <see cref="GorgonLibrary.GorgonRangeF"/>.
 		/// </summary>
 		/// <param name="range">The range.</param>
 		/// <returns>The result of the conversion.</returns>
-		public static implicit operator GorgonMinMaxF(GorgonMinMax range)
+		public static implicit operator GorgonRangeF(GorgonRange range)
 		{
-			return new GorgonMinMaxF(range.Minimum, range.Maximum);
+			return new GorgonRangeF(range.Minimum, range.Maximum);
 		}
 
 		/// <summary>
-		/// Performs an explicit conversion from <see cref="GorgonLibrary.GorgonMinMax"/> to <see cref="GorgonLibrary.GorgonMinMaxD"/>.
+		/// Performs an explicit conversion from <see cref="GorgonLibrary.GorgonRange"/> to <see cref="GorgonLibrary.GorgonRangeD"/>.
 		/// </summary>
 		/// <param name="range">The range.</param>
 		/// <returns>The result of the conversion.</returns>
-		public static implicit operator GorgonMinMaxD(GorgonMinMax range)
+		public static implicit operator GorgonRangeD(GorgonRange range)
 		{
-			return new GorgonMinMaxD(range.Minimum, range.Maximum);
+			return new GorgonRangeD(range.Minimum, range.Maximum);
 		}
 
 		/// <summary>
@@ -1530,7 +1343,7 @@ namespace GorgonLibrary
 		/// <param name="left">The left.</param>
 		/// <param name="right">The right.</param>
 		/// <returns>The result of the operator.</returns>
-		public static bool operator ==(GorgonMinMax left, GorgonMinMax right)
+		public static bool operator ==(GorgonRange left, GorgonRange right)
 		{
 			return left.Minimum == right.Minimum && left.Maximum == right.Maximum;
 		}
@@ -1541,7 +1354,7 @@ namespace GorgonLibrary
 		/// <param name="left">The left.</param>
 		/// <param name="right">The right.</param>
 		/// <returns>The result of the operator.</returns>
-		public static bool operator !=(GorgonMinMax left, GorgonMinMax right)
+		public static bool operator !=(GorgonRange left, GorgonRange right)
 		{
 			return !(left.Minimum == right.Minimum && left.Maximum == right.Maximum);
 		}
@@ -1552,9 +1365,9 @@ namespace GorgonLibrary
 		/// <param name="left">The left range.</param>
 		/// <param name="right">The right range.</param>
 		/// <returns>The result of the operator.</returns>
-		public static GorgonMinMax operator +(GorgonMinMax left, GorgonMinMax right)
+		public static GorgonRange operator +(GorgonRange left, GorgonRange right)
 		{
-			GorgonMinMax result;
+			GorgonRange result;
 			Add(ref left, ref right, out result);
 			return result;
 		}
@@ -1565,9 +1378,9 @@ namespace GorgonLibrary
 		/// <param name="left">The left range.</param>
 		/// <param name="right">The right range.</param>
 		/// <returns>The result of the operator.</returns>
-		public static GorgonMinMax operator -(GorgonMinMax left, GorgonMinMax right)
+		public static GorgonRange operator -(GorgonRange left, GorgonRange right)
 		{
-			GorgonMinMax result;
+			GorgonRange result;
 			Subtract(ref left, ref right, out result);
 			return result;
 		}
@@ -1578,23 +1391,10 @@ namespace GorgonLibrary
 		/// <param name="left">The left range.</param>
 		/// <param name="right">The right range.</param>
 		/// <returns>The result of the operator.</returns>
-		public static GorgonMinMax operator *(GorgonMinMax left, GorgonMinMax right)
+		public static GorgonRange operator *(GorgonRange left, GorgonRange right)
 		{
-			GorgonMinMax result;
+			GorgonRange result;
 			Multiply(ref left, ref right, out result);
-			return result;
-		}
-
-		/// <summary>
-		/// Implements the operator /.
-		/// </summary>
-		/// <param name="left">The left range.</param>
-		/// <param name="right">The right range.</param>
-		/// <returns>The result of the operator.</returns>
-		public static GorgonMinMax operator /(GorgonMinMax left, GorgonMinMax right)
-		{
-			GorgonMinMax result;
-			Divide(ref left, ref right, out result);
 			return result;
 		}
 
@@ -1604,9 +1404,9 @@ namespace GorgonLibrary
 		/// <param name="left">The left range.</param>
 		/// <param name="scalar">The right scalar value.</param>
 		/// <returns>The result of the operator.</returns>
-		public static GorgonMinMax operator *(GorgonMinMax left, int scalar)
+		public static GorgonRange operator *(GorgonRange left, int scalar)
 		{
-			GorgonMinMax result;
+			GorgonRange result;
 			Multiply(ref left, scalar, out result);
 			return result;
 		}
@@ -1617,9 +1417,9 @@ namespace GorgonLibrary
 		/// <param name="scalar">The scalar value.</param>
 		/// <param name="right">The right scalar value.</param>
 		/// <returns>The result of the operator.</returns>
-		public static GorgonMinMax operator *(int scalar, GorgonMinMax right)
+		public static GorgonRange operator *(int scalar, GorgonRange right)
 		{
-			GorgonMinMax result;
+			GorgonRange result;
 			Multiply(ref right, scalar, out result);
 			return result;
 		}
@@ -1630,9 +1430,9 @@ namespace GorgonLibrary
 		/// <param name="left">The left range.</param>
 		/// <param name="scalar">The right scalar value.</param>
 		/// <returns>The result of the operator.</returns>
-		public static GorgonMinMax operator /(GorgonMinMax left, int scalar)
+		public static GorgonRange operator /(GorgonRange left, int scalar)
 		{
-			GorgonMinMax result;
+			GorgonRange result;
 			Divide(ref left, scalar, out result);
 			return result;
 		}
@@ -1670,7 +1470,7 @@ namespace GorgonLibrary
 		/// <returns>
 		/// true if the current object is equal to the <paramref name="other"/> parameter; otherwise, false.
 		/// </returns>
-		public bool Equals(GorgonMinMax other)
+		public bool Equals(GorgonRange other)
 		{
 			return (Minimum == other.Minimum) && (Maximum == other.Maximum);
 		}

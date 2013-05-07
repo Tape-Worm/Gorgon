@@ -412,14 +412,14 @@ namespace GorgonLibrary.Configuration
 		/// <returns>The element with the section name.</returns>
 		private XElement GetSectionElement(string sectionName)
 		{
-		    if (string.IsNullOrEmpty(sectionName))
+		    if (string.IsNullOrWhiteSpace(sectionName))
 		    {
 		        return _xmlSettings.Element("ApplicationSettings");
 		    }
 
-		    return (from section in _xmlSettings.Descendants("Section")
-					where ((section != null) && (String.CompareOrdinal(section.Attribute("SectionName").Value, sectionName) == 0))
-					select section).FirstOrDefault();
+			return _xmlSettings.Descendants("Section")
+			                  .FirstOrDefault(
+				                  item => string.CompareOrdinal(item.Attribute("SectionName").Value, sectionName) == 0);
 		}
 
 		/// <summary>
@@ -484,7 +484,15 @@ namespace GorgonLibrary.Configuration
 		/// <exception cref="System.ArgumentException">Thrown when the settingName parameter is empty or the <paramref name="section"/> or the <paramref name="settingName"/> could not be found.</exception>
 		private object GetSetting(string section, string settingName, Type valueType)
 		{
-		    GorgonDebug.AssertParamString(settingName, "settingName");
+		    if (settingName == null)
+		    {
+			    throw new ArgumentNullException("settingName");
+		    }
+
+			if (string.IsNullOrWhiteSpace(settingName))
+			{
+				throw new ArgumentException(Resources.GOR_PARAMETER_MUST_NOT_BE_EMPTY, "settingName");
+			}
 
 			XElement currentSection = GetSectionElement(section);
 
@@ -497,12 +505,7 @@ namespace GorgonLibrary.Configuration
 								  where ((settings != null) && (settings.Attribute(settingName) != null))
 								  select settings).FirstOrDefault();
 
-		    if (currentSetting == null)
-		    {
-		        return null;
-		    }
-
-		    return UnconvertValue(currentSetting.Attribute(settingName).Value, valueType);
+			return currentSetting == null ? null : UnconvertValue(currentSetting.Attribute(settingName).Value, valueType);
 		}
 
 	    /// <summary>

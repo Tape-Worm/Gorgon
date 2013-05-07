@@ -229,11 +229,9 @@ namespace GorgonLibrary.Collections.Specialized
 		///   </exception>
 		public bool Remove(IDisposable item)
 		{
-			if (!_objects.Contains(item))
-				return false;
-
-			return _objects.Remove(item);
+			return _objects.Contains(item) && _objects.Remove(item);
 		}
+
 		#endregion
 		#endregion
 

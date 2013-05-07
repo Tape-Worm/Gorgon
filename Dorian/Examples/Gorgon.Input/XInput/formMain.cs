@@ -298,10 +298,10 @@ namespace GorgonLibrary.Examples
 					// Set a dead zone on the joystick.
 					// A dead zone will stop input from the joystick until it reaches the outside
 					// of the specified coordinates.
-					joystick.DeadZone.X = new GorgonMinMax(joystick.Capabilities.XAxisRange.Minimum / 4, joystick.Capabilities.XAxisRange.Maximum / 4);
-					joystick.DeadZone.Y = new GorgonMinMax(joystick.Capabilities.YAxisRange.Minimum / 4, joystick.Capabilities.YAxisRange.Maximum / 4);
-					joystick.DeadZone.SecondaryX = new GorgonMinMax(joystick.Capabilities.XAxisRange.Minimum / 128, joystick.Capabilities.XAxisRange.Maximum / 128);
-					joystick.DeadZone.SecondaryY = new GorgonMinMax(joystick.Capabilities.YAxisRange.Minimum / 128, joystick.Capabilities.YAxisRange.Maximum / 128);
+					joystick.DeadZone.X = new GorgonRange(joystick.Capabilities.XAxisRange.Minimum / 4, joystick.Capabilities.XAxisRange.Maximum / 4);
+					joystick.DeadZone.Y = new GorgonRange(joystick.Capabilities.YAxisRange.Minimum / 4, joystick.Capabilities.YAxisRange.Maximum / 4);
+					joystick.DeadZone.SecondaryX = new GorgonRange(joystick.Capabilities.XAxisRange.Minimum / 128, joystick.Capabilities.XAxisRange.Maximum / 128);
+					joystick.DeadZone.SecondaryY = new GorgonRange(joystick.Capabilities.YAxisRange.Minimum / 128, joystick.Capabilities.YAxisRange.Maximum / 128);
 
 					_joystick[i] = joystick;
 

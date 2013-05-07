@@ -111,7 +111,7 @@ namespace GorgonLibrary.Renderers
 		private GorgonVertexBufferBinding _vertexBuffer = default(GorgonVertexBufferBinding);
 		private GorgonDepthStencilStates _depthState = GorgonDepthStencilStates.DefaultStates;
 		private GorgonColor _blendFactor = new GorgonColor(1.0f, 1.0f, 1.0f, 1.0f);
-		private GorgonMinMaxF _alphaTestValue = GorgonMinMaxF.Empty;
+		private GorgonRangeF _alphaTestValue = GorgonRangeF.Empty;
 		private bool _alphaTestEnabled = false;
 		private GorgonResourceView _textureView = null;
 		#endregion
@@ -122,7 +122,7 @@ namespace GorgonLibrary.Renderers
 		/// </summary>
 		/// <param name="enabled">TRUE to enable the alpha test, FALSE to disable it.</param>
 		/// <param name="range">Range of values to include.</param>
-		private void UpdateAlphaTest(bool enabled, GorgonMinMaxF range)
+		private void UpdateAlphaTest(bool enabled, GorgonRangeF range)
 		{
 			_alphaTestEnabled = enabled;
 			_alphaTestValue = range;
