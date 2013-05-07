@@ -25,18 +25,14 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Drawing;
 using System.Windows.Forms;
-using SlimMath;
 using GorgonLibrary.Diagnostics;
-using GorgonLibrary.Math;
-using GorgonLibrary.IO;
 using GorgonLibrary.Graphics;
+using GorgonLibrary.IO;
+using GorgonLibrary.Math;
 using GorgonLibrary.Renderers;
+using SlimMath;
 
 namespace GorgonLibrary.Editor
 {

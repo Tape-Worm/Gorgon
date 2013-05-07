@@ -26,9 +26,9 @@
 
 using System;
 using System.Windows.Forms;
-using GorgonLibrary.Native;
 using GorgonLibrary.Diagnostics;
 using GorgonLibrary.Input.Raw.Properties;
+using GorgonLibrary.Native;
 
 namespace GorgonLibrary.Input.Raw
 {

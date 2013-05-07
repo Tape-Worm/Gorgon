@@ -104,18 +104,11 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Drawing;
 using System.Drawing.Imaging;
-using System.Threading.Tasks;
-using DX = SharpDX;
-using WIC = SharpDX.WIC;
 using GorgonLibrary.IO;
 using GorgonLibrary.Math;
-using GorgonLibrary.Diagnostics;
-using GorgonLibrary.Native;
+using DX = SharpDX;
 
 namespace GorgonLibrary.Graphics
 {
@@ -206,81 +199,81 @@ namespace GorgonLibrary.Graphics
         #endregion
 
         #region Variables.
-        private WIC.ImagingFactory _factory = null;                 // WIC image factory.
+        private SharpDX.WIC.ImagingFactory _factory = null;                 // WIC image factory.
         private bool _disposed = false;                             // Flag to indicate that the object was disposed.
 
         private readonly WICPixelFormat[] _wicPixelFormats = new[]                                 // Formats for conversion between System.Drawing.Images and WIC.
         {            
-            new WICPixelFormat(WIC.PixelFormat.Format64bppPBGRA, PixelFormat.Format64bppPArgb),            
-            new WICPixelFormat(WIC.PixelFormat.Format64bppBGRA, PixelFormat.Format64bppArgb),            
-            new WICPixelFormat(WIC.PixelFormat.Format48bppBGR, PixelFormat.Format48bppRgb),            
-            new WICPixelFormat(WIC.PixelFormat.Format32bppPBGRA, PixelFormat.Format32bppPArgb),            
-            new WICPixelFormat(WIC.PixelFormat.Format32bppBGRA, PixelFormat.Format32bppArgb),
-            new WICPixelFormat(WIC.PixelFormat.Format24bppBGR, PixelFormat.Format24bppRgb),
-            new WICPixelFormat(WIC.PixelFormat.Format16bppGray, PixelFormat.Format16bppGrayScale),
-            new WICPixelFormat(WIC.PixelFormat.Format16bppBGRA5551, PixelFormat.Format16bppArgb1555),
-            new WICPixelFormat(WIC.PixelFormat.Format16bppBGR565, PixelFormat.Format16bppRgb565),
-            new WICPixelFormat(WIC.PixelFormat.Format16bppBGR555, PixelFormat.Format16bppRgb555),
+            new WICPixelFormat(SharpDX.WIC.PixelFormat.Format64bppPBGRA, PixelFormat.Format64bppPArgb),            
+            new WICPixelFormat(SharpDX.WIC.PixelFormat.Format64bppBGRA, PixelFormat.Format64bppArgb),            
+            new WICPixelFormat(SharpDX.WIC.PixelFormat.Format48bppBGR, PixelFormat.Format48bppRgb),            
+            new WICPixelFormat(SharpDX.WIC.PixelFormat.Format32bppPBGRA, PixelFormat.Format32bppPArgb),            
+            new WICPixelFormat(SharpDX.WIC.PixelFormat.Format32bppBGRA, PixelFormat.Format32bppArgb),
+            new WICPixelFormat(SharpDX.WIC.PixelFormat.Format24bppBGR, PixelFormat.Format24bppRgb),
+            new WICPixelFormat(SharpDX.WIC.PixelFormat.Format16bppGray, PixelFormat.Format16bppGrayScale),
+            new WICPixelFormat(SharpDX.WIC.PixelFormat.Format16bppBGRA5551, PixelFormat.Format16bppArgb1555),
+            new WICPixelFormat(SharpDX.WIC.PixelFormat.Format16bppBGR565, PixelFormat.Format16bppRgb565),
+            new WICPixelFormat(SharpDX.WIC.PixelFormat.Format16bppBGR555, PixelFormat.Format16bppRgb555),
         };
 
         private readonly WICGorgonFormat[] _wicGorgonFormats = new[]								// Formats for conversion between Gorgon and WIC.
 		{
-			new WICGorgonFormat(WIC.PixelFormat.Format128bppRGBAFloat, BufferFormat.R32G32B32A32_Float),
-			new WICGorgonFormat(WIC.PixelFormat.Format64bppRGBAHalf, BufferFormat.R16G16B16A16_Float),
-			new WICGorgonFormat(WIC.PixelFormat.Format64bppRGBA, BufferFormat.R16G16B16A16_UIntNormal),
-			new WICGorgonFormat(WIC.PixelFormat.Format32bppRGBA, BufferFormat.R8G8B8A8_UIntNormal),
-			new WICGorgonFormat(WIC.PixelFormat.Format32bppBGRA, BufferFormat.B8G8R8A8_UIntNormal),
-			new WICGorgonFormat(WIC.PixelFormat.Format32bppBGR, BufferFormat.B8G8R8X8_UIntNormal),
-			new WICGorgonFormat(WIC.PixelFormat.Format32bppRGBA1010102XR, BufferFormat.R10G10B10_XR_BIAS_A2_UIntNormal),
-			new WICGorgonFormat(WIC.PixelFormat.Format32bppRGBA1010102, BufferFormat.R10G10B10A2_UIntNormal),
-			new WICGorgonFormat(WIC.PixelFormat.Format32bppRGBE, BufferFormat.R9G9B9E5_SharedExp),
-			new WICGorgonFormat(WIC.PixelFormat.Format16bppBGR565, BufferFormat.B5G6R5_UIntNormal),
-			new WICGorgonFormat(WIC.PixelFormat.Format16bppBGRA5551, BufferFormat.B5G5R5A1_UIntNormal),
-			new WICGorgonFormat(WIC.PixelFormat.Format32bppRGBE, BufferFormat.R9G9B9E5_SharedExp),
-			new WICGorgonFormat(WIC.PixelFormat.Format32bppGrayFloat, BufferFormat.R32_Float),
-			new WICGorgonFormat(WIC.PixelFormat.Format16bppGrayHalf, BufferFormat.R16_Float),
-			new WICGorgonFormat(WIC.PixelFormat.Format16bppGray, BufferFormat.R16_UIntNormal),
-			new WICGorgonFormat(WIC.PixelFormat.Format8bppGray, BufferFormat.R8_UIntNormal),
-			new WICGorgonFormat(WIC.PixelFormat.Format8bppAlpha, BufferFormat.A8_UIntNormal)
+			new WICGorgonFormat(SharpDX.WIC.PixelFormat.Format128bppRGBAFloat, BufferFormat.R32G32B32A32_Float),
+			new WICGorgonFormat(SharpDX.WIC.PixelFormat.Format64bppRGBAHalf, BufferFormat.R16G16B16A16_Float),
+			new WICGorgonFormat(SharpDX.WIC.PixelFormat.Format64bppRGBA, BufferFormat.R16G16B16A16_UIntNormal),
+			new WICGorgonFormat(SharpDX.WIC.PixelFormat.Format32bppRGBA, BufferFormat.R8G8B8A8_UIntNormal),
+			new WICGorgonFormat(SharpDX.WIC.PixelFormat.Format32bppBGRA, BufferFormat.B8G8R8A8_UIntNormal),
+			new WICGorgonFormat(SharpDX.WIC.PixelFormat.Format32bppBGR, BufferFormat.B8G8R8X8_UIntNormal),
+			new WICGorgonFormat(SharpDX.WIC.PixelFormat.Format32bppRGBA1010102XR, BufferFormat.R10G10B10_XR_BIAS_A2_UIntNormal),
+			new WICGorgonFormat(SharpDX.WIC.PixelFormat.Format32bppRGBA1010102, BufferFormat.R10G10B10A2_UIntNormal),
+			new WICGorgonFormat(SharpDX.WIC.PixelFormat.Format32bppRGBE, BufferFormat.R9G9B9E5_SharedExp),
+			new WICGorgonFormat(SharpDX.WIC.PixelFormat.Format16bppBGR565, BufferFormat.B5G6R5_UIntNormal),
+			new WICGorgonFormat(SharpDX.WIC.PixelFormat.Format16bppBGRA5551, BufferFormat.B5G5R5A1_UIntNormal),
+			new WICGorgonFormat(SharpDX.WIC.PixelFormat.Format32bppRGBE, BufferFormat.R9G9B9E5_SharedExp),
+			new WICGorgonFormat(SharpDX.WIC.PixelFormat.Format32bppGrayFloat, BufferFormat.R32_Float),
+			new WICGorgonFormat(SharpDX.WIC.PixelFormat.Format16bppGrayHalf, BufferFormat.R16_Float),
+			new WICGorgonFormat(SharpDX.WIC.PixelFormat.Format16bppGray, BufferFormat.R16_UIntNormal),
+			new WICGorgonFormat(SharpDX.WIC.PixelFormat.Format8bppGray, BufferFormat.R8_UIntNormal),
+			new WICGorgonFormat(SharpDX.WIC.PixelFormat.Format8bppAlpha, BufferFormat.A8_UIntNormal)
 		};
         
         private readonly WICNearest[] _wicBestFitFormat = new[]										// Best fit for supported format conversions.
 		{
-            new WICNearest(WIC.PixelFormat.Format1bppIndexed, WIC.PixelFormat.Format32bppRGBA),
-            new WICNearest(WIC.PixelFormat.Format2bppIndexed, WIC.PixelFormat.Format32bppRGBA),
-            new WICNearest(WIC.PixelFormat.Format4bppIndexed, WIC.PixelFormat.Format32bppRGBA),
-            new WICNearest(WIC.PixelFormat.Format8bppIndexed, WIC.PixelFormat.Format32bppRGBA),
-            new WICNearest(WIC.PixelFormat.Format2bppGray, WIC.PixelFormat.Format8bppGray),
-            new WICNearest(WIC.PixelFormat.Format4bppGray, WIC.PixelFormat.Format8bppGray),
-            new WICNearest(WIC.PixelFormat.Format16bppGrayFixedPoint, WIC.PixelFormat.Format16bppGrayHalf),
-            new WICNearest(WIC.PixelFormat.Format32bppGrayFixedPoint, WIC.PixelFormat.Format32bppGrayFloat),
-            new WICNearest(WIC.PixelFormat.Format16bppBGR555, WIC.PixelFormat.Format16bppBGRA5551),
-            new WICNearest(WIC.PixelFormat.Format32bppBGR101010, WIC.PixelFormat.Format32bppRGBA1010102),
-            new WICNearest(WIC.PixelFormat.Format24bppBGR, WIC.PixelFormat.Format32bppRGBA),
-            new WICNearest(WIC.PixelFormat.Format24bppRGB, WIC.PixelFormat.Format32bppRGBA),
-            new WICNearest(WIC.PixelFormat.Format32bppPBGRA, WIC.PixelFormat.Format32bppRGBA),
-            new WICNearest(WIC.PixelFormat.Format32bppPRGBA, WIC.PixelFormat.Format32bppRGBA),
-            new WICNearest(WIC.PixelFormat.Format48bppRGB, WIC.PixelFormat.Format64bppRGBA),
-            new WICNearest(WIC.PixelFormat.Format48bppBGR, WIC.PixelFormat.Format64bppRGBA),
-            new WICNearest(WIC.PixelFormat.Format64bppBGRA, WIC.PixelFormat.Format64bppRGBA),
-            new WICNearest(WIC.PixelFormat.Format64bppPRGBA, WIC.PixelFormat.Format64bppRGBA),
-            new WICNearest(WIC.PixelFormat.Format64bppPBGRA, WIC.PixelFormat.Format64bppRGBA),
-            new WICNearest(WIC.PixelFormat.Format48bppRGBFixedPoint, WIC.PixelFormat.Format64bppRGBAHalf),
-            new WICNearest(WIC.PixelFormat.Format48bppBGRFixedPoint, WIC.PixelFormat.Format64bppRGBAHalf),
-            new WICNearest(WIC.PixelFormat.Format64bppRGBAFixedPoint, WIC.PixelFormat.Format64bppRGBAHalf),
-            new WICNearest(WIC.PixelFormat.Format64bppBGRAFixedPoint, WIC.PixelFormat.Format64bppRGBAHalf),
-            new WICNearest(WIC.PixelFormat.Format64bppRGBFixedPoint, WIC.PixelFormat.Format64bppRGBAHalf),
-            new WICNearest(WIC.PixelFormat.Format64bppRGBHalf, WIC.PixelFormat.Format64bppRGBAHalf),
-            new WICNearest(WIC.PixelFormat.Format48bppRGBHalf, WIC.PixelFormat.Format64bppRGBAHalf),
-            new WICNearest(WIC.PixelFormat.Format128bppPRGBAFloat, WIC.PixelFormat.Format128bppRGBAFloat),
-            new WICNearest(WIC.PixelFormat.Format128bppRGBFloat, WIC.PixelFormat.Format128bppRGBAFloat),
-            new WICNearest(WIC.PixelFormat.Format128bppRGBAFixedPoint, WIC.PixelFormat.Format128bppRGBAFloat),
-            new WICNearest(WIC.PixelFormat.Format128bppRGBFixedPoint, WIC.PixelFormat.Format128bppRGBAFloat),
-            new WICNearest(WIC.PixelFormat.Format32bppCMYK, WIC.PixelFormat.Format32bppRGBA),
-            new WICNearest(WIC.PixelFormat.Format64bppCMYK, WIC.PixelFormat.Format64bppRGBA),
-            new WICNearest(WIC.PixelFormat.Format40bppCMYKAlpha, WIC.PixelFormat.Format64bppRGBA),
-            new WICNearest(WIC.PixelFormat.Format80bppCMYKAlpha, WIC.PixelFormat.Format64bppRGBA),
-			new WICNearest(WIC.PixelFormat.Format96bppRGBFixedPoint, WIC.PixelFormat.Format128bppRGBAFloat)
+            new WICNearest(SharpDX.WIC.PixelFormat.Format1bppIndexed, SharpDX.WIC.PixelFormat.Format32bppRGBA),
+            new WICNearest(SharpDX.WIC.PixelFormat.Format2bppIndexed, SharpDX.WIC.PixelFormat.Format32bppRGBA),
+            new WICNearest(SharpDX.WIC.PixelFormat.Format4bppIndexed, SharpDX.WIC.PixelFormat.Format32bppRGBA),
+            new WICNearest(SharpDX.WIC.PixelFormat.Format8bppIndexed, SharpDX.WIC.PixelFormat.Format32bppRGBA),
+            new WICNearest(SharpDX.WIC.PixelFormat.Format2bppGray, SharpDX.WIC.PixelFormat.Format8bppGray),
+            new WICNearest(SharpDX.WIC.PixelFormat.Format4bppGray, SharpDX.WIC.PixelFormat.Format8bppGray),
+            new WICNearest(SharpDX.WIC.PixelFormat.Format16bppGrayFixedPoint, SharpDX.WIC.PixelFormat.Format16bppGrayHalf),
+            new WICNearest(SharpDX.WIC.PixelFormat.Format32bppGrayFixedPoint, SharpDX.WIC.PixelFormat.Format32bppGrayFloat),
+            new WICNearest(SharpDX.WIC.PixelFormat.Format16bppBGR555, SharpDX.WIC.PixelFormat.Format16bppBGRA5551),
+            new WICNearest(SharpDX.WIC.PixelFormat.Format32bppBGR101010, SharpDX.WIC.PixelFormat.Format32bppRGBA1010102),
+            new WICNearest(SharpDX.WIC.PixelFormat.Format24bppBGR, SharpDX.WIC.PixelFormat.Format32bppRGBA),
+            new WICNearest(SharpDX.WIC.PixelFormat.Format24bppRGB, SharpDX.WIC.PixelFormat.Format32bppRGBA),
+            new WICNearest(SharpDX.WIC.PixelFormat.Format32bppPBGRA, SharpDX.WIC.PixelFormat.Format32bppRGBA),
+            new WICNearest(SharpDX.WIC.PixelFormat.Format32bppPRGBA, SharpDX.WIC.PixelFormat.Format32bppRGBA),
+            new WICNearest(SharpDX.WIC.PixelFormat.Format48bppRGB, SharpDX.WIC.PixelFormat.Format64bppRGBA),
+            new WICNearest(SharpDX.WIC.PixelFormat.Format48bppBGR, SharpDX.WIC.PixelFormat.Format64bppRGBA),
+            new WICNearest(SharpDX.WIC.PixelFormat.Format64bppBGRA, SharpDX.WIC.PixelFormat.Format64bppRGBA),
+            new WICNearest(SharpDX.WIC.PixelFormat.Format64bppPRGBA, SharpDX.WIC.PixelFormat.Format64bppRGBA),
+            new WICNearest(SharpDX.WIC.PixelFormat.Format64bppPBGRA, SharpDX.WIC.PixelFormat.Format64bppRGBA),
+            new WICNearest(SharpDX.WIC.PixelFormat.Format48bppRGBFixedPoint, SharpDX.WIC.PixelFormat.Format64bppRGBAHalf),
+            new WICNearest(SharpDX.WIC.PixelFormat.Format48bppBGRFixedPoint, SharpDX.WIC.PixelFormat.Format64bppRGBAHalf),
+            new WICNearest(SharpDX.WIC.PixelFormat.Format64bppRGBAFixedPoint, SharpDX.WIC.PixelFormat.Format64bppRGBAHalf),
+            new WICNearest(SharpDX.WIC.PixelFormat.Format64bppBGRAFixedPoint, SharpDX.WIC.PixelFormat.Format64bppRGBAHalf),
+            new WICNearest(SharpDX.WIC.PixelFormat.Format64bppRGBFixedPoint, SharpDX.WIC.PixelFormat.Format64bppRGBAHalf),
+            new WICNearest(SharpDX.WIC.PixelFormat.Format64bppRGBHalf, SharpDX.WIC.PixelFormat.Format64bppRGBAHalf),
+            new WICNearest(SharpDX.WIC.PixelFormat.Format48bppRGBHalf, SharpDX.WIC.PixelFormat.Format64bppRGBAHalf),
+            new WICNearest(SharpDX.WIC.PixelFormat.Format128bppPRGBAFloat, SharpDX.WIC.PixelFormat.Format128bppRGBAFloat),
+            new WICNearest(SharpDX.WIC.PixelFormat.Format128bppRGBFloat, SharpDX.WIC.PixelFormat.Format128bppRGBAFloat),
+            new WICNearest(SharpDX.WIC.PixelFormat.Format128bppRGBAFixedPoint, SharpDX.WIC.PixelFormat.Format128bppRGBAFloat),
+            new WICNearest(SharpDX.WIC.PixelFormat.Format128bppRGBFixedPoint, SharpDX.WIC.PixelFormat.Format128bppRGBAFloat),
+            new WICNearest(SharpDX.WIC.PixelFormat.Format32bppCMYK, SharpDX.WIC.PixelFormat.Format32bppRGBA),
+            new WICNearest(SharpDX.WIC.PixelFormat.Format64bppCMYK, SharpDX.WIC.PixelFormat.Format64bppRGBA),
+            new WICNearest(SharpDX.WIC.PixelFormat.Format40bppCMYKAlpha, SharpDX.WIC.PixelFormat.Format64bppRGBA),
+            new WICNearest(SharpDX.WIC.PixelFormat.Format80bppCMYKAlpha, SharpDX.WIC.PixelFormat.Format64bppRGBA),
+			new WICNearest(SharpDX.WIC.PixelFormat.Format96bppRGBFixedPoint, SharpDX.WIC.PixelFormat.Format128bppRGBAFloat)
 		};
         #endregion
 
@@ -288,7 +281,7 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Property to return the factory object.
 		/// </summary>
-		public WIC.ImagingFactory Factory
+		public SharpDX.WIC.ImagingFactory Factory
 		{
 			get
 			{
@@ -356,7 +349,7 @@ namespace GorgonLibrary.Graphics
                 case PixelFormat.Format4bppIndexed:
                 case PixelFormat.Format8bppIndexed:
                 case PixelFormat.Format32bppRgb:
-                    return WIC.PixelFormat.Format32bppBGRA;
+                    return SharpDX.WIC.PixelFormat.Format32bppBGRA;
                 default:
                     return Guid.Empty;
             }
@@ -380,15 +373,15 @@ namespace GorgonLibrary.Graphics
             switch (format)
             {
                 case BufferFormat.R8G8B8A8_UIntNormal_sRGB:
-                    return WIC.PixelFormat.Format32bppRGBA;
+                    return SharpDX.WIC.PixelFormat.Format32bppRGBA;
                 case BufferFormat.D32_Float:
-                    return WIC.PixelFormat.Format32bppGrayFloat;
+                    return SharpDX.WIC.PixelFormat.Format32bppGrayFloat;
                 case BufferFormat.D16_UIntNormal:
-                    return WIC.PixelFormat.Format16bppGray;
+                    return SharpDX.WIC.PixelFormat.Format16bppGray;
                 case BufferFormat.B8G8R8A8_UIntNormal_sRGB:
-                    return WIC.PixelFormat.Format32bppBGRA;
+                    return SharpDX.WIC.PixelFormat.Format32bppBGRA;
                 case BufferFormat.B8G8R8X8_UIntNormal_sRGB:
-                    return WIC.PixelFormat.Format32bppBGR;
+                    return SharpDX.WIC.PixelFormat.Format32bppBGR;
             }
 
             return Guid.Empty;
@@ -409,9 +402,9 @@ namespace GorgonLibrary.Graphics
 
 			if (result == BufferFormat.Unknown)
 			{
-				if (sourcePixelFormat == WIC.PixelFormat.Format96bppRGBFixedPoint)
+				if (sourcePixelFormat == SharpDX.WIC.PixelFormat.Format96bppRGBFixedPoint)
 				{
-					updatedPixelFormat = WIC.PixelFormat.Format128bppRGBAFloat;
+					updatedPixelFormat = SharpDX.WIC.PixelFormat.Format128bppRGBAFloat;
 					result = BufferFormat.R32G32B32A32_Float;
 				}
 				else
@@ -442,14 +435,14 @@ namespace GorgonLibrary.Graphics
 					if ((flags & WICFlags.ForceRGB) == WICFlags.ForceRGB)
 					{
 						result = BufferFormat.R8G8B8A8_UIntNormal;
-						updatedPixelFormat = WIC.PixelFormat.Format32bppRGBA;
+						updatedPixelFormat = SharpDX.WIC.PixelFormat.Format32bppRGBA;
 					}
 					break;
 				case BufferFormat.R10G10B10_XR_BIAS_A2_UIntNormal:
 					if ((flags & WICFlags.NoX2Bias) == WICFlags.NoX2Bias)
 					{
 						result = BufferFormat.R10G10B10A2_UIntNormal;
-						updatedPixelFormat = WIC.PixelFormat.Format32bppRGBA1010102;
+						updatedPixelFormat = SharpDX.WIC.PixelFormat.Format32bppRGBA1010102;
 					}
 					break;
 				case BufferFormat.B5G5R5A1_UIntNormal:
@@ -457,14 +450,14 @@ namespace GorgonLibrary.Graphics
 					if ((flags & WICFlags.No16BPP) == WICFlags.No16BPP)
 					{
 						result = BufferFormat.R8G8B8A8_UIntNormal;
-						updatedPixelFormat = WIC.PixelFormat.Format32bppRGBA;
+						updatedPixelFormat = SharpDX.WIC.PixelFormat.Format32bppRGBA;
 					}				
 					break;
 				case BufferFormat.R1_UIntNormal:
 					if ((flags & WICFlags.AllowMono) != WICFlags.AllowMono)
 					{
 						result = BufferFormat.R1_UIntNormal;
-						updatedPixelFormat = WIC.PixelFormat.Format8bppGray;
+						updatedPixelFormat = SharpDX.WIC.PixelFormat.Format8bppGray;
 					}
 					break;
 			}
@@ -479,14 +472,14 @@ namespace GorgonLibrary.Graphics
         /// <returns>The bits per pixel of the format.</returns>
         public int GetBitsPerPixel(Guid wicPixelFormat)
         {
-            using (var component = new WIC.ComponentInfo(_factory, wicPixelFormat))
+            using (var component = new SharpDX.WIC.ComponentInfo(_factory, wicPixelFormat))
             {
-                if (component.ComponentType != WIC.ComponentType.PixelFormat)
+                if (component.ComponentType != SharpDX.WIC.ComponentType.PixelFormat)
                 {
                     throw new ArgumentException("The bits per pixel could not be determined from the pixel format.", "wicPixelFormat");
                 }
 
-                using (var formatInfo = component.QueryInterfaceOrNull<WIC.PixelFormatInfo>())
+                using (var formatInfo = component.QueryInterfaceOrNull<SharpDX.WIC.PixelFormatInfo>())
                 {
                     if (formatInfo == null)
                     {
@@ -503,10 +496,10 @@ namespace GorgonLibrary.Graphics
         /// </summary>
         /// <param name="data">Data to convert to the list of WIC bitmaps.</param>
         /// <returns>The list of WIC bitmaps.</returns>
-        public WIC.Bitmap[] CreateWICBitmapsFromImageData(GorgonImageData data)
+        public SharpDX.WIC.Bitmap[] CreateWICBitmapsFromImageData(GorgonImageData data)
         {
             int bitmapIndex = 0;
-            WIC.Bitmap[] bitmaps = null;
+            SharpDX.WIC.Bitmap[] bitmaps = null;
             Guid bitmapFormat = GetGUID(data.Settings.Format);
                        
             if (bitmapFormat == Guid.Empty)
@@ -515,13 +508,13 @@ namespace GorgonLibrary.Graphics
             }
 
             // Make room for all the buffers.
-            bitmaps = new WIC.Bitmap[data.Count];
+            bitmaps = new SharpDX.WIC.Bitmap[data.Count];
 
             // Copy to the bitmap.
             foreach (var buffer in data)
             {
                 var pointer = new DX.DataRectangle(buffer.Data.BasePointer, buffer.PitchInformation.RowPitch);
-                bitmaps[bitmapIndex] = new WIC.Bitmap(_factory, buffer.Width, buffer.Height, bitmapFormat, pointer, pointer.Pitch * buffer.Height);
+                bitmaps[bitmapIndex] = new SharpDX.WIC.Bitmap(_factory, buffer.Width, buffer.Height, bitmapFormat, pointer, pointer.Pitch * buffer.Height);
                 bitmapIndex++;
             }
 
@@ -534,7 +527,7 @@ namespace GorgonLibrary.Graphics
         /// <param name="bitmap">Bitmap to convert.</param>
         /// <param name="format">Pixel format to use.</param>
         /// <returns>The converted bitmap.</returns>
-        public Image CreateGDIImageFromWICBitmap(WIC.Bitmap bitmap, PixelFormat format)
+        public Image CreateGDIImageFromWICBitmap(SharpDX.WIC.Bitmap bitmap, PixelFormat format)
         {
             Bitmap result = null;
             BitmapData lockData = null;
@@ -555,9 +548,9 @@ namespace GorgonLibrary.Graphics
                 // We need to convert, so copy using the format converter.
                 if (bitmap.PixelFormat != conversionFormat)
                 {
-                    using (var converter = new WIC.FormatConverter(_factory))
+                    using (var converter = new SharpDX.WIC.FormatConverter(_factory))
                     {
-                        converter.Initialize(bitmap, conversionFormat, WIC.BitmapDitherType.None, null, 0, WIC.BitmapPaletteType.Custom);
+                        converter.Initialize(bitmap, conversionFormat, SharpDX.WIC.BitmapDitherType.None, null, 0, SharpDX.WIC.BitmapPaletteType.Custom);
                         converter.CopyPixels(lockData.Stride, lockData.Scan0, lockData.Stride * lockData.Height);
                     }
                 }
@@ -582,10 +575,10 @@ namespace GorgonLibrary.Graphics
         /// Function to create a WIC bitmap from a System.Drawing.Image object.
         /// </summary>
         /// <param name="image">Image to convert.</param>
-        public WIC.Bitmap CreateWICImageFromImage(Image image)
+        public SharpDX.WIC.Bitmap CreateWICImageFromImage(Image image)
         {
 			DX.DataRectangle pointer = default(DX.DataRectangle);
-			WIC.Bitmap result = null;
+			SharpDX.WIC.Bitmap result = null;
 			BitmapData bmpData = null;
             var imageBitmap = image as Bitmap;
             bool bitmapClone = false;
@@ -617,7 +610,7 @@ namespace GorgonLibrary.Graphics
 				bmpData = imageBitmap.LockBits(new Rectangle(0, 0, imageBitmap.Width, imageBitmap.Height), ImageLockMode.ReadOnly, imageBitmap.PixelFormat);
 
 				pointer = new DX.DataRectangle(bmpData.Scan0, bmpData.Stride);
-				result = new WIC.Bitmap(_factory, imageBitmap.Width, imageBitmap.Height, guid, pointer, bmpData.Stride * bmpData.Height);
+				result = new SharpDX.WIC.Bitmap(_factory, imageBitmap.Width, imageBitmap.Height, guid, pointer, bmpData.Stride * bmpData.Height);
 				result.SetResolution(image.HorizontalResolution, image.VerticalResolution);
 
 				return result;
@@ -653,13 +646,13 @@ namespace GorgonLibrary.Graphics
 		/// <param name="buffer">Buffer holding the converted data.</param>
 		/// <param name="scale">TRUE to scale when converting, FALSE to keep at original size.</param>
 		/// <param name="clip">TRUE to perform clipping, FALSE to keep at original size.</param>
-		private void ConvertFormat(Guid sourceFormat, Guid destFormat, WIC.BitmapDitherType dithering, WIC.BitmapInterpolationMode filter, WIC.BitmapSource bitmap, WIC.Palette bitmapPalette, int alphaValue, GorgonImageData.ImageBuffer buffer, bool scale, bool clip)
+		private void ConvertFormat(Guid sourceFormat, Guid destFormat, SharpDX.WIC.BitmapDitherType dithering, SharpDX.WIC.BitmapInterpolationMode filter, SharpDX.WIC.BitmapSource bitmap, SharpDX.WIC.Palette bitmapPalette, int alphaValue, GorgonImageData.ImageBuffer buffer, bool scale, bool clip)
 		{
-			WIC.BitmapSource source = bitmap;
+			SharpDX.WIC.BitmapSource source = bitmap;
 			int rowPitch = 0;
 			int slicePitch = 0;
 			double alphaPercent = alphaValue / 255.0;
-			var paletteType = WIC.BitmapPaletteType.Custom;
+			var paletteType = SharpDX.WIC.BitmapPaletteType.Custom;
 
 			// If we have a palette, then confirm that the dithering method is valid.
 			if (bitmapPalette != null)
@@ -668,12 +661,12 @@ namespace GorgonLibrary.Graphics
 				// a custom palette and request ordered dithering.
 				switch (dithering)
 				{
-					case WIC.BitmapDitherType.Ordered4x4:
-					case WIC.BitmapDitherType.Ordered8x8:
-					case WIC.BitmapDitherType.Ordered16x16:					
-						if (bitmapPalette.TypeInfo == WIC.BitmapPaletteType.Custom)
+					case SharpDX.WIC.BitmapDitherType.Ordered4x4:
+					case SharpDX.WIC.BitmapDitherType.Ordered8x8:
+					case SharpDX.WIC.BitmapDitherType.Ordered16x16:					
+						if (bitmapPalette.TypeInfo == SharpDX.WIC.BitmapPaletteType.Custom)
 						{
-							dithering = WIC.BitmapDitherType.None;
+							dithering = SharpDX.WIC.BitmapDitherType.None;
 						}
 						break;
 				}
@@ -685,7 +678,7 @@ namespace GorgonLibrary.Graphics
 				// Create a scaler if need one.
 				if ((scale) && (!clip))
 				{
-					var scaler = new WIC.BitmapScaler(_factory);
+					var scaler = new SharpDX.WIC.BitmapScaler(_factory);
 					scaler.Initialize(bitmap, buffer.Width, buffer.Height, filter);
 					source = scaler;
 				}
@@ -693,13 +686,13 @@ namespace GorgonLibrary.Graphics
 				// Create a clipper if we want to clip and the image needs resizing.
 				if ((clip) && (scale) && ((buffer.Width < bitmap.Size.Width) || (buffer.Height < bitmap.Size.Height)))
 				{
-					var clipper = new WIC.BitmapClipper(_factory);
+					var clipper = new SharpDX.WIC.BitmapClipper(_factory);
 					clipper.Initialize(bitmap, new DX.DrawingRectangle(0, 0, buffer.Width < bitmap.Size.Width ? buffer.Width : bitmap.Size.Width, 
 																			 buffer.Height < bitmap.Size.Height ? buffer.Height : bitmap.Size.Height));
 					source = clipper;
 				}
 
-				using (var converter = new WIC.FormatConverter(_factory))
+				using (var converter = new SharpDX.WIC.FormatConverter(_factory))
 				{
 					if (!converter.CanConvert(sourceFormat, destFormat))
 					{
@@ -739,11 +732,11 @@ namespace GorgonLibrary.Graphics
 		/// <param name="buffer">Buffer to receive the scaled bitmap.</param>
 		/// <param name="clip">TRUE to clip, FALSE to scale.</param>
 		/// <returns>TRUE if clipping/scaling was performed, FALSE if not.</returns>
-		private bool ResizeBitmap(WIC.BitmapSource bitmap, WIC.BitmapInterpolationMode filter, GorgonImageData.ImageBuffer buffer, bool clip)
+		private bool ResizeBitmap(SharpDX.WIC.BitmapSource bitmap, SharpDX.WIC.BitmapInterpolationMode filter, GorgonImageData.ImageBuffer buffer, bool clip)
 		{
 			if (!clip)
 			{
-				using (var scaler = new WIC.BitmapScaler(_factory))
+				using (var scaler = new SharpDX.WIC.BitmapScaler(_factory))
 				{
 					scaler.Initialize(bitmap, buffer.Width, buffer.Height, filter);
 					scaler.CopyPixels(buffer.PitchInformation.RowPitch, buffer.Data.BasePointer, buffer.PitchInformation.SlicePitch);
@@ -768,9 +761,9 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		/// <param name="bitmap">Bitmap to clip.</param>
 		/// <param name="buffer">Buffer containing clipped data.</param>
-		private void ClipBitmap(WIC.BitmapSource bitmap, GorgonImageData.ImageBuffer buffer)
+		private void ClipBitmap(SharpDX.WIC.BitmapSource bitmap, GorgonImageData.ImageBuffer buffer)
 		{
-			using (var clipper = new WIC.BitmapClipper(_factory))
+			using (var clipper = new SharpDX.WIC.BitmapClipper(_factory))
 			{
 				clipper.Initialize(bitmap, new DX.DrawingRectangle(0, 0, buffer.Width < bitmap.Size.Width ? buffer.Width : bitmap.Size.Width, 
 																		 buffer.Height < bitmap.Size.Height ? buffer.Height : bitmap.Size.Height));
@@ -786,7 +779,7 @@ namespace GorgonLibrary.Graphics
 		/// <param name="ditherFlags">Flags used to dither the image.</param>
 		/// <param name="buffer">Buffer for holding the image data.</param>
 		/// <param name="clip">TRUE to clip the data, FALSE to scale it.</param>
-        public void AddWICBitmapToImageData(WIC.Bitmap bitmap, ImageFilter filter, ImageDithering ditherFlags, GorgonImageData.ImageBuffer buffer, bool clip)
+        public void AddWICBitmapToImageData(SharpDX.WIC.Bitmap bitmap, ImageFilter filter, ImageDithering ditherFlags, GorgonImageData.ImageBuffer buffer, bool clip)
         {
             Guid conversionFormat = GetGUID(buffer.Format);
 			bool needsResize = (buffer.Width != bitmap.Size.Width) || (buffer.Height != bitmap.Size.Height);			
@@ -806,12 +799,12 @@ namespace GorgonLibrary.Graphics
             // conversion format, then we need to convert the image.
             if (bitmap.PixelFormat != conversionFormat)
             {
-				ConvertFormat(bitmap.PixelFormat, conversionFormat, (WIC.BitmapDitherType)ditherFlags, (WIC.BitmapInterpolationMode)filter, bitmap, null, 0, buffer, needsResize, clip);
+				ConvertFormat(bitmap.PixelFormat, conversionFormat, (SharpDX.WIC.BitmapDitherType)ditherFlags, (SharpDX.WIC.BitmapInterpolationMode)filter, bitmap, null, 0, buffer, needsResize, clip);
 			}
             else
             {
                 // Just dump without converting because our formats are equal.
-				if ((!needsResize) || (!ResizeBitmap(bitmap, (WIC.BitmapInterpolationMode)filter, buffer, clip)))
+				if ((!needsResize) || (!ResizeBitmap(bitmap, (SharpDX.WIC.BitmapInterpolationMode)filter, buffer, clip)))
 				{
 					bitmap.CopyPixels(buffer.PitchInformation.RowPitch, buffer.Data.BasePointer, buffer.PitchInformation.SlicePitch);
 				}
@@ -830,26 +823,26 @@ namespace GorgonLibrary.Graphics
         /// <param name="destRect">Rectangle containing the area to scale or clip</param>
         /// <param name="clip">TRUE to perform clipping instead of scaling.</param>
         /// <param name="scaleFilter">Filter to apply to scaled data.</param>
-        public unsafe void TransformImageData(WIC.BitmapSource sourceData, IntPtr destData, int rowPitch, int slicePitch, Guid destFormat, ImageDithering dither, Rectangle destRect, bool clip, ImageFilter scaleFilter)
+        public unsafe void TransformImageData(SharpDX.WIC.BitmapSource sourceData, IntPtr destData, int rowPitch, int slicePitch, Guid destFormat, ImageDithering dither, Rectangle destRect, bool clip, ImageFilter scaleFilter)
         {
 			Guid pixelFormat = destFormat;
-            WIC.BitmapSource source = sourceData;
-            WIC.FormatConverter converter = null;
-            WIC.BitmapClipper clipper = null;
-            WIC.BitmapScaler scaler = null;
+            SharpDX.WIC.BitmapSource source = sourceData;
+            SharpDX.WIC.FormatConverter converter = null;
+            SharpDX.WIC.BitmapClipper clipper = null;
+            SharpDX.WIC.BitmapScaler scaler = null;
 
             try
             {
                 if (destFormat != Guid.Empty)
                 {
-                    converter = new WIC.FormatConverter(_factory);
+                    converter = new SharpDX.WIC.FormatConverter(_factory);
 
 					if (!converter.CanConvert(sourceData.PixelFormat, destFormat))
 					{
 						throw new GorgonException(GorgonResult.FormatNotSupported, "Cannot convert to the destination format.");
 					}
 
-                    converter.Initialize(source, destFormat, (WIC.BitmapDitherType)dither, null, 0, WIC.BitmapPaletteType.Custom);
+                    converter.Initialize(source, destFormat, (SharpDX.WIC.BitmapDitherType)dither, null, 0, SharpDX.WIC.BitmapPaletteType.Custom);
                     source = converter;
                 }
 
@@ -859,8 +852,8 @@ namespace GorgonLibrary.Graphics
 
                     if (!clip)
                     {
-                        scaler = new WIC.BitmapScaler(_factory);
-                        scaler.Initialize(source, destRect.Width, destRect.Height, (WIC.BitmapInterpolationMode)scaleFilter);
+                        scaler = new SharpDX.WIC.BitmapScaler(_factory);
+                        scaler.Initialize(source, destRect.Width, destRect.Height, (SharpDX.WIC.BitmapInterpolationMode)scaleFilter);
                         source = scaler;
                     }
                     else
@@ -870,7 +863,7 @@ namespace GorgonLibrary.Graphics
 
 						if ((destRect.Width < source.Size.Width) || (destRect.Height < source.Size.Height))
 						{
-							clipper = new WIC.BitmapClipper(_factory);
+							clipper = new SharpDX.WIC.BitmapClipper(_factory);
 							clipper.Initialize(source, new DX.DrawingRectangle(destRect.X, destRect.Y, destRect.Width, destRect.Height));
 							source = clipper;
 						}
@@ -879,14 +872,14 @@ namespace GorgonLibrary.Graphics
 					// We have a change of format (probably due to the filter when scaling)... so we need to convert.
 					if (source.PixelFormat != pixelFormat)
 					{
-						converter = new WIC.FormatConverter(_factory);
+						converter = new SharpDX.WIC.FormatConverter(_factory);
 
 						if (!converter.CanConvert(source.PixelFormat, pixelFormat))
 						{
 							throw new GorgonException(GorgonResult.FormatNotSupported, "Cannot convert to the destination format.");
 						}
 
-						converter.Initialize(source, pixelFormat, WIC.BitmapDitherType.None, null, 0, WIC.BitmapPaletteType.Custom);
+						converter.Initialize(source, pixelFormat, SharpDX.WIC.BitmapDitherType.None, null, 0, SharpDX.WIC.BitmapPaletteType.Custom);
 						source = converter;
 					}
                 }
@@ -925,7 +918,7 @@ namespace GorgonLibrary.Graphics
         /// </summary>
         public GorgonWICImage()
         {
-            _factory = new WIC.ImagingFactory();
+            _factory = new SharpDX.WIC.ImagingFactory();
         }
         #endregion
 

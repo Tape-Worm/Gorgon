@@ -27,10 +27,8 @@
 using System;
 using System.Drawing;
 using GorgonLibrary.Diagnostics;
-using GorgonLibrary.Native;
-using Forms = System.Windows.Forms;
 using GorgonLibrary.Input.Raw.Properties;
-
+using GorgonLibrary.Native;
 
 namespace GorgonLibrary.Input.Raw
 {
@@ -65,7 +63,7 @@ namespace GorgonLibrary.Input.Raw
 		    }
 
 		    // Move the windows cursor to match if not exclusive.
-		    Forms.Cursor.Position = BoundControl.PointToScreen(!Exclusive ? Point.Truncate(Position) : new Point(0, 0));
+		    System.Windows.Forms.Cursor.Position = BoundControl.PointToScreen(!Exclusive ? Point.Truncate(Position) : new Point(0, 0));
 		}
 
 	    /// <summary>
@@ -114,13 +112,13 @@ namespace GorgonLibrary.Input.Raw
 			if (_messageFilter != null)
 			{
 				_messageFilter.RawInputData -= GetRawData;
-				Forms.Application.RemoveMessageFilter(_messageFilter);
+				System.Windows.Forms.Application.RemoveMessageFilter(_messageFilter);
 				_messageFilter.Dispose();
 			}
 
 			_messageFilter = new MessageFilter();
 			_messageFilter.RawInputData += GetRawData;
-			Forms.Application.AddMessageFilter(_messageFilter);
+			System.Windows.Forms.Application.AddMessageFilter(_messageFilter);
 
 			_device.UsagePage = HIDUsagePage.Generic;
 			_device.Usage = (ushort)HIDUsage.Mouse;
@@ -155,7 +153,7 @@ namespace GorgonLibrary.Input.Raw
 			if (_messageFilter != null)
 			{
 				_messageFilter.RawInputData -= GetRawData;
-				Forms.Application.RemoveMessageFilter(_messageFilter);
+				System.Windows.Forms.Application.RemoveMessageFilter(_messageFilter);
 				_messageFilter.Dispose();
 				_messageFilter = null;
 			}
@@ -205,7 +203,7 @@ namespace GorgonLibrary.Input.Raw
 			// Do nothing if we're outside and we have exclusive mode turned off.
 			if (!Exclusive)
 			{
-			    if (!WindowRectangle.Contains(BoundControl.PointToClient(Forms.Cursor.Position))) 
+			    if (!WindowRectangle.Contains(BoundControl.PointToClient(System.Windows.Forms.Cursor.Position))) 
 				{
 					_outside = true;
 					return;
@@ -215,7 +213,7 @@ namespace GorgonLibrary.Input.Raw
 			    {
 			        // If we're back inside place position at the entry point.
 			        _outside = false;
-			        Position = BoundControl.PointToClient(Forms.Cursor.Position);
+			        Position = BoundControl.PointToClient(System.Windows.Forms.Cursor.Position);
 			    }
 			}
 
@@ -356,7 +354,7 @@ namespace GorgonLibrary.Input.Raw
 		/// <param name="boundWindow">The window to bind this device with.</param>
 		/// <exception cref="System.ArgumentNullException">Thrown when the owner parameter is NULL (or Nothing in VB.NET).</exception>
 		/// <remarks>Pass NULL (Nothing in VB.Net) to the <paramref name="boundWindow"/> parameter to use the <see cref="P:GorgonLibrary.Gorgon.ApplicationForm">Gorgon application window</see>.</remarks>
-		internal RawPointingDevice(GorgonInputFactory owner, string deviceName, IntPtr handle, Forms.Control boundWindow)
+		internal RawPointingDevice(GorgonInputFactory owner, string deviceName, IntPtr handle, System.Windows.Forms.Control boundWindow)
 			: base(owner, deviceName, boundWindow)
 		{
 			Gorgon.Log.Print("Raw input pointing device interface created for handle 0x{0}.", LoggingLevel.Verbose, handle.FormatHex());

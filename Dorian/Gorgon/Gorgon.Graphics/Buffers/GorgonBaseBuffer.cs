@@ -25,10 +25,10 @@
 #endregion
 
 using System;
-using D3D11 = SharpDX.Direct3D11;
 using GorgonLibrary.Diagnostics;
-using GorgonLibrary.IO;
 using GorgonLibrary.Graphics.Properties;
+using GorgonLibrary.IO;
+using D3D11 = SharpDX.Direct3D11;
 
 namespace GorgonLibrary.Graphics
 {

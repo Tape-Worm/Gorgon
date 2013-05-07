@@ -25,23 +25,18 @@
 #endregion
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
-using System.Windows.Forms;
-using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
-using KRBTabControl;
-using GorgonLibrary.Math;
-using GorgonLibrary.Diagnostics;
-using GorgonLibrary.UI;
-using GorgonLibrary.Graphics;
+using System.Windows.Forms;
 using GorgonLibrary.IO;
+using GorgonLibrary.Math;
+using GorgonLibrary.UI;
 
 namespace GorgonLibrary.Editor
 {

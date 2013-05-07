@@ -26,17 +26,13 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.IO;
 using System.Drawing;
+using System.IO;
+using GorgonLibrary.Diagnostics;
+using GorgonLibrary.IO;
 using DX = SharpDX;
 using GI = SharpDX.DXGI;
 using D3D = SharpDX.Direct3D11;
-using SlimMath;
-using GorgonLibrary.Math;
-using GorgonLibrary.Diagnostics;
-using GorgonLibrary.IO;
 
 namespace GorgonLibrary.Graphics
 {

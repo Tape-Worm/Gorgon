@@ -103,14 +103,8 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using WIC = SharpDX.WIC;
-using GorgonLibrary.Native;
-using GorgonLibrary.Math;
 using GorgonLibrary.Graphics;
+using GorgonLibrary.Math;
 
 namespace GorgonLibrary.IO
 {
@@ -224,7 +218,7 @@ namespace GorgonLibrary.IO
 		/// <param name="wic">WIC interface.</param>
 		/// <param name="data">Image data to populate.</param>
 		/// <param name="decoder">Decoder for the image.</param>
-		private void ReadFrames(GorgonWICImage wic, GorgonImageData data, WIC.BitmapDecoder decoder)
+		private void ReadFrames(GorgonWICImage wic, GorgonImageData data, SharpDX.WIC.BitmapDecoder decoder)
 		{
 			Guid bestPixelFormat = wic.GetGUID(data.Settings.Format);
 
@@ -272,15 +266,15 @@ namespace GorgonLibrary.IO
 							// We need to scale the image up/down to the size of our image data.
 							if (!Clip)
 							{
-								using (var scaler = new WIC.BitmapScaler(wic.Factory))
+								using (var scaler = new SharpDX.WIC.BitmapScaler(wic.Factory))
 								{
-									scaler.Initialize(frame, data.Settings.Width, data.Settings.Height, (WIC.BitmapInterpolationMode)Filter);
+									scaler.Initialize(frame, data.Settings.Width, data.Settings.Height, (SharpDX.WIC.BitmapInterpolationMode)Filter);
 									scaler.CopyPixels(buffer.PitchInformation.RowPitch, bufferPointer, buffer.PitchInformation.SlicePitch);
 								}
 							}
 							else
 							{
-								using (var clipper = new WIC.BitmapClipper(wic.Factory))
+								using (var clipper = new SharpDX.WIC.BitmapClipper(wic.Factory))
 								{
 									clipper.Initialize(frame, new SharpDX.DrawingRectangle(0, 0, data.Settings.Width, data.Settings.Height));
 									clipper.CopyPixels(buffer.PitchInformation.RowPitch, bufferPointer, buffer.PitchInformation.SlicePitch);
@@ -292,9 +286,9 @@ namespace GorgonLibrary.IO
 					else
 					{
 						// Poop.  We need to convert this image.
-						using (var converter = new WIC.FormatConverter(wic.Factory))
+						using (var converter = new SharpDX.WIC.FormatConverter(wic.Factory))
 						{		
-							converter.Initialize(frame, bestPixelFormat, (WIC.BitmapDitherType)Dithering, null, 0.0, WIC.BitmapPaletteType.Custom);
+							converter.Initialize(frame, bestPixelFormat, (SharpDX.WIC.BitmapDitherType)Dithering, null, 0.0, SharpDX.WIC.BitmapPaletteType.Custom);
 
 							if (((frameWidth == data.Settings.Width) && (frameHeight == data.Settings.Height)) || ((!needsSizeAdjust) && (Clip)))
 							{
@@ -305,15 +299,15 @@ namespace GorgonLibrary.IO
 								// And we need to scale the image.
 								if (!Clip)
 								{
-									using (var scaler = new WIC.BitmapScaler(wic.Factory))
+									using (var scaler = new SharpDX.WIC.BitmapScaler(wic.Factory))
 									{
-										scaler.Initialize(converter, data.Settings.Width, data.Settings.Height, (WIC.BitmapInterpolationMode)Filter);
+										scaler.Initialize(converter, data.Settings.Width, data.Settings.Height, (SharpDX.WIC.BitmapInterpolationMode)Filter);
 										scaler.CopyPixels(buffer.PitchInformation.RowPitch, bufferPointer, buffer.PitchInformation.SlicePitch);
 									}
 								}
 								else
 								{
-									using (var clipper = new WIC.BitmapClipper(wic.Factory))
+									using (var clipper = new SharpDX.WIC.BitmapClipper(wic.Factory))
 									{
 										clipper.Initialize(frame, new SharpDX.DrawingRectangle(0, 0, data.Settings.Width, data.Settings.Height));
 										clipper.CopyPixels(buffer.PitchInformation.RowPitch, bufferPointer, buffer.PitchInformation.SlicePitch);
@@ -334,7 +328,7 @@ namespace GorgonLibrary.IO
 		/// <param name="srcFormat">Source image format.</param>
 		/// <param name="convertFormat">Conversion format.</param>
 		/// <param name="frame">Frame containing the image data.</param>
-		private void ReadFrame(GorgonWICImage wic, GorgonImageData data, Guid srcFormat, Guid convertFormat, WIC.BitmapFrameDecode frame)
+		private void ReadFrame(GorgonWICImage wic, GorgonImageData data, Guid srcFormat, Guid convertFormat, SharpDX.WIC.BitmapFrameDecode frame)
 		{
 			var buffer = data[0];
 
@@ -346,13 +340,13 @@ namespace GorgonLibrary.IO
 			}
 
 			// Perform conversion.
-			using (var converter = new WIC.FormatConverter(wic.Factory))
+			using (var converter = new SharpDX.WIC.FormatConverter(wic.Factory))
 			{
-				bool isIndexed = ((frame.PixelFormat == WIC.PixelFormat.Format8bppIndexed)
-							|| (frame.PixelFormat == WIC.PixelFormat.Format4bppIndexed)
-							|| (frame.PixelFormat == WIC.PixelFormat.Format2bppIndexed)
-							|| (frame.PixelFormat == WIC.PixelFormat.Format1bppIndexed));
-				Tuple<WIC.Palette, double, WIC.BitmapPaletteType> paletteInfo = null;
+				bool isIndexed = ((frame.PixelFormat == SharpDX.WIC.PixelFormat.Format8bppIndexed)
+							|| (frame.PixelFormat == SharpDX.WIC.PixelFormat.Format4bppIndexed)
+							|| (frame.PixelFormat == SharpDX.WIC.PixelFormat.Format2bppIndexed)
+							|| (frame.PixelFormat == SharpDX.WIC.PixelFormat.Format1bppIndexed));
+				Tuple<SharpDX.WIC.Palette, double, SharpDX.WIC.BitmapPaletteType> paletteInfo = null;
 
 				try
 				{
@@ -365,10 +359,10 @@ namespace GorgonLibrary.IO
 					// If we've defined a palette for an indexed image, then copy it to a bitmap and set its palette.
 					if ((paletteInfo != null) && (paletteInfo.Item1 != null) && (isIndexed))
 					{
-						using (var tempBitmap = new WIC.Bitmap(wic.Factory, frame, WIC.BitmapCreateCacheOption.CacheOnDemand))
+						using (var tempBitmap = new SharpDX.WIC.Bitmap(wic.Factory, frame, SharpDX.WIC.BitmapCreateCacheOption.CacheOnDemand))
 						{
 							tempBitmap.Palette = paletteInfo.Item1;
-							converter.Initialize(tempBitmap, convertFormat, (WIC.BitmapDitherType)Dithering, paletteInfo.Item1, paletteInfo.Item2, paletteInfo.Item3);
+							converter.Initialize(tempBitmap, convertFormat, (SharpDX.WIC.BitmapDitherType)Dithering, paletteInfo.Item1, paletteInfo.Item2, paletteInfo.Item3);
 							converter.CopyPixels(buffer.PitchInformation.RowPitch, buffer.Data.BasePointer, buffer.PitchInformation.SlicePitch);
 						}
 
@@ -378,11 +372,11 @@ namespace GorgonLibrary.IO
 					// Only apply palettes to indexed image data.
 					if (paletteInfo != null)
 					{
-						converter.Initialize(frame, convertFormat, (WIC.BitmapDitherType)Dithering, paletteInfo.Item1, paletteInfo.Item2, paletteInfo.Item3);
+						converter.Initialize(frame, convertFormat, (SharpDX.WIC.BitmapDitherType)Dithering, paletteInfo.Item1, paletteInfo.Item2, paletteInfo.Item3);
 					}
 					else
 					{
-						converter.Initialize(frame, convertFormat, (WIC.BitmapDitherType)Dithering, null, 0.0, WIC.BitmapPaletteType.Custom);
+						converter.Initialize(frame, convertFormat, (SharpDX.WIC.BitmapDitherType)Dithering, null, 0.0, SharpDX.WIC.BitmapPaletteType.Custom);
 					}
 
 					converter.CopyPixels(buffer.PitchInformation.RowPitch, buffer.Data.BasePointer, buffer.PitchInformation.SlicePitch);
@@ -405,7 +399,7 @@ namespace GorgonLibrary.IO
         /// <param name="frame">Frame in the image to decode.</param>
         /// <param name="bestFormatMatch">The best match for the pixel format.</param>
         /// <returns>Settings for the new image.</returns>
-        internal IImageSettings ReadMetaData(GorgonWICImage wic, WIC.BitmapDecoder decoder, WIC.BitmapFrameDecode frame, ref Guid bestFormatMatch)
+        internal IImageSettings ReadMetaData(GorgonWICImage wic, SharpDX.WIC.BitmapDecoder decoder, SharpDX.WIC.BitmapFrameDecode frame, ref Guid bestFormatMatch)
         {
             var settings = new GorgonTexture2DSettings();
 
@@ -424,7 +418,7 @@ namespace GorgonLibrary.IO
 		/// </summary>
 		/// <param name="frame">Frame to decode.</param>
 		/// <returns>The position of the offset.</returns>
-		internal virtual System.Drawing.Point GetFrameOffset(WIC.BitmapFrameDecode frame)
+		internal virtual System.Drawing.Point GetFrameOffset(SharpDX.WIC.BitmapFrameDecode frame)
 		{
 			return System.Drawing.Point.Empty;
 		}
@@ -435,9 +429,9 @@ namespace GorgonLibrary.IO
 		/// <param name="wic">The WIC interface.</param>
 		/// <param name="bitmap">The bitmap to derive the palette from (only used when encoding).</param>
 		/// <returns>A tuple containing the palette data, alpha percentage and the type of palette.  NULL if we're encoding and we want to generate the palette from the frame.</returns>
-		internal virtual Tuple<WIC.Palette, double, WIC.BitmapPaletteType> GetPaletteInfo(GorgonWICImage wic, WIC.Bitmap bitmap)
+		internal virtual Tuple<SharpDX.WIC.Palette, double, SharpDX.WIC.BitmapPaletteType> GetPaletteInfo(GorgonWICImage wic, SharpDX.WIC.Bitmap bitmap)
 		{
-			return new Tuple<WIC.Palette, double, WIC.BitmapPaletteType>(null, 0, WIC.BitmapPaletteType.Custom);
+			return new Tuple<SharpDX.WIC.Palette, double, SharpDX.WIC.BitmapPaletteType>(null, 0, SharpDX.WIC.BitmapPaletteType.Custom);
 		}
 
 		/// <summary>
@@ -448,7 +442,7 @@ namespace GorgonLibrary.IO
 		/// <param name="frameIndex">Index of the current frame.</param>
 		/// <param name="settings">Image data settings.</param>
 		/// <param name="paletteColors">Palette colors used to encode the 8 bit images.</param>
-		internal virtual void AddCustomMetaData(WIC.BitmapEncoder encoder, WIC.BitmapFrameEncode frame, int frameIndex, IImageSettings settings, SharpDX.Color[] paletteColors)
+		internal virtual void AddCustomMetaData(SharpDX.WIC.BitmapEncoder encoder, SharpDX.WIC.BitmapFrameEncode frame, int frameIndex, IImageSettings settings, SharpDX.Color[] paletteColors)
 		{
 		}
 
@@ -456,7 +450,7 @@ namespace GorgonLibrary.IO
         /// Function to set custom encoding options.
         /// </summary>
         /// <param name="frame">Frame encoder to use.</param>
-        internal virtual void SetFrameOptions(WIC.BitmapFrameEncode frame)
+        internal virtual void SetFrameOptions(SharpDX.WIC.BitmapFrameEncode frame)
         {
         }
 
@@ -478,13 +472,13 @@ namespace GorgonLibrary.IO
 			{
 				using (var wic = new GorgonWICImage())
 				{
-					using (var decoder = new WIC.BitmapDecoder(wic.Factory, SupportedFormat))
+					using (var decoder = new SharpDX.WIC.BitmapDecoder(wic.Factory, SupportedFormat))
 					{
-						using (var wicStream = new WIC.WICStream(wic.Factory, wrapperStream))
+						using (var wicStream = new SharpDX.WIC.WICStream(wic.Factory, wrapperStream))
 						{
 							try
 							{
-								decoder.Initialize(wicStream, WIC.DecodeOptions.CacheOnDemand);
+								decoder.Initialize(wicStream, SharpDX.WIC.DecodeOptions.CacheOnDemand);
 							}
 							catch (SharpDX.SharpDXException sdex)
 							{
@@ -574,7 +568,7 @@ namespace GorgonLibrary.IO
 
 					actualFormat = targetFormat;
 
-					using (var encoder = new WIC.BitmapEncoder(wic.Factory, SupportedFormat))
+					using (var encoder = new SharpDX.WIC.BitmapEncoder(wic.Factory, SupportedFormat))
 					{
 						try
 						{
@@ -596,7 +590,7 @@ namespace GorgonLibrary.IO
 
 							for (int frameIndex = 0; frameIndex < frameCount; frameIndex++)
 							{
-								using (var frame = new WIC.BitmapFrameEncode(encoder))
+								using (var frame = new SharpDX.WIC.BitmapFrameEncode(encoder))
 								{
 									var buffer = imageData[frameIndex, 0];
 
@@ -612,7 +606,7 @@ namespace GorgonLibrary.IO
 									if (targetFormat != actualFormat)
 									{
 										var rect = new SharpDX.DataRectangle(buffer.Data.BasePointer, buffer.PitchInformation.RowPitch);
-										using (var bitmap = new WIC.Bitmap(wic.Factory, buffer.Width, buffer.Height, targetFormat, rect))
+										using (var bitmap = new SharpDX.WIC.Bitmap(wic.Factory, buffer.Width, buffer.Height, targetFormat, rect))
 										{
 											// If we're using a codec that supports 8 bit indexed data, then get the palette info.									
 											var paletteInfo = GetPaletteInfo(wic, bitmap);
@@ -624,9 +618,9 @@ namespace GorgonLibrary.IO
 
 											try
 											{
-												using (var converter = new WIC.FormatConverter(wic.Factory))
+												using (var converter = new SharpDX.WIC.FormatConverter(wic.Factory))
 												{
-													converter.Initialize(bitmap, actualFormat, (WIC.BitmapDitherType)Dithering, paletteInfo.Item1, paletteInfo.Item2, paletteInfo.Item3);
+													converter.Initialize(bitmap, actualFormat, (SharpDX.WIC.BitmapDitherType)Dithering, paletteInfo.Item1, paletteInfo.Item2, paletteInfo.Item3);
 													if (paletteInfo.Item1 != null)
 													{
 														frame.Palette = paletteInfo.Item1;
@@ -707,13 +701,13 @@ namespace GorgonLibrary.IO
 					// Get our WIC interface.				
 					using (var wic = new GorgonWICImage())
 					{
-						using (var decoder = new WIC.BitmapDecoder(wic.Factory, SupportedFormat))
+						using (var decoder = new SharpDX.WIC.BitmapDecoder(wic.Factory, SupportedFormat))
 						{
-							using (var wicStream = new WIC.WICStream(wic.Factory, wrapperStream))
+							using (var wicStream = new SharpDX.WIC.WICStream(wic.Factory, wrapperStream))
 							{
 								try
 								{
-									decoder.Initialize(wicStream, WIC.DecodeOptions.CacheOnDemand);
+									decoder.Initialize(wicStream, SharpDX.WIC.DecodeOptions.CacheOnDemand);
 								}
 								catch (SharpDX.SharpDXException sdex)
 								{
@@ -784,13 +778,13 @@ namespace GorgonLibrary.IO
 				{
 					using (var wic = new GorgonWICImage())
 					{
-						using (var decoder = new WIC.BitmapDecoder(wic.Factory, SupportedFormat))
+						using (var decoder = new SharpDX.WIC.BitmapDecoder(wic.Factory, SupportedFormat))
 						{
-							using (var wicStream = new WIC.WICStream(wic.Factory, wrapperStream))
+							using (var wicStream = new SharpDX.WIC.WICStream(wic.Factory, wrapperStream))
 							{
 								try
 								{
-									decoder.Initialize(wicStream, WIC.DecodeOptions.CacheOnDemand);
+									decoder.Initialize(wicStream, SharpDX.WIC.DecodeOptions.CacheOnDemand);
 								}
 								catch (SharpDX.SharpDXException)
 								{

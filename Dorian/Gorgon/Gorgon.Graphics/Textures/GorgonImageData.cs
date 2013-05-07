@@ -51,17 +51,12 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Runtime.InteropServices;
 using System.Drawing;
-using DX = SharpDX;
-using WIC = SharpDX.WIC;
-using GorgonLibrary.Native;
+using GorgonLibrary.Diagnostics;
 using GorgonLibrary.IO;
 using GorgonLibrary.Math;
-using GorgonLibrary.Diagnostics;
+using GorgonLibrary.Native;
+using DX = SharpDX;
 
 namespace GorgonLibrary.Graphics
 {
@@ -450,7 +445,7 @@ namespace GorgonLibrary.Graphics
             }
 
             // Ensure WIC can convert between the two formats.
-            using (var converter = new WIC.FormatConverter(wic.Factory))
+            using (var converter = new SharpDX.WIC.FormatConverter(wic.Factory))
             {
                 converter.CanConvert(sourcePixelFormat, destPixelFormat);
             }
@@ -2177,7 +2172,7 @@ namespace GorgonLibrary.Graphics
 
 									var dataPtr = new DX.DataRectangle(sourceBuffer.Data.BasePointer, sourceBuffer.PitchInformation.RowPitch);
 									// Create a temporary bitmap and resize it.
-									using (var bitmap = new WIC.Bitmap(wic.Factory, sourceBuffer.Width, sourceBuffer.Height, format, dataPtr, sourceBuffer.PitchInformation.SlicePitch))
+									using (var bitmap = new SharpDX.WIC.Bitmap(wic.Factory, sourceBuffer.Width, sourceBuffer.Height, format, dataPtr, sourceBuffer.PitchInformation.SlicePitch))
 									{
 										// Scale the image into the next buffer.
 										wic.TransformImageData(bitmap, depthBuffer.Data.BasePointer, depthBuffer.PitchInformation.RowPitch, depthBuffer.PitchInformation.SlicePitch,
@@ -2306,7 +2301,7 @@ namespace GorgonLibrary.Graphics
 							var rect = new DX.DataRectangle(srcBuffer.Data.BasePointer, srcBuffer.PitchInformation.RowPitch);
 
 							// Create a WIC bitmap so we have a source for conversion.
-							using (var wicBmp = new WIC.Bitmap(wic.Factory, srcBuffer.Width, srcBuffer.Height, sourceFormat, rect, rect.Pitch * Settings.Height))
+							using (var wicBmp = new SharpDX.WIC.Bitmap(wic.Factory, srcBuffer.Width, srcBuffer.Height, sourceFormat, rect, rect.Pitch * Settings.Height))
 							{
 								wic.TransformImageData(wicBmp, destBuffer.Data.BasePointer, destBuffer.PitchInformation.RowPitch,
 																destBuffer.PitchInformation.SlicePitch, Guid.Empty, ImageDithering.None, new Rectangle(0, 0, width, height), clip, filter);
@@ -2406,7 +2401,7 @@ namespace GorgonLibrary.Graphics
                                 var rect = new DX.DataRectangle(srcBuffer.Data.BasePointer, srcBuffer.PitchInformation.RowPitch);
                                
                                 // Create a WIC bitmap so we have a source for conversion.
-                                using (var wicBmp = new WIC.Bitmap(wic.Factory, srcBuffer.Width, srcBuffer.Height, sourceFormat, rect, rect.Pitch * destData.Settings.Height))
+                                using (var wicBmp = new SharpDX.WIC.Bitmap(wic.Factory, srcBuffer.Width, srcBuffer.Height, sourceFormat, rect, rect.Pitch * destData.Settings.Height))
                                 {
 									wic.TransformImageData(wicBmp, destBuffer.Data.BasePointer, destBuffer.PitchInformation.RowPitch, 
 																	destBuffer.PitchInformation.SlicePitch, destFormat, ditherMode, Rectangle.Empty, true, ImageFilter.Point);

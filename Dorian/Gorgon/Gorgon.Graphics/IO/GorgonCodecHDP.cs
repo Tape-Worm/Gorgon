@@ -24,13 +24,6 @@
 // 
 #endregion
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using WIC = SharpDX.WIC;
-
 namespace GorgonLibrary.IO
 {
     /// <summary>
@@ -100,7 +93,7 @@ namespace GorgonLibrary.IO
         /// Function to set custom encoding options.
         /// </summary>
         /// <param name="frame">Frame encoder to use.</param>
-        internal override void SetFrameOptions(WIC.BitmapFrameEncode frame)
+        internal override void SetFrameOptions(SharpDX.WIC.BitmapFrameEncode frame)
         {
             frame.Options.LossLess = UseLosslessCompression;
             frame.Options.ImageQuality = _imageQuality;
@@ -112,7 +105,7 @@ namespace GorgonLibrary.IO
         /// Initializes a new instance of the <see cref="GorgonCodecHDP"/> class.
         /// </summary>
         public GorgonCodecHDP()
-            : base("WMP", "HD Photo format", new string[] { "hdp", "wmp" }, WIC.ContainerFormatGuids.Wmp)
+            : base("WMP", "HD Photo format", new string[] { "hdp", "wmp" }, SharpDX.WIC.ContainerFormatGuids.Wmp)
         {
         }
         #endregion

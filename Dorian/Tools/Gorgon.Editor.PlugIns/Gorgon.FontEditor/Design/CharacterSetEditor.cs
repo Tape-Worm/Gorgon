@@ -25,14 +25,10 @@
 #endregion
 
 using System;
-using System.Drawing.Design;
 using System.ComponentModel;
-using System.Windows.Forms;
-using System.Windows.Forms.Design;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Drawing;
+using System.Drawing.Design;
+using System.Windows.Forms;
 
 namespace GorgonLibrary.Editor.FontEditorPlugIn
 {

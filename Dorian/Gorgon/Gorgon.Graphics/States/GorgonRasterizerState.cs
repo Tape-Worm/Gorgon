@@ -24,12 +24,9 @@
 // 
 #endregion
 
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using D3D = SharpDX.Direct3D11;
-using GorgonLibrary.Diagnostics;
 
 namespace GorgonLibrary.Graphics
 {

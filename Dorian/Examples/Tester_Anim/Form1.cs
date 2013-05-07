@@ -1,19 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Linq;
-using System.Text;
 using System.Windows.Forms;
-using SlimMath;
 using GorgonLibrary;
-using GorgonLibrary.IO;
-using GorgonLibrary.UI;
-using GorgonLibrary.Graphics;
 using GorgonLibrary.Animation;
-using GorgonLibrary.Renderers;
+using GorgonLibrary.Graphics;
+using GorgonLibrary.IO;
 using GorgonLibrary.Math;
+using GorgonLibrary.Renderers;
+using GorgonLibrary.UI;
+using SlimMath;
 
 namespace Tester_Anim
 {

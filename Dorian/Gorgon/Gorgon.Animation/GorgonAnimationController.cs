@@ -33,7 +33,6 @@ using GorgonLibrary.Collections;
 using GorgonLibrary.Diagnostics;
 using GorgonLibrary.IO;
 
-
 namespace GorgonLibrary.Animation
 {
 	/// <summary>

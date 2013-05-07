@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Windows.Forms;
 using GorgonLibrary;
-using GorgonLibrary.UI;
-using GorgonLibrary.IO;
 
 namespace Tester_Graphics
 {

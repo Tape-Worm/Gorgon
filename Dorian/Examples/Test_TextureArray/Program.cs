@@ -1,16 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Windows.Forms;
 using System.Drawing;
-using SlimMath;
+using System.Windows.Forms;
 using GorgonLibrary;
-using GorgonLibrary.IO;
-using GorgonLibrary.Math;
+using GorgonLibrary.Animation;
 using GorgonLibrary.Diagnostics;
 using GorgonLibrary.Graphics;
+using GorgonLibrary.IO;
+using GorgonLibrary.Math;
 using GorgonLibrary.Renderers;
-using GorgonLibrary.Animation;
+using SlimMath;
 
 namespace Test_TextureArray
 {

@@ -25,14 +25,10 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Drawing;
-using SlimMath;
-using GorgonLibrary.Math;
-using GorgonLibrary.Diagnostics;
 using GorgonLibrary.Graphics;
+using GorgonLibrary.Math;
+using SlimMath;
 
 namespace GorgonLibrary.Renderers
 {

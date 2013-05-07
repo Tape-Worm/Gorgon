@@ -26,12 +26,8 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Diagnostics;
-using System.Windows.Forms;
 using System.Runtime.InteropServices;
-using Drawing = System.Drawing;
+using System.Windows.Forms;
 
 namespace GorgonLibrary.Native
 {
@@ -45,8 +41,8 @@ namespace GorgonLibrary.Native
 		private static IntPtr _lasthObj = IntPtr.Zero;				// Last active object handle.
 		private static IntPtr _hdc = IntPtr.Zero;					// Current device context.
 		private static IntPtr _hFont = IntPtr.Zero;					// Font handle.
-		private static Drawing.Graphics _lastGraphics = null;		// Last used graphics interface.
-		private static Drawing.Font _tempFont = null;				// Temporary font.
+		private static System.Drawing.Graphics _lastGraphics = null;		// Last used graphics interface.
+		private static System.Drawing.Font _tempFont = null;				// Temporary font.
 		#endregion
 
 		#region Win32 Methods.
@@ -139,7 +135,7 @@ namespace GorgonLibrary.Native
 		/// </summary>
 		/// <param name="graphics">Graphics interface to use.</param>
 		/// <param name="font">Font to set.</param>
-		public static void SetActiveFont(Drawing.Graphics graphics, Drawing.Font font)
+		public static void SetActiveFont(System.Drawing.Graphics graphics, System.Drawing.Font font)
 		{
 			if ((_lasthObj != IntPtr.Zero) || (_hdc != IntPtr.Zero) || (_hFont != IntPtr.Zero))
 				return;
@@ -147,7 +143,7 @@ namespace GorgonLibrary.Native
 			try
 			{
 				_lastGraphics = graphics;
-				_tempFont = (Drawing.Font)font.Clone();
+				_tempFont = (System.Drawing.Font)font.Clone();
 				_hdc = graphics.GetHdc();
 				_hFont = _tempFont.ToHfont();
 

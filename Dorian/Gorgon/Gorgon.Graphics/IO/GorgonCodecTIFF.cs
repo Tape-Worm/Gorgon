@@ -24,13 +24,6 @@
 // 
 #endregion
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using WIC = SharpDX.WIC;
-
 namespace GorgonLibrary.IO
 {
     /// <summary>
@@ -41,23 +34,23 @@ namespace GorgonLibrary.IO
         /// <summary>
         /// The system will pick a compression format based on the format of the image.
         /// </summary>
-        DontCare = WIC.TiffCompressionOption.DontCare,
+        DontCare = SharpDX.WIC.TiffCompressionOption.DontCare,
         /// <summary>
         /// No compression.
         /// </summary>
-        None = WIC.TiffCompressionOption.None,
+        None = SharpDX.WIC.TiffCompressionOption.None,
         /// <summary>
         /// LZW compression algorithm.
         /// </summary>
-        LZW = WIC.TiffCompressionOption.LZW,
+        LZW = SharpDX.WIC.TiffCompressionOption.LZW,
         /// <summary>
         /// ZIP compression algorithm.
         /// </summary>
-        ZIP = WIC.TiffCompressionOption.ZIP,
+        ZIP = SharpDX.WIC.TiffCompressionOption.ZIP,
         /// <summary>
         /// LZW differencing compression algorithm.
         /// </summary>
-        LZWDifferencing = WIC.TiffCompressionOption.LZWHDifferencing
+        LZWDifferencing = SharpDX.WIC.TiffCompressionOption.LZWHDifferencing
     }
 
     /// <summary>
@@ -126,10 +119,10 @@ namespace GorgonLibrary.IO
         /// Function to set custom encoding options.
         /// </summary>
         /// <param name="frame">Frame encoder to use.</param>
-        internal override void SetFrameOptions(WIC.BitmapFrameEncode frame)
+        internal override void SetFrameOptions(SharpDX.WIC.BitmapFrameEncode frame)
         {
             frame.Options.CompressionQuality = _compressionQuality;
-            frame.Options.TiffCompressionMethod = (WIC.TiffCompressionOption)CompressionType;
+            frame.Options.TiffCompressionMethod = (SharpDX.WIC.TiffCompressionOption)CompressionType;
         }
         #endregion
 
@@ -138,7 +131,7 @@ namespace GorgonLibrary.IO
         /// Initializes a new instance of the <see cref="GorgonCodecTIFF"/> class.
         /// </summary>
         public GorgonCodecTIFF()
-            : base("TIFF", "Tagged Image File Format", new string[] { "tif", "tiff" }, WIC.ContainerFormatGuids.Tiff)
+            : base("TIFF", "Tagged Image File Format", new string[] { "tif", "tiff" }, SharpDX.WIC.ContainerFormatGuids.Tiff)
         {
             CompressionType = TIFFCompressionType.None;
         }

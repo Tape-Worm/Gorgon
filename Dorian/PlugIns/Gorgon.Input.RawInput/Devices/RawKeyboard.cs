@@ -25,10 +25,9 @@
 #endregion
 
 using System;
-using Forms = System.Windows.Forms;
 using GorgonLibrary.Diagnostics;
-using GorgonLibrary.Native;
 using GorgonLibrary.Input.Raw.Properties;
+using GorgonLibrary.Native;
 
 namespace GorgonLibrary.Input.Raw
 {
@@ -135,13 +134,13 @@ namespace GorgonLibrary.Input.Raw
 			if (_messageFilter != null)
 			{
 				_messageFilter.RawInputData -= GetRawData;
-				Forms.Application.RemoveMessageFilter(_messageFilter);
+				System.Windows.Forms.Application.RemoveMessageFilter(_messageFilter);
 				_messageFilter.Dispose();
 			}
 
 			_messageFilter = new MessageFilter();
 			_messageFilter.RawInputData += GetRawData;
-			Forms.Application.AddMessageFilter(_messageFilter);
+			System.Windows.Forms.Application.AddMessageFilter(_messageFilter);
 
 			_device.UsagePage = HIDUsagePage.Generic;
 			_device.Usage = (ushort)HIDUsage.Keyboard;
@@ -176,7 +175,7 @@ namespace GorgonLibrary.Input.Raw
 			if (_messageFilter != null)
 			{
 				_messageFilter.RawInputData -= GetRawData;
-				Forms.Application.RemoveMessageFilter(_messageFilter);
+				System.Windows.Forms.Application.RemoveMessageFilter(_messageFilter);
 				_messageFilter.Dispose();
 				_messageFilter = null;
 			}
@@ -204,7 +203,7 @@ namespace GorgonLibrary.Input.Raw
 		/// <param name="boundWindow">The window to bind this device with.</param>
 		/// <exception cref="System.ArgumentNullException">Thrown when the owner parameter is NULL (or Nothing in VB.NET).</exception>
 		/// <remarks>Pass NULL (Nothing in VB.Net) to the <paramref name="boundWindow"/> parameter to use the <see cref="P:GorgonLibrary.Gorgon.ApplicationForm">Gorgon application window</see>.</remarks>
-		internal RawKeyboard(GorgonInputFactory owner, string deviceName, IntPtr handle, Forms.Control boundWindow)
+		internal RawKeyboard(GorgonInputFactory owner, string deviceName, IntPtr handle, System.Windows.Forms.Control boundWindow)
 			: base(owner, deviceName, boundWindow)
 		{
 			Gorgon.Log.Print("Raw input keyboard interface created for handle 0x{0}.", LoggingLevel.Verbose, handle.FormatHex());

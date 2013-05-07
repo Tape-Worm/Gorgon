@@ -1,21 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using System.IO;
-using SlimMath;
 using GorgonLibrary;
-using GorgonLibrary.Math;
-using GorgonLibrary.UI;
-using GorgonLibrary.IO;
 using GorgonLibrary.Diagnostics;
 using GorgonLibrary.Graphics;
+using GorgonLibrary.IO;
+using GorgonLibrary.Math;
 using GorgonLibrary.Renderers;
+using GorgonLibrary.UI;
+using SlimMath;
 
 namespace Tester_Graphics
 {

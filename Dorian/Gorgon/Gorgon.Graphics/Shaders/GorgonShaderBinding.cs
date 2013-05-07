@@ -26,13 +26,13 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
-using System.IO;
-using Shaders = SharpDX.D3DCompiler;
-using GorgonLibrary.Native;
 using GorgonLibrary.Diagnostics;
 using GorgonLibrary.IO;
+using GorgonLibrary.Native;
+using Shaders = SharpDX.D3DCompiler;
 
 namespace GorgonLibrary.Graphics
 {

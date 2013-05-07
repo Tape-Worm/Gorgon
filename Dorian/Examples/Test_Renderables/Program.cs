@@ -1,13 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Drawing;
 using System.Windows.Forms;
-using SlimMath;
 using GorgonLibrary;
-using GorgonLibrary.IO;
 using GorgonLibrary.Graphics;
+using GorgonLibrary.IO;
 using GorgonLibrary.Renderers;
+using SlimMath;
 
 namespace Test_Renderables
 {

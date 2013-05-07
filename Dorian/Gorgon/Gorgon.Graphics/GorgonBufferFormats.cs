@@ -28,8 +28,8 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Threading;
-using GorgonLibrary.Math;
 using GorgonLibrary.Graphics.Properties;
+using GorgonLibrary.Math;
 
 namespace GorgonLibrary.Graphics
 {

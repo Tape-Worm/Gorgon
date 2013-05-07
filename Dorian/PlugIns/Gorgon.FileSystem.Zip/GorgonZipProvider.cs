@@ -25,10 +25,10 @@
 #endregion
 
 using System.Collections.Generic;
-using System.Linq;
 using System.IO;
-using ICSharpCode.SharpZipLib.Zip;
+using System.Linq;
 using GorgonLibrary.Diagnostics;
+using ICSharpCode.SharpZipLib.Zip;
 
 namespace GorgonLibrary.IO.Zip
 {

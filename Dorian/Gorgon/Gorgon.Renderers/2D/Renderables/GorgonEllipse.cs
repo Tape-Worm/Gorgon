@@ -27,13 +27,9 @@
 // Portions of this code were adapted from the Vortex 2D graphics library by Alex Khomich.
 // Vortex2D.Net is available from http://www.vortex2d.net/
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using SlimMath;
-using GorgonLibrary.Math;
 using GorgonLibrary.Graphics;
+using GorgonLibrary.Math;
+using SlimMath;
 
 namespace GorgonLibrary.Renderers
 {

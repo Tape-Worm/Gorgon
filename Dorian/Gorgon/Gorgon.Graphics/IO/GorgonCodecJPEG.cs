@@ -24,13 +24,6 @@
 // 
 #endregion
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using WIC = SharpDX.WIC;
-
 namespace GorgonLibrary.IO
 {
     /// <summary>
@@ -82,7 +75,7 @@ namespace GorgonLibrary.IO
         /// Function to set custom encoding options.
         /// </summary>
         /// <param name="frame">Frame encoder to use.</param>
-        internal override void SetFrameOptions(WIC.BitmapFrameEncode frame)
+        internal override void SetFrameOptions(SharpDX.WIC.BitmapFrameEncode frame)
         {
             frame.Options.ImageQuality = _imageQuality;
         }
@@ -93,7 +86,7 @@ namespace GorgonLibrary.IO
         /// Initializes a new instance of the <see cref="GorgonCodecJPEG" /> class.
         /// </summary>
         public GorgonCodecJPEG()
-            : base("JPEG", "Joint Photographics Experts Group", new string[] { "jpg", "jpeg", "jpe", "jif", "jfif", "jfi" }, WIC.ContainerFormatGuids.Jpeg)
+            : base("JPEG", "Joint Photographics Experts Group", new string[] { "jpg", "jpeg", "jpe", "jif", "jfif", "jfi" }, SharpDX.WIC.ContainerFormatGuids.Jpeg)
         {
         }
         #endregion

@@ -28,12 +28,9 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
-using DXGI = SharpDX.DXGI;
-using D3D = SharpDX.Direct3D11;
 using GorgonLibrary.Collections.Specialized;
+using D3D = SharpDX.Direct3D11;
 
 namespace GorgonLibrary.Graphics
 {
@@ -86,9 +83,9 @@ namespace GorgonLibrary.Graphics
 			using (var d3dDevice = new D3D.Device(SharpDX.Direct3D.DriverType.Warp, D3D.DeviceCreationFlags.None))
 			{
 #endif
-				using (var giDevice = d3dDevice.QueryInterface<DXGI.Device1>())
+				using (var giDevice = d3dDevice.QueryInterface<SharpDX.DXGI.Device1>())
 				{
-					using (var adapter = giDevice.GetParent<DXGI.Adapter1>())
+					using (var adapter = giDevice.GetParent<SharpDX.DXGI.Adapter1>())
 					{
 						device = new GorgonVideoDevice(adapter, VideoDeviceType.Software, index);
 
@@ -116,9 +113,9 @@ namespace GorgonLibrary.Graphics
 
 			using (var d3dDevice = new D3D.Device(SharpDX.Direct3D.DriverType.Reference, D3D.DeviceCreationFlags.Debug))
 			{
-				using (var giDevice = d3dDevice.QueryInterface<DXGI.Device1>())
+				using (var giDevice = d3dDevice.QueryInterface<SharpDX.DXGI.Device1>())
 				{
-					using (var adapter = giDevice.QueryInterface<DXGI.Adapter1>())
+					using (var adapter = giDevice.QueryInterface<SharpDX.DXGI.Adapter1>())
 					{
 						device = new GorgonVideoDevice(adapter, VideoDeviceType.ReferenceRasterizer, index);
 						
@@ -165,7 +162,7 @@ namespace GorgonLibrary.Graphics
 		/// <param name="output">Output that owns the video modes.</param>
 		/// <param name="d3dDevice">D3D device for filtering supported display modes.</param>
 		/// <param name="giOutput">Output that contains the video modes.</param>
-		private static void GetVideoModes(GorgonVideoOutput output, D3D.Device d3dDevice, DXGI.Output giOutput)
+		private static void GetVideoModes(GorgonVideoOutput output, D3D.Device d3dDevice, SharpDX.DXGI.Output giOutput)
 		{
 			var formats = (BufferFormat[])Enum.GetValues(typeof(BufferFormat));
 			GorgonVideoMode[] videoModes = null;
@@ -176,8 +173,8 @@ namespace GorgonLibrary.Graphics
 			// Test each format for display compatibility.
 			foreach (var format in formats)
 			{
-				var giFormat = (DXGI.Format)format;
-				DXGI.ModeDescription[] modes = giOutput.GetDisplayModeList(giFormat, DXGI.DisplayModeEnumerationFlags.Scaling | DXGI.DisplayModeEnumerationFlags.Interlaced);
+				var giFormat = (SharpDX.DXGI.Format)format;
+				SharpDX.DXGI.ModeDescription[] modes = giOutput.GetDisplayModeList(giFormat, SharpDX.DXGI.DisplayModeEnumerationFlags.Scaling | SharpDX.DXGI.DisplayModeEnumerationFlags.Interlaced);
 
 				if ((modes != null) && (modes.Length > 0))
 				{
@@ -210,19 +207,19 @@ namespace GorgonLibrary.Graphics
 		/// <param name="d3ddevice">D3D device to find closest matching mode.</param>
 		/// <param name="device">Device used to filter video modes that aren't supported.</param>
 		/// <param name="outputCount">The number of outputs attached to the device.</param>
-		private static void GetOutputs(GorgonVideoDevice device, D3D.Device d3ddevice, DXGI.Adapter1 adapter, int outputCount)
+		private static void GetOutputs(GorgonVideoDevice device, D3D.Device d3ddevice, SharpDX.DXGI.Adapter1 adapter, int outputCount)
 		{
 			var outputs = new List<GorgonVideoOutput>(outputCount);
 
 			// Get outputs.
 			for (int i = 0; i < outputCount; i++)
 			{
-				using (DXGI.Output giOutput = adapter.GetOutput(i))
+				using (SharpDX.DXGI.Output giOutput = adapter.GetOutput(i))
 				{
 					var output = new GorgonVideoOutput(giOutput, device, i);
 
-					DXGI.ModeDescription findMode = GorgonVideoMode.Convert(new GorgonVideoMode(output.OutputBounds.Width, output.OutputBounds.Height, BufferFormat.R8G8B8A8_UIntNormal, 60, 1));
-					DXGI.ModeDescription result = default(DXGI.ModeDescription);
+					SharpDX.DXGI.ModeDescription findMode = GorgonVideoMode.Convert(new GorgonVideoMode(output.OutputBounds.Width, output.OutputBounds.Height, BufferFormat.R8G8B8A8_UIntNormal, 60, 1));
+					SharpDX.DXGI.ModeDescription result = default(SharpDX.DXGI.ModeDescription);
 
 					// Get the default (desktop) video mode.
 					giOutput.GetClosestMatchingMode(d3ddevice, findMode, out result);
@@ -290,7 +287,7 @@ namespace GorgonLibrary.Graphics
 		            return;
 		        }
 
-		        using(var factory = new DXGI.Factory1())
+		        using(var factory = new SharpDX.DXGI.Factory1())
 		        {
 		            int adapterCount = factory.GetAdapterCount1();
 
@@ -307,7 +304,7 @@ namespace GorgonLibrary.Graphics
 		                    // Only enumerate local devices.
 		                    int outputCount = adapter.GetOutputCount();
 
-		                    if (((adapter.Description1.Flags & DXGI.AdapterFlags.Remote) == 0) && (outputCount > 0))
+		                    if (((adapter.Description1.Flags & SharpDX.DXGI.AdapterFlags.Remote) == 0) && (outputCount > 0))
 		                    {
 		                        var videoDevice = new GorgonVideoDevice(adapter, VideoDeviceType.Hardware, i);
 

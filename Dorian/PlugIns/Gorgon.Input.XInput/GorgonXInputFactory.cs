@@ -27,9 +27,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using XI = SharpDX.XInput;
-using Forms = System.Windows.Forms;
 using GorgonLibrary.Input.XInput.Properties;
+using XI = SharpDX.XInput;
 
 namespace GorgonLibrary.Input.XInput
 {
@@ -101,7 +100,7 @@ namespace GorgonLibrary.Input.XInput
 		/// <param name="window">The window.</param>
 		/// <param name="hidName">Name of the hid.</param>
 		/// <returns></returns>
-		protected override GorgonCustomHID CreateCustomHIDImpl(Forms.Control window, GorgonInputDeviceInfo hidName)
+		protected override GorgonCustomHID CreateCustomHIDImpl(System.Windows.Forms.Control window, GorgonInputDeviceInfo hidName)
 		{
 			throw new NotImplementedException(Resources.GORINP_XINP_ONLY_360_CONTROLLERS);
 		}
@@ -112,7 +111,7 @@ namespace GorgonLibrary.Input.XInput
 		/// <param name="window">The window.</param>
 		/// <param name="keyboardName">Name of the keyboard.</param>
 		/// <returns></returns>
-		protected override GorgonKeyboard CreateKeyboardImpl(Forms.Control window, GorgonInputDeviceInfo keyboardName)
+		protected override GorgonKeyboard CreateKeyboardImpl(System.Windows.Forms.Control window, GorgonInputDeviceInfo keyboardName)
 		{
             throw new NotImplementedException(Resources.GORINP_XINP_ONLY_360_CONTROLLERS);
 		}
@@ -123,7 +122,7 @@ namespace GorgonLibrary.Input.XInput
 		/// <param name="window">The window.</param>
 		/// <param name="pointingDeviceName">Name of the pointing device.</param>
 		/// <returns></returns>
-		protected override GorgonPointingDevice CreatePointingDeviceImpl(Forms.Control window, GorgonInputDeviceInfo pointingDeviceName)
+		protected override GorgonPointingDevice CreatePointingDeviceImpl(System.Windows.Forms.Control window, GorgonInputDeviceInfo pointingDeviceName)
 		{
             throw new NotImplementedException(Resources.GORINP_XINP_ONLY_360_CONTROLLERS);
 		}
@@ -135,7 +134,7 @@ namespace GorgonLibrary.Input.XInput
 		/// <param name="joystickName">A <see cref="GorgonLibrary.Input.GorgonInputDeviceInfo">GorgonInputDeviceInfo</see> object containing the joystick information.</param>
 		/// <returns>A new joystick interface.</returns>
 		/// <remarks>Pass NULL to the <paramref name="window"/> parameter to use the <see cref="P:GorgonLibrary.Gorgon.ApplicationForm">Gorgon application form</see>.</remarks>
-		protected override GorgonJoystick CreateJoystickImpl(Forms.Control window, GorgonInputDeviceInfo joystickName)
+		protected override GorgonJoystick CreateJoystickImpl(System.Windows.Forms.Control window, GorgonInputDeviceInfo joystickName)
 		{
 		    var deviceName = joystickName as GorgonXInputDeviceInfo;
 
