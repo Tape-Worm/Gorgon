@@ -189,12 +189,12 @@ namespace GorgonLibrary.Input
 		public abstract class JoystickCapabilities
 		{
 			#region Variables.
-			private GorgonMinMax _xAxisRange = GorgonMinMax.Empty;			// X axis range.
-			private GorgonMinMax _yAxisRange = GorgonMinMax.Empty;			// Y axis range.
-			private GorgonMinMax _x2AxisRange = GorgonMinMax.Empty;			// Secondary X axis range.
-			private GorgonMinMax _y2AxisRange = GorgonMinMax.Empty;			// Secondary Y axis range.
-			private GorgonMinMax _throttleAxisRange = GorgonMinMax.Empty;	// Throttle axis range.
-			private GorgonMinMax _rudderAxisRange = GorgonMinMax.Empty;		// Rudder axis range.
+			private GorgonRange _xAxisRange = GorgonRange.Empty;			// X axis range.
+			private GorgonRange _yAxisRange = GorgonRange.Empty;			// Y axis range.
+			private GorgonRange _x2AxisRange = GorgonRange.Empty;			// Secondary X axis range.
+			private GorgonRange _y2AxisRange = GorgonRange.Empty;			// Secondary Y axis range.
+			private GorgonRange _throttleAxisRange = GorgonRange.Empty;	// Throttle axis range.
+			private GorgonRange _rudderAxisRange = GorgonRange.Empty;		// Rudder axis range.
 			#endregion
 
 			#region Properties.
@@ -282,7 +282,7 @@ namespace GorgonLibrary.Input
 			/// <summary>
 			/// Property to return the X axis range.
 			/// </summary>
-			public GorgonMinMax XAxisRange
+			public GorgonRange XAxisRange
 			{
 				get
 				{
@@ -298,7 +298,7 @@ namespace GorgonLibrary.Input
 			/// <summary>
 			/// Property to return the Y axis range.
 			/// </summary>
-			public GorgonMinMax YAxisRange
+			public GorgonRange YAxisRange
 			{
 				get
 				{
@@ -314,7 +314,7 @@ namespace GorgonLibrary.Input
 			/// <summary>
 			/// Property to return the secondary Y axis range.
 			/// </summary>
-			public GorgonMinMax SecondaryYAxisRange
+			public GorgonRange SecondaryYAxisRange
 			{
 				get
 				{
@@ -330,7 +330,7 @@ namespace GorgonLibrary.Input
 			/// <summary>
 			/// Property to return the secondary X axis range.
 			/// </summary>
-			public GorgonMinMax SecondaryXAxisRange
+			public GorgonRange SecondaryXAxisRange
 			{
 				get
 				{
@@ -346,7 +346,7 @@ namespace GorgonLibrary.Input
 			/// <summary>
 			/// Property to return the throttle axis range.
 			/// </summary>
-			public GorgonMinMax ThrottleAxisRange
+			public GorgonRange ThrottleAxisRange
 			{
 				get
 				{
@@ -362,7 +362,7 @@ namespace GorgonLibrary.Input
 			/// <summary>
 			/// Property to return the rudder axis range.
 			/// </summary>
-			public GorgonMinMax RudderAxisRange
+			public GorgonRange RudderAxisRange
 			{
 				get
 				{
@@ -389,7 +389,7 @@ namespace GorgonLibrary.Input
 			/// <summary>
 			/// Property to return the vibration motor ranges.
 			/// </summary>
-			public IList<GorgonMinMax> VibrationMotorRanges
+			public IList<GorgonRange> VibrationMotorRanges
 			{
 				get;
 				protected set;
@@ -420,9 +420,9 @@ namespace GorgonLibrary.Input
 			/// </summary>
 			/// <param name="range">Range to calculate.</param>
 			/// <returns>The mid point of the range.</returns>
-			private int CalculateMidRange(GorgonMinMax range)
+			private int CalculateMidRange(GorgonRange range)
 			{
-				if (range == GorgonMinMax.Empty)
+				if (range == GorgonRange.Empty)
 					return 0;
 
 				return (range.Range / 2) - range.Maximum;
@@ -435,15 +435,15 @@ namespace GorgonLibrary.Input
 			/// </summary>
 			protected JoystickCapabilities()
 			{
-				VibrationMotorRanges = new GorgonMinMax[0];
+				VibrationMotorRanges = new GorgonRange[0];
 				AxisCount = 0;
 				ButtonCount = 0;
-				XAxisRange = GorgonMinMax.Empty;
-				YAxisRange = GorgonMinMax.Empty;
-				SecondaryXAxisRange = GorgonMinMax.Empty;
-				SecondaryYAxisRange = GorgonMinMax.Empty;
-				ThrottleAxisRange = GorgonMinMax.Empty;
-				RudderAxisRange = GorgonMinMax.Empty;
+				XAxisRange = GorgonRange.Empty;
+				YAxisRange = GorgonRange.Empty;
+				SecondaryXAxisRange = GorgonRange.Empty;
+				SecondaryYAxisRange = GorgonRange.Empty;
+				ThrottleAxisRange = GorgonRange.Empty;
+				RudderAxisRange = GorgonRange.Empty;
 				ManufacturerID = 0;
 				ProductID = 0;
 
@@ -461,7 +461,7 @@ namespace GorgonLibrary.Input
 			/// <summary>
 			/// Property to set or return the deadzone for the X axis.
 			/// </summary>
-			public GorgonMinMax X
+			public GorgonRange X
 			{
 				get;
 				set;
@@ -470,7 +470,7 @@ namespace GorgonLibrary.Input
 			/// <summary>
 			/// Property to set or return the deadzone for the Y axis.
 			/// </summary>
-			public GorgonMinMax Y
+			public GorgonRange Y
 			{
 				get;
 				set;
@@ -479,7 +479,7 @@ namespace GorgonLibrary.Input
 			/// <summary>
 			/// Property to set or return the deadzone for the secondary X axis.
 			/// </summary>
-			public GorgonMinMax SecondaryX
+			public GorgonRange SecondaryX
 			{
 				get;
 				set;
@@ -488,7 +488,7 @@ namespace GorgonLibrary.Input
 			/// <summary>
 			/// Property to set or return the deadzone for the secondary Y axis.
 			/// </summary>
-			public GorgonMinMax SecondaryY
+			public GorgonRange SecondaryY
 			{
 				get;
 				set;
@@ -497,7 +497,7 @@ namespace GorgonLibrary.Input
 			/// <summary>
 			/// Property to set or return the deadzone for the throttle axis.
 			/// </summary>
-			public GorgonMinMax Throttle
+			public GorgonRange Throttle
 			{
 				get;
 				set;
@@ -506,7 +506,7 @@ namespace GorgonLibrary.Input
 			/// <summary>
 			/// Property to set or return the deadzone for the rudder axis.
 			/// </summary>
-			public GorgonMinMax Rudder
+			public GorgonRange Rudder
 			{
 				get;
 				set;
@@ -519,12 +519,12 @@ namespace GorgonLibrary.Input
 			/// </summary>
 			internal JoystickDeadZoneAxes()
 			{
-				X = GorgonMinMax.Empty;
-				Y = GorgonMinMax.Empty;
-				SecondaryX = GorgonMinMax.Empty;
-				SecondaryY = GorgonMinMax.Empty;
-				Throttle = GorgonMinMax.Empty;
-				Rudder = GorgonMinMax.Empty;
+				X = GorgonRange.Empty;
+				Y = GorgonRange.Empty;
+				SecondaryX = GorgonRange.Empty;
+				SecondaryY = GorgonRange.Empty;
+				Throttle = GorgonRange.Empty;
+				Rudder = GorgonRange.Empty;
 			}
 			#endregion
 		}
@@ -885,10 +885,10 @@ namespace GorgonLibrary.Input
 		/// <param name="midRange">Mid point for the range.</param>
 		/// <returns>The actual axis data if it falls outside of the dead zone, or the center position value.</returns>
 		/// <exception cref="GorgonLibrary.GorgonException">Thrown when the joystick has not been initialized.</exception>
-		private int DeadZoneValue(int value, GorgonMinMax deadZone, int midRange)
+		private int DeadZoneValue(int value, GorgonRange deadZone, int midRange)
 		{
 		    // The dead zone range needs to be within the range of the axis.
-		    if ((!deadZone.Contains(value)) || (deadZone == GorgonMinMax.Empty))
+		    if ((!deadZone.Contains(value)) || (deadZone == GorgonRange.Empty))
 		    {
 		        return value;
 		    }
@@ -904,11 +904,11 @@ namespace GorgonLibrary.Input
 		/// <param name="orientation">Orientation of the axis.</param>
 		/// <param name="midRange">Mid point for the range.</param>
 		/// <returns>The direction that the axis is pointed at.</returns>
-		private JoystickDirections GetDirection(int value, GorgonMinMax deadZone, JoystickDirections orientation, int midRange)
+		private JoystickDirections GetDirection(int value, GorgonRange deadZone, JoystickDirections orientation, int midRange)
 		{
 			var result = JoystickDirections.Center;
 
-			if ((deadZone == GorgonMinMax.Empty) || (!deadZone.Contains(value)))
+			if ((deadZone == GorgonRange.Empty) || (!deadZone.Contains(value)))
 			{
 				switch (orientation)
 				{

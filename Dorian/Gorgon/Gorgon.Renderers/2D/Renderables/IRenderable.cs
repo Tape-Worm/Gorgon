@@ -194,7 +194,7 @@ namespace GorgonLibrary.Renderers
 		/// <para>Be aware that the default shaders implement alpha testing.  However, a custom shader will have to make use of the GorgonAlphaTest constant buffer 
 		/// in order to take advantage of alpha testing.</para>
 		/// </remarks>
-		GorgonMinMaxF AlphaTestValues
+		GorgonRangeF AlphaTestValues
 		{
 			get;
 			set;

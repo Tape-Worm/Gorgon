@@ -211,7 +211,7 @@ namespace GorgonLibrary.Renderers
 		/// <summary>
 		/// Property to set or return the range of alpha values to reject on this renderable.
 		/// </summary>
-		public GorgonMinMaxF AlphaTestValues
+		public GorgonRangeF AlphaTestValues
 		{
 			get;
 			set;

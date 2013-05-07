@@ -655,7 +655,7 @@ namespace GorgonLibrary.Graphics
 				switch (texture.Settings.ImageType)
 				{
 					case ImageType.Image1D:
-						((GorgonTexture1D)texture).UpdateSubResource(textureData, resourceIndex, new GorgonMinMax(0, texture.Settings.Width.Min(Settings.Width)));
+						((GorgonTexture1D)texture).UpdateSubResource(textureData, resourceIndex, new GorgonRange(0, texture.Settings.Width.Min(Settings.Width)));
 						break;
 					case ImageType.Image2D:
 					case ImageType.ImageCube:

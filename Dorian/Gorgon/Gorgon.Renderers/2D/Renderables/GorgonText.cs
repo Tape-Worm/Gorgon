@@ -1158,7 +1158,7 @@ namespace GorgonLibrary.Renderers
 			_sampler = new GorgonRenderable.TextureSamplerState();
 			Color = new GorgonColor(1, 1, 1, 1);
 			CullingMode = Graphics.CullingMode.Back;
-			AlphaTestValues = GorgonMinMaxF.Empty;
+			AlphaTestValues = GorgonRangeF.Empty;
 			BlendingMode = BlendingMode.Modulate;
 			_tabText = new StringBuilder("   ", 8);
 
@@ -1417,7 +1417,7 @@ namespace GorgonLibrary.Renderers
 		/// <summary>
 		/// Property to set or return the range of alpha values to reject on this renderable.
 		/// </summary>
-		public GorgonMinMaxF AlphaTestValues
+		public GorgonRangeF AlphaTestValues
 		{
 			get;
 			set;

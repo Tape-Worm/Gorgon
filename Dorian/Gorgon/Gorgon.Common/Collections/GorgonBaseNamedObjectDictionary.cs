@@ -127,12 +127,7 @@ namespace GorgonLibrary.Collections
 		/// <returns>Item with the specified key.</returns>
 		protected virtual T GetItem(string name)
 		{
-		    if (!KeysAreCaseSensitive)
-		    {
-		        return _list[name.ToLower()];
-		    }
-            
-		    return _list[name];
+			return !KeysAreCaseSensitive ? _list[name.ToLower()] : _list[name];
 		}
 
 		/// <summary>
@@ -193,15 +188,10 @@ namespace GorgonLibrary.Collections
 		/// <returns>TRUE if found, FALSE if not.</returns>
 		public virtual bool Contains(string name)
 		{
-		    if (!KeysAreCaseSensitive)
-		    {
-		        return _list.ContainsKey(name.ToLower());
-		    }
-
-		    return _list.ContainsKey(name);
+			return _list.ContainsKey(!KeysAreCaseSensitive ? name.ToLower() : name);
 		}
 
-	    /// <summary>
+		/// <summary>
 		/// Function to return whether the specified object exists in the collection.
 		/// </summary>
 		/// <param name="value">The value to find.</param>

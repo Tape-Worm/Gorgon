@@ -563,7 +563,7 @@ namespace GorgonLibrary.Renderers
                 // Read rendering information.
                 chunk.Begin("RNDRDATA");
                 CullingMode = chunk.Read<CullingMode>();
-                AlphaTestValues = chunk.Read<GorgonMinMaxF>();
+                AlphaTestValues = chunk.Read<GorgonRangeF>();
                 Blending.AlphaOperation = chunk.Read<BlendOperation>();
                 Blending.BlendOperation = chunk.Read<BlendOperation>();
                 Blending.BlendFactor = chunk.Read<GorgonColor>();
@@ -655,7 +655,7 @@ namespace GorgonLibrary.Renderers
                 // Write rendering information.
 				chunk.Begin("RNDRDATA");                
                 chunk.Write<CullingMode>(CullingMode);
-                chunk.Write<GorgonMinMaxF>(AlphaTestValues);
+                chunk.Write<GorgonRangeF>(AlphaTestValues);
                 chunk.Write<BlendOperation>(Blending.AlphaOperation);
                 chunk.Write<BlendOperation>(Blending.BlendOperation);
                 chunk.Write<GorgonColor>(Blending.BlendFactor);

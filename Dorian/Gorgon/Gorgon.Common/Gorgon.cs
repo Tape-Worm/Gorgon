@@ -277,10 +277,7 @@ namespace GorgonLibrary
 		{
 			get
 			{
-				if (ApplicationContext != null)
-					return ApplicationContext.MainForm;
-
-				return _mainForm;
+				return ApplicationContext != null ? ApplicationContext.MainForm : _mainForm;
 			}
 		}
 

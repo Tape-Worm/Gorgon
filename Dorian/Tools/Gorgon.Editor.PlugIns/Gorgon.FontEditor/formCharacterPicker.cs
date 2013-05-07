@@ -41,7 +41,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 	{
 		#region Variables.
 		private int _page = 0;														// Page for characters.
-		private IDictionary<string, GorgonMinMax> _characterRanges = null;			// Character ranges for the font.
+		private IDictionary<string, GorgonRange> _characterRanges = null;			// Character ranges for the font.
 		private System.Drawing.Graphics _graphics = null;							// GDI+ graphics.
 		private IntPtr _hFont = IntPtr.Zero;										// Font handle.
 		private IntPtr _hDc = IntPtr.Zero;											// Device context.
@@ -78,7 +78,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		{
 			try
 			{
-				var item = (KeyValuePair<string, GorgonMinMax>)listRanges.SelectedItems[0].Tag;
+				var item = (KeyValuePair<string, GorgonRange>)listRanges.SelectedItems[0].Tag;
 
 				string newString = string.Empty;
 
@@ -300,7 +300,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 				return;
 					
 			ListViewItem charSet = listRanges.SelectedItems[0];
-			GorgonMinMax range = ((KeyValuePair<string, GorgonMinMax>)charSet.Tag).Value;
+			GorgonRange range = ((KeyValuePair<string, GorgonRange>)charSet.Tag).Value;
 			int lineCount = ((int)System.Math.Ceiling(range.Range / 8.0f)) - 1;
 			if (lineCount > 6)
 			{

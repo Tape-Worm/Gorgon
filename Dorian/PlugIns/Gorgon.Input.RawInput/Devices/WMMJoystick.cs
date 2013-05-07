@@ -108,12 +108,12 @@ namespace GorgonLibrary.Input.Raw
 				if ((caps.Capabilities & JoystickCaps.HasZ) == JoystickCaps.HasZ)
 				{
 					capsFlags |= JoystickCapabilityFlags.SupportsThrottle;
-					ThrottleAxisRange = new GorgonMinMax((int)caps.MinimumZ, (int)caps.MaximumZ);
+					ThrottleAxisRange = new GorgonRange((int)caps.MinimumZ, (int)caps.MaximumZ);
 				}
 				if ((caps.Capabilities & JoystickCaps.HasRudder) == JoystickCaps.HasRudder)
 				{
 					capsFlags |= JoystickCapabilityFlags.SupportsRudder;
-					RudderAxisRange = new GorgonMinMax((int)caps.MinimumRudder, (int)caps.MaximumRudder);
+					RudderAxisRange = new GorgonRange((int)caps.MinimumRudder, (int)caps.MaximumRudder);
 				}
 				if ((caps.Capabilities & JoystickCaps.HasPOV) == JoystickCaps.HasPOV)
 				{
@@ -127,13 +127,13 @@ namespace GorgonLibrary.Input.Raw
 				if ((caps.Capabilities & JoystickCaps.HasU) == JoystickCaps.HasU)
 				{
 					capsFlags |= JoystickCapabilityFlags.SupportsSecondaryXAxis;
-					SecondaryXAxisRange = new GorgonMinMax((int)caps.Axis5Minimum, (int)caps.Axis5Maximum);
+					SecondaryXAxisRange = new GorgonRange((int)caps.Axis5Minimum, (int)caps.Axis5Maximum);
 				}
 
 				if ((caps.Capabilities & JoystickCaps.HasV) == JoystickCaps.HasV)
 				{
 					capsFlags |= JoystickCapabilityFlags.SupportsSecondaryYAxis;
-					SecondaryYAxisRange = new GorgonMinMax((int)caps.Axis6Minimum, (int)caps.Axis6Maximum);
+					SecondaryYAxisRange = new GorgonRange((int)caps.Axis6Minimum, (int)caps.Axis6Maximum);
 				}
 
 				ExtraCapabilities = capsFlags;
@@ -143,8 +143,8 @@ namespace GorgonLibrary.Input.Raw
 				ProductID = caps.ProductID;
 
 				// Get primary axis ranges.  Force the range to split into halfs going from negative to positive so that 0 is our center.
-				XAxisRange = new GorgonMinMax(-((int)caps.MaximumX / 2) - 1, ((int)caps.MaximumX / 2)); 
-				YAxisRange = new GorgonMinMax(-((int)caps.MaximumY / 2) - 1, ((int)caps.MaximumY / 2));
+				XAxisRange = new GorgonRange(-((int)caps.MaximumX / 2) - 1, ((int)caps.MaximumX / 2)); 
+				YAxisRange = new GorgonRange(-((int)caps.MaximumY / 2) - 1, ((int)caps.MaximumY / 2));
 			}
 			#endregion
 
@@ -214,7 +214,7 @@ namespace GorgonLibrary.Input.Raw
 		/// <param name="currentValue">Value to shift.</param>
 		/// <param name="axisRange">Range to evaluate.</param>
 		/// <returns>The shifted value.</returns>
-		private int CenterValue(int currentValue, GorgonMinMax axisRange)
+		private int CenterValue(int currentValue, GorgonRange axisRange)
 		{
 			return currentValue - (axisRange.Range / 2);
 		}

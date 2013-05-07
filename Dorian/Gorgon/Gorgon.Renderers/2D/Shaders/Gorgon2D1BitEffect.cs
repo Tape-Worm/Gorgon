@@ -39,7 +39,7 @@ namespace GorgonLibrary.Renderers
 		private bool _disposed = false;												// Flag to indicate that the object was disposed.
 		private GorgonConstantBuffer _1bitBuffer = null;							// Constant buffer for the 1 bit information.
 		private GorgonDataStream _1bitStream = null;								// Stream used to write to the buffer.
-		private GorgonMinMaxF _whiteRange = new GorgonMinMaxF(0.5f, 1.0f);			// Range of values that are considered "on".
+		private GorgonRangeF _whiteRange = new GorgonRangeF(0.5f, 1.0f);			// Range of values that are considered "on".
 		private bool _useAverage = false;											// Flag to calculate using an average of the texel colors.
 		private bool _invert = false;												// Flag to invert the texel colors.
 		private bool _useAlpha = true;												// Flag to indicate that the alpha channel should be included.
@@ -108,7 +108,7 @@ namespace GorgonLibrary.Renderers
 		/// <summary>
 		/// Property to set or return the range of values that are considered to be "on".
 		/// </summary>
-		public GorgonMinMaxF Threshold
+		public GorgonRangeF Threshold
 		{
 			get
 			{

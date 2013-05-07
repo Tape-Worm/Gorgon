@@ -719,7 +719,7 @@ namespace GorgonLibrary.Renderers
 		/// <para>Be aware that the default shaders implement alpha testing.  However, a custom shader will have to make use of the GorgonAlphaTest constant buffer 
 		/// in order to take advantage of alpha testing.</para>
 		/// </remarks>
-		public virtual GorgonMinMaxF AlphaTestValues
+		public virtual GorgonRangeF AlphaTestValues
 		{
 			get;
 			set;
@@ -927,7 +927,7 @@ namespace GorgonLibrary.Renderers
 			Gorgon2D = gorgon2D;
 			CullingMode = Graphics.CullingMode.Back;
 	
-			AlphaTestValues = GorgonMinMaxF.Empty;
+			AlphaTestValues = GorgonRangeF.Empty;
 			DepthStencil = new DepthStencilStates();
 			Blending = new BlendState();
 			TextureSampler = new TextureSamplerState();
