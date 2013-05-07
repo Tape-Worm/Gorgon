@@ -312,7 +312,7 @@ namespace GorgonLibrary.Graphics.Example
 		/// </summary>
 		private static void Initialize()
 		{
-		    BufferFormat depthFormat = BufferFormat.D24_UIntNormal_S8_UInt;			// Depth buffer format.
+		    var depthFormat = BufferFormat.D24_UIntNormal_S8_UInt;			// Depth buffer format.
 
 			// Create our form.
 			_mainForm = new formMain();			
@@ -387,7 +387,7 @@ namespace GorgonLibrary.Graphics.Example
 
 			// Create the view port.
 			// This just tells the renderer how big our display is.
-			GorgonViewport view = new GorgonViewport(0, 0, _mainForm.ClientSize.Width, _mainForm.ClientSize.Height, 0.0f, 1.0f);
+			var view = new GorgonViewport(0, 0, _mainForm.ClientSize.Width, _mainForm.ClientSize.Height, 0.0f, 1.0f);
 
 			// Load our textures from the resources.
 			// This contains our textures for the walls and ball.  

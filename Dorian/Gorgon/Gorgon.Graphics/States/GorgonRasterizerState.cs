@@ -291,7 +291,7 @@ namespace GorgonLibrary.Graphics
 		/// <returns>The D3D state object.</returns>
 		internal override D3D.DeviceChild GetStateObject(ref GorgonRasterizerStates stateType)
 		{
-			D3D.RasterizerStateDescription desc = new D3D.RasterizerStateDescription();
+			var desc = new D3D.RasterizerStateDescription();
 
 			desc.CullMode = (D3D.CullMode)States.CullingMode;
 			desc.DepthBias = States.DepthBias;
@@ -303,7 +303,7 @@ namespace GorgonLibrary.Graphics
 			desc.IsMultisampleEnabled = States.IsMultisamplingEnabled;
 			desc.IsScissorEnabled = States.IsScissorTestingEnabled;
 
-			D3D.RasterizerState state = new D3D.RasterizerState(Graphics.D3DDevice, desc);
+			var state = new D3D.RasterizerState(Graphics.D3DDevice, desc);
 			state.DebugName = "Gorgon Rasterizer State #" + StateCacheCount.ToString();
 
 			return state;

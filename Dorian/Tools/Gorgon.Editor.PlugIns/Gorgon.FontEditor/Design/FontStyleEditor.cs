@@ -53,10 +53,10 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		/// </returns>
 		public override object EditValue(System.ComponentModel.ITypeDescriptorContext context, IServiceProvider provider, object value)
 		{
-			IWindowsFormsEditorService editorSerivce = (IWindowsFormsEditorService)provider.GetService(typeof(IWindowsFormsEditorService));
+			var editorSerivce = (IWindowsFormsEditorService)provider.GetService(typeof(IWindowsFormsEditorService));
 			listBoxFontStyle fonts = null;
-			ContentTypeDescriptor descriptor = context.Instance as ContentTypeDescriptor;
-            GorgonFontContent document = descriptor.Content as GorgonFontContent;
+			var descriptor = context.Instance as ContentTypeDescriptor;
+            var document = descriptor.Content as GorgonFontContent;
 
 			try
 			{

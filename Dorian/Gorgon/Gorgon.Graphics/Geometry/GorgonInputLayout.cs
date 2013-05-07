@@ -195,7 +195,7 @@ namespace GorgonLibrary.Graphics
 				if (D3DLayout != null)
 					D3DLayout.Dispose();
 
-				D3D.InputElement[] elements = new D3D.InputElement[Count];
+				var elements = new D3D.InputElement[Count];
 
 				for (int i = 0; i < Count; i++)
 					elements[i] = this[i].Convert();
@@ -301,7 +301,7 @@ namespace GorgonLibrary.Graphics
 			}
 
 			// Check for existing context at the same index.
-			GorgonInputElement element = new GorgonInputElement(context, format, offset.Value, index, slot, instanced, (instanced ? instanceCount : 0));
+			var element = new GorgonInputElement(context, format, offset.Value, index, slot, instanced, (instanced ? instanceCount : 0));
 
 			Add(element);
 

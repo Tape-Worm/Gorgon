@@ -257,7 +257,7 @@ namespace GorgonLibrary.Graphics
 		/// <returns>The D3D render target blend description.</returns>
 		internal D3D.RenderTargetBlendDescription Convert()
 		{
-			D3D.RenderTargetBlendDescription desc = new D3D.RenderTargetBlendDescription();
+			var desc = new D3D.RenderTargetBlendDescription();
 
 			desc.AlphaBlendOperation = (D3D.BlendOperation)AlphaOperation;
 			desc.BlendOperation = (D3D.BlendOperation)BlendingOperation;
@@ -646,7 +646,7 @@ namespace GorgonLibrary.Graphics
 		/// <returns>The D3D state object.</returns>
 		internal override D3D.DeviceChild GetStateObject(ref GorgonBlendStates stateType)
 		{
-			D3D.BlendStateDescription desc = new D3D.BlendStateDescription();
+			var desc = new D3D.BlendStateDescription();
 
 			if ((desc.AlphaToCoverageEnable) && (Graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM2_a_b))
 				throw new GorgonException(GorgonResult.CannotBind, "Cannot bind the blending state.  Alpha to coverage is only available on SM 4.x or better video devices.");
@@ -664,7 +664,7 @@ namespace GorgonLibrary.Graphics
 			desc.RenderTarget[6] = stateType.RenderTarget6.Convert();
 			desc.RenderTarget[7] = stateType.RenderTarget7.Convert();
 
-			D3D.BlendState state = new D3D.BlendState(Graphics.D3DDevice, desc);
+			var state = new D3D.BlendState(Graphics.D3DDevice, desc);
 			state.DebugName = "Gorgon Blend State #" + StateCacheCount.ToString();
 
 			return state;

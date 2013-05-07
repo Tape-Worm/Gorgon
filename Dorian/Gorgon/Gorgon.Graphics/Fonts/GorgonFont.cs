@@ -765,7 +765,7 @@ namespace GorgonLibrary.Graphics
 				throw new ArgumentException("The stream is not a file stream, external textures cannot be saved.", "externalTextures");
 
 			// Output the font in chunked format.
-            using (GorgonChunkWriter chunk = new GorgonChunkWriter(stream))
+            using (var chunk = new GorgonChunkWriter(stream))
             {
                 string characterList = string.Join(string.Empty, Settings.Characters);
 
@@ -838,7 +838,7 @@ namespace GorgonLibrary.Graphics
                     }
                     else
                     {
-                        FileStream fileStream = (FileStream)stream;
+                        var fileStream = (FileStream)stream;
                         string path = Path.GetDirectoryName(fileStream.Name);
                         string textureFileName = Path.GetFileNameWithoutExtension(fileStream.Name) + "Texture_" + textureCounter.ToString("0000") + ".png";
 
@@ -917,7 +917,7 @@ namespace GorgonLibrary.Graphics
 
 					gradBrush = new LinearGradientBrush(position, Settings.BaseColors[0], Settings.BaseColors[Settings.BaseColors.Count - 1], LinearGradientMode.Vertical);
 
-					ColorBlend blends = new ColorBlend(Settings.BaseColors.Count);
+					var blends = new ColorBlend(Settings.BaseColors.Count);
 					blends.Positions = new float[Settings.BaseColors.Count];
 					blends.Colors = (from colors in Settings.BaseColors
 									select colors.ToColor()).ToArray();					
@@ -994,7 +994,7 @@ namespace GorgonLibrary.Graphics
 		/// <returns>TRUE if empty, FALSE if not.</returns>
 		private unsafe bool IsBitmapRowEmpty(BitmapData pixels, int y)
 		{
-			int* pixel = (int*)pixels.Scan0.ToPointer();
+			var pixel = (int*)pixels.Scan0.ToPointer();
 
 			pixel += y * pixels.Width;
 			for (int x = 0; x < pixels.Width; x++)
@@ -1077,8 +1077,8 @@ namespace GorgonLibrary.Graphics
 					_charBitmap = new Bitmap((int)result.Width * 2, (int)result.Height, PixelFormat.Format32bppArgb);					
 				}
 
-				Point cropTL = new Point(0, 0);
-				Point cropRB = new Point(_charBitmap.Width - 1, _charBitmap.Height - 1);
+				var cropTL = new Point(0, 0);
+				var cropRB = new Point(_charBitmap.Width - 1, _charBitmap.Height - 1);
 
 				// Perform cropping.
 				using (System.Drawing.Graphics charGraphics = System.Drawing.Graphics.FromImage(_charBitmap))
@@ -1154,12 +1154,12 @@ namespace GorgonLibrary.Graphics
 			BitmapData sourcePixels = bitmap.LockBits(new Rectangle(0, 0, bitmap.Width, bitmap.Height), ImageLockMode.ReadOnly, PixelFormat.Format32bppArgb);
 			try
 			{
-				int* pixels = (int*)sourcePixels.Scan0.ToPointer();
+				var pixels = (int*)sourcePixels.Scan0.ToPointer();
 				int* offset = null;
 
-				using (GorgonDataStream stream = new GorgonDataStream(texture.SizeInBytes))
+				using (var stream = new GorgonDataStream(texture.SizeInBytes))
 				{
-					GorgonTexture2DData data = new GorgonTexture2DData(stream, sourcePixels.Stride);
+					var data = new GorgonTexture2DData(stream, sourcePixels.Stride);
 
 					for (int y = 0; y < bitmap.Height; y++)
 					{
@@ -1258,7 +1258,7 @@ namespace GorgonLibrary.Graphics
 			IDictionary<char, ABC> charABC = null;
 			IList<KERNINGPAIR> kernPairs = null;
 			List<char> availableCharacters = null;
-			CharacterRange[] range = new[] { new CharacterRange(0, 1) };
+			var range = new[] { new CharacterRange(0, 1) };
 
 			if (settings == null)
 			{
@@ -1373,7 +1373,7 @@ namespace GorgonLibrary.Graphics
 				_charBitmap = new Bitmap((int)(System.Math.Ceiling(LineHeight)), (int)(System.Math.Ceiling(LineHeight)));
 
 				// Sort by size.
-				List<Tuple<char, int>> charsizes = new List<Tuple<char,int>>();
+				var charsizes = new List<Tuple<char,int>>();
 				foreach (char c in availableCharacters)
 				{
 					Tuple<Rectangle, Vector2, char> charBounds = GetCharRect(graphics, newFont, stringFormat, drawFormat, c);

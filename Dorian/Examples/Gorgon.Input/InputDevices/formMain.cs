@@ -121,7 +121,7 @@ namespace GorgonLibrary.Examples
                     // Get our joystick data and constrain it.
                     // First get the normalized joystick value.
                     // Do this by first shifting the coordinates to the minimum range value.
-					PointF stickNormalized = new PointF(_joystick.X - (float)_joystick.Capabilities.XAxisRange.Minimum,
+					var stickNormalized = new PointF(_joystick.X - (float)_joystick.Capabilities.XAxisRange.Minimum,
 														_joystick.Y - (float)_joystick.Capabilities.YAxisRange.Minimum);
 					// Then normalize.
                     stickNormalized = new PointF(stickNormalized.X / (_joystick.Capabilities.XAxisRange.Range + 1), 
@@ -162,7 +162,7 @@ namespace GorgonLibrary.Examples
         /// <param name="e">The <see cref="PaintEventArgs" /> instance containing the event data.</param>
         private void DevicePanelsPaint(object sender, PaintEventArgs e)
         {
-            Control control = sender as Control;
+            var control = sender as Control;
 
             if (control != null)
             {
@@ -257,7 +257,7 @@ namespace GorgonLibrary.Examples
 	    /// <param name="shift">Shifted keys.</param>
 	    private void UpdateKeyboardLabel(KeyboardKeys key, KeyboardKeys shift)
 		{
-			KeyboardKeys shiftKey = KeyboardKeys.None;
+			var shiftKey = KeyboardKeys.None;
 
 			if ((KeyboardKeys.Alt & shift) == KeyboardKeys.Alt)
 			{

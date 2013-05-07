@@ -193,7 +193,7 @@ namespace GorgonLibrary.Editor
             Image currentImage = null;
             Image plusMinusImage = null;
             Font font = null;
-            EditorTreeNode node = e.Node as EditorTreeNode;
+            var node = e.Node as EditorTreeNode;
             TreeNodeFile nodeFile = null;
             Point position = e.Bounds.Location;
             Size size = e.Bounds.Size;
@@ -280,7 +280,7 @@ namespace GorgonLibrary.Editor
             // Draw a focus rectangle only when focused, not when selected.
             if (e.State == TreeNodeStates.Focused)
             {
-                Rectangle rect = new Rectangle(e.Bounds.X, e.Bounds.Y, e.Bounds.Width - 1, e.Bounds.Height - 1);
+                var rect = new Rectangle(e.Bounds.X, e.Bounds.Y, e.Bounds.Width - 1, e.Bounds.Height - 1);
                 e.Graphics.DrawRectangle(_focusPen, rect);
             }			
 
@@ -361,7 +361,7 @@ namespace GorgonLibrary.Editor
 			_renameBox.Width = ClientSize.Width - nodePosition.X;
 			_renameBox.Text = node.Text;
 
-			NodeLabelEditEventArgs editArgs = new NodeLabelEditEventArgs(node, node.Text);
+			var editArgs = new NodeLabelEditEventArgs(node, node.Text);
 			editArgs.CancelEdit = false;
 
 			OnBeforeLabelEdit(editArgs);

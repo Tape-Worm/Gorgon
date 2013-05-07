@@ -191,7 +191,7 @@ namespace GorgonLibrary.Configuration
 
 			    if (converterType != null)
 			    {
-			        TypeConverter converter = Activator.CreateInstance(converterType) as TypeConverter;
+			        var converter = Activator.CreateInstance(converterType) as TypeConverter;
 
 			        if ((converter != null) && (converter.CanConvertFrom(typeof(string))))
 			        {

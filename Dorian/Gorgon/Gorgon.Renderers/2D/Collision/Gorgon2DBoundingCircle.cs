@@ -188,8 +188,8 @@ namespace GorgonLibrary.Renderers
 			}
 
 			// Define an infinite boundary.
-			Vector2 min = new Vector2(float.MaxValue, float.MaxValue);
-			Vector2 max = new Vector2(float.MinValue, float.MinValue);
+			var min = new Vector2(float.MaxValue, float.MaxValue);
+			var max = new Vector2(float.MinValue, float.MinValue);
 
 			// Determine the minimum and maximum extents.
 			for (int i = 0; i < CollisionObject.VertexCount; i++)

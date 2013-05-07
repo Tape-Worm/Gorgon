@@ -173,7 +173,7 @@ namespace GorgonLibrary.Editor
         /// <returns>A new tool strip menu item.</returns>
         protected ToolStripMenuItem CreateMenuItem(string name, string text, Image icon)
         {
-            ToolStripMenuItem result = new ToolStripMenuItem(text, icon);
+            var result = new ToolStripMenuItem(text, icon);
             result.Name = name;
             result.Tag = this;
 

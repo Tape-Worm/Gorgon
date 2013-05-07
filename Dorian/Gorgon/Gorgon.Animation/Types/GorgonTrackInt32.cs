@@ -88,8 +88,8 @@ namespace GorgonLibrary.Animation
 		/// </returns>
 		protected override IKeyFrame GetTweenKey(ref NearestKeys keyValues, float keyTime, float unitTime)
 		{
-			GorgonKeyInt32 next = (GorgonKeyInt32)keyValues.NextKey;
-			GorgonKeyInt32 prev = (GorgonKeyInt32)keyValues.PreviousKey;			
+			var next = (GorgonKeyInt32)keyValues.NextKey;
+			var prev = (GorgonKeyInt32)keyValues.PreviousKey;			
 
 			switch (InterpolationMode)
 			{
@@ -108,7 +108,7 @@ namespace GorgonLibrary.Animation
 		/// <param name="key">Key to apply to the properties.</param>
 		protected internal override void ApplyKey(ref IKeyFrame key)
 		{
-			GorgonKeyInt32 value = (GorgonKeyInt32)key;
+			var value = (GorgonKeyInt32)key;
 			_setProperty(Animation.AnimationController.AnimatedObject, value.Value);
 		}
 		#endregion

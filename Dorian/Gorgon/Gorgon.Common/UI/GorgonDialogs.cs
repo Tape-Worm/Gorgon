@@ -72,7 +72,7 @@ namespace GorgonLibrary.UI
 		/// <returns>A formatted stack trace.</returns>
 		private static string FormatStackTrace(string stackTrace)
 		{
-			StringBuilder result = new StringBuilder(8192);
+			var result = new StringBuilder(8192);
 
 		    if (string.IsNullOrEmpty(stackTrace))
 				return string.Empty;
@@ -108,7 +108,7 @@ namespace GorgonLibrary.UI
 		/// <param name="caption">Caption for the error box.</param>
 		public static void ErrorBox(Form owner, string message, Exception innerException, string caption)
 		{
-		    ErrorDialog errorDialog = new ErrorDialog();
+		    var errorDialog = new ErrorDialog();
 			// If the owner form is NULL or not available, center on screen.
 			if ((owner == null) || (owner.WindowState == FormWindowState.Minimized) || (!owner.Visible))
 				errorDialog.StartPosition = FormStartPosition.CenterScreen;
@@ -215,7 +215,7 @@ namespace GorgonLibrary.UI
 		/// <param name="caption">Caption for the error box.</param>
 		public static void ErrorBox(Form owner, string description, string details, bool showDetail, string caption)
 		{
-		    ErrorDialog errorDialog = new ErrorDialog();
+		    var errorDialog = new ErrorDialog();
 			// If the owner form is NULL or not available, center on screen.
 		    if ((owner == null) || (owner.WindowState == FormWindowState.Minimized) || (!owner.Visible))
 		    {

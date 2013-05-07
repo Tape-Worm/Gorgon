@@ -125,7 +125,7 @@ namespace GorgonLibrary.Examples
 							break;
 						default:
 							// Get data in the file stream.
-							byte[] textData = new byte[fileStream.Length];
+							var textData = new byte[fileStream.Length];
 							fileStream.Read(textData, 0, textData.Length);
 
 							// Convert to a string.
@@ -153,7 +153,7 @@ namespace GorgonLibrary.Examples
 		/// <param name="e">The <see cref="TreeViewCancelEventArgs" /> instance containing the event data.</param>
 		private void treeFileSystem_BeforeExpand(object sender, TreeViewCancelEventArgs e)
 		{
-			GorgonFileSystemDirectory directory = e.Node.Tag as GorgonFileSystemDirectory;
+			var directory = e.Node.Tag as GorgonFileSystemDirectory;
 
 			try
 			{
@@ -178,7 +178,7 @@ namespace GorgonLibrary.Examples
 		/// <param name="e">The <see cref="TreeViewCancelEventArgs" /> instance containing the event data.</param>
 		private void treeFileSystem_BeforeCollapse(object sender, TreeViewCancelEventArgs e)
 		{
-			GorgonFileSystemDirectory directory = e.Node.Tag as GorgonFileSystemDirectory;
+			var directory = e.Node.Tag as GorgonFileSystemDirectory;
 
 			try
 			{
@@ -267,7 +267,7 @@ namespace GorgonLibrary.Examples
 				// Get directories.
 				foreach (var subDirectory in directories)
 				{
-					TreeNode directoryNode = new TreeNode(subDirectory.Name)
+					var directoryNode = new TreeNode(subDirectory.Name)
 					    {
 					        Name = subDirectory.FullPath, 
                             Tag = subDirectory
@@ -301,7 +301,7 @@ namespace GorgonLibrary.Examples
 				{
 					if (file.Extension != ".gorSprite")
 					{
-						TreeNode fileNode = new TreeNode(file.Name)
+						var fileNode = new TreeNode(file.Name)
 						    {
 						        Name = file.FullPath, 
                                 Tag = file

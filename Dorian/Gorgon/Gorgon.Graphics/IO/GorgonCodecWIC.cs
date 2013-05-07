@@ -365,7 +365,7 @@ namespace GorgonLibrary.IO
 					// If we've defined a palette for an indexed image, then copy it to a bitmap and set its palette.
 					if ((paletteInfo != null) && (paletteInfo.Item1 != null) && (isIndexed))
 					{
-						using (WIC.Bitmap tempBitmap = new WIC.Bitmap(wic.Factory, frame, WIC.BitmapCreateCacheOption.CacheOnDemand))
+						using (var tempBitmap = new WIC.Bitmap(wic.Factory, frame, WIC.BitmapCreateCacheOption.CacheOnDemand))
 						{
 							tempBitmap.Palette = paletteInfo.Item1;
 							converter.Initialize(tempBitmap, convertFormat, (WIC.BitmapDitherType)Dithering, paletteInfo.Item1, paletteInfo.Item2, paletteInfo.Item3);
@@ -407,7 +407,7 @@ namespace GorgonLibrary.IO
         /// <returns>Settings for the new image.</returns>
         internal IImageSettings ReadMetaData(GorgonWICImage wic, WIC.BitmapDecoder decoder, WIC.BitmapFrameDecode frame, ref Guid bestFormatMatch)
         {
-            GorgonTexture2DSettings settings = new GorgonTexture2DSettings();
+            var settings = new GorgonTexture2DSettings();
 
             return new GorgonTexture2DSettings()
             {
@@ -611,8 +611,8 @@ namespace GorgonLibrary.IO
 									// the best format for the codec.
 									if (targetFormat != actualFormat)
 									{
-										SharpDX.DataRectangle rect = new SharpDX.DataRectangle(buffer.Data.BasePointer, buffer.PitchInformation.RowPitch);
-										using (WIC.Bitmap bitmap = new WIC.Bitmap(wic.Factory, buffer.Width, buffer.Height, targetFormat, rect))
+										var rect = new SharpDX.DataRectangle(buffer.Data.BasePointer, buffer.PitchInformation.RowPitch);
+										using (var bitmap = new WIC.Bitmap(wic.Factory, buffer.Width, buffer.Height, targetFormat, rect))
 										{
 											// If we're using a codec that supports 8 bit indexed data, then get the palette info.									
 											var paletteInfo = GetPaletteInfo(wic, bitmap);
@@ -624,7 +624,7 @@ namespace GorgonLibrary.IO
 
 											try
 											{
-												using (WIC.FormatConverter converter = new WIC.FormatConverter(wic.Factory))
+												using (var converter = new WIC.FormatConverter(wic.Factory))
 												{
 													converter.Initialize(bitmap, actualFormat, (WIC.BitmapDitherType)Dithering, paletteInfo.Item1, paletteInfo.Item2, paletteInfo.Item3);
 													if (paletteInfo.Item1 != null)
@@ -786,7 +786,7 @@ namespace GorgonLibrary.IO
 					{
 						using (var decoder = new WIC.BitmapDecoder(wic.Factory, SupportedFormat))
 						{
-							using (WIC.WICStream wicStream = new WIC.WICStream(wic.Factory, wrapperStream))
+							using (var wicStream = new WIC.WICStream(wic.Factory, wrapperStream))
 							{
 								try
 								{

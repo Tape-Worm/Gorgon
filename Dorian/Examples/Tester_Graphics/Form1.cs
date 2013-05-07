@@ -229,7 +229,7 @@ namespace Tester_Graphics
 				int blurPasses = 128;
 				string fps = string.Empty;
 
-				GorgonTimer timer = new GorgonTimer();
+				var timer = new GorgonTimer();
 
 				_2D.Effects.GaussianBlur.BlurAmount = 2.0f;
 				GorgonOrthoCamera camera =_2D.CreateCamera("My Camera", new Vector2(640, 480), 1000.0f);

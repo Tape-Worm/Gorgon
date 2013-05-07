@@ -356,7 +356,7 @@ namespace GorgonLibrary.Input.Raw
 		/// </returns>
 		protected override GorgonCustomHID CreateCustomHIDImpl(Forms.Control window, GorgonInputDeviceInfo hidInfo)
 		{
-            GorgonRawInputDeviceInfo rawInfo = hidInfo as GorgonRawInputDeviceInfo;
+            var rawInfo = hidInfo as GorgonRawInputDeviceInfo;
 
 		    if (rawInfo == null)
 		    {

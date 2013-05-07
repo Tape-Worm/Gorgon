@@ -605,7 +605,7 @@ namespace GorgonLibrary.Graphics
 		{
 			int size = data.Count * DirectAccess.SizeOf<T>();
 
-			using (GorgonDataStream dataStream = new GorgonDataStream(size))
+			using (var dataStream = new GorgonDataStream(size))
 			{
 				for (int i = 0; i < data.Count; i++)
 					dataStream.Write<T>(data[i]);
@@ -639,7 +639,7 @@ namespace GorgonLibrary.Graphics
 			if ((usage == BufferUsage.Immutable) && ((initialData == null) || (initialData.Length == 0)))
 				throw new ArgumentException("Cannot create an immutable buffer without initial data to populate it.", "usage");
 
-			GorgonIndexBuffer buffer = new GorgonIndexBuffer(_graphics, usage, size, is32bit);
+			var buffer = new GorgonIndexBuffer(_graphics, usage, size, is32bit);
 			buffer.Initialize(initialData);
 
 			_graphics.AddTrackedObject(buffer);
@@ -681,7 +681,7 @@ namespace GorgonLibrary.Graphics
 			GorgonDebug.AssertNull<IList<T>>(data, "data");
 			int size = data.Count * DirectAccess.SizeOf<T>();
 
-			using (GorgonDataStream dataStream = new GorgonDataStream(size))
+			using (var dataStream = new GorgonDataStream(size))
 			{
 				for (int i = 0; i < data.Count; i++)
 					dataStream.Write<T>(data[i]);
@@ -714,7 +714,7 @@ namespace GorgonLibrary.Graphics
 			if ((usage == BufferUsage.Immutable) && ((initialData == null) || (initialData.Length == 0)))
 				throw new ArgumentException("Cannot create an immutable buffer without initial data to populate it.", "usage");
 
-			GorgonVertexBuffer buffer = new GorgonVertexBuffer(_graphics, usage, size);
+			var buffer = new GorgonVertexBuffer(_graphics, usage, size);
 			buffer.Initialize(initialData);
 
 			_graphics.AddTrackedObject(buffer);

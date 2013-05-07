@@ -98,7 +98,7 @@ namespace GorgonLibrary.Editor
         {
             try
             {
-                Dictionary<string, Tuple<string, string>> contentExtensions = new Dictionary<string, Tuple<string, string>>();
+                var contentExtensions = new Dictionary<string, Tuple<string, string>>();
 
                 var extensions = (from plugIn in Program.ContentPlugIns
                                   from extension in plugIn.Value.FileExtensions                            
@@ -109,8 +109,8 @@ namespace GorgonLibrary.Editor
                 // Add extension filter(s) to import dialog.
                 if (extensions.Count() > 0)
                 {
-                    StringBuilder allExtensions = new StringBuilder(256);
-                    StringBuilder filter = new StringBuilder(1024);
+                    var allExtensions = new StringBuilder(256);
+                    var filter = new StringBuilder(1024);
 
                     // Add each extension.
                     foreach (var extension in extensions)
@@ -164,7 +164,7 @@ namespace GorgonLibrary.Editor
                     }
                     else
                     {
-                        EditorTreeNode parentNode = treeFiles.SelectedNode.Parent as EditorTreeNode;
+                        var parentNode = treeFiles.SelectedNode.Parent as EditorTreeNode;
                         directoryNode = treeFiles.SelectedNode as TreeNodeDirectory;
                                                 
                         while ((directoryNode == null) && (parentNode != null))
@@ -219,7 +219,7 @@ namespace GorgonLibrary.Editor
 
                 if (contentPlugIn != null)
                 {
-                    StringBuilder extensions = new StringBuilder(512);
+                    var extensions = new StringBuilder(512);
 
                     // Build our filter.
                     int index = 1;
@@ -328,7 +328,7 @@ namespace GorgonLibrary.Editor
 
             menuRecent.Enabled = Program.Settings.RecentFiles.Count > 0;
 
-            EditorTreeNode node = treeFiles.SelectedNode as EditorTreeNode;
+            var node = treeFiles.SelectedNode as EditorTreeNode;
 
             // No node is the same as selecting the root.
             if (treeFiles.SelectedNode == null)
@@ -674,7 +674,7 @@ namespace GorgonLibrary.Editor
         /// <param name="e">The <see cref="ContentPropertyChangedEventArgs"/> instance containing the event data.</param>
         private void CurrentContent_ContentPropertyChanged(object sender, ContentPropertyChangedEventArgs e)
         {
-            ContentObject content = sender as ContentObject;
+            var content = sender as ContentObject;
 
 			try
 			{
@@ -740,7 +740,7 @@ namespace GorgonLibrary.Editor
 				// Find the parts.
 				for (int i = 0; i < current.Nodes.Count; i++)
 				{
-					EditorTreeNode nodePart = current.Nodes[i] as EditorTreeNode;
+					var nodePart = current.Nodes[i] as EditorTreeNode;
 					int index = parts.IndexOf(nodePart.Text);
 
 					// This node type is invalid, skip it.
@@ -827,7 +827,7 @@ namespace GorgonLibrary.Editor
 
 					if (node != null)
 					{
-						TreeNodeDirectory dest = treeFiles.SelectedNode as TreeNodeDirectory;
+						var dest = treeFiles.SelectedNode as TreeNodeDirectory;
 
 						if (dest == null)
 						{
@@ -900,7 +900,7 @@ namespace GorgonLibrary.Editor
 					return;
 				}
 
-				EditorTreeNode node = (EditorTreeNode)treeFiles.SelectedNode;
+				var node = (EditorTreeNode)treeFiles.SelectedNode;
 				node.IsCut = false;
 				node.Redraw();
 				_isCutOperation = false;
@@ -926,7 +926,7 @@ namespace GorgonLibrary.Editor
 					return;
 				}
 
-				EditorTreeNode node = (EditorTreeNode)treeFiles.SelectedNode;
+				var node = (EditorTreeNode)treeFiles.SelectedNode;
 				node.IsCut = true;
 				node.Redraw();
 				_isCutOperation = true;
@@ -1111,7 +1111,7 @@ namespace GorgonLibrary.Editor
 
 			try
 			{
-				TreeNodeDirectory directoryNode = e.Node as TreeNodeDirectory;
+				var directoryNode = e.Node as TreeNodeDirectory;
 
 				// Expand sub folders.
 				if (directoryNode != null)
@@ -1142,7 +1142,7 @@ namespace GorgonLibrary.Editor
 
 			foreach (var subDirectory in rootNode.Directory.Directories.OrderBy(item => item.Name))
 			{
-				TreeNodeDirectory subNode = new TreeNodeDirectory(subDirectory);
+				var subNode = new TreeNodeDirectory(subDirectory);
 
 				if ((subDirectory.Directories.Count > 0) 
                     || ((subDirectory.Files.Count > 0)
@@ -1163,7 +1163,7 @@ namespace GorgonLibrary.Editor
                     continue;
                 }
 
-				TreeNodeFile fileNode = new TreeNodeFile(file);
+				var fileNode = new TreeNodeFile(file);
 				rootNode.Nodes.Add(fileNode);
 			}
 		}
@@ -1286,7 +1286,7 @@ namespace GorgonLibrary.Editor
 		private void AddContent(object sender, EventArgs e)
 		{		
 			ContentObject content = null;
-			ToolStripMenuItem item = sender as ToolStripMenuItem;
+			var item = sender as ToolStripMenuItem;
 			ContentPlugIn plugIn = null;
 
 			if (item == null)
@@ -1473,7 +1473,7 @@ namespace GorgonLibrary.Editor
 		{
 			try
 			{
-				TreeNodeDirectory directory = treeFiles.SelectedNode as TreeNodeDirectory;
+				var directory = treeFiles.SelectedNode as TreeNodeDirectory;
 
                 if (treeFiles.SelectedNode == null)
                 {
@@ -1491,7 +1491,7 @@ namespace GorgonLibrary.Editor
 				}
 				else
 				{
-					TreeNodeFile file = treeFiles.SelectedNode as TreeNodeFile;
+					var file = treeFiles.SelectedNode as TreeNodeFile;
 
 					if (file != null)
 					{
@@ -1521,8 +1521,8 @@ namespace GorgonLibrary.Editor
 		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
 		private void itemSaveAs_Click(object sender, EventArgs e)
 		{
-			List<FileWriterPlugIn> plugIns = new List<FileWriterPlugIn>();
-			StringBuilder extensions = new StringBuilder(512);
+			var plugIns = new List<FileWriterPlugIn>();
+			var extensions = new StringBuilder(512);
 			int counter = 0;
 			int filterIndex = 0;
 			string extension = string.Empty;
@@ -1635,8 +1635,8 @@ namespace GorgonLibrary.Editor
 		/// <param name="e">The <see cref="NodeLabelEditEventArgs"/> instance containing the event data.</param>
 		private void treeFiles_AfterLabelEdit(object sender, NodeLabelEditEventArgs e)
 		{
-			EditorTreeNode node = e.Node as EditorTreeNode;
-			NodeEditState currentState = NodeEditState.None;
+			var node = e.Node as EditorTreeNode;
+			var currentState = NodeEditState.None;
 			string label = e.Label;
 
 			Cursor.Current = Cursors.WaitCursor;
@@ -1679,7 +1679,7 @@ namespace GorgonLibrary.Editor
 
 						label = label.FormatDirectory('/');
 
-						TreeNodeDirectory parentNode = node.Parent as TreeNodeDirectory;
+						var parentNode = node.Parent as TreeNodeDirectory;
 						var newDirectory = Program.ScratchFiles.CreateDirectory(parentNode.Directory.FullPath + label);
 
 						// Set up a new node for the directory since our current node is here as a proxy.
@@ -1700,8 +1700,8 @@ namespace GorgonLibrary.Editor
 						}
 
 						// Rename the directory by moving it.
-						TreeNodeDirectory selectedNode = node as TreeNodeDirectory;
-						TreeNodeDirectory parentNode = selectedNode.Parent as TreeNodeDirectory;
+						var selectedNode = node as TreeNodeDirectory;
+						var parentNode = selectedNode.Parent as TreeNodeDirectory;
 
                         CopyDirectoryNode(selectedNode, parentNode, label, true);
 					}
@@ -1716,8 +1716,8 @@ namespace GorgonLibrary.Editor
 					}
 					
 					// Rename the file by moving it.
-					TreeNodeFile selectedNode = node as TreeNodeFile;
-					TreeNodeDirectory parentNode = selectedNode.Parent as TreeNodeDirectory;
+					var selectedNode = node as TreeNodeFile;
+					var parentNode = selectedNode.Parent as TreeNodeDirectory;
 
                     CopyFileNode(selectedNode, parentNode, label, true);
 					return;
@@ -1794,7 +1794,7 @@ namespace GorgonLibrary.Editor
 		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
 		private void itemRenameFolder_Click(object sender, EventArgs e)
 		{
-			EditorTreeNode selectedNode = treeFiles.SelectedNode as EditorTreeNode;
+			var selectedNode = treeFiles.SelectedNode as EditorTreeNode;
 
 			try
 			{
@@ -1862,13 +1862,13 @@ namespace GorgonLibrary.Editor
 		private void itemCreateFolder_Click(object sender, EventArgs e)
 		{
 			bool expandDisabled = false;
-			EditorTreeNode tempNode = new EditorTreeNode();
+			var tempNode = new EditorTreeNode();
 
 			try
 			{
 				int nameIndex = -1;
 				string defaultName = "Untitled";
-				TreeNodeDirectory selectedNode = treeFiles.SelectedNode as TreeNodeDirectory;
+				var selectedNode = treeFiles.SelectedNode as TreeNodeDirectory;
 
 				if (selectedNode == null)
 				{
@@ -1931,7 +1931,7 @@ namespace GorgonLibrary.Editor
         /// <param name="deleteSource">TRUE to delete the source file, FALSE to leave alone.</param>
         private void CopyFileNode(TreeNodeFile sourceFile, TreeNodeDirectory destDirectory, string name, bool deleteSource)
         {
-            ConfirmationResult result = ConfirmationResult.None;
+            var result = ConfirmationResult.None;
 
             if (string.IsNullOrWhiteSpace(name))
             {
@@ -2049,7 +2049,7 @@ namespace GorgonLibrary.Editor
         private void CopyDirectoryNode(TreeNodeDirectory sourceDirectory, TreeNodeDirectory destDirectory, string name, bool deleteSource)
         {
             GorgonFileSystemFileEntry currentFile = null;
-            ConfirmationResult result = ConfirmationResult.None;
+            var result = ConfirmationResult.None;
             bool wasExpanded = sourceDirectory.IsExpanded;
 
             if (string.IsNullOrWhiteSpace(name))
@@ -2211,7 +2211,7 @@ namespace GorgonLibrary.Editor
 		/// <returns>The list of enumerated files/folders.</returns>
 		private List<Tuple<string, string>> GetExplorerFiles(DirectoryInfo directoryInfo, string destPath)
 		{
-			List<Tuple<string, string>> result = new List<Tuple<string, string>>();
+			var result = new List<Tuple<string, string>>();
 
 			foreach (var directory in directoryInfo.EnumerateDirectories())
 			{
@@ -2257,7 +2257,7 @@ namespace GorgonLibrary.Editor
 		{
 			foreach (string filePath in files)
 			{
-				DirectoryInfo pathInfo = new DirectoryInfo(filePath);
+				var pathInfo = new DirectoryInfo(filePath);
 				string newPath = (destDir.FullPath + pathInfo.Name).FormatDirectory('/');
 
 				if (ct.IsCancellationRequested)
@@ -2333,8 +2333,8 @@ namespace GorgonLibrary.Editor
 		/// <param name="files">Paths to the files/directories to copy.</param>
 		private void AddFilesFromExplorer(TreeNodeDirectory destDir, List<string> files)
 		{			
-			List<Tuple<string, string>> sourceDirectories = new List<Tuple<string, string>>();
-			List<Tuple<string, string>> sourceFiles = new List<Tuple<string, string>>();
+			var sourceDirectories = new List<Tuple<string, string>>();
+			var sourceFiles = new List<Tuple<string, string>>();
 			
 			using (var progForm = new formProcess())
 			{
@@ -2389,7 +2389,7 @@ namespace GorgonLibrary.Editor
 					progForm.Task = Task.Factory.StartNew(() =>
 						{
 							// Begin copy procedure.
-							ConfirmationResult result = ConfirmationResult.None;
+							var result = ConfirmationResult.None;
 							decimal max = sourceFiles.Count + sourceDirectories.Count;
 
 							for (int i = 0; i < sourceDirectories.Count; i++)
@@ -2563,14 +2563,14 @@ namespace GorgonLibrary.Editor
 
 				Cursor.Current = Cursors.WaitCursor;
 
-				EditorTreeNode overNode = (EditorTreeNode)treeFiles.GetNodeAt(treeFiles.PointToClient(new Point(e.X, e.Y)));
-				TreeNodeDirectory destDir = overNode as TreeNodeDirectory;
-				TreeNodeFile destFile = overNode as TreeNodeFile;
+				var overNode = (EditorTreeNode)treeFiles.GetNodeAt(treeFiles.PointToClient(new Point(e.X, e.Y)));
+				var destDir = overNode as TreeNodeDirectory;
+				var destFile = overNode as TreeNodeFile;
 
 				// Handle explorer files.
 				if (e.Data.GetDataPresent(DataFormats.FileDrop, false))
 				{
-					List<string> files = new List<string>((IEnumerable<string>)e.Data.GetData(DataFormats.FileDrop));
+					var files = new List<string>((IEnumerable<string>)e.Data.GetData(DataFormats.FileDrop));
 					var excludedFiles = files.Where(item => item.StartsWith(Program.ScratchFiles.WriteLocation, StringComparison.CurrentCultureIgnoreCase));
 
 					// Don't allow files in our write path to be imported.
@@ -2595,7 +2595,7 @@ namespace GorgonLibrary.Editor
 					var data = (Tuple<EditorTreeNode, MouseButtons>)e.Data.GetData(typeof(Tuple<EditorTreeNode, MouseButtons>));
 
 					// Perform a move.
-					TreeNodeDirectory directory = data.Item1 as TreeNodeDirectory;
+					var directory = data.Item1 as TreeNodeDirectory;
 
 					// Our source data is a directory, so move it.
 					if ((directory != null) && (destDir != null))
@@ -2605,7 +2605,7 @@ namespace GorgonLibrary.Editor
 					}
 
 					// We didn't have a directory, so move the file.
-					TreeNodeFile file = data.Item1 as TreeNodeFile;
+					var file = data.Item1 as TreeNodeFile;
 
 					if ((destDir != null) && (file != null))
 					{
@@ -2669,9 +2669,9 @@ namespace GorgonLibrary.Editor
 		{
 			try
 			{
-				EditorTreeNode overNode = treeFiles.GetNodeAt(treeFiles.PointToClient(new Point(e.X, e.Y))) as EditorTreeNode;
-				TreeNodeDirectory destDirectory = overNode as TreeNodeDirectory;
-				TreeNodeFile destFile = overNode as TreeNodeFile;
+				var overNode = treeFiles.GetNodeAt(treeFiles.PointToClient(new Point(e.X, e.Y))) as EditorTreeNode;
+				var destDirectory = overNode as TreeNodeDirectory;
+				var destFile = overNode as TreeNodeFile;
 
 				e.Effect = DragDropEffects.None;
 
@@ -2697,9 +2697,9 @@ namespace GorgonLibrary.Editor
 				if (e.Data.GetDataPresent(typeof(Tuple<EditorTreeNode, MouseButtons>)))
 				{
 					// Get our source data.
-					Tuple<EditorTreeNode, MouseButtons> dragData = (Tuple<EditorTreeNode, MouseButtons>)e.Data.GetData(typeof(Tuple<EditorTreeNode, MouseButtons>));
-					TreeNodeDirectory sourceDirectory = dragData.Item1 as TreeNodeDirectory;
-					TreeNodeFile sourceFile = dragData.Item1 as TreeNodeFile;
+					var dragData = (Tuple<EditorTreeNode, MouseButtons>)e.Data.GetData(typeof(Tuple<EditorTreeNode, MouseButtons>));
+					var sourceDirectory = dragData.Item1 as TreeNodeDirectory;
+					var sourceFile = dragData.Item1 as TreeNodeFile;
 
 					// Don't drag into ourselves, that's just dumb.
 					// Likewise, if we're over our current parent, do nothing.
@@ -2748,7 +2748,7 @@ namespace GorgonLibrary.Editor
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void itemOpen_Click(object sender, EventArgs e)
         {
-            StringBuilder extensions = new StringBuilder(512);
+            var extensions = new StringBuilder(512);
 
             try
             {
@@ -2877,7 +2877,7 @@ namespace GorgonLibrary.Editor
                     var directory = Path.GetDirectoryName(file).FormatDirectory(Path.DirectorySeparatorChar);
                     var fileName = Path.GetFileName(file);
                     var root = Path.GetPathRoot(directory);
-                    ToolStripMenuItem item = new ToolStripMenuItem();
+                    var item = new ToolStripMenuItem();
 
                     directory = directory.Substring(root.Length);
                     if (directory.Length > 0)
@@ -2936,7 +2936,7 @@ namespace GorgonLibrary.Editor
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void recentItem_Click(object sender, EventArgs e)
         {
-            ToolStripMenuItem item = sender as ToolStripMenuItem;
+            var item = sender as ToolStripMenuItem;
 
             if (item == null)
             {

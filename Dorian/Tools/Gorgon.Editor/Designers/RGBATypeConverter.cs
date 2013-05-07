@@ -61,8 +61,8 @@ namespace GorgonLibrary.Editor
 		///   </PermissionSet>
 		public override object ConvertFrom(ITypeDescriptorContext context, System.Globalization.CultureInfo culture, object value)
 		{
-			string colorValue = value as String;
-			int[] values = new int[4];
+			var colorValue = value as String;
+			var values = new int[4];
 
 			if (string.IsNullOrEmpty(colorValue))
 				return Color.Transparent;
@@ -109,7 +109,7 @@ namespace GorgonLibrary.Editor
 			if (culture == null)
 				culture = CultureInfo.CurrentCulture;
 
-			Color color = (Color)value;
+			var color = (Color)value;
 			string separator = culture.TextInfo.ListSeparator + " ";
 
 			return color.R.ToString() + separator + color.G.ToString() + separator + color.B.ToString() + separator + color.A.ToString();

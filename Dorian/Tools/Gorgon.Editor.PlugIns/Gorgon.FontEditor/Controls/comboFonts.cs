@@ -105,8 +105,8 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 			{
 				e.Graphics.TextRenderingHint = System.Drawing.Text.TextRenderingHint.ClearTypeGridFit;
 				Size measure = TextRenderer.MeasureText(e.Graphics, fontName, this.Font, e.Bounds.Size, flags);
-				Rectangle textBounds = new Rectangle(e.Bounds.Width - measure.Width + e.Bounds.Left, e.Bounds.Top, e.Bounds.Width, e.Bounds.Height);
-				Rectangle fontBounds = new Rectangle(e.Bounds.Left, e.Bounds.Top, textBounds.X - 2, e.Bounds.Height);
+				var textBounds = new Rectangle(e.Bounds.Width - measure.Width + e.Bounds.Left, e.Bounds.Top, e.Bounds.Width, e.Bounds.Height);
+				var fontBounds = new Rectangle(e.Bounds.Left, e.Bounds.Top, textBounds.X - 2, e.Bounds.Height);
 				TextRenderer.DrawText(e.Graphics, fontName, GorgonFontEditorPlugIn.CachedFonts[fontName.ToLower()], fontBounds, e.ForeColor, e.BackColor, flags);
 				TextRenderer.DrawText(e.Graphics, fontName, this.Font, textBounds, e.ForeColor, e.BackColor, flags);
 			}

@@ -363,7 +363,7 @@ namespace GorgonLibrary.Input
 
 			if (PointingDeviceWheelMove != null)
 			{
-				PointingDeviceEventArgs e = new PointingDeviceEventArgs(Button, PointingDeviceButtons.None, _position, _wheel, RelativePosition, WheelDelta, 0);
+				var e = new PointingDeviceEventArgs(Button, PointingDeviceButtons.None, _position, _wheel, RelativePosition, WheelDelta, 0);
 				PointingDeviceWheelMove(this, e);
 			}
 		}

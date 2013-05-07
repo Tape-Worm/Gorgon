@@ -536,8 +536,8 @@ namespace GorgonLibrary.IO
 		/// <param name="destPitch">The pitch of the destination data.</param>
 		private unsafe void Compress24BPPScanLine(void* src, int srcPitch, void* dest, int destPitch)
 		{
-			uint* srcPtr = (uint*)src;
-			byte* destPtr = (byte*)dest;
+			var srcPtr = (uint*)src;
+			var destPtr = (byte*)dest;
 			byte* endPtr = destPtr + destPitch;
 
 			for (int srcCount = 0; srcCount < srcPitch; srcCount += 4)
@@ -638,7 +638,7 @@ namespace GorgonLibrary.IO
 					return false;
 				case BufferFormat.B5G5R5A1_UIntNormal:
 					{
-						ushort* destPtr = (ushort*)dest;
+						var destPtr = (ushort*)dest;
 
 						for (int x = 0; x < width; )
 						{
@@ -657,7 +657,7 @@ namespace GorgonLibrary.IO
 									throw new System.IO.IOException("Cannot decode TGA file.  The buffer is too small for the width of the image.");
 								}
 
-								ushort pixel = (ushort)(*src | (*(src + 1) << 8));
+								var pixel = (ushort)(*src | (*(src + 1) << 8));
 
 								if ((pixel & 0x8000) != 0)
 								{
@@ -696,7 +696,7 @@ namespace GorgonLibrary.IO
 										throw new System.IO.IOException("Cannot decode TGA file.  The buffer is too small for the width of the image.");
 									}
 
-									ushort pixel = (ushort)(*src | (*(src + 1) << 8));
+									var pixel = (ushort)(*src | (*(src + 1) << 8));
 									src += 2;
 
 									if ((pixel & 0x8000) != 0)
@@ -719,7 +719,7 @@ namespace GorgonLibrary.IO
 					}
 				case BufferFormat.R8G8B8A8_UIntNormal:
 					{
-						uint* destPtr = (uint*)dest;
+						var destPtr = (uint*)dest;
 						
 						for (int x = 0; x < width;)
 						{
@@ -883,11 +883,11 @@ namespace GorgonLibrary.IO
 					return false;
 				case BufferFormat.B5G5R5A1_UIntNormal:
 					{
-						ushort* destPtr = (ushort*)dest;
+						var destPtr = (ushort*)dest;
 
 						for (int x = 0; x < srcPitch; x += 2)
 						{
-							ushort pixel = (ushort)(*(src++) | (byte)(*(src++) << 8));
+							var pixel = (ushort)(*(src++) | (byte)(*(src++) << 8));
 
 							if ((pixel & 0x8000) != 0)
 							{
@@ -908,7 +908,7 @@ namespace GorgonLibrary.IO
 					}
 				case BufferFormat.R8G8B8A8_UIntNormal:
 					{
-						uint* destPtr = (uint*)dest;
+						var destPtr = (uint*)dest;
 						int x = 0;
 
 						while (x < srcPitch)
@@ -979,8 +979,8 @@ namespace GorgonLibrary.IO
 
 			// Otherwise, allocate a buffer for conversion.
 			bool setOpaque = false;
-			byte* srcPtr = (byte*)stream.PositionPointerUnsafe;
-			byte* destPtr = (byte*)buffer.Data.UnsafePointer;
+			var srcPtr = (byte*)stream.PositionPointerUnsafe;
+			var destPtr = (byte*)buffer.Data.UnsafePointer;
 
 			// Adjust destination for inverted axes.
 			if ((conversionFlags & TGAConversionFlags.InvertX) == TGAConversionFlags.InvertX)
@@ -994,7 +994,7 @@ namespace GorgonLibrary.IO
 			}
 
 			// Get bounds of image memory.
-			int scanSize = (int)(stream.Length - stream.Position);
+			var scanSize = (int)(stream.Length - stream.Position);
 			byte* endScan = (byte*)stream.PositionPointerUnsafe + scanSize;
 
 			for (int y = 0; y < image.Settings.Height; y++)
@@ -1038,7 +1038,7 @@ namespace GorgonLibrary.IO
 		{
 			GorgonImageData imageData = null;
 			IImageSettings settings = null;
-			TGAConversionFlags flags = TGAConversionFlags.None;
+			var flags = TGAConversionFlags.None;
 
             if (DirectAccess.SizeOf<TGAHeader>() > size)
             {
@@ -1082,11 +1082,11 @@ namespace GorgonLibrary.IO
 		/// <param name="stream">Stream that will contain the data.</param>
 		protected internal unsafe override void SaveToStream(GorgonImageData imageData, System.IO.Stream stream)
 		{
-			TGAConversionFlags conversionFlags = TGAConversionFlags.None;
+			var conversionFlags = TGAConversionFlags.None;
 			GorgonFormatPitch pitch = default(GorgonFormatPitch);
 			
 			// Use a binary writer.
-			using (GorgonBinaryWriter writer = new GorgonBinaryWriter(stream, true))
+			using (var writer = new GorgonBinaryWriter(stream, true))
 			{
 				// Write the header for the file.
 				WriteHeader(imageData.Settings, writer, out conversionFlags);
@@ -1158,7 +1158,7 @@ namespace GorgonLibrary.IO
 		public override IImageSettings GetMetaData(System.IO.Stream stream)
 		{
             long position = 0;
-			TGAConversionFlags conversion = TGAConversionFlags.None;
+			var conversion = TGAConversionFlags.None;
             int headerSize = DirectAccess.SizeOf<TGAHeader>();
 
             if (stream == null)

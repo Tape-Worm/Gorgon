@@ -791,7 +791,7 @@ namespace GorgonLibrary.IO
 		/// <returns>The correct format for pixel expansion, or None if no applicable format was found.</returns>
 		private DDSConversionFlags ExpansionFormat(DDSConversionFlags flags)
 		{
-			DDSConversionFlags result = DDSConversionFlags.None;
+			var result = DDSConversionFlags.None;
 
 			if ((flags & DDSConversionFlags.Palette) == DDSConversionFlags.Palette)
 			{
@@ -906,7 +906,7 @@ namespace GorgonLibrary.IO
         /// <returns>The format of the buffer, or Unknown if the format is not supported.</returns>
         private BufferFormat GetFormat(ref DDSPixelFormat format, DDSFlags flags, out DDSConversionFlags conversionFlags)
         {
-            BufferFormat result = BufferFormat.Unknown;
+            var result = BufferFormat.Unknown;
             DDSLegacyConversion conversion = default(DDSLegacyConversion);
 
             foreach (var ddsFormat in _legacyMapping)
@@ -979,7 +979,7 @@ namespace GorgonLibrary.IO
         private IImageSettings ReadHeader(GorgonDataStream stream, int size, out DDSConversionFlags conversionFlags)
         {			
             IImageSettings settings = null;
-            DDSHeader header = new DDSHeader();            
+            var header = new DDSHeader();            
             uint magicNumber = 0;
 
 			// Start with no conversion.
@@ -1191,7 +1191,7 @@ namespace GorgonLibrary.IO
 							byte pixel = *(srcPtr++);
 
 							uint alpha = ((bitFlags & ImageBitFlags.OpaqueAlpha) == ImageBitFlags.OpaqueAlpha) ? 0xFF000000 : (uint)(((pixel & 0xF0)  << 24) | ((pixel & 0xF0 << 20)));
-							uint lum = (uint)((pixel & 0x0F << 4) | (pixel & 0x0F));
+							var lum = (uint)((pixel & 0x0F << 4) | (pixel & 0x0F));
 
 							*(destPtr++) = lum | (lum << 8) | (lum << 16) | alpha;
 						}
@@ -1262,7 +1262,7 @@ namespace GorgonLibrary.IO
 						for (int srcCount = 0, destCount = 0; ((srcCount < srcPitch) && (destCount < destPitch)); srcCount += 2, destCount += 4)
 						{
 							uint r = 0, g = 0, b = 0;
-							ushort pixel = (ushort)(*(srcPtr++) & 0xFF);
+							var pixel = (ushort)(*(srcPtr++) & 0xFF);
 							uint alpha = ((bitFlags & ImageBitFlags.OpaqueAlpha) == ImageBitFlags.OpaqueAlpha) ? 0xFF000000 : (uint)((pixel & 0xFF00) << 16);
 
 							r = (uint)((pixel & 0xE0) | ((pixel & 0xE0) >> 3) | ((pixel & 0xC0) >> 6));
@@ -1322,7 +1322,7 @@ namespace GorgonLibrary.IO
 		/// <param name="writer">Writer interface for the stream.</param>
 		private void WriteHeader(IImageSettings settings, GorgonBinaryWriter writer)
 		{
-			DDSHeader header = new DDSHeader();
+			var header = new DDSHeader();
 			DDSPixelFormat? format = null;
 			DDSFlags flags = LegacyConversionFlags;
 			var formatInfo = GorgonBufferFormatInfo.GetInfo(settings.Format);
@@ -1567,7 +1567,7 @@ namespace GorgonLibrary.IO
                 return;
 			}
 
-			ImageBitFlags expFlags = ImageBitFlags.None;
+			var expFlags = ImageBitFlags.None;
 
 			if ((conversionFlags & DDSConversionFlags.NoAlpha) == DDSConversionFlags.NoAlpha)
 			{
@@ -1582,7 +1582,7 @@ namespace GorgonLibrary.IO
 			// Clip the depth.
 			int depth = _actualDepth.Min(image.Settings.Depth);
 			int arrayCount = _actualArrayCount.Min(image.Settings.ArrayCount);
-			byte *srcPointer = (byte*)stream.PositionPointerUnsafe;
+			var srcPointer = (byte*)stream.PositionPointerUnsafe;
 
 			for (int array = 0; array < arrayCount; array++)
 			{
@@ -1665,7 +1665,7 @@ namespace GorgonLibrary.IO
 		protected internal override GorgonImageData LoadFromStream(GorgonDataStream stream, int size)
 		{
 			GorgonImageData imageData = null;
-			DDSConversionFlags flags = DDSConversionFlags.None;
+			var flags = DDSConversionFlags.None;
 			IImageSettings settings = null;
 			uint[] palette = null;
                         
@@ -1766,7 +1766,7 @@ namespace GorgonLibrary.IO
 		protected internal override void SaveToStream(GorgonImageData imageData, System.IO.Stream stream)
 		{
 			// Use a binary writer.
-			using (GorgonBinaryWriter writer = new GorgonBinaryWriter(stream, true))
+			using (var writer = new GorgonBinaryWriter(stream, true))
 			{
 				// Write the header for the file.
 				WriteHeader(imageData.Settings, writer);
@@ -1822,7 +1822,7 @@ namespace GorgonLibrary.IO
 		public override IImageSettings GetMetaData(System.IO.Stream stream)
 		{
             long position = 0;
-			DDSConversionFlags flags = DDSConversionFlags.None;
+			var flags = DDSConversionFlags.None;
             int size = DirectAccess.SizeOf<DDSHeader>() + DirectAccess.SizeOf<DX10Header>() + sizeof(uint); // Allocate enough space to hold the header and the DX 10 header and the magic number.
 
             if (stream == null)
@@ -1854,7 +1854,7 @@ namespace GorgonLibrary.IO
                     return this.ReadHeader((GorgonDataStream)stream, size, out flags);
                 }
 
-                using (GorgonDataStream memoryStream = new GorgonDataStream(size))
+                using (var memoryStream = new GorgonDataStream(size))
                 {
                     memoryStream.ReadFromStream(stream, size);
                     return this.ReadHeader(memoryStream, size, out flags);
@@ -1903,7 +1903,7 @@ namespace GorgonLibrary.IO
             try
             {
                 position = stream.Position;
-                using (GorgonBinaryReader reader = new GorgonBinaryReader(stream, true))
+                using (var reader = new GorgonBinaryReader(stream, true))
                 {
                     magicNumber = reader.ReadUInt32();
                 }

@@ -144,7 +144,7 @@ namespace GorgonLibrary.Examples
 				_bitmap.SetPixel(x, y, color);				
 			else
 			{
-				using (Pen pen = new Pen(color))
+				using (var pen = new Pen(color))
 					_graphics.DrawLine(pen, new Point(lastX, lastY), new Point(x, y));
 			}
 		}

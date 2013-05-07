@@ -111,7 +111,7 @@ namespace GorgonLibrary.Renderers
                 throw new ArgumentNullException("data");
             }
 			
-			using (MemoryStream stream = new MemoryStream(data))
+			using (var stream = new MemoryStream(data))
 			{
 				return FromStream<T>(name, stream);
 			}

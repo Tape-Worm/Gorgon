@@ -147,7 +147,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		{
 			get
 			{
-				FontStyle result = System.Drawing.FontStyle.Regular;
+				var result = System.Drawing.FontStyle.Regular;
 
 				if (checkBold.Checked)
 					result |= System.Drawing.FontStyle.Bold;
@@ -251,7 +251,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		/// </summary>
 		private void UpdatePreview()
 		{
-			FontStyle style = FontStyle.Regular;
+			var style = FontStyle.Regular;
 
 			labelPreview.Font = this.Font;
 			if (_font != null)
@@ -276,7 +276,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		/// </summary>
 		private void RestrictTexture()
 		{
-			float fontSize = (float)numericSize.Value;
+			var fontSize = (float)numericSize.Value;
 			if (string.Compare(comboSizeType.Text, "points", true) == 0)
 				fontSize = (float)System.Math.Ceiling(GorgonFontSettings.GetFontHeight(fontSize, 0));
 

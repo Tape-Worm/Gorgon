@@ -67,7 +67,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		/// </returns>
 		public override object EditValue(System.ComponentModel.ITypeDescriptorContext context, IServiceProvider provider, object value)
 		{
-			IWindowsFormsEditorService editorSerivce = (IWindowsFormsEditorService)provider.GetService(typeof(IWindowsFormsEditorService));
+			var editorSerivce = (IWindowsFormsEditorService)provider.GetService(typeof(IWindowsFormsEditorService));
 			listBoxFont fonts = null;
 
 			try

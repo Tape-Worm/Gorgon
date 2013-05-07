@@ -85,7 +85,7 @@ namespace GorgonLibrary.Examples
         /// <param name="point">Origin point for the spray.</param>
         public void SprayPoint(Point point)
         {
-            Point randomArea = new Point(GorgonRandom.RandomInt32(-10, 10), GorgonRandom.RandomInt32(-10, 10));
+            var randomArea = new Point(GorgonRandom.RandomInt32(-10, 10), GorgonRandom.RandomInt32(-10, 10));
             Color randomColor = Color.FromArgb(GorgonRandom.RandomInt32(0, 255), GorgonRandom.RandomInt32(0, 255), GorgonRandom.RandomInt32(0, 255));
 
             using (var brush = new SolidBrush(randomColor))

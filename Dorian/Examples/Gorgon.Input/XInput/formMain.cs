@@ -78,7 +78,7 @@ namespace GorgonLibrary.Examples
 		/// <param name="e">The <see cref="PaintEventArgs" /> instance containing the event data.</param>
 		private void ControllerControlsPaint(object sender, PaintEventArgs e)
 		{
-			Control control = sender as Control;
+			var control = sender as Control;
 
 			if (control != null)
 			{
@@ -93,8 +93,8 @@ namespace GorgonLibrary.Examples
 		/// <param name="index">Index of the joystick.</param>
 		private void UpdateControllerLabels(GorgonJoystick joystick, int index)
 		{			
-			Panel panel = (Panel)panelControllers.Controls["panelController" + index.ToString()];
-			Label label = (Label)panel.Controls["labelController" + index.ToString()];			
+			var panel = (Panel)panelControllers.Controls["panelController" + index.ToString()];
+			var label = (Label)panel.Controls["labelController" + index.ToString()];			
 
 			// Update the label visibility for the controller.
 			if (joystick.IsConnected)
@@ -178,11 +178,11 @@ namespace GorgonLibrary.Examples
 		/// <param name="index">Index of the joystick.</param>
 		private void DrawJoystickCursor(GorgonJoystick joystick, int index)
 		{
-			int playerColorValue = (int)((uint)0xFF << (index * 8) | 0xFF000000);						// Get the color based on the joystick index.			
-			Size cursorSize = new Size(_surface.CursorSize.Width / 2, _surface.CursorSize.Height / 2);	// Get the cursor size with offset.
+			var playerColorValue = (int)((uint)0xFF << (index * 8) | 0xFF000000);						// Get the color based on the joystick index.			
+			var cursorSize = new Size(_surface.CursorSize.Width / 2, _surface.CursorSize.Height / 2);	// Get the cursor size with offset.
 
 			// Transform the axis into a -1 .. 1 range.				
-			PointF moveVector = new PointF(joystick.X - (float)joystick.Capabilities.XAxisRange.Minimum,
+			var moveVector = new PointF(joystick.X - (float)joystick.Capabilities.XAxisRange.Minimum,
 											joystick.Y - (float)joystick.Capabilities.YAxisRange.Minimum);
 
 			moveVector = new PointF((moveVector.X / (joystick.Capabilities.XAxisRange.Range + 1) * 2.0f) - 1.0f,
@@ -190,7 +190,7 @@ namespace GorgonLibrary.Examples
 
 			// Move at 100 units per second 
 			float speed = panelDisplay.ClientSize.Width / 2.0f * GorgonTiming.Delta;
-			PointF position = new PointF((speed * moveVector.X) + _stickPosition[index].X,
+			var position = new PointF((speed * moveVector.X) + _stickPosition[index].X,
 										(speed * -moveVector.Y) + _stickPosition[index].Y);
 
 

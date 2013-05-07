@@ -633,7 +633,7 @@ namespace GorgonLibrary.Renderers
 
 						if ((i < currentLine.Length - 1) && (_font.KerningPairs.Count > 0))
 						{
-							GorgonKerningPair kerning = new GorgonKerningPair(c, currentLine[i + 1]);
+							var kerning = new GorgonKerningPair(c, currentLine[i + 1]);
 							if (_font.KerningPairs.ContainsKey(kerning))
 								pos.X += _font.KerningPairs[kerning];
 							else
@@ -764,7 +764,7 @@ namespace GorgonLibrary.Renderers
 						{
 							if ((i < _formattedText.Length - 1) && (_font.KerningPairs.Count > 0))
 							{
-								GorgonKerningPair kernPair = new GorgonKerningPair(character, _formattedText[i + 1]);
+								var kernPair = new GorgonKerningPair(character, _formattedText[i + 1]);
 								if (_font.KerningPairs.ContainsKey(kernPair))
 									kernValue = _font.KerningPairs[kernPair];
 							}
@@ -881,7 +881,7 @@ namespace GorgonLibrary.Renderers
 
 					if ((i < line.Length - 1) && (_font.KerningPairs.Count > 0))
 					{
-						GorgonKerningPair kerning = new GorgonKerningPair(c, line[i + 1]);
+						var kerning = new GorgonKerningPair(c, line[i + 1]);
 						if (_font.KerningPairs.ContainsKey(kerning))
 							size += _font.KerningPairs[kerning];
 						else
@@ -929,7 +929,7 @@ namespace GorgonLibrary.Renderers
 		/// <param name="color">Color to set.</param>
 		public void SetCornerColor(RectangleCorner corner, GorgonColor color)
 		{
-			int index = (int)corner;
+			var index = (int)corner;
 
 			if (color != _colors[index])
 			{
@@ -1025,7 +1025,7 @@ namespace GorgonLibrary.Renderers
 		{
 			Rectangle clipRegion = Rectangle.Round(ClipRegion);
 			Rectangle? lastClip = Gorgon2D.ClipRegion;
-			StateChange states = StateChange.None;
+			var states = StateChange.None;
 			int vertexIndex = 0;
 
 			// We don't need to draw anything if we don't have a font or text to draw.

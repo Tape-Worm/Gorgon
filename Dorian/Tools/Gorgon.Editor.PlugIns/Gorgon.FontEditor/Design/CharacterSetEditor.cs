@@ -55,8 +55,8 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		public override object EditValue(ITypeDescriptorContext context, IServiceProvider provider, object value)
 		{
 			formCharacterPicker picker = null;
-			ContentTypeDescriptor descriptor = context.Instance as ContentTypeDescriptor;
-            GorgonFontContent content = descriptor.Content as GorgonFontContent;
+			var descriptor = context.Instance as ContentTypeDescriptor;
+            var content = descriptor.Content as GorgonFontContent;
 			Font currentFont = null;
 
 			try

@@ -62,7 +62,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		{
 			get
 			{
-				FontStyle result = System.Drawing.FontStyle.Regular;
+				var result = System.Drawing.FontStyle.Regular;
 
 				if (CheckedItems.Count == 0)
 					return FontStyle.Regular;

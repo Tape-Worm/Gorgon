@@ -194,7 +194,7 @@ namespace GorgonLibrary.Native
 		{
 			int size = 0;
 			KERNINGPAIR[] pairs = null;			
-			MapModes lastMapMode = MapModes.MM_TEXT;
+			var lastMapMode = MapModes.MM_TEXT;
 
 #if DEBUG
 			if (_hdc == IntPtr.Zero)
@@ -233,7 +233,7 @@ namespace GorgonLibrary.Native
 			uint firstCharIndex = Convert.ToUInt32(firstCharacter);
 			uint lastCharIndex = Convert.ToUInt32(lastCharacter);
 			int size = (int)(lastCharIndex - firstCharIndex) + 1;
-			SortedDictionary<char, ABC> result = new SortedDictionary<char, ABC>();
+			var result = new SortedDictionary<char, ABC>();
 
 #if DEBUG
 			if (_hdc == IntPtr.Zero)

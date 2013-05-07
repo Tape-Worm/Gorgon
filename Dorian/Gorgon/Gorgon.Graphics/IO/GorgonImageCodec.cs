@@ -777,7 +777,7 @@ namespace GorgonLibrary.IO
 								var sourceBuffer = data[array, 0, depth];
 								var destBuffer = destData[array, 0, depth];
 
-								SharpDX.DataRectangle dataRect = new SharpDX.DataRectangle(sourceBuffer.Data.BasePointer, sourceBuffer.PitchInformation.RowPitch);
+								var dataRect = new SharpDX.DataRectangle(sourceBuffer.Data.BasePointer, sourceBuffer.PitchInformation.RowPitch);
 
 								// Create a temporary WIC bitmap to work with.
 								using (var bitmap = new WIC.Bitmap(wic.Factory, sourceBuffer.Width, sourceBuffer.Height, srcPixelFormat, dataRect, sourceBuffer.PitchInformation.SlicePitch))
@@ -809,7 +809,7 @@ namespace GorgonLibrary.IO
 									var sourceBuffer = destData[array, 0, (destSettings.Depth / mipDepth) * depth];
 									var destBuffer = destData[array, mip, depth];
 
-									SharpDX.DataRectangle dataRect = new SharpDX.DataRectangle(sourceBuffer.Data.BasePointer, sourceBuffer.PitchInformation.RowPitch);
+									var dataRect = new SharpDX.DataRectangle(sourceBuffer.Data.BasePointer, sourceBuffer.PitchInformation.RowPitch);
 
 									// Create a temporary WIC bitmap to work with.
 									using (var bitmap = new WIC.Bitmap(wic.Factory, sourceBuffer.Width, sourceBuffer.Height, srcPixelFormat, dataRect, sourceBuffer.PitchInformation.SlicePitch))

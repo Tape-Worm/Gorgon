@@ -92,7 +92,7 @@ namespace GorgonLibrary.Editor
                 var acl = directoryInfo.GetAccessControl();
 
                 // Ensure that we can actually write to this directory.
-                FileInfo testWrite = new FileInfo(directoryName + "TestWrite.tst");
+                var testWrite = new FileInfo(directoryName + "TestWrite.tst");
                 using (Stream stream = testWrite.OpenWrite())
                 {
                     stream.WriteByte(127);
@@ -201,11 +201,11 @@ namespace GorgonLibrary.Editor
             listContentPlugIns.Items.Clear();
             foreach (var plugIn in Gorgon.PlugIns)
             {
-                ListViewItem item = new ListViewItem();
+                var item = new ListViewItem();
 
                 if ((plugIn is EditorPlugIn) || (plugIn is GorgonFileSystemProviderPlugIn))
                 {
-                    EditorPlugIn editorPlugIn = plugIn as EditorPlugIn;
+                    var editorPlugIn = plugIn as EditorPlugIn;
 
                     item.Name = plugIn.Name;
                     item.Text = plugIn.Description;
@@ -249,7 +249,7 @@ namespace GorgonLibrary.Editor
             listDisabledPlugIns.Items.Clear();
             foreach (var plugIn in Program.DisabledPlugIns)
             {
-                ListViewItem item = new ListViewItem();
+                var item = new ListViewItem();
 
                 item.Name = plugIn.Key.Name;
                 item.Text = plugIn.Key.Description;

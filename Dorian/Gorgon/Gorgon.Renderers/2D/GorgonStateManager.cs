@@ -150,7 +150,7 @@ namespace GorgonLibrary.Renderers
 		/// <returns></returns>
 		public StateChange CheckState(IRenderable renderable)
 		{
-			StateChange result = StateChange.None;
+			var result = StateChange.None;
 			GorgonRenderable.DepthStencilStates depthStencil = renderable.DepthStencil;
 			GorgonRenderable.BlendState blending = renderable.Blending;
 			GorgonRenderable.TextureSamplerState sampler = renderable.TextureSampler;

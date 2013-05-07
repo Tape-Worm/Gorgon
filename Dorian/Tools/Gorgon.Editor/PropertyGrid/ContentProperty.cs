@@ -232,7 +232,7 @@ namespace GorgonLibrary.Editor
 		/// <returns>A list of attributes.</returns>
 		public Attribute[] RetrieveAttributes()
 		{
-			List<Attribute> attributes = new List<Attribute>();
+			var attributes = new List<Attribute>();
 
 			attributes.Add(new BrowsableAttribute(true));
 			attributes.Add(new ReadOnlyAttribute(IsReadOnly));

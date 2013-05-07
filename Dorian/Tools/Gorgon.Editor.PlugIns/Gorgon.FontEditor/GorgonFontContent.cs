@@ -463,7 +463,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 			}
 
 			Font cachedFont = GorgonFontEditorPlugIn.CachedFonts[FontFamily.ToLower()];
-			FontStyle[] styles = Enum.GetValues(typeof(FontStyle)) as FontStyle[];
+			var styles = Enum.GetValues(typeof(FontStyle)) as FontStyle[];
 
 			// Remove styles that won't work.
 			for (int i = 0; i < styles.Length; i++)

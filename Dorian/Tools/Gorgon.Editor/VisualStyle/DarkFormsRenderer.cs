@@ -150,7 +150,7 @@ namespace GorgonLibrary.Editor
                 }
             }
 
-			ToolStripMenuItem item = e.Item as ToolStripMenuItem;
+			var item = e.Item as ToolStripMenuItem;
 			if ((item != null) && (item.IsOnDropDown))
 			{				
 				e.TextRectangle = new Rectangle(e.TextRectangle.X - 12, e.TextRectangle.Y, e.TextRectangle.Width, e.TextRectangle.Height);
@@ -179,7 +179,7 @@ namespace GorgonLibrary.Editor
 				return;
 			}
 
-			ToolStripMenuItem item = e.Item as ToolStripMenuItem;
+			var item = e.Item as ToolStripMenuItem;
 
 			if (item.Selected)
 			{
@@ -209,7 +209,7 @@ namespace GorgonLibrary.Editor
 		/// <param name="e">A <see cref="T:System.Windows.Forms.ToolStripRenderEventArgs"/> that contains the event data.</param>
 		protected override void OnRenderButtonBackground(ToolStripItemRenderEventArgs e)
 		{
-			ToolStripButton button = e.Item as ToolStripButton;
+			var button = e.Item as ToolStripButton;
 
 			if (e.Item.Selected)
 			{
@@ -242,7 +242,7 @@ namespace GorgonLibrary.Editor
 		/// <param name="e">A <see cref="T:System.Windows.Forms.ToolStripItemImageRenderEventArgs"/> that contains the event data.</param>
 		protected override void OnRenderItemCheck(ToolStripItemImageRenderEventArgs e)
 		{
-			Rectangle newRect = new Rectangle(e.Item.Width - e.Image.Width - 5, e.ImageRectangle.Top, e.ImageRectangle.Width, e.ImageRectangle.Height);
+			var newRect = new Rectangle(e.Item.Width - e.Image.Width - 5, e.ImageRectangle.Top, e.ImageRectangle.Width, e.ImageRectangle.Height);
 			if ((e.Item.Enabled) && (!e.Item.Selected))
 			{
 				e.Graphics.DrawImage(Properties.Resources.Check_Enabled, newRect);
@@ -265,8 +265,8 @@ namespace GorgonLibrary.Editor
 
 				if ((e.ToolStrip.IsDropDown))
 				{					
-					ToolStripDropDownMenu menu = e.ToolStrip as ToolStripDropDownMenu;
-                    using (Pen borderPen = new Pen(BorderColor))
+					var menu = e.ToolStrip as ToolStripDropDownMenu;
+                    using (var borderPen = new Pen(BorderColor))
                     {
                         e.Graphics.DrawRectangle(borderPen, new Rectangle(e.AffectedBounds.Left, e.AffectedBounds.Top, e.AffectedBounds.Width - 1, e.AffectedBounds.Height - 1));
                     }
@@ -296,7 +296,7 @@ namespace GorgonLibrary.Editor
 		/// <param name="e">A <see cref="T:System.Windows.Forms.ToolStripItemRenderEventArgs"/> that contains the event data.</param>
 		protected override void OnRenderDropDownButtonBackground(ToolStripItemRenderEventArgs e)
 		{
-			ToolStripDropDownButton item = e.Item as ToolStripDropDownButton;
+			var item = e.Item as ToolStripDropDownButton;
 
 			if (item.Selected)
 			{

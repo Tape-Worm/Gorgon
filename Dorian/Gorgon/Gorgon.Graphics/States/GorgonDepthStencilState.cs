@@ -450,7 +450,7 @@ namespace GorgonLibrary.Graphics
 		/// <returns>The D3D state object.</returns>
 		internal override D3D.DeviceChild GetStateObject(ref GorgonDepthStencilStates stateType)
 		{
-			D3D.DepthStencilStateDescription desc = new D3D.DepthStencilStateDescription();
+			var desc = new D3D.DepthStencilStateDescription();
 			desc.IsDepthEnabled = States.IsDepthEnabled;
 			desc.IsStencilEnabled = States.IsStencilEnabled;
 			desc.DepthComparison = (D3D.Comparison)States.DepthComparison;
@@ -471,7 +471,7 @@ namespace GorgonLibrary.Graphics
 			desc.BackFace.FailOperation = (D3D.StencilOperation)States.StencilBackFace.FailOperation;
 			desc.BackFace.PassOperation = (D3D.StencilOperation)States.StencilBackFace.PassOperation;
 
-			D3D.DepthStencilState state = new D3D.DepthStencilState(Graphics.D3DDevice, desc);
+			var state = new D3D.DepthStencilState(Graphics.D3DDevice, desc);
 			state.DebugName = "Gorgon Depth/stencil state #" + StateCacheCount.ToString();
 
 			return state;

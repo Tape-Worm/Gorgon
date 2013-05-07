@@ -177,7 +177,7 @@ namespace GorgonLibrary.Animation
 						break;
 					case "gorgonlibrary.graphics.gorgontexture2d":
 						// We need grab an additional property for texture animation.
-						GorgonAnimatedProperty property = new GorgonAnimatedProperty(_animation.AnimationController.AnimatedObjectType.GetProperty("TextureRegion"));
+						var property = new GorgonAnimatedProperty(_animation.AnimationController.AnimatedObjectType.GetProperty("TextureRegion"));
 						Add(new GorgonTrackTexture2D<T>(item.Value, property));
 						break;
 					case "gorgonlibrary.graphics.gorgoncolor":

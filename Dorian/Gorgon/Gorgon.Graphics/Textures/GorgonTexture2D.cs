@@ -109,14 +109,14 @@ namespace GorgonLibrary.Graphics
 			}
 #endif
 
-			SharpDX.DataBox box = new SharpDX.DataBox()
+			var box = new SharpDX.DataBox()
 			{
 				DataPointer = data.Data.PositionPointer,
 				RowPitch = data.RowPitch,
 				SlicePitch = data.SlicePitch
 			};
 
-			D3D.ResourceRegion region = new D3D.ResourceRegion();
+			var region = new D3D.ResourceRegion();
 
 			region.Front = 0;
 			region.Back = 1;
@@ -138,7 +138,7 @@ namespace GorgonLibrary.Graphics
 		{
 			GorgonTexture staging = null;
 
-			GorgonTexture2DSettings settings2D = new GorgonTexture2DSettings()
+			var settings2D = new GorgonTexture2DSettings()
 			{
 				ArrayCount = Settings.ArrayCount,
 				Format = Settings.Format,
@@ -166,7 +166,7 @@ namespace GorgonLibrary.Graphics
 		protected override ITextureSettings GetTextureInformation()
 		{
 			ITextureSettings newSettings = null;
-			BufferFormat viewFormat = BufferFormat.Unknown;
+			var viewFormat = BufferFormat.Unknown;
 
 			if (Settings != null)
 				viewFormat = Settings.ViewFormat;
@@ -194,7 +194,7 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		internal void InitializeRenderTarget()
 		{
-			D3D.Texture2DDescription desc = new D3D.Texture2DDescription();
+			var desc = new D3D.Texture2DDescription();
 
 			desc.ArraySize = 1;
 			desc.Format = (SharpDX.DXGI.Format)Settings.Format;
@@ -219,7 +219,7 @@ namespace GorgonLibrary.Graphics
 		/// <param name="isShaderBound">TRUE if the texture should be used in a shader, FALSE if not.</param>
 		internal void InitializeDepth(bool isShaderBound)
 		{
-			D3D.Texture2DDescription desc = new D3D.Texture2DDescription();
+			var desc = new D3D.Texture2DDescription();
 
 			desc.ArraySize = 1;
 			desc.Format = (SharpDX.DXGI.Format)Settings.Format;
@@ -248,7 +248,7 @@ namespace GorgonLibrary.Graphics
 		/// <param name="initialData">Data used to populate the image.</param>
 		protected override void InitializeImpl(GorgonImageData initialData)
 		{
-			D3D.Texture2DDescription desc = new D3D.Texture2DDescription();
+			var desc = new D3D.Texture2DDescription();
 
 			desc.ArraySize = Settings.ArrayCount;
 			desc.Format = (SharpDX.DXGI.Format)Settings.Format;
@@ -565,18 +565,18 @@ namespace GorgonLibrary.Graphics
 				throw new InvalidOperationException("Cannot update a texture used as a depth/stencil buffer.");
 
 #endif
-			Rectangle textureSize = new Rectangle(0, 0, Settings.Width, Settings.Height);
+			var textureSize = new Rectangle(0, 0, Settings.Width, Settings.Height);
 			if (!textureSize.Contains(destRect))
 				destRect = Rectangle.Intersect(destRect, textureSize);
 
-			SharpDX.DataBox box = new SharpDX.DataBox()
+			var box = new SharpDX.DataBox()
 			{
 				DataPointer = data.Data.PositionPointer,
 				RowPitch = data.RowPitch,
 				SlicePitch = data.SlicePitch
 			};
 
-			D3D.ResourceRegion region = new D3D.ResourceRegion()
+			var region = new D3D.ResourceRegion()
 			{
 				Front = 0,
 				Back = 1,

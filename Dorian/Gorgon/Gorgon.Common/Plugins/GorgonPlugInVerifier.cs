@@ -133,7 +133,7 @@ namespace GorgonLibrary.PlugIns
 	    /// <returns></returns>
 	    private Assembly CurrentDomain_ReflectionOnlyAssemblyResolve(object sender, ResolveEventArgs args)
 	    {
-            AssemblyName name = new AssemblyName(args.Name);
+            var name = new AssemblyName(args.Name);
             Assembly result;
 
             // Try from the GAC first.

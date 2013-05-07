@@ -92,14 +92,14 @@ namespace GorgonLibrary.Graphics
 		/// <param name="subResource">Sub resource index to use.</param>
 		protected override void UpdateSubResourceImpl(ISubResourceData data, int subResource)
 		{
-			SharpDX.DataBox box = new SharpDX.DataBox()
+			var box = new SharpDX.DataBox()
 			{
 				DataPointer = data.Data.PositionPointer,
 				RowPitch = data.RowPitch,
 				SlicePitch = data.SlicePitch
 			};
 
-			D3D.ResourceRegion region = new D3D.ResourceRegion();
+			var region = new D3D.ResourceRegion();
 
 			region.Front = 0;
 			region.Back = Settings.Depth;
@@ -121,7 +121,7 @@ namespace GorgonLibrary.Graphics
 		{
 			GorgonTexture staging = null;
 
-			GorgonTexture3DSettings settings3D = new GorgonTexture3DSettings()
+			var settings3D = new GorgonTexture3DSettings()
 			{
 				Format = Settings.Format,
 				Width = Settings.Width,
@@ -147,7 +147,7 @@ namespace GorgonLibrary.Graphics
 		protected override ITextureSettings GetTextureInformation()
 		{
 			ITextureSettings newSettings = null;
-			BufferFormat viewFormat = BufferFormat.Unknown;
+			var viewFormat = BufferFormat.Unknown;
 
 			if (Settings != null)
 				viewFormat = Settings.ViewFormat;
@@ -180,7 +180,7 @@ namespace GorgonLibrary.Graphics
 		/// </remarks>
 		protected override void InitializeImpl(GorgonImageData initialData)
 		{
-			D3D.Texture3DDescription desc = new D3D.Texture3DDescription();
+			var desc = new D3D.Texture3DDescription();
 
 			desc.Format = (SharpDX.DXGI.Format)Settings.Format;
 			desc.Width = Settings.Width;
@@ -466,7 +466,7 @@ namespace GorgonLibrary.Graphics
 			if ((Settings.Usage == BufferUsage.Dynamic) || (Settings.Usage == BufferUsage.Immutable))
 				throw new InvalidOperationException("Cannot update a texture that is Dynamic or Immutable");
 #endif
-			GorgonBox textureSize = new GorgonBox()
+			var textureSize = new GorgonBox()
 			{
 				Front = 0,
 				Depth = Settings.Depth,
@@ -503,14 +503,14 @@ namespace GorgonLibrary.Graphics
 			if (destBox.Back >= Settings.Depth)
 				destBox.Width = Settings.Depth - destBox.Z - 1;
 
-			SharpDX.DataBox box = new SharpDX.DataBox()
+			var box = new SharpDX.DataBox()
 			{
 				DataPointer = data.Data.PositionPointer,
 				RowPitch = data.RowPitch,
 				SlicePitch = data.SlicePitch
 			};
 
-			D3D.ResourceRegion region = new D3D.ResourceRegion()
+			var region = new D3D.ResourceRegion()
 			{
 				Front = destBox.Front,
 				Back = destBox.Back,

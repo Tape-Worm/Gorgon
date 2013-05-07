@@ -94,14 +94,14 @@ namespace GorgonLibrary.Graphics
 		/// <param name="subResource">Sub resource index to use.</param>
 		protected override void UpdateSubResourceImpl(ISubResourceData data, int subResource)
 		{
-			SharpDX.DataBox box = new SharpDX.DataBox()
+			var box = new SharpDX.DataBox()
 			{
 				DataPointer = data.Data.PositionPointer,
 				RowPitch = data.RowPitch,
 				SlicePitch = data.SlicePitch
 			};
 
-			D3D.ResourceRegion region = new D3D.ResourceRegion();
+			var region = new D3D.ResourceRegion();
 
 			region.Front = 0;
 			region.Back = 1;
@@ -123,7 +123,7 @@ namespace GorgonLibrary.Graphics
 		{
 			GorgonTexture staging = null;
 
-			GorgonTexture1DSettings settings1D = new GorgonTexture1DSettings()
+			var settings1D = new GorgonTexture1DSettings()
 			{
 				ArrayCount = Settings.ArrayCount,
 				Format = Settings.Format,
@@ -147,7 +147,7 @@ namespace GorgonLibrary.Graphics
 		protected override ITextureSettings GetTextureInformation()
 		{
 			ITextureSettings newSettings = null;
-			BufferFormat viewFormat = BufferFormat.Unknown;
+			var viewFormat = BufferFormat.Unknown;
 
 			if (Settings != null)
 				viewFormat = Settings.ViewFormat;
@@ -180,7 +180,7 @@ namespace GorgonLibrary.Graphics
 		/// </remarks>
 		protected override void InitializeImpl(GorgonImageData initialData)
 		{
-			D3D.Texture1DDescription desc = new D3D.Texture1DDescription();
+			var desc = new D3D.Texture1DDescription();
 
 			desc.ArraySize = Settings.ArrayCount;
 			desc.Format = (SharpDX.DXGI.Format)Settings.Format;
@@ -445,14 +445,14 @@ namespace GorgonLibrary.Graphics
 			if (destRange.Maximum >= Settings.Width)
 				destRange.Maximum = Settings.Width -1;
 
-			SharpDX.DataBox box = new SharpDX.DataBox()
+			var box = new SharpDX.DataBox()
 			{
 				DataPointer = data.Data.PositionPointer,
 				RowPitch = data.RowPitch,
 				SlicePitch = data.SlicePitch
 			};
 
-			D3D.ResourceRegion region = new D3D.ResourceRegion()
+			var region = new D3D.ResourceRegion()
 			{
 				Front = 0,
 				Back = 1,

@@ -356,7 +356,7 @@ namespace GorgonLibrary
 		/// </returns>
 		public override bool Equals(object obj)
 		{
-			IEquatable<GorgonMinMaxD> equate = obj as IEquatable<GorgonMinMaxD>;
+			var equate = obj as IEquatable<GorgonMinMaxD>;
 
 			if (equate != null)
 				return equate.Equals(this);
@@ -897,7 +897,7 @@ namespace GorgonLibrary
 		/// </returns>
 		public override bool Equals(object obj)
 		{
-			IEquatable<GorgonMinMaxF> equate = obj as IEquatable<GorgonMinMaxF>;
+			var equate = obj as IEquatable<GorgonMinMaxF>;
 
 			if (equate != null)
 				return equate.Equals(this);

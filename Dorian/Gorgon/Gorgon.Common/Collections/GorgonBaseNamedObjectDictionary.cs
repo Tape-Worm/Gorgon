@@ -217,7 +217,7 @@ namespace GorgonLibrary.Collections
 		/// <returns>Array containing the contents of this collection.</returns>
 		public T[] ToArray()
 		{
-			T[] array = new T[Count];
+			var array = new T[Count];
 			int i = 0;
 
 			foreach(T item in this)

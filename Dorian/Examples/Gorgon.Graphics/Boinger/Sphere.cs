@@ -95,11 +95,11 @@ namespace GorgonLibrary.Graphics.Example
 			{
 				float angle = deltaRingAngle * ring;
 				float ringSin = angle.Sin();
-				Vector3 position = new Vector3(0, angle.Cos() * radius, 0);
+				var position = new Vector3(0, angle.Cos() * radius, 0);
 
 				for (int segment = 0; segment <= segmentCount; segment++)
 				{
-					Vector2 textureDelta = new Vector2(1.0f - segment / (float)segmentCount, 1.0f - ring / (float)ringCount);
+					var textureDelta = new Vector2(1.0f - segment / (float)segmentCount, 1.0f - ring / (float)ringCount);
 					float segmentAngle = deltaSegAngle * segment;
 
 					position.X = ringSin * segmentAngle.Sin() * radius;

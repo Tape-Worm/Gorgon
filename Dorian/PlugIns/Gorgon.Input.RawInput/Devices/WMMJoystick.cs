@@ -86,7 +86,7 @@ namespace GorgonLibrary.Input.Raw
 			private void GetCaps(int joystickID)
 			{
 				JOYCAPS caps = default(JOYCAPS);									// Joystick capabilities.
-			    JoystickCapabilityFlags capsFlags = JoystickCapabilityFlags.None;	// Extra capability flags.
+			    var capsFlags = JoystickCapabilityFlags.None;	// Extra capability flags.
 
 				int error = Win32API.joyGetDevCaps(joystickID, ref caps, Marshal.SizeOf(typeof(JOYCAPS)));
 

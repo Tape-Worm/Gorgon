@@ -126,7 +126,7 @@ namespace GorgonLibrary.Graphics
 		{
 			Gorgon.Log.Print("GorgonDepthStencil '{0}': Creating depth stencil texture...", Diagnostics.LoggingLevel.Verbose, Name);
 
-			D3D.DepthStencilViewDescription viewDesc = new D3D.DepthStencilViewDescription();
+			var viewDesc = new D3D.DepthStencilViewDescription();
 
 			Texture = new GorgonTexture2D(Graphics, "Depth buffer '" + Name + "' texture.", new GorgonTexture2DSettings()
 				{

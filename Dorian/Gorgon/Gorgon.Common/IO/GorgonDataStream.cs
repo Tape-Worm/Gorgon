@@ -322,7 +322,7 @@ namespace GorgonLibrary.IO
 				}
 				else
 				{
-				    PropertyInfo property = (PropertyInfo)member;
+				    var property = (PropertyInfo)member;
 					memberType = property.PropertyType;
 					isValid = property.CanRead && property.CanWrite;
 				}
@@ -374,7 +374,7 @@ namespace GorgonLibrary.IO
 		                   ? DirectAccess.SizeOf<T>()*count
 		                   : type.StructLayoutAttribute.Size*count;
 
-		    GorgonDataStream result = new GorgonDataStream(size);
+		    var result = new GorgonDataStream(size);
 
 			foreach (T item in value)
 			{
@@ -415,7 +415,7 @@ namespace GorgonLibrary.IO
 
 		    int size = type.StructLayoutAttribute.Size <= 0 ? DirectAccess.SizeOf<T>() : type.StructLayoutAttribute.Size;
 
-			GorgonDataStream result = new GorgonDataStream(size);
+			var result = new GorgonDataStream(size);
 
 		    if (!UseMarshalling(type))
 		    {
@@ -1897,7 +1897,7 @@ namespace GorgonLibrary.IO
             }
 #endif
 
-			T value = _pointerOffset.MarshalTo<T>();			
+			var value = _pointerOffset.MarshalTo<T>();			
 			Position += dataSize;
 
 			return value;

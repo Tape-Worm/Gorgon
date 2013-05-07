@@ -555,7 +555,7 @@ namespace GorgonLibrary.Graphics
                 // We need to convert, so copy using the format converter.
                 if (bitmap.PixelFormat != conversionFormat)
                 {
-                    using (WIC.FormatConverter converter = new WIC.FormatConverter(_factory))
+                    using (var converter = new WIC.FormatConverter(_factory))
                     {
                         converter.Initialize(bitmap, conversionFormat, WIC.BitmapDitherType.None, null, 0, WIC.BitmapPaletteType.Custom);
                         converter.CopyPixels(lockData.Stride, lockData.Scan0, lockData.Stride * lockData.Height);
@@ -587,7 +587,7 @@ namespace GorgonLibrary.Graphics
 			DX.DataRectangle pointer = default(DX.DataRectangle);
 			WIC.Bitmap result = null;
 			BitmapData bmpData = null;
-            Bitmap imageBitmap = image as Bitmap;
+            var imageBitmap = image as Bitmap;
             bool bitmapClone = false;
 
             if (image == null)
@@ -659,7 +659,7 @@ namespace GorgonLibrary.Graphics
 			int rowPitch = 0;
 			int slicePitch = 0;
 			double alphaPercent = alphaValue / 255.0;
-			WIC.BitmapPaletteType paletteType = WIC.BitmapPaletteType.Custom;
+			var paletteType = WIC.BitmapPaletteType.Custom;
 
 			// If we have a palette, then confirm that the dithering method is valid.
 			if (bitmapPalette != null)

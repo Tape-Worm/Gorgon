@@ -407,7 +407,7 @@ namespace GorgonLibrary.Renderers
 		/// </summary>
 		private void UpdateVertices()
 		{
-			Vector2 lineDims = new Vector2(_line.Right - _line.Left, _line.Bottom - _line.Top);
+			var lineDims = new Vector2(_line.Right - _line.Left, _line.Bottom - _line.Top);
 			float lineLength = lineDims.Length;
 
 			if (lineLength > 0)
