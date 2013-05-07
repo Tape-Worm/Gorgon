@@ -135,7 +135,7 @@ namespace GorgonLibrary.Graphics
 				D3DResource = null;
 			}
 
-			D3D.BufferDescription desc = new D3D.BufferDescription()
+			var desc = new D3D.BufferDescription()
 			{
 				BindFlags = BindingFlags,
 				CpuAccessFlags = D3DCPUAccessFlags,
@@ -149,7 +149,7 @@ namespace GorgonLibrary.Graphics
 			{
 				long position = value.Position;
 
-				using (DX.DataStream dxStream = new DX.DataStream(value.BasePointer, value.Length - position, true, true))
+				using (var dxStream = new DX.DataStream(value.BasePointer, value.Length - position, true, true))
 					D3DResource = new D3D.Buffer(Graphics.D3DDevice, dxStream, desc);
 			}
 			else

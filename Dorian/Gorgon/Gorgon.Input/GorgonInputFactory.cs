@@ -402,7 +402,7 @@ namespace GorgonLibrary.Input
 			}
 
 			GorgonInputDeviceInfo deviceInfo = JoystickDevices[joystickName];
-			GorgonJoystick joystickDevice = GetInputDevice<GorgonJoystick>(deviceInfo);
+			var joystickDevice = GetInputDevice<GorgonJoystick>(deviceInfo);
 
 			if (joystickDevice == null)
 			{

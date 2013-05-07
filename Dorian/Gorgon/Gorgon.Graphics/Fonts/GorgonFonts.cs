@@ -122,7 +122,7 @@ namespace GorgonLibrary.Graphics
 		/// <returns>The font loaded from the stream.</returns>
 		private GorgonFont LoadFont(string fontName, Stream stream)
 		{
-			GorgonFontSettings settings = new GorgonFontSettings();
+			var settings = new GorgonFontSettings();
 			GorgonFont font = null;
 			FileStream fileStream = null;
             float fontHeight = 0.0f;
@@ -131,7 +131,7 @@ namespace GorgonLibrary.Graphics
             float fontLineHeight = 0.0f;
 
             // Output the font in chunked format.
-            using (GorgonChunkReader chunk = new GorgonChunkReader(stream))
+            using (var chunk = new GorgonChunkReader(stream))
             {
                 chunk.Begin(GorgonFont.FileHeader);
 
@@ -152,7 +152,7 @@ namespace GorgonLibrary.Graphics
                 // Write rendering information.
                 chunk.Begin("RNDRDATA");
                 settings.AntiAliasingMode = chunk.Read<FontAntiAliasMode>();
-                GorgonColor[] colors = new GorgonColor[chunk.ReadInt32()];
+                var colors = new GorgonColor[chunk.ReadInt32()];
                 for (int i = 0; i < colors.Length; i++)
                 {
                     colors[i] = chunk.Read<GorgonColor>();
@@ -247,7 +247,7 @@ namespace GorgonLibrary.Graphics
 
                     for (int j = 0; j < glyphCount; j++)
                     {
-                        GorgonGlyph glyph = new GorgonGlyph(chunk.ReadChar(), font.Textures[textureName],
+                        var glyph = new GorgonGlyph(chunk.ReadChar(), font.Textures[textureName],
                             chunk.ReadRectangle(),
                             chunk.Read<Vector2>(),
                             chunk.Read<Vector3>());
@@ -264,7 +264,7 @@ namespace GorgonLibrary.Graphics
                     int kernCount = chunk.ReadInt32();
                     for (int i = 0; i < kernCount; i++)
                     {
-                        GorgonKerningPair pair = new GorgonKerningPair(chunk.ReadChar(), chunk.ReadChar());
+                        var pair = new GorgonKerningPair(chunk.ReadChar(), chunk.ReadChar());
                         font.KerningPairs.Add(pair, chunk.ReadInt32());
                     }
                     chunk.End();
@@ -419,7 +419,7 @@ namespace GorgonLibrary.Graphics
 			if (pointSize < 1e-6f)
 				pointSize = 1e-6f;
 
-			GorgonFontSettings settings = new GorgonFontSettings()
+			var settings = new GorgonFontSettings()
 			{
 				AntiAliasingMode = antiAliasMode,
 				BaseColors = new GorgonColor[] { Color.White },
@@ -474,7 +474,7 @@ namespace GorgonLibrary.Graphics
                 throw new ArgumentNullException("font");
             }
 
-			GorgonFontSettings settings = new GorgonFontSettings()
+			var settings = new GorgonFontSettings()
 			{
 				AntiAliasingMode = antiAliasMode,
 				BaseColors = null,
@@ -526,7 +526,7 @@ namespace GorgonLibrary.Graphics
                 throw new ArgumentNullException("The font family name must not be NULL or empty.", "settings");
             }
 
-			GorgonFont result = new GorgonFont(_graphics, fontName, settings);
+			var result = new GorgonFont(_graphics, fontName, settings);
 
 			result.Update(settings);
 

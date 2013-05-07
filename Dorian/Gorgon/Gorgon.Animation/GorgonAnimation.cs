@@ -210,7 +210,7 @@ namespace GorgonLibrary.Animation
 		{
 			GorgonDebug.AssertNull(stream, "stream");
 
-			using (GorgonChunkWriter chunk = new GorgonChunkWriter(stream))
+			using (var chunk = new GorgonChunkWriter(stream))
 			{
 				chunk.Begin(GorgonAnimationController<T>.AnimationVersion);
 
@@ -294,7 +294,7 @@ namespace GorgonLibrary.Animation
 		/// <returns>A clone of the animation.</returns>		
 		public GorgonAnimation<T> Clone()
 		{
-			GorgonAnimation<T> clone = new GorgonAnimation<T>(AnimationController, Name, Length)
+			var clone = new GorgonAnimation<T>(AnimationController, Name, Length)
 			    {
 			        IsLooped = IsLooped,
 			        Length = Length,

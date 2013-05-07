@@ -252,7 +252,7 @@ namespace GorgonLibrary.IO
         private static BufferFormat GetBufferFormat(PixelFormat format)
         {
             PixelFormat bestFormat = format;
-            BufferFormat result = BufferFormat.Unknown;
+            var result = BufferFormat.Unknown;
 
             // Get the best fit for the pixel format.
             for (int i = 0; i < _bestFit.Length; i++)
@@ -339,7 +339,7 @@ namespace GorgonLibrary.IO
 			}
 
 			// Create our settings.
-			GorgonTexture1DSettings settings = new GorgonTexture1DSettings()
+			var settings = new GorgonTexture1DSettings()
 			{
 				Width = options.Width,
 				MipCount = options.MipCount,
@@ -416,7 +416,7 @@ namespace GorgonLibrary.IO
 			}
 
 			// Create our settings.
-			GorgonTexture1DSettings settings = new GorgonTexture1DSettings()
+			var settings = new GorgonTexture1DSettings()
 			{
 				Width = options.Width,
 				MipCount = options.MipCount,
@@ -498,7 +498,7 @@ namespace GorgonLibrary.IO
 			}
 			
 			// Create our settings.
-			GorgonTexture2DSettings settings = new GorgonTexture2DSettings()
+			var settings = new GorgonTexture2DSettings()
 			{
 				Width = options.Width,
 				Height = options.Height,
@@ -584,7 +584,7 @@ namespace GorgonLibrary.IO
 			}
 
 			// Create our settings.
-			GorgonTexture2DSettings settings = new GorgonTexture2DSettings()
+			var settings = new GorgonTexture2DSettings()
 			{
 				Width = options.Width,
 				Height = options.Height,
@@ -687,7 +687,7 @@ namespace GorgonLibrary.IO
 			}
 
 			// Create our settings.
-			GorgonTexture3DSettings settings = new GorgonTexture3DSettings()
+			var settings = new GorgonTexture3DSettings()
 			{
 				Width = options.Width,
 				Height = options.Height,

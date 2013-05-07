@@ -210,7 +210,7 @@ namespace GorgonLibrary.Editor
 		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
 		private void numericUpDown1_Enter(object sender, EventArgs e)
 		{
-			NumericUpDown control = sender as NumericUpDown;
+			var control = sender as NumericUpDown;
 
 			if (control == null)
 			{

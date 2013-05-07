@@ -462,7 +462,7 @@ namespace GorgonLibrary.UI
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void labelClose_MouseEnter(object sender, EventArgs e)
         {
-            Label label = sender as Label;
+            var label = sender as Label;
 
             if (label != null)
             {
@@ -477,7 +477,7 @@ namespace GorgonLibrary.UI
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void labelClose_MouseLeave(object sender, EventArgs e)
         {
-            Label label = sender as Label;
+            var label = sender as Label;
 
             if (label != null)
             {
@@ -841,7 +841,7 @@ namespace GorgonLibrary.UI
 		{
 			if ((WindowState == FormWindowState.Normal) && (Border))
 			{
-				using (Pen pen = new Pen(ActiveForm == this ? BorderColor : Color.FromKnownColor(KnownColor.DimGray), _borderWidth))
+				using (var pen = new Pen(ActiveForm == this ? BorderColor : Color.FromKnownColor(KnownColor.DimGray), _borderWidth))
 				{
 					graphics.DrawRectangle(pen, new Rectangle(0, 0, Width - 1, Height - 1));
 				}

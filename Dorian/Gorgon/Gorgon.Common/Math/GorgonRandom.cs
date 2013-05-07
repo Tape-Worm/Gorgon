@@ -149,7 +149,7 @@ namespace GorgonLibrary.Math
 		/// <returns>The Perlin noise value.</returns>
 		public static float Perlin(float value)
 		{
-			int index0 = (int)value.FastFloor();
+			var index0 = (int)value.FastFloor();
 			int index1 = index0 + 1;
 			float x0 = value - index0;
 			float x1 = x0 - 1.0f;
@@ -205,8 +205,8 @@ namespace GorgonLibrary.Math
 			// A step of (1,0) in (i,j) means a step of (1-c,-c) in (x,y), and
 			// a step of (0,1) in (i,j) means a step of (-c,1-c) in (x,y), where
 			// c = (3-sqrt(3))/6
-			Vector2 value1 = new Vector2(distance.X - offset1 + g2, distance.Y - offset2 + g2);					// Offsets for middle corner in (x,y) unskewed coords
-			Vector2 value2 = new Vector2(distance.X - 1.0f + 2.0f * g2, distance.Y - 1.0f + 2.0f * g2);			// Offsets for last corner in (x,y) unskewed coords
+			var value1 = new Vector2(distance.X - offset1 + g2, distance.Y - offset2 + g2);					// Offsets for middle corner in (x,y) unskewed coords
+			var value2 = new Vector2(distance.X - 1.0f + 2.0f * g2, distance.Y - 1.0f + 2.0f * g2);			// Offsets for last corner in (x,y) unskewed coords
 
 			// Wrap the integer indices at 256, to avoid indexing _permutations[] out of bounds
 			int index0 = i % 256;

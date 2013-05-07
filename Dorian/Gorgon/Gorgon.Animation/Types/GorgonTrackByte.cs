@@ -108,7 +108,7 @@ namespace GorgonLibrary.Animation
 		/// <param name="key">Key to apply to the properties.</param>
 		protected internal override void ApplyKey(ref IKeyFrame key)
 		{
-			GorgonKeyByte value = (GorgonKeyByte)key;            
+			var value = (GorgonKeyByte)key;            
 			_setProperty(Animation.AnimationController.AnimatedObject, value.Value);
 		}
 		#endregion

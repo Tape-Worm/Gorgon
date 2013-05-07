@@ -111,7 +111,7 @@ namespace Test_TextureArray
 
 			_noDecal = _graphics.Textures.FromFile<GorgonTexture2D>("Image", @"..\..\..\..\Resources\Images\BallDemo.png", new GorgonCodecPNG());
 
-			GorgonTexture2D image = _graphics.Textures.FromFile<GorgonTexture2D>("Image2", @"..\..\..\..\Resources\Images\Ship_Decal.png", new GorgonCodecPNG()
+			var image = _graphics.Textures.FromFile<GorgonTexture2D>("Image2", @"..\..\..\..\Resources\Images\Ship_Decal.png", new GorgonCodecPNG()
 				{
 					Usage = BufferUsage.Staging
 				});

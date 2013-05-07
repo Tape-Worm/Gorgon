@@ -104,7 +104,7 @@ namespace GorgonLibrary.IO
 				return;
 			}
 
-			byte* data = (byte*)pointer;
+			var data = (byte*)pointer;
 			while (size > 0)
 			{
 				if (size >= 8)

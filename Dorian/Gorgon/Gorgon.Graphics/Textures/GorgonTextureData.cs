@@ -56,7 +56,7 @@ namespace GorgonLibrary.Graphics
 			if ((data == null) || (data.Count() == 0))
 				return null;
 
-			DX.DataStream[] streams = new DX.DataStream[data.Count()];
+			var streams = new DX.DataStream[data.Count()];
 
 			for (int i = 0; i < data.Count(); i++)
 				streams[i] = new DX.DataStream(data.ElementAt(i).Data.PositionPointer, data.ElementAt(i).Size, true, true);
@@ -152,7 +152,7 @@ namespace GorgonLibrary.Graphics
 			if ((data == null) || (data.Count() == 0))
 				return null;
 
-			DX.DataRectangle[] rectangles = new DX.DataRectangle[data.Count()];
+			var rectangles = new DX.DataRectangle[data.Count()];
 
 			for (int i = 0; i < data.Count(); i++)
 				rectangles[i] = new DX.DataRectangle(data.ElementAt(i).Data.PositionPointer, data.ElementAt(i).RowPitch);
@@ -255,7 +255,7 @@ namespace GorgonLibrary.Graphics
 			if ((data == null) || (data.Count() == 0))
 				return null;
 
-			DX.DataBox[] boxes = new DX.DataBox[data.Count()];
+			var boxes = new DX.DataBox[data.Count()];
 
 			for (int i = 0; i < data.Count(); i++)
 				boxes[i] = new DX.DataBox(data.ElementAt(i).Data.PositionPointer, data.ElementAt(i).RowPitch, data.ElementAt(i).SlicePitch);

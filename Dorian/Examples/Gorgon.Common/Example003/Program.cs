@@ -56,7 +56,7 @@ namespace GorgonLibrary.Examples
 		/// <remarks>This is the secondary default idle loop.</remarks>
 		public static bool NewIdle()
 		{
-			formMain form = (formMain)Gorgon.ApplicationContext.MainForm;		// Get our main form from the context.
+			var form = (formMain)Gorgon.ApplicationContext.MainForm;		// Get our main form from the context.
 			
 			// Draw some bars every 16 ms.
 			if (GorgonTiming.MillisecondsSinceStart - _lastTime >= 16.6f)
@@ -111,7 +111,7 @@ namespace GorgonLibrary.Examples
 		/// <remarks>This is the default idle loop.</remarks>
 		public static bool Idle()
 		{
-			formMain form = (formMain)Gorgon.ApplicationContext.MainForm;		// Get our main form from the context.
+			var form = (formMain)Gorgon.ApplicationContext.MainForm;		// Get our main form from the context.
 
 			int x = _rnd.Next(0, form.GraphicsSize.Width - 1);
 			int y = _rnd.Next(0, form.GraphicsSize.Height - 1);

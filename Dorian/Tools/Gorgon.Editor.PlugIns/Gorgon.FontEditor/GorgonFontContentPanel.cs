@@ -178,7 +178,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
 		private void componentEdit_ValueChanged(object sender, EventArgs e)
 		{
-			formValueComponentEditDialog dialog = sender as formValueComponentEditDialog;
+			var dialog = sender as formValueComponentEditDialog;
 						
 			_text.ShadowOffset = new Point((int)dialog.Value1, (int)dialog.Value2);
 			DrawText();
@@ -192,7 +192,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
 		private void itemShadowOpacity_Click(object sender, EventArgs e)
 		{
-			int opacity = (int)(GorgonFontEditorPlugIn.Settings.ShadowOpacity * 255.0f);
+			var opacity = (int)(GorgonFontEditorPlugIn.Settings.ShadowOpacity * 255.0f);
 			formAlphaPicker picker = null;
 
 			try
@@ -728,7 +728,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 
 			float alpha = 0.0f;
 
-			Vector2 texturePos = new Vector2(((panelTextures.ClientSize.Width / 2.0f) - (currentTexture.Settings.Width * _currentZoom) / 2.0f), 0);
+			var texturePos = new Vector2(((panelTextures.ClientSize.Width / 2.0f) - (currentTexture.Settings.Width * _currentZoom) / 2.0f), 0);
 
 			// Show the textures that come before the current texture.
 			for (int i = _currentTextureIndex - 1; i >= 0; i--)
@@ -739,7 +739,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 
 				alpha = (range - index) / range;
 
-				Vector2 textureSize = new Vector2((_currentZoom * 0.75f * alpha) * currentTexture.Settings.Width, (_currentZoom * 0.75f * alpha) * currentTexture.Settings.Height);
+				var textureSize = new Vector2((_currentZoom * 0.75f * alpha) * currentTexture.Settings.Width, (_currentZoom * 0.75f * alpha) * currentTexture.Settings.Height);
 
 				texturePos.Y = panelTextures.ClientSize.Height / 2.0f - textureSize.Y / 2.0f;
 				texturePos.X -= textureSize.X + 8.0f;				
@@ -759,7 +759,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 
 				alpha = (range - index) / range;
 
-				Vector2 textureSize = new Vector2((_currentZoom * 0.75f * alpha) * currentTexture.Settings.Width, (_currentZoom * 0.75f * alpha) * currentTexture.Settings.Height);
+				var textureSize = new Vector2((_currentZoom * 0.75f * alpha) * currentTexture.Settings.Width, (_currentZoom * 0.75f * alpha) * currentTexture.Settings.Height);
 
 				texturePos.Y = panelTextures.ClientSize.Height / 2.0f - textureSize.Y / 2.0f;
 

@@ -118,7 +118,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 				// Get range.
 				if ((!string.IsNullOrEmpty(items[0])) && (!string.IsNullOrEmpty(items[1])))
 				{
-					GorgonMinMax range = new GorgonMinMax(int.Parse(items[0].Substring(0, items[0].IndexOf('.')), System.Globalization.NumberStyles.HexNumber), 
+					var range = new GorgonMinMax(int.Parse(items[0].Substring(0, items[0].IndexOf('.')), System.Globalization.NumberStyles.HexNumber), 
 						int.Parse(items[0].Substring(items[0].LastIndexOf('.') + 1), System.Globalization.NumberStyles.HexNumber));
 
 					// Combine the first 2 latin categories into the one category.
@@ -141,7 +141,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		/// <returns>TRUE if supported, FALSE if not.</returns>
 		public static bool IsGlyphSupported(char c, IntPtr hDc)
 		{
-			ushort[] indices = new ushort[1];
+			var indices = new ushort[1];
 
 			GetGlyphIndices(hDc, c.ToString(), 1, indices, 0x01);
 
@@ -157,9 +157,9 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		{
 			char result = ' ';
 
-			byte[] keys = new byte[255];
+			var keys = new byte[255];
 			GetKeyboardState(keys);
-			char[] characters = new char[1];
+			var characters = new char[1];
 
 			if (ToUnicode((int)key, 0, keys, characters, characters.Length, 1) != 0)
 				result = characters[0];
@@ -210,7 +210,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 			int itemCount = 0;
 			size = GetFontUnicodeRanges(hDc, IntPtr.Zero);
 
-			using (GorgonDataStream stream = new GorgonDataStream((int)size))
+			using (var stream = new GorgonDataStream((int)size))
 			{							
 				GetFontUnicodeRanges(hDc, stream.BasePointer);
 

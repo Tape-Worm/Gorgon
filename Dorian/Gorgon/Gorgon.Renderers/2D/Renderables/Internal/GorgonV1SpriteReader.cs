@@ -274,7 +274,7 @@ namespace GorgonLibrary.Renderers
 			// transformation.
 			// Also, older versions used the size the determine the area on the texture to cover.  So use the size to
 			// get the texture bounds.
-			Vector2 textureOffset = new Vector2(reader.ReadSingle(), reader.ReadSingle());
+			var textureOffset = new Vector2(reader.ReadSingle(), reader.ReadSingle());
 			Vector2 textureSize = Vector2.Zero;
 
 			if (sprite.Texture != null)

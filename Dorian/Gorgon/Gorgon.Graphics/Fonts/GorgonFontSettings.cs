@@ -314,7 +314,7 @@ namespace GorgonLibrary.Graphics
 		/// <returns>The font height, in pixels.</returns>
 		public static float GetFontHeight(float pointSize, int outlineSize)
 		{
-			using (Bitmap tempBmp = new Bitmap(1, 1, System.Drawing.Imaging.PixelFormat.Format32bppArgb))
+			using (var tempBmp = new Bitmap(1, 1, System.Drawing.Imaging.PixelFormat.Format32bppArgb))
 			{
 				using (System.Drawing.Graphics g = System.Drawing.Graphics.FromImage(tempBmp))
 				{

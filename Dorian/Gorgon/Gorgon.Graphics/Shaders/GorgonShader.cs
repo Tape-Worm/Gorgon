@@ -305,7 +305,7 @@ namespace GorgonLibrary.Graphics
 		/// <returns>The compiled shader byte code.</returns>
 		private Shaders.ShaderBytecode CompileFromSource(bool includeDebugInfo)
 		{
-			Shaders.ShaderFlags flags = Shaders.ShaderFlags.OptimizationLevel3;
+			var flags = Shaders.ShaderFlags.OptimizationLevel3;
 			string parsedCode = string.Empty;
 
 			try

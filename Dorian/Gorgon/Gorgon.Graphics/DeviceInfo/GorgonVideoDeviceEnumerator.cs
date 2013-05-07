@@ -167,7 +167,7 @@ namespace GorgonLibrary.Graphics
 		/// <param name="giOutput">Output that contains the video modes.</param>
 		private static void GetVideoModes(GorgonVideoOutput output, D3D.Device d3dDevice, DXGI.Output giOutput)
 		{
-			BufferFormat[] formats = (BufferFormat[])Enum.GetValues(typeof(BufferFormat));
+			var formats = (BufferFormat[])Enum.GetValues(typeof(BufferFormat));
 			GorgonVideoMode[] videoModes = null;
 
 			Gorgon.Log.Print("Retrieving video modes for output '{0}'...", Diagnostics.LoggingLevel.Simple, output.Name);
@@ -176,7 +176,7 @@ namespace GorgonLibrary.Graphics
 			// Test each format for display compatibility.
 			foreach (var format in formats)
 			{
-				DXGI.Format giFormat = (DXGI.Format)format;
+				var giFormat = (DXGI.Format)format;
 				DXGI.ModeDescription[] modes = giOutput.GetDisplayModeList(giFormat, DXGI.DisplayModeEnumerationFlags.Scaling | DXGI.DisplayModeEnumerationFlags.Interlaced);
 
 				if ((modes != null) && (modes.Length > 0))
@@ -212,14 +212,14 @@ namespace GorgonLibrary.Graphics
 		/// <param name="outputCount">The number of outputs attached to the device.</param>
 		private static void GetOutputs(GorgonVideoDevice device, D3D.Device d3ddevice, DXGI.Adapter1 adapter, int outputCount)
 		{
-			List<GorgonVideoOutput> outputs = new List<GorgonVideoOutput>(outputCount);
+			var outputs = new List<GorgonVideoOutput>(outputCount);
 
 			// Get outputs.
 			for (int i = 0; i < outputCount; i++)
 			{
 				using (DXGI.Output giOutput = adapter.GetOutput(i))
 				{
-					GorgonVideoOutput output = new GorgonVideoOutput(giOutput, device, i);
+					var output = new GorgonVideoOutput(giOutput, device, i);
 
 					DXGI.ModeDescription findMode = GorgonVideoMode.Convert(new GorgonVideoMode(output.OutputBounds.Width, output.OutputBounds.Height, BufferFormat.R8G8B8A8_UIntNormal, 60, 1));
 					DXGI.ModeDescription result = default(DXGI.ModeDescription);

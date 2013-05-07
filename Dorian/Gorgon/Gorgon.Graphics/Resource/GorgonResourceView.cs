@@ -292,10 +292,10 @@ namespace GorgonLibrary.Graphics
 		private void BuildBufferView(GorgonShaderBuffer buffer)
 		{
 			Type bufferType = buffer.GetType();
-			D3D.ShaderResourceViewDescription srvDesc = new D3D.ShaderResourceViewDescription();
-			D3D.UnorderedAccessViewDescription uavDesc = new D3D.UnorderedAccessViewDescription();
-			D3D.UnorderedAccessViewBufferFlags uavFlags = D3D.UnorderedAccessViewBufferFlags.None;
-			GorgonStructuredBuffer structuredBuffer = buffer as GorgonStructuredBuffer;
+			var srvDesc = new D3D.ShaderResourceViewDescription();
+			var uavDesc = new D3D.UnorderedAccessViewDescription();
+			var uavFlags = D3D.UnorderedAccessViewBufferFlags.None;
+			var structuredBuffer = buffer as GorgonStructuredBuffer;
 
 			if (structuredBuffer != null)
 			{

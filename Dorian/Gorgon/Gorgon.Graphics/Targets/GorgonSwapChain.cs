@@ -301,7 +301,7 @@ namespace GorgonLibrary.Graphics
 			{
 				Gorgon.Log.Print("GorgonSwapChain '{0}': Creating internal depth/stencil...", Diagnostics.LoggingLevel.Verbose, Name);
 
-				GorgonDepthStencilSettings settings = new GorgonDepthStencilSettings {
+				var settings = new GorgonDepthStencilSettings {
 					Format = Settings.DepthStencilFormat,
 					Width = Settings.Width,
 					Height = Settings.Height,
@@ -335,7 +335,7 @@ namespace GorgonLibrary.Graphics
 		private void ResizeBuffers()
 		{
 			ReleaseResources();
-			GI.SwapChainFlags flags = GI.SwapChainFlags.AllowModeSwitch;
+			var flags = GI.SwapChainFlags.AllowModeSwitch;
 
 			GISwapChain.ResizeBuffers(Settings.BufferCount, Settings.VideoMode.Width, Settings.VideoMode.Height, (GI.Format)Settings.VideoMode.Format, flags);
 			CreateResources();
@@ -592,8 +592,8 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		protected internal override void Initialize()
 		{
-			GI.SwapChainFlags flags = GI.SwapChainFlags.AllowModeSwitch;
-			GI.SwapChainDescription d3dSettings = new GI.SwapChainDescription();
+			var flags = GI.SwapChainFlags.AllowModeSwitch;
+			var d3dSettings = new GI.SwapChainDescription();
 
 			// Resize the window to match requested mode size.
 			if ((_parentForm == Settings.Window) && (Settings.IsWindowed) && (!Settings.NoClientResize))
@@ -765,7 +765,7 @@ namespace GorgonLibrary.Graphics
 		/// <exception cref="GorgonLibrary.GorgonException">Thrown when the method encounters an unrecoverable error.</exception>
 		public void Flip(int interval)
 		{
-			GI.PresentFlags flags = GI.PresentFlags.None;
+			var flags = GI.PresentFlags.None;
 			SharpDX.Result result = SharpDX.Result.Ok;
 
 			GorgonDebug.AssertParamRange(interval, 0, 4, true, true, "interval");

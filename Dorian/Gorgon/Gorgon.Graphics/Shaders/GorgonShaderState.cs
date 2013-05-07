@@ -90,7 +90,7 @@ namespace GorgonLibrary.Graphics
 			/// <returns>The D3D state object.</returns>
 			internal override D3D.DeviceChild GetStateObject(ref GorgonTextureSamplerStates stateType)
 			{
-				D3D.SamplerStateDescription desc = new D3D.SamplerStateDescription();
+				var desc = new D3D.SamplerStateDescription();
 
 				desc.AddressU = (D3D.TextureAddressMode)stateType.HorizontalAddressing;
 				desc.AddressV = (D3D.TextureAddressMode)stateType.VerticalAddressing;
@@ -153,7 +153,7 @@ namespace GorgonLibrary.Graphics
 						desc.Filter = D3D.Filter.MinPointMagLinearMipPoint;
 				}
 
-				D3D.SamplerState state = new D3D.SamplerState(Graphics.D3DDevice, desc);
+				var state = new D3D.SamplerState(Graphics.D3DDevice, desc);
 				state.DebugName = "Gorgon Sampler State #" + StateCacheCount.ToString();
 
 				return state;

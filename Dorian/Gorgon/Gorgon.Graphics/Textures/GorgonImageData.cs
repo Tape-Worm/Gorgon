@@ -344,7 +344,7 @@ namespace GorgonLibrary.Graphics
 			_buffers = new ImageBuffer[GetDepthSliceCount(Settings.Depth, Settings.MipCount) * Settings.ArrayCount];	// Allocate enough room for the array and mip levels.
 			_mipOffsetSize = new Tuple<int, int>[Settings.MipCount * Settings.ArrayCount];								// Offsets for the mip maps.
 			_dataBoxes = new DX.DataBox[Settings.ArrayCount * Settings.MipCount];										// Create the data boxes for textures.
-			byte* imageData = (byte*)_imageData.UnsafePointer;															// Start at the beginning of our data block.
+			var imageData = (byte*)_imageData.UnsafePointer;															// Start at the beginning of our data block.
 			
 			// Enumerate array indices. (For 1D and 2D only, 3D will always be 1)
 			for (int array = 0; array < Settings.ArrayCount; array++)
@@ -450,7 +450,7 @@ namespace GorgonLibrary.Graphics
             }
 
             // Ensure WIC can convert between the two formats.
-            using (WIC.FormatConverter converter = new WIC.FormatConverter(wic.Factory))
+            using (var converter = new WIC.FormatConverter(wic.Factory))
             {
                 converter.CanConvert(sourcePixelFormat, destPixelFormat);
             }
@@ -664,11 +664,11 @@ namespace GorgonLibrary.Graphics
 						break;
 					case ImageType.Image2D:
 					case ImageType.ImageCube:
-						Rectangle destArea = new Rectangle(0, 0, texture.Settings.Width.Min(Settings.Width), height);
+						var destArea = new Rectangle(0, 0, texture.Settings.Width.Min(Settings.Width), height);
 						((GorgonTexture2D)texture).UpdateSubResource(textureData, resourceIndex, destArea);
 						break;
 					case ImageType.Image3D:
-						GorgonBox destBox = new GorgonBox();
+						var destBox = new GorgonBox();
 						destBox.X = destBox.Y = destBox.Z = 0;
 						destBox.Width = texture.Settings.Width.Min(Settings.Width);
 						destBox.Height = height;
@@ -1215,8 +1215,8 @@ namespace GorgonLibrary.Graphics
                 // If the strides don't match, then the texture is using padding, so copy one scanline at a time for each depth index.
                 if ((textureLock.RowPitch != rowStride) || (textureLock.SlicePitch != sliceStride))
                 {
-                    byte* destData = (byte*)buffer;
-                    byte* sourceData = (byte*)textureLock.Data.UnsafePointer;
+                    var destData = (byte*)buffer;
+                    var sourceData = (byte*)textureLock.Data.UnsafePointer;
 
                     for (int depth = 0; depth < depthCount; depth++)
                     {
@@ -1906,7 +1906,7 @@ namespace GorgonLibrary.Graphics
 		/// data structure to another.</remarks>
 		public byte[] SaveRaw()
 		{
-			byte[] result = new byte[SizeInBytes];
+			var result = new byte[SizeInBytes];
 
 			fixed (byte* element = &result[0])
 			{
@@ -2153,7 +2153,7 @@ namespace GorgonLibrary.Graphics
 
 				if (mipCount > 1)
 				{
-					using (GorgonWICImage wic = new GorgonWICImage())
+					using (var wic = new GorgonWICImage())
 					{
 						Guid format = wic.GetGUID(Settings.Format);
 
@@ -2175,9 +2175,9 @@ namespace GorgonLibrary.Graphics
 									var sourceBuffer = mipWorker[array, 0, (Settings.Depth / mipDepth) * depth];
 									var depthBuffer = mipWorker[array, mipLevel, depth];
 
-									SharpDX.DataRectangle dataPtr = new DX.DataRectangle(sourceBuffer.Data.BasePointer, sourceBuffer.PitchInformation.RowPitch);
+									var dataPtr = new DX.DataRectangle(sourceBuffer.Data.BasePointer, sourceBuffer.PitchInformation.RowPitch);
 									// Create a temporary bitmap and resize it.
-									using (WIC.Bitmap bitmap = new WIC.Bitmap(wic.Factory, sourceBuffer.Width, sourceBuffer.Height, format, dataPtr, sourceBuffer.PitchInformation.SlicePitch))
+									using (var bitmap = new WIC.Bitmap(wic.Factory, sourceBuffer.Width, sourceBuffer.Height, format, dataPtr, sourceBuffer.PitchInformation.SlicePitch))
 									{
 										// Scale the image into the next buffer.
 										wic.TransformImageData(bitmap, depthBuffer.Data.BasePointer, depthBuffer.PitchInformation.RowPitch, depthBuffer.PitchInformation.SlicePitch,
@@ -2303,10 +2303,10 @@ namespace GorgonLibrary.Graphics
 							// Get the array/mip/depth buffer.
 							var destBuffer = destData[array, 0, depth];
 							var srcBuffer = this[array, 0, depth];
-							DX.DataRectangle rect = new DX.DataRectangle(srcBuffer.Data.BasePointer, srcBuffer.PitchInformation.RowPitch);
+							var rect = new DX.DataRectangle(srcBuffer.Data.BasePointer, srcBuffer.PitchInformation.RowPitch);
 
 							// Create a WIC bitmap so we have a source for conversion.
-							using (WIC.Bitmap wicBmp = new WIC.Bitmap(wic.Factory, srcBuffer.Width, srcBuffer.Height, sourceFormat, rect, rect.Pitch * Settings.Height))
+							using (var wicBmp = new WIC.Bitmap(wic.Factory, srcBuffer.Width, srcBuffer.Height, sourceFormat, rect, rect.Pitch * Settings.Height))
 							{
 								wic.TransformImageData(wicBmp, destBuffer.Data.BasePointer, destBuffer.PitchInformation.RowPitch,
 																destBuffer.PitchInformation.SlicePitch, Guid.Empty, ImageDithering.None, new Rectangle(0, 0, width, height), clip, filter);
@@ -2403,10 +2403,10 @@ namespace GorgonLibrary.Graphics
                                 // Get the array/mip/depth buffer.
                                 var destBuffer = destData[array, mip, depth];
 								var srcBuffer = this[array, mip, depth];
-                                DX.DataRectangle rect = new DX.DataRectangle(srcBuffer.Data.BasePointer, srcBuffer.PitchInformation.RowPitch);
+                                var rect = new DX.DataRectangle(srcBuffer.Data.BasePointer, srcBuffer.PitchInformation.RowPitch);
                                
                                 // Create a WIC bitmap so we have a source for conversion.
-                                using (WIC.Bitmap wicBmp = new WIC.Bitmap(wic.Factory, srcBuffer.Width, srcBuffer.Height, sourceFormat, rect, rect.Pitch * destData.Settings.Height))
+                                using (var wicBmp = new WIC.Bitmap(wic.Factory, srcBuffer.Width, srcBuffer.Height, sourceFormat, rect, rect.Pitch * destData.Settings.Height))
                                 {
 									wic.TransformImageData(wicBmp, destBuffer.Data.BasePointer, destBuffer.PitchInformation.RowPitch, 
 																	destBuffer.PitchInformation.SlicePitch, destFormat, ditherMode, Rectangle.Empty, true, ImageFilter.Point);

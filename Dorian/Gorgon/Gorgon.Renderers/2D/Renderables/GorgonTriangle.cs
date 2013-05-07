@@ -209,8 +209,8 @@ namespace GorgonLibrary.Renderers
 		{
 			get
 			{
-				Vector2 min = new Vector2(float.MaxValue, float.MaxValue);
-				Vector2 max = new Vector2(float.MinValue, float.MinValue);
+				var min = new Vector2(float.MaxValue, float.MaxValue);
+				var max = new Vector2(float.MinValue, float.MinValue);
 
 				for (int i = 0; i < _points.Length; i++)
 				{
@@ -495,8 +495,8 @@ namespace GorgonLibrary.Renderers
 		{
 			get
 			{
-				Vector2 min = new Vector2(float.MaxValue, float.MaxValue);
-				Vector2 max = new Vector2(float.MinValue, float.MinValue);
+				var min = new Vector2(float.MaxValue, float.MaxValue);
+				var max = new Vector2(float.MinValue, float.MinValue);
 
 				for (int i = 0; i < _points.Length; i++)
 				{

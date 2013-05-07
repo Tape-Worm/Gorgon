@@ -198,7 +198,7 @@ namespace GorgonLibrary.Examples
 				}
 
 				// Draw the pen.
-				RectangleF penPositon = new RectangleF(e.Position.X - (_radius / 2.0f), e.Position.Y - (_radius / 2.0f), _radius, _radius);
+				var penPositon = new RectangleF(e.Position.X - (_radius / 2.0f), e.Position.Y - (_radius / 2.0f), _radius, _radius);
 				if (_radius > 3.0f)
 				{
 					_2D.Drawing.FilledEllipse(penPositon, drawColor);
@@ -251,7 +251,7 @@ namespace GorgonLibrary.Examples
 			// If we have a joystick button down, then draw a black dot.
 			if ((_joystick != null) && (_joystick.Button[0].IsPressed))
 			{
-				RectangleF penPosition = new RectangleF(cursorPosition.X - (_radius / 2.0f), cursorPosition.Y - (_radius / 2.0f), _radius, _radius);
+				var penPosition = new RectangleF(cursorPosition.X - (_radius / 2.0f), cursorPosition.Y - (_radius / 2.0f), _radius, _radius);
 				_2D.Drawing.BlendingMode = BlendingMode.Modulate;
 				_2D.Target = _backBuffer;
 				if (_radius > 3.0f)

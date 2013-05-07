@@ -209,7 +209,7 @@ namespace GorgonLibrary.Collections
 		/// <returns>Array containing the contents of this collection.</returns>
 		public T[] ToArray()
 		{
-			T[] array = new T[Count];
+			var array = new T[Count];
 			CopyTo(array, 0);
 			
 			return array;

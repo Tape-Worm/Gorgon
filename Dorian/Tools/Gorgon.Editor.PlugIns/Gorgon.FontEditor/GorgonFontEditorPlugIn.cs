@@ -119,7 +119,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
         /// </returns>        
         protected override string ValidatePlugIn()
         {
-            StringBuilder invalidReasons = new StringBuilder(512);
+            var invalidReasons = new StringBuilder(512);
 
             // Currently we won't work on Direct 3D 9 video devices because of issues when saving texture data.
             if (Graphics.VideoDevice.SupportedFeatureLevel == GorgonLibrary.Graphics.DeviceFeatureLevel.SM2_a_b)

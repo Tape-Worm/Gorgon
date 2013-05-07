@@ -63,7 +63,7 @@ namespace GorgonLibrary.Editor
             for (int i = 0; i < _prefPanels.Count; i++)
             {
                 PreferencePanel panel = _prefPanels[i];
-                TabPageEx page = new TabPageEx(panel.Text);
+                var page = new TabPageEx(panel.Text);
 
                 page.BackColor = DarkFormsRenderer.WindowBackground;
                 page.ForeColor = Color.White;

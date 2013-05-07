@@ -398,7 +398,7 @@ namespace GorgonLibrary.Animation
 			if (time <= 0)
 				return KeyFrames[0];
 
-			NearestKeys keys = new NearestKeys(this, time);
+			var keys = new NearestKeys(this, time);
 
 		    if (keys.KeyTimeDelta == 0.0f)
 		    {

@@ -134,7 +134,7 @@ namespace GorgonLibrary
 
 			while (inner != null)
 			{
-				GorgonException gorgonException = inner as GorgonException;
+				var gorgonException = inner as GorgonException;
 
 				FormatMessage(inner.Message, indicator, (inner == ex) ? LoggingLevel.All : LoggingLevel.Verbose);
 				Log.Print("{1}Type: {0}", (inner == ex) ? LoggingLevel.All : LoggingLevel.Verbose, inner.GetType().FullName, indicator);

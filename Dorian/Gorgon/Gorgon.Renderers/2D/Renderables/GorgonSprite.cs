@@ -363,7 +363,7 @@ namespace GorgonLibrary.Renderers
 		/// <param name="offset">Offset for the corner.</param>
 		public void SetCornerOffset(RectangleCorner corner, Vector2 offset)
 		{
-			int index = (int)corner;
+			var index = (int)corner;
 
 			if (_offsets[index] != offset)
 			{
@@ -408,7 +408,7 @@ namespace GorgonLibrary.Renderers
 		/// <returns>A byte array containing the sprite data.</returns>
 		public byte[] Save()
 		{
-			using (MemoryStream stream = new MemoryStream())
+			using (var stream = new MemoryStream())
 			{
 				Save(stream);
 
@@ -528,12 +528,12 @@ namespace GorgonLibrary.Renderers
             }
 
             // Read the sprite in.
-            using (GorgonChunkReader chunk = new GorgonChunkReader(stream))
+            using (var chunk = new GorgonChunkReader(stream))
             {
                 if (!chunk.HasChunk(FileHeader))
                 {
                     // Check to see if it's an older version of the Gorgon sprite data.
-                    using (GorgonBinaryReader oldReader = new GorgonBinaryReader(stream, true))
+                    using (var oldReader = new GorgonBinaryReader(stream, true))
                     {
                         GorgonV1SpriteReader.LoadSprite(this, oldReader);
                     }
@@ -632,7 +632,7 @@ namespace GorgonLibrary.Renderers
 			}
 
             // Chunk the file.            
-            using (GorgonChunkWriter chunk = new GorgonChunkWriter(stream))
+            using (var chunk = new GorgonChunkWriter(stream))
             {
                 // Write anchor information.
 				chunk.Begin(FileHeader);

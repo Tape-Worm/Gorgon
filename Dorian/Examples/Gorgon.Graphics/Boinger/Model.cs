@@ -177,7 +177,7 @@ namespace GorgonLibrary.Graphics.Example
                     Quaternion quatRotation;		// Quaternion for rotation.
 
 				    // Convert degrees to radians.
-					Vector3 rotRads = new Vector3(_rotation.X.Radians(), _rotation.Y.Radians(), _rotation.Z.Radians());
+					var rotRads = new Vector3(_rotation.X.Radians(), _rotation.Y.Radians(), _rotation.Z.Radians());
 				    
 				    Quaternion.RotationYawPitchRoll(rotRads.Y, rotRads.X, rotRads.Z, out quatRotation);
 					Matrix.RotationQuaternion(ref quatRotation, out _rotationMatrix);

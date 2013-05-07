@@ -27,12 +27,13 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Globalization;
 using System.IO;
 using System.Text;
 using System.Windows.Forms;
-using GorgonLibrary.Math;
 using GorgonLibrary.Diagnostics;
 using GorgonLibrary.IO;
+using GorgonLibrary.Math;
 using GorgonLibrary.Renderers;
 using SlimMath;
 
@@ -76,15 +77,15 @@ namespace GorgonLibrary.Graphics.Example
 				throw new ArgumentException("The resource was not specified.", "resourceItem");
 			}
 
-			if (!path.EndsWith(Path.DirectorySeparatorChar.ToString()))
+			if (!path.EndsWith(Path.DirectorySeparatorChar.ToString(CultureInfo.InvariantCulture)))
 			{
-				path += Path.DirectorySeparatorChar.ToString();
+				path += Path.DirectorySeparatorChar.ToString(CultureInfo.InvariantCulture);
 			}
 
 			path = path.RemoveIllegalPathChars();
 
 			// If this is a directory, then sanitize it as such.
-			if (resourceItem.EndsWith(Path.DirectorySeparatorChar.ToString()))
+			if (resourceItem.EndsWith(Path.DirectorySeparatorChar.ToString(CultureInfo.InvariantCulture)))
 			{
 				path += resourceItem.RemoveIllegalPathChars();
 			}
@@ -121,7 +122,7 @@ namespace GorgonLibrary.Graphics.Example
 			// Generate balls.
 			for (int i = start; i < _ballCount; i++)
 			{
-				Ball ball = new Ball
+				var ball = new Ball
 				    {
 				        Position = new Vector2(halfWidth - (_ball.Size.X/2.0f), halfHeight - (_ball.Size.Y/2.0f)),
 				        PositionDelta = new Vector2((GorgonRandom.RandomSingle()*_mainScreen.Settings.Width) - (halfWidth),

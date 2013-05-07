@@ -159,7 +159,7 @@ namespace Test_Dual
 		{
 			if (e.KeyCode == Keys.S)
 			{
-				GorgonTexture2D combinedTexture = _graphics.Textures.CreateTexture<GorgonTexture2D>("BigPicture", new GorgonTexture2DSettings()
+				var combinedTexture = _graphics.Textures.CreateTexture<GorgonTexture2D>("BigPicture", new GorgonTexture2DSettings()
 					{
 						Width = 1600,
 						Height = 600,

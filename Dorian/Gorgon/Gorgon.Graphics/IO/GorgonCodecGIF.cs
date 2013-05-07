@@ -205,7 +205,7 @@ namespace GorgonLibrary.IO
 						writer.SetMetadataByName("/grctlext/TransparencyFlag", hasTransparency);
 						if (hasTransparency)
 						{
-							byte transparentIndex = (byte)Array.FindIndex<DX.Color>(paletteColors, item => item.A == 0);
+							var transparentIndex = (byte)Array.FindIndex<DX.Color>(paletteColors, item => item.A == 0);
 							writer.SetMetadataByName("/grctlext/TransparentColorIndex", transparentIndex);
 						}
 					}
@@ -277,7 +277,7 @@ namespace GorgonLibrary.IO
 			}
 
 			// Generate from our custom palette.
-			DX.Color4[] paletteColors = new DX.Color4[256];
+			var paletteColors = new DX.Color4[256];
 			int size = paletteColors.Length.Min(Palette.Count);
 
 			for (int i = 0; i < size; i++)
@@ -339,7 +339,7 @@ namespace GorgonLibrary.IO
         public ushort[] GetFrameDelays(System.IO.Stream stream)
         {
             IImageSettings settings = null;
-            ushort[] result = new ushort[0];
+            var result = new ushort[0];
             Guid bestFormat = Guid.Empty;
             long position = 0;
 
@@ -374,7 +374,7 @@ namespace GorgonLibrary.IO
 					{
 						using (var decoder = new WIC.BitmapDecoder(wic.Factory, SupportedFormat))
 						{
-							using (WIC.WICStream wicStream = new WIC.WICStream(wic.Factory, wrapperStream))
+							using (var wicStream = new WIC.WICStream(wic.Factory, wrapperStream))
 							{
 								try
 								{

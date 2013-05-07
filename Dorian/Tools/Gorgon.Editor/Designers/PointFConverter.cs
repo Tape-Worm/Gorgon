@@ -88,12 +88,12 @@ namespace GorgonLibrary.Editor
 		/// <exception cref="T:System.NotSupportedException">The conversion cannot be performed. </exception>
 		public override object ConvertFrom(ITypeDescriptorContext context, System.Globalization.CultureInfo culture, object value)
 		{
-			string text = value as string;		// Value to convert.
+			var text = value as string;		// Value to convert.
 
 			if ((text != null) && (text.Trim().Length != 0))
 			{
 				TypeConverter converter = TypeDescriptor.GetConverter(typeof(float));		// Get the floating point type converter.
-				PointF point = new PointF(0, 0);											// New point.
+				var point = new PointF(0, 0);											// New point.
 
 				// Clip off spaces.
 				text = text.Trim();
@@ -137,7 +137,7 @@ namespace GorgonLibrary.Editor
 		{
 			if (destinationType == typeof(string))
 			{
-				PointF ptValue = (PointF)value;		// Point value.
+				var ptValue = (PointF)value;		// Point value.
 
 				return ptValue.X.ToString() + ", " + ptValue.Y.ToString();
 			}

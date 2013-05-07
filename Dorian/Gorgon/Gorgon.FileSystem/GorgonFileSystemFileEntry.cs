@@ -43,12 +43,7 @@ namespace GorgonLibrary.IO
         {
             get
             {
-                if (Directory == null)
-                {
-                    return null;
-                }
-
-                return Directory.FileSystem;
+	            return Directory == null ? null : Directory.FileSystem;
             }
         }
 

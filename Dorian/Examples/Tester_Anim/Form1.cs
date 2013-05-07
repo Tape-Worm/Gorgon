@@ -114,7 +114,7 @@ namespace Tester_Anim
 				
 				for (int i = 0; i < _sprites.Length; i++)
 				{
-					StarSprite star = new StarSprite();
+					var star = new StarSprite();
 
 					star.Sprite = _2D.Renderables.CreateSprite("Sprite", new Vector2(1, 1), _texture);
 					star.Sprite.SmoothingMode = SmoothingMode.Smooth;
@@ -167,7 +167,7 @@ namespace Tester_Anim
 
 				for (int i = 0; i < _stars.Length; i++)
 				{
-					Star star = new Star();
+					var star = new Star();
 					star.Position = new Vector2(GorgonRandom.RandomSingle(), GorgonRandom.RandomSingle());
 
 					int sprite = GorgonRandom.RandomInt32(256);

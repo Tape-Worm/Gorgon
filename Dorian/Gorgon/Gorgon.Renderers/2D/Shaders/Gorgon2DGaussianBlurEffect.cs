@@ -185,7 +185,7 @@ namespace GorgonLibrary.Renderers
 		{
 			FreeResources();
 
-			GorgonRenderTargetSettings settings = new GorgonRenderTargetSettings()
+			var settings = new GorgonRenderTargetSettings()
 			{
 				Width = BlurRenderTargetsSize.Width,
 				Height = BlurRenderTargetsSize.Height,

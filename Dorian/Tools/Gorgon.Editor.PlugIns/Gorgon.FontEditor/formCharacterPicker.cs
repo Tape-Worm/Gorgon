@@ -81,7 +81,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		{
 			try
 			{
-				KeyValuePair<string, GorgonMinMax> item = (KeyValuePair<string, GorgonMinMax>)listRanges.SelectedItems[0].Tag;
+				var item = (KeyValuePair<string, GorgonMinMax>)listRanges.SelectedItems[0].Tag;
 
 				string newString = string.Empty;
 
@@ -164,7 +164,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		/// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
 		private void fontControl_MouseEnter(object sender, EventArgs e)
 		{
-			CheckBox check = sender as CheckBox;
+			var check = sender as CheckBox;
 
 			string name = Win32API.GetCodePointName(check.Text[0]);
 
@@ -388,7 +388,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 				var sortedRanges = _characterRanges.OrderBy(item => item.Value.Minimum);
 				foreach (var range in sortedRanges)
 				{
-					ListViewItem item = new ListViewItem(((ushort)range.Value.Minimum).FormatHex() + ".." + ((ushort)range.Value.Maximum).FormatHex());
+					var item = new ListViewItem(((ushort)range.Value.Minimum).FormatHex() + ".." + ((ushort)range.Value.Maximum).FormatHex());
 					item.SubItems.Add(range.Key);
 					item.Tag = range;
 					listRanges.Items.Add(item);

@@ -208,7 +208,7 @@ namespace GorgonLibrary.IO
             if (stringLength == 0)
                 return string.Empty;
             
-            byte[] byteData = new byte[stringLength];
+            var byteData = new byte[stringLength];
             stream.Read(byteData, 0, byteData.Length);
             return encoding.GetString(byteData, 0, byteData.Length);
         }

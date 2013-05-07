@@ -79,13 +79,13 @@ namespace GorgonLibrary.Animation
 		/// </returns>
 		protected override IKeyFrame GetTweenKey(ref NearestKeys keyValues, float keyTime, float unitTime)
 		{
-			GorgonKeyTexture2D prev = (GorgonKeyTexture2D)keyValues.PreviousKey;
+			var prev = (GorgonKeyTexture2D)keyValues.PreviousKey;
 
 			if (InterpolationMode == TrackInterpolationMode.Linear)
 			{
-				GorgonKeyTexture2D next = (GorgonKeyTexture2D)keyValues.NextKey;
-				Vector4 regionStart = new Vector4(prev.TextureRegion.X, prev.TextureRegion.Y, prev.TextureRegion.Width, prev.TextureRegion.Height);
-				Vector4 regionEnd = new Vector4(next.TextureRegion.X, next.TextureRegion.Y, next.TextureRegion.Width, next.TextureRegion.Height);
+				var next = (GorgonKeyTexture2D)keyValues.NextKey;
+				var regionStart = new Vector4(prev.TextureRegion.X, prev.TextureRegion.Y, prev.TextureRegion.Width, prev.TextureRegion.Height);
+				var regionEnd = new Vector4(next.TextureRegion.X, next.TextureRegion.Y, next.TextureRegion.Width, next.TextureRegion.Height);
 				Vector4 result;
 
 				Vector4.Lerp(ref regionStart, ref regionEnd, unitTime, out result);
@@ -101,7 +101,7 @@ namespace GorgonLibrary.Animation
 		/// <param name="key">Key to apply to the properties.</param>
 		protected internal override void ApplyKey(ref IKeyFrame key)
 		{
-			GorgonKeyTexture2D value = (GorgonKeyTexture2D)key;
+			var value = (GorgonKeyTexture2D)key;
 			GorgonTexture2D currentTexture = _getTextureProperty(Animation.AnimationController.AnimatedObject);
 
 			// If there's no texture on this key, then try to find it.

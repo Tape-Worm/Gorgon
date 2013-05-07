@@ -99,7 +99,7 @@ namespace GorgonLibrary.Graphics
 		/// <remarks>Passing NULL (Nothing in VB.Net) to the <paramref name="data"/> parameter should ignore the initialization and create the backing buffer as normal.</remarks>
 		protected override void InitializeImpl(GorgonDataStream data)
 		{
-			D3D11.BufferDescription desc = new D3D11.BufferDescription();
+			var desc = new D3D11.BufferDescription();
 
 			desc.BindFlags = D3D11.BindFlags.IndexBuffer;
 			desc.CpuAccessFlags = D3DCPUAccessFlags;
@@ -114,7 +114,7 @@ namespace GorgonLibrary.Graphics
 			{
 				long position = data.Position;
 
-				using (DX.DataStream stream = new DX.DataStream(data.PositionPointer, data.Length - position, true, true))
+				using (var stream = new DX.DataStream(data.PositionPointer, data.Length - position, true, true))
 					D3DResource = new D3D11.Buffer(Graphics.D3DDevice, stream, desc);
 			}
 
@@ -135,7 +135,7 @@ namespace GorgonLibrary.Graphics
 		/// </returns>
 		protected override GorgonDataStream LockImpl(BufferLockFlags lockFlags)
 		{
-			D3D11.MapMode mapMode = D3D11.MapMode.Write;
+			var mapMode = D3D11.MapMode.Write;
 
 			// Read is mutually exclusive.
 			if ((lockFlags & BufferLockFlags.Read) == BufferLockFlags.Read)

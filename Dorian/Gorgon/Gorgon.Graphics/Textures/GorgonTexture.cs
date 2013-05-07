@@ -617,7 +617,7 @@ namespace GorgonLibrary.Graphics
 		public T Lock<T>(int subResource, BufferLockFlags lockFlags)
 			where T : ISubResourceData
 		{
-			D3D.MapMode mapMode = D3D.MapMode.Write;
+			var mapMode = D3D.MapMode.Write;
 			DX.DataStream lockStream = null;
 			ISubResourceData data = default(ISubResourceData);
 

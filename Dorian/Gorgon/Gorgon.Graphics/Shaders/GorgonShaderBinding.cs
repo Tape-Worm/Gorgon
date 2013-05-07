@@ -170,7 +170,7 @@ namespace GorgonLibrary.Graphics
                 throw new ArgumentException("The parameter must not empty.", "name");
             }
 
-			T effect = (T)Activator.CreateInstance(typeof(T), new object[] {_graphics, name});
+			var effect = (T)Activator.CreateInstance(typeof(T), new object[] {_graphics, name});
 
 			if ((effect.RequiredParameters.Count > 0) && ((parameters == null) || (parameters.Length == 0)))
 			{
@@ -242,7 +242,7 @@ namespace GorgonLibrary.Graphics
 		/// <returns>A new constant buffer.</returns>
 		public GorgonConstantBuffer CreateConstantBuffer(int size, bool allowCPUWrite, GorgonDataStream stream)
 		{			
-			GorgonConstantBuffer buffer = new GorgonConstantBuffer(_graphics, size, allowCPUWrite);
+			var buffer = new GorgonConstantBuffer(_graphics, size, allowCPUWrite);
 			buffer.Initialize(stream);
 			_graphics.AddTrackedObject(buffer);
 			return buffer;
@@ -260,7 +260,7 @@ namespace GorgonLibrary.Graphics
 		{
 			using (GorgonDataStream stream = GorgonDataStream.ValueToStream<T>(value))
 			{
-				GorgonConstantBuffer buffer = new GorgonConstantBuffer(_graphics, (int)stream.Length, allowCPUWrite);
+				var buffer = new GorgonConstantBuffer(_graphics, (int)stream.Length, allowCPUWrite);
 				buffer.Initialize(stream);
 
 				_graphics.AddTrackedObject(buffer);

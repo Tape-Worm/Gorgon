@@ -212,7 +212,7 @@ namespace GorgonLibrary.Animation
 			GorgonAnimation<T> animation;
 			GorgonDebug.AssertNull(stream, "stream");
 
-			using (GorgonChunkReader chunk = new GorgonChunkReader(stream))
+			using (var chunk = new GorgonChunkReader(stream))
 			{
 				// Get the header.
 				chunk.Begin(AnimationVersion);
@@ -460,7 +460,7 @@ namespace GorgonLibrary.Animation
 		    }
 #endif
 
-		    GorgonAnimation<T> result = new GorgonAnimation<T>(this, name, length);
+		    var result = new GorgonAnimation<T>(this, name, length);
 			AddItem(result);
 
 			return result;

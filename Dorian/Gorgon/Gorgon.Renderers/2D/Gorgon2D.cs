@@ -829,7 +829,7 @@ namespace GorgonLibrary.Renderers
 			int spriteIBSize = sizeof(int) * _cacheSize * 6;
 
 			// Set up our index buffer.
-			using (GorgonDataStream ibData = new GorgonDataStream(spriteIBSize))
+			using (var ibData = new GorgonDataStream(spriteIBSize))
 			{
 				int index = 0;
 				for (int i = 0; i < _cacheSize; i++)
@@ -922,7 +922,7 @@ namespace GorgonLibrary.Renderers
 						}
 						break;
 					case BufferUsage.Default:
-						using (GorgonDataStream stream = new GorgonDataStream(_vertexCache, _cacheStart, _cacheWritten))
+						using (var stream = new GorgonDataStream(_vertexCache, _cacheStart, _cacheWritten))
 							vbBinding.VertexBuffer.Update(stream, _cacheStart * Gorgon2DVertex.SizeInBytes, (int)stream.Length);
 						break;
 				}
@@ -1000,7 +1000,7 @@ namespace GorgonLibrary.Renderers
 		/// <param name="renderable">Renderable object to add.</param>
 		internal void AddRenderable(IRenderable renderable)
 		{
-			StateChange stateChange = StateChange.None;
+			var stateChange = StateChange.None;
 
 			// Check for state changes.
 			stateChange = StateManager.CheckState(renderable);
@@ -1049,7 +1049,7 @@ namespace GorgonLibrary.Renderers
 		public T Create2DEffect<T>(string name, int passCount)
 			where T : Gorgon2DEffect
 		{
-			T effect = (T)Activator.CreateInstance(typeof(T), new object[] { this, name, passCount });
+			var effect = (T)Activator.CreateInstance(typeof(T), new object[] { this, name, passCount });
 
 			TrackedObjects.Add(effect);
 

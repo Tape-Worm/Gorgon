@@ -55,7 +55,7 @@ namespace GorgonLibrary.Input.Raw
 		{
 			get
 			{				
-				JOYCAPS caps = new JOYCAPS();
+				var caps = new JOYCAPS();
 				return Win32API.joyGetDevCaps(JoystickID, ref caps, _joyCapsSize) == 0;
 			}
 		}

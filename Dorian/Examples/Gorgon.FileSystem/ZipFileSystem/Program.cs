@@ -165,7 +165,7 @@ namespace GorgonLibrary.Examples
             }
 
             // Ensure this plug in is a file system provider.
-            GorgonFileSystemProviderPlugIn plugIn = Gorgon.PlugIns[PlugInName] as GorgonFileSystemProviderPlugIn;
+            var plugIn = Gorgon.PlugIns[PlugInName] as GorgonFileSystemProviderPlugIn;
 
             if (plugIn == null)
             {

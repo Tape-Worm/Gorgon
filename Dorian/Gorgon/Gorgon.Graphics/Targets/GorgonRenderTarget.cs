@@ -226,7 +226,7 @@ namespace GorgonLibrary.Graphics
 			{
 				Gorgon.Log.Print("GorgonRenderTarget '{0}': Creating internal depth/stencil...", Diagnostics.LoggingLevel.Verbose, Name);
 
-				GorgonDepthStencilSettings settings = new GorgonDepthStencilSettings
+				var settings = new GorgonDepthStencilSettings
 				{
 					Format = Settings.DepthStencilFormat,
 					Width = Settings.Width,

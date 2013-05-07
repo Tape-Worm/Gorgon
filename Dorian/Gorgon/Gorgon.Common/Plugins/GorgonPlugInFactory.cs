@@ -190,7 +190,7 @@ namespace GorgonLibrary.PlugIns
 		/// <param name="plugIn">Plug-in to check and dispose.</param>
 		private void CheckDisposable(GorgonPlugIn plugIn)
 		{
-			IDisposable disposer = plugIn as IDisposable;
+			var disposer = plugIn as IDisposable;
 
 			if (disposer != null)
 				disposer.Dispose();
