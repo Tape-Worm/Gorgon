@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.Diagnostics;
 using GorgonLibrary.Properties;
 
 namespace GorgonLibrary.Diagnostics
@@ -41,9 +42,9 @@ namespace GorgonLibrary.Diagnostics
 		/// <param name="value">The value being passed.</param>
 		/// <param name="paramName">The name of the parameter.</param>
 		/// <remarks>This will only throw exceptions when we're in DEBUG mode.  Release mode will do nothing.</remarks>
+        [Conditional("DEBUG"), DebuggerStepThrough]
 		public static void AssertParamString(string value, string paramName)
 		{
-#if DEBUG
 		    if (value == null)
 		    {
 		        throw new ArgumentNullException(paramName);
@@ -53,7 +54,6 @@ namespace GorgonLibrary.Diagnostics
 		    {
 		        throw new ArgumentException(Resources.GOR_PARAMETER_MUST_NOT_BE_EMPTY, paramName);
 		    }
-#endif
 		}
 
 		/// <summary>
@@ -65,9 +65,9 @@ namespace GorgonLibrary.Diagnostics
 		/// <param name="minInclusive">TRUE if the minimum is inclusive in the range (i.e. value &lt; min).</param>
 		/// <param name="maxInclusive">TRUE if the maximum is inclusive in the range (i.e. value &gt; max).</param>
 		/// <param name="paramName">Name of the parameter.</param>
+        [Conditional("DEBUG"), DebuggerStepThrough]
 		public static void AssertParamRange(int value, int min, int max, bool minInclusive, bool maxInclusive, string paramName)
 		{
-#if DEBUG
 		    if (((minInclusive) && (value < min)) || ((!minInclusive) && (value <= min)))
 		    {
 		        throw new ArgumentOutOfRangeException(paramName, string.Format(Resources.GOR_VALUE_IS_LESS_THAN, value, min));
@@ -77,7 +77,6 @@ namespace GorgonLibrary.Diagnostics
 		    {
                 throw new ArgumentOutOfRangeException(paramName, string.Format(Resources.GOR_VALUE_IS_GREATER_THAN, value, min));
             }
-#endif
 		}
 
 		/// <summary>
@@ -88,11 +87,10 @@ namespace GorgonLibrary.Diagnostics
 		/// <param name="max">Maximum value.</param>
 		/// <param name="paramName">Name of the parameter.</param>
 		/// <remarks>This overload includes the min value in the comparison, but excludes the max value (i.e. value &lt; 0 and value &gt;= max).</remarks>
+        [Conditional("DEBUG"), DebuggerStepThrough]
 		public static void AssertParamRange(int value, int min, int max, string paramName)
 		{
-#if DEBUG
 			AssertParamRange(value, min, max, true, false, paramName);
-#endif
 		}
 
 		/// <summary>
@@ -100,14 +98,13 @@ namespace GorgonLibrary.Diagnostics
 		/// </summary>
 		/// <param name="index">Index being requested.</param>
 		/// <param name="count">Number of items in the collection.</param>
+        [Conditional("DEBUG"), DebuggerStepThrough]
 		public static void AssertRange(int index, int count)
 		{
-#if DEBUG
 			if ((index < 0) || (index >= count))
 			{
                 throw new IndexOutOfRangeException(string.Format(Resources.GOR_INDEX_OUT_OF_RANGE, index, count));
 			}
-#endif
 		}
 
 		/// <summary>
@@ -116,14 +113,13 @@ namespace GorgonLibrary.Diagnostics
 		/// <typeparam name="T">A reference type to evaluate.</typeparam>
 		/// <param name="value">Value to evaluate.</param>
 		/// <param name="paramName">Name of the parameter to evaluate.</param>
+        [Conditional("DEBUG"), DebuggerStepThrough]
 		public static void AssertNull<T>(T value, string paramName) where T : class
 		{
-#if DEBUG
 		    if (value == null)
 		    {
 		        throw new ArgumentNullException(paramName);
 		    }
-#endif
 		}
 		#endregion
 	}
