@@ -62,10 +62,9 @@ namespace GorgonLibrary.Graphics
 		/// <returns>The vertex buffer binding.</returns>
 		internal D3D.VertexBufferBinding Convert()
 		{
-			if (VertexBuffer != null)
-				return new D3D.VertexBufferBinding((D3D.Buffer)VertexBuffer.D3DResource, Stride, Offset);
-			else
-				return new D3D.VertexBufferBinding(null, 0, 0);
+			return VertexBuffer != null
+				       ? new D3D.VertexBufferBinding((D3D.Buffer)VertexBuffer.D3DResource, Stride, Offset)
+				       : new D3D.VertexBufferBinding(null, 0, 0);
 		}
 
 		/// <summary>
@@ -87,10 +86,9 @@ namespace GorgonLibrary.Graphics
 		/// </returns>
 		public override int GetHashCode()
 		{
-			if (VertexBuffer != null)
-				return 281.GenerateHash(Stride).GenerateHash(Offset);
-			else
-				return 281.GenerateHash(Stride).GenerateHash(Offset).GenerateHash(VertexBuffer.GetHashCode());
+			return VertexBuffer != null
+				       ? 281.GenerateHash(Stride).GenerateHash(Offset)
+				       : 281.GenerateHash(Stride).GenerateHash(Offset).GenerateHash(VertexBuffer.GetHashCode());
 		}
 
 		/// <summary>

@@ -734,12 +734,7 @@ namespace GorgonLibrary.Input
 		{
 			get
 			{
-			    if (!AllowBackground)
-			    {
-			        return _deviceLost;
-			    }
-			    
-			    return false;
+				return !AllowBackground && _deviceLost;
 			}
 			set
 			{

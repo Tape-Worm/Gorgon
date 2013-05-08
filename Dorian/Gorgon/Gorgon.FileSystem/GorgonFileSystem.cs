@@ -555,12 +555,11 @@ namespace GorgonLibrary.IO
 		    GorgonFileSystemDirectory search = GetDirectory(directory);
 
 			if (search == null)
+			{
 				return null;
+			}
 
-			if (search.Files.Contains(filename))
-				return search.Files[filename];
-
-			return null;
+			return search.Files.Contains(filename) ? search.Files[filename] : null;
 		}
 
 		/// <summary>

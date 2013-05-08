@@ -129,10 +129,7 @@ namespace GorgonLibrary.Graphics
 		{
 			get
 			{
-				if (_depthStencil == null)
-					return InternalDepthStencil;
-
-				return _depthStencil;
+				return _depthStencil ?? InternalDepthStencil;
 			}
 			set
 			{

@@ -85,10 +85,7 @@ namespace GorgonLibrary.Renderers
 		{
 			get
 			{
-				if (_textRect == null)
-					return Gorgon2D.Target.Viewport.Region;
-				else
-					return _textRect.Value;
+				return _textRect == null ? Gorgon2D.Target.Viewport.Region : _textRect.Value;
 			}
 		}
 
@@ -1481,10 +1478,7 @@ namespace GorgonLibrary.Renderers
 		{
 			get
 			{
-				if (_currentTexture == null)
-					return RectangleF.Empty;
-
-				return new RectangleF(Vector2.Zero, _currentTexture.Settings.Size);
+				return _currentTexture == null ? RectangleF.Empty : new RectangleF(Vector2.Zero, _currentTexture.Settings.Size);
 			}
 			set
 			{
@@ -1514,10 +1508,7 @@ namespace GorgonLibrary.Renderers
 		{
 			get
 			{
-				if (_currentTexture != null)
-					return _currentTexture.Settings.Size;
-				else
-					return Vector2.Zero;
+				return _currentTexture != null ? _currentTexture.Settings.Size : Vector2.Zero;
 			}
 			set
 			{

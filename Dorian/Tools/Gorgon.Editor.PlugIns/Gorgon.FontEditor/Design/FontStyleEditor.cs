@@ -60,10 +60,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 
 				editorSerivce.DropDownControl(fonts);
 
-				if (fonts.FontStyle != (System.Drawing.FontStyle)value)
-					return fonts.FontStyle;
-
-				return value;
+				return fonts.FontStyle != (System.Drawing.FontStyle)value ? fonts.FontStyle : value;
 			}
 			finally
 			{

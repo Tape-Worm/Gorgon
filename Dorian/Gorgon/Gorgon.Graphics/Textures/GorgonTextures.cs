@@ -124,10 +124,7 @@ namespace GorgonLibrary.Graphics
 		{
 			get
 			{
-				if (_graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM2_a_b)
-					return 512;
-				else
-					return 2048;
+				return _graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM2_a_b ? 512 : 2048;
 			}
 		}
 		#endregion

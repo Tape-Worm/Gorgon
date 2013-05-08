@@ -106,12 +106,7 @@ namespace GorgonLibrary.Graphics
 		{
 			int index = IndexOf(ref state);
 
-			if (index == -1)
-			{
-				return null;
-			}
-
-			return _cache[index].Item2;
+			return index == -1 ? null : _cache[index].Item2;
 		}
 
 		/// <summary>

@@ -55,10 +55,7 @@ namespace GorgonLibrary.Renderers
 		{
 			get
 			{
-				if (Graphics.Shaders.VertexShader.Current == DefaultVertexShader)
-					return null;
-
-				return Graphics.Shaders.VertexShader.Current;
+				return Graphics.Shaders.VertexShader.Current == DefaultVertexShader ? null : Graphics.Shaders.VertexShader.Current;
 			}
 			set
 			{

@@ -63,10 +63,7 @@ namespace GorgonLibrary.Renderers
 		{
 			get
 			{
-				if (CollisionObject == null)
-					return false;
-
-				return _enabled;
+				return CollisionObject != null && _enabled;
 			}
 			set
 			{

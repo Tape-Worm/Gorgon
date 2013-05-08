@@ -142,12 +142,7 @@ namespace GorgonLibrary.Graphics
 		{
 			get
 			{
-				if (_view == null)
-				{
-					return DefaultView;
-				}
-
-				return _view;
+				return _view ?? DefaultView;
 			}
 			set
 			{

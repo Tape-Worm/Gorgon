@@ -41,24 +41,14 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Gorgon.MemoryAccess, Version=1.0.0.0, Culture=neutral, PublicKeyToken=c001d94e9acbbee7, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Gorgon\Gorgon.Memory\Gorgon.MemoryAccess.dll</HintPath>
-    </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="SlimMath">
       <HintPath>..\..\Dependencies\SlimMath\SlimMath\bin\Release\SlimMath.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Deployment" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
-    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Form1.cs">
@@ -113,10 +103,6 @@
     <ProjectReference Include="..\..\Gorgon\Gorgon.Common\Gorgon.Common.csproj">
       <Project>{933569ED-52A9-4232-A929-1D4C4489B5A1}</Project>
       <Name>Gorgon.Common</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Gorgon\Gorgon.FileSystem\Gorgon.FileSystem.csproj">
-      <Project>{1F3DD0EF-3CA7-41FF-A451-74FDAE5307A2}</Project>
-      <Name>Gorgon.FileSystem</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Gorgon\Gorgon.Graphics\Gorgon.Graphics.csproj">
       <Project>{EA4B0A1A-586A-47A4-89C1-3E6A4E821C31}</Project>

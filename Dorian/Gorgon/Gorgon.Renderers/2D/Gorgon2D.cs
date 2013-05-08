@@ -657,10 +657,7 @@ namespace GorgonLibrary.Renderers
 		{
 			get
 			{
-				if (_target == null)
-					return _defaultTarget;
-
-				return _target;
+				return _target ?? _defaultTarget;
 			}
 			set
 			{

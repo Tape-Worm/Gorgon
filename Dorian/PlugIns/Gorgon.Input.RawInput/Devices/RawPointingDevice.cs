@@ -95,13 +95,8 @@ namespace GorgonLibrary.Input.Raw
 		    {
 		        return false;
 		    }
-		    if ((System.Math.Abs(Position.X - _doubleClickPosition.X) > DoubleClickRange.X) ||
-		        (System.Math.Abs(Position.Y - _doubleClickPosition.Y) > DoubleClickRange.Y))
-		    {
-		        return false;
-		    }
-
-		    return true;
+			return (!(System.Math.Abs(Position.X - _doubleClickPosition.X) > DoubleClickRange.X)) &&
+			       (!(System.Math.Abs(Position.Y - _doubleClickPosition.Y) > DoubleClickRange.Y));
 		}
 
 		/// <summary>

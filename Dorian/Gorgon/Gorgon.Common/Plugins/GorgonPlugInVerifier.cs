@@ -86,12 +86,7 @@ namespace GorgonLibrary.PlugIns
             // Search for executables.
             location = Path.ChangeExtension(location, "exe");
 
-            if (File.Exists(location))
-            {
-                return Assembly.ReflectionOnlyLoadFrom(location);
-            }
-
-            return null;
+            return File.Exists(location) ? Assembly.ReflectionOnlyLoadFrom(location) : null;
         }
 
         /// <summary>
@@ -117,12 +112,7 @@ namespace GorgonLibrary.PlugIns
             // Search for executables.
             location = Path.ChangeExtension(location, "exe");
 
-            if (File.Exists(location))
-            {
-                return Assembly.ReflectionOnlyLoadFrom(location);
-            }
-
-            return null;
+            return File.Exists(location) ? Assembly.ReflectionOnlyLoadFrom(location) : null;
         }
         
         /// <summary>

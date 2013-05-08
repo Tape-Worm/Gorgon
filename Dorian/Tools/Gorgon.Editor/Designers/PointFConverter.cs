@@ -47,10 +47,7 @@ namespace GorgonLibrary.Editor
 		/// </returns>
 		public override bool CanConvertTo(ITypeDescriptorContext context, Type destinationType)
 		{
-			if (destinationType == typeof(string))
-				return true;
-
-			return base.CanConvertTo(context, destinationType);
+			return destinationType == typeof(string) || base.CanConvertTo(context, destinationType);
 		}
 
 		/// <summary>
@@ -63,9 +60,7 @@ namespace GorgonLibrary.Editor
 		/// </returns>
 		public override bool CanConvertFrom(ITypeDescriptorContext context, Type sourceType)
 		{
-			if (sourceType == typeof(string))
-				return true;
-			return base.CanConvertFrom(context, sourceType);
+			return sourceType == typeof(string) || base.CanConvertFrom(context, sourceType);
 		}
 
 		/// <summary>

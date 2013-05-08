@@ -63,14 +63,7 @@ namespace GorgonLibrary.Editor
 			
 				if ((IsSelected) && (PlugIn != null))
                 {
-					if (!IsCut)
-					{
-						return DarkFormsRenderer.MenuHilightForeground;
-					}
-					else
-					{
-						return Color.Black;
-					}
+					return !IsCut ? DarkFormsRenderer.MenuHilightForeground : Color.Black;
                 }
 
 				if (IsCut)
@@ -108,13 +101,8 @@ namespace GorgonLibrary.Editor
 		{
 			get
 			{
-				if (Program.ScratchFiles == null)
-				{
-					return null;
-				}
-
-				return Program.ScratchFiles.GetFile(Name);
-			}			
+				return Program.ScratchFiles == null ? null : Program.ScratchFiles.GetFile(Name);
+			}
 		}
 		#endregion
 
