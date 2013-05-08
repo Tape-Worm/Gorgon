@@ -103,12 +103,7 @@ namespace GorgonLibrary.Input.WinForms
 		/// <para>Pass NULL to the <paramref name="window"/> parameter to use the <see cref="P:GorgonLibrary.Gorgon.ApplicationForm">Gorgon application window</see>.</para></remarks>
 		protected override GorgonKeyboard CreateKeyboardImpl(System.Windows.Forms.Control window, GorgonInputDeviceInfo keyboardInfo)
 		{
-			var keyboard = new WinFormsKeyboard(this, window)
-			    {
-			        Enabled = true
-			    };
-
-		    return keyboard;
+			return new WinFormsKeyboard(this);
 		}
 
 		/// <summary>
@@ -122,12 +117,7 @@ namespace GorgonLibrary.Input.WinForms
 		/// </remarks>
 		protected override GorgonPointingDevice CreatePointingDeviceImpl(System.Windows.Forms.Control window, GorgonInputDeviceInfo pointingDeviceInfo)
 		{
-			var mouse = new WinFormsPointingDevice(this, window)
-			    {
-			        Enabled = true
-			    };
-
-		    return mouse;
+			return new WinFormsPointingDevice(this);
 		}
 
 		/// <summary>

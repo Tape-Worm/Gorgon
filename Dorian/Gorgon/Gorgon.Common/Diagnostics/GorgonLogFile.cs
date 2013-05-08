@@ -29,6 +29,7 @@ using System.Globalization;
 using System.IO;
 using System.Text;
 using GorgonLibrary.IO;
+using GorgonLibrary.Properties;
 
 namespace GorgonLibrary.Diagnostics
 {
@@ -75,7 +76,7 @@ namespace GorgonLibrary.Diagnostics
 				if ((_filterLevel != value) && (value != LoggingLevel.NoLogging))
 				{
 					Print(string.Empty, LoggingLevel.All);
-					Print("**** Log Filter Level: {0}", LoggingLevel.All, value);
+					Print("**** {1}: {0}", LoggingLevel.All, value, Resources.GOR_LOG_FILTER_LEVEL);
 					Print(string.Empty, LoggingLevel.All);
 				}
 
@@ -125,34 +126,31 @@ namespace GorgonLibrary.Diagnostics
 		        return;
 		    }
 
-		    var outputLine = new StringBuilder(512);			// Output string 
-
-		    if ((level <= LogFilterLevel) || (level == LoggingLevel.All))
+			if ((level > LogFilterLevel) && (level != LoggingLevel.All))
 			{
-				if (string.IsNullOrEmpty(formatSpecifier) || (formatSpecifier == "\n") || (formatSpecifier == "\r"))
-				{
-					outputLine.Append("[");
-					outputLine.Append(DateTime.Now.ToString("MM/dd/yyyy hh:mm:ss tt"));
-					outputLine.Append("]\r\n");
-				}
-				else
-				{
-                    // Get a list of lines.
-				    string[] lines = formatSpecifier.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
-
-				    for (int i = 0; i < lines.Length; i++)
-					{
-						outputLine.Append("[");
-						outputLine.Append(DateTime.Now.ToString("MM/dd/yyyy hh:mm:ss tt"));
-						outputLine.Append("] ");
-
-						outputLine.Append(string.Format(lines[i] + "\r\n", arguments));
-					}
-				}
-
-			    _stream.Write(outputLine.ToString());
-				_stream.Flush();
+				return;
 			}
+
+			var outputLine = new StringBuilder(512);			// Output string 
+
+			if (string.IsNullOrEmpty(formatSpecifier) || (formatSpecifier == "\n") || (formatSpecifier == "\r"))
+			{
+				outputLine.AppendFormat("[{0} {1}]\r\n", DateTime.Now.ToShortDateString(), DateTime.Now.ToShortTimeString());
+			}
+			else
+			{
+				// Get a list of lines.
+				string[] lines = formatSpecifier.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
+
+				for (int i = 0; i < lines.Length; i++)
+				{
+					outputLine.AppendFormat("[{0} {1}] ", DateTime.Now.ToShortDateString(), DateTime.Now.ToShortTimeString());
+					outputLine.Append(string.Format(lines[i] + "\r\n", arguments));
+				}
+			}
+
+			_stream.Write(outputLine.ToString());
+			_stream.Flush();
 		}
 
 		/// <summary>
@@ -160,22 +158,23 @@ namespace GorgonLibrary.Diagnostics
 		/// </summary>
 		public void Close()
 		{
-			if (!IsClosed)
+			if (IsClosed)
 			{
-				// Clean up.
-				Print(string.Empty, LoggingLevel.All);
-				Print("**** {0} (Version {1}) logging ends. ****", LoggingLevel.All, LogApplication, GetType().Assembly.GetName().Version.ToString());
+				return;
+			}
 
-				if (_stream != null)
-				{
-					_stream.Close();
-					_stream = null;
-				}
+			// Clean up.
+			Print(string.Empty, LoggingLevel.All);
+			Print("**** {0} ({2} {1}) {3}. ****", LoggingLevel.All, LogApplication,
+			      GetType().Assembly.GetName().Version.ToString(), Resources.GOR_LOG_VERSION, Resources.GOR_LOG_ENDS);
 
-				IsClosed = true;
-			}			
+			if (_stream != null)
+			{
+				_stream.Close();
+				_stream = null;
+			}
 
-			GC.SuppressFinalize(this);
+			IsClosed = true;
 		}
 
 		/// <summary>
@@ -183,32 +182,39 @@ namespace GorgonLibrary.Diagnostics
 		/// </summary>
 		public void Open()
 		{
-			if (IsClosed)
+			if (!IsClosed)
 			{
-			    string directory = Path.GetDirectoryName(LogPath);
-
-                // If we can't get a directory, then leave.
-                if (string.IsNullOrWhiteSpace(directory))
-                {
-                    return;
-                }
-
-				// Create the directory if it doesn't exist.
-			    if (!Directory.Exists(directory))
-			    {
-			        Directory.CreateDirectory(directory);
-			    }
-
-			    // Open the stream.
-				_stream = new StreamWriter(File.Open(LogPath, FileMode.Create, FileAccess.ReadWrite, FileShare.Read), Encoding.UTF8);
-				_stream.Flush();
-
-				IsClosed = false;
-				Print("**** {0} (Version {1}) logging begins ****", LoggingLevel.All, LogApplication, GetType().Assembly.GetName().Version.ToString());
-				if (LogFilterLevel != LoggingLevel.NoLogging)
-					Print("**** Log Filter Level: {0}", LoggingLevel.All, LogFilterLevel);
-				Print(string.Empty, LoggingLevel.All);
+				return;
 			}
+
+			string directory = Path.GetDirectoryName(LogPath);
+
+			// If we can't get a directory, then leave.
+			if (string.IsNullOrWhiteSpace(directory))
+			{
+				return;
+			}
+
+			// Create the directory if it doesn't exist.
+			if (!Directory.Exists(directory))
+			{
+				Directory.CreateDirectory(directory);
+			}
+
+			// Open the stream.
+			_stream = new StreamWriter(File.Open(LogPath, FileMode.Create, FileAccess.ReadWrite, FileShare.Read), Encoding.UTF8);
+			_stream.Flush();
+
+			IsClosed = false;
+			Print("**** {0} ({2} {1}) {3} ****", LoggingLevel.All, LogApplication,
+			      GetType().Assembly.GetName().Version.ToString(), Resources.GOR_LOG_VERSION, Resources.GOR_LOG_BEGINS);
+
+			if (LogFilterLevel != LoggingLevel.NoLogging)
+			{
+				Print("**** {1}: {0}", LoggingLevel.All, LogFilterLevel, Resources.GOR_LOG_FILTER_LEVEL);
+			}
+
+			Print(string.Empty, LoggingLevel.All);
 		}
 		#endregion
 
@@ -237,14 +243,9 @@ namespace GorgonLibrary.Diagnostics
 				// Remove any text up to and after the volume separator character.
 				if (extraPath.Contains(Path.VolumeSeparatorChar.ToString(CultureInfo.InvariantCulture)))
 				{
-				    if (extraPath.IndexOf(Path.VolumeSeparatorChar) < (extraPath.Length - 1))
-				    {
-				        extraPath = extraPath.Substring(extraPath.IndexOf(Path.VolumeSeparatorChar) + 1);
-				    }
-				    else
-				    {
-				        extraPath = string.Empty;
-				    }
+					extraPath = extraPath.IndexOf(Path.VolumeSeparatorChar) < (extraPath.Length - 1)
+						            ? extraPath.Substring(extraPath.IndexOf(Path.VolumeSeparatorChar) + 1)
+						            : string.Empty;
 				}
 
 			    if ((extraPath.StartsWith(Path.AltDirectorySeparatorChar.ToString(CultureInfo.InvariantCulture)))
@@ -277,14 +278,18 @@ namespace GorgonLibrary.Diagnostics
 		/// <param name="disposing">TRUE if we're removing managed resources and unmanaged, FALSE if only unmanaged.</param>
 		protected virtual void Dispose(bool disposing)
 		{
-			if (disposing)
-				Close();
+			if (!disposing)
+			{
+				return;
+			}
+
+			Close();
 		}
 
 		/// <summary>
 		/// Function to clean up.
 		/// </summary>
-		void IDisposable.Dispose()
+		public void Dispose()
 		{
 			Dispose(true);
 			GC.SuppressFinalize(this);

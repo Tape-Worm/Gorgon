@@ -25,7 +25,6 @@
 #endregion
 
 using System;
-using System.Windows.Forms;
 using GorgonLibrary.Diagnostics;
 
 namespace GorgonLibrary.Input
@@ -105,7 +104,7 @@ namespace GorgonLibrary.Input
 		/// <summary>
 		/// Function to clear the properties and their values.
 		/// </summary>
-		protected void ClearData()
+		protected internal void ClearData()
 		{
 			Data.Clear();
 		}
@@ -144,10 +143,9 @@ namespace GorgonLibrary.Input
 		/// </summary>
 		/// <param name="owner">The control that owns this device.</param>
 		/// <param name="deviceName">Name of the input device.</param>
-		/// <param name="boundWindow">The window to bind this device with.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the owner parameter is NULL (or Nothing in VB.NET).</exception>
-		protected GorgonCustomHID(GorgonInputFactory owner, string deviceName, Control boundWindow)
-			: base(owner, deviceName, boundWindow)
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="owner"/> parameter is NULL (or Nothing in VB.NET).</exception>
+		protected GorgonCustomHID(GorgonInputFactory owner, string deviceName)
+			: base(owner, deviceName)
 		{
 			Data = new GorgonCustomHIDPropertyCollection();
 		}

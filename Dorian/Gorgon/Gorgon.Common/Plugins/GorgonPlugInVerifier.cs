@@ -50,16 +50,18 @@ namespace GorgonLibrary.PlugIns
 		/// information for type comparisons later on.</remarks>
 		private void GetGorgonPlugInType()
 		{
-			if (_plugInType == null)
+			if (_plugInType != null)
 			{
-				AssemblyName gorgonAssemblyName = typeof(GorgonPlugInVerifier).Assembly.GetName();
-				Assembly gorgonReflection = Assembly.ReflectionOnlyLoad(gorgonAssemblyName.FullName);
-
-				// Get the Gorgon reflection only plug-in type.
-				_plugInType = gorgonReflection.GetTypes().Single(item => typeof(GorgonPlugIn).FullName == item.FullName);
-
-			    _assembly = _plugInType.Assembly;
+				return;
 			}
+
+			AssemblyName gorgonAssemblyName = typeof(GorgonPlugInVerifier).Assembly.GetName();
+			Assembly gorgonReflection = Assembly.ReflectionOnlyLoad(gorgonAssemblyName.FullName);
+
+			// Get the Gorgon reflection only plug-in type.
+			_plugInType = gorgonReflection.GetTypes().Single(item => typeof(GorgonPlugIn).FullName == item.FullName);
+
+			_assembly = _plugInType.Assembly;
 		}
 
         /// <summary>
@@ -68,7 +70,7 @@ namespace GorgonLibrary.PlugIns
         /// <param name="name">Name of the assembly.</param>
         /// <param name="requesting">Requesting assembly.</param>
         /// <returns>The assembly if found, NULL if not.</returns>
-        private Assembly GetFromRequestedDir(AssemblyName name, Assembly requesting)
+        private static Assembly GetFromRequestedDir(AssemblyName name, Assembly requesting)
         {
             string location = string.Format("{0}{1}{2}", 
                                     Path.GetDirectoryName(requesting.Location), 

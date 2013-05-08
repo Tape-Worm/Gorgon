@@ -125,7 +125,7 @@ namespace GorgonLibrary.Configuration
 		/// </summary>
 		/// <param name="value">Value to convert.</param>
 		/// <returns>The string value for the object.</returns>
-		private string ConvertValue(object value)
+		private static string ConvertValue(object value)
 		{
 		    if (value == null)
 		    {
@@ -159,7 +159,7 @@ namespace GorgonLibrary.Configuration
 		/// <param name="value">Value to convert.</param>
 		/// <param name="type">Type to convert into.</param>
 		/// <returns>The value for the object.</returns>
-		private object UnconvertValue(string value, Type type)
+		private static object UnconvertValue(string value, Type type)
 		{
 		    if (value == null)
 		    {
@@ -168,7 +168,7 @@ namespace GorgonLibrary.Configuration
 
 		    if (type != typeof (string))
 		    {
-		        if (value == string.Empty)
+		        if (string.IsNullOrEmpty(string.Empty))
 		        {
 		            return null;
 		        }

@@ -654,16 +654,121 @@ Code: 0x{2}</value>
     <value>Cannot read types from the assembly '{0}'
 {1}</value>
   </data>
-  <data name="GOR_UI_CAPTION_CONFIRM" xml:space="preserve">
+  <data name="GOR_DLG_CAPTION_CONFIRM" xml:space="preserve">
     <value>Confirmation</value>
   </data>
-  <data name="GOR_UI_CAPTION_ERROR" xml:space="preserve">
+  <data name="GOR_DLG_CAPTION_ERROR" xml:space="preserve">
     <value>Error</value>
   </data>
-  <data name="GOR_UI_CAPTION_INFO" xml:space="preserve">
+  <data name="GOR_DLG_CAPTION_INFO" xml:space="preserve">
     <value>Information</value>
   </data>
-  <data name="GOR_UI_CAPTION_WARNING" xml:space="preserve">
+  <data name="GOR_DLG_CAPTION_WARNING" xml:space="preserve">
     <value>Warning</value>
+  </data>
+  <data name="GOR_DLG_CANCEL" xml:space="preserve">
+    <value>&amp;Cancel</value>
+  </data>
+  <data name="GOR_DLG_DETAILS" xml:space="preserve">
+    <value>&amp;Details</value>
+  </data>
+  <data name="GOR_DLG_ERR_CUSTOM_INFO" xml:space="preserve">
+    <value>Custom Information</value>
+  </data>
+  <data name="GOR_DLG_ERR_DETAILS_MSG" xml:space="preserve">
+    <value>Error Message</value>
+  </data>
+  <data name="GOR_DLG_ERR_EXCEPT_TYPE" xml:space="preserve">
+    <value>Exception Type</value>
+  </data>
+  <data name="GOR_DLG_ERR_GOREXCEPT_RESULT" xml:space="preserve">
+    <value>Result Code</value>
+  </data>
+  <data name="GOR_DLG_ERR_NEXT_EXCEPTION" xml:space="preserve">
+    <value>Next Exception</value>
+  </data>
+  <data name="GOR_DLG_ERR_NO_MSG" xml:space="preserve">
+    <value>No message given.</value>
+  </data>
+  <data name="GOR_DLG_ERR_SRC" xml:space="preserve">
+    <value>Source</value>
+  </data>
+  <data name="GOR_DLG_ERR_STACK_END" xml:space="preserve">
+    <value>END</value>
+  </data>
+  <data name="GOR_DLG_ERR_TARGET_SITE" xml:space="preserve">
+    <value>Target Site</value>
+  </data>
+  <data name="GOR_DLG_NO" xml:space="preserve">
+    <value>&amp;No</value>
+  </data>
+  <data name="GOR_DLG_OK" xml:space="preserve">
+    <value>&amp;OK</value>
+  </data>
+  <data name="GOR_DLG_TO_ALL" xml:space="preserve">
+    <value>&amp;Apply selection to all items?</value>
+  </data>
+  <data name="GOR_DLG_YES" xml:space="preserve">
+    <value>&amp;Yes</value>
+  </data>
+  <data name="GOR_LOG_BEGINS" xml:space="preserve">
+    <value>logging begins</value>
+  </data>
+  <data name="GOR_LOG_ENDS" xml:space="preserve">
+    <value>logging ends</value>
+  </data>
+  <data name="GOR_LOG_EXCEPTION" xml:space="preserve">
+    <value>Exception</value>
+  </data>
+  <data name="GOR_LOG_FILTER_LEVEL" xml:space="preserve">
+    <value>Log Filter Level</value>
+  </data>
+  <data name="GOR_LOG_VERSION" xml:space="preserve">
+    <value>Version</value>
+  </data>
+  <data name="GOR_TIME_CANNOT_BEGIN" xml:space="preserve">
+    <value>Cannot begin the timer period.</value>
+  </data>
+  <data name="GOR_TIME_CANNOT_END" xml:space="preserve">
+    <value>Cannot end the timer period.</value>
+  </data>
+  <data name="GOR_ZUNE_CLOSE" xml:space="preserve">
+    <value>Close</value>
+  </data>
+  <data name="GOR_ZUNE_CLOSE_ICON" xml:space="preserve">
+    <value>r</value>
+  </data>
+  <data name="GOR_ZUNE_CLOSE_TIP" xml:space="preserve">
+    <value>Close the window</value>
+  </data>
+  <data name="GOR_ZUNE_MAXIMIZE" xml:space="preserve">
+    <value>Ma&amp;ximize</value>
+  </data>
+  <data name="GOR_ZUNE_MAXIMIZE_TIP" xml:space="preserve">
+    <value>Maximize the window</value>
+  </data>
+  <data name="GOR_ZUNE_MAX_ICON" xml:space="preserve">
+    <value>2</value>
+  </data>
+  <data name="GOR_ZUNE_MINIMIZE" xml:space="preserve">
+    <value>Mi&amp;nimize</value>
+  </data>
+  <data name="GOR_ZUNE_MINIMIZE_ZIP" xml:space="preserve">
+    <value>Minimize the window</value>
+  </data>
+  <data name="GOR_ZUNE_MIN_ICON" xml:space="preserve">
+    <value>0</value>
+  </data>
+  <data name="GOR_ZUNE_MOVE" xml:space="preserve">
+    <value>&amp;Move</value>
+  </data>
+  <data name="GOR_ZUNE_RESTORE" xml:space="preserve">
+    <value>&amp;Restore</value>
+  </data>
+  <data name="GOR_ZUNE_RESTORE_ICON" xml:space="preserve">
+    <value>1</value>
+  </data>
+  <data name="GOR_ZUNE_SIZE" xml:space="preserve">
+    <value>&amp;Size</value>
   </data>
 </root>

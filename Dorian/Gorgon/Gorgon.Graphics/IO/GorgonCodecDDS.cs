@@ -786,36 +786,39 @@ namespace GorgonLibrary.IO
 		/// </summary>
 		/// <param name="flags">Current conversion flags.</param>
 		/// <returns>The correct format for pixel expansion, or None if no applicable format was found.</returns>
-		private DDSConversionFlags ExpansionFormat(DDSConversionFlags flags)
+		private static DDSConversionFlags ExpansionFormat(DDSConversionFlags flags)
 		{
-			var result = DDSConversionFlags.None;
-
 			if ((flags & DDSConversionFlags.Palette) == DDSConversionFlags.Palette)
 			{
 				return ((flags & DDSConversionFlags.A8P8) == DDSConversionFlags.A8P8) ? DDSConversionFlags.A8P8 : DDSConversionFlags.Palette;
 			}
-			else if ((flags & DDSConversionFlags.RGB888) == DDSConversionFlags.RGB888)
+
+			if ((flags & DDSConversionFlags.RGB888) == DDSConversionFlags.RGB888)
 			{
 				return DDSConversionFlags.RGB888;
 			}
-			else if ((flags & DDSConversionFlags.RGB332) == DDSConversionFlags.RGB332)
+
+			if ((flags & DDSConversionFlags.RGB332) == DDSConversionFlags.RGB332)
 			{
 				return DDSConversionFlags.RGB332;
 			}
-			else if ((flags & DDSConversionFlags.RGB8332) == DDSConversionFlags.RGB8332)
+
+			if ((flags & DDSConversionFlags.RGB8332) == DDSConversionFlags.RGB8332)
 			{
 				return DDSConversionFlags.RGB8332;
 			}
-			else if ((flags & DDSConversionFlags.A4L4) == DDSConversionFlags.A4L4)
+
+			if ((flags & DDSConversionFlags.A4L4) == DDSConversionFlags.A4L4)
 			{
 				return DDSConversionFlags.A4L4;
 			}
-			else if ((flags & DDSConversionFlags.RGB4444) == DDSConversionFlags.RGB4444)
+
+			if ((flags & DDSConversionFlags.RGB4444) == DDSConversionFlags.RGB4444)
 			{
 				return DDSConversionFlags.RGB4444;
 			}
 
-			return result;
+			return DDSConversionFlags.None;
 		}
 
 		/// <summary>
@@ -1146,7 +1149,7 @@ namespace GorgonLibrary.IO
 		/// <param name="destFormat">The destination format.</param>
 		/// <param name="bitFlags">Image bit conversion control flags.</param>
 		/// <param name="palette">Palette to assigned to indexed images.</param>
-		private void ExpandLegacyScanline(void* src, int srcPitch, DDSConversionFlags srcFormat, void* dest, int destPitch, BufferFormat destFormat, ImageBitFlags bitFlags, uint[] palette)
+		private static void ExpandLegacyScanline(void* src, int srcPitch, DDSConversionFlags srcFormat, void* dest, int destPitch, BufferFormat destFormat, ImageBitFlags bitFlags, uint[] palette)
 		{
 			if ((srcFormat == DDSConversionFlags.RGB332) && (destFormat != BufferFormat.B5G6R5_UIntNormal))
 			{
@@ -1173,7 +1176,7 @@ namespace GorgonLibrary.IO
 						// Copy indexed data.
 						for (int srcCount = 0, destCount = 0; ((srcCount < srcPitch) && (destCount < destPitch)); ++srcCount, destCount += 4)
 						{
-							*(destPtr++) = (uint)palette[*(srcPtr++)];
+							*(destPtr++) = palette[*(srcPtr++)];
 						}
 					}
 					break;
@@ -1616,7 +1619,7 @@ namespace GorgonLibrary.IO
 								else
 								{
 									// If we're 8 bit or some other type of format, then expand to match.
-									DDSConversionFlags expandLegacyFormat = this.ExpansionFormat(conversionFlags);
+									DDSConversionFlags expandLegacyFormat = ExpansionFormat(conversionFlags);
 
 									if (expandLegacyFormat == DDSConversionFlags.None)
 									{

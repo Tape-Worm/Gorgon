@@ -275,7 +275,7 @@ namespace GorgonLibrary.Examples
 			}
 
 
-			labelKeyboard.Text = string.Format("{2}. Currently pressed key: {0}{1}  (Press 'P' to switch between polling and events for the mouse)"
+			labelKeyboard.Text = string.Format("{2}. Currently pressed key: {0}{1}  (Press 'P' to switch between polling and events for the mouse. Press 'ESC' to close.)"
 												, key.ToString()
 												, ((shiftKey != KeyboardKeys.None) && (shiftKey != key) ? " + " + shiftKey.ToString() : string.Empty)
                                                 , _keyboard.Name);				
@@ -350,6 +350,13 @@ namespace GorgonLibrary.Examples
 					_mouse.PointingDeviceDown += _mouse_PointingDeviceDown;
 					_mouse.PointingDeviceUp += _mouse_PointingDeviceUp;
 				}
+			}
+
+			// Exit the application.
+			if (e.Key == KeyboardKeys.Escape)
+			{
+				Close();
+				return;
 			}
 
 			UpdateKeyboardLabel(e.Key, e.ModifierKeys);

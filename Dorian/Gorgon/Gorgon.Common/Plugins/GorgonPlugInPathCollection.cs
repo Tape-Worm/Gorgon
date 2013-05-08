@@ -62,7 +62,7 @@ namespace GorgonLibrary.PlugIns
 		/// </summary>
 		/// <param name="path">Path to validate.</param>
 		/// <returns>The validated path.</returns>
-		private string ValidatePath(string path)
+		private static string ValidatePath(string path)
 		{
             if (path == null)
             {

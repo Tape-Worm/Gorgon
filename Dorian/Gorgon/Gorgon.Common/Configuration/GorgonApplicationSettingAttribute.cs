@@ -32,7 +32,7 @@ namespace GorgonLibrary.Configuration
 	/// An attribute defining whether a property is to be used as an application setting.
 	/// </summary>
 	[AttributeUsage(AttributeTargets.Property, Inherited=true, AllowMultiple=false)]
-	public class ApplicationSettingAttribute
+	public sealed class ApplicationSettingAttribute
 		: Attribute
 	{
 		#region Properties.

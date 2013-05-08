@@ -338,6 +338,23 @@ namespace GorgonLibrary.UI
 				ValidateWindowControls();
 			}
 		}
+
+		/// <summary>
+		/// Property to return the sizing grip style.
+		/// </summary>
+		/// <remarks>This is not used for the Zune style window.</remarks>
+		[Browsable(false)]
+		public new SizeGripStyle SizeGripStyle
+		{
+			get
+			{
+				return SizeGripStyle.Hide;
+			}
+			set
+			{
+				// Do nothing.
+			}
+		}
 		#endregion
 
 		#region Methods.
@@ -353,14 +370,7 @@ namespace GorgonLibrary.UI
 				return;
 			}
 
-			if (WindowState == FormWindowState.Maximized)
-			{
-				WindowState = FormWindowState.Normal;
-			}
-			else
-			{
-				WindowState = FormWindowState.Maximized;
-			}
+			WindowState = WindowState == FormWindowState.Maximized ? FormWindowState.Normal : FormWindowState.Maximized;
 		}
 
 		/// <summary>
@@ -513,19 +523,12 @@ namespace GorgonLibrary.UI
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void labelMaxRestore_Click(object sender, EventArgs e)
         {
-            if (WindowState != FormWindowState.Maximized)
-            {
-                WindowState = FormWindowState.Maximized;
-            }
-            else
-            {
-                WindowState = FormWindowState.Normal;
-            }
+	        WindowState = WindowState != FormWindowState.Maximized ? FormWindowState.Maximized : FormWindowState.Normal;
 
-            ValidateWindowControls();
+	        ValidateWindowControls();
         }
 
-        /// <summary>
+		/// <summary>
         /// Handles the MouseDown event of the labelCaption control.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
@@ -584,7 +587,7 @@ namespace GorgonLibrary.UI
 					itemMinimize.Enabled = true;
 					itemMove.Enabled = false;
 					itemSize.Enabled = false;
-					labelMaxRestore.Text = @"2";
+					labelMaxRestore.Text = Properties.Resources.GOR_ZUNE_MAX_ICON;
 					break;
 				case FormWindowState.Minimized:
 					itemRestore.Enabled = true;
@@ -594,7 +597,7 @@ namespace GorgonLibrary.UI
 					itemMinimize.Enabled = false;
 					break;
 				case FormWindowState.Normal:
-					labelMaxRestore.Text = @"1";
+					labelMaxRestore.Text = Properties.Resources.GOR_ZUNE_RESTORE_ICON;
 					itemMove.Enabled = true;
 					itemSize.Enabled = true;
 					itemRestore.Enabled = false;
@@ -645,7 +648,7 @@ namespace GorgonLibrary.UI
 				{
 					ResizeDir = ResizeDirection.BottomLeft;
 				}
-				else if ((e.Location.X > Width - ResizeHandleSize) && (e.Location.Y > Height - ResizeHandleSize))
+				if ((e.Location.X > Width - ResizeHandleSize) && (e.Location.Y > Height - ResizeHandleSize))
 				{
 					ResizeDir = ResizeDirection.BottomRight;
 				}
@@ -703,60 +706,62 @@ namespace GorgonLibrary.UI
 					return;
 				}
 
-				if (e.Button == MouseButtons.Left)
+				if (e.Button != MouseButtons.Left)
 				{
-					if ((Width - ResizeHandleSize > e.X) && (e.X > ResizeHandleSize) && (e.Y > ResizeHandleSize) && (e.Y < Height - ResizeHandleSize))
+					return;
+				}
+
+				if ((Width - ResizeHandleSize > e.X) && (e.X > ResizeHandleSize) && (e.Y > ResizeHandleSize) && (e.Y < Height - ResizeHandleSize))
+				{
+					Win32API.ReleaseCapture();
+					Win32API.SendMessage(Handle, (uint)WindowMessages.NCLeftButtonDown, new IntPtr((int)HitTests.Caption), IntPtr.Zero);
+				}
+				else
+				{
+					if ((WindowState == FormWindowState.Normal) && (Resizable))
 					{
-						Win32API.ReleaseCapture();
-						Win32API.SendMessage(Handle, (uint)WindowMessages.NCLeftButtonDown, new IntPtr((int)HitTests.Caption), IntPtr.Zero);
-					}
-					else
-					{
-						if ((WindowState == FormWindowState.Normal) && (Resizable))
+						switch (ResizeDir)
 						{
-							switch (ResizeDir)
-							{
-								case ResizeDirection.Left:
-									Win32API.ReleaseCapture();
-									Cursor.Current = Cursors.SizeWE;
-									Win32API.SendMessage(Handle, (uint)WindowMessages.NCLeftButtonDown, new IntPtr((int)HitTests.Left), IntPtr.Zero);
-									break;
-								case ResizeDirection.TopLeft:
-									Win32API.ReleaseCapture();
-									Cursor.Current = Cursors.SizeNWSE;
-									Win32API.SendMessage(Handle, (uint)WindowMessages.NCLeftButtonDown, new IntPtr((int)HitTests.TopLeft), IntPtr.Zero);
-									break;
-								case ResizeDirection.Top:
-									Win32API.ReleaseCapture();
-									Cursor.Current = Cursors.SizeNS;
-									Win32API.SendMessage(Handle, (uint)WindowMessages.NCLeftButtonDown, new IntPtr((int)HitTests.Top), IntPtr.Zero);
-									break;
-								case ResizeDirection.TopRight:
-									Win32API.ReleaseCapture();
-									Cursor.Current = Cursors.SizeNESW;
-									Win32API.SendMessage(Handle, (uint)WindowMessages.NCLeftButtonDown, new IntPtr((int)HitTests.TopRight), IntPtr.Zero);
-									break;
-								case ResizeDirection.Right:
-									Win32API.ReleaseCapture();
-									Cursor.Current = Cursors.SizeWE;
-									Win32API.SendMessage(Handle, (uint)WindowMessages.NCLeftButtonDown, new IntPtr((int)HitTests.Right), IntPtr.Zero);
-									break;
-								case ResizeDirection.BottomRight:
-									Win32API.ReleaseCapture();
-									Cursor.Current = Cursors.SizeNWSE;
-									Win32API.SendMessage(Handle, (uint)WindowMessages.NCLeftButtonDown, new IntPtr((int)HitTests.BottomRight), IntPtr.Zero);
-									break;
-								case ResizeDirection.Bottom:
-									Win32API.ReleaseCapture();
-									Cursor.Current = Cursors.SizeNS;
-									Win32API.SendMessage(Handle, (uint)WindowMessages.NCLeftButtonDown, new IntPtr((int)HitTests.Bottom), IntPtr.Zero);
-									break;
-								case ResizeDirection.BottomLeft:
-									Win32API.ReleaseCapture();
-									Cursor.Current = Cursors.SizeNESW;
-									Win32API.SendMessage(Handle, (uint)WindowMessages.NCLeftButtonDown, new IntPtr((int)HitTests.BottomLeft), IntPtr.Zero);
-									break;
-							}
+							case ResizeDirection.Left:
+								Win32API.ReleaseCapture();
+								Cursor.Current = Cursors.SizeWE;
+								Win32API.SendMessage(Handle, (uint)WindowMessages.NCLeftButtonDown, new IntPtr((int)HitTests.Left), IntPtr.Zero);
+								break;
+							case ResizeDirection.TopLeft:
+								Win32API.ReleaseCapture();
+								Cursor.Current = Cursors.SizeNWSE;
+								Win32API.SendMessage(Handle, (uint)WindowMessages.NCLeftButtonDown, new IntPtr((int)HitTests.TopLeft), IntPtr.Zero);
+								break;
+							case ResizeDirection.Top:
+								Win32API.ReleaseCapture();
+								Cursor.Current = Cursors.SizeNS;
+								Win32API.SendMessage(Handle, (uint)WindowMessages.NCLeftButtonDown, new IntPtr((int)HitTests.Top), IntPtr.Zero);
+								break;
+							case ResizeDirection.TopRight:
+								Win32API.ReleaseCapture();
+								Cursor.Current = Cursors.SizeNESW;
+								Win32API.SendMessage(Handle, (uint)WindowMessages.NCLeftButtonDown, new IntPtr((int)HitTests.TopRight), IntPtr.Zero);
+								break;
+							case ResizeDirection.Right:
+								Win32API.ReleaseCapture();
+								Cursor.Current = Cursors.SizeWE;
+								Win32API.SendMessage(Handle, (uint)WindowMessages.NCLeftButtonDown, new IntPtr((int)HitTests.Right), IntPtr.Zero);
+								break;
+							case ResizeDirection.BottomRight:
+								Win32API.ReleaseCapture();
+								Cursor.Current = Cursors.SizeNWSE;
+								Win32API.SendMessage(Handle, (uint)WindowMessages.NCLeftButtonDown, new IntPtr((int)HitTests.BottomRight), IntPtr.Zero);
+								break;
+							case ResizeDirection.Bottom:
+								Win32API.ReleaseCapture();
+								Cursor.Current = Cursors.SizeNS;
+								Win32API.SendMessage(Handle, (uint)WindowMessages.NCLeftButtonDown, new IntPtr((int)HitTests.Bottom), IntPtr.Zero);
+								break;
+							case ResizeDirection.BottomLeft:
+								Win32API.ReleaseCapture();
+								Cursor.Current = Cursors.SizeNESW;
+								Win32API.SendMessage(Handle, (uint)WindowMessages.NCLeftButtonDown, new IntPtr((int)HitTests.BottomLeft), IntPtr.Zero);
+								break;
 						}
 					}
 				}
@@ -839,12 +844,14 @@ namespace GorgonLibrary.UI
 		/// <param name="graphics">Graphics interface to use.</param>
 		private void DrawBorder(Graphics graphics)
 		{
-			if ((WindowState == FormWindowState.Normal) && (Border))
+			if ((WindowState != FormWindowState.Normal) || (!Border))
 			{
-				using (var pen = new Pen(ActiveForm == this ? BorderColor : Color.FromKnownColor(KnownColor.DimGray), _borderWidth))
-				{
-					graphics.DrawRectangle(pen, new Rectangle(0, 0, Width - 1, Height - 1));
-				}
+				return;
+			}
+
+			using (var pen = new Pen(ActiveForm == this ? BorderColor : Color.FromKnownColor(KnownColor.DimGray), _borderWidth))
+			{
+				graphics.DrawRectangle(pen, new Rectangle(0, 0, Width - 1, Height - 1));
 			}
 		}
 

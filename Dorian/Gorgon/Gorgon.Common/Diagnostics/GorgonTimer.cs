@@ -25,7 +25,9 @@
 #endregion
 
 using System;
+using System.ComponentModel;
 using GorgonLibrary.Native;
+using GorgonLibrary.Properties;
 
 namespace GorgonLibrary.Diagnostics
 {
@@ -35,25 +37,24 @@ namespace GorgonLibrary.Diagnostics
 	public class GorgonTimer
 	{
 		#region Variables.
-		private static bool _usingLowRes;		// Flag to indicate that we're using low resolution timers.
 		private bool _isHighResTimer;			// Flag to indicate that this is a Query Performance timer.
 		private long _frequency;				// Frequency for the timer.
 		private long _startTime;				// Starting timer time.
 		private long _startTick;				// Starting tick.
 		private long _currentTicks;				// Current number of ticks elapsed.
 		private double _microSeconds;			// Number of microseconds elapsed.
+		private static uint _timePeriod;		// Minimum period for the low res timer.
 		#endregion
 
 		#region Properties.
+
 		/// <summary>
 		/// Property to return whether we're using low resolution timers.
 		/// </summary>
 		internal static bool UsingLowResTimers
 		{
-			get
-			{
-				return _usingLowRes;
-			}
+			get;
+			private set;
 		}
 
 		/// <summary>
@@ -206,9 +207,13 @@ namespace GorgonLibrary.Diagnostics
 		private void GetTime()
 		{
 			if (_isHighResTimer)
+			{
 				GetHighResolutionTime();
+			}
 			else
+			{
 				GetWin32Time();
+			}
 		}
 
 		/// <summary>
@@ -216,11 +221,18 @@ namespace GorgonLibrary.Diagnostics
 		/// </summary>
 		internal static void ResetLowResTimerPeriod()
 		{
-			if (_usingLowRes)
+			if ((!UsingLowResTimers) || (_timePeriod <= 0))
 			{
-				_usingLowRes = false;
-				Win32API.timeEndPeriod(1);
+				return;
 			}
+			
+			UsingLowResTimers = false;
+			if (Win32API.timeEndPeriod(_timePeriod) == TimePeriodReturn.NoCanDo)
+			{
+				throw new Win32Exception(Resources.GOR_TIME_CANNOT_END);
+			}
+
+			_timePeriod = 0;
 		}
 
 		/// <summary>
@@ -228,25 +240,46 @@ namespace GorgonLibrary.Diagnostics
 		/// </summary>
 		public void Reset()
 		{
+			TIMECAPS caps = default(TIMECAPS);
+
 			if (_isHighResTimer)
 			{
 				if (Win32API.QueryPerformanceFrequency(out _frequency))
-					Win32API.QueryPerformanceCounter(out _startTime);
-				else
-					_isHighResTimer = false;
-			}
-
-			if (!_isHighResTimer)
-			{
-				if (_usingLowRes)
 				{
-					Win32API.timeBeginPeriod(1);
-					_usingLowRes = true;
+					Win32API.QueryPerformanceCounter(out _startTime);
+
+					return;
 				}
 
-				_startTick = Environment.TickCount;
-				_startTime = Win32API.timeGetTime();
+				_isHighResTimer = false;
 			}
+
+			if (_timePeriod > 0)
+			{
+				if (Win32API.timeEndPeriod(_timePeriod) == TimePeriodReturn.NoCanDo)
+				{
+					throw new Win32Exception(Resources.GOR_TIME_CANNOT_END);
+				}
+			}
+			else
+			{
+				if (Win32API.timeGetDevCaps(ref caps, DirectAccess.SizeOf<TIMECAPS>()) != 0)
+				{
+					throw new Win32Exception(Resources.GOR_TIME_CANNOT_BEGIN);
+				}
+
+				_timePeriod = caps.MinPeriod;
+			}
+
+			if (Win32API.timeBeginPeriod(_timePeriod) == TimePeriodReturn.NoCanDo)
+			{
+				throw new Win32Exception(Resources.GOR_TIME_CANNOT_BEGIN);
+			}
+
+			UsingLowResTimers = true;
+
+			_startTick = Environment.TickCount;
+			_startTime = Win32API.timeGetTime();
 		}
 		#endregion
 
@@ -258,18 +291,17 @@ namespace GorgonLibrary.Diagnostics
 		/// <remarks>The high resolution timer uses QueryPerformanceCounter, and the standard timer uses timeGetTime.</remarks>
 		public GorgonTimer(bool useHighResolution)
 		{
-			if (useHighResolution)
+			if (!useHighResolution)
 			{
 				if (Win32API.QueryPerformanceFrequency(out _frequency))
+				{
 					_isHighResTimer = true;
+				}
 			}
 			else
 			{
-				if (!_usingLowRes)
-				{
-					_usingLowRes = true;
-					Win32API.timeBeginPeriod(1);
-				}
+				UsingLowResTimers = true;
+				_isHighResTimer = false;
 			}
 
 			Reset();

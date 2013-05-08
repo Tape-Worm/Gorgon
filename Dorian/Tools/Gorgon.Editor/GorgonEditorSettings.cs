@@ -178,7 +178,7 @@ namespace GorgonLibrary.Editor
 		/// Function to find the best drive on the computer for use as temporary storage.
 		/// </summary>
 		/// <returns>The root directory of the best drive on the system.</returns>
-		private DirectoryInfo GetBestDrive()
+		private static DirectoryInfo GetBestDrive()
 		{
 			DriveInfo biggestDrive = null;		// Biggest writable drive on the system.
 

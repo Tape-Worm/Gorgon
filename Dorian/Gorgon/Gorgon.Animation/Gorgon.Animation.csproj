@@ -25,6 +25,8 @@
     <DocumentationFile>bin\Debug\Gorgon.Animation.XML</DocumentationFile>
     <Prefer32Bit>false</Prefer32Bit>
     <UseVSHostingProcess>true</UseVSHostingProcess>
+    <RunCodeAnalysis>true</RunCodeAnalysis>
+    <CodeAnalysisRuleSet>ExtendedCorrectnessRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -49,6 +51,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AnimatedPropertyAttribute.cs" />
+    <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="GorgonAnimatedProperty.cs" />
     <Compile Include="GorgonAnimation.cs" />
     <Compile Include="GorgonAnimationController.cs" />

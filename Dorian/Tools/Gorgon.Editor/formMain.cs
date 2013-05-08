@@ -771,7 +771,7 @@ namespace GorgonLibrary.Editor
 		/// <param name="childNode">Child node.</param>
 		/// <param name="parentNode">Root parent node.</param>
 		/// <returns>TRUE if the child is ancestor of parent, FALSE if not.</returns>
-		private bool IsAncestor(EditorTreeNode childNode, EditorTreeNode parentNode)
+		private static bool IsAncestor(EditorTreeNode childNode, EditorTreeNode parentNode)
 		{
 			TreeNode node = childNode.Parent;
 
@@ -1088,7 +1088,7 @@ namespace GorgonLibrary.Editor
 		/// Function for idle time.
 		/// </summary>
 		/// <returns>TRUE to continue, FALSE to exit.</returns>
-		private bool Idle()
+		private static bool Idle()
 		{
 			Program.CurrentContent.Draw();
 
@@ -1130,7 +1130,7 @@ namespace GorgonLibrary.Editor
 		/// Function to retrieve the folder nodes.
 		/// </summary>
 		/// <param name="rootNode">Node to add folder information into.</param>
-		private void GetFolders(TreeNodeDirectory rootNode)
+		private static void GetFolders(TreeNodeDirectory rootNode)
 		{
 			// Get the sub directories.
 			rootNode.Nodes.Clear();
@@ -1168,7 +1168,7 @@ namespace GorgonLibrary.Editor
         /// </summary>
         /// <param name="directory">Directory to evaluate.</param>
         /// <returns>TRUE if some files can be shown, FALSE if not.</returns>
-        private bool CanShowDirectoryFiles(GorgonFileSystemDirectory directory)
+        private static bool CanShowDirectoryFiles(GorgonFileSystemDirectory directory)
         {
 			return directory.Files.Count(item => Program.BlockedFiles.Contains(item.Name)) < directory.Files.Count;
         }
@@ -1824,7 +1824,7 @@ namespace GorgonLibrary.Editor
 		/// </summary>
 		/// <param name="parent">Parent node.</param>		
 		/// <param name="newNode">New Node to add.</param>
-		private void AddAfterLastFolder(EditorTreeNode parent, EditorTreeNode newNode)
+		private static void AddAfterLastFolder(EditorTreeNode parent, EditorTreeNode newNode)
 		{
 			// Add after other folders.
 			var lastFolder = (from node in parent.Nodes.Cast<EditorTreeNode>()
@@ -2204,7 +2204,7 @@ namespace GorgonLibrary.Editor
 		/// <param name="directoryInfo">Root directory information.</param>
 		/// <param name="destPath">New destination path.</param>
 		/// <returns>The list of enumerated files/folders.</returns>
-		private List<Tuple<string, string>> GetExplorerFiles(DirectoryInfo directoryInfo, string destPath)
+		private static List<Tuple<string, string>> GetExplorerFiles(DirectoryInfo directoryInfo, string destPath)
 		{
 			var result = new List<Tuple<string, string>>();
 
@@ -2248,7 +2248,7 @@ namespace GorgonLibrary.Editor
 		/// <param name="sourceFiles">Files to copy.</param>
 		/// <param name="ct">Cancellation token.</param>
 		/// <returns>The list of directories and files.</returns>		
-		private void GetFilesAndDirectories(GorgonFileSystemDirectory destDir, List<string> files, List<Tuple<string, string>> sourceDirectories, List<Tuple<string, string>> sourceFiles, CancellationToken ct)
+		private static void GetFilesAndDirectories(GorgonFileSystemDirectory destDir, List<string> files, List<Tuple<string, string>> sourceDirectories, List<Tuple<string, string>> sourceFiles, CancellationToken ct)
 		{
 			foreach (string filePath in files)
 			{

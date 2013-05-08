@@ -68,35 +68,32 @@ namespace GorgonLibrary.IO.Zip
             var directories = new List<string>();
             var files = new List<PhysicalFileInfo>();
 
-			using (FileStream stream = File.Open(physicalMountPoint, FileMode.Open, FileAccess.Read, FileShare.Read))
+			using (var zipStream = new ZipInputStream(File.Open(physicalMountPoint, FileMode.Open, FileAccess.Read, FileShare.Read)))
 			{
-				using (var zipStream = new ZipInputStream(stream))
+				ZipEntry entry;
+					
+				while ((entry = zipStream.GetNextEntry()) != null)
 				{
-					ZipEntry entry;
-
-					while ((entry = zipStream.GetNextEntry()) != null)
+					if (!entry.IsDirectory)
 					{
-					    if (!entry.IsDirectory)
+					    string directoryName = Path.GetDirectoryName(entry.Name).FormatDirectory('/');
+					    string fileName = Path.GetFileName(entry.Name).FormatFileName();
+
+					    directoryName = mountPoint.FullPath + directoryName;
+
+					    if (string.IsNullOrWhiteSpace(directoryName))
 					    {
-					        string directoryName = Path.GetDirectoryName(entry.Name).FormatDirectory('/');
-					        string fileName = Path.GetFileName(entry.Name).FormatFileName();
-
-					        directoryName = mountPoint.FullPath + directoryName;
-
-					        if (string.IsNullOrWhiteSpace(directoryName))
-					        {
-					            directoryName = "/";
-					        }
-
-					        directories.Add(directoryName);
-
-					        files.Add(new PhysicalFileInfo(physicalMountPoint + "::/" + entry.Name, fileName, entry.DateTime,
-					                                       entry.Offset, entry.Size, directoryName + fileName));
+					        directoryName = "/";
 					    }
-					    else
-					    {
-					        directories.Add(mountPoint.FullPath + entry.Name);
-					    }
+
+					    directories.Add(directoryName);
+
+					    files.Add(new PhysicalFileInfo(physicalMountPoint + "::/" + entry.Name, fileName, entry.DateTime,
+					                                    entry.Offset, entry.Size, directoryName + fileName));
+					}
+					else
+					{
+					    directories.Add(mountPoint.FullPath + entry.Name);
 					}
 				}
 			}

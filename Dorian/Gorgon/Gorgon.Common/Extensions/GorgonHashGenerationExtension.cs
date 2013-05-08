@@ -13,6 +13,7 @@ namespace GorgonLibrary
 		/// <param name="previousHash">The hash code of the previous value.</param>
 		/// <param name="item">New item to add to the hash code.</param>
 		/// <returns>The hash code.</returns>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2233:OperationsShouldNotOverflow", MessageId = "397*previousHash")]
 		public static int GenerateHash<T>(this int previousHash, T item)
 		{
 			unchecked

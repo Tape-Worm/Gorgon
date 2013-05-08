@@ -147,7 +147,7 @@ namespace GorgonLibrary.Editor
         /// Function to determine if the scratch area is accessible.
         /// </summary>
         /// <returns>TRUE if accessible, FALSE if not.</returns>
-        private bool CanAccessScratch()
+        private static bool CanAccessScratch()
 		{
             string directoryName = Path.GetFullPath(Program.Settings.ScratchPath).FormatDirectory(Path.DirectorySeparatorChar);
 
@@ -199,7 +199,7 @@ namespace GorgonLibrary.Editor
 		/// <summary>
 		/// Function to clean up all scratch file locations.
 		/// </summary>
-		private void CleanAllScratchFiles()
+		private static void CleanAllScratchFiles()
 		{
 			if (string.IsNullOrWhiteSpace(Program.Settings.ScratchPath))
 			{

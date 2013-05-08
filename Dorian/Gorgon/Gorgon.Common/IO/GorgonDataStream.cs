@@ -68,6 +68,7 @@ namespace GorgonLibrary.IO
 		#region Variables.
         private static byte[] _buffer;                      // Buffer for read operations.
 		private bool _disposed;							    // Flag to indicate that the object was disposed.
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2006:UseSafeHandleToEncapsulateNativeResources")]
 		private IntPtr _data = IntPtr.Zero;					// Pointer to the data held by the stream.
 		private int _pointerPosition;						// Position in the buffer.
 		private int _length;								// Number of bytes in the buffer.

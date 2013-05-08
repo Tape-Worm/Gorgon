@@ -88,7 +88,7 @@ namespace GorgonLibrary.UI
 			this.checkToAll.Padding = new System.Windows.Forms.Padding(3, 0, 0, 0);
 			this.checkToAll.Size = new System.Drawing.Size(243, 19);
 			this.checkToAll.TabIndex = 12;
-			this.checkToAll.Text = "&Apply selection to all items?";
+			this.checkToAll.Text = Properties.Resources.GOR_DLG_TO_ALL;
 			this.checkToAll.UseVisualStyleBackColor = false;
 			// 
 			// ConfirmationDialogEx

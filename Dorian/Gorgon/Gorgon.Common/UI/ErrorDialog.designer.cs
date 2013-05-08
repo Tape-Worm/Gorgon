@@ -106,7 +106,7 @@ namespace GorgonLibrary.UI
 			this.checkDetail.Name = "checkDetail";
 			this.checkDetail.Size = new System.Drawing.Size(70, 30);
 			this.checkDetail.TabIndex = 1;
-			this.checkDetail.Text = "&Details";
+			this.checkDetail.Text = Properties.Resources.GOR_DLG_DETAILS;
 			this.checkDetail.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
 			this.checkDetail.Click += new System.EventHandler(this.detailsButton_Click);
 			// 
@@ -120,7 +120,7 @@ namespace GorgonLibrary.UI
 			this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
 			this.Name = "ErrorDialog";
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
-			this.Text = "Error";
+			this.Text = Properties.Resources.GOR_DLG_CAPTION_ERROR;
 			this.Controls.SetChildIndex(this.pictureDialog, 0);
 			this.Controls.SetChildIndex(this.errorDetails, 0);
 			this.Controls.SetChildIndex(this.buttonOK, 0);

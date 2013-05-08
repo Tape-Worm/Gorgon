@@ -154,4 +154,7 @@
   <data name="Gorgon_2_x_Logo_Small" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Gorgon_2.x_Logo_Small.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="GOR_GFX_IMAGE_SETTINGS_NOT_TEXTURE_SETTINGS" xml:space="preserve">
+    <value>These image settings are not compatible with texture settings.</value>
+  </data>
 </root>

@@ -177,7 +177,7 @@ namespace GorgonLibrary.IO
 		/// <param name="entries">List of entries to populate.</param>
 		/// <param name="recurse">TRUE to search all children, FALSE to use only the immediate directory.</param>
 		/// <param name="fileName">Filename/mask to search for.</param>
-		private void SearchDirectories(GorgonFileSystemDirectory parent, IList<GorgonFileSystemDirectory> entries, bool recurse, string fileName)
+		private static void SearchDirectories(GorgonFileSystemDirectory parent, ICollection<GorgonFileSystemDirectory> entries, bool recurse, string fileName)
 		{
 			foreach (GorgonFileSystemDirectory entry in parent.Directories)
 			{
@@ -196,7 +196,7 @@ namespace GorgonLibrary.IO
 		/// <param name="entries">List of entries to populate.</param>
 		/// <param name="recurse">TRUE to search all children, FALSE to use only the immediate directory.</param>
 		/// <param name="fileName">Filename/mask to search for.</param>
-		private void SearchFiles(GorgonFileSystemDirectory parent, IList<GorgonFileSystemFileEntry> entries, bool recurse, string fileName)
+		private static void SearchFiles(GorgonFileSystemDirectory parent, ICollection<GorgonFileSystemFileEntry> entries, bool recurse, string fileName)
 		{
 			if (recurse)
 			{
@@ -1095,11 +1095,13 @@ namespace GorgonLibrary.IO
 		            Mount(mountPoint.PhysicalPath, mountPoint.MountLocation);
 		        }
 
-                if (!string.IsNullOrWhiteSpace(writeLocation))
-                {
-                    _writeLocation = writeLocation;
-                    QueryWriteLocation();
-                }
+			    if (string.IsNullOrWhiteSpace(writeLocation))
+			    {
+				    return;
+			    }
+
+			    _writeLocation = writeLocation;
+			    QueryWriteLocation();
 		    }
 		    finally
 		    {

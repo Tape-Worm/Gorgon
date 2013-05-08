@@ -142,6 +142,7 @@ namespace GorgonLibrary.Native
 		/// <param name="cbSize">Size of the RAWINPUTDEVICE structure.</param>
 		/// <returns>TRUE if successful, FALSE if not.</returns>
 		[DllImport("user32.dll")]
+		[return: MarshalAs(UnmanagedType.Bool)]
 		public static extern bool RegisterRawInputDevices([MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 0)] RAWINPUTDEVICE[] pRawInputDevices, int uiNumDevices, int cbSize);
 
 		/// <summary>

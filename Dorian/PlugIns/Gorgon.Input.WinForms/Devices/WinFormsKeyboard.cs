@@ -176,11 +176,9 @@ namespace GorgonLibrary.Input.WinForms
 		/// Initializes a new instance of the <see cref="WinFormsKeyboard"/> class.
 		/// </summary>
 		/// <param name="owner">The control that owns this device.</param>
-		/// <param name="boundWindow">The window to bind this device with.</param>
 		/// <exception cref="System.ArgumentNullException">Thrown when the owner parameter is NULL (or Nothing in VB.NET).</exception>
-		/// <remarks>Pass NULL (Nothing in VB.Net) to the <paramref name="boundWindow"/> parameter to use the <see cref="P:GorgonLibrary.Gorgon.ApplicationForm">Gorgon application window</see>.</remarks>
-		internal WinFormsKeyboard(GorgonInputFactory owner, System.Windows.Forms.Control boundWindow)
-			: base(owner, "Win Forms Input Keyboard", boundWindow)
+		internal WinFormsKeyboard(GorgonInputFactory owner)
+			: base(owner, "Win Forms Input Keyboard")
 		{
 			Gorgon.Log.Print("Win Forms input keyboard interface created.", LoggingLevel.Verbose);
 		}

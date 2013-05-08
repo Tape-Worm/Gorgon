@@ -26,6 +26,7 @@
 
 using System;
 using System.Drawing;
+using System.Runtime.InteropServices;
 using GorgonLibrary.Math;
 
 namespace GorgonLibrary.Input
@@ -297,25 +298,9 @@ namespace GorgonLibrary.Input
         /// </summary>
         /// <param name="bShow">TRUE to show, FALSE to hide.</param>
         /// <returns>-1 if no pointing device is installed, 0 or greater for the number of times this function has been called with TRUE.</returns>
-        [System.Runtime.InteropServices.DllImport("User32.dll"), System.Security.SuppressUnmanagedCodeSecurity]
-        private static extern int ShowCursor(bool bShow);
+        [DllImport("User32.dll"), System.Security.SuppressUnmanagedCodeSecurity]
+        private static extern int ShowCursor([MarshalAs(UnmanagedType.Bool)] bool bShow);
         
-        /// <summary>
-        /// Function that will hide the cursor and rewind the cursor visibility stack.
-        /// </summary>
-        private void ResetCursor()
-        {
-            int count = ShowCursor(false);
-
-            // Turn off the cursor.
-            while (count >= 0)
-            {
-                count = ShowCursor(false);
-            }
-
-            ShowCursor(true);
-        }
-
 		/// <summary>
 		/// Function called when the device is bound to a window.
 		/// </summary>
@@ -360,11 +345,13 @@ namespace GorgonLibrary.Input
 
 			ConstrainData();
 
-			if (PointingDeviceWheelMove != null)
+			if (PointingDeviceWheelMove == null)
 			{
-				var e = new PointingDeviceEventArgs(Button, PointingDeviceButtons.None, _position, _wheel, RelativePosition, WheelDelta, 0);
-				PointingDeviceWheelMove(this, e);
+				return;
 			}
+
+			var e = new PointingDeviceEventArgs(Button, PointingDeviceButtons.None, _position, _wheel, RelativePosition, WheelDelta, 0);
+			PointingDeviceWheelMove(this, e);
 		}
 
 		/// <summary>
@@ -503,20 +490,39 @@ namespace GorgonLibrary.Input
 			    }
 			}
 
-			if (_wheelConstraint != Point.Empty)
+			if (_wheelConstraint == Point.Empty)
 			{
-				// Limit wheel.
-			    if (_wheel < _wheelConstraint.X)
-			    {
-			        _wheel = _wheelConstraint.X;
-			    }
+				return;
+			}
 
-			    if (_wheel > _wheelConstraint.Y - 1)
-			    {
-			        _wheel = _wheelConstraint.Y - 1;
-			    }
+			// Limit wheel.
+			if (_wheel < _wheelConstraint.X)
+			{
+				_wheel = _wheelConstraint.X;
+			}
+
+			if (_wheel > _wheelConstraint.Y - 1)
+			{
+				_wheel = _wheelConstraint.Y - 1;
 			}
 		}
+
+		/// <summary>
+		/// Function that will hide the cursor and rewind the cursor visibility stack.
+		/// </summary>
+		internal static void ResetCursor()
+		{
+			int count = ShowCursor(false);
+
+			// Turn off the cursor.
+			while (count >= 0)
+			{
+				count = ShowCursor(false);
+			}
+
+			ShowCursor(true);
+		}
+
 
 		/// <summary>
 		/// Function to show the pointing device cursor.
@@ -624,21 +630,17 @@ namespace GorgonLibrary.Input
 		/// </summary>
 		/// <param name="owner">The control that owns this device.</param>
 		/// <param name="deviceName">Name of the input device.</param>
-		/// <param name="boundWindow">The window to bind this device with.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the owner parameter is NULL (or Nothing in VB.NET).</exception>
-		/// <remarks>Pass NULL (Nothing in VB.Net) to the <paramref name="boundWindow"/> parameter to use the <see cref="P:GorgonLibrary.Gorgon.ApplicationForm">Gorgon application window</see>.</remarks>
-		protected GorgonPointingDevice(GorgonInputFactory owner, string deviceName, System.Windows.Forms.Control boundWindow)
-			: base(owner, deviceName, boundWindow)
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="owner"/> parameter is NULL (or Nothing in VB.NET).</exception>
+		protected GorgonPointingDevice(GorgonInputFactory owner, string deviceName)
+			: base(owner, deviceName)
 		{
-			_position = new PointF(BoundControl.ClientSize.Width / 2, BoundControl.ClientSize.Height / 2);
+			_position = PointF.Empty;
 			Button = PointingDeviceButtons.None;
 			_positionConstraint = RectangleF.Empty;
 			_wheelConstraint = Point.Empty;
 
 			ResetCursor();
 			ShowCursor();
-
-			System.Windows.Forms.Cursor.Position = Point.Truncate(_position);
 
 			DoubleClickDelay = System.Windows.Forms.SystemInformation.DoubleClickTime;
 			DoubleClickRange = new PointF(System.Windows.Forms.SystemInformation.DoubleClickSize.Width, System.Windows.Forms.SystemInformation.DoubleClickSize.Height);

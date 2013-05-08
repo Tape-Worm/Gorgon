@@ -26,8 +26,9 @@
 
 using System;
 using System.Collections.Generic;
-using System.Windows.Forms;
+using System.Linq;
 using GorgonLibrary.Input.Properties;
+using GorgonLibrary.Math;
 
 namespace GorgonLibrary.Input
 {
@@ -776,12 +777,22 @@ namespace GorgonLibrary.Input
             /// <param name="arrayIndex">Index of the array.</param>
             public void CopyTo(KeyCharMap[] array, int arrayIndex)
             {
-                foreach (var item in _keys)
-                {
-                    array[arrayIndex] = item.Value;
+				if (array == null)
+				{
+					throw new ArgumentNullException("array");
+				}
 
-                    ++arrayIndex;
-                }
+				if ((arrayIndex < 0) || (arrayIndex >= array.Length))
+				{
+					throw new ArgumentOutOfRangeException("arrayIndex");	
+				}
+
+	            int count = array.Length.Min(Count);
+
+				for (int i = arrayIndex; i < count; i++)
+				{
+					array[i] = this.ElementAt(i);
+				}
             }
 
             /// <summary>
@@ -1257,16 +1268,13 @@ namespace GorgonLibrary.Input
 		/// </summary>
 		/// <param name="owner">The control that owns this device.</param>
 		/// <param name="deviceName">Name of the input device.</param>
-		/// <param name="boundWindow">The window to bind this device with.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the owner parameter is NULL (or Nothing in VB.NET).</exception>
-		/// <remarks>Pass NULL (Nothing in VB.Net) to the <paramref name="boundWindow"/> parameter to use the <see cref="P:GorgonLibrary.Gorgon.ApplicationForm">Gorgon application window</see>.</remarks>
-		protected GorgonKeyboard(GorgonInputFactory owner, string deviceName, Control boundWindow)
-			: base(owner, deviceName, boundWindow)
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="owner"/> parameter is NULL (or Nothing in VB.NET).</exception>
+		protected GorgonKeyboard(GorgonInputFactory owner, string deviceName)
+			: base(owner, deviceName)
 		{
             KeyMappings = new KeyMapCollection();
             KeyStates = new KeyStateCollection();
 			KeyStateResetMode = KeyStateResetMode.ResetAll;
-			GetDefaultKeyMapping();
 		}
 		#endregion
 	}

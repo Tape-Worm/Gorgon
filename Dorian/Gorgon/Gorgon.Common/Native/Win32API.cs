@@ -357,6 +357,7 @@ namespace GorgonLibrary.Native
 		/// <param name="PerformanceFrequency">Frequency of timer.</param>
 		/// <returns>TRUE if system supports high precision timing, FALSE if not.</returns>
 		[DllImport("kernel32", CharSet=CharSet.Auto)]
+		[return: MarshalAs(UnmanagedType.Bool)]
 		public static extern bool QueryPerformanceFrequency(out long PerformanceFrequency);
 
 		/// <summary>
@@ -366,6 +367,7 @@ namespace GorgonLibrary.Native
 		/// <param name="PerformanceCount">Time from the timer.</param>
 		/// <returns>TRUE if system supports high precision timing, FALSE if not.</returns>
 		[DllImport("kernel32",CharSet=CharSet.Auto)]
+		[return: MarshalAs(UnmanagedType.Bool)]
 		public static extern bool QueryPerformanceCounter(out long PerformanceCount);
 
 		/// <summary>
@@ -388,7 +390,7 @@ namespace GorgonLibrary.Native
 		/// <param name="uPeriod">Minimum resolution in milliseconds.</param>
 		/// <returns>0 if successful, non 0 if not.</returns>
 		[DllImport("winmm.dll",CharSet=CharSet.Auto)]
-		public static extern int timeBeginPeriod(uint uPeriod);
+		public static extern TimePeriodReturn timeBeginPeriod(uint uPeriod);
 
 		/// <summary>
 		/// Function to end a timing session.
@@ -396,7 +398,16 @@ namespace GorgonLibrary.Native
 		/// <param name="uPeriod">Minimum resolution in milliseconds.</param>
 		/// <returns>0 if successful, non 0 if not.</returns>
 		[DllImport("winmm.dll", CharSet = CharSet.Auto)]
-		public static extern int timeEndPeriod(uint uPeriod);
+		public static extern TimePeriodReturn timeEndPeriod(uint uPeriod);
+
+		/// <summary>
+		/// Function to get time capabilities.
+		/// </summary>
+		/// <param name="timeCaps">Timer capabilities value.</param>
+		/// <param name="size">Size of the value, in bytes.</param>
+		/// <returns>0 if successful, non-0 if not.</returns>
+		[DllImport("winmm.dll", CharSet = CharSet.Auto)]
+		public static extern int timeGetDevCaps(ref TIMECAPS timeCaps, int size);
 		#endregion
 
 		#region Constructor.
@@ -408,6 +419,22 @@ namespace GorgonLibrary.Native
 			Marshal.PrelinkAll(typeof(Win32API));
 		}
 		#endregion
+	}
+
+	/// <summary>
+	/// Time capabilities.
+	/// </summary>
+	[StructLayout(LayoutKind.Sequential)]
+	struct TIMECAPS
+	{
+		/// <summary>
+		/// 
+		/// </summary>
+		public uint MinPeriod;
+		/// <summary>
+		/// 
+		/// </summary>
+		public uint MaxPeriod;
 	}
 
 	/// <summary>
