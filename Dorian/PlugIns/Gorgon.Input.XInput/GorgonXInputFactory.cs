@@ -143,10 +143,7 @@ namespace GorgonLibrary.Input.XInput
                 throw new InvalidCastException(Resources.GORINP_XINP_NOT_XINPUT_JOYSTICK);
 		    }
 
-		    GorgonJoystick joystick = new XInputController(this, deviceName.Index, joystickName.Name, window, deviceName.Controller);
-			joystick.Enabled = true;
-
-			return joystick;			
+		    return new XInputController(this, deviceName.Index, joystickName.Name, deviceName.Controller);
 		}
 		#endregion
 

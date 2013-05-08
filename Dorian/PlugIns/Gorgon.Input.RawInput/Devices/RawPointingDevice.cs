@@ -346,11 +346,9 @@ namespace GorgonLibrary.Input.Raw
 		/// <param name="owner">The control that owns this device.</param>
 		/// <param name="deviceName">Device name.</param>
 		/// <param name="handle">The handle to the device.</param>
-		/// <param name="boundWindow">The window to bind this device with.</param>
 		/// <exception cref="System.ArgumentNullException">Thrown when the owner parameter is NULL (or Nothing in VB.NET).</exception>
-		/// <remarks>Pass NULL (Nothing in VB.Net) to the <paramref name="boundWindow"/> parameter to use the <see cref="P:GorgonLibrary.Gorgon.ApplicationForm">Gorgon application window</see>.</remarks>
-		internal RawPointingDevice(GorgonInputFactory owner, string deviceName, IntPtr handle, System.Windows.Forms.Control boundWindow)
-			: base(owner, deviceName, boundWindow)
+		internal RawPointingDevice(GorgonInputFactory owner, string deviceName, IntPtr handle)
+			: base(owner, deviceName)
 		{
 			Gorgon.Log.Print("Raw input pointing device interface created for handle 0x{0}.", LoggingLevel.Verbose, handle.FormatHex());
 			_deviceHandle = handle;

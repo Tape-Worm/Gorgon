@@ -67,7 +67,7 @@ namespace GorgonLibrary.UI
 			this.buttonOK.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
 			this.buttonOK.Location = new System.Drawing.Point(12, 78);
 			this.buttonOK.TabIndex = 0;
-			this.buttonOK.Text = "&Yes";
+			this.buttonOK.Text = Properties.Resources.GOR_DLG_YES;
 			this.buttonOK.Click += new System.EventHandler(this.OKButton_Click);
 			// 
 			// pictureDialog
@@ -85,7 +85,7 @@ namespace GorgonLibrary.UI
 			this.buttonNo.Name = "buttonNo";
 			this.buttonNo.Size = new System.Drawing.Size(50, 30);
 			this.buttonNo.TabIndex = 1;
-			this.buttonNo.Text = "&No";
+			this.buttonNo.Text = Properties.Resources.GOR_DLG_NO;
 			this.buttonNo.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
 			this.buttonNo.Click += new System.EventHandler(this.buttonNo_Click);
 			// 
@@ -100,7 +100,7 @@ namespace GorgonLibrary.UI
 			this.buttonCancel.Name = "buttonCancel";
 			this.buttonCancel.Size = new System.Drawing.Size(70, 30);
 			this.buttonCancel.TabIndex = 2;
-			this.buttonCancel.Text = "&Cancel";
+			this.buttonCancel.Text = Properties.Resources.GOR_DLG_CANCEL;
 			this.buttonCancel.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
 			this.buttonCancel.Visible = false;
 			this.buttonCancel.Click += new System.EventHandler(this.buttonCancel_Click);

@@ -25,7 +25,7 @@
 #endregion
 
 using System;
-using System.Windows.Forms;
+using System.Collections.ObjectModel;
 using GorgonLibrary.Diagnostics;
 using XI = SharpDX.XInput;
 
@@ -102,14 +102,15 @@ namespace GorgonLibrary.Input.XInput
 				SecondaryYAxisRange = SecondaryXAxisRange = YAxisRange = XAxisRange = new GorgonRange(-32768, 32767);
 				ThrottleAxisRange = RudderAxisRange = new GorgonRange(0, 255);
 
-				VibrationMotorRanges = new GorgonRange[2];
+			    VibrationMotorRanges = new ReadOnlyCollection<GorgonRange>(new[]
+				    {
+					    new GorgonRange(0, 65535), new GorgonRange(0, 65535)
+				    });
+
 				// BUG: As of this writing, there's a bug in XInputGetCapabilities in DirectX that's returning 255 even though
 				// they've documented the ranges (and I've tested these) to be 0..65535.
 				//VibrationMotorRanges[0] = new GorgonMinMax(0, caps.Vibration.LeftMotorSpeed);
 				//VibrationMotorRanges[1] = new GorgonMinMax(0, caps.Vibration.RightMotorSpeed);
-
-				VibrationMotorRanges[0] = new GorgonRange(0, 65535);
-				VibrationMotorRanges[1] = new GorgonRange(0, 65535);
 
 				ExtraCapabilities = JoystickCapabilityFlags.SupportsDiscreetPOV | JoystickCapabilityFlags.SupportsPOV | JoystickCapabilityFlags.SupportsRudder | JoystickCapabilityFlags.SupportsThrottle | JoystickCapabilityFlags.SupportsVibration | JoystickCapabilityFlags.SupportsSecondaryXAxis | JoystickCapabilityFlags.SupportsSecondaryYAxis;
 			}
@@ -378,11 +379,9 @@ namespace GorgonLibrary.Input.XInput
 		/// <param name="owner">The input factory that owns this device.</param>
 		/// <param name="joystickID">The ID of the joystick.</param>
 		/// <param name="name">The name of the joystick.</param>
-		/// <param name="boundWindow">The window to bind the joystick with.</param>
 		/// <param name="controller">Controller instance to bind to this joystick.</param>
-		/// <remarks>Pass NULL (Nothing in VB.Net) to the <paramref name="boundWindow"/> parameter to use the <see cref="P:GorgonLibrary.Gorgon.ApplicationForm">Gorgon application window</see>.</remarks>
-		internal XInputController(GorgonInputFactory owner, int joystickID, string name, Control boundWindow, XI.Controller controller)
-			: base(owner, name, boundWindow)
+		internal XInputController(GorgonInputFactory owner, int joystickID, string name, XI.Controller controller)
+			: base(owner, name)
 		{
 		    _controller = controller;
 			_controllerID = joystickID;
@@ -400,8 +399,6 @@ namespace GorgonLibrary.Input.XInput
 				Gorgon.Log.Print("Disconnected XInput XBOX 360 controller device #{0} interface created.", LoggingLevel.Simple, joystickID);
 				IsConnected = false;				
 			}
-
-			Initialize();
 		}
 		#endregion
 	}

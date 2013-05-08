@@ -26,7 +26,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Windows.Forms;
 using GorgonLibrary.Collections;
 using GorgonLibrary.Diagnostics;
 using GorgonLibrary.Input.Properties;
@@ -420,7 +419,7 @@ namespace GorgonLibrary.Input
 			/// </summary>
 			/// <param name="range">Range to calculate.</param>
 			/// <returns>The mid point of the range.</returns>
-			private int CalculateMidRange(GorgonRange range)
+			private static int CalculateMidRange(GorgonRange range)
 			{
 				if (range == GorgonRange.Empty)
 					return 0;
@@ -723,7 +722,6 @@ namespace GorgonLibrary.Input
 
 		#region Variables.
 		private bool _deviceLost;												// Flag to indicate that the device was in a lost state.
-
 	    #endregion
 
 		#region Properties.
@@ -880,7 +878,7 @@ namespace GorgonLibrary.Input
 		/// <param name="midRange">Mid point for the range.</param>
 		/// <returns>The actual axis data if it falls outside of the dead zone, or the center position value.</returns>
 		/// <exception cref="GorgonLibrary.GorgonException">Thrown when the joystick has not been initialized.</exception>
-		private int DeadZoneValue(int value, GorgonRange deadZone, int midRange)
+		private static int DeadZoneValue(int value, GorgonRange deadZone, int midRange)
 		{
 		    // The dead zone range needs to be within the range of the axis.
 		    if ((!deadZone.Contains(value)) || (deadZone == GorgonRange.Empty))
@@ -899,7 +897,7 @@ namespace GorgonLibrary.Input
 		/// <param name="orientation">Orientation of the axis.</param>
 		/// <param name="midRange">Mid point for the range.</param>
 		/// <returns>The direction that the axis is pointed at.</returns>
-		private JoystickDirections GetDirection(int value, GorgonRange deadZone, JoystickDirections orientation, int midRange)
+		private static JoystickDirections GetDirection(int value, GorgonRange deadZone, JoystickDirections orientation, int midRange)
 		{
 			var result = JoystickDirections.Center;
 
@@ -985,7 +983,7 @@ namespace GorgonLibrary.Input
 		/// Function to initalize the data for the joystick.
 		/// </summary>
 		/// <remarks>Implementors must call this method after the object has been created or during the construction of the object.</remarks>
-		protected void Initialize()
+		protected internal void Initialize()
 		{
 			DeadZone = new JoystickDeadZoneAxes();
 			Capabilities = GetCapabilities();
@@ -1178,11 +1176,9 @@ namespace GorgonLibrary.Input
 		/// </summary>
 		/// <param name="owner">The control that owns this device.</param>
 		/// <param name="deviceName">Name of the input device.</param>
-		/// <param name="boundWindow">The window to bind this device with.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the owner parameter is NULL (or Nothing in VB.NET).</exception>
-		/// <remarks>Pass NULL (Nothing in VB.Net) to the <paramref name="boundWindow"/> parameter to use the <see cref="P:GorgonLibrary.Gorgon.ApplicationForm">Gorgon application window</see>.</remarks>
-		protected GorgonJoystick(GorgonInputFactory owner, string deviceName, Control boundWindow)
-			: base(owner, deviceName, boundWindow)
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="owner"/> parameter is NULL (or Nothing in VB.NET).</exception>
+		protected GorgonJoystick(GorgonInputFactory owner, string deviceName)
+			: base(owner, deviceName)
 		{
 			Direction = new JoystickAxisDirections();
 		}

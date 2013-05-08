@@ -25,7 +25,6 @@
 #endregion
 
 using System;
-using GorgonLibrary.Diagnostics;
 using GorgonLibrary.Properties;
 
 namespace GorgonLibrary
@@ -279,8 +278,25 @@ namespace GorgonLibrary
 		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="name"/> or <paramref name="description"/> parameter is an empty string.</exception>
 		public GorgonResult(string name, int code, string description)
 		{
-			GorgonDebug.AssertParamString(name, "name");
-			GorgonDebug.AssertParamString(description, "description");
+			if (name == null)
+			{
+				throw new ArgumentNullException("name");
+			}
+
+			if (string.IsNullOrWhiteSpace(name))
+			{
+				throw new ArgumentException(Resources.GOR_PARAMETER_MUST_NOT_BE_EMPTY, "name");
+			}
+
+			if (description == null)
+			{
+				throw new ArgumentNullException("description");
+			}
+
+			if (string.IsNullOrEmpty(description))
+			{
+				throw new ArgumentException(Resources.GOR_PARAMETER_MUST_NOT_BE_EMPTY, "description");
+			}
 
 			_name = name;
 			_description = description;

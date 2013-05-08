@@ -72,7 +72,7 @@ namespace GorgonLibrary.UI
 			this.buttonOK.Name = "buttonOK";
 			this.buttonOK.Size = new System.Drawing.Size(50, 30);
 			this.buttonOK.TabIndex = 10;
-			this.buttonOK.Text = "&OK";
+			this.buttonOK.Text = Properties.Resources.GOR_DLG_OK;
 			this.buttonOK.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
 			// 
 			// pictureDialog
@@ -101,7 +101,7 @@ namespace GorgonLibrary.UI
 			this.MinimumSize = new System.Drawing.Size(249, 158);
 			this.Name = "BaseDialog";
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-			this.Text = "Caption";
+			this.Text = "";
 			((System.ComponentModel.ISupportInitialize)(this.pictureDialog)).EndInit();
 			this.ResumeLayout(false);
 

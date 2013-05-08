@@ -124,7 +124,7 @@ namespace GorgonLibrary.IO
 		/// <param name="physicalRoot">Location of the physical folder holding the root for the virtual file system.</param>
 		/// <param name="mountPoint">Path to the mount point.</param>
 		/// <returns>The virtual file system path.</returns>
-		private string MapToVirtualPath(string physicalPath, string physicalRoot, string mountPoint)
+		private static string MapToVirtualPath(string physicalPath, string physicalRoot, string mountPoint)
 		{
 
 			if (!Path.IsPathRooted(physicalPath))

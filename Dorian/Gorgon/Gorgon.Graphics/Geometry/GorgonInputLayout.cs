@@ -130,7 +130,7 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		/// <param name="type">Type to use when evaluating.</param>
 		/// <returns>The element format.</returns>
-		private BufferFormat GetElementType(Type type)
+		private static BufferFormat GetElementType(Type type)
 		{
 			if (type == typeof(byte))
 			{

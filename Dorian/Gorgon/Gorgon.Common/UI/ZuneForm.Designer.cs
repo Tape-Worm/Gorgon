@@ -67,8 +67,8 @@
 			this.labelClose.Name = "labelClose";
 			this.labelClose.Size = new System.Drawing.Size(22, 15);
 			this.labelClose.TabIndex = 0;
-			this.labelClose.Text = "r";
-			this.toolTip.SetToolTip(this.labelClose, "Close the window");
+			this.labelClose.Text = Properties.Resources.GOR_ZUNE_CLOSE_ICON;
+			this.toolTip.SetToolTip(this.labelClose, Properties.Resources.GOR_ZUNE_CLOSE_TIP);
 			this.labelClose.MouseDown += new System.Windows.Forms.MouseEventHandler(this.labelClose_MouseDown);
 			this.labelClose.MouseEnter += new System.EventHandler(this.labelClose_MouseEnter);
 			this.labelClose.MouseLeave += new System.EventHandler(this.labelClose_MouseLeave);
@@ -82,8 +82,8 @@
 			this.labelMaxRestore.Name = "labelMaxRestore";
 			this.labelMaxRestore.Size = new System.Drawing.Size(22, 15);
 			this.labelMaxRestore.TabIndex = 1;
-			this.labelMaxRestore.Text = "2";
-			this.toolTip.SetToolTip(this.labelMaxRestore, "Maximize the window");
+			this.labelMaxRestore.Text = Properties.Resources.GOR_ZUNE_MAX_ICON;
+			this.toolTip.SetToolTip(this.labelMaxRestore, Properties.Resources.GOR_ZUNE_MAXIMIZE_TIP);
 			this.labelMaxRestore.Click += new System.EventHandler(this.labelMaxRestore_Click);
 			this.labelMaxRestore.MouseEnter += new System.EventHandler(this.labelClose_MouseEnter);
 			this.labelMaxRestore.MouseLeave += new System.EventHandler(this.labelClose_MouseLeave);
@@ -97,8 +97,8 @@
 			this.labelMinimize.Name = "labelMinimize";
 			this.labelMinimize.Size = new System.Drawing.Size(22, 15);
 			this.labelMinimize.TabIndex = 2;
-			this.labelMinimize.Text = "0";
-			this.toolTip.SetToolTip(this.labelMinimize, "Minimize the window");
+			this.labelMinimize.Text = Properties.Resources.GOR_ZUNE_MIN_ICON;
+			this.toolTip.SetToolTip(this.labelMinimize, Properties.Resources.GOR_ZUNE_MINIMIZE_ZIP);
 			this.labelMinimize.Click += new System.EventHandler(this.labelMinimize_Click);
 			this.labelMinimize.MouseEnter += new System.EventHandler(this.labelClose_MouseEnter);
 			this.labelMinimize.MouseLeave += new System.EventHandler(this.labelClose_MouseLeave);
@@ -113,7 +113,7 @@
 			this.labelCaption.Name = "labelCaption";
 			this.labelCaption.Size = new System.Drawing.Size(61, 20);
 			this.labelCaption.TabIndex = 3;
-			this.labelCaption.Text = "Caption";
+			this.labelCaption.Text = "";
 			this.labelCaption.DoubleClick += new System.EventHandler(this.panelCaptionArea_DoubleClick);
 			this.labelCaption.MouseDown += new System.Windows.Forms.MouseEventHandler(this.labelCaption_MouseDown);
 			this.labelCaption.MouseMove += new System.Windows.Forms.MouseEventHandler(this.labelCaption_MouseMove);
@@ -162,21 +162,21 @@
 			this.itemRestore.Image = global::GorgonLibrary.Properties.Resources.Restore;
 			this.itemRestore.Name = "itemRestore";
 			this.itemRestore.Size = new System.Drawing.Size(147, 22);
-			this.itemRestore.Text = "&Restore";
+			this.itemRestore.Text = Properties.Resources.GOR_ZUNE_RESTORE;
 			this.itemRestore.Click += new System.EventHandler(this.itemRestore_Click);
 			// 
 			// itemMove
 			// 
 			this.itemMove.Name = "itemMove";
 			this.itemMove.Size = new System.Drawing.Size(147, 22);
-			this.itemMove.Text = "&Move";
+			this.itemMove.Text = Properties.Resources.GOR_ZUNE_MOVE;
 			this.itemMove.Click += new System.EventHandler(this.itemMove_Click);
 			// 
 			// itemSize
 			// 
 			this.itemSize.Name = "itemSize";
 			this.itemSize.Size = new System.Drawing.Size(147, 22);
-			this.itemSize.Text = "&Size";
+			this.itemSize.Text = Properties.Resources.GOR_ZUNE_SIZE;
 			this.itemSize.Click += new System.EventHandler(this.itemSize_Click);
 			// 
 			// itemMinimize
@@ -184,7 +184,7 @@
 			this.itemMinimize.Image = ((System.Drawing.Image)(resources.GetObject("itemMinimize.Image")));
 			this.itemMinimize.Name = "itemMinimize";
 			this.itemMinimize.Size = new System.Drawing.Size(147, 22);
-			this.itemMinimize.Text = "Mi&nimize";
+			this.itemMinimize.Text = Properties.Resources.GOR_ZUNE_MINIMIZE;
 			this.itemMinimize.Click += new System.EventHandler(this.itemMinimize_Click);
 			// 
 			// itemMaximize
@@ -192,7 +192,7 @@
 			this.itemMaximize.Image = ((System.Drawing.Image)(resources.GetObject("itemMaximize.Image")));
 			this.itemMaximize.Name = "itemMaximize";
 			this.itemMaximize.Size = new System.Drawing.Size(147, 22);
-			this.itemMaximize.Text = "Ma&ximize";
+			this.itemMaximize.Text = Properties.Resources.GOR_ZUNE_MAXIMIZE;
 			this.itemMaximize.Click += new System.EventHandler(this.itemMaximize_Click);
 			// 
 			// toolStripMenuItem1
@@ -207,7 +207,7 @@
 			this.itemClose.Name = "itemClose";
 			this.itemClose.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.F4)));
 			this.itemClose.Size = new System.Drawing.Size(147, 22);
-			this.itemClose.Text = "Close";
+			this.itemClose.Text = Properties.Resources.GOR_ZUNE_CLOSE;
 			this.itemClose.Click += new System.EventHandler(this.itemClose_Click);
 			// 
 			// toolTip
@@ -228,7 +228,7 @@
 			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
 			this.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
 			this.Name = "ZuneForm";
-			this.Text = "Form";
+			this.Text = "";
 			this.Activated += new System.EventHandler(this.ZuneForm_Activated);
 			this.Deactivate += new System.EventHandler(this.ZuneForm_Deactivate);
 			this.Load += new System.EventHandler(this.ZuneForm_Load);

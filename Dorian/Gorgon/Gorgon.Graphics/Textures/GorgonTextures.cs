@@ -29,6 +29,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Threading;
+using GorgonLibrary.Graphics.Properties;
 using GorgonLibrary.IO;
 using D3D = SharpDX.Direct3D11;
 
@@ -135,12 +136,14 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		/// <param name="settings">Settings to derive settings from.</param>
 		/// <returns>The compatible texture settings.</returns>
-		private ITextureSettings GetTextureSettings(IImageSettings settings)
+		private static ITextureSettings GetTextureSettings(IImageSettings settings)
 		{
 			// If these settings are already texture settings, then just leave.
-			if (settings is ITextureSettings)
+			var textureSettings = settings as ITextureSettings;
+
+			if (textureSettings != null)
 			{
-				return (ITextureSettings)settings;
+				return textureSettings;
 			}
 
 			switch (settings.ImageType)
@@ -184,7 +187,7 @@ namespace GorgonLibrary.Graphics
 						ViewIsUnordered = false
 					};					
 				default:
-					throw new ArgumentException("These image settings are not compatible with texture settings.", "settings");
+					throw new ArgumentException(Resources.GOR_GFX_IMAGE_SETTINGS_NOT_TEXTURE_SETTINGS, "settings");
 			}
 		}
 
@@ -195,7 +198,7 @@ namespace GorgonLibrary.Graphics
 		/// <param name="height">Height of the texture.</param>
 		/// <param name="depth">Depth of the texture.</param>
 		/// <returns>The width, height and depth bumped to the nearest power of two.</returns>
-		private Tuple<int, int, int> GetPow2Size(int width, int height, int depth)
+		private static Tuple<int, int, int> GetPow2Size(int width, int height, int depth)
 		{
 			// Do width.
 			while ((width != 0) && ((width & (width - 1)) != 0))

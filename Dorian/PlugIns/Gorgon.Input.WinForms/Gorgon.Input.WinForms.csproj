@@ -28,6 +28,8 @@
     <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
     <Prefer32Bit>false</Prefer32Bit>
     <UseVSHostingProcess>true</UseVSHostingProcess>
+    <RunCodeAnalysis>true</RunCodeAnalysis>
+    <CodeAnalysisRuleSet>ExtendedCorrectnessRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -62,6 +64,7 @@
     <Compile Include="Devices\KeyMapper.cs" />
     <Compile Include="Devices\WinFormsKeyboard.cs" />
     <Compile Include="Devices\WinFormsPointingDevice.cs" />
+    <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="GorgonWinFormsPlugIn.cs" />
     <Compile Include="GorgonWinFormsInputDeviceInfo.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

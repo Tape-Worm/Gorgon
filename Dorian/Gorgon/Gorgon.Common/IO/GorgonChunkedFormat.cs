@@ -74,7 +74,8 @@ namespace GorgonLibrary.IO
         /// <summary>
         /// Property to set or return the temporary buffer for large reads/writes.
         /// </summary>
-        protected byte[] TempBuffer
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1819:PropertiesShouldNotReturnArrays")]
+		protected byte[] TempBuffer
         {
             get;
             set;
@@ -106,6 +107,17 @@ namespace GorgonLibrary.IO
 			get;
 			private set;
 		}
+
+		/// <summary>
+		/// Property to return the underlying stream for the chunking object.
+		/// </summary>
+	    public Stream BaseStream
+	    {
+		    get
+		    {
+				return ChunkAccessMode == ChunkAccessMode.Write ? Writer.BaseStream : Reader.BaseStream;
+		    }
+	    }
         #endregion
 
         #region Methods.
@@ -142,15 +154,6 @@ namespace GorgonLibrary.IO
             return ((ulong)chunkName[7] << 56) | ((ulong)chunkName[6] << 48) | ((ulong)chunkName[5] << 40) | ((ulong)chunkName[4] << 32)
                    | ((ulong)chunkName[3] << 24) | ((ulong)chunkName[2] << 16) | ((ulong)chunkName[1] << 8) | chunkName[0];
         }
-
-		/// <summary>
-		/// Function to return the underlying stream used for the reading/writing of chunks.
-		/// </summary>
-		/// <returns>The stream used to read/write chunks.</returns>
-		public Stream GetStream()
-		{
-			return ChunkAccessMode == ChunkAccessMode.Write ? Writer.BaseStream : Reader.BaseStream;
-		}
 
 	    /// <summary>
 		/// Function to begin reading/writing the chunk

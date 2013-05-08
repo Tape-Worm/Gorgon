@@ -356,15 +356,14 @@ namespace GorgonLibrary.IO
 		/// <param name="stream">Stream containing the data.</param>
         /// <param name="conversionFlags">Flags for conversion.</param>
 		/// <returns>New image settings.</returns>
-        private IImageSettings ReadHeader(GorgonDataStream stream, out TGAConversionFlags conversionFlags)
+        private static IImageSettings ReadHeader(GorgonDataStream stream, out TGAConversionFlags conversionFlags)
         {            
             IImageSettings settings = new GorgonTexture2DSettings();
-            TGAHeader header = default(TGAHeader);
 
-            conversionFlags = TGAConversionFlags.None;
+			conversionFlags = TGAConversionFlags.None;
 
             // Get the header for the file.
-            header = stream.Read<TGAHeader>();
+            TGAHeader header = stream.Read<TGAHeader>();
 
             if ((header.ColorMapType != 0) || (header.ColorMapLength != 0))
             {
@@ -460,7 +459,7 @@ namespace GorgonLibrary.IO
 		/// <param name="settings">Meta data for the image header.</param>
 		/// <param name="writer">Writer interface for the stream.</param>
 		/// <param name="conversionFlags">Flags for image conversion.</param>
-		private void WriteHeader(IImageSettings settings, GorgonBinaryWriter writer, out TGAConversionFlags conversionFlags)
+		private static void WriteHeader(IImageSettings settings, GorgonBinaryWriter writer, out TGAConversionFlags conversionFlags)
 		{
 			TGAHeader header = default(TGAHeader);
 
@@ -529,7 +528,7 @@ namespace GorgonLibrary.IO
 		/// <param name="srcPitch">The pitch of the source data.</param>
 		/// <param name="dest">The pointer to the destination data.</param>
 		/// <param name="destPitch">The pitch of the destination data.</param>
-		private unsafe void Compress24BPPScanLine(void* src, int srcPitch, void* dest, int destPitch)
+		private static void Compress24BPPScanLine(void* src, int srcPitch, void* dest, int destPitch)
 		{
 			var srcPtr = (uint*)src;
 			var destPtr = (byte*)dest;
@@ -548,20 +547,18 @@ namespace GorgonLibrary.IO
 				*(destPtr++) = (byte)((pixel & 0xFF) >> 8);		//G
 				*(destPtr++) = (byte)((pixel & 0xFF) >> 16);	//R
 			}
-		}			
-		
-		/// <summary>
-		/// Function to read uncompressed TGA scanline data.
-		/// </summary>
-		/// <param name="src">Pointer to the source data.</param>
-		/// <param name="bufferSize">Size of the conversion buffer.</param>
-		/// <param name="width">Image width.</param>
-		/// <param name="dest">Destination buffer pointner</param>		
-		/// <param name="destPitch">Pitch of the destination scan line</param>
-		/// <param name="end">End of the scan line.</param>
-		/// <param name="format">Format of the destination buffer.</param>
-		/// <param name="conversionFlags">Flags used for conversion.</param>
-		private unsafe bool ReadCompressed(ref byte *src, int bufferSize, int width, byte *dest, int destPitch, byte *end, BufferFormat format, TGAConversionFlags conversionFlags)
+		}
+
+	    /// <summary>
+	    /// Function to read uncompressed TGA scanline data.
+	    /// </summary>
+	    /// <param name="src">Pointer to the source data.</param>
+	    /// <param name="width">Image width.</param>
+	    /// <param name="dest">Destination buffer pointner</param>
+	    /// <param name="end">End of the scan line.</param>
+	    /// <param name="format">Format of the destination buffer.</param>
+	    /// <param name="conversionFlags">Flags used for conversion.</param>
+	    private static bool ReadCompressed(ref byte *src, int width, byte *dest, byte *end, BufferFormat format, TGAConversionFlags conversionFlags)
 		{
 			bool setOpaque = true;
 			bool flipHorizontal = (conversionFlags & TGAConversionFlags.InvertX) == TGAConversionFlags.InvertX;			
@@ -847,16 +844,15 @@ namespace GorgonLibrary.IO
 
 		}
 
-		/// <summary>
-		/// Function to read uncompressed TGA scanline data.
-		/// </summary>
-		/// <param name="src">Pointer to the source data.</param>
-		/// <param name="srcPitch">Pitch of the source scan line.</param>
-		/// <param name="dest">Destination buffer pointner</param>
-		/// <param name="destPitch">Pitch of the destination scan line</param>
-		/// <param name="format">Format of the destination buffer.</param>
-		/// <param name="conversionFlags">Flags used for conversion.</param>
-		private unsafe bool ReadUncompressed(byte* src, int srcPitch, byte* dest, int destPitch, BufferFormat format, TGAConversionFlags conversionFlags)
+	    /// <summary>
+	    /// Function to read uncompressed TGA scanline data.
+	    /// </summary>
+	    /// <param name="src">Pointer to the source data.</param>
+	    /// <param name="srcPitch">Pitch of the source scan line.</param>
+	    /// <param name="dest">Destination buffer pointner</param>
+	    /// <param name="format">Format of the destination buffer.</param>
+	    /// <param name="conversionFlags">Flags used for conversion.</param>
+	    private static bool ReadUncompressed(byte* src, int srcPitch, byte* dest, BufferFormat format, TGAConversionFlags conversionFlags)
 		{
 			bool setOpaque = true;
 			bool flipHorizontal = (conversionFlags & TGAConversionFlags.InvertX) == TGAConversionFlags.InvertX;
@@ -957,10 +953,10 @@ namespace GorgonLibrary.IO
 		/// <param name="stream">Stream containing the image data.</param>
 		/// <param name="image">Image data.</param>
 		/// <param name="conversionFlags">Flags used to convert the image.</param>
-		private unsafe void CopyImageData(GorgonDataStream stream, GorgonImageData image, TGAConversionFlags conversionFlags)
+		private void CopyImageData(GorgonDataStream stream, GorgonImageData image, TGAConversionFlags conversionFlags)
 		{
-			GorgonFormatPitch srcPitch = default(GorgonFormatPitch);	// Source pitch.
-			var buffer = image[0, 0, 0];								// Get the first buffer only.
+			GorgonFormatPitch srcPitch;		// Source pitch.
+			var buffer = image[0, 0, 0];	// Get the first buffer only.
 			var formatInfo = GorgonBufferFormatInfo.GetInfo(image.Settings.Format);
 
 			if ((conversionFlags & TGAConversionFlags.Expand) == TGAConversionFlags.Expand)
@@ -973,7 +969,6 @@ namespace GorgonLibrary.IO
 			}
 
 			// Otherwise, allocate a buffer for conversion.
-			bool setOpaque = false;
 			var srcPtr = (byte*)stream.PositionPointerUnsafe;
 			var destPtr = (byte*)buffer.Data.UnsafePointer;
 
@@ -993,14 +988,16 @@ namespace GorgonLibrary.IO
 			byte* endScan = (byte*)stream.PositionPointerUnsafe + scanSize;
 
 			for (int y = 0; y < image.Settings.Height; y++)
-			{				
+			{
+				bool setOpaque;
+
 				if ((conversionFlags & TGAConversionFlags.RLE) == TGAConversionFlags.RLE)
 				{
-					setOpaque = ReadCompressed(ref srcPtr, scanSize, image.Settings.Width, destPtr, buffer.PitchInformation.RowPitch, endScan, image.Settings.Format, conversionFlags);
+					setOpaque = ReadCompressed(ref srcPtr, image.Settings.Width, destPtr, endScan, image.Settings.Format, conversionFlags);
 				}
 				else
 				{
-					setOpaque = ReadUncompressed(srcPtr, srcPitch.RowPitch, destPtr, buffer.PitchInformation.RowPitch, image.Settings.Format, conversionFlags);
+					setOpaque = ReadUncompressed(srcPtr, srcPitch.RowPitch, destPtr, image.Settings.Format, conversionFlags);
 					srcPtr += srcPitch.RowPitch;
 				}
 
@@ -1182,13 +1179,13 @@ namespace GorgonLibrary.IO
 
                 if (stream is GorgonDataStream)
                 {
-                    return this.ReadHeader((GorgonDataStream)stream, out conversion);
+                    return ReadHeader((GorgonDataStream)stream, out conversion);
                 }
 
                 using (var memoryStream = new GorgonDataStream(headerSize))
                 {
                     memoryStream.ReadFromStream(stream, headerSize);
-                    return this.ReadHeader(memoryStream, out conversion);
+                    return ReadHeader(memoryStream, out conversion);
                 }
             }
             finally

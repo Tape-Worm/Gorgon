@@ -146,6 +146,177 @@ namespace GorgonLibrary.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to &amp;Cancel.
+        /// </summary>
+        internal static string GOR_DLG_CANCEL {
+            get {
+                return ResourceManager.GetString("GOR_DLG_CANCEL", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Confirmation.
+        /// </summary>
+        internal static string GOR_DLG_CAPTION_CONFIRM {
+            get {
+                return ResourceManager.GetString("GOR_DLG_CAPTION_CONFIRM", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Error.
+        /// </summary>
+        internal static string GOR_DLG_CAPTION_ERROR {
+            get {
+                return ResourceManager.GetString("GOR_DLG_CAPTION_ERROR", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Information.
+        /// </summary>
+        internal static string GOR_DLG_CAPTION_INFO {
+            get {
+                return ResourceManager.GetString("GOR_DLG_CAPTION_INFO", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Warning.
+        /// </summary>
+        internal static string GOR_DLG_CAPTION_WARNING {
+            get {
+                return ResourceManager.GetString("GOR_DLG_CAPTION_WARNING", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &amp;Details.
+        /// </summary>
+        internal static string GOR_DLG_DETAILS {
+            get {
+                return ResourceManager.GetString("GOR_DLG_DETAILS", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Custom Information.
+        /// </summary>
+        internal static string GOR_DLG_ERR_CUSTOM_INFO {
+            get {
+                return ResourceManager.GetString("GOR_DLG_ERR_CUSTOM_INFO", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Error Message.
+        /// </summary>
+        internal static string GOR_DLG_ERR_DETAILS_MSG {
+            get {
+                return ResourceManager.GetString("GOR_DLG_ERR_DETAILS_MSG", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Exception Type.
+        /// </summary>
+        internal static string GOR_DLG_ERR_EXCEPT_TYPE {
+            get {
+                return ResourceManager.GetString("GOR_DLG_ERR_EXCEPT_TYPE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Result Code.
+        /// </summary>
+        internal static string GOR_DLG_ERR_GOREXCEPT_RESULT {
+            get {
+                return ResourceManager.GetString("GOR_DLG_ERR_GOREXCEPT_RESULT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Next Exception.
+        /// </summary>
+        internal static string GOR_DLG_ERR_NEXT_EXCEPTION {
+            get {
+                return ResourceManager.GetString("GOR_DLG_ERR_NEXT_EXCEPTION", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No message given..
+        /// </summary>
+        internal static string GOR_DLG_ERR_NO_MSG {
+            get {
+                return ResourceManager.GetString("GOR_DLG_ERR_NO_MSG", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Source.
+        /// </summary>
+        internal static string GOR_DLG_ERR_SRC {
+            get {
+                return ResourceManager.GetString("GOR_DLG_ERR_SRC", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to END.
+        /// </summary>
+        internal static string GOR_DLG_ERR_STACK_END {
+            get {
+                return ResourceManager.GetString("GOR_DLG_ERR_STACK_END", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Target Site.
+        /// </summary>
+        internal static string GOR_DLG_ERR_TARGET_SITE {
+            get {
+                return ResourceManager.GetString("GOR_DLG_ERR_TARGET_SITE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &amp;No.
+        /// </summary>
+        internal static string GOR_DLG_NO {
+            get {
+                return ResourceManager.GetString("GOR_DLG_NO", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &amp;OK.
+        /// </summary>
+        internal static string GOR_DLG_OK {
+            get {
+                return ResourceManager.GetString("GOR_DLG_OK", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &amp;Apply selection to all items?.
+        /// </summary>
+        internal static string GOR_DLG_TO_ALL {
+            get {
+                return ResourceManager.GetString("GOR_DLG_TO_ALL", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &amp;Yes.
+        /// </summary>
+        internal static string GOR_DLG_YES {
+            get {
+                return ResourceManager.GetString("GOR_DLG_YES", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Named object: {0}.
         /// </summary>
         internal static string GOR_GORGONNAMEDOBJECT_TOSTRING {
@@ -207,6 +378,51 @@ namespace GorgonLibrary.Properties {
         internal static string GOR_KEY_NOT_FOUND {
             get {
                 return ResourceManager.GetString("GOR_KEY_NOT_FOUND", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to logging begins.
+        /// </summary>
+        internal static string GOR_LOG_BEGINS {
+            get {
+                return ResourceManager.GetString("GOR_LOG_BEGINS", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to logging ends.
+        /// </summary>
+        internal static string GOR_LOG_ENDS {
+            get {
+                return ResourceManager.GetString("GOR_LOG_ENDS", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Exception.
+        /// </summary>
+        internal static string GOR_LOG_EXCEPTION {
+            get {
+                return ResourceManager.GetString("GOR_LOG_EXCEPTION", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Log Filter Level.
+        /// </summary>
+        internal static string GOR_LOG_FILTER_LEVEL {
+            get {
+                return ResourceManager.GetString("GOR_LOG_FILTER_LEVEL", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Version.
+        /// </summary>
+        internal static string GOR_LOG_VERSION {
+            get {
+                return ResourceManager.GetString("GOR_LOG_VERSION", resourceCulture);
             }
         }
         
@@ -356,38 +572,20 @@ namespace GorgonLibrary.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Confirmation.
+        ///   Looks up a localized string similar to Cannot begin the timer period..
         /// </summary>
-        internal static string GOR_UI_CAPTION_CONFIRM {
+        internal static string GOR_TIME_CANNOT_BEGIN {
             get {
-                return ResourceManager.GetString("GOR_UI_CAPTION_CONFIRM", resourceCulture);
+                return ResourceManager.GetString("GOR_TIME_CANNOT_BEGIN", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Error.
+        ///   Looks up a localized string similar to Cannot end the timer period..
         /// </summary>
-        internal static string GOR_UI_CAPTION_ERROR {
+        internal static string GOR_TIME_CANNOT_END {
             get {
-                return ResourceManager.GetString("GOR_UI_CAPTION_ERROR", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Information.
-        /// </summary>
-        internal static string GOR_UI_CAPTION_INFO {
-            get {
-                return ResourceManager.GetString("GOR_UI_CAPTION_INFO", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Warning.
-        /// </summary>
-        internal static string GOR_UI_CAPTION_WARNING {
-            get {
-                return ResourceManager.GetString("GOR_UI_CAPTION_WARNING", resourceCulture);
+                return ResourceManager.GetString("GOR_TIME_CANNOT_END", resourceCulture);
             }
         }
         
@@ -478,6 +676,123 @@ namespace GorgonLibrary.Properties {
         internal static string GOR_VALUE_IS_LESS_THAN {
             get {
                 return ResourceManager.GetString("GOR_VALUE_IS_LESS_THAN", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Close.
+        /// </summary>
+        internal static string GOR_ZUNE_CLOSE {
+            get {
+                return ResourceManager.GetString("GOR_ZUNE_CLOSE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to r.
+        /// </summary>
+        internal static string GOR_ZUNE_CLOSE_ICON {
+            get {
+                return ResourceManager.GetString("GOR_ZUNE_CLOSE_ICON", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Close the window.
+        /// </summary>
+        internal static string GOR_ZUNE_CLOSE_TIP {
+            get {
+                return ResourceManager.GetString("GOR_ZUNE_CLOSE_TIP", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 2.
+        /// </summary>
+        internal static string GOR_ZUNE_MAX_ICON {
+            get {
+                return ResourceManager.GetString("GOR_ZUNE_MAX_ICON", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Ma&amp;ximize.
+        /// </summary>
+        internal static string GOR_ZUNE_MAXIMIZE {
+            get {
+                return ResourceManager.GetString("GOR_ZUNE_MAXIMIZE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Maximize the window.
+        /// </summary>
+        internal static string GOR_ZUNE_MAXIMIZE_TIP {
+            get {
+                return ResourceManager.GetString("GOR_ZUNE_MAXIMIZE_TIP", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 0.
+        /// </summary>
+        internal static string GOR_ZUNE_MIN_ICON {
+            get {
+                return ResourceManager.GetString("GOR_ZUNE_MIN_ICON", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Mi&amp;nimize.
+        /// </summary>
+        internal static string GOR_ZUNE_MINIMIZE {
+            get {
+                return ResourceManager.GetString("GOR_ZUNE_MINIMIZE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Minimize the window.
+        /// </summary>
+        internal static string GOR_ZUNE_MINIMIZE_ZIP {
+            get {
+                return ResourceManager.GetString("GOR_ZUNE_MINIMIZE_ZIP", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &amp;Move.
+        /// </summary>
+        internal static string GOR_ZUNE_MOVE {
+            get {
+                return ResourceManager.GetString("GOR_ZUNE_MOVE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &amp;Restore.
+        /// </summary>
+        internal static string GOR_ZUNE_RESTORE {
+            get {
+                return ResourceManager.GetString("GOR_ZUNE_RESTORE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 1.
+        /// </summary>
+        internal static string GOR_ZUNE_RESTORE_ICON {
+            get {
+                return ResourceManager.GetString("GOR_ZUNE_RESTORE_ICON", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &amp;Size.
+        /// </summary>
+        internal static string GOR_ZUNE_SIZE {
+            get {
+                return ResourceManager.GetString("GOR_ZUNE_SIZE", resourceCulture);
             }
         }
         

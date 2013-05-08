@@ -40,6 +40,7 @@ namespace GorgonLibrary.IO
 		: System.IO.BinaryWriter
 	{
 		#region Variables.
+		private bool _isDisposed;		// Flag to indicate that the object was disposed.
 		private byte[] _tempBuffer;		// Temporary buffer.
 		private bool _keepOpen;			// Flag to keep the underlying stream open.
 		#endregion
@@ -68,15 +69,20 @@ namespace GorgonLibrary.IO
 		/// <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
 		protected override void Dispose(bool disposing)
 		{
-			if (disposing)
+			if (!_isDisposed)
 			{
-			    if (!_keepOpen)
-			    {
-			        BaseStream.Dispose();
-			    }
-			}
+				if (disposing)
+				{
+					// Force the dispose to -not- destroy the underlying stream.
+					if (!_keepOpen)
+					{
+						BaseStream.Dispose();
+					}
+				}
 
-			// Force the dispose to -not- destroy the underlying stream.
+				_isDisposed = true;
+			}
+			
 			base.Dispose(false);
 		}
 

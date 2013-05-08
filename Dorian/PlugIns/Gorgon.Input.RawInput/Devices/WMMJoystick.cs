@@ -25,7 +25,6 @@
 #endregion
 
 using System.Runtime.InteropServices;
-using System.Windows.Forms;
 using GorgonLibrary.Diagnostics;
 using GorgonLibrary.Input.Raw.Properties;
 using GorgonLibrary.Native;
@@ -214,7 +213,7 @@ namespace GorgonLibrary.Input.Raw
 		/// <param name="currentValue">Value to shift.</param>
 		/// <param name="axisRange">Range to evaluate.</param>
 		/// <returns>The shifted value.</returns>
-		private int CenterValue(int currentValue, GorgonRange axisRange)
+		private static int CenterValue(int currentValue, GorgonRange axisRange)
 		{
 			return currentValue - (axisRange.Range / 2);
 		}
@@ -388,14 +387,11 @@ namespace GorgonLibrary.Input.Raw
 		/// <param name="owner">The input factory that owns this device.</param>
 		/// <param name="joystickID">The ID of the joystick.</param>
 		/// <param name="name">The name of the joystick.</param>
-		/// <param name="boundWindow">The window to bind the joystick with.</param>
 		/// <exception cref="System.ArgumentNullException">Thrown when the owner parameter is NULL (or Nothing in VB.NET).</exception>
-		/// <remarks>Pass NULL (Nothing in VB.Net) to the <paramref name="boundWindow"/> parameter to use the <see cref="P:GorgonLibrary.Gorgon.ApplicationForm">Gorgon application window</see>.</remarks>
-		internal MultimediaJoystick(GorgonInputFactory owner, int joystickID, string name, Control boundWindow)
-			: base(owner, name, boundWindow)
+		internal MultimediaJoystick(GorgonInputFactory owner, int joystickID, string name)
+			: base(owner, name)
 		{
 			_joystickID = joystickID;
-			Initialize();
 			Gorgon.Log.Print("Windows multimedia joystick device ID 0x{0} interface created.", LoggingLevel.Verbose, joystickID.FormatHex());
 		}
 		#endregion

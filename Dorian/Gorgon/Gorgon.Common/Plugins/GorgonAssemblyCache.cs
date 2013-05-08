@@ -37,7 +37,7 @@ namespace GorgonLibrary.PlugIns
 	static class AssemblyCache
 	{
 		#region Variables.
-		private static readonly Dictionary<string, Assembly> _assemblies;			// List of loaded assemblies.
+		private static readonly Dictionary<string, Assembly> _assemblies = new Dictionary<string, Assembly>();		// List of loaded assemblies.
 		#endregion
 
 		#region Methods.
@@ -98,7 +98,6 @@ namespace GorgonLibrary.PlugIns
 		/// </summary>
 		static AssemblyCache()
 		{
-			_assemblies = new Dictionary<string, Assembly>();
 			GetAssemblies();
 		}
 		#endregion

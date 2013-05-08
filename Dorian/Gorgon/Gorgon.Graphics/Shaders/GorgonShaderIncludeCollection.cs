@@ -114,41 +114,50 @@ namespace GorgonLibrary.Graphics
 		/// <param name="includeLine">Include line.</param>
 		/// <param name="checkFileExists">TRUE to check if the file exists, FALSE to skip the check.</param>
 		/// <returns>A path to the include file.</returns>
-		private GorgonShaderInclude ParseIncludeLine(string includeLine, bool checkFileExists)
+		private static GorgonShaderInclude ParseIncludeLine(string includeLine, bool checkFileExists)
 		{
 			string originalLine = includeLine;
 
 			includeLine = includeLine.Substring(14).Trim();
 
 			if (string.IsNullOrEmpty(includeLine))
-				throw new GorgonException(GorgonResult.CannotRead, "Cannot read the shader file.  The include line has no parameters.");
-			
+			{
+				throw new GorgonException(GorgonResult.CannotRead,
+				                          "Cannot read the shader file.  The include line has no parameters.");
+			}
+
 			// Get include files.
-			int startQuote = 0;
 			int endQuote = 0;
-			string includeName = string.Empty;
-			string includePath = string.Empty;
+			string includePath;
 
 			if (!includeLine.StartsWith("\""))
+			{
 				throw new GorgonException(GorgonResult.CannotRead, "Cannot read the file.  Include name is not enclosed in quotes.");
+			}
 
 			if (!includeLine.EndsWith("\""))
+			{
 				throw new GorgonException(GorgonResult.CannotRead, "Cannot read the file.  Include path is not enclosed in quotes.");
+			}
 
 			// Get the include name.
 			for (int c = 1; c < includeLine.Length; c++)
 			{
-				if (includeLine[c] == '\"')
+				if (includeLine[c] != '\"')
 				{
-					endQuote = c;
-					break;
+					continue;
 				}
+
+				endQuote = c;
+				break;
 			}
 
 			if (endQuote == 0)
+			{
 				throw new GorgonException(GorgonResult.CannotRead, "Cannot read the file.  Include name is not enclosed in quotes.");
+			}
 
-			includeName = includeLine.Substring(1, endQuote - 1);
+			string includeName = includeLine.Substring(1, endQuote - 1);
 			includeLine = includeLine.Substring(endQuote + 1).Trim();
 
 			if (includeLine.StartsWith(","))
@@ -156,23 +165,34 @@ namespace GorgonLibrary.Graphics
 				includeLine = includeLine.Substring(1).Trim();
 
 				if (!includeLine.StartsWith("\""))
+				{
 					throw new GorgonException(GorgonResult.CannotRead, "Cannot read the file.  Include path is not enclosed in quotes.");
+				}
 
 				endQuote = includeLine.Length - 1;
 
-				includePath = Path.GetFullPath(includeLine.Substring(startQuote + 1, endQuote - (startQuote + 1)));
+				includePath = Path.GetFullPath(includeLine.Substring(1, endQuote - 1));
 
 				if (endQuote + 1 <= includeLine.Length)
+				{
 					includeLine = includeLine.Substring(endQuote + 1);
+				}
 
 				if (!string.IsNullOrEmpty(includeLine))
-					throw new GorgonException(GorgonResult.CannotRead, "Cannot read the file.  '" + originalLine + "' has invalid information.");
+				{
+					throw new GorgonException(GorgonResult.CannotRead,
+					                          "Cannot read the file.  '" + originalLine + "' has invalid information.");
+				}
 
 				if ((checkFileExists) && (!File.Exists(includePath)))
+				{
 					throw new IOException("The include file '" + includePath + "' was not found.");
+				}
 			}
 			else
+			{
 				includePath = string.Empty;
+			}
 
 			return new GorgonShaderInclude(includeName, includePath);
 		}

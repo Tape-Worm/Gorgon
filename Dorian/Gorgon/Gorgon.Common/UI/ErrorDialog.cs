@@ -113,7 +113,7 @@ namespace GorgonLibrary.UI
 		/// </summary>
 		protected override void ValidateFunctions()
 		{
-		    checkDetail.Enabled = _errorDetails != string.Empty;
+		    checkDetail.Enabled = !string.IsNullOrWhiteSpace(_errorDetails);
 		}
 
 	    /// <summary>

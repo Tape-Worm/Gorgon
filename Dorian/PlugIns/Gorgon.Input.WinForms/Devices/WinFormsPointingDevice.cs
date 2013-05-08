@@ -219,11 +219,9 @@ namespace GorgonLibrary.Input.WinForms
 		/// Initializes a new instance of the <see cref="WinFormsPointingDevice"/> class.
 		/// </summary>
 		/// <param name="owner">The control that owns this device.</param>
-		/// <param name="boundWindow">The window to bind this device with.</param>
 		/// <exception cref="System.ArgumentNullException">Thrown when the owner parameter is NULL (or Nothing in VB.NET).</exception>
-		/// <remarks>Pass NULL (Nothing in VB.Net) to the <paramref name="boundWindow"/> parameter to use the <see cref="P:GorgonLibrary.Gorgon.ApplicationForm">Gorgon application window</see>.</remarks>
-		internal WinFormsPointingDevice(GorgonInputFactory owner, System.Windows.Forms.Control boundWindow)
-			: base(owner, "Win Forms Mouse", boundWindow)
+		internal WinFormsPointingDevice(GorgonInputFactory owner)
+			: base(owner, "Win Forms Mouse")
 		{			
 			Gorgon.Log.Print("Raw input pointing device interface created.", LoggingLevel.Verbose);
 

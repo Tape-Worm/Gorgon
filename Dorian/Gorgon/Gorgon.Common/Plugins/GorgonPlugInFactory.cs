@@ -188,12 +188,14 @@ namespace GorgonLibrary.PlugIns
 		/// Function to determine if a plug-in implements <see cref="System.IDisposable">IDisposable</see> and dispose the object if it does.
 		/// </summary>
 		/// <param name="plugIn">Plug-in to check and dispose.</param>
-		private void CheckDisposable(GorgonPlugIn plugIn)
+		private static void CheckDisposable(GorgonPlugIn plugIn)
 		{
 			var disposer = plugIn as IDisposable;
 
 			if (disposer != null)
+			{
 				disposer.Dispose();
+			}
 		}
 
 		/// <summary>

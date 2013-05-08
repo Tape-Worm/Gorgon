@@ -26,6 +26,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using GorgonLibrary.Input.Properties;
 
@@ -110,7 +111,7 @@ namespace GorgonLibrary.Input
 		/// <param name="name">Name of the device.</param>
 		/// <param name="deviceType">Type of input device.</param>
 		/// <returns>The UUID for the device.</returns>
-		private string GetDeviceUUID(GorgonInputDeviceInfo name, Type deviceType)
+		private static string GetDeviceUUID(GorgonInputDeviceInfo name, Type deviceType)
 		{
 			string result = Guid.Empty.ToString();
 
@@ -275,6 +276,10 @@ namespace GorgonLibrary.Input
 				Devices.Add(customHID.UUID, customHID);
 			}
 
+			customHID.ClearData();
+			customHID.Bind(window);
+			customHID.Enabled = true;
+
 			return customHID;
 		}
 
@@ -310,6 +315,12 @@ namespace GorgonLibrary.Input
 				keyboardDevice.UUID = GetDeviceUUID(deviceInfo, keyboardDevice.GetType());
 				Devices.Add(keyboardDevice.UUID, keyboardDevice);
 			}
+
+			keyboardDevice.GetDefaultKeyMapping();
+			keyboardDevice.KeyStateResetMode = KeyStateResetMode.ResetAll;
+			keyboardDevice.KeyStates.Reset();
+			keyboardDevice.Bind(window);
+			keyboardDevice.Enabled = true;
 
 			return keyboardDevice;
 		}
@@ -351,12 +362,25 @@ namespace GorgonLibrary.Input
 
 			var pointingDevice = GetInputDevice<GorgonPointingDevice>(deviceInfo);
 
+			GorgonPointingDevice.ResetCursor();
+
 			if (pointingDevice == null)
 			{
 				pointingDevice = CreatePointingDeviceImpl(window, deviceInfo);
 				pointingDevice.UUID = GetDeviceUUID(deviceInfo, pointingDevice.GetType());
 				Devices.Add(pointingDevice.UUID, pointingDevice);
 			}
+
+			// Default to center of the window on initial creation.
+			pointingDevice.Position = new PointF(window.ClientSize.Width / 2, window.ClientSize.Height / 2);
+			pointingDevice.PositionRange = RectangleF.Empty;
+			pointingDevice.WheelRange = Point.Empty;
+			pointingDevice.ResetButtons();
+			pointingDevice.Bind(window);
+			pointingDevice.Enabled = true;
+			pointingDevice.ShowCursor();
+			
+			System.Windows.Forms.Cursor.Position = Point.Truncate(pointingDevice.Position);
 
 			return pointingDevice;
 		}
@@ -409,6 +433,10 @@ namespace GorgonLibrary.Input
 				joystickDevice.UUID = GetDeviceUUID(deviceInfo, joystickDevice.GetType());
 				Devices.Add(joystickDevice.UUID, joystickDevice);
 			}
+
+			joystickDevice.Initialize();
+			joystickDevice.Bind(window);
+			joystickDevice.Enabled = true;
 
 			return joystickDevice;
 		}
@@ -465,6 +493,9 @@ namespace GorgonLibrary.Input
                                           string.Format(Resources.GORINP_CANNOT_CREATE, plugInType));
             }
 
+			// Enumerate the devices.
+			factory.EnumerateDevices();
+
 		    Gorgon.AddTrackedObject(factory);
 
 			return factory;
@@ -498,7 +529,6 @@ namespace GorgonLibrary.Input
 			: base(name)
 		{
 			Devices = new Dictionary<string, GorgonInputDevice>();
-			EnumerateDevices();
 			AutoReacquireDevices = true;
 		}
 		#endregion

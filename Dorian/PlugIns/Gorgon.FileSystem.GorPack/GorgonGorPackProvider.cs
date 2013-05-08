@@ -99,7 +99,7 @@ namespace GorgonLibrary.IO.GorPack
 		/// </summary>
 		/// <param name="data">Data to decompress.</param>
 		/// <returns>The uncompressed data.</returns>
-		private byte[] Decompress(byte[] data)
+		private static byte[] Decompress(byte[] data)
 		{
 			using (var sourceStream = new MemoryStream(data))
 			{
@@ -235,21 +235,18 @@ namespace GorgonLibrary.IO.GorPack
         protected override void Enumerate(string physicalMountPoint, GorgonFileSystemDirectory mountPoint, 
             out string[] physicalDirectories, out PhysicalFileInfo[] physicalFiles)
         {
-            using (var stream = File.Open(physicalMountPoint, FileMode.Open, FileAccess.Read, FileShare.Read))
+            using (var reader = new GorgonBinaryReader(File.Open(physicalMountPoint, FileMode.Open, FileAccess.Read, FileShare.Read), false))
             {
-                using (var reader = new GorgonBinaryReader(stream, true))
-                {
-                    // Skip the header.
-                    reader.ReadString();
+                // Skip the header.
+                reader.ReadString();
 
-                    int indexLength = reader.ReadInt32();
+                int indexLength = reader.ReadInt32();
 
-                    byte[] indexData = Decompress(reader.ReadBytes(indexLength));
-                    string xmlData = Encoding.UTF8.GetString(indexData);
+                byte[] indexData = Decompress(reader.ReadBytes(indexLength));
+                string xmlData = Encoding.UTF8.GetString(indexData);
 
-                    ParseIndexXML(physicalMountPoint, mountPoint, XDocument.Parse(xmlData, LoadOptions.None),
-                                  stream.Position, out physicalDirectories, out physicalFiles);
-                }
+                ParseIndexXML(physicalMountPoint, mountPoint, XDocument.Parse(xmlData, LoadOptions.None),
+                                reader.BaseStream.Position, out physicalDirectories, out physicalFiles);
             }
         }
 
@@ -287,12 +284,9 @@ namespace GorgonLibrary.IO.GorPack
 
 			GorgonDebug.AssertParamString(physicalPath, "physicalPath");
 
-		    using (FileStream stream = File.Open(physicalPath, FileMode.Open, FileAccess.Read, FileShare.Read))
+			using (var reader = new GorgonBinaryReader(File.Open(physicalPath, FileMode.Open, FileAccess.Read, FileShare.Read), false))
 			{
-				using (var reader = new GorgonBinaryReader(stream, true))
-				{
-					header = reader.ReadString();
-				}
+				header = reader.ReadString();
 			}
 
 			return (String.CompareOrdinal(header, GorgonGorPackPlugIn.GorPackHeader) == 0);

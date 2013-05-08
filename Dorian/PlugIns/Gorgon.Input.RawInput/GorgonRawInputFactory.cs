@@ -50,7 +50,7 @@ namespace GorgonLibrary.Input.Raw
 		/// <param name="deviceType">Type of device.</param>
 		/// <param name="deviceList">List of devices.</param>
 		/// <returns>A device name structure.</returns>
-		private void GetRawInputDeviceInfo(IntPtr deviceHandle, InputDeviceType deviceType, List<GorgonRawInputDeviceInfo> deviceList)
+		private static void GetRawInputDeviceInfo(IntPtr deviceHandle, InputDeviceType deviceType, List<GorgonRawInputDeviceInfo> deviceList)
 		{
 			int dataSize = 0;
 			RegistryKey deviceKey = null;
@@ -173,7 +173,7 @@ namespace GorgonLibrary.Input.Raw
 		/// <param name="joystickData">Joystick capability data.</param>
 		/// <param name="joystickID">ID of the joystick to retrieve data for.</param>
 		/// <returns>The name of the joystick.</returns>
-		private string GetJoystickName(JOYCAPS joystickData, int joystickID)
+		private static string GetJoystickName(JOYCAPS joystickData, int joystickID)
 		{
 			RegistryKey rootKey = null;			// Root registry key.
 			RegistryKey lookup = null;			// Look up key.
@@ -362,12 +362,7 @@ namespace GorgonLibrary.Input.Raw
                 throw new InvalidCastException(Resources.GORINP_RAW_HIDINFO_NOT_RAW);
 		    }
 
-		    var hidDevice = new RawHIDDevice(this, rawInfo, window)
-		        {
-		            Enabled = true
-		        };
-
-		    return hidDevice;
+			return new RawHIDDevice(this, rawInfo);
 		}
 
 		/// <summary>
@@ -381,11 +376,8 @@ namespace GorgonLibrary.Input.Raw
 		protected override GorgonKeyboard CreateKeyboardImpl(System.Windows.Forms.Control window, GorgonInputDeviceInfo keyboardInfo)
 		{
 		    RawKeyboard keyboard = keyboardInfo == null
-		                               ? new RawKeyboard(this, "System Keyboard", IntPtr.Zero, window)
-		                               : new RawKeyboard(this, keyboardInfo.Name, ((GorgonRawInputDeviceInfo)keyboardInfo).Handle, window);
-
-			keyboard.Enabled = true;
-
+		                               ? new RawKeyboard(this, "System Keyboard", IntPtr.Zero)
+		                               : new RawKeyboard(this, keyboardInfo.Name, ((GorgonRawInputDeviceInfo)keyboardInfo).Handle);
 			return keyboard;
 		}
 
@@ -401,12 +393,9 @@ namespace GorgonLibrary.Input.Raw
 		protected override GorgonPointingDevice CreatePointingDeviceImpl(System.Windows.Forms.Control window, GorgonInputDeviceInfo pointingDeviceInfo)
 		{
 		    RawPointingDevice mouse = pointingDeviceInfo == null
-		                                  ? new RawPointingDevice(this, "System Mouse", IntPtr.Zero, window)
+		                                  ? new RawPointingDevice(this, "System Mouse", IntPtr.Zero)
 		                                  : new RawPointingDevice(this, pointingDeviceInfo.Name,
-		                                                          ((GorgonRawInputDeviceInfo)pointingDeviceInfo).Handle,
-		                                                          window);
-			mouse.Enabled = true;
-
+		                                                          ((GorgonRawInputDeviceInfo)pointingDeviceInfo).Handle);
 			return mouse;
 		}
 
@@ -418,21 +407,17 @@ namespace GorgonLibrary.Input.Raw
 		/// <returns>A new joystick interface.</returns>
 		/// <remarks>Pass NULL to the <paramref name="window"/> parameter to use the <see cref="P:GorgonLibrary.Gorgon.ApplicationForm">Gorgon application window</see>.</remarks>
 		/// <exception cref="System.ArgumentNullException">The <paramRef name="joystickInfo"/> is NULL.</exception>
-		protected override GorgonJoystick CreateJoystickImpl(System.Windows.Forms.Control window, GorgonInputDeviceInfo joystickInfo)
+		protected override GorgonJoystick CreateJoystickImpl(System.Windows.Forms.Control window,
+		                                                     GorgonInputDeviceInfo joystickInfo)
 		{
-		    var mmJoystick = joystickInfo as GorgonMultimediaDeviceInfo;
+			var mmJoystick = joystickInfo as GorgonMultimediaDeviceInfo;
 
-		    if (mmJoystick == null)
-		    {
-                throw new InvalidCastException(Resources.GORINP_RAW_NOT_MM_JOYSTICK);
-		    }
+			if (mmJoystick == null)
+			{
+				throw new InvalidCastException(Resources.GORINP_RAW_NOT_MM_JOYSTICK);
+			}
 
-		    var joystick = new MultimediaJoystick(this, mmJoystick.JoystickID, joystickInfo.Name, window)
-		        {
-		            Enabled = true
-		        };
-
-		    return joystick;
+			return new MultimediaJoystick(this, mmJoystick.JoystickID, joystickInfo.Name);
 		}
 		#endregion
 

@@ -69,7 +69,7 @@ namespace GorgonLibrary.Editor.GorPackWriterPlugIn
         /// </summary>
         /// <param name="directory">Directory to retrieve information from.</param>
         /// <returns>A new node element with the directory information.</returns>
-        private XElement CreatePathNode(GorgonFileSystemDirectory directory)
+        private static XElement CreatePathNode(GorgonFileSystemDirectory directory)
         {
             return new XElement("Path", 
                                 new XAttribute("Name", (directory.Name == "/") ? @"\" : directory.Name), 
@@ -84,7 +84,7 @@ namespace GorgonLibrary.Editor.GorPackWriterPlugIn
         /// <param name="size">Size of the compressed file in the packed data.</param>
 		/// <param name="compressedSize">Compressed size of the file.</param>
         /// <returns>A new node element with the file information.</returns>
-        private XElement CreateFileNode(GorgonFileSystemFileEntry file, long position, long size, long compressedSize)
+        private static XElement CreateFileNode(GorgonFileSystemFileEntry file, long position, long size, long compressedSize)
         {
             return new XElement("File",
                                 new XElement("Filename", file.BaseFileName),

@@ -95,12 +95,18 @@ namespace GorgonLibrary.Input
 			{
 				_acquired = value;
 
-				if (_enabled)
+				if (!_enabled)
 				{
-					if (value)
-						BindDevice();
-					else
-						UnbindDevice();
+					return;
+				}
+
+				if (value)
+				{
+					BindDevice();
+				}
+				else
+				{
+					UnbindDevice();
 				}
 			}
 		}
@@ -332,10 +338,8 @@ namespace GorgonLibrary.Input
 		/// </summary>
 		/// <param name="owner">The control that owns this device.</param>
 		/// <param name="deviceName">Name of the input device.</param>
-		/// <param name="boundWindow">The window to bind this device with.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the owner parameter is NULL (or Nothing in VB.NET).</exception>
-		/// <remarks>Pass NULL (Nothing in VB.Net) to the <paramref name="boundWindow"/> parameter to use the <see cref="P:GorgonLibrary.Gorgon.ApplicationForm">Gorgon application window</see>.</remarks>
-		protected internal GorgonInputDevice(GorgonInputFactory owner, string deviceName, Control boundWindow)
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="owner"/> parameter is NULL (or Nothing in VB.NET).</exception>
+		protected internal GorgonInputDevice(GorgonInputFactory owner, string deviceName)
 			: base(deviceName)
 		{
 		    if (owner == null)
@@ -344,7 +348,6 @@ namespace GorgonLibrary.Input
 		    }
 
 		    DeviceFactory = owner;
-			Bind(boundWindow);
 			UUID = Guid.Empty.ToString();
 		}
 		#endregion
@@ -356,22 +359,30 @@ namespace GorgonLibrary.Input
 		/// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
 		protected virtual void Dispose(bool disposing)
 		{
-			if (!_disposed)
+			if (_disposed)
 			{
-				if (disposing)
-				{
-					UnbindWindow();
-
-					if (_enabled)
-						UnbindDevice();
-					_acquired = false;
-					_enabled = false;
-
-					if (DeviceFactory.Devices.ContainsKey(UUID))
-						DeviceFactory.Devices.Remove(UUID);
-				}
-				_disposed = true;
+				return;
 			}
+
+			if (disposing)
+			{
+				UnbindWindow();
+
+				if (_enabled)
+				{
+					UnbindDevice();
+				}
+
+				_acquired = false;
+				_enabled = false;
+
+				if (DeviceFactory.Devices.ContainsKey(UUID))
+				{
+					DeviceFactory.Devices.Remove(UUID);
+				}
+			}
+
+			_disposed = true;
 		}
 
 		/// <summary>

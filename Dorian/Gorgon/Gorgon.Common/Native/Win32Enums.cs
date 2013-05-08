@@ -31,6 +31,21 @@ namespace GorgonLibrary.Native
     // ReSharper disable InconsistentNaming
 	#region Enumerations
 	/// <summary>
+	/// Timer period method return values.
+	/// </summary>
+	enum TimePeriodReturn
+	{
+		/// <summary>
+		/// 
+		/// </summary>
+		NoError = 0,
+		/// <summary>
+		/// 
+		/// </summary>
+		NoCanDo = 97
+	}
+
+	/// <summary>
 	/// 
 	/// </summary>
 	[Flags]

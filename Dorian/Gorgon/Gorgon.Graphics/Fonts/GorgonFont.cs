@@ -969,10 +969,9 @@ namespace GorgonLibrary.Graphics
 		/// <param name="pixels">Pixels to evaluate.</param>
 		/// <param name="x">Horizontal position.</param>
 		/// <returns>TRUE if empty, FALSE if not.</returns>
-		private unsafe bool IsBitmapColumnEmpty(BitmapData pixels, int x)
+		private static unsafe bool IsBitmapColumnEmpty(BitmapData pixels, int x)
 		{
 			int* pixel = (int *)pixels.Scan0.ToPointer() + x;
-			int* offset = null;
 			
 			for (int y = 0; y < pixels.Height; y++)
 			{
@@ -991,7 +990,7 @@ namespace GorgonLibrary.Graphics
 		/// <param name="pixels">Pixels to evaluate.</param>
 		/// <param name="y">Vertical position.</param>
 		/// <returns>TRUE if empty, FALSE if not.</returns>
-		private unsafe bool IsBitmapRowEmpty(BitmapData pixels, int y)
+		private static unsafe bool IsBitmapRowEmpty(BitmapData pixels, int y)
 		{
 			var pixel = (int*)pixels.Scan0.ToPointer();
 
@@ -1148,13 +1147,12 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		/// <param name="bitmap">Bitmap to copy.</param>
 		/// <param name="texture">Texture to receive the data.</param>
-		private unsafe void CopyBitmap(Bitmap bitmap, GorgonTexture2D texture)
+		private static unsafe void CopyBitmap(Bitmap bitmap, GorgonTexture2D texture)
 		{
 			BitmapData sourcePixels = bitmap.LockBits(new Rectangle(0, 0, bitmap.Width, bitmap.Height), ImageLockMode.ReadOnly, PixelFormat.Format32bppArgb);
 			try
 			{
 				var pixels = (int*)sourcePixels.Scan0.ToPointer();
-				int* offset = null;
 
 				using (var stream = new GorgonDataStream(texture.SizeInBytes))
 				{
@@ -1162,7 +1160,7 @@ namespace GorgonLibrary.Graphics
 
 					for (int y = 0; y < bitmap.Height; y++)
 					{
-						offset = pixels + (y * bitmap.Width);
+						int* offset = pixels + (y * bitmap.Width);
 						for (int x = 0; x < bitmap.Width; x++)
 						{
 							stream.Write(GorgonColor.FromABGR(*offset).ToARGB());

@@ -27,6 +27,7 @@
 using System;
 using System.Runtime.Serialization;
 using GorgonLibrary.Diagnostics;
+using GorgonLibrary.Properties;
 
 namespace GorgonLibrary
 {
@@ -38,6 +39,7 @@ namespace GorgonLibrary
 	/// <summary>
 	/// Primary exception used for Gorgon.
 	/// </summary>
+	[Serializable]
 	public class GorgonException
 		: Exception
 	{
@@ -88,7 +90,7 @@ namespace GorgonLibrary
 				Log.Print("{1}{0}", logLevel, lines[i], indicator);
 			}
 
-			Log.Print("{0}<<<END>>>", logLevel, indicator);
+			Log.Print("{0}<<<{1}>>>", logLevel, indicator, Resources.GOR_DLG_ERR_STACK_END);
 		}
 
 		/// <summary>
@@ -107,7 +109,7 @@ namespace GorgonLibrary
 
 			for (int i = 0; i < lines.Length; i++)
 			{
-			    Log.Print(i == 0 ? "{1}Exception: {0}" : "{1}           {0}", logLevel, lines[i], indicator);
+			    Log.Print(i == 0 ? "{1}{2}: {0}" : "{1}           {0}", logLevel, lines[i], indicator, Resources.GOR_LOG_EXCEPTION);
 			}
 		}
 
@@ -120,14 +122,18 @@ namespace GorgonLibrary
 			string branch = string.Empty;		// Branching character.
 
 			if (Log == null)
+			{
 				return;
+			}
 
 			if (ex == null)
+			{
 				return;
+			}
 
 			Log.Print("", LoggingLevel.All);
 			Log.Print("================================================", LoggingLevel.All);
-			Log.Print("\tEXCEPTION!!", LoggingLevel.All);
+			Log.Print("\t{0}!!", LoggingLevel.All, Resources.GOR_LOG_EXCEPTION.ToUpper());
 			Log.Print("================================================", LoggingLevel.All);
 
 			Exception inner = ex;
@@ -137,22 +143,23 @@ namespace GorgonLibrary
 				var gorgonException = inner as GorgonException;
 
 				FormatMessage(inner.Message, indicator, (inner == ex) ? LoggingLevel.All : LoggingLevel.Verbose);
-				Log.Print("{1}Type: {0}", (inner == ex) ? LoggingLevel.All : LoggingLevel.Verbose, inner.GetType().FullName, indicator);
+				Log.Print("{1}{2}: {0}", (inner == ex) ? LoggingLevel.All : LoggingLevel.Verbose, inner.GetType().FullName, indicator, Resources.GOR_DLG_ERR_EXCEPT_TYPE);
 			    if (inner.Source != null)
 			    {
-			        Log.Print("{1}Source: {0}", (inner == ex) ? LoggingLevel.All : LoggingLevel.Verbose, inner.Source, indicator);
+			        Log.Print("{1}{2}: {0}", (inner == ex) ? LoggingLevel.All : LoggingLevel.Verbose, inner.Source, indicator, Resources.GOR_DLG_ERR_SRC);
 			    }
 
 			    if ((inner.TargetSite != null) && (inner.TargetSite.DeclaringType != null))
 			    {
-			        Log.Print("{1}Target site: {0}", (inner == ex) ? LoggingLevel.All : LoggingLevel.Verbose,
-			                  inner.TargetSite.DeclaringType.FullName + "." + inner.TargetSite.Name, indicator);
+			        Log.Print("{1}{2}: {0}", (inner == ex) ? LoggingLevel.All : LoggingLevel.Verbose,
+			                  inner.TargetSite.DeclaringType.FullName + "." + inner.TargetSite.Name, indicator, Resources.GOR_DLG_ERR_TARGET_SITE);
 			    }
 
 			    if (gorgonException != null)
 			    {
-			        Log.Print("{2}Result Code: {0} (0x{1:X})", (inner == ex) ? LoggingLevel.All : LoggingLevel.Verbose,
-			                  gorgonException.ResultCode.Name, gorgonException.ResultCode.Code, indicator);
+				    Log.Print("{3}{4}: [{0}] {1} (0x{2:X})", (inner == ex) ? LoggingLevel.All : LoggingLevel.Verbose,
+				              gorgonException.ResultCode.Name, gorgonException.ResultCode.Description,
+				              gorgonException.ResultCode.Code, indicator, Resources.GOR_DLG_ERR_GOREXCEPT_RESULT);
 			    }
 
 			    System.Collections.IDictionary extraInfo = inner.Data;
@@ -161,7 +168,7 @@ namespace GorgonLibrary
 				if (extraInfo.Count > 0)
 				{
 					Log.Print("{0}", LoggingLevel.Verbose, indicator);
-					Log.Print("{0}Custom Information:", LoggingLevel.Verbose, indicator);
+					Log.Print("{0}{1}:", LoggingLevel.Verbose, indicator, Resources.GOR_DLG_ERR_CUSTOM_INFO);
 					Log.Print("{0}------------------------------------------------------------", LoggingLevel.Verbose, indicator);
 					foreach (System.Collections.DictionaryEntry item in extraInfo)
 					{
@@ -178,7 +185,7 @@ namespace GorgonLibrary
 				
 				if (inner.InnerException != null)
 				{
-					if (indicator != string.Empty)
+					if (!string.IsNullOrWhiteSpace(indicator))
 					{
 						Log.Print("{0}================================================================================================", LoggingLevel.Verbose, branch + "|->   ");
 						branch += "  ";
@@ -190,7 +197,7 @@ namespace GorgonLibrary
 						indicator = "|   ";
 					}
 										
-					Log.Print("{0}  Inner exception from \"{1}\"", LoggingLevel.Verbose, indicator, inner.Message);
+					Log.Print("{0}  {2} \"{1}\"", LoggingLevel.Verbose, indicator, inner.Message, Resources.GOR_DLG_ERR_NEXT_EXCEPTION);
 					Log.Print("{0}================================================================================================", LoggingLevel.Verbose, indicator);
 				}
 
@@ -242,10 +249,14 @@ namespace GorgonLibrary
 		public static Exception Catch(Exception ex, GorgonExceptionHandler handler)
 		{
 			if (ex == null)
+			{
 				throw new ArgumentNullException("ex");
+			}
 
 			if (handler == null)
+			{
 				throw new ArgumentNullException("handler");
+			}
 
 			LogException(ex);
 			handler();
@@ -265,7 +276,9 @@ namespace GorgonLibrary
 		public static GorgonException Repackage(GorgonResult result, string message, Exception ex)
 		{
 			if (ex == null)
+			{
 				throw new ArgumentNullException("ex");
+			}
 
 			return new GorgonException(result, message, ex);
 		}
@@ -281,7 +294,9 @@ namespace GorgonLibrary
 		public static GorgonException Repackage(GorgonResult result, Exception ex)
 		{
 			if (ex == null)
+			{
 				throw new ArgumentNullException("ex");
+			}
 
 			return new GorgonException(result, ex);
 		}
@@ -297,7 +312,9 @@ namespace GorgonLibrary
 		public static GorgonException Repackage(string message, Exception ex)
 		{
 			if (ex == null)
+			{
 				throw new ArgumentNullException("ex");
+			}
 
 			return new GorgonException(message, ex);
 		}
@@ -334,9 +351,13 @@ namespace GorgonLibrary
 			: base(info, context)
 		{
 			if (info.FullTypeName == typeof(GorgonResult).FullName)
+			{
 				ResultCode = (GorgonResult)info.GetValue("ResultCode", typeof(GorgonResult));
+			}
 			else
+			{
 				ResultCode = new GorgonResult("Exception", info.GetInt32("HResult"), info.GetString("Message"));
+			}
 		}
 
 		/// <summary>

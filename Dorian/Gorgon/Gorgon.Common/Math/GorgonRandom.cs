@@ -28,6 +28,8 @@
 // The original code can be found at http://code.google.com/p/simplexnoise/
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using SlimMath;
 
 namespace GorgonLibrary.Math
@@ -90,7 +92,7 @@ namespace GorgonLibrary.Math
 		/// <summary>
 		/// Property to set or return the Perlin noise permutation array.
 		/// </summary>
-		public static byte[] PerlinPermutations
+		public static IEnumerable<byte> PerlinPermutations
 		{
 			get
 			{
@@ -103,11 +105,11 @@ namespace GorgonLibrary.Math
 			        return;
 			    }
 
-			    int length = value.Length > _permutations.Length ? _permutations.Length : value.Length;
+			    int length = value.Count().Min(_permutations.Length);
 
 			    for (int i = 0; i < length; i++)
 			    {
-			        _permutations[i] = value[i];
+			        _permutations[i] = value.ElementAt(i);
 			    }
 			}
 		}

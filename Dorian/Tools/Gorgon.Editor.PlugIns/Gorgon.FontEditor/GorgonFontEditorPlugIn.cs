@@ -67,7 +67,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		/// <summary>
 		/// Function to update the font cache.
 		/// </summary>
-		private void UpdateCachedFonts()
+		private static void UpdateCachedFonts()
 		{
 			SortedDictionary<string, Font> fonts = null;
 

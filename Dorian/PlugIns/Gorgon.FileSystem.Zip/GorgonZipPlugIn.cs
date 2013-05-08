@@ -24,6 +24,8 @@
 // 
 #endregion
 
+using System.Collections.Generic;
+
 namespace GorgonLibrary.IO
 {
     /// <summary>
@@ -35,7 +37,7 @@ namespace GorgonLibrary.IO
         /// <summary>
         /// Header bytes for a zip file.
         /// </summary>
-        public static readonly byte[] ZipHeader = new byte[] { 0x50, 0x4B, 0x3, 0x4 };
+        internal static IEnumerable<byte> ZipHeader = new byte[] { 0x50, 0x4B, 0x3, 0x4 };
 
 		/// <summary>
 		/// Function to create a new file system provider plug-in instance.
