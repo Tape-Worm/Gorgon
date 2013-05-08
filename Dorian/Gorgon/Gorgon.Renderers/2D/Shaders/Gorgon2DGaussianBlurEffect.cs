@@ -166,10 +166,7 @@ namespace GorgonLibrary.Renderers
 		{
 			get
 			{
-				if (_vTarget == null)
-					return null;
-
-				return _vTarget.Texture;
+				return _vTarget == null ? null : _vTarget.Texture;
 			}
 		}
 		#endregion

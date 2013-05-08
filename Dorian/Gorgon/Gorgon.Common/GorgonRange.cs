@@ -838,7 +838,6 @@ namespace GorgonLibrary
 		/// <param name="max">The maximum value.</param>
 		public GorgonRangeM(decimal min, decimal max)
 		{
-			Nullable feh;
 			if (min < max)
 			{
 				Minimum = min;

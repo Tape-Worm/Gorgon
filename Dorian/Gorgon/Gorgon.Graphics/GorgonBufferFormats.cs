@@ -549,15 +549,13 @@ namespace GorgonLibrary.Graphics
 		/// </returns>
 		public override string ToString()
 		{
-		    if (BlockCount.IsEmpty)
-			{
-				return string.Format(Resources.GORGFX_FMTPITCH_TOSTR, RowPitch, SlicePitch);
-			}
-
-		    return string.Format(Resources.GORGFX_FMTPITCH_COMPRESSED_TOSTR, RowPitch, SlicePitch, BlockCount.Width, BlockCount.Height);
+			return BlockCount.IsEmpty
+				       ? string.Format(Resources.GORGFX_FMTPITCH_TOSTR, RowPitch, SlicePitch)
+				       : string.Format(Resources.GORGFX_FMTPITCH_COMPRESSED_TOSTR, RowPitch, SlicePitch, BlockCount.Width,
+				                       BlockCount.Height);
 		}
 
-	    /// <summary>
+		/// <summary>
 		/// Equality operator.
 		/// </summary>
 		/// <param name="left">The left instance to compare.</param>
@@ -1276,13 +1274,9 @@ namespace GorgonLibrary.Graphics
 			/// </remarks>
 			public int Scanlines(int height)
 			{
-				if (IsCompressed)
-				{
-					return 1.Max((height + 3) / 4);
-				}
-
-				return height;
+				return IsCompressed ? 1.Max((height + 3) / 4) : height;
 			}
+
 			#endregion
 
 			#region Constructor/Destructor.
@@ -1342,13 +1336,9 @@ namespace GorgonLibrary.Graphics
 		/// <returns>The information for the format.  If the format is unknown, then the data for the Unknown GorgonBufferFormat will be returned.</returns>
 		public static GorgonFormatData GetInfo(BufferFormat format)
 		{
-		    if (!_formats.ContainsKey(format))
-		    {
-		        return _formats[BufferFormat.Unknown];
-		    }
-
-		    return _formats[format];
+			return !_formats.ContainsKey(format) ? _formats[BufferFormat.Unknown] : _formats[format];
 		}
+
 		#endregion
 
 		#region Constructor/Destructor.

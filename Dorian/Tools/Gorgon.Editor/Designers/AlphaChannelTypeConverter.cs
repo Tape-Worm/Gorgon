@@ -59,10 +59,9 @@ namespace GorgonLibrary.Editor
 		{
 			var colorValue = value as String;
 
-			if (string.IsNullOrEmpty(colorValue))
-				return Color.Transparent;
-
-			return Color.FromArgb(int.Parse(colorValue, culture.NumberFormat), 255, 255, 255);
+			return string.IsNullOrEmpty(colorValue)
+				       ? Color.Transparent
+				       : Color.FromArgb(int.Parse(colorValue, culture.NumberFormat), 255, 255, 255);
 		}
 
 		/// <summary>

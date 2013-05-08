@@ -435,10 +435,10 @@ namespace GorgonLibrary.Graphics
 				        DebugName = VideoDevice.Name + " D3D11Device"
 				    };
 #else
-				D3DDevice = new D3D.Device(Adapter, D3D.DeviceCreationFlags.None, VideoDevice.GetFeatureLevel(featureLevel));
-				    {
-				        DebugName = VideoDevice.Name + " D3D11Device"
-				    };
+				D3DDevice = new D3D.Device(Adapter, D3D.DeviceCreationFlags.None, VideoDevice.GetFeatureLevel(featureLevel))
+					{
+						DebugName = VideoDevice.Name + " D3D11Device"
+					};
 #endif
 
                 D3DDevice.ImmediateContext.ClearState();

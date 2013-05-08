@@ -149,15 +149,10 @@ namespace GorgonLibrary.IO
 		/// <returns>The stream used to read/write chunks.</returns>
 		public Stream GetStream()
 		{
-			if (ChunkAccessMode == ChunkAccessMode.Write)
-			{
-				return Writer.BaseStream;
-			}
-
-			return Reader.BaseStream;
+			return ChunkAccessMode == ChunkAccessMode.Write ? Writer.BaseStream : Reader.BaseStream;
 		}
-        
-        /// <summary>
+
+	    /// <summary>
 		/// Function to begin reading/writing the chunk
 		/// </summary>
 		/// <param name="chunkName">The name of the chunk.</param>

@@ -1264,13 +1264,9 @@ namespace GorgonLibrary.IO
 				return false;
 			}
 
-			if (((header.ImageType == TGAImageType.BlackAndWhite) || (header.ImageType == TGAImageType.BlackAndWhiteRLE)) && (header.BPP != 8))
-			{
-				return false;
-			}
-
-			return true;
-		}
+			return ((header.ImageType != TGAImageType.BlackAndWhite) && (header.ImageType != TGAImageType.BlackAndWhiteRLE)) ||
+			       (header.BPP == 8);
+        }
 		#endregion
 
 		#region Constructor/Destructor.

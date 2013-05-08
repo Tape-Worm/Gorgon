@@ -65,14 +65,9 @@ namespace GorgonLibrary.Editor
         {
             get
             {
-                if (IsSelected)
-                {
-                    return DarkFormsRenderer.MenuHilightBackground;
-                }
-                
-                return base.BackColor;
+	            return IsSelected ? DarkFormsRenderer.MenuHilightBackground : base.BackColor;
             }
-            set
+	        set
             {
                 base.BackColor = value;
             }
@@ -89,12 +84,7 @@ namespace GorgonLibrary.Editor
 		{
 			get
 			{
-                if (IsSelected)
-                {
-                    return DarkFormsRenderer.MenuHilightForeground;
-                }
-
-				return base.ForeColor;
+				return IsSelected ? DarkFormsRenderer.MenuHilightForeground : base.ForeColor;
 			}
 			set
 			{
@@ -156,12 +146,7 @@ namespace GorgonLibrary.Editor
 		{
 			get
 			{
-				if (this.TreeView != null)
-				{
-					return new Rectangle(0, base.Bounds.Top, this.TreeView.ClientSize.Width, base.Bounds.Height);
-				}
-
-				return base.Bounds;
+				return TreeView != null ? new Rectangle(0, base.Bounds.Top, TreeView.ClientSize.Width, base.Bounds.Height) : base.Bounds;
 			}
 		}
 		#endregion

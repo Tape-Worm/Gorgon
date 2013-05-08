@@ -1600,32 +1600,24 @@ namespace GorgonLibrary.Graphics
 		/// <exception cref="System.ArgumentException">Thrown when the format value of the <paramref name="settings"/> parameter is not supported.</exception>
 		public static int GetSizeInBytes(IImageSettings settings, PitchFlags pitchFlags)
 		{
-			if (settings.ImageType == ImageType.Image3D)
-			{
-				return GetSizeInBytes(settings.Width, settings.Height, settings.Depth, settings.Format, settings.MipCount, pitchFlags);
-			}
-			else
-			{
-				return GetSizeInBytes(settings.Width, settings.Height, settings.Format, settings.ArrayCount, settings.MipCount, pitchFlags);
-			}
+			return settings.ImageType == ImageType.Image3D
+				       ? GetSizeInBytes(settings.Width, settings.Height, settings.Depth, settings.Format, settings.MipCount,
+				                        pitchFlags)
+				       : GetSizeInBytes(settings.Width, settings.Height, settings.Format, settings.ArrayCount, settings.MipCount,
+				                        pitchFlags);
 		}
 
-		/// <summary>
+	    /// <summary>
 		/// Function to return the maximum number of mip levels supported given the specified settings.
 		/// </summary>
 		/// <param name="settings">Settings to evaluate.</param>
 		/// <returns>The number of possible mip-map levels in the image.</returns>
 		public static int GetMaxMipCount(IImageSettings settings)
-		{
-			if (settings == null)
-			{
-				return 0;
-			}
+	    {
+		    return settings == null ? 0 : GetMaxMipCount(settings.Width, settings.Height, settings.Depth);
+	    }
 
-			return GetMaxMipCount(settings.Width, settings.Height, settings.Depth);
-		}
-
-		/// <summary>
+	    /// <summary>
 		/// Function to return the maximum number of mip levels supported in a 2D image.
 		/// </summary>
 		/// <param name="width">Width of the proposed image.</param>
@@ -1721,12 +1713,7 @@ namespace GorgonLibrary.Graphics
 		{
 			GorgonDebug.AssertParamRange(mipLevel, 0, Settings.MipCount, "mipLevel");
 
-			if (Settings.Depth <= 1)
-			{
-				return 1;
-			}
-
-			return _mipOffsetSize[mipLevel].Item2; 
+			return Settings.Depth <= 1 ? 1 : _mipOffsetSize[mipLevel].Item2;
 		}
 
 		/// <summary>

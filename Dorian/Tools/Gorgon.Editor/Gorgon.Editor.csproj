@@ -69,15 +69,8 @@
       <HintPath>..\..\Dependencies\SlimMath\SlimMath\bin\Release\SlimMath.dll</HintPath>
     </Reference>
     <Reference Include="System" />
-    <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Design" />
-    <Reference Include="System.Messaging" />
     <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Deployment" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
@@ -253,10 +246,6 @@
     <ProjectReference Include="..\..\Gorgon\Gorgon.Graphics\Gorgon.Graphics.csproj">
       <Project>{EA4B0A1A-586A-47A4-89C1-3E6A4E821C31}</Project>
       <Name>Gorgon.Graphics</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Gorgon\Gorgon.Input\Gorgon.Input.csproj">
-      <Project>{780B5B61-77BB-4456-AF77-E6681E7E48BF}</Project>
-      <Name>Gorgon.Input</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Gorgon\Gorgon.Renderers\2D\Gorgon.Renderers.2D.csproj">
       <Project>{CE225F21-FB4D-4CB1-8B5B-48A61B5D0E54}</Project>

@@ -133,37 +133,66 @@ namespace GorgonLibrary.Graphics
 		private BufferFormat GetElementType(Type type)
 		{
 			if (type == typeof(byte))
+			{
 				return BufferFormat.R8_UInt;
+			}
+
 			if (type == typeof(SByte))
+			{
 				return BufferFormat.R8_Int;
+			}
 
 			if (type == typeof(Int32))
+			{
 				return BufferFormat.R32_Int;
+			}
+
 			if (type == typeof(UInt32))
+			{
 				return BufferFormat.R32_UInt;
+			}
 
 			if (type == typeof(Int16))
+			{
 				return BufferFormat.R16_Int;
+			}
+
 			if (type == typeof(UInt16))
+			{
 				return BufferFormat.R16_UInt;
+			}
 
 			if (type == typeof(Int64))
+			{
 				return BufferFormat.R32G32_Int;
+			}
+
 			if (type == typeof(UInt64))
+			{
 				return BufferFormat.R32G32_UInt;
+			}
 
 			if (type == typeof(float))
+			{
 				return BufferFormat.R32_Float;
-			if (type == typeof(Vector2))
-				return BufferFormat.R32G32_Float;
-			if (type == typeof(Vector3))
-				return BufferFormat.R32G32B32_Float;				
-			if (type == typeof(Vector4))
-				return BufferFormat.R32G32B32A32_Float;
-			if (type == typeof(GorgonColor))
-				return BufferFormat.R32G32B32A32_Float;
+			}
 
-			return BufferFormat.Unknown;
+			if (type == typeof(Vector2))
+			{
+				return BufferFormat.R32G32_Float;
+			}
+
+			if (type == typeof(Vector3))
+			{
+				return BufferFormat.R32G32B32_Float;
+			}
+
+			if (type == typeof(Vector4))
+			{
+				return BufferFormat.R32G32B32A32_Float;
+			}
+
+			return type == typeof(GorgonColor) ? BufferFormat.R32G32B32A32_Float : BufferFormat.Unknown;
 		}		
 
 		/// <summary>

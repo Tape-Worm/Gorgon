@@ -302,6 +302,7 @@ namespace GorgonLibrary.Animation
 		/// <param name="setMethod">Method information.</param>
 		/// <typeparam name="TO">Type of output.</typeparam>
 		/// <returns>The get accessor method.</returns>
+		// ReSharper disable PossiblyMistakenUseOfParamsMethod
 		protected Action<T, TO> BuildSetAccessor<TO>(MethodInfo setMethod)
 		{
 			var instance = Expression.Parameter(typeof(T), "Inst");
@@ -314,6 +315,7 @@ namespace GorgonLibrary.Animation
 
 			return expression.Compile();
 		}
+		// ReSharper restore PossiblyMistakenUseOfParamsMethod
 
 		/// <summary>
 		/// Function to set up the spline for the animation.
@@ -389,23 +391,24 @@ namespace GorgonLibrary.Animation
 		/// <returns>A keyframe at that time.  Note that this can return an interpolated key frame and therefore not actually exist in the <see cref="GorgonLibrary.Animation.GorgonAnimationTrack{T}.KeyFrames">key frames collection</see>.</returns>
 		public IKeyFrame GetKeyAtTime(float time)
 		{
-		    if (KeyFrames.Times.ContainsKey(time))
+			if (KeyFrames.Times.ContainsKey(time))
+			{
 				return KeyFrames.Times[time];
+			}
 
 			if (time >= KeyFrames[KeyFrames.Count - 1].Time)
+			{
 				return KeyFrames[KeyFrames.Count - 1];
+			}
 
 			if (time <= 0)
+			{
 				return KeyFrames[0];
+			}
 
 			var keys = new NearestKeys(this, time);
 
-		    if (keys.KeyTimeDelta == 0.0f)
-		    {
-		        return keys.PreviousKey;
-		    }
-
-		    return GetTweenKey(ref keys, time, keys.KeyTimeDelta);
+		    return keys.KeyTimeDelta.EqualsEpsilon(0.0f) ? keys.PreviousKey : GetTweenKey(ref keys, time, keys.KeyTimeDelta);
 		}
 
 		/// <summary>

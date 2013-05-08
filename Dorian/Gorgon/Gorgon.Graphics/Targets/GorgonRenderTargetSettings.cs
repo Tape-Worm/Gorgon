@@ -277,11 +277,9 @@ namespace GorgonLibrary.Graphics
 		/// <returns>The D3D swap effect.</returns>
 		internal static GI.SwapEffect Convert(SwapEffect swapEffect)
 		{
-			if (swapEffect == SwapEffect.Discard)
-				return GI.SwapEffect.Discard;
-			else
-				return GI.SwapEffect.Sequential;
+			return swapEffect == SwapEffect.Discard ? GI.SwapEffect.Discard : GI.SwapEffect.Sequential;
 		}
+
 		#endregion
 
 		#region Constructor/Destructor.

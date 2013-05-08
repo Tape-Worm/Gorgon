@@ -49,14 +49,7 @@ namespace GorgonLibrary.Editor
             {
                 if (IsSelected)
                 {
-					if (!IsCut)
-					{
-						return DarkFormsRenderer.MenuHilightForeground;
-					}
-					else
-					{
-						return Color.Black;
-					}
+					return !IsCut ? DarkFormsRenderer.MenuHilightForeground : Color.Black;
                 }
 
 				if (IsCut)
@@ -64,12 +57,7 @@ namespace GorgonLibrary.Editor
 					return Color.Silver;
 				}
 
-				if (Directory == null)
-				{
-					return DarkFormsRenderer.DisabledColor;
-				}
-
-                return Color.White;
+				return Directory == null ? DarkFormsRenderer.DisabledColor : Color.White;
             }
             set
             {
@@ -84,13 +72,8 @@ namespace GorgonLibrary.Editor
 		{
 			get
 			{
-				if (Program.ScratchFiles == null)
-				{
-					return null;
-				}
-
-				return Program.ScratchFiles.GetDirectory(Name);
-			}			
+				return Program.ScratchFiles == null ? null : Program.ScratchFiles.GetDirectory(Name);
+			}
 		}
 		#endregion
 
@@ -154,12 +137,7 @@ namespace GorgonLibrary.Editor
                     return DarkFormsRenderer.MenuHilightForeground;
                 }
 
-                if (Program.EditorFileChanged)
-                {
-                    return Color.FromArgb(94, 126, 255);
-                }
-
-                return Color.White;
+                return Program.EditorFileChanged ? Color.FromArgb(94, 126, 255) : Color.White;
             }
             set
             {                
@@ -173,12 +151,7 @@ namespace GorgonLibrary.Editor
 		{
 			get
 			{
-				if (Program.ScratchFiles == null)
-				{
-					return null;
-				}
-
-				return Program.ScratchFiles.RootDirectory;
+				return Program.ScratchFiles == null ? null : Program.ScratchFiles.RootDirectory;
 			}
 		}
 

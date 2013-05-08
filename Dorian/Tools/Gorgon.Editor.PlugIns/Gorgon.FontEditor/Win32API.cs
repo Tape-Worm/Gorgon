@@ -185,10 +185,9 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 				}
 			}
 
-			if (_codePointNames.ContainsKey(Convert.ToInt32(character)))
-				return _codePointNames[Convert.ToInt32(character)];
-			else
-				return string.Empty;
+			return _codePointNames.ContainsKey(Convert.ToInt32(character))
+				       ? _codePointNames[Convert.ToInt32(character)]
+				       : string.Empty;
 		}
 
 		/// <summary>
