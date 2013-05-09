@@ -239,7 +239,7 @@ namespace GorgonLibrary.Editor
     {
         #region Variables.
 		private float _compressAmount = 0.05f;			// Compression amount.
-		private formProcess _processForm = null;		// Processing form.
+		private formProcess _processForm;				// Processing form.
         #endregion
 
         #region Properties.

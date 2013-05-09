@@ -330,14 +330,20 @@ namespace GorgonLibrary.IO
 
 				isValid = isValid && !memberType.IsPrimitive;
 
-				if (isValid)
+				if (!isValid)
 				{
-					var marshalAttrib = member.GetCustomAttributes(typeof(MarshalAsAttribute), true) as IList<MarshalAsAttribute>;
-					if ((marshalAttrib != null) && (marshalAttrib.Count > 0))
-						return true;
+					continue;
+				}
 
-					if (UseMarshalling(memberType))
-						return true;
+				var marshalAttrib = member.GetCustomAttributes(typeof(MarshalAsAttribute), true) as IList<MarshalAsAttribute>;
+				if ((marshalAttrib != null) && (marshalAttrib.Count > 0))
+				{
+					return true;
+				}
+
+				if (UseMarshalling(memberType))
+				{
+					return true;
 				}
 			}
 

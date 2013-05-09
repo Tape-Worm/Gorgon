@@ -43,16 +43,15 @@ namespace GorgonLibrary.Editor
 		: ContentObject
 	{
 		#region Variables.
-		private DefaultContentPanel _container = null;			// Our container control.
-		private Gorgon2D _2D = null;							// 2D renderer for the content.
-		private GorgonTexture2D _logo = null;					// Logo.
-		private bool _disposed = false;							// Flag to indicate that the object was disposed.
-		private RectangleF[] _blurStates = null;				// Images for blur states.
-		private RectangleF _sourceState = RectangleF.Empty;		// Source image state.
-		private RectangleF _destState = RectangleF.Empty;		// Destination image state.
-		private float _alphaDelta = 0.0f;						// Alpha delta value.
-		private float _alpha = 0.0f;							// Alpha value.
-		private string _name = string.Empty;					// Name of the document.
+		private DefaultContentPanel _container;				// Our container control.
+		private Gorgon2D _2D;								// 2D renderer for the content.
+		private GorgonTexture2D _logo;						// Logo.
+		private bool _disposed;								// Flag to indicate that the object was disposed.
+		private RectangleF[] _blurStates;					// Images for blur states.
+		private RectangleF _sourceState = RectangleF.Empty;	// Source image state.
+		private RectangleF _destState = RectangleF.Empty;	// Destination image state.
+		private float _alphaDelta;							// Alpha delta value.
+		private float _alpha;								// Alpha value.
 		#endregion
 
 		#region Properties.

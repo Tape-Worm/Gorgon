@@ -38,13 +38,13 @@ namespace GorgonLibrary.Renderers
 		: Gorgon2DEffect
 	{
 		#region Variables.
-		private bool _disposed = false;								// Flag to indicate that the object was disposed.
-		private GorgonConstantBuffer _sobelBuffer = null;			// Buffer for the sobel edge detection.
-		private GorgonDataStream _sobelStream = null;				// Stream for the sobel edge detection.
-		private Vector2 _sobelTexelSize = Vector2.Zero;				// Size of a texel.
-		private GorgonColor _sobelLineColor = Color.Black;			// Line color for the edges.
-		private float _sobelThreshold = 0.75f;						// Threshhold for edges.
-		private bool _isUpdated = true;								// Flag to indicate that the parameters have been updated.
+		private bool _disposed;									// Flag to indicate that the object was disposed.
+		private readonly GorgonConstantBuffer _sobelBuffer;		// Buffer for the sobel edge detection.
+		private readonly GorgonDataStream _sobelStream;			// Stream for the sobel edge detection.
+		private Vector2 _sobelTexelSize = Vector2.Zero;			// Size of a texel.
+		private GorgonColor _sobelLineColor = Color.Black;		// Line color for the edges.
+		private float _sobelThreshold = 0.75f;					// Threshhold for edges.
+		private bool _isUpdated = true;							// Flag to indicate that the parameters have been updated.
 		#endregion
 
 		#region Properties.

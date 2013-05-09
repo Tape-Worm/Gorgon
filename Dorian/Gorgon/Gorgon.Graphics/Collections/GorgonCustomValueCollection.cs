@@ -84,7 +84,7 @@ namespace GorgonLibrary.Collections
 		: GorgonBaseNamedObjectDictionary<GorgonNamedValue<T>>
 	{
 		#region Variables.
-		private List<string> _names = null;		// List of names.
+		private List<string> _names;		// List of names.
 		#endregion
 
 		#region Properties.

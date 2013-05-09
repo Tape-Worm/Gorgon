@@ -40,9 +40,8 @@ namespace GorgonLibrary.Graphics
 	public class GorgonFonts
 	{
 		#region Variables.
-		private byte[] _fileHeader = null;					// File header.
-		private GorgonGraphics _graphics = null;			// Graphics interface.
-		private GorgonFont _default = null;					// Default font for debugging, etc...
+		private readonly GorgonGraphics _graphics;			// Graphics interface.
+		private GorgonFont _default;						// Default font for debugging, etc...
 		#endregion
 
 		#region Properties.
@@ -542,7 +541,6 @@ namespace GorgonLibrary.Graphics
 		internal GorgonFonts(GorgonGraphics graphics)
 		{
 			_graphics = graphics;
-			_fileHeader = Encoding.UTF8.GetBytes(GorgonFont.FileHeader);
 		}
 		#endregion
 	}

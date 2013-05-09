@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.Diagnostics;
 using System.Drawing;
 using GorgonLibrary.Graphics;
 using GorgonLibrary.IO;
@@ -36,27 +37,24 @@ namespace GorgonLibrary.Renderers
 	/// <summary>
 	/// An effect that with blur an image using Gaussian blurring.
 	/// </summary>
-	/// <remarks>
-	/// This effect differs from the others in that it does not take an Action to render data.  It merely uses a <see cref="P:GorgonLibrary.Renderers.Gorgon2DGaussianBlurEffect.SourceTexture">source texture</see> and outputs to a destination render target.
-	/// </remarks>
 	public class Gorgon2DGaussianBlurEffect
 		: Gorgon2DEffect
 	{
 		#region Variables.
-		private bool _disposed = false;												// Flag to indicate that the object was disposed.
-		private Vector4[] _xOffsets = null;											// Calculated offsets.
-		private Vector4[] _yOffsets = null;											// Calculated offsets.
-		private Vector4[] _kernel = null;											// Blur kernel.
+		private bool _disposed ;													// Flag to indicate that the object was disposed.
+		private readonly Vector4[] _xOffsets;										// Calculated offsets.
+		private readonly Vector4[] _yOffsets;										// Calculated offsets.
+		private readonly Vector4[] _kernel;											// Blur kernel.
 		private int _blurRadius = 6;												// Radius for the blur.
 		private float _blurAmount = 3.0f;											// Amount to blur.
-		private GorgonConstantBuffer _blurBuffer = null;							// Buffer for blur data.
-		private GorgonConstantBuffer _blurStaticBuffer = null;						// Buffer for blur data that does not change very often.
-		private GorgonDataStream _blurStream = null;								// Stream for the buffer.
-		private GorgonRenderTarget _hTarget = null;									// Horizontal blur render target.
-		private GorgonRenderTarget _vTarget = null;									// Vertical blur render target.
+		private readonly GorgonConstantBuffer _blurBuffer;							// Buffer for blur data.
+		private readonly GorgonConstantBuffer _blurStaticBuffer;					// Buffer for blur data that does not change very often.
+		private readonly GorgonDataStream _blurStream;								// Stream for the buffer.
+		private GorgonRenderTarget _hTarget;										// Horizontal blur render target.
+		private GorgonRenderTarget _vTarget;										// Vertical blur render target.
 		private BufferFormat _blurTargetFormat = BufferFormat.R8G8B8A8_UIntNormal;	// Format of the blur render targets.
 		private Size _blurTargetSize = new Size(256, 256);							// Size of the render targets used for blurring.
-		private GorgonRenderTarget _currentTarget = null;							// Current render target.
+		private GorgonRenderTarget _currentTarget;									// Current render target.
 		private SmoothingMode _lastSmoothMode = SmoothingMode.None;					// Last smoothing mode.
 		#endregion
 
@@ -74,17 +72,24 @@ namespace GorgonLibrary.Renderers
 			}
 			set
 			{
-				if (value > 6)
-					value = 6;
-				if (value < 1)
-					value = 1;
-
-				if (_blurRadius != value)
+				if (_blurRadius == value)
 				{
-					_blurRadius = value;
-					UpdateKernel();
-					UpdateOffsets();
+					return;
 				}
+
+				if (value > 6)
+				{
+					value = 6;
+				}
+
+				if (value < 1)
+				{
+					value = 1;
+				}
+
+				_blurRadius = value;
+				UpdateKernel();
+				UpdateOffsets();
 			}
 		}
 
@@ -100,14 +105,18 @@ namespace GorgonLibrary.Renderers
 			}
 			set
 			{
-				if (value < 1e-6f)
-					value = 1e-6f;
-
-				if (_blurAmount != value)
+				if (_blurAmount.EqualsEpsilon(value))
 				{
-					_blurAmount = value;
-					UpdateKernel();
+					return;
 				}
+
+				if (value < 1e-6f)
+				{
+					value = 1e-6f;
+				}
+
+				_blurAmount = value;
+				UpdateKernel();
 			}
 		}
 
@@ -122,11 +131,13 @@ namespace GorgonLibrary.Renderers
 			}
 			set
 			{
-				if (_blurTargetFormat != value)
+				if (_blurTargetFormat == value)
 				{
-					_blurTargetFormat = value;
-					UpdateRenderTarget();
+					return;
 				}
+
+				_blurTargetFormat = value;
+				UpdateRenderTarget();
 			}
 		}
 
@@ -141,21 +152,34 @@ namespace GorgonLibrary.Renderers
 			}
 			set
 			{
+				if (_blurTargetSize == value)
+				{
+					return;
+				}
+
 				// Constrain the size.
 				if (value.Width < 1)
-					value.Width = 1;
-				if (value.Height < 1)
-					value.Height = 1;
-				if (value.Width >= Graphics.Textures.MaxWidth)
-					value.Width = Graphics.Textures.MaxWidth - 1;
-				if (value.Height >= Graphics.Textures.MaxHeight)
-					value.Height = Graphics.Textures.MaxHeight - 1;
-
-				if (_blurTargetSize != value)
 				{
-					_blurTargetSize = value;
-					UpdateRenderTarget();
+					value.Width = 1;
 				}
+
+				if (value.Height < 1)
+				{
+					value.Height = 1;
+				}
+
+				if (value.Width >= Graphics.Textures.MaxWidth)
+				{
+					value.Width = Graphics.Textures.MaxWidth - 1;
+				}
+
+				if (value.Height >= Graphics.Textures.MaxHeight)
+				{
+					value.Height = Graphics.Textures.MaxHeight - 1;
+				}
+
+				_blurTargetSize = value;
+				UpdateRenderTarget();
 			}
 		}
 
@@ -179,7 +203,7 @@ namespace GorgonLibrary.Renderers
 		{
 			FreeResources();
 
-			var settings = new GorgonRenderTargetSettings()
+			var settings = new GorgonRenderTargetSettings
 			{
 				Width = BlurRenderTargetsSize.Width,
 				Height = BlurRenderTargetsSize.Height,
@@ -203,13 +227,14 @@ namespace GorgonLibrary.Renderers
 			if (_vTarget == null)
 			{
 				UpdateRenderTarget();
-			}
 
+				Debug.Assert(_vTarget != null, "_vTarget != null");
+			}
 
 			for (int i = -_blurRadius; i <= _blurRadius; i++)
 			{
-				_xOffsets[index] = new Vector4((1.0f / _vTarget.Settings.Width) * (float)i, 0, 0, 0);
-				_yOffsets[index] = new Vector4(0, (1.0f / _vTarget.Settings.Height) * (float)i, 0, 0);
+				_xOffsets[index] = new Vector4((1.0f / _vTarget.Settings.Width) * i, 0, 0, 0);
+				_yOffsets[index] = new Vector4(0, (1.0f / _vTarget.Settings.Height) * i, 0, 0);
 				index++;
 			}
 		}
@@ -224,26 +249,27 @@ namespace GorgonLibrary.Renderers
 			float sqSigmaDouble = 2.0f * sigma * sigma;
 			float sigmaRoot = (sqSigmaDouble * (float)System.Math.PI).Sqrt();
 			float total = 0.0f;
-			float distance = 0.0f;
 			int blurKernelSize = (_blurRadius * 2) + 1;
 			int index = 0;
 
 			for (int i = -_blurRadius; i <= _blurRadius; i++)
 			{
-				distance = i * i;
+				float distance = i * i;
 				_kernel[index] = new Vector4(0, 0, 0, (-distance / sqSigmaDouble).Exp() / sigmaRoot);
 				total += _kernel[index].W;
 				index++;
 			}
 
 			for (int i = 0; i < blurKernelSize; i++)
+			{
 				_kernel[i].X /= total;
+			}
 
 
 			// Send to constant buffer.
 			_blurStream.Position = 0;
 			_blurStream.Write(_blurRadius);
-			_blurStream.WriteRange<Vector4>(_kernel);
+			_blurStream.WriteRange(_kernel);
 			_blurStream.Position = 0;
 			_blurStaticBuffer.Update(_blurStream);
 		}
@@ -254,9 +280,13 @@ namespace GorgonLibrary.Renderers
 		public override void FreeResources()
 		{
 			if (_hTarget != null)
+			{
 				_hTarget.Dispose();
+			}
 			if (_vTarget != null)
+			{
 				_vTarget.Dispose();
+			}
 
 			_hTarget = null;
 			_vTarget = null;
@@ -271,14 +301,17 @@ namespace GorgonLibrary.Renderers
 			base.OnBeforeRenderPass(passIndex);
 
 			if ((_hTarget == null) || (_vTarget == null))
+			{
 				UpdateRenderTarget();
 
+				Debug.Assert(_hTarget != null, "_hTarget != null");
+			}
+			
 			_blurStream.Position = 0;
 			if (passIndex == 0)
 			{
 				// Get the current target.
 				_currentTarget = Gorgon2D.Target;
-
 				_hTarget.Clear(GorgonColor.Transparent);
 				Gorgon2D.Target = _hTarget;
 				_blurStream.WriteRange(_xOffsets);
@@ -292,10 +325,8 @@ namespace GorgonLibrary.Renderers
 			_blurStream.Position = 0;
 			_blurBuffer.Update(_blurStream);
 
-			if (Gorgon2D.PixelShader.ConstantBuffers[2] != _blurStaticBuffer)
-				Gorgon2D.PixelShader.ConstantBuffers[2] = _blurStaticBuffer;
-			if (Gorgon2D.PixelShader.ConstantBuffers[3] != _blurBuffer)
-				Gorgon2D.PixelShader.ConstantBuffers[3] = _blurBuffer;
+			Gorgon2D.PixelShader.ConstantBuffers[2] = _blurStaticBuffer;
+			Gorgon2D.PixelShader.ConstantBuffers[3] = _blurBuffer;
 		}
 
 		/// <summary>
@@ -306,11 +337,15 @@ namespace GorgonLibrary.Renderers
 		protected override void RenderImpl(Action<int> renderMethod, int passIndex)
 		{
 			if ((_hTarget == null) || (_vTarget == null))
+			{
 				UpdateRenderTarget();
+			}
 
 			if (passIndex == 0)
+			{
 				Gorgon2D.Target = _hTarget;
-			else			
+			}
+			else
 			{
 				// Copy the horizontal pass to the vertical pass target and blur the result.
 				_lastSmoothMode = Gorgon2D.Drawing.SmoothingMode;
@@ -331,7 +366,9 @@ namespace GorgonLibrary.Renderers
 			base.OnAfterRenderPass(passIndex);
 
 			if (passIndex == 1)
+			{
 				Gorgon2D.Drawing.SmoothingMode = _lastSmoothMode;
+			}
 		}
 
 		/// <summary>
@@ -345,13 +382,21 @@ namespace GorgonLibrary.Renderers
 				if (disposing)
 				{
 					if (_blurStaticBuffer != null)
+					{
 						_blurStaticBuffer.Dispose();
+					}
 					if (_blurBuffer != null)
+					{
 						_blurBuffer.Dispose();
+					}
 					if (_blurStream != null)
+					{
 						_blurStream.Dispose();
+					}
 					if (PixelShader != null)
+					{
 						PixelShader.Dispose();
+					}
 				}
 
 				PixelShader = null;

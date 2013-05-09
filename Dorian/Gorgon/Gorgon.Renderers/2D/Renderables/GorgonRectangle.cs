@@ -40,11 +40,11 @@ namespace GorgonLibrary.Renderers
 		: GorgonMoveable
 	{
 		#region Variables.
-		private Vector2[] _corners = null;					// Corner points.
+		private readonly Vector2[] _corners;				// Corner points.
 		private RectangleF _rectangle = RectangleF.Empty;	// Rectangle dimensions.
-		private GorgonColor[] _colors = null;				// Colors for each corner.
-		private GorgonLine _line = null;					// Line used for outlined drawing.
-		private GorgonSprite _filled = null;				// Sprite used for rectangle drawing.
+		private readonly GorgonColor[] _colors;				// Colors for each corner.
+		private readonly GorgonLine _line;					// Line used for outlined drawing.
+		private readonly GorgonSprite _filled;				// Sprite used for rectangle drawing.
 		#endregion
 
 		#region Properties.

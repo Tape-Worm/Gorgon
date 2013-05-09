@@ -38,7 +38,7 @@ namespace GorgonLibrary.Editor
 		: ZuneForm
 	{
 		#region Variables.
-		private bool _forceClose = false;			// Flag to indicate that we should force the window to shut down.
+		private bool _forceClose;			// Flag to indicate that we should force the window to shut down.
 		#endregion
 
 		#region Properties.

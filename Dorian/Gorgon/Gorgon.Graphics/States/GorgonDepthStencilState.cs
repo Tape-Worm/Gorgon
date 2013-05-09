@@ -35,6 +35,10 @@ namespace GorgonLibrary.Graphics
 	public enum StencilOperations
 	{
 		/// <summary>
+		/// Unknown.
+		/// </summary>
+		Unknown = 0,
+		/// <summary>
 		/// Keep existing stencil data.
 		/// </summary>
 		Keep = 1,
@@ -398,7 +402,7 @@ namespace GorgonLibrary.Graphics
 		: GorgonState<GorgonDepthStencilStates>
 	{
 		#region Variables.
-		private int _depthRef = 0;																// Depth reference.
+		private int _depthRef;																// Depth reference.
 		#endregion
 
 		#region Properties.

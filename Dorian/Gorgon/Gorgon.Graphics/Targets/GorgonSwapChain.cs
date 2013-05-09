@@ -118,8 +118,7 @@ namespace GorgonLibrary.Graphics
 		: GorgonRenderTarget
 	{
 		#region Variables.
-		private Form _parentForm = null;							// Parent form for our window.
-		private IEnumerable<GorgonSwapChain> _swapChains = null;	// A list of other full screen swap chains.
+		private Form _parentForm;							// Parent form for our window.
 		#endregion
 
 		#region Events.
@@ -215,7 +214,7 @@ namespace GorgonLibrary.Graphics
 			if ((GISwapChain == null) || (!Graphics.ResetFullscreenOnFocus))
 				return;
 
-			_swapChains = Graphics.GetFullscreenSwapChains();
+			Graphics.GetFullscreenSwapChains();
 
 			// Reset the video mode to windowed.
 			// Note:  For some reason, this is different than it was on SlimDX.  I never had to do this before, but with
@@ -238,7 +237,7 @@ namespace GorgonLibrary.Graphics
 			if ((GISwapChain == null) || (!Graphics.ResetFullscreenOnFocus))
 				return;
 
-			_swapChains = Graphics.GetFullscreenSwapChains();
+			Graphics.GetFullscreenSwapChains();
 						
 			if (!GISwapChain.IsFullScreen) 
 			{
@@ -597,7 +596,7 @@ namespace GorgonLibrary.Graphics
 				_parentForm.ClientSize = new Size(Settings.VideoMode.Width, Settings.VideoMode.Height);
 
 			AutoResize = !Settings.NoClientResize;
-			_swapChains = Graphics.GetFullscreenSwapChains();
+			Graphics.GetFullscreenSwapChains();
 
 			d3dSettings.BufferCount = Settings.BufferCount;
 			d3dSettings.Flags = flags;

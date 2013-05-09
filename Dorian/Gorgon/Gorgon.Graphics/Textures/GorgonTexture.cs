@@ -43,7 +43,7 @@ namespace GorgonLibrary.Graphics
 		: GorgonNamedResource
 	{
 		#region Variables.
-		private IList<DX.DataStream> _lock = null;			// Locks for the texture.
+		private readonly IList<DX.DataStream> _lock;			// Locks for the texture.
 		#endregion
 
 		#region Properties.

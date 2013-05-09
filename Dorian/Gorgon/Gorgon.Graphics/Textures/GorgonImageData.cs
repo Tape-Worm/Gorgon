@@ -52,11 +52,12 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using DX = SharpDX;
 using GorgonLibrary.Diagnostics;
 using GorgonLibrary.IO;
 using GorgonLibrary.Math;
 using GorgonLibrary.Native;
-using DX = SharpDX;
+using GorgonLibrary.Graphics.Properties;
 
 namespace GorgonLibrary.Graphics
 {
@@ -195,11 +196,11 @@ namespace GorgonLibrary.Graphics
 		#endregion
 
 		#region Variables.
-		private DX.DataBox[] _dataBoxes = null;						// Data boxes for textures.
-		private bool _disposed = false;                             // Flag to indicate whether the object was disposed.
-        private GorgonDataStream _imageData = null;                 // Base image data buffer.
-		private ImageBuffer[] _buffers = null;						// Buffers for access to the arrays, slices and mip maps.
-		private Tuple<int, int>[] _mipOffsetSize = null;			// Offsets and sizes in the buffer list for mip maps.
+		private DX.DataBox[] _dataBoxes;						// Data boxes for textures.
+		private bool _disposed;									// Flag to indicate whether the object was disposed.
+        private GorgonDataStream _imageData;					// Base image data buffer.
+		private ImageBuffer[] _buffers;							// Buffers for access to the arrays, slices and mip maps.
+		private Tuple<int, int>[] _mipOffsetSize;				// Offsets and sizes in the buffer list for mip maps.
         #endregion
 
         #region Properties.
@@ -594,6 +595,8 @@ namespace GorgonLibrary.Graphics
 
 					depth = texture.Settings.Depth;
 					break;
+				default:
+					throw new ArgumentException(string.Format(Resources.GORGFX_IMAGE_TYPE_INVALID, texture.Settings.ImageType));
 			}
 
 			height = texture.Settings.Height.Min(Settings.Height);
@@ -670,6 +673,8 @@ namespace GorgonLibrary.Graphics
 						destBox.Depth = depth;
 						((GorgonTexture3D)texture).UpdateSubResource(textureData, resourceIndex, destBox);
 						break;
+					default:
+						throw new ArgumentException(string.Format(Resources.GORGFX_IMAGE_TYPE_INVALID, texture.Settings.ImageType));
 				}
 			}				
 		}
@@ -1200,6 +1205,8 @@ namespace GorgonLibrary.Graphics
                     resourceIndex = GorgonTexture3D.GetSubResourceIndex(mipLevel, stagingTexture.Settings.MipCount);   
                     sliceStride = (height * rowStride) * depthCount;        // Calculate how big the buffer should be with depth.
                     break;
+				default:
+					throw new ArgumentException(string.Format(Resources.GORGFX_IMAGE_TYPE_INVALID, stagingTexture.Settings.ImageType));
             }
 
             // Copy the texture data into the buffer.

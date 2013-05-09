@@ -39,7 +39,7 @@ namespace GorgonLibrary.Graphics
 		: GorgonBaseBuffer
 	{
 		#region Variables.
-		private DX.DataStream _lockStream = null;								// Stream used when locking.
+		private DX.DataStream _lockStream;								// Stream used when locking.
 		#endregion
 
 		#region Properties.

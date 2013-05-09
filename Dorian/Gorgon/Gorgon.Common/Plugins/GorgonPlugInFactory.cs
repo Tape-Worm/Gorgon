@@ -234,8 +234,10 @@ namespace GorgonLibrary.PlugIns
 		protected override void ClearItems()
 		{
 			foreach (GorgonPlugIn plugIn in this)
+			{
 				CheckDisposable(plugIn);
-			
+			}
+
 			base.ClearItems();
 		}
 
@@ -281,11 +283,13 @@ namespace GorgonLibrary.PlugIns
 		/// quite a bit of memory over time, so this method will purge that application domain.</remarks>
 		public void PurgeCachedPlugInInfo()
 		{
-			if (_discoveryDomain != null)
+			if (_discoveryDomain == null)
 			{
-				AppDomain.Unload(_discoveryDomain);
-				_discoveryDomain = null;
+				return;
 			}
+
+			AppDomain.Unload(_discoveryDomain);
+			_discoveryDomain = null;
 		}
 
 		/// <summary>
@@ -367,11 +371,13 @@ namespace GorgonLibrary.PlugIns
 			    {
 			        for (int i = 0; i < publicKey.Length - 1; i++)
 			        {
-			            if (publicKey[i] != plugInPublicKey[i])
-			            {
-			                result |= PlugInSigningResult.KeyMismatch;
-			                break;
-			            }
+				        if (publicKey[i] == plugInPublicKey[i])
+				        {
+					        continue;
+				        }
+
+				        result |= PlugInSigningResult.KeyMismatch;
+				        break;
 			        }
 			    }
 			}
@@ -513,39 +519,54 @@ namespace GorgonLibrary.PlugIns
 		/// <exception cref="GorgonLibrary.GorgonException">The assembly contains a plug-in type that was already loaded by another assembly.</exception>
 		public void LoadPlugInAssembly(AssemblyName assemblyName)
 		{
+			Assembly plugInAssembly;
+
 		    if (assemblyName == null)
 		    {
 		        throw new ArgumentNullException("assemblyName");
 		    }
+			
+			try
+			{
+				
 
-		    Assembly plugInAssembly = AssemblyCache.LoadAssembly(assemblyName);
+				plugInAssembly = AssemblyCache.LoadAssembly(assemblyName);
+			}
+			finally
+			{
+				//AppDomain.CurrentDomain.AssemblyResolve -= ResolveAssembly;				
+			}
+
 
 			try
 			{
-                // Get all plug-in types from the assembly.
+
+				// Get all plug-in types from the assembly.
 				var plugInTypes = (from plugInType in plugInAssembly.GetTypes()
-								  where (plugInType.IsSubclassOf(typeof(GorgonPlugIn)) && (!plugInType.IsAbstract))
-								  select plugInType).ToArray();
+				                   where (plugInType.IsSubclassOf(typeof(GorgonPlugIn)) && (!plugInType.IsAbstract))
+				                   select plugInType).ToArray();
 
-			    if (plugInTypes.Length == 0)
-			    {
-			        throw new ArgumentException(string.Format(Resources.GOR_PLUGIN_NOT_PLUGIN_ASSEMBLY, assemblyName.FullName),
-			                                    "assemblyName");
-			    }
-
-                // Create an instance of each plug-in object.
-			    foreach (Type plugInType in plugInTypes)
+				if (plugInTypes.Length == 0)
 				{
-					var plugIn = (GorgonPlugIn)plugInType.Assembly.CreateInstance(plugInType.FullName, false, BindingFlags.CreateInstance, null, null, null, null);
+					throw new ArgumentException(string.Format(Resources.GOR_PLUGIN_NOT_PLUGIN_ASSEMBLY, assemblyName.FullName),
+					                            "assemblyName");
+				}
 
-				    if (plugIn == null)
-				    {
-				        throw new GorgonException(GorgonResult.CannotCreate,
-				                                  string.Format(Resources.GOR_PLUGIN_CANNOT_CREATE, plugInType.FullName,
-				                                                plugInType.Assembly.FullName));
-				    }
+				// Create an instance of each plug-in object.
+				foreach (Type plugInType in plugInTypes)
+				{
+					var plugIn =
+						(GorgonPlugIn)
+						plugInType.Assembly.CreateInstance(plugInType.FullName, false, BindingFlags.CreateInstance, null, null, null, null);
 
-				    if (!Contains(plugIn.Name))
+					if (plugIn == null)
+					{
+						throw new GorgonException(GorgonResult.CannotCreate,
+						                          string.Format(Resources.GOR_PLUGIN_CANNOT_CREATE, plugInType.FullName,
+						                                        plugInType.Assembly.FullName));
+					}
+
+					if (!Contains(plugIn.Name))
 					{
 						Gorgon.Log.Print("Plug-in '{0}' created.", LoggingLevel.Simple, plugIn.Name);
 						AddItem(plugIn);
@@ -554,10 +575,10 @@ namespace GorgonLibrary.PlugIns
 					{
 						if (plugInType != this[plugIn.Name].GetType())
 						{
-						    throw new GorgonException(GorgonResult.CannotCreate,
-						                              string.Format(Resources.GOR_PLUGIN_CONFLICT, plugIn.Name,
-						                                            plugInType.Assembly.FullName,
-						                                            this[plugIn.Name].GetType().Assembly.FullName));
+							throw new GorgonException(GorgonResult.CannotCreate,
+							                          string.Format(Resources.GOR_PLUGIN_CONFLICT, plugIn.Name,
+							                                        plugInType.Assembly.FullName,
+							                                        this[plugIn.Name].GetType().Assembly.FullName));
 						}
 
 						Gorgon.Log.Print("Plug-in '{0}' already created.  Using this instance.", LoggingLevel.Simple, plugIn.Name);
@@ -566,19 +587,21 @@ namespace GorgonLibrary.PlugIns
 			}
 			catch (ReflectionTypeLoadException ex)
 			{
-			    var errorMessage = new StringBuilder(512);
+				var errorMessage = new StringBuilder(512);
 
 				foreach (Exception loadEx in ex.LoaderExceptions)
 				{
-                    if (errorMessage.Length > 0)
-                    {
-                        errorMessage.Append("\n\r");
-                    }
+					if (errorMessage.Length > 0)
+					{
+						errorMessage.Append("\n\r");
+					}
 
-				    errorMessage.Append(loadEx.Message);
+					errorMessage.Append(loadEx.Message);
 				}
 
-                throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GOR_PLUGIN_TYPE_LOAD_FAILURE, plugInAssembly.FullName, errorMessage));
+				throw new GorgonException(GorgonResult.CannotRead,
+				                          string.Format(Resources.GOR_PLUGIN_TYPE_LOAD_FAILURE, plugInAssembly.FullName,
+				                                        errorMessage));
 			}
 		}
 		#endregion

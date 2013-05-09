@@ -42,10 +42,10 @@ namespace GorgonLibrary.Graphics
 		#endregion
 
 		#region Variables.
-		private bool _disposed = false;																				// Flag to indicate that the object was disposed.
-		private int _currentCachePosition = 0;																		// Current position in the cache.
-		private int _cacheCount = 0;																				// Number of items in the cache.
-		private Tuple<T, D3D.DeviceChild>[] _cache = new Tuple<T,D3D.DeviceChild>[_cacheLimit];						// Cache objects.
+		private bool _disposed;																				// Flag to indicate that the object was disposed.
+		private int _currentCachePosition;																	// Current position in the cache.
+		private int _cacheCount;																			// Number of items in the cache.
+		private Tuple<T, D3D.DeviceChild>[] _cache = new Tuple<T,D3D.DeviceChild>[_cacheLimit];				// Cache objects.
 		#endregion
 
 		#region Properties.

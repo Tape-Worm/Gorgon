@@ -56,25 +56,35 @@ namespace GorgonLibrary.Editor
 		/// <PermissionSet>
 		///   <IPermission class="System.Security.Permissions.FileIOPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/>
 		///   </PermissionSet>
-		public override object ConvertFrom(ITypeDescriptorContext context, System.Globalization.CultureInfo culture, object value)
+		public override object ConvertFrom(ITypeDescriptorContext context, CultureInfo culture, object value)
 		{
+			// If we have a numeric encoded value, then just convert that.
+			if ((value is Int32) || (value is UInt32) || (value is Int64) || (value is UInt64))
+			{
+				return Color.FromArgb((int)value);
+			}
+
 			var colorValue = value as String;
 			var values = new int[4];
 
 			if (string.IsNullOrEmpty(colorValue))
+			{
 				return Color.Transparent;
+			}
 
-			if (culture == null)
-				culture = CultureInfo.CurrentCulture;
-
-			string[] components = colorValue.Split(new char[] { culture.TextInfo.ListSeparator[0] }, StringSplitOptions.RemoveEmptyEntries);
+			string[] components = colorValue.Split(new[]
+				{
+					culture.TextInfo.ListSeparator[0]
+				}, StringSplitOptions.RemoveEmptyEntries);
 			
 			for (int i = 0; i < (components.Length > 4 ? 4 : components.Length); i++)
 			{
-				int component = 0;
+				int component;
 
 				if (Int32.TryParse(components[i], out component))
+				{
 					values[i] = component;
+				}
 			}
 
 			return Color.FromArgb(values[3], values[0], values[1], values[2]);
@@ -91,25 +101,41 @@ namespace GorgonLibrary.Editor
 		/// An <see cref="T:System.Object"/> representing the converted value.
 		/// </returns>
 		/// <exception cref="T:System.ArgumentNullException">
-		///   <paramref name="destinationtype"/> is null.</exception>
+		///   <paramref name="destinationType"/> is null.</exception>
 		///   
 		/// <exception cref="T:System.NotSupportedException">The conversion cannot be performed.</exception>
 		///   
 		/// <PermissionSet>
 		///   <IPermission class="System.Security.Permissions.FileIOPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/>
 		///   </PermissionSet>
-		public override object ConvertTo(ITypeDescriptorContext context, System.Globalization.CultureInfo culture, object value, Type destinationType)
+		public override object ConvertTo(ITypeDescriptorContext context, CultureInfo culture, object value, Type destinationType)
 		{
-			if ((destinationType == null) || (!(value is Color)) || (destinationType != typeof(string)))
+			if ((!(value is Color)) || 
+				((destinationType != typeof(string)) 
+					&& (destinationType != typeof(Int32)) 
+					&& (destinationType != typeof(UInt32)) 
+					&& (destinationType != typeof(Int64)) && (destinationType != typeof(UInt64))))
+			{
 				return base.ConvertTo(context, culture, value, destinationType);
-
-			if (culture == null)
-				culture = CultureInfo.CurrentCulture;
+			}
 
 			var color = (Color)value;
+
+			if ((destinationType == typeof(Int32)) || (destinationType == typeof(UInt32)) || (destinationType == typeof(Int64)) ||
+			    (destinationType == typeof(UInt64)))
+			{
+				return color.ToArgb();
+			}
+
+			if (culture == null)
+			{
+				culture = CultureInfo.CurrentCulture;
+			}
+			
 			string separator = culture.TextInfo.ListSeparator + " ";
 
-			return color.R.ToString() + separator + color.G.ToString() + separator + color.B.ToString() + separator + color.A.ToString();
+			return color.R.ToString(culture) + separator + color.G.ToString(culture) + separator + color.B.ToString(culture) +
+			       separator + color.A.ToString(culture);
 		}
 		#endregion
 	}

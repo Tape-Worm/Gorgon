@@ -61,15 +61,6 @@ namespace GorgonLibrary.Graphics.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to These image settings are not compatible with texture settings..
-        /// </summary>
-        internal static string GOR_GFX_IMAGE_SETTINGS_NOT_TEXTURE_SETTINGS {
-            get {
-                return ResourceManager.GetString("GOR_GFX_IMAGE_SETTINGS_NOT_TEXTURE_SETTINGS", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to The buffer is already locked..
         /// </summary>
         internal static string GORGFX_ALREADY_LOCKED {
@@ -129,6 +120,15 @@ namespace GorgonLibrary.Graphics.Properties {
         internal static string GORGFX_FMTPITCH_TOSTR {
             get {
                 return ResourceManager.GetString("GORGFX_FMTPITCH_TOSTR", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The image type &apos;{0}&apos; is not a valid image type..
+        /// </summary>
+        internal static string GORGFX_IMAGE_TYPE_INVALID {
+            get {
+                return ResourceManager.GetString("GORGFX_IMAGE_TYPE_INVALID", resourceCulture);
             }
         }
         

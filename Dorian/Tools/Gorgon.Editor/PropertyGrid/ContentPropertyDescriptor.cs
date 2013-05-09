@@ -36,7 +36,7 @@ namespace GorgonLibrary.Editor
 		: PropertyDescriptor
 	{
 		#region Variables.
-		private ContentProperty _property = null;			// Property that is bound to the descriptor.
+		private readonly ContentProperty _property;			// Property that is bound to the descriptor.
 		#endregion
 
 		#region Properties.
@@ -100,7 +100,9 @@ namespace GorgonLibrary.Editor
 		public override void ResetValue(object component)
 		{
 			if (CanResetValue(component))
+			{
 				SetValue(component, _property.DefaultValue);
+			}
 		}
 
 		/// <summary>

@@ -41,9 +41,9 @@ namespace GorgonLibrary.Graphics
 	public sealed class GorgonTextures
 	{
 		#region Variables.
-		private GorgonGraphics _graphics = null;
-		private GorgonTexture2D _logo = null;
-		private static int _incrementCount = 0;
+		private readonly GorgonGraphics _graphics;
+		private GorgonTexture2D _logo;
+		private static int _incrementCount;
 		#endregion
 
 		#region Properties.
@@ -187,7 +187,7 @@ namespace GorgonLibrary.Graphics
 						ViewIsUnordered = false
 					};					
 				default:
-					throw new ArgumentException(Resources.GOR_GFX_IMAGE_SETTINGS_NOT_TEXTURE_SETTINGS, "settings");
+					throw new ArgumentException(string.Format(Resources.GORGFX_IMAGE_TYPE_INVALID, settings.ImageType));
 			}
 		}
 
@@ -1087,7 +1087,7 @@ namespace GorgonLibrary.Graphics
 						result = CreateTexture<GorgonTexture3D>(name, imageData) as T;
 						break;
 					default:
-						throw new GorgonException(GorgonResult.CannotCreate, "The texture type is unknown.");
+						throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_IMAGE_TYPE_INVALID, settings.ImageType));
 				}
 			}
 
@@ -1250,13 +1250,11 @@ namespace GorgonLibrary.Graphics
 					ValidateTexture3D(ref settings);
 					texture = new GorgonTexture3D(_graphics, name, settings) as T;
 					break;
-				default:
-					throw new ArgumentException("The texture type '" + type.FullName + "' is unknown.", "settings");
 			}
 
 			if (texture == null)
 			{
-				throw new ArgumentException("The texture type '" + type.FullName + "' is unknown.", "settings");
+				throw new ArgumentException(string.Format(Resources.GORGFX_IMAGE_TYPE_INVALID, settings.ImageType), "settings");
 			}
 
 			texture.Initialize(null);
@@ -1329,13 +1327,11 @@ namespace GorgonLibrary.Graphics
 					ValidateTexture3D(ref settings);
 					texture = new GorgonTexture3D(_graphics, name, settings) as T;
 					break;
-				default:
-					throw new ArgumentException("The texture type '" + type.FullName + "' is unknown.", "settings");
 			}
 
 			if (texture == null)
 			{
-				throw new ArgumentException("The texture type '" + type.FullName + "' is unknown.", "settings");
+				throw new ArgumentException(string.Format(Resources.GORGFX_IMAGE_TYPE_INVALID, settings.ImageType), "data");
 			}
 
 			texture.Initialize(data);

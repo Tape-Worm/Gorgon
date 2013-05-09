@@ -41,13 +41,13 @@ namespace GorgonLibrary.Renderers
 		: GorgonMoveable
 	{
 		#region Variables.
-		private int _quality = 0;								// Quality for the ellipse rendering.
-		private Vector2 _center = Vector2.Zero;					// Center point for the ellipse.
-		private Vector2[] _offsets = null;						// Offsets for the ellipse points.
-		private Vector2[] _points = null;						// List of points for the ellipse.
-		private GorgonColor[] _colors = null;					// Colors for points.
-		private GorgonLine _line = null;						// List of lines to draw.
-		private bool _isFilled = false;							// Flag to indicate whether to draw the ellipse as filled or as an outline.
+		private int _quality;							// Quality for the ellipse rendering.
+		private Vector2 _center = Vector2.Zero;			// Center point for the ellipse.
+		private Vector2[] _offsets;						// Offsets for the ellipse points.
+		private Vector2[] _points;						// List of points for the ellipse.
+		private GorgonColor[] _colors;					// Colors for points.
+		private readonly GorgonLine _line;				// List of lines to draw.
+		private bool _isFilled;							// Flag to indicate whether to draw the ellipse as filled or as an outline.
 		#endregion
 
 		#region Properties.

@@ -102,9 +102,9 @@ namespace GorgonLibrary.Renderers
 		#endregion
 
 		#region Variables.
-		private GorgonLine _line = null;												// Line used to draw outlined triangle.
-		private TrianglePoint[] _points = null;											// Points for the triangle.
-		private Vector2 _anchor = Vector2.Zero;											// Anchor point.
+		private readonly GorgonLine _line;					// Line used to draw outlined triangle.
+		private readonly TrianglePoint[] _points;			// Points for the triangle.
+		private Vector2 _anchor = Vector2.Zero;				// Anchor point.
 		#endregion
 
 		#region Properties.

@@ -36,10 +36,10 @@ namespace GorgonLibrary.Renderers
 		: Gorgon2DEffect
 	{
 		#region Variables.
-		private bool _disposed = false;								// Flag to indicate that the object was disposed.
-		private GorgonConstantBuffer _posterizeBuffer = null;		// Buffer for the posterize effect.
-		private GorgonDataStream _posterizeStream = null;			// Stream for the posterize effect.
-		private bool _posterizeAlpha = false;						// Flag to posterize the alpha channel.
+		private bool _disposed;										// Flag to indicate that the object was disposed.
+		private readonly GorgonConstantBuffer _posterizeBuffer;		// Buffer for the posterize effect.
+		private readonly GorgonDataStream _posterizeStream;			// Stream for the posterize effect.
+		private bool _posterizeAlpha;								// Flag to posterize the alpha channel.
 		private float _posterizeExponent = 1.0f;					// Posterize exponent.
 		private int _posterizeBits = 8;								// Posterize bit count.
 		private bool _isUpdated = true;								// Flag to indicate that the parameters have been updated.

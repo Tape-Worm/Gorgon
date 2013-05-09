@@ -49,7 +49,7 @@ namespace GorgonLibrary.Graphics
 		#endregion
 
 		#region Variables.
-		private GorgonGraphics _graphics = null;		// Graphics interface.
+		private GorgonGraphics _graphics;		// Graphics interface.
 		#endregion
 
 		#region Properties.

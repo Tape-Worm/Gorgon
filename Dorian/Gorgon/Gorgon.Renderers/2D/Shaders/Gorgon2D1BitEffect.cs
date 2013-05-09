@@ -36,14 +36,14 @@ namespace GorgonLibrary.Renderers
 		: Gorgon2DEffect
 	{
 		#region Variables.
-		private bool _disposed = false;												// Flag to indicate that the object was disposed.
-		private GorgonConstantBuffer _1bitBuffer = null;							// Constant buffer for the 1 bit information.
-		private GorgonDataStream _1bitStream = null;								// Stream used to write to the buffer.
-		private GorgonRangeF _whiteRange = new GorgonRangeF(0.5f, 1.0f);			// Range of values that are considered "on".
-		private bool _useAverage = false;											// Flag to calculate using an average of the texel colors.
-		private bool _invert = false;												// Flag to invert the texel colors.
-		private bool _useAlpha = true;												// Flag to indicate that the alpha channel should be included.
-		private bool _isUpdated = true;												// Flag to indicate that the parameters were updated.
+		private bool _disposed;												// Flag to indicate that the object was disposed.
+		private readonly GorgonConstantBuffer _1BitBuffer;					// Constant buffer for the 1 bit information.
+		private readonly GorgonDataStream _1BitStream;						// Stream used to write to the buffer.
+		private GorgonRangeF _whiteRange = new GorgonRangeF(0.5f, 1.0f);	// Range of values that are considered "on".
+		private bool _useAverage;											// Flag to calculate using an average of the texel colors.
+		private bool _invert;												// Flag to invert the texel colors.
+		private bool _useAlpha = true;										// Flag to indicate that the alpha channel should be included.
+		private bool _isUpdated = true;										// Flag to indicate that the parameters were updated.
 		#endregion
 
 		#region Properties.
@@ -131,25 +131,25 @@ namespace GorgonLibrary.Renderers
 		/// </summary>
 		private void SetValues()
 		{
-			_1bitStream.Position = 0;
-			_1bitStream.Write(_whiteRange.Minimum);
-			_1bitStream.Write(_whiteRange.Maximum);
+			_1BitStream.Position = 0;
+			_1BitStream.Write(_whiteRange.Minimum);
+			_1BitStream.Write(_whiteRange.Maximum);
 
 			// .NET uses 1 byte for BOOL, HLSL uses 4 bytes.
-			_1bitStream.Write(_useAverage);
-			_1bitStream.Write<byte>(0);
-			_1bitStream.Write<byte>(0);
-			_1bitStream.Write<byte>(0);
-			_1bitStream.Write(_invert);
-			_1bitStream.Write<byte>(0);
-			_1bitStream.Write<byte>(0);
-			_1bitStream.Write<byte>(0);
-			_1bitStream.Write(_useAlpha);
-			_1bitStream.Write<byte>(0);
-			_1bitStream.Write<byte>(0);
-			_1bitStream.Write<byte>(0);
-			_1bitStream.Position = 0;
-			_1bitBuffer.Update(_1bitStream);
+			_1BitStream.Write(_useAverage);
+			_1BitStream.Write<byte>(0);
+			_1BitStream.Write<byte>(0);
+			_1BitStream.Write<byte>(0);
+			_1BitStream.Write(_invert);
+			_1BitStream.Write<byte>(0);
+			_1BitStream.Write<byte>(0);
+			_1BitStream.Write<byte>(0);
+			_1BitStream.Write(_useAlpha);
+			_1BitStream.Write<byte>(0);
+			_1BitStream.Write<byte>(0);
+			_1BitStream.Write<byte>(0);
+			_1BitStream.Position = 0;
+			_1BitBuffer.Update(_1BitStream);
 			_isUpdated = false;
 		}
 
@@ -164,8 +164,8 @@ namespace GorgonLibrary.Renderers
 			if (_isUpdated)
 				SetValues();
 
-			if (Gorgon2D.PixelShader.ConstantBuffers[2] != _1bitBuffer)
-				Gorgon2D.PixelShader.ConstantBuffers[2] = _1bitBuffer;
+			if (Gorgon2D.PixelShader.ConstantBuffers[2] != _1BitBuffer)
+				Gorgon2D.PixelShader.ConstantBuffers[2] = _1BitBuffer;
 		}
 
 		/// <summary>
@@ -193,10 +193,10 @@ namespace GorgonLibrary.Renderers
 
 					PixelShader = null;
 
-					if (_1bitBuffer != null)
-						_1bitBuffer.Dispose();
-					if (_1bitStream != null)
-						_1bitStream.Dispose();
+					if (_1BitBuffer != null)
+						_1BitBuffer.Dispose();
+					if (_1BitStream != null)
+						_1BitStream.Dispose();
 				}
 
 				_disposed = true;
@@ -221,8 +221,8 @@ namespace GorgonLibrary.Renderers
 			PixelShader = Graphics.Shaders.CreateShader<GorgonPixelShader>("Effect.2D.1Bit.PS", "GorgonPixelShader1Bit", "#GorgonInclude \"Gorgon2DShaders\"", false);
 #endif
 
-			_1bitStream = new GorgonDataStream(32);
-			_1bitBuffer = Graphics.Shaders.CreateConstantBuffer(32, false);
+			_1BitStream = new GorgonDataStream(32);
+			_1BitBuffer = Graphics.Shaders.CreateConstantBuffer(32, false);
 		}
 		#endregion
 	}

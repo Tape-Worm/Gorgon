@@ -32,6 +32,13 @@
   <PropertyGroup>
     <ApplicationIcon>Gorgon2.ico</ApplicationIcon>
   </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>false</SignAssembly>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AssemblyOriginatorKeyFile>
+    </AssemblyOriginatorKeyFile>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="SlimMath">
       <HintPath>..\..\..\Dependencies\SlimMath\SlimMath\bin\Release\SlimMath.dll</HintPath>

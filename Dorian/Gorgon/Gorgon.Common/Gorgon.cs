@@ -27,6 +27,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Windows.Forms;
 using GorgonLibrary.Collections.Specialized;
 using GorgonLibrary.Diagnostics;
@@ -352,6 +353,9 @@ namespace GorgonLibrary
 		/// <returns>TRUE if the application has signalled to quit before it starts running, FALSE to continue.</returns>
 		private static bool Initialize()
 		{
+			// Attach assembly resolving to deal with issues when loading assemblies with designers/type converters.
+			AppDomain.CurrentDomain.AssemblyResolve += ResolveAssembly;
+
 			// Display the form.
 			if ((ApplicationForm != null) && (!ApplicationForm.IsDisposed))
 			{
@@ -404,6 +408,9 @@ namespace GorgonLibrary
 		{
 			IsRunning = false;
 
+			// Attach assembly resolving to deal with issues when loading assemblies with designers/type converters.
+			AppDomain.CurrentDomain.AssemblyResolve -= ResolveAssembly;
+
 			// Remove quit handlers.
 			Application.ApplicationExit -= Application_ApplicationExit;
 			Application.ThreadExit -= Application_ThreadExit;
@@ -434,6 +441,31 @@ namespace GorgonLibrary
 			{
 				Log.Close();
 			}
+		}
+
+		/// <summary>
+		/// Function called when a type needs to be resolved from another assembly in the current app domain.
+		/// </summary>
+		/// <param name="sender">Sender of the event.</param>
+		/// <param name="args">Event arguments.</param>
+		/// <returns>The assembly, if found, NULL if not.</returns>
+		private static Assembly ResolveAssembly(object sender, ResolveEventArgs args)
+		{
+			var domain = (AppDomain)sender;
+			var assemblies = domain.GetAssemblies();
+
+			// ReSharper disable LoopCanBeConvertedToQuery
+			for (int i = 0; i < assemblies.Length; i++)
+			{
+				var assembly = assemblies[i];
+
+				if (assembly.FullName == args.Name)
+				{
+					return assembly;
+				}
+			}
+			// ReSharper restore LoopCanBeConvertedToQuery
+			return null;
 		}
 
 		/// <summary>
@@ -483,7 +515,7 @@ namespace GorgonLibrary
             {
                 throw new InvalidOperationException(Resources.GOR_APPLICATION_ALREADY_RUNNING);
             }
-						
+
 			ApplicationIdleLoopMethod = loop;
 			ApplicationContext = context;
 

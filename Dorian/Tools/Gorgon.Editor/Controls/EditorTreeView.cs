@@ -66,14 +66,14 @@ namespace GorgonLibrary.Editor
         : TreeView
     {
         #region Variables.
-        private bool _disposed = false;                     // Flag to indicate that the object was disposed.
-        private Font _openContent = null;                   // Font used for open content items.
-        private Brush _selectBrush = null;                  // Brush used for selection background.
-        private Pen _focusPen = null;                       // Pen used for focus.
-		private TextBox _renameBox = null;				    // Text box used to rename a node.
-		private EditorTreeNode _editNode = null;		    // Node being edited.
-		private ColorMatrix _fadeMatrix = null;				// Fade matrix.
-		private ImageAttributes _fadeAttributes = null;		// Attributes for faded items.
+        private bool _disposed;							// Flag to indicate that the object was disposed.
+        private Font _openContent;						// Font used for open content items.
+        private Brush _selectBrush;						// Brush used for selection background.
+        private Pen _focusPen;							// Pen used for focus.
+		private TextBox _renameBox;						// Text box used to rename a node.
+		private EditorTreeNode _editNode;				// Node being edited.
+		private readonly ColorMatrix _fadeMatrix;		// Fade matrix.
+		private ImageAttributes _fadeAttributes;		// Attributes for faded items.
         #endregion
 
 		#region Properties.

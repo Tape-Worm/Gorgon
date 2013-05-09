@@ -45,11 +45,11 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
         : ContentObject
     {
         #region Variables.
-        private GorgonFontContentPanel _panel = null;               // Interface for editing the font.
-        private bool _disposed = false;                             // Flag to indicate that the object was disposed.
-		private GorgonFontSettings _settings = null;				// Settings for the font.
-		private GorgonSwapChain _swap = null;						// Swap chain for our display.
-        private GorgonSwapChain _textDisplay = null;                // Swap chain for sample text display.
+        private GorgonFontContentPanel _panel;              // Interface for editing the font.
+        private bool _disposed;                             // Flag to indicate that the object was disposed.
+		private GorgonFontSettings _settings;				// Settings for the font.
+		private GorgonSwapChain _swap;						// Swap chain for our display.
+        private GorgonSwapChain _textDisplay;               // Swap chain for sample text display.
         #endregion
 
         #region Properties.
@@ -103,21 +103,24 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
         /// <summary>
         /// Function to set the base color for the font glyphs.
         /// </summary>
-        [Category("Appearance"), Description("Sets the outline color for the glyphs with outlines.  Note that the outline size must be greater than 0 before it is applied to the glyph."), DefaultValue(0), Editor(typeof(RGBAEditor), typeof(UITypeEditor)), TypeConverter(typeof(RGBATypeConverter))]
+		[Category("Appearance"), Description("Sets the outline color for the glyphs with outlines.  Note that the outline size must be greater than 0 before it is applied to the glyph."), 
+		DefaultValue(0xFF000000), Editor(typeof(RGBAEditor), typeof(UITypeEditor)), TypeConverter(typeof(RGBATypeConverter))]
         public Color OutlineColor
         {
             get
             {
-                return _settings.OutlineColor;
+                return _settings.OutlineColor.ToColor();
             }
             set
             {
-                if (_settings.OutlineColor.ToColor() != value)
-                {
-                    _settings.OutlineColor = value;
-                    UpdateContent();
-					OnContentPropertyChanged("OutlineColor", value);
-				}
+	            if (_settings.OutlineColor.ToColor() == value)
+	            {
+		            return;
+	            }
+
+	            _settings.OutlineColor = value;
+	            UpdateContent();
+	            OnContentPropertyChanged("OutlineColor", value);
             }
         }
 
@@ -335,13 +338,15 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
             }
             set
             {
-                if (_settings.FontStyle != value)
-                {
-                    _settings.FontStyle = value;
-                    CheckTextureSize();
-                    UpdateContent();
-					OnContentPropertyChanged("FontStyle", value);
-				}
+	            if (_settings.FontStyle == value)
+	            {
+		            return;
+	            }
+
+	            _settings.FontStyle = value;
+	            CheckTextureSize();
+	            UpdateContent();
+	            OnContentPropertyChanged("FontStyle", value);
             }
         }
 

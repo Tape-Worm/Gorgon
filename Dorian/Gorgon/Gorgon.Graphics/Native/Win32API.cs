@@ -41,8 +41,8 @@ namespace GorgonLibrary.Native
 		private static IntPtr _lasthObj = IntPtr.Zero;				// Last active object handle.
 		private static IntPtr _hdc = IntPtr.Zero;					// Current device context.
 		private static IntPtr _hFont = IntPtr.Zero;					// Font handle.
-		private static System.Drawing.Graphics _lastGraphics = null;		// Last used graphics interface.
-		private static System.Drawing.Font _tempFont = null;				// Temporary font.
+		private static System.Drawing.Graphics _lastGraphics;		// Last used graphics interface.
+		private static System.Drawing.Font _tempFont;				// Temporary font.
 		#endregion
 
 		#region Win32 Methods.

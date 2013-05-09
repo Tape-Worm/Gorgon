@@ -35,9 +35,9 @@ namespace GorgonLibrary.IO
         : Stream
     {
         #region Variables.
-        private Stream _sourceStream = null;            // Source stream.
-        private long _sourcePosition = 0;               // Source initial position.
-        private long _currentPosition = 0;              // Current position.
+        private readonly Stream _sourceStream;      // Source stream.
+        private readonly long _sourcePosition;      // Source initial position.
+        private long _currentPosition;              // Current position.
         #endregion
 
         #region Properties.

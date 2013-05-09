@@ -35,6 +35,10 @@ namespace GorgonLibrary.Graphics
 	public enum TextureAddressing
 	{
 		/// <summary>
+		/// Unknown.
+		/// </summary>
+		Unknown = 0,
+		/// <summary>
 		/// Wrap and repeat the texture at the texture boundary.
 		/// </summary>
 		Wrap = 1,
@@ -59,9 +63,13 @@ namespace GorgonLibrary.Graphics
 	/// <summary>
 	/// Filtering to apply to a texture.
 	/// </summary>
-	[Flags()]
+	[Flags]
 	public enum TextureFilter
 	{
+		/// <summary>
+		/// Unknown.
+		/// </summary>
+		Unknown = 0,
 		/// <summary>
 		/// Point minification filtering.
 		/// </summary>
@@ -215,7 +223,9 @@ namespace GorgonLibrary.Graphics
 		public override bool Equals(object obj)
 		{
 			if (obj is GorgonTextureSamplerStates)
+			{
 				return Equals((GorgonTextureSamplerStates)obj);
+			}
 
 			return base.Equals(obj);
 		}

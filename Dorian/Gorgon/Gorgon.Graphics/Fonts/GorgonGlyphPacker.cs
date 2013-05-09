@@ -35,7 +35,7 @@ namespace GorgonLibrary.Graphics
 	class GlyphNode
 	{
 		#region Variables.
-		private bool _noMoreRoom = false;				// Flag to indicate that there is no more room to add a leaf.
+		private bool _noMoreRoom;				// Flag to indicate that there is no more room to add a leaf.
 		#endregion
 
 		#region Properties.
@@ -87,7 +87,7 @@ namespace GorgonLibrary.Graphics
 		}
 		#endregion
 
-		#region Methods.		
+		#region Methods.
 		/// <summary>
 		/// Function to add a node as a child to this node.
 		/// </summary>

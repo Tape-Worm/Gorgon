@@ -35,10 +35,10 @@ namespace GorgonLibrary.Renderers
 		: GorgonEffect
 	{
 		#region Variables.
-		private bool _isDisposed = false;							// Flag to indicate that the object was disposed.
-		private GorgonPixelShader _lastPixelShader = null;			// Last pixel shader.
-		private GorgonVertexShader _lastVertexShader = null;		// Last vertex shader.
-		private GorgonRenderTarget _currentTarget = null;			// Current render target.
+		private bool _isDisposed;							// Flag to indicate that the object was disposed.
+		private GorgonPixelShader _lastPixelShader;			// Last pixel shader.
+		private GorgonVertexShader _lastVertexShader;		// Last vertex shader.
+		private GorgonRenderTarget _currentTarget;			// Current render target.
 		#endregion
 
 		#region Properties.

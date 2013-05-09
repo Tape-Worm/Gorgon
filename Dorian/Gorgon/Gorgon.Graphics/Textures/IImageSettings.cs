@@ -32,6 +32,10 @@ namespace GorgonLibrary.Graphics
 	public enum ImageType
 	{
 		/// <summary>
+		/// Unknown.
+		/// </summary>
+		Unknown = 0,
+		/// <summary>
 		/// Image is a 1 dimensional image.
 		/// </summary>
 		Image1D = 2,

@@ -349,25 +349,27 @@ namespace GorgonLibrary.IO
         /// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
         protected virtual void Dispose(bool disposing)
         {
-            if (!_disposed)
-            {
-                if (disposing)
-                {
-					if (Reader != null)
-					{
-						Reader.Dispose();						
-					}
+	        if (_disposed)
+	        {
+		        return;
+	        }
 
-					if (Writer != null)
-					{
-						Writer.Dispose();
-					}                    
-                }
+	        if (disposing)
+	        {
+		        if (Reader != null)
+		        {
+			        Reader.Dispose();						
+		        }
 
-				Writer = null;
-				Reader = null;
-                _disposed = true;
-            }
+		        if (Writer != null)
+		        {
+			        Writer.Dispose();
+		        }                    
+	        }
+
+	        Writer = null;
+	        Reader = null;
+	        _disposed = true;
         }
 
         /// <summary>

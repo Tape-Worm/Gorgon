@@ -60,8 +60,7 @@ namespace GorgonLibrary.Graphics
 			: IDictionary<char, GorgonGlyph>, IEnumerable<GorgonGlyph>
 		{
 			#region Variables.
-			private GorgonFont _font = null;				// Font that owns this collection.
-			private SortedList<char, GorgonGlyph> _list;	// List.
+			private readonly SortedList<char, GorgonGlyph> _list;	// List.
 			#endregion
 
 			#region Properties.
@@ -212,7 +211,6 @@ namespace GorgonLibrary.Graphics
 			/// <param name="font">Fonr that owns this glyph collection.</param>
 			internal GlyphCollection(GorgonFont font)
 			{
-				_font = font;
 				_list = new SortedList<char, GorgonGlyph>(255);
 			}
 			#endregion
@@ -449,7 +447,7 @@ namespace GorgonLibrary.Graphics
 			: GorgonBaseNamedObjectCollection<GorgonTexture2D>
 		{
 			#region Variables.
-			private GorgonFont _font = null;			// Font that owns this collection.
+			private readonly GorgonFont _font;			// Font that owns this collection.
 			#endregion
 
 			#region Properties.
@@ -644,10 +642,10 @@ namespace GorgonLibrary.Graphics
 		#endregion
 
 		#region Variables.
-		private bool _disposed = false;									// Flag to indicate that the object was disposed.
-		private IList<GorgonTexture2D> _textures = null;				// List of internal textures for the font.
-		private GorgonTexture2DSettings _textureSettings = null;		// Settings for the texture.
-		private Bitmap _charBitmap = null;								// Bitmap used for character cropping.
+		private bool _disposed;											// Flag to indicate that the object was disposed.
+		private readonly IList<GorgonTexture2D> _textures;				// List of internal textures for the font.
+		private readonly GorgonTexture2DSettings _textureSettings;		// Settings for the texture.
+		private Bitmap _charBitmap;										// Bitmap used for character cropping.
 		#endregion
 
 		#region Properties.

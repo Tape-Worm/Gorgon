@@ -35,7 +35,7 @@ namespace GorgonLibrary.Renderers
 		: Gorgon2DEffect
 	{
 		#region Variables.
-		private bool _disposed = false;				// Flag to indicate that the object was disposed.
+		private bool _disposed;				// Flag to indicate that the object was disposed.
 		#endregion
 
 		#region Methods.

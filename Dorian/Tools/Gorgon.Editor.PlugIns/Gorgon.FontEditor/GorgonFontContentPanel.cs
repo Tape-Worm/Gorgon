@@ -45,19 +45,19 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		: ContentPanel
     {
         #region Variables.
-        private bool _disposed = false;
-        private GorgonTexture2D _pattern = null;
-		private float _currentZoom = -1;
-		private int _currentTextureIndex = 0;
-		private GorgonFontContent _content = null;
-		private GorgonText _text = null;                            
-        private GorgonSprite _patternSprite = null;
-        private Dictionary<GorgonGlyph, RectangleF> _glyphRegions = null;
-        private Vector2 _textureOffset = Vector2.Zero;
-        private RectangleF _textureRegion = RectangleF.Empty;
-        private GorgonGlyph _hoverGlyph = null;
-        private Vector2 _selectorBGPos = Vector2.Zero;
-        private GorgonGlyph _selectedGlyph = null;
+	    private bool _disposed;
+	    private GorgonTexture2D _pattern;
+	    private float _currentZoom = -1;
+	    private int _currentTextureIndex;
+	    private GorgonFontContent _content;
+	    private GorgonText _text;
+	    private GorgonSprite _patternSprite;
+	    private Dictionary<GorgonGlyph, RectangleF> _glyphRegions;
+	    private Vector2 _textureOffset = Vector2.Zero;
+	    private RectangleF _textureRegion = RectangleF.Empty;
+	    private GorgonGlyph _hoverGlyph;
+	    private Vector2 _selectorBackGroundPos = Vector2.Zero;
+	    private GorgonGlyph _selectedGlyph;
         #endregion
 
         #region Properties.
@@ -764,17 +764,17 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 
 			_content.Renderer.Drawing.SmoothingMode = SmoothingMode.None;
 
-            _selectorBGPos.X += (GorgonTiming.Delta * 16.0f) / _pattern.Settings.Width;
-            _selectorBGPos.Y += (GorgonTiming.Delta * 16.0f) / _pattern.Settings.Height;
+            _selectorBackGroundPos.X += (GorgonTiming.Delta * 16.0f) / _pattern.Settings.Width;
+            _selectorBackGroundPos.Y += (GorgonTiming.Delta * 16.0f) / _pattern.Settings.Height;
 
-            if (_selectorBGPos.X > 1.0f)
+            if (_selectorBackGroundPos.X > 1.0f)
             {
-                _selectorBGPos.X = 0.0f;
+                _selectorBackGroundPos.X = 0.0f;
             }
 
-            if (_selectorBGPos.Y > 1.0f)
+            if (_selectorBackGroundPos.Y > 1.0f)
             {
-                _selectorBGPos.Y = 0.0f;
+                _selectorBackGroundPos.Y = 0.0f;
             }
 
 			panelTextures.AutoScrollMinSize = new Size((int)System.Math.Ceiling(_currentZoom * currentTexture.Settings.Width), (int)System.Math.Ceiling(_currentZoom * currentTexture.Settings.Height));
@@ -819,7 +819,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
                 _patternSprite.Position = rect.Location;
                 _patternSprite.Size = rect.Size;
                 _patternSprite.Color = new GorgonColor(1, 0, 0, 0.4f);
-				_patternSprite.TextureRegion = new RectangleF(_selectorBGPos.X, _selectorBGPos.Y, rect.Width / _pattern.Settings.Width, rect.Height / _pattern.Settings.Height);
+				_patternSprite.TextureRegion = new RectangleF(_selectorBackGroundPos.X, _selectorBackGroundPos.Y, rect.Width / _pattern.Settings.Width, rect.Height / _pattern.Settings.Height);
                 _patternSprite.Draw();
             }
 
@@ -832,7 +832,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
                 _patternSprite.Position = rect.Location;
                 _patternSprite.Size = rect.Size;
                 _patternSprite.Color = new GorgonColor(0.25f, 0.25f, 1.0f, 0.4f);
-				_patternSprite.TextureRegion = new RectangleF(_selectorBGPos.X, _selectorBGPos.Y, rect.Width / _pattern.Settings.Width, rect.Height / _pattern.Settings.Height);
+				_patternSprite.TextureRegion = new RectangleF(_selectorBackGroundPos.X, _selectorBackGroundPos.Y, rect.Width / _pattern.Settings.Width, rect.Height / _pattern.Settings.Height);
                 _patternSprite.Draw();
             }
 		}

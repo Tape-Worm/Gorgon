@@ -36,11 +36,11 @@ namespace GorgonLibrary.Renderers
 		: Gorgon2DEffect
 	{
 		#region Variables.
-		private bool _disposed = false;									// Flag to indicate that the object was disposed.
-		private GorgonConstantBuffer _burnDodgeBuffer = null;			// Burn/dodge buffer.
-		private GorgonDataStream _burnDodgeStream = null;				// Burn/dodge stream.
-		private bool _useDodge = false;									// Flag to indicate that we want a color dodge effect.
-		private bool _useLinear = false;								// Flag to use linear versions of the burn/dodge effects.
+		private bool _disposed;											// Flag to indicate that the object was disposed.
+		private readonly GorgonConstantBuffer _burnDodgeBuffer;			// Burn/dodge buffer.
+		private readonly GorgonDataStream _burnDodgeStream;				// Burn/dodge stream.
+		private bool _useDodge;											// Flag to indicate that we want a color dodge effect.
+		private bool _useLinear;										// Flag to use linear versions of the burn/dodge effects.
 		private bool _isUpdated = true;									// Flag to indicate that the effect parameters are updated.
 		#endregion
 

@@ -55,7 +55,7 @@ namespace GorgonLibrary.Renderers
 		: GorgonRenderable, IMoveable
 	{
 		#region Variables.
-		private float[] _corners = null;												// Corners for the line.
+		private readonly float[] _corners;												// Corners for the line.
 		private RectangleF _line = RectangleF.Empty;									// Line dimensions.
 		private Vector2 _textureEnd = Vector2.Zero;										// Texture offset for the end point.
 		private Vector2 _textureStart = Vector2.Zero;									// Texture offset for the start point.

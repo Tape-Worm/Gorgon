@@ -40,14 +40,14 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// A list of render targets to bind.
 		/// </summary>
-		public class GorgonRenderTargetList
+		public class RenderTargetList
 			: IList<GorgonRenderTarget>
 		{
 			#region Variables.
-			private GorgonGraphics _graphics = null;
-			private IList<GorgonRenderTarget> _targets = null;
-			private D3D.RenderTargetView[] _views = null;
-			private GorgonDepthStencil _depthStencilBuffer = null;
+			private readonly GorgonGraphics _graphics;
+			private readonly IList<GorgonRenderTarget> _targets;
+			private readonly D3D.RenderTargetView[] _views;
+			private GorgonDepthStencil _depthStencilBuffer;
 			#endregion
 
 			#region Properties.
@@ -284,10 +284,10 @@ namespace GorgonLibrary.Graphics
 
 			#region Constructor/Destructor.
 			/// <summary>
-			/// Initializes a new instance of the <see cref="GorgonRenderTargetList"/> class.
+			/// Initializes a new instance of the <see cref="RenderTargetList"/> class.
 			/// </summary>
 			/// <param name="graphics">Graphics interface.</param>
-			internal GorgonRenderTargetList(GorgonGraphics graphics)
+			internal RenderTargetList(GorgonGraphics graphics)
 			{
 				_graphics = graphics;
 				if (graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM2_a_b)
@@ -435,7 +435,7 @@ namespace GorgonLibrary.Graphics
 		}
 
 		#region Variables.
-		private GorgonGraphics _graphics = null;
+		private readonly GorgonGraphics _graphics;
 		#endregion
 
 		#region Properties.
@@ -460,7 +460,7 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Property to return the render target bindings.
 		/// </summary>
-		public GorgonRenderTargetList RenderTargets
+		public RenderTargetList RenderTargets
 		{
 			get;
 			private set;
@@ -735,7 +735,7 @@ namespace GorgonLibrary.Graphics
 			_graphics = graphics;
 			BlendingState = new GorgonBlendRenderState(_graphics);
 			DepthStencilState = new GorgonDepthStencilRenderState(_graphics);
-			RenderTargets = new GorgonRenderTargetList(_graphics);
+			RenderTargets = new RenderTargetList(_graphics);
 		}
 		#endregion
 	}

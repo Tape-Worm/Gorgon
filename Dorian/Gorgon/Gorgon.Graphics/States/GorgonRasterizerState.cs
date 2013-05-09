@@ -36,6 +36,10 @@ namespace GorgonLibrary.Graphics
 	public enum CullingMode
 	{
 		/// <summary>
+		/// Unknown.
+		/// </summary>
+		Unknown = 0,
+		/// <summary>
 		/// No culling.
 		/// </summary>
 		None = 1,
@@ -54,6 +58,10 @@ namespace GorgonLibrary.Graphics
 	/// </summary>
 	public enum FillMode
 	{
+		/// <summary>
+		/// Unknown.
+		/// </summary>
+		Unknown = 0,
 		/// <summary>
 		/// Wireframe triangles.
 		/// </summary>

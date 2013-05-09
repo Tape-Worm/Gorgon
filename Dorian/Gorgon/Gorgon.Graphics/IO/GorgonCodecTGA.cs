@@ -307,10 +307,6 @@ namespace GorgonLibrary.IO
         }
 		#endregion
 
-		#region Variables.
-        private BufferFormat[] _formats = null;         // Buffer formats.
-		#endregion
-
 		#region Properties.
 		/// <summary>
 		/// Property to set or return whether to set the alpha on the image as opaque if no alpha values are present.
@@ -1275,7 +1271,6 @@ namespace GorgonLibrary.IO
 			SetOpaqueIfZeroAlpha = true;
 
 			this.CodecCommonExtensions = new string[] { "tga", "tpic" };
-            _formats = (BufferFormat[])Enum.GetValues(typeof(BufferFormat));
 		}
 		#endregion
 	}

@@ -37,13 +37,13 @@ namespace GorgonLibrary.Renderers
 		: Gorgon2DEffect
 	{
 		#region Variables.
-		private bool _disposed = false;												// Flag to indicate that the object was disposed.
-		private GorgonConstantBuffer _sharpenEmbossBuffer = null;					// Constant buffer for the sharpen/emboss information.
-		private GorgonDataStream _sharpenEmbossStream = null;						// Stream used to write to the buffer.
-		private float _amount = 1.0f;												// Amount to sharpen/emboss
-		private bool _useEmboss = false;											// Flag to indicate that the image should be embossed or not.
-		private bool _isUpdated = true;												// Flag to indicate that the parameters were updated.
-		private Vector2 _size = Vector2.Zero;										// Area to emboss.
+		private bool _disposed;												// Flag to indicate that the object was disposed.
+		private readonly GorgonConstantBuffer _sharpenEmbossBuffer;			// Constant buffer for the sharpen/emboss information.
+		private readonly GorgonDataStream _sharpenEmbossStream;				// Stream used to write to the buffer.
+		private float _amount = 1.0f;										// Amount to sharpen/emboss
+		private bool _useEmboss;											// Flag to indicate that the image should be embossed or not.
+		private bool _isUpdated = true;										// Flag to indicate that the parameters were updated.
+		private Vector2 _size = Vector2.Zero;								// Area to emboss.
 		#endregion
 
 		#region Properties.

@@ -48,7 +48,7 @@ namespace GorgonLibrary.Graphics
 		: GorgonBaseBuffer
 	{
 		#region Variables.
-		private DX.DataStream _lockStream = null;							// Lock stream.
+		private DX.DataStream _lockStream;							// Lock stream.
 		#endregion
 
 		#region Properties.

@@ -41,9 +41,9 @@ namespace GorgonLibrary.Renderers
 		private Matrix _projection = Matrix.Identity;					// Projection matrix.
 		private Matrix _view = Matrix.Identity;							// View matrix.
 		private Vector2 _viewDimensions = Vector2.Zero;					// View dimensions.
-		private float _maxDepth = 0.0f;									// Maximum depth.
-		private GorgonSprite _cameraIcon = null;						// Camera icon.
-		private float _angle = 0.0f;									// Angle of rotation.
+		private float _maxDepth;										// Maximum depth.
+		private readonly GorgonSprite _cameraIcon;						// Camera icon.
+		private float _angle;											// Angle of rotation.
 		private Vector2 _scale = new Vector2(1.0f);						// Scale.
 		private Vector2 _position = Vector2.Zero;						// Position.
 		private Vector2 _anchor = Vector2.Zero;							// Target position.

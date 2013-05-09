@@ -94,11 +94,11 @@ namespace GorgonLibrary.Graphics
 		: GorgonNamedObject, INotifier, IDisposable
 	{
 		#region Variables.
-		private bool _disposed = false;								// Flag to indicate that the object was disposed.
-		private string _source = null;								// Shader source code.
+		private bool _disposed;										// Flag to indicate that the object was disposed.
+		private string _source;										// Shader source code.
 		private ShaderVersion _version = ShaderVersion.Version2a_b;	// Shader model version.
-		private bool _isDebug = false;								// Flag to indicate that debug information is included.
-		private Shaders.ShaderBytecode _byteCode = null;			// Byte code for the shader.
+		private bool _isDebug;										// Flag to indicate that debug information is included.
+		private Shaders.ShaderBytecode _byteCode;					// Byte code for the shader.
 		#endregion
 
 		#region Properties.

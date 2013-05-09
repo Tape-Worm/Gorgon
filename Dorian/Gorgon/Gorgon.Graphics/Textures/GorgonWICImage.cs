@@ -127,11 +127,11 @@ namespace GorgonLibrary.Graphics
             /// <summary>
             /// WIC GUID to convert from/to.
             /// </summary>
-            public Guid WICGuid;
+            public readonly Guid WICGuid;
             /// <summary>
             /// Pixel format to convert from/to.
             /// </summary>
-            public PixelFormat PixelFormat;
+            public readonly PixelFormat PixelFormat;
 
             /// <summary>
             /// Initializes a new instance of the <see cref="WICPixelFormat" /> struct.
@@ -153,11 +153,11 @@ namespace GorgonLibrary.Graphics
             /// <summary>
             /// WIC GUID to convert from/to.
             /// </summary>
-            public Guid WICGuid;
+            public readonly Guid WICGuid;
             /// <summary>
             /// Gorgon buffer format to convert from/to.
             /// </summary>
-            public BufferFormat GorgonFormat;
+            public readonly BufferFormat GorgonFormat;
 
             /// <summary>
             /// Initializes a new instance of the <see cref="WICGorgonFormat" /> struct.
@@ -179,11 +179,11 @@ namespace GorgonLibrary.Graphics
             /// <summary>
             /// Source format to convert from.
             /// </summary>
-            public Guid Source;
+            public readonly Guid Source;
             /// <summary>
             /// Destination format to convert to.
             /// </summary>
-            public Guid Destination;
+            public readonly Guid Destination;
 
             /// <summary>
             /// Initializes a new instance of the <see cref="WICNearest" /> struct.
@@ -199,8 +199,8 @@ namespace GorgonLibrary.Graphics
         #endregion
 
         #region Variables.
-        private SharpDX.WIC.ImagingFactory _factory = null;                 // WIC image factory.
-        private bool _disposed = false;                             // Flag to indicate that the object was disposed.
+        private SharpDX.WIC.ImagingFactory _factory;                 // WIC image factory.
+        private bool _disposed;                             // Flag to indicate that the object was disposed.
 
         private readonly WICPixelFormat[] _wicPixelFormats = new[]                                 // Formats for conversion between System.Drawing.Images and WIC.
         {            

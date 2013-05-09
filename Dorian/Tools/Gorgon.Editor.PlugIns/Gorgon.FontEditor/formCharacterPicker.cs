@@ -40,12 +40,12 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		: ZuneForm
 	{
 		#region Variables.
-		private int _page = 0;														// Page for characters.
-		private IDictionary<string, GorgonRange> _characterRanges = null;			// Character ranges for the font.
-		private System.Drawing.Graphics _graphics = null;							// GDI+ graphics.
-		private IntPtr _hFont = IntPtr.Zero;										// Font handle.
-		private IntPtr _hDc = IntPtr.Zero;											// Device context.
-		private IntPtr _prevHObj = IntPtr.Zero;										// Previous object.
+		private int _page;													// Page for characters.
+		private IDictionary<string, GorgonRange> _characterRanges;			// Character ranges for the font.
+		private System.Drawing.Graphics _graphics;							// GDI+ graphics.
+		private IntPtr _hFont = IntPtr.Zero;								// Font handle.
+		private IntPtr _hDc = IntPtr.Zero;									// Device context.
+		private IntPtr _prevHObj = IntPtr.Zero;								// Previous object.
 		#endregion
 
 		#region Properties.
@@ -91,7 +91,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 						newString += Convert.ToChar(index);
 				}
 
-				textCharacters.Text = " " + newString;
+				textCharacters.Text = @" " + newString;
 				UpdateSelections();
 			}
 			catch (Exception ex)
@@ -276,14 +276,18 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		private bool IsCharacterSupported(char c)
 		{
 			if ((char.IsWhiteSpace(c)) || (char.IsControl(c)))
+			{
 				return false;
+			}
 
 			if (!Win32API.IsGlyphSupported(c, _hDc))
+			{
 				return false;
+			}
 
 			int charValue = Convert.ToInt32(c);
 						
-			return _characterRanges.Count(item => ((charValue >= item.Value.Minimum) && (charValue <= item.Value.Maximum))) > 0;
+			return _characterRanges.Any(item => ((charValue >= item.Value.Minimum) && (charValue <= item.Value.Maximum)));
 		}
 
 		/// <summary>

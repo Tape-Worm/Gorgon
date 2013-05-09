@@ -39,8 +39,8 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
         : ContentPlugIn
 	{
 		#region Variables.
-		private ToolStripMenuItem _createItem = null;
-		private bool _disposed = false;
+		private ToolStripMenuItem _createItem;
+		private bool _disposed;
 		#endregion
 
 		#region Properties.

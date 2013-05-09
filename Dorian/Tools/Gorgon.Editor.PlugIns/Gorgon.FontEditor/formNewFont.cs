@@ -41,7 +41,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		: ZuneForm
 	{
 		#region Variables.
-		private Font _font = null;						// Font used for preview.
+		private Font _font;						// Font used for preview.
 		#endregion
 
 		#region Properties.

@@ -40,7 +40,7 @@ namespace GorgonLibrary.Editor
         : ZuneForm
     {
         #region Variables.
-        private List<PreferencePanel> _prefPanels = null;               // A list of our loaded preference panels.
+        private List<PreferencePanel> _prefPanels;               // A list of our loaded preference panels.
         #endregion
 
         #region Properties.
