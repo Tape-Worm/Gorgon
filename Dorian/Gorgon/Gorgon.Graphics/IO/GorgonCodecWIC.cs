@@ -103,6 +103,7 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
 using GorgonLibrary.Graphics;
 using GorgonLibrary.Math;
 
@@ -823,7 +824,7 @@ namespace GorgonLibrary.IO
 		/// <param name="description">Description for the codec.</param>
 		/// <param name="extensions">Common extension(s) for the codec.</param>
 		/// <param name="containerGUID">GUID for the container format.</param>
-		internal GorgonCodecWIC(string codec, string description, string[] extensions, Guid containerGUID)
+		internal GorgonCodecWIC(string codec, string description, IEnumerable<string> extensions, Guid containerGUID)
 		{
 			DecodeFlags = WICFlags.None;
 			CodecUseAllFrames = true;

@@ -131,7 +131,7 @@ namespace GorgonLibrary.IO
         /// Initializes a new instance of the <see cref="GorgonCodecTIFF"/> class.
         /// </summary>
         public GorgonCodecTIFF()
-            : base("TIFF", "Tagged Image File Format", new string[] { "tif", "tiff" }, SharpDX.WIC.ContainerFormatGuids.Tiff)
+            : base("TIFF", "Tagged Image File Format", new[] { "tif", "tiff" }, SharpDX.WIC.ContainerFormatGuids.Tiff)
         {
             CompressionType = TIFFCompressionType.None;
         }

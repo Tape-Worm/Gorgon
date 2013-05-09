@@ -427,9 +427,15 @@ namespace GorgonLibrary.Graphics
 				else
 				{
 					if (sdEx.ResultCode == GI.ResultCode.NotCurrentlyAvailable)
-						Gorgon.Log.Print("GorgonSwapChain '{0}': Could not switch to full screen mode because the device is not currently available.  Possible causes are:  .", LoggingLevel.All, Name);
+					{
+						Gorgon.Log.Print(
+							"GorgonSwapChain '{0}': Could not switch to full screen mode because the device is not currently available.  Possible causes are:  .",
+							LoggingLevel.All, Name);
+					}
 					else
-						throw sdEx;
+					{
+						throw;
+					}
 				}
 			}
 
@@ -485,8 +491,11 @@ namespace GorgonLibrary.Graphics
 			if (graphics.VideoDevice == null)
 				throw new GorgonException(GorgonResult.CannotCreate, "Cannot create the swap chain, no video device was selected.");
 
-			if ((graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM2_a_b) && (settings.Flags != SwapChainUsageFlags.RenderTarget))
-				throw new GorgonException(GorgonResult.CannotCreate, "SM2_a_b video devices can only use RenderTarget as a flag.");
+			if ((graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM2_a_b) &&
+			    (settings.Flags != SwapChainUsageFlags.RenderTarget))
+			{
+				throw new GorgonException(GorgonResult.CannotCreate, "SM2_a_b video devices can only use [RenderTarget] as a flag.");
+			}
 
 			// Default to using the default Gorgon application window.
 			if (settings.Window == null)

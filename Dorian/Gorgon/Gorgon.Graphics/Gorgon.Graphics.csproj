@@ -86,6 +86,7 @@
     <Compile Include="Geometry\GorgonInputElement.cs" />
     <Compile Include="Geometry\GorgonInputLayout.cs" />
     <Compile Include="Geometry\InputElementAttribute.cs" />
+    <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="GorgonBox.cs" />
     <Compile Include="GorgonBufferFormats.cs" />
     <Compile Include="GorgonColor.cs" />

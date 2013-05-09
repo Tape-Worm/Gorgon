@@ -117,7 +117,7 @@ namespace GorgonLibrary.IO
         /// Initializes a new instance of the <see cref="GorgonCodecPNG"/> class.
         /// </summary>
         public GorgonCodecPNG()
-            : base("PNG", "Portable Network Graphics", new string[] { "png" }, SharpDX.WIC.ContainerFormatGuids.Png)
+            : base("PNG", "Portable Network Graphics", new[] { "png" }, SharpDX.WIC.ContainerFormatGuids.Png)
         {
             UseInterlacing = false;
             CompressionFilter = PNGFilter.None;

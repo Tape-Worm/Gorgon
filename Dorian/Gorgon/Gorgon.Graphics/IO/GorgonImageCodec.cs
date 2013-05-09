@@ -272,7 +272,7 @@ namespace GorgonLibrary.IO
 		/// <summary>
 		/// Property to return the common file name extension(s) for a codec.
 		/// </summary>
-		public IList<string> CodecCommonExtensions
+		public IEnumerable<string> CodecCommonExtensions
 		{
 			get;
 			protected set;
