@@ -359,7 +359,7 @@ namespace GorgonLibrary.IO
 			conversionFlags = TGAConversionFlags.None;
 
             // Get the header for the file.
-            TGAHeader header = stream.Read<TGAHeader>();
+            var header = stream.Read<TGAHeader>();
 
             if ((header.ColorMapType != 0) || (header.ColorMapLength != 0))
             {
@@ -1270,7 +1270,7 @@ namespace GorgonLibrary.IO
 		{
 			SetOpaqueIfZeroAlpha = true;
 
-			this.CodecCommonExtensions = new string[] { "tga", "tpic" };
+			this.CodecCommonExtensions = new[] { "tga", "tpic" };
 		}
 		#endregion
 	}

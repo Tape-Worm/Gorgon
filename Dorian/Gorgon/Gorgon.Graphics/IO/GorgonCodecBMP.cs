@@ -41,7 +41,7 @@ namespace GorgonLibrary.IO
         /// Initializes a new instance of the <see cref="GorgonCodecBMP"/> class.
         /// </summary>
         public GorgonCodecBMP()
-            : base("BMP", "Windows Bitmap", new string[] { "bmp", "dib" }, SharpDX.WIC.ContainerFormatGuids.Bmp)
+            : base("BMP", "Windows Bitmap", new[] { "bmp", "dib" }, SharpDX.WIC.ContainerFormatGuids.Bmp)
         {
         }
         #endregion

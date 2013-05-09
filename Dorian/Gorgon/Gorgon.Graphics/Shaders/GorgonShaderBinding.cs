@@ -88,9 +88,9 @@ namespace GorgonLibrary.Graphics
 		internal void CleanUp()
 		{
 			if (PixelShader != null)
-				PixelShader.Dispose();
+				PixelShader.CleanUp();
 			if (VertexShader != null)
-				VertexShader.Dispose();
+				VertexShader.CleanUp();
 
 			PixelShader = null;
 			VertexShader = null;

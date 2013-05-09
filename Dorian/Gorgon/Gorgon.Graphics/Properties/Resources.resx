@@ -157,4 +157,19 @@
   <data name="GORGFX_IMAGE_TYPE_INVALID" xml:space="preserve">
     <value>The image type '{0}' is not a valid image type.</value>
   </data>
+  <data name="GORGFX_ALPHA_TO_COVERAGE_NOT_AVAILABLE" xml:space="preserve">
+    <value>Cannot bind the blending state.  Alpha to coverage is only available on SM 4.x or better video devices.</value>
+  </data>
+  <data name="GORGFX_CANNOT_RETRIEVE_ABC" xml:space="preserve">
+    <value>Could not retrieve character widths for the specified characters.</value>
+  </data>
+  <data name="GORGFX_CANNOT_RETRIEVE_KERNING" xml:space="preserve">
+    <value>Cannot retrieve kerning pairs.</value>
+  </data>
+  <data name="GORGFX_INVALID_D3D_CONTEXT" xml:space="preserve">
+    <value>A valid device context was not found.</value>
+  </data>
+  <data name="GORGFX_INVALID_ENUM_VALUE" xml:space="preserve">
+    <value>The value [{0}] for parameter '{1}' is not valid.</value>
+  </data>
 </root>

@@ -217,17 +217,17 @@ namespace GorgonLibrary.IO
 	static class GorgonGDIImageConverter
 	{
 		// Formats that can be converted.
-		private static Tuple<PixelFormat, BufferFormat>[] _formatConversion = new[] 
+		private static readonly Tuple<PixelFormat, BufferFormat>[] _formatConversion = new[] 
 		{
 			new Tuple<PixelFormat, BufferFormat>(PixelFormat.Format64bppArgb, BufferFormat.R16G16B16A16_UIntNormal),
 			new Tuple<PixelFormat, BufferFormat>(PixelFormat.Format32bppArgb, BufferFormat.R8G8B8A8_UIntNormal),
 			new Tuple<PixelFormat, BufferFormat>(PixelFormat.Format16bppGrayScale, BufferFormat.R16_UIntNormal),
 			new Tuple<PixelFormat, BufferFormat>(PixelFormat.Format16bppArgb1555, BufferFormat.B5G5R5A1_UIntNormal),
-			new Tuple<PixelFormat, BufferFormat>(PixelFormat.Format16bppRgb565, BufferFormat.B5G6R5_UIntNormal),
+			new Tuple<PixelFormat, BufferFormat>(PixelFormat.Format16bppRgb565, BufferFormat.B5G6R5_UIntNormal)
 		};
 
 		// Best fit format mapping.
-		private static Tuple<PixelFormat, PixelFormat>[] _bestFit = new[]
+		private static readonly Tuple<PixelFormat, PixelFormat>[] _bestFit = new[]
 		{
 			new Tuple<PixelFormat, PixelFormat>(PixelFormat.Format1bppIndexed, PixelFormat.Format32bppArgb),
 			new Tuple<PixelFormat, PixelFormat>(PixelFormat.Format4bppIndexed, PixelFormat.Format32bppArgb),
@@ -308,7 +308,7 @@ namespace GorgonLibrary.IO
 		/// <returns>The converted image data.</returns>
 		public static GorgonImageData Create1DImageDataFromImage(GorgonWICImage wic, Image image, GorgonGDIOptions options)
 		{
-			GorgonImageData data = null;
+			GorgonImageData data;
 
 			if (options.Format == BufferFormat.Unknown)
 			{

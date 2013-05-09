@@ -28,13 +28,15 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
+using GorgonLibrary.Graphics.Properties;
 
 namespace GorgonLibrary.Native
 {
+	// ReSharper disable InconsistentNaming
 	/// <summary>
 	/// Win 32 API function calls.
 	/// </summary>
-	[System.Security.SuppressUnmanagedCodeSecurity()]
+	[System.Security.SuppressUnmanagedCodeSecurity]
 	unsafe static class Win32API
 	{
 		#region Variables.
@@ -72,6 +74,7 @@ namespace GorgonLibrary.Native
 		/// <param name="lpABC">A pointer to an array of ABC structures that receives the character widths, in logical units. This array must contain at least as many ABC structures as there are characters in the range specified by the uFirstChar and uLastChar parameters.</param>
 		/// <returns>TRUE if successful, FALSE if not.</returns>
 		[DllImport("gdi32.dll", EntryPoint = "GetCharABCWidthsW", CharSet = CharSet.Unicode)]
+		[return: MarshalAs(UnmanagedType.Bool)]
 		private static extern bool GetCharABCWidthsW(IntPtr HDC, uint uFirstChar, uint uLastChar, ABC* lpABC);
 
 		/// <summary>
@@ -116,7 +119,7 @@ namespace GorgonLibrary.Native
 		/// <param name="pfEnabled"></param>
 		/// <returns></returns>
 		[DllImport("dwmapi.dll")]
-		public static extern int DwmIsCompositionEnabled(out bool pfEnabled);
+		public static extern int DwmIsCompositionEnabled([MarshalAs(UnmanagedType.Bool)] out bool pfEnabled);
 		#endregion
 
 		#region Methods.
@@ -138,7 +141,9 @@ namespace GorgonLibrary.Native
 		public static void SetActiveFont(System.Drawing.Graphics graphics, System.Drawing.Font font)
 		{
 			if ((_lasthObj != IntPtr.Zero) || (_hdc != IntPtr.Zero) || (_hFont != IntPtr.Zero))
+			{
 				return;
+			}
 
 			try
 			{
@@ -164,16 +169,24 @@ namespace GorgonLibrary.Native
 		public static void RestoreActiveObject()
 		{
 			if (_lasthObj != IntPtr.Zero)
+			{
 				SelectObject(_hdc, _lasthObj);
+			}
 
 			if ((_hdc != IntPtr.Zero) && (_lastGraphics != null))
+			{
 				_lastGraphics.ReleaseHdc();
+			}
 
 			if (_hFont != IntPtr.Zero)
+			{
 				DeleteObject(_hFont);
+			}
 
 			if (_tempFont != null)
+			{
 				_tempFont.Dispose();
+			}
 
 			_tempFont = null;
 			_hFont = IntPtr.Zero;
@@ -186,34 +199,45 @@ namespace GorgonLibrary.Native
 		/// Function to get the kerning pairs for a font.
 		/// </summary>
 		/// <returns>A list of kerning pair values for the active font.</returns>
-		public static IList<KERNINGPAIR> GetKerningPairs()
+		public static KERNINGPAIR[] GetKerningPairs()
 		{
-			int size = 0;
-			KERNINGPAIR[] pairs = null;			
-			var lastMapMode = MapModes.MM_TEXT;
+			KERNINGPAIR[] pairs;
 
-#if DEBUG
 			if (_hdc == IntPtr.Zero)
-				throw new GorgonException(GorgonResult.CannotEnumerate, "Cannot retrieve kerning pairs.  No device context.");
-#endif
+			{
+				throw new GorgonException(GorgonResult.CannotEnumerate, Resources.GORGFX_CANNOT_RETRIEVE_KERNING);
+			}
 
-			lastMapMode = SetMapMode(_hdc, MapModes.MM_TEXT);
+			MapModes lastMode = SetMapMode(_hdc, MapModes.MM_TEXT);
 
-			// Get the number of pairs.
-			size = (int)GetKerningPairsW(_hdc, 0, null);
+			try
+			{
+				// Get the number of pairs.
+				var size = (int)GetKerningPairsW(_hdc, 0, null);
 
-			// If we have no pairs, then leave here.
-			if (size == 0)
-				return new KERNINGPAIR[0];
+				// If we have no pairs, then leave here.
+				if (size == 0)
+				{
+					return new KERNINGPAIR[0];
+				}
 
-			pairs = new KERNINGPAIR[size];
-			KERNINGPAIR* pairPtr = stackalloc KERNINGPAIR[size];
+				pairs = new KERNINGPAIR[size];
+				KERNINGPAIR* pairPtr = stackalloc KERNINGPAIR[size];
 
-			if (GetKerningPairsW(_hdc, (uint)size, pairPtr) == 0)
-				throw new InvalidOperationException("Could not retrieve character kerning pairs.");
+				if (GetKerningPairsW(_hdc, (uint)size, pairPtr) == 0)
+				{
+					throw new GorgonException(GorgonResult.CannotEnumerate, Resources.GORGFX_CANNOT_RETRIEVE_KERNING);
+				}
 
-			for(int i = 0; i < size; i++)
-				pairs[i] = pairPtr[i];
+				for (int i = 0; i < size; i++)
+				{
+					pairs[i] = pairPtr[i];
+				}
+			}
+			finally
+			{
+				SetMapMode(_hdc, lastMode);
+			}
 
 			return pairs;
 		}
@@ -231,22 +255,27 @@ namespace GorgonLibrary.Native
 			int size = (int)(lastCharIndex - firstCharIndex) + 1;
 			var result = new SortedDictionary<char, ABC>();
 
-#if DEBUG
 			if (_hdc == IntPtr.Zero)
-				throw new GorgonException(GorgonResult.CannotEnumerate, "Cannot retrieve ABC widths.  No device context.");
-#endif
+			{
+				throw new GorgonException(GorgonResult.CannotEnumerate, Resources.GORGFX_CANNOT_RETRIEVE_ABC);
+			}
 
-			ABC* abcData = stackalloc ABC[size];				
+			ABC* abcData = stackalloc ABC[size];
 
 			if (!GetCharABCWidthsW(_hdc, firstCharIndex, lastCharIndex, abcData))
-				throw new InvalidOperationException("Could not retrieve character widths for the specified characters.");
+			{
+				throw new GorgonException(GorgonResult.CannotEnumerate, Resources.GORGFX_CANNOT_RETRIEVE_ABC);
+			}
 
 			// Copy to our result.
 			for (int i = 0; i < size; i++)
+			{
 				result.Add(Convert.ToChar(i + Convert.ToInt32(firstCharacter)), abcData[i]);
+			}
 
 			return result;
 		}
 		#endregion
 	}
+	// ReSharper restore InconsistentNaming
 }

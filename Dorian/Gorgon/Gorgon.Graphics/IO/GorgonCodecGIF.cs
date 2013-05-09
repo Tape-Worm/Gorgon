@@ -46,7 +46,7 @@ namespace GorgonLibrary.IO
 	/// </list>
 	/// </para>
 	/// </remarks>
-	public sealed unsafe class GorgonCodecGIF
+	public sealed class GorgonCodecGIF
 		: GorgonCodecWIC
 	{
 		#region Variables.
@@ -131,7 +131,7 @@ namespace GorgonLibrary.IO
 		public IList<GorgonColor> Palette
 		{
 			get;
-			set;
+			private set;
 		}
 
 		/// <summary>
@@ -202,7 +202,7 @@ namespace GorgonLibrary.IO
 						writer.SetMetadataByName("/grctlext/TransparencyFlag", hasTransparency);
 						if (hasTransparency)
 						{
-							var transparentIndex = (byte)Array.FindIndex<DX.Color>(paletteColors, item => item.A == 0);
+							var transparentIndex = (byte)Array.FindIndex(paletteColors, item => item.A == 0);
 							writer.SetMetadataByName("/grctlext/TransparentColorIndex", transparentIndex);
 						}
 					}
@@ -262,15 +262,13 @@ namespace GorgonLibrary.IO
 				// If decoding, just return the default, otherwise we'll need to generate from the frame.
 				if (bitmap == null)
 				{
-					return base.GetPaletteInfo(wic, bitmap);
+					return base.GetPaletteInfo(wic, null);
 				}
-				else
-				{
-					palette = new SharpDX.WIC.Palette(wic.Factory);
-					palette.Initialize(bitmap, 256, true);
+
+				palette = new SharpDX.WIC.Palette(wic.Factory);
+				palette.Initialize(bitmap, 256, true);
 					
-					return new Tuple<SharpDX.WIC.Palette,double,SharpDX.WIC.BitmapPaletteType>(palette, AlphaThresholdPercent, SharpDX.WIC.BitmapPaletteType.Custom);
-				}
+				return new Tuple<SharpDX.WIC.Palette,double,SharpDX.WIC.BitmapPaletteType>(palette, AlphaThresholdPercent, SharpDX.WIC.BitmapPaletteType.Custom);
 			}
 
 			// Generate from our custom palette.
@@ -440,9 +438,10 @@ namespace GorgonLibrary.IO
 		/// Initializes a new instance of the <see cref="GorgonCodecWIC" /> class.
 		/// </summary>
 		public GorgonCodecGIF()
-			: base("GIF", "Graphics Interchange Format", new string[] { "gif" }, SharpDX.WIC.ContainerFormatGuids.Gif)
+			: base("GIF", "Graphics Interchange Format", new[] { "gif" }, SharpDX.WIC.ContainerFormatGuids.Gif)
 		{
 			FrameDelays = null;
+			Palette = new GorgonColor[256];
 		}
 		#endregion
 	}

@@ -117,6 +117,7 @@ namespace GorgonLibrary.IO
     /// <summary>
 	/// DDS Flags.
 	/// </summary>
+	[Flags]
 	public enum DDSFlags
 		: uint
 	{
@@ -301,6 +302,7 @@ namespace GorgonLibrary.IO
 		PaletteIndexed = 0x20
 	}
 
+	// ReSharper disable InconsistentNaming
 	/// <summary>
 	/// DDS surface flags.
 	/// </summary>
@@ -366,6 +368,7 @@ namespace GorgonLibrary.IO
 		/// </summary>
 		Volume = 0x200000
 	}
+	// ReSharper restore InconsistentNaming
     #endregion
 
     /// <summary>
@@ -618,78 +621,78 @@ namespace GorgonLibrary.IO
 		#endregion
 
 		#region Variables.
-		private static DDSPixelFormat _pfDxt1 = new DDSPixelFormat(DDSPixelFormatFlags.FourCC, GorgonCodecDDS.MakeFourCC('D', 'X', 'T', '1'), 0, 0, 0, 0, 0);		// DXT1		
-		private static DDSPixelFormat _pfDxt2 = new DDSPixelFormat(DDSPixelFormatFlags.FourCC, GorgonCodecDDS.MakeFourCC('D', 'X', 'T', '2'), 0, 0, 0, 0, 0);		// DXT2
-		private static DDSPixelFormat _pfDxt3 = new DDSPixelFormat(DDSPixelFormatFlags.FourCC, GorgonCodecDDS.MakeFourCC('D', 'X', 'T', '3'), 0, 0, 0, 0, 0);		// DXT3
-		private static DDSPixelFormat _pfDxt4 = new DDSPixelFormat(DDSPixelFormatFlags.FourCC, GorgonCodecDDS.MakeFourCC('D', 'X', 'T', '4'), 0, 0, 0, 0, 0);		// DXT4
-		private static DDSPixelFormat _pfDxt5 = new DDSPixelFormat(DDSPixelFormatFlags.FourCC, GorgonCodecDDS.MakeFourCC('D', 'X', 'T', '5'), 0, 0, 0, 0, 0);		// DXT5
-		private static DDSPixelFormat _pfBC4U = new DDSPixelFormat(DDSPixelFormatFlags.FourCC, GorgonCodecDDS.MakeFourCC('B', 'C', '4', 'U'), 0, 0, 0, 0, 0);		// BC4 Unsigned
-		private static DDSPixelFormat _pfBC4S = new DDSPixelFormat(DDSPixelFormatFlags.FourCC, GorgonCodecDDS.MakeFourCC('B', 'C', '4', 'S'), 0, 0, 0, 0, 0);		// BC4 Signed
-		private static DDSPixelFormat _pfBC5U = new DDSPixelFormat(DDSPixelFormatFlags.FourCC, GorgonCodecDDS.MakeFourCC('B', 'C', '5', 'U'), 0, 0, 0, 0, 0);		// BC5 Unsigned
-		private static DDSPixelFormat _pfBC5S = new DDSPixelFormat(DDSPixelFormatFlags.FourCC, GorgonCodecDDS.MakeFourCC('B', 'C', '5', 'S'), 0, 0, 0, 0, 0);		// BC5 Signed
-		private static DDSPixelFormat _pfR8G8_B8G8 = new DDSPixelFormat(DDSPixelFormatFlags.FourCC, GorgonCodecDDS.MakeFourCC('R', 'G', 'B', 'G'), 0, 0, 0, 0, 0);		// R8G8_B8G8
-		private static DDSPixelFormat _pfG8R8_G8B8 = new DDSPixelFormat(DDSPixelFormatFlags.FourCC, GorgonCodecDDS.MakeFourCC('G', 'R', 'G', 'B'), 0, 0, 0, 0, 0);		// G8R8_G8B8
-		private static DDSPixelFormat _pfA8R8G8B8 = new DDSPixelFormat(DDSPixelFormatFlags.RGBA, 0, 32, 0x00ff0000, 0x0000ff00, 0x000000ff, 0xff000000);			// A8R8G8B8
-		private static DDSPixelFormat _pfX8R8G8B8 = new DDSPixelFormat(DDSPixelFormatFlags.RGB, 0, 32, 0x00ff0000, 0x0000ff00, 0x000000ff, 0x00000000);			// X8R8G8B8
-		private static DDSPixelFormat _pfA8B8G8R8 = new DDSPixelFormat(DDSPixelFormatFlags.RGBA, 0, 32, 0x000000ff, 0x0000ff00, 0x00ff0000, 0xff000000);			// A8B8G8R8
-		private static DDSPixelFormat _pfX8B8G8R8 = new DDSPixelFormat(DDSPixelFormatFlags.RGB, 0, 32, 0x000000ff, 0x0000ff00, 0x00ff0000, 0x00000000);			// X8B8G8R8
-		private static DDSPixelFormat _pfG16R16 = new DDSPixelFormat(DDSPixelFormatFlags.RGB, 0, 32, 0x0000ffff, 0xffff0000, 0x00000000, 0x00000000);				// G16R16
-		private static DDSPixelFormat _pfR5G6B5 = new DDSPixelFormat(DDSPixelFormatFlags.RGB, 0, 16, 0x0000f800, 0x000007e0, 0x0000001f, 0x00000000);				// R5G6B5
-		private static DDSPixelFormat _pfA1R5G5B5 = new DDSPixelFormat(DDSPixelFormatFlags.RGBA, 0, 16, 0x00007c00, 0x000003e0, 0x0000001f, 0x00008000);			// A1R5G5B5A1
-		private static DDSPixelFormat _pfA4R4G4B4 = new DDSPixelFormat(DDSPixelFormatFlags.RGBA, 0, 16, 0x00000f00, 0x000000f0, 0x0000000f, 0x0000f000);			// A4R4G4B4		
-		private static DDSPixelFormat _pfR8G8B8 = new DDSPixelFormat(DDSPixelFormatFlags.RGB, 0, 24, 0x00ff0000, 0x0000ff00, 0x000000ff, 0x00000000);				// R8G8B8
-		private static DDSPixelFormat _pfL8 = new DDSPixelFormat(DDSPixelFormatFlags.Luminance, 0, 8, 0xff, 0x00, 0x00, 0x00);									// L8
-		private static DDSPixelFormat _pfL16 = new DDSPixelFormat(DDSPixelFormatFlags.Luminance, 0, 16, 0xffff, 0x0000, 0x0000, 0x0000);							// L16
-		private static DDSPixelFormat _pfA8L8 = new DDSPixelFormat(DDSPixelFormatFlags.LuminanceAlpha, 0, 16, 0x00ff, 0x0000, 0x0000, 0xff00);						// A8L8
-		private static DDSPixelFormat _pfA8 = new DDSPixelFormat(DDSPixelFormatFlags.Alpha, 0, 8, 0x00, 0x00, 0x00, 0xff);											// A8
-		private static DDSPixelFormat _pfDX10 = new DDSPixelFormat(DDSPixelFormatFlags.FourCC, GorgonCodecDDS.MakeFourCC('D', 'X', '1', '0'), 0, 0, 0, 0, 0);			// DX10 extension
+		private static readonly DDSPixelFormat _pfDxt1 = new DDSPixelFormat(DDSPixelFormatFlags.FourCC, MakeFourCC('D', 'X', 'T', '1'), 0, 0, 0, 0, 0);		// DXT1		
+	    private static readonly DDSPixelFormat _pfDxt2 = new DDSPixelFormat(DDSPixelFormatFlags.FourCC, MakeFourCC('D', 'X', 'T', '2'), 0, 0, 0, 0, 0);     // DXT2
+	    private static readonly DDSPixelFormat _pfDxt3 = new DDSPixelFormat(DDSPixelFormatFlags.FourCC, MakeFourCC('D', 'X', 'T', '3'), 0, 0, 0, 0, 0);     // DXT3
+	    private static readonly DDSPixelFormat _pfDxt4 = new DDSPixelFormat(DDSPixelFormatFlags.FourCC, MakeFourCC('D', 'X', 'T', '4'), 0, 0, 0, 0, 0);		// DXT4
+	    private static readonly DDSPixelFormat _pfDxt5 = new DDSPixelFormat(DDSPixelFormatFlags.FourCC, MakeFourCC('D', 'X', 'T', '5'), 0, 0, 0, 0, 0);		// DXT5
+	    private static readonly DDSPixelFormat _pfBC4U = new DDSPixelFormat(DDSPixelFormatFlags.FourCC,	MakeFourCC('B', 'C', '4', 'U'), 0, 0, 0, 0, 0);		// BC4 Unsigned
+	    private static readonly DDSPixelFormat _pfBC4S = new DDSPixelFormat(DDSPixelFormatFlags.FourCC,	MakeFourCC('B', 'C', '4', 'S'), 0, 0, 0, 0, 0);		// BC4 Signed
+	    private static readonly DDSPixelFormat _pfBC5U = new DDSPixelFormat(DDSPixelFormatFlags.FourCC,	MakeFourCC('B', 'C', '5', 'U'), 0, 0, 0, 0, 0);		// BC5 Unsigned
+	    private static readonly DDSPixelFormat _pfBC5S = new DDSPixelFormat(DDSPixelFormatFlags.FourCC,	MakeFourCC('B', 'C', '5', 'S'), 0, 0, 0, 0, 0);		// BC5 Signed
+	    private static readonly DDSPixelFormat _pfR8G8_B8G8 = new DDSPixelFormat(DDSPixelFormatFlags.FourCC, MakeFourCC('R', 'G', 'B', 'G'), 0, 0, 0, 0, 0); // R8G8_B8G8
+	    private static readonly DDSPixelFormat _pfG8R8_G8B8 = new DDSPixelFormat(DDSPixelFormatFlags.FourCC, MakeFourCC('G', 'R', 'G', 'B'), 0, 0, 0, 0, 0); // G8R8_G8B8
+	    private static readonly DDSPixelFormat _pfA8R8G8B8 = new DDSPixelFormat(DDSPixelFormatFlags.RGBA, 0, 32, 0x00ff0000, 0x0000ff00, 0x000000ff, 0xff000000); // A8R8G8B8
+	    private static readonly DDSPixelFormat _pfX8R8G8B8 = new DDSPixelFormat(DDSPixelFormatFlags.RGB, 0, 32, 0x00ff0000, 0x0000ff00, 0x000000ff, 0x00000000); // X8R8G8B8
+	    private static readonly DDSPixelFormat _pfA8B8G8R8 = new DDSPixelFormat(DDSPixelFormatFlags.RGBA, 0, 32, 0x000000ff, 0x0000ff00, 0x00ff0000, 0xff000000); // A8B8G8R8
+	    private static readonly DDSPixelFormat _pfX8B8G8R8 = new DDSPixelFormat(DDSPixelFormatFlags.RGB, 0, 32, 0x000000ff, 0x0000ff00, 0x00ff0000, 0x00000000); // X8B8G8R8
+	    private static readonly DDSPixelFormat _pfG16R16 = new DDSPixelFormat(DDSPixelFormatFlags.RGB, 0, 32, 0x0000ffff, 0xffff0000, 0x00000000, 0x00000000); // G16R16
+	    private static readonly DDSPixelFormat _pfR5G6B5 = new DDSPixelFormat(DDSPixelFormatFlags.RGB, 0, 16, 0x0000f800, 0x000007e0, 0x0000001f, 0x00000000); // R5G6B5
+	    private static readonly DDSPixelFormat _pfA1R5G5B5 = new DDSPixelFormat(DDSPixelFormatFlags.RGBA, 0, 16, 0x00007c00, 0x000003e0, 0x0000001f, 0x00008000); // A1R5G5B5A1
+	    private static readonly DDSPixelFormat _pfA4R4G4B4 = new DDSPixelFormat(DDSPixelFormatFlags.RGBA, 0, 16, 0x00000f00, 0x000000f0, 0x0000000f, 0x0000f000); // A4R4G4B4		
+	    private static readonly DDSPixelFormat _pfR8G8B8 = new DDSPixelFormat(DDSPixelFormatFlags.RGB, 0, 24, 0x00ff0000, 0x0000ff00, 0x000000ff, 0x00000000); // R8G8B8
+	    private static readonly DDSPixelFormat _pfL8 = new DDSPixelFormat(DDSPixelFormatFlags.Luminance, 0, 8, 0xff, 0x00, 0x00, 0x00);						// L8
+	    private static readonly DDSPixelFormat _pfL16 = new DDSPixelFormat(DDSPixelFormatFlags.Luminance, 0, 16, 0xffff, 0x0000, 0x0000, 0x0000);			// L16
+	    private static readonly DDSPixelFormat _pfA8L8 = new DDSPixelFormat(DDSPixelFormatFlags.LuminanceAlpha, 0, 16, 0x00ff, 0x0000, 0x0000, 0xff00);		// A8L8
+	    private static readonly DDSPixelFormat _pfA8 = new DDSPixelFormat(DDSPixelFormatFlags.Alpha, 0, 8, 0x00, 0x00, 0x00,0xff);							// A8
+	    private static DDSPixelFormat _pfDX10 = new DDSPixelFormat(DDSPixelFormatFlags.FourCC, MakeFourCC('D', 'X', '1', '0'), 0, 0, 0, 0, 0);				// DX10 extension
 
-		private DDSLegacyConversion[] _legacyMapping = new []								// Mappings for legacy formats.
-		{
-			new DDSLegacyConversion(BufferFormat.BC1_UIntNormal, DDSConversionFlags.None, _pfDxt1),
-			new DDSLegacyConversion(BufferFormat.BC2_UIntNormal, DDSConversionFlags.None, _pfDxt3),
-			new DDSLegacyConversion(BufferFormat.BC3_UIntNormal, DDSConversionFlags.None, _pfDxt5),
-			new DDSLegacyConversion(BufferFormat.BC2_UIntNormal, DDSConversionFlags.None, _pfDxt2),
-			new DDSLegacyConversion(BufferFormat.BC3_UIntNormal, DDSConversionFlags.None, _pfDxt4),
-			new DDSLegacyConversion(BufferFormat.BC4_UIntNormal, DDSConversionFlags.None, _pfBC4U),
-			new DDSLegacyConversion(BufferFormat.BC4_IntNormal, DDSConversionFlags.None, _pfBC4S),
-			new DDSLegacyConversion(BufferFormat.BC5_UIntNormal, DDSConversionFlags.None, _pfBC5U),
-			new DDSLegacyConversion(BufferFormat.BC4_IntNormal, DDSConversionFlags.None, _pfBC5S),
-			new DDSLegacyConversion(BufferFormat.BC4_UIntNormal, DDSConversionFlags.None, new DDSPixelFormat(DDSPixelFormatFlags.FourCC, MakeFourCC('A','T','I','1'), 0, 0, 0, 0, 0)),
-			new DDSLegacyConversion(BufferFormat.BC5_UIntNormal, DDSConversionFlags.None, new DDSPixelFormat(DDSPixelFormatFlags.FourCC, MakeFourCC('A','T','I','2'), 0, 0, 0, 0, 0)),
-			new DDSLegacyConversion(BufferFormat.R8G8_B8G8_UIntNormal, DDSConversionFlags.None, _pfR8G8_B8G8),
-			new DDSLegacyConversion(BufferFormat.G8R8_G8B8_UIntNormal, DDSConversionFlags.None, _pfG8R8_G8B8),
-			new DDSLegacyConversion(BufferFormat.B8G8R8A8_UIntNormal, DDSConversionFlags.None, _pfA8R8G8B8),
-			new DDSLegacyConversion(BufferFormat.B8G8R8X8_UIntNormal, DDSConversionFlags.None, _pfX8R8G8B8),
-			new DDSLegacyConversion(BufferFormat.R8G8B8A8_UIntNormal, DDSConversionFlags.None, _pfA8B8G8R8),
-			new DDSLegacyConversion(BufferFormat.R8G8B8A8_UIntNormal, DDSConversionFlags.NoAlpha, _pfX8B8G8R8),
-			new DDSLegacyConversion(BufferFormat.R16G16_UIntNormal, DDSConversionFlags.None, _pfG16R16),
-			new DDSLegacyConversion(BufferFormat.R10G10B10A2_UIntNormal, DDSConversionFlags.Swizzle, new DDSPixelFormat(DDSPixelFormatFlags.RGB, 0, 32, 0x000003ff, 0x000ffc00, 0x3ff00000, 0xc0000000)),
-			new DDSLegacyConversion(BufferFormat.R10G10B10A2_UIntNormal, DDSConversionFlags.None, new DDSPixelFormat(DDSPixelFormatFlags.RGB, 0, 32, 0x3ff00000, 0x000ffc00, 0x000003ff, 0xc0000000)),
-			new DDSLegacyConversion(BufferFormat.R8G8B8A8_UIntNormal, DDSConversionFlags.Expand | DDSConversionFlags.NoAlpha | DDSConversionFlags.RGB888, _pfR8G8B8),
-			new DDSLegacyConversion(BufferFormat.B5G6R5_UIntNormal, DDSConversionFlags.RGB565, _pfR5G6B5),
-			new DDSLegacyConversion(BufferFormat.B5G5R5A1_UIntNormal, DDSConversionFlags.RGB5551, _pfA1R5G5B5),
-			new DDSLegacyConversion(BufferFormat.B5G5R5A1_UIntNormal, DDSConversionFlags.RGB5551 | DDSConversionFlags.NoAlpha, new DDSPixelFormat(DDSPixelFormatFlags.RGB, 0, 16, 0x7c00, 0x03e0, 0x001f, 0x0000)),
-			new DDSLegacyConversion(BufferFormat.R8G8B8A8_UIntNormal, DDSConversionFlags.Expand | DDSConversionFlags.RGB8332, new DDSPixelFormat(DDSPixelFormatFlags.RGB, 0, 16, 0x00e0, 0x001c, 0x0003, 0xff00)),
-			new DDSLegacyConversion(BufferFormat.B5G6R5_UIntNormal, DDSConversionFlags.Expand | DDSConversionFlags.RGB332, new DDSPixelFormat(DDSPixelFormatFlags.RGB, 0,  8, 0xe0, 0x1c, 0x03, 0x00)),
-			new DDSLegacyConversion(BufferFormat.R8_UIntNormal, DDSConversionFlags.None, _pfL8),
-			new DDSLegacyConversion(BufferFormat.R16_UIntNormal, DDSConversionFlags.None, _pfL16),
-			new DDSLegacyConversion(BufferFormat.R8G8_UIntNormal, DDSConversionFlags.None, _pfA8L8),
-			new DDSLegacyConversion(BufferFormat.A8_UIntNormal,DDSConversionFlags.None,_pfA8),
-			new DDSLegacyConversion(BufferFormat.R16G16B16A16_UIntNormal, DDSConversionFlags.None, new DDSPixelFormat(DDSPixelFormatFlags.FourCC, 36, 0, 0, 0, 0, 0)),
-			new DDSLegacyConversion(BufferFormat.R16G16B16A16_IntNormal, DDSConversionFlags.None, new DDSPixelFormat(DDSPixelFormatFlags.FourCC, 110, 0, 0, 0, 0, 0)),
-			new DDSLegacyConversion(BufferFormat.R16_Float, DDSConversionFlags.None, new DDSPixelFormat(DDSPixelFormatFlags.FourCC, 111, 0, 0, 0, 0, 0)),
-			new DDSLegacyConversion(BufferFormat.R16G16_Float, DDSConversionFlags.None, new DDSPixelFormat(DDSPixelFormatFlags.FourCC, 112, 0, 0, 0, 0, 0)),
-			new DDSLegacyConversion(BufferFormat.R16G16B16A16_Float, DDSConversionFlags.None, new DDSPixelFormat(DDSPixelFormatFlags.FourCC, 113, 0, 0, 0, 0, 0)),
-			new DDSLegacyConversion(BufferFormat.R32_Float, DDSConversionFlags.None, new DDSPixelFormat(DDSPixelFormatFlags.FourCC, 114, 0, 0, 0, 0, 0)),
-			new DDSLegacyConversion(BufferFormat.R32G32_Float, DDSConversionFlags.None, new DDSPixelFormat(DDSPixelFormatFlags.FourCC, 115, 0, 0, 0, 0, 0)),
-			new DDSLegacyConversion(BufferFormat.R32G32B32A32_Float, DDSConversionFlags.None, new DDSPixelFormat(DDSPixelFormatFlags.FourCC, 116, 0, 0, 0, 0, 0)),
-			new DDSLegacyConversion(BufferFormat.R32_Float, DDSConversionFlags.None, new DDSPixelFormat(DDSPixelFormatFlags.RGB, 0, 32, 0xffffffff, 0x00000000, 0x00000000, 0x00000000)),
-			new DDSLegacyConversion(BufferFormat.R8G8B8A8_UIntNormal, DDSConversionFlags.Expand | DDSConversionFlags.Palette | DDSConversionFlags.A8P8, new DDSPixelFormat(DDSPixelFormatFlags.PaletteIndexed, 0, 16, 0, 0, 0, 0)),
-			new DDSLegacyConversion(BufferFormat.R8G8B8A8_UIntNormal, DDSConversionFlags.Expand | DDSConversionFlags.Palette, new DDSPixelFormat(DDSPixelFormatFlags.PaletteIndexed, 0, 8, 0, 0, 0, 0)),
-			new DDSLegacyConversion(BufferFormat.R8G8B8A8_UIntNormal, DDSConversionFlags.Expand | DDSConversionFlags.RGB4444, _pfA4R4G4B4),
-			new DDSLegacyConversion(BufferFormat.R8G8B8A8_UIntNormal, DDSConversionFlags.Expand | DDSConversionFlags.NoAlpha | DDSConversionFlags.RGB4444, new DDSPixelFormat(DDSPixelFormatFlags.RGB, 0, 16, 0x0f00, 0x00f0, 0x000f, 0x0000)),
-			new DDSLegacyConversion(BufferFormat.R8G8B8A8_UIntNormal, DDSConversionFlags.Expand | DDSConversionFlags.A4L4, new DDSPixelFormat(DDSPixelFormatFlags.Luminance, 0, 8, 0x0f, 0x00, 0x00, 0xf0))
+	    private readonly DDSLegacyConversion[] _legacyMapping = new[] // Mappings for legacy formats.
+		    {
+			    new DDSLegacyConversion(BufferFormat.BC1_UIntNormal, DDSConversionFlags.None, _pfDxt1),
+			    new DDSLegacyConversion(BufferFormat.BC2_UIntNormal, DDSConversionFlags.None, _pfDxt3),
+			    new DDSLegacyConversion(BufferFormat.BC3_UIntNormal, DDSConversionFlags.None, _pfDxt5),
+			    new DDSLegacyConversion(BufferFormat.BC2_UIntNormal, DDSConversionFlags.None, _pfDxt2),
+			    new DDSLegacyConversion(BufferFormat.BC3_UIntNormal, DDSConversionFlags.None, _pfDxt4),
+			    new DDSLegacyConversion(BufferFormat.BC4_UIntNormal, DDSConversionFlags.None, _pfBC4U),
+			    new DDSLegacyConversion(BufferFormat.BC4_IntNormal, DDSConversionFlags.None, _pfBC4S),
+			    new DDSLegacyConversion(BufferFormat.BC5_UIntNormal, DDSConversionFlags.None, _pfBC5U),
+			    new DDSLegacyConversion(BufferFormat.BC4_IntNormal, DDSConversionFlags.None, _pfBC5S),
+			    new DDSLegacyConversion(BufferFormat.BC4_UIntNormal, DDSConversionFlags.None, new DDSPixelFormat(DDSPixelFormatFlags.FourCC, MakeFourCC('A', 'T', 'I', '1'), 0, 0, 0, 0, 0)),
+			    new DDSLegacyConversion(BufferFormat.BC5_UIntNormal, DDSConversionFlags.None, new DDSPixelFormat(DDSPixelFormatFlags.FourCC, MakeFourCC('A', 'T', 'I', '2'), 0, 0, 0, 0, 0)),
+			    new DDSLegacyConversion(BufferFormat.R8G8_B8G8_UIntNormal, DDSConversionFlags.None, _pfR8G8_B8G8),
+			    new DDSLegacyConversion(BufferFormat.G8R8_G8B8_UIntNormal, DDSConversionFlags.None, _pfG8R8_G8B8),
+			    new DDSLegacyConversion(BufferFormat.B8G8R8A8_UIntNormal, DDSConversionFlags.None, _pfA8R8G8B8),
+			    new DDSLegacyConversion(BufferFormat.B8G8R8X8_UIntNormal, DDSConversionFlags.None, _pfX8R8G8B8),
+			    new DDSLegacyConversion(BufferFormat.R8G8B8A8_UIntNormal, DDSConversionFlags.None, _pfA8B8G8R8),
+			    new DDSLegacyConversion(BufferFormat.R8G8B8A8_UIntNormal, DDSConversionFlags.NoAlpha, _pfX8B8G8R8),
+			    new DDSLegacyConversion(BufferFormat.R16G16_UIntNormal, DDSConversionFlags.None, _pfG16R16),
+			    new DDSLegacyConversion(BufferFormat.R10G10B10A2_UIntNormal, DDSConversionFlags.Swizzle, new DDSPixelFormat(DDSPixelFormatFlags.RGB, 0, 32, 0x000003ff, 0x000ffc00, 0x3ff00000, 0xc0000000)),
+			    new DDSLegacyConversion(BufferFormat.R10G10B10A2_UIntNormal, DDSConversionFlags.None, new DDSPixelFormat(DDSPixelFormatFlags.RGB, 0, 32, 0x3ff00000, 0x000ffc00, 0x000003ff, 0xc0000000)),
+			    new DDSLegacyConversion(BufferFormat.R8G8B8A8_UIntNormal, DDSConversionFlags.Expand | DDSConversionFlags.NoAlpha | DDSConversionFlags.RGB888, _pfR8G8B8),
+			    new DDSLegacyConversion(BufferFormat.B5G6R5_UIntNormal, DDSConversionFlags.RGB565, _pfR5G6B5),
+			    new DDSLegacyConversion(BufferFormat.B5G5R5A1_UIntNormal, DDSConversionFlags.RGB5551, _pfA1R5G5B5),
+			    new DDSLegacyConversion(BufferFormat.B5G5R5A1_UIntNormal, DDSConversionFlags.RGB5551 | DDSConversionFlags.NoAlpha, new DDSPixelFormat(DDSPixelFormatFlags.RGB, 0, 16, 0x7c00, 0x03e0, 0x001f, 0x0000)),
+			    new DDSLegacyConversion(BufferFormat.R8G8B8A8_UIntNormal, DDSConversionFlags.Expand | DDSConversionFlags.RGB8332, new DDSPixelFormat(DDSPixelFormatFlags.RGB, 0, 16, 0x00e0, 0x001c, 0x0003, 0xff00)),
+			    new DDSLegacyConversion(BufferFormat.B5G6R5_UIntNormal, DDSConversionFlags.Expand | DDSConversionFlags.RGB332, new DDSPixelFormat(DDSPixelFormatFlags.RGB, 0, 8, 0xe0, 0x1c, 0x03, 0x00)),
+			    new DDSLegacyConversion(BufferFormat.R8_UIntNormal, DDSConversionFlags.None, _pfL8),
+			    new DDSLegacyConversion(BufferFormat.R16_UIntNormal, DDSConversionFlags.None, _pfL16),
+			    new DDSLegacyConversion(BufferFormat.R8G8_UIntNormal, DDSConversionFlags.None, _pfA8L8),
+			    new DDSLegacyConversion(BufferFormat.A8_UIntNormal, DDSConversionFlags.None, _pfA8),
+			    new DDSLegacyConversion(BufferFormat.R16G16B16A16_UIntNormal, DDSConversionFlags.None, new DDSPixelFormat(DDSPixelFormatFlags.FourCC, 36, 0, 0, 0, 0, 0)),
+			    new DDSLegacyConversion(BufferFormat.R16G16B16A16_IntNormal, DDSConversionFlags.None, new DDSPixelFormat(DDSPixelFormatFlags.FourCC, 110, 0, 0, 0, 0, 0)),
+			    new DDSLegacyConversion(BufferFormat.R16_Float, DDSConversionFlags.None, new DDSPixelFormat(DDSPixelFormatFlags.FourCC, 111, 0, 0, 0, 0, 0)),
+			    new DDSLegacyConversion(BufferFormat.R16G16_Float, DDSConversionFlags.None, new DDSPixelFormat(DDSPixelFormatFlags.FourCC, 112, 0, 0, 0, 0, 0)),
+			    new DDSLegacyConversion(BufferFormat.R16G16B16A16_Float, DDSConversionFlags.None, new DDSPixelFormat(DDSPixelFormatFlags.FourCC, 113, 0, 0, 0, 0, 0)),
+			    new DDSLegacyConversion(BufferFormat.R32_Float, DDSConversionFlags.None, new DDSPixelFormat(DDSPixelFormatFlags.FourCC, 114, 0, 0, 0, 0, 0)),
+			    new DDSLegacyConversion(BufferFormat.R32G32_Float, DDSConversionFlags.None, new DDSPixelFormat(DDSPixelFormatFlags.FourCC, 115, 0, 0, 0, 0, 0)),
+			    new DDSLegacyConversion(BufferFormat.R32G32B32A32_Float, DDSConversionFlags.None, new DDSPixelFormat(DDSPixelFormatFlags.FourCC, 116, 0, 0, 0, 0, 0)),
+			    new DDSLegacyConversion(BufferFormat.R32_Float, DDSConversionFlags.None, new DDSPixelFormat(DDSPixelFormatFlags.RGB, 0, 32, 0xffffffff, 0x00000000, 0x00000000, 0x00000000)),
+			    new DDSLegacyConversion(BufferFormat.R8G8B8A8_UIntNormal, DDSConversionFlags.Expand | DDSConversionFlags.Palette | DDSConversionFlags.A8P8, new DDSPixelFormat(DDSPixelFormatFlags.PaletteIndexed, 0, 16, 0, 0, 0, 0)),
+			    new DDSLegacyConversion(BufferFormat.R8G8B8A8_UIntNormal, DDSConversionFlags.Expand | DDSConversionFlags.Palette, new DDSPixelFormat(DDSPixelFormatFlags.PaletteIndexed, 0, 8, 0, 0, 0, 0)), 
+				new DDSLegacyConversion(BufferFormat.R8G8B8A8_UIntNormal, DDSConversionFlags.Expand | DDSConversionFlags.RGB4444,_pfA4R4G4B4),
+				new DDSLegacyConversion(BufferFormat.R8G8B8A8_UIntNormal, DDSConversionFlags.Expand | DDSConversionFlags.NoAlpha | DDSConversionFlags.RGB4444, new DDSPixelFormat(DDSPixelFormatFlags.RGB, 0, 16, 0x0f00, 0x00f0, 0x000f, 0x0000)),
+			    new DDSLegacyConversion(BufferFormat.R8G8B8A8_UIntNormal, DDSConversionFlags.Expand | DDSConversionFlags.A4L4, new DDSPixelFormat(DDSPixelFormatFlags.Luminance, 0, 8, 0x0f, 0x00, 0x00, 0xf0))
 		};
 
         private readonly BufferFormat[] _formats;       // Buffer formats.
@@ -739,7 +742,7 @@ namespace GorgonLibrary.IO
 		public IList<GorgonColor> Palette
 		{
 			get;
-			set;
+			private set;
 		}
 
 
@@ -1675,7 +1678,7 @@ namespace GorgonLibrary.IO
                         
             if (size < DirectAccess.SizeOf<DDSHeader>() + sizeof(uint))
             {
-                throw new System.IO.EndOfStreamException("Cannot read beyond the end of the stream.");
+                throw new EndOfStreamException("Cannot read beyond the end of the stream.");
             }
 
 			// Read the header information.
@@ -1718,17 +1721,17 @@ namespace GorgonLibrary.IO
 			    // We have a palette, either create a new one or clone the assigned one.
 			    if ((flags & DDSConversionFlags.Palette) == DDSConversionFlags.Palette)
 			    {
-                    int paletteSize = sizeof(uint) * 256;
+                    const int paletteSize = sizeof(uint) * 256;
 
                     if (paletteSize > stream.Length - stream.Position)
                     {
-                        throw new System.IO.EndOfStreamException("Cannot read beyond the end of the stream.");
+                        throw new EndOfStreamException("Cannot read beyond the end of the stream.");
                     }
 
 				    palette = new uint[256];
-				    if (Palette != null)
+				    if (Palette.Count > 0)
 				    {
-					    int count = Palette.Count > 256 ? 256 : Palette.Count;
+					    int count = Palette.Count.Min(256);
 
 					    for (int i = 0; i < count; i++)
 					    {
@@ -1741,7 +1744,7 @@ namespace GorgonLibrary.IO
 				    else
 				    {
 					    // Read from the stream if we haven't assigned a palette.
-					    stream.ReadRange<uint>(palette, 0, 256);
+					    stream.ReadRange(palette, 0, 256);
 				    }
 			    }
 
@@ -1751,10 +1754,7 @@ namespace GorgonLibrary.IO
 			catch 
 			{
 				// Clean up any memory allocated if we can't copy the image.
-				if (imageData != null)
-				{
-					imageData.Dispose();
-				}
+				imageData.Dispose();
 
 				throw;
 			}
@@ -1927,10 +1927,11 @@ namespace GorgonLibrary.IO
 		public GorgonCodecDDS()
 		{
 			Depth = 0;
-			this.CodecCommonExtensions = new string[] { "dds" };
+			CodecCommonExtensions = new[] { "dds" };
             _formats = (BufferFormat[])Enum.GetValues(typeof(BufferFormat));
 
             LegacyConversionFlags = DDSFlags.None;
+			Palette = new GorgonColor[256];
 		}
 		#endregion
 	}

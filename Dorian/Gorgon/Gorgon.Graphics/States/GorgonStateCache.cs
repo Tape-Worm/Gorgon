@@ -33,19 +33,19 @@ namespace GorgonLibrary.Graphics
 	/// A cache for state Direct 3D state objects.
 	/// </summary>
 	/// <typeparam name="T">Type of state to store.</typeparam>
-	sealed class GorgonStateCacheNEW<T>
+	sealed class GorgonStateCache<T>
 		: IDisposable
 		where T : struct, IEquatableByRef<T>
 	{
 		#region Constants.
-		private const int _cacheLimit = 4096;									// Number of objects that can initially live in the cache.
+		private const int CacheLimit = 4096;									// Number of objects that can initially live in the cache.
 		#endregion
 
 		#region Variables.
 		private bool _disposed;																				// Flag to indicate that the object was disposed.
 		private int _currentCachePosition;																	// Current position in the cache.
 		private int _cacheCount;																			// Number of items in the cache.
-		private Tuple<T, D3D.DeviceChild>[] _cache = new Tuple<T,D3D.DeviceChild>[_cacheLimit];				// Cache objects.
+		private Tuple<T, D3D.DeviceChild>[] _cache = new Tuple<T,D3D.DeviceChild>[CacheLimit];				// Cache objects.
 		#endregion
 
 		#region Properties.
@@ -113,25 +113,25 @@ namespace GorgonLibrary.Graphics
 		/// Function to put a state into the cache.
 		/// </summary>
 		/// <param name="state">Type of state to add.</param>
-		/// <param name="d3dState">The D3D state object.</param>
-		public void SetItem(ref T state, D3D.DeviceChild d3dState)
+		/// <param name="D3DState">The D3D state object.</param>
+		public void SetItem(ref T state, D3D.DeviceChild D3DState)
 		{
 			int index = IndexOf(ref state);
 
 			if (index != -1)
 			{
-				_cache[index] = new Tuple<T, D3D.DeviceChild>(state, d3dState);
+				_cache[index] = new Tuple<T, D3D.DeviceChild>(state, D3DState);
 				return;
 			}
 
-			_cache[_currentCachePosition] = new Tuple<T, D3D.DeviceChild>(state, d3dState);
+			_cache[_currentCachePosition] = new Tuple<T, D3D.DeviceChild>(state, D3DState);
 
 			_cacheCount++;
 			_currentCachePosition++;
 
 			if (_currentCachePosition >= _cache.Length)
 			{
-				Array.Resize<Tuple<T, D3D.DeviceChild>>(ref _cache, _cache.Length * 2);
+				Array.Resize(ref _cache, _cache.Length * 2);
 			}
 		}
 
@@ -144,31 +144,24 @@ namespace GorgonLibrary.Graphics
 			int index = IndexOf(ref state);
 			int lastPosition = _currentCachePosition - 1;
 
-			if (index != -1)
+			if (index == -1)
 			{
-				_cache[index].Item2.Dispose();
-
-				if (index != lastPosition)
-				{
-					_cache[index] = _cache[lastPosition];
-				}
-				else
-				{
-					_cache[index] = null;
-				}
-
-				_cacheCount--;
-				_currentCachePosition--;
+				return;
 			}
-		}
-		#endregion
 
-		#region Constructor/Destructor.
-		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonStateCacheNEW{T}" /> class.
-		/// </summary>
-		public GorgonStateCacheNEW()
-		{
+			_cache[index].Item2.Dispose();
+
+			if (index != lastPosition)
+			{
+				_cache[index] = _cache[lastPosition];
+			}
+			else
+			{
+				_cache[index] = null;
+			}
+
+			_cacheCount--;
+			_currentCachePosition--;
 		}
 		#endregion
 
@@ -179,15 +172,17 @@ namespace GorgonLibrary.Graphics
 		/// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
 		private void Dispose(bool disposing)
 		{
-			if (!_disposed)
+			if (_disposed)
 			{
-				if (disposing)
-				{
-					EvictCache();
-				}
-				
-				_disposed = true;
+				return;
 			}
+
+			if (disposing)
+			{
+				EvictCache();
+			}
+				
+			_disposed = true;
 		}
 
 		/// <summary>
@@ -196,7 +191,6 @@ namespace GorgonLibrary.Graphics
 		public void Dispose()
 		{
 			Dispose(true);
-			GC.SuppressFinalize(this);
 		}
 		#endregion
 	}

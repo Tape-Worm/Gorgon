@@ -474,9 +474,14 @@ namespace GorgonLibrary.Graphics
 		internal void CleanUp()
 		{
 			if (BlendingState != null)
-				((IDisposable)BlendingState).Dispose();
+			{
+				BlendingState.CleanUp();
+			}
+
 			if (DepthStencilState != null)
-				((IDisposable)DepthStencilState).Dispose();
+			{
+				DepthStencilState.CleanUp();
+			}
 
 			BlendingState = null;
 			DepthStencilState = null;

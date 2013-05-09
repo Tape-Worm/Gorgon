@@ -140,19 +140,19 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Default texture sampler states.
 		/// </summary>
-		public static readonly GorgonTextureSamplerStates DefaultStates = new GorgonTextureSamplerStates()
-		{
-			TextureFilter = TextureFilter.Linear,
-			HorizontalAddressing = TextureAddressing.Clamp,
-			VerticalAddressing = TextureAddressing.Clamp,
-			DepthAddressing = TextureAddressing.Clamp,
-			MipLODBias = 0.0f,
-			MaxAnisotropy = 1,
-			ComparisonFunction = ComparisonOperators.Never,
-			BorderColor = System.Drawing.Color.White,
-			MinLOD = -3.402823466e+38f,
-			MaxLOD = 3.402823466e+38f
-		};
+		public static readonly GorgonTextureSamplerStates DefaultStates = new GorgonTextureSamplerStates
+			{
+				TextureFilter = TextureFilter.Linear,
+				HorizontalAddressing = TextureAddressing.Clamp,
+				VerticalAddressing = TextureAddressing.Clamp,
+				DepthAddressing = TextureAddressing.Clamp,
+				MipLODBias = 0.0f,
+				MaxAnisotropy = 1,
+				ComparisonFunction = ComparisonOperators.Never,
+				BorderColor = System.Drawing.Color.White,
+				MinLOD = -3.402823466e+38f,
+				MaxLOD = 3.402823466e+38f
+			};
 
 
 		/// <summary>
@@ -240,9 +240,11 @@ namespace GorgonLibrary.Graphics
 		{
 			unchecked
 			{
+				// ReSharper disable NonReadonlyFieldInGetHashCode
 				return 281.GenerateHash(BorderColor).GenerateHash(ComparisonFunction).GenerateHash(DepthAddressing).
 					GenerateHash(HorizontalAddressing).GenerateHash(MaxAnisotropy).GenerateHash(MaxLOD).
 					GenerateHash(MinLOD).GenerateHash(MipLODBias).GenerateHash(TextureFilter).GenerateHash(VerticalAddressing);
+				// ReSharper restore NonReadonlyFieldInGetHashCode
 			}
 		}
 
@@ -256,7 +258,7 @@ namespace GorgonLibrary.Graphics
 		/// </returns>
 		public static bool operator ==(GorgonTextureSamplerStates left, GorgonTextureSamplerStates right)
 		{
-			return GorgonTextureSamplerStates.Equals(ref left, ref right);
+			return Equals(ref left, ref right);
 		}
 
 		/// <summary>
@@ -269,7 +271,7 @@ namespace GorgonLibrary.Graphics
 		/// </returns>
 		public static bool operator !=(GorgonTextureSamplerStates left, GorgonTextureSamplerStates right)
 		{
-			return !GorgonTextureSamplerStates.Equals(ref left, ref right);
+			return !Equals(ref left, ref right);
 		}
 		#endregion
 
@@ -297,7 +299,7 @@ namespace GorgonLibrary.Graphics
 		/// </returns>
 		public bool Equals(ref GorgonTextureSamplerStates other)
 		{
-			return GorgonTextureSamplerStates.Equals(ref this, ref other);			
+			return Equals(ref this, ref other);			
 		}
 		#endregion
 	}

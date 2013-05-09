@@ -1276,7 +1276,6 @@ namespace GorgonLibrary.Graphics
 			{
 				return IsCompressed ? 1.Max((height + 3) / 4) : height;
 			}
-
 			#endregion
 
 			#region Constructor/Destructor.

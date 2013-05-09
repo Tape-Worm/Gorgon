@@ -276,7 +276,7 @@ namespace GorgonLibrary.Graphics
 					catch (SharpDX.SharpDXException sDXEx)
 					{
 						if ((uint)sDXEx.ResultCode.Code == 0x80070057)
-							throw new GorgonException(GorgonResult.CannotCreate, "Cannot create the shader view.  The format '" + resource.Settings.ViewFormat.ToString() + "' is not compatible or castable to '" + resource.Settings.Format.ToString() + "'.");
+							throw new GorgonException(GorgonResult.CannotCreate, "Cannot create the shader view.  The format '" + resource.Settings.ViewFormat.ToString() + "' is not compatible or cannot be cast to '" + resource.Settings.Format.ToString() + "'.");
 					}
 				}
 			}

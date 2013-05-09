@@ -27,8 +27,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using GorgonLibrary.Diagnostics;
 using D3D = SharpDX.Direct3D11;
+using GorgonLibrary.Diagnostics;
+using GorgonLibrary.Graphics.Properties;
 
 namespace GorgonLibrary.Graphics
 {
@@ -63,7 +64,7 @@ namespace GorgonLibrary.Graphics
 			{
 				get
 				{
-					throw new NotImplementedException();
+					return _states[0];
 				}
 				set
 				{
@@ -89,23 +90,69 @@ namespace GorgonLibrary.Graphics
 			/// <returns>The D3D state object.</returns>
 			internal override D3D.DeviceChild GetStateObject(ref GorgonTextureSamplerStates stateType)
 			{
-				var desc = new D3D.SamplerStateDescription();
+#if DEBUG
+				// Perform validation of the state type.
+				if (stateType.ComparisonFunction == ComparisonOperators.Unknown)
+				{
+					throw new GorgonException(GorgonResult.CannotBind,
+					                          string.Format(Properties.Resources.GORGFX_INVALID_ENUM_VALUE,
+					                                        stateType.ComparisonFunction, "ComparisonFunction"));
+				}
 
-				desc.AddressU = (D3D.TextureAddressMode)stateType.HorizontalAddressing;
-				desc.AddressV = (D3D.TextureAddressMode)stateType.VerticalAddressing;
-				desc.AddressW = (D3D.TextureAddressMode)stateType.DepthAddressing;
-				desc.BorderColor = new SharpDX.Color4(stateType.BorderColor.Red, stateType.BorderColor.Green, stateType.BorderColor.Blue, stateType.BorderColor.Alpha);
-				desc.ComparisonFunction = (D3D.Comparison)stateType.ComparisonFunction;
-				desc.MaximumAnisotropy = stateType.MaxAnisotropy;
-				desc.MaximumLod = stateType.MaxLOD;
-				desc.MinimumLod = stateType.MinLOD;
-				desc.MipLodBias = stateType.MipLODBias;
+				if (stateType.DepthAddressing == TextureAddressing.Unknown)
+				{
+					throw new GorgonException(GorgonResult.CannotBind,
+											  string.Format(Properties.Resources.GORGFX_INVALID_ENUM_VALUE,
+															stateType.DepthAddressing, "DepthAddressing"));
+				}
+
+				if (stateType.HorizontalAddressing == TextureAddressing.Unknown)
+				{
+					throw new GorgonException(GorgonResult.CannotBind,
+											  string.Format(Properties.Resources.GORGFX_INVALID_ENUM_VALUE,
+															stateType.HorizontalAddressing, "HorizontalAddressing"));
+				}
+
+				if (stateType.VerticalAddressing == TextureAddressing.Unknown)
+				{
+					throw new GorgonException(GorgonResult.CannotBind,
+											  string.Format(Properties.Resources.GORGFX_INVALID_ENUM_VALUE,
+															stateType.VerticalAddressing, "VerticalAddressing"));
+				}
+
+				if (stateType.TextureFilter == TextureFilter.Unknown)
+				{
+					throw new GorgonException(GorgonResult.CannotBind,
+											  string.Format(Properties.Resources.GORGFX_INVALID_ENUM_VALUE,
+															stateType.TextureFilter, "TextureFilter"));
+				}
+#endif
+
+				var desc = new D3D.SamplerStateDescription
+					{
+						AddressU = (D3D.TextureAddressMode)stateType.HorizontalAddressing,
+						AddressV = (D3D.TextureAddressMode)stateType.VerticalAddressing,
+						AddressW = (D3D.TextureAddressMode)stateType.DepthAddressing,
+						BorderColor =
+							new SharpDX.Color4(stateType.BorderColor.Red, stateType.BorderColor.Green, stateType.BorderColor.Blue,
+							                   stateType.BorderColor.Alpha),
+						ComparisonFunction = (D3D.Comparison)stateType.ComparisonFunction,
+						MaximumAnisotropy = stateType.MaxAnisotropy,
+						MaximumLod = stateType.MaxLOD,
+						MinimumLod = stateType.MinLOD,
+						MipLodBias = stateType.MipLODBias
+					};
 
 
 				if (stateType.TextureFilter == TextureFilter.Anisotropic)
+				{
 					desc.Filter = D3D.Filter.Anisotropic;
+				}
+
 				if (stateType.TextureFilter == TextureFilter.CompareAnisotropic)
+				{
 					desc.Filter = D3D.Filter.ComparisonAnisotropic;
+				}
 
 				// Sort out filter stateType.
 				// Check comparison stateType.
@@ -152,8 +199,10 @@ namespace GorgonLibrary.Graphics
 						desc.Filter = D3D.Filter.MinPointMagLinearMipPoint;
 				}
 
-				var state = new D3D.SamplerState(Graphics.D3DDevice, desc);
-				state.DebugName = "Gorgon Sampler State #" + StateCacheCount.ToString();
+				var state = new D3D.SamplerState(Graphics.D3DDevice, desc)
+					{
+						DebugName = "Gorgon Sampler State #" + StateCacheCount
+					};
 
 				return state;
 			}
@@ -1170,16 +1219,14 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Function to clean up.
 		/// </summary>
-		internal void Dispose()
+		internal void CleanUp()
 		{
 			if (_samplers != null)
 			{
-				((IDisposable)_samplers).Dispose();
+				_samplers.CleanUp();
 			}
 
 			_samplers = null;
-
-			GC.SuppressFinalize(this);
 		}
 		#endregion
 

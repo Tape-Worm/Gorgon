@@ -34,12 +34,11 @@ namespace GorgonLibrary.Graphics
 	/// </summary>
 	/// <typeparam name="T">Type of state.</typeparam>
 	public abstract class GorgonState<T>
-		: IDisposable
 		where T : struct, IEquatableByRef<T>
 	{
 		#region Variables.
 		private bool _disposed;										// Flag to indicate that the object was disposed.
-		private GorgonStateCacheNEW<T> _cache;						// Cache for the states.
+		private GorgonStateCache<T> _cache;						// Cache for the states.
 		private T _state;											// Immutable state for the object.
 		#endregion
 
@@ -78,9 +77,10 @@ namespace GorgonLibrary.Graphics
 			{
 #if DEBUG
 				if (Graphics.Context == null)
+				{
 					throw new InvalidOperationException("No usable context was found.");
-#endif			
-				D3D.DeviceChild d3dState = null;
+				}
+#endif
 
 				// If the state is the same as the current, then leave.
 				if (_state.Equals(ref value))
@@ -91,16 +91,16 @@ namespace GorgonLibrary.Graphics
 				_state = value;
 
 				// Try to get the state from the cache first.
-				d3dState = _cache.GetItem(ref value);
+				D3D.DeviceChild D3DState = _cache.GetItem(ref value);
 
-				if (d3dState == null)
+				if (D3DState == null)
 				{
 					// If we couldn't find it, then put a new one in the cache.
-					d3dState = GetStateObject(ref value);
-					_cache.SetItem(ref value, d3dState);
+					D3DState = GetStateObject(ref value);
+					_cache.SetItem(ref value, D3DState);
 				}
 								
-				ApplyState(d3dState);
+				ApplyState(D3DState);
 			}
 		}
 		#endregion
@@ -140,6 +140,25 @@ namespace GorgonLibrary.Graphics
 		internal abstract D3D.DeviceChild GetStateObject(ref T stateType);
 
 		/// <summary>
+		/// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+		/// </summary>
+		internal void CleanUp()
+		{
+			if (_disposed)
+			{
+				return;
+			}
+
+			if (_cache != null)
+			{
+				_cache.Dispose();
+			}
+
+			_cache = null;
+			_disposed = true;
+		}
+
+		/// <summary>
 		/// Function to purge a specific state from the cached states.
 		/// </summary>
 		/// <param name="stateType">State to purge.</param>
@@ -157,39 +176,7 @@ namespace GorgonLibrary.Graphics
 		protected GorgonState(GorgonGraphics graphics)
 		{
 			Graphics = graphics;
-			_cache = new GorgonStateCacheNEW<T>();
-		}
-		#endregion
-
-		#region IDisposable Members
-		/// <summary>
-		/// Releases unmanaged and - optionally - managed resources.
-		/// </summary>
-		/// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
-		private void Dispose(bool disposing)
-		{
-			if (!_disposed)
-			{
-				if (disposing)
-				{
-					if (_cache != null)
-					{
-						_cache.Dispose();
-					}					
-				}
-
-				_cache = null;
-				_disposed = true;
-			}
-		}
-
-		/// <summary>
-		/// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-		/// </summary>
-		void IDisposable.Dispose()
-		{
-			Dispose(true);
-			GC.SuppressFinalize(this);
+			_cache = new GorgonStateCache<T>();
 		}
 		#endregion
 	}

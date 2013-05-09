@@ -86,7 +86,7 @@ namespace GorgonLibrary.IO
         /// Initializes a new instance of the <see cref="GorgonCodecJPEG" /> class.
         /// </summary>
         public GorgonCodecJPEG()
-            : base("JPEG", "Joint Photographics Experts Group", new string[] { "jpg", "jpeg", "jpe", "jif", "jfif", "jfi" }, SharpDX.WIC.ContainerFormatGuids.Jpeg)
+            : base("JPEG", "Joint Photographics Experts Group", new[] { "jpg", "jpeg", "jpe", "jif", "jfif", "jfi" }, SharpDX.WIC.ContainerFormatGuids.Jpeg)
         {
         }
         #endregion

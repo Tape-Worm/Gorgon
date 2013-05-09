@@ -26,6 +26,7 @@
 
 using System;
 using D3D = SharpDX.Direct3D11;
+using GorgonLibrary.Graphics.Properties;
 
 namespace GorgonLibrary.Graphics
 {
@@ -146,6 +147,10 @@ namespace GorgonLibrary.Graphics
 	public enum ColorWriteMaskFlags
 	{
 		/// <summary>
+		/// Unknown value.
+		/// </summary>
+		Unknown = 0,
+		/// <summary>
 		/// Use the red channel.
 		/// </summary>
 		Red = 1,
@@ -178,7 +183,7 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Default render target blending states.
 		/// </summary>
-		public static readonly GorgonRenderTargetBlendState DefaultStates = new GorgonRenderTargetBlendState()
+		public static readonly GorgonRenderTargetBlendState DefaultStates = new GorgonRenderTargetBlendState
 		{
 			IsBlendingEnabled = false,
 			AlphaOperation = BlendOperation.Add,
@@ -260,16 +265,17 @@ namespace GorgonLibrary.Graphics
 		/// <returns>The D3D render target blend description.</returns>
 		internal D3D.RenderTargetBlendDescription Convert()
 		{
-			var desc = new D3D.RenderTargetBlendDescription();
-
-			desc.AlphaBlendOperation = (D3D.BlendOperation)AlphaOperation;
-			desc.BlendOperation = (D3D.BlendOperation)BlendingOperation;
-			desc.IsBlendEnabled = IsBlendingEnabled;
-			desc.DestinationAlphaBlend = (D3D.BlendOption)DestinationAlphaBlend;
-			desc.DestinationBlend = (D3D.BlendOption)DestinationBlend;
-			desc.RenderTargetWriteMask = (D3D.ColorWriteMaskFlags)WriteMask;
-			desc.SourceAlphaBlend = (D3D.BlendOption)SourceAlphaBlend;
-			desc.SourceBlend = (D3D.BlendOption)SourceBlend;
+			var desc = new D3D.RenderTargetBlendDescription
+				{
+					AlphaBlendOperation = (D3D.BlendOperation)AlphaOperation,
+					BlendOperation = (D3D.BlendOperation)BlendingOperation,
+					IsBlendEnabled = IsBlendingEnabled,
+					DestinationAlphaBlend = (D3D.BlendOption)DestinationAlphaBlend,
+					DestinationBlend = (D3D.BlendOption)DestinationBlend,
+					RenderTargetWriteMask = (D3D.ColorWriteMaskFlags)WriteMask,
+					SourceAlphaBlend = (D3D.BlendOption)SourceAlphaBlend,
+					SourceBlend = (D3D.BlendOption)SourceBlend
+				};
 
 			return desc;
 		}
@@ -312,6 +318,7 @@ namespace GorgonLibrary.Graphics
 		{
 			unchecked
 			{
+				// ReSharper disable NonReadonlyFieldInGetHashCode
 				return 281.GenerateHash(AlphaOperation).
 						GenerateHash(BlendingOperation).
 						GenerateHash(DestinationBlend).
@@ -320,6 +327,7 @@ namespace GorgonLibrary.Graphics
 						GenerateHash(SourceAlphaBlend).
 						GenerateHash(SourceBlend).
 						GenerateHash(WriteMask);
+				// ReSharper restore NonReadonlyFieldInGetHashCode
 			}
 		}
 
@@ -333,7 +341,7 @@ namespace GorgonLibrary.Graphics
 		/// </returns>
 		public static bool operator ==(GorgonRenderTargetBlendState left, GorgonRenderTargetBlendState right)
 		{
-			return GorgonRenderTargetBlendState.Equals(ref left, ref right);
+			return Equals(ref left, ref right);
 		}
 
 		/// <summary>
@@ -346,7 +354,7 @@ namespace GorgonLibrary.Graphics
 		/// </returns>
 		public static bool operator !=(GorgonRenderTargetBlendState left, GorgonRenderTargetBlendState right)
 		{
-			return !GorgonRenderTargetBlendState.Equals(ref left, ref right);
+			return !Equals(ref left, ref right);
 		}
 		#endregion
 
@@ -360,7 +368,7 @@ namespace GorgonLibrary.Graphics
 		/// </returns>
 		public bool Equals(GorgonRenderTargetBlendState other)
 		{
-			return GorgonRenderTargetBlendState.Equals(ref this, ref other);
+			return Equals(ref this, ref other);
 		}
 		#endregion
 
@@ -372,7 +380,7 @@ namespace GorgonLibrary.Graphics
 		/// <returns>TRUE if equal, FALSE if not.</returns>
 		public bool Equals(ref GorgonRenderTargetBlendState other)
 		{
-			return GorgonRenderTargetBlendState.Equals(ref this, ref other);			
+			return Equals(ref this, ref other);			
 		}
 		#endregion
 	}
@@ -383,12 +391,12 @@ namespace GorgonLibrary.Graphics
 	public struct GorgonBlendStates
 		: IEquatableByRef<GorgonBlendStates>
 	{
-		#region Variables.		
+		#region Variables.
 		/// <summary>
 		/// Default blending states.
 		/// </summary>
-		public static readonly GorgonBlendStates DefaultStates = new GorgonBlendStates()
-		{
+		public static readonly GorgonBlendStates DefaultStates = new GorgonBlendStates
+			{
 			IsAlphaCoverageEnabled = false,
 			IsIndependentBlendEnabled = false,
 			RenderTarget0 = GorgonRenderTargetBlendState.DefaultStates,
@@ -501,6 +509,7 @@ namespace GorgonLibrary.Graphics
 		{
 			unchecked
 			{
+				// ReSharper disable NonReadonlyFieldInGetHashCode
 				// Pick an arbitrary prime.
 				return 281.GenerateHash(IsAlphaCoverageEnabled).
 							GenerateHash(IsIndependentBlendEnabled).
@@ -512,6 +521,7 @@ namespace GorgonLibrary.Graphics
 							GenerateHash(RenderTarget5).
 							GenerateHash(RenderTarget6).
 							GenerateHash(RenderTarget7);
+				// ReSharper restore NonReadonlyFieldInGetHashCode
 			}
 		}
 
@@ -525,7 +535,7 @@ namespace GorgonLibrary.Graphics
 		/// </returns>
 		public static bool operator ==(GorgonBlendStates left, GorgonBlendStates right)
 		{
-			return GorgonBlendStates.Equals(ref left, ref right);
+			return Equals(ref left, ref right);
 		}
 
 		/// <summary>
@@ -538,7 +548,7 @@ namespace GorgonLibrary.Graphics
 		/// </returns>
 		public static bool operator !=(GorgonBlendStates left, GorgonBlendStates right)
 		{
-			return !GorgonBlendStates.Equals(ref left, ref right);
+			return !Equals(ref left, ref right);
 		}
 		#endregion
 
@@ -552,7 +562,7 @@ namespace GorgonLibrary.Graphics
 		/// </returns>
 		public bool Equals(GorgonBlendStates other)
 		{
-			return GorgonBlendStates.Equals(ref this, ref other);
+			return Equals(ref this, ref other);
 		}
 		#endregion
 
@@ -564,7 +574,7 @@ namespace GorgonLibrary.Graphics
 		/// <returns>TRUE if equal, FALSE if not.</returns>
 		public bool Equals(ref GorgonBlendStates other)
 		{
-			return GorgonBlendStates.Equals(ref this, ref other);		
+			return Equals(ref this, ref other);		
 		}
 		#endregion
 	}
@@ -574,7 +584,7 @@ namespace GorgonLibrary.Graphics
 	/// The blending render state.
 	/// </summary>
 	/// <remarks>This is used to control how polygons are blended in a scene.</remarks>
-	public class GorgonBlendRenderState
+	public sealed class GorgonBlendRenderState
 		: GorgonState<GorgonBlendStates>
 	{
 		#region Variables.
@@ -593,17 +603,21 @@ namespace GorgonLibrary.Graphics
 			{
 #if DEBUG
 				if (Graphics.Context == null)
-					throw new InvalidOperationException("A valid context could not be found.");
+				{
+					throw new GorgonException(GorgonResult.CannotRead, Resources.GORGFX_INVALID_D3D_CONTEXT);
+				}
 #endif
 				return _blendFactor;
 			}
 			set
 			{
-				if (_blendFactor != value)
+				if (_blendFactor == value)
 				{
-					_blendFactor = value;
-					Graphics.Context.OutputMerger.BlendFactor = value.SharpDXColor4;
+					return;
 				}
+
+				_blendFactor = value;
+				Graphics.Context.OutputMerger.BlendFactor = value.SharpDXColor4;
 			}
 		}
 
@@ -617,22 +631,26 @@ namespace GorgonLibrary.Graphics
 			{
 #if DEBUG
 				if (Graphics.Context == null)
-					throw new InvalidOperationException("A valid context could not be found.");
+				{
+					throw new GorgonException(GorgonResult.CannotRead, Resources.GORGFX_INVALID_D3D_CONTEXT);
+				}
 #endif
 				return _sampleMask;
 			}
 			set
 			{
-				if (_sampleMask != value)
-				{				
-					_sampleMask = value;
-					Graphics.Context.OutputMerger.BlendSampleMask = (int)_sampleMask;
+				if (_sampleMask == value)
+				{
+					return;
 				}
+
+				_sampleMask = value;
+				Graphics.Context.OutputMerger.BlendSampleMask = (int)_sampleMask;
 			}
 		}
 		#endregion
 
-		#region Methods.		
+		#region Methods.
 		/// <summary>
 		/// Function to apply the state to the current rendering context.
 		/// </summary>
@@ -649,13 +667,119 @@ namespace GorgonLibrary.Graphics
 		/// <returns>The D3D state object.</returns>
 		internal override D3D.DeviceChild GetStateObject(ref GorgonBlendStates stateType)
 		{
-			var desc = new D3D.BlendStateDescription();
+#if DEBUG
+			#region State Validation Code.
+			if ((stateType.RenderTarget0.AlphaOperation == BlendOperation.Unknown)
+			    && (stateType.RenderTarget1.AlphaOperation == BlendOperation.Unknown)
+			    && (stateType.RenderTarget2.AlphaOperation == BlendOperation.Unknown)
+			    && (stateType.RenderTarget3.AlphaOperation == BlendOperation.Unknown)
+			    && (stateType.RenderTarget4.AlphaOperation == BlendOperation.Unknown)
+			    && (stateType.RenderTarget5.AlphaOperation == BlendOperation.Unknown)
+			    && (stateType.RenderTarget6.AlphaOperation == BlendOperation.Unknown)
+			    && (stateType.RenderTarget7.AlphaOperation == BlendOperation.Unknown))
+			{
+				throw new GorgonException(GorgonResult.CannotBind,
+				                          string.Format(Resources.GORGFX_INVALID_ENUM_VALUE, BlendOperation.Unknown,
+				                                        "AlphaOperation"));
+			}
 
-			if ((desc.AlphaToCoverageEnable) && (Graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM2_a_b))
-				throw new GorgonException(GorgonResult.CannotBind, "Cannot bind the blending state.  Alpha to coverage is only available on SM 4.x or better video devices.");
+			if ((stateType.RenderTarget0.BlendingOperation == BlendOperation.Unknown)
+				&& (stateType.RenderTarget1.BlendingOperation == BlendOperation.Unknown)
+				&& (stateType.RenderTarget2.BlendingOperation == BlendOperation.Unknown)
+				&& (stateType.RenderTarget3.BlendingOperation == BlendOperation.Unknown)
+				&& (stateType.RenderTarget4.BlendingOperation == BlendOperation.Unknown)
+				&& (stateType.RenderTarget5.BlendingOperation == BlendOperation.Unknown)
+				&& (stateType.RenderTarget6.BlendingOperation == BlendOperation.Unknown)
+				&& (stateType.RenderTarget7.BlendingOperation == BlendOperation.Unknown))
+			{
+				throw new GorgonException(GorgonResult.CannotBind,
+										  string.Format(Resources.GORGFX_INVALID_ENUM_VALUE, BlendOperation.Unknown,
+														"BlendingOperation"));
+			}
 
-			desc.AlphaToCoverageEnable = stateType.IsAlphaCoverageEnabled;
-			desc.IndependentBlendEnable = stateType.IsIndependentBlendEnabled;
+			if ((stateType.RenderTarget0.DestinationAlphaBlend == BlendType.Unknown)
+				&& (stateType.RenderTarget1.DestinationAlphaBlend == BlendType.Unknown)
+				&& (stateType.RenderTarget2.DestinationAlphaBlend == BlendType.Unknown)
+				&& (stateType.RenderTarget3.DestinationAlphaBlend == BlendType.Unknown)
+				&& (stateType.RenderTarget4.DestinationAlphaBlend == BlendType.Unknown)
+				&& (stateType.RenderTarget5.DestinationAlphaBlend == BlendType.Unknown)
+				&& (stateType.RenderTarget6.DestinationAlphaBlend == BlendType.Unknown)
+				&& (stateType.RenderTarget7.DestinationAlphaBlend == BlendType.Unknown))
+			{
+				throw new GorgonException(GorgonResult.CannotBind,
+										  string.Format(Resources.GORGFX_INVALID_ENUM_VALUE, BlendType.Unknown,
+														"DestinationAlphaBlend"));
+			}
+
+			if ((stateType.RenderTarget0.DestinationBlend == BlendType.Unknown)
+				&& (stateType.RenderTarget1.DestinationBlend == BlendType.Unknown)
+				&& (stateType.RenderTarget2.DestinationBlend == BlendType.Unknown)
+				&& (stateType.RenderTarget3.DestinationBlend == BlendType.Unknown)
+				&& (stateType.RenderTarget4.DestinationBlend == BlendType.Unknown)
+				&& (stateType.RenderTarget5.DestinationBlend == BlendType.Unknown)
+				&& (stateType.RenderTarget6.DestinationBlend == BlendType.Unknown)
+				&& (stateType.RenderTarget7.DestinationBlend == BlendType.Unknown))
+			{
+				throw new GorgonException(GorgonResult.CannotBind,
+										  string.Format(Resources.GORGFX_INVALID_ENUM_VALUE, BlendType.Unknown,
+														"DestinationBlend"));
+			}
+
+			if ((stateType.RenderTarget0.SourceAlphaBlend == BlendType.Unknown)
+				&& (stateType.RenderTarget1.SourceAlphaBlend == BlendType.Unknown)
+				&& (stateType.RenderTarget2.SourceAlphaBlend == BlendType.Unknown)
+				&& (stateType.RenderTarget3.SourceAlphaBlend == BlendType.Unknown)
+				&& (stateType.RenderTarget4.SourceAlphaBlend == BlendType.Unknown)
+				&& (stateType.RenderTarget5.SourceAlphaBlend == BlendType.Unknown)
+				&& (stateType.RenderTarget6.SourceAlphaBlend == BlendType.Unknown)
+				&& (stateType.RenderTarget7.SourceAlphaBlend == BlendType.Unknown))
+			{
+				throw new GorgonException(GorgonResult.CannotBind,
+										  string.Format(Resources.GORGFX_INVALID_ENUM_VALUE, BlendType.Unknown,
+														"SourceAlphaBlend"));
+			}
+
+			if ((stateType.RenderTarget0.SourceBlend == BlendType.Unknown)
+				&& (stateType.RenderTarget1.SourceBlend == BlendType.Unknown)
+				&& (stateType.RenderTarget2.SourceBlend == BlendType.Unknown)
+				&& (stateType.RenderTarget3.SourceBlend == BlendType.Unknown)
+				&& (stateType.RenderTarget4.SourceBlend == BlendType.Unknown)
+				&& (stateType.RenderTarget5.SourceBlend == BlendType.Unknown)
+				&& (stateType.RenderTarget6.SourceBlend == BlendType.Unknown)
+				&& (stateType.RenderTarget7.SourceBlend == BlendType.Unknown))
+			{
+				throw new GorgonException(GorgonResult.CannotBind,
+										  string.Format(Resources.GORGFX_INVALID_ENUM_VALUE, BlendType.Unknown,
+														"SourceBlend"));
+			}
+
+			if ((stateType.RenderTarget0.WriteMask == ColorWriteMaskFlags.Unknown)
+				&& (stateType.RenderTarget1.WriteMask == ColorWriteMaskFlags.Unknown)
+				&& (stateType.RenderTarget2.WriteMask == ColorWriteMaskFlags.Unknown)
+				&& (stateType.RenderTarget3.WriteMask == ColorWriteMaskFlags.Unknown)
+				&& (stateType.RenderTarget4.WriteMask == ColorWriteMaskFlags.Unknown)
+				&& (stateType.RenderTarget5.WriteMask == ColorWriteMaskFlags.Unknown)
+				&& (stateType.RenderTarget6.WriteMask == ColorWriteMaskFlags.Unknown)
+				&& (stateType.RenderTarget7.WriteMask == ColorWriteMaskFlags.Unknown))
+			{
+				throw new GorgonException(GorgonResult.CannotBind,
+										  string.Format(Resources.GORGFX_INVALID_ENUM_VALUE, ColorWriteMaskFlags.Unknown,
+														"WriteMask"));
+			}
+
+			if ((stateType.IsAlphaCoverageEnabled) && (Graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM2_a_b))
+			{
+				throw new GorgonException(GorgonResult.CannotBind,
+				                          Resources.GORGFX_ALPHA_TO_COVERAGE_NOT_AVAILABLE);
+			}
+			#endregion
+#endif
+
+			var desc = new D3D.BlendStateDescription
+				{
+					AlphaToCoverageEnable = stateType.IsAlphaCoverageEnabled,
+					IndependentBlendEnable = stateType.IsIndependentBlendEnabled
+				};
 
 			// Copy render targets.
 			desc.RenderTarget[0] = stateType.RenderTarget0.Convert();
@@ -667,8 +791,10 @@ namespace GorgonLibrary.Graphics
 			desc.RenderTarget[6] = stateType.RenderTarget6.Convert();
 			desc.RenderTarget[7] = stateType.RenderTarget7.Convert();
 
-			var state = new D3D.BlendState(Graphics.D3DDevice, desc);
-			state.DebugName = "Gorgon Blend State #" + StateCacheCount.ToString();
+			var state = new D3D.BlendState(Graphics.D3DDevice, desc)
+				{
+					DebugName = "Gorgon Blend State #" + StateCacheCount
+				};
 
 			return state;
 		}		

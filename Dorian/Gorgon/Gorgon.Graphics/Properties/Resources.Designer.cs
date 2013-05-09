@@ -61,6 +61,15 @@ namespace GorgonLibrary.Graphics.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Cannot bind the blending state.  Alpha to coverage is only available on SM 4.x or better video devices..
+        /// </summary>
+        internal static string GORGFX_ALPHA_TO_COVERAGE_NOT_AVAILABLE {
+            get {
+                return ResourceManager.GetString("GORGFX_ALPHA_TO_COVERAGE_NOT_AVAILABLE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The buffer is already locked..
         /// </summary>
         internal static string GORGFX_ALREADY_LOCKED {
@@ -84,6 +93,24 @@ namespace GorgonLibrary.Graphics.Properties {
         internal static string GORGFX_BUFFER_SIZE_MISMATCH {
             get {
                 return ResourceManager.GetString("GORGFX_BUFFER_SIZE_MISMATCH", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Could not retrieve character widths for the specified characters..
+        /// </summary>
+        internal static string GORGFX_CANNOT_RETRIEVE_ABC {
+            get {
+                return ResourceManager.GetString("GORGFX_CANNOT_RETRIEVE_ABC", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cannot retrieve kerning pairs..
+        /// </summary>
+        internal static string GORGFX_CANNOT_RETRIEVE_KERNING {
+            get {
+                return ResourceManager.GetString("GORGFX_CANNOT_RETRIEVE_KERNING", resourceCulture);
             }
         }
         
@@ -138,6 +165,24 @@ namespace GorgonLibrary.Graphics.Properties {
         internal static string GORGFX_INDEX_OUT_OF_RANGE {
             get {
                 return ResourceManager.GetString("GORGFX_INDEX_OUT_OF_RANGE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to A valid device context was not found..
+        /// </summary>
+        internal static string GORGFX_INVALID_D3D_CONTEXT {
+            get {
+                return ResourceManager.GetString("GORGFX_INVALID_D3D_CONTEXT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The value [{0}] for parameter &apos;{1}&apos; is not valid..
+        /// </summary>
+        internal static string GORGFX_INVALID_ENUM_VALUE {
+            get {
+                return ResourceManager.GetString("GORGFX_INVALID_ENUM_VALUE", resourceCulture);
             }
         }
         
