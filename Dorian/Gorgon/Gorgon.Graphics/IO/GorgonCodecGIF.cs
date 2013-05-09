@@ -362,60 +362,59 @@ namespace GorgonLibrary.IO
             
 			try
 			{
-				using (var wrapperStream = new GorgonStreamWrapper(stream))
+			    var wrapperStream = new GorgonStreamWrapper(stream);
+
+				// Get our WIC interface.				
+				using (var wic = new GorgonWICImage())
 				{
-					// Get our WIC interface.				
-					using (var wic = new GorgonWICImage())
+					using (var decoder = new SharpDX.WIC.BitmapDecoder(wic.Factory, SupportedFormat))
 					{
-						using (var decoder = new SharpDX.WIC.BitmapDecoder(wic.Factory, SupportedFormat))
+						using (var wicStream = new SharpDX.WIC.WICStream(wic.Factory, wrapperStream))
 						{
-							using (var wicStream = new SharpDX.WIC.WICStream(wic.Factory, wrapperStream))
+							try
 							{
-								try
-								{
-									decoder.Initialize(wicStream, SharpDX.WIC.DecodeOptions.CacheOnDemand);
-								}
-								catch (DX.SharpDXException sdex)
-								{
-									// Repackage the exception to keep in line with our API defintion.
-									throw new System.IO.IOException("Cannot decode the " + Codec + " file. " + sdex.Descriptor.Description, sdex);
-								}
+								decoder.Initialize(wicStream, SharpDX.WIC.DecodeOptions.CacheOnDemand);
+							}
+							catch (DX.SharpDXException sdex)
+							{
+								// Repackage the exception to keep in line with our API defintion.
+								throw new System.IO.IOException("Cannot decode the " + Codec + " file. " + sdex.Descriptor.Description, sdex);
+							}
 
-								if (decoder.FrameCount < 2)
-								{
-									return result;
-								}
+							if (decoder.FrameCount < 2)
+							{
+								return result;
+							}
 
-								result = new ushort[decoder.FrameCount];
+							result = new ushort[decoder.FrameCount];
 
-								for (int frame = 0; frame < result.Length; frame++)
+							for (int frame = 0; frame < result.Length; frame++)
+							{
+								using (var frameImage = decoder.GetFrame(frame))
 								{
-									using (var frameImage = decoder.GetFrame(frame))
+									// Check to see if we can actually read this thing.
+									if (frame == 0)
 									{
-										// Check to see if we can actually read this thing.
-										if (frame == 0)
-										{
-											Guid temp = Guid.Empty;
-											settings = ReadMetaData(wic, decoder, frameImage, ref temp);
+										Guid temp = Guid.Empty;
+										settings = ReadMetaData(wic, decoder, frameImage, ref temp);
 
-											if (settings.Format == BufferFormat.Unknown)
-											{
-												throw new System.IO.IOException("Cannot decode the GIF file.  The data could not be decoded as a GIF file.");
-											}
+										if (settings.Format == BufferFormat.Unknown)
+										{
+											throw new System.IO.IOException("Cannot decode the GIF file.  The data could not be decoded as a GIF file.");
 										}
+									}
 
-										using (var reader = frameImage.MetadataQueryReader)
+									using (var reader = frameImage.MetadataQueryReader)
+									{
+										var metaData = reader.GetMetadataByName("/grctlext/Delay");
+
+										if (metaData != null)
 										{
-											var metaData = reader.GetMetadataByName("/grctlext/Delay");
-
-											if (metaData != null)
-											{
-												result[frame] = (ushort)metaData;
-											}
-											else
-											{
-												result[frame] = 0;
-											}
+											result[frame] = (ushort)metaData;
+										}
+										else
+										{
+											result[frame] = 0;
 										}
 									}
 								}

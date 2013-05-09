@@ -118,10 +118,12 @@ namespace GorgonLibrary.Renderers
 		/// </summary>
 		internal void CleanUp()
 		{
-			if (DefaultVertexShader != null)
-				DefaultVertexShader.Dispose();
+		    if (DefaultVertexShader != null)
+		    {
+		        DefaultVertexShader.Dispose();
+		    }
 
-			DefaultVertexShader = null;
+		    DefaultVertexShader = null;
 		}
 		#endregion
 

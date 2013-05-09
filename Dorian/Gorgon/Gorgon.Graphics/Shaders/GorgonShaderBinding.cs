@@ -29,10 +29,11 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using Shaders = SharpDX.D3DCompiler;
 using GorgonLibrary.Diagnostics;
 using GorgonLibrary.IO;
 using GorgonLibrary.Native;
-using Shaders = SharpDX.D3DCompiler;
+using GorgonLibrary.Graphics.Properties;
 
 namespace GorgonLibrary.Graphics
 {
@@ -240,10 +241,19 @@ namespace GorgonLibrary.Graphics
 		/// <param name="allowCPUWrite">TRUE to allow the CPU to write to the buffer, FALSE to disallow.</param>
 		/// <param name="stream">Stream used to initialize the buffer.</param>
 		/// <returns>A new constant buffer.</returns>
+		/// <exception cref="GorgonLibrary.GorgonException">Thrown when the <paramref name="size"/> parameter is not a multiple of 16.</exception>
 		public GorgonConstantBuffer CreateConstantBuffer(int size, bool allowCPUWrite, GorgonDataStream stream)
 		{			
+            if ((size % 16) != 0)
+            {
+                throw new GorgonException(GorgonResult.CannotCreate,
+                                          string.Format(Resources.GORGFX_CBUFFER_NOT_MULTIPLE_OF_16, size));
+            }
+
 			var buffer = new GorgonConstantBuffer(_graphics, size, allowCPUWrite);
+
 			buffer.Initialize(stream);
+
 			_graphics.AddTrackedObject(buffer);
 			return buffer;
 		}
@@ -258,13 +268,9 @@ namespace GorgonLibrary.Graphics
 		public GorgonConstantBuffer CreateConstantBuffer<T>(T value, bool allowCPUWrite)
 			where T : struct
 		{
-			using (GorgonDataStream stream = GorgonDataStream.ValueToStream<T>(value))
+			using (GorgonDataStream stream = GorgonDataStream.ValueToStream(value))
 			{
-				var buffer = new GorgonConstantBuffer(_graphics, (int)stream.Length, allowCPUWrite);
-				buffer.Initialize(stream);
-
-				_graphics.AddTrackedObject(buffer);
-				return buffer;
+			    return CreateConstantBuffer((int)stream.Length, allowCPUWrite, stream);
 			}
 		}
 

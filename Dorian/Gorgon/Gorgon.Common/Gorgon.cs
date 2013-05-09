@@ -354,9 +354,9 @@ namespace GorgonLibrary
 		private static bool Initialize()
 		{
 			// Attach assembly resolving to deal with issues when loading assemblies with designers/type converters.
-			AppDomain.CurrentDomain.AssemblyResolve += ResolveAssembly;
+		    AppDomain.CurrentDomain.AssemblyResolve += ResolveAssembly;
 
-			// Display the form.
+		    // Display the form.
 			if ((ApplicationForm != null) && (!ApplicationForm.IsDisposed))
 			{
 				ApplicationForm.Show();
@@ -409,9 +409,9 @@ namespace GorgonLibrary
 			IsRunning = false;
 
 			// Attach assembly resolving to deal with issues when loading assemblies with designers/type converters.
-			AppDomain.CurrentDomain.AssemblyResolve -= ResolveAssembly;
+	        AppDomain.CurrentDomain.AssemblyResolve -= ResolveAssembly;
 
-			// Remove quit handlers.
+		    // Remove quit handlers.
 			Application.ApplicationExit -= Application_ApplicationExit;
 			Application.ThreadExit -= Application_ThreadExit;
 
@@ -451,20 +451,11 @@ namespace GorgonLibrary
 		/// <returns>The assembly, if found, NULL if not.</returns>
 		private static Assembly ResolveAssembly(object sender, ResolveEventArgs args)
 		{
-			var domain = (AppDomain)sender;
-			var assemblies = domain.GetAssemblies();
+            if ((PlugIns != null) && (PlugIns.AssemblyResolver != null))
+            {
+                return PlugIns.AssemblyResolver((AppDomain)sender, args);
+            }
 
-			// ReSharper disable LoopCanBeConvertedToQuery
-			for (int i = 0; i < assemblies.Length; i++)
-			{
-				var assembly = assemblies[i];
-
-				if (assembly.FullName == args.Name)
-				{
-					return assembly;
-				}
-			}
-			// ReSharper restore LoopCanBeConvertedToQuery
 			return null;
 		}
 
@@ -698,9 +689,11 @@ namespace GorgonLibrary
 		public static Form GetTopLevelForm(Control childControl)
 		{
 		    if (childControl == null)
-				throw new ArgumentNullException("childControl");
+		    {
+		        throw new ArgumentNullException("childControl");
+		    }
 
-			var result = childControl as Form;
+		    var result = childControl as Form;
 
 		    if (result != null)
 		    {

@@ -29,6 +29,7 @@ using System.Collections.Generic;
 using System.Linq;
 using D3D = SharpDX.Direct3D11;
 using GorgonLibrary.Diagnostics;
+using GorgonLibrary.Math;
 using GorgonLibrary.Graphics.Properties;
 
 namespace GorgonLibrary.Graphics
@@ -1066,15 +1067,24 @@ namespace GorgonLibrary.Graphics
 			/// <param name="arrayIndex">Index in the array to start writing at.</param>
 			public void CopyTo(GorgonResourceView[] array, int arrayIndex)
 			{
-				var resources = from shaderView in _resources							   
-							   where shaderView != null
-							   select shaderView;
+#if DEBUG
+                if (array == null)
+                {
+                    throw new ArgumentNullException("array");
+                }
 
-				foreach (var item in resources)
-				{
-					array[arrayIndex] = item;
-					arrayIndex++;
-				}
+                if ((arrayIndex < 0) || (arrayIndex >= array.Length))
+                {
+                    throw new ArgumentOutOfRangeException("arrayIndex");
+                }
+#endif
+
+			    int count = array.Length.Min(_resources.Count);
+
+			    for (int i = 0; i < count; i++)
+			    {
+			        array[i] = _resources[i];
+			    }
 			}
 
 			/// <summary>
@@ -1219,7 +1229,7 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Function to clean up.
 		/// </summary>
-		internal void CleanUp()
+		internal virtual void CleanUp()
 		{
 			if (_samplers != null)
 			{
@@ -1241,12 +1251,6 @@ namespace GorgonLibrary.Graphics
 			ConstantBuffers = new ShaderConstantBuffers(this);
 			_samplers = new TextureSamplerState(this);
 			Resources = new ShaderResourceViews(this);
-
-			// Set to default sampler states.
-			for (int i = 0; i < _samplers.Count; i++)
-			{
-				_samplers[i] = GorgonTextureSamplerStates.DefaultStates;
-			}
 		}
 		#endregion
 	}

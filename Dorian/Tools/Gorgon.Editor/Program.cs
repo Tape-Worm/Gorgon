@@ -231,6 +231,31 @@ namespace GorgonLibrary.Editor
 
 		#region Methods.
         /// <summary>
+        /// Function called to resolve dependency assemblies.
+        /// </summary>
+        /// <param name="appDomain">The application domain that's requesting resolution.</param>
+        /// <param name="e">Event parameters for the assembly resolution event.</param>
+        /// <returns>The assembly if found, NULL if not.</returns>
+        private static System.Reflection.Assembly Resolver(AppDomain appDomain, ResolveEventArgs e)
+        {
+            var assemblies = appDomain.GetAssemblies();
+
+            // ReSharper disable LoopCanBeConvertedToQuery
+            for (int i = 0; i < assemblies.Length; i++)
+            {
+                var assembly = assemblies[i];
+
+                if (assembly.FullName == e.Name)
+                {
+                    return assembly;
+                }
+            }
+            // ReSharper restore LoopCanBeConvertedToQuery
+
+            return null;
+        }
+
+        /// <summary>
         /// Function to retrieve the writer plug-in that was used to write this file.
         /// </summary>
         /// <param name="path">Path to the current file.</param>
@@ -629,7 +654,9 @@ namespace GorgonLibrary.Editor
 				Application.SetCompatibleTextRenderingDefault(false);
 
 				Settings.Load();
-								
+
+			    Gorgon.PlugIns.AssemblyResolver = Resolver;
+
 				Gorgon.Run(new AppContext());
 			}
 			catch (Exception ex)
@@ -638,6 +665,8 @@ namespace GorgonLibrary.Editor
 			}
 			finally
 			{
+                Gorgon.PlugIns.AssemblyResolver = null;
+
 				// Destroy the current content.
 				if (CurrentContent != null)
 				{

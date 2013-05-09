@@ -152,12 +152,17 @@ namespace GorgonLibrary.Renderers
 		/// </summary>
 		internal void CleanUp()
 		{
-			if (DefaultPixelShaderDiffuse != null)
-				DefaultPixelShaderDiffuse.Dispose();
-			if (DefaultPixelShaderTextured != null)
-				DefaultPixelShaderTextured.Dispose();
+		    if (DefaultPixelShaderDiffuse != null)
+		    {
+		        DefaultPixelShaderDiffuse.Dispose();
+		    }
 
-			DefaultPixelShaderTextured = null;
+		    if (DefaultPixelShaderTextured != null)
+		    {
+		        DefaultPixelShaderTextured.Dispose();
+		    }
+
+		    DefaultPixelShaderTextured = null;
 			DefaultPixelShaderDiffuse = null;
 		}
 		#endregion

@@ -209,6 +209,24 @@ namespace GorgonLibrary.Graphics
 			CreateDefaultResourceView();
 		}
 
+        /// <summary>
+        /// Function to initialize the texture from a swap chain.
+        /// </summary>
+        /// <param name="swapChain">The swap chain used to initialize the texture.</param>
+        internal void InitializeSwapChain(GorgonSwapChain swapChain)
+        {
+            D3DResource = D3D.Resource.FromSwapChain<D3D.Texture2D>(swapChain.GISwapChain, 0);
+
+            base.Settings = GetTextureInformation();
+
+            RenderTarget = swapChain;
+
+            if ((swapChain.Settings.Flags & SwapChainUsageFlags.ShaderInput) == SwapChainUsageFlags.ShaderInput)
+            {
+                CreateDefaultResourceView();
+            }
+        }
+
 		/// <summary>
 		/// Function to initialize a depth/stencil texture.
 		/// </summary>
@@ -587,36 +605,6 @@ namespace GorgonLibrary.Graphics
 		#endregion
 
 		#region Constructor/Destructor.
-		/// <summary>
-		/// Prevents a default instance of the <see cref="GorgonTexture2D"/> class from being created.
-		/// </summary>
-		/// <param name="graphics">The graphics interface that created this object.</param>
-		/// <param name="name">The name of the texture.</param>
-		/// <param name="texture">The source texture.</param>
-		internal GorgonTexture2D(GorgonGraphics graphics, string name, D3D.Texture2D texture)
-			: base(graphics, name, null)
-		{
-			D3DResource = texture;
-			base.Settings = GetTextureInformation();
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonTexture2D"/> class.
-		/// </summary>
-		/// <param name="swapChain">The swap chain to get texture information from.</param>
-		internal GorgonTexture2D(GorgonSwapChain swapChain)
-			: base(swapChain.Graphics, swapChain.Name + "_Internal_Texture_" + Guid.NewGuid().ToString(), null)
-		{
-			D3DResource = D3D.Texture2D.FromSwapChain<D3D.Texture2D>(swapChain.GISwapChain, 0);
-
-			base.Settings = GetTextureInformation();
-
-			RenderTarget = swapChain;
-
-			if ((swapChain.Settings.Flags & SwapChainUsageFlags.ShaderInput) == SwapChainUsageFlags.ShaderInput)
-				CreateDefaultResourceView();
-		}
-
 		/// <summary>
 		/// Initializes a new instance of the <see cref="GorgonTexture2D"/> class.
 		/// </summary>

@@ -25,10 +25,10 @@
 #endregion
 
 using System;
-using System.Linq;
-using GorgonLibrary.IO;
 using DX = SharpDX;
 using D3D = SharpDX.Direct3D11;
+using GorgonLibrary.IO;
+using GorgonLibrary.Graphics.Properties;
 
 namespace GorgonLibrary.Graphics
 {
@@ -39,7 +39,7 @@ namespace GorgonLibrary.Graphics
 	/// <para>Typically, the user will define a value type that matches a constant buffer layout.  Then, if the value type uses nothing but blittable types, the user can then write the entire 
 	/// value type structure to the constant buffer.  If the value type contains more complex types, such as arrays, then the user can write each item in the value type to a variable in the constant 
 	/// buffer.  Please note that the names for the variables in the value type and the shader do -not- have to match, although, for the sake of clarity, it is a good idea that they do.</para>
-	/// <para>In order to write to a constant buffer, the user must <see cref="M:GorgonLibrary.Graphics.GorgonBaseBuffer.Lock">lock</see> the buffer beforehand, and unlock it when done.  Failure to do so will result in an exception.</para>
+	/// <para>In order to write to a constant buffer, the user must <see cref="GorgonLibrary.Graphics.GorgonBaseBuffer.Lock">lock</see> the buffer beforehand, and unlock it when done.  Failure to do so will result in an exception.</para>
 	/// <para>Constant buffers follow very specific rules, which are explained at http://msdn.microsoft.com/en-us/library/windows/desktop/bb509632(v=vs.85).aspx </para>
 	/// <para>When passing a value type to the constant buffer, ensure that the type has a System.Runtime.InteropServices.StructLayout attribute assigned to it, and that the layout is explicit.  Also, the size of the 
 	/// value type must be a multiple of 16, so padding variables may be required.</para>
@@ -81,8 +81,8 @@ namespace GorgonLibrary.Graphics
 				D3DResource = null;
 			}
 
-			var desc = new D3D.BufferDescription()
-			{
+			var desc = new D3D.BufferDescription
+			    {
 				BindFlags = D3D.BindFlags.ConstantBuffer,
 				CpuAccessFlags = D3DCPUAccessFlags,
 				OptionFlags = D3D.ResourceOptionFlags.None,
@@ -105,7 +105,7 @@ namespace GorgonLibrary.Graphics
 			GorgonRenderStatistics.ConstantBufferSize += ((D3D.Buffer)D3DResource).Description.SizeInBytes;
 
 #if DEBUG
-			D3DResource.DebugName = "Gorgon Constant Buffer #" + Graphics.GetGraphicsObjectOfType<GorgonConstantBuffer>().Count().ToString(); 
+			D3DResource.DebugName = "Gorgon Constant Buffer #" + Graphics.GetGraphicsObjectOfType<GorgonConstantBuffer>().Count; 
 #endif
 		}
 
@@ -118,10 +118,15 @@ namespace GorgonLibrary.Graphics
 		/// </returns>
 		protected override GorgonDataStream LockImpl(BufferLockFlags lockFlags)
 		{
-			if (((lockFlags & BufferLockFlags.Discard) != BufferLockFlags.Discard) || ((lockFlags & BufferLockFlags.Write) != BufferLockFlags.Write))
-				throw new ArgumentException("A constant buffer must be locked with the Write and Discard flags.", "lockFlags");
+#if DEBUG
+		    if (((lockFlags & BufferLockFlags.Discard) != BufferLockFlags.Discard) ||
+		        ((lockFlags & BufferLockFlags.Write) != BufferLockFlags.Write))
+		    {
+		        throw new ArgumentException(Resources.GORGFX_CBUFFER_LOCK_NOT_WRITE_DISCARD, "lockFlags");
+		    }
+#endif
 
-			Graphics.Context.MapSubresource(D3DBuffer, D3D.MapMode.WriteDiscard, D3D.MapFlags.None, out _lockStream);
+		    Graphics.Context.MapSubresource(D3DBuffer, D3D.MapMode.WriteDiscard, D3D.MapFlags.None, out _lockStream);
 
 			return new GorgonDataStream(_lockStream.DataPointer, (int)_lockStream.Length);
 		}
@@ -135,18 +140,21 @@ namespace GorgonLibrary.Graphics
 			Graphics.Shaders.VertexShader.ConstantBuffers.Unbind(this);
 			Graphics.Shaders.PixelShader.ConstantBuffers.Unbind(this);
 
-			if (IsLocked)
-				Unlock();
+		    if (IsLocked)
+		    {
+		        Unlock();
+		    }
 
-			if (D3DResource != null)
-			{
-				GorgonRenderStatistics.ConstantBufferCount--;
-				GorgonRenderStatistics.ConstantBufferSize -= D3DBuffer.Description.SizeInBytes;
+		    if (D3DResource == null)
+		    {
+		        return;
+		    }
 
-				D3DResource.Dispose();
-				D3DResource = null;
-			}
+		    GorgonRenderStatistics.ConstantBufferCount--;
+		    GorgonRenderStatistics.ConstantBufferSize -= D3DBuffer.Description.SizeInBytes;
 
+		    D3DResource.Dispose();
+		    D3DResource = null;
 		}
 
 		/// <summary>
@@ -168,8 +176,8 @@ namespace GorgonLibrary.Graphics
 		protected override void UpdateImpl(GorgonDataStream stream, int offset, int size)
 		{
 			Graphics.Context.UpdateSubresource(
-				new DX.DataBox()
-				{
+				new DX.DataBox
+				    {
 					DataPointer = stream.PositionPointer,
 					RowPitch = 0,
 					SlicePitch = 0
@@ -184,8 +192,7 @@ namespace GorgonLibrary.Graphics
 		/// <param name="offset">Offset, in bytes, into the buffer to start writing at.</param>
 		/// <param name="size">The number of bytes to write.</param>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="stream"/> parameter is NULL (Nothing in VB.Net).</exception>
-		///   
-		/// <exception cref="System.InvalidOperationException">Thrown when the buffer usage is not set to default.</exception>
+        /// <exception cref="GorgonLibrary.GorgonException">Thrown when the buffer usage is not set to default.</exception>
 		[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
 		public new void Update(GorgonDataStream stream, int offset, int size)
 		{
@@ -197,12 +204,12 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		/// <param name="stream">Stream containing the data used to update the buffer.</param>
 		/// <remarks>This method can only be used with buffers that have Default usage.  Other buffer usages will thrown an exception.
-		/// <para>This method will respect the <see cref="P:GorgonLibrary.GorgonDataStream.Position">Position</see> property of the data stream.  
+		/// <para>This method will respect the <see cref="GorgonLibrary.IO.GorgonDataStream.Position">Position</see> property of the data stream.  
 		/// This means that it will start reading from the stream at the current position.  To read from the beginning of the stream, set the position 
 		/// to 0.</para>
 		/// </remarks>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="stream"/> parameter is NULL (Nothing in VB.Net).</exception>
-		/// <exception cref="System.InvalidOperationException">Thrown when the buffer usage is not set to default.</exception>
+        /// <exception cref="GorgonLibrary.GorgonException">Thrown when the buffer usage is not set to default.</exception>
 		public void Update(GorgonDataStream stream)
 		{
 			Update(stream, 0, 0);
@@ -219,8 +226,6 @@ namespace GorgonLibrary.Graphics
 		internal GorgonConstantBuffer(GorgonGraphics graphics, int size, bool allowCPUWrite)
 			: base(graphics, (allowCPUWrite ? BufferUsage.Dynamic : BufferUsage.Default), size)
 		{
-			if ((SizeInBytes % 16) != 0)
-				throw new GorgonException(GorgonResult.CannotCreate, "Cannot create the constant buffer.  The buffer size (" + size.ToString() + " bytes) need be evenly divisible by 16.");
 		}
 		#endregion
 	}

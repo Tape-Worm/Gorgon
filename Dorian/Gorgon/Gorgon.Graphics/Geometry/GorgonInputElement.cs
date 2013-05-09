@@ -230,7 +230,17 @@ namespace GorgonLibrary.Graphics
 		/// <param name="instanceCount">Number of instances to use before moving to the next element.</param>
 		public GorgonInputElement(string context, BufferFormat format, int offset, int index, int slot, bool instanced, int instanceCount)
 		{
-			_context = context;
+            if (GorgonBufferFormatInfo.GetInfo(format).BitDepth == 0)
+            {
+                throw new ArgumentException("'" + format.ToString() + "' is not a supported format.", "format");
+            }
+
+            if ((slot < 0) || (slot > 15))
+            {
+                throw new ArgumentException("The value must be from 0 to 15.", "slot");
+            }
+            
+            _context = context;
 			_index = index;
 			_format = format;
 			_offset = offset;

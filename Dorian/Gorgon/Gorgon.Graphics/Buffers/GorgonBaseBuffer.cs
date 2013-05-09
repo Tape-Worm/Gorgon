@@ -40,20 +40,20 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Allows read/write access to the buffer from the GPU.
 		/// </summary>
-		Default = 0,
+		Default = D3D11.ResourceUsage.Default,
 		/// <summary>
 		/// Can only be read by the GPU, cannot be written to or read from by the CPU, and cannot be written to by the GPU.
 		/// </summary>
 		/// <remarks>Pre-initialize any buffer created with this usage, or else you will not be able to after it's been created.</remarks>
-		Immutable = 1,
+		Immutable = D3D11.ResourceUsage.Immutable,
 		/// <summary>
 		/// Allows read access by the GPU and write access by the CPU.
 		/// </summary>
-		Dynamic = 2,
+		Dynamic = D3D11.ResourceUsage.Dynamic,
 		/// <summary>
 		/// Allows reading/writing by the CPU and can be copied to a GPU compatiable buffer (but not used directly by the GPU).
 		/// </summary>
-		Staging = 3
+		Staging = D3D11.ResourceUsage.Staging
 	}
 
 	/// <summary>

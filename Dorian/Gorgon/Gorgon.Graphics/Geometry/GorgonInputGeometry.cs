@@ -536,11 +536,11 @@ namespace GorgonLibrary.Graphics
 			{
 				if (_inputLayout != value)
 				{
-					_inputLayout = value;
-					if (_inputLayout != null)
-						_graphics.Context.InputAssembler.InputLayout = _inputLayout.Convert(_graphics.D3DDevice);
-					else
-						_graphics.Context.InputAssembler.InputLayout = null;
+				    _inputLayout = value;
+
+				    _graphics.Context.InputAssembler.InputLayout = _inputLayout != null
+				                                                       ? _inputLayout.Convert(_graphics.D3DDevice)
+				                                                       : null;
 				}
 			}
 		}
@@ -739,13 +739,18 @@ namespace GorgonLibrary.Graphics
 		/// </remarks>
 		public GorgonInputLayout CreateInputLayout(string name, Type type, GorgonShader shader)
 		{
-			GorgonInputLayout layout = null;
+            if (type == null)
+            {
+                throw new ArgumentNullException("type");
+            }
 
-			GorgonDebug.AssertNull<Type>(type, "type");
-			GorgonDebug.AssertNull<GorgonShader>(shader, "shader");
+            if (shader == null)
+            {
+                throw new ArgumentNullException("shader");
+            }
 
-			layout = new GorgonInputLayout(_graphics, name, shader);
-			layout.GetLayoutFromType(type);
+			var layout = new GorgonInputLayout(_graphics, name, shader);
+			layout.InitializeFromType(type);
 
 			_graphics.AddTrackedObject(layout);
 
@@ -768,10 +773,12 @@ namespace GorgonLibrary.Graphics
 		/// </remarks>
 		public GorgonInputLayout CreateInputLayout(string name, GorgonShader shader)
 		{
-			GorgonInputLayout layout = null;
-
-			GorgonDebug.AssertNull<GorgonShader>(shader, "shader");
-			layout = new GorgonInputLayout(_graphics, name, shader);
+		    if (shader == null)
+            {
+                throw new ArgumentNullException("shader");
+            }
+			
+			var layout = new GorgonInputLayout(_graphics, name, shader);
 
 			_graphics.AddTrackedObject(layout);
 			return layout;
