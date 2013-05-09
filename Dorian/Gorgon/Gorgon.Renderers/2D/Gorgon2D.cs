@@ -306,13 +306,6 @@ namespace GorgonLibrary.Renderers
 					graphics.Shaders.PixelShader.ConstantBuffers[psConstant.Key] = psConstant.Value;
 				}
 			}
-
-			/// <summary>
-			/// Initializes a new instance of the <see cref="PreviousStates"/> struct.
-			/// </summary>
-			public PreviousStates()
-			{
-			}
 		}
 		#endregion
 

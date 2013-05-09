@@ -63,7 +63,9 @@ namespace GorgonLibrary.PlugIns
 	/// </summary>
 	/// <remarks>Use this object to control loading and unloading of plug-ins.  It is exposed as the <see cref="P:GorgonLibrary.Gorgon.PlugIns">PlugIns</see> parameter on the primary 
 	/// <seealso cref="GorgonLibrary.Gorgon">Gorgon</seealso> object and cannot be created by the user.
-	/// <para>This collection is not case-sensitive.</para></remarks>
+	/// <para>In some cases, a plug-in assembly may have issues when loading an assembly. Such as a type not being found, or a type in the assembly refusing to instantiate. In these cases 
+	/// use the <see cref="GorgonLibrary.PlugIns.GorgonPlugInFactory.AssemblyResolver">AssemblyResolver</see> property to assign a method that will attempt to resolve any dependency 
+	/// assemblies.</para></remarks>
 	public class GorgonPlugInFactory
 		: GorgonBaseNamedObjectCollection<GorgonPlugIn>
 	{
@@ -94,6 +96,21 @@ namespace GorgonLibrary.PlugIns
 			    return _paths ?? (_paths = new GorgonPlugInPathCollection());
 			}
 		}
+
+        /// <summary>
+        /// Property to set or return a fucntion that will be used to resolve plug-in assembly dependencies.
+        /// </summary>
+        /// <remarks>This property will intercept an event on the current application domain to resolve assembly dependencies as 
+        /// they are loaded.  This is necessary to handle issues where types won't load or instantiate in an assembly at run time.  
+        /// <para>This property must be set before any of the <c>Run</c> methods are called.</para>
+        /// <para>For example, if a custom type converter attribute is specified in a plug-in assembly, it may not instantiate unless  
+        /// some assemblies are resolved at load time.  Setting this property with a method that will look up assemblies in the 
+        /// current application domain will correct the issue.</para></remarks>
+        public Func<AppDomain, ResolveEventArgs, Assembly> AssemblyResolver
+        {
+            get;
+            set;
+        }
 
 		/// <summary>
 		/// Property to return a plug-in by its index in the list.

@@ -307,11 +307,11 @@ namespace GorgonLibrary.Graphics
 
 				GorgonDepthStencil.ValidateSettings(Graphics, settings);
 
-				InternalDepthStencil = new GorgonDepthStencil(Graphics, Name + "_Internal_DepthStencil_" + Guid.NewGuid().ToString(), settings);
+				InternalDepthStencil = new GorgonDepthStencil(Graphics, Name + "_Internal_DepthStencil_" + Guid.NewGuid(), settings);
 				InternalDepthStencil.UpdateSettings();
 			}
 
-			Texture = new GorgonTexture2D(this);
+			Texture = new GorgonTexture2D(Graphics, Name + "_Internal_Texture_" + Guid.NewGuid(), null);
 			D3DRenderTarget = new D3D.RenderTargetView(Graphics.D3DDevice, Texture.D3DResource);
 			D3DRenderTarget.DebugName = "SwapChain '" + Name + "' Render Target View";
 

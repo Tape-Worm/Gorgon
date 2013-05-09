@@ -314,7 +314,7 @@ namespace GorgonLibrary.Graphics
 
 		    if (Rasterizer != null)
 		    {
-		        ((IDisposable)Rasterizer).Dispose();
+                Rasterizer.CleanUp();
 		    }
 		}
 
@@ -459,6 +459,25 @@ namespace GorgonLibrary.Graphics
 			Textures = new GorgonTextures(this);
 			Fonts = new GorgonFonts(this);
 
+            // Set default states.
+		    Rasterizer.States = GorgonRasterizerStates.DefaultStates;
+		    Output.BlendingState.States = GorgonBlendStates.DefaultStates;
+		    Output.DepthStencilState.States = GorgonDepthStencilStates.DefaultStates;
+
+            // Initialize the shaders with default texture sampler settings.
+            for (int i = 0; i < Shaders.VertexShader.TextureSamplers.Count; i++)
+            {
+                Shaders.VertexShader.TextureSamplers[i] = GorgonTextureSamplerStates.DefaultStates;
+            }
+
+            for (int i = 0; i < Shaders.PixelShader.TextureSamplers.Count; i++)
+            {
+                Shaders.PixelShader.TextureSamplers[i] = GorgonTextureSamplerStates.DefaultStates;
+            }
+
+            // TODO: For feature level capable devices, initialize Geometry, Hull, Domain and Compute shaders.
+
+
 			Gorgon.Log.Print("Gorgon Graphics initialized.", LoggingLevel.Simple);
 		}
 
@@ -527,62 +546,59 @@ namespace GorgonLibrary.Graphics
 		/// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
 		private void Dispose(bool disposing)
 		{
-			if (!_disposed)
-			{
-				if (disposing)
-				{
-					Gorgon.Log.Print("Gorgon Graphics shutting down...", LoggingLevel.Simple);
+		    if (_disposed)
+		    {
+		        return;
+		    }
 
-					_trackedObjects.ReleaseAll();
-					DestroyInterfaces();
+		    if (disposing)
+		    {
+		        Gorgon.Log.Print("Gorgon Graphics shutting down...", LoggingLevel.Simple);
 
-					Gorgon.Log.Print("Removing D3D11 Device object...", LoggingLevel.Verbose);
-					if (D3DDevice != null)
-					{
-						Context.ClearState();
-						D3DDevice.Dispose();
-						D3DDevice = null;
-					}
+		        _trackedObjects.ReleaseAll();
+		        DestroyInterfaces();
 
-					// Destroy the video device interface.
-					if (D3DDevice != null)
-					{
-						D3DDevice.Dispose();
-						D3DDevice = null;
-					}
+		        Gorgon.Log.Print("Removing D3D11 Device object...", LoggingLevel.Verbose);
 
-					if (Adapter != null)
-					{
-						Adapter.Dispose();
-						Adapter = null;
-					}
+		        // Destroy the video device interface.
+		        if (D3DDevice != null)
+		        {
+		            Context.ClearState();
+		            D3DDevice.Dispose();
+		            D3DDevice = null;
+		        }
 
-					if (GIFactory != null)
-					{
-						GIFactory.Dispose();
-						GIFactory = null;
-					}
+		        if (Adapter != null)
+		        {
+		            Adapter.Dispose();
+		            Adapter = null;
+		        }
 
-					if (VideoDevice != null)
-					{
-						VideoDevice.Graphics = null;
-					}
+		        if (GIFactory != null)
+		        {
+		            GIFactory.Dispose();
+		            GIFactory = null;
+		        }
 
-					Gorgon.Log.Print("Removing DXGI factory interface...", LoggingLevel.Verbose);
-					if (GIFactory != null)
-					{
-						GIFactory.Dispose();
-						GIFactory = null;
-					}
+		        if (VideoDevice != null)
+		        {
+		            VideoDevice.Graphics = null;
+		        }
 
-					// Remove us from the object tracker.
-					Gorgon.RemoveTrackedObject(this);
+		        Gorgon.Log.Print("Removing DXGI factory interface...", LoggingLevel.Verbose);
+		        if (GIFactory != null)
+		        {
+		            GIFactory.Dispose();
+		            GIFactory = null;
+		        }
 
-					Gorgon.Log.Print("Gorgon Graphics shut down successfully", LoggingLevel.Simple);
-				}					
+		        // Remove us from the object tracker.
+		        Gorgon.RemoveTrackedObject(this);
 
-				_disposed = true;
-			}
+		        Gorgon.Log.Print("Gorgon Graphics shut down successfully", LoggingLevel.Simple);
+		    }					
+
+		    _disposed = true;
 		}
 
 		/// <summary>

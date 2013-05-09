@@ -85,9 +85,12 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		internal void CleanUp()
 		{
-			if (_default != null)
-				_default.Dispose();
-			_default = null;
+		    if (_default != null)
+		    {
+		        _default.Dispose();
+		    }
+
+		    _default = null;
 		}
 
 		/// <summary>

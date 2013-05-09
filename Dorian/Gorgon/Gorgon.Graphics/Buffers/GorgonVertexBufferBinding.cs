@@ -26,6 +26,7 @@
 
 using System;
 using D3D = SharpDX.Direct3D11;
+using GorgonLibrary.Graphics.Properties;
 
 namespace GorgonLibrary.Graphics
 {
@@ -44,15 +45,15 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// The vertex buffer to bind.
 		/// </summary>
-		public GorgonVertexBuffer VertexBuffer;
+		public readonly GorgonVertexBuffer VertexBuffer;
 		/// <summary>
 		/// Stride of the items within the vertex buffer, in bytes.
 		/// </summary>
-		public int Stride;
+		public readonly int Stride;
 		/// <summary>
 		/// Offset within the buffer to start at, in bytes.
 		/// </summary>
-		public int Offset;
+		public readonly int Offset;
 		#endregion
 
 		#region Methods.
@@ -75,7 +76,11 @@ namespace GorgonLibrary.Graphics
 		/// </returns>
 		public override string ToString()
 		{
-			return "Gorgon vertex buffer binding";
+		    return string.Format(Resources.GORGFX_VERTEXBUFFER_BINDING_TOSTR, Stride, Offset,
+		                         (VertexBuffer == null || VertexBuffer.D3DBuffer == null ||
+		                          VertexBuffer.D3DBuffer.DebugName == null)
+		                             ? "(NULL)"
+		                             : VertexBuffer.D3DBuffer.DebugName);
 		}
 
 		/// <summary>
@@ -86,12 +91,12 @@ namespace GorgonLibrary.Graphics
 		/// </returns>
 		public override int GetHashCode()
 		{
-			return VertexBuffer != null
-				       ? 281.GenerateHash(Stride).GenerateHash(Offset)
-				       : 281.GenerateHash(Stride).GenerateHash(Offset).GenerateHash(VertexBuffer.GetHashCode());
+		    return VertexBuffer == null
+		               ? 281.GenerateHash(Stride).GenerateHash(Offset)
+		               : 281.GenerateHash(Stride).GenerateHash(Offset).GenerateHash(VertexBuffer.GetHashCode());
 		}
 
-		/// <summary>
+	    /// <summary>
 		/// Determines whether the specified <see cref="System.Object"/> is equal to this instance.
 		/// </summary>
 		/// <param name="obj">The <see cref="System.Object"/> to compare with this instance.</param>
@@ -100,11 +105,25 @@ namespace GorgonLibrary.Graphics
 		/// </returns>
 		public override bool Equals(object obj)
 		{
-			if (obj is GorgonVertexBufferBinding)
-				return this.Equals((GorgonVertexBufferBinding)obj);
+		    if (obj is GorgonVertexBufferBinding)
+		    {
+		        return Equals((GorgonVertexBufferBinding)obj);
+		    }
 
-			return base.Equals(obj);
+		    return base.Equals(obj);
 		}
+
+        /// <summary>
+        /// Function to determine if two instances are equal.
+        /// </summary>
+        /// <param name="left">The left instance to compare.</param>
+        /// <param name="right">The right instance to compare.</param>
+        /// <returns>TRUE if equal, FALSE if not.</returns>
+        public static bool Equals(ref GorgonVertexBufferBinding left, ref GorgonVertexBufferBinding right)
+        {
+            return ((left.VertexBuffer == right.VertexBuffer) && (left.Offset == right.Offset) &&
+                    (left.Stride == right.Stride));
+        }
 
 		/// <summary>
 		/// Implements the operator ==.
@@ -114,7 +133,7 @@ namespace GorgonLibrary.Graphics
 		/// <returns>The result of the operator.</returns>
 		public static bool operator ==(GorgonVertexBufferBinding left, GorgonVertexBufferBinding right)
 		{
-			return left.Equals(right);
+		    return Equals(ref left, ref right);
 		}
 
 		/// <summary>
@@ -125,7 +144,7 @@ namespace GorgonLibrary.Graphics
 		/// <returns>The result of the operator.</returns>
 		public static bool operator !=(GorgonVertexBufferBinding left, GorgonVertexBufferBinding right)
 		{
-			return !left.Equals(right);
+            return !Equals(ref left, ref right);
 		}
 		#endregion
 
@@ -164,7 +183,7 @@ namespace GorgonLibrary.Graphics
 		/// <returns>TRUE if equal, FALSE if not.</returns>
 		public bool Equals(GorgonVertexBufferBinding other)
 		{
-			return ((other.VertexBuffer == VertexBuffer) && (other.Stride == Stride) && (other.Offset == Offset));
+		    return Equals(ref this, ref other);
 		}
 		#endregion
 	}
