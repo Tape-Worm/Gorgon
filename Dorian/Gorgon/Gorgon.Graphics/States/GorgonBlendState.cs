@@ -34,6 +34,10 @@ namespace GorgonLibrary.Graphics
 	/// </summary>
 	public enum BlendOperation
 	{
+		/// <summary>
+		/// Unknown.
+		/// </summary>
+		Unknown = 0,
 		///<summary>
 		///Add source 1 and source 2.
 		///</summary>
@@ -61,6 +65,10 @@ namespace GorgonLibrary.Graphics
 	/// </summary>
 	public enum BlendType
 	{
+		/// <summary>
+		/// Unknown.
+		/// </summary>
+		Unknown = 0,
 		/// <summary>
 		/// The data source is the color black (0, 0, 0, 0). No pre-blend operation.
 		/// </summary>

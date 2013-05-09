@@ -146,9 +146,9 @@ namespace GorgonLibrary.IO
 		: GorgonImageCodec
 	{
 		#region Variables.
-		private string _codec = string.Empty;				// Codec name.
-		private string _description = string.Empty;			// Codec description.
-		private int _actualArrayCount = 0;					// Array count.
+		private readonly string _codec = string.Empty;			// Codec name.
+		private readonly string _description = string.Empty;	// Codec description.
+		private int _actualArrayCount;							// Array count.
 		#endregion
 
 		#region Properties

@@ -103,8 +103,8 @@ namespace GorgonLibrary.Renderers
 	class GorgonStateManager
 	{
 		#region Variables.
-		private GorgonGraphics _graphics = null;
-		private Gorgon2D _gorgon2D = null;
+		private readonly GorgonGraphics _graphics;
+		private readonly Gorgon2D _gorgon2D;
 		private GorgonBlendStates _blendState = GorgonBlendStates.DefaultStates;
 		private GorgonRasterizerStates _rasterState = GorgonRasterizerStates.DefaultStates;
 		private GorgonTextureSamplerStates _samplerState = GorgonTextureSamplerStates.DefaultStates;
@@ -112,8 +112,8 @@ namespace GorgonLibrary.Renderers
 		private GorgonDepthStencilStates _depthState = GorgonDepthStencilStates.DefaultStates;
 		private GorgonColor _blendFactor = new GorgonColor(1.0f, 1.0f, 1.0f, 1.0f);
 		private GorgonRangeF _alphaTestValue = GorgonRangeF.Empty;
-		private bool _alphaTestEnabled = false;
-		private GorgonResourceView _textureView = null;
+		private bool _alphaTestEnabled;
+		private GorgonResourceView _textureView;
 		#endregion
 
 		#region Methods.

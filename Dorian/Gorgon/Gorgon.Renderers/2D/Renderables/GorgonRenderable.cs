@@ -454,11 +454,11 @@ namespace GorgonLibrary.Renderers
 		#endregion
 
 		#region Variables.
-		private GorgonTexture2D _texture = null;															// Texture to use for the renderable.
-		private DepthStencilStates _depthStencil = null;													// Depth stencil interface.
-		private BlendState _blendState = null;																// Blending state.
-		private TextureSamplerState _samplerState = null;													// Texture sampler state.
-		private RectangleF _textureRegion = RectangleF.Empty;												// Texture region.
+		private GorgonTexture2D _texture;						// Texture to use for the renderable.
+		private DepthStencilStates _depthStencil;				// Depth stencil interface.
+		private BlendState _blendState;							// Blending state.
+		private TextureSamplerState _samplerState;				// Texture sampler state.
+		private RectangleF _textureRegion = RectangleF.Empty;	// Texture region.
 		#endregion
 
 		#region Properties.

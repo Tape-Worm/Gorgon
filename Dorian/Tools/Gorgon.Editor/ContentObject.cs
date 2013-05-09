@@ -83,8 +83,8 @@ namespace GorgonLibrary.Editor
 		: IDisposable, INamedObject
 	{
 		#region Variables.
-        private Control _contentControl = null;     // Control used to edit/display the content.
-        private bool _hasChanged = false;           // Flag to indicate that the object was changed.
+        private Control _contentControl;			// Control used to edit/display the content.
+        private bool _hasChanged;					// Flag to indicate that the object was changed.
 		private string _name = "Content";			// Name of the content.
 		private string _filePath = string.Empty;	// Path to the file for the content.
 		#endregion

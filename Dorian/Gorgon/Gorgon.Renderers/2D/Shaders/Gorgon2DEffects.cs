@@ -32,18 +32,18 @@ namespace GorgonLibrary.Renderers
 	public class Gorgon2DEffects
 	{
 		#region Variables.
-		private static readonly object _syncLock = new object();				// Synchronization object for multiple threads.
-		private Gorgon2D _gorgon2D = null;										// Our 2D interface.
-		private Gorgon2D1BitEffect _1bitEffect = null;							// A 1 bit effect.
-		private Gorgon2DBurnDodgeEffect _burnDodgeEffect = null;				// Burn/dodge effect.
-		private Gorgon2DDisplacementEffect _displacementEffect = null;			// Displacement effect.
-		private Gorgon2DGaussianBlurEffect _gaussBlurEffect = null;				// Gaussian blur effect.
-		private Gorgon2DGrayScaleEffect _grayScaleEffect = null;				// Gray scale effect.
-		private Gorgon2DInvertEffect _invertEffect = null;						// Invert effect.
-		private Gorgon2DPosterizedEffect _posterizeEffect = null;				// Posterize effect.
-		private Gorgon2DSharpenEmbossEffect _sharpenEmbossEffect = null;		// Sharpen/emboss effect.
-		private Gorgon2DSobelEdgeDetectEffect _sobelEdgeDetectEffect = null;	// Sobel edge detection effect.
-		private Gorgon2DWaveEffect _waveEffect = null;							// Wave effect.
+		private static readonly object _syncLock = new object();		// Synchronization object for multiple threads.
+		private readonly Gorgon2D _gorgon2D;							// Our 2D interface.
+		private Gorgon2D1BitEffect _1BitEffect;							// A 1 bit effect.
+		private Gorgon2DBurnDodgeEffect _burnDodgeEffect;				// Burn/dodge effect.
+		private Gorgon2DDisplacementEffect _displacementEffect;			// Displacement effect.
+		private Gorgon2DGaussianBlurEffect _gaussBlurEffect;			// Gaussian blur effect.
+		private Gorgon2DGrayScaleEffect _grayScaleEffect;				// Gray scale effect.
+		private Gorgon2DInvertEffect _invertEffect;						// Invert effect.
+		private Gorgon2DPosterizedEffect _posterizeEffect;				// Posterize effect.
+		private Gorgon2DSharpenEmbossEffect _sharpenEmbossEffect;		// Sharpen/emboss effect.
+		private Gorgon2DSobelEdgeDetectEffect _sobelEdgeDetectEffect;	// Sobel edge detection effect.
+		private Gorgon2DWaveEffect _waveEffect;							// Wave effect.
 		#endregion
 
 		#region Properties.
@@ -93,12 +93,12 @@ namespace GorgonLibrary.Renderers
 			{
 				lock (_syncLock)
 				{
-					if (_1bitEffect == null)
+					if (_1BitEffect == null)
 					{
-						_1bitEffect = new Gorgon2D1BitEffect(_gorgon2D);
+						_1BitEffect = new Gorgon2D1BitEffect(_gorgon2D);
 					}					
 				}
-				return _1bitEffect;
+				return _1BitEffect;
 			}			
 		}
 
@@ -256,10 +256,10 @@ namespace GorgonLibrary.Renderers
 				_waveEffect = null;
 			}
 
-			if (_1bitEffect != null)
+			if (_1BitEffect != null)
 			{
-				_1bitEffect.Dispose();
-				_1bitEffect = null;
+				_1BitEffect.Dispose();
+				_1BitEffect = null;
 			}
 
 			if (_sharpenEmbossEffect != null)

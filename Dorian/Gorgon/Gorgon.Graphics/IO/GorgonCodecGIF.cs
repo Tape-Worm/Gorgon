@@ -50,7 +50,7 @@ namespace GorgonLibrary.IO
 		: GorgonCodecWIC
 	{
 		#region Variables.
-		private double _alphaPercent = 0.0;			// Alpha threshold.
+		private double _alphaPercent;			// Alpha threshold.
 		#endregion
 
 		#region Properties.

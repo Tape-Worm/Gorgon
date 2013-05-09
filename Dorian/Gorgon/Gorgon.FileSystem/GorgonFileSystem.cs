@@ -733,7 +733,7 @@ namespace GorgonLibrary.IO
 												 AddFileEntry(_defaultProvider, path, WriteLocation, GetWritePath(path), 0, 0,
 																			   DateTime.Now);
 
-				if ((data != null) || (file != null))
+				if ((data != null) && (file != null))
 				{
 					WriteFile(file, data);
 				}

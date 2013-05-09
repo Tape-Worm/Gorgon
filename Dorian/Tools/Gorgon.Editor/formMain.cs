@@ -47,13 +47,11 @@ namespace GorgonLibrary.Editor
 		: ZuneForm
     {
         #region Variables.
-		private static int _syncCounter = 0;							// Synchronization counter for multiple threads.
-		private static readonly object _syncLock = new object();		// Synchronization lock.
-        private RootNodeDirectory _rootNode = null;						// Our root node for the tree.
-		private char[] _pathChars = Path.GetInvalidPathChars();			// Invalid path characters.
-		private char[] _fileChars = Path.GetInvalidFileNameChars();		// Invalid filename characters.
-		private object _cutCopyObject = null;							// Object being cut/copied.
-		private bool? _isCutOperation = null;							// Flag for cut/copy operation.
+		private static int _syncCounter;										// Synchronization counter for multiple threads.
+		private RootNodeDirectory _rootNode;									// Our root node for the tree.
+		private readonly char[] _fileChars = Path.GetInvalidFileNameChars();	// Invalid filename characters.
+		private object _cutCopyObject;											// Object being cut/copied.
+		private bool? _isCutOperation;											// Flag for cut/copy operation.
 		#endregion
 
 		#region Methods.
@@ -547,10 +545,13 @@ namespace GorgonLibrary.Editor
 		{
 			try
 			{
-				if ((propertyItem.SelectedObject == null) || (propertyItem.SelectedGridItem == null))
+				if ((propertyItem.SelectedObject == null) || (propertyItem.SelectedGridItem == null)
+					|| (propertyItem.SelectedGridItem.PropertyDescriptor == null))
+				{
 					return;
+				}
 
-				propertyItem.SelectedGridItem.PropertyDescriptor.ResetValue(propertyItem.SelectedObject);
+				propertyItem.ResetSelectedProperty();
 				propertyItem.Refresh();
 			}
 			catch (Exception ex)
@@ -1268,6 +1269,12 @@ namespace GorgonLibrary.Editor
 			// Add to tree and select.
 			directoryNode.Nodes.Add(newNode);
 			treeFiles.SelectedNode = newNode;
+
+			// Set any pre-selected values as default.
+			if (content.HasProperties)
+			{
+				content.SetDefaults();
+			}
 
 			// We set this to true to indicate that this is a new file.
 			Program.EditorFileChanged = true;

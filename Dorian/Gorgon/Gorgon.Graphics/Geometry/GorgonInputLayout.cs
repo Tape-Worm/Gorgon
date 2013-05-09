@@ -45,11 +45,11 @@ namespace GorgonLibrary.Graphics
 		: GorgonBaseNamedObjectList<GorgonInputElement>, INotifier, IDisposable, INamedObject 
 	{
 		#region Variables.
-		private bool _disposed = false;							// Flag to indicate that the object was disposed.
-		private IDictionary<int, int> _slotSizes = null;		// List of slot sizes.
-		private bool _isUpdated = false;						// Flag to indicate that the input was updated.
-		private Type[] _allowedTypes = null;					// Types allowed when pulling information from an object.
-		private string _name = string.Empty;					// Name of the object.
+		private bool _disposed;									// Flag to indicate that the object was disposed.
+		private IDictionary<int, int> _slotSizes;				// List of slot sizes.
+		private bool _isUpdated;								// Flag to indicate that the input was updated.
+		private readonly Type[] _allowedTypes;					// Types allowed when pulling information from an object.
+		private readonly string _name = string.Empty;			// Name of the object.
 		#endregion
 
 		#region Properties.

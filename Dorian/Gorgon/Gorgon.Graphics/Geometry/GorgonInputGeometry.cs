@@ -224,9 +224,9 @@ namespace GorgonLibrary.Graphics
 			: IList<GorgonVertexBufferBinding>
 		{
 			#region Variables.
-			private IList<GorgonVertexBufferBinding> _bindings = null;		// List of bindings.
-			private D3D.VertexBufferBinding[] _d3dBindings = null;			// List of D3D bindings.
-			private GorgonGraphics _graphics = null;						// Graphics interface.
+			private readonly IList<GorgonVertexBufferBinding> _bindings;		// List of bindings.
+			private readonly D3D.VertexBufferBinding[] _D3DBindings;			// List of D3D bindings.
+			private readonly GorgonGraphics _graphics;							// Graphics interface.
 			#endregion
 
 			#region Properties.
@@ -254,8 +254,8 @@ namespace GorgonLibrary.Graphics
 				set
 				{
 					_bindings[index] = value;
-					_d3dBindings[index] = value.Convert();
-					_graphics.Context.InputAssembler.SetVertexBuffers(index, _d3dBindings[index]);
+					_D3DBindings[index] = value.Convert();
+					_graphics.Context.InputAssembler.SetVertexBuffers(index, _D3DBindings[index]);
 				}
 			}
 			#endregion
@@ -324,10 +324,10 @@ namespace GorgonLibrary.Graphics
 						currentBinding = binding.ElementAt(i);
 
 					_bindings[startIndex + i] = currentBinding;
-					_d3dBindings[startIndex + i] = currentBinding.Convert();
+					_D3DBindings[startIndex + i] = currentBinding.Convert();
 				}
 
-				_graphics.Context.InputAssembler.SetVertexBuffers(startIndex, _d3dBindings);
+				_graphics.Context.InputAssembler.SetVertexBuffers(startIndex, _D3DBindings);
 			}
 			#endregion
 
@@ -340,11 +340,11 @@ namespace GorgonLibrary.Graphics
 			{
 				_graphics = graphics;
 				_bindings = new GorgonVertexBufferBinding[_graphics.VideoDevice.SupportedFeatureLevel < DeviceFeatureLevel.SM4_1 ? 16 : 32];
-				_d3dBindings = new D3D.VertexBufferBinding[_bindings.Count];
+				_D3DBindings = new D3D.VertexBufferBinding[_bindings.Count];
 				for (int i = 0; i < _bindings.Count; i++)
 				{
 					_bindings[i] = GorgonVertexBufferBinding.Empty;
-					_d3dBindings[i] = new D3D.VertexBufferBinding();
+					_D3DBindings[i] = new D3D.VertexBufferBinding();
 				}				
 			}
 			#endregion
@@ -474,9 +474,9 @@ namespace GorgonLibrary.Graphics
 
 		#region Variables.
 		private PrimitiveType _primitiveType = PrimitiveType.Unknown;		// Primitive type to use.
-		private GorgonInputLayout _inputLayout = null;						// The current input layout.
-		private GorgonGraphics _graphics = null;							// Current graphics interface.
-		private GorgonIndexBuffer _indexBuffer = null;						// The current index buffer.
+		private GorgonInputLayout _inputLayout;								// The current input layout.
+		private readonly GorgonGraphics _graphics;							// Current graphics interface.
+		private GorgonIndexBuffer _indexBuffer;								// The current index buffer.
 		#endregion
 
 		#region Properties.

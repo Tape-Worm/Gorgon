@@ -104,10 +104,12 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Runtime.InteropServices;
 using GorgonLibrary.Graphics;
 using GorgonLibrary.Math;
 using GorgonLibrary.Native;
+using GorgonLibrary.Graphics.Properties;
 
 namespace GorgonLibrary.IO
 {
@@ -549,7 +551,7 @@ namespace GorgonLibrary.IO
 			/// <summary>
 			/// Reserved.
 			/// </summary>
-			public uint Reserved;
+			private readonly uint Reserved;
 		}
 
 		/// <summary>
@@ -561,35 +563,35 @@ namespace GorgonLibrary.IO
 			/// <summary>
 			/// Size of the format, in bytes.
 			/// </summary>
-			public uint SizeInBytes;
+			public readonly uint SizeInBytes;
 			/// <summary>
 			/// Flags for the format.
 			/// </summary>
-			public DDSPixelFormatFlags Flags;
+			public readonly DDSPixelFormatFlags Flags;
 			/// <summary>
 			/// FOURCC value.
 			/// </summary>
-			public uint FourCC;
+			public readonly uint FourCC;
 			/// <summary>
 			/// Number of bits per pixel.
 			/// </summary>
-			public uint BitCount;
+			public readonly uint BitCount;
 			/// <summary>
 			/// Bit mask for the R component.
 			/// </summary>
-			public uint RBitMask;
+			public readonly uint RBitMask;
 			/// <summary>
 			/// Bit mask for the G component.
 			/// </summary>
-			public uint GBitMask;
+			public readonly uint GBitMask;
 			/// <summary>
 			/// Bit mask for the B component.
 			/// </summary>
-			public uint BBitMask;
+			public readonly uint BBitMask;
 			/// <summary>
 			/// Bit mask for the A component.
 			/// </summary>
-			public uint ABitMask;
+			public readonly uint ABitMask;
 			
 			/// <summary>
 			/// Initializes a new instance of the <see cref="DDSPixelFormat" /> struct.
@@ -690,9 +692,9 @@ namespace GorgonLibrary.IO
 			new DDSLegacyConversion(BufferFormat.R8G8B8A8_UIntNormal, DDSConversionFlags.Expand | DDSConversionFlags.A4L4, new DDSPixelFormat(DDSPixelFormatFlags.Luminance, 0, 8, 0x0f, 0x00, 0x00, 0xf0))
 		};
 
-        private BufferFormat[] _formats = null;         // Buffer formats.
-		private int _actualDepth = 0;					// Actual depth value.
-		private int _actualArrayCount = 0;				// Actual array count.
+        private readonly BufferFormat[] _formats;       // Buffer formats.
+		private int _actualDepth;						// Actual depth value.
+		private int _actualArrayCount;					// Actual array count.
 		#endregion
 
 		#region Properties.
@@ -866,7 +868,7 @@ namespace GorgonLibrary.IO
                 case ImageType.Image3D:
                     if ((header.Flags & DDSHeaderFlags.Volume) != DDSHeaderFlags.Volume)
                     {
-                        throw new System.IO.IOException("The data in the stream cannot be decoded as a DDS file.  Image claims to be a 3D image, but is missing volume flag.");
+						throw new IOException(string.Format(Resources.GORGFX_IMAGE_TYPE_INVALID, dx10Header.ResourceDimension));
                     }
 
                     settings = new GorgonTexture3DSettings();
@@ -875,7 +877,7 @@ namespace GorgonLibrary.IO
                     settings.Depth = (int)header.Depth;
                     break;
                 default:
-                    throw new System.IO.IOException("The data in the stream cannot be decoded as a DDS file.  The image data is not 1D, 2D or 3D.");
+					throw new IOException(string.Format(Resources.GORGFX_IMAGE_TYPE_INVALID, dx10Header.ResourceDimension));
             }
 
             settings.Width = (int)header.Width;           
@@ -1469,6 +1471,8 @@ namespace GorgonLibrary.IO
 					header.Flags |= DDSHeaderFlags.Volume;
 					header.Caps2 |= DDSCAPS2.Volume;
 					break;
+				default:
+					throw new IOException(string.Format(Resources.GORGFX_IMAGE_TYPE_INVALID, settings.ImageType));
 			}
 
 			// Get pitch information.

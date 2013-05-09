@@ -37,9 +37,9 @@ namespace GorgonLibrary.Editor
 	public partial class ContentPanel : UserControl
 	{
 		#region Variables.
-        private ContentObject _content = null;
+        private ContentObject _content;
 		private bool _captionVisible = true;
-        private bool _contentChanged = false;
+        private bool _contentChanged;
 		#endregion
 
 		#region Properties.

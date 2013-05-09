@@ -168,7 +168,7 @@ namespace GorgonLibrary.Configuration
 
 		    if (type != typeof (string))
 		    {
-		        if (string.IsNullOrEmpty(string.Empty))
+		        if (string.IsNullOrEmpty(value))
 		        {
 		            return null;
 		        }
@@ -358,13 +358,15 @@ namespace GorgonLibrary.Configuration
 			{
 				var attributes = (ApplicationSettingAttribute[])info.GetCustomAttributes(typeof(ApplicationSettingAttribute), true);
 
-				if (attributes.Length > 0)
+				if (attributes.Length <= 0)
 				{
-					_properties.Add(info, attributes[0]);
-				    if (!(info.PropertyType.IsGenericType) && (info.PropertyType != typeof (IList)) && (attributes[0].HasDefault))
-				    {
-				        info.SetValue(this, attributes[0].DefaultValue, null);
-				    }
+					continue;
+				}
+
+				_properties.Add(info, attributes[0]);
+				if (!(info.PropertyType.IsGenericType) && (info.PropertyType != typeof (IList)) && (attributes[0].HasDefault))
+				{
+					info.SetValue(this, attributes[0].DefaultValue, null);
 				}
 			}
 		}

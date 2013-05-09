@@ -54,12 +54,12 @@ namespace GorgonLibrary.Renderers
 		: Gorgon2DEffect
 	{
 		#region Variables.
-		private bool _disposed = false;							// Flag to indicate that the object was disposed.
-		private GorgonConstantBuffer _waveBuffer = null;		// Constant buffer for the wave information.
-		private GorgonDataStream _waveStream = null;			// Stream used to write to the buffer.
+		private bool _disposed;									// Flag to indicate that the object was disposed.
+		private readonly GorgonConstantBuffer _waveBuffer;		// Constant buffer for the wave information.
+		private readonly GorgonDataStream _waveStream;			// Stream used to write to the buffer.
 		private float _amplitude = 0.01f;						// Amplitude for the wave.
 		private float _length = 50.0f;							// Length of the wave.
-		private float _period = 0.0f;							// Period for the wave.
+		private float _period;									// Period for the wave.
 		private bool _isUpdated = true;							// Flag to indicate that the parameters were updated.
 		private WaveType _waveType = WaveType.Horizontal;		// Wave type.
 		#endregion

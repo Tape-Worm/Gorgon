@@ -81,14 +81,16 @@ namespace GorgonLibrary.PlugIns
 			}
 
 			Gorgon.Log.Print("Loading plug-in assembly '{0}' from {1}", Diagnostics.LoggingLevel.Simple, assemblyName.FullName, assemblyName.EscapedCodeBase);
+
 			Assembly assembly = Assembly.Load(assemblyName);
 
-		    if (!_assemblies.ContainsKey(assembly.FullName))
-		    {
-		        _assemblies.Add(assembly.FullName, assembly);
-		    }
+			if (!_assemblies.ContainsKey(assembly.FullName))
+			{
+				_assemblies.Add(assembly.FullName, assembly);
+			}
 
-		    Gorgon.Log.Print("Plug-in assembly '{0}' loaded successfully.", Diagnostics.LoggingLevel.Simple, assemblyName.FullName);
+			Gorgon.Log.Print("Plug-in assembly '{0}' loaded successfully.", Diagnostics.LoggingLevel.Simple,
+				                assemblyName.FullName);
 
 			return assembly;
 		}

@@ -25,7 +25,6 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using GorgonLibrary.Collections;
@@ -107,7 +106,7 @@ namespace GorgonLibrary.Editor
 				if (property.Attributes.Matches(BrowsableAttribute.No))
 					continue;
 
-				this.AddItem(new ContentProperty(property, Content));
+				AddItem(new ContentProperty(property, Content));
 			}
 		}
 		#endregion
@@ -235,19 +234,10 @@ namespace GorgonLibrary.Editor
 		/// </returns>
 		PropertyDescriptorCollection ICustomTypeDescriptor.GetProperties(Attribute[] attributes)
 		{
-			IList<PropertyDescriptor> descriptors = new List<PropertyDescriptor>();
+			var descriptors = this.Where(item => !item.HideProperty)
+			                      .Select(propValue => new ContentPropertyDescriptor(propValue));
 
-			var visibleProperties = from property in this
-									where !property.HideProperty
-									select property;
-
-			foreach (var propValue in visibleProperties)
-			{
-				Attribute[] propertyAttributes = propValue.RetrieveAttributes();
-				descriptors.Add(new ContentPropertyDescriptor(propValue));
-			}
-
-			return new PropertyDescriptorCollection(descriptors.ToArray());
+			return new PropertyDescriptorCollection(descriptors.Cast<PropertyDescriptor>().ToArray());
 		}
 
 		/// <summary>

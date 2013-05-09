@@ -38,9 +38,9 @@ namespace GorgonLibrary.Graphics
 		where T : struct, IEquatableByRef<T>
 	{
 		#region Variables.
-		private bool _disposed = false;										// Flag to indicate that the object was disposed.
-		private GorgonStateCacheNEW<T> _cache = null;						// Cache for the states.
-		private T _state = default(T);										// Immutable state for the object.
+		private bool _disposed;										// Flag to indicate that the object was disposed.
+		private GorgonStateCacheNEW<T> _cache;						// Cache for the states.
+		private T _state;											// Immutable state for the object.
 		#endregion
 
 		#region Properties.

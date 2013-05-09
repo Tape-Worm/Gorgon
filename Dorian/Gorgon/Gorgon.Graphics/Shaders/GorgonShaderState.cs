@@ -47,9 +47,9 @@ namespace GorgonLibrary.Graphics
 			: GorgonState<GorgonTextureSamplerStates>, IList<GorgonTextureSamplerStates>
 		{
 			#region Variables.
-			private GorgonTextureSamplerStates[] _states = null;								// List of sampler states.
-			private D3D.SamplerState[] _d3dStates = null;										// List of sampler state objects.
-			private GorgonShaderState<T> _shader = null;										// Shader that owns the state.
+			private readonly GorgonTextureSamplerStates[] _states;								// List of sampler states.
+			private readonly D3D.SamplerState[] _D3DStates;										// List of sampler state objects.
+			private readonly GorgonShaderState<T> _shader;										// Shader that owns the state.
 			#endregion
 
 			#region Properties.
@@ -194,11 +194,11 @@ namespace GorgonLibrary.Graphics
 						}
 
 						_states[stateIndex] = state;
-						_d3dStates[i] = (D3D.SamplerState)d3dState;
+						_D3DStates[i] = (D3D.SamplerState)d3dState;
 					}
 				}
 
-				_shader.SetSamplers(slot, count, _d3dStates);
+				_shader.SetSamplers(slot, count, _D3DStates);
 			}
 			#endregion
 
@@ -222,7 +222,7 @@ namespace GorgonLibrary.Graphics
 				}
 
 				_states = new GorgonTextureSamplerStates[count];
-				_d3dStates = new D3D.SamplerState[_states.Length];
+				_D3DStates = new D3D.SamplerState[_states.Length];
 			}
 			#endregion
 
@@ -255,8 +255,8 @@ namespace GorgonLibrary.Graphics
 						}
 
 						_states[index] = value;
-						_d3dStates[0] = (D3D.SamplerState)state;
-						_shader.SetSamplers(index, 1, _d3dStates);
+						_D3DStates[0] = (D3D.SamplerState)state;
+						_shader.SetSamplers(index, 1, _D3DStates);
 					}
 				}
 			}
@@ -410,9 +410,9 @@ namespace GorgonLibrary.Graphics
 			: IList<GorgonConstantBuffer>
 		{
 			#region Variables.
-			private IList<GorgonConstantBuffer> _buffers = null;
-			private GorgonShaderState<T> _shader = null;
-			private D3D.Buffer[] _d3dBufferArray = null;
+			private readonly IList<GorgonConstantBuffer> _buffers;
+			private readonly GorgonShaderState<T> _shader;
+			private readonly D3D.Buffer[] _D3DBufferArray;
 			#endregion
 
 			#region Properties.
@@ -438,16 +438,22 @@ namespace GorgonLibrary.Graphics
 				}
 				set
 				{
-					if (_buffers[index] != value)
+					if (_buffers[index] == value)
 					{
-						_buffers[index] = value;
-						if (value != null)
-							_d3dBufferArray[0] = value.D3DBuffer;
-						else
-							_d3dBufferArray[0] = null;
-
-						_shader.SetConstantBuffers(index, 1, _d3dBufferArray);
+						return;
 					}
+
+					_buffers[index] = value;
+					if (value != null)
+					{
+						_D3DBufferArray[0] = value.D3DBuffer;
+					}
+					else
+					{
+						_D3DBufferArray[0] = null;
+					}
+
+					_shader.SetConstantBuffers(index, 1, _D3DBufferArray);
 				}
 			}
 			#endregion
@@ -492,12 +498,12 @@ namespace GorgonLibrary.Graphics
 
 					_buffers[i + slot] = buffer;
 					if (buffer != null)
-						_d3dBufferArray[i] = buffer.D3DBuffer;
+						_D3DBufferArray[i] = buffer.D3DBuffer;
 					else
-						_d3dBufferArray[i] = null;
+						_D3DBufferArray[i] = null;
 				}
 
-				_shader.SetConstantBuffers(slot, count, _d3dBufferArray);
+				_shader.SetConstantBuffers(slot, count, _D3DBufferArray);
 			}
 			#endregion
 
@@ -510,7 +516,7 @@ namespace GorgonLibrary.Graphics
 			{
 				_buffers = new GorgonConstantBuffer[D3D.CommonShaderStage.ConstantBufferApiSlotCount];
 				_shader = shader;
-				_d3dBufferArray = new D3D.Buffer[_buffers.Count];
+				_D3DBufferArray = new D3D.Buffer[_buffers.Count];
 			}
 			#endregion
 
@@ -647,9 +653,9 @@ namespace GorgonLibrary.Graphics
 			: IList<GorgonResourceView>
 		{
 			#region Variables.
-			private D3D.ShaderResourceView[] _views = null;				// Shader resource views.
-			private IList<GorgonResourceView> _resources = null;		// Shader resources.
-			private GorgonShaderState<T> _shader = null;				// Shader that owns this interface.
+			private readonly D3D.ShaderResourceView[] _views;			// Shader resource views.
+			private readonly IList<GorgonResourceView> _resources;		// Shader resources.
+			private readonly GorgonShaderState<T> _shader;				// Shader that owns this interface.
 			#endregion
 
 			#region Methods.
@@ -1062,7 +1068,8 @@ namespace GorgonLibrary.Graphics
 		#endregion
 
 		#region Variables.
-		private T _current = null;									// Current shader.
+		private T _current;									// Current shader.
+		private TextureSamplerState _samplers;				// Sampler states.
 		#endregion
 
 		#region Properties.
@@ -1110,8 +1117,10 @@ namespace GorgonLibrary.Graphics
 		/// <exception cref="System.InvalidOperationException">Thrown when the current video device is a SM2_a_b device.</exception>
 		public virtual TextureSamplerState TextureSamplers
 		{
-			get;
-			private set;
+			get
+			{
+				return _samplers;
+			}
 		}
 
 		/// <summary>
@@ -1163,10 +1172,12 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		internal void Dispose()
 		{
-			if (TextureSamplers != null)
-				((IDisposable)TextureSamplers).Dispose();
+			if (_samplers != null)
+			{
+				((IDisposable)_samplers).Dispose();
+			}
 
-			TextureSamplers = null;
+			_samplers = null;
 
 			GC.SuppressFinalize(this);
 		}
@@ -1181,8 +1192,14 @@ namespace GorgonLibrary.Graphics
 		{
 			Graphics = graphics;			
 			ConstantBuffers = new ShaderConstantBuffers(this);
-			TextureSamplers = new TextureSamplerState(this);
+			_samplers = new TextureSamplerState(this);
 			Resources = new ShaderResourceViews(this);
+
+			// Set to default sampler states.
+			for (int i = 0; i < _samplers.Count; i++)
+			{
+				_samplers[i] = GorgonTextureSamplerStates.DefaultStates;
+			}
 		}
 		#endregion
 	}
@@ -1256,8 +1273,6 @@ namespace GorgonLibrary.Graphics
 		protected internal GorgonPixelShaderState(GorgonGraphics graphics)
 			: base(graphics)
 		{
-			for (int i = 0; i < TextureSamplers.Count; i++)
-				TextureSamplers[i] = GorgonTextureSamplerStates.DefaultStates;
 		}
 		#endregion
 	}
@@ -1341,8 +1356,6 @@ namespace GorgonLibrary.Graphics
 		protected internal GorgonVertexShaderState(GorgonGraphics graphics)
 			: base(graphics)
 		{
-			for (int i = 0; i < TextureSamplers.Count; i++)
-				TextureSamplers[i] = GorgonTextureSamplerStates.DefaultStates;
 		}
 		#endregion
 	}

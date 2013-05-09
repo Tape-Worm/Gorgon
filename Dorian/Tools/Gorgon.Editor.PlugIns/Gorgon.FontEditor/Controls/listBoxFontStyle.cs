@@ -39,8 +39,8 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		: CheckedListBox
 	{
 		#region Variables.
-		private StringFormat _format = null;					// String format.
-		private bool _disposed = false;							// Flag to indicate that we've disposed the object.
+		private StringFormat _format;					// String format.
+		private bool _disposed;							// Flag to indicate that we've disposed the object.
 		#endregion
 
 		#region Properties.

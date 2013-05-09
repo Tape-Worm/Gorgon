@@ -129,11 +129,13 @@ namespace GorgonLibrary.UI
 			buttonOK.Focus();
 			ValidateFunctions();
 
-            if (ShowDetailPanel)
-            {
-                checkDetail.Checked = ShowDetailPanel;
-                detailsButton_Click(this, EventArgs.Empty);
-            }
+		    if (!ShowDetailPanel)
+		    {
+			    return;
+		    }
+
+		    checkDetail.Checked = ShowDetailPanel;
+		    detailsButton_Click(this, EventArgs.Empty);
 		}
 
 		/// <summary>

@@ -65,6 +65,10 @@ namespace GorgonLibrary.Graphics
 		: uint
 	{
 		/// <summary>
+		/// Unknown.
+		/// </summary>
+		Unknown = 0,
+		/// <summary>
 		/// The resource is unused and can be evicted as soon as another resource requires the memory that the resource occupies.
 		/// </summary>
 		Minimum = 0x28000000,
@@ -94,8 +98,8 @@ namespace GorgonLibrary.Graphics
 		: IDisposable
 	{
 		#region Variables.
-		private bool _disposed = false;				// Flag to indicate that the object was disposed.
-		private GorgonResourceView _view = null;	// The view of the resource when bound to a shader.
+		private bool _disposed;				// Flag to indicate that the object was disposed.
+		private GorgonResourceView _view;	// The view of the resource when bound to a shader.
 		#endregion
 
 		#region Properties.

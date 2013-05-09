@@ -36,15 +36,16 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 	/// <summary>
 	/// Win32 functions.
 	/// </summary>
-	[System.Security.SuppressUnmanagedCodeSecurity()]
+	[System.Security.SuppressUnmanagedCodeSecurity]
 	static class Win32API
 	{
 		#region Variables.
-		private static IDictionary<string, GorgonRange> _ranges = null;		// List of ranges.
-		private static IDictionary<int, string> _codePointNames = null;			// List of code point names.
+		private static IDictionary<string, GorgonRange> _ranges;			// List of ranges.
+		private static IDictionary<int, string> _codePointNames;			// List of code point names.
 		#endregion
 
 		#region Methods.
+		// ReSharper disable InconsistentNaming
 		/// <summary>
 		/// Gets the ranges supported by a font.
 		/// </summary>
@@ -61,7 +62,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		/// <param name="hObject">Object to select.</param>
 		/// <returns>The previous object.</returns>
 		[DllImport("gdi32.dll")]
-		public extern static IntPtr SelectObject(IntPtr hDC, IntPtr hObject);		
+		public extern static IntPtr SelectObject(IntPtr hDC, IntPtr hObject);
 
 		/// <summary>
 		/// Convert a virtual key to ascii.
@@ -70,6 +71,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		/// <param name="uScanCode"></param>
 		/// <param name="lpbKeyState"></param>
 		/// <param name="lpChar"></param>
+		/// <param name="cchBuff"></param>
 		/// <param name="uFlags"></param>
 		/// <returns></returns>
 		[DllImport("user32.dll", CharSet=CharSet.Unicode)]
@@ -78,11 +80,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		/// <summary>
 		/// Retrieves the current keyboard state.
 		/// </summary>
-		/// <param name="uVirtKey"></param>
-		/// <param name="uScanCode"></param>
 		/// <param name="lpbKeyState"></param>
-		/// <param name="lpChar"></param>
-		/// <param name="uFlags"></param>
 		/// <returns></returns>
 		[DllImport("user32.dll")]
 		private extern static int GetKeyboardState(byte[] lpbKeyState);
@@ -98,35 +96,41 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		/// <returns></returns>
 		[DllImport("gdi32.dll", EntryPoint = "GetGlyphIndicesW")]
 		private static extern uint GetGlyphIndices([In] IntPtr hdc, [In] [MarshalAs(UnmanagedType.LPTStr)] string lpsz, int c, [Out] ushort[] pgi, uint fl);
+		// ReSharper restore InconsistentNaming
 		
 		/// <summary>
 		/// Function to build a list of unicode ranges.
 		/// </summary>
 		private static void BuildUnicodeRangeList()
 		{
-			IList<string> rangeLines = Properties.Resources.UnicodeBlocks.Split(new char[] { '\n' }, StringSplitOptions.RemoveEmptyEntries);
-			IList<string> items = null;
+			IList<string> rangeLines = Properties.Resources.UnicodeBlocks.Split(new[] { '\n' }, StringSplitOptions.RemoveEmptyEntries);
 			_ranges = new SortedDictionary<string, GorgonRange>();
 
 			// Break out the lines.
 			foreach (var line in rangeLines)
 			{
-				items = line.Split(new char[] { ';' });
+				IList<string> items = line.Split(new[] { ';' });
 
 				// Get range.
-				if ((!string.IsNullOrEmpty(items[0])) && (!string.IsNullOrEmpty(items[1])))
+				if ((string.IsNullOrEmpty(items[0])) || (string.IsNullOrEmpty(items[1])))
 				{
-					var range = new GorgonRange(int.Parse(items[0].Substring(0, items[0].IndexOf('.')), System.Globalization.NumberStyles.HexNumber), 
-						int.Parse(items[0].Substring(items[0].LastIndexOf('.') + 1), System.Globalization.NumberStyles.HexNumber));
+					continue;
+				}
 
-					// Combine the first 2 latin categories into the one category.
-					if (range.Maximum <= 0xff) 
+				var range = new GorgonRange(int.Parse(items[0].Substring(0, items[0].IndexOf('.')), System.Globalization.NumberStyles.HexNumber), 
+				                            int.Parse(items[0].Substring(items[0].LastIndexOf('.') + 1), System.Globalization.NumberStyles.HexNumber));
+
+				// Combine the first 2 latin categories into the one category.
+				if (range.Maximum <= 0xff)
+				{
+					if (!_ranges.ContainsKey("Latin + Latin Supplement"))
 					{
-						if (!_ranges.ContainsKey("Latin + Latin Supplement"))
-							_ranges.Add("Latin + Latin Supplement", new GorgonRange(0, 0xFF));
+						_ranges.Add("Latin + Latin Supplement", new GorgonRange(0, 0xFF));
 					}
-					else
-						_ranges.Add(items[1].Trim(), range);
+				}
+				else
+				{
+					_ranges.Add(items[1].Trim(), range);
 				}
 			}
 		}
@@ -174,14 +178,14 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		{
 			if (_codePointNames == null)
 			{
-				IList<string> lines = Properties.Resources.UnicodeData.Split(new char[] { '\n' }, StringSplitOptions.RemoveEmptyEntries);
+				IList<string> lines = Properties.Resources.UnicodeData.Split(new[] { '\n' }, StringSplitOptions.RemoveEmptyEntries);
 
 				_codePointNames = new Dictionary<int, string>();
 
-				foreach (var line in lines)
+				foreach (string[] fields in lines.Select(line => line.Split(new[] { ';' })))
 				{
-					IList<string> fields = line.Split(new char[] { ';' });
-					_codePointNames.Add(Int32.Parse(fields[0], System.Globalization.NumberStyles.HexNumber), string.IsNullOrEmpty(fields[10]) ? fields[1] : fields[10]);
+					_codePointNames.Add(Int32.Parse(fields[0], System.Globalization.NumberStyles.HexNumber),
+					                    string.IsNullOrEmpty(fields[10]) ? fields[1] : fields[10]);
 				}
 			}
 
@@ -198,14 +202,14 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		/// <returns>A list of ranges.</returns>
 		public static IDictionary<string, GorgonRange> GetUnicodeRanges(Font font, IntPtr hDc)
 		{
-			Dictionary<string, GorgonRange> result = null;
+			Dictionary<string, GorgonRange> result;
 
 			if (_ranges == null)
+			{
 				BuildUnicodeRangeList();
+			}
 
-			uint size = 0;
-			int itemCount = 0;
-			size = GetFontUnicodeRanges(hDc, IntPtr.Zero);
+			uint size = GetFontUnicodeRanges(hDc, IntPtr.Zero);
 
 			using (var stream = new GorgonDataStream((int)size))
 			{							
@@ -215,21 +219,22 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 				stream.Read<Int64>();
 				stream.Read<Int32>();
 
-				itemCount = stream.Read<int>();
+				var itemCount = stream.Read<int>();
 				result = new Dictionary<string, GorgonRange>(itemCount);
 
 				for (int i = 0; i < itemCount; i++)
 				{
-					GorgonRange value = default(GorgonRange);
-
-					value = new GorgonRange(stream.Read<ushort>(), stream.Read<ushort>() + value.Minimum - 1);
+					var min = stream.Read<ushort>();
+					var value = new GorgonRange(min, stream.Read<ushort>() + min - 1);
 
 					var rangeName = (from unicodeRange in _ranges
 									where unicodeRange.Value.Contains(value.Minimum) && unicodeRange.Value.Contains(value.Maximum)
 									select unicodeRange).SingleOrDefault();
 
 					if ((!string.IsNullOrEmpty(rangeName.Key)) && (!result.ContainsKey(rangeName.Key)))
+					{
 						result.Add(rangeName.Key, rangeName.Value);
+					}
 				}
 			}
 

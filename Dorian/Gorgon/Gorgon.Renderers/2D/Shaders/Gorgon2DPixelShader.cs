@@ -35,7 +35,7 @@ namespace GorgonLibrary.Renderers
 		: GorgonPixelShaderState
 	{
 		#region Variables.
-		private Gorgon2D _gorgon2D = null;				// The 2D interface that owns this object.
+		private readonly Gorgon2D _gorgon2D;				// The 2D interface that owns this object.
 		#endregion
 
 		#region Properties.

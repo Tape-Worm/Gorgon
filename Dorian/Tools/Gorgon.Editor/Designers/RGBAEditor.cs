@@ -104,8 +104,10 @@ namespace GorgonLibrary.Editor
 			base.PaintValue(e);
 
 			e.Graphics.DrawImage(Properties.Resources.PropertyChecker, e.Bounds);
-			using (Brush brush = new SolidBrush((Color)e.Value))
+			using(Brush brush = new SolidBrush((Color)e.Value))
+			{
 				e.Graphics.FillRectangle(brush, e.Bounds);
+			}
 		}
 
 		/// <summary>

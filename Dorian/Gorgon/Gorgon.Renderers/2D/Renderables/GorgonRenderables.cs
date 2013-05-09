@@ -42,7 +42,7 @@ namespace GorgonLibrary.Renderers
 	public class GorgonRenderables
 	{
 		#region Variables.
-		private Gorgon2D _gorgon2D = null;			// Gorgon 2D interface.
+		private readonly Gorgon2D _gorgon2D;			// Gorgon 2D interface.
 		#endregion
 
 		#region Properties.

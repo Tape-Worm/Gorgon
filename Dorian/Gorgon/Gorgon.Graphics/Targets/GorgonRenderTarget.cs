@@ -84,8 +84,8 @@ namespace GorgonLibrary.Graphics
 		#endregion
 
 		#region Variables.
-		private bool _disposed = false;										// Flag to indicate that the object was disposed.
-		private GorgonDepthStencil _depthStencil = null;					// Depth/stencil buffer attached to this render target.
+		private bool _disposed;										// Flag to indicate that the object was disposed.
+		private GorgonDepthStencil _depthStencil;					// Depth/stencil buffer attached to this render target.
 		#endregion
 
 		#region Properties.

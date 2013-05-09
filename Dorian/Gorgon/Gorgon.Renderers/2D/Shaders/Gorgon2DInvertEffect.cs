@@ -37,10 +37,10 @@ namespace GorgonLibrary.Renderers
 		: Gorgon2DEffect
 	{
 		#region Variables.
-		private bool _disposed = false;								// Flag to indicate that the object was disposed.
-		private GorgonConstantBuffer _invertBuffer = null;			// Buffer for the inversion effect.
-		private GorgonDataStream _invertStream = null;				// Stream for the invert effect.
-		private bool _invertAlpha = false;							// Flag to invert the alpha channel.
+		private bool _disposed;										// Flag to indicate that the object was disposed.
+		private readonly GorgonConstantBuffer _invertBuffer;		// Buffer for the inversion effect.
+		private readonly GorgonDataStream _invertStream;			// Stream for the invert effect.
+		private bool _invertAlpha;									// Flag to invert the alpha channel.
 		#endregion
 
 		#region Properties.

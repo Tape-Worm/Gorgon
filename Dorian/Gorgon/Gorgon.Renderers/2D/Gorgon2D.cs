@@ -317,28 +317,28 @@ namespace GorgonLibrary.Renderers
 		#endregion
 
 		#region Variables.
-		private PreviousStates _stateRecall = null;													// State recall cache.
-		private GorgonSwapChain _swapChain = null;													// Swap chain target.
-		private int _baseVertex = 0;																// Base vertex.		
-		private Gorgon2DVertex[] _vertexCache = null;												// List of vertices to cache.
-		private int _cacheStart = 0;																// Starting cache vertex buffer index.
-		private int _renderIndexStart = 0;															// Starting index to render.
-		private int _renderIndexCount = 0;															// Number of indices to render.
-		private int _cacheEnd = 0;																	// Ending vertex buffer cache index.
-		private int _cacheWritten = 0;																// Number of vertices written.
-		private bool _useCache = true;																// Flag to indicate that we want to use the cache.
-		private bool _disposed = false;																// Flag to indicate that the object was disposed.
-		private int _cacheSize = 32768;																// Number of vertices that we can stuff into a vertex buffer.
-		private GorgonRenderTarget _defaultTarget = null;											// Default render target.
-		private GorgonRenderTarget _target = null;													// Current render target.	
-		private GorgonInputLayout _layout = null;													// Input layout.
-		private bool _multiSampleEnable = false;													// Flag to indicate that multi sampling is enabled.
-		private GorgonViewport? _viewPort = null;													// Viewport to use.
-		private Rectangle? _clip = null;															// Clipping rectangle.
-		private ICamera _camera = null;																// Current camera.
-		private GorgonOrthoCamera _defaultCamera = null;											// Default camera.
-		private GorgonSprite _logoSprite = null;													// Logo sprite.
-		private GorgonDataStream _projectionViewStream = null;										// Stream used to write to the projection/view matrix buffer.
+		private PreviousStates _stateRecall;											// State recall cache.
+		private GorgonSwapChain _swapChain;												// Swap chain target.
+		private int _baseVertex;														// Base vertex.		
+		private Gorgon2DVertex[] _vertexCache;											// List of vertices to cache.
+		private int _cacheStart;														// Starting cache vertex buffer index.
+		private int _renderIndexStart;													// Starting index to render.
+		private int _renderIndexCount;													// Number of indices to render.
+		private int _cacheEnd;															// Ending vertex buffer cache index.
+		private int _cacheWritten;														// Number of vertices written.
+		private bool _useCache = true;													// Flag to indicate that we want to use the cache.
+		private bool _disposed;															// Flag to indicate that the object was disposed.
+		private int _cacheSize = 32768;													// Number of vertices that we can stuff into a vertex buffer.
+		private GorgonRenderTarget _defaultTarget;										// Default render target.
+		private GorgonRenderTarget _target;												// Current render target.	
+		private GorgonInputLayout _layout;												// Input layout.
+		private bool _multiSampleEnable;												// Flag to indicate that multi sampling is enabled.
+		private GorgonViewport? _viewPort;												// Viewport to use.
+		private Rectangle? _clip;														// Clipping rectangle.
+		private ICamera _camera;														// Current camera.
+		private readonly GorgonOrthoCamera _defaultCamera;								// Default camera.
+		private readonly GorgonSprite _logoSprite;										// Logo sprite.
+		private GorgonDataStream _projectionViewStream;									// Stream used to write to the projection/view matrix buffer.
 		#endregion
 
 		#region Properties.

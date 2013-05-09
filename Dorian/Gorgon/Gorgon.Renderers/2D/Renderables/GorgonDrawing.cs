@@ -37,16 +37,15 @@ namespace GorgonLibrary.Renderers
 	public class GorgonDrawing
 	{
 		#region Variables.
-		private Gorgon2D _gorgon2D = null;														// 2D interface.
-		private GorgonRectangle _rect = null;													// Rectangle.
-		private GorgonPoint _point = null;														// Point.
-		private GorgonLine _line = null;														// Line.
-		private GorgonEllipse _ellipse = null;													// Ellipse.
-		private GorgonTriangle _triangle = null;												// Triangle.
-		private GorgonText _string = null;														// String.
-		private GorgonRenderable.DepthStencilStates _depthStencil = null;						// Depth stencil states.
-		private GorgonRenderable.TextureSamplerState _sampler = null;							// Texture sampler states.
-		private GorgonRenderable.BlendState _blend = null;										// Blending states.
+		private readonly GorgonRectangle _rect;											// Rectangle.
+		private readonly GorgonPoint _point;											// Point.
+		private readonly GorgonLine _line;												// Line.
+		private readonly GorgonEllipse _ellipse;										// Ellipse.
+		private readonly GorgonTriangle _triangle;										// Triangle.
+		private readonly GorgonText _string;											// String.
+		private GorgonRenderable.DepthStencilStates _depthStencil;						// Depth stencil states.
+		private GorgonRenderable.TextureSamplerState _sampler;							// Texture sampler states.
+		private GorgonRenderable.BlendState _blend;										// Blending states.
 		#endregion
 
 		#region Properties.
@@ -732,7 +731,6 @@ namespace GorgonLibrary.Renderers
 		/// <param name="gorgon2D">The gorgon 2D interface that owns this object.</param>
 		internal GorgonDrawing(Gorgon2D gorgon2D)
 		{
-			_gorgon2D = gorgon2D;
 			_depthStencil = new GorgonRenderable.DepthStencilStates();
 			_sampler = new GorgonRenderable.TextureSamplerState();
 			_blend = new GorgonRenderable.BlendState();

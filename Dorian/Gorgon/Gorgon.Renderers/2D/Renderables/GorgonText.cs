@@ -43,38 +43,38 @@ namespace GorgonLibrary.Renderers
 		: GorgonNamedObject, IRenderable, IMoveable, I2DCollisionObject
 	{
 		#region Variables.
-		private StringBuilder _tabText = null;											// Tab spacing text.
-		private Gorgon2DCollider _collider = null;                                      // Collision object.
-		private int _colliderVertexCount = 0;                                           // Collider vertex count.
-		private RectangleF? _textRect = null;											// Text rectangle.
-		private int _vertexCount = 0;													// Number of vertices.
-		private Gorgon2DVertex[] _vertices = null;										// Vertices.
-		private GorgonFont _font = null;												// Font to apply to the text.
-		private string _text = null;													// Original text.
-		private GorgonColor[] _colors = new GorgonColor[4];								// Vertex colors.
-		private GorgonRenderable.DepthStencilStates _depthStencil = null;				// Depth/stencil states.
-		private GorgonRenderable.BlendState _blend = null;								// Blending states.
-		private GorgonRenderable.TextureSamplerState _sampler = null;					// Texture sampler states.
-		private GorgonTexture2D _currentTexture = null;									// Currently active texture.
-		private bool _needsVertexUpdate = true;											// Flag to indicate that we need a vertex update.
-		private bool _needsColorUpdate = true;											// Flag to indicate that the color needs updating.
-		private bool _needsShadowUpdate = true;											// Flag to indicate that the shadow alpha needs updating.
-		private StringBuilder _formattedText = null;									// Formatted text.
-		private List<string> _lines = null;												// Lines in the text.
-		private Vector2 _size = Vector2.Zero;											// Size of the text block.
-		private Vector2 _position = Vector2.Zero;										// Position of the text.
-		private Vector2 _scale = new Vector2(1);										// Scale for the text.
-		private float _angle = 0;														// Angle of rotation for the text.
-		private Vector2 _anchor = Vector2.Zero;											// Anchor point for the text.
-		private float _depth = 0;														// Depth value.
-		private int _tabSpace = 3;														// Tab spaces.
-		private bool _wordWrap = false;													// Flag to indicate that the text should word wrap.
-		private Alignment _alignment = Alignment.UpperLeft;								// Text alignment.
-		private float _lineSpace = 1.0f;												// Line spacing.
-		private float[] _shadowAlpha = new float[4];									// Shadow vertex opacity.
-		private Vector2 _shadowOffset = new Vector2(1);									// Shadow offset.
-		private bool _shadowEnabled = false;											// Flag to indicate whether shadowing is enabled or not.
-		private bool _useKerning = true;												// Flag to indicate that kerning should be used.
+		private readonly StringBuilder _tabText;								// Tab spacing text.
+		private Gorgon2DCollider _collider;                                     // Collision object.
+		private int _colliderVertexCount;                                       // Collider vertex count.
+		private RectangleF? _textRect;											// Text rectangle.
+		private int _vertexCount;												// Number of vertices.
+		private Gorgon2DVertex[] _vertices;										// Vertices.
+		private GorgonFont _font;												// Font to apply to the text.
+		private string _text;													// Original text.
+		private readonly GorgonColor[] _colors = new GorgonColor[4];			// Vertex colors.
+		private GorgonRenderable.DepthStencilStates _depthStencil;				// Depth/stencil states.
+		private GorgonRenderable.BlendState _blend;								// Blending states.
+		private GorgonRenderable.TextureSamplerState _sampler;					// Texture sampler states.
+		private GorgonTexture2D _currentTexture;								// Currently active texture.
+		private bool _needsVertexUpdate = true;									// Flag to indicate that we need a vertex update.
+		private bool _needsColorUpdate = true;									// Flag to indicate that the color needs updating.
+		private bool _needsShadowUpdate = true;									// Flag to indicate that the shadow alpha needs updating.
+		private readonly StringBuilder _formattedText;							// Formatted text.
+		private readonly List<string> _lines;									// Lines in the text.
+		private Vector2 _size = Vector2.Zero;									// Size of the text block.
+		private Vector2 _position = Vector2.Zero;								// Position of the text.
+		private Vector2 _scale = new Vector2(1);								// Scale for the text.
+		private float _angle;													// Angle of rotation for the text.
+		private Vector2 _anchor = Vector2.Zero;									// Anchor point for the text.
+		private float _depth;													// Depth value.
+		private int _tabSpace = 3;												// Tab spaces.
+		private bool _wordWrap;													// Flag to indicate that the text should word wrap.
+		private Alignment _alignment = Alignment.UpperLeft;						// Text alignment.
+		private float _lineSpace = 1.0f;										// Line spacing.
+		private readonly float[] _shadowAlpha = new float[4];					// Shadow vertex opacity.
+		private Vector2 _shadowOffset = new Vector2(1);							// Shadow offset.
+		private bool _shadowEnabled;											// Flag to indicate whether shadowing is enabled or not.
+		private bool _useKerning = true;										// Flag to indicate that kerning should be used.
 		#endregion
 
 		#region Properties.
@@ -100,11 +100,13 @@ namespace GorgonLibrary.Renderers
 			}
 			set
 			{
-				if (value != _useKerning)
+				if (value == _useKerning)
 				{
-					_useKerning = value;
-					_needsVertexUpdate = true;
+					return;
 				}
+
+				_useKerning = value;
+				_needsVertexUpdate = true;
 			}
 		}
 

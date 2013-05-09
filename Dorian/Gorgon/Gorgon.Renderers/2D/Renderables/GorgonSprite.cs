@@ -77,13 +77,12 @@ namespace GorgonLibrary.Renderers
 		#endregion
 
 		#region Variables.
-        private byte[] _headerData = null;                                              // File header data.
-		private float[] _corners = new float[4];										// Corners for the sprite.
-		private string _textureName = string.Empty;										// Name of the texture for the sprite.
-		private Vector2[] _offsets = null;												// A list of vertex offsets.
-		private bool _horizontalFlip = false;											// Flag to indicate that the sprite is flipped horizontally.
-		private bool _verticalFlip = false;												// Flag to indicate that the sprite is flipped vertically.
-		private Gorgon2DCollider _collider = null;										// Collider for the sprite.
+		private readonly float[] _corners = new float[4];						// Corners for the sprite.
+		private string _textureName = string.Empty;								// Name of the texture for the sprite.
+		private readonly Vector2[] _offsets;									// A list of vertex offsets.
+		private bool _horizontalFlip;											// Flag to indicate that the sprite is flipped horizontally.
+		private bool _verticalFlip;												// Flag to indicate that the sprite is flipped vertically.
+		private Gorgon2DCollider _collider;										// Collider for the sprite.
 		#endregion
 
 		#region Properties.
@@ -449,8 +448,6 @@ namespace GorgonLibrary.Renderers
 		internal GorgonSprite(Gorgon2D gorgon2D, string name)
 			: base(gorgon2D, name)
 		{
-            _headerData = Encoding.UTF8.GetBytes(FileHeader);
-
 			InitializeVertices(4);
 
 			Size = Vector2.Zero;

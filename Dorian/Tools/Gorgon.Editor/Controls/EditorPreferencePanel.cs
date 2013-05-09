@@ -39,15 +39,11 @@ namespace GorgonLibrary.Editor
     public partial class EditorPreferencePanel
         : PreferencePanel
     {
-        #region Variables.
-        private ListViewItem[] _moveBuffer = null;
-        #endregion
-
         #region Properties.
 
         #endregion
 
-        #region Methods.        
+        #region Methods.
         /// <summary>
         /// Function to determine if the scratch area is accessible.
         /// </summary>
@@ -257,8 +253,6 @@ namespace GorgonLibrary.Editor
 
             listDisabledPlugIns.EndUpdate();
             listDisabledPlugIns.AutoResizeColumns(ColumnHeaderAutoResizeStyle.HeaderSize);
-
-            _moveBuffer = new ListViewItem[64];
         }
 
         /// <summary>

@@ -42,6 +42,10 @@ namespace GorgonLibrary.Graphics
 	public enum ComparisonOperators
 	{
 		/// <summary>
+		/// Unknown.
+		/// </summary>
+		Unknown = 0,
+		/// <summary>
 		/// Never pass the comparison.
 		/// </summary>
 		Never = 1,

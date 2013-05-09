@@ -39,11 +39,11 @@ namespace GorgonLibrary.Renderers
 		: GorgonNamedObject, IRenderable, IMoveable
 	{
 		#region Variables.
-		private GorgonRenderable.BlendState _blendState = null;								// Blending state.
-		private GorgonRenderable.DepthStencilStates _depthState = null;						// Depth/stencil state.
-		private GorgonRenderable.TextureSamplerState _samplerState = null;					// Sampler state.
-		private Gorgon2DVertex[] _vertices = null;											// List of vertices.
-		private Vector2 _pointSize = new Vector2(1);										// Point size.
+		private GorgonRenderable.BlendState _blendState;						// Blending state.
+		private GorgonRenderable.DepthStencilStates _depthState;				// Depth/stencil state.
+		private readonly GorgonRenderable.TextureSamplerState _samplerState;	// Sampler state.
+		private readonly Gorgon2DVertex[] _vertices;							// List of vertices.
+		private Vector2 _pointSize = new Vector2(1);							// Point size.
 		#endregion
 
 		#region Properties.

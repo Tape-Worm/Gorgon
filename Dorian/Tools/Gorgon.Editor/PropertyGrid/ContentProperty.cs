@@ -38,10 +38,10 @@ namespace GorgonLibrary.Editor
 		: GorgonNamedObject
 	{
 		#region Variables.
-		private ContentObject _owner = null;
-		private PropertyDescriptor _descriptor = null;
+		private readonly ContentObject _owner;
+		private readonly PropertyDescriptor _descriptor;
 		private string _editorBase = string.Empty;
-		private object _defaultValue = null;
+		private object _defaultValue;
 		#endregion
 
 		#region Properties.
@@ -85,11 +85,13 @@ namespace GorgonLibrary.Editor
 			}
 			set
 			{
-				if (_defaultValue != value)
+				if (_defaultValue == value)
 				{
-					_defaultValue = value;
-					HasDefaultValue = true;
+					return;
 				}
+
+				_defaultValue = value;
+				HasDefaultValue = true;
 			}
 		}
 

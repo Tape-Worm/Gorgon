@@ -38,16 +38,16 @@ namespace GorgonLibrary.Renderers
 		: Gorgon2DEffect
 	{
 		#region Variables.
-		private bool _disposed = false;											// Flag to indicate that the object was disposed.
-		private GorgonRenderTarget _displacementTarget = null;					// Displacement buffer target.
+		private bool _disposed;													// Flag to indicate that the object was disposed.
+		private GorgonRenderTarget _displacementTarget;							// Displacement buffer target.
 		private Size _targetSize = new Size(512, 512);							// Displacement target size.
 		private BufferFormat _targetFormat = BufferFormat.R8G8B8A8_UIntNormal;	// Format for the displacement target.
-		private GorgonConstantBuffer _displacementBuffer = null;				// Buffer used to send displacement data.
-		private GorgonDataStream _displacementStream = null;					// Stream used to update the displacement buffer.
+		private readonly GorgonConstantBuffer _displacementBuffer;				// Buffer used to send displacement data.
+		private readonly GorgonDataStream _displacementStream;					// Stream used to update the displacement buffer.
 		private bool _isUpdated = true;											// Flag to indicate that the parameters have been updated.
 		private float _displacementStrength = 1.0f;								// Strength of the displacement map.
 		private SmoothingMode _lastSmoothMode = SmoothingMode.None;				// Last global smoothing state.
-		private GorgonRenderTarget _currentTarget = null;						// Current render target.
+		private GorgonRenderTarget _currentTarget;								// Current render target.
 		#endregion
 
 		#region Properties.

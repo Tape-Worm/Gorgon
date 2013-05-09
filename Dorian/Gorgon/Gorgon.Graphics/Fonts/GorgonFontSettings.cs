@@ -75,7 +75,7 @@ namespace GorgonLibrary.Graphics
 		private IEnumerable<char> _characters = string.Empty;				// The list of characters supported by the font.
 		private int _contrast = 4;											// Text contrasting.
 		private int _packSpace = 1;											// Packing spacing.
-		private IList<GorgonColor> _baseColors = null;						// Base colors.
+		private IList<GorgonColor> _baseColors;								// Base colors.
 		#endregion
 
 		#region Properties.

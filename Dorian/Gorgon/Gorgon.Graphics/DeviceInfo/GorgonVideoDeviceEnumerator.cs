@@ -38,7 +38,7 @@ namespace GorgonLibrary.Graphics
 	/// Enumerates information about the installed video devices on the system.
 	/// </summary>
 	/// <remarks>Use this to retrieve a list of video devices available on the system. A video device may be a discreet video card, or a device on the motherboard. 
-	/// Retrieve the video device information by calling the <see cref="M:GorgonLibrary.Graphics.GorgonVideoDeviceEnumerator.Enumerate">Enumerate</see> method and the 
+	/// Retrieve the video device information by calling the <see cref="GorgonLibrary.Graphics.GorgonVideoDeviceEnumerator.Enumerate">Enumerate</see> method and the 
 	/// <see cref="P:GorgonLibrary.Graphics.GorgonVideoDeviceEnumerator.VideoDevices">VideoDevices</see> property will be populated with video device information.  From 
 	/// there you can pass a <see cref="GorgonLibrary.Graphics.GorgonVideoDevice">GorgonVideoDevice</see> object into the <see cref="GorgonLibrary.Graphics.GorgonGraphics">
 	/// GorgonGraphics</see> constructor to use a specific video device.
@@ -48,8 +48,8 @@ namespace GorgonLibrary.Graphics
 	public static class GorgonVideoDeviceEnumerator
 	{
 		#region Variables.
-		private static int _lockIncr = 0;		
-		private static GorgonNamedObjectReadOnlyCollection<GorgonVideoDevice> _devices = null;
+		private static int _lockIncr;		
+		private static GorgonNamedObjectReadOnlyCollection<GorgonVideoDevice> _devices;
 		#endregion
 
 		#region Properties.
