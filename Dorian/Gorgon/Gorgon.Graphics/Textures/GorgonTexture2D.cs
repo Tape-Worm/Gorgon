@@ -178,7 +178,8 @@ namespace GorgonLibrary.Graphics
 			newSettings.Usage = (BufferUsage)desc.Usage;
 			newSettings.ViewFormat = BufferFormat.Unknown;
 			newSettings.Multisampling = new GorgonMultisampling(desc.SampleDescription.Count, desc.SampleDescription.Quality);
-
+		    newSettings.IsTextureCube = (desc.OptionFlags & D3D.ResourceOptionFlags.TextureCube)
+		                                == D3D.ResourceOptionFlags.TextureCube;
 			// Preserve any custom view format.
 			newSettings.ViewFormat = viewFormat;
 
@@ -190,20 +191,21 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		internal void InitializeRenderTarget()
 		{
-			var desc = new D3D.Texture2DDescription();
+			var desc = new D3D.Texture2DDescription
+			    {
+			        ArraySize = 1,
+			        Format = (SharpDX.DXGI.Format)Settings.Format,
+			        Width = Settings.Width,
+			        Height = Settings.Height,
+			        MipLevels = 1,
+			        BindFlags = GetBindFlags(false, true),
+			        Usage = D3D.ResourceUsage.Default,
+			        CpuAccessFlags = D3D.CpuAccessFlags.None,
+			        OptionFlags = D3D.ResourceOptionFlags.None,
+			        SampleDescription = GorgonMultisampling.Convert(Settings.Multisampling)
+			    };
 
-			desc.ArraySize = 1;
-			desc.Format = (SharpDX.DXGI.Format)Settings.Format;
-			desc.Width = Settings.Width;
-			desc.Height = Settings.Height;
-			desc.MipLevels = 1;
-			desc.BindFlags = D3D.BindFlags.RenderTarget | D3D.BindFlags.ShaderResource;
-			desc.Usage = D3D.ResourceUsage.Default;
-			desc.CpuAccessFlags = D3D.CpuAccessFlags.None;
-			desc.OptionFlags = D3D.ResourceOptionFlags.None;
-			desc.SampleDescription = GorgonMultisampling.Convert(Settings.Multisampling);
-
-			Gorgon.Log.Print("{0} {1}: Creating 2D D3D 11 render target texture...", Diagnostics.LoggingLevel.Verbose, GetType().Name, Name);
+		    Gorgon.Log.Print("{0} {1}: Creating 2D D3D 11 render target texture...", Diagnostics.LoggingLevel.Verbose, GetType().Name, Name);
 			D3DResource = new D3D.Texture2D(Graphics.D3DDevice, desc);
 
 			CreateDefaultResourceView();
@@ -233,20 +235,24 @@ namespace GorgonLibrary.Graphics
 		/// <param name="isShaderBound">TRUE if the texture should be used in a shader, FALSE if not.</param>
 		internal void InitializeDepth(bool isShaderBound)
 		{
-			var desc = new D3D.Texture2DDescription();
+			var desc = new D3D.Texture2DDescription
+			    {
+			        ArraySize = 1,
+			        Format = (SharpDX.DXGI.Format)Settings.Format,
+			        Width = Settings.Width,
+			        Height = Settings.Height,
+			        MipLevels = Settings.MipCount,
+			        BindFlags = GetBindFlags(true, false),
+			        Usage = D3D.ResourceUsage.Default,
+			        CpuAccessFlags = D3D.CpuAccessFlags.None,
+			        OptionFlags = D3D.ResourceOptionFlags.None,
+			        SampleDescription = GorgonMultisampling.Convert(Settings.Multisampling)
+			    };
 
-			desc.ArraySize = 1;
-			desc.Format = (SharpDX.DXGI.Format)Settings.Format;
-			desc.Width = Settings.Width;
-			desc.Height = Settings.Height;
-			desc.MipLevels = Settings.MipCount;
-			desc.BindFlags = D3D.BindFlags.DepthStencil;
-			if (isShaderBound)
-				desc.BindFlags |= D3D.BindFlags.ShaderResource;
-			desc.Usage = D3D.ResourceUsage.Default;
-			desc.CpuAccessFlags = D3D.CpuAccessFlags.None;
-			desc.OptionFlags = D3D.ResourceOptionFlags.None;
-			desc.SampleDescription = GorgonMultisampling.Convert(Settings.Multisampling);
+		    if (isShaderBound)
+		    {
+		        desc.BindFlags |= D3D.BindFlags.ShaderResource;
+		    }
 
 			Gorgon.Log.Print("{0} {1}: Creating D3D 11 depth/stencil texture...", Diagnostics.LoggingLevel.Verbose, GetType().Name, Name);
 			D3DResource = new D3D.Texture2D(Graphics.D3DDevice, desc);
@@ -262,19 +268,20 @@ namespace GorgonLibrary.Graphics
 		/// <param name="initialData">Data used to populate the image.</param>
 		protected override void InitializeImpl(GorgonImageData initialData)
 		{
-			var desc = new D3D.Texture2DDescription();
+			var desc = new D3D.Texture2DDescription
+			    {
+			        ArraySize = Settings.ArrayCount,
+			        Format = (SharpDX.DXGI.Format)Settings.Format,
+			        Width = Settings.Width,
+			        Height = Settings.Height,
+			        MipLevels = Settings.MipCount,
+			        BindFlags = GetBindFlags(false, false),
+			        Usage = (D3D.ResourceUsage)Settings.Usage,
+			        OptionFlags = Settings.IsTextureCube ? D3D.ResourceOptionFlags.TextureCube : D3D.ResourceOptionFlags.None,
+			        SampleDescription = GorgonMultisampling.Convert(Settings.Multisampling)
+			    };
 
-			desc.ArraySize = Settings.ArrayCount;
-			desc.Format = (SharpDX.DXGI.Format)Settings.Format;
-			desc.Width = Settings.Width;
-			desc.Height = Settings.Height;
-			desc.MipLevels = Settings.MipCount;
-			if (Settings.Usage != BufferUsage.Staging)
-				desc.BindFlags = D3D.BindFlags.ShaderResource;
-			else
-				desc.BindFlags = D3D.BindFlags.None;
-			desc.Usage = (D3D.ResourceUsage)Settings.Usage;
-			switch (Settings.Usage)
+		    switch (Settings.Usage)
 			{
 				case BufferUsage.Staging:
 					desc.CpuAccessFlags = D3D.CpuAccessFlags.Read | D3D.CpuAccessFlags.Write;
@@ -286,17 +293,10 @@ namespace GorgonLibrary.Graphics
 					desc.CpuAccessFlags = D3D.CpuAccessFlags.None;
 					break;
 			}
-			desc.OptionFlags = D3D.ResourceOptionFlags.None;
-			desc.SampleDescription = GorgonMultisampling.Convert(Settings.Multisampling);
 
-			if (initialData != null)
-			{
-				D3DResource = new D3D.Texture2D(Graphics.D3DDevice, desc, initialData.GetDataBoxes());
-			}
-			else
-			{
-				D3DResource = new D3D.Texture2D(Graphics.D3DDevice, desc);
-			}
+		    D3DResource = initialData != null
+		                      ? new D3D.Texture2D(Graphics.D3DDevice, desc, initialData.GetDataBoxes())
+		                      : new D3D.Texture2D(Graphics.D3DDevice, desc);
 		}
 
 		/// <summary>

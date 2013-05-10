@@ -24,7 +24,6 @@
 // 
 #endregion
 
-using System.Linq;
 using GorgonLibrary.IO;
 using DX = SharpDX;
 using D3D = SharpDX.Direct3D11;
@@ -95,13 +94,17 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		protected override void CreateDefaultResourceView()
 		{
-			if (BufferUsage != GorgonLibrary.Graphics.BufferUsage.Staging)
-			{
-				DefaultView = new GorgonResourceView(Graphics, "Gorgon Structured Buffer #" + Graphics.GetGraphicsObjectOfType<GorgonStructuredBuffer>().Count().ToString());
-				DefaultView.Resource = this;
-				DefaultView.BuildResourceView();
-				Graphics.Shaders.Reseat(this);
-			}
+		    if (BufferUsage == GorgonLibrary.Graphics.BufferUsage.Staging)
+		    {
+		        return;
+		    }
+
+		    DefaultView = new GorgonResourceView(Graphics, "Gorgon Structured Buffer #" + Graphics.GetGraphicsObjectOfType<GorgonStructuredBuffer>().Count)
+		        {
+		            Resource = this
+		        };
+		    DefaultView.BuildResourceView();
+		    Graphics.Shaders.Reseat(this);
 		}
 
 		/// <summary>
@@ -130,31 +133,35 @@ namespace GorgonLibrary.Graphics
 				D3DResource = null;
 			}
 
-			var desc = new D3D.BufferDescription()
-			{
-				BindFlags = BindingFlags,
-				CpuAccessFlags = D3DCPUAccessFlags,
-				OptionFlags = D3D.ResourceOptionFlags.BufferStructured,
-				SizeInBytes = SizeInBytes,
-				StructureByteStride = ElementSize,
-				Usage = D3DUsage
-			};
+		    var desc = new D3D.BufferDescription
+		        {
+		            BindFlags = BindingFlags,
+		            CpuAccessFlags = D3DCPUAccessFlags,
+		            OptionFlags = D3D.ResourceOptionFlags.BufferStructured,
+		            SizeInBytes = SizeInBytes,
+		            StructureByteStride = ElementSize,
+		            Usage = D3DUsage
+		        };
 
-			if (value != null)
-			{
-				long position = value.Position;
+		    if (value != null)
+		    {
+		        long position = value.Position;
 
-				using (var dxStream = new DX.DataStream(value.BasePointer, value.Length - position, true, true))
-					D3DResource = new D3D.Buffer(Graphics.D3DDevice, dxStream, desc);
-			}
-			else
-				D3DResource = new D3D.Buffer(Graphics.D3DDevice, desc);
+		        using(var dxStream = new DX.DataStream(value.BasePointer, value.Length - position, true, true))
+		        {
+		            D3DResource = new D3D.Buffer(Graphics.D3DDevice, dxStream, desc);
+		        }
+		    }
+		    else
+		    {
+		        D3DResource = new D3D.Buffer(Graphics.D3DDevice, desc);
+		    }
 
-			GorgonRenderStatistics.StructuredBufferCount++;
+		    GorgonRenderStatistics.StructuredBufferCount++;
 			GorgonRenderStatistics.StructuredBufferSize += ((D3D.Buffer)D3DResource).Description.SizeInBytes;
 
 #if DEBUG
-			D3DResource.DebugName = "Gorgon Structured Buffer #" + Graphics.GetGraphicsObjectOfType<GorgonStructuredBuffer>().Count().ToString();
+			D3DResource.DebugName = "Gorgon Structured Buffer #" + Graphics.GetGraphicsObjectOfType<GorgonStructuredBuffer>().Count;
 #endif
 			CreateDefaultResourceView();
 		}

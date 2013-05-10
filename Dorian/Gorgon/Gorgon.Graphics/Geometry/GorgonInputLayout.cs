@@ -31,8 +31,6 @@ using System.Reflection;
 using System.Diagnostics;
 using SlimMath;
 using D3D = SharpDX.Direct3D11;
-using GorgonLibrary.Collections;
-using GorgonLibrary.Diagnostics;
 using GorgonLibrary.Graphics.Properties;
 
 namespace GorgonLibrary.Graphics

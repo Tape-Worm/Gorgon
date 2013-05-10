@@ -339,14 +339,21 @@ namespace GorgonLibrary.Graphics
 			GorgonStructuredBuffer result = null;
 
 #if DEBUG
-			if (_graphics.VideoDevice.SupportedFeatureLevel < DeviceFeatureLevel.SM5)
-				throw new InvalidOperationException("Structured buffers are only available for video devices that support SM5 or better.");
+		    if (_graphics.VideoDevice.SupportedFeatureLevel < DeviceFeatureLevel.SM5)
+		    {
+		        throw new InvalidOperationException(
+		            "Structured buffers are only available for video devices that support SM5 or better.");
+		    }
 
-			if (elementCount <= 0)
-				throw new ArgumentException("The element count must be greater than 0.", "settings");
+		    if (elementCount <= 0)
+		    {
+		        throw new ArgumentException("The element count must be greater than 0.", "settings");
+		    }
 
-			if (elementSize <= 0)
-				throw new ArgumentException("The element size must be greater than 0.", "settings");
+		    if (elementSize <= 0)
+		    {
+		        throw new ArgumentException("The element size must be greater than 0.", "settings");
+		    }
 #endif
 
 			result = new GorgonStructuredBuffer(_graphics, elementCount, elementSize, false, allowCPUWrite);

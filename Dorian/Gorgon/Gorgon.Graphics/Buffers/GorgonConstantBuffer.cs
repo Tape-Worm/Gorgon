@@ -122,7 +122,7 @@ namespace GorgonLibrary.Graphics
 		    if (((lockFlags & BufferLockFlags.Discard) != BufferLockFlags.Discard) ||
 		        ((lockFlags & BufferLockFlags.Write) != BufferLockFlags.Write))
 		    {
-		        throw new ArgumentException(Resources.GORGFX_CBUFFER_LOCK_NOT_WRITE_DISCARD, "lockFlags");
+		        throw new ArgumentException(Resources.GORGFX_BUFFER_LOCK_NOT_WRITE_DISCARD, "lockFlags");
 		    }
 #endif
 

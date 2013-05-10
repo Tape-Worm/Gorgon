@@ -28,6 +28,7 @@ using System;
 using GorgonLibrary.IO;
 using DX = SharpDX;
 using D3D = SharpDX.Direct3D11;
+using GorgonLibrary.Graphics.Properties;
 
 namespace GorgonLibrary.Graphics
 {
@@ -50,10 +51,12 @@ namespace GorgonLibrary.Graphics
 		{
 			get
 			{
-				if (IsUnorderedAccess)
-					return D3D.BindFlags.ShaderResource | D3D.BindFlags.UnorderedAccess;
-				else
-					return D3D.BindFlags.ShaderResource;
+			    if (IsUnorderedAccess)
+			    {
+			        return D3D.BindFlags.ShaderResource | D3D.BindFlags.UnorderedAccess;
+			    }
+
+			    return D3D.BindFlags.ShaderResource;
 			}
 		}
 
@@ -78,14 +81,7 @@ namespace GorgonLibrary.Graphics
 			}
 			set
 			{
-				if (BufferUsage != BufferUsage.Staging)
-				{
-					base.View = value;
-				}
-				else
-				{
-					base.View = null;
-				}
+			    base.View = BufferUsage != BufferUsage.Staging ? value : null;
 			}
 		}
 		#endregion
@@ -100,13 +96,12 @@ namespace GorgonLibrary.Graphics
 			Graphics.Shaders.VertexShader.Resources.Unbind(this);
 			Graphics.Shaders.PixelShader.Resources.Unbind(this);
 
-			if (IsLocked)
-				Unlock();
+		    if (IsLocked)
+		    {
+		        Unlock();
+		    }
 
-			if (View != null)
-			{
-				View = null;
-			}
+		    View = null;
 
 			if (DefaultView != null)
 			{
@@ -115,11 +110,13 @@ namespace GorgonLibrary.Graphics
 				DefaultView = null;
 			}
 
-			if (D3DResource != null)
-			{
-				D3DResource.Dispose();
-				D3DResource = null;
-			}
+		    if (D3DResource == null)
+		    {
+		        return;
+		    }
+
+		    D3DResource.Dispose();
+		    D3DResource = null;
 		}
 
 		/// <summary>
@@ -131,10 +128,13 @@ namespace GorgonLibrary.Graphics
 		/// </returns>
 		protected override GorgonDataStream LockImpl(BufferLockFlags lockFlags)
 		{
-			if (((lockFlags & BufferLockFlags.Discard) != BufferLockFlags.Discard) || ((lockFlags & BufferLockFlags.Write) != BufferLockFlags.Write))
-				throw new ArgumentException("A structured buffer must be locked with the Write and Discard flags.", "lockFlags");
+		    if (((lockFlags & BufferLockFlags.Discard) != BufferLockFlags.Discard)
+		        || ((lockFlags & BufferLockFlags.Write) != BufferLockFlags.Write))
+		    {
+		        throw new ArgumentException(Resources.GORGFX_BUFFER_LOCK_NOT_WRITE_DISCARD, "lockFlags");
+		    }
 
-			Graphics.Context.MapSubresource(D3DBuffer, D3D.MapMode.WriteDiscard, D3D.MapFlags.None, out _lockStream);
+		    Graphics.Context.MapSubresource(D3DBuffer, D3D.MapMode.WriteDiscard, D3D.MapFlags.None, out _lockStream);
 
 			return new GorgonDataStream(_lockStream.DataPointer, (int)_lockStream.Length);
 		}
@@ -158,8 +158,8 @@ namespace GorgonLibrary.Graphics
 		protected override void UpdateImpl(GorgonDataStream stream, int offset, int size)
 		{
 			Graphics.Context.UpdateSubresource(
-				new DX.DataBox()
-				{
+				new DX.DataBox
+				    {
 					DataPointer = stream.PositionPointer,
 					RowPitch = 0,
 					SlicePitch = 0
@@ -187,7 +187,7 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		/// <param name="stream">Stream containing the data used to update the buffer.</param>
 		/// <remarks>This method can only be used with buffers that have Default usage.  Other buffer usages will thrown an exception.
-		/// <para>This method will respect the <see cref="P:GorgonLibrary.GorgonDataStream.Position">Position</see> property of the data stream.  
+		/// <para>This method will respect the <see cref="P:GorgonLibrary.IO.GorgonDataStream.Position">Position</see> property of the data stream.  
 		/// This means that it will start reading from the stream at the current position.  To read from the beginning of the stream, set the position 
 		/// to 0.</para>
 		/// </remarks>
@@ -210,9 +210,6 @@ namespace GorgonLibrary.Graphics
 		protected GorgonShaderBuffer(GorgonGraphics graphics, bool allowCPUWrite, bool isUnorderedAccess, int size)
 			: base(graphics, (allowCPUWrite ? BufferUsage.Dynamic : BufferUsage.Default), size)
 		{
-			if ((isUnorderedAccess) && (graphics.VideoDevice.SupportedFeatureLevel < DeviceFeatureLevel.SM5))
-				throw new ArgumentException("Cannot use unordered access buffers with video devices that are not SM5 or better.", "isUnorderedAccess");
-
 			IsUnorderedAccess = isUnorderedAccess;
 		}
 		#endregion
