@@ -205,6 +205,41 @@ namespace GorgonLibrary.Graphics
 		/// </remarks>
 		protected abstract void InitializeImpl(GorgonImageData initialData);
 
+        /// <summary>
+        /// Funtion to retrieve the binding flags for a resource.
+        /// </summary>
+        /// <param name="isDepth">TRUE if the texture is meant for depth/stencil.</param>
+        /// <param name="isTarget">TRUE if the texture is meant for use as a render target.</param>
+        /// <returns>The Direct3D binding flags.</returns>
+        internal D3D.BindFlags GetBindFlags(bool isDepth, bool isTarget)
+        {
+            var flags = D3D.BindFlags.None;
+
+            if (!isDepth)
+            {
+                if (Settings.Usage != BufferUsage.Staging)
+                {
+                    flags |= D3D.BindFlags.ShaderResource;
+                }
+
+                if (Settings.ViewIsUnordered)
+                {
+                    flags |= D3D.BindFlags.UnorderedAccess;
+                }
+
+                if (isTarget)
+                {
+                    flags |= D3D.BindFlags.RenderTarget;
+                }
+            }
+            else
+            {
+                flags |= D3D.BindFlags.DepthStencil;
+            }
+
+            return flags;
+        }
+
 		/// <summary>
 		/// Function to create an image with initial data.
 		/// </summary>

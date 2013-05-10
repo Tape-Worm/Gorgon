@@ -178,8 +178,8 @@
   <data name="GORGFX_BUFFER_WRITE_ONLY" xml:space="preserve">
     <value>Cannot read this buffer.</value>
   </data>
-  <data name="GORGFX_CBUFFER_LOCK_NOT_WRITE_DISCARD" xml:space="preserve">
-    <value>A constant buffer must be locked with the Write and Discard flags.</value>
+  <data name="GORGFX_BUFFER_LOCK_NOT_WRITE_DISCARD" xml:space="preserve">
+    <value>This buffer must be locked with the Write and Discard flags.</value>
   </data>
   <data name="GORGFX_CBUFFER_NOT_MULTIPLE_OF_16" xml:space="preserve">
     <value>Cannot create the constant buffer.  The buffer size of {0} bytes is not a multiple of 16.</value>

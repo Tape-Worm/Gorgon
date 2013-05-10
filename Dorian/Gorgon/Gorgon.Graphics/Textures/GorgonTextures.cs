@@ -249,7 +249,13 @@ namespace GorgonLibrary.Graphics
 				settings.Depth = newSize.Item3;
 			}
 
-			// Check texture size if using a compressed format.
+            if ((_graphics.VideoDevice.SupportedFeatureLevel != DeviceFeatureLevel.SM5)
+                && (settings.ViewIsUnordered))
+            {
+                throw new GorgonException(GorgonResult.CannotCreate, "Unordered access views for textures requires a SM5 or better video device.");
+            }
+
+            // Check texture size if using a compressed format.
 			var formatInfo = GorgonBufferFormatInfo.GetInfo(settings.Format);
 
 			if (formatInfo.IsCompressed)
@@ -348,6 +354,12 @@ namespace GorgonLibrary.Graphics
 				settings.Height = newSize.Item2;
 			}
 
+            if ((_graphics.VideoDevice.SupportedFeatureLevel != DeviceFeatureLevel.SM5)
+                && (settings.ViewIsUnordered))
+            {
+                throw new GorgonException(GorgonResult.CannotCreate, "Unordered access views for textures requires a SM5 or better video device.");
+            }
+
 			if (settings.Width > MaxWidth)
 				throw new GorgonException(GorgonResult.CannotCreate, "The texture width must be less than " + MaxWidth.ToString() + ".");
 			if (settings.Height > MaxHeight)
@@ -396,6 +408,12 @@ namespace GorgonLibrary.Graphics
 				Tuple<int, int, int> newSize = GetPow2Size(settings.Width, 0, 0);
 				settings.Width = newSize.Item1;
 			}
+
+            if ((_graphics.VideoDevice.SupportedFeatureLevel != DeviceFeatureLevel.SM5)
+                && (settings.ViewIsUnordered))
+            {
+                throw new GorgonException(GorgonResult.CannotCreate, "Unordered access views for textures requires a SM5 or better video device.");
+            }
 
 			if (settings.Width > MaxWidth)
 				throw new GorgonException(GorgonResult.CannotCreate, "The texture width must be less than " + MaxWidth.ToString() + ".");
