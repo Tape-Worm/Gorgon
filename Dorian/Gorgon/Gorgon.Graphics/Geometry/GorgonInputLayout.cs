@@ -29,12 +29,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Diagnostics;
-using GorgonLibrary.Collections;
-using GorgonLibrary.Diagnostics;
 using SlimMath;
 using D3D = SharpDX.Direct3D11;
-
-#error This is currently being refactored.
+using GorgonLibrary.Collections;
+using GorgonLibrary.Diagnostics;
+using GorgonLibrary.Graphics.Properties;
 
 namespace GorgonLibrary.Graphics
 {
@@ -181,16 +180,15 @@ namespace GorgonLibrary.Graphics
         /// <param name="element"></param>
         private void FindDuplicateElements(GorgonInputElement element)
         {
-            if (
-                _elements.Any(
-                    elementItem =>
-                    ((element.Offset == elementItem.Offset) ||
-                     (String.Compare(element.Context, elementItem.Context, StringComparison.OrdinalIgnoreCase) == 0)) && element.Index == elementItem.Index &&
-                    element.Slot == elementItem.Slot))
+            if (_elements.Any(
+		            elementItem =>
+		            !string.IsNullOrWhiteSpace(elementItem.Context) &&
+		            ((element.Offset == elementItem.Offset) ||
+		             (String.Compare(element.Context, elementItem.Context, StringComparison.OrdinalIgnoreCase) == 0)) &&
+		            element.Index == elementItem.Index && element.Slot == elementItem.Slot))
             {
-                throw new ArgumentException(
-                    "The offset '" + element.Offset + "' or context '" + element.Context +
-                    "' is in use by another item with the same index or slot.", "element");
+				throw new ArgumentException(
+					string.Format(Resources.GORGFX_LAYOUT_ELEMENT_IN_USE, element.Offset, element.Context), "element");
             }
         }
 
@@ -205,48 +203,7 @@ namespace GorgonLibrary.Graphics
 		                  group slot by slot.Slot).ToDictionary(key => key.Key, value => value.Sum(item => item.Size));
 		}
 
-        /// <summary>
-        /// Function to assign an input element to the list.
-        /// </summary>
-        /// <param name="elementIndex">Index of the element.</param>
-        /// <param name="context">Context of the element.</param>
-        /// <param name="format">Format of the element.</param>
-        /// <param name="offset">Offset in bytes of the element.</param>
-        /// <param name="index">Index of the element.</param>
-        /// <param name="slot">Vertex buffer slot for the element.</param>
-        /// <param name="instanced">TRUE if this element is instanced, FALSE if not.</param>
-        /// <param name="instanceCount">If <paramref name="instanced"/> is TRUE, then the number of instances.  If FALSE, this parameter must be 0.</param>
-        /// <returns>The size of the element, in bytes.</returns>
-        private int SetElement(int elementIndex, string context, BufferFormat format, int? offset, int index, int slot, bool instanced, int instanceCount)
-        {
-            // Find the highest offset and increment by the last element size.
-            if (offset == null)
-            {
-                if (_elements.Length > 0)
-                {
-                    var lastElement = (from elementItem in _elements
-                                       orderby elementItem.Offset descending
-                                       select elementItem).Single();
-
-                    offset = lastElement.Offset + lastElement.Size;
-                }
-                else
-                {
-                    offset = 0;
-                }
-            }
-
-            var element = new GorgonInputElement(context, format, offset.Value, index, slot, instanced,
-                                                 (instanced ? instanceCount : 0));
-
-            FindDuplicateElements(element);
-
-            _elements[elementIndex] = element;
-
-            return element.Size;
-        }
-
-        /// <summary>
+		/// <summary>
         /// Function to retrieve the input layout from a specific type.
         /// </summary>
         /// <param name="type">Type of retrieve layout info from.</param>
@@ -329,6 +286,8 @@ namespace GorgonLibrary.Graphics
                 _elements[i] = element;
                 byteOffset += element.Size;
             }
+
+			UpdateVertexSize();
 		}
 
         /// <summary>
@@ -348,6 +307,8 @@ namespace GorgonLibrary.Graphics
 
                 _elements[i] = element;
             }
+
+			UpdateVertexSize();
         }
         
         /// <summary>
@@ -448,19 +409,21 @@ namespace GorgonLibrary.Graphics
 		/// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
 		private void Dispose(bool disposing)
 		{
-			if (!_disposed)
+			if (_disposed)
 			{
-				if (disposing)
-				{
-					if (D3DLayout != null)
-						D3DLayout.Dispose();
-
-					Graphics.RemoveTrackedObject(this);
-				}
-
-				D3DLayout = null;
-				_disposed = true;
+				return;
 			}
+
+			if (disposing)
+			{
+				if (D3DLayout != null)
+					D3DLayout.Dispose();
+
+				Graphics.RemoveTrackedObject(this);
+			}
+
+			D3DLayout = null;
+			_disposed = true;
 		}
 
 		/// <summary>

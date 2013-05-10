@@ -56,7 +56,7 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// A collection of glyphs for the font.
 		/// </summary>
-		public class GlyphCollection
+		public sealed class GlyphCollection
 			: IDictionary<char, GorgonGlyph>, IEnumerable<GorgonGlyph>
 		{
 			#region Variables.
@@ -759,7 +759,10 @@ namespace GorgonLibrary.Graphics
 				throw new IOException("The stream is not writable.");
 
 			if ((externalTextures) && (!(stream is FileStream)))
-				throw new ArgumentException("The stream is not a file stream, external textures cannot be saved.", "externalTextures");
+			{
+				throw new ArgumentException("The stream is not a file stream, external textures cannot be saved.",
+				                            "externalTextures");
+			}
 
 			// Output the font in chunked format.
             using (var chunk = new GorgonChunkWriter(stream))
@@ -785,6 +788,12 @@ namespace GorgonLibrary.Graphics
                 // Write rendering information.
                 chunk.Begin("RNDRDATA");
                 chunk.Write<FontAntiAliasMode>(Settings.AntiAliasingMode);
+				
+				if (Settings.BaseColors.Count < 1)
+				{
+					Settings.BaseColors.Add(GorgonColor.White);
+				}
+
                 chunk.WriteInt32(Settings.BaseColors.Count);
                 for (int i = 0; i < Settings.BaseColors.Count; i++)
                 {
@@ -1266,16 +1275,31 @@ namespace GorgonLibrary.Graphics
 			}
 
 			if (settings.TextureSize.Width >= Graphics.Textures.MaxWidth)
-				throw new ArgumentException("The texture width '" + settings.TextureSize.Width.ToString() + "' is too large for the current feature level.");
+			{
+				throw new ArgumentException("The texture width '" + settings.TextureSize.Width.ToString() +
+				                            "' is too large for the current feature level.");
+			}
 
 			if (settings.TextureSize.Height >= Graphics.Textures.MaxHeight)
-				throw new ArgumentException("The texture height '" + settings.TextureSize.Height.ToString() + "' is too large for the current feature level.");
+			{
+				throw new ArgumentException("The texture height '" + settings.TextureSize.Height.ToString() +
+				                            "' is too large for the current feature level.");
+			}
 
 			if (!settings.Characters.Contains(settings.DefaultCharacter))
-				throw new ArgumentException("The default character '" + settings.DefaultCharacter.ToString() + "' does not exist in the font character set.");
+			{
+				throw new ArgumentException("The default character '" + settings.DefaultCharacter.ToString() +
+				                            "' does not exist in the font character set.");
+			}
 
 			try
 			{
+				// Don't allow empty base colors.
+				if (settings.BaseColors.Count < 1)
+				{
+					settings.BaseColors.Add(GorgonColor.White);
+				}
+
 				Settings = settings;
 
 				// Remove all previous textures.
@@ -1455,17 +1479,35 @@ namespace GorgonLibrary.Graphics
 				Win32API.RestoreActiveObject();
 
 				if (_charBitmap != null)
+				{
 					_charBitmap.Dispose();
+					_charBitmap = null;
+				}
+
 				if (stringFormat != null)
+				{
 					stringFormat.Dispose();
+				}
+
 				if (drawFormat != null)
+				{
 					drawFormat.Dispose();
+				}
+
 				if (tempBitmap != null)
+				{
 					tempBitmap.Dispose();
+				}
+
 				if (newFont != null)
+				{
 					newFont.Dispose();
+				}
+
 				if (graphics != null)
+				{
 					graphics.Dispose();
+				}
 			}
 		}
 		#endregion
@@ -1508,20 +1550,32 @@ namespace GorgonLibrary.Graphics
 		/// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
 		private void Dispose(bool disposing)
 		{
-			if (!_disposed)
+			if (_disposed)
 			{
-				if (disposing)
-				{
-					Graphics.RemoveTrackedObject(this);
+				return;
+			}
 
-					if (Glyphs != null)
-						Glyphs.Clear();
-					if (Textures != null)
-						Textures.Clear();
+			if (disposing)
+			{
+				Graphics.RemoveTrackedObject(this);
+
+				if (_charBitmap != null)
+				{
+					_charBitmap.Dispose();
 				}
 
-				_disposed = true;
+				if (Glyphs != null)
+				{
+					Glyphs.Clear();
+				}
+
+				if (Textures != null)
+				{
+					Textures.Clear();
+				}
 			}
+
+			_disposed = true;
 		}
 
 		/// <summary>

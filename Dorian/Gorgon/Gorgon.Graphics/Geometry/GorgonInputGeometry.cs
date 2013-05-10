@@ -26,13 +26,13 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
+using GI = SharpDX.DXGI;
+using D3D = SharpDX.Direct3D11;
 using GorgonLibrary.Diagnostics;
 using GorgonLibrary.IO;
+using GorgonLibrary.Math;
 using GorgonLibrary.Native;
-using GI = SharpDX.DXGI;
-using DX = SharpDX;
-using D3D = SharpDX.Direct3D11;
+using GorgonLibrary.Graphics.Properties;
 
 namespace GorgonLibrary.Graphics
 {
@@ -220,7 +220,7 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// A list of vertex buffer bindings.
 		/// </summary>
-		public class GorgonVertexBufferBindingList
+		public sealed class VertexBufferBindingList
 			: IList<GorgonVertexBufferBinding>
 		{
 			#region Variables.
@@ -253,6 +253,11 @@ namespace GorgonLibrary.Graphics
 				}
 				set
 				{
+					if (value.Equals(_bindings[index]))
+					{
+						return;
+					}
+
 					_bindings[index] = value;
 					_D3DBindings[index] = value.Convert();
 					_graphics.Context.InputAssembler.SetVertexBuffers(index, _D3DBindings[index]);
@@ -268,12 +273,14 @@ namespace GorgonLibrary.Graphics
 			/// <returns>The index of the buffer binding in the list, -1 if not found.</returns>
 			public int IndexOf(GorgonVertexBuffer buffer)
 			{
-				GorgonDebug.AssertNull<GorgonVertexBuffer>(buffer, "buffer");
+				GorgonDebug.AssertNull(buffer, "buffer");
 
 				for (int i = 0; i < _bindings.Count; i++)
 				{
 					if (_bindings[i].VertexBuffer == buffer)
+					{
 						return i;
+					}
 				}
 
 				return -1;
@@ -286,7 +293,7 @@ namespace GorgonLibrary.Graphics
 			/// <returns>TRUE if found, FALSE if not.</returns>
 			public bool Contains(GorgonVertexBuffer buffer)
 			{
-				GorgonDebug.AssertNull<GorgonVertexBuffer>(buffer, "buffer");
+				GorgonDebug.AssertNull(buffer, "buffer");
 
 				return IndexOf(buffer) != -1;
 			}
@@ -296,7 +303,7 @@ namespace GorgonLibrary.Graphics
 			/// </summary>
 			/// <param name="binding">Bindings to set.</param>
 			/// <remarks>Passing NULL (Nothing in VB.Net) to the <paramref name="binding"/> parameter will set the bindings to empty.</remarks>
-			public void SetVertexBindingRange(IEnumerable<GorgonVertexBufferBinding> binding)
+			public void SetVertexBindingRange(GorgonVertexBufferBinding[] binding)
 			{
 				SetVertexBindingRange(binding, 0);
 			}
@@ -308,23 +315,34 @@ namespace GorgonLibrary.Graphics
 			/// <param name="startIndex">Index to start writing at.</param>
 			/// <remarks>Passing NULL (Nothing in VB.Net) to the <paramref name="binding"/> parameter will set the bindings to empty (starting at <paramref name="startIndex"/>).</remarks>
 			/// <exception cref="System.ArgumentOutOfRangeException">Thrown when the startIndex parameter is less than 0 or greater than the number of available bindings - 1.</exception>
-			public void SetVertexBindingRange(IEnumerable<GorgonVertexBufferBinding> binding, int startIndex)
+			public void SetVertexBindingRange(GorgonVertexBufferBinding[] binding, int startIndex)
 			{
 				int count = _bindings.Count - startIndex;
 
 				GorgonDebug.AssertParamRange(startIndex, 0, _bindings.Count, true, false,"startIndex");
 
-				if (count > binding.Count())
-					count = binding.Count();
+				if (binding != null)
+				{
+					count = binding.Length.Min(_bindings.Count);
+				}
 
 				for (int i = 0; i < count; i++)
 				{
 					GorgonVertexBufferBinding currentBinding = GorgonVertexBufferBinding.Empty;
-					if (binding == null)
-						currentBinding = binding.ElementAt(i);
+
+					if (binding != null)
+					{
+						currentBinding = binding[i];
+					}
+
+					// If we've already set the binding, then don't bother.
+					if (_bindings[startIndex + i].Equals(currentBinding))
+					{
+						continue;
+					}
 
 					_bindings[startIndex + i] = currentBinding;
-					_D3DBindings[startIndex + i] = currentBinding.Convert();
+					_D3DBindings[i] = currentBinding.Convert();
 				}
 
 				_graphics.Context.InputAssembler.SetVertexBuffers(startIndex, _D3DBindings);
@@ -333,10 +351,10 @@ namespace GorgonLibrary.Graphics
 
 			#region Constructor/Destructor.
 			/// <summary>
-			/// Initializes a new instance of the <see cref="GorgonVertexBufferBindingList"/> class.
+			/// Initializes a new instance of the <see cref="VertexBufferBindingList"/> class.
 			/// </summary>
 			/// <param name="graphics">The graphics.</param>
-			internal GorgonVertexBufferBindingList(GorgonGraphics graphics)
+			internal VertexBufferBindingList(GorgonGraphics graphics)
 			{
 				_graphics = graphics;
 				_bindings = new GorgonVertexBufferBinding[_graphics.VideoDevice.SupportedFeatureLevel < DeviceFeatureLevel.SM4_1 ? 16 : 32];
@@ -354,12 +372,11 @@ namespace GorgonLibrary.Graphics
 			/// Returns an enumerator that iterates through a collection.
 			/// </summary>
 			/// <returns>
-			/// An <see cref="T:System.Collections.IEnumerator&lt;GorgonVertexBufferBinding&gt;"/> object that can be used to iterate through the collection.
+			/// An <see cref="System.Collections.Generic.IEnumerator{GorgonVertexBufferBinding}"/> object that can be used to iterate through the collection.
 			/// </returns>
 			public IEnumerator<GorgonVertexBufferBinding> GetEnumerator()
 			{
-				foreach (var item in _bindings)
-					yield return item;
+				return _bindings.GetEnumerator();
 			}
 			#endregion
 
@@ -372,7 +389,7 @@ namespace GorgonLibrary.Graphics
 			/// </returns>
 			System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
 			{
-				return GetEnumerator();
+				return ((System.Collections.IEnumerable)_bindings).GetEnumerator();
 			}
 			#endregion
 
@@ -394,7 +411,6 @@ namespace GorgonLibrary.Graphics
 			/// <param name="item">The item.</param>
 			void IList<GorgonVertexBufferBinding>.Insert(int index, GorgonVertexBufferBinding item)
 			{
-				throw new NotImplementedException();
 			}
 
 			/// <summary>
@@ -403,7 +419,6 @@ namespace GorgonLibrary.Graphics
 			/// <param name="index">The index.</param>
 			void IList<GorgonVertexBufferBinding>.RemoveAt(int index)
 			{
-				throw new NotImplementedException();
 			}
 			#endregion
 
@@ -414,7 +429,6 @@ namespace GorgonLibrary.Graphics
 			/// <param name="item">The item.</param>
 			void ICollection<GorgonVertexBufferBinding>.Add(GorgonVertexBufferBinding item)
 			{
-				throw new NotImplementedException();
 			}
 
 			/// <summary>
@@ -422,7 +436,6 @@ namespace GorgonLibrary.Graphics
 			/// </summary>
 			void ICollection<GorgonVertexBufferBinding>.Clear()
 			{
-				throw new NotImplementedException();
 			}
 
 			/// <summary>
@@ -466,7 +479,7 @@ namespace GorgonLibrary.Graphics
 			/// <returns></returns>
 			bool ICollection<GorgonVertexBufferBinding>.Remove(GorgonVertexBufferBinding item)
 			{
-				throw new NotImplementedException();
+				return false;
 			}
 			#endregion
 		}
@@ -498,7 +511,7 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Property to return the vertex buffer binding interface.
 		/// </summary>
-		public GorgonVertexBufferBindingList VertexBuffers
+		public VertexBufferBindingList VertexBuffers
 		{
 			get;
 			private set;
@@ -515,11 +528,13 @@ namespace GorgonLibrary.Graphics
 			}
 			set
 			{
-				if (_primitiveType != value)
+				if (_primitiveType == value)
 				{
-					_primitiveType = value;
-					_graphics.Context.InputAssembler.PrimitiveTopology = (SharpDX.Direct3D.PrimitiveTopology)value;
+					return;
 				}
+
+				_primitiveType = value;
+				_graphics.Context.InputAssembler.PrimitiveTopology = (SharpDX.Direct3D.PrimitiveTopology)value;
 			}
 		}
 
@@ -534,14 +549,16 @@ namespace GorgonLibrary.Graphics
 			}
 			set
 			{
-				if (_inputLayout != value)
+				if (_inputLayout == value)
 				{
-				    _inputLayout = value;
-
-				    _graphics.Context.InputAssembler.InputLayout = _inputLayout != null
-				                                                       ? _inputLayout.Convert(_graphics.D3DDevice)
-				                                                       : null;
+					return;
 				}
+
+				_inputLayout = value;
+
+				_graphics.Context.InputAssembler.InputLayout = _inputLayout != null
+					                                               ? _inputLayout.Convert(_graphics.D3DDevice)
+					                                               : null;
 			}
 		}
 		#endregion
@@ -555,15 +572,26 @@ namespace GorgonLibrary.Graphics
 		public void SetIndexBuffer(GorgonIndexBuffer buffer, int offset)
 		{
 			if (_indexBuffer == buffer)
+			{
 				return;
-
+			}
+			
+#if DEBUG
 			if ((buffer != null) && ((offset >= buffer.SizeInBytes) || (offset < 0)))
-				throw new ArgumentOutOfRangeException("offset", "The value is either less than 0, or is larger than the size of the buffer");
+			{
+				throw new ArgumentOutOfRangeException("offset", string.Format(Resources.GORGFX_VALUE_OUT_OF_RANGE, offset, buffer.SizeInBytes));
+			}
+#endif
 
 			if (buffer != null)
-				_graphics.Context.InputAssembler.SetIndexBuffer((D3D.Buffer)buffer.D3DResource, buffer.Is32Bit ? GI.Format.R32_UInt : GI.Format.R16_UInt, offset);
+			{
+				_graphics.Context.InputAssembler.SetIndexBuffer((D3D.Buffer)buffer.D3DResource,
+				                                                buffer.Is32Bit ? GI.Format.R32_UInt : GI.Format.R16_UInt, offset);
+			}
 			else
+			{
 				_graphics.Context.InputAssembler.SetIndexBuffer(null, GI.Format.Unknown, 0);
+			}
 
 			_indexBuffer = buffer;
 		}
@@ -572,25 +600,22 @@ namespace GorgonLibrary.Graphics
 		/// Function to create a index buffer.
 		/// </summary>
 		/// <param name="size">Size of the buffer, in bytes.</param>
-		/// <param name="is32bit">TRUE to indicate that we're using 32 bit indices, FALSE to use 16 bit indices </param>
+		/// <param name="is32Bit">TRUE to indicate that we're using 32 bit indices, FALSE to use 16 bit indices </param>
 		/// <param name="usage">Usage of the buffer.</param>
 		/// <returns>A new index buffer.</returns>
 		/// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="size"/> parameter is less than 1.</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="usage"/> parameter is set to Staging or Immutable.
 		/// </exception>
-		public GorgonIndexBuffer CreateIndexBuffer(int size, BufferUsage usage, bool is32bit)
+		public GorgonIndexBuffer CreateIndexBuffer(int size, BufferUsage usage, bool is32Bit)
 		{
-			if ((usage == BufferUsage.Staging) || (usage == BufferUsage.Immutable))
-				throw new ArgumentException("A index buffer cannot be used as a staging or immutable buffer.", "usage");
-
-			return CreateIndexBuffer(size, usage, is32bit, null);
+			return CreateIndexBuffer(size, usage, is32Bit, null);
 		}
 
 		/// <summary>
 		/// Function to create a index buffer.
 		/// </summary>
 		/// <param name="usage">Usage of the buffer.</param>
-		/// <param name="is32bit">TRUE to indicate that we're using 32 bit indices, FALSE to use 16 bit indices </param>
+		/// <param name="is32Bit">TRUE to indicate that we're using 32 bit indices, FALSE to use 16 bit indices </param>
 		/// <param name="data">Data used to initialize the buffer.</param>
 		/// <typeparam name="T">Type of data used to populate the buffer.</typeparam>
 		/// <returns>A new index buffer.</returns>
@@ -599,7 +624,7 @@ namespace GorgonLibrary.Graphics
 		/// <para>Thrown when the usage parameter is set to Immutable and the <paramref name="data"/> is NULL (Nothing in VB.Net) or empty.</para>
 		/// </exception>
 		/// <remarks>If creating an immutable index buffer, be sure to pre-populate it via the initialData parameter.</remarks>
-		public GorgonIndexBuffer CreateIndexBuffer<T>(BufferUsage usage, bool is32bit, IList<T> data)
+		public GorgonIndexBuffer CreateIndexBuffer<T>(BufferUsage usage, bool is32Bit, IList<T> data)
 			where T : struct
 		{
 			int size = data.Count * DirectAccess.SizeOf<T>();
@@ -607,9 +632,13 @@ namespace GorgonLibrary.Graphics
 			using (var dataStream = new GorgonDataStream(size))
 			{
 				for (int i = 0; i < data.Count; i++)
-					dataStream.Write<T>(data[i]);
+				{
+					dataStream.Write(data[i]);
+				}
+
 				dataStream.Position = 0;
-				return CreateIndexBuffer(size, usage, is32bit, dataStream);
+
+				return CreateIndexBuffer(size, usage, is32Bit, dataStream);
 			}
 		}
 
@@ -618,7 +647,7 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		/// <param name="size">Size of the buffer, in bytes.</param>
 		/// <param name="usage">Usage of the buffer.</param>
-		/// <param name="is32bit">TRUE to indicate that we're using 32 bit indices, FALSE to use 16 bit indices </param>
+		/// <param name="is32Bit">TRUE to indicate that we're using 32 bit indices, FALSE to use 16 bit indices </param>
 		/// <param name="initialData">Initial data to populate the index buffer with.</param>
 		/// <returns>A new index buffer.</returns>
 		/// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="size"/> parameter is less than 1.</exception>
@@ -627,18 +656,24 @@ namespace GorgonLibrary.Graphics
 		/// <para>Thrown when the usage parameter is set to Immutable and the <paramref name="initialData"/> is NULL (Nothing in VB.Net).</para>
 		/// </exception>
 		/// <remarks>If creating an immutable index buffer, be sure to pre-populate it via the initialData parameter.</remarks>
-		public GorgonIndexBuffer CreateIndexBuffer(int size, BufferUsage usage, bool is32bit, GorgonDataStream initialData)
+		public GorgonIndexBuffer CreateIndexBuffer(int size, BufferUsage usage, bool is32Bit, GorgonDataStream initialData)
 		{
 			if (size < 1)
-				throw new ArgumentOutOfRangeException("size", "A index buffer needs at least 1 byte.");
+			{
+				throw new ArgumentOutOfRangeException("size");
+			}
 
 			if (usage == BufferUsage.Staging)
-				throw new ArgumentException("A index buffer cannot be used as a staging buffer.", "usage");
+			{
+				throw new ArgumentException(Resources.GORGFX_BUFFER_NO_STAGING, "usage");
+			}
 
 			if ((usage == BufferUsage.Immutable) && ((initialData == null) || (initialData.Length == 0)))
-				throw new ArgumentException("Cannot create an immutable buffer without initial data to populate it.", "usage");
+			{
+				throw new ArgumentException(Resources.GORGFX_BUFFER_IMMUTABLE_REQUIRES_DATA, "usage");
+			}
 
-			var buffer = new GorgonIndexBuffer(_graphics, usage, size, is32bit);
+			var buffer = new GorgonIndexBuffer(_graphics, usage, size, is32Bit);
 			buffer.Initialize(initialData);
 
 			_graphics.AddTrackedObject(buffer);
@@ -656,9 +691,6 @@ namespace GorgonLibrary.Graphics
 		/// </exception>
 		public GorgonVertexBuffer CreateVertexBuffer(int size, BufferUsage usage)
 		{
-			if ((usage == BufferUsage.Staging) || (usage == BufferUsage.Immutable))
-				throw new ArgumentException("A vertex buffer cannot be used as a staging or immutable buffer.", "usage");
-
 			return CreateVertexBuffer(size, usage, null);
 		}
 
@@ -677,13 +709,20 @@ namespace GorgonLibrary.Graphics
 		public GorgonVertexBuffer CreateVertexBuffer<T>(BufferUsage usage, IList<T> data)
 			where T : struct
 		{
-			GorgonDebug.AssertNull<IList<T>>(data, "data");
+			if (data == null)
+			{
+				throw new ArgumentNullException("data");
+			}
+
 			int size = data.Count * DirectAccess.SizeOf<T>();
 
 			using (var dataStream = new GorgonDataStream(size))
 			{
 				for (int i = 0; i < data.Count; i++)
-					dataStream.Write<T>(data[i]);
+				{
+					dataStream.Write(data[i]);
+				}
+
 				dataStream.Position = 0;
 				return CreateVertexBuffer(size, usage, dataStream);
 			}
@@ -705,13 +744,19 @@ namespace GorgonLibrary.Graphics
 		public GorgonVertexBuffer CreateVertexBuffer(int size, BufferUsage usage, GorgonDataStream initialData)
 		{
 			if (size < 1)
-				throw new ArgumentOutOfRangeException("size", "A vertex buffer needs at least 1 byte.");
+			{
+				throw new ArgumentOutOfRangeException("size");
+			}
 
 			if (usage == BufferUsage.Staging)
-				throw new ArgumentException("A vertex buffer cannot be used as a staging buffer.", "usage");
+			{
+				throw new ArgumentException(Resources.GORGFX_BUFFER_NO_STAGING, "usage");
+			}
 
 			if ((usage == BufferUsage.Immutable) && ((initialData == null) || (initialData.Length == 0)))
-				throw new ArgumentException("Cannot create an immutable buffer without initial data to populate it.", "usage");
+			{
+				throw new ArgumentException(Resources.GORGFX_BUFFER_IMMUTABLE_REQUIRES_DATA, "usage");
+			}
 
 			var buffer = new GorgonVertexBuffer(_graphics, usage, size);
 			buffer.Initialize(initialData);
@@ -761,24 +806,39 @@ namespace GorgonLibrary.Graphics
 		/// Function to create an input layout object.
 		/// </summary>
 		/// <param name="name">Name of the input layout.</param>
+		/// <param name="elements">The input elements to assign to the layout.</param>
 		/// <param name="shader">The shader that holds the input layout signature.</param>
 		/// <returns>The input layout object to create.</returns>
 		/// <exception cref="System.ArgumentException">Thrown when then name parameter is an empty string.</exception>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="shader"/> parameter is NULL (Nothing in VB.Net).
 		/// <para>-or-</para>
+		/// <para>Thrown when the <paramref name="elements"/> parameter is NULL.</para>
+		/// <para>-or-</para>
 		/// <para>Thrown when the <paramref name="name"/> parameter is NULL.</para>
 		/// </exception>
+		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="elements"/> parameter is empty.</exception>
 		/// <remarks>The shader parameter is used to compare input layout on the shader side with the input layout.  If the layout is mismatched, a warning will appear in the debug output.
 		/// <para>Note that any shader can be used with the input layout as long as the shader contains the same layout for the input, i.e. there is no need to create a new layout for each shader if the element layouts are identical.</para>
 		/// </remarks>
-		public GorgonInputLayout CreateInputLayout(string name, GorgonShader shader)
+		public GorgonInputLayout CreateInputLayout(string name, IList<GorgonInputElement> elements, GorgonShader shader)
 		{
 		    if (shader == null)
             {
                 throw new ArgumentNullException("shader");
             }
+
+			if (elements == null)
+			{
+				throw new ArgumentNullException("elements");
+			}
+
+			if (elements.Count == 0)
+			{
+				throw new ArgumentException(Resources.GORGFX_PARAMETER_MUST_NOT_BE_EMPTY, "elements");	
+			}
 			
 			var layout = new GorgonInputLayout(_graphics, name, shader);
+			layout.InitializeFromList(elements);
 
 			_graphics.AddTrackedObject(layout);
 			return layout;
@@ -793,7 +853,7 @@ namespace GorgonLibrary.Graphics
 		{
 			_graphics = graphics;
 			PrimitiveType = PrimitiveType.TriangleList;
-			VertexBuffers = new GorgonVertexBufferBindingList(_graphics);
+			VertexBuffers = new VertexBufferBindingList(_graphics);
 		}
 		#endregion
 	}

@@ -75,7 +75,6 @@ namespace GorgonLibrary.Graphics
 		private IEnumerable<char> _characters = string.Empty;				// The list of characters supported by the font.
 		private int _contrast = 4;											// Text contrasting.
 		private int _packSpace = 1;											// Packing spacing.
-		private IList<GorgonColor> _baseColors;								// Base colors.
 		#endregion
 
 		#region Properties.
@@ -125,9 +124,13 @@ namespace GorgonLibrary.Graphics
 			set
 			{
 				if (value < 0)
+				{
 					value = 0;
+				}
 				if (value > 12)
+				{
 					value = 12;
+				}
 
 				_contrast = value;
 			}
@@ -138,7 +141,7 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		/// <remarks>Use this decrease or increase the number of textures used for a font.  If the number of glyphs cannot fit onto a single texture, a new texture will be created to 
 		/// store the remaining glyphs.  This value will control the width and height of the textures created.
-		/// <para>To retrieve the count of textures used, call the <see cref="P:GorgonLibrary.Graphics.GorgonFont.FontTextureCollection.Count">Count</see> property on the <see cref="P:GorgonLibrary.Graphics.GorgonFont.Textures">Textures</see> property.</para>
+		/// <para>To retrieve the count of textures used, call the <c>Count</c> property on the <see cref="P:GorgonLibrary.Graphics.GorgonFont.Textures">Textures</see> property.</para>
 		/// <para>The default size is 256x256, the minimum size is 16x16 and the maximum size depends on the maximum texture size that's supported by the feature level.</para>
 		/// </remarks>
 		public Size TextureSize
@@ -150,9 +153,13 @@ namespace GorgonLibrary.Graphics
 			set
 			{
 				if (value.Width < 16)
+				{
 					value.Width = 16;
+				}
 				if (value.Height < 16)
+				{
 					value.Height = 16;
+				}
 
 				_textureSize = value;
 			}
@@ -174,11 +181,19 @@ namespace GorgonLibrary.Graphics
 			set
 			{
 				// Always default to a space character.
-				if ((value == null) || (value.Count() == 0))
+				if (value == null)
+				{
 					_characters = " ";
+					return;
+				}
 
 				// Reorder the string.
-				_characters = value.OrderBy(c => Convert.ToInt32(c));
+				_characters = value.OrderBy(Convert.ToInt32);
+				
+				if (!_characters.Any())
+				{
+					_characters = " ";
+				}
 			}
 		}
 
@@ -200,17 +215,8 @@ namespace GorgonLibrary.Graphics
 		/// <remarks>The default value is a single color of White (A=1.0f, R=1.0f, G=1.0f, B=1.0f).</remarks>
 		public IList<GorgonColor> BaseColors
 		{
-			get
-			{
-				return _baseColors;
-			}
-			set
-			{
-				if (value == null)
-					_baseColors = new[] { new GorgonColor(1.0f, 1.0f, 1.0f, 1.0f) };
-				else
-					_baseColors = value;
-			}
+			get;
+			private set;
 		}
 
 		/// <summary>
@@ -331,13 +337,16 @@ namespace GorgonLibrary.Graphics
 		{
 			UseKerningPairs = true;
 			Characters = Enumerable.Range(32, 224).
-						 Select(i => Convert.ToChar(i)).
+						 Select(Convert.ToChar).
 						 Where(c => !char.IsControl(c));
 
 			FontHeightMode = FontHeightMode.Points;
 			OutlineColor = Color.Black;
 			OutlineSize = 0;
-			_baseColors = new [] { new GorgonColor(1.0f, 1.0f, 1.0f, 1.0f) };
+			BaseColors = new List<GorgonColor>
+				{
+					new GorgonColor(1.0f, 1.0f, 1.0f, 1.0f)
+				};
 			FontStyle = FontStyle.Regular;
 			DefaultCharacter = ' ';
 			AntiAliasingMode = FontAntiAliasMode.AntiAliasHQ;

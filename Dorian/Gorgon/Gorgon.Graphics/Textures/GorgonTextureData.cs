@@ -25,11 +25,8 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using GorgonLibrary.Diagnostics;
 using GorgonLibrary.IO;
-using DX = SharpDX;
 
 namespace GorgonLibrary.Graphics
 {
@@ -40,28 +37,8 @@ namespace GorgonLibrary.Graphics
 		: ISubResourceData
 	{
 		#region Variables.
-		private int _rowPitch;
-		private GorgonDataStream _data;
-		#endregion
-
-		#region Methods.
-		/// <summary>
-		/// Function to convert Gorgon texture 3D data into DirectX data boxes.
-		/// </summary>
-		/// <param name="data">Data to convert.</param>
-		/// <returns>An array of boxes.</returns>
-		internal static DX.DataStream[] Convert(IEnumerable<ISubResourceData> data)
-		{
-			if ((data == null) || (data.Count() == 0))
-				return null;
-
-			var streams = new DX.DataStream[data.Count()];
-
-			for (int i = 0; i < data.Count(); i++)
-				streams[i] = new DX.DataStream(data.ElementAt(i).Data.PositionPointer, data.ElementAt(i).Size, true, true);
-
-			return streams;
-		}
+		private readonly int _rowPitch;
+		private readonly GorgonDataStream _data;
 		#endregion
 
 		#region Constructor/Destructor.
@@ -72,7 +49,8 @@ namespace GorgonLibrary.Graphics
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="data"/> parameter is NULL (Nothing in VB.Net).</exception>
 		public GorgonTexture1DData(GorgonDataStream data)
 		{
-			GorgonDebug.AssertNull<GorgonDataStream>(data, "data");
+			GorgonDebug.AssertNull(data, "data");
+
 			_data = data;
 			_rowPitch = (int)_data.Length;
 		}
@@ -87,7 +65,9 @@ namespace GorgonLibrary.Graphics
 			get
 			{
 				if (_data == null)
+				{
 					return 0;
+				}
 
 				return (int)_data.Length;
 			}
@@ -136,28 +116,8 @@ namespace GorgonLibrary.Graphics
 		: ISubResourceData
 	{
 		#region Variables.
-		private int _rowPitch;
-		private GorgonDataStream _data;
-		#endregion
-
-		#region Methods.
-		/// <summary>
-		/// Function to convert Gorgon texture 2D data into DirectX data rectangles.
-		/// </summary>
-		/// <param name="data">Data to convert.</param>
-		/// <returns>An array of rectangles.</returns>
-		internal static DX.DataRectangle[] Convert(IEnumerable<ISubResourceData> data)
-		{
-			if ((data == null) || (data.Count() == 0))
-				return null;
-
-			var rectangles = new DX.DataRectangle[data.Count()];
-
-			for (int i = 0; i < data.Count(); i++)
-				rectangles[i] = new DX.DataRectangle(data.ElementAt(i).Data.PositionPointer, data.ElementAt(i).RowPitch);
-			
-			return rectangles;
-		}
+		private readonly int _rowPitch;
+		private readonly GorgonDataStream _data;
 		#endregion
 
 		#region Constructor/Destructor.
@@ -170,10 +130,14 @@ namespace GorgonLibrary.Graphics
 		/// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="rowPitch"/> parameter is less than or equal to 0.</exception>
 		public GorgonTexture2DData(GorgonDataStream data, int rowPitch)
 		{
-			GorgonDebug.AssertNull<GorgonDataStream>(data, "data");
+			GorgonDebug.AssertNull(data, "data");
 
+#if DEBUG
 			if (rowPitch <= 0)
-				throw new ArgumentOutOfRangeException("rowPitch", "Number must be greater than 0.");
+			{
+				throw new ArgumentOutOfRangeException("rowPitch");
+			}
+#endif
 
 			_data = data;
 			_rowPitch = rowPitch;
@@ -189,7 +153,9 @@ namespace GorgonLibrary.Graphics
 			get
 			{
 				if (_data == null)
+				{
 					return 0;
+				}
 
 				return (int)_data.Length;
 			}
@@ -238,29 +204,9 @@ namespace GorgonLibrary.Graphics
 		: ISubResourceData
 	{
 		#region Variables.
-		private GorgonDataStream _data;
-		private int _rowPitch;
-		private int _slicePitch;
-		#endregion
-
-		#region Methods.
-		/// <summary>
-		/// Function to convert Gorgon texture 3D data into DirectX data boxes.
-		/// </summary>
-		/// <param name="data">Data to convert.</param>
-		/// <returns>An array of boxes.</returns>
-		internal static DX.DataBox[] Convert(IEnumerable<ISubResourceData> data)
-		{
-			if ((data == null) || (data.Count() == 0))
-				return null;
-
-			var boxes = new DX.DataBox[data.Count()];
-
-			for (int i = 0; i < data.Count(); i++)
-				boxes[i] = new DX.DataBox(data.ElementAt(i).Data.PositionPointer, data.ElementAt(i).RowPitch, data.ElementAt(i).SlicePitch);
-
-			return boxes;
-		}
+		private readonly GorgonDataStream _data;
+		private readonly int _rowPitch;
+		private readonly int _slicePitch;
 		#endregion
 
 		#region Constructor/Destructor.
@@ -275,13 +221,19 @@ namespace GorgonLibrary.Graphics
 		/// </exception>
 		public GorgonTexture3DData(GorgonDataStream data, int rowPitch, int slicePitch)
 		{
-			GorgonDebug.AssertNull<GorgonDataStream>(data, "data");
+			GorgonDebug.AssertNull(data, "data");
 
+#if DEBUG
 			if (rowPitch <= 0)
-				throw new ArgumentOutOfRangeException("rowPitch", "Number must be greater than 0.");
-			if (slicePitch <= 0)
-				throw new ArgumentOutOfRangeException("slicePitch", "Number must be greater than 0.");
+			{
+				throw new ArgumentOutOfRangeException("rowPitch");
+			}
 
+			if (slicePitch <= 0)
+			{
+				throw new ArgumentOutOfRangeException("slicePitch");
+			}
+#endif
 			_data = data;
 			_rowPitch = rowPitch;
 			_slicePitch = slicePitch;
@@ -297,7 +249,9 @@ namespace GorgonLibrary.Graphics
 			get 
 			{
 				if (_data == null)
+				{
 					return 0;
+				}
 
 				return (int)_data.Length;
 			}

@@ -26,6 +26,7 @@
 
 using System;
 using D3D = SharpDX.Direct3D11;
+using GorgonLibrary.Graphics.Properties;
 
 namespace GorgonLibrary.Graphics
 {
@@ -37,115 +38,49 @@ namespace GorgonLibrary.Graphics
 		: INamedObject, IEquatable<GorgonInputElement>
 	{
 		#region Variables.
-		private string _context;
-		private int _index;
-		private BufferFormat _format;
-		private int _offset;
-		private int _slot;
-		private bool _instanced;
-		private int _instanceCount;
-		private int _size;
-		#endregion
-
-		#region Properties.
 		/// <summary>
-		/// Property to return the context of the element.
+		/// The context of the element.
 		/// </summary>
 		/// <remarks>This is a string value that corresponds to a shader input.  For example, to specify a position, the user would set this to "position".  
 		/// These contexts can be named whatever the user wishes.  This must map to a corresponding element in the shader.
 		/// </remarks>
-		public string Context
-		{
-			get
-			{
-				return _context;
-			}
-		}
-
+		public readonly string Context;
 		/// <summary>
-		/// Property to return the index of the context.
+		/// The index of the context.
 		/// </summary>
 		/// <remarks>This is used to denote the same context but at another index.  For example, to specify a second set of texture coordinates, set this 
 		/// to 1.</remarks>
-		public int Index
-		{
-			get
-			{
-				return _index;
-			}
-		}
-
+		public readonly int Index;
 		/// <summary>
-		/// Property to return the format of the data.
+		/// The format of the data.
 		/// </summary>
 		/// <remarks>This is used to specify the format and type of the element.</remarks>
-		public BufferFormat Format
-		{
-			get
-			{
-				return _format;
-			}
-		}
-
+		public readonly BufferFormat Format;
 		/// <summary>
-		/// Property to return the offset of this element compared to other elements.
+		/// The offset of this element compared to other elements.
 		/// </summary>
 		/// <remarks>The format of the data dictates the offset of the element.  This value is optional.</remarks>
-		public int Offset
-		{
-			get
-			{
-				return _offset;
-			}
-		}
-
+		public readonly int Offset;
 		/// <summary>
-		/// Property to return the vertex buffer slot this element will use.
+		/// The vertex buffer slot this element will use.
 		/// </summary>
 		/// <remarks>Multiple vertex buffers can be used to identify parts of the same vertex.  This is used to minimize the amount of data being written to a 
 		/// vertex buffer and provide better performance.</remarks>
-		public int Slot
-		{
-			get
-			{
-				return _slot;
-			}
-		}
-
+		public readonly int Slot;
 		/// <summary>
-		/// Property to return whether this data is instanced or per vertex.
+		/// Indicates whether this data is instanced or per vertex.
 		/// </summary>
 		/// <remarks>Indicates that the element should be included in instancing.</remarks>
-		public bool Instanced
-		{
-			get
-			{
-				return _instanced;
-			}
-		}
-
+		public readonly bool Instanced;
 		/// <summary>
-		/// Property to return the number of instances to draw.
+		/// The number of instances to draw.
 		/// </summary>
 		/// <remarks>The number of times this element should be used before moving to the next element.</remarks>
-		public int InstanceCount
-		{
-			get
-			{
-				return _instanceCount;
-			}
-		}
-
+		public readonly int InstanceCount;
 		/// <summary>
 		/// Property to return the size in bytes of this element.
 		/// </summary>
-		public int Size
-		{
-			get
-			{
-				return _size;
-			}
-		}
+		public readonly int Size;
 		#endregion
 
 		#region Method.
@@ -160,7 +95,10 @@ namespace GorgonLibrary.Graphics
 			if (!Instanced)
 				instanceCount = 0;
 
-			return new D3D.InputElement(Context, Index, (SharpDX.DXGI.Format)Format, Offset, Slot, (Instanced ? D3D.InputClassification.PerInstanceData : D3D.InputClassification.PerVertexData), instanceCount);
+			return new D3D.InputElement(Context, Index, (SharpDX.DXGI.Format)Format, Offset, Slot,
+			                            (Instanced
+				                             ? D3D.InputClassification.PerInstanceData
+				                             : D3D.InputClassification.PerVertexData), instanceCount);
 		}
 
 		/// <summary>
@@ -173,7 +111,9 @@ namespace GorgonLibrary.Graphics
 		public override bool Equals(object obj)
 		{
 			if (obj is GorgonInputElement)
-				return this.Equals((GorgonInputElement)obj);
+			{
+				return Equals((GorgonInputElement)obj);
+			}
 
 			return base.Equals(obj);
 		}
@@ -213,7 +153,15 @@ namespace GorgonLibrary.Graphics
 		/// </returns>
 		public override int GetHashCode()
 		{
-			return 281.GenerateHash(Context.GetHashCode()).GenerateHash(Index).GenerateHash(Format).GenerateHash(Offset).GenerateHash(Slot).GenerateHash(Instanced.GetHashCode()).GenerateHash(InstanceCount).GenerateHash(Size);
+			return
+				281.GenerateHash(Context.GetHashCode())
+				   .GenerateHash(Index)
+				   .GenerateHash(Format)
+				   .GenerateHash(Offset)
+				   .GenerateHash(Slot)
+				   .GenerateHash(Instanced.GetHashCode())
+				   .GenerateHash(InstanceCount)
+				   .GenerateHash(Size);
 		}
 		#endregion
 
@@ -228,26 +176,29 @@ namespace GorgonLibrary.Graphics
 		/// <param name="slot">The vertex buffer slot for the element.</param>
 		/// <param name="instanced">TRUE if using instanced data, FALSE if not.</param>
 		/// <param name="instanceCount">Number of instances to use before moving to the next element.</param>
+		/// <remarks>The slot value must be between 0 and 15 (inclusive).  A value outside of this range will cause an exception to be thrown.</remarks>
+		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="format"/> parameter is not supported.</exception>
+		/// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="slot"/> parameter is less than 0 or greater than 15.</exception>
 		public GorgonInputElement(string context, BufferFormat format, int offset, int index, int slot, bool instanced, int instanceCount)
 		{
             if (GorgonBufferFormatInfo.GetInfo(format).BitDepth == 0)
             {
-                throw new ArgumentException("'" + format.ToString() + "' is not a supported format.", "format");
+	            throw new ArgumentException(string.Format(Resources.GORGFX_FORMAT_NOT_SUPPORTED, format), "format");
             }
 
             if ((slot < 0) || (slot > 15))
             {
-                throw new ArgumentException("The value must be from 0 to 15.", "slot");
+				throw new ArgumentOutOfRangeException("slot", string.Format(Resources.GORGFX_VALUE_OUT_OF_RANGE, slot, 16));
             }
             
-            _context = context;
-			_index = index;
-			_format = format;
-			_offset = offset;
-			_size = GorgonBufferFormatInfo.GetInfo(format).SizeInBytes;
-			_slot = slot;
-			_instanced = instanced;
-			_instanceCount = instanceCount;
+            Context = context;
+			Index = index;
+			Format = format;
+			Offset = offset;
+			Size = GorgonBufferFormatInfo.GetInfo(format).SizeInBytes;
+			Slot = slot;
+			Instanced = instanced;
+			InstanceCount = instanceCount;
 		}
 
 		/// <summary>
@@ -284,9 +235,9 @@ namespace GorgonLibrary.Graphics
 		/// </returns>
 		public bool Equals(GorgonInputElement other)
 		{
-			return (string.Compare(other.Context, this.Context, false) == 0) && (other.Format == this.Format) && (other.Index == this.Index) &&
-					(other.InstanceCount == this.InstanceCount) && (other.Instanced == this.Instanced) && (other.Offset == this.Offset) &&
-					(other.Size == this.Size) && (other.Slot == this.Slot);
+			return (String.CompareOrdinal(other.Context, Context) == 0) && (other.Format == Format) && (other.Index == Index) &&
+					(other.InstanceCount == InstanceCount) && (other.Instanced == Instanced) && (other.Offset == Offset) &&
+					(other.Size == Size) && (other.Slot == Slot);
 		}
 		#endregion
 	}

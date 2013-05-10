@@ -24,8 +24,9 @@
 // 
 #endregion
 
+using System;
 using System.Collections.Generic;
-using GorgonLibrary.Diagnostics;
+using GorgonLibrary.Graphics.Properties;
 
 namespace GorgonLibrary.Collections
 {
@@ -37,7 +38,10 @@ namespace GorgonLibrary.Collections
 		: INamedObject
 	{
 		#region Variables.
-		private string _name;		// Name for the value.
+		/// <summary>
+		/// Name of the value.
+		/// </summary>
+		public readonly string Name;
 
 		/// <summary>
 		/// Value to bind with the name.
@@ -55,9 +59,17 @@ namespace GorgonLibrary.Collections
 		/// <exception cref="System.ArgumentException">Thrown when the name parameter is an empty string.</exception>
 		public GorgonNamedValue(string name, T value)
 		{
-			GorgonDebug.AssertParamString(name, "name");
+			if (name == null)
+			{
+				throw new ArgumentNullException("name");
+			}
 
-			_name = name;
+			if (string.IsNullOrWhiteSpace(name))
+			{
+				throw new ArgumentException(Resources.GORGFX_PARAMETER_MUST_NOT_BE_EMPTY, "name");
+			}
+
+			Name = name;
 			Value = value;
 		}
 		#endregion
@@ -66,11 +78,11 @@ namespace GorgonLibrary.Collections
 		/// <summary>
 		/// Property to return the name of the value.
 		/// </summary>
-		public string Name
+		string INamedObject.Name
 		{
 			get
 			{
-				return _name;
+				return Name;
 			}
 		}
 		#endregion
@@ -84,7 +96,7 @@ namespace GorgonLibrary.Collections
 		: GorgonBaseNamedObjectDictionary<GorgonNamedValue<T>>
 	{
 		#region Variables.
-		private List<string> _names;		// List of names.
+		private readonly List<string> _names;		// List of names.
 		#endregion
 
 		#region Properties.
@@ -100,9 +112,13 @@ namespace GorgonLibrary.Collections
 			set
 			{
 				if (Contains(name))
+				{
 					SetItem(name, new GorgonNamedValue<T>(name, value));
+				}
 				else
+				{
 					Add(name, value);
+				}
 			}
 		}
 
@@ -128,8 +144,6 @@ namespace GorgonLibrary.Collections
 		/// <exception cref="System.ArgumentException">Thrown when the name parameter is an empty string.</exception>
 		private void Add(string name, T value)
 		{
-			GorgonDebug.AssertParamString(name, "name");
-
 			AddItem(new GorgonNamedValue<T>(name, value));
 			_names.Add(name);
 		}

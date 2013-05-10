@@ -56,7 +56,8 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
         /// <summary>
         /// Function to set the base color for the font glyphs.
         /// </summary>
-        [Category("Appearance"), Description("Sets a base color for the glyphs on the texture."), Editor(typeof(RGBAEditor), typeof(UITypeEditor)), TypeConverter(typeof(RGBATypeConverter))]
+        [Category("Appearance"), Description("Sets a base color for the glyphs on the texture."), Editor(typeof(RGBAEditor), typeof(UITypeEditor)), 
+		TypeConverter(typeof(RGBATypeConverter)), DefaultValue(0xFFFFFFFF)]
         public Color BaseColor
         {
             get
@@ -65,12 +66,20 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
             }
             set
             {
-                if (_settings.BaseColors[0].ToColor() != value)
-                {
-                    _settings.BaseColors = new GorgonColor[] { value };
-                    UpdateContent();
-					OnContentPropertyChanged("BaseColor", value);
+				if (_settings.BaseColors.Count == 0)
+				{
+					_settings.BaseColors.Add(value);
+					return;
 				}
+
+	            if (_settings.BaseColors[0].ToColor() == value)
+	            {
+		            return;
+	            }
+
+	            _settings.BaseColors[0] = value;
+	            UpdateContent();
+	            OnContentPropertyChanged("BaseColor", value);
             }
         }
 
@@ -486,23 +495,30 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 
 			try
 			{
-				newFont = Graphics.Fonts.CreateFont(Name, new GorgonFontSettings()
+				var fontSettings = new GorgonFontSettings()
+					{
+						AntiAliasingMode = _settings.AntiAliasingMode,
+						Brush = _settings.Brush,
+						Characters = _settings.Characters,
+						DefaultCharacter = _settings.DefaultCharacter,
+						FontFamilyName = _settings.FontFamilyName,
+						FontHeightMode = _settings.FontHeightMode,
+						FontStyle = _settings.FontStyle,
+						OutlineColor = _settings.OutlineColor,
+						OutlineSize = _settings.OutlineSize,
+						PackingSpacing = _settings.PackingSpacing,
+						Size = _settings.Size,
+						TextContrast = _settings.TextContrast,
+						TextureSize = _settings.TextureSize
+					};
+
+				fontSettings.BaseColors.Clear();
+				for (int i = 0; i < _settings.BaseColors.Count; i++)
 				{
-					AntiAliasingMode = _settings.AntiAliasingMode,
-					BaseColors = _settings.BaseColors,
-					Brush = _settings.Brush,
-					Characters = _settings.Characters,
-					DefaultCharacter = _settings.DefaultCharacter,
-					FontFamilyName = _settings.FontFamilyName,
-					FontHeightMode = _settings.FontHeightMode,
-					FontStyle = _settings.FontStyle,
-					OutlineColor = _settings.OutlineColor,
-					OutlineSize = _settings.OutlineSize,
-					PackingSpacing = _settings.PackingSpacing,
-					Size = _settings.Size,
-					TextContrast = _settings.TextContrast,
-					TextureSize = _settings.TextureSize
-				});
+					fontSettings.BaseColors.Add(_settings.BaseColors[i]);
+				}
+
+				newFont = Graphics.Fonts.CreateFont(Name, fontSettings);
 			}
 			catch
 			{
@@ -755,7 +771,6 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		{
 			if (Renderer != null)
 			{
-				Renderer.End2D();
 				Renderer.Begin2D();
 			}
 		}

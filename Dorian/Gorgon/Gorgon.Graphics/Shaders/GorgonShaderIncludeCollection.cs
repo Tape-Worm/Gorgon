@@ -67,48 +67,6 @@ namespace GorgonLibrary.Graphics
 
 		#region Methods.
 		/// <summary>
-		/// Function to find the start and end to the include block
-		/// </summary>
-		/// <param name="startLine">Starting line.</param>
-		/// <param name="lines">Lines to scan.</param>
-		/// <returns>The start and end index of the include block.</returns>
-		private Tuple<int, int> FindIncludeBlock(int startLine, IList<string> lines)
-		{
-			string currentLine = string.Empty;
-			int start = startLine;
-			int startBlock = -1;
-			int endBlock = -1;
-
-			// Find brackets.
-			for (int i = start; i < lines.Count; i++)
-			{
-				currentLine = lines[i].Trim();
-				if ((currentLine.StartsWith("#GorgonInclude", StringComparison.CurrentCultureIgnoreCase)) && (currentLine.Length >= 14))
-					currentLine = currentLine.Substring(14).Trim();
-
-				if ((string.IsNullOrEmpty(currentLine)) || (currentLine == "\r") || (currentLine == "\n"))
-					continue;
-
-				if (currentLine.StartsWith("{"))
-					startBlock = i;
-
-				if (currentLine.EndsWith("}"))
-					endBlock = i;
-
-				if ((!currentLine.StartsWith("\"")) && (startBlock == -1))
-					throw new GorgonException(GorgonResult.CannotEnumerate, "Cannot read the file.  The line '" + lines[startLine] + "' has no starting bracket.");
-
-				if ((startBlock > -1) && (endBlock > -1))
-					break;
-			}
-
-			if (endBlock == -1)
-				throw new GorgonException(GorgonResult.CannotEnumerate, "Cannot read the file.  The line '" + lines[startLine] + "' has no ending bracket.");
-
-			return new Tuple<int, int>(startBlock, endBlock);
-		}
-
-		/// <summary>
 		/// Function to retrieve the include line.
 		/// </summary>
 		/// <param name="includeLine">Include line.</param>
@@ -220,15 +178,15 @@ namespace GorgonLibrary.Graphics
 
 					// If we already have this include, then parse it and continue on.
 					if (Contains(includeFile.Name))
-						paths.AddRange(GetIncludes(searchPath, this[includeFile.Name].SourceCode));
+						paths.AddRange(GetIncludes(searchPath, this[includeFile.Name].SourceCodeFile));
 					else
 					{
 						// Otherwise, we need to load it.
-						if (string.IsNullOrEmpty(includeFile.SourceCode))
+						if (string.IsNullOrEmpty(includeFile.SourceCodeFile))
 							throw new GorgonException(GorgonResult.CannotRead, "Cannot read the file.  The include '" + includeFile.Name + "' was not found and has no path.");
 
-						sourceCode = File.ReadAllText(includeFile.SourceCode);
-						paths.AddRange(GetIncludes(Path.GetDirectoryName(includeFile.SourceCode) + Path.DirectorySeparatorChar.ToString(), sourceCode));
+						sourceCode = File.ReadAllText(includeFile.SourceCodeFile);
+						paths.AddRange(GetIncludes(Path.GetDirectoryName(includeFile.SourceCodeFile) + Path.DirectorySeparatorChar.ToString(), sourceCode));
 
 						if (!Contains(includeFile.Name))
 							paths.Add(new GorgonShaderInclude(includeFile.Name, sourceCode));
@@ -246,7 +204,7 @@ namespace GorgonLibrary.Graphics
 		protected override void AddItem(GorgonShaderInclude value)
 		{
 			GorgonDebug.AssertParamString(value.Name, "includeFile.Name");
-			GorgonDebug.AssertParamString(value.SourceCode, "includeFile.SourceCode");
+			GorgonDebug.AssertParamString(value.SourceCodeFile, "includeFile.SourceCode");
 
 			base.AddItem(value);
 		}
@@ -316,7 +274,7 @@ namespace GorgonLibrary.Graphics
 					result.Append("// ------------------ Begin #include of '");
 					result.Append(includeFile.Name);
 					result.Append("' ------------------ \r\n");
-					result.Append(ProcessSource(this[includeFile.Name].SourceCode));
+					result.Append(ProcessSource(this[includeFile.Name].SourceCodeFile));
 					result.Append("\r\n");
 					result.Append("// ------------------ End #include of '");
 					result.Append(includeFile.Name);
