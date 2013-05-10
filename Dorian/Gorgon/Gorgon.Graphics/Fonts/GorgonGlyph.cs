@@ -33,7 +33,7 @@ namespace GorgonLibrary.Graphics
 	/// <summary>
 	/// A glyph used to define a character in the font.
 	/// </summary>
-	public class GorgonGlyph
+	public sealed class GorgonGlyph
 		: INamedObject
 	{
 		#region Properties.
@@ -154,7 +154,7 @@ namespace GorgonLibrary.Graphics
 		{
 			get 
 			{
-				return Character.ToString();
+				return Character.ToString(System.Globalization.CultureInfo.CurrentCulture);
 			}
 		}
 		#endregion

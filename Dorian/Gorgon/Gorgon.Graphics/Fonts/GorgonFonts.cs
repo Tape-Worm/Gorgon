@@ -152,12 +152,18 @@ namespace GorgonLibrary.Graphics
                 // Write rendering information.
                 chunk.Begin("RNDRDATA");
                 settings.AntiAliasingMode = chunk.Read<FontAntiAliasMode>();
-                var colors = new GorgonColor[chunk.ReadInt32()];
-                for (int i = 0; i < colors.Length; i++)
+				settings.BaseColors.Clear();
+                var colorCount = chunk.ReadInt32();
+
+                for (int i = 0; i < colorCount; i++)
                 {
-                    colors[i] = chunk.Read<GorgonColor>();
+                    settings.BaseColors.Add(chunk.Read<GorgonColor>());
                 }
-                settings.BaseColors = colors;
+
+				if (settings.BaseColors.Count < 1)
+				{
+					settings.BaseColors.Add(GorgonColor.White);
+				}
                 settings.OutlineColor = chunk.Read<GorgonColor>();
                 settings.OutlineSize = chunk.ReadInt32();
                 settings.TextContrast = chunk.ReadInt32();
@@ -422,7 +428,6 @@ namespace GorgonLibrary.Graphics
 			var settings = new GorgonFontSettings()
 			{
 				AntiAliasingMode = antiAliasMode,
-				BaseColors = new GorgonColor[] { Color.White },
 				Brush = null,
 				FontFamilyName = fontFamily,
 				FontStyle = style,
@@ -477,7 +482,6 @@ namespace GorgonLibrary.Graphics
 			var settings = new GorgonFontSettings()
 			{
 				AntiAliasingMode = antiAliasMode,
-				BaseColors = null,
 				Brush = null,
 				FontFamilyName = font.FontFamily.Name,
 				FontStyle = font.Style,

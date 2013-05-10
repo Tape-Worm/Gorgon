@@ -98,7 +98,7 @@ namespace GorgonLibrary.Graphics
 	/// <summary>
 	/// Settings for a 1D texture.
 	/// </summary>
-	public class GorgonTexture1DSettings
+	public sealed class GorgonTexture1DSettings
 		: ITextureSettings
 	{
 		#region Constructor.
@@ -305,7 +305,7 @@ namespace GorgonLibrary.Graphics
 	/// <summary>
 	/// Settings for a 2D texture.
 	/// </summary>
-	public class GorgonTexture2DSettings
+	public sealed class GorgonTexture2DSettings
 		: ITextureSettings
 	{
 		#region Properties.
@@ -530,7 +530,7 @@ namespace GorgonLibrary.Graphics
 	/// <summary>
 	/// Settings for a 3D texture.
 	/// </summary>
-	public class GorgonTexture3DSettings
+	public sealed class GorgonTexture3DSettings
 		: ITextureSettings
 	{
 		#region Constructor.

@@ -24,7 +24,8 @@
 // 
 #endregion
 
-using GorgonLibrary.Diagnostics;
+using System;
+using GorgonLibrary.Graphics.Properties;
 
 namespace GorgonLibrary.Graphics
 {
@@ -39,23 +40,94 @@ namespace GorgonLibrary.Graphics
 	/// <para>The include object is only for shaders with source code, therefore, the objects will be ignored when used with a binary shader.  Binary shaders should already have the required information in them.</para>
 	/// </remarks>
 	public struct GorgonShaderInclude
-		: INamedObject
+		: INamedObject, IEquatable<GorgonShaderInclude>
 	{
 		#region Variables.
-		private string _name;			// Name for the include file.
-		private string _sourceCode;		// Source code for the include file.
+		/// <summary>
+		/// The name of the shader include file.
+		/// </summary>
+		public readonly string Name;			// Name for the include file.
+		/// <summary>
+		/// The source code for the shader include file.
+		/// </summary>
+		public readonly string SourceCodeFile;	// Source code for the include file.
 		#endregion
 
-		#region Properties.		
+		#region Methods.
 		/// <summary>
-		/// Property to return the source code for the include file.
+		/// Returns a <see cref="System.String" /> that represents this instance.
 		/// </summary>
-		public string SourceCode
+		/// <returns>
+		/// A <see cref="System.String" /> that represents this instance.
+		/// </returns>
+		public override string ToString()
 		{
-			get
+			return string.Format(Resources.GORGFX_SHADER_INCLUDE_TOSTR, Name);
+		}
+
+		/// <summary>
+		/// Returns a hash code for this instance.
+		/// </summary>
+		/// <returns>
+		/// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table. 
+		/// </returns>
+		public override int GetHashCode()
+		{
+			unchecked
 			{
-				return _sourceCode;
+				return 281.GenerateHash(Name).GenerateHash(SourceCodeFile);
 			}
+		}
+
+		/// <summary>
+		/// Function to evaluate two instances for equality.
+		/// </summary>
+		/// <param name="left">The left instance to compare.</param>
+		/// <param name="right">The right instance to compare.</param>
+		/// <returns>TRUE if equal, FALSE if not.</returns>
+		public static bool Equals(ref GorgonShaderInclude left, ref GorgonShaderInclude right)
+		{
+			return (string.Compare(left.Name, right.Name, StringComparison.OrdinalIgnoreCase) == 0)
+			       && (string.Compare(left.SourceCodeFile, right.SourceCodeFile, StringComparison.CurrentCultureIgnoreCase) == 0);
+		}
+
+		/// <summary>
+		/// Determines whether the specified <see cref="System.Object" /> is equal to this instance.
+		/// </summary>
+		/// <param name="obj">The <see cref="System.Object" /> to compare with this instance.</param>
+		/// <returns>
+		///   <c>true</c> if the specified <see cref="System.Object" /> is equal to this instance; otherwise, <c>false</c>.
+		/// </returns>
+		public override bool Equals(object obj)
+		{
+			if (obj is GorgonShaderInclude)
+			{
+				return Equals((GorgonShaderInclude)obj);
+			}
+
+			return base.Equals(obj);
+		}
+
+		/// <summary>
+		/// Equality operator.
+		/// </summary>
+		/// <param name="left">Left instance to compare.</param>
+		/// <param name="right">Right instance to compare.</param>
+		/// <returns>TRUE if equal, FALSE if not.</returns>
+		public static bool operator ==(GorgonShaderInclude left, GorgonShaderInclude right)
+		{
+			return Equals(ref left, ref right);
+		}
+
+		/// <summary>
+		/// Inequality operator.
+		/// </summary>
+		/// <param name="left">Left instance to compare.</param>
+		/// <param name="right">Right instance to compare.</param>
+		/// <returns>TRUE if not equal, FALSE if equal.</returns>
+		public static bool operator !=(GorgonShaderInclude left, GorgonShaderInclude right)
+		{
+			return !Equals(ref left, ref right);
 		}
 		#endregion
 
@@ -64,15 +136,30 @@ namespace GorgonLibrary.Graphics
 		/// Initializes a new instance of the <see cref="GorgonShaderInclude"/> struct.
 		/// </summary>
 		/// <param name="includeName">Name of the include file.</param>
-		/// <param name="includeSource">The include source code.</param>
+		/// <param name="includeSourceFile">The include source code file.</param>
+		/// <remarks>The <paramref name="includeSourceFile"/> can be set to NULL (Nothing in VB.Net) or empty if the include source code is already included in the 
+		/// <see cref="GorgonLibrary.Graphics.GorgonShaderBinding.IncludeFiles">IncludeFiles</see> collection.</remarks>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="includeName"/> parameters is NULL (Nothing in VB.Net).</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the includeName parameter is empty.</exception>
-		public GorgonShaderInclude(string includeName, string includeSource)
+		public GorgonShaderInclude(string includeName, string includeSourceFile)
 		{
-			GorgonDebug.AssertParamString(includeName, "includeName");
+			if (includeName == null)
+			{
+				throw new ArgumentNullException("includeName");
+			}
 
-			_name = includeName;
-			_sourceCode = includeSource;
+			if (string.IsNullOrWhiteSpace(includeName))
+			{
+				throw new ArgumentException(Resources.GORGFX_PARAMETER_MUST_NOT_BE_EMPTY, "includeName");
+			}
+
+			if (includeSourceFile == null)
+			{
+				includeSourceFile = string.Empty;
+			}
+
+			Name = includeName;
+			SourceCodeFile = includeSourceFile;
 		}
 		#endregion
 
@@ -80,12 +167,26 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Property to return the name of the include file.
 		/// </summary>
-		public string Name
+		string INamedObject.Name
 		{
 			get 
 			{
-				return _name;
+				return Name;
 			}
+		}
+		#endregion
+
+		#region IEquatable<GorgonShaderInclude> Members
+		/// <summary>
+		/// Indicates whether the current object is equal to another object of the same type.
+		/// </summary>
+		/// <param name="other">An object to compare with this object.</param>
+		/// <returns>
+		/// true if the current object is equal to the <paramref name="other" /> parameter; otherwise, false.
+		/// </returns>
+		public bool Equals(GorgonShaderInclude other)
+		{
+			return Equals(ref this, ref other);
 		}
 		#endregion
 	}

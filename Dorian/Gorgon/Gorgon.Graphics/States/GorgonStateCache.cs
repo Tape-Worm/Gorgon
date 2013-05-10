@@ -44,7 +44,6 @@ namespace GorgonLibrary.Graphics
 		#region Variables.
 		private bool _disposed;																				// Flag to indicate that the object was disposed.
 		private int _currentCachePosition;																	// Current position in the cache.
-		private int _cacheCount;																			// Number of items in the cache.
 		private Tuple<T, D3D.DeviceChild>[] _cache = new Tuple<T,D3D.DeviceChild>[CacheLimit];				// Cache objects.
 		#endregion
 
@@ -54,10 +53,8 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		public int CacheCount
 		{
-			get
-			{
-				return _cacheCount;
-			}
+			get;
+			private set;
 		}
 		#endregion
 
@@ -69,7 +66,7 @@ namespace GorgonLibrary.Graphics
 		/// <returns>The index of the state, or -1 if not found.</returns>
 		private int IndexOf(ref T state)
 		{
-			for (int i = 0; i < _cacheCount; i++)
+			for (int i = 0; i < CacheCount; i++)
 			{
 				if (_cache[i].Item1.Equals(ref state))
 				{
@@ -84,7 +81,7 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		public void EvictCache()
 		{
-			for (int i = 0; i < _cacheCount; i++)
+			for (int i = 0; i < CacheCount; i++)
 			{
 				if (_cache[i].Item2 != null)
 				{
@@ -93,7 +90,7 @@ namespace GorgonLibrary.Graphics
 				_cache[i] = null;
 			}
 
-			_cacheCount = 0;
+			CacheCount = 0;
 			_currentCachePosition = 0;
 		}
 
@@ -126,7 +123,7 @@ namespace GorgonLibrary.Graphics
 
 			_cache[_currentCachePosition] = new Tuple<T, D3D.DeviceChild>(state, D3DState);
 
-			_cacheCount++;
+			CacheCount++;
 			_currentCachePosition++;
 
 			if (_currentCachePosition >= _cache.Length)
@@ -160,7 +157,7 @@ namespace GorgonLibrary.Graphics
 				_cache[index] = null;
 			}
 
-			_cacheCount--;
+			CacheCount--;
 			_currentCachePosition--;
 		}
 		#endregion

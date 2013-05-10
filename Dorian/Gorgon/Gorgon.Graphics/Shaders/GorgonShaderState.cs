@@ -45,7 +45,7 @@ namespace GorgonLibrary.Graphics
 		/// Sampler states.
 		/// </summary>
 		/// <remarks>This is used to control how textures are used by the shader.</remarks>
-		public class TextureSamplerState
+		public sealed class TextureSamplerState
 			: GorgonState<GorgonTextureSamplerStates>, IList<GorgonTextureSamplerStates>
 		{
 			#region Variables.
@@ -456,7 +456,7 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// A list of constant buffers.
 		/// </summary>
-		public class ShaderConstantBuffers
+		public sealed class ShaderConstantBuffers
 			: IList<GorgonConstantBuffer>
 		{
 			#region Variables.
@@ -699,7 +699,7 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		/// <remarks>A view is a way for a shader to read (or potentially write) a resource.  Views can also be used to cast the data 
         /// in a resource to another type.</remarks>
-		public class ShaderResourceViews
+		public sealed class ShaderResourceViews
 			: IList<GorgonResourceView>
 		{
 			#region Variables.

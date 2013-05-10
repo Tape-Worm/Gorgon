@@ -534,8 +534,11 @@ namespace GorgonLibrary.Graphics
 		static GorgonGraphics()
 		{
 			Win32API.DwmIsCompositionEnabled(out _isDWMEnabled);
+
 			if (!_isDWMEnabled)
+			{
 				_dontEnableDWM = true;
+			}
 		}
 		#endregion
 

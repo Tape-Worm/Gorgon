@@ -108,7 +108,10 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using GorgonLibrary.IO;
 using GorgonLibrary.Math;
+using SharpDX.WIC;
+using Bitmap = System.Drawing.Bitmap;
 using DX = SharpDX;
+using PixelFormat = System.Drawing.Imaging.PixelFormat;
 
 namespace GorgonLibrary.Graphics
 {
@@ -199,8 +202,8 @@ namespace GorgonLibrary.Graphics
         #endregion
 
         #region Variables.
-        private SharpDX.WIC.ImagingFactory _factory;                 // WIC image factory.
-        private bool _disposed;                             // Flag to indicate that the object was disposed.
+
+	    private bool _disposed;                             // Flag to indicate that the object was disposed.
 
         private readonly WICPixelFormat[] _wicPixelFormats = new[]                                 // Formats for conversion between System.Drawing.Images and WIC.
         {            
@@ -278,17 +281,15 @@ namespace GorgonLibrary.Graphics
         #endregion
 
 		#region Properties.
-		/// <summary>
-		/// Property to return the factory object.
-		/// </summary>
-		public SharpDX.WIC.ImagingFactory Factory
-		{
-			get
-			{
-				return _factory;
-			}
-		}
-		#endregion
+	    /// <summary>
+	    /// Property to return the factory object.
+	    /// </summary>
+	    public ImagingFactory Factory
+	    {
+		    get;
+		    private set;
+	    }
+	    #endregion
 
 		#region Methods.
 		/// <summary>
@@ -309,25 +310,7 @@ namespace GorgonLibrary.Graphics
             return BufferFormat.Unknown;
         }
 
-        /// <summary>
-        /// Function to retrieve a System.Drawing.Imaging.PixelFormat from a WIC pixel format GUID.
-        /// </summary>
-        /// <param name="wicFormat">WIC pixel format GUID.</param>
-        /// <returns>The pixel format, or DontCare if a match could not be found.</returns>
-        private PixelFormat GetPixelFormat(Guid wicFormat)
-        {
-            for (int i = 0; i < _wicPixelFormats.Length; i++)
-            {
-                if (_wicPixelFormats[i].WICGuid == wicFormat)
-                {
-                    return _wicPixelFormats[i].PixelFormat;
-                }
-            }
-
-            return PixelFormat.DontCare;
-        }               
-
-		/// <summary>
+	    /// <summary>
 		/// Function to retrieve a WIC format GUID from a System.Drawing PixelFormat.
 		/// </summary>
 		/// <param name="format">Pixel format to translate.</param>
@@ -472,7 +455,7 @@ namespace GorgonLibrary.Graphics
         /// <returns>The bits per pixel of the format.</returns>
         public int GetBitsPerPixel(Guid wicPixelFormat)
         {
-            using (var component = new SharpDX.WIC.ComponentInfo(_factory, wicPixelFormat))
+            using (var component = new SharpDX.WIC.ComponentInfo(Factory, wicPixelFormat))
             {
                 if (component.ComponentType != SharpDX.WIC.ComponentType.PixelFormat)
                 {
@@ -514,7 +497,7 @@ namespace GorgonLibrary.Graphics
             foreach (var buffer in data)
             {
                 var pointer = new DX.DataRectangle(buffer.Data.BasePointer, buffer.PitchInformation.RowPitch);
-                bitmaps[bitmapIndex] = new SharpDX.WIC.Bitmap(_factory, buffer.Width, buffer.Height, bitmapFormat, pointer, pointer.Pitch * buffer.Height);
+                bitmaps[bitmapIndex] = new SharpDX.WIC.Bitmap(Factory, buffer.Width, buffer.Height, bitmapFormat, pointer, pointer.Pitch * buffer.Height);
                 bitmapIndex++;
             }
 
@@ -548,7 +531,7 @@ namespace GorgonLibrary.Graphics
                 // We need to convert, so copy using the format converter.
                 if (bitmap.PixelFormat != conversionFormat)
                 {
-                    using (var converter = new SharpDX.WIC.FormatConverter(_factory))
+                    using (var converter = new SharpDX.WIC.FormatConverter(Factory))
                     {
                         converter.Initialize(bitmap, conversionFormat, SharpDX.WIC.BitmapDitherType.None, null, 0, SharpDX.WIC.BitmapPaletteType.Custom);
                         converter.CopyPixels(lockData.Stride, lockData.Scan0, lockData.Stride * lockData.Height);
@@ -610,7 +593,7 @@ namespace GorgonLibrary.Graphics
 				bmpData = imageBitmap.LockBits(new Rectangle(0, 0, imageBitmap.Width, imageBitmap.Height), ImageLockMode.ReadOnly, imageBitmap.PixelFormat);
 
 				pointer = new DX.DataRectangle(bmpData.Scan0, bmpData.Stride);
-				result = new SharpDX.WIC.Bitmap(_factory, imageBitmap.Width, imageBitmap.Height, guid, pointer, bmpData.Stride * bmpData.Height);
+				result = new SharpDX.WIC.Bitmap(Factory, imageBitmap.Width, imageBitmap.Height, guid, pointer, bmpData.Stride * bmpData.Height);
 				result.SetResolution(image.HorizontalResolution, image.VerticalResolution);
 
 				return result;
@@ -678,7 +661,7 @@ namespace GorgonLibrary.Graphics
 				// Create a scaler if need one.
 				if ((scale) && (!clip))
 				{
-					var scaler = new SharpDX.WIC.BitmapScaler(_factory);
+					var scaler = new SharpDX.WIC.BitmapScaler(Factory);
 					scaler.Initialize(bitmap, buffer.Width, buffer.Height, filter);
 					source = scaler;
 				}
@@ -686,13 +669,13 @@ namespace GorgonLibrary.Graphics
 				// Create a clipper if we want to clip and the image needs resizing.
 				if ((clip) && (scale) && ((buffer.Width < bitmap.Size.Width) || (buffer.Height < bitmap.Size.Height)))
 				{
-					var clipper = new SharpDX.WIC.BitmapClipper(_factory);
+					var clipper = new SharpDX.WIC.BitmapClipper(Factory);
 					clipper.Initialize(bitmap, new DX.DrawingRectangle(0, 0, buffer.Width < bitmap.Size.Width ? buffer.Width : bitmap.Size.Width, 
 																			 buffer.Height < bitmap.Size.Height ? buffer.Height : bitmap.Size.Height));
 					source = clipper;
 				}
 
-				using (var converter = new SharpDX.WIC.FormatConverter(_factory))
+				using (var converter = new SharpDX.WIC.FormatConverter(Factory))
 				{
 					if (!converter.CanConvert(sourceFormat, destFormat))
 					{
@@ -736,7 +719,7 @@ namespace GorgonLibrary.Graphics
 		{
 			if (!clip)
 			{
-				using (var scaler = new SharpDX.WIC.BitmapScaler(_factory))
+				using (var scaler = new SharpDX.WIC.BitmapScaler(Factory))
 				{
 					scaler.Initialize(bitmap, buffer.Width, buffer.Height, filter);
 					scaler.CopyPixels(buffer.PitchInformation.RowPitch, buffer.Data.BasePointer, buffer.PitchInformation.SlicePitch);
@@ -763,7 +746,7 @@ namespace GorgonLibrary.Graphics
 		/// <param name="buffer">Buffer containing clipped data.</param>
 		private void ClipBitmap(SharpDX.WIC.BitmapSource bitmap, GorgonImageData.ImageBuffer buffer)
 		{
-			using (var clipper = new SharpDX.WIC.BitmapClipper(_factory))
+			using (var clipper = new SharpDX.WIC.BitmapClipper(Factory))
 			{
 				clipper.Initialize(bitmap, new DX.DrawingRectangle(0, 0, buffer.Width < bitmap.Size.Width ? buffer.Width : bitmap.Size.Width, 
 																		 buffer.Height < bitmap.Size.Height ? buffer.Height : bitmap.Size.Height));
@@ -835,7 +818,7 @@ namespace GorgonLibrary.Graphics
             {
                 if (destFormat != Guid.Empty)
                 {
-                    converter = new SharpDX.WIC.FormatConverter(_factory);
+                    converter = new SharpDX.WIC.FormatConverter(Factory);
 
 					if (!converter.CanConvert(sourceData.PixelFormat, destFormat))
 					{
@@ -852,7 +835,7 @@ namespace GorgonLibrary.Graphics
 
                     if (!clip)
                     {
-                        scaler = new SharpDX.WIC.BitmapScaler(_factory);
+                        scaler = new SharpDX.WIC.BitmapScaler(Factory);
                         scaler.Initialize(source, destRect.Width, destRect.Height, (SharpDX.WIC.BitmapInterpolationMode)scaleFilter);
                         source = scaler;
                     }
@@ -863,7 +846,7 @@ namespace GorgonLibrary.Graphics
 
 						if ((destRect.Width < source.Size.Width) || (destRect.Height < source.Size.Height))
 						{
-							clipper = new SharpDX.WIC.BitmapClipper(_factory);
+							clipper = new SharpDX.WIC.BitmapClipper(Factory);
 							clipper.Initialize(source, new DX.DrawingRectangle(destRect.X, destRect.Y, destRect.Width, destRect.Height));
 							source = clipper;
 						}
@@ -872,7 +855,7 @@ namespace GorgonLibrary.Graphics
 					// We have a change of format (probably due to the filter when scaling)... so we need to convert.
 					if (source.PixelFormat != pixelFormat)
 					{
-						converter = new SharpDX.WIC.FormatConverter(_factory);
+						converter = new SharpDX.WIC.FormatConverter(Factory);
 
 						if (!converter.CanConvert(source.PixelFormat, pixelFormat))
 						{
@@ -918,7 +901,7 @@ namespace GorgonLibrary.Graphics
         /// </summary>
         public GorgonWICImage()
         {
-            _factory = new SharpDX.WIC.ImagingFactory();
+            Factory = new SharpDX.WIC.ImagingFactory();
         }
         #endregion
 
@@ -933,13 +916,13 @@ namespace GorgonLibrary.Graphics
             {
                 if (disposing)
                 {
-                    if (_factory != null)
+                    if (Factory != null)
                     {
-                        _factory.Dispose();
+                        Factory.Dispose();
                     }
                 }
 
-                _factory = null;
+                Factory = null;
                 _disposed = true;
             }
         }

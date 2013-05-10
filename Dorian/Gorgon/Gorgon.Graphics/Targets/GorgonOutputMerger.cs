@@ -40,7 +40,7 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// A list of render targets to bind.
 		/// </summary>
-		public class RenderTargetList
+		public sealed class RenderTargetList
 			: IList<GorgonRenderTarget>
 		{
 			#region Variables.

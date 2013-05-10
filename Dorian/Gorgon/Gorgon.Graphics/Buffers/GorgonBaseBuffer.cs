@@ -353,7 +353,7 @@ namespace GorgonLibrary.Graphics
 
 		    if ((BufferUsage == BufferUsage.Default) || (BufferUsage == BufferUsage.Immutable))
 		    {
-		        throw new GorgonException(GorgonResult.AccessDenied, string.Format(Resources.GORGFX_USAGE_CANT_LOCK, BufferUsage));
+		        throw new GorgonException(GorgonResult.AccessDenied, string.Format(Resources.GORGFX_BUFFER_USAGE_CANT_LOCK, BufferUsage));
 		    }
 #endif
 
