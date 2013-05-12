@@ -497,6 +497,46 @@ namespace GorgonLibrary.Graphics
 			}
 		}
 
+        /// <summary>
+        /// Function to determine if the device supports a given format for unordered access views.
+        /// </summary>
+        /// <param name="format">Format to evaluate.</param>
+        /// <returns>TRUE if the format is supported, FALSE if not.</returns>
+        /// <remarks>This is meant for UAVs that are used with a texture/buffer.  For structured buffers only Unknown is supported and for raw buffers only R32 (typeless) is supported.</remarks>
+        public bool SupportsUnorderedAccessViewFormat(BufferFormat format)
+        {
+            D3D.Device device = (Graphics != null) ? Graphics.D3DDevice : null;
+            Tuple<GI.Factory1, GI.Adapter1, D3D.Device> tempInterfaces = null;
+
+            try
+            {
+                if (device == null)
+                {
+                    tempInterfaces = CreateTemporaryInterfaces();
+                    device = tempInterfaces.Item3;
+                }
+
+                switch (SupportedFeatureLevel)
+                {
+                    case DeviceFeatureLevel.SM2_a_b:
+                    case DeviceFeatureLevel.SM4:
+                    case DeviceFeatureLevel.SM4_1:
+                        return false;
+                    default:
+                        return ((device.CheckFormatSupport((GI.Format)format) & D3D.FormatSupport.TypedUnorderedAccessView) == D3D.FormatSupport.TypedUnorderedAccessView);
+                }
+            }
+            finally
+            {
+                if (tempInterfaces != null)
+                {
+                    tempInterfaces.Item3.Dispose();
+                    tempInterfaces.Item2.Dispose();
+                    tempInterfaces.Item1.Dispose();
+                }
+            }
+        }
+
 		/// <summary>
 		/// Function to determine if the specified depth buffer format is supported.
 		/// </summary>

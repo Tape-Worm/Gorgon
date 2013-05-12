@@ -364,37 +364,6 @@ namespace GorgonLibrary.Graphics
 			return result;
 		}
 
-		/// <summary>
-		/// Function to create a resource view.
-		/// </summary>
-		/// <param name="name">Name of the resource view.</param>
-		/// <returns>A new resource view object.</returns>
-		/// <remarks>A resource view will allow the shaders to access resources like textures and buffers.  A resource view may be a shader resource view (SRV) and  
-		/// an unordered access view (UAV).
-		/// <para>A shader resource view will allow casting of a resource type into another type as long as the format is of the same group.  That is, a resource created with 
-		/// a format of R8G8B8A8 can have a view of R8G8B8A8_UInt, R8G8B8A8_Int, R8G8B8A8_UIntNormal, etc...  To check the grouping of a format examine the <see cref="GorgonLibrary.Graphics.GorgonBufferFormatInfo.GorgonFormatData.Group">GorgonFormatData.Group</see> property 
-		/// returned from the <see cref="GorgonLibrary.Graphics.GorgonBufferFormatInfo.GetInfo">GorgonBufferFormatInfo.GetInfo</see> method.</para>
-		/// <para>Unordered access views will allow the use of the RWTexture HLSL intrinsic function to allow reading/writing of a texture (if the UAV format is R32_UInt, write-only for 
-		/// other formats).  Unordered access views are only available on SM_5 or better video devices.  For structured buffers the unordered access format must be Unknown for Append/Counter, and R32 (typeless) 
-		/// for Raw.  Otherwise the format must match the format of the buffer.</para>
-		/// </remarks>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (Nothing in VB.Net).</exception>
-		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
-		public GorgonResourceView CreateResourceView(string name)
-		{
-			if (name == null)
-			{
-				throw new ArgumentNullException("name");
-			}
-
-			if (string.IsNullOrWhiteSpace(name))
-			{
-				throw new ArgumentException(Resources.GORGFX_PARAMETER_MUST_NOT_BE_EMPTY, "name");
-			}
-
-			return new GorgonResourceView(_graphics, name);
-		}
-
         /// <summary>
         /// Function to load a shader from a byte array.
         /// </summary>

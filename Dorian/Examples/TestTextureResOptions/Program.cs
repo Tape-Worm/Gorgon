@@ -34,12 +34,12 @@ namespace TestTextureResOptions
 				{
 					Width = 512,
 					Height = 512,
-					Format = BufferFormat.R8G8B8A8,
+                    Format = BufferFormat.R16G16,
 					ArrayCount = 6,
 					MipCount = 1,
 					Usage = BufferUsage.Default,
 					IsTextureCube = true,
-					ShaderViewFormat = BufferFormat.R8G8B8A8_UIntNormal,
+					ShaderViewFormat = BufferFormat.R16G16_Int,
 					UnorderedAccessViewFormat = BufferFormat.R32_UInt,
 				});
 			

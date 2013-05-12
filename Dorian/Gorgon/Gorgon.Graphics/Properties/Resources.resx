@@ -211,4 +211,7 @@
   <data name="GORGFX_BUFFER_NO_STAGING" xml:space="preserve">
     <value>This buffer cannot be used as a staging buffer.</value>
   </data>
+  <data name="GORGFX_SHADER_VIEW_TOSTR" xml:space="preserve">
+    <value>Gorgon Shader View.  Format: [{0}]</value>
+  </data>
 </root>

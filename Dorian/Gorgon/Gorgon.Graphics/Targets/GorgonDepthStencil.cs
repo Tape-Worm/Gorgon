@@ -95,7 +95,7 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		private void CleanUp()
 		{
-			if (D3DDepthStencilView != null)
+    		if (D3DDepthStencilView != null)
 			{
 				Gorgon.Log.Print("GorgonDepthStencil '{0}': Destroying D3D11 depth stencil view...", Diagnostics.LoggingLevel.Verbose, Name);
 				D3DDepthStencilView.Dispose();
@@ -111,7 +111,7 @@ namespace GorgonLibrary.Graphics
 				Gorgon.Log.Print("GorgonDepthStencil '{0}': Destroying depth stencil texture...", Diagnostics.LoggingLevel.Verbose, Name);
 				Texture.Dispose();
 			}
-			
+
 			Texture = null;
 			D3DDepthStencilView = null;
 		}
@@ -208,6 +208,9 @@ namespace GorgonLibrary.Graphics
 			CleanUp();
 			ValidateSettings(Graphics, Settings);
 			CreateResources();
+
+            // Re-bind the depth/stencil with the new settings.
+            Graphics.Output.RenderTargets.ReSeat(this);
 		}
 
 		/// <summary>
@@ -276,8 +279,11 @@ namespace GorgonLibrary.Graphics
 				if (disposing)
 				{
 					CleanUp();
-					if (Graphics != null)
-						Graphics.RemoveTrackedObject(this);
+
+				    if (Graphics != null)
+				    {
+				        Graphics.RemoveTrackedObject(this);
+				    }
 				}
 
 				Graphics = null;
