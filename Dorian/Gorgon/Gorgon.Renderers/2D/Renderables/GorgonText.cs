@@ -1083,10 +1083,10 @@ namespace GorgonLibrary.Renderers
 						glyph = _font.Glyphs[c];
 
 						// Change to the current texture.
-						if (Gorgon2D.PixelShader.Resources[0] != glyph.Texture.DefaultView)
+						if (Gorgon2D.PixelShader.Resources[0] != glyph.Texture.View)
 						{
 							Gorgon2D.RenderObjects();
-							Gorgon2D.PixelShader.Resources[0] = glyph.Texture.DefaultView;
+							Gorgon2D.PixelShader.Resources[0] = glyph.Texture.View;
 						}
 
 						// Add shadowed characters.
@@ -1112,10 +1112,10 @@ namespace GorgonLibrary.Renderers
 					glyph = _font.Glyphs[c];
 
 					// Change to the current texture.
-					if (Gorgon2D.PixelShader.Resources[0] != glyph.Texture.DefaultView)
+					if (Gorgon2D.PixelShader.Resources[0] != glyph.Texture.View)
 					{
 						Gorgon2D.RenderObjects();
-						Gorgon2D.PixelShader.Resources[0] = glyph.Texture.DefaultView;
+						Gorgon2D.PixelShader.Resources[0] = glyph.Texture.View;
 					}
 
 					Gorgon2D.AddVertices(_vertices, 0, 6, vertexIndex, 4);

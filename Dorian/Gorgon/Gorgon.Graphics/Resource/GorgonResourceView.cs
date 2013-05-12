@@ -102,182 +102,208 @@ namespace GorgonLibrary.Graphics
 		/// <param name="resource">The resource to build a view for.</param>
 		private void BuildTextureView(GorgonTexture resource)
 		{
-			string textureType = GetType().Name;
 			bool isMultisampled = resource.Settings.Multisampling.Count > 1 || resource.Settings.Multisampling.Quality > 0;
 			D3D.ShaderResourceViewDescription desc = default(D3D.ShaderResourceViewDescription);
 			D3D.UnorderedAccessViewDescription uavDesc = default(D3D.UnorderedAccessViewDescription);
 
-			if (resource.ViewFormatInformation.IsTypeless)
-				throw new GorgonException(GorgonResult.CannotCreate, "Cannot create the shader view.  The format '" + resource.Settings.ViewFormat.ToString() + "' is untyped.  A view requires a typed format.");
-
+			// Can't bind to staging resources.
 			if (resource.Settings.Usage == BufferUsage.Staging)
 			{
 				throw new GorgonException(GorgonResult.CannotCreate, "Cannot create a view for staging objects.");
 			}
-
-			// We cannot bind staging resources to the pipeline.
-			if (resource.Settings.Usage != BufferUsage.Staging)
+			
+			// Validate shader view format.
+			if (resource.ShaderViewFormatInformation.IsTypeless)
 			{
-				if ((resource.Settings.ViewFormat == BufferFormat.Unknown) || (resource.Settings.ViewFormat == resource.Settings.Format))
-				{
-					D3DResourceView = new D3D.ShaderResourceView(Graphics.D3DDevice, resource.D3DResource);
-					D3DResourceView.DebugName = textureType + " '" + Name + "' Shader Resource View";
+				throw new GorgonException(GorgonResult.CannotCreate,
+				                          "Cannot create the shader view.  The format '" + resource.Settings.ShaderViewFormat.ToString() +
+				                          "' is untyped.  A view requires a typed format.");
+			}
 
-					// Create an unordered access view if we've requested one.
-					if (resource.Settings.ViewIsUnordered)
-					{
-						D3DUnorderedResourceView = new D3D.UnorderedAccessView(Graphics.D3DDevice, resource.D3DResource);
-						D3DUnorderedResourceView.DebugName = textureType + " '" + Name + "' Shader Resource View";
-					}
+			// Ensure that the shader view is in the same bit group as the resource format.
+			if ((resource.Settings.Format != resource.Settings.ShaderViewFormat)
+				&& (resource.ShaderViewFormatInformation.Group != resource.FormatInformation.Group))
+			{
+				throw new GorgonException(GorgonResult.CannotCreate,
+											"Cannot create the shader view.  The format '" + resource.Settings.Format.ToString() +
+											"' and the view format '" + resource.Settings.ShaderViewFormat.ToString() +
+											"' are not part of the same group.");
+			}
+
+			// Validate unordered access view formats.
+			if (resource.Settings.UnorderedAccessViewFormat != BufferFormat.Unknown)
+			{
+				if (resource.UnorderedAccessViewFormatInformation.IsTypeless)
+				{
+					throw new GorgonException(GorgonResult.CannotCreate,
+											  "Cannot create the unordered access view.  The format '" + resource.Settings.UnorderedAccessViewFormat.ToString() +
+											  "' is untyped.  A view requires a typed format.");
 				}
-				else
+
+				if ((resource.Settings.UnorderedAccessViewFormat != resource.Settings.Format) &&
+				    (resource.Settings.UnorderedAccessViewFormat != BufferFormat.R32_UInt))
 				{
-					if (resource.ViewFormatInformation.Group != resource.FormatInformation.Group)
-						throw new GorgonException(GorgonResult.CannotCreate, "Cannot create the shader view.  The format '" + resource.Settings.Format.ToString() + "' and the view format '" + resource.Settings.ViewFormat.ToString() + "' are not part of the same group.");
+					throw new GorgonException(GorgonResult.CannotCreate,
+					                          "Cannot create the unordered access view.  The view format is not [" +
+					                          resource.Settings.Format.ToString() + "] or is not R32_Uint.");
+				}
 
-					desc.Format = (GI.Format)resource.Settings.ViewFormat;
+				if ((resource.Settings.UnorderedAccessViewFormat == BufferFormat.R32_UInt) &&
+				    ((resource.FormatInformation.BitDepth != 32) || (!resource.FormatInformation.IsTypeless)))
+				{
+					throw new GorgonException(GorgonResult.CannotCreate,
+					                          "Cannot create the unordered access view with the R32_UInt format.  The texture format needs to be 32 bits wide and typeless.");
+				}
+			}
 
-					// Determine view type.
-					switch (textureType.ToLower())
+			desc.Format = resource.Settings.ShaderViewFormat == BufferFormat.Unknown
+				              ? (GI.Format)resource.Settings.Format
+				              : (GI.Format)resource.Settings.ShaderViewFormat;
+			uavDesc.Format = (GI.Format)resource.Settings.UnorderedAccessViewFormat;
+
+			// Determine view type.
+			switch (resource.ResourceType)
+			{
+				case ResourceType.Texture1D:
+					if (resource.Settings.ArrayCount <= 1)
 					{
-						case "gorgontexture1d":
-							if (resource.Settings.ArrayCount <= 1)
-							{
-								desc.Dimension = SharpDX.Direct3D.ShaderResourceViewDimension.Texture1D;
-								uavDesc.Dimension = D3D.UnorderedAccessViewDimension.Texture1D;
-							}
-							else
-							{
-								desc.Dimension = SharpDX.Direct3D.ShaderResourceViewDimension.Texture1DArray;
-								uavDesc.Dimension = D3D.UnorderedAccessViewDimension.Texture1DArray;
-							}
-
-							desc.Texture1DArray = new D3D.ShaderResourceViewDescription.Texture1DArrayResource()
-							{
-								MipLevels = resource.Settings.MipCount,
-								MostDetailedMip = 0,
-								ArraySize = resource.Settings.ArrayCount,
-								FirstArraySlice = 0
-							};
-
-							uavDesc.Texture1DArray = new D3D.UnorderedAccessViewDescription.Texture1DArrayResource()
-							{
-								ArraySize = resource.Settings.ArrayCount,
-								FirstArraySlice = 0,
-								MipSlice = 0
-							};
-							break;
-						case "gorgontexture2d":
-							if (resource.Settings.ArrayCount <= 1)
-							{
-								uavDesc.Dimension = D3D.UnorderedAccessViewDimension.Texture2D;
-							}
-							else
-							{
-								uavDesc.Dimension = D3D.UnorderedAccessViewDimension.Texture2DArray;
-							}
-
-							uavDesc.Texture2DArray = new D3D.UnorderedAccessViewDescription.Texture2DArrayResource()
-							{
-								ArraySize = resource.Settings.ArrayCount,
-								FirstArraySlice = 0,
-								MipSlice = 0
-							};
-
-							if (!resource.Settings.IsTextureCube)
-							{
-								if (isMultisampled)
-								{
-									if (resource.Settings.ArrayCount <= 1)
-									{
-										desc.Dimension = SharpDX.Direct3D.ShaderResourceViewDimension.Texture2DMultisampled;
-									}
-									else
-									{
-										desc.Dimension = SharpDX.Direct3D.ShaderResourceViewDimension.Texture2DMultisampledArray;
-									}
-
-									desc.Texture2DMSArray = new D3D.ShaderResourceViewDescription.Texture2DMultisampledArrayResource()
-									{
-										ArraySize = resource.Settings.ArrayCount,										
-										FirstArraySlice = 0
-									};
-								}
-								else
-								{
-									if (resource.Settings.ArrayCount <= 1)
-										desc.Dimension = SharpDX.Direct3D.ShaderResourceViewDimension.Texture2D;
-									else
-										desc.Dimension = SharpDX.Direct3D.ShaderResourceViewDimension.Texture2DArray;
-
-									desc.Texture2DArray = new D3D.ShaderResourceViewDescription.Texture2DArrayResource()
-									{
-										MipLevels = resource.Settings.MipCount,
-										MostDetailedMip = 0,
-										ArraySize = resource.Settings.ArrayCount,
-										FirstArraySlice = 0
-									};
-								}
-							}
-							else
-							{
-								if (resource.Settings.ArrayCount <= 1)
-								{
-									desc.Dimension = SharpDX.Direct3D.ShaderResourceViewDimension.TextureCube;
-									desc.TextureCube = new D3D.ShaderResourceViewDescription.TextureCubeResource()
-									{
-										MipLevels = resource.Settings.MipCount,
-										MostDetailedMip = 0
-									};
-								}
-								else
-								{
-									desc.Dimension = SharpDX.Direct3D.ShaderResourceViewDimension.TextureCubeArray;
-									desc.TextureCubeArray = new D3D.ShaderResourceViewDescription.TextureCubeArrayResource()
-									{
-										MipLevels = resource.Settings.MipCount,
-										CubeCount = resource.Settings.ArrayCount / 6,
-										First2DArrayFace = 0,
-										MostDetailedMip = 0
-									};
-								}								
-							}
-							break;
-						case "gorgontexture3d":
-							desc.Dimension = SharpDX.Direct3D.ShaderResourceViewDimension.Texture3D;
-							desc.Texture3D = new D3D.ShaderResourceViewDescription.Texture3DResource()
-							{
-								MipLevels = resource.Settings.MipCount,
-								MostDetailedMip = 0
-							};
-
-							uavDesc.Dimension = D3D.UnorderedAccessViewDimension.Texture3D;
-							uavDesc.Texture3D = new D3D.UnorderedAccessViewDescription.Texture3DResource()
-							{
-								FirstWSlice = 0,
-								MipSlice = 0,
-								WSize = resource.Settings.Depth
-							};
-							break;
-						default:
-							throw new GorgonException(GorgonResult.CannotCreate, "Cannot create a resource view, the texture type '" + textureType + "' is unknown.");
+						desc.Dimension = SharpDX.Direct3D.ShaderResourceViewDimension.Texture1D;
+						uavDesc.Dimension = D3D.UnorderedAccessViewDimension.Texture1D;
+					}
+					else
+					{
+						desc.Dimension = SharpDX.Direct3D.ShaderResourceViewDimension.Texture1DArray;
+						uavDesc.Dimension = D3D.UnorderedAccessViewDimension.Texture1DArray;
 					}
 
-					try
-					{
-						D3DResourceView = new D3D.ShaderResourceView(Graphics.D3DDevice, resource.D3DResource, desc);
-						D3DResourceView.DebugName = textureType + " '" + Name + "' Shader Resource View";
-						if (resource.Settings.ViewIsUnordered)
+					desc.Texture1DArray = new D3D.ShaderResourceViewDescription.Texture1DArrayResource()
 						{
-							D3DUnorderedResourceView = new D3D.UnorderedAccessView(Graphics.D3DDevice, resource.D3DResource, uavDesc);
-							D3DUnorderedResourceView.DebugName = textureType + " '" + Name + "' Unordered Access Resource View";
+							MipLevels = resource.Settings.MipCount,
+							MostDetailedMip = 0,
+							ArraySize = resource.Settings.ArrayCount,
+							FirstArraySlice = 0
+						};
+
+					uavDesc.Texture1DArray = new D3D.UnorderedAccessViewDescription.Texture1DArrayResource()
+						{
+							ArraySize = resource.Settings.ArrayCount,
+							FirstArraySlice = 0,
+							MipSlice = 0
+						};
+					break;
+				case ResourceType.Texture2D:
+					// Build UAV desc.
+					uavDesc.Dimension = resource.Settings.ArrayCount <= 1
+						                    ? D3D.UnorderedAccessViewDimension.Texture2D
+						                    : D3D.UnorderedAccessViewDimension.Texture2DArray;
+
+					uavDesc.Texture2DArray = new D3D.UnorderedAccessViewDescription.Texture2DArrayResource()
+						{
+							ArraySize = resource.Settings.ArrayCount,
+							FirstArraySlice = 0,
+							MipSlice = 0
+						};
+
+					// Build SRC desc.
+					if (!resource.Settings.IsTextureCube)
+					{
+						if (isMultisampled)
+						{
+							desc.Dimension = resource.Settings.ArrayCount <= 1
+								                 ? SharpDX.Direct3D.ShaderResourceViewDimension.Texture2DMultisampled
+								                 : SharpDX.Direct3D.ShaderResourceViewDimension.Texture2DMultisampledArray;
+
+							desc.Texture2DMSArray = new D3D.ShaderResourceViewDescription.Texture2DMultisampledArrayResource()
+								{
+									ArraySize = resource.Settings.ArrayCount,										
+									FirstArraySlice = 0
+								};
+						}
+						else
+						{
+							desc.Dimension = resource.Settings.ArrayCount <= 1
+								                 ? SharpDX.Direct3D.ShaderResourceViewDimension.Texture2D
+								                 : SharpDX.Direct3D.ShaderResourceViewDimension.Texture2DArray;
+
+							desc.Texture2DArray = new D3D.ShaderResourceViewDescription.Texture2DArrayResource()
+								{
+									MipLevels = resource.Settings.MipCount,
+									MostDetailedMip = 0,
+									ArraySize = resource.Settings.ArrayCount,
+									FirstArraySlice = 0
+								};
 						}
 					}
-					catch (SharpDX.SharpDXException sDXEx)
+					else
 					{
-						if ((uint)sDXEx.ResultCode.Code == 0x80070057)
-							throw new GorgonException(GorgonResult.CannotCreate, "Cannot create the shader view.  The format '" + resource.Settings.ViewFormat.ToString() + "' is not compatible or cannot be cast to '" + resource.Settings.Format.ToString() + "'.");
+						if (resource.Settings.ArrayCount == 6)
+						{
+							desc.Dimension = SharpDX.Direct3D.ShaderResourceViewDimension.TextureCube;
+							desc.TextureCube = new D3D.ShaderResourceViewDescription.TextureCubeResource()
+								{
+									MipLevels = resource.Settings.MipCount,
+									MostDetailedMip = 0
+								};
+						}
+						else
+						{
+							desc.Dimension = SharpDX.Direct3D.ShaderResourceViewDimension.TextureCubeArray;
+							desc.TextureCubeArray = new D3D.ShaderResourceViewDescription.TextureCubeArrayResource()
+								{
+									MipLevels = resource.Settings.MipCount,
+									CubeCount = resource.Settings.ArrayCount / 6,
+									First2DArrayFace = 0,
+									MostDetailedMip = 0
+								};
+						}								
 					}
+					break;
+				case ResourceType.Texture3D:
+					desc.Dimension = SharpDX.Direct3D.ShaderResourceViewDimension.Texture3D;
+					desc.Texture3D = new D3D.ShaderResourceViewDescription.Texture3DResource()
+						{
+							MipLevels = resource.Settings.MipCount,
+							MostDetailedMip = 0
+						};
+
+					uavDesc.Dimension = D3D.UnorderedAccessViewDimension.Texture3D;
+					uavDesc.Texture3D = new D3D.UnorderedAccessViewDescription.Texture3DResource()
+						{
+							FirstWSlice = 0,
+							MipSlice = 0,
+							WSize = resource.Settings.Depth
+						};
+					break;
+				default:
+					throw new GorgonException(GorgonResult.CannotCreate, "Cannot create a resource view, the texture type [" + resource.ResourceType + "] is unknown.");
+			}
+
+			try
+			{
+				// Create our SRV.
+				D3DResourceView = new D3D.ShaderResourceView(Graphics.D3DDevice, resource.D3DResource, desc)
+					{
+						DebugName = resource.ResourceType + " '" + Name + "' Shader Resource View"
+					};
+
+				// Create our UAV.
+				if (resource.Settings.UnorderedAccessViewFormat != BufferFormat.Unknown)
+				{
+					D3DUnorderedResourceView = new D3D.UnorderedAccessView(Graphics.D3DDevice, resource.D3DResource, uavDesc)
+						{
+							DebugName = resource.ResourceType + " '" + Name + "' Unordered Access Resource View"
+						};
+				}
+			}
+			catch (SharpDX.SharpDXException sDXEx)
+			{
+				if ((uint)sDXEx.ResultCode.Code == 0x80070057)
+				{
+					throw new GorgonException(GorgonResult.CannotCreate,
+						                        "Cannot create the shader view.  The format '" +
+						                        resource.Settings.ShaderViewFormat.ToString() +
+						                        "' is not compatible or cannot be cast to '" + resource.Settings.Format.ToString() +
+						                        "'.");
 				}
 			}
 		}
@@ -291,50 +317,54 @@ namespace GorgonLibrary.Graphics
 			Type bufferType = buffer.GetType();
 			var srvDesc = new D3D.ShaderResourceViewDescription();
 			var uavDesc = new D3D.UnorderedAccessViewDescription();
-			var uavFlags = D3D.UnorderedAccessViewBufferFlags.None;
 			var structuredBuffer = buffer as GorgonStructuredBuffer;
 
-			if (structuredBuffer != null)
+			if (structuredBuffer == null)
 			{
-				switch (structuredBuffer.StructuredBufferType)
-				{
-					case StructuredBufferType.AppendConsume:
-						uavFlags = D3D.UnorderedAccessViewBufferFlags.Append;
-						break;
-					case StructuredBufferType.Counter:
-						uavFlags = D3D.UnorderedAccessViewBufferFlags.Counter;
-						break;
-					default:
-						uavFlags = D3D.UnorderedAccessViewBufferFlags.None;
-						break;
-				}
+				return;
+			}
 
-				srvDesc.Dimension = SharpDX.Direct3D.ShaderResourceViewDimension.ExtendedBuffer;
-				srvDesc.BufferEx = new D3D.ShaderResourceViewDescription.ExtendedBufferResource()
+			D3D.UnorderedAccessViewBufferFlags uavFlags;
+			switch (structuredBuffer.StructuredBufferType)
+			{
+				case StructuredBufferType.Raw:
+					uavFlags = D3D.UnorderedAccessViewBufferFlags.Raw;
+					break;
+				case StructuredBufferType.AppendConsume:
+					uavFlags = D3D.UnorderedAccessViewBufferFlags.Append;
+					break;
+				case StructuredBufferType.Counter:
+					uavFlags = D3D.UnorderedAccessViewBufferFlags.Counter;
+					break;
+				default:
+					uavFlags = D3D.UnorderedAccessViewBufferFlags.None;
+					break;
+			}
+
+			srvDesc.Dimension = SharpDX.Direct3D.ShaderResourceViewDimension.ExtendedBuffer;
+			srvDesc.BufferEx = new D3D.ShaderResourceViewDescription.ExtendedBufferResource()
 				{
 					ElementCount = structuredBuffer.ElementCount,
 					FirstElement = 0,
 					Flags = D3D.ShaderResourceViewExtendedBufferFlags.None
 				};
-				srvDesc.Format = GI.Format.Unknown;
+			srvDesc.Format = GI.Format.Unknown;
 
-				uavDesc.Dimension = D3D.UnorderedAccessViewDimension.Buffer;
-				uavDesc.Format = GI.Format.Unknown;
-				uavDesc.Buffer = new D3D.UnorderedAccessViewDescription.BufferResource()
+			uavDesc.Dimension = D3D.UnorderedAccessViewDimension.Buffer;
+			uavDesc.Format = GI.Format.Unknown;
+			uavDesc.Buffer = new D3D.UnorderedAccessViewDescription.BufferResource()
 				{
 					ElementCount = structuredBuffer.ElementCount,
 					FirstElement = 0,
 					Flags = uavFlags
 				};
 
-				D3DResourceView = new D3D.ShaderResourceView(Graphics.D3DDevice, buffer.D3DResource, srvDesc);
-				D3DResourceView.DebugName = bufferType + " '" + Name + "' Shader Resource View";
-				if (structuredBuffer.IsUnorderedAccess)
-				{
-					D3DUnorderedResourceView = new D3D.UnorderedAccessView(Graphics.D3DDevice, buffer.D3DResource, uavDesc);
-					D3DUnorderedResourceView.DebugName = bufferType + " '" + Name + "' Unordered Access View";
-				}
-				return;
+			D3DResourceView = new D3D.ShaderResourceView(Graphics.D3DDevice, buffer.D3DResource, srvDesc);
+			D3DResourceView.DebugName = bufferType + " '" + Name + "' Shader Resource View";
+			if (structuredBuffer.IsUnorderedAccess)
+			{
+				D3DUnorderedResourceView = new D3D.UnorderedAccessView(Graphics.D3DDevice, buffer.D3DResource, uavDesc);
+				D3DUnorderedResourceView.DebugName = bufferType + " '" + Name + "' Unordered Access View";
 			}
 		}
 

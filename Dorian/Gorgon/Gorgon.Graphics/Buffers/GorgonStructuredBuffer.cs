@@ -46,7 +46,11 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// A counter buffer.
 		/// </summary>
-		Counter = 2
+		Counter = 2,
+		/// <summary>
+		/// A raw buffer.
+		/// </summary>
+		Raw = 3
 	}
 
 	/// <summary>

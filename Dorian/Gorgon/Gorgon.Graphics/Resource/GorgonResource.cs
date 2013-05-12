@@ -113,21 +113,21 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
+		/// Property to return the default view for the resource.
+		/// </summary>
+		internal GorgonResourceView DefaultView
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
 		/// Property to set or return whether this resource can be used as a raw resource in a shader.
 		/// </summary>
 		public bool IsRaw
 		{
 			get;
 			protected set;
-		}
-
-		/// <summary>
-		/// Property to return the default view for the resource.
-		/// </summary>
-		public GorgonResourceView DefaultView
-		{
-			get;
-			internal set;
 		}
 
 		/// <summary>
@@ -142,6 +142,7 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Property to set or return the view for the resource.
 		/// </summary>
+		/// <exception cref="GorgonLibrary.GorgonException">Thrown when an attempt to bind a view to the resource is made and the view is already bound to another resource.</exception>
 		public virtual GorgonResourceView View
 		{
 			get
@@ -150,15 +151,21 @@ namespace GorgonLibrary.Graphics
 			}
 			set
 			{
-				// If we're changing the view, ensure it's not bound.
-				Graphics.Shaders.Unbind(this);
-
-				if ((value == DefaultView) && (_view != DefaultView))
+				if ((value == View) || (value != _view))
 				{
-					_view.Resource = null;
-					_view = null;
 					return;
 				}
+
+#if DEBUG
+				// Do not bind a view that's already bound to another resource.
+				if ((value != null) && (value.Resource != null) && (value.Resource != this))
+				{
+					throw new GorgonException(GorgonResult.CannotBind, "The view is already bound to another resource.");
+				}
+#endif
+
+				// If we're changing the view, ensure it's not bound.
+				Graphics.Shaders.Unbind(this);
 
 				if ((value == null) && (_view != null))
 				{
@@ -166,12 +173,14 @@ namespace GorgonLibrary.Graphics
 				}
 
 				_view = value;
-				
-				if (_view != null)
-				{					
-					_view.Resource = this;
-					_view.BuildResourceView();
-				}				
+
+				if (_view == null)
+				{
+					return;
+				}
+
+				_view.Resource = this;
+				_view.BuildResourceView();
 			}			
 		}
 

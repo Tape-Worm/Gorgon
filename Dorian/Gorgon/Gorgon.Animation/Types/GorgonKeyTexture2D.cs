@@ -210,7 +210,7 @@ namespace GorgonLibrary.Animation
 				        MipCount = chunk.ReadInt32(),
 				        Multisampling = new GorgonMultisampling(chunk.ReadInt32(), chunk.ReadInt32()),
 				        Usage = BufferUsage.Default,
-				        ViewFormat = BufferFormat.Unknown
+				        ShaderViewFormat = BufferFormat.Unknown
 				    };
 
 			    // Defer load the texture.

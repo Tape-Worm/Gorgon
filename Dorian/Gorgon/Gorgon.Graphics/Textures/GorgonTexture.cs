@@ -68,9 +68,18 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
-		/// Property to return information about format for the shader resource view.
+		/// Property to return information about the format for the shader resource view associated with the texture.
 		/// </summary>
-		public GorgonBufferFormatInfo.GorgonFormatData ViewFormatInformation
+		public GorgonBufferFormatInfo.GorgonFormatData ShaderViewFormatInformation
+		{
+			get;
+			private set;
+		}
+
+		/// <summary>
+		/// Property to return the information about the format for the unordered access view associated with the texture.
+		/// </summary>
+		public GorgonBufferFormatInfo.GorgonFormatData UnorderedAccessViewFormatInformation
 		{
 			get;
 			private set;
@@ -114,13 +123,22 @@ namespace GorgonLibrary.Graphics
 		protected override void CreateDefaultResourceView()
 		{
 			FormatInformation = GorgonBufferFormatInfo.GetInfo(Settings.Format);
-			if (Settings.ViewFormat != BufferFormat.Unknown)
+			if (Settings.ShaderViewFormat != BufferFormat.Unknown)
 			{
-				ViewFormatInformation = GorgonBufferFormatInfo.GetInfo(Settings.Format);
+				ShaderViewFormatInformation = GorgonBufferFormatInfo.GetInfo(Settings.ShaderViewFormat);
 			}
 			else
 			{
-				ViewFormatInformation = FormatInformation;
+				ShaderViewFormatInformation = FormatInformation;
+			}
+
+			if (Settings.UnorderedAccessViewFormat != BufferFormat.Unknown)
+			{
+				UnorderedAccessViewFormatInformation = GorgonBufferFormatInfo.GetInfo(Settings.UnorderedAccessViewFormat);
+			}
+			else
+			{
+				UnorderedAccessViewFormatInformation = null;
 			}
 
 			// Create the default view for this resource.
@@ -222,7 +240,7 @@ namespace GorgonLibrary.Graphics
                     flags |= D3D.BindFlags.ShaderResource;
                 }
 
-                if (Settings.ViewIsUnordered)
+                if (Settings.UnorderedAccessViewFormat != BufferFormat.Unknown)
                 {
                     flags |= D3D.BindFlags.UnorderedAccess;
                 }
