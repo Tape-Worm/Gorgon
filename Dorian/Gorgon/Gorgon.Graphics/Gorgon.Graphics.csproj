@@ -112,6 +112,7 @@
     <Compile Include="Resource\GorgonNamedResource.cs" />
     <Compile Include="Resource\GorgonResource.cs" />
     <Compile Include="Resource\GorgonResourceView.cs" />
+    <Compile Include="Resource\GorgonShaderResourceView.cs" />
     <Compile Include="Shaders\GorgonEffect.cs" />
     <Compile Include="Shaders\GorgonPixelShader.cs" />
     <Compile Include="Shaders\GorgonShader.cs" />
