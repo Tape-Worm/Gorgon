@@ -972,46 +972,57 @@ namespace GorgonLibrary.Graphics
 			{
 				switch (format)
 				{
+                    case BufferFormat.B8G8R8A8:
 					case BufferFormat.B8G8R8A8_UIntNormal:
 					case BufferFormat.B8G8R8A8_UIntNormal_sRGB:
 						Group = BufferFormat.B8G8R8A8;
 						break;
+                    case BufferFormat.B8G8R8X8:
 					case BufferFormat.B8G8R8X8_UIntNormal:
 					case BufferFormat.B8G8R8X8_UIntNormal_sRGB:
 						Group = BufferFormat.B8G8R8X8;
 						break;
+                    case BufferFormat.BC1:
 					case BufferFormat.BC1_UIntNormal:
 					case BufferFormat.BC1_UIntNormal_sRGB:
 						Group = BufferFormat.BC1;
 						break;
+                    case BufferFormat.BC2:
 					case BufferFormat.BC2_UIntNormal:
 					case BufferFormat.BC2_UIntNormal_sRGB:
 						Group = BufferFormat.BC2;
 						break;
+                    case BufferFormat.BC3:
 					case BufferFormat.BC3_UIntNormal:
 					case BufferFormat.BC3_UIntNormal_sRGB:
 						Group = BufferFormat.BC3;
 						break;
+                    case BufferFormat.BC4:
 					case BufferFormat.BC4_UIntNormal:
 					case BufferFormat.BC4_IntNormal:
 						Group = BufferFormat.BC4;
 						break;
+                    case BufferFormat.BC5:
 					case BufferFormat.BC5_UIntNormal:
 					case BufferFormat.BC5_IntNormal:
 						Group = BufferFormat.BC5;
 						break;
+                    case BufferFormat.BC6H:
 					case BufferFormat.BC6H_UF16:
 					case BufferFormat.BC6H_SF16:
 						Group = BufferFormat.BC6H;
 						break;
+                    case BufferFormat.BC7:
 					case BufferFormat.BC7_UIntNormal:
 					case BufferFormat.BC7_UIntNormal_sRGB:
 						Group = BufferFormat.BC7;
 						break;
+                    case BufferFormat.R10G10B10A2:
 					case BufferFormat.R10G10B10A2_UIntNormal:
 					case BufferFormat.R10G10B10A2_UInt:
 						Group = BufferFormat.R10G10B10A2;
 						break;
+                    case BufferFormat.R16:
 					case BufferFormat.R16_Float:
 					case BufferFormat.R16_UIntNormal:
 					case BufferFormat.R16_UInt:
@@ -1019,6 +1030,7 @@ namespace GorgonLibrary.Graphics
 					case BufferFormat.R16_Int:
 						Group = BufferFormat.R16;
 						break;
+                    case BufferFormat.R16G16:
 					case BufferFormat.R16G16_Float:
 					case BufferFormat.R16G16_UIntNormal:
 					case BufferFormat.R16G16_UInt:
@@ -1026,6 +1038,7 @@ namespace GorgonLibrary.Graphics
 					case BufferFormat.R16G16_Int:
 						Group = BufferFormat.R16G16;
 						break;
+                    case BufferFormat.R16G16B16A16:
 					case BufferFormat.R16G16B16A16_Float:
 					case BufferFormat.R16G16B16A16_UIntNormal:
 					case BufferFormat.R16G16B16A16_UInt:
@@ -1033,32 +1046,38 @@ namespace GorgonLibrary.Graphics
 					case BufferFormat.R16G16B16A16_Int:
 						Group = BufferFormat.R16G16B16A16;
 						break;
+                    case BufferFormat.R32:
 					case BufferFormat.R32_Float:
 					case BufferFormat.R32_UInt:
 					case BufferFormat.R32_Int:
 						Group = BufferFormat.R32;
 						break;
+                    case BufferFormat.R32G32:
 					case BufferFormat.R32G32_Float:
 					case BufferFormat.R32G32_UInt:
 					case BufferFormat.R32G32_Int:
 						Group = BufferFormat.R32G32;
 						break;
+                    case BufferFormat.R32G32B32:
 					case BufferFormat.R32G32B32_Float:
 					case BufferFormat.R32G32B32_UInt:
 					case BufferFormat.R32G32B32_Int:
 						Group = BufferFormat.R32G32B32;
 						break;
+                    case BufferFormat.R32G32B32A32:
 					case BufferFormat.R32G32B32A32_Float:
 					case BufferFormat.R32G32B32A32_UInt:
 					case BufferFormat.R32G32B32A32_Int:
 						Group = BufferFormat.R32G32B32A32;
 						break;
+                    case BufferFormat.R8:
 					case BufferFormat.R8_UIntNormal:
 					case BufferFormat.R8_UInt:
 					case BufferFormat.R8_IntNormal:
 					case BufferFormat.R8_Int:
 						Group = BufferFormat.R8;
 						break;
+                    case BufferFormat.R8G8:
 					case BufferFormat.R8G8_UIntNormal:
 					case BufferFormat.R8G8_UInt:
 					case BufferFormat.R8G8_IntNormal:

@@ -64,6 +64,86 @@ namespace GorgonLibrary.Graphics
 		Sequential = 1
 	}
 
+    public interface IRenderTargetSettings
+    {
+        #region Properties.
+        /// <summary>
+        /// Property to set or return the width of the render target.
+        /// </summary>
+        int Width
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Property to set or return the height of the render target.
+        /// </summary>
+        /// <remarks>For 2D and 3D render targets only.</remarks>
+        int Height
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Property to set or return the depth of the render target.
+        /// </summary>
+        /// <returns>For 3D render targets only.  For other target types, this value will return 1.</returns>
+        int Depth
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Property to set or return the format for the render target.
+        /// </summary>
+        BufferFormat Format
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Property to set or return the format used to access the render target in a shader.
+        /// </summary>
+        /// <remarks>If this value is set to Unknown, then the <see cref="GorgonLibrary.Graphics.IRenderTargetSettings.Format">Format</see> property will be used.
+        /// <para>If the render target type is a <see cref="GorgonLibrary.Graphics.GorgonSwapChain">GorgonSwapChain</see>, then setting this value to anything other 
+        /// than Unknown will enable the swap chain front buffer to be read in a shader.</para>
+        /// <para>The default value is Unknown.</para>
+        /// </remarks>
+        BufferFormat ShaderViewFormat
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Property to set or return the un
+        /// </summary>
+        BufferFormat UnorderedAccessViewFormat
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Property to set or return the format used by the default depth/stencil buffer.
+        /// </summary>
+        /// <remarks>If this value is set to Unknown, then no default depth/stencil will be created for the render target.  
+        /// <para>If a more complex depth/stencil (e.g. a depth/stencil with shader access) is required, then leave this value set to Unknown, 
+        /// create a new <see cref="GorgonLibrary.Graphics.GorgonDepthStencil">GorgonDepthStencil</see> buffer and attach it to the render 
+        /// targets <see cref="GorgonLibrary.Graphics.GorgonRenderTarget.DepthStencil">DepthStencil</see> property.</para>
+        /// </remarks>
+        BufferFormat DepthStencilFormat
+        {
+            get;
+            set;
+        }
+        #endregion
+    }
+
 	/// <summary>
 	/// Settings for defining a render target.
 	/// </summary>

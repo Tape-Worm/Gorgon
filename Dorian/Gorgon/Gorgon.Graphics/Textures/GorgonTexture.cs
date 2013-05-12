@@ -68,15 +68,6 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
-		/// Property to return information about the format for the shader resource view associated with the texture.
-		/// </summary>
-		public GorgonBufferFormatInfo.GorgonFormatData ShaderViewFormatInformation
-		{
-			get;
-			private set;
-		}
-
-		/// <summary>
 		/// Property to return the information about the format for the unordered access view associated with the texture.
 		/// </summary>
 		public GorgonBufferFormatInfo.GorgonFormatData UnorderedAccessViewFormatInformation
@@ -123,9 +114,9 @@ namespace GorgonLibrary.Graphics
 		protected override void CreateDefaultResourceView()
 		{
 			FormatInformation = GorgonBufferFormatInfo.GetInfo(Settings.Format);
-			if (Settings.ShaderViewFormat != BufferFormat.Unknown)
+			if (Settings.ShaderView != BufferFormat.Unknown)
 			{
-				ShaderViewFormatInformation = GorgonBufferFormatInfo.GetInfo(Settings.ShaderViewFormat);
+				ShaderViewFormatInformation = GorgonBufferFormatInfo.GetInfo(Settings.ShaderView);
 			}
 			else
 			{

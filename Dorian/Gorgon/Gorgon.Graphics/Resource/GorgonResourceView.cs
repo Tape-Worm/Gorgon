@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using GorgonLibrary.Diagnostics;
 using GI = SharpDX.DXGI;
 using D3D = SharpDX.Direct3D11;
 
@@ -34,13 +35,8 @@ namespace GorgonLibrary.Graphics
 	/// A view of a resource that can be bound to a shader.
 	/// </summary>
 	/// <remarks>A view allows a resource to be handled by a shader and optionally used to reinterpret the format of a resource.</remarks>
-	public class GorgonResourceView
-		: GorgonNamedObject, IDisposable
-	{
-		#region Variables.
-		private bool _disposed;				// Flag to indicate whether the resource is disposed or not.
-		#endregion
-
+	public sealed class GorgonResourceView
+    {
 		#region Properties.
 		/// <summary>
 		/// Property to return the Direct3D shader resource view.
@@ -66,7 +62,7 @@ namespace GorgonLibrary.Graphics
 		public GorgonResource Resource
 		{
 			get;
-			internal set;
+			private set;
 		}
 
 		/// <summary>
@@ -81,7 +77,8 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Property to return the format for the shader resource.
 		/// </summary>
-		public BufferFormat ShaderResourceFormat
+		/// <remarks>If this value returns Unknown, then no shader view was created for this view.</remarks>
+		public BufferFormat ShaderViewFormat
 		{
 			get
 			{
@@ -93,6 +90,23 @@ namespace GorgonLibrary.Graphics
 				return BufferFormat.Unknown;
 			}
 		}
+
+        /// <summary>
+        /// Property to return the format for the unordered access view.
+        /// </summary>
+        /// <remarks>If this value returns Unknown, then no unordered access view was created for this view.</remarks>
+	    public BufferFormat UnorderedAccessViewFormat
+	    {
+	        get
+	        {
+	            if (D3DUnorderedResourceView != null)
+	            {
+	                return (BufferFormat)D3DUnorderedResourceView.Description.Format;
+	            }
+
+	            return BufferFormat.Unknown;
+	        }
+	    }
 		#endregion
 
 		#region Methods.
@@ -116,17 +130,17 @@ namespace GorgonLibrary.Graphics
 			if (resource.ShaderViewFormatInformation.IsTypeless)
 			{
 				throw new GorgonException(GorgonResult.CannotCreate,
-				                          "Cannot create the shader view.  The format '" + resource.Settings.ShaderViewFormat.ToString() +
+				                          "Cannot create the shader view.  The format '" + resource.Settings.ShaderView.ToString() +
 				                          "' is untyped.  A view requires a typed format.");
 			}
 
 			// Ensure that the shader view is in the same bit group as the resource format.
-			if ((resource.Settings.Format != resource.Settings.ShaderViewFormat)
+			if ((resource.Settings.Format != resource.Settings.ShaderView)
 				&& (resource.ShaderViewFormatInformation.Group != resource.FormatInformation.Group))
 			{
 				throw new GorgonException(GorgonResult.CannotCreate,
 											"Cannot create the shader view.  The format '" + resource.Settings.Format.ToString() +
-											"' and the view format '" + resource.Settings.ShaderViewFormat.ToString() +
+											"' and the view format '" + resource.Settings.ShaderView.ToString() +
 											"' are not part of the same group.");
 			}
 
@@ -140,25 +154,28 @@ namespace GorgonLibrary.Graphics
 											  "' is untyped.  A view requires a typed format.");
 				}
 
-				if ((resource.Settings.UnorderedAccessViewFormat != resource.Settings.Format) &&
-				    (resource.Settings.UnorderedAccessViewFormat != BufferFormat.R32_UInt))
-				{
-					throw new GorgonException(GorgonResult.CannotCreate,
-					                          "Cannot create the unordered access view.  The view format is not [" +
-					                          resource.Settings.Format.ToString() + "] or is not R32_Uint.");
-				}
+                if (!Graphics.VideoDevice.SupportsUnorderedAccessViewFormat(resource.Settings.UnorderedAccessViewFormat))
+                {
+                    throw new GorgonException(GorgonResult.CannotCreate,
+                                              "Cannot create the unordered access with with the format ["
+                                              + resource.Settings.UnorderedAccessViewFormat
+                                              + "].  This format is not supported for unordered access views.");
+                }
 
-				if ((resource.Settings.UnorderedAccessViewFormat == BufferFormat.R32_UInt) &&
-				    ((resource.FormatInformation.BitDepth != 32) || (!resource.FormatInformation.IsTypeless)))
-				{
-					throw new GorgonException(GorgonResult.CannotCreate,
-					                          "Cannot create the unordered access view with the R32_UInt format.  The texture format needs to be 32 bits wide and typeless.");
-				}
-			}
+                if (((resource.UnorderedAccessViewFormatInformation.Group != BufferFormat.R32)
+                    && (resource.UnorderedAccessViewFormatInformation.Group != resource.FormatInformation.Group))
+                    || (resource.UnorderedAccessViewFormatInformation.BitDepth != resource.FormatInformation.BitDepth))
+                {
+                    throw new GorgonException(GorgonResult.CannotCreate,
+                                                "Cannot create the unordered access view.  The format [" + resource.Settings.Format +
+                                                "[ and the view format [" + resource.Settings.UnorderedAccessViewFormat.ToString() +
+                                                "] are not part of the same group.");
+                }
+            }
 
-			desc.Format = resource.Settings.ShaderViewFormat == BufferFormat.Unknown
+			desc.Format = resource.Settings.ShaderView == BufferFormat.Unknown
 				              ? (GI.Format)resource.Settings.Format
-				              : (GI.Format)resource.Settings.ShaderViewFormat;
+				              : (GI.Format)resource.Settings.ShaderView;
 			uavDesc.Format = (GI.Format)resource.Settings.UnorderedAccessViewFormat;
 
 			// Determine view type.
@@ -280,18 +297,22 @@ namespace GorgonLibrary.Graphics
 
 			try
 			{
+                Gorgon.Log.Print("Gorgon resource view: Creating D3D 11 shader resource view.", LoggingLevel.Verbose);
+
 				// Create our SRV.
 				D3DResourceView = new D3D.ShaderResourceView(Graphics.D3DDevice, resource.D3DResource, desc)
 					{
-						DebugName = resource.ResourceType + " '" + Name + "' Shader Resource View"
+						DebugName = resource.ResourceType + " '" + resource.Name + "' Shader Resource View"
 					};
 
 				// Create our UAV.
 				if (resource.Settings.UnorderedAccessViewFormat != BufferFormat.Unknown)
 				{
+                    Gorgon.Log.Print("Gorgon resource view: Creating D3D 11 unordered access resource view.", LoggingLevel.Verbose);
+
 					D3DUnorderedResourceView = new D3D.UnorderedAccessView(Graphics.D3DDevice, resource.D3DResource, uavDesc)
 						{
-							DebugName = resource.ResourceType + " '" + Name + "' Unordered Access Resource View"
+                            DebugName = resource.ResourceType + " '" + resource.Name + "' Unordered Access Resource View"
 						};
 				}
 			}
@@ -301,7 +322,7 @@ namespace GorgonLibrary.Graphics
 				{
 					throw new GorgonException(GorgonResult.CannotCreate,
 						                        "Cannot create the shader view.  The format '" +
-						                        resource.Settings.ShaderViewFormat.ToString() +
+						                        resource.Settings.ShaderView.ToString() +
 						                        "' is not compatible or cannot be cast to '" + resource.Settings.Format.ToString() +
 						                        "'.");
 				}
@@ -359,29 +380,32 @@ namespace GorgonLibrary.Graphics
 					Flags = uavFlags
 				};
 
+            Gorgon.Log.Print("Gorgon resource view: Creating D3D 11 shader resource view.", LoggingLevel.Verbose);
 			D3DResourceView = new D3D.ShaderResourceView(Graphics.D3DDevice, buffer.D3DResource, srvDesc);
-			D3DResourceView.DebugName = bufferType + " '" + Name + "' Shader Resource View";
+            D3DResourceView.DebugName = bufferType + " Shader Resource View";
+
 			if (structuredBuffer.IsUnorderedAccess)
 			{
+                Gorgon.Log.Print("Gorgon resource view: Creating D3D 11 unordered access resource view.", LoggingLevel.Verbose);
 				D3DUnorderedResourceView = new D3D.UnorderedAccessView(Graphics.D3DDevice, buffer.D3DResource, uavDesc);
-				D3DUnorderedResourceView.DebugName = bufferType + " '" + Name + "' Unordered Access View";
+				D3DUnorderedResourceView.DebugName = bufferType + " Unordered Access View";
 			}
 		}
 
 		/// <summary>
 		/// Function to clean up the resource view objects.
 		/// </summary>
-		protected void CleanUp()
+		internal void CleanUp()
 		{
 			if (D3DResourceView != null)
 			{
-				Gorgon.Log.Print("Gorgon resource view {0}: Destroying D3D 11 shader resource view.", Diagnostics.LoggingLevel.Verbose, Name);
+				Gorgon.Log.Print("Gorgon resource view: Destroying D3D 11 shader resource view.", LoggingLevel.Verbose);
 				D3DResourceView.Dispose();
 			}
 
 			if (D3DUnorderedResourceView != null)
 			{
-				Gorgon.Log.Print("Gorgon resource view {0}: Destroying D3D 11 unordered access resource view.", Diagnostics.LoggingLevel.Verbose, Name);
+				Gorgon.Log.Print("Gorgon resource view: Destroying D3D 11 unordered access resource view.", LoggingLevel.Verbose);
 				D3DUnorderedResourceView.Dispose();
 			}
 
@@ -394,10 +418,7 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		internal void BuildResourceView()
 		{
-			GorgonShaderBuffer buffer = null;
-			GorgonTexture texture = null;
-
-			CleanUp();
+		    CleanUp();
 
 			// Do nothing if we're not bound to a resource.
 			if (Resource == null)
@@ -406,21 +427,20 @@ namespace GorgonLibrary.Graphics
 			}
 
 			// Determine the type of the resource.
-			buffer = Resource as GorgonShaderBuffer;
+			var buffer = Resource as GorgonShaderBuffer;
 			if (buffer != null)
 			{
 				BuildBufferView(buffer);
 				return;
 			}
+            
+			var texture = Resource as GorgonTexture;
+		    if (texture == null)
+		    {
+		        return;
+		    }
 
-			texture = Resource as GorgonTexture;
-			if (texture != null)
-			{
-				BuildTextureView(texture);
-				return;
-			}
-
-			throw new InvalidCastException("The resource type cannot have a view.");
+		    BuildTextureView(texture);
 		}
 		#endregion
 
@@ -429,44 +449,11 @@ namespace GorgonLibrary.Graphics
 		/// Initializes a new instance of the <see cref="GorgonResourceView" /> class.
 		/// </summary>
 		/// <param name="graphics">The graphics interface that owns this object.</param>
-		/// <param name="name">The name of the resource.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (Nothing in VB.Net).</exception>
-		/// <exception cref="System.ArgumentException">Thrown when the parameter is an empty string.</exception>
-		internal GorgonResourceView(GorgonGraphics graphics, string name)	
-			: base(name)
+		/// <param name="resource">Resource to bind with.</param>
+		internal GorgonResourceView(GorgonGraphics graphics, GorgonResource resource)	
 		{
 			Graphics = graphics;
-		}
-		#endregion
-
-		#region IDisposable Members
-		/// <summary>
-		/// Releases unmanaged and - optionally - managed resources.
-		/// </summary>
-		/// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
-		protected virtual void Dispose(bool disposing)
-		{
-			if (!_disposed)
-			{
-				if (disposing)
-				{
-					Graphics.RemoveTrackedObject(this);
-
-					CleanUp();
-				}				
-
-				_disposed = true;
-			}
-		}
-
-		/// <summary>
-		/// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-		/// </summary>
-		/// <exception cref="System.NotImplementedException"></exception>
-		public void Dispose()
-		{
-			Dispose(true);
-			GC.SuppressFinalize(this);
+		    Resource = resource;
 		}
 		#endregion
 	}

@@ -176,12 +176,12 @@ namespace GorgonLibrary.Graphics
 			newSettings.Format = (BufferFormat)desc.Format;
 			newSettings.MipCount = desc.MipLevels;
 			newSettings.Usage = (BufferUsage)desc.Usage;
-			newSettings.ShaderViewFormat = BufferFormat.Unknown;
+			newSettings.ShaderView = BufferFormat.Unknown;
 			newSettings.Multisampling = new GorgonMultisampling(desc.SampleDescription.Count, desc.SampleDescription.Quality);
 		    newSettings.IsTextureCube = (desc.OptionFlags & D3D.ResourceOptionFlags.TextureCube)
 		                                == D3D.ResourceOptionFlags.TextureCube;
 			// Preserve any custom view format.
-			newSettings.ShaderViewFormat = viewFormat;
+			newSettings.ShaderView = viewFormat;
 
 			return newSettings;
 		}

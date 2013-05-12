@@ -112,6 +112,49 @@ namespace GorgonLibrary.Graphics
 			#endregion
 
 			#region Methods.
+            /// <summary>
+            /// Function to validate the render target being set.
+            /// </summary>
+            /// <param name="newTarget">The new render target being set.</param>
+            private void ValidateTargets(GorgonRenderTarget newTarget)
+            {
+                // If we're turning off a target, then leave.
+                if (newTarget == null)
+                {
+                    return;
+                }
+                
+                // TODO: Add depth component when we have 3D targets.
+                // Ensure the dimensions of the targets are the same.
+                if (!this.All(
+                        item =>
+                        item == null || item.Settings.Width != newTarget.Settings.Width
+                        || item.Settings.Height != newTarget.Settings.Height))
+                {
+                    throw new GorgonException(GorgonResult.CannotBind,
+                                              string.Format(
+                                                  "Cannot bind the render target '{0}', the width and height of the target must be the same as all other targets bound to the pipeline.",
+                                                  newTarget.Name));
+                }
+
+                if (!this.All(item => item == null || item.Settings.MultiSample.Count == newTarget.Settings.MultiSample.Count))
+                {
+                    throw new GorgonException(GorgonResult.CannotBind,
+                                              string.Format(
+                                                  "Cannot bind the render target '{0}', the multi-sampling settings of the target must be the same as all other targets bound to the pipeline.",
+                                                  newTarget.Name));
+                }
+
+                if (!this.All(
+                        item =>
+                        item == null || item.Texture.Settings.ArrayCount == newTarget.Texture.Settings.ArrayCount))
+                {
+                    throw new GorgonException(GorgonResult.CannotBind,
+                                              string.Format(
+                                                  "Cannot bind the render target '{0}', the array count settings of the target must be the same as all other targets bound to the pipeline.",
+                                                  newTarget.Name));
+                }
+            }
 			/// <summary>
 			/// Function to determine if the render targets have the same bit depth.
 			/// </summary>
@@ -157,6 +200,21 @@ namespace GorgonLibrary.Graphics
 				}
 			}
 
+            /// <summary>
+            /// Function to re-seat a depth/stencil buffer after it's been altered.
+            /// </summary>
+            /// <param name="depthStencil">The depth/stencil buffer that is to be reseated.</param>
+            internal void ReSeat(GorgonDepthStencil depthStencil)
+            {
+                if (DepthStencilBuffer != depthStencil)
+                {
+                    return;
+                }
+
+                DepthStencilBuffer = null;
+                DepthStencilBuffer = depthStencil;
+            }
+
 			/// <summary>
 			/// Function to determine if a render target is bound by its name.
 			/// </summary>
@@ -195,6 +253,32 @@ namespace GorgonLibrary.Graphics
 			{
 				D3D.DepthStencilView view = (depthBuffer == null ? null : depthBuffer.D3DDepthStencilView);
 
+#if DEBUG
+                // Ensure the depth/stencil multi-sample settings are the same.  Otherwise, an exception should be thrown.
+			    if (depthBuffer != null)
+			    {
+			        if (!this.All(item => item == null || item.Settings.MultiSample.Count == depthBuffer.Settings.MultiSample.Count))
+			        {
+			            throw new GorgonException(GorgonResult.CannotBind,
+			                                      string.Format(
+			                                          "The depth/stencil buffer '{0}' has different multi-sample settings than the render target(s) that are bound to the pipeline.",
+			                                          depthBuffer.Name));
+			        }
+
+			        if (!this.All(item => item == null || item.Texture.Settings.ArrayCount == depthBuffer.Texture.Settings.ArrayCount))
+			        {
+			            throw new GorgonException(GorgonResult.CannotBind,
+			                                      string.Format(
+			                                          "The depth/stencil buffer '{0}' has a different array count than the render target(s) that are bound to the pipeline.",
+			                                          depthBuffer.Name));
+			        }
+
+                    // TODO: Add code to check dimensions and ensure they match the targets.
+                    // This is not explcitly stated in the documentation, but it's a good bet that there's going to be issues with having a depth buffer 
+                    // that has a different width/height/depth than the render target texture is going to cause problems.
+                }
+#endif
+                
 				_depthStencilBuffer = depthBuffer;
 				_graphics.Context.OutputMerger.SetTargets(view, _views);
 			}

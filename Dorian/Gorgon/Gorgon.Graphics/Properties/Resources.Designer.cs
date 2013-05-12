@@ -313,6 +313,15 @@ namespace GorgonLibrary.Graphics.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Gorgon Shader View.  Format: [{0}].
+        /// </summary>
+        internal static string GORGFX_SHADER_VIEW_TOSTR {
+            get {
+                return ResourceManager.GetString("GORGFX_SHADER_VIEW_TOSTR", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The value is out of range.  The value [{0}] must be be 0 or less than {1}..
         /// </summary>
         internal static string GORGFX_VALUE_OUT_OF_RANGE {
