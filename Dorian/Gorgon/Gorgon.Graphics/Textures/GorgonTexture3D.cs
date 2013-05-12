@@ -146,7 +146,7 @@ namespace GorgonLibrary.Graphics
 			var viewFormat = BufferFormat.Unknown;
 
 			if (Settings != null)
-				viewFormat = Settings.ViewFormat;
+				viewFormat = Settings.ShaderViewFormat;
 
 			D3D.Texture3DDescription desc = ((D3D.Texture3D)this.D3DResource).Description;
 			newSettings = new GorgonTexture3DSettings();
@@ -157,11 +157,11 @@ namespace GorgonLibrary.Graphics
 			newSettings.Format = (BufferFormat)desc.Format;
 			newSettings.MipCount = desc.MipLevels;
 			newSettings.Usage = (BufferUsage)desc.Usage;
-			newSettings.ViewFormat = BufferFormat.Unknown;
+			newSettings.ShaderViewFormat = BufferFormat.Unknown;
 			newSettings.Multisampling = new GorgonMultisampling(1, 0);
 
 			// Preserve any custom view format.
-			newSettings.ViewFormat = viewFormat;
+			newSettings.ShaderViewFormat = viewFormat;
 
 			return newSettings;
 		}
@@ -176,18 +176,18 @@ namespace GorgonLibrary.Graphics
 		/// </remarks>
 		protected override void InitializeImpl(GorgonImageData initialData)
 		{
-			var desc = new D3D.Texture3DDescription();
+			var desc = new D3D.Texture3DDescription
+				{
+					Format = (SharpDX.DXGI.Format)Settings.Format,
+					Width = Settings.Width,
+					Height = Settings.Height,
+					Depth = Settings.Depth,
+					MipLevels = Settings.MipCount,
+					BindFlags = GetBindFlags(false, false),
+					Usage = (D3D.ResourceUsage)Settings.Usage,
+					OptionFlags = D3D.ResourceOptionFlags.None
+				};
 
-			desc.Format = (SharpDX.DXGI.Format)Settings.Format;
-			desc.Width = Settings.Width;
-			desc.Height = Settings.Height;
-			desc.Depth = Settings.Depth;
-			desc.MipLevels = Settings.MipCount;
-			if (Settings.Usage != BufferUsage.Staging)
-				desc.BindFlags = D3D.BindFlags.ShaderResource;
-			else
-				desc.BindFlags = D3D.BindFlags.None;
-			desc.Usage = (D3D.ResourceUsage)Settings.Usage;
 			switch (Settings.Usage)
 			{
 				case BufferUsage.Staging:
@@ -200,7 +200,7 @@ namespace GorgonLibrary.Graphics
 					desc.CpuAccessFlags = D3D.CpuAccessFlags.None;
 					break;
 			}
-			desc.OptionFlags = D3D.ResourceOptionFlags.None;
+			
 
 			if ((initialData != null) && (initialData.Count > 0))
 			{

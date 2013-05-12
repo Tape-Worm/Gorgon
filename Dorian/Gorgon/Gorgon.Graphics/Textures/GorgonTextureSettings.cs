@@ -42,19 +42,24 @@ namespace GorgonLibrary.Graphics
 		/// <remarks>This changes how the texture is sampled/viewed in a shader.  When this value is set to Unknown the view format is taken from the texture format.
 		/// <para>The default value is Unknown.</para>
 		/// </remarks>
-		BufferFormat ViewFormat
+		BufferFormat ShaderViewFormat
 		{
 			get;
 			set;
 		}
 
 		/// <summary>
-		/// Property to set or return whether the view uses unordered access.
+		/// Property to set or return the unordered access view format.
 		/// </summary>
-		/// <remarks>This changes how a texture sampled/viewed in a shader.
-		/// <para>The default value is FALSE.</para>
+		/// <remarks>This changes how the texture is accessed in an unordered access view in a shader.
+		/// <para>If this value is set to anything other than Unknown, then an unordered access view will be created for the texture.  If the value is 
+		/// left as Unknown, then no unordered access view will be created for the texture.</para>
+		/// <para>Textures using an unordered access view can only use the same typed (i.e. not typeless) format that's assigned to the texture, or R32_UInt 
+		/// (only if the texture format is 32 bit).  Any other format will raise an exception.  Note that if the format is not set to R32_UInt, then write-only 
+		/// access will be given to the UAV.</para> 
+		/// <para>The default value is Unknown.</para>
 		/// </remarks>
-		bool ViewIsUnordered
+		BufferFormat UnorderedAccessViewFormat
 		{
 			get;
 			set;
@@ -63,7 +68,7 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Property to set or return whether this is a cube texture.
 		/// </summary>
-		/// <remarks>When setting this value to TRUE, ensure that the <see cref="P:GorgonLibrary.Graphics.ITextureSettings.ArrayCount">ArrayCount</see> property is set to a multiple of 6.
+		/// <remarks>When setting this value to TRUE, ensure that the <see cref="GorgonLibrary.Graphics.IImageSettings.ArrayCount">ArrayCount</see> property is set to a multiple of 6.
 		/// <para>This only applies to 2D textures.  All other textures will return FALSE.  The default value is FALSE.</para></remarks>
 		bool IsTextureCube
 		{
@@ -75,7 +80,7 @@ namespace GorgonLibrary.Graphics
 		/// Property to set or return the multisampling count/quality for the texture.
 		/// </summary>
 		/// <remarks>This only applies to 2D textures.  The default value is a count of 1, and a quality of 0 (no multisampling).
-		/// <para>Note that multisampled textures cannot have sub resources (e.g. mipmaps), so the <see cref="P:GorgonLibrary.Graphics.ITextureSettings.MipCount">MipCount</see> should be set to 1.</para>
+		/// <para>Note that multisampled textures cannot have sub resources (e.g. mipmaps), so the <see cref="GorgonLibrary.Graphics.IImageSettings.MipCount">MipCount</see> should be set to 1.</para>
 		/// </remarks>
 		GorgonMultisampling Multisampling
 		{
@@ -111,7 +116,7 @@ namespace GorgonLibrary.Graphics
 			Format = BufferFormat.Unknown;
 			ArrayCount = 1;
 			MipCount = 1;
-			ViewFormat = BufferFormat.Unknown;
+			ShaderViewFormat = BufferFormat.Unknown;
 			Usage = BufferUsage.Default;
 		}
 		#endregion
@@ -133,8 +138,7 @@ namespace GorgonLibrary.Graphics
 		/// Property to set or return whether this is a cube texture.
 		/// </summary>
 		/// <value></value>
-		/// <remarks>When setting this value to TRUE, ensure that the <see cref="P:GorgonLibrary.Graphics.ITextureSettings.ArrayCount">ArrayCount</see> property is set to a multiple of 6.
-		/// <para>This only applies to 2D textures.  All other textures will return FALSE.  The default value is FALSE.</para></remarks>
+		/// <remarks>This only applies to 2D textures.  This value is always FALSE.</remarks>
 		bool ITextureSettings.IsTextureCube
 		{
 			get
@@ -160,7 +164,7 @@ namespace GorgonLibrary.Graphics
 		/// Property to set or return the height of a texture.
 		/// </summary>
 		/// <value></value>
-		/// <remarks>This applies to 2D and 3D textures only.</remarks>
+		/// <remarks>This applies to 2D and 3D textures only.  This value always returns 1.</remarks>
 		int IImageSettings.Height
 		{
 			get
@@ -176,7 +180,7 @@ namespace GorgonLibrary.Graphics
 		/// Property to set or return the depth of a texture.
 		/// </summary>
 		/// <value></value>
-		/// <remarks>This applies to 3D textures only.</remarks>
+		/// <remarks>This applies to 3D textures only.  This value always returns 1.</remarks>
 		int IImageSettings.Depth
 		{
 			get
@@ -192,7 +196,7 @@ namespace GorgonLibrary.Graphics
 		/// Property to set or return the format of a texture.
 		/// </summary>
 		/// <value></value>
-		/// <remarks>This sets the format of the texture data.  If you want to change the format of a texture when being sampled in a shader, then set the <see cref="P:GorgonLibrary.Graphics.ITextureSettings.ViewFormat">ViewFormat</see> property to anything other than Unknown.</remarks>
+		/// <remarks>This sets the format of the texture data.  If you want to change the format of a texture when being sampled in a shader, then set the <see cref="P:GorgonLibrary.Graphics.GorgonTexture1DSettings.ShaderViewFormat">ViewFormat</see> property to anything other than Unknown.</remarks>
 		public BufferFormat Format
 		{
 			get;
@@ -202,18 +206,25 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Property to set or return the shader view format.
 		/// </summary>
-		/// <value></value>
 		/// <remarks>This changes how the texture is sampled/viewed in a shader.  The default value is Unknown.</remarks>
-		public BufferFormat ViewFormat
+		public BufferFormat ShaderViewFormat
 		{
 			get;
 			set;
 		}
 
 		/// <summary>
-		/// Property to set or return whether the view uses unordered access.
+		/// Property to set or return the unordered access view format.
 		/// </summary>
-		public bool ViewIsUnordered
+		/// <remarks>This changes how the texture is accessed in an unordered access view in a shader.
+		/// <para>If this value is set to anything other than Unknown, then an unordered access view will be created for the texture.  If the value is 
+		/// left as Unknown, then no unordered access view will be created for the texture.</para>
+		/// <para>Textures using an unordered access view can only use the same typed (i.e. not typeless) format that's assigned to the texture, or R32_UInt 
+		/// (only if the texture format is 32 bit).  Any other format will raise an exception.  Note that if the format is not set to R32_UInt, then write-only 
+		/// access will be given to the UAV.</para> 
+		/// <para>The default value is Unknown.</para>
+		/// </remarks>
+		public BufferFormat UnorderedAccessViewFormat
 		{
 			get;
 			set;
@@ -223,7 +234,7 @@ namespace GorgonLibrary.Graphics
 		/// Property to set or return the number of textures there are in a texture array.
 		/// </summary>
 		/// <value></value>
-		/// <remarks>This only applies to 1D and 2D textures, 3D textures always have this value set to 1.  The default value is 1.</remarks>
+		/// <remarks>The default value for this setting is 1.</remarks>
 		public int ArrayCount
 		{
 			get;
@@ -245,7 +256,7 @@ namespace GorgonLibrary.Graphics
 		/// Property to set or return the multisampling count/quality for the texture.
 		/// </summary>
 		/// <value></value>
-		/// <remarks>This only applies to 2D textures.  The default value is a count of 1, and a quality of 0 (no multisampling).</remarks>
+		/// <remarks>This only applies to 2D textures.  This will always returns a count of 1, and a quality of 0 (no multisampling).</remarks>
 		GorgonMultisampling ITextureSettings.Multisampling
 		{
 			get
@@ -287,15 +298,15 @@ namespace GorgonLibrary.Graphics
         /// <returns>A clone of the image settings object.</returns>
         public IImageSettings Clone()
         {
-            return (IImageSettings)new GorgonTexture1DSettings()
+            return new GorgonTexture1DSettings
             {
-                Width = this.Width,
-                Format = this.Format,
-                ArrayCount = this.ArrayCount,
-                MipCount = this.MipCount,
-                ViewFormat = this.ViewFormat,
-                ViewIsUnordered = this.ViewIsUnordered,
-                Usage = this.Usage
+                Width = Width,
+                Format = Format,
+                ArrayCount = ArrayCount,
+                MipCount = MipCount,
+                ShaderViewFormat = ShaderViewFormat,
+				UnorderedAccessViewFormat = UnorderedAccessViewFormat,
+                Usage = Usage
             };
         }
         #endregion
@@ -338,7 +349,8 @@ namespace GorgonLibrary.Graphics
 			MipCount = 1;
 			ArrayCount = 1;
 			Multisampling = new GorgonMultisampling(1, 0);
-			ViewFormat = BufferFormat.Unknown;
+			ShaderViewFormat = BufferFormat.Unknown;
+			UnorderedAccessViewFormat = BufferFormat.Unknown;
 			Usage = BufferUsage.Default;
 		}
 		#endregion
@@ -352,7 +364,7 @@ namespace GorgonLibrary.Graphics
 		{
 			get
 			{
-				return IsTextureCube ? Graphics.ImageType.ImageCube : ImageType.Image2D;
+				return IsTextureCube ? ImageType.ImageCube : ImageType.Image2D;
 			}
 		}
 
@@ -360,7 +372,7 @@ namespace GorgonLibrary.Graphics
 		/// Property to set or return whether this is a cube texture.
 		/// </summary>
 		/// <value></value>
-		/// <remarks>When setting this value to TRUE, ensure that the <see cref="P:GorgonLibrary.Graphics.ITextureSettings.ArrayCount">ArrayCount</see> property is set to a multiple of 6.
+		/// <remarks>When setting this value to TRUE, ensure that the <see cref="GorgonLibrary.Graphics.GorgonTexture2DSettings.ArrayCount">ArrayCount</see> property is set to a multiple of 6.
 		/// <para>This only applies to 2D textures.  All other textures will return FALSE.  The default value is FALSE.</para></remarks>
 		public bool IsTextureCube
 		{
@@ -385,7 +397,7 @@ namespace GorgonLibrary.Graphics
 		/// <value></value>
 		/// <remarks>
 		/// When loading a file, leave as 0 to use the height from the file source.
-		/// <para>This applies to 2D and 3D textures only.</para></remarks>
+		/// </remarks>
 		public int Height
 		{
 			get;
@@ -396,9 +408,7 @@ namespace GorgonLibrary.Graphics
 		/// Property to set or return the depth of a texture.
 		/// </summary>
 		/// <value></value>
-		/// <remarks>
-		/// When loading a file, leave as 0 to use the width from the depth source.
-		/// <para>This applies to 3D textures only.</para></remarks>
+		/// <remarks>This applies to 3D textures only and will always return 1.</remarks>
 		int IImageSettings.Depth
 		{
 			get
@@ -416,7 +426,7 @@ namespace GorgonLibrary.Graphics
 		/// <value></value>
 		/// <remarks>
 		/// When loading a texture from a file, leave this as Unknown to get the file format from the source file.
-		/// <para>This sets the format of the texture data.  If you want to change the format of a texture when being sampled in a shader, then set the <see cref="P:GorgonLibrary.Graphics.ITextureSettings.ViewFormat">ViewFormat</see> property to anything other than Unknown.</para></remarks>
+		/// <para>This sets the format of the texture data.  If you want to change the format of a texture when being sampled in a shader, then set the <see cref="GorgonLibrary.Graphics.GorgonTexture2DSettings.ShaderViewFormat">ViewFormat</see> property to anything other than Unknown.</para></remarks>
 		public BufferFormat Format
 		{
 			get;
@@ -428,16 +438,24 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		/// <value></value>
 		/// <remarks>This changes how the texture is sampled/viewed in a shader.  The default value is Unknown.</remarks>
-		public BufferFormat ViewFormat
+		public BufferFormat ShaderViewFormat
 		{
 			get;
 			set;
 		}
 
 		/// <summary>
-		/// Property to set or return whether the view uses unordered access.
+		/// Property to set or return the unordered access view format.
 		/// </summary>
-		public bool ViewIsUnordered
+		/// <remarks>This changes how the texture is accessed in an unordered access view in a shader.
+		/// <para>If this value is set to anything other than Unknown, then an unordered access view will be created for the texture.  If the value is 
+		/// left as Unknown, then no unordered access view will be created for the texture.</para>
+		/// <para>Textures using an unordered access view can only use the same typed (i.e. not typeless) format that's assigned to the texture, or R32_UInt 
+		/// (only if the texture format is 32 bit).  Any other format will raise an exception.  Note that if the format is not set to R32_UInt, then write-only 
+		/// access will be given to the UAV.</para> 
+		/// <para>The default value is Unknown.</para>
+		/// </remarks>
+		public BufferFormat UnorderedAccessViewFormat
 		{
 			get;
 			set;
@@ -447,7 +465,7 @@ namespace GorgonLibrary.Graphics
 		/// Property to set or return the number of textures there are in a texture array.
 		/// </summary>
 		/// <value></value>
-		/// <remarks>This only applies to 1D and 2D textures, 3D textures always have this value set to 1.  The default value is 1.</remarks>
+		/// <remarks>The default value is 1.</remarks>
 		public int ArrayCount
 		{
 			get;
@@ -470,7 +488,7 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		/// <value></value>
 		/// <remarks>This only applies to 2D textures.  The default value is a count of 1, and a quality of 0 (no multisampling).
-		/// <para>Note that multisampled textures cannot have sub resources (e.g. mipmaps), so the <see cref="P:GorgonLibrary.Graphics.ITextureSettings.MipCount">MipCount</see> should be set to 1.</para>
+		/// <para>Note that multisampled textures cannot have sub resources (e.g. mipmaps), so the <see cref="GorgonLibrary.Graphics.GorgonTexture2DSettings.MipCount">MipCount</see> should be set to 1.</para>
 		/// </remarks>
 		public GorgonMultisampling Multisampling
 		{
@@ -509,19 +527,19 @@ namespace GorgonLibrary.Graphics
         /// <returns>A clone of the image settings object.</returns>
         public IImageSettings Clone()
         {
-            return (IImageSettings)new GorgonTexture2DSettings()
-            {
-                Width = this.Width,
-                Height = this.Height,
-                Format = this.Format,
-                ArrayCount = this.ArrayCount,
-                MipCount = this.MipCount,
-                IsTextureCube = this.IsTextureCube,
-                ViewFormat = this.ViewFormat,
-                ViewIsUnordered = this.ViewIsUnordered,
-                Multisampling = this.Multisampling,                
-                Usage = this.Usage
-            };
+            return new GorgonTexture2DSettings
+	            {
+		            Width = Width,
+		            Height = Height,
+		            Format = Format,
+		            ArrayCount = ArrayCount,
+		            MipCount = MipCount,
+		            IsTextureCube = IsTextureCube,
+		            ShaderViewFormat = ShaderViewFormat,
+		            UnorderedAccessViewFormat = UnorderedAccessViewFormat,
+		            Multisampling = Multisampling,                
+		            Usage = Usage
+	            };
         }
         #endregion
 		#endregion
@@ -544,7 +562,8 @@ namespace GorgonLibrary.Graphics
 			Depth = 0;
 			Format = BufferFormat.Unknown;
 			MipCount = 1;
-			ViewFormat = BufferFormat.Unknown;
+			ShaderViewFormat = BufferFormat.Unknown;
+			UnorderedAccessViewFormat = BufferFormat.Unknown;
 			Usage = BufferUsage.Default;
 		}
 		#endregion
@@ -566,8 +585,7 @@ namespace GorgonLibrary.Graphics
 		/// Property to set or return whether this is a cube texture.
 		/// </summary>
 		/// <value></value>
-		/// <remarks>When setting this value to TRUE, ensure that the <see cref="P:GorgonLibrary.Graphics.ITextureSettings.ArrayCount">ArrayCount</see> property is set to a multiple of 6.
-		/// <para>This only applies to 2D textures.  All other textures will return FALSE.  The default value is FALSE.</para></remarks>
+		/// <remarks>This only applies to 2D textures.  This value will always return FALSE.</remarks>
 		bool ITextureSettings.IsTextureCube
 		{
 			get
@@ -607,9 +625,7 @@ namespace GorgonLibrary.Graphics
 		/// Property to set or return the depth of a texture.
 		/// </summary>
 		/// <value></value>
-		/// <remarks>
-		/// When loading a file, leave as 0 to use the width from the depth source.
-		/// <para>This applies to 3D textures only.</para></remarks>
+		/// <remarks>When loading a file, leave as 0 to use the width from the depth source.</remarks>
 		public int Depth
 		{
 			get;
@@ -622,7 +638,7 @@ namespace GorgonLibrary.Graphics
 		/// <value></value>
 		/// <remarks>
 		/// When loading a texture from a file, leave this as Unknown to get the file format from the source file.
-		/// <para>This sets the format of the texture data.  If you want to change the format of a texture when being sampled in a shader, then set the <see cref="P:GorgonLibrary.Graphics.ITextureSettings.ViewFormat">ViewFormat</see> property to anything other than Unknown.</para></remarks>
+		/// <para>This sets the format of the texture data.  If you want to change the format of a texture when being sampled in a shader, then set the <see cref="P:GorgonLibrary.Graphics.GorgonTexture3DSettings.ShaderViewFormat">ViewFormat</see> property to anything other than Unknown.</para></remarks>
 		public BufferFormat Format
 		{
 			get;
@@ -634,16 +650,24 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		/// <value></value>
 		/// <remarks>This changes how the texture is sampled/viewed in a shader.  The default value is Unknown.</remarks>
-		public BufferFormat ViewFormat
+		public BufferFormat ShaderViewFormat
 		{
 			get;
 			set;
 		}
 
 		/// <summary>
-		/// Property to set or return whether the view uses unordered access.
+		/// Property to set or return the unordered access view format.
 		/// </summary>
-		public bool ViewIsUnordered
+		/// <remarks>This changes how the texture is accessed in an unordered access view in a shader.
+		/// <para>If this value is set to anything other than Unknown, then an unordered access view will be created for the texture.  If the value is 
+		/// left as Unknown, then no unordered access view will be created for the texture.</para>
+		/// <para>Textures using an unordered access view can only use the same typed (i.e. not typeless) format that's assigned to the texture, or R32_UInt 
+		/// (only if the texture format is 32 bit).  Any other format will raise an exception.  Note that if the format is not set to R32_UInt, then write-only 
+		/// access will be given to the UAV.</para> 
+		/// <para>The default value is Unknown.</para>
+		/// </remarks>
+		public BufferFormat UnorderedAccessViewFormat
 		{
 			get;
 			set;
@@ -653,7 +677,7 @@ namespace GorgonLibrary.Graphics
 		/// Property to set or return the number of textures there are in a texture array.
 		/// </summary>
 		/// <value></value>
-		/// <remarks>This only applies to 1D and 2D textures, 3D textures always have this value set to 1.  The default value is 1.</remarks>
+		/// <remarks>This only applies to 1D and 2D textures.  This value will always return 1.</remarks>
 		int IImageSettings.ArrayCount
 		{
 			get
@@ -680,9 +704,7 @@ namespace GorgonLibrary.Graphics
 		/// Property to set or return the multisampling count/quality for the texture.
 		/// </summary>
 		/// <value></value>
-		/// <remarks>This only applies to 2D textures.  The default value is a count of 1, and a quality of 0 (no multisampling).
-		/// <para>Note that multisampled textures cannot have sub resources (e.g. mipmaps), so the <see cref="P:GorgonLibrary.Graphics.ITextureSettings.MipCount">MipCount</see> should be set to 1.</para>
-		/// </remarks>
+		/// <remarks>This only applies to 2D textures.  This value will always return a count of 1, and a quality of 0 (no multisampling).</remarks>
 		GorgonMultisampling ITextureSettings.Multisampling
 		{
 			get
@@ -726,17 +748,17 @@ namespace GorgonLibrary.Graphics
         /// <returns>A clone of the image settings object.</returns>
         public IImageSettings Clone()
         {
-            return (IImageSettings)new GorgonTexture3DSettings()
-            {
-                Width = this.Width,
-                Height = this.Height,
-                Depth = this.Depth,
-                Format = this.Format,
-                MipCount = this.MipCount,
-                ViewFormat = this.ViewFormat,
-                ViewIsUnordered = this.ViewIsUnordered,                
-                Usage = this.Usage
-            };
+            return new GorgonTexture3DSettings
+	            {
+		            Width = Width,
+		            Height = Height,
+		            Depth = Depth,
+		            Format = Format,
+		            MipCount = MipCount,
+		            ShaderViewFormat = ShaderViewFormat,
+		            UnorderedAccessViewFormat = UnorderedAccessViewFormat,                
+		            Usage = Usage
+	            };
         }
         #endregion
 		#endregion

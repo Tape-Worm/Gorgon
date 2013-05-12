@@ -165,7 +165,7 @@ namespace GorgonLibrary.Graphics
 			var viewFormat = BufferFormat.Unknown;
 
 			if (Settings != null)
-				viewFormat = Settings.ViewFormat;
+				viewFormat = Settings.ShaderViewFormat;
 
 			D3D.Texture2DDescription desc = ((D3D.Texture2D)this.D3DResource).Description;
 			newSettings = new GorgonTexture2DSettings();
@@ -176,12 +176,12 @@ namespace GorgonLibrary.Graphics
 			newSettings.Format = (BufferFormat)desc.Format;
 			newSettings.MipCount = desc.MipLevels;
 			newSettings.Usage = (BufferUsage)desc.Usage;
-			newSettings.ViewFormat = BufferFormat.Unknown;
+			newSettings.ShaderViewFormat = BufferFormat.Unknown;
 			newSettings.Multisampling = new GorgonMultisampling(desc.SampleDescription.Count, desc.SampleDescription.Quality);
 		    newSettings.IsTextureCube = (desc.OptionFlags & D3D.ResourceOptionFlags.TextureCube)
 		                                == D3D.ResourceOptionFlags.TextureCube;
 			// Preserve any custom view format.
-			newSettings.ViewFormat = viewFormat;
+			newSettings.ShaderViewFormat = viewFormat;
 
 			return newSettings;
 		}
@@ -280,7 +280,7 @@ namespace GorgonLibrary.Graphics
 			        OptionFlags = Settings.IsTextureCube ? D3D.ResourceOptionFlags.TextureCube : D3D.ResourceOptionFlags.None,
 			        SampleDescription = GorgonMultisampling.Convert(Settings.Multisampling)
 			    };
-
+		
 		    switch (Settings.Usage)
 			{
 				case BufferUsage.Staging:

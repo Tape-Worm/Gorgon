@@ -1065,6 +1065,7 @@ namespace GorgonLibrary.Graphics
 					case BufferFormat.R8G8_Int:
 						Group = BufferFormat.R8G8;
 						break;
+					case BufferFormat.R8G8B8A8:
 					case BufferFormat.R8G8B8A8_UIntNormal:
 					case BufferFormat.R8G8B8A8_UIntNormal_sRGB:
 					case BufferFormat.R8G8B8A8_UInt:

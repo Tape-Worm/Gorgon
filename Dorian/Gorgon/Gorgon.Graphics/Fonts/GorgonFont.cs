@@ -1537,7 +1537,7 @@ namespace GorgonLibrary.Graphics
 				MipCount = 1,
 				Multisampling = new GorgonMultisampling(1, 0),
 				Usage = BufferUsage.Default,
-				ViewFormat = BufferFormat.Unknown
+				ShaderViewFormat = BufferFormat.Unknown
 			};
 			KerningPairs = new Dictionary<GorgonKerningPair, int>();
 		}

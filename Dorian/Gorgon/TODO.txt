@@ -4,6 +4,9 @@ This list is not in order.  Please don't get excited.
 	+ Put in updatesubresource functionality for textures (Done)
 	+ Put in map functionality for textures	(Done)
 	+ Add GetSubResourceIndex1/2/3D to the Textures interface (Done, added to texture objects as static member).
+	+ Update SRV for depth for binding to shaders using typeless texture and typed srv.
+	+ Update 1D/3D textures for depth (if possible).
+	+ Update 1D/3D textures for render target destination.
 * Add buffers
 	+ Update vertex buffer (and index buffer?  Need to research) code to allow for stream output from Geometry shaders.
 	+ Add raw buffers

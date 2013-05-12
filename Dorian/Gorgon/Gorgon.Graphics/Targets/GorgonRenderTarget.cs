@@ -225,7 +225,7 @@ namespace GorgonLibrary.Graphics
 					Width = Settings.Width,
 					Height = Settings.Height,
 					MultiSample = Settings.MultiSample,
-					TextureFormat = BufferFormat.Unknown
+					ShaderViewFormat = BufferFormat.Unknown
 				};
 
 				GorgonDepthStencil.ValidateSettings(Graphics, settings);

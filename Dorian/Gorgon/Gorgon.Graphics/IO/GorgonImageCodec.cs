@@ -217,14 +217,19 @@ namespace GorgonLibrary.IO
 		}
 
 		/// <summary>
-		/// Property to set or return whether the view uses unordered access.
+		/// Property to set or return the unordered access view format.
 		/// </summary>
-		/// <remarks>This changes how the texture is sampled/viewed in a shader.  
+		/// <remarks>This changes how the texture is accessed in an unordered access view in a shader.
+		/// <para>If this value is set to anything other than Unknown, then an unordered access view will be created for the texture.  If the value is 
+		/// left as Unknown, then no unordered access view will be created for the texture.</para>
+		/// <para>Textures using an unordered access view can only use the same typed (i.e. not typeless) format that's assigned to the texture, or R32_UInt 
+		/// (only if the texture format is 32 bit).  Any other format will raise an exception.  Note that if the format is not set to R32_UInt, then write-only 
+		/// access will be given to the UAV.</para> 
 		/// <para>This property is for <see cref="GorgonLibrary.Graphics.GorgonTexture">textures</see> only, for <see cref="GorgonLibrary.Graphics.GorgonImageData">image data</see> it is ignored.</para>
 		/// <para>This property is only applied when decoding an image, otherwise it is ignored.</para>
-		/// <para>The default value is FALSE.</para>
+		/// <para>The default value is Unknown.</para>
 		/// </remarks>
-		public bool ViewIsUnordered
+		public BufferFormat UnorderedAccessViewFormat
 		{
 			get;
 			set;
@@ -892,7 +897,7 @@ namespace GorgonLibrary.IO
 			Dithering = ImageDithering.None;
 			CodecCommonExtensions = new string[] { };
 			ViewFormat = BufferFormat.Unknown;
-			ViewIsUnordered = false;
+			UnorderedAccessViewFormat = BufferFormat.Unknown;
 			Usage = BufferUsage.Default;
 		}
 		#endregion

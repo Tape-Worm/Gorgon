@@ -132,11 +132,11 @@ namespace GorgonLibrary.Graphics
 					MipCount = 1,
 					ArrayCount = 1,
 					Multisampling = Settings.MultiSample,
-					Format = (Settings.TextureFormat != BufferFormat.Unknown ? Settings.TextureFormat : Settings.Format),
+					Format = (Settings.ShaderViewFormat != BufferFormat.Unknown ? Settings.ShaderViewFormat : Settings.Format),
 					Usage = BufferUsage.Default
 				});
 
-			Texture.InitializeDepth(Settings.TextureFormat != BufferFormat.Unknown);
+			Texture.InitializeDepth(Settings.ShaderViewFormat != BufferFormat.Unknown);
 
 			// Create the view.
 			Gorgon.Log.Print("GorgonDepthStencil '{0}': Creating D3D11 depth stencil view...", Diagnostics.LoggingLevel.Verbose, Name);
@@ -183,14 +183,14 @@ namespace GorgonLibrary.Graphics
 				throw new ArgumentException("Video device '" + graphics.VideoDevice.Name + "' does not support multisampling with a count of '" + settings.MultiSample.Count.ToString() + "' and a quality of '" + settings.MultiSample.Quality.ToString() + " with a format of '" + settings.Format + "'");
 
 			// Validate the texture format if it's different.
-			if ((settings.TextureFormat != BufferFormat.Unknown) && (settings.TextureFormat != settings.Format))
+			if ((settings.ShaderViewFormat != BufferFormat.Unknown) && (settings.ShaderViewFormat != settings.Format))
 			{
-				if (!graphics.VideoDevice.SupportsDepthFormat(settings.TextureFormat))
-					throw new ArgumentException("Video device '" + graphics.VideoDevice.Name + "' does not support '" + settings.TextureFormat + "' as a depth/stencil buffer format.");
+				/*if (!graphics.VideoDevice.SupportsDepthFormat(settings.ShaderViewFormat))
+					throw new ArgumentException("Video device '" + graphics.VideoDevice.Name + "' does not support '" + settings.ShaderViewFormat + "' as a depth/stencil buffer format.");*/
 
 				// Ensure that this format can be used to pass to a shader.
-				if (!graphics.VideoDevice.Supports2DTextureFormat(settings.TextureFormat))
-					throw new ArgumentException("Video device '" + graphics.VideoDevice.Name + "' does not support '" + settings.TextureFormat + "' as texture format for the depth buffer.");
+				if (!graphics.VideoDevice.Supports2DTextureFormat(settings.ShaderViewFormat))
+					throw new ArgumentException("Video device '" + graphics.VideoDevice.Name + "' does not support '" + settings.ShaderViewFormat + "' as texture format for the depth buffer.");
 
 				// Feature levels less than 4.1 can't read back multi sampled depth buffers in a shader.
 				if ((graphics.VideoDevice.SupportedFeatureLevel != DeviceFeatureLevel.SM4_1) && (graphics.VideoDevice.SupportedFeatureLevel != DeviceFeatureLevel.SM5) &&
