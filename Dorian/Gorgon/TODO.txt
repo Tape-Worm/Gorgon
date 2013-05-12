@@ -5,6 +5,7 @@ This list is not in order.  Please don't get excited.
 	+ Put in map functionality for textures	(Done)
 	+ Add GetSubResourceIndex1/2/3D to the Textures interface (Done, added to texture objects as static member).
 	+ Update SRV for depth for binding to shaders using typeless texture and typed srv.
+	+ Make SRV/UAV more flexible for resource types.  Currently limited to 1 view to 1 resource, not ideal.
 	+ Update 1D/3D textures for depth (if possible).
 	+ Update 1D/3D textures for render target destination.
 * Add buffers
