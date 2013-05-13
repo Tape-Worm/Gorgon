@@ -28,6 +28,7 @@ using System;
 using GorgonLibrary.Diagnostics;
 using GorgonLibrary.Graphics.Properties;
 using GorgonLibrary.IO;
+using DX = SharpDX;
 using D3D11 = SharpDX.Direct3D11;
 
 namespace GorgonLibrary.Graphics
@@ -82,12 +83,14 @@ namespace GorgonLibrary.Graphics
 	}
 
 	/// <summary>
-	/// A base buffer object.
+	/// A generic buffer object.
 	/// </summary>
-	public abstract class GorgonBaseBuffer
+	/// <remarks>This generic buffer object is unable to be bound with shaders, but can be bound with output streams to retrieve data from shaders that support output data streams.</remarks>
+	public class GorgonBuffer
 		: GorgonResource
 	{
 		#region Variables.
+		private DX.DataStream _lockStream;			// Stream used to lock the buffer for read/write.
 		private readonly int _size;					// Size of the buffer, in bytes.
 		#endregion
 
@@ -117,6 +120,15 @@ namespace GorgonLibrary.Graphics
 		{
 			get;
 			set;
+		}
+
+		/// <summary>
+		/// Property to return whether this buffer can be used in the output stream or not.
+		/// </summary>
+		public bool IsOutput
+		{
+			get;
+			private set;
 		}
 
 		/// <summary>
@@ -162,11 +174,71 @@ namespace GorgonLibrary.Graphics
 
 		#region Methods.
 		/// <summary>
+		/// Function to clean up the resource object.
+		/// </summary>
+		protected override void CleanUpResource()
+		{
+		    if (IsLocked)
+		    {
+		        Unlock();
+		    }
+
+		    if (D3DResource == null)
+		    {
+		        return;
+		    }
+
+		    GorgonRenderStatistics.BufferCount--;
+		    GorgonRenderStatistics.BufferSize -= D3DBuffer.Description.SizeInBytes;
+
+		    D3DResource.Dispose();
+		    D3DResource = null;
+		}
+
+		/// <summary>
 		/// Function used to initialize the buffer with data.
 		/// </summary>
 		/// <param name="data">Data to write.</param>
 		/// <remarks>Passing NULL (Nothing in VB.Net) to the <paramref name="data"/> parameter should ignore the initialization and create the backing buffer as normal.</remarks>
-		protected abstract void InitializeImpl(GorgonDataStream data);
+		protected virtual void InitializeImpl(GorgonDataStream data)
+		{
+			if (D3DResource != null)
+			{
+				D3DResource.Dispose();
+				D3DResource = null;
+			}
+
+		    var desc = new D3D11.BufferDescription
+		        {
+		            BindFlags = IsOutput ? D3D11.BindFlags.StreamOutput | D3D11.BindFlags.None,
+		            CpuAccessFlags = D3DCPUAccessFlags,
+		            OptionFlags = D3D11.ResourceOptionFlags.None,
+		            SizeInBytes = SizeInBytes,
+		            StructureByteStride = 0,
+		            Usage = D3DUsage
+		        };
+
+		    if (data != null)
+		    {
+		        long position = data.Position;
+
+		        using(var dxStream = new DX.DataStream(data.BasePointer, data.Length - position, true, true))
+		        {
+		            D3DResource = new D3D11.Buffer(Graphics.D3DDevice, dxStream, desc);
+		        }
+		    }
+		    else
+		    {
+		        D3DResource = new D3D11.Buffer(Graphics.D3DDevice, desc);
+		    }
+
+		    GorgonRenderStatistics.BufferCount++;
+			GorgonRenderStatistics.BufferSize += ((D3D11.Buffer)D3DResource).Description.SizeInBytes;
+
+#if DEBUG
+			D3DResource.DebugName = "Gorgon Structured Buffer #" + Graphics.GetGraphicsObjectOfType<GorgonBuffer>().Count;
+#endif
+		}
 
 		/// <summary>
 		/// Function used to initialize the buffer with data.
@@ -184,12 +256,35 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		/// <param name="lockFlags">Flags used when locking the buffer.</param>
 		/// <returns>A data stream containing the buffer data.</returns>		
-		protected abstract GorgonDataStream LockImpl(BufferLockFlags lockFlags);
+		protected virtual GorgonDataStream LockImpl(BufferLockFlags lockFlags)
+		{
+#if DEBUG
+			if (((lockFlags & BufferLockFlags.Discard) != BufferLockFlags.Discard)
+				|| ((lockFlags & BufferLockFlags.Write) != BufferLockFlags.Write))
+			{
+				throw new ArgumentException(Resources.GORGFX_BUFFER_LOCK_NOT_WRITE_DISCARD, "lockFlags");
+			}
+
+			if ((lockFlags & BufferLockFlags.NoOverwrite) == BufferLockFlags.NoOverwrite)
+			{
+				throw new ArgumentException(Resources.GORGFX_BUFFER_NO_OVERWRITE_NOT_VALID, "lockFlags");
+			}
+#endif
+
+			Graphics.Context.MapSubresource(D3DBuffer, D3D11.MapMode.WriteDiscard, D3D11.MapFlags.None, out _lockStream);
+
+			return new GorgonDataStream(_lockStream.DataPointer, (int)_lockStream.Length);
+		}
 
 		/// <summary>
 		/// Function called to unlock the underlying data buffer.
 		/// </summary>
-		protected internal abstract void UnlockImpl();
+		protected virtual void UnlockImpl()
+		{
+			Graphics.Context.UnmapSubresource(D3DBuffer, 0);
+			_lockStream.Dispose();
+			_lockStream = null;
+		}
 
 		/// <summary>
 		/// Function to update the buffer.
@@ -197,7 +292,17 @@ namespace GorgonLibrary.Graphics
 		/// <param name="stream">Stream containing the data used to update the buffer.</param>
 		/// <param name="offset">Offset, in bytes, into the buffer to start writing at.</param>
 		/// <param name="size">The number of bytes to write.</param>
-		protected abstract void UpdateImpl(GorgonDataStream stream, int offset, int size);
+		protected virtual void UpdateImpl(GorgonDataStream stream, int offset, int size)
+		{
+			Graphics.Context.UpdateSubresource(
+				new DX.DataBox
+				{
+					DataPointer = stream.PositionPointer,
+					RowPitch = 0,
+					SlicePitch = 0
+				},
+				D3DResource);
+		}
 
 		/// <summary>
 		/// Function to copy the contents of the specified buffer to this buffer.
@@ -206,7 +311,7 @@ namespace GorgonLibrary.Graphics
 		/// <remarks>This is used to copy data from one GPU buffer to another.  The size of the buffers must be the same.</remarks>
 		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="buffer"/> size is not equal to the size of this buffer.</exception>
 		/// <exception cref="GorgonLibrary.GorgonException">Thrown when this buffer has a usage of Immutable.</exception>
-		public void Copy(GorgonBaseBuffer buffer)
+		public void Copy(GorgonBuffer buffer)
 		{
 #if DEBUG
 		    if (buffer.SizeInBytes != SizeInBytes)
@@ -234,7 +339,7 @@ namespace GorgonLibrary.Graphics
 		/// <para>Thrown when the <paramref name="byteCount"/> + sourceStartIndex is greater than the size of the source buffer, or less than 0.</para>
 		/// </exception>
 		/// <exception cref="System.InvalidOperationException">Thrown when this buffer has a usage of Immutable.</exception>
-		public void Copy(GorgonBaseBuffer buffer, int sourceStartingIndex, int byteCount)
+		public void Copy(GorgonBuffer buffer, int sourceStartingIndex, int byteCount)
 		{
 			Copy(buffer, sourceStartingIndex, byteCount, 0);
 		}
@@ -254,7 +359,7 @@ namespace GorgonLibrary.Graphics
 		/// <para>Thrown when the <paramref name="destOffset"/> + byteCount is greater than the size of this buffer, or less than 0.</para>
 		/// </exception>
 		/// <exception cref="GorgonLibrary.GorgonException">Thrown when this buffer has a usage of Immutable.</exception>
-		public void Copy(GorgonBaseBuffer buffer, int sourceStartingIndex, int byteCount, int destOffset)
+		public void Copy(GorgonBuffer buffer, int sourceStartingIndex, int byteCount, int destOffset)
 		{
 			int endByteIndex = sourceStartingIndex + byteCount;
 
@@ -284,28 +389,25 @@ namespace GorgonLibrary.Graphics
 		/// Function to update the buffer.
 		/// </summary>
 		/// <param name="stream">Stream containing the data used to update the buffer.</param>
-		/// <param name="offset">Offset, in bytes, into the buffer to start writing at.</param>
-		/// <param name="size">The number of bytes to write.</param>
 		/// <remarks>This method can only be used with buffers that have Default usage.  Other buffer usages will thrown an exception.
-		/// <para>Please note that constant buffers don't use the <paramref name="offset"/> and <paramref name="size"/> parameters.</para>
 		/// <para>This method will respect the <see cref="GorgonLibrary.IO.GorgonDataStream.Position">Position</see> property of the data stream.  
 		/// This means that it will start reading from the stream at the current position.  To read from the beginning of the stream, set the position 
 		/// to 0.</para>
 		/// </remarks>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="stream"/> parameter is NULL (Nothing in VB.Net).</exception>
 		/// <exception cref="GorgonLibrary.GorgonException">Thrown when the buffer usage is not set to default.</exception>
-		public void Update(GorgonDataStream stream, int offset, int size)
+		public void Update(GorgonDataStream stream)
 		{
 			GorgonDebug.AssertNull(stream, "stream");
 
 #if DEBUG
-		    if (BufferUsage != GorgonLibrary.Graphics.BufferUsage.Default)
-		    {
-                throw new GorgonException(GorgonResult.AccessDenied, Resources.GORGFX_NOT_DEFAULT_USAGE);
-		    }
+			if (BufferUsage != GorgonLibrary.Graphics.BufferUsage.Default)
+			{
+				throw new GorgonException(GorgonResult.AccessDenied, Resources.GORGFX_NOT_DEFAULT_USAGE);
+			}
 #endif
 
-			UpdateImpl(stream, offset, size);
+			UpdateImpl(stream, 0, (int)(stream.Length - stream.Position));
 		}
 
 		/// <summary>
@@ -367,17 +469,19 @@ namespace GorgonLibrary.Graphics
 
 		#region Constructor/Destructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonBaseBuffer"/> class.
+		/// Initializes a new instance of the <see cref="GorgonBuffer"/> class.
 		/// </summary>
 		/// <param name="graphics">The graphics interface used to create this object.</param>
 		/// <param name="usage">Usage for this buffer.</param>
 		/// <param name="size">The size of the buffer, in bytes.</param>
+		/// <param name="isOutput"></param>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="graphics"/> parameter is NULL (Nothing in VB.Net).</exception>
-		protected GorgonBaseBuffer(GorgonGraphics graphics, BufferUsage usage, int size)
+		internal GorgonBuffer(GorgonGraphics graphics, BufferUsage usage, int size, bool isOutput)
 			: base(graphics)
 		{
 			_size = size;
 			BufferUsage = usage;
+			IsOutput = isOutput;
 
 			D3DUsage = (D3D11.ResourceUsage)usage;
 			switch (usage)

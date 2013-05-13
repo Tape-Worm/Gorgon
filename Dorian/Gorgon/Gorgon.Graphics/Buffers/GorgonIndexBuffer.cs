@@ -36,7 +36,7 @@ namespace GorgonLibrary.Graphics
 	/// A buffer to hold a set of indices.
 	/// </summary>
 	public class GorgonIndexBuffer
-		: GorgonBaseBuffer
+		: GorgonBuffer
 	{
 		#region Variables.
 		private DX.DataStream _lockStream;								// Stream used when locking.
@@ -50,21 +50,6 @@ namespace GorgonLibrary.Graphics
 		{
 			get;
 			private set;
-		}
-		
-		/// <summary>
-		/// Property to set or return the view for the resource.
-		/// </summary>
-		[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-		public override GorgonResourceView View
-		{
-			get
-			{
-				return null;
-			}
-			set
-			{
-			}
 		}
 		#endregion
 
@@ -112,6 +97,11 @@ namespace GorgonLibrary.Graphics
 			        StructureByteStride = 0,
 			        Usage = D3DUsage
 			    };
+
+			if (IsOutput)
+			{
+				desc.BindFlags |= D3D11.BindFlags.StreamOutput;
+			}
 
 		    if (data == null)
 		    {
@@ -177,7 +167,7 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Function called to unlock the underlying data buffer.
 		/// </summary>
-		protected internal override void UnlockImpl()
+		protected override void UnlockImpl()
 		{
 			Graphics.Context.UnmapSubresource(D3DBuffer, 0);
 			_lockStream.Dispose();
@@ -212,19 +202,22 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
-		/// Function to update the entire buffer.
+		/// Function to update the buffer.
 		/// </summary>
 		/// <param name="stream">Stream containing the data used to update the buffer.</param>
+		/// <param name="offset">Offset, in bytes, into the buffer to start writing at.</param>
+		/// <param name="size">The number of bytes to write.</param>
 		/// <remarks>This method can only be used with buffers that have Default usage.  Other buffer usages will thrown an exception.
-		/// <para>This method will respect the <see cref="P:GorgonLibrary.IO.GorgonDataStream.Position">Position</see> property of the data stream.  
+		/// <para>Please note that constant buffers don't use the <paramref name="offset"/> and <paramref name="size"/> parameters.</para>
+		/// <para>This method will respect the <see cref="GorgonLibrary.IO.GorgonDataStream.Position">Position</see> property of the data stream.  
 		/// This means that it will start reading from the stream at the current position.  To read from the beginning of the stream, set the position 
 		/// to 0.</para>
 		/// </remarks>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="stream"/> parameter is NULL (Nothing in VB.Net).</exception>
-        /// <exception cref="GorgonLibrary.GorgonException">Thrown when the buffer usage is not set to default.</exception>
-		public void Update(GorgonDataStream stream)
+		/// <exception cref="GorgonLibrary.GorgonException">Thrown when the buffer usage is not set to default.</exception>
+		public void Update(GorgonDataStream stream, int offset, int size)
 		{
-            Update(stream, 0, (int)(stream.Length - stream.Position));
+			UpdateImpl(stream, offset, size);
 		}
 		#endregion
 
@@ -236,8 +229,9 @@ namespace GorgonLibrary.Graphics
 		/// <param name="usage">The buffer usage</param>
 		/// <param name="size">The size.</param>
 		/// <param name="is32Bit">TRUE to use 32 bit indices, FALSE to use 16 bit.</param>
-		internal GorgonIndexBuffer(GorgonGraphics graphics, BufferUsage usage, int size, bool is32Bit)
-			: base(graphics, usage, size)
+		/// <param name="isOutput">TRUE to allow the buffer to bound to stream output, FALSE to only allow stream input.</param>
+		internal GorgonIndexBuffer(GorgonGraphics graphics, BufferUsage usage, int size, bool is32Bit, bool isOutput)
+			: base(graphics, usage, size, isOutput)
 		{
 			Is32Bit = is32Bit;
 		}

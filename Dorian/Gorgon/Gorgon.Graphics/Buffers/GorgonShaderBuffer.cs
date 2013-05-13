@@ -37,7 +37,7 @@ namespace GorgonLibrary.Graphics
 	/// </summary>
 	/// <remarks>This is a base object for buffers that can be bound to a shader.</remarks>
 	public abstract class GorgonShaderBuffer
-		: GorgonBaseBuffer
+		: GorgonBuffer
 	{
 		#region Variables.
 		private DX.DataStream _lockStream;							// Lock stream.
@@ -45,29 +45,12 @@ namespace GorgonLibrary.Graphics
 
 		#region Properties.
 		/// <summary>
-		/// Property to return the binding flags for the buffer.
+		/// Property to return the settings for a shader buffer.
 		/// </summary>
-		internal virtual D3D.BindFlags BindingFlags
-		{
-			get
-			{
-			    if (IsUnorderedAccess)
-			    {
-			        return D3D.BindFlags.ShaderResource | D3D.BindFlags.UnorderedAccess;
-			    }
-
-			    return D3D.BindFlags.ShaderResource;
-			}
-		}
-
-		/// <summary>
-		/// Property to return whether there's unordered access to the default view of the buffer.
-		/// </summary>
-		/// <remarks>Unordered access is only available to video devices that support SM5 or better.</remarks>
-		public bool IsUnorderedAccess
+		public IShaderBufferSettings Settings
 		{
 			get;
-			protected set;
+			private set;
 		}
 
 		/// <summary>
@@ -93,10 +76,13 @@ namespace GorgonLibrary.Graphics
 		protected override void CleanUpResource()
 		{
 			// If we're bound with a pixel or vertex shader, then unbind.
-			Graphics.Shaders.VertexShader.Resources.Unbind(this);
-			Graphics.Shaders.PixelShader.Resources.Unbind(this);
+			if (BufferUsage != BufferUsage.Staging)
+			{
+				Graphics.Shaders.VertexShader.Resources.Unbind(this);
+				Graphics.Shaders.PixelShader.Resources.Unbind(this);
+			}
 
-		    if (IsLocked)
+			if (IsLocked)
 		    {
 		        Unlock();
 		    }
@@ -118,85 +104,6 @@ namespace GorgonLibrary.Graphics
 		    D3DResource.Dispose();
 		    D3DResource = null;
 		}
-
-		/// <summary>
-		/// Function used to lock the underlying buffer for reading/writing.
-		/// </summary>
-		/// <param name="lockFlags">Flags used when locking the buffer.</param>
-		/// <returns>
-		/// A data stream containing the buffer data.
-		/// </returns>
-		protected override GorgonDataStream LockImpl(BufferLockFlags lockFlags)
-		{
-		    if (((lockFlags & BufferLockFlags.Discard) != BufferLockFlags.Discard)
-		        || ((lockFlags & BufferLockFlags.Write) != BufferLockFlags.Write))
-		    {
-		        throw new ArgumentException(Resources.GORGFX_BUFFER_LOCK_NOT_WRITE_DISCARD, "lockFlags");
-		    }
-
-		    Graphics.Context.MapSubresource(D3DBuffer, D3D.MapMode.WriteDiscard, D3D.MapFlags.None, out _lockStream);
-
-			return new GorgonDataStream(_lockStream.DataPointer, (int)_lockStream.Length);
-		}
-
-		/// <summary>
-		/// Function called to unlock the underlying data buffer.
-		/// </summary>
-		protected internal override void UnlockImpl()
-		{
-			Graphics.Context.UnmapSubresource(D3DBuffer, 0);
-			_lockStream.Dispose();
-			_lockStream = null;
-		}
-
-		/// <summary>
-		/// Function to update the buffer.
-		/// </summary>
-		/// <param name="stream">Stream containing the data used to update the buffer.</param>
-		/// <param name="offset">Offset, in bytes, into the buffer to start writing at.</param>
-		/// <param name="size">The number of bytes to write.</param>
-		protected override void UpdateImpl(GorgonDataStream stream, int offset, int size)
-		{
-			Graphics.Context.UpdateSubresource(
-				new DX.DataBox
-				    {
-					DataPointer = stream.PositionPointer,
-					RowPitch = 0,
-					SlicePitch = 0
-				}, 
-				D3DResource);
-		}
-
-		/// <summary>
-		/// Function to update the buffer.
-		/// </summary>
-		/// <param name="stream">Stream containing the data used to update the buffer.</param>
-		/// <param name="offset">Offset, in bytes, into the buffer to start writing at.</param>
-		/// <param name="size">The number of bytes to write.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="stream"/> parameter is NULL (Nothing in VB.Net).</exception>
-		///   
-		/// <exception cref="System.InvalidOperationException">Thrown when the buffer usage is not set to default.</exception>
-		[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-		public new void Update(GorgonDataStream stream, int offset, int size)
-		{
-			base.Update(stream, 0, 0);
-		}
-
-		/// <summary>
-		/// Function to update the buffer.
-		/// </summary>
-		/// <param name="stream">Stream containing the data used to update the buffer.</param>
-		/// <remarks>This method can only be used with buffers that have Default usage.  Other buffer usages will thrown an exception.
-		/// <para>This method will respect the <see cref="P:GorgonLibrary.IO.GorgonDataStream.Position">Position</see> property of the data stream.  
-		/// This means that it will start reading from the stream at the current position.  To read from the beginning of the stream, set the position 
-		/// to 0.</para>
-		/// </remarks>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="stream"/> parameter is NULL (Nothing in VB.Net).</exception>
-		/// <exception cref="System.InvalidOperationException">Thrown when the buffer usage is not set to default.</exception>
-		public void Update(GorgonDataStream stream)
-		{
-			Update(stream, 0, 0);
-		}
 		#endregion
 
 		#region Constructor/Destructor.
@@ -204,13 +111,12 @@ namespace GorgonLibrary.Graphics
 		/// Initializes a new instance of the <see cref="GorgonShaderBuffer" /> class.
 		/// </summary>
 		/// <param name="graphics">Graphics interface that owns this buffer.</param>
-		/// <param name="allowCPUWrite">TRUE to allow the CPU write access to the buffer, FALSE to disallow.</param>
-		/// <param name="isUnorderedAccess">TRUE to allow unordered access to the buffer, FALSE to disallow.</param>
-		/// <param name="size">Size of the buffer, in bytes.</param>
-		protected GorgonShaderBuffer(GorgonGraphics graphics, bool allowCPUWrite, bool isUnorderedAccess, int size)
-			: base(graphics, (allowCPUWrite ? BufferUsage.Dynamic : BufferUsage.Default), size)
+		/// <param name="settings">The settings for the buffer.</param>
+		/// <param name="totalSize">The total size of the buffer, in bytes.</param>
+		protected GorgonShaderBuffer(GorgonGraphics graphics, IShaderBufferSettings settings, int totalSize)
+			: base(graphics, (settings.AllowCPUWrite ? BufferUsage.Dynamic : BufferUsage.Default), totalSize, settings.IsOutput)
 		{
-			IsUnorderedAccess = isUnorderedAccess;
+			Settings = settings;
 		}
 		#endregion
 	}

@@ -148,7 +148,7 @@
     <value>The usage for this object must be set to 'Default'.</value>
   </data>
   <data name="GORGFX_BUFFER_USAGE_CANT_LOCK" xml:space="preserve">
-    <value>A buffer with a usage of '{0}' cannot be locked.</value>
+    <value>A buffer with a usage of [{0}] cannot be locked.</value>
   </data>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   <data name="Gorgon_2_x_Logo_Small" type="System.Resources.ResXFileRef, System.Windows.Forms">
@@ -173,13 +173,13 @@
     <value>The value [{0}] for parameter '{1}' is not valid.</value>
   </data>
   <data name="GORGFX_BUFFER_REQUIRES_NOOVERWRITE_DISCARD" xml:space="preserve">
-    <value>The buffer must use NoOverwrite or Discard when locking.</value>
+    <value>The buffer must use [NoOverwrite] or [Discard] when locking.</value>
   </data>
   <data name="GORGFX_BUFFER_WRITE_ONLY" xml:space="preserve">
     <value>Cannot read this buffer.</value>
   </data>
   <data name="GORGFX_BUFFER_LOCK_NOT_WRITE_DISCARD" xml:space="preserve">
-    <value>This buffer must be locked with the Write and Discard flags.</value>
+    <value>This buffer must be locked with the [Write] and [Discard] flags.</value>
   </data>
   <data name="GORGFX_CBUFFER_NOT_MULTIPLE_OF_16" xml:space="preserve">
     <value>Cannot create the constant buffer.  The buffer size of {0} bytes is not a multiple of 16.</value>
@@ -213,5 +213,11 @@
   </data>
   <data name="GORGFX_SHADER_VIEW_TOSTR" xml:space="preserve">
     <value>Gorgon Shader View.  Format: [{0}]</value>
+  </data>
+  <data name="GORGFX_BUFFER_NO_OVERWRITE_NOT_VALID" xml:space="preserve">
+    <value>Cannot lock this buffer with a lock type of [NoOverwrite]</value>
+  </data>
+  <data name="GORGFX_VIEW_UNKNOWN_FORMAT" xml:space="preserve">
+    <value>The format for the view must not be [Unknown].</value>
   </data>
 </root>

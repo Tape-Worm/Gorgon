@@ -599,21 +599,6 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Function to create a index buffer.
 		/// </summary>
-		/// <param name="size">Size of the buffer, in bytes.</param>
-		/// <param name="is32Bit">TRUE to indicate that we're using 32 bit indices, FALSE to use 16 bit indices </param>
-		/// <param name="usage">Usage of the buffer.</param>
-		/// <returns>A new index buffer.</returns>
-		/// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="size"/> parameter is less than 1.</exception>
-		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="usage"/> parameter is set to Staging or Immutable.
-		/// </exception>
-		public GorgonIndexBuffer CreateIndexBuffer(int size, BufferUsage usage, bool is32Bit)
-		{
-			return CreateIndexBuffer(size, usage, is32Bit, null);
-		}
-
-		/// <summary>
-		/// Function to create a index buffer.
-		/// </summary>
 		/// <param name="usage">Usage of the buffer.</param>
 		/// <param name="is32Bit">TRUE to indicate that we're using 32 bit indices, FALSE to use 16 bit indices </param>
 		/// <param name="data">Data used to initialize the buffer.</param>
@@ -638,7 +623,7 @@ namespace GorgonLibrary.Graphics
 
 				dataStream.Position = 0;
 
-				return CreateIndexBuffer(size, usage, is32Bit, dataStream);
+				return CreateIndexBuffer(size, usage, is32Bit, false, dataStream);
 			}
 		}
 
@@ -648,6 +633,7 @@ namespace GorgonLibrary.Graphics
 		/// <param name="size">Size of the buffer, in bytes.</param>
 		/// <param name="usage">Usage of the buffer.</param>
 		/// <param name="is32Bit">TRUE to indicate that we're using 32 bit indices, FALSE to use 16 bit indices </param>
+		/// <param name="isOutput">TRUE to allow this buffer to be used in stream output, FALSE to only allow stream input.</param>
 		/// <param name="initialData">Initial data to populate the index buffer with.</param>
 		/// <returns>A new index buffer.</returns>
 		/// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="size"/> parameter is less than 1.</exception>
@@ -656,7 +642,7 @@ namespace GorgonLibrary.Graphics
 		/// <para>Thrown when the usage parameter is set to Immutable and the <paramref name="initialData"/> is NULL (Nothing in VB.Net).</para>
 		/// </exception>
 		/// <remarks>If creating an immutable index buffer, be sure to pre-populate it via the initialData parameter.</remarks>
-		public GorgonIndexBuffer CreateIndexBuffer(int size, BufferUsage usage, bool is32Bit, GorgonDataStream initialData)
+		public GorgonIndexBuffer CreateIndexBuffer(int size, BufferUsage usage, bool is32Bit, bool isOutput = false, GorgonDataStream initialData = null)
 		{
 			if (size < 1)
 			{
@@ -673,25 +659,11 @@ namespace GorgonLibrary.Graphics
 				throw new ArgumentException(Resources.GORGFX_BUFFER_IMMUTABLE_REQUIRES_DATA, "usage");
 			}
 
-			var buffer = new GorgonIndexBuffer(_graphics, usage, size, is32Bit);
+			var buffer = new GorgonIndexBuffer(_graphics, usage, size, is32Bit, isOutput);
 			buffer.Initialize(initialData);
 
 			_graphics.AddTrackedObject(buffer);
 			return buffer;
-		}
-
-		/// <summary>
-		/// Function to create a vertex buffer.
-		/// </summary>
-		/// <param name="size">Size of the buffer, in bytes.</param>
-		/// <param name="usage">Usage of the buffer.</param>
-		/// <returns>A new vertex buffer.</returns>
-		/// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="size"/> parameter is less than 1.</exception>
-		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="usage"/> parameter is set to Staging or Immutable.
-		/// </exception>
-		public GorgonVertexBuffer CreateVertexBuffer(int size, BufferUsage usage)
-		{
-			return CreateVertexBuffer(size, usage, null);
 		}
 
 		/// <summary>
@@ -724,7 +696,7 @@ namespace GorgonLibrary.Graphics
 				}
 
 				dataStream.Position = 0;
-				return CreateVertexBuffer(size, usage, dataStream);
+				return CreateVertexBuffer(size, usage, false, dataStream);
 			}
 		}
 
@@ -733,6 +705,7 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		/// <param name="size">Size of the buffer, in bytes.</param>
 		/// <param name="usage">Usage of the buffer.</param>
+		/// <param name="isOutput">TRUE to allow this buffer to be used in stream output, FALSE to only allow stream input.</param>
 		/// <param name="initialData">Initial data to populate the vertex buffer with.</param>
 		/// <returns>A new vertex buffer.</returns>
 		/// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="size"/> parameter is less than 1.</exception>
@@ -741,7 +714,7 @@ namespace GorgonLibrary.Graphics
 		/// <para>Thrown when the usage parameter is set to Immutable and the <paramref name="initialData"/> is NULL (Nothing in VB.Net).</para>
 		/// </exception>
 		/// <remarks>If creating an immutable vertex buffer, be sure to pre-populate it via the initialData parameter.</remarks>
-		public GorgonVertexBuffer CreateVertexBuffer(int size, BufferUsage usage, GorgonDataStream initialData)
+		public GorgonVertexBuffer CreateVertexBuffer(int size, BufferUsage usage, bool isOutput = false, GorgonDataStream initialData = null)
 		{
 			if (size < 1)
 			{
@@ -758,7 +731,7 @@ namespace GorgonLibrary.Graphics
 				throw new ArgumentException(Resources.GORGFX_BUFFER_IMMUTABLE_REQUIRES_DATA, "usage");
 			}
 
-			var buffer = new GorgonVertexBuffer(_graphics, usage, size);
+			var buffer = new GorgonVertexBuffer(_graphics, usage, size, isOutput);
 			buffer.Initialize(initialData);
 
 			_graphics.AddTrackedObject(buffer);

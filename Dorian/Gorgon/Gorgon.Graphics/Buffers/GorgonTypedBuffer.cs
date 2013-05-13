@@ -1,7 +1,7 @@
 ﻿#region MIT.
 // 
 // Gorgon.
-// Copyright (C) 2012 Michael Winsor
+// Copyright (C) 2013 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -20,58 +20,40 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: Monday, November 5, 2012 8:58:47 PM
+// Created: Sunday, May 12, 2013 11:04:40 PM
 // 
 #endregion
 
-using GorgonLibrary.IO;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using DX = SharpDX;
 using D3D = SharpDX.Direct3D11;
+using GorgonLibrary.Native;
+using GorgonLibrary.IO;
 
 namespace GorgonLibrary.Graphics
 {
 	/// <summary>
-	/// The type of structured buffer.
+	/// A buffer to hold generic byte data.
 	/// </summary>
-	public enum StructuredBufferType
-	{
-		/// <summary>
-		/// A standard structured buffer.
-		/// </summary>
-		Standard = 0,
-		/// <summary>
-		/// An append/consume buffer.
-		/// </summary>
-		AppendConsume = 1,
-		/// <summary>
-		/// A counter buffer.
-		/// </summary>
-		Counter = 2,
-		/// <summary>
-		/// A raw buffer.
-		/// </summary>
-		Raw = 3
-	}
-
-	/// <summary>
-	/// A structured buffer for shaders.
-	/// </summary>
-	/// <remarks>Structured buffers are similar to <see cref="GorgonLibrary.Graphics.GorgonConstantBuffer">constant buffers</see> in that they're used to convey data to 
-	/// a shader.  However, unlike constant buffers, these buffers allow for unordered access and are meant as containers for structured data (hence, structured buffers).
-	/// <para>Structured buffers are only available to SM5 and above.</para>
-	/// </remarks>
-	public class GorgonStructuredBuffer
+	/// <typeparam name="T">Type of data in the buffer.</typeparam>
+	/// <remarks>This buffer holds typed data and can be accessed in a shader through its shader view or an unordered access view.</remarks>
+	public class GorgonTypedBuffer<T>
 		: GorgonShaderBuffer
+		where T : struct
 	{
 		#region Properties.
 		/// <summary>
-		/// Property to return the settings for a structured shader buffer.
+		/// Property to return the settings for the buffer.
 		/// </summary>
-		public new GorgonStructuredBufferSettings Settings
+		public new GorgonTypedBufferSettings Settings
 		{
 			get
 			{
-				return (GorgonStructuredBufferSettings)base.Settings;
+				return (GorgonTypedBufferSettings)base.Settings;
 			}
 		}
 		#endregion
@@ -87,7 +69,7 @@ namespace GorgonLibrary.Graphics
 		        return;
 		    }
 
-		    DefaultView = new GorgonResourceView(Graphics, "Gorgon Structured Buffer #" + Graphics.GetGraphicsObjectOfType<GorgonStructuredBuffer>().Count)
+		    DefaultView = new GorgonResourceView(Graphics, "Gorgon Typed Buffer #" + Graphics.GetGraphicsObjectOfType<GorgonTypedBuffer<T>>().Count)
 		        {
 		            Resource = this
 		        };
@@ -102,8 +84,8 @@ namespace GorgonLibrary.Graphics
 		{
 			if (D3DResource != null)
 			{
-				GorgonRenderStatistics.StructuredBufferCount--;
-				GorgonRenderStatistics.StructuredBufferSize -= D3DBuffer.Description.SizeInBytes;
+				GorgonRenderStatistics.TypedBufferCount--;
+				GorgonRenderStatistics.TypedBufferSize -= D3DBuffer.Description.SizeInBytes;
 			}
 
 			base.CleanUpResource();
@@ -123,15 +105,14 @@ namespace GorgonLibrary.Graphics
 
 		    var desc = new D3D.BufferDescription
 		        {
-					BindFlags = BufferUsage == BufferUsage.Staging ? D3D.BindFlags.None : D3D.BindFlags.ShaderResource,
+		            BindFlags = BufferUsage == BufferUsage.Staging ? D3D.BindFlags.None : D3D.BindFlags.ShaderResource,
 		            CpuAccessFlags = D3DCPUAccessFlags,
-		            OptionFlags = D3D.ResourceOptionFlags.BufferStructured,
+		            OptionFlags = Settings.IsRaw ? D3D.ResourceOptionFlags.BufferAllowRawViews : D3D.ResourceOptionFlags.None,
 		            SizeInBytes = SizeInBytes,
-		            StructureByteStride = Settings.ElementSize,
 		            Usage = D3DUsage
 		        };
 
-			if ((BufferUsage != BufferUsage.Staging) && (Settings.UseUnorderedAccessView))
+			if ((BufferUsage != BufferUsage.Staging) && (Settings.UnorderedAccessViewFormat != BufferFormat.Unknown))
 			{
 				desc.BindFlags |= D3D.BindFlags.UnorderedAccess;
 			}
@@ -150,11 +131,11 @@ namespace GorgonLibrary.Graphics
 		        D3DResource = new D3D.Buffer(Graphics.D3DDevice, desc);
 		    }
 
-		    GorgonRenderStatistics.StructuredBufferCount++;
-			GorgonRenderStatistics.StructuredBufferSize += ((D3D.Buffer)D3DResource).Description.SizeInBytes;
+		    GorgonRenderStatistics.TypedBufferCount++;
+			GorgonRenderStatistics.TypedBufferSize += ((D3D.Buffer)D3DResource).Description.SizeInBytes;
 
 #if DEBUG
-			D3DResource.DebugName = "Gorgon Structured Buffer #" + Graphics.GetGraphicsObjectOfType<GorgonStructuredBuffer>().Count;
+			D3DResource.DebugName = "Gorgon Typed Buffer #" + Graphics.GetGraphicsObjectOfType<GorgonTypedBuffer<T>>().Count;
 #endif
 			CreateDefaultResourceView();
 		}
@@ -162,12 +143,12 @@ namespace GorgonLibrary.Graphics
 
 		#region Constructor/Destructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonStructuredBuffer" /> class.
+		/// Initializes a new instance of the <see cref="GorgonTypedBuffer{T}" /> class.
 		/// </summary>
 		/// <param name="graphics">Graphics interface that owns this buffer.</param>
-		/// <param name="settings">The settings for the structured buffer.</param>
-		internal GorgonStructuredBuffer(GorgonGraphics graphics, GorgonStructuredBufferSettings settings)
-			: base(graphics, settings, settings.ElementCount * settings.ElementSize)
+		/// <param name="settings">The settings to apply to the typed buffer.</param>
+		internal GorgonTypedBuffer(GorgonGraphics graphics, GorgonTypedBufferSettings settings)
+			: base(graphics, settings, settings.ElementCount * DirectAccess.SizeOf<T>())
 		{
 		}
 		#endregion
