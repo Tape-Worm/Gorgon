@@ -99,9 +99,7 @@ namespace GorgonLibrary.Graphics
 		: IDisposable
 	{
 		#region Variables.
-	    private Dictionary<GorgonShaderView, D3D.ShaderResourceView> _shaderViewCache;  // A cache of shader resource views.
 		private bool _disposed;				                                            // Flag to indicate that the object was disposed.
-		private GorgonShaderView _shaderView;	                                        // The current view for the resource..
 		#endregion
 
 		#region Properties.
@@ -113,16 +111,7 @@ namespace GorgonLibrary.Graphics
 			get;
 			set;
 		}
-
-        /// <summary>
-        /// Property to set or return the default shader view for this resource.
-        /// </summary>
-        internal KeyValuePair<GorgonShaderView, D3D.ShaderResourceView> DefaultView
-        {
-            get;
-            set;
-        }
-
+        
 		/// <summary>
 		/// Property to return the graphics interface that owns this object.
 		/// </summary>
@@ -130,31 +119,6 @@ namespace GorgonLibrary.Graphics
 		{
 			get;
 			private set;
-		}
-
-        /// <summary>
-        /// Property to set or return the current shader view.
-        /// </summary>
-        public virtual GorgonShaderView? ShaderView
-        {
-            get
-            {
-                return _shaderView;
-            }
-            set
-            {
-                
-            }
-        }
-
-		/// <summary>
-		/// Property to set or return the view for the resource.
-		/// </summary>
-		/// <exception cref="GorgonLibrary.GorgonException">Thrown when an attempt to bind a view to the resource is made and the view is already bound to another resource.</exception>
-		public virtual GorgonResourceView View
-		{
-			get;
-            protected set;
 		}
 
 		/// <summary>
@@ -202,40 +166,6 @@ namespace GorgonLibrary.Graphics
 		/// Function to clean up the resource object.
 		/// </summary>
 		protected abstract void CleanUpResource();
-
-        /// <summary>
-        /// Function to set the current resource view for this resource.
-        /// </summary>
-        /// <param name="srvFormat">Shader resource view format.</param>
-        /// <param name="uavFormat">Unordered access view format</param>
-        protected void SetResourceView(BufferFormat srvFormat, BufferFormat uavFormat)
-        {
-            // If there's no change, then do nothing.
-			if ((_view != null) && (_view.ShaderViewFormat == srvFormat) && (_view.UnorderedAccessViewFormat == uavFormat))
-			{
-				return;
-			}
-
-            // Check the cache for this view.
-            var lookUp = new Tuple<BufferFormat, BufferFormat>(srvFormat, uavFormat);
-
-            // If it's in the cache, then just re-use it.
-            if (_viewCache.ContainsKey(lookUp))
-            {
-                _view = _viewCache[lookUp];
-
-                Graphics.Shaders.Reseat(this);
-                return;
-            }
-
-            // It's not in the cache.  So we need to build it.
-            _view = new GorgonResourceView(Graphics, this);
-            _view.BuildResourceView();
-
-            // Re-apply to the shaders with the new view.
-            Graphics.Shaders.Reseat(this);
-            
-        }
 
 		/// <summary>
 		/// Function to set application specific data on the resource.
@@ -332,9 +262,7 @@ namespace GorgonLibrary.Graphics
 		/// <param name="graphics">The graphics interface that owns this object.</param>
 		protected GorgonResource(GorgonGraphics graphics)
 		{
-			IsRaw = false;
 			Graphics = graphics;
-            _viewCache = new Dictionary<Tuple<BufferFormat, BufferFormat>, GorgonResourceView>();
 		}
 		#endregion
 
@@ -352,14 +280,6 @@ namespace GorgonLibrary.Graphics
 					Graphics.RemoveTrackedObject(this);
 
 					CleanUpResource();
-
-                    // Destroy all views in the cache.
-                    foreach (var item in _viewCache)
-                    {
-                        item.Value.CleanUp();
-                    }
-
-                    _viewCache.Clear();
 				}
 
 				_disposed = true;

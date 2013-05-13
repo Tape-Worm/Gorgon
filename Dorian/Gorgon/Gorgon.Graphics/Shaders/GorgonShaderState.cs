@@ -709,6 +709,15 @@ namespace GorgonLibrary.Graphics
 			#endregion
 
 			#region Methods.
+            /// <summary>
+            /// Function unbind a shader view.
+            /// </summary>
+            /// <param name="view">View to unbind.</param>
+            internal void Unbind(GorgonShaderView view)
+            {
+                throw new NotImplementedException("Need to implement this ASAP.  Don't forget about it.");    
+            }
+
 			/// <summary>
 			/// Function to unbind a shader resource view.
 			/// </summary>
