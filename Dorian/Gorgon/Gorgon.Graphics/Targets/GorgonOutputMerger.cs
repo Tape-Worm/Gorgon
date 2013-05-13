@@ -642,9 +642,9 @@ namespace GorgonLibrary.Graphics
 		/// <param name="isIndexed">TRUE if the data is indexed, FALSE if not.</param>
 		/// <remarks>This method is not supported by SM2_a_b or SM_4.x video devices.</remarks>
 		/// <exception cref="System.InvalidOperationException">Thrown if the current video device is a SM2_a_b or SM4_x device.</exception>
-		public void DrawInstancedIndirect(GorgonBaseBuffer buffer, int alignedAyteOffset, bool isIndexed)
+		public void DrawInstancedIndirect(GorgonBuffer buffer, int alignedAyteOffset, bool isIndexed)
 		{
-			GorgonDebug.AssertNull<GorgonBaseBuffer>(buffer, "buffer");
+			GorgonDebug.AssertNull<GorgonBuffer>(buffer, "buffer");
 
 #if DEBUG
 			if ((_graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM2_a_b) ||

@@ -25,123 +25,54 @@
 #endregion
 
 using System;
+using D3D = SharpDX.Direct3D11;
 using GorgonLibrary.Graphics.Properties;
 
 namespace GorgonLibrary.Graphics
 {
     /// <summary>
-    /// A shader resource view to allow access to resource data inside of a shader.
+    /// A resource view to allow access to resource data inside of a shader.
     /// </summary>
-    public struct GorgonShaderView
-        : IEquatable<GorgonShaderView>
+    public abstract class GorgonView
     {
-        #region Variables.
-        /// <summary>
-        /// The format of the resource view.
-        /// </summary>
-        public readonly BufferFormat Format;
-        /// <summary>
-        /// Information about the assigned format.
-        /// </summary>
-        public readonly GorgonBufferFormatInfo.GorgonFormatData FormatInfo;
-        #endregion
+		#region Properties.
+		/// <summary>
+		/// Property to return information about the format used for the shader view.
+		/// </summary>
+		public GorgonBufferFormatInfo.GorgonFormatData FormatInfo
+		{
+			get;
+			private set;
+		}
 
-        #region Methods.
-        /// <summary>
-        /// Function to return whether two instances are equal.
-        /// </summary>
-        /// <param name="left">Left instance to compare.</param>
-        /// <param name="right">Right instance to compare.</param>
-        /// <returns>TRUE if equal, FALSE if not.</returns>
-        public static bool Equals(ref GorgonShaderView left, ref GorgonShaderView right)
-        {
-            return left.Format == right.Format;
-        }
+		/// <summary>
+		/// Property to return the format of the view.
+		/// </summary>
+		public BufferFormat Format
+		{
+			get;
+			private set;
+		}
 
-        /// <summary>
-        /// Determines whether the specified <see cref="System.Object" /> is equal to this instance.
-        /// </summary>
-        /// <param name="obj">The <see cref="System.Object" /> to compare with this instance.</param>
-        /// <returns>
-        ///   <c>true</c> if the specified <see cref="System.Object" /> is equal to this instance; otherwise, <c>false</c>.
-        /// </returns>
-        public override bool Equals(object obj)
-        {
-            if (obj is GorgonShaderView)
-            {
-                return Equals((GorgonShaderView)obj);
-            }
-            return base.Equals(obj);
-        }
-        
-        /// <summary>
-        /// Returns a hash code for this instance.
-        /// </summary>
-        /// <returns>
-        /// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table. 
-        /// </returns>
-        public override int GetHashCode()
-        {
-            return 281.GenerateHash(Format);
-        }
+		/// <summary>
+		/// Property to return the resource bound to this view.
+		/// </summary>
+		public GorgonResource Resource
+		{
+			get;
+			private set;
+		}
+		#endregion
 
-        /// <summary>
-        /// Returns a <see cref="System.String" /> that represents this instance.
-        /// </summary>
-        /// <returns>
-        /// A <see cref="System.String" /> that represents this instance.
-        /// </returns>
-        public override string ToString()
-        {
-            return string.Format(Resources.GORGFX_SHADER_VIEW_TOSTR, Format);
-        }
-
-        /// <summary>
-        /// Equality operator.
-        /// </summary>
-        /// <param name="left">Left instance to compare.</param>
-        /// <param name="right">Right instance to compare.</param>
-        /// <returns>TRUE if equal, FALSE if not.</returns>
-        public static bool operator ==(GorgonShaderView left, GorgonShaderView right)
-        {
-            return Equals(ref left, ref right);
-        }
-
-        /// <summary>
-        /// Inequality operator.
-        /// </summary>
-        /// <param name="left">Left instance to compare.</param>
-        /// <param name="right">Right instance to compare.</param>
-        /// <returns>TRUE if not equal, FALSE if equal.</returns>
-        public static bool operator !=(GorgonShaderView left, GorgonShaderView right)
-        {
-            return !Equals(ref left, ref right);
-        }
-        #endregion
-
-        #region Constructor/Destructor.
-        /// <summary>
-        /// Initializes a new instance of the <see cref="GorgonShaderView"/> struct.
+		#region Constructor/Destructor.
+		/// <summary>
+        /// Initializes a new instance of the <see cref="GorgonView"/> struct.
         /// </summary>
         /// <param name="format">The format of the resource view.</param>
-        public GorgonShaderView(BufferFormat format)
+        protected GorgonView(BufferFormat format)
         {
             Format = format;
             FormatInfo = format != BufferFormat.Unknown ? GorgonBufferFormatInfo.GetInfo(format) : null;
-        }
-        #endregion
-
-        #region IEquatable<GorgonShaderView> Implementation.
-        /// <summary>
-        /// Indicates whether the current object is equal to another object of the same type.
-        /// </summary>
-        /// <param name="other">An object to compare with this object.</param>
-        /// <returns>
-        /// true if the current object is equal to the other parameter; otherwise, false.
-        /// </returns>
-        public bool Equals(GorgonShaderView other)
-        {
-            return Equals(ref this, ref other);
         }
         #endregion
     }

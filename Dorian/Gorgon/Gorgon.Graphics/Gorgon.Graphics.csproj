@@ -63,6 +63,8 @@
     <Reference Include="System.Windows.Forms" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Buffers\GorgonShaderBufferSettings.cs" />
+    <Compile Include="Buffers\GorgonTypedBuffer.cs" />
     <Compile Include="Buffers\GorgonShaderBuffer.cs" />
     <Compile Include="Buffers\GorgonStructuredBuffer.cs" />
     <Compile Include="Buffers\GorgonIndexBuffer.cs" />
@@ -113,6 +115,7 @@
     <Compile Include="Resource\GorgonResource.cs" />
     <Compile Include="Resource\GorgonResourceView.cs" />
     <Compile Include="Resource\GorgonShaderResourceView.cs" />
+    <Compile Include="Resource\GorgonShaderViewSettings.cs" />
     <Compile Include="Shaders\GorgonEffect.cs" />
     <Compile Include="Shaders\GorgonPixelShader.cs" />
     <Compile Include="Shaders\GorgonShader.cs" />

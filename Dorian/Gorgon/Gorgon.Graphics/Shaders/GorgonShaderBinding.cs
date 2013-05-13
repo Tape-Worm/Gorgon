@@ -326,31 +326,34 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Function to create a structured buffer and initialize it with data.
 		/// </summary>
-		/// <param name="elementCount">Number of elements that the buffer will contain.</param>
-		/// <param name="elementSize">Size of an element, in bytes.</param>
-		/// <param name="allowCPUWrite">TRUE to allow the CPU to have write access to the buffer, FALSE to disallow.</param>
+		/// <param name="settings">Settings used to create the structured buffer.</param>
 		/// <param name="stream">Stream containing the data used to initialize the buffer.</param>
 		/// <returns>A new structured buffer.</returns>
-		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="elementCount"/> or <paramref name="elementSize"/> parameters are not greater than 0.
-		/// </exception>
+		/// <remarks>This buffer type allows structures of data to be processed by the GPU without implicit byte mapping.
+		/// <para>Structured buffers can only be used on SM_5 video devices.</para></remarks>
+		/// <exception cref="System.ArgumentException">Thrown when the ElementSize or ElementCount properties in the <paramref name="settings"/> parameter are not greater than 0.</exception>
 		/// <exception cref="System.InvalidOperationException">Thrown when an attempt to create a structured buffer is made on a video device that does not support SM5 or better.</exception>
-		public GorgonStructuredBuffer CreateStructuredBuffer(int elementCount, int elementSize, bool allowCPUWrite, GorgonDataStream stream)
+		public GorgonStructuredBuffer CreateStructuredBuffer(GorgonStructuredBufferSettings settings, GorgonDataStream stream = null)
 		{
-			GorgonStructuredBuffer result = null;
+			GorgonStructuredBuffer result;
 
+			GorgonDebug.AssertNull(settings, "settings");
 #if DEBUG
+			
 		    if (_graphics.VideoDevice.SupportedFeatureLevel < DeviceFeatureLevel.SM5)
 		    {
 		        throw new InvalidOperationException(
 		            "Structured buffers are only available for video devices that support SM5 or better.");
 		    }
 
-		    if (elementCount <= 0)
+			if (settings.)
+
+		    if (settings.ElementCount <= 0)
 		    {
 		        throw new ArgumentException("The element count must be greater than 0.", "settings");
 		    }
 
-		    if (elementSize <= 0)
+		    if (settings.ElementSize <= 0)
 		    {
 		        throw new ArgumentException("The element size must be greater than 0.", "settings");
 		    }

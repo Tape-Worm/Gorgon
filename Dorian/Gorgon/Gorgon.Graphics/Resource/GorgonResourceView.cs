@@ -28,10 +28,188 @@ using System;
 using GorgonLibrary.Diagnostics;
 using GI = SharpDX.DXGI;
 using D3D = SharpDX.Direct3D11;
+using GorgonLibrary.Graphics.Properties;
 
 namespace GorgonLibrary.Graphics
 {
 	/// <summary>
+	/// A shader resource view.
+	/// </summary>
+	/// <remarks>Use a resource view to allow a shader access to the contents of a resource (or sub resource).  When the resource is created with a typeless format, this will allow 
+	/// the resource to be cast to any format within the same group.</remarks>
+	public abstract class GorgonShaderView
+		: IDisposable
+	{
+		#region Variables.
+		private bool _disposed;				// Flag to indicate that the object was disposed.
+		#endregion
+
+		#region Properties.
+		/// <summary>
+		/// Property to return the Direct3D shader resource view.
+		/// </summary>
+		internal D3D.ShaderResourceView D3DView
+		{
+			get;
+			private set;
+		}
+
+		/// <summary>
+		/// Property to return the resource that the view is bound with.
+		/// </summary>
+		public GorgonResource Resource
+		{
+			get;
+			private set;
+		}
+
+		/// <summary>
+		/// Property to return information about the view format.
+		/// </summary>
+		public GorgonBufferFormatInfo.GorgonFormatData FormatInformation
+		{
+			get;
+			private set;
+		}
+
+		/// <summary>
+		/// Property to return the settings for the view.
+		/// </summary>
+		public IViewSettings Settings
+		{
+			get;
+			protected set;
+		}
+		#endregion
+
+		#region Methods.
+		/// <summary>
+		/// Releases unmanaged and - optionally - managed resources.
+		/// </summary>
+		/// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
+		private void Dispose(bool disposing)
+		{
+			if (_disposed)
+			{
+				return;
+			}
+
+			if (disposing)
+			{
+				// Unbind this view since we're destroying it.
+				// TODO: fix this to take a shader resource view.
+				//Resource.Graphics.Shaders.Unbind(Resource);
+				Resource.Graphics.RemoveTrackedObject(this);
+
+				if (D3DView != null)
+				{
+					Gorgon.Log.Print("Destroying shader resource view for {0}.", LoggingLevel.Verbose, Resource.GetType().FullName);
+					D3DView.Dispose();
+				}
+
+				D3DView = null;
+			}
+
+			_disposed = true;
+		}
+
+		/// <summary>
+		/// Function to perform initialization of the shader view resource.
+		/// </summary>
+		protected internal abstract void Initialize();
+		#endregion
+
+		#region Constructor/Destructor.
+		/// <summary>
+		/// Initializes a new instance of the <see cref="GorgonShaderView"/> class.
+		/// </summary>
+		/// <param name="buffer">The buffer to bind to the view.</param>
+		/// <param name="settings">Settings to apply to the view.</param>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="buffer"/> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentException">Thrown when the format property <paramref name="settings"/> parameter is set to Unknown.</exception>
+		protected GorgonShaderView(GorgonResource buffer, IViewSettings settings)
+		{
+			if (buffer == null)
+			{
+				throw new ArgumentNullException("buffer");
+			}
+
+			if (settings == null)
+			{
+				throw new ArgumentNullException("settings");
+			}
+			
+			if (settings.Format == BufferFormat.Unknown)
+			{
+				throw new ArgumentException(Resources.GORGFX_VIEW_UNKNOWN_FORMAT, "settings");
+			}
+
+			Resource = buffer;
+			Settings = settings;
+			FormatInformation = GorgonBufferFormatInfo.GetInfo(Settings.Format);
+		}
+		#endregion
+	
+		#region IDisposable Members
+		/// <summary>
+		/// Releases unmanaged and - optionally - managed resources.
+		/// </summary>
+		public void Dispose()
+		{
+ 			Dispose(true);
+		}
+		#endregion
+	}
+
+	/// <summary>
+	/// A shader view for buffers.
+	/// </summary>
+	/// <remarks>Use a resource view to allow a shader access to the contents of a resource (or sub resource).  When the resource is created with a typeless format, this will allow 
+	/// the resource to be cast to any format within the same group.</remarks>
+	public sealed class GorgonBufferShaderView
+		: GorgonShaderView
+	{
+		#region Variables.
+
+		#endregion
+
+		#region Properties.
+		/// <summary>
+		/// Property to return the settings for the view.
+		/// </summary>
+		public new GorgonBufferShaderViewSettings Settings
+		{
+			get
+			{
+				return (GorgonBufferShaderViewSettings)base.Settings;
+			}
+		}
+		#endregion
+
+		#region Methods.
+		/// <summary>
+		/// Function to perform initialization of the shader view resource.
+		/// </summary>
+		protected internal override void Initialize()
+		{
+			
+		}
+		#endregion
+
+		#region Constructor/Destructor.
+		/// <summary>
+		/// Initializes a new instance of the <see cref="GorgonBufferShaderView"/> class.
+		/// </summary>
+		/// <param name="buffer">The buffer to bind to the view.</param>
+		/// <param name="settings">The settings to apply to the view.</param>
+		public GorgonBufferShaderView(GorgonShaderBuffer buffer, GorgonBufferShaderViewSettings settings)
+			: base(buffer, settings)
+		{
+		}
+		#endregion
+	}
+
+	/*/// <summary>
 	/// A view of a resource that can be bound to a shader.
 	/// </summary>
 	/// <remarks>A view allows a resource to be handled by a shader and optionally used to reinterpret the format of a resource.</remarks>
@@ -456,5 +634,5 @@ namespace GorgonLibrary.Graphics
 		    Resource = resource;
 		}
 		#endregion
-	}
+	}*/
 }

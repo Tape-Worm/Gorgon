@@ -402,7 +402,7 @@ namespace GorgonLibrary.Graphics
 
                 if (Settings.ImageType != ImageType.Image2D)
                 {
-                    throw new NotSupportedException("Feature level SM2_a_B video devices can only save 2D staging textures.");
+                    throw new NotSupportedException("Feature level SM2_a_b video devices can only save 2D staging textures.");
                 }
             }
 

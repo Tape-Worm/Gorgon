@@ -124,15 +124,6 @@ namespace GorgonLibrary.Graphics
         }
 
 		/// <summary>
-		/// Property to set or return whether this resource can be used as a raw resource in a shader.
-		/// </summary>
-		public bool IsRaw
-		{
-			get;
-			protected set;
-		}
-
-		/// <summary>
 		/// Property to return the graphics interface that owns this object.
 		/// </summary>
 		public GorgonGraphics Graphics
