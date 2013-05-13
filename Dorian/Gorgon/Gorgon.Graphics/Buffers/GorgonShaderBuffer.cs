@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
 using GorgonLibrary.IO;
 using DX = SharpDX;
 using D3D = SharpDX.Direct3D11;
@@ -40,10 +41,22 @@ namespace GorgonLibrary.Graphics
 		: GorgonBuffer
 	{
 		#region Variables.
-		private DX.DataStream _lockStream;							// Lock stream.
+	    private Dictionary<Tuple<BufferFormat, int, int>, D3D.ShaderResourceView> _cache = null;    // A cache of shader resource views for the buffer.
+	    private GorgonBufferShaderView _defaultSRV;                                                 // The default shader resource view for a shader bound buffer.
+	    private D3D.UnorderedAccessView _defaultUAV;                                                // The default unordered access view for a shader bound buffer.
 		#endregion
 
 		#region Properties.
+        /// <summary>
+        /// Property to return the default shader resource view for the buffer.
+        /// </summary>
+	    internal D3D.ShaderResourceView DefaultSRV
+	    {
+	        get
+	        {
+	            return _defaultSRV == null ? null : _defaultSRV.D3DView;
+	        }
+	    }
 		/// <summary>
 		/// Property to return the settings for a shader buffer.
 		/// </summary>
@@ -51,21 +64,6 @@ namespace GorgonLibrary.Graphics
 		{
 			get;
 			private set;
-		}
-
-		/// <summary>
-		/// Property to set or return the view for the resource.
-		/// </summary>
-		public override GorgonResourceView View
-		{
-			get
-			{
-				return base.View;
-			}
-			set
-			{
-			    base.View = BufferUsage != BufferUsage.Staging ? value : null;
-			}
 		}
 		#endregion
 
@@ -87,14 +85,25 @@ namespace GorgonLibrary.Graphics
 		        Unlock();
 		    }
 
-		    View = null;
+            // Destroy the default shader resource view.
+            if (_defaultSRV != null)
+            {
+                _defaultSRV.Dispose();
+                _defaultSRV = null;
+            }
 
-			if (DefaultView != null)
-			{
-				Gorgon.Log.Print("Gorgon default resource view {0}: Destroying default resource view.", Diagnostics.LoggingLevel.Verbose, DefaultView.Name); 
-				DefaultView.Dispose();
-				DefaultView = null;
-			}
+            // Destroy the default unordered access view.
+            if (_defaultUAV != null)
+            {
+                _defaultUAV.Dispose();
+                _defaultUAV = null;
+            }
+
+            // Wipe out the cache for this object.
+            foreach (var item in _cache)
+            {
+                
+            }
 
 		    if (D3DResource == null)
 		    {
@@ -104,6 +113,13 @@ namespace GorgonLibrary.Graphics
 		    D3DResource.Dispose();
 		    D3DResource = null;
 		}
+
+        public GorgonBufferShaderView CreateView(BufferFormat format, int start, int count)
+        {
+            GorgonBufferShaderView result;
+
+            return result;
+        }
 		#endregion
 
 		#region Constructor/Destructor.

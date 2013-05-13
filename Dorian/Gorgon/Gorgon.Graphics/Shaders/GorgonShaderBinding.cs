@@ -142,6 +142,11 @@ namespace GorgonLibrary.Graphics
 			VertexShader.Resources.Unbind(resource);
 		}
 
+        internal void Unbind(GorgonShaderView view)
+        {
+            PixelShader.Resources.Unbind(view);
+        }
+
 		/// <summary>
 		/// Function to create an effect object.
 		/// </summary>
