@@ -48,7 +48,7 @@ namespace GorgonLibrary.Renderers
 			private uint _blendSampleMask;											// Blending sample mask.
 			private GorgonRasterizerStates _rasterStates;							// Rasterizer states.
 			private GorgonTextureSamplerStates _samplerState;						// Sampler states.
-			private GorgonResourceView _resource;									// First pixel shader resource.
+			private GorgonShaderView _resource;									    // First pixel shader resource.
 			private IDictionary<int, GorgonConstantBuffer> _vsConstantBuffers;		// The vertex shader constant buffers.
 			private IDictionary<int, GorgonConstantBuffer> _psConstantBuffers;		// The pixel shader constant buffers.
 			private GorgonRenderTarget _target;										// Default target.
@@ -77,7 +77,7 @@ namespace GorgonLibrary.Renderers
 				_blendSampleMask = graphics.Output.BlendingState.BlendSampleMask;
 				_rasterStates = graphics.Rasterizer.States;
 				_samplerState = graphics.Shaders.PixelShader.TextureSamplers[0];
-				_resource = graphics.Shaders.PixelShader.Resources[0];
+				_resource = graphics.Shaders.PixelShader.Resources.GetView(0);
 				_depthStencilState = graphics.Output.DepthStencilState.States;
 				_depthStencilReference = graphics.Output.DepthStencilState.DepthStencilReference;
 				_rasterStates.IsScissorTestingEnabled = false;
@@ -131,7 +131,7 @@ namespace GorgonLibrary.Renderers
 				graphics.Output.DepthStencilState.States = _depthStencilState;
 				graphics.Output.DepthStencilState.DepthStencilReference = _depthStencilReference;
 				graphics.Rasterizer.States = _rasterStates;
-				graphics.Shaders.PixelShader.Resources[0] = _resource;
+				graphics.Shaders.PixelShader.Resources.SetView(0, _resource);
 				graphics.Shaders.PixelShader.TextureSamplers[0] = _samplerState;
 
 				// Restore any constant buffers.				

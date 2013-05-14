@@ -220,4 +220,28 @@
   <data name="GORGFX_VIEW_UNKNOWN_FORMAT" xml:space="preserve">
     <value>The format for the view must not be [Unknown].</value>
   </data>
+  <data name="GORGFX_VIEW_ARRAY_COUNT_INVALID" xml:space="preserve">
+    <value>The array count must be between 1 and {0}.</value>
+  </data>
+  <data name="GORGFX_VIEW_ARRAY_START_INVALID" xml:space="preserve">
+    <value>The array start must be between 0 and less than {0}.</value>
+  </data>
+  <data name="GORGFX_VIEW_CANNOT_CAST_FORMAT" xml:space="preserve">
+    <value>The format [{0}] is not compatiable or cannot be cast to [{1}].</value>
+  </data>
+  <data name="GORGFX_VIEW_CUBE_ARRAY_SIZE_INVALID" xml:space="preserve">
+    <value>The array count for a cube texture must be a multiple of 6.</value>
+  </data>
+  <data name="GORGFX_VIEW_FORMAT_GROUP_INVALID" xml:space="preserve">
+    <value>The resource format [{0}] is not the same group as the view format [{1}].</value>
+  </data>
+  <data name="GORGFX_VIEW_MIP_COUNT_INVALID" xml:space="preserve">
+    <value>The mip map count must be between 1 and {0}.</value>
+  </data>
+  <data name="GORGFX_VIEW_MIP_START_INVALID" xml:space="preserve">
+    <value>The mip map start must be between 0 and less than {0}.</value>
+  </data>
+  <data name="GORGFX_VIEW_NO_TYPELESS" xml:space="preserve">
+    <value>The view cannot use a typeless format.</value>
+  </data>
 </root>

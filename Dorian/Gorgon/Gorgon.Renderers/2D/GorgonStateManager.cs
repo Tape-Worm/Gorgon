@@ -113,7 +113,7 @@ namespace GorgonLibrary.Renderers
 		private GorgonColor _blendFactor = new GorgonColor(1.0f, 1.0f, 1.0f, 1.0f);
 		private GorgonRangeF _alphaTestValue = GorgonRangeF.Empty;
 		private bool _alphaTestEnabled;
-		private GorgonResourceView _textureView;
+		private GorgonShaderView _textureView;
 		#endregion
 
 		#region Methods.
@@ -150,12 +150,12 @@ namespace GorgonLibrary.Renderers
 			GorgonRenderable.DepthStencilStates depthStencil = renderable.DepthStencil;
 			GorgonRenderable.BlendState blending = renderable.Blending;
 			GorgonRenderable.TextureSamplerState sampler = renderable.TextureSampler;
-            GorgonResourceView textureView = null;
+            GorgonShaderView textureView = null;
 
             // Get the current texture view.
             if (renderable.Texture != null)
             {
-                textureView = renderable.Texture.View;
+                textureView = renderable.Texture.DefaultShaderView;
             }
 
 			if (textureView != _textureView)
@@ -246,7 +246,8 @@ namespace GorgonLibrary.Renderers
 
 			if ((state & StateChange.Texture) == StateChange.Texture)
 			{
-                _textureView = _graphics.Shaders.PixelShader.Resources[0] = (renderable.Texture == null ? null : renderable.Texture.View);
+			    _textureView = renderable.Texture == null ? null : renderable.Texture.DefaultShaderView;
+                _graphics.Shaders.PixelShader.Resources.SetView(0, _textureView);
 
 				// If we have a texture change, and we have the default diffuse shader loaded, then switch to the textured shader, otherwise 
 				// switch to the diffuse shader.
@@ -345,7 +346,7 @@ namespace GorgonLibrary.Renderers
 			_rasterState = _graphics.Rasterizer.States;
 			_samplerState = _graphics.Shaders.PixelShader.TextureSamplers[0];
 			_depthState = _graphics.Output.DepthStencilState.States;
-			_textureView = _graphics.Shaders.PixelShader.Resources[0];
+			_textureView = _graphics.Shaders.PixelShader.Resources.GetView(0);
 		}
 		#endregion
 

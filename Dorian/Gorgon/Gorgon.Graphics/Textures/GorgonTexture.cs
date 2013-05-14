@@ -28,6 +28,7 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
+using System.Windows.Forms;
 using GorgonLibrary.Diagnostics;
 using GorgonLibrary.IO;
 using DX = SharpDX;
@@ -43,10 +44,20 @@ namespace GorgonLibrary.Graphics
 		: GorgonNamedResource
 	{
 		#region Variables.
+	    private GorgonViewCache _viewCache;                     // View cache.
 		private readonly IList<DX.DataStream> _lock;			// Locks for the texture.
 		#endregion
 
 		#region Properties.
+        /// <summary>
+        /// Property to return the default shader view.
+        /// </summary>
+        public GorgonShaderView DefaultShaderView
+        {
+            get;
+            private set;
+        }
+
 		/// <summary>
 		/// Property to return the render target that this texture belongs to.
 		/// </summary>
@@ -108,41 +119,44 @@ namespace GorgonLibrary.Graphics
 		#endregion
 
 		#region Methods.
-		/// <summary>
-		/// Function to create the resource object.
-		/// </summary>
-		protected override void CreateDefaultResourceView()
-		{
-			FormatInformation = GorgonBufferFormatInfo.GetInfo(Settings.Format);
-			if (Settings.ShaderView != BufferFormat.Unknown)
-			{
-				ShaderViewFormatInformation = GorgonBufferFormatInfo.GetInfo(Settings.ShaderView);
-			}
-			else
-			{
-				ShaderViewFormatInformation = FormatInformation;
-			}
+	    /// <summary>
+	    /// Function to create the resource objects.
+	    /// </summary>
+	    /// <returns>The new default shader view.</returns>
+	    protected void CreateDefaultResourceView()
+	    {
+	        if (Settings.Usage == BufferUsage.Staging)
+            {
+                return;
+            }
 
-			if (Settings.UnorderedAccessViewFormat != BufferFormat.Unknown)
-			{
-				UnorderedAccessViewFormatInformation = GorgonBufferFormatInfo.GetInfo(Settings.UnorderedAccessViewFormat);
-			}
-			else
-			{
-				UnorderedAccessViewFormatInformation = null;
-			}
+	        BufferFormat format = Settings.ShaderViewFormat == BufferFormat.Unknown ? Settings.Format : Settings.ShaderViewFormat;
 
-			// Create the default view for this resource.
-			if (Settings.Usage != BufferUsage.Staging)
-			{
-				DefaultView = new GorgonResourceView(Graphics, Name + "ResourceView");
-				DefaultView.Resource = this;
-				DefaultView.BuildResourceView();
+	        DefaultShaderView = CreateCachedShaderView(format, 0, Settings.MipCount, 0, Settings.ArrayCount);
+	    }
 
-				// Unbind and rebind us to the pipeline.
-				Graphics.Shaders.Reseat(this);	
-			}
-		}
+        /// <summary>
+        /// Function to create a new shader resource view object.
+        /// </summary>
+        /// <param name="format">The format of the resource view.</param>
+        /// <param name="mipStart">Starting mip map for the view.</param>
+        /// <param name="mipCount">Mip map count for the view.</param>
+        /// <param name="arrayStart">Starting array index for the view.</param>
+        /// <param name="arrayCount">Array index count for the view.</param>
+        /// <returns>A cached shader view object.</returns>
+        protected GorgonTextureShaderView CreateCachedShaderView(BufferFormat format,
+                                                    int mipStart,
+                                                    int mipCount,
+                                                    int arrayStart,
+                                                    int arrayCount)
+        {
+            if (Settings.Usage == BufferUsage.Staging)
+            {
+                throw new GorgonException(GorgonResult.CannotCreate, "A staging texture cannot create shader views.");
+            }
+
+            return _viewCache.GetTextureView(format, mipStart, mipCount, arrayStart, arrayCount);
+        }
 
 		/// <summary>
 		/// Function to clean up the resource object.
@@ -154,27 +168,22 @@ namespace GorgonLibrary.Graphics
 
 			Gorgon.Log.Print("Gorgon texture {0}: Destroying D3D 11 texture resource.", Diagnostics.LoggingLevel.Verbose, Name);
 
-			// Unbind from the view.
-			if (View != null)
-			{
-				View.Resource = null;
-			}
+			// Unbind the view(s).
+            if (_viewCache != null)
+            {
+                _viewCache.Dispose();
+                _viewCache = null;
+            }
 
-			// Destroy any view attached to this object.
-			if (DefaultView != null)
-			{
-				Gorgon.Log.Print("Gorgon default resource view {0}: Destroying default resource view.", Diagnostics.LoggingLevel.Verbose, DefaultView.Name);
-				DefaultView.Dispose();
-				DefaultView = null;
-			}
+		    if (D3DResource == null)
+		    {
+		        return;
+		    }
 
-			if (D3DResource != null)
-			{
-				GorgonRenderStatistics.TextureCount--;
-				GorgonRenderStatistics.TextureSize -= SizeInBytes;
-				D3DResource.Dispose();
-				D3DResource = null;
-			}			
+		    GorgonRenderStatistics.TextureCount--;
+		    GorgonRenderStatistics.TextureSize -= SizeInBytes;
+		    D3DResource.Dispose();
+		    D3DResource = null;
 		}
 
 		/// <summary>
@@ -198,12 +207,6 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		/// <returns>The new staging texture.</returns>
 		protected abstract GorgonTexture GetStagingTextureImpl();
-
-		/// <summary>
-		/// Function to retrieve information about an existing texture.
-		/// </summary>
-		/// <returns>New settings for the texture.</returns>
-		protected abstract ITextureSettings GetTextureInformation();
 
 		/// <summary>
 		/// Function to create an image with initial data.
@@ -260,6 +263,7 @@ namespace GorgonLibrary.Graphics
 			{
 				Gorgon.Log.Print("{0} {1}: Creating D3D11 texture resource...", Diagnostics.LoggingLevel.Verbose, GetType().Name, Name);
 				InitializeImpl(initialData);
+			    FormatInformation = GorgonBufferFormatInfo.GetInfo(Settings.Format);
 				CreateDefaultResourceView();
 
 				GorgonRenderStatistics.TextureCount++;
@@ -738,6 +742,7 @@ namespace GorgonLibrary.Graphics
 		{
 			_lock = new List<DX.DataStream>(16);
 			Settings = settings;
+            _viewCache = new GorgonViewCache(this);
 		}
 		#endregion
 	}

@@ -664,7 +664,7 @@ namespace GorgonLibrary.Renderers
 				}
 
 				ibData.Position = 0;
-				DefaultIndexBuffer = Graphics.Input.CreateIndexBuffer((int)ibData.Length, BufferUsage.Immutable, true, ibData);
+				DefaultIndexBuffer = Graphics.Input.CreateIndexBuffer((int)ibData.Length, BufferUsage.Immutable, true, false, ibData);
 			}
 			
 			// Create our empty vertex buffer.
@@ -685,7 +685,7 @@ namespace GorgonLibrary.Renderers
 		/// </summary>
 		internal void RenderObjects()
 		{
-			ICamera currentCamera = (_camera == null ? _defaultCamera : _camera);
+			ICamera currentCamera = (_camera ?? _defaultCamera);
 			BufferLockFlags flags = BufferLockFlags.Discard | BufferLockFlags.Write;
 			GorgonVertexBufferBinding vbBinding = Graphics.Input.VertexBuffers[0];
 
@@ -899,7 +899,7 @@ namespace GorgonLibrary.Renderers
 				GorgonTextureSamplerStates sampler = GorgonTextureSamplerStates.DefaultStates;
 				sampler.TextureFilter = TextureFilter.Point;
 				Graphics.Shaders.PixelShader.TextureSamplers[0] = sampler;
-				Graphics.Shaders.PixelShader.Resources[0] = null;
+				Graphics.Shaders.PixelShader.Resources.SetView(0, null);
 			}
 
 			Graphics.Rasterizer.SetViewport(Target.Viewport);

@@ -26,262 +26,47 @@
 
 using System;
 using System.Collections.Generic;
-using System.Runtime.InteropServices;
-using GorgonLibrary.Diagnostics;
-using SharpDX.Direct3D;
-using GI = SharpDX.DXGI;
-using D3D = SharpDX.Direct3D11;
 
 namespace GorgonLibrary.Graphics
 {
-	/// <summary>
-	/// A shader resource view.
-	/// </summary>
-	/// <remarks>Use a resource view to allow a shader access to the contents of a resource (or sub resource).  When the resource is created with a typeless format, this will allow 
-	/// the resource to be cast to any format within the same group.</remarks>
-	public abstract class GorgonShaderView
-		: IDisposable
-	{
-		#region Variables.
-		private bool _disposed;				// Flag to indicate that the object was disposed.
-		#endregion
-
-		#region Properties.
-		/// <summary>
-		/// Property to return the Direct3D shader resource view.
-		/// </summary>
-		internal D3D.ShaderResourceView D3DView
-		{
-			get;
-			set;
-		}
-
-		/// <summary>
-		/// Property to return the resource that the view is bound with.
-		/// </summary>
-		public GorgonResource Resource
-		{
-			get;
-			private set;
-		}
-
-        /// <summary>
-        /// Property to return the format for the view.
-        /// </summary>
-        public BufferFormat Format
-        {
-            get;
-            private set;
-        }
-
-		/// <summary>
-		/// Property to return information about the view format.
-		/// </summary>
-		public GorgonBufferFormatInfo.GorgonFormatData FormatInformation
-		{
-			get;
-			private set;
-		}
-		#endregion
-
-		#region Methods.
-		/// <summary>
-		/// Releases unmanaged and - optionally - managed resources.
-		/// </summary>
-		/// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
-		private void Dispose(bool disposing)
-		{
-			if (_disposed)
-			{
-				return;
-			}
-
-			if (disposing)
-			{
-				// Unbind this view since we're destroying it.
-				Resource.Graphics.Shaders.Unbind(this);
-
-				if (D3DView != null)
-				{
-					Gorgon.Log.Print("Destroying shader resource view for {0}.", LoggingLevel.Verbose, Resource.GetType().FullName);
-					D3DView.Dispose();
-				}
-
-				D3DView = null;
-			}
-
-			_disposed = true;
-		}
-
-	    /// <summary>
-	    /// Function to perform initialization of the shader view resource.
-	    /// </summary>
-	    protected abstract void InitializeImpl();
-
-        /// <summary>
-        /// Function to perform initialization of the shader view resource.
-        /// </summary>
-        internal void Initialize()
-        {
-            Gorgon.Log.Print("Creating shader resource view for {0}.", LoggingLevel.Verbose, Resource.GetType().FullName);
-            InitializeImpl();
-        }
-		#endregion
-
-		#region Constructor/Destructor.
-		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonShaderView"/> class.
-		/// </summary>
-		/// <param name="resource">The buffer to bind to the view.</param>
-		/// <param name="format">The format of the view.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="resource"/> parameter is NULL (Nothing in VB.Net).</exception>
-		protected GorgonShaderView(GorgonResource resource, BufferFormat format)
-		{
-			if (resource == null)
-			{
-				throw new ArgumentNullException("resource");
-			}
-
-			Resource = resource;
-		    Format = format;
-			FormatInformation = GorgonBufferFormatInfo.GetInfo(Format);
-		}
-		#endregion
-	
-		#region IDisposable Members
-		/// <summary>
-		/// Releases unmanaged and - optionally - managed resources.
-		/// </summary>
-		public void Dispose()
-		{
- 			Dispose(true);
-		}
-		#endregion
-	}
-
-	/// <summary>
-	/// A shader view for buffers.
-	/// </summary>
-	/// <remarks>Use a resource view to allow a shader access to the contents of a resource (or sub resource).  When the resource is created with a typeless format, this will allow 
-	/// the resource to be cast to any format within the same group.</remarks>
-	public sealed class GorgonBufferShaderView
-		: GorgonShaderView
-	{
-		#region Variables.
-
-		#endregion
-
-		#region Properties.
-        /// <summary>
-        /// Property to return the offset of the view from the first element in the buffer.
-        /// </summary>
-        public int ElementStart
-        {
-            get;
-            private set;
-        }
-
-        /// <summary>
-        /// Property to return the number of elements that the view will encompass.
-        /// </summary>
-        public int ElementCount
-        {
-            get;
-            private set;
-        }
-
-        /// <summary>
-        /// Propery to return whether the buffer is using raw access or not.
-        /// </summary>
-        public bool IsRaw
-        {
-            get;
-            private set;
-        }
-		#endregion
-
-		#region Methods.
-		/// <summary>
-		/// Function to perform initialization of the shader view resource.
-		/// </summary>
-		protected override void InitializeImpl()
-		{
-		    var desc = new D3D.ShaderResourceViewDescription
-		        {
-		            BufferEx = new D3D.ShaderResourceViewDescription.ExtendedBufferResource
-		                {
-		                    FirstElement = ElementStart,
-		                    ElementCount = ElementCount,
-                            Flags = IsRaw ? D3D.ShaderResourceViewExtendedBufferFlags.Raw 
-                                          : D3D.ShaderResourceViewExtendedBufferFlags.None
-		                },
-		            Dimension = ShaderResourceViewDimension.ExtendedBuffer,
-		            Format = (GI.Format)Format
-		        };
-
-            D3DView = new D3D.ShaderResourceView(Resource.Graphics.D3DDevice, Resource.D3DResource, desc);
-		}
-		#endregion
-
-		#region Constructor/Destructor.
-		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonBufferShaderView"/> class.
-		/// </summary>
-		/// <param name="buffer">The buffer to bind to the view.</param>
-		/// <param name="format">Format of the view.</param>
-		/// <param name="elementStart">The starting element for the view.</param>
-		/// <param name="elementCount">The number of elements in the view.</param>
-		internal GorgonBufferShaderView(GorgonShaderBuffer buffer, BufferFormat format, int elementStart, int elementCount)
-			: base(buffer, format)
-		{
-		    ElementStart = elementStart;
-		    ElementCount = elementCount;
-		    IsRaw = buffer.Settings.IsRaw;
-		}
-		#endregion
-	}
-
     /// <summary>
-    /// A cache for shader resource views.
+    /// A cache for resource views.
     /// </summary>
-    class GorgonSRVCache<TK, TV>
+    class GorgonViewCache
         : IDisposable
-        where TV : GorgonShaderView
     {
         #region Value Types.
         /// <summary>
         /// A key for the SRV cache.
         /// </summary>
-        [StructLayout(LayoutKind.Explicit)]
-        struct BufferViewKey
-            : IEquatable<BufferViewKey>
+        struct ShaderViewKey
+            : IEquatable<ShaderViewKey>
         {
             #region Variables.
-            [FieldOffset(0)]
             private readonly BufferFormat _format;
-            [FieldOffset(4)]
-            private readonly D3D.ShaderResourceViewDescription.ExtendedBufferResource _buffer;
-            [FieldOffset(4)]
-            private readonly D3D.ShaderResourceViewDescription.Texture1DResource _texture1D;
-            [FieldOffset(4)]
-            private readonly D3D.ShaderResourceViewDescription.Texture1DArrayResource _texture1DArray;
-            [FieldOffset(4)]
-            private readonly D3D.ShaderResourceViewDescription.Texture2DResource _texture2D;
-            [FieldOffset(4)]
-            private readonly D3D.ShaderResourceViewDescription.Texture2DArrayResource _texture2DArray;
-            [FieldOffset(4)]
-            private readonly D3D.ShaderResourceViewDescription.Texture2DMultisampledResource _texture2DMultiSample;
-            [FieldOffset(4)]
-            private readonly D3D.ShaderResourceViewDescription.Texture2DMultisampledArrayResource _texture2DMultSampleArray;
-            [FieldOffset(4)]
-            private readonly D3D.ShaderResourceViewDescription.Texture3DResource _texture3D;
-            [FieldOffset(4)]
-            private readonly D3D.ShaderResourceViewDescription.TextureCubeResource _textureCube;
-            [FieldOffset(4)]
-            private readonly D3D.ShaderResourceViewDescription.TextureCubeArrayResource _textureCubeArray;
+            private readonly int _value1;
+            private readonly int _value2;
+            private readonly int _value3;
+            private readonly int _value4;
             #endregion
 
             #region Methods.
+            /// <summary>
+            /// Determines whether the specified <see cref="System.Object" /> is equal to this instance.
+            /// </summary>
+            /// <param name="obj">The <see cref="System.Object" /> to compare with this instance.</param>
+            /// <returns>
+            ///   <c>true</c> if the specified <see cref="System.Object" /> is equal to this instance; otherwise, <c>false</c>.
+            /// </returns>
+            public override bool Equals(object obj)
+            {
+                if (obj is ShaderViewKey)
+                {
+                    return Equals((ShaderViewKey)obj);
+                }
+                return base.Equals(obj);
+            }
+
             /// <summary>
             /// Returns a hash code for this instance.
             /// </summary>
@@ -290,25 +75,48 @@ namespace GorgonLibrary.Graphics
             /// </returns>
             public override int GetHashCode()
             {
-                return 281.GenerateHash(_texture1DArray.ArraySize).GenerateHash(_texture1DArray.FirstArraySlice).GenerateHash(_texture1DArray.MipLevels).GenerateHash(_
-                return 281.GenerateHash(_format).GenerateHash(_elementStart).GenerateHash(_elementCount).GenerateHash(_raw);
+                return 281.GenerateHash(_format)
+                       .GenerateHash(_value1)
+                       .GenerateHash(_value2)
+                       .GenerateHash(_value3)
+                       .GenerateHash(_value4);
             }
             #endregion
 
             #region Constructor.
             /// <summary>
-            /// Initializes a new instance of the <see cref="BufferViewKey"/> struct.
+            /// Initializes a new instance of the <see cref="ShaderViewKey"/> struct.
             /// </summary>
             /// <param name="format">The format.</param>
-            /// <param name="start">The start.</param>
-            /// <param name="count">The count.</param>
-            /// <param name="isRaw">if set to <c>true</c> [is raw].</param>
-            public BufferViewKey(BufferFormat format, int start, int count, bool isRaw)
+            /// <param name="value1">First key component.</param>
+            /// <param name="value2">Second key component.</param>
+            /// <param name="value3">Third key component.</param>
+            /// <param name="value4">Fourth key component.</param>
+            public ShaderViewKey(BufferFormat format, int value1, int value2, int value3, int value4)
             {
                 _format = format;
-                _elementStart = start;
-                _elementCount = count;
-                _raw = isRaw;
+                _value1 = value1;
+                _value2 = value2;
+                _value3 = value3;
+                _value4 = value4;
+            }
+            #endregion
+
+            #region IEquatable<ShaderViewKey> Members
+            /// <summary>
+            /// Indicates whether the current object is equal to another object of the same type.
+            /// </summary>
+            /// <param name="other">An object to compare with this object.</param>
+            /// <returns>
+            /// true if the current object is equal to the other parameter; otherwise, false.
+            /// </returns>
+            public bool Equals(ShaderViewKey other)
+            {
+                return other._format == _format
+                       && other._value1 == _value1
+                       && other._value2 == _value2
+                       && other._value3 == _value3
+                       && other._value4 == _value4;
             }
             #endregion
         }
@@ -319,11 +127,10 @@ namespace GorgonLibrary.Graphics
         private static readonly object _syncLock = new object();                        // Synchronization object for threading.
         // ReSharper restore StaticFieldInGenericType
 
-        private bool _disposed = false;                                                 // Flag to indicate that the object is disposed.
+        private bool _disposed;                                                         // Flag to indicate that the object is disposed.
         private GorgonResource _resource;                                               // Resource bound to the SRVs.
-        private Dictionary<BufferViewKey, GorgonBufferShaderView> _bufferViews;         // The cache of buffer views.
-        
-        // TODO: Add texture view types.
+        private Dictionary<ShaderViewKey, GorgonBufferShaderView> _bufferViews;         // The cache of buffer views.
+        private Dictionary<ShaderViewKey, GorgonTextureShaderView> _textureViews;       // The cache of texture views.
         #endregion
 
         #region Methods.
@@ -340,15 +147,62 @@ namespace GorgonLibrary.Graphics
 
             if (disposing)
             {
+                foreach (var item in _textureViews)
+                {
+                    item.Value.CleanUp();
+                }
+
                 foreach (var item in _bufferViews)
                 {
-                    item.Value.Dispose();
+                    item.Value.CleanUp();
                 }
 
                 _bufferViews.Clear();
             }
 
             _disposed = true;
+        }
+
+        /// <summary>
+        /// Function to retrieve a texture view.
+        /// </summary>
+        /// <param name="format">Format of the view.</param>
+        /// <param name="firstMip">First mip level for the view.</param>
+        /// <param name="mipCount">Number of mip levels to view.</param>
+        /// <param name="arrayIndex">First array index for the view.</param>
+        /// <param name="arrayCount">Number of array indices to view.</param>
+        /// <returns>The cached texture shader view.</returns>
+        public GorgonTextureShaderView GetTextureView(BufferFormat format,
+                                                      int firstMip,
+                                                      int mipCount,
+                                                      int arrayIndex,
+                                                      int arrayCount)
+        {
+            var buffer = (GorgonTexture)_resource;
+            var key = new ShaderViewKey(format,
+                                        firstMip,
+                                        mipCount,
+                                        buffer.ResourceType != ResourceType.Texture3D ? arrayIndex : -1,
+                                        buffer.ResourceType != ResourceType.Texture3D ? arrayCount : -1);
+
+            lock (_syncLock)
+            {
+                GorgonTextureShaderView result;
+
+                if (!_textureViews.TryGetValue(key, out result))
+                {
+                    result = new GorgonTextureShaderView(buffer,
+                                                         format,
+                                                         firstMip,
+                                                         mipCount,
+                                                         buffer.ResourceType != ResourceType.Texture3D ? arrayIndex : -1,
+                                                         buffer.ResourceType != ResourceType.Texture3D ? arrayCount : -1);
+                    result.Initialize();
+                    _textureViews.Add(key, result);
+                }
+
+                return result;
+            }
         }
 
         /// <summary>
@@ -361,7 +215,7 @@ namespace GorgonLibrary.Graphics
         public GorgonBufferShaderView GetBufferView(BufferFormat format, int start, int count)
         {
             var buffer = (GorgonShaderBuffer)_resource;
-            var key = new BufferViewKey(format, start, count, buffer.Settings.IsRaw);
+            var key = new ShaderViewKey(format, start, count, Convert.ToInt32(buffer.Settings.IsRaw), 0);
 
             lock(_syncLock)
             {
@@ -369,8 +223,9 @@ namespace GorgonLibrary.Graphics
 
                 if (!_bufferViews.TryGetValue(key, out result))
                 {
-                     result = new GorgonBufferShaderView(buffer, format, start, count);
-                     _bufferViews.Add(key, result);
+                    result = new GorgonBufferShaderView(buffer, format, start, count);
+                    result.Initialize();
+                    _bufferViews.Add(key, result);
                 }
 
                 return result;
@@ -380,12 +235,13 @@ namespace GorgonLibrary.Graphics
 
         #region Constructor/Destructor.
         /// <summary>
-        /// Initializes a new instance of the <see cref="GorgonSRVCache"/> class.
+        /// Initializes a new instance of the <see cref="GorgonViewCache"/> class.
         /// </summary>
-        /// <param name="resource">The resource used to bind the cached SRVs.</param>
-        public GorgonSRVCache(GorgonResource resource)
+        /// <param name="resource">The resource.</param>
+        public GorgonViewCache(GorgonResource resource)
         {
-            _bufferViews = new Dictionary<BufferViewKey, GorgonBufferShaderView>();
+            _bufferViews = new Dictionary<ShaderViewKey, GorgonBufferShaderView>();
+            _textureViews = new Dictionary<ShaderViewKey, GorgonTextureShaderView>();
             _resource = resource;
         }
         #endregion

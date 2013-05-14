@@ -64,6 +64,9 @@ namespace GorgonLibrary.Graphics
 		Sequential = 1
 	}
 
+    /// <summary>
+    /// Settings for a render target.
+    /// </summary>
     public interface IRenderTargetSettings
     {
         #region Properties.

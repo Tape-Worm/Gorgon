@@ -222,7 +222,11 @@ namespace Test_TextureArray
 
 			_dyn.Unlock();
 
-			_structBuffer = _graphics.Shaders.CreateStructuredBuffer(1, 4, true);
+			_structBuffer = _graphics.Shaders.CreateStructuredBuffer(new GorgonStructuredBufferSettings()
+			    {
+			        ElementCount = 1,
+                    ElementSize = 4
+			    });
 
 			int structValue = 2;
 			using (var thing = _structBuffer.Lock(BufferLockFlags.Discard | BufferLockFlags.Write))

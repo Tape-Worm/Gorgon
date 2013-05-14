@@ -1086,7 +1086,7 @@ namespace GorgonLibrary.Graphics
 
 				// Apply texture specific settings from the codec.
 				settings.Usage = codec.Usage;
-				settings.ShaderView = codec.ViewFormat;
+				settings.ShaderViewFormat = codec.ViewFormat;
 				settings.UnorderedAccessViewFormat = codec.UnorderedAccessViewFormat;
 
 				switch (settings.ImageType)
