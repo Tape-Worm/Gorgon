@@ -123,7 +123,7 @@ namespace GorgonLibrary.Graphics
 	/// <summary>
 	/// Settings for a typed buffer.
 	/// </summary>
-	public class GorgonTypedBufferSettings
+	public sealed class GorgonTypedBufferSettings
 		: IShaderBufferSettings
 	{
 		#region Constructor/Destructor.
@@ -223,7 +223,8 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Property to set or return the format of the view used when binding a typed buffer to a shader.
 		/// </summary>
-		/// <remarks>This value should be set to something other than Unknown for typed buffers.
+		/// <remarks>If this value is set to unknown, then no default shader view will be created for the buffer.  If no shader view exists for this buffer, 
+		/// then it will be unable to be bound to a shader.
 		/// <para>The default value is Unknown.</para>
 		/// </remarks>
 		public BufferFormat ShaderViewFormat
@@ -238,7 +239,7 @@ namespace GorgonLibrary.Graphics
 	/// Settings for a structured buffer.
 	/// </summary>
 	/// <remarks>Structured buffers are only available on SM_5 video devices.</remarks>
-	public class GorgonStructuredBufferSettings
+	public sealed class GorgonStructuredBufferSettings
 		: IShaderBufferSettings
 	{
 		#region Properties.

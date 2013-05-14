@@ -700,35 +700,26 @@ namespace GorgonLibrary.Graphics
 		/// <remarks>A view is a way for a shader to read (or potentially write) a resource.  Views can also be used to cast the data 
         /// in a resource to another type.</remarks>
 		public sealed class ShaderResourceViews
-			: IList<GorgonResourceView>
+			: IList<GorgonShaderView>
 		{
 			#region Variables.
 			private readonly D3D.ShaderResourceView[] _views;			// Shader resource views.
-			private readonly IList<GorgonResourceView> _resources;		// Shader resources.
+			private readonly IList<GorgonShaderView> _resources;		// Shader resources.
 			private readonly GorgonShaderState<T> _shader;				// Shader that owns this interface.
 			#endregion
 
 			#region Methods.
-            /// <summary>
-            /// Function unbind a shader view.
-            /// </summary>
-            /// <param name="view">View to unbind.</param>
-            internal void Unbind(GorgonShaderView view)
-            {
-                throw new NotImplementedException("Need to implement this ASAP.  Don't forget about it.");    
-            }
-
 			/// <summary>
 			/// Function to unbind a shader resource view.
 			/// </summary>
 			/// <param name="resourceView">Resource view to unbind.</param>
-			internal void Unbind(GorgonResourceView resourceView)
+			internal void Unbind(GorgonShaderView resourceView)
 			{
 				for (int i = 0; i < Count; i++)
 				{
 					if (_resources[i] == resourceView)
 					{
-						this[i] = null;
+                        SetView(i, null);
 					}
 				}
 			}
@@ -737,28 +728,52 @@ namespace GorgonLibrary.Graphics
             /// Function to unbind a shader resource view.
             /// </summary>
             /// <param name="resource">Resource containing the view to unbind.</param>
-            internal void Unbind(GorgonResource resource)
+            internal void Unbind(GorgonShaderBuffer resource)
             {
 				if (resource == null)
 				{
 					return;
 				}
 
-                Unbind(resource.DefaultView);
+                var views = this.Where(item => item != null && item.Resource == resource);
+
+                foreach (var view in views)
+                {
+                    Unbind(view);
+                }
+            }
+
+            /// <summary>
+            /// Function to unbind a shader resource view.
+            /// </summary>
+            /// <param name="resource">Resource containing the view to unbind.</param>
+            internal void Unbind(GorgonTexture resource)
+            {
+                if (resource == null)
+                {
+                    return;
+                }
+
+                var views = this.Where(item => item != null && item.Resource == resource);
+
+                foreach (var view in views)
+                {
+                    Unbind(view);
+                }
             }
 
 			/// <summary>
 			/// Function to re-seat a resource view after it's been altered.
 			/// </summary>
 			/// <param name="resourceView">Resource view to re-seat.</param>
-			internal void ReSeat(GorgonResourceView resourceView)
+			internal void ReSeat(GorgonShaderView resourceView)
 			{
 				int index = IndexOf(resourceView);
 
 				if (index > -1)
 				{
-					this[index] = null;
-					this[index] = resourceView;
+                    SetView(index, null);
+                    SetView(index, resourceView);
 				}
 			}
 
@@ -766,9 +781,28 @@ namespace GorgonLibrary.Graphics
 			/// Function to re-seat a resource view after it's been altered.
 			/// </summary>
 			/// <param name="resource">Resource containing the view to re-seat.</param>
-            internal void ReSeat(GorgonResource resource)
+            internal void ReSeat(GorgonShaderBuffer resource)
+			{
+			    var views = this.Where(item => item != null && item.Resource == resource);
+
+			    foreach (var view in views)
+			    {
+			        ReSeat(view);
+			    }
+			}
+
+            /// <summary>
+            /// Function to re-seat a resource view after it's been altered.
+            /// </summary>
+            /// <param name="resource">Resource containing the view to re-seat.</param>
+            internal void ReSeat(GorgonTexture resource)
             {
-                ReSeat(resource.DefaultView);
+                var views = this.Where(item => item != null && item.Resource == resource);
+
+                foreach (var view in views)
+                {
+                    ReSeat(view);
+                }
             }
 
 			/// <summary>
@@ -781,11 +815,11 @@ namespace GorgonLibrary.Graphics
 			/// <para>-or-</para>
 			/// <para>Thrown when the buffers count + the slot is greater than or equal to the number of available resource slots.</para>
 			/// </exception>
-			public void SetRange(int slot, IEnumerable<GorgonResourceView> resourceViews)
+			public void SetRange(int slot, IEnumerable<GorgonShaderView> resourceViews)
 			{
 				int count = 0;
 
-				GorgonDebug.AssertNull<IEnumerable<GorgonResourceView>>(resourceViews, "resourceViews");
+				GorgonDebug.AssertNull<IEnumerable<GorgonShaderView>>(resourceViews, "resourceViews");
 #if DEBUG
 				if ((slot < 0) || (slot >= _resources.Count) || ((slot + resourceViews.Count()) >= _resources.Count))
 					throw new ArgumentOutOfRangeException("Cannot have more than " + _resources.Count.ToString() + " slots occupied.");
@@ -801,7 +835,7 @@ namespace GorgonLibrary.Graphics
                     {
                         int bufferIndex = _resources.IndexOf(buffer);
 
-                        if ((bufferIndex != i + slot) && (bufferIndex != -1) && (_views[bufferIndex] == buffer.D3DResourceView))
+                        if ((bufferIndex != i + slot) && (bufferIndex != -1) && (_views[bufferIndex] == buffer.D3DView))
                         {
                             throw new ArgumentException("The resource view at index [" + i.ToString() + "] is already bound to a shader with the same resource view.");
                         }
@@ -810,7 +844,7 @@ namespace GorgonLibrary.Graphics
 
 					_resources[i + slot] = buffer;
 					if (buffer != null)
-						_views[i] = _resources[i + slot].D3DResourceView;
+						_views[i] = _resources[i + slot].D3DView;
 					else
 						_views[i] = null;
 				}
@@ -819,24 +853,81 @@ namespace GorgonLibrary.Graphics
 			}
 
             /// <summary>
+            /// Function to retrieve a shader view at the specified index.
+            /// </summary>
+            /// <param name="index">Index of the shader view to retrieve.</param>
+            /// <returns>The shader view at the specified index.</returns>
+            /// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="index"/> is less than 0 or greater than or equal to the number of resource slots.</exception>
+            public GorgonShaderView GetView(int index)
+            {
+                GorgonDebug.AssertParamRange(index, 0, Count, "index");
+                return _resources[index];
+            }
+
+            /// <summary>
+            /// Function to set a shader view to the specified index.
+            /// </summary>
+            /// <param name="index">Index of the shader view to apply.</param>
+            /// <param name="view">View to apply to the shader.</param>
+            /// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="index"/> is less than 0 or greater than or equal to the number of resource slots.</exception>
+            /// <exception cref="System.ArgumentException">Thrown when the <paramref name="view"/> parameter is already bound.</exception>
+            public void SetView(int index, GorgonShaderView view)
+            {
+                GorgonDebug.AssertParamRange(index, 0, Count, "index");
+
+                if (_resources[index] == view)
+                {
+                    return;
+                }
+
+#if DEBUG
+                if (view != null)
+                {
+                    int currentIndex = IndexOf(view);
+
+                    if ((currentIndex != -1)
+                        && (currentIndex != index)
+                        && (_views[currentIndex] == view.D3DView))
+                    {
+                        throw new ArgumentException(
+                            string.Format("The resource view is already bound to a shader at index [{0}]", index),
+                            "view");
+                    }
+                }
+#endif
+
+                _resources[index] = view;
+                if (view == null)
+                {
+                    _views[0] = null;
+                }
+                else
+                {
+                    _views[0] = view.D3DView;
+                }
+
+                _shader.SetResources(index, 1, _views);
+            }
+
+            /// <summary>
             /// Function to return the texture resource assigned to the view at the specified index.
             /// </summary>
-            /// <typeparam name="Tx">Type of texture.</typeparam>
+            /// <typeparam name="TX">Type of texture.</typeparam>
             /// <param name="index">Index of the texture to look up.</param>
             /// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="index"/> parameter is outside of the available resource view slots.</exception>
             /// <exception cref="System.InvalidCastException">Thrown when the type of resource at the specified index is not a texture.</exception>
             /// <returns>The texture assigned to the view at the specified index, or NULL if nothing is assigned to the specified index.</returns>
-            public Tx GetTexture<Tx>(int index)
-                where Tx : GorgonTexture
+            public TX GetTexture<TX>(int index)
+                where TX : GorgonTexture
             {
                 GorgonDebug.AssertParamRange(index, 0, _resources.Count, "index");
 
                 var resourceView = _resources[index];
                 
 #if DEBUG
-                if ((resourceView != null) && (resourceView.Resource != null) && (!(resourceView.Resource is Tx)))
+                if ((resourceView != null) && (resourceView.Resource != null) && (!(resourceView.Resource is TX)))
                 {
-                    throw new InvalidCastException("The resource at index [" + index.ToString() + "] is not a texture.");
+                    throw new InvalidCastException("The resource at index [" + index + "] is not a texture.");
                 }
 #endif
 
@@ -845,49 +936,49 @@ namespace GorgonLibrary.Graphics
                     return null;    
                 }
 
-                return (Tx)resourceView.Resource;                
+                return (TX)resourceView.Resource;                
             }
 
             /// <summary>
             /// Function to set a texture resource's default view at the specified index.
             /// </summary>
-            /// <typeparam name="Tx">Type of texture.</typeparam>
+            /// <typeparam name="TX">Type of texture.</typeparam>
             /// <param name="index">Index of the resource view to use.</param>
             /// <param name="texture">Texture to assign.</param>
             /// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="index"/> parameter is outside of the available resource view slots.</exception>
-            public void SetTexture<Tx>(int index, Tx texture)
-                where Tx : GorgonTexture
+            public void SetTexture<TX>(int index, TX texture)
+                where TX : GorgonTexture
             {
                 GorgonDebug.AssertParamRange(index, 0, _resources.Count, "index");
 
                 if (texture != null)
                 {
-                    this[index] = texture.DefaultView;
+                    SetView(index, texture.DefaultShaderView);
                 }
                 else
                 {
-                    this[index] = null;
+                    SetView(index, null);
                 }
             }
 
             /// <summary>
             /// Function to return the shader buffer resource assigned to the view at the specified index.
             /// </summary>
-            /// <typeparam name="B">Type of shader buffer.</typeparam>
+            /// <typeparam name="TB">Type of shader buffer.</typeparam>
             /// <param name="index">Index of the texture to look up.</param>
             /// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="index"/> parameter is outside of the available resource view slots.</exception>
             /// <exception cref="System.InvalidCastException">Thrown when the type of resource at the specified index is not a shader buffer.</exception>
             /// <returns>The shader buffer assigned to the view at the specified index, or NULL if nothing is assigned to the specified index.</returns>
-            public B GetShaderBuffer<B>(int index)
-                where B : GorgonShaderBuffer
+            public TB GetShaderBuffer<TB>(int index)
+                where TB : GorgonShaderBuffer
             {
                 GorgonDebug.AssertParamRange(index, 0, _resources.Count, "index");
 
                 var resourceView = _resources[index];
 #if DEBUG
-                if ((resourceView != null) && (resourceView.Resource != null) && (!(resourceView.Resource is B)))
+                if ((resourceView != null) && (resourceView.Resource != null) && (!(resourceView.Resource is TB)))
                 {
-                    throw new InvalidCastException("The resource at index [" + index.ToString() + "] is not a shader buffer.");
+                    throw new InvalidCastException("The resource at index [" + index + "] is not a shader buffer.");
                 }
 #endif
 
@@ -896,28 +987,28 @@ namespace GorgonLibrary.Graphics
                     return null;    
                 }
 
-                return (B)resourceView.Resource;                
+                return (TB)resourceView.Resource;                
             }
 
             /// <summary>
             /// Function to set a shader buffer resource's default view at the specified index.
             /// </summary>
-            /// <typeparam name="B">Type of shader buffer.</typeparam>
+            /// <typeparam name="TB">Type of shader buffer.</typeparam>
             /// <param name="index">Index of the resource view to use.</param>
             /// <param name="buffer">Shader buffer to assign.</param>
             /// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="index"/> parameter is outside of the available resource view slots.</exception>
-            public void SetShaderBuffer<B>(int index, B buffer)
-                where B : GorgonShaderBuffer
+            public void SetShaderBuffer<TB>(int index, TB buffer)
+                where TB : GorgonShaderBuffer
             {
                 GorgonDebug.AssertParamRange(index, 0, _resources.Count, "index");
 
                 if (buffer != null)
                 {
-                    this[index] = buffer.DefaultView;
+                    SetView(index, buffer.DefaultShaderView);
                 }
                 else
                 {
-                    this[index] = null;
+                    SetView(index, null);
                 }
             }
 			#endregion
@@ -934,22 +1025,22 @@ namespace GorgonLibrary.Graphics
 				if ((_shader is GorgonVertexShaderState) && (_shader.Graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM2_a_b))
 				{
 					_views = new D3D.ShaderResourceView[] { };
-					_resources = new GorgonResourceView[] { };
+					_resources = new GorgonShaderView[] { };
 				}
 				else
 				{
 					_views = new D3D.ShaderResourceView[D3D.CommonShaderStage.InputResourceSlotCount];
-					_resources = new GorgonResourceView[_views.Length];							
+					_resources = new GorgonShaderView[_views.Length];							
 				}
 			}
 			#endregion
 
-			#region IList<GorgonResourceView> Members
+			#region IList<GorgonShaderView> Members
 			#region Properties.            
 			/// <summary>
 			/// Property to set or return the bound shader resource view.
 			/// </summary>
-			public GorgonResourceView this[int index]
+			GorgonShaderView IList<GorgonShaderView>.this[int index]
 			{
 				get
 				{
@@ -957,27 +1048,7 @@ namespace GorgonLibrary.Graphics
 				}
 				set
 				{
-					if (_resources[index] != value)
-					{
-#if DEBUG
-						if (value != null)
-						{
-							int currentIndex = IndexOf(value);
-
-							if ((currentIndex != -1) && (currentIndex != index) && (_views[currentIndex] == value.D3DResourceView))
-							{
-								throw new ArgumentException("The resource view at index [" + index.ToString() + "] is already bound to a shader with the same resource view.");
-							}
-						}
-#endif
-						_resources[index] = value;
-						if (value != null)
-							_views[0] = _resources[index].D3DResourceView;
-						else
-							_views[0] = null;
-
-						_shader.SetResources(index, 1, _views);
-					}
+                    SetView(index, value);
 				}
 			}
 			#endregion
@@ -988,9 +1059,9 @@ namespace GorgonLibrary.Graphics
 			/// </summary>
 			/// <param name="item">The shader resource to find the index of.</param>
 			/// <returns>The index if found, or -1 if not.</returns>
-			public int IndexOf(GorgonResourceView item)
+			public int IndexOf(GorgonShaderView item)
 			{
-				GorgonDebug.AssertNull<GorgonResourceView>(item, "item");
+				GorgonDebug.AssertNull<GorgonShaderView>(item, "item");
 
 				return _resources.IndexOf(item);
 			}
@@ -1000,7 +1071,7 @@ namespace GorgonLibrary.Graphics
 			/// </summary>
 			/// <param name="index">The index.</param>
 			/// <param name="item">The item.</param>
-			void IList<GorgonResourceView>.Insert(int index, GorgonResourceView item)
+			void IList<GorgonShaderView>.Insert(int index, GorgonShaderView item)
 			{
 				throw new NotImplementedException();
 			}
@@ -1009,14 +1080,14 @@ namespace GorgonLibrary.Graphics
 			/// Removes at.
 			/// </summary>
 			/// <param name="index">The index.</param>
-			void IList<GorgonResourceView>.RemoveAt(int index)
+			void IList<GorgonShaderView>.RemoveAt(int index)
 			{
 				throw new NotImplementedException();
 			}
 			#endregion
 			#endregion
 
-			#region ICollection<GorgonResourceView> Members
+			#region ICollection<GorgonShaderView> Members
 			#region Properties.
 			/// <summary>
 			/// Property to return the number of resource view slots.
@@ -1046,7 +1117,7 @@ namespace GorgonLibrary.Graphics
 			/// Adds the specified item.
 			/// </summary>
 			/// <param name="item">The item.</param>
-			void ICollection<GorgonResourceView>.Add(GorgonResourceView item)
+			void ICollection<GorgonShaderView>.Add(GorgonShaderView item)
 			{
 				throw new NotImplementedException();
 			}
@@ -1054,7 +1125,7 @@ namespace GorgonLibrary.Graphics
 			/// <summary>
 			/// Clears this instance.
 			/// </summary>
-			void ICollection<GorgonResourceView>.Clear()
+			void ICollection<GorgonShaderView>.Clear()
 			{
 				throw new NotImplementedException();
 			}
@@ -1064,7 +1135,7 @@ namespace GorgonLibrary.Graphics
 			/// </summary>
 			/// <param name="item">Texture to find.</param>
 			/// <returns>TRUE if found, FALSE if not.</returns>
-			public bool Contains(GorgonResourceView item)
+			public bool Contains(GorgonShaderView item)
 			{
 				return _resources.Contains(item);
 			}
@@ -1074,7 +1145,7 @@ namespace GorgonLibrary.Graphics
 			/// </summary>
 			/// <param name="array">Array to copy into.</param>
 			/// <param name="arrayIndex">Index in the array to start writing at.</param>
-			public void CopyTo(GorgonResourceView[] array, int arrayIndex)
+			public void CopyTo(GorgonShaderView[] array, int arrayIndex)
 			{
 #if DEBUG
                 if (array == null)
@@ -1101,19 +1172,19 @@ namespace GorgonLibrary.Graphics
 			/// </summary>
 			/// <param name="item">The item.</param>
 			/// <returns></returns>
-			bool ICollection<GorgonResourceView>.Remove(GorgonResourceView item)
+			bool ICollection<GorgonShaderView>.Remove(GorgonShaderView item)
 			{
 				throw new NotImplementedException();
 			}
 			#endregion
 			#endregion
 
-			#region IEnumerable<GorgonResourceView> Members
+			#region IEnumerable<GorgonShaderView> Members
 			/// <summary>
 			/// Function to return an enumerator for the list.
 			/// </summary>
 			/// <returns>The enumerator for the list.</returns>
-			public IEnumerator<GorgonResourceView> GetEnumerator()
+			public IEnumerator<GorgonShaderView> GetEnumerator()
 			{
 				foreach (var resource in _resources)
 					yield return resource;

@@ -210,7 +210,7 @@ namespace GorgonLibrary.Graphics
 
 		    var desc = new D3D11.BufferDescription
 		        {
-		            BindFlags = IsOutput ? D3D11.BindFlags.StreamOutput | D3D11.BindFlags.None,
+		            BindFlags = IsOutput ? D3D11.BindFlags.StreamOutput : D3D11.BindFlags.None,
 		            CpuAccessFlags = D3DCPUAccessFlags,
 		            OptionFlags = D3D11.ResourceOptionFlags.None,
 		            SizeInBytes = SizeInBytes,

@@ -78,7 +78,7 @@ namespace GorgonLibrary.Renderers
 					if (value == null)
 					{
 						// If we have a texture in the first slot, then set the proper shader.
-						if (Graphics.Shaders.PixelShader.Resources[0] == null)
+						if (Graphics.Shaders.PixelShader.Resources.GetView(0) == null)
 							Graphics.Shaders.PixelShader.Current = DefaultPixelShaderDiffuse;
 						else
 							Graphics.Shaders.PixelShader.Current = DefaultPixelShaderTextured;

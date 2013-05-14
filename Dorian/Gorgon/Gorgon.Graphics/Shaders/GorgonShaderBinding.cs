@@ -122,29 +122,64 @@ namespace GorgonLibrary.Graphics
 			}
 		}
 
+        /// <summary>
+        /// Function to re-seat a shader resource after it's been altered.
+        /// </summary>
+        /// <param name="resource">Shader resource to re-seat.</param>
+        internal void Reseat(GorgonTexture resource)
+        {
+            PixelShader.Resources.ReSeat(resource);
+            VertexShader.Resources.ReSeat(resource);
+        }
+
 		/// <summary>
 		/// Function to re-seat a shader resource after it's been altered.
 		/// </summary>
 		/// <param name="resource">Shader resource to re-seat.</param>
-		internal void Reseat(GorgonResource resource)
+		internal void Reseat(GorgonShaderBuffer resource)
 		{
 			PixelShader.Resources.ReSeat(resource);
 			VertexShader.Resources.ReSeat(resource);
 		}
 
+        /// <summary>
+        /// Function to re-seat a shader resource after it's been altered.
+        /// </summary>
+        /// <param name="view">The view to re-seat.</param>
+        internal void Reseat(GorgonShaderView view)
+        {
+            PixelShader.Resources.ReSeat(view);
+            VertexShader.Resources.ReSeat(view);
+        }
+
+        /// <summary>
+        /// Function to unbind a shader resource from all shaders.
+        /// </summary>
+        /// <param name="resource">Shader resource to unbind.</param>
+        internal void Unbind(GorgonTexture resource)
+        {
+            PixelShader.Resources.Unbind(resource);
+            VertexShader.Resources.Unbind(resource);
+        }
+
 		/// <summary>
 		/// Function to unbind a shader resource from all shaders.
 		/// </summary>
 		/// <param name="resource">Shader resource to unbind.</param>
-		internal void Unbind(GorgonResource resource)
+		internal void Unbind(GorgonShaderBuffer resource)
 		{
 			PixelShader.Resources.Unbind(resource);
 			VertexShader.Resources.Unbind(resource);
 		}
 
+        /// <summary>
+        /// Function to unbind a shader resource from all shaders.
+        /// </summary>
+        /// <param name="view">View to unbind.</param>
         internal void Unbind(GorgonShaderView view)
         {
             PixelShader.Resources.Unbind(view);
+            VertexShader.Resources.Unbind(view);
         }
 
 		/// <summary>
@@ -213,22 +248,6 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
-		/// Function to create an effect object.
-		/// </summary>
-		/// <typeparam name="T">Type of effect to create.</typeparam>
-		/// <param name="name">Name of the effect.</param>
-		/// <returns>The new effect object.</returns>
-		/// <remarks>Effects are used to simplify rendering with multiple passes when using a shader, similar to the old Direct 3D effects framework.
-		/// </remarks>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (Nothing in VB.Net).</exception>
-		/// <exception cref="System.ArgumentException">Thrown when the name parameter is an empty string.</exception>
-		public T CreateEffect<T>(string name)
-			where T : GorgonEffect
-		{
-			return CreateEffect<T>(name, null);
-		}
-
-		/// <summary>
 		/// Function to create a constant buffer.
 		/// </summary>
 		/// <param name="size">Size of the buffer, in bytes.</param>
@@ -294,7 +313,12 @@ namespace GorgonLibrary.Graphics
 						
 			using (GorgonDataStream stream = GorgonDataStream.ArrayToStream<T>(value))
 			{
-				return CreateStructuredBuffer(value.Count(), DirectAccess.SizeOf<T>(), allowCPUWrite);
+				return CreateStructuredBuffer(new GorgonStructuredBufferSettings()
+				    {
+				        AllowCPUWrite = allowCPUWrite,
+                        ElementCount = value.Length,
+                        ElementSize = DirectAccess.SizeOf<T>()
+				    }, stream);
 			}
 		}
 
@@ -310,22 +334,13 @@ namespace GorgonLibrary.Graphics
 		{
 			using (GorgonDataStream stream = GorgonDataStream.ValueToStream<T>(value))
 			{
-				return CreateStructuredBuffer(1, DirectAccess.SizeOf<T>(), allowCPUWrite);
+				return CreateStructuredBuffer(new GorgonStructuredBufferSettings()
+				    {
+				        AllowCPUWrite = allowCPUWrite,
+                        ElementCount = 1,
+                        ElementSize = DirectAccess.SizeOf<T>()
+				    }, stream);
 			}			
-		}
-
-		/// <summary>
-		/// Function to create a structured buffer and initialize it with data.
-		/// </summary>
-		/// <param name="elementCount">Number of elements that the buffer will contain.</param>
-		/// <param name="elementSize">Size of an element, in bytes.</param>
-		/// <param name="allowCPUWrite">TRUE to allow the CPU to have write access to the buffer, FALSE to disallow.</param>
-		/// <returns>A new structured buffer.</returns>
-		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="elementCount"/> or <paramref name="elementSize"/> parameters are not greater than 0.
-		/// </exception>
-		public GorgonStructuredBuffer CreateStructuredBuffer(int elementCount, int elementSize, bool allowCPUWrite)
-		{
-			return CreateStructuredBuffer(elementCount, elementSize, allowCPUWrite, null);
 		}
 
 		/// <summary>
@@ -351,8 +366,6 @@ namespace GorgonLibrary.Graphics
 		            "Structured buffers are only available for video devices that support SM5 or better.");
 		    }
 
-			if (settings.)
-
 		    if (settings.ElementCount <= 0)
 		    {
 		        throw new ArgumentException("The element count must be greater than 0.", "settings");
@@ -364,7 +377,7 @@ namespace GorgonLibrary.Graphics
 		    }
 #endif
 
-			result = new GorgonStructuredBuffer(_graphics, elementCount, elementSize, false, allowCPUWrite);
+			result = new GorgonStructuredBuffer(_graphics, settings);
 			result.Initialize(stream);
 
 			_graphics.AddTrackedObject(result);

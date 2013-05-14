@@ -69,7 +69,7 @@ namespace GorgonLibrary.Graphics
 		#endregion
 
 		#region Methods.
-		/// <summary>
+        /// <summary>
 		/// Function to return sub resource data for a lock operation.
 		/// </summary>
 		/// <param name="dataStream">Stream containing the data.</param>
@@ -135,32 +135,6 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
-		/// Function to retrieve information about an existing texture.
-		/// </summary>
-		/// <returns>
-		/// New settings for the texture.
-		/// </returns>
-		protected override ITextureSettings GetTextureInformation()
-		{
-			ITextureSettings newSettings = null;
-
-			D3D.Texture1DDescription desc = ((D3D.Texture1D)D3DResource).Description;
-
-			newSettings = new GorgonTexture1DSettings
-				{
-					Width = desc.Width,
-					ArrayCount = desc.ArraySize,
-					Format = (BufferFormat)desc.Format,
-					MipCount = desc.MipLevels,
-					Usage = (BufferUsage)desc.Usage,
-					ShaderViewFormat = Settings.ShaderViewFormat,
-					UnorderedAccessViewFormat = Settings.UnorderedAccessViewFormat
-				};
-			
-			return newSettings;
-		}
-
-		/// <summary>
 		/// Function to create an image with initial data.
 		/// </summary>
 		/// <param name="initialData">Data to use when creating the image.</param>
@@ -203,6 +177,63 @@ namespace GorgonLibrary.Graphics
 				D3DResource = new D3D.Texture1D(Graphics.D3DDevice, desc);
 			}
 		}
+
+        /// <summary>
+        /// Function to create a new shader view for the texture.
+        /// </summary>
+        /// <param name="format">The format of the view.</param>
+        /// <param name="mipStart">Starting mip map for the view.</param>
+        /// <param name="mipCount">Mip map count for the view.</param>
+        /// <param name="arrayIndex">Starting array index for the view.</param>
+        /// <param name="arrayCount">Array index count for the view.</param>
+        /// <returns>A new shader view for the texture.</returns>
+        /// <exception cref="GorgonLibrary.GorgonException">Thrown when the usage for this texture is set to Staging.
+        /// <para>-or-</para>
+        /// <para>Thrown when the view could not be created.</para>
+        /// </exception>
+        /// <remarks>Use this to create additional shader views for the texture.  Multiple views of the same resource can be bound to multiple stages in the pipeline.
+        /// <para>This function only applies to buffers that have not been created with a Usage of Staging.</para>
+        /// </remarks>
+        public GorgonTextureShaderView CreateShaderView(BufferFormat format, int mipStart, int mipCount, int arrayIndex, int arrayCount)
+        {
+            return CreateCachedShaderView(format, mipStart, mipCount, arrayIndex, arrayCount);
+        }
+
+        /// <summary>
+        /// Function to create a new shader view for the texture.
+        /// </summary>
+        /// <param name="format">The format of the view.</param>
+        /// <param name="mipStart">Starting mip map for the view.</param>
+        /// <param name="mipCount">Mip map count for the view.</param>
+        /// <returns>A new shader view for the texture.</returns>
+        /// <exception cref="GorgonLibrary.GorgonException">Thrown when the usage for this texture is set to Staging.
+        /// <para>-or-</para>
+        /// <para>Thrown when the view could not be created.</para>
+        /// </exception>
+        /// <remarks>Use this to create additional shader views for the texture.  Multiple views of the same resource can be bound to multiple stages in the pipeline.
+        /// <para>This function only applies to buffers that have not been created with a Usage of Staging.</para>
+        /// </remarks>
+        public GorgonTextureShaderView CreateShaderView(BufferFormat format, int mipStart, int mipCount)
+        {
+            return CreateCachedShaderView(format, mipStart, mipCount, 0, Settings.ArrayCount);
+        }
+
+        /// <summary>
+        /// Function to create a new shader view for the texture.
+        /// </summary>
+        /// <param name="format">The format of the view.</param>
+        /// <returns>A new shader view for the texture.</returns>
+        /// <exception cref="GorgonLibrary.GorgonException">Thrown when the usage for this texture is set to Staging.
+        /// <para>-or-</para>
+        /// <para>Thrown when the view could not be created.</para>
+        /// </exception>
+        /// <remarks>Use this to create additional shader views for the texture.  Multiple views of the same resource can be bound to multiple stages in the pipeline.
+        /// <para>This function only applies to buffers that have not been created with a Usage of Staging.</para>
+        /// </remarks>
+        public GorgonTextureShaderView CreateShaderView(BufferFormat format)
+        {
+            return CreateCachedShaderView(format, 0, Settings.MipCount, 0, Settings.ArrayCount);
+        }
 
 		/// <summary>
 		/// Function to convert a texel space coordinate into a pixel space coordinate.

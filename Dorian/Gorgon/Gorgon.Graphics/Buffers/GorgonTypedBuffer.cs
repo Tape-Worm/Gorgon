@@ -33,6 +33,7 @@ using DX = SharpDX;
 using D3D = SharpDX.Direct3D11;
 using GorgonLibrary.Native;
 using GorgonLibrary.IO;
+using GorgonLibrary.Graphics.Properties;
 
 namespace GorgonLibrary.Graphics
 {
@@ -46,6 +47,15 @@ namespace GorgonLibrary.Graphics
 		where T : struct
 	{
 		#region Properties.
+        /// <summary>
+        /// Property to return the size of an element, in bytes.
+        /// </summary>
+        public int ElementSize
+        {
+            get;
+            private set;
+        }
+
 		/// <summary>
 		/// Property to return the settings for the buffer.
 		/// </summary>
@@ -62,19 +72,15 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Function to create a default resource view object.
 		/// </summary>
-		protected override void CreateDefaultResourceView()
+		private void CreateDefaultResourceView()
 		{
-		    if (BufferUsage == GorgonLibrary.Graphics.BufferUsage.Staging)
+		    if ((BufferUsage == GorgonLibrary.Graphics.BufferUsage.Staging)
+                || (Settings.ShaderViewFormat == BufferFormat.Unknown))
 		    {
 		        return;
 		    }
 
-		    DefaultView = new GorgonResourceView(Graphics, "Gorgon Typed Buffer #" + Graphics.GetGraphicsObjectOfType<GorgonTypedBuffer<T>>().Count)
-		        {
-		            Resource = this
-		        };
-		    DefaultView.BuildResourceView();
-		    Graphics.Shaders.Reseat(this);
+		    DefaultShaderView = CreateShaderView(Settings.ShaderViewFormat, 0, Settings.ElementCount);
 		}
 
 		/// <summary>
@@ -139,7 +145,56 @@ namespace GorgonLibrary.Graphics
 #endif
 			CreateDefaultResourceView();
 		}
-		#endregion
+
+        /// <summary>
+        /// Function to create a new shader view for the buffer.
+        /// </summary>
+        /// <param name="format">The format of the view.</param>
+        /// <param name="start">Starting element.</param>
+        /// <param name="count">Element count.</param>
+        /// <returns>A new shader view for the buffer.</returns>
+        /// <exception cref="GorgonLibrary.GorgonException">Thrown when the usage for this buffer is set to Staging.
+        /// <para>-or-</para>
+        /// <para>Thrown when the view could not be created.</para>
+        /// </exception>
+        /// <exception cref="System.ArgumentException">Thrown when the <paramref name="start"/> or <paramref name="count"/> parameters are less than 0 or greater than or equal to the 
+        /// number of elements in the buffer.</exception>
+        /// <remarks>Use this to create additional shader views for the buffer.  Multiple views of the same resource can be bound to multiple stages in the pipeline.
+        /// <para>This function only applies to buffers that have not been created with a Usage of Staging.</para>
+        /// </remarks>
+        public GorgonBufferShaderView CreateShaderView(BufferFormat format, int start, int count)
+        {
+            if (BufferUsage == BufferUsage.Staging)
+            {
+                throw new GorgonException(GorgonResult.CannotCreate, "Cannot create a shader resource view for a buffer that has a usage of Staging.");
+            }
+
+            if ((start + count > Settings.ElementCount) || (start < 0) || (count < 0))
+            {
+                throw new ArgumentException("The start and count must be 0 or greater and less than the number of elements in the buffer.");
+            }
+
+            if (format == BufferFormat.Unknown)
+            {
+                throw new ArgumentException(Resources.GORGFX_VIEW_UNKNOWN_FORMAT, "format");
+            }
+
+            // Ensure the size of the data type fits the requested format.
+            var info = GorgonBufferFormatInfo.GetInfo(format);
+
+            if (info.SizeInBytes != ElementSize)
+            {
+                throw new ArgumentException(
+                    string.Format(
+                        "The size of the format: {0} bytes, does not match the size of the data type: {1} bytes.",
+                        info,
+                        ElementSize),
+                    "format");
+            }
+
+            return ViewCache.GetBufferView(format, start, count);
+        }
+        #endregion
 
 		#region Constructor/Destructor.
 		/// <summary>
@@ -150,6 +205,7 @@ namespace GorgonLibrary.Graphics
 		internal GorgonTypedBuffer(GorgonGraphics graphics, GorgonTypedBufferSettings settings)
 			: base(graphics, settings, settings.ElementCount * DirectAccess.SizeOf<T>())
 		{
+		    ElementSize = DirectAccess.SizeOf<T>();
 		}
 		#endregion
 	}

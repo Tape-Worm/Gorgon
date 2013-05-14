@@ -24,6 +24,7 @@
 // 
 #endregion
 
+using System;
 using GorgonLibrary.IO;
 using DX = SharpDX;
 using D3D = SharpDX.Direct3D11;
@@ -46,11 +47,7 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// A counter buffer.
 		/// </summary>
-		Counter = 2,
-		/// <summary>
-		/// A raw buffer.
-		/// </summary>
-		Raw = 3
+		Counter = 2
 	}
 
 	/// <summary>
@@ -80,19 +77,14 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Function to create a default resource view object.
 		/// </summary>
-		protected override void CreateDefaultResourceView()
+		private void CreateDefaultResourceView()
 		{
 		    if (BufferUsage == GorgonLibrary.Graphics.BufferUsage.Staging)
 		    {
 		        return;
 		    }
 
-		    DefaultView = new GorgonResourceView(Graphics, "Gorgon Structured Buffer #" + Graphics.GetGraphicsObjectOfType<GorgonStructuredBuffer>().Count)
-		        {
-		            Resource = this
-		        };
-		    DefaultView.BuildResourceView();
-		    Graphics.Shaders.Reseat(this);
+		    DefaultShaderView = CreateShaderView(0, Settings.ElementCount);
 		}
 
 		/// <summary>
@@ -158,6 +150,36 @@ namespace GorgonLibrary.Graphics
 #endif
 			CreateDefaultResourceView();
 		}
+
+        /// <summary>
+        /// Function to create a new shader view for the buffer.
+        /// </summary>
+        /// <param name="start">Starting element.</param>
+        /// <param name="count">Element count.</param>
+        /// <returns>A new shader view for the buffer.</returns>
+        /// <exception cref="GorgonLibrary.GorgonException">Thrown when the usage for this buffer is set to Staging.
+        /// <para>-or-</para>
+        /// <para>Thrown when the view could not be created.</para>
+        /// </exception>
+        /// <exception cref="System.ArgumentException">Thrown when the <paramref name="start"/> or <paramref name="count"/> parameters are less than 0 or greater than or equal to the 
+        /// number of elements in the buffer.</exception>
+        /// <remarks>Use this to create additional shader views for the buffer.  Multiple views of the same resource can be bound to multiple stages in the pipeline.
+        /// <para>This function only applies to buffers that have not been created with a Usage of Staging.</para>
+        /// </remarks>
+        public GorgonBufferShaderView CreateShaderView(int start, int count)
+        {
+            if (BufferUsage == BufferUsage.Staging)
+            {
+                throw new GorgonException(GorgonResult.CannotCreate, "Cannot create a shader resource view for a buffer that has a usage of Staging.");
+            }
+
+            if ((start + count > Settings.ElementCount) || (start < 0) || (count < 0))
+            {
+                throw new ArgumentException("The start and count must be 0 or greater and less than the number of elements in the buffer.");
+            }
+
+            return ViewCache.GetBufferView(BufferFormat.Unknown, start, count);
+        }
 		#endregion
 
 		#region Constructor/Destructor.

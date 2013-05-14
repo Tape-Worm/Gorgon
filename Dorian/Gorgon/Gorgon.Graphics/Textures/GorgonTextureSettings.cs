@@ -36,7 +36,19 @@ namespace GorgonLibrary.Graphics
         : IImageSettings
 	{
 		#region Properties.
-		/// <summary>
+        /// <summary>
+        /// Property to set or return the format for the default shader view.
+        /// </summary>
+        /// <remarks>This changes how the texture is sampled/viewed in a shader.  When this value is set to Unknown, then default view uses the texture format.
+        /// <para>The default value is Unknown.</para>
+        /// </remarks>
+        BufferFormat ShaderViewFormat
+        {
+            get;
+            set;
+        }
+        
+        /// <summary>
 		/// Property to set or return the unordered access view format.
 		/// </summary>
 		/// <remarks>This changes how the texture is accessed in an unordered access view in a shader.
@@ -104,6 +116,8 @@ namespace GorgonLibrary.Graphics
 		{
 			Width = 0;
 			Format = BufferFormat.Unknown;
+            ShaderViewFormat = BufferFormat.Unknown;
+		    UnorderedAccessViewFormat = BufferFormat.Unknown;
 			ArrayCount = 1;
 			MipCount = 1;
 		    Usage = BufferUsage.Default;
@@ -187,14 +201,26 @@ namespace GorgonLibrary.Graphics
 		/// <value></value>
         /// <remarks>
         /// When loading a texture from a file, leave this as Unknown to get the file format from the source file.
-        /// <para>This sets the format of the texture data. To reinterpret the format of the data inside of a shader, create a new <see cref="GorgonLibrary.Graphics.GorgonShaderView">GorgonShaderView</see> and assign it to the texture.</para></remarks>
+        /// <para>This sets the format of the texture data. To reinterpret the format of the data inside of a shader, create a new <see cref="GorgonLibrary.Graphics.GorgonTexture1D.CreateShaderView(BufferFormat, int, int, int, int)">shader view</see> and assign it to the texture.</para></remarks>
         public BufferFormat Format
 		{
 			get;
 			set;
 		}
 
-		/// <summary>
+        /// <summary>
+        /// Property to set or return the format for the default shader view.
+        /// </summary>
+        /// <remarks>This changes how the texture is sampled/viewed in a shader.  When this value is set to Unknown, then default view uses the texture format.
+        /// <para>The default value is Unknown.</para>
+        /// </remarks>
+        public BufferFormat ShaderViewFormat
+        {
+            get;
+            set;
+        }
+        
+        /// <summary>
 		/// Property to set or return the unordered access view format.
 		/// </summary>
 		/// <remarks>This changes how the texture is accessed in an unordered access view in a shader.
@@ -287,6 +313,7 @@ namespace GorgonLibrary.Graphics
                 Format = Format,
                 ArrayCount = ArrayCount,
                 MipCount = MipCount,
+                ShaderViewFormat = ShaderViewFormat,
 				UnorderedAccessViewFormat = UnorderedAccessViewFormat,
                 Usage = Usage
             };
@@ -331,7 +358,7 @@ namespace GorgonLibrary.Graphics
 			MipCount = 1;
 			ArrayCount = 1;
 			Multisampling = new GorgonMultisampling(1, 0);
-		    ShaderView = null;
+		    ShaderViewFormat = BufferFormat.Unknown;
 			UnorderedAccessViewFormat = BufferFormat.Unknown;
 			Usage = BufferUsage.Default;
 		}
@@ -408,7 +435,7 @@ namespace GorgonLibrary.Graphics
 		/// <value></value>
 		/// <remarks>
 		/// When loading a texture from a file, leave this as Unknown to get the file format from the source file.
-        /// <para>This sets the format of the texture data. To reinterpret the format of the data inside of a shader, create a new <see cref="GorgonLibrary.Graphics.GorgonShaderView">GorgonShaderView</see> and assign it to the texture.</para></remarks>
+        /// <para>This sets the format of the texture data. To reinterpret the format of the data inside of a shader, create a new <see cref="GorgonLibrary.Graphics.GorgonTexture2D.CreateShaderView(BufferFormat, int, int, int, int)">shader view</see> and assign it to the texture.</para></remarks>
 		public BufferFormat Format
 		{
 			get;
@@ -416,12 +443,12 @@ namespace GorgonLibrary.Graphics
 		}
 
         /// <summary>
-        /// Property to set or return the shader view.
+        /// Property to set or return the format for the default shader view.
         /// </summary>
-        /// <remarks>This changes how the texture is sampled/viewed in a shader.  When this value is set to NULL (Nothing in VB.Net) the view format is taken from the texture format.
-        /// <para>The default value is NULL.</para>
+        /// <remarks>This changes how the texture is sampled/viewed in a shader.  When this value is set to Unknown, then default view uses the texture format.
+        /// <para>The default value is Unknown.</para>
         /// </remarks>
-        public GorgonShaderView? ShaderView
+        public BufferFormat ShaderViewFormat
         {
             get;
             set;
@@ -545,8 +572,9 @@ namespace GorgonLibrary.Graphics
 			Height = 0;
 			Depth = 0;
 			Format = BufferFormat.Unknown;
+            ShaderViewFormat = BufferFormat.Unknown;
+		    UnorderedAccessViewFormat = BufferFormat.Unknown;
 			MipCount = 1;
-			UnorderedAccessViewFormat = BufferFormat.Unknown;
 			Usage = BufferUsage.Default;
 		}
 		#endregion
@@ -621,12 +649,24 @@ namespace GorgonLibrary.Graphics
 		/// <value></value>
         /// <remarks>
         /// When loading a texture from a file, leave this as Unknown to get the file format from the source file.
-        /// <para>This sets the format of the texture data. To reinterpret the format of the data inside of a shader, create a new <see cref="GorgonLibrary.Graphics.GorgonShaderView">GorgonShaderView</see> and assign it to the texture.</para></remarks>
+        /// <para>This sets the format of the texture data. To reinterpret the format of the data inside of a shader, create a new <see cref="GorgonLibrary.Graphics.GorgonTexture3D.CreateShaderView(BufferFormat, int, int)">shader view</see> and assign it to the texture.</para></remarks>
         public BufferFormat Format
 		{
 			get;
 			set;
 		}
+
+        /// <summary>
+        /// Property to set or return the format for the default shader view.
+        /// </summary>
+        /// <remarks>This changes how the texture is sampled/viewed in a shader.  When this value is set to Unknown, then default view uses the texture format.
+        /// <para>The default value is Unknown.</para>
+        /// </remarks>
+        public BufferFormat ShaderViewFormat
+        {
+            get;
+            set;
+        }
 
 		/// <summary>
 		/// Property to set or return the unordered access view format.
@@ -729,6 +769,7 @@ namespace GorgonLibrary.Graphics
 		            Depth = Depth,
 		            Format = Format,
 		            MipCount = MipCount,
+                    ShaderViewFormat = ShaderViewFormat,
 		            UnorderedAccessViewFormat = UnorderedAccessViewFormat,                
 		            Usage = Usage
 	            };
