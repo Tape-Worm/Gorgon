@@ -283,8 +283,8 @@ namespace GorgonLibrary.Graphics
         /// <returns>The shader view description.</returns>
         private D3D.ShaderResourceViewDescription GetDesc2D(GorgonTexture texture)
         {
-            bool isMultiSampled = ((texture.Settings.Multisampling.Count == 1)
-                                   && (texture.Settings.Multisampling.Quality == 0));
+            bool isMultiSampled = ((texture.Settings.Multisampling.Count > 1)
+                                   || (texture.Settings.Multisampling.Quality > 0));
             int arrayCount = texture.Settings.IsTextureCube ? ArrayCount / 6 : ArrayCount;
 
             if (!isMultiSampled)
