@@ -58,19 +58,6 @@ namespace GorgonLibrary.Graphics
 		/// Alpha channel.
 		/// </summary>
         public readonly float Alpha;
-
-		/// <summary>
-		/// A completely transparent color.
-		/// </summary>
-		public static readonly GorgonColor Transparent = new GorgonColor(0, 0, 0, 0);
-		/// <summary>
-		/// White.
-		/// </summary>
-		public static readonly GorgonColor White = new GorgonColor(1, 1, 1, 1);
-		/// <summary>
-		/// Black.
-		/// </summary>
-		public static readonly GorgonColor Black = new GorgonColor(0, 0, 0, 1);
 		#endregion
 
 		#region Properties.
@@ -95,6 +82,39 @@ namespace GorgonLibrary.Graphics
 				return new SharpDX.Color3(Red, Green, Blue);
 			}
 		}
+
+        /// <summary>
+        /// A completely transparent color.
+        /// </summary>
+        public static GorgonColor Transparent
+        {
+            get
+            {
+                return new GorgonColor(0, 0, 0, 0);
+            }
+        }
+
+        /// <summary>
+        /// White.
+        /// </summary>
+        public static GorgonColor White
+        {
+            get
+            {
+                return new GorgonColor(1, 1, 1, 1);
+            }
+        }
+
+        /// <summary>
+        /// Black.
+        /// </summary>
+        public static GorgonColor Black
+        {
+            get
+            {
+                return new GorgonColor(0, 0, 0, 1);
+            }
+        }
 		#endregion
 
 		#region Methods.

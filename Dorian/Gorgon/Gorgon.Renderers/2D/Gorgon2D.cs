@@ -27,6 +27,7 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Runtime.InteropServices;
 using System.Text;
 using GorgonLibrary.Collections.Specialized;
 using GorgonLibrary.Graphics;
@@ -39,6 +40,7 @@ namespace GorgonLibrary.Renderers
 	/// <summary>
 	/// A vertex for a renderable object.
 	/// </summary>		
+	[StructLayout(LayoutKind.Sequential, Pack = 1)]
 	public struct Gorgon2DVertex
 	{
         /// <summary>

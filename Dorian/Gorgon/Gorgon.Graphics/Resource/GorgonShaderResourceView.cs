@@ -211,6 +211,7 @@ namespace GorgonLibrary.Graphics
                                                         Format));
             }
 
+            // 3D textures don't use arrays.
             if (texture.ResourceType != ResourceType.Texture3D)
             {
                 if ((ArrayCount > texture.Settings.ArrayCount)
@@ -221,14 +222,14 @@ namespace GorgonLibrary.Graphics
                                               string.Format(Resources.GORGFX_VIEW_ARRAY_COUNT_INVALID,
                                                             texture.Settings.ArrayCount));
                 }
-            }
 
-            if ((ArrayStart >= texture.Settings.ArrayCount)
-                || (ArrayStart < 0))
-            {
-                throw new GorgonException(GorgonResult.CannotCreate,
-                                          string.Format(Resources.GORGFX_VIEW_ARRAY_START_INVALID,
-                                                        texture.Settings.ArrayCount));
+                if ((ArrayStart >= texture.Settings.ArrayCount)
+                    || (ArrayStart < 0))
+                {
+                    throw new GorgonException(GorgonResult.CannotCreate,
+                                              string.Format(Resources.GORGFX_VIEW_ARRAY_START_INVALID,
+                                                            texture.Settings.ArrayCount));
+                }
             }
 
             if ((MipCount > texture.Settings.MipCount) || (MipStart + MipCount > texture.Settings.MipCount)
