@@ -23,8 +23,8 @@ namespace GorgonLibrary.Graphics.Test
             public Vector4 Position;
             [InputElement(1, "COLOR")]
             public Vector4 Color;
-            /*[InputElement(2, "TEXCOORD")]
-            public Vector2 TexCoord;*/
+            [InputElement(2, "TEXCOORD")]
+            public Vector2 TexCoord;
         }
         #endregion
 
@@ -77,26 +77,26 @@ namespace GorgonLibrary.Graphics.Test
                                                                    new Vertex
                                                                        {
                                                                            Position = new Vector4(-0.5f, 0.5f, 0.5f, 1.0f),
-                                                                           Color = new Vector4(1.0f, 0.0f, 0.0f, 1.0f)
-                                                                           //TexCoord = new Vector2(0, 0)
+                                                                           Color = new Vector4(1.0f, 0.0f, 0.0f, 1.0f),
+                                                                           TexCoord = new Vector2(0, 0)
                                                                        },
                                                                     new Vertex
                                                                         {
                                                                            Position = new Vector4(0.5f, -0.5f, 0.5f, 1.0f),
-                                                                           Color = new Vector4(0.0f, 1.0f, 0.0f, 1.0f)
-                                                                           //TexCoord = new Vector2(1, 1)
+                                                                           Color = new Vector4(0.0f, 1.0f, 0.0f, 1.0f),
+                                                                           TexCoord = new Vector2(1, 1)
                                                                         },
                                                                     new Vertex
                                                                         {
                                                                            Position = new Vector4(-0.5f, -0.5f, 0.5f, 1.0f),
-                                                                           Color = new Vector4(0.0f, 0.0f, 1.0f, 1.0f)
-                                                                           //TexCoord = new Vector2(0, 1)
+                                                                           Color = new Vector4(0.0f, 0.0f, 1.0f, 1.0f),
+                                                                           TexCoord = new Vector2(0, 1)
                                                                         },
                                                                     new Vertex
                                                                         {
                                                                            Position = new Vector4(0.5f, 0.5f, 0.5f, 1.0f),
-                                                                           Color = new Vector4(1.0f, 1.0f, 1.0f, 1.0f)
-                                                                           //TexCoord = new Vector2(1, 0)
+                                                                           Color = new Vector4(1.0f, 1.0f, 1.0f, 1.0f),
+                                                                           TexCoord = new Vector2(1, 0)
                                                                         }
                                                                });
 
@@ -109,13 +109,13 @@ namespace GorgonLibrary.Graphics.Test
 
             _graphics.Input.Layout = _layout;
             _graphics.Input.PrimitiveType = PrimitiveType.TriangleList;
-            _graphics.Input.VertexBuffers[0] = new GorgonVertexBufferBinding(_vertices, 32);
+            _graphics.Input.VertexBuffers[0] = new GorgonVertexBufferBinding(_vertices, 40);
             _graphics.Input.IndexBuffer = _indices;
             _graphics.Rasterizer.SetViewport(new GorgonViewport(0, 0, 640, 480, 0, 1.0f));
-            _graphics.Rasterizer.States = GorgonRasterizerStates.NoCulling;
+            _graphics.Rasterizer.States = GorgonRasterizerStates.DefaultStates;
             _graphics.Shaders.VertexShader.Current = _vertexShader;
             _graphics.Shaders.PixelShader.Current = _pixelShader;
-            //_graphics.Shaders.PixelShader.TextureSamplers[0] = GorgonTextureSamplerStates.DefaultStates;
+            _graphics.Shaders.PixelShader.TextureSamplers[0] = GorgonTextureSamplerStates.DefaultStates;
 
             _form.TopMost = true;
 
@@ -129,6 +129,23 @@ namespace GorgonLibrary.Graphics.Test
                                                            });
 
             _graphics.Output.RenderTargets[0] = _screen;
+        }
+
+        private bool Idle()
+        {
+            _screen.Clear(GorgonColor.Black);
+
+            _graphics.Output.DrawIndexed(0, 0, 6);
+
+            _screen.Flip(1);
+
+            if ((_maxTime > 0) && (GorgonTiming.MillisecondsSinceStart > _maxTime))
+            {
+                _form.Close();
+                return false;
+            }
+
+            return true;
         }
 
         /// <summary>
@@ -247,28 +264,11 @@ namespace GorgonLibrary.Graphics.Test
             }
         }
 
-        private bool Idle()
-        {
-            _screen.Clear(GorgonColor.Black);
-
-            _graphics.Output.DrawIndexed(0, 0, 6);
-
-            _screen.Flip(1);
-
-            if ((_maxTime > 0) && (GorgonTiming.MillisecondsSinceStart > _maxTime))
-            {
-                _form.Close();
-                return false;
-            }
-
-            return true;
-        }
-
         /// <summary>
         /// Test for failure on staging textures.
         /// </summary>
         [TestMethod]
-        public void Test2D()
+        public void Test2ViewsSameShaderStage()
         {
             GorgonTexture2D texture = null;
 
@@ -276,7 +276,7 @@ namespace GorgonLibrary.Graphics.Test
 
             try
             {
-                /*using(var data = new GorgonImageData(new GorgonTexture2DSettings
+                using(var data = new GorgonImageData(new GorgonTexture2DSettings
                     {
                         Width = 256,
                         Height = 256,
@@ -296,13 +296,12 @@ namespace GorgonLibrary.Graphics.Test
                     }
 
                     texture = _graphics.Textures.CreateTexture<GorgonTexture2D>("Test2D", data);
-                }*/
+                }
 
-                /*texture = _graphics.Textures.FromFile<GorgonTexture2D>("Test",
-                                                                       @"c:\mike\unpak\imageTest.png",
-                                                                       new GorgonCodecPNG());
-
-                _graphics.Shaders.PixelShader.Resources.SetTexture(0, texture);*/
+                GorgonTextureShaderView view = texture.CreateShaderView(BufferFormat.R8G8B8A8_Int);
+                 
+                _graphics.Shaders.PixelShader.Resources.SetTexture(0, texture);
+                _graphics.Shaders.PixelShader.Resources.SetView(1, view);
 
                 _maxTime = 10000;
                 Gorgon.Run(_form, Idle);
