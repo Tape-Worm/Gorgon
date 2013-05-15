@@ -46,10 +46,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gorgon.Animation", "Gorgon.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tester_Anim", "..\Examples\Tester_Anim\Tester_Anim.csproj", "{558C7262-93C6-4597-BA9C-58A618911E88}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gorgon.Data", "Gorgon.Data\Gorgon.Data\Gorgon.Data.csproj", "{2A6FF1C5-DC06-48DE-8831-B7F4E5176D26}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gorgon.Data.UnitTests", "Gorgon.Data\Gorgon.Data.UnitTests\Gorgon.Data.UnitTests.csproj", "{86ADDA37-1469-4489-9EF8-8C57A1C09069}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Boinger", "..\Examples\Gorgon.Graphics\Boinger\Boinger.csproj", "{256CC806-B7DC-4125-A350-F78F520D9742}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Gorgon.Common", "Gorgon.Common", "{9A8C2588-028B-42F6-92B4-EA4AF2B8489B}"
@@ -106,7 +102,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "File", "File", "{4733C95B-7
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gorgon.GorPackWriter", "..\Tools\Gorgon.Editor.PlugIns\Gorgon.GorPackWriter\Gorgon.GorPackWriter.csproj", "{A38CC512-B17D-4793-80B8-E7C31D3AE436}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestTextureResOptions", "..\Examples\TestTextureResOptions\TestTextureResOptions.csproj", "{44A274E3-B696-4C89-814F-A83400F6F480}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{31B25F6B-73AE-4096-890A-17616716BC11}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gorgon.Graphics.Test", "..\Test\Gorgon.Graphics.Test\Gorgon.Graphics.Test.csproj", "{042DEA65-F75B-46C7-808D-8C29A68C672A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -194,14 +192,6 @@ Global
 		{558C7262-93C6-4597-BA9C-58A618911E88}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{558C7262-93C6-4597-BA9C-58A618911E88}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{558C7262-93C6-4597-BA9C-58A618911E88}.Release|Any CPU.Build.0 = Release|Any CPU
-		{2A6FF1C5-DC06-48DE-8831-B7F4E5176D26}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{2A6FF1C5-DC06-48DE-8831-B7F4E5176D26}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{2A6FF1C5-DC06-48DE-8831-B7F4E5176D26}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{2A6FF1C5-DC06-48DE-8831-B7F4E5176D26}.Release|Any CPU.Build.0 = Release|Any CPU
-		{86ADDA37-1469-4489-9EF8-8C57A1C09069}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{86ADDA37-1469-4489-9EF8-8C57A1C09069}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{86ADDA37-1469-4489-9EF8-8C57A1C09069}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{86ADDA37-1469-4489-9EF8-8C57A1C09069}.Release|Any CPU.Build.0 = Release|Any CPU
 		{256CC806-B7DC-4125-A350-F78F520D9742}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{256CC806-B7DC-4125-A350-F78F520D9742}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{256CC806-B7DC-4125-A350-F78F520D9742}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -278,10 +268,10 @@ Global
 		{A38CC512-B17D-4793-80B8-E7C31D3AE436}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A38CC512-B17D-4793-80B8-E7C31D3AE436}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A38CC512-B17D-4793-80B8-E7C31D3AE436}.Release|Any CPU.Build.0 = Release|Any CPU
-		{44A274E3-B696-4C89-814F-A83400F6F480}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{44A274E3-B696-4C89-814F-A83400F6F480}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{44A274E3-B696-4C89-814F-A83400F6F480}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{44A274E3-B696-4C89-814F-A83400F6F480}.Release|Any CPU.Build.0 = Release|Any CPU
+		{042DEA65-F75B-46C7-808D-8C29A68C672A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{042DEA65-F75B-46C7-808D-8C29A68C672A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{042DEA65-F75B-46C7-808D-8C29A68C672A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{042DEA65-F75B-46C7-808D-8C29A68C672A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -317,5 +307,6 @@ Global
 		{4733C95B-70C0-4316-8EC0-83795AB07E75} = {344D5C9C-D275-4644-9CD8-C91C79FE2123}
 		{B4E8A97F-2DBC-4559-A535-2EC64A69F0E5} = {94E5BF16-684A-45DA-AA0E-895972EE792B}
 		{A38CC512-B17D-4793-80B8-E7C31D3AE436} = {4733C95B-70C0-4316-8EC0-83795AB07E75}
+		{042DEA65-F75B-46C7-808D-8C29A68C672A} = {31B25F6B-73AE-4096-890A-17616716BC11}
 	EndGlobalSection
 EndGlobal

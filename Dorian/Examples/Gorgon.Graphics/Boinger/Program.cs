@@ -26,6 +26,7 @@
 
 using System;
 using System.Drawing;
+using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using GorgonLibrary.Diagnostics;
 using GorgonLibrary.IO;
@@ -39,6 +40,7 @@ namespace GorgonLibrary.Graphics.Example
 	/// <summary>
 	/// A vertex for our boinger objects.
 	/// </summary>
+	[StructLayout(LayoutKind.Sequential, Pack = 1)]
 	public struct BoingerVertex
 	{
 		/// <summary>
