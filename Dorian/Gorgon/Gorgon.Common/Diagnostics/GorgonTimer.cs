@@ -181,14 +181,14 @@ namespace GorgonLibrary.Diagnostics
 			// Handle wrap around every ~50 days.
 			if (currentTime < _startTime)
 			{
-				long diff = 4294967295 - _startTime;
+				long diff = uint.MaxValue - _startTime;
 				_startTime = diff;
 				currentTime += diff;
 			}
 
 			if (ticks < _startTick)
 			{
-				long diff = 4294967295 - _startTick;
+				long diff = uint.MaxValue - _startTick;
 				_startTick = diff;
 				ticks += diff;
 			}
@@ -291,7 +291,7 @@ namespace GorgonLibrary.Diagnostics
 		/// <remarks>The high resolution timer uses QueryPerformanceCounter, and the standard timer uses timeGetTime.</remarks>
 		public GorgonTimer(bool useHighResolution)
 		{
-			if (!useHighResolution)
+			if (useHighResolution)
 			{
 				if (Win32API.QueryPerformanceFrequency(out _frequency))
 				{

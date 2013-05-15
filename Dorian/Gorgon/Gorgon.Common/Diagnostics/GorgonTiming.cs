@@ -24,6 +24,8 @@
 // 
 #endregion
 
+using GorgonLibrary.Math;
+
 namespace GorgonLibrary.Diagnostics
 {	
 	/// <summary>
@@ -249,7 +251,7 @@ namespace GorgonLibrary.Diagnostics
 		public static void Update()
 		{
 			double theTime;				// Time value.
-			double delta;					// Frame delta.
+			double frameDelta;			// Frame delta.
 
 			if (!_firstCall)
 			{
@@ -260,20 +262,22 @@ namespace GorgonLibrary.Diagnostics
 			do
 			{
 				theTime = _timer.Milliseconds;
-				delta = (theTime - _lastTimerValue);
-			} while ((delta < 0.0001) && (delta != 0.0));
+				frameDelta = (theTime - _lastTimerValue);
+			} while ((frameDelta < 0.000001) && (frameDelta != 0.0));
 
 			// If our delta since the last time was too high, then don't allow any movement until
 			// the simulation is caught up.
-			if (delta > 200)
-				delta = 0;
+			if (frameDelta > 200)
+			{
+				frameDelta = 0;
+			}
 
-			Delta = (float)delta / 1000.0f;
+			Delta = (float)frameDelta / 1000.0f;
 
 			// If the delta is 0, then put in the smallest possible positive value.
-			if (Delta == 0.0f)
+			if (Delta.EqualsEpsilon(0.0f))
 			{
-				Delta = 0.000001f;
+				Delta = 1e-6f;
 			}
 
 			ScaledDelta = Delta * TimeScale;
@@ -284,26 +288,42 @@ namespace GorgonLibrary.Diagnostics
 			{
 				FrameCount++;
 
-				_frameCounter++;
-				delta = _lastTimerValue - _lastTime;
+				frameDelta = _lastTimerValue - _lastTime;
 
-				FPS = (float)(_frameCounter / delta) * 1000.0f;
+				// If the value is too small, then don't use this time value.
+				if (frameDelta < 1e-6)
+				{
+					return;
+				}
+				
+				_frameCounter++;
+				FPS = (float)((_frameCounter / frameDelta) * 1000.0);
 
 				// Wait until we get one second of information.
-				if (delta >= 1000.0)
+				if (frameDelta >= 1000.0)
 				{
 					_lastTime = _lastTimerValue;
 					_frameCounter = 0;
 
 					if (FPS > HighestFPS)
+					{
 						HighestFPS = FPS;
+					}
+
 					if (FPS < LowestFPS)
+					{
 						LowestFPS = FPS;
+					}
 
 					if (Delta > HighestDelta)
+					{
 						HighestDelta = Delta;
+					}
+
 					if (Delta < LowestDelta)
+					{
 						LowestDelta = Delta;
+					}
 				}
 
 				if (_averageCounter > 0)
@@ -345,7 +365,9 @@ namespace GorgonLibrary.Diagnostics
 		public static void Reset()
 		{
 			if ((_timer == null) || (UseHighResolutionTimer != _timer.IsHighResolution))
+			{
 				_timer = new GorgonTimer(UseHighResolutionTimer);
+			}
 
 			_useHighResTimer = _timer.IsHighResolution;
 			HighestFPS = float.MinValue;
