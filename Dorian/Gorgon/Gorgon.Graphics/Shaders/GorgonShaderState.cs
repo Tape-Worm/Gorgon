@@ -890,7 +890,7 @@ namespace GorgonLibrary.Graphics
                         && (_views[currentIndex] == view.D3DView))
                     {
                         throw new ArgumentException(
-                            string.Format("The resource view is already bound to a shader at index [{0}]", index),
+                            string.Format("The resource view is already bound to a shader at index [{0}]", currentIndex),
                             "view");
                     }
                 }

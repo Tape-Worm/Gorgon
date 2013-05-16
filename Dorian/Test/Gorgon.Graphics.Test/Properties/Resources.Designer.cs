@@ -93,9 +93,9 @@ namespace GorgonLibrary.Graphics.Test.Properties {
         ///
         ///float4 TestPS( PS_IN input ) : SV_Target [rest of string was truncated]&quot;;.
         /// </summary>
-        internal static string Shader {
+        internal static string ShaderMultiView {
             get {
-                return ResourceManager.GetString("Shader", resourceCulture);
+                return ResourceManager.GetString("ShaderMultiView", resourceCulture);
             }
         }
     }

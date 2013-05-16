@@ -69,6 +69,8 @@ namespace GorgonLibrary.Graphics
 
 					D3DShader = null;
 				}
+
+			    _disposed = true;
 			}
 
 			base.Dispose(disposing);

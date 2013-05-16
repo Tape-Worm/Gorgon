@@ -522,19 +522,21 @@ namespace GorgonLibrary.Graphics
 		/// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
 		protected virtual void Dispose(bool disposing)
 		{
-			if (!_disposed)
-			{
-				if (disposing)
-				{
-					if (D3DByteCode != null)
-						D3DByteCode.Dispose();
+		    if (_disposed)
+		    {
+		        return;
+		    }
 
-					Graphics.RemoveTrackedObject(this);
-				}
+		    if (disposing)
+		    {
+		        if (D3DByteCode != null)
+		            D3DByteCode.Dispose();
 
-				D3DByteCode = null;
-				_disposed = true;
-			}
+		        Graphics.RemoveTrackedObject(this);
+		    }
+
+		    D3DByteCode = null;
+		    _disposed = true;
 		}
 
 		/// <summary>
