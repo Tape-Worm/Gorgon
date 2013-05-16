@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
+using GorgonLibrary.Graphics.Test.Properties;
 using GorgonLibrary.IO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SlimMath;
@@ -67,8 +69,23 @@ namespace GorgonLibrary.Graphics.Test
         /// <summary>
         /// Function to create a test scene.
         /// </summary>
-        private void CreateTestScene()
+        /// <param name="vs">Vertex Shader Code.</param>
+        /// <param name="ps">Pixel shader code.</param>
+        /// <param name="showTestPanel">TRUE to show the testing panel on the form, FALSE to hide it.</param>
+        private void CreateTestScene(string vs, string ps, bool showTestPanel)
         {
+            _form.ClientSize = new Size(640, 480);
+            _form.ShowTestPanel = showTestPanel;
+
+            _vertexShader = _graphics.Shaders.CreateShader<GorgonVertexShader>("VS",
+                                                                               "TestVS",
+                                                                               vs,
+                                                                               true);
+            _pixelShader = _graphics.Shaders.CreateShader<GorgonPixelShader>("PS",
+                                                                             "TestPS",
+                                                                             ps,
+                                                                             true);
+
             _layout = _graphics.Input.CreateInputLayout("Layout", typeof(Vertex), _vertexShader);
 
             _vertices = _graphics.Input.CreateVertexBuffer(BufferUsage.Immutable,
@@ -107,6 +124,7 @@ namespace GorgonLibrary.Graphics.Test
                                                                  0, 1, 2, 3, 1, 0
                                                              });
 
+
             _graphics.Input.Layout = _layout;
             _graphics.Input.PrimitiveType = PrimitiveType.TriangleList;
             _graphics.Input.VertexBuffers[0] = new GorgonVertexBufferBinding(_vertices, 40);
@@ -122,13 +140,50 @@ namespace GorgonLibrary.Graphics.Test
             _screen = _graphics.Output.CreateSwapChain("Screen",
                                                        new GorgonSwapChainSettings
                                                            {
-                                                               Width = 640,
-                                                               Height = 480,
-                                                               Window = _form,
+                                                               Window = _form.panelDisplay,
                                                                IsWindowed = true
                                                            });
 
             _graphics.Output.RenderTargets[0] = _screen;
+        }
+
+        private void TearDownScene()
+        {
+            if (_screen != null)
+            {
+                _screen.Dispose();
+                _screen = null;
+            }
+
+            if (_indices != null)
+            {
+                _indices.Dispose();
+                _indices = null;
+            }
+
+            if (_vertices != null)
+            {
+                _vertices.Dispose();
+                _vertices = null;
+            }
+
+            if (_layout != null)
+            {
+                _layout.Dispose();
+                _layout = null;
+            }
+
+            if (_pixelShader != null)
+            {
+                _pixelShader.Dispose();
+                _pixelShader = null;
+            }
+
+            if (_vertexShader != null)
+            {
+                _vertexShader.Dispose();
+                _vertexShader = null;
+            }
         }
 
         private bool Idle()
@@ -156,15 +211,6 @@ namespace GorgonLibrary.Graphics.Test
         {
             _form = new TestForm();
             _graphics = new GorgonGraphics();
-
-            _vertexShader = _graphics.Shaders.CreateShader<GorgonVertexShader>("VS",
-                                                                               "TestVS",
-                                                                               Properties.Resources.Shader,
-                                                                               true);
-            _pixelShader = _graphics.Shaders.CreateShader<GorgonPixelShader>("PS",
-                                                                             "TestPS",
-                                                                             Properties.Resources.Shader,
-                                                                             true);
         }
 
         /// <summary>
@@ -272,7 +318,7 @@ namespace GorgonLibrary.Graphics.Test
         {
             GorgonTexture2D texture = null;
 
-            CreateTestScene();
+            CreateTestScene(Resources.ShaderMultiView, Resources.ShaderMultiView, true);
 
             try
             {
@@ -298,13 +344,14 @@ namespace GorgonLibrary.Graphics.Test
                     texture = _graphics.Textures.CreateTexture<GorgonTexture2D>("Test2D", data);
                 }
 
-                GorgonTextureShaderView view = texture.CreateShaderView(BufferFormat.R8G8B8A8_Int);
+                GorgonTextureShaderView view = texture.CreateShaderView(BufferFormat.R8G8B8A8_IntNormal);
                  
                 _graphics.Shaders.PixelShader.Resources.SetTexture(0, texture);
                 _graphics.Shaders.PixelShader.Resources.SetView(1, view);
-
-                _maxTime = 10000;
+                
                 Gorgon.Run(_form, Idle);
+
+                Assert.IsTrue(_form.TestResult == DialogResult.Yes);
             }
             finally
             {
@@ -312,6 +359,8 @@ namespace GorgonLibrary.Graphics.Test
                 {
                     texture.Dispose();
                 }
+
+                TearDownScene();
             }
         }
 
