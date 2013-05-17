@@ -297,8 +297,8 @@ namespace GorgonLibrary.Graphics
 			Graphics.Context.UpdateSubresource(
 				new DX.DataBox
 				{
-					DataPointer = stream.PositionPointer,
-					RowPitch = 0,
+					DataPointer = (stream.PositionPointer + offset),
+					RowPitch = size,
 					SlicePitch = 0
 				},
 				D3DResource);
@@ -430,7 +430,7 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		/// <param name="lockFlags">The flags to use when locking the buffer.</param>
 		/// <returns>A data stream pointing to the memory used by the buffer.</returns>
-		/// <remarks>A data stream locked with this method does not have to be disposed of.  After it is <see cref="M:GorgonLibrary.Graphics.GorgonBaseBuffer.Unlock">unlocked</see>, the memory pointed 
+		/// <remarks>A data stream locked with this method does not have to be disposed of.  After it is <see cref="M:GorgonLibrary.Graphics.GorgonBuffer.Unlock">unlocked</see>, the memory pointed 
 		/// at by the stream will be considered invalid.  However, for the sake of following practice, it is a good idea to call the Dispose method 
 		/// on the resulting data stream when finished.
 		/// <para>This method only works on buffers with a Dynamic or Staging usage.  Immutable or default buffers will throw an exception when an attempt 

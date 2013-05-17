@@ -624,7 +624,7 @@ Code: 0x{2}</value>
     <value>Cannot read beyond the beginning of the stream.</value>
   </data>
   <data name="GOR_UNSAFE_STRUCT_NOT_EXPLICIT_LAYOUT" xml:space="preserve">
-    <value>The type '{0}' is not explicitly laid out using the StructLayout attribute.</value>
+    <value>The type '{0}' is not explicitly or sequentially laid out using the StructLayout attribute.</value>
   </data>
   <data name="GOR_STREAM_COUNT_OUT_OF_RANGE" xml:space="preserve">
     <value>The count [{0}] must be greater than or equal to 0.</value>

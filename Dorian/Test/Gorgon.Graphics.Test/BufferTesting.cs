@@ -46,17 +46,11 @@ namespace GorgonLibrary.Graphics.Test
 	[TestClass]
 	public class BufferTesting
 	{
-		[StructLayout(LayoutKind.Sequential, Pack = 1)]
-		public struct SBStruct
-		{
-			public float x;
-			public float y;
-			public float z;
-		}
-
 		private GraphicsFramework _framework;
+	    private GorgonDataStream _bufferStream;
 		private string _tbShaders;
 		private string _sbShaders;
+	    private string _rbShaders;
 
 		[TestInitialize]
 		public void Init()
@@ -64,11 +58,17 @@ namespace GorgonLibrary.Graphics.Test
 			_framework = new GraphicsFramework();
 			_tbShaders = Encoding.UTF8.GetString(Resources.TypedBufferShaders);
 			_sbShaders = Encoding.UTF8.GetString(Resources.StructuredBufferShaders);
+            _rbShaders = Encoding.UTF8.GetString(Resources.RawBufferShaders);
 		}
 
 		[TestCleanup]
 		public void CleanUp()
 		{
+            if (_bufferStream != null)
+            {
+                _bufferStream.Dispose();
+            }
+
 			if (_framework != null)
 			{
 				_framework.Dispose();
@@ -78,57 +78,41 @@ namespace GorgonLibrary.Graphics.Test
 		[TestMethod]
 		public void BindStructBuffer()
 		{
-			_framework.CreateTestScene(_sbShaders, _sbShaders, false);
+		    _framework.CreateTestScene(_sbShaders, _sbShaders, false);
 
-			using (var buffer = _framework.Graphics.Shaders.CreateStructuredBuffer(new GorgonStructuredBufferSettings()
-				{
+			using (var buffer = _framework.Graphics.Shaders.CreateStructuredBuffer(new GorgonStructuredBufferSettings
+			    {
 					AllowCPUWrite = false,
-					ElementCount = 1,
-					ElementSize = 48,
+					ElementCount = 4,
+					ElementSize = 12,
 					IsOutput = false,
 					StructuredBufferType = StructuredBufferType.Standard
 				}))
 			{
-				var stream = new GorgonDataStream(48);
+				_bufferStream = new GorgonDataStream(48);
 
-				try
-				{
-					_framework.Graphics.Shaders.VertexShader.Resources.SetShaderBuffer(0, buffer);
+				_framework.Graphics.Shaders.VertexShader.Resources.SetShaderBuffer(0, buffer);
 					
-					_framework.MaxTimeout = 10000;
+				_framework.MaxTimeout = 10000;
 
-					_framework.IdleFunc = () =>
+				_framework.IdleFunc = () =>
+					{
+						for (int i = 0; i < 4; i++)
 						{
-							stream.Position = 0;
+							var rnd = new Vector3(GorgonRandom.RandomSingle() * GorgonTiming.Delta,
+								                        GorgonRandom.RandomSingle() * GorgonTiming.Delta,
+								                        GorgonRandom.RandomSingle() * GorgonTiming.Delta);
 
-							for (int i = 0; i < 4; i++)
-							{
-								var rnd = new Vector3(GorgonRandom.RandomSingle() * GorgonTiming.Delta,
-								                          GorgonRandom.RandomSingle() * GorgonTiming.Delta,
-								                          (GorgonRandom.RandomSingle() * 5.0f - 2.5f) * GorgonTiming.Delta);
-								var value = new SBStruct
-									{
-										x = rnd.X,
-										y = rnd.Y,
-										z = rnd.Z
-									};
+                            _bufferStream.Write(rnd);
+						}
+                            
+                        _bufferStream.Position = 0;
+                        // ReSharper disable AccessToDisposedClosure
+                        buffer.Update(_bufferStream);
+                        // ReSharper restore AccessToDisposedClosure
+					}; 
 
-								stream.Write(value);
-							}
-
-							stream.Position = 0;
-
-							buffer.Update(stream);
-						}; 
-
-					buffer.Update(stream);
-
-					_framework.Run();
-				}
-				finally
-				{
-					stream.Dispose();
-				}
+				_framework.Run();
 			}
 		}
 
@@ -144,7 +128,7 @@ namespace GorgonLibrary.Graphics.Test
 				values[i] = new Vector4(GorgonRandom.RandomSingle(), GorgonRandom.RandomSingle(), GorgonRandom.RandomSingle(), 1.0f);
 			}
 
-			using(var buffer = _framework.Graphics.Shaders.CreateTypedBuffer<Vector4>(values, BufferFormat.R32G32B32A32_Float, false))
+			using(var buffer = _framework.Graphics.Shaders.CreateTypedBuffer(values, BufferFormat.R32G32B32A32_Float, false))
 			{
 				_framework.Graphics.Shaders.PixelShader.Resources.SetShaderBuffer(0, buffer);
 
@@ -152,5 +136,35 @@ namespace GorgonLibrary.Graphics.Test
 			}
 			
 		}
-	}
+
+        [TestMethod]
+        public void BindRawBuffer()
+        {
+            _framework.CreateTestScene(_rbShaders, _rbShaders, true);
+
+            var values = new byte[256 * 4];
+
+            for (int i = 0; i < values.Length; i++)
+            {
+                values[i] = (byte)GorgonRandom.RandomInt32(256);
+            }
+
+            using(var stream = GorgonDataStream.ArrayToStream(values))
+            {
+                using(var buffer = _framework.Graphics.Shaders.CreateTypedBuffer<Vector4>(new GorgonTypedBufferSettings
+                    {
+                        AllowCPUWrite = false,
+                        ElementCount = 256,
+                        IsRaw = true,
+                        ShaderViewFormat = BufferFormat.R32_UInt
+                    }, stream))
+                {
+                    _framework.Graphics.Shaders.PixelShader.Resources.SetShaderBuffer(0, buffer);
+
+                    Assert.IsTrue(_framework.Run() == DialogResult.Yes);
+                }
+            }
+
+        }
+    }
 }

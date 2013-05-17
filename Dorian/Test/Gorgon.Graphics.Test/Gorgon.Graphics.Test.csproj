@@ -92,6 +92,7 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="RawBufferShaders.hlsl" />
     <Content Include="StructuredBufferShaders.hlsl" />
     <Content Include="TypedBufferShaders.hlsl" />
     <Content Include="TextureShaders.hlsl" />
