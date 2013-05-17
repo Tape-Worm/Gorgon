@@ -1,11 +1,9 @@
 ﻿using System;
-using System.Drawing;
-using System.Runtime.InteropServices;
+using System.Text;
 using System.Windows.Forms;
 using GorgonLibrary.Graphics.Test.Properties;
 using GorgonLibrary.IO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using SlimMath;
 using GorgonLibrary.Math;
 using GorgonLibrary.Diagnostics;
 
@@ -14,36 +12,27 @@ namespace GorgonLibrary.Graphics.Test
     [TestClass]
     public class TextureTesting
     {
-        #region Value Types.
-        /// <summary>
-        /// Vertex for testing.
-        /// </summary>
-        [StructLayout(LayoutKind.Sequential, Pack = 1)]
-        public struct Vertex
-        {
-            [InputElement(0, "POSITION")]
-            public Vector4 Position;
-            [InputElement(1, "COLOR")]
-            public Vector4 Color;
-            [InputElement(2, "TEXCOORD")]
-            public Vector2 TexCoord;
-        }
-        #endregion
-
         #region Variables.
-        private int _maxTime;
-        private GorgonPixelShader _pixelShader;
-        private GorgonVertexShader _vertexShader;
-        private GorgonInputLayout _layout;
-        private GorgonVertexBuffer _vertices;
-        private GorgonIndexBuffer _indices;
-        private GorgonSwapChain _screen;
-        private GorgonGraphics _graphics;
-        private TestForm _form;
+	    private GraphicsFramework _framework;
+	    private string _shaders;
         #endregion
 
         #region Properties.
+		/// <summary>
+		/// Property to return the shaders for the test.
+		/// </summary>
+	    private string Shaders
+	    {
+		    get
+		    {
+			    if (string.IsNullOrWhiteSpace(_shaders))
+			    {
+				    _shaders = Encoding.UTF8.GetString(Resources.TextureShaders);
+			    }
 
+			    return _shaders;
+		    }
+	    }
         #endregion
 
         #region Methods.
@@ -53,154 +42,13 @@ namespace GorgonLibrary.Graphics.Test
         [TestCleanup]
         public void CleanUp()
         {
-            if (_form != null)
-            {
-                _form.Dispose();
-                _form = null;
-            }
+	        if (_framework == null)
+	        {
+		        return;
+	        }
 
-            if (_graphics != null)
-            {
-                _graphics.Dispose();
-                _graphics = null;
-            }
-        }
-
-        /// <summary>
-        /// Function to create a test scene.
-        /// </summary>
-        /// <param name="vs">Vertex Shader Code.</param>
-        /// <param name="ps">Pixel shader code.</param>
-        /// <param name="showTestPanel">TRUE to show the testing panel on the form, FALSE to hide it.</param>
-        private void CreateTestScene(string vs, string ps, bool showTestPanel)
-        {
-            _form.ClientSize = new Size(640, 480);
-            _form.ShowTestPanel = showTestPanel;
-
-            _vertexShader = _graphics.Shaders.CreateShader<GorgonVertexShader>("VS",
-                                                                               "TestVS",
-                                                                               vs,
-                                                                               true);
-            _pixelShader = _graphics.Shaders.CreateShader<GorgonPixelShader>("PS",
-                                                                             "TestPS",
-                                                                             ps,
-                                                                             true);
-
-            _layout = _graphics.Input.CreateInputLayout("Layout", typeof(Vertex), _vertexShader);
-
-            _vertices = _graphics.Input.CreateVertexBuffer(BufferUsage.Immutable,
-                                                           new[]
-                                                               {
-                                                                   new Vertex
-                                                                       {
-                                                                           Position = new Vector4(-0.5f, 0.5f, 0.5f, 1.0f),
-                                                                           Color = new Vector4(1.0f, 0.0f, 0.0f, 1.0f),
-                                                                           TexCoord = new Vector2(0, 0)
-                                                                       },
-                                                                    new Vertex
-                                                                        {
-                                                                           Position = new Vector4(0.5f, -0.5f, 0.5f, 1.0f),
-                                                                           Color = new Vector4(0.0f, 1.0f, 0.0f, 1.0f),
-                                                                           TexCoord = new Vector2(1, 1)
-                                                                        },
-                                                                    new Vertex
-                                                                        {
-                                                                           Position = new Vector4(-0.5f, -0.5f, 0.5f, 1.0f),
-                                                                           Color = new Vector4(0.0f, 0.0f, 1.0f, 1.0f),
-                                                                           TexCoord = new Vector2(0, 1)
-                                                                        },
-                                                                    new Vertex
-                                                                        {
-                                                                           Position = new Vector4(0.5f, 0.5f, 0.5f, 1.0f),
-                                                                           Color = new Vector4(1.0f, 1.0f, 1.0f, 1.0f),
-                                                                           TexCoord = new Vector2(1, 0)
-                                                                        }
-                                                               });
-
-            _indices = _graphics.Input.CreateIndexBuffer(BufferUsage.Immutable,
-                                                         true,
-                                                         new int[]
-                                                             {
-                                                                 0, 1, 2, 3, 1, 0
-                                                             });
-
-
-            _graphics.Input.Layout = _layout;
-            _graphics.Input.PrimitiveType = PrimitiveType.TriangleList;
-            _graphics.Input.VertexBuffers[0] = new GorgonVertexBufferBinding(_vertices, 40);
-            _graphics.Input.IndexBuffer = _indices;
-            _graphics.Rasterizer.SetViewport(new GorgonViewport(0, 0, 640, 480, 0, 1.0f));
-            _graphics.Rasterizer.States = GorgonRasterizerStates.DefaultStates;
-            _graphics.Shaders.VertexShader.Current = _vertexShader;
-            _graphics.Shaders.PixelShader.Current = _pixelShader;
-            _graphics.Shaders.PixelShader.TextureSamplers[0] = GorgonTextureSamplerStates.DefaultStates;
-
-            _form.TopMost = true;
-
-            _screen = _graphics.Output.CreateSwapChain("Screen",
-                                                       new GorgonSwapChainSettings
-                                                           {
-                                                               Window = _form.panelDisplay,
-                                                               IsWindowed = true
-                                                           });
-
-            _graphics.Output.RenderTargets[0] = _screen;
-        }
-
-        private void TearDownScene()
-        {
-            if (_screen != null)
-            {
-                _screen.Dispose();
-                _screen = null;
-            }
-
-            if (_indices != null)
-            {
-                _indices.Dispose();
-                _indices = null;
-            }
-
-            if (_vertices != null)
-            {
-                _vertices.Dispose();
-                _vertices = null;
-            }
-
-            if (_layout != null)
-            {
-                _layout.Dispose();
-                _layout = null;
-            }
-
-            if (_pixelShader != null)
-            {
-                _pixelShader.Dispose();
-                _pixelShader = null;
-            }
-
-            if (_vertexShader != null)
-            {
-                _vertexShader.Dispose();
-                _vertexShader = null;
-            }
-        }
-
-        private bool Idle()
-        {
-            _screen.Clear(GorgonColor.Black);
-
-            _graphics.Output.DrawIndexed(0, 0, 6);
-
-            _screen.Flip(1);
-
-            if ((_maxTime > 0) && (GorgonTiming.MillisecondsSinceStart > _maxTime))
-            {
-                _form.Close();
-                return false;
-            }
-
-            return true;
+	        _framework.Dispose();
+	        _framework = null;
         }
 
         /// <summary>
@@ -209,8 +57,7 @@ namespace GorgonLibrary.Graphics.Test
         [TestInitialize]
         public void Init()
         {
-            _form = new TestForm();
-            _graphics = new GorgonGraphics();
+			_framework = new GraphicsFramework();
         }
 
         /// <summary>
@@ -223,7 +70,7 @@ namespace GorgonLibrary.Graphics.Test
 
             try
             {
-                texture = _graphics.Textures.CreateTexture<GorgonTexture1D>("Test1D",
+                texture = _framework.Graphics.Textures.CreateTexture<GorgonTexture1D>("Test1D",
                                                  new GorgonTexture1DSettings
                                                  {
                                                      Width = 256,
@@ -255,7 +102,7 @@ namespace GorgonLibrary.Graphics.Test
 
             try
             {
-                texture = _graphics.Textures.CreateTexture<GorgonTexture2D>("Test2D",
+                texture = _framework.Graphics.Textures.CreateTexture<GorgonTexture2D>("Test2D",
                                                  new GorgonTexture2DSettings
                                                  {
                                                      Width = 256,
@@ -288,7 +135,7 @@ namespace GorgonLibrary.Graphics.Test
 
             try
             {
-                texture = _graphics.Textures.CreateTexture<GorgonTexture3D>("Test3D",
+                texture = _framework.Graphics.Textures.CreateTexture<GorgonTexture3D>("Test3D",
                                                  new GorgonTexture3DSettings
                                                  {
                                                      Width = 256,
@@ -318,7 +165,7 @@ namespace GorgonLibrary.Graphics.Test
         {
             GorgonTexture2D texture = null;
 
-            CreateTestScene(Resources.ShaderMultiView, Resources.ShaderMultiView, true);
+			_framework.CreateTestScene(Shaders, Shaders, true);
 
             try
             {
@@ -329,7 +176,7 @@ namespace GorgonLibrary.Graphics.Test
                         ArrayCount = 1,
                         Format = BufferFormat.R8G8B8A8,
                         MipCount = 1,
-                        ShaderViewFormat = BufferFormat.R8G8B8A8_UIntNormal,
+                        ShaderViewFormat = BufferFormat.R8G8B8A8_IntNormal,
                         UnorderedAccessViewFormat = BufferFormat.Unknown,
                         Usage = BufferUsage.Default
                     }))
@@ -341,17 +188,15 @@ namespace GorgonLibrary.Graphics.Test
                         data[0].Data.Write(GorgonColor.White.ToRGBA());
                     }
 
-                    texture = _graphics.Textures.CreateTexture<GorgonTexture2D>("Test2D", data);
+                    texture = _framework.Graphics.Textures.CreateTexture<GorgonTexture2D>("Test2D", data);
                 }
 
-                GorgonTextureShaderView view = texture.CreateShaderView(BufferFormat.R8G8B8A8_IntNormal);
+                GorgonTextureShaderView view = texture.CreateShaderView(BufferFormat.R8G8B8A8_UIntNormal);
                  
-                _graphics.Shaders.PixelShader.Resources.SetTexture(0, texture);
-                _graphics.Shaders.PixelShader.Resources.SetView(1, view);
-                
-                Gorgon.Run(_form, Idle);
+                _framework.Graphics.Shaders.PixelShader.Resources.SetTexture(0, texture);
+                _framework.Graphics.Shaders.PixelShader.Resources.SetView(1, view);
 
-                Assert.IsTrue(_form.TestResult == DialogResult.Yes);
+                Assert.IsTrue(_framework.Run() == DialogResult.Yes);
             }
             finally
             {
@@ -359,8 +204,6 @@ namespace GorgonLibrary.Graphics.Test
                 {
                     texture.Dispose();
                 }
-
-                TearDownScene();
             }
         }
 
@@ -376,7 +219,7 @@ namespace GorgonLibrary.Graphics.Test
 
             try
             {
-                _1D = _graphics.Textures.CreateTexture<GorgonTexture1D>("Test1D",
+                _1D = _framework.Graphics.Textures.CreateTexture<GorgonTexture1D>("Test1D",
                                                  new GorgonTexture1DSettings
                                                      {
                                                          Width = 256,
@@ -391,7 +234,7 @@ namespace GorgonLibrary.Graphics.Test
                 Assert.IsNotNull(_1D.DefaultShaderView);
                 Assert.AreEqual(_1D.Settings.Format, _1D.DefaultShaderView.Format);
 
-                _2D = _graphics.Textures.CreateTexture<GorgonTexture2D>("Test2D",
+                _2D = _framework.Graphics.Textures.CreateTexture<GorgonTexture2D>("Test2D",
                                                  new GorgonTexture2DSettings
                                                  {
                                                      Width = 256,
@@ -407,7 +250,7 @@ namespace GorgonLibrary.Graphics.Test
                 Assert.IsNotNull(_2D.DefaultShaderView);
                 Assert.AreEqual(_2D.Settings.Format, _2D.DefaultShaderView.Format);
 
-                _3D = _graphics.Textures.CreateTexture<GorgonTexture3D>("Test3D",
+                _3D = _framework.Graphics.Textures.CreateTexture<GorgonTexture3D>("Test3D",
                                                  new GorgonTexture3DSettings
                                                  {
                                                      Width = 256,
