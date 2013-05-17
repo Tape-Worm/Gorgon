@@ -187,7 +187,7 @@ namespace GorgonLibrary.Graphics
                 throw new ArgumentException(
                     string.Format(
                         "The size of the format: {0} bytes, does not match the size of the data type: {1} bytes.",
-                        info,
+                        info.SizeInBytes,
                         ElementSize),
                     "format");
             }

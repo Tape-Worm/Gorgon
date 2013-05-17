@@ -117,40 +117,14 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="ShaderMultiView" xml:space="preserve">
-    <value>
-Texture2D _texture : register(t0);
-Texture2D _textureView2 : register(t1);
-SamplerState _sampler : register(s0);
-
-struct VS_IN
-{
-	float4 pos : POSITION;
-	float4 col : COLOR;
-	float2 uv: TEXCOORD;
-};
-
-struct PS_IN
-{
-	float4 pos : SV_POSITION;
-	float4 col : COLOR;
-	float2 uv: TEXCOORD;
-};
-
-PS_IN TestVS( VS_IN input )
-{
-	PS_IN output = (PS_IN)0;
-	
-	output.pos = input.pos;
-	output.col = input.col;
-	output.uv = input.uv;
-	
-	return output;
-}
-
-float4 TestPS( PS_IN input ) : SV_Target
-{
-	return (_textureView2.Sample(_sampler, input.uv)) * input.col;		
-}</value>
+  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="StructuredBufferShaders" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\StructuredBufferShaders.hlsl;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="TextureShaders" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\TextureShaders.hlsl;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="TypedBufferShaders" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\TypedBufferShaders.hlsl;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
 </root>

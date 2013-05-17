@@ -68,7 +68,7 @@
     <Compile Include="Buffers\GorgonShaderBuffer.cs" />
     <Compile Include="Buffers\GorgonStructuredBuffer.cs" />
     <Compile Include="Buffers\GorgonIndexBuffer.cs" />
-    <Compile Include="Buffers\GorgonBaseBuffer.cs" />
+    <Compile Include="Buffers\GorgonBuffer.cs" />
     <Compile Include="Buffers\GorgonConstantBuffer.cs" />
     <Compile Include="Buffers\GorgonVertexBuffer.cs" />
     <Compile Include="Buffers\GorgonVertexBufferBinding.cs" />

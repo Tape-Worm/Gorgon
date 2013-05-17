@@ -26,6 +26,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using D3D = SharpDX.Direct3D11;
 using GorgonLibrary.Diagnostics;
@@ -1036,10 +1037,11 @@ namespace GorgonLibrary.Graphics
 			#endregion
 
 			#region IList<GorgonShaderView> Members
-			#region Properties.            
+			#region Properties.
 			/// <summary>
 			/// Property to set or return the bound shader resource view.
 			/// </summary>
+			[EditorBrowsable(EditorBrowsableState.Never)]
 			GorgonShaderView IList<GorgonShaderView>.this[int index]
 			{
 				get
