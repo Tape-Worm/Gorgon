@@ -371,7 +371,7 @@ namespace GorgonLibrary.IO
 		        return null;
 		    }
 
-		    if (((!type.IsExplicitLayout)  && (!type.IsLayoutSequential)) || (type.StructLayoutAttribute == null))
+		    if (((!type.IsPrimitive) && (!type.IsExplicitLayout)  && (!type.IsLayoutSequential)) || (type.StructLayoutAttribute == null))
 		    {
 		        throw new ArgumentException(string.Format(Resources.GOR_UNSAFE_STRUCT_NOT_EXPLICIT_LAYOUT, type.FullName),
 		                                    "value");
@@ -414,7 +414,7 @@ namespace GorgonLibrary.IO
 		{
 		    Type type = typeof(T);
 
-		    if ((!type.IsExplicitLayout) || (type.StructLayoutAttribute == null))
+            if (((!type.IsPrimitive) && (!type.IsExplicitLayout) && (!type.IsLayoutSequential)) || (type.StructLayoutAttribute == null))
 		    {
 		        throw new ArgumentException(string.Format(Resources.GOR_UNSAFE_STRUCT_NOT_EXPLICIT_LAYOUT, type.FullName),
 		                                    "value");

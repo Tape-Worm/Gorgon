@@ -179,7 +179,13 @@ namespace GorgonLibrary.Graphics.Test
 		/// <returns>The test result for manual testing.</returns>
 		public DialogResult Run()
 		{
-			Gorgon.Run(_form, Idle);
+            _form.WindowState = FormWindowState.Minimized;
+		    _form.Show();
+            _form.WindowState = FormWindowState.Normal;
+
+		    //_form.TopMost = true;
+
+            Gorgon.Run(_form, Idle);
 
 			return _form.TestResult;
 		}
@@ -253,7 +259,7 @@ namespace GorgonLibrary.Graphics.Test
 			Graphics.Shaders.PixelShader.Current = PixelShader;
 			Graphics.Shaders.PixelShader.TextureSamplers[0] = GorgonTextureSamplerStates.DefaultStates;
 
-			_form.TopMost = true;
+			//_form.TopMost = true;
 
 			Screen = Graphics.Output.CreateSwapChain("Screen",
 													   new GorgonSwapChainSettings

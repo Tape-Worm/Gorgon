@@ -466,13 +466,16 @@ namespace GorgonLibrary.Graphics
 		/// <param name="settings">Settings used to create the typed buffer.</param>
 		/// <param name="stream">Stream containing the data used to initialize the buffer.</param>
 		/// <returns>A new typed buffer.</returns>
-		/// <remarks>This buffer type allows typed elements of data to be processed by the GPU.  The shader view format must be the same size, in bytes, as the type parameter.</remarks>
+		/// <remarks>This buffer type allows typed elements of data to be processed by the GPU.  The shader view format must be the same size, in bytes, as the type parameter.
+		/// <para>When creating a raw byte buffer, the number of elements and the size in bytes of an element must be a multiple of 4.</para>
+		/// </remarks>
 		/// <exception cref="System.ArgumentException">Thrown when the ElementCount property in the <paramref name="settings"/> parameter is not greater than 1.
 		/// <para>-or-</para>
 		/// <para>Thrown when the <see cref="P:GorgonLibrary.Graphics.GorgonTypedBufferSettings.ShaderViewFormat">settings.ShaderViewFormat</see> is Unknown.</para>
 		/// <para>-or-</para>
 		/// <para>Thrown when the <see cref="P:GorgonLibrary.Graphics.GorgonTypedBufferSettings.ShaderViewFormat">settings.ShaderViewFormat</see> is not the same size, in bytes, as the type parameter.</para>
 		/// </exception>
+		/// <exception cref="System.DataMisalignedException">Thrown when the buffer has raw access and the total size of the buffer is not a multiple of 4.</exception>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="settings"/> parameter is NULL (Nothing in VB.Net).</exception>
 		public GorgonTypedBuffer<T> CreateTypedBuffer<T>(GorgonTypedBufferSettings settings, GorgonDataStream stream = null)
 			where T : struct
@@ -500,7 +503,23 @@ namespace GorgonLibrary.Graphics
 					"settings");
 			}
 
-			var result = new GorgonTypedBuffer<T>(_graphics, settings);
+		    if (settings.IsRaw)
+		    {
+		        if (info.Group != BufferFormat.R32)
+		        {
+		            throw new ArgumentException(
+		                "Cannot have a raw buffer unless the shader view format is set to R32_Int, R32_UInt or R32_Float.",
+		                "settings");
+		        }
+
+                // Raw buffer size must be a multiple of 4.
+                if ((settings.ElementCount * typeSize) % 4 != 0)
+                {
+                    throw new DataMisalignedException(string.Format("The size of the raw buffer [{0}] must be a multiple of 4.", settings.ElementCount * typeSize));
+                }
+		    }
+
+		    var result = new GorgonTypedBuffer<T>(_graphics, settings);
 			result.Initialize(stream);
 
 			_graphics.AddTrackedObject(result);

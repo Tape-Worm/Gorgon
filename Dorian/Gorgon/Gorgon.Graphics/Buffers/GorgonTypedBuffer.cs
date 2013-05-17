@@ -192,6 +192,12 @@ namespace GorgonLibrary.Graphics
                     "format");
             }
 
+            if ((Settings.IsRaw)
+                && (info.Group != BufferFormat.R32))
+            {
+                throw new ArgumentException("Cannot view a raw buffer unless the view format is set to R32_Int, R32_UInt or R32_Float.", "format");
+            }
+
             return ViewCache.GetBufferView(format, start, count);
         }
         #endregion

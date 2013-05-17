@@ -1,18 +1,10 @@
-struct MyCoord
-{
-	float x;
-	float y;
-	float z;
-};
-
-StructuredBuffer<MyCoord> _bufferView;
+ByteAddressBuffer _bufferView;
 
 struct VS_IN
 {
 	float4 pos : POSITION;
 	float4 col : COLOR;
 	float2 uv: TEXCOORD;
-	uint vtxID : SV_VertexID;
 };
 
 struct PS_IN
@@ -26,7 +18,7 @@ PS_IN TestVS(VS_IN input )
 {
 	PS_IN output = (PS_IN)0;	
 	
-	output.pos = float4(input.pos.x + buffer.x, input.pos.y + buffer.y, input.pos.z + buffer.z, 1.0f);
+	output.pos = input.pos;
 	output.col = input.col;
 	output.uv = input.uv;
 	
@@ -35,5 +27,8 @@ PS_IN TestVS(VS_IN input )
 
 float4 TestPS( PS_IN input ) : SV_Target
 {
-	return input.col;
+	uint value = _bufferView.Load4((uint)(input.pos.x * 255.0f));
+	float4 color = float4(((value << 24) & 0xff) / 255.0f, ((value << 16) & 0xff) / 255.0f, ((value << 8) & 0xff), (value & 0xff) / 255.0f);
+
+	return input.col * color;
 }
