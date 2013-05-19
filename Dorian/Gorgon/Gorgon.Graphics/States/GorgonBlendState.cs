@@ -410,6 +410,33 @@ namespace GorgonLibrary.Graphics
 		};
 
 		/// <summary>
+		/// Standard modulated blending on the first render target.
+		/// </summary>
+		public static readonly GorgonBlendStates ModulatedBlending = new GorgonBlendStates
+		{
+			IsAlphaCoverageEnabled = false,
+			IsIndependentBlendEnabled = false,
+			RenderTarget0 =
+				{
+					IsBlendingEnabled = true,
+					AlphaOperation = BlendOperation.Add,
+					BlendingOperation = BlendOperation.Add,
+					SourceBlend = BlendType.One,
+					DestinationBlend = BlendType.InverseSourceAlpha,
+					SourceAlphaBlend = BlendType.One,
+					DestinationAlphaBlend = BlendType.Zero,
+					WriteMask = ColorWriteMaskFlags.All
+				},
+			RenderTarget1 = GorgonRenderTargetBlendState.DefaultStates,
+			RenderTarget2 = GorgonRenderTargetBlendState.DefaultStates,
+			RenderTarget3 = GorgonRenderTargetBlendState.DefaultStates,
+			RenderTarget4 = GorgonRenderTargetBlendState.DefaultStates,
+			RenderTarget5 = GorgonRenderTargetBlendState.DefaultStates,
+			RenderTarget6 = GorgonRenderTargetBlendState.DefaultStates,
+			RenderTarget7 = GorgonRenderTargetBlendState.DefaultStates
+		};
+
+		/// <summary>
 		/// Is alpha-to-coverage is enabled or not.
 		/// </summary>
 		/// <remarks>This is a multisample techique that smooths out the transparent edges of polygons with alpha blending.

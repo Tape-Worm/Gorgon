@@ -7,8 +7,7 @@ namespace GorgonLibrary.Graphics.Test
         /// <summary>
         /// Required designer variable.
         /// </summary>
-        private System.ComponentModel.IContainer components = null;
-        private Panel panelInput;
+		private System.ComponentModel.IContainer components = null;
         private Button buttonWrong;
         private Button buttonYes;
         public Panel panelDisplay;
@@ -93,6 +92,8 @@ namespace GorgonLibrary.Graphics.Test
         }
 
         #endregion
+
+		public Panel panelInput;
  
 
     }
