@@ -140,31 +140,66 @@ namespace GorgonLibrary.Graphics.Test
         [TestMethod]
         public void BindRawBuffer()
         {
-            _framework.CreateTestScene(_rbShaders, _rbShaders, true);
+            _framework.CreateTestScene(_rbShaders, _rbShaders, false);
 
-            var values = new byte[256 * 4];
+            var values = new byte[256 * 256 * 4];
+	        float angle = 0.0f;
 
-            for (int i = 0; i < values.Length; i++)
-            {
-                values[i] = (byte)GorgonRandom.RandomInt32(256);
-            }
+	        using(var buffer = _framework.Graphics.Shaders.CreateRawBuffer(values, false))
+	        {
+		        _framework.Graphics.Shaders.PixelShader.Resources.SetShaderBuffer(0, buffer);
 
-            using(var stream = GorgonDataStream.ArrayToStream(values))
-            {
-                using(var buffer = _framework.Graphics.Shaders.CreateTypedBuffer<Vector4>(new GorgonTypedBufferSettings
-                    {
-                        AllowCPUWrite = false,
-                        ElementCount = 256,
-                        IsRaw = true,
-                        ShaderViewFormat = BufferFormat.R32_UInt
-                    }, stream))
-                {
-                    _framework.Graphics.Shaders.PixelShader.Resources.SetShaderBuffer(0, buffer);
+			    _framework.IdleFunc = () =>
+				    {
+					    using(var stream = new GorgonDataStream(values))
+					    {
+						    float rads = (angle * GorgonRandom.RandomSingle(8.0f, 32.0f) + 16.0f).Radians();
+						    float x = 128 + GorgonRandom.RandomInt32(0, 5) + (rads * rads.Cos());
+							float y = 128 + GorgonRandom.RandomInt32(0, 5) + (rads * rads.Sin());
 
-                    Assert.IsTrue(_framework.Run() == DialogResult.Yes);
-                }
-            }
+						    if (x > 255)
+						    {
+							    x = 255;
+						    }
 
+						    if (y > 255)
+						    {
+							    y = 255;
+						    }
+
+
+						    if (x < 0)
+						    {
+							    x = 0;
+						    }
+
+						    if (y < 0)
+						    {
+							    y = 0;
+						    }
+							
+							int pos = (((int)y * 1024) + ((int)x * 4));
+
+							for (int i = 0; i < pos - 50; i++)
+							{
+								values[i] = (byte)(values[i] * 0.95f);
+							}
+
+							values[pos] = 255;
+							values[pos + 3] = values[pos + 2] = values[pos + 1] = (byte)GorgonRandom.RandomInt32(64, 128);
+
+						    angle += GorgonRandom.RandomSingle(1, 180) * GorgonTiming.Delta;
+						    if (angle > 360.0f)
+						    {
+							    angle = 0.0f;
+						    }
+
+						    buffer.Update(stream);
+					    }
+				    };
+				_framework.MaxTimeout = 15000;
+				_framework.Run();
+	        }
         }
     }
 }

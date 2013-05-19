@@ -27,8 +27,11 @@ PS_IN TestVS(VS_IN input )
 
 float4 TestPS( PS_IN input ) : SV_Target
 {
-	uint value = _bufferView.Load4((uint)(input.pos.x * 255.0f));
-	float4 color = float4(((value << 24) & 0xff) / 255.0f, ((value << 16) & 0xff) / 255.0f, ((value << 8) & 0xff), (value & 0xff) / 255.0f);
+	uint x = (uint)(input.uv.x * 255);
+	uint y = (uint)(input.uv.y * 255);
+	uint pos = y * 1024 + x * 4;
+	uint value = _bufferView.Load(pos);
+	float4 color = float4(((value >> 24) & 0xff) / 255.0f, ((value >> 16) & 0xff) / 255.0f, ((value >> 8) & 0xff) / 255.0f, (value & 0xff) / 255.0f);	
 
-	return input.col * color;
+	return color + input.col;
 }

@@ -1,4 +1,4 @@
-Texture2D _texture : register(t0);
+Texture2D<int> _texture : register(t0);
 Texture2D _textureView2 : register(t1);
 SamplerState _sampler : register(s0);
 
@@ -29,5 +29,11 @@ PS_IN TestVS( VS_IN input )
 
 float4 TestPS( PS_IN input ) : SV_Target
 {
-	return (_textureView2.Sample(_sampler, input.uv)) * input.col;		
+	float4 pixel = _texture.Load(int3((int)(input.uv.x * 256), (int)(input.uv.y * 256), 0));
+
+	pixel += 1.0f;
+	pixel *= 0.5f;	
+	pixel.w = 1.0f;
+
+	return (_textureView2.Sample(_sampler, input.uv) + pixel) * input.col;		
 }

@@ -217,21 +217,19 @@ namespace GorgonLibrary.IO
 		}
 
 		/// <summary>
-		/// Property to set or return the unordered access view format.
+		/// Property to set or return whether to allow an unordered access view of this texture.
 		/// </summary>
-		/// <remarks>This changes how the texture is accessed in an unordered access view in a shader.
-		/// <para>If this value is set to anything other than Unknown, then an unordered access view will be created for the texture.  If the value is 
-		/// left as Unknown, then no unordered access view will be created for the texture.</para>
-        /// <para>Textures using an unordered access view can only use a typed (e.g. int, uint, float) format that belongs to the same group as the format assigned to the texture, 
-        /// or R32_UInt/Int/Float (but only if the texture format is 32 bit).  Any other format will raise an exception.  Note that if the format is not set to R32_UInt/Int/Float, 
-        /// then write-only access will be given to the UAV.</para> 
-        /// <para>To check to see if a format is supported for UAV, use the <see cref="GorgonLibrary.Graphics.GorgonVideoDevice.SupportsUnorderedAccessViewFormat">GorgonVideoDevice.SupportsUnorderedAccessViewFormat</see> 
-        /// method to determine if the format is supported.</para>
-        /// <para>This property is for <see cref="GorgonLibrary.Graphics.GorgonTexture">textures</see> only, for <see cref="GorgonLibrary.Graphics.GorgonImageData">image data</see> it is ignored.</para>
+		/// <remarks>This allows a texture to be accessed via an unordered access view in a shader.
+		/// <para>Textures using an unordered access view can only use a typed (e.g. int, uint, float) format that belongs to the same group as the format assigned to the texture, 
+		/// or R32_UInt/Int/Float (but only if the texture format is 32 bit).  Any other format will raise an exception.  Note that if the format is not set to R32_UInt/Int/Float, 
+		/// then write-only access will be given to the UAV.</para> 
+		/// <para>To check to see if a format is supported for UAV, use the <see cref="GorgonLibrary.Graphics.GorgonVideoDevice.SupportsUnorderedAccessViewFormat">GorgonVideoDevice.SupportsUnorderedAccessViewFormat</see> 
+		/// method to determine if the format is supported.</para>
+		/// <para>This property is for <see cref="GorgonLibrary.Graphics.GorgonTexture">textures</see> only, for <see cref="GorgonLibrary.Graphics.GorgonImageData">image data</see> it is ignored.</para>
 		/// <para>This property is only applied when decoding an image, otherwise it is ignored.</para>
-		/// <para>The default value is Unknown.</para>
+		/// <para>The default value is FALSE.</para>
 		/// </remarks>
-		public BufferFormat UnorderedAccessViewFormat
+		public bool AllowUnorderedAccess
 		{
 			get;
 			set;
@@ -716,7 +714,6 @@ namespace GorgonLibrary.IO
 			Guid srcPixelFormat = Guid.Empty;
 			Guid destPixelFormat = Guid.Empty;
 			Rectangle newSize = Rectangle.Empty;
-			int maxMips = 0;
 			int mipStart = 0;
 
 			// First, confirm whether we can perform format conversions.
@@ -750,7 +747,7 @@ namespace GorgonLibrary.IO
 				destSettings.MipCount = mipCount;
 
 				// Ensure we don't go over the maximum.
-				maxMips = GorgonImageData.GetMaxMipCount(destSettings);
+				int maxMips = GorgonImageData.GetMaxMipCount(destSettings);
 
 				if (mipCount > maxMips)
 				{
@@ -899,7 +896,7 @@ namespace GorgonLibrary.IO
 			Dithering = ImageDithering.None;
 			CodecCommonExtensions = new string[] { };
 			ViewFormat = BufferFormat.Unknown;
-			UnorderedAccessViewFormat = BufferFormat.Unknown;
+			AllowUnorderedAccess = false;
 			Usage = BufferUsage.Default;
 		}
 		#endregion

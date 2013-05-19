@@ -67,9 +67,9 @@ namespace GorgonLibrary.Graphics
 	public enum TextureFilter
 	{
 		/// <summary>
-		/// Unknown.
+		/// No filter.  This is equivalent to the Point value.
 		/// </summary>
-		Unknown = 0,
+		None = 0,
 		/// <summary>
 		/// Point minification filtering.
 		/// </summary>

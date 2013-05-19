@@ -37,9 +37,9 @@ namespace GorgonLibrary.Graphics
 		where T : struct, IEquatableByRef<T>
 	{
 		#region Variables.
-		private bool _disposed;										// Flag to indicate that the object was disposed.
+		private bool _disposed;									// Flag to indicate that the object was disposed.
 		private GorgonStateCache<T> _cache;						// Cache for the states.
-		private T _state;											// Immutable state for the object.
+		private T _state;										// Immutable state for the object.
 		#endregion
 
 		#region Properties.
@@ -151,7 +151,7 @@ namespace GorgonLibrary.Graphics
 
 			if (_cache != null)
 			{
-				_cache.Dispose();
+				_cache.EvictCache();
 			}
 
 			_cache = null;

@@ -147,9 +147,9 @@ namespace GorgonLibrary.Graphics
 	public enum ColorWriteMaskFlags
 	{
 		/// <summary>
-		/// Unknown value.
+		/// No value.
 		/// </summary>
-		Unknown = 0,
+		None = 0,
 		/// <summary>
 		/// Use the red channel.
 		/// </summary>
@@ -601,12 +601,6 @@ namespace GorgonLibrary.Graphics
 		{
 			get
 			{
-#if DEBUG
-				if (Graphics.Context == null)
-				{
-					throw new GorgonException(GorgonResult.CannotRead, Resources.GORGFX_INVALID_D3D_CONTEXT);
-				}
-#endif
 				return _blendFactor;
 			}
 			set
@@ -629,12 +623,6 @@ namespace GorgonLibrary.Graphics
 		{
 			get
 			{
-#if DEBUG
-				if (Graphics.Context == null)
-				{
-					throw new GorgonException(GorgonResult.CannotRead, Resources.GORGFX_INVALID_D3D_CONTEXT);
-				}
-#endif
 				return _sampleMask;
 			}
 			set
@@ -753,17 +741,17 @@ namespace GorgonLibrary.Graphics
 														"SourceBlend"));
 			}
 
-			if ((stateType.RenderTarget0.WriteMask == ColorWriteMaskFlags.Unknown)
-				&& (stateType.RenderTarget1.WriteMask == ColorWriteMaskFlags.Unknown)
-				&& (stateType.RenderTarget2.WriteMask == ColorWriteMaskFlags.Unknown)
-				&& (stateType.RenderTarget3.WriteMask == ColorWriteMaskFlags.Unknown)
-				&& (stateType.RenderTarget4.WriteMask == ColorWriteMaskFlags.Unknown)
-				&& (stateType.RenderTarget5.WriteMask == ColorWriteMaskFlags.Unknown)
-				&& (stateType.RenderTarget6.WriteMask == ColorWriteMaskFlags.Unknown)
-				&& (stateType.RenderTarget7.WriteMask == ColorWriteMaskFlags.Unknown))
+			if ((stateType.RenderTarget0.WriteMask == ColorWriteMaskFlags.None)
+				&& (stateType.RenderTarget1.WriteMask == ColorWriteMaskFlags.None)
+				&& (stateType.RenderTarget2.WriteMask == ColorWriteMaskFlags.None)
+				&& (stateType.RenderTarget3.WriteMask == ColorWriteMaskFlags.None)
+				&& (stateType.RenderTarget4.WriteMask == ColorWriteMaskFlags.None)
+				&& (stateType.RenderTarget5.WriteMask == ColorWriteMaskFlags.None)
+				&& (stateType.RenderTarget6.WriteMask == ColorWriteMaskFlags.None)
+				&& (stateType.RenderTarget7.WriteMask == ColorWriteMaskFlags.None))
 			{
 				throw new GorgonException(GorgonResult.CannotBind,
-										  string.Format(Resources.GORGFX_INVALID_ENUM_VALUE, ColorWriteMaskFlags.Unknown,
+										  string.Format(Resources.GORGFX_INVALID_ENUM_VALUE, ColorWriteMaskFlags.None,
 														"WriteMask"));
 			}
 

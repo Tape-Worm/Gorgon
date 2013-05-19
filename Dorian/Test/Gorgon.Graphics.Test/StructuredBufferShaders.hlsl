@@ -25,6 +25,7 @@ struct PS_IN
 PS_IN TestVS(VS_IN input )
 {
 	PS_IN output = (PS_IN)0;	
+	MyCoord buffer = _bufferView[0];
 	
 	output.pos = float4(input.pos.x + buffer.x, input.pos.y + buffer.y, input.pos.z + buffer.z, 1.0f);
 	output.col = input.col;

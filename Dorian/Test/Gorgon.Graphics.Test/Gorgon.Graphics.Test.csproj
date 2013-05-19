@@ -97,11 +97,6 @@
     <Content Include="TypedBufferShaders.hlsl" />
     <Content Include="TextureShaders.hlsl" />
   </ItemGroup>
-  <ItemGroup>
-    <None Include="Ordering.orderedtest">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
       <ItemGroup>

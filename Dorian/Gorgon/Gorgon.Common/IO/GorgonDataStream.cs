@@ -351,12 +351,12 @@ namespace GorgonLibrary.IO
 		}
 
 		/// <summary>
-		/// Function to marshal an enumerable type of value types into a Gorgon Data Stream.
+		/// Function to marshal an array of value types into a new Gorgon Data Stream.
 		/// </summary>
 		/// <typeparam name="T">Type of value to marshal.</typeparam>
 		/// <param name="value">Values to marshal.</param>
 		/// <returns>A data stream containing the marshalled data.</returns>
-		/// <remarks>Use this to create and initialize a data stream with marshalled data.
+		/// <remarks>Use this to create and initialize a data stream with marshalled data.  This method will create a copy of the data stored in the array.
 		/// <para>Value types must include the System.Runtime.InteropServices.StructLayout attribute, and must use an explicit layout.</para>
 		/// </remarks>
 		/// <exception cref="System.ArgumentException">Thrown when the type of <paramref name="value"/> is not explicitly laid out with the System.Runtime.InteropServices.StructLayout attribute.</exception>
@@ -1608,7 +1608,7 @@ namespace GorgonLibrary.IO
 		}
 
 		/// <summary>
-		/// Function to read a value type from the 
+		/// Function to read a value type from the stream.
 		/// </summary>
 		/// <returns>The value type within the stream.</returns>
 		/// <remarks>At this time, this function will only support structures with primitive types in them, strings and other objects will not work.</remarks>
@@ -1932,7 +1932,7 @@ namespace GorgonLibrary.IO
         /// in the stream.
         /// </para>
         /// </remarks>
-		public GorgonDataStream(Array data, int index, int count, StreamStatus status)
+		public GorgonDataStream(Array data, int index, int count, StreamStatus status = StreamStatus.ReadWrite)
 		{
 		    if (data == null)
 		    {
@@ -1967,24 +1967,6 @@ namespace GorgonLibrary.IO
 		/// Initializes a new instance of the <see cref="GorgonDataStream"/> class.
 		/// </summary>
 		/// <param name="data">The data used to initialize the stream.</param>
-		/// <param name="index">Index inside of the source array to start reading from.</param>
-		/// <param name="count">Number of elements to read.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the data parameter is NULL (Nothing in VB.Net).</exception>
-		/// <remarks>The array elements should all be of the same type, and value types.
-		/// <para>A pointer to the array will be held and released upon disposal of the stream, this may impact garbage collection performance.  
-		/// Also, since the stream is holding a pointer, any changes to the <paramref name="data"/> parameter array elements will be reflected 
-		/// in the stream.
-		/// </para>
-		/// </remarks>
-		public GorgonDataStream(Array data, int index, int count)
-			: this(data, index, count, StreamStatus.ReadWrite)
-		{
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonDataStream"/> class.
-		/// </summary>
-		/// <param name="data">The data used to initialize the stream.</param>
 		/// <exception cref="System.ArgumentNullException">Thrown when the data parameter is NULL (Nothing in VB.Net).</exception>
 		/// <remarks>The array elements should all be of the same type, and value types.
 		/// <para>A pointer to the array will be held and released upon disposal of the stream, this may impact garbage collection performance.  
@@ -1993,7 +1975,7 @@ namespace GorgonLibrary.IO
 		/// </para>
 		/// </remarks>
 		public GorgonDataStream(Array data)
-			: this(data, 0, data.Length, StreamStatus.ReadWrite)
+			: this(data, 0, data.Length)
 		{
 		}
 

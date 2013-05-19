@@ -35,6 +35,7 @@ namespace GorgonLibrary.Graphics
 	/// <summary>
 	/// Available feature levels for the video device.
 	/// </summary>
+	// ReSharper disable InconsistentNaming
 	public enum DeviceFeatureLevel
 	{
 		/// <summary>
@@ -67,6 +68,7 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		SM5 = 4,
 	}
+	// ReSharper restore InconsistentNaming
 
 	/// <summary>
 	/// Video device types.
@@ -124,7 +126,7 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Property to return the highest feature level that the hardware can support.
 		/// </summary>
-		/// <remarks>This is independant of the <see cref="P:GorgonLibrary.Graphics.GorgonGraphics.RequestedFeatureLevel">GorgonGraphics.RequestedFeatureLevel</see> property and will always return the true hardware feature level.</remarks>
+		/// <remarks>This is independant of the <see cref="GorgonLibrary.Graphics.GorgonVideoDevice.SupportedFeatureLevel">SupportedFeatureLevel</see> property and will always return the true hardware feature level.</remarks>
 		public DeviceFeatureLevel HardwareFeatureLevel
 		{
 			get;
@@ -135,9 +137,9 @@ namespace GorgonLibrary.Graphics
 		/// Property to return the supported feature levels.
 		/// </summary>
 		/// <remarks>
-		/// This property will show either the requested feature level passed into the <see cref="GorgonLibrary.Graphics.GorgonGraphics.GorgonGraphics(GorgonVideoDevice, DeviceFeatureLevel)">GorgonGraphics constructor</see>, or the 
+		/// This property will show either the requested feature level passed into the <see cref="GorgonLibrary.Graphics.GorgonGraphics(GorgonVideoDevice, DeviceFeatureLevel)">GorgonGraphics constructor</see>, or the 
 		/// <see cref="GorgonLibrary.Graphics.GorgonVideoDevice.HardwareFeatureLevel">GorgonVideoDevice.HardwareFeatureLevel</see> property, depending on which is higher.
-		/// <para>Due to the restrictions that may be imposed by specifying a feature level, the return value may differ from the <see cref="P:GorgonLibrary.GorgonGraphics.GorgonVideoDevice.HardwareFeatureLevels">HardwareFeatureLevels</see> property.</para>
+		/// <para>Due to the restrictions that may be imposed by specifying a feature level, the return value may differ from the <see cref="GorgonLibrary.Graphics.GorgonVideoDevice.HardwareFeatureLevel">HardwareFeatureLevels</see> property.</para>
 		/// </remarks>
 		public DeviceFeatureLevel SupportedFeatureLevel
 		{

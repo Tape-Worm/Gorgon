@@ -127,7 +127,7 @@
     <value>The size of the buffers do not match.</value>
   </data>
   <data name="GORGFX_COLOR_TOSTR" xml:space="preserve">
-    <value>Color Value: Red={0}, Green={1}, Blue={2}, Alpha={3}.</value>
+    <value>Color Value: Red={0}, Green={1}, Blue={2}, Alpha={3}</value>
   </data>
   <data name="GORGFX_FEATURE_LEVEL_UNKNOWN" xml:space="preserve">
     <value>Must supply a known feature level.</value>
@@ -243,5 +243,17 @@
   </data>
   <data name="GORGFX_VIEW_NO_TYPELESS" xml:space="preserve">
     <value>The view cannot use a typeless format.</value>
+  </data>
+  <data name="GORGFX_VIEW_CANNOT_BIND_UNKNOWN_RESOURCE" xml:space="preserve">
+    <value>Cannot bind the view to the resource, the resource type is not known.</value>
+  </data>
+  <data name="GORGFX_VIEW_UAV_NOT_SUPPORTED" xml:space="preserve">
+    <value>Unordered access views cannot be applied to texture cubes or multi-sampled textures.</value>
+  </data>
+  <data name="GORGFX_VIEW_DEPTH_COUNT_INVALID" xml:space="preserve">
+    <value>The depth count must be between 1 and {0}.</value>
+  </data>
+  <data name="GORGFX_VIEW_DEPTH_START_INVALID" xml:space="preserve">
+    <value>The depth start must be between 0 and less than {0}.</value>
   </data>
 </root>

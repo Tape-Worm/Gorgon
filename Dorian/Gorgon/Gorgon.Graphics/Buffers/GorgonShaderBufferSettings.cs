@@ -24,12 +24,6 @@
 // 
 #endregion
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 namespace GorgonLibrary.Graphics
 {
 	/// <summary>
@@ -37,6 +31,18 @@ namespace GorgonLibrary.Graphics
 	/// </summary>
 	public interface IShaderBufferSettings
 	{
+		/// <summary>
+		/// Property to set or return whether to allow unordered access to the buffer.
+		/// </summary>
+		/// <remarks>Unordered access views require a video device feature level of SM_5 or better.
+		/// <para>The default value is FALSE.</para>
+		/// </remarks>
+		bool AllowUnorderedAccess
+		{
+			get;
+			set;
+		}
+
 		/// <summary>
 		/// Property to set or return whether to allow this buffer to be used for stream output.
 		/// </summary>
@@ -52,32 +58,6 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		/// <remarks>The default value is FALSE.</remarks>
 		bool AllowCPUWrite
-		{
-			get;
-			set;
-		}
-
-		/// <summary>
-		/// Property to set or return the format used for the default unordered access view assigned to the buffer.
-		/// </summary>
-		/// <remarks>Set this value to Unknown to disable the creation of a default unordered access view.
-		/// <para>This value is only applicable on SM_5 video devices.</para>
-		/// <para>The default value is Unknown.</para>
-		/// </remarks>
-		BufferFormat UnorderedAccessViewFormat
-		{
-			get;
-			set;
-		}
-
-		/// <summary>
-		/// Property to set or return whether the buffer can be accessed using raw views.
-		/// </summary>
-		/// <remarks>This value is only applicable on SM_5 video devices.
-		/// <para>Structured buffers cannot use raw buffers, so this value will always return false for those buffers.</para>
-		/// <para>The default value is FALSE.</para>
-		/// </remarks>
-		bool IsRaw
 		{
 			get;
 			set;
@@ -135,13 +115,24 @@ namespace GorgonLibrary.Graphics
 			IsOutput = false;
 			AllowCPUWrite = false;
 			ElementCount = 0;
-			IsRaw = false;
-			UnorderedAccessViewFormat = BufferFormat.Unknown;
 			ShaderViewFormat = BufferFormat.Unknown;
+			AllowUnorderedAccess = false;
 		}
 		#endregion
 
 		#region IShaderBufferSettings Members
+		/// <summary>
+		/// Property to set or return whether to allow unordered access to the buffer.
+		/// </summary>
+		/// <remarks>Unordered access views require a video device feature level of SM_5 or better.
+		/// <para>The default value is FALSE.</para>
+		/// </remarks>
+		public bool AllowUnorderedAccess
+		{
+			get;
+			set;
+		}
+
 		/// <summary>
 		/// Property to set or return whether to allow this buffer to be used for stream output.
 		/// </summary>
@@ -158,32 +149,6 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		/// <remarks>The default value is FALSE.</remarks>
 		public bool AllowCPUWrite
-		{
-			get;
-			set;
-		}
-
-		/// <summary>
-		/// Property to set or return the format used for the default unordered access view assigned to the buffer.
-		/// </summary>
-		/// <remarks>Set this value to Unknown to disable the creation of a default unordered access view.
-		/// <para>This value is only applicable on SM_5 video devices.</para>
-		/// <para>The default value is Unknown.</para>
-		/// </remarks>
-		public BufferFormat UnorderedAccessViewFormat
-		{
-			get;
-			set;
-		}
-
-		/// <summary>
-		/// Property to set or return whether the buffer can be accessed using raw views.
-		/// </summary>
-		/// <remarks>
-		/// This value is only applicable on SM_5 video devices.
-		/// <para>The default value is FALSE.</para>
-		/// </remarks>
-		public bool IsRaw
 		{
 			get;
 			set;
@@ -236,50 +201,39 @@ namespace GorgonLibrary.Graphics
 	}
 
 	/// <summary>
-	/// Settings for a structured buffer.
+	/// Settings for a typed buffer.
 	/// </summary>
-	/// <remarks>Structured buffers are only available on SM_5 video devices.</remarks>
-	public sealed class GorgonStructuredBufferSettings
+	/// <remarks>Raw buffers are only available on SM5 video devices.</remarks>
+	public sealed class GorgonRawBufferSettings
 		: IShaderBufferSettings
 	{
-		#region Properties.
-		/// <summary>
-		/// Property to set or return the type of structured buffer.
-		/// </summary>
-		/// <remarks>The default value is standard.</remarks>
-		public StructuredBufferType StructuredBufferType
-		{
-			get;
-			set;
-		}
-
-		/// <summary>
-		/// Property to set or return whether to create a default unordered access view for this structured buffer.
-		/// </summary>
-		/// <remarks>The default value is FALSE.</remarks>
-		public bool UseUnorderedAccessView
-		{
-			get;
-			set;
-		}
-		#endregion
-
 		#region Constructor/Destructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonStructuredBufferSettings"/> class.
+		/// Initializes a new instance of the <see cref="GorgonRawBufferSettings"/> class.
 		/// </summary>
-		public GorgonStructuredBufferSettings()
+		public GorgonRawBufferSettings()
 		{
-			UseUnorderedAccessView = false;
-			StructuredBufferType = StructuredBufferType.Standard;
 			IsOutput = false;
 			AllowCPUWrite = false;
 			ElementCount = 0;
-			ElementSize = 0;
+			CreateUnderedAccessView = false;
+			AllowUnorderedAccess = false;
 		}
 		#endregion
 
 		#region IShaderBufferSettings Members
+		/// <summary>
+		/// Property to set or return whether to allow unordered access to the buffer.
+		/// </summary>
+		/// <remarks>Unordered access views require a video device feature level of SM_5 or better.
+		/// <para>The default value is FALSE.</para>
+		/// </remarks>
+		public bool AllowUnorderedAccess
+		{
+			get;
+			set;
+		}
+
 		/// <summary>
 		/// Property to set or return whether to allow this buffer to be used for stream output.
 		/// </summary>
@@ -302,14 +256,27 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
-		/// Property to set or return the format used for the default unordered access view assigned to the buffer.
+		/// Propery to set or return whether to create a default unordered access view to the buffer.
 		/// </summary>
-		/// <remarks>This value is not applicable to structured buffers.</remarks>
-		BufferFormat IShaderBufferSettings.UnorderedAccessViewFormat
+		/// <remarks>The default value is FALSE.</remarks>
+		public bool CreateUnderedAccessView
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Property to set or return the size of an element in a structured buffer.
+		/// </summary>
+		/// <remarks>
+		/// This does not apply to typed buffers.
+		/// <para>The default value is 0.</para>
+		/// </remarks>
+		int IShaderBufferSettings.ElementSize
 		{
 			get
 			{
-				return BufferFormat.Unknown;
+				return 0;
 			}
 			set
 			{
@@ -317,19 +284,101 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
-		/// Property to set or return whether the buffer can be accessed using raw views.
+		/// Property to set or return the number of an elements in a structured buffer or typed buffer.
 		/// </summary>
-		/// <remarks>This value is not applicable to structured buffers and will always return FALSE.
+		/// <remarks>
+		/// This value is only applicable on SM_5 video devices if used with a structured buffer. The value must be non-zero for all buffer types.
+		/// <para>The default value is 0.</para>
 		/// </remarks>
-		bool IShaderBufferSettings.IsRaw
+		public int ElementCount
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Property to set or return the format of the view used when binding a typed buffer to a shader.
+		/// </summary>
+		/// <remarks>This value will always return R32.</remarks>
+		BufferFormat IShaderBufferSettings.ShaderViewFormat
 		{
 			get
 			{
-				return false;
+				return BufferFormat.R32;
 			}
 			set
 			{
 			}
+		}
+		#endregion
+	}
+
+	/// <summary>
+	/// Settings for a structured buffer.
+	/// </summary>
+	/// <remarks>Structured buffers are only available on SM_5 video devices.</remarks>
+	public sealed class GorgonStructuredBufferSettings
+		: IShaderBufferSettings
+	{
+		#region Properties.
+		/// <summary>
+		/// Property to set or return the type of structured buffer.
+		/// </summary>
+		/// <remarks>The default value is standard.</remarks>
+		public StructuredBufferType StructuredBufferType
+		{
+			get;
+			set;
+		}
+		#endregion
+
+		#region Constructor/Destructor.
+		/// <summary>
+		/// Initializes a new instance of the <see cref="GorgonStructuredBufferSettings"/> class.
+		/// </summary>
+		public GorgonStructuredBufferSettings()
+		{
+			StructuredBufferType = StructuredBufferType.Standard;
+			IsOutput = false;
+			AllowCPUWrite = false;
+			AllowUnorderedAccess = false;
+			ElementCount = 0;
+			ElementSize = 0;
+		}
+		#endregion
+
+		#region IShaderBufferSettings Members
+		/// <summary>
+		/// Property to set or return whether to allow unordered access to the buffer.
+		/// </summary>
+		/// <remarks>Unordered access views require a video device feature level of SM_5 or better.
+		/// <para>The default value is FALSE.</para>
+		/// </remarks>
+		public bool AllowUnorderedAccess
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Property to set or return whether to allow this buffer to be used for stream output.
+		/// </summary>
+		/// <remarks>The default value is FALSE.</remarks>
+		public bool IsOutput
+		{
+			get;
+			set;
+		}
+
+
+		/// <summary>
+		/// Property to set or return whether to allow writing from the CPU.
+		/// </summary>
+		/// <remarks>The default value is FALSE.</remarks>
+		public bool AllowCPUWrite
+		{
+			get;
+			set;
 		}
 
 		/// <summary>

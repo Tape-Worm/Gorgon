@@ -124,13 +124,13 @@ namespace GorgonLibrary.Graphics
 
         #region Variables.
         // ReSharper disable StaticFieldInGenericType
-        private static readonly object _syncLock = new object();                        // Synchronization object for threading.
+        private static readonly object _syncLock = new object();								// Synchronization object for threading.
         // ReSharper restore StaticFieldInGenericType
 
-        private bool _disposed;                                                         // Flag to indicate that the object is disposed.
-        private GorgonResource _resource;                                               // Resource bound to the SRVs.
-        private Dictionary<ShaderViewKey, GorgonBufferShaderView> _bufferViews;         // The cache of buffer views.
-        private Dictionary<ShaderViewKey, GorgonTextureShaderView> _textureViews;       // The cache of texture views.
+        private bool _disposed;																	// Flag to indicate that the object is disposed.
+        private readonly GorgonResource _resource;                                              // Resource bound to the SRVs.
+        private readonly Dictionary<ShaderViewKey, GorgonBufferShaderView> _bufferViews;        // The cache of buffer views.
+        private readonly Dictionary<ShaderViewKey, GorgonTextureShaderView> _textureViews;      // The cache of texture views.
         #endregion
 
         #region Methods.
@@ -211,11 +211,12 @@ namespace GorgonLibrary.Graphics
         /// <param name="format">Format of the view.</param>
         /// <param name="start">Starting element for the view.</param>
         /// <param name="count">Number of elements for the view.</param>
+        /// <param name="isRaw">TRUE for raw buffers, FALSE for standard.</param>
         /// <returns>The cached buffer shader view.</returns>
-        public GorgonBufferShaderView GetBufferView(BufferFormat format, int start, int count)
+        public GorgonBufferShaderView GetBufferView(BufferFormat format, int start, int count, bool isRaw)
         {
             var buffer = (GorgonShaderBuffer)_resource;
-            var key = new ShaderViewKey(format, start, count, Convert.ToInt32(buffer.Settings.IsRaw), 0);
+            var key = new ShaderViewKey(format, start, count, 0, 0);
 
             lock(_syncLock)
             {
@@ -223,7 +224,7 @@ namespace GorgonLibrary.Graphics
 
                 if (!_bufferViews.TryGetValue(key, out result))
                 {
-                    result = new GorgonBufferShaderView(buffer, format, start, count);
+                    result = new GorgonBufferShaderView(buffer, format, start, count, isRaw);
                     result.Initialize();
                     _bufferViews.Add(key, result);
                 }

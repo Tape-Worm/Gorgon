@@ -34,7 +34,6 @@ namespace GorgonLibrary.Graphics
 	/// </summary>
 	/// <typeparam name="T">Type of state to store.</typeparam>
 	sealed class GorgonStateCache<T>
-		: IDisposable
 		where T : struct, IEquatableByRef<T>
 	{
 		#region Constants.
@@ -42,7 +41,6 @@ namespace GorgonLibrary.Graphics
 		#endregion
 
 		#region Variables.
-		private bool _disposed;																				// Flag to indicate that the object was disposed.
 		private int _currentCachePosition;																	// Current position in the cache.
 		private Tuple<T, D3D.DeviceChild>[] _cache = new Tuple<T,D3D.DeviceChild>[CacheLimit];				// Cache objects.
 		#endregion
@@ -159,35 +157,6 @@ namespace GorgonLibrary.Graphics
 
 			CacheCount--;
 			_currentCachePosition--;
-		}
-		#endregion
-
-		#region IDisposable Members
-		/// <summary>
-		/// Releases unmanaged and - optionally - managed resources.
-		/// </summary>
-		/// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
-		private void Dispose(bool disposing)
-		{
-			if (_disposed)
-			{
-				return;
-			}
-
-			if (disposing)
-			{
-				EvictCache();
-			}
-				
-			_disposed = true;
-		}
-
-		/// <summary>
-		/// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-		/// </summary>
-		public void Dispose()
-		{
-			Dispose(true);
 		}
 		#endregion
 	}

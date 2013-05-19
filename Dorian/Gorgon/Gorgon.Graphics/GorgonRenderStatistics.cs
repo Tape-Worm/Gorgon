@@ -124,6 +124,16 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
+		/// Property to return the number of raw buffers allocated.
+		/// </summary>
+		public static int RawBufferCount
+		{
+			get;
+			internal set;
+		}
+
+
+		/// <summary>
 		/// Property to return the size, in bytes, of all generic buffers allocated.
 		/// </summary>
 		public static int BufferSize
@@ -150,6 +160,15 @@ namespace GorgonLibrary.Graphics
 			internal set;
 		}
 
+		/// <summary>
+		/// Property to return the size, in bytes, of all typed buffers allocated.
+		/// </summary>
+		public static int RawBufferSize
+		{
+			get;
+			internal set;
+		}
+		
 		/// <summary>
 		/// Property to return the number of textures allocated.
 		/// </summary>
@@ -240,6 +259,8 @@ namespace GorgonLibrary.Graphics
 			BufferSize = 0;
 			StructuredBufferSize = 0;
 			TypedBufferSize = 0;
+			RawBufferCount = 0;
+			RawBufferSize = 0;
 		}
 		#endregion
 	}
