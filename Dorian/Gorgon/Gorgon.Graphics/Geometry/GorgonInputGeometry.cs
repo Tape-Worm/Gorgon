@@ -609,20 +609,13 @@ namespace GorgonLibrary.Graphics
 		/// <para>Thrown when the usage parameter is set to Immutable and the <paramref name="data"/> is NULL (Nothing in VB.Net) or empty.</para>
 		/// </exception>
 		/// <remarks>If creating an immutable index buffer, be sure to pre-populate it via the initialData parameter.</remarks>
-		public GorgonIndexBuffer CreateIndexBuffer<T>(BufferUsage usage, bool is32Bit, IList<T> data)
+		public GorgonIndexBuffer CreateIndexBuffer<T>(BufferUsage usage, bool is32Bit, T[] data)
 			where T : struct
 		{
-			int size = data.Count * DirectAccess.SizeOf<T>();
+			int size = data.Length * DirectAccess.SizeOf<T>();
 
-			using (var dataStream = new GorgonDataStream(size))
+			using (var dataStream = new GorgonDataStream(data))
 			{
-				for (int i = 0; i < data.Count; i++)
-				{
-					dataStream.Write(data[i]);
-				}
-
-				dataStream.Position = 0;
-
 				return CreateIndexBuffer(size, usage, is32Bit, false, dataStream);
 			}
 		}
@@ -678,7 +671,7 @@ namespace GorgonLibrary.Graphics
 		/// <para>Thrown when the usage parameter is set to Immutable and the <paramref name="data"/> is NULL (Nothing in VB.Net) or empty.</para>
 		/// </exception>
 		/// <remarks>If creating an immutable vertex buffer, be sure to pre-populate it via the initialData parameter.</remarks>
-		public GorgonVertexBuffer CreateVertexBuffer<T>(BufferUsage usage, IList<T> data)
+		public GorgonVertexBuffer CreateVertexBuffer<T>(BufferUsage usage, T[] data)
 			where T : struct
 		{
 			if (data == null)
@@ -686,16 +679,10 @@ namespace GorgonLibrary.Graphics
 				throw new ArgumentNullException("data");
 			}
 
-			int size = data.Count * DirectAccess.SizeOf<T>();
+			int size = data.Length * DirectAccess.SizeOf<T>();
 
-			using (var dataStream = new GorgonDataStream(size))
+			using (var dataStream = new GorgonDataStream(data))
 			{
-				for (int i = 0; i < data.Count; i++)
-				{
-					dataStream.Write(data[i]);
-				}
-
-				dataStream.Position = 0;
 				return CreateVertexBuffer(size, usage, false, dataStream);
 			}
 		}

@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Text;
+using System.Drawing;
 using System.Windows.Forms;
 using GorgonLibrary.Graphics.Test.Properties;
 using GorgonLibrary.IO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using GorgonLibrary.Math;
 using GorgonLibrary.Diagnostics;
+using SlimMath;
 
 namespace GorgonLibrary.Graphics.Test
 {
@@ -77,7 +79,7 @@ namespace GorgonLibrary.Graphics.Test
                                                      ArrayCount = 1,
                                                      Format = BufferFormat.R8,
                                                      MipCount = 1,
-                                                     UnorderedAccessViewFormat = BufferFormat.Unknown,
+                                                     AllowUnorderedAccess = false,
                                                      Usage = BufferUsage.Staging
                                                  });
 
@@ -110,7 +112,7 @@ namespace GorgonLibrary.Graphics.Test
                                                      ArrayCount = 1,
                                                      Format = BufferFormat.R8G8B8A8,
                                                      MipCount = 1,
-                                                     UnorderedAccessViewFormat = BufferFormat.Unknown,
+                                                     AllowUnorderedAccess = false,
                                                      Usage = BufferUsage.Staging
                                                  });
 
@@ -143,7 +145,7 @@ namespace GorgonLibrary.Graphics.Test
                                                      Depth = 64,
                                                      Format = BufferFormat.R8G8B8A8,
                                                      MipCount = 1,
-                                                     UnorderedAccessViewFormat = BufferFormat.Unknown,
+                                                     AllowUnorderedAccess = false,
                                                      Usage = BufferUsage.Staging
                                                  });
                 texture.CreateShaderView(BufferFormat.R8G8B8A8_Int);
@@ -176,8 +178,8 @@ namespace GorgonLibrary.Graphics.Test
                         ArrayCount = 1,
                         Format = BufferFormat.R8G8B8A8,
                         MipCount = 1,
-                        ShaderViewFormat = BufferFormat.R8G8B8A8_IntNormal,
-                        UnorderedAccessViewFormat = BufferFormat.Unknown,
+                        ShaderViewFormat = BufferFormat.R8G8B8A8_Int,
+                        AllowUnorderedAccess = false,
                         Usage = BufferUsage.Default
                     }))
                 {
@@ -185,7 +187,7 @@ namespace GorgonLibrary.Graphics.Test
                     {
                         data[0].Data.Position = ((GorgonRandom.RandomInt32(0, 256) * data[0].PitchInformation.RowPitch)
                                                 + GorgonRandom.RandomInt32(0, 256) * 4);
-                        data[0].Data.Write(GorgonColor.White.ToRGBA());
+						data[0].Data.Write((int)((GorgonRandom.RandomSingle() * 2.0f - 1.0f) * (Int32.MaxValue - 2)));
                     }
 
                     texture = _framework.Graphics.Textures.CreateTexture<GorgonTexture2D>("Test2D", data);
@@ -227,7 +229,7 @@ namespace GorgonLibrary.Graphics.Test
                                                          Format = BufferFormat.R8_UIntNormal,
                                                          MipCount = 1,
                                                          ShaderViewFormat = BufferFormat.Unknown,
-                                                         UnorderedAccessViewFormat = BufferFormat.Unknown,
+                                                         AllowUnorderedAccess = false,
                                                          Usage = BufferUsage.Default
                                                      });
 
@@ -243,7 +245,7 @@ namespace GorgonLibrary.Graphics.Test
                                                      Format = BufferFormat.R8G8B8A8_UIntNormal,
                                                      MipCount = 1,
                                                      ShaderViewFormat = BufferFormat.Unknown,
-                                                     UnorderedAccessViewFormat = BufferFormat.Unknown,
+                                                     AllowUnorderedAccess = false,
                                                      Usage = BufferUsage.Default
                                                  });
 
@@ -259,7 +261,7 @@ namespace GorgonLibrary.Graphics.Test
                                                      Format = BufferFormat.R8G8B8A8_UIntNormal,
                                                      MipCount = 1,
                                                      ShaderViewFormat = BufferFormat.Unknown,
-                                                     UnorderedAccessViewFormat = BufferFormat.Unknown,
+                                                     AllowUnorderedAccess = false,
                                                      Usage = BufferUsage.Default
                                                  });
 

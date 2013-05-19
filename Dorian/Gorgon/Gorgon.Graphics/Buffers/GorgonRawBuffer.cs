@@ -1,7 +1,7 @@
 ﻿#region MIT.
 // 
 // Gorgon.
-// Copyright (C) 2012 Michael Winsor
+// Copyright (C) 2013 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -20,55 +20,34 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: Monday, November 5, 2012 8:58:47 PM
+// Created: Sunday, May 12, 2013 11:04:40 PM
 // 
 #endregion
 
 using System;
-using GorgonLibrary.IO;
+using GorgonLibrary.Graphics.Properties;
 using DX = SharpDX;
 using D3D = SharpDX.Direct3D11;
+using GorgonLibrary.IO;
 
 namespace GorgonLibrary.Graphics
 {
 	/// <summary>
-	/// The type of structured buffer.
+	/// A buffer to hold generic byte data.
 	/// </summary>
-	public enum StructuredBufferType
-	{
-		/// <summary>
-		/// A standard structured buffer.
-		/// </summary>
-		Standard = 0,
-		/// <summary>
-		/// An append/consume buffer.
-		/// </summary>
-		AppendConsume = 1,
-		/// <summary>
-		/// A counter buffer.
-		/// </summary>
-		Counter = 2
-	}
-
-	/// <summary>
-	/// A structured buffer for shaders.
-	/// </summary>
-	/// <remarks>Structured buffers are similar to <see cref="GorgonLibrary.Graphics.GorgonConstantBuffer">constant buffers</see> in that they're used to convey data to 
-	/// a shader.  However, unlike constant buffers, these buffers allow for unordered access and are meant as containers for structured data (hence, structured buffers).
-	/// <para>Structured buffers are only available to SM5 and above.</para>
-	/// </remarks>
-	public class GorgonStructuredBuffer
+	/// <remarks>This buffer holds raw byte data and can be accessed in a shader through its shader view or an unordered access view.  The buffer size must be a multiple of 4 or an exception will be thrown when creating the buffer.</remarks>
+	public class GorgonRawBuffer
 		: GorgonShaderBuffer
 	{
 		#region Properties.
 		/// <summary>
-		/// Property to return the settings for a structured shader buffer.
+		/// Property to return the settings for the buffer.
 		/// </summary>
-		public new GorgonStructuredBufferSettings Settings
+		public new GorgonRawBufferSettings Settings
 		{
 			get
 			{
-				return (GorgonStructuredBufferSettings)base.Settings;
+				return (GorgonRawBufferSettings)base.Settings;
 			}
 		}
 		#endregion
@@ -84,7 +63,7 @@ namespace GorgonLibrary.Graphics
 		        return;
 		    }
 
-		    DefaultShaderView = CreateShaderView(0, Settings.ElementCount);
+		    DefaultShaderView = CreateShaderView(0, Settings.ElementCount / 4);
 		}
 
 		/// <summary>
@@ -94,8 +73,8 @@ namespace GorgonLibrary.Graphics
 		{
 			if (D3DResource != null)
 			{
-				GorgonRenderStatistics.StructuredBufferCount--;
-				GorgonRenderStatistics.StructuredBufferSize -= D3DBuffer.Description.SizeInBytes;
+				GorgonRenderStatistics.RawBufferCount--;
+				GorgonRenderStatistics.RawBufferSize -= D3DBuffer.Description.SizeInBytes;
 			}
 
 			base.CleanUpResource();
@@ -115,15 +94,14 @@ namespace GorgonLibrary.Graphics
 
 		    var desc = new D3D.BufferDescription
 		        {
-					BindFlags = BufferUsage == BufferUsage.Staging ? D3D.BindFlags.None : D3D.BindFlags.ShaderResource,
+		            BindFlags = BufferUsage == BufferUsage.Staging ? D3D.BindFlags.None : D3D.BindFlags.ShaderResource,
 		            CpuAccessFlags = D3DCPUAccessFlags,
-		            OptionFlags = D3D.ResourceOptionFlags.BufferStructured,
+		            OptionFlags = D3D.ResourceOptionFlags.BufferAllowRawViews,
 		            SizeInBytes = SizeInBytes,
-		            StructureByteStride = Settings.ElementSize,
 		            Usage = D3DUsage
 		        };
 
-			if ((Settings.AllowUnorderedAccess) && (BufferUsage != BufferUsage.Staging))
+			if ((BufferUsage != BufferUsage.Staging) && (Settings.CreateUnderedAccessView))
 			{
 				desc.BindFlags |= D3D.BindFlags.UnorderedAccess;
 			}
@@ -142,20 +120,83 @@ namespace GorgonLibrary.Graphics
 		        D3DResource = new D3D.Buffer(Graphics.D3DDevice, desc);
 		    }
 
-		    GorgonRenderStatistics.StructuredBufferCount++;
-			GorgonRenderStatistics.StructuredBufferSize += ((D3D.Buffer)D3DResource).Description.SizeInBytes;
+		    GorgonRenderStatistics.RawBufferCount++;
+			GorgonRenderStatistics.RawBufferSize += ((D3D.Buffer)D3DResource).Description.SizeInBytes;
 
 #if DEBUG
-			D3DResource.DebugName = "Gorgon Structured Buffer #" + Graphics.GetGraphicsObjectOfType<GorgonStructuredBuffer>().Count;
+			D3DResource.DebugName = "Gorgon Raw Buffer #" + Graphics.GetGraphicsObjectOfType<GorgonRawBuffer>().Count;
 #endif
 			CreateDefaultResourceView();
 		}
 
-        /// <summary>
+		/// <summary>
+		/// Function to create an unordered access view for this buffer.
+		/// </summary>
+		/// <param name="format">Format of the buffer.</param>
+		/// <param name="start">First element to map to the view.</param>
+		/// <param name="count">The number of elements to map to the view.</param>
+		/// <returns>A new unordered access view for the buffer.</returns>
+		/// <remarks>Use this to create an unordered access view that will allow shaders to access the view using multiple threads at the same time.  Unlike a <see cref="CreateShaderView">Shader View</see>, only one 
+		/// unordered access view can be bound to the pipeline at any given time.
+		/// <para>Unordered access views require a video device feature level of SM_5 or better.</para>
+		/// </remarks>
+		/// <exception cref="GorgonLibrary.GorgonException">Thrown when the usage for this buffer is set to Staging.
+		/// <para>-or-</para>
+		/// <para>Thrown when the video device feature level is not SM_5 or better.</para>
+		/// <para>-or-</para>
+		/// <para>Thrown when the resource settings do not allow unordered access views.</para>
+		/// <para>-or-</para>
+		/// <para>Thrown when the view could not be created.</para>
+		/// </exception>
+		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="start"/> or <paramref name="count"/> parameters are less than 0 or greater than or equal to the 
+		/// number of elements in the buffer.</exception>
+		public GorgonBufferUnorderAccessView CreateUnorderedAccessView(BufferFormat format, int start, int count)
+		{
+			if (Graphics.VideoDevice.SupportedFeatureLevel < DeviceFeatureLevel.SM5)
+			{
+				throw new GorgonException(GorgonResult.CannotCreate, "Unordered access views are only available on video devices that support SM_5 or better.");
+			}
+
+			if (!Settings.AllowUnorderedAccess)
+			{
+				throw new GorgonException(GorgonResult.CannotCreate, "The buffer does not allow unordered access.");
+			}
+
+			if (BufferUsage == BufferUsage.Staging)
+			{
+				throw new GorgonException(GorgonResult.CannotCreate, "Cannot create an unordered access resource view for a buffer that has a usage of Staging.");
+			}
+
+			if (format == BufferFormat.Unknown)
+			{
+				throw new ArgumentException(Resources.GORGFX_VIEW_UNKNOWN_FORMAT, "format");
+			}
+
+			if ((start + count > Settings.ElementCount) || (start < 0) || (count < 0))
+			{
+				throw new ArgumentException("The start and count must be 0 or greater and less than the number of elements in the buffer.");
+			}
+
+			// Ensure the size of the data type fits the requested format.
+			var info = GorgonBufferFormatInfo.GetInfo(format);
+
+			if (info.SizeInBytes != 4)
+			{
+				throw new ArgumentException(
+					string.Format(
+						"The size of the format: {0} bytes, does not match the size of the data type: 4 bytes.",
+						info.SizeInBytes),
+					"format");
+			}
+
+			return new GorgonBufferUnorderAccessView(this, format, start, count, false);
+		}
+		
+		/// <summary>
         /// Function to create a new shader view for the buffer.
         /// </summary>
         /// <param name="start">Starting element.</param>
-        /// <param name="count">Element count.</param>
+        /// <param name="count">Element count. This value must the number of elements, not the number of bytes in the resource.</param>
         /// <returns>A new shader view for the buffer.</returns>
         /// <exception cref="GorgonLibrary.GorgonException">Thrown when the usage for this buffer is set to Staging.
         /// <para>-or-</para>
@@ -178,63 +219,18 @@ namespace GorgonLibrary.Graphics
                 throw new ArgumentException("The start and count must be 0 or greater and less than the number of elements in the buffer.");
             }
 
-            return ViewCache.GetBufferView(BufferFormat.Unknown, start, count, false);
+	        return ViewCache.GetBufferView(BufferFormat.R32, start, count, true);
         }
-
-		/// <summary>
-		/// Function to create an unordered access view for this buffer.
-		/// </summary>
-		/// <param name="start">First element to map to the view.</param>
-		/// <param name="count">The number of elements to map to the view.</param>
-		/// <returns>A new unordered access view for the buffer.</returns>
-		/// <remarks>Use this to create an unordered access view that will allow shaders to access the view using multiple threads at the same time.  Unlike a <see cref="CreateShaderView">Shader View</see>, only one 
-		/// unordered access view can be bound to the pipeline at any given time.
-		/// <para>Unordered access views require a video device feature level of SM_5 or better.</para>
-		/// </remarks>
-		/// <exception cref="GorgonLibrary.GorgonException">Thrown when the usage for this buffer is set to Staging.
-		/// <para>-or-</para>
-		/// <para>Thrown when the video device feature level is not SM_5 or better.</para>
-		/// <para>-or-</para>
-		/// <para>Thrown when the resource settings do not allow unordered access views.</para>
-		/// <para>-or-</para>
-		/// <para>Thrown when the view could not be created.</para>
-		/// </exception>
-		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="start"/> or <paramref name="count"/> parameters are less than 0 or greater than or equal to the 
-		/// number of elements in the buffer.</exception>
-		public GorgonBufferUnorderAccessView CreateUnorderedAccessView(int start, int count)
-		{
-			if (Graphics.VideoDevice.SupportedFeatureLevel < DeviceFeatureLevel.SM5)
-			{
-				throw new GorgonException(GorgonResult.CannotCreate, "Unordered access views are only available on video devices that support SM_5 or better.");
-			}
-
-			if (!Settings.AllowUnorderedAccess)
-			{
-				throw new GorgonException(GorgonResult.CannotCreate, "The buffer does not allow unordered access.");
-			}
-
-			if (BufferUsage == BufferUsage.Staging)
-			{
-				throw new GorgonException(GorgonResult.CannotCreate, "Cannot create an unordered access resource view for a buffer that has a usage of Staging.");
-			}
-
-			if ((start + count > Settings.ElementCount) || (start < 0) || (count < 0))
-			{
-				throw new ArgumentException("The start and count must be 0 or greater and less than the number of elements in the buffer.");
-			}
-
-			return new GorgonBufferUnorderAccessView(this, BufferFormat.Unknown, start, count, false);
-		}
-		#endregion
+        #endregion
 
 		#region Constructor/Destructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonStructuredBuffer" /> class.
+		/// Initializes a new instance of the <see cref="GorgonRawBuffer" /> class.
 		/// </summary>
 		/// <param name="graphics">Graphics interface that owns this buffer.</param>
-		/// <param name="settings">The settings for the structured buffer.</param>
-		internal GorgonStructuredBuffer(GorgonGraphics graphics, GorgonStructuredBufferSettings settings)
-			: base(graphics, settings, settings.ElementCount * settings.ElementSize)
+		/// <param name="settings">The settings to apply to the typed buffer.</param>
+		internal GorgonRawBuffer(GorgonGraphics graphics, GorgonRawBufferSettings settings)
+			: base(graphics, settings, settings.ElementCount)
 		{
 		}
 		#endregion

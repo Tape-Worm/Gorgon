@@ -28,7 +28,7 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <Prefer32Bit>false</Prefer32Bit>
     <UseVSHostingProcess>false</UseVSHostingProcess>
-    <CodeAnalysisRuleSet>ExtendedCorrectnessRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSet>NoLiteralBugFix.ruleset</CodeAnalysisRuleSet>
     <RunCodeAnalysis>true</RunCodeAnalysis>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
@@ -63,6 +63,7 @@
     <Reference Include="System.Windows.Forms" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Buffers\GorgonRawBuffer.cs" />
     <Compile Include="Buffers\GorgonShaderBufferSettings.cs" />
     <Compile Include="Buffers\GorgonTypedBuffer.cs" />
     <Compile Include="Buffers\GorgonShaderBuffer.cs" />
@@ -111,10 +112,15 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="Resource\GorgonBufferUnorderAccessView.cs" />
+    <Compile Include="Resource\GorgonTextureUnorderAccessView.cs" />
+    <Compile Include="Resource\GorgonUnorderedAccessView.cs" />
+    <Compile Include="Resource\GorgonBufferShaderView.cs" />
     <Compile Include="Resource\GorgonNamedResource.cs" />
     <Compile Include="Resource\GorgonResource.cs" />
+    <Compile Include="Resource\GorgonTextureShaderView.cs" />
     <Compile Include="Resource\GorgonViewCache.cs" />
-    <Compile Include="Resource\GorgonShaderResourceView.cs" />
+    <Compile Include="Resource\GorgonShaderView.cs" />
     <Compile Include="Shaders\GorgonEffect.cs" />
     <Compile Include="Shaders\GorgonPixelShader.cs" />
     <Compile Include="Shaders\GorgonShader.cs" />
@@ -169,6 +175,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Gorgon2.ico" />
+    <None Include="NoLiteralBugFix.ruleset" />
     <None Include="Resources\Gorgon_2.x_Logo_Small.png" />
   </ItemGroup>
   <ItemGroup>

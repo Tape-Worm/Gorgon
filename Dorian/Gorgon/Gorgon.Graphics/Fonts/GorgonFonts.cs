@@ -60,7 +60,7 @@ namespace GorgonLibrary.Graphics
 						AntiAliasingMode = FontAntiAliasMode.AntiAliasHQ,
 						TextContrast = 2,
 						Characters = Enumerable.Range(32, 127).
-							Select(i => Convert.ToChar(i)).
+							Select(Convert.ToChar).
 							Where(c => !char.IsControl(c)),
 						DefaultCharacter = ' ',
 						FontFamilyName = "Tahoma",

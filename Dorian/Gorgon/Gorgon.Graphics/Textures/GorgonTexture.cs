@@ -132,7 +132,7 @@ namespace GorgonLibrary.Graphics
 
 	        BufferFormat format = Settings.ShaderViewFormat == BufferFormat.Unknown ? Settings.Format : Settings.ShaderViewFormat;
 
-	        DefaultShaderView = CreateCachedShaderView(format, 0, Settings.MipCount, 0, Settings.ArrayCount);
+	        DefaultShaderView = OnCreateShaderView(format, 0, Settings.MipCount, 0, Settings.ArrayCount);
 	    }
 
         /// <summary>
@@ -144,7 +144,7 @@ namespace GorgonLibrary.Graphics
         /// <param name="arrayStart">Starting array index for the view.</param>
         /// <param name="arrayCount">Array index count for the view.</param>
         /// <returns>A cached shader view object.</returns>
-        protected GorgonTextureShaderView CreateCachedShaderView(BufferFormat format,
+        protected GorgonTextureShaderView OnCreateShaderView(BufferFormat format,
                                                     int mipStart,
                                                     int mipCount,
                                                     int arrayStart,
@@ -157,6 +157,63 @@ namespace GorgonLibrary.Graphics
 
             return _viewCache.GetTextureView(format, mipStart, mipCount, arrayStart, arrayCount);
         }
+
+		/// <summary>
+		/// Function to create an unordered access view for this texture.
+		/// </summary>
+		/// <param name="format">Format of the buffer.</param>
+		/// <param name="mipStart">First mip map level to map to the view.</param>
+		/// <param name="arrayStart">The first array index to map to the view.</param>
+		/// <param name="arrayCount">The number of array indices to map to the view.</param>
+		/// <returns>A new unordered access view for the texture.</returns>
+		/// <remarks>Use this to create an unordered access view that will allow shaders to access the view using multiple threads at the same time.  Unlike a shader view, only one 
+		/// unordered access view can be bound to the pipeline at any given time.
+		/// <para>Unordered access views require a video device feature level of SM_5 or better.</para>
+		/// </remarks>
+		/// <exception cref="GorgonLibrary.GorgonException">Thrown when the usage for this texture is set to Staging.
+		/// <para>-or-</para>
+		/// <para>Thrown when the video device feature level is not SM_5 or better.</para>
+		/// <para>-or-</para>
+		/// <para>Thrown when the resource settings do not allow unordered access views.</para>
+		/// <para>-or-</para>
+		/// <para>Thrown when the view could not be created.</para>
+		/// </exception>
+		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="mipStart"/>, <paramref name="arrayStart"/> or <paramref name="arrayCount"/> parameters are less than 0 or greater than or equal to the 
+		/// number of mip levels and/or array levels in the texture.
+		/// <para>-or-</para>
+		/// <para>Thrown if the bit count of the <paramref name="format"/> and the texture format are different, or if format is not in the R32 group and is not in the same group as the texture format.</para>
+		/// </exception>
+		protected GorgonTextureUnorderAccessView OnCreateUnorderedAccessView(BufferFormat format, int mipStart, int arrayStart, int arrayCount)
+		{
+			if (Graphics.VideoDevice.SupportedFeatureLevel < DeviceFeatureLevel.SM5)
+			{
+				throw new GorgonException(GorgonResult.CannotCreate, "Unordered access views are only available on video devices that support SM_5 or better.");
+			}
+
+			if (!Settings.AllowUnorderedAccess)
+			{
+				throw new GorgonException(GorgonResult.CannotCreate, "The texture does not allow unordered access.");
+			}
+
+			if (Settings.Usage == BufferUsage.Staging)
+			{
+				throw new GorgonException(GorgonResult.CannotCreate, "Cannot create an unordered access resource view for a texture that has a usage of Staging.");
+			}
+			
+			// Ensure the size of the data type fits the requested format.
+			var info = GorgonBufferFormatInfo.GetInfo(format);
+
+			if (((FormatInformation.Group != BufferFormat.R32) && (FormatInformation.Group != info.Group))
+				|| (info.SizeInBytes != FormatInformation.SizeInBytes))
+			{
+				throw new GorgonException(GorgonResult.CannotCreate,
+											"Cannot create the unordered access view.  The format [" + Settings.Format +
+											"[ and the view format [" + format +
+											"] are not part of the same group.");
+			}
+
+			return new GorgonTextureUnorderAccessView(this, format, mipStart, arrayStart, arrayCount);
+		}
 
 		/// <summary>
 		/// Function to clean up the resource object.
@@ -234,7 +291,7 @@ namespace GorgonLibrary.Graphics
                     flags |= D3D.BindFlags.ShaderResource;
                 }
 
-                if (Settings.UnorderedAccessViewFormat != BufferFormat.Unknown)
+                if (Settings.AllowUnorderedAccess)
                 {
                     flags |= D3D.BindFlags.UnorderedAccess;
                 }

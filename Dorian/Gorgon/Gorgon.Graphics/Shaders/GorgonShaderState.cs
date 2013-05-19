@@ -121,14 +121,12 @@ namespace GorgonLibrary.Graphics
 											  string.Format(Properties.Resources.GORGFX_INVALID_ENUM_VALUE,
 															stateType.VerticalAddressing, "VerticalAddressing"));
 				}
-
-				if (stateType.TextureFilter == TextureFilter.Unknown)
-				{
-					throw new GorgonException(GorgonResult.CannotBind,
-											  string.Format(Properties.Resources.GORGFX_INVALID_ENUM_VALUE,
-															stateType.TextureFilter, "TextureFilter"));
-				}
 #endif
+
+				if (stateType.TextureFilter == TextureFilter.None)
+				{
+					stateType.TextureFilter = TextureFilter.Point;
+				}
 
 				var desc = new D3D.SamplerStateDescription
 					{

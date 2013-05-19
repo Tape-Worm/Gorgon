@@ -50,7 +50,7 @@ namespace GorgonLibrary.Graphics
 		#endregion
 
 		#region Variables.
-		private GorgonGraphics _graphics;		// Graphics interface.
+		private readonly GorgonGraphics _graphics;		// Graphics interface.
 		#endregion
 
 		#region Properties.
@@ -103,23 +103,29 @@ namespace GorgonLibrary.Graphics
 		/// <param name="shader">Shader to re-seat.</param>
 		internal void Reseat(GorgonShader shader)
 		{
-			if (shader is GorgonPixelShader)
+			var pixelShader = shader as GorgonPixelShader;
+
+			if (pixelShader != null)
 			{
-				if (PixelShader.Current == shader)
+				if (PixelShader.Current == pixelShader)
 				{
 					PixelShader.Current = null;
-					PixelShader.Current = (GorgonPixelShader)shader;
+					PixelShader.Current = pixelShader;
 				}
+
+				return;
 			}
 
-			if (shader is GorgonVertexShader)
+			// Lastly, check for vertex shaders.
+			var vertexShader = shader as GorgonVertexShader;
+
+			if ((vertexShader == null) || (VertexShader.Current != vertexShader))
 			{
-				if (VertexShader.Current == shader)
-				{
-					VertexShader.Current = null;
-					VertexShader.Current = (GorgonVertexShader)shader;
-				}
+				return;
 			}
+
+			VertexShader.Current = null;
+			VertexShader.Current = vertexShader;
 		}
 
         /// <summary>
@@ -309,9 +315,9 @@ namespace GorgonLibrary.Graphics
 		public GorgonStructuredBuffer CreateStructuredBuffer<T>(T[] value, bool allowCPUWrite)
 			where T : struct
 		{
-			GorgonDebug.AssertNull<T[]>(value, "value");
-						
-			using (GorgonDataStream stream = GorgonDataStream.ArrayToStream<T>(value))
+			GorgonDebug.AssertNull(value, "value");
+
+			using (var stream = new GorgonDataStream(value))
 			{
 				return CreateStructuredBuffer(new GorgonStructuredBufferSettings()
 				    {
@@ -353,7 +359,7 @@ namespace GorgonLibrary.Graphics
 		/// <para>Structured buffers can only be used on SM_5 video devices.</para></remarks>
 		/// <exception cref="System.ArgumentException">Thrown when the ElementSize or ElementCount properties in the <paramref name="settings"/> parameter are not greater than 0.</exception>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="settings"/> parameter is NULL (Nothing in VB.Net).</exception>
-		/// <exception cref="System.InvalidOperationException">Thrown when an attempt to create a structured buffer is made on a video device that does not support SM5 or better.</exception>
+		/// <exception cref="GorgonLibrary.GorgonException">Thrown when an attempt to create a structured buffer is made on a video device that does not support SM5 or better.</exception>
 		public GorgonStructuredBuffer CreateStructuredBuffer(GorgonStructuredBufferSettings settings, GorgonDataStream stream = null)
 		{
 			if (settings == null)
@@ -363,7 +369,7 @@ namespace GorgonLibrary.Graphics
 			
 		    if (_graphics.VideoDevice.SupportedFeatureLevel < DeviceFeatureLevel.SM5)
 		    {
-		        throw new InvalidOperationException(
+		        throw new GorgonException(GorgonResult.CannotCreate,
 		            "Structured buffers are only available for video devices that support SM5 or better.");
 		    }
 
@@ -408,9 +414,8 @@ namespace GorgonLibrary.Graphics
 						AllowCPUWrite = allowCPUWrite,
 						ElementCount = 1,
 						IsOutput = false,
-						IsRaw = false,
 						ShaderViewFormat = shaderViewFormat,
-						UnorderedAccessViewFormat = BufferFormat.Unknown
+						AllowUnorderedAccess = false
 					}, stream);
 			}
 		}
@@ -444,16 +449,15 @@ namespace GorgonLibrary.Graphics
 				throw new ArgumentException(Resources.GORGFX_PARAMETER_MUST_NOT_BE_EMPTY, "values");
 			}
 
-			using (var stream = GorgonDataStream.ArrayToStream(values))
+			using (var stream = new GorgonDataStream(values))
 			{
 				return CreateTypedBuffer<T>(new GorgonTypedBufferSettings
 				{
 					AllowCPUWrite = allowCPUWrite,
 					ElementCount = values.Length,
 					IsOutput = false,
-					IsRaw = false,
 					ShaderViewFormat = shaderViewFormat,
-					UnorderedAccessViewFormat = BufferFormat.Unknown
+					AllowUnorderedAccess = false
 				}, stream);
 			}
 		}
@@ -490,7 +494,13 @@ namespace GorgonLibrary.Graphics
 				throw new ArgumentException(Resources.GORGFX_VIEW_UNKNOWN_FORMAT, "settings");
 			}
 
+			if (_graphics.VideoDevice.SupportedFeatureLevel < DeviceFeatureLevel.SM5)
+			{
+				throw new GorgonException(GorgonResult.CannotCreate, "Unordered access requires a video device feature level of SM_5 or better.");
+			}
+
 			var typeSize = DirectAccess.SizeOf<T>();
+			
 			var info = GorgonBufferFormatInfo.GetInfo(settings.ShaderViewFormat);
 
 			if (typeSize != info.SizeInBytes)
@@ -503,23 +513,153 @@ namespace GorgonLibrary.Graphics
 					"settings");
 			}
 
-		    if (settings.IsRaw)
-		    {
-		        if (info.Group != BufferFormat.R32)
-		        {
-		            throw new ArgumentException(
-		                "Cannot have a raw buffer unless the shader view format is set to R32_Int, R32_UInt or R32_Float.",
-		                "settings");
-		        }
-
-                // Raw buffer size must be a multiple of 4.
-                if ((settings.ElementCount * typeSize) % 4 != 0)
-                {
-                    throw new DataMisalignedException(string.Format("The size of the raw buffer [{0}] must be a multiple of 4.", settings.ElementCount * typeSize));
-                }
-		    }
-
 		    var result = new GorgonTypedBuffer<T>(_graphics, settings);
+			result.Initialize(stream);
+
+			_graphics.AddTrackedObject(result);
+
+			return result;
+		}
+
+		/// <summary>
+		/// Function to create a raw buffer and initialize it with multiple values.
+		/// </summary>
+		/// <param name="values">Byte values to write to the buffer.</param>
+		/// <param name="allowCPUWrite">TRUE to allow the CPU to write to the buffer, FALSE to disallow.</param>
+		/// <returns>A new typed buffer.</returns>
+		/// <remarks>This buffer type allows raw data to be processed by the GPU.
+		/// <para>When creating the buffer, the number of bytes must be a multiple of 4.</para>
+		/// </remarks>
+		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="values"/> parameter is empty.</exception>
+		/// <exception cref="System.DataMisalignedException">Thrown when the buffer has raw access and the total size of the buffer is not a multiple of 4.</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="values"/> parameter is NULL (Nothing in VB.Net).</exception>
+		public GorgonRawBuffer CreateRawBuffer(byte[] values, bool allowCPUWrite)
+		{
+			if (values == null)
+			{
+				throw new ArgumentNullException("values");
+			}
+
+			if (values.Length == 0)
+			{
+				throw new ArgumentException(Resources.GORGFX_PARAMETER_MUST_NOT_BE_EMPTY, "values");
+			}
+
+			using (var stream = new GorgonDataStream(values))
+			{
+				return CreateRawBuffer(new GorgonRawBufferSettings
+				{
+					AllowCPUWrite = allowCPUWrite,
+					ElementCount = values.Length,
+					IsOutput = false
+				}, stream);
+			}
+		}
+
+		/// <summary>
+		/// Function to create a raw buffer and initialize it with multiple values.
+		/// </summary>
+		/// <param name="values">Byte values to write to the buffer.</param>
+		/// <param name="allowCPUWrite">TRUE to allow the CPU to write to the buffer, FALSE to disallow.</param>
+		/// <returns>A new typed buffer.</returns>
+		/// <remarks>This buffer type allows raw data to be processed by the GPU.
+		/// <para>When creating the buffer, the number of bytes must be a multiple of 4.</para>
+		/// </remarks>
+		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="values"/> parameter is empty.</exception>
+		/// <exception cref="System.DataMisalignedException">Thrown when the buffer has raw access and the total size of the buffer is not a multiple of 4.</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="values"/> parameter is NULL (Nothing in VB.Net).</exception>
+		public GorgonRawBuffer CreateRawBuffer(int[] values, bool allowCPUWrite)
+		{
+			if (values == null)
+			{
+				throw new ArgumentNullException("values");
+			}
+
+			if (values.Length == 0)
+			{
+				throw new ArgumentException(Resources.GORGFX_PARAMETER_MUST_NOT_BE_EMPTY, "values");
+			}
+
+			using (var stream = new GorgonDataStream(values))
+			{
+				return CreateRawBuffer(new GorgonRawBufferSettings
+				{
+					AllowCPUWrite = allowCPUWrite,
+					ElementCount = values.Length * sizeof(int),
+					IsOutput = false
+				}, stream);
+			}
+		}
+
+		/// <summary>
+		/// Function to create a raw buffer and initialize it with multiple values.
+		/// </summary>
+		/// <param name="values">Byte values to write to the buffer.</param>
+		/// <param name="allowCPUWrite">TRUE to allow the CPU to write to the buffer, FALSE to disallow.</param>
+		/// <returns>A new typed buffer.</returns>
+		/// <remarks>This buffer type allows raw data to be processed by the GPU.
+		/// <para>When creating the buffer, the number of bytes must be a multiple of 4.</para>
+		/// </remarks>
+		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="values"/> parameter is empty.</exception>
+		/// <exception cref="System.DataMisalignedException">Thrown when the buffer has raw access and the total size of the buffer is not a multiple of 4.</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="values"/> parameter is NULL (Nothing in VB.Net).</exception>
+		public GorgonRawBuffer CreateRawBuffer(uint[] values, bool allowCPUWrite)
+		{
+			if (values == null)
+			{
+				throw new ArgumentNullException("values");
+			}
+
+			if (values.Length == 0)
+			{
+				throw new ArgumentException(Resources.GORGFX_PARAMETER_MUST_NOT_BE_EMPTY, "values");
+			}
+
+			using (var stream = new GorgonDataStream(values))
+			{
+				return CreateRawBuffer(new GorgonRawBufferSettings
+				{
+					AllowCPUWrite = allowCPUWrite,
+					ElementCount = values.Length * sizeof(int),
+					IsOutput = false
+				}, stream);
+			}
+		}
+
+		/// <summary>
+		/// Function to create a raw buffer and initialize it with data.
+		/// </summary>
+		/// <param name="settings">Settings used to create the typed buffer.</param>
+		/// <param name="stream">Stream containing the data used to initialize the buffer.</param>
+		/// <returns>A new typed buffer.</returns>
+		/// <remarks>This buffer type allows raw data to be processed by the GPU.
+		/// <para>When creating the buffer, the number of elements and the size in bytes of an element must be a multiple of 4.</para>
+		/// <para>Raw buffers can only be used on SM_5 video devices.</para>
+		/// </remarks>
+		/// <exception cref="System.ArgumentException">Thrown when the ElementCount property in the <paramref name="settings"/> parameter is not greater than 1.</exception>
+		/// <exception cref="System.DataMisalignedException">Thrown when the buffer has raw access and the total size of the buffer is not a multiple of 4.</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="settings"/> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="GorgonLibrary.GorgonException">Thrown when attempting to create a raw buffer on a video device that does not support SM_5 or better.</exception>
+		public GorgonRawBuffer CreateRawBuffer(GorgonRawBufferSettings settings, GorgonDataStream stream = null)
+		{
+			if (settings == null)
+			{
+				throw new ArgumentNullException("settings");
+			}
+
+			if (_graphics.VideoDevice.SupportedFeatureLevel < DeviceFeatureLevel.SM5)
+			{
+				throw new GorgonException(GorgonResult.CannotCreate, "Cannot create the buffer, a SM_5 video device or better is required.");
+			}
+
+			// Raw buffer size must be a multiple of 4.
+			if ((settings.ElementCount * sizeof(int)) % 4 != 0)
+			{
+				throw new DataMisalignedException(string.Format("The size of the raw buffer [{0}] must be a multiple of 4.",
+																settings.ElementCount * sizeof(int)));
+			}
+
+			var result = new GorgonRawBuffer(_graphics, settings);
 			result.Initialize(stream);
 
 			_graphics.AddTrackedObject(result);
