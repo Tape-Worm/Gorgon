@@ -42,7 +42,7 @@ namespace GorgonLibrary.Diagnostics
 		/// <param name="value">The value being passed.</param>
 		/// <param name="paramName">The name of the parameter.</param>
 		/// <remarks>This will only throw exceptions when we're in DEBUG mode.  Release mode will do nothing.</remarks>
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1820:TestForEmptyStringsUsingStringLength"), Conditional("DEBUG"), DebuggerStepThrough]
+		[Conditional("DEBUG"), DebuggerStepThrough]
 		public static void AssertParamString(string value, string paramName)
 		{
 		    if (value == null)
@@ -50,7 +50,7 @@ namespace GorgonLibrary.Diagnostics
 		        throw new ArgumentNullException(paramName);
 		    }
 
-		    if (value == string.Empty)
+		    if (value.Length == 0)
 		    {
 		        throw new ArgumentException(Resources.GOR_PARAMETER_MUST_NOT_BE_EMPTY, paramName);
 		    }

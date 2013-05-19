@@ -225,7 +225,7 @@ namespace GorgonLibrary.Native
 		/// <param name="bRevert"></param>
 		/// <returns></returns>
 		[DllImport("User32.dll", CharSet = CharSet.Auto, SetLastError = true)]
-		public static extern IntPtr GetSystemMenu(IntPtr hwnd, bool bRevert);
+		public static extern IntPtr GetSystemMenu(IntPtr hwnd, [MarshalAs(UnmanagedType.Bool)] bool bRevert);
 
 		/// <summary>
 		/// DWM default window procedure.
@@ -262,6 +262,7 @@ namespace GorgonLibrary.Native
 		/// </summary>
 		/// <returns></returns>
 		[DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
+		[return: MarshalAs(UnmanagedType.Bool)]
 		public static extern bool ReleaseCapture();
 
 		/// <summary>
@@ -301,6 +302,7 @@ namespace GorgonLibrary.Native
 		/// <param name="stat">Memory status data.</param>
 		/// <returns>TRUE if successful, FALSE if not.</returns>
 		[DllImport("kernel32.dll")]
+		[return: MarshalAs(UnmanagedType.Bool)]
 		private static extern bool GlobalMemoryStatusEx(ref MemoryStatusEx stat);
 		
 		/// <summary>
@@ -333,6 +335,7 @@ namespace GorgonLibrary.Native
 		/// <param name="msg">Message to translate.</param>
 		/// <returns>TRUE if successful, FALSE if not.</returns>
 		[DllImport("user32.dll")]
+		[return: MarshalAs(UnmanagedType.Bool)]
 		public static extern bool TranslateMessage([In] ref MSG msg);
 
 		/// <summary>

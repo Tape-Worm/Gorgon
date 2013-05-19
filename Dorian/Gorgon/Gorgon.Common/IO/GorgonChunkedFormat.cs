@@ -74,7 +74,6 @@ namespace GorgonLibrary.IO
         /// <summary>
         /// Property to set or return the temporary buffer for large reads/writes.
         /// </summary>
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1819:PropertiesShouldNotReturnArrays")]
 		protected byte[] TempBuffer
         {
             get;

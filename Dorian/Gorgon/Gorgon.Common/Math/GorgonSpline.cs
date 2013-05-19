@@ -62,7 +62,6 @@ namespace GorgonLibrary.Math
         /// <returns>The interpolated value at <paramref name="delta"/>.</returns>
         /// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="startPointIndex"/> parameter is less than 0, or greater than/equal to the number of points in the spline minus 1.</exception>
         /// <remarks>The delta parameter is a unit value where 0 is the first point in the spline (referenced by startPointIndex) and 1 is the next point from the startPointIndex in the spline.</remarks>
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2233:OperationsShouldNotOverflow", MessageId = "startPointIndex+1")]
 		public Vector4 GetInterpolatedValue(int startPointIndex, float delta)
         {
             Matrix calculations = Matrix.Identity;

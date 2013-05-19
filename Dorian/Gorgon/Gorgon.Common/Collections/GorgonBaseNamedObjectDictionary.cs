@@ -450,7 +450,7 @@ namespace GorgonLibrary.Collections
 	    /// </summary>
 	    /// <param name="array">The one-dimensional <see cref="T:System.Array"/> that is the destination of the elements copied from <see cref="T:System.Collections.Generic.ICollection`1"/>. The <see cref="T:System.Array"/> must have zero-based indexing.</param>
 	    /// <param name="arrayIndex">The zero-based index in <paramref name="array"/> at which copying begins.</param>
-	    /// <exception cref="NotImplementedException">This method is not implemented.</exception>
+	    /// <exception cref="NotSupportedException">This method is not implemented.</exception>
 	    /// <exception cref="T:System.ArgumentNullException">
 	    /// 	<paramref name="array"/> is null.
 	    /// </exception>
@@ -468,7 +468,7 @@ namespace GorgonLibrary.Collections
 	    /// </exception>
 	    void ICollection<KeyValuePair<string, T>>.CopyTo(KeyValuePair<string, T>[] array, int arrayIndex)
 		{
-			throw new NotImplementedException();
+			throw new NotSupportedException();
 		}
 
 		/// <summary>
