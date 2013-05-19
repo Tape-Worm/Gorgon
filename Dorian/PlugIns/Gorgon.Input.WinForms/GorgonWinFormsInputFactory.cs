@@ -90,7 +90,7 @@ namespace GorgonLibrary.Input.WinForms
 		/// <exception cref="System.ArgumentNullException">The <paramRef name="hidInfo"/> is NULL.</exception>
 		protected override GorgonCustomHID CreateCustomHIDImpl(System.Windows.Forms.Control window, GorgonInputDeviceInfo hidInfo)
 		{
-			throw new NotImplementedException(Resources.GORINP_WIN_KEYBOARD_MOUSE_ONLY);
+			throw new NotSupportedException(Resources.GORINP_WIN_KEYBOARD_MOUSE_ONLY);
 		}
 
 		/// <summary>
@@ -130,7 +130,7 @@ namespace GorgonLibrary.Input.WinForms
 		/// <exception cref="System.ArgumentNullException">The <paramRef name="joystickInfo"/> is NULL.</exception>
 		protected override GorgonJoystick CreateJoystickImpl(System.Windows.Forms.Control window, GorgonInputDeviceInfo joystickInfo)
 		{
-            throw new NotImplementedException(Resources.GORINP_WIN_KEYBOARD_MOUSE_ONLY);
+            throw new NotSupportedException(Resources.GORINP_WIN_KEYBOARD_MOUSE_ONLY);
 		}
 		#endregion
 

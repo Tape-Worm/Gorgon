@@ -50,7 +50,7 @@ namespace GorgonLibrary.Examples
 		/// </summary>
 		/// <param name="sender">The source of the event.</param>
 		/// <param name="e">The <see cref="KeyEventArgs" /> instance containing the event data.</param>
-		/// <exception cref="System.NotImplementedException"></exception>
+		/// <exception cref="System.NotSupportedException"></exception>
 		private void MainForm_KeyDown(object sender, KeyEventArgs e)
 		{
 			if (e.KeyCode == Keys.Space)

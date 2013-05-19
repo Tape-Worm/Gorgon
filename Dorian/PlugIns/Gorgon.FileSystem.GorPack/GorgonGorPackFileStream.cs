@@ -383,15 +383,6 @@ namespace GorgonLibrary.IO.GorPack
 		{
 			throw new NotSupportedException();
 		}
-
-		/// <summary>
-		/// Closes the current stream and releases any resources (such as sockets and file handles) associated with the current stream.
-		/// </summary>
-		public override void Close()
-		{
-			Dispose(true);
-			GC.SuppressFinalize(this);
-		}
 		#endregion
 
 		#region Constructor/Destructor.

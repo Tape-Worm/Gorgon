@@ -405,7 +405,7 @@ namespace GorgonLibrary.Graphics
 			/// <param name="arrayIndex">Index of the array.</param>
 			void ICollection<KeyValuePair<char, GorgonGlyph>>.CopyTo(KeyValuePair<char, GorgonGlyph>[] array, int arrayIndex)
 			{
-				throw new NotImplementedException();
+				throw new NotSupportedException();
 			}
 
 			/// <summary>

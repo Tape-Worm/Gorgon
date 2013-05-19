@@ -28,7 +28,7 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <Prefer32Bit>false</Prefer32Bit>
     <UseVSHostingProcess>false</UseVSHostingProcess>
-    <CodeAnalysisRuleSet>NoLiteralBugFix.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSet>..\NoLiteralBugFix.ruleset</CodeAnalysisRuleSet>
     <RunCodeAnalysis>true</RunCodeAnalysis>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
@@ -123,12 +123,14 @@
     <Compile Include="Resource\GorgonShaderView.cs" />
     <Compile Include="Shaders\GorgonEffect.cs" />
     <Compile Include="Shaders\GorgonPixelShader.cs" />
+    <Compile Include="Shaders\GorgonPixelShaderState.cs" />
     <Compile Include="Shaders\GorgonShader.cs" />
     <Compile Include="Shaders\GorgonShaderBinding.cs" />
     <Compile Include="Shaders\GorgonShaderInclude.cs" />
     <Compile Include="Shaders\GorgonShaderIncludeCollection.cs" />
     <Compile Include="Shaders\GorgonShaderState.cs" />
     <Compile Include="Shaders\GorgonVertexShader.cs" />
+    <Compile Include="Shaders\GorgonVertexShaderState.cs" />
     <Compile Include="States\GorgonBlendState.cs" />
     <Compile Include="States\GorgonDepthStencilState.cs" />
     <Compile Include="States\GorgonRasterizerState.cs" />
@@ -175,7 +177,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Gorgon2.ico" />
-    <None Include="NoLiteralBugFix.ruleset" />
     <None Include="Resources\Gorgon_2.x_Logo_Small.png" />
   </ItemGroup>
   <ItemGroup>

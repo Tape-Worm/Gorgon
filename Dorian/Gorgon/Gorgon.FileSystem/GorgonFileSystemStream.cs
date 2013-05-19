@@ -277,15 +277,6 @@ namespace GorgonLibrary.IO
 		}
 
 		/// <summary>
-		/// Closes the current stream and releases any resources (such as sockets and file handles) associated with the current stream.
-		/// </summary>
-		public override void Close()
-		{
-			Dispose(true);
-			GC.SuppressFinalize(this);
-		}
-
-		/// <summary>
 		/// Waits for the pending asynchronous read to complete.
 		/// </summary>
 		/// <param name="asyncResult">The reference to the pending asynchronous request to finish.</param>

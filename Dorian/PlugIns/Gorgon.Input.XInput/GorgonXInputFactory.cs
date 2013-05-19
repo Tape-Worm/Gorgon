@@ -102,7 +102,7 @@ namespace GorgonLibrary.Input.XInput
 		/// <returns></returns>
 		protected override GorgonCustomHID CreateCustomHIDImpl(System.Windows.Forms.Control window, GorgonInputDeviceInfo hidName)
 		{
-			throw new NotImplementedException(Resources.GORINP_XINP_ONLY_360_CONTROLLERS);
+			throw new NotSupportedException(Resources.GORINP_XINP_ONLY_360_CONTROLLERS);
 		}
 
 		/// <summary>
@@ -113,7 +113,7 @@ namespace GorgonLibrary.Input.XInput
 		/// <returns></returns>
 		protected override GorgonKeyboard CreateKeyboardImpl(System.Windows.Forms.Control window, GorgonInputDeviceInfo keyboardName)
 		{
-            throw new NotImplementedException(Resources.GORINP_XINP_ONLY_360_CONTROLLERS);
+            throw new NotSupportedException(Resources.GORINP_XINP_ONLY_360_CONTROLLERS);
 		}
 
 		/// <summary>
@@ -124,7 +124,7 @@ namespace GorgonLibrary.Input.XInput
 		/// <returns></returns>
 		protected override GorgonPointingDevice CreatePointingDeviceImpl(System.Windows.Forms.Control window, GorgonInputDeviceInfo pointingDeviceName)
 		{
-            throw new NotImplementedException(Resources.GORINP_XINP_ONLY_360_CONTROLLERS);
+            throw new NotSupportedException(Resources.GORINP_XINP_ONLY_360_CONTROLLERS);
 		}
 
 		/// <summary>

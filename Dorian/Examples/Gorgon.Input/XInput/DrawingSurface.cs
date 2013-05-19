@@ -307,7 +307,7 @@ namespace GorgonLibrary.Examples
 		/// <summary>
 		/// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
 		/// </summary>
-		/// <exception cref="System.NotImplementedException"></exception>
+		/// <exception cref="System.NotSupportedException"></exception>
 		public void Dispose()
 		{
 			Dispose(true);

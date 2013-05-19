@@ -53,7 +53,7 @@ namespace GorgonLibrary.Renderers
 		/// </summary>
 		protected internal override PrimitiveType PrimitiveType
 		{
-			get { throw new NotImplementedException(); }
+			get { throw new NotSupportedException(); }
 		}
 
 		/// <summary>
@@ -61,7 +61,7 @@ namespace GorgonLibrary.Renderers
 		/// </summary>
 		protected internal override int IndexCount
 		{
-			get { throw new NotImplementedException(); }
+			get { throw new NotSupportedException(); }
 		}
 
 		/// <summary>
@@ -153,7 +153,7 @@ namespace GorgonLibrary.Renderers
 		/// </summary>
 		protected override void UpdateTextureCoordinates()
 		{
-			throw new NotImplementedException();
+			throw new NotSupportedException();
 		}
 
 		/// <summary>
@@ -161,7 +161,7 @@ namespace GorgonLibrary.Renderers
 		/// </summary>
 		protected override void UpdateVertices()
 		{
-			throw new NotImplementedException();
+			throw new NotSupportedException();
 		}
 
 		/// <summary>
