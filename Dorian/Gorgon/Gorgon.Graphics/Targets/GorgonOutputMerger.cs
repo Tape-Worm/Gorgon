@@ -406,7 +406,7 @@ namespace GorgonLibrary.Graphics
 			/// <exception cref="T:System.ArgumentOutOfRangeException">index is not a valid index in the <see cref="T:System.Collections.Generic.IList`1"></see>.</exception>
 			void IList<GorgonRenderTarget>.Insert(int index, GorgonRenderTarget item)
 			{
-				throw new NotImplementedException();
+				throw new NotSupportedException();
 			}
 
 			/// <summary>
@@ -418,7 +418,7 @@ namespace GorgonLibrary.Graphics
 			/// <exception cref="T:System.ArgumentOutOfRangeException">index is not a valid index in the <see cref="T:System.Collections.Generic.IList`1"></see>.</exception>
 			void IList<GorgonRenderTarget>.RemoveAt(int index)
 			{
-				throw new NotImplementedException();
+				throw new NotSupportedException();
 			}
 			#endregion
 
@@ -430,7 +430,7 @@ namespace GorgonLibrary.Graphics
 			/// <exception cref="T:System.NotSupportedException">The <see cref="T:System.Collections.Generic.ICollection`1"></see> is read-only.</exception>
 			void ICollection<GorgonRenderTarget>.Add(GorgonRenderTarget item)
 			{
-				throw new NotImplementedException();
+				throw new NotSupportedException();
 			}
 
 			/// <summary>
@@ -439,7 +439,7 @@ namespace GorgonLibrary.Graphics
 			/// <exception cref="T:System.NotSupportedException">The <see cref="T:System.Collections.Generic.ICollection`1"></see> is read-only. </exception>
 			void ICollection<GorgonRenderTarget>.Clear()
 			{
-				throw new NotImplementedException();
+				throw new NotSupportedException();
 			}
 
 			/// <summary>
@@ -486,7 +486,7 @@ namespace GorgonLibrary.Graphics
 			/// <exception cref="T:System.NotSupportedException">The <see cref="T:System.Collections.Generic.ICollection`1"></see> is read-only.</exception>
 			bool ICollection<GorgonRenderTarget>.Remove(GorgonRenderTarget item)
 			{
-				throw new NotImplementedException();
+				throw new NotSupportedException();
 			}
 			#endregion
 

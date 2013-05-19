@@ -117,7 +117,6 @@ namespace GorgonLibrary.Editor
 		/// </summary>
 		/// <param name="sender">The source of the event.</param>
 		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-		/// <exception cref="System.NotImplementedException"></exception>
 		private void checkPulse_Click(object sender, EventArgs e)
 		{
 			Program.Settings.AnimateStartPage = _container.checkPulse.Checked;

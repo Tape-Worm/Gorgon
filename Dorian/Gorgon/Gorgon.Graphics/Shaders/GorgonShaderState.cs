@@ -31,7 +31,6 @@ using System.Linq;
 using D3D = SharpDX.Direct3D11;
 using GorgonLibrary.Diagnostics;
 using GorgonLibrary.Math;
-using GorgonLibrary.Graphics.Properties;
 
 namespace GorgonLibrary.Graphics
 {
@@ -60,8 +59,8 @@ namespace GorgonLibrary.Graphics
 			/// Property to set or return the current state.
 			/// </summary>
 			/// <remarks>This property is not used for texture samplers and will throw an exception if used.</remarks>
-			/// <exception cref="System.NotImplementedException">Thrown when this property is accessed because it is not implemented for texture samplers.</exception>
-			[System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+			/// <exception cref="System.NotSupportedException">Thrown when this property is accessed because it is not implemented for texture samplers.</exception>
+			[EditorBrowsable(EditorBrowsableState.Never)]
 			public override GorgonTextureSamplerStates States
 			{
 				get
@@ -70,7 +69,6 @@ namespace GorgonLibrary.Graphics
 				}
 				set
 				{
-					throw new NotImplementedException();
 				}
 			}
 			#endregion
@@ -223,7 +221,7 @@ namespace GorgonLibrary.Graphics
 				GorgonDebug.AssertNull<IEnumerable<GorgonTextureSamplerStates>>(states, "states");
 #if DEBUG
 				if ((slot < 0) || (slot >= Count) || ((slot + states.Count()) >= Count))
-					throw new ArgumentOutOfRangeException("Cannot have more than " + Count.ToString() + " slots occupied.");
+					throw new ArgumentOutOfRangeException("Cannot have more than " + Count + " slots occupied.");
 #endif
 
 				count = states.Count();
@@ -232,19 +230,21 @@ namespace GorgonLibrary.Graphics
 					int stateIndex = i + slot;
 					var state = states.ElementAtOrDefault(i);
 
-					if (!_states[stateIndex].Equals(ref state))
+					if (_states[stateIndex].Equals(ref state))
 					{
-						D3D.DeviceChild d3dState = GetFromCache(ref state);
-
-						if (d3dState == null)
-						{
-							d3dState = GetStateObject(ref state);
-							StoreInCache(ref state, d3dState);
-						}
-
-						_states[stateIndex] = state;
-						_D3DStates[i] = (D3D.SamplerState)d3dState;
+						continue;
 					}
+
+					D3D.DeviceChild D3DState = GetFromCache(ref state);
+
+					if (D3DState == null)
+					{
+						D3DState = GetStateObject(ref state);
+						StoreInCache(ref state, D3DState);
+					}
+
+					_states[stateIndex] = state;
+					_D3DStates[i] = (D3D.SamplerState)D3DState;
 				}
 
 				_shader.SetSamplers(slot, count, _D3DStates);
@@ -292,21 +292,23 @@ namespace GorgonLibrary.Graphics
 					return _states[index];
 				}
 				set
-				{					
-					if (!_states[index].Equals(ref value))
+				{
+					if (_states[index].Equals(ref value))
 					{
-						D3D.DeviceChild state = GetFromCache(ref value);
-
-						if (state == null)
-						{
-							state = GetStateObject(ref value);
-							StoreInCache(ref value, state);
-						}
-
-						_states[index] = value;
-						_D3DStates[0] = (D3D.SamplerState)state;
-						_shader.SetSamplers(index, 1, _D3DStates);
+						return;
 					}
+
+					D3D.DeviceChild state = GetFromCache(ref value);
+
+					if (state == null)
+					{
+						state = GetStateObject(ref value);
+						StoreInCache(ref value, state);
+					}
+
+					_states[index] = value;
+					_D3DStates[0] = (D3D.SamplerState)state;
+					_shader.SetSamplers(index, 1, _D3DStates);
 				}
 			}
 			#endregion
@@ -333,22 +335,24 @@ namespace GorgonLibrary.Graphics
 			}
 
 			/// <summary>
-			/// Inserts the specified index.
+			/// Inserts an item to the <see cref="T:System.Collections.Generic.IList`1" /> at the specified index.
 			/// </summary>
-			/// <param name="index">The index.</param>
-			/// <param name="item">The item.</param>
+			/// <param name="index">The zero-based index at which <paramref name="item" /> should be inserted.</param>
+			/// <param name="item">The object to insert into the <see cref="T:System.Collections.Generic.IList`1" />.</param>
+			/// <exception cref="System.NotSupportedException">This method is not used.</exception>
 			void IList<GorgonTextureSamplerStates>.Insert(int index, GorgonTextureSamplerStates item)
 			{
-				throw new NotImplementedException();
+				throw new NotSupportedException();
 			}
 
 			/// <summary>
-			/// Removes at.
+			/// Removes the <see cref="T:System.Collections.Generic.IList`1" /> item at the specified index.
 			/// </summary>
-			/// <param name="index">The index.</param>
+			/// <param name="index">The zero-based index of the item to remove.</param>
+			/// <exception cref="System.NotSupportedException">This method is not used.</exception>
 			void IList<GorgonTextureSamplerStates>.RemoveAt(int index)
 			{
-				throw new NotImplementedException();
+				throw new NotSupportedException();
 			}
 			#endregion
 			#endregion
@@ -380,20 +384,22 @@ namespace GorgonLibrary.Graphics
 
 			#region Methods.
 			/// <summary>
-			/// Adds the specified item.
+			/// Adds an item to the <see cref="T:System.Collections.Generic.ICollection`1" />.
 			/// </summary>
-			/// <param name="item">The item.</param>
+			/// <param name="item">The object to add to the <see cref="T:System.Collections.Generic.ICollection`1" />.</param>
+			/// <exception cref="System.NotSupportedException">This method is not used.</exception>
 			void ICollection<GorgonTextureSamplerStates>.Add(GorgonTextureSamplerStates item)
 			{
-				throw new NotImplementedException();
+				throw new NotSupportedException();
 			}
 
 			/// <summary>
-			/// Clears this instance.
+			/// Removes all items from the <see cref="T:System.Collections.Generic.ICollection`1" />.
 			/// </summary>
+			/// <exception cref="System.NotSupportedException">This method is not used.</exception>
 			void ICollection<GorgonTextureSamplerStates>.Clear()
 			{
-				throw new NotImplementedException();
+				throw new NotSupportedException();
 			}
 
 			/// <summary>
@@ -417,13 +423,16 @@ namespace GorgonLibrary.Graphics
 			}
 
 			/// <summary>
-			/// Removes the specified item.
+			/// Removes the first occurrence of a specific object from the <see cref="T:System.Collections.Generic.ICollection`1" />.
 			/// </summary>
-			/// <param name="item">The item.</param>
-			/// <returns></returns>
+			/// <param name="item">The object to remove from the <see cref="T:System.Collections.Generic.ICollection`1" />.</param>
+			/// <returns>
+			/// true if <paramref name="item" /> was successfully removed from the <see cref="T:System.Collections.Generic.ICollection`1" />; otherwise, false. This method also returns false if <paramref name="item" /> is not found in the original <see cref="T:System.Collections.Generic.ICollection`1" />.
+			/// </returns>
+			/// <exception cref="System.NotSupportedException">This method is not used.</exception>
 			bool ICollection<GorgonTextureSamplerStates>.Remove(GorgonTextureSamplerStates item)
 			{
-				throw new NotImplementedException();
+				throw new NotSupportedException();
 			}
 			#endregion
 			#endregion
@@ -435,8 +444,12 @@ namespace GorgonLibrary.Graphics
 			/// <returns>The enumerator for the sampler states.</returns>
 			public IEnumerator<GorgonTextureSamplerStates> GetEnumerator()
 			{
+				// ReSharper disable LoopCanBeConvertedToQuery
 				foreach (var item in _states)
+				{
 					yield return item;
+				}
+				// ReSharper restore LoopCanBeConvertedToQuery
 			}
 			#endregion
 
@@ -447,7 +460,7 @@ namespace GorgonLibrary.Graphics
 			/// <returns></returns>
 			System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
 			{
-				return ((System.Collections.IEnumerable)_states).GetEnumerator();
+				return _states.GetEnumerator();
 			}
 			#endregion
 		}
@@ -459,7 +472,7 @@ namespace GorgonLibrary.Graphics
 			: IList<GorgonConstantBuffer>
 		{
 			#region Variables.
-			private readonly IList<GorgonConstantBuffer> _buffers;
+			private readonly GorgonConstantBuffer[] _buffers;
 			private readonly GorgonShaderState<T> _shader;
 			private readonly D3D.Buffer[] _D3DBufferArray;
 			#endregion
@@ -472,7 +485,7 @@ namespace GorgonLibrary.Graphics
 			{
 				get
 				{
-					return _buffers.Count;
+					return _buffers.Length;
 				}
 			}
 
@@ -514,10 +527,12 @@ namespace GorgonLibrary.Graphics
 			/// <param name="buffer">Buffer to unbind.</param>
 			internal void Unbind(GorgonConstantBuffer buffer)
 			{
-				for (int i = 0; i < _buffers.Count - 1; i++)
+				for (int i = 0; i < _buffers.Length; i++)
 				{
 					if (_buffers[i] == buffer)
+					{
 						_buffers[i] = null;
+					}
 				}
 			}
 
@@ -536,8 +551,8 @@ namespace GorgonLibrary.Graphics
 
 				GorgonDebug.AssertNull<IEnumerable<GorgonConstantBuffer>>(buffers, "buffers");
 #if DEBUG
-				if ((slot < 0) || (slot >= _buffers.Count) || ((slot + buffers.Count()) >= _buffers.Count))
-					throw new ArgumentOutOfRangeException("Cannot have more than " + _buffers.Count.ToString() + " slots occupied.");
+				if ((slot < 0) || (slot >= _buffers.Length) || ((slot + buffers.Count()) >= _buffers.Length))
+					throw new ArgumentOutOfRangeException("Cannot have more than " + _buffers.Length + " slots occupied.");
 #endif
 
 				count = buffers.Count();
@@ -565,7 +580,7 @@ namespace GorgonLibrary.Graphics
 			{
 				_buffers = new GorgonConstantBuffer[D3D.CommonShaderStage.ConstantBufferApiSlotCount];
 				_shader = shader;
-				_D3DBufferArray = new D3D.Buffer[_buffers.Count];
+				_D3DBufferArray = new D3D.Buffer[_buffers.Length];
 			}
 			#endregion
 
@@ -578,27 +593,29 @@ namespace GorgonLibrary.Graphics
 			public int IndexOf(GorgonConstantBuffer item)
 			{
 				GorgonDebug.AssertNull<GorgonConstantBuffer>(item, "item");
-
-				return _buffers.IndexOf(item);
+				
+				return Array.IndexOf(_buffers, item);
 			}
 
 			/// <summary>
-			/// Inserts the specified index.
+			/// Inserts an item to the <see cref="T:System.Collections.Generic.IList`1" /> at the specified index.
 			/// </summary>
-			/// <param name="index">The index.</param>
-			/// <param name="item">The item.</param>
+			/// <param name="index">The zero-based index at which <paramref name="item" /> should be inserted.</param>
+			/// <param name="item">The object to insert into the <see cref="T:System.Collections.Generic.IList`1" />.</param>
+			/// <exception cref="System.NotSupportedException">This method is not used.</exception>
 			void IList<GorgonConstantBuffer>.Insert(int index, GorgonConstantBuffer item)
 			{
-				throw new NotImplementedException();
+				throw new NotSupportedException();
 			}
 
 			/// <summary>
-			/// Removes at.
+			/// Removes the <see cref="T:System.Collections.Generic.IList`1" /> item at the specified index.
 			/// </summary>
-			/// <param name="index">The index.</param>
+			/// <param name="index">The zero-based index of the item to remove.</param>
+			/// <exception cref="System.NotSupportedException">This method is not used.</exception>
 			void IList<GorgonConstantBuffer>.RemoveAt(int index)
 			{
-				throw new NotImplementedException();
+				throw new NotSupportedException();
 			}
 			#endregion
 
@@ -618,20 +635,22 @@ namespace GorgonLibrary.Graphics
 
 			#region Methods.
 			/// <summary>
-			/// Adds the specified item.
+			/// Adds an item to the <see cref="T:System.Collections.Generic.ICollection`1" />.
 			/// </summary>
-			/// <param name="item">The item.</param>
+			/// <param name="item">The object to add to the <see cref="T:System.Collections.Generic.ICollection`1" />.</param>
+			/// <exception cref="System.NotSupportedException">This method is not used.</exception>
 			void ICollection<GorgonConstantBuffer>.Add(GorgonConstantBuffer item)
 			{
-				throw new NotImplementedException();
+				throw new NotSupportedException();
 			}
 
 			/// <summary>
-			/// Clears this instance.
+			/// Removes all items from the <see cref="T:System.Collections.Generic.ICollection`1" />.
 			/// </summary>
+			/// <exception cref="System.NotSupportedException">This method is not used.</exception>
 			void ICollection<GorgonConstantBuffer>.Clear()
 			{
-				throw new NotImplementedException();
+				throw new NotSupportedException();
 			}
 
 			/// <summary>
@@ -655,13 +674,16 @@ namespace GorgonLibrary.Graphics
 			}
 
 			/// <summary>
-			/// Removes the specified item.
+			/// Removes the first occurrence of a specific object from the <see cref="T:System.Collections.Generic.ICollection`1" />.
 			/// </summary>
-			/// <param name="item">The item.</param>
-			/// <returns></returns>
+			/// <param name="item">The object to remove from the <see cref="T:System.Collections.Generic.ICollection`1" />.</param>
+			/// <returns>
+			/// true if <paramref name="item" /> was successfully removed from the <see cref="T:System.Collections.Generic.ICollection`1" />; otherwise, false. This method also returns false if <paramref name="item" /> is not found in the original <see cref="T:System.Collections.Generic.ICollection`1" />.
+			/// </returns>
+			/// <exception cref="System.NotSupportedException">This method is not used.</exception>
 			bool ICollection<GorgonConstantBuffer>.Remove(GorgonConstantBuffer item)
 			{
-				throw new NotImplementedException();
+				throw new NotSupportedException();
 			}
 			#endregion
 			#endregion
@@ -673,8 +695,12 @@ namespace GorgonLibrary.Graphics
 			/// <returns>The enumerator for the list.</returns>
 			public IEnumerator<GorgonConstantBuffer> GetEnumerator()
 			{
+				// ReSharper disable LoopCanBeConvertedToQuery
 				foreach (var item in _buffers)
+				{
 					yield return item;
+				}
+				// ReSharper restore LoopCanBeConvertedToQuery
 			}
 
 			#endregion
@@ -688,7 +714,7 @@ namespace GorgonLibrary.Graphics
 			/// </returns>
 			System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
 			{
-				return GetEnumerator();
+				return _buffers.GetEnumerator();
 			}
 			#endregion
 		}			
@@ -703,7 +729,7 @@ namespace GorgonLibrary.Graphics
 		{
 			#region Variables.
 			private readonly D3D.ShaderResourceView[] _views;			// Shader resource views.
-			private readonly IList<GorgonShaderView> _resources;		// Shader resources.
+			private readonly GorgonShaderView[] _resources;				// Shader resources.
 			private readonly GorgonShaderState<T> _shader;				// Shader that owns this interface.
 			#endregion
 
@@ -769,11 +795,13 @@ namespace GorgonLibrary.Graphics
 			{
 				int index = IndexOf(resourceView);
 
-				if (index > -1)
+				if (index <= -1)
 				{
-                    SetView(index, null);
-                    SetView(index, resourceView);
+					return;
 				}
+
+				SetView(index, null);
+				SetView(index, resourceView);
 			}
 
 			/// <summary>
@@ -820,8 +848,8 @@ namespace GorgonLibrary.Graphics
 
 				GorgonDebug.AssertNull<IEnumerable<GorgonShaderView>>(resourceViews, "resourceViews");
 #if DEBUG
-				if ((slot < 0) || (slot >= _resources.Count) || ((slot + resourceViews.Count()) >= _resources.Count))
-					throw new ArgumentOutOfRangeException("Cannot have more than " + _resources.Count.ToString() + " slots occupied.");
+				if ((slot < 0) || (slot >= _resources.Length) || ((slot + resourceViews.Count()) >= _resources.Length))
+					throw new ArgumentOutOfRangeException("Cannot have more than " + _resources.Length + " slots occupied.");
 #endif
 
 				count = resourceViews.Count();
@@ -832,11 +860,11 @@ namespace GorgonLibrary.Graphics
 #if DEBUG
                     if (buffer != null)
                     {
-                        int bufferIndex = _resources.IndexOf(buffer);
+                        int bufferIndex = Array.IndexOf(_resources, buffer);
 
                         if ((bufferIndex != i + slot) && (bufferIndex != -1) && (_views[bufferIndex] == buffer.D3DView))
                         {
-                            throw new ArgumentException("The resource view at index [" + i.ToString() + "] is already bound to a shader with the same resource view.");
+                            throw new ArgumentException("The resource view at index [" + i + "] is already bound to a shader with the same resource view.");
                         }
                     }
 #endif
@@ -919,7 +947,7 @@ namespace GorgonLibrary.Graphics
             public TX GetTexture<TX>(int index)
                 where TX : GorgonTexture
             {
-                GorgonDebug.AssertParamRange(index, 0, _resources.Count, "index");
+                GorgonDebug.AssertParamRange(index, 0, _resources.Length, "index");
 
                 var resourceView = _resources[index];
                 
@@ -948,19 +976,12 @@ namespace GorgonLibrary.Graphics
             public void SetTexture<TX>(int index, TX texture)
                 where TX : GorgonTexture
             {
-                GorgonDebug.AssertParamRange(index, 0, _resources.Count, "index");
+	            GorgonDebug.AssertParamRange(index, 0, _resources.Length, "index");
 
-                if (texture != null)
-                {
-                    SetView(index, texture.DefaultShaderView);
-                }
-                else
-                {
-                    SetView(index, null);
-                }
+	            SetView(index, texture != null ? texture.DefaultShaderView : null);
             }
 
-            /// <summary>
+			/// <summary>
             /// Function to return the shader buffer resource assigned to the view at the specified index.
             /// </summary>
             /// <typeparam name="TB">Type of shader buffer.</typeparam>
@@ -971,7 +992,7 @@ namespace GorgonLibrary.Graphics
             public TB GetShaderBuffer<TB>(int index)
                 where TB : GorgonShaderBuffer
             {
-                GorgonDebug.AssertParamRange(index, 0, _resources.Count, "index");
+                GorgonDebug.AssertParamRange(index, 0, _resources.Length, "index");
 
                 var resourceView = _resources[index];
 #if DEBUG
@@ -999,17 +1020,11 @@ namespace GorgonLibrary.Graphics
             public void SetShaderBuffer<TB>(int index, TB buffer)
                 where TB : GorgonShaderBuffer
             {
-                GorgonDebug.AssertParamRange(index, 0, _resources.Count, "index");
+	            GorgonDebug.AssertParamRange(index, 0, _resources.Length, "index");
 
-                if (buffer != null)
-                {
-                    SetView(index, buffer.DefaultShaderView);
-                }
-                else
-                {
-                    SetView(index, null);
-                }
+	            SetView(index, buffer != null ? buffer.DefaultShaderView : null);
             }
+
 			#endregion
 
 			#region Constructor/Destructor.
@@ -1063,26 +1078,28 @@ namespace GorgonLibrary.Graphics
 			{
 				GorgonDebug.AssertNull<GorgonShaderView>(item, "item");
 
-				return _resources.IndexOf(item);
+				return Array.IndexOf(_resources, item);
 			}
 
 			/// <summary>
-			/// Inserts the specified index.
+			/// Inserts an item to the <see cref="T:System.Collections.Generic.IList`1" /> at the specified index.
 			/// </summary>
-			/// <param name="index">The index.</param>
-			/// <param name="item">The item.</param>
+			/// <param name="index">The zero-based index at which <paramref name="item" /> should be inserted.</param>
+			/// <param name="item">The object to insert into the <see cref="T:System.Collections.Generic.IList`1" />.</param>
+			/// <exception cref="System.NotSupportedException">This method is not used.</exception>
 			void IList<GorgonShaderView>.Insert(int index, GorgonShaderView item)
 			{
-				throw new NotImplementedException();
+				throw new NotSupportedException();
 			}
 
 			/// <summary>
-			/// Removes at.
+			/// Removes the <see cref="T:System.Collections.Generic.IList`1" /> item at the specified index.
 			/// </summary>
-			/// <param name="index">The index.</param>
+			/// <param name="index">The zero-based index of the item to remove.</param>
+			/// <exception cref="System.NotSupportedException">This method is not used.</exception>
 			void IList<GorgonShaderView>.RemoveAt(int index)
 			{
-				throw new NotImplementedException();
+				throw new NotSupportedException();
 			}
 			#endregion
 			#endregion
@@ -1096,7 +1113,7 @@ namespace GorgonLibrary.Graphics
 			{
 				get
 				{
-					return _resources.Count;
+					return _resources.Length;
 				}
 			}
 
@@ -1114,20 +1131,22 @@ namespace GorgonLibrary.Graphics
 
 			#region Methods.
 			/// <summary>
-			/// Adds the specified item.
+			/// Adds an item to the <see cref="T:System.Collections.Generic.ICollection`1" />.
 			/// </summary>
-			/// <param name="item">The item.</param>
+			/// <param name="item">The object to add to the <see cref="T:System.Collections.Generic.ICollection`1" />.</param>
+			/// <exception cref="System.NotSupportedException">This method is not used.</exception>
 			void ICollection<GorgonShaderView>.Add(GorgonShaderView item)
 			{
-				throw new NotImplementedException();
+				throw new NotSupportedException();
 			}
 
 			/// <summary>
-			/// Clears this instance.
+			/// Removes all items from the <see cref="T:System.Collections.Generic.ICollection`1" />.
 			/// </summary>
+			/// <exception cref="System.NotSupportedException">This method is not used.</exception>
 			void ICollection<GorgonShaderView>.Clear()
 			{
-				throw new NotImplementedException();
+				throw new NotSupportedException();
 			}
 
 			/// <summary>
@@ -1159,7 +1178,7 @@ namespace GorgonLibrary.Graphics
                 }
 #endif
 
-			    int count = array.Length.Min(_resources.Count);
+			    int count = array.Length.Min(_resources.Length);
 
 			    for (int i = 0; i < count; i++)
 			    {
@@ -1168,13 +1187,16 @@ namespace GorgonLibrary.Graphics
 			}
 
 			/// <summary>
-			/// Removes the specified item.
+			/// Removes the first occurrence of a specific object from the <see cref="T:System.Collections.Generic.ICollection`1" />.
 			/// </summary>
-			/// <param name="item">The item.</param>
-			/// <returns></returns>
+			/// <param name="item">The object to remove from the <see cref="T:System.Collections.Generic.ICollection`1" />.</param>
+			/// <returns>
+			/// true if <paramref name="item" /> was successfully removed from the <see cref="T:System.Collections.Generic.ICollection`1" />; otherwise, false. This method also returns false if <paramref name="item" /> is not found in the original <see cref="T:System.Collections.Generic.ICollection`1" />.
+			/// </returns>
+			/// <exception cref="System.NotSupportedException">This method is not used.</exception>
 			bool ICollection<GorgonShaderView>.Remove(GorgonShaderView item)
 			{
-				throw new NotImplementedException();
+				throw new NotSupportedException();
 			}
 			#endregion
 			#endregion
@@ -1186,8 +1208,12 @@ namespace GorgonLibrary.Graphics
 			/// <returns>The enumerator for the list.</returns>
 			public IEnumerator<GorgonShaderView> GetEnumerator()
 			{
+				// ReSharper disable LoopCanBeConvertedToQuery
 				foreach (var resource in _resources)
+				{
 					yield return resource;
+				}
+				// ReSharper restore LoopCanBeConvertedToQuery
 			}
 			#endregion
 
@@ -1200,7 +1226,7 @@ namespace GorgonLibrary.Graphics
 			/// </returns>
 			System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
 			{
-				return GetEnumerator();
+				return _resources.GetEnumerator();
 			}
 			#endregion
 		}
@@ -1232,11 +1258,13 @@ namespace GorgonLibrary.Graphics
 			}
 			set
 			{
-				if (_current != value)
+				if (_current == value)
 				{
-					_current = value;
-					SetCurrent();
+					return;
 				}
+
+				_current = value;
+				SetCurrent();
 			}
 		}
 
@@ -1331,162 +1359,6 @@ namespace GorgonLibrary.Graphics
 			ConstantBuffers = new ShaderConstantBuffers(this);
 			_samplers = new TextureSamplerState(this);
 			Resources = new ShaderResourceViews(this);
-		}
-		#endregion
-	}
-
-	/// <summary>
-	/// Pixel shader states.
-	/// </summary>
-	public class GorgonPixelShaderState
-		: GorgonShaderState<GorgonPixelShader>
-	{
-		#region Methods.
-		/// <summary>
-		/// Property to set or return the current shader.
-		/// </summary>
-		protected override void SetCurrent()
-		{
-			if (Current == null)
-				Graphics.Context.PixelShader.Set(null);
-			else
-				Graphics.Context.PixelShader.Set(Current.D3DShader);
-		}
-
-		/// <summary>
-		/// Function to set resources for the shader.
-		/// </summary>
-		/// <param name="slot">Slot to start at.</param>
-		/// <param name="count"></param>
-		/// <param name="resources">Resources to update.</param>
-		protected override void SetResources(int slot, int count, D3D.ShaderResourceView[] resources)
-		{
-			if (count == 1)
-				Graphics.Context.PixelShader.SetShaderResource(slot, resources[0]);
-			else
-				Graphics.Context.PixelShader.SetShaderResources(slot, count, resources);
-		}
-
-		/// <summary>
-		/// Function to set the texture samplers for a shader.
-		/// </summary>
-		/// <param name="slot">Slot to start at.</param>
-		/// <param name="count"></param>
-		/// <param name="samplers">Samplers to update.</param>
-		protected override void SetSamplers(int slot, int count, D3D.SamplerState[] samplers)
-		{
-			if (count == 1)
-				Graphics.Context.PixelShader.SetSampler(slot, samplers[0]);
-			else
-				Graphics.Context.PixelShader.SetSamplers(slot, count, samplers);
-		}
-
-		/// <summary>
-		/// Function to set constant buffers for the shader.
-		/// </summary>
-		/// <param name="slot">Slot to start at.</param>
-		/// <param name="count"></param>
-		/// <param name="buffers">Constant buffers to update.</param>
-		protected override void SetConstantBuffers(int slot, int count, D3D.Buffer[] buffers)
-		{
-			if (count == 1)
-				Graphics.Context.PixelShader.SetConstantBuffer(slot, buffers[0]);
-			else
-				Graphics.Context.PixelShader.SetConstantBuffers(slot, count, buffers);
-		}
-		#endregion
-
-		#region Constructor/Destructor.
-		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonPixelShaderState"/> class.
-		/// </summary>
-		/// <param name="graphics">The graphics interface that owns this object.</param>
-		protected internal GorgonPixelShaderState(GorgonGraphics graphics)
-			: base(graphics)
-		{
-		}
-		#endregion
-	}
-
-	/// <summary>
-	/// Vertex shader states.
-	/// </summary>
-	public class GorgonVertexShaderState
-		: GorgonShaderState<GorgonVertexShader>
-	{
-		#region Methods.
-		/// <summary>
-		/// Property to set or return the current shader.
-		/// </summary>
-		protected override void SetCurrent()
-		{
-			if (Current == null)
-				Graphics.Context.VertexShader.Set(null);
-			else
-				Graphics.Context.VertexShader.Set(Current.D3DShader);
-		}
-
-		/// <summary>
-		/// Function to set resources for the shader.
-		/// </summary>
-		/// <param name="slot">Slot to start at.</param>
-		/// <param name="count"></param>
-		/// <param name="resources">Resources to update.</param>
-		/// <exception cref="System.InvalidOperationException">Thrown when the current video device is a SM2_a_b device.</exception>
-		protected override void SetResources(int slot, int count, D3D.ShaderResourceView[] resources)
-		{
-#if DEBUG
-			if (Graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM2_a_b)
-				throw new InvalidOperationException("Cannot set resources on a SM2_a_b device.");
-#endif
-			if (count == 1)
-				Graphics.Context.VertexShader.SetShaderResource(slot, resources[0]);
-			else
-				Graphics.Context.VertexShader.SetShaderResources(slot, count, resources);
-		}
-
-		/// <summary>
-		/// Function to set the texture samplers for a shader.
-		/// </summary>
-		/// <param name="slot">Slot to start at.</param>
-		/// <param name="count"></param>
-		/// <param name="samplers">Samplers to update.</param>
-		/// <exception cref="System.InvalidOperationException">Thrown when the current video device is a SM2_a_b device.</exception>
-		protected override void SetSamplers(int slot, int count, D3D.SamplerState[] samplers)
-		{
-#if DEBUG
-			if (Graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM2_a_b)
-				throw new InvalidOperationException("Cannot set resources on a SM2_a_b device.");
-#endif
-			if (count == 1)
-				Graphics.Context.VertexShader.SetSampler(slot, samplers[0]);
-			else
-				Graphics.Context.VertexShader.SetSamplers(slot, count, samplers);
-		}
-
-		/// <summary>
-		/// Function to set constant buffers for the shader.
-		/// </summary>
-		/// <param name="slot">Slot to start at.</param>
-		/// <param name="count"></param>
-		/// <param name="buffers">Constant buffers to update.</param>
-		protected override void SetConstantBuffers(int slot, int count, D3D.Buffer[] buffers)
-		{
-			if (count == 1)
-				Graphics.Context.VertexShader.SetConstantBuffer(slot, buffers[0]);
-			else
-				Graphics.Context.VertexShader.SetConstantBuffers(slot, count, buffers);
-		}
-		#endregion
-
-		#region Constructor/Destructor.
-		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonVertexShaderState"/> class.
-		/// </summary>
-		/// <param name="graphics">The graphics interface that owns this object.</param>
-		protected internal GorgonVertexShaderState(GorgonGraphics graphics)
-			: base(graphics)
-		{
 		}
 		#endregion
 	}

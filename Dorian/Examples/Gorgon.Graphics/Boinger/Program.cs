@@ -517,7 +517,7 @@ namespace GorgonLibrary.Graphics.Example
 		/// </summary>
 		/// <param name="sender">The source of the event.</param>
 		/// <param name="e">The <see cref="KeyEventArgs" /> instance containing the event data.</param>
-		/// <exception cref="System.NotImplementedException"></exception>
+		/// <exception cref="System.NotSupportedException"></exception>
 		static void _mainForm_KeyDown(object sender, KeyEventArgs e)
 		{
 			if ((e.Alt) && (e.KeyCode == Keys.Enter))
@@ -531,7 +531,7 @@ namespace GorgonLibrary.Graphics.Example
 		/// </summary>
 		/// <param name="sender">The source of the event.</param>
 		/// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
-		/// <exception cref="System.NotImplementedException"></exception>
+		/// <exception cref="System.NotSupportedException"></exception>
 		static void _swap_Resized(object sender, EventArgs e)
 		{
 			// Reset our projection matrix to match our new size.

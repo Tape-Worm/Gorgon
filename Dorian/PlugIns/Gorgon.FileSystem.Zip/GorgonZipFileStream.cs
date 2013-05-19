@@ -206,11 +206,13 @@ namespace GorgonLibrary.IO.Zip
 			        newPath = "/" + newPath;
 			    }
 
-			    if (String.Compare(newPath, filePath, StringComparison.OrdinalIgnoreCase) == 0)
-			    {
-			        _basePosition = _zipStream.Position;
-			        return;
-			    }
+				if (String.Compare(newPath, filePath, StringComparison.OrdinalIgnoreCase) != 0)
+				{
+					continue;
+				}
+
+				_basePosition = _zipStream.Position;
+				return;
 			}
 
 		    if (_zipStream != null)
@@ -427,15 +429,6 @@ namespace GorgonLibrary.IO.Zip
 		public override void WriteByte(byte value)
 		{
 			throw new NotSupportedException();
-		}
-
-		/// <summary>
-		/// Closes the current stream and releases any resources (such as sockets and file handles) associated with the current stream.
-		/// </summary>
-		public override void Close()
-		{
-			Dispose(true);
-			GC.SuppressFinalize(this);
 		}
 		#endregion
 
