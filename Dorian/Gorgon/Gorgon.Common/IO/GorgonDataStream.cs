@@ -68,7 +68,6 @@ namespace GorgonLibrary.IO
 		#region Variables.
         private static byte[] _buffer;                      // Buffer for read operations.
 		private bool _disposed;							    // Flag to indicate that the object was disposed.
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2006:UseSafeHandleToEncapsulateNativeResources")]
 		private IntPtr _data = IntPtr.Zero;					// Pointer to the data held by the stream.
 		private int _pointerPosition;						// Position in the buffer.
 		private int _length;								// Number of bytes in the buffer.
@@ -128,10 +127,6 @@ namespace GorgonLibrary.IO
 		/// When overridden in a derived class, gets the length in bytes of the stream.
 		/// </summary>
 		/// <returns>A long value representing the length of the stream in bytes.</returns>
-		///   
-		/// <exception cref="T:System.NotSupportedException">A class derived from Stream does not support seeking. </exception>
-		///   
-		/// <exception cref="T:System.ObjectDisposedException">Methods were called after the stream was closed. </exception>
 		public override long Length
 		{
 			get 
@@ -144,12 +139,6 @@ namespace GorgonLibrary.IO
 		/// When overridden in a derived class, gets or sets the position within the current stream.
 		/// </summary>
 		/// <returns>The current position within the stream.</returns>
-		///   
-		/// <exception cref="T:System.IO.IOException">An I/O error occurs. </exception>
-		///   
-		/// <exception cref="T:System.NotSupportedException">The stream does not support seeking. </exception>
-		///   
-		/// <exception cref="T:System.ObjectDisposedException">Methods were called after the stream was closed. </exception>
 		/// <exception cref="System.ArgumentOutOfRangeException">Thrown when the value is less than zero or greater than <see cref="System.Int32.MaxValue">Int32.MaxValue</see>.</exception>
 		public override long Position
 		{
@@ -451,11 +440,10 @@ namespace GorgonLibrary.IO
 	    /// <summary>
 	    /// When overridden in a derived class, clears all buffers for this stream and causes any buffered data to be written to the underlying device.
 	    /// </summary>
-	    /// <exception cref="NotImplementedException">This method is not implemented.</exception>
-	    /// <exception cref="T:System.IO.IOException">An I/O error occurs. </exception>
+	    /// <exception cref="NotSupportedException">This method is not implemented.</exception>
 	    public override void Flush()
 		{
-			throw new NotImplementedException();
+			throw new NotSupportedException();
 		}
 
 	    /// <summary>
@@ -467,19 +455,12 @@ namespace GorgonLibrary.IO
 	    /// <returns>
 	    /// The total number of bytes read into the buffer. This can be less than the number of bytes requested if that many bytes are not currently available, or zero (0) if the end of the stream has been reached.
 	    /// </returns>
-	    /// <exception cref="T:System.ArgumentException">The sum of <paramref name="offset"/> and <paramref name="count"/> is larger than the buffer length. </exception>
-	    ///   
-	    /// <exception cref="T:System.ArgumentNullException">
-	    ///   <paramref name="buffer"/> is null. </exception>
-	    ///   
-	    /// <exception cref="T:System.ArgumentOutOfRangeException">
-	    ///   <paramref name="offset"/> or <paramref name="count"/> is negative. </exception>
-	    ///   
+	    /// <exception cref="T:System.ArgumentException">The sum of <paramref name="offset"/> and <paramref name="count"/> is larger than the buffer length. </exception>   
+	    /// <exception cref="T:System.ArgumentNullException"><paramref name="buffer"/> is null.</exception>
+	    /// <exception cref="T:System.ArgumentOutOfRangeException"><paramref name="offset"/> or <paramref name="count"/> is negative. </exception>
 	    /// <exception cref="T:System.IO.IOException">An I/O error occurs. </exception>
-	    ///   
+	    /// <exception cref="System.ObjectDisposedException">Thrown when the stream is disposed.</exception>
 	    /// <exception cref="T:System.NotSupportedException">The stream does not support reading. </exception>
-	    ///   
-	    /// <exception cref="T:System.ObjectDisposedException">Methods were called after the stream was closed. </exception>
 	    public override int Read(byte[] buffer, int offset, int count)
 	    {
 	        int actualCount = count;
@@ -536,10 +517,6 @@ namespace GorgonLibrary.IO
 		/// <returns>
 		/// The new position within the current stream.
 		/// </returns>
-		/// <exception cref="T:System.IO.IOException">An I/O error occurs. </exception>
-		///   
-		/// <exception cref="T:System.NotSupportedException">The stream does not support seeking, such as if the stream is constructed from a pipe or console output. </exception>
-		///   
 		/// <exception cref="T:System.ObjectDisposedException">Methods were called after the stream was closed. </exception>
 		/// <exception cref="System.ArgumentOutOfRangeException">Thrown when the offset moves the position outside of the boundaries of the stream.</exception>
 		public override long Seek(long offset, SeekOrigin origin)
@@ -606,11 +583,7 @@ namespace GorgonLibrary.IO
 		/// </summary>
 		/// <param name="value">The desired length of the current stream in bytes.</param>
 		/// <remarks>Calling this function will clear any data being held by the buffer, and reset the <see cref="P:GorgonLibrary.IO.GorgonDataStream.Position">position</see> to the beginning of the stream..</remarks>
-		/// <exception cref="T:System.IO.IOException">An I/O error occurs. </exception>
-		///   
 		/// <exception cref="T:System.NotSupportedException">The stream does not support both writing and seeking, such as if the stream is constructed from a pipe or console output. </exception>
-		///   
-		/// <exception cref="T:System.ObjectDisposedException">Methods were called after the stream was closed. </exception>
 		public override void SetLength(long value)
 		{
             AllocateBuffer(value);
@@ -622,18 +595,10 @@ namespace GorgonLibrary.IO
 		/// <param name="buffer">An array of bytes. This method copies <paramref name="count"/> bytes from <paramref name="buffer"/> to the current stream.</param>
 		/// <param name="offset">The zero-based byte offset in <paramref name="buffer"/> at which to begin copying bytes to the current stream.</param>
 		/// <param name="count">The number of bytes to be written to the current stream.</param>
-		/// <exception cref="T:System.ArgumentException">The sum of <paramref name="offset"/> and <paramref name="count"/> is greater than the buffer length. </exception>
-		///   
-		/// <exception cref="T:System.ArgumentNullException">
-		///   <paramref name="buffer"/> is null. </exception>
-		///   
-		/// <exception cref="T:System.ArgumentOutOfRangeException">
-		///   <paramref name="offset"/> or <paramref name="count"/> is negative. </exception>
-		///   
-		/// <exception cref="T:System.IO.IOException">An I/O error occurs. </exception>
-		///   
+		/// <exception cref="T:System.ArgumentException">The sum of <paramref name="offset"/> and <paramref name="count"/> is greater than the buffer length. </exception>   
+		/// <exception cref="T:System.ArgumentNullException"><paramref name="buffer"/> is null. </exception>   
+		/// <exception cref="T:System.ArgumentOutOfRangeException"><paramref name="offset"/> or <paramref name="count"/> is negative.</exception>
 		/// <exception cref="T:System.NotSupportedException">The stream does not support writing. </exception>
-		///   
 		/// <exception cref="T:System.ObjectDisposedException">Methods were called after the stream was closed. </exception>
 		public override void Write(byte[] buffer, int offset, int count)
 		{
@@ -685,10 +650,7 @@ namespace GorgonLibrary.IO
 		/// Writes a floating point value to the current position in the stream and advances the position within the stream by one byte.
 		/// </summary>
 		/// <param name="value">The floating point value to write to the stream.</param>
-		/// <exception cref="T:System.IO.IOException">An I/O error occurs. </exception>
-		///   
 		/// <exception cref="T:System.NotSupportedException">The stream does not support writing, or the stream is already closed. </exception>
-		///   
 		/// <exception cref="T:System.ObjectDisposedException">Methods were called after the stream was closed. </exception>
 		public void WriteFloat(float value)
 		{
@@ -719,10 +681,7 @@ namespace GorgonLibrary.IO
 		/// Writes a double to the current position in the stream and advances the position within the stream by one byte.
 		/// </summary>
 		/// <param name="value">The double to write to the stream.</param>
-		/// <exception cref="T:System.IO.IOException">An I/O error occurs. </exception>
-		///   
 		/// <exception cref="T:System.NotSupportedException">The stream does not support writing, or the stream is already closed. </exception>
-		///   
 		/// <exception cref="T:System.ObjectDisposedException">Methods were called after the stream was closed. </exception>
 		public void WriteDouble(double value)
 		{
@@ -753,10 +712,7 @@ namespace GorgonLibrary.IO
 		/// Writes an unsigned 16 bit integer to the current position in the stream and advances the position within the stream by one byte.
 		/// </summary>
 		/// <param name="value">The unsigned 16 bit integer to write to the stream.</param>
-		/// <exception cref="T:System.IO.IOException">An I/O error occurs. </exception>
-		///   
 		/// <exception cref="T:System.NotSupportedException">The stream does not support writing, or the stream is already closed. </exception>
-		///   
 		/// <exception cref="T:System.ObjectDisposedException">Methods were called after the stream was closed. </exception>
 		public void WriteUInt16(UInt16 value)
 		{
@@ -787,10 +743,7 @@ namespace GorgonLibrary.IO
 		/// Writes an unsigned 64 bit integer to the current position in the stream and advances the position within the stream by one byte.
 		/// </summary>
 		/// <param name="value">The unsigned 64 bit integer to write to the stream.</param>
-		/// <exception cref="T:System.IO.IOException">An I/O error occurs. </exception>
-		///   
 		/// <exception cref="T:System.NotSupportedException">The stream does not support writing, or the stream is already closed. </exception>
-		///   
 		/// <exception cref="T:System.ObjectDisposedException">Methods were called after the stream was closed. </exception>
 		public void WriteUInt64(UInt64 value)
 		{
@@ -821,10 +774,7 @@ namespace GorgonLibrary.IO
 		/// Writes an unsigned integer to the current position in the stream and advances the position within the stream by one byte.
 		/// </summary>
 		/// <param name="value">The unsigned integer to write to the stream.</param>
-		/// <exception cref="T:System.IO.IOException">An I/O error occurs. </exception>
-		///   
 		/// <exception cref="T:System.NotSupportedException">The stream does not support writing, or the stream is already closed. </exception>
-		///   
 		/// <exception cref="T:System.ObjectDisposedException">Methods were called after the stream was closed. </exception>
 		public void WriteUInt32(UInt32 value)
 		{
@@ -855,10 +805,7 @@ namespace GorgonLibrary.IO
 		/// Writes a 16 bit integer to the current position in the stream and advances the position within the stream by one byte.
 		/// </summary>
 		/// <param name="value">The 16 bit integer to write to the stream.</param>
-		/// <exception cref="T:System.IO.IOException">An I/O error occurs. </exception>
-		///   
 		/// <exception cref="T:System.NotSupportedException">The stream does not support writing, or the stream is already closed. </exception>
-		///   
 		/// <exception cref="T:System.ObjectDisposedException">Methods were called after the stream was closed. </exception>
 		public void WriteInt16(Int16 value)
 		{
@@ -890,9 +837,7 @@ namespace GorgonLibrary.IO
 		/// </summary>
 		/// <param name="value">The 64 bit integer to write to the stream.</param>
 		/// <exception cref="T:System.IO.IOException">An I/O error occurs. </exception>
-		///   
 		/// <exception cref="T:System.NotSupportedException">The stream does not support writing, or the stream is already closed. </exception>
-		///   
 		/// <exception cref="T:System.ObjectDisposedException">Methods were called after the stream was closed. </exception>
 		public void WriteInt64(Int64 value)
 		{
@@ -924,9 +869,7 @@ namespace GorgonLibrary.IO
 		/// </summary>
 		/// <param name="value">The integer to write to the stream.</param>
 		/// <exception cref="T:System.IO.IOException">An I/O error occurs. </exception>
-		///   
 		/// <exception cref="T:System.NotSupportedException">The stream does not support writing, or the stream is already closed. </exception>
-		///   
 		/// <exception cref="T:System.ObjectDisposedException">Methods were called after the stream was closed. </exception>
 		public void WriteInt32(Int32 value)
 		{
@@ -958,7 +901,6 @@ namespace GorgonLibrary.IO
         /// </summary>
         /// <param name="value">The character to write to the stream.</param>
 		/// <remarks>This function advances the position by 2 bytes because internally .NET defaults to UTF16 for a character, which is 2 bytes.</remarks>
-        /// <exception cref="T:System.IO.IOException">An I/O error occurs. </exception>
         /// <exception cref="T:System.NotSupportedException">The stream does not support writing, or the stream is already closed. </exception>
         /// <exception cref="T:System.ObjectDisposedException">Methods were called after the stream was closed. </exception>
 		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="value"/> parameter is a surrogate character.  These are not supported.</exception>
@@ -987,10 +929,7 @@ namespace GorgonLibrary.IO
 		/// Writes a byte to the current position in the stream and advances the position within the stream by one byte.
 		/// </summary>
 		/// <param name="value">The byte to write to the stream.</param>
-		/// <exception cref="T:System.IO.IOException">An I/O error occurs. </exception>
-		///   
 		/// <exception cref="T:System.NotSupportedException">The stream does not support writing, or the stream is already closed. </exception>
-		///   
 		/// <exception cref="T:System.ObjectDisposedException">Methods were called after the stream was closed. </exception>
 		public override void WriteByte(byte value)
 		{
@@ -1295,8 +1234,7 @@ namespace GorgonLibrary.IO
 		/// <returns>
 		/// The unsigned byte cast to an Int32, or -1 if at the end of the stream.
 		/// </returns>
-		/// <exception cref="T:System.NotSupportedException">The stream does not support reading. </exception>
-		///   
+		/// <exception cref="T:System.NotSupportedException">The stream does not support reading. </exception>   
 		/// <exception cref="T:System.ObjectDisposedException">Methods were called after the stream was closed. </exception>
 		public override int ReadByte()
 		{
@@ -1331,18 +1269,10 @@ namespace GorgonLibrary.IO
 		/// <param name="buffer">Array of data to write.</param>
 		/// <param name="offset">Offset into the array to start at.</param>
 		/// <param name="count">Number of elements in the array to read.</param>
-		/// <exception cref="T:System.ArgumentException">The sum of <paramref name="offset"/> and <paramref name="count"/> is greater than the buffer length. </exception>
-		///   
-		/// <exception cref="T:System.ArgumentNullException">
-		///   <paramref name="buffer"/> is null. </exception>
-		///   
-		/// <exception cref="T:System.ArgumentOutOfRangeException">
-		///   <paramref name="offset"/> or <paramref name="count"/> is negative. </exception>
-		///   
-		/// <exception cref="T:System.IO.IOException">An I/O error occurs. </exception>
-		///   
-		/// <exception cref="T:System.NotSupportedException">The stream does not support writing. </exception>
-		///   
+		/// <exception cref="T:System.ArgumentException">The sum of <paramref name="offset"/> and <paramref name="count"/> is greater than the buffer length. </exception>   
+		/// <exception cref="T:System.ArgumentNullException"><paramref name="buffer"/> is null. </exception> 
+		/// <exception cref="T:System.ArgumentOutOfRangeException"><paramref name="offset"/> or <paramref name="count"/> is negative. </exception>   
+		/// <exception cref="T:System.NotSupportedException">The stream does not support writing. </exception>   
 		/// <exception cref="T:System.ObjectDisposedException">Methods were called after the stream was closed. </exception>
 		/// <remarks>At this time, this function will only support structures with primitive types in them, strings and other objects will not work.</remarks>
 		public virtual void WriteRange<T>(T[] buffer, int offset, int count)
@@ -1471,18 +1401,10 @@ namespace GorgonLibrary.IO
 		/// <returns>
 		/// The total number of bytes read into the buffer. This can be less than the number of bytes requested if that many bytes are not currently available, or zero (0) if the end of the stream has been reached.
 		/// </returns>
-		/// <exception cref="T:System.ArgumentException">The sum of <paramref name="offset"/> and <paramref name="count"/> is larger than the buffer length. </exception>
-		///   
-		/// <exception cref="T:System.ArgumentNullException">
-		///   <paramref name="buffer"/> is null. </exception>
-		///   
-		/// <exception cref="T:System.ArgumentOutOfRangeException">
-		///   <paramref name="offset"/> or <paramref name="count"/> is negative. </exception>
-		///   
-		/// <exception cref="T:System.IO.IOException">An I/O error occurs. </exception>
-		///   
-		/// <exception cref="T:System.NotSupportedException">The stream does not support reading. </exception>
-		///   
+		/// <exception cref="T:System.ArgumentException">The sum of <paramref name="offset"/> and <paramref name="count"/> is larger than the buffer length. </exception>   
+		/// <exception cref="T:System.ArgumentNullException"><paramref name="buffer"/> is null.</exception>   
+		/// <exception cref="T:System.ArgumentOutOfRangeException"><paramref name="offset"/> or <paramref name="count"/> is negative. </exception>   
+		/// <exception cref="T:System.NotSupportedException">The stream does not support reading. </exception>   
 		/// <exception cref="T:System.ObjectDisposedException">Methods were called after the stream was closed. </exception>
 		/// <remarks>At this time, this function will only support structures with primitive types in them, strings and other objects will not work.</remarks>
 		public virtual int ReadRange<T>(T[] buffer, int offset, int count)

@@ -87,7 +87,6 @@ namespace GorgonLibrary.Diagnostics
 		/// Function to retrieve the process that is associated with the current foreground window.
 		/// </summary>
 		/// <returns>The process for the foreground window, or NULL if not found.</returns>
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1806:DoNotIgnoreMethodResults", MessageId = "GorgonLibrary.Native.Win32API.GetWindowThreadProcessId(System.IntPtr,System.UInt32@)")]
 		public static Process GetActiveProcess()
 		{
 			uint processID;
@@ -99,7 +98,7 @@ namespace GorgonLibrary.Diagnostics
 		        return null;
 		    }
 
-		    Win32API.GetWindowThreadProcessId(foregroundWindow, out processID);
+			Win32API.GetWindowThreadProcessId(foregroundWindow, out processID);
 
 			return Process.GetProcessById((int)processID);
 		}
@@ -109,7 +108,6 @@ namespace GorgonLibrary.Diagnostics
 		/// </summary>
 		/// <param name="windowHandle">Handle to the window to retrieve the process from.</param>
 		/// <returns>The process for the specified window, or NULL if not found.</returns>
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1806:DoNotIgnoreMethodResults", MessageId = "GorgonLibrary.Native.Win32API.GetWindowThreadProcessId(System.IntPtr,System.UInt32@)")]
 		public static Process GetProcessByWindow(IntPtr windowHandle)
 		{
 		    if (windowHandle == IntPtr.Zero)

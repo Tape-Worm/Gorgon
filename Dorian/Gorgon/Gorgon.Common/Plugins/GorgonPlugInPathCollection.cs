@@ -229,12 +229,13 @@ namespace GorgonLibrary.PlugIns
 		#endregion
 
 		#region Methods.
-	    /// <summary>
-	    /// Removes the specified item.
-	    /// </summary>
-	    /// <param name="item">The item.</param>
-	    /// <exception cref="NotImplementedException">Method is not implemented.</exception>
-	    /// <returns></returns>
+		/// <summary>
+		/// Removes the first occurrence of a specific object from the <see cref="T:System.Collections.Generic.ICollection`1" />.
+		/// </summary>
+		/// <param name="item">The object to remove from the <see cref="T:System.Collections.Generic.ICollection`1" />.</param>
+		/// <returns>
+		/// true if <paramref name="item" /> was successfully removed from the <see cref="T:System.Collections.Generic.ICollection`1" />; otherwise, false. This method also returns false if <paramref name="item" /> is not found in the original <see cref="T:System.Collections.Generic.ICollection`1" />.
+		/// </returns>
 	    bool ICollection<string>.Remove(string item)
 		{
 			Remove(item);
@@ -275,12 +276,11 @@ namespace GorgonLibrary.PlugIns
 			return _paths.Contains(item);
 		}
 
-        /// <summary>
-        /// Copies to.
-        /// </summary>
-        /// <param name="array">The array.</param>
-        /// <param name="arrayIndex">Index of the array.</param>
-        /// <exception cref="NotImplementedException">Method is not implemented.</exception>
+		/// <summary>
+		/// Copies to.
+		/// </summary>
+		/// <param name="array">The array.</param>
+		/// <param name="arrayIndex">Index of the array.</param>
         public void CopyTo(string[] array, int arrayIndex)
         {
             _paths.CopyTo(array, arrayIndex);

@@ -246,7 +246,7 @@ namespace GorgonLibrary.Collections
 	    /// </summary>
 	    /// <param name="index">The zero-based index at which <paramref name="item"/> should be inserted.</param>
 	    /// <param name="item">The object to insert into the <see cref="T:System.Collections.Generic.IList`1"/>.</param>
-	    /// <exception cref="NotImplementedException">Method is not implemented.</exception>
+	    /// <exception cref="NotSupportedException">Method is not implemented.</exception>
 	    /// <exception cref="T:System.ArgumentOutOfRangeException">
 	    /// 	<paramref name="index"/> is not a valid index in the <see cref="T:System.Collections.Generic.IList`1"/>.
 	    /// </exception>
@@ -255,7 +255,7 @@ namespace GorgonLibrary.Collections
 	    /// </exception>
 	    void IList<T>.Insert(int index, T item)
 		{
-			throw new NotImplementedException();
+			throw new NotSupportedException(Resources.GOR_COLLECTION_READ_ONLY);
 		}
 
 		/// <summary>
