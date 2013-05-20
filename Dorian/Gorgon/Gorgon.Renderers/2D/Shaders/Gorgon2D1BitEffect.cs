@@ -222,7 +222,7 @@ namespace GorgonLibrary.Renderers
 #endif
 
 			_1BitStream = new GorgonDataStream(32);
-			_1BitBuffer = Graphics.Shaders.CreateConstantBuffer(32, false);
+            _1BitBuffer = Graphics.Shaders.CreateConstantBuffer(32, "Gorgon2D1BitEffect Constant Buffer");
 		}
 		#endregion
 	}

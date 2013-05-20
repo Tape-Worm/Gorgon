@@ -215,7 +215,6 @@ namespace GorgonLibrary.Graphics.Test
 		private float _camPos = -0.75f;
 		private bool _3d = false;
 		private SpriteBall[] _balls = new SpriteBall[Count];
-		private bool _needsUpdate = true;
 
 		/// <summary>
 		/// Test clean up code.
@@ -256,7 +255,8 @@ namespace GorgonLibrary.Graphics.Test
 			_graphics = new GorgonGraphics();
 			_swap = _graphics.Output.CreateSwapChain("Screen", new GorgonSwapChainSettings()
 				{
-					Window = _form.panelDisplay
+					Window = _form.panelDisplay,
+                    DepthStencilFormat = BufferFormat.D24_UIntNormal_S8_UInt
 				});
 
 			_swap.Resized += (sender, args) =>
@@ -319,14 +319,14 @@ namespace GorgonLibrary.Graphics.Test
 				_balls[i].AngleDelta = 1.0f;
 				_balls[i].Color = new Vector4(1.0f);
 				_balls[i].AlphaDelta = GorgonRandom.RandomSingle() * 0.5f;
-				_balls[i].Checkered = GorgonRandom.RandomInt32(0, 100) > 50;
+			    _balls[i].Checkered = true;// GorgonRandom.RandomInt32(0, 100) > 50;
 				_balls[i].Position = new Vector3((GorgonRandom.RandomSingle() * 2.0f) - 1.0f, (GorgonRandom.RandomSingle() * 2.0f) - 1.0f, GorgonRandom.RandomSingle());
 			}
 
 			_vs = _graphics.Shaders.CreateShader<GorgonVertexShader>("TestVShader", "VS", _shader, true);
 			_ps = _graphics.Shaders.CreateShader<GorgonPixelShader>("TestPShader", "PS", _shader, true);
 
-			_layout = _graphics.Input.CreateInputLayout("Layout", typeof(vertex), _vs);
+			_layout = _graphics.Input.CreateInputLayout(typeof(vertex), _vs);
 
 			int vertexSize = _layout.Size;
 			int index = 0;
@@ -365,8 +365,8 @@ namespace GorgonLibrary.Graphics.Test
 					tempArray = new Vector4[3]
 				};
 
-			_depthStateAlpha.IsDepthEnabled = false;
-			_depthStateAlpha.IsDepthWriteEnabled = false;
+			_depthStateAlpha.IsDepthEnabled = true;
+			_depthStateAlpha.IsDepthWriteEnabled = true;
 
 			_graphics.Input.Layout = _layout;
 			_graphics.Shaders.VertexShader.Current = _vs;
@@ -375,6 +375,7 @@ namespace GorgonLibrary.Graphics.Test
 			_graphics.Shaders.PixelShader.TextureSamplers.SetRange(0, new[] { GorgonTextureSamplerStates.DefaultStates, GorgonTextureSamplerStates.DefaultStates });
 
 			_graphics.Rasterizer.SetViewport(_swap.Viewport);
+		    _graphics.Output.DepthStencilState.States = _depthStateAlpha;
 			_graphics.Output.RenderTargets[0] = _swap;
 			_graphics.Input.VertexBuffers[0] = new GorgonVertexBufferBinding(_vertices, vertexSize);
 			_graphics.Input.IndexBuffer = _index;
@@ -391,235 +392,150 @@ namespace GorgonLibrary.Graphics.Test
 			Gorgon.Run(_form, () =>
 				{
 					_swap.Clear(Color.Black);
-					try
-					{
-						for (int i = 0; i < Count; i++)
-						{
-							_balls[i].Angle += _balls[i].AngleDelta * GorgonTiming.Delta;
+				    for (int i = 0; i < Count; i++)
+				    {
+				        _balls[i].Angle += _balls[i].AngleDelta * GorgonTiming.Delta;
 
-							if (_balls[i].Angle > 360.0f)
-							{
-								_balls[i].Angle = _balls[i].Angle - 360.0f;
-								_balls[i].AngleDelta = GorgonRandom.RandomSingle() * 90.0f;
-							}
+				        if (_balls[i].Angle > 360.0f)
+				        {
+				            _balls[i].Angle = _balls[i].Angle - 360.0f;
+				            _balls[i].AngleDelta = GorgonRandom.RandomSingle() * 90.0f;
+				        }
 
-							if ((_balls[i].ScaleBouce) || (!_balls[i].ZBounce))
-								_balls[i].Color.W -= _balls[i].Velocity.Z * GorgonTiming.Delta;
-							else
-								_balls[i].Color.W += _balls[i].Velocity.Z * GorgonTiming.Delta;
+				        /*if ((_balls[i].ScaleBouce) || (!_balls[i].ZBounce))
+				            _balls[i].Color.W -= _balls[i].Velocity.Z * GorgonTiming.Delta;
+				        else
+				            _balls[i].Color.W += _balls[i].Velocity.Z * GorgonTiming.Delta;
 
-							if (_balls[i].Color.W > 1.0f)
-								_balls[i].Color.W = 1.0f;
+				        if (_balls[i].Color.W > 1.0f)
+				            _balls[i].Color.W = 1.0f;
 
-							if (_balls[i].Color.W < 0.0f)
-							{
-								_balls[i].Color.W = 0.0f;
-								_balls[i].Color = new Vector4((GorgonRandom.RandomSingle() * 0.961f) + 0.039f,
-								                              (GorgonRandom.RandomSingle() * 0.961f) + 0.039f,
-								                              (GorgonRandom.RandomSingle() * 0.961f) + 0.039f, 0.0f);
-							}
+				        if (_balls[i].Color.W < 0.0f)
+				        {
+				            _balls[i].Color.W = 0.0f;
+				            _balls[i].Color = new Vector4((GorgonRandom.RandomSingle() * 0.961f) + 0.039f,
+				                                          (GorgonRandom.RandomSingle() * 0.961f) + 0.039f,
+				                                          (GorgonRandom.RandomSingle() * 0.961f) + 0.039f, 0.0f);
+				        }*/
 
-							//_balls[i].Color = new Vector4(1.0f);
+				        if (_balls[i].YBounce)
+				            _balls[i].Position.Y -= (_balls[i].Velocity.Y * GorgonTiming.Delta);
+				        else
+				            _balls[i].Position.Y += (_balls[i].Velocity.Y * GorgonTiming.Delta);
 
-							/*if (_balls[i].ScaleBouce)
-						_balls[i].Scale -= _balls[i].ScaleDelta * GorgonTiming.Delta;
-					else
-						_balls[i].Scale += _balls[i].ScaleDelta * GorgonTiming.Delta;*/
+				        if (_balls[i].XBounce)
+				            _balls[i].Position.X -= (_balls[i].Velocity.X * GorgonTiming.Delta);
+				        else
+				            _balls[i].Position.X += (_balls[i].Velocity.X * GorgonTiming.Delta);
+				        if (_balls[i].ZBounce)
+				            _balls[i].Position.Z -= (_balls[i].Velocity.Z * GorgonTiming.Delta);
+				        else
+				            _balls[i].Position.Z += (_balls[i].Velocity.Z * GorgonTiming.Delta);
 
-							//_balls[i].Scale = 1.05f;
+				        if (_balls[i].Position.X > (1.0f * _aspect))
+				        {
+				            _balls[i].Position.X = (1.0f * _aspect);
+				            _balls[i].Velocity.X = (GorgonRandom.RandomSingle() * 0.5f);
+				            _balls[i].XBounce = !_balls[i].XBounce;
+				        }
+				        if (_balls[i].Position.Y > (1.0f * _aspect))
+				        {
+				            _balls[i].Position.Y = (1.0f * _aspect);
+				            _balls[i].Velocity.Y = (GorgonRandom.RandomSingle() * 0.5f);
+				            _balls[i].YBounce = !_balls[i].YBounce;
+				        }
 
-							/*				if ((_balls[i].Scale < 0.05f) || (_balls[i].Scale > 1.0f))
-									{
-										if (_balls[i].Scale > 1.0f)
-											_balls[i].Scale = 1.0f;
-										if (_balls[i].Scale < 0.05f)
-										{
-											_balls[i].Scale = 0.05f;
-											_balls[i].Color = new Vector4((GorgonRandom.RandomSingle() * 0.961f) + 0.039f, (GorgonRandom.RandomSingle() * 0.961f) + 0.039f, (GorgonRandom.RandomSingle() * 0.961f) + 0.039f, _balls[i].Color.W);
-										}
-										_balls[i].ScaleBouce = !_balls[i].ScaleBouce;
-										_balls[i].ScaleDelta = (GorgonRandom.RandomSingle() * 1.5f) + 0.25f;
-									}*/
-
-
-							if (_balls[i].YBounce)
-								_balls[i].Position.Y -= (_balls[i].Velocity.Y * GorgonTiming.Delta);
-							else
-								_balls[i].Position.Y += (_balls[i].Velocity.Y * GorgonTiming.Delta);
-
-							if (_balls[i].XBounce)
-								_balls[i].Position.X -= (_balls[i].Velocity.X * GorgonTiming.Delta);
-							else
-								_balls[i].Position.X += (_balls[i].Velocity.X * GorgonTiming.Delta);
-							if (_balls[i].ZBounce)
-								_balls[i].Position.Z -= (_balls[i].Velocity.Z * GorgonTiming.Delta);
-							else
-								_balls[i].Position.Z += (_balls[i].Velocity.Z * GorgonTiming.Delta);
-
-							if (_balls[i].Position.X > (1.0f * _aspect))
-							{
-								_balls[i].Position.X = (1.0f * _aspect);
-								_balls[i].Velocity.X = (GorgonRandom.RandomSingle() * 0.5f);
-								_balls[i].XBounce = !_balls[i].XBounce;
-							}
-							if (_balls[i].Position.Y > (1.0f * _aspect))
-							{
-								_balls[i].Position.Y = (1.0f * _aspect);
-								_balls[i].Velocity.Y = (GorgonRandom.RandomSingle() * 0.5f);
-								_balls[i].YBounce = !_balls[i].YBounce;
-							}
-
-							if (_balls[i].Position.X < (-1.0f * _aspect))
-							{
-								_balls[i].Position.X = (-1.0f * _aspect);
-								_balls[i].Velocity.X = GorgonRandom.RandomSingle() * 0.5f;
-								_balls[i].XBounce = !_balls[i].XBounce;
-							}
-							if (_balls[i].Position.Y < (-1.0f * _aspect))
-							{
-								_balls[i].Position.Y = (-1.0f * _aspect);
-								_balls[i].Velocity.Y = GorgonRandom.RandomSingle() * 0.5f;
-								_balls[i].YBounce = !_balls[i].YBounce;
-							}
+				        if (_balls[i].Position.X < (-1.0f * _aspect))
+				        {
+				            _balls[i].Position.X = (-1.0f * _aspect);
+				            _balls[i].Velocity.X = GorgonRandom.RandomSingle() * 0.5f;
+				            _balls[i].XBounce = !_balls[i].XBounce;
+				        }
+				        if (_balls[i].Position.Y < (-1.0f * _aspect))
+				        {
+				            _balls[i].Position.Y = (-1.0f * _aspect);
+				            _balls[i].Velocity.Y = GorgonRandom.RandomSingle() * 0.5f;
+				            _balls[i].YBounce = !_balls[i].YBounce;
+				        }
 
 
-							if (_balls[i].Position.Z < -1.0f)
-							{
-								_balls[i].Position.Z = -1.0f;
-								_balls[i].Velocity.Z = GorgonRandom.RandomSingle() * 0.5f;
-								_balls[i].ZBounce = !_balls[i].ZBounce;
-							}
+				        if (_balls[i].Position.Z < 0.125f)
+				        {
+				            _balls[i].Position.Z = 0.125f;
+				            _balls[i].Velocity.Z = GorgonRandom.RandomSingle() * 0.5f;
+				            _balls[i].ZBounce = !_balls[i].ZBounce;
+				        }
 
-							if (_balls[i].Position.Z > 1.0f)
-							{
-								_balls[i].Position.Z = 1.0f;
-								_balls[i].Velocity.Z = GorgonRandom.RandomSingle() * 0.5f;
-								_balls[i].ZBounce = !_balls[i].ZBounce;
-							}
-						}
+				        if (!(_balls[i].Position.Z > 1.0f))
+				        {
+				            continue;
+				        }
 
-						//if (frames == 0)
-						{
+				        _balls[i].Position.Z = 1.0f;
+				        _balls[i].Velocity.Z = GorgonRandom.RandomSingle() * 0.5f;
+				        _balls[i].ZBounce = !_balls[i].ZBounce;
+				    }
 
-							Matrix trans = Matrix.Identity;
-							Matrix world = Matrix.Identity;
-							Quaternion rot = Quaternion.Identity;
-							var sortPos = _balls.OrderByDescending(item => item.Position.Z).ToArray();
-							for (int i = 0; i < Count * 4; i += 4)
-							{
-								int arrayindex = i / 4;
+				    var sortPos = _balls.OrderByDescending(item => item.Position.Z).ToArray();
+				    
+				    for (int i = 0; i < Count * 4; i += 4)
+				    {
+				        int arrayindex = i / 4;
 
-								trans = Matrix.Identity;
-								//buffer.World = Matrix.Scaling(0.248f, 0.248f, 1.0f);// *Matrix.Translation(-0.5f + ((float)(i / 4) / (float)count), 0.25f, 0.0f);
+				        Matrix world;
+				        if (_3d)
+				        {
+				            Quaternion rot = Quaternion.RotationYawPitchRoll(sortPos[arrayindex].Angle.Cos(), -sortPos[arrayindex].Angle.Sin() * 2.0f, -sortPos[arrayindex].Angle);
+				            Matrix.RotationQuaternion(ref rot, out world);
+				        }
+				        else
+				            world = Matrix.RotationZ(-sortPos[arrayindex].Angle);
+				        world = world * (Matrix.Scaling(sortPos[arrayindex].Scale, sortPos[arrayindex].Scale, 1.0f)) *
+				                Matrix.Translation(sortPos[arrayindex].Position.X, sortPos[arrayindex].Position.Y,
+				                                    sortPos[arrayindex].Position.Z);
+				        Matrix trans;
+				        Matrix.Multiply(ref world, ref pvw, out trans);
 
-								//buffer.World = Matrix.RotationZ(angle[arrayindex]);
-								if (_3d)
-								{
-									rot = Quaternion.RotationYawPitchRoll(0.0f, -sortPos[arrayindex].Angle.Sin() * 2.0f, -sortPos[arrayindex].Angle);
-									Matrix.RotationQuaternion(ref rot, out world);
-								}
-								else
-									world = Matrix.RotationZ(-sortPos[arrayindex].Angle);
-								world = world * (Matrix.Scaling(sortPos[arrayindex].Scale, sortPos[arrayindex].Scale, 1.0f)) *
-								        Matrix.Translation(sortPos[arrayindex].Position.X, sortPos[arrayindex].Position.Y,
-								                           sortPos[arrayindex].Position.Z);
-								Matrix.Multiply(ref world, ref pvw, out trans);
+				        _sprite[i].Color = new GorgonColor(sortPos[arrayindex].Color);
 
+				        _sprite[i + 1].Color = _sprite[i].Color;
+				        _sprite[i + 2].Color = _sprite[i].Color;
+				        _sprite[i + 3].Color = _sprite[i].Color;
 
+				        _sprite[i].Position = Vector3.Transform(new Vector3(-0.1401f, 0.1401f, 0.0f), trans);
+				        _sprite[i + 1].Position = Vector3.Transform(new Vector3(0.1401f, 0.1401f, 0.0f), trans);
+				        _sprite[i + 2].Position = Vector3.Transform(new Vector3(-0.1401f, -0.1401f, 0.0f), trans);
+				        _sprite[i + 3].Position = Vector3.Transform(new Vector3(0.1401f, -0.1401f, 0.0f), trans);
 
+				        if (sortPos[arrayindex].Checkered)
+				        {
+				            _sprite[i].UV = new Vector2(0.503f, 0.0f);
+				            _sprite[i + 1].UV = new Vector2(1.0f, 0.0f);
+				            _sprite[i + 2].UV = new Vector2(0.503f, 0.5f);
+				            _sprite[i + 3].UV = new Vector2(1.0f, 0.5f);
+				        }
+				        else
+				        {
+				            _sprite[i].UV = new Vector2(0.0f, 0.503f);
+				            _sprite[i + 1].UV = new Vector2(0.5f, 0.503f);
+				            _sprite[i + 2].UV = new Vector2(0.0f, 1.0f);
+				            _sprite[i + 3].UV = new Vector2(0.5f, 1.0f);
+				        }
+				    }
 
-								/*				buffer.World = Matrix.Identity;
-										buffer.World = Matrix.Scaling(0.125f, 0.125f, 1.0f) * Matrix.Translation(-0.5f + ((float)i / 32767.0f), 0.25f, 0.0f);				
-										//buffer.World = Matrix.Transpose(buffer.World);
-										buffer.Alpha.Alpha = 1.0f;
-										using (GorgonDataStream stream = _changeBuffer.GetBuffer())
-										{
-											stream.Write(buffer);
-										}*/
-								_sprite[i].Color = new GorgonColor(sortPos[arrayindex].Color.X, sortPos[arrayindex].Color.Y,
-								                                   sortPos[arrayindex].Color.Z, sortPos[arrayindex].Color.W);
-								//_sprite[i].Color = new GorgonColor(System.Drawing.Color.White);
-								_sprite[i + 1].Color = _sprite[i].Color;
-								_sprite[i + 2].Color = _sprite[i].Color;
-								_sprite[i + 3].Color = _sprite[i].Color;
+				    using(GorgonDataStream vstream = _vertices.Lock(BufferLockFlags.Write | BufferLockFlags.Discard))
+				    {
+				        vstream.WriteRange(_sprite);
+				        _vertices.Unlock();
+				    }
 
-								_sprite[i].Position = Vector3.Transform(new Vector3(-0.1401f, 0.1401f, 0.0f), trans);
-								_sprite[i + 1].Position = Vector3.Transform(new Vector3(0.1401f, 0.1401f, 0.0f), trans);
-								_sprite[i + 2].Position = Vector3.Transform(new Vector3(-0.1401f, -0.1401f, 0.0f), trans);
-								_sprite[i + 3].Position = Vector3.Transform(new Vector3(0.1401f, -0.1401f, 0.0f), trans);
+				    _graphics.Output.DrawIndexed(0, 0, 6 * Count);
 
-								//_sprite[i].Position = new Vector4(-0.5f, 0.5f, 0.0f, 1.0f);
-								//_sprite[i + 1].Position = new Vector4(0.5f, 0.5f, 0.0f, 1.0f);
-								//_sprite[i + 2].Position = new Vector4(-0.5f, -0.5f, 0.0f, 1.0f);
-								//_sprite[i + 3].Position = new Vector4(0.5f, -0.5f, 0.0f, 1.0f);
+				    _swap.Flip();
 
-								if (sortPos[arrayindex].Checkered)
-								{
-									_sprite[i].UV = new Vector2(0.503f, 0.0f);
-									_sprite[i + 1].UV = new Vector2(1.0f, 0.0f);
-									_sprite[i + 2].UV = new Vector2(0.503f, 0.5f);
-									_sprite[i + 3].UV = new Vector2(1.0f, 0.5f);
-								}
-								else
-								{
-									_sprite[i].UV = new Vector2(0.0f, 0.503f);
-									_sprite[i + 1].UV = new Vector2(0.5f, 0.503f);
-									_sprite[i + 2].UV = new Vector2(0.0f, 1.0f);
-									_sprite[i + 3].UV = new Vector2(0.5f, 1.0f);
-								}
-							}
+				    _form.Text = string.Format("FPS: {0:0.0}  DT: {1:0.000}ms", GorgonTiming.FPS, GorgonTiming.Delta * 1000);
 
-							//				_tempStream.Position = 0;
-							//				_tempStream.WriteRange(_sprite);
-							//_graphics.Context.UpdateSubresource(new DX.DataBox { DataPointer = _tempStream.BasePointer, RowPitch = (int)_tempStream.Length }, _vertices);
-							/*_graphics.Context.UpdateSubresource(new DX.DataBox { DataPointer = _tempStream.BasePointer, RowPitch = (int)_tempStream.Length }, _vertices, 0, new D3D.ResourceRegion()
-						{
-							Left = 0,
-							Right = 81920,
-							Top = 0,
-							Bottom = 1,
-							Front = 0,
-							Back = 1
-						});*/
-							//frames = Int32.MaxValue;				
-						}
-
-						_needsUpdate = true;
-
-						//_tempStream.Position = 0;			
-						//_tempStream.WriteRange(_sprite);
-						//_tempStream.Position = 0;
-						//_vertices.Update(_tempStream);
-
-						if (_needsUpdate)
-						{
-							using(GorgonDataStream vstream = _vertices.Lock(BufferLockFlags.Write | BufferLockFlags.Discard))
-							{
-								vstream.WriteRange(_sprite);
-								//using (GorgonDataStream cstream = _cols.Lock(BufferLockFlags.Write | BufferLockFlags.Discard))
-								//{
-								//    for (int i = 0; i < count * 4; i++)
-								//    {
-								//        vstream.Write(_sprite[i].Position);
-								//        cstream.Write(_sprite[i].Color);
-								//    }
-								//    _cols.Unlock();
-								_vertices.Unlock();
-								//}
-							}
-							_needsUpdate = false;
-						}
-
-						_graphics.Output.DrawIndexed(0, 0, 6 * Count);
-
-						_swap.Flip();
-					}
-					finally
-					{
-
-					}
-
-					return true;
+				    return true;
 				});
 
 			Assert.IsTrue(_form.TestResult == DialogResult.Yes);

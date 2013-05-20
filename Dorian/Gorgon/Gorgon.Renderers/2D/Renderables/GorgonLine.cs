@@ -359,72 +359,6 @@ namespace GorgonLibrary.Renderers
 
 		#region Methods.
 		/// <summary>
-		/// Function to update the texture coordinates.
-		/// </summary>
-		private void UpdateTextureCoordinates()
-		{
-			Vector2 textureDims = Vector2.Zero;
-			Vector2 textureNormal = Vector2.Zero;
-			Vector2 textureCrossProduct = Vector2.Zero;
-			float length = 0;
-
-			if (Texture == null)
-			{
-				Vertices[3].UV = Vertices[2].UV = Vertices[0].UV = Vertices[1].UV = Vector2.Zero;
-				return;
-			}
-
-			Vector2.Subtract(ref _textureEnd, ref _textureStart, out textureDims);
-			length = textureDims.Length;
-
-			if (length > 0)
-			{
-				textureNormal = textureDims * (1.0f / length);
-				textureCrossProduct = new Vector2(textureNormal.Y, -textureNormal.X);
-				textureCrossProduct.X *= LineThickness.X / (float)Texture.Settings.Width;
-				textureCrossProduct.Y *= LineThickness.Y / (float)Texture.Settings.Height;
-			}
-
-			if ((LineThickness.X == 1.0f) && (LineThickness.Y == 1.0f))
-			{
-				Vector2.Add(ref _textureStart, ref textureCrossProduct, out Vertices[0].UV);
-				Vector2.Add(ref _textureEnd, ref textureCrossProduct, out Vertices[1].UV);
-			}
-			else
-			{
-				Vector2.Add(ref _textureStart, ref textureCrossProduct, out Vertices[0].UV);
-				Vector2.Add(ref _textureEnd, ref textureCrossProduct, out Vertices[1].UV);
-				Vector2.Subtract(ref _textureStart, ref textureCrossProduct, out Vertices[2].UV);
-				Vector2.Subtract(ref _textureEnd, ref textureCrossProduct, out Vertices[3].UV);
-			}
-		}
-
-		/// <summary>
-		/// Function to update the vertices for the renderable.
-		/// </summary>
-		private void UpdateVertices()
-		{
-			var lineDims = new Vector2(_line.Right - _line.Left, _line.Bottom - _line.Top);
-			float lineLength = lineDims.Length;
-
-			if (lineLength > 0)
-			{
-				Vector2 lineNormal = lineDims * (1.0f / lineDims.Length);
-
-				_crossProduct = new Vector2(lineNormal.Y, -lineNormal.X);
-				_crossProduct.X *= LineThickness.X;
-				_crossProduct.Y *= LineThickness.Y;
-			}
-			else
-				_crossProduct = Vector2.Zero;
-
-			_corners[0] = -Anchor.X;
-			_corners[1] = -Anchor.Y;
-			_corners[2] = _line.Width - Anchor.X;
-			_corners[3] = _line.Height - Anchor.Y;
-		}
-
-		/// <summary>
 		/// Function to transform the line quad.
 		/// </summary>
 		private void TransformQuad()
@@ -569,19 +503,73 @@ namespace GorgonLibrary.Renderers
 			}
 		}
 
-		/// <summary>
-		/// Function to set up any additional information for the renderable.
-		/// </summary>
-		protected override void InitializeCustomVertexInformation()
-		{
-			UpdateVertices();
-			UpdateTextureCoordinates();
+        /// <summary>
+        /// Function to update the texture coordinates.
+        /// </summary>
+        protected override void UpdateTextureCoordinates()
+        {
+            Vector2 textureDims = Vector2.Zero;
+            Vector2 textureNormal = Vector2.Zero;
+            Vector2 textureCrossProduct = Vector2.Zero;
+            float length = 0;
 
-			NeedsVertexUpdate = false;
-			NeedsTextureUpdate = false;
-		}
+            if (Texture == null)
+            {
+                Vertices[3].UV = Vertices[2].UV = Vertices[0].UV = Vertices[1].UV = Vector2.Zero;
+                return;
+            }
 
-		/// <summary>
+            Vector2.Subtract(ref _textureEnd, ref _textureStart, out textureDims);
+            length = textureDims.Length;
+
+            if (length > 0)
+            {
+                textureNormal = textureDims * (1.0f / length);
+                textureCrossProduct = new Vector2(textureNormal.Y, -textureNormal.X);
+                textureCrossProduct.X *= LineThickness.X / (float)Texture.Settings.Width;
+                textureCrossProduct.Y *= LineThickness.Y / (float)Texture.Settings.Height;
+            }
+
+            if ((LineThickness.X == 1.0f) && (LineThickness.Y == 1.0f))
+            {
+                Vector2.Add(ref _textureStart, ref textureCrossProduct, out Vertices[0].UV);
+                Vector2.Add(ref _textureEnd, ref textureCrossProduct, out Vertices[1].UV);
+            }
+            else
+            {
+                Vector2.Add(ref _textureStart, ref textureCrossProduct, out Vertices[0].UV);
+                Vector2.Add(ref _textureEnd, ref textureCrossProduct, out Vertices[1].UV);
+                Vector2.Subtract(ref _textureStart, ref textureCrossProduct, out Vertices[2].UV);
+                Vector2.Subtract(ref _textureEnd, ref textureCrossProduct, out Vertices[3].UV);
+            }
+        }
+
+        /// <summary>
+        /// Function to update the vertices for the renderable.
+        /// </summary>
+        protected override void UpdateVertices()
+        {
+            var lineDims = new Vector2(_line.Right - _line.Left, _line.Bottom - _line.Top);
+            float lineLength = lineDims.Length;
+
+            if (lineLength > 0)
+            {
+                Vector2 lineNormal = lineDims * (1.0f / lineDims.Length);
+
+                _crossProduct = new Vector2(lineNormal.Y, -lineNormal.X);
+                _crossProduct.X *= LineThickness.X;
+                _crossProduct.Y *= LineThickness.Y;
+            }
+            else
+                _crossProduct = Vector2.Zero;
+
+            _corners[0] = -Anchor.X;
+            _corners[1] = -Anchor.Y;
+            _corners[2] = _line.Width - Anchor.X;
+            _corners[3] = _line.Height - Anchor.Y;
+        }
+        
+        /// <summary>
 		/// Function to set the color for a specific vertex on the line.
 		/// </summary>
 		/// <param name="point">Point on the line to set.</param>

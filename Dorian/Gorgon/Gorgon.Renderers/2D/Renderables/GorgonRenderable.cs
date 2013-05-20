@@ -871,10 +871,27 @@ namespace GorgonLibrary.Renderers
 		#endregion
 
 		#region Methods.
-		/// <summary>
-		/// Function to set up any additional information for the renderable.
-		/// </summary>
-		protected abstract void InitializeCustomVertexInformation();
+        /// <summary>
+        /// Function to update the texture coordinates.
+        /// </summary>
+        protected abstract void UpdateTextureCoordinates();
+
+        /// <summary>
+        /// Function to update the vertices for the renderable.
+        /// </summary>
+        protected abstract void UpdateVertices();
+
+        /// <summary>
+        /// Function to set up any additional information for the renderable.
+        /// </summary>
+        protected virtual void InitializeCustomVertexInformation()
+        {
+            UpdateVertices();
+            UpdateTextureCoordinates();
+
+            NeedsVertexUpdate = false;
+            NeedsTextureUpdate = false;
+        }
 
 		/// <summary>
 		/// Function to initialize the vertex 

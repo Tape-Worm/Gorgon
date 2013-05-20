@@ -123,7 +123,14 @@ namespace GorgonLibrary.Graphics
 		            Usage = D3DUsage
 		        };
 
-			if ((Settings.AllowUnorderedAccess) && (BufferUsage != BufferUsage.Staging))
+            if ((IsOutput)
+                && (BufferUsage != BufferUsage.Immutable)
+                && (BufferUsage != BufferUsage.Staging))
+            {
+                desc.BindFlags |= D3D.BindFlags.StreamOutput;
+            }
+            
+            if ((Settings.AllowUnorderedAccess) && (BufferUsage != BufferUsage.Staging))
 			{
 				desc.BindFlags |= D3D.BindFlags.UnorderedAccess;
 			}
@@ -145,10 +152,7 @@ namespace GorgonLibrary.Graphics
 		    GorgonRenderStatistics.StructuredBufferCount++;
 			GorgonRenderStatistics.StructuredBufferSize += ((D3D.Buffer)D3DResource).Description.SizeInBytes;
 
-#if DEBUG
-			D3DResource.DebugName = "Gorgon Structured Buffer #" + Graphics.GetGraphicsObjectOfType<GorgonStructuredBuffer>().Count;
-#endif
-			CreateDefaultResourceView();
+            CreateDefaultResourceView();
 		}
 
         /// <summary>
@@ -186,6 +190,7 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		/// <param name="start">First element to map to the view.</param>
 		/// <param name="count">The number of elements to map to the view.</param>
+		/// <param name="viewType">The type of unordered view to apply to the structured buffer.</param>
 		/// <returns>A new unordered access view for the buffer.</returns>
 		/// <remarks>Use this to create an unordered access view that will allow shaders to access the view using multiple threads at the same time.  Unlike a <see cref="CreateShaderView">Shader View</see>, only one 
 		/// unordered access view can be bound to the pipeline at any given time.
@@ -193,21 +198,14 @@ namespace GorgonLibrary.Graphics
 		/// </remarks>
 		/// <exception cref="GorgonLibrary.GorgonException">Thrown when the usage for this buffer is set to Staging.
 		/// <para>-or-</para>
-		/// <para>Thrown when the video device feature level is not SM_5 or better.</para>
-		/// <para>-or-</para>
 		/// <para>Thrown when the resource settings do not allow unordered access views.</para>
 		/// <para>-or-</para>
 		/// <para>Thrown when the view could not be created.</para>
 		/// </exception>
 		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="start"/> or <paramref name="count"/> parameters are less than 0 or greater than or equal to the 
 		/// number of elements in the buffer.</exception>
-		public GorgonBufferUnorderAccessView CreateUnorderedAccessView(int start, int count)
+		public GorgonStructuredBufferUnorderedAccessView CreateUnorderedAccessView(int start, int count, StructuredBufferType viewType)
 		{
-			if (Graphics.VideoDevice.SupportedFeatureLevel < DeviceFeatureLevel.SM5)
-			{
-				throw new GorgonException(GorgonResult.CannotCreate, "Unordered access views are only available on video devices that support SM_5 or better.");
-			}
-
 			if (!Settings.AllowUnorderedAccess)
 			{
 				throw new GorgonException(GorgonResult.CannotCreate, "The buffer does not allow unordered access.");
@@ -223,7 +221,7 @@ namespace GorgonLibrary.Graphics
 				throw new ArgumentException("The start and count must be 0 or greater and less than the number of elements in the buffer.");
 			}
 
-			return new GorgonBufferUnorderAccessView(this, BufferFormat.Unknown, start, count, false);
+			return new GorgonStructuredBufferUnorderedAccessView(this, BufferFormat.Unknown, start, count, viewType);
 		}
 		#endregion
 
@@ -232,9 +230,10 @@ namespace GorgonLibrary.Graphics
 		/// Initializes a new instance of the <see cref="GorgonStructuredBuffer" /> class.
 		/// </summary>
 		/// <param name="graphics">Graphics interface that owns this buffer.</param>
+		/// <param name="name">Name of the buffer.</param>
 		/// <param name="settings">The settings for the structured buffer.</param>
-		internal GorgonStructuredBuffer(GorgonGraphics graphics, GorgonStructuredBufferSettings settings)
-			: base(graphics, settings, settings.ElementCount * settings.ElementSize)
+		internal GorgonStructuredBuffer(GorgonGraphics graphics, string name, GorgonStructuredBufferSettings settings)
+			: base(graphics, name, settings, settings.ElementCount * settings.ElementSize)
 		{
 		}
 		#endregion

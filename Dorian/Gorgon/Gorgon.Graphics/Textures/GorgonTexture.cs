@@ -41,7 +41,7 @@ namespace GorgonLibrary.Graphics
 	/// The base texture object for all textures.
 	/// </summary>
 	public abstract class GorgonTexture
-		: GorgonNamedResource
+		: GorgonResource
 	{
 		#region Variables.
 	    private GorgonViewCache _viewCache;                     // View cache.

@@ -26,6 +26,7 @@
 
 using System;
 using System.ComponentModel;
+using GorgonLibrary.Diagnostics;
 using DX = SharpDX;
 using D3D = SharpDX.Direct3D11;
 using GorgonLibrary.IO;
@@ -97,10 +98,6 @@ namespace GorgonLibrary.Graphics
 
 			GorgonRenderStatistics.ConstantBufferCount++;
 			GorgonRenderStatistics.ConstantBufferSize += ((D3D.Buffer)D3DResource).Description.SizeInBytes;
-
-#if DEBUG
-			D3DResource.DebugName = "Gorgon Constant Buffer #" + Graphics.GetGraphicsObjectOfType<GorgonConstantBuffer>().Count; 
-#endif
 		}
 
 		/// <summary>
@@ -127,6 +124,8 @@ namespace GorgonLibrary.Graphics
 
 		    D3DResource.Dispose();
 		    D3DResource = null;
+
+            Gorgon.Log.Print("Destroyed {0} {1}.", LoggingLevel.Verbose, GetType().FullName, Name);
 		}
 
 		/// <summary>
@@ -153,10 +152,11 @@ namespace GorgonLibrary.Graphics
 		/// Initializes a new instance of the <see cref="GorgonConstantBuffer"/> class.
 		/// </summary>
 		/// <param name="graphics">Graphics interface that owns this buffer.</param>
+		/// <param name="name">Name of the constant buffer.</param>
 		/// <param name="size">Size of the buffer, in bytes.</param>
 		/// <param name="allowCPUWrite">TRUE to allow the CPU write access to the buffer, FALSE to disallow.</param>
-		internal GorgonConstantBuffer(GorgonGraphics graphics, int size, bool allowCPUWrite)
-			: base(graphics, (allowCPUWrite ? BufferUsage.Dynamic : BufferUsage.Default), size, false)
+		internal GorgonConstantBuffer(GorgonGraphics graphics, string name, int size, bool allowCPUWrite)
+			: base(graphics, name, (allowCPUWrite ? BufferUsage.Dynamic : BufferUsage.Default), size, false)
 		{
 		}
 		#endregion

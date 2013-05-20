@@ -165,31 +165,9 @@ namespace GorgonLibrary.Renderers
 
 		#region Methods.
 		/// <summary>
-		/// Function to update the texture coordinates.
-		/// </summary>
-		protected abstract void UpdateTextureCoordinates();
-
-		/// <summary>
-		/// Function to update the vertices for the renderable.
-		/// </summary>
-		protected abstract void UpdateVertices();
-
-		/// <summary>
 		/// Function to transform the vertices.
 		/// </summary>
 		protected abstract void TransformVertices();
-
-		/// <summary>
-		/// Function to set up any additional information for the renderable.
-		/// </summary>
-		protected override void InitializeCustomVertexInformation()
-		{
-			UpdateVertices();
-			UpdateTextureCoordinates();
-
-			NeedsVertexUpdate = false;
-			NeedsTextureUpdate = false;
-		}
 
 		/// <summary>
 		/// Function to draw the object.

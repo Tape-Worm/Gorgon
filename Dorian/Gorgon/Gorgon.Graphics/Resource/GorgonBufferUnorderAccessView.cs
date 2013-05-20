@@ -1,3 +1,5 @@
+using D3D = SharpDX.Direct3D11;
+
 namespace GorgonLibrary.Graphics
 {
 	/// <summary>
@@ -8,7 +10,7 @@ namespace GorgonLibrary.Graphics
 	/// have a format that is the same bit-depth and in the same group as its bound resource.</para>
 	/// <para>Unlike a <see cref="GorgonLibrary.Graphics.GorgonBufferShaderView">GorgonBufferShaderView</see>, only one unordered access view may be applied to a resource.</para>
 	/// </remarks>
-	public class GorgonBufferUnorderAccessView
+	public class GorgonBufferUnorderedAccessView
 		: GorgonUnorderedAccessView
 	{
 		#region Properties.
@@ -29,15 +31,6 @@ namespace GorgonLibrary.Graphics
 			get;
 			private set;
 		}
-
-		/// <summary>
-		/// Property to return whether the buffer is using raw access or not.
-		/// </summary>
-		public bool IsRaw
-		{
-			get;
-			private set;
-		}
 		#endregion
 
 		#region Methods.
@@ -45,38 +38,15 @@ namespace GorgonLibrary.Graphics
 		/// Function to perform initialization of the shader view resource.
 		/// </summary>
 		protected override void InitializeImpl()
-		{
-			var bufferType = SharpDX.Direct3D11.UnorderedAccessViewBufferFlags.None;
-			var structBuffer = Resource as GorgonStructuredBuffer;
-			
-			if (structBuffer != null)
-			{
-				switch (structBuffer.Settings.StructuredBufferType)
-				{
-					case StructuredBufferType.AppendConsume:
-						bufferType = SharpDX.Direct3D11.UnorderedAccessViewBufferFlags.Append;
-						break;
-					case StructuredBufferType.Counter:
-						bufferType = SharpDX.Direct3D11.UnorderedAccessViewBufferFlags.Append;
-						break;
-				}
-			}
-			else
-			{
-				if (IsRaw)
-				{
-					bufferType = SharpDX.Direct3D11.UnorderedAccessViewBufferFlags.Raw;
-				}
-			}
-
-			var desc = new SharpDX.Direct3D11.UnorderedAccessViewDescription
+        {
+            var desc = new SharpDX.Direct3D11.UnorderedAccessViewDescription
 				{
 					Dimension = SharpDX.Direct3D11.UnorderedAccessViewDimension.Buffer,
 					Buffer =
 						{
 							FirstElement = ElementStart,
 							ElementCount = ElementCount,
-							Flags = bufferType
+							Flags = D3D.UnorderedAccessViewBufferFlags.None
 						},
 					Format = (SharpDX.DXGI.Format)Format
 				};
@@ -90,19 +60,17 @@ namespace GorgonLibrary.Graphics
 
 		#region Constructor/Destructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonBufferUnorderAccessView"/> class.
+		/// Initializes a new instance of the <see cref="GorgonBufferUnorderedAccessView"/> class.
 		/// </summary>
 		/// <param name="resource">The buffer to bind to the view.</param>
 		/// <param name="format">The format of the view.</param>
 		/// <param name="firstElement">The first element in the buffer.</param>
 		/// <param name="elementCount">The number of elements to view.</param>
-		/// <param name="isRaw">TRUE if the view is a raw view, FALSE if not.</param>
-		internal GorgonBufferUnorderAccessView(GorgonResource resource, BufferFormat format, int firstElement, int elementCount, bool isRaw)
+		internal GorgonBufferUnorderedAccessView(GorgonResource resource, BufferFormat format, int firstElement, int elementCount)
 			: base(resource, format)
 		{
 			ElementStart = firstElement;
 			ElementCount = elementCount;
-			IsRaw = isRaw;
 		}
 		#endregion
 	}

@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using GorgonLibrary.Diagnostics;
 using D3D = SharpDX.Direct3D11;
 
 namespace GorgonLibrary.Graphics
@@ -108,6 +109,8 @@ namespace GorgonLibrary.Graphics
 
 		    D3DResource.Dispose();
 		    D3DResource = null;
+
+            Gorgon.Log.Print("Destroyed {0} {1}.", LoggingLevel.Verbose, GetType().FullName, Name);
 		}
 		#endregion
 
@@ -116,10 +119,11 @@ namespace GorgonLibrary.Graphics
 		/// Initializes a new instance of the <see cref="GorgonShaderBuffer" /> class.
 		/// </summary>
 		/// <param name="graphics">Graphics interface that owns this buffer.</param>
+		/// <param name="name">Name of the buffer.</param>
 		/// <param name="settings">The settings for the buffer.</param>
 		/// <param name="totalSize">The total size of the buffer, in bytes.</param>
-		protected GorgonShaderBuffer(GorgonGraphics graphics, IShaderBufferSettings settings, int totalSize)
-			: base(graphics, (settings.AllowCPUWrite ? BufferUsage.Dynamic : BufferUsage.Default), totalSize, settings.IsOutput)
+		protected GorgonShaderBuffer(GorgonGraphics graphics, string name, IShaderBufferSettings settings, int totalSize)
+			: base(graphics, name, (settings.AllowCPUWrite ? BufferUsage.Dynamic : BufferUsage.Default), totalSize, settings.IsOutput)
 		{
 			Settings = settings;
             ViewCache = new GorgonViewCache(this);

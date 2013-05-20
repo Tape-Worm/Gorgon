@@ -114,7 +114,14 @@ namespace GorgonLibrary.Graphics
 		            Usage = D3DUsage
 		        };
 
-			if ((BufferUsage != BufferUsage.Staging) && (Settings.AllowUnorderedAccess))
+            if ((IsOutput)
+                && (BufferUsage != BufferUsage.Immutable)
+                && (BufferUsage != BufferUsage.Staging))
+            {
+                desc.BindFlags |= D3D.BindFlags.StreamOutput;
+            }
+            
+            if ((BufferUsage != BufferUsage.Staging) && (Settings.AllowUnorderedAccess))
 			{
 				desc.BindFlags |= D3D.BindFlags.UnorderedAccess;
 			}
@@ -136,10 +143,7 @@ namespace GorgonLibrary.Graphics
 		    GorgonRenderStatistics.TypedBufferCount++;
 			GorgonRenderStatistics.TypedBufferSize += ((D3D.Buffer)D3DResource).Description.SizeInBytes;
 
-#if DEBUG
-			D3DResource.DebugName = "Gorgon Typed Buffer #" + Graphics.GetGraphicsObjectOfType<GorgonTypedBuffer<T>>().Count;
-#endif
-			CreateDefaultResourceView();
+            CreateDefaultResourceView();
 		}
 
 		/// <summary>
@@ -163,7 +167,7 @@ namespace GorgonLibrary.Graphics
 		/// </exception>
 		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="start"/> or <paramref name="count"/> parameters are less than 0 or greater than or equal to the 
 		/// number of elements in the buffer.</exception>
-		public GorgonBufferUnorderAccessView CreateUnorderedAccessView(BufferFormat format, int start, int count)
+		public GorgonBufferUnorderedAccessView CreateUnorderedAccessView(BufferFormat format, int start, int count)
 		{
 			if (Graphics.VideoDevice.SupportedFeatureLevel < DeviceFeatureLevel.SM5)
 			{
@@ -203,7 +207,7 @@ namespace GorgonLibrary.Graphics
 					"format");
 			}
 
-			return new GorgonBufferUnorderAccessView(this, format, start, count, false);
+			return new GorgonBufferUnorderedAccessView(this, format, start, count);
 		}
 		
 		/// <summary>
@@ -261,9 +265,10 @@ namespace GorgonLibrary.Graphics
 		/// Initializes a new instance of the <see cref="GorgonTypedBuffer{T}" /> class.
 		/// </summary>
 		/// <param name="graphics">Graphics interface that owns this buffer.</param>
+		/// <param name="name">Name of the buffer.</param>
 		/// <param name="settings">The settings to apply to the typed buffer.</param>
-		internal GorgonTypedBuffer(GorgonGraphics graphics, GorgonTypedBufferSettings settings)
-			: base(graphics, settings, settings.ElementCount * DirectAccess.SizeOf<T>())
+		internal GorgonTypedBuffer(GorgonGraphics graphics, string name, GorgonTypedBufferSettings settings)
+			: base(graphics, name, settings, settings.ElementCount * DirectAccess.SizeOf<T>())
 		{
 		    ElementSize = DirectAccess.SizeOf<T>();
 		}

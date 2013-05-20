@@ -210,7 +210,7 @@ namespace GorgonLibrary.Graphics.Test
 																			 ps,
 																			 true);
 
-			Layout = Graphics.Input.CreateInputLayout("Layout", typeof(Vertex), VertexShader);
+			Layout = Graphics.Input.CreateInputLayout(typeof(Vertex), VertexShader);
 
 			Vertices = Graphics.Input.CreateVertexBuffer(BufferUsage.Immutable,
 														   new[]

@@ -320,25 +320,12 @@ namespace GorgonLibrary.Graphics
 	public sealed class GorgonStructuredBufferSettings
 		: IShaderBufferSettings
 	{
-		#region Properties.
-		/// <summary>
-		/// Property to set or return the type of structured buffer.
-		/// </summary>
-		/// <remarks>The default value is standard.</remarks>
-		public StructuredBufferType StructuredBufferType
-		{
-			get;
-			set;
-		}
-		#endregion
-
 		#region Constructor/Destructor.
 		/// <summary>
 		/// Initializes a new instance of the <see cref="GorgonStructuredBufferSettings"/> class.
 		/// </summary>
 		public GorgonStructuredBufferSettings()
 		{
-			StructuredBufferType = StructuredBufferType.Standard;
 			IsOutput = false;
 			AllowCPUWrite = false;
 			AllowUnorderedAccess = false;

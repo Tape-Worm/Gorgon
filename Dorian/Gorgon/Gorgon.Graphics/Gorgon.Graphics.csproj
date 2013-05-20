@@ -113,10 +113,12 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="Resource\GorgonBufferUnorderAccessView.cs" />
+    <Compile Include="Resource\GorgonRawBufferShaderView.cs" />
+    <Compile Include="Resource\GorgonRawBufferUnorderedAccessView.cs" />
+    <Compile Include="Resource\GorgonStructuredBufferUnorderedAccessView.cs" />
     <Compile Include="Resource\GorgonTextureUnorderAccessView.cs" />
     <Compile Include="Resource\GorgonUnorderedAccessView.cs" />
     <Compile Include="Resource\GorgonBufferShaderView.cs" />
-    <Compile Include="Resource\GorgonNamedResource.cs" />
     <Compile Include="Resource\GorgonResource.cs" />
     <Compile Include="Resource\GorgonTextureShaderView.cs" />
     <Compile Include="Resource\GorgonViewCache.cs" />

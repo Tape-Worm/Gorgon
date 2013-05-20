@@ -42,14 +42,13 @@ namespace GorgonLibrary.Graphics
 	/// by passing the type of the input object to the <see cref="GorgonLibrary.Graphics.GorgonInputLayout.InitializeFromType">GetLayoutFromType</see> method.
 	/// </remarks>
 	public class GorgonInputLayout
-		: IDisposable, INamedObject 
+		: GorgonNamedObject, IDisposable
 	{
 		#region Variables.
 	    private GorgonInputElement[] _elements;                 // Elements used to build the layout.
 		private bool _disposed;									// Flag to indicate that the object was disposed.
 		private IDictionary<int, int> _slotSizes;				// List of slot sizes.
 		private readonly Type[] _allowedTypes;					// Types allowed when pulling information from an object.
-		private readonly string _name = string.Empty;			// Name of the object.
 		#endregion
 
 		#region Properties.
@@ -377,8 +376,8 @@ namespace GorgonLibrary.Graphics
 		/// <param name="name">Name of the object.</param>
 		/// <param name="shader">Vertex shader to bind the layout with.</param>
 		internal GorgonInputLayout(GorgonGraphics graphics, string name, GorgonShader shader)
+            : base(name)
 		{
-			_name = name;
 			Graphics = graphics;
 			Shader = shader;
 
@@ -397,6 +396,8 @@ namespace GorgonLibrary.Graphics
 									typeof(Vector4),
 									typeof(GorgonColor)
 								};
+
+		    GorgonRenderStatistics.InputLayoutCount++;
 		}
 		#endregion
 
@@ -414,10 +415,14 @@ namespace GorgonLibrary.Graphics
 
 			if (disposing)
 			{
-				if (D3DLayout != null)
-					D3DLayout.Dispose();
+			    if (D3DLayout != null)
+			    {
+			        D3DLayout.Dispose();
+			    }
 
-				Graphics.RemoveTrackedObject(this);
+			    Graphics.RemoveTrackedObject(this);
+
+                GorgonRenderStatistics.InputLayoutCount--;
 			}
 
 			D3DLayout = null;
@@ -431,19 +436,6 @@ namespace GorgonLibrary.Graphics
 		{
 			Dispose(true);
 			GC.SuppressFinalize(this);
-		}
-		#endregion
-
-		#region INamedObject Members
-		/// <summary>
-		/// Property to return the name of this object.
-		/// </summary>
-		public string Name
-		{
-			get 
-			{
-				return _name;
-			}
 		}
 		#endregion
 	}

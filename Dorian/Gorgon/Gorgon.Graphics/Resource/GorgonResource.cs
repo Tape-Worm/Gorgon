@@ -25,7 +25,6 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using GorgonLibrary.Native;
 using D3D = SharpDX.Direct3D11;
@@ -96,20 +95,34 @@ namespace GorgonLibrary.Graphics
 	/// </summary>
 	/// <remarks>Objects that inherit from this class will be considered a resource object that may (depending on usage) be bound to the pipeline.</remarks>
 	public abstract class GorgonResource
-		: IDisposable
+		: GorgonNamedObject, IDisposable
 	{
 		#region Variables.
-		private bool _disposed;				                                            // Flag to indicate that the object was disposed.
+	    private D3D.Resource _resource;                             // Direct 3D resource object.
+		private bool _disposed;				                        // Flag to indicate that the object was disposed.
 		#endregion
 
 		#region Properties.
 		/// <summary>
 		/// Property to return the Direct 3D resource object bound to this object.
 		/// </summary>
-		internal virtual D3D.Resource D3DResource
+		internal D3D.Resource D3DResource
 		{
-			get;
-			set;
+			get
+			{
+			    return _resource;
+			}
+			set
+            {
+#if DEBUG
+				if (value != null)
+				{
+					value.DebugName = GetType().Name + " " + Name;
+				}
+#endif
+
+                _resource = value;
+            }
 		}
         
 		/// <summary>
@@ -177,15 +190,14 @@ namespace GorgonLibrary.Graphics
 		public void SetApplicationData<T>(Guid guid, T? data)
 			where T : struct
 		{
-			int bytes = 0;
-			IntPtr dataPtr = IntPtr.Zero;
+		    IntPtr dataPtr = IntPtr.Zero;
 
 			if (D3DResource == null)
 			{
 				return;
 			}
 
-			bytes = DirectAccess.SizeOf<T>();
+			int bytes = DirectAccess.SizeOf<T>();
 
 			try
 			{
@@ -193,7 +205,7 @@ namespace GorgonLibrary.Graphics
 				{
 					T value = data.Value;
 					dataPtr = Marshal.AllocHGlobal(bytes);
-					dataPtr.Write<T>(ref value);
+					dataPtr.Write(ref value);
 					D3DResource.SetPrivateData(guid, bytes, dataPtr);
 				}
 				else
@@ -219,31 +231,28 @@ namespace GorgonLibrary.Graphics
 		public T? GetApplicationData<T>(Guid guid)
 			where T : struct
 		{
-			int bytes = 0;
-			IntPtr dataPtr = IntPtr.Zero;
-			T result = default(T);
+		    IntPtr dataPtr = IntPtr.Zero;
 
-			if (D3DResource == null)
+		    if (D3DResource == null)
 			{
 				return null;
 			}
 
 			try
 			{
-				bytes = DirectAccess.SizeOf<T>();
+				int bytes = DirectAccess.SizeOf<T>();
 				dataPtr = Marshal.AllocHGlobal(bytes);
 
-				if (dataPtr != IntPtr.Zero)
-				{
-					D3DResource.GetPrivateData(guid, ref bytes, dataPtr);
-					dataPtr.Read<T>(out result);
+			    if (dataPtr == IntPtr.Zero)
+			    {
+			        return null;
+			    }
 
-					return result;
-				}
-				else
-				{
-					return null;
-				}
+			    D3DResource.GetPrivateData(guid, ref bytes, dataPtr);
+			    T result;
+			    dataPtr.Read(out result);
+
+			    return result;
 			}
 			finally
 			{
@@ -260,8 +269,18 @@ namespace GorgonLibrary.Graphics
 		/// Initializes a new instance of the <see cref="GorgonResource" /> class.
 		/// </summary>
 		/// <param name="graphics">The graphics interface that owns this object.</param>
-		protected GorgonResource(GorgonGraphics graphics)
+        /// <param name="name">Name of this resource.</param>
+        /// <remarks>Names for the resource are required, but do not need to be unique.  Names provide a way to organize the objects and can be ignored.</remarks>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (Nothing in VB.Net).</exception> 
+		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
+        protected GorgonResource(GorgonGraphics graphics, string name)
+            : base(name)
 		{
+            if (graphics == null)
+            {
+                throw new ArgumentNullException("graphics");
+            }
+
 			Graphics = graphics;
 		}
 		#endregion
@@ -273,17 +292,19 @@ namespace GorgonLibrary.Graphics
 		/// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
 		protected virtual void Dispose(bool disposing)
 		{
-			if (!_disposed)
-			{
-				if (disposing)
-				{
-					Graphics.RemoveTrackedObject(this);
+		    if (_disposed)
+		    {
+		        return;
+		    }
 
-					CleanUpResource();
-				}
+		    if (disposing)
+		    {
+                Graphics.RemoveTrackedObject(this);
 
-				_disposed = true;
-			}
+		        CleanUpResource();
+		    }
+
+		    _disposed = true;
 		}
 
 		/// <summary>
