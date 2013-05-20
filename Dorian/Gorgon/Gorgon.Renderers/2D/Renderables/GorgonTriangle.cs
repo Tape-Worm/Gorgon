@@ -260,28 +260,9 @@ namespace GorgonLibrary.Renderers
 
 		#region Methods.
 		/// <summary>
-		/// Function to update the texture coordinates.
+		/// Function to update the vertices.
 		/// </summary>
-		private void UpdateTextureCoordinates()
-		{
-			Vector2 uvScale = Vector2.Zero;
-			Vector2 uvOffset = Vector2.Zero;
-
-			if (Texture == null)
-			{
-				Vertices[0].UV = Vertices[1].UV = Vertices[2].UV = Vector2.Zero;
-				return;
-			}
-
-			Vertices[0].UV = _points[0].TextureCoordinate;
-			Vertices[1].UV = _points[1].TextureCoordinate;
-			Vertices[2].UV = _points[2].TextureCoordinate;
-		}
-
-		/// <summary>
-		/// Function to transform the vertices.
-		/// </summary>
-		private void TransformVertices()
+		protected override void UpdateVertices()
 		{
 			Vector2 point1 = _points[0].Position;
 			Vector2 point2 = _points[1].Position;
@@ -360,12 +341,21 @@ namespace GorgonLibrary.Renderers
 			Vertices[2].Color = _points[2].Color;
 		}
 
-		/// <summary>
-		/// Function to set up any additional information for the renderable.
-		/// </summary>
-		protected override void InitializeCustomVertexInformation()
-		{			
-		}
+        /// <summary>
+        /// Function to update the texture coordinates.
+        /// </summary>
+        protected override void UpdateTextureCoordinates()
+        {
+            if (Texture == null)
+            {
+                Vertices[0].UV = Vertices[1].UV = Vertices[2].UV = Vector2.Zero;
+                return;
+            }
+
+            Vertices[0].UV = _points[0].TextureCoordinate;
+            Vertices[1].UV = _points[1].TextureCoordinate;
+            Vertices[2].UV = _points[2].TextureCoordinate;
+        }
 
 		/// <summary>
 		/// Function to draw the object.
@@ -382,7 +372,7 @@ namespace GorgonLibrary.Renderers
 					NeedsTextureUpdate = false;
 				}
 
-				TransformVertices();
+				UpdateVertices();
 
 				base.Draw();
 				return;
@@ -391,7 +381,7 @@ namespace GorgonLibrary.Renderers
 			offset.X = LineThickness.X - 1.0f;
 			offset.Y = LineThickness.Y - 1.0f;
 
-			TransformVertices();
+			UpdateVertices();
 
 			// Set global line state.
 			_line.AlphaTestValues = AlphaTestValues;
@@ -468,7 +458,6 @@ namespace GorgonLibrary.Renderers
 			: base(gorgon2D, name)
 		{
 			Scale = new Vector2(1);
-			InitializeVertices(3);
 			VertexCount = 3;
 			BaseVertexCount = 3;
 			IsFilled = isFilled;
@@ -481,6 +470,8 @@ namespace GorgonLibrary.Renderers
 				};
 
 			_line = new GorgonLine(gorgon2D, "Triangle.Line", Vector2.Zero, Vector2.Zero, point1.Color);
+
+            InitializeVertices(3);
 		}
 		#endregion
 

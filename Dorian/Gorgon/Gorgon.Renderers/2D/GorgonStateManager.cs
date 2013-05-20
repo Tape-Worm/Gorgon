@@ -253,7 +253,7 @@ namespace GorgonLibrary.Renderers
 				// switch to the diffuse shader.
 				_gorgon2D.PixelShader.TextureSwitch(renderable.Texture);
 			}
-			
+		
 			if ((state & StateChange.BlendEnable) == StateChange.BlendEnable)
 			{
 				_blendState.RenderTarget0.IsBlendingEnabled = _gorgon2D.IsBlendingEnabled;

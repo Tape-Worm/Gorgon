@@ -596,18 +596,18 @@ namespace GorgonLibrary.Renderers
 			string shaderSource = Encoding.UTF8.GetString(Properties.Resources.BasicSprite);
 			
 			// Create the default projection matrix.
-			Target.Resized -= new EventHandler<GorgonRenderTargetResizedEventArgs>(target_Resized);
+			Target.Resized -= target_Resized;
 
 			// Create constant buffers.
 			if (ProjectionViewBuffer == null)
 			{
-				ProjectionViewBuffer = Graphics.Shaders.CreateConstantBuffer(Matrix.SizeInBytes, false);
+				ProjectionViewBuffer = Graphics.Shaders.CreateConstantBuffer(Matrix.SizeInBytes, "Gorgon2D Projection/View Matrix Constant Buffer");
 				_projectionViewStream = new GorgonDataStream(ProjectionViewBuffer.SizeInBytes);
 			}
 
 			if (AlphaTestBuffer == null)
 			{
-				AlphaTestBuffer = Graphics.Shaders.CreateConstantBuffer(32, false);
+				AlphaTestBuffer = Graphics.Shaders.CreateConstantBuffer(32, "Gorgon2D Alpha Test Constant Buffer");
 				AlphaTestStream = new GorgonDataStream(AlphaTestBuffer.SizeInBytes);
 				AlphaTestStream.Write(new byte[AlphaTestBuffer.SizeInBytes], 0, AlphaTestBuffer.SizeInBytes);
 				AlphaTestStream.Position = 0;
@@ -639,7 +639,7 @@ namespace GorgonLibrary.Renderers
 			// Create layout information so we can bind our vertices to the shader.
 			if (_layout == null)
 			{
-				_layout = Graphics.Input.CreateInputLayout("2D_Sprite_Vertex_Layout", typeof(Gorgon2DVertex), VertexShader.DefaultVertexShader);
+				_layout = Graphics.Input.CreateInputLayout(typeof(Gorgon2DVertex), VertexShader.DefaultVertexShader, "Gorgon2D Input Layout");
 			}
 
 			if (DefaultIndexBuffer != null)
@@ -666,7 +666,7 @@ namespace GorgonLibrary.Renderers
 				}
 
 				ibData.Position = 0;
-				DefaultIndexBuffer = Graphics.Input.CreateIndexBuffer((int)ibData.Length, BufferUsage.Immutable, true, false, ibData);
+				DefaultIndexBuffer = Graphics.Input.CreateIndexBuffer((int)ibData.Length, BufferUsage.Immutable, true, "Gorgon2D Default Index Buffer", false, ibData);
 			}
 			
 			// Create our empty vertex buffer.

@@ -5,7 +5,7 @@
 	/// </summary>
 	/// <remarks>Use a resource view to allow a shader access to the contents of a resource (or sub resource).  When the resource is created with a typeless format, this will allow 
 	/// the resource to be cast to any format within the same group.</remarks>
-	public sealed class GorgonBufferShaderView
+	public class GorgonBufferShaderView
 		: GorgonShaderView
 	{
 		#region Properties.
@@ -26,15 +26,6 @@
 			get;
 			private set;
 		}
-
-		/// <summary>
-		/// Propery to return whether the buffer is using raw access or not.
-		/// </summary>
-		public bool IsRaw
-		{
-			get;
-			private set;
-		}
 		#endregion
 
 		#region Methods.
@@ -49,8 +40,7 @@
 						{
 							FirstElement = ElementStart,
 							ElementCount = ElementCount,
-							Flags = IsRaw ? SharpDX.Direct3D11.ShaderResourceViewExtendedBufferFlags.Raw
-								        : SharpDX.Direct3D11.ShaderResourceViewExtendedBufferFlags.None
+							Flags = SharpDX.Direct3D11.ShaderResourceViewExtendedBufferFlags.None
 						},
 					Dimension = SharpDX.Direct3D.ShaderResourceViewDimension.ExtendedBuffer,
 					Format = (SharpDX.DXGI.Format)Format
@@ -71,14 +61,12 @@
 		/// <param name="format">Format of the view.</param>
 		/// <param name="elementStart">The starting element for the view.</param>
 		/// <param name="elementCount">The number of elements in the view.</param>
-		/// <param name="isRaw">TRUE for raw buffers, FALSE if not.</param>
-		internal GorgonBufferShaderView(GorgonShaderBuffer buffer, BufferFormat format, int elementStart, int elementCount, bool isRaw)
+		internal GorgonBufferShaderView(GorgonResource buffer, BufferFormat format, int elementStart, int elementCount)
 			: base(buffer, format)
 		{
 			ElementStart = elementStart;
 			ElementCount = elementCount;
-			IsRaw = isRaw;
 		}
 		#endregion
-	}
+    }
 }

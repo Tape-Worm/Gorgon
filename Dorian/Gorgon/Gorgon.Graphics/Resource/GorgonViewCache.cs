@@ -215,7 +215,6 @@ namespace GorgonLibrary.Graphics
         /// <returns>The cached buffer shader view.</returns>
         public GorgonBufferShaderView GetBufferView(BufferFormat format, int start, int count, bool isRaw)
         {
-            var buffer = (GorgonShaderBuffer)_resource;
             var key = new ShaderViewKey(format, start, count, 0, 0);
 
             lock(_syncLock)
@@ -224,7 +223,15 @@ namespace GorgonLibrary.Graphics
 
                 if (!_bufferViews.TryGetValue(key, out result))
                 {
-                    result = new GorgonBufferShaderView(buffer, format, start, count, isRaw);
+                    if (!isRaw)
+                    {
+                        result = new GorgonBufferShaderView(_resource, format, start, count);
+                    }
+                    else
+                    {
+                        result = new GorgonRawBufferShaderView(_resource, format, start, count);
+                    }
+
                     result.Initialize();
                     _bufferViews.Add(key, result);
                 }

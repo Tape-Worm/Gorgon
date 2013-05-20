@@ -85,8 +85,7 @@ namespace GorgonLibrary.Graphics.Test
 					AllowCPUWrite = false,
 					ElementCount = 4,
 					ElementSize = 12,
-					IsOutput = false,
-					StructuredBufferType = StructuredBufferType.Standard
+					IsOutput = false
 				}))
 			{
 				_bufferStream = new GorgonDataStream(48);
@@ -128,7 +127,7 @@ namespace GorgonLibrary.Graphics.Test
 				values[i] = new Vector4(GorgonRandom.RandomSingle(), GorgonRandom.RandomSingle(), GorgonRandom.RandomSingle(), 1.0f);
 			}
 
-			using(var buffer = _framework.Graphics.Shaders.CreateTypedBuffer(values, BufferFormat.R32G32B32A32_Float, false))
+			using(var buffer = _framework.Graphics.Shaders.CreateTypedBuffer(values, BufferFormat.R32G32B32A32_Float))
 			{
 				_framework.Graphics.Shaders.PixelShader.Resources.SetShaderBuffer(0, buffer);
 
@@ -138,6 +137,27 @@ namespace GorgonLibrary.Graphics.Test
 		}
 
         [TestMethod]
+        public void CreateUnorderedView()
+        {
+            var structBuffer = _framework.Graphics.Shaders.CreateStructuredBuffer(new GorgonStructuredBufferSettings()
+                {
+                    AllowCPUWrite = false,
+                    AllowUnorderedAccess = true,
+                    ElementCount = 5,
+                    ElementSize = 16
+                });
+
+            var view = structBuffer.CreateUnorderedAccessView(0, 5, StructuredBufferType.Standard);
+            view.Dispose();
+
+            view = structBuffer.CreateUnorderedAccessView(0, 5, StructuredBufferType.AppendConsume);
+            view.Dispose();
+
+            view = structBuffer.CreateUnorderedAccessView(0, 5, StructuredBufferType.Counter);
+            view.Dispose();
+        }
+
+        [TestMethod]
         public void BindRawBuffer()
         {
             _framework.CreateTestScene(_rbShaders, _rbShaders, false);
@@ -145,7 +165,7 @@ namespace GorgonLibrary.Graphics.Test
             var values = new byte[256 * 256 * 4];
 	        float angle = 0.0f;
 
-	        using(var buffer = _framework.Graphics.Shaders.CreateRawBuffer(values, false))
+	        using(var buffer = _framework.Graphics.Shaders.CreateRawBuffer(values))
 	        {
 		        _framework.Graphics.Shaders.PixelShader.Resources.SetShaderBuffer(0, buffer);
 

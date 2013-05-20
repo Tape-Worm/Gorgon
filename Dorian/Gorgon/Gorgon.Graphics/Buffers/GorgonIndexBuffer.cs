@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using GorgonLibrary.Diagnostics;
 using DX = SharpDX;
 using D3D11 = SharpDX.Direct3D11;
 using GorgonLibrary.IO;
@@ -79,6 +80,8 @@ namespace GorgonLibrary.Graphics
 
 		    D3DResource.Dispose();
 		    D3DResource = null;
+
+            Gorgon.Log.Print("Destroyed {0} {1}.", LoggingLevel.Verbose, GetType().FullName, Name);
 		}
 
 		/// <summary>
@@ -98,7 +101,7 @@ namespace GorgonLibrary.Graphics
 			        Usage = D3DUsage
 			    };
 
-			if (IsOutput)
+			if ((IsOutput) && (BufferUsage != BufferUsage.Staging) && (BufferUsage != BufferUsage.Immutable))
 			{
 				desc.BindFlags |= D3D11.BindFlags.StreamOutput;
 			}
@@ -119,10 +122,6 @@ namespace GorgonLibrary.Graphics
 
 		    GorgonRenderStatistics.IndexBufferCount++;
 			GorgonRenderStatistics.IndexBufferSize += ((D3D11.Buffer)D3DResource).Description.SizeInBytes;
-
-#if DEBUG
-			D3DResource.DebugName = "Gorgon Index Buffer #" + Graphics.GetGraphicsObjectOfType<GorgonIndexBuffer>().Count; 
-#endif
 		}
 
 		/// <summary>
@@ -226,12 +225,13 @@ namespace GorgonLibrary.Graphics
 		/// Initializes a new instance of the <see cref="GorgonIndexBuffer"/> class.
 		/// </summary>
 		/// <param name="graphics">The graphics.</param>
+		/// <param name="name">Name for this index buffer.</param>
 		/// <param name="usage">The buffer usage</param>
 		/// <param name="size">The size.</param>
 		/// <param name="is32Bit">TRUE to use 32 bit indices, FALSE to use 16 bit.</param>
 		/// <param name="isOutput">TRUE to allow the buffer to bound to stream output, FALSE to only allow stream input.</param>
-		internal GorgonIndexBuffer(GorgonGraphics graphics, BufferUsage usage, int size, bool is32Bit, bool isOutput)
-			: base(graphics, usage, size, isOutput)
+		internal GorgonIndexBuffer(GorgonGraphics graphics, string name, BufferUsage usage, int size, bool is32Bit, bool isOutput)
+			: base(graphics, name, usage, size, isOutput)
 		{
 			Is32Bit = is32Bit;
 		}

@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using GorgonLibrary.Diagnostics;
 using DX = SharpDX;
 using D3D11 = SharpDX.Direct3D11;
 using GorgonLibrary.IO;
@@ -71,6 +72,8 @@ namespace GorgonLibrary.Graphics
 
 		    D3DResource.Dispose();
 		    D3DResource = null;
+
+            Gorgon.Log.Print("Destroyed {0} {1}.", LoggingLevel.Verbose, GetType().FullName, Name);
 		}
 
 		/// <summary>
@@ -90,7 +93,7 @@ namespace GorgonLibrary.Graphics
 			        Usage = D3DUsage
 			    };
 
-			if (IsOutput)
+			if ((IsOutput) && (BufferUsage != BufferUsage.Staging) && (BufferUsage != BufferUsage.Immutable))
 			{
 				desc.BindFlags |= D3D11.BindFlags.StreamOutput;
 			}
@@ -111,10 +114,6 @@ namespace GorgonLibrary.Graphics
 
 		    GorgonRenderStatistics.VertexBufferCount++;
 			GorgonRenderStatistics.VertexBufferSize += ((D3D11.Buffer)D3DResource).Description.SizeInBytes;
-
-#if DEBUG
-			D3DResource.DebugName = "Gorgon Vertex Buffer #" + Graphics.GetGraphicsObjectOfType<GorgonVertexBuffer>().Count;
-#endif
 		}
 
 		/// <summary>
@@ -217,11 +216,12 @@ namespace GorgonLibrary.Graphics
 		/// Initializes a new instance of the <see cref="GorgonVertexBuffer"/> class.
 		/// </summary>
 		/// <param name="graphics">The graphics.</param>
+		/// <param name="name">Name of the buffer.</param>
 		/// <param name="usage">The buffer usage</param>
 		/// <param name="size">The size.</param>
 		/// <param name="isOutput">TRUE if the buffer can be used in stream output, FALSE to only allow stream input.</param>
-		internal GorgonVertexBuffer(GorgonGraphics graphics, BufferUsage usage, int size, bool isOutput)
-			: base(graphics, usage, size, isOutput)
+		internal GorgonVertexBuffer(GorgonGraphics graphics, string name, BufferUsage usage, int size, bool isOutput)
+			: base(graphics, name, usage, size, isOutput)
 		{
 		}
 		#endregion

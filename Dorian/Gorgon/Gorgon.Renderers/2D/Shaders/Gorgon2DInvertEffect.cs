@@ -136,7 +136,7 @@ namespace GorgonLibrary.Renderers
 #else
 			PixelShader = Graphics.Shaders.CreateShader<GorgonPixelShader>("Effect.2D.Invert.PS", "GorgonPixelShaderInvert", "#GorgonInclude \"Gorgon2DShaders\"", false);
 #endif
-			_invertBuffer = Graphics.Shaders.CreateConstantBuffer(16, false);
+			_invertBuffer = Graphics.Shaders.CreateConstantBuffer(16, "Gorgon2DInvertEffect Constant Buffer");
 			_invertStream = new GorgonDataStream(16);
 		}
 		#endregion

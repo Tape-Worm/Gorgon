@@ -193,6 +193,8 @@ namespace GorgonLibrary.Graphics
 
 		    D3DResource.Dispose();
 		    D3DResource = null;
+
+            Gorgon.Log.Print("Destroyed {0} {1}.", LoggingLevel.Verbose, GetType().FullName, Name);
 		}
 
 		/// <summary>
@@ -234,10 +236,6 @@ namespace GorgonLibrary.Graphics
 
 		    GorgonRenderStatistics.BufferCount++;
 			GorgonRenderStatistics.BufferSize += ((D3D11.Buffer)D3DResource).Description.SizeInBytes;
-
-#if DEBUG
-			D3DResource.DebugName = "Gorgon Structured Buffer #" + Graphics.GetGraphicsObjectOfType<GorgonBuffer>().Count;
-#endif
 		}
 
 		/// <summary>
@@ -247,6 +245,7 @@ namespace GorgonLibrary.Graphics
 		/// <remarks>Passing NULL (Nothing in VB.Net) to the <paramref name="data"/> parameter should ignore the initialization and create the backing buffer as normal.</remarks>
 		internal void Initialize(GorgonDataStream data)
 		{
+            Gorgon.Log.Print("Creating {0} {1}...", LoggingLevel.Verbose, GetType().FullName, Name);
 			InitializeImpl(data);
 			D3DBuffer = (D3D11.Buffer)D3DResource;
 		}
@@ -468,16 +467,17 @@ namespace GorgonLibrary.Graphics
 		#endregion
 
 		#region Constructor/Destructor.
-		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonBuffer"/> class.
-		/// </summary>
-		/// <param name="graphics">The graphics interface used to create this object.</param>
-		/// <param name="usage">Usage for this buffer.</param>
-		/// <param name="size">The size of the buffer, in bytes.</param>
-		/// <param name="isOutput"></param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="graphics"/> parameter is NULL (Nothing in VB.Net).</exception>
-		internal GorgonBuffer(GorgonGraphics graphics, BufferUsage usage, int size, bool isOutput)
-			: base(graphics)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GorgonBuffer" /> class.
+        /// </summary>
+        /// <param name="graphics">The graphics interface used to create this object.</param>
+        /// <param name="name">Name of the buffer.</param>
+        /// <param name="usage">Usage for this buffer.</param>
+        /// <param name="size">The size of the buffer, in bytes.</param>
+        /// <param name="isOutput">if set to <c>true</c> [is output].</param>
+        /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="graphics" /> parameter is NULL (Nothing in VB.Net).</exception>
+		internal GorgonBuffer(GorgonGraphics graphics, string name, BufferUsage usage, int size, bool isOutput)
+			: base(graphics, name)
 		{
 			_size = size;
 			BufferUsage = usage;

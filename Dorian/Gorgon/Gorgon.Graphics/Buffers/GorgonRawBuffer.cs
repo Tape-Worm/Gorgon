@@ -101,6 +101,13 @@ namespace GorgonLibrary.Graphics
 		            Usage = D3DUsage
 		        };
 
+            if ((IsOutput)
+                && (BufferUsage != BufferUsage.Immutable)
+                && (BufferUsage != BufferUsage.Staging))
+            {
+                desc.BindFlags |= D3D.BindFlags.StreamOutput;
+            }
+
 			if ((BufferUsage != BufferUsage.Staging) && (Settings.CreateUnderedAccessView))
 			{
 				desc.BindFlags |= D3D.BindFlags.UnorderedAccess;
@@ -123,10 +130,7 @@ namespace GorgonLibrary.Graphics
 		    GorgonRenderStatistics.RawBufferCount++;
 			GorgonRenderStatistics.RawBufferSize += ((D3D.Buffer)D3DResource).Description.SizeInBytes;
 
-#if DEBUG
-			D3DResource.DebugName = "Gorgon Raw Buffer #" + Graphics.GetGraphicsObjectOfType<GorgonRawBuffer>().Count;
-#endif
-			CreateDefaultResourceView();
+            CreateDefaultResourceView();
 		}
 
 		/// <summary>
@@ -142,21 +146,14 @@ namespace GorgonLibrary.Graphics
 		/// </remarks>
 		/// <exception cref="GorgonLibrary.GorgonException">Thrown when the usage for this buffer is set to Staging.
 		/// <para>-or-</para>
-		/// <para>Thrown when the video device feature level is not SM_5 or better.</para>
-		/// <para>-or-</para>
 		/// <para>Thrown when the resource settings do not allow unordered access views.</para>
 		/// <para>-or-</para>
 		/// <para>Thrown when the view could not be created.</para>
 		/// </exception>
 		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="start"/> or <paramref name="count"/> parameters are less than 0 or greater than or equal to the 
 		/// number of elements in the buffer.</exception>
-		public GorgonBufferUnorderAccessView CreateUnorderedAccessView(BufferFormat format, int start, int count)
+		public GorgonRawBufferUnorderedAccessView CreateUnorderedAccessView(BufferFormat format, int start, int count)
 		{
-			if (Graphics.VideoDevice.SupportedFeatureLevel < DeviceFeatureLevel.SM5)
-			{
-				throw new GorgonException(GorgonResult.CannotCreate, "Unordered access views are only available on video devices that support SM_5 or better.");
-			}
-
 			if (!Settings.AllowUnorderedAccess)
 			{
 				throw new GorgonException(GorgonResult.CannotCreate, "The buffer does not allow unordered access.");
@@ -189,7 +186,7 @@ namespace GorgonLibrary.Graphics
 					"format");
 			}
 
-			return new GorgonBufferUnorderAccessView(this, format, start, count, false);
+			return new GorgonRawBufferUnorderedAccessView(this, format, start, count);
 		}
 		
 		/// <summary>
@@ -227,10 +224,11 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Initializes a new instance of the <see cref="GorgonRawBuffer" /> class.
 		/// </summary>
+		/// <param name="name">Name of the buffer.</param>
 		/// <param name="graphics">Graphics interface that owns this buffer.</param>
 		/// <param name="settings">The settings to apply to the typed buffer.</param>
-		internal GorgonRawBuffer(GorgonGraphics graphics, GorgonRawBufferSettings settings)
-			: base(graphics, settings, settings.ElementCount)
+		internal GorgonRawBuffer(GorgonGraphics graphics, string name, GorgonRawBufferSettings settings)
+			: base(graphics, name, settings, settings.ElementCount)
 		{
 		}
 		#endregion

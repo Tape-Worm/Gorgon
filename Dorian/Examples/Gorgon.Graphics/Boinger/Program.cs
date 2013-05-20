@@ -382,7 +382,7 @@ namespace GorgonLibrary.Graphics.Example
 			// We need to create a layout for our vertex type because the shader won't know
 			// how to interpret the data we're sending it otherwise.  This is why we need a 
 			// vertex shader before we even create the layout.
-			_inputLayout = Graphics.Input.CreateInputLayout("InputLayout", typeof(BoingerVertex), _vertexShader);
+			_inputLayout = Graphics.Input.CreateInputLayout(typeof(BoingerVertex), _vertexShader, "InputLayout");
 
 			// Create the view port.
 			// This just tells the renderer how big our display is.
@@ -410,7 +410,7 @@ namespace GorgonLibrary.Graphics.Example
 			// the constant buffer is our system memory store for the data.  Basically we write to the system 
 			// memory and then upload that data to the video card.  This is very different from how things used to
 			// work, but allows a lot more flexibility.  
-			_wvpBuffer = Graphics.Shaders.CreateConstantBuffer(Matrix.SizeInBytes, false);
+			_wvpBuffer = Graphics.Shaders.CreateConstantBuffer(Matrix.SizeInBytes, false, "WVPBuffer");
 			_wvpBufferStream = new GorgonDataStream(_wvpBuffer.SizeInBytes);
 
 			// Create our planes.

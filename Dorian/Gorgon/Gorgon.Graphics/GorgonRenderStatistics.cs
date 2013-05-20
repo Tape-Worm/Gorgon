@@ -222,6 +222,15 @@ namespace GorgonLibrary.Graphics
 			get;
 			internal set;
 		}
+
+        /// <summary>
+        /// Property to return the number of input layouts that have been created.
+        /// </summary>
+        public static int InputLayoutCount
+        {
+            get;
+            internal set;
+        }
 		#endregion
 
 		#region Methods.
@@ -241,6 +250,7 @@ namespace GorgonLibrary.Graphics
 		static GorgonRenderStatistics()
 		{
 			DrawCallCount = 0;
+		    InputLayoutCount = 0;
 			VertexBufferCount = 0;
 			VertexBufferSize = 0;
 			IndexBufferSize = 0;

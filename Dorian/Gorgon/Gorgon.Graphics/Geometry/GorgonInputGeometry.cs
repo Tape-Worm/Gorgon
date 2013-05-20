@@ -36,7 +36,8 @@ using GorgonLibrary.Graphics.Properties;
 
 namespace GorgonLibrary.Graphics
 {
-	/// <summary>
+    #region Enums
+    /// <summary>
 	/// Primitive type.
 	/// </summary>
 	public enum PrimitiveType
@@ -210,8 +211,9 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		PatchListWith32ControlPoints = 64,
 	}
+    #endregion
 
-	/// <summary>
+    /// <summary>
 	/// Manages the input bindings such as the vertex/index buffer, input layout and primitive types.
 	/// </summary>
 	public sealed class GorgonInputGeometry
@@ -599,52 +601,66 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Function to create a index buffer.
 		/// </summary>
-		/// <param name="usage">Usage of the buffer.</param>
-		/// <param name="is32Bit">TRUE to indicate that we're using 32 bit indices, FALSE to use 16 bit indices </param>
+        /// <param name="name">The name of the buffer.</param>
 		/// <param name="data">Data used to initialize the buffer.</param>
+        /// <param name="usage">[Optional] Usage of the buffer.</param>
+        /// <param name="is32Bit">[Optional] TRUE to indicate that we're using 32 bit indices, FALSE to use 16 bit indices </param>
 		/// <typeparam name="T">Type of data used to populate the buffer.</typeparam>
 		/// <returns>A new index buffer.</returns>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> is NULL (Nothing in VB.Net).
+		/// <para>-or-</para>
+		/// <para>Thrown when the <paramref name="data"/> parameter is NULL.</para>
+		/// </exception> 
 		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="usage"/> parameter is set to Staging.
 		/// <para>-or-</para>
 		/// <para>Thrown when the usage parameter is set to Immutable and the <paramref name="data"/> is NULL (Nothing in VB.Net) or empty.</para>
+		/// <para>-or-</para>
+		/// <para>Thrown when the <paramref name="name"/> parameter is empty.</para>
 		/// </exception>
 		/// <remarks>If creating an immutable index buffer, be sure to pre-populate it via the initialData parameter.</remarks>
-		public GorgonIndexBuffer CreateIndexBuffer<T>(BufferUsage usage, bool is32Bit, T[] data)
+        public GorgonIndexBuffer CreateIndexBuffer<T>(string name, T[] data, BufferUsage usage, bool is32Bit = true)
 			where T : struct
 		{
+            if (data == null)
+            {
+                throw new ArgumentNullException("data");
+            }
+
+            if (data.Length == 0)
+            {
+                throw new ArgumentException(Resources.GORGFX_PARAMETER_MUST_NOT_BE_EMPTY, "data");
+            }
+
 			int size = data.Length * DirectAccess.SizeOf<T>();
 
 			using (var dataStream = new GorgonDataStream(data))
 			{
-				return CreateIndexBuffer(size, usage, is32Bit, false, dataStream);
+				return CreateIndexBuffer(name, size, usage, is32Bit, false, dataStream);
 			}
 		}
 
 		/// <summary>
 		/// Function to create a index buffer.
 		/// </summary>
-		/// <param name="size">Size of the buffer, in bytes.</param>
-		/// <param name="usage">Usage of the buffer.</param>
-		/// <param name="is32Bit">TRUE to indicate that we're using 32 bit indices, FALSE to use 16 bit indices </param>
-		/// <param name="isOutput">TRUE to allow this buffer to be used in stream output, FALSE to only allow stream input.</param>
-		/// <param name="initialData">Initial data to populate the index buffer with.</param>
+        /// <param name="name">The name of the buffer.</param>
+        /// <param name="size">Size of the buffer, in bytes.</param>
+		/// <param name="usage">[Optional] Usage of the buffer.</param>
+		/// <param name="is32Bit">[Optional] TRUE to indicate that we're using 32 bit indices, FALSE to use 16 bit indices </param>
+		/// <param name="isOutput">[Optional] TRUE to allow this buffer to be used in stream output, FALSE to only allow stream input.</param>
+		/// <param name="initialData">[Optional] Initial data to populate the index buffer with.</param>
 		/// <returns>A new index buffer.</returns>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (Nothing in VB.Net).</exception>
 		/// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="size"/> parameter is less than 1.</exception>
-		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="usage"/> parameter is set to Staging.
+		/// <exception cref="System.ArgumentException">Thrown when the usage parameter is set to Immutable and the <paramref name="initialData"/> is NULL (Nothing in VB.Net).
 		/// <para>-or-</para>
-		/// <para>Thrown when the usage parameter is set to Immutable and the <paramref name="initialData"/> is NULL (Nothing in VB.Net).</para>
+		/// <para>Thrown when the <paramref name="name"/> parameter is empty.</para>
 		/// </exception>
 		/// <remarks>If creating an immutable index buffer, be sure to pre-populate it via the initialData parameter.</remarks>
-		public GorgonIndexBuffer CreateIndexBuffer(int size, BufferUsage usage, bool is32Bit, bool isOutput = false, GorgonDataStream initialData = null)
+		public GorgonIndexBuffer CreateIndexBuffer(string name, int size, BufferUsage usage = BufferUsage.Default, bool is32Bit = true, bool isOutput = false, GorgonDataStream initialData = null)
 		{
-			if (size < 1)
+            if (size < 1)
 			{
 				throw new ArgumentOutOfRangeException("size");
-			}
-
-			if (usage == BufferUsage.Staging)
-			{
-				throw new ArgumentException(Resources.GORGFX_BUFFER_NO_STAGING, "usage");
 			}
 
 			if ((usage == BufferUsage.Immutable) && ((initialData == null) || (initialData.Length == 0)))
@@ -652,7 +668,12 @@ namespace GorgonLibrary.Graphics
 				throw new ArgumentException(Resources.GORGFX_BUFFER_IMMUTABLE_REQUIRES_DATA, "usage");
 			}
 
-			var buffer = new GorgonIndexBuffer(_graphics, usage, size, is32Bit, isOutput);
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                name = string.Format("IndexBuffer #{0}", GorgonRenderStatistics.IndexBufferCount);
+            }
+
+			var buffer = new GorgonIndexBuffer(_graphics, name, usage, size, is32Bit, isOutput);
 			buffer.Initialize(initialData);
 
 			_graphics.AddTrackedObject(buffer);
@@ -662,16 +683,24 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Function to create a vertex buffer.
 		/// </summary>
-		/// <param name="usage">Usage of the buffer.</param>
+        /// <param name="name">Name of the vertex buffer.</param>
 		/// <param name="data">Data used to initialize the buffer.</param>
-		/// <typeparam name="T">Type of data used to populate the buffer.</typeparam>
+        /// <param name="usage">[Optional] Usage of the buffer.</param>
+        /// <typeparam name="T">Type of data used to populate the buffer.</typeparam>
 		/// <returns>A new vertex buffer.</returns>
+        /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (Nothing in VB.Net).
+        /// <para>-or-</para>
+        /// <para>Thrown when the <paramref name="data"/> parameter is NULL.</para>
+        /// </exception>
 		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="usage"/> parameter is set to Staging.
 		/// <para>-or-</para>
 		/// <para>Thrown when the usage parameter is set to Immutable and the <paramref name="data"/> is NULL (Nothing in VB.Net) or empty.</para>
-		/// </exception>
-		/// <remarks>If creating an immutable vertex buffer, be sure to pre-populate it via the initialData parameter.</remarks>
-		public GorgonVertexBuffer CreateVertexBuffer<T>(BufferUsage usage, T[] data)
+        /// <para>-or-</para>
+        /// <para>Thrown when the <paramref name="name"/> or the <paramref name="data"/> parameter is empty.</para>
+        /// </exception>
+		/// <remarks>If creating an immutable vertex buffer, be sure to pre-populate it via the initialData parameter.
+		/// </remarks>
+        public GorgonVertexBuffer CreateVertexBuffer<T>(string name, T[] data, BufferUsage usage = BufferUsage.Default)
 			where T : struct
 		{
 			if (data == null)
@@ -679,29 +708,39 @@ namespace GorgonLibrary.Graphics
 				throw new ArgumentNullException("data");
 			}
 
+            if (data.Length == 0)
+            {
+                throw new ArgumentException(Resources.GORGFX_PARAMETER_MUST_NOT_BE_EMPTY, "data");
+            }
+
 			int size = data.Length * DirectAccess.SizeOf<T>();
 
 			using (var dataStream = new GorgonDataStream(data))
 			{
-				return CreateVertexBuffer(size, usage, false, dataStream);
+				return CreateVertexBuffer(name, size, usage, false, dataStream);
 			}
 		}
 
 		/// <summary>
 		/// Function to create a vertex buffer.
 		/// </summary>
-		/// <param name="size">Size of the buffer, in bytes.</param>
-		/// <param name="usage">Usage of the buffer.</param>
-		/// <param name="isOutput">TRUE to allow this buffer to be used in stream output, FALSE to only allow stream input.</param>
-		/// <param name="initialData">Initial data to populate the vertex buffer with.</param>
+        /// <param name="name">Name of the vertex buffer.</param>
+        /// <param name="size">Size of the buffer, in bytes.</param>
+		/// <param name="usage">[Optional] Usage of the buffer.</param>
+        /// <param name="isOutput">[Optional] TRUE to allow this buffer to be used in stream output, FALSE to only allow stream input.</param>
+		/// <param name="initialData">[Optional] Initial data to populate the vertex buffer with.</param>
 		/// <returns>A new vertex buffer.</returns>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (Nothing in VB.Net).</exception>
 		/// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="size"/> parameter is less than 1.</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="usage"/> parameter is set to Staging.
 		/// <para>-or-</para>
 		/// <para>Thrown when the usage parameter is set to Immutable and the <paramref name="initialData"/> is NULL (Nothing in VB.Net).</para>
+		/// <para>-or-</para>
+		/// <para>Thrown when the <paramref name="name"/> parameter is empty.</para>
 		/// </exception>
-		/// <remarks>If creating an immutable vertex buffer, be sure to pre-populate it via the initialData parameter.</remarks>
-		public GorgonVertexBuffer CreateVertexBuffer(int size, BufferUsage usage, bool isOutput = false, GorgonDataStream initialData = null)
+		/// <remarks>If creating an immutable vertex buffer, be sure to pre-populate it via the initialData parameter.
+		/// </remarks>
+		public GorgonVertexBuffer CreateVertexBuffer(string name, int size, BufferUsage usage = BufferUsage.Default, bool isOutput = false, GorgonDataStream initialData = null)
 		{
 			if (size < 1)
 			{
@@ -718,7 +757,12 @@ namespace GorgonLibrary.Graphics
 				throw new ArgumentException(Resources.GORGFX_BUFFER_IMMUTABLE_REQUIRES_DATA, "usage");
 			}
 
-			var buffer = new GorgonVertexBuffer(_graphics, usage, size, isOutput);
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                name = string.Format("VertexBuffer #{0}", GorgonRenderStatistics.VertexBufferCount);
+            }
+
+			var buffer = new GorgonVertexBuffer(_graphics, name, usage, size, isOutput);
 			buffer.Initialize(initialData);
 
 			_graphics.AddTrackedObject(buffer);
@@ -728,8 +772,8 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Function to create an input layout object from a predefined type.
 		/// </summary>
-		/// <param name="name">Name of the input layout.</param>
-		/// <param name="type">Type to evaluate.</param>
+        /// <param name="name">The name of the input layout.</param>
+        /// <param name="type">Type to evaluate.</param>
 		/// <param name="shader">The shader that holds the input layout signature.</param>
 		/// <returns>The input layout object to create.</returns>
 		/// <exception cref="System.ArgumentException">Thrown when then <paramref name="name"/> parameter is an empty string.</exception>
@@ -754,7 +798,7 @@ namespace GorgonLibrary.Graphics
                 throw new ArgumentNullException("shader");
             }
 
-			var layout = new GorgonInputLayout(_graphics, name, shader);
+            var layout = new GorgonInputLayout(_graphics, name, shader);
 			layout.InitializeFromType(type);
 
 			_graphics.AddTrackedObject(layout);
@@ -765,8 +809,8 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Function to create an input layout object.
 		/// </summary>
-		/// <param name="name">Name of the input layout.</param>
-		/// <param name="elements">The input elements to assign to the layout.</param>
+        /// <param name="name">The name of the input layout.</param>
+        /// <param name="elements">The input elements to assign to the layout.</param>
 		/// <param name="shader">The shader that holds the input layout signature.</param>
 		/// <returns>The input layout object to create.</returns>
 		/// <exception cref="System.ArgumentException">Thrown when then name parameter is an empty string.</exception>
@@ -796,7 +840,7 @@ namespace GorgonLibrary.Graphics
 			{
 				throw new ArgumentException(Resources.GORGFX_PARAMETER_MUST_NOT_BE_EMPTY, "elements");	
 			}
-			
+
 			var layout = new GorgonInputLayout(_graphics, name, shader);
 			layout.InitializeFromList(elements);
 

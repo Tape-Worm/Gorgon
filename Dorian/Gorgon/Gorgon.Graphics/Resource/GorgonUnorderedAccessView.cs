@@ -41,7 +41,12 @@ namespace GorgonLibrary.Graphics
     /// <para>Unordered access views are only available on SM_5 or better video devices.</para>
     /// </remarks>
     public abstract class GorgonUnorderedAccessView
+        : IDisposable
     {
+        #region Variables.
+        private bool _disposed;             // Flag to indicate whether this object was disposed or not.
+        #endregion
+
         #region Properties.
         /// <summary>
         /// Property to return the Direct3D unordered access resource view.
@@ -133,6 +138,39 @@ namespace GorgonLibrary.Graphics
             Resource = resource;
             Format = format;
             FormatInformation = GorgonBufferFormatInfo.GetInfo(Format);
+        }
+        #endregion
+
+        #region IDisposable Members
+        /// <summary>
+        /// Releases unmanaged and - optionally - managed resources.
+        /// </summary>
+        /// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
+        private void Dispose(bool disposing)
+        {
+            if (_disposed)
+            {
+                return;
+            }
+
+            if (disposing)
+            {
+                if (D3DView != null)
+                {
+                    D3DView.Dispose();
+                    D3DView = null;
+                }
+            }
+
+            _disposed = true;
+        }
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
         }
         #endregion
     }
