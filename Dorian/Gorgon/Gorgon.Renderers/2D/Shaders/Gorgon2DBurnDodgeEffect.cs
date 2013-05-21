@@ -159,7 +159,11 @@ namespace GorgonLibrary.Renderers
 #else
 			PixelShader = Graphics.Shaders.CreateShader<GorgonPixelShader>("Effect.2D.BurnDodge.PS", "GorgonPixelShaderBurnDodge", "#GorgonInclude \"Gorgon2DShaders\"", false);
 #endif
-            _burnDodgeBuffer = Graphics.Shaders.CreateConstantBuffer(16, "Gorgon2DBurnDodgeEffect Constant Buffer");
+			_burnDodgeBuffer = Graphics.Shaders.CreateConstantBuffer("Gorgon2DBurnDodgeEffect Constant Buffer",
+																new GorgonConstantBufferSettings
+																{
+																	SizeInBytes = 16
+																});
 			_burnDodgeStream = new GorgonDataStream(16);
 		}
 		#endregion

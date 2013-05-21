@@ -193,7 +193,11 @@ namespace GorgonLibrary.Renderers
 #endif
 
 			_sharpenEmbossStream = new GorgonDataStream(16);
-            _sharpenEmbossBuffer = Graphics.Shaders.CreateConstantBuffer(16, "Gorgon2DSharpenEmbossEffect Constant Buffer");
+			_sharpenEmbossBuffer = Graphics.Shaders.CreateConstantBuffer("Gorgon2DSharpenEmbossEffect Constant Buffer",
+																new GorgonConstantBufferSettings
+																{
+																	SizeInBytes = 16
+																});
 		}
 		#endregion
 	}

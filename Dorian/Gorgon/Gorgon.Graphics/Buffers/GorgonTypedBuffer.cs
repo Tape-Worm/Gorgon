@@ -27,7 +27,6 @@
 using System;
 using DX = SharpDX;
 using D3D = SharpDX.Direct3D11;
-using GorgonLibrary.Native;
 using GorgonLibrary.IO;
 using GorgonLibrary.Graphics.Properties;
 
@@ -43,23 +42,14 @@ namespace GorgonLibrary.Graphics
 		where T : struct
 	{
 		#region Properties.
-        /// <summary>
-        /// Property to return the size of an element, in bytes.
-        /// </summary>
-        public int ElementSize
-        {
-            get;
-            private set;
-        }
-
 		/// <summary>
 		/// Property to return the settings for the buffer.
 		/// </summary>
-		public new GorgonTypedBufferSettings Settings
+		public new GorgonTypedBufferSettings<T> Settings
 		{
 			get
 			{
-				return (GorgonTypedBufferSettings)base.Settings;
+				return (GorgonTypedBufferSettings<T>)base.Settings;
 			}
 		}
 		#endregion
@@ -70,7 +60,7 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		private void CreateDefaultResourceView()
 		{
-		    if ((BufferUsage == GorgonLibrary.Graphics.BufferUsage.Staging)
+		    if ((Settings.Usage == GorgonLibrary.Graphics.BufferUsage.Staging)
                 || (Settings.ShaderViewFormat == BufferFormat.Unknown))
 		    {
 		        return;
@@ -107,21 +97,21 @@ namespace GorgonLibrary.Graphics
 
 		    var desc = new D3D.BufferDescription
 		        {
-		            BindFlags = BufferUsage == BufferUsage.Staging ? D3D.BindFlags.None : D3D.BindFlags.ShaderResource,
+		            BindFlags = Settings.Usage == BufferUsage.Staging ? D3D.BindFlags.None : D3D.BindFlags.ShaderResource,
 		            CpuAccessFlags = D3DCPUAccessFlags,
 		            OptionFlags = D3D.ResourceOptionFlags.None,
 		            SizeInBytes = SizeInBytes,
 		            Usage = D3DUsage
 		        };
 
-            if ((IsOutput)
-                && (BufferUsage != BufferUsage.Immutable)
-                && (BufferUsage != BufferUsage.Staging))
+            if ((Settings.IsOutput)
+                && (Settings.Usage != BufferUsage.Immutable)
+                && (Settings.Usage != BufferUsage.Staging))
             {
                 desc.BindFlags |= D3D.BindFlags.StreamOutput;
             }
             
-            if ((BufferUsage != BufferUsage.Staging) && (Settings.AllowUnorderedAccess))
+            if ((Settings.Usage != BufferUsage.Staging) && (Settings.AllowUnorderedAccess))
 			{
 				desc.BindFlags |= D3D.BindFlags.UnorderedAccess;
 			}
@@ -179,9 +169,14 @@ namespace GorgonLibrary.Graphics
 				throw new GorgonException(GorgonResult.CannotCreate, "The buffer does not allow unordered access.");
 			}
 
-			if (BufferUsage == BufferUsage.Staging)
+			if (Settings.Usage == BufferUsage.Staging)
 			{
-				throw new GorgonException(GorgonResult.CannotCreate, "Cannot create an unordered access resource view for a buffer that has a usage of Staging.");
+				throw new GorgonException(GorgonResult.CannotBind, "Cannot create an unordered access resource view for a buffer that has a usage of [Staging].");
+			}
+
+			if (Settings.Usage == BufferUsage.Dynamic)
+			{
+				throw new GorgonException(GorgonResult.CannotBind, "Cannot create an unordered access resource view for a buffer that has a usage of [Dynamic].");
 			}
 
 			if (format == BufferFormat.Unknown)
@@ -197,13 +192,13 @@ namespace GorgonLibrary.Graphics
 			// Ensure the size of the data type fits the requested format.
 			var info = GorgonBufferFormatInfo.GetInfo(format);
 
-			if (info.SizeInBytes != ElementSize)
+			if (info.SizeInBytes != Settings.ElementSize)
 			{
 				throw new ArgumentException(
 					string.Format(
 						"The size of the format: {0} bytes, does not match the size of the data type: {1} bytes.",
 						info.SizeInBytes,
-						ElementSize),
+						Settings.ElementSize),
 					"format");
 			}
 
@@ -228,7 +223,7 @@ namespace GorgonLibrary.Graphics
         /// </remarks>
         public GorgonBufferShaderView CreateShaderView(BufferFormat format, int start, int count)
         {
-            if (BufferUsage == BufferUsage.Staging)
+            if (Settings.Usage == BufferUsage.Staging)
             {
                 throw new GorgonException(GorgonResult.CannotCreate, "Cannot create a shader resource view for a buffer that has a usage of Staging.");
             }
@@ -246,13 +241,13 @@ namespace GorgonLibrary.Graphics
 			// Ensure the size of the data type fits the requested format.
 			var info = GorgonBufferFormatInfo.GetInfo(format);
 				
-			if (info.SizeInBytes != ElementSize)
+			if (info.SizeInBytes != Settings.ElementSize)
 		    {
 			    throw new ArgumentException(
 				    string.Format(
 					    "The size of the format: {0} bytes, does not match the size of the data type: {1} bytes.",
 					    info.SizeInBytes,
-					    ElementSize),
+					    Settings.ElementSize),
 				    "format");
 		    }
 
@@ -267,10 +262,9 @@ namespace GorgonLibrary.Graphics
 		/// <param name="graphics">Graphics interface that owns this buffer.</param>
 		/// <param name="name">Name of the buffer.</param>
 		/// <param name="settings">The settings to apply to the typed buffer.</param>
-		internal GorgonTypedBuffer(GorgonGraphics graphics, string name, GorgonTypedBufferSettings settings)
-			: base(graphics, name, settings, settings.ElementCount * DirectAccess.SizeOf<T>())
+		internal GorgonTypedBuffer(GorgonGraphics graphics, string name, GorgonTypedBufferSettings<T> settings)
+			: base(graphics, name, settings)
 		{
-		    ElementSize = DirectAccess.SizeOf<T>();
 		}
 		#endregion
 	}

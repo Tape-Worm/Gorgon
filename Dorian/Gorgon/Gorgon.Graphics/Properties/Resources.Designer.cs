@@ -79,6 +79,24 @@ namespace GorgonLibrary.Graphics.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The buffer requires at least {0} element(s)..
+        /// </summary>
+        internal static string GORGFX_BUFFER_ELEMENT_COUNT_INVALID {
+            get {
+                return ResourceManager.GetString("GORGFX_BUFFER_ELEMENT_COUNT_INVALID", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The size of the format: {0} bytes, does not match the size of the data type: {1} bytes..
+        /// </summary>
+        internal static string GORGFX_BUFFER_FORMAT_SIZE_MISMATCH {
+            get {
+                return ResourceManager.GetString("GORGFX_BUFFER_FORMAT_SIZE_MISMATCH", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to This buffer is immutable and this cannot be updated..
         /// </summary>
         internal static string GORGFX_BUFFER_IMMUTABLE {
@@ -124,6 +142,15 @@ namespace GorgonLibrary.Graphics.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Cannot create the buffer.  The buffer size of {0} bytes is not a multiple of {1}..
+        /// </summary>
+        internal static string GORGFX_BUFFER_NOT_MULTIPLE {
+            get {
+                return ResourceManager.GetString("GORGFX_BUFFER_NOT_MULTIPLE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The buffer must use [NoOverwrite] or [Discard] when locking..
         /// </summary>
         internal static string GORGFX_BUFFER_REQUIRES_NOOVERWRITE_DISCARD {
@@ -138,6 +165,15 @@ namespace GorgonLibrary.Graphics.Properties {
         internal static string GORGFX_BUFFER_SIZE_MISMATCH {
             get {
                 return ResourceManager.GetString("GORGFX_BUFFER_SIZE_MISMATCH", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The buffer requires at least {0} byte(s)..
+        /// </summary>
+        internal static string GORGFX_BUFFER_SIZE_TOO_SMALL {
+            get {
+                return ResourceManager.GetString("GORGFX_BUFFER_SIZE_TOO_SMALL", resourceCulture);
             }
         }
         
@@ -174,15 +210,6 @@ namespace GorgonLibrary.Graphics.Properties {
         internal static string GORGFX_CANNOT_RETRIEVE_KERNING {
             get {
                 return ResourceManager.GetString("GORGFX_CANNOT_RETRIEVE_KERNING", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Cannot create the constant buffer.  The buffer size of {0} bytes is not a multiple of 16..
-        /// </summary>
-        internal static string GORGFX_CBUFFER_NOT_MULTIPLE_OF_16 {
-            get {
-                return ResourceManager.GetString("GORGFX_CBUFFER_NOT_MULTIPLE_OF_16", resourceCulture);
             }
         }
         
@@ -309,6 +336,15 @@ namespace GorgonLibrary.Graphics.Properties {
         internal static string GORGFX_PARAMETER_MUST_NOT_BE_EMPTY {
             get {
                 return ResourceManager.GetString("GORGFX_PARAMETER_MUST_NOT_BE_EMPTY", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to A {0} video device is necessary to use this object or perform this operation..
+        /// </summary>
+        internal static string GORGFX_REQUIRES_SM {
+            get {
+                return ResourceManager.GetString("GORGFX_REQUIRES_SM", resourceCulture);
             }
         }
         

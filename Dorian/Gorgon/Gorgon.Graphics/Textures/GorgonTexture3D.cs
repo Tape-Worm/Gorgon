@@ -59,10 +59,6 @@ namespace GorgonLibrary.Graphics
 			{
 				return (GorgonTexture3DSettings)base.Settings;
 			}
-			private set
-			{
-				base.Settings = value;
-			}
 		}
 		#endregion
 

@@ -181,8 +181,8 @@
   <data name="GORGFX_BUFFER_LOCK_NOT_WRITE_DISCARD" xml:space="preserve">
     <value>This buffer must be locked with the [Write] and [Discard] flags.</value>
   </data>
-  <data name="GORGFX_CBUFFER_NOT_MULTIPLE_OF_16" xml:space="preserve">
-    <value>Cannot create the constant buffer.  The buffer size of {0} bytes is not a multiple of 16.</value>
+  <data name="GORGFX_BUFFER_NOT_MULTIPLE" xml:space="preserve">
+    <value>Cannot create the buffer.  The buffer size of {0} bytes is not a multiple of {1}.</value>
   </data>
   <data name="GORGFX_VERTEXBUFFER_BINDING_TOSTR" xml:space="preserve">
     <value>Vertex buffer binding.  Stride: {0}, Offset: {1}, VertexBuffer: {2}</value>
@@ -255,5 +255,17 @@
   </data>
   <data name="GORGFX_VIEW_DEPTH_START_INVALID" xml:space="preserve">
     <value>The depth start must be between 0 and less than {0}.</value>
+  </data>
+  <data name="GORGFX_BUFFER_ELEMENT_COUNT_INVALID" xml:space="preserve">
+    <value>The buffer requires at least {0} element(s).</value>
+  </data>
+  <data name="GORGFX_BUFFER_FORMAT_SIZE_MISMATCH" xml:space="preserve">
+    <value>The size of the format: {0} bytes, does not match the size of the data type: {1} bytes.</value>
+  </data>
+  <data name="GORGFX_BUFFER_SIZE_TOO_SMALL" xml:space="preserve">
+    <value>The buffer requires at least {0} byte(s).</value>
+  </data>
+  <data name="GORGFX_REQUIRES_SM" xml:space="preserve">
+    <value>A {0} video device is necessary to use this object or perform this operation.</value>
   </data>
 </root>

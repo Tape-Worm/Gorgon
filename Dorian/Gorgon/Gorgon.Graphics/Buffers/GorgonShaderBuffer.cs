@@ -35,12 +35,8 @@ namespace GorgonLibrary.Graphics
 	/// </summary>
 	/// <remarks>This is a base object for buffers that can be bound to a shader.</remarks>
 	public abstract class GorgonShaderBuffer
-		: GorgonBuffer
+		: GorgonBaseBuffer
 	{
-		#region Variables.
-	    private D3D.UnorderedAccessView _defaultUAV;                                                // The default unordered access view for a shader bound buffer.
-		#endregion
-
 		#region Properties.
         /// <summary>
         /// Property to return the view cache for the buffer.
@@ -63,10 +59,12 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Property to return the settings for a shader buffer.
 		/// </summary>
-		public IShaderBufferSettings Settings
+		public new IShaderBufferSettings Settings
 		{
-			get;
-			private set;
+			get
+			{
+				return (IShaderBufferSettings)base.Settings;
+			}
 		}
 		#endregion
 
@@ -77,7 +75,7 @@ namespace GorgonLibrary.Graphics
 		protected override void CleanUpResource()
 		{
 			// If we're bound with a pixel or vertex shader, then unbind.
-			if (BufferUsage != BufferUsage.Staging)
+			if (Settings.Usage != BufferUsage.Staging)
 			{
 				Graphics.Shaders.VertexShader.Resources.Unbind(this);
 				Graphics.Shaders.PixelShader.Resources.Unbind(this);
@@ -87,13 +85,6 @@ namespace GorgonLibrary.Graphics
 		    {
 		        Unlock();
 		    }
-
-            // Destroy the default unordered access view.
-            if (_defaultUAV != null)
-            {
-                _defaultUAV.Dispose();
-                _defaultUAV = null;
-            }
             
             // Wipe out the cache for this object.
             if (ViewCache != null)
@@ -121,11 +112,9 @@ namespace GorgonLibrary.Graphics
 		/// <param name="graphics">Graphics interface that owns this buffer.</param>
 		/// <param name="name">Name of the buffer.</param>
 		/// <param name="settings">The settings for the buffer.</param>
-		/// <param name="totalSize">The total size of the buffer, in bytes.</param>
-		protected GorgonShaderBuffer(GorgonGraphics graphics, string name, IShaderBufferSettings settings, int totalSize)
-			: base(graphics, name, (settings.AllowCPUWrite ? BufferUsage.Dynamic : BufferUsage.Default), totalSize, settings.IsOutput)
+		protected GorgonShaderBuffer(GorgonGraphics graphics, string name, IBufferSettings settings)
+			: base(graphics, name, settings)
 		{
-			Settings = settings;
             ViewCache = new GorgonViewCache(this);
         }
 		#endregion

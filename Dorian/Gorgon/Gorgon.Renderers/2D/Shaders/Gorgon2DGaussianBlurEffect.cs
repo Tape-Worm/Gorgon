@@ -418,8 +418,16 @@ namespace GorgonLibrary.Renderers
 			_xOffsets = new Vector4[13];
 			_yOffsets = new Vector4[13];
 			_kernel = new Vector4[13];
-            _blurBuffer = Graphics.Shaders.CreateConstantBuffer(256, "Gorgon2DGaussianBlurEffect Constant Buffer");
-            _blurStaticBuffer = Graphics.Shaders.CreateConstantBuffer(256, "Gorgon2DGaussianBlurEffect Static Constant Buffer");
+			_blurBuffer = Graphics.Shaders.CreateConstantBuffer("Gorgon2DGaussianBlurEffect Constant Buffer",
+			                                                    new GorgonConstantBufferSettings
+				                                                    {
+					                                                    SizeInBytes = 256
+				                                                    });
+			_blurStaticBuffer = Graphics.Shaders.CreateConstantBuffer("Gorgon2DGaussianBlurEffect Static Constant Buffer",
+																new GorgonConstantBufferSettings
+																{
+																	SizeInBytes = 256
+																});
 			_blurStream = new GorgonDataStream(256);
 #if DEBUG
 			PixelShader = Graphics.Shaders.CreateShader<GorgonPixelShader>("Effect.PS.GaussBlur", "GorgonPixelShaderGaussBlur", "#GorgonInclude \"Gorgon2DShaders\"", true);

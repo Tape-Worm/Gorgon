@@ -601,13 +601,21 @@ namespace GorgonLibrary.Renderers
 			// Create constant buffers.
 			if (ProjectionViewBuffer == null)
 			{
-				ProjectionViewBuffer = Graphics.Shaders.CreateConstantBuffer(Matrix.SizeInBytes, "Gorgon2D Projection/View Matrix Constant Buffer");
+				ProjectionViewBuffer = Graphics.Shaders.CreateConstantBuffer("Gorgon2D Projection/View Matrix Constant Buffer",
+				                                                             new GorgonConstantBufferSettings
+					                                                             {
+						                                                             SizeInBytes = Matrix.SizeInBytes,
+					                                                             });
 				_projectionViewStream = new GorgonDataStream(ProjectionViewBuffer.SizeInBytes);
 			}
 
 			if (AlphaTestBuffer == null)
 			{
-				AlphaTestBuffer = Graphics.Shaders.CreateConstantBuffer(32, "Gorgon2D Alpha Test Constant Buffer");
+				AlphaTestBuffer = Graphics.Shaders.CreateConstantBuffer("Gorgon2D Alpha Test Constant Buffer",
+				                                                        new GorgonConstantBufferSettings
+					                                                        {
+						                                                        SizeInBytes = 32
+					                                                        });
 				AlphaTestStream = new GorgonDataStream(AlphaTestBuffer.SizeInBytes);
 				AlphaTestStream.Write(new byte[AlphaTestBuffer.SizeInBytes], 0, AlphaTestBuffer.SizeInBytes);
 				AlphaTestStream.Position = 0;
@@ -639,7 +647,7 @@ namespace GorgonLibrary.Renderers
 			// Create layout information so we can bind our vertices to the shader.
 			if (_layout == null)
 			{
-				_layout = Graphics.Input.CreateInputLayout(typeof(Gorgon2DVertex), VertexShader.DefaultVertexShader, "Gorgon2D Input Layout");
+				_layout = Graphics.Input.CreateInputLayout("Gorgon2D Input Layout", typeof(Gorgon2DVertex), VertexShader.DefaultVertexShader);
 			}
 
 			if (DefaultIndexBuffer != null)
@@ -666,11 +674,24 @@ namespace GorgonLibrary.Renderers
 				}
 
 				ibData.Position = 0;
-				DefaultIndexBuffer = Graphics.Input.CreateIndexBuffer((int)ibData.Length, BufferUsage.Immutable, true, "Gorgon2D Default Index Buffer", false, ibData);
+				DefaultIndexBuffer = Graphics.Input.CreateIndexBuffer("Gorgon2D Default Index Buffer", new GorgonIndexBufferSettings()
+					{
+						IsOutput = false,
+						SizeInBytes = (int)ibData.Length,
+						Usage = BufferUsage.Immutable,
+						Use32BitIndices = true
+					}, ibData);
 			}
 			
 			// Create our empty vertex buffer.
-			DefaultVertexBufferBinding = new GorgonVertexBufferBinding(Graphics.Input.CreateVertexBuffer(spriteVBSize, BufferUsage.Dynamic), Gorgon2DVertex.SizeInBytes);
+			DefaultVertexBufferBinding =
+				new GorgonVertexBufferBinding(
+					Graphics.Input.CreateVertexBuffer("Gorgon 2D Default Vertex Buffer", new GorgonBufferSettings
+						{
+							IsOutput = false,
+							SizeInBytes = spriteVBSize,
+							Usage = BufferUsage.Dynamic
+						}), Gorgon2DVertex.SizeInBytes);
 
 			// Create the vertex cache.
 			_vertexCache = new Gorgon2DVertex[VertexCacheSize];
@@ -733,7 +754,7 @@ namespace GorgonLibrary.Renderers
 #endif
 
 				// Update buffers depending on type.
-				switch (vbBinding.VertexBuffer.BufferUsage)
+				switch (vbBinding.VertexBuffer.Settings.Usage)
 				{
 					case BufferUsage.Dynamic:
 						using (GorgonDataStream stream = vbBinding.VertexBuffer.Lock(flags))

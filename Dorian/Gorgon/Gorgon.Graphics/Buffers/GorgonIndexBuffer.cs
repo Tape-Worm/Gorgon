@@ -37,7 +37,7 @@ namespace GorgonLibrary.Graphics
 	/// A buffer to hold a set of indices.
 	/// </summary>
 	public class GorgonIndexBuffer
-		: GorgonBuffer
+		: GorgonBaseBuffer
 	{
 		#region Variables.
 		private DX.DataStream _lockStream;								// Stream used when locking.
@@ -45,12 +45,14 @@ namespace GorgonLibrary.Graphics
 
 		#region Properties.
 		/// <summary>
-		/// Property to return whether the buffer uses 32 bit indices or not.
+		/// Property to return the index buffer settings.
 		/// </summary>
-		public bool Is32Bit
+		public new GorgonIndexBufferSettings Settings
 		{
-			get;
-			private set;
+			get
+			{
+				return (GorgonIndexBufferSettings)base.Settings;
+			}
 		}
 		#endregion
 
@@ -101,7 +103,7 @@ namespace GorgonLibrary.Graphics
 			        Usage = D3DUsage
 			    };
 
-			if ((IsOutput) && (BufferUsage != BufferUsage.Staging) && (BufferUsage != BufferUsage.Immutable))
+			if ((Settings.IsOutput) && (Settings.Usage != BufferUsage.Staging) && (Settings.Usage != BufferUsage.Immutable))
 			{
 				desc.BindFlags |= D3D11.BindFlags.StreamOutput;
 			}
@@ -226,14 +228,10 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		/// <param name="graphics">The graphics.</param>
 		/// <param name="name">Name for this index buffer.</param>
-		/// <param name="usage">The buffer usage</param>
-		/// <param name="size">The size.</param>
-		/// <param name="is32Bit">TRUE to use 32 bit indices, FALSE to use 16 bit.</param>
-		/// <param name="isOutput">TRUE to allow the buffer to bound to stream output, FALSE to only allow stream input.</param>
-		internal GorgonIndexBuffer(GorgonGraphics graphics, string name, BufferUsage usage, int size, bool is32Bit, bool isOutput)
-			: base(graphics, name, usage, size, isOutput)
+		/// <param name="settings">Settings for the buffer.</param>
+		internal GorgonIndexBuffer(GorgonGraphics graphics, string name, GorgonIndexBufferSettings settings)
+			: base(graphics, name, settings)
 		{
-			Is32Bit = is32Bit;
 		}
 		#endregion
 	}
