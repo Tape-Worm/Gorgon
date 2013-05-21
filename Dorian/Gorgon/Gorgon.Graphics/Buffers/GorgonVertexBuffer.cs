@@ -37,10 +37,23 @@ namespace GorgonLibrary.Graphics
 	/// A buffer to hold a set of vertices.
 	/// </summary>
 	public class GorgonVertexBuffer
-		: GorgonBuffer
+		: GorgonBaseBuffer
 	{
 		#region Variables.
 		private DX.DataStream _lockStream;								// Stream used when locking.
+		#endregion
+
+		#region Properties.
+		/// <summary>
+		/// Property to return the settings for the vertex buffer.
+		/// </summary>
+		public new GorgonBufferSettings Settings
+		{
+			get
+			{
+				return (GorgonBufferSettings)base.Settings;
+			}
+		}
 		#endregion
 
 		#region Methods.
@@ -93,7 +106,7 @@ namespace GorgonLibrary.Graphics
 			        Usage = D3DUsage
 			    };
 
-			if ((IsOutput) && (BufferUsage != BufferUsage.Staging) && (BufferUsage != BufferUsage.Immutable))
+			if ((Settings.IsOutput) && (Settings.Usage != BufferUsage.Staging) && (Settings.Usage != BufferUsage.Immutable))
 			{
 				desc.BindFlags |= D3D11.BindFlags.StreamOutput;
 			}
@@ -217,11 +230,9 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		/// <param name="graphics">The graphics.</param>
 		/// <param name="name">Name of the buffer.</param>
-		/// <param name="usage">The buffer usage</param>
-		/// <param name="size">The size.</param>
-		/// <param name="isOutput">TRUE if the buffer can be used in stream output, FALSE to only allow stream input.</param>
-		internal GorgonVertexBuffer(GorgonGraphics graphics, string name, BufferUsage usage, int size, bool isOutput)
-			: base(graphics, name, usage, size, isOutput)
+		/// <param name="settings">The settings for the vertex buffer.</param>
+		internal GorgonVertexBuffer(GorgonGraphics graphics, string name, IBufferSettings settings)
+			: base(graphics, name, settings)
 		{
 		}
 		#endregion

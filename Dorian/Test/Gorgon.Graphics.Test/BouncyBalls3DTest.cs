@@ -326,7 +326,7 @@ namespace GorgonLibrary.Graphics.Test
 			_vs = _graphics.Shaders.CreateShader<GorgonVertexShader>("TestVShader", "VS", _shader, true);
 			_ps = _graphics.Shaders.CreateShader<GorgonPixelShader>("TestPShader", "PS", _shader, true);
 
-			_layout = _graphics.Input.CreateInputLayout(typeof(vertex), _vs);
+			_layout = _graphics.Input.CreateInputLayout("Input", typeof(vertex), _vs);
 
 			int vertexSize = _layout.Size;
 			int index = 0;
@@ -343,8 +343,12 @@ namespace GorgonLibrary.Graphics.Test
 				index += 4;
 			}
 
-			_vertices = _graphics.Input.CreateVertexBuffer(4 * vertexSize * Count, BufferUsage.Dynamic);
-			_index = _graphics.Input.CreateIndexBuffer(BufferUsage.Immutable, true, indices);
+			_vertices = _graphics.Input.CreateVertexBuffer("Vertex", new GorgonBufferSettings()
+				{
+					SizeInBytes = 4 * vertexSize * Count,
+					Usage = BufferUsage.Dynamic
+				});
+			_index = _graphics.Input.CreateIndexBuffer("Index", indices, BufferUsage.Immutable);
 
 			_texture = _graphics.Textures.FromFile<GorgonTexture2D>("Balls", @"..\..\..\..\Resources\BallDemo\BallDemo.png", new GorgonCodecPNG());
 			_texture2 = _graphics.Textures.FromFile<GorgonTexture2D>("VBBack", @"..\..\..\..\Resources\Images\VBback.jpg", new GorgonCodecJPEG());
@@ -365,8 +369,8 @@ namespace GorgonLibrary.Graphics.Test
 					tempArray = new Vector4[3]
 				};
 
-			_depthStateAlpha.IsDepthEnabled = true;
-			_depthStateAlpha.IsDepthWriteEnabled = true;
+			_depthStateAlpha.IsDepthEnabled = false;
+			_depthStateAlpha.IsDepthWriteEnabled = false;
 
 			_graphics.Input.Layout = _layout;
 			_graphics.Shaders.VertexShader.Current = _vs;
@@ -402,7 +406,7 @@ namespace GorgonLibrary.Graphics.Test
 				            _balls[i].AngleDelta = GorgonRandom.RandomSingle() * 90.0f;
 				        }
 
-				        /*if ((_balls[i].ScaleBouce) || (!_balls[i].ZBounce))
+				        if ((_balls[i].ScaleBouce) || (!_balls[i].ZBounce))
 				            _balls[i].Color.W -= _balls[i].Velocity.Z * GorgonTiming.Delta;
 				        else
 				            _balls[i].Color.W += _balls[i].Velocity.Z * GorgonTiming.Delta;
@@ -416,7 +420,7 @@ namespace GorgonLibrary.Graphics.Test
 				            _balls[i].Color = new Vector4((GorgonRandom.RandomSingle() * 0.961f) + 0.039f,
 				                                          (GorgonRandom.RandomSingle() * 0.961f) + 0.039f,
 				                                          (GorgonRandom.RandomSingle() * 0.961f) + 0.039f, 0.0f);
-				        }*/
+				        }
 
 				        if (_balls[i].YBounce)
 				            _balls[i].Position.Y -= (_balls[i].Velocity.Y * GorgonTiming.Delta);
@@ -459,9 +463,9 @@ namespace GorgonLibrary.Graphics.Test
 				        }
 
 
-				        if (_balls[i].Position.Z < 0.125f)
+				        if (_balls[i].Position.Z < -1.0f)
 				        {
-				            _balls[i].Position.Z = 0.125f;
+				            _balls[i].Position.Z = -1.0f;
 				            _balls[i].Velocity.Z = GorgonRandom.RandomSingle() * 0.5f;
 				            _balls[i].ZBounce = !_balls[i].ZBounce;
 				        }

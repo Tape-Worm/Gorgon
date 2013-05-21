@@ -80,9 +80,8 @@ namespace GorgonLibrary.Graphics.Test
 		{
 		    _framework.CreateTestScene(_sbShaders, _sbShaders, false);
 
-			using (var buffer = _framework.Graphics.Shaders.CreateStructuredBuffer(new GorgonStructuredBufferSettings
+			using (var buffer = _framework.Graphics.Shaders.CreateStructuredBuffer("SB", new GorgonStructuredBufferSettings
 			    {
-					AllowCPUWrite = false,
 					ElementCount = 4,
 					ElementSize = 12,
 					IsOutput = false
@@ -127,7 +126,7 @@ namespace GorgonLibrary.Graphics.Test
 				values[i] = new Vector4(GorgonRandom.RandomSingle(), GorgonRandom.RandomSingle(), GorgonRandom.RandomSingle(), 1.0f);
 			}
 
-			using(var buffer = _framework.Graphics.Shaders.CreateTypedBuffer(values, BufferFormat.R32G32B32A32_Float))
+			using(var buffer = _framework.Graphics.Shaders.CreateTypedBuffer("TB", values, BufferFormat.R32G32B32A32_Float, BufferUsage.Default))
 			{
 				_framework.Graphics.Shaders.PixelShader.Resources.SetShaderBuffer(0, buffer);
 
@@ -139,9 +138,9 @@ namespace GorgonLibrary.Graphics.Test
         [TestMethod]
         public void CreateUnorderedView()
         {
-            var structBuffer = _framework.Graphics.Shaders.CreateStructuredBuffer(new GorgonStructuredBufferSettings()
+            var structBuffer = _framework.Graphics.Shaders.CreateStructuredBuffer("SB", new GorgonStructuredBufferSettings()
                 {
-                    AllowCPUWrite = false,
+                    Usage = BufferUsage.Default,
                     AllowUnorderedAccess = true,
                     ElementCount = 5,
                     ElementSize = 16
@@ -165,7 +164,7 @@ namespace GorgonLibrary.Graphics.Test
             var values = new byte[256 * 256 * 4];
 	        float angle = 0.0f;
 
-	        using(var buffer = _framework.Graphics.Shaders.CreateRawBuffer(values))
+	        using(var buffer = _framework.Graphics.Shaders.CreateRawBuffer("RB", values, BufferUsage.Default))
 	        {
 		        _framework.Graphics.Shaders.PixelShader.Resources.SetShaderBuffer(0, buffer);
 

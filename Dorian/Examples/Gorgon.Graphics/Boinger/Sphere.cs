@@ -131,8 +131,8 @@ namespace GorgonLibrary.Graphics.Example
 			}
 			
 			// Create our buffers.
-			VertexBuffer = Program.Graphics.Input.CreateVertexBuffer(BufferUsage.Immutable, Vertices);
-			IndexBuffer = Program.Graphics.Input.CreateIndexBuffer(BufferUsage.Immutable, true, Indices);
+			VertexBuffer = Program.Graphics.Input.CreateVertexBuffer("Sphere Vertex Buffer", Vertices, BufferUsage.Immutable);
+			IndexBuffer = Program.Graphics.Input.CreateIndexBuffer("Sphere Index Buffer", Indices, BufferUsage.Immutable);
 		}
 		#endregion
 	}

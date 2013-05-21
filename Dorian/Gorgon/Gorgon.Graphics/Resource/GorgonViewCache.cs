@@ -223,14 +223,9 @@ namespace GorgonLibrary.Graphics
 
                 if (!_bufferViews.TryGetValue(key, out result))
                 {
-                    if (!isRaw)
-                    {
-                        result = new GorgonBufferShaderView(_resource, format, start, count);
-                    }
-                    else
-                    {
-                        result = new GorgonRawBufferShaderView(_resource, format, start, count);
-                    }
+	                result = !isRaw
+		                         ? new GorgonBufferShaderView(_resource, format, start, count)
+		                         : new GorgonRawBufferShaderView(_resource, format, start, count);
 
                     result.Initialize();
                     _bufferViews.Add(key, result);

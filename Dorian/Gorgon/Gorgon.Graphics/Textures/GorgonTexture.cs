@@ -114,7 +114,7 @@ namespace GorgonLibrary.Graphics
 		public ITextureSettings Settings
 		{
 			get;
-			protected set;
+			private set;
 		}
 		#endregion
 

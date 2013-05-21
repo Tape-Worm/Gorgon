@@ -189,6 +189,16 @@ namespace GorgonLibrary.Graphics
         }
 
 		/// <summary>
+		/// Function to unbind a constant buffer from all shaders.
+		/// </summary>
+		/// <param name="buffer">Bufferr to unbind.</param>
+		internal void Unbind(GorgonConstantBuffer buffer)
+		{
+			PixelShader.ConstantBuffers.Unbind(buffer);
+			VertexShader.ConstantBuffers.Unbind(buffer);
+		}
+
+		/// <summary>
 		/// Function to create an effect object.
 		/// </summary>
 		/// <typeparam name="T">Type of effect to create.</typeparam>
@@ -257,23 +267,29 @@ namespace GorgonLibrary.Graphics
 		/// Function to create a constant buffer.
 		/// </summary>
         /// <param name="name">The name of the constant buffer.</param>
-        /// <param name="size">Size of the buffer, in bytes.</param>
-        /// <param name="allowCPUWrite">[Optional] TRUE to allow the CPU to write to the buffer, FALSE to disallow.</param>
+        /// <param name="settings">The settings for the buffer.</param>
 		/// <param name="stream">[Optional] Stream used to initialize the buffer.</param>
 		/// <returns>A new constant buffer.</returns>
 		/// <remarks>The size of the buffer must be a multiple of 16.</remarks>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (Nothing in VB.Net).
+		/// <para>-or-</para>
+		/// <para>Thrown when the <paramref name="settings"/> parameter is NULL.</para>
+		/// </exception>
 		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
-		/// <exception cref="GorgonLibrary.GorgonException">Thrown when the <paramref name="size"/> parameter is not a multiple of 16.</exception>
-		public GorgonConstantBuffer CreateConstantBuffer(string name, int size, bool allowCPUWrite = false, GorgonDataStream stream = null)
-		{			
-            if ((size % 16) != 0)
+		/// <exception cref="System.DataMisalignedException">Thrown when the <see cref="GorgonLibrary.Graphics.GorgonConstantBufferSettings.SizeInBytes">SizeInBytes</see> property of the <paramref name="settings"/> parameter is not a multiple of 16.</exception>
+		public GorgonConstantBuffer CreateConstantBuffer(string name, GorgonConstantBufferSettings settings, GorgonDataStream stream = null)
+		{		
+			if (settings == null)
+			{
+				throw new ArgumentNullException("settings");
+			}
+
+            if ((settings.SizeInBytes % 16) != 0)
             {
-                throw new GorgonException(GorgonResult.CannotCreate,
-                                          string.Format(Resources.GORGFX_CBUFFER_NOT_MULTIPLE_OF_16, size));
+                throw new DataMisalignedException(string.Format(Resources.GORGFX_BUFFER_NOT_MULTIPLE, settings.SizeInBytes, 16));
             }
 
-			var buffer = new GorgonConstantBuffer(_graphics, name, size, allowCPUWrite);
+			var buffer = new GorgonConstantBuffer(_graphics, name, settings);
 
 			buffer.Initialize(stream);
 
@@ -281,86 +297,111 @@ namespace GorgonLibrary.Graphics
 			return buffer;
 		}
 
-#error("Finish refactoring naming of types")
-
 		/// <summary>
 		/// Function to create a constant buffer and initializes it with data.
 		/// </summary>
-		/// <typeparam name="T">Type of data to pass to the constant buffer.</typeparam>
+		/// <typeparam name="T">Type of data to pass to the constant buffer.  Must be a value type.</typeparam>
         /// <param name="name">The name of the constant buffer.</param>
 		/// <param name="value">Value to write to the buffer</param>
         /// <param name="allowCPUWrite">TRUE to allow the CPU to write to the buffer, FALSE to disallow.</param>
         /// <returns>A new constant buffer.</returns>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
 		public GorgonConstantBuffer CreateConstantBuffer<T>(string name, T value, bool allowCPUWrite)
 			where T : struct
 		{
 			using (GorgonDataStream stream = GorgonDataStream.ValueToStream(value))
 			{
-			    return CreateConstantBuffer((int)stream.Length, name, allowCPUWrite, stream);
+			    return CreateConstantBuffer(name, new GorgonConstantBufferSettings
+				    {
+					    AllowCPUWrite = allowCPUWrite,
+						SizeInBytes = (int)stream.Length
+				    }, stream);
 			}
 		}
 
         /// <summary>
         /// Function to create a structured buffer and initialize it with data.
         /// </summary>
-        /// <param name="value">Value to write to the buffer.</param>
-        /// <param name="allowCPUWrite">TRUE to allow the CPU to write to the buffer, FALSE to disallow.</param>
-        /// <param name="name">[Optional] The name of the structured buffer.</param>
+		/// <param name="name">The name of the structured buffer.</param>
+		/// <param name="value">Value to write to the buffer.</param>
+        /// <param name="usage">Usage for the buffer.</param>
         /// <returns>A new structured buffer.</returns>
         /// <typeparam name="T">Type of data to write.  Must be a value type.</typeparam>
-        /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="value"/> parameter is NULL (Nothing in VB.Net).</exception>
-        public GorgonStructuredBuffer CreateStructuredBuffer<T>(T value, bool allowCPUWrite, string name = null)
+		public GorgonStructuredBuffer CreateStructuredBuffer<T>(string name, T value, BufferUsage usage)
             where T : struct
         {
             using (var stream = GorgonDataStream.ValueToStream(value))
             {
-                return CreateStructuredBuffer(new GorgonStructuredBufferSettings()
+                return CreateStructuredBuffer(name, new GorgonStructuredBufferSettings
                 {
-                    AllowCPUWrite = allowCPUWrite,
+					IsOutput = false,
+					AllowUnorderedAccess = false,
+                    Usage = usage,
                     ElementCount = 1,
                     ElementSize = DirectAccess.SizeOf<T>()
-                }, name, stream);
+                }, stream);
             }
         }
 
 		/// <summary>
 		/// Function to create a structured buffer and initialize it with data.
 		/// </summary>
-		/// <param name="value">Values to write to the buffer.</param>
-        /// <param name="name">[Optional] The name of the structured buffer.</param>
-        /// <param name="allowCPUWrite">[Optional] TRUE to allow the CPU to write to the buffer, FALSE to disallow.</param>
+		/// <param name="name">The name of the structured buffer.</param>
+		/// <param name="values">Values to write to the buffer.</param>
+        /// <param name="usage">Usage for the buffer.</param>
         /// <returns>A new structured buffer.</returns>
 		/// <typeparam name="T">Type of data to write.  Must be a value type.</typeparam>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="value"/> parameter is NULL (Nothing in VB.Net).</exception>
-		public GorgonStructuredBuffer CreateStructuredBuffer<T>(T[] value, string name = null, bool allowCPUWrite = false)
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (Nothing in VB.Net).
+		/// <para>-or-</para>
+		/// <para>Thrown when the <paramref name="values"/> parameter is NULL (Nothing in VB.Net).</para>
+		/// </exception>
+		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
+		public GorgonStructuredBuffer CreateStructuredBuffer<T>(string name, T[] values, BufferUsage usage)
 			where T : struct
 		{
-			GorgonDebug.AssertNull(value, "value");
-
-			using (var stream = new GorgonDataStream(value))
+			if (values == null)
 			{
-				return CreateStructuredBuffer(new GorgonStructuredBufferSettings()
-				    {
-				        AllowCPUWrite = allowCPUWrite,
-                        ElementCount = value.Length,
+				throw new ArgumentNullException("values");
+			}
+
+			if (values.Length == 0)
+			{
+				throw new ArgumentException(Resources.GORGFX_PARAMETER_MUST_NOT_BE_EMPTY, "values");
+			}
+
+			using (var stream = new GorgonDataStream(values))
+			{
+				return CreateStructuredBuffer(name, new GorgonStructuredBufferSettings
+					{
+						IsOutput = false,
+						AllowUnorderedAccess = false,
+				        Usage = usage,
+                        ElementCount = values.Length,
                         ElementSize = DirectAccess.SizeOf<T>()
-				    }, name, stream);
+				    }, stream);
 			}
 		}
 
 		/// <summary>
 		/// Function to create a structured buffer and initialize it with data.
 		/// </summary>
+		/// <param name="name">The name of the structured buffer.</param>
 		/// <param name="settings">Settings used to create the structured buffer.</param>
-        /// <param name="name">[Optional] The name of the structured buffer.</param>
 		/// <param name="stream">[Optional] Stream containing the data used to initialize the buffer.</param>
 		/// <returns>A new structured buffer.</returns>
 		/// <remarks>This buffer type allows structures of data to be processed by the GPU without implicit byte mapping.
 		/// <para>Structured buffers can only be used on SM_5 video devices.</para></remarks>
-		/// <exception cref="System.ArgumentException">Thrown when the ElementSize or ElementCount properties in the <paramref name="settings"/> parameter are not greater than 0.</exception>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="settings"/> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="name"/> parameter is empty.
+		/// <para>-or-</para>
+		/// <para>Thrown when the ElementSize or ElementCount properties in the <paramref name="settings"/> parameter are not greater than 0.</para>
+		/// </exception>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (Nothing in VB.Net).
+		/// <para>-or-</para>
+		/// <para>Thrown when the <paramref name="settings"/> parameter is NULL.</para>
+		/// </exception>
 		/// <exception cref="GorgonLibrary.GorgonException">Thrown when an attempt to create a structured buffer is made on a video device that does not support SM5 or better.</exception>
-		public GorgonStructuredBuffer CreateStructuredBuffer(GorgonStructuredBufferSettings settings, string name = null, GorgonDataStream stream = null)
+		public GorgonStructuredBuffer CreateStructuredBuffer(string name, GorgonStructuredBufferSettings settings, GorgonDataStream stream = null)
 		{
 			if (settings == null)
 			{
@@ -369,24 +410,18 @@ namespace GorgonLibrary.Graphics
 			
 		    if (_graphics.VideoDevice.SupportedFeatureLevel < DeviceFeatureLevel.SM5)
 		    {
-		        throw new GorgonException(GorgonResult.CannotCreate,
-		            "Structured buffers are only available for video devices that support SM5 or better.");
-		    }
+				throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_REQUIRES_SM, DeviceFeatureLevel.SM5));
+			}
 
 		    if (settings.ElementCount <= 0)
 		    {
-		        throw new ArgumentException("The element count must be greater than 0.", "settings");
+		        throw new ArgumentException(string.Format(Resources.GORGFX_BUFFER_ELEMENT_COUNT_INVALID, 1), "settings");
 		    }
 
 		    if (settings.ElementSize <= 0)
 		    {
-		        throw new ArgumentException("The element size must be greater than 0.", "settings");
+				throw new ArgumentException(string.Format(Resources.GORGFX_BUFFER_SIZE_TOO_SMALL, 1), "settings");
 		    }
-
-            if (string.IsNullOrWhiteSpace(name))
-            {
-                name = string.Format("Structured Buffer #{0}", GorgonRenderStatistics.StructuredBufferCount);
-            }
 
 			var result = new GorgonStructuredBuffer(_graphics, name, settings);
 			result.Initialize(stream);
@@ -399,51 +434,58 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Function to create a typed buffer and initialize it with a single value.
 		/// </summary>
-		/// <typeparam name="T">The type of data to store in the buffer.</typeparam>
+		/// <typeparam name="T">The type of data to store in the buffer. Must be a value type.</typeparam>
+		/// <param name="name">Name of the typed buffer.</param>
 		/// <param name="value">Value to write to the buffer.</param>
 		/// <param name="shaderViewFormat">Format for the shader resource view.</param>
-        /// <param name="allowCPUWrite">TRUE to allow the CPU to write to the buffer, FALSE to disallow.</param>
-        /// <param name="name">[Optional] Name of the typed buffer.</param>
+		/// <param name="usage">The usage of the buffer.</param>
 		/// <returns>A new typed buffer.</returns>
 		/// <remarks>This buffer type allows typed elements of data to be processed by the GPU.  The shader view format must be the same size, in bytes, as the type parameter.</remarks>
-		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="shaderViewFormat"/> is Unknown.
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="name"/> parameter is empty.
+		/// <para>Thrown when the <paramref name="shaderViewFormat"/> is Unknown.</para>
 		/// <para>-or-</para>
 		/// <para>Thrown when the <paramref name="shaderViewFormat"/> is not the same size, in bytes, as the type parameter.</para>
 		/// </exception>
-		public GorgonTypedBuffer<T> CreateTypedBuffer<T>(T value, BufferFormat shaderViewFormat, bool allowCPUWrite, string name = null)
+		public GorgonTypedBuffer<T> CreateTypedBuffer<T>(string name, T value, BufferFormat shaderViewFormat, BufferUsage usage)
 			where T : struct
 		{
 			using(var stream = GorgonDataStream.ValueToStream(value))
 			{
-				return CreateTypedBuffer<T>(new GorgonTypedBufferSettings
+				return CreateTypedBuffer(name,new GorgonTypedBufferSettings<T>
 					{
-						AllowCPUWrite = allowCPUWrite,
+						Usage = usage,
 						ElementCount = 1,
 						IsOutput = false,
 						ShaderViewFormat = shaderViewFormat,
 						AllowUnorderedAccess = false
-					}, name, stream);
+					}, stream);
 			}
 		}
 
 		/// <summary>
 		/// Function to create a typed buffer and initialize it with multiple values.
 		/// </summary>
-		/// <typeparam name="T">The type of data to store in the buffer.</typeparam>
+		/// <typeparam name="T">The type of data to store in the buffer. Must be a value type.</typeparam>
+		/// <param name="name">Name of the typed buffer.</param>
 		/// <param name="values">Values to write to the buffer.</param>
 		/// <param name="shaderViewFormat">Format for the shader resource view.</param>
-        /// <param name="name">[Optional] Name of the typed buffer.</param>
-		/// <param name="allowCPUWrite">[Optional] TRUE to allow the CPU to write to the buffer, FALSE to disallow.</param>
+		/// <param name="usage">The usage of the buffer.</param>
 		/// <returns>A new typed buffer.</returns>
 		/// <remarks>This buffer type allows typed elements of data to be processed by the GPU.  The shader view format must be the same size, in bytes, as the type parameter.</remarks>
-		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="shaderViewFormat"/> is Unknown.
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (Nothing in VB.Net).
 		/// <para>-or-</para>
-		/// <para>Thrown when the <paramref name="shaderViewFormat"/> is not the same size, in bytes, as the type parameter.</para>
+		/// <para>Thrown when the <paramref name="values"/> parameter is NULL.</para>
+		/// </exception>
+		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="name"/> parameter is empty.
 		/// <para>-or-</para>
 		/// <para>Thrown when the <paramref name="values"/> parameter is empty.</para>
+		/// <para>-or-</para>
+		/// <para>Thrown when the <paramref name="shaderViewFormat"/> is Unknown.</para>
+		/// <para>-or-</para>
+		/// <para>Thrown when the <paramref name="shaderViewFormat"/> is not the same size, in bytes, as the type parameter.</para>
 		/// </exception>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="values"/> parameter is NULL (Nothing in VB.Net).</exception>
-		public GorgonTypedBuffer<T> CreateTypedBuffer<T>(T[] values, BufferFormat shaderViewFormat, string name = null, bool allowCPUWrite = false)
+		public GorgonTypedBuffer<T> CreateTypedBuffer<T>(string name, T[] values, BufferFormat shaderViewFormat, BufferUsage usage)
 			where T : struct
 		{
 			if (values == null)
@@ -458,14 +500,14 @@ namespace GorgonLibrary.Graphics
 
 			using (var stream = new GorgonDataStream(values))
 			{
-				return CreateTypedBuffer<T>(new GorgonTypedBufferSettings
+				return CreateTypedBuffer(name, new GorgonTypedBufferSettings<T>
 				{
-					AllowCPUWrite = allowCPUWrite,
+					Usage = usage,
 					ElementCount = values.Length,
 					IsOutput = false,
 					ShaderViewFormat = shaderViewFormat,
 					AllowUnorderedAccess = false
-				}, name, stream);
+				}, stream);
 			}
 		}
 
@@ -473,23 +515,28 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Function to create a typed buffer and initialize it with data.
 		/// </summary>
-		/// <typeparam name="T">The type of data to store in the buffer.</typeparam>
+		/// <typeparam name="T">The type of data to store in the buffer. Must be a value type.</typeparam>
+		/// <param name="name">Name of the typed buffer.</param>
 		/// <param name="settings">Settings used to create the typed buffer.</param>
-		/// <param name="name">[Optional] Name of the typed buffer.</param>
 		/// <param name="stream">[Optional] Stream containing the data used to initialize the buffer.</param>
 		/// <returns>A new typed buffer.</returns>
 		/// <remarks>This buffer type allows typed elements of data to be processed by the GPU.  The shader view format must be the same size, in bytes, as the type parameter.
 		/// <para>When creating a raw byte buffer, the number of elements and the size in bytes of an element must be a multiple of 4.</para>
 		/// </remarks>
-		/// <exception cref="System.ArgumentException">Thrown when the ElementCount property in the <paramref name="settings"/> parameter is not greater than 1.
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (Nothing in VB.Net).
 		/// <para>-or-</para>
-		/// <para>Thrown when the <see cref="P:GorgonLibrary.Graphics.GorgonTypedBufferSettings.ShaderViewFormat">settings.ShaderViewFormat</see> is Unknown.</para>
+		/// <para>Thrown when the <paramref name="settings"/> parameter is NULL.</para>
+		/// </exception>
+		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="name"/> parameter is empty.
 		/// <para>-or-</para>
-		/// <para>Thrown when the <see cref="P:GorgonLibrary.Graphics.GorgonTypedBufferSettings.ShaderViewFormat">settings.ShaderViewFormat</see> is not the same size, in bytes, as the type parameter.</para>
+		/// <para>Thrown when the ElementCount property in the <paramref name="settings"/> parameter is not greater than 1.</para>
+		/// <para>-or-</para>
+		/// <para>Thrown when the <see cref="GorgonLibrary.Graphics.GorgonTypedBufferSettings{T}.ShaderViewFormat">settings.ShaderViewFormat</see> is Unknown.</para>
+		/// <para>-or-</para>
+		/// <para>Thrown when the <see cref="GorgonLibrary.Graphics.GorgonTypedBufferSettings{T}.ShaderViewFormat">settings.ShaderViewFormat</see> is not the same size, in bytes, as the type parameter.</para>
 		/// </exception>
 		/// <exception cref="System.DataMisalignedException">Thrown when the buffer has raw access and the total size of the buffer is not a multiple of 4.</exception>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="settings"/> parameter is NULL (Nothing in VB.Net).</exception>
-		public GorgonTypedBuffer<T> CreateTypedBuffer<T>(GorgonTypedBufferSettings settings, string name = null, GorgonDataStream stream = null)
+		public GorgonTypedBuffer<T> CreateTypedBuffer<T>(string name, GorgonTypedBufferSettings<T> settings, GorgonDataStream stream = null)
 			where T : struct
 		{
 			if (settings == null)
@@ -502,29 +549,17 @@ namespace GorgonLibrary.Graphics
 				throw new ArgumentException(Resources.GORGFX_VIEW_UNKNOWN_FORMAT, "settings");
 			}
 
-			if (_graphics.VideoDevice.SupportedFeatureLevel < DeviceFeatureLevel.SM5)
-			{
-				throw new GorgonException(GorgonResult.CannotCreate, "Unordered access requires a video device feature level of SM_5 or better.");
-			}
-
-			var typeSize = DirectAccess.SizeOf<T>();
-			
 			var info = GorgonBufferFormatInfo.GetInfo(settings.ShaderViewFormat);
 
-			if (typeSize != info.SizeInBytes)
+			if (settings.ElementSize != info.SizeInBytes)
 			{
 				throw new ArgumentException(
 					string.Format(
-						"The size of the format: {0} bytes, does not match the size of the data type: {1} bytes.",
+						Resources.GORGFX_BUFFER_FORMAT_SIZE_MISMATCH,
 						info.SizeInBytes,
-						typeSize),
+						settings.ElementSize),
 					"settings");
 			}
-
-		    if (string.IsNullOrWhiteSpace(name))
-		    {
-		        name = string.Format("Typed Buffer #{0}", GorgonRenderStatistics.TypedBufferCount);
-		    }
 
 		    var result = new GorgonTypedBuffer<T>(_graphics, name, settings);
 			result.Initialize(stream);
@@ -537,17 +572,25 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Function to create a raw buffer and initialize it with multiple values.
 		/// </summary>
+		/// <typeparam name="T">The type of data in the buffer.  Must be a value type.</typeparam>
+		/// <param name="name">The name of the raw buffer.</param>
 		/// <param name="values">Byte values to write to the buffer.</param>
-        /// <param name="name">[Optional] The name of the raw buffer.</param>
-        /// <param name="allowCPUWrite">[Optional] TRUE to allow the CPU to write to the buffer, FALSE to disallow.</param>
+        /// <param name="usage">The usage for the buffer.</param>
 		/// <returns>A new typed buffer.</returns>
 		/// <remarks>This buffer type allows raw data to be processed by the GPU.
 		/// <para>When creating the buffer, the number of bytes must be a multiple of 4.</para>
 		/// </remarks>
-		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="values"/> parameter is empty.</exception>
-		/// <exception cref="System.DataMisalignedException">Thrown when the buffer has raw access and the total size of the buffer is not a multiple of 4.</exception>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="values"/> parameter is NULL (Nothing in VB.Net).</exception>
-        public GorgonRawBuffer CreateRawBuffer(byte[] values, string name = null, bool allowCPUWrite = false)
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (Nothing in VB.Net).
+		/// <para>-or-</para>
+		/// <para>Thrown when the <paramref name="values"/> parameter is NULL.</para>
+		/// </exception>
+		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="name"/> parameter is empty.
+		/// <para>-or-</para>
+		/// <para>Thrown when the <paramref name="values"/> parameter is empty.</para>
+		/// </exception>
+		/// <exception cref="GorgonLibrary.GorgonException">Thrown when attempting to create a raw buffer on a video device that does not support SM_5 or better.</exception>
+		public GorgonRawBuffer CreateRawBuffer<T>(string name, T[] values, BufferUsage usage)
+			where T : struct
 		{
 			if (values == null)
 			{
@@ -559,105 +602,48 @@ namespace GorgonLibrary.Graphics
 				throw new ArgumentException(Resources.GORGFX_PARAMETER_MUST_NOT_BE_EMPTY, "values");
 			}
 
-			using (var stream = new GorgonDataStream(values))
-			{
-				return CreateRawBuffer(new GorgonRawBufferSettings
-				{
-					AllowCPUWrite = allowCPUWrite,
-					ElementCount = values.Length,
-					IsOutput = false
-				}, name, stream);
-			}
-		}
+			int length = values.Length;
 
-		/// <summary>
-		/// Function to create a raw buffer and initialize it with multiple values.
-		/// </summary>
-		/// <param name="values">Byte values to write to the buffer.</param>
-        /// <param name="name">[Optional] The name of the raw buffer.</param>
-        /// <param name="allowCPUWrite">[Optional] TRUE to allow the CPU to write to the buffer, FALSE to disallow.</param>
-		/// <returns>A new typed buffer.</returns>
-		/// <remarks>This buffer type allows raw data to be processed by the GPU.
-		/// <para>When creating the buffer, the number of bytes must be a multiple of 4.</para>
-		/// </remarks>
-		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="values"/> parameter is empty.</exception>
-		/// <exception cref="System.DataMisalignedException">Thrown when the buffer has raw access and the total size of the buffer is not a multiple of 4.</exception>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="values"/> parameter is NULL (Nothing in VB.Net).</exception>
-        public GorgonRawBuffer CreateRawBuffer(int[] values, string name = null, bool allowCPUWrite = false)
-		{
-			if (values == null)
+			// Increase the length of the buffer.
+			while ((length % 4) != 0)
 			{
-				throw new ArgumentNullException("values");
-			}
-
-			if (values.Length == 0)
-			{
-				throw new ArgumentException(Resources.GORGFX_PARAMETER_MUST_NOT_BE_EMPTY, "values");
+				length++;
 			}
 
 			using (var stream = new GorgonDataStream(values))
 			{
-				return CreateRawBuffer(new GorgonRawBufferSettings
+				return CreateRawBuffer(name, new GorgonRawBufferSettings
 				{
-					AllowCPUWrite = allowCPUWrite,
-					ElementCount = values.Length * sizeof(int),
-					IsOutput = false
-				}, name, stream);
-			}
-		}
-
-		/// <summary>
-		/// Function to create a raw buffer and initialize it with multiple values.
-		/// </summary>
-		/// <param name="values">Byte values to write to the buffer.</param>
-        /// <param name="name">[Optional] The name of the raw buffer.</param>
-        /// <param name="allowCPUWrite">[Optional] TRUE to allow the CPU to write to the buffer, FALSE to disallow.</param>
-		/// <returns>A new typed buffer.</returns>
-		/// <remarks>This buffer type allows raw data to be processed by the GPU.
-		/// <para>When creating the buffer, the number of bytes must be a multiple of 4.</para>
-		/// </remarks>
-		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="values"/> parameter is empty.</exception>
-		/// <exception cref="System.DataMisalignedException">Thrown when the buffer has raw access and the total size of the buffer is not a multiple of 4.</exception>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="values"/> parameter is NULL (Nothing in VB.Net).</exception>
-        public GorgonRawBuffer CreateRawBuffer(uint[] values, string name = null, bool allowCPUWrite = false)
-		{
-			if (values == null)
-			{
-				throw new ArgumentNullException("values");
-			}
-
-			if (values.Length == 0)
-			{
-				throw new ArgumentException(Resources.GORGFX_PARAMETER_MUST_NOT_BE_EMPTY, "values");
-			}
-
-			using (var stream = new GorgonDataStream(values))
-			{
-				return CreateRawBuffer(new GorgonRawBufferSettings
-				{
-					AllowCPUWrite = allowCPUWrite,
-					ElementCount = values.Length * sizeof(int),
-					IsOutput = false
-				}, name, stream);
+					Usage = usage,
+					ElementCount = length,
+					IsOutput = false,
+					AllowUnorderedAccess = false
+				}, stream);
 			}
 		}
 
 		/// <summary>
 		/// Function to create a raw buffer and initialize it with data.
 		/// </summary>
+		/// <param name="name">Name of the buffer.</param>
 		/// <param name="settings">Settings used to create the typed buffer.</param>
-        /// <param name="name">[Optional] The name of the raw buffer.</param>
 		/// <param name="stream">[Optional] Stream containing the data used to initialize the buffer.</param>
 		/// <returns>A new typed buffer.</returns>
 		/// <remarks>This buffer type allows raw data to be processed by the GPU.
 		/// <para>When creating the buffer, the number of elements and the size in bytes of an element must be a multiple of 4.</para>
 		/// <para>Raw buffers can only be used on SM_5 video devices.</para>
 		/// </remarks>
-		/// <exception cref="System.ArgumentException">Thrown when the ElementCount property in the <paramref name="settings"/> parameter is not greater than 1.</exception>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (Nothing in VB.Net).
+		/// <para>-or-</para>
+		/// <para>Thrown when the <paramref name="settings"/> parameter is NULL.</para>
+		/// </exception>
+		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="name"/> parameter is empty.
+		/// <para>-or-</para>
+		/// <para>Thrown when the ElementCount property in the <paramref name="settings"/> parameter is not greater than 1.</para>
+		/// </exception>
 		/// <exception cref="System.DataMisalignedException">Thrown when the buffer has raw access and the total size of the buffer is not a multiple of 4.</exception>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="settings"/> parameter is NULL (Nothing in VB.Net).</exception>
 		/// <exception cref="GorgonLibrary.GorgonException">Thrown when attempting to create a raw buffer on a video device that does not support SM_5 or better.</exception>
-		public GorgonRawBuffer CreateRawBuffer(GorgonRawBufferSettings settings, string name = null, GorgonDataStream stream = null)
+		public GorgonRawBuffer CreateRawBuffer(string name, GorgonRawBufferSettings settings, GorgonDataStream stream = null)
 		{
 			if (settings == null)
 			{
@@ -666,20 +652,15 @@ namespace GorgonLibrary.Graphics
 
 			if (_graphics.VideoDevice.SupportedFeatureLevel < DeviceFeatureLevel.SM5)
 			{
-				throw new GorgonException(GorgonResult.CannotCreate, "Cannot create the buffer, a SM_5 video device or better is required.");
+				throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_REQUIRES_SM, DeviceFeatureLevel.SM5));
 			}
 
 			// Raw buffer size must be a multiple of 4.
 			if ((settings.ElementCount * sizeof(int)) % 4 != 0)
 			{
-				throw new DataMisalignedException(string.Format("The size of the raw buffer [{0}] must be a multiple of 4.",
-																settings.ElementCount * sizeof(int)));
+				throw new DataMisalignedException(string.Format(Resources.GORGFX_BUFFER_NOT_MULTIPLE,
+																settings.ElementCount * sizeof(int), 4));
 			}
-
-            if (string.IsNullOrWhiteSpace(name))
-            {
-                name = string.Format("Raw Buffer #{0}", GorgonRenderStatistics.RawBufferCount);
-            }
 
 			var result = new GorgonRawBuffer(_graphics, name, settings);
 			result.Initialize(stream);

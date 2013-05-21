@@ -69,10 +69,6 @@ namespace GorgonLibrary.Graphics
 			{
 				return (GorgonTexture2DSettings)base.Settings;
 			}
-			private set
-			{
-				base.Settings = value;
-			}
 		}
 		#endregion
 
@@ -186,22 +182,18 @@ namespace GorgonLibrary.Graphics
         {
             D3DResource = D3D.Resource.FromSwapChain<D3D.Texture2D>(swapChain.GISwapChain, 0);
             D3D.Texture2DDescription desc = ((D3D.Texture2D)D3DResource).Description;
-            
-			base.Settings = new GorgonTexture2DSettings
-			    {
-			        Width = desc.Width,
-			        Height = desc.Height,
-			        ArrayCount = desc.ArraySize,
-			        Format = (BufferFormat)desc.Format,
-			        MipCount = desc.MipLevels,
-			        Usage = (BufferUsage)desc.Usage,
-			        ShaderViewFormat = BufferFormat.Unknown,
-			        AllowUnorderedAccess = (desc.BindFlags & D3D.BindFlags.UnorderedAccess) == D3D.BindFlags.UnorderedAccess,
-			        Multisampling = new GorgonMultisampling(desc.SampleDescription.Count, desc.SampleDescription.Quality),
-			        IsTextureCube = (desc.OptionFlags & D3D.ResourceOptionFlags.TextureCube)
-			                        == D3D.ResourceOptionFlags.TextureCube
-			    };
 
+	        base.Settings.Width = desc.Width;
+	        base.Settings.Height = desc.Height;
+	        base.Settings.ArrayCount = desc.ArraySize;
+	        base.Settings.Format = (BufferFormat)desc.Format;
+	        base.Settings.MipCount = desc.MipLevels;
+	        base.Settings.Usage = (BufferUsage)desc.Usage;
+			base.Settings.ShaderViewFormat = BufferFormat.Unknown;
+	        base.Settings.AllowUnorderedAccess = (desc.BindFlags & D3D.BindFlags.UnorderedAccess) == D3D.BindFlags.UnorderedAccess;
+			base.Settings.Multisampling = new GorgonMultisampling(desc.SampleDescription.Count, desc.SampleDescription.Quality);
+	        base.Settings.IsTextureCube = (desc.OptionFlags & D3D.ResourceOptionFlags.TextureCube) ==
+	                                      D3D.ResourceOptionFlags.TextureCube;
             RenderTarget = swapChain;
 
             if ((swapChain.Settings.Flags & SwapChainUsageFlags.ShaderInput) == SwapChainUsageFlags.ShaderInput)

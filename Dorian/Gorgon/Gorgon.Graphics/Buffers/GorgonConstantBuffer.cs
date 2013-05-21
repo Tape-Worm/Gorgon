@@ -24,13 +24,10 @@
 // 
 #endregion
 
-using System;
-using System.ComponentModel;
 using GorgonLibrary.Diagnostics;
 using DX = SharpDX;
 using D3D = SharpDX.Direct3D11;
 using GorgonLibrary.IO;
-using GorgonLibrary.Graphics.Properties;
 
 namespace GorgonLibrary.Graphics
 {
@@ -41,24 +38,23 @@ namespace GorgonLibrary.Graphics
 	/// <para>Typically, the user will define a value type that matches a constant buffer layout.  Then, if the value type uses nothing but blittable types, the user can then write the entire 
 	/// value type structure to the constant buffer.  If the value type contains more complex types, such as arrays, then the user can write each item in the value type to a variable in the constant 
 	/// buffer.  Please note that the names for the variables in the value type and the shader do -not- have to match, although, for the sake of clarity, it is a good idea that they do.</para>
-	/// <para>In order to write to a constant buffer, the user must <see cref="GorgonLibrary.Graphics.GorgonBuffer.Lock">lock</see> the buffer beforehand, and unlock it when done.  Failure to do so will result in an exception.</para>
+	/// <para>In order to write to a constant buffer, the user must <see cref="GorgonLibrary.Graphics.GorgonBaseBuffer.Lock">lock</see> the buffer beforehand, and unlock it when done.  Failure to do so will result in an exception.</para>
 	/// <para>Constant buffers follow very specific rules, which are explained at http://msdn.microsoft.com/en-us/library/windows/desktop/bb509632(v=vs.85).aspx </para>
 	/// <para>When passing a value type to the constant buffer, ensure that the type has a System.Runtime.InteropServices.StructLayout attribute assigned to it, and that the layout is explicit.  Also, the size of the 
 	/// value type must be a multiple of 16, so padding variables may be required.</para>
 	/// </remarks>
-	public class GorgonConstantBuffer
-		: GorgonBuffer
+	public sealed class GorgonConstantBuffer
+		: GorgonBaseBuffer
 	{
 		#region Properties.
 		/// <summary>
-		/// Not used by constant buffers.
+		/// Property to return the settings.
 		/// </summary>
-		[EditorBrowsable(EditorBrowsableState.Never)]
-		public new bool IsOutput
+		public new GorgonConstantBufferSettings Settings
 		{
 			get
 			{
-				return false;
+				return (GorgonConstantBufferSettings)base.Settings;
 			}
 		}
 		#endregion
@@ -77,24 +73,28 @@ namespace GorgonLibrary.Graphics
 			}
 
 			var desc = new D3D.BufferDescription
-			    {
-				BindFlags = D3D.BindFlags.ConstantBuffer,
-				CpuAccessFlags = D3DCPUAccessFlags,
-				OptionFlags = D3D.ResourceOptionFlags.None,
-				SizeInBytes = SizeInBytes,
-				StructureByteStride = 0,
-				Usage = D3DUsage
-			};
-			
+				{
+					BindFlags = D3D.BindFlags.ConstantBuffer,
+					CpuAccessFlags = D3DCPUAccessFlags,
+					OptionFlags = D3D.ResourceOptionFlags.None,
+					SizeInBytes = SizeInBytes,
+					StructureByteStride = 0,
+					Usage = D3DUsage
+				};
+
 			if (value != null)
 			{
 				long position = value.Position;
 
-				using (var dxStream = new DX.DataStream(value.BasePointer, value.Length - position, true, true))
+				using(var dxStream = new DX.DataStream(value.BasePointer, value.Length - position, true, true))
+				{
 					D3DResource = new D3D.Buffer(Graphics.D3DDevice, dxStream, desc);
+				}
 			}
 			else
+			{
 				D3DResource = new D3D.Buffer(Graphics.D3DDevice, desc);
+			}
 
 			GorgonRenderStatistics.ConstantBufferCount++;
 			GorgonRenderStatistics.ConstantBufferSize += ((D3D.Buffer)D3DResource).Description.SizeInBytes;
@@ -106,8 +106,7 @@ namespace GorgonLibrary.Graphics
 		protected override void CleanUpResource()
 		{
 			// If we're bound with a pixel or vertex shader, then unbind.
-			Graphics.Shaders.VertexShader.ConstantBuffers.Unbind(this);
-			Graphics.Shaders.PixelShader.ConstantBuffers.Unbind(this);
+			Graphics.Shaders.Unbind(this);
 
 		    if (IsLocked)
 		    {
@@ -153,10 +152,9 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		/// <param name="graphics">Graphics interface that owns this buffer.</param>
 		/// <param name="name">Name of the constant buffer.</param>
-		/// <param name="size">Size of the buffer, in bytes.</param>
-		/// <param name="allowCPUWrite">TRUE to allow the CPU write access to the buffer, FALSE to disallow.</param>
-		internal GorgonConstantBuffer(GorgonGraphics graphics, string name, int size, bool allowCPUWrite)
-			: base(graphics, name, (allowCPUWrite ? BufferUsage.Dynamic : BufferUsage.Default), size, false)
+		/// <param name="settings">Settings for the buffer.</param>
+		internal GorgonConstantBuffer(GorgonGraphics graphics, string name, IBufferSettings settings)
+			: base(graphics, name, settings)
 		{
 		}
 		#endregion

@@ -79,7 +79,7 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		private void CreateDefaultResourceView()
 		{
-		    if (BufferUsage == GorgonLibrary.Graphics.BufferUsage.Staging)
+		    if (Settings.Usage == GorgonLibrary.Graphics.BufferUsage.Staging)
 		    {
 		        return;
 		    }
@@ -115,7 +115,7 @@ namespace GorgonLibrary.Graphics
 
 		    var desc = new D3D.BufferDescription
 		        {
-					BindFlags = BufferUsage == BufferUsage.Staging ? D3D.BindFlags.None : D3D.BindFlags.ShaderResource,
+					BindFlags = Settings.Usage == BufferUsage.Staging ? D3D.BindFlags.None : D3D.BindFlags.ShaderResource,
 		            CpuAccessFlags = D3DCPUAccessFlags,
 		            OptionFlags = D3D.ResourceOptionFlags.BufferStructured,
 		            SizeInBytes = SizeInBytes,
@@ -123,14 +123,14 @@ namespace GorgonLibrary.Graphics
 		            Usage = D3DUsage
 		        };
 
-            if ((IsOutput)
-                && (BufferUsage != BufferUsage.Immutable)
-                && (BufferUsage != BufferUsage.Staging))
+            if ((Settings.IsOutput)
+                && (Settings.Usage != BufferUsage.Immutable)
+                && (Settings.Usage != BufferUsage.Staging))
             {
                 desc.BindFlags |= D3D.BindFlags.StreamOutput;
             }
             
-            if ((Settings.AllowUnorderedAccess) && (BufferUsage != BufferUsage.Staging))
+            if ((Settings.AllowUnorderedAccess) && (Settings.Usage != BufferUsage.Staging))
 			{
 				desc.BindFlags |= D3D.BindFlags.UnorderedAccess;
 			}
@@ -172,7 +172,7 @@ namespace GorgonLibrary.Graphics
         /// </remarks>
         public GorgonBufferShaderView CreateShaderView(int start, int count)
         {
-            if (BufferUsage == BufferUsage.Staging)
+            if (Settings.Usage == BufferUsage.Staging)
             {
                 throw new GorgonException(GorgonResult.CannotCreate, "Cannot create a shader resource view for a buffer that has a usage of Staging.");
             }
@@ -196,7 +196,7 @@ namespace GorgonLibrary.Graphics
 		/// unordered access view can be bound to the pipeline at any given time.
 		/// <para>Unordered access views require a video device feature level of SM_5 or better.</para>
 		/// </remarks>
-		/// <exception cref="GorgonLibrary.GorgonException">Thrown when the usage for this buffer is set to Staging.
+		/// <exception cref="GorgonLibrary.GorgonException">Thrown when the usage for this buffer is set to Staging or Dynamic.
 		/// <para>-or-</para>
 		/// <para>Thrown when the resource settings do not allow unordered access views.</para>
 		/// <para>-or-</para>
@@ -211,9 +211,14 @@ namespace GorgonLibrary.Graphics
 				throw new GorgonException(GorgonResult.CannotCreate, "The buffer does not allow unordered access.");
 			}
 
-			if (BufferUsage == BufferUsage.Staging)
+			if (Settings.Usage == BufferUsage.Staging)
 			{
-				throw new GorgonException(GorgonResult.CannotCreate, "Cannot create an unordered access resource view for a buffer that has a usage of Staging.");
+				throw new GorgonException(GorgonResult.CannotBind, "Cannot create an unordered access resource view for a buffer that has a usage of [Staging].");
+			}
+
+			if (Settings.Usage == BufferUsage.Dynamic)
+			{
+				throw new GorgonException(GorgonResult.CannotBind, "Cannot create an unordered access resource view for a buffer that has a usage of [Dynamic].");
 			}
 
 			if ((start + count > Settings.ElementCount) || (start < 0) || (count < 0))
@@ -233,7 +238,7 @@ namespace GorgonLibrary.Graphics
 		/// <param name="name">Name of the buffer.</param>
 		/// <param name="settings">The settings for the structured buffer.</param>
 		internal GorgonStructuredBuffer(GorgonGraphics graphics, string name, GorgonStructuredBufferSettings settings)
-			: base(graphics, name, settings, settings.ElementCount * settings.ElementSize)
+			: base(graphics, name, settings)
 		{
 		}
 		#endregion
