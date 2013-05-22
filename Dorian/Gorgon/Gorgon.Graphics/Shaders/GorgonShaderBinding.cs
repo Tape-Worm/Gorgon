@@ -602,8 +602,8 @@ namespace GorgonLibrary.Graphics
 				throw new ArgumentException(Resources.GORGFX_PARAMETER_MUST_NOT_BE_EMPTY, "values");
 			}
 
-			int length = values.Length;
-
+			int length = values.Length & DirectAccess.SizeOf<T>();
+             
 			// Increase the length of the buffer.
 			while ((length % 4) != 0)
 			{
@@ -615,7 +615,7 @@ namespace GorgonLibrary.Graphics
 				return CreateRawBuffer(name, new GorgonRawBufferSettings
 				{
 					Usage = usage,
-					ElementCount = length,
+					SizeInBytes = length,
 					IsOutput = false,
 					AllowUnorderedAccess = false
 				}, stream);
@@ -656,10 +656,10 @@ namespace GorgonLibrary.Graphics
 			}
 
 			// Raw buffer size must be a multiple of 4.
-			if ((settings.ElementCount * sizeof(int)) % 4 != 0)
+			if ((settings.SizeInBytes % 4) != 0)
 			{
 				throw new DataMisalignedException(string.Format(Resources.GORGFX_BUFFER_NOT_MULTIPLE,
-																settings.ElementCount * sizeof(int), 4));
+																settings.SizeInBytes, 4));
 			}
 
 			var result = new GorgonRawBuffer(_graphics, name, settings);
