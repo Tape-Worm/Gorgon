@@ -184,7 +184,7 @@ namespace GorgonLibrary.Graphics
 				throw new ArgumentException(Resources.GORGFX_VIEW_UNKNOWN_FORMAT, "format");
 			}
 
-			if ((start + count > Settings.ElementCount) || (start < 0) || (count < 0))
+			if ((start + count > Settings.ElementCount) || (start < 0) || (count < 1))
 			{
 				throw new ArgumentException("The start and count must be 0 or greater and less than the number of elements in the buffer.");
 			}
@@ -228,7 +228,7 @@ namespace GorgonLibrary.Graphics
                 throw new GorgonException(GorgonResult.CannotCreate, "Cannot create a shader resource view for a buffer that has a usage of Staging.");
             }
 
-            if ((start + count > Settings.ElementCount) || (start < 0) || (count < 0))
+            if ((start + count > Settings.ElementCount) || (start < 0) || (count < 1))
             {
                 throw new ArgumentException("The start and count must be 0 or greater and less than the number of elements in the buffer.");
             }

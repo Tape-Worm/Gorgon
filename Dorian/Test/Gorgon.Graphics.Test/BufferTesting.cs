@@ -146,13 +146,35 @@ namespace GorgonLibrary.Graphics.Test
                     ElementSize = 16
                 });
 
-            var view = structBuffer.CreateUnorderedAccessView(0, 5, StructuredBufferType.Standard);
+            var typedBuffer = _framework.Graphics.Shaders.CreateTypedBuffer("TB", new GorgonTypedBufferSettings<int>
+                {
+                    Usage = BufferUsage.Default,
+                    AllowUnorderedAccess = true,
+                    ElementCount = 1,
+                    ElementSize = 4,
+                    ShaderViewFormat = BufferFormat.R8G8B8A8_Int
+                });
+
+            var rawBuffer = _framework.Graphics.Shaders.CreateRawBuffer("RB", new GorgonRawBufferSettings()
+                {
+                    Usage = BufferUsage.Default,
+                    AllowUnorderedAccess = true,
+                    SizeInBytes = 12
+                });
+
+            GorgonUnorderedAccessView view = structBuffer.CreateUnorderedAccessView(0, 5, StructuredBufferType.Standard);
             view.Dispose();
 
             view = structBuffer.CreateUnorderedAccessView(0, 5, StructuredBufferType.AppendConsume);
             view.Dispose();
 
             view = structBuffer.CreateUnorderedAccessView(0, 5, StructuredBufferType.Counter);
+            view.Dispose();
+
+            view = typedBuffer.CreateUnorderedAccessView(BufferFormat.R8G8B8A8_Int, 0, 1);
+            view.Dispose();
+
+            view = rawBuffer.CreateUnorderedAccessView(8, 4);
             view.Dispose();
         }
 
@@ -185,7 +207,6 @@ namespace GorgonLibrary.Graphics.Test
 						    {
 							    y = 255;
 						    }
-
 
 						    if (x < 0)
 						    {

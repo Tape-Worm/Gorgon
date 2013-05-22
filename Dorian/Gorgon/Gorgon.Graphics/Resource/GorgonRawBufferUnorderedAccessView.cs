@@ -42,11 +42,10 @@ namespace GorgonLibrary.Graphics
         /// Initializes a new instance of the <see cref="GorgonBufferUnorderedAccessView"/> class.
         /// </summary>
         /// <param name="resource">The buffer to bind to the view.</param>
-        /// <param name="format">The format of the view.</param>
         /// <param name="firstElement">The first element in the buffer.</param>
         /// <param name="elementCount">The number of elements to view.</param>
-        internal GorgonRawBufferUnorderedAccessView(GorgonResource resource, BufferFormat format, int firstElement, int elementCount)
-            : base(resource, format, firstElement, elementCount)
+        internal GorgonRawBufferUnorderedAccessView(GorgonResource resource, int firstElement, int elementCount)
+            : base(resource, BufferFormat.R32, firstElement, elementCount)
         {
         }
         #endregion

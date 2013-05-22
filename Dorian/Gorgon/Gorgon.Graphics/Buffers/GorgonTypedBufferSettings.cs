@@ -78,16 +78,6 @@ namespace GorgonLibrary.Graphics
 
 
 		/// <summary>
-		/// Property to set or return whether to allow writing from the CPU.
-		/// </summary>
-		/// <remarks>The default value is FALSE.</remarks>
-		public bool AllowCPUWrite
-		{
-			get;
-			set;
-		}
-
-		/// <summary>
 		/// Property to set or return the size of an element in a structured buffer.
 		/// </summary>
 		/// <remarks>This value is read-only for typed buffers and will return the size, in bytes, of the type parameter.

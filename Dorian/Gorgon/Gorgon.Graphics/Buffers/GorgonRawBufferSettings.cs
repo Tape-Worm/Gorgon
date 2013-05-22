@@ -6,16 +6,15 @@
 	/// <remarks>Raw buffers are only available on SM5 video devices.</remarks>
 	public sealed class GorgonRawBufferSettings
 		: IShaderBufferSettings
-	{
-		#region Constructor/Destructor.
-		/// <summary>
+    {
+        #region Constructor/Destructor.
+        /// <summary>
 		/// Initializes a new instance of the <see cref="GorgonRawBufferSettings"/> class.
 		/// </summary>
 		public GorgonRawBufferSettings()
 		{
 			IsOutput = false;
 			Usage = BufferUsage.Default;
-			ElementCount = 0;
 			AllowUnorderedAccess = false;
 		}
 		#endregion
@@ -24,15 +23,10 @@
 		/// <summary>
 		/// Property to return the size of the buffer, in bytes.
 		/// </summary>
-		int IBufferSettings.SizeInBytes
+		public int SizeInBytes
 		{
-			get
-			{
-				return ElementCount * 4;
-			}
-			set
-			{
-			}
+			get;
+			set;
 		}
 
 		/// <summary>
@@ -89,10 +83,15 @@
 		/// This value is only applicable on SM_5 video devices if used with a structured buffer. The value must be non-zero for all buffer types.
 		/// <para>The default value is 0.</para>
 		/// </remarks>
-		public int ElementCount
+		int IShaderBufferSettings.ElementCount
 		{
-			get;
-			set;
+			get
+			{
+			    return SizeInBytes / 4;
+			}
+			set
+			{
+			}
 		}
 
 		/// <summary>
