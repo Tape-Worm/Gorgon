@@ -191,7 +191,7 @@ namespace GorgonLibrary.Renderers
 #else
 			PixelShader = Graphics.Shaders.CreateShader<GorgonPixelShader>("Effect.2D.SobelEdgeDetect.PS", "GorgonPixelShaderSobelEdge", "#GorgonInclude \"Gorgon2DShaders\"", false);
 #endif
-			_sobelBuffer = Graphics.Shaders.CreateConstantBuffer("Gorgon2DSobelEdgeDetectEffect Constant Buffer",
+			_sobelBuffer = Graphics.Buffers.CreateConstantBuffer("Gorgon2DSobelEdgeDetectEffect Constant Buffer",
 																new GorgonConstantBufferSettings
 																{
 																	SizeInBytes = 32

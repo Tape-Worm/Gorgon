@@ -31,6 +31,8 @@ using GorgonLibrary.Diagnostics;
 using GorgonLibrary.Graphics.Properties;
 using GorgonLibrary.IO;
 
+// TODO: Add GetStaging() (like textures) for buffers.
+// TODO: Add Save() for buffers.
 namespace GorgonLibrary.Graphics
 {
 	/// <summary>

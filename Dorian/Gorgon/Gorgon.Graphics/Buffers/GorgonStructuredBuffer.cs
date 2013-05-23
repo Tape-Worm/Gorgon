@@ -211,17 +211,17 @@ namespace GorgonLibrary.Graphics
 				throw new GorgonException(GorgonResult.CannotCreate, "The buffer does not allow unordered access.");
 			}
 
-			if (Settings.Usage == BufferUsage.Staging)
-			{
-				throw new GorgonException(GorgonResult.CannotBind, "Cannot create an unordered access resource view for a buffer that has a usage of [Staging].");
-			}
+            if (Settings.Usage == BufferUsage.Staging)
+            {
+                throw new GorgonException(GorgonResult.CannotBind, "Cannot bind an unordered access resource view to a buffer that has a usage of [Staging].");
+            }
 
-			if (Settings.Usage == BufferUsage.Dynamic)
-			{
-				throw new GorgonException(GorgonResult.CannotBind, "Cannot create an unordered access resource view for a buffer that has a usage of [Dynamic].");
-			}
-
-			if ((start + count > Settings.ElementCount) || (start < 0) || (count < 1))
+            if (Settings.Usage == BufferUsage.Dynamic)
+            {
+                throw new GorgonException(GorgonResult.CannotBind, "Cannot bind an unordered access resource view to a buffer that has a usage of [Dynamic].");
+            }
+            
+            if ((start + count > Settings.ElementCount) || (start < 0) || (count < 1))
 			{
 				throw new ArgumentException("The start and count must be 0 or greater and less than the number of elements in the buffer.");
 			}

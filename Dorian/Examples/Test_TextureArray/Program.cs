@@ -222,7 +222,7 @@ namespace Test_TextureArray
 
 			_dyn.Unlock();
 
-			_structBuffer = _graphics.Shaders.CreateStructuredBuffer("SB", new GorgonStructuredBufferSettings()
+			_structBuffer = _graphics.Buffers.CreateStructuredBuffer("SB", new GorgonStructuredBufferSettings()
 			    {
 			        ElementCount = 1,
                     ElementSize = 4

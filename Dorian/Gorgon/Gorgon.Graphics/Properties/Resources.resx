@@ -277,13 +277,13 @@
   <data name="GORGFX_EFFECT_PARAM_TOSTR" xml:space="preserve">
     <value>Effect Parameter: {0}, Value = {1}</value>
   </data>
-  <data name="GORGFX_VIEW_ALREADY_BOUND" xml:space="preserve">
-    <value>The shader resource view is already bound at index [{0}].</value>
-  </data>
   <data name="GORGFX_VIEW_CANT_BIND_STAGING_NO_VIEW" xml:space="preserve">
     <value>The resource view cannot be bound, it is either a staging resource or has no default shader view.</value>
   </data>
   <data name="GORGFX_VIEW_RESOURCE_NOT_TYPE" xml:space="preserve">
     <value>The view at index [{0}] is not bound to a resource of type '{1}'.</value>
+  </data>
+  <data name="GORGFX_VIEW_ALREADY_BOUND" xml:space="preserve">
+    <value>The view was already bound to the shader at index [{0}].</value>
   </data>
 </root>

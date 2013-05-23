@@ -166,12 +166,12 @@ namespace GorgonLibrary.Graphics
 
 			if (Settings.Usage == BufferUsage.Staging)
 			{
-				throw new GorgonException(GorgonResult.CannotBind, "Cannot create an unordered access resource view for a buffer that has a usage of [Staging].");
+				throw new GorgonException(GorgonResult.CannotBind, "Cannot bind an unordered access resource view to a buffer that has a usage of [Staging].");
 			}
 
 			if (Settings.Usage == BufferUsage.Dynamic)
 			{
-				throw new GorgonException(GorgonResult.CannotBind, "Cannot create an unordered access resource view for a buffer that has a usage of [Dynamic].");
+				throw new GorgonException(GorgonResult.CannotBind, "Cannot bind an unordered access resource view to a buffer that has a usage of [Dynamic].");
 			}
 
             if ((start + count > Settings.ElementCount) || (start < 0) || (count < 1))

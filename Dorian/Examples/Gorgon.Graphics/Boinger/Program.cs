@@ -410,7 +410,7 @@ namespace GorgonLibrary.Graphics.Example
 			// the constant buffer is our system memory store for the data.  Basically we write to the system 
 			// memory and then upload that data to the video card.  This is very different from how things used to
 			// work, but allows a lot more flexibility.  
-			_wvpBuffer = Graphics.Shaders.CreateConstantBuffer("WVPBuffer", new GorgonConstantBufferSettings
+			_wvpBuffer = Graphics.Buffers.CreateConstantBuffer("WVPBuffer", new GorgonConstantBufferSettings
 				{
 					SizeInBytes = Matrix.SizeInBytes
 				});

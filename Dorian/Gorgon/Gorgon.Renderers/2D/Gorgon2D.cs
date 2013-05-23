@@ -601,7 +601,7 @@ namespace GorgonLibrary.Renderers
 			// Create constant buffers.
 			if (ProjectionViewBuffer == null)
 			{
-				ProjectionViewBuffer = Graphics.Shaders.CreateConstantBuffer("Gorgon2D Projection/View Matrix Constant Buffer",
+				ProjectionViewBuffer = Graphics.Buffers.CreateConstantBuffer("Gorgon2D Projection/View Matrix Constant Buffer",
 				                                                             new GorgonConstantBufferSettings
 					                                                             {
 						                                                             SizeInBytes = Matrix.SizeInBytes,
@@ -611,7 +611,7 @@ namespace GorgonLibrary.Renderers
 
 			if (AlphaTestBuffer == null)
 			{
-				AlphaTestBuffer = Graphics.Shaders.CreateConstantBuffer("Gorgon2D Alpha Test Constant Buffer",
+				AlphaTestBuffer = Graphics.Buffers.CreateConstantBuffer("Gorgon2D Alpha Test Constant Buffer",
 				                                                        new GorgonConstantBufferSettings
 					                                                        {
 						                                                        SizeInBytes = 32
@@ -674,7 +674,7 @@ namespace GorgonLibrary.Renderers
 				}
 
 				ibData.Position = 0;
-				DefaultIndexBuffer = Graphics.Input.CreateIndexBuffer("Gorgon2D Default Index Buffer", new GorgonIndexBufferSettings()
+				DefaultIndexBuffer = Graphics.Buffers.CreateIndexBuffer("Gorgon2D Default Index Buffer", new GorgonIndexBufferSettings()
 					{
 						IsOutput = false,
 						SizeInBytes = (int)ibData.Length,
@@ -686,7 +686,7 @@ namespace GorgonLibrary.Renderers
 			// Create our empty vertex buffer.
 			DefaultVertexBufferBinding =
 				new GorgonVertexBufferBinding(
-					Graphics.Input.CreateVertexBuffer("Gorgon 2D Default Vertex Buffer", new GorgonBufferSettings
+					Graphics.Buffers.CreateVertexBuffer("Gorgon 2D Default Vertex Buffer", new GorgonVertexBufferSettings
 						{
 							IsOutput = false,
 							SizeInBytes = spriteVBSize,

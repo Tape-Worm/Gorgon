@@ -147,7 +147,7 @@ namespace GorgonLibrary.Graphics
 		/// unordered access view can be bound to the pipeline at any given time.
 		/// <para>Unordered access views require a video device feature level of SM_5 or better.</para>
 		/// </remarks>
-		/// <exception cref="GorgonLibrary.GorgonException">Thrown when the usage for this buffer is set to Staging.
+		/// <exception cref="GorgonLibrary.GorgonException">Thrown when the usage for this buffer is set to Staging or Dynamic.
 		/// <para>-or-</para>
 		/// <para>Thrown when the video device feature level is not SM_5 or better.</para>
 		/// <para>-or-</para>
@@ -169,17 +169,17 @@ namespace GorgonLibrary.Graphics
 				throw new GorgonException(GorgonResult.CannotCreate, "The buffer does not allow unordered access.");
 			}
 
-			if (Settings.Usage == BufferUsage.Staging)
-			{
-				throw new GorgonException(GorgonResult.CannotBind, "Cannot create an unordered access resource view for a buffer that has a usage of [Staging].");
-			}
+            if (Settings.Usage == BufferUsage.Staging)
+            {
+                throw new GorgonException(GorgonResult.CannotBind, "Cannot bind an unordered access resource view to a buffer that has a usage of [Staging].");
+            }
 
-			if (Settings.Usage == BufferUsage.Dynamic)
-			{
-				throw new GorgonException(GorgonResult.CannotBind, "Cannot create an unordered access resource view for a buffer that has a usage of [Dynamic].");
-			}
-
-			if (format == BufferFormat.Unknown)
+            if (Settings.Usage == BufferUsage.Dynamic)
+            {
+                throw new GorgonException(GorgonResult.CannotBind, "Cannot bind an unordered access resource view to a buffer that has a usage of [Dynamic].");
+            }
+            
+            if (format == BufferFormat.Unknown)
 			{
 				throw new ArgumentException(Resources.GORGFX_VIEW_UNKNOWN_FORMAT, "format");
 			}

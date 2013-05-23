@@ -188,6 +188,15 @@ namespace GorgonLibrary.Graphics
 			private set;
 		}
 
+        /// <summary>
+        /// Property to return the interface for buffers.
+        /// </summary>
+        public GorgonBuffers Buffers
+        {
+            get;
+            private set;
+        }
+
 		/// <summary>
 		/// Property to return the shader interface.
 		/// </summary>
@@ -458,6 +467,7 @@ namespace GorgonLibrary.Graphics
 			Output = new GorgonOutputMerger(this);
 			Textures = new GorgonTextures(this);
 			Fonts = new GorgonFonts(this);
+            Buffers = new GorgonBuffers(this);
 
             // Set default states.
 		    Rasterizer.States = GorgonRasterizerStates.DefaultStates;

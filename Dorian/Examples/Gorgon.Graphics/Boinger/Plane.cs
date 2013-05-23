@@ -80,7 +80,7 @@ namespace GorgonLibrary.Graphics.Example
 				new BoingerVertex(new Vector3(size.X, -size.Y, 0.0f), new Vector2(textureCoordinates.Right, textureCoordinates.Bottom))
 			};
 
-			VertexBuffer = Program.Graphics.Input.CreateVertexBuffer("Plane Vertex Buffer", Vertices, BufferUsage.Immutable);
+			VertexBuffer = Program.Graphics.Buffers.CreateVertexBuffer("Plane Vertex Buffer", Vertices, BufferUsage.Immutable);
 
 			// Create our indices.
 			Indices = new[] {
@@ -92,7 +92,7 @@ namespace GorgonLibrary.Graphics.Example
 				3
 			};
 
-			IndexBuffer = Program.Graphics.Input.CreateIndexBuffer("Plane Index Buffer", Indices, BufferUsage.Immutable);
+			IndexBuffer = Program.Graphics.Buffers.CreateIndexBuffer("Plane Index Buffer", Indices, BufferUsage.Immutable);
 		}
 		#endregion
 	}

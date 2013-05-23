@@ -224,7 +224,7 @@ namespace GorgonLibrary.Renderers
 #endif
 
 			_waveStream = new GorgonDataStream(16);
-			_waveBuffer = Graphics.Shaders.CreateConstantBuffer("Gorgon2DWaveEffect Constant Buffer",
+			_waveBuffer = Graphics.Buffers.CreateConstantBuffer("Gorgon2DWaveEffect Constant Buffer",
 																new GorgonConstantBufferSettings
 																{
 																	SizeInBytes = 16

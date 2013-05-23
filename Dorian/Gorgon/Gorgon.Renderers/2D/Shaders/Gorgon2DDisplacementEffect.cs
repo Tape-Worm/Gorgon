@@ -255,7 +255,7 @@ namespace GorgonLibrary.Renderers
 			PixelShader = Graphics.Shaders.CreateShader<GorgonPixelShader>("Effect.2D.DisplacementDecoder.PS", "GorgonPixelShaderDisplacementDecoder", "#GorgonInclude \"Gorgon2DShaders\"", false);
 #endif
 
-			_displacementBuffer = Graphics.Shaders.CreateConstantBuffer("Gorgon2DDisplacementEffect Constant Buffer",
+			_displacementBuffer = Graphics.Buffers.CreateConstantBuffer("Gorgon2DDisplacementEffect Constant Buffer",
 																new GorgonConstantBufferSettings
 																{
 																	SizeInBytes = 16
