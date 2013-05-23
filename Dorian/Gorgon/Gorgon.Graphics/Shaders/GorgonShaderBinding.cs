@@ -25,12 +25,11 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using Shaders = SharpDX.D3DCompiler;
-using GorgonLibrary.Diagnostics;
 using GorgonLibrary.IO;
 using GorgonLibrary.Native;
 using GorgonLibrary.Graphics.Properties;
@@ -89,9 +88,14 @@ namespace GorgonLibrary.Graphics
 		internal void CleanUp()
 		{
 			if (PixelShader != null)
+			{
 				PixelShader.CleanUp();
+			}
+
 			if (VertexShader != null)
+			{
 				VertexShader.CleanUp();
+			}
 
 			PixelShader = null;
 			VertexShader = null;
@@ -214,7 +218,7 @@ namespace GorgonLibrary.Graphics
 		/// <para>-or-</para>
 		/// <para>Thrown when the parameter list does not contain a required parameter.</para>
 		/// </exception>
-		public T CreateEffect<T>(string name, params KeyValuePair<string, object>[] parameters)
+		public T CreateEffect<T>(string name, params GorgonEffectParameter[] parameters)
 			where T : GorgonEffect
 		{
             if (name == null)
@@ -224,34 +228,37 @@ namespace GorgonLibrary.Graphics
 
             if (string.IsNullOrWhiteSpace(name))
             {
-                throw new ArgumentException("The parameter must not empty.", "name");
+                throw new ArgumentException(Resources.GORGFX_PARAMETER_MUST_NOT_BE_EMPTY, "name");
             }
 
+			// Create the effect.
 			var effect = (T)Activator.CreateInstance(typeof(T), new object[] {_graphics, name});
 
+			// Check its required parameters.
 			if ((effect.RequiredParameters.Count > 0) && ((parameters == null) || (parameters.Length == 0)))
 			{
-				throw new ArgumentException("There are required parameters for the effect, but none were passed to the effect.", "parameters");
+				throw new ArgumentException(string.Format(Resources.GORGFX_EFFECT_MISSING_REQUIRED_PARAMS, effect.RequiredParameters[0]), "parameters");
 			}
 
 			if ((parameters != null) && (parameters.Length > 0))
 			{
 				// Only get parameters where the key name has a value.
-				var validParameters = parameters.Where(item => !string.IsNullOrWhiteSpace(item.Key));
+				var validParameters = parameters.Where(item => !string.IsNullOrWhiteSpace(item.Name)).ToArray();
 
 				// Check for predefined required parameters from the effect.
 				foreach (var effectParam in effect.RequiredParameters)
-				{					
-					if (!validParameters.Any(item => item.Key == effectParam))
+				{
+					if ((!string.IsNullOrWhiteSpace(effectParam)) 
+						&& (!validParameters.Any(item => string.Compare(item.Name, effectParam, StringComparison.OrdinalIgnoreCase) == 0)))
 					{
-						throw new ArgumentException("The required parameter '" + effectParam + "' was not found in the parameter list.", "parameters");
+						throw new ArgumentException(string.Format(Resources.GORGFX_EFFECT_MISSING_REQUIRED_PARAMS, effectParam), "parameters");
 					}
 				}
 
 				// Add/update the parameters.
 				foreach (var param in validParameters)
 				{
-					effect.Parameters[param.Key] = param.Value;
+					effect.Parameters[param.Name] = param.Value;
 				}
 			}
 
@@ -602,7 +609,7 @@ namespace GorgonLibrary.Graphics
 				throw new ArgumentException(Resources.GORGFX_PARAMETER_MUST_NOT_BE_EMPTY, "values");
 			}
 
-			int length = values.Length & DirectAccess.SizeOf<T>();
+			int length = values.Length * DirectAccess.SizeOf<T>();
              
 			// Increase the length of the buffer.
 			while ((length % 4) != 0)
@@ -769,14 +776,10 @@ namespace GorgonLibrary.Graphics
         public T FromStream<T>(string name, string entryPoint, Stream stream, int size, bool isDebug)
 			where T : GorgonShader
 		{
-			bool isBinary = false;
-			GorgonShader shader = null;
-			string sourceCode = string.Empty;
-			byte[] shaderData = null;
-			byte[] header = null;
-			long streamPosition = 0;
+			GorgonShader shader;
+			byte[] shaderData;
 
-            if (stream == null)
+			if (stream == null)
             {
                 throw new ArgumentNullException("stream");
             }
@@ -791,30 +794,31 @@ namespace GorgonLibrary.Graphics
                 throw new ArgumentNullException("entryPoint");
             }
 
-            if (stream.Length <= 0)
+            if (size < 1)
             {
-                throw new ArgumentOutOfRangeException("size", "The parameter must be greater than 0.");
+                throw new ArgumentOutOfRangeException("size");
             }
 
             if (string.IsNullOrWhiteSpace("name"))
             {
-                throw new ArgumentException("The parameter must not be empty.", "name");
+                throw new ArgumentException(Resources.GORGFX_PARAMETER_MUST_NOT_BE_EMPTY, "name");
             }
 
             if (string.IsNullOrWhiteSpace("entryPoint"))
             {
-                throw new ArgumentException("The parameter must not be empty.", "entryPoint");
+				throw new ArgumentException(Resources.GORGFX_PARAMETER_MUST_NOT_BE_EMPTY, "entryPoint");
             }           
 			
-			streamPosition = stream.Position;
+			long streamPosition = stream.Position;
 
 			// Check for the binary header.  If we have it, load the file as a binary file.
 			// Otherwise load it as source code.
-			header = new byte[Encoding.UTF8.GetBytes(BinaryShaderHeader).Length];
-			stream.Read(header, 0, header.Length);
-			isBinary = (string.Compare(Encoding.UTF8.GetString(header), BinaryShaderHeader, true) == 0);
+			var header = new byte[Encoding.UTF8.GetBytes(BinaryShaderHeader).Length];
+			bool isBinary = (string.Compare(Encoding.UTF8.GetString(header), stream.ReadString(), StringComparison.OrdinalIgnoreCase) == 0);
 			if (isBinary)
+			{
 				shaderData = new byte[size - BinaryShaderHeader.Length];
+			}
 			else
 			{
 				stream.Position = streamPosition;
@@ -831,7 +835,7 @@ namespace GorgonLibrary.Graphics
 			}
 			else
 			{
-				sourceCode = Encoding.UTF8.GetString(shaderData);
+				string sourceCode = Encoding.UTF8.GetString(shaderData);
 				shader = CreateShader<T>(name, entryPoint, sourceCode, isDebug);
 			}
 
@@ -888,7 +892,7 @@ namespace GorgonLibrary.Graphics
 
             if (string.IsNullOrWhiteSpace(fileName))
             {
-                throw new ArgumentException("The parameter must not be empty.", "fileName");
+                throw new ArgumentException(Resources.GORGFX_PARAMETER_MUST_NOT_BE_EMPTY, "fileName");
             }
 
 			try
@@ -899,8 +903,9 @@ namespace GorgonLibrary.Graphics
 			finally
 			{
 				if (stream != null)
+				{
 					stream.Dispose();
-				stream = null;
+				}
 			}
 		}
 
@@ -920,36 +925,37 @@ namespace GorgonLibrary.Graphics
 		public T CreateShader<T>(string name, string entryPoint, string sourceCode, bool debug)
 			where T : GorgonShader
 		{
-			GorgonShader shader = null;
-
-            if (name == null)
+			if (name == null)
             {
                 throw new ArgumentNullException("name");
             }
 
             if (string.IsNullOrWhiteSpace(name))
             {
-                throw new ArgumentException("The parameter must not be empty.", "name");
+                throw new ArgumentException(Resources.GORGFX_PARAMETER_MUST_NOT_BE_EMPTY, "name");
             }
 
-			if (typeof(T) == typeof(GorgonVertexShader))
-				shader = new GorgonVertexShader(_graphics, name, entryPoint);
-
-			if (typeof(T) == typeof(GorgonPixelShader))
-				shader = new GorgonPixelShader(_graphics, name, entryPoint);
+			var shader = (T)Activator.CreateInstance(typeof(T), BindingFlags.Instance | BindingFlags.NonPublic, null, new object[]
+				{
+					_graphics, name, entryPoint
+				}, null, null);
 
 			if (shader == null)
+			{
 				throw new TypeInitializationException(typeof(T).FullName, null);
+			}
 
 			shader.IsDebug = debug;
+
 			if (!string.IsNullOrEmpty(sourceCode))
 			{
 				shader.SourceCode = sourceCode;
 				shader.Compile();
 			}
+
 			_graphics.AddTrackedObject(shader);
 
-			return (T)shader;
+			return shader;
 		}
 		#endregion
 

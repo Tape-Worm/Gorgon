@@ -4,7 +4,7 @@ namespace GorgonLibrary.Graphics
 	/// Settings for the index buffer.
 	/// </summary>
 	public class GorgonIndexBufferSettings
-		: IBufferSettings
+		: IShaderBufferSettings
 	{
 		/// <summary>
 		/// Property to set or return the usage for the buffer.
@@ -53,6 +53,15 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
+		/// Property to set or return whether to allow the index buffer to create shader resource views or not.
+		/// </summary>
+		public bool UseShaderView
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
 		/// Initializes a new instance of the <see cref="GorgonIndexBufferSettings"/> class.
 		/// </summary>
 		public GorgonIndexBufferSettings()
@@ -61,6 +70,65 @@ namespace GorgonLibrary.Graphics
 			IsOutput = false;
 			Use32BitIndices = true;
 			Usage = BufferUsage.Default;
+		}
+
+		/// <summary>
+		/// Property to set or return whether to allow unordered access to the buffer.
+		/// </summary>
+		/// <remarks>
+		/// Unordered access views require a video device feature level of SM_5 or better.
+		/// <para>The default value is FALSE.</para>
+		/// </remarks>
+		public bool AllowUnorderedAccess
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Property to set or return the size of an element in a structured buffer.
+		/// </summary>
+		/// <remarks>This value will always return 4 if the Use32BitIndices value is set to TRUE, 2 if set to FALSE.</remarks>
+		public int ElementSize
+		{
+			get
+			{
+				return Use32BitIndices ? sizeof(uint) : sizeof(ushort);
+			}
+			set
+			{
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return the number of an elements in a structured buffer or typed buffer.
+		/// </summary>
+		public int ElementCount
+		{
+			get
+			{
+				return SizeInBytes / ((IShaderBufferSettings)this).ElementSize;
+			}
+			set
+			{
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return the format of the view used when binding a typed buffer to a shader.
+		/// </summary>
+		/// <remarks>
+		/// This value will always return R32_UInt for 32 bit index buffers, and R16_UInt for 16 bit index buffers.
+		/// </remarks>
+		BufferFormat IShaderBufferSettings.ShaderViewFormat
+		{
+			get
+			{
+				return Use32BitIndices ? BufferFormat.R32_UInt : BufferFormat.R16_UInt;
+			}
+			set
+			{
+			}
 		}
 	}
 }

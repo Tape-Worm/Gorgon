@@ -65,7 +65,7 @@
 		/// Property to set or return the size of an element in a structured buffer.
 		/// </summary>
 		/// <remarks>This value always returns 4.</remarks>
-		int IShaderBufferSettings.ElementSize
+		public int ElementSize
 		{
 			get
 			{
@@ -79,11 +79,8 @@
 		/// <summary>
 		/// Property to set or return the number of an elements in a structured buffer or typed buffer.
 		/// </summary>
-		/// <remarks>
-		/// This value is only applicable on SM_5 video devices if used with a structured buffer. The value must be non-zero for all buffer types.
-		/// <para>The default value is 0.</para>
-		/// </remarks>
-		int IShaderBufferSettings.ElementCount
+		/// <remarks>This value returns the number of 4 byte values in the buffer (SizeInBytes / 4).</remarks>
+		public int ElementCount
 		{
 			get
 			{

@@ -67,7 +67,7 @@ namespace GorgonLibrary.Graphics
 		        return;
 		    }
 
-		    DefaultShaderView = CreateShaderView(0, Settings.SizeInBytes);
+		    DefaultShaderView = CreateShaderView(0, Settings.ElementCount);
 		}
 
 		/// <summary>
@@ -140,13 +140,13 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Function to create an unordered access view for this buffer.
 		/// </summary>
-		/// <param name="start">First bytes to map to the view.</param>
-		/// <param name="count">The number of bytes to map to the view.</param>
+		/// <param name="start">First DWORD aligned element to map to the view.</param>
+		/// <param name="count">The number of DWORD aligned elements to map to the view.</param>
 		/// <returns>A new unordered access view for the buffer.</returns>
 		/// <remarks>Use this to create an unordered access view that will allow shaders to access the view using multiple threads at the same time.  Unlike a <see cref="CreateShaderView">Shader View</see>, only one 
 		/// unordered access view can be bound to the pipeline at any given time.
-		/// <para>Since raw buffers require DWORD aligned data, the <paramref name="count"/> parameter must be aligned to fit the DWORD aligned data.  If the count does not fit, then it will be adjusted to be DWORD 
-		/// aligned.</para>
+		/// <para>Since raw buffers require DWORD aligned data, the parameters <paramref name="start"/> and <paramref name="count"/> are sized in elements and each element is 4 bytes wide.  
+		/// For example, a count of 4 would mean 16 bytes, and a start of 2 would be an offset of 8 bytes into the buffer.</para>
 		/// <para>Unordered access views require a video device feature level of SM_5 or better.</para>
 		/// </remarks>
 		/// <exception cref="GorgonLibrary.GorgonException">Thrown when the usage for this buffer is set to Staging or Dynamic.
@@ -174,23 +174,24 @@ namespace GorgonLibrary.Graphics
 				throw new GorgonException(GorgonResult.CannotBind, "Cannot create an unordered access resource view for a buffer that has a usage of [Dynamic].");
 			}
 
-            // Readjust the count to be DWORD aligned.
-            count = (count + ((DWORDAlign - (count % DWORDAlign)) % DWORDAlign)) / DWORDAlign;
-
-            if ((start + count > Settings.SizeInBytes) || (start < 0) || (count < 1))
+            if ((start + count > Settings.ElementCount) || (start < 0) || (count < 1))
 			{
 				throw new ArgumentException("The start and count must be 0 or greater and less than the number of elements in the buffer.");
 			}
 
-			return new GorgonRawBufferUnorderedAccessView(this, start, count);
+			var view = new GorgonRawBufferUnorderedAccessView(this, start, count);
+
+			view.Initialize();
+
+			return view;
 		}
 		
 		/// <summary>
         /// Function to create a new shader view for the buffer.
         /// </summary>
-        /// <param name="start">The offset, in bytes, to start mapping the view at.</param>
-        /// <param name="count">The number of bytes to map into the view.</param>
-        /// <returns>A new shader view for the buffer.</returns>
+		/// <param name="start">First DWORD aligned element to map to the view.</param>
+		/// <param name="count">The number of DWORD aligned elements to map to the view.</param>
+		/// <returns>A new shader view for the buffer.</returns>
         /// <exception cref="GorgonLibrary.GorgonException">Thrown when the usage for this buffer is set to Staging.
         /// <para>-or-</para>
         /// <para>Thrown when the view could not be created.</para>
@@ -198,9 +199,9 @@ namespace GorgonLibrary.Graphics
         /// <exception cref="System.ArgumentException">Thrown when the <paramref name="start"/> or <paramref name="count"/> parameters are less than 0 or greater than or equal to the 
         /// number of elements in the buffer.</exception>
         /// <remarks>Use this to create additional shader views for the buffer.  Multiple views of the same resource can be bound to multiple stages in the pipeline.
-        /// <para>Since raw buffers require DWORD aligned data, the <paramref name="count"/> parameter must be aligned to fit the DWORD aligned data.  If the count does not fit, then it will be adjusted to be DWORD 
-        /// aligned.</para>
-        /// <para>This function only applies to buffers that have not been created with a Usage of Staging.</para>
+		/// <para>Since raw buffers require DWORD aligned data, the parameters <paramref name="start"/> and <paramref name="count"/> are sized in elements and each element is 4 bytes wide.  
+		/// For example, a count of 4 would mean 16 bytes, and a start of 2 would be an offset of 8 bytes into the buffer.</para>
+		/// <para>This function only applies to buffers that have not been created with a Usage of Staging.</para>
         /// </remarks>
         public GorgonBufferShaderView CreateShaderView(int start, int count)
         {
@@ -209,10 +210,7 @@ namespace GorgonLibrary.Graphics
                 throw new GorgonException(GorgonResult.CannotCreate, "Cannot create a shader resource view for a buffer that has a usage of Staging.");
             }
 
-            // Readjust the count to be DWORD aligned.
-            count = (count + ((DWORDAlign - (count % DWORDAlign)) % DWORDAlign)) / DWORDAlign;
-
-            if ((start + count > Settings.SizeInBytes) || (start < 0) || (count < 1))
+            if ((start + count > Settings.ElementCount) || (start < 0) || (count < 1))
             {
                 throw new ArgumentException("The start and count must be 0 or greater and less than the number of elements in the buffer.");
             }

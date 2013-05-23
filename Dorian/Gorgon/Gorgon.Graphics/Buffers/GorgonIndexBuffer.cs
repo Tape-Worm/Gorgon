@@ -37,7 +37,7 @@ namespace GorgonLibrary.Graphics
 	/// A buffer to hold a set of indices.
 	/// </summary>
 	public class GorgonIndexBuffer
-		: GorgonBaseBuffer
+		: GorgonShaderBuffer
 	{
 		#region Variables.
 		private DX.DataStream _lockStream;								// Stream used when locking.
@@ -57,6 +57,19 @@ namespace GorgonLibrary.Graphics
 		#endregion
 
 		#region Methods.
+		/// <summary>
+		/// Function to create a default shader resource view.
+		/// </summary>
+		private void CreateDefaultResourceView()
+		{
+			if ((!Settings.UseShaderView) || (Settings.Usage == BufferUsage.Staging))
+			{
+				return;
+			}
+
+			DefaultShaderView = CreateShaderView(0, Settings.ElementCount);
+		}
+
 		/// <summary>
 		/// Function to clean up the resource object.
 		/// </summary>
@@ -103,6 +116,16 @@ namespace GorgonLibrary.Graphics
 			        Usage = D3DUsage
 			    };
 
+			if (Settings.UseShaderView)
+			{
+				desc.BindFlags |= D3D11.BindFlags.ShaderResource;
+			}
+
+			if (Settings.AllowUnorderedAccess)
+			{
+				desc.BindFlags |= D3D11.BindFlags.UnorderedAccess;
+			}
+
 			if ((Settings.IsOutput) && (Settings.Usage != BufferUsage.Staging) && (Settings.Usage != BufferUsage.Immutable))
 			{
 				desc.BindFlags |= D3D11.BindFlags.StreamOutput;
@@ -121,6 +144,8 @@ namespace GorgonLibrary.Graphics
 		            D3DResource = new D3D11.Buffer(Graphics.D3DDevice, stream, desc);
 		        }
 		    }
+
+			CreateDefaultResourceView();
 
 		    GorgonRenderStatistics.IndexBufferCount++;
 			GorgonRenderStatistics.IndexBufferSize += ((D3D11.Buffer)D3DResource).Description.SizeInBytes;
@@ -219,6 +244,86 @@ namespace GorgonLibrary.Graphics
 		public void Update(GorgonDataStream stream, int offset, int size)
 		{
 			UpdateImpl(stream, offset, size);
+		}
+
+		/// <summary>
+		/// Function to create a new shader view for the index buffer.
+		/// </summary>
+		/// <param name="startIndex">Starting index to map to the view.</param>
+		/// <param name="count">Number of indices to map to the view.</param>
+		/// <returns>A new shader view for the buffer.</returns>
+		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="startIndex"/> or <paramref name="count"/> parameters are less than 0 or 1, respectively.  Or if the total is larger than the buffer size.</exception>
+		/// <exception cref="GorgonLibrary.GorgonException">Thrown when the buffer has a usage of Staging.
+		/// <para>-or-</para>
+		/// <para>Thrown when the resource settings do not allow shader views.</para>
+		/// </exception>
+		public GorgonBufferShaderView CreateShaderView(int startIndex, int count)
+		{
+			if (Settings.Usage == BufferUsage.Staging)
+			{
+				throw new GorgonException(GorgonResult.CannotCreate, "Cannot create a shader resource view for a buffer that has a usage of Staging.");
+			}
+
+			if (!Settings.UseShaderView)
+			{
+				throw new GorgonException(GorgonResult.CannotCreate, "The was created without shader view access.");
+			}
+
+			if ((startIndex + count > Settings.ElementCount) || (startIndex < 0) || (count < 1))
+			{
+				throw new ArgumentException("The start and count must be 0 or greater and less than the number of elements in the buffer.");
+			}
+
+			return ViewCache.GetBufferView(Settings.Use32BitIndices ? BufferFormat.R32_UInt : BufferFormat.R16_UInt, startIndex,
+			                               count, false);
+		}
+
+		/// <summary>
+		/// Function to create an unordered access view for this buffer.
+		/// </summary>
+		/// <param name="start">First element to map to the view.</param>
+		/// <param name="count">The number of elements to map to the view.</param>
+		/// <returns>A new unordered access view for the buffer.</returns>
+		/// <remarks>Use this to create an unordered access view that will allow shaders to access the view using multiple threads at the same time.  Unlike a <see cref="CreateShaderView">Shader View</see>, only one 
+		/// unordered access view can be bound to the pipeline at any given time.
+		/// <para>Unordered access views require a video device feature level of SM_5 or better.</para>
+		/// </remarks>
+		/// <exception cref="GorgonLibrary.GorgonException">Thrown when the usage for this buffer is set to Staging or Dynamic.
+		/// <para>-or-</para>
+		/// <para>Thrown when the resource settings do not allow unordered access views.</para>
+		/// <para>-or-</para>
+		/// <para>Thrown when the view could not be created.</para>
+		/// </exception>
+		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="start"/> or <paramref name="count"/> parameters are less than 0 or greater than or equal to the 
+		/// number of elements in the buffer.</exception>
+		public GorgonBufferUnorderedAccessView CreateUnorderedAccessView(int start, int count)
+		{
+			if (!Settings.AllowUnorderedAccess)
+			{
+				throw new GorgonException(GorgonResult.CannotCreate, "The buffer does not allow unordered access.");
+			}
+
+			if (Settings.Usage == BufferUsage.Staging)
+			{
+				throw new GorgonException(GorgonResult.CannotBind, "Cannot create an unordered access resource view for a buffer that has a usage of [Staging].");
+			}
+
+			if (Settings.Usage == BufferUsage.Dynamic)
+			{
+				throw new GorgonException(GorgonResult.CannotBind, "Cannot create an unordered access resource view for a buffer that has a usage of [Dynamic].");
+			}
+
+			if ((start + count > SizeInBytes) || (start < 0) || (count < 1))
+			{
+				throw new ArgumentException("The start and count must be 0 or greater and less than the number of elements in the buffer.");
+			}
+
+			var view = new GorgonBufferUnorderedAccessView(this,
+													   Settings.Use32BitIndices ? BufferFormat.R32_UInt : BufferFormat.R16_UInt, 
+			                                           start, count);
+			view.Initialize();
+
+			return view;
 		}
 		#endregion
 
