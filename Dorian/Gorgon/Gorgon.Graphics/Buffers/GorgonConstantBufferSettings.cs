@@ -1,3 +1,5 @@
+using System;
+
 namespace GorgonLibrary.Graphics
 {
 	/// <summary>
@@ -10,6 +12,7 @@ namespace GorgonLibrary.Graphics
 		/// Property to set or return the usage for the buffer.
 		/// </summary>
 		/// <para>This value will always return Default or Dynamic depending on the CPU access flag.</para>
+        /// <exception cref="System.NotSupportedException">Thrown when an attempt to set a value is made.</exception>
 		BufferUsage IBufferSettings.Usage
 		{
 			get
@@ -18,6 +21,7 @@ namespace GorgonLibrary.Graphics
 			}
 			set
 			{
+                throw new NotSupportedException();
 			}
 		}
 
@@ -27,6 +31,7 @@ namespace GorgonLibrary.Graphics
 		/// <remarks>
 		/// This value always returns FALSE for constant buffers.
 		/// </remarks>
+        /// <exception cref="System.NotSupportedException">Thrown when an attempt to set a value is made.</exception>
 		bool IBufferSettings.IsOutput
 		{
 			get
@@ -35,6 +40,7 @@ namespace GorgonLibrary.Graphics
 			}
 			set
 			{
+                throw new NotSupportedException();
 			}
 		}
 

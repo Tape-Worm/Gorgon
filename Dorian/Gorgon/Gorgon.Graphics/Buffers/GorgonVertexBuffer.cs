@@ -71,7 +71,30 @@ namespace GorgonLibrary.Graphics
             DefaultShaderView = CreateShaderView(Settings.ShaderViewFormat, 0, Settings.SizeInBytes / info.SizeInBytes);
         }
 
-		/// <summary>
+        /// <summary>
+        /// Function to retrieve the staging buffer for this buffer.
+        /// </summary>
+        /// <returns>
+        /// The staging buffer for this buffer.
+        /// </returns>
+        protected override GorgonBaseBuffer GetStagingBufferImpl()
+        {
+            GorgonBaseBuffer result = Graphics.Buffers.CreateVertexBuffer(Name + " [Staging]",
+                                                                         new GorgonVertexBufferSettings
+                                                                         {
+                                                                             AllowUnorderedAccess = false,
+                                                                             SizeInBytes = Settings.SizeInBytes,
+                                                                             IsOutput = false,
+                                                                             Usage = BufferUsage.Staging,
+                                                                             ShaderViewFormat = BufferFormat.Unknown
+                                                                         });
+
+            result.Copy(this);
+
+            return result;
+        }
+        
+        /// <summary>
 		/// Function to clean up the resource object.
 		/// </summary>
 		protected override void CleanUpResource()

@@ -358,6 +358,11 @@ namespace GorgonLibrary.Graphics
             {
                 throw new NotSupportedException("Feature level SM2_a_b video devices cannot build a staging texture from a non-staging texture.");
             }
+
+            if (Settings.Usage == BufferUsage.Immutable)
+            {
+                throw new NotSupportedException("Textures with a usage of Immutable cannot be used as staging textures.");    
+            }
 #endif
 			return (T)GetStagingTextureImpl();
 		}

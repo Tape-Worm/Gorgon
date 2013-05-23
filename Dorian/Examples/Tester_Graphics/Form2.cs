@@ -214,7 +214,7 @@ namespace Tester_Graphics
 				_frameIndex = _graphics.Buffers.CreateConstantBuffer("CB", new GorgonConstantBufferSettings() { SizeInBytes = sizeof(float) * 4, AllowCPUWrite = false});
 				_stream = new GorgonDataStream(sizeof(float));
                 UpdateFrame(0);
-
+                
                 if (_graphics.VideoDevice.SupportedFeatureLevel != DeviceFeatureLevel.SM2_a_b)
                 {
                     _shader = _graphics.Shaders.CreateShader<GorgonPixelShader>("TArray", "DualTex", Properties.Resources.Shader, true);

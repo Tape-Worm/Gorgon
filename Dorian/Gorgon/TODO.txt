@@ -13,9 +13,8 @@ This list is not in order.  Please don't get excited.
 	+ Add raw buffers (Done)
 	+ Add structured buffer (Done)
 		- Add append and counter buffers (Done)
-	+ Add type buffer (Done)
-	+ Update buffers to allow for creation of staging buffer.
-	+ Add FromFile/Stream and Save functionality for buffers.
+	+ Add typed buffer (Done)
+	+ Update buffers to allow for creation of staging buffer. (Done)	
 	+ Add generic buffer creation to GorgonBuffers.
 	+ Add argument buffer (for DrawIndirect)
 * Finish shader objects in base graphics library.

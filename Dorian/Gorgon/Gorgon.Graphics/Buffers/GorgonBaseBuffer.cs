@@ -31,7 +31,6 @@ using GorgonLibrary.Diagnostics;
 using GorgonLibrary.Graphics.Properties;
 using GorgonLibrary.IO;
 
-// TODO: Add GetStaging() (like textures) for buffers.
 // TODO: Add Save() for buffers.
 namespace GorgonLibrary.Graphics
 {
@@ -175,6 +174,12 @@ namespace GorgonLibrary.Graphics
 				D3DResource);
 		}
 
+        /// <summary>
+        /// Function to retrieve the staging buffer for this buffer.
+        /// </summary>
+        /// <returns>The staging buffer for this buffer.</returns>
+	    protected abstract GorgonBaseBuffer GetStagingBufferImpl();
+
 		/// <summary>
 		/// Function used to initialize the buffer with data.
 		/// </summary>
@@ -187,6 +192,29 @@ namespace GorgonLibrary.Graphics
 			D3DBuffer = (D3D.Buffer)D3DResource;
 		}
 
+        /// <summary>
+        /// Function to return this buffer as a staging buffer.
+        /// </summary>
+        /// <typeparam name="T">Type of buffer.</typeparam>
+        /// <returns>The new staging buffer.</returns>
+        public T GetStagingBuffer<T>()
+            where T : GorgonBaseBuffer
+        {
+#if DEBUG
+            if ((Graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM2_a_b) && (Settings.Usage != BufferUsage.Staging))
+            {
+                throw new NotSupportedException("Feature level SM2_a_b video devices cannot build a staging buffer from a non-staging buffer.");
+            }
+
+            if (Settings.Usage == BufferUsage.Immutable)
+            {
+                throw new NotSupportedException("Textures with a usage of Immutable cannot be used as staging textures.");
+            }
+#endif
+
+            return (T)GetStagingBufferImpl();
+        }
+
 		/// <summary>
 		/// Function to copy the contents of the specified buffer to this buffer.
 		/// </summary>
@@ -194,7 +222,7 @@ namespace GorgonLibrary.Graphics
 		/// <remarks>This is used to copy data from one GPU buffer to another.  The size of the buffers must be the same.</remarks>
 		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="buffer"/> size is not equal to the size of this buffer.</exception>
 		/// <exception cref="GorgonLibrary.GorgonException">Thrown when this buffer has a usage of Immutable.</exception>
-		public void Copy(GorgonBuffer buffer)
+		public void Copy(GorgonBaseBuffer buffer)
 		{
 #if DEBUG
 			if (buffer.SizeInBytes != SizeInBytes)
@@ -222,7 +250,7 @@ namespace GorgonLibrary.Graphics
 		/// <para>Thrown when the <paramref name="byteCount"/> + sourceStartIndex is greater than the size of the source buffer, or less than 0.</para>
 		/// </exception>
 		/// <exception cref="System.InvalidOperationException">Thrown when this buffer has a usage of Immutable.</exception>
-		public void Copy(GorgonBuffer buffer, int sourceStartingIndex, int byteCount)
+		public void Copy(GorgonBaseBuffer buffer, int sourceStartingIndex, int byteCount)
 		{
 			Copy(buffer, sourceStartingIndex, byteCount, 0);
 		}
@@ -242,7 +270,7 @@ namespace GorgonLibrary.Graphics
 		/// <para>Thrown when the <paramref name="destOffset"/> + byteCount is greater than the size of this buffer, or less than 0.</para>
 		/// </exception>
 		/// <exception cref="GorgonLibrary.GorgonException">Thrown when this buffer has a usage of Immutable.</exception>
-		public void Copy(GorgonBuffer buffer, int sourceStartingIndex, int byteCount, int destOffset)
+		public void Copy(GorgonBaseBuffer buffer, int sourceStartingIndex, int byteCount, int destOffset)
 		{
 			int endByteIndex = sourceStartingIndex + byteCount;
 
@@ -360,8 +388,6 @@ namespace GorgonLibrary.Graphics
 		protected GorgonBaseBuffer(GorgonGraphics graphics, string name, IBufferSettings settings)
 			: base(graphics, name)
 		{
-			Settings = settings;
-
 			Settings = settings;
 
 			D3DUsage = (D3D.ResourceUsage)Settings.Usage;
