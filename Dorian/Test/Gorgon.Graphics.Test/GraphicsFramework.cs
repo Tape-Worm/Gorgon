@@ -212,7 +212,7 @@ namespace GorgonLibrary.Graphics.Test
 
 			Layout = Graphics.Input.CreateInputLayout("Layout", typeof(Vertex), VertexShader);
 
-			Vertices = Graphics.Input.CreateVertexBuffer("VB",
+			Vertices = Graphics.Buffers.CreateVertexBuffer("VB",
 														   new[]
                                                                {
                                                                    new Vertex
@@ -241,7 +241,7 @@ namespace GorgonLibrary.Graphics.Test
                                                                         }
                                                                }, BufferUsage.Immutable);
 
-			Indices = Graphics.Input.CreateIndexBuffer("IB",
+			Indices = Graphics.Buffers.CreateIndexBuffer("IB",
 			                                           new[]
 				                                           {
 					                                           0, 1, 2, 3, 1, 0

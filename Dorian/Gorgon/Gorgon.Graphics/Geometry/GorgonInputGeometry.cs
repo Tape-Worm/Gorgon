@@ -261,8 +261,8 @@ namespace GorgonLibrary.Graphics
 					}
 
 					_bindings[index] = value;
-					_D3DBindings[index] = value.Convert();
-					_graphics.Context.InputAssembler.SetVertexBuffers(index, _D3DBindings[index]);
+					_D3DBindings[0] = value.Convert();
+					_graphics.Context.InputAssembler.SetVertexBuffers(index, _D3DBindings[0]);
 				}
 			}
 			#endregion
@@ -305,31 +305,32 @@ namespace GorgonLibrary.Graphics
 			/// </summary>
 			/// <param name="binding">Bindings to set.</param>
 			/// <remarks>Passing NULL (Nothing in VB.Net) to the <paramref name="binding"/> parameter will set the bindings to empty.</remarks>
-			public void SetVertexBindingRange(GorgonVertexBufferBinding[] binding)
+			public void SetRange(GorgonVertexBufferBinding[] binding)
 			{
-				SetVertexBindingRange(binding, 0);
+				SetRange(0, binding);
 			}
 
 			/// <summary>
 			/// Function to set a series of bindings at once.
 			/// </summary>
 			/// <param name="binding">Bindings to set.</param>
-			/// <param name="startIndex">Index to start writing at.</param>
-			/// <remarks>Passing NULL (Nothing in VB.Net) to the <paramref name="binding"/> parameter will set the bindings to empty (starting at <paramref name="startIndex"/>).</remarks>
+			/// <param name="slot">Index to start writing at.</param>
+			/// <remarks>Passing NULL (Nothing in VB.Net) to the <paramref name="binding"/> parameter will set the bindings to empty (starting at <paramref name="slot"/>).</remarks>
 			/// <exception cref="System.ArgumentOutOfRangeException">Thrown when the startIndex parameter is less than 0 or greater than the number of available bindings - 1.</exception>
-			public void SetVertexBindingRange(GorgonVertexBufferBinding[] binding, int startIndex)
+			public void SetRange(int slot, GorgonVertexBufferBinding[] binding)
 			{
-				int count = _bindings.Count - startIndex;
+				int count = _bindings.Count - slot;
 
-				GorgonDebug.AssertParamRange(startIndex, 0, _bindings.Count, true, false,"startIndex");
-
-				if (binding != null)
+				GorgonDebug.AssertParamRange(slot, 0, _bindings.Count, true, false,"startIndex");
+                
+                if (binding != null)
 				{
 					count = binding.Length.Min(_bindings.Count);
 				}
 
 				for (int i = 0; i < count; i++)
 				{
+				    int slotIndex = i + slot;
 					GorgonVertexBufferBinding currentBinding = GorgonVertexBufferBinding.Empty;
 
 					if (binding != null)
@@ -338,16 +339,16 @@ namespace GorgonLibrary.Graphics
 					}
 
 					// If we've already set the binding, then don't bother.
-					if (_bindings[startIndex + i].Equals(currentBinding))
+					if (_bindings[slotIndex].Equals(currentBinding))
 					{
 						continue;
 					}
 
-					_bindings[startIndex + i] = currentBinding;
+					_bindings[slotIndex] = currentBinding;
 					_D3DBindings[i] = currentBinding.Convert();
 				}
 
-				_graphics.Context.InputAssembler.SetVertexBuffers(startIndex, _D3DBindings);
+				_graphics.Context.InputAssembler.SetVertexBuffers(slot, _D3DBindings);
 			}
 			#endregion
 
@@ -596,172 +597,6 @@ namespace GorgonLibrary.Graphics
 			}
 
 			_indexBuffer = buffer;
-		}
-
-		/// <summary>
-		/// Function to create a index buffer.
-		/// </summary>
-        /// <param name="name">The name of the buffer.</param>
-		/// <param name="data">Data used to initialize the buffer.</param>
-        /// <param name="usage">[Optional] Usage of the buffer.</param>
-        /// <param name="is32Bit">[Optional] TRUE to indicate that we're using 32 bit indices, FALSE to use 16 bit indices </param>
-		/// <typeparam name="T">Type of data used to populate the buffer.</typeparam>
-		/// <returns>A new index buffer.</returns>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> is NULL (Nothing in VB.Net).
-		/// <para>-or-</para>
-		/// <para>Thrown when the <paramref name="data"/> parameter is NULL.</para>
-		/// </exception> 
-		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
-		/// <remarks>If creating an immutable index buffer, be sure to pre-populate it via the initialData parameter.</remarks>
-        public GorgonIndexBuffer CreateIndexBuffer<T>(string name, T[] data, BufferUsage usage = BufferUsage.Default, bool is32Bit = true)
-			where T : struct
-		{
-            if (data == null)
-            {
-                throw new ArgumentNullException("data");
-            }
-
-            if (data.Length == 0)
-            {
-                throw new ArgumentException(Resources.GORGFX_PARAMETER_MUST_NOT_BE_EMPTY, "data");
-            }
-
-			int size = data.Length * DirectAccess.SizeOf<T>();
-
-			using (var dataStream = new GorgonDataStream(data))
-			{
-				return CreateIndexBuffer(name, new GorgonIndexBufferSettings
-					{
-						SizeInBytes = size,
-						IsOutput = false,
-						Usage = usage,
-						Use32BitIndices = is32Bit
-					}, dataStream);
-			}
-		}
-
-		/// <summary>
-		/// Function to create a index buffer.
-		/// </summary>
-        /// <param name="name">The name of the buffer.</param>
-        /// <param name="settings">The settings for the buffer.</param>
-		/// <param name="initialData">[Optional] Initial data to populate the index buffer with.</param>
-		/// <returns>A new index buffer.</returns>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (Nothing in VB.Net).
-		/// <para>-or-</para>
-		/// <para>Thrown when the <paramref name="settings"/> parameter is NULL.</para>
-		/// </exception>
-		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
-		/// <exception cref="GorgonLibrary.GorgonException">Thrown when the <see cref="GorgonLibrary.Graphics.GorgonIndexBufferSettings.SizeInBytes">SizeInBytes</see> property of the <paramref name="settings"/> parameter is less than 1.
-		/// <para>-or-</para>
-		/// <para>Thrown when the usage parameter is set to Immutable and the <paramref name="initialData"/> is NULL (Nothing in VB.Net).</para>
-		/// </exception>
-		/// <remarks>If creating an immutable index buffer, be sure to pre-populate it via the initialData parameter.</remarks>
-		public GorgonIndexBuffer CreateIndexBuffer(string name, GorgonIndexBufferSettings settings, GorgonDataStream initialData = null)
-		{
-			if (settings == null)
-			{
-				throw new ArgumentNullException("settings");
-			}
-			
-            if (settings.SizeInBytes < 1)
-			{
-				throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_BUFFER_SIZE_TOO_SMALL, 1));
-			}
-
-			if ((settings.Usage == BufferUsage.Immutable) && ((initialData == null) || (initialData.Length == 0)))
-			{
-				throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_BUFFER_IMMUTABLE_REQUIRES_DATA);
-			}
-
-			var buffer = new GorgonIndexBuffer(_graphics, name, settings);
-			buffer.Initialize(initialData);
-
-			_graphics.AddTrackedObject(buffer);
-			return buffer;
-		}
-
-		/// <summary>
-		/// Function to create a vertex buffer.
-		/// </summary>
-        /// <param name="name">Name of the vertex buffer.</param>
-		/// <param name="data">Data used to initialize the buffer.</param>
-        /// <param name="usage">[Optional] Usage of the buffer.</param>
-        /// <typeparam name="T">Type of data used to populate the buffer.</typeparam>
-		/// <returns>A new vertex buffer.</returns>
-        /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (Nothing in VB.Net).
-        /// <para>-or-</para>
-        /// <para>Thrown when the <paramref name="data"/> parameter is NULL.</para>
-        /// </exception>
-		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="name"/> or the <paramref name="data"/> parameter is empty.</exception>
-		/// <remarks>If creating an immutable vertex buffer, be sure to pre-populate it via the initialData parameter.
-		/// </remarks>
-        public GorgonVertexBuffer CreateVertexBuffer<T>(string name, T[] data, BufferUsage usage = BufferUsage.Default)
-			where T : struct
-		{
-			if (data == null)
-			{
-				throw new ArgumentNullException("data");
-			}
-
-            if (data.Length == 0)
-            {
-                throw new ArgumentException(Resources.GORGFX_PARAMETER_MUST_NOT_BE_EMPTY, "data");
-            }
-
-			int size = data.Length * DirectAccess.SizeOf<T>();
-
-			using (var dataStream = new GorgonDataStream(data))
-			{
-				return CreateVertexBuffer(name, new GorgonBufferSettings
-					{
-						IsOutput = false,
-						SizeInBytes = size,
-						Usage = usage
-					}, dataStream);
-			}
-		}
-
-		/// <summary>
-		/// Function to create a vertex buffer.
-		/// </summary>
-        /// <param name="name">Name of the vertex buffer.</param>
-        /// <param name="settings">The settings for the buffer.</param>
-		/// <param name="initialData">[Optional] Initial data to populate the vertex buffer with.</param>
-		/// <returns>A new vertex buffer.</returns>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (Nothing in VB.Net).
-		/// <para>-or-</para>
-		/// <para>Thrown when the <paramref name="settings"/> parameter is NULL.</para>
-		/// </exception>
-		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
-		/// <exception cref="GorgonLibrary.GorgonException">Thrown when the <see cref="GorgonLibrary.Graphics.GorgonBufferSettings.SizeInBytes">SizeInBytes</see> property of the <paramref name="settings"/> parameter is less than 1.
-		/// <para>-or-</para>
-		/// <para>Thrown when the usage parameter is set to Immutable and the <paramref name="initialData"/> is NULL (Nothing in VB.Net).</para>
-		/// </exception>
-		/// <remarks>If creating an immutable vertex buffer, be sure to pre-populate it via the initialData parameter.
-		/// </remarks>
-		public GorgonVertexBuffer CreateVertexBuffer(string name, GorgonBufferSettings settings, GorgonDataStream initialData = null)
-		{
-			if (settings == null)
-			{
-				throw new ArgumentNullException("settings");
-			}
-
-			if (settings.SizeInBytes < 1)
-			{
-				throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_BUFFER_SIZE_TOO_SMALL, 1));
-			}
-
-			if ((settings.Usage == BufferUsage.Immutable) && ((initialData == null) || (initialData.Length == 0)))
-			{
-				throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_BUFFER_IMMUTABLE_REQUIRES_DATA);
-			}
-
-			var buffer = new GorgonVertexBuffer(_graphics, name, settings);
-			buffer.Initialize(initialData);
-
-			_graphics.AddTrackedObject(buffer);
-			return buffer;
 		}
 
 		/// <summary>

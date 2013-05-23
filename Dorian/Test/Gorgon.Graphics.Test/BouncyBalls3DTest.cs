@@ -343,12 +343,12 @@ namespace GorgonLibrary.Graphics.Test
 				index += 4;
 			}
 
-			_vertices = _graphics.Input.CreateVertexBuffer("Vertex", new GorgonBufferSettings()
+			_vertices = _graphics.Buffers.CreateVertexBuffer("Vertex", new GorgonVertexBufferSettings()
 				{
 					SizeInBytes = 4 * vertexSize * Count,
 					Usage = BufferUsage.Dynamic
 				});
-			_index = _graphics.Input.CreateIndexBuffer("Index", indices, BufferUsage.Immutable);
+			_index = _graphics.Buffers.CreateIndexBuffer("Index", indices, BufferUsage.Immutable);
 
 			_texture = _graphics.Textures.FromFile<GorgonTexture2D>("Balls", @"..\..\..\..\Resources\BallDemo\BallDemo.png", new GorgonCodecPNG());
 			_texture2 = _graphics.Textures.FromFile<GorgonTexture2D>("VBBack", @"..\..\..\..\Resources\Images\VBback.jpg", new GorgonCodecJPEG());

@@ -295,29 +295,39 @@ namespace GorgonLibrary.Graphics
 			/// </summary>
 			/// <param name="slot">Starting slot for the states.</param>
 			/// <param name="states">States to set.</param>
-			/// <remarks>This will bind several texture samplers at the same time.</remarks>
-			/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="states"/> parameter is NULL (Nothing in VB.Net).</exception>
-			/// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="slot"/> is less than 0, or greater than the available number of resource view slots.
-			/// <para>-or-</para>
-			/// <para>Thrown when the buffers count + the slot is greater than or equal to the number of available resource slots.</para>
-			/// </exception>
+			/// <remarks>This will bind several texture samplers at the same time.
+			/// <para>Passing NULL (Nothing in VB.Net) to <paramref name="states"/> will set all the slots from <paramref name="slot"/> onward to an undefined texture sampler state.</para>
+			/// </remarks>
+			/// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="slot"/> is less than 0, or greater than the available number of resource view slots.</exception>
 			public void SetRange(int slot, GorgonTextureSamplerStates[] states)
 			{
-				GorgonDebug.AssertNull(states, "states");
-				GorgonDebug.AssertParamRange(slot, 0, _states.Length, "slot");
-				GorgonDebug.AssertParamRange(slot + states.Length, 0, _states.Length, "slot");
+			    int count = _states.Length - slot;
 
-				for (int i = 0; i < states.Length; i++)
+				GorgonDebug.AssertParamRange(slot, 0, _states.Length, "slot");
+
+                if (states != null)
+                {
+                    count = states.Length.Min(_states.Length);
+                }
+
+				for (int i = 0; i < count; i++)
 				{
 					int stateIndex = i + slot;
-					var state = states[i];
+					GorgonTextureSamplerStates state = default(GorgonTextureSamplerStates);
+
+                    if (states != null)
+                    {
+                        state = states[i];
+                    }
 					
 					if (_states[stateIndex].Equals(ref state))
 					{
 						continue;
 					}
 
+                    // ReSharper disable InconsistentNaming
 					D3D.DeviceChild D3DState = GetFromCache(ref state);
+                    // ReSharper restore InconsistentNaming
 
 					if (D3DState == null)
 					{
@@ -329,7 +339,7 @@ namespace GorgonLibrary.Graphics
 					_D3DStates[i] = (D3D.SamplerState)D3DState;
 				}
 
-				_shader.SetSamplers(slot, states.Length, _D3DStates);
+				_shader.SetSamplers(slot, count, _D3DStates);
 			}
 			#endregion
 
@@ -629,43 +639,42 @@ namespace GorgonLibrary.Graphics
 			/// </summary>
 			/// <param name="slot">Starting slot for the buffer.</param>
 			/// <param name="buffers">Buffers to set.</param>
-			/// <remarks>This will bind several constant buffers at the same time.  A constant buffer must not already be bound to the shader at another index, or an exception will be thrown.</remarks>
-			/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="buffers"/> parameter is NULL (Nothing in VB.Net).</exception>
-			/// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="slot"/> is less than 0, or greater than the available number of resource view slots.
-			/// <para>-or-</para>
-			/// <para>Thrown when the buffers count + the slot is greater than or equal to the number of available resource slots.</para>
-			/// </exception>
-			/// <exception cref="GorgonLibrary.GorgonException">Thrown when a view in the <paramref name="buffers"/> parameter is already bound to the shader at another index.</exception>
+			/// <remarks>This will bind several constant buffers at the same time.  A constant buffer must not already be bound to the shader at another index, or an exception will be thrown.
+            /// <para>Passing NULL (Nothing in VB.Net) to the <paramref name="buffers"/> parameter will set the bindings to empty (starting at <paramref name="slot"/>).</para>
+			/// </remarks>
+			/// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="slot"/> is less than 0, or greater than the available number of resource view slots.</exception>
 			public void SetRange(int slot, GorgonConstantBuffer[] buffers)
 			{
-				GorgonDebug.AssertNull<IEnumerable<GorgonConstantBuffer>>(buffers, "buffers");
+			    int count = _buffers.Length - slot;
+
 				GorgonDebug.AssertParamRange(slot, 0, _buffers.Length, "slot");
-				GorgonDebug.AssertParamRange(slot + buffers.Length, 0, _buffers.Length, "slot");
 
-				for (int i = 0; i < buffers.Length; i++)
+                if (buffers != null)
+                {
+                    count = buffers.Length.Min(_buffers.Length);
+                }
+
+				for (int i = 0; i < count; i++)
 				{
+                    GorgonConstantBuffer buffer = null;
 					var bufferIndex = i + slot;
-					var buffer = buffers[i];
+					
 
-#if DEBUG
-					if (buffer != null)
-					{
-						int currentIndex = IndexOf(buffer);
+                    if (buffers != null)
+                    {
+                        buffer = buffers[i];
+                    }
 
-						if ((currentIndex != -1) && (currentIndex != bufferIndex))
-						{
-							throw new GorgonException(GorgonResult.CannotBind,
-							                          string.Format(Properties.Resources.GORGFX_CBUFFER_ALREADY_BOUND, buffer.Name,
-							                                        currentIndex));
-						}
-					}
-#endif
+                    if ((buffer != null) && (IndexOf(buffer) != -1))
+                    {
+                        continue;
+                    }
 
 					_buffers[bufferIndex] = buffer;
 					_D3DBufferArray[i] = buffer != null ? buffer.D3DBuffer : null;
 				}
 
-				_shader.SetConstantBuffers(slot, _buffers.Length, _D3DBufferArray);
+				_shader.SetConstantBuffers(slot, count, _D3DBufferArray);
 			}
 			#endregion
 
@@ -1035,41 +1044,42 @@ namespace GorgonLibrary.Graphics
 			/// </summary>
 			/// <param name="slot">Resource view slot to start at.</param>
 			/// <param name="resourceViews">A list of resource views to set.</param>
-			/// <remarks>This will bind several resource views at the same time.  A view must not already be bound to the shader at another index, or an exception will be thrown.</remarks>
-			/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="resourceViews"/> parameter is NULL (Nothing in VB.Net).</exception>
-			/// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="slot"/> is less than 0, or greater than the available number of resource view slots.
-			/// <para>-or-</para>
-			/// <para>Thrown when the buffers count + the slot is greater than or equal to the number of available resource slots.</para>
-			/// </exception>
-			/// <exception cref="GorgonLibrary.GorgonException">Thrown when a view in the <paramref name="resourceViews"/> parameter is already bound to the shader at another index.</exception>
+			/// <remarks>This will bind several resource views at the same time.  A view must not already be bound to the shader at another index, or an exception will be thrown.
+            /// <para>Passing NULL (Nothing in VB.Net) to the <paramref name="resourceViews"/> parameter will set the bindings to empty (starting at <paramref name="slot"/>).</para>
+			/// </remarks>
+			/// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="slot"/> is less than 0, or greater than the available number of resource view slots.</exception>
 			public void SetRange(int slot, GorgonShaderView[] resourceViews)
 			{
-				GorgonDebug.AssertNull(resourceViews, "resourceViews");
-				GorgonDebug.AssertParamRange(slot, 0, _resources.Length, "slot");
-				GorgonDebug.AssertParamRange(slot + resourceViews.Length, 0, _resources.Length, "slot");
+			    int count = _resources.Length - slot;
 
-				for (int i = 0; i < resourceViews.Length; i++)
+				GorgonDebug.AssertParamRange(slot, 0, _resources.Length, "slot");
+
+                if (resourceViews != null)
+                {
+                    count = resourceViews.Length.Min(_resources.Length);
+                }
+
+				for (int i = 0; i < count; i++)
 				{
 					int resourceIndex = i + slot;
-					var buffer = resourceViews[i];
+					GorgonShaderView view = null;
 
-#if DEBUG
-                    if (buffer != null)
+                    if (resourceViews != null)
                     {
-                        int bufferIndex = IndexOf(buffer);
-
-                        if ((bufferIndex != resourceIndex) && (bufferIndex != -1))
-                        {
-							throw new GorgonException(GorgonResult.CannotBind, string.Format(Properties.Resources.GORGFX_VIEW_ALREADY_BOUND, bufferIndex));
-                        }
+                        view = resourceViews[i];
                     }
-#endif
 
-					_views[i] = buffer != null ? buffer.D3DView : null;
-					_resources[resourceIndex] = buffer;
+                    // We've already bound this view, skip it.
+                    if ((view != null) && (IndexOf(view) != -1))
+                    {
+                        continue;
+                    }
+
+					_views[i] = view != null ? view.D3DView : null;
+					_resources[resourceIndex] = view;
 				}
 
-				_shader.SetResources(slot, resourceViews.Length, _views);
+				_shader.SetResources(slot, count, _views);
 			}
 
             /// <summary>
