@@ -226,7 +226,11 @@ namespace GorgonLibrary.Graphics
 				throw new ArgumentException("The start and count must be 0 or greater and less than the number of elements in the buffer.");
 			}
 
-			return new GorgonStructuredBufferUnorderedAccessView(this, BufferFormat.Unknown, start, count, viewType);
+			var view = new GorgonStructuredBufferUnorderedAccessView(this, BufferFormat.Unknown, start, count, viewType);
+
+			view.Initialize();
+
+			return view;
 		}
 		#endregion
 

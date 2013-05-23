@@ -53,7 +53,7 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Shader model 2, vertex shader profile a, pixel shader profile b.
 		/// </summary>
-		Version2a_b = 3
+		Version2A_B = 3
 	}
 
 	/// <summary>
@@ -96,7 +96,7 @@ namespace GorgonLibrary.Graphics
 		#region Variables.
 		private bool _disposed;										// Flag to indicate that the object was disposed.
 		private string _source;										// Shader source code.
-		private ShaderVersion _version = ShaderVersion.Version2a_b;	// Shader model version.
+		private ShaderVersion _version = ShaderVersion.Version2A_B;	// Shader model version.
 		private bool _isDebug;										// Flag to indicate that debug information is included.
 		private Shaders.ShaderBytecode _byteCode;					// Byte code for the shader.
 		#endregion
@@ -147,11 +147,13 @@ namespace GorgonLibrary.Graphics
 			}
 			set
 			{
-				if (_isDebug != value)
+				if (_isDebug == value)
 				{
-					_isDebug = value;
-					HasChanged = true;
+					return;
 				}
+
+				_isDebug = value;
+				HasChanged = true;
 			}
 		}
 
@@ -498,7 +500,7 @@ namespace GorgonLibrary.Graphics
 					Version = ShaderVersion.Version4;
 					break;
 				default:
-					Version = ShaderVersion.Version2a_b;
+					Version = ShaderVersion.Version2A_B;
 					break;
 			}
 		}

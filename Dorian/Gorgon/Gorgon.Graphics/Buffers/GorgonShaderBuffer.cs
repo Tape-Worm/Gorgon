@@ -77,8 +77,7 @@ namespace GorgonLibrary.Graphics
 			// If we're bound with a pixel or vertex shader, then unbind.
 			if (Settings.Usage != BufferUsage.Staging)
 			{
-				Graphics.Shaders.VertexShader.Resources.Unbind(this);
-				Graphics.Shaders.PixelShader.Resources.Unbind(this);
+				Graphics.Shaders.Unbind(this);
 			}
 
 			if (IsLocked)

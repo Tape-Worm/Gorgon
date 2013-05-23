@@ -268,4 +268,22 @@
   <data name="GORGFX_REQUIRES_SM" xml:space="preserve">
     <value>A {0} video device is necessary to use this object or perform this operation.</value>
   </data>
+  <data name="GORGFX_CBUFFER_ALREADY_BOUND" xml:space="preserve">
+    <value>The constant buffer '{0}' is already bound at index [{1}].</value>
+  </data>
+  <data name="GORGFX_EFFECT_MISSING_REQUIRED_PARAMS" xml:space="preserve">
+    <value>The parameter '{0}' was required for this effect, but is not present in the parameters list.</value>
+  </data>
+  <data name="GORGFX_EFFECT_PARAM_TOSTR" xml:space="preserve">
+    <value>Effect Parameter: {0}, Value = {1}</value>
+  </data>
+  <data name="GORGFX_VIEW_ALREADY_BOUND" xml:space="preserve">
+    <value>The shader resource view is already bound at index [{0}].</value>
+  </data>
+  <data name="GORGFX_VIEW_CANT_BIND_STAGING_NO_VIEW" xml:space="preserve">
+    <value>The resource view cannot be bound, it is either a staging resource or has no default shader view.</value>
+  </data>
+  <data name="GORGFX_VIEW_RESOURCE_NOT_TYPE" xml:space="preserve">
+    <value>The view at index [{0}] is not bound to a resource of type '{1}'.</value>
+  </data>
 </root>

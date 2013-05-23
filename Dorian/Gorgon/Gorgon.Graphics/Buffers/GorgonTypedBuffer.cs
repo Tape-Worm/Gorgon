@@ -202,7 +202,11 @@ namespace GorgonLibrary.Graphics
 					"format");
 			}
 
-			return new GorgonBufferUnorderedAccessView(this, format, start, count);
+			var view = new GorgonBufferUnorderedAccessView(this, format, start, count);
+
+			view.Initialize();
+
+			return view;
 		}
 		
 		/// <summary>

@@ -135,6 +135,21 @@ namespace GorgonLibrary.Graphics.Test
 			
 		}
 
+		[TestMethod]
+		public void CreateIndexBufferViews()
+		{
+			var ib = _framework.Graphics.Input.CreateIndexBuffer("IB", new GorgonIndexBufferSettings()
+				{
+					AllowUnorderedAccess = true,
+					UseShaderView = true,
+					SizeInBytes = 48,
+					Usage = BufferUsage.Default
+				});
+
+			var uav = ib.CreateUnorderedAccessView(0, 8);
+			uav.Dispose();
+		}
+
         [TestMethod]
         public void CreateUnorderedView()
         {
@@ -174,7 +189,7 @@ namespace GorgonLibrary.Graphics.Test
             view = typedBuffer.CreateUnorderedAccessView(BufferFormat.R8G8B8A8_Int, 0, 1);
             view.Dispose();
 
-            view = rawBuffer.CreateUnorderedAccessView(8, 4);
+            view = rawBuffer.CreateUnorderedAccessView(0, 3);
             view.Dispose();
         }
 

@@ -214,11 +214,38 @@ namespace GorgonLibrary.Graphics.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The constant buffer &apos;{0}&apos; is already bound at index [{1}]..
+        /// </summary>
+        internal static string GORGFX_CBUFFER_ALREADY_BOUND {
+            get {
+                return ResourceManager.GetString("GORGFX_CBUFFER_ALREADY_BOUND", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Color Value: Red={0}, Green={1}, Blue={2}, Alpha={3}.
         /// </summary>
         internal static string GORGFX_COLOR_TOSTR {
             get {
                 return ResourceManager.GetString("GORGFX_COLOR_TOSTR", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The parameter &apos;{0}&apos; was required for this effect, but is not present in the parameters list..
+        /// </summary>
+        internal static string GORGFX_EFFECT_MISSING_REQUIRED_PARAMS {
+            get {
+                return ResourceManager.GetString("GORGFX_EFFECT_MISSING_REQUIRED_PARAMS", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Effect Parameter: {0}, Value = {1}.
+        /// </summary>
+        internal static string GORGFX_EFFECT_PARAM_TOSTR {
+            get {
+                return ResourceManager.GetString("GORGFX_EFFECT_PARAM_TOSTR", resourceCulture);
             }
         }
         
@@ -385,6 +412,15 @@ namespace GorgonLibrary.Graphics.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The shader resource view is already bound at index [{0}]..
+        /// </summary>
+        internal static string GORGFX_VIEW_ALREADY_BOUND {
+            get {
+                return ResourceManager.GetString("GORGFX_VIEW_ALREADY_BOUND", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The array count must be between 1 and {0}..
         /// </summary>
         internal static string GORGFX_VIEW_ARRAY_COUNT_INVALID {
@@ -417,6 +453,15 @@ namespace GorgonLibrary.Graphics.Properties {
         internal static string GORGFX_VIEW_CANNOT_CAST_FORMAT {
             get {
                 return ResourceManager.GetString("GORGFX_VIEW_CANNOT_CAST_FORMAT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The resource view cannot be bound, it is either a staging resource or has no default shader view..
+        /// </summary>
+        internal static string GORGFX_VIEW_CANT_BIND_STAGING_NO_VIEW {
+            get {
+                return ResourceManager.GetString("GORGFX_VIEW_CANT_BIND_STAGING_NO_VIEW", resourceCulture);
             }
         }
         
@@ -480,6 +525,15 @@ namespace GorgonLibrary.Graphics.Properties {
         internal static string GORGFX_VIEW_NO_TYPELESS {
             get {
                 return ResourceManager.GetString("GORGFX_VIEW_NO_TYPELESS", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The view at index [{0}] is not bound to a resource of type &apos;{1}&apos;..
+        /// </summary>
+        internal static string GORGFX_VIEW_RESOURCE_NOT_TYPE {
+            get {
+                return ResourceManager.GetString("GORGFX_VIEW_RESOURCE_NOT_TYPE", resourceCulture);
             }
         }
         

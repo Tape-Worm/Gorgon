@@ -118,6 +118,7 @@ namespace GorgonLibrary.Graphics
         {
 			Gorgon.Log.Print("Creating unordered access resource view for {0}.", LoggingLevel.Verbose, Resource.GetType().FullName);
 			InitializeImpl();
+			Gorgon.AddTrackedObject(this);
         }
         #endregion
 
@@ -155,6 +156,8 @@ namespace GorgonLibrary.Graphics
 
             if (disposing)
             {
+				Gorgon.RemoveTrackedObject(this);
+
                 if (D3DView != null)
                 {
                     D3DView.Dispose();

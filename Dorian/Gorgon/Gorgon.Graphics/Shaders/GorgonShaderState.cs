@@ -75,6 +75,146 @@ namespace GorgonLibrary.Graphics
 
 			#region Methods.
 			/// <summary>
+			/// Function to retrieve the Direct 3D filter type.
+			/// </summary>
+			/// <param name="filter">Filter to evaluate.</param>
+			/// <returns>The Direct 3D filter type.</returns>
+			private static D3D.Filter GetFilter(TextureFilter filter)
+			{
+				var result = D3D.Filter.MinMagMipPoint;
+
+				if (filter == TextureFilter.Anisotropic)
+				{
+					result = D3D.Filter.Anisotropic;
+				}
+
+				if (filter == TextureFilter.CompareAnisotropic)
+				{
+					result = D3D.Filter.ComparisonAnisotropic;
+				}
+
+				// Sort out filter stateType.
+				// Check comparison stateType.
+				if ((filter & TextureFilter.Comparison) == TextureFilter.Comparison)
+				{
+					if (((filter & TextureFilter.MinLinear) == TextureFilter.MinLinear) &&
+						((filter & TextureFilter.MagLinear) == TextureFilter.MagLinear) &&
+						((filter & TextureFilter.MipLinear) == TextureFilter.MipLinear))
+					{
+						result = D3D.Filter.ComparisonMinMagMipLinear;
+					}
+
+					if (((filter & TextureFilter.MinPoint) == TextureFilter.MinPoint) &&
+						((filter & TextureFilter.MagPoint) == TextureFilter.MagPoint) &&
+						((filter & TextureFilter.MipPoint) == TextureFilter.MipPoint))
+					{
+						result = D3D.Filter.ComparisonMinMagMipPoint;
+					}
+
+					if (((filter & TextureFilter.MinLinear) == TextureFilter.MinLinear) &&
+						((filter & TextureFilter.MagLinear) == TextureFilter.MagLinear) &&
+						((filter & TextureFilter.MipPoint) == TextureFilter.MipPoint))
+					{
+						result = D3D.Filter.ComparisonMinMagLinearMipPoint;
+					}
+
+					if (((filter & TextureFilter.MinLinear) == TextureFilter.MinLinear) &&
+						((filter & TextureFilter.MagPoint) == TextureFilter.MagPoint) &&
+						((filter & TextureFilter.MipPoint) == TextureFilter.MipPoint))
+					{
+						result = D3D.Filter.ComparisonMinLinearMagMipPoint;
+					}
+
+					if (((filter & TextureFilter.MinLinear) == TextureFilter.MinLinear) &&
+						((filter & TextureFilter.MagPoint) == TextureFilter.MagPoint) &&
+						((filter & TextureFilter.MipLinear) == TextureFilter.MipLinear))
+					{
+						result = D3D.Filter.ComparisonMinLinearMagPointMipLinear;
+					}
+
+					if (((filter & TextureFilter.MinPoint) == TextureFilter.MinPoint) &&
+						((filter & TextureFilter.MagLinear) == TextureFilter.MagLinear) &&
+						((filter & TextureFilter.MipLinear) == TextureFilter.MipLinear))
+					{
+						result = D3D.Filter.ComparisonMinPointMagMipLinear;
+					}
+					if (((filter & TextureFilter.MinPoint) == TextureFilter.MinPoint) &&
+						((filter & TextureFilter.MagPoint) == TextureFilter.MagPoint) &&
+						((filter & TextureFilter.MipLinear) == TextureFilter.MipLinear))
+					{
+						result = D3D.Filter.ComparisonMinMagPointMipLinear;
+					}
+
+					if (((filter & TextureFilter.MinPoint) == TextureFilter.MinPoint) &&
+						((filter & TextureFilter.MagLinear) == TextureFilter.MagLinear) &&
+						((filter & TextureFilter.MipPoint) == TextureFilter.MipPoint))
+					{
+						result = D3D.Filter.ComparisonMinPointMagLinearMipPoint;
+					}
+				}
+				else
+				{
+					if (((filter & TextureFilter.MinLinear) == TextureFilter.MinLinear) &&
+						((filter & TextureFilter.MagLinear) == TextureFilter.MagLinear) &&
+						((filter & TextureFilter.MipLinear) == TextureFilter.MipLinear))
+					{
+						result = D3D.Filter.MinMagMipLinear;
+					}
+
+					if (((filter & TextureFilter.MinPoint) == TextureFilter.MinPoint) &&
+						((filter & TextureFilter.MagPoint) == TextureFilter.MagPoint) &&
+						((filter & TextureFilter.MipPoint) == TextureFilter.MipPoint))
+					{
+						result = D3D.Filter.MinMagMipPoint;
+					}
+
+					if (((filter & TextureFilter.MinLinear) == TextureFilter.MinLinear) &&
+						((filter & TextureFilter.MagLinear) == TextureFilter.MagLinear) &&
+						((filter & TextureFilter.MipPoint) == TextureFilter.MipPoint))
+					{
+						result = D3D.Filter.MinMagLinearMipPoint;
+					}
+
+					if (((filter & TextureFilter.MinLinear) == TextureFilter.MinLinear) &&
+						((filter & TextureFilter.MagPoint) == TextureFilter.MagPoint) &&
+						((filter & TextureFilter.MipPoint) == TextureFilter.MipPoint))
+					{
+						result = D3D.Filter.MinLinearMagMipPoint;
+					}
+
+					if (((filter & TextureFilter.MinLinear) == TextureFilter.MinLinear) &&
+						((filter & TextureFilter.MagPoint) == TextureFilter.MagPoint) &&
+						((filter & TextureFilter.MipLinear) == TextureFilter.MipLinear))
+					{
+						result = D3D.Filter.MinLinearMagPointMipLinear;
+					}
+
+					if (((filter & TextureFilter.MinPoint) == TextureFilter.MinPoint) &&
+						((filter & TextureFilter.MagLinear) == TextureFilter.MagLinear) &&
+						((filter & TextureFilter.MipLinear) == TextureFilter.MipLinear))
+					{
+						result = D3D.Filter.MinPointMagMipLinear;
+					}
+
+					if (((filter & TextureFilter.MinPoint) == TextureFilter.MinPoint) &&
+						((filter & TextureFilter.MagPoint) == TextureFilter.MagPoint) &&
+						((filter & TextureFilter.MipLinear) == TextureFilter.MipLinear))
+					{
+						result = D3D.Filter.MinMagPointMipLinear;
+					}
+
+					if (((filter & TextureFilter.MinPoint) == TextureFilter.MinPoint) &&
+						((filter & TextureFilter.MagLinear) == TextureFilter.MagLinear) &&
+						((filter & TextureFilter.MipPoint) == TextureFilter.MipPoint))
+					{
+						result = D3D.Filter.MinPointMagLinearMipPoint;
+					}
+				}
+
+				return result;
+			}
+
+			/// <summary>
 			/// Applies the state.
 			/// </summary>
 			/// <param name="stateObject">The state object.</param>
@@ -138,64 +278,9 @@ namespace GorgonLibrary.Graphics
 						MaximumAnisotropy = stateType.MaxAnisotropy,
 						MaximumLod = stateType.MaxLOD,
 						MinimumLod = stateType.MinLOD,
-						MipLodBias = stateType.MipLODBias
+						MipLodBias = stateType.MipLODBias,
+						Filter = GetFilter(stateType.TextureFilter)
 					};
-
-
-				if (stateType.TextureFilter == TextureFilter.Anisotropic)
-				{
-					desc.Filter = D3D.Filter.Anisotropic;
-				}
-
-				if (stateType.TextureFilter == TextureFilter.CompareAnisotropic)
-				{
-					desc.Filter = D3D.Filter.ComparisonAnisotropic;
-				}
-
-				// Sort out filter stateType.
-				// Check comparison stateType.
-				if ((stateType.TextureFilter & TextureFilter.Comparison) == TextureFilter.Comparison)
-				{
-					if (((stateType.TextureFilter & TextureFilter.MinLinear) == TextureFilter.MinLinear) && ((stateType.TextureFilter & TextureFilter.MagLinear) == TextureFilter.MagLinear) && ((stateType.TextureFilter & TextureFilter.MipLinear) == TextureFilter.MipLinear))
-						desc.Filter = D3D.Filter.ComparisonMinMagMipLinear;
-					if (((stateType.TextureFilter & TextureFilter.MinPoint) == TextureFilter.MinPoint) && ((stateType.TextureFilter & TextureFilter.MagPoint) == TextureFilter.MagPoint) && ((stateType.TextureFilter & TextureFilter.MipPoint) == TextureFilter.MipPoint))
-						desc.Filter = D3D.Filter.ComparisonMinMagMipPoint;
-
-					if (((stateType.TextureFilter & TextureFilter.MinLinear) == TextureFilter.MinLinear) && ((stateType.TextureFilter & TextureFilter.MagLinear) == TextureFilter.MagLinear) && ((stateType.TextureFilter & TextureFilter.MipPoint) == TextureFilter.MipPoint))
-						desc.Filter = D3D.Filter.ComparisonMinMagLinearMipPoint;
-					if (((stateType.TextureFilter & TextureFilter.MinLinear) == TextureFilter.MinLinear) && ((stateType.TextureFilter & TextureFilter.MagPoint) == TextureFilter.MagPoint) && ((stateType.TextureFilter & TextureFilter.MipPoint) == TextureFilter.MipPoint))
-						desc.Filter = D3D.Filter.ComparisonMinLinearMagMipPoint;
-					if (((stateType.TextureFilter & TextureFilter.MinLinear) == TextureFilter.MinLinear) && ((stateType.TextureFilter & TextureFilter.MagPoint) == TextureFilter.MagPoint) && ((stateType.TextureFilter & TextureFilter.MipLinear) == TextureFilter.MipLinear))
-						desc.Filter = D3D.Filter.ComparisonMinLinearMagPointMipLinear;
-
-					if (((stateType.TextureFilter & TextureFilter.MinPoint) == TextureFilter.MinPoint) && ((stateType.TextureFilter & TextureFilter.MagLinear) == TextureFilter.MagLinear) && ((stateType.TextureFilter & TextureFilter.MipLinear) == TextureFilter.MipLinear))
-						desc.Filter = D3D.Filter.ComparisonMinPointMagMipLinear;
-					if (((stateType.TextureFilter & TextureFilter.MinPoint) == TextureFilter.MinPoint) && ((stateType.TextureFilter & TextureFilter.MagPoint) == TextureFilter.MagPoint) && ((stateType.TextureFilter & TextureFilter.MipLinear) == TextureFilter.MipLinear))
-						desc.Filter = D3D.Filter.ComparisonMinMagPointMipLinear;
-					if (((stateType.TextureFilter & TextureFilter.MinPoint) == TextureFilter.MinPoint) && ((stateType.TextureFilter & TextureFilter.MagLinear) == TextureFilter.MagLinear) && ((stateType.TextureFilter & TextureFilter.MipPoint) == TextureFilter.MipPoint))
-						desc.Filter = D3D.Filter.ComparisonMinPointMagLinearMipPoint;
-				}
-				else
-				{
-					if (((stateType.TextureFilter & TextureFilter.MinLinear) == TextureFilter.MinLinear) && ((stateType.TextureFilter & TextureFilter.MagLinear) == TextureFilter.MagLinear) && ((stateType.TextureFilter & TextureFilter.MipLinear) == TextureFilter.MipLinear))
-						desc.Filter = D3D.Filter.MinMagMipLinear;
-					if (((stateType.TextureFilter & TextureFilter.MinPoint) == TextureFilter.MinPoint) && ((stateType.TextureFilter & TextureFilter.MagPoint) == TextureFilter.MagPoint) && ((stateType.TextureFilter & TextureFilter.MipPoint) == TextureFilter.MipPoint))
-						desc.Filter = D3D.Filter.MinMagMipPoint;
-
-					if (((stateType.TextureFilter & TextureFilter.MinLinear) == TextureFilter.MinLinear) && ((stateType.TextureFilter & TextureFilter.MagLinear) == TextureFilter.MagLinear) && ((stateType.TextureFilter & TextureFilter.MipPoint) == TextureFilter.MipPoint))
-						desc.Filter = D3D.Filter.MinMagLinearMipPoint;
-					if (((stateType.TextureFilter & TextureFilter.MinLinear) == TextureFilter.MinLinear) && ((stateType.TextureFilter & TextureFilter.MagPoint) == TextureFilter.MagPoint) && ((stateType.TextureFilter & TextureFilter.MipPoint) == TextureFilter.MipPoint))
-						desc.Filter = D3D.Filter.MinLinearMagMipPoint;
-					if (((stateType.TextureFilter & TextureFilter.MinLinear) == TextureFilter.MinLinear) && ((stateType.TextureFilter & TextureFilter.MagPoint) == TextureFilter.MagPoint) && ((stateType.TextureFilter & TextureFilter.MipLinear) == TextureFilter.MipLinear))
-						desc.Filter = D3D.Filter.MinLinearMagPointMipLinear;
-
-					if (((stateType.TextureFilter & TextureFilter.MinPoint) == TextureFilter.MinPoint) && ((stateType.TextureFilter & TextureFilter.MagLinear) == TextureFilter.MagLinear) && ((stateType.TextureFilter & TextureFilter.MipLinear) == TextureFilter.MipLinear))
-						desc.Filter = D3D.Filter.MinPointMagMipLinear;
-					if (((stateType.TextureFilter & TextureFilter.MinPoint) == TextureFilter.MinPoint) && ((stateType.TextureFilter & TextureFilter.MagPoint) == TextureFilter.MagPoint) && ((stateType.TextureFilter & TextureFilter.MipLinear) == TextureFilter.MipLinear))
-						desc.Filter = D3D.Filter.MinMagPointMipLinear;
-					if (((stateType.TextureFilter & TextureFilter.MinPoint) == TextureFilter.MinPoint) && ((stateType.TextureFilter & TextureFilter.MagLinear) == TextureFilter.MagLinear) && ((stateType.TextureFilter & TextureFilter.MipPoint) == TextureFilter.MipPoint))
-						desc.Filter = D3D.Filter.MinPointMagLinearMipPoint;
-				}
 
 				var state = new D3D.SamplerState(Graphics.D3DDevice, desc)
 					{
@@ -210,26 +295,23 @@ namespace GorgonLibrary.Graphics
 			/// </summary>
 			/// <param name="slot">Starting slot for the states.</param>
 			/// <param name="states">States to set.</param>
-			/// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="slot"/> is less than 0, or greater than the available number of state slots.
+			/// <remarks>This will bind several texture samplers at the same time.</remarks>
+			/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="states"/> parameter is NULL (Nothing in VB.Net).</exception>
+			/// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="slot"/> is less than 0, or greater than the available number of resource view slots.
 			/// <para>-or-</para>
-			/// <para>Thrown when the <paramref name="states"/> count + the slot is greater than or equal to the number of available state slots.</para>
+			/// <para>Thrown when the buffers count + the slot is greater than or equal to the number of available resource slots.</para>
 			/// </exception>
-			public void SetRange(int slot, IEnumerable<GorgonTextureSamplerStates> states)
+			public void SetRange(int slot, GorgonTextureSamplerStates[] states)
 			{
-				int count = 0;
+				GorgonDebug.AssertNull(states, "states");
+				GorgonDebug.AssertParamRange(slot, 0, _states.Length, "slot");
+				GorgonDebug.AssertParamRange(slot + states.Length, 0, _states.Length, "slot");
 
-				GorgonDebug.AssertNull<IEnumerable<GorgonTextureSamplerStates>>(states, "states");
-#if DEBUG
-				if ((slot < 0) || (slot >= Count) || ((slot + states.Count()) >= Count))
-					throw new ArgumentOutOfRangeException("Cannot have more than " + Count + " slots occupied.");
-#endif
-
-				count = states.Count();
-				for (int i = 0; i < count; i++)
+				for (int i = 0; i < states.Length; i++)
 				{
 					int stateIndex = i + slot;
-					var state = states.ElementAtOrDefault(i);
-
+					var state = states[i];
+					
 					if (_states[stateIndex].Equals(ref state))
 					{
 						continue;
@@ -247,7 +329,7 @@ namespace GorgonLibrary.Graphics
 					_D3DStates[i] = (D3D.SamplerState)D3DState;
 				}
 
-				_shader.SetSamplers(slot, count, _D3DStates);
+				_shader.SetSamplers(slot, states.Length, _D3DStates);
 			}
 			#endregion
 
@@ -281,10 +363,7 @@ namespace GorgonLibrary.Graphics
 			/// Gets or sets the element at the specified index.
 			/// </summary>
 			/// <returns>The element at the specified index.</returns>
-			///   
 			/// <exception cref="T:System.ArgumentOutOfRangeException">index is not a valid index in the <see cref="T:System.Collections.Generic.IList`1"></see>.</exception>
-			///   
-			/// <exception cref="T:System.NotSupportedException">The property is set and the <see cref="T:System.Collections.Generic.IList`1"></see> is read-only.</exception>
 			public GorgonTextureSamplerStates this[int index]
 			{
 				get
@@ -409,7 +488,7 @@ namespace GorgonLibrary.Graphics
 			/// <returns>TRUE if found, FALSE if not.</returns>
 			public bool Contains(GorgonTextureSamplerStates item)
 			{
-				return IndexOf(item) != -1;
+				return IndexOf(item) > -1;
 			}
 
 			/// <summary>
@@ -419,7 +498,22 @@ namespace GorgonLibrary.Graphics
 			/// <param name="arrayIndex">Index of the array to start writing at.</param>
 			public void CopyTo(GorgonTextureSamplerStates[] array, int arrayIndex)
 			{
-				_states.CopyTo(array, arrayIndex);
+				if (array == null)
+				{
+					throw new ArgumentNullException("array");
+				}
+
+				if ((arrayIndex < 0) || (arrayIndex >= array.Length))
+				{
+					throw new ArgumentOutOfRangeException("arrayIndex");
+				}
+
+				int count = array.Length.Min(_states.Length);
+
+				for (int i = 0; i < count; i++)
+				{
+					array[i] = _states[i];
+				}
 			}
 
 			/// <summary>
@@ -506,14 +600,8 @@ namespace GorgonLibrary.Graphics
 					}
 
 					_buffers[index] = value;
-					if (value != null)
-					{
-						_D3DBufferArray[0] = value.D3DBuffer;
-					}
-					else
-					{
-						_D3DBufferArray[0] = null;
-					}
+
+					_D3DBufferArray[0] = value != null ? value.D3DBuffer : null;
 
 					_shader.SetConstantBuffers(index, 1, _D3DBufferArray);
 				}
@@ -541,33 +629,43 @@ namespace GorgonLibrary.Graphics
 			/// </summary>
 			/// <param name="slot">Starting slot for the buffer.</param>
 			/// <param name="buffers">Buffers to set.</param>
-			/// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="slot"/> is less than 0, or greater than the available number of constant buffer slots.
+			/// <remarks>This will bind several constant buffers at the same time.  A constant buffer must not already be bound to the shader at another index, or an exception will be thrown.</remarks>
+			/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="buffers"/> parameter is NULL (Nothing in VB.Net).</exception>
+			/// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="slot"/> is less than 0, or greater than the available number of resource view slots.
 			/// <para>-or-</para>
-			/// <para>Thrown when the <paramref name="buffers"/> count + the slot is greater than or equal to the number of available constant buffer slots.</para>
+			/// <para>Thrown when the buffers count + the slot is greater than or equal to the number of available resource slots.</para>
 			/// </exception>
-			public void SetRange(int slot, IEnumerable<GorgonConstantBuffer> buffers)
+			/// <exception cref="GorgonLibrary.GorgonException">Thrown when a view in the <paramref name="buffers"/> parameter is already bound to the shader at another index.</exception>
+			public void SetRange(int slot, GorgonConstantBuffer[] buffers)
 			{
-				int count = 0;
-
 				GorgonDebug.AssertNull<IEnumerable<GorgonConstantBuffer>>(buffers, "buffers");
+				GorgonDebug.AssertParamRange(slot, 0, _buffers.Length, "slot");
+				GorgonDebug.AssertParamRange(slot + buffers.Length, 0, _buffers.Length, "slot");
+
+				for (int i = 0; i < buffers.Length; i++)
+				{
+					var bufferIndex = i + slot;
+					var buffer = buffers[i];
+
 #if DEBUG
-				if ((slot < 0) || (slot >= _buffers.Length) || ((slot + buffers.Count()) >= _buffers.Length))
-					throw new ArgumentOutOfRangeException("Cannot have more than " + _buffers.Length + " slots occupied.");
+					if (buffer != null)
+					{
+						int currentIndex = IndexOf(buffer);
+
+						if ((currentIndex != -1) && (currentIndex != bufferIndex))
+						{
+							throw new GorgonException(GorgonResult.CannotBind,
+							                          string.Format(Properties.Resources.GORGFX_CBUFFER_ALREADY_BOUND, buffer.Name,
+							                                        currentIndex));
+						}
+					}
 #endif
 
-				count = buffers.Count();
-				for (int i = 0; i < count; i++)
-				{
-					var buffer = buffers.ElementAtOrDefault(i);
-
-					_buffers[i + slot] = buffer;
-					if (buffer != null)
-						_D3DBufferArray[i] = buffer.D3DBuffer;
-					else
-						_D3DBufferArray[i] = null;
+					_buffers[bufferIndex] = buffer;
+					_D3DBufferArray[i] = buffer != null ? buffer.D3DBuffer : null;
 				}
 
-				_shader.SetConstantBuffers(slot, count, _D3DBufferArray);
+				_shader.SetConstantBuffers(slot, _buffers.Length, _D3DBufferArray);
 			}
 			#endregion
 
@@ -586,13 +684,19 @@ namespace GorgonLibrary.Graphics
 
 			#region IList<GorgonConstantBuffer> Members
 			/// <summary>
-			/// Indexes the of.
+			/// Determines the index of a specific item in the <see cref="T:System.Collections.Generic.IList`1" />.
 			/// </summary>
-			/// <param name="item">The item.</param>
-			/// <returns></returns>
+			/// <param name="item">The object to locate in the <see cref="T:System.Collections.Generic.IList`1" />.</param>
+			/// <returns>
+			/// The index of <paramref name="item" /> if found in the list; otherwise, -1.
+			/// </returns>
+			/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="item"/> parameter is NULL (Nothing in VB.Net).</exception>
 			public int IndexOf(GorgonConstantBuffer item)
 			{
-				GorgonDebug.AssertNull<GorgonConstantBuffer>(item, "item");
+				if (item == null)
+				{
+					throw new ArgumentNullException("item");
+				}
 				
 				return Array.IndexOf(_buffers, item);
 			}
@@ -654,12 +758,20 @@ namespace GorgonLibrary.Graphics
 			}
 
 			/// <summary>
-			/// Function to return whether the specified constant buffer is bound or not.
+			/// Determines whether the <see cref="T:System.Collections.Generic.ICollection`1" /> contains a specific value.
 			/// </summary>
-			/// <param name="item">Constant buffer to check.</param>
-			/// <returns>TRUE if found, FALSE if not.</returns>
+			/// <param name="item">The object to locate in the <see cref="T:System.Collections.Generic.ICollection`1" />.</param>
+			/// <returns>
+			/// true if <paramref name="item" /> is found in the <see cref="T:System.Collections.Generic.ICollection`1" />; otherwise, false.
+			/// </returns>
+			/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="item" /> parameter is NULL (Nothing in VB.Net).</exception>
 			public bool Contains(GorgonConstantBuffer item)
 			{
+				if (item == null)
+				{
+					throw new ArgumentNullException("item");
+				}
+
 				return _buffers.Contains(item);
 			}
 
@@ -670,7 +782,22 @@ namespace GorgonLibrary.Graphics
 			/// <param name="arrayIndex">Index in the array to start writing at.</param>
 			public void CopyTo(GorgonConstantBuffer[] array, int arrayIndex)
 			{
-				_buffers.CopyTo(array, arrayIndex);
+				if (array == null)
+				{
+					throw new ArgumentNullException("array");
+				}
+
+				if ((arrayIndex < 0) || (arrayIndex >= array.Length))
+				{
+					throw new ArgumentOutOfRangeException("arrayIndex");
+				}
+
+				int count = array.Length.Min(_buffers.Length);
+
+				for (int i = 0; i < count; i++)
+				{
+					array[i] = _buffers[i];
+				}
 			}
 
 			/// <summary>
@@ -740,13 +867,14 @@ namespace GorgonLibrary.Graphics
 			/// <param name="resourceView">Resource view to unbind.</param>
 			internal void Unbind(GorgonShaderView resourceView)
 			{
-				for (int i = 0; i < Count; i++)
+				int index = IndexOf(resourceView);
+
+				if (index == -1)
 				{
-					if (_resources[i] == resourceView)
-					{
-                        SetView(i, null);
-					}
+					return;
 				}
+
+				SetView(index, null);
 			}
 
             /// <summary>
@@ -795,7 +923,7 @@ namespace GorgonLibrary.Graphics
 			{
 				int index = IndexOf(resourceView);
 
-				if (index <= -1)
+				if (index == -1)
 				{
 					return;
 				}
@@ -833,50 +961,115 @@ namespace GorgonLibrary.Graphics
             }
 
 			/// <summary>
+			/// Function to determine the index of a specific texture resource that's bound to the shader.
+			/// </summary>
+			/// <param name="texture">Texture to look up.</param>
+			/// <returns>The index of the texture if found, or -1 if not.</returns>
+			/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="texture"/> parameter is NULL (Nothing in VB.Net).</exception>
+			public int IndexOf(GorgonTexture texture)
+			{
+				if (texture == null)
+				{
+					throw new ArgumentNullException("texture");
+				}
+
+				for (int i = 0; i < _resources.Length; i++)
+				{
+					if ((_resources[i] != null) && (_resources[i].Resource == texture))
+					{
+						return i;
+					}
+				}
+
+				return -1;
+			}
+
+			/// <summary>
+			/// Function to determine the index of a specific buffer resource that's bound to the shader.
+			/// </summary>
+			/// <param name="buffer">Texture to look up.</param>
+			/// <returns>The index of the texture if found, or -1 if not.</returns>
+			/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="buffer"/> parameter is NULL (Nothing in VB.Net).</exception>
+			public int IndexOf(GorgonShaderBuffer buffer)
+			{
+				if (buffer == null)
+				{
+					throw new ArgumentNullException("buffer");
+				}
+
+				for (int i = 0; i < _resources.Length; i++)
+				{
+					if ((_resources[i] != null) && (_resources[i].Resource == buffer))
+					{
+						return i;
+					}
+				}
+
+				return -1;
+			}
+
+			/// <summary>
+			/// Function to determine if a texture resource has a view bound to this shader stage.
+			/// </summary>
+			/// <param name="texture">Texture to look up.</param>
+			/// <returns>TRUE if found, FALSE if not.</returns>
+			/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="texture"/> parameter is NULL (Nothing in VB.Net).</exception>
+			public bool Contains(GorgonTexture texture)
+			{
+				return IndexOf(texture) > -1;
+			}
+
+			/// <summary>
+			/// Function to determine if a buffer resource has a view bound to this shader stage.
+			/// </summary>
+			/// <param name="buffer">Buffer to look up.</param>
+			/// <returns>TRUE if found, FALSE if not.</returns>
+			/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="buffer"/> parameter is NULL (Nothing in VB.Net).</exception>
+			public bool Contains(GorgonShaderBuffer buffer)
+			{
+				return IndexOf(buffer) > -1;
+			}
+
+			/// <summary>
 			/// Function to set a range of resource views at one time.
 			/// </summary>
 			/// <param name="slot">Resource view slot to start at.</param>
 			/// <param name="resourceViews">A list of resource views to set.</param>
+			/// <remarks>This will bind several resource views at the same time.  A view must not already be bound to the shader at another index, or an exception will be thrown.</remarks>
 			/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="resourceViews"/> parameter is NULL (Nothing in VB.Net).</exception>
 			/// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="slot"/> is less than 0, or greater than the available number of resource view slots.
 			/// <para>-or-</para>
 			/// <para>Thrown when the buffers count + the slot is greater than or equal to the number of available resource slots.</para>
 			/// </exception>
-			public void SetRange(int slot, IEnumerable<GorgonShaderView> resourceViews)
+			/// <exception cref="GorgonLibrary.GorgonException">Thrown when a view in the <paramref name="resourceViews"/> parameter is already bound to the shader at another index.</exception>
+			public void SetRange(int slot, GorgonShaderView[] resourceViews)
 			{
-				int count = 0;
+				GorgonDebug.AssertNull(resourceViews, "resourceViews");
+				GorgonDebug.AssertParamRange(slot, 0, _resources.Length, "slot");
+				GorgonDebug.AssertParamRange(slot + resourceViews.Length, 0, _resources.Length, "slot");
 
-				GorgonDebug.AssertNull<IEnumerable<GorgonShaderView>>(resourceViews, "resourceViews");
-#if DEBUG
-				if ((slot < 0) || (slot >= _resources.Length) || ((slot + resourceViews.Count()) >= _resources.Length))
-					throw new ArgumentOutOfRangeException("Cannot have more than " + _resources.Length + " slots occupied.");
-#endif
-
-				count = resourceViews.Count();
-				for (int i = 0; i < count; i++)
+				for (int i = 0; i < resourceViews.Length; i++)
 				{
-					var buffer = resourceViews.ElementAtOrDefault(i);
+					int resourceIndex = i + slot;
+					var buffer = resourceViews[i];
 
 #if DEBUG
                     if (buffer != null)
                     {
-                        int bufferIndex = Array.IndexOf(_resources, buffer);
+                        int bufferIndex = IndexOf(buffer);
 
-                        if ((bufferIndex != i + slot) && (bufferIndex != -1) && (_views[bufferIndex] == buffer.D3DView))
+                        if ((bufferIndex != resourceIndex) && (bufferIndex != -1))
                         {
-                            throw new ArgumentException("The resource view at index [" + i + "] is already bound to a shader with the same resource view.");
+							throw new GorgonException(GorgonResult.CannotBind, string.Format(Properties.Resources.GORGFX_VIEW_ALREADY_BOUND, bufferIndex));
                         }
                     }
 #endif
 
-					_resources[i + slot] = buffer;
-					if (buffer != null)
-						_views[i] = _resources[i + slot].D3DView;
-					else
-						_views[i] = null;
+					_views[i] = buffer != null ? buffer.D3DView : null;
+					_resources[resourceIndex] = buffer;
 				}
 
-				_shader.SetResources(slot, count, _views);
+				_shader.SetResources(slot, resourceViews.Length, _views);
 			}
 
             /// <summary>
@@ -887,7 +1080,7 @@ namespace GorgonLibrary.Graphics
             /// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="index"/> is less than 0 or greater than or equal to the number of resource slots.</exception>
             public GorgonShaderView GetView(int index)
             {
-                GorgonDebug.AssertParamRange(index, 0, Count, "index");
+                GorgonDebug.AssertParamRange(index, 0, _resources.Length, "index");
                 return _resources[index];
             }
 
@@ -900,7 +1093,7 @@ namespace GorgonLibrary.Graphics
             /// <exception cref="System.ArgumentException">Thrown when the <paramref name="view"/> parameter is already bound.</exception>
             public void SetView(int index, GorgonShaderView view)
             {
-                GorgonDebug.AssertParamRange(index, 0, Count, "index");
+                GorgonDebug.AssertParamRange(index, 0, _resources.Length, "index");
 
                 if (_resources[index] == view)
                 {
@@ -912,28 +1105,19 @@ namespace GorgonLibrary.Graphics
                 {
                     int currentIndex = IndexOf(view);
 
-                    if ((currentIndex != -1)
-                        && (currentIndex != index)
-                        && (_views[currentIndex] == view.D3DView))
+                    if (currentIndex != -1)
                     {
-                        throw new ArgumentException(
-                            string.Format("The resource view is already bound to a shader at index [{0}]", currentIndex),
-                            "view");
+	                    throw new GorgonException(GorgonResult.CannotBind,
+	                                              string.Format(Properties.Resources.GORGFX_VIEW_ALREADY_BOUND,
+	                                                            currentIndex));
                     }
                 }
 #endif
 
                 _resources[index] = view;
-                if (view == null)
-                {
-                    _views[0] = null;
-                }
-                else
-                {
-                    _views[0] = view.D3DView;
-                }
+	            _views[0] = view == null ? null : view.D3DView;
 
-                _shader.SetResources(index, 1, _views);
+	            _shader.SetResources(index, 1, _views);
             }
 
             /// <summary>
@@ -954,7 +1138,8 @@ namespace GorgonLibrary.Graphics
 #if DEBUG
                 if ((resourceView != null) && (resourceView.Resource != null) && (!(resourceView.Resource is TX)))
                 {
-                    throw new InvalidCastException("The resource at index [" + index + "] is not a texture.");
+	                throw new InvalidCastException(string.Format(Properties.Resources.GORGFX_VIEW_RESOURCE_NOT_TYPE, index,
+	                                                             typeof(TX).FullName));
                 }
 #endif
 
@@ -973,10 +1158,16 @@ namespace GorgonLibrary.Graphics
             /// <param name="index">Index of the resource view to use.</param>
             /// <param name="texture">Texture to assign.</param>
             /// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="index"/> parameter is outside of the available resource view slots.</exception>
-            public void SetTexture<TX>(int index, TX texture)
+			/// <exception cref="GorgonLibrary.GorgonException">Thrown when attempting to bind a texture that has no default view or is a staging resource.</exception>
+			public void SetTexture<TX>(int index, TX texture)
                 where TX : GorgonTexture
             {
-	            GorgonDebug.AssertParamRange(index, 0, _resources.Length, "index");
+#if DEBUG
+				if ((texture != null) && (texture.DefaultShaderView == null))
+				{
+					throw new GorgonException(GorgonResult.CannotBind, Properties.Resources.GORGFX_VIEW_CANT_BIND_STAGING_NO_VIEW);
+				}
+#endif
 
 	            SetView(index, texture != null ? texture.DefaultShaderView : null);
             }
@@ -998,7 +1189,8 @@ namespace GorgonLibrary.Graphics
 #if DEBUG
                 if ((resourceView != null) && (resourceView.Resource != null) && (!(resourceView.Resource is TB)))
                 {
-                    throw new InvalidCastException("The resource at index [" + index + "] is not a shader buffer.");
+					throw new InvalidCastException(string.Format(Properties.Resources.GORGFX_VIEW_RESOURCE_NOT_TYPE, index,
+																 typeof(TB).FullName));
                 }
 #endif
 
@@ -1017,14 +1209,18 @@ namespace GorgonLibrary.Graphics
             /// <param name="index">Index of the resource view to use.</param>
             /// <param name="buffer">Shader buffer to assign.</param>
             /// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="index"/> parameter is outside of the available resource view slots.</exception>
+            /// <exception cref="GorgonLibrary.GorgonException">Thrown when attempting to bind a buffer that has no default view or is a staging resource.</exception>
             public void SetShaderBuffer<TB>(int index, TB buffer)
                 where TB : GorgonShaderBuffer
             {
-	            GorgonDebug.AssertParamRange(index, 0, _resources.Length, "index");
-
+#if DEBUG
+				if ((buffer != null) && (buffer.DefaultShaderView == null))
+				{
+					throw new GorgonException(GorgonResult.CannotBind, Properties.Resources.GORGFX_VIEW_CANT_BIND_STAGING_NO_VIEW);
+				}
+#endif
 	            SetView(index, buffer != null ? buffer.DefaultShaderView : null);
             }
-
 			#endregion
 
 			#region Constructor/Destructor.
@@ -1036,6 +1232,7 @@ namespace GorgonLibrary.Graphics
 			{
 				_shader = shader;
 
+				// SM2_a_b devices can't have resources bound to the vertex shader stage.
 				if ((_shader is GorgonVertexShaderState) && (_shader.Graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM2_a_b))
 				{
 					_views = new D3D.ShaderResourceView[] { };
@@ -1054,7 +1251,6 @@ namespace GorgonLibrary.Graphics
 			/// <summary>
 			/// Property to set or return the bound shader resource view.
 			/// </summary>
-			[EditorBrowsable(EditorBrowsableState.Never)]
 			GorgonShaderView IList<GorgonShaderView>.this[int index]
 			{
 				get
@@ -1070,13 +1266,19 @@ namespace GorgonLibrary.Graphics
 
 			#region Methods.
 			/// <summary>
-			/// Function to return the index of the specified shader resource.
+			/// Determines the index of a specific item in the <see cref="T:System.Collections.Generic.IList`1" />.
 			/// </summary>
-			/// <param name="item">The shader resource to find the index of.</param>
-			/// <returns>The index if found, or -1 if not.</returns>
+			/// <param name="item">The object to locate in the <see cref="T:System.Collections.Generic.IList`1" />.</param>
+			/// <returns>
+			/// The index of <paramref name="item" /> if found in the list; otherwise, -1.
+			/// </returns>
+			/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="item" /> parameter is NULL (Nothing in VB.Net).</exception>
 			public int IndexOf(GorgonShaderView item)
 			{
-				GorgonDebug.AssertNull<GorgonShaderView>(item, "item");
+				if (item == null)
+				{
+					throw new ArgumentNullException("item");
+				}
 
 				return Array.IndexOf(_resources, item);
 			}
@@ -1166,7 +1368,6 @@ namespace GorgonLibrary.Graphics
 			/// <param name="arrayIndex">Index in the array to start writing at.</param>
 			public void CopyTo(GorgonShaderView[] array, int arrayIndex)
 			{
-#if DEBUG
                 if (array == null)
                 {
                     throw new ArgumentNullException("array");
@@ -1176,7 +1377,6 @@ namespace GorgonLibrary.Graphics
                 {
                     throw new ArgumentOutOfRangeException("arrayIndex");
                 }
-#endif
 
 			    int count = array.Length.Min(_resources.Length);
 
