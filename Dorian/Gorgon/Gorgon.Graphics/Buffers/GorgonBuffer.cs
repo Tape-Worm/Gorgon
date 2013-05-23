@@ -102,6 +102,19 @@ namespace GorgonLibrary.Graphics
 		#endregion
 
 		#region Methods.
+        /// <summary>
+        /// Function to retrieve the staging buffer for this buffer.
+        /// </summary>
+        /// <returns>
+        /// The staging buffer for this buffer.
+        /// </returns>
+        protected override GorgonBaseBuffer GetStagingBufferImpl()
+        {
+            // TODO: Add this when generic buffer type gets added to buffers interface.
+
+            return null;
+        }
+
 		/// <summary>
 		/// Function to clean up the resource object.
 		/// </summary>

@@ -1,3 +1,5 @@
+using System;
+
 namespace GorgonLibrary.Graphics
 {
 	/// <summary>
@@ -89,6 +91,7 @@ namespace GorgonLibrary.Graphics
 		/// Property to set or return the size of an element in a structured buffer.
 		/// </summary>
 		/// <remarks>This value will always return 4 if the Use32BitIndices value is set to TRUE, 2 if set to FALSE.</remarks>
+        /// <exception cref="System.NotSupportedException">Thrown when an attempt to set a value is made.</exception>
 		public int ElementSize
 		{
 			get
@@ -97,12 +100,14 @@ namespace GorgonLibrary.Graphics
 			}
 			set
 			{
+                throw new NotSupportedException();
 			}
 		}
 
 		/// <summary>
 		/// Property to set or return the number of an elements in a structured buffer or typed buffer.
 		/// </summary>
+        /// <exception cref="System.NotSupportedException">Thrown when an attempt to set a value is made.</exception>
 		public int ElementCount
 		{
 			get
@@ -111,6 +116,7 @@ namespace GorgonLibrary.Graphics
 			}
 			set
 			{
+                throw new NotSupportedException();
 			}
 		}
 
@@ -120,6 +126,7 @@ namespace GorgonLibrary.Graphics
 		/// <remarks>
 		/// This value will always return R32_UInt for 32 bit index buffers, and R16_UInt for 16 bit index buffers.
 		/// </remarks>
+        /// <exception cref="System.NotSupportedException">Thrown when an attempt to set a value is made.</exception>
 		BufferFormat IShaderBufferSettings.ShaderViewFormat
 		{
 			get
@@ -128,6 +135,7 @@ namespace GorgonLibrary.Graphics
 			}
 			set
 			{
+                throw new NotSupportedException();
 			}
 		}
 	}

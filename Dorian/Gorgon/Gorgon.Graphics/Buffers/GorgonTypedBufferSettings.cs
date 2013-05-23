@@ -1,4 +1,5 @@
-﻿using GorgonLibrary.Native;
+﻿using System;
+using GorgonLibrary.Native;
 
 namespace GorgonLibrary.Graphics
 {
@@ -33,6 +34,7 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Property to set or return the size of the buffer, in bytes.
 		/// </summary>
+        /// <exception cref="System.NotSupportedException">Thrown when an attempt to set a value is made.</exception>
 		int IBufferSettings.SizeInBytes
 		{
 			get
@@ -41,6 +43,7 @@ namespace GorgonLibrary.Graphics
 			}
 			set
 			{
+                throw new NotSupportedException();
 			}
 		}
 
@@ -82,6 +85,7 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		/// <remarks>This value is read-only for typed buffers and will return the size, in bytes, of the type parameter.
 		/// </remarks>
+		/// <exception cref="System.NotSupportedException">Thrown when an attempt to set a value is made.</exception>
 		public int ElementSize
 		{
 			get
@@ -90,6 +94,7 @@ namespace GorgonLibrary.Graphics
 			}
 			set
 			{
+                throw new NotSupportedException();
 			}
 		}
 

@@ -1,3 +1,5 @@
+using System;
+
 namespace GorgonLibrary.Graphics
 {
     /// <summary>
@@ -67,6 +69,7 @@ namespace GorgonLibrary.Graphics
         /// Property to set or return the size of an element in a structured buffer.
         /// </summary>
         /// <remarks>This value will always return -1 because element size does not apply to vertex buffers.</remarks>
+        /// <exception cref="System.NotSupportedException">Thrown when an attempt to set a value is made.</exception>
         int IShaderBufferSettings.ElementSize
         {
             get
@@ -75,6 +78,7 @@ namespace GorgonLibrary.Graphics
             }
             set 
             { 
+                throw new NotSupportedException();
             }
         }
 
@@ -84,6 +88,7 @@ namespace GorgonLibrary.Graphics
         /// <exception cref="System.NotImplementedException">
         /// </exception>
         /// <remarks>This value wil always return -1 because element count does not apply to vertex buffers.</remarks>
+        /// <exception cref="System.NotSupportedException">Thrown when an attempt to set a value is made.</exception>
         int IShaderBufferSettings.ElementCount
         {
             get
@@ -92,6 +97,7 @@ namespace GorgonLibrary.Graphics
             }
             set 
             { 
+                throw new NotSupportedException();
             }
         }
 

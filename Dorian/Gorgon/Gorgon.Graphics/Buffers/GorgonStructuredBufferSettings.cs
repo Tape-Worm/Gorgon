@@ -1,4 +1,6 @@
-﻿namespace GorgonLibrary.Graphics
+﻿using System;
+
+namespace GorgonLibrary.Graphics
 {
 	/// <summary>
 	/// Settings for a structured buffer.
@@ -26,6 +28,7 @@
 		/// Property to return the size of the buffer, in bytes.
 		/// </summary>
 		/// <remarks>This value will return the Element Count multiplied by the Element Size.</remarks>
+        /// <exception cref="System.NotSupportedException">Thrown when an attempt to set a value is made.</exception>
 		int IBufferSettings.SizeInBytes
 		{
 			get
@@ -34,6 +37,7 @@
 			}
 			set
 			{
+                throw new NotSupportedException();
 			}
 		}
 
@@ -98,10 +102,17 @@
 		/// Property to set or return the format of the view used when binding a typed buffer to a shader.
 		/// </summary>
 		/// <remarks>This value is not applicable to structured buffers.</remarks>
+        /// <exception cref="System.NotSupportedException">Thrown when an attempt to set a value is made.</exception>
 		BufferFormat IShaderBufferSettings.ShaderViewFormat
 		{
-			get;
-			set;
+			get
+			{
+			    return BufferFormat.Unknown;
+			}
+			set
+			{
+                throw new NotSupportedException();
+			}
 		}
 		#endregion
 	}

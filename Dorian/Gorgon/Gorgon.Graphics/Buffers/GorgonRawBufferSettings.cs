@@ -1,4 +1,6 @@
-﻿namespace GorgonLibrary.Graphics
+﻿using System;
+
+namespace GorgonLibrary.Graphics
 {
 	/// <summary>
 	/// Settings for a typed buffer.
@@ -65,6 +67,7 @@
 		/// Property to set or return the size of an element in a structured buffer.
 		/// </summary>
 		/// <remarks>This value always returns 4.</remarks>
+		/// <exception cref="System.NotSupportedException">Thrown when an attempt to set this value is made.</exception>
 		public int ElementSize
 		{
 			get
@@ -73,6 +76,7 @@
 			}
 			set
 			{
+                throw new NotSupportedException();
 			}
 		}
 
@@ -80,6 +84,7 @@
 		/// Property to set or return the number of an elements in a structured buffer or typed buffer.
 		/// </summary>
 		/// <remarks>This value returns the number of 4 byte values in the buffer (SizeInBytes / 4).</remarks>
+		/// <exception cref="System.NotSupportedException">Thrown when an attempt to set this value is made.</exception>
 		public int ElementCount
 		{
 			get
@@ -88,6 +93,7 @@
 			}
 			set
 			{
+                throw new NotSupportedException();
 			}
 		}
 
@@ -95,6 +101,7 @@
 		/// Property to set or return the format of the view used when binding a typed buffer to a shader.
 		/// </summary>
 		/// <remarks>This value will always return R32.</remarks>
+        /// <exception cref="System.NotSupportedException">Thrown when an attempt to set a value is made.</exception>
 		BufferFormat IShaderBufferSettings.ShaderViewFormat
 		{
 			get
@@ -103,6 +110,7 @@
 			}
 			set
 			{
+                throw new NotSupportedException();
 			}
 		}
 		#endregion

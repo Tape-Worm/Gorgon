@@ -29,7 +29,7 @@ using GorgonLibrary.IO;
 using GorgonLibrary.Native;
 using GorgonLibrary.Graphics.Properties;
 
-//TODO: Add FromFile/Stream methods for buffers.
+//TODO: Add generic buffer type.
 namespace GorgonLibrary.Graphics
 {
     /// <summary>

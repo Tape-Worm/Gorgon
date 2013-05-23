@@ -24,6 +24,8 @@
 // 
 #endregion
 
+using System;
+using System.ComponentModel;
 using GorgonLibrary.Diagnostics;
 using DX = SharpDX;
 using D3D = SharpDX.Direct3D11;
@@ -60,6 +62,17 @@ namespace GorgonLibrary.Graphics
 		#endregion
 
 		#region Methods.
+        /// <summary>
+        /// Function to retrieve the staging buffer for this buffer.
+        /// </summary>
+        /// <returns>
+        /// The staging buffer for this buffer.
+        /// </returns>
+        protected override GorgonBaseBuffer GetStagingBufferImpl()
+        {
+            throw new NotSupportedException("Constant buffers do not support staging usage.");
+        }
+        
 		/// <summary>
 		/// Function to initialize the buffer.
 		/// </summary>
@@ -144,6 +157,20 @@ namespace GorgonLibrary.Graphics
 				}, 
 				D3DResource);
 		}
+
+        /// <summary>
+        /// Function to return this buffer as a staging buffer.
+        /// </summary>
+        /// <typeparam name="T">Type of buffer.</typeparam>
+        /// <returns>The new staging buffer.</returns>
+        /// <remarks>This is not applicable to constant buffers.</remarks>
+        /// <exception cref="System.NotSupportedException">This method is not supported for constant buffers.</exception>
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public new T GetStagingBuffer<T>()
+            where T : GorgonBaseBuffer
+        {
+            throw new NotSupportedException("Constant buffers do not support staging usage.");
+        }
 		#endregion
 
 		#region Constructor/Destructor.
