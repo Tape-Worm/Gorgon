@@ -286,4 +286,7 @@
   <data name="GORGFX_VIEW_ALREADY_BOUND" xml:space="preserve">
     <value>The view was already bound to the shader at index [{0}].</value>
   </data>
+  <data name="GORGFX_BUFFER_OUTPUT_NOT_DEFAULT" xml:space="preserve">
+    <value>A buffer used for output must have a usage of [Default].</value>
+  </data>
 </root>

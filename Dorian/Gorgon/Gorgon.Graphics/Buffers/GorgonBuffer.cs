@@ -33,55 +33,6 @@ using D3D11 = SharpDX.Direct3D11;
 namespace GorgonLibrary.Graphics
 {
 	/// <summary>
-	/// Buffer usage types.
-	/// </summary>
-	public enum BufferUsage
-	{
-		/// <summary>
-		/// Allows read/write access to the buffer from the GPU.
-		/// </summary>
-		Default = D3D11.ResourceUsage.Default,
-		/// <summary>
-		/// Can only be read by the GPU, cannot be written to or read from by the CPU, and cannot be written to by the GPU.
-		/// </summary>
-		/// <remarks>Pre-initialize any buffer created with this usage, or else you will not be able to after it's been created.</remarks>
-		Immutable = D3D11.ResourceUsage.Immutable,
-		/// <summary>
-		/// Allows read access by the GPU and write access by the CPU.
-		/// </summary>
-		Dynamic = D3D11.ResourceUsage.Dynamic,
-		/// <summary>
-		/// Allows reading/writing by the CPU and can be copied to a GPU compatiable buffer (but not used directly by the GPU).
-		/// </summary>
-		Staging = D3D11.ResourceUsage.Staging
-	}
-
-	/// <summary>
-	/// Flags used when locking the buffer for reading/writing.
-	/// </summary>
-	[Flags]
-	public enum BufferLockFlags
-	{
-		/// <summary>
-		/// Lock the buffer for reading.
-		/// </summary>
-		/// <remarks>This flag is mutually exclusive.</remarks>
-		Read = 1,
-		/// <summary>
-		/// Lock the buffer for writing.
-		/// </summary>
-		Write = 2,
-		/// <summary>
-		/// Lock the buffer for writing, but guarantee that we will not overwrite a part of the buffer that's already in use.
-		/// </summary>
-		NoOverwrite = 4,
-		/// <summary>
-		/// Lock the buffer for writing, but mark its contents as invalid.
-		/// </summary>
-		Discard = 8
-	}
-
-	/// <summary>
 	/// A generic buffer object.
 	/// </summary>
 	/// <remarks>This generic buffer object is unable to be bound with shaders, but can be bound with output streams to retrieve data from shaders that support output data streams.</remarks>
