@@ -136,6 +136,24 @@ namespace GorgonLibrary.Graphics.Test
 		}
 
         [TestMethod]
+        public void CreateGenericBuffer()
+        {
+            _framework.Graphics.Buffers.CreateBuffer("Test",
+                                                        new GorgonBufferSettings
+                                                            {
+                                                                IsOutput = true,
+                                                                SizeInBytes = 6144,
+                                                                Usage = BufferUsage.Default
+                                                            });
+        }
+
+        [TestMethod]
+        public void TestInDirectSettings()
+        {
+            var id = new GorgonIndirectArgumentBuffer(_framework.Graphics);
+        }
+
+        [TestMethod]
         public void CreateVertexBufferViews()
         {
             var vb = _framework.Graphics.Buffers.CreateVertexBuffer("VB", new GorgonVertexBufferSettings()

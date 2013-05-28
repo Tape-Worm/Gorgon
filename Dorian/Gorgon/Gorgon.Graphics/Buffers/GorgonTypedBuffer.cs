@@ -126,9 +126,7 @@ namespace GorgonLibrary.Graphics
 		            Usage = D3DUsage
 		        };
 
-            if ((Settings.IsOutput)
-                && (Settings.Usage != BufferUsage.Immutable)
-                && (Settings.Usage != BufferUsage.Staging))
+            if (Settings.IsOutput)
             {
                 desc.BindFlags |= D3D.BindFlags.StreamOutput;
             }

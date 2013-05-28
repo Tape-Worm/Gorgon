@@ -26,6 +26,141 @@
 
 namespace GorgonLibrary.Graphics
 {
+    /// <summary>
+    /// Settings for a buffer.
+    /// </summary>
+    public interface IBufferSettings2
+    {
+        /// <summary>
+        /// Property to set or return the usage for the buffer.
+        /// </summary>
+        /// <para>The default value is Default.</para>
+        BufferUsage Usage
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Property to set or return whether to allow unordered access to the buffer.
+        /// </summary>
+        /// <remarks>
+        /// This value must be set to FALSE if <see cref="IsOutput"/> is set to TRUE.
+        /// <para>The default value is FALSE.</para>
+        /// </remarks>
+        bool AllowUnorderedAccessViews
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Property to set or return whether to allow shader resource views for this buffer.
+        /// </summary>
+        /// <remarks>
+        /// This value does not apply to constant buffers.
+        /// <para>The default value is FALSE.</para>
+        /// </remarks>
+        bool AllowShaderViews
+        {
+            get;
+            set;
+        }
+
+        // TODO: Add functionality to bind render targets to a buffer object.
+        /// <summary>
+        /// Property to set or return whether to allow this buffer to be used as a render target.
+        /// </summary>
+        /// <remarks>
+        /// This will allow the buffer to hold render target data.  As of right now, Gorgon does not have a way to bind a render target to the buffer objects.
+        /// <para>This value does not apply to constant or structured buffers.</para>
+        /// <para>The default value is FALSE.</para></remarks>
+        bool AllowRenderTarget
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Property to set or return the format for the default shader view.
+        /// </summary>
+        /// <remarks> 
+        /// Setting this value to any other value than Unknown will create a default shader view for the buffer that will encompass the entire buffer with the specified format.
+        /// <para>If <see cref="AllowRawViews"/> is set to TRUE, then this value should be set to one of: R32_Uint, R32_Int, R32_Float.</para>
+        /// <para>This value does not apply to constant or structured buffers.</para>
+        /// <para>The default value is Unknown.</para>
+        /// </remarks>
+        BufferFormat DefaultShaderViewFormat
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Property to set or return whether a buffer will allow raw views.
+        /// </summary>
+        /// <remarks>This value must be set to FALSE if <see cref="AllowShaderViews"/> or <see cref="AllowUnorderedAccessViews"/> is set to FALSE.
+        /// <para>The default value is FALSE.</para>
+        /// </remarks>
+        bool AllowRawViews
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Property to set or return whether the buffer will be used as an indirect argument buffer.
+        /// </summary>
+        /// <remarks>
+        /// This value does not apply to structured buffers or constant buffers.
+        /// <para>The default value is FALSE.</para>
+        /// </remarks>
+        bool AllowIndirectArguments
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Property to set or return whether to allow this buffer to be used for stream output.
+        /// </summary>
+        /// <remarks>
+        /// This value must be set to FALSE if <see cref="AllowUnorderedAccessViews"/> is set to TRUE.
+        /// <para>The default value is FALSE.</para>
+        /// </remarks>
+        bool IsOutput
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Property to set or return the size of the buffer, in bytes.
+        /// </summary>
+        /// <remarks>
+        /// For a <see cref="GorgonLibrary.Graphics.GorgonConstantBuffer">constant buffer</see>, this value must be a multiple of 16.
+        /// <para>The default value is 0.</para>
+        /// </remarks>
+        int SizeInBytes
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Property to set or return the size, in bytes, of an individual item in a structured buffer.
+        /// </summary>
+        /// <remarks>This value is only applicable to a structured buffer.  All other buffer types will return 0 for this setting.
+        /// <para>This value must be between 1 and 2048 and a multiple of 4.</para>
+        /// <para>The default value is 0.</para>
+        /// </remarks>
+        int StructureSize
+        {
+            get;
+            set;
+        }
+    }
+
 	/// <summary>
 	/// Common buffer settings.
 	/// </summary>

@@ -151,7 +151,7 @@ namespace GorgonLibrary.Graphics
 				desc.BindFlags |= D3D11.BindFlags.UnorderedAccess;
 			}
 
-			if ((Settings.IsOutput) && (Settings.Usage != BufferUsage.Staging) && (Settings.Usage != BufferUsage.Immutable))
+			if (Settings.IsOutput)
 			{
 				desc.BindFlags |= D3D11.BindFlags.StreamOutput;
 			}

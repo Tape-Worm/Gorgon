@@ -29,9 +29,13 @@ using GorgonLibrary.IO;
 using GorgonLibrary.Native;
 using GorgonLibrary.Graphics.Properties;
 
-//TODO: Add generic buffer type.
 namespace GorgonLibrary.Graphics
 {
+    // TODO:  This is getting too complicated.  Need to remove the "raw" buffer type and merge the GorgonTypedBuffer into GorgonBuffer.
+    //        Put "AllowRaw" flag in settings instead.  
+    //        Put "IsIndirect" flag in settings to Indirect argument buffers.
+    //        Remove "GorgonShaderBuffer" and merge back into base buffer class.
+    //        
     /// <summary>
     /// An interface to create buffers.
     /// </summary>
@@ -42,6 +46,108 @@ namespace GorgonLibrary.Graphics
         #endregion
 
         #region Methods.
+        /// <summary>
+        /// Function to create a generic buffer.
+        /// </summary>
+        /// <typeparam name="T">Type of data in the array.  Must be a value type.</typeparam>
+        /// <param name="name">Name of the buffer.</param>
+        /// <param name="values">Data used to initialize the buffer.</param>
+        /// <param name="usage">Usage for the buffer.</param>
+        /// <returns>A new generic buffer object populated with the data in <paramref name="values"/>.</returns>
+        /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (Nothing in VB.Net).
+        /// <para>-or-</para>
+        /// <para>Thrown when the <paramref name="values"/> parameter is NULL.</para>
+        /// </exception> 
+        /// <exception cref="System.ArgumentException">Thrown when the <paramref name="name"/> parameter is empty.
+        /// <para>-or-</para>
+        /// <para>Thrown when the <paramref name="values"/> parameter is empty.</para>
+        /// </exception>
+        /// <remarks>This generic buffer type is not capable of being bound to a shader, but can be used as a stream output from a geometry/compute shader.</remarks>
+        public GorgonBuffer CreateBuffer<T>(string name, T[] values, BufferUsage usage)
+            where T : struct
+        {
+            if (values == null)
+            {
+                throw new ArgumentNullException("values");
+            }
+
+            if (values.Length == 0)
+            {
+                throw new ArgumentException(Resources.GORGFX_PARAMETER_MUST_NOT_BE_EMPTY, "values");
+            }
+            
+            using(var stream = new GorgonDataStream(values))
+            {
+                return CreateBuffer(name,
+                                    new GorgonBufferSettings
+                                        {
+                                            SizeInBytes = DirectAccess.SizeOf<T>() * values.Length,
+                                            IsOutput = false,
+                                            Usage = usage
+                                        }, stream);
+            }
+        }
+
+        /// <summary>
+        /// Function to create a generic buffer.
+        /// </summary>
+        /// <param name="name">Name of the buffer.</param>
+        /// <param name="settings">The settings for the buffer.</param>
+        /// <param name="stream">[Optional] Stream used to initialize the buffer.</param>
+        /// <returns>A new generic buffer object.</returns>
+        /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (Nothing in VB.Net).
+        /// <para>-or-</para>
+        /// <para>Thrown when the <paramref name="settings"/> parameter is NULL.</para>
+        /// </exception>
+        /// <exception cref="System.ArgumentException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
+        /// <exception cref="GorgonLibrary.GorgonException">Thrown when the <see cref="GorgonLibrary.Graphics.GorgonBufferSettings.IsOutput">IsOutput</see> property is TRUE and has a usage that is not Default.
+        /// <para>-or-</para>
+        /// <para>Thrown when the <see cref="GorgonLibrary.Graphics.GorgonBufferSettings.SizeInBytes">SizeInBytes</see> property of the <paramref name="settings"/> parameter is less than 1.</para>
+        /// <para>-or-</para>
+        /// <para>Thrown when the usage is set to immutable and the <paramref name="stream"/> parameter is NULL (Nothing in VB.Net) or has no data.</para>
+        /// </exception>
+        /// <remarks>This generic buffer type is not capable of being bound to a shader, but can be used as a stream output from a geometry/compute shader.</remarks>
+        public GorgonBuffer CreateBuffer(string name, GorgonBufferSettings settings, GorgonDataStream stream = null)
+        {
+            if (name == null)
+            {
+                throw new ArgumentNullException("name");
+            }
+
+            if (settings == null)
+            {
+                throw new ArgumentNullException("settings");
+            }
+
+            if (name.Length == 0)
+            {
+                throw new ArgumentException(Resources.GORGFX_PARAMETER_MUST_NOT_BE_EMPTY, "name");
+            }
+
+            if ((settings.Usage == BufferUsage.Immutable) && ((stream == null) || (stream.Length == 0)))
+            {
+                throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_BUFFER_IMMUTABLE_REQUIRES_DATA);
+            }
+
+            if ((settings.IsOutput)
+                && (settings.Usage != BufferUsage.Default))
+            {
+                throw new GorgonException(GorgonResult.CannotBind, Resources.GORGFX_BUFFER_OUTPUT_NOT_DEFAULT);
+            }
+
+            if (settings.SizeInBytes < 1)
+            {
+                throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_BUFFER_SIZE_TOO_SMALL, 1));
+            }
+
+            var buffer = new GorgonBuffer(_graphics, name, settings);
+
+            buffer.Initialize(stream);
+
+            _graphics.AddTrackedObject(buffer);
+            return buffer;
+        }
+
         /// <summary>
         /// Function to create a constant buffer.
         /// </summary>
@@ -56,6 +162,7 @@ namespace GorgonLibrary.Graphics
         /// </exception>
         /// <exception cref="System.ArgumentException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
         /// <exception cref="System.DataMisalignedException">Thrown when the <see cref="GorgonLibrary.Graphics.GorgonConstantBufferSettings.SizeInBytes">SizeInBytes</see> property of the <paramref name="settings"/> parameter is not a multiple of 16.</exception>
+        /// <exception cref="GorgonLibrary.GorgonException">Thrown when the buffer size, in bytes, is less than 1.</exception>
         public GorgonConstantBuffer CreateConstantBuffer(string name, GorgonConstantBufferSettings settings, GorgonDataStream stream = null)
         {
             if (settings == null)
@@ -66,6 +173,11 @@ namespace GorgonLibrary.Graphics
             if ((settings.SizeInBytes % 16) != 0)
             {
                 throw new DataMisalignedException(string.Format(Resources.GORGFX_BUFFER_NOT_MULTIPLE, settings.SizeInBytes, 16));
+            }
+
+            if (settings.SizeInBytes < 1)
+            {
+                throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_BUFFER_SIZE_TOO_SMALL, 1));
             }
 
             var buffer = new GorgonConstantBuffer(_graphics, name, settings);
@@ -179,7 +291,14 @@ namespace GorgonLibrary.Graphics
         /// <para>-or-</para>
         /// <para>Thrown when the <paramref name="settings"/> parameter is NULL.</para>
         /// </exception>
-        /// <exception cref="GorgonLibrary.GorgonException">Thrown when an attempt to create a structured buffer is made on a video device that does not support SM5 or better.</exception>
+        /// <exception cref="GorgonLibrary.GorgonException">Thrown when the <see cref="GorgonLibrary.Graphics.GorgonStructuredBufferSettings.IsOutput">IsOutput</see> property is TRUE and has a usage that is not Default.
+        /// <para>-or-</para>
+        /// <para>Thrown when the <see cref="GorgonLibrary.Graphics.GorgonStructuredBufferSettings.ElementCount">ElementCount</see> or the <see cref="GorgonLibrary.Graphics.GorgonStructuredBufferSettings.ElementSize">ElementSize</see> property of the <paramref name="settings"/> parameter is less than 1.</para>
+        /// <para>-or-</para>
+        /// <para>Thrown when the usage is set to immutable and the <paramref name="stream"/> parameter is NULL (Nothing in VB.Net) or has no data.</para>
+        /// <para>-or-</para>
+        /// <para>Thrown when an attempt to create a structured buffer is made on a video device that does not support SM5 or better.</para>
+        /// </exception>
         public GorgonStructuredBuffer CreateStructuredBuffer(string name, GorgonStructuredBufferSettings settings, GorgonDataStream stream = null)
         {
             if (settings == null)
@@ -192,14 +311,25 @@ namespace GorgonLibrary.Graphics
                 throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_REQUIRES_SM, DeviceFeatureLevel.SM5));
             }
 
+            if ((settings.Usage == BufferUsage.Immutable) && ((stream == null) || (stream.Length == 0)))
+            {
+                throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_BUFFER_IMMUTABLE_REQUIRES_DATA);
+            }
+
             if (settings.ElementCount <= 0)
             {
-                throw new ArgumentException(string.Format(Resources.GORGFX_BUFFER_ELEMENT_COUNT_INVALID, 1), "settings");
+                throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_BUFFER_ELEMENT_COUNT_INVALID, 1));
             }
 
             if (settings.ElementSize <= 0)
             {
-                throw new ArgumentException(string.Format(Resources.GORGFX_BUFFER_SIZE_TOO_SMALL, 1), "settings");
+                throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_BUFFER_SIZE_TOO_SMALL, 1));
+            }
+
+            if ((settings.IsOutput)
+                && (settings.Usage != BufferUsage.Default))
+            {
+                throw new GorgonException(GorgonResult.CannotBind, Resources.GORGFX_BUFFER_OUTPUT_NOT_DEFAULT);
             }
 
             var result = new GorgonStructuredBuffer(_graphics, name, settings);
@@ -315,6 +445,12 @@ namespace GorgonLibrary.Graphics
         /// <para>Thrown when the <see cref="GorgonLibrary.Graphics.GorgonTypedBufferSettings{T}.ShaderViewFormat">settings.ShaderViewFormat</see> is not the same size, in bytes, as the type parameter.</para>
         /// </exception>
         /// <exception cref="System.DataMisalignedException">Thrown when the buffer has raw access and the total size of the buffer is not a multiple of 4.</exception>
+        /// <exception cref="GorgonLibrary.GorgonException">Thrown when the <see cref="GorgonLibrary.Graphics.GorgonTypedBufferSettings{T}.IsOutput">IsOutput</see> property is TRUE and has a usage that is not Default.
+        /// <para>-or-</para>
+        /// <para>Thrown when the <see cref="GorgonLibrary.Graphics.GorgonTypedBufferSettings{T}.ElementCount">ElementCount</see> property of the <paramref name="settings"/> parameter is less than 1.</para>
+        /// <para>-or-</para>
+        /// <para>Thrown when the usage is set to immutable and the <paramref name="stream"/> parameter is NULL (Nothing in VB.Net) or has no data.</para>
+        /// </exception>
         public GorgonTypedBuffer<T> CreateTypedBuffer<T>(string name, GorgonTypedBufferSettings<T> settings, GorgonDataStream stream = null)
             where T : struct
         {
@@ -328,6 +464,11 @@ namespace GorgonLibrary.Graphics
                 throw new ArgumentException(Resources.GORGFX_VIEW_UNKNOWN_FORMAT, "settings");
             }
 
+            if ((settings.Usage == BufferUsage.Immutable) && ((stream == null) || (stream.Length == 0)))
+            {
+                throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_BUFFER_IMMUTABLE_REQUIRES_DATA);
+            }
+
             var info = GorgonBufferFormatInfo.GetInfo(settings.ShaderViewFormat);
 
             if (settings.ElementSize != info.SizeInBytes)
@@ -338,6 +479,17 @@ namespace GorgonLibrary.Graphics
                         info.SizeInBytes,
                         settings.ElementSize),
                     "settings");
+            }
+
+            if ((settings.IsOutput)
+                && (settings.Usage != BufferUsage.Default))
+            {
+                throw new GorgonException(GorgonResult.CannotBind, Resources.GORGFX_BUFFER_OUTPUT_NOT_DEFAULT);
+            }
+
+            if (settings.ElementCount <= 0)
+            {
+                throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_BUFFER_SIZE_TOO_SMALL, DirectAccess.SizeOf<T>()));
             }
 
             var result = new GorgonTypedBuffer<T>(_graphics, name, settings);
@@ -421,7 +573,14 @@ namespace GorgonLibrary.Graphics
         /// <para>Thrown when the ElementCount property in the <paramref name="settings"/> parameter is not greater than 1.</para>
         /// </exception>
         /// <exception cref="System.DataMisalignedException">Thrown when the buffer has raw access and the total size of the buffer is not a multiple of 4.</exception>
-        /// <exception cref="GorgonLibrary.GorgonException">Thrown when attempting to create a raw buffer on a video device that does not support SM_5 or better.</exception>
+        /// <exception cref="GorgonLibrary.GorgonException">Thrown when the <see cref="GorgonLibrary.Graphics.GorgonRawBufferSettings.IsOutput">IsOutput</see> property is TRUE and has a usage that is not Default.
+        /// <para>-or-</para>
+        /// <para>Thrown when the <see cref="GorgonLibrary.Graphics.GorgonRawBufferSettings.SizeInBytes">SizeInBytes</see> property of the <paramref name="settings"/> parameter is less than 1.</para>
+        /// <para>-or-</para>
+        /// <para>Thrown when the usage is set to immutable and the <paramref name="stream"/> parameter is NULL (Nothing in VB.Net) or has no data.</para>
+        /// <para>-or-</para>
+        /// <para>Thrown when an attempt to create a structured buffer is made on a video device that does not support SM5 or better.</para>
+        /// </exception>
         public GorgonRawBuffer CreateRawBuffer(string name, GorgonRawBufferSettings settings, GorgonDataStream stream = null)
         {
             if (settings == null)
@@ -441,6 +600,22 @@ namespace GorgonLibrary.Graphics
                                                                 settings.SizeInBytes, 4));
             }
 
+            if ((settings.Usage == BufferUsage.Immutable) && ((stream == null) || (stream.Length == 0)))
+            {
+                throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_BUFFER_IMMUTABLE_REQUIRES_DATA);
+            }
+
+            if ((settings.IsOutput)
+                && (settings.Usage != BufferUsage.Default))
+            {
+                throw new GorgonException(GorgonResult.CannotBind, Resources.GORGFX_BUFFER_OUTPUT_NOT_DEFAULT);
+            }
+
+            if (settings.SizeInBytes < 1)
+            {
+                throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_BUFFER_SIZE_TOO_SMALL, 1));
+            }
+
             var result = new GorgonRawBuffer(_graphics, name, settings);
             result.Initialize(stream);
 
@@ -455,7 +630,7 @@ namespace GorgonLibrary.Graphics
         /// <param name="name">Name of the vertex buffer.</param>
         /// <param name="data">Data used to initialize the buffer.</param>
         /// <param name="usage">[Optional] Usage of the buffer.</param>
-        /// <typeparam name="T">Type of data used to populate the buffer.</typeparam>
+        /// <typeparam name="T">Type of data in the array.  Must be a value type.</typeparam>
         /// <returns>A new vertex buffer.</returns>
         /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (Nothing in VB.Net).
         /// <para>-or-</para>
@@ -502,12 +677,12 @@ namespace GorgonLibrary.Graphics
         /// <para>Thrown when the <paramref name="settings"/> parameter is NULL.</para>
         /// </exception>
         /// <exception cref="System.ArgumentException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
-        /// <exception cref="GorgonLibrary.GorgonException">Thrown when the <see cref="GorgonLibrary.Graphics.GorgonBufferSettings.SizeInBytes">SizeInBytes</see> property of the <paramref name="settings"/> parameter is less than 1.
+        /// <exception cref="GorgonLibrary.GorgonException">Thrown when the <see cref="GorgonLibrary.Graphics.GorgonVertexBufferSettings.IsOutput">IsOutput</see> property is TRUE and has a usage that is not Default.
         /// <para>-or-</para>
-        /// <para>Thrown when the usage parameter is set to Immutable and the <paramref name="initialData"/> is NULL (Nothing in VB.Net).</para>
+        /// <para>Thrown when the <see cref="GorgonLibrary.Graphics.GorgonVertexBufferSettings.SizeInBytes">SizeInBytes</see> property of the <paramref name="settings"/> parameter is less than 1.</para>
+        /// <para>-or-</para>
+        /// <para>Thrown when the usage is set to immutable and the <paramref name="initialData"/> parameter is NULL (Nothing in VB.Net) or has no data.</para>
         /// </exception>
-        /// <remarks>If creating an immutable vertex buffer, be sure to pre-populate it via the initialData parameter.
-        /// </remarks>
         public GorgonVertexBuffer CreateVertexBuffer(string name, GorgonVertexBufferSettings settings, GorgonDataStream initialData = null)
         {
             if (settings == null)
@@ -525,6 +700,12 @@ namespace GorgonLibrary.Graphics
                 throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_BUFFER_IMMUTABLE_REQUIRES_DATA);
             }
 
+            if ((settings.IsOutput)
+                && (settings.Usage != BufferUsage.Default))
+            {
+                throw new GorgonException(GorgonResult.CannotBind, Resources.GORGFX_BUFFER_OUTPUT_NOT_DEFAULT);
+            }
+
             var buffer = new GorgonVertexBuffer(_graphics, name, settings);
             buffer.Initialize(initialData);
 
@@ -539,7 +720,7 @@ namespace GorgonLibrary.Graphics
         /// <param name="data">Data used to initialize the buffer.</param>
         /// <param name="usage">[Optional] Usage of the buffer.</param>
         /// <param name="is32Bit">[Optional] TRUE to indicate that we're using 32 bit indices, FALSE to use 16 bit indices </param>
-        /// <typeparam name="T">Type of data used to populate the buffer.</typeparam>
+        /// <typeparam name="T">Type of data in the array.  Must be a value type.</typeparam>
         /// <returns>A new index buffer.</returns>
         /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> is NULL (Nothing in VB.Net).
         /// <para>-or-</para>
@@ -586,11 +767,12 @@ namespace GorgonLibrary.Graphics
         /// <para>Thrown when the <paramref name="settings"/> parameter is NULL.</para>
         /// </exception>
         /// <exception cref="System.ArgumentException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
-        /// <exception cref="GorgonLibrary.GorgonException">Thrown when the <see cref="GorgonLibrary.Graphics.GorgonIndexBufferSettings.SizeInBytes">SizeInBytes</see> property of the <paramref name="settings"/> parameter is less than 1.
+        /// <exception cref="GorgonLibrary.GorgonException">Thrown when the <see cref="GorgonLibrary.Graphics.GorgonIndexBufferSettings.IsOutput">IsOutput</see> property is TRUE and has a usage that is not Default.
         /// <para>-or-</para>
-        /// <para>Thrown when the usage parameter is set to Immutable and the <paramref name="initialData"/> is NULL (Nothing in VB.Net).</para>
+        /// <para>Thrown when the <see cref="GorgonLibrary.Graphics.GorgonIndexBufferSettings.SizeInBytes">SizeInBytes</see> property of the <paramref name="settings"/> parameter is less than 1.</para>
+        /// <para>-or-</para>
+        /// <para>Thrown when the usage is set to immutable and the <paramref name="initialData"/> parameter is NULL (Nothing in VB.Net) or has no data.</para>
         /// </exception>
-        /// <remarks>If creating an immutable index buffer, be sure to pre-populate it via the initialData parameter.</remarks>
         public GorgonIndexBuffer CreateIndexBuffer(string name, GorgonIndexBufferSettings settings, GorgonDataStream initialData = null)
         {
             if (settings == null)
@@ -606,6 +788,12 @@ namespace GorgonLibrary.Graphics
             if ((settings.Usage == BufferUsage.Immutable) && ((initialData == null) || (initialData.Length == 0)))
             {
                 throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_BUFFER_IMMUTABLE_REQUIRES_DATA);
+            }
+
+            if ((settings.IsOutput)
+                && (settings.Usage != BufferUsage.Default))
+            {
+                throw new GorgonException(GorgonResult.CannotBind, Resources.GORGFX_BUFFER_OUTPUT_NOT_DEFAULT);
             }
 
             var buffer = new GorgonIndexBuffer(_graphics, name, settings);

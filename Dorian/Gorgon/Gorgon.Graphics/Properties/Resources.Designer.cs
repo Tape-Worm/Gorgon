@@ -151,6 +151,15 @@ namespace GorgonLibrary.Graphics.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to A buffer used for output must have a usage of [Default]..
+        /// </summary>
+        internal static string GORGFX_BUFFER_OUTPUT_NOT_DEFAULT {
+            get {
+                return ResourceManager.GetString("GORGFX_BUFFER_OUTPUT_NOT_DEFAULT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The buffer must use [NoOverwrite] or [Discard] when locking..
         /// </summary>
         internal static string GORGFX_BUFFER_REQUIRES_NOOVERWRITE_DISCARD {

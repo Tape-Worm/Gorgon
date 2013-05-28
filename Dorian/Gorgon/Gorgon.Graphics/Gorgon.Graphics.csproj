@@ -67,6 +67,7 @@
     <Compile Include="Buffers\GorgonBufferSettings.cs" />
     <Compile Include="Buffers\GorgonConstantBufferSettings.cs" />
     <Compile Include="Buffers\GorgonIndexBufferSettings.cs" />
+    <Compile Include="Buffers\GorgonIndirectArgumentBuffer.cs" />
     <Compile Include="Buffers\GorgonRawBuffer.cs" />
     <Compile Include="Buffers\GorgonRawBufferSettings.cs" />
     <Compile Include="Buffers\GorgonBaseBuffer.cs" />

@@ -34,6 +34,104 @@ using GorgonLibrary.IO;
 // TODO: Add Save() for buffers.
 namespace GorgonLibrary.Graphics
 {
+    /// <summary>
+    /// Type of buffer.
+    /// </summary>
+    [Flags]
+    public enum BufferType
+    {
+        /// <summary>
+        /// Buffer is a generic buffer with no special purpose.
+        /// </summary>
+        Generic = 0,
+        /// <summary>
+        /// Buffer holds shader constants.
+        /// </summary>
+        Constant = 1,
+        /// <summary>
+        /// Buffer holds vertex information.
+        /// </summary>
+        Vertex = 2,
+        /// <summary>
+        /// Buffer holds index information.
+        /// </summary>
+        Index = 4,
+        /// <summary>
+        /// Buffer holds structured data.
+        /// </summary>
+        Structured = 8,
+        /// <summary>
+        /// Buffer can be used as a render target.
+        /// </summary>
+        AllowRenderTarget = 16,
+        /// <summary>
+        /// Buffer allows raw access.
+        /// </summary>
+        AllowRawAccess = 32,
+        /// <summary>
+        /// Buffer can be used as an indirect argument buffer.
+        /// </summary>
+        AllowIndirectArgument = 64,
+        /// <summary>
+        /// Buffer allows shader views.
+        /// </summary>
+        AllowShaderView = 128,
+        /// <summary>
+        /// Buffer allows unordered access views.
+        /// </summary>
+        AllowUnorderedAccessView = 512,
+    }
+
+    /// <summary>
+    /// Buffer usage types.
+    /// </summary>
+    public enum BufferUsage
+    {
+        /// <summary>
+        /// Allows read/write access to the buffer from the GPU.
+        /// </summary>
+        Default = D3D.ResourceUsage.Default,
+        /// <summary>
+        /// Can only be read by the GPU, cannot be written to or read from by the CPU, and cannot be written to by the GPU.
+        /// </summary>
+        /// <remarks>Pre-initialize any buffer created with this usage, or else you will not be able to after it's been created.</remarks>
+        Immutable = D3D.ResourceUsage.Immutable,
+        /// <summary>
+        /// Allows read access by the GPU and write access by the CPU.
+        /// </summary>
+        Dynamic = D3D.ResourceUsage.Dynamic,
+        /// <summary>
+        /// Allows reading/writing by the CPU and can be copied to a GPU compatiable buffer (but not used directly by the GPU).
+        /// </summary>
+        Staging = D3D.ResourceUsage.Staging
+    }
+
+    /// <summary>
+    /// Flags used when locking the buffer for reading/writing.
+    /// </summary>
+    [Flags]
+    public enum BufferLockFlags
+    {
+        /// <summary>
+        /// Lock the buffer for reading.
+        /// </summary>
+        /// <remarks>This flag is mutually exclusive.</remarks>
+        Read = 1,
+        /// <summary>
+        /// Lock the buffer for writing.
+        /// </summary>
+        Write = 2,
+        /// <summary>
+        /// Lock the buffer for writing, but guarantee that we will not overwrite a part of the buffer that's already in use.
+        /// </summary>
+        NoOverwrite = 4,
+        /// <summary>
+        /// Lock the buffer for writing, but mark its contents as invalid.
+        /// </summary>
+        Discard = 8
+    }
+
+
 	/// <summary>
 	/// Base buffer interface.
 	/// </summary>
@@ -114,6 +212,14 @@ namespace GorgonLibrary.Graphics
 		#endregion
 
 		#region Methods.
+        /// <summary>
+        /// Function to perform validation upon the settings for the buffer.
+        /// </summary>
+        protected void ValidateBufferSettings()
+        {
+            
+        }
+
 		/// <summary>
 		/// Function used to initialize the buffer with data.
 		/// </summary>
@@ -197,6 +303,12 @@ namespace GorgonLibrary.Graphics
         /// </summary>
         /// <typeparam name="T">Type of buffer.</typeparam>
         /// <returns>The new staging buffer.</returns>
+        /// <exception cref="System.NotSupportedException">Thrown when staging buffers are not supported for the type of buffer.
+        /// <para>-or-</para>
+        /// <para>Thrown when the video device is a SM2_a_b video device.</para>
+        /// <para>-or-</para>
+        /// <para>Thrown when the current buffer is immutable.</para>
+        /// </exception>
         public T GetStagingBuffer<T>()
             where T : GorgonBaseBuffer
         {
@@ -208,7 +320,7 @@ namespace GorgonLibrary.Graphics
 
             if (Settings.Usage == BufferUsage.Immutable)
             {
-                throw new NotSupportedException("Textures with a usage of Immutable cannot be used as staging textures.");
+                throw new NotSupportedException("Buffers with a usage of Immutable cannot be used as staging buffers.");
             }
 #endif
 

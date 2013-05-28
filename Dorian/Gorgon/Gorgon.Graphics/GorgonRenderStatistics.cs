@@ -132,6 +132,14 @@ namespace GorgonLibrary.Graphics
 			internal set;
 		}
 
+        /// <summary>
+        /// Property to return the number of indirect argument buffers allocated.
+        /// </summary>
+        public static int IndirectBufferCount
+        {
+            get;
+            internal set;
+        }
 
 		/// <summary>
 		/// Property to return the size, in bytes, of all generic buffers allocated.
@@ -168,7 +176,16 @@ namespace GorgonLibrary.Graphics
 			get;
 			internal set;
 		}
-		
+
+        /// <summary>
+        /// Property to return the size, in bytes, of all indirect argument buffers allocated.
+        /// </summary>
+        public static int IndirectBufferSize
+        {
+            get;
+            internal set;
+        }
+
 		/// <summary>
 		/// Property to return the number of textures allocated.
 		/// </summary>
@@ -271,6 +288,8 @@ namespace GorgonLibrary.Graphics
 			TypedBufferSize = 0;
 			RawBufferCount = 0;
 			RawBufferSize = 0;
+		    IndirectBufferCount = 0;
+		    IndirectBufferSize = 0;
 		}
 		#endregion
 	}
