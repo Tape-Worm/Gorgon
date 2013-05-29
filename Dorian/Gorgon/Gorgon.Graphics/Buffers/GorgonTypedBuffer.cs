@@ -222,7 +222,7 @@ namespace GorgonLibrary.Graphics
 					"format");
 			}
 
-			var view = new GorgonBufferUnorderedAccessView(this, format, start, count);
+			var view = new GorgonBufferUnorderedAccessView(this, format, start, count, false);
 
 			view.Initialize();
 

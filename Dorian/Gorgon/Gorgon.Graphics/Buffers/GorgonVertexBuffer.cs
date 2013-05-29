@@ -374,7 +374,7 @@ namespace GorgonLibrary.Graphics
                 throw new ArgumentException("The start and count must be 0 or greater and less than the number of elements in the buffer.");
             }
 
-            var view = new GorgonBufferUnorderedAccessView(this, format, startElement, count);
+            var view = new GorgonBufferUnorderedAccessView(this, format, startElement, count, false);
             view.Initialize();
 
             return view;

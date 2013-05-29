@@ -211,7 +211,7 @@ namespace Tester_Graphics
                 _sprite.Blending.SourceAlphaBlend = BlendType.One;
                 _sprite.Blending.DestinationAlphaBlend = BlendType.One;
 
-				_frameIndex = _graphics.Buffers.CreateConstantBuffer("CB", new GorgonConstantBufferSettings() { SizeInBytes = sizeof(float) * 4, AllowCPUWrite = false});
+				_frameIndex = _graphics.Buffers.CreateConstantBuffer("CB", new GorgonConstantBufferSettings() { SizeInBytes = sizeof(float) * 4, Usage = BufferUsage.Default});
 				_stream = new GorgonDataStream(sizeof(float));
                 UpdateFrame(0);
                 

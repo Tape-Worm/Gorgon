@@ -86,7 +86,6 @@ namespace GorgonLibrary.Graphics
         /// </summary>
         /// <remarks> 
         /// Setting this value to any other value than Unknown will create a default shader view for the buffer that will encompass the entire buffer with the specified format.
-        /// <para>If <see cref="AllowRawViews"/> is set to TRUE, then this value should be set to one of: R32_Uint, R32_Int, R32_Float.</para>
         /// <para>This value does not apply to constant or structured buffers.</para>
         /// <para>The default value is Unknown.</para>
         /// </remarks>

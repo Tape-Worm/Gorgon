@@ -63,6 +63,10 @@
     <Reference Include="System.Windows.Forms" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Buffers\GorgonBaseBuffer.cs" />
+    <Compile Include="Buffers\GorgonBuffer.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Buffers\GorgonBuffers.cs" />
     <Compile Include="Buffers\GorgonBufferSettings.cs" />
     <Compile Include="Buffers\GorgonConstantBufferSettings.cs" />
@@ -70,7 +74,6 @@
     <Compile Include="Buffers\GorgonIndirectArgumentBuffer.cs" />
     <Compile Include="Buffers\GorgonRawBuffer.cs" />
     <Compile Include="Buffers\GorgonRawBufferSettings.cs" />
-    <Compile Include="Buffers\GorgonBaseBuffer.cs" />
     <Compile Include="Buffers\GorgonVertexBufferSettings.cs" />
     <Compile Include="Buffers\IBufferSettings.cs" />
     <Compile Include="Buffers\GorgonStructuredBufferSettings.cs" />
@@ -78,7 +81,6 @@
     <Compile Include="Buffers\GorgonShaderBuffer.cs" />
     <Compile Include="Buffers\GorgonStructuredBuffer.cs" />
     <Compile Include="Buffers\GorgonIndexBuffer.cs" />
-    <Compile Include="Buffers\GorgonBuffer.cs" />
     <Compile Include="Buffers\GorgonConstantBuffer.cs" />
     <Compile Include="Buffers\GorgonTypedBufferSettings.cs" />
     <Compile Include="Buffers\GorgonVertexBuffer.cs" />

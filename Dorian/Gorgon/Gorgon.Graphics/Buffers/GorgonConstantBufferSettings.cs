@@ -6,23 +6,16 @@ namespace GorgonLibrary.Graphics
 	/// Settings for the constant buffer.
 	/// </summary>
 	public class GorgonConstantBufferSettings
-		: IBufferSettings
+		: IBufferSettings2
 	{
-		/// <summary>
-		/// Property to set or return the usage for the buffer.
-		/// </summary>
-		/// <para>This value will always return Default or Dynamic depending on the CPU access flag.</para>
-        /// <exception cref="System.NotSupportedException">Thrown when an attempt to set a value is made.</exception>
-		BufferUsage IBufferSettings.Usage
+        /// <summary>
+        /// Property to set or return the usage for the buffer.
+        /// </summary>
+        /// <para>The default value is Default.</para>
+		public BufferUsage Usage
 		{
-			get
-			{
-				return AllowCPUWrite ? BufferUsage.Dynamic : BufferUsage.Default;
-			}
-			set
-			{
-                throw new NotSupportedException();
-			}
+			get;
+			set;
 		}
 
 		/// <summary>
@@ -31,8 +24,8 @@ namespace GorgonLibrary.Graphics
 		/// <remarks>
 		/// This value always returns FALSE for constant buffers.
 		/// </remarks>
-        /// <exception cref="System.NotSupportedException">Thrown when an attempt to set a value is made.</exception>
-		bool IBufferSettings.IsOutput
+        /// <exception cref="System.NotSupportedException">Thrown when an attempt to set a value to this property was made.</exception>
+		bool IBufferSettings2.IsOutput
 		{
 			get
 			{
@@ -42,18 +35,6 @@ namespace GorgonLibrary.Graphics
 			{
                 throw new NotSupportedException();
 			}
-		}
-
-		/// <summary>
-		/// Property to set or return whether to allow writing from the CPU.
-		/// </summary>
-		/// <remarks>
-		/// The default value is FALSE.
-		/// </remarks>
-		public bool AllowCPUWrite
-		{
-			get;
-			set;
 		}
 
 		/// <summary>
@@ -74,7 +55,130 @@ namespace GorgonLibrary.Graphics
 		public GorgonConstantBufferSettings()
 		{
 			SizeInBytes = 0;
-			AllowCPUWrite = false;
+            Usage = BufferUsage.Default;
 		}
-	}
+
+        /// <summary>
+        /// Property to set or return whether to allow unordered access to the buffer.
+        /// </summary>
+        /// <exception cref="System.NotSupportedException">Thrown when an attempt to set a value to this property was made.</exception>
+        /// <remarks>This value does not apply to constant buffers and will always return FALSE.</remarks>
+        bool IBufferSettings2.AllowUnorderedAccessViews
+        {
+            get
+            {
+                return false;
+            }
+            set
+            {
+                throw new NotSupportedException();
+            }
+        }
+
+        /// <summary>
+        /// Property to set or return whether to allow shader resource views for this buffer.
+        /// </summary>
+        /// <exception cref="System.NotSupportedException">Thrown when an attempt to set a value to this property was made.</exception>
+        /// <remarks>This value does not apply to constant buffers and will always return FALSE.</remarks>
+        bool IBufferSettings2.AllowShaderViews
+        {
+            get
+            {
+                return false;
+            }
+            set
+            {
+                throw new NotSupportedException();
+            }
+        }
+
+        /// <summary>
+        /// Property to set or return whether to allow this buffer to be used as a render target.
+        /// </summary>
+        /// <exception cref="System.NotSupportedException">Thrown when an attempt to set a value to this property was made.</exception>
+        /// <remarks>This value does not apply to constant buffers and will always return FALSE.</remarks>
+        bool IBufferSettings2.AllowRenderTarget
+        {
+            get
+            {
+                return false;
+            }
+            set
+            {
+                throw new NotSupportedException();
+            }
+        }
+
+        /// <summary>
+        /// Property to set or return the format for the default shader view.
+        /// </summary>
+        /// <exception cref="System.NotSupportedException">Thrown when an attempt to set a value to this property was made.</exception>
+        /// <remarks>This value does not apply to constant buffers and will always return Unknown.</remarks>
+        BufferFormat IBufferSettings2.DefaultShaderViewFormat
+        {
+            get
+            {
+                return BufferFormat.Unknown;
+            }
+            set
+            {
+                throw new NotSupportedException();
+            }
+        }
+
+        /// <summary>
+        /// Property to set or return whether a buffer will allow raw views.
+        /// </summary>
+        /// <exception cref="System.NotSupportedException">Thrown when an attempt to set a value to this property was made.</exception>
+        /// <remarks>This value does not apply to constant buffers and will always return FALSE.</remarks>
+        bool IBufferSettings2.AllowRawViews
+        {
+            get
+            {
+                return false;
+            }
+            set
+            {
+                throw new NotSupportedException();
+            }
+        }
+
+        /// <summary>
+        /// Property to set or return whether the buffer will be used as an indirect argument buffer.
+        /// </summary>
+        /// <exception cref="System.NotSupportedException">Thrown when an attempt to set a value to this property was made.</exception>
+        /// <remarks>
+        /// This value does not apply to constant buffers and will always return FALSE.
+        /// </remarks>
+        bool IBufferSettings2.AllowIndirectArguments
+        {
+            get
+            {
+                return false;
+            }
+            set
+            {
+                throw new NotSupportedException();
+            }
+        }
+
+        /// <summary>
+        /// Property to set or return the size, in bytes, of an individual item in a structured buffer.
+        /// </summary>
+        /// <exception cref="System.NotSupportedException">Thrown when an attempt to set a value to this property was made.</exception>
+        /// <remarks>
+        /// This value is only applicable to a structured buffer.  This will always return 0.
+        /// </remarks>
+        int IBufferSettings2.StructureSize
+        {
+            get
+            {
+                return 0;
+            }
+            set
+            {
+                throw new NotSupportedException();
+            }
+        }
+    }
 }
