@@ -146,7 +146,7 @@ namespace GorgonLibrary.Graphics
 		/// Function to re-seat a shader resource after it's been altered.
 		/// </summary>
 		/// <param name="resource">Shader resource to re-seat.</param>
-		internal void Reseat(GorgonShaderBuffer resource)
+		internal void Reseat(GorgonBaseBuffer resource)
 		{
 			PixelShader.Resources.ReSeat(resource);
 			VertexShader.Resources.ReSeat(resource);
@@ -176,7 +176,7 @@ namespace GorgonLibrary.Graphics
 		/// Function to unbind a shader resource from all shaders.
 		/// </summary>
 		/// <param name="resource">Shader resource to unbind.</param>
-		internal void Unbind(GorgonShaderBuffer resource)
+		internal void Unbind(GorgonBaseBuffer resource)
 		{
 			PixelShader.Resources.Unbind(resource);
 			VertexShader.Resources.Unbind(resource);

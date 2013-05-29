@@ -40,105 +40,61 @@ namespace GorgonLibrary.Graphics
 	/// <para>Typically, the user will define a value type that matches a constant buffer layout.  Then, if the value type uses nothing but blittable types, the user can then write the entire 
 	/// value type structure to the constant buffer.  If the value type contains more complex types, such as arrays, then the user can write each item in the value type to a variable in the constant 
 	/// buffer.  Please note that the names for the variables in the value type and the shader do -not- have to match, although, for the sake of clarity, it is a good idea that they do.</para>
-	/// <para>In order to write to a constant buffer, the user must <see cref="GorgonLibrary.Graphics.GorgonBuffer.Lock">lock</see> the buffer beforehand, and unlock it when done.  Failure to do so will result in an exception.</para>
+	/// <para>In order to write to a Dynamic usage constant buffer, the user must <see cref="GorgonLibrary.Graphics.GorgonBaseBuffer.Lock">lock</see> the buffer beforehand, write the data, and unlock it when done.  
+    /// If the buffer does not have a Dynamic usage, the <see cref="GorgonLibrary.Graphics.GorgonBaseBuffer.Update(GorgonDataStream)">Update</see> method will copy data to the buffer.</para>
 	/// <para>Constant buffers follow very specific rules, which are explained at http://msdn.microsoft.com/en-us/library/windows/desktop/bb509632(v=vs.85).aspx </para>
-	/// <para>When passing a value type to the constant buffer, ensure that the type has a System.Runtime.InteropServices.StructLayout attribute assigned to it, and that the layout is explicit.  Also, the size of the 
-	/// value type must be a multiple of 16, so padding variables may be required.</para>
+	/// <para>When passing a value type to the constant buffer, ensure that the type has a System.Runtime.InteropServices.StructLayout attribute assigned to it, and that the layout is explicit or sequential.  
+	/// Also, the size of the value type must be a multiple of 16, so padding of the value type might be necessary.</para>
 	/// </remarks>
 	public sealed class GorgonConstantBuffer
-		: GorgonBuffer
+		: GorgonBaseBuffer
 	{
 		#region Properties.
+        /// <summary>
+        /// Property to return the type of buffer.
+        /// </summary>
+        public override BufferType BufferType
+        {
+            get
+            {
+                return BufferType.Constant;
+            }
+        }
+
 		/// <summary>
 		/// Property to return the settings.
 		/// </summary>
-		public new GorgonConstantBufferSettings Settings
+		public new GorgonConstantBufferSettings Settings2
 		{
 			get
 			{
-				return (GorgonConstantBufferSettings)base.Settings;
+				return (GorgonConstantBufferSettings)base.Settings2;
 			}
 		}
+
+        /// <summary>
+        /// Property to return the default shader view for this buffer.
+        /// </summary>
+        [EditorBrowsable(EditorBrowsableState.Never)]
+	    public override GorgonShaderView DefaultShaderView
+	    {
+	        get
+	        {
+	            return null;
+	        }
+	    }
 		#endregion
 
 		#region Methods.
         /// <summary>
-        /// Function to retrieve the staging buffer for this buffer.
+        /// Function to perform the creation of a default shader view.
         /// </summary>
-        /// <returns>
-        /// The staging buffer for this buffer.
-        /// </returns>
-        protected override GorgonBuffer GetStagingBufferImpl()
+        /// <returns>Nothing.</returns>
+        /// <exception cref="System.NotSupportedException">Constant buffers do not support views.</exception>
+        protected override GorgonShaderView OnCreateDefaultShaderView()
         {
-            throw new NotSupportedException("Constant buffers do not support staging usage.");
+            throw new NotSupportedException();
         }
-        
-		/// <summary>
-		/// Function to initialize the buffer.
-		/// </summary>
-		/// <param name="value">Value used to initialize the buffer.</param>
-		protected override void InitializeImpl(GorgonDataStream value)
-		{
-			if (D3DResource != null)
-			{
-				D3DResource.Dispose();
-				D3DResource = null;
-			}
-
-			var desc = new D3D.BufferDescription
-				{
-					BindFlags = D3D.BindFlags.ConstantBuffer,
-					CpuAccessFlags = D3DCPUAccessFlags,
-					OptionFlags = D3D.ResourceOptionFlags.None,
-					SizeInBytes = SizeInBytes,
-					StructureByteStride = 0,
-					Usage = D3DUsage
-				};
-
-			if (value != null)
-			{
-				long position = value.Position;
-
-				using(var dxStream = new DX.DataStream(value.BasePointer, value.Length - position, true, true))
-				{
-					D3DResource = new D3D.Buffer(Graphics.D3DDevice, dxStream, desc);
-				}
-			}
-			else
-			{
-				D3DResource = new D3D.Buffer(Graphics.D3DDevice, desc);
-			}
-
-			GorgonRenderStatistics.ConstantBufferCount++;
-			GorgonRenderStatistics.ConstantBufferSize += ((D3D.Buffer)D3DResource).Description.SizeInBytes;
-		}
-
-		/// <summary>
-		/// Function to clean up the resource object.
-		/// </summary>		
-		protected override void CleanUpResource()
-		{
-			// If we're bound with a pixel or vertex shader, then unbind.
-			Graphics.Shaders.Unbind(this);
-
-		    if (IsLocked)
-		    {
-		        Unlock();
-		    }
-
-		    if (D3DResource == null)
-		    {
-		        return;
-		    }
-
-		    GorgonRenderStatistics.ConstantBufferCount--;
-		    GorgonRenderStatistics.ConstantBufferSize -= D3DBuffer.Description.SizeInBytes;
-
-		    D3DResource.Dispose();
-		    D3DResource = null;
-
-            Gorgon.Log.Print("Destroyed {0} {1}.", LoggingLevel.Verbose, GetType().FullName, Name);
-		}
 
 		/// <summary>
 		/// Function to update the buffer.
@@ -157,20 +113,6 @@ namespace GorgonLibrary.Graphics
 				}, 
 				D3DResource);
 		}
-
-        /// <summary>
-        /// Function to return this buffer as a staging buffer.
-        /// </summary>
-        /// <typeparam name="T">Type of buffer.</typeparam>
-        /// <returns>The new staging buffer.</returns>
-        /// <remarks>This is not applicable to constant buffers.</remarks>
-        /// <exception cref="System.NotSupportedException">This method is not supported for constant buffers.</exception>
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        public new T GetStagingBuffer<T>()
-            where T : GorgonBuffer
-        {
-            throw new NotSupportedException("Constant buffers do not support staging usage.");
-        }
 		#endregion
 
 		#region Constructor/Destructor.
@@ -180,7 +122,7 @@ namespace GorgonLibrary.Graphics
 		/// <param name="graphics">Graphics interface that owns this buffer.</param>
 		/// <param name="name">Name of the constant buffer.</param>
 		/// <param name="settings">Settings for the buffer.</param>
-		internal GorgonConstantBuffer(GorgonGraphics graphics, string name, IBufferSettings settings)
+		internal GorgonConstantBuffer(GorgonGraphics graphics, string name, IBufferSettings2 settings)
 			: base(graphics, name, settings)
 		{
 		}

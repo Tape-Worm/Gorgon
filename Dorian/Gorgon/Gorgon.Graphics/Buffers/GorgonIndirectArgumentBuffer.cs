@@ -74,7 +74,7 @@ namespace GorgonLibrary.Graphics
             var buffer = new D3D.Buffer(graphics.D3DDevice,
                                         new D3D.BufferDescription
                                             {
-                                                BindFlags = D3D.BindFlags.RenderTarget,
+                                                BindFlags = D3D.BindFlags.VertexBuffer,
                                                 CpuAccessFlags = D3D.CpuAccessFlags.None,
                                                 OptionFlags = D3D.ResourceOptionFlags.None,
                                                 SizeInBytes = 6144,

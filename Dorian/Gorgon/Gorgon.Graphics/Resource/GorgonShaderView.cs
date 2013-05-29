@@ -91,7 +91,7 @@ namespace GorgonLibrary.Graphics
 
             Gorgon.Log.Print("Destroying shader resource view for {0}.",
                              LoggingLevel.Verbose,
-                             Resource.GetType().FullName);
+                             Resource.Name);
             D3DView.Dispose();
             D3DView = null;
         }
@@ -106,7 +106,7 @@ namespace GorgonLibrary.Graphics
         /// </summary>
         internal void Initialize()
         {
-            Gorgon.Log.Print("Creating shader resource view for {0}.", LoggingLevel.Verbose, Resource.GetType().FullName);
+            Gorgon.Log.Print("Creating shader resource view for {0}.", LoggingLevel.Verbose, Resource.Name);
             InitializeImpl();
         }
 

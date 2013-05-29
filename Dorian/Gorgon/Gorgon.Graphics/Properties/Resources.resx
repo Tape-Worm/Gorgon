@@ -208,8 +208,8 @@
   <data name="GORGFX_BUFFER_IMMUTABLE_REQUIRES_DATA" xml:space="preserve">
     <value>Cannot create an immutable buffer without initial data to populate it.</value>
   </data>
-  <data name="GORGFX_BUFFER_NO_STAGING" xml:space="preserve">
-    <value>This buffer cannot be used as a staging buffer.</value>
+  <data name="GORGFX_BUFFER_NO_STAGING_BUFFER_TYPE" xml:space="preserve">
+    <value>Vertex, Index and Constant buffers cannot have a usage of [Staging].</value>
   </data>
   <data name="GORGFX_SHADER_VIEW_TOSTR" xml:space="preserve">
     <value>Gorgon Shader View.  Format: [{0}]</value>
@@ -286,7 +286,31 @@
   <data name="GORGFX_VIEW_ALREADY_BOUND" xml:space="preserve">
     <value>The view was already bound to the shader at index [{0}].</value>
   </data>
-  <data name="GORGFX_BUFFER_OUTPUT_NOT_DEFAULT" xml:space="preserve">
-    <value>A buffer used for output must have a usage of [Default].</value>
+  <data name="GORGFX_BUFFER_OUTPUT_NOT_DYNAMIC_OR_STAGING" xml:space="preserve">
+    <value>A buffer that allows stream output must not have a usage of [Dynamic] or [Staging].</value>
+  </data>
+  <data name="GORGFX_BUFFER_NO_STAGING_INVALID_FLAGS" xml:space="preserve">
+    <value>Buffers that allow indirect arguments, shader views, unordered access views, raw views and render target views cannot have a usage of [Staging].</value>
+  </data>
+  <data name="GORGFX_BUFFER_OUTPUT_NO_UNORDERED" xml:space="preserve">
+    <value>A buffer that allows stream output cannot have unordered access.</value>
+  </data>
+  <data name="GORGFX_BUFFER_RAW_ACCESS_REQUIRES_VIEW_ACCESS" xml:space="preserve">
+    <value>A buffer that provides raw access must allow shader views and/or unordered resource views.</value>
+  </data>
+  <data name="GORGFX_BUFFER_NO_OUTPUT_INVALID_TYPE" xml:space="preserve">
+    <value>The {0} buffer type cannot output data.</value>
+  </data>
+  <data name="GORGFX_BUFFER_NO_SHADER_VIEWS" xml:space="preserve">
+    <value>The buffer does not allow shader resource views.</value>
+  </data>
+  <data name="GORGFX_VIEW_BUFFER_NOT_RAW" xml:space="preserve">
+    <value>The buffer does not allow raw views.</value>
+  </data>
+  <data name="GORGFX_VIEW_RAW_INVALID_FORMAT" xml:space="preserve">
+    <value>Raw shader views require a format of [R32_Uint], [R32_Int], or [R32_Float].</value>
+  </data>
+  <data name="GORGFX_VIEW_UNORDERED_RAW_INVALID_FORMAT" xml:space="preserve">
+    <value>Raw unordered views require a format of [R32] (Typeless).</value>
   </data>
 </root>

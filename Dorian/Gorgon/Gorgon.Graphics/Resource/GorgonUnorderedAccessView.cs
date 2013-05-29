@@ -83,6 +83,15 @@ namespace GorgonLibrary.Graphics
             get;
             private set;
         }
+
+        /// <summary>
+        /// Property to return whether this unordered access view is a raw view or not.
+        /// </summary>
+        public bool IsRaw
+        {
+            get;
+            private set;
+        }
         #endregion
 
         #region Methods.
@@ -101,7 +110,7 @@ namespace GorgonLibrary.Graphics
 
             Gorgon.Log.Print("Destroying unordered access resource view for {0}.",
                              LoggingLevel.Verbose,
-                             Resource.GetType().FullName);
+                             Resource.Name);
             D3DView.Dispose();
             D3DView = null;
         }
@@ -109,15 +118,15 @@ namespace GorgonLibrary.Graphics
         /// <summary>
         /// Function to perform initialization of the shader view resource.
         /// </summary>
-        protected abstract void InitializeImpl();
+        protected abstract void OnInitialize();
 
         /// <summary>
         /// Function to perform initialization of the shader view resource.
         /// </summary>
         internal void Initialize()
         {
-			Gorgon.Log.Print("Creating unordered access resource view for {0}.", LoggingLevel.Verbose, Resource.GetType().FullName);
-			InitializeImpl();
+			Gorgon.Log.Print("Creating unordered access resource view for {0}.", LoggingLevel.Verbose, Resource.Name);
+			OnInitialize();
 			Gorgon.AddTrackedObject(this);
         }
         #endregion
@@ -128,8 +137,9 @@ namespace GorgonLibrary.Graphics
         /// </summary>
         /// <param name="resource">The buffer to bind to the view.</param>
         /// <param name="format">The format of the view.</param>
+        /// <param name="isRaw">TRUE if the view is raw, FALSE if not.</param>
         /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="resource"/> parameter is NULL (Nothing in VB.Net).</exception>
-		protected GorgonUnorderedAccessView(GorgonResource resource, BufferFormat format)
+		protected GorgonUnorderedAccessView(GorgonResource resource, BufferFormat format, bool isRaw)
         {
             if (resource == null)
             {
@@ -139,6 +149,7 @@ namespace GorgonLibrary.Graphics
             Resource = resource;
             Format = format;
             FormatInformation = GorgonBufferFormatInfo.GetInfo(Format);
+            IsRaw = isRaw;
         }
         #endregion
 

@@ -26,6 +26,7 @@
 
 using System;
 using GorgonLibrary.Diagnostics;
+using GorgonLibrary.IO;
 using D3D = SharpDX.Direct3D11;
 
 namespace GorgonLibrary.Graphics
@@ -38,6 +39,24 @@ namespace GorgonLibrary.Graphics
 		: GorgonBuffer
 	{
 		#region Properties.
+        /// <summary>
+        /// Property to set or return the D3D CPU access flags.
+        /// </summary>
+        internal D3D.CpuAccessFlags D3DCPUAccessFlags
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Property to set or return the D3D usages.
+        /// </summary>
+        internal D3D.ResourceUsage D3DUsage
+        {
+            get;
+            set;
+        }
+
         /// <summary>
         /// Property to return the view cache for the buffer.
         /// </summary>
@@ -56,20 +75,39 @@ namespace GorgonLibrary.Graphics
             protected set;
         }
 
-		/// <summary>
-		/// Property to return the settings for a shader buffer.
-		/// </summary>
-		public new IShaderBufferSettings Settings
-		{
-			get
-			{
-				return (IShaderBufferSettings)base.Settings;
-			}
-		}
-		#endregion
+        // TODO: Get rid of this.
+        /// <summary>
+        /// Property to return the settings for the buffer.
+        /// </summary>
+        public IShaderBufferSettings Settings
+        {
+            get;
+            private set;
+        }
+        #endregion
 
 		#region Methods.
-		/// <summary>
+        /// <summary>
+        /// Function used to initialize the buffer with data.
+        /// </summary>
+        /// <param name="data">Data to write.</param>
+        /// <remarks>Passing NULL (Nothing in VB.Net) to the <paramref name="data"/> parameter should ignore the initialization and create the backing buffer as normal.</remarks>
+        protected virtual void InitializeImpl(GorgonDataStream data)
+        {
+            // TODO: Get rid of this.
+        }
+
+        /// <summary>
+        /// Gets the staging buffer impl.
+        /// </summary>
+        /// <returns></returns>
+        protected virtual GorgonBuffer GetStagingBufferImpl()
+        {
+            // TODO: Get rid of this class.
+            return null;
+        }
+
+        /// <summary>
 		/// Function to clean up the resource object.
 		/// </summary>
 		protected override void CleanUpResource()

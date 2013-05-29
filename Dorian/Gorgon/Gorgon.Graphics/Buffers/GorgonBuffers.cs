@@ -47,6 +47,83 @@ namespace GorgonLibrary.Graphics
 
         #region Methods.
         /// <summary>
+        /// Function to perform validation upon the settings for a generic buffer.
+        /// </summary>
+        private static void ValidateGenericBufferSettings(IBufferSettings2 settings)
+        {
+            // Ensure that we can actually put something into our buffer.
+            if (settings.SizeInBytes <= 4)
+            {
+                throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_BUFFER_SIZE_TOO_SMALL, 4));
+            }
+
+            // Only allow raw views if we've provided a shader view and/or an unordered access view.
+            if ((settings.AllowRawViews)
+                && (!settings.AllowShaderViews)
+                && (!settings.AllowUnorderedAccessViews))
+            {
+                throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_BUFFER_RAW_ACCESS_REQUIRES_VIEW_ACCESS);
+            }
+
+            if (settings.IsOutput)
+            {
+                if (settings.AllowUnorderedAccessViews)
+                {
+                    throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_BUFFER_OUTPUT_NO_UNORDERED);
+                }
+
+                if ((settings.Usage == BufferUsage.Dynamic)
+                    || (settings.Usage == BufferUsage.Staging))
+                {
+                    throw new GorgonException(GorgonResult.CannotCreate,
+                                              Resources.GORGFX_BUFFER_OUTPUT_NOT_DYNAMIC_OR_STAGING);
+                }
+            }
+
+            // Do not allow staging usage with any of these.
+            if ((settings.Usage == BufferUsage.Staging)
+                && ((settings.AllowIndirectArguments) || (settings.AllowRawViews)
+                    || (settings.AllowRenderTarget) || (settings.AllowShaderViews)
+                    || (settings.AllowUnorderedAccessViews)))
+            {
+                throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_BUFFER_NO_STAGING_INVALID_FLAGS);
+            }
+
+            if ((settings.DefaultShaderViewFormat != BufferFormat.Unknown) &&  (!settings.AllowShaderViews))
+            {
+                throw new GorgonException(GorgonResult.CannotBind, Resources.GORGFX_BUFFER_NO_SHADER_VIEWS);
+            }
+        }
+
+        /// <summary>
+        /// Function to perform validation upon the settings for a generic buffer.
+        /// </summary>
+        private static void ValidateConstantBufferSettings(IBufferSettings2 settings)
+        {
+            if (settings == null)
+            {
+                throw new ArgumentNullException("settings");
+            }
+
+            if (settings.Usage == BufferUsage.Staging)
+            {
+                throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_BUFFER_NO_STAGING_BUFFER_TYPE);
+            }
+
+            // Ensure that we can actually put something into our buffer.
+            if (settings.SizeInBytes < 16)
+            {
+                throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_BUFFER_SIZE_TOO_SMALL, 16));
+            }
+
+            // Allow only a multiple of 16.
+            if ((settings.SizeInBytes % 16) != 0)
+            {
+                throw new DataMisalignedException(string.Format(Resources.GORGFX_BUFFER_NOT_MULTIPLE, 16));
+            }
+        }
+
+        /// <summary>
         /// Function to create a generic buffer.
         /// </summary>
         /// <typeparam name="T">Type of data in the array.  Must be a value type.</typeparam>
@@ -129,16 +206,8 @@ namespace GorgonLibrary.Graphics
                 throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_BUFFER_IMMUTABLE_REQUIRES_DATA);
             }
 
-            if ((settings.IsOutput)
-                && (settings.Usage != BufferUsage.Default))
-            {
-                throw new GorgonException(GorgonResult.CannotBind, Resources.GORGFX_BUFFER_OUTPUT_NOT_DYNAMIC_OR_STAGING);
-            }
-
-            if (settings.SizeInBytes < 1)
-            {
-                throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_BUFFER_SIZE_TOO_SMALL, 1));
-            }
+            // Validate our buffer settings.
+            ValidateGenericBufferSettings(settings);
 
             var buffer = new GorgonBuffer(_graphics, name, settings);
 
@@ -162,7 +231,7 @@ namespace GorgonLibrary.Graphics
         /// </exception>
         /// <exception cref="System.ArgumentException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
         /// <exception cref="System.DataMisalignedException">Thrown when the <see cref="GorgonLibrary.Graphics.GorgonConstantBufferSettings.SizeInBytes">SizeInBytes</see> property of the <paramref name="settings"/> parameter is not a multiple of 16.</exception>
-        /// <exception cref="GorgonLibrary.GorgonException">Thrown when the buffer size, in bytes, is less than 1.</exception>
+        /// <exception cref="GorgonLibrary.GorgonException">Thrown when the buffer size is less than 16 bytes.</exception>
         public GorgonConstantBuffer CreateConstantBuffer(string name, GorgonConstantBufferSettings settings, GorgonDataStream stream = null)
         {
             if (settings == null)
@@ -170,15 +239,12 @@ namespace GorgonLibrary.Graphics
                 throw new ArgumentNullException("settings");
             }
 
-            if ((settings.SizeInBytes % 16) != 0)
+            if ((settings.Usage == BufferUsage.Immutable) && ((stream == null) || (stream.Length == 0)))
             {
-                throw new DataMisalignedException(string.Format(Resources.GORGFX_BUFFER_NOT_MULTIPLE, settings.SizeInBytes, 16));
+                throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_BUFFER_IMMUTABLE_REQUIRES_DATA);
             }
 
-            if (settings.SizeInBytes < 1)
-            {
-                throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_BUFFER_SIZE_TOO_SMALL, 1));
-            }
+            ValidateConstantBufferSettings(settings);
 
             var buffer = new GorgonConstantBuffer(_graphics, name, settings);
 
@@ -194,18 +260,18 @@ namespace GorgonLibrary.Graphics
         /// <typeparam name="T">Type of data to pass to the constant buffer.  Must be a value type.</typeparam>
         /// <param name="name">The name of the constant buffer.</param>
         /// <param name="value">Value to write to the buffer</param>
-        /// <param name="allowCPUWrite">TRUE to allow the CPU to write to the buffer, FALSE to disallow.</param>
+        /// <param name="usage">Usage for the buffer.</param>
         /// <returns>A new constant buffer.</returns>
         /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (Nothing in VB.Net).</exception>
         /// <exception cref="System.ArgumentException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
-        public GorgonConstantBuffer CreateConstantBuffer<T>(string name, T value, bool allowCPUWrite)
+        public GorgonConstantBuffer CreateConstantBuffer<T>(string name, T value, BufferUsage usage)
             where T : struct
         {
             using (GorgonDataStream stream = GorgonDataStream.ValueToStream(value))
             {
                 return CreateConstantBuffer(name, new GorgonConstantBufferSettings
                 {
-                    AllowCPUWrite = allowCPUWrite,
+                    Usage = usage,
                     SizeInBytes = (int)stream.Length
                 }, stream);
             }

@@ -173,13 +173,13 @@ namespace GorgonLibrary.Graphics.Test
 		{
 			var ib = _framework.Graphics.Buffers.CreateIndexBuffer("IB", new GorgonIndexBufferSettings()
 				{
-					AllowUnorderedAccess = true,
-					UseShaderView = true,
+					AllowUnorderedAccessViews = true,
+					AllowShaderViews = true,
 					SizeInBytes = 48,
 					Usage = BufferUsage.Default
 				});
 
-			var uav = ib.CreateUnorderedAccessView(0, 8);
+			var uav = ib.CreateUnorderedAccessView(BufferFormat.R32_UInt, 0, 8, false);
 			uav.Dispose();
 		}
 
