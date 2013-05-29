@@ -31,7 +31,6 @@ using GorgonLibrary.Diagnostics;
 using GorgonLibrary.Graphics.Properties;
 using GorgonLibrary.IO;
 
-// TODO: Add Save() for buffers.
 namespace GorgonLibrary.Graphics
 {
     /// <summary>
@@ -133,9 +132,39 @@ namespace GorgonLibrary.Graphics
 
 
 	/// <summary>
-	/// Base buffer interface.
+	/// A generic buffer interface.
 	/// </summary>
-	public abstract class GorgonBaseBuffer
+	/// <remarks>Buffers are a core resource object that can be used to store and/or transfer data to and from the GPU.
+	/// <para>There are 5 buffer types in Gorgon:  Generic, Vertex, Index, Constant and Structured.  All of these buffer types, except generic, are used to convey specific types of information to and from the GPU. 
+	/// <list type="table">
+	/// <listheader>
+	///     <term>Type</term>
+	///     <description>Description</description>
+	/// </listheader>
+    /// <item>
+    ///     <term>Generic</term>
+    ///     <description>Holds arbitrary information.</description>
+    /// </item>
+    /// <item>
+	///     <term>Vertex</term>
+	///     <description>Holds vertex information for rendering geometry.</description>
+	/// </item>
+    /// <item>
+    ///     <term>Index</term>
+    ///     <description>Holds index information for organization of vertices.</description>
+    /// </item>
+    /// <item>
+    ///     <term>Constant</term>
+    ///     <description>Specialized buffers that hold information to be passed to a shader.  This allows sending of multiple values at once for more efficient usage.</description>
+    /// </item>
+    /// <item>
+    ///     <term>Structured</term>
+    ///     <description>A buffer containing highly structured data.</description>
+    /// </item>
+    /// </list>
+	/// </para>
+    /// <para>The generic buffer is intended to be used with the [RW]Buffer&lt;&gt; HLSL type.</para></remarks>
+	public class GorgonBuffer
 		: GorgonResource
 	{
 		#region Variables.
@@ -187,6 +216,15 @@ namespace GorgonLibrary.Graphics
 			get;
 			private set;
 		}
+
+        /// <summary>
+        /// Property to return the settings for the buffer.
+        /// </summary>
+        public IBufferSettings2 Settings2
+        {
+            get;
+            private set;
+        }
 		
 		/// <summary>
 		/// Property to return the size of the resource, in bytes.
@@ -215,9 +253,45 @@ namespace GorgonLibrary.Graphics
         /// <summary>
         /// Function to perform validation upon the settings for the buffer.
         /// </summary>
-        protected void ValidateBufferSettings()
+        protected internal virtual void ValidateBufferSettings()
         {
-            
+            // Ensure that we can actually put something into our buffer.
+            if (Settings2.SizeInBytes <= 4)
+            {
+                throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_BUFFER_SIZE_TOO_SMALL, 4));
+            }
+
+            // Only allow raw views if we've provided a shader view and/or an unordered access view.
+            if ((Settings2.AllowRawViews)
+                && (!Settings2.AllowShaderViews)
+                && (!Settings2.AllowUnorderedAccessViews))
+            {
+                throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_BUFFER_RAW_ACCESS_REQUIRES_VIEW_ACCESS);
+            }
+
+            if (Settings2.IsOutput)
+            {
+                if (Settings2.AllowUnorderedAccessViews)
+                {
+                    throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_BUFFER_OUTPUT_NO_UNORDERED);
+                }
+
+                if ((Settings2.Usage == BufferUsage.Dynamic)
+                    || (Settings2.Usage == BufferUsage.Staging))
+                {
+                    throw new GorgonException(GorgonResult.CannotCreate,
+                                              Resources.GORGFX_BUFFER_OUTPUT_NOT_DYNAMIC_OR_STAGING);
+                }
+            }
+
+            // Do not allow staging usage with any of these.
+            if ((Settings2.Usage == BufferUsage.Staging) 
+                && ((Settings2.AllowIndirectArguments) || (Settings2.AllowRawViews) 
+                    || (Settings2.AllowRenderTarget) || (Settings2.AllowShaderViews) 
+                    || (Settings2.AllowUnorderedAccessViews)))
+            {
+                throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_BUFFER_NO_STAGING);
+            }
         }
 
 		/// <summary>
@@ -225,7 +299,35 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		/// <param name="data">Data to write.</param>
 		/// <remarks>Passing NULL (Nothing in VB.Net) to the <paramref name="data"/> parameter should ignore the initialization and create the backing buffer as normal.</remarks>
-		protected abstract void InitializeImpl(GorgonDataStream data);
+		protected virtual void InitializeImpl(GorgonDataStream data)
+		{
+            var desc = new D3D.BufferDescription
+            {
+                BindFlags = D3D.BindFlags.None,
+                CpuAccessFlags = D3DCPUAccessFlags,
+                OptionFlags = D3D.ResourceOptionFlags.None,
+                SizeInBytes = SizeInBytes,
+                StructureByteStride = 0,
+                Usage = D3DUsage
+            };
+
+            if (data != null)
+            {
+                long position = data.Position;
+
+                using (var dxStream = new DX.DataStream(data.BasePointer, data.Length - position, true, true))
+                {
+                    D3DResource = new D3D.Buffer(Graphics.D3DDevice, dxStream, desc);
+                }
+            }
+            else
+            {
+                D3DResource = new D3D.Buffer(Graphics.D3DDevice, desc);
+            }
+
+            GorgonRenderStatistics.BufferCount++;
+            GorgonRenderStatistics.BufferSize += ((D3D.Buffer)D3DResource).Description.SizeInBytes;
+		}
 
 		/// <summary>
 		/// Function used to lock the underlying buffer for reading/writing.
@@ -281,10 +383,37 @@ namespace GorgonLibrary.Graphics
 		}
 
         /// <summary>
+        /// Function to clean up the resource object.
+        /// </summary>
+        protected override void CleanUpResource()
+        {
+            if (IsLocked)
+            {
+                Unlock();
+            }
+
+            if (D3DResource == null)
+            {
+                return;
+            }
+
+            GorgonRenderStatistics.BufferCount--;
+            GorgonRenderStatistics.BufferSize -= D3DBuffer.Description.SizeInBytes;
+
+            D3DResource.Dispose();
+            D3DResource = null;
+
+            Gorgon.Log.Print("Destroyed {0} {1}.", LoggingLevel.Verbose, GetType().FullName, Name);
+        }
+
+        /// <summary>
         /// Function to retrieve the staging buffer for this buffer.
         /// </summary>
         /// <returns>The staging buffer for this buffer.</returns>
-	    protected abstract GorgonBaseBuffer GetStagingBufferImpl();
+        protected virtual GorgonBuffer GetStagingBufferImpl()
+        {
+            return null;
+        }
 
 		/// <summary>
 		/// Function used to initialize the buffer with data.
@@ -301,7 +430,6 @@ namespace GorgonLibrary.Graphics
         /// <summary>
         /// Function to return this buffer as a staging buffer.
         /// </summary>
-        /// <typeparam name="T">Type of buffer.</typeparam>
         /// <returns>The new staging buffer.</returns>
         /// <exception cref="System.NotSupportedException">Thrown when staging buffers are not supported for the type of buffer.
         /// <para>-or-</para>
@@ -309,8 +437,7 @@ namespace GorgonLibrary.Graphics
         /// <para>-or-</para>
         /// <para>Thrown when the current buffer is immutable.</para>
         /// </exception>
-        public T GetStagingBuffer<T>()
-            where T : GorgonBaseBuffer
+        public GorgonBuffer GetStagingBuffer()
         {
 #if DEBUG
             if ((Graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM2_a_b) && (Settings.Usage != BufferUsage.Staging))
@@ -324,7 +451,7 @@ namespace GorgonLibrary.Graphics
             }
 #endif
 
-            return (T)GetStagingBufferImpl();
+            return GetStagingBufferImpl();
         }
 
 		/// <summary>
@@ -334,7 +461,7 @@ namespace GorgonLibrary.Graphics
 		/// <remarks>This is used to copy data from one GPU buffer to another.  The size of the buffers must be the same.</remarks>
 		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="buffer"/> size is not equal to the size of this buffer.</exception>
 		/// <exception cref="GorgonLibrary.GorgonException">Thrown when this buffer has a usage of Immutable.</exception>
-		public void Copy(GorgonBaseBuffer buffer)
+		public void Copy(GorgonBuffer buffer)
 		{
 #if DEBUG
 			if (buffer.SizeInBytes != SizeInBytes)
@@ -362,7 +489,7 @@ namespace GorgonLibrary.Graphics
 		/// <para>Thrown when the <paramref name="byteCount"/> + sourceStartIndex is greater than the size of the source buffer, or less than 0.</para>
 		/// </exception>
 		/// <exception cref="System.InvalidOperationException">Thrown when this buffer has a usage of Immutable.</exception>
-		public void Copy(GorgonBaseBuffer buffer, int sourceStartingIndex, int byteCount)
+		public void Copy(GorgonBuffer buffer, int sourceStartingIndex, int byteCount)
 		{
 			Copy(buffer, sourceStartingIndex, byteCount, 0);
 		}
@@ -382,7 +509,7 @@ namespace GorgonLibrary.Graphics
 		/// <para>Thrown when the <paramref name="destOffset"/> + byteCount is greater than the size of this buffer, or less than 0.</para>
 		/// </exception>
 		/// <exception cref="GorgonLibrary.GorgonException">Thrown when this buffer has a usage of Immutable.</exception>
-		public void Copy(GorgonBaseBuffer buffer, int sourceStartingIndex, int byteCount, int destOffset)
+		public void Copy(GorgonBuffer buffer, int sourceStartingIndex, int byteCount, int destOffset)
 		{
 			int endByteIndex = sourceStartingIndex + byteCount;
 
@@ -492,12 +619,12 @@ namespace GorgonLibrary.Graphics
 
 		#region Constructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonBaseBuffer" /> class.
+		/// Initializes a new instance of the <see cref="GorgonBuffer" /> class.
 		/// </summary>
 		/// <param name="graphics">The graphics interface used to create this object.</param>
 		/// <param name="name">Name of the buffer.</param>
 		/// <param name="settings">Settings for the buffer.</param>
-		protected GorgonBaseBuffer(GorgonGraphics graphics, string name, IBufferSettings settings)
+		internal GorgonBuffer(GorgonGraphics graphics, string name, IBufferSettings settings)
 			: base(graphics, name)
 		{
 			Settings = settings;
