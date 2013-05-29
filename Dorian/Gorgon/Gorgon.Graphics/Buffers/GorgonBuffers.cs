@@ -132,7 +132,7 @@ namespace GorgonLibrary.Graphics
             if ((settings.IsOutput)
                 && (settings.Usage != BufferUsage.Default))
             {
-                throw new GorgonException(GorgonResult.CannotBind, Resources.GORGFX_BUFFER_OUTPUT_NOT_DEFAULT);
+                throw new GorgonException(GorgonResult.CannotBind, Resources.GORGFX_BUFFER_OUTPUT_NOT_DYNAMIC_OR_STAGING);
             }
 
             if (settings.SizeInBytes < 1)
@@ -329,7 +329,7 @@ namespace GorgonLibrary.Graphics
             if ((settings.IsOutput)
                 && (settings.Usage != BufferUsage.Default))
             {
-                throw new GorgonException(GorgonResult.CannotBind, Resources.GORGFX_BUFFER_OUTPUT_NOT_DEFAULT);
+                throw new GorgonException(GorgonResult.CannotBind, Resources.GORGFX_BUFFER_OUTPUT_NOT_DYNAMIC_OR_STAGING);
             }
 
             var result = new GorgonStructuredBuffer(_graphics, name, settings);
@@ -484,7 +484,7 @@ namespace GorgonLibrary.Graphics
             if ((settings.IsOutput)
                 && (settings.Usage != BufferUsage.Default))
             {
-                throw new GorgonException(GorgonResult.CannotBind, Resources.GORGFX_BUFFER_OUTPUT_NOT_DEFAULT);
+                throw new GorgonException(GorgonResult.CannotBind, Resources.GORGFX_BUFFER_OUTPUT_NOT_DYNAMIC_OR_STAGING);
             }
 
             if (settings.ElementCount <= 0)
@@ -608,7 +608,7 @@ namespace GorgonLibrary.Graphics
             if ((settings.IsOutput)
                 && (settings.Usage != BufferUsage.Default))
             {
-                throw new GorgonException(GorgonResult.CannotBind, Resources.GORGFX_BUFFER_OUTPUT_NOT_DEFAULT);
+                throw new GorgonException(GorgonResult.CannotBind, Resources.GORGFX_BUFFER_OUTPUT_NOT_DYNAMIC_OR_STAGING);
             }
 
             if (settings.SizeInBytes < 1)
@@ -703,7 +703,7 @@ namespace GorgonLibrary.Graphics
             if ((settings.IsOutput)
                 && (settings.Usage != BufferUsage.Default))
             {
-                throw new GorgonException(GorgonResult.CannotBind, Resources.GORGFX_BUFFER_OUTPUT_NOT_DEFAULT);
+                throw new GorgonException(GorgonResult.CannotBind, Resources.GORGFX_BUFFER_OUTPUT_NOT_DYNAMIC_OR_STAGING);
             }
 
             var buffer = new GorgonVertexBuffer(_graphics, name, settings);
@@ -793,7 +793,7 @@ namespace GorgonLibrary.Graphics
             if ((settings.IsOutput)
                 && (settings.Usage != BufferUsage.Default))
             {
-                throw new GorgonException(GorgonResult.CannotBind, Resources.GORGFX_BUFFER_OUTPUT_NOT_DEFAULT);
+                throw new GorgonException(GorgonResult.CannotBind, Resources.GORGFX_BUFFER_OUTPUT_NOT_DYNAMIC_OR_STAGING);
             }
 
             var buffer = new GorgonIndexBuffer(_graphics, name, settings);

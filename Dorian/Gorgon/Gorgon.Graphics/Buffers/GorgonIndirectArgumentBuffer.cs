@@ -62,6 +62,9 @@ namespace GorgonLibrary.Graphics
                A D3D11_USAGE_DYNAMIC Resource may have only the D3D11_CPU_ACCESS_WRITE CPUAccessFlags set. [ STATE_CREATION ERROR #63: CREATEBUFFER_INVALIDCPUACCESSFLAGS]
                D3D11_BIND_UNORDERED_ACCESS cannot be combined with the following BindFlags: D3D11_BIND_CONSTANT_BUFFER (0), D3D11_BIND_DEPTH_STENCIL (0), or D3D11_BIND_STREAM_OUTPUT (1). [ STATE_CREATION ERROR #64: CREATEBUFFER_INVALIDBINDFLAGS]
                Buffers for DrawIndirect can not be created with D3D11_BIND_CONSTANT_BUFFER. [ STATE_CREATION ERROR #68: CREATEBUFFER_INVALIDMISCFLAGS]
+               Buffers for DrawIndirect can not be created with D3D11_USAGE_STAGING. [ STATE_CREATION ERROR #68: CREATEBUFFER_INVALIDMISCFLAGS]
+               A D3D11_USAGE_STAGING Resource must have at least one CPUAccessFlag bit set. [ STATE_CREATION ERROR #63: CREATEBUFFER_INVALIDCPUACCESSFLAGS]
+               A D3D11_USAGE_STAGING Resource cannot be bound to any parts of the graphics pipeline, so therefore cannot have any BindFlags bits set. [ STATE_CREATION ERROR #64: CREATEBUFFER_INVALIDBINDFLAGS]               
              */
 
             // Indirect Arg buffers cannot be:
@@ -73,10 +76,10 @@ namespace GorgonLibrary.Graphics
                                             {
                                                 BindFlags = D3D.BindFlags.RenderTarget,
                                                 CpuAccessFlags = D3D.CpuAccessFlags.None,
-                                                OptionFlags = D3D.ResourceOptionFlags.DrawIndirectArguments,
+                                                OptionFlags = D3D.ResourceOptionFlags.None,
                                                 SizeInBytes = 6144,
                                                 StructureByteStride = 128,
-                                                Usage = D3D.ResourceUsage.Default
+                                                Usage = D3D.ResourceUsage.Staging
                                             });
             buffer.Dispose();
         }

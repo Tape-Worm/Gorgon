@@ -93,9 +93,9 @@ namespace GorgonLibrary.Graphics
         /// <returns>
         /// The staging buffer for this buffer.
         /// </returns>
-        protected override GorgonBaseBuffer GetStagingBufferImpl()
+        protected override GorgonBuffer GetStagingBufferImpl()
         {
-            GorgonBaseBuffer result = Graphics.Buffers.CreateStructuredBuffer(Name + " [Staging]",
+            GorgonBuffer result = Graphics.Buffers.CreateStructuredBuffer(Name + " [Staging]",
                                                                          new GorgonStructuredBufferSettings
                                                                          {
                                                                              AllowUnorderedAccess = false,
