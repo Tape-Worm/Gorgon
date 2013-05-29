@@ -76,9 +76,9 @@ namespace GorgonLibrary.Graphics
         /// <returns>
         /// The staging buffer for this buffer.
         /// </returns>
-        protected override GorgonBaseBuffer GetStagingBufferImpl()
+        protected override GorgonBuffer GetStagingBufferImpl()
         {
-            GorgonBaseBuffer result = Graphics.Buffers.CreateIndexBuffer(Name + " [Staging]",
+            GorgonBuffer result = Graphics.Buffers.CreateIndexBuffer(Name + " [Staging]",
                                                                          new GorgonIndexBufferSettings
                                                                              {
                                                                                  AllowUnorderedAccess = false,

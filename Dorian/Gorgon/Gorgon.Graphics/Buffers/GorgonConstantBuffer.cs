@@ -40,13 +40,13 @@ namespace GorgonLibrary.Graphics
 	/// <para>Typically, the user will define a value type that matches a constant buffer layout.  Then, if the value type uses nothing but blittable types, the user can then write the entire 
 	/// value type structure to the constant buffer.  If the value type contains more complex types, such as arrays, then the user can write each item in the value type to a variable in the constant 
 	/// buffer.  Please note that the names for the variables in the value type and the shader do -not- have to match, although, for the sake of clarity, it is a good idea that they do.</para>
-	/// <para>In order to write to a constant buffer, the user must <see cref="GorgonLibrary.Graphics.GorgonBaseBuffer.Lock">lock</see> the buffer beforehand, and unlock it when done.  Failure to do so will result in an exception.</para>
+	/// <para>In order to write to a constant buffer, the user must <see cref="GorgonLibrary.Graphics.GorgonBuffer.Lock">lock</see> the buffer beforehand, and unlock it when done.  Failure to do so will result in an exception.</para>
 	/// <para>Constant buffers follow very specific rules, which are explained at http://msdn.microsoft.com/en-us/library/windows/desktop/bb509632(v=vs.85).aspx </para>
 	/// <para>When passing a value type to the constant buffer, ensure that the type has a System.Runtime.InteropServices.StructLayout attribute assigned to it, and that the layout is explicit.  Also, the size of the 
 	/// value type must be a multiple of 16, so padding variables may be required.</para>
 	/// </remarks>
 	public sealed class GorgonConstantBuffer
-		: GorgonBaseBuffer
+		: GorgonBuffer
 	{
 		#region Properties.
 		/// <summary>
@@ -68,7 +68,7 @@ namespace GorgonLibrary.Graphics
         /// <returns>
         /// The staging buffer for this buffer.
         /// </returns>
-        protected override GorgonBaseBuffer GetStagingBufferImpl()
+        protected override GorgonBuffer GetStagingBufferImpl()
         {
             throw new NotSupportedException("Constant buffers do not support staging usage.");
         }
@@ -167,7 +167,7 @@ namespace GorgonLibrary.Graphics
         /// <exception cref="System.NotSupportedException">This method is not supported for constant buffers.</exception>
         [EditorBrowsable(EditorBrowsableState.Never)]
         public new T GetStagingBuffer<T>()
-            where T : GorgonBaseBuffer
+            where T : GorgonBuffer
         {
             throw new NotSupportedException("Constant buffers do not support staging usage.");
         }

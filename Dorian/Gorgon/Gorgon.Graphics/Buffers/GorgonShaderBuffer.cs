@@ -35,7 +35,7 @@ namespace GorgonLibrary.Graphics
 	/// </summary>
 	/// <remarks>This is a base object for buffers that can be bound to a shader.</remarks>
 	public abstract class GorgonShaderBuffer
-		: GorgonBaseBuffer
+		: GorgonBuffer
 	{
 		#region Properties.
         /// <summary>
