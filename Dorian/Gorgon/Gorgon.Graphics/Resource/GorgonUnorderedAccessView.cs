@@ -30,6 +30,25 @@ using GorgonLibrary.Diagnostics;
 
 namespace GorgonLibrary.Graphics
 {
+	/// <summary>
+	/// The type of structured buffer unordered access view.
+	/// </summary>
+	public enum UnorderedAccessViewType
+	{
+		/// <summary>
+		/// A standard structured buffer.
+		/// </summary>
+		Standard = 0,
+		/// <summary>
+		/// An append/consume buffer.
+		/// </summary>
+		AppendConsume = 1,
+		/// <summary>
+		/// A counter buffer.
+		/// </summary>
+		Counter = 2
+	}
+
     /// <summary>
     /// An unordered access resource view.
     /// </summary>

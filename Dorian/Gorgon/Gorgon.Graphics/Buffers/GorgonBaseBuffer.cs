@@ -168,7 +168,7 @@ namespace GorgonLibrary.Graphics
         {
             get
             {
-                return Settings2.SizeInBytes;
+                return Settings.SizeInBytes;
             }
         }
 
@@ -192,7 +192,7 @@ namespace GorgonLibrary.Graphics
         /// <summary>
         /// Property to return the settings for the buffer.
         /// </summary>
-        public IBufferSettings2 Settings2
+        public IBufferSettings Settings
         {
             get;
             private set;
@@ -220,55 +220,59 @@ namespace GorgonLibrary.Graphics
                 BindFlags = D3D.BindFlags.None,
                 CpuAccessFlags = D3DCPUAccessFlags,
                 OptionFlags = D3D.ResourceOptionFlags.None,
-                SizeInBytes = Settings2.SizeInBytes,
-                StructureByteStride = Settings2.StructureSize,
+                SizeInBytes = Settings.SizeInBytes,
+                StructureByteStride = Settings.StructureSize,
                 Usage = D3DUsage
             };
 
-            // Determine type.
-            switch (BufferType)
-            {
-                case BufferType.Constant:
-                    desc.BindFlags = D3D.BindFlags.ConstantBuffer;
-                    break;
-                case BufferType.Index:
-                    desc.BindFlags = D3D.BindFlags.IndexBuffer;
-                    break;
-                case BufferType.Vertex:
-                    desc.BindFlags = D3D.BindFlags.VertexBuffer;
-                    break;
-                case BufferType.Structured:
-                    desc.OptionFlags = D3D.ResourceOptionFlags.BufferStructured;
-                    break;
-            }
+            // Set up the buffer.  If we're a staging buffer, then none of this stuff will 
+			// work because staging buffers can't be bound to the pipeline, so just skip it.
+	        if (Settings.Usage != BufferUsage.Staging)
+	        {
+		        switch (BufferType)
+		        {
+			        case BufferType.Constant:
+				        desc.BindFlags = D3D.BindFlags.ConstantBuffer;
+				        break;
+			        case BufferType.Index:
+				        desc.BindFlags = D3D.BindFlags.IndexBuffer;
+				        break;
+			        case BufferType.Vertex:
+				        desc.BindFlags = D3D.BindFlags.VertexBuffer;
+				        break;
+			        case BufferType.Structured:
+				        desc.OptionFlags = D3D.ResourceOptionFlags.BufferStructured;
+				        break;
+		        }
 
-            // Update binding modifiers.
-            if (Settings2.AllowShaderViews)
-            {
-                desc.BindFlags |= D3D.BindFlags.ShaderResource;
-            }
+		        // Update binding modifiers.
+		        if (Settings.AllowShaderViews)
+		        {
+			        desc.BindFlags |= D3D.BindFlags.ShaderResource;
+		        }
 
-            if (Settings2.AllowUnorderedAccessViews)
-            {
-                desc.BindFlags |= D3D.BindFlags.UnorderedAccess;
-            }
+		        if (Settings.AllowUnorderedAccessViews)
+		        {
+			        desc.BindFlags |= D3D.BindFlags.UnorderedAccess;
+		        }
 
-            if (Settings2.AllowRenderTarget)
-            {
-                desc.BindFlags |= D3D.BindFlags.RenderTarget;
-            }
+		        if (Settings.AllowRenderTarget)
+		        {
+			        desc.BindFlags |= D3D.BindFlags.RenderTarget;
+		        }
 
-            if (Settings2.AllowIndirectArguments)
-            {
-                desc.OptionFlags = D3D.ResourceOptionFlags.DrawIndirectArguments;
-            }
+		        if (Settings.AllowIndirectArguments)
+		        {
+			        desc.OptionFlags = D3D.ResourceOptionFlags.DrawIndirectArguments;
+		        }
 
-            if (Settings2.AllowRawViews)
-            {
-                desc.OptionFlags = D3D.ResourceOptionFlags.BufferAllowRawViews;
-            }
+		        if (Settings.AllowRawViews)
+		        {
+			        desc.OptionFlags = D3D.ResourceOptionFlags.BufferAllowRawViews;
+		        }
+	        }
 
-            if (data != null)
+	        if (data != null)
             {
                 long position = data.Position;
 
@@ -286,27 +290,18 @@ namespace GorgonLibrary.Graphics
         /// <summary>
         /// Function to create the default shader view.
         /// </summary>
-        private void CreateDefaultShaderView()
+        protected virtual void OnCreateDefaultShaderView()
         {
             // Staging buffers cannot create shader views.
-            if ((Settings2.Usage == BufferUsage.Staging)
-                || (Settings2.DefaultShaderViewFormat == BufferFormat.Unknown)
-                || (BufferType == BufferType.Constant))
+            if ((Settings.Usage == BufferUsage.Staging)
+                || (Settings.DefaultShaderViewFormat == BufferFormat.Unknown))
             {
                 return;
             }
 
-            DefaultShaderView = OnCreateDefaultShaderView();
-        }
-
-        /// <summary>
-        /// Function to perform the creation of a default shader view.
-        /// </summary>
-        /// <returns>The default shader view for the buffer.</returns>
-        protected virtual GorgonShaderView OnCreateDefaultShaderView()
-        {
-            var info = GorgonBufferFormatInfo.GetInfo(Settings2.DefaultShaderViewFormat);
-            return OnCreateShaderView(Settings2.DefaultShaderViewFormat, 0, Settings2.SizeInBytes / info.SizeInBytes, false);
+			var info = GorgonBufferFormatInfo.GetInfo(Settings.DefaultShaderViewFormat);
+	        DefaultShaderView = OnCreateShaderView(Settings.DefaultShaderViewFormat, 0,
+	                                               Settings.SizeInBytes / info.SizeInBytes, false);
         }
 
         /// <summary>
@@ -325,7 +320,7 @@ namespace GorgonLibrary.Graphics
             }
 
             // Unbind us from any shaders.
-            if (Settings2.AllowShaderViews)
+            if (Settings.AllowShaderViews)
             {
                 Graphics.Shaders.Unbind(this);
             }
@@ -366,7 +361,7 @@ namespace GorgonLibrary.Graphics
         /// </summary>
         /// <param name="lockFlags">Flags used when locking the buffer.</param>
         /// <returns>A data stream containing the buffer data.</returns>		
-        protected virtual GorgonDataStream LockImpl(BufferLockFlags lockFlags)
+        protected virtual GorgonDataStream OnLock(BufferLockFlags lockFlags)
         {
 #if DEBUG
             if (((lockFlags & BufferLockFlags.Discard) != BufferLockFlags.Discard)
@@ -389,7 +384,7 @@ namespace GorgonLibrary.Graphics
         /// <summary>
         /// Function called to unlock the underlying data buffer.
         /// </summary>
-        protected virtual void UnlockImpl()
+        protected virtual void OnUnlock()
         {
             Graphics.Context.UnmapSubresource(D3DBuffer, 0);
             _lockStream.Dispose();
@@ -402,7 +397,7 @@ namespace GorgonLibrary.Graphics
         /// <param name="stream">Stream containing the data used to update the buffer.</param>
         /// <param name="offset">Offset, in bytes, into the buffer to start writing at.</param>
         /// <param name="size">The number of bytes to write.</param>
-        protected virtual void UpdateImpl(GorgonDataStream stream, int offset, int size)
+        protected virtual void OnUpdate(GorgonDataStream stream, int offset, int size)
         {
             Graphics.Context.UpdateSubresource(
                 new DX.DataBox
@@ -446,17 +441,17 @@ namespace GorgonLibrary.Graphics
                 throw new GorgonException(GorgonResult.CannotCreate, "Unordered access views are only available on video devices that support SM_5 or better.");
             }
 
-            if (!Settings2.AllowUnorderedAccessViews)
+            if (!Settings.AllowUnorderedAccessViews)
             {
                 throw new GorgonException(GorgonResult.CannotCreate, "The buffer does not allow unordered access.");
             }
 
-            if (Settings2.Usage == BufferUsage.Staging)
+            if (Settings.Usage == BufferUsage.Staging)
             {
                 throw new GorgonException(GorgonResult.CannotBind, "Cannot bind an unordered access resource view to a buffer that has a usage of [Staging].");
             }
 
-            if (Settings2.Usage == BufferUsage.Dynamic)
+            if (Settings.Usage == BufferUsage.Dynamic)
             {
                 throw new GorgonException(GorgonResult.CannotBind, "Cannot bind an unordered access resource view to a buffer that has a usage of [Dynamic].");
             }
@@ -468,7 +463,7 @@ namespace GorgonLibrary.Graphics
                     throw new ArgumentException(Resources.GORGFX_VIEW_UNKNOWN_FORMAT, "format");
                 }
 
-                if (Settings2.AllowRawViews)
+                if (Settings.AllowRawViews)
                 {
                     if (format != BufferFormat.R32)
                     {
@@ -487,7 +482,7 @@ namespace GorgonLibrary.Graphics
             else
             {
                 isRaw = false;
-                elementCount = SizeInBytes / Settings2.StructureSize;
+                elementCount = SizeInBytes / Settings.StructureSize;
                 format = BufferFormat.Unknown;
             }
 
@@ -521,7 +516,7 @@ namespace GorgonLibrary.Graphics
         /// <exception cref="System.ArgumentException">Thrown when the <paramref name="start"/> or <paramref name="count"/> parameters are less than 0 or greater than or equal to the 
         /// number of elements in the buffer.</exception>
         /// <remarks>Use this to create additional shader views for the buffer.  Multiple views of the same resource can be bound to multiple stages in the pipeline.
-        /// <para>Raw views require that the buffer be created with the <see cref="GorgonLibrary.Graphics.IBufferSettings2.AllowRawViews">AllowRawViews</see> property set to TRUE in its settings.</para>
+        /// <para>Raw views require that the buffer be created with the <see cref="GorgonLibrary.Graphics.IBufferSettings.AllowRawViews">AllowRawViews</see> property set to TRUE in its settings.</para>
         /// <para>Raw views can only be used on SM5 video devices or better. </para>
         /// <para>This function only applies to buffers that have not been created with a Usage of Staging.</para>
         /// </remarks>
@@ -529,7 +524,7 @@ namespace GorgonLibrary.Graphics
         {
             int elementCount;
 
-            if (Settings2.Usage == BufferUsage.Staging)
+            if (Settings.Usage == BufferUsage.Staging)
             {
                 throw new GorgonException(GorgonResult.CannotCreate, "Cannot create a shader resource view for a buffer that has a usage of Staging.");
             }
@@ -558,7 +553,7 @@ namespace GorgonLibrary.Graphics
                                                   string.Format(Resources.GORGFX_REQUIRES_SM, 5));
                     }
 
-                    if (!Settings2.AllowRawViews)
+                    if (!Settings.AllowRawViews)
                     {
                         throw new GorgonException(GorgonResult.CannotBind, Resources.GORGFX_VIEW_BUFFER_NOT_RAW);
                     }
@@ -584,7 +579,7 @@ namespace GorgonLibrary.Graphics
                                               string.Format(Resources.GORGFX_REQUIRES_SM, 5));
                 }
 
-                elementCount = Settings2.SizeInBytes / Settings2.StructureSize;
+                elementCount = Settings.SizeInBytes / Settings.StructureSize;
                 format = BufferFormat.Unknown;
                 isRaw = false;
             }
@@ -645,7 +640,7 @@ namespace GorgonLibrary.Graphics
             }
 
             // Create any default shader views that are required.
-            CreateDefaultShaderView();
+            OnCreateDefaultShaderView();
         }
 
         /// <summary>
@@ -661,12 +656,12 @@ namespace GorgonLibrary.Graphics
         public GorgonBuffer GetStagingBuffer()
         {
 #if DEBUG
-            if ((Graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM2_a_b) && (Settings2.Usage != BufferUsage.Staging))
+            if ((Graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM2_a_b) && (Settings.Usage != BufferUsage.Staging))
             {
                 throw new NotSupportedException("Feature level SM2_a_b video devices cannot build a staging buffer from a non-staging buffer.");
             }
 
-            if (Settings2.Usage == BufferUsage.Immutable)
+            if (Settings.Usage == BufferUsage.Immutable)
             {
                 throw new NotSupportedException("Buffers with a usage of Immutable cannot be used as staging buffers.");
             }
@@ -706,7 +701,7 @@ namespace GorgonLibrary.Graphics
                 throw new ArgumentException(Resources.GORGFX_BUFFER_SIZE_MISMATCH, "buffer");
             }
 
-            if (Settings2.Usage == GorgonLibrary.Graphics.BufferUsage.Immutable)
+            if (Settings.Usage == GorgonLibrary.Graphics.BufferUsage.Immutable)
             {
                 throw new GorgonException(GorgonResult.AccessDenied, Resources.GORGFX_BUFFER_IMMUTABLE);
             }
@@ -756,7 +751,7 @@ namespace GorgonLibrary.Graphics
             GorgonDebug.AssertParamRange(destOffset, 0, SizeInBytes, "destOffset");
 
 #if DEBUG
-            if (Settings2.Usage == GorgonLibrary.Graphics.BufferUsage.Immutable)
+            if (Settings.Usage == GorgonLibrary.Graphics.BufferUsage.Immutable)
             {
                 throw new GorgonException(GorgonResult.AccessDenied, Resources.GORGFX_BUFFER_IMMUTABLE);
             }
@@ -788,13 +783,13 @@ namespace GorgonLibrary.Graphics
             GorgonDebug.AssertNull(stream, "stream");
 
 #if DEBUG
-            if (Settings2.Usage != GorgonLibrary.Graphics.BufferUsage.Default)
+            if (Settings.Usage != GorgonLibrary.Graphics.BufferUsage.Default)
             {
                 throw new GorgonException(GorgonResult.AccessDenied, Resources.GORGFX_NOT_DEFAULT_USAGE);
             }
 #endif
 
-            UpdateImpl(stream, 0, (int)(stream.Length - stream.Position));
+            OnUpdate(stream, 0, (int)(stream.Length - stream.Position));
         }
 
         /// <summary>
@@ -807,7 +802,7 @@ namespace GorgonLibrary.Graphics
                 return;
             }
 
-            UnlockImpl();
+            OnUnlock();
 
             IsLocked = false;
         }
@@ -837,16 +832,16 @@ namespace GorgonLibrary.Graphics
 #if DEBUG
             if (IsLocked)
             {
-                throw new GorgonException(GorgonResult.AccessDenied, Resources.GORGFX_ALREADY_LOCKED);
+                throw new GorgonException(GorgonResult.AccessDenied, Resources.GORGFX_BUFFER_ALREADY_LOCKED);
             }
 
-            if ((Settings2.Usage == BufferUsage.Default) || (Settings2.Usage == BufferUsage.Immutable))
+            if ((Settings.Usage == BufferUsage.Default) || (Settings.Usage == BufferUsage.Immutable))
             {
-                throw new GorgonException(GorgonResult.AccessDenied, string.Format(Resources.GORGFX_BUFFER_USAGE_CANT_LOCK, Settings2.Usage));
+                throw new GorgonException(GorgonResult.AccessDenied, string.Format(Resources.GORGFX_BUFFER_USAGE_CANT_LOCK, Settings.Usage));
             }
 #endif
 
-            GorgonDataStream result = LockImpl(lockFlags);
+            GorgonDataStream result = OnLock(lockFlags);
 
             IsLocked = true;
 
@@ -861,10 +856,10 @@ namespace GorgonLibrary.Graphics
         /// <param name="graphics">The graphics.</param>
         /// <param name="name">The name.</param>
         /// <param name="settings">The settings.</param>
-        protected GorgonBaseBuffer(GorgonGraphics graphics, string name, IBufferSettings2 settings)
+        protected GorgonBaseBuffer(GorgonGraphics graphics, string name, IBufferSettings settings)
             : base(graphics, name)
         {
-            Settings2 = settings;
+            Settings = settings;
 
             D3DUsage = (D3D.ResourceUsage)settings.Usage;
 

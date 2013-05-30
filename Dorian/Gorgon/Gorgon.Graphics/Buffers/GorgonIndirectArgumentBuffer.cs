@@ -24,13 +24,6 @@
 // 
 #endregion
 
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using DX = SharpDX;
 using D3D = SharpDX.Direct3D11;
 
 namespace GorgonLibrary.Graphics
@@ -52,37 +45,104 @@ namespace GorgonLibrary.Graphics
         /// <param name="graphics">The graphics interface that owns this object.</param>
         public GorgonIndirectArgumentBuffer(GorgonGraphics graphics)
         {
-            /*
-               A resource cannot created with both D3D11_RESOURCE_MISC_DRAWINDIRECT_ARGS and D3D11_RESOURCE_MISC_BUFFER_STRUCTURED. [ STATE_CREATION ERROR #68: CREATEBUFFER_INVALIDMISCFLAGS]
-               When creating a buffer with the MiscFlag D3D11_RESOURCE_MISC_BUFFER_STRUCTURED specified, the StructureByteStride must be greater than zero, no greater than 2048, and a multiple of 4. [ STATE_CREATION ERROR #2097339: CREATEBUFFER_INVALIDSTRUCTURESTRIDE]
-               Buffers cannot be created with both D3D11_RESOURCE_MISC_BUFFER_ALLOW_RAW_VIEWS and D3D11_RESOURCE_MISC_BUFFER_STRUCTURED. [ STATE_CREATION ERROR #68: CREATEBUFFER_INVALIDMISCFLAGS]
-               Buffers created with D3D11_RESOURCE_MISC_BUFFER_STRUCTURED cannot specify any of the following listed bind flags.  The following BindFlags bits (0x81) are set: D3D11_BIND_VERTEX_BUFFER (1), D3D11_BIND_INDEX_BUFFER (0), D3D11_BIND_CONSTANT_BUFFER (0), D3D11_BIND_STREAM_OUTPUT (0), D3D11_BIND_RENDER_TARGET (0), or D3D11_BIND_DEPTH_STENCIL (0). [ STATE_CREATION ERROR #68: CREATEBUFFER_INVALIDMISCFLAGS]
-               Buffers created with D3D11_RESOURCE_MISC_BUFFER_ALLOW_RAW_VIEWS must specify at least one of the D3D11_BIND_SHADER_RESOURCE and D3D11_BIND_UNORDERED_ACCESS bind flags. [ STATE_CREATION ERROR #68: CREATEBUFFER_INVALIDMISCFLAGS]
-               A D3D11_USAGE_DYNAMIC Resource cannot be bound to certain parts of the graphics pipeline, but has at least one invalid BindFlags bit set. The BindFlags bits (0x19) have the following settings: D3D11_BIND_STREAM_OUTPUT (1), D3D11_BIND_RENDER_TARGET (0), D3D11_BIND_DEPTH_STENCIL (0), D3D11_BIND_UNORDERED_ACCESS (0). [ STATE_CREATION ERROR #64: CREATEBUFFER_INVALIDBINDFLAGS]
-               A D3D11_USAGE_DYNAMIC Resource may have only the D3D11_CPU_ACCESS_WRITE CPUAccessFlags set. [ STATE_CREATION ERROR #63: CREATEBUFFER_INVALIDCPUACCESSFLAGS]
-               D3D11_BIND_UNORDERED_ACCESS cannot be combined with the following BindFlags: D3D11_BIND_CONSTANT_BUFFER (0), D3D11_BIND_DEPTH_STENCIL (0), or D3D11_BIND_STREAM_OUTPUT (1). [ STATE_CREATION ERROR #64: CREATEBUFFER_INVALIDBINDFLAGS]
-               Buffers for DrawIndirect can not be created with D3D11_BIND_CONSTANT_BUFFER. [ STATE_CREATION ERROR #68: CREATEBUFFER_INVALIDMISCFLAGS]
-               Buffers for DrawIndirect can not be created with D3D11_USAGE_STAGING. [ STATE_CREATION ERROR #68: CREATEBUFFER_INVALIDMISCFLAGS]
-               A D3D11_USAGE_STAGING Resource must have at least one CPUAccessFlag bit set. [ STATE_CREATION ERROR #63: CREATEBUFFER_INVALIDCPUACCESSFLAGS]
-               A D3D11_USAGE_STAGING Resource cannot be bound to any parts of the graphics pipeline, so therefore cannot have any BindFlags bits set. [ STATE_CREATION ERROR #64: CREATEBUFFER_INVALIDBINDFLAGS]               
-             */
+			/*
+			   A resource cannot created with both D3D11_RESOURCE_MISC_DRAWINDIRECT_ARGS and D3D11_RESOURCE_MISC_BUFFER_STRUCTURED. [ STATE_CREATION ERROR #68: CREATEBUFFER_INVALIDMISCFLAGS]
+			   When creating a buffer with the MiscFlag D3D11_RESOURCE_MISC_BUFFER_STRUCTURED specified, the StructureByteStride must be greater than zero, no greater than 2048, and a multiple of 4. [ STATE_CREATION ERROR #2097339: CREATEBUFFER_INVALIDSTRUCTURESTRIDE]
+			   Buffers cannot be created with both D3D11_RESOURCE_MISC_BUFFER_ALLOW_RAW_VIEWS and D3D11_RESOURCE_MISC_BUFFER_STRUCTURED. [ STATE_CREATION ERROR #68: CREATEBUFFER_INVALIDMISCFLAGS]
+			   Buffers created with D3D11_RESOURCE_MISC_BUFFER_STRUCTURED cannot specify any of the following listed bind flags.  The following BindFlags bits (0x81) are set: D3D11_BIND_VERTEX_BUFFER (1), D3D11_BIND_INDEX_BUFFER (0), D3D11_BIND_CONSTANT_BUFFER (0), D3D11_BIND_STREAM_OUTPUT (0), D3D11_BIND_RENDER_TARGET (0), or D3D11_BIND_DEPTH_STENCIL (0). [ STATE_CREATION ERROR #68: CREATEBUFFER_INVALIDMISCFLAGS]
+			   Buffers created with D3D11_RESOURCE_MISC_BUFFER_ALLOW_RAW_VIEWS must specify at least one of the D3D11_BIND_SHADER_RESOURCE and D3D11_BIND_UNORDERED_ACCESS bind flags. [ STATE_CREATION ERROR #68: CREATEBUFFER_INVALIDMISCFLAGS]
+			   A D3D11_USAGE_DYNAMIC Resource cannot be bound to certain parts of the graphics pipeline, but has at least one invalid BindFlags bit set. The BindFlags bits (0x19) have the following settings: D3D11_BIND_STREAM_OUTPUT (1), D3D11_BIND_RENDER_TARGET (0), D3D11_BIND_DEPTH_STENCIL (0), D3D11_BIND_UNORDERED_ACCESS (0). [ STATE_CREATION ERROR #64: CREATEBUFFER_INVALIDBINDFLAGS]
+			   A D3D11_USAGE_DYNAMIC Resource may have only the D3D11_CPU_ACCESS_WRITE CPUAccessFlags set. [ STATE_CREATION ERROR #63: CREATEBUFFER_INVALIDCPUACCESSFLAGS]
+			   D3D11_BIND_UNORDERED_ACCESS cannot be combined with the following BindFlags: D3D11_BIND_CONSTANT_BUFFER (0), D3D11_BIND_DEPTH_STENCIL (0), or D3D11_BIND_STREAM_OUTPUT (1). [ STATE_CREATION ERROR #64: CREATEBUFFER_INVALIDBINDFLAGS]
+			   Buffers for DrawIndirect can not be created with D3D11_BIND_CONSTANT_BUFFER. [ STATE_CREATION ERROR #68: CREATEBUFFER_INVALIDMISCFLAGS]
+			   Buffers for DrawIndirect can not be created with D3D11_USAGE_STAGING. [ STATE_CREATION ERROR #68: CREATEBUFFER_INVALIDMISCFLAGS]
+			   A D3D11_USAGE_STAGING Resource must have at least one CPUAccessFlag bit set. [ STATE_CREATION ERROR #63: CREATEBUFFER_INVALIDCPUACCESSFLAGS]
+			   A D3D11_USAGE_STAGING Resource cannot be bound to any parts of the graphics pipeline, so therefore cannot have any BindFlags bits set. [ STATE_CREATION ERROR #64: CREATEBUFFER_INVALIDBINDFLAGS]               
+			 * 
+			 * A D3D11_USAGE_DYNAMIC Resource cannot be bound to certain parts of the graphics pipeline, but must have at least one BindFlags bit set. The BindFlags bits (0) have the following settings: D3D11_BIND_STREAM_OUTPUT (0), D3D11_BIND_RENDER_TARGET (0), D3D11_BIND_DEPTH_STENCIL (0), D3D11_BIND_UNORDERED_ACCESS (0). [ STATE_CREATION ERROR #64: CREATEBUFFER_INVALIDBINDFLAGS]
+			 */
 
-            // Indirect Arg buffers cannot be:
+			// Indirect Arg buffers cannot be:
             // Structured.
             // Staging.
 
-            var buffer = new D3D.Buffer(graphics.D3DDevice,
-                                        new D3D.BufferDescription
-                                            {
-                                                BindFlags = D3D.BindFlags.VertexBuffer,
-                                                CpuAccessFlags = D3D.CpuAccessFlags.None,
-                                                OptionFlags = D3D.ResourceOptionFlags.None,
-                                                SizeInBytes = 6144,
-                                                StructureByteStride = 128,
-                                                Usage = D3D.ResourceUsage.Staging
-                                            });
-            buffer.Dispose();
-        }
+	        D3D.Buffer buffer = null;
+
+	        try
+	        {
+		        buffer = new D3D.Buffer(graphics.D3DDevice,
+		                                    new D3D.BufferDescription
+			                                    {
+				                                    BindFlags = D3D.BindFlags.ShaderResource,
+				                                    CpuAccessFlags = D3D.CpuAccessFlags.Write,
+				                                    OptionFlags = D3D.ResourceOptionFlags.BufferAllowRawViews,
+				                                    SizeInBytes = 6144,
+				                                    StructureByteStride = 128,
+				                                    Usage = D3D.ResourceUsage.Dynamic
+			                                    });
+	        }
+	        catch
+	        {
+				
+	        }
+	        finally
+	        {
+		        if (buffer != null)
+		        {
+			        buffer.Dispose();
+		        }
+	        }
+
+			try
+			{
+				buffer = new D3D.Buffer(graphics.D3DDevice,
+											new D3D.BufferDescription
+											{
+												BindFlags = D3D.BindFlags.ShaderResource,
+												CpuAccessFlags = D3D.CpuAccessFlags.Write,
+												OptionFlags = D3D.ResourceOptionFlags.BufferStructured,
+												SizeInBytes = 6144,
+												StructureByteStride = 128,
+												Usage = D3D.ResourceUsage.Dynamic
+											});
+			}
+			catch
+			{
+
+			}
+			finally
+			{
+				if (buffer != null)
+				{
+					buffer.Dispose();
+				}
+			}
+
+			try
+			{
+				buffer = new D3D.Buffer(graphics.D3DDevice,
+											new D3D.BufferDescription
+											{
+												BindFlags = D3D.BindFlags.ShaderResource,
+												CpuAccessFlags = D3D.CpuAccessFlags.Write,
+												OptionFlags = D3D.ResourceOptionFlags.DrawIndirectArguments,
+												SizeInBytes = 6144,
+												StructureByteStride = 128,
+												Usage = D3D.ResourceUsage.Dynamic
+											});
+			}
+			catch
+			{
+
+			}
+			finally
+			{
+				if (buffer != null)
+				{
+					buffer.Dispose();
+				}
+			}
+		}
         #endregion
     }
 }

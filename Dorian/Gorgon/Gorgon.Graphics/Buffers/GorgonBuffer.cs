@@ -24,8 +24,6 @@
 // 
 #endregion
 
-using System;
-
 namespace GorgonLibrary.Graphics
 {
 	/// <summary>
@@ -79,11 +77,11 @@ namespace GorgonLibrary.Graphics
         /// <summary>
         /// Property to return the settings for the buffer.
         /// </summary>
-        public new GorgonBufferSettings Settings2
+        public new GorgonBufferSettings Settings
         {
             get
             {
-                return (GorgonBufferSettings)base.Settings2;
+                return (GorgonBufferSettings)base.Settings;
             }
         }
 		#endregion
@@ -151,18 +149,6 @@ namespace GorgonLibrary.Graphics
 		/// <param name="name">Name of the buffer.</param>
 		/// <param name="settings">Settings for the buffer.</param>
 		internal GorgonBuffer(GorgonGraphics graphics, string name, IBufferSettings settings)
-            : base(graphics, name, null)
-		{
-		    throw new NotSupportedException("This is now obsolete");
-		}
-        
-		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonBuffer" /> class.
-		/// </summary>
-		/// <param name="graphics">The graphics interface used to create this object.</param>
-		/// <param name="name">Name of the buffer.</param>
-		/// <param name="settings">Settings for the buffer.</param>
-		internal GorgonBuffer(GorgonGraphics graphics, string name, IBufferSettings2 settings)
 			: base(graphics, name, settings)
 		{
 		}

@@ -589,7 +589,7 @@ namespace GorgonLibrary.Graphics
 			if (buffer != null)
 			{
 				_graphics.Context.InputAssembler.SetIndexBuffer((D3D.Buffer)buffer.D3DResource,
-				                                                buffer.Settings2.Use32BitIndices ? GI.Format.R32_UInt : GI.Format.R16_UInt, offset);
+				                                                buffer.Settings.Use32BitIndices ? GI.Format.R32_UInt : GI.Format.R16_UInt, offset);
 			}
 			else
 			{

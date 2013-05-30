@@ -686,9 +686,8 @@ namespace GorgonLibrary.Renderers
 			// Create our empty vertex buffer.
 			DefaultVertexBufferBinding =
 				new GorgonVertexBufferBinding(
-					Graphics.Buffers.CreateVertexBuffer("Gorgon 2D Default Vertex Buffer", new GorgonVertexBufferSettings
+					Graphics.Buffers.CreateVertexBuffer("Gorgon 2D Default Vertex Buffer", new GorgonBufferSettings
 						{
-							IsOutput = false,
 							SizeInBytes = spriteVBSize,
 							Usage = BufferUsage.Dynamic
 						}), Gorgon2DVertex.SizeInBytes);

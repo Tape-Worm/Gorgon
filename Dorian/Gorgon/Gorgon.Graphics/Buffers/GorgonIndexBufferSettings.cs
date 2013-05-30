@@ -6,7 +6,7 @@ namespace GorgonLibrary.Graphics
 	/// Settings for the index buffer.
 	/// </summary>
 	public class GorgonIndexBufferSettings
-		: IBufferSettings2
+		: IBufferSettings
 	{
 		/// <summary>
 		/// Property to set or return the usage for the buffer.
@@ -75,6 +75,7 @@ namespace GorgonLibrary.Graphics
         /// Property to set or return whether to allow unordered access to the buffer.
         /// </summary>
         /// <remarks>This value must be set to FALSE if <see cref="IsOutput" /> is set to TRUE.
+		/// <para>Unordered access views require a video device with SM5 capabilities.</para>
         /// <para>The default value is FALSE.</para>
         /// </remarks>
         public bool AllowUnorderedAccessViews
@@ -99,7 +100,6 @@ namespace GorgonLibrary.Graphics
         /// </summary>
         /// <remarks>
         /// This will allow the buffer to hold render target data.  As of right now, Gorgon does not have a way to bind a render target to the buffer objects.
-        /// <para>This value does not apply to constant or structured buffers.</para>
         /// <para>The default value is FALSE.</para>
         /// </remarks>
         public bool AllowRenderTarget
@@ -113,7 +113,6 @@ namespace GorgonLibrary.Graphics
         /// </summary>
         /// <remarks>
         /// Setting this value to any other value than Unknown will create a default shader view for the buffer that will encompass the entire buffer with the specified format.
-        /// <para>This value does not apply to constant or structured buffers.</para>
         /// <para>The default value is Unknown.</para>
         /// </remarks>
         public BufferFormat DefaultShaderViewFormat
@@ -138,10 +137,7 @@ namespace GorgonLibrary.Graphics
         /// <summary>
         /// Property to set or return whether the buffer will be used as an indirect argument buffer.
         /// </summary>
-        /// <remarks>
-        /// This value does not apply to structured buffers or constant buffers.
-        /// <para>The default value is FALSE.</para>
-        /// </remarks>
+        /// <remarks>The default value is FALSE.</remarks>
         public bool AllowIndirectArguments
         {
             get;
@@ -153,7 +149,7 @@ namespace GorgonLibrary.Graphics
         /// </summary>
         /// <exception cref="System.NotSupportedException">Thrown when an attempt to set a value to this property was made.</exception>
         /// <remarks>This value is only applicable to a structured buffer and will always return 0.</remarks>
-        int IBufferSettings2.StructureSize
+        int IBufferSettings.StructureSize
         {
             get
             {

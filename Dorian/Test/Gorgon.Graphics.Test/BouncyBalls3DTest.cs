@@ -343,7 +343,7 @@ namespace GorgonLibrary.Graphics.Test
 				index += 4;
 			}
 
-			_vertices = _graphics.Buffers.CreateVertexBuffer("Vertex", new GorgonVertexBufferSettings()
+			_vertices = _graphics.Buffers.CreateVertexBuffer("Vertex", new GorgonBufferSettings()
 				{
 					SizeInBytes = 4 * vertexSize * Count,
 					Usage = BufferUsage.Dynamic
