@@ -82,9 +82,8 @@ namespace GorgonLibrary.Graphics.Test
 
 			using (var buffer = _framework.Graphics.Buffers.CreateStructuredBuffer("SB", new GorgonStructuredBufferSettings
 			    {
-					ElementCount = 4,
-					ElementSize = 12,
-					IsOutput = false
+					SizeInBytes = 48,
+					StructureSize = 12
 				}))
 			{
 				_bufferStream = new GorgonDataStream(48);
@@ -114,27 +113,6 @@ namespace GorgonLibrary.Graphics.Test
 			}
 		}
 
-		[TestMethod]
-		public void BindTypedBuffer()
-		{
-			_framework.CreateTestScene(_tbShaders, _tbShaders, true);
-
-			var values = new Vector4[256];
-
-			for (int i = 0; i < values.Length; i++)
-			{
-				values[i] = new Vector4(GorgonRandom.RandomSingle(), GorgonRandom.RandomSingle(), GorgonRandom.RandomSingle(), 1.0f);
-			}
-
-			using(var buffer = _framework.Graphics.Buffers.CreateTypedBuffer("TB", values, BufferFormat.R32G32B32A32_Float, BufferUsage.Default))
-			{
-				_framework.Graphics.Shaders.PixelShader.Resources.SetShaderBuffer(0, buffer);
-
-				Assert.IsTrue(_framework.Run() == DialogResult.Yes);
-			}
-			
-		}
-
         [TestMethod]
         public void CreateGenericBuffer()
         {
@@ -156,15 +134,16 @@ namespace GorgonLibrary.Graphics.Test
         [TestMethod]
         public void CreateVertexBufferViews()
         {
-            var vb = _framework.Graphics.Buffers.CreateVertexBuffer("VB", new GorgonVertexBufferSettings()
+            var vb = _framework.Graphics.Buffers.CreateVertexBuffer("VB", new GorgonBufferSettings()
             {
-                AllowUnorderedAccess = true,
-                ShaderViewFormat = BufferFormat.R8_Int,
+				AllowShaderViews = true,
+                AllowUnorderedAccessViews = true,
+                DefaultShaderViewFormat = BufferFormat.R8_Int,
                 SizeInBytes = 48,
                 Usage = BufferUsage.Default
             });
 
-            var uav = vb.CreateUnorderedAccessView(BufferFormat.R32G32B32A32_Float, 0, 3);
+            var uav = vb.CreateUnorderedAccessView(BufferFormat.R32G32B32A32_Float, 0, 3, false);
             uav.Dispose();
         }
 
@@ -189,40 +168,18 @@ namespace GorgonLibrary.Graphics.Test
             var structBuffer = _framework.Graphics.Buffers.CreateStructuredBuffer("SB", new GorgonStructuredBufferSettings()
                 {
                     Usage = BufferUsage.Default,
-                    AllowUnorderedAccess = true,
-                    ElementCount = 5,
-                    ElementSize = 16
+                    AllowUnorderedAccessViews = true,
+					SizeInBytes = 80,
+					StructureSize = 16
                 });
 
-            var typedBuffer = _framework.Graphics.Buffers.CreateTypedBuffer("TB", new GorgonTypedBufferSettings<int>
-                {
-                    Usage = BufferUsage.Default,
-                    AllowUnorderedAccess = true,
-                    ElementCount = 1,
-                    ElementSize = 4,
-                    ShaderViewFormat = BufferFormat.R8G8B8A8_Int
-                });
-
-            var rawBuffer = _framework.Graphics.Buffers.CreateRawBuffer("RB", new GorgonRawBufferSettings()
-                {
-                    Usage = BufferUsage.Default,
-                    AllowUnorderedAccess = true,
-                    SizeInBytes = 12
-                });
-
-            GorgonUnorderedAccessView view = structBuffer.CreateUnorderedAccessView(0, 5, StructuredBufferType.Standard);
+            GorgonUnorderedAccessView view = structBuffer.CreateUnorderedAccessView(0, 5, UnorderedAccessViewType.Standard);
             view.Dispose();
 
-            view = structBuffer.CreateUnorderedAccessView(0, 5, StructuredBufferType.AppendConsume);
+            view = structBuffer.CreateUnorderedAccessView(0, 5, UnorderedAccessViewType.AppendConsume);
             view.Dispose();
 
-            view = structBuffer.CreateUnorderedAccessView(0, 5, StructuredBufferType.Counter);
-            view.Dispose();
-
-            view = typedBuffer.CreateUnorderedAccessView(BufferFormat.R8G8B8A8_Int, 0, 1);
-            view.Dispose();
-
-            view = rawBuffer.CreateUnorderedAccessView(0, 3);
+            view = structBuffer.CreateUnorderedAccessView(0, 5, UnorderedAccessViewType.Counter);
             view.Dispose();
         }
 
@@ -233,8 +190,14 @@ namespace GorgonLibrary.Graphics.Test
 
             var values = new byte[256 * 256 * 4];
 	        float angle = 0.0f;
-
-	        using(var buffer = _framework.Graphics.Buffers.CreateRawBuffer("RB", values, BufferUsage.Default))
+			
+	        using(var buffer = _framework.Graphics.Buffers.CreateBuffer("RB", new GorgonBufferSettings
+		        {
+					AllowRawViews = true,
+					AllowShaderViews = true,
+					DefaultShaderViewFormat = BufferFormat.R32_UInt,
+					SizeInBytes = values.Length
+		        }))
 	        {
 		        _framework.Graphics.Shaders.PixelShader.Resources.SetShaderBuffer(0, buffer);
 

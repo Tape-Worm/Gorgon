@@ -25,7 +25,6 @@
 #endregion
 
 using System;
-using GorgonLibrary.Diagnostics;
 using DX = SharpDX;
 using D3D11 = SharpDX.Direct3D11;
 using GorgonLibrary.IO;
@@ -48,11 +47,11 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Property to return the index buffer settings.
 		/// </summary>
-		public new GorgonIndexBufferSettings Settings2
+		public new GorgonIndexBufferSettings Settings
 		{
 			get
 			{
-				return (GorgonIndexBufferSettings)base.Settings2;
+				return (GorgonIndexBufferSettings)base.Settings;
 			}
 		}
 
@@ -76,7 +75,7 @@ namespace GorgonLibrary.Graphics
 		/// <returns>
 		/// A data stream containing the buffer data.
 		/// </returns>
-		protected override GorgonDataStream LockImpl(BufferLockFlags lockFlags)
+		protected override GorgonDataStream OnLock(BufferLockFlags lockFlags)
 		{
 			var mapMode = D3D11.MapMode.Write;
 
@@ -111,7 +110,7 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Function called to unlock the underlying data buffer.
 		/// </summary>
-		protected override void UnlockImpl()
+		protected override void OnUnlock()
 		{
 			Graphics.Context.UnmapSubresource(D3DBuffer, 0);
 			_lockStream.Dispose();
@@ -124,7 +123,7 @@ namespace GorgonLibrary.Graphics
 		/// <param name="stream">Stream containing the data used to update the buffer.</param>
 		/// <param name="offset">Offset, in bytes, into the buffer to start writing at.</param>
 		/// <param name="size">The number of bytes to write.</param>
-		protected override void UpdateImpl(GorgonDataStream stream, int offset, int size)
+		protected override void OnUpdate(GorgonDataStream stream, int offset, int size)
 		{
 			Graphics.Context.UpdateSubresource(
 				new DX.DataBox
@@ -161,7 +160,7 @@ namespace GorgonLibrary.Graphics
 		/// <exception cref="GorgonLibrary.GorgonException">Thrown when the buffer usage is not set to default.</exception>
 		public void Update(GorgonDataStream stream, int offset, int size)
 		{
-			UpdateImpl(stream, offset, size);
+			OnUpdate(stream, offset, size);
 		}
 
 		/// <summary>
@@ -184,8 +183,9 @@ namespace GorgonLibrary.Graphics
         /// <remarks>Use this to create additional shader views for the buffer.  Multiple views of the same resource can be bound to multiple stages in the pipeline.
         /// <para>To create a shader view, the index buffer must have <see cref="GorgonLibrary.Graphics.GorgonIndexBufferSettings.AllowShaderViews">AllowShaderViews</see> in the settings set to TRUE.  Otherwise, an exception will be thrown.</para>
         /// <para>The <paramref name="startIndex"/> and <paramref name="count"/> are elements in the buffer.  The size of each element is dependent upon the size, in bytes, of the format specified in the <paramref name="format"/> parameter.</para>
-        /// <para></para>
-        /// <para>This function only applies to buffers that have not been created with a Usage of Staging.</para>
+		/// <para>Raw views require that the buffer be created with the <see cref="GorgonLibrary.Graphics.GorgonIndexBufferSettings.AllowRawViews">AllowRawViews</see> property set to TRUE in its settings.</para>
+		/// <para>Raw views can only be used on SM5 video devices or better. </para>
+		/// <para>This function only applies to buffers that have not been created with a Usage of Staging.</para>
         /// </remarks>
         public GorgonBufferShaderView CreateShaderView(BufferFormat format, int startIndex, int count, bool useRaw)
 		{
@@ -202,11 +202,10 @@ namespace GorgonLibrary.Graphics
 		/// <returns>A new unordered access view for the buffer.</returns>
 		/// <remarks>Use this to create an unordered access view that will allow shaders to access the view using multiple threads at the same time.  Unlike a <see cref="CreateShaderView">Shader View</see>, only one 
 		/// unordered access view can be bound to the pipeline at any given time.
-        /// <para>Views on index buffers will only use R32_Uint format if the buffer is a 32 bit index buffer or R16_Uint format if the buffer is a 16 bit buffer.</para>
-        /// <para>The <paramref name="startIndex"/> and <paramref name="count"/> are elements in the buffer.  The size of each element is dependant upon whether the index buffer holds 32 bit indices or 16 bit indices.
-        /// Consequently the number of elements in the buffer may be larger or smaller depending on the view format.  For example, a 48 byte buffer with 32bit indices will have an element count of 12. Whereas the same buffer with 
-        /// 16bit indices will have count of 24.</para>
-        /// <para>Unordered access views require a video device feature level of SM_5 or better.</para>
+		/// <para>To create an unordered access view, the index buffer must have <see cref="GorgonLibrary.Graphics.GorgonIndexBufferSettings.AllowUnorderedAccessViews">AllowUnorderedAccessViews</see> in the settings set to TRUE.  Otherwise, an exception will be thrown.</para>
+		/// <para>The <paramref name="startIndex"/> and <paramref name="count"/> are elements in the buffer.  The size of each element is dependent upon the size, in bytes, of the format specified in the <paramref name="format"/> parameter.</para>
+		/// <para>Raw views require that the buffer be created with the <see cref="GorgonLibrary.Graphics.GorgonIndexBufferSettings.AllowRawViews">AllowRawViews</see> property set to TRUE in its settings.</para>
+		/// <para>Unordered access views require a video device feature level of SM_5 or better.</para>
 		/// </remarks>
 		/// <exception cref="GorgonLibrary.GorgonException">Thrown when the usage for this buffer is set to Staging or Dynamic.
 		/// <para>-or-</para>

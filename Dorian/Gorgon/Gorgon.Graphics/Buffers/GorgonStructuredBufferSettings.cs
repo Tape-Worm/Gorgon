@@ -5,40 +5,23 @@ namespace GorgonLibrary.Graphics
 	/// <summary>
 	/// Settings for a structured buffer.
 	/// </summary>
-	/// <remarks>Structured buffers are only available on SM_5 video devices.</remarks>
+	/// <remarks>
+	/// Structured buffers are only available on SM_5 video devices.
+	/// </remarks>
 	public sealed class GorgonStructuredBufferSettings
-		: IShaderBufferSettings
+		: IBufferSettings
 	{
-		#region Constructor/Destructor.
 		/// <summary>
 		/// Initializes a new instance of the <see cref="GorgonStructuredBufferSettings"/> class.
 		/// </summary>
 		public GorgonStructuredBufferSettings()
 		{
-			IsOutput = false;
-			AllowUnorderedAccess = false;
-			ElementCount = 0;
-			ElementSize = 0;
+			AllowUnorderedAccessViews = false;
+			CreateDefaultShaderView = true;
+			AllowShaderViews = true;
 			Usage = BufferUsage.Default;
-		}
-		#endregion
-
-		#region IShaderBufferSettings Members
-		/// <summary>
-		/// Property to return the size of the buffer, in bytes.
-		/// </summary>
-		/// <remarks>This value will return the Element Count multiplied by the Element Size.</remarks>
-        /// <exception cref="System.NotSupportedException">Thrown when an attempt to set a value is made.</exception>
-		int IBufferSettings.SizeInBytes
-		{
-			get
-			{
-				return ElementCount * ElementSize;
-			}
-			set
-			{
-                throw new NotSupportedException();
-			}
+			SizeInBytes = 0;
+			StructureSize = 0;
 		}
 
 		/// <summary>
@@ -54,66 +37,140 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Property to set or return whether to allow unordered access to the buffer.
 		/// </summary>
-		/// <remarks>Unordered access views require a video device feature level of SM_5 or better.
+		/// <remarks>Unordered access views require a video device with SM5 capabilities.
 		/// <para>The default value is FALSE.</para>
 		/// </remarks>
-		public bool AllowUnorderedAccess
+		public bool AllowUnorderedAccessViews
 		{
 			get;
 			set;
+		}
+
+		/// <summary>
+		/// Property to set or return whether to allow shader resource views for this buffer.
+		/// </summary>
+		/// <remarks>The default value is TRUE.</remarks>
+		public bool AllowShaderViews
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Property to set or return whether to create a default shader view for this buffer.
+		/// </summary>
+		/// <remarks>The default value is TRUE.</remarks>
+		public bool CreateDefaultShaderView
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Property to set or return whether to allow this buffer to be used as a render target.
+		/// </summary>
+		/// <exception cref="System.NotSupportedException">Thrown when an attempt to set a value to this property was made.</exception>
+		/// <remarks>This value does not apply to structured buffers will always return FALSE.</remarks>
+		bool IBufferSettings.AllowRenderTarget
+		{
+			get
+			{
+				return false;
+			}
+			set
+			{
+				throw new NotSupportedException();
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return the format for the default shader view.
+		/// </summary>
+		/// <exception cref="System.NotSupportedException">Thrown when an attempt to set a value to this property was made.</exception>
+		/// <remarks>This value does not apply to structured buffers will always return Unknown.</remarks>
+		BufferFormat IBufferSettings.DefaultShaderViewFormat
+		{
+			get
+			{
+				return BufferFormat.Unknown;
+			}
+			set
+			{
+				throw new NotSupportedException();
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return whether a buffer will allow raw views.
+		/// </summary>
+		/// <exception cref="System.NotSupportedException">Thrown when an attempt to set a value to this property was made.</exception>
+		/// <remarks>This value does not apply to structured buffers will always return FALSE.</remarks>
+		bool IBufferSettings.AllowRawViews
+		{
+			get
+			{
+				return false;
+			}
+			set
+			{
+				throw new NotSupportedException();
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return whether the buffer will be used as an indirect argument buffer.
+		/// </summary>
+		/// <exception cref="System.NotSupportedException">Thrown when an attempt to set a value to this property was made.</exception>
+		/// <remarks>This value does not apply to structured buffers will always return FALSE.</remarks>
+		bool IBufferSettings.AllowIndirectArguments
+		{
+			get
+			{
+				return false;
+			}
+			set
+			{
+				throw new NotSupportedException();
+			}
 		}
 
 		/// <summary>
 		/// Property to set or return whether to allow this buffer to be used for stream output.
 		/// </summary>
-		/// <remarks>The default value is FALSE.</remarks>
-		public bool IsOutput
-		{
-			get;
-			set;
-		}
-
-		/// <summary>
-		/// Property to set or return the size of an element in a structured buffer.
-		/// </summary>
-		/// <remarks>
-		/// <para>The default value is 0.</para>
-		/// </remarks>
-		public int ElementSize
-		{
-			get;
-			set;
-		}
-
-		/// <summary>
-		/// Property to set or return the number of an elements in a structured buffer or typed buffer.
-		/// </summary>
-		/// <remarks>
-		/// This value is only applicable on SM_5 video devices if used with a structured buffer. The value must be non-zero for all buffer types.
-		/// <para>The default value is 0.</para>
-		/// </remarks>
-		public int ElementCount
-		{
-			get;
-			set;
-		}
-
-		/// <summary>
-		/// Property to set or return the format of the view used when binding a typed buffer to a shader.
-		/// </summary>
-		/// <remarks>This value is not applicable to structured buffers.</remarks>
-        /// <exception cref="System.NotSupportedException">Thrown when an attempt to set a value is made.</exception>
-		BufferFormat IShaderBufferSettings.ShaderViewFormat
+		/// <exception cref="System.NotSupportedException">Thrown when an attempt to set a value to this property was made.</exception>
+		/// <remarks>This value does not apply to structured buffers will always return FALSE.</remarks>
+		bool IBufferSettings.IsOutput
 		{
 			get
 			{
-			    return BufferFormat.Unknown;
+				return false;
 			}
 			set
 			{
-                throw new NotSupportedException();
+				throw new NotSupportedException();
 			}
 		}
-		#endregion
+
+		/// <summary>
+		/// Property to set or return the size of the buffer, in bytes.
+		/// </summary>
+		/// <remarks>The default value is 0.</remarks>
+		public int SizeInBytes
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Property to set or return the size, in bytes, of an individual item in a structured buffer.
+		/// </summary>
+		/// <remarks>This value must be between 1 and 2048 and be a multiple of 4.
+		/// <para>The default value is 0.</para>
+		/// </remarks>
+		public int StructureSize
+		{
+			get;
+			set;
+		}
 	}
 }

@@ -117,14 +117,11 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="GORGFX_ALREADY_LOCKED" xml:space="preserve">
+  <data name="GORGFX_BUFFER_ALREADY_LOCKED" xml:space="preserve">
     <value>The buffer is already locked.</value>
   </data>
   <data name="GORGFX_BUFFER_IMMUTABLE" xml:space="preserve">
     <value>This buffer is immutable and this cannot be updated.</value>
-  </data>
-  <data name="GORGFX_BUFFER_SIZE_MISMATCH" xml:space="preserve">
-    <value>The size of the buffers do not match.</value>
   </data>
   <data name="GORGFX_COLOR_TOSTR" xml:space="preserve">
     <value>Color Value: Red={0}, Green={1}, Blue={2}, Alpha={3}</value>
@@ -208,9 +205,6 @@
   <data name="GORGFX_BUFFER_IMMUTABLE_REQUIRES_DATA" xml:space="preserve">
     <value>Cannot create an immutable buffer without initial data to populate it.</value>
   </data>
-  <data name="GORGFX_BUFFER_NO_STAGING_BUFFER_TYPE" xml:space="preserve">
-    <value>Vertex, Index and Constant buffers cannot have a usage of [Staging].</value>
-  </data>
   <data name="GORGFX_SHADER_VIEW_TOSTR" xml:space="preserve">
     <value>Gorgon Shader View.  Format: [{0}]</value>
   </data>
@@ -256,12 +250,6 @@
   <data name="GORGFX_VIEW_DEPTH_START_INVALID" xml:space="preserve">
     <value>The depth start must be between 0 and less than {0}.</value>
   </data>
-  <data name="GORGFX_BUFFER_ELEMENT_COUNT_INVALID" xml:space="preserve">
-    <value>The buffer requires at least {0} element(s).</value>
-  </data>
-  <data name="GORGFX_BUFFER_FORMAT_SIZE_MISMATCH" xml:space="preserve">
-    <value>The size of the format: {0} bytes, does not match the size of the data type: {1} bytes.</value>
-  </data>
   <data name="GORGFX_BUFFER_SIZE_TOO_SMALL" xml:space="preserve">
     <value>The buffer requires at least {0} byte(s).</value>
   </data>
@@ -286,11 +274,8 @@
   <data name="GORGFX_VIEW_ALREADY_BOUND" xml:space="preserve">
     <value>The view was already bound to the shader at index [{0}].</value>
   </data>
-  <data name="GORGFX_BUFFER_OUTPUT_NOT_DYNAMIC_OR_STAGING" xml:space="preserve">
-    <value>A buffer that allows stream output must not have a usage of [Dynamic] or [Staging].</value>
-  </data>
   <data name="GORGFX_BUFFER_NO_STAGING_INVALID_FLAGS" xml:space="preserve">
-    <value>Buffers that allow indirect arguments, shader views, unordered access views, raw views and render target views cannot have a usage of [Staging].</value>
+    <value>Buffers that allow indirect arguments, shader views, unordered access views, raw views, render target views or can be used for output cannot have a usage of [Staging].</value>
   </data>
   <data name="GORGFX_BUFFER_OUTPUT_NO_UNORDERED" xml:space="preserve">
     <value>A buffer that allows stream output cannot have unordered access.</value>
@@ -312,5 +297,17 @@
   </data>
   <data name="GORGFX_VIEW_UNORDERED_RAW_INVALID_FORMAT" xml:space="preserve">
     <value>Raw unordered views require a format of [R32] (Typeless).</value>
+  </data>
+  <data name="GORGFX_BUFFER_STRUCTURE_SIZE_INVALID" xml:space="preserve">
+    <value>The structure size must be greater than 0 and no greater than 2048 bytes.</value>
+  </data>
+  <data name="GORGFX_BUFFER_DYNAMIC_NEEDS_SHADER_VIEW" xml:space="preserve">
+    <value>A generic dynamic buffer must be accessible via a shader view.</value>
+  </data>
+  <data name="GORGFX_BUFFER_NO_DYNAMIC_INVALID_FLAGS" xml:space="preserve">
+    <value>Buffers that allow unordered access views, render target views, or can be used for output cannot have a usage of [Dynamic].</value>
+  </data>
+  <data name="GORGFX_BUFFER_SIZE_MISMATCH" xml:space="preserve">
+    <value>The size of the buffers do not match.</value>
   </data>
 </root>

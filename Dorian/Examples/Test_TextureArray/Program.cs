@@ -224,8 +224,8 @@ namespace Test_TextureArray
 
 			_structBuffer = _graphics.Buffers.CreateStructuredBuffer("SB", new GorgonStructuredBufferSettings()
 			    {
-			        ElementCount = 1,
-                    ElementSize = 4
+					SizeInBytes = 4,
+					StructureSize = 4,
 			    });
 
 			int structValue = 2;

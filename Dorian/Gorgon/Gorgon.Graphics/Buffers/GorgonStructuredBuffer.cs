@@ -25,31 +25,9 @@
 #endregion
 
 using System;
-using GorgonLibrary.IO;
-using DX = SharpDX;
-using D3D = SharpDX.Direct3D11;
 
 namespace GorgonLibrary.Graphics
 {
-	/// <summary>
-	/// The type of structured buffer.
-	/// </summary>
-	public enum StructuredBufferType
-	{
-		/// <summary>
-		/// A standard structured buffer.
-		/// </summary>
-		Standard = 0,
-		/// <summary>
-		/// An append/consume buffer.
-		/// </summary>
-		AppendConsume = 1,
-		/// <summary>
-		/// A counter buffer.
-		/// </summary>
-		Counter = 2
-	}
-
 	/// <summary>
 	/// A structured buffer for shaders.
 	/// </summary>
@@ -58,9 +36,24 @@ namespace GorgonLibrary.Graphics
 	/// <para>Structured buffers are only available to SM5 and above.</para>
 	/// </remarks>
 	public class GorgonStructuredBuffer
-		: GorgonShaderBuffer
+		: GorgonBaseBuffer
 	{
+		#region Variables.
+		private GorgonShaderView _defaultView;
+		#endregion
+
 		#region Properties.
+		/// <summary>
+		/// Property to return the type of buffer.
+		/// </summary>
+		public override BufferType BufferType
+		{
+			get
+			{
+				return BufferType.Structured;
+			}
+		}
+
 		/// <summary>
 		/// Property to return the settings for a structured shader buffer.
 		/// </summary>
@@ -71,109 +64,31 @@ namespace GorgonLibrary.Graphics
 				return (GorgonStructuredBufferSettings)base.Settings;
 			}
 		}
+
+		/// <summary>
+		/// Property to return the default shader view for this buffer.
+		/// </summary>
+		public override GorgonShaderView DefaultShaderView
+		{
+			get
+			{
+				return _defaultView;
+			}
+		}
 		#endregion
 
 		#region Methods.
 		/// <summary>
-		/// Function to create a default resource view object.
+		/// Function to create the default shader view.
 		/// </summary>
-		private void CreateDefaultResourceView()
+		protected override void OnCreateDefaultShaderView()
 		{
-		    if (Settings.Usage == GorgonLibrary.Graphics.BufferUsage.Staging)
-		    {
-		        return;
-		    }
-
-		    DefaultShaderView = CreateShaderView(0, Settings.ElementCount);
-		}
-
-        /// <summary>
-        /// Function to retrieve the staging buffer for this buffer.
-        /// </summary>
-        /// <returns>
-        /// The staging buffer for this buffer.
-        /// </returns>
-        protected override GorgonBuffer GetStagingBufferImpl()
-        {
-            GorgonBuffer result = Graphics.Buffers.CreateStructuredBuffer(Name + " [Staging]",
-                                                                         new GorgonStructuredBufferSettings
-                                                                         {
-                                                                             AllowUnorderedAccess = false,
-                                                                             ElementCount = Settings.ElementCount,
-                                                                             ElementSize = Settings.ElementSize,
-                                                                             IsOutput = false,
-                                                                             Usage = BufferUsage.Staging
-                                                                         });
-
-            result.Copy(this);
-
-            return result;
-        }
-
-		/// <summary>
-		/// Function to clean up the resource object.
-		/// </summary>
-		protected override void CleanUpResource()
-		{
-			if (D3DResource != null)
+			if ((Settings.Usage == BufferUsage.Staging) || (!Settings.AllowShaderViews) || (!Settings.CreateDefaultShaderView))
 			{
-				GorgonRenderStatistics.StructuredBufferCount--;
-				GorgonRenderStatistics.StructuredBufferSize -= D3DBuffer.Description.SizeInBytes;
+				return;
 			}
 
-			base.CleanUpResource();
-		}
-
-		/// <summary>
-		/// Function to initialize the buffer.
-		/// </summary>
-		/// <param name="value">Value used to initialize the buffer.</param>
-		protected override void InitializeImpl(GorgonDataStream value)
-		{
-			if (D3DResource != null)
-			{
-				D3DResource.Dispose();
-				D3DResource = null;
-			}
-
-		    var desc = new D3D.BufferDescription
-		        {
-					BindFlags = Settings.Usage == BufferUsage.Staging ? D3D.BindFlags.None : D3D.BindFlags.ShaderResource,
-		            CpuAccessFlags = D3DCPUAccessFlags,
-		            OptionFlags = D3D.ResourceOptionFlags.BufferStructured,
-		            SizeInBytes = SizeInBytes,
-		            StructureByteStride = Settings.ElementSize,
-		            Usage = D3DUsage
-		        };
-
-            if (Settings.IsOutput)
-            {
-                desc.BindFlags |= D3D.BindFlags.StreamOutput;
-            }
-            
-            if ((Settings.AllowUnorderedAccess) && (Settings.Usage != BufferUsage.Staging))
-			{
-				desc.BindFlags |= D3D.BindFlags.UnorderedAccess;
-			}
-
-		    if (value != null)
-		    {
-		        long position = value.Position;
-
-		        using(var dxStream = new DX.DataStream(value.BasePointer, value.Length - position, true, true))
-		        {
-		            D3DResource = new D3D.Buffer(Graphics.D3DDevice, dxStream, desc);
-		        }
-		    }
-		    else
-		    {
-		        D3DResource = new D3D.Buffer(Graphics.D3DDevice, desc);
-		    }
-
-		    GorgonRenderStatistics.StructuredBufferCount++;
-			GorgonRenderStatistics.StructuredBufferSize += ((D3D.Buffer)D3DResource).Description.SizeInBytes;
-
-            CreateDefaultResourceView();
+			_defaultView = CreateShaderView(0, Settings.SizeInBytes / Settings.StructureSize);
 		}
 
         /// <summary>
@@ -193,17 +108,7 @@ namespace GorgonLibrary.Graphics
         /// </remarks>
         public GorgonBufferShaderView CreateShaderView(int start, int count)
         {
-            if (Settings.Usage == BufferUsage.Staging)
-            {
-                throw new GorgonException(GorgonResult.CannotCreate, "Cannot create a shader resource view for a buffer that has a usage of Staging.");
-            }
-
-            if ((start + count > Settings.ElementCount) || (start < 0) || (count < 1))
-            {
-                throw new ArgumentException("The start and count must be 0 or greater and less than the number of elements in the buffer.");
-            }
-
-            return ViewCache.GetBufferView(BufferFormat.Unknown, start, count, false);
+	        return OnCreateShaderView(BufferFormat.Unknown, start, count, false);
         }
 
 		/// <summary>
@@ -225,29 +130,39 @@ namespace GorgonLibrary.Graphics
 		/// </exception>
 		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="start"/> or <paramref name="count"/> parameters are less than 0 or greater than or equal to the 
 		/// number of elements in the buffer.</exception>
-		public GorgonStructuredBufferUnorderedAccessView CreateUnorderedAccessView(int start, int count, StructuredBufferType viewType)
+		public GorgonStructuredBufferUnorderedAccessView CreateUnorderedAccessView(int start, int count, UnorderedAccessViewType viewType)
 		{
-			if (!Settings.AllowUnorderedAccess)
+			if (Graphics.VideoDevice.SupportedFeatureLevel < DeviceFeatureLevel.SM5)
+			{
+				throw new GorgonException(GorgonResult.CannotCreate, "Unordered access views are only available on video devices that support SM_5 or better.");
+			}
+
+			if (!Settings.AllowUnorderedAccessViews)
 			{
 				throw new GorgonException(GorgonResult.CannotCreate, "The buffer does not allow unordered access.");
 			}
 
-            if (Settings.Usage == BufferUsage.Staging)
-            {
-                throw new GorgonException(GorgonResult.CannotBind, "Cannot bind an unordered access resource view to a buffer that has a usage of [Staging].");
-            }
-
-            if (Settings.Usage == BufferUsage.Dynamic)
-            {
-                throw new GorgonException(GorgonResult.CannotBind, "Cannot bind an unordered access resource view to a buffer that has a usage of [Dynamic].");
-            }
-            
-            if ((start + count > Settings.ElementCount) || (start < 0) || (count < 1))
+			if (Settings.Usage == BufferUsage.Staging)
 			{
-				throw new ArgumentException("The start and count must be 0 or greater and less than the number of elements in the buffer.");
+				throw new GorgonException(GorgonResult.CannotBind, "Cannot bind an unordered access resource view to a buffer that has a usage of [Staging].");
 			}
 
-			var view = new GorgonStructuredBufferUnorderedAccessView(this, BufferFormat.Unknown, start, count, viewType);
+			if (Settings.Usage == BufferUsage.Dynamic)
+			{
+				throw new GorgonException(GorgonResult.CannotBind, "Cannot bind an unordered access resource view to a buffer that has a usage of [Dynamic].");
+			}
+
+			int elementCount = SizeInBytes / Settings.StructureSize;
+
+			if (((start + count) > elementCount)
+				|| (start < 0)
+				|| (count < 1))
+			{
+				throw new ArgumentException(
+					"The start and count must be 0 or greater and less than the number of elements in the buffer.");
+			}
+
+			var view = new GorgonStructuredBufferUnorderedAccessView(this, start, count, viewType);
 
 			view.Initialize();
 

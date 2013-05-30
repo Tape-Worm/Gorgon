@@ -24,11 +24,8 @@
 // 
 #endregion
 
-using System;
 using System.ComponentModel;
-using GorgonLibrary.Diagnostics;
 using DX = SharpDX;
-using D3D = SharpDX.Direct3D11;
 using GorgonLibrary.IO;
 
 namespace GorgonLibrary.Graphics
@@ -64,11 +61,11 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Property to return the settings.
 		/// </summary>
-		public new GorgonConstantBufferSettings Settings2
+		public new GorgonConstantBufferSettings Settings
 		{
 			get
 			{
-				return (GorgonConstantBufferSettings)base.Settings2;
+				return (GorgonConstantBufferSettings)base.Settings;
 			}
 		}
 
@@ -90,10 +87,9 @@ namespace GorgonLibrary.Graphics
         /// Function to perform the creation of a default shader view.
         /// </summary>
         /// <returns>Nothing.</returns>
-        /// <exception cref="System.NotSupportedException">Constant buffers do not support views.</exception>
-        protected override GorgonShaderView OnCreateDefaultShaderView()
+        protected override void OnCreateDefaultShaderView()
         {
-            throw new NotSupportedException();
+            // Do nothing here.  Constant buffers don't support shader resource views.
         }
 
 		/// <summary>
@@ -102,7 +98,7 @@ namespace GorgonLibrary.Graphics
 		/// <param name="stream">Stream containing the data used to update the buffer.</param>
 		/// <param name="offset">Offset, in bytes, into the buffer to start writing at.</param>
 		/// <param name="size">The number of bytes to write.</param>
-		protected override void UpdateImpl(GorgonDataStream stream, int offset, int size)
+		protected override void OnUpdate(GorgonDataStream stream, int offset, int size)
 		{
 			Graphics.Context.UpdateSubresource(
 				new DX.DataBox
@@ -122,7 +118,7 @@ namespace GorgonLibrary.Graphics
 		/// <param name="graphics">Graphics interface that owns this buffer.</param>
 		/// <param name="name">Name of the constant buffer.</param>
 		/// <param name="settings">Settings for the buffer.</param>
-		internal GorgonConstantBuffer(GorgonGraphics graphics, string name, IBufferSettings2 settings)
+		internal GorgonConstantBuffer(GorgonGraphics graphics, string name, IBufferSettings settings)
 			: base(graphics, name, settings)
 		{
 		}

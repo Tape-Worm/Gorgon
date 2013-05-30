@@ -32,7 +32,7 @@ namespace GorgonLibrary.Graphics
 	/// Settings for a generic buffer.
 	/// </summary>
 	public class GorgonBufferSettings
-		: IBufferSettings2
+		: IBufferSettings
 	{
 		/// <summary>
 		/// Property to set or return the usage for the buffer.
@@ -170,7 +170,7 @@ namespace GorgonLibrary.Graphics
         /// </summary>
         /// <remarks>This value is only applicable to a structured buffer.  It will always return 0.</remarks>
         /// <exception cref="System.NotSupportedException">Thrown when an attempt to set a value to this property was made.</exception>
-        int IBufferSettings2.StructureSize
+        int IBufferSettings.StructureSize
         {
             get
             {

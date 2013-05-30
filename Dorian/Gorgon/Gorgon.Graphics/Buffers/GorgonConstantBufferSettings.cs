@@ -6,7 +6,7 @@ namespace GorgonLibrary.Graphics
 	/// Settings for the constant buffer.
 	/// </summary>
 	public class GorgonConstantBufferSettings
-		: IBufferSettings2
+		: IBufferSettings
 	{
         /// <summary>
         /// Property to set or return the usage for the buffer.
@@ -25,7 +25,7 @@ namespace GorgonLibrary.Graphics
 		/// This value always returns FALSE for constant buffers.
 		/// </remarks>
         /// <exception cref="System.NotSupportedException">Thrown when an attempt to set a value to this property was made.</exception>
-		bool IBufferSettings2.IsOutput
+		bool IBufferSettings.IsOutput
 		{
 			get
 			{
@@ -63,7 +63,7 @@ namespace GorgonLibrary.Graphics
         /// </summary>
         /// <exception cref="System.NotSupportedException">Thrown when an attempt to set a value to this property was made.</exception>
         /// <remarks>This value does not apply to constant buffers and will always return FALSE.</remarks>
-        bool IBufferSettings2.AllowUnorderedAccessViews
+        bool IBufferSettings.AllowUnorderedAccessViews
         {
             get
             {
@@ -80,7 +80,7 @@ namespace GorgonLibrary.Graphics
         /// </summary>
         /// <exception cref="System.NotSupportedException">Thrown when an attempt to set a value to this property was made.</exception>
         /// <remarks>This value does not apply to constant buffers and will always return FALSE.</remarks>
-        bool IBufferSettings2.AllowShaderViews
+        bool IBufferSettings.AllowShaderViews
         {
             get
             {
@@ -97,7 +97,7 @@ namespace GorgonLibrary.Graphics
         /// </summary>
         /// <exception cref="System.NotSupportedException">Thrown when an attempt to set a value to this property was made.</exception>
         /// <remarks>This value does not apply to constant buffers and will always return FALSE.</remarks>
-        bool IBufferSettings2.AllowRenderTarget
+        bool IBufferSettings.AllowRenderTarget
         {
             get
             {
@@ -114,7 +114,7 @@ namespace GorgonLibrary.Graphics
         /// </summary>
         /// <exception cref="System.NotSupportedException">Thrown when an attempt to set a value to this property was made.</exception>
         /// <remarks>This value does not apply to constant buffers and will always return Unknown.</remarks>
-        BufferFormat IBufferSettings2.DefaultShaderViewFormat
+        BufferFormat IBufferSettings.DefaultShaderViewFormat
         {
             get
             {
@@ -131,7 +131,7 @@ namespace GorgonLibrary.Graphics
         /// </summary>
         /// <exception cref="System.NotSupportedException">Thrown when an attempt to set a value to this property was made.</exception>
         /// <remarks>This value does not apply to constant buffers and will always return FALSE.</remarks>
-        bool IBufferSettings2.AllowRawViews
+        bool IBufferSettings.AllowRawViews
         {
             get
             {
@@ -150,7 +150,7 @@ namespace GorgonLibrary.Graphics
         /// <remarks>
         /// This value does not apply to constant buffers and will always return FALSE.
         /// </remarks>
-        bool IBufferSettings2.AllowIndirectArguments
+        bool IBufferSettings.AllowIndirectArguments
         {
             get
             {
@@ -169,7 +169,7 @@ namespace GorgonLibrary.Graphics
         /// <remarks>
         /// This value is only applicable to a structured buffer.  This will always return 0.
         /// </remarks>
-        int IBufferSettings2.StructureSize
+        int IBufferSettings.StructureSize
         {
             get
             {

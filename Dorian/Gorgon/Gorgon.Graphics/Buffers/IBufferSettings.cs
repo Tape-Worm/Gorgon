@@ -29,7 +29,7 @@ namespace GorgonLibrary.Graphics
     /// <summary>
     /// Settings for a buffer.
     /// </summary>
-    public interface IBufferSettings2
+    public interface IBufferSettings
     {
         /// <summary>
         /// Property to set or return the usage for the buffer.
@@ -46,6 +46,7 @@ namespace GorgonLibrary.Graphics
         /// </summary>
         /// <remarks>
         /// This value must be set to FALSE if <see cref="IsOutput"/> is set to TRUE.
+        /// <para>Unordered access views require a video device with SM5 capabilities.</para>
         /// <para>The default value is FALSE.</para>
         /// </remarks>
         bool AllowUnorderedAccessViews
@@ -99,6 +100,7 @@ namespace GorgonLibrary.Graphics
         /// Property to set or return whether a buffer will allow raw views.
         /// </summary>
         /// <remarks>This value must be set to FALSE if <see cref="AllowShaderViews"/> or <see cref="AllowUnorderedAccessViews"/> is set to FALSE.
+        /// <para>This value does not apply to structured buffers.</para>
         /// <para>The default value is FALSE.</para>
         /// </remarks>
         bool AllowRawViews
@@ -159,40 +161,4 @@ namespace GorgonLibrary.Graphics
             set;
         }
     }
-
-	/// <summary>
-	/// Common buffer settings.
-	/// </summary>
-	public interface IBufferSettings
-	{
-		/// <summary>
-		/// Property to set or return the usage for the buffer.
-		/// </summary>
-		/// <para>The default value is Default.</para>
-		BufferUsage Usage
-		{
-			get;
-			set;
-		}
-
-		/// <summary>
-		/// Property to set or return whether to allow this buffer to be used for stream output.
-		/// </summary>
-		/// <remarks>The default value is FALSE.</remarks>
-		bool IsOutput
-		{
-			get;
-			set;
-		}
-
-		/// <summary>
-		/// Property to set or return the size of the buffer, in bytes.
-		/// </summary>
-		/// <remarks>For a <see cref="GorgonLibrary.Graphics.GorgonConstantBuffer">constant buffer</see>, this value must be a multiple of 16.</remarks>
-		int SizeInBytes
-		{
-			get;
-			set;
-		}
-	}
 }

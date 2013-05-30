@@ -42,7 +42,7 @@ namespace GorgonLibrary.Graphics
         /// <summary>
         /// Property to return the type of view.
         /// </summary>
-        public StructuredBufferType ViewType
+        public UnorderedAccessViewType ViewType
         {
             get;
             private set;
@@ -59,10 +59,10 @@ namespace GorgonLibrary.Graphics
 
             switch (ViewType)
             {
-                case StructuredBufferType.AppendConsume:
+                case UnorderedAccessViewType.AppendConsume:
                     bufferType = SharpDX.Direct3D11.UnorderedAccessViewBufferFlags.Append;
                     break;
-                case StructuredBufferType.Counter:
+                case UnorderedAccessViewType.Counter:
                     bufferType = SharpDX.Direct3D11.UnorderedAccessViewBufferFlags.Counter;
                     break;
             }
@@ -91,12 +91,11 @@ namespace GorgonLibrary.Graphics
         /// Initializes a new instance of the <see cref="GorgonStructuredBufferUnorderedAccessView"/> class.
         /// </summary>
         /// <param name="resource">The buffer to bind to the view.</param>
-        /// <param name="format">The format of the view.</param>
         /// <param name="firstElement">The first element in the buffer.</param>
         /// <param name="elementCount">The number of elements to view.</param>
         /// <param name="viewType">The type of unordered access view.</param>
-        internal GorgonStructuredBufferUnorderedAccessView(GorgonResource resource, BufferFormat format, int firstElement, int elementCount, StructuredBufferType viewType)
-            : base(resource, format, firstElement, elementCount, false)
+        internal GorgonStructuredBufferUnorderedAccessView(GorgonResource resource, int firstElement, int elementCount, UnorderedAccessViewType viewType)
+            : base(resource, BufferFormat.Unknown, firstElement, elementCount, false)
         {
             ViewType = viewType;
         }
