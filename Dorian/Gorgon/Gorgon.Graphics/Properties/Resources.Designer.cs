@@ -142,6 +142,15 @@ namespace GorgonLibrary.Graphics.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The buffer does not allow raw views..
+        /// </summary>
+        internal static string GORGFX_BUFFER_NO_RAW_VIEWS {
+            get {
+                return ResourceManager.GetString("GORGFX_BUFFER_NO_RAW_VIEWS", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The buffer does not allow shader resource views..
         /// </summary>
         internal static string GORGFX_BUFFER_NO_SHADER_VIEWS {
@@ -156,6 +165,15 @@ namespace GorgonLibrary.Graphics.Properties {
         internal static string GORGFX_BUFFER_NO_STAGING_INVALID_FLAGS {
             get {
                 return ResourceManager.GetString("GORGFX_BUFFER_NO_STAGING_INVALID_FLAGS", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The buffer does not allow unordered access views..
+        /// </summary>
+        internal static string GORGFX_BUFFER_NO_UNORDERED_VIEWS {
+            get {
+                return ResourceManager.GetString("GORGFX_BUFFER_NO_UNORDERED_VIEWS", resourceCulture);
             }
         }
         
@@ -214,6 +232,15 @@ namespace GorgonLibrary.Graphics.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Cannot create a staging buffer because the source buffer is immutable..
+        /// </summary>
+        internal static string GORGFX_BUFFER_STAGING_NO_IMMUTABLE {
+            get {
+                return ResourceManager.GetString("GORGFX_BUFFER_STAGING_NO_IMMUTABLE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The structure size must be greater than 0 and no greater than 2048 bytes..
         /// </summary>
         internal static string GORGFX_BUFFER_STRUCTURE_SIZE_INVALID {
@@ -255,15 +282,6 @@ namespace GorgonLibrary.Graphics.Properties {
         internal static string GORGFX_CANNOT_RETRIEVE_KERNING {
             get {
                 return ResourceManager.GetString("GORGFX_CANNOT_RETRIEVE_KERNING", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The constant buffer &apos;{0}&apos; is already bound at index [{1}]..
-        /// </summary>
-        internal static string GORGFX_CBUFFER_ALREADY_BOUND {
-            get {
-                return ResourceManager.GetString("GORGFX_CBUFFER_ALREADY_BOUND", resourceCulture);
             }
         }
         
@@ -412,7 +430,7 @@ namespace GorgonLibrary.Graphics.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to A {0} video device is necessary to use this object or perform this operation..
+        ///   Looks up a localized string similar to A {0} (or better) video device is necessary to use this object or perform this operation..
         /// </summary>
         internal static string GORGFX_REQUIRES_SM {
             get {
@@ -484,15 +502,6 @@ namespace GorgonLibrary.Graphics.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The buffer does not allow raw views..
-        /// </summary>
-        internal static string GORGFX_VIEW_BUFFER_NOT_RAW {
-            get {
-                return ResourceManager.GetString("GORGFX_VIEW_BUFFER_NOT_RAW", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Cannot bind the view to the resource, the resource type is not known..
         /// </summary>
         internal static string GORGFX_VIEW_CANNOT_BIND_UNKNOWN_RESOURCE {
@@ -543,6 +552,15 @@ namespace GorgonLibrary.Graphics.Properties {
         internal static string GORGFX_VIEW_DEPTH_START_INVALID {
             get {
                 return ResourceManager.GetString("GORGFX_VIEW_DEPTH_START_INVALID", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The start element must be between 0 and {0}, and the element count must be between 1 and {1}..
+        /// </summary>
+        internal static string GORGFX_VIEW_ELEMENT_OUT_OF_RANGE {
+            get {
+                return ResourceManager.GetString("GORGFX_VIEW_ELEMENT_OUT_OF_RANGE", resourceCulture);
             }
         }
         
@@ -601,6 +619,15 @@ namespace GorgonLibrary.Graphics.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Shader resource views cannot be bound to resources that have a usage of [Staging]..
+        /// </summary>
+        internal static string GORGFX_VIEW_SRV_NO_STAGING {
+            get {
+                return ResourceManager.GetString("GORGFX_VIEW_SRV_NO_STAGING", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Unordered access views cannot be applied to texture cubes or multi-sampled textures..
         /// </summary>
         internal static string GORGFX_VIEW_UAV_NOT_SUPPORTED {
@@ -615,6 +642,15 @@ namespace GorgonLibrary.Graphics.Properties {
         internal static string GORGFX_VIEW_UNKNOWN_FORMAT {
             get {
                 return ResourceManager.GetString("GORGFX_VIEW_UNKNOWN_FORMAT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cannot bind an unordered access view to a resource that has a usage of [Staging] or [Dynamic]..
+        /// </summary>
+        internal static string GORGFX_VIEW_UNORDERED_NO_STAGING_DYNAMIC {
+            get {
+                return ResourceManager.GetString("GORGFX_VIEW_UNORDERED_NO_STAGING_DYNAMIC", resourceCulture);
             }
         }
         

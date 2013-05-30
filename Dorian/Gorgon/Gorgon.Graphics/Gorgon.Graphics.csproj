@@ -71,7 +71,7 @@
     <Compile Include="Buffers\GorgonBufferSettings.cs" />
     <Compile Include="Buffers\GorgonConstantBufferSettings.cs" />
     <Compile Include="Buffers\GorgonIndexBufferSettings.cs" />
-    <Compile Include="Buffers\GorgonIndirectArgumentBuffer.cs" />
+    <Compile Include="Buffers\BufferInfo.cs" />
     <Compile Include="Buffers\IBufferSettings.cs" />
     <Compile Include="Buffers\GorgonStructuredBufferSettings.cs" />
     <Compile Include="Buffers\GorgonStructuredBuffer.cs" />
@@ -119,8 +119,6 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="Resource\GorgonBufferUnorderAccessView.cs" />
-    <Compile Include="Resource\GorgonRawBufferShaderView.cs" />
-    <Compile Include="Resource\GorgonRawBufferUnorderedAccessView.cs" />
     <Compile Include="Resource\GorgonStructuredBufferUnorderedAccessView.cs" />
     <Compile Include="Resource\GorgonTextureUnorderAccessView.cs" />
     <Compile Include="Resource\GorgonUnorderedAccessView.cs" />

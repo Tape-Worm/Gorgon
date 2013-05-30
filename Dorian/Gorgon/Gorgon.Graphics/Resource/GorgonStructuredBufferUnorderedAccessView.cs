@@ -35,7 +35,7 @@ namespace GorgonLibrary.Graphics
     /// <para>Unlike a <see cref="GorgonLibrary.Graphics.GorgonBufferShaderView">GorgonBufferShaderView</see>, only one unordered access view may be applied to a resource.</para>
     /// <para>This view allows structured views to be viewed as append/consume or count buffers.</para>
     /// </remarks>
-    public class GorgonStructuredBufferUnorderedAccessView
+    public sealed class GorgonStructuredBufferUnorderedAccessView
         : GorgonBufferUnorderedAccessView
     {
         #region Properties.

@@ -58,6 +58,7 @@ namespace GorgonLibrary.Graphics
     /// </item>
     /// </list>
 	/// </para>
+	/// <para>Generic buffers can only be created by SM4 or better devices.</para>
     /// <para>The generic buffer is intended to be used with the [RW]Buffer&lt;&gt; HLSL type.</para></remarks>
 	public class GorgonBuffer
 		: GorgonBaseBuffer

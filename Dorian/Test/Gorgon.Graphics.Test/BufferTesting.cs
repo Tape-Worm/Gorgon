@@ -76,6 +76,21 @@ namespace GorgonLibrary.Graphics.Test
 		}
 
 		[TestMethod]
+		public void CreateStagingBuffer()
+		{
+			using(var gfx = new GorgonGraphics(DeviceFeatureLevel.SM4))
+			{
+				var buff = gfx.Buffers.CreateConstantBuffer("MyBuff", new GorgonConstantBufferSettings
+					{
+						SizeInBytes = 6144,
+						Usage = BufferUsage.Default
+					});
+
+				var stage = buff.GetStagingBuffer();
+			}
+		}
+
+		[TestMethod]
 		public void BindStructBuffer()
 		{
 		    _framework.CreateTestScene(_sbShaders, _sbShaders, false);
@@ -128,7 +143,7 @@ namespace GorgonLibrary.Graphics.Test
         [TestMethod]
         public void TestInDirectSettings()
         {
-            var id = new GorgonIndirectArgumentBuffer(_framework.Graphics);
+            var id = new BufferInfo(_framework.Graphics);
         }
 
         [TestMethod]
