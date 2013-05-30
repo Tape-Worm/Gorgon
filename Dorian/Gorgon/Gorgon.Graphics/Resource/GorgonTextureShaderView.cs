@@ -299,8 +299,9 @@ namespace GorgonLibrary.Graphics
 		                                 int mipCount,
 		                                 int arrayIndex,
 		                                 int arrayCount)
-			: base(texture, format)
+			: base(texture, format, false)
 		{
+			// TODO: Update this to use raw views.
 			MipStart = firstMipLevel;
 			MipCount = mipCount;
 			ArrayStart = arrayIndex;

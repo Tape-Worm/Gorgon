@@ -24,6 +24,11 @@
 // 
 #endregion
 
+using DX = SharpDX;
+using GI = SharpDX.DXGI;
+using DXCommon = SharpDX.Direct3D;
+using D3D = SharpDX.Direct3D11;
+
 namespace GorgonLibrary.Graphics
 {
 	/// <summary>
@@ -66,10 +71,10 @@ namespace GorgonLibrary.Graphics
 						{
 							FirstElement = ElementStart,
 							ElementCount = ElementCount,
-							Flags = SharpDX.Direct3D11.ShaderResourceViewExtendedBufferFlags.None
+							Flags = IsRaw ? D3D.ShaderResourceViewExtendedBufferFlags.Raw : D3D.ShaderResourceViewExtendedBufferFlags.None
 						},
-					Dimension = SharpDX.Direct3D.ShaderResourceViewDimension.ExtendedBuffer,
-					Format = (SharpDX.DXGI.Format)Format
+					Dimension = DXCommon.ShaderResourceViewDimension.ExtendedBuffer,
+					Format = (GI.Format)Format
 				};
 
 			D3DView = new SharpDX.Direct3D11.ShaderResourceView(Resource.Graphics.D3DDevice, Resource.D3DResource, desc)
@@ -87,8 +92,9 @@ namespace GorgonLibrary.Graphics
 		/// <param name="format">Format of the view.</param>
 		/// <param name="elementStart">The starting element for the view.</param>
 		/// <param name="elementCount">The number of elements in the view.</param>
-		internal GorgonBufferShaderView(GorgonResource buffer, BufferFormat format, int elementStart, int elementCount)
-			: base(buffer, format)
+		/// <param name="isRaw">TRUE to use a raw view, FALSE to use a normal view.</param>
+		internal GorgonBufferShaderView(GorgonResource buffer, BufferFormat format, int elementStart, int elementCount, bool isRaw)
+			: base(buffer, format, isRaw)
 		{
 			ElementStart = elementStart;
 			ElementCount = elementCount;

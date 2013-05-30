@@ -438,22 +438,17 @@ namespace GorgonLibrary.Graphics
 
             if (Graphics.VideoDevice.SupportedFeatureLevel < DeviceFeatureLevel.SM5)
             {
-                throw new GorgonException(GorgonResult.CannotCreate, "Unordered access views are only available on video devices that support SM_5 or better.");
+                throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_REQUIRES_SM, "SM5"));
             }
 
             if (!Settings.AllowUnorderedAccessViews)
             {
-                throw new GorgonException(GorgonResult.CannotCreate, "The buffer does not allow unordered access.");
+                throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_BUFFER_NO_UNORDERED_VIEWS);
             }
 
-            if (Settings.Usage == BufferUsage.Staging)
+            if ((Settings.Usage == BufferUsage.Staging) || (Settings.Usage == BufferUsage.Dynamic))
             {
-                throw new GorgonException(GorgonResult.CannotBind, "Cannot bind an unordered access resource view to a buffer that has a usage of [Staging].");
-            }
-
-            if (Settings.Usage == BufferUsage.Dynamic)
-            {
-                throw new GorgonException(GorgonResult.CannotBind, "Cannot bind an unordered access resource view to a buffer that has a usage of [Dynamic].");
+                throw new GorgonException(GorgonResult.CannotBind, Resources.GORGFX_VIEW_UNORDERED_NO_STAGING_DYNAMIC);
             }
 
             if (BufferType != BufferType.Structured)
@@ -490,8 +485,8 @@ namespace GorgonLibrary.Graphics
                 || (start < 0)
                 || (count < 1))
             {
-                throw new ArgumentException(
-                    "The start and count must be 0 or greater and less than the number of elements in the buffer.");
+	            throw new ArgumentException(string.Format(Resources.GORGFX_VIEW_ELEMENT_OUT_OF_RANGE, elementCount,
+	                                                      (elementCount - start)));
             }
 
             var view = new GorgonBufferUnorderedAccessView(this, format, start, count, isRaw);
@@ -526,7 +521,7 @@ namespace GorgonLibrary.Graphics
 
             if (Settings.Usage == BufferUsage.Staging)
             {
-                throw new GorgonException(GorgonResult.CannotCreate, "Cannot create a shader resource view for a buffer that has a usage of Staging.");
+                throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_VIEW_SRV_NO_STAGING);
             }
 
             // If we're using any other type than structured...
@@ -550,12 +545,12 @@ namespace GorgonLibrary.Graphics
                     if (Graphics.VideoDevice.SupportedFeatureLevel < DeviceFeatureLevel.SM5)
                     {
                         throw new GorgonException(GorgonResult.CannotCreate,
-                                                  string.Format(Resources.GORGFX_REQUIRES_SM, 5));
+                                                  string.Format(Resources.GORGFX_REQUIRES_SM, "SM5"));
                     }
 
                     if (!Settings.AllowRawViews)
                     {
-                        throw new GorgonException(GorgonResult.CannotBind, Resources.GORGFX_VIEW_BUFFER_NOT_RAW);
+                        throw new GorgonException(GorgonResult.CannotBind, Resources.GORGFX_BUFFER_NO_RAW_VIEWS);
                     }
 
                     if (info.Group != BufferFormat.R32)
@@ -576,7 +571,7 @@ namespace GorgonLibrary.Graphics
                 if (Graphics.VideoDevice.SupportedFeatureLevel < DeviceFeatureLevel.SM5)
                 {
                     throw new GorgonException(GorgonResult.CannotCreate,
-                                              string.Format(Resources.GORGFX_REQUIRES_SM, 5));
+                                              string.Format(Resources.GORGFX_REQUIRES_SM, "SM5"));
                 }
 
                 elementCount = Settings.SizeInBytes / Settings.StructureSize;
@@ -588,9 +583,9 @@ namespace GorgonLibrary.Graphics
                 || (start < 0)
                 || (count < 1))
             {
-                throw new ArgumentException(
-                    "The start and count must be 0 or greater and less than the number of elements in the buffer.");
-            }
+				throw new ArgumentException(string.Format(Resources.GORGFX_VIEW_ELEMENT_OUT_OF_RANGE, elementCount,
+														  (elementCount - start)));
+			}
 
             lock(_syncLock)
             {
@@ -647,26 +642,14 @@ namespace GorgonLibrary.Graphics
         /// Function to return this buffer as a staging buffer.
         /// </summary>
         /// <returns>The new staging buffer.</returns>
-        /// <exception cref="System.NotSupportedException">Thrown when staging buffers are not supported for the type of buffer.
-        /// <para>-or-</para>
-        /// <para>Thrown when the video device is a SM2_a_b video device.</para>
+        /// <exception cref="GorgonLibrary.GorgonException">Thrown when the video device is a SM2_a_b video device.
         /// <para>-or-</para>
         /// <para>Thrown when the current buffer is immutable.</para>
         /// </exception>
+        /// <remarks>Staging buffers are generic buffers with a staging usage applied.  
+		/// <para>SM2_a_b video devices only support Vertex, Index and Constant buffers.  Therefore this method will throw an exception on those devices.</para></remarks>
         public GorgonBuffer GetStagingBuffer()
         {
-#if DEBUG
-            if ((Graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM2_a_b) && (Settings.Usage != BufferUsage.Staging))
-            {
-                throw new NotSupportedException("Feature level SM2_a_b video devices cannot build a staging buffer from a non-staging buffer.");
-            }
-
-            if (Settings.Usage == BufferUsage.Immutable)
-            {
-                throw new NotSupportedException("Buffers with a usage of Immutable cannot be used as staging buffers.");
-            }
-#endif
-
             var stagingBuffer = Graphics.Buffers.CreateBuffer(Name + " (Staging)", new GorgonBufferSettings
             {
                 AllowIndirectArguments = false,

@@ -254,10 +254,7 @@
     <value>The buffer requires at least {0} byte(s).</value>
   </data>
   <data name="GORGFX_REQUIRES_SM" xml:space="preserve">
-    <value>A {0} video device is necessary to use this object or perform this operation.</value>
-  </data>
-  <data name="GORGFX_CBUFFER_ALREADY_BOUND" xml:space="preserve">
-    <value>The constant buffer '{0}' is already bound at index [{1}].</value>
+    <value>A {0} (or better) video device is necessary to use this object or perform this operation.</value>
   </data>
   <data name="GORGFX_EFFECT_MISSING_REQUIRED_PARAMS" xml:space="preserve">
     <value>The parameter '{0}' was required for this effect, but is not present in the parameters list.</value>
@@ -289,7 +286,7 @@
   <data name="GORGFX_BUFFER_NO_SHADER_VIEWS" xml:space="preserve">
     <value>The buffer does not allow shader resource views.</value>
   </data>
-  <data name="GORGFX_VIEW_BUFFER_NOT_RAW" xml:space="preserve">
+  <data name="GORGFX_BUFFER_NO_RAW_VIEWS" xml:space="preserve">
     <value>The buffer does not allow raw views.</value>
   </data>
   <data name="GORGFX_VIEW_RAW_INVALID_FORMAT" xml:space="preserve">
@@ -309,5 +306,22 @@
   </data>
   <data name="GORGFX_BUFFER_SIZE_MISMATCH" xml:space="preserve">
     <value>The size of the buffers do not match.</value>
+  </data>
+  <data name="GORGFX_BUFFER_NO_UNORDERED_VIEWS" xml:space="preserve">
+    <value>The buffer does not allow unordered access views.</value>
+  </data>
+  <data name="GORGFX_BUFFER_STAGING_NO_IMMUTABLE" xml:space="preserve">
+    <value>Cannot create a staging buffer because the source buffer is immutable.</value>
+  </data>
+  <data name="GORGFX_VIEW_ELEMENT_OUT_OF_RANGE" xml:space="preserve">
+    <value>The start element must be between 0 and {0}, and the element count must be between 1 and {1}.</value>
+  </data>
+  <data name="GORGFX_VIEW_SRV_NO_STAGING" xml:space="preserve">
+    <value>Shader resource views cannot be bound to resources that have a usage of [Staging].</value>
+    <comment>Applies to textures/buffers</comment>
+  </data>
+  <data name="GORGFX_VIEW_UNORDERED_NO_STAGING_DYNAMIC" xml:space="preserve">
+    <value>Cannot bind an unordered access view to a resource that has a usage of [Staging] or [Dynamic].</value>
+    <comment>Applies to textures/buffers</comment>
   </data>
 </root>

@@ -46,6 +46,11 @@ namespace GorgonLibrary.Graphics
         /// </summary>
         private static void ValidateGenericBufferSettings(IBufferSettings settings)
         {
+			if (settings == null)
+			{
+				return;
+			}
+
             // Ensure that we can actually put something into our buffer.
             if (settings.SizeInBytes <= 4)
             {
@@ -195,9 +200,16 @@ namespace GorgonLibrary.Graphics
         /// <para>-or-</para>
         /// <para>Thrown when the usage is set to immutable and the <paramref name="stream"/> parameter is NULL (Nothing in VB.Net) or has no data.</para>
         /// </exception>
-        /// <remarks>This generic buffer type is not capable of being bound to a shader, but can be used as a stream output from a geometry/compute shader.</remarks>
+		/// <remarks>The generic buffer is intended to be used with the [RW]Buffer&lt;&gt; HLSL type.
+		/// <para>Generic buffers are only available on video devices that are capable of SM4 or better.</para>
+		/// </remarks>
         public GorgonBuffer CreateBuffer(string name, GorgonBufferSettings settings, GorgonDataStream stream = null)
         {
+			if (_graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM2_a_b)
+			{
+				throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_REQUIRES_SM, "SM4"));	
+			}
+
             if (name == null)
             {
                 throw new ArgumentNullException("name");

@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using GorgonLibrary.Graphics.Properties;
 
 namespace GorgonLibrary.Graphics
 {
@@ -134,22 +135,17 @@ namespace GorgonLibrary.Graphics
 		{
 			if (Graphics.VideoDevice.SupportedFeatureLevel < DeviceFeatureLevel.SM5)
 			{
-				throw new GorgonException(GorgonResult.CannotCreate, "Unordered access views are only available on video devices that support SM_5 or better.");
+				throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_REQUIRES_SM, "SM5"));
 			}
 
 			if (!Settings.AllowUnorderedAccessViews)
 			{
-				throw new GorgonException(GorgonResult.CannotCreate, "The buffer does not allow unordered access.");
+				throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_BUFFER_NO_UNORDERED_VIEWS);
 			}
 
-			if (Settings.Usage == BufferUsage.Staging)
+			if ((Settings.Usage == BufferUsage.Staging) || (Settings.Usage == BufferUsage.Dynamic))
 			{
-				throw new GorgonException(GorgonResult.CannotBind, "Cannot bind an unordered access resource view to a buffer that has a usage of [Staging].");
-			}
-
-			if (Settings.Usage == BufferUsage.Dynamic)
-			{
-				throw new GorgonException(GorgonResult.CannotBind, "Cannot bind an unordered access resource view to a buffer that has a usage of [Dynamic].");
+				throw new GorgonException(GorgonResult.CannotBind, Resources.GORGFX_VIEW_UNORDERED_NO_STAGING_DYNAMIC);
 			}
 
 			int elementCount = SizeInBytes / Settings.StructureSize;
@@ -158,8 +154,8 @@ namespace GorgonLibrary.Graphics
 				|| (start < 0)
 				|| (count < 1))
 			{
-				throw new ArgumentException(
-					"The start and count must be 0 or greater and less than the number of elements in the buffer.");
+				throw new ArgumentException(string.Format(Resources.GORGFX_VIEW_ELEMENT_OUT_OF_RANGE, elementCount,
+														  (elementCount - start)));
 			}
 
 			var view = new GorgonStructuredBufferUnorderedAccessView(this, start, count, viewType);

@@ -284,6 +284,7 @@ namespace GorgonLibrary.Graphics
 		                                        int arrayIndex, int arrayCount)
 			: base(resource, format, false)
 		{
+			// TODO: Update this to use raw views.
 			MipIndex = mipIndex;
 			ArrayStart = arrayIndex;
 			ArrayCount = arrayCount;
