@@ -36,14 +36,14 @@ namespace GorgonLibrary.Graphics
     /// <para>This buffer type is meant to be used to be used with the <see cref="GorgonLibrary.Graphics.GorgonOutputMerger.DrawInstancedIndirect">DrawInstancedIndirect</see> method.</para>
     /// <para>This buffer type is only available to video devices that are SM_5 or better.</para>
     /// </remarks>
-    public class GorgonIndirectArgumentBuffer
+    public class BufferTesting
     {
         #region Constructor/Destructor.
         /// <summary>
-        /// Initializes a new instance of the <see cref="GorgonIndirectArgumentBuffer"/> class.
+        /// Initializes a new instance of the <see cref="BufferTesting"/> class.
         /// </summary>
         /// <param name="graphics">The graphics interface that owns this object.</param>
-        public GorgonIndirectArgumentBuffer(GorgonGraphics graphics)
+        public BufferTesting(GorgonGraphics graphics)
         {
 			/*
 			   A resource cannot created with both D3D11_RESOURCE_MISC_DRAWINDIRECT_ARGS and D3D11_RESOURCE_MISC_BUFFER_STRUCTURED. [ STATE_CREATION ERROR #68: CREATEBUFFER_INVALIDMISCFLAGS]
