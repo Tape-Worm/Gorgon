@@ -102,15 +102,6 @@ namespace GorgonLibrary.Graphics
             get;
             private set;
         }
-
-        /// <summary>
-        /// Property to return whether this unordered access view is a raw view or not.
-        /// </summary>
-        public bool IsRaw
-        {
-            get;
-            private set;
-        }
         #endregion
 
         #region Methods.
@@ -156,9 +147,8 @@ namespace GorgonLibrary.Graphics
         /// </summary>
         /// <param name="resource">The buffer to bind to the view.</param>
         /// <param name="format">The format of the view.</param>
-        /// <param name="isRaw">TRUE if the view is raw, FALSE if not.</param>
         /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="resource"/> parameter is NULL (Nothing in VB.Net).</exception>
-		protected GorgonUnorderedAccessView(GorgonResource resource, BufferFormat format, bool isRaw)
+		protected GorgonUnorderedAccessView(GorgonResource resource, BufferFormat format)
         {
             if (resource == null)
             {
@@ -168,7 +158,6 @@ namespace GorgonLibrary.Graphics
             Resource = resource;
             Format = format;
             FormatInformation = GorgonBufferFormatInfo.GetInfo(Format);
-            IsRaw = isRaw;
         }
         #endregion
 

@@ -71,19 +71,36 @@ namespace GorgonLibrary.Graphics
 			set;
 		}
 
-		/// <summary>
-		/// Property to set or return the format for the texture used by the depth/stencil buffer.
-		/// </summary>
-		/// <remarks>This is typically used for accessing the depth buffer through a shader.  The shader will require a typeless format, of which there is none for a depth buffer.  If this
-		/// value is set to Unknown, then this property will be ignored when creating/updating the depth/stencil buffer and will make the buffer inaccessible to a shader.
-		/// <para>The default value is Unknown.</para>
-		/// <para>Note that this only applies to the SM_4_1 and higher feature levels, other feature levels will ignore this setting.</para>
-		/// </remarks>
-		public BufferFormat ShaderViewFormat
-		{
-			get;
-			set;
-		}
+        /// <summary>
+        /// Property to set or return whether to allow shader views on the depth/stencil buffer.
+        /// </summary>
+        /// <remarks>
+        /// Set this value to TRUE if depth buffer needs to be bound to the shader.
+        /// <para>This value is only applicable on video devices that have a feature level of SM4_1 or better.</para>
+        /// <para>The default value is FALSE.</para>
+        /// </remarks>
+        public bool AllowShaderView
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Property to set or return the texture format for the depth/stencil buffer texture.
+        /// </summary>
+        /// <remarks>
+        /// If the <see cref="AllowShaderView"/> setting is set to TRUE, then this value needs to be set to a typeless format.  This is because 
+        /// a depth/stencil buffer is not capable of having a format that is not one of the depth formats.
+        /// <para>If this value is set to Unknown, then an exception will be thrown when trying to create the depth/stencil buffer.</para>
+        /// <para>This value is only applicable on video devices that have a feature level of SM4 or better if no multisampling is present on the depth/stencil buffer.  
+        /// If the depth/stencil buffer is multisampled then a video device with a feature level of SM4_1 or better is required.</para>
+        /// <para>The default value is Unknown.</para>
+        /// </remarks>
+        public BufferFormat TextureFormat
+        {
+            get;
+            set;
+        }
 		#endregion
 
 		#region Constructor/Destructor.
@@ -92,7 +109,8 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		public GorgonDepthStencilSettings()
 		{
-			ShaderViewFormat = BufferFormat.Unknown;
+			TextureFormat = BufferFormat.Unknown;
+		    AllowShaderView = false;
 			MultiSample = new GorgonMultisampling(1, 0);
 		}
 		#endregion

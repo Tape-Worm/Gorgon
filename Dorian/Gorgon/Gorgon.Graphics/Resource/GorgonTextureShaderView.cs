@@ -24,8 +24,10 @@
 // 
 #endregion
 
+using System.ComponentModel;
 using GorgonLibrary.Diagnostics;
 using GorgonLibrary.Graphics.Properties;
+using D3D = SharpDX.Direct3D11;
 
 namespace GorgonLibrary.Graphics
 {
@@ -81,80 +83,13 @@ namespace GorgonLibrary.Graphics
 
 		#region Methods.
 		/// <summary>
-		/// Function to validate the view settings.
-		/// </summary>
-		private void ValidateViewSettings(GorgonTexture texture)
-		{
-			if (Format == BufferFormat.Unknown)
-			{
-				throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_VIEW_UNKNOWN_FORMAT);
-			}
-
-			if (FormatInformation.IsTypeless)
-			{
-				throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_VIEW_NO_TYPELESS);
-			}
-
-			if ((texture.Settings.Format != Format) && (texture.FormatInformation.Group != FormatInformation.Group))
-			{
-				throw new GorgonException(GorgonResult.CannotCreate,
-				                          string.Format(Resources.GORGFX_VIEW_FORMAT_GROUP_INVALID,
-				                                        texture.Settings.Format,
-				                                        Format));
-			}
-
-			// 3D textures don't use arrays.
-			if (texture.ResourceType != ResourceType.Texture3D)
-			{
-				if ((ArrayCount > texture.Settings.ArrayCount)
-				    || (ArrayCount + ArrayStart > texture.Settings.ArrayCount)
-				    || (ArrayCount < 1))
-				{
-					throw new GorgonException(GorgonResult.CannotCreate,
-					                          string.Format(Resources.GORGFX_VIEW_ARRAY_COUNT_INVALID,
-					                                        texture.Settings.ArrayCount));
-				}
-
-				if ((ArrayStart >= texture.Settings.ArrayCount)
-				    || (ArrayStart < 0))
-				{
-					throw new GorgonException(GorgonResult.CannotCreate,
-					                          string.Format(Resources.GORGFX_VIEW_ARRAY_START_INVALID,
-					                                        texture.Settings.ArrayCount));
-				}
-			}
-
-			if ((MipCount > texture.Settings.MipCount) || (MipStart + MipCount > texture.Settings.MipCount)
-			    || (MipCount < 1))
-			{
-				throw new GorgonException(GorgonResult.CannotCreate,
-				                          string.Format(Resources.GORGFX_VIEW_MIP_COUNT_INVALID,
-				                                        texture.Settings.MipCount));
-			}
-
-			if ((MipStart >= texture.Settings.MipCount)
-			    || (MipStart < 0))
-			{
-				throw new GorgonException(GorgonResult.CannotCreate,
-				                          string.Format(Resources.GORGFX_VIEW_MIP_START_INVALID,
-				                                        texture.Settings.MipCount));
-			}
-
-			if ((texture.Settings.IsTextureCube)
-			    && ((ArrayCount % 6) != 0))
-			{
-				throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_VIEW_CUBE_ARRAY_SIZE_INVALID);
-			}
-		}
-
-		/// <summary>
 		/// Function to retrieve the view description for a 1D texture.
 		/// </summary>
 		/// <param name="texture">Texture to build a view description for.</param>
 		/// <returns>The shader view description.</returns>
-		private SharpDX.Direct3D11.ShaderResourceViewDescription GetDesc1D(GorgonTexture texture)
+		private D3D.ShaderResourceViewDescription GetDesc1D(GorgonTexture texture)
 		{
-			return new SharpDX.Direct3D11.ShaderResourceViewDescription
+			return new D3D.ShaderResourceViewDescription
 				{
 					Format = (SharpDX.DXGI.Format)Format,
 					Dimension = texture.Settings.ArrayCount > 1 ? SharpDX.Direct3D.ShaderResourceViewDimension.Texture1DArray 
@@ -174,7 +109,7 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		/// <param name="texture">Texture to build a view description for.</param>
 		/// <returns>The shader view description.</returns>
-		private SharpDX.Direct3D11.ShaderResourceViewDescription GetDesc2D(GorgonTexture texture)
+		private D3D.ShaderResourceViewDescription GetDesc2D(GorgonTexture texture)
 		{
 			bool isMultiSampled = ((texture.Settings.Multisampling.Count > 1)
 			                       || (texture.Settings.Multisampling.Quality > 0));
@@ -182,7 +117,7 @@ namespace GorgonLibrary.Graphics
 
 			if (!isMultiSampled)
 			{
-				return new SharpDX.Direct3D11.ShaderResourceViewDescription
+				return new D3D.ShaderResourceViewDescription
 					{
 						Format = (SharpDX.DXGI.Format)Format,
 						Dimension = texture.Settings.ArrayCount > 1
@@ -200,7 +135,7 @@ namespace GorgonLibrary.Graphics
 					};
 			}
 
-			return new SharpDX.Direct3D11.ShaderResourceViewDescription
+			return new D3D.ShaderResourceViewDescription
 				{
 					Format = (SharpDX.DXGI.Format)Format,
 					Dimension = texture.Settings.ArrayCount > 1
@@ -218,9 +153,9 @@ namespace GorgonLibrary.Graphics
 		/// Function to retrieve the view description for a 3D texture.
 		/// </summary>
 		/// <returns>The shader view description.</returns>
-		private SharpDX.Direct3D11.ShaderResourceViewDescription GetDesc3D()
+		private D3D.ShaderResourceViewDescription GetDesc3D()
 		{
-			return new SharpDX.Direct3D11.ShaderResourceViewDescription
+			return new D3D.ShaderResourceViewDescription
 				{
 					Format = (SharpDX.DXGI.Format)Format,
 					Dimension = SharpDX.Direct3D.ShaderResourceViewDimension.Texture3D,
@@ -236,12 +171,10 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Function to perform initialization of the shader view resource.
 		/// </summary>
-		protected override void InitializeImpl()
+		protected override void OnInitialize()
 		{
-			SharpDX.Direct3D11.ShaderResourceViewDescription desc;
+			D3D.ShaderResourceViewDescription desc;
 			var texture = (GorgonTexture)Resource;
-
-			ValidateViewSettings(texture);
 
 			// Build SRV description.
 			switch(Resource.ResourceType)
@@ -265,7 +198,7 @@ namespace GorgonLibrary.Graphics
 				Gorgon.Log.Print("Gorgon resource view: Creating D3D 11 shader resource view.", LoggingLevel.Verbose);
 
 				// Create our SRV.
-				D3DView = new SharpDX.Direct3D11.ShaderResourceView(Resource.Graphics.D3DDevice, Resource.D3DResource, desc)
+				D3DView = new D3D.ShaderResourceView(Resource.Graphics.D3DDevice, Resource.D3DResource, desc)
 					{
 						DebugName = Resource.ResourceType + " '" + texture.Name + "' Shader Resource View"
 					};
@@ -299,9 +232,8 @@ namespace GorgonLibrary.Graphics
 		                                 int mipCount,
 		                                 int arrayIndex,
 		                                 int arrayCount)
-			: base(texture, format, false)
+			: base(texture, format)
 		{
-			// TODO: Update this to use raw views.
 			MipStart = firstMipLevel;
 			MipCount = mipCount;
 			ArrayStart = arrayIndex;

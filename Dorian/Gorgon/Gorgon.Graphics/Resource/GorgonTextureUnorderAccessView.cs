@@ -282,9 +282,8 @@ namespace GorgonLibrary.Graphics
 		/// <param name="arrayCount">The array count.</param>
 		internal GorgonTextureUnorderAccessView(GorgonResource resource, BufferFormat format, int mipIndex, 
 		                                        int arrayIndex, int arrayCount)
-			: base(resource, format, false)
+			: base(resource, format)
 		{
-			// TODO: Update this to use raw views.
 			MipIndex = mipIndex;
 			ArrayStart = arrayIndex;
 			ArrayCount = arrayCount;

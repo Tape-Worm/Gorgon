@@ -30,6 +30,7 @@ using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
 using GorgonLibrary.Diagnostics;
+using GorgonLibrary.Graphics.Properties;
 using GorgonLibrary.IO;
 using DX = SharpDX;
 using GI = SharpDX.DXGI;
@@ -135,16 +136,30 @@ namespace GorgonLibrary.Graphics
 	        DefaultShaderView = OnCreateShaderView(format, 0, Settings.MipCount, 0, Settings.ArrayCount);
 	    }
 
-        /// <summary>
-        /// Function to create a new shader resource view object.
-        /// </summary>
-        /// <param name="format">The format of the resource view.</param>
-        /// <param name="mipStart">Starting mip map for the view.</param>
-        /// <param name="mipCount">Mip map count for the view.</param>
-        /// <param name="arrayStart">Starting array index for the view.</param>
-        /// <param name="arrayCount">Array index count for the view.</param>
-        /// <returns>A cached shader view object.</returns>
-        protected GorgonTextureShaderView OnCreateShaderView(BufferFormat format,
+	    /// <summary>
+	    /// Function to create a new shader resource view object.
+	    /// </summary>
+	    /// <param name="format">The format of the resource view.</param>
+	    /// <param name="mipStart">Starting mip map for the view.</param>
+	    /// <param name="mipCount">Mip map count for the view.</param>
+	    /// <param name="arrayStart">Starting array index for the view.</param>
+	    /// <param name="arrayCount">Array index count for the view.</param>
+        /// <remarks>Use a shader view to access a texture from a shader.  A shader view can view a select portion of the texture, and the view <paramref name="format"/> can be used to 
+        /// cast the format of the texture into another type (as long as the view format is in the same group as the texture format).  For example, a texture with a format of R8G8B8A8 could be cast 
+        /// to R8G8B8A8_UInt_Normal, or R8G8B8A8_UInt or any of the other R8G8B8A8 formats.
+        /// <para>Multiple views of the texture can be bound to different parts of the shader pipeline.</para>
+        /// <para>Textures that have a usage of staging cannot create shader views.</para>
+        /// </remarks>
+	    /// <exception cref="GorgonLibrary.GorgonException">Thrown when the texture has a usage of staging.
+	    /// <para>-or-</para>
+	    /// <para>Thrown when the <paramref name="format"/> is not valid for the view.</para>
+	    /// <para>-or-</para>
+	    /// <para>Thrown when the <paramref name="arrayStart"/> and the <paramref name="arrayCount"/> are less than 0 or 1 respectively, or greater than the number of array indices in the texture.</para>
+        /// <para>-or-</para>
+        /// <para>Thrown when the <paramref name="mipStart"/> and the <paramref name="mipCount"/> are less than 0 or 1 respectively, or greater than the number of mip levels in the texture.</para>
+	    /// </exception>
+	    /// <returns>A texture shader view object.</returns>
+	    protected GorgonTextureShaderView OnCreateShaderView(BufferFormat format,
                                                     int mipStart,
                                                     int mipCount,
                                                     int arrayStart,
@@ -153,6 +168,70 @@ namespace GorgonLibrary.Graphics
             if (Settings.Usage == BufferUsage.Staging)
             {
                 throw new GorgonException(GorgonResult.CannotCreate, "A staging texture cannot create shader views.");
+            }
+
+            if (format == BufferFormat.Unknown)
+            {
+                throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_VIEW_UNKNOWN_FORMAT);
+            }
+
+	        var formatInformation = GorgonBufferFormatInfo.GetInfo(format);
+
+            if (formatInformation.IsTypeless)
+            {
+                throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_VIEW_NO_TYPELESS);
+            }
+
+
+            if ((Settings.Format != format) && (FormatInformation.Group != formatInformation.Group))
+            {
+                throw new GorgonException(GorgonResult.CannotCreate,
+                                          string.Format(Resources.GORGFX_VIEW_FORMAT_GROUP_INVALID,
+                                                        Settings.Format,
+                                                        format));
+            }
+
+            // 3D textures don't use arrays.
+            if (ResourceType != ResourceType.Texture3D)
+            {
+                if ((arrayCount > Settings.ArrayCount)
+                    || (arrayCount + arrayStart > Settings.ArrayCount)
+                    || (arrayCount < 1))
+                {
+                    throw new GorgonException(GorgonResult.CannotCreate,
+                                              string.Format(Resources.GORGFX_VIEW_ARRAY_COUNT_INVALID,
+                                                            Settings.Format));
+                }
+
+                if ((arrayStart >= Settings.ArrayCount)
+                    || (arrayStart < 0))
+                {
+                    throw new GorgonException(GorgonResult.CannotCreate,
+                                              string.Format(Resources.GORGFX_VIEW_ARRAY_START_INVALID,
+                                                            Settings.Format));
+                }
+            }
+
+            if ((mipCount > Settings.MipCount) || (mipStart + mipCount > Settings.MipCount)
+                || (mipCount < 1))
+            {
+                throw new GorgonException(GorgonResult.CannotCreate,
+                                          string.Format(Resources.GORGFX_VIEW_MIP_COUNT_INVALID,
+                                                        Settings.MipCount));
+            }
+
+            if ((mipStart >= Settings.MipCount)
+                || (mipStart < 0))
+            {
+                throw new GorgonException(GorgonResult.CannotCreate,
+                                          string.Format(Resources.GORGFX_VIEW_MIP_START_INVALID,
+                                                        Settings.MipCount));
+            }
+
+            if ((Settings.IsTextureCube)
+                && ((arrayCount % 6) != 0))
+            {
+                throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_VIEW_CUBE_ARRAY_SIZE_INVALID);
             }
 
             return _viewCache.GetTextureView(format, mipStart, mipCount, arrayStart, arrayCount);
@@ -250,20 +329,20 @@ namespace GorgonLibrary.Graphics
 		/// <param name="rowPitch">The number of bytes per row of the texture.</param>
 		/// <param name="slicePitch">The number of bytes per depth slice of the texture.</param>
 		/// <returns>The sub resource data.</returns>
-		protected abstract ISubResourceData GetLockSubResourceData(GorgonDataStream dataStream, int rowPitch, int slicePitch);
+		protected abstract ISubResourceData OnGetLockSubResourceData(GorgonDataStream dataStream, int rowPitch, int slicePitch);
 
 		/// <summary>
 		/// Function to copy data from the CPU to a texture.
 		/// </summary>
 		/// <param name="data">Data to copy to the texture.</param>
 		/// <param name="subResource">Sub resource index to use.</param>
-		protected abstract void UpdateSubResourceImpl(ISubResourceData data, int subResource);
+		protected abstract void OnUpdateSubResource(ISubResourceData data, int subResource);
 
 		/// <summary>
 		/// Function to copy this texture into a new staging texture.
 		/// </summary>
 		/// <returns>The new staging texture.</returns>
-		protected abstract GorgonTexture GetStagingTextureImpl();
+		protected abstract GorgonTexture OnGetStagingTexture();
 
 		/// <summary>
 		/// Function to create an image with initial data.
@@ -272,7 +351,7 @@ namespace GorgonLibrary.Graphics
 		/// <remarks>The <paramref name="initialData"/> can be NULL (Nothing in VB.Net) IF the texture is not created with an Immutable usage flag.
 		/// <para>To initialize the texture, create a new <see cref="GorgonLibrary.Graphics.GorgonImageData">GorgonImageData</see> object and fill it with image information.</para>
 		/// </remarks>
-		protected abstract void InitializeImpl(GorgonImageData initialData);
+		protected abstract void OnInitialize(GorgonImageData initialData);
 
         /// <summary>
         /// Funtion to retrieve the binding flags for a resource.
@@ -319,7 +398,7 @@ namespace GorgonLibrary.Graphics
 			try
 			{
 				Gorgon.Log.Print("{0} {1}: Creating D3D11 texture resource...", Diagnostics.LoggingLevel.Verbose, GetType().Name, Name);
-				InitializeImpl(initialData);
+				OnInitialize(initialData);
 			    FormatInformation = GorgonBufferFormatInfo.GetInfo(Settings.Format);
 				CreateDefaultResourceView();
 
@@ -364,7 +443,7 @@ namespace GorgonLibrary.Graphics
                 throw new NotSupportedException("Textures with a usage of Immutable cannot be used as staging textures.");    
             }
 #endif
-			return (T)GetStagingTextureImpl();
+			return (T)OnGetStagingTexture();
 		}
 
         /// <summary>
@@ -642,7 +721,7 @@ namespace GorgonLibrary.Graphics
 			if ((Settings.Multisampling.Count > 1) || (Settings.Multisampling.Quality > 0))
 				throw new InvalidOperationException("Cannot update a texture that is multisampled.");
 #endif
-			UpdateSubResourceImpl(data, subResource);
+			OnUpdateSubResource(data, subResource);
 		}
 
 		/// <summary>
@@ -765,7 +844,7 @@ namespace GorgonLibrary.Graphics
 			else
 				_lock[subResource] = lockStream;
 
-			data = GetLockSubResourceData(new GorgonDataStream(lockStream.DataPointer, (int)lockStream.Length), box.RowPitch, box.SlicePitch); 
+			data = OnGetLockSubResourceData(new GorgonDataStream(lockStream.DataPointer, (int)lockStream.Length), box.RowPitch, box.SlicePitch); 
 
 			return (T)data;
 		}

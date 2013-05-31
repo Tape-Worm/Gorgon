@@ -132,11 +132,11 @@ namespace GorgonLibrary.Graphics
 					MipCount = 1,
 					ArrayCount = 1,
 					Multisampling = Settings.MultiSample,
-					Format = (Settings.ShaderViewFormat != BufferFormat.Unknown ? Settings.ShaderViewFormat : Settings.Format),
+					Format = (Settings.AllowShaderView ? Settings.TextureFormat : Settings.Format),
 					Usage = BufferUsage.Default
 				});
 
-			Texture.InitializeDepth(Settings.ShaderViewFormat != BufferFormat.Unknown);
+			Texture.InitializeDepth(Settings.AllowShaderView);
 
 			// Create the view.
 			Gorgon.Log.Print("GorgonDepthStencil '{0}': Creating D3D11 depth stencil view...", Diagnostics.LoggingLevel.Verbose, Name);
@@ -166,43 +166,75 @@ namespace GorgonLibrary.Graphics
 		internal static void ValidateSettings(GorgonGraphics graphics, GorgonDepthStencilSettings settings)
 		{
 			if (settings.Format == BufferFormat.Unknown)
-				throw new ArgumentException("The format for the depth buffer ('" + settings.Format.ToString() + "') is not valid.");
+            {
+				throw new ArgumentException("The format for the depth buffer ('" + settings.Format + "') is not valid.");
+            }
 
-			if (!graphics.VideoDevice.SupportsDepthFormat(settings.Format))
-				throw new ArgumentException("Video device '" + graphics.VideoDevice.Name + "' does not support '" + settings.Format + "' as a depth/stencil buffer format.");
+		    if (!graphics.VideoDevice.SupportsDepthFormat(settings.Format))
+		    {
+		        throw new ArgumentException("Video device '" + graphics.VideoDevice.Name + "' does not support '"
+		                                    + settings.Format + "' as a depth/stencil buffer format.");
+		    }
 
-			if (!graphics.VideoDevice.Supports2DTextureFormat(settings.Format))
-				throw new ArgumentException("Video device '" + graphics.VideoDevice.Name + "' does not support '" + settings.Format + "' as texture format for the depth buffer.");
+            // Make sure we can use the same multi-sampling with our depth buffer.
+		    int quality = graphics.VideoDevice.GetMultiSampleQuality(settings.Format, settings.MultiSample.Count);
 
-			// Make sure we can use the same multi-sampling with our depth buffer.
-			int quality = 0;
-			quality = graphics.VideoDevice.GetMultiSampleQuality(settings.Format, settings.MultiSample.Count);
+            // Ensure that the quality of the sampling does not exceed what the card can do.
+            if ((settings.MultiSample.Quality >= quality)
+                || (settings.MultiSample.Quality < 0))
+            {
+                throw new ArgumentException("Video device '" + graphics.VideoDevice.Name
+                                            + "' does not support multisampling with a count of '"
+                                            + settings.MultiSample.Count + "' and a quality of '"
+                                            + settings.MultiSample.Quality + " with a format of '"
+                                            + settings.Format + "'");
+            }
 
-			// Ensure that the quality of the sampling does not exceed what the card can do.
-			if ((settings.MultiSample.Quality >= quality) || (settings.MultiSample.Quality < 0))
-				throw new ArgumentException("Video device '" + graphics.VideoDevice.Name + "' does not support multisampling with a count of '" + settings.MultiSample.Count.ToString() + "' and a quality of '" + settings.MultiSample.Quality.ToString() + " with a format of '" + settings.Format + "'");
+		    if (!settings.AllowShaderView)
+		    {
+		        if (!graphics.VideoDevice.Supports2DTextureFormat(settings.Format))
+		        {
+		            throw new ArgumentException("Video device '" + graphics.VideoDevice.Name + "' does not support '"
+		                                        + settings.Format + "' as texture format for the depth buffer.");
+		        }
+		    }
+		    else
+		    {
+                if (settings.TextureFormat == BufferFormat.Unknown)
+                {
+                    throw new GorgonException(GorgonResult.CannotCreate, "The texture format must not be Unknown.");    
+                }
 
-			// Validate the texture format if it's different.
-			if ((settings.ShaderViewFormat != BufferFormat.Unknown) && (settings.ShaderViewFormat != settings.Format))
-			{
-				/*if (!graphics.VideoDevice.SupportsDepthFormat(settings.ShaderViewFormat))
-					throw new ArgumentException("Video device '" + graphics.VideoDevice.Name + "' does not support '" + settings.ShaderViewFormat + "' as a depth/stencil buffer format.");*/
+		        var formatInfo = GorgonBufferFormatInfo.GetInfo(settings.TextureFormat);
 
-				// Ensure that this format can be used to pass to a shader.
-				if (!graphics.VideoDevice.Supports2DTextureFormat(settings.ShaderViewFormat))
-					throw new ArgumentException("Video device '" + graphics.VideoDevice.Name + "' does not support '" + settings.ShaderViewFormat + "' as texture format for the depth buffer.");
+                if (!formatInfo.IsTypeless)
+                {
+                    throw new GorgonException(GorgonResult.CannotCreate, "The texture format must be typeless.");
+                }
 
-				// Feature levels less than 4.1 can't read back multi sampled depth buffers in a shader.
-				if ((graphics.VideoDevice.SupportedFeatureLevel != DeviceFeatureLevel.SM4_1) && (graphics.VideoDevice.SupportedFeatureLevel != DeviceFeatureLevel.SM5) &&
-					((settings.MultiSample.Count > 1) || (settings.MultiSample.Quality > 0)))
-					throw new ArgumentException("Video device '" + graphics.VideoDevice.Name + "' cannot bind a multi sampled depth buffer to a shader if the feature level is less than SM_4_1");
-			}
+                if (!graphics.VideoDevice.Supports2DTextureFormat(settings.TextureFormat))
+                {
+                    throw new ArgumentException("Video device '" + graphics.VideoDevice.Name + "' does not support '"
+                                                + settings.TextureFormat + "' as texture format for the depth buffer.");
+                }
+
+                if (graphics.VideoDevice.SupportedFeatureLevel < DeviceFeatureLevel.SM4)
+                {
+                    throw new GorgonException(GorgonResult.CannotCreate, "Depth/stencil buffers cannot be bound to the shader pipeline with video devices that don't support SM4 or better.");
+                }
+
+                if ((graphics.VideoDevice.SupportedFeatureLevel < DeviceFeatureLevel.SM4_1)
+                    && ((settings.MultiSample.Count > 1) || (settings.MultiSample.Quality > 0)))
+                {
+                    throw new GorgonException(GorgonResult.CannotCreate, "Multisampled Depth/stencil buffers cannot be bound to the shader pipeline if the video device does not support SM4_1 or better.");
+                }
+            }
 		}
 
 		/// <summary>
 		/// Function to update the settings for the depth/stencil buffer.
 		/// </summary>
-		/// <remarks>This will destroy and re-create the depth/stencil buffer according to the modified <see cref="P:GorgonLibrary.GorgonGraphics.GorgonDepthStencil.Settings">settings</see></remarks>
+		/// <remarks>This will destroy and re-create the depth/stencil buffer according to the modified <see cref="GorgonLibrary.Graphics.GorgonDepthStencil.Settings">settings</see></remarks>
 		public void UpdateSettings()
 		{
 			CleanUp();

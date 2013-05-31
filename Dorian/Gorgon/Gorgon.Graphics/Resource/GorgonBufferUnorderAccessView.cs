@@ -57,6 +57,15 @@ namespace GorgonLibrary.Graphics
 			get;
 			private set;
 		}
+        
+        /// <summary>
+        /// Property to return whether this is a raw view or not.
+        /// </summary>
+        public bool IsRaw
+        {
+            get;
+            private set;
+        }
 		#endregion
 
 		#region Methods.
@@ -94,8 +103,9 @@ namespace GorgonLibrary.Graphics
 		/// <param name="elementCount">The number of elements to view.</param>
 		/// <param name="isRaw">TRUE if the view should be a raw view, FALSE if not.</param>
 		internal GorgonBufferUnorderedAccessView(GorgonResource resource, BufferFormat format, int firstElement, int elementCount, bool isRaw)
-			: base(resource, format, isRaw)
+			: base(resource, format)
 		{
+		    IsRaw = isRaw;
 			ElementStart = firstElement;
 			ElementCount = elementCount;
 		}
