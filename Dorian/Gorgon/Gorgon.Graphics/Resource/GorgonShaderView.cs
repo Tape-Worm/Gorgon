@@ -73,15 +73,6 @@ namespace GorgonLibrary.Graphics
             get;
             private set;
         }
-
-		/// <summary>
-		/// Property to return whether this is a raw view or not.
-		/// </summary>
-		public bool IsRaw
-		{
-			get;
-			private set;
-		}
         #endregion
 
         #region Methods.
@@ -107,7 +98,7 @@ namespace GorgonLibrary.Graphics
         /// <summary>
         /// Function to perform initialization of the shader view resource.
         /// </summary>
-        protected abstract void InitializeImpl();
+        protected abstract void OnInitialize();
 
         /// <summary>
         /// Function to perform initialization of the shader view resource.
@@ -115,7 +106,7 @@ namespace GorgonLibrary.Graphics
         internal void Initialize()
         {
             Gorgon.Log.Print("Creating shader resource view for {0}.", LoggingLevel.Verbose, Resource.Name);
-            InitializeImpl();
+            OnInitialize();
         }
 
         #endregion
@@ -127,16 +118,14 @@ namespace GorgonLibrary.Graphics
         /// </summary>
         /// <param name="resource">The buffer to bind to the view.</param>
         /// <param name="format">The format of the view.</param>
-        /// <param name="isRaw">TRUE if the view is raw, FALSE if not.</param>
         /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="resource"/> parameter is NULL (Nothing in VB.Net).</exception>
-        protected GorgonShaderView(GorgonResource resource, BufferFormat format, bool isRaw)
+        protected GorgonShaderView(GorgonResource resource, BufferFormat format)
         {
             if (resource == null)
             {
                 throw new ArgumentNullException("resource");
             }
 
-	        IsRaw = isRaw;
             Resource = resource;
             Format = format;
             FormatInformation = GorgonBufferFormatInfo.GetInfo(Format);

@@ -639,7 +639,8 @@ namespace GorgonLibrary.Graphics
 				default:
 					this.Name = adapter.Description1.Description;
 					break;
-			}			
+			}
+		    this.UUID = adapter.Description1.Luid;
 			this.Revision = adapter.Description1.Revision;
 			this.SharedSystemMemory = adapter.Description1.SharedSystemMemory;
 			this.SubSystemID = adapter.Description1.SubsystemId;

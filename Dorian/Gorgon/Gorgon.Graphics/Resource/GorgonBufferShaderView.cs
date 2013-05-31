@@ -57,13 +57,23 @@ namespace GorgonLibrary.Graphics
 			get;
 			private set;
 		}
+
+
+        /// <summary>
+        /// Property to return whether this is a raw view or not.
+        /// </summary>
+        public bool IsRaw
+        {
+            get;
+            private set;
+        }
 		#endregion
 
 		#region Methods.
 		/// <summary>
 		/// Function to perform initialization of the shader view resource.
 		/// </summary>
-		protected override void InitializeImpl()
+		protected override void OnInitialize()
 		{
 			var desc = new SharpDX.Direct3D11.ShaderResourceViewDescription
 				{
@@ -94,8 +104,9 @@ namespace GorgonLibrary.Graphics
 		/// <param name="elementCount">The number of elements in the view.</param>
 		/// <param name="isRaw">TRUE to use a raw view, FALSE to use a normal view.</param>
 		internal GorgonBufferShaderView(GorgonResource buffer, BufferFormat format, int elementStart, int elementCount, bool isRaw)
-			: base(buffer, format, isRaw)
+			: base(buffer, format)
 		{
+		    IsRaw = isRaw;
 			ElementStart = elementStart;
 			ElementCount = elementCount;
 		}
