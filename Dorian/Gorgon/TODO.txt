@@ -7,7 +7,9 @@ This list is not in order.  Please don't get excited.
 	+ Update SRV for depth for binding to shaders using typeless texture and typed srv. (Done)
 	+ Make SRV/UAV more flexible for resource types.  Currently limited to 1 view to 1 resource, not ideal. (Done)
 	+ Update 1D textures for depth, 3D cannot be used as depth.
-	+ Update 1D/3D textures for render target destination.
+	+ Test depth/stencil for unordered access view support.
+	+ Update buffers and 1D/3D textures for render target destination.
+		- Refactor GorgonRenderTarget into GorgonRenderTarget/1D/2D/3D/Buffer types.
 * Add buffers (DONE)
 	+ Update vertex buffer (and index buffer?  Need to research) code to allow for stream output from Geometry shaders. (Done)
 	+ Add raw buffers (N/A - Any buffer except constant, structured can be raw)

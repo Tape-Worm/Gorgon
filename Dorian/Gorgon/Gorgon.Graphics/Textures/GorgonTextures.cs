@@ -1229,7 +1229,6 @@ namespace GorgonLibrary.Graphics
 		public T CreateTexture<T>(string name, ITextureSettings settings)
 			where T : GorgonTexture
 		{
-			Type type = typeof(T);
 			T texture = null;
 
 			if (name == null)

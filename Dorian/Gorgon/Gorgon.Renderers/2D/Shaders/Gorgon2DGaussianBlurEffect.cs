@@ -190,7 +190,7 @@ namespace GorgonLibrary.Renderers
 		{
 			get
 			{
-				return _vTarget == null ? null : _vTarget.Texture;
+				return _vTarget == null ? null : _vTarget;
 			}
 		}
 		#endregion
@@ -203,7 +203,7 @@ namespace GorgonLibrary.Renderers
 		{
 			FreeResources();
 
-			var settings = new GorgonRenderTargetSettings
+			var settings = new GorgonRenderTarget2DSettings
 			{
 				Width = BlurRenderTargetsSize.Width,
 				Height = BlurRenderTargetsSize.Height,
@@ -212,8 +212,8 @@ namespace GorgonLibrary.Renderers
 				MultiSample = new GorgonMultisampling(1, 0)
 			};
 
-			_hTarget = Graphics.Output.CreateRenderTarget("Effect.GaussBlur.Target_Horizontal", settings);
-			_vTarget = Graphics.Output.CreateRenderTarget("Effect.GaussBlur.Target_Vertical", settings);
+			_hTarget = Graphics.Output.CreateRenderTarget<GorgonRenderTarget2D>("Effect.GaussBlur.Target_Horizontal", settings);
+			_vTarget = Graphics.Output.CreateRenderTarget<GorgonRenderTarget2D>("Effect.GaussBlur.Target_Vertical", settings);
 			UpdateOffsets();
 		}
 

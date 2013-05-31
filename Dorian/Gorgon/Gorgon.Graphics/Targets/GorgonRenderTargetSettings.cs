@@ -65,14 +65,52 @@ namespace GorgonLibrary.Graphics
 	}
 
     /// <summary>
+    /// Type of render target.
+    /// </summary>
+    public enum RenderTargetType
+    {
+        /// <summary>
+        /// A render target buffer.
+        /// </summary>
+        Buffer = 0,
+        /// <summary>
+        /// A 1D render target.
+        /// </summary>
+        Target1D = 1,
+        /// <summary>
+        /// A 2D render target.
+        /// </summary>
+        Target2D = 2,
+        /// <summary>
+        /// A 3D render target.
+        /// </summary>
+        Target3D = 3,
+        /// <summary>
+        /// A swap chain target.
+        /// </summary>
+        SwapChain = 4
+    }
+
+    /// <summary>
     /// Settings for a render target.
     /// </summary>
     public interface IRenderTargetSettings
     {
         #region Properties.
         /// <summary>
+        /// Property to return the type of render target.
+        /// </summary>
+        RenderTargetType RenderTargetType
+        {
+            get;
+        }
+
+        /// <summary>
         /// Property to set or return the width of the render target.
         /// </summary>
+        /// <remarks>This is for 1D, 2D and 3D targets only, buffer targets will always return 0.
+        /// <para>The default value is 0.</para>
+        /// </remarks>
         int Width
         {
             get;
@@ -82,7 +120,7 @@ namespace GorgonLibrary.Graphics
         /// <summary>
         /// Property to set or return the height of the render target.
         /// </summary>
-        /// <remarks>For 2D and 3D render targets only.</remarks>
+        /// <remarks>For 2D and 3D render targets only. All other targets will always return 1.</remarks>
         int Height
         {
             get;
@@ -109,23 +147,12 @@ namespace GorgonLibrary.Graphics
         }
 
         /// <summary>
-        /// Property to set or return the format used to access the render target in a shader.
+        /// Property to set or return the multisampling settings for the target.
         /// </summary>
-        /// <remarks>If this value is set to Unknown, then the <see cref="GorgonLibrary.Graphics.IRenderTargetSettings.Format">Format</see> property will be used.
-        /// <para>If the render target type is a <see cref="GorgonLibrary.Graphics.GorgonSwapChain">GorgonSwapChain</see>, then setting this value to anything other 
-        /// than Unknown will enable the swap chain front buffer to be read in a shader.</para>
-        /// <para>The default value is Unknown.</para>
+        /// <remarks>This is only applicable to 1D, 2D, and 3D render targets.  Buffer targets will return a Count of 0 and a quality of 0.
+        /// <para>The default value is a count of 1 and a quality of 0 (No multisampling).</para>
         /// </remarks>
-        BufferFormat ShaderViewFormat
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Property to set or return the un
-        /// </summary>
-        BufferFormat UnorderedAccessViewFormat
+        GorgonMultisampling MultiSample
         {
             get;
             set;
@@ -148,15 +175,44 @@ namespace GorgonLibrary.Graphics
     }
 
 	/// <summary>
-	/// Settings for defining a render target.
+	/// Settings for defining a 2D render target.
 	/// </summary>
-	public class GorgonRenderTargetSettings
+	public class GorgonRenderTarget2DSettings
+        : IRenderTargetSettings
 	{
 		#region Variables.
 		private GorgonVideoMode _mode = default(GorgonVideoMode);			// Gorgon video mode.
 		#endregion
 
 		#region Properties.
+        /// <summary>
+        /// Property to return the type of render target.
+        /// </summary>
+	    public virtual RenderTargetType RenderTargetType
+	    {
+	        get
+	        {
+                return RenderTargetType.Target2D;
+	        }
+	    }
+
+        /// <summary>
+        /// Property to set or return the depth of the render target.
+        /// </summary>
+        /// <returns>This value will always return 1.</returns>
+        /// <exception cref="System.NotSupportedException">Thrown when an attempt to set this value is made.</exception>
+	    int IRenderTargetSettings.Depth
+	    {
+	        get
+	        {
+	           return 1;
+	        }
+            set
+            {
+               throw new NotSupportedException(); 
+            }
+	    }
+
 		/// <summary>
 		/// Property to set or return the width and height of the target.
 		/// </summary>
@@ -173,7 +229,7 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
-		/// Property to set or return the format of the back buffer for the target.
+		/// Property to set or return the format of the target.
 		/// </summary>
 		public BufferFormat Format
 		{
@@ -255,13 +311,13 @@ namespace GorgonLibrary.Graphics
 
 		#region Constructor/Destructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonRenderTargetSettings"/> class.
+		/// Initializes a new instance of the <see cref="GorgonRenderTarget2DSettings"/> class.
 		/// </summary>
-		public GorgonRenderTargetSettings()
+		public GorgonRenderTarget2DSettings()
 		{
 			Format = BufferFormat.Unknown;
 			DepthStencilFormat = BufferFormat.Unknown;
-			MultiSample = new GorgonMultisampling(1, 0);
+			MultiSample = GorgonMultisampling.NoMultiSampling;
 		}
 		#endregion
 	}
@@ -270,13 +326,24 @@ namespace GorgonLibrary.Graphics
 	/// Settings for defining a swap chain.
 	/// </summary>
 	public class GorgonSwapChainSettings
-		: GorgonRenderTargetSettings
+		: GorgonRenderTarget2DSettings
 	{
 		#region Variables.
 		private int _backBufferCount = 2;									// Number of back buffers.		
 		#endregion
 
 		#region Properties.
+        /// <summary>
+        /// Property to return the type of render target.
+        /// </summary>
+        public override RenderTargetType RenderTargetType
+        {
+            get
+            {
+                return RenderTargetType.SwapChain;
+            }
+        }
+
 		/// <summary>
 		/// Property to set or return whether the client area of the window should stay in sync with the swap chain back buffer size.
 		/// </summary>

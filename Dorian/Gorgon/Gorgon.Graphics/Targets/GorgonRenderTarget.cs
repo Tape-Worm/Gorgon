@@ -70,9 +70,9 @@ namespace GorgonLibrary.Graphics
 	}
 
 	/// <summary>
-	/// A texture render target.
+	/// The base render target object.
 	/// </summary>
-	/// <remarks>Use this to render graphics data to a texture.</remarks>
+	/// <remarks>This is the base class for all render target types in Gorgon.</remarks>
 	public class GorgonRenderTarget
 		: GorgonNamedObject, IDisposable
 	{
@@ -98,7 +98,16 @@ namespace GorgonLibrary.Graphics
 			set;
 		}
 
-		/// <summary>
+        /// <summary>
+        /// Property to set or return the texture for the render target.
+        /// </summary>
+        protected GorgonTexture2D Texture
+        {
+            get;
+            set;
+        }
+        
+        /// <summary>
 		/// Property to set or return the internal depth/stencil for the render target.
 		/// </summary>
 		protected GorgonDepthStencil InternalDepthStencil
@@ -110,10 +119,10 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Property to return the settings for this render target.
 		/// </summary>
-		public GorgonRenderTargetSettings Settings
+		public IRenderTargetSettings Settings
 		{
 			get;
-			protected set;
+			private set;
 		}
 
 		/// <summary>
@@ -135,15 +144,6 @@ namespace GorgonLibrary.Graphics
 			{
 				_depthStencil = value;
 			}
-		}
-
-		/// <summary>
-		/// Property to return the texture for the render target.
-		/// </summary>
-		public GorgonTexture2D Texture
-		{
-			get;
-			protected set;
 		}
 
 		/// <summary>
@@ -244,8 +244,7 @@ namespace GorgonLibrary.Graphics
 				Multisampling = Settings.MultiSample,
 				Usage = BufferUsage.Default
 			});
-			Texture.RenderTarget = this;
-			Texture.InitializeRenderTarget();
+			Texture.InitializeRenderTarget(this);
 
 			Gorgon.Log.Print("GorgonRenderTarget '{0}': Creating D3D11 render target view...", Diagnostics.LoggingLevel.Intermediate, Name);
 			UpdateResourceView();
@@ -281,40 +280,6 @@ namespace GorgonLibrary.Graphics
 			D3DRenderTarget.DebugName = "RenderTarget '" + Name + "' Render Target View";
 
 			Graphics.Output.RenderTargets.ReSeat(this);
-		}
-
-		/// <summary>
-		/// Function to validate the settings for a render target.
-		/// </summary>
-		internal static void ValidateRenderTargetSettings(GorgonGraphics graphics, GorgonRenderTargetSettings settings)
-		{
-			D3D.Device d3dDevice = null;
-
-			if (graphics.VideoDevice == null)
-				throw new GorgonException(GorgonResult.CannotCreate, "Cannot create the render target, no video device was selected.");
-
-			// Get the Direct 3D device instance.
-			d3dDevice = graphics.D3DDevice;
-
-			// Ensure width and height are valid.
-			if ((settings.Width <= 0) || (settings.Width >= graphics.Textures.MaxWidth))
-				throw new GorgonException(GorgonResult.CannotCreate, "Render target must have a width greater than 0 or less than " + graphics.Textures.MaxWidth.ToString() + ".");
-
-			if ((settings.Height <= 0) || (settings.Height >= graphics.Textures.MaxHeight))
-				throw new GorgonException(GorgonResult.CannotCreate, "Render target must have a height greater than 0 or less than " + graphics.Textures.MaxHeight.ToString() + ".");
-
-			if (settings.Format == BufferFormat.Unknown)
-				throw new GorgonException(GorgonResult.CannotCreate, "Render target must have a known buffer format.");
-
-			int quality = graphics.VideoDevice.GetMultiSampleQuality(settings.Format, settings.MultiSample.Count);
-
-			// Ensure that the quality of the sampling does not exceed what the card can do.
-			if ((settings.MultiSample.Quality >= quality) || (settings.MultiSample.Quality < 0))
-				throw new ArgumentException("Video device '" + graphics.VideoDevice.Name + "' does not support multisampling with a count of '" + settings.MultiSample.Count.ToString() + "' and a quality of '" + settings.MultiSample.Quality.ToString() + " with a format of '" + settings.Format + "'");
-
-			// Ensure that the selected video format can be used.
-			if (!graphics.VideoDevice.SupportsRenderTargetFormat(settings.Format, (settings.MultiSample.Quality > 0) || (settings.MultiSample.Count > 1)))
-				throw new ArgumentException("Cannot use the format '" + settings.Format.ToString() + "' for a render target on the video device '" + graphics.VideoDevice.Name + "'.");
 		}
 
 		/// <summary>
@@ -361,41 +326,29 @@ namespace GorgonLibrary.Graphics
 			if ((DepthStencil != null) && (DepthStencil.FormatInformation.HasDepth) && (DepthStencil.FormatInformation.HasStencil))
 			{
 				DepthStencil.Clear(depthValue, stencilValue);
-				return;
 			}
 		}
 
-		/// <summary>
-		/// Function to update the settings for the render target.
-		/// </summary>
-		/// <param name="mode">New video mode to use.</param>
-		/// <param name="depthStencilFormat">The format of the internal depth/stencil buffer.</param>
-		/// <exception cref="GorgonLibrary.GorgonException">Thrown when the <see cref="P:GorgonLibrary.Graphics.GorgonVideoMode.Format">GorgonRenderTargetSettings.VideoMode.Format</see> property cannot be used by the render target.
-		/// <para>-or-</para>
-		/// <para>The width and height are not valid for the render target.</para>
-		/// </exception>
-		public virtual void UpdateSettings(GorgonVideoMode mode, BufferFormat depthStencilFormat)
-		{
-			bool sizeChanged = (mode.Size != Settings.VideoMode.Size);
+        /// <summary>
+        /// Function to convert a render target to a texture.
+        /// </summary>
+        /// <param name="target">Target to convert to a texture.</param>
+        /// <returns>The texture bound to the render target.</returns>
+        public static GorgonTexture2D ToTexture(GorgonRenderTarget target)
+        {
+            return target == null ? null : target.Texture;
+        }
 
-			// Assign the new settings.	
-			Settings.VideoMode = mode;
-			Settings.DepthStencilFormat = depthStencilFormat;
-
-			// Validate and modify the settings as appropriate.
-			ValidateRenderTargetSettings(Graphics, Settings);
-
-			// Recreate the render target.
-			CleanUp();
-			CreateResources();
-
-			// Re-seat our target.
-			Graphics.Output.RenderTargets.ReSeat(this);
-
-			if (sizeChanged)
-				OnTargetResize(new GorgonRenderTargetResizedEventArgs(this));
-		}
-		#endregion
+        /// <summary>
+        /// Implicit operator to convert a render target to a texture.
+        /// </summary>
+        /// <param name="target">Render target to convert.</param>
+        /// <returns>The texture attached to the render target.</returns>
+        public static implicit operator GorgonTexture2D(GorgonRenderTarget target)
+        {
+            return target == null ? null : target.Texture;
+        }
+	    #endregion
 
 		#region Constructor/Destructor.
 		/// <summary>
@@ -404,7 +357,7 @@ namespace GorgonLibrary.Graphics
 		/// <param name="graphics">The graphics interface that created this object.</param>
 		/// <param name="name">The name of the render target.</param>
 		/// <param name="settings">Settings to apply to the render target.</param>
-		internal GorgonRenderTarget(GorgonGraphics graphics, string name, GorgonRenderTargetSettings settings)
+		internal GorgonRenderTarget(GorgonGraphics graphics, string name, IRenderTargetSettings settings)
 			: base(name)
 		{
 			Graphics = graphics;

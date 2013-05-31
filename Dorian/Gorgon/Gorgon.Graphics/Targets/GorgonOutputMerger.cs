@@ -128,8 +128,8 @@ namespace GorgonLibrary.Graphics
                 // Ensure the dimensions of the targets are the same.
                 if (!this.All(
                         item =>
-                        item == null || item.Settings.Width != newTarget.Settings.Width
-                        || item.Settings.Height != newTarget.Settings.Height))
+                        item == null || item.Settings.Width == newTarget.Settings.Width
+                        || item.Settings.Height == newTarget.Settings.Height))
                 {
                     throw new GorgonException(GorgonResult.CannotBind,
                                               string.Format(
@@ -147,7 +147,7 @@ namespace GorgonLibrary.Graphics
 
                 if (!this.All(
                         item =>
-                        item == null || item.Texture.Settings.ArrayCount == newTarget.Texture.Settings.ArrayCount))
+                        item == null || ((GorgonTexture2D)item).Settings.ArrayCount == ((GorgonTexture2D)newTarget).Settings.ArrayCount))
                 {
                     throw new GorgonException(GorgonResult.CannotBind,
                                               string.Format(
@@ -155,6 +155,7 @@ namespace GorgonLibrary.Graphics
                                                   newTarget.Name));
                 }
             }
+
 			/// <summary>
 			/// Function to determine if the render targets have the same bit depth.
 			/// </summary>
@@ -265,7 +266,7 @@ namespace GorgonLibrary.Graphics
 			                                          depthBuffer.Name));
 			        }
 
-			        if (!this.All(item => item == null || item.Texture.Settings.ArrayCount == depthBuffer.Texture.Settings.ArrayCount))
+			        if (!this.All(item => item == null || ((GorgonTexture2D)item).Settings.ArrayCount == depthBuffer.Texture.Settings.ArrayCount))
 			        {
 			            throw new GorgonException(GorgonResult.CannotBind,
 			                                      string.Format(
@@ -306,7 +307,7 @@ namespace GorgonLibrary.Graphics
 				// If we've got the target bound to a texture slot, then remove it before assigning it.
 				// Otherwise D3D11 will throw up a warning in the debug output.
 				if (target != null)
-				    _graphics.Shaders.Unbind(target.Texture);
+				    _graphics.Shaders.Unbind(target);
 
 				_targets[index] = target;
 				_views[index] = target == null ? null : target.D3DRenderTarget;
@@ -344,7 +345,7 @@ namespace GorgonLibrary.Graphics
 
 							// If we've got the target bound to a texture slot, then remove it before assigning it.
 							// Otherwise D3D11 will throw up a warning in the debug output.
-							_graphics.Shaders.Unbind(target.Texture);
+							_graphics.Shaders.Unbind(target);
 						}
 					}
 					_targets[i + startIndex] = target;
@@ -552,7 +553,77 @@ namespace GorgonLibrary.Graphics
 		#endregion
 
 		#region Methods.
-		/// <summary>
+
+	    /// <summary>
+	    /// Function to validate the settings for a render target.
+	    /// </summary>
+	    private void ValidateRenderTargetTextureSettings(IRenderTargetSettings settings)
+        {
+            if (settings.RenderTargetType == RenderTargetType.Buffer)
+            {
+                throw new GorgonException(GorgonResult.CannotCreate, "Cannot use buffer settings for 1D, 2D or 3D render targets.");    
+            }
+
+            if (_graphics.VideoDevice == null)
+            {
+                throw new GorgonException(GorgonResult.CannotCreate,
+                                          "Cannot create the render target, no video device was selected.");
+            }
+
+            // Ensure the dimensions are valid.
+            if ((settings.Width <= 0)
+                || (settings.Width >= _graphics.Textures.MaxWidth))
+            {
+                throw new GorgonException(GorgonResult.CannotCreate,
+                                          "Render target must have a width greater than 0 or less than "
+                                          + _graphics.Textures.MaxWidth + ".");
+            }
+            
+            if ((settings.RenderTargetType > RenderTargetType.Target1D) && ((settings.Height <= 0)
+                || (settings.Height >= _graphics.Textures.MaxHeight)))
+            {
+                throw new GorgonException(GorgonResult.CannotCreate,
+                                          "Render target must have a height greater than 0 or less than "
+                                          + _graphics.Textures.MaxHeight + ".");
+            }
+
+            if ((settings.RenderTargetType > RenderTargetType.Target3D) && ((settings.Depth <= 0)
+                || (settings.Depth >= _graphics.Textures.MaxDepth)))
+            {
+                throw new GorgonException(GorgonResult.CannotCreate,
+                                          "Render target must have a depth greater than 0 or less than "
+                                          + _graphics.Textures.MaxDepth + ".");
+            }
+
+            if (settings.Format == BufferFormat.Unknown)
+            {
+                throw new GorgonException(GorgonResult.CannotCreate, "Render target must have a known buffer format.");
+            }
+
+            int quality = _graphics.VideoDevice.GetMultiSampleQuality(settings.Format, settings.MultiSample.Count);
+
+            // Ensure that the quality of the sampling does not exceed what the card can do.
+            if ((settings.MultiSample.Quality >= quality)
+                || (settings.MultiSample.Quality < 0))
+            {
+                throw new ArgumentException("Video device '" + _graphics.VideoDevice.Name
+                                            + "' does not support multisampling with a count of '"
+                                            + settings.MultiSample.Count + "' and a quality of '"
+                                            + settings.MultiSample.Quality + " with a format of '"
+                                            + settings.Format + "'");
+            }
+
+            // Ensure that the selected video format can be used.
+            if (!_graphics.VideoDevice.SupportsRenderTargetFormat(settings.Format,
+                                                                 (settings.MultiSample.Quality > 0)
+                                                                 || (settings.MultiSample.Count > 1)))
+            {
+                throw new ArgumentException("Cannot use the format '" + settings.Format.ToString()
+                                            + "' for a render target on the video device '" + _graphics.VideoDevice.Name + "'.");
+            }
+        }
+        
+        /// <summary>
 		/// Function to clean up resources used by the interface.
 		/// </summary>
 		internal void CleanUp()
@@ -785,9 +856,10 @@ namespace GorgonLibrary.Graphics
 		/// <para>-or-</para>
 		/// <para>Thrown when the <see cref="P:GorgonLibrary.Graphics.GorgonSwapChainSettings.MultSamples.Quality">GorgonSwapChainSettings.MultiSamples.Quality</see> property is less than 0 or not less than the value returned by <see cref="M:GorgonLibrary.Graphics.GorgonVideoDevice">GorgonVideoDevice.GetMultiSampleQuality</see>.</para>
 		/// </exception>
-		public GorgonRenderTarget CreateRenderTarget(string name, GorgonRenderTargetSettings settings)
+		public T CreateRenderTarget<T>(string name, IRenderTargetSettings settings)
+            where T : GorgonRenderTarget
 		{
-			GorgonRenderTarget target = null;
+			T target = null;
 
             if (name == null)
             {
@@ -804,9 +876,28 @@ namespace GorgonLibrary.Graphics
                 throw new ArgumentNullException("settings");
             }
 
-			GorgonRenderTarget.ValidateRenderTargetSettings(_graphics, settings);
 
-			target = new GorgonRenderTarget(_graphics, name, settings);
+		    switch (settings.RenderTargetType)
+		    {
+                case RenderTargetType.Buffer:
+		            break;
+                case RenderTargetType.Target1D:
+		            break;
+                case RenderTargetType.Target2D:
+                    ValidateRenderTargetTextureSettings(settings);
+		            target = new GorgonRenderTarget2D(_graphics, name, (GorgonRenderTarget2DSettings)settings) as T;
+		            break;
+                case RenderTargetType.Target3D:
+		            break;
+                default:
+                    throw new ArgumentException(string.Format("Unknown render target type [{0}].", settings.RenderTargetType), "settings");
+		    }
+
+            if (target == null)
+            {
+                throw new ArgumentException(string.Format("Unknown render target type [{0}].", settings.RenderTargetType), "settings");
+            }
+
 			_graphics.AddTrackedObject(target);
 			target.Initialize();
 

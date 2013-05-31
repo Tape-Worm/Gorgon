@@ -196,10 +196,6 @@ namespace GorgonLibrary.Graphics
 			{
 				return (GorgonSwapChainSettings)base.Settings;
 			}
-			private set
-			{
-				base.Settings = value;
-			}
 		}
 		#endregion
 
@@ -711,7 +707,7 @@ namespace GorgonLibrary.Graphics
 		///   <para>-or-</para>
 		///   <para>The width and height are not valid for the render target.</para>
 		///   </exception>
-		public override void UpdateSettings(GorgonVideoMode mode, BufferFormat depthStencilFormat)
+		public void UpdateSettings(GorgonVideoMode mode, BufferFormat depthStencilFormat)
 		{
 			UpdateSettings(mode, Settings.IsWindowed, depthStencilFormat, Settings.BufferCount);
 		}
