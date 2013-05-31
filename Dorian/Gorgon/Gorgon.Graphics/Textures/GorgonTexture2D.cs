@@ -152,8 +152,11 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Function to initialize a render target texture.
 		/// </summary>
-		internal void InitializeRenderTarget()
+		/// <param name="target">The render target that is bound to the texture.</param>
+		internal void InitializeRenderTarget(GorgonRenderTarget target)
 		{
+            RenderTarget = target;
+		    
 			var desc = new D3D.Texture2DDescription
 			    {
 			        ArraySize = 1,
@@ -733,6 +736,27 @@ namespace GorgonLibrary.Graphics
 
 			Graphics.Context.UpdateSubresource(box, D3DResource, subResource, region);
 		}
+
+        /// <summary>
+        /// Explicit operator to convert a texture to a render target.
+        /// </summary>
+        /// <param name="texture">Texture to convert.</param>
+        /// <returns>The render target bound to the texture.</returns>
+        /// <remarks>If this texture is not bound to a render target, then an exception will be raised.</remarks>
+        public static explicit operator GorgonRenderTarget(GorgonTexture2D texture)
+        {
+            if (texture == null)
+            {
+                return null;
+            }
+
+            if (texture.RenderTarget != null)
+            {
+                return texture.RenderTarget;
+            }
+
+            throw new InvalidCastException("This texture is not a render target.");
+        }
 		#endregion
 
 		#region Constructor/Destructor.

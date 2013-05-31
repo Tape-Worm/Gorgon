@@ -51,6 +51,15 @@ namespace GorgonLibrary.Graphics
 
 		#region Properties.
         /// <summary>
+        /// Property to set or return the render target bound to this texture.
+        /// </summary>
+        protected GorgonRenderTarget RenderTarget
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
         /// Property to return the default shader view.
         /// </summary>
         public GorgonShaderView DefaultShaderView
@@ -58,16 +67,6 @@ namespace GorgonLibrary.Graphics
             get;
             private set;
         }
-
-		/// <summary>
-		/// Property to return the render target that this texture belongs to.
-		/// </summary>
-		public GorgonRenderTarget RenderTarget
-		{
-			get;
-			internal set;
-		}
-
 		/// <summary>
 		/// Property to return whether this texture is for a render target.
 		/// </summary>

@@ -71,7 +71,6 @@
     <Compile Include="Buffers\GorgonBufferSettings.cs" />
     <Compile Include="Buffers\GorgonConstantBufferSettings.cs" />
     <Compile Include="Buffers\GorgonIndexBufferSettings.cs" />
-    <Compile Include="Buffers\BufferInfo.cs" />
     <Compile Include="Buffers\IBufferSettings.cs" />
     <Compile Include="Buffers\GorgonStructuredBufferSettings.cs" />
     <Compile Include="Buffers\GorgonStructuredBuffer.cs" />
@@ -81,6 +80,7 @@
     <Compile Include="Buffers\GorgonVertexBufferBinding.cs" />
     <Compile Include="Collections\GorgonCustomValueCollection.cs" />
     <Compile Include="D3DErrors.cs" />
+    <Compile Include="D3DTesting\BufferInfo.cs" />
     <Compile Include="DeviceInfo\GorgonVideoDeviceEnumerator.cs" />
     <Compile Include="DeviceInfo\GorgonVideoDevice.cs" />
     <Compile Include="DeviceInfo\GorgonVideoMode.cs" />
@@ -152,6 +152,7 @@
     <Compile Include="Targets\GorgonDepthStencil.cs" />
     <Compile Include="Targets\GorgonDepthStencilSettings.cs" />
     <Compile Include="Targets\GorgonMultiSampling.cs" />
+    <Compile Include="Targets\GorgonRenderTarget2D.cs" />
     <Compile Include="Targets\GorgonSwapChain.cs" />
     <Compile Include="Targets\GorgonRenderTargetSettings.cs" />
     <Compile Include="Targets\GorgonViewport.cs" />

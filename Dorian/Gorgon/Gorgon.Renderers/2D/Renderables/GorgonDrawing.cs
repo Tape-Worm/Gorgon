@@ -232,46 +232,6 @@ namespace GorgonLibrary.Renderers
 		}
 
 		/// <summary>
-		/// Function to blit a render target to the current render target.
-		/// </summary>
-		/// <param name="target">Render target to blit to the current render target.</param>
-		/// <param name="blitRegion">The position, and size of the blitted region.</param>
-		/// <param name="textureRegion">The region of the texture to blit.</param>
-		/// <remarks>This is for very quickly copying a render target to another target.  If more control is required, then use a <see cref="GorgonLibrary.Renderers.GorgonSprite">Sprite</see>.</remarks>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="target"/> parameter is NULL (Nothing in VB.Net).</exception>
-		public void Blit(GorgonRenderTarget target, RectangleF blitRegion, RectangleF textureRegion)
-		{
-			GorgonDebug.AssertNull<GorgonRenderTarget>(target, "target");
-			Blit(target.Texture, blitRegion, textureRegion);
-		}
-
-		/// <summary>
-		/// Function to blit a render target to the current render target.
-		/// </summary>
-		/// <param name="target">Render target to blit to the current render target.</param>
-		/// <param name="blitRegion">The position, and size of the blitted region.</param>
-		/// <remarks>This is for very quickly copying a render target to another target.  If more control is required, then use a <see cref="GorgonLibrary.Renderers.GorgonSprite">Sprite</see>.</remarks>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="target"/> parameter is NULL (Nothing in VB.Net).</exception>
-		public void Blit(GorgonRenderTarget target, RectangleF blitRegion)
-		{
-			GorgonDebug.AssertNull<GorgonRenderTarget>(target, "target");
-			Blit(target.Texture, blitRegion, new RectangleF(Vector2.Zero, new Vector2(1)));
-		}
-
-		/// <summary>
-		/// Function to blit a render target to the current render target.
-		/// </summary>
-		/// <param name="target">Render target to blit to the current render target.</param>
-		/// <param name="position">Position on the screen to blit onto.</param>
-		/// <remarks>This is for very quickly copying a render target to another target.  If more control is required, then use a <see cref="GorgonLibrary.Renderers.GorgonSprite">Sprite</see>.</remarks>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="target"/> parameter is NULL (Nothing in VB.Net).</exception>
-		public void Blit(GorgonRenderTarget target, Vector2 position)
-		{
-			GorgonDebug.AssertNull<GorgonRenderTarget>(target, "target");
-			Blit(target, new RectangleF(position, target.Settings.Size), new RectangleF(Vector2.Zero, new Vector2(1)));
-		}
-
-		/// <summary>
 		/// Function to blit a texture to the current render target.
 		/// </summary>
 		/// <param name="texture">Texture to blit to the current render target.</param>

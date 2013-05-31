@@ -324,4 +324,7 @@
     <value>Cannot bind an unordered access view to a resource that has a usage of [Staging] or [Dynamic].</value>
     <comment>Applies to textures/buffers</comment>
   </data>
+  <data name="GORGFX_MULTISAMPLE_TOSTR" xml:space="preserve">
+    <value>Multisampling count: {0}, quality: {1}.</value>
+  </data>
 </root>

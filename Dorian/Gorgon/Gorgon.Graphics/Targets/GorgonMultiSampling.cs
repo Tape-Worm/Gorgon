@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using GorgonLibrary.Graphics.Properties;
 using GI = SharpDX.DXGI;
 using D3D = SharpDX.Direct3D11;
 
@@ -38,41 +39,26 @@ namespace GorgonLibrary.Graphics
 		: IEquatable<GorgonMultisampling>
 	{
 		#region Variables.
-		private int _count;
+        /// <summary>
+        /// The default multisampling value.
+        /// </summary>
+        public static readonly GorgonMultisampling NoMultiSampling = new GorgonMultisampling(1, 0);
+
+        /// <summary>
+        /// The number of samples per pixel.
+        /// </summary>
+		public readonly int Count;
 
 		/// <summary>
 		/// Image quality.
 		/// </summary>
 		/// <remarks>There is a performance penalty for setting this value to higher levels.
-		/// <para>This value must be 0 or less than the value returned by <see cref="M:GorgonLibrary.Graphics.GorgonVideoDevice">GorgonVideoDevice.GetMultiSampleQuality</see>.  Failure to do so will cause the anything using the value to throw an exception.</para>
+		/// <para>This value must be 0 or less than the value returned by <see cref="GorgonLibrary.Graphics.GorgonVideoDevice.GetMultiSampleQuality">GorgonVideoDevice.GetMultiSampleQuality</see>.  Failure to do so will cause the anything using the value to throw an exception.</para>
 		/// </remarks>
-		public int Quality;
+		public readonly int Quality;
 		#endregion
 
-		#region Properties.
-		/// <summary>
-		/// Property to set or return the number of samples per pixel.
-		/// </summary>
-		/// <remarks>This value is limited to a range of 1 to 32.</remarks>
-		public int Count
-		{
-			get
-			{
-				return _count;
-			}
-			set
-			{
-				if (value < 1)
-					value = 1;
-				if (value > 32)
-					value = 32;
-
-				_count = value;
-			}
-		}
-		#endregion
-
-		#region Methods.		
+		#region Methods.
 		/// <summary>
 		/// Function to convert a Gorgon multisampling value to a D3D sample description.
 		/// </summary>
@@ -103,10 +89,12 @@ namespace GorgonLibrary.Graphics
 		/// </returns>
 		public override bool Equals(object obj)
 		{
-			if (obj is GorgonMultisampling)
-				return Equals((GorgonMultisampling)obj);
+		    if (obj is GorgonMultisampling)
+		    {
+		        return Equals((GorgonMultisampling)obj);
+		    }
 
-			return base.Equals(obj);
+		    return base.Equals(obj);
 		}
 
 		/// <summary>
@@ -117,7 +105,7 @@ namespace GorgonLibrary.Graphics
 		/// <returns></returns>
 		public static bool operator ==(GorgonMultisampling left, GorgonMultisampling right)
 		{
-			return GorgonMultisampling.Equals(ref left, ref right);
+			return Equals(ref left, ref right);
 		}
 
 		/// <summary>
@@ -128,7 +116,7 @@ namespace GorgonLibrary.Graphics
 		/// <returns></returns>
 		public static bool operator !=(GorgonMultisampling left, GorgonMultisampling right)
 		{
-			return !GorgonMultisampling.Equals(ref left, ref right);
+			return !Equals(ref left, ref right);
 		}
 
 		/// <summary>
@@ -150,7 +138,7 @@ namespace GorgonLibrary.Graphics
 		/// </returns>
 		public override string ToString()
 		{
-			return "Multisampling count: " + Count.ToString() + ", quality: " + Quality.ToString();
+		    return string.Format(Resources.GORGFX_MULTISAMPLE_TOSTR, Count, Quality);
 		}
 		#endregion
 
@@ -162,12 +150,16 @@ namespace GorgonLibrary.Graphics
 		/// <param name="quality">Image quality.</param>
 		public GorgonMultisampling(int count, int quality)
 		{
-			if (count < 1)
-				count = 1;
-			if (count > 32)
-				count = 32;
+		    if (count < 1)
+		    {
+		        count = 1;
+		    }
+		    if (count > 32)
+		    {
+		        count = 32;
+		    }
 
-			_count = count;
+		    Count = count;
 			Quality = quality;
 		}
 		#endregion
@@ -180,7 +172,7 @@ namespace GorgonLibrary.Graphics
 		/// <returns>TRUE if equal, FALSE if not.</returns>
 		public bool Equals(GorgonMultisampling other)
 		{
-			return GorgonMultisampling.Equals(ref this, ref other);
+			return Equals(ref this, ref other);
 		}
 		#endregion
 	}

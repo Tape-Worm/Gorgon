@@ -122,7 +122,7 @@ namespace GorgonLibrary.Renderers
 			if ((newSize.Width <= 0) || (newSize.Height <= 0))
 				return;
 
-			_displacementTarget = Graphics.Output.CreateRenderTarget("Effect.Displacement.RT", new GorgonRenderTargetSettings()
+			_displacementTarget = Graphics.Output.CreateRenderTarget<GorgonRenderTarget2D>("Effect.Displacement.RT", new GorgonRenderTarget2DSettings
 			{
 				Width = newSize.Width,
 				Height = newSize.Height,
@@ -199,8 +199,8 @@ namespace GorgonLibrary.Renderers
 				Gorgon2D.Drawing.SmoothingMode = SmoothingMode.Smooth;
 				Gorgon2D.PixelShader.Current = PixelShader;
 				Gorgon2D.Target = _currentTarget;
-				if (Gorgon2D.PixelShader.Resources.GetView(1) != _displacementTarget.Texture.DefaultShaderView)
-					Gorgon2D.PixelShader.Resources.SetView(1, _displacementTarget.Texture.DefaultShaderView);
+				if (Gorgon2D.PixelShader.Resources.GetView(1) != ((GorgonTexture2D)_displacementTarget).DefaultShaderView)
+					Gorgon2D.PixelShader.Resources.SetView(1, ((GorgonTexture2D)_displacementTarget).DefaultShaderView);
 			}				
 		}
 
