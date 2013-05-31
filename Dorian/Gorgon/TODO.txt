@@ -8,15 +8,15 @@ This list is not in order.  Please don't get excited.
 	+ Make SRV/UAV more flexible for resource types.  Currently limited to 1 view to 1 resource, not ideal. (Done)
 	+ Update 1D textures for depth, 3D cannot be used as depth.
 	+ Update 1D/3D textures for render target destination.
-* Add buffers
+* Add buffers (DONE)
 	+ Update vertex buffer (and index buffer?  Need to research) code to allow for stream output from Geometry shaders. (Done)
-	+ Add raw buffers (Done)
+	+ Add raw buffers (N/A - Any buffer except constant, structured can be raw)
 	+ Add structured buffer (Done)
-		- Add append and counter buffers (Done)
-	+ Add typed buffer (Done)
+		- Add append and counter buffers (N/A - This is a view type)
+	+ Add typed buffer (N/A - All buffers are "typed" buffers)
 	+ Update buffers to allow for creation of staging buffer. (Done)	
-	+ Add generic buffer creation to GorgonBuffers.
-	+ Add argument buffer (for DrawIndirect)
+	+ Add generic buffer creation to GorgonBuffers. (Done)
+	+ Add argument buffer (for DrawIndirect) (N/A - Most buffers can be used as an indirect args buffer)
 * Finish shader objects in base graphics library.
 	+ Add ability to load/save shaders from text file and compiled form. (Done)
 	+ Maybe consider putting in shader reflection.
