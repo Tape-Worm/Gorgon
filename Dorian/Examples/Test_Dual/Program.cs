@@ -166,8 +166,8 @@ namespace Test_Dual
 						Usage = BufferUsage.Staging,
 						Multisampling = new GorgonMultisampling(1, 0)
 					});
-				combinedTexture.CopySubResource(_swap1.Texture, 0, 0, new Rectangle(0, 0, 800, 600), Vector2.Zero);
-				combinedTexture.CopySubResource(_swap2.Texture, 0, 0, new Rectangle(0, 0, 800, 600), new Vector2(800, 0));
+				combinedTexture.CopySubResource(_swap1, 0, 0, new Rectangle(0, 0, 800, 600), Vector2.Zero);
+				combinedTexture.CopySubResource(_swap2, 0, 0, new Rectangle(0, 0, 800, 600), new Vector2(800, 0));
 				combinedTexture.Save(Environment.GetFolderPath(Environment.SpecialFolder.Desktop) + @"\DualMonitor.png", new GorgonCodecPNG());
 			}
 		}

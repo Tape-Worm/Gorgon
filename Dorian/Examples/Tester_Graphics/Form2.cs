@@ -220,7 +220,7 @@ namespace Tester_Graphics
                     _shader = _graphics.Shaders.CreateShader<GorgonPixelShader>("TArray", "DualTex", Properties.Resources.Shader, true);
                 }
 
-                _target = _graphics.Output.CreateRenderTarget("Name", new GorgonRenderTargetSettings()
+                _target = _graphics.Output.CreateRenderTarget<GorgonRenderTarget2D>("Name", new GorgonRenderTarget2DSettings
                 {
                     Width = (int)_sprite.Size.X,
                     Height = (int)_sprite.Size.Y,
@@ -228,7 +228,7 @@ namespace Tester_Graphics
                 });
 
                 _target.Clear(Color.Transparent);
-                _targetSprite = _2D.Renderables.CreateSprite("Target", new Vector2(_target.Settings.Width, _target.Settings.Height), _target.Texture);
+                _targetSprite = _2D.Renderables.CreateSprite("Target", new Vector2(_target.Settings.Width, _target.Settings.Height), _target);
                 _targetSprite.Opacity = 0.0f;
 				_targetSprite.SmoothingMode = SmoothingMode.Smooth;
 				_targetSprite.Anchor = new Vector2(_targetSprite.Size.X / 2.0f, _targetSprite.Size.Y / 2.0f);
