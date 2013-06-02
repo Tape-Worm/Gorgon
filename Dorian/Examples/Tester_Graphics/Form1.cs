@@ -70,21 +70,21 @@ namespace Tester_Graphics
 				GorgonVideoDeviceEnumerator.Enumerate(true, false);
 				_graphics = new GorgonGraphics(GorgonVideoDeviceEnumerator.VideoDevices[0], DeviceFeatureLevel.SM2_a_b);
 
-				_target = _graphics.Output.CreateRenderTarget("My target", new GorgonRenderTargetSettings()
+				_target = _graphics.Output.CreateRenderTarget<GorgonRenderTarget2D>("My target", new GorgonRenderTarget2DSettings()
 				{
 					Width = 320,
 					Height = 240,
 					Format = BufferFormat.R8G8B8A8_UIntNormal
 				});
 
-				_target2 = _graphics.Output.CreateRenderTarget("My target 2", new GorgonRenderTargetSettings()
+				_target2 = _graphics.Output.CreateRenderTarget<GorgonRenderTarget2D>("My target 2", new GorgonRenderTarget2DSettings()
 				{
 					Width = 320,
 					Height = 240,
 					Format = BufferFormat.R8G8B8A8_UIntNormal
 				});
 
-				_target3 = _graphics.Output.CreateRenderTarget("My Target 3", _target2.Settings);
+				_target3 = _graphics.Output.CreateRenderTarget<GorgonRenderTarget2D>("My Target 3", _target2.Settings);
 
 				//using (GorgonTexture1D _1D = _graphics.Textures.CreateTexture<GorgonTexture1D>("Test", new GorgonTexture1DSettings()
 				//{
@@ -114,12 +114,12 @@ namespace Tester_Graphics
 
 				using (var imageData = GorgonImageData.Create2DFromGDIImage(Properties.Resources.Haiku))
 				{
-					imageData.CopyToTexture(_target.Texture);
+					imageData.CopyToTexture(_target);
 					//imageData.CopyToTexture(_target2.Texture);
 					//_target.Texture.Copy(Properties.Resources.Haiku);
 					//_target2.Texture.Copy(Properties.Resources.Haiku);
 				}
-				_target.Texture.Save(@"D:\unpak\test1.png", new GorgonCodecPNG());
+				((GorgonTexture2D)_target).Save(@"D:\unpak\test1.png", new GorgonCodecPNG());
 				//_texture.CopySubResource(_target.Texture, new Rectangle(0, 0, 256, 128), Vector2.Zero);
 
 				//byte[] data = new byte[_texture.SizeInBytes];
@@ -226,7 +226,7 @@ namespace Tester_Graphics
 
 				_2D.Effects.GaussianBlur.BlurAmount = 2.0f;
 				GorgonOrthoCamera camera =_2D.CreateCamera("My Camera", new Vector2(640, 480), 1000.0f);
-				_outputTarget = _graphics.Output.CreateRenderTarget("Output", new GorgonRenderTargetSettings()
+				_outputTarget = _graphics.Output.CreateRenderTarget<GorgonRenderTarget2D>("Output", new GorgonRenderTarget2DSettings()
 				{
 					Width = 800,
 					Height = 600,
@@ -235,11 +235,11 @@ namespace Tester_Graphics
 					MultiSample = new GorgonMultisampling(1, 0),
 				});
 
-				GorgonSprite window = _2D.Renderables.CreateSprite("Window", new Vector2(800, 600), _mainScreen.Texture);
+				GorgonSprite window = _2D.Renderables.CreateSprite("Window", new Vector2(800, 600), _mainScreen);
 				_2D.Effects.GaussianBlur.BlurAmount = 3.0f;
 
 				_2D.Effects.GaussianBlur.BlurRenderTargetsSize = new System.Drawing.Size(256, 256);
-				window.Texture = _outputTarget.Texture;
+				window.Texture = _outputTarget;
 				window.BlendingMode = BlendingMode.None;
 				window.Angle = 0.0f;
 				window.Blending.DestinationAlphaBlend = BlendType.InverseSourceAlpha;
@@ -734,7 +734,7 @@ namespace Tester_Graphics
 
 			if (_outputTarget != null)
 				_outputTarget.Dispose();
-			_outputTarget = _graphics.Output.CreateRenderTarget("Output", new GorgonRenderTargetSettings()
+			_outputTarget = _graphics.Output.CreateRenderTarget<GorgonRenderTarget2D>("Output", new GorgonRenderTarget2DSettings()
 							{
 								Size = ClientSize,
 								Format = BufferFormat.R8G8B8A8_UIntNormal

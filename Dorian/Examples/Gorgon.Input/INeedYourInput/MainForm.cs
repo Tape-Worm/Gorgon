@@ -72,7 +72,7 @@ namespace GorgonLibrary.Examples
 		private GorgonJoystick _joystick;					        // Joystick.
 		private GorgonKeyboard _keyboard;					        // Keyboard object.
 		private GorgonText _messageSprite;					        // Text sprite object.
-		private GorgonRenderTarget _backBuffer;				        // Back buffer.
+		private GorgonRenderTarget2D _backBuffer;			        // Back buffer.
 		private GorgonTexture2D _backupImage;				        // Backup image.
 		private float _radius = 6.0f;								// Pen radius.
 		private BlendingMode _blendMode = BlendingMode.Modulate;	// Blend mode.
@@ -119,7 +119,7 @@ namespace GorgonLibrary.Examples
 					var imageLock = _backupImage.Lock<GorgonTexture2DData>(BufferLockFlags.Write);					
 					imageLock.Data.Fill(0xFF);
 					_backupImage.Unlock();
-					_backBuffer.Texture.CopySubResource(_backupImage,
+					((GorgonTexture2D)_backBuffer).CopySubResource(_backupImage,
 														0, 0,
 														new Rectangle(Point.Empty, _backBuffer.Settings.Size),
 														Vector2.Zero);
@@ -300,15 +300,21 @@ namespace GorgonLibrary.Examples
 
 			// Copy the render target texture to a temporary buffer and resize the main buffer.
 			// The copy the temporary buffer back to the main buffer.
-			_backupImage.CopySubResource(_backBuffer.Texture,
+			_backupImage.CopySubResource(_backBuffer,
 										0,
 										0,
 										new Rectangle(Point.Empty, currentImageSize),
 										Vector2.Zero);
 
-			_backBuffer.UpdateSettings(new GorgonVideoMode(ClientSize.Width, ClientSize.Height, _backBuffer.Settings.Format), BufferFormat.Unknown);
+            // Recreate our render target to match the new size.
+            _backBuffer.Dispose();
+            _backBuffer = _graphics.Output.CreateRenderTarget<GorgonRenderTarget2D>("BackBuffer", new GorgonRenderTarget2DSettings
+            {
+                Size = ClientSize,
+                Format = BufferFormat.R8G8B8A8_UIntNormal
+            });
 			_backBuffer.Clear(Color.White);
-			_backBuffer.Texture.CopySubResource(_backupImage,
+			((GorgonTexture2D)_backBuffer).CopySubResource(_backupImage,
 												0,
 												0,
 												new Rectangle(Point.Empty, _backBuffer.Settings.Size),
@@ -385,7 +391,7 @@ namespace GorgonLibrary.Examples
 				_messageSprite.Color = Color.Black;
 
 				// Create a back buffer.
-				_backBuffer = _graphics.Output.CreateRenderTarget("BackBuffer", new GorgonRenderTargetSettings
+				_backBuffer = _graphics.Output.CreateRenderTarget<GorgonRenderTarget2D>("BackBuffer", new GorgonRenderTarget2DSettings
 				    {
 					Size = _screen.Settings.Size,
 					Format = BufferFormat.R8G8B8A8_UIntNormal

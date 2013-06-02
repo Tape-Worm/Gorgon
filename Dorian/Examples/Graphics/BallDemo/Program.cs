@@ -56,8 +56,8 @@ namespace GorgonLibrary.Graphics.Example
 		private static int _ballCount;																	        // Number of balls.
 		private static float _accumulator;																        // Our accumulator for running at a fixed frame rate.
 		private static GorgonFont _ballFont;															        // Font to display our FPS, etc...
-		private static GorgonRenderTarget _ballTarget;												            // Render target for the balls.
-		private static GorgonRenderTarget _statsTarget;												            // Render target for statistics.
+		private static GorgonRenderTarget2D _ballTarget;											            // Render target for the balls.
+		private static GorgonRenderTarget2D _statsTarget;											            // Render target for statistics.
 		private static GorgonOrthoCamera _camera;													            // Camera.
 		private static StringBuilder _fpsText;														            // Frames per second text.
 		private static StringBuilder _helpText;														            // Help text.
@@ -358,7 +358,7 @@ namespace GorgonLibrary.Graphics.Example
 			_ball.Anchor = new Vector2(32, 32);
 
 			// Create the ball render target.
-			_ballTarget = _graphics.Output.CreateRenderTarget("BallTarget", new GorgonRenderTargetSettings
+			_ballTarget = _graphics.Output.CreateRenderTarget<GorgonRenderTarget2D>("BallTarget", new GorgonRenderTarget2DSettings
 			    {
 				DepthStencilFormat = BufferFormat.Unknown,
 				Width = 512,
@@ -379,8 +379,8 @@ namespace GorgonLibrary.Graphics.Example
 			_form.Resize += _form_Resize;
 
 			// Create statistics render target.
-			_statsTarget = _graphics.Output.CreateRenderTarget("Statistics", new GorgonRenderTargetSettings
-			    {
+			_statsTarget = _graphics.Output.CreateRenderTarget<GorgonRenderTarget2D>("Statistics", new GorgonRenderTarget2DSettings
+			{
 				Width = 140,
 				Height = 66,
 				Format = BufferFormat.R8G8B8A8_UIntNormal
