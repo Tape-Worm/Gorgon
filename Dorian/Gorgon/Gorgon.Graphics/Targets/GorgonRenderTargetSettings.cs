@@ -34,7 +34,7 @@ namespace GorgonLibrary.Graphics
 	/// <summary>
 	/// Usage flags for the swap chain.
 	/// </summary>
-	[Flags()]
+	[Flags]
 	public enum SwapChainUsageFlags
 	{
 		/// <summary>
@@ -84,11 +84,7 @@ namespace GorgonLibrary.Graphics
         /// <summary>
         /// A 3D render target.
         /// </summary>
-        Target3D = 3,
-        /// <summary>
-        /// A swap chain target.
-        /// </summary>
-        SwapChain = 4
+        Target3D = 3
     }
 
     /// <summary>
@@ -171,6 +167,18 @@ namespace GorgonLibrary.Graphics
             get;
             set;
         }
+
+		/// <summary>
+		/// Property to set or return the number of textures in a texture array.
+		/// </summary>
+		/// <remarks>This value is only applicable to 1D and 2D render targets.  Buffer and 3D textures will return 1.
+		/// <para>The default value is 1.</para>
+		/// </remarks>
+		int ArrayCount
+		{
+			get;
+			set;
+		}
         #endregion
     }
 
@@ -212,6 +220,19 @@ namespace GorgonLibrary.Graphics
                throw new NotSupportedException(); 
             }
 	    }
+
+		/// <summary>
+		/// Property to set or return the number of textures in a texture array.
+		/// </summary>
+		/// <remarks>
+		/// This value is only applicable to 1D and 2D render targets.  Buffer and 3D textures will return 1.
+		/// <para>The default value is 1.</para>
+		/// </remarks>
+		public int ArrayCount
+		{
+			get;
+			set;
+		}
 
 		/// <summary>
 		/// Property to set or return the width and height of the target.
@@ -315,6 +336,7 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		public GorgonRenderTarget2DSettings()
 		{
+			ArrayCount = 1;
 			Format = BufferFormat.Unknown;
 			DepthStencilFormat = BufferFormat.Unknown;
 			MultiSample = GorgonMultisampling.NoMultiSampling;
@@ -340,7 +362,7 @@ namespace GorgonLibrary.Graphics
         {
             get
             {
-                return RenderTargetType.SwapChain;
+                return RenderTargetType.Target2D;
             }
         }
 
@@ -440,7 +462,7 @@ namespace GorgonLibrary.Graphics
 		{
 			IsWindowed = true;			
 			Flags = SwapChainUsageFlags.RenderTarget;
-			SwapEffect = Graphics.SwapEffect.Discard;
+			SwapEffect = SwapEffect.Discard;
 			MultiSample = new GorgonMultisampling(1, 0);
 			DepthStencilFormat = BufferFormat.Unknown;			
 		}

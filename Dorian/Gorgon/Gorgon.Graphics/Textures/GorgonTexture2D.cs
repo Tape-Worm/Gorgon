@@ -183,6 +183,7 @@ namespace GorgonLibrary.Graphics
         /// <param name="swapChain">The swap chain used to initialize the texture.</param>
         internal void InitializeSwapChain(GorgonSwapChain swapChain)
         {
+			// TODO: Allow the texture to be updated instead of destroyed when a swap chain is resized.
             D3DResource = D3D.Resource.FromSwapChain<D3D.Texture2D>(swapChain.GISwapChain, 0);
             D3D.Texture2DDescription desc = ((D3D.Texture2D)D3DResource).Description;
 

@@ -39,7 +39,7 @@ namespace GorgonLibrary.Renderers
 	{
 		#region Variables.
 		private bool _disposed;													// Flag to indicate that the object was disposed.
-		private GorgonRenderTarget _displacementTarget;							// Displacement buffer target.
+		private GorgonRenderTarget2D _displacementTarget;						// Displacement buffer target.
 		private Size _targetSize = new Size(512, 512);							// Displacement target size.
 		private BufferFormat _targetFormat = BufferFormat.R8G8B8A8_UIntNormal;	// Format for the displacement target.
 		private readonly GorgonConstantBuffer _displacementBuffer;				// Buffer used to send displacement data.

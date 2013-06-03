@@ -327,4 +327,13 @@
   <data name="GORGFX_MULTISAMPLE_TOSTR" xml:space="preserve">
     <value>Multisampling count: {0}, quality: {1}.</value>
   </data>
+  <data name="GORGFX_CONSTANTBUFFER_ALREADY_BOUND" xml:space="preserve">
+    <value>The constant buffer '{0}' is already bound at slot [{1}].</value>
+  </data>
+  <data name="GORGFX_VERTEXBUFFER_ALREADY_BOUND" xml:space="preserve">
+    <value>The vertex buffer '{0}' is already bound at slot [{1}].</value>
+  </data>
+  <data name="GORGFX_RENDERTARGET_NOT_SWAPCHAIN" xml:space="preserve">
+    <value>The render target '{0}' is not bound to a swap chain.</value>
+  </data>
 </root>
