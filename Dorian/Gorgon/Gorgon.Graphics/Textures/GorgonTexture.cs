@@ -45,6 +45,7 @@ namespace GorgonLibrary.Graphics
 		: GorgonResource
 	{
 		#region Variables.
+	    private bool _disposed;                                 // Flag to indicate that the object was disposed.
 	    private GorgonViewCache _viewCache;                     // View cache.
 		private readonly IList<DX.DataStream> _lock;			// Locks for the texture.
 		#endregion
@@ -53,10 +54,10 @@ namespace GorgonLibrary.Graphics
         /// <summary>
         /// Property to set or return the render target bound to this texture.
         /// </summary>
-        protected GorgonRenderTarget RenderTarget
+        public GorgonRenderTarget RenderTarget
         {
             get;
-            set;
+            internal set;
         }
 
         /// <summary>
@@ -119,6 +120,34 @@ namespace GorgonLibrary.Graphics
 		#endregion
 
 		#region Methods.
+        /// <summary>
+        /// Releases unmanaged and - optionally - managed resources.
+        /// </summary>
+        /// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
+        /// <exception cref="System.NotSupportedException">Thrown when the texture is attached to another object type.</exception>
+        protected override void Dispose(bool disposing)
+        {
+            if (!_disposed)
+            {
+                if (disposing)
+                {
+                    Gorgon.Log.Print("Gorgon texture {0}: Unbound from shaders.", Diagnostics.LoggingLevel.Verbose, Name);
+                    Graphics.Shaders.Unbind(this);
+
+                    // Unbind the view(s).
+                    if (_viewCache != null)
+                    {
+                        _viewCache.Dispose();
+                        _viewCache = null;
+                    }
+                }
+                
+                _disposed = true;
+            }
+            
+            base.Dispose(disposing);
+        }
+
 	    /// <summary>
 	    /// Function to create the resource objects.
 	    /// </summary>
@@ -298,17 +327,7 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		protected override void CleanUpResource()
 		{
-			Gorgon.Log.Print("Gorgon texture {0}: Unbound from shaders.", Diagnostics.LoggingLevel.Verbose, Name);
-			Graphics.Shaders.Unbind(this);
-
 			Gorgon.Log.Print("Gorgon texture {0}: Destroying D3D 11 texture resource.", Diagnostics.LoggingLevel.Verbose, Name);
-
-			// Unbind the view(s).
-            if (_viewCache != null)
-            {
-                _viewCache.Dispose();
-                _viewCache = null;
-            }
 
 		    if (D3DResource == null)
 		    {

@@ -75,8 +75,18 @@ namespace GorgonLibrary.Graphics
 				}
 				set
 				{
-					SetDepthStencil(value);
-				}
+                    if (_depthStencilBuffer == value)
+                    {
+                        return;
+                    }
+
+#if DEBUG
+                    ValidateDepthBuffer(value);
+#endif
+                    _depthStencilBuffer = value;
+
+                    BindResources();
+                }
 			}
 
 			/// <summary>
@@ -89,20 +99,24 @@ namespace GorgonLibrary.Graphics
 				{
 					int index = IndexOf(name);
 
-					if (index > -1)
-					{
-						return _targets[index];
-					}
+				    if (index == -1)
+				    {
+				        throw new KeyNotFoundException("The render target '" + name + "' was not bound.");
+				    }
 
-					throw new KeyNotFoundException("The render target '" + name + "' was not bound.");
+				    return _targets[index];
 				}
 			}
 
 			/// <summary>
 			/// Property to set or return a render target binding.
 			/// </summary>
-			/// <remarks>This will set the depth/stencil buffer to the one that's assigned to the render target.  If there is a need to set a separate depth/stencil, then use then 
-			/// <see cref="GorgonLibrary.Graphics.GorgonOutputMerger.RenderTargetList.SetRenderTarget">SetRenderTarget</see> method.</remarks>
+			/// <remarks>
+			/// This property will assign the default depth/stencil buffer of the render target in slot 0 to be the current depth/stencil.  If there is no default depth/stencil on the
+			/// render target, then the depth/stencil buffer will be unbound.
+			/// <para>If this value is set to NULL (Nothing in VB.Net), and the <paramref name="index"/> is 0, then the depth/stencil will be unbound.</para>
+			/// <para>If more control over the assignment of the depth/stencil buffer and render target is required, please use the 
+			/// <see cref="GorgonLibrary.Graphics.GorgonOutputMerger.RenderTargetList.SetRenderTarget">SetRenderTarget</see> method instead.</para></remarks>
 			public GorgonRenderTarget this[int index]
 			{
 				get
@@ -111,7 +125,15 @@ namespace GorgonLibrary.Graphics
 				}
 				set
 				{
-					SetRenderTarget(index, value, value == null ? null : value.DepthStencil);
+				    GorgonDepthStencil depthStencil = _depthStencilBuffer;
+
+                    // Only update the depth/stencil from the first slot.
+                    if (index == 0)
+                    {
+                        depthStencil = value != null ? value.DepthStencilBuffer : null;
+                    }
+
+					SetRenderTarget(index, value, depthStencil);
 				}
 			}
 			#endregion
@@ -246,6 +268,23 @@ namespace GorgonLibrary.Graphics
 			}
 
             /// <summary>
+            /// Function to re-seat a swap chain after it's been altered.
+            /// </summary>
+            /// <param name="swapChain">Swap chain to re-seat.</param>
+            internal void ReSeat(GorgonSwapChain swapChain)
+            {
+                int index = IndexOf(swapChain.RenderTarget);
+
+                if (index <= -1)
+                {
+                    return;
+                }
+
+                this[index] = null;
+                this[index] = swapChain.RenderTarget;
+            }
+
+            /// <summary>
             /// Function to re-seat a depth/stencil buffer after it's been altered.
             /// </summary>
             /// <param name="depthStencil">The depth/stencil buffer that is to be reseated.</param>
@@ -268,18 +307,12 @@ namespace GorgonLibrary.Graphics
 			{
 				int index = IndexOf(target);
 
-				if (index > -1)
-				{
-					this[index] = null;
-				}
-			}
+			    if (index == -1)
+			    {
+			        return;
+			    }
 
-			/// <summary>
-			/// Function to unbind all render targets and any depth buffers.
-			/// </summary>
-			internal void UnbindAll()
-			{
-				_graphics.Context.OutputMerger.SetTargets(null, new D3D.RenderTargetView[] { null });
+                SetRenderTarget(index, null, target.DepthStencilBuffer == _depthStencilBuffer ? null : _depthStencilBuffer);
 			}
 
 			/// <summary>
@@ -324,20 +357,17 @@ namespace GorgonLibrary.Graphics
 				return -1;
 			}
 
-			/// <summary>
-			/// Function to set the depth buffer.
-			/// </summary>
-			/// <param name="depthBuffer">Depth buffer to set.</param>
-			public void SetDepthStencil(GorgonDepthStencil depthBuffer)
-			{
-#if DEBUG
-				ValidateDepthBuffer(depthBuffer);
-#endif
+            /// <summary>
+            /// Function to bind the resources to the pipeline.
+            /// </summary>
+            private void BindResources()
+            {
+                D3D.DepthStencilView depthView = (_depthStencilBuffer != null
+                                                      ? _depthStencilBuffer.D3DDepthStencilView
+                                                      : null);
 
-				D3D.DepthStencilView view = (_depthStencilBuffer == null ? null : _depthStencilBuffer.D3DDepthStencilView);
-				_depthStencilBuffer = depthBuffer;
-				_graphics.Context.OutputMerger.SetTargets(view, _views);
-			}
+                _graphics.Context.OutputMerger.SetTargets(depthView, _views);
+            }
 
 			/// <summary>
 			/// Function to bind a render target and a depth/stencil buffer.
@@ -352,9 +382,15 @@ namespace GorgonLibrary.Graphics
 			{
 				GorgonDebug.AssertParamRange(index, 0, 8, true, false, "startIndex");
 
-				if (target != null)
-				{
+                // Don't set the same target.
+                if ((target == _targets[index]) && (_depthStencilBuffer == depthStencil))
+                {
+                    return;
+                }
+
 #if DEBUG
+                if (target != null)
+				{
 					// If the target is bound somewhere else, then throw an exception.
 					var oldIndex = IndexOf(target);
 
@@ -370,12 +406,15 @@ namespace GorgonLibrary.Graphics
 						throw new GorgonException(GorgonResult.CannotBind,
 						                          "Cannot bind the render target, targets must be of the same bit depth for SM2_a_b video devices.");
 					}
-#endif
-				}
+                }
 
-				_targets[index] = target;
+                ValidateDepthBuffer(depthStencil);
+#endif
+
+			    _depthStencilBuffer = depthStencil;
+                _targets[index] = target;
 				_views[index] = target == null ? null : target.D3DRenderTarget;
-				SetDepthStencil(depthStencil);
+				BindResources();
 			}
 
 			/// <summary>
@@ -390,6 +429,7 @@ namespace GorgonLibrary.Graphics
 			/// <exception cref="GorgonLibrary.GorgonException">Thrown if the current video device is SM 2.0 and the targets are not the same bit depth.</exception>
 			public void SetRange(int slot, GorgonRenderTarget[] targets, GorgonDepthStencil depthStencil)
 			{
+			    bool hasChanges = false;
 				int count = _targets.Length - slot;
 
 				GorgonDebug.AssertParamRange(slot, 0, 8, true, false, "startIndex");
@@ -398,6 +438,11 @@ namespace GorgonLibrary.Graphics
 				{
 					count = targets.Length.Min(_targets.Length);
 				}
+
+                if (depthStencil != _depthStencilBuffer)
+                {
+                    hasChanges = true;
+                }
 
 				for (int i = 0; i < count; i++)
 				{
@@ -409,9 +454,14 @@ namespace GorgonLibrary.Graphics
 						target = targets[i];
 					}
 
-					if (target != null)
-					{
+                    if (target == _targets[targetIndex])
+                    {
+                        continue;
+                    }
+
 #if DEBUG
+                    if (target != null)
+					{
 						// If the target is bound somewhere else, then throw an exception.
 						var oldIndex = IndexOf(target);
 
@@ -427,11 +477,11 @@ namespace GorgonLibrary.Graphics
 							throw new GorgonException(GorgonResult.CannotBind,
 							                          "Cannot bind the render target, targets must be of the same bit depth for SM_2_a_b video devices.");
 						}
+                    }
 #endif
-					}
 
-
-					_targets[targetIndex] = target;
+                    hasChanges = true;
+                    _targets[targetIndex] = target;
 					// Unlike the other set functions that take arrays, this one is an all-or-nothing approach.  So, targets that aren't set in the array
 					// would be set to NULL (D3D automatically does this).  This is an annoying "feature" of D3D11 and makes automation of some things (like 
 					// auto-setting the render target after swap chain is resized) nearly impossible without unsetting every other target bound.  I'm sure 
@@ -439,7 +489,15 @@ namespace GorgonLibrary.Graphics
 					_views[targetIndex] = (target == null ? null : target.D3DRenderTarget);
 				}
 
-				SetDepthStencil(depthStencil);
+#if DEBUG
+                ValidateDepthBuffer(depthStencil);
+#endif
+			    _depthStencilBuffer = depthStencil;
+
+                if (hasChanges)
+                {
+                    BindResources();
+                }
 			}
 			#endregion
 
@@ -853,7 +911,7 @@ namespace GorgonLibrary.Graphics
 
 			depthBuffer = new GorgonDepthStencil(_graphics, name, settings);
 			_graphics.AddTrackedObject(depthBuffer);
-			depthBuffer.UpdateSettings();
+			depthBuffer.Initialize();
 
 			return depthBuffer;
 		}

@@ -39,7 +39,6 @@ namespace GorgonLibrary.Graphics
 	{
 		#region Variables.
 		private bool _disposed;										// Flag to indicate that the object was disposed.
-		private GorgonDepthStencil _depthStencil;					// Depth/stencil buffer attached to this render target.
 		#endregion
 
 		#region Properties.
@@ -47,23 +46,6 @@ namespace GorgonLibrary.Graphics
 		/// Property to return the D3D render target interface.
 		/// </summary>
 		internal D3D.RenderTargetView D3DRenderTarget
-		{
-			get;
-			set;
-		}
-
-		/// <summary>
-		/// Property to return the texture bound to the target (if applicable).
-		/// </summary>
-		protected abstract GorgonTexture TargetTexture
-		{
-			get;
-		}
-       
-        /// <summary>
-		/// Property to set or return the internal depth/stencil for the render target.
-		/// </summary>
-		protected GorgonDepthStencil InternalDepthStencil
 		{
 			get;
 			set;
@@ -79,23 +61,12 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
-		/// Property to set or return the depth/stencil for this render target.
+		/// Property to return the default depth/stencil for this render target.
 		/// </summary>
-		/// <remarks>
-		/// Setting this value to NULL will reset this value to the internal depth/stencil buffer if one was created when the render target was created.
-		/// <para>Care should be taken with the lifetime of the depth/stencil that is attached to this render target.  If a user creates the render target with a depth buffer, its 
-		/// lifetime will be managed by the render target (i.e. it will be disposed when the render target is disposed).  If a user sets this value to an external depth buffer, then the render target will -NOT- manage the lifetime of the external depth/stencil.</para>
-		/// </remarks>
-		public GorgonDepthStencil DepthStencil
+		public GorgonDepthStencil DepthStencilBuffer
 		{
-			get
-			{
-				return _depthStencil ?? InternalDepthStencil;
-			}
-			set
-			{
-				_depthStencil = value;
-			}
+			get;
+            protected set;
 		}
 
 		/// <summary>
@@ -133,8 +104,8 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		internal void CleanUp()
 		{
-			OnCleanUp();
-			Graphics.Output.RenderTargets.Unbind(this);
+            Graphics.Output.RenderTargets.Unbind(this);
+            OnCleanUp();
 		}
 
 		/// <summary>
@@ -165,8 +136,8 @@ namespace GorgonLibrary.Graphics
 		{
 			Clear(color);
 
-			if ((DepthStencil != null) && (DepthStencil.FormatInformation.HasDepth))
-				DepthStencil.ClearDepth(depthValue);
+			if ((DepthStencilBuffer != null) && (DepthStencilBuffer.FormatInformation.HasDepth))
+				DepthStencilBuffer.ClearDepth(depthValue);
 		}
 
 		/// <summary>
@@ -178,7 +149,7 @@ namespace GorgonLibrary.Graphics
 		/// <remarks>This will clear the swap chain, depth buffer and stencil component of the depth buffer.</remarks>
 		public void Clear(GorgonColor color, float depthValue, int stencilValue)
 		{
-			if ((DepthStencil != null) && (DepthStencil.FormatInformation.HasDepth) && (!DepthStencil.FormatInformation.HasStencil))
+			if ((DepthStencilBuffer != null) && (DepthStencilBuffer.FormatInformation.HasDepth) && (!DepthStencilBuffer.FormatInformation.HasStencil))
 			{
 				Clear(color, depthValue);
 				return;
@@ -186,9 +157,9 @@ namespace GorgonLibrary.Graphics
 
 			Clear(color);
 
-			if ((DepthStencil != null) && (DepthStencil.FormatInformation.HasDepth) && (DepthStencil.FormatInformation.HasStencil))
+			if ((DepthStencilBuffer != null) && (DepthStencilBuffer.FormatInformation.HasDepth) && (DepthStencilBuffer.FormatInformation.HasStencil))
 			{
-				DepthStencil.Clear(depthValue, stencilValue);
+				DepthStencilBuffer.Clear(depthValue, stencilValue);
 			}
 		}
 	    #endregion
@@ -215,19 +186,20 @@ namespace GorgonLibrary.Graphics
 		/// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
 		protected virtual void Dispose(bool disposing)
 		{
-			if (!_disposed)
-			{
-				if (disposing)
-				{
-					CleanUp();
+		    if (_disposed)
+		    {
+		        return;
+		    }
 
-					Graphics.RemoveTrackedObject(this);
-				}
+		    if (disposing)
+		    {
+		        CleanUp();
 
-				Graphics = null;
-				_disposed = true;
-			}
-		}
+		        Graphics.RemoveTrackedObject(this);
+		    }
+
+            _disposed = true;
+        }
 
 		/// <summary>
 		/// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
