@@ -72,7 +72,7 @@ namespace GorgonLibrary.Examples
 		private GorgonJoystick _joystick;					        // Joystick.
 		private GorgonKeyboard _keyboard;					        // Keyboard object.
 		private GorgonText _messageSprite;					        // Text sprite object.
-		private GorgonRenderTarget2D _backBuffer;			        // Back buffer.
+		private GorgonRenderTarget2D _backBuffer;				    // Back buffer.
 		private GorgonTexture2D _backupImage;				        // Backup image.
 		private float _radius = 6.0f;								// Pen radius.
 		private BlendingMode _blendMode = BlendingMode.Modulate;	// Blend mode.
@@ -306,13 +306,12 @@ namespace GorgonLibrary.Examples
 										new Rectangle(Point.Empty, currentImageSize),
 										Vector2.Zero);
 
-            // Recreate our render target to match the new size.
-            _backBuffer.Dispose();
-            _backBuffer = _graphics.Output.CreateRenderTarget<GorgonRenderTarget2D>("BackBuffer", new GorgonRenderTarget2DSettings
-            {
-                Size = ClientSize,
-                Format = BufferFormat.R8G8B8A8_UIntNormal
-            });
+			_backBuffer.Dispose();
+			_backBuffer = _graphics.Output.CreateRenderTarget<GorgonRenderTarget2D>("BackBuffer", new GorgonRenderTarget2DSettings
+			{
+				Size = ClientSize,
+				Format = BufferFormat.R8G8B8A8_UIntNormal
+			});
 			_backBuffer.Clear(Color.White);
 			((GorgonTexture2D)_backBuffer).CopySubResource(_backupImage,
 												0,

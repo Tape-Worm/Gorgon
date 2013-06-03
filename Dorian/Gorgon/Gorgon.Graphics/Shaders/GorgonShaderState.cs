@@ -49,8 +49,8 @@ namespace GorgonLibrary.Graphics
 			: GorgonState<GorgonTextureSamplerStates>, IList<GorgonTextureSamplerStates>
 		{
 			#region Variables.
-			private readonly GorgonTextureSamplerStates[] _states;								// List of sampler states.
 			private readonly D3D.SamplerState[] _D3DStates;										// List of sampler state objects.
+			private readonly GorgonTextureSamplerStates[] _states;								// List of sampler states.
 			private readonly GorgonShaderState<T> _shader;										// Shader that owns the state.
 			#endregion
 
@@ -325,9 +325,7 @@ namespace GorgonLibrary.Graphics
 						continue;
 					}
 
-                    // ReSharper disable InconsistentNaming
 					D3D.DeviceChild D3DState = GetFromCache(ref state);
-                    // ReSharper restore InconsistentNaming
 
 					if (D3DState == null)
 					{
@@ -363,7 +361,7 @@ namespace GorgonLibrary.Graphics
 				}
 
 				_states = new GorgonTextureSamplerStates[count];
-				_D3DStates = new D3D.SamplerState[_states.Length];
+				_D3DStates = new D3D.SamplerState[count];
 			}
 			#endregion
 
@@ -506,6 +504,8 @@ namespace GorgonLibrary.Graphics
 			/// </summary>
 			/// <param name="array">The array to copy into.</param>
 			/// <param name="arrayIndex">Index of the array to start writing at.</param>
+			/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="array"/> parameter is NULL (Nothing in VB.Net).</exception>
+			/// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="arrayIndex"/> parameter is less than 0 or not less than the length of the array.</exception>
 			public void CopyTo(GorgonTextureSamplerStates[] array, int arrayIndex)
 			{
 				if (array == null)
@@ -518,11 +518,11 @@ namespace GorgonLibrary.Graphics
 					throw new ArgumentOutOfRangeException("arrayIndex");
 				}
 
-				int count = array.Length.Min(_states.Length);
+				int count = (array.Length - arrayIndex).Min(_states.Length);
 
 				for (int i = 0; i < count; i++)
 				{
-					array[i] = _states[i];
+					array[i + arrayIndex] = _states[i];
 				}
 			}
 
@@ -596,6 +596,7 @@ namespace GorgonLibrary.Graphics
 			/// <summary>
 			/// Property to set or return a constant buffer at the specified index.
 			/// </summary>
+			/// <exception cref="GorgonLibrary.GorgonException">Thrown when a constant buffer is already bound to another slot.</exception>
 			public GorgonConstantBuffer this[int index]
 			{
 				get
@@ -608,6 +609,17 @@ namespace GorgonLibrary.Graphics
 					{
 						return;
 					}
+
+#if DEBUG
+					var oldIndex = IndexOf(value);
+
+					if ((value != null) && (oldIndex > -1))
+					{
+						throw new GorgonException(GorgonResult.CannotBind,
+						                          string.Format(Properties.Resources.GORGFX_CONSTANTBUFFER_ALREADY_BOUND, value.Name,
+						                                        oldIndex));
+					}
+#endif
 
 					_buffers[index] = value;
 
@@ -635,6 +647,50 @@ namespace GorgonLibrary.Graphics
 			}
 
 			/// <summary>
+			/// Function to return the index of the buffer with the specified name.
+			/// </summary>
+			/// <param name="name">Name of the buffer.</param>
+			/// <returns>The index of the buffer if found, -1 if not.</returns>
+			/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (Nothing in VB.Net).</exception>
+			/// <exception cref="System.ArgumentException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
+			public int IndexOf(string name)
+			{
+				if (name == null)
+				{
+					throw new ArgumentNullException("name");
+				}
+
+				if (string.IsNullOrWhiteSpace(name))
+				{
+					throw new ArgumentException(Properties.Resources.GORGFX_PARAMETER_MUST_NOT_BE_EMPTY, "name");
+				}
+
+				for (int i = 0; i < _buffers.Length; i++)
+				{
+					var buffer = _buffers[i];
+
+					if ((buffer != null) && (string.Compare(name, buffer.Name, StringComparison.OrdinalIgnoreCase) == 0))
+					{
+						return i;
+					}
+				}
+
+				return -1;
+			}
+
+			/// <summary>
+			/// Function to determine if the list contains a buffer with the specified name.
+			/// </summary>
+			/// <param name="name">Name of the buffer.</param>
+			/// <returns>TRUE if found, FALSE if not.</returns>
+			/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (Nothing in VB.Net).</exception>
+			/// <exception cref="System.ArgumentException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
+			public bool Contains(string name)
+			{
+				return IndexOf(name) > -1;
+			}
+
+			/// <summary>
 			/// Function to set a range of constant buffers at once.
 			/// </summary>
 			/// <param name="slot">Starting slot for the buffer.</param>
@@ -643,6 +699,7 @@ namespace GorgonLibrary.Graphics
             /// <para>Passing NULL (Nothing in VB.Net) to the <paramref name="buffers"/> parameter will set the bindings to empty (starting at <paramref name="slot"/>).</para>
 			/// </remarks>
 			/// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="slot"/> is less than 0, or greater than the available number of resource view slots.</exception>
+			/// <exception cref="GorgonLibrary.GorgonException">Thrown when a constant buffer is already bound to another slot.</exception>
 			public void SetRange(int slot, GorgonConstantBuffer[] buffers)
 			{
 			    int count = _buffers.Length - slot;
@@ -665,10 +722,16 @@ namespace GorgonLibrary.Graphics
                         buffer = buffers[i];
                     }
 
-                    if ((buffer != null) && (IndexOf(buffer) != -1))
+#if DEBUG
+					var oldIndex = IndexOf(buffer);
+
+                    if ((buffer != null) && (oldIndex > -1))
                     {
-                        continue;
+	                    throw new GorgonException(GorgonResult.CannotBind,
+	                                              string.Format(Properties.Resources.GORGFX_CONSTANTBUFFER_ALREADY_BOUND,
+	                                                            buffer.Name, oldIndex));
                     }
+#endif
 
 					_buffers[bufferIndex] = buffer;
 					_D3DBufferArray[i] = buffer != null ? buffer.D3DBuffer : null;
@@ -789,6 +852,8 @@ namespace GorgonLibrary.Graphics
 			/// </summary>
 			/// <param name="array">Array to copy into.</param>
 			/// <param name="arrayIndex">Index in the array to start writing at.</param>
+			/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="array"/> parameter is NULL (Nothing in VB.Net).</exception>
+			/// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="arrayIndex"/> parameter is less than 0 or not less than the length of the array.</exception>
 			public void CopyTo(GorgonConstantBuffer[] array, int arrayIndex)
 			{
 				if (array == null)
@@ -801,11 +866,11 @@ namespace GorgonLibrary.Graphics
 					throw new ArgumentOutOfRangeException("arrayIndex");
 				}
 
-				int count = array.Length.Min(_buffers.Length);
+				int count = (array.Length - arrayIndex).Min(_buffers.Length);
 
 				for (int i = 0; i < count; i++)
 				{
-					array[i] = _buffers[i];
+					array[i + arrayIndex] = _buffers[i];
 				}
 			}
 
@@ -1018,6 +1083,54 @@ namespace GorgonLibrary.Graphics
 			}
 
 			/// <summary>
+			/// Function to return the index of the resource with the specified name.
+			/// </summary>
+			/// <param name="name">Name of the resource.</param>
+			/// <returns>The index of the resource if found, -1 if not.</returns>
+			/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (Nothing in VB.Net).</exception>
+			/// <exception cref="System.ArgumentException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
+			/// <remarks>This only looks up resources bound to a view that's bound to the pipeline.</remarks>
+			public int IndexOf(string name)
+			{
+				if (name == null)
+				{
+					throw new ArgumentNullException("name");
+				}
+
+				if (string.IsNullOrWhiteSpace(name))
+				{
+					throw new ArgumentException(Properties.Resources.GORGFX_PARAMETER_MUST_NOT_BE_EMPTY, "name");
+				}
+
+				for (int i = 0; i < _resources.Length; i++)
+				{
+					var resource = _resources[i];
+
+					if ((resource != null) 
+						&& (resource.Resource != null) 
+						&& (string.Compare(name, resource.Resource.Name, StringComparison.OrdinalIgnoreCase) == 0))
+					{
+						return i;
+					}
+				}
+
+				return -1;
+			}
+
+			/// <summary>
+			/// Function to determine if the list contains a resource with the specified name.
+			/// </summary>
+			/// <param name="name">Name of the resource.</param>
+			/// <returns>TRUE if found, FALSE if not.</returns>
+			/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (Nothing in VB.Net).</exception>
+			/// <exception cref="System.ArgumentException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
+			/// <remarks>This only looks up resources bound to a view that's bound to a pipeline.</remarks>
+			public bool Contains(string name)
+			{
+				return IndexOf(name) > -1;
+			}
+
+			/// <summary>
 			/// Function to determine if a texture resource has a view bound to this shader stage.
 			/// </summary>
 			/// <param name="texture">Texture to look up.</param>
@@ -1048,6 +1161,7 @@ namespace GorgonLibrary.Graphics
             /// <para>Passing NULL (Nothing in VB.Net) to the <paramref name="resourceViews"/> parameter will set the bindings to empty (starting at <paramref name="slot"/>).</para>
 			/// </remarks>
 			/// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="slot"/> is less than 0, or greater than the available number of resource view slots.</exception>
+			/// <exception cref="GorgonLibrary.GorgonException">Thrown when a view is already bound to another slot.</exception>
 			public void SetRange(int slot, GorgonShaderView[] resourceViews)
 			{
 			    int count = _resources.Length - slot;
@@ -1069,11 +1183,14 @@ namespace GorgonLibrary.Graphics
                         view = resourceViews[i];
                     }
 
-                    // We've already bound this view, skip it.
-                    if ((view != null) && (IndexOf(view) != -1))
+#if DEBUG
+					int oldIndex = IndexOf(view);
+
+                    if ((view != null) && (oldIndex > -1))
                     {
-                        continue;
+                        throw new GorgonException(GorgonResult.CannotBind, string.Format(Properties.Resources.GORGFX_VIEW_ALREADY_BOUND, oldIndex));
                     }
+#endif
 
 					_views[i] = view != null ? view.D3DView : null;
 					_resources[resourceIndex] = view;
@@ -1099,8 +1216,9 @@ namespace GorgonLibrary.Graphics
             /// </summary>
             /// <param name="index">Index of the shader view to apply.</param>
             /// <param name="view">View to apply to the shader.</param>
+            /// <remarks>Ensure that the view being set is not already bound to the shader.  If it is already bound, then an exception will be thrown.</remarks>
             /// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="index"/> is less than 0 or greater than or equal to the number of resource slots.</exception>
-            /// <exception cref="System.ArgumentException">Thrown when the <paramref name="view"/> parameter is already bound.</exception>
+			/// <exception cref="GorgonLibrary.GorgonException">Thrown when a view is already bound to another slot.</exception>
             public void SetView(int index, GorgonShaderView view)
             {
                 GorgonDebug.AssertParamRange(index, 0, _resources.Length, "index");
@@ -1376,6 +1494,8 @@ namespace GorgonLibrary.Graphics
 			/// </summary>
 			/// <param name="array">Array to copy into.</param>
 			/// <param name="arrayIndex">Index in the array to start writing at.</param>
+			/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="array"/> parameter is NULL (Nothing in VB.Net).</exception>
+			/// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="arrayIndex"/> parameter is less than 0 or not less than the length of the array.</exception>
 			public void CopyTo(GorgonShaderView[] array, int arrayIndex)
 			{
                 if (array == null)
@@ -1388,11 +1508,11 @@ namespace GorgonLibrary.Graphics
                     throw new ArgumentOutOfRangeException("arrayIndex");
                 }
 
-			    int count = array.Length.Min(_resources.Length);
+			    int count = (array.Length - arrayIndex).Min(_resources.Length);
 
 			    for (int i = 0; i < count; i++)
 			    {
-			        array[i] = _resources[i];
+			        array[i + arrayIndex] = _resources[i];
 			    }
 			}
 

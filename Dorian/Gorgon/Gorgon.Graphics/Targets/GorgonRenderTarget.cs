@@ -31,58 +31,12 @@ using D3D = SharpDX.Direct3D11;
 namespace GorgonLibrary.Graphics
 {
 	/// <summary>
-	/// Render target resized event arguments.
-	/// </summary>
-	public class GorgonRenderTargetResizedEventArgs
-		: EventArgs
-	{
-		#region Properties.
-		/// <summary>
-		/// Property to return the new width of the target.
-		/// </summary>
-		public int Width
-		{
-			get;
-			private set;
-		}
-
-		/// <summary>
-		/// Property to return the new height of the target.
-		/// </summary>
-		public int Height
-		{
-			get;
-			private set;
-		}
-		#endregion
-
-		#region Constructor/Destructor.
-		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonRenderTargetResizedEventArgs" /> class.
-		/// </summary>
-		/// <param name="target">Render target that was resized.</param>
-		public GorgonRenderTargetResizedEventArgs(GorgonRenderTarget target)
-		{
-			Width = target.Settings.Width;
-			Height = target.Settings.Height;
-		}
-		#endregion
-	}
-
-	/// <summary>
 	/// The base render target object.
 	/// </summary>
 	/// <remarks>This is the base class for all render target types in Gorgon.</remarks>
-	public class GorgonRenderTarget
+	public abstract class GorgonRenderTarget
 		: GorgonNamedObject, IDisposable
 	{
-		#region Events.
-		/// <summary>
-		/// Event called after the render target has been resized.
-		/// </summary>
-		public event EventHandler<GorgonRenderTargetResizedEventArgs> Resized;
-		#endregion
-
 		#region Variables.
 		private bool _disposed;										// Flag to indicate that the object was disposed.
 		private GorgonDepthStencil _depthStencil;					// Depth/stencil buffer attached to this render target.
@@ -98,15 +52,14 @@ namespace GorgonLibrary.Graphics
 			set;
 		}
 
-        /// <summary>
-        /// Property to set or return the texture for the render target.
-        /// </summary>
-        protected GorgonTexture2D Texture
-        {
-            get;
-            set;
-        }
-        
+		/// <summary>
+		/// Property to return the texture bound to the target (if applicable).
+		/// </summary>
+		protected abstract GorgonTexture TargetTexture
+		{
+			get;
+		}
+       
         /// <summary>
 		/// Property to set or return the internal depth/stencil for the render target.
 		/// </summary>
@@ -129,8 +82,7 @@ namespace GorgonLibrary.Graphics
 		/// Property to set or return the depth/stencil for this render target.
 		/// </summary>
 		/// <remarks>
-		/// Setting this value to NULL will reset this value to the internal depth/stencil buffer if one was created when the render target was created.  Use <see cref="M:GorgonLibrary.GorgonGraphics.GorgonRenderTarget.UpdateSettings">UpdateSettings</see> to 
-		/// change the internal depth/stencil buffer.
+		/// Setting this value to NULL will reset this value to the internal depth/stencil buffer if one was created when the render target was created.
 		/// <para>Care should be taken with the lifetime of the depth/stencil that is attached to this render target.  If a user creates the render target with a depth buffer, its 
 		/// lifetime will be managed by the render target (i.e. it will be disposed when the render target is disposed).  If a user sets this value to an external depth buffer, then the render target will -NOT- manage the lifetime of the external depth/stencil.</para>
 		/// </remarks>
@@ -167,119 +119,30 @@ namespace GorgonLibrary.Graphics
 
 		#region Methods.
 		/// <summary>
-		/// Function called when the target is resized.
-		/// </summary>
-		/// <param name="args">Resize event arguments.</param>
-		protected virtual void OnTargetResize(GorgonRenderTargetResizedEventArgs args)
-		{
-			if (Resized != null)
-			{
-				Resized(this, args);
-			}
-		}
-
-		/// <summary>
 		/// Function to clean up any internal resources.
 		/// </summary>
-		protected virtual void CleanUp()
-		{
-			if (Texture != null)
-			{
-				GorgonRenderStatistics.RenderTargetCount--;
-				GorgonRenderStatistics.RenderTargetSize -= Texture.SizeInBytes;
-
-				Texture.Dispose();
-			}
-
-			if (InternalDepthStencil != null)
-			{
-				Gorgon.Log.Print("GorgonRenderTarget '{0}': Releasing internal depth stencil...", LoggingLevel.Verbose, Name);
-				InternalDepthStencil.Dispose();				
-			}
-
-			Gorgon.Log.Print("GorgonRenderTarget '{0}': Releasing D3D11 render target view...", Diagnostics.LoggingLevel.Intermediate, Name);
-			if (D3DRenderTarget != null)
-				D3DRenderTarget.Dispose();
-
-			InternalDepthStencil = null;
-			D3DRenderTarget = null;
-			Texture = null;
-		}
+		protected abstract void OnCleanUp();
 
 		/// <summary>
 		/// Function to create the resources for the render target.
 		/// </summary>
-		protected virtual void CreateResources()
+		protected abstract void OnInitialize();
+
+		/// <summary>
+		/// Function to clean up any internal resources.
+		/// </summary>
+		internal void CleanUp()
 		{
-			if (D3DRenderTarget != null)
-				CleanUp();
-
-			// Create the internal depth/stencil.
-			if (Settings.DepthStencilFormat != BufferFormat.Unknown)
-			{
-				Gorgon.Log.Print("GorgonRenderTarget '{0}': Creating internal depth/stencil...", Diagnostics.LoggingLevel.Verbose, Name);
-
-				var settings = new GorgonDepthStencilSettings
-				{
-					Format = Settings.DepthStencilFormat,
-					Width = Settings.Width,
-					Height = Settings.Height,
-					MultiSample = Settings.MultiSample
-				};
-
-				GorgonDepthStencil.ValidateSettings(Graphics, settings);
-
-				InternalDepthStencil = new GorgonDepthStencil(Graphics, Name + "_Internal_DepthStencil_" + Guid.NewGuid().ToString(), settings);
-				InternalDepthStencil.UpdateSettings();
-			}
-
-			// Create the render target texture.
-			Texture = new GorgonTexture2D(Graphics, Name + "_Internal_Texture_" + Guid.NewGuid().ToString(), new GorgonTexture2DSettings()
-			{
-				ArrayCount = 1,
-				Format = Settings.Format,
-				Height = Settings.Height,
-				Width =  Settings.Width,
-				MipCount = 1,
-				Multisampling = Settings.MultiSample,
-				Usage = BufferUsage.Default
-			});
-			Texture.InitializeRenderTarget(this);
-
-			Gorgon.Log.Print("GorgonRenderTarget '{0}': Creating D3D11 render target view...", Diagnostics.LoggingLevel.Intermediate, Name);
-			UpdateResourceView();
-
-			GorgonRenderStatistics.RenderTargetCount++;
-			GorgonRenderStatistics.RenderTargetSize += Texture.SizeInBytes;
-
-			// Set default viewport.
-			Viewport = new GorgonViewport(0, 0, Settings.Width, Settings.Height, 0.0f, 1.0f);
+			OnCleanUp();
+			Graphics.Output.RenderTargets.Unbind(this);
 		}
 
 		/// <summary>
 		/// Function to initialize the target.
 		/// </summary>
-		protected internal virtual void Initialize()
+		internal void Initialize()
 		{
-			CreateResources();
-		}
-
-		/// <summary>
-		/// Function called by a texture to update the resource view.
-		/// </summary>
-		internal void UpdateResourceView()
-		{
-			if (D3DRenderTarget != null)
-			{
-				D3DRenderTarget.Dispose();
-				D3DRenderTarget = null;
-			}
-
-			// Modify the render target.
-			D3DRenderTarget = new D3D.RenderTargetView(Graphics.D3DDevice, Texture.D3DResource);
-			D3DRenderTarget.DebugName = "RenderTarget '" + Name + "' Render Target View";
-
-			Graphics.Output.RenderTargets.ReSeat(this);
+			OnInitialize();
 		}
 
 		/// <summary>
@@ -328,26 +191,6 @@ namespace GorgonLibrary.Graphics
 				DepthStencil.Clear(depthValue, stencilValue);
 			}
 		}
-
-        /// <summary>
-        /// Function to convert a render target to a texture.
-        /// </summary>
-        /// <param name="target">Target to convert to a texture.</param>
-        /// <returns>The texture bound to the render target.</returns>
-        public static GorgonTexture2D ToTexture(GorgonRenderTarget target)
-        {
-            return target == null ? null : target.Texture;
-        }
-
-        /// <summary>
-        /// Implicit operator to convert a render target to a texture.
-        /// </summary>
-        /// <param name="target">Render target to convert.</param>
-        /// <returns>The texture attached to the render target.</returns>
-        public static implicit operator GorgonTexture2D(GorgonRenderTarget target)
-        {
-            return target == null ? null : target.Texture;
-        }
 	    #endregion
 
 		#region Constructor/Destructor.
@@ -357,7 +200,7 @@ namespace GorgonLibrary.Graphics
 		/// <param name="graphics">The graphics interface that created this object.</param>
 		/// <param name="name">The name of the render target.</param>
 		/// <param name="settings">Settings to apply to the render target.</param>
-		internal GorgonRenderTarget(GorgonGraphics graphics, string name, IRenderTargetSettings settings)
+		protected GorgonRenderTarget(GorgonGraphics graphics, string name, IRenderTargetSettings settings)
 			: base(name)
 		{
 			Graphics = graphics;
@@ -376,12 +219,9 @@ namespace GorgonLibrary.Graphics
 			{
 				if (disposing)
 				{
-					int targetIndex = Graphics.Output.RenderTargets.IndexOf(this);
-
-					if (targetIndex > -1)
-						Graphics.Output.RenderTargets[targetIndex] = null;
-
 					CleanUp();
+
+					Graphics.RemoveTrackedObject(this);
 				}
 
 				Graphics = null;

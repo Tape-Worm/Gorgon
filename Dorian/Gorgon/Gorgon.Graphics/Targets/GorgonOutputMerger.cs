@@ -27,7 +27,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using GorgonLibrary.Math;
 using GorgonLibrary.Diagnostics;
+using GorgonLibrary.Graphics.Properties;
 using D3D = SharpDX.Direct3D11;
 
 namespace GorgonLibrary.Graphics
@@ -45,7 +47,7 @@ namespace GorgonLibrary.Graphics
 		{
 			#region Variables.
 			private readonly GorgonGraphics _graphics;
-			private readonly IList<GorgonRenderTarget> _targets;
+			private readonly GorgonRenderTarget[] _targets;
 			private readonly D3D.RenderTargetView[] _views;
 			private GorgonDepthStencil _depthStencilBuffer;
 			#endregion
@@ -58,7 +60,7 @@ namespace GorgonLibrary.Graphics
 			{
 				get
 				{
-					return _targets.Count;
+					return _targets.Length;
 				}
 			}
 
@@ -86,8 +88,11 @@ namespace GorgonLibrary.Graphics
 				get
 				{
 					int index = IndexOf(name);
+
 					if (index > -1)
+					{
 						return _targets[index];
+					}
 
 					throw new KeyNotFoundException("The render target '" + name + "' was not bound.");
 				}
@@ -97,7 +102,7 @@ namespace GorgonLibrary.Graphics
 			/// Property to set or return a render target binding.
 			/// </summary>
 			/// <remarks>This will set the depth/stencil buffer to the one that's assigned to the render target.  If there is a need to set a separate depth/stencil, then use then 
-			/// <see cref="M:GorgonLibrary.Graphics.GorgonOutputMerger.GorgonRenderTargetList.SetRenderTarget">SetRenderTarget</see> method.</remarks>
+			/// <see cref="GorgonLibrary.Graphics.GorgonOutputMerger.RenderTargetList.SetRenderTarget">SetRenderTarget</see> method.</remarks>
 			public GorgonRenderTarget this[int index]
 			{
 				get
@@ -147,7 +152,7 @@ namespace GorgonLibrary.Graphics
 
                 if (!this.All(
                         item =>
-                        item == null || ((GorgonTexture2D)item).Settings.ArrayCount == ((GorgonTexture2D)newTarget).Settings.ArrayCount))
+                        item == null || item.Settings.ArrayCount == newTarget.Settings.ArrayCount))
                 {
                     throw new GorgonException(GorgonResult.CannotBind,
                                               string.Format(
@@ -157,33 +162,70 @@ namespace GorgonLibrary.Graphics
             }
 
 			/// <summary>
+			/// Function to validate the depth buffer.
+			/// </summary>
+			/// <param name="depthStencil">The depth/stencil buffer to validate.</param>
+			private void ValidateDepthBuffer(GorgonDepthStencil depthStencil)
+			{
+				if (depthStencil == null)
+				{
+					return;
+				}
+
+				// Ensure the depth/stencil multi-sample settings are the same.  Otherwise, an exception should be thrown.
+				if (!this.All(item => item == null || item.Settings.MultiSample.Count == depthStencil.Settings.MultiSample.Count))
+				{
+					throw new GorgonException(GorgonResult.CannotBind,
+					                          string.Format(
+						                          "The depth/stencil buffer '{0}' has different multi-sample settings than the render target(s) that are bound to the pipeline.",
+						                          depthStencil.Name));
+				}
+
+				// TODO: Need to test whether depth/stencil buffers can have multiple array sizes.
+				if (!this.All(item => item == null || item.Settings.ArrayCount == depthStencil.Texture.Settings.ArrayCount))
+				{
+					throw new GorgonException(GorgonResult.CannotBind,
+					                          string.Format(
+						                          "The depth/stencil buffer '{0}' has a different array count than the render target(s) that are bound to the pipeline.",
+						                          depthStencil.Name));
+				}
+
+				// Ensure the target types match (3D/Buffer targets don't have depth/stencil components), and the width/height is the same.
+				if (!this.All(
+						item =>
+						item == null ||
+						(item.Settings.RenderTargetType != RenderTargetType.Target3D 
+							&& item.Settings.RenderTargetType != RenderTargetType.Buffer 
+							&& item.Settings.Width == depthStencil.Settings.Width 
+							&& item.Settings.Height == depthStencil.Settings.Height)))
+				{
+					throw new GorgonException(GorgonResult.CannotBind,
+					                          string.Format("The depth/stencil buffer '{0}' must have the same width/height and can only be used with 1D/2D render targets.", depthStencil.Name));
+
+				}
+			}
+
+			/// <summary>
 			/// Function to determine if the render targets have the same bit depth.
 			/// </summary>
 			/// <param name="format">The format to check.</param>
-			/// <param name="index">Index of the render target being set.</param>
 			/// <returns>TRUE if the bit depths are the same, FALSE if not.</returns>
-			private bool HasSameBitDepth(BufferFormat format, int index)
+			private bool HasSameBitDepth(BufferFormat format)
 			{
-				int bitDepth = GorgonBufferFormatInfo.GetInfo(format).BitDepth;
-
 				if (_graphics.VideoDevice.SupportedFeatureLevel != DeviceFeatureLevel.SM2_a_b)
-					return true;
-
-				for (int i = 0; i < _targets.Count; i++)
 				{
-					if (index == i)
-						continue;
-
-					if (_targets[i] != null)
-					{
-						int otherBitDepth = GorgonBufferFormatInfo.GetInfo(_targets[i].Settings.Format).BitDepth;
-
-						if (otherBitDepth != bitDepth)
-							return false;
-					}
+					return true;
 				}
 
-				return true;
+				int bitDepth = GorgonBufferFormatInfo.GetInfo(format).BitDepth;
+
+				// If there's any other target with a different bit depth, then get rid of it.
+				return this.Any(item =>
+					{
+						var otherBitDepth = GorgonBufferFormatInfo.GetInfo(item.Settings.Format).BitDepth;
+
+						return otherBitDepth != bitDepth;
+					});
 			}
 
 			/// <summary>
@@ -194,11 +236,13 @@ namespace GorgonLibrary.Graphics
 			{
 				int index = IndexOf(target);
 
-				if (index > -1)
+				if (index <= -1)
 				{
-					this[index] = null;
-					this[index] = target;
+					return;
 				}
+
+				this[index] = null;
+				this[index] = target;
 			}
 
             /// <summary>
@@ -217,15 +261,37 @@ namespace GorgonLibrary.Graphics
             }
 
 			/// <summary>
+			/// Function to unbind the specified render target from the pipeline.
+			/// </summary>
+			/// <param name="target">Target to unbind.</param>
+			internal void Unbind(GorgonRenderTarget target)
+			{
+				int index = IndexOf(target);
+
+				if (index > -1)
+				{
+					this[index] = null;
+				}
+			}
+
+			/// <summary>
+			/// Function to unbind all render targets and any depth buffers.
+			/// </summary>
+			internal void UnbindAll()
+			{
+				_graphics.Context.OutputMerger.SetTargets(null, new D3D.RenderTargetView[] { null });
+			}
+
+			/// <summary>
 			/// Function to determine if a render target is bound by its name.
 			/// </summary>
 			/// <param name="name">Name of the render target.</param>
 			/// <returns>TRUE if the render target was found, FALSE if not.</returns>
+			/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (Nothing in VB.Net).</exception>
+			/// <exception cref="System.ArgumentException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
 			public bool Contains(string name)
 			{
-				GorgonDebug.AssertParamString(name, "name");
-
-				return IndexOf(name) != -1;
+				return IndexOf(name) > -1;
 			}
 
 			/// <summary>
@@ -233,14 +299,26 @@ namespace GorgonLibrary.Graphics
 			/// </summary>
 			/// <param name="name">Name of the render target to look up.</param>
 			/// <returns>The index of the render target, -1 if not found.</returns>
+			/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (Nothing in VB.Net).</exception>
+			/// <exception cref="System.ArgumentException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
 			public int IndexOf(string name)
 			{
-				GorgonDebug.AssertParamString(name, "name");
-
-				for (int i = 0; i < _targets.Count; i++)
+				if (name == null)
 				{
-					if ((_targets[i] != null) && (string.Compare(name, _targets[i].Name, true) == 0))
+					throw new ArgumentNullException("name");
+				}
+
+				if (string.IsNullOrWhiteSpace(name))
+				{
+					throw new ArgumentException(Resources.GORGFX_PARAMETER_MUST_NOT_BE_EMPTY, "name");
+				}
+
+				for (int i = 0; i < _targets.Length; i++)
+				{
+					if ((_targets[i] != null) && (string.Compare(name, _targets[i].Name, StringComparison.OrdinalIgnoreCase) == 0))
+					{
 						return i;
+					}
 				}
 
 				return -1;
@@ -252,34 +330,11 @@ namespace GorgonLibrary.Graphics
 			/// <param name="depthBuffer">Depth buffer to set.</param>
 			public void SetDepthStencil(GorgonDepthStencil depthBuffer)
 			{
-				D3D.DepthStencilView view = (depthBuffer == null ? null : depthBuffer.D3DDepthStencilView);
-
 #if DEBUG
-                // Ensure the depth/stencil multi-sample settings are the same.  Otherwise, an exception should be thrown.
-			    if (depthBuffer != null)
-			    {
-			        if (!this.All(item => item == null || item.Settings.MultiSample.Count == depthBuffer.Settings.MultiSample.Count))
-			        {
-			            throw new GorgonException(GorgonResult.CannotBind,
-			                                      string.Format(
-			                                          "The depth/stencil buffer '{0}' has different multi-sample settings than the render target(s) that are bound to the pipeline.",
-			                                          depthBuffer.Name));
-			        }
-
-			        if (!this.All(item => item == null || ((GorgonTexture2D)item).Settings.ArrayCount == depthBuffer.Texture.Settings.ArrayCount))
-			        {
-			            throw new GorgonException(GorgonResult.CannotBind,
-			                                      string.Format(
-			                                          "The depth/stencil buffer '{0}' has a different array count than the render target(s) that are bound to the pipeline.",
-			                                          depthBuffer.Name));
-			        }
-
-                    // TODO: Add code to check dimensions and ensure they match the targets.
-                    // This is not explcitly stated in the documentation, but it's a good bet that there's going to be issues with having a depth buffer 
-                    // that has a different width/height/depth than the render target texture is going to cause problems.
-                }
+				ValidateDepthBuffer(depthBuffer);
 #endif
-                
+
+				D3D.DepthStencilView view = (_depthStencilBuffer == null ? null : _depthStencilBuffer.D3DDepthStencilView);
 				_depthStencilBuffer = depthBuffer;
 				_graphics.Context.OutputMerger.SetTargets(view, _views);
 			}
@@ -290,24 +345,33 @@ namespace GorgonLibrary.Graphics
 			/// <param name="index">Index to bind at.</param>
 			/// <param name="target">Target to bind.</param>
 			/// <param name="depthStencil">Depth/stencil buffer to bind.</param>
+			/// <remarks>If the current video device is only capable of SM2_a_b, then all render targets bound must have the same bit depth.</remarks>
 			/// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="index"/> parameter is less than 0 or greater than the number of allowed targets.</exception>
-			/// <exception cref="GorgonLibrary.GorgonException">Thrown if the current video device is only SM 2.0 and the targets are not the same bit depth.</exception>
+			/// <exception cref="GorgonLibrary.GorgonException">Thrown if the current video device is only SM2_a_b and the targets are not the same bit depth.</exception>
 			public void SetRenderTarget(int index, GorgonRenderTarget target, GorgonDepthStencil depthStencil)
 			{
 				GorgonDebug.AssertParamRange(index, 0, 8, true, false, "startIndex");
 
-#if DEBUG
 				if (target != null)
 				{
-					if (!HasSameBitDepth(target.Settings.Format, index))
-						throw new GorgonException(GorgonResult.CannotBind, "Cannot bind the render target, targets must be of the same bit depth for SM_2_a_b video devices.");
-				}
+#if DEBUG
+					// If the target is bound somewhere else, then throw an exception.
+					var oldIndex = IndexOf(target);
+
+					if (oldIndex != -1)
+					{
+						throw new GorgonException(GorgonResult.CannotBind,
+												  string.Format("The render target '{0}' is already bound in slot [{1}]", target.Name,
+																oldIndex));
+					}
+
+					if (!HasSameBitDepth(target.Settings.Format))
+					{
+						throw new GorgonException(GorgonResult.CannotBind,
+						                          "Cannot bind the render target, targets must be of the same bit depth for SM2_a_b video devices.");
+					}
 #endif
-				
-				// If we've got the target bound to a texture slot, then remove it before assigning it.
-				// Otherwise D3D11 will throw up a warning in the debug output.
-				if (target != null)
-				    _graphics.Shaders.Unbind(target);
+				}
 
 				_targets[index] = target;
 				_views[index] = target == null ? null : target.D3DRenderTarget;
@@ -317,53 +381,65 @@ namespace GorgonLibrary.Graphics
 			/// <summary>
 			/// Function to set a range of render targets.
 			/// </summary>
+			/// <param name="slot">The starting slot index that will be bound.</param>
 			/// <param name="targets">Render targets to set.</param>
 			/// <param name="depthStencil">The depth/stencil buffer to use.</param>
-			/// <param name="startIndex">The starting index that will be bound.</param>
-			/// <remarks>Passing NULL (Nothing in VB.Net) to the <paramref name="targets"/> parameter will set the bindings to empty (starting at <paramref name="startIndex"/>).</remarks>
-			/// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="startIndex"/> parameter is less than 0 or greater than the number of allowed targets.</exception>
+			/// <remarks>Passing NULL (Nothing in VB.Net) to the <paramref name="targets"/> parameter will set the bindings to empty (starting at <paramref name="slot"/>).
+			/// </remarks>
+			/// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="slot"/> parameter is less than 0 or greater than the number of allowed targets.</exception>
 			/// <exception cref="GorgonLibrary.GorgonException">Thrown if the current video device is SM 2.0 and the targets are not the same bit depth.</exception>
-			public void SetRenderTargetRange(IEnumerable<GorgonRenderTarget> targets, GorgonDepthStencil depthStencil, int startIndex)
+			public void SetRange(int slot, GorgonRenderTarget[] targets, GorgonDepthStencil depthStencil)
 			{
-				int count = _targets.Count - startIndex;
+				int count = _targets.Length - slot;
 
-				GorgonDebug.AssertParamRange(startIndex, 0, 8, true, false, "startIndex");
+				GorgonDebug.AssertParamRange(slot, 0, 8, true, false, "startIndex");
+
+				if (targets != null)
+				{
+					count = targets.Length.Min(_targets.Length);
+				}
 
 				for (int i = 0; i < count; i++)
 				{
 					GorgonRenderTarget target = null;
+					int targetIndex = i + slot;
 
 					if (targets != null)
 					{
-						target = targets.ElementAt(i);
-						if (target != null)
-						{
-#if DEBUG
-							if (!HasSameBitDepth(target.Settings.Format, i + startIndex))
-								throw new GorgonException(GorgonResult.CannotBind, "Cannot bind the render target, targets must be of the same bit depth for SM_2_a_b video devices.");
-#endif
-
-							// If we've got the target bound to a texture slot, then remove it before assigning it.
-							// Otherwise D3D11 will throw up a warning in the debug output.
-							_graphics.Shaders.Unbind(target);
-						}
+						target = targets[i];
 					}
-					_targets[i + startIndex] = target;
-					_views[i + startIndex] = (target == null ? null : target.D3DRenderTarget);
+
+					if (target != null)
+					{
+#if DEBUG
+						// If the target is bound somewhere else, then throw an exception.
+						var oldIndex = IndexOf(target);
+
+						if (oldIndex != -1)
+						{
+							throw new GorgonException(GorgonResult.CannotBind,
+													  string.Format("The render target '{0}' is already bound in slot [{1}]", target.Name,
+																	oldIndex));
+						}
+
+						if (!HasSameBitDepth(target.Settings.Format))
+						{
+							throw new GorgonException(GorgonResult.CannotBind,
+							                          "Cannot bind the render target, targets must be of the same bit depth for SM_2_a_b video devices.");
+						}
+#endif
+					}
+
+
+					_targets[targetIndex] = target;
+					// Unlike the other set functions that take arrays, this one is an all-or-nothing approach.  So, targets that aren't set in the array
+					// would be set to NULL (D3D automatically does this).  This is an annoying "feature" of D3D11 and makes automation of some things (like 
+					// auto-setting the render target after swap chain is resized) nearly impossible without unsetting every other target bound.  I'm sure 
+					// there's a performance penalty for this, but it's likely negligable and worth it for the trade off in convenience.
+					_views[targetIndex] = (target == null ? null : target.D3DRenderTarget);
 				}
 
 				SetDepthStencil(depthStencil);
-			}
-
-			/// <summary>
-			/// Function to set a range of render targets.
-			/// </summary>
-			/// <param name="targets">Render targets to set.</param>
-			/// <param name="depthStencil">The depth/stencil buffer to use.</param>
-			/// <remarks>Passing NULL (Nothing in VB.Net) to the <paramref name="targets"/> parameter will set the bindings to empty.</remarks>
-			public void SetRenderTargetRange(IEnumerable<GorgonRenderTarget> targets, GorgonDepthStencil depthStencil)
-			{
-				SetRenderTargetRange(targets, depthStencil, 0);
 			}
 			#endregion
 
@@ -375,12 +451,11 @@ namespace GorgonLibrary.Graphics
 			internal RenderTargetList(GorgonGraphics graphics)
 			{
 				_graphics = graphics;
-				if (graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM2_a_b)
-					_targets = new GorgonRenderTarget[4];
-				else
-					_targets = new GorgonRenderTarget[8];
+				_targets = graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM2_a_b
+					           ? new GorgonRenderTarget[4]
+					           : new GorgonRenderTarget[8];
 
-				_views = new D3D.RenderTargetView[_targets.Count];
+				_views = new D3D.RenderTargetView[_targets.Length];
 			}
 			#endregion
 
@@ -394,7 +469,7 @@ namespace GorgonLibrary.Graphics
 			/// </returns>
 			public int IndexOf(GorgonRenderTarget item)
 			{
-				return _targets.IndexOf(item);
+				return Array.IndexOf(_targets, item);
 			}
 
 			/// <summary>
@@ -501,7 +576,9 @@ namespace GorgonLibrary.Graphics
 			public IEnumerator<GorgonRenderTarget> GetEnumerator()
 			{
 				foreach (var item in _targets)
+				{
 					yield return item;
+				}
 			}
 			#endregion
 
@@ -514,7 +591,7 @@ namespace GorgonLibrary.Graphics
 			/// </returns>
 			System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
 			{
-				return GetEnumerator();
+				return _targets.GetEnumerator();
 			}
 			#endregion
 		}
@@ -553,7 +630,6 @@ namespace GorgonLibrary.Graphics
 		#endregion
 
 		#region Methods.
-
 	    /// <summary>
 	    /// Function to validate the settings for a render target.
 	    /// </summary>
@@ -622,12 +698,17 @@ namespace GorgonLibrary.Graphics
                                             + "' for a render target on the video device '" + _graphics.VideoDevice.Name + "'.");
             }
         }
-        
+
         /// <summary>
 		/// Function to clean up resources used by the interface.
 		/// </summary>
 		internal void CleanUp()
 		{
+			for (int i = 0; i < RenderTargets.Count; i++)
+			{
+				RenderTargets[i] = null;
+			}
+
 			if (BlendingState != null)
 			{
 				BlendingState.CleanUp();
@@ -840,7 +921,7 @@ namespace GorgonLibrary.Graphics
 		/// <param name="name">Name of the render target.</param>
 		/// <param name="settings">Settings for the render target.</param>
 		/// <returns>A new render target object.</returns>
-		/// <remarks>This allows graphics data to be rendered on to a <see cref="GorgonLibrary.Graphics.GorgonTexture2D">texture</see>.
+		/// <remarks>This allows graphics data to be rendered on to a <see cref="GorgonLibrary.Graphics.GorgonTexture">texture (either 1D, 2D or 3D)</see> or a <see cref="GorgonLibrary.Graphics.GorgonBuffer">Buffer</see>.
 		/// <para>Unlike the <see cref="GorgonLibrary.Graphics.GorgonSwapChain">GorgonSwapChain</see> object (which is also a render target), no defaults will be set for the <paramref name="settings"/> except multisampling, and DepthFormat (defaults to Unknown).  
 		/// </para>
 		/// <para>If the multisampling quality in the <see cref="P:GorgonLibrary.Graphics.GorgonRenderTarget.MultSample.Quality">GorgonRenderTarget.MultiSample.Quality</see> property is higher than what the video device can support, an exception will be raised.  To determine 
@@ -913,6 +994,7 @@ namespace GorgonLibrary.Graphics
 		internal GorgonOutputMerger(GorgonGraphics graphics)
 		{
 			_graphics = graphics;
+
 			BlendingState = new GorgonBlendRenderState(_graphics);
 			DepthStencilState = new GorgonDepthStencilRenderState(_graphics);
 			RenderTargets = new RenderTargetList(_graphics);

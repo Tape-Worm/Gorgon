@@ -50,8 +50,8 @@ namespace GorgonLibrary.Renderers
 		private readonly GorgonConstantBuffer _blurBuffer;							// Buffer for blur data.
 		private readonly GorgonConstantBuffer _blurStaticBuffer;					// Buffer for blur data that does not change very often.
 		private readonly GorgonDataStream _blurStream;								// Stream for the buffer.
-		private GorgonRenderTarget _hTarget;										// Horizontal blur render target.
-		private GorgonRenderTarget _vTarget;										// Vertical blur render target.
+		private GorgonRenderTarget2D _hTarget;										// Horizontal blur render target.
+		private GorgonRenderTarget2D _vTarget;										// Vertical blur render target.
 		private BufferFormat _blurTargetFormat = BufferFormat.R8G8B8A8_UIntNormal;	// Format of the blur render targets.
 		private Size _blurTargetSize = new Size(256, 256);							// Size of the render targets used for blurring.
 		private GorgonRenderTarget _currentTarget;									// Current render target.
@@ -190,7 +190,7 @@ namespace GorgonLibrary.Renderers
 		{
 			get
 			{
-				return _vTarget == null ? null : _vTarget;
+				return _vTarget;
 			}
 		}
 		#endregion

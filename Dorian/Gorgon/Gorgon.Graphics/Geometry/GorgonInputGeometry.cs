@@ -29,9 +29,7 @@ using System.Collections.Generic;
 using GI = SharpDX.DXGI;
 using D3D = SharpDX.Direct3D11;
 using GorgonLibrary.Diagnostics;
-using GorgonLibrary.IO;
 using GorgonLibrary.Math;
-using GorgonLibrary.Native;
 using GorgonLibrary.Graphics.Properties;
 
 namespace GorgonLibrary.Graphics
@@ -226,8 +224,8 @@ namespace GorgonLibrary.Graphics
 			: IList<GorgonVertexBufferBinding>
 		{
 			#region Variables.
-			private readonly IList<GorgonVertexBufferBinding> _bindings;		// List of bindings.
-			private readonly D3D.VertexBufferBinding[] _D3DBindings;			// List of D3D bindings.
+			private D3D.VertexBufferBinding[] _D3DBindings;						// List of D3D bindings.
+			private readonly GorgonVertexBufferBinding[] _bindings;				// List of bindings.
 			private readonly GorgonGraphics _graphics;							// Graphics interface.
 			#endregion
 
@@ -240,13 +238,14 @@ namespace GorgonLibrary.Graphics
 			{
 				get
 				{
-					return _bindings.Count;
+					return _bindings.Length;
 				}
 			}
 
 			/// <summary>
 			/// Property to set or return the vertex buffer binding for a given slot.
 			/// </summary>
+			/// <exception cref="GorgonLibrary.GorgonException">Thrown when an the vertex buffer is already bound to another slot.</exception>
 			public GorgonVertexBufferBinding this[int index]
 			{
 				get
@@ -260,24 +259,83 @@ namespace GorgonLibrary.Graphics
 						return;
 					}
 
+#if DEBUG
+					if (!value.Equals(GorgonVertexBufferBinding.Empty))
+					{
+						var oldIndex = IndexOf(value);
+						if (oldIndex != -1)
+						{
+							throw new GorgonException(GorgonResult.CannotBind,
+							                          string.Format(Resources.GORGFX_VERTEXBUFFER_ALREADY_BOUND,
+							                                        value.VertexBuffer != null ? value.VertexBuffer.Name : "NULL", oldIndex));
+						}
+					}
+#endif
+
+					var D3DBinding = value.Convert();
 					_bindings[index] = value;
-					_D3DBindings[0] = value.Convert();
-					_graphics.Context.InputAssembler.SetVertexBuffers(index, _D3DBindings[0]);
+					_graphics.Context.InputAssembler.SetVertexBuffers(index, D3DBinding);
 				}
 			}
 			#endregion
 
 			#region Methods.
 			/// <summary>
+			/// Function to return the index of the vertex buffer with the specified name.
+			/// </summary>
+			/// <param name="name">Name of the vertex buffer.</param>
+			/// <returns>The index of the vertex buffer if found, -1 if not.</returns>
+			/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (Nothing in VB.Net).</exception>
+			/// <exception cref="System.ArgumentException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
+			public int IndexOf(string name)
+			{
+				if (name == null)
+				{
+					throw new ArgumentNullException("name");
+				}
+
+				if (string.IsNullOrWhiteSpace(name))
+				{
+					throw new ArgumentException(Resources.GORGFX_PARAMETER_MUST_NOT_BE_EMPTY, "name");
+				}
+
+				for (int i = 0; i < _bindings.Length; i++)
+				{
+					if ((_bindings[i].VertexBuffer != null) && (string.Compare(name, _bindings[i].VertexBuffer.Name, StringComparison.OrdinalIgnoreCase) == 0))
+					{
+						return i;
+					}
+				}
+
+				return -1;
+			}
+
+			/// <summary>
+			/// Function to determine if the list contains a buffer with the specified name.
+			/// </summary>
+			/// <param name="name">Name of the buffer.</param>
+			/// <returns>TRUE if found, FALSE if not.</returns>
+			/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (Nothing in VB.Net).</exception>
+			/// <exception cref="System.ArgumentException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
+			public bool Contains(string name)
+			{
+				return IndexOf(name) > -1;
+			}
+
+			/// <summary>
 			/// Function to find the index of a vertex buffer binding that contains the specified vertex buffer.
 			/// </summary>
 			/// <param name="buffer">Vertex buffer to find.</param>
 			/// <returns>The index of the buffer binding in the list, -1 if not found.</returns>
+			/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="buffer"/> parameter is NULL (Nothing in VB.Net).</exception>
 			public int IndexOf(GorgonVertexBuffer buffer)
 			{
-				GorgonDebug.AssertNull(buffer, "buffer");
+				if (buffer == null)
+				{
+					throw new ArgumentNullException("buffer");
+				}
 
-				for (int i = 0; i < _bindings.Count; i++)
+				for (int i = 0; i < _bindings.Length; i++)
 				{
 					if (_bindings[i].VertexBuffer == buffer)
 					{
@@ -293,21 +351,10 @@ namespace GorgonLibrary.Graphics
 			/// </summary>
 			/// <param name="buffer">The buffer to find.</param>
 			/// <returns>TRUE if found, FALSE if not.</returns>
+			/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="buffer"/> parameter is NULL (Nothing in VB.Net).</exception>
 			public bool Contains(GorgonVertexBuffer buffer)
 			{
-				GorgonDebug.AssertNull(buffer, "buffer");
-
-				return IndexOf(buffer) != -1;
-			}
-
-			/// <summary>
-			/// Function to set a series of bindings at once.
-			/// </summary>
-			/// <param name="binding">Bindings to set.</param>
-			/// <remarks>Passing NULL (Nothing in VB.Net) to the <paramref name="binding"/> parameter will set the bindings to empty.</remarks>
-			public void SetRange(GorgonVertexBufferBinding[] binding)
-			{
-				SetRange(0, binding);
+				return IndexOf(buffer) > -1;
 			}
 
 			/// <summary>
@@ -317,15 +364,21 @@ namespace GorgonLibrary.Graphics
 			/// <param name="slot">Index to start writing at.</param>
 			/// <remarks>Passing NULL (Nothing in VB.Net) to the <paramref name="binding"/> parameter will set the bindings to empty (starting at <paramref name="slot"/>).</remarks>
 			/// <exception cref="System.ArgumentOutOfRangeException">Thrown when the startIndex parameter is less than 0 or greater than the number of available bindings - 1.</exception>
+			/// <exception cref="GorgonLibrary.GorgonException">Thrown when an the vertex buffer is already bound to another slot.</exception>
 			public void SetRange(int slot, GorgonVertexBufferBinding[] binding)
 			{
-				int count = _bindings.Count - slot;
+				int count = _bindings.Length - slot;
 
-				GorgonDebug.AssertParamRange(slot, 0, _bindings.Count, true, false,"startIndex");
+				GorgonDebug.AssertParamRange(slot, 0, _bindings.Length, true, false,"startIndex");
                 
                 if (binding != null)
 				{
-					count = binding.Length.Min(_bindings.Count);
+					count = binding.Length.Min(_bindings.Length);
+				}
+
+				if ((_D3DBindings == null) || (_D3DBindings.Length != count))
+				{
+					_D3DBindings = new D3D.VertexBufferBinding[count];
 				}
 
 				for (int i = 0; i < count; i++)
@@ -344,6 +397,21 @@ namespace GorgonLibrary.Graphics
 						continue;
 					}
 
+#if DEBUG
+					if (!currentBinding.Equals(GorgonVertexBufferBinding.Empty))
+					{
+						var oldIndex = IndexOf(currentBinding);
+						if (oldIndex != -1)
+						{
+							throw new GorgonException(GorgonResult.CannotBind,
+							                          string.Format(Resources.GORGFX_VERTEXBUFFER_ALREADY_BOUND,
+							                                        currentBinding.VertexBuffer != null
+								                                        ? currentBinding.VertexBuffer.Name
+								                                        : "NULL", oldIndex));
+						}
+					}
+#endif
+
 					_bindings[slotIndex] = currentBinding;
 					_D3DBindings[i] = currentBinding.Convert();
 				}
@@ -361,11 +429,9 @@ namespace GorgonLibrary.Graphics
 			{
 				_graphics = graphics;
 				_bindings = new GorgonVertexBufferBinding[_graphics.VideoDevice.SupportedFeatureLevel < DeviceFeatureLevel.SM4_1 ? 16 : 32];
-				_D3DBindings = new D3D.VertexBufferBinding[_bindings.Count];
-				for (int i = 0; i < _bindings.Count; i++)
+				for (int i = 0; i < _bindings.Length; i++)
 				{
 					_bindings[i] = GorgonVertexBufferBinding.Empty;
-					_D3DBindings[i] = new D3D.VertexBufferBinding();
 				}				
 			}
 			#endregion
@@ -379,7 +445,10 @@ namespace GorgonLibrary.Graphics
 			/// </returns>
 			public IEnumerator<GorgonVertexBufferBinding> GetEnumerator()
 			{
-				return _bindings.GetEnumerator();
+				foreach (var item in _bindings)
+				{
+					yield return item;
+				}
 			}
 			#endregion
 
@@ -392,7 +461,7 @@ namespace GorgonLibrary.Graphics
 			/// </returns>
 			System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
 			{
-				return ((System.Collections.IEnumerable)_bindings).GetEnumerator();
+				return _bindings.GetEnumerator();
 			}
 			#endregion
 
@@ -404,41 +473,49 @@ namespace GorgonLibrary.Graphics
 			/// <returns>The index of the binding, if found.  -1 if the binding was not found.</returns>
 			public int IndexOf(GorgonVertexBufferBinding item)
 			{
-				return _bindings.IndexOf(item);
+				return Array.IndexOf(_bindings, item);
 			}
 
 			/// <summary>
-			/// Inserts the specified index.
+			/// Inserts an item to the <see cref="T:System.Collections.Generic.IList`1" /> at the specified index.
 			/// </summary>
-			/// <param name="index">The index.</param>
-			/// <param name="item">The item.</param>
+			/// <param name="index">The zero-based index at which <paramref name="item" /> should be inserted.</param>
+			/// <param name="item">The object to insert into the <see cref="T:System.Collections.Generic.IList`1" />.</param>
+			/// <exception cref="System.NotSupportedException">This method is not supported.</exception>
 			void IList<GorgonVertexBufferBinding>.Insert(int index, GorgonVertexBufferBinding item)
 			{
+				throw new NotSupportedException();
 			}
 
 			/// <summary>
-			/// Removes at.
+			/// Removes the <see cref="T:System.Collections.Generic.IList`1" /> item at the specified index.
 			/// </summary>
-			/// <param name="index">The index.</param>
+			/// <param name="index">The zero-based index of the item to remove.</param>
+			/// <exception cref="System.NotSupportedException">This method is not supported.</exception>
 			void IList<GorgonVertexBufferBinding>.RemoveAt(int index)
 			{
+				throw new NotSupportedException();
 			}
 			#endregion
 
 			#region ICollection<GorgonVertexBufferBinding> Members
 			/// <summary>
-			/// Adds the specified item.
+			/// Adds an item to the <see cref="T:System.Collections.Generic.ICollection`1" />.
 			/// </summary>
-			/// <param name="item">The item.</param>
+			/// <param name="item">The object to add to the <see cref="T:System.Collections.Generic.ICollection`1" />.</param>
+			/// <exception cref="System.NotSupportedException">This method is not supported.</exception>
 			void ICollection<GorgonVertexBufferBinding>.Add(GorgonVertexBufferBinding item)
 			{
+				throw new NotSupportedException();
 			}
 
 			/// <summary>
-			/// Clears this instance.
+			/// Removes all items from the <see cref="T:System.Collections.Generic.ICollection`1" />.
 			/// </summary>
+			/// <exception cref="System.NotSupportedException">This method is not supported.</exception>
 			void ICollection<GorgonVertexBufferBinding>.Clear()
 			{
+				throw new NotSupportedException();
 			}
 
 			/// <summary>
@@ -448,7 +525,7 @@ namespace GorgonLibrary.Graphics
 			/// <returns>TRUE if found, FALSE if not.</returns>
 			public bool Contains(GorgonVertexBufferBinding item)
 			{
-				return _bindings.Contains(item);
+				return IndexOf(item) > -1;
 			}
 
 			/// <summary>
@@ -456,17 +533,33 @@ namespace GorgonLibrary.Graphics
 			/// </summary>
 			/// <param name="array">The array to copy into.</param>
 			/// <param name="arrayIndex">Index of the array to start writing at.</param>
+			/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="array"/> parameter is NULL (Nothing in VB.Net).</exception>
+			/// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="arrayIndex"/> parameter is less than 0 or not less than the length of the array.</exception>
 			public void CopyTo(GorgonVertexBufferBinding[] array, int arrayIndex)
 			{
-				_bindings.CopyTo(array, arrayIndex);
+				if (array == null)
+				{
+					throw new ArgumentNullException("array");
+				}
+
+				if ((arrayIndex < 0) || (arrayIndex >= array.Length))
+				{
+					throw new ArgumentOutOfRangeException("arrayIndex");
+				}
+
+				int count = (array.Length - arrayIndex).Min(_bindings.Length);
+
+				for (int i = 0; i < count; i++)
+				{
+					array[i + arrayIndex] = _bindings[i];
+				}
 			}
 
 			/// <summary>
-			/// Gets a value indicating whether this instance is read only.
+			/// Gets a value indicating whether the <see cref="T:System.Collections.Generic.ICollection`1" /> is read-only.
 			/// </summary>
-			/// <value>
-			/// 	<c>true</c> if this instance is read only; otherwise, <c>false</c>.
-			/// </value>
+			/// <returns>true if the <see cref="T:System.Collections.Generic.ICollection`1" /> is read-only; otherwise, false.
+			///   </returns>
 			public bool IsReadOnly
 			{
 				get 
@@ -476,13 +569,16 @@ namespace GorgonLibrary.Graphics
 			}
 
 			/// <summary>
-			/// Removes the specified item.
+			/// Removes the first occurrence of a specific object from the <see cref="T:System.Collections.Generic.ICollection`1" />.
 			/// </summary>
-			/// <param name="item">The item.</param>
-			/// <returns></returns>
+			/// <param name="item">The object to remove from the <see cref="T:System.Collections.Generic.ICollection`1" />.</param>
+			/// <returns>
+			/// true if <paramref name="item" /> was successfully removed from the <see cref="T:System.Collections.Generic.ICollection`1" />; otherwise, false. This method also returns false if <paramref name="item" /> is not found in the original <see cref="T:System.Collections.Generic.ICollection`1" />.
+			/// </returns>
+			/// <exception cref="System.NotSupportedException">This method is not supported.</exception>
 			bool ICollection<GorgonVertexBufferBinding>.Remove(GorgonVertexBufferBinding item)
 			{
-				return false;
+				throw new NotSupportedException();
 			}
 			#endregion
 		}

@@ -37,6 +37,55 @@ using D3D = SharpDX.Direct3D11;
 namespace GorgonLibrary.Graphics
 {
 	/// <summary>
+	/// Render target resized event arguments.
+	/// </summary>
+	public class GorgonSwapChainResizedEventArgs
+		: EventArgs
+	{
+		#region Properties.
+		/// <summary>
+		/// Property to return the new width of the target.
+		/// </summary>
+		public int Width
+		{
+			get;
+			private set;
+		}
+
+		/// <summary>
+		/// Property to return the new height of the target.
+		/// </summary>
+		public int Height
+		{
+			get;
+			private set;
+		}
+
+		/// <summary>
+		/// Property to return whether the swap chain is in full screen or windowed mode.
+		/// </summary>
+		public bool IsWindowed
+		{
+			get;
+			private set;
+		}
+		#endregion
+
+		#region Constructor/Destructor.
+		/// <summary>
+		/// Initializes a new instance of the <see cref="GorgonSwapChainResizedEventArgs" /> class.
+		/// </summary>
+		/// <param name="target">Render target that was resized.</param>
+		public GorgonSwapChainResizedEventArgs(GorgonSwapChain target)
+		{
+			Width = target.Settings.Width;
+			Height = target.Settings.Height;
+			IsWindowed = target.Settings.IsWindowed;
+		}
+		#endregion
+	}
+
+	/// <summary>
 	/// Event parameters for a full screen/windowed state change.
 	/// </summary>
 	public class GorgonBeforeStateTransitionEventArgs
@@ -67,36 +116,6 @@ namespace GorgonLibrary.Graphics
 	}
 
 	/// <summary>
-	/// Event parameters for a swap chain resize event.
-	/// </summary>
-	public class GorgonSwapChainResizedEventArgs
-		: GorgonRenderTargetResizedEventArgs
-	{
-		#region Properties.
-		/// <summary>
-		/// Property to return whether the swap chain is in full screen or windowed mode.
-		/// </summary>
-		public bool IsWindowed
-		{
-			get;
-			private set;
-		}
-		#endregion
-
-		#region Constructor/Destructor.
-		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonSwapChainResizedEventArgs" /> class.
-		/// </summary>
-		/// <param name="swapChain">The swap chain that's being resized..</param>
-		public GorgonSwapChainResizedEventArgs(GorgonSwapChain swapChain)
-			: base(swapChain)
-		{
-			IsWindowed = swapChain.Settings.IsWindowed;
-		}
-		#endregion
-	}
-
-	/// <summary>
 	/// A swap chain used to display graphics to a window.
 	/// </summary>
 	/// <remarks>The swap chain is used to display data to the <see cref="GorgonLibrary.Graphics.GorgonVideoOutput">video output</see>, or it can be used as a shader input.
@@ -114,14 +133,20 @@ namespace GorgonLibrary.Graphics
 	/// developer.  This is mandatory in full screen multi-monitor applications, if the ResetFullscreenOnFocus flag is FALSE in this scenario, then the behaviour when switching between applications will be undefined.  
 	/// It is the responsibility of the developer to handle task switching in multi-monitor environments.</para>
 	/// </remarks>
-	public class GorgonSwapChain
-		: GorgonRenderTarget
+	public sealed class GorgonSwapChain
+		: GorgonNamedObject, IDisposable
 	{
 		#region Variables.
+		private bool _disposed;								// Flag to indicate that the object was disposed.
+		private GorgonRenderTarget2D _target;				// Render target.
 		private Form _parentForm;							// Parent form for our window.
 		#endregion
 
 		#region Events.
+		/// <summary>
+		/// Event called after the render target has been resized.
+		/// </summary>
+		public event EventHandler<GorgonSwapChainResizedEventArgs> Resized;
 		/// <summary>
 		/// Event called before the swap chain transitions to full screen or windowed mode.
 		/// </summary>
@@ -137,6 +162,31 @@ namespace GorgonLibrary.Graphics
 		/// Property to return the DXGI swap chain interface.
 		/// </summary>
 		internal GI.SwapChain GISwapChain
+		{
+			get;
+			private set;
+		}
+
+		/// <summary>
+		/// Property to set or return a depth/stencil buffer for this swap chain.
+		/// </summary>
+		/// <remarks>Use this to set a user defined depth/stencil buffer for the swap chain.</remarks>
+		public GorgonDepthStencil DepthStencil
+		{
+			get
+			{
+				return _target.DepthStencil;
+			}
+			set
+			{
+				_target.DepthStencil = value;
+			}
+		}
+
+		/// <summary>
+		/// Property to return the graphics interface that owns this object.
+		/// </summary>
+		public GorgonGraphics Graphics
 		{
 			get;
 			private set;
@@ -188,14 +238,23 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
-		/// Property to return the settings for this swap chain.
+		/// Property to return the default viewport associated with this render target.
 		/// </summary>
-		public new GorgonSwapChainSettings Settings
+		public GorgonViewport Viewport
 		{
 			get
 			{
-				return (GorgonSwapChainSettings)base.Settings;
+				return _target.Viewport;
 			}
+		}
+
+		/// <summary>
+		/// Property to return the settings for this swap chain.
+		/// </summary>
+		public GorgonSwapChainSettings Settings
+		{
+			get;
+			private set;
 		}
 		#endregion
 
@@ -245,77 +304,38 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
-		/// Function to release any resources bound to the swap chain.
-		/// </summary>
-		private void ReleaseResources()
-		{
-			if (Texture != null)
-			{
-				// This is to offset the change in the stats.
-				GorgonRenderStatistics.TextureCount++;
-				GorgonRenderStatistics.TextureSize += Texture.SizeInBytes;
-
-				GorgonRenderStatistics.RenderTargetCount--;
-				GorgonRenderStatistics.RenderTargetSize -= (Texture.SizeInBytes * Settings.BufferCount);
-
-				Texture.Dispose();
-			}
-
-			if (InternalDepthStencil != null)
-			{
-				Gorgon.Log.Print("GorgonSwapChain '{0}': Releasing internal depth stencil...", LoggingLevel.Verbose, Name);
-				InternalDepthStencil.Dispose();
-				InternalDepthStencil = null;
-			}
-
-			if (D3DRenderTarget != null)
-			{
-				Gorgon.Log.Print("GorgonSwapChain '{0}': Releasing D3D11 render target view...", Diagnostics.LoggingLevel.Intermediate, Name);
-				D3DRenderTarget.Dispose();
-			}
-
-			D3DRenderTarget = null;
-			Texture = null;
-		}
-
-		/// <summary>
 		/// Function to create any resources bound to the swap chain.
 		/// </summary>
-		protected override void CreateResources()
+		private void CreateResources()
 		{
-			if (D3DRenderTarget != null)
-				ReleaseResources();
-
 			Gorgon.Log.Print("GorgonSwapChain '{0}': Creating D3D11 render target view...", Diagnostics.LoggingLevel.Intermediate, Name);
-
-			// Create a depth buffer if we've requested one.
-			if (Settings.DepthStencilFormat != BufferFormat.Unknown)
+			if (_target == null)
 			{
-				Gorgon.Log.Print("GorgonSwapChain '{0}': Creating internal depth/stencil...", Diagnostics.LoggingLevel.Verbose, Name);
-
-				var settings = new GorgonDepthStencilSettings {
-					Format = Settings.DepthStencilFormat,
-					Width = Settings.Width,
-					Height = Settings.Height,
-					MultiSample = Settings.MultiSample
-				};
-
-				GorgonDepthStencil.ValidateSettings(Graphics, settings);
-
-				InternalDepthStencil = new GorgonDepthStencil(Graphics, Name + "_Internal_DepthStencil_" + Guid.NewGuid(), settings);
-				InternalDepthStencil.UpdateSettings();
+				_target = new GorgonRenderTarget2D(Graphics, Name + "_Internal_Render_Target_" + Guid.NewGuid(),
+				                                   new GorgonRenderTarget2DSettings
+					                                   {
+						                                   Width = Settings.Width,
+						                                   Height = Settings.Height,
+						                                   DepthStencilFormat = Settings.DepthStencilFormat,
+						                                   Format = Settings.Format,
+						                                   MultiSample = Settings.MultiSample
+					                                   });
+			}
+			else
+			{
+				// Readjust target settings.
+				_target.Settings.Width = Settings.Width;
+				_target.Settings.Height = Settings.Height;
+				_target.Settings.DepthStencilFormat = Settings.DepthStencilFormat;
+				_target.Settings.Format = Settings.Format;
+				_target.Settings.MultiSample = Settings.MultiSample;
 			}
 
-			Texture = new GorgonTexture2D(Graphics, Name + "_Internal_Texture_" + Guid.NewGuid(), new GorgonTexture2DSettings());
-			Texture.InitializeSwapChain(this);
-			D3DRenderTarget = new D3D.RenderTargetView(Graphics.D3DDevice, Texture.D3DResource);
-			D3DRenderTarget.DebugName = "SwapChain '" + Name + "' Render Target View";
-
-			// Set up the default viewport.
-			Viewport = new GorgonViewport(0, 0, Settings.VideoMode.Width, Settings.VideoMode.Height, 0.0f, 1.0f);
+			// Initialize (or reinitialize) the target.
+			_target.InitializeSwapChain(this);
 
 			GorgonRenderStatistics.RenderTargetCount++;
-			GorgonRenderStatistics.RenderTargetSize += (Texture.SizeInBytes * Settings.BufferCount);
+			GorgonRenderStatistics.RenderTargetSize += ((GorgonTexture2D)_target).SizeInBytes * Settings.BufferCount;
 
 			// Re-seat the target.
 			Graphics.Output.RenderTargets.ReSeat(this);
@@ -326,13 +346,16 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		private void ResizeBuffers()
 		{
-			ReleaseResources();
+			_target.CleanUp();
 			var flags = GI.SwapChainFlags.AllowModeSwitch;
 
 			GISwapChain.ResizeBuffers(Settings.BufferCount, Settings.VideoMode.Width, Settings.VideoMode.Height, (GI.Format)Settings.VideoMode.Format, flags);
 			CreateResources();
 
-			OnTargetResize(new GorgonSwapChainResizedEventArgs(this));
+			if (Resized != null)
+			{
+				Resized(this, new GorgonSwapChainResizedEventArgs(this));
+			}
 		}
 
 		/// <summary>
@@ -446,7 +469,7 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Function to force clean up.
 		/// </summary>
-		protected override void CleanUp()
+		private void CleanUp()
 		{
 			Settings.Window.ParentChanged -= Window_ParentChanged;
 
@@ -458,7 +481,11 @@ namespace GorgonLibrary.Graphics
 
 			Settings.Window.Resize -= new EventHandler(Window_Resize);
 
-			ReleaseResources();
+			if (_target != null)
+			{
+				_target.Dispose();
+				_target = null;
+			}
 
 			Gorgon.Log.Print("GorgonSwapChain '{0}': Removing D3D11 swap chain...", Diagnostics.LoggingLevel.Simple, Name);
 			if (GISwapChain != null)
@@ -591,7 +618,7 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Function to intialize the swap chain.
 		/// </summary>
-		protected internal override void Initialize()
+		internal void Initialize()
 		{
 			var flags = GI.SwapChainFlags.AllowModeSwitch;
 			var d3dSettings = new GI.SwapChainDescription();
@@ -627,17 +654,59 @@ namespace GorgonLibrary.Graphics
 
 			if (!Settings.IsWindowed)
 			{
-				flags |= GI.SwapChainFlags.Nonprerotated;
-			}
-
-			if (!Settings.IsWindowed)
-			{
 				ModeStateUpdate();
 			}
 
 			CreateResources();
 
 			Settings.Window.Resize += new EventHandler(Window_Resize);
+		}
+
+		/// <summary>
+		/// Function to clear the swap chain and any depth buffer attached to it.
+		/// </summary>
+		/// <param name="color">Color used to clear the swap chain.</param>
+		/// <remarks>This will only clear the swap chain.  Any attached depth/stencil buffer will remain untouched.</remarks>
+		public void Clear(GorgonColor color)
+		{
+			Graphics.Context.ClearRenderTargetView(_target.D3DRenderTarget, color.SharpDXColor4);
+		}
+
+		/// <summary>
+		/// Function to clear the swap chain and an associated depth buffer.
+		/// </summary>
+		/// <param name="color">Color used to clear the swap chain.</param>
+		/// <param name="depthValue">Value used to fill the depth buffer.</param>
+		/// <remarks>This will clear the swap chain and depth buffer, but depth buffers with a stencil component will remain untouched.</remarks>
+		public void Clear(GorgonColor color, float depthValue)
+		{
+			Clear(color);
+
+			if ((DepthStencil != null) && (DepthStencil.FormatInformation.HasDepth))
+				DepthStencil.ClearDepth(depthValue);
+		}
+
+		/// <summary>
+		/// Function to clear the swap chain and an associated depth buffer with a stencil component.
+		/// </summary>
+		/// <param name="color">Color used to clear the swap chain.</param>
+		/// <param name="depthValue">Value used to fill the depth buffer.</param>
+		/// <param name="stencilValue">Value used to fill the stencil component of the depth buffer.</param>
+		/// <remarks>This will clear the swap chain, depth buffer and stencil component of the depth buffer.</remarks>
+		public void Clear(GorgonColor color, float depthValue, int stencilValue)
+		{
+			if ((DepthStencil != null) && (DepthStencil.FormatInformation.HasDepth) && (!DepthStencil.FormatInformation.HasStencil))
+			{
+				Clear(color, depthValue);
+				return;
+			}
+
+			Clear(color);
+
+			if ((DepthStencil != null) && (DepthStencil.FormatInformation.HasDepth) && (DepthStencil.FormatInformation.HasStencil))
+			{
+				DepthStencil.Clear(depthValue, stencilValue);
+			}
 		}
 
 		/// <summary>
@@ -808,6 +877,46 @@ namespace GorgonLibrary.Graphics
 		{
 			Flip(0);
 		}
+
+		/// <summary>
+		/// Function to convert the swap chain to a 2D texture.
+		/// </summary>
+		/// <param name="swapChain">Swap chain to convert.</param>
+		/// <returns>The 2D texture bound to the swap chain.</returns>
+		public static GorgonTexture2D ToTexture2D(GorgonSwapChain swapChain)
+		{
+			return (swapChain == null || swapChain._target == null) ? null : swapChain._target;
+		}
+
+		/// <summary>
+		/// Operator to convert the swap chain to a render target.
+		/// </summary>
+		/// <param name="swapChain">The swap chain to convert.</param>
+		/// <returns>The render target bound to the swap chain.</returns>
+		public static implicit operator GorgonTexture2D(GorgonSwapChain swapChain)
+		{
+			return ToTexture2D(swapChain);
+		}
+
+		/// <summary>
+		/// Function to convert the swap chain to a render target.
+		/// </summary>
+		/// <param name="swapChain">Swap chain to convert.</param>
+		/// <returns>The render target bound to the swap chain.</returns>
+		public static GorgonRenderTarget2D ToRenderTarget2D(GorgonSwapChain swapChain)
+		{
+			return swapChain == null ? null : swapChain._target;
+		}
+
+		/// <summary>
+		/// Operator to convert the swap chain to a render target.
+		/// </summary>
+		/// <param name="swapChain">The swap chain to convert.</param>
+		/// <returns>The render target bound to the swap chain.</returns>
+		public static implicit operator GorgonRenderTarget2D(GorgonSwapChain swapChain)
+		{
+			return ToRenderTarget2D(swapChain);
+		}
 		#endregion
 
 		#region Constructor/Destructor.
@@ -817,16 +926,48 @@ namespace GorgonLibrary.Graphics
 		/// <param name="graphics">Graphics interface that owns this swap chain.</param>
 		/// <param name="name">The name of the swap chain.</param>
 		/// <param name="settings">Settings for the swap chain.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (Nothing in VB.Net).</exception>
-		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="name"/> parameter is an empty string.</exception>
 		internal GorgonSwapChain(GorgonGraphics graphics, string name, GorgonSwapChainSettings settings)
-			: base(graphics, name, settings)
+			: base(name)
 		{
+			Graphics = graphics;
+			Settings = settings;
+
 			// Get the parent form for our window.
 			_parentForm = Gorgon.GetTopLevelForm(settings.Window);
 			settings.Window.ParentChanged += Window_ParentChanged;
 
 			AutoResize = true;
+		}
+		#endregion
+
+		#region IDisposable Members
+		/// <summary>
+		/// Releases unmanaged and - optionally - managed resources
+		/// </summary>
+		/// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
+		private void Dispose(bool disposing)
+		{
+			if (_disposed)
+			{
+				return;
+			}
+
+			if (disposing)
+			{
+				CleanUp();
+			}
+
+			Graphics = null;
+			_disposed = true;
+		}
+
+		/// <summary>
+		/// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+		/// </summary>
+		public void Dispose()
+		{
+			Dispose(true);
+			GC.SuppressFinalize(this);
 		}
 		#endregion
 	}

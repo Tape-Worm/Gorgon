@@ -161,7 +161,6 @@ namespace GorgonLibrary.Renderers
 		private bool _useCache = true;													// Flag to indicate that we want to use the cache.
 		private bool _disposed;															// Flag to indicate that the object was disposed.
 		private int _cacheSize = 32768;													// Number of vertices that we can stuff into a vertex buffer.
-		private GorgonRenderTarget _target;												// Current render target.	
 		private GorgonInputLayout _layout;												// Input layout.
 		private bool _multiSampleEnable;												// Flag to indicate that multi sampling is enabled.
 		private GorgonViewport? _viewPort;												// Viewport to use.
@@ -486,17 +485,17 @@ namespace GorgonLibrary.Renderers
 		{
 			get
 			{
-				return _target ?? DefaultTarget;
+				return Graphics.Output.RenderTargets[0] ?? DefaultTarget;
 			}
 			set
 			{
-				if (_target != value)
+				if (Graphics.Output.RenderTargets[0] == value)
 				{
-					RenderObjects();
-
-					_target = value;
-					UpdateTarget();
+					return;
 				}
+
+				RenderObjects();
+				UpdateTarget(value ?? DefaultTarget);
 			}
 		}
 
@@ -545,16 +544,29 @@ namespace GorgonLibrary.Renderers
 		/// <summary>
 		/// Function to update the current render target.
 		/// </summary>
-		private void UpdateTarget()
+		/// <param name="target">The target being bound.</param>
+		private void UpdateTarget(GorgonRenderTarget target)
 		{
-			// Remove any previous handler.
-			if (Target != null)
-				Target.Resized -= new EventHandler<GorgonRenderTargetResizedEventArgs>(target_Resized);
-
 			// Find out if the target is a swap chain.
-			_swapChain = Target as GorgonSwapChain;
+			_swapChain = null;
+			var target2D = Target as GorgonRenderTarget2D;
+			if (target2D != null)
+			{
+				_swapChain = (GorgonSwapChain)target2D;
+			}
 
-			Graphics.Output.RenderTargets[0] = Target;
+			// Remove any previous handler.
+			if (_swapChain != null)
+				_swapChain.Resized -= new EventHandler<GorgonSwapChainResizedEventArgs>(target_Resized);
+
+			Graphics.Output.RenderTargets[0] = target;
+
+			// If this is a swap chain, then bind the resizing code to it.
+			target2D = target as GorgonRenderTarget2D;
+			if (target2D != null)
+			{
+				_swapChain = (GorgonSwapChain)target2D;
+			}
 
 			// Update our default camera.
 			// User cameras will need to be updated by the user on a resize or target change.
@@ -574,8 +586,8 @@ namespace GorgonLibrary.Renderers
 				Graphics.Rasterizer.SetViewport(_viewPort.Value);
 
 			// Re-assign the event.
-			if (Target != null)
-				Target.Resized += new EventHandler<GorgonRenderTargetResizedEventArgs>(target_Resized);
+			if (_swapChain != null)
+				_swapChain.Resized += new EventHandler<GorgonSwapChainResizedEventArgs>(target_Resized);
 		}
 
 		/// <summary>
@@ -583,9 +595,9 @@ namespace GorgonLibrary.Renderers
 		/// </summary>
 		/// <param name="sender">Object that sent the event.</param>
 		/// <param name="e">Event parameters.</param>
-		private void target_Resized(object sender, GorgonRenderTargetResizedEventArgs e)
+		private void target_Resized(object sender, GorgonSwapChainResizedEventArgs e)
 		{
-			UpdateTarget();
+			UpdateTarget(_swapChain);
 		}
 
 		/// <summary>
@@ -593,10 +605,11 @@ namespace GorgonLibrary.Renderers
 		/// </summary>
 		internal void Initialize()
 		{
-			string shaderSource = Encoding.UTF8.GetString(Properties.Resources.BasicSprite);
-			
 			// Create the default projection matrix.
-			Target.Resized -= target_Resized;
+			if (_swapChain != null)
+			{
+				_swapChain.Resized -= target_Resized;
+			}
 
 			// Create constant buffers.
 			if (ProjectionViewBuffer == null)
@@ -935,7 +948,7 @@ namespace GorgonLibrary.Renderers
 
 			StateManager.GetDefaults();
 
-			UpdateTarget();
+			UpdateTarget(DefaultTarget);
 		}
 
 		/// <summary>
@@ -1044,7 +1057,7 @@ namespace GorgonLibrary.Renderers
 			Rectangle? previousClip = _clip;
 
 			// Only draw the logo when we're flipping, and we're on the default target and the default target is a swap chain.
-			if ((flip) && (IsLogoVisible) && (_swapChain != null) && (_swapChain == DefaultTarget))
+			if ((flip) && (IsLogoVisible) && (_swapChain != null) && (Target == DefaultTarget))
 			{
 				// Reset any view/projection/clip/viewport.
 				if (_camera != null)
@@ -1132,7 +1145,13 @@ namespace GorgonLibrary.Renderers
 			TrackedObjects = new GorgonDisposableObjectCollection();
 			Graphics = target.Graphics;
 			DefaultTarget = target;
-			_swapChain = target as GorgonSwapChain;
+
+			var target2D = target as GorgonRenderTarget2D;
+
+			if (target2D != null)
+			{
+				_swapChain = (GorgonSwapChain)target2D;
+			}
 
 			Icons = Graphics.Textures.Create2DTextureFromGDIImage("Gorgon2D.Icons", Properties.Resources.Icons);
 			_logoSprite = new GorgonSprite(this, "Gorgon2D.LogoSprite", new GorgonSpriteSettings()
@@ -1168,8 +1187,8 @@ namespace GorgonLibrary.Renderers
 
 					TrackedObjects.ReleaseAll();
 
-					if (Target != null)
-						Target.Resized -= new EventHandler<GorgonRenderTargetResizedEventArgs>(target_Resized);
+					if (_swapChain != null)
+						_swapChain.Resized -= new EventHandler<GorgonSwapChainResizedEventArgs>(target_Resized);
 
 					if (_layout != null)
 						_layout.Dispose();
