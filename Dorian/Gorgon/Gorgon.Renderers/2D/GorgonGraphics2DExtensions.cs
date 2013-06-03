@@ -128,7 +128,7 @@ namespace GorgonLibrary.Graphics
 				Window = window
 			});
 
-			return Create2DRenderer(graphics, swapChain, true);
+			return Create2DRenderer(graphics, swapChain.RenderTarget, true);
 		}
 
 		/// <summary>
@@ -140,7 +140,9 @@ namespace GorgonLibrary.Graphics
 		/// <returns>A new 2D graphics interface.</returns>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="target"/> parameter is NULL (Nothing in VB.Net).</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the target was not created by the same graphics interface as the one creating the 2D interface.</exception>
+        // ReSharper disable UnusedParameter.Local
 		private static Gorgon2D Create2DRenderer(this GorgonOutputMerger graphics, GorgonRenderTarget target, bool systemCreatedSwap)
+        // ReSharper restore UnusedParameter.Local
 		{
 			Gorgon2D result = null;
 
@@ -154,6 +156,19 @@ namespace GorgonLibrary.Graphics
 
 			return result;
 		}
+
+        /// <summary>
+        /// Function to create a new 2D renderer interface.
+        /// </summary>
+        /// <param name="graphics">Graphics interface used to create the 2D interface.</param>
+        /// <param name="target">Default target swap chain to use for the renderer.</param>
+        /// <returns>A new 2D graphics interface.</returns>
+        /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="target"/> parameter is NULL (Nothing in VB.Net).</exception>
+        /// <exception cref="System.ArgumentException">Thrown when the target was not created by the same graphics interface as the one creating the 2D interface.</exception>
+        public static Gorgon2D Create2DRenderer(this GorgonOutputMerger graphics, GorgonSwapChain target)
+        {
+            return Create2DRenderer(graphics, target.RenderTarget, false);
+        }
 
 		/// <summary>
 		/// Function to create a new 2D renderer interface.

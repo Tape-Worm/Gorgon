@@ -267,7 +267,7 @@ namespace GorgonLibrary.Graphics.Test
 														   IsWindowed = true
 													   });
 
-			Graphics.Output.RenderTargets[0] = Screen;
+			Graphics.Output.RenderTargets[0] = Screen.RenderTarget;
 		}
 		#endregion
 

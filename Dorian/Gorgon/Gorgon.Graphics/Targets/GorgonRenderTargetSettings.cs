@@ -160,7 +160,7 @@ namespace GorgonLibrary.Graphics
         /// <remarks>If this value is set to Unknown, then no default depth/stencil will be created for the render target.  
         /// <para>If a more complex depth/stencil (e.g. a depth/stencil with shader access) is required, then leave this value set to Unknown, 
         /// create a new <see cref="GorgonLibrary.Graphics.GorgonDepthStencil">GorgonDepthStencil</see> buffer and attach it to the render 
-        /// targets <see cref="GorgonLibrary.Graphics.GorgonRenderTarget.DepthStencil">DepthStencil</see> property.</para>
+        /// targets <see cref="GorgonLibrary.Graphics.GorgonRenderTarget.DepthStencilBuffer">DepthStencil</see> property.</para>
         /// </remarks>
         BufferFormat DepthStencilFormat
         {

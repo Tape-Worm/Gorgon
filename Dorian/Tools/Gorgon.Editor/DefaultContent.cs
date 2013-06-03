@@ -181,8 +181,7 @@ namespace GorgonLibrary.Editor
 			SizeF logoSize = _logo.Settings.Size;
 			float aspect = 0.0f;
 						
-			//_2D.Clear(_container.BackColor);
-			_2D.Clear(Color.FromArgb(255, 255,0, 255));
+			_2D.Clear(_container.BackColor);
 
 			logoSize.Height = 256;
 

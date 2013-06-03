@@ -474,16 +474,16 @@ namespace GorgonLibrary.Graphics.Example
 			    {
 				RenderTarget0 = new GorgonRenderTargetBlendState
 				    {
-					AlphaOperation = BlendOperation.Add,
-					DestinationAlphaBlend = BlendType.Zero,
-					BlendingOperation = BlendOperation.Add,
-					DestinationBlend = BlendType.InverseSourceAlpha,
-					IsBlendingEnabled = true,
-					SourceAlphaBlend = BlendType.One,
-					SourceBlend = BlendType.SourceAlpha,
-					WriteMask = ColorWriteMaskFlags.All
-				}
-			};
+					    AlphaOperation = BlendOperation.Add,
+					    DestinationAlphaBlend = BlendType.Zero,
+					    BlendingOperation = BlendOperation.Add,
+					    DestinationBlend = BlendType.InverseSourceAlpha,
+					    IsBlendingEnabled = true,
+					    SourceAlphaBlend = BlendType.One,
+					    SourceBlend = BlendType.SourceAlpha,
+					    WriteMask = ColorWriteMaskFlags.All
+				    }
+    			};
 
 
 			// Turn on depth writing.
@@ -492,11 +492,11 @@ namespace GorgonLibrary.Graphics.Example
 			// problematic....
 			_depth = new GorgonDepthStencilStates
 			    {
-				DepthComparison = ComparisonOperators.LessEqual,
-				IsDepthEnabled = true,
-				IsDepthWriteEnabled = true,
-				IsStencilEnabled = false
-			};
+				    DepthComparison = ComparisonOperators.LessEqual,
+				    IsDepthEnabled = true,
+				    IsDepthWriteEnabled = true,
+				    IsStencilEnabled = false
+			    };
 
 			// Turn off depth writing.
 			// So, we copy the depth state and turn off depth writing so that translucent objects 
@@ -507,7 +507,7 @@ namespace GorgonLibrary.Graphics.Example
 
 			// Finally bind our swap chain and set up the default
 			// rasterizer states.
-			Graphics.Output.RenderTargets[0] = _swap;
+			Graphics.Output.RenderTargets[0] = _swap.RenderTarget;
 			Graphics.Rasterizer.States = GorgonRasterizerStates.DefaultStates;
 			Graphics.Rasterizer.SetViewport(view);
 

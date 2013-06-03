@@ -597,7 +597,7 @@ namespace GorgonLibrary.Renderers
 		/// <param name="e">Event parameters.</param>
 		private void target_Resized(object sender, GorgonSwapChainResizedEventArgs e)
 		{
-			UpdateTarget(_swapChain);
+			UpdateTarget(_swapChain.RenderTarget);
 		}
 
 		/// <summary>
@@ -988,8 +988,8 @@ namespace GorgonLibrary.Renderers
 				return;
 			}
 
-			if (Target.DepthStencil != null)
-				Target.DepthStencil.Clear(depth, stencil);
+			if (Target.DepthStencilBuffer != null)
+				Target.DepthStencilBuffer.Clear(depth, stencil);
 
 			Drawing.FilledRectangle(new RectangleF(0, 0, Target.Settings.Width, Target.Settings.Height), color);
 		}
