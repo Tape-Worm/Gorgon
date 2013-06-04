@@ -136,60 +136,20 @@ namespace GorgonLibrary.Graphics
         /// Function to re-seat a shader resource after it's been altered.
         /// </summary>
         /// <param name="resource">Shader resource to re-seat.</param>
-        internal void Reseat(GorgonTexture resource)
+        internal void Reseat(GorgonResource resource)
         {
             PixelShader.Resources.ReSeat(resource);
             VertexShader.Resources.ReSeat(resource);
         }
-
-		/// <summary>
-		/// Function to re-seat a shader resource after it's been altered.
-		/// </summary>
-		/// <param name="resource">Shader resource to re-seat.</param>
-		internal void Reseat(GorgonBaseBuffer resource)
-		{
-			PixelShader.Resources.ReSeat(resource);
-			VertexShader.Resources.ReSeat(resource);
-		}
-
-        /// <summary>
-        /// Function to re-seat a shader resource after it's been altered.
-        /// </summary>
-        /// <param name="view">The view to re-seat.</param>
-        internal void Reseat(GorgonShaderView view)
-        {
-            PixelShader.Resources.ReSeat(view);
-            VertexShader.Resources.ReSeat(view);
-        }
-
+        
         /// <summary>
         /// Function to unbind a shader resource from all shaders.
         /// </summary>
         /// <param name="resource">Shader resource to unbind.</param>
-        internal void Unbind(GorgonTexture resource)
+        internal void Unbind(GorgonResource resource)
         {
             PixelShader.Resources.Unbind(resource);
             VertexShader.Resources.Unbind(resource);
-        }
-
-		/// <summary>
-		/// Function to unbind a shader resource from all shaders.
-		/// </summary>
-		/// <param name="resource">Shader resource to unbind.</param>
-		internal void Unbind(GorgonBaseBuffer resource)
-		{
-			PixelShader.Resources.Unbind(resource);
-			VertexShader.Resources.Unbind(resource);
-		}
-
-        /// <summary>
-        /// Function to unbind a shader resource from all shaders.
-        /// </summary>
-        /// <param name="view">View to unbind.</param>
-        internal void Unbind(GorgonShaderView view)
-        {
-            PixelShader.Resources.Unbind(view);
-            VertexShader.Resources.Unbind(view);
         }
 
 		/// <summary>

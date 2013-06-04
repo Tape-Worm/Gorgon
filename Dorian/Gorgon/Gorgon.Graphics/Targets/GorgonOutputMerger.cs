@@ -39,6 +39,667 @@ namespace GorgonLibrary.Graphics
 	/// </summary>
 	public sealed class GorgonOutputMerger
 	{
+        /// <summary>
+        /// A list of render targets bound to the pipeline.
+        /// </summary>
+        /// <remarks>This list contains 8 slots for SM4 and better devices.  For SM2_a_b devices only 4 slots are available.</remarks>
+        public sealed class RenderTargetList2
+            : ICollection<GorgonRenderTargetView>
+        {
+            #region Variables.
+            private GorgonGraphics _graphics;                           // Containing graphics interface.
+            private D3D.RenderTargetView[] _D3Dviews;                   // List of Direct 3D views.
+            private GorgonRenderTargetView[] _views;                    // List of views.
+            private GorgonDepthStencil _depthStencil;                   // The current depth/stencil buffer.
+            #endregion
+
+            #region Properties.
+            /// <summary>
+            /// Property to set or return the current depth/stencil buffer.
+            /// </summary>
+            /// <remarks>
+            /// This will bind a single depth/stencil buffer for all the render targets.  The depth/stencil buffer must use the same type of resource, and that resource must be a texture 
+            /// (i.e. a 1D or 2D texture), and if the targets are multisampled, then the depth buffer must also be multisampled.  The depth/stencil buffer must also have the same number of array 
+            /// indices and mip levels as the render target texture and it also must be the same width and height (for 2D textures).  If these conditions are not met, then an exception will be thrown.
+            /// </remarks>
+            /// <exception cref="GorgonLibrary.GorgonException">Thrown when the depth/stencil buffer could not be bound to the pipeline.</exception>
+            public GorgonDepthStencil DepthStencilBuffer
+            {
+                get
+                {
+                    return _depthStencil;
+                }
+                set
+                {
+#if DEBUG
+                    ValidateDepthBuffer(value);
+#endif
+                    _depthStencil = value;
+                    BindResources();
+                }
+            }
+            #endregion
+
+            #region Methods.
+#if DEBUG
+            /// <summary>
+            /// Function to validate the depth buffer.
+            /// </summary>
+            /// <param name="depthStencil">The depth/stencil buffer to validate.</param>
+            private void ValidateDepthBuffer(GorgonDepthStencil depthStencil)
+            {
+                if (depthStencil == null)
+                {
+                    return;
+                }
+
+                foreach (var view in _views.Where(item => item != null))
+                {
+                    if ((view.Resource.ResourceType != ResourceType.Texture1D)
+                        && (view.Resource.ResourceType != ResourceType.Texture2D))
+                    {
+                        throw new GorgonException(GorgonResult.CannotBind,
+                                                  string.Format(Resources.GORGFX_RTV_DEPTH_RT_TYPE_INVALID,
+                                                      view.Resource.ResourceType));
+                    }
+
+                    if ((view.Resource.ResourceType != depthStencil.Texture.ResourceType))
+                    {
+                        throw new GorgonException(GorgonResult.CannotBind,
+                                                  string.Format(Resources.GORGFX_RTV_DEPTH_RESOURCE_TYPE_INVALID,
+                                                      view.Resource.ResourceType,
+                                                      depthStencil.Texture.ResourceType));
+                    }
+
+                    var resTexture = view.Resource as GorgonTexture;
+
+                    if (resTexture == null)
+                    {
+                        continue;
+                    }
+
+                    if (depthStencil.Texture.Settings.ArrayCount != resTexture.Settings.ArrayCount)
+                    {
+                        throw new GorgonException(GorgonResult.CannotBind,
+                                                  string.Format(Resources.GORGFX_RTV_DEPTH_ARRAYCOUNT_MISMATCH,
+                                                      resTexture.Name));
+                    }
+
+                    if (depthStencil.Texture.Settings.MipCount != resTexture.Settings.MipCount)
+                    {
+                        throw new GorgonException(GorgonResult.CannotBind,
+                                                  string.Format(Resources.GORGFX_RTV_DEPTH_MIPCOUNT_MISMATCH,
+                                                      resTexture.Name));
+                    }
+
+                    if ((depthStencil.Settings.MultiSample.Count != resTexture.Settings.Multisampling.Count) 
+                        || (depthStencil.Settings.MultiSample.Quality != resTexture.Settings.Multisampling.Quality))
+                    {
+                        throw new GorgonException(GorgonResult.CannotBind,
+                                                  string.Format(Resources.GORGFX_RTV_DEPTH_MULTISAMPLE_MISMATCH,
+                                                      resTexture.Name, resTexture.Settings.Multisampling.Count, resTexture.Settings.Multisampling.Quality,
+                                                      depthStencil.Texture.Settings.Multisampling.Count, depthStencil.Texture.Settings.Multisampling.Quality));
+                    }
+                }
+            }
+
+            /// <summary>
+            /// Function to validate a render target.
+            /// </summary>
+            /// <param name="view">View to validate.</param>
+            /// <param name="slot">Slot being bound.</param>
+            private void ValidateRenderTarget(GorgonRenderTargetView view, int slot)
+            {
+                if (view == null)
+                {
+                    return;
+                }
+
+                var viewTexture = view.Resource as GorgonTexture;
+                var viewBuffer = view.Resource as GorgonBuffer;
+
+                // This should never happen.
+                if ((viewTexture == null) && (viewBuffer == null))
+                {
+                    // Don't bother to localize this guy, this is for developers.  It'll happen if we modify the render target type but don't
+                    // handle related code.
+                    throw new GorgonException(GorgonResult.CannotBind, "View is bound to an unknown resource type.  That shouldn't happen.");
+                }
+
+                for (int i = 0; i < _views.Length; i++)
+                {
+                    var target = _views[i];
+
+                    if (target == null)
+                    {
+                        continue;
+                    }
+
+                    if ((view == target) && (slot != i))
+                    {
+                        throw new GorgonException(GorgonResult.CannotBind, string.Format(Resources.GORGFX_RTV_ALREADY_BOUND, view.Resource.Name, i));
+                    }
+
+                    if ((_graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM2_a_b) 
+                        && (target.Format != view.Format) 
+                        && (GorgonBufferFormatInfo.GetInfo(target.Format).BitDepth != GorgonBufferFormatInfo.GetInfo(view.Format).BitDepth))
+                    {
+                        throw new GorgonException(GorgonResult.CannotBind,string.Format(Resources.GORGFX_RTV_BIT_DEPTH_MISMATCH,
+                                                      view.Resource.Name));
+                    }
+
+                    if (target.Resource.ResourceType != view.Resource.ResourceType)
+                    {
+                        throw new GorgonException(GorgonResult.CannotBind,
+                                                  string.Format(Resources.GORGFX_RTV_RESOURCE_TYPE_MISMATCH,
+                                                      view.Resource.Name, target.Resource.ResourceType, view.Resource.ResourceType));
+                    }
+
+                    // Check for texture specific constraints.
+                    if (viewTexture != null)
+                    {
+                        var targetTexture = (GorgonTexture)target.Resource;
+
+                        if (targetTexture.Settings.ArrayCount != viewTexture.Settings.ArrayCount)
+                        {
+                            throw new GorgonException(GorgonResult.CannotBind, string.Format(Resources.GORGFX_RTV_ARRAY_COUNT_MISMATCH,
+                                                            view.Resource.Name, viewTexture.Settings.ArrayCount, targetTexture.Settings.ArrayCount));
+                        }
+
+                        if (targetTexture.Settings.MipCount != viewTexture.Settings.MipCount)
+                        {
+                            throw new GorgonException(GorgonResult.CannotBind, string.Format(Resources.GORGFX_RTV_MIP_COUNT_MISMATCH,
+                                                            view.Resource.Name, viewTexture.Settings.MipCount, targetTexture.Settings.MipCount));
+                        }
+
+                        if ((targetTexture.Settings.Width != viewTexture.Settings.Width)
+                            || (targetTexture.Settings.Height != viewTexture.Settings.Height)
+                            || (targetTexture.Settings.Depth != viewTexture.Settings.Depth))
+                        {
+                            throw new GorgonException(GorgonResult.CannotBind, string.Format(Resources.GORGFX_RTV_DIMENSIONS_MISMATCH,
+                                                        view.Resource.Name, viewTexture.Settings.Width, viewTexture.Settings.Height, viewTexture.Settings.Depth,
+                                                        targetTexture.Settings.Width, targetTexture.Settings.Height, targetTexture.Settings.Depth));
+                        }
+
+                        if ((targetTexture.Settings.Multisampling.Count != viewTexture.Settings.Multisampling.Count)
+                            || (targetTexture.Settings.Multisampling.Quality != viewTexture.Settings.Multisampling.Quality))
+                        {
+                            throw new GorgonException(GorgonResult.CannotBind, string.Format(Resources.GORGFX_RTV_MULTISAMPLE_MISMATCH,
+                                                          view.Resource.Name, viewTexture.Settings.Multisampling.Count, viewTexture.Settings.Multisampling.Quality,
+                                                          targetTexture.Settings.Multisampling.Count, targetTexture.Settings.Multisampling.Quality));
+                        }
+                    }
+
+                    if (viewBuffer == null)
+                    {
+                        continue;
+                    }
+
+                    var targetBuffer = (GorgonBuffer)target.Resource;
+
+                    if (targetBuffer.Settings.SizeInBytes != viewBuffer.Settings.SizeInBytes)
+                    {
+                        throw new GorgonException(GorgonResult.CannotBind, string.Format(Resources.GORGFX_RTV_BUFFER_SIZE_MISMATCH,
+                            view.Resource.Name, viewBuffer.SizeInBytes, targetBuffer.SizeInBytes));
+                    }
+                }
+            }
+#endif
+            /// <summary>
+            /// Function to perform the binding of the targets.
+            /// </summary>
+            private void BindResources()
+            {
+                D3D.DepthStencilView depthView = _depthStencil == null ? null : _depthStencil.D3DDepthStencilView;
+
+                _graphics.Context.OutputMerger.SetTargets(depthView, _D3Dviews);
+            }
+
+            /// <summary>
+            /// Function re-seat a render target.
+            /// </summary>
+            /// <param name="target">Target to reseat.</param>
+            internal void Reseat(GorgonResource target)
+            {
+                var views = _views.Where(item => item != null && item.Resource == target);
+
+                foreach (var view in views)
+                {
+                    int index = IndexOf(view);
+
+                    if (index == -1)
+                    {
+                        continue;
+                    }
+
+                    SetView(index, null);
+                    SetView(index, view);
+                }
+            }
+
+            /// <summary>
+            /// Function to unbind a render target.
+            /// </summary>
+            /// <param name="target">Target to unbind.</param>
+            internal void Unbind(GorgonResource target)
+            {
+                var indices =
+                    _views.Where(item => item != null && item.Resource == target)
+                          .Select(IndexOf)
+                          .Where(item => item != -1);
+
+                foreach (int index in indices)
+                {
+                    SetView(index, null);
+                }
+            }
+
+            /// <summary>
+            /// Determines the index of a specific item in the <see cref="T:System.Collections.Generic.IList`1"></see>.
+            /// </summary>
+            /// <param name="item">The object to locate in the <see cref="T:System.Collections.Generic.IList`1"></see>.</param>
+            /// <returns>
+            /// The index of item if found in the list; otherwise, -1.
+            /// </returns>
+            /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="item"/> parameter is NULL (Nothing in VB.Net).</exception>
+            public int IndexOf(GorgonRenderTargetView item)
+            {
+                if (item == null)
+                {
+                    throw new ArgumentNullException("item");
+                }
+
+                return Array.IndexOf(_views, item);
+            }
+
+            /// <summary>
+            /// Function to determine the index of a view with a resource that has the specified name.
+            /// </summary>
+            /// <param name="name">Name of the resource to find.</param>
+            /// <returns>The index of the view, or -1 if not found.</returns>
+            /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (Nothing in VB.Net).</exception>
+            /// <exception cref="System.ArgumentException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
+            public int IndexOf(string name)
+            {
+                if (name == null)
+                {
+                    throw new ArgumentNullException("name");
+                }
+
+                if (string.IsNullOrWhiteSpace(name))
+                {
+                    throw new ArgumentException(Resources.GORGFX_PARAMETER_MUST_NOT_BE_EMPTY, "name");
+                }
+
+                for (int i = 0; i < _views.Length; i++)
+                {
+                    if ((_views[i] != null) 
+                        && (string.Compare(_views[i].Resource.Name, name, StringComparison.OrdinalIgnoreCase) == 0))
+                    {
+                        return i;
+                    }
+                }
+
+                return -1;
+            }
+
+            // TODO: Add an overload for each render target type.
+            /// <summary>
+            /// Function to determine the index of a view that is attached to the specific render target view.
+            /// </summary>
+            /// <param name="target">Target to look up.</param>
+            /// <returns>The index of the view, or -1 if not found.</returns>
+            /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="target"/> parameter is NULL (Nothing in VB.Net).</exception>
+            public int IndexOf(GorgonRenderTarget2D target)
+            {
+                if (target == null)
+                {
+                    throw new ArgumentNullException("target");
+                }
+
+                for (int i = 0; i < _views.Length; i++)
+                {
+                    // TODO: RenderTarget2D will inherit from GorgonTexture2D.
+                    //if ((_views[i] != null) && (_views[i].Resource == target))
+                    {
+                        return i;
+                    }
+                }
+
+                return -1;
+            }
+
+            /// <summary>
+            /// Function to return whether a resource with the specified name has a view bound to the pipeline.
+            /// </summary>
+            /// <param name="name">Name of the resource.</param>
+            /// <returns>TRUE if found, FALSE if not.</returns>
+            /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (Nothing in VB.Net).</exception>
+            /// <exception cref="System.ArgumentException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
+            public bool Contains(string name)
+            {
+                return IndexOf(name) > -1;
+            }
+
+            // TODO: Add an overload for each render target type.
+            /// <summary>
+            /// Function to return whether a render target has a view that is bound to the pipeline.
+            /// </summary>
+            /// <param name="target">Target to look up.</param>
+            /// <returns>TRUE if found, FALSE if not.</returns>
+            /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="target"/> parameter is NULL (Nothing in VB.Net).</exception>
+            public bool Contains(GorgonRenderTarget2D target)
+            {
+                return IndexOf(target) > -1;
+            }
+
+            /// <summary>
+            /// Function to set a render target view into a slot.
+            /// </summary>
+            /// <param name="slot">Slot index to set.</param>
+            /// <param name="view">View to set.</param>
+            public void SetView(int slot, GorgonRenderTargetView view)
+            {
+                GorgonDebug.AssertParamRange(slot, 0, _views.Length, true, false, "startIndex");
+
+                // Don't set the same target.
+                if (view == _views[slot])
+                {
+                    return;
+                }
+
+#if DEBUG
+                ValidateRenderTarget(view, slot);
+#endif
+
+                _views[slot] = view;
+                _D3Dviews[slot] = view == null ? null : view.D3DView;
+                BindResources();
+            }
+
+            /// <summary>
+            /// Function to return a render target view from the specified slot.
+            /// </summary>
+            /// <param name="slot">Slot containing the view to return.</param>
+            /// <returns>The view in the specified slot, or NULL (Nothing in VB.Net) if there was not view bound to the slot.</returns>
+            /// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="slot"/> parameter is less than 0 or not less than the number of slots available.</exception>
+            public GorgonRenderTargetView GetView(int slot)
+            {
+                if ((slot < 0)
+                    || (slot >= _views.Length))
+                {
+                    throw new ArgumentOutOfRangeException("slot");
+                }
+
+                return _views[slot];
+            }
+
+            /// <summary>
+            /// Function to bind a series of render target views to the pipeline.
+            /// </summary>
+            /// <param name="slot">Slot to start binding at.</param>
+            /// <param name="views">The views to bind.</param>
+            /// <remarks>Use this to set a series of render target views all at the same time.  If the <paramref name="views"/> parameter is NULL (Nothing in VB.Net) then all render targets and 
+            /// the depth/stencil buffer will be unbound from the pipeline.</remarks>
+            /// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="slot"/> parameter is less than 0 or not less than the number of available slots.</exception>
+            /// <exception cref="GorgonLibrary.GorgonException">Thrown when one or all of the views in the <paramref name="views"/> parameter can't be bound.</exception>
+            public void SetRange(int slot, GorgonRenderTargetView[] views)
+            {
+                bool hasChanges = false;
+                int count = _views.Length - slot;
+
+                GorgonDebug.AssertParamRange(slot, 0, _views.Length, true, false, "startIndex");
+
+                if (views != null)
+                {
+                    count = views.Length.Min(_views.Length);
+                }
+                else
+                {
+                    // If we're setting nothing, then unbind the depth/stencil as well.
+                    _depthStencil = null;
+                }
+
+                for (int i = 0; i < count; i++)
+                {
+                    GorgonRenderTargetView target = null;
+                    int targetIndex = i + slot;
+
+                    if (views != null)
+                    {
+                        target = views[i];
+                    }
+
+                    if (target == _views[targetIndex])
+                    {
+                        continue;
+                    }
+
+#if DEBUG
+                    ValidateRenderTarget(target, i);
+#endif
+
+                    hasChanges = true;
+                    _views[targetIndex] = target;
+                    // Unlike the other set functions that take arrays, this one is an all-or-nothing approach.  So, targets that aren't set in the array
+                    // would be set to NULL (D3D automatically does this).  This is an annoying "feature" of D3D11 and makes automation of some things (like 
+                    // auto-setting the render target after swap chain is resized) nearly impossible without unsetting every other target bound.  I'm sure 
+                    // there's a performance penalty for this, but it's likely negligable and worth it for the trade off in convenience.
+                    _D3Dviews[targetIndex] = (target == null ? null : target.D3DView);
+                }
+
+                if (hasChanges)
+                {
+                    BindResources();
+                }
+            }
+
+            // TODO: Provide overloads for other render target types (1D/3D/Buffer).
+            /// <summary>
+            /// Function to bind the render target to the specified slot.
+            /// </summary>
+            /// <param name="slot">Slot to bind the render target with.</param>
+            /// <param name="target">Target to bind.</param>
+            /// <param name="depthStencilBuffer">[Optional] An alternative depth/stencil buffer to bind.</param>
+            /// <remarks>Use this to directly set a render target to the pipeline at the specified slot.
+            /// <para>The <paramref name="depthStencilBuffer"/> is an optional alternative buffer to set instead of the buffer that's attached to the render target.  If this value is NULL (Nothing in VB.Net) 
+            /// then the depth/stencil buffer that's attached to the render target (if it exists) will be used instead.</para>
+            /// </remarks>
+            /// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="slot"/> parameter is less than 0 or not less than the number of available slots.</exception>
+            /// <exception cref="GorgonLibrary.GorgonException">Thrown when render target in the <paramref name="target"/> parameter can't be bound.
+            /// <para>-or-</para>
+            /// <para>Thrown when the <paramref name="depthStencilBuffer"/> (or the attached depth/stencil on the render target) can't be bound.</para>
+            /// </exception>
+            public void SetRenderTarget(int slot, GorgonRenderTarget2D target, GorgonDepthStencil depthStencilBuffer = null)
+            {
+                if ((depthStencilBuffer == null) && (target != null))
+                {
+                    depthStencilBuffer = target.DepthStencilBuffer;
+                }
+
+                // TODO: Get the RTV from the render target: target == null ? target.DefaultRenderTargetView : null
+                _depthStencil = depthStencilBuffer;
+                SetView(slot, null);
+            }
+
+            /// <summary>
+            /// Function to retrieve the specified render target resource from the view bound to the specified slot.
+            /// </summary>
+            /// <typeparam name="TR">Type of resource to look up.</typeparam>
+            /// <param name="slot">Slot containing the render target resource.</param>
+            /// <returns>The resource attached to the view at the specified slot, or NULL (Nothing in VB.Net) if there wasn't a view bound at that slot.</returns>
+            /// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="slot"/> parameter is less than 0 or not less than the number of available slots.</exception>
+            /// <exception cref="System.InvalidCastException">Thrown when the resource is not the type requested.</exception>
+            public TR GetResource<TR>(int slot)
+                where TR : GorgonResource
+            {
+                GorgonDebug.AssertParamRange(slot, 0, _views.Length, "index");
+
+                var view = _views[slot];
+
+#if DEBUG
+                if ((view != null) && (view.Resource != null) && (!(view.Resource is TR)))
+                {
+                    throw new InvalidCastException(string.Format(Resources.GORGFX_VIEW_RESOURCE_NOT_TYPE, slot,
+                                                                 typeof(TR).FullName));
+                }
+#endif
+
+                if (view == null)
+                {
+                    return null;
+                }
+
+                return (TR)view.Resource;                
+            }
+            #endregion
+
+            #region Constructor/Destructor.
+            /// <summary>
+            /// Initializes a new instance of the <see cref="RenderTargetList2"/> class.
+            /// </summary>
+            /// <param name="graphics">The graphics interface that owns this interface.</param>
+            internal RenderTargetList2(GorgonGraphics graphics)
+            {
+                _views = new GorgonRenderTargetView[graphics.VideoDevice.SupportedFeatureLevel != DeviceFeatureLevel.SM2_a_b ? 8 : 4];
+                _D3Dviews = new D3D.RenderTargetView[_views.Length];
+                _graphics = graphics;
+            }
+            #endregion
+
+            #region ICollection<GorgonRenderTargetView> Members
+            #region Properties.
+            /// <summary>
+            /// Gets the number of elements contained in the <see cref="T:System.Collections.Generic.ICollection`1"></see>.
+            /// </summary>
+            /// <returns>The number of elements contained in the <see cref="T:System.Collections.Generic.ICollection`1"></see>.</returns>
+            public int Count
+            {
+                get
+                {
+                    return _views.Length;
+                }
+            }
+
+            /// <summary>
+            /// Gets a value indicating whether the <see cref="T:System.Collections.Generic.ICollection`1"></see> is read-only.
+            /// </summary>
+            /// <returns>true if the <see cref="T:System.Collections.Generic.ICollection`1"></see> is read-only; otherwise, false.</returns>
+            public bool IsReadOnly
+            {
+                get
+                {
+                    return false;
+                }
+            }
+            #endregion
+
+            #region Methods.
+            /// <summary>
+            /// Removes the first occurrence of a specific object from the <see cref="T:System.Collections.Generic.ICollection`1"></see>.
+            /// </summary>
+            /// <param name="item">The object to remove from the <see cref="T:System.Collections.Generic.ICollection`1"></see>.</param>
+            /// <returns>
+            /// true if item was successfully removed from the <see cref="T:System.Collections.Generic.ICollection`1"></see>; otherwise, false. This method also returns false if item is not found in the original <see cref="T:System.Collections.Generic.ICollection`1"></see>.
+            /// </returns>
+            /// <exception cref="System.NotSupportedException">This method is not supported.</exception>
+            bool ICollection<GorgonRenderTargetView>.Remove(GorgonRenderTargetView item)
+            {
+                throw new NotSupportedException();
+            }
+
+            /// <summary>
+            /// Adds an item to the <see cref="T:System.Collections.Generic.ICollection`1"></see>.
+            /// </summary>
+            /// <param name="item">The object to add to the <see cref="T:System.Collections.Generic.ICollection`1"></see>.</param>
+            /// <exception cref="System.NotSupportedException">This method is not supported.</exception>
+            void ICollection<GorgonRenderTargetView>.Add(GorgonRenderTargetView item)
+            {
+                throw new NotSupportedException();
+            }
+
+            /// <summary>
+            /// Removes all items from the <see cref="T:System.Collections.Generic.ICollection`1"></see>.
+            /// </summary>
+            /// <exception cref="System.NotSupportedException">This method is not supported.</exception>
+            void ICollection<GorgonRenderTargetView>.Clear()
+            {
+                throw new NotSupportedException();
+            }
+
+            /// <summary>
+            /// Determines whether the <see cref="T:System.Collections.Generic.ICollection`1"></see> contains a specific value.
+            /// </summary>
+            /// <param name="item">The object to locate in the <see cref="T:System.Collections.Generic.ICollection`1"></see>.</param>
+            /// <returns>
+            /// true if item is found in the <see cref="T:System.Collections.Generic.ICollection`1"></see>; otherwise, false.
+            /// </returns>
+            /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="item"/> parameter is NULL (Nothing in VB.Net).</exception>
+            public bool Contains(GorgonRenderTargetView item)
+            {
+                return IndexOf(item) > -1;
+            }
+
+            /// <summary>
+            /// Function to copy the contents of this list to an array.
+            /// </summary>
+            /// <param name="array">Array to copy into.</param>
+            /// <param name="arrayIndex">Index in the array to start writing at.</param>
+            /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="array"/> parameter is NULL (Nothing in VB.Net).</exception>
+            /// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="arrayIndex"/> parameter is less than 0 or not less than the length of the array.</exception>
+            public void CopyTo(GorgonRenderTargetView[] array, int arrayIndex)
+            {
+                if (array == null)
+                {
+                    throw new ArgumentNullException("array");
+                }
+
+                if ((arrayIndex < 0) || (arrayIndex >= array.Length))
+                {
+                    throw new ArgumentOutOfRangeException("arrayIndex");
+                }
+
+                int count = (array.Length - arrayIndex).Min(_views.Length);
+
+                for (int i = 0; i < count; i++)
+                {
+                    array[i + arrayIndex] = _views[i];
+                }
+            }
+            #endregion
+            #endregion
+
+            #region IEnumerable<GorgonRenderTargetView> Members
+            /// <summary>
+            /// Returns an enumerator that iterates through the collection.
+            /// </summary>
+            /// <returns>
+            /// A <see cref="T:System.Collections.Generic.IEnumerator`1"></see> that can be used to iterate through the collection.
+            /// </returns>
+            public IEnumerator<GorgonRenderTargetView> GetEnumerator()
+            {
+                for (int i = 0; i < _views.Length; i++)
+                {
+                    yield return _views[i];
+                }
+            }
+
+            #endregion
+
+            #region IEnumerable Members
+            /// <summary>
+            /// Returns an enumerator that iterates through a collection.
+            /// </summary>
+            /// <returns>
+            /// An <see cref="T:System.Collections.IEnumerator" /> object that can be used to iterate through the collection.
+            /// </returns>
+            System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+            {
+                return _views.GetEnumerator();
+            }
+            #endregion
+        }
+
 		/// <summary>
 		/// A list of render targets to bind.
 		/// </summary>
@@ -677,6 +1338,15 @@ namespace GorgonLibrary.Graphics
 			private set;
 		}
 
+        /// <summary>
+        /// Property to returnt he render target bindings.
+        /// </summary>
+        public RenderTargetList2 RenderTargets2
+        {
+            get;
+            private set;
+        }
+
 		/// <summary>
 		/// Property to return the render target bindings.
 		/// </summary>
@@ -1056,6 +1726,7 @@ namespace GorgonLibrary.Graphics
 			BlendingState = new GorgonBlendRenderState(_graphics);
 			DepthStencilState = new GorgonDepthStencilRenderState(_graphics);
 			RenderTargets = new RenderTargetList(_graphics);
+            RenderTargets2 = new RenderTargetList2(_graphics);
 		}
 		#endregion
 	}

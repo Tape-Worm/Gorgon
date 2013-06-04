@@ -466,6 +466,123 @@ namespace GorgonLibrary.Graphics.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The render target &apos;{0}&apos; view is already bound at slot [{1}].
+        /// </summary>
+        internal static string GORGFX_RTV_ALREADY_BOUND {
+            get {
+                return ResourceManager.GetString("GORGFX_RTV_ALREADY_BOUND", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cannot bind the render target &apos;{0}&apos;. Render targets must all have the same number of array indices.  Expected: {1}, Got: {2}.
+        /// </summary>
+        internal static string GORGFX_RTV_ARRAY_COUNT_MISMATCH {
+            get {
+                return ResourceManager.GetString("GORGFX_RTV_ARRAY_COUNT_MISMATCH", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cannot bind the render target &apos;{0}&apos;. SM2_a_b video devices require that all render targets have the same bit depth..
+        /// </summary>
+        internal static string GORGFX_RTV_BIT_DEPTH_MISMATCH {
+            get {
+                return ResourceManager.GetString("GORGFX_RTV_BIT_DEPTH_MISMATCH", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cannot bind the render target &apos;{0}&apos;. Render target buffers must be the same size. Expected: {1}, Got: {2}.
+        /// </summary>
+        internal static string GORGFX_RTV_BUFFER_SIZE_MISMATCH {
+            get {
+                return ResourceManager.GetString("GORGFX_RTV_BUFFER_SIZE_MISMATCH", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cannot bind the depth/stencil buffer, the render target &apos;{0}&apos; has a texture with a different array count than the depth/stencil buffer..
+        /// </summary>
+        internal static string GORGFX_RTV_DEPTH_ARRAYCOUNT_MISMATCH {
+            get {
+                return ResourceManager.GetString("GORGFX_RTV_DEPTH_ARRAYCOUNT_MISMATCH", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cannot bind the depth/stencil buffer, the render target &apos;{0}&apos; has a texture with a different mip level count than the depth/stencil buffer..
+        /// </summary>
+        internal static string GORGFX_RTV_DEPTH_MIPCOUNT_MISMATCH {
+            get {
+                return ResourceManager.GetString("GORGFX_RTV_DEPTH_MIPCOUNT_MISMATCH", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cannot bind the depth/stencil buffer, the render target &apos;{0}&apos; has a multisampling count/quaity of {1}/{2} and the depth/stencil buffer has a multisampling count/quality of {3}/{4}..
+        /// </summary>
+        internal static string GORGFX_RTV_DEPTH_MULTISAMPLE_MISMATCH {
+            get {
+                return ResourceManager.GetString("GORGFX_RTV_DEPTH_MULTISAMPLE_MISMATCH", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cannot bind the depth/stencil buffer, there is a render target bound with the resource type of [{0}] and the depth/stencil is bound to a [{1}] resource type..
+        /// </summary>
+        internal static string GORGFX_RTV_DEPTH_RESOURCE_TYPE_INVALID {
+            get {
+                return ResourceManager.GetString("GORGFX_RTV_DEPTH_RESOURCE_TYPE_INVALID", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cannot bind the depth/stencil buffer, there are render targets with the resource type of [{0}] bound to the pipeline..
+        /// </summary>
+        internal static string GORGFX_RTV_DEPTH_RT_TYPE_INVALID {
+            get {
+                return ResourceManager.GetString("GORGFX_RTV_DEPTH_RT_TYPE_INVALID", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cannot bind the render target &apos;{0}&apos;. Render targets must all have the same dimensions.  Expected: {1}x{2}x{3}, Got: {4}x{5}x{6}.
+        /// </summary>
+        internal static string GORGFX_RTV_DIMENSIONS_MISMATCH {
+            get {
+                return ResourceManager.GetString("GORGFX_RTV_DIMENSIONS_MISMATCH", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cannot bind the render target &apos;{0}&apos;. Render targets must all have the same number of mip levels.  Expected: {1}, Got: {2}.
+        /// </summary>
+        internal static string GORGFX_RTV_MIP_COUNT_MISMATCH {
+            get {
+                return ResourceManager.GetString("GORGFX_RTV_MIP_COUNT_MISMATCH", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cannot bind the render target &apos;{0}&apos;. Render targets must all have the same multisample settings. Expected count/quality: {1}/{2}, Got count/quality: {3}/{4}.
+        /// </summary>
+        internal static string GORGFX_RTV_MULTISAMPLE_MISMATCH {
+            get {
+                return ResourceManager.GetString("GORGFX_RTV_MULTISAMPLE_MISMATCH", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cannot bind the render target &apos;{0}&apos;. There is a render target bound with the resource type of [{1}] and the depth/stencil is bound to a [{2}] resource type..
+        /// </summary>
+        internal static string GORGFX_RTV_RESOURCE_TYPE_MISMATCH {
+            get {
+                return ResourceManager.GetString("GORGFX_RTV_RESOURCE_TYPE_MISMATCH", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Gorgon Shader Include &apos;{0}&apos;.
         /// </summary>
         internal static string GORGFX_SHADER_INCLUDE_TOSTR {

@@ -336,4 +336,43 @@
   <data name="GORGFX_RENDERTARGET_NOT_SWAPCHAIN" xml:space="preserve">
     <value>The render target '{0}' is not bound to a swap chain.</value>
   </data>
+  <data name="GORGFX_RTV_ALREADY_BOUND" xml:space="preserve">
+    <value>The render target '{0}' view is already bound at slot [{1}]</value>
+  </data>
+  <data name="GORGFX_RTV_ARRAY_COUNT_MISMATCH" xml:space="preserve">
+    <value>Cannot bind the render target '{0}'. Render targets must all have the same number of array indices.  Expected: {1}, Got: {2}</value>
+  </data>
+  <data name="GORGFX_RTV_BIT_DEPTH_MISMATCH" xml:space="preserve">
+    <value>Cannot bind the render target '{0}'. SM2_a_b video devices require that all render targets have the same bit depth.</value>
+  </data>
+  <data name="GORGFX_RTV_BUFFER_SIZE_MISMATCH" xml:space="preserve">
+    <value>Cannot bind the render target '{0}'. Render target buffers must be the same size. Expected: {1}, Got: {2}</value>
+  </data>
+  <data name="GORGFX_RTV_DEPTH_ARRAYCOUNT_MISMATCH" xml:space="preserve">
+    <value>Cannot bind the depth/stencil buffer, the render target '{0}' has a texture with a different array count than the depth/stencil buffer.</value>
+  </data>
+  <data name="GORGFX_RTV_DEPTH_MIPCOUNT_MISMATCH" xml:space="preserve">
+    <value>Cannot bind the depth/stencil buffer, the render target '{0}' has a texture with a different mip level count than the depth/stencil buffer.</value>
+  </data>
+  <data name="GORGFX_RTV_DEPTH_MULTISAMPLE_MISMATCH" xml:space="preserve">
+    <value>Cannot bind the depth/stencil buffer, the render target '{0}' has a multisampling count/quaity of {1}/{2} and the depth/stencil buffer has a multisampling count/quality of {3}/{4}.</value>
+  </data>
+  <data name="GORGFX_RTV_DEPTH_RESOURCE_TYPE_INVALID" xml:space="preserve">
+    <value>Cannot bind the depth/stencil buffer, there is a render target bound with the resource type of [{0}] and the depth/stencil is bound to a [{1}] resource type.</value>
+  </data>
+  <data name="GORGFX_RTV_DEPTH_RT_TYPE_INVALID" xml:space="preserve">
+    <value>Cannot bind the depth/stencil buffer, there are render targets with the resource type of [{0}] bound to the pipeline.</value>
+  </data>
+  <data name="GORGFX_RTV_DIMENSIONS_MISMATCH" xml:space="preserve">
+    <value>Cannot bind the render target '{0}'. Render targets must all have the same dimensions.  Expected: {1}x{2}x{3}, Got: {4}x{5}x{6}</value>
+  </data>
+  <data name="GORGFX_RTV_MIP_COUNT_MISMATCH" xml:space="preserve">
+    <value>Cannot bind the render target '{0}'. Render targets must all have the same number of mip levels.  Expected: {1}, Got: {2}</value>
+  </data>
+  <data name="GORGFX_RTV_MULTISAMPLE_MISMATCH" xml:space="preserve">
+    <value>Cannot bind the render target '{0}'. Render targets must all have the same multisample settings. Expected count/quality: {1}/{2}, Got count/quality: {3}/{4}</value>
+  </data>
+  <data name="GORGFX_RTV_RESOURCE_TYPE_MISMATCH" xml:space="preserve">
+    <value>Cannot bind the render target '{0}'. There is a render target bound with the resource type of [{1}] and the depth/stencil is bound to a [{2}] resource type.</value>
+  </data>
 </root>
