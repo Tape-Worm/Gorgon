@@ -153,6 +153,7 @@
     <Compile Include="Targets\GorgonDepthStencilSettings.cs" />
     <Compile Include="Targets\GorgonMultiSampling.cs" />
     <Compile Include="Targets\GorgonRenderTarget2D.cs" />
+    <Compile Include="Targets\GorgonRenderTargetView.cs" />
     <Compile Include="Targets\GorgonSwapChain.cs" />
     <Compile Include="Targets\GorgonRenderTargetSettings.cs" />
     <Compile Include="Targets\GorgonViewport.cs" />

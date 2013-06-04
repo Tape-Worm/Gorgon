@@ -445,10 +445,10 @@ namespace GorgonLibrary.Graphics
 			/// </returns>
 			public IEnumerator<GorgonVertexBufferBinding> GetEnumerator()
 			{
-				foreach (var item in _bindings)
-				{
-					yield return item;
-				}
+                for (int i = 0; i < _bindings.Length; i++ )
+                {
+                    yield return _bindings[i];
+                }
 			}
 			#endregion
 
