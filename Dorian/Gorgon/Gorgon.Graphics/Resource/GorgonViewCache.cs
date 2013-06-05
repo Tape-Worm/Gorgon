@@ -187,13 +187,9 @@ namespace GorgonLibrary.Graphics
 						case ResourceType.Buffer:
 							break;
 						case ResourceType.Texture1D:
-							result = new GorgonRenderTarget1DView((GorgonRenderTarget1D)_resource, format, mipSlice, arrayDepthIndex, arrayDepthCount);
-							break;
-						case ResourceType.Texture2D:
-							result = new GorgonRenderTarget2DView((GorgonRenderTarget2D)_resource, format, mipSlice, arrayDepthIndex, arrayDepthCount);
-							break;
-						case ResourceType.Texture3D:
-							//result = new GorgonRenderTarget3DView((GorgonRenderTarget3D)_resource, format, mipSlice, arrayDepthIndex, arrayDepthCount);
+                        case ResourceType.Texture2D:
+                        case ResourceType.Texture3D:
+							result = new GorgonRenderTargetTextureView((GorgonRenderTarget1D)_resource, format, mipSlice, arrayDepthIndex, arrayDepthCount);
 							break;
 					}
 
