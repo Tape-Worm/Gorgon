@@ -137,6 +137,7 @@ namespace GorgonLibrary.Graphics
 		: GorgonNamedObject, IDisposable
 	{
 		#region Variables.
+		private GorgonRenderTarget2D _renderTarget;			// The render target bound to this swap chain.
 		private bool _disposed;								// Flag to indicate that the object was disposed.
 		private Form _parentForm;							// Parent form for our window.
 		#endregion
@@ -166,17 +167,6 @@ namespace GorgonLibrary.Graphics
 			private set;
 		}
 
-        /// <summary>
-        /// Property to return the texture attached to the swap chain render target.
-        /// </summary>
-        public GorgonTexture2D Texture
-        {
-            get
-            {
-                return RenderTarget == null ? null : RenderTarget;
-            }
-        }
-
 		/// <summary>
 		/// Property to return the default depth/stencil buffer for this swap chain.
 		/// </summary>
@@ -184,18 +174,9 @@ namespace GorgonLibrary.Graphics
 		{
 			get
 			{
-				return RenderTarget == null ? null : RenderTarget.DepthStencilBuffer;
+				return _renderTarget == null ? null : _renderTarget.DepthStencilBuffer;
 			}
 		}
-
-        /// <summary>
-        /// Property to return the render target attached to the swap chain.
-        /// </summary>
-	    public GorgonRenderTarget2D RenderTarget
-	    {
-	        get;
-            private set;
-	    }
 
 		/// <summary>
 		/// Property to return the graphics interface that owns this object.
@@ -258,7 +239,7 @@ namespace GorgonLibrary.Graphics
 		{
 			get
 			{
-			    return RenderTarget == null ? new GorgonViewport(0, 0, 0, 0, 0, 0) : RenderTarget.Viewport;
+				return _renderTarget == null ? new GorgonViewport(0, 0, 0, 0, 0, 0) : _renderTarget.Viewport;
 			}
 		}
 
@@ -320,39 +301,48 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Function to create any resources bound to the swap chain.
 		/// </summary>
-		private void CreateResources()
+		/// <param name="needReseat">The swap chain needs to be re-seated in slot 0 of the render target list.</param>
+		private void CreateResources(bool needReseat = false)
 		{
 			Gorgon.Log.Print("GorgonSwapChain '{0}': Creating D3D11 render target view...", Diagnostics.LoggingLevel.Intermediate, Name);
-			if (RenderTarget == null)
+			if (_renderTarget == null)
 			{
-                RenderTarget = new GorgonRenderTarget2D(Graphics, Name + "_Internal_Render_Target_" + Guid.NewGuid(),
-				                                   new GorgonRenderTarget2DSettings
-					                                   {
-						                                   Width = Settings.Width,
-						                                   Height = Settings.Height,
-						                                   DepthStencilFormat = Settings.DepthStencilFormat,
-						                                   Format = Settings.Format,
-						                                   MultiSample = Settings.MultiSample
-					                                   });
+				_renderTarget = new GorgonRenderTarget2D(Graphics, Name + "_Internal_Render_Target_" + Guid.NewGuid(), new GorgonRenderTarget2DSettings
+					{
+						AllowUnorderedAccess = false,
+						ArrayCount = 1,
+						DepthStencilFormat = Settings.DepthStencilFormat,
+						Width = Settings.Width,
+						Height = Settings.Height,
+						Format = Settings.Format,
+						TextureFormat = Settings.Format,
+						Multisampling = Settings.Multisampling,
+						IsTextureCube = false,
+						MipCount = 1,
+						ShaderViewFormat = BufferFormat.Unknown
+					});
 			}
 			else
 			{
 				// Readjust target settings.
-                RenderTarget.Settings.Width = Settings.Width;
-                RenderTarget.Settings.Height = Settings.Height;
-                RenderTarget.Settings.DepthStencilFormat = Settings.DepthStencilFormat;
-                RenderTarget.Settings.Format = Settings.Format;
-                RenderTarget.Settings.MultiSample = Settings.MultiSample;
+                _renderTarget.Settings.Width = Settings.Width;
+                _renderTarget.Settings.Height = Settings.Height;
+                _renderTarget.Settings.DepthStencilFormat = Settings.DepthStencilFormat;
+                _renderTarget.Settings.Format = Settings.Format;
+                _renderTarget.Settings.Multisampling = Settings.Multisampling;
 			}
 
 			// Initialize (or reinitialize) the target.
-            RenderTarget.InitializeSwapChain(this);
+            _renderTarget.InitializeSwapChain(this);
 
 			GorgonRenderStatistics.RenderTargetCount++;
-            GorgonRenderStatistics.RenderTargetSize += ((GorgonTexture2D)RenderTarget).SizeInBytes * Settings.BufferCount;
+            GorgonRenderStatistics.RenderTargetSize += _renderTarget.SizeInBytes * Settings.BufferCount;
 
 			// Re-seat the target.
-			Graphics.Output.RenderTargets.ReSeat(this);
+			if (needReseat)
+			{
+				Graphics.Output.RenderTargets.SetRenderTarget(0, _renderTarget, Graphics.Output.RenderTargets.DepthStencilBuffer);
+			}
 		}
 
 		/// <summary>
@@ -360,11 +350,11 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		private void ResizeBuffers()
 		{
-            RenderTarget.CleanUp();
+			var needReseat = _renderTarget.OnSwapChainResize();
 			var flags = GI.SwapChainFlags.AllowModeSwitch;
 
 			GISwapChain.ResizeBuffers(Settings.BufferCount, Settings.VideoMode.Width, Settings.VideoMode.Height, (GI.Format)Settings.VideoMode.Format, flags);
-			CreateResources();
+			CreateResources(needReseat);
 
 			if (Resized != null)
 			{
@@ -495,11 +485,10 @@ namespace GorgonLibrary.Graphics
 
 			Settings.Window.Resize -= new EventHandler(Window_Resize);
 
-            if (RenderTarget != null)
+            if (_renderTarget != null)
 			{
-                RenderTarget.SwapChain = null;
-                RenderTarget.Dispose();
-                RenderTarget = null;
+                _renderTarget.Dispose();
+                _renderTarget = null;
 			}
 
 			Gorgon.Log.Print("GorgonSwapChain '{0}': Removing D3D11 swap chain...", Diagnostics.LoggingLevel.Simple, Name);
@@ -613,13 +602,13 @@ namespace GorgonLibrary.Graphics
 
 			// Check multi sampling levels.
 			if (settings.SwapEffect == SwapEffect.Sequential)
-				settings.MultiSample = new GorgonMultisampling(1, 0);
+				settings.Multisampling = new GorgonMultisampling(1, 0);
 			
-			int quality = graphics.VideoDevice.GetMultiSampleQuality(settings.VideoMode.Format, settings.MultiSample.Count);
+			int quality = graphics.VideoDevice.GetMultiSampleQuality(settings.VideoMode.Format, settings.Multisampling.Count);
 
 			// Ensure that the quality of the sampling does not exceed what the card can do.
-			if ((settings.MultiSample.Quality >= quality) || (settings.MultiSample.Quality < 0))
-				throw new GorgonException(GorgonResult.CannotCreate, "Video device '" + graphics.VideoDevice.Name + "' does not support multisampling with a count of '" + settings.MultiSample.Count.ToString() + "' and a quality of '" + settings.MultiSample.Quality.ToString() + " with a format of '" + settings.VideoMode.Format + "'");
+			if ((settings.Multisampling.Quality >= quality) || (settings.Multisampling.Quality < 0))
+				throw new GorgonException(GorgonResult.CannotCreate, "Video device '" + graphics.VideoDevice.Name + "' does not support multisampling with a count of '" + settings.Multisampling.Count.ToString() + "' and a quality of '" + settings.Multisampling.Quality.ToString() + " with a format of '" + settings.VideoMode.Format + "'");
 
 			// Force 2 buffers for discard.
 			if ((settings.BufferCount < 2) && (settings.SwapEffect == SwapEffect.Discard))
@@ -651,7 +640,7 @@ namespace GorgonLibrary.Graphics
 			d3dSettings.IsWindowed = true;
 			d3dSettings.ModeDescription = GorgonVideoMode.Convert(Settings.VideoMode);
 			d3dSettings.OutputHandle = Settings.Window.Handle;
-			d3dSettings.SampleDescription = GorgonMultisampling.Convert(Settings.MultiSample);
+			d3dSettings.SampleDescription = GorgonMultisampling.Convert(Settings.Multisampling);
 			d3dSettings.SwapEffect = GorgonSwapChainSettings.Convert(Settings.SwapEffect);
 
 			if ((Settings.Flags & SwapChainUsageFlags.RenderTarget) == SwapChainUsageFlags.RenderTarget)
@@ -684,7 +673,7 @@ namespace GorgonLibrary.Graphics
 		/// <remarks>This will only clear the swap chain.  Any attached depth/stencil buffer will remain untouched.</remarks>
 		public void Clear(GorgonColor color)
 		{
-            Graphics.Context.ClearRenderTargetView(RenderTarget.D3DRenderTarget, color.SharpDXColor4);
+            Graphics.Context.ClearRenderTargetView(_renderTarget.DefaultRenderTargetView.D3DView, color.SharpDXColor4);
 		}
 
 		/// <summary>
@@ -732,7 +721,7 @@ namespace GorgonLibrary.Graphics
 		/// <para>-or-</para>
 		/// <para>Thrown when the <see cref="P:GorgonLibrary.Graphics.GorgonVideoMode.Format">GorgonSwapChainSettings.VideoMode.Format</see> property cannot be used by the video device for displaying data.</para>
 		/// <para>-or-</para>
-		/// <para>Thrown when the <see cref="P:GorgonLibrary.Graphics.GorgonSwapChainSettings.MultSamples.Quality">GorgonSwapChainSettings.MultiSamples.Quality</see> property is higher than what the video device can support.</para>
+		/// <para>Thrown when the <see cref="P:GorgonLibrary.Graphics.GorgonSwapChainSettings.MultSamples.Quality">GorgonSwapChainSettings.Multisamplings.Quality</see> property is higher than what the video device can support.</para>
 		/// </exception>
 		/// <exception cref="GorgonLibrary.GorgonException">Thrown when the video output could not be determined from the window.
 		/// <para>-or-</para>
@@ -751,7 +740,7 @@ namespace GorgonLibrary.Graphics
 		/// <para>-or-</para>
 		/// <para>Thrown when the <see cref="P:GorgonLibrary.Graphics.GorgonVideoMode.Format">GorgonSwapChainSettings.VideoMode.Format</see> property cannot be used by the video device for displaying data.</para>
 		/// <para>-or-</para>
-		/// <para>Thrown when the <see cref="P:GorgonLibrary.Graphics.GorgonSwapChainSettings.MultSamples.Quality">GorgonSwapChainSettings.MultiSamples.Quality</see> property is higher than what the video device can support.</para>
+		/// <para>Thrown when the <see cref="P:GorgonLibrary.Graphics.GorgonSwapChainSettings.MultSamples.Quality">GorgonSwapChainSettings.Multisamplings.Quality</see> property is higher than what the video device can support.</para>
 		/// </exception>
 		/// <exception cref="GorgonLibrary.GorgonException">Thrown when the video output could not be determined from the window.
 		/// <para>-or-</para>
@@ -771,7 +760,7 @@ namespace GorgonLibrary.Graphics
 		/// <para>-or-</para>
 		/// <para>Thrown when the <see cref="P:GorgonLibrary.Graphics.GorgonVideoMode.Format">GorgonSwapChainSettings.VideoMode.Format</see> property cannot be used by the video device for displaying data.</para>
 		/// <para>-or-</para>
-		/// <para>Thrown when the <see cref="P:GorgonLibrary.Graphics.GorgonSwapChainSettings.MultSamples.Quality">GorgonSwapChainSettings.MultiSamples.Quality</see> property is higher than what the video device can support.</para>
+		/// <para>Thrown when the <see cref="P:GorgonLibrary.Graphics.GorgonSwapChainSettings.MultSamples.Quality">GorgonSwapChainSettings.Multisamplings.Quality</see> property is higher than what the video device can support.</para>
 		/// </exception>
 		/// <exception cref="GorgonLibrary.GorgonException">Thrown when the video output could not be determined from the window.
 		/// <para>-or-</para>
@@ -895,6 +884,26 @@ namespace GorgonLibrary.Graphics
 		public void Flip()
 		{
 			Flip(0);
+		}
+
+		/// <summary>
+		/// Function to retrieve the render target view for a swap chain.
+		/// </summary>
+		/// <param name="swapChain">Swap chain to evaluate.</param>
+		/// <returns>The render target view for the swap chain.</returns>
+		public static GorgonRenderTargetView ToRenderTargetView(GorgonSwapChain swapChain)
+		{
+			return swapChain == null ? null : swapChain._renderTarget.DefaultRenderTargetView;
+		}
+
+		/// <summary>
+		/// Implicit operator to return the render target view for a swap chain.
+		/// </summary>
+		/// <param name="swapChain">Swap chain to evaluate.</param>
+		/// <returns>The render target view for the swap chain.</returns>
+		public static implicit operator GorgonRenderTargetView(GorgonSwapChain swapChain)
+		{
+			return swapChain == null ? null : swapChain._renderTarget.DefaultRenderTargetView;
 		}
 		#endregion
 

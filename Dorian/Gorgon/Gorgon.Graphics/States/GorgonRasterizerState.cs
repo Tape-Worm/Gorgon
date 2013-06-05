@@ -26,6 +26,7 @@
 
 using System.Collections.Generic;
 using System.Linq;
+using SharpDX;
 using D3D = SharpDX.Direct3D11;
 
 namespace GorgonLibrary.Graphics
@@ -404,28 +405,41 @@ namespace GorgonLibrary.Graphics
 		/// <remarks>Passing NULL (Nothing in VB.Net) to the <paramref name="regions"/> parameter will use the width/height of the current <see cref="P:GorgonLibrary.Graphics.OutputMerger.RenderTargets">render target</see>.
 		/// <para>On SM2_a_b devices only the first clip rectangle will be used.</para>
 		/// </remarks>
-		public void SetClip(IEnumerable<System.Drawing.Rectangle> regions)
+		public void SetClip(System.Drawing.Rectangle[] regions)
 		{
-			if (regions == null)
+			if ((regions == null) || (regions.Length == 0))
 			{
-				if (Graphics.Output.RenderTargets[0] != null)
-					SetClip(new System.Drawing.Rectangle(0, 0, Graphics.Output.RenderTargets[0].Settings.Width, Graphics.Output.RenderTargets[0].Settings.Height));
+				var view = Graphics.Output.RenderTargets.GetView(0);
+
+				if (view != null)
+				{
+					if (view.Resource.ResourceType != ResourceType.Buffer)
+					{
+						var texture = (GorgonTexture)view.Resource;
+						SetClip(new System.Drawing.Rectangle(0, 0, texture.Settings.Width, texture.Settings.Height));
+					}
+				}
 				return;
 			}
 
 
 			if (Graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM2_a_b)
 			{
-				if (Graphics.Output.RenderTargets[0] != null)
-					SetClip(regions.ElementAt(0));
+				if (Graphics.Output.RenderTargets.GetView(0) != null)
+				{
+					SetClip(regions[0]);
+				}
 				return;
 			}
 
-			var dxRegions = (from region in regions
-							 let dxRegion = new SharpDX.Rectangle(region.Left, region.Top, region.Right, region.Bottom)
-							 select dxRegion).ToArray();
+			var dxRects = new Rectangle[regions.Length];
 
-			Graphics.Context.Rasterizer.SetScissorRectangles(dxRegions);
+			for (int i = 0; i < regions.Length; i++)
+			{
+				dxRects[i] = new Rectangle(regions[i].Left, regions[i].Top, regions[i].Right, regions[i].Bottom);
+			}
+
+			Graphics.Context.Rasterizer.SetScissorRectangles(dxRects);
 		}
 		#endregion
 

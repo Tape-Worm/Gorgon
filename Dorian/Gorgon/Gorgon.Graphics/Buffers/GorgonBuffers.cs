@@ -76,7 +76,6 @@ namespace GorgonLibrary.Graphics
 					|| (settings.AllowShaderViews) 
 					|| (settings.AllowRawViews) 
 					|| (settings.AllowUnorderedAccessViews) 
-					|| (settings.AllowRenderTarget) 
 					|| (settings.IsOutput)))
             {
 
@@ -87,7 +86,6 @@ namespace GorgonLibrary.Graphics
 			if ((settings.Usage == BufferUsage.Dynamic)
 				&& ((settings.AllowIndirectArguments)
 					|| (settings.AllowUnorderedAccessViews)
-					|| (settings.AllowRenderTarget)
 					|| (settings.IsOutput)))
 			{
 

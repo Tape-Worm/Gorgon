@@ -112,7 +112,7 @@ namespace GorgonLibrary.Graphics
 		/// </exception>
 		public static Gorgon2D Create2DRenderer(this GorgonOutputMerger graphics, Control window, int width, int height, BufferFormat format, bool isWindowed, BufferFormat depthStencilFormat)
 		{
-			GorgonSwapChain swapChain = null;
+			GorgonSwapChain swapChain;
 
 			swapChain = graphics.CreateSwapChain("Gorgon2D.DefaultSwapChain", new GorgonSwapChainSettings()
 			{
@@ -122,13 +122,13 @@ namespace GorgonLibrary.Graphics
 				Format = format,
 				Height = height,
 				IsWindowed = isWindowed,
-				MultiSample = new GorgonMultisampling(1, 0),
+				Multisampling = new GorgonMultisampling(1, 0),
 				SwapEffect = SwapEffect.Discard,
 				Width = width,
 				Window = window
 			});
 
-			return Create2DRenderer(graphics, swapChain.RenderTarget, true);
+			return Create2DRenderer(graphics, swapChain, true);
 		}
 
 		/// <summary>
@@ -141,12 +141,12 @@ namespace GorgonLibrary.Graphics
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="target"/> parameter is NULL (Nothing in VB.Net).</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the target was not created by the same graphics interface as the one creating the 2D interface.</exception>
         // ReSharper disable UnusedParameter.Local
-		private static Gorgon2D Create2DRenderer(this GorgonOutputMerger graphics, GorgonRenderTarget target, bool systemCreatedSwap)
+		private static Gorgon2D Create2DRenderer(this GorgonOutputMerger graphics, GorgonRenderTargetView target, bool systemCreatedSwap)
         // ReSharper restore UnusedParameter.Local
 		{
-			Gorgon2D result = null;
+			Gorgon2D result;
 
-			GorgonDebug.AssertNull<GorgonRenderTarget>(target, "target");
+			GorgonDebug.AssertNull(target, "target");
 
 			result = new Gorgon2D(target);
 			result.SystemCreatedTarget = systemCreatedSwap;

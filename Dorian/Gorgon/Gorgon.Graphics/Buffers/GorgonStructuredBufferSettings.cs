@@ -67,23 +67,6 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
-		/// Property to set or return whether to allow this buffer to be used as a render target.
-		/// </summary>
-		/// <exception cref="System.NotSupportedException">Thrown when an attempt to set a value to this property was made.</exception>
-		/// <remarks>This value does not apply to structured buffers will always return FALSE.</remarks>
-		bool IBufferSettings.AllowRenderTarget
-		{
-			get
-			{
-				return false;
-			}
-			set
-			{
-				throw new NotSupportedException();
-			}
-		}
-
-		/// <summary>
 		/// Property to set or return the format for the default shader view.
 		/// </summary>
 		/// <exception cref="System.NotSupportedException">Thrown when an attempt to set a value to this property was made.</exception>

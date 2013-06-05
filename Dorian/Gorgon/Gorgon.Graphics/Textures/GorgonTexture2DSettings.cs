@@ -24,6 +24,7 @@
 // 
 #endregion
 
+using System;
 using System.Drawing;
 using D3D = SharpDX.Direct3D11;
 
@@ -125,6 +126,7 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		/// <value></value>
 		/// <remarks>This applies to 3D textures only and will always return 1.</remarks>
+		/// <exception cref="System.NotSupportedException">Thrown when an attempt to set this value is made.</exception>
 		int IImageSettings.Depth
 		{
 			get
@@ -133,6 +135,7 @@ namespace GorgonLibrary.Graphics
 			}
 			set
 			{
+				throw new NotSupportedException();
 			}
 		}
 

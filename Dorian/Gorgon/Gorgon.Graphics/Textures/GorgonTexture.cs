@@ -28,12 +28,10 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
-using System.Windows.Forms;
 using GorgonLibrary.Diagnostics;
 using GorgonLibrary.Graphics.Properties;
 using GorgonLibrary.IO;
 using DX = SharpDX;
-using GI = SharpDX.DXGI;
 using D3D = SharpDX.Direct3D11;
 
 namespace GorgonLibrary.Graphics
@@ -46,48 +44,12 @@ namespace GorgonLibrary.Graphics
 	{
 		#region Variables.
 	    private bool _disposed;                                 // Flag to indicate that the object was disposed.
-	    private GorgonViewCache _viewCache;                     // View cache.
 		private readonly IList<DX.DataStream> _lock;			// Locks for the texture.
+		private GorgonViewCache _viewCache;						// Cache for views.
+		private GorgonShaderView _defaultShaderView;			// The default shader view for the texture.
 		#endregion
 
 		#region Properties.
-        /// <summary>
-        /// Property to set or return the render target bound to this texture.
-        /// </summary>
-        public GorgonRenderTarget RenderTarget
-        {
-            get;
-            internal set;
-        }
-
-        /// <summary>
-        /// Property to return the default shader view.
-        /// </summary>
-        public GorgonShaderView DefaultShaderView
-        {
-            get;
-            private set;
-        }
-		/// <summary>
-		/// Property to return whether this texture is for a render target.
-		/// </summary>
-		public bool IsRenderTarget
-		{
-			get
-			{
-				return RenderTarget != null;
-			}
-		}
-
-		/// <summary>
-		/// Property to return the information about the format for the unordered access view associated with the texture.
-		/// </summary>
-		public GorgonBufferFormatInfo.GorgonFormatData UnorderedAccessViewFormatInformation
-		{
-			get;
-			private set;
-		}
-
 		/// <summary>
 		/// Property to return information about the format for the texture.
 		/// </summary>
@@ -132,7 +94,7 @@ namespace GorgonLibrary.Graphics
                 if (disposing)
                 {
                     Gorgon.Log.Print("Gorgon texture {0}: Unbound from shaders.", Diagnostics.LoggingLevel.Verbose, Name);
-                    Graphics.Shaders.Unbind(this);
+                    Graphics.Shaders.UnbindResource(this);
 
                     // Unbind the view(s).
                     if (_viewCache != null)
@@ -161,7 +123,7 @@ namespace GorgonLibrary.Graphics
 
 	        BufferFormat format = Settings.ShaderViewFormat == BufferFormat.Unknown ? Settings.Format : Settings.ShaderViewFormat;
 
-	        DefaultShaderView = OnCreateShaderView(format, 0, Settings.MipCount, 0, Settings.ArrayCount);
+	        _defaultShaderView = OnCreateShaderView(format, 0, Settings.MipCount, 0, Settings.ArrayCount);
 	    }
 
 	    /// <summary>
@@ -228,7 +190,7 @@ namespace GorgonLibrary.Graphics
                 {
                     throw new GorgonException(GorgonResult.CannotCreate,
                                               string.Format(Resources.GORGFX_VIEW_ARRAY_COUNT_INVALID,
-                                                            Settings.Format));
+                                                            Settings.ArrayCount));
                 }
 
                 if ((arrayStart >= Settings.ArrayCount)
@@ -236,7 +198,7 @@ namespace GorgonLibrary.Graphics
                 {
                     throw new GorgonException(GorgonResult.CannotCreate,
                                               string.Format(Resources.GORGFX_VIEW_ARRAY_START_INVALID,
-                                                            Settings.Format));
+                                                            Settings.ArrayCount));
                 }
             }
 
@@ -264,6 +226,89 @@ namespace GorgonLibrary.Graphics
 
             return _viewCache.GetTextureView(format, mipStart, mipCount, arrayStart, arrayCount);
         }
+
+		/// <summary>
+		/// Function to create a new render target view.
+		/// </summary>
+		/// <param name="format">Format of the new render target view.</param>
+		/// <param name="mipSlice">Mip level index to use in the view.</param>
+		/// <param name="arrayIndex">Array index to use in the view.</param>
+		/// <param name="arrayCount">Number of array indices to use.</param>
+		/// <returns>A render target view.</returns>
+		/// <typeparam name="TR">The type of render target view.</typeparam>
+		protected TR OnCreateRenderTargetView<TR>(BufferFormat format, int mipSlice, int arrayIndex,
+															   int arrayCount)
+			where TR : GorgonRenderTargetView
+		{
+			// If we pass unknown, use the format from the texture.
+			if (format == BufferFormat.Unknown)
+			{
+				format = ((IRenderTargetTextureSettings)Settings).TextureFormat;
+			}
+			
+			if (Settings.ImageType != ImageType.Image3D)
+			{
+				if ((arrayIndex >= Settings.ArrayCount)
+					|| (arrayIndex < 0))
+				{
+					throw new GorgonException(GorgonResult.CannotCreate,
+											  string.Format(Resources.GORGFX_VIEW_ARRAY_START_INVALID,
+															Settings.ArrayCount));
+				}
+
+				if ((arrayCount > Settings.ArrayCount)
+				    || (arrayCount + arrayIndex > Settings.ArrayCount)
+				    || (arrayCount < 1))
+				{
+					throw new GorgonException(GorgonResult.CannotCreate,
+					                          string.Format(Resources.GORGFX_VIEW_ARRAY_COUNT_INVALID,
+					                                        Settings.ArrayCount));
+				}
+			}
+			else
+			{
+				if ((arrayIndex >= Settings.Depth)
+					|| (arrayIndex < 0))
+				{
+					throw new GorgonException(GorgonResult.CannotCreate,
+											  string.Format(Resources.GORGFX_VIEW_DEPTH_START_INVALID,
+															Settings.Depth));
+				}
+
+				if ((arrayCount > Settings.Depth)
+					|| (arrayCount + arrayIndex > Settings.Depth)
+					|| (arrayCount < 1))
+				{
+					throw new GorgonException(GorgonResult.CannotCreate,
+											  string.Format(Resources.GORGFX_VIEW_DEPTH_COUNT_INVALID,
+															Settings.Depth));
+				}
+				
+			}
+
+			if ((mipSlice < 0) && (mipSlice >= Settings.MipCount))
+			{
+				throw new GorgonException(GorgonResult.CannotCreate, 
+														string.Format(Resources.GORGFX_VIEW_MIP_START_INVALID,
+                                                        Settings.MipCount));
+			}
+
+			if ((mipSlice < 0) && (mipSlice >= Settings.MipCount))
+			{
+				throw new GorgonException(GorgonResult.CannotCreate,
+														string.Format(Resources.GORGFX_VIEW_MIP_START_INVALID,
+														Settings.MipCount));
+			}
+
+			var info = GorgonBufferFormatInfo.GetInfo(format);
+
+			if (info.IsTypeless)
+			{
+				throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_VIEW_NO_TYPELESS);
+			}
+
+			return _viewCache.GetRenderTargetView(format, mipSlice, arrayIndex, arrayCount) as TR;
+		}
 
 		/// <summary>
 		/// Function to create an unordered access view for this texture.
@@ -327,14 +372,21 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		protected override void CleanUpResource()
 		{
-			Gorgon.Log.Print("Gorgon texture {0}: Destroying D3D 11 texture resource.", Diagnostics.LoggingLevel.Verbose, Name);
+			Gorgon.Log.Print("Gorgon texture {0}: Destroying D3D 11 texture resource.", LoggingLevel.Verbose, Name);
 
 		    if (D3DResource == null)
 		    {
 		        return;
 		    }
 
-		    GorgonRenderStatistics.TextureCount--;
+			// Release any cached resources.  Otherwise we'll be hold on to invalid resources.
+			// This should only happen when we update a swap chain.
+			if (_viewCache != null)
+			{
+				_viewCache.Clear();
+			}
+
+			GorgonRenderStatistics.TextureCount--;
 		    GorgonRenderStatistics.TextureSize -= SizeInBytes;
 		    D3DResource.Dispose();
 		    D3DResource = null;
@@ -886,6 +938,26 @@ namespace GorgonLibrary.Graphics
 			Graphics.Context.UnmapSubresource(D3DResource, subResource);
 			_lock[subResource].Dispose();
 			_lock[subResource] = null;
+		}
+
+		/// <summary>
+		/// Function to return the default shader view for a texture.
+		/// </summary>
+		/// <param name="texture">Texture that holds the default shader view.</param>
+		/// <returns>The default shader view for the texture.</returns>
+		public static GorgonShaderView ToShaderView(GorgonTexture texture)
+		{
+			return texture == null ? null : texture._defaultShaderView;
+		}
+
+		/// <summary>
+		/// Implicit operator to retrieve the default shader resource view for a texture.
+		/// </summary>
+		/// <param name="texture">The texture to retrieve the default shader view from.</param>
+		/// <returns>The default shader view for the texture.</returns>
+		public static implicit operator GorgonShaderView(GorgonTexture texture)
+		{
+			return texture == null ? null : texture._defaultShaderView;
 		}
 		#endregion
 

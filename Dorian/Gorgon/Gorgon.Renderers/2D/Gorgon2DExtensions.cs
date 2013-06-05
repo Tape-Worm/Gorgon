@@ -51,7 +51,7 @@ namespace GorgonLibrary.Renderers
 			private GorgonShaderView _resource;									    // First pixel shader resource.
 			private IDictionary<int, GorgonConstantBuffer> _vsConstantBuffers;		// The vertex shader constant buffers.
 			private IDictionary<int, GorgonConstantBuffer> _psConstantBuffers;		// The pixel shader constant buffers.
-			private GorgonRenderTarget _target;										// Default target.
+			private GorgonRenderTargetView _target;									// Default target.
 			private GorgonIndexBuffer _indexBuffer;									// Default target.
 			private GorgonVertexBufferBinding _vertexBuffer;						// Vertex buffer.
 			private GorgonInputLayout _inputLayout;									// Input layout.
@@ -65,7 +65,7 @@ namespace GorgonLibrary.Renderers
 			/// <param name="graphics">Graphics interface.</param>
 			public void Save(GorgonGraphics graphics)
 			{
-				_target = graphics.Output.RenderTargets[0];
+				_target = graphics.Output.RenderTargets.GetView(0);
 				_indexBuffer = graphics.Input.IndexBuffer;
 				_vertexBuffer = graphics.Input.VertexBuffers[0];
 				_inputLayout = graphics.Input.Layout;
@@ -114,10 +114,10 @@ namespace GorgonLibrary.Renderers
 			/// <param name="graphics">Graphics interface.</param>
 			public void Restore(GorgonGraphics graphics)
 			{
-				graphics.Output.RenderTargets[0] = _target;
-				if (_target != null)
+				graphics.Output.RenderTargets.SetView(0, _target);
+				if ((_target != null) && (_target.Resource.ResourceType == ResourceType.Texture2D))
 				{
-					graphics.Rasterizer.SetViewport(_target.Viewport);
+					graphics.Rasterizer.SetViewport(((GorgonRenderTarget2D)_target.Resource).Viewport);
 				}
 				graphics.Input.IndexBuffer = _indexBuffer;
 				graphics.Input.VertexBuffers[0] = _vertexBuffer;

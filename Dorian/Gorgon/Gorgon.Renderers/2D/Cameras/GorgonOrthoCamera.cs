@@ -346,11 +346,11 @@ namespace GorgonLibrary.Renderers
 		/// <summary>
 		/// Function to update the projection matrix from the current target.
 		/// </summary>
-		/// <param name="target">Target to use when updating.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="target"/> parameter is NULL (Nothing in VB.Net).</exception>
-		public void UpdateFromTarget(GorgonRenderTarget target)
+		/// <param name="width">The width of the target.</param>
+		/// <param name="height">The height of the target.</param>
+		public void UpdateFromTarget(float width, float height)
 		{
-			_viewDimensions = new Vector2(target.Settings.Width, target.Settings.Height);
+			_viewDimensions = new Vector2(width, height);
 			_needsProjectionUpdate = true;
 			_needsViewUpdate = true;
 		}

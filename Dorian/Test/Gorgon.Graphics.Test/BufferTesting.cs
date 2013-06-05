@@ -103,7 +103,7 @@ namespace GorgonLibrary.Graphics.Test
 			{
 				_bufferStream = new GorgonDataStream(48);
 
-				_framework.Graphics.Shaders.VertexShader.Resources.SetShaderBuffer(0, buffer);
+				_framework.Graphics.Shaders.VertexShader.Resources.SetView(0, buffer);
 					
 				_framework.MaxTimeout = 10000;
 
@@ -214,7 +214,7 @@ namespace GorgonLibrary.Graphics.Test
 					SizeInBytes = values.Length
 		        }))
 	        {
-		        _framework.Graphics.Shaders.PixelShader.Resources.SetShaderBuffer(0, buffer);
+		        _framework.Graphics.Shaders.PixelShader.Resources.SetView(0, buffer);
 
 			    _framework.IdleFunc = () =>
 				    {

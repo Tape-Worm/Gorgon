@@ -60,7 +60,7 @@ namespace GorgonLibrary.Graphics
     /// <para>Unordered access views are only available on SM_5 or better video devices.</para>
     /// </remarks>
     public abstract class GorgonUnorderedAccessView
-        : IDisposable
+        : GorgonView, IDisposable
     {
         #region Variables.
         private bool _disposed;             // Flag to indicate whether this object was disposed or not.
@@ -75,40 +75,13 @@ namespace GorgonLibrary.Graphics
             get;
             set;
         }
-
-        /// <summary>
-        /// Property to return the resource that the view is bound with.
-        /// </summary>
-        public GorgonResource Resource
-        {
-            get;
-            private set;
-        }
-
-        /// <summary>
-        /// Property to return the format for the view.
-        /// </summary>
-        public BufferFormat Format
-        {
-            get;
-            private set;
-        }
-
-        /// <summary>
-        /// Property to return information about the view format.
-        /// </summary>
-        public GorgonBufferFormatInfo.GorgonFormatData FormatInformation
-        {
-            get;
-            private set;
-        }
         #endregion
 
         #region Methods.
         /// <summary>
         /// Function to clean up the resources used by the view.
         /// </summary>
-        internal void CleanUp()
+        protected override void OnCleanUp()
         {
             if (D3DView == null)
             {
@@ -124,21 +97,6 @@ namespace GorgonLibrary.Graphics
             D3DView.Dispose();
             D3DView = null;
         }
-
-        /// <summary>
-        /// Function to perform initialization of the shader view resource.
-        /// </summary>
-        protected abstract void OnInitialize();
-
-        /// <summary>
-        /// Function to perform initialization of the shader view resource.
-        /// </summary>
-        internal void Initialize()
-        {
-			Gorgon.Log.Print("Creating unordered access resource view for {0}.", LoggingLevel.Verbose, Resource.Name);
-			OnInitialize();
-			Gorgon.AddTrackedObject(this);
-        }
         #endregion
 
         #region Constructor/Destructor.
@@ -147,17 +105,9 @@ namespace GorgonLibrary.Graphics
         /// </summary>
         /// <param name="resource">The buffer to bind to the view.</param>
         /// <param name="format">The format of the view.</param>
-        /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="resource"/> parameter is NULL (Nothing in VB.Net).</exception>
 		protected GorgonUnorderedAccessView(GorgonResource resource, BufferFormat format)
+			: base(resource, format)
         {
-            if (resource == null)
-            {
-                throw new ArgumentNullException("resource");
-            }
-
-            Resource = resource;
-            Format = format;
-            FormatInformation = GorgonBufferFormatInfo.GetInfo(Format);
         }
         #endregion
 
@@ -176,12 +126,7 @@ namespace GorgonLibrary.Graphics
             if (disposing)
             {
 				Gorgon.RemoveTrackedObject(this);
-
-                if (D3DView != null)
-                {
-                    D3DView.Dispose();
-                    D3DView = null;
-                }
+				CleanUp();
             }
 
             _disposed = true;

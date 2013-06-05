@@ -45,7 +45,7 @@ namespace GorgonLibrary.Graphics
 		/// Property to set or return the multi sampling settings for the depth/stencil buffer.
 		/// </summary>
 		/// <remarks>Ensure that these settings match the render target that the depth buffer will be paired with.</remarks>
-		public GorgonMultisampling MultiSample
+		public GorgonMultisampling Multisampling
 		{
 			get;
 			set;
@@ -111,7 +111,7 @@ namespace GorgonLibrary.Graphics
 		{
 			TextureFormat = BufferFormat.Unknown;
 		    AllowShaderView = false;
-			MultiSample = new GorgonMultisampling(1, 0);
+			Multisampling = GorgonMultisampling.NoMultiSampling;
 		}
 		#endregion
 	}

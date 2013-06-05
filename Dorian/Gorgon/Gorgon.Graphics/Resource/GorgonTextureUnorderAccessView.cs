@@ -229,6 +229,8 @@ namespace GorgonLibrary.Graphics
 			SharpDX.Direct3D11.UnorderedAccessViewDescription desc;
 			var texture = (GorgonTexture)Resource;
 
+			Gorgon.Log.Print("Creating texture unordered access view for {0}.", LoggingLevel.Verbose, Resource.Name);
+
 			ValidateViewSettings(texture);
 
 			// Build SRV description.
@@ -257,6 +259,8 @@ namespace GorgonLibrary.Graphics
 					{
 						DebugName = Resource.ResourceType + " '" + texture.Name + "' Unordered Access Resource View"
 					};
+
+				Resource.Graphics.AddTrackedObject(this);
 			}
 			catch (SharpDX.SharpDXException sDXEx)
 			{

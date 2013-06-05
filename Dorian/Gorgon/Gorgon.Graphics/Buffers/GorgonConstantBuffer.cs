@@ -83,6 +83,15 @@ namespace GorgonLibrary.Graphics
 		#endregion
 
 		#region Methods.
+		/// <summary>
+		/// Function to clean up the resource object.
+		/// </summary>
+		protected override void CleanUpResource()
+		{
+			Graphics.Shaders.UnbindConstantBuffer(this);
+			base.CleanUpResource();
+		}
+
         /// <summary>
         /// Function to perform the creation of a default shader view.
         /// </summary>
