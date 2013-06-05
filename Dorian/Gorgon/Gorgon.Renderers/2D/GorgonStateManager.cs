@@ -246,13 +246,11 @@ namespace GorgonLibrary.Renderers
 
 			if ((state & StateChange.Texture) == StateChange.Texture)
 			{
-                _graphics.Shaders.PixelShader.Resources.SetView(0, renderable.Texture);
+                _textureView = _graphics.Shaders.PixelShader.Resources[0] = renderable.Texture;
 
 				// If we have a texture change, and we have the default diffuse shader loaded, then switch to the textured shader, otherwise 
 				// switch to the diffuse shader.
 				_gorgon2D.PixelShader.TextureSwitch(renderable.Texture);
-
-                _textureView = renderable.Texture;
 			}
 		
 			if ((state & StateChange.BlendEnable) == StateChange.BlendEnable)
@@ -347,7 +345,7 @@ namespace GorgonLibrary.Renderers
 			_rasterState = _graphics.Rasterizer.States;
 			_samplerState = _graphics.Shaders.PixelShader.TextureSamplers[0];
 			_depthState = _graphics.Output.DepthStencilState.States;
-			_textureView = _graphics.Shaders.PixelShader.Resources.GetView(0);
+			_textureView = _graphics.Shaders.PixelShader.Resources[0];
 		}
 		#endregion
 

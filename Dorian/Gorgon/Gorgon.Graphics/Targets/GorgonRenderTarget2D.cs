@@ -38,9 +38,10 @@ namespace GorgonLibrary.Graphics
     /// </summary>
     public class GorgonRenderTarget2D
         : GorgonTexture2D
-	{
+    {
 		#region Variables.
-	    private bool _disposed;				// Flag to indicate that the object was disposed.
+        private GorgonRenderTargetView _defaultRenderTargetView;    // The default render target view for this render target.
+        private bool _disposed;				                        // Flag to indicate that the object was disposed.
 		#endregion
 
 		#region Properties.
@@ -48,16 +49,6 @@ namespace GorgonLibrary.Graphics
 		/// Property to return the swap chain that this texture is attached to.
 		/// </summary>
 		public GorgonSwapChain SwapChain
-		{
-			get;
-			private set;
-		}
-
-		/// <summary>
-		/// Property to return the default render target view for this render target.
-		/// </summary>
-		/// <remarks>This view encompasses the first mip-map level, and only the first array index.</remarks>
-		public GorgonRenderTargetView DefaultRenderTargetView
 		{
 			get;
 			private set;
@@ -209,7 +200,7 @@ namespace GorgonLibrary.Graphics
 							  : new D3D.Texture2D(Graphics.D3DDevice, desc);
 
 			// Create the default render target view.
-			DefaultRenderTargetView = CreateRenderTargetView(Settings.Format, 0, 0, 1);
+			_defaultRenderTargetView = CreateRenderTargetView(Settings.Format, 0, 0, 1);
 
 			GorgonRenderStatistics.RenderTargetCount++;
 			GorgonRenderStatistics.RenderTargetSize += SizeInBytes;
@@ -271,7 +262,7 @@ namespace GorgonLibrary.Graphics
 			}
 
             // Create the default render target view.
-            DefaultRenderTargetView = CreateRenderTargetView(Settings.Format, 0, 0, 1);
+            _defaultRenderTargetView = CreateRenderTargetView(Settings.Format, 0, 0, 1);
             
             GorgonRenderStatistics.TextureCount++;
 			GorgonRenderStatistics.TextureSize += SizeInBytes;
@@ -305,7 +296,7 @@ namespace GorgonLibrary.Graphics
 		/// <remarks>This will only clear the render target.  Only the default view will be cleared, any extra views will not be cleared. Any attached depth/stencil buffer will remain untouched.</remarks>
 		public void Clear(GorgonColor color)
 		{
-			Graphics.Context.ClearRenderTargetView(DefaultRenderTargetView.D3DView, color.SharpDXColor4);
+			Graphics.Context.ClearRenderTargetView(_defaultRenderTargetView.D3DView, color.SharpDXColor4);
 		}
 
 		/// <summary>
@@ -352,7 +343,7 @@ namespace GorgonLibrary.Graphics
 		/// <returns>The render target view for the swap chain.</returns>
 		public static GorgonRenderTargetView ToRenderTargetView(GorgonRenderTarget2D target)
 		{
-			return target == null ? null : target.DefaultRenderTargetView;
+			return target == null ? null : target._defaultRenderTargetView;
 		}
 
 		/// <summary>
@@ -362,7 +353,7 @@ namespace GorgonLibrary.Graphics
 		/// <returns>The render target view for the swap chain.</returns>
 		public static implicit operator GorgonRenderTargetView(GorgonRenderTarget2D target)
 		{
-			return target == null ? null : target.DefaultRenderTargetView;
+			return target == null ? null : target._defaultRenderTargetView;
 		}
 		#endregion
 

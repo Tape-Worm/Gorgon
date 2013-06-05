@@ -195,8 +195,8 @@ namespace GorgonLibrary.Graphics.Test
 
                 GorgonTextureShaderView view = texture.CreateShaderView(BufferFormat.R8G8B8A8_UIntNormal);
                  
-                _framework.Graphics.Shaders.PixelShader.Resources.SetView(0, texture);
-                _framework.Graphics.Shaders.PixelShader.Resources.SetView(1, view);
+                _framework.Graphics.Shaders.PixelShader.Resources[0] = texture;
+                _framework.Graphics.Shaders.PixelShader.Resources[1] = view;
 
                 Assert.IsTrue(_framework.Run() == DialogResult.Yes);
             }

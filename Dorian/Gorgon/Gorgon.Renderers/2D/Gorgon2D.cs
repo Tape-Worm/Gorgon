@@ -916,7 +916,7 @@ namespace GorgonLibrary.Renderers
 				GorgonTextureSamplerStates sampler = GorgonTextureSamplerStates.DefaultStates;
 				sampler.TextureFilter = TextureFilter.Point;
 				Graphics.Shaders.PixelShader.TextureSamplers[0] = sampler;
-				Graphics.Shaders.PixelShader.Resources.SetView(0, null);
+				Graphics.Shaders.PixelShader.Resources[0] = null;
 			}
 
 			Graphics.Rasterizer.SetViewport(Target.Viewport);
