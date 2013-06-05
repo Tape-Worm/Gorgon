@@ -976,5 +976,5 @@ namespace GorgonLibrary.Graphics
             _viewCache = new GorgonViewCache(this);
 		}
 		#endregion
-	}
+    }
 }

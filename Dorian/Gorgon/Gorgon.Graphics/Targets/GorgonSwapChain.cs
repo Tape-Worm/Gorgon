@@ -670,7 +670,7 @@ namespace GorgonLibrary.Graphics
 		/// <remarks>This will only clear the swap chain.  Any attached depth/stencil buffer will remain untouched.</remarks>
 		public void Clear(GorgonColor color)
 		{
-            Graphics.Context.ClearRenderTargetView(_renderTarget.DefaultRenderTargetView.D3DView, color.SharpDXColor4);
+            _renderTarget.Clear(color);
 		}
 
 		/// <summary>
@@ -681,10 +681,7 @@ namespace GorgonLibrary.Graphics
 		/// <remarks>This will clear the swap chain and depth buffer, but depth buffers with a stencil component will remain untouched.</remarks>
 		public void Clear(GorgonColor color, float depthValue)
 		{
-			Clear(color);
-
-			if ((DepthStencilBuffer != null) && (DepthStencilBuffer.FormatInformation.HasDepth))
-				DepthStencilBuffer.ClearDepth(depthValue);
+		    _renderTarget.Clear(color, depthValue);
 		}
 
 		/// <summary>
@@ -696,18 +693,7 @@ namespace GorgonLibrary.Graphics
 		/// <remarks>This will clear the swap chain, depth buffer and stencil component of the depth buffer.</remarks>
 		public void Clear(GorgonColor color, float depthValue, int stencilValue)
 		{
-			if ((DepthStencilBuffer != null) && (DepthStencilBuffer.FormatInformation.HasDepth) && (!DepthStencilBuffer.FormatInformation.HasStencil))
-			{
-				Clear(color, depthValue);
-				return;
-			}
-
-			Clear(color);
-
-			if ((DepthStencilBuffer != null) && (DepthStencilBuffer.FormatInformation.HasDepth) && (DepthStencilBuffer.FormatInformation.HasStencil))
-			{
-				DepthStencilBuffer.Clear(depthValue, stencilValue);
-			}
+            _renderTarget.Clear(color, depthValue, stencilValue);
 		}
 
 		/// <summary>
@@ -910,7 +896,7 @@ namespace GorgonLibrary.Graphics
 		/// <returns>The render target view for the swap chain.</returns>
 		public static GorgonRenderTargetView ToRenderTargetView(GorgonSwapChain swapChain)
 		{
-			return swapChain == null ? null : swapChain._renderTarget.DefaultRenderTargetView;
+			return swapChain == null ? null : swapChain._renderTarget;
 		}
 
 		/// <summary>
@@ -920,7 +906,7 @@ namespace GorgonLibrary.Graphics
 		/// <returns>The render target view for the swap chain.</returns>
 		public static implicit operator GorgonRenderTargetView(GorgonSwapChain swapChain)
 		{
-			return swapChain == null ? null : swapChain._renderTarget.DefaultRenderTargetView;
+			return swapChain == null ? null : swapChain._renderTarget;
 		}
 		#endregion
 
@@ -975,5 +961,5 @@ namespace GorgonLibrary.Graphics
 			GC.SuppressFinalize(this);
 		}
 		#endregion
-	}
+    }
 }

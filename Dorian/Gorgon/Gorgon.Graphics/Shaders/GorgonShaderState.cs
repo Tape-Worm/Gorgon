@@ -932,7 +932,7 @@ namespace GorgonLibrary.Graphics
 		/// <remarks>A view is a way for a shader to read (or potentially write) a resource.  Views can also be used to cast the data 
         /// in a resource to another type.</remarks>
 		public sealed class ShaderResourceViews
-			: ICollection<GorgonShaderView>
+			: IList<GorgonShaderView>
 		{
 			#region Variables.
 			private readonly D3D.ShaderResourceView[] _views;			// Shader resource views.
@@ -954,7 +954,7 @@ namespace GorgonLibrary.Graphics
 					return;
 				}
 
-				SetView(index, null);
+			    this[index] = null;
 			}
 
             /// <summary>
@@ -975,7 +975,7 @@ namespace GorgonLibrary.Graphics
 
                 foreach (var index in indices)
                 {
-                    SetView(index, null);
+                    this[index] = null;
                 }
             }
             
@@ -996,8 +996,8 @@ namespace GorgonLibrary.Graphics
                         continue;
                     }
 
-			        SetView(index, null);
-                    SetView(index, view);
+                    this[index] = null;
+			        this[index] = view;
 			    }
 			}
 
@@ -1149,7 +1149,7 @@ namespace GorgonLibrary.Graphics
 				_shader.SetResources(slot, count, _views);
 			}
 
-            /// <summary>
+            /*/// <summary>
             /// Function to retrieve a shader view at the specified index.
             /// </summary>
             /// <param name="index">Index of the shader view to retrieve.</param>
@@ -1159,9 +1159,9 @@ namespace GorgonLibrary.Graphics
             {
                 GorgonDebug.AssertParamRange(index, 0, _resources.Length, "index");
                 return _resources[index];
-            }
+            }*/
 
-            /// <summary>
+/*            /// <summary>
             /// Function to set a shader view to the specified index.
             /// </summary>
             /// <param name="index">Index of the shader view to apply.</param>
@@ -1199,7 +1199,7 @@ namespace GorgonLibrary.Graphics
 	            _views[0] = view == null ? null : view.D3DView;
 
 	            _shader.SetResources(index, 1, _views);
-            }
+            }*/
 
             /// <summary>
             /// Function to return the resource assigned to the view at the specified index.
@@ -1381,7 +1381,73 @@ namespace GorgonLibrary.Graphics
 				return _resources.GetEnumerator();
 			}
 			#endregion
-		}
+
+            #region IList<GorgonShaderView> Members
+            #region Properties.
+            /// <summary>
+            /// Gets or sets the shader resource view at the specified slot.
+            /// </summary>
+            /// <exception cref="GorgonException">Thrown when the shader view is already bound to another slot.</exception>
+            /// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="slot"/> parameter is less than 0 or not less than the number of available resource slots.</exception>
+            public GorgonShaderView this[int slot]
+            {
+                get
+                {
+                    return _resources[slot];
+                }
+                set
+                {
+                    if (_resources[slot] == value)
+                    {
+                        return;
+                    }
+
+#if DEBUG
+                    if (value != null)
+                    {
+                        int currentIndex = IndexOf(value);
+
+                        if (currentIndex != -1)
+                        {
+                            throw new GorgonException(GorgonResult.CannotBind,
+                                                      string.Format(Properties.Resources.GORGFX_VIEW_ALREADY_BOUND,
+                                                                    currentIndex));
+                        }
+                    }
+#endif
+
+                    _resources[slot] = value;
+                    _views[0] = value == null ? null : value.D3DView;
+
+                    _shader.SetResources(slot, 1, _views);
+                }
+            }
+            #endregion
+
+            #region Methods.
+            /// <summary>
+            /// Inserts an item to the <see cref="T:System.Collections.Generic.IList`1"></see> at the specified index.
+            /// </summary>
+            /// <param name="index">The zero-based index at which item should be inserted.</param>
+            /// <param name="item">The object to insert into the <see cref="T:System.Collections.Generic.IList`1"></see>.</param>
+            /// <exception cref="System.NotSupportedException">This method is not supported.</exception>
+            void IList<GorgonShaderView>.Insert(int index, GorgonShaderView item)
+            {
+                throw new NotSupportedException();
+            }
+
+            /// <summary>
+            /// Removes the <see cref="T:System.Collections.Generic.IList`1"></see> item at the specified index.
+            /// </summary>
+            /// <param name="index">The zero-based index of the item to remove.</param>
+            /// <exception cref="System.NotSupportedException">This method is not supported.</exception>
+            void IList<GorgonShaderView>.RemoveAt(int index)
+            {
+                throw new NotSupportedException();
+            }
+            #endregion
+            #endregion
+        }
 		#endregion
 
 		#region Variables.

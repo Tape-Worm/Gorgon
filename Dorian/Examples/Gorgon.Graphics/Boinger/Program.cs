@@ -465,7 +465,7 @@ namespace GorgonLibrary.Graphics.Example
 			// know how to interpret the texture data (e.g. how will the shader know if the texture
 			// is supposed to be bilinear filtered or point filtered?)
 			Graphics.Shaders.PixelShader.Current = _pixelShader;
-			Graphics.Shaders.PixelShader.Resources.SetView(0, _texture);
+			Graphics.Shaders.PixelShader.Resources[0] = _texture;
 			Graphics.Shaders.PixelShader.TextureSamplers[0] = GorgonTextureSamplerStates.DefaultStates;
 
 			// Turn on alpha blending.

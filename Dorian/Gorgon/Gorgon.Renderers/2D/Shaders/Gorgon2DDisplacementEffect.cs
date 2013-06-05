@@ -198,8 +198,8 @@ namespace GorgonLibrary.Renderers
 				Gorgon2D.Drawing.SmoothingMode = SmoothingMode.Smooth;
 				Gorgon2D.PixelShader.Current = PixelShader;
 				Gorgon2D.Target = _currentTarget;
-				if (Gorgon2D.PixelShader.Resources.GetView(1) != GorgonTexture.ToShaderView(_displacementTarget))
-					Gorgon2D.PixelShader.Resources.SetView(1, _displacementTarget);
+				if (Gorgon2D.PixelShader.Resources[1] != GorgonTexture.ToShaderView(_displacementTarget))
+					Gorgon2D.PixelShader.Resources[1] = _displacementTarget;
 			}				
 		}
 
