@@ -195,7 +195,7 @@ namespace GorgonLibrary.Graphics.Test
 
                 GorgonTextureShaderView view = texture.CreateShaderView(BufferFormat.R8G8B8A8_UIntNormal);
                  
-                _framework.Graphics.Shaders.PixelShader.Resources.SetTexture(0, texture);
+                _framework.Graphics.Shaders.PixelShader.Resources.SetView(0, texture);
                 _framework.Graphics.Shaders.PixelShader.Resources.SetView(1, view);
 
                 Assert.IsTrue(_framework.Run() == DialogResult.Yes);
@@ -233,8 +233,8 @@ namespace GorgonLibrary.Graphics.Test
                                                          Usage = BufferUsage.Default
                                                      });
 
-                Assert.IsNotNull(_1D.DefaultShaderView);
-                Assert.AreEqual(_1D.Settings.Format, _1D.DefaultShaderView.Format);
+                Assert.IsNotNull((GorgonShaderView)_1D);
+				Assert.AreEqual(_1D.Settings.Format, ((GorgonShaderView)_1D).Format);
 
                 _2D = _framework.Graphics.Textures.CreateTexture<GorgonTexture2D>("Test2D",
                                                  new GorgonTexture2DSettings
@@ -249,8 +249,8 @@ namespace GorgonLibrary.Graphics.Test
                                                      Usage = BufferUsage.Default
                                                  });
 
-                Assert.IsNotNull(_2D.DefaultShaderView);
-                Assert.AreEqual(_2D.Settings.Format, _2D.DefaultShaderView.Format);
+				Assert.IsNotNull((GorgonShaderView)_2D);
+                Assert.AreEqual(_2D.Settings.Format, ((GorgonShaderView)_2D).Format);
 
                 _3D = _framework.Graphics.Textures.CreateTexture<GorgonTexture3D>("Test3D",
                                                  new GorgonTexture3DSettings
@@ -265,8 +265,8 @@ namespace GorgonLibrary.Graphics.Test
                                                      Usage = BufferUsage.Default
                                                  });
 
-                Assert.IsNotNull(_3D.DefaultShaderView);
-                Assert.AreEqual(_3D.Settings.Format, _3D.DefaultShaderView.Format);
+				Assert.IsNotNull((GorgonShaderView)_3D);
+				Assert.AreEqual(_3D.Settings.Format, ((GorgonShaderView)_3D).Format);
             }
             finally
             {

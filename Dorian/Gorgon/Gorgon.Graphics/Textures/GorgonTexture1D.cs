@@ -544,7 +544,7 @@ namespace GorgonLibrary.Graphics
 		/// </remarks>
 		/// <exception cref="System.InvalidOperationException">Thrown when this texture has an Immutable, Dynamic or a Staging usage.
 		/// </exception>
-		public void UpdateSubResource(ISubResourceData data, int subResource, GorgonRange destRange)
+		public virtual void UpdateSubResource(ISubResourceData data, int subResource, GorgonRange destRange)
 		{
 #if DEBUG
 			if ((Settings.Usage == BufferUsage.Dynamic) || (Settings.Usage == BufferUsage.Immutable))

@@ -375,4 +375,7 @@
   <data name="GORGFX_RTV_RESOURCE_TYPE_MISMATCH" xml:space="preserve">
     <value>Cannot bind the render target '{0}'. There is a render target bound with the resource type of [{1}] and the depth/stencil is bound to a [{2}] resource type.</value>
   </data>
+  <data name="GORGFX_RT_NEED_DEFAULT" xml:space="preserve">
+    <value>A render target must have a usage of [Default].</value>
+  </data>
 </root>

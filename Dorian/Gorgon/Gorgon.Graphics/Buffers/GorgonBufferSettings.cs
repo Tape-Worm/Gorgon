@@ -78,7 +78,6 @@ namespace GorgonLibrary.Graphics
 			Usage = BufferUsage.Default;
 		    AllowUnorderedAccessViews = false;
 		    AllowShaderViews = false;
-		    AllowRenderTarget = false;
             DefaultShaderViewFormat = BufferFormat.Unknown;
 		    AllowRawViews = false;
 		    AllowIndirectArguments = false;
@@ -105,20 +104,6 @@ namespace GorgonLibrary.Graphics
         /// <para>The default value is FALSE.</para>
         /// </remarks>
         public bool AllowShaderViews
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Property to set or return whether to allow this buffer to be used as a render target.
-        /// </summary>
-        /// <remarks>
-        /// This will allow the buffer to hold render target data.  As of right now, Gorgon does not have a way to bind a render target to the buffer objects.
-        /// <para>This value does not apply to constant or structured buffers.</para>
-        /// <para>The default value is FALSE.</para>
-        /// </remarks>
-        public bool AllowRenderTarget
         {
             get;
             set;

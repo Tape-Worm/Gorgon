@@ -24,7 +24,6 @@
 // 
 #endregion
 
-using System.ComponentModel;
 using GorgonLibrary.Diagnostics;
 using GorgonLibrary.Graphics.Properties;
 using D3D = SharpDX.Direct3D11;
@@ -175,6 +174,8 @@ namespace GorgonLibrary.Graphics
 		{
 			D3D.ShaderResourceViewDescription desc;
 			var texture = (GorgonTexture)Resource;
+
+			Gorgon.Log.Print("Creating texture shader view for {0}.", LoggingLevel.Verbose, Resource.Name);
 
 			// Build SRV description.
 			switch(Resource.ResourceType)

@@ -24,6 +24,8 @@
 // 
 #endregion
 
+using GorgonLibrary.Diagnostics;
+
 namespace GorgonLibrary.Graphics
 {
     /// <summary>
@@ -57,6 +59,8 @@ namespace GorgonLibrary.Graphics
         {
             var bufferType = SharpDX.Direct3D11.UnorderedAccessViewBufferFlags.None;
 
+			Gorgon.Log.Print("Creating structured buffer unordered access view for {0}.", LoggingLevel.Verbose, Resource.Name);
+
             switch (ViewType)
             {
                 case UnorderedAccessViewType.AppendConsume:
@@ -83,6 +87,8 @@ namespace GorgonLibrary.Graphics
                 {
                     DebugName = "Gorgon Unordered Access View for " + Resource.Name
                 };
+
+			Resource.Graphics.AddTrackedObject(this);
         }
         #endregion
 

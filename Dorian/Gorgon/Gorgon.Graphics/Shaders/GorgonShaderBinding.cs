@@ -31,7 +31,6 @@ using System.Reflection;
 using System.Text;
 using Shaders = SharpDX.D3DCompiler;
 using GorgonLibrary.IO;
-using GorgonLibrary.Native;
 using GorgonLibrary.Graphics.Properties;
 
 namespace GorgonLibrary.Graphics
@@ -132,21 +131,21 @@ namespace GorgonLibrary.Graphics
 			VertexShader.Current = vertexShader;
 		}
 
-        /// <summary>
-        /// Function to re-seat a shader resource after it's been altered.
-        /// </summary>
-        /// <param name="resource">Shader resource to re-seat.</param>
-        internal void Reseat(GorgonResource resource)
-        {
-            PixelShader.Resources.ReSeat(resource);
-            VertexShader.Resources.ReSeat(resource);
-        }
+		/// <summary>
+		/// Function to unbind a shader view.
+		/// </summary>
+		/// <param name="view">View to unbind.</param>
+		internal void Unbind(GorgonShaderView view)
+		{
+			PixelShader.Resources.Unbind(view);
+			VertexShader.Resources.Unbind(view);
+		}
         
         /// <summary>
         /// Function to unbind a shader resource from all shaders.
         /// </summary>
         /// <param name="resource">Shader resource to unbind.</param>
-        internal void Unbind(GorgonResource resource)
+        internal void UnbindResource(GorgonResource resource)
         {
             PixelShader.Resources.Unbind(resource);
             VertexShader.Resources.Unbind(resource);
@@ -155,11 +154,11 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Function to unbind a constant buffer from all shaders.
 		/// </summary>
-		/// <param name="buffer">Bufferr to unbind.</param>
-		internal void Unbind(GorgonConstantBuffer buffer)
+		/// <param name="constantBuffer">The constant buffer to unbind.</param>
+		internal void UnbindConstantBuffer(GorgonConstantBuffer constantBuffer)
 		{
-			PixelShader.ConstantBuffers.Unbind(buffer);
-			VertexShader.ConstantBuffers.Unbind(buffer);
+			PixelShader.ConstantBuffers.Unbind(constantBuffer);
+			VertexShader.ConstantBuffers.Unbind(constantBuffer);
 		}
 
 		/// <summary>

@@ -246,8 +246,7 @@ namespace GorgonLibrary.Renderers
 
 			if ((state & StateChange.Texture) == StateChange.Texture)
 			{
-			    _textureView = renderable.Texture == null ? null : renderable.Texture.DefaultShaderView;
-                _graphics.Shaders.PixelShader.Resources.SetView(0, _textureView);
+                _graphics.Shaders.PixelShader.Resources.SetView(0, renderable.Texture);
 
 				// If we have a texture change, and we have the default diffuse shader loaded, then switch to the textured shader, otherwise 
 				// switch to the diffuse shader.

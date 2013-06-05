@@ -25,45 +25,9 @@
 #endregion
 
 using System;
-using System.Drawing;
-using System.Windows.Forms;
-using GI = SharpDX.DXGI;
 
 namespace GorgonLibrary.Graphics
 {
-	/// <summary>
-	/// Usage flags for the swap chain.
-	/// </summary>
-	[Flags]
-	public enum SwapChainUsageFlags
-	{
-		/// <summary>
-		/// Specifies that the swap chain is used to display its data.
-		/// </summary>
-		RenderTarget = 1,
-		/// <summary>
-		/// Specifies that the swap chain is used as a shader input.
-		/// </summary>
-		ShaderInput = 2
-	}
-
-	/// <summary>
-	/// Values to determine how data is displayed to the front buffer of a swap chain.
-	/// </summary>
-	public enum SwapEffect
-	{
-		/// <summary>
-		/// Back buffer data will be discarded when the data is displayed.
-		/// </summary>
-		/// <remarks>The swap chain must have more than 1 back buffer to use this.</remarks>
-		Discard = 0,
-		/// <summary>
-		/// Back buffer data will not be discard when the data is displayed.
-		/// </summary>
-		/// <remarks>Use this to display the back buffer data in order from the first buffer, to the last.  This cannot be used on swap chains that have multisampling enabled.</remarks>
-		Sequential = 1
-	}
-
     /// <summary>
     /// Type of render target.
     /// </summary>
@@ -87,147 +51,479 @@ namespace GorgonLibrary.Graphics
         Target3D = 3
     }
 
-    /// <summary>
-    /// Settings for a render target.
-    /// </summary>
-    public interface IRenderTargetSettings
-    {
-        #region Properties.
-        /// <summary>
-        /// Property to return the type of render target.
-        /// </summary>
-        RenderTargetType RenderTargetType
-        {
-            get;
-        }
-
-        /// <summary>
-        /// Property to set or return the width of the render target.
-        /// </summary>
-        /// <remarks>This is for 1D, 2D and 3D targets only, buffer targets will always return 0.
-        /// <para>The default value is 0.</para>
-        /// </remarks>
-        int Width
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Property to set or return the height of the render target.
-        /// </summary>
-        /// <remarks>For 2D and 3D render targets only. All other targets will always return 1.</remarks>
-        int Height
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Property to set or return the depth of the render target.
-        /// </summary>
-        /// <returns>For 3D render targets only.  For other target types, this value will return 1.</returns>
-        int Depth
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Property to set or return the format for the render target.
-        /// </summary>
-        BufferFormat Format
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Property to set or return the multisampling settings for the target.
-        /// </summary>
-        /// <remarks>This is only applicable to 1D, 2D, and 3D render targets.  Buffer targets will return a Count of 0 and a quality of 0.
-        /// <para>The default value is a count of 1 and a quality of 0 (No multisampling).</para>
-        /// </remarks>
-        GorgonMultisampling MultiSample
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Property to set or return the format used by the default depth/stencil buffer.
-        /// </summary>
-        /// <remarks>If this value is set to Unknown, then no default depth/stencil will be created for the render target.  
-        /// <para>If a more complex depth/stencil (e.g. a depth/stencil with shader access) is required, then leave this value set to Unknown, 
-        /// create a new <see cref="GorgonLibrary.Graphics.GorgonDepthStencil">GorgonDepthStencil</see> buffer and attach it to the render 
-        /// targets <see cref="GorgonLibrary.Graphics.GorgonRenderTarget.DepthStencilBuffer">DepthStencil</see> property.</para>
-        /// </remarks>
-        BufferFormat DepthStencilFormat
-        {
-            get;
-            set;
-        }
+	/// <summary>
+	/// Render target texture settings.
+	/// </summary>
+	public interface IRenderTargetTextureSettings
+		: ITextureSettings
+	{
+		/// <summary>
+		/// Property to return the type of render target.
+		/// </summary>
+		RenderTargetType RenderTargetType
+		{
+			get;
+		}
 
 		/// <summary>
-		/// Property to set or return the number of textures in a texture array.
+		/// Property to set or return the format of the backing texture for the render target.
 		/// </summary>
-		/// <remarks>This value is only applicable to 1D and 2D render targets.  Buffer and 3D textures will return 1.
-		/// <para>The default value is 1.</para>
+		/// <remarks>If this value is Unknown, then it will use the format from <see cref="GorgonLibrary.Graphics.IImageSettings.Format">Format</see>.
+		/// <para>If both the Format and this parameter is Unknown, an exception will be raised.</para>
+		/// <para>The default value is Unknown.</para>
 		/// </remarks>
-		int ArrayCount
+		BufferFormat TextureFormat
 		{
 			get;
 			set;
 		}
-        #endregion
-    }
+
+
+		/// <summary>
+		/// Property to set or return the depth and/or stencil buffer format.
+		/// </summary>
+		/// <remarks>Setting this value to Unknown will create the target without a depth buffer.
+		/// <para>This value is only valid for 1D and 2D render targets.  3D render targets can't have a depth buffer.</para>
+		/// <para>The default value is Unknown.</para>
+		/// </remarks>
+		BufferFormat DepthStencilFormat
+		{
+			get;
+			set;
+		}
+	}
 
 	/// <summary>
-	/// Settings for defining a 2D render target.
+	/// Settings for defining a render target buffer.
 	/// </summary>
-	public class GorgonRenderTarget2DSettings
-        : IRenderTargetSettings
+	public class GorgonRenderTargetBufferSettings
+		: IBufferSettings, ICloneable<GorgonRenderTargetBufferSettings>
 	{
-		#region Variables.
-		private GorgonVideoMode _mode = default(GorgonVideoMode);			// Gorgon video mode.
+		#region Properties.
+		/// <summary>
+		/// Property to return the type of render target.
+		/// </summary>
+		public RenderTargetType RenderTargetType
+		{
+			get
+			{
+				return RenderTargetType.Buffer;
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return the format for the default render target view.
+		/// </summary>
+		/// <remarks>
+		/// This value must not be Unknown, if it is set to Unknown an exception will be thrown.
+		/// <para>The default is Unknown.</para>
+		/// </remarks>
+		public BufferFormat Format
+		{
+			get;
+			set;
+		}
 		#endregion
 
+		#region Constructor.
+		/// <summary>
+		/// Initializes a new instance of the <see cref="GorgonRenderTargetBufferSettings"/> class.
+		/// </summary>
+		public GorgonRenderTargetBufferSettings()
+		{
+			SizeInBytes = 0;
+			Format = BufferFormat.Unknown;
+		}
+		#endregion
+
+		#region IBufferSettings Members
+		/// <summary>
+		/// Property to set or return the size of the buffer, in bytes.
+		/// </summary>
+		/// <remarks>The default value is 0.</remarks>
+		public int SizeInBytes
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Property to set or return the usage for the buffer.
+		/// </summary>
+		/// <remarks>For render targets, this value is always Default.</remarks>
+		/// <exception cref="System.NotSupportedException">Thrown when an attempt to set the value is made.</exception>
+		BufferUsage IBufferSettings.Usage
+		{
+			get
+			{
+				return BufferUsage.Default;
+			}
+			set
+			{
+				throw new NotSupportedException();
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return whether to allow unordered access to the buffer.
+		/// </summary>
+		/// <remarks>Unordered access views require a video device with SM5 capabilities.
+		/// <para>The default value is FALSE.</para>
+		/// </remarks>
+		public bool AllowUnorderedAccessViews
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Property to set or return whether to allow shader resource views for this buffer.
+		/// </summary>
+		/// <remarks>The default value is FALSE.
+		/// </remarks>
+		public bool AllowShaderViews
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Property to set or return the format for the default shader view.
+		/// </summary>
+		/// <remarks>
+		/// Setting this value to any other value than Unknown will create a default shader view for the buffer that will encompass the entire buffer with the specified format.
+		/// <para>The default value is Unknown.</para>
+		/// </remarks>
+		public BufferFormat DefaultShaderViewFormat
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Property to set or return whether a buffer will allow raw views.
+		/// </summary>
+		/// <remarks>
+		/// This value must be set to FALSE if <see cref="AllowShaderViews" /> or <see cref="AllowUnorderedAccessViews" /> is set to FALSE.
+		/// <para>The default value is FALSE.</para>
+		/// </remarks>
+		public bool AllowRawViews
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Property to set or return whether the buffer will be used as an indirect argument buffer.
+		/// </summary>
+		/// <exception cref="System.NotSupportedException">Thrown when an attempt to set the value is made.</exception>
+		/// <remarks>This value does not apply to render target buffers and will always return FALSE.</remarks>
+		bool IBufferSettings.AllowIndirectArguments
+		{
+			get
+			{
+				return false;
+			}
+			set
+			{
+				throw new NotSupportedException();
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return whether to allow this buffer to be used for stream output.
+		/// </summary>
+		/// <exception cref="System.NotSupportedException">Thrown when an attempt to set the value is made.</exception>
+		/// <remarks>This value does not apply to render target buffers and will always return FALSE.</remarks>
+		bool IBufferSettings.IsOutput
+		{
+			get
+			{
+				return false;
+			}
+			set
+			{
+				throw new NotSupportedException();
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return the size, in bytes, of an individual item in a structured buffer.
+		/// </summary>
+		/// <exception cref="System.NotSupportedException">Thrown when an attempt to set the value is made.</exception>
+		/// <remarks>This value does not apply to render target buffers and will always return 0.
+		/// </remarks>
+		int IBufferSettings.StructureSize
+		{
+			get
+			{
+				return 0;
+			}
+			set
+			{
+				throw new NotSupportedException();
+			}
+		}
+		#endregion
+
+		#region ICloneable<GorgonRenderTargetBufferSettings> Members
+		/// <summary>
+		/// Function to return a clone of the settings.
+		/// </summary>
+		/// <returns>A clone of the settings.</returns>
+		public GorgonRenderTargetBufferSettings Clone()
+		{
+			return new GorgonRenderTargetBufferSettings
+			{
+				SizeInBytes = SizeInBytes,
+				AllowRawViews = AllowRawViews,
+				AllowUnorderedAccessViews = AllowUnorderedAccessViews,
+				AllowShaderViews = AllowShaderViews,
+				DefaultShaderViewFormat = DefaultShaderViewFormat,
+				Format = Format
+			};
+		}
+		#endregion
+	}
+
+	/// <summary>
+	/// Settings for defining a 1D render target.
+	/// </summary>
+	public class GorgonRenderTarget1DSettings
+		: IRenderTargetTextureSettings
+	{
 		#region Properties.
         /// <summary>
         /// Property to return the type of render target.
         /// </summary>
-	    public virtual RenderTargetType RenderTargetType
+	    public RenderTargetType RenderTargetType
 	    {
 	        get
 	        {
-                return RenderTargetType.Target2D;
+                return RenderTargetType.Target1D;
 	        }
-	    }
-
-        /// <summary>
-        /// Property to set or return the depth of the render target.
-        /// </summary>
-        /// <returns>This value will always return 1.</returns>
-        /// <exception cref="System.NotSupportedException">Thrown when an attempt to set this value is made.</exception>
-	    int IRenderTargetSettings.Depth
-	    {
-	        get
-	        {
-	           return 1;
-	        }
-            set
-            {
-               throw new NotSupportedException(); 
-            }
 	    }
 
 		/// <summary>
-		/// Property to set or return the number of textures in a texture array.
+		/// Property to set or return the format of the backing texture for the render target.
+		/// </summary>
+		/// <remarks>If this value is Unknown, then it will use the format from <see cref="GorgonLibrary.Graphics.GorgonTexture2DSettings.Format">Format</see>.
+		/// <para>If both the Format and this parameter is Unknown, an exception will be raised.</para>
+		/// <para>The default value is Unknown.</para>
+		/// </remarks>
+		public BufferFormat TextureFormat
+		{
+			get;
+			set;
+		}
+		
+		/// <summary>
+		/// Property to set or return the default depth and/or stencil buffer format.
+		/// </summary>
+		/// <remarks>Setting this value to Unknown will create the target without a depth buffer.
+		/// <para>The default value is Unknown.</para>
+		/// </remarks>
+		public BufferFormat DepthStencilFormat
+		{
+			get;
+			set;
+		}
+		#endregion
+
+		#region Constructor/Destructor.
+		/// <summary>
+		/// Initializes a new instance of the <see cref="GorgonRenderTarget2DSettings"/> class.
+		/// </summary>
+		public GorgonRenderTarget1DSettings()
+		{
+			ArrayCount = 1;
+			MipCount = 1;
+			Format = BufferFormat.Unknown;
+			TextureFormat = BufferFormat.Unknown;
+			DepthStencilFormat = BufferFormat.Unknown;
+			ShaderViewFormat = BufferFormat.Unknown;
+			AllowUnorderedAccess = false;
+		}
+		#endregion
+
+		#region ITextureSettings Members
+		/// <summary>
+		/// Property to set or return the format for the default shader view.
 		/// </summary>
 		/// <remarks>
-		/// This value is only applicable to 1D and 2D render targets.  Buffer and 3D textures will return 1.
-		/// <para>The default value is 1.</para>
+		/// This changes how the render target is sampled/viewed in a shader.  When this value is set to Unknown, then default view uses the render target <see cref="Format">Format</see>.
+		/// <para>The default value is Unknown.</para>
 		/// </remarks>
+		public BufferFormat ShaderViewFormat
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Property to set or return whether to allow an unordered access view of this render target.
+		/// </summary>
+		/// <remarks>
+		/// This allows the render target to be accessed via an unordered access view in a shader.
+		/// <para>Render targets using an unordered access view can only use a typed (e.g. int, uint, float) format that belongs to the same group as the format assigned to the <see cref="TextureFormat">backing texture</see>,
+		/// or R32_UInt/Int/Float (but only if the texture format is 32 bit).  Any other format will raise an exception.  Note that if the format is not set to R32_UInt/Int/Float,
+		/// then write-only access will be given to the UAV.</para>
+		/// <para>To check to see if a format is supported for UAV, use the <see cref="GorgonLibrary.Graphics.GorgonVideoDevice.SupportsUnorderedAccessViewFormat">GorgonVideoDevice.SupportsUnorderedAccessViewFormat</see>
+		/// method to determine if the format is supported.</para>
+		/// <para>The default value is FALSE.</para>
+		/// </remarks>
+		public bool AllowUnorderedAccess
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Property to set or return whether this render target has a cube texture for its backing store.
+		/// </summary>
+		/// <remarks>This is not supported for 1D render targets.  This value will always return FALSE.</remarks>
+		/// <exception cref="System.NotSupportedException">Thrown when an attempt to set this value is made.</exception>
+		bool ITextureSettings.IsTextureCube
+		{
+			get
+			{
+				return false;
+			}
+			set
+			{
+				throw new NotSupportedException();
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return the multisampling count/quality for the render target.
+		/// </summary>
+		/// <remarks>This is not supported for 1D render targets.  This will always return a count of 1, and a quality of 0 (no multisampling).</remarks>
+		/// <exception cref="System.NotSupportedException">Thrown when an attempt to set this value is made.</exception>
+		GorgonMultisampling ITextureSettings.Multisampling
+		{
+			get
+			{
+				return GorgonMultisampling.NoMultiSampling;
+			}
+			set
+			{
+				throw new NotSupportedException();
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return the usage for the render target.
+		/// </summary>
+		/// <remarks>For render targets, this value is always Default.</remarks>
+		/// <exception cref="System.NotSupportedException">Thrown when an attempt to set the value is made.</exception>
+		BufferUsage ITextureSettings.Usage
+		{
+			get
+			{
+				return BufferUsage.Default;
+			}
+			set
+			{
+				throw new NotSupportedException();
+			}
+		}
+		#endregion
+
+		#region IImageSettings Members
+		/// <summary>
+		/// Property to return the type of render target data.
+		/// </summary>
+		public ImageType ImageType
+		{
+			get
+			{
+				return ImageType.Image1D;
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return the width of a render target.
+		/// </summary>
+		public int Width
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Property to set or return the height of a render target.
+		/// </summary>
+		/// <remarks>This value does not apply to 1D render targets.  This will always return 1.</remarks>
+		/// <exception cref="System.NotSupportedException">Thrown when an attempt to set the value is made.</exception>
+		int IImageSettings.Height
+		{
+			get
+			{
+				return 1;
+			}
+			set
+			{
+				throw new NotSupportedException();
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return the depth of a render target.
+		/// </summary>
+		/// <exception cref="System.NotSupportedException">Thrown when an attempt to set this value is made.</exception>
+		/// <remarks>
+		/// This applies to 3D images only.  This parameter will always return 1.
+		/// </remarks>
+		int IImageSettings.Depth
+		{
+			get
+			{
+				return 1;
+			}
+			set
+			{
+				throw new NotSupportedException();
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return the pixel layout of the default render target view.
+		/// </summary>
+		/// <remarks>This value must not be set to Unknown if the <see cref="TextureFormat"/> is set to Unknown.  Having both values set to unknown will raise an exception.
+		/// <para>The default value is Unknown.</para>
+		/// </remarks>
+		public BufferFormat Format
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Property to set or return the number of mip map levels in the render target backing texture.
+		/// </summary>
+		/// <remarks>The default value is 1.</remarks>
+		public int MipCount
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Property to return whether the size of the render target is a power of 2 or not.
+		/// </summary>
+		public bool IsPowerOfTwo
+		{
+			get
+			{
+				return ((Width == 0) || (Width & (Width - 1)) == 0);
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return the number of images there are in the render target backing texture.
+		/// </summary>
+		/// <remarks>The default value is 1.</remarks>
 		public int ArrayCount
 		{
 			get;
@@ -235,94 +531,66 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
-		/// Property to set or return the width and height of the target.
+		/// Function to clone these image settings.
 		/// </summary>
-		public Size Size
+		/// <returns>
+		/// A clone of the image settings.
+		/// </returns>
+		public IImageSettings Clone()
 		{
-			get
-			{
-				return _mode.Size;
-			}
-			set
-			{
-				_mode.SetSize(value);
-			}
+			return new GorgonRenderTarget1DSettings
+				{
+					Width = Width,
+					AllowUnorderedAccess = AllowUnorderedAccess,
+					ArrayCount = ArrayCount,
+					DepthStencilFormat = DepthStencilFormat,
+					Format = Format,
+					MipCount = MipCount,
+					ShaderViewFormat = ShaderViewFormat,
+					TextureFormat = TextureFormat
+				};
 		}
+		#endregion
+	}
+
+	/// <summary>
+	/// Settings for defining a 2D render target.
+	/// </summary>
+	public class GorgonRenderTarget2DSettings
+        : IRenderTargetTextureSettings
+	{
+		#region Properties.
+        /// <summary>
+        /// Property to return the type of render target.
+        /// </summary>
+	    public RenderTargetType RenderTargetType
+	    {
+	        get
+	        {
+                return RenderTargetType.Target2D;
+	        }
+	    }
 
 		/// <summary>
-		/// Property to set or return the format of the target.
+		/// Property to set or return the format of the backing texture for the render target.
 		/// </summary>
-		public BufferFormat Format
-		{
-			get
-			{
-				return _mode.Format;
-			}
-			set
-			{
-				_mode.Format = value;
-			}
-		}
-
-		/// <summary>
-		/// Property to set or return the width of the target.
-		/// </summary>
-		public int Width
-		{
-			get
-			{
-				return _mode.Width;
-			}
-			set
-			{
-				_mode.SetSize(value, _mode.Height);
-			}
-		}
-
-		/// <summary>
-		/// Property to set or return the height of the target.
-		/// </summary>
-		public int Height
-		{
-			get
-			{
-				return _mode.Height;
-			}
-			set
-			{
-				_mode.SetSize(_mode.Width, value);
-			}
-		}
-
-		/// <summary>
-		/// Property to set or return the multisampling settings for the target.
-		/// </summary>
-		public GorgonMultisampling MultiSample
+		/// <remarks>If this value is Unknown, then it will use the format from <see cref="GorgonLibrary.Graphics.GorgonTexture2DSettings.Format">Format</see>.
+		/// <para>If both the Format and this parameter is Unknown, an exception will be raised.</para>
+		/// <para>The default value is Unknown.</para>
+		/// </remarks>
+		public BufferFormat TextureFormat
 		{
 			get;
 			set;
 		}
 
+	
 		/// <summary>
-		/// Property to set or return the video mode to use.
+		/// Property to set or return the default depth and/or stencil buffer format.
 		/// </summary>
-		/// <remarks>For swap chains -ONLY-: leaving the width, height or format undefined (i.e. 0, 0, or Unknown) will tell Gorgon to find the best video mode based on the window dimensions and desktop format.</remarks>
-		public GorgonVideoMode VideoMode
-		{
-			get
-			{
-				return _mode;
-			}
-			set
-			{
-				_mode = value;
-			}
-		}
-		
-		/// <summary>
-		/// Property to set or return the depth and/or stencil buffer format.
-		/// </summary>
-		/// <remarks>Setting this value to Unknown will create the target without a depth buffer.  The default value is Unknown.</remarks>
+		/// <remarks>Setting this value to Unknown will create the target without a depth buffer.
+		/// <para>The default value is Unknown.</para>
+		/// </remarks>
 		public BufferFormat DepthStencilFormat
 		{
 			get;
@@ -337,134 +605,466 @@ namespace GorgonLibrary.Graphics
 		public GorgonRenderTarget2DSettings()
 		{
 			ArrayCount = 1;
+			MipCount = 1;
 			Format = BufferFormat.Unknown;
+			TextureFormat = BufferFormat.Unknown;
 			DepthStencilFormat = BufferFormat.Unknown;
-			MultiSample = GorgonMultisampling.NoMultiSampling;
+			ShaderViewFormat = BufferFormat.Unknown;
+			Multisampling = GorgonMultisampling.NoMultiSampling;
+			AllowUnorderedAccess = false;
+		}
+		#endregion
+
+		#region ITextureSettings Members
+		/// <summary>
+		/// Property to set or return the format for the default shader view.
+		/// </summary>
+		/// <remarks>
+		/// This changes how the render target is sampled/viewed in a shader.  When this value is set to Unknown, then default view uses the render target <see cref="Format">Format</see>.
+		/// <para>The default value is Unknown.</para>
+		/// </remarks>
+		public BufferFormat ShaderViewFormat
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Property to set or return whether to allow an unordered access view of this render target.
+		/// </summary>
+		/// <remarks>
+		/// This allows the render target to be accessed via an unordered access view in a shader.
+		/// <para>Render targets using an unordered access view can only use a typed (e.g. int, uint, float) format that belongs to the same group as the format assigned to the <see cref="TextureFormat">backing texture</see>,
+		/// or R32_UInt/Int/Float (but only if the texture format is 32 bit).  Any other format will raise an exception.  Note that if the format is not set to R32_UInt/Int/Float,
+		/// then write-only access will be given to the UAV.</para>
+		/// <para>To check to see if a format is supported for UAV, use the <see cref="GorgonLibrary.Graphics.GorgonVideoDevice.SupportsUnorderedAccessViewFormat">GorgonVideoDevice.SupportsUnorderedAccessViewFormat</see>
+		/// method to determine if the format is supported.</para>
+		/// <para>The default value is FALSE.</para>
+		/// </remarks>
+		public bool AllowUnorderedAccess
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Property to set or return whether this render target has a cube texture for its backing store.
+		/// </summary>
+		/// <remarks>
+		/// When setting this value to TRUE, ensure that the <see cref="GorgonLibrary.Graphics.IImageSettings.ArrayCount">ArrayCount</see> property is set to a multiple of 6.
+		/// <para>The default value is FALSE.</para>
+		/// </remarks>
+		public bool IsTextureCube
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Property to set or return the multisampling count/quality for the render target.
+		/// </summary>
+		/// <remarks>Multisampled textures cannot have sub resources (e.g. mipmaps), so the <see cref="GorgonLibrary.Graphics.IImageSettings.MipCount">MipCount</see> should be set to 1.
+		/// <para>The default is a count of 1 and a quality of 0 (no multisampling).</para>
+		/// </remarks>
+		public GorgonMultisampling Multisampling
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Property to set or return the usage for the render target.
+		/// </summary>
+		/// <remarks>For render targets, this value is always Default.</remarks>
+		/// <exception cref="System.NotSupportedException">Thrown when an attempt to set the value is made.</exception>
+		BufferUsage ITextureSettings.Usage
+		{
+			get
+			{
+				return BufferUsage.Default;
+			}
+			set
+			{
+				throw new NotSupportedException();
+			}
+		}
+		#endregion
+
+		#region IImageSettings Members
+		/// <summary>
+		/// Property to return the type of render target data.
+		/// </summary>
+		public ImageType ImageType
+		{
+			get
+			{
+				return IsTextureCube ? ImageType.ImageCube : ImageType.Image2D;
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return the width of a render target.
+		/// </summary>
+		public int Width
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Property to set or return the height of a render target.
+		/// </summary>
+		public int Height
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Property to set or return the depth of a render target.
+		/// </summary>
+		/// <exception cref="System.NotSupportedException">Thrown when an attempt to set this value is made.</exception>
+		/// <remarks>
+		/// This applies to 3D images only.  This parameter will always return 1.
+		/// </remarks>
+		int IImageSettings.Depth
+		{
+			get
+			{
+				return 1;
+			}
+			set
+			{
+				throw new NotSupportedException();
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return the pixel layout of the default render target view.
+		/// </summary>
+		/// <remarks>This value must not be set to Unknown if the <see cref="TextureFormat"/> is set to Unknown.  Having both values set to unknown will raise an exception.
+		/// <para>The default value is Unknown.</para>
+		/// </remarks>
+		public BufferFormat Format
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Property to set or return the number of mip map levels in the render target backing texture.
+		/// </summary>
+		/// <remarks>The default value is 1.</remarks>
+		public int MipCount
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Property to return whether the size of the render target is a power of 2 or not.
+		/// </summary>
+		public bool IsPowerOfTwo
+		{
+			get
+			{
+				return ((Width == 0) || (Width & (Width - 1)) == 0) &&
+						((Height == 0) || (Height & (Height - 1)) == 0);
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return the number of images there are in the render target backing texture.
+		/// </summary>
+		/// <remarks>The default value is 1.</remarks>
+		public int ArrayCount
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Function to clone these image settings.
+		/// </summary>
+		/// <returns>
+		/// A clone of the image settings.
+		/// </returns>
+		public IImageSettings Clone()
+		{
+			return new GorgonRenderTarget2DSettings
+				{
+					Width = Width,
+					Height = Height,
+					AllowUnorderedAccess = AllowUnorderedAccess,
+					ArrayCount = ArrayCount,
+					DepthStencilFormat = DepthStencilFormat,
+					Format = Format,
+					IsTextureCube = IsTextureCube,
+					MipCount = MipCount,
+					Multisampling = Multisampling,
+					ShaderViewFormat = ShaderViewFormat,
+					TextureFormat = TextureFormat
+				};
 		}
 		#endregion
 	}
 
 	/// <summary>
-	/// Settings for defining a swap chain.
+	/// Settings for defining a 3D render target.
 	/// </summary>
-	public class GorgonSwapChainSettings
-		: GorgonRenderTarget2DSettings
+	public class GorgonRenderTarget3DSettings
+		: IRenderTargetTextureSettings
 	{
-		#region Variables.
-		private int _backBufferCount = 2;									// Number of back buffers.		
-		#endregion
-
 		#region Properties.
-        /// <summary>
-        /// Property to return the type of render target.
-        /// </summary>
-        public override RenderTargetType RenderTargetType
-        {
-            get
-            {
-                return RenderTargetType.Target2D;
-            }
-        }
-
 		/// <summary>
-		/// Property to set or return whether the client area of the window should stay in sync with the swap chain back buffer size.
+		/// Property to return the type of render target.
 		/// </summary>
-		/// <remarks>
-		/// Set this to TRUE to tell the swap chain to -not- resize the client window when the swap chain back buffer is not the same size.
-		/// <para>This is only applied when the <see cref="P:GorgonLibrary.Graphics.GorgonSwapChainSettings.Window">Window</see> property is set to a windows form object, otherwise it is ignored.</para>
-		/// <para>The default value is FALSE.</para></remarks>
-		public bool NoClientResize
-		{
-			get;
-			set;
-		}
-
-		/// <summary>
-		/// Property to return the window that is bound with the swap chain.
-		/// </summary>
-		/// <remarks>Leaving this value as NULL (Nothing in VB.Net) will use the <see cref="P:GorgonLibrary.Gorgon.ApplicationForm">Gorgon default application window.</see></remarks>
-		public Control Window
-		{
-			get;
-			set;
-		}
-
-		/// <summary>
-		/// Property to set or return whether to use windowed mode or not.
-		/// </summary>
-		public bool IsWindowed
-		{
-			get;
-			set;
-		}
-
-		/// <summary>
-		/// Property to set or return usage flags for the swap chain.
-		/// </summary>
-		/// <remarks>This will default to SwapChainUsageFlags.RenderTarget if not defined.
-		/// <para>If the current video device is a SM2_a_b video device, then this can only be set to RenderTarget, any other combination will not work and will throw an exception upon creation.</para>
-		/// </remarks>
-		public SwapChainUsageFlags Flags
-		{
-			get;
-			set;
-		}
-
-		/// <summary>
-		/// Property to set or return the number of back buffers to use.
-		/// </summary>
-		/// <remarks>This value defaults to 2 if not specified.</remarks>
-		public int BufferCount
+		public RenderTargetType RenderTargetType
 		{
 			get
 			{
-				return _backBufferCount;
-			}
-			set
-			{
-				if (value < 1)
-					value = 1;
-				_backBufferCount = value;
+				return RenderTargetType.Target3D;
 			}
 		}
 
 		/// <summary>
-		/// Property to set or return the effect used when displaying data in the swap chain to the front buffer.
+		/// Property to set or return the format of the backing texture for the render target.
 		/// </summary>
-		/// <remarks>This value defaults to SwapEffect.Discard if not specified.
-		/// <para>Note that multisampling cannot be used on the swap chain if SwapEffect.Sequential is used.</para>
+		/// <remarks>If this value is Unknown, then it will use the format from <see cref="GorgonLibrary.Graphics.GorgonTexture2DSettings.Format">Format</see>.
+		/// <para>If both the Format and this parameter is Unknown, an exception will be raised.</para>
+		/// <para>The default value is Unknown.</para>
 		/// </remarks>
-		public SwapEffect SwapEffect
+		public BufferFormat TextureFormat
 		{
 			get;
 			set;
 		}
-		#endregion
 
-		#region Methods.
 		/// <summary>
-		/// Function to convert a Gorgon swap effect into a D3D swap effect.
+		/// Property to set or return the default depth and/or stencil buffer format.
 		/// </summary>
-		/// <param name="swapEffect">Swap effect to convert.</param>
-		/// <returns>The D3D swap effect.</returns>
-		internal static GI.SwapEffect Convert(SwapEffect swapEffect)
+		/// <remarks>This value is not supported for 3D render targets.  This value will always return Unknown.</remarks>
+		BufferFormat IRenderTargetTextureSettings.DepthStencilFormat
 		{
-			return swapEffect == SwapEffect.Discard ? GI.SwapEffect.Discard : GI.SwapEffect.Sequential;
+			get
+			{
+				return BufferFormat.Unknown;
+			}
+			set
+			{
+				throw new NotSupportedException();
+			}
 		}
-
 		#endregion
 
 		#region Constructor/Destructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonSwapChainSettings"/> class.
+		/// Initializes a new instance of the <see cref="GorgonRenderTarget2DSettings"/> class.
 		/// </summary>
-		public GorgonSwapChainSettings()
+		public GorgonRenderTarget3DSettings()
 		{
-			IsWindowed = true;			
-			Flags = SwapChainUsageFlags.RenderTarget;
-			SwapEffect = SwapEffect.Discard;
-			MultiSample = new GorgonMultisampling(1, 0);
-			DepthStencilFormat = BufferFormat.Unknown;			
+			MipCount = 1;
+			Format = BufferFormat.Unknown;
+			TextureFormat = BufferFormat.Unknown;
+			ShaderViewFormat = BufferFormat.Unknown;
+			AllowUnorderedAccess = false;
+		}
+		#endregion
+
+		#region ITextureSettings Members
+		/// <summary>
+		/// Property to set or return the format for the default shader view.
+		/// </summary>
+		/// <remarks>
+		/// This changes how the render target is sampled/viewed in a shader.  When this value is set to Unknown, then default view uses the render target <see cref="Format">Format</see>.
+		/// <para>The default value is Unknown.</para>
+		/// </remarks>
+		public BufferFormat ShaderViewFormat
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Property to set or return whether to allow an unordered access view of this render target.
+		/// </summary>
+		/// <remarks>
+		/// This allows the render target to be accessed via an unordered access view in a shader.
+		/// <para>Render targets using an unordered access view can only use a typed (e.g. int, uint, float) format that belongs to the same group as the format assigned to the <see cref="TextureFormat">backing texture</see>,
+		/// or R32_UInt/Int/Float (but only if the texture format is 32 bit).  Any other format will raise an exception.  Note that if the format is not set to R32_UInt/Int/Float,
+		/// then write-only access will be given to the UAV.</para>
+		/// <para>To check to see if a format is supported for UAV, use the <see cref="GorgonLibrary.Graphics.GorgonVideoDevice.SupportsUnorderedAccessViewFormat">GorgonVideoDevice.SupportsUnorderedAccessViewFormat</see>
+		/// method to determine if the format is supported.</para>
+		/// <para>The default value is FALSE.</para>
+		/// </remarks>
+		public bool AllowUnorderedAccess
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Property to set or return whether this render target has a cube texture for its backing store.
+		/// </summary>
+		/// <remarks>This is not supported for 3D render targets.  This value will always return FALSE.</remarks>
+		/// <exception cref="System.NotSupportedException">Thrown when an attempt to set this value is made.</exception>
+		bool ITextureSettings.IsTextureCube
+		{
+			get
+			{
+				return false;
+			}
+			set
+			{
+				throw new NotSupportedException();
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return the multisampling count/quality for the render target.
+		/// </summary>
+		/// <remarks>This is not supported for 3D render targets.  This will always return a count of 1, and a quality of 0 (no multisampling).</remarks>
+		/// <exception cref="System.NotSupportedException">Thrown when an attempt to set this value is made.</exception>
+		GorgonMultisampling ITextureSettings.Multisampling
+		{
+			get
+			{
+				return GorgonMultisampling.NoMultiSampling;
+			}
+			set
+			{
+				throw new NotSupportedException();
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return the usage for the render target.
+		/// </summary>
+		/// <remarks>For render targets, this value is always Default.</remarks>
+		/// <exception cref="System.NotSupportedException">Thrown when an attempt to set the value is made.</exception>
+		BufferUsage ITextureSettings.Usage
+		{
+			get
+			{
+				return BufferUsage.Default;
+			}
+			set
+			{
+				throw new NotSupportedException();
+			}
+		}
+		#endregion
+
+		#region IImageSettings Members
+		/// <summary>
+		/// Property to return the type of render target data.
+		/// </summary>
+		public ImageType ImageType
+		{
+			get
+			{
+				return ImageType.Image3D;
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return the width of a render target.
+		/// </summary>
+		public int Width
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Property to set or return the height of a render target.
+		/// </summary>
+		public int Height
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Property to set or return the depth of a render target.
+		/// </summary>
+		public int Depth
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Property to set or return the pixel layout of the default render target view.
+		/// </summary>
+		/// <remarks>This value must not be set to Unknown if the <see cref="TextureFormat"/> is set to Unknown.  Having both values set to unknown will raise an exception.
+		/// <para>The default value is Unknown.</para>
+		/// </remarks>
+		public BufferFormat Format
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Property to set or return the number of mip map levels in the render target backing texture.
+		/// </summary>
+		/// <remarks>The default value is 1.</remarks>
+		public int MipCount
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Property to return whether the size of the render target is a power of 2 or not.
+		/// </summary>
+		public bool IsPowerOfTwo
+		{
+			get
+			{
+				return ((Width == 0) || (Width & (Width - 1)) == 0) &&
+					   ((Height == 0) || (Height & (Height - 1)) == 0) &&
+					   ((Depth == 0) || (Depth & (Depth - 1)) == 0);
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return the number of images there are in the render target backing texture.
+		/// </summary>
+		/// <remarks>The default value is 1.</remarks>
+		/// <exception cref="System.NotSupportedException">Thrown when an attempt to set this value is made.</exception>
+		int IImageSettings.ArrayCount
+		{
+			get
+			{
+				return 1;
+			}
+			set
+			{
+				throw new NotSupportedException();
+			}
+		}
+
+		/// <summary>
+		/// Function to clone these image settings.
+		/// </summary>
+		/// <returns>
+		/// A clone of the image settings.
+		/// </returns>
+		public IImageSettings Clone()
+		{
+			return new GorgonRenderTarget3DSettings
+			{
+				Width = Width,
+				Height = Height,
+				Depth = Depth,
+				AllowUnorderedAccess = AllowUnorderedAccess,
+				Format = Format,
+				MipCount = MipCount,
+				ShaderViewFormat = ShaderViewFormat,
+				TextureFormat = TextureFormat
+			};
 		}
 		#endregion
 	}

@@ -24,6 +24,7 @@
 // 
 #endregion
 
+using GorgonLibrary.Diagnostics;
 using DX = SharpDX;
 using GI = SharpDX.DXGI;
 using DXCommon = SharpDX.Direct3D;
@@ -75,6 +76,8 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		protected override void OnInitialize()
 		{
+			Gorgon.Log.Print("Creating buffer shader view for {0}.", LoggingLevel.Verbose, Resource.Name);
+
 			var desc = new SharpDX.Direct3D11.ShaderResourceViewDescription
 				{
 					BufferEx = new SharpDX.Direct3D11.ShaderResourceViewDescription.ExtendedBufferResource

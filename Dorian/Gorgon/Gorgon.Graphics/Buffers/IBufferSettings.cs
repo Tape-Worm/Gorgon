@@ -34,7 +34,7 @@ namespace GorgonLibrary.Graphics
         /// <summary>
         /// Property to set or return the usage for the buffer.
         /// </summary>
-        /// <para>The default value is Default.</para>
+        /// <remarks>The default value is Default.</remarks>
         BufferUsage Usage
         {
             get;
@@ -63,20 +63,6 @@ namespace GorgonLibrary.Graphics
         /// <para>The default value is FALSE.</para>
         /// </remarks>
         bool AllowShaderViews
-        {
-            get;
-            set;
-        }
-
-        // TODO: Add functionality to bind render targets to a buffer object.
-        /// <summary>
-        /// Property to set or return whether to allow this buffer to be used as a render target.
-        /// </summary>
-        /// <remarks>
-        /// This will allow the buffer to hold render target data.  As of right now, Gorgon does not have a way to bind a render target to the buffer objects.
-        /// <para>This value does not apply to constant or structured buffers.</para>
-        /// <para>The default value is FALSE.</para></remarks>
-        bool AllowRenderTarget
         {
             get;
             set;

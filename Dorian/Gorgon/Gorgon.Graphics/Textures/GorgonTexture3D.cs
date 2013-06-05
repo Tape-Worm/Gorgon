@@ -556,16 +556,6 @@ namespace GorgonLibrary.Graphics
 			if ((Settings.Usage == BufferUsage.Dynamic) || (Settings.Usage == BufferUsage.Immutable))
 				throw new InvalidOperationException("Cannot update a texture that is Dynamic or Immutable");
 #endif
-			var textureSize = new GorgonBox()
-			{
-				Front = 0,
-				Depth = Settings.Depth,
-				Top = 0,
-				Left = 0,
-				Width = Settings.Width,
-				Height = Settings.Height
-			};
-
 			if (destBox.Z < 0)
 				destBox.Z = 0;
 			if (destBox.Depth < 0)

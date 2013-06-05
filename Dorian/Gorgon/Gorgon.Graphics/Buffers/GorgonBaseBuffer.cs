@@ -141,6 +141,15 @@ namespace GorgonLibrary.Graphics
             set;
         }
 
+		/// <summary>
+		/// Property to set or return whether this buffer can be used as a render target.
+		/// </summary>
+		protected bool IsRenderTarget
+		{
+			get;
+			set;
+		}
+
         /// <summary>
         /// Property to set or return the D3D buffer object.
         /// </summary>
@@ -225,6 +234,12 @@ namespace GorgonLibrary.Graphics
                 Usage = D3DUsage
             };
 
+			// If this is a render target buffer, then ensure that we have a default resource.
+			if ((IsRenderTarget) && (Settings.Usage != BufferUsage.Default))
+			{
+				throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_RT_NEED_DEFAULT);
+			}
+
             // Set up the buffer.  If we're a staging buffer, then none of this stuff will 
 			// work because staging buffers can't be bound to the pipeline, so just skip it.
 	        if (Settings.Usage != BufferUsage.Staging)
@@ -241,7 +256,10 @@ namespace GorgonLibrary.Graphics
 				        desc.BindFlags = D3D.BindFlags.VertexBuffer;
 				        break;
 			        case BufferType.Structured:
-				        desc.OptionFlags = D3D.ResourceOptionFlags.BufferStructured;
+				        if (!IsRenderTarget)
+				        {
+					        desc.OptionFlags = D3D.ResourceOptionFlags.BufferStructured;
+				        }
 				        break;
 		        }
 
@@ -256,14 +274,16 @@ namespace GorgonLibrary.Graphics
 			        desc.BindFlags |= D3D.BindFlags.UnorderedAccess;
 		        }
 
-		        if (Settings.AllowRenderTarget)
+		        if (!IsRenderTarget)
+		        {
+			        if (Settings.AllowIndirectArguments)
+			        {
+				        desc.OptionFlags = D3D.ResourceOptionFlags.DrawIndirectArguments;
+			        }
+		        }
+		        else
 		        {
 			        desc.BindFlags |= D3D.BindFlags.RenderTarget;
-		        }
-
-		        if (Settings.AllowIndirectArguments)
-		        {
-			        desc.OptionFlags = D3D.ResourceOptionFlags.DrawIndirectArguments;
 		        }
 
 		        if (Settings.AllowRawViews)
@@ -272,6 +292,7 @@ namespace GorgonLibrary.Graphics
 		        }
 	        }
 
+			// Create and initialize the buffer.
 	        if (data != null)
             {
                 long position = data.Position;
@@ -322,8 +343,14 @@ namespace GorgonLibrary.Graphics
             // Unbind us from any shaders.
             if (Settings.AllowShaderViews)
             {
-                Graphics.Shaders.Unbind(this);
+                Graphics.Shaders.UnbindResource(this);
             }
+
+			if (IsRenderTarget)
+			{
+				GorgonRenderStatistics.RenderTargetCount--;
+				GorgonRenderStatistics.RenderTargetSize -= D3DBuffer.Description.SizeInBytes;
+			}
 
             switch (BufferType)
             {
@@ -634,6 +661,12 @@ namespace GorgonLibrary.Graphics
                     break;
             }
 
+			if (IsRenderTarget)
+			{
+				GorgonRenderStatistics.RenderTargetCount++;
+				GorgonRenderStatistics.RenderTargetSize += D3DBuffer.Description.SizeInBytes;
+			}
+
             // Create any default shader views that are required.
             OnCreateDefaultShaderView();
         }
@@ -654,7 +687,6 @@ namespace GorgonLibrary.Graphics
             {
                 AllowIndirectArguments = false,
                 AllowRawViews = false,
-                AllowRenderTarget = false,
                 AllowShaderViews = false,
                 AllowUnorderedAccessViews = false,
                 DefaultShaderViewFormat = BufferFormat.Unknown,
@@ -830,7 +862,27 @@ namespace GorgonLibrary.Graphics
 
             return result;
         }
-        #endregion
+
+		/// <summary>
+		/// Function to return the default shader view for a buffer.
+		/// </summary>
+		/// <param name="buffer">Buffer to evaluate.</param>
+		/// <returns>The default shader view for the buffer.</returns>
+		public static GorgonShaderView ToShaderView(GorgonBaseBuffer buffer)
+		{
+			return buffer == null ? null : buffer.DefaultShaderView;
+		}
+
+		/// <summary>
+		/// Implicit operator to return the default shader view for a buffer.
+		/// </summary>
+		/// <param name="buffer">Buffer to evaluate.</param>
+		/// <returns>The default shader view for the buffer.</returns>
+		public static implicit operator GorgonShaderView(GorgonBaseBuffer buffer)
+		{
+			return buffer == null ? null : buffer.DefaultShaderView;
+		}
+	    #endregion
 
         #region Constructor/Destructor.
         /// <summary>

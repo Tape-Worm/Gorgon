@@ -639,10 +639,12 @@ namespace GorgonLibrary.Graphics
 			{
 				for (int i = 0; i < _buffers.Length; i++)
 				{
-					if (_buffers[i] == buffer)
+					if (_buffers[i] != buffer)
 					{
-						_buffers[i] = null;
+						continue;
 					}
+
+					this[i] = null;
 				}
 			}
 
@@ -935,6 +937,22 @@ namespace GorgonLibrary.Graphics
 			#endregion
 
             #region Methods.
+			/// <summary>
+			/// Function to unbind a shader view.
+			/// </summary>
+			/// <param name="view">View to unbind.</param>
+			internal void Unbind(GorgonShaderView view)
+			{
+				int index = IndexOf(view);
+
+				if (index == -1)
+				{
+					return;
+				}
+
+				SetView(index, null);
+			}
+
             /// <summary>
             /// Function to unbind a shader resource view.
             /// </summary>
@@ -998,45 +1016,21 @@ namespace GorgonLibrary.Graphics
             }
             
             /// <summary>
-			/// Function to determine the index of a specific texture resource that's bound to the shader.
+			/// Function to determine the index of a specific resource that's bound to the shader.
 			/// </summary>
-			/// <param name="texture">Texture to look up.</param>
+			/// <param name="resource">Resource to look up.</param>
 			/// <returns>The index of the texture if found, or -1 if not.</returns>
-			/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="texture"/> parameter is NULL (Nothing in VB.Net).</exception>
-			public int IndexOf(GorgonTexture texture)
+			/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="resource"/> parameter is NULL (Nothing in VB.Net).</exception>
+			public int IndexOf(GorgonResource resource)
 			{
-				if (texture == null)
+				if (resource == null)
 				{
-					throw new ArgumentNullException("texture");
+					throw new ArgumentNullException("resource");
 				}
 
 				for (int i = 0; i < _resources.Length; i++)
 				{
-					if ((_resources[i] != null) && (_resources[i].Resource == texture))
-					{
-						return i;
-					}
-				}
-
-				return -1;
-			}
-
-			/// <summary>
-			/// Function to determine the index of a specific buffer resource that's bound to the shader.
-			/// </summary>
-			/// <param name="buffer">Texture to look up.</param>
-			/// <returns>The index of the texture if found, or -1 if not.</returns>
-			/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="buffer"/> parameter is NULL (Nothing in VB.Net).</exception>
-			public int IndexOf(GorgonBaseBuffer buffer)
-			{
-				if (buffer == null)
-				{
-					throw new ArgumentNullException("buffer");
-				}
-
-				for (int i = 0; i < _resources.Length; i++)
-				{
-					if ((_resources[i] != null) && (_resources[i].Resource == buffer))
+					if ((_resources[i] != null) && (_resources[i].Resource == resource))
 					{
 						return i;
 					}
@@ -1094,25 +1088,14 @@ namespace GorgonLibrary.Graphics
 			}
 
 			/// <summary>
-			/// Function to determine if a texture resource has a view bound to this shader stage.
+			/// Function to determine if a resource has a view bound to this shader stage.
 			/// </summary>
-			/// <param name="texture">Texture to look up.</param>
+			/// <param name="resource">Resource to look up.</param>
 			/// <returns>TRUE if found, FALSE if not.</returns>
-			/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="texture"/> parameter is NULL (Nothing in VB.Net).</exception>
-			public bool Contains(GorgonTexture texture)
+			/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="resource"/> parameter is NULL (Nothing in VB.Net).</exception>
+			public bool Contains(GorgonResource resource)
 			{
-				return IndexOf(texture) > -1;
-			}
-
-			/// <summary>
-			/// Function to determine if a buffer resource has a view bound to this shader stage.
-			/// </summary>
-			/// <param name="buffer">Buffer to look up.</param>
-			/// <returns>TRUE if found, FALSE if not.</returns>
-			/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="buffer"/> parameter is NULL (Nothing in VB.Net).</exception>
-			public bool Contains(GorgonBaseBuffer buffer)
-			{
-				return IndexOf(buffer) > -1;
+				return IndexOf(resource) > -1;
 			}
 
 			/// <summary>
@@ -1179,7 +1162,10 @@ namespace GorgonLibrary.Graphics
             /// </summary>
             /// <param name="index">Index of the shader view to apply.</param>
             /// <param name="view">View to apply to the shader.</param>
-            /// <remarks>Ensure that the view being set is not already bound to the shader.  If it is already bound, then an exception will be thrown.</remarks>
+            /// <remarks>Set a shader view to give a shader access to a resource.  You may also pass in the following resources: <see cref="GorgonLibrary.Graphics.GorgonBaseBuffer">a buffer</see>, <see cref="GorgonLibrary.Graphics.GorgonTexture">a texture</see> 
+            /// or one of the render target types.  These resources may be used as shader resources provided that the resource was created to allow shader view access.  If not, then the view will be unbound.
+			/// <para>Ensure that the view being set is not already bound to the shader.  If it is already bound, then an exception will be thrown.</para>
+            /// </remarks>
             /// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="index"/> is less than 0 or greater than or equal to the number of resource slots.</exception>
 			/// <exception cref="GorgonLibrary.GorgonException">Thrown when a view is already bound to another slot.</exception>
             public void SetView(int index, GorgonShaderView view)
@@ -1240,77 +1226,6 @@ namespace GorgonLibrary.Graphics
                 }
 
                 return (TR)resourceView.Resource;                
-            }
-
-            /// <summary>
-            /// Function to set a texture resource's default view at the specified index.
-            /// </summary>
-            /// <typeparam name="TX">Type of texture.</typeparam>
-            /// <param name="index">Index of the resource view to use.</param>
-            /// <param name="texture">Texture to assign.</param>
-            /// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="index"/> parameter is outside of the available resource view slots.</exception>
-			/// <exception cref="GorgonLibrary.GorgonException">Thrown when attempting to bind a texture that has no default view or is a staging resource.</exception>
-			public void SetTexture<TX>(int index, TX texture)
-                where TX : GorgonTexture
-            {
-#if DEBUG
-				if ((texture != null) && (texture.DefaultShaderView == null))
-				{
-					throw new GorgonException(GorgonResult.CannotBind, Properties.Resources.GORGFX_VIEW_CANT_BIND_STAGING_NO_VIEW);
-				}
-#endif
-
-	            SetView(index, texture != null ? texture.DefaultShaderView : null);
-            }
-
-			/// <summary>
-            /// Function to return the shader buffer resource assigned to the view at the specified index.
-            /// </summary>
-            /// <typeparam name="TB">Type of shader buffer.</typeparam>
-            /// <param name="index">Index of the texture to look up.</param>
-            /// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="index"/> parameter is outside of the available resource view slots.</exception>
-            /// <exception cref="System.InvalidCastException">Thrown when the type of resource at the specified index is not a shader buffer.</exception>
-            /// <returns>The shader buffer assigned to the view at the specified index, or NULL if nothing is assigned to the specified index.</returns>
-            public TB GetShaderBuffer<TB>(int index)
-                where TB : GorgonBaseBuffer
-            {
-                GorgonDebug.AssertParamRange(index, 0, _resources.Length, "index");
-
-                var resourceView = _resources[index];
-#if DEBUG
-                if ((resourceView != null) && (resourceView.Resource != null) && (!(resourceView.Resource is TB)))
-                {
-					throw new InvalidCastException(string.Format(Properties.Resources.GORGFX_VIEW_RESOURCE_NOT_TYPE, index,
-																 typeof(TB).FullName));
-                }
-#endif
-
-                if (resourceView == null)
-                {
-                    return null;    
-                }
-
-                return (TB)resourceView.Resource;                
-            }
-
-            /// <summary>
-            /// Function to set a shader buffer resource's default view at the specified index.
-            /// </summary>
-            /// <typeparam name="TB">Type of shader buffer.</typeparam>
-            /// <param name="index">Index of the resource view to use.</param>
-            /// <param name="buffer">Shader buffer to assign.</param>
-            /// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="index"/> parameter is outside of the available resource view slots.</exception>
-            /// <exception cref="GorgonLibrary.GorgonException">Thrown when attempting to bind a buffer that has no default view or is a staging resource.</exception>
-            public void SetShaderBuffer<TB>(int index, TB buffer)
-                where TB : GorgonBaseBuffer
-            {
-#if DEBUG
-				if ((buffer != null) && (buffer.DefaultShaderView == null))
-				{
-					throw new GorgonException(GorgonResult.CannotBind, Properties.Resources.GORGFX_VIEW_CANT_BIND_STAGING_NO_VIEW);
-				}
-#endif
-	            SetView(index, buffer != null ? buffer.DefaultShaderView : null);
             }
 			#endregion
 

@@ -24,6 +24,8 @@
 // 
 #endregion
 
+using System;
+
 namespace GorgonLibrary.Graphics
 {
 	/// <summary>
@@ -67,6 +69,7 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		/// <value></value>
 		/// <remarks>This only applies to 2D textures.  This value will always return FALSE.</remarks>
+		/// <exception cref="System.NotSupportedException">Thrown when an attempt to set this value is made.</exception>
 		bool ITextureSettings.IsTextureCube
 		{
 			get
@@ -75,6 +78,7 @@ namespace GorgonLibrary.Graphics
 			}
 			set
 			{
+				throw new NotSupportedException();
 			}
 		}
 
@@ -160,6 +164,7 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		/// <value></value>
 		/// <remarks>This only applies to 1D and 2D textures.  This value will always return 1.</remarks>
+		/// <exception cref="System.NotSupportedException">Thrown when an attempt to set this value is made.</exception>
 		int IImageSettings.ArrayCount
 		{
 			get
@@ -168,6 +173,7 @@ namespace GorgonLibrary.Graphics
 			}
 			set
 			{
+				throw new NotSupportedException();
 			}
 		}
 
@@ -187,14 +193,16 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		/// <value></value>
 		/// <remarks>This only applies to 2D textures.  This value will always return a count of 1, and a quality of 0 (no multisampling).</remarks>
+		/// <exception cref="System.NotSupportedException">Thrown when an attempt to set this value is made.</exception>
 		GorgonMultisampling ITextureSettings.Multisampling
 		{
 			get
 			{
-				return new GorgonMultisampling(1, 0);
+				return GorgonMultisampling.NoMultiSampling;
 			}
 			set
 			{
+				throw new NotSupportedException();
 			}
 		}
 

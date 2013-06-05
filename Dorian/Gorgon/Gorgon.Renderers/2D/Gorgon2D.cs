@@ -88,6 +88,7 @@ namespace GorgonLibrary.Renderers
 	/// It is important to use the 2D interface Target property as it will perform state checking to keep rendering consistent.
 	/// </para>
 	/// </remarks>
+#error "Need to finish render target binding for 2D module."
 	public class Gorgon2D
 		: IDisposable
 	{
@@ -268,7 +269,7 @@ namespace GorgonLibrary.Renderers
 		/// Property to return the default render target.
 		/// </summary>
 		/// <remarks>This is the inital target that the Gorgon2D interface was created with, or the one internally generated depending on the constructor being used.</remarks>
-		public GorgonRenderTarget DefaultTarget
+		public GorgonRenderTargetView DefaultTarget
 		{
 			get;
 			private set;
@@ -478,18 +479,18 @@ namespace GorgonLibrary.Renderers
 		}
 
 		/// <summary>
-		/// Property to set or return the active render target.
+		/// Property to set or return the active render target view.
 		/// </summary>
 		/// <remarks>Changing the current render target will reset the <see cref="P:GorgonLibrary.Renderers.Gorgon2D.Viewport">Viewport</see> and the <see cref="P:GorgonLibrary.Renderers.Gorgon2D.ClipRegion">ClipRegion</see>.</remarks>
-		public GorgonRenderTarget Target
+		public GorgonRenderTargetView Target
 		{
 			get
 			{
-				return Graphics.Output.RenderTargets[0] ?? DefaultTarget;
+				return Graphics.Output.RenderTargets.GetView(0) ?? DefaultTarget;
 			}
 			set
 			{
-				if (Graphics.Output.RenderTargets[0] == value)
+				if (Graphics.Output.RenderTargets.GetView(0) == value)
 				{
 					return;
 				}
@@ -545,34 +546,37 @@ namespace GorgonLibrary.Renderers
 		/// Function to update the current render target.
 		/// </summary>
 		/// <param name="target">The target being bound.</param>
-		private void UpdateTarget(GorgonRenderTarget target)
+		private void UpdateTarget(GorgonRenderTargetView target)
 		{
 			// Find out if the target is a swap chain.
 			_swapChain = null;
-			var target2D = Target as GorgonRenderTarget2D;
-			if (target2D != null)
+			var target2D = Target.Resource as GorgonRenderTarget2D;
+			if (target2D == null)
 			{
-				_swapChain = (GorgonSwapChain)target2D;
+				// If this isn't a 2D target, then leave.
+				return;
 			}
+
+			_swapChain = target2D.SwapChain;
 
 			// Remove any previous handler.
 			if (_swapChain != null)
 				_swapChain.Resized -= new EventHandler<GorgonSwapChainResizedEventArgs>(target_Resized);
 
-			Graphics.Output.RenderTargets[0] = target;
+			Graphics.Output.RenderTargets.SetView(0, target);
 
 			// If this is a swap chain, then bind the resizing code to it.
-			target2D = target as GorgonRenderTarget2D;
+			target2D = target.Resource as GorgonRenderTarget2D;
 			if (target2D != null)
 			{
-				_swapChain = (GorgonSwapChain)target2D;
+				_swapChain = target2D.SwapChain;
 			}
 
 			// Update our default camera.
 			// User cameras will need to be updated by the user on a resize or target change.
 			if (_camera == null)
 			{
-				_defaultCamera.UpdateFromTarget(Target);
+				_defaultCamera.UpdateFromTarget(target2D.Settings.Width, target2D.Settings.Height);
 				_defaultCamera.Anchor = new Vector2(Target.Settings.Width / 2.0f, Target.Settings.Height / 2.0f);
 				_defaultCamera.Position = -_defaultCamera.Anchor;
 			}
@@ -915,7 +919,7 @@ namespace GorgonLibrary.Renderers
 
 			// By default, turn on multi sampling over a count of 2.
 			if ((!IsMultisamplingEnabled)
-				&& (Target.Settings.MultiSample.Count > 1)
+				&& (Target.Settings.Multisampling.Count > 1)
 				&& ((Graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM4_1)
 					|| (Graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM5)))
 			{
@@ -1140,17 +1144,17 @@ namespace GorgonLibrary.Renderers
 		/// Initializes a new instance of the <see cref="Gorgon2D"/> class.
 		/// </summary>
 		/// <param name="target">The primary render target to use.</param>		
-		internal Gorgon2D(GorgonRenderTarget target)
+		internal Gorgon2D(GorgonRenderTargetView target)
 		{						
 			TrackedObjects = new GorgonDisposableObjectCollection();
-			Graphics = target.Graphics;
+			Graphics = target.Resource.Graphics;
 			DefaultTarget = target;
 
-			var target2D = target as GorgonRenderTarget2D;
+			var target2D = target.Resource as GorgonRenderTarget2D;
 
 			if (target2D != null)
 			{
-				_swapChain = (GorgonSwapChain)target2D;
+				_swapChain = target2D.SwapChain;
 			}
 
 			Icons = Graphics.Textures.Create2DTextureFromGDIImage("Gorgon2D.Icons", Properties.Resources.Icons);

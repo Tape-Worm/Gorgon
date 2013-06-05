@@ -164,8 +164,7 @@ namespace GorgonLibrary.Renderers
 
 			_currentTarget = Gorgon2D.Target;
 
-			if (Gorgon2D.PixelShader.ConstantBuffers[2] != _displacementBuffer)
-				Gorgon2D.PixelShader.ConstantBuffers[2] = _displacementBuffer;
+			Gorgon2D.PixelShader.ConstantBuffers[2] = _displacementBuffer;
 
 			return base.OnBeforeRender();
 		}
@@ -199,8 +198,8 @@ namespace GorgonLibrary.Renderers
 				Gorgon2D.Drawing.SmoothingMode = SmoothingMode.Smooth;
 				Gorgon2D.PixelShader.Current = PixelShader;
 				Gorgon2D.Target = _currentTarget;
-				if (Gorgon2D.PixelShader.Resources.GetView(1) != ((GorgonTexture2D)_displacementTarget).DefaultShaderView)
-					Gorgon2D.PixelShader.Resources.SetView(1, ((GorgonTexture2D)_displacementTarget).DefaultShaderView);
+				if (Gorgon2D.PixelShader.Resources.GetView(1) != GorgonTexture.ToShaderView(_displacementTarget))
+					Gorgon2D.PixelShader.Resources.SetView(1, _displacementTarget);
 			}				
 		}
 

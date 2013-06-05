@@ -52,24 +52,6 @@ namespace GorgonLibrary.Graphics
 		}
 
         /// <summary>
-        /// Property to return the swap chain that this texture is attached to.
-        /// </summary>
-        public GorgonSwapChain SwapChain
-        {
-            get;
-            internal set;
-        }
-
-        /// <summary>
-        /// Property to return the depth/stencil buffer that this texture is attached to.
-        /// </summary>
-        public GorgonDepthStencil DepthStencilBuffer
-        {
-            get;
-            internal set;
-        }
-
-        /// <summary>
 		/// Property to return the settings for this texture.
 		/// </summary>
 		public new GorgonTexture2DSettings Settings
@@ -104,10 +86,11 @@ namespace GorgonLibrary.Graphics
 		protected override void OnUpdateSubResource(ISubResourceData data, int subResource)
 		{
 #if DEBUG
-			if (DepthStencilBuffer != null)
+			// TODO: Add this to depth/stencil buffer override.
+			/*if (DepthStencilBuffer != null)
 			{
 				throw new InvalidOperationException("Cannot update a texture used as a depth/stencil buffer.");
-			}
+			}*/
 #endif
 
 			var box = new SharpDX.DataBox()
@@ -117,14 +100,15 @@ namespace GorgonLibrary.Graphics
 				SlicePitch = data.SlicePitch
 			};
 
-			var region = new D3D.ResourceRegion();
-
-			region.Front = 0;
-			region.Back = 1;
-			region.Left = 0;
-			region.Right = Settings.Width;
-			region.Top = 0;
-			region.Bottom = Settings.Height;
+			var region = new D3D.ResourceRegion
+				{
+					Front = 0,
+					Back = 1,
+					Left = 0,
+					Right = Settings.Width,
+					Top = 0,
+					Bottom = Settings.Height
+				};
 
 			Graphics.Context.UpdateSubresourceSafe(box, D3DResource, FormatInformation.SizeInBytes, subResource, region, FormatInformation.IsCompressed);			
 		}
@@ -159,74 +143,6 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
-		/// Function to initialize a render target texture.
-		/// </summary>
-		/// <param name="target">The render target that is bound to the texture.</param>
-		internal void InitializeRenderTarget(GorgonRenderTarget target)
-		{
-            RenderTarget = target;
-		    
-			var desc = new D3D.Texture2DDescription
-			    {
-			        ArraySize = Settings.ArrayCount,
-                    Format = (SharpDX.DXGI.Format)Settings.Format,
-			        Width = Settings.Width,
-			        Height = Settings.Height,
-			        MipLevels = Settings.MipCount,
-			        BindFlags = GetBindFlags(false, true),
-			        Usage = D3D.ResourceUsage.Default,
-			        CpuAccessFlags = D3D.CpuAccessFlags.None,
-			        OptionFlags = D3D.ResourceOptionFlags.None,
-			        SampleDescription = GorgonMultisampling.Convert(Settings.Multisampling)
-			    };
-
-		    Gorgon.Log.Print("{0} {1}: Creating 2D D3D 11 render target texture...", Diagnostics.LoggingLevel.Verbose, GetType().Name, Name);
-			D3DResource = new D3D.Texture2D(Graphics.D3DDevice, desc);
-
-			CreateDefaultResourceView();
-		}
-
-        /// <summary>
-        /// Function to initialize the texture from a swap chain.
-        /// </summary>
-        /// <param name="swapChain">The swap chain used to initialize the texture.</param>
-        internal void InitializeSwapChain(GorgonSwapChain swapChain)
-        {
-            if (D3DResource != null)
-            {
-                CleanUpResource();
-            }
-
-            D3DResource = D3D.Resource.FromSwapChain<D3D.Texture2D>(swapChain.GISwapChain, 0);
-            D3D.Texture2DDescription desc = ((D3D.Texture2D)D3DResource).Description;
-
-	        base.Settings.Width = desc.Width;
-	        base.Settings.Height = desc.Height;
-	        base.Settings.ArrayCount = desc.ArraySize;
-	        base.Settings.Format = (BufferFormat)desc.Format;
-	        base.Settings.MipCount = desc.MipLevels;
-	        base.Settings.Usage = (BufferUsage)desc.Usage;
-			base.Settings.ShaderViewFormat = BufferFormat.Unknown;
-	        base.Settings.AllowUnorderedAccess = (desc.BindFlags & D3D.BindFlags.UnorderedAccess) == D3D.BindFlags.UnorderedAccess;
-			base.Settings.Multisampling = new GorgonMultisampling(desc.SampleDescription.Count, desc.SampleDescription.Quality);
-	        base.Settings.IsTextureCube = (desc.OptionFlags & D3D.ResourceOptionFlags.TextureCube) ==
-	                                      D3D.ResourceOptionFlags.TextureCube;
-
-            SwapChain = swapChain;
-            RenderTarget = swapChain.RenderTarget;
-
-            if ((swapChain.Settings.Flags & SwapChainUsageFlags.ShaderInput) == SwapChainUsageFlags.ShaderInput)
-            {
-                CreateDefaultResourceView();
-            }
-
-            Graphics.Shaders.Reseat(this);
-
-            GorgonRenderStatistics.TextureCount++;
-            GorgonRenderStatistics.TextureSize += SizeInBytes;
-        }
-
-		/// <summary>
 		/// Function to initialize a depth/stencil texture.
 		/// </summary>
 		/// <param name="depthStencil">The depth/stencil buffer that owns this texture.</param>
@@ -255,7 +171,6 @@ namespace GorgonLibrary.Graphics
 
 			Gorgon.Log.Print("{0} {1}: Creating D3D 11 depth/stencil texture...", Diagnostics.LoggingLevel.Verbose, GetType().Name, Name);
 			D3DResource = new D3D.Texture2D(Graphics.D3DDevice, desc);
-            DepthStencilBuffer = depthStencil;
 
 		    if (depthStencil.Settings.AllowShaderView)
 		    {
@@ -728,7 +643,7 @@ namespace GorgonLibrary.Graphics
 		/// <para>-or-</para>
 		/// <para>Thrown if this texture is a depth/stencil buffer texture.</para>
 		/// </exception>
-		public void UpdateSubResource(ISubResourceData data, int subResource, Rectangle destRect)
+		public virtual void UpdateSubResource(ISubResourceData data, int subResource, Rectangle destRect)
 		{
 #if DEBUG
 			if ((Settings.Usage == BufferUsage.Dynamic) || (Settings.Usage == BufferUsage.Immutable))
@@ -737,10 +652,11 @@ namespace GorgonLibrary.Graphics
 			if ((Settings.Multisampling.Count > 1) || (Settings.Multisampling.Quality > 0))
 				throw new InvalidOperationException("Cannot update a texture that is multisampled.");
 
-		    if (DepthStencilBuffer != null)
+			// TODO: Put this in the depth/stencil buffer code when we have it inheriting from Texture.
+		    /*if (DepthStencilBuffer != null)
 		    {
 		        throw new InvalidOperationException("Cannot update a texture used as a depth/stencil buffer.");
-		    }
+		    }*/
 
 #endif
 			var textureSize = new Rectangle(0, 0, Settings.Width, Settings.Height);

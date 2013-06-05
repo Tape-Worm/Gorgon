@@ -24,11 +24,8 @@
 // 
 #endregion
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using GorgonLibrary.Diagnostics;
+using GI = SharpDX.DXGI;
 using D3D = SharpDX.Direct3D11;
 
 namespace GorgonLibrary.Graphics
@@ -39,12 +36,9 @@ namespace GorgonLibrary.Graphics
     /// <remarks>A render target view is what allows a render target to be bound to the pipeline.  By default, every render target has a default view assigned which encompasses the entire resource.  
     /// This allows the resource to be bound to the pipeline directly via a cast operation.  However, in some instances, only a section of the resource may need to be assigned to the pipeline (e.g. 
     /// a particular array index in a 2D array texture).  In this case, the user can define a render target view to only use that one array index and bind that to the pipeline.</remarks>
-    public class GorgonRenderTargetView
+    public abstract class GorgonRenderTargetView
+		: GorgonView
     {
-        #region Variables.
-
-        #endregion
-
         #region Properties.
         /// <summary>
         /// Property to return the render target view.
@@ -52,25 +46,7 @@ namespace GorgonLibrary.Graphics
         internal D3D.RenderTargetView D3DView
         {
             get;
-            private set;
-        }
-
-        /// <summary>
-        /// Property to return the resource that is bound with this view.
-        /// </summary>
-        public GorgonResource Resource
-        {
-            get;
-            private set;
-        }
-
-        /// <summary>
-        /// Property to return the format of the render target view.
-        /// </summary>
-        public BufferFormat Format
-        {
-            get;
-            private set;
+            set;
         }
         #endregion
 
@@ -78,19 +54,271 @@ namespace GorgonLibrary.Graphics
         /// <summary>
         /// Function to clean up the render target view.
         /// </summary>
-        internal void CleanUp()
+        protected override void OnCleanUp()
         {
             if (D3DView == null)
             {
                 return;
             }
 
-            
+			Resource.Graphics.Output.RenderTargets.Unbind(this);
+
+			Gorgon.Log.Print("Destroying render target view for {0}.",
+							 LoggingLevel.Verbose,
+							 Resource.Name);
+			D3DView.Dispose();
+	        D3DView = null;
         }
         #endregion
 
         #region Constructor/Destructor.
-
+		/// <summary>
+		/// Initializes a new instance of the <see cref="GorgonRenderTargetView"/> class.
+		/// </summary>
+		/// <param name="resource">The resource to bind to the view.</param>
+		/// <param name="format">The format of the view.</param>
+		protected GorgonRenderTargetView(GorgonResource resource, BufferFormat format)
+			: base(resource, format)
+		{
+		}
         #endregion
     }
+
+	/// <summary>
+	/// A view to allow 1D texture based render targets to be bound to the pipeline.
+	/// </summary>
+	/// <remarks>A render target view is what allows a render target to be bound to the pipeline.  By default, every render target has a default view assigned which encompasses the entire resource.  
+	/// This allows the resource to be bound to the pipeline directly via a cast operation.  However, in some instances, only a section of the resource may need to be assigned to the pipeline (e.g. 
+	/// a particular array index in a 2D array texture).  In this case, the user can define a render target view to only use that one array index and bind that to the pipeline.</remarks>
+	public class GorgonRenderTarget1DView
+		: GorgonRenderTargetView
+	{
+		#region Variables.
+		private readonly GorgonRenderTarget1D _target;				// 1D render target to bind.
+		#endregion
+
+		#region Properties.
+		/// <summary>
+		/// Property to return the mip slice to use for the view.
+		/// </summary>
+		public int MipSlice
+		{
+			get;
+			private set;
+		}
+
+		/// <summary>
+		/// Property to return the number of array indices to cover.
+		/// </summary>
+		/// <returns></returns>
+		public int ArrayCount
+		{
+			get;
+			private set;
+		}
+
+		/// <summary>
+		/// Property to return the first array index to use.
+		/// </summary>
+		public int FirstArrayIndex
+		{
+			get;
+			private set;
+		}
+		#endregion
+
+		#region Methods.
+		/// <summary>
+		/// Function to retrieve the view description.
+		/// </summary>
+		/// <returns>The view description.</returns>
+		private D3D.RenderTargetViewDescription GetDesc()
+		{
+			// Set up for arrayed and multisampled texture.
+			if (_target.Settings.ArrayCount > 1)
+			{
+				return new D3D.RenderTargetViewDescription
+				{
+					Format = (GI.Format)Format,
+					Dimension = D3D.RenderTargetViewDimension.Texture1DArray,
+					Texture1DArray =
+					{
+						MipSlice = MipSlice,
+						FirstArraySlice = FirstArrayIndex,
+						ArraySize = ArrayCount
+					}
+				};
+			}
+
+			return new D3D.RenderTargetViewDescription
+			{
+				Format = (GI.Format)Format,
+				Dimension = D3D.RenderTargetViewDimension.Texture1D,
+				Texture1D =
+				{
+					MipSlice = MipSlice
+				}
+			};
+		}
+
+		/// <summary>
+		/// Function to perform initialization of the view.
+		/// </summary>
+		protected override void OnInitialize()
+		{
+			var desc = GetDesc();
+
+			D3DView = new D3D.RenderTargetView(Resource.Graphics.D3DDevice, Resource.D3DResource, desc)
+				{
+					DebugName = string.Format("{0} '{1}' Render Target View", Resource.ResourceType, Resource.Name)
+				};
+
+		}
+		#endregion
+
+		#region Constructor/Destructor.
+		/// <summary>
+		/// Initializes a new instance of the <see cref="GorgonRenderTarget1DView"/> class.
+		/// </summary>
+		/// <param name="target">The render target to bind.</param>
+		/// <param name="format">The format of the render target view.</param>
+		/// <param name="mipSlice">The mip slice to use in the view.</param>
+		/// <param name="arrayIndex">The first array index to use in the view.</param>
+		/// <param name="arrayCount">The number of array indices to use in the view.</param>
+		internal GorgonRenderTarget1DView(GorgonRenderTarget1D target, BufferFormat format, int mipSlice, int arrayIndex, int arrayCount)
+			: base(target, format)
+		{
+			_target = target;
+			MipSlice = mipSlice;
+			FirstArrayIndex = arrayIndex;
+			ArrayCount = arrayCount;
+		}
+		#endregion
+	}
+
+	/// <summary>
+	/// A view to allow 2d texture based render targets to be bound to the pipeline.
+	/// </summary>
+	/// <remarks>A render target view is what allows a render target to be bound to the pipeline.  By default, every render target has a default view assigned which encompasses the entire resource.  
+	/// This allows the resource to be bound to the pipeline directly via a cast operation.  However, in some instances, only a section of the resource may need to be assigned to the pipeline (e.g. 
+	/// a particular array index in a 2D array texture).  In this case, the user can define a render target view to only use that one array index and bind that to the pipeline.</remarks>
+	public class GorgonRenderTarget2DView
+		: GorgonRenderTargetView
+	{
+		#region Variables.
+		private readonly GorgonRenderTarget2D _target;				// 2D render target to bind.
+		#endregion
+
+		#region Properties.
+		/// <summary>
+		/// Property to return the mip slice to use for the view.
+		/// </summary>
+		public int MipSlice
+		{
+			get;
+			private set;
+		}
+
+		/// <summary>
+		/// Property to return the number of array indices to cover.
+		/// </summary>
+		/// <returns></returns>
+		public int ArrayCount
+		{
+			get;
+			private set;
+		}
+
+		/// <summary>
+		/// Property to return the first array index to use.
+		/// </summary>
+		public int FirstArrayIndex
+		{
+			get;
+			private set;
+		}
+		#endregion
+
+		#region Methods.
+		/// <summary>
+		/// Function to retrieve the view description.
+		/// </summary>
+		/// <returns>The view description.</returns>
+		private D3D.RenderTargetViewDescription GetDesc()
+		{
+			bool isMultiSampled = _target.Settings.Multisampling != GorgonMultisampling.NoMultiSampling;
+
+			// Set up for arrayed and multisampled texture.
+			if (_target.Settings.ArrayCount > 1)
+			{
+				return new D3D.RenderTargetViewDescription
+					{
+						Format = (GI.Format)Format,
+						Dimension = isMultiSampled
+							            ? D3D.RenderTargetViewDimension.Texture2DMultisampledArray
+							            : D3D.RenderTargetViewDimension.Texture2DArray,
+						Texture2DArray =
+							{
+								MipSlice = isMultiSampled ? FirstArrayIndex : MipSlice,
+								FirstArraySlice = isMultiSampled ? ArrayCount : FirstArrayIndex,
+								ArraySize = isMultiSampled ? 0 : ArrayCount
+							}
+					};
+			}
+
+			return new D3D.RenderTargetViewDescription
+				{
+					Format = (GI.Format)Format,
+					Dimension = isMultiSampled
+						            ? D3D.RenderTargetViewDimension.Texture2DMultisampled
+						            : D3D.RenderTargetViewDimension.Texture2D,
+					Texture2D =
+						{
+							MipSlice = isMultiSampled ? 0 : MipSlice
+						}
+				};
+		}
+
+		/// <summary>
+		/// Function to perform initialization of the view.
+		/// </summary>
+		protected override void OnInitialize()
+		{
+			var desc = GetDesc();
+
+			D3DView = new D3D.RenderTargetView(Resource.Graphics.D3DDevice, Resource.D3DResource, desc)
+				{
+					DebugName = string.Format("{0} '{1}' Render Target View", Resource.ResourceType, Resource.Name)
+				};
+		}
+
+		/// <summary>
+		/// Function to clear the render target view.
+		/// </summary>
+		/// <param name="color">Color used to clear the render target view.</param>
+		public void Clear(GorgonColor color)
+		{
+			Resource.Graphics.Context.ClearRenderTargetView(D3DView, color.SharpDXColor4);
+		}
+		#endregion
+
+		#region Constructor/Destructor.
+		/// <summary>
+		/// Initializes a new instance of the <see cref="GorgonRenderTarget2DView"/> class.
+		/// </summary>
+		/// <param name="target">The render target to bind.</param>
+		/// <param name="format">The format of the render target view.</param>
+		/// <param name="mipSlice">The mip slice to use in the view.</param>
+		/// <param name="arrayIndex">The first array index to use in the view.</param>
+		/// <param name="arrayCount">The number of array indices to use in the view.</param>
+		internal GorgonRenderTarget2DView(GorgonRenderTarget2D target, BufferFormat format, int mipSlice, int arrayIndex, int arrayCount)
+			: base(target, format)
+		{
+			_target = target;
+			MipSlice = mipSlice;
+			FirstArrayIndex = arrayIndex;
+			ArrayCount = arrayCount;
+		}
+		#endregion
+	}
 }

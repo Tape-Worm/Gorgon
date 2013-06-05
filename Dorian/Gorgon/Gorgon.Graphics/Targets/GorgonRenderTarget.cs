@@ -34,6 +34,7 @@ namespace GorgonLibrary.Graphics
 	/// The base render target object.
 	/// </summary>
 	/// <remarks>This is the base class for all render target types in Gorgon.</remarks>
+	[Obsolete("I'm deleting this.")]
 	public abstract class GorgonRenderTarget
 		: GorgonNamedObject, IDisposable
 	{
@@ -54,7 +55,7 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Property to return the settings for this render target.
 		/// </summary>
-		public IRenderTargetSettings Settings
+		public IRenderTargetTextureSettings Settings
 		{
 			get;
 			private set;
@@ -104,7 +105,6 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		internal void CleanUp()
 		{
-            Graphics.Output.RenderTargets.Unbind(this);
             OnCleanUp();
 		}
 
@@ -115,53 +115,6 @@ namespace GorgonLibrary.Graphics
 		{
 			OnInitialize();
 		}
-
-		/// <summary>
-		/// Function to clear the swap chain and any depth buffer attached to it.
-		/// </summary>
-		/// <param name="color">Color used to clear the swap chain.</param>
-		/// <remarks>This will only clear the swap chain.  Any attached depth/stencil buffer will remain untouched.</remarks>
-		public void Clear(GorgonColor color)
-		{
-			Graphics.Context.ClearRenderTargetView(D3DRenderTarget, color.SharpDXColor4);
-		}
-
-		/// <summary>
-		/// Function to clear the swap chain and an associated depth buffer.
-		/// </summary>
-		/// <param name="color">Color used to clear the swap chain.</param>
-		/// <param name="depthValue">Value used to fill the depth buffer.</param>
-		/// <remarks>This will clear the swap chain and depth buffer, but depth buffers with a stencil component will remain untouched.</remarks>
-		public void Clear(GorgonColor color, float depthValue)
-		{
-			Clear(color);
-
-			if ((DepthStencilBuffer != null) && (DepthStencilBuffer.FormatInformation.HasDepth))
-				DepthStencilBuffer.ClearDepth(depthValue);
-		}
-
-		/// <summary>
-		/// Function to clear the swap chain and an associated depth buffer with a stencil component.
-		/// </summary>
-		/// <param name="color">Color used to clear the swap chain.</param>
-		/// <param name="depthValue">Value used to fill the depth buffer.</param>
-		/// <param name="stencilValue">Value used to fill the stencil component of the depth buffer.</param>
-		/// <remarks>This will clear the swap chain, depth buffer and stencil component of the depth buffer.</remarks>
-		public void Clear(GorgonColor color, float depthValue, int stencilValue)
-		{
-			if ((DepthStencilBuffer != null) && (DepthStencilBuffer.FormatInformation.HasDepth) && (!DepthStencilBuffer.FormatInformation.HasStencil))
-			{
-				Clear(color, depthValue);
-				return;
-			}
-
-			Clear(color);
-
-			if ((DepthStencilBuffer != null) && (DepthStencilBuffer.FormatInformation.HasDepth) && (DepthStencilBuffer.FormatInformation.HasStencil))
-			{
-				DepthStencilBuffer.Clear(depthValue, stencilValue);
-			}
-		}
 	    #endregion
 
 		#region Constructor/Destructor.
@@ -171,7 +124,7 @@ namespace GorgonLibrary.Graphics
 		/// <param name="graphics">The graphics interface that created this object.</param>
 		/// <param name="name">The name of the render target.</param>
 		/// <param name="settings">Settings to apply to the render target.</param>
-		protected GorgonRenderTarget(GorgonGraphics graphics, string name, IRenderTargetSettings settings)
+		protected GorgonRenderTarget(GorgonGraphics graphics, string name, IRenderTargetTextureSettings settings)
 			: base(name)
 		{
 			Graphics = graphics;

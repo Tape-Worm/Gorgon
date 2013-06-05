@@ -56,7 +56,7 @@ namespace GorgonLibrary.Graphics
         /// <summary>
         /// Property to return the render target that has this depth/stencil buffer as its default.
         /// </summary>
-        public GorgonRenderTarget RenderTarget
+        public GorgonRenderTarget2D RenderTarget
         {
             get;
             internal set;
@@ -124,7 +124,6 @@ namespace GorgonLibrary.Graphics
 		        Gorgon.Log.Print("GorgonDepthStencil '{0}': Destroying depth stencil texture...",
 		                         Diagnostics.LoggingLevel.Verbose,
 		                         Name);
-		        Texture.DepthStencilBuffer = null;
 		        Texture.Dispose();
 		        Texture = null;
 		    }
@@ -158,16 +157,16 @@ namespace GorgonLibrary.Graphics
 		    }
 
             // Make sure we can use the same multi-sampling with our depth buffer.
-		    int quality = graphics.VideoDevice.GetMultiSampleQuality(settings.Format, settings.MultiSample.Count);
+		    int quality = graphics.VideoDevice.GetMultiSampleQuality(settings.Format, settings.Multisampling.Count);
 
             // Ensure that the quality of the sampling does not exceed what the card can do.
-            if ((settings.MultiSample.Quality >= quality)
-                || (settings.MultiSample.Quality < 0))
+            if ((settings.Multisampling.Quality >= quality)
+                || (settings.Multisampling.Quality < 0))
             {
                 throw new ArgumentException("Video device '" + graphics.VideoDevice.Name
                                             + "' does not support multisampling with a count of '"
-                                            + settings.MultiSample.Count + "' and a quality of '"
-                                            + settings.MultiSample.Quality + " with a format of '"
+                                            + settings.Multisampling.Count + "' and a quality of '"
+                                            + settings.Multisampling.Quality + " with a format of '"
                                             + settings.Format + "'");
             }
 
@@ -205,7 +204,7 @@ namespace GorgonLibrary.Graphics
                 }
 
                 if ((graphics.VideoDevice.SupportedFeatureLevel < DeviceFeatureLevel.SM4_1)
-                    && ((settings.MultiSample.Count > 1) || (settings.MultiSample.Quality > 0)))
+                    && ((settings.Multisampling.Count > 1) || (settings.Multisampling.Quality > 0)))
                 {
                     throw new GorgonException(GorgonResult.CannotCreate, "Multisampled Depth/stencil buffers cannot be bound to the shader pipeline if the video device does not support SM4_1 or better.");
                 }
@@ -235,7 +234,7 @@ namespace GorgonLibrary.Graphics
                                                   Height = Settings.Height,
                                                   MipCount = 1,
                                                   ArrayCount = 1,
-                                                  Multisampling = Settings.MultiSample,
+                                                  Multisampling = Settings.Multisampling,
                                                   Format =
                                                       (Settings.AllowShaderView ? Settings.TextureFormat : Settings.Format),
                                                   Usage = BufferUsage.Default
@@ -245,7 +244,7 @@ namespace GorgonLibrary.Graphics
             {
                 Texture.Settings.Width = Settings.Width;
                 Texture.Settings.Height = Settings.Height;
-                Texture.Settings.Multisampling = Settings.MultiSample;
+                Texture.Settings.Multisampling = Settings.Multisampling;
                 Texture.Settings.Format = (Settings.AllowShaderView ? Settings.TextureFormat : Settings.Format);
                 Texture.Settings.Usage = BufferUsage.Default;
                 // TODO: Determine if depth/stencil can support these properties.
@@ -259,7 +258,7 @@ namespace GorgonLibrary.Graphics
             Gorgon.Log.Print("GorgonDepthStencil '{0}': Creating D3D11 depth stencil view...", Diagnostics.LoggingLevel.Verbose, Name);
 
             // If we have multisampling enabled, then apply it to our view.
-            if ((Settings.MultiSample.Count > 1) || (Settings.MultiSample.Quality > 1))
+            if ((Settings.Multisampling.Count > 1) || (Settings.Multisampling.Quality > 1))
                 viewDesc.Dimension = D3D.DepthStencilViewDimension.Texture2DMultisampled;
             else
                 viewDesc.Dimension = D3D.DepthStencilViewDimension.Texture2D;
@@ -275,7 +274,11 @@ namespace GorgonLibrary.Graphics
             GorgonRenderStatistics.DepthBufferSize += Texture.SizeInBytes;
 
             // Re-bind the depth/stencil with the new settings.
-            Graphics.Output.RenderTargets.ReSeat(this);
+			if (Graphics.Output.RenderTargets.DepthStencilBuffer == this)
+			{
+				Graphics.Output.RenderTargets.DepthStencilBuffer = null;
+				Graphics.Output.RenderTargets.DepthStencilBuffer = this;
+			}
 		}
 
 		/// <summary>
