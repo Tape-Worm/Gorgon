@@ -378,7 +378,6 @@ namespace GorgonLibrary.IO
 
             settings.MipCount = 1;
             settings.ArrayCount = 1;
-            settings.Depth = 1;
 
             switch (header.ImageType)
             {
