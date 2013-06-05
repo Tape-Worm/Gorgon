@@ -119,9 +119,9 @@ namespace GorgonLibrary.Examples
 					var imageLock = _backupImage.Lock<GorgonTexture2DData>(BufferLockFlags.Write);					
 					imageLock.Data.Fill(0xFF);
 					_backupImage.Unlock();
-					((GorgonTexture2D)_backBuffer).CopySubResource(_backupImage,
+					_backBuffer.CopySubResource(_backupImage,
 														0, 0,
-														new Rectangle(Point.Empty, _backBuffer.Settings.Size),
+														new Rectangle(0, 0, _backBuffer.Settings.Width, _backBuffer.Settings.Height),
 														Vector2.Zero);
 					break;
 				case KeyboardKeys.J:
@@ -180,37 +180,39 @@ namespace GorgonLibrary.Examples
 		{
 			Color drawColor = Color.Black;		// Drawing color.
 
-			if (e.Buttons != PointingDeviceButtons.None)
-			{
-				// Draw to the back buffer.
-				_2D.Target = _backBuffer;
-				_2D.Drawing.Blending.DestinationAlphaBlend = BlendType.One;
-				_2D.Drawing.BlendingMode = _blendMode;
+		    if (e.Buttons == PointingDeviceButtons.None)
+		    {
+		        return;
+		    }
 
-				if ((e.Buttons & PointingDeviceButtons.Left) == PointingDeviceButtons.Left)
-				{
-					drawColor = Color.FromArgb(64, 0, 0, 192);
-				}
+		    // Draw to the back buffer.
+		    _2D.Target = _backBuffer;
+		    _2D.Drawing.Blending.DestinationAlphaBlend = BlendType.One;
+		    _2D.Drawing.BlendingMode = _blendMode;
 
-				if ((e.Buttons & PointingDeviceButtons.Right) == PointingDeviceButtons.Right)
-				{
-					drawColor = Color.FromArgb(64, 192, 0, 0);
-				}
+		    if ((e.Buttons & PointingDeviceButtons.Left) == PointingDeviceButtons.Left)
+		    {
+		        drawColor = Color.FromArgb(64, 0, 0, 192);
+		    }
 
-				// Draw the pen.
-				var penPositon = new RectangleF(e.Position.X - (_radius / 2.0f), e.Position.Y - (_radius / 2.0f), _radius, _radius);
-				if (_radius > 3.0f)
-				{
-					_2D.Drawing.FilledEllipse(penPositon, drawColor);
-				}
-				else
-				{
-					_2D.Drawing.FilledRectangle(penPositon, drawColor);
-				}
+		    if ((e.Buttons & PointingDeviceButtons.Right) == PointingDeviceButtons.Right)
+		    {
+		        drawColor = Color.FromArgb(64, 192, 0, 0);
+		    }
 
-				_2D.Drawing.Blending.DestinationAlphaBlend = BlendType.Zero;
-				_2D.Target = null;
-			}
+		    // Draw the pen.
+		    var penPositon = new RectangleF(e.Position.X - (_radius / 2.0f), e.Position.Y - (_radius / 2.0f), _radius, _radius);
+		    if (_radius > 3.0f)
+		    {
+		        _2D.Drawing.FilledEllipse(penPositon, drawColor);
+		    }
+		    else
+		    {
+		        _2D.Drawing.FilledRectangle(penPositon, drawColor);
+		    }
+
+		    _2D.Drawing.Blending.DestinationAlphaBlend = BlendType.Zero;
+		    _2D.Target = null;
 		}
 
 		/// <summary>
@@ -296,7 +298,7 @@ namespace GorgonLibrary.Examples
 		{
 			base.OnResizeEnd(e);
 						
-			Size currentImageSize = _backBuffer.Settings.Size;
+			var currentImageSize = new Size(_backBuffer.Settings.Width, _backBuffer.Settings.Height);
 
 			// Copy the render target texture to a temporary buffer and resize the main buffer.
 			// The copy the temporary buffer back to the main buffer.
@@ -307,16 +309,17 @@ namespace GorgonLibrary.Examples
 										Vector2.Zero);
 
 			_backBuffer.Dispose();
-			_backBuffer = _graphics.Output.CreateRenderTarget<GorgonRenderTarget2D>("BackBuffer", new GorgonRenderTarget2DSettings
+			_backBuffer = _graphics.Output.CreateRenderTarget2D("BackBuffer", new GorgonRenderTarget2DSettings
 			{
-				Size = ClientSize,
+				Width = ClientSize.Width,
+                Height = ClientSize.Height,
 				Format = BufferFormat.R8G8B8A8_UIntNormal
 			});
 			_backBuffer.Clear(Color.White);
-			((GorgonTexture2D)_backBuffer).CopySubResource(_backupImage,
+			_backBuffer.CopySubResource(_backupImage,
 												0,
 												0,
-												new Rectangle(Point.Empty, _backBuffer.Settings.Size),
+												new Rectangle(0, 0, _backBuffer.Settings.Width, _backBuffer.Settings.Height),
 												Vector2.Zero);
 
 			// Set the mouse range to the new size.
@@ -390,11 +393,12 @@ namespace GorgonLibrary.Examples
 				_messageSprite.Color = Color.Black;
 
 				// Create a back buffer.
-				_backBuffer = _graphics.Output.CreateRenderTarget<GorgonRenderTarget2D>("BackBuffer", new GorgonRenderTarget2DSettings
-				    {
-					Size = _screen.Settings.Size,
-					Format = BufferFormat.R8G8B8A8_UIntNormal
-				});
+				_backBuffer = _graphics.Output.CreateRenderTarget2D("BackBuffer", new GorgonRenderTarget2DSettings
+				        {
+					        Width = _screen.Settings.Width,
+                            Height = _screen.Settings.Height,
+					        Format = BufferFormat.R8G8B8A8_UIntNormal
+				        });
 				_backBuffer.Clear(Color.White);
 
 				// Create the backup image.  Make it as large as the monitor that we're on.
@@ -429,13 +433,15 @@ namespace GorgonLibrary.Examples
 						OnResizeEnd(EventArgs.Empty);
 
 						// Reposition after a state change.
-						if (args.IsWindowed)
-						{
-							Screen monitor = Screen.FromHandle(Handle);
-							Location = new Point(monitor.Bounds.Left + (monitor.WorkingArea.Width / 2) - args.Width / 2,
-												 monitor.Bounds.Top + (monitor.WorkingArea.Height / 2) - args.Height / 2);
-							Cursor.Position = PointToScreen(Point.Round(_mouse.Position));
-						}
+					    if (!args.IsWindowed)
+					    {
+					        return;
+					    }
+
+					    Screen monitor = Screen.FromHandle(Handle);
+					    Location = new Point(monitor.Bounds.Left + (monitor.WorkingArea.Width / 2) - args.Width / 2,
+					                         monitor.Bounds.Top + (monitor.WorkingArea.Height / 2) - args.Height / 2);
+					    Cursor.Position = PointToScreen(Point.Round(_mouse.Position));
 					};				
 				Gorgon.ApplicationIdleLoopMethod = Gorgon_Idle;
 			}

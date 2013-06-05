@@ -47,7 +47,7 @@ namespace GorgonLibrary.Renderers
 		private bool _isUpdated = true;											// Flag to indicate that the parameters have been updated.
 		private float _displacementStrength = 1.0f;								// Strength of the displacement map.
 		private SmoothingMode _lastSmoothMode = SmoothingMode.None;				// Last global smoothing state.
-		private GorgonRenderTarget _currentTarget;								// Current render target.
+		private GorgonRenderTarget2D _currentTarget;							// Current render target.
 		#endregion
 
 		#region Properties.
@@ -122,13 +122,13 @@ namespace GorgonLibrary.Renderers
 			if ((newSize.Width <= 0) || (newSize.Height <= 0))
 				return;
 
-			_displacementTarget = Graphics.Output.CreateRenderTarget<GorgonRenderTarget2D>("Effect.Displacement.RT", new GorgonRenderTarget2DSettings
+			_displacementTarget = Graphics.Output.CreateRenderTarget2D("Effect.Displacement.RT", new GorgonRenderTarget2DSettings
 			{
 				Width = newSize.Width,
 				Height = newSize.Height,
 				DepthStencilFormat = BufferFormat.Unknown,
 				Format = format,
-				MultiSample = new GorgonMultisampling(1, 0)				
+				Multisampling = GorgonMultisampling.NoMultiSampling
 			});
 
 			_targetFormat = format;

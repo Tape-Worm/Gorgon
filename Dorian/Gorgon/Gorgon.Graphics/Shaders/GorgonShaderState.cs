@@ -611,14 +611,18 @@ namespace GorgonLibrary.Graphics
 					}
 
 #if DEBUG
-					var oldIndex = IndexOf(value);
+				    if (value != null)
+				    {
+				        var oldIndex = IndexOf(value);
 
-					if ((value != null) && (oldIndex > -1))
-					{
-						throw new GorgonException(GorgonResult.CannotBind,
-						                          string.Format(Properties.Resources.GORGFX_CONSTANTBUFFER_ALREADY_BOUND, value.Name,
-						                                        oldIndex));
-					}
+			            if (oldIndex > -1)
+				        {
+				            throw new GorgonException(GorgonResult.CannotBind,
+				                                      string.Format(Properties.Resources.GORGFX_CONSTANTBUFFER_ALREADY_BOUND,
+				                                                    value.Name,
+				                                                    oldIndex));
+				        }
+				    }
 #endif
 
 					_buffers[index] = value;

@@ -852,8 +852,6 @@ namespace GorgonLibrary.IO
                 case ImageType.Image1D:
                     settings = new GorgonTexture1DSettings();
                     settings.ArrayCount = (int)dx10Header.ArrayCount;
-                    settings.Height = 1;
-                    settings.Depth = 1;
                     break;
                 case ImageType.Image2D:
                     settings = new GorgonTexture2DSettings();
@@ -865,7 +863,6 @@ namespace GorgonLibrary.IO
                         ((GorgonTexture2DSettings)settings).IsTextureCube = true;
                     }
                     settings.Height = (int)header.Height;
-                    settings.Depth = 1;
 					settings.ArrayCount = (int)dx10Header.ArrayCount;
                     break;
                 case ImageType.Image3D:
@@ -875,7 +872,6 @@ namespace GorgonLibrary.IO
                     }
 
                     settings = new GorgonTexture3DSettings();
-                    settings.ArrayCount = 1;
                     settings.Height = (int)header.Height;
                     settings.Depth = (int)header.Depth;
                     break;
@@ -1036,14 +1032,12 @@ namespace GorgonLibrary.IO
                 if ((header.Flags & DDSHeaderFlags.Volume) == DDSHeaderFlags.Volume)
                 {
                     settings = new GorgonTexture3DSettings();
-                    settings.ArrayCount = 1;
                     settings.Depth = (int)header.Depth.Min(1);
                 }
                 else
                 {
                     settings = new GorgonTexture2DSettings();
                     settings.ArrayCount = 1;
-                    settings.Depth = 1;
                     if ((header.Caps2 & DDSCAPS2.CubeMap) == DDSCAPS2.CubeMap)
                     {
                         // Only allow all faces.
@@ -1689,32 +1683,35 @@ namespace GorgonLibrary.IO
 			_actualArrayCount = settings.ArrayCount;
 
 			// Override depth settings.
-			if (Depth > 0)
+			if ((Depth > 0) && (settings.ImageType == ImageType.Image3D))
 			{				
 				settings.Depth = Depth;
 			}			
 
 			// Override the array count.
-			if (ArrayCount > 0)
-			{
-				if (ArrayCount > 1)
-				{
-					_actualDepth = 1;
-					settings.Depth = 1;
-				}
-				settings.ArrayCount = ArrayCount;
-			}
-			else
-			{
-				// Reset depth override if we have an array in the image and we're not overriding the array count.
-				if (_actualArrayCount > 1)
-				{
-					_actualDepth = 1;
-					settings.Depth = 1;
-				}
-			}
+            if (settings.ImageType != ImageType.Image3D)
+            {
+                if (ArrayCount > 0)
+                {
+                    if (ArrayCount > 1)
+                    {
+                        _actualDepth = 1;
+                        settings.Depth = 1;
+                    }
+                    settings.ArrayCount = ArrayCount;
+                }
+                else
+                {
+                    // Reset depth override if we have an array in the image and we're not overriding the array count.
+                    if (_actualArrayCount > 1)
+                    {
+                        _actualDepth = 1;
+                        settings.Depth = 1;
+                    }
+                }
+            }
 
-			imageData = new GorgonImageData(settings);
+            imageData = new GorgonImageData(settings);
 
             try
             {
