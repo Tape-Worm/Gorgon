@@ -780,14 +780,14 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		/// </summary>
 		public override void Draw()
 		{
-            Renderer.Target = _swap.RenderTarget;
+            Renderer.Target = _swap;
 			Renderer.Clear(_panel.panelTextures.BackColor);           
 
 			_panel.DrawFontTexture();
 
             Renderer.Render(2);
 
-            Renderer.Target = _textDisplay.RenderTarget;
+            Renderer.Target = _textDisplay;
 
 			_panel.DrawText();
             

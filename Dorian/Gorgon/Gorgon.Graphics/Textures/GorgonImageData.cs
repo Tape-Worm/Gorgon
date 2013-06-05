@@ -394,10 +394,17 @@ namespace GorgonLibrary.Graphics
         {
 			Settings.ArrayCount = 1.Max(Settings.ArrayCount);
 			Settings.Width = 1.Max(Settings.Width);
-			Settings.Height = 1.Max(Settings.Height);
-			Settings.Depth = 1.Max(Settings.Depth);
+		    if ((Settings.ImageType == ImageType.Image2D)
+		        || (Settings.ImageType == ImageType.ImageCube))
+		    {
+		        Settings.Height = 1.Max(Settings.Height);
+		    }
+		    if (Settings.ImageType == ImageType.Image3D)
+		    {
+		        Settings.Depth = 1.Max(Settings.Depth);
+		    }
 
-			// Ensure mip values do not exceed more than what's available based on width, height and/or depth.
+		    // Ensure mip values do not exceed more than what's available based on width, height and/or depth.
 			if (Settings.MipCount > 1)
 			{
 				Settings.MipCount = Settings.MipCount.Min(GorgonImageData.GetMaxMipCount(Settings));

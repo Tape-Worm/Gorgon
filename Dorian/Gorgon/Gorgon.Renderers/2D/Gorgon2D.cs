@@ -88,7 +88,6 @@ namespace GorgonLibrary.Renderers
 	/// It is important to use the 2D interface Target property as it will perform state checking to keep rendering consistent.
 	/// </para>
 	/// </remarks>
-#error "Need to finish render target binding for 2D module."
 	public class Gorgon2D
 		: IDisposable
 	{
@@ -151,7 +150,6 @@ namespace GorgonLibrary.Renderers
 		#endregion
 
 		#region Variables.
-		private GorgonSwapChain _swapChain;												// Swap chain target.
 		private int _baseVertex;														// Base vertex.		
 		private Gorgon2DVertex[] _vertexCache;											// List of vertices to cache.
 		private int _cacheStart;														// Starting cache vertex buffer index.
@@ -269,7 +267,7 @@ namespace GorgonLibrary.Renderers
 		/// Property to return the default render target.
 		/// </summary>
 		/// <remarks>This is the inital target that the Gorgon2D interface was created with, or the one internally generated depending on the constructor being used.</remarks>
-		public GorgonRenderTargetView DefaultTarget
+		public GorgonRenderTarget2D DefaultTarget
 		{
 			get;
 			private set;
@@ -438,7 +436,7 @@ namespace GorgonLibrary.Renderers
 					// Refresh our camera information if we're jumping back to the default camera.
 					if (value == null)
 					{
-						_defaultCamera.UpdateFromTarget(Target);
+						_defaultCamera.UpdateFromTarget(Target.Settings.Width, Target.Settings.Height);
 						_defaultCamera.Anchor = new Vector2(Target.Settings.Width / 2.0f, Target.Settings.Height / 2.0f);
 						_defaultCamera.Position = -_defaultCamera.Anchor;
 					}
@@ -482,15 +480,15 @@ namespace GorgonLibrary.Renderers
 		/// Property to set or return the active render target view.
 		/// </summary>
 		/// <remarks>Changing the current render target will reset the <see cref="P:GorgonLibrary.Renderers.Gorgon2D.Viewport">Viewport</see> and the <see cref="P:GorgonLibrary.Renderers.Gorgon2D.ClipRegion">ClipRegion</see>.</remarks>
-		public GorgonRenderTargetView Target
+		public GorgonRenderTarget2D Target
 		{
 			get
 			{
-				return Graphics.Output.RenderTargets.GetView(0) ?? DefaultTarget;
+				return Graphics.Output.RenderTargets.GetResource<GorgonRenderTarget2D>(0) ?? DefaultTarget;
 			}
 			set
 			{
-				if (Graphics.Output.RenderTargets.GetView(0) == value)
+				if (Graphics.Output.RenderTargets.GetResource<GorgonRenderTarget2D>(0) == value)
 				{
 					return;
 				}
@@ -546,43 +544,24 @@ namespace GorgonLibrary.Renderers
 		/// Function to update the current render target.
 		/// </summary>
 		/// <param name="target">The target being bound.</param>
-		private void UpdateTarget(GorgonRenderTargetView target)
+		private void UpdateTarget(GorgonRenderTarget2D target)
 		{
-			// Find out if the target is a swap chain.
-			_swapChain = null;
-			var target2D = Target.Resource as GorgonRenderTarget2D;
-			if (target2D == null)
-			{
-				// If this isn't a 2D target, then leave.
-				return;
-			}
-
-			_swapChain = target2D.SwapChain;
-
 			// Remove any previous handler.
-			if (_swapChain != null)
-				_swapChain.Resized -= new EventHandler<GorgonSwapChainResizedEventArgs>(target_Resized);
+			if (Target.SwapChain != null)
+				Target.SwapChain.Resized -= new EventHandler<GorgonSwapChainResizedEventArgs>(target_Resized);
 
-			Graphics.Output.RenderTargets.SetView(0, target);
-
-			// If this is a swap chain, then bind the resizing code to it.
-			target2D = target.Resource as GorgonRenderTarget2D;
-			if (target2D != null)
-			{
-				_swapChain = target2D.SwapChain;
-			}
+			Graphics.Output.RenderTargets.SetRenderTarget(0, target);
 
 			// Update our default camera.
 			// User cameras will need to be updated by the user on a resize or target change.
 			if (_camera == null)
 			{
-				_defaultCamera.UpdateFromTarget(target2D.Settings.Width, target2D.Settings.Height);
+                _defaultCamera.UpdateFromTarget(target.Settings.Width, target.Settings.Height);
 				_defaultCamera.Anchor = new Vector2(Target.Settings.Width / 2.0f, Target.Settings.Height / 2.0f);
 				_defaultCamera.Position = -_defaultCamera.Anchor;
 			}
 
-			if (ClipRegion != null)
-				ClipRegion = null;
+			ClipRegion = null;
 
 			if (_viewPort == null)
 				Graphics.Rasterizer.SetViewport(Target.Viewport);
@@ -590,8 +569,8 @@ namespace GorgonLibrary.Renderers
 				Graphics.Rasterizer.SetViewport(_viewPort.Value);
 
 			// Re-assign the event.
-			if (_swapChain != null)
-				_swapChain.Resized += new EventHandler<GorgonSwapChainResizedEventArgs>(target_Resized);
+			if (Target.SwapChain != null)
+				Target.SwapChain.Resized += new EventHandler<GorgonSwapChainResizedEventArgs>(target_Resized);
 		}
 
 		/// <summary>
@@ -601,8 +580,22 @@ namespace GorgonLibrary.Renderers
 		/// <param name="e">Event parameters.</param>
 		private void target_Resized(object sender, GorgonSwapChainResizedEventArgs e)
 		{
-			UpdateTarget(_swapChain.RenderTarget);
+			UpdateTarget(Target);
 		}
+
+        /// <summary>
+        /// Function to clear up the vertex cache.
+        /// </summary>
+        internal void ClearCache()
+        {
+            // Clear up the cache.
+            _baseVertex = 0;
+            _cacheStart = 0;
+            _cacheEnd = 0;
+            _renderIndexCount = 0;
+            _renderIndexStart = 0;
+            _cacheWritten = 0;
+        }
 
 		/// <summary>
 		/// Function to initialize the 2D renderer.
@@ -610,9 +603,9 @@ namespace GorgonLibrary.Renderers
 		internal void Initialize()
 		{
 			// Create the default projection matrix.
-			if (_swapChain != null)
+			if ((Target != null) && (Target.SwapChain != null))
 			{
-				_swapChain.Resized -= target_Resized;
+				Target.SwapChain.Resized -= target_Resized;
 			}
 
 			// Create constant buffers.
@@ -711,12 +704,7 @@ namespace GorgonLibrary.Renderers
 
 			// Create the vertex cache.
 			_vertexCache = new Gorgon2DVertex[VertexCacheSize];
-			_cacheStart = 0;
-			_cacheEnd = 0;
-			_cacheWritten = 0;
-			_renderIndexStart = 0;		
-			_renderIndexCount = 0;
-			_baseVertex = 0;
+            ClearCache();
 		}
 
 		/// <summary>
@@ -874,12 +862,7 @@ namespace GorgonLibrary.Renderers
 				// If we switch vertex buffers, then reset the cache.
 				if ((stateChange & StateChange.VertexBuffer) == StateChange.VertexBuffer)
 				{
-					_baseVertex = 0;
-					_cacheStart = 0;
-					_cacheEnd = 0;
-					_renderIndexCount = 0;
-					_renderIndexStart = 0;
-					_cacheWritten = 0;
+                    ClearCache();
 					_useCache = Graphics.Input.VertexBuffers[0].Equals(DefaultVertexBufferBinding);
 
 					// We skip the cache for objects that have their own vertex buffers.
@@ -900,12 +883,7 @@ namespace GorgonLibrary.Renderers
 		internal void Setup()
 		{
 			// Reset the cache values.
-			_baseVertex = 0;
-			_cacheStart = 0;
-			_cacheEnd = 0;
-			_renderIndexCount = 0;
-			_renderIndexStart = 0;
-			_cacheWritten = 0;
+            ClearCache();
 
 			// Set our default shaders.
 			VertexShader.Current = VertexShader.DefaultVertexShader;
@@ -1061,7 +1039,7 @@ namespace GorgonLibrary.Renderers
 			Rectangle? previousClip = _clip;
 
 			// Only draw the logo when we're flipping, and we're on the default target and the default target is a swap chain.
-			if ((flip) && (IsLogoVisible) && (_swapChain != null) && (Target == DefaultTarget))
+			if ((flip) && (IsLogoVisible) && (Target.SwapChain != null) && (Target == DefaultTarget))
 			{
 				// Reset any view/projection/clip/viewport.
 				if (_camera != null)
@@ -1078,10 +1056,12 @@ namespace GorgonLibrary.Renderers
 
 			if (flip)
 			{
-				if (_swapChain != null)
-					_swapChain.Flip(interval);
+			    if (Target.SwapChain != null)
+			    {
+			        Target.SwapChain.Flip(interval);
+			    }
 
-				if (IsLogoVisible)
+			    if (IsLogoVisible)
 				{
 					if (camera != null)
 						Camera = camera;
@@ -1144,18 +1124,11 @@ namespace GorgonLibrary.Renderers
 		/// Initializes a new instance of the <see cref="Gorgon2D"/> class.
 		/// </summary>
 		/// <param name="target">The primary render target to use.</param>		
-		internal Gorgon2D(GorgonRenderTargetView target)
+		internal Gorgon2D(GorgonRenderTarget2D target)
 		{						
 			TrackedObjects = new GorgonDisposableObjectCollection();
-			Graphics = target.Resource.Graphics;
+			Graphics = target.Graphics;
 			DefaultTarget = target;
-
-			var target2D = target.Resource as GorgonRenderTarget2D;
-
-			if (target2D != null)
-			{
-				_swapChain = target2D.SwapChain;
-			}
 
 			Icons = Graphics.Textures.Create2DTextureFromGDIImage("Gorgon2D.Icons", Properties.Resources.Icons);
 			_logoSprite = new GorgonSprite(this, "Gorgon2D.LogoSprite", new GorgonSpriteSettings()
@@ -1189,19 +1162,21 @@ namespace GorgonLibrary.Renderers
 					if (Icons != null)
 						Icons.Dispose();
 
+                    if (Effects != null)
+                    {
+                        Effects.FreeShaders();
+                        Effects = null;
+                    }
+
 					TrackedObjects.ReleaseAll();
 
-					if (_swapChain != null)
-						_swapChain.Resized -= new EventHandler<GorgonSwapChainResizedEventArgs>(target_Resized);
+				    if ((Target != null) && (Target.SwapChain != null))
+				    {
+				        Target.SwapChain.Resized -= new EventHandler<GorgonSwapChainResizedEventArgs>(target_Resized);
+				    }
 
-					if (_layout != null)
+				    if (_layout != null)
 						_layout.Dispose();
-
-					if (Effects != null)
-					{
-						Effects.FreeShaders();
-						Effects = null;
-					}
 
 					if (VertexShader != null)
 						VertexShader.CleanUp();

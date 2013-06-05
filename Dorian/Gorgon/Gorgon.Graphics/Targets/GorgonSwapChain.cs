@@ -335,9 +335,6 @@ namespace GorgonLibrary.Graphics
 			// Initialize (or reinitialize) the target.
             _renderTarget.InitializeSwapChain(this);
 
-			GorgonRenderStatistics.RenderTargetCount++;
-            GorgonRenderStatistics.RenderTargetSize += _renderTarget.SizeInBytes * Settings.BufferCount;
-
 			// Re-seat the target.
 			if (needReseat)
 			{
@@ -885,6 +882,26 @@ namespace GorgonLibrary.Graphics
 		{
 			Flip(0);
 		}
+
+        /// <summary>
+        /// Function to retrieve the 2D render target for a swap chain.
+        /// </summary>
+        /// <param name="swapChain">Swap chain to evaluate.</param>
+        /// <returns>The 2D render target for a swap chain.</returns>
+        public static GorgonRenderTarget2D ToRenderTarget2D(GorgonSwapChain swapChain)
+        {
+            return swapChain == null ? null : swapChain._renderTarget;
+        }
+
+        /// <summary>
+        /// Implicit operator to retrieve the 2D render target for a swap chain.
+        /// </summary>
+        /// <param name="swapChain">Swap chain to evaluate.</param>
+        /// <returns>The 2D render target for a swap chain.</returns>
+        public static implicit operator GorgonRenderTarget2D(GorgonSwapChain swapChain)
+        {
+            return swapChain == null ? null : swapChain._renderTarget;
+        }
 
 		/// <summary>
 		/// Function to retrieve the render target view for a swap chain.

@@ -170,12 +170,12 @@ namespace GorgonLibrary.Graphics
                 {
                     var target = _views[i];
 
-                    if (target == null)
+                    if ((target == null) || (i == slot))
                     {
                         continue;
                     }
 
-                    if ((view == target) && (slot != i))
+                    if (view == target)
                     {
                         throw new GorgonException(GorgonResult.CannotBind, string.Format(Resources.GORGFX_RTV_ALREADY_BOUND, view.Resource.Name, i));
                     }

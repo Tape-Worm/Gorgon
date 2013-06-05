@@ -52,7 +52,8 @@ namespace GorgonLibrary.Renderers
 			private IDictionary<int, GorgonConstantBuffer> _vsConstantBuffers;		// The vertex shader constant buffers.
 			private IDictionary<int, GorgonConstantBuffer> _psConstantBuffers;		// The pixel shader constant buffers.
 			private GorgonRenderTargetView _target;									// Default target.
-			private GorgonIndexBuffer _indexBuffer;									// Default target.
+		    private GorgonDepthStencil _depthStencil;                               // Default depth/stencil buffer.
+			private GorgonIndexBuffer _indexBuffer;									// Index buffer.
 			private GorgonVertexBufferBinding _vertexBuffer;						// Vertex buffer.
 			private GorgonInputLayout _inputLayout;									// Input layout.
 			private PrimitiveType _primitiveType;									// Primitive type.
@@ -81,6 +82,7 @@ namespace GorgonLibrary.Renderers
 				_depthStencilState = graphics.Output.DepthStencilState.States;
 				_depthStencilReference = graphics.Output.DepthStencilState.DepthStencilReference;
 				_rasterStates.IsScissorTestingEnabled = false;
+			    _depthStencil = graphics.Output.RenderTargets.DepthStencilBuffer;
 
 				_vsConstantBuffers = new Dictionary<int, GorgonConstantBuffer>();
 				_psConstantBuffers = new Dictionary<int, GorgonConstantBuffer>();
@@ -115,6 +117,7 @@ namespace GorgonLibrary.Renderers
 			public void Restore(GorgonGraphics graphics)
 			{
 				graphics.Output.RenderTargets.SetView(0, _target);
+			    graphics.Output.RenderTargets.DepthStencilBuffer = _depthStencil;
 				if ((_target != null) && (_target.Resource.ResourceType == ResourceType.Texture2D))
 				{
 					graphics.Rasterizer.SetViewport(((GorgonRenderTarget2D)_target.Resource).Viewport);
@@ -219,6 +222,7 @@ namespace GorgonLibrary.Renderers
 				return;
 			}
 
+		    renderer.ClearCache();
 			_previousStates.Restore(renderer.Graphics);
 			_previousStates = null;
 			_currentRenderer = null;

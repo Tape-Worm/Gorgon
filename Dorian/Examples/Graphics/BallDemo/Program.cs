@@ -358,15 +358,15 @@ namespace GorgonLibrary.Graphics.Example
 			_ball.Anchor = new Vector2(32, 32);
 
 			// Create the ball render target.
-			_ballTarget = _graphics.Output.CreateRenderTarget<GorgonRenderTarget2D>("BallTarget", new GorgonRenderTarget2DSettings
+			_ballTarget = _graphics.Output.CreateRenderTarget2D("BallTarget", new GorgonRenderTarget2DSettings
 			    {
 				DepthStencilFormat = BufferFormat.Unknown,
 				Width = 512,
 				Height = 512,
 				Format = BufferFormat.R8G8B8A8_UIntNormal,
-				MultiSample = new GorgonMultisampling(1, 0)
+				Multisampling = GorgonMultisampling.NoMultiSampling
 			});
-			_2D.Effects.GaussianBlur.BlurRenderTargetsSize = _ballTarget.Settings.Size;
+			_2D.Effects.GaussianBlur.BlurRenderTargetsSize = new Size(_ballTarget.Settings.Width, _ballTarget.Settings.Height);
 			_2D.Effects.GaussianBlur.BlurAmount = 10.0f;
 
 			_camera = _2D.CreateCamera("Camera", new Vector2(Properties.Settings.Default.ScreenWidth, Properties.Settings.Default.ScreenHeight), 1000.0f);
@@ -379,7 +379,7 @@ namespace GorgonLibrary.Graphics.Example
 			_form.Resize += _form_Resize;
 
 			// Create statistics render target.
-			_statsTarget = _graphics.Output.CreateRenderTarget<GorgonRenderTarget2D>("Statistics", new GorgonRenderTarget2DSettings
+			_statsTarget = _graphics.Output.CreateRenderTarget2D("Statistics", new GorgonRenderTarget2DSettings
 			{
 				Width = 140,
 				Height = 66,

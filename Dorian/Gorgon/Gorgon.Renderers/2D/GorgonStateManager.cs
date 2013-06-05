@@ -155,7 +155,7 @@ namespace GorgonLibrary.Renderers
             // Get the current texture view.
             if (renderable.Texture != null)
             {
-                textureView = renderable.Texture.DefaultShaderView;
+                textureView = renderable.Texture;
             }
 
 			if (textureView != _textureView)
@@ -251,6 +251,8 @@ namespace GorgonLibrary.Renderers
 				// If we have a texture change, and we have the default diffuse shader loaded, then switch to the textured shader, otherwise 
 				// switch to the diffuse shader.
 				_gorgon2D.PixelShader.TextureSwitch(renderable.Texture);
+
+                _textureView = renderable.Texture;
 			}
 		
 			if ((state & StateChange.BlendEnable) == StateChange.BlendEnable)

@@ -39,6 +39,10 @@ namespace GorgonLibrary.Graphics
 	public class GorgonTexture2D
 		: GorgonTexture
     {
+        #region Variables.
+
+	    #endregion
+
         #region Properties.
         /// <summary>
 		/// Property to return the type of data in the resource.
@@ -51,17 +55,16 @@ namespace GorgonLibrary.Graphics
 			}
 		}
 
-        /// <summary>
-		/// Property to return the settings for this texture.
-		/// </summary>
-		public new GorgonTexture2DSettings Settings
-		{
-			get
-			{
-				return (GorgonTexture2DSettings)base.Settings;
-			}
-		}
-		#endregion
+	    /// <summary>
+	    /// Property to return the settings for this texture.
+	    /// </summary>
+	    public new GorgonTexture2DSettings Settings
+	    {
+	        get;
+	        private set;
+	    }
+
+	    #endregion
 
 		#region Methods.
 		/// <summary>
@@ -696,6 +699,19 @@ namespace GorgonLibrary.Graphics
 		internal GorgonTexture2D(GorgonGraphics graphics, string name, ITextureSettings settings)
 			: base(graphics, name, settings)
 		{
+		    Settings = settings as GorgonTexture2DSettings ?? new GorgonTexture2DSettings
+		        {
+		            Width = settings.Width,
+		            Height = settings.Height,
+		            AllowUnorderedAccess = settings.AllowUnorderedAccess,
+		            ArrayCount = settings.ArrayCount,
+		            Format = settings.Format,
+		            IsTextureCube = settings.IsTextureCube,
+		            MipCount = settings.MipCount,
+		            Multisampling = settings.Multisampling,
+		            ShaderViewFormat = settings.ShaderViewFormat,
+		            Usage = settings.Usage
+		        };
 		}
 		#endregion
 	}

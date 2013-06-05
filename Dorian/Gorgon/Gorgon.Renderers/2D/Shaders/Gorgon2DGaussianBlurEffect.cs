@@ -54,7 +54,7 @@ namespace GorgonLibrary.Renderers
 		private GorgonRenderTarget2D _vTarget;										// Vertical blur render target.
 		private BufferFormat _blurTargetFormat = BufferFormat.R8G8B8A8_UIntNormal;	// Format of the blur render targets.
 		private Size _blurTargetSize = new Size(256, 256);							// Size of the render targets used for blurring.
-		private GorgonRenderTarget _currentTarget;									// Current render target.
+		private GorgonRenderTarget2D _currentTarget;								// Current render target.
 		private SmoothingMode _lastSmoothMode = SmoothingMode.None;					// Last smoothing mode.
 		#endregion
 
@@ -209,11 +209,11 @@ namespace GorgonLibrary.Renderers
 				Height = BlurRenderTargetsSize.Height,
 				Format = BlurTargetFormat,
 				DepthStencilFormat = BufferFormat.Unknown,
-				MultiSample = new GorgonMultisampling(1, 0)
+				Multisampling = GorgonMultisampling.NoMultiSampling
 			};
 
-			_hTarget = Graphics.Output.CreateRenderTarget<GorgonRenderTarget2D>("Effect.GaussBlur.Target_Horizontal", settings);
-			_vTarget = Graphics.Output.CreateRenderTarget<GorgonRenderTarget2D>("Effect.GaussBlur.Target_Vertical", settings);
+			_hTarget = Graphics.Output.CreateRenderTarget2D("Effect.GaussBlur.Target_Horizontal", settings);
+			_vTarget = Graphics.Output.CreateRenderTarget2D("Effect.GaussBlur.Target_Vertical", settings);
 			UpdateOffsets();
 		}
 

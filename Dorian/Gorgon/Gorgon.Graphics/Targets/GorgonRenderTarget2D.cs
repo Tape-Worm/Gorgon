@@ -270,13 +270,18 @@ namespace GorgonLibrary.Graphics
 				CreateDefaultResourceView();
 			}
 
-			GorgonRenderStatistics.TextureCount++;
+            // Create the default render target view.
+            DefaultRenderTargetView = CreateRenderTargetView(Settings.Format, 0, 0, 1);
+            
+            GorgonRenderStatistics.TextureCount++;
 			GorgonRenderStatistics.TextureSize += SizeInBytes;
 			GorgonRenderStatistics.RenderTargetCount++;
 			GorgonRenderStatistics.RenderTargetSize += SizeInBytes * swapChain.Settings.BufferCount;
 
 			// Set default viewport.
 			Viewport = new GorgonViewport(0, 0, Settings.Width, Settings.Height, 0.0f, 1.0f);
+
+            CreateDepthStencilBuffer();
 		}
 
 		/// <summary>
