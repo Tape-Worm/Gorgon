@@ -46,7 +46,7 @@ namespace GorgonLibrary.Graphics
 	    private bool _disposed;                                 // Flag to indicate that the object was disposed.
 		private readonly IList<DX.DataStream> _lock;			// Locks for the texture.
 		private GorgonViewCache _viewCache;						// Cache for views.
-		private GorgonShaderView _defaultShaderView;			// The default shader view for the texture.
+		private GorgonTextureShaderView _defaultShaderView;		// The default shader view for the texture.
 		#endregion
 
 		#region Properties.
@@ -232,13 +232,16 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		/// <param name="format">Format of the new render target view.</param>
 		/// <param name="mipSlice">Mip level index to use in the view.</param>
-		/// <param name="arrayIndex">Array index to use in the view.</param>
-		/// <param name="arrayCount">Number of array indices to use.</param>
+		/// <param name="arrayOrDepthIndex">Array or depth slice index to use in the view.</param>
+		/// <param name="arrayOrDepthCount">Number of array indices or depth slices to use.</param>
 		/// <returns>A render target view.</returns>
-		/// <typeparam name="TR">The type of render target view.</typeparam>
-		protected TR OnCreateRenderTargetView<TR>(BufferFormat format, int mipSlice, int arrayIndex,
-															   int arrayCount)
-			where TR : GorgonRenderTargetView
+		/// <remarks>Use this to create a render target view that can bind a portion of the target to the pipeline as a render target.
+		/// <para>The <paramref name="format"/> for the render target view does not have to be the same as the render target backing texture, and if the format is set to Unknown, then it will 
+		/// use the format from the texture.</para>
+		/// </remarks>
+		/// <exception cref="GorgonLibrary.GorgonException">Thrown when the render target view could not be created.</exception>
+		protected GorgonRenderTargetTextureView OnCreateRenderTargetView(BufferFormat format, int mipSlice, int arrayOrDepthIndex,
+															   int arrayOrDepthCount)
 		{
 			// If we pass unknown, use the format from the texture.
 			if (format == BufferFormat.Unknown)
@@ -248,17 +251,17 @@ namespace GorgonLibrary.Graphics
 			
 			if (Settings.ImageType != ImageType.Image3D)
 			{
-				if ((arrayIndex >= Settings.ArrayCount)
-					|| (arrayIndex < 0))
+				if ((arrayOrDepthIndex >= Settings.ArrayCount)
+					|| (arrayOrDepthIndex < 0))
 				{
 					throw new GorgonException(GorgonResult.CannotCreate,
 											  string.Format(Resources.GORGFX_VIEW_ARRAY_START_INVALID,
 															Settings.ArrayCount));
 				}
 
-				if ((arrayCount > Settings.ArrayCount)
-				    || (arrayCount + arrayIndex > Settings.ArrayCount)
-				    || (arrayCount < 1))
+				if ((arrayOrDepthCount > Settings.ArrayCount)
+				    || (arrayOrDepthCount + arrayOrDepthIndex > Settings.ArrayCount)
+				    || (arrayOrDepthCount < 1))
 				{
 					throw new GorgonException(GorgonResult.CannotCreate,
 					                          string.Format(Resources.GORGFX_VIEW_ARRAY_COUNT_INVALID,
@@ -267,17 +270,17 @@ namespace GorgonLibrary.Graphics
 			}
 			else
 			{
-				if ((arrayIndex >= Settings.Depth)
-					|| (arrayIndex < 0))
+				if ((arrayOrDepthIndex >= Settings.Depth)
+					|| (arrayOrDepthIndex < 0))
 				{
 					throw new GorgonException(GorgonResult.CannotCreate,
 											  string.Format(Resources.GORGFX_VIEW_DEPTH_START_INVALID,
 															Settings.Depth));
 				}
 
-				if ((arrayCount > Settings.Depth)
-					|| (arrayCount + arrayIndex > Settings.Depth)
-					|| (arrayCount < 1))
+				if ((arrayOrDepthCount > Settings.Depth)
+					|| (arrayOrDepthCount + arrayOrDepthIndex > Settings.Depth)
+					|| (arrayOrDepthCount < 1))
 				{
 					throw new GorgonException(GorgonResult.CannotCreate,
 											  string.Format(Resources.GORGFX_VIEW_DEPTH_COUNT_INVALID,
@@ -307,7 +310,7 @@ namespace GorgonLibrary.Graphics
 				throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_VIEW_NO_TYPELESS);
 			}
 
-			return _viewCache.GetRenderTargetView(format, mipSlice, arrayIndex, arrayCount) as TR;
+			return (GorgonRenderTargetTextureView)_viewCache.GetRenderTargetView(format, mipSlice, arrayOrDepthIndex, arrayOrDepthCount);
 		}
 
 		/// <summary>
@@ -945,7 +948,7 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		/// <param name="texture">Texture that holds the default shader view.</param>
 		/// <returns>The default shader view for the texture.</returns>
-		public static GorgonShaderView ToShaderView(GorgonTexture texture)
+		public static GorgonTextureShaderView ToShaderView(GorgonTexture texture)
 		{
 			return texture == null ? null : texture._defaultShaderView;
 		}
@@ -955,7 +958,7 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		/// <param name="texture">The texture to retrieve the default shader view from.</param>
 		/// <returns>The default shader view for the texture.</returns>
-		public static implicit operator GorgonShaderView(GorgonTexture texture)
+		public static implicit operator GorgonTextureShaderView(GorgonTexture texture)
 		{
 			return texture == null ? null : texture._defaultShaderView;
 		}

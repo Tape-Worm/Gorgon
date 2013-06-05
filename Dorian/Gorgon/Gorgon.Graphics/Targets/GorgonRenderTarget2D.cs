@@ -26,8 +26,6 @@
 
 using System;
 using GorgonLibrary.Diagnostics;
-using GorgonLibrary.Graphics.Properties;
-using SharpDX;
 using GI = SharpDX.DXGI;
 using D3D = SharpDX.Direct3D11;
 
@@ -36,7 +34,13 @@ namespace GorgonLibrary.Graphics
     /// <summary>
     /// A render target bound to a 2D texture.
     /// </summary>
-    public class GorgonRenderTarget2D
+    /// <remarks>
+    /// A 2D render target is a texture that can be used to receive rendering data in the pipeline by binding it as a render target.  Because it is inherited from <see cref="GorgonLibrary.Graphics.GorgonTexture2D">GorgonTexture2D</see> 
+    /// it can be cast to that type and used as a normal 2D texture.  Also, for convenience, it can also be cast to a <see cref="GorgonLibrary.Graphics.GorgonRenderTargetView">GorgonRenderTargetView</see> or 
+    /// a <see cref="GorgonLibrary.Graphics.GorgonShaderView">GorgonTextureShaderView</see> to allow ease of binding to the <see cref="GorgonLibrary.Graphics.GorgonOutputMerger.RenderTargets">render target list</see> or 
+    /// to the <see cref="GorgonLibrary.Graphics.GorgonShaderState{T}.Resources">shader resource list</see>.
+    /// </remarks>
+    public sealed class GorgonRenderTarget2D
         : GorgonTexture2D
     {
 		#region Variables.
@@ -283,10 +287,15 @@ namespace GorgonLibrary.Graphics
 		/// <param name="arrayIndex">Array index to use in the view.</param>
 		/// <param name="arrayCount">Number of array indices to use.</param>
 		/// <returns>A render target view.</returns>
-		public GorgonRenderTarget2DView CreateRenderTargetView(BufferFormat format, int mipSlice, int arrayIndex,
+        /// <remarks>Use this to create a render target view that can bind a portion of the target to the pipeline as a render target.
+        /// <para>The <paramref name="format"/> for the render target view does not have to be the same as the render target backing texture, and if the format is set to Unknown, then it will 
+        /// use the format from the texture.</para>
+        /// </remarks>
+        /// <exception cref="GorgonLibrary.GorgonException">Thrown when the render target view could not be created.</exception>
+        public GorgonRenderTargetTextureView CreateRenderTargetView(BufferFormat format, int mipSlice, int arrayIndex,
 															   int arrayCount)
 		{
-			return OnCreateRenderTargetView<GorgonRenderTarget2DView>(format, mipSlice, arrayIndex, arrayCount);
+			return OnCreateRenderTargetView(format, mipSlice, arrayIndex, arrayCount);
 		}
 
 		/// <summary>

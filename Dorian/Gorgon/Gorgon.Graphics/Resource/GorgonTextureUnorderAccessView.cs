@@ -51,22 +51,22 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
-		/// Property to return the starting array element to view.
+		/// Property to return the starting array element or depth slice to view.
 		/// </summary>
-		/// <remarks>This value has no meaning for a 3D texture and is ignored.</remarks>
-		public int ArrayStart
+		/// <remarks>For a 1D/2D texture, this value indicates an array index.  For a 3D texture, this value indicates a depth slice.</remarks>
+		public int ArrayOrDepthStart
 		{
 			get;
 			private set;
 		}
 
 		/// <summary>
-		/// Property to return the number of array elements to view.
+		/// Property to return the number of array indices or depth slices to view.
 		/// </summary>
 		/// <remarks>If the texture is a cube map, then this value must be a multiple of 6.
-		/// <para>This value has no meaning for a 3D texture and is ignored.</para>
+        /// <para>For a 1D/2D texture, this value indicates an array index.  For a 3D texture, this value indicates a depth slice.</para>
 		/// </remarks>
-		public int ArrayCount
+		public int ArrayOrDepthCount
 		{
 			get;
 			private set;
@@ -105,17 +105,17 @@ namespace GorgonLibrary.Graphics
 			// 3D textures don't use arrays.
 			if (texture.ResourceType != ResourceType.Texture3D)
 			{
-				if ((ArrayCount > texture.Settings.ArrayCount)
-				    || (ArrayCount + ArrayStart > texture.Settings.ArrayCount)
-				    || (ArrayCount < 1))
+				if ((ArrayOrDepthCount > texture.Settings.ArrayCount)
+				    || (ArrayOrDepthCount + ArrayOrDepthStart > texture.Settings.ArrayCount)
+				    || (ArrayOrDepthCount < 1))
 				{
 					throw new GorgonException(GorgonResult.CannotCreate,
 					                          string.Format(Resources.GORGFX_VIEW_ARRAY_COUNT_INVALID,
 					                                        texture.Settings.ArrayCount));
 				}
 
-				if ((ArrayStart >= texture.Settings.ArrayCount)
-				    || (ArrayStart < 0))
+				if ((ArrayOrDepthStart >= texture.Settings.ArrayCount)
+				    || (ArrayOrDepthStart < 0))
 				{
 					throw new GorgonException(GorgonResult.CannotCreate,
 					                          string.Format(Resources.GORGFX_VIEW_ARRAY_START_INVALID,
@@ -124,17 +124,17 @@ namespace GorgonLibrary.Graphics
 			}
 			else
 			{
-				if ((ArrayCount > texture.Settings.Depth)
-					|| (ArrayCount + ArrayStart > texture.Settings.Depth)
-					|| (ArrayCount < 1))
+				if ((ArrayOrDepthCount > texture.Settings.Depth)
+					|| (ArrayOrDepthCount + ArrayOrDepthStart > texture.Settings.Depth)
+					|| (ArrayOrDepthCount < 1))
 				{
 					throw new GorgonException(GorgonResult.CannotCreate,
 											  string.Format(Resources.GORGFX_VIEW_DEPTH_COUNT_INVALID,
 															texture.Settings.Depth));
 				}
 
-				if ((ArrayStart >= texture.Settings.Depth)
-					|| (ArrayStart < 0))
+				if ((ArrayOrDepthStart >= texture.Settings.Depth)
+					|| (ArrayOrDepthStart < 0))
 				{
 					throw new GorgonException(GorgonResult.CannotCreate,
 											  string.Format(Resources.GORGFX_VIEW_DEPTH_START_INVALID,
@@ -173,8 +173,8 @@ namespace GorgonLibrary.Graphics
 					Texture1DArray =
 						{
 							MipSlice = MipIndex,
-							ArraySize = ArrayCount,
-							FirstArraySlice = ArrayStart
+							ArraySize = ArrayOrDepthCount,
+							FirstArraySlice = ArrayOrDepthStart
 						}
 				};
 		}
@@ -195,8 +195,8 @@ namespace GorgonLibrary.Graphics
 					Texture2DArray =
 						{
 							MipSlice =  MipIndex,
-							FirstArraySlice = ArrayStart,
-							ArraySize = ArrayCount
+							FirstArraySlice = ArrayOrDepthStart,
+							ArraySize = ArrayOrDepthCount
 						}
 				};
 		}
@@ -214,8 +214,8 @@ namespace GorgonLibrary.Graphics
 					Texture3D =
 						{
 							MipSlice = MipIndex,
-							FirstWSlice = ArrayStart,
-							WSize = ArrayCount
+							FirstWSlice = ArrayOrDepthStart,
+							WSize = ArrayOrDepthCount
 						}
 				};
 		}
@@ -289,8 +289,8 @@ namespace GorgonLibrary.Graphics
 			: base(resource, format)
 		{
 			MipIndex = mipIndex;
-			ArrayStart = arrayIndex;
-			ArrayCount = arrayCount;
+			ArrayOrDepthStart = arrayIndex;
+			ArrayOrDepthCount = arrayCount;
 		}
 		#endregion
 	}
