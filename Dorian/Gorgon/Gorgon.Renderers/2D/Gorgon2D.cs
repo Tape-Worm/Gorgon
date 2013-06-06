@@ -371,7 +371,7 @@ namespace GorgonLibrary.Renderers
 
 					_clip = value;
 					if (value != null)
-						Graphics.Rasterizer.SetClip(_clip.Value);
+						Graphics.Rasterizer.SetScissorRectangle(_clip.Value);
 				}
 			}
 		}

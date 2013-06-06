@@ -26,7 +26,9 @@
 
 using System;
 using System.Drawing;
+using GorgonLibrary.Graphics.Properties;
 using D3D = SharpDX.Direct3D11;
+using GorgonLibrary.Math;
 
 namespace GorgonLibrary.Graphics
 {
@@ -37,36 +39,88 @@ namespace GorgonLibrary.Graphics
 		: IEquatable<GorgonViewport>
 	{
 		#region Variables.
-		/// <summary>
-		/// The rectangular region used for screen space clipping/scaling.
-		/// </summary>
-		/// <remarks>The width and height must be greater than or equal to 0.</remarks>
-		public RectangleF Region;
+        /// <summary>
+        /// An empty viewport.
+        /// </summary>
+	    public static readonly GorgonViewport Empty = new GorgonViewport(true);
+        
+	    private readonly bool _isEmpty;      // Flag to indicate that the viewport is empty.
+
+        /// <summary>
+        /// The horizontal position of the viewport.
+        /// </summary>
+	    public readonly float Left;
+        /// <summary>
+        /// The vertical position of the viewport.
+        /// </summary>
+	    public readonly float Top;
+        /// <summary>
+        /// The width of the viewport.
+        /// </summary>
+        /// <remarks>This value must be greater than or equal to 0.</remarks>
+	    public readonly float Width;
+        /// <summary>
+        /// The height of the viewport.
+        /// </summary>
+        /// <remarks>This value must be greater than or equal to 0.</remarks>
+	    public readonly float Height;
 		/// <summary>
 		/// The minimum depth for the viewport.
 		/// </summary>
 		/// <remarks>This must be between 0 and 1.</remarks>
-		public float MinimumZ;
+		public readonly float MinimumZ;
 		/// <summary>
 		/// The maximum depth for the viewport.
 		/// </summary>
 		/// <remarks>This must be between 0 and 1.</remarks>
-		public float MaximumZ;
-		/// <summary>
-		/// Flag to indicate that the viewport is enabled.
-		/// </summary>
-		/// <remarks>The default value is TRUE.</remarks>
-		public bool IsEnabled;
+		public readonly float MaximumZ;
 		#endregion
 
-		#region Methods.
-		/// <summary>
+        #region Properties.
+        /// <summary>
+        /// Property to return whether the viewport is empty or not.
+        /// </summary>
+	    public bool IsEmpty
+	    {
+	        get
+	        {
+	            return _isEmpty;
+	        }
+	    }
+
+        /// <summary>
+        /// Property to return the right coordinate of the viewport.
+        /// </summary>
+        /// <remarks>This is the sum of the left coordinate and the width.</remarks>
+        public float Right
+        {
+            get
+            {
+                return Width + Left;
+            }
+        }
+
+        /// <summary>
+        /// Property to return the bottom coordinate of the viewport.
+        /// </summary>
+        /// <remarks>This is the sum of the top coordinate and the height.</remarks>
+	    public float Bottom
+	    {
+	        get
+	        {
+	            return Height + Top;
+	        }
+	    }
+        #endregion
+
+        #region Methods.
+        /// <summary>
 		/// Function to convert this viewport rectangle into a Direct3D viewport.
 		/// </summary>
 		/// <returns>The Direct3D viewport value type.</returns>		
 		internal SharpDX.ViewportF Convert()
 		{
-			return new SharpDX.ViewportF(Region.X, Region.Y, Region.Width, Region.Height, MinimumZ, MaximumZ);
+			return new SharpDX.ViewportF(Left, Top, Width, Height, MinimumZ, MaximumZ);
 		}
 
 		/// <summary>
@@ -77,7 +131,10 @@ namespace GorgonLibrary.Graphics
 		/// <returns>TRUE if equal, FALSE if not.</returns>
 		public static bool Equals(ref GorgonViewport left, ref GorgonViewport right)
 		{
-			return ((left.Region.X == right.Region.X) && (left.Region.Y == right.Region.Y) && (left.Region.Width == right.Region.Width) && (left.Region.Height == right.Region.Height) && (left.MinimumZ == right.MinimumZ) && (left.MaximumZ == right.MaximumZ));
+		    return ((left.Left.EqualsEpsilon(right.Left)) && (left.Top.EqualsEpsilon(right.Top))
+		            && (left.Width.EqualsEpsilon(right.Width)) && (left.Height.EqualsEpsilon(right.Height))
+		            && (left.MinimumZ.EqualsEpsilon(right.MinimumZ)) && (left.MaximumZ.EqualsEpsilon(right.MaximumZ))
+                    && (left._isEmpty == right._isEmpty));
 		}
 
 		/// <summary>
@@ -90,7 +147,7 @@ namespace GorgonLibrary.Graphics
 		/// </returns>
 		public static bool operator ==(GorgonViewport left, GorgonViewport right)
 		{
-			return GorgonViewport.Equals(ref left, ref right);
+			return Equals(ref left, ref right);
 		}
 
 		/// <summary>
@@ -103,7 +160,7 @@ namespace GorgonLibrary.Graphics
 		/// </returns>
 		public static bool operator !=(GorgonViewport left, GorgonViewport right)
 		{
-			return !GorgonViewport.Equals(ref left, ref right);
+			return !Equals(ref left, ref right);
 		}
 
 		/// <summary>
@@ -115,10 +172,12 @@ namespace GorgonLibrary.Graphics
 		/// </returns>
 		public override bool Equals(object obj)
 		{
-			if (obj is GorgonViewport)
-				return this.Equals((GorgonViewport)obj);
+		    if (obj is GorgonViewport)
+		    {
+		        return Equals((GorgonViewport)obj);
+		    }
 
-			return base.Equals(obj);
+		    return base.Equals(obj);
 		}
 
 		/// <summary>
@@ -131,8 +190,8 @@ namespace GorgonLibrary.Graphics
 		{
 			unchecked
 			{
-				return 281.GenerateHash(Region.X).GenerateHash(Region.Y).GenerateHash(Region.Width).GenerateHash(Region.Height).
-						GenerateHash(MinimumZ).GenerateHash(MaximumZ);
+				return 281.GenerateHash(Left).GenerateHash(Left).GenerateHash(Width).GenerateHash(Height).
+						GenerateHash(MinimumZ).GenerateHash(MaximumZ).GenerateHash(_isEmpty);
 			}
 		}
 
@@ -144,11 +203,47 @@ namespace GorgonLibrary.Graphics
 		/// </returns>
 		public override string ToString()
 		{
-			return string.Format("Gorgon Viewport: {0}x{1}-{2}x{3} (Width: {4}, Height: {5}) Minimum depth: {6} Maximum depth: {7}", Region.X, Region.Y, Region.Right, Region.Bottom, Region.Width, Region.Height, MinimumZ, MaximumZ);
+			return string.Format(Resources.GORGFX_VIEWPORT_TOSTR, Left, Top, Right, Bottom, Width, Height, MinimumZ, MaximumZ);
 		}
+
+        /// <summary>
+        /// Implicit operator to convert this viewport into a System.Drawing.RectangleF.
+        /// </summary>
+        /// <param name="viewport">Viewport to convert.</param>
+        /// <returns>The viewport converted into a rectangle.</returns>
+        public static explicit operator RectangleF(GorgonViewport viewport)
+        {
+            return new RectangleF(viewport.Left, viewport.Top, viewport.Width, viewport.Height);
+        }
+
+        /// <summary>
+        /// Implicit operator to convert this viewport into a System.Drawing.Rectangle.
+        /// </summary>
+        /// <param name="viewport">Viewport to convert.</param>
+        /// <returns>The viewport converted into a rectangle.</returns>
+        /// <remarks>This will round any fractional coordinates to the nearest whole number.</remarks>
+        public static explicit operator Rectangle(GorgonViewport viewport)
+        {
+            return Rectangle.Round(new RectangleF(viewport.Left, viewport.Top, viewport.Width, viewport.Height));
+        }
 		#endregion
 
 		#region Constructor/Destructor.
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GorgonViewport"/> struct.
+        /// </summary>
+        /// <param name="isEmpty">Flag to indicate that the viewport is empty.</param>
+        internal GorgonViewport(bool isEmpty)
+        {
+            _isEmpty = isEmpty;
+            Top = 0;
+            Left = 0;
+            Width = 0;
+            Height = 0;
+            MinimumZ = 0;
+            MaximumZ = 0;
+        }
+
 		/// <summary>
 		/// Initializes a new instance of the <see cref="GorgonViewport"/> struct.
 		/// </summary>
@@ -157,11 +252,8 @@ namespace GorgonLibrary.Graphics
 		/// <param name="maxZ">Maximum depth.</param>
 		/// <remarks>The <paramref name="minZ"/> and <paramref name="maxZ"/> parameters must be between 0 and 1.  The width and height of the <paramref name="region"/> parameter must be greater than or equal to 0.</remarks>
 		public GorgonViewport(RectangleF region, float minZ, float maxZ)
+            : this(region.X, region.Y, region.Width, region.Height, minZ, maxZ)
 		{
-			Region = region;
-			MinimumZ = minZ;
-			MaximumZ = maxZ;
-			IsEnabled = true;
 		}
 
 		/// <summary>
@@ -170,7 +262,7 @@ namespace GorgonLibrary.Graphics
 		/// <param name="region">The position and size for the screen space region.</param>
 		/// <remarks>The width and height of the <paramref name="region"/> parameter must be greater than or equal to 0.</remarks>
 		public GorgonViewport(RectangleF region)
-			: this(region, 0.0f, 1.0f)
+			: this(region.X, region.Y, region.Width, region.Height, 0.0f, 1.0f)
 		{
 		}
 
@@ -185,8 +277,14 @@ namespace GorgonLibrary.Graphics
 		/// <param name="maxZ">Maximum depth.</param>
 		/// <remarks>The <paramref name="minZ"/> and <paramref name="maxZ"/> parameters must be between 0 and 1.  The <paramref name="width"/> and <paramref name="height"/> parameters must be greater than or equal to 0.</remarks>
 		public GorgonViewport(float x, float y, float width, float height, float minZ, float maxZ)
-			: this(new RectangleF(x, y, width, height), minZ, maxZ)
 		{
+		    Left = x;
+		    Top = y;
+		    Width = width;
+		    Height = height;
+		    MinimumZ = minZ;
+		    MaximumZ = maxZ;
+		    _isEmpty = false;
 		}
 
 		/// <summary>
@@ -198,7 +296,7 @@ namespace GorgonLibrary.Graphics
 		/// <param name="height">The height of the view.</param>
 		/// <remarks>The <paramref name="width"/> and <paramref name="height"/> parameters must be greater than or equal to 0.</remarks>
 		public GorgonViewport(float x, float y, float width, float height)
-			: this(new RectangleF(x, y, width, height), 0.0f, 1.0f)
+			: this(x, y, width, height, 0.0f, 1.0f)
 		{
 		}
 		#endregion
@@ -213,7 +311,7 @@ namespace GorgonLibrary.Graphics
 		/// </returns>
 		public bool Equals(GorgonViewport other)
 		{
-			return GorgonViewport.Equals(ref this, ref other);
+			return Equals(ref this, ref other);
 		}
 		#endregion
 	}
