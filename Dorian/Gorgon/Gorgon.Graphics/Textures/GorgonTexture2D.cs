@@ -39,10 +39,6 @@ namespace GorgonLibrary.Graphics
 	public class GorgonTexture2D
 		: GorgonTexture
     {
-        #region Variables.
-
-	    #endregion
-
         #region Properties.
         /// <summary>
 		/// Property to return the type of data in the resource.
