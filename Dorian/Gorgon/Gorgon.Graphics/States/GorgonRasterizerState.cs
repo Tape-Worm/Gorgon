@@ -312,7 +312,7 @@ namespace GorgonLibrary.Graphics
 	/// <summary>
 	/// Render states for the rasterizer.
 	/// </summary>
-#error Update viewport code to take an array instead of IEnumerable.  Also, add Get methods for viewports.  Update documentation on ScissorRect/Viewport methods to reflect all-or-nothing setting.
+//#error Update viewport code to take an array instead of IEnumerable.  Also, add Get methods for viewports.  Update documentation on ScissorRect/Viewport methods to reflect all-or-nothing setting.
 	public sealed class GorgonRasterizerRenderState
 		: GorgonState<GorgonRasterizerStates>
 	{
@@ -325,13 +325,13 @@ namespace GorgonLibrary.Graphics
 
 		#region Properties.
 		/// <summary>
-		/// Property to return the maximum number of clipping rectangles allowed for the device.
+		/// Property to return the maximum number of viewport and scissor test rectangles allowed for the device.
 		/// </summary>
-		public int MaxClipRectangleCount
+		public int MaxViewportScissorTestCount
 		{
 			get
 			{
-				return Graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM2_a_b ? 1 : 16;
+				return 16;
 			}
 		}
 		#endregion
@@ -374,19 +374,48 @@ namespace GorgonLibrary.Graphics
 			return state;
 		}
 
+        /// <summary>
+        /// Function to return a viewport by index.
+        /// </summary>
+        /// <param name="index">Index of the viewport.</param>
+        /// <returns>The viewport or NULL if no viewport was set at the index.</returns>
+        public GorgonViewport? GetViewport(int index)
+        {
+            if ((_viewPorts == null) || (_viewPorts.Length == 0) || (index < 0) || (index >= _viewPorts.Length))
+            {
+                return null;
+            }
+
+            return _viewPorts[index];
+        }
+
+        /// <summary>
+        /// Function to return all the viewports.
+        /// </summary>
+        /// <returns>An array containing all the viewports.</returns>
+        /// <remarks>This will return an array with all of the viewports bound to the pipeline.</remarks>
+        public GorgonViewport[] GetViewports()
+        {
+            return _viewPorts;
+        }
+
 		/// <summary>
 		/// Function to set a list of viewports.
 		/// </summary>
-		/// <remarks>This will clip/scale the output to the the constraints in the viewport(s).
+		/// <remarks>This will clip/scale the output to the the constraints defined in the viewports.
 		/// <para>Viewports must have a width and height greater than 0.</para>
-		/// <para>Which viewport to use is determined by the SV_ViewportArrayIndex semantic output by a geometry shader; if a geometry shader does not specify the semantic, then the first viewport in the list will be used.</para>
-		/// <para>On SM2_a_b devices only the first viewport will be used.</para>
-		/// </remarks>
-		public void SetViewport(IEnumerable<GorgonViewport> viewPorts)
+        /// <para>Which viewport is in use is determined by the <c>SV_ViewportArrayIndex</c> HLSL semantic output by a geometry shader.  If no geometry shader is bound, or the 
+        /// geometry shader does not make use of the <c>SV_ViewportArrayIndex</c> semantic, then only the first viewport is used.</para>
+        /// <para>On only the first scissor test rectangle will be used on devices with a feature level of SM2_a_b.  This is because they cannot set the SV_ViewportArrayIndex semantic in 
+        /// a geometry shader because these devices do not support geometry shaders.</para>
+        /// </remarks>
+		public void SetViewports(GorgonViewport[] viewPorts)
 		{
-			if (viewPorts == null)
+			if ((viewPorts == null) || (viewPorts.Length == 0))
 			{
-				Graphics.Context.Rasterizer.SetViewport(0, 0, 1.0f, 1.0f, 0, 1.0f);
+				Graphics.Context.Rasterizer.SetViewport(0, 0, 1.0f, 1.0f);
+			    _dxViewports = null;
+			    _viewPorts = null;
 				return;
 			}
 
@@ -396,11 +425,20 @@ namespace GorgonLibrary.Graphics
 				return;
 			}
 
-			var D3DViews = (from viewPort in viewPorts
-							where viewPort.IsEnabled
-							select viewPort.Convert()).ToArray();
+		    _viewPorts = viewPorts;
 
-			Graphics.Context.Rasterizer.SetViewports(D3DViews);
+            if ((_dxViewports == null)
+                || (_dxViewports.Length != viewPorts.Length))
+            {
+                _dxViewports = new DX.ViewportF[_viewPorts.Length];
+            }
+
+            for (int i = 0; i < _viewPorts.Length; i++)
+            {
+                _dxViewports[i] = _viewPorts[i].Convert();
+            }
+
+			Graphics.Context.Rasterizer.SetViewports(_dxViewports);
 		}
 
 
@@ -411,40 +449,65 @@ namespace GorgonLibrary.Graphics
 		/// <remarks>Viewports must have a width and height greater than 0.</remarks>
 		public void SetViewport(GorgonViewport viewPort)
 		{
-			Graphics.Context.Rasterizer.SetViewport(viewPort.Region.X, viewPort.Region.Y, viewPort.Region.Width, viewPort.Region.Height, viewPort.MinimumZ, viewPort.MaximumZ);			
+            if ((_viewPorts == null) || (_viewPorts.Length != 1))
+            {
+                _viewPorts = new[]
+                    {
+                        viewPort
+                    };
+                _dxViewports = new[]
+                    {
+                        viewPort.Convert()
+                    };
+            }
+            else
+            {
+                if (_viewPorts[0].Equals(viewPort))
+                {
+                    return;
+                }
+
+                _viewPorts[0] = viewPort;
+                _dxViewports[0] = viewPort.Convert();
+            }
+
+			Graphics.Context.Rasterizer.SetViewport(viewPort.Left, viewPort.Top, viewPort.Width, viewPort.Height, viewPort.MinimumZ, viewPort.MaximumZ);			
 		}
 
 		/// <summary>
-		/// Function to set a scissor rectangle clipping region.
+		/// Function to set a scissor rectangle clipping rectangle.
 		/// </summary>
-		/// <param name="region">Region to set.</param>
-		public void SetClip(Rectangle region)
+		/// <param name="rectangle">Rectangle to set.</param>
+		/// <remarks>Scissor rectangles define a 2D area on the render target that can be used for clipping.  That is, all pixels outside of the rectangle will be discarded.
+        /// <para>To use scissor rectangles, set the <see cref="GorgonLibrary.Graphics.GorgonRasterizerStates.IsScissorTestingEnabled">IsScissorTestingEnabled</see> 
+        /// <see cref="GorgonLibrary.Graphics.GorgonRasterizerRenderState.States">state</see> to TRUE. If the state is set to FALSE, this value will have no effect.</para>
+        /// <para>This method will only set the first scissor test rectangle.</para>
+		/// </remarks>
+		public void SetScissorRectangle(Rectangle rectangle)
 		{
 			if ((_clipRects == null) || (_clipRects.Length != 1))
 			{
 				_clipRects = new[]
 					{
-						region
+						rectangle
 					};
+			    _dxRects = new DX.Rectangle[]
+			        {
+                        DX.Rectangle.Empty
+			        };
 			}
 			else
 			{
-				_clipRects[0] = region;
+                if (_clipRects[0] == rectangle)
+                {
+                    return;
+                }
+
+				_clipRects[0] = rectangle;
+                _dxRects[0] = new DX.Rectangle(rectangle.Left, rectangle.Top, rectangle.Right, rectangle.Bottom);
 			}
 
-			if ((_dxRects == null) || (_dxRects.Length != 1))
-			{
-				_dxRects = new[]
-					{
-						new DX.Rectangle(region.Left, region.Top, region.Right, region.Bottom)
-					};
-			}
-			else
-			{
-				_dxRects[0] = new DX.Rectangle(region.Left, region.Top, region.Right, region.Bottom);
-			}
-
-			Graphics.Context.Rasterizer.SetScissorRectangle(region.Left, region.Top, region.Right, region.Bottom);
+			Graphics.Context.Rasterizer.SetScissorRectangle(rectangle.Left, rectangle.Top, rectangle.Right, rectangle.Bottom);
 		}
 
 		/// <summary>
@@ -463,37 +526,33 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
-		/// Function to return all the sissor test rectangles.
+		/// Function to return all the scissor test rectangles.
 		/// </summary>
 		/// <returns>An array containing all the scissor test rectangles.</returns>
-		/// <remarks>This will return a copy of the internal scissor test rectangle list.  Use this method sparingly as it will generate garbage.</remarks>
+		/// <remarks>This will return a array of all scissor test rectangles currently bound to the pipeline.</remarks>
 		public Rectangle[] GetScissorRectangles()
 		{
-			if (_clipRects == null)
-			{
-				return new Rectangle[] { };	
-			}
-
-			var result = new Rectangle[_clipRects.Length];
-
-			if (_clipRects.Length > 0)
-			{
-				_clipRects.CopyTo(result, 0);
-			}
-
-			return _clipRects;
+		    return _clipRects;
 		}
 
 		/// <summary>
 		/// Function to set a list of scissor rectangle clipping rectangles.
 		/// </summary>
-		/// <param name="regions">Rectangles to set.</param>
-		/// <remarks>Passing NULL (Nothing in VB.Net) to the <paramref name="regions"/> parameter will unbind all scissor test rectangles.
-		/// <para>On SM2_a_b devices only the first clip rectangle will be used.</para>
+		/// <param name="rectangles">An array containing the scissor testing rectangles.</param>
+        /// <remarks>Scissor rectangles define a 2D area on the render target that can be used for clipping.  That is, all pixels outside of the rectangle will be discarded.
+        /// <para>To use scissor rectangles, set the <see cref="GorgonLibrary.Graphics.GorgonRasterizerStates.IsScissorTestingEnabled">IsScissorTestingEnabled</see> 
+        /// <para>Which scissor rectangle is in use is determined by the <c>SV_ViewportArrayIndex</c> HLSL semantic output by a geometry shader.  If no geometry shader is bound, or the 
+        /// geometry shader does not make use of the <c>SV_ViewportArrayIndex</c> semantic, then only the first rectangle is used.</para>
+        /// <para>Each scissor test rectangle corresponds to a <see cref="GorgonLibrary.Graphics.GorgonRasterizerRenderState.SetViewports">viewport</see> in an array of viewports.</para>
+        /// <see cref="GorgonLibrary.Graphics.GorgonRasterizerRenderState.States">state</see> to TRUE. If the state is set to FALSE, this value will have no effect.</para>
+        /// <para>Any scissor test rectangles not defined in the <paramref name="rectangles"/> parameter will be disabled.</para>
+        /// <para>Passing NULL (Nothing in VB.Net) to the <paramref name="rectangles"/> parameter will disable all scissor test rectangles.</para>
+        /// <para>On only the first scissor test rectangle will be used on devices with a feature level of SM2_a_b.  This is because they cannot set the SV_ViewportArrayIndex semantic in 
+        /// a geometry shader because these devices do not support geometry shaders.</para>
 		/// </remarks>
-		public void SetClip(Rectangle[] regions)
+		public void SetScissorRectangles(Rectangle[] rectangles)
 		{
-			if ((regions == null) || (regions.Length == 0))
+			if ((rectangles == null) || (rectangles.Length == 0))
 			{
 				Graphics.Context.Rasterizer.SetScissorRectangles(null);
 				_clipRects = null;
@@ -503,15 +562,11 @@ namespace GorgonLibrary.Graphics
 
 			if (Graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM2_a_b)
 			{
-				if (Graphics.Output.GetRenderTarget(0) != null)
-				{
-					SetClip(regions[0]);
-				}
-
+				SetScissorRectangle(rectangles[0]);
 				return;
 			}
 
-			_clipRects = regions;
+			_clipRects = rectangles;
 			if ((_dxRects == null) || (_dxRects.Length != _clipRects.Length))
 			{
 				_dxRects = new DX.Rectangle[_clipRects.Length];

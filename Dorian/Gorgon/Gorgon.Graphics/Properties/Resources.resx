@@ -378,4 +378,7 @@
   <data name="GORGFX_RT_NEED_DEFAULT" xml:space="preserve">
     <value>A render target must have a usage of [Default].</value>
   </data>
+  <data name="GORGFX_VIEWPORT_TOSTR" xml:space="preserve">
+    <value>Gorgon Viewport: {0}x{1}-{2}x{3} (Width: {4}, Height: {5}) Minimum depth: {6} Maximum depth: {7}</value>
+  </data>
 </root>
