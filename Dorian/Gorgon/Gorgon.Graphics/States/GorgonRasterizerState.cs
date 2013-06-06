@@ -312,7 +312,7 @@ namespace GorgonLibrary.Graphics
 	/// <summary>
 	/// Render states for the rasterizer.
 	/// </summary>
-//#error Update viewport code to take an array instead of IEnumerable.  Also, add Get methods for viewports.  Update documentation on ScissorRect/Viewport methods to reflect all-or-nothing setting.
+#error Update viewport code to take an array instead of IEnumerable.  Also, add Get methods for viewports.  Update documentation on ScissorRect/Viewport methods to reflect all-or-nothing setting.
 	public sealed class GorgonRasterizerRenderState
 		: GorgonState<GorgonRasterizerStates>
 	{
