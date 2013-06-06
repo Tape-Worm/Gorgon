@@ -338,7 +338,9 @@ namespace GorgonLibrary.Graphics
 			// Re-seat the target.
 			if (needReseat)
 			{
-				Graphics.Output.RenderTargets.SetRenderTarget(0, _renderTarget, Graphics.Output.RenderTargets.DepthStencilBuffer);
+				// TODO: Target Experiment.
+				//Graphics.Output.RenderTargets.SetRenderTarget(0, _renderTarget, Graphics.Output.RenderTargets.DepthStencilBuffer);
+				Graphics.Output.BindTarget(0, _renderTarget);
 			}
 		}
 

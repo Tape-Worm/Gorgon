@@ -273,11 +273,18 @@ namespace GorgonLibrary.Graphics
             GorgonRenderStatistics.DepthBufferCount++;
             GorgonRenderStatistics.DepthBufferSize += Texture.SizeInBytes;
 
+			// TODO: Target Experiment.
             // Re-bind the depth/stencil with the new settings.
-			if (Graphics.Output.RenderTargets.DepthStencilBuffer == this)
+			/*if (Graphics.Output.RenderTargets.DepthStencilBuffer == this)
 			{
 				Graphics.Output.RenderTargets.DepthStencilBuffer = null;
 				Graphics.Output.RenderTargets.DepthStencilBuffer = this;
+			}*/
+
+			if (Graphics.Output.DepthStencilBuffer == this)
+			{
+				Graphics.Output.DepthStencilBuffer = null;
+				Graphics.Output.DepthStencilBuffer = this;
 			}
 		}
 
@@ -349,11 +356,19 @@ namespace GorgonLibrary.Graphics
 
 		    if (disposing)
 		    {
-		        // Unbind this depth/stencil buffer.
+
+				// TODO: Target Experiment.
+		        /*// Unbind this depth/stencil buffer.
 		        if (Graphics.Output.RenderTargets.DepthStencilBuffer == this)
 		        {
 		            Graphics.Output.RenderTargets.DepthStencilBuffer = null;
-		        }
+		        }*/
+
+				// Unbind this depth/stencil buffer.
+				if (Graphics.Output.DepthStencilBuffer == this)
+				{
+					Graphics.Output.DepthStencilBuffer = null;
+				}
 
 		        CleanUp();
 

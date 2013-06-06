@@ -484,11 +484,21 @@ namespace GorgonLibrary.Renderers
 		{
 			get
 			{
-				return Graphics.Output.RenderTargets.GetResource<GorgonRenderTarget2D>(0) ?? DefaultTarget;
+				var targetView = Graphics.Output.GetRenderTarget(0);
+				
+				// TODO: Target Experiment.
+				// TODO: Clean this shit up.
+				//return Graphics.Output.RenderTargets.GetResource<GorgonRenderTarget2D>(0) ?? DefaultTarget;
+				return targetView == null ? DefaultTarget : (targetView.Resource as GorgonRenderTarget2D) ?? DefaultTarget;
 			}
 			set
 			{
-				if (Graphics.Output.RenderTargets.GetResource<GorgonRenderTarget2D>(0) == value)
+				// TODO: Target Experiment.
+				/*if (Graphics.Output.RenderTargets.GetResource<GorgonRenderTarget2D>(0) == value)
+				{
+					return;
+				}*/
+				if (Graphics.Output.GetRenderTarget(0) == GorgonRenderTarget2D.ToRenderTargetView(value))
 				{
 					return;
 				}
@@ -550,21 +560,23 @@ namespace GorgonLibrary.Renderers
 			if (Target.SwapChain != null)
 				Target.SwapChain.Resized -= new EventHandler<GorgonSwapChainResizedEventArgs>(target_Resized);
 
-			Graphics.Output.RenderTargets.SetRenderTarget(0, target);
+			// TODO: Target Experiment.
+			//Graphics.Output.RenderTargets.SetRenderTarget(0, target);
+			Graphics.Output.SetRenderTarget(target, target.DepthStencilBuffer);
 
 			// Update our default camera.
 			// User cameras will need to be updated by the user on a resize or target change.
 			if (_camera == null)
 			{
                 _defaultCamera.UpdateFromTarget(target.Settings.Width, target.Settings.Height);
-				_defaultCamera.Anchor = new Vector2(Target.Settings.Width / 2.0f, Target.Settings.Height / 2.0f);
+				_defaultCamera.Anchor = new Vector2(target.Settings.Width / 2.0f, target.Settings.Height / 2.0f);
 				_defaultCamera.Position = -_defaultCamera.Anchor;
 			}
 
 			ClipRegion = null;
 
 			if (_viewPort == null)
-				Graphics.Rasterizer.SetViewport(Target.Viewport);
+				Graphics.Rasterizer.SetViewport(target.Viewport);
 			else
 				Graphics.Rasterizer.SetViewport(_viewPort.Value);
 

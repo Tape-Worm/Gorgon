@@ -823,7 +823,6 @@ namespace GorgonLibrary.Graphics
 		internal GorgonBlendRenderState(GorgonGraphics graphics)
 			: base(graphics)
 		{
-			States = GorgonBlendStates.DefaultStates;
 		}
 		#endregion
 	}

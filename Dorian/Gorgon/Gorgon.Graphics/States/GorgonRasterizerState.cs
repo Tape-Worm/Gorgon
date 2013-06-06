@@ -26,7 +26,8 @@
 
 using System.Collections.Generic;
 using System.Linq;
-using SharpDX;
+using System.Drawing;
+using DX = SharpDX;
 using D3D = SharpDX.Direct3D11;
 
 namespace GorgonLibrary.Graphics
@@ -311,9 +312,30 @@ namespace GorgonLibrary.Graphics
 	/// <summary>
 	/// Render states for the rasterizer.
 	/// </summary>
-	public class GorgonRasterizerRenderState
+//#error Update viewport code to take an array instead of IEnumerable.  Also, add Get methods for viewports.  Update documentation on ScissorRect/Viewport methods to reflect all-or-nothing setting.
+	public sealed class GorgonRasterizerRenderState
 		: GorgonState<GorgonRasterizerStates>
 	{
+		#region Variables.
+		private Rectangle[] _clipRects;						// Clipping rectangles for scissor testing.
+		private GorgonViewport[] _viewPorts;				// Viewports.
+		private DX.Rectangle[] _dxRects;					// DirectX rectangles for scissor testing.
+		private DX.ViewportF[] _dxViewports;				// DirectX viewports.
+		#endregion
+
+		#region Properties.
+		/// <summary>
+		/// Property to return the maximum number of clipping rectangles allowed for the device.
+		/// </summary>
+		public int MaxClipRectangleCount
+		{
+			get
+			{
+				return Graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM2_a_b ? 1 : 16;
+			}
+		}
+		#endregion
+
 		#region Methods.
 		/// <summary>
 		/// Function to apply the state to the current rendering context.
@@ -331,20 +353,23 @@ namespace GorgonLibrary.Graphics
 		/// <returns>The D3D state object.</returns>
 		internal override D3D.DeviceChild GetStateObject(ref GorgonRasterizerStates stateType)
 		{
-			var desc = new D3D.RasterizerStateDescription();
+			var desc = new D3D.RasterizerStateDescription
+				{
+					CullMode = (D3D.CullMode)States.CullingMode,
+					DepthBias = States.DepthBias,
+					DepthBiasClamp = States.DepthBiasClamp,
+					FillMode = (D3D.FillMode)States.FillMode,
+					IsAntialiasedLineEnabled = States.IsAntialiasedLinesEnabled,
+					IsDepthClipEnabled = States.IsDepthClippingEnabled,
+					IsFrontCounterClockwise = States.IsFrontFacingTriangleCounterClockwise,
+					IsMultisampleEnabled = States.IsMultisamplingEnabled,
+					IsScissorEnabled = States.IsScissorTestingEnabled
+				};
 
-			desc.CullMode = (D3D.CullMode)States.CullingMode;
-			desc.DepthBias = States.DepthBias;
-			desc.DepthBiasClamp = States.DepthBiasClamp;
-			desc.FillMode = (D3D.FillMode)States.FillMode;
-			desc.IsAntialiasedLineEnabled = States.IsAntialiasedLinesEnabled;
-			desc.IsDepthClipEnabled = States.IsDepthClippingEnabled;
-			desc.IsFrontCounterClockwise = States.IsFrontFacingTriangleCounterClockwise;
-			desc.IsMultisampleEnabled = States.IsMultisamplingEnabled;
-			desc.IsScissorEnabled = States.IsScissorTestingEnabled;
-
-			var state = new D3D.RasterizerState(Graphics.D3DDevice, desc);
-			state.DebugName = "Gorgon Rasterizer State #" + StateCacheCount.ToString();
+			var state = new D3D.RasterizerState(Graphics.D3DDevice, desc)
+				{
+					DebugName = "Gorgon Rasterizer State #" + StateCacheCount
+				};
 
 			return state;
 		}
@@ -371,11 +396,11 @@ namespace GorgonLibrary.Graphics
 				return;
 			}
 
-			var d3dViews = (from viewPort in viewPorts
+			var D3DViews = (from viewPort in viewPorts
 							where viewPort.IsEnabled
 							select viewPort.Convert()).ToArray();
 
-			Graphics.Context.Rasterizer.SetViewports(d3dViews);
+			Graphics.Context.Rasterizer.SetViewports(D3DViews);
 		}
 
 
@@ -393,53 +418,112 @@ namespace GorgonLibrary.Graphics
 		/// Function to set a scissor rectangle clipping region.
 		/// </summary>
 		/// <param name="region">Region to set.</param>
-		public void SetClip(System.Drawing.Rectangle region)
+		public void SetClip(Rectangle region)
 		{
+			if ((_clipRects == null) || (_clipRects.Length != 1))
+			{
+				_clipRects = new[]
+					{
+						region
+					};
+			}
+			else
+			{
+				_clipRects[0] = region;
+			}
+
+			if ((_dxRects == null) || (_dxRects.Length != 1))
+			{
+				_dxRects = new[]
+					{
+						new DX.Rectangle(region.Left, region.Top, region.Right, region.Bottom)
+					};
+			}
+			else
+			{
+				_dxRects[0] = new DX.Rectangle(region.Left, region.Top, region.Right, region.Bottom);
+			}
+
 			Graphics.Context.Rasterizer.SetScissorRectangle(region.Left, region.Top, region.Right, region.Bottom);
 		}
 
 		/// <summary>
-		/// Function to set a list of scissor rectangle clipping regions.
+		/// Function to return a scissor test rectangle by index.
 		/// </summary>
-		/// <param name="regions">Regions to set.</param>
-		/// <remarks>Passing NULL (Nothing in VB.Net) to the <paramref name="regions"/> parameter will use the width/height of the current <see cref="P:GorgonLibrary.Graphics.OutputMerger.RenderTargets">render target</see>.
+		/// <param name="index">Index of the scissor test rectangle.</param>
+		/// <returns>The scissor test rectangle or NULL if no scissor test rectangle was set at the index.</returns>
+		public Rectangle? GetScissorRectangle(int index)
+		{
+			if ((_clipRects == null) || (_clipRects.Length == 0) || (index < 0) || (index >= _clipRects.Length))
+			{
+				return null;
+			}
+
+			return _clipRects[index];
+		}
+
+		/// <summary>
+		/// Function to return all the sissor test rectangles.
+		/// </summary>
+		/// <returns>An array containing all the scissor test rectangles.</returns>
+		/// <remarks>This will return a copy of the internal scissor test rectangle list.  Use this method sparingly as it will generate garbage.</remarks>
+		public Rectangle[] GetScissorRectangles()
+		{
+			if (_clipRects == null)
+			{
+				return new Rectangle[] { };	
+			}
+
+			var result = new Rectangle[_clipRects.Length];
+
+			if (_clipRects.Length > 0)
+			{
+				_clipRects.CopyTo(result, 0);
+			}
+
+			return _clipRects;
+		}
+
+		/// <summary>
+		/// Function to set a list of scissor rectangle clipping rectangles.
+		/// </summary>
+		/// <param name="regions">Rectangles to set.</param>
+		/// <remarks>Passing NULL (Nothing in VB.Net) to the <paramref name="regions"/> parameter will unbind all scissor test rectangles.
 		/// <para>On SM2_a_b devices only the first clip rectangle will be used.</para>
 		/// </remarks>
-		public void SetClip(System.Drawing.Rectangle[] regions)
+		public void SetClip(Rectangle[] regions)
 		{
 			if ((regions == null) || (regions.Length == 0))
 			{
-				var view = Graphics.Output.RenderTargets.GetView(0);
-
-				if (view != null)
-				{
-					if (view.Resource.ResourceType != ResourceType.Buffer)
-					{
-						var texture = (GorgonTexture)view.Resource;
-						SetClip(new System.Drawing.Rectangle(0, 0, texture.Settings.Width, texture.Settings.Height));
-					}
-				}
+				Graphics.Context.Rasterizer.SetScissorRectangles(null);
+				_clipRects = null;
+				_dxRects = null;
 				return;
 			}
-
 
 			if (Graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM2_a_b)
 			{
-				if (Graphics.Output.RenderTargets.GetView(0) != null)
+				if (Graphics.Output.GetRenderTarget(0) != null)
 				{
 					SetClip(regions[0]);
 				}
+
 				return;
 			}
 
-			var dxRects = new Rectangle[regions.Length];
-
-			for (int i = 0; i < regions.Length; i++)
+			_clipRects = regions;
+			if ((_dxRects == null) || (_dxRects.Length != _clipRects.Length))
 			{
-				dxRects[i] = new Rectangle(regions[i].Left, regions[i].Top, regions[i].Right, regions[i].Bottom);
+				_dxRects = new DX.Rectangle[_clipRects.Length];
 			}
 
-			Graphics.Context.Rasterizer.SetScissorRectangles(dxRects);
+			for (int i = 0; i < _clipRects.Length; i++)
+			{
+				var clipRect = _clipRects[i];
+				_dxRects[i] = new DX.Rectangle(clipRect.Left, clipRect.Top, clipRect.Right, clipRect.Bottom);
+			}
+
+			Graphics.Context.Rasterizer.SetScissorRectangles(_dxRects);
 		}
 		#endregion
 
@@ -450,7 +534,6 @@ namespace GorgonLibrary.Graphics
 		internal GorgonRasterizerRenderState(GorgonGraphics graphics)
 			: base(graphics)
 		{
-			States = GorgonRasterizerStates.DefaultStates;
 		}
 		#endregion
 	}

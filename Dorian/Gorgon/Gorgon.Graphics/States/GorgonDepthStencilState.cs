@@ -398,7 +398,7 @@ namespace GorgonLibrary.Graphics
 	/// Depth/stencil buffer render state.
 	/// </summary>
 	/// <remarks>Used to control how depth/stencil testing is applied to a scene.// </remarks>
-	public class GorgonDepthStencilRenderState
+	public sealed class GorgonDepthStencilRenderState
 		: GorgonState<GorgonDepthStencilStates>
 	{
 		#region Variables.
@@ -486,7 +486,6 @@ namespace GorgonLibrary.Graphics
 		internal GorgonDepthStencilRenderState(GorgonGraphics graphics)
 			: base(graphics)
 		{
-			States = GorgonDepthStencilStates.DefaultStates;
 		}
 		#endregion
 	}
