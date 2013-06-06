@@ -255,28 +255,6 @@ namespace GorgonLibrary.Graphics
                 _graphics.Context.OutputMerger.SetTargets(depthView, _D3Dviews);
             }
 
-            /// <summary>
-            /// Function re-seat a render target.
-            /// </summary>
-            /// <param name="target">Target to reseat.</param>
-            internal void Reseat(GorgonResource target)
-            {
-                var views = _views.Where(item => item != null && item.Resource == target);
-
-                foreach (var view in views)
-                {
-                    int index = IndexOf(view);
-
-                    if (index == -1)
-                    {
-                        continue;
-                    }
-
-                    SetView(index, null);
-                    SetView(index, view);
-                }
-            }
-
 			/// <summary>
 			/// Function to unbind a render target view from the pipeline.
 			/// </summary>
@@ -290,23 +268,26 @@ namespace GorgonLibrary.Graphics
 					return;
 				}
 
-				SetView(index, null);
+				SetView(index, null, _depthStencil);
 			}
 
             /// <summary>
             /// Function to unbind a render target.
             /// </summary>
             /// <param name="target">Target to unbind.</param>
-            internal void UnbindResource(GorgonResource target)
+            /// <param name="depthStencil">Depth/stencil buffer to unbind.</param>
+            internal void UnbindResource(GorgonResource target, GorgonDepthStencil depthStencil)
             {
                 var indices =
                     _views.Where(item => item != null && item.Resource == target)
                           .Select(IndexOf)
                           .Where(item => item != -1);
+				
+				depthStencil = depthStencil == _depthStencil ? null : _depthStencil;
 
                 foreach (int index in indices)
                 {
-                    SetView(index, null);
+                    SetView(index, null, depthStencil);
                 }
             }
 
@@ -411,20 +392,33 @@ namespace GorgonLibrary.Graphics
             /// </summary>
             /// <param name="slot">Slot index to set.</param>
             /// <param name="view">View to set.</param>
-            public void SetView(int slot, GorgonRenderTargetView view)
+            /// <param name="depthStencilBuffer">[Optional] The depth/stencil buffer to set with the render target views.</param>
+            /// <remarks>
+            /// Use this to bind a single render target view at the specified slot.
+			/// <para>A render target must have the same type (1D/2D/3D/Buffer), and have the same dimensions and array count (for 1D/2D targets) as other render targets bound to the pipeline.</para>
+            /// <para> A render target may use a different format from the other bound render targets unless the video device has a feature level of SM2_a_b.  In that case, the render targets must all have the same 
+            /// bit depth.</para>
+            /// <para>If multisampling is used, then all targets must have the same multisampling count.</para>
+            /// <para>A single render target view can't be set to multiple slots, but multiple views pointing at sub resources of the same resource may occupy multiple slots.</para>
+			/// <para>If the optional <paramref name="depthStencilBuffer"/> is set to NULL (Nothing in VB.Net), then the depth/stencil buffer will be unbound.</para>
+			/// </remarks>
+			/// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="slot"/> parameter is less than 0 or not less than the number of slots available.</exception>
+            /// <exception cref="GorgonLibrary.GorgonException">Thrown when the render target cannot be bound.</exception>
+            public void SetView(int slot, GorgonRenderTargetView view, GorgonDepthStencil depthStencilBuffer = null)
             {
                 GorgonDebug.AssertParamRange(slot, 0, _views.Length, true, false, "startIndex");
 
                 // Don't set the same target.
-                if (view == _views[slot])
+                if ((view == _views[slot]) && (depthStencilBuffer == _depthStencil))
                 {
                     return;
                 }
 
 #if DEBUG
                 ValidateRenderTarget(view, slot);
+				ValidateDepthBuffer(depthStencilBuffer);
 #endif
-
+	            _depthStencil = depthStencilBuffer;
                 _views[slot] = view;
                 _D3Dviews[slot] = view == null ? null : view.D3DView;
                 BindResources();
@@ -452,14 +446,22 @@ namespace GorgonLibrary.Graphics
             /// </summary>
             /// <param name="slot">Slot to start binding at.</param>
             /// <param name="views">The views to bind.</param>
+            /// <param name="depthStencilBuffer">[Optional] A depth/stencil buffer to bind with the render target view.</param>
             /// <remarks>Use this to set a series of render target views all at the same time.  If the <paramref name="views"/> parameter is NULL (Nothing in VB.Net) then all render targets and 
-            /// the depth/stencil buffer will be unbound from the pipeline.</remarks>
+            /// the depth/stencil buffer will be unbound from the pipeline.
+			/// <para>A render target must have the same type (1D/2D/3D/Buffer), and have the same dimensions and array count (for 1D/2D targets) as other render targets bound to the pipeline.</para>
+			/// <para> A render target may use a different format from the other bound render targets unless the video device has a feature level of SM2_a_b.  In that case, the render targets must all have the same 
+			/// bit depth.</para>
+			/// <para>A single render target view can't be set to multiple slots, but multiple views pointing at sub resources of the same resource may occupy multiple slots.</para>
+			/// <para>If multisampling is used, then all targets must have the same multisampling count.</para>
+			/// <para>If the optional <paramref name="depthStencilBuffer"/> is set to NULL (Nothing in VB.Net), then the depth/stencil buffer will be unbound.</para>
+            /// </remarks>
             /// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="slot"/> parameter is less than 0 or not less than the number of available slots.</exception>
             /// <exception cref="GorgonLibrary.GorgonException">Thrown when one or all of the views in the <paramref name="views"/> parameter can't be bound.</exception>
-            public void SetRange(int slot, GorgonRenderTargetView[] views)
+            public void SetRange(int slot, GorgonRenderTargetView[] views, GorgonDepthStencil depthStencilBuffer = null)
             {
-                bool hasChanges = false;
-                int count = _views.Length - slot;
+	            int count = _views.Length - slot;
+				bool hasChanges = depthStencilBuffer != _depthStencil;
 
                 GorgonDebug.AssertParamRange(slot, 0, _views.Length, true, false, "startIndex");
 
@@ -501,37 +503,16 @@ namespace GorgonLibrary.Graphics
                     _D3Dviews[targetIndex] = (target == null ? null : target.D3DView);
                 }
 
-                if (hasChanges)
-                {
-                    BindResources();
-                }
-            }
+	            if (!hasChanges)
+	            {
+		            return;
+	            }
 
-            // TODO: Provide overloads for other render target types (1D/3D/Buffer).
-            /// <summary>
-            /// Function to bind the render target to the specified slot.
-            /// </summary>
-            /// <param name="slot">Slot to bind the render target with.</param>
-            /// <param name="target">Target to bind.</param>
-            /// <param name="depthStencilBuffer">[Optional] An alternative depth/stencil buffer to bind.</param>
-            /// <remarks>Use this to directly set a render target to the pipeline at the specified slot.
-            /// <para>The <paramref name="depthStencilBuffer"/> is an optional alternative buffer to set instead of the buffer that's attached to the render target.  If this value is NULL (Nothing in VB.Net) 
-            /// then the depth/stencil buffer that's attached to the render target (if it exists) will be used instead.</para>
-            /// </remarks>
-            /// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="slot"/> parameter is less than 0 or not less than the number of available slots.</exception>
-            /// <exception cref="GorgonLibrary.GorgonException">Thrown when render target in the <paramref name="target"/> parameter can't be bound.
-            /// <para>-or-</para>
-            /// <para>Thrown when the <paramref name="depthStencilBuffer"/> (or the attached depth/stencil on the render target) can't be bound.</para>
-            /// </exception>
-            public void SetRenderTarget(int slot, GorgonRenderTarget2D target, GorgonDepthStencil depthStencilBuffer = null)
-            {
-                if ((depthStencilBuffer == null) && (target != null))
-                {
-                    depthStencilBuffer = target.DepthStencilBuffer;
-                }
-
-                _depthStencil = depthStencilBuffer;
-				SetView(slot, target);
+#if DEBUG
+				ValidateDepthBuffer(depthStencilBuffer);
+#endif
+	            _depthStencil = depthStencilBuffer;
+	            BindResources();
             }
 
             /// <summary>
@@ -714,9 +695,43 @@ namespace GorgonLibrary.Graphics
 
 		#region Variables.
 		private readonly GorgonGraphics _graphics;
+		private D3D.RenderTargetView[] _D3DViews;
+		private GorgonRenderTargetView[] _targetViews;
+		private GorgonDepthStencil _depthStencil;
 		#endregion
 
 		#region Properties.
+		/// <summary>
+		/// Property to return the maximum number of slots available for render targets.
+		/// </summary>
+		public int MaxRenderTargetViewSlots
+		{
+			get
+			{
+				return _graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM2_a_b ? 4 : 8;
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return the depth/stencil buffer that is bound to the pipeline.
+		/// </summary>
+		public GorgonDepthStencil DepthStencilBuffer
+		{
+			get
+			{
+				return _depthStencil;
+			}
+			set
+			{
+				if (_depthStencil != value)
+				{
+					return;
+				}
+
+				SetRenderTargets(_targetViews, value);
+			}
+		}
+
 		/// <summary>
 		/// Property to return the blending render state interface.
 		/// </summary>
@@ -735,6 +750,7 @@ namespace GorgonLibrary.Graphics
 			private set;
 		}
 
+		/*
         /// <summary>
         /// Property to returnt he render target bindings.
         /// </summary>
@@ -743,6 +759,7 @@ namespace GorgonLibrary.Graphics
             get;
             private set;
         }
+		*/
 		#endregion
 
 		#region Methods.
@@ -810,20 +827,96 @@ namespace GorgonLibrary.Graphics
                                                                  (settings.Multisampling.Quality > 0)
                                                                  || (settings.Multisampling.Count > 1)))
             {
-                throw new ArgumentException("Cannot use the format '" + settings.Format.ToString()
+                throw new ArgumentException("Cannot use the format '" + settings.Format
                                             + "' for a render target on the video device '" + _graphics.VideoDevice.Name + "'.");
             }
         }
+
+		/// <summary>
+		/// Function to unbind a target with the specified resource and the depth stencil.
+		/// </summary>
+		/// <param name="resource">Resource to look up.</param>
+		/// <param name="depthStencil">Depth/stencil to unbind.</param>
+		internal void Unbind(GorgonResource resource, GorgonDepthStencil depthStencil)
+		{
+			if ((_targetViews == null) || (_targetViews.Length == 0))
+			{
+				return;
+			}
+
+			var indices =
+				_targetViews.Where(item => item != null && item.Resource == resource)
+				            .Select(item => Array.IndexOf(_targetViews, item))
+				            .Where(item => item != -1);
+
+			foreach (var index in indices)
+			{
+				_targetViews[index] = null;
+			}
+
+			SetRenderTargets(_targetViews, _depthStencil);
+		}
+
+		/// <summary>
+		/// Function to unbind a target view.
+		/// </summary>
+		/// <param name="view">View to unbind.</param>
+		internal void Unbind(GorgonRenderTargetView view)
+		{
+			if ((_targetViews == null) || (_targetViews.Length == 0))
+			{
+				return;
+			}
+
+			int index = Array.IndexOf(_targetViews, view);
+
+			if (index == -1)
+			{
+				return;
+			}
+
+			_targetViews[index] = null;
+			SetRenderTargets(_targetViews, _depthStencil);
+		}
+
+		/// <summary>
+		/// Function to bind a target at a specific index.
+		/// </summary>
+		/// <param name="index">Index of the target to bind.</param>
+		/// <param name="view">View to bind.</param>
+		internal void BindTarget(int index, GorgonRenderTargetView view)
+		{
+			if ((_targetViews == null) || (index < 0) || (index >= _targetViews.Length))
+			{
+				return;
+			}
+
+			_targetViews[index] = view;
+			SetRenderTargets(_targetViews, _depthStencil);
+		}
 
         /// <summary>
 		/// Function to clean up resources used by the interface.
 		/// </summary>
 		internal void CleanUp()
-		{
-			for (int i = 0; i < RenderTargets.Count; i++)
+        {
+			// Unbind all of the views.
+	        if (_D3DViews != null)
+	        {
+		        for (int i = 0; i < _D3DViews.Length; i++)
+		        {
+			        _D3DViews[i] = null;
+		        }
+		        _graphics.Context.OutputMerger.SetTargets(null, _D3DViews);
+		        _D3DViews = null;
+		        _targetViews = null;
+	        }
+
+			// TODO: Target Experiment.
+	        /*for (int i = 0; i < RenderTargets.Count; i++)
 			{
 				RenderTargets.SetView(0, null);
-			}
+			}*/
 
 			if (BlendingState != null)
 			{
@@ -837,6 +930,152 @@ namespace GorgonLibrary.Graphics
 
 			BlendingState = null;
 			DepthStencilState = null;
+		}
+
+		/// <summary>
+		/// Function to retrieve a view bound at the specified index.
+		/// </summary>
+		/// <param name="index">Index of the view to retrieve.</param>
+		/// <returns>The view at the index, or NULL if no view was bound at the index.</returns>
+		public GorgonRenderTargetView GetRenderTarget(int index)
+		{
+			if (_targetViews == null)
+			{
+				return null;
+			}
+
+			if ((index >= 0) && (index < _targetViews.Length))
+			{
+				return _targetViews[index];
+			}
+
+			return null;
+		}
+
+		/// <summary>
+		/// Function to bind a a single render target view and a depth/stencil buffer to the pipeline.
+		/// </summary>
+		/// <param name="view">Render target view to set.</param>
+		/// <param name="depthStencilBuffer">[Optional] Depth/stencil buffer to set.</param>
+		public void SetRenderTarget(GorgonRenderTargetView view, GorgonDepthStencil depthStencilBuffer = null)
+		{
+			D3D.DepthStencilView depthView = depthStencilBuffer == null ? null : depthStencilBuffer.D3DDepthStencilView;
+			_depthStencil = depthStencilBuffer;
+
+#if DEBUG
+			// TODO: Validate existing depth/stencil buffer.
+#endif
+
+			if (view == null)
+			{
+				if ((_D3DViews == null) || (_D3DViews.Length != 1))
+				{
+					_D3DViews = new D3D.RenderTargetView[]
+						{
+							null
+						};
+
+					_targetViews = null;
+				}
+			}
+			else
+			{
+				if ((_targetViews == null) || (_targetViews.Length != 1))
+				{
+					_targetViews = new[]
+						{
+							view
+						};
+				}
+				else
+				{
+					_targetViews[0] = view;
+				}
+
+				if ((_D3DViews == null) || (_D3DViews.Length != 1))
+				{
+					_D3DViews = new[]
+						{
+							view.D3DView
+						};
+				}
+				else
+				{
+					_D3DViews[0] = view.D3DView;
+				}
+			}
+
+
+			_graphics.Context.OutputMerger.SetTargets(depthView, _D3DViews[0]);
+		}
+
+		/// <summary>
+		/// Function to bind a depth/stencil buffer and a list of render target views to the pipeline.
+		/// </summary>
+		/// <param name="views">List of render target views to set.</param>
+		/// <param name="depthStencilBuffer">[Optional] Depth/stencil buffer to set.</param>
+		public void SetRenderTargets(GorgonRenderTargetView[] views, GorgonDepthStencil depthStencilBuffer = null)
+		{
+			D3D.DepthStencilView depthView = depthStencilBuffer == null ? null : depthStencilBuffer.D3DDepthStencilView;
+			_depthStencil = depthStencilBuffer;
+
+#if DEBUG
+			// TODO: Validate existing depth/stencil buffer.
+#endif
+			// If we didn't pass any views, then unbind all the views.
+			if ((views == null) || (views.Length == 0))
+			{
+				if ((_D3DViews == null) || (_D3DViews.Length != 1))
+				{
+					_D3DViews = new D3D.RenderTargetView[] { null };
+				}
+
+				_graphics.Context.OutputMerger.SetTargets(depthView, _D3DViews);
+				_targetViews = null;
+				return;
+			}
+
+			// Update the current view list.
+			if ((_D3DViews == null) || (views.Length != _D3DViews.Length))
+			{
+				_D3DViews = new D3D.RenderTargetView[views.Length];
+			}
+
+			// If we have more than one view to set, then blast them all out.
+			for (int i = 0; i < views.Length; i++)
+			{
+				var view = views[i];
+
+				if (view != null)
+				{
+					_D3DViews[i] = view.D3DView;
+				}
+				else
+				{
+					_D3DViews[i] = null;
+				}
+			}
+
+			_graphics.Context.OutputMerger.SetTargets(depthView, _D3DViews);
+
+			_targetViews = views;
+		}
+
+		/// <summary>
+		/// Function to retrieve the list of render targets.
+		/// </summary>
+		/// <returns>An array of render targets.</returns>
+		/// <remarks>This will return a copy of the internal render target list.  Use this method sparingly as it will generate garbage.</remarks>
+		public GorgonRenderTargetView[] GetRenderTargets()
+		{
+			var result = new GorgonRenderTargetView[_targetViews == null ? 0 : _targetViews.Length];
+
+			if (_targetViews != null)
+			{
+				_targetViews.CopyTo(result, 0);
+			}
+
+			return result;
 		}
 
 		/// <summary>
@@ -906,25 +1145,32 @@ namespace GorgonLibrary.Graphics
 		/// Function to draw indexed, instanced GPU generated data.
 		/// </summary>
 		/// <param name="buffer">Buffer holding the GPU generated data.</param>
-		/// <param name="alignedAyteOffset">Number of bytes to start at within the buffer.</param>
+		/// <param name="alignedByteOffset">Number of bytes to start at within the buffer.</param>
 		/// <param name="isIndexed">TRUE if the data is indexed, FALSE if not.</param>
 		/// <remarks>This method is not supported by SM2_a_b or SM_4.x video devices.</remarks>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="buffer"/> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="buffer"/> passed to the parameter was not set up to have indirect arguments.</exception>
 		/// <exception cref="System.InvalidOperationException">Thrown if the current video device is a SM2_a_b or SM4_x device.</exception>
-		public void DrawInstancedIndirect(GorgonBuffer buffer, int alignedAyteOffset, bool isIndexed)
+		public void DrawInstancedIndirect(GorgonBaseBuffer buffer, int alignedByteOffset, bool isIndexed)
 		{
-			GorgonDebug.AssertNull<GorgonBuffer>(buffer, "buffer");
+			GorgonDebug.AssertNull<GorgonBaseBuffer>(buffer, "buffer");
 
 #if DEBUG
-			if ((_graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM2_a_b) ||
-				(_graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM4) ||
-				(_graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM4_1))
+			if (_graphics.VideoDevice.SupportedFeatureLevel < DeviceFeatureLevel.SM5)
+			{
 				throw new InvalidOperationException("Cannot call DrawInstancedIndirect without a SM5 or better video device.");
+			}
+
+			if (!buffer.Settings.AllowIndirectArguments)
+			{
+				throw new ArgumentException("Cannot call DrawInstancedIndirect with a buffer than does not contain indirect arguments.", "buffer");
+			}
 #endif
 			GorgonRenderStatistics.DrawCallCount++;
 			if (isIndexed)
-				_graphics.Context.DrawIndexedInstancedIndirect((D3D.Buffer)buffer.D3DResource, alignedAyteOffset);
+				_graphics.Context.DrawIndexedInstancedIndirect((D3D.Buffer)buffer.D3DResource, alignedByteOffset);
 			else
-				_graphics.Context.DrawInstancedIndirect((D3D.Buffer)buffer.D3DResource, alignedAyteOffset);
+				_graphics.Context.DrawInstancedIndirect((D3D.Buffer)buffer.D3DResource, alignedByteOffset);
 		}
 
 		/// <summary>
@@ -957,7 +1203,7 @@ namespace GorgonLibrary.Graphics
 
             if (string.IsNullOrWhiteSpace(name))
             {
-                throw new ArgumentException("The parameter must not be empty.", "name");
+                throw new ArgumentException(Resources.GORGFX_PARAMETER_MUST_NOT_BE_EMPTY, "name");
             }
 
             if (settings == null)
@@ -1089,10 +1335,18 @@ namespace GorgonLibrary.Graphics
 		internal GorgonOutputMerger(GorgonGraphics graphics)
 		{
 			_graphics = graphics;
+			
+			BlendingState = new GorgonBlendRenderState(_graphics)
+				{
+					States = GorgonBlendStates.DefaultStates
+				};
+			DepthStencilState = new GorgonDepthStencilRenderState(_graphics)
+				{
+					States = GorgonDepthStencilStates.DefaultStates
+				};
 
-			BlendingState = new GorgonBlendRenderState(_graphics);
-			DepthStencilState = new GorgonDepthStencilRenderState(_graphics);
-            RenderTargets = new RenderTargetList(_graphics);
+			// TODO: Target Experiment
+            //RenderTargets = new RenderTargetList(_graphics);
 		}
 		#endregion
 	}

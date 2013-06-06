@@ -24,6 +24,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gorgon.Renderers.2D", "Gorg
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Examples", "Examples", "{E656298C-C1C6-4274-87B5-A19C6BA689CB}"
 	ProjectSection(SolutionItems) = preProject
+		PerfNums.txt = PerfNums.txt
 		TextureInfo.txt = TextureInfo.txt
 		TODO.txt = TODO.txt
 	EndProjectSection

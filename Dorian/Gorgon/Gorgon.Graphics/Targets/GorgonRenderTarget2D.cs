@@ -37,7 +37,7 @@ namespace GorgonLibrary.Graphics
     /// <remarks>
     /// A 2D render target is a texture that can be used to receive rendering data in the pipeline by binding it as a render target.  Because it is inherited from <see cref="GorgonLibrary.Graphics.GorgonTexture2D">GorgonTexture2D</see> 
     /// it can be cast to that type and used as a normal 2D texture.  Also, for convenience, it can also be cast to a <see cref="GorgonLibrary.Graphics.GorgonRenderTargetView">GorgonRenderTargetView</see> or 
-    /// a <see cref="GorgonLibrary.Graphics.GorgonShaderView">GorgonTextureShaderView</see> to allow ease of binding to the <see cref="GorgonLibrary.Graphics.GorgonOutputMerger.RenderTargets">render target list</see> or 
+	/// a <see cref="GorgonLibrary.Graphics.GorgonShaderView">GorgonTextureShaderView</see> to allow ease of <see cref="GorgonLibrary.Graphics.GorgonOutputMerger.SetRenderTarget">binding a render target</see> to the output merger stage in the pipeline or 
     /// to the <see cref="GorgonLibrary.Graphics.GorgonShaderState{T}.Resources">shader resource list</see>.
     /// </remarks>
     public sealed class GorgonRenderTarget2D
@@ -138,7 +138,9 @@ namespace GorgonLibrary.Graphics
 			if (disposing)
 			{
 				// Remove us from the pipeline.
-				Graphics.Output.RenderTargets.UnbindResource(this);
+				Graphics.Output.Unbind(this, DepthStencilBuffer);
+				// TODO: Target Experiment.
+				//Graphics.Output.RenderTargets.UnbindResource(this, DepthStencilBuffer);
 			}
 
 			base.Dispose(disposing);
@@ -221,7 +223,9 @@ namespace GorgonLibrary.Graphics
 		/// <returns>TRUE if the swap chain was bound to slot 0, and needs to be rebound.</returns>
 		internal bool OnSwapChainResize()
 		{
-			bool result = Graphics.Output.RenderTargets.GetView(0) == GorgonSwapChain.ToRenderTargetView(SwapChain);
+			// TODO: Target Experiment.
+			//bool result = Graphics.Output.RenderTargets.GetView(0) == GorgonSwapChain.ToRenderTargetView(SwapChain);
+			bool result = Graphics.Output.GetRenderTarget(0) == GorgonSwapChain.ToRenderTargetView(SwapChain);
 
 			CleanUpResource();
 
@@ -260,14 +264,6 @@ namespace GorgonLibrary.Graphics
 
 			SwapChain = swapChain;
 
-			if ((swapChain.Settings.Flags & SwapChainUsageFlags.ShaderInput) == SwapChainUsageFlags.ShaderInput)
-			{
-				CreateDefaultResourceView();
-			}
-
-            // Create the default render target view.
-            _defaultRenderTargetView = CreateRenderTargetView(Settings.Format, 0, 0, 1);
-            
             GorgonRenderStatistics.TextureCount++;
 			GorgonRenderStatistics.TextureSize += SizeInBytes;
 			GorgonRenderStatistics.RenderTargetCount++;
@@ -277,6 +273,14 @@ namespace GorgonLibrary.Graphics
 			Viewport = new GorgonViewport(0, 0, Settings.Width, Settings.Height, 0.0f, 1.0f);
 
             CreateDepthStencilBuffer();
+
+			// Create the default render target view.
+			_defaultRenderTargetView = CreateRenderTargetView(Settings.Format, 0, 0, 1);
+
+			if ((swapChain.Settings.Flags & SwapChainUsageFlags.ShaderInput) == SwapChainUsageFlags.ShaderInput)
+			{
+				CreateDefaultResourceView();
+			}
 		}
 
 		/// <summary>

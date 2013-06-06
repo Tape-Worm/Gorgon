@@ -267,7 +267,8 @@ namespace GorgonLibrary.Graphics.Test
 														   IsWindowed = true
 													   });
 
-			Graphics.Output.RenderTargets.SetView(0, Screen);
+			// TODO: Target Experiment.
+			//Graphics.Output.RenderTargets.SetView(0, Screen, Screen.DepthStencilBuffer);
 		}
 		#endregion
 

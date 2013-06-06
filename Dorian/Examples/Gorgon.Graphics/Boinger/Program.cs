@@ -507,7 +507,9 @@ namespace GorgonLibrary.Graphics.Example
 
 			// Finally bind our swap chain and set up the default
 			// rasterizer states.
-			Graphics.Output.RenderTargets.SetRenderTarget(0, _swap);
+			// TODO: Target Experiment.
+			//Graphics.Output.RenderTargets.SetRenderTarget(0, _swap);
+			Graphics.Output.SetRenderTarget(_swap, _swap.DepthStencilBuffer);
 			Graphics.Rasterizer.States = GorgonRasterizerStates.DefaultStates;
 			Graphics.Rasterizer.SetViewport(view);
 

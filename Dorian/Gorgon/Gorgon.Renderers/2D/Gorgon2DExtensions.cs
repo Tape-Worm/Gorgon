@@ -51,7 +51,9 @@ namespace GorgonLibrary.Renderers
 			private GorgonShaderView _resource;									    // First pixel shader resource.
 			private IDictionary<int, GorgonConstantBuffer> _vsConstantBuffers;		// The vertex shader constant buffers.
 			private IDictionary<int, GorgonConstantBuffer> _psConstantBuffers;		// The pixel shader constant buffers.
-			private GorgonRenderTargetView _target;									// Default target.
+			// TODO: Target Experiment.
+			private GorgonRenderTargetView[] _targets;								// The default targets.
+			//private GorgonRenderTargetView _target;									// Default target.
 		    private GorgonDepthStencil _depthStencil;                               // Default depth/stencil buffer.
 			private GorgonIndexBuffer _indexBuffer;									// Index buffer.
 			private GorgonVertexBufferBinding _vertexBuffer;						// Vertex buffer.
@@ -66,7 +68,9 @@ namespace GorgonLibrary.Renderers
 			/// <param name="graphics">Graphics interface.</param>
 			public void Save(GorgonGraphics graphics)
 			{
-				_target = graphics.Output.RenderTargets.GetView(0);
+				// TODO: Target Experiment.
+				//_target = graphics.Output.RenderTargets.GetView(0);
+				_targets = graphics.Output.GetRenderTargets();
 				_indexBuffer = graphics.Input.IndexBuffer;
 				_vertexBuffer = graphics.Input.VertexBuffers[0];
 				_inputLayout = graphics.Input.Layout;
@@ -82,7 +86,9 @@ namespace GorgonLibrary.Renderers
 				_depthStencilState = graphics.Output.DepthStencilState.States;
 				_depthStencilReference = graphics.Output.DepthStencilState.DepthStencilReference;
 				_rasterStates.IsScissorTestingEnabled = false;
-			    _depthStencil = graphics.Output.RenderTargets.DepthStencilBuffer;
+				// TODO: Target Experiment.
+			    //_depthStencil = graphics.Output.RenderTargets.DepthStencilBuffer;
+				_depthStencil = graphics.Output.DepthStencilBuffer;
 
 				_vsConstantBuffers = new Dictionary<int, GorgonConstantBuffer>();
 				_psConstantBuffers = new Dictionary<int, GorgonConstantBuffer>();
@@ -116,12 +122,19 @@ namespace GorgonLibrary.Renderers
 			/// <param name="graphics">Graphics interface.</param>
 			public void Restore(GorgonGraphics graphics)
 			{
-				graphics.Output.RenderTargets.SetView(0, _target);
-			    graphics.Output.RenderTargets.DepthStencilBuffer = _depthStencil;
+				// TODO: Target Experiment.
+				/*graphics.Output.RenderTargets.SetView(0, _target, _depthStencil);
 				if ((_target != null) && (_target.Resource.ResourceType == ResourceType.Texture2D))
 				{
 					graphics.Rasterizer.SetViewport(((GorgonRenderTarget2D)_target.Resource).Viewport);
+				}*/
+				graphics.Output.SetRenderTargets(_targets, _depthStencil);
+				if ((_targets != null) && (_targets.Length > 0) && (_targets[0] != null) && (_targets[0].Resource.ResourceType == ResourceType.Texture2D))
+				{
+					// TODO: We need to fix this.  Perhaps have a way to read back the viewports.
+					graphics.Rasterizer.SetViewport(((GorgonRenderTarget2D)_targets[0].Resource).Viewport);
 				}
+
 				graphics.Input.IndexBuffer = _indexBuffer;
 				graphics.Input.VertexBuffers[0] = _vertexBuffer;
 				graphics.Input.Layout = _inputLayout;
