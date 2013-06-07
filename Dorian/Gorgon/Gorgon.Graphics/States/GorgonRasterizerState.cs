@@ -194,7 +194,7 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Property to set or return whether antialiasing should be used when drawing lines.
 		/// </summary>
-		/// <remarks>This value is only valid if <see cref="P:GorgonLibrary.GorgonGraphics.GorgonRasterizerState.RasterizerStates.IsMultisamplingEnabled">IsMultisamplingEnabled</see> is equal to FALSE.
+		/// <remarks>This value is only valid if <see cref="GorgonLibrary.Graphics.GorgonRasterizerStates.IsMultisamplingEnabled">IsMultisamplingEnabled</see> is equal to FALSE.
 		/// <para>The default value is FALSE.</para>
 		/// </remarks>
 		public bool IsAntialiasedLinesEnabled;
@@ -211,6 +211,7 @@ namespace GorgonLibrary.Graphics
 		{
 			unchecked
 			{
+                // ReSharper disable NonReadonlyFieldInGetHashCode
 				return 281.GenerateHash(CullingMode).
 						GenerateHash(DepthBias).
 						GenerateHash(DepthBiasClamp).
@@ -221,7 +222,8 @@ namespace GorgonLibrary.Graphics
 						GenerateHash(IsMultisamplingEnabled).
 						GenerateHash(IsScissorTestingEnabled).
 						GenerateHash(SlopeScaledDepthBias);
-			}
+                // ReSharper restore NonReadonlyFieldInGetHashCode
+            }
 		}
 
 		/// <summary>
@@ -404,6 +406,8 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		/// <remarks>This will clip/scale the output to the the constraints defined in the viewports.
 		/// <para>Viewports must have a width and height greater than 0.</para>
+        /// <para>Viewports must be set all at once, any viewports not defined in the <paramref name="viewPorts"/> parameter will be disabled.  Passing NULL to the <paramref name="viewPorts"/> parameter 
+        /// will disable all viewports.</para>
         /// <para>Which viewport is in use is determined by the <c>SV_ViewportArrayIndex</c> HLSL semantic output by a geometry shader.  If no geometry shader is bound, or the 
         /// geometry shader does not make use of the <c>SV_ViewportArrayIndex</c> semantic, then only the first viewport is used.</para>
         /// <para>On only the first scissor test rectangle will be used on devices with a feature level of SM2_a_b.  This is because they cannot set the SV_ViewportArrayIndex semantic in 
@@ -541,13 +545,13 @@ namespace GorgonLibrary.Graphics
 		/// <param name="rectangles">An array containing the scissor testing rectangles.</param>
         /// <remarks>Scissor rectangles define a 2D area on the render target that can be used for clipping.  That is, all pixels outside of the rectangle will be discarded.
         /// <para>To use scissor rectangles, set the <see cref="GorgonLibrary.Graphics.GorgonRasterizerStates.IsScissorTestingEnabled">IsScissorTestingEnabled</see> 
+        /// <see cref="GorgonLibrary.Graphics.GorgonRasterizerRenderState.States">state</see> to TRUE. If the state is set to FALSE, then setting a scissor test rectangle will have no effect.</para>
+        /// <para>Scissor test rectangles must be set all at once, any viewports not defined in the <paramref name="rectangles"/> parameter will be disabled.  Passing NULL (Nothing in VB.Net) to the 
+        /// <paramref name="rectangles"/> parameter will disable all scissor test rectangles.</para>
         /// <para>Which scissor rectangle is in use is determined by the <c>SV_ViewportArrayIndex</c> HLSL semantic output by a geometry shader.  If no geometry shader is bound, or the 
         /// geometry shader does not make use of the <c>SV_ViewportArrayIndex</c> semantic, then only the first rectangle is used.</para>
         /// <para>Each scissor test rectangle corresponds to a <see cref="GorgonLibrary.Graphics.GorgonRasterizerRenderState.SetViewports">viewport</see> in an array of viewports.</para>
-        /// <see cref="GorgonLibrary.Graphics.GorgonRasterizerRenderState.States">state</see> to TRUE. If the state is set to FALSE, this value will have no effect.</para>
-        /// <para>Any scissor test rectangles not defined in the <paramref name="rectangles"/> parameter will be disabled.</para>
-        /// <para>Passing NULL (Nothing in VB.Net) to the <paramref name="rectangles"/> parameter will disable all scissor test rectangles.</para>
-        /// <para>On only the first scissor test rectangle will be used on devices with a feature level of SM2_a_b.  This is because they cannot set the SV_ViewportArrayIndex semantic in 
+        /// <para>Only the first scissor test rectangle will be used on devices with a feature level of SM2_a_b.  This is because they cannot set the SV_ViewportArrayIndex semantic in 
         /// a geometry shader because these devices do not support geometry shaders.</para>
 		/// </remarks>
 		public void SetScissorRectangles(Rectangle[] rectangles)

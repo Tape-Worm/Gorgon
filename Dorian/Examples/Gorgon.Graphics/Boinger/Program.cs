@@ -263,8 +263,7 @@ namespace GorgonLibrary.Graphics.Example
 				new Vector2(3.0f, 0.0f), GorgonColor.White);
 			// Draw our logo because I'm insecure.
 			_2D.Drawing.Blit(Graphics.Textures.GorgonLogo,
-					new RectangleF(
-						_mainForm.ClientSize.Width - Graphics.Textures.GorgonLogo.Settings.Width,
+					new RectangleF(_mainForm.ClientSize.Width - Graphics.Textures.GorgonLogo.Settings.Width,
 						_mainForm.ClientSize.Height - Graphics.Textures.GorgonLogo.Settings.Height,
 						Graphics.Textures.GorgonLogo.Settings.Width,
 						Graphics.Textures.GorgonLogo.Settings.Height));
@@ -507,8 +506,6 @@ namespace GorgonLibrary.Graphics.Example
 
 			// Finally bind our swap chain and set up the default
 			// rasterizer states.
-			// TODO: Target Experiment.
-			//Graphics.Output.RenderTargets.SetRenderTarget(0, _swap);
 			Graphics.Output.SetRenderTarget(_swap, _swap.DepthStencilBuffer);
 			Graphics.Rasterizer.States = GorgonRasterizerStates.DefaultStates;
 			Graphics.Rasterizer.SetViewport(view);

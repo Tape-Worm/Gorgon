@@ -194,10 +194,84 @@ namespace GorgonLibrary.Graphics
 			DestinationAlphaBlend = BlendType.Zero,
 			WriteMask = ColorWriteMaskFlags.All
 		};
-		#endregion
 
-		#region Properties.
-		/// <summary>
+        /// <summary>
+        /// Disabled blending settings.
+        /// </summary>
+        /// <remarks>The IsBlending flag is still set to TRUE, but the SourceBlend is set to One and the DestinatinBlend is set to Zero.</remarks>
+        public static readonly GorgonRenderTargetBlendState NoBlending = new GorgonRenderTargetBlendState
+        {
+            IsBlendingEnabled = true,
+            AlphaOperation = BlendOperation.Add,
+            BlendingOperation = BlendOperation.Add,
+            SourceBlend = BlendType.One,
+            DestinationBlend = BlendType.Zero,
+            SourceAlphaBlend = BlendType.One,
+            DestinationAlphaBlend = BlendType.Zero,
+            WriteMask = ColorWriteMaskFlags.All
+        };
+
+        /// <summary>
+        /// Modulated blending settings.
+        /// </summary>
+        public static readonly GorgonRenderTargetBlendState ModulatedBlending = new GorgonRenderTargetBlendState
+        {
+            IsBlendingEnabled = true,
+            AlphaOperation = BlendOperation.Add,
+            BlendingOperation = BlendOperation.Add,
+            SourceBlend = BlendType.SourceAlpha,
+            DestinationBlend = BlendType.InverseSourceAlpha,
+            SourceAlphaBlend = BlendType.One,
+            DestinationAlphaBlend = BlendType.Zero,
+            WriteMask = ColorWriteMaskFlags.All
+        };
+
+        /// <summary>
+        /// Additive blending settings.
+        /// </summary>
+        public static readonly GorgonRenderTargetBlendState AdditiveBlending = new GorgonRenderTargetBlendState
+        {
+            IsBlendingEnabled = true,
+            AlphaOperation = BlendOperation.Add,
+            BlendingOperation = BlendOperation.Add,
+            SourceBlend = BlendType.SourceAlpha,
+            DestinationBlend = BlendType.One,
+            SourceAlphaBlend = BlendType.One,
+            DestinationAlphaBlend = BlendType.Zero,
+            WriteMask = ColorWriteMaskFlags.All
+        };
+
+        /// <summary>
+        /// Inverted blending on the first render target.
+        /// </summary>
+        public static readonly GorgonRenderTargetBlendState InvertedBlending = new GorgonRenderTargetBlendState
+        {
+            IsBlendingEnabled = true,
+            AlphaOperation = BlendOperation.Add,
+            BlendingOperation = BlendOperation.Add,
+            SourceBlend = BlendType.InverseDestinationColor,
+            DestinationBlend = BlendType.InverseSourceColor,
+            SourceAlphaBlend = BlendType.One,
+            DestinationAlphaBlend = BlendType.Zero,
+            WriteMask = ColorWriteMaskFlags.All
+        };
+
+        /// <summary>
+        /// Premultiplied blending on the first render target.
+        /// </summary>
+        public static readonly GorgonRenderTargetBlendState PremultipliedBlending = new GorgonRenderTargetBlendState
+        {
+            IsBlendingEnabled = true,
+            AlphaOperation = BlendOperation.Add,
+            BlendingOperation = BlendOperation.Add,
+            SourceBlend = BlendType.One,
+            DestinationBlend = BlendType.InverseSourceAlpha,
+            SourceAlphaBlend = BlendType.One,
+            DestinationAlphaBlend = BlendType.Zero,
+            WriteMask = ColorWriteMaskFlags.All
+        };
+        
+        /// <summary>
 		/// Is blending enabled for this render target or not.
 		/// </summary>
 		/// <remarks>The default value is FALSE.</remarks>
@@ -256,10 +330,10 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		/// <remarks>The default value is All.</remarks>
 		public ColorWriteMaskFlags WriteMask;
-		#endregion
+        #endregion
 
-		#region Methods.
-		/// <summary>
+        #region Methods.
+        /// <summary>
 		/// Function to convert this render target blend state to a D3D blend description.
 		/// </summary>
 		/// <returns>The D3D render target blend description.</returns>
@@ -395,11 +469,47 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Default blending states.
 		/// </summary>
+		/// <remarks>Blending is disabled for all render targets.</remarks>
 		public static readonly GorgonBlendStates DefaultStates = new GorgonBlendStates
-			{
+		    {
+			    IsAlphaCoverageEnabled = false,
+			    IsIndependentBlendEnabled = false,
+			    RenderTarget0 = GorgonRenderTargetBlendState.DefaultStates,
+			    RenderTarget1 = GorgonRenderTargetBlendState.DefaultStates,
+			    RenderTarget2 = GorgonRenderTargetBlendState.DefaultStates,
+			    RenderTarget3 = GorgonRenderTargetBlendState.DefaultStates,
+			    RenderTarget4 = GorgonRenderTargetBlendState.DefaultStates,
+			    RenderTarget5 = GorgonRenderTargetBlendState.DefaultStates,
+			    RenderTarget6 = GorgonRenderTargetBlendState.DefaultStates,
+			    RenderTarget7 = GorgonRenderTargetBlendState.DefaultStates
+		    };
+
+        /// <summary>
+        /// Disabled blending on the first render target.
+        /// </summary>
+        /// <remarks>The IsBlending flag is still set to TRUE, but the SourceBlend is set to One and the DestinatinBlend is set to Zero.</remarks>
+        public static readonly GorgonBlendStates NoBlending = new GorgonBlendStates
+        {
+            IsAlphaCoverageEnabled = false,
+            IsIndependentBlendEnabled = false,
+            RenderTarget0 = GorgonRenderTargetBlendState.NoBlending,
+            RenderTarget1 = GorgonRenderTargetBlendState.DefaultStates,
+            RenderTarget2 = GorgonRenderTargetBlendState.DefaultStates,
+            RenderTarget3 = GorgonRenderTargetBlendState.DefaultStates,
+            RenderTarget4 = GorgonRenderTargetBlendState.DefaultStates,
+            RenderTarget5 = GorgonRenderTargetBlendState.DefaultStates,
+            RenderTarget6 = GorgonRenderTargetBlendState.DefaultStates,
+            RenderTarget7 = GorgonRenderTargetBlendState.DefaultStates
+        };
+
+		/// <summary>
+		/// Modulated blending on the first render target.
+		/// </summary>
+		public static readonly GorgonBlendStates ModulatedBlending = new GorgonBlendStates
+		{
 			IsAlphaCoverageEnabled = false,
 			IsIndependentBlendEnabled = false,
-			RenderTarget0 = GorgonRenderTargetBlendState.DefaultStates,
+			RenderTarget0 = GorgonRenderTargetBlendState.ModulatedBlending,
 			RenderTarget1 = GorgonRenderTargetBlendState.DefaultStates,
 			RenderTarget2 = GorgonRenderTargetBlendState.DefaultStates,
 			RenderTarget3 = GorgonRenderTargetBlendState.DefaultStates,
@@ -409,32 +519,56 @@ namespace GorgonLibrary.Graphics
 			RenderTarget7 = GorgonRenderTargetBlendState.DefaultStates
 		};
 
-		/// <summary>
-		/// Standard modulated blending on the first render target.
-		/// </summary>
-		public static readonly GorgonBlendStates ModulatedBlending = new GorgonBlendStates
-		{
-			IsAlphaCoverageEnabled = false,
-			IsIndependentBlendEnabled = false,
-			RenderTarget0 =
-				{
-					IsBlendingEnabled = true,
-					AlphaOperation = BlendOperation.Add,
-					BlendingOperation = BlendOperation.Add,
-					SourceBlend = BlendType.One,
-					DestinationBlend = BlendType.InverseSourceAlpha,
-					SourceAlphaBlend = BlendType.One,
-					DestinationAlphaBlend = BlendType.Zero,
-					WriteMask = ColorWriteMaskFlags.All
-				},
-			RenderTarget1 = GorgonRenderTargetBlendState.DefaultStates,
-			RenderTarget2 = GorgonRenderTargetBlendState.DefaultStates,
-			RenderTarget3 = GorgonRenderTargetBlendState.DefaultStates,
-			RenderTarget4 = GorgonRenderTargetBlendState.DefaultStates,
-			RenderTarget5 = GorgonRenderTargetBlendState.DefaultStates,
-			RenderTarget6 = GorgonRenderTargetBlendState.DefaultStates,
-			RenderTarget7 = GorgonRenderTargetBlendState.DefaultStates
-		};
+        /// <summary>
+        /// Additive blending on the first render target.
+        /// </summary>
+        public static readonly GorgonBlendStates AdditiveBlending = new GorgonBlendStates
+        {
+            IsAlphaCoverageEnabled = false,
+            IsIndependentBlendEnabled = false,
+            RenderTarget0 = GorgonRenderTargetBlendState.AdditiveBlending,
+            RenderTarget1 = GorgonRenderTargetBlendState.DefaultStates,
+            RenderTarget2 = GorgonRenderTargetBlendState.DefaultStates,
+            RenderTarget3 = GorgonRenderTargetBlendState.DefaultStates,
+            RenderTarget4 = GorgonRenderTargetBlendState.DefaultStates,
+            RenderTarget5 = GorgonRenderTargetBlendState.DefaultStates,
+            RenderTarget6 = GorgonRenderTargetBlendState.DefaultStates,
+            RenderTarget7 = GorgonRenderTargetBlendState.DefaultStates
+        };
+
+        /// <summary>
+        /// Inverted blending on the first render target.
+        /// </summary>
+        public static readonly GorgonBlendStates InvertedBlending = new GorgonBlendStates
+        {
+            IsAlphaCoverageEnabled = false,
+            IsIndependentBlendEnabled = false,
+            RenderTarget0 = GorgonRenderTargetBlendState.InvertedBlending,
+            RenderTarget1 = GorgonRenderTargetBlendState.DefaultStates,
+            RenderTarget2 = GorgonRenderTargetBlendState.DefaultStates,
+            RenderTarget3 = GorgonRenderTargetBlendState.DefaultStates,
+            RenderTarget4 = GorgonRenderTargetBlendState.DefaultStates,
+            RenderTarget5 = GorgonRenderTargetBlendState.DefaultStates,
+            RenderTarget6 = GorgonRenderTargetBlendState.DefaultStates,
+            RenderTarget7 = GorgonRenderTargetBlendState.DefaultStates
+        };
+
+        /// <summary>
+        /// Premultiplied blending on the first render target.
+        /// </summary>
+        public static readonly GorgonBlendStates PremultipliedBlending = new GorgonBlendStates
+        {
+            IsAlphaCoverageEnabled = false,
+            IsIndependentBlendEnabled = false,
+            RenderTarget0 = GorgonRenderTargetBlendState.PremultipliedBlending,
+            RenderTarget1 = GorgonRenderTargetBlendState.DefaultStates,
+            RenderTarget2 = GorgonRenderTargetBlendState.DefaultStates,
+            RenderTarget3 = GorgonRenderTargetBlendState.DefaultStates,
+            RenderTarget4 = GorgonRenderTargetBlendState.DefaultStates,
+            RenderTarget5 = GorgonRenderTargetBlendState.DefaultStates,
+            RenderTarget6 = GorgonRenderTargetBlendState.DefaultStates,
+            RenderTarget7 = GorgonRenderTargetBlendState.DefaultStates
+        };
 
 		/// <summary>
 		/// Is alpha-to-coverage is enabled or not.
@@ -537,7 +671,6 @@ namespace GorgonLibrary.Graphics
 			unchecked
 			{
 				// ReSharper disable NonReadonlyFieldInGetHashCode
-				// Pick an arbitrary prime.
 				return 281.GenerateHash(IsAlphaCoverageEnabled).
 							GenerateHash(IsIndependentBlendEnabled).
 							GenerateHash(RenderTarget0).
@@ -579,8 +712,8 @@ namespace GorgonLibrary.Graphics
 		}
 		#endregion
 
-		#region IEquatable<BlendStates> Members
-		/// <summary>
+        #region IEquatable<BlendStates> Members
+        /// <summary>
 		/// Indicates whether the current object is equal to another object of the same type.
 		/// </summary>
 		/// <param name="other">An object to compare with this object.</param>

@@ -268,8 +268,7 @@ namespace GorgonLibrary.Graphics.Test
 				currentMatrix.Projection = Matrix.PerspectiveFovLH(100.39f.Radians(), _aspect, 0.1f, 1000.0f);
 				currentMatrix.View = Matrix.LookAtLH(new Vector3(0, 0, -0.75f), new Vector3(0, 0, 1.0f), Vector3.UnitY);
 
-				// TODO: Target Experiment.
-				//_graphics.Output.RenderTargets.SetView(0, _swap, _swap.DepthStencilBuffer);
+                _graphics.Output.SetRenderTarget(_swap, _swap.DepthStencilBuffer);
 
 				pvw = currentMatrix.View * currentMatrix.Projection;
 			};
@@ -283,8 +282,7 @@ namespace GorgonLibrary.Graphics.Test
 				currentMatrix.Projection = Matrix.PerspectiveFovLH(100.39f.Radians(), _aspect, 0.1f, 1000.0f);
 				currentMatrix.View = Matrix.LookAtLH(new Vector3(0, 0, -0.75f), new Vector3(0, 0, 1.0f), Vector3.UnitY);
 
-				// TODO: Target Experiment.
-				//_graphics.Output.RenderTargets.SetView(0, _swap, _swap.DepthStencilBuffer);
+                _graphics.Output.SetRenderTarget(_swap, _swap.DepthStencilBuffer);
 
 				pvw = currentMatrix.View * currentMatrix.Projection;
 			};
@@ -382,9 +380,8 @@ namespace GorgonLibrary.Graphics.Test
 
 			_graphics.Rasterizer.SetViewport(_swap.Viewport);
 		    _graphics.Output.DepthStencilState.States = _depthStateAlpha;
-			// TODO: Target Experiment.
-			//_graphics.Output.RenderTargets.SetView(0, _swap, _swap.DepthStencilBuffer);
-			_graphics.Input.VertexBuffers[0] = new GorgonVertexBufferBinding(_vertices, vertexSize);
+            _graphics.Output.SetRenderTarget(_swap, _swap.DepthStencilBuffer); 
+            _graphics.Input.VertexBuffers[0] = new GorgonVertexBufferBinding(_vertices, vertexSize);
 			_graphics.Input.IndexBuffer = _index;
 			_graphics.Shaders.PixelShader.Resources.SetRange(0, new GorgonShaderView[] { _texture, _texture2 });
 			_graphics.Output.BlendingState.States = GorgonBlendStates.ModulatedBlending;
