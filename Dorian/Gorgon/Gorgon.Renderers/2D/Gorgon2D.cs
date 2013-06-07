@@ -486,18 +486,12 @@ namespace GorgonLibrary.Renderers
 			{
 				var targetView = Graphics.Output.GetRenderTarget(0);
 				
-				// TODO: Target Experiment.
 				// TODO: Clean this shit up.
-				//return Graphics.Output.RenderTargets.GetResource<GorgonRenderTarget2D>(0) ?? DefaultTarget;
 				return targetView == null ? DefaultTarget : (targetView.Resource as GorgonRenderTarget2D) ?? DefaultTarget;
 			}
 			set
 			{
-				// TODO: Target Experiment.
-				/*if (Graphics.Output.RenderTargets.GetResource<GorgonRenderTarget2D>(0) == value)
-				{
-					return;
-				}*/
+                // TODO: Clean this shit up.
 				if (Graphics.Output.GetRenderTarget(0) == GorgonRenderTarget2D.ToRenderTargetView(value))
 				{
 					return;
@@ -560,8 +554,6 @@ namespace GorgonLibrary.Renderers
 			if (Target.SwapChain != null)
 				Target.SwapChain.Resized -= new EventHandler<GorgonSwapChainResizedEventArgs>(target_Resized);
 
-			// TODO: Target Experiment.
-			//Graphics.Output.RenderTargets.SetRenderTarget(0, target);
 			Graphics.Output.SetRenderTarget(target, target.DepthStencilBuffer);
 
 			// Update our default camera.

@@ -85,7 +85,7 @@ namespace GorgonLibrary.Renderers
 		{
 			get
 			{
-				return _textRect == null ? Gorgon2D.Target.Viewport.Region : _textRect.Value;
+				return _textRect == null ? (RectangleF)Gorgon2D.Target.Viewport : _textRect.Value;
 			}
 		}
 

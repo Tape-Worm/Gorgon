@@ -139,8 +139,6 @@ namespace GorgonLibrary.Graphics
 			{
 				// Remove us from the pipeline.
 				Graphics.Output.Unbind(this, DepthStencilBuffer);
-				// TODO: Target Experiment.
-				//Graphics.Output.RenderTargets.UnbindResource(this, DepthStencilBuffer);
 			}
 
 			base.Dispose(disposing);
@@ -223,8 +221,6 @@ namespace GorgonLibrary.Graphics
 		/// <returns>TRUE if the swap chain was bound to slot 0, and needs to be rebound.</returns>
 		internal bool OnSwapChainResize()
 		{
-			// TODO: Target Experiment.
-			//bool result = Graphics.Output.RenderTargets.GetView(0) == GorgonSwapChain.ToRenderTargetView(SwapChain);
 			bool result = Graphics.Output.GetRenderTarget(0) == GorgonSwapChain.ToRenderTargetView(SwapChain);
 
 			CleanUpResource();
@@ -309,7 +305,7 @@ namespace GorgonLibrary.Graphics
 		/// <remarks>This will only clear the render target.  Only the default view will be cleared, any extra views will not be cleared. Any attached depth/stencil buffer will remain untouched.</remarks>
 		public void Clear(GorgonColor color)
 		{
-			Graphics.Context.ClearRenderTargetView(_defaultRenderTargetView.D3DView, color.SharpDXColor4);
+            _defaultRenderTargetView.Clear(color);
 		}
 
 		/// <summary>

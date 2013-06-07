@@ -62,8 +62,6 @@ namespace GorgonLibrary.Graphics
                 return;
             }
 
-			// TODO: Target Experiment.
-			//Resource.Graphics.Output.RenderTargets.Unbind(this);
 			Resource.Graphics.Output.Unbind(this);
 
 			Gorgon.Log.Print("Destroying render target view for {0}.",
@@ -71,6 +69,15 @@ namespace GorgonLibrary.Graphics
 							 Resource.Name);
 			D3DView.Dispose();
 	        D3DView = null;
+        }
+
+        /// <summary>
+        /// Function to clear the render target view.
+        /// </summary>
+        /// <param name="color">Color used to clear the render target view.</param>
+        public void Clear(GorgonColor color)
+        {
+            Resource.Graphics.Context.ClearRenderTargetView(D3DView, color.SharpDXColor4);
         }
         #endregion
 

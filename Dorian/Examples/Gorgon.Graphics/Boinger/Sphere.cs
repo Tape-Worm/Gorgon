@@ -63,7 +63,6 @@ namespace GorgonLibrary.Graphics.Example
 		#endregion
 
 		#region Constructor/Destructor.
-
 	    /// <summary>
 	    /// Initializes a new instance of the <see cref="Sphere" /> class.
 	    /// </summary>

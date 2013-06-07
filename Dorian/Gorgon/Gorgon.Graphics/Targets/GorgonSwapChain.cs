@@ -338,8 +338,6 @@ namespace GorgonLibrary.Graphics
 			// Re-seat the target.
 			if (needReseat)
 			{
-				// TODO: Target Experiment.
-				//Graphics.Output.RenderTargets.SetRenderTarget(0, _renderTarget, Graphics.Output.RenderTargets.DepthStencilBuffer);
 				Graphics.Output.BindTarget(0, _renderTarget);
 			}
 		}
@@ -652,7 +650,7 @@ namespace GorgonLibrary.Graphics
 			GISwapChain = new GI.SwapChain(Graphics.GIFactory, Graphics.D3DDevice, d3dSettings);
 			GISwapChain.DebugName = Name + " DXGISwapChain";
 
-			// Due to a bug with winforms and DXGI, we have to manually handle transitions ourselves.
+			// Due to an issue with winforms and DXGI, we have to manually handle transitions ourselves.
 			Graphics.GIFactory.MakeWindowAssociation(Settings.Window.Handle, GI.WindowAssociationFlags.IgnoreAll);
 
 			if (!Settings.IsWindowed)
