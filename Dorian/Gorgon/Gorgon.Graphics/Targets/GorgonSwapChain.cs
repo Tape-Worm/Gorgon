@@ -170,7 +170,7 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Property to return the default depth/stencil buffer for this swap chain.
 		/// </summary>
-		public GorgonDepthStencil DepthStencilBuffer
+		public GorgonDepthStencil2D DepthStencilBuffer
 		{
 			get
 			{
@@ -301,10 +301,12 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Function to create any resources bound to the swap chain.
 		/// </summary>
-		/// <param name="needReseat">The swap chain needs to be re-seated in slot 0 of the render target list.</param>
-		private void CreateResources(bool needReseat = false)
+		/// <param name="targetReseat">The swap chain needs to be re-seated in slot 0 of the render target list.</param>
+		/// <param name="depthReseat">The depth/stencil view needs to be re-seated.</param>
+		private void CreateResources(bool targetReseat = false, bool depthReseat = false)
 		{
 			Gorgon.Log.Print("GorgonSwapChain '{0}': Creating D3D11 render target view...", Diagnostics.LoggingLevel.Intermediate, Name);
+
 			if (_renderTarget == null)
 			{
 				_renderTarget = new GorgonRenderTarget2D(Graphics, Name + "_Internal_Render_Target_" + Guid.NewGuid(), new GorgonRenderTarget2DSettings
@@ -335,8 +337,16 @@ namespace GorgonLibrary.Graphics
 			// Initialize (or reinitialize) the target.
             _renderTarget.InitializeSwapChain(this);
 
-			// Re-seat the target.
-			if (needReseat)
+			// Re-seat the target/depth stencil.
+			if ((targetReseat) && (depthReseat))
+			{
+				Graphics.Output.SetRenderTarget(_renderTarget, DepthStencilBuffer);
+			}
+			else if (depthReseat)
+			{
+				Graphics.Output.DepthStencilView = DepthStencilBuffer;
+			}
+			else if (targetReseat)
 			{
 				Graphics.Output.BindTarget(0, _renderTarget);
 			}
@@ -347,11 +357,12 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		private void ResizeBuffers()
 		{
-			var needReseat = _renderTarget.OnSwapChainResize();
+			var targetReseat = _renderTarget.OnSwapChainResize();
+			var depthReseat = DepthStencilBuffer != null && DepthStencilBuffer.OnDepthStencilResize();
 			var flags = GI.SwapChainFlags.AllowModeSwitch;
 
 			GISwapChain.ResizeBuffers(Settings.BufferCount, Settings.VideoMode.Width, Settings.VideoMode.Height, (GI.Format)Settings.VideoMode.Format, flags);
-			CreateResources(needReseat);
+			CreateResources(targetReseat, depthReseat);
 
 			if (Resized != null)
 			{
@@ -386,14 +397,16 @@ namespace GorgonLibrary.Graphics
 				return;
 
 			// Only do this if the size has changed, if we're just restoring the window, then don't bother.
-			if (((GISwapChain != null)) && (Settings.Window.ClientSize.Width > 0) && (Settings.Window.ClientSize.Height > 0))
+			if (((GISwapChain == null)) || (Settings.Window.ClientSize.Width <= 0) || (Settings.Window.ClientSize.Height <= 0))
 			{
-				// Resize the video mode.
-				Settings.VideoMode = new GorgonVideoMode(Settings.Window.ClientSize, Settings.VideoMode);
-				ResizeBuffers();
+				return;
 			}
+
+			// Resize the video mode.
+			Settings.VideoMode = new GorgonVideoMode(Settings.Window.ClientSize, Settings.VideoMode);
+			ResizeBuffers();
 		}
-		
+
 		/// <summary>
 		/// Function to update the fullscreen/windowed mode state.
 		/// </summary>

@@ -114,7 +114,7 @@ namespace GorgonLibrary.Graphics
 	    /// Function to create the resource objects.
 	    /// </summary>
 	    /// <returns>The new default shader view.</returns>
-	    protected void CreateDefaultResourceView()
+	    protected virtual void CreateDefaultResourceView()
 	    {
 	        if (Settings.Usage == BufferUsage.Staging)
             {
@@ -123,8 +123,103 @@ namespace GorgonLibrary.Graphics
 
 	        BufferFormat format = Settings.ShaderViewFormat == BufferFormat.Unknown ? Settings.Format : Settings.ShaderViewFormat;
 
-	        _defaultShaderView = OnCreateShaderView(format, 0, Settings.MipCount, 0, Settings.ArrayCount);
+		    _defaultShaderView = OnCreateShaderView(format, 0, Settings.MipCount, 0, Settings.ArrayCount);
 	    }
+
+		/// <summary>
+		/// Function to create a new depth/stencil view object.
+		/// </summary>
+		/// <param name="format">The format of the depth/stencil view.</param>
+		/// <param name="mipSlice">Starting mip map for the view.</param>
+		/// <param name="arrayStart">Starting array index for the view.</param>
+		/// <param name="arrayCount">Array index count for the view.</param>
+		/// <remarks>Use a depth/stencil view to bind a resource to the pipeline as a depth/stencil buffer.  A depth/stencil view can view a select portion of the texture, and the view <paramref name="format"/> can be used to 
+		/// cast the format of the texture into another type (as long as the view format has the same bit depth as the depth/stencil format).  For example, a texture with a format of D32_Float could be cast 
+		/// to R32_Uint, R32_Int or R32_Float formats.
+		/// </remarks>
+		/// <exception cref="GorgonLibrary.GorgonException">Thrown when the texture has a usage of staging.
+		/// <para>-or-</para>
+		/// <para>Thrown when the <paramref name="format"/> is not valid for the view.</para>
+		/// <para>-or-</para>
+		/// <para>Thrown when the <paramref name="arrayStart"/> and the <paramref name="arrayCount"/> are less than 0 or 1 respectively, or greater than the number of array indices in the texture.</para>
+		/// <para>-or-</para>
+		/// <para>Thrown when the <paramref name="mipSlice"/> is less than 0 or greater than the number of mip levels in the texture.</para>
+		/// </exception>
+		/// <returns>A texture shader view object.</returns>
+		protected GorgonDepthStencilView OnCreateDepthStencilView(BufferFormat format,
+													int mipSlice,
+													int arrayStart,
+													int arrayCount)
+		{
+			if (Settings.Usage == BufferUsage.Staging)
+			{
+				throw new GorgonException(GorgonResult.CannotCreate, "A staging texture cannot create shader views.");
+			}
+
+			if (format == BufferFormat.Unknown)
+			{
+				throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_VIEW_UNKNOWN_FORMAT);
+			}
+
+			var formatInformation = GorgonBufferFormatInfo.GetInfo(format);
+
+			if (formatInformation.IsTypeless)
+			{
+				throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_VIEW_NO_TYPELESS);
+			}
+
+
+			if ((Settings.Format != format) && (FormatInformation.BitDepth != formatInformation.BitDepth))
+			{
+				throw new GorgonException(GorgonResult.CannotCreate,
+										  string.Format(Resources.GORGFX_VIEW_CANNOT_CAST_FORMAT,
+														Settings.Format,
+														format));
+			}
+
+			// 3D textures can't be depth/stencil buffers.
+			if (ResourceType == ResourceType.Texture3D)
+			{
+				throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_VIEW_CANNOT_BIND_UNKNOWN_RESOURCE);
+			}
+
+			if ((mipSlice >= Settings.MipCount)
+				|| (mipSlice < 0))
+			{
+				throw new GorgonException(GorgonResult.CannotCreate,
+										  string.Format(Resources.GORGFX_VIEW_MIP_START_INVALID,
+														Settings.MipCount));
+			}
+
+			if ((arrayCount > Settings.ArrayCount)
+				|| (arrayCount + arrayStart > Settings.ArrayCount)
+				|| (arrayCount < 1))
+			{
+				throw new GorgonException(GorgonResult.CannotCreate,
+										  string.Format(Resources.GORGFX_VIEW_ARRAY_COUNT_INVALID,
+														Settings.ArrayCount));
+			}
+
+			if ((arrayStart >= Settings.ArrayCount)
+				|| (arrayStart < 0))
+			{
+				throw new GorgonException(GorgonResult.CannotCreate,
+										  string.Format(Resources.GORGFX_VIEW_ARRAY_START_INVALID,
+														Settings.ArrayCount));
+			}
+
+			if ((Settings.IsTextureCube)
+				&& ((arrayCount % 6) != 0))
+			{
+				throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_VIEW_CUBE_ARRAY_SIZE_INVALID);
+			}
+
+			var view = new GorgonDepthStencilView(this, format, mipSlice, arrayStart, arrayCount);
+			view.Initialize();
+			Graphics.AddTrackedObject(view);
+
+			return view;
+		}
 
 	    /// <summary>
 	    /// Function to create a new shader resource view object.
@@ -471,8 +566,9 @@ namespace GorgonLibrary.Graphics
 			try
 			{
 				Gorgon.Log.Print("{0} {1}: Creating D3D11 texture resource...", Diagnostics.LoggingLevel.Verbose, GetType().Name, Name);
+
+				FormatInformation = GorgonBufferFormatInfo.GetInfo(Settings.Format);
 				OnInitialize(initialData);
-			    FormatInformation = GorgonBufferFormatInfo.GetInfo(Settings.Format);
 				CreateDefaultResourceView();
 
 				GorgonRenderStatistics.TextureCount++;

@@ -975,7 +975,10 @@ namespace GorgonLibrary.Renderers
 			}
 
 			if (Target.DepthStencilBuffer != null)
-				Target.DepthStencilBuffer.Clear(depth, stencil);
+			{
+				Target.DepthStencilBuffer.ClearDepth(depth);
+				Target.DepthStencilBuffer.ClearStencil(stencil);
+			}
 
 			Drawing.FilledRectangle(new RectangleF(0, 0, Target.Settings.Width, Target.Settings.Height), color);
 		}

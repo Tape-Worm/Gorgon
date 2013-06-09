@@ -79,7 +79,7 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Property to return the default depth/stencil buffer attached to this render target.
 		/// </summary>
-	    public GorgonDepthStencil DepthStencilBuffer
+	    public GorgonDepthStencil2D DepthStencilBuffer
 	    {
 		    get;
 		    private set;
@@ -102,14 +102,16 @@ namespace GorgonLibrary.Graphics
 
 		    if (DepthStencilBuffer == null)
 		    {
-		        DepthStencilBuffer = new GorgonDepthStencil(Graphics,
+				DepthStencilBuffer = new GorgonDepthStencil2D(Graphics,
 		                                                    Name + "_Internal_DepthStencil_" + Guid.NewGuid(),
-		                                                    new GorgonDepthStencilSettings
+		                                                    new GorgonDepthStencil2DSettings
 		                                                        {
 		                                                            Format = Settings.DepthStencilFormat,
                                                                     Width = Settings.Width,
                                                                     Height = Settings.Height,
-                                                                    Multisampling = Settings.Multisampling
+                                                                    Multisampling = Settings.Multisampling,
+																	ArrayCount = Settings.ArrayCount,
+																	MipCount = Settings.MipCount
 		                                                        });
 		    }
 		    else
@@ -119,8 +121,12 @@ namespace GorgonLibrary.Graphics
                 DepthStencilBuffer.Settings.Height = Settings.Height;
                 DepthStencilBuffer.Settings.Multisampling = Settings.Multisampling;
 		    }
+
+#if DEBUG
+			Graphics.Output.ValidateDepthStencilSettings(DepthStencilBuffer.Settings);
+#endif
             
-            DepthStencilBuffer.Initialize();
+            DepthStencilBuffer.Initialize(null);
 		    DepthStencilBuffer.RenderTarget = this;
 		}
 
@@ -139,6 +145,9 @@ namespace GorgonLibrary.Graphics
 			{
 				// Remove us from the pipeline.
 				Graphics.Output.Unbind(this, DepthStencilBuffer);
+
+				// Remove link to a swap chain.
+				SwapChain = null;
 			}
 
 			base.Dispose(disposing);
@@ -150,7 +159,7 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		protected override void CleanUpResource()
 		{
-			Gorgon.Log.Print("GorgonRenderTarget '{0}': Releasing D3D11 render target view...", LoggingLevel.Intermediate, Name);
+			Gorgon.Log.Print("Destroying GorgonRenderTarget '{0}'...", LoggingLevel.Intermediate, Name);
 		    GorgonRenderStatistics.RenderTargetCount--;
 		    GorgonRenderStatistics.RenderTargetSize -= SizeInBytes * (SwapChain == null ? 1 : SwapChain.Settings.BufferCount);
 
@@ -159,12 +168,11 @@ namespace GorgonLibrary.Graphics
                 // If the swap chain is resized, we don't want to destroy these objects.
 		        if (SwapChain == null)
 		        {
-                    Gorgon.Log.Print("GorgonRenderTarget '{0}': Releasing internal depth stencil...",
-                                        LoggingLevel.Verbose,
-                                        Name);
-		            DepthStencilBuffer.RenderTarget = null;
-                    DepthStencilBuffer.Dispose();
-                    DepthStencilBuffer = null;
+			        Gorgon.Log.Print("GorgonRenderTarget '{0}': Releasing internal depth stencil...",
+			                         LoggingLevel.Verbose,
+			                         Name);
+			        DepthStencilBuffer.Dispose();
+			        DepthStencilBuffer = null;
 		        }
 		    }
 
@@ -221,7 +229,8 @@ namespace GorgonLibrary.Graphics
 		/// <returns>TRUE if the swap chain was bound to slot 0, and needs to be rebound.</returns>
 		internal bool OnSwapChainResize()
 		{
-			bool result = Graphics.Output.GetRenderTarget(0) == GorgonSwapChain.ToRenderTargetView(SwapChain);
+			var currentTarget = Graphics.Output.GetRenderTarget(0);
+			bool result = currentTarget != null && currentTarget.Resource == this;
 
 			CleanUpResource();
 
@@ -260,6 +269,10 @@ namespace GorgonLibrary.Graphics
 
 			SwapChain = swapChain;
 
+#if DEBUG
+			Graphics.Output.ValidateRenderTargetSettings(Settings);
+#endif
+
             GorgonRenderStatistics.TextureCount++;
 			GorgonRenderStatistics.TextureSize += SizeInBytes;
 			GorgonRenderStatistics.RenderTargetCount++;
@@ -269,6 +282,11 @@ namespace GorgonLibrary.Graphics
 			Viewport = new GorgonViewport(0, 0, Settings.Width, Settings.Height, 0.0f, 1.0f);
 
             CreateDepthStencilBuffer();
+
+			if (DepthStencilBuffer != null)
+			{
+				DepthStencilBuffer.SwapChain = swapChain;
+			}
 
 			// Create the default render target view.
 			_defaultRenderTargetView = CreateRenderTargetView(Settings.Format, 0, 0, 1);
@@ -318,8 +336,12 @@ namespace GorgonLibrary.Graphics
 		{
 			Clear(color);
 
-			if ((DepthStencilBuffer != null) && (DepthStencilBuffer.FormatInformation.HasDepth))
-				DepthStencilBuffer.ClearDepth(depthValue);
+			if ((DepthStencilBuffer == null) || (!DepthStencilBuffer.FormatInformation.HasDepth))
+			{
+				return;
+			}
+
+			DepthStencilBuffer.ClearDepth(depthValue);
 		}
 
 		/// <summary>
@@ -339,10 +361,14 @@ namespace GorgonLibrary.Graphics
 
 			Clear(color);
 
-			if ((DepthStencilBuffer != null) && (DepthStencilBuffer.FormatInformation.HasDepth) && (DepthStencilBuffer.FormatInformation.HasStencil))
+			if ((DepthStencilBuffer == null) || (!DepthStencilBuffer.FormatInformation.HasDepth) ||
+			    (!DepthStencilBuffer.FormatInformation.HasStencil))
 			{
-				DepthStencilBuffer.Clear(depthValue, stencilValue);
+				return;
 			}
+
+			DepthStencilBuffer.ClearDepth(depthValue);
+			DepthStencilBuffer.ClearStencil(stencilValue);
 		}
 
 		/// <summary>

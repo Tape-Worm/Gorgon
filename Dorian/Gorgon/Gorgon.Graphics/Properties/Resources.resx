@@ -381,4 +381,10 @@
   <data name="GORGFX_VIEWPORT_TOSTR" xml:space="preserve">
     <value>Gorgon Viewport: {0}x{1}-{2}x{3} (Width: {4}, Height: {5}) Minimum depth: {6} Maximum depth: {7}</value>
   </data>
+  <data name="GORGFX_DEPTH_OPERATION_NOT_SUPPORTED" xml:space="preserve">
+    <value>Cannot update a texture used as a depth/stencil buffer.</value>
+  </data>
+  <data name="GORGFX_VIEW_UNORDERED_TYPE_NOT_VALID_FOR_COPY" xml:space="preserve">
+    <value>The view type must be either [Counter] or [AppendConsume].</value>
+  </data>
 </root>

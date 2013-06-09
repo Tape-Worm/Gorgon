@@ -277,7 +277,7 @@ namespace GorgonLibrary.Graphics.Example
 			// Now we flip our buffers.
 			// We need to this or we won't see anything.
 			_swap.Flip();
-
+			
 			return true;
 		}
 

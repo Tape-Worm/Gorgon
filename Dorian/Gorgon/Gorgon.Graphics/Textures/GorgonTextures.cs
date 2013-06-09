@@ -374,7 +374,7 @@ namespace GorgonLibrary.Graphics
 		/// Function to validate the 1D texture settings.
 		/// </summary>
 		/// <param name="settings">Settings to validate.</param>
-		private void ValidateTexture1D(ref ITextureSettings settings)
+		internal void ValidateTexture1D(ref ITextureSettings settings)
 		{
 			if (_graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM2_a_b)
 				throw new GorgonException(GorgonResult.CannotCreate, "1 dimensional textures are not supported on SM2_a_b devices.");

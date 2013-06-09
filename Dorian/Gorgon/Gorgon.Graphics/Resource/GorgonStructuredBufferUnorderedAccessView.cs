@@ -24,11 +24,32 @@
 // 
 #endregion
 
+using System.IO;
 using GorgonLibrary.Diagnostics;
+using GorgonLibrary.Graphics.Properties;
 
 namespace GorgonLibrary.Graphics
 {
-    /// <summary>
+	/// <summary>
+	/// The type of structured buffer unordered access view.
+	/// </summary>
+	public enum UnorderedAccessViewType
+	{
+		/// <summary>
+		/// A standard structured buffer.
+		/// </summary>
+		Standard = 0,
+		/// <summary>
+		/// An append/consume buffer.
+		/// </summary>
+		AppendConsume = 1,
+		/// <summary>
+		/// A counter buffer.
+		/// </summary>
+		Counter = 2
+	}
+	
+	/// <summary>
     /// An unordered access structured buffer view.
     /// </summary>
     /// <remarks>Use a resource view to allow a multiple threads inside of a shader access to the contents of a resource (or sub resource) at the same time.  
@@ -90,6 +111,28 @@ namespace GorgonLibrary.Graphics
 
 			Resource.Graphics.AddTrackedObject(this);
         }
+
+		/// <summary>
+		/// Function to copy data from this view into a buffer.
+		/// </summary>
+		/// <param name="buffer">Buffer that will receive the data.</param>
+		/// <param name="offset">DWORD aligned offset within the buffer to start writing at.</param>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="buffer"/> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="offset"/> parameter is less than 0, or larger than the size of the buffer minus 4 bytes.</exception>
+		/// <remarks>This will copy the contents of a structured buffer into any other type of buffer.  The view must have been created using a ViewType of Counter or Append, otherwise an exception will be thrown.</remarks>
+		public void CopyTo(GorgonBaseBuffer buffer, int offset)
+		{
+			GorgonDebug.AssertNull(buffer, "buffer");
+			GorgonDebug.AssertParamRange(offset, 0, buffer.SizeInBytes - 4, "index");
+
+#if DEBUG
+			if (ViewType == UnorderedAccessViewType.Standard)
+			{
+				throw new GorgonException(GorgonResult.CannotRead, Resources.GORGFX_VIEW_UNORDERED_TYPE_NOT_VALID_FOR_COPY);
+			}
+#endif
+			Resource.Graphics.Context.CopyStructureCount(buffer.D3DBuffer, offset, D3DView);
+		}
         #endregion
 
         #region Constructor/Destructor.

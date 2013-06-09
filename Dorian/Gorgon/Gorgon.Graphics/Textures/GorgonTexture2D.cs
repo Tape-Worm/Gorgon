@@ -83,14 +83,6 @@ namespace GorgonLibrary.Graphics
 		/// <param name="subResource">Sub resource index to use.</param>
 		protected override void OnUpdateSubResource(ISubResourceData data, int subResource)
 		{
-#if DEBUG
-			// TODO: Add this to depth/stencil buffer override.
-			/*if (DepthStencilBuffer != null)
-			{
-				throw new InvalidOperationException("Cannot update a texture used as a depth/stencil buffer.");
-			}*/
-#endif
-
 			var box = new SharpDX.DataBox()
 			{
 				DataPointer = data.Data.PositionPointer,
@@ -138,45 +130,6 @@ namespace GorgonLibrary.Graphics
 			staging.Copy(this);
 
 			return staging;
-		}
-
-		/// <summary>
-		/// Function to initialize a depth/stencil texture.
-		/// </summary>
-		/// <param name="depthStencil">The depth/stencil buffer that owns this texture.</param>
-		internal void InitializeDepth(GorgonDepthStencil depthStencil)
-		{
-            CleanUpResource();
-		    
-			var desc = new D3D.Texture2DDescription
-			    {
-			        ArraySize = 1,
-			        Format = (SharpDX.DXGI.Format)Settings.Format,
-			        Width = Settings.Width,
-			        Height = Settings.Height,
-			        MipLevels = Settings.MipCount,
-			        BindFlags = GetBindFlags(true, false),
-			        Usage = D3D.ResourceUsage.Default,
-			        CpuAccessFlags = D3D.CpuAccessFlags.None,
-			        OptionFlags = D3D.ResourceOptionFlags.None,
-			        SampleDescription = GorgonMultisampling.Convert(Settings.Multisampling)
-			    };
-
-		    if (depthStencil.Settings.AllowShaderView)
-		    {
-		        desc.BindFlags |= D3D.BindFlags.ShaderResource;
-		    }
-
-			Gorgon.Log.Print("{0} {1}: Creating D3D 11 depth/stencil texture...", Diagnostics.LoggingLevel.Verbose, GetType().Name, Name);
-			D3DResource = new D3D.Texture2D(Graphics.D3DDevice, desc);
-
-		    if (depthStencil.Settings.AllowShaderView)
-		    {
-		        CreateDefaultResourceView();
-		    }
-
-            GorgonRenderStatistics.TextureCount++;
-            GorgonRenderStatistics.TextureSize += SizeInBytes;
 		}
 
 		/// <summary>
@@ -638,8 +591,6 @@ namespace GorgonLibrary.Graphics
 		/// <exception cref="System.InvalidOperationException">Thrown when this texture has an Immutable, Dynamic or a Staging usage.
 		/// <para>-or-</para>
 		/// <para>Thrown when this texture has multisampling applied.</para>
-		/// <para>-or-</para>
-		/// <para>Thrown if this texture is a depth/stencil buffer texture.</para>
 		/// </exception>
 		public virtual void UpdateSubResource(ISubResourceData data, int subResource, Rectangle destRect)
 		{
@@ -649,13 +600,6 @@ namespace GorgonLibrary.Graphics
 
 			if ((Settings.Multisampling.Count > 1) || (Settings.Multisampling.Quality > 0))
 				throw new InvalidOperationException("Cannot update a texture that is multisampled.");
-
-			// TODO: Put this in the depth/stencil buffer code when we have it inheriting from Texture.
-		    /*if (DepthStencilBuffer != null)
-		    {
-		        throw new InvalidOperationException("Cannot update a texture used as a depth/stencil buffer.");
-		    }*/
-
 #endif
 			var textureSize = new Rectangle(0, 0, Settings.Width, Settings.Height);
 			if (!textureSize.Contains(destRect))
