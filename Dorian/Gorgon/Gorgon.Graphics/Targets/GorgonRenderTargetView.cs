@@ -116,7 +116,7 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Property to return the number of array indices or depth slices to use in the view.
 		/// </summary>
-        /// <remarks>For a 1D/2D texture, this value indicates an array index.  For a 3D texture, this value indicates a depth slice.</remarks>
+        /// <remarks>For a 1D/2D render target, this value indicates an array index.  For a 3D render target, this value indicates a depth slice.</remarks>
 		public int ArrayOrDepthCount
 		{
 			get;
@@ -126,7 +126,7 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Property to return the first array index or depth slice to use in the view.
 		/// </summary>
-        /// <remarks>For a 1D/2D texture, this value indicates an array index.  For a 3D texture, this value indicates a depth slice.</remarks>
+        /// <remarks>For a 1D/2D render target, this value indicates an array index.  For a 3D render target, this value indicates a depth slice.</remarks>
 		public int FirstArrayOrDepthIndex
 		{
 			get;
@@ -236,7 +236,7 @@ namespace GorgonLibrary.Graphics
 		{
 			D3D.RenderTargetViewDescription desc = default(D3D.RenderTargetViewDescription);
 
-			desc.Dimension = D3D.RenderTargetViewDimension.Buffer;
+			desc.Dimension = D3D.RenderTargetViewDimension.Unknown;
 
 			switch (Resource.ResourceType)
 			{
@@ -251,7 +251,7 @@ namespace GorgonLibrary.Graphics
 					break;
 			}
 
-			if (desc.Dimension == D3D.RenderTargetViewDimension.Buffer)
+			if (desc.Dimension == D3D.RenderTargetViewDimension.Unknown)
 			{
 				throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_VIEW_CANNOT_BIND_UNKNOWN_RESOURCE);
 			}

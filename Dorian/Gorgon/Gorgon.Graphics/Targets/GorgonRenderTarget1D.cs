@@ -24,6 +24,7 @@
 // 
 #endregion
 
+using System;
 using GorgonLibrary.Diagnostics;
 using D3D = SharpDX.Direct3D11;
 
@@ -62,7 +63,7 @@ namespace GorgonLibrary.Graphics
         /// <summary>
         /// Property to return the default depth/stencil buffer attached to this render target.
         /// </summary>
-        public GorgonDepthStencil DepthStencilBuffer
+        public GorgonDepthStencil1D DepthStencilBuffer
         {
             get;
             private set;
@@ -75,8 +76,39 @@ namespace GorgonLibrary.Graphics
         /// </summary>
         private void CreateDepthStencilBuffer()
         {
-            // TODO: Implement this.
-        }
+			// Create the internal depth/stencil.
+			if (Settings.DepthStencilFormat == BufferFormat.Unknown)
+			{
+				return;
+			}
+
+			Gorgon.Log.Print("GorgonRenderTarget '{0}': Creating internal depth/stencil...", LoggingLevel.Verbose, Name);
+
+			if (DepthStencilBuffer == null)
+			{
+				DepthStencilBuffer = new GorgonDepthStencil1D(Graphics,
+															Name + "_Internal_DepthStencil_" + Guid.NewGuid(),
+															new GorgonDepthStencil1DSettings
+															{
+																Format = Settings.DepthStencilFormat,
+																Width = Settings.Width,
+																ArrayCount = Settings.ArrayCount,
+																MipCount = Settings.MipCount
+															});
+			}
+			else
+			{
+				DepthStencilBuffer.Settings.Format = Settings.DepthStencilFormat;
+				DepthStencilBuffer.Settings.Width = Settings.Width;
+			}
+
+#if DEBUG
+			Graphics.Output.ValidateDepthStencilSettings(DepthStencilBuffer.Settings);
+#endif
+
+			DepthStencilBuffer.Initialize(null);
+			DepthStencilBuffer.RenderTarget = this;
+		}
 
         /// <summary>
         /// Releases unmanaged and - optionally - managed resources.
@@ -226,10 +258,14 @@ namespace GorgonLibrary.Graphics
 
             Clear(color);
 
-            if ((DepthStencilBuffer != null) && (DepthStencilBuffer.FormatInformation.HasDepth) && (DepthStencilBuffer.FormatInformation.HasStencil))
-            {
-                DepthStencilBuffer.Clear(depthValue, stencilValue);
-            }
+	        if ((DepthStencilBuffer == null) || (!DepthStencilBuffer.FormatInformation.HasDepth) ||
+	            (!DepthStencilBuffer.FormatInformation.HasStencil))
+	        {
+		        return;
+	        }
+
+	        DepthStencilBuffer.ClearDepth(depthValue);
+	        DepthStencilBuffer.ClearStencil(stencilValue);
         }
 
         /// <summary>

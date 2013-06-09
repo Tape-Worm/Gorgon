@@ -24,7 +24,6 @@
 // 
 #endregion
 
-using System.Collections.Generic;
 using System.Linq;
 using System.Drawing;
 using DX = SharpDX;
@@ -314,7 +313,6 @@ namespace GorgonLibrary.Graphics
 	/// <summary>
 	/// Render states for the rasterizer.
 	/// </summary>
-//#error Update viewport code to take an array instead of IEnumerable.  Also, add Get methods for viewports.  Update documentation on ScissorRect/Viewport methods to reflect all-or-nothing setting.
 	public sealed class GorgonRasterizerRenderState
 		: GorgonState<GorgonRasterizerStates>
 	{
@@ -417,7 +415,7 @@ namespace GorgonLibrary.Graphics
 		{
 			if ((viewPorts == null) || (viewPorts.Length == 0))
 			{
-				Graphics.Context.Rasterizer.SetViewport(0, 0, 1.0f, 1.0f);
+				Graphics.Context.Rasterizer.SetViewports(null);
 			    _dxViewports = null;
 			    _viewPorts = null;
 				return;
@@ -484,7 +482,7 @@ namespace GorgonLibrary.Graphics
 		/// <param name="rectangle">Rectangle to set.</param>
 		/// <remarks>Scissor rectangles define a 2D area on the render target that can be used for clipping.  That is, all pixels outside of the rectangle will be discarded.
         /// <para>To use scissor rectangles, set the <see cref="GorgonLibrary.Graphics.GorgonRasterizerStates.IsScissorTestingEnabled">IsScissorTestingEnabled</see> 
-        /// <see cref="GorgonLibrary.Graphics.GorgonRasterizerRenderState.States">state</see> to TRUE. If the state is set to FALSE, this value will have no effect.</para>
+		/// state to TRUE. If the state is set to FALSE, this value will have no effect.</para>
         /// <para>This method will only set the first scissor test rectangle.</para>
 		/// </remarks>
 		public void SetScissorRectangle(Rectangle rectangle)
@@ -495,7 +493,7 @@ namespace GorgonLibrary.Graphics
 					{
 						rectangle
 					};
-			    _dxRects = new DX.Rectangle[]
+			    _dxRects = new[]
 			        {
                         DX.Rectangle.Empty
 			        };
@@ -545,7 +543,7 @@ namespace GorgonLibrary.Graphics
 		/// <param name="rectangles">An array containing the scissor testing rectangles.</param>
         /// <remarks>Scissor rectangles define a 2D area on the render target that can be used for clipping.  That is, all pixels outside of the rectangle will be discarded.
         /// <para>To use scissor rectangles, set the <see cref="GorgonLibrary.Graphics.GorgonRasterizerStates.IsScissorTestingEnabled">IsScissorTestingEnabled</see> 
-        /// <see cref="GorgonLibrary.Graphics.GorgonRasterizerRenderState.States">state</see> to TRUE. If the state is set to FALSE, then setting a scissor test rectangle will have no effect.</para>
+		/// state to TRUE. If the state is set to FALSE, then setting a scissor test rectangle will have no effect.</para>
         /// <para>Scissor test rectangles must be set all at once, any viewports not defined in the <paramref name="rectangles"/> parameter will be disabled.  Passing NULL (Nothing in VB.Net) to the 
         /// <paramref name="rectangles"/> parameter will disable all scissor test rectangles.</para>
         /// <para>Which scissor rectangle is in use is determined by the <c>SV_ViewportArrayIndex</c> HLSL semantic output by a geometry shader.  If no geometry shader is bound, or the 

@@ -53,7 +53,7 @@ namespace GorgonLibrary.Renderers
 			private IDictionary<int, GorgonConstantBuffer> _vsConstantBuffers;		// The vertex shader constant buffers.
 			private IDictionary<int, GorgonConstantBuffer> _psConstantBuffers;		// The pixel shader constant buffers.
 			private GorgonRenderTargetView[] _targets;								// The default targets.
-		    private GorgonDepthStencil _depthStencil;                               // Default depth/stencil buffer.
+		    private GorgonDepthStencilView _depthStencil;                           // Default depth/stencil view.
 			private GorgonIndexBuffer _indexBuffer;									// Index buffer.
 			private GorgonVertexBufferBinding _vertexBuffer;						// Vertex buffer.
 			private GorgonInputLayout _inputLayout;									// Input layout.
@@ -85,7 +85,7 @@ namespace GorgonLibrary.Renderers
 				_depthStencilState = graphics.Output.DepthStencilState.States;
 				_depthStencilReference = graphics.Output.DepthStencilState.DepthStencilReference;
 				_rasterStates.IsScissorTestingEnabled = false;
-				_depthStencil = graphics.Output.DepthStencilBuffer;
+				_depthStencil = graphics.Output.DepthStencilView;
 			    _viewports = graphics.Rasterizer.GetViewports();
 			    _scissorTests = graphics.Rasterizer.GetScissorRectangles();
 

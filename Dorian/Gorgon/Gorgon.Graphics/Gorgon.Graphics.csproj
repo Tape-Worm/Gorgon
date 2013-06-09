@@ -148,10 +148,13 @@
     <Compile Include="States\GorgonState.cs" />
     <Compile Include="States\GorgonStateCache.cs" />
     <Compile Include="States\GorgonTextureSamplerState.cs" />
+    <Compile Include="Targets\GorgonDepthStencil1D.cs" />
+    <Compile Include="Targets\GorgonDepthStencil1DSettings.cs" />
+    <Compile Include="Targets\GorgonDepthStencil2D.cs" />
+    <Compile Include="Targets\GorgonDepthStencil2DSettings.cs" />
+    <Compile Include="Targets\GorgonDepthStencilView.cs" />
     <Compile Include="Targets\GorgonRenderTarget1D.cs" />
     <Compile Include="Targets\GorgonOutputMerger.cs" />
-    <Compile Include="Targets\GorgonDepthStencil.cs" />
-    <Compile Include="Targets\GorgonDepthStencilSettings.cs" />
     <Compile Include="GorgonMultiSampling.cs" />
     <Compile Include="Targets\GorgonRenderTarget1DSettings.cs" />
     <Compile Include="Targets\GorgonRenderTarget2D.cs" />
@@ -162,6 +165,7 @@
     <Compile Include="Targets\GorgonRenderTargetBufferSettings.cs" />
     <Compile Include="Targets\GorgonRenderTargetView.cs" />
     <Compile Include="Targets\GorgonSwapChain.cs" />
+    <Compile Include="Targets\IDepthStencilSettings.cs" />
     <Compile Include="Targets\IRenderTargetSettings.cs" />
     <Compile Include="Targets\GorgonSwapChainSettings.cs" />
     <Compile Include="Targets\GorgonViewport.cs" />
