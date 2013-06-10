@@ -33,6 +33,28 @@ using GorgonLibrary.Graphics.Properties;
 
 namespace GorgonLibrary.Graphics
 {
+    /// <summary>
+    /// Flags to determine how the view will be handled.
+    /// </summary>
+    [Flags]
+    public enum DepthStencilViewFlags
+    {
+        /// <summary>
+        /// No view flags.
+        /// </summary>
+        /// <remarks>This will make it so the depth/stencil view can't be bound to a shader view simultaneously.</remarks>
+        None = D3D.DepthStencilViewFlags.None,
+        /// <summary>
+        /// Allow read-only access to the depth portion of the resource.
+        /// </summary>
+        /// <remarks>This will allow the depth/stencil buffer to be bound as a depth buffer and as a shader view at the same time.</remarks>
+        DepthReadOnly = D3D.DepthStencilViewFlags.ReadOnlyDepth,
+        /// <summary>
+        /// Allow read-only access to the stencil porition of the resource.
+        /// </summary>
+        /// <remarks>This will allow the depth/stencil buffer to be bound as a stencil buffer and as a shader view at the same time.</remarks>
+        StencilReadOnly = D3D.DepthStencilViewFlags.ReadOnlyStencil
+    }
 	/// <summary>
 	/// A depth/stencil view to allow a texture to be bound to the pipeline as a depth/stencil buffer.
 	/// </summary>
@@ -52,6 +74,21 @@ namespace GorgonLibrary.Graphics
 			get;
 			set;
 		}
+
+        /// <summary>
+        /// Property to return the flags for this view.
+        /// </summary>
+        /// <remarks>This will allow the depth/stencil buffer to be read simultaneously from the depth/stencil view and from a shader view.  It is not normally possible to bind a view of a resource to 2 parts of the 
+        /// pipeline at the same time.  However, using the flags provided, read-only access may be granted to a part of the resource (depth or stencil) or all of it for all parts of the pipline.  This would bind 
+        /// the depth/stencil as a read-only view and make it a read-only view accessible to shaders.
+        /// <para>This is only valid if the resource allows shader access.</para>
+        /// <para>This is only valid on video devices with a feature level of SM5 or better.</para>
+        /// </remarks>
+        public DepthStencilViewFlags Flags
+        {
+            get;
+            private set;
+        }
 
 		/// <summary>
 		/// Property to return the mip slice to use for the view.
@@ -102,7 +139,7 @@ namespace GorgonLibrary.Graphics
 						MipSlice = MipSlice,
 						FirstArraySlice = FirstArrayIndex,
 						ArraySize = ArrayCount
-					}
+					},
 				};
 			}
 
@@ -285,12 +322,14 @@ namespace GorgonLibrary.Graphics
 		/// <param name="mipSlice">The mip level to use for the view.</param>
 		/// <param name="firstArrayIndex">The first array index to use for the view.</param>
 		/// <param name="arrayCount">The number of array indices to use for the view.</param>
-		internal GorgonDepthStencilView(GorgonResource resource, BufferFormat format, int mipSlice, int firstArrayIndex, int arrayCount)
+		/// <param name="flags">Depth/stencil view flags.</param>
+		internal GorgonDepthStencilView(GorgonResource resource, BufferFormat format, int mipSlice, int firstArrayIndex, int arrayCount, DepthStencilViewFlags flags)
 			: base(resource, format)
 		{
 			MipSlice = mipSlice;
 			FirstArrayIndex = firstArrayIndex;
 			ArrayCount = arrayCount;
+		    Flags = flags;
 		}
 		#endregion
 

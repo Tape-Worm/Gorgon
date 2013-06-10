@@ -254,7 +254,7 @@
     <value>The buffer requires at least {0} byte(s).</value>
   </data>
   <data name="GORGFX_REQUIRES_SM" xml:space="preserve">
-    <value>A {0} (or better) video device is necessary to use this object or perform this operation.</value>
+    <value>A device with feature level {0} (or better) is necessary to use this object or perform this operation.</value>
   </data>
   <data name="GORGFX_EFFECT_MISSING_REQUIRED_PARAMS" xml:space="preserve">
     <value>The parameter '{0}' was required for this effect, but is not present in the parameters list.</value>
@@ -306,9 +306,6 @@
   </data>
   <data name="GORGFX_BUFFER_SIZE_MISMATCH" xml:space="preserve">
     <value>The size of the buffers do not match.</value>
-  </data>
-  <data name="GORGFX_BUFFER_NO_UNORDERED_VIEWS" xml:space="preserve">
-    <value>The buffer does not allow unordered access views.</value>
   </data>
   <data name="GORGFX_BUFFER_STAGING_NO_IMMUTABLE" xml:space="preserve">
     <value>Cannot create a staging buffer because the source buffer is immutable.</value>
@@ -386,5 +383,11 @@
   </data>
   <data name="GORGFX_VIEW_UNORDERED_TYPE_NOT_VALID_FOR_COPY" xml:space="preserve">
     <value>The view type must be either [Counter] or [AppendConsume].</value>
+  </data>
+  <data name="GORGFX_VIEW_NO_SUPPORT" xml:space="preserve">
+    <value>Cannot create the view, the resource does not allow {0} views.</value>
+  </data>
+  <data name="GORGFX_VIEW_UNORDERED_CLEAR_NEED_4_VALUES" xml:space="preserve">
+    <value>The array requires 4 elements to clear the unordered access view.</value>
   </data>
 </root>

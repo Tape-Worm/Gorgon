@@ -84,7 +84,7 @@ namespace GorgonLibrary.Graphics
 			TextureFormat = BufferFormat.Unknown;
 			DepthStencilFormat = BufferFormat.Unknown;
 			ShaderViewFormat = BufferFormat.Unknown;
-			AllowUnorderedAccess = false;
+			AllowUnorderedAccessViews = false;
 		}
 		#endregion
 
@@ -114,7 +114,7 @@ namespace GorgonLibrary.Graphics
 		/// method to determine if the format is supported.</para>
 		/// <para>The default value is FALSE.</para>
 		/// </remarks>
-		public bool AllowUnorderedAccess
+		public bool AllowUnorderedAccessViews
 		{
 			get;
 			set;
@@ -283,7 +283,7 @@ namespace GorgonLibrary.Graphics
 			return new GorgonRenderTarget1DSettings
 				{
 					Width = Width,
-					AllowUnorderedAccess = AllowUnorderedAccess,
+					AllowUnorderedAccessViews = AllowUnorderedAccessViews,
 					ArrayCount = ArrayCount,
 					DepthStencilFormat = DepthStencilFormat,
 					Format = Format,

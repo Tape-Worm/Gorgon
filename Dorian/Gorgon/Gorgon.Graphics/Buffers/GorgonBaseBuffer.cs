@@ -470,7 +470,7 @@ namespace GorgonLibrary.Graphics
 
             if (!Settings.AllowUnorderedAccessViews)
             {
-                throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_BUFFER_NO_UNORDERED_VIEWS);
+                throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_VIEW_NO_SUPPORT, "GorgonUnorderedAccessView"));
             }
 
             if ((Settings.Usage == BufferUsage.Staging) || (Settings.Usage == BufferUsage.Dynamic))
@@ -549,6 +549,11 @@ namespace GorgonLibrary.Graphics
             if (Settings.Usage == BufferUsage.Staging)
             {
                 throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_VIEW_SRV_NO_STAGING);
+            }
+
+            if (!Settings.AllowShaderViews)
+            {
+                throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_VIEW_NO_SUPPORT, "GorgonShaderView"));
             }
 
             // If we're using any other type than structured...

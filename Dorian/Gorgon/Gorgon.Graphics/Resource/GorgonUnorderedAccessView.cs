@@ -25,7 +25,10 @@
 #endregion
 
 using System;
+using SlimMath;
+using DX = SharpDX;
 using D3D = SharpDX.Direct3D11;
+using GorgonLibrary.Graphics.Properties;
 using GorgonLibrary.Diagnostics;
 
 namespace GorgonLibrary.Graphics
@@ -79,8 +82,112 @@ namespace GorgonLibrary.Graphics
             D3DView = null;
         }
 
-#error Add ID3D11DeviceContext::ClearUnorderedAccessViewUint/Float functionality to UAV.
-		#endregion
+        /// <summary>
+        /// Function to clear the unordered access value with the specified values.
+        /// </summary>
+        /// <param name="value1">First value.</param>
+        /// <param name="value2">Second value.</param>
+        /// <param name="value3">Third value.</param>
+        /// <param name="value4">Fourth value.</param>
+        /// <remarks>This method will copy the lower n[i] bits (where n is the number of bits in a channel, i is the index of the channel) to the proper channel.
+        /// <para>This method works on any unordered access view that does not require format conversion.  Unordered access views for raw/structured buffers only use the first value.</para>
+        /// </remarks>
+        public void Clear(int value1, int value2, int value3, int value4)
+        {
+            Resource.Graphics.Context.ClearUnorderedAccessView(D3DView, new DX.Int4(value1, value2, value3, value4));
+        }
+
+        /// <summary>
+        /// Function to clear the unordered access value with the specified values.
+        /// </summary>
+        /// <param name="values">Values used to clear.</param>
+        /// <remarks>This method will copy the lower n[i] bits (where n is the number of bits in a channel, i is the index of the channel) to the proper channel.
+        /// <para>This method works on any unordered access view that does not require format conversion.  Unordered access views for raw/structured buffers only use the first value in the array</para>
+        /// </remarks>
+        /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="values"/> parameter is NULL (Nothing in VB.Net).</exception>
+        /// <exception cref="System.ArgumentException">Thrown when the <paramref name="values"/> parameter does not contain exactly 4 elements in the array.</exception>
+        public void Clear(int[] values)
+        {
+            GorgonDebug.AssertNull(values, "values");
+
+            if (values.Length != 4)
+            {
+                throw new ArgumentException(Resources.GORGFX_VIEW_UNORDERED_CLEAR_NEED_4_VALUES, "values");
+            }
+
+            Resource.Graphics.Context.ClearUnorderedAccessView(D3DView, new DX.Int4(values));
+        }
+
+        /// <summary>
+        /// Function to clear the unordered access value with the specified value.
+        /// </summary>
+        /// <param name="value">Value used to clear.</param>
+        /// <remarks>This method will copy the lower n[i] bits (where n is the number of bits in a channel, i is the index of the channel) to the proper channel.
+        /// <para>This method works on any unordered access view that does not require format conversion.</para>
+        /// </remarks>
+        public void Clear(int value)
+        {
+            Resource.Graphics.Context.ClearUnorderedAccessView(D3DView, new DX.Int4(value));
+        }
+
+        /// <summary>
+        /// Function to clear the unordered access value with the specified values.
+        /// </summary>
+        /// <param name="value1">First value.</param>
+        /// <param name="value2">Second value.</param>
+        /// <param name="value3">Third value.</param>
+        /// <param name="value4">Fourth value.</param>
+        /// <remarks>This method will copy the lower n[i] bits (where n is the number of bits in a channel, i is the index of the channel) to the proper channel.
+        /// <para>This method works on any unordered access view that does not require format conversion.  Unordered access views for raw/structured buffers only use the first value.</para>
+        /// </remarks>
+        public void Clear(float value1, float value2, float value3, float value4)
+        {
+            Resource.Graphics.Context.ClearUnorderedAccessView(D3DView, new DX.Vector4(value1, value2, value3, value4));
+        }
+
+        /// <summary>
+        /// Function to clear the unordered access value with the specified values.
+        /// </summary>
+        /// <param name="values">Values used to clear.</param>
+        /// <remarks>This method works on any unordered access view that does not require format conversion.  Unordered access views for raw/structured buffers only use the first value in the array.</remarks>
+        /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="values"/> parameter is NULL (Nothing in VB.Net).</exception>
+        /// <exception cref="System.ArgumentException">Thrown when the <paramref name="values"/> parameter does not contain exactly 4 elements in the array.</exception>
+        public void Clear(float[] values)
+        {
+            GorgonDebug.AssertNull(values, "values");
+
+            if (values.Length != 4)
+            {
+                throw new ArgumentException(Resources.GORGFX_VIEW_UNORDERED_CLEAR_NEED_4_VALUES, "values");
+            }
+
+            Resource.Graphics.Context.ClearUnorderedAccessView(D3DView, new DX.Vector4(values));
+        }
+
+        /// <summary>
+        /// Function to clear the unordered access value with the specified value.
+        /// </summary>
+        /// <param name="value">Value used to clear.</param>
+        /// <remarks>This method will copy the lower n[i] bits (where n is the number of bits in a channel, i is the index of the channel) to the proper channel.
+        /// <para>This method works on any unordered access view that does not require format conversion.</para>
+        /// </remarks>
+        public void Clear(float value)
+        {
+            Resource.Graphics.Context.ClearUnorderedAccessView(D3DView, new DX.Vector4(value));
+        }
+
+        /// <summary>
+        /// Function to clear the unordered access value with the specified values.
+        /// </summary>
+        /// <param name="values">Values used to clear.</param>
+        /// <remarks>This method will copy the lower n[i] bits (where n is the number of bits in a channel, i is the index of the channel) to the proper channel.
+        /// <para>This method works on any unordered access view that does not require format conversion.  Unordered access views for raw/structured buffers only use the first value in the vector.</para>
+        /// </remarks>
+        public void Clear(Vector4 values)
+        {
+            Resource.Graphics.Context.ClearUnorderedAccessView(D3DView, new DX.Vector4(values.X, values.Y, values.Z, values.W));
+        }
+        #endregion
 
 		#region Constructor/Destructor.
 		/// <summary>

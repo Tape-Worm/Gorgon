@@ -260,7 +260,7 @@ namespace GorgonLibrary.Graphics
 			                            SwapChainUsageFlags.ShaderInput
 				                            ? swapChain.Settings.Format
 				                            : BufferFormat.Unknown;
-			Settings.AllowUnorderedAccess = (desc.BindFlags & D3D.BindFlags.UnorderedAccess) == D3D.BindFlags.UnorderedAccess;
+			Settings.AllowUnorderedAccessViews = (desc.BindFlags & D3D.BindFlags.UnorderedAccess) == D3D.BindFlags.UnorderedAccess;
 			Settings.Multisampling = new GorgonMultisampling(desc.SampleDescription.Count, desc.SampleDescription.Quality);
 			Settings.IsTextureCube = (desc.OptionFlags & D3D.ResourceOptionFlags.TextureCube) ==
 										  D3D.ResourceOptionFlags.TextureCube;

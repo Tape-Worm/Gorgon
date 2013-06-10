@@ -157,7 +157,7 @@ namespace GorgonLibrary.Graphics
 						MipCount = settings.MipCount,
 						Usage = BufferUsage.Default,
 						ShaderViewFormat = BufferFormat.Unknown,
-						AllowUnorderedAccess = false
+						AllowUnorderedAccessViews = false
 					};
 				case ImageType.Image2D:
 				case ImageType.ImageCube:
@@ -172,7 +172,7 @@ namespace GorgonLibrary.Graphics
 						Usage = BufferUsage.Default,
 						Multisampling = new GorgonMultisampling(1, 0),
 						ShaderViewFormat = BufferFormat.Unknown,
-						AllowUnorderedAccess = false
+						AllowUnorderedAccessViews = false
 					};
 				case ImageType.Image3D:
 					return new GorgonTexture3DSettings()
@@ -184,7 +184,7 @@ namespace GorgonLibrary.Graphics
 						MipCount = settings.MipCount,
 						Usage = BufferUsage.Default,						
 						ShaderViewFormat = BufferFormat.Unknown,
-						AllowUnorderedAccess = false
+						AllowUnorderedAccessViews = false
 					};					
 				default:
 					throw new ArgumentException(string.Format(Resources.GORGFX_IMAGE_TYPE_INVALID, settings.ImageType));
@@ -250,7 +250,7 @@ namespace GorgonLibrary.Graphics
 			}
 
             if ((_graphics.VideoDevice.SupportedFeatureLevel != DeviceFeatureLevel.SM5)
-                && (settings.AllowUnorderedAccess))
+                && (settings.AllowUnorderedAccessViews))
             {
                 throw new GorgonException(GorgonResult.CannotCreate, "Unordered access views for textures requires a SM5 or better video device.");
             }
@@ -355,7 +355,7 @@ namespace GorgonLibrary.Graphics
 			}
 
             if ((_graphics.VideoDevice.SupportedFeatureLevel != DeviceFeatureLevel.SM5)
-                && (settings.AllowUnorderedAccess))
+                && (settings.AllowUnorderedAccessViews))
             {
                 throw new GorgonException(GorgonResult.CannotCreate, "Unordered access views for textures requires a SM5 or better video device.");
             }
@@ -410,7 +410,7 @@ namespace GorgonLibrary.Graphics
 			}
 
             if ((_graphics.VideoDevice.SupportedFeatureLevel != DeviceFeatureLevel.SM5)
-                && (settings.AllowUnorderedAccess))
+                && (settings.AllowUnorderedAccessViews))
             {
                 throw new GorgonException(GorgonResult.CannotCreate, "Unordered access views for textures requires a SM5 or better video device.");
             }
@@ -1087,7 +1087,7 @@ namespace GorgonLibrary.Graphics
 				// Apply texture specific settings from the codec.
 				settings.Usage = codec.Usage;
 				settings.ShaderViewFormat = codec.ViewFormat;
-				settings.AllowUnorderedAccess = codec.AllowUnorderedAccess;
+				settings.AllowUnorderedAccessViews = codec.AllowUnorderedAccess;
 
 				switch (settings.ImageType)
 				{

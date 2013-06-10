@@ -56,7 +56,7 @@ namespace GorgonLibrary.Graphics
 		/// method to determine if the format is supported.</para>
 		/// <para>The default value is FALSE.</para>
 		/// </remarks>
-		bool AllowUnorderedAccess
+		bool AllowUnorderedAccessViews
 		{
 			get;
 			set;

@@ -62,5 +62,18 @@ namespace GorgonLibrary.Graphics
 			get;
 			set;
 		}
+
+        /// <summary>
+        /// Property to set or return the flags used for the default depth/stencil view.
+        /// </summary>
+        /// <remarks>Use this to determine how the default depth/stencil view is bound to the pipeline.
+        /// <para>A value other than None requires a video device with a feature level of SM5 or better.</para>
+        /// <para>The default value is None.</para>
+        /// </remarks>
+        DepthStencilViewFlags DefaultDepthStencilViewFlags
+        {
+            set;
+            get;
+        }
 	}
 }

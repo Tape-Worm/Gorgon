@@ -43,7 +43,7 @@ namespace GorgonLibrary.Graphics
 			Width = 0;
 			Format = BufferFormat.Unknown;
 			ShaderViewFormat = BufferFormat.Unknown;
-			AllowUnorderedAccess = false;
+			AllowUnorderedAccessViews = false;
 			ArrayCount = 1;
 			MipCount = 1;
 			Usage = BufferUsage.Default;
@@ -163,7 +163,7 @@ namespace GorgonLibrary.Graphics
 		/// method to determine if the format is supported.</para>
 		/// <para>The default value is FALSE.</para>
 		/// </remarks>
-		public bool AllowUnorderedAccess
+		public bool AllowUnorderedAccessViews
 		{
 			get;
 			set;
@@ -246,7 +246,7 @@ namespace GorgonLibrary.Graphics
 					ArrayCount = ArrayCount,
 					MipCount = MipCount,
 					ShaderViewFormat = ShaderViewFormat,
-					AllowUnorderedAccess = AllowUnorderedAccess,
+					AllowUnorderedAccessViews = AllowUnorderedAccessViews,
 					Usage = Usage
 				};
 		}

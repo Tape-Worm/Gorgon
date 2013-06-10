@@ -313,7 +313,7 @@ namespace GorgonLibrary.Graphics
 			{
 				_renderTarget = new GorgonRenderTarget2D(Graphics, Name + "_Internal_Render_Target_" + Guid.NewGuid(), new GorgonRenderTarget2DSettings
 					{
-						AllowUnorderedAccess = false,
+						AllowUnorderedAccessViews = false,
 						ArrayCount = 1,
 						DepthStencilFormat = Settings.DepthStencilFormat,
 						Width = Settings.Width,

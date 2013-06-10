@@ -492,6 +492,24 @@ namespace GorgonLibrary.Graphics
 		}
 
         /// <summary>
+        /// Function to unbind targets after the starting slot specified.
+        /// </summary>
+        /// <param name="startSlot">Starting slot to unbind.</param>
+        internal void UnbindSlots(int startSlot)
+        {
+            if ((_targetViews == null)
+                || (startSlot >= _targetViews.Length))
+            {
+                return;
+            }
+
+            for (int i = startSlot; i < _targetViews.Length; i++)
+            {
+                _targetViews[i] = null;
+            }
+        }
+
+        /// <summary>
 		/// Function to clean up resources used by the interface.
 		/// </summary>
 		internal void CleanUp()
@@ -911,6 +929,15 @@ namespace GorgonLibrary.Graphics
 
 			return target;
 		}
+
+        /// <summary>
+        /// Function to bind a single unordered access view to the pipeline for pixel shaders.
+        /// </summary>
+        /// <param name="view"></param>
+        public void SetUnorderedAccessView(GorgonUnorderedAccessView view)
+        {
+            
+        }
 		#endregion
 
 		#region Constructor/Destructor.
