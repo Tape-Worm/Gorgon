@@ -78,10 +78,12 @@ namespace GorgonLibrary.Graphics
             D3DView.Dispose();
             D3DView = null;
         }
-        #endregion
 
-        #region Constructor/Destructor.
-        /// <summary>
+#error Add ID3D11DeviceContext::ClearUnorderedAccessViewUint/Float functionality to UAV.
+		#endregion
+
+		#region Constructor/Destructor.
+		/// <summary>
         /// Initializes a new instance of the <see cref="GorgonUnorderedAccessView"/> class.
         /// </summary>
         /// <param name="resource">The buffer to bind to the view.</param>
