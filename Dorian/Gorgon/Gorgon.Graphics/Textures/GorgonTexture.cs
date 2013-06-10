@@ -133,10 +133,15 @@ namespace GorgonLibrary.Graphics
 		/// <param name="mipSlice">Starting mip map for the view.</param>
 		/// <param name="arrayStart">Starting array index for the view.</param>
 		/// <param name="arrayCount">Array index count for the view.</param>
+		/// <param name="flags">Flags to determine how to treat the bound view.</param>
 		/// <remarks>Use a depth/stencil view to bind a resource to the pipeline as a depth/stencil buffer.  A depth/stencil view can view a select portion of the texture, and the view <paramref name="format"/> can be used to 
 		/// cast the format of the texture into another type (as long as the view format has the same bit depth as the depth/stencil format).  For example, a texture with a format of D32_Float could be cast 
 		/// to R32_Uint, R32_Int or R32_Float formats.
-		/// </remarks>
+        /// <para>The <paramref name="flags"/> parameter will allow the depth/stencil buffer to be read simultaneously from the depth/stencil view and from a shader view.  It is not normally possible to bind a view of a 
+        /// resource to 2 parts of the pipeline at the same time.  However, using the flags provided, read-only access may be granted to a part of the resource (depth or stencil) or all of it for all parts of the pipline.  
+        /// This would bind the depth/stencil as a read-only view and make it a read-only view accessible to shaders. If the flags are not set to None, then the depth/stencil buffer must allow shader access.</para>
+        /// <para>Binding to simulatenous views require a video device with a feature level of SM5 or better.</para>
+        /// </remarks>
 		/// <exception cref="GorgonLibrary.GorgonException">Thrown when the texture has a usage of staging.
 		/// <para>-or-</para>
 		/// <para>Thrown when the <paramref name="format"/> is not valid for the view.</para>
@@ -144,12 +149,15 @@ namespace GorgonLibrary.Graphics
 		/// <para>Thrown when the <paramref name="arrayStart"/> and the <paramref name="arrayCount"/> are less than 0 or 1 respectively, or greater than the number of array indices in the texture.</para>
 		/// <para>-or-</para>
 		/// <para>Thrown when the <paramref name="mipSlice"/> is less than 0 or greater than the number of mip levels in the texture.</para>
+		/// <para>-or-</para>
+		/// <para>Thrown when the <paramref name="flags"/> property is not set to None and the depth buffer does not allow shader access, or if the current video device feature level is not SM5 or better.</para>
 		/// </exception>
 		/// <returns>A texture shader view object.</returns>
 		protected GorgonDepthStencilView OnCreateDepthStencilView(BufferFormat format,
 													int mipSlice,
 													int arrayStart,
-													int arrayCount)
+													int arrayCount,
+                                                    DepthStencilViewFlags flags)
 		{
 			if (Settings.Usage == BufferUsage.Staging)
 			{
@@ -214,7 +222,7 @@ namespace GorgonLibrary.Graphics
 				throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_VIEW_CUBE_ARRAY_SIZE_INVALID);
 			}
 
-			var view = new GorgonDepthStencilView(this, format, mipSlice, arrayStart, arrayCount);
+			var view = new GorgonDepthStencilView(this, format, mipSlice, arrayStart, arrayCount, flags);
 			view.Initialize();
 			Graphics.AddTrackedObject(view);
 
@@ -440,10 +448,10 @@ namespace GorgonLibrary.Graphics
 				throw new GorgonException(GorgonResult.CannotCreate, "Unordered access views are only available on video devices that support SM_5 or better.");
 			}
 
-			if (!Settings.AllowUnorderedAccess)
-			{
-				throw new GorgonException(GorgonResult.CannotCreate, "The texture does not allow unordered access.");
-			}
+            if (!Settings.AllowUnorderedAccessViews)
+            {
+                throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_VIEW_NO_SUPPORT, "GorgonUnorderedAccessView"));
+            }
 
 			if (Settings.Usage == BufferUsage.Staging)
 			{
@@ -538,7 +546,7 @@ namespace GorgonLibrary.Graphics
                     flags |= D3D.BindFlags.ShaderResource;
                 }
 
-                if (Settings.AllowUnorderedAccess)
+                if (Settings.AllowUnorderedAccessViews)
                 {
                     flags |= D3D.BindFlags.UnorderedAccess;
                 }

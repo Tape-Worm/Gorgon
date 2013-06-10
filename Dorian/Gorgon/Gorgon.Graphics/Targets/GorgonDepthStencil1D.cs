@@ -133,7 +133,7 @@ namespace GorgonLibrary.Graphics
 			GorgonRenderStatistics.DepthBufferCount++;
 			GorgonRenderStatistics.DepthBufferSize += SizeInBytes;
 
-			_defaultView = CreateDepthStencilView(Settings.Format, 0, 0, 1);
+			_defaultView = CreateDepthStencilView(Settings.Format, 0, 0, 1, Settings.DefaultDepthStencilViewFlags);
 		}
 
 		/// <summary>
@@ -187,29 +187,49 @@ namespace GorgonLibrary.Graphics
 			throw new NotSupportedException(Resources.GORGFX_DEPTH_OPERATION_NOT_SUPPORTED);
 		}
 
-		/// <summary>
-		/// Function to create a new depth/stencil view object.
-		/// </summary>
-		/// <param name="format">The format of the depth/stencil view.</param>
-		/// <param name="mipSlice">Starting mip map for the view.</param>
-		/// <param name="arrayStart">Starting array index for the view.</param>
-		/// <param name="arrayCount">Array index count for the view.</param>
-		/// <remarks>Use a depth/stencil view to bind a resource to the pipeline as a depth/stencil buffer.  A depth/stencil view can view a select portion of the texture, and the view <paramref name="format"/> can be used to 
-		/// cast the format of the texture into another type (as long as the view format has the same bit depth as the depth/stencil format).  For example, a texture with a format of D32_Float could be cast 
-		/// to R32_Uint, R32_Int or R32_Float formats.
-		/// </remarks>
-		/// <exception cref="GorgonLibrary.GorgonException">Thrown when the texture has a usage of staging.
-		/// <para>-or-</para>
-		/// <para>Thrown when the <paramref name="format"/> is not valid for the view.</para>
-		/// <para>-or-</para>
-		/// <para>Thrown when the <paramref name="arrayStart"/> and the <paramref name="arrayCount"/> are less than 0 or 1 respectively, or greater than the number of array indices in the texture.</para>
-		/// <para>-or-</para>
-		/// <para>Thrown when the <paramref name="mipSlice"/> is less than 0 or greater than the number of mip levels in the texture.</para>
-		/// </exception>
-		/// <returns>A texture shader view object.</returns>
-		public GorgonDepthStencilView CreateDepthStencilView(BufferFormat format, int mipSlice, int arrayStart, int arrayCount)
+        /// <summary>
+        /// Function to create a new depth/stencil view object.
+        /// </summary>
+        /// <param name="format">The format of the depth/stencil view.</param>
+        /// <param name="mipSlice">Starting mip map for the view.</param>
+        /// <param name="arrayStart">Starting array index for the view.</param>
+        /// <param name="arrayCount">Array index count for the view.</param>
+        /// <param name="flags">Flags to determine how to treat the bound view.</param>
+        /// <remarks>Use a depth/stencil view to bind a resource to the pipeline as a depth/stencil buffer.  A depth/stencil view can view a select portion of the texture, and the view <paramref name="format"/> can be used to 
+        /// cast the format of the texture into another type (as long as the view format has the same bit depth as the depth/stencil format).  For example, a texture with a format of D32_Float could be cast 
+        /// to R32_Uint, R32_Int or R32_Float formats.
+        /// <para>The <paramref name="flags"/> parameter will allow the depth/stencil buffer to be read simultaneously from the depth/stencil view and from a shader view.  It is not normally possible to bind a view of a 
+        /// resource to 2 parts of the pipeline at the same time.  However, using the flags provided, read-only access may be granted to a part of the resource (depth or stencil) or all of it for all parts of the pipline.  
+        /// This would bind the depth/stencil as a read-only view and make it a read-only view accessible to shaders. If the flags are not set to None, then the depth/stencil buffer must allow shader access.</para>
+        /// <para>Binding to simulatenous views require a video device with a feature level of SM5 or better.</para>
+        /// </remarks>
+        /// <exception cref="GorgonLibrary.GorgonException">Thrown when the texture has a usage of staging.
+        /// <para>-or-</para>
+        /// <para>Thrown when the <paramref name="format"/> is not valid for the view.</para>
+        /// <para>-or-</para>
+        /// <para>Thrown when the <paramref name="arrayStart"/> and the <paramref name="arrayCount"/> are less than 0 or 1 respectively, or greater than the number of array indices in the texture.</para>
+        /// <para>-or-</para>
+        /// <para>Thrown when the <paramref name="mipSlice"/> is less than 0 or greater than the number of mip levels in the texture.</para>
+        /// <para>-or-</para>
+        /// <para>Thrown when the <paramref name="flags"/> property is not set to None and the depth buffer does not allow shader access, or if the current video device feature level is not SM5 or better.</para>
+        /// </exception>
+        /// <returns>A texture shader view object.</returns>
+        public GorgonDepthStencilView CreateDepthStencilView(BufferFormat format, int mipSlice, int arrayStart, int arrayCount, DepthStencilViewFlags flags)
 		{
-			return OnCreateDepthStencilView(format, mipSlice, arrayStart, arrayCount);
+            if (flags != DepthStencilViewFlags.None)
+            {
+                if (Graphics.VideoDevice.SupportedFeatureLevel < DeviceFeatureLevel.SM5)
+                {
+                    throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_REQUIRES_SM, DeviceFeatureLevel.SM5));
+                }
+
+                if (!Settings.AllowShaderView)
+                {
+                    throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_VIEW_NO_SUPPORT, "GorgonShaderView"));
+                }
+            }
+
+			return OnCreateDepthStencilView(format, mipSlice, arrayStart, arrayCount, flags);
 		}
 
 		/// <summary>

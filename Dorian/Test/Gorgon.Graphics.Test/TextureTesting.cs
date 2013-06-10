@@ -79,7 +79,7 @@ namespace GorgonLibrary.Graphics.Test
                                                      ArrayCount = 1,
                                                      Format = BufferFormat.R8,
                                                      MipCount = 1,
-                                                     AllowUnorderedAccess = false,
+                                                     AllowUnorderedAccessViews = false,
                                                      Usage = BufferUsage.Staging
                                                  });
 
@@ -112,7 +112,7 @@ namespace GorgonLibrary.Graphics.Test
                                                      ArrayCount = 1,
                                                      Format = BufferFormat.R8G8B8A8,
                                                      MipCount = 1,
-                                                     AllowUnorderedAccess = false,
+                                                     AllowUnorderedAccessViews = false,
                                                      Usage = BufferUsage.Staging
                                                  });
 
@@ -145,7 +145,7 @@ namespace GorgonLibrary.Graphics.Test
                                                      Depth = 64,
                                                      Format = BufferFormat.R8G8B8A8,
                                                      MipCount = 1,
-                                                     AllowUnorderedAccess = false,
+                                                     AllowUnorderedAccessViews = false,
                                                      Usage = BufferUsage.Staging
                                                  });
                 texture.CreateShaderView(BufferFormat.R8G8B8A8_Int);
@@ -179,7 +179,7 @@ namespace GorgonLibrary.Graphics.Test
                         Format = BufferFormat.R8G8B8A8,
                         MipCount = 1,
                         ShaderViewFormat = BufferFormat.R8G8B8A8_Int,
-                        AllowUnorderedAccess = false,
+                        AllowUnorderedAccessViews = false,
                         Usage = BufferUsage.Default
                     }))
                 {
@@ -229,7 +229,7 @@ namespace GorgonLibrary.Graphics.Test
                                                          Format = BufferFormat.R8_UIntNormal,
                                                          MipCount = 1,
                                                          ShaderViewFormat = BufferFormat.Unknown,
-                                                         AllowUnorderedAccess = false,
+                                                         AllowUnorderedAccessViews = false,
                                                          Usage = BufferUsage.Default
                                                      });
 
@@ -245,7 +245,7 @@ namespace GorgonLibrary.Graphics.Test
                                                      Format = BufferFormat.R8G8B8A8_UIntNormal,
                                                      MipCount = 1,
                                                      ShaderViewFormat = BufferFormat.Unknown,
-                                                     AllowUnorderedAccess = false,
+                                                     AllowUnorderedAccessViews = false,
                                                      Usage = BufferUsage.Default
                                                  });
 
@@ -261,7 +261,7 @@ namespace GorgonLibrary.Graphics.Test
                                                      Format = BufferFormat.R8G8B8A8_UIntNormal,
                                                      MipCount = 1,
                                                      ShaderViewFormat = BufferFormat.Unknown,
-                                                     AllowUnorderedAccess = false,
+                                                     AllowUnorderedAccessViews = false,
                                                      Usage = BufferUsage.Default
                                                  });
 

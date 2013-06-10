@@ -29,13 +29,61 @@ using D3D = SharpDX.Direct3D11;
 namespace GorgonLibrary.Graphics
 {
     /// <summary>
-    /// Buffer to hold arguments for indirect drawing.
+    /// Testing class.
     /// </summary>
-    /// <remarks>Some shaders can output data which requires a CPU read to retrieve the count. This will cause a stall in the pipeline.  This buffer type 
-    /// mitigates this issue by holding data output by a shader so that it may be passed back without having to perform a read.
-    /// <para>This buffer type is meant to be used to be used with the <see cref="GorgonLibrary.Graphics.GorgonOutputMerger.DrawInstancedIndirect">DrawInstancedIndirect</see> method.</para>
-    /// <para>This buffer type is only available to video devices that are SM_5 or better.</para>
-    /// </remarks>
+    public class PSUAViewTesting
+    {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PSUAViewTesting"/> class.
+        /// </summary>
+        /// <param name="graphics">The graphics.</param>
+        public PSUAViewTesting(GorgonGraphics graphics)
+        {
+            GorgonBuffer uavBuffer = graphics.Buffers.CreateBuffer("Test",
+                                                                   new GorgonBufferSettings
+                                                                       {
+                                                                           AllowUnorderedAccessViews = true,
+                                                                           SizeInBytes = 8192,
+                                                                           Usage = BufferUsage.Default
+                                                                       });
+            GorgonRenderTarget2D tempTarget = graphics.Output.CreateRenderTarget2D("Target",
+                                                                                   new GorgonRenderTarget2DSettings
+                                                                                       {
+                                                                                           Format = BufferFormat.R8G8B8A8_UIntNormal,
+                                                                                           Width = 256,
+                                                                                           Height = 256,
+                                                                                       });
+
+            GorgonRenderTarget2D tempTarget2 = graphics.Output.CreateRenderTarget2D("Target2",
+                                                                                   new GorgonRenderTarget2DSettings
+                                                                                   {
+                                                                                       Format = BufferFormat.R8G8B8A8_UIntNormal,
+                                                                                       Width = 256,
+                                                                                       Height = 256,
+                                                                                   });
+
+            var uav = uavBuffer.CreateUnorderedAccessView(BufferFormat.R8G8B8A8_UIntNormal, 0, 2048, false);
+
+            graphics.Context.OutputMerger.SetTargets(1, new D3D.UnorderedAccessView[] { uav.D3DView }, ((GorgonRenderTargetView)tempTarget).D3DView);
+
+            var views = graphics.Context.OutputMerger.GetUnorderedAccessViews(0, 1);
+
+            if ((views != null)
+                && (views.Length > 0))
+            {
+                System.Diagnostics.Debug.Print(">>> UAV Count: {0}", views.Length);
+            }
+
+            graphics.Context.OutputMerger.SetTargets((D3D.DepthStencilView)null, ((GorgonRenderTargetView)tempTarget2).D3DView);
+
+
+            graphics.Context.OutputMerger.SetTargets((D3D.DepthStencilView)null, (D3D.RenderTargetView)null);
+        }
+    }
+
+    /// <summary>
+    /// Testing class.
+    /// </summary>
     public class BufferInfo
     {
         #region Constructor/Destructor.

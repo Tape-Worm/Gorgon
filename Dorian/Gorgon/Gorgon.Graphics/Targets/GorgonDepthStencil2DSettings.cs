@@ -80,7 +80,21 @@ namespace GorgonLibrary.Graphics
 			get;
 			set;
 		}
-		#endregion
+
+        /// <summary>
+        /// Property to set or return the flags used for the default depth/stencil view.
+        /// </summary>
+        /// <remarks>
+        /// Use this to determine how the default depth/stencil view is bound to the pipeline.
+        /// <para>A value other than None requires a video device with a feature level of SM5 or better.</para>
+        /// <para>The default value is None.</para>
+        /// </remarks>
+        public DepthStencilViewFlags DefaultDepthStencilViewFlags
+        {
+            get;
+            set;
+        }
+        #endregion
 
 		#region ITextureSettings Members
 		/// <summary>
@@ -105,7 +119,7 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		/// <remarks>This value is not supported with depth/stencil buffers.  This value will always return FALSE.</remarks>
 		/// <exception cref="System.NotSupportedException">Thrown when an attempt to set a value to this property is made.</exception>
-		bool ITextureSettings.AllowUnorderedAccess
+		bool ITextureSettings.AllowUnorderedAccessViews
 		{
 			get
 			{
@@ -277,5 +291,5 @@ namespace GorgonLibrary.Graphics
 				};
 		}
 		#endregion
-	}
+    }
 }

@@ -141,6 +141,15 @@ namespace GorgonLibrary.Graphics.Test
         }
 
         [TestMethod]
+        public void TestUAVPSBinding()
+        {
+            using(GorgonGraphics graphics = new GorgonGraphics(DeviceFeatureLevel.SM5))
+            {
+                var test = new PSUAViewTesting(graphics);
+            }
+        }
+
+        [TestMethod]
         public void TestInDirectSettings()
         {
             var id = new BufferInfo(_framework.Graphics);

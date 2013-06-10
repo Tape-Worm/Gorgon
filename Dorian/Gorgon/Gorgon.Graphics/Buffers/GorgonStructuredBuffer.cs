@@ -140,7 +140,7 @@ namespace GorgonLibrary.Graphics
 
 			if (!Settings.AllowUnorderedAccessViews)
 			{
-				throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_BUFFER_NO_UNORDERED_VIEWS);
+				throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_VIEW_NO_SUPPORT, "GorgonUnorderedAccessView"));
 			}
 
 			if ((Settings.Usage == BufferUsage.Staging) || (Settings.Usage == BufferUsage.Dynamic))

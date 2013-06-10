@@ -86,7 +86,7 @@ namespace GorgonLibrary.Graphics
 			Format = BufferFormat.Unknown;
 			TextureFormat = BufferFormat.Unknown;
 			ShaderViewFormat = BufferFormat.Unknown;
-			AllowUnorderedAccess = false;
+			AllowUnorderedAccessViews = false;
 		}
 		#endregion
 
@@ -116,7 +116,7 @@ namespace GorgonLibrary.Graphics
 		/// method to determine if the format is supported.</para>
 		/// <para>The default value is FALSE.</para>
 		/// </remarks>
-		public bool AllowUnorderedAccess
+		public bool AllowUnorderedAccessViews
 		{
 			get;
 			set;
@@ -278,7 +278,7 @@ namespace GorgonLibrary.Graphics
 					Width = Width,
 					Height = Height,
 					Depth = Depth,
-					AllowUnorderedAccess = AllowUnorderedAccess,
+					AllowUnorderedAccessViews = AllowUnorderedAccessViews,
 					Format = Format,
 					MipCount = MipCount,
 					ShaderViewFormat = ShaderViewFormat,

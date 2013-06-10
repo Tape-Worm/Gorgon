@@ -86,7 +86,7 @@ namespace GorgonLibrary.Graphics
 			DepthStencilFormat = BufferFormat.Unknown;
 			ShaderViewFormat = BufferFormat.Unknown;
 			Multisampling = GorgonMultisampling.NoMultiSampling;
-			AllowUnorderedAccess = false;
+			AllowUnorderedAccessViews = false;
 		}
 		#endregion
 
@@ -116,7 +116,7 @@ namespace GorgonLibrary.Graphics
 		/// method to determine if the format is supported.</para>
 		/// <para>The default value is FALSE.</para>
 		/// </remarks>
-		public bool AllowUnorderedAccess
+		public bool AllowUnorderedAccessViews
 		{
 			get;
 			set;
@@ -270,7 +270,7 @@ namespace GorgonLibrary.Graphics
 				{
 					Width = Width,
 					Height = Height,
-					AllowUnorderedAccess = AllowUnorderedAccess,
+					AllowUnorderedAccessViews = AllowUnorderedAccessViews,
 					ArrayCount = ArrayCount,
 					DepthStencilFormat = DepthStencilFormat,
 					Format = Format,

@@ -67,7 +67,7 @@ namespace GorgonLibrary.Graphics
 			ArrayCount = 1;
 			Multisampling = new GorgonMultisampling(1, 0);
 		    ShaderViewFormat = BufferFormat.Unknown;
-			AllowUnorderedAccess = false;
+			AllowUnorderedAccessViews = false;
 			Usage = BufferUsage.Default;
 		}
 		#endregion
@@ -175,7 +175,7 @@ namespace GorgonLibrary.Graphics
 		/// method to determine if the format is supported.</para>
 		/// <para>The default value is FALSE.</para>
 		/// </remarks>
-		public bool AllowUnorderedAccess
+		public bool AllowUnorderedAccessViews
 		{
 			get;
 			set;
@@ -255,7 +255,7 @@ namespace GorgonLibrary.Graphics
 		            ArrayCount = ArrayCount,
 		            MipCount = MipCount,
 		            IsTextureCube = IsTextureCube,
-		            AllowUnorderedAccess = AllowUnorderedAccess,
+		            AllowUnorderedAccessViews = AllowUnorderedAccessViews,
 		            Multisampling = Multisampling,                
 		            Usage = Usage
 	            };

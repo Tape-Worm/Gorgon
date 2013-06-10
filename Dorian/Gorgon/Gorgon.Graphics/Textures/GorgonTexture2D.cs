@@ -643,7 +643,7 @@ namespace GorgonLibrary.Graphics
 		        {
 		            Width = settings.Width,
 		            Height = settings.Height,
-		            AllowUnorderedAccess = settings.AllowUnorderedAccess,
+		            AllowUnorderedAccessViews = settings.AllowUnorderedAccessViews,
 		            ArrayCount = settings.ArrayCount,
 		            Format = settings.Format,
 		            IsTextureCube = settings.IsTextureCube,
