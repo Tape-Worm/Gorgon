@@ -139,7 +139,9 @@ namespace GorgonLibrary.Graphics
 		#region Variables.
 		private GorgonRenderTarget2D _renderTarget;			// The render target bound to this swap chain.
 		private bool _disposed;								// Flag to indicate that the object was disposed.
+		private Control _topLevelControl;					// Top level control.
 		private Form _parentForm;							// Parent form for our window.
+		private bool _isInResize;							// Flag to indicate that we're in the middle of a resizing operation.
 		#endregion
 
 		#region Events.
@@ -377,7 +379,66 @@ namespace GorgonLibrary.Graphics
 		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
 		private void Window_ParentChanged(object sender, EventArgs e)
 		{
+			// If the actual control has changed parents, update the top level control.
+			if (sender == Settings.Window)
+			{
+				var newTopLevelParent = Gorgon.GetTopLevelControl(Settings.Window);
+
+				if (newTopLevelParent != _topLevelControl)
+				{
+					_topLevelControl.ParentChanged -= Window_ParentChanged;
+
+					// If we're not at the top of the chain, then find out which window is and set it up
+					// to handle changes to its hierarchy.
+					if (newTopLevelParent != Settings.Window)
+					{
+						_topLevelControl = newTopLevelParent;
+						_topLevelControl.ParentChanged += Window_ParentChanged;
+					}
+				}
+			}
+
+			if (_parentForm != null)
+			{
+				_parentForm.ResizeBegin -= _parentForm_ResizeBegin;
+				_parentForm.ResizeEnd -= _parentForm_ResizeEnd;
+			}
+
 			_parentForm = Gorgon.GetTopLevelForm(Settings.Window);
+
+			if (_parentForm == null)
+			{
+				return;
+			}
+
+			_parentForm.ResizeBegin += _parentForm_ResizeBegin;
+			_parentForm.ResizeEnd += _parentForm_ResizeEnd;
+		}
+
+		/// <summary>
+		/// Handles the ResizeBegin event of the _parentForm control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+		private void _parentForm_ResizeBegin(object sender, EventArgs e)
+		{
+			_isInResize = true;
+		}
+
+		/// <summary>
+		/// Handles the ResizeEnd event of the _parentForm control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+		private void _parentForm_ResizeEnd(object sender, EventArgs e)
+		{
+			_isInResize = false;
+
+			// Only attempt a resize if the window has actually changed size.
+			if ((Settings.Window.ClientSize.Width != Settings.Width) || (Settings.Window.ClientSize.Height != Settings.Height))
+			{
+				Window_Resize(sender, e);
+			}
 		}
 
 		/// <summary>
@@ -387,10 +448,18 @@ namespace GorgonLibrary.Graphics
 		/// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
 		private void Window_Resize(object sender, EventArgs e)
 		{
+			// If we're in a manual resize operation, then don't call this method just yet.
+			if (_isInResize)
+			{
+				return;
+			}
+
 			// Attempt to get the parent form if we don't have one yet.
 			if (_parentForm == null)
 			{
 				_parentForm = Gorgon.GetTopLevelForm(Settings.Window);
+				_parentForm.ResizeBegin += _parentForm_ResizeBegin;
+				_parentForm.ResizeEnd += _parentForm_ResizeEnd;
 			}
 
 			if ((!AutoResize) || ((_parentForm != null) && (_parentForm.WindowState == FormWindowState.Minimized)))
@@ -478,40 +547,6 @@ namespace GorgonLibrary.Graphics
 			{
 				AfterStateTransition(this, new GorgonSwapChainResizedEventArgs(this));
 			}
-		}
-
-		/// <summary>
-		/// Function to force clean up.
-		/// </summary>
-		private void CleanUp()
-		{
-			Settings.Window.ParentChanged -= Window_ParentChanged;
-
-			if (_parentForm != null)
-			{
-				_parentForm.Activated -= new EventHandler(_parentForm_Activated);
-				_parentForm.Deactivate -= new EventHandler(_parentForm_Deactivate);
-			}
-
-			Settings.Window.Resize -= new EventHandler(Window_Resize);
-
-            if (_renderTarget != null)
-			{
-                _renderTarget.Dispose();
-                _renderTarget = null;
-			}
-
-			Gorgon.Log.Print("GorgonSwapChain '{0}': Removing D3D11 swap chain...", Diagnostics.LoggingLevel.Simple, Name);
-			if (GISwapChain != null)
-			{
-				// Always go to windowed mode before destroying the swap chain.
-				GISwapChain.SetFullscreenState(false, null);
-				GISwapChain.Dispose();
-			}
-			if (Graphics != null)
-				Graphics.RemoveTrackedObject(this);					
-
-			GISwapChain = null;
 		}
 
 		/// <summary>
@@ -674,6 +709,14 @@ namespace GorgonLibrary.Graphics
 			CreateResources();
 
 			Settings.Window.Resize += new EventHandler(Window_Resize);
+			
+			if (_parentForm == null)
+			{
+				return;
+			}
+
+			_parentForm.ResizeBegin += _parentForm_ResizeBegin;
+			_parentForm.ResizeEnd += _parentForm_ResizeEnd;
 		}
 
 		/// <summary>
@@ -938,7 +981,13 @@ namespace GorgonLibrary.Graphics
 
 			// Get the parent form for our window.
 			_parentForm = Gorgon.GetTopLevelForm(settings.Window);
+			_topLevelControl = Gorgon.GetTopLevelControl(settings.Window);
 			settings.Window.ParentChanged += Window_ParentChanged;
+
+			if (_topLevelControl != settings.Window)
+			{
+				_topLevelControl.ParentChanged += Window_ParentChanged;
+			}
 
 			AutoResize = true;
 		}
@@ -958,7 +1007,40 @@ namespace GorgonLibrary.Graphics
 
 			if (disposing)
 			{
-				CleanUp();
+				Settings.Window.ParentChanged -= Window_ParentChanged;
+
+				if (_topLevelControl != null)
+				{
+					_topLevelControl.ParentChanged -= Window_ParentChanged;
+				}
+
+				if (_parentForm != null)
+				{
+					_parentForm.ResizeBegin -= _parentForm_ResizeBegin;
+					_parentForm.ResizeEnd -= _parentForm_ResizeEnd;
+					_parentForm.Activated -= new EventHandler(_parentForm_Activated);
+					_parentForm.Deactivate -= new EventHandler(_parentForm_Deactivate);
+				}
+
+				Settings.Window.Resize -= new EventHandler(Window_Resize);
+
+				if (_renderTarget != null)
+				{
+					_renderTarget.Dispose();
+					_renderTarget = null;
+				}
+
+				Gorgon.Log.Print("GorgonSwapChain '{0}': Removing D3D11 swap chain...", Diagnostics.LoggingLevel.Simple, Name);
+				if (GISwapChain != null)
+				{
+					// Always go to windowed mode before destroying the swap chain.
+					GISwapChain.SetFullscreenState(false, null);
+					GISwapChain.Dispose();
+				}
+				if (Graphics != null)
+					Graphics.RemoveTrackedObject(this);
+
+				GISwapChain = null;
 			}
 
 			Graphics = null;

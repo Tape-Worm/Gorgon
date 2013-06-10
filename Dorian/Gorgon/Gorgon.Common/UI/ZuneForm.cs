@@ -684,6 +684,71 @@ namespace GorgonLibrary.UI
 		}
 
 		/// <summary>
+		/// Handles the Activated event of the ZuneForm control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+		private void ZuneForm_Activated(object sender, EventArgs e)
+		{
+			panelCaptionArea.ForeColor = ForeColor;
+			labelMinimize.ForeColor = ForeColor;
+			labelMaxRestore.ForeColor = ForeColor;
+			labelClose.ForeColor = ForeColor;
+
+			using (var graphics = CreateGraphics())
+			{
+				DrawBorder(graphics);
+			}
+		}
+
+		/// <summary>
+		/// Handles the Deactivate event of the ZuneForm control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+		private void ZuneForm_Deactivate(object sender, EventArgs e)
+		{
+			panelCaptionArea.ForeColor = Color.FromKnownColor(KnownColor.DimGray);
+			labelMinimize.ForeColor = Color.FromKnownColor(KnownColor.DimGray);
+			labelMaxRestore.ForeColor = Color.FromKnownColor(KnownColor.DimGray);
+			labelClose.ForeColor = Color.FromKnownColor(KnownColor.DimGray);
+			using (var graphics = CreateGraphics())
+			{
+				DrawBorder(graphics);
+			}
+		}
+
+		/// <summary>
+		/// Window procedure override.
+		/// </summary>
+		/// <param name="m">The Windows <see cref="T:System.Windows.Forms.Message" /> to process.</param>
+		protected override void WndProc(ref Message m)
+		{
+			switch ((WindowMessages)m.Msg)
+			{
+				case WindowMessages.EnterSizeMove:
+					if (DesignMode)
+					{
+						return;
+					}
+
+					// If we're resizing, then begin resizing.
+					OnResizeBegin(EventArgs.Empty);
+					break;
+				case WindowMessages.ExitSizeMove:
+					if (DesignMode)
+					{
+						return;
+					}
+
+					// If we're resizing, then stop.
+					OnResizeEnd(EventArgs.Empty);
+					break;
+			}
+			base.WndProc(ref m);
+		}
+
+		/// <summary>
 		/// Handles the MouseDown event of the ZuneForm control.
 		/// </summary>
 		/// <param name="sender">The source of the event.</param>
@@ -898,40 +963,5 @@ namespace GorgonLibrary.UI
 			ValidateWindowControls();
 		}
 		#endregion
-
-		/// <summary>
-		/// Handles the Activated event of the ZuneForm control.
-		/// </summary>
-		/// <param name="sender">The source of the event.</param>
-		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-		private void ZuneForm_Activated(object sender, EventArgs e)
-		{
-			panelCaptionArea.ForeColor = ForeColor;
-			labelMinimize.ForeColor = ForeColor;
-			labelMaxRestore.ForeColor = ForeColor;
-			labelClose.ForeColor = ForeColor;
-
-			using (var graphics = CreateGraphics())
-			{
-				DrawBorder(graphics);
-			}
-		}
-
-		/// <summary>
-		/// Handles the Deactivate event of the ZuneForm control.
-		/// </summary>
-		/// <param name="sender">The source of the event.</param>
-		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-		private void ZuneForm_Deactivate(object sender, EventArgs e)
-		{
-			panelCaptionArea.ForeColor = Color.FromKnownColor(KnownColor.DimGray);
-			labelMinimize.ForeColor = Color.FromKnownColor(KnownColor.DimGray);
-			labelMaxRestore.ForeColor = Color.FromKnownColor(KnownColor.DimGray);
-			labelClose.ForeColor = Color.FromKnownColor(KnownColor.DimGray);
-			using (var graphics = CreateGraphics())
-			{
-				DrawBorder(graphics);
-			}
-		}
 	}
 }
