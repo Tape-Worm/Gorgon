@@ -6,10 +6,11 @@ This list is not in order.  Please don't get excited.
 	+ Add GetSubResourceIndex1/2/3D to the Textures interface (Done, added to texture objects as static member).
 	+ Update SRV for depth for binding to shaders using typeless texture and typed srv. (Done)
 	+ Make SRV/UAV more flexible for resource types.  Currently limited to 1 view to 1 resource, not ideal. (Done)
-	+ Update 1D textures for depth, 3D cannot be used as depth.
-	+ Test depth/stencil for unordered access view support.
-	+ Update buffers and 1D/3D textures for render target destination.
-		- Refactor GorgonRenderTarget into GorgonRenderTarget/1D/2D/3D/Buffer types.
+	+ Update 1D /2D textures for depth, 3D cannot be used as depth. (Done)
+	+ Test depth/stencil for unordered access view support. (Done)
+	+ Update buffers and 1D/3D textures for render target destination. (Done)
+		- Refactor GorgonRenderTarget into GorgonRenderTarget/1D/2D/3D/Buffer types. (Done)
+	+ Add methods to set or return buffers for stream output to the OutputMerger interface.
 * Add buffers (DONE)
 	+ Update vertex buffer (and index buffer?  Need to research) code to allow for stream output from Geometry shaders. (Done)
 	+ Add raw buffers (N/A - Any buffer except constant, structured can be raw)
@@ -28,7 +29,19 @@ This list is not in order.  Please don't get excited.
 	+ Some basic shaders for blurring, color inversion, sharpening, etc... (Done)
 		- Expose these as 'Effect' objects for easier use. (Done)
 	+ Add functionality to allow creation of custom shader resource/unordered views for objects. (Done, added to buffers/textures)
+	+ Add Dispatch command for compute shaders (This will go into the compute shader interface).
+		- Will need dispatch for indirect argument buffers too.
+	+ Add class support to shaders for SM5 for dynamic linking.
 * Add multi-threaded support for D3D 11 device contexts.
+	+ Add Object type that is similar to GorgonGraphics, but stripped to the items that are actually supported by threaded contexts.
+	+ Begin/End are not related to this and are used for Queries which will not be supported in Gorgon at this time.
+	+ Add a "Finish" command to this deferred object type:
+		1.  Create deferred graphics object type.
+		2.  Add drawing commands (clear, draw, etc...)
+		3.  Call Finish to indicate the end of the command list, this will return a command list object type. [FinishCommandList]
+		4.  Call execute on the command list when ready to use. [ExecuteCommandList]
+	+ Add command list type.  Will have Execute method.  Note that we can chain command lists to other command lists.
+	+ Add functionality to check for threading support.  Limit support to SM5 or better devices.
 * Maybe update Gorgon2D to create a swap chain in its Create2DRenderer method in addition to passing one in. (Done)
 * Update 2D shader code (Not necessary, 2D specific shader types are now gone and integrated via #GorgonInclude in the shader).
 * Add bounding box/circle for renderable objects. (Done)
