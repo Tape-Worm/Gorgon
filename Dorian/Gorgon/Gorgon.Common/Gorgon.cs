@@ -680,6 +680,29 @@ namespace GorgonLibrary
 		}
 
 		/// <summary>
+		/// Function to return the top level control that contains the child control.
+		/// </summary>
+		/// <param name="childControl">The child control that's nested within a container control.</param>
+		/// <returns>The container control that contains the control, or the control pointed at by <paramref name="childControl"/> if the control has no parent.</returns>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="childControl"/> parameter is NULL (Nothing in VB.Net).</exception>
+		public static Control GetTopLevelControl(Control childControl)
+		{
+			if (childControl == null)
+			{
+				throw new ArgumentNullException("childControl");
+			}
+
+			Control parent = childControl;
+
+			while (parent.Parent != null)
+			{
+				parent = parent.Parent;
+			}
+
+			return parent;
+		}
+
+		/// <summary>
 		/// Function to return the top level form that contains the child control.
 		/// </summary>
 		/// <param name="childControl">The child control that's nested within a base windows form.</param>

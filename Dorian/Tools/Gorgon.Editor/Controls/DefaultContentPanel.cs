@@ -44,16 +44,6 @@ namespace GorgonLibrary.Editor
 		}
 
 		/// <summary>
-		/// Handles the MouseMove event of the panel1 control.
-		/// </summary>
-		/// <param name="sender">The source of the event.</param>
-		/// <param name="e">The <see cref="MouseEventArgs"/> instance containing the event data.</param>
-		private void panel1_MouseMove(object sender, MouseEventArgs e)
-		{
-			panelOptions.Height = 30;
-		}
-
-		/// <summary>
 		/// Handles the MouseDown event of the panelOptions control.
 		/// </summary>
 		/// <param name="sender">The source of the event.</param>

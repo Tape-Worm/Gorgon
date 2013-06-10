@@ -631,7 +631,7 @@ namespace GorgonLibrary.Editor
 
 			// Add to the main interface.
 			Program.CurrentContent = content;
-			splitPanel1.Controls.Add(control);
+			control.Parent = splitPanel1;
 
 			// Activate the content.
 			content.Activate();
