@@ -143,9 +143,6 @@ namespace GorgonLibrary.Graphics
 
 			if (disposing)
 			{
-				// Remove us from the pipeline.
-				Graphics.Output.Unbind(this, DepthStencilBuffer);
-
 				// Remove link to a swap chain.
 				SwapChain = null;
 			}

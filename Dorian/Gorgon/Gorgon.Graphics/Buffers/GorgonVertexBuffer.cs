@@ -222,7 +222,7 @@ namespace GorgonLibrary.Graphics
         /// number of elements in the buffer.</exception>
         public GorgonBufferUnorderedAccessView CreateUnorderedAccessView(BufferFormat format, int startElement, int count, bool useRaw)
         {
-	        return OnCreateUnorderedAccessView(format, startElement, count, useRaw);
+	        return OnCreateUnorderedAccessView(format, startElement, count, useRaw, UnorderedAccessViewType.Standard);
         }
 		#endregion
 

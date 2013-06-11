@@ -339,11 +339,11 @@ namespace GorgonLibrary.Graphics
             {
                 return;
             }
-
-            // Unbind us from any shaders.
-            if (Settings.AllowShaderViews)
+            
+            if (_viewCache != null)
             {
-                Graphics.Shaders.UnbindResource(this);
+                _viewCache.Dispose();
+                _viewCache = null;
             }
 
 			if (IsRenderTarget)
@@ -443,6 +443,7 @@ namespace GorgonLibrary.Graphics
         /// <param name="start">First element to map to the view.</param>
         /// <param name="count">The number of elements to map to the view.</param>
         /// <param name="isRaw">TRUE if using a raw view to the buffer, FALSE if not.</param>
+        /// <param name="viewType">The type of view for a structured buffer.</param>
         /// <returns>A new unordered access view for the buffer.</returns>
         /// <remarks>Use this to create an unordered access view that will allow shaders to access the view using multiple threads at the same time.  Unlike a Shader View, only one 
         /// unordered access view can be bound to the pipeline at any given time.
@@ -459,7 +460,7 @@ namespace GorgonLibrary.Graphics
         /// </exception>
         /// <exception cref="System.ArgumentException">Thrown when the <paramref name="start"/> or <paramref name="count"/> parameters are less than 0 or greater than or equal to the 
         /// number of elements in the buffer.</exception>
-        protected GorgonBufferUnorderedAccessView OnCreateUnorderedAccessView(BufferFormat format, int start, int count, bool isRaw)
+        protected GorgonBufferUnorderedAccessView OnCreateUnorderedAccessView(BufferFormat format, int start, int count, bool isRaw, UnorderedAccessViewType viewType)
         {
             int elementCount;
 
@@ -516,17 +517,16 @@ namespace GorgonLibrary.Graphics
 	                                                      (elementCount - start)));
             }
 
-			if (!Graphics.VideoDevice.SupportsUnorderedAccessViewFormat(format))
-			{
-				throw new GorgonException(GorgonResult.CannotCreate,
-				                          string.Format(Resources.GORGFX_VIEW_FORMAT_NOT_SUPPORTED, format));
-			}
+            if (BufferType != BufferType.Structured)
+            {
+                if (!Graphics.VideoDevice.SupportsUnorderedAccessViewFormat(format))
+                {
+                    throw new GorgonException(GorgonResult.CannotCreate,
+                                              string.Format(Resources.GORGFX_VIEW_FORMAT_NOT_SUPPORTED, format));
+                }
+            }
 
-            var view = new GorgonBufferUnorderedAccessView(this, format, start, count, isRaw);
-
-            view.Initialize();
-
-            return view;
+            return (GorgonBufferUnorderedAccessView)_viewCache.GetUnorderedAccessView(format, start, count, 0, viewType, isRaw);
         }
 
         /// <summary>

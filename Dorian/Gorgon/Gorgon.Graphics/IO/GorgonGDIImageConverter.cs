@@ -211,6 +211,8 @@ namespace GorgonLibrary.IO
 		/// <para>Textures using an unordered access view can only use a typed (e.g. int, uint, float) format that belongs to the same group as the format assigned to the texture, 
 		/// or R32_UInt/Int/Float (but only if the texture format is 32 bit).  Any other format will raise an exception.  Note that if the format is not set to R32_UInt/Int/Float, 
 		/// then write-only access will be given to the UAV.</para> 
+		/// <para>If this value is set to TRUE, it will automatically change the format of the texture to the equivalent typeless format.  This is necessary because UAVs cannot be 
+		/// used with typed texture resources.</para>
 		/// <para>To check to see if a format is supported for UAV, use the <see cref="GorgonLibrary.Graphics.GorgonVideoDevice.SupportsUnorderedAccessViewFormat">GorgonVideoDevice.SupportsUnorderedAccessViewFormat</see> 
 		/// method to determine if the format is supported.</para>
 		/// <para>This property is for <see cref="GorgonLibrary.Graphics.GorgonTexture">textures</see> only, for <see cref="GorgonLibrary.Graphics.GorgonImageData">image data</see> it is ignored.</para>
@@ -377,7 +379,8 @@ namespace GorgonLibrary.IO
 				ArrayCount = 1,
 				Format = options.Format,
 				AllowUnorderedAccessViews = options.AllowUnorderedAccess,
-				ShaderViewFormat = options.ViewFormat
+                ShaderViewFormat = options.ViewFormat,
+                Usage = options.Usage
 			};
 
 			// Create our image data.
@@ -456,7 +459,8 @@ namespace GorgonLibrary.IO
 				ArrayCount = options.ArrayCount,
 				Format = options.Format,
 				AllowUnorderedAccessViews = options.AllowUnorderedAccess,
-				ShaderViewFormat = options.ViewFormat
+				ShaderViewFormat = options.ViewFormat,
+                Usage = options.Usage
 			};
 			
 			if ((options.ArrayCount * options.MipCount) > images.Count)
@@ -541,7 +545,8 @@ namespace GorgonLibrary.IO
 				ArrayCount = 1,
 				Format = options.Format,
 				AllowUnorderedAccessViews = options.AllowUnorderedAccess,
-				ShaderViewFormat = options.ViewFormat
+                ShaderViewFormat = options.ViewFormat,
+                Usage = options.Usage
 			};
 
             // Create our image data.
@@ -629,7 +634,8 @@ namespace GorgonLibrary.IO
 				ArrayCount = options.ArrayCount,
 				Format = options.Format,
 				AllowUnorderedAccessViews = options.AllowUnorderedAccess,
-				ShaderViewFormat = options.ViewFormat
+                ShaderViewFormat = options.ViewFormat,
+                Usage = options.Usage
 			};
 
 			if ((options.ArrayCount * options.MipCount) > images.Count)
@@ -734,7 +740,8 @@ namespace GorgonLibrary.IO
 				MipCount = options.MipCount,
 				Format = options.Format,
 				AllowUnorderedAccessViews = options.AllowUnorderedAccess,
-				ShaderViewFormat = options.ViewFormat
+                ShaderViewFormat = options.ViewFormat,
+                Usage = options.Usage
 			};
 
 			// Only volume textures that are size to a power of 2 can have mip maps.

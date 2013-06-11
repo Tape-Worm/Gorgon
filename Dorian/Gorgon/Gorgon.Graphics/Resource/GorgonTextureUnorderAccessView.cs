@@ -37,7 +37,7 @@ namespace GorgonLibrary.Graphics
 	/// have a format that is the same bit-depth and in the same group as its bound resource.</para>
 	/// <para>Unlike a <see cref="GorgonLibrary.Graphics.GorgonTextureShaderView">GorgonTextureShaderView</see>, only one unordered access view may be applied to a resource.</para>
 	/// </remarks>
-	public class GorgonTextureUnorderAccessView
+	public class GorgonTextureUnorderedAccessView
 		: GorgonUnorderedAccessView
 	{
 		#region Properties.
@@ -267,14 +267,14 @@ namespace GorgonLibrary.Graphics
 
 		#region Constructor/Destructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonTextureUnorderAccessView"/> class.
+		/// Initializes a new instance of the <see cref="GorgonTextureUnorderedAccessView"/> class.
 		/// </summary>
 		/// <param name="resource">The resource.</param>
 		/// <param name="format">The format.</param>
 		/// <param name="mipIndex">The first mip level.</param>
 		/// <param name="arrayIndex">Index of the array.</param>
 		/// <param name="arrayCount">The array count.</param>
-		internal GorgonTextureUnorderAccessView(GorgonResource resource, BufferFormat format, int mipIndex, 
+		internal GorgonTextureUnorderedAccessView(GorgonResource resource, BufferFormat format, int mipIndex, 
 		                                        int arrayIndex, int arrayCount)
 			: base(resource, format)
 		{

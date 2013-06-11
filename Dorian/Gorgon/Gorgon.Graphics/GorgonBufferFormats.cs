@@ -627,7 +627,7 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Information about a specific GorgonBufferFormat.
 		/// </summary>
-		public class GorgonFormatData
+		public class FormatData
 		{
 			#region Variables.
 			private int _sizeInBytes;
@@ -1288,7 +1288,7 @@ namespace GorgonLibrary.Graphics
 			/// <returns>The number of scan lines.</returns>
 			/// <remarks>
 			/// This will compute the number of scan lines for an image that uses the format that this information describes.  If the format is 
-			/// <see cref="P:GorgonLibrary.Graphics.GorgonBufferFormatInfo.GorgonFormatData.IsCompressed">compressed</see>, then this method will 
+			/// <see cref="P:GorgonLibrary.Graphics.GorgonBufferFormatInfo.FormatData.IsCompressed">compressed</see>, then this method will 
 			/// compute the scanline count based on the maximum size between 1 and a block size multiple of 4.  If the format is not compressed, 
 			/// then it will just return the height value passed in.
 			/// </remarks>
@@ -1300,10 +1300,10 @@ namespace GorgonLibrary.Graphics
 
 			#region Constructor/Destructor.
 			/// <summary>
-			/// Initializes a new instance of the <see cref="GorgonFormatData"/> class.
+			/// Initializes a new instance of the <see cref="FormatData"/> class.
 			/// </summary>
 			/// <param name="format">The format to evaluate.</param>
-			internal GorgonFormatData(BufferFormat format)
+			internal FormatData(BufferFormat format)
 			{
 				Format = format;
 				Group = BufferFormat.Unknown;
@@ -1319,7 +1319,7 @@ namespace GorgonLibrary.Graphics
 
 		#region Variables.
 	    private static int _syncInc;  
-		private static readonly IDictionary<BufferFormat, GorgonFormatData> _formats;
+		private static readonly IDictionary<BufferFormat, FormatData> _formats;
 		#endregion
 
 		#region Methods.
@@ -1339,7 +1339,7 @@ namespace GorgonLibrary.Graphics
 
 		        foreach (var format in formats)
 		        {
-		            _formats.Add(format, new GorgonFormatData(format));
+		            _formats.Add(format, new FormatData(format));
 		        }
 		    }
 		    finally
@@ -1353,7 +1353,7 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		/// <param name="format">Format to retrieve information about.</param>
 		/// <returns>The information for the format.  If the format is unknown, then the data for the Unknown GorgonBufferFormat will be returned.</returns>
-		public static GorgonFormatData GetInfo(BufferFormat format)
+		public static FormatData GetInfo(BufferFormat format)
 		{
 			return !_formats.ContainsKey(format) ? _formats[BufferFormat.Unknown] : _formats[format];
 		}
@@ -1366,7 +1366,7 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		static GorgonBufferFormatInfo()
 		{
-			_formats = new Dictionary<BufferFormat, GorgonFormatData>();
+			_formats = new Dictionary<BufferFormat, FormatData>();
 			GetFormatInfo();
 		}
 		#endregion

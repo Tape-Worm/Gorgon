@@ -200,7 +200,7 @@ namespace GorgonLibrary.Graphics
 		/// <para>-or-</para>
 		/// <para>Thrown if the bit count of the <paramref name="format"/> and the texture format are different, or if format is not in the R32 group and is not in the same group as the texture format.</para>
 		/// </exception>
-		public GorgonTextureUnorderAccessView CreateUnorderedAccessView(BufferFormat format, int mipStart, int arrayStart,
+		public GorgonTextureUnorderedAccessView CreateUnorderedAccessView(BufferFormat format, int mipStart, int arrayStart,
 		                                                                     int arrayCount)
 		{
 			return OnCreateUnorderedAccessView(format, mipStart, arrayStart, arrayCount);
@@ -230,7 +230,7 @@ namespace GorgonLibrary.Graphics
 		/// <para>-or-</para>
 		/// <para>Thrown if the bit count of the <paramref name="format"/> and the texture format are different, or if format is not in the R32 group and is not in the same group as the texture format.</para>
 		/// </exception>
-		public GorgonTextureUnorderAccessView CreateUnorderedAccessView(BufferFormat format, int mipStart)
+		public GorgonTextureUnorderedAccessView CreateUnorderedAccessView(BufferFormat format, int mipStart)
 		{
 			return OnCreateUnorderedAccessView(format, mipStart, 0, Settings.ArrayCount);
 		}
@@ -255,7 +255,7 @@ namespace GorgonLibrary.Graphics
 		/// </exception>
 		/// <exception cref="System.ArgumentException">Thrown if the bit count of the <paramref name="format"/> and the texture format are different, or if format is not in the R32 group and is not in the same group as the texture format.
 		/// </exception>
-		public GorgonTextureUnorderAccessView CreateUnorderedAccessView(BufferFormat format)
+		public GorgonTextureUnorderedAccessView CreateUnorderedAccessView(BufferFormat format)
 		{
 			return OnCreateUnorderedAccessView(format, 0, 0, Settings.ArrayCount);
 		}

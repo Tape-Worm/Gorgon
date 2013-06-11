@@ -295,20 +295,15 @@ namespace GorgonLibrary.Graphics.Test
 			/*var texture = _framework.Graphics.Textures.Create2DTextureFromGDIImage("Test", Properties.Resources.Glass, new GorgonGDIOptions
 				{
 					AllowUnorderedAccess = true,
-					Format = BufferFormat.R8G8B8A8,
+					//Format = BufferFormat.R8G8B8A8_UIntNormal,
 					ViewFormat = BufferFormat.R8G8B8A8_UIntNormal
 				});*/
-			var baseTexture = GorgonImageData.FromFile(@"D:\Code\Current\Gorgon\Branches\2.x\Dorian\Resources\D3D\Glass.png",
-			                                           new GorgonCodecPNG
-				                                           {
-					                                           Format = BufferFormat.R8G8B8A8_UIntNormal
-				                                           });
-			var newSettings = (GorgonTexture2DSettings)baseTexture.Settings;
-			newSettings.AllowUnorderedAccessViews = true;
-			newSettings.Format = BufferFormat.R8G8B8A8;
-			newSettings.ShaderViewFormat = BufferFormat.R8G8B8A8_UIntNormal;
+            var texture = _framework.Graphics.Textures.FromFile<GorgonTexture2D>("Test", @"..\..\..\..\Resources\D3D\Glass.png", new GorgonCodecPNG
+                {
+                    AllowUnorderedAccess = true,
+                    Format = BufferFormat.R8G8B8A8_UIntNormal
+                });
 
-			var texture = _framework.Graphics.Textures.CreateTexture<GorgonTexture2D>("Texture", baseTexture, newSettings);
 			var uav = texture.CreateUnorderedAccessView(BufferFormat.R32_UInt);
 			var uavShaderPS = _framework.Graphics.Shaders.CreateShader<GorgonPixelShader>("UAV", "TestUAV", uavOutputPS, true);
 
@@ -329,7 +324,8 @@ namespace GorgonLibrary.Graphics.Test
 						if (_framework.Graphics.Shaders.PixelShader.Resources.GetResource<GorgonTexture2D>(0) != texture)
 						{
 							//_framework.Graphics.Shaders.PixelShader.SetUnorderedAccessView(1, null);
-							_framework.Graphics.Shaders.PixelShader.SetUnorderedAccessViewTest(_framework.Screen, 1, null);
+							//_framework.Graphics.Shaders.PixelShader.SetUnorderedAccessViewTest(_framework.Screen, 1, null);
+                            _framework.Graphics.Output.SetRenderTarget(_framework.Screen);
 							_framework.Graphics.Shaders.PixelShader.Current = _framework.PixelShader;
 							_framework.Graphics.Shaders.PixelShader.Resources[0] = texture;
 							//firstStep = true;
@@ -337,7 +333,6 @@ namespace GorgonLibrary.Graphics.Test
 					}
 					else
 					{
-						_framework.Graphics.Output.SetRenderTarget(_framework.Screen);
 						_framework.Graphics.Shaders.PixelShader.Resources[0] = null;
 						_framework.Graphics.Shaders.PixelShader.Current = uavShaderPS;
 						_framework.Graphics.Shaders.PixelShader.SetUnorderedAccessView(1, uav);

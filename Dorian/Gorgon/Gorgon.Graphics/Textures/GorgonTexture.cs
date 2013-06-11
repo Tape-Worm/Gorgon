@@ -53,7 +53,7 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Property to return information about the format for the texture.
 		/// </summary>
-		public GorgonBufferFormatInfo.GorgonFormatData FormatInformation
+		public GorgonBufferFormatInfo.FormatData FormatInformation
 		{
 			get;
 			private set;
@@ -441,7 +441,7 @@ namespace GorgonLibrary.Graphics
 		/// <para>-or-</para>
 		/// <para>Thrown if the bit count of the <paramref name="format"/> and the texture format are different, or if format is not in the R32 group and is not in the same group as the texture format.</para>
 		/// </exception>
-		protected GorgonTextureUnorderAccessView OnCreateUnorderedAccessView(BufferFormat format, int mipStart, int arrayStart, int arrayCount)
+		protected GorgonTextureUnorderedAccessView OnCreateUnorderedAccessView(BufferFormat format, int mipStart, int arrayStart, int arrayCount)
 		{
 			if (Graphics.VideoDevice.SupportedFeatureLevel < DeviceFeatureLevel.SM5)
 			{
@@ -476,12 +476,13 @@ namespace GorgonLibrary.Graphics
 														format));
 			}
 
-			var view = new GorgonTextureUnorderAccessView(this, format, mipStart, arrayStart, arrayCount);
-			view.Initialize();
-			Graphics.AddTrackedObject(view);
-
-			return view;
-		}
+		    return (GorgonTextureUnorderedAccessView)_viewCache.GetUnorderedAccessView(format,
+		                                                                               mipStart,
+		                                                                               arrayStart,
+		                                                                               arrayCount,
+		                                                                               UnorderedAccessViewType.Standard,
+		                                                                               false);
+        }
 
 		/// <summary>
 		/// Function to clean up the resource object.
