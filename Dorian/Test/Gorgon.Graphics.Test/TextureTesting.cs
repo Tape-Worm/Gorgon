@@ -286,6 +286,67 @@ namespace GorgonLibrary.Graphics.Test
                 }
             }
         }
+
+		[TestMethod]
+		public void TestUAVPSBinding()
+		{
+			bool firstStep = true;
+			var uavOutputPS = Encoding.UTF8.GetString(Resources.UAVTexture);
+			/*var texture = _framework.Graphics.Textures.Create2DTextureFromGDIImage("Test", Properties.Resources.Glass, new GorgonGDIOptions
+				{
+					AllowUnorderedAccess = true,
+					Format = BufferFormat.R8G8B8A8,
+					ViewFormat = BufferFormat.R8G8B8A8_UIntNormal
+				});*/
+			var baseTexture = GorgonImageData.FromFile(@"D:\Code\Current\Gorgon\Branches\2.x\Dorian\Resources\D3D\Glass.png",
+			                                           new GorgonCodecPNG
+				                                           {
+					                                           Format = BufferFormat.R8G8B8A8_UIntNormal
+				                                           });
+			var newSettings = (GorgonTexture2DSettings)baseTexture.Settings;
+			newSettings.AllowUnorderedAccessViews = true;
+			newSettings.Format = BufferFormat.R8G8B8A8;
+			newSettings.ShaderViewFormat = BufferFormat.R8G8B8A8_UIntNormal;
+
+			var texture = _framework.Graphics.Textures.CreateTexture<GorgonTexture2D>("Texture", baseTexture, newSettings);
+			var uav = texture.CreateUnorderedAccessView(BufferFormat.R32_UInt);
+			var uavShaderPS = _framework.Graphics.Shaders.CreateShader<GorgonPixelShader>("UAV", "TestUAV", uavOutputPS, true);
+
+			var newRT = _framework.Graphics.Output.CreateRenderTarget2D("RT", new GorgonRenderTarget2DSettings
+				{
+					Width = 256,
+					Height = 256,
+					Format = BufferFormat.R8G8B8A8_UIntNormal
+				});
+
+			_framework.CreateTestScene(Shaders, uavOutputPS, true);
+			_framework.Graphics.Output.SetRenderTarget(newRT);
+
+			_framework.IdleFunc = () =>
+				{
+					if (!firstStep)
+					{
+						if (_framework.Graphics.Shaders.PixelShader.Resources.GetResource<GorgonTexture2D>(0) != texture)
+						{
+							//_framework.Graphics.Shaders.PixelShader.SetUnorderedAccessView(1, null);
+							_framework.Graphics.Shaders.PixelShader.SetUnorderedAccessViewTest(_framework.Screen, 1, null);
+							_framework.Graphics.Shaders.PixelShader.Current = _framework.PixelShader;
+							_framework.Graphics.Shaders.PixelShader.Resources[0] = texture;
+							//firstStep = true;
+						}
+					}
+					else
+					{
+						_framework.Graphics.Output.SetRenderTarget(_framework.Screen);
+						_framework.Graphics.Shaders.PixelShader.Resources[0] = null;
+						_framework.Graphics.Shaders.PixelShader.Current = uavShaderPS;
+						_framework.Graphics.Shaders.PixelShader.SetUnorderedAccessView(1, uav);
+						firstStep = false;
+					}
+				};
+
+			Assert.IsTrue(_framework.Run() == DialogResult.Yes);
+		}
         #endregion
     }
 }

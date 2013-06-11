@@ -89,14 +89,6 @@ namespace GorgonLibrary.Graphics
 				throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_VIEW_NO_TYPELESS);
 			}
 
-			if ((texture.Settings.Format != Format) && (texture.FormatInformation.Group != FormatInformation.Group))
-			{
-				throw new GorgonException(GorgonResult.CannotCreate,
-				                          string.Format(Resources.GORGFX_VIEW_FORMAT_GROUP_INVALID,
-				                                        texture.Settings.Format,
-				                                        Format));
-			}
-
 			if ((texture.Settings.IsTextureCube) || (texture.Settings.Multisampling.Count > 1) || (texture.Settings.Multisampling.Quality > 0))
 			{
 				throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_VIEW_UAV_NOT_SUPPORTED);
@@ -259,8 +251,6 @@ namespace GorgonLibrary.Graphics
 					{
 						DebugName = Resource.ResourceType + " '" + texture.Name + "' Unordered Access Resource View"
 					};
-
-				Resource.Graphics.AddTrackedObject(this);
 			}
 			catch (SharpDX.SharpDXException sDXEx)
 			{

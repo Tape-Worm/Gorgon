@@ -516,6 +516,12 @@ namespace GorgonLibrary.Graphics
 	                                                      (elementCount - start)));
             }
 
+			if (!Graphics.VideoDevice.SupportsUnorderedAccessViewFormat(format))
+			{
+				throw new GorgonException(GorgonResult.CannotCreate,
+				                          string.Format(Resources.GORGFX_VIEW_FORMAT_NOT_SUPPORTED, format));
+			}
+
             var view = new GorgonBufferUnorderedAccessView(this, format, start, count, isRaw);
 
             view.Initialize();
