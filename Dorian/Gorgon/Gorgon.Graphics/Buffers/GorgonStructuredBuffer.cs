@@ -133,36 +133,7 @@ namespace GorgonLibrary.Graphics
 		/// number of elements in the buffer.</exception>
 		public GorgonStructuredBufferUnorderedAccessView CreateUnorderedAccessView(int start, int count, UnorderedAccessViewType viewType)
 		{
-			if (Graphics.VideoDevice.SupportedFeatureLevel < DeviceFeatureLevel.SM5)
-			{
-				throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_REQUIRES_SM, "SM5"));
-			}
-
-			if (!Settings.AllowUnorderedAccessViews)
-			{
-				throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_VIEW_NO_SUPPORT, "GorgonUnorderedAccessView"));
-			}
-
-			if ((Settings.Usage == BufferUsage.Staging) || (Settings.Usage == BufferUsage.Dynamic))
-			{
-				throw new GorgonException(GorgonResult.CannotBind, Resources.GORGFX_VIEW_UNORDERED_NO_STAGING_DYNAMIC);
-			}
-
-			int elementCount = SizeInBytes / Settings.StructureSize;
-
-			if (((start + count) > elementCount)
-				|| (start < 0)
-				|| (count < 1))
-			{
-				throw new ArgumentException(string.Format(Resources.GORGFX_VIEW_ELEMENT_OUT_OF_RANGE, elementCount,
-														  (elementCount - start)));
-			}
-
-			var view = new GorgonStructuredBufferUnorderedAccessView(this, start, count, viewType);
-
-			view.Initialize();
-
-			return view;
+		    return (GorgonStructuredBufferUnorderedAccessView)OnCreateUnorderedAccessView(BufferFormat.Unknown, start, count, false, viewType);
 		}
 		#endregion
 

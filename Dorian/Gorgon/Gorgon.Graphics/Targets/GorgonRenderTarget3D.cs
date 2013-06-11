@@ -37,7 +37,6 @@ namespace GorgonLibrary.Graphics
 	{
 		#region Variables.
         private GorgonRenderTargetTextureView _defaultRenderTargetView;     // The default render target view for this render target.
-        private bool _disposed;				                                // Flag to indicate that the object was disposed.
         #endregion
 
 		#region Properties.
@@ -61,35 +60,6 @@ namespace GorgonLibrary.Graphics
 		#endregion
 
 		#region Methods.
-        /// <summary>
-        /// Function to create the depth/stencil buffer for the target.
-        /// </summary>
-        private void CreateDepthStencilBuffer()
-        {
-            // TODO: Implement this.
-        }
-
-        /// <summary>
-        /// Releases unmanaged and - optionally - managed resources.
-        /// </summary>
-        /// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
-        protected override void Dispose(bool disposing)
-        {
-            if (_disposed)
-            {
-                return;
-            }
-
-            if (disposing)
-            {
-                // Remove us from the pipeline.
-                Graphics.Output.Unbind(this, null);
-            }
-
-            base.Dispose(disposing);
-            _disposed = true;
-        }
-
         /// <summary>
         /// Function to clean up any internal resources.
         /// </summary>
@@ -138,8 +108,6 @@ namespace GorgonLibrary.Graphics
 
             GorgonRenderStatistics.RenderTargetCount++;
             GorgonRenderStatistics.RenderTargetSize += SizeInBytes;
-
-            CreateDepthStencilBuffer();
 
             // Set default viewport.
             Viewport = new GorgonViewport(0, 0, Settings.Width, 1.0f, 0.0f, 1.0f);

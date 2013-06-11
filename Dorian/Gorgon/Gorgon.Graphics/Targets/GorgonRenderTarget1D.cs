@@ -38,7 +38,6 @@ namespace GorgonLibrary.Graphics
 	{
 		#region Variables.
         private GorgonRenderTargetView _defaultRenderTargetView;    // The default render target view for this render target.
-        private bool _disposed;				                        // Flag to indicate that the object was disposed.
 	    #endregion
 
 		#region Properties.
@@ -109,27 +108,6 @@ namespace GorgonLibrary.Graphics
 			DepthStencilBuffer.Initialize(null);
 			DepthStencilBuffer.RenderTarget = this;
 		}
-
-        /// <summary>
-        /// Releases unmanaged and - optionally - managed resources.
-        /// </summary>
-        /// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
-        protected override void Dispose(bool disposing)
-        {
-            if (_disposed)
-            {
-                return;
-            }
-
-            if (disposing)
-            {
-                // Remove us from the pipeline.
-                Graphics.Output.Unbind(this, DepthStencilBuffer);
-            }
-
-            base.Dispose(disposing);
-            _disposed = true;
-        }
 
         /// <summary>
         /// Function to clean up any internal resources.

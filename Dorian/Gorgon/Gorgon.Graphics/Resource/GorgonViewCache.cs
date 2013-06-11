@@ -27,7 +27,7 @@
 using System;
 using System.Collections.Generic;
 using GorgonLibrary.Graphics.Properties;
-
+#error Add cached depth/stencil views.
 namespace GorgonLibrary.Graphics
 {
     /// <summary>
@@ -128,11 +128,12 @@ namespace GorgonLibrary.Graphics
         private static readonly object _syncLock = new object();								// Synchronization object for threading.
         // ReSharper restore StaticFieldInGenericType
 
-        private bool _disposed;																	// Flag to indicate that the object is disposed.
-        private readonly GorgonResource _resource;                                              // Resource bound to the SRVs.
-        private readonly Dictionary<ViewKey, GorgonBufferShaderView> _bufferViews;				// The cache of buffer views.
-        private readonly Dictionary<ViewKey, GorgonTextureShaderView> _textureViews;			// The cache of texture views.
-	    private readonly Dictionary<ViewKey, GorgonRenderTargetView> _targetViews;				// The cache of render target views.
+        private bool _disposed;																	 // Flag to indicate that the object is disposed.
+        private readonly GorgonResource _resource;                                               // Resource bound to the SRVs.
+        private readonly Dictionary<ViewKey, GorgonBufferShaderView> _bufferViews;				 // The cache of buffer views.
+        private readonly Dictionary<ViewKey, GorgonTextureShaderView> _textureViews;			 // The cache of texture views.
+	    private readonly Dictionary<ViewKey, GorgonRenderTargetView> _targetViews;				 // The cache of render target views.
+        private readonly Dictionary<ViewKey, GorgonUnorderedAccessView> _unorderedViews;         // The cache of unordered access views.
         #endregion
 
         #region Methods.
@@ -151,6 +152,11 @@ namespace GorgonLibrary.Graphics
 				item.Value.CleanUp();
 			}
 
+            foreach (var item in _unorderedViews)
+            {
+                item.Value.CleanUp();
+            }
+
 			foreach (var item in _targetViews)
 			{
 				item.Value.CleanUp();
@@ -159,7 +165,70 @@ namespace GorgonLibrary.Graphics
 			_bufferViews.Clear();
 			_textureViews.Clear();
 			_targetViews.Clear();
+            _unorderedViews.Clear();
 		}
+
+        /// <summary>
+        /// Function to create/retrieve an unordered access view in the cache.
+        /// </summary>
+        /// <param name="format">Format of the unordered access view.</param>
+        /// <param name="mipSliceElementStart">Mip slice for a texture, element start for a buffer.</param>
+        /// <param name="arrayIndexElementCount">Array index for a texture, element count for a buffer.</param>
+        /// <param name="arrayCount">Array count for a texture.</param>
+        /// <param name="viewType">View type for structured buffers.</param>
+        /// <param name="isRaw">TRUE for raw views, FALSE for normal.</param>
+        /// <returns>The cached unordered access view.</returns>
+        public GorgonUnorderedAccessView GetUnorderedAccessView(BufferFormat format,
+                                                                        int mipSliceElementStart,
+                                                                        int arrayIndexElementCount,
+                                                                        int arrayCount,
+                                                                        UnorderedAccessViewType viewType,
+                                                                        bool isRaw)
+        {
+            var key = new ViewKey(format, mipSliceElementStart, arrayIndexElementCount, arrayCount, ((int)viewType) + (isRaw ? 10 : 0));
+
+            lock (_syncLock)
+            {
+                GorgonUnorderedAccessView result;
+
+                if (!_unorderedViews.TryGetValue(key, out result))
+                {
+                    switch (_resource.ResourceType)
+                    {
+                        case ResourceType.Buffer:
+                            if (_resource is GorgonStructuredBuffer)
+                            {
+                                result = new GorgonStructuredBufferUnorderedAccessView(_resource,
+                                                                                       mipSliceElementStart,
+                                                                                       arrayIndexElementCount,
+                                                                                       viewType);
+                            }
+                            else
+                            {
+                                result = new GorgonBufferUnorderedAccessView(_resource, format, mipSliceElementStart, arrayIndexElementCount, isRaw);
+                            }
+                            break;
+                        case ResourceType.Texture1D:
+                        case ResourceType.Texture2D:
+                        case ResourceType.Texture3D:
+                            result = new GorgonTextureUnorderedAccessView(_resource, format, mipSliceElementStart, arrayIndexElementCount, arrayCount);
+                            break;
+                    }
+
+                    // This should never happen.
+                    if (result == null)
+                    {
+                        throw new GorgonException(GorgonResult.CannotCreate,
+                                                  string.Format(Resources.GORGFX_IMAGE_TYPE_INVALID, _resource.ResourceType));
+                    }
+
+                    result.Initialize();
+                    _unorderedViews.Add(key, result);
+                }
+
+                return result;
+            }
+        }
 
 		/// <summary>
 		/// Function to retrieve a render target view.
@@ -260,7 +329,7 @@ namespace GorgonLibrary.Graphics
         /// <returns>The cached buffer shader view.</returns>
         public GorgonBufferShaderView GetBufferView(BufferFormat format, int start, int count, bool isRaw)
         {
-            var key = new ViewKey(format, start, count, 0, 0);
+            var key = new ViewKey(format, start, count, Convert.ToInt32(isRaw), 0);
 
             lock(_syncLock)
             {
@@ -289,6 +358,7 @@ namespace GorgonLibrary.Graphics
             _bufferViews = new Dictionary<ViewKey, GorgonBufferShaderView>();
             _textureViews = new Dictionary<ViewKey, GorgonTextureShaderView>();
 			_targetViews = new Dictionary<ViewKey, GorgonRenderTargetView>();
+            _unorderedViews = new Dictionary<ViewKey, GorgonUnorderedAccessView>();
             _resource = resource;
         }
         #endregion

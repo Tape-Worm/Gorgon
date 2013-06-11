@@ -350,7 +350,7 @@ namespace GorgonLibrary.Graphics
 			}
 			else if (targetReseat)
 			{
-				Graphics.Output.BindTarget(0, _renderTarget);
+                Graphics.Output.SetRenderTarget(_renderTarget, Graphics.Output.DepthStencilView);
 			}
 		}
 

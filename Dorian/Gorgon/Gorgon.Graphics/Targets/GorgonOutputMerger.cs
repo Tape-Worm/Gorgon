@@ -44,6 +44,10 @@ namespace GorgonLibrary.Graphics
 		private D3D.RenderTargetView[] _D3DViews;
 		private GorgonRenderTargetView[] _targetViews;
 		private GorgonDepthStencilView _depthView;
+	    private GorgonUnorderedAccessView[] _uavViews;
+	    private D3D.UnorderedAccessView[] _d3dUAVViews;
+	    private int _uavStartSlot;
+	    private int[] _uavCounts;
 		#endregion
 
 		#region Properties.
@@ -276,6 +280,30 @@ namespace GorgonLibrary.Graphics
                 }
             }
         }
+
+        /// <summary>
+        /// Function to perform the actual binding of the targets, uavs and depth/stencil buffers.
+        /// </summary>
+        /// <param name="depthView">The Direct 3D depth/stencil view to set.</param>
+        private void SetTargets(D3D.DepthStencilView depthView)
+        {
+            // If we have no views to set, then get out.
+            if (((_D3DViews == null) || (_D3DViews.Length == 0))
+                && ((_d3dUAVViews == null) || (_d3dUAVViews.Length == 0)))
+            {
+                return;
+            }
+
+            // We have UAV views, so we need to use the proper function.
+            if ((_d3dUAVViews != null)
+                && (_d3dUAVViews.Length > 0))
+            {
+                _graphics.Context.OutputMerger.SetTargets(depthView, _uavStartSlot, _d3dUAVViews, _uavCounts, _D3DViews);
+                return;
+            }
+
+            _graphics.Context.OutputMerger.SetTargets(depthView, _D3DViews);
+        }
         
         /// <summary>
 	    /// Function to validate the settings for a render target.
@@ -422,36 +450,6 @@ namespace GorgonLibrary.Graphics
 				}
 			}
 		}
-		
-		/// <summary>
-		/// Function to unbind a target with the specified resource and the depth stencil.
-		/// </summary>
-		/// <param name="resource">Resource to look up.</param>
-		/// <param name="depthStencil">Depth/stencil to unbind.</param>
-		internal void Unbind(GorgonResource resource, GorgonDepthStencilView depthStencil)
-		{
-			if ((_targetViews == null) || (_targetViews.Length == 0))
-			{
-				return;
-			}
-
-			var indices =
-				_targetViews.Where(item => item != null && item.Resource == resource)
-				            .Select(item => Array.IndexOf(_targetViews, item))
-				            .Where(item => item != -1);
-
-			foreach (var index in indices)
-			{
-				_targetViews[index] = null;
-			}
-
-            if (depthStencil == _depthView)
-            {
-				_depthView = null;
-            }
-
-			SetRenderTargets(_targetViews, _depthView);
-		}
 
 		/// <summary>
 		/// Function to unbind a target view.
@@ -464,32 +462,36 @@ namespace GorgonLibrary.Graphics
 				return;
 			}
 
-			int index = Array.IndexOf(_targetViews, view);
+		    int index = Array.IndexOf(_targetViews, view);
 
-			if (index == -1)
-			{
-				return;
-			}
+            if (index == -1)
+            {
+                return;
+            }
 
-			_targetViews[index] = null;
-			SetRenderTargets(_targetViews, _depthView);
+		    _targetViews[index] = null;
+		    _D3DViews[index] = null;
+
+            SetTargets(_depthView == null ? null : _depthView.D3DView);
+
+		    // If all of the views are nulled out, then reset the arrays.
+		    if (_targetViews.Any(item => item != null))
+		    {
+		        return;
+		    }
+
+		    _D3DViews = null;
+		    _targetViews = null;
 		}
 
-		/// <summary>
-		/// Function to bind a target at a specific index.
-		/// </summary>
-		/// <param name="index">Index of the target to bind.</param>
-		/// <param name="view">View to bind.</param>
-		internal void BindTarget(int index, GorgonRenderTargetView view)
-		{
-			if ((_targetViews == null) || (index < 0) || (index >= _targetViews.Length))
-			{
-				return;
-			}
-
-			_targetViews[index] = view;
-			SetRenderTargets(_targetViews, _depthView);
-		}
+        /// <summary>
+        /// Function to unbind an unordered access view.
+        /// </summary>
+        /// <param name="view">Unordered access view to unbind.</param>
+        internal void Unbind(GorgonUnorderedAccessView view)
+        {
+            
+        }
 
         /// <summary>
         /// Function to unbind targets after the starting slot specified.
@@ -525,6 +527,14 @@ namespace GorgonLibrary.Graphics
 		        _D3DViews = null;
 		        _targetViews = null;
 	        }
+
+            // Unbind any unordered access views (assuming we didn't have a target bound).
+            if (_uavViews != null)
+            {
+                _graphics.Context.OutputMerger.SetUnorderedAccessViews(0, null);
+                _uavViews = null;
+                _uavCounts = null;
+            }
 
 			if (BlendingState != null)
 			{
@@ -569,6 +579,12 @@ namespace GorgonLibrary.Graphics
 		{
 			D3D.DepthStencilView depthView = depthStencilView == null ? null : depthStencilView.D3DView;
 
+            // Don't rebind the same target/depth/stencil.
+            if ((_targetViews != null) && (_targetViews.Length > 0) && (_targetViews[0] == view) && (depthStencilView == _depthView))
+            {
+                return;
+            }
+
 #if DEBUG
             ValidateRenderTargetBinding(view, 0);
 #endif
@@ -609,7 +625,7 @@ namespace GorgonLibrary.Graphics
             ValidateDepthBufferBinding(depthStencilView);
 #endif
 			_depthView = depthStencilView; 
-			_graphics.Context.OutputMerger.SetTargets(depthView, _D3DViews[0]);
+            SetTargets(depthView);
 		}
 
 		/// <summary>
@@ -619,24 +635,31 @@ namespace GorgonLibrary.Graphics
 		/// <param name="depthStencilBuffer">[Optional] Depth/stencil view to set.</param>
 		public void SetRenderTargets(GorgonRenderTargetView[] views, GorgonDepthStencilView depthStencilBuffer = null)
 		{
-			D3D.DepthStencilView depthView = depthStencilBuffer == null ? null : depthStencilBuffer.D3DView;
+		    D3D.DepthStencilView depthView = depthStencilBuffer == null ? null : depthStencilBuffer.D3DView;
 			_depthView = depthStencilBuffer;
 
 			// If we didn't pass any views, then unbind all the views.
 			if ((views == null) || (views.Length == 0))
 			{
-				_graphics.Context.OutputMerger.SetTargets(depthView, (D3D.RenderTargetView[])null);
-				_D3DViews = null;
-				_targetViews = null;
-				return;
+			    if ((_targetViews != null) && (_targetViews.Length != 0))
+			    {
+			        _graphics.Context.OutputMerger.SetTargets(depthView, (D3D.RenderTargetView[])null);
+			        _D3DViews = null;
+			        _targetViews = null;
+			    }
+
+			    return;
 			}
 
-            _targetViews = views;
+            // Have we changed the array structure or depth/stencil view?
+		    bool hasChanged = (_targetViews == null) || (_targetViews.Length != views.Length)
+		                      || (depthStencilBuffer != _depthView);
 
 			// Update the current view list.
 			if ((_D3DViews == null) || (views.Length != _D3DViews.Length))
 			{
 				_D3DViews = new D3D.RenderTargetView[views.Length];
+			    hasChanged = true;
 			}
 
 			// If we have more than one view to set, then blast them all out.
@@ -644,6 +667,12 @@ namespace GorgonLibrary.Graphics
 			{
 				var view = views[i];
 
+                // If the targets in the slots have not changed, then don't bother.
+                if ((!hasChanged) && (view == _targetViews[i]))
+                {
+                    continue;
+                }
+			    
 #if DEBUG
                 ValidateRenderTargetBinding(view, i);
 #endif
@@ -656,26 +685,35 @@ namespace GorgonLibrary.Graphics
 				{
 					_D3DViews[i] = null;
 				}
+
+                hasChanged = true;
 			}
+
+            // Do nothing if there's been no change.
+            if (!hasChanged)
+            {
+                return;
+            }
 
 #if DEBUG
             // Validate the depth/stencil buffer here because we need to have the current render target set before
             // evaluation.
             ValidateDepthBufferBinding(depthStencilBuffer);
 #endif
-			_graphics.Context.OutputMerger.SetTargets(depthView, _D3DViews);
-		}
+            _targetViews = views;
+            SetTargets(depthView);
+        }
 
 		/// <summary>
 		/// Function to retrieve the list of render targets.
 		/// </summary>
 		/// <returns>An array of render targets.</returns>
-		/// <remarks>This will return a copy of the internal render target list.  Use this method sparingly as it will generate garbage.</remarks>
+		/// <remarks>This will return a copy of the internal render target list.</remarks>
 		public GorgonRenderTargetView[] GetRenderTargets()
 		{
 			var result = new GorgonRenderTargetView[_targetViews == null ? 0 : _targetViews.Length];
 
-			if (_targetViews != null)
+			if ((_targetViews != null) && (_targetViews.Length > 0))
 			{
 				_targetViews.CopyTo(result, 0);
 			}
@@ -929,15 +967,6 @@ namespace GorgonLibrary.Graphics
 
 			return target;
 		}
-
-        /// <summary>
-        /// Function to bind a single unordered access view to the pipeline for pixel shaders.
-        /// </summary>
-        /// <param name="view"></param>
-        public void SetUnorderedAccessView(GorgonUnorderedAccessView view)
-        {
-            
-        }
 		#endregion
 
 		#region Constructor/Destructor.

@@ -506,7 +506,28 @@ namespace GorgonLibrary.Graphics
 
 			using (GorgonImageData data = GorgonImageData.Create1DFromGDIImage(image, options))
 			{
-				result = CreateTexture<GorgonTexture1D>(name, data);
+                GorgonTexture1DSettings settings = null;
+
+                // If we're using unordered access, then make the format typeless.
+                if (options.AllowUnorderedAccess)
+                {
+                    settings = (GorgonTexture1DSettings)data.Settings;
+
+                    var info = GorgonBufferFormatInfo.GetInfo(settings.Format);
+
+                    if (info.Group != BufferFormat.Unknown)
+                    {
+                        // Remap the shader view.
+                        if (settings.ShaderViewFormat == BufferFormat.Unknown)
+                        {
+                            settings.ShaderViewFormat = settings.Format;
+                        }
+
+                        settings.Format = info.Group;
+                    }
+                }
+
+				result = CreateTexture<GorgonTexture1D>(name, data, settings);
 			}
 
 			return result;
@@ -595,7 +616,28 @@ namespace GorgonLibrary.Graphics
 
 			using (GorgonImageData data = GorgonImageData.Create2DFromGDIImage(image, options))
 			{
-				result = CreateTexture<GorgonTexture2D>(name, data);
+                GorgonTexture2DSettings settings = null;
+
+                // If we're using unordered access, then make the format typeless.
+                if (options.AllowUnorderedAccess)
+                {
+                    settings = (GorgonTexture2DSettings)data.Settings;
+
+                    var info = GorgonBufferFormatInfo.GetInfo(settings.Format);
+
+                    if (info.Group != BufferFormat.Unknown)
+                    {
+                        // Remap the shader view.
+                        if (settings.ShaderViewFormat == BufferFormat.Unknown)
+                        {
+                            settings.ShaderViewFormat = settings.Format;
+                        }
+
+                        settings.Format = info.Group;
+                    }
+                }
+                
+                result = CreateTexture<GorgonTexture2D>(name, data, settings);
 			}
 
 			return result;
@@ -698,7 +740,28 @@ namespace GorgonLibrary.Graphics
 			
 			using (GorgonImageData data = GorgonImageData.Create1DFromGDIImage(images, options))
 			{
-				result = CreateTexture<GorgonTexture1D>(name, data);
+                GorgonTexture1DSettings settings = null;
+
+                // If we're using unordered access, then make the format typeless.
+                if (options.AllowUnorderedAccess)
+                {
+                    settings = (GorgonTexture1DSettings)data.Settings;
+
+                    var info = GorgonBufferFormatInfo.GetInfo(settings.Format);
+
+                    if (info.Group != BufferFormat.Unknown)
+                    {
+                        // Remap the shader view.
+                        if (settings.ShaderViewFormat == BufferFormat.Unknown)
+                        {
+                            settings.ShaderViewFormat = settings.Format;
+                        }
+
+                        settings.Format = info.Group;
+                    }
+                }
+
+                result = CreateTexture<GorgonTexture1D>(name, data, settings);
 			}
 
 			return result;
@@ -801,7 +864,28 @@ namespace GorgonLibrary.Graphics
 
 			using (GorgonImageData data = GorgonImageData.Create2DFromGDIImage(images, options))
 			{
-				result = CreateTexture<GorgonTexture2D>(name, data);
+			    GorgonTexture2DSettings settings = null;
+
+                // If we're using unordered access, then make the format typeless.
+                if (options.AllowUnorderedAccess)
+                {
+                    settings = (GorgonTexture2DSettings)data.Settings;
+
+                    var info = GorgonBufferFormatInfo.GetInfo(settings.Format);
+
+                    if (info.Group != BufferFormat.Unknown)
+                    {
+                        // Remap the shader view.
+                        if (settings.ShaderViewFormat == BufferFormat.Unknown)
+                        {
+                            settings.ShaderViewFormat = settings.Format;
+                        }
+
+                        settings.Format = info.Group;
+                    }
+                }
+
+                result = CreateTexture<GorgonTexture2D>(name, data, settings);
 			}
 
 			return result;
@@ -949,7 +1033,28 @@ namespace GorgonLibrary.Graphics
 
 			using (GorgonImageData data = GorgonImageData.Create3DFromGDIImage(images, options))
 			{
-				result = CreateTexture<GorgonTexture3D>(name, data);
+                GorgonTexture3DSettings settings = null;
+
+                // If we're using unordered access, then make the format typeless.
+                if (options.AllowUnorderedAccess)
+                {
+                    settings = (GorgonTexture3DSettings)data.Settings;
+
+                    var info = GorgonBufferFormatInfo.GetInfo(settings.Format);
+
+                    if (info.Group != BufferFormat.Unknown)
+                    {
+                        // Remap the shader view.
+                        if (settings.ShaderViewFormat == BufferFormat.Unknown)
+                        {
+                            settings.ShaderViewFormat = settings.Format;
+                        }
+
+                        settings.Format = info.Group;
+                    }
+                }
+                
+                result = CreateTexture<GorgonTexture3D>(name, data, settings);
 			}
 
 			return result;
@@ -1088,20 +1193,37 @@ namespace GorgonLibrary.Graphics
 				settings.ShaderViewFormat = codec.ViewFormat;
 				settings.AllowUnorderedAccessViews = codec.AllowUnorderedAccess;
 
+                // If we've opted for unordered access views, then make the current format typeless.
+                if (settings.AllowUnorderedAccessViews)
+                {
+                    var info = GorgonBufferFormatInfo.GetInfo(settings.Format);
+
+                    if (info.Group != BufferFormat.Unknown)
+                    {
+                        // Remap the shader view.
+                        if (settings.ShaderViewFormat == BufferFormat.Unknown)
+                        {
+                            settings.ShaderViewFormat = settings.Format;
+                        }
+
+                        settings.Format = info.Group;
+                    }
+                }
+
 				switch (settings.ImageType)
 				{
 					case ImageType.Image1D:
 						ValidateTexture1D(ref settings);
-						result = CreateTexture<GorgonTexture1D>(name, imageData) as T;
+						result = CreateTexture<GorgonTexture1D>(name, imageData, settings) as T;
 						break;
 					case ImageType.Image2D:
 					case ImageType.ImageCube:
 						ValidateTexture2D(ref settings);
-						result = CreateTexture<GorgonTexture2D>(name, imageData) as T;
+						result = CreateTexture<GorgonTexture2D>(name, imageData, settings) as T;
 						break;
 					case ImageType.Image3D:
 						ValidateTexture3D(ref settings);
-						result = CreateTexture<GorgonTexture3D>(name, imageData) as T;
+						result = CreateTexture<GorgonTexture3D>(name, imageData, settings) as T;
 						break;
 					default:
 						throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_IMAGE_TYPE_INVALID, settings.ImageType));

@@ -21,7 +21,7 @@ float4 TestUAV(PS_IN input) : SV_Target
 	float4 srcColor = float4((value & 0xFF)  / 255.0f, ((value >> 8) & 0xFF)  / 255.0f, ((value >> 16) & 0xFF)  / 255.0f, ((value >> 24) & 0xFF) / 255.0f);
 	float4 destColor = srcColor;
 	
-	destColor.b = destColor.g = destColor.r;	
+	destColor.b = destColor.g = destColor.r = (destColor.r + destColor.g + destColor.b) / 3.0f;
 
 	destColor.rgb *= (1.0f - 0.125f);
 	destColor.rgb += srcColor.rgb * 0.125f;

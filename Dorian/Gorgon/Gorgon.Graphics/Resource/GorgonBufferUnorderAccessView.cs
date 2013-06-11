@@ -92,8 +92,6 @@ namespace GorgonLibrary.Graphics
 				{
 					DebugName = "Gorgon Unordered Access View for " + Resource.Name
 				};
-
-			Resource.Graphics.AddTrackedObject(this);
 		}
 		#endregion
 

@@ -396,7 +396,14 @@ namespace GorgonLibrary.Graphics
         /// <remarks>This will return an array with all of the viewports bound to the pipeline.</remarks>
         public GorgonViewport[] GetViewports()
         {
-            return _viewPorts;
+            var result = new GorgonViewport[_viewPorts == null ? 0 : _viewPorts.Length];
+
+            if ((_viewPorts != null) && (_viewPorts.Length > 0))
+            {
+                _viewPorts.CopyTo(result, 0);
+            }
+
+            return result;
         }
 
 		/// <summary>
@@ -534,7 +541,15 @@ namespace GorgonLibrary.Graphics
 		/// <remarks>This will return a array of all scissor test rectangles currently bound to the pipeline.</remarks>
 		public Rectangle[] GetScissorRectangles()
 		{
-		    return _clipRects;
+		    var result = new Rectangle[_clipRects == null ? 0 : _clipRects.Length];
+
+            if ((_clipRects != null)
+                && (_clipRects.Length > 0))
+            {
+                _clipRects.CopyTo(result, 0);
+            }
+
+		    return result;
 		}
 
 		/// <summary>

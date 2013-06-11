@@ -33,7 +33,7 @@
 		/// <summary>
 		/// Property to return information about the view format.
 		/// </summary>
-		public GorgonBufferFormatInfo.GorgonFormatData FormatInformation
+		public GorgonBufferFormatInfo.FormatData FormatInformation
 		{
 			get;
 			private set;
