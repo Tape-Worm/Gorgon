@@ -457,20 +457,30 @@ namespace GorgonLibrary.Graphics
 			{
 				throw new GorgonException(GorgonResult.CannotCreate, "Cannot create an unordered access resource view for a texture that has a usage of Staging.");
 			}
+
+			if (!Graphics.VideoDevice.SupportsUnorderedAccessViewFormat(format))
+			{
+				throw new GorgonException(GorgonResult.CannotCreate,
+										  string.Format(Resources.GORGFX_VIEW_FORMAT_NOT_SUPPORTED, format));
+			}
 			
 			// Ensure the size of the data type fits the requested format.
 			var info = GorgonBufferFormatInfo.GetInfo(format);
 
-			if (((FormatInformation.Group != BufferFormat.R32) && (FormatInformation.Group != info.Group))
+			if (((info.Group != BufferFormat.R32) && (FormatInformation.Group != info.Group))
 				|| (info.SizeInBytes != FormatInformation.SizeInBytes))
 			{
 				throw new GorgonException(GorgonResult.CannotCreate,
-											"Cannot create the unordered access view.  The format [" + Settings.Format +
-											"[ and the view format [" + format +
-											"] are not part of the same group.");
+										  string.Format(Resources.GORGFX_VIEW_FORMAT_GROUP_INVALID,
+														Settings.Format,
+														format));
 			}
 
-			return new GorgonTextureUnorderAccessView(this, format, mipStart, arrayStart, arrayCount);
+			var view = new GorgonTextureUnorderAccessView(this, format, mipStart, arrayStart, arrayCount);
+			view.Initialize();
+			Graphics.AddTrackedObject(view);
+
+			return view;
 		}
 
 		/// <summary>

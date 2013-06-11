@@ -390,4 +390,7 @@
   <data name="GORGFX_VIEW_UNORDERED_CLEAR_NEED_4_VALUES" xml:space="preserve">
     <value>The array requires 4 elements to clear the unordered access view.</value>
   </data>
+  <data name="GORGFX_VIEW_FORMAT_NOT_SUPPORTED" xml:space="preserve">
+    <value>The format [{0}] is not valid for an unordered access view.</value>
+  </data>
 </root>

@@ -272,15 +272,15 @@ namespace GorgonLibrary.Graphics
 			}
 
 			if (settings.Width > MaxWidth)
-				throw new GorgonException(GorgonResult.CannotCreate, "The texture width must be less than " + MaxWidth.ToString() + ".");
+				throw new GorgonException(GorgonResult.CannotCreate, "The texture width must be less than " + MaxWidth + ".");
 			if (settings.Height > MaxHeight)
-				throw new GorgonException(GorgonResult.CannotCreate, "The texture height must be less than " + MaxHeight.ToString() + ".");
+				throw new GorgonException(GorgonResult.CannotCreate, "The texture height must be less than " + MaxHeight + ".");
 			if (settings.Depth > MaxDepth)
-				throw new GorgonException(GorgonResult.CannotCreate, "The texture depth must be less than " + MaxDepth.ToString() + ".");
+				throw new GorgonException(GorgonResult.CannotCreate, "The texture depth must be less than " + MaxDepth + ".");
 
 			// Check the format to see if it's available on this device.
 			if (!_graphics.VideoDevice.Supports3DTextureFormat(settings.Format))
-				throw new GorgonException(GorgonResult.CannotCreate, "Cannot create the texture.  The format '" + settings.Format.ToString() + "' is not supported by the hardware.");
+				throw new GorgonException(GorgonResult.CannotCreate, "Cannot create the texture.  The format '" + settings.Format + "' is not supported by the hardware.");
 		}
 
 		/// <summary>
@@ -361,13 +361,13 @@ namespace GorgonLibrary.Graphics
             }
 
 			if (settings.Width > MaxWidth)
-				throw new GorgonException(GorgonResult.CannotCreate, "The texture width must be less than " + MaxWidth.ToString() + ".");
+				throw new GorgonException(GorgonResult.CannotCreate, "The texture width must be less than " + MaxWidth + ".");
 			if (settings.Height > MaxHeight)
-				throw new GorgonException(GorgonResult.CannotCreate, "The texture height must be less than " + MaxHeight.ToString() + ".");
+				throw new GorgonException(GorgonResult.CannotCreate, "The texture height must be less than " + MaxHeight + ".");
 
 			// Check the format to see if it's available on this device.
 			if (!_graphics.VideoDevice.Supports2DTextureFormat(settings.Format))
-				throw new GorgonException(GorgonResult.CannotCreate, "Cannot create the texture.  The format '" + settings.Format.ToString() + "' is not supported by the hardware.");			
+				throw new GorgonException(GorgonResult.CannotCreate, "Cannot create the texture.  The format '" + settings.Format + "' is not supported by the hardware.");			
 		}
 
 		/// <summary>
@@ -416,11 +416,11 @@ namespace GorgonLibrary.Graphics
             }
 
 			if (settings.Width > MaxWidth)
-				throw new GorgonException(GorgonResult.CannotCreate, "The texture width must be less than " + MaxWidth.ToString() + ".");
+				throw new GorgonException(GorgonResult.CannotCreate, "The texture width must be less than " + MaxWidth + ".");
 
 			// Check the format to see if it's available on this device.
 			if (!_graphics.VideoDevice.Supports1DTextureFormat(settings.Format))
-				throw new GorgonException(GorgonResult.CannotCreate, "Cannot create the texture.  The format '" + settings.Format.ToString() + "' is not supported by the hardware.");
+				throw new GorgonException(GorgonResult.CannotCreate, "Cannot create the texture.  The format '" + settings.Format + "' is not supported by the hardware.");
 		}
 
 		/// <summary>
@@ -1077,12 +1077,11 @@ namespace GorgonLibrary.Graphics
 		public T FromStream<T>(string name, Stream stream, int length, GorgonImageCodec codec)
 			where T : GorgonTexture
 		{
-			ITextureSettings settings = null;
-			T result = null;
+			T result;
 
 			using (GorgonImageData imageData = GorgonImageData.FromStream(stream, length, codec))
 			{
-				settings = GetTextureSettings(imageData.Settings);
+				ITextureSettings settings = GetTextureSettings(imageData.Settings);
 
 				// Apply texture specific settings from the codec.
 				settings.Usage = codec.Usage;
@@ -1286,6 +1285,7 @@ namespace GorgonLibrary.Graphics
 		/// <typeparam name="T">Type of texture to create.</typeparam>
 		/// <param name="name">Name of the texture.</param>
 		/// <param name="data">Data used to initialize the texture.</param>
+		/// <param name="settingsOverride">[Optional] Texture settings that override the settings from the image.</param>
 		/// <returns>A new texture.</returns>
 		/// <remarks>This will create a new texture from the image data specified.
 		/// <para>The texture settings width, height, depth, mip count, array count, and format will use the settings from the <paramref name="data"/> parameter.</para>
@@ -1299,11 +1299,10 @@ namespace GorgonLibrary.Graphics
 		/// <para>-or-</para>
 		/// <para>Thrown when the texture format isn't supported by the hardware.</para>
 		/// </exception>
-		public T CreateTexture<T>(string name, GorgonImageData data)
+		public T CreateTexture<T>(string name, GorgonImageData data, ITextureSettings settingsOverride = null)
 			where T : GorgonTexture
 		{
-			ITextureSettings settings = null;
-			Type type = typeof(T);
+			ITextureSettings settings;
 			T texture = null;
 
 			if (name == null)
@@ -1327,7 +1326,7 @@ namespace GorgonLibrary.Graphics
 			}
 
 			// Get the settings from the image data.
-			settings = GetTextureSettings(data.Settings);
+			settings = settingsOverride == null ? GetTextureSettings(data.Settings) : GetTextureSettings(settingsOverride);
 
 			switch (settings.ImageType)
 			{

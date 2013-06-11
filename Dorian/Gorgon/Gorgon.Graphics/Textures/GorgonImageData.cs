@@ -2023,9 +2023,11 @@ namespace GorgonLibrary.Graphics
 			}
 
             // Just apply directly if we're already using a data stream.
-            if (stream is GorgonDataStream)
+			var gorgonDataStream = stream as GorgonDataStream;
+
+			if (gorgonDataStream != null)
             {
-                return codec.LoadFromStream((GorgonDataStream)stream, size);
+                return codec.LoadFromStream(gorgonDataStream, size);
             }
 
             // Load the data into unmanaged memory.

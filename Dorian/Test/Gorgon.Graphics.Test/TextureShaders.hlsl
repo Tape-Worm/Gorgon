@@ -27,6 +27,7 @@ PS_IN TestVS( VS_IN input )
 	return output;
 }
 
+
 float4 TestPS( PS_IN input ) : SV_Target
 {
 	float4 pixel = _texture.Load(int3((int)(input.uv.x * 256), (int)(input.uv.y * 256), 0));
