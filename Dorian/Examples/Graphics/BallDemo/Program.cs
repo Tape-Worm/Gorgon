@@ -358,7 +358,7 @@ namespace GorgonLibrary.Graphics.Example
 			_ball.Anchor = new Vector2(32, 32);
 
 			// Create the ball render target.
-			_ballTarget = _graphics.Output.CreateRenderTarget2D("BallTarget", new GorgonRenderTarget2DSettings
+			_ballTarget = _graphics.Output.CreateRenderTarget("BallTarget", new GorgonRenderTarget2DSettings
 			    {
 				DepthStencilFormat = BufferFormat.Unknown,
 				Width = 512,
@@ -379,7 +379,7 @@ namespace GorgonLibrary.Graphics.Example
 			_form.Resize += _form_Resize;
 
 			// Create statistics render target.
-			_statsTarget = _graphics.Output.CreateRenderTarget2D("Statistics", new GorgonRenderTarget2DSettings
+			_statsTarget = _graphics.Output.CreateRenderTarget("Statistics", new GorgonRenderTarget2DSettings
 			{
 				Width = 140,
 				Height = 66,

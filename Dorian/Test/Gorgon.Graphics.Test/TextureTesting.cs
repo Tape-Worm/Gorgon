@@ -307,7 +307,7 @@ namespace GorgonLibrary.Graphics.Test
 			var uav = texture.CreateUnorderedAccessView(BufferFormat.R32_UInt);
 			var uavShaderPS = _framework.Graphics.Shaders.CreateShader<GorgonPixelShader>("UAV", "TestUAV", uavOutputPS, true);
 
-			var newRT = _framework.Graphics.Output.CreateRenderTarget2D("RT", new GorgonRenderTarget2DSettings
+			var newRT = _framework.Graphics.Output.CreateRenderTarget("RT", new GorgonRenderTarget2DSettings
 				{
 					Width = 256,
 					Height = 256,

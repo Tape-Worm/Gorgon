@@ -27,6 +27,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using GorgonLibrary.IO;
 using GorgonLibrary.Math;
 using GorgonLibrary.Diagnostics;
 using GorgonLibrary.Graphics.Properties;
@@ -325,7 +326,7 @@ namespace GorgonLibrary.Graphics
             }
 
             // We have UAV views, so we need to use the proper function.
-            if ((_D3DUnorderedViews != null) && (_D3DUnorderedViews.Length > 0) && (_uavStartSlot > -1))
+            if ((_graphics.VideoDevice.SupportedFeatureLevel >= DeviceFeatureLevel.SM5) && (_D3DUnorderedViews != null) && (_D3DUnorderedViews.Length > 0) && (_uavStartSlot > -1))
             {
                 if ((_unorderedViews != null) && (_unorderedViews.Length != 0))
                 {
@@ -518,10 +519,48 @@ namespace GorgonLibrary.Graphics
                 }
             }
         }
+
+        /// <summary>
+        /// Function to validate the settings for a render target.
+        /// </summary>
+        /// <param name="settings">Settings to validate.</param>
+        private void ValidateRenderTargetSettings(GorgonRenderTargetBufferSettings settings)
+        {
+            if (settings.RenderTargetType != RenderTargetType.Buffer)
+            {
+                throw new GorgonException(GorgonResult.CannotCreate, "Cannot use 1D, 2D or 3D settings for buffer render targets.");
+            }
+
+            if (_graphics.VideoDevice == null)
+            {
+                throw new GorgonException(GorgonResult.CannotCreate,
+                                          "Cannot create the render target, no video device was selected.");
+            }
+
+            // Ensure the dimensions are valid.
+            if (settings.SizeInBytes <= 4)
+            {
+                throw new GorgonException(GorgonResult.CannotCreate,
+                                          "Render target must have a size of 4 or more bytes.");
+            }
+
+            if (settings.Format == BufferFormat.Unknown)
+            {
+                throw new GorgonException(GorgonResult.CannotCreate, "Render target must have a known buffer format.");
+            }
+
+            // Ensure that the selected video format can be used.
+            if (!_graphics.VideoDevice.SupportsRenderTargetFormat(settings.Format, false))
+            {
+                throw new GorgonException(GorgonResult.CannotCreate, "Cannot use the format '" + settings.Format
+                                            + "' for a render target on the video device '" + _graphics.VideoDevice.Name + "'.");
+            }
+        }
         
         /// <summary>
 	    /// Function to validate the settings for a render target.
 	    /// </summary>
+        /// <param name="settings">Settings to validate.</param>
 	    internal void ValidateRenderTargetSettings(IRenderTargetTextureSettings settings)
         {
             if (settings.RenderTargetType == RenderTargetType.Buffer)
@@ -634,6 +673,17 @@ namespace GorgonLibrary.Graphics
 			}
 			else
 			{
+                if (_graphics.VideoDevice.SupportedFeatureLevel < DeviceFeatureLevel.SM4)
+                {
+                    throw new GorgonException(GorgonResult.CannotCreate, "Depth/stencil buffers cannot be bound to the shader pipeline with video devices that don't support SM4 or better.");
+                }
+
+                if ((_graphics.VideoDevice.SupportedFeatureLevel < DeviceFeatureLevel.SM4_1)
+                    && ((settings.Multisampling.Count > 1) || (settings.Multisampling.Quality > 0)))
+                {
+                    throw new GorgonException(GorgonResult.CannotCreate, "Multisampled Depth/stencil buffers cannot be bound to the shader pipeline if the video device does not support SM4_1 or better.");
+                }
+
 				if (settings.TextureFormat == BufferFormat.Unknown)
 				{
 					throw new GorgonException(GorgonResult.CannotCreate, "The texture format must not be Unknown.");
@@ -650,17 +700,6 @@ namespace GorgonLibrary.Graphics
 				{
 					throw new ArgumentException("Video device '" + _graphics.VideoDevice.Name + "' does not support '"
 												+ settings.TextureFormat + "' as texture format for the depth buffer.");
-				}
-
-				if (_graphics.VideoDevice.SupportedFeatureLevel < DeviceFeatureLevel.SM4)
-				{
-					throw new GorgonException(GorgonResult.CannotCreate, "Depth/stencil buffers cannot be bound to the shader pipeline with video devices that don't support SM4 or better.");
-				}
-
-				if ((_graphics.VideoDevice.SupportedFeatureLevel < DeviceFeatureLevel.SM4_1)
-					&& ((settings.Multisampling.Count > 1) || (settings.Multisampling.Quality > 0)))
-				{
-					throw new GorgonException(GorgonResult.CannotCreate, "Multisampled Depth/stencil buffers cannot be bound to the shader pipeline if the video device does not support SM4_1 or better.");
 				}
 			}
 		}
@@ -921,6 +960,11 @@ namespace GorgonLibrary.Graphics
             if ((unorderedAccessViews != null) && (unorderedAccessViews.Length > 0))
             {
 #if DEBUG
+                if (_graphics.VideoDevice.SupportedFeatureLevel < DeviceFeatureLevel.SM5)
+                {
+                    throw new GorgonException(GorgonResult.CannotBind, string.Format(Resources.GORGFX_REQUIRES_SM, DeviceFeatureLevel.SM5));
+                }
+
                 if ((view != null) && (unorderedAccessViews.Length + 1 > MaxRenderTargetViewSlots))
                 {
                     throw new ArgumentException(string.Format(Resources.GORGFX_RTV_TOO_MANY, MaxRenderTargetViewSlots));
@@ -1024,6 +1068,11 @@ namespace GorgonLibrary.Graphics
             if ((unorderedAccessViews != null) && (unorderedAccessViews.Length > 0))
             {
 #if DEBUG
+                if (_graphics.VideoDevice.SupportedFeatureLevel < DeviceFeatureLevel.SM5)
+                {
+                    throw new GorgonException(GorgonResult.CannotBind, string.Format(Resources.GORGFX_REQUIRES_SM, DeviceFeatureLevel.SM5));    
+                }
+
                 if ((views != null) && (views.Length + unorderedAccessViews.Length > MaxRenderTargetViewSlots))
                 {
                     throw new ArgumentException(string.Format(Resources.GORGFX_RTV_TOO_MANY, MaxRenderTargetViewSlots));
@@ -1178,8 +1227,10 @@ namespace GorgonLibrary.Graphics
 		public void DrawAuto()
 		{
 #if DEBUG
-			if (_graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM2_a_b)
-				throw new GorgonException(GorgonResult.AccessDenied, "SM 2.0 video devices cannot draw auto-generated data.");
+            if (_graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM2_a_b)
+            {
+                throw new GorgonException(GorgonResult.CannotBind, string.Format(Resources.GORGFX_REQUIRES_SM, DeviceFeatureLevel.SM2_a_b));
+            }
 #endif
 			GorgonRenderStatistics.DrawCallCount++;
 			_graphics.Context.DrawAuto();
@@ -1239,10 +1290,10 @@ namespace GorgonLibrary.Graphics
 			GorgonDebug.AssertNull(buffer, "buffer");
 
 #if DEBUG
-			if (_graphics.VideoDevice.SupportedFeatureLevel < DeviceFeatureLevel.SM5)
-			{
-				throw new InvalidOperationException("Cannot call DrawInstancedIndirect without a SM5 or better video device.");
-			}
+            if (_graphics.VideoDevice.SupportedFeatureLevel < DeviceFeatureLevel.SM5)
+            {
+                throw new GorgonException(GorgonResult.CannotBind, string.Format(Resources.GORGFX_REQUIRES_SM, DeviceFeatureLevel.SM5));
+            }
 
 			if (!buffer.Settings.AllowIndirectArguments)
 			{
@@ -1257,7 +1308,7 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
-		/// Function to create a depth/stencil buffer.
+		/// Function to create a 2D depth/stencil buffer.
 		/// </summary>
 		/// <param name="name">Name of the depth/stencil buffer.</param>
 		/// <param name="settings">Settings to apply to the depth/stencil buffer.</param>
@@ -1267,16 +1318,21 @@ namespace GorgonLibrary.Graphics
 		/// <para>-or-</para>
 		/// <para>Thrown when the <paramref name="settings"/> parameter is NULL (Nothing in VB.Net).</para>
 		/// </exception>
-		/// <exception cref="System.ArgumentException">Thrown when the name parameter is an empty string.
-		/// <para>-or-</para>
-		/// <para>Thrown when the <see cref="P:GorgonLibrary.Graphics.GorgonDepthStencilSettings.Format">GorgonDepthStencilSettings.Format</see> property is set to Unknown or is unsupported.</para>
-		/// </exception>
+		/// <exception cref="System.ArgumentException">Thrown when the name parameter is an empty string.</exception>
+		/// <exception cref="GorgonLibrary.GorgonException">Thrown when the depth/stencil buffer could not be created.</exception>
 		/// <remarks>
-		/// A depth buffer may be paired with a swapchain or render target through its DepthStencil property.  When pairing the depth/stencil to the render target, Ensure that the depth/stencil buffer width, height and multisample settings match that of the render target that it is paired with.
-		/// <para>The texture for a depth/stencil may be used in a shader for cards that have a feature level of SM_4_1 or better, and can be set to do so by setting the <see cref="P:GorgonLibrary.Graphics.GorgonDepthStencilSettings.TextureFormat">GorgonDepthStencilSettings.TextureFormat</see> property to a typeless format. 
-		/// If this is attempted on a video device that has a feature level of SM_4_0 or below, then an exception will be raised.</para>
+		/// A depth buffer or its corresponding view(s) may set by assigning it to the <see cref="GorgonLibrary.Graphics.GorgonOutputMerger.DepthStencilView">DepthStencilView</see> property.   
+		/// <para>The texture for a depth/stencil may be used in a shader for cards that have a feature level of SM_4_0 or better to allow for reading of the depth/stencil.
+        /// To achieve this, create the depth/stencil with <see cref="P:GorgonLibrary.Graphics.GorgonDepthStencil2DSettings.AllowShaderView">GorgonDepthStencilSettings.AllowShaderView</see> set to TRUE, and 
+        /// give the <see cref="P:GorgonLibrary.Graphics.GorgonDepthStencil2DSettings.TextureFormat">GorgonDepthStencilSettings.TextureFormat</see> property a typeless format that matches the size, in bytes, 
+        /// of the depth/stencil format (e.g. a depth buffer with D32_Float as its format, could use a texture format of R32).  This is required because a depth/stencil format can't be used in a shader view.
+        /// </para>
+        /// <para>A <see cref="GorgonLibrary.Graphics.GorgonDepthStencilView">depth/stencil view</see> can be bound in read-only mode to the depth/stencil and the shader view if the current video device has 
+        /// a feature level of SM5 or better. To set this up, create the depth/stencil view by setting the flags parameter appropriately.</para>
+		/// <para>Binding to a shader view requires video device that has a feature level of SM_4_0 or below.  If the depth/stencil is multisampled, then a feature level of SM4_1 is required.</para>
+		/// <para></para>
 		/// </remarks>
-		public GorgonDepthStencil2D CreateDepthStencil2D(string name, GorgonDepthStencil2DSettings settings, GorgonImageData initialData = null)
+		public GorgonDepthStencil2D CreateDepthStencil(string name, GorgonDepthStencil2DSettings settings, GorgonImageData initialData = null)
 		{
 			if (name == null)
             {
@@ -1302,7 +1358,58 @@ namespace GorgonLibrary.Graphics
 			return depthBuffer;
 		}
 
-		/// <summary>
+        /// <summary>
+        /// Function to create a 1D depth/stencil buffer.
+        /// </summary>
+        /// <param name="name">Name of the depth/stencil buffer.</param>
+        /// <param name="settings">Settings to apply to the depth/stencil buffer.</param>
+        /// <param name="initialData">[Optional] Data used to initialize the depth buffer.</param>
+        /// <returns>A new depth/stencil buffer.</returns>
+        /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (Nothing in VB.Net).
+        /// <para>-or-</para>
+        /// <para>Thrown when the <paramref name="settings"/> parameter is NULL (Nothing in VB.Net).</para>
+        /// </exception>
+        /// <exception cref="System.ArgumentException">Thrown when the name parameter is an empty string.</exception>
+        /// <exception cref="GorgonLibrary.GorgonException">Thrown when the depth/stencil buffer could not be created.</exception>
+        /// <remarks>
+        /// A depth buffer or its corresponding view(s) may set by assigning it to the <see cref="GorgonLibrary.Graphics.GorgonOutputMerger.DepthStencilView">DepthStencilView</see> property.   
+        /// <para>The texture for a depth/stencil may be used in a shader for cards that have a feature level of SM_4_0 or better to allow for reading of the depth/stencil.
+        /// To achieve this, create the depth/stencil with <see cref="P:GorgonLibrary.Graphics.GorgonDepthStencil1DSettings.AllowShaderView">GorgonDepthStencilSettings.AllowShaderView</see> set to TRUE, and 
+        /// give the <see cref="P:GorgonLibrary.Graphics.GorgonDepthStencil1DSettings.TextureFormat">GorgonDepthStencilSettings.TextureFormat</see> property a typeless format that matches the size, in bytes, 
+        /// of the depth/stencil format (e.g. a depth buffer with D32_Float as its format, could use a texture format of R32).  This is required because a depth/stencil format can't be used in a shader view.
+        /// </para>
+        /// <para>A <see cref="GorgonLibrary.Graphics.GorgonDepthStencilView">depth/stencil view</see> can be bound in read-only mode to the depth/stencil and the shader view if the current video device has 
+        /// a feature level of SM5 or better. To set this up, create the depth/stencil view by setting the flags parameter appropriately.</para>
+        /// <para>Binding to a shader view requires video device that has a feature level of SM_4_0 or below.  If the depth/stencil is multisampled, then a feature level of SM4_1 is required.</para>
+        /// <para></para>
+        /// </remarks>
+        public GorgonDepthStencil1D CreateDepthStencil(string name, GorgonDepthStencil1DSettings settings, GorgonImageData initialData = null)
+        {
+            if (name == null)
+            {
+                throw new ArgumentNullException("name");
+            }
+
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                throw new ArgumentException(Resources.GORGFX_PARAMETER_MUST_NOT_BE_EMPTY, "name");
+            }
+
+            if (settings == null)
+            {
+                throw new ArgumentNullException("settings");
+            }
+
+            ValidateDepthStencilSettings(settings);
+
+            var depthBuffer = new GorgonDepthStencil1D(_graphics, name, settings);
+            _graphics.AddTrackedObject(depthBuffer);
+            depthBuffer.Initialize(initialData);
+
+            return depthBuffer;
+        }
+        
+        /// <summary>
 		/// Function to create a swap chain.
 		/// </summary>
 		/// <param name="name">Name of the swap chain.</param>
@@ -1359,15 +1466,100 @@ namespace GorgonLibrary.Graphics
 			return swapChain;
 		}
 
+        /// <summary>
+        /// Function to create a buffer render target.
+        /// </summary>
+        /// <param name="name">Name of the render target.</param>
+        /// <param name="settings">Settings for the render target.</param>
+        /// <param name="initialData">[Optional] Data used to initialize the underlying buffer.</param>
+        /// <returns>A new render target object.</returns>
+        /// <remarks>This allows graphics data to be rendered to a <see cref="GorgonLibrary.Graphics.GorgonBuffer">buffer</see>.</remarks>
+        /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (Nothing in VB.Net).</exception>
+        /// <exception cref="System.ArgumentException">Thrown when the name parameter is an empty string.</exception>
+        /// <exception cref="GorgonLibrary.GorgonException">Thrown when there is no <see cref="P:GorgonLibrary.Graphics.GorgonGraphics.VideoDevice">video device present on the graphics interface</see>.
+        /// <para>-or-</para>
+        /// <para>Thrown when the <see cref="P:GorgonLibrary.Graphics.GorgonRenderTargetBufferSettings.SizeInBytes">SizeInBytes</see> property is less than 4.</para>
+        /// <para>-or-</para>
+        /// <para>Thrown when the <see cref="P:GorgonLibrary.Graphics.GorgonRenderTargetBufferSettings.Format">Format</see> property is unknown or is not a supported render target format.</para>
+        /// </exception>
+        public GorgonRenderTargetBuffer CreateRenderTarget(string name, GorgonRenderTargetBufferSettings settings, GorgonDataStream initialData = null)
+        {
+            if (name == null)
+            {
+                throw new ArgumentNullException("name");
+            }
+
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                throw new ArgumentException(Resources.GORGFX_PARAMETER_MUST_NOT_BE_EMPTY, "name");
+            }
+
+            if (settings == null)
+            {
+                throw new ArgumentNullException("settings");
+            }
+
+            ValidateRenderTargetSettings(settings);
+
+            var target = new GorgonRenderTargetBuffer(_graphics, name, settings);
+
+            _graphics.AddTrackedObject(target);
+            target.Initialize(initialData);
+
+            return target;
+        }
+
+        /// <summary>
+        /// Function to create a 1D render target.
+        /// </summary>
+        /// <param name="name">Name of the render target.</param>
+        /// <param name="settings">Settings for the render target.</param>
+        /// <param name="initialData">[Optional] Image data used to initialize the render target.</param>
+        /// <returns>A new render target object.</returns>
+        /// <remarks>This allows graphics data to be rendered on to a <see cref="GorgonLibrary.Graphics.GorgonTexture1D">1D texture</see>.</remarks>
+        /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (Nothing in VB.Net).</exception>
+        /// <exception cref="System.ArgumentException">Thrown when the name parameter is an empty string.</exception>
+        /// <exception cref="GorgonLibrary.GorgonException">Thrown when there is no <see cref="P:GorgonLibrary.Graphics.GorgonGraphics.VideoDevice">video device present on the graphics interface</see>.
+        /// <para>-or-</para>
+        /// <para>Thrown when the Width value is 0 or greater than the maximum size for a texture that a video device can support.</para>
+        /// <para>-or-</para>
+        /// <para>Thrown when the Format is unknown or is not a supported render target format.</para>
+        /// </exception>
+        public GorgonRenderTarget1D CreateRenderTarget(string name, GorgonRenderTarget1DSettings settings, GorgonImageData initialData = null)
+        {
+            if (name == null)
+            {
+                throw new ArgumentNullException("name");
+            }
+
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                throw new ArgumentException(Resources.GORGFX_PARAMETER_MUST_NOT_BE_EMPTY, "name");
+            }
+
+            if (settings == null)
+            {
+                throw new ArgumentNullException("settings");
+            }
+
+            ValidateRenderTargetSettings(settings);
+
+            var target = new GorgonRenderTarget1D(_graphics, name, settings);
+
+            _graphics.AddTrackedObject(target);
+            target.Initialize(initialData);
+
+            return target;
+        }
+
 		/// <summary>
-		/// Function to create a render target.
+		/// Function to create a 2D render target.
 		/// </summary>
 		/// <param name="name">Name of the render target.</param>
 		/// <param name="settings">Settings for the render target.</param>
 		/// <param name="initialData">[Optional] Image data used to initialize the render target.</param>
 		/// <returns>A new render target object.</returns>
-		/// <remarks>This allows graphics data to be rendered on to a <see cref="GorgonLibrary.Graphics.GorgonTexture">texture (either 1D, 2D or 3D)</see> or a <see cref="GorgonLibrary.Graphics.GorgonBuffer">Buffer</see>.
-		/// <para>Unlike the <see cref="GorgonLibrary.Graphics.GorgonSwapChain">GorgonSwapChain</see> object (which is also a render target), no defaults will be set for the <paramref name="settings"/> except multisampling, and DepthFormat (defaults to Unknown).</para>
+		/// <remarks>This allows graphics data to be rendered on to a <see cref="GorgonLibrary.Graphics.GorgonTexture2D">2D texture</see>.
 		/// <para>If the multisampling quality in the <see cref="GorgonLibrary.Graphics.GorgonRenderTarget2DSettings.Multisampling">GorgonRenderTarget2D.Multisampling.Quality</see> property is higher than what the video device can support, an exception will be raised.  To determine 
 		/// what the maximum quality for the sample count for the video device should be, call the <see cref="GorgonLibrary.Graphics.GorgonVideoDevice.GetMultiSampleQuality">GorgonVideoDevice.GetMultiSampleQuality</see> method.</para>
 		/// </remarks>
@@ -1375,13 +1567,14 @@ namespace GorgonLibrary.Graphics
 		/// <exception cref="System.ArgumentException">Thrown when the name parameter is an empty string.</exception>
 		/// <exception cref="GorgonLibrary.GorgonException">Thrown when there is no <see cref="P:GorgonLibrary.Graphics.GorgonGraphics.VideoDevice">video device present on the graphics interface</see>.
 		/// <para>-or-</para>
-		/// <para>Thrown when the <see cref="P:GorgonLibrary.Graphics.GorgonRenderTarget2DSettings.Width">Width</see> or <see cref="P:GorgonLibrary.Graphics.GorgonRenderTarget2DSettings.Width">Height</see> property is 0 or greater than the maximum size for a texture that a video device can support.</para>
-		/// <para>-or-</para>
-		/// <para>Thrown when the <see cref="P:GorgonLibrary.Graphics.GorgonRenderTarget2DSettings.Format">Format</see> property is unknown or is not a supported render target format.</para>
-		/// <para>-or-</para>
+        /// <para>-or-</para>
+        /// <para>Thrown when the Width or Height values are 0 or greater than the maximum size for a texture that a video device can support.</para>
+        /// <para>-or-</para>
+        /// <para>Thrown when the Format is unknown or is not a supported render target format.</para>
+        /// <para>-or-</para>
 		/// <para>Thrown when the <see cref="P:GorgonLibrary.Graphics.GorgonRenderTarget2DSettings.Multisampling">GorgonRenderTarget2DSettings.Multisampling.Quality</see> property is less than 0 or not less than the value returned by <see cref="M:GorgonLibrary.Graphics.GorgonVideoDevice">GorgonVideoDevice.GetMultiSampleQuality</see>.</para>
 		/// </exception>
-		public GorgonRenderTarget2D CreateRenderTarget2D(string name, GorgonRenderTarget2DSettings settings, GorgonImageData initialData = null)
+		public GorgonRenderTarget2D CreateRenderTarget(string name, GorgonRenderTarget2DSettings settings, GorgonImageData initialData = null)
 		{
 			if (name == null)
             {
@@ -1407,7 +1600,50 @@ namespace GorgonLibrary.Graphics
 
 			return target;
 		}
-		#endregion
+
+        /// <summary>
+        /// Function to create a 3D render target.
+        /// </summary>
+        /// <param name="name">Name of the render target.</param>
+        /// <param name="settings">Settings for the render target.</param>
+        /// <param name="initialData">[Optional] Image data used to initialize the render target.</param>
+        /// <returns>A new render target object.</returns>
+        /// <remarks>This allows graphics data to be rendered on to a <see cref="GorgonLibrary.Graphics.GorgonTexture3D">3D texture</see>.</remarks>
+        /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (Nothing in VB.Net).</exception>
+        /// <exception cref="System.ArgumentException">Thrown when the name parameter is an empty string.</exception>
+        /// <exception cref="GorgonLibrary.GorgonException">Thrown when there is no <see cref="P:GorgonLibrary.Graphics.GorgonGraphics.VideoDevice">video device present on the graphics interface</see>.
+        /// <para>-or-</para>
+        /// <para>Thrown when the Width, Height or Depth values is 0 or greater than the maximum size for a texture that a video device can support.</para>
+        /// <para>-or-</para>
+        /// <para>Thrown when the Format is unknown or is not a supported render target format.</para>
+        /// </exception>
+        public GorgonRenderTarget3D CreateRenderTarget(string name, GorgonRenderTarget3DSettings settings, GorgonImageData initialData = null)
+        {
+            if (name == null)
+            {
+                throw new ArgumentNullException("name");
+            }
+
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                throw new ArgumentException(Resources.GORGFX_PARAMETER_MUST_NOT_BE_EMPTY, "name");
+            }
+
+            if (settings == null)
+            {
+                throw new ArgumentNullException("settings");
+            }
+
+            ValidateRenderTargetSettings(settings);
+
+            var target = new GorgonRenderTarget3D(_graphics, name, settings);
+
+            _graphics.AddTrackedObject(target);
+            target.Initialize(initialData);
+
+            return target;
+        }
+        #endregion
 
 		#region Constructor/Destructor.
 		/// <summary>
