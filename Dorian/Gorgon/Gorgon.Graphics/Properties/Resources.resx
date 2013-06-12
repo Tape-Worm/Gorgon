@@ -393,4 +393,16 @@
   <data name="GORGFX_VIEW_FORMAT_NOT_SUPPORTED" xml:space="preserve">
     <value>The format [{0}] is not valid for an unordered access view.</value>
   </data>
+  <data name="GORGFX_RTV_TOO_MANY" xml:space="preserve">
+    <value>Cannot have more than [{0}] render target views + unordered access views.</value>
+  </data>
+  <data name="GORGFX_UAV_SLOT_OUT_OF_RANGE" xml:space="preserve">
+    <value>The starting unordered access view slot must be between 0 and 7.</value>
+  </data>
+  <data name="GORGFX_UAV_TOO_MANY" xml:space="preserve">
+    <value>The starting slot [{0}] + the number of views [{1}] is greater than the maximum number of slots [8].</value>
+  </data>
+  <data name="GORGFX_VIEW_RESOURCE_ALREADY_BOUND" xml:space="preserve">
+    <value>This view has a resource '{0}' that is already bound with a {2} at index [{1}].</value>
+  </data>
 </root>

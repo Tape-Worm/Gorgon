@@ -44,9 +44,9 @@ namespace GorgonLibrary.Graphics
 		private D3D.RenderTargetView[] _D3DViews;
 		private GorgonRenderTargetView[] _targetViews;
 		private GorgonDepthStencilView _depthView;
-	    private GorgonUnorderedAccessView[] _uavViews;
-	    private D3D.UnorderedAccessView[] _d3dUAVViews;
-	    private int _uavStartSlot;
+	    private GorgonUnorderedAccessView[] _unorderedViews;
+	    private D3D.UnorderedAccessView[] _D3DUnorderedViews;
+	    private int _uavStartSlot = -1;
 	    private int[] _uavCounts;
 		#endregion
 
@@ -216,6 +216,36 @@ namespace GorgonLibrary.Graphics
                     throw new GorgonException(GorgonResult.CannotBind, string.Format(Resources.GORGFX_RTV_ALREADY_BOUND, view.Resource.Name, i));
                 }
 
+                if (target.Resource == view.Resource)
+                {
+                    throw new GorgonException(GorgonResult.CannotBind,
+                                              string.Format(Resources.GORGFX_VIEW_RESOURCE_ALREADY_BOUND,
+                                                            view.Resource.Name,
+                                                            i,
+                                                            view.GetType().FullName));
+                }
+
+                // Ensure the unordered access views and resource views don't have the same resource bound.
+                if ((_unorderedViews != null) && (_unorderedViews.Length > 0))
+                {
+                    for (int j = 0; j < _unorderedViews.Length; j++)
+                    {
+                        if (_unorderedViews[j] == null)
+                        {
+                            continue;
+                        }
+
+                        if (_unorderedViews[j].Resource == view.Resource)
+                        {
+                            throw new GorgonException(GorgonResult.CannotBind,
+                                                      string.Format(Resources.GORGFX_VIEW_RESOURCE_ALREADY_BOUND,
+                                                                    view.Resource.Name,
+                                                                    j,
+                                                                    typeof(GorgonUnorderedAccessView).FullName));
+                        }
+                    }
+                }
+
                 if ((_graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM2_a_b)
                     && (target.Format != view.Format)
                     && (GorgonBufferFormatInfo.GetInfo(target.Format).BitDepth != GorgonBufferFormatInfo.GetInfo(view.Format).BitDepth))
@@ -289,20 +319,204 @@ namespace GorgonLibrary.Graphics
         {
             // If we have no views to set, then get out.
             if (((_D3DViews == null) || (_D3DViews.Length == 0))
-                && ((_d3dUAVViews == null) || (_d3dUAVViews.Length == 0)))
+                && ((_D3DUnorderedViews == null) || (_D3DUnorderedViews.Length == 0)))
             {
                 return;
             }
 
             // We have UAV views, so we need to use the proper function.
-            if ((_d3dUAVViews != null)
-                && (_d3dUAVViews.Length > 0))
+            if ((_D3DUnorderedViews != null) && (_D3DUnorderedViews.Length > 0) && (_uavStartSlot > -1))
             {
-                _graphics.Context.OutputMerger.SetTargets(depthView, _uavStartSlot, _d3dUAVViews, _uavCounts, _D3DViews);
-                return;
+                if ((_unorderedViews != null) && (_unorderedViews.Length != 0))
+                {
+                    _graphics.Context.OutputMerger.SetTargets(depthView,
+                                                              _uavStartSlot,
+                                                              _D3DUnorderedViews,
+                                                              _uavCounts,
+                                                              _D3DViews);
+                    return;
+                }
+
+                _graphics.Context.OutputMerger.SetUnorderedAccessViews(0, _D3DUnorderedViews);
+                _uavCounts = null;
+                _uavStartSlot = -1;
             }
 
             _graphics.Context.OutputMerger.SetTargets(depthView, _D3DViews);
+        }
+
+        /// <summary>
+        /// Function to perform the binding of unordered access views.
+        /// </summary>
+        /// <param name="startSlot">Starting slot for the unordered access views.</param>
+        /// <param name="views">Views to bind.</param>
+        /// <returns>TRUE if the UAV bindings have changed, FALSE if not.</returns>
+        private bool BindUnorderedAccessViews(int startSlot, GorgonUnorderedAccessView[] views)
+        {
+            bool hasChanged = false;
+
+#if DEBUG
+            if ((startSlot < 0) || (startSlot >= 8))
+            {
+                throw new ArgumentOutOfRangeException("startSlot", Resources.GORGFX_UAV_SLOT_OUT_OF_RANGE);
+            }
+
+            if (views.Length > 8)
+            {
+                throw new ArgumentException(string.Format(Resources.GORGFX_RTV_TOO_MANY, MaxRenderTargetViewSlots));
+            }
+
+            if (startSlot + views.Length > 8)
+            {
+                throw new ArgumentException(string.Format(Resources.GORGFX_UAV_TOO_MANY, startSlot, views.Length));
+            }
+#endif
+            _uavStartSlot = startSlot;
+
+            // Allocate the arrays.
+            if ((_unorderedViews == null) || (_unorderedViews.Length != views.Length))
+            {
+                _unorderedViews = new GorgonUnorderedAccessView[views.Length];
+                _D3DUnorderedViews = new D3D.UnorderedAccessView[_unorderedViews.Length];
+                _uavCounts = new int[_unorderedViews.Length];
+                hasChanged = true;
+            }
+
+            // If we only have a single view, then only bind the first view.
+            if ((views.Length == 1) && (views[0] != _unorderedViews[0]))
+            {
+                var view = views[0];
+
+#if DEBUG
+                ValidateUnorderedAccessViewBinding(view, 0);
+#endif
+
+                var structView = view as GorgonStructuredBufferUnorderedAccessView;
+
+                _unorderedViews[0] = view;
+
+                if (structView != null)
+                {
+                    _uavCounts[0] = structView.InitialCount;
+                }
+                else
+                {
+                    _uavCounts[0] = -1;
+                }
+
+                _D3DUnorderedViews[0] = view.D3DView;
+
+                // Ensure this view is not bound to another part of the pipeline.
+                if (view != null)
+                {
+                    _graphics.Shaders.UnbindResource(view.Resource);
+                }
+
+                return true;
+            }
+
+            // Copy views.
+            for (int i = 0; i < views.Length; i++)
+            {
+                var view = views[i];
+
+                if (view == _unorderedViews[i])
+                {
+                    continue;
+                }
+
+#if DEBUG
+                ValidateUnorderedAccessViewBinding(view, i);
+#endif
+
+                if (view == null)
+                {
+                    _unorderedViews[i] = null;
+                    _uavCounts[i] = -1;
+                    _D3DUnorderedViews[i] = null;
+                }
+                else
+                {
+                    var structView = view as GorgonStructuredBufferUnorderedAccessView;
+
+                    if (structView != null)
+                    {
+                        _uavCounts[i] = structView.InitialCount;
+                    }
+                    else
+                    {
+                        _uavCounts[i] = -1;
+                    }
+
+                    _unorderedViews[i] = view;
+                    _D3DUnorderedViews[i] = view.D3DView;
+
+                    // Ensure this view is not bound to another part of the pipeline.
+                    _graphics.Shaders.UnbindResource(view.Resource);
+                }
+
+                hasChanged = true;
+            }
+
+            return hasChanged;
+        }
+
+        /// <summary>
+        /// Function to validate an unordered access view binding.
+        /// </summary>
+        /// <param name="view">Unordered access view to evaluate.</param>
+        /// <param name="slot">Slot for the view.</param>
+        private void ValidateUnorderedAccessViewBinding(GorgonUnorderedAccessView view, int slot)
+        {
+            if ((view == null) || (_unorderedViews == null) || (_unorderedViews.Length == 0))
+            {
+                return;
+            }
+
+            for (int i = 0; i < _unorderedViews.Length; i++)
+            {
+                var otherView = _unorderedViews[i];
+
+                if ((slot != i) || (otherView == null))
+                {
+                    continue;
+                }
+
+                if (otherView == view)
+                {
+                    throw new GorgonException(GorgonResult.CannotBind, string.Format(Resources.GORGFX_VIEW_ALREADY_BOUND, i));
+                }
+
+                if (otherView.Resource == view.Resource)
+                {
+                    throw new GorgonException(GorgonResult.CannotBind,
+                                              string.Format(Resources.GORGFX_VIEW_RESOURCE_ALREADY_BOUND,
+                                                            view.Resource.Name,
+                                                            i,
+                                                            view.GetType().FullName));
+                }
+
+                // Ensure the unordered access views and resource views don't have the same resource bound.
+                if ((_targetViews != null) && (_targetViews.Length > 0))
+                {
+                    for (int j = 0; j < _targetViews.Length; j++)
+                    {
+                        if (_targetViews[j] == null)
+                        {
+                            continue;
+                        }
+
+                        if (_targetViews[j].Resource == view.Resource)
+                        {
+                            throw new GorgonException(GorgonResult.CannotBind,
+                                                      string.Format(Resources.GORGFX_VIEW_RESOURCE_ALREADY_BOUND,
+                                                                    view.Resource.Name,
+                                                                    j,
+                                                                    typeof(GorgonRenderTargetView).FullName));
+                        }
+                    }
+                }
+            }
         }
         
         /// <summary>
@@ -490,7 +704,39 @@ namespace GorgonLibrary.Graphics
         /// <param name="view">Unordered access view to unbind.</param>
         internal void Unbind(GorgonUnorderedAccessView view)
         {
-            
+            if ((_unorderedViews == null) || (_unorderedViews.Length == 0))
+            {
+                return;
+            }
+
+            int index = Array.IndexOf(_unorderedViews, view);
+
+            if (index == -1)
+            {
+                return;
+            }
+
+            _unorderedViews[index] = null;
+            _D3DUnorderedViews[index] = null;
+            _uavCounts[index] = -1;
+
+            SetTargets(_depthView == null ? null : _depthView.D3DView);
+
+            if (_unorderedViews.Any(item => item != null))
+            {
+                // Update the starting slot.
+                if (index == _uavStartSlot)
+                {
+                    _uavStartSlot = Array.IndexOf(_unorderedViews, _unorderedViews.First(item => item != null));
+                }
+
+                return;
+            }
+
+            _unorderedViews = null;
+            _uavCounts = null;
+            _D3DUnorderedViews = null;
+            _uavStartSlot = -1;
         }
 
         /// <summary>
@@ -529,12 +775,15 @@ namespace GorgonLibrary.Graphics
 	        }
 
             // Unbind any unordered access views (assuming we didn't have a target bound).
-            if (_uavViews != null)
+            if ((_D3DUnorderedViews != null) && (_uavStartSlot != -1))
             {
-                _graphics.Context.OutputMerger.SetUnorderedAccessViews(0, null);
-                _uavViews = null;
+                _graphics.Context.OutputMerger.SetUnorderedAccessViews(_uavStartSlot, _D3DUnorderedViews);
+                _unorderedViews = null;
                 _uavCounts = null;
+                _D3DUnorderedViews = null;
             }
+
+            _uavStartSlot = -1;
 
 			if (BlendingState != null)
 			{
@@ -549,6 +798,26 @@ namespace GorgonLibrary.Graphics
 			BlendingState = null;
 			DepthStencilState = null;
 		}
+
+        /// <summary>
+        /// Function to retrieve an unordered access view bound at the specified index.
+        /// </summary>
+        /// <param name="index">The index of the view to retrieve.</param>
+        /// <returns>The view at the index, or NULL if not view was bound at the index.</returns>
+        public GorgonUnorderedAccessView GetUnorderedAccessView(int index)
+        {
+            if (_unorderedViews == null)
+            {
+                return null;
+            }
+
+            if ((index >= 0) && (index < _unorderedViews.Length))
+            {
+                return _unorderedViews[index];
+            }
+
+            return null;
+        }
 
 		/// <summary>
 		/// Function to retrieve a view bound at the specified index.
@@ -570,17 +839,113 @@ namespace GorgonLibrary.Graphics
 			return null;
 		}
 
+        /// <summary>
+        /// Function to bind a an array of unordered access views to the pipeline at the specified render target slot.
+        /// </summary>
+        /// <param name="startSlot">Starting slot to bind at.</param>
+        /// <param name="views">Unordered access views to bind.</param>
+        /// <remarks>This will bind multiple unordered access views (or a single view) to the pipeline.  This function will preserve any render targets that are already bound before the <paramref name="startSlot"/>.
+        /// <para>Unordered access views may be bound with the render target to give access to read/write resources in a pixel shader.  These views must be set at the same time as the 
+        /// render targets because UAVs occupy the same slots as render target views.  This means that any slots including and after the <paramref name="startSlot"/> 
+        /// will unbind any existing render targets.  This also means that the number unordered access views must not be greater than 8.</para>
+        /// <para>Setting the <paramref name="views"/> parameter to NULL or empty will set unbind all the current unordered access views.</para>
+        /// <para>A video device with a feature level of SM5 or better is required in order to use the unordered access views.</para>
+        /// </remarks>
+        /// <exception cref="System.ArgumentOutOfRangeException">Thrown when then <paramref name="startSlot"/> is less than 0, or greater than 8.</exception>
+        /// <exception cref="System.ArgumentException">Thrown when the number of <paramref name="views"/> is greater than 8.</exception>
+        /// <exception cref="GorgonLibrary.GorgonException">
+        /// Thrown when the current video device feature level is not SM5 or better.
+        /// <para>-or-</para>
+        /// <para>Thrown when the render target view, depth/stencil view, or the unordered access views could not be bound to the pipeline.</para></exception>
+        public void SetUnorderedAccessViews(int startSlot, params GorgonUnorderedAccessView[] views)
+        {
+            bool hasChanged = false;
+
+            if ((views != null)
+                && (views.Length > 0))
+            {
+                hasChanged = BindUnorderedAccessViews(startSlot, views);
+
+                // Unbind any render targets that occupy the same slots.
+                if (hasChanged)
+                {
+                    UnbindSlots(startSlot);    
+                }
+            }
+            else
+            {
+                if (_unorderedViews != null)
+                {
+                    _unorderedViews = null;
+                    hasChanged = true;
+                }
+            }
+
+            if (!hasChanged)
+            {
+                return;
+            }
+
+            SetTargets(_depthView == null ? null : _depthView.D3DView);
+        }
+
 		/// <summary>
 		/// Function to bind a a single render target view and a depth/stencil view to the pipeline.
 		/// </summary>
 		/// <param name="view">Render target view to set.</param>
 		/// <param name="depthStencilView">[Optional] Depth/stencil view to set.</param>
-		public void SetRenderTarget(GorgonRenderTargetView view, GorgonDepthStencilView depthStencilView = null)
+        /// <param name="startSlot">[Optional] The starting slot for the unordered access views.</param>
+        /// <param name="unorderedAccessViews">[Optional] Unordered access views to bind to the current pixel shader.</param>
+        /// <remarks>This will bind a single render target to the pipeline.  A render target is one of the GorgonRenderTargetViews, GorgonRenderTarget types (Buffer, Texture1D/2D/3D) or 
+        /// a <see cref="GorgonLibrary.Graphics.GorgonSwapChain">GorgonSwapChain</see>. The latter types are all convertable to a <see cref="GorgonLibrary.Graphics.GorgonRenderTargetView">GorgonRenderTargetView</see>.
+        /// <para>When binding, ensure that all the render targets match the dimensions, format, array count and mip level count of the render target views that are already bound to the pipeline.  This 
+        /// applies to the depth/stencil buffer as well.</para>
+        /// <para>Unordered access views may be bound with the render target to give access to read/write resources in a pixel shader.  These views must be set at the same time as the 
+        /// render targets because UAVs occupy the same slots as render target views.  This means that any slots including and after the <paramref name="startSlot"/> 
+        /// will unbind any existing render targets.  This also means that the total number of render target views and unordered access views must not be greater than 8.</para>
+        /// <para>A video device with a feature level of SM5 or better is required in order to use the unordered access views.</para>
+        /// </remarks>
+        /// <exception cref="System.ArgumentOutOfRangeException">Thrown when then <paramref name="startSlot"/> is less than 0, or greater than 8.</exception>
+        /// <exception cref="System.ArgumentException">Thrown when the number of render target views plus the number of <paramref name="unorderedAccessViews"/> are greater than 8 (or 4 render targets on a 
+        /// video device with a feature level of SM2_a_b, UAVs are not supported).</exception>
+        /// <exception cref="GorgonLibrary.GorgonException">
+        /// Thrown when the <paramref name="unorderedAccessViews"/> parameter is non NULL (and has 1 or more elements), and the video device feature level is not SM5 or better.
+        /// <para>-or-</para>
+        /// <para>Thrown when the render target view, depth/stencil view, or the unordered access views could not be bound to the pipeline.</para></exception>
+        public void SetRenderTarget(GorgonRenderTargetView view, GorgonDepthStencilView depthStencilView = null, int startSlot = 1, params GorgonUnorderedAccessView[] unorderedAccessViews)
 		{
+		    bool uavsChanged = false;
 			D3D.DepthStencilView depthView = depthStencilView == null ? null : depthStencilView.D3DView;
 
+            // Set up UAVs for binding.
+            if ((unorderedAccessViews != null) && (unorderedAccessViews.Length > 0))
+            {
+#if DEBUG
+                if ((view != null) && (unorderedAccessViews.Length + 1 > MaxRenderTargetViewSlots))
+                {
+                    throw new ArgumentException(string.Format(Resources.GORGFX_RTV_TOO_MANY, MaxRenderTargetViewSlots));
+                }
+#endif
+
+                uavsChanged = BindUnorderedAccessViews(startSlot, unorderedAccessViews);
+            }
+            else
+            {
+                _unorderedViews = null;
+
+                // Reset all the views.
+                if (_D3DUnorderedViews != null)
+                {
+                    for (int i = 0; i < _D3DUnorderedViews.Length; i++)
+                    {
+                        _D3DUnorderedViews[i] = null;
+                    }
+                }
+            }
+
+
             // Don't rebind the same target/depth/stencil.
-            if ((_targetViews != null) && (_targetViews.Length > 0) && (_targetViews[0] == view) && (depthStencilView == _depthView))
+            if ((!uavsChanged) && (_targetViews != null) && (_targetViews.Length > 0) && (_targetViews[0] == view) && (depthStencilView == _depthView))
             {
                 return;
             }
@@ -591,13 +956,10 @@ namespace GorgonLibrary.Graphics
 
 			if (view == null)
 			{
-				if ((_D3DViews == null) || (_D3DViews.Length != 1))
-				{
-					_D3DViews = null;
-					_targetViews = null;
-				}
+				_D3DViews = null;
+				_targetViews = null;
 
-				_graphics.Context.OutputMerger.SetTargets(depthView, _D3DViews);
+                SetTargets(depthView);
 				return;
 			}
 
@@ -633,37 +995,99 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		/// <param name="views">List of render target views to set.</param>
 		/// <param name="depthStencilBuffer">[Optional] Depth/stencil view to set.</param>
-		public void SetRenderTargets(GorgonRenderTargetView[] views, GorgonDepthStencilView depthStencilBuffer = null)
+        /// <param name="startSlot">[Optional] The starting slot for the unordered access views.</param>
+        /// <param name="unorderedAccessViews">[Optional] Unordered access views to bind to the current pixel shader.</param>
+		/// <remarks>This will bind multiple render targets to the pipeline at the same time.  A render target is one of the GorgonRenderTargetViews, GorgonRenderTarget types (Buffer, Texture1D/2D/3D) or 
+		/// a <see cref="GorgonLibrary.Graphics.GorgonSwapChain">GorgonSwapChain</see>. The latter types are all convertable to a <see cref="GorgonLibrary.Graphics.GorgonRenderTargetView">GorgonRenderTargetView</see>.
+		/// <para>When binding, ensure that all the render targets match the dimensions, format, array count and mip level count of the render target views that are already bound to the pipeline.  This 
+		/// applies to the depth/stencil buffer as well.</para>
+		/// <para>Unordered access views may be bound with the render target to give access to read/write resources in a pixel shader.  These views must be set at the same time as the 
+		/// render targets because UAVs occupy the same slots as render target views.  This means that any slots including and after the <paramref name="startSlot"/> 
+		/// will unbind any existing render targets.  This also means that the total number of render target views and unordered access views must not be greater than 8.</para>
+		/// <para>A video device with a feature level of SM5 or better is required in order to use the unordered access views.</para>
+		/// </remarks>
+		/// <exception cref="System.ArgumentOutOfRangeException">Thrown when then <paramref name="startSlot"/> is less than 0, or greater than 8.</exception>
+		/// <exception cref="System.ArgumentException">Thrown when the number of <paramref name="views"/> and/or <paramref name="unorderedAccessViews"/> are greater than 8 (or 4 render targets on a 
+		/// video device with a feature level of SM2_a_b, UAVs are not supported).</exception>
+		/// <exception cref="GorgonLibrary.GorgonException">
+		/// Thrown when the <paramref name="unorderedAccessViews"/> parameter is non NULL (and has 1 or more elements), and the video device feature level is not SM5 or better.
+		/// <para>-or-</para>
+        /// <para>Thrown when the render target view, depth/stencil view, or the unordered access views could not be bound to the pipeline.</para></exception>
+		public void SetRenderTargets(GorgonRenderTargetView[] views, GorgonDepthStencilView depthStencilBuffer = null, int startSlot = 1, params GorgonUnorderedAccessView[] unorderedAccessViews)
 		{
+		    bool hasChanged = false;
+
 		    D3D.DepthStencilView depthView = depthStencilBuffer == null ? null : depthStencilBuffer.D3DView;
 			_depthView = depthStencilBuffer;
+
+            // Set up UAVs for binding.
+            if ((unorderedAccessViews != null) && (unorderedAccessViews.Length > 0))
+            {
+#if DEBUG
+                if ((views != null) && (views.Length + unorderedAccessViews.Length > MaxRenderTargetViewSlots))
+                {
+                    throw new ArgumentException(string.Format(Resources.GORGFX_RTV_TOO_MANY, MaxRenderTargetViewSlots));
+                }
+#endif
+
+                hasChanged = BindUnorderedAccessViews(startSlot, unorderedAccessViews);    
+            }
+            else
+            {
+                _unorderedViews = null;
+            }
 
 			// If we didn't pass any views, then unbind all the views.
 			if ((views == null) || (views.Length == 0))
 			{
 			    if ((_targetViews != null) && (_targetViews.Length != 0))
 			    {
-			        _graphics.Context.OutputMerger.SetTargets(depthView, (D3D.RenderTargetView[])null);
 			        _D3DViews = null;
 			        _targetViews = null;
+
+#if DEBUG
+                    // Validate the depth/stencil buffer here because we need to have the current render target set before
+                    // evaluation.
+                    ValidateDepthBufferBinding(depthStencilBuffer);
+#endif
+
+                    SetTargets(depthView);
 			    }
 
 			    return;
 			}
 
+#if DEBUG
+            // Ensure that the number of render targets is less than the maximum available render target slot count.
+            if (views.Length > MaxRenderTargetViewSlots)
+            {
+                throw new ArgumentException(string.Format(Resources.GORGFX_RTV_TOO_MANY, MaxRenderTargetViewSlots),"views");
+            }
+#endif
+
             // Have we changed the array structure or depth/stencil view?
-		    bool hasChanged = (_targetViews == null) || (_targetViews.Length != views.Length)
-		                      || (depthStencilBuffer != _depthView);
+		    hasChanged = (!hasChanged) && ((_targetViews == null) || (_targetViews.Length != views.Length)
+		                      || (depthStencilBuffer != _depthView));
 
 			// Update the current view list.
-			if ((_D3DViews == null) || (views.Length != _D3DViews.Length))
+			if ((_targetViews == null) || (views.Length != _targetViews.Length))
 			{
-				_D3DViews = new D3D.RenderTargetView[views.Length];
+                _targetViews = new GorgonRenderTargetView[views.Length];
+				_D3DViews = new D3D.RenderTargetView[_targetViews.Length];
 			    hasChanged = true;
 			}
 
+		    int lastSlot = views.Length;
+
+            // Determine the last slot for the render targets.
+            if ((unorderedAccessViews != null) && (unorderedAccessViews.Length > 0) && (views.Length > startSlot))
+            {
+                lastSlot = startSlot - 1;
+                hasChanged = true;
+            }
+
 			// If we have more than one view to set, then blast them all out.
-			for (int i = 0; i < views.Length; i++)
+			for (int i = 0; i < lastSlot; i++)
 			{
 				var view = views[i];
 
@@ -679,10 +1103,12 @@ namespace GorgonLibrary.Graphics
 
 				if (view != null)
 				{
+				    _targetViews[i] = view;
 					_D3DViews[i] = view.D3DView;
 				}
 				else
 				{
+				    _targetViews[i] = null;
 					_D3DViews[i] = null;
 				}
 
@@ -700,15 +1126,29 @@ namespace GorgonLibrary.Graphics
             // evaluation.
             ValidateDepthBufferBinding(depthStencilBuffer);
 #endif
-            _targetViews = views;
             SetTargets(depthView);
+        }
+
+        /// <summary>
+        /// Function to retrieve the list of bound unordered access views.
+        /// </summary>
+        /// <returns>An array of bound unordered access views.</returns>
+        public GorgonUnorderedAccessView[] GetUnorderedAccessViews()
+        {
+            var result = new GorgonUnorderedAccessView[_unorderedViews == null ? 0 : _unorderedViews.Length];
+
+            if ((_unorderedViews != null) && (_unorderedViews.Length > 0))
+            {
+                _targetViews.CopyTo(result, 0);
+            }
+
+            return result;
         }
 
 		/// <summary>
 		/// Function to retrieve the list of render targets.
 		/// </summary>
 		/// <returns>An array of render targets.</returns>
-		/// <remarks>This will return a copy of the internal render target list.</remarks>
 		public GorgonRenderTargetView[] GetRenderTargets()
 		{
 			var result = new GorgonRenderTargetView[_targetViews == null ? 0 : _targetViews.Length];
