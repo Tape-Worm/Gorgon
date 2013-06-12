@@ -1,4 +1,4 @@
-﻿#region MIT.
+#region MIT.
 // 
 // Gorgon.
 // Copyright (C) 2012 Michael Winsor
@@ -32,7 +32,7 @@ using System.Threading;
 using GorgonLibrary.Graphics.Properties;
 using GorgonLibrary.IO;
 using D3D = SharpDX.Direct3D11;
-
+// TODO: Lose the generic parameter on CreateTexture functions, make overloads instead.
 namespace GorgonLibrary.Graphics
 {
 	/// <summary>
