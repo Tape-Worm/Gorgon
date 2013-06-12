@@ -212,8 +212,8 @@ namespace GorgonLibrary.Renderers
 				Multisampling = GorgonMultisampling.NoMultiSampling
 			};
 
-			_hTarget = Graphics.Output.CreateRenderTarget2D("Effect.GaussBlur.Target_Horizontal", settings);
-			_vTarget = Graphics.Output.CreateRenderTarget2D("Effect.GaussBlur.Target_Vertical", settings);
+			_hTarget = Graphics.Output.CreateRenderTarget("Effect.GaussBlur.Target_Horizontal", settings);
+			_vTarget = Graphics.Output.CreateRenderTarget("Effect.GaussBlur.Target_Vertical", settings);
 			UpdateOffsets();
 		}
 

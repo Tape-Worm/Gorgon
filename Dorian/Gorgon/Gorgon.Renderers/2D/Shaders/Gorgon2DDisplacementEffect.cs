@@ -122,7 +122,7 @@ namespace GorgonLibrary.Renderers
 			if ((newSize.Width <= 0) || (newSize.Height <= 0))
 				return;
 
-			_displacementTarget = Graphics.Output.CreateRenderTarget2D("Effect.Displacement.RT", new GorgonRenderTarget2DSettings
+			_displacementTarget = Graphics.Output.CreateRenderTarget("Effect.Displacement.RT", new GorgonRenderTarget2DSettings
 			{
 				Width = newSize.Width,
 				Height = newSize.Height,

@@ -309,7 +309,7 @@ namespace GorgonLibrary.Examples
 										Vector2.Zero);
 
 			_backBuffer.Dispose();
-			_backBuffer = _graphics.Output.CreateRenderTarget2D("BackBuffer", new GorgonRenderTarget2DSettings
+			_backBuffer = _graphics.Output.CreateRenderTarget("BackBuffer", new GorgonRenderTarget2DSettings
 			{
 				Width = ClientSize.Width,
                 Height = ClientSize.Height,
@@ -393,7 +393,7 @@ namespace GorgonLibrary.Examples
 				_messageSprite.Color = Color.Black;
 
 				// Create a back buffer.
-				_backBuffer = _graphics.Output.CreateRenderTarget2D("BackBuffer", new GorgonRenderTarget2DSettings
+				_backBuffer = _graphics.Output.CreateRenderTarget("BackBuffer", new GorgonRenderTarget2DSettings
 				        {
 					        Width = _screen.Settings.Width,
                             Height = _screen.Settings.Height,
