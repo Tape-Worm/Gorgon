@@ -333,9 +333,9 @@ namespace GorgonLibrary.Graphics.Test
 					}
 					else
 					{
+                        _framework.Graphics.Output.SetUnorderedAccessViews(1, uav);
 						_framework.Graphics.Shaders.PixelShader.Resources[0] = null;
 						_framework.Graphics.Shaders.PixelShader.Current = uavShaderPS;
-						_framework.Graphics.Shaders.PixelShader.SetUnorderedAccessView(1, uav);
 						firstStep = false;
 					}
 				};

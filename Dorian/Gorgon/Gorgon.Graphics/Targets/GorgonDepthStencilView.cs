@@ -59,12 +59,8 @@ namespace GorgonLibrary.Graphics
 	/// A depth/stencil view to allow a texture to be bound to the pipeline as a depth/stencil buffer.
 	/// </summary>
 	public class GorgonDepthStencilView
-		: GorgonView, IDisposable
+		: GorgonView
 	{
-		#region Variables.
-		private bool _disposed;			// Flag to indicate that the object was disposed.
-		#endregion
-
 		#region Properties.
 		/// <summary>
 		/// Property to return the Direct3D depth/stencil view.
@@ -330,36 +326,6 @@ namespace GorgonLibrary.Graphics
 			FirstArrayIndex = firstArrayIndex;
 			ArrayCount = arrayCount;
 		    Flags = flags;
-		}
-		#endregion
-
-		#region IDisposable Members
-		/// <summary>
-		/// Releases unmanaged and - optionally - managed resources.
-		/// </summary>
-		/// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
-		private void Dispose(bool disposing)
-		{
-			if (_disposed)
-			{
-				return;
-			}
-
-			if (disposing)
-			{
-				CleanUp();
-			}
-
-			_disposed = true;
-		}
-
-		/// <summary>
-		/// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-		/// </summary>
-		public void Dispose()
-		{
-			Dispose(true);
-			GC.SuppressFinalize(this);
 		}
 		#endregion
 	}

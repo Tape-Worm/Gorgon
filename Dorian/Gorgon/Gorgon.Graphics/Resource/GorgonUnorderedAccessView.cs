@@ -69,7 +69,8 @@ namespace GorgonLibrary.Graphics
             }
 
 			// TODO: We'll have to do this for unordered view properties.
-            //Resource.Graphics.Shaders.Unbind(this);
+            //Resource.Graphics.Shaders.Unbind(this); <-- This is for compute shaders.
+            Resource.Graphics.Output.Unbind(this);      // Unbind pixel shaders/render targets.
 
             Gorgon.Log.Print("Destroying unordered access resource view for {0}.",
                              LoggingLevel.Verbose,
@@ -193,8 +194,8 @@ namespace GorgonLibrary.Graphics
         /// <param name="format">The format of the view.</param>
 		protected GorgonUnorderedAccessView(GorgonResource resource, BufferFormat format)
 			: base(resource, format)
-        {
-        }
+		{
+		}
         #endregion
     }
 }

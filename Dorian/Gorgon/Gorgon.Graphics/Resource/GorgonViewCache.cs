@@ -27,7 +27,7 @@
 using System;
 using System.Collections.Generic;
 using GorgonLibrary.Graphics.Properties;
-#error Add cached depth/stencil views.
+
 namespace GorgonLibrary.Graphics
 {
     /// <summary>
@@ -128,12 +128,13 @@ namespace GorgonLibrary.Graphics
         private static readonly object _syncLock = new object();								// Synchronization object for threading.
         // ReSharper restore StaticFieldInGenericType
 
-        private bool _disposed;																	 // Flag to indicate that the object is disposed.
-        private readonly GorgonResource _resource;                                               // Resource bound to the SRVs.
-        private readonly Dictionary<ViewKey, GorgonBufferShaderView> _bufferViews;				 // The cache of buffer views.
-        private readonly Dictionary<ViewKey, GorgonTextureShaderView> _textureViews;			 // The cache of texture views.
-	    private readonly Dictionary<ViewKey, GorgonRenderTargetView> _targetViews;				 // The cache of render target views.
-        private readonly Dictionary<ViewKey, GorgonUnorderedAccessView> _unorderedViews;         // The cache of unordered access views.
+        private bool _disposed;																	// Flag to indicate that the object is disposed.
+        private readonly GorgonResource _resource;                                              // Resource bound to the SRVs.
+        private readonly Dictionary<ViewKey, GorgonBufferShaderView> _bufferViews;				// The cache of buffer views.
+        private readonly Dictionary<ViewKey, GorgonTextureShaderView> _textureViews;			// The cache of texture views.
+	    private readonly Dictionary<ViewKey, GorgonRenderTargetView> _targetViews;				// The cache of render target views.
+        private readonly Dictionary<ViewKey, GorgonUnorderedAccessView> _unorderedViews;        // The cache of unordered access views.
+        private readonly Dictionary<ViewKey, GorgonDepthStencilView> _depthViews;               // The cache of depth/stencil views.
         #endregion
 
         #region Methods.
@@ -162,11 +163,63 @@ namespace GorgonLibrary.Graphics
 				item.Value.CleanUp();
 			}
 
+            foreach (var item in _targetViews)
+            {
+                item.Value.CleanUp();
+            }
+
 			_bufferViews.Clear();
 			_textureViews.Clear();
 			_targetViews.Clear();
             _unorderedViews.Clear();
+            _depthViews.Clear();
 		}
+
+        /// <summary>
+        /// Function to create/retrieve a depth/stencil view in the cache.
+        /// </summary>
+        /// <param name="format">Format of the depth/stencil view.</param>
+        /// <param name="mipSlice">Mip slice.</param>
+        /// <param name="arrayIndex">Array index.</param>
+        /// <param name="arrayCount">Array count.</param>
+        /// <param name="flags">Flags for the depth/stencil view.</param>
+        /// <returns>The cached depth/stencil view.</returns>
+        public GorgonDepthStencilView GetDepthStencilView(BufferFormat format,
+                                                                        int mipSlice,
+                                                                        int arrayIndex,
+                                                                        int arrayCount,
+                                                                        DepthStencilViewFlags flags)
+        {
+            var key = new ViewKey(format, mipSlice, arrayIndex, arrayCount, (int)flags);
+
+            lock (_syncLock)
+            {
+                GorgonDepthStencilView result;
+
+                if (!_depthViews.TryGetValue(key, out result))
+                {
+                    switch (_resource.ResourceType)
+                    {
+                        case ResourceType.Texture1D:
+                        case ResourceType.Texture2D:
+                            result = new GorgonDepthStencilView(_resource, format, mipSlice, arrayIndex, arrayCount, flags);
+                            break;
+                    }
+
+                    // This should never happen.
+                    if (result == null)
+                    {
+                        throw new GorgonException(GorgonResult.CannotCreate,
+                                                  string.Format(Resources.GORGFX_IMAGE_TYPE_INVALID, _resource.ResourceType));
+                    }
+
+                    result.Initialize();
+                    _depthViews.Add(key, result);
+                }
+
+                return result;
+            }
+        }
 
         /// <summary>
         /// Function to create/retrieve an unordered access view in the cache.
@@ -359,6 +412,7 @@ namespace GorgonLibrary.Graphics
             _textureViews = new Dictionary<ViewKey, GorgonTextureShaderView>();
 			_targetViews = new Dictionary<ViewKey, GorgonRenderTargetView>();
             _unorderedViews = new Dictionary<ViewKey, GorgonUnorderedAccessView>();
+            _depthViews = new Dictionary<ViewKey, GorgonDepthStencilView>();
             _resource = resource;
         }
         #endregion

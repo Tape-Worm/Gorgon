@@ -301,12 +301,6 @@ namespace GorgonLibrary.Graphics
 
 			if (disposing)
 			{
-				if (_defaultView != null)
-				{
-					_defaultView.Dispose();
-					_defaultView = null;
-				}
-
 				// Removing bindings.
 				RenderTarget = null;
 			}

@@ -222,11 +222,7 @@ namespace GorgonLibrary.Graphics
 				throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_VIEW_CUBE_ARRAY_SIZE_INVALID);
 			}
 
-			var view = new GorgonDepthStencilView(this, format, mipSlice, arrayStart, arrayCount, flags);
-			view.Initialize();
-			Graphics.AddTrackedObject(view);
-
-			return view;
+		    return _viewCache.GetDepthStencilView(format, mipSlice, arrayStart, arrayCount, flags);
 		}
 
 	    /// <summary>

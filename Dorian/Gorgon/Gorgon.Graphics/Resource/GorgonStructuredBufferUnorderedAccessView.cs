@@ -70,6 +70,18 @@ namespace GorgonLibrary.Graphics
             get;
             private set;
         }
+
+        /// <summary>
+        /// Property to set or return the initial count for the unordered access view.
+        /// </summary>
+        /// <remarks>This only applies to view AppendConsume/Counter view types.
+        /// <para>The default value is -1.</para>
+        /// </remarks>
+        public int InitialCount
+        {
+            get;
+            set;
+        }
         #endregion
 
         #region Methods.
@@ -145,6 +157,7 @@ namespace GorgonLibrary.Graphics
             : base(resource, BufferFormat.Unknown, firstElement, elementCount, false)
         {
             ViewType = viewType;
+            InitialCount = -1;
         }
         #endregion
     }
