@@ -109,8 +109,8 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Function to add the reference device.
 		/// </summary>
-		/// <param name="index"></param>
-		/// <returns></returns>
+		/// <param name="index">Index of the device.</param>
+        /// <returns>The video device used for reference software rendering.</returns>
 		private static GorgonVideoDevice GetRefSoftwareDevice(int index)
 		{
 			GorgonVideoDevice device;
@@ -118,8 +118,9 @@ namespace GorgonLibrary.Graphics
 			using (var D3DDevice = new D3D.Device(D3DCommon.DriverType.Reference, D3D.DeviceCreationFlags.Debug))
 			{
 				using (var giDevice = D3DDevice.QueryInterface<SharpDX.DXGI.Device1>())
-				{
-					using(var adapter = giDevice.GetParent<SharpDX.DXGI.Adapter1>())
+                {
+#error TODO: Ensure that this works in Win8 - It didn't last night when it was using QueryInterface instead of GetParent.
+                    using (var adapter = giDevice.GetParent<SharpDX.DXGI.Adapter1>())
 					{
 						device = new GorgonVideoDevice(adapter, VideoDeviceType.ReferenceRasterizer, index);
 
