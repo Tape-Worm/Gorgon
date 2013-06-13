@@ -35,14 +35,14 @@ float4 TestUAV(PS_IN input) : SV_Target
 	
 	_uavText.GetDimensions(width, height);
 	
-	uint value = _uavText[uint2((uint)(input.uv.x * width) -16, (uint)(input.uv.y * height)-16)];
+	uint value = _uavText[uint2((uint)(input.uv.x * width) - 16, (uint)(input.uv.y * height) - 16)];
 	float4 srcColor = float4((value & 0xFF)  / 255.0f, ((value >> 8) & 0xFF)  / 255.0f, ((value >> 16) & 0xFF)  / 255.0f, ((value >> 24) & 0xFF) / 255.0f);
-	float4 destColor = srcColor;
+	value = _uavText[uint2((uint)(input.uv.x * width), (uint)(input.uv.y * height))];
+	float4 destColor = float4((value & 0xFF)  / 255.0f, ((value >> 8) & 0xFF)  / 255.0f, ((value >> 16) & 0xFF)  / 255.0f, ((value >> 24) & 0xFF) / 255.0f);;
 	
 	destColor.b = destColor.g = destColor.r = (destColor.r + destColor.g + destColor.b) / 3.0f;
 
-	destColor.rgb *= (1.0f - 0.125f);
-	destColor.rgb += srcColor.rgb * 0.125f;
+	destColor.rgb = saturate(((srcColor.a * 0.35f) * srcColor.rgb) + ((1.0f - (srcColor.a * 0.35f)) * destColor.rgb));
 
 	value = ((uint)(destColor.a * 255.0f) << 24) | ((uint)(destColor.b * 255.0f) << 16) | ((uint)(destColor.g * 255.0f) << 8) | (uint)(destColor.r * 255.0f);
 	
