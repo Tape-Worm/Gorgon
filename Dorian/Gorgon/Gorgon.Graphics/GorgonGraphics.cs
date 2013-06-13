@@ -437,22 +437,14 @@ namespace GorgonLibrary.Graphics
 
 			if (device != null)
 			{
-				VideoDevice = device;				
+				VideoDevice = device;
+
+			    var D3DDeviceData = VideoDevice.GetDevice(VideoDevice.VideoDeviceType, featureLevel);
 
 				// Create the DXGI factory for the video device.
-				GIFactory = new GI.Factory1();
-				Adapter = GIFactory.GetAdapter1(VideoDevice.Index);
-#if DEBUG
-				D3DDevice = new D3D.Device(Adapter, D3D.DeviceCreationFlags.Debug, VideoDevice.GetFeatureLevel(featureLevel))
-				    {
-				        DebugName = VideoDevice.Name + " D3D11Device"
-				    };
-#else
-				D3DDevice = new D3D.Device(Adapter, D3D.DeviceCreationFlags.None, VideoDevice.GetFeatureLevel(featureLevel))
-					{
-						DebugName = VideoDevice.Name + " D3D11Device"
-					};
-#endif
+                GIFactory = D3DDeviceData.Item1;
+                Adapter = D3DDeviceData.Item2;
+                D3DDevice = D3DDeviceData.Item3;
 
                 D3DDevice.ImmediateContext.ClearState();
 				VideoDevice.Graphics = this;

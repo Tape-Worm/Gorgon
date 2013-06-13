@@ -263,12 +263,14 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		/// <param name="featureLevel">Feature level to convert.</param>
 		/// <returns>The D3D feature level.</returns>
-		internal D3DCommon.FeatureLevel[] GetFeatureLevel(DeviceFeatureLevel featureLevel)
+		private D3DCommon.FeatureLevel[] GetFeatureLevel(DeviceFeatureLevel featureLevel)
 		{
-			if (HardwareFeatureLevel < featureLevel)
-				featureLevel = HardwareFeatureLevel;
+		    if (HardwareFeatureLevel < featureLevel)
+		    {
+		        featureLevel = HardwareFeatureLevel;
+		    }
 
-			SupportedFeatureLevel = featureLevel;
+		    SupportedFeatureLevel = featureLevel;
 
 			switch (featureLevel)
 			{
@@ -307,7 +309,78 @@ namespace GorgonLibrary.Graphics
 			}
 		}
 
-		/// <summary>
+        /// <summary>
+        /// Function to return a device object for this video device.
+        /// </summary>
+        /// <returns>The new device object, adapter and factory.</returns>
+        internal Tuple<GI.Factory1, GI.Adapter1, D3D.Device> GetDevice(VideoDeviceType deviceType, DeviceFeatureLevel featureLevel)
+        {
+            GI.Factory1 factory;
+            GI.Adapter1 adapter;
+            D3D.Device device;
+
+            switch (deviceType)
+            {
+#if DEBUG
+                case VideoDeviceType.ReferenceRasterizer:
+                    device = new D3D.Device(D3DCommon.DriverType.Reference,
+                                            D3D.DeviceCreationFlags.Debug,
+                                            D3DCommon.FeatureLevel.Level_11_0)
+                    {
+                        DebugName = string.Format("{0} D3D11 Device", Name)
+                    };
+
+                    using (var giDevice = device.QueryInterface<GI.Device1>())
+                    {
+                        adapter = giDevice.GetParent<GI.Adapter1>();//giDevice.Adapter;
+                        factory = adapter.GetParent<GI.Factory1>();
+                    }
+                    break;
+#endif
+                case VideoDeviceType.Software:
+                    // WARP devices can only do SM4_1 or lower.
+                    if (featureLevel >= DeviceFeatureLevel.SM5)
+                    {
+                        featureLevel = DeviceFeatureLevel.SM4_1;
+                    }
+#if DEBUG
+                    device = new D3D.Device(D3DCommon.DriverType.Warp,
+                                            D3D.DeviceCreationFlags.Debug,
+                                            GetFeatureLevel(featureLevel))
+                    {
+                        DebugName = string.Format("{0} D3D11 Device", Name)
+                    };
+#else
+                    device = new D3D.Device(D3DCommon.DriverType.Warp, 
+                                            D3D.DeviceCreationFlags.None,
+                                            GetFeatureLevel(featureLevel))
+#endif
+                    using (var giDevice = device.QueryInterface<GI.Device1>())
+                    {
+                        adapter = giDevice.GetParent<GI.Adapter1>();
+                        factory = adapter.GetParent<GI.Factory1>();
+                    }
+                    break;
+                default:
+                    factory = new GI.Factory1();
+                    adapter = factory.GetAdapter1(Index);
+#if DEBUG
+                    device = new D3D.Device(adapter,
+                                            D3D.DeviceCreationFlags.Debug,
+                                            GetFeatureLevel(featureLevel))
+                    {
+                        DebugName = string.Format("{0} D3D11 Device", Name)
+                    };
+#else
+                    device = new D3D.Device(adapter, D3D.DeviceCreationFlags.None, GetFeatureLevel(HardwareFeatureLevel));
+#endif
+                    break;
+            }
+
+            return new Tuple<GI.Factory1, GI.Adapter1, D3D.Device>(factory, adapter, device);
+        }
+
+        /// <summary>
 		/// Returns a <see cref="System.String"/> that represents this instance.
 		/// </summary>
 		/// <returns>
@@ -316,19 +389,6 @@ namespace GorgonLibrary.Graphics
 		public override string ToString()
 		{
 			return string.Format("Gorgon Graphics Device: {0}", Name);
-		}
-
-		/// <summary>
-		/// Function to create a temporary interface to get device support features.
-		/// </summary>
-		/// <returns>The temporary D3D device.</returns>
-		private Tuple<GI.Factory1, GI.Adapter1, D3D.Device> CreateTemporaryInterfaces()
-		{
-			var factory = new GI.Factory1();
-			var adapter = factory.GetAdapter1(Index);
-			var device = new D3D.Device(adapter, D3D.DeviceCreationFlags.Debug, GetFeatureLevel(HardwareFeatureLevel));
-
-			return new Tuple<GI.Factory1,GI.Adapter1,D3D.Device>(factory, adapter, device);
 		}
 
 		/// <summary>
@@ -345,7 +405,7 @@ namespace GorgonLibrary.Graphics
 			{
 				if (device == null)
 				{
-					tempInterfaces = CreateTemporaryInterfaces();
+					tempInterfaces = GetDevice(VideoDeviceType, HardwareFeatureLevel);
 					device = tempInterfaces.Item3;
 				}
 				
@@ -358,8 +418,6 @@ namespace GorgonLibrary.Graphics
 					tempInterfaces.Item3.Dispose();
 					tempInterfaces.Item2.Dispose();
 					tempInterfaces.Item1.Dispose();
-
-					tempInterfaces = null;
 				}
 			}
 		}
@@ -378,7 +436,7 @@ namespace GorgonLibrary.Graphics
 			{
 				if (device == null)
 				{
-					tempInterfaces = CreateTemporaryInterfaces();
+                    tempInterfaces = GetDevice(VideoDeviceType, HardwareFeatureLevel);
 					device = tempInterfaces.Item3;
 				}
 
@@ -412,7 +470,7 @@ namespace GorgonLibrary.Graphics
 			{
 				if (device == null)
 				{
-					tempInterfaces = CreateTemporaryInterfaces();
+                    tempInterfaces = GetDevice(VideoDeviceType, HardwareFeatureLevel);
 					device = tempInterfaces.Item3;
 				}
 				
@@ -447,7 +505,7 @@ namespace GorgonLibrary.Graphics
 			{
 				if (device == null)
 				{
-					tempInterfaces = CreateTemporaryInterfaces();
+                    tempInterfaces = GetDevice(VideoDeviceType, HardwareFeatureLevel);
 					device = tempInterfaces.Item3;
 				}
 
@@ -480,7 +538,7 @@ namespace GorgonLibrary.Graphics
 			{
 				if (device == null)
 				{
-					tempInterfaces = CreateTemporaryInterfaces();
+                    tempInterfaces = GetDevice(VideoDeviceType, HardwareFeatureLevel);
 					device = tempInterfaces.Item3;
 				}
 
@@ -514,7 +572,7 @@ namespace GorgonLibrary.Graphics
             {
                 if (device == null)
                 {
-                    tempInterfaces = CreateTemporaryInterfaces();
+                    tempInterfaces = GetDevice(VideoDeviceType, HardwareFeatureLevel);
                     device = tempInterfaces.Item3;
                 }
 
@@ -553,7 +611,7 @@ namespace GorgonLibrary.Graphics
 			{
 				if (device == null)
 				{
-					tempInterfaces = CreateTemporaryInterfaces();
+                    tempInterfaces = GetDevice(VideoDeviceType, HardwareFeatureLevel);
 					device = tempInterfaces.Item3;
 				}
 
@@ -593,7 +651,7 @@ namespace GorgonLibrary.Graphics
 			{
 				if (device == null)
 				{
-					tempInterfaces = CreateTemporaryInterfaces();
+                    tempInterfaces = GetDevice(VideoDeviceType, HardwareFeatureLevel);
 					device = tempInterfaces.Item3;
 				}
 
@@ -620,63 +678,38 @@ namespace GorgonLibrary.Graphics
 		/// <param name="adapter">DXGI video adapter.</param>
 		/// <param name="deviceType">Type of video device.</param>
 		/// <param name="index">Index of the device.</param>
-		internal GorgonVideoDevice(GI.Adapter adapter, VideoDeviceType deviceType, int index)
+		internal GorgonVideoDevice(GI.Adapter1 adapter, VideoDeviceType deviceType, int index)
 		{
-			var adapter1 = adapter as GI.Adapter1;
-
 			VideoDeviceType = deviceType;
-			if (adapter1 != null)
+
+			this.Index = index;
+			this.DedicatedSystemMemory = adapter.Description1.DedicatedSystemMemory;
+			this.DedicatedVideoMemory = adapter.Description1.DedicatedVideoMemory;
+			this.DeviceID = adapter.Description1.DeviceId;
+			this.HardwareFeatureLevel = DeviceFeatureLevel.Unsupported;
+            this.UUID = adapter.Description1.Luid;
+            this.Revision = adapter.Description1.Revision;
+            this.SharedSystemMemory = adapter.Description1.SharedSystemMemory;
+            this.SubSystemID = adapter.Description1.SubsystemId;
+            this.VendorID = adapter.Description1.VendorId;
+
+            switch (deviceType)
 			{
-				this.Index = index;
-				this.DedicatedSystemMemory = adapter1.Description1.DedicatedSystemMemory;
-				this.DedicatedVideoMemory = adapter1.Description1.DedicatedVideoMemory;
-				this.DeviceID = adapter1.Description1.DeviceId;
-				this.HardwareFeatureLevel = DeviceFeatureLevel.Unsupported;
-				switch (deviceType)
-				{
-					case VideoDeviceType.Software:
-						this.Name = "WARP software rasterizer";
-						break;
-					case VideoDeviceType.ReferenceRasterizer:
-						this.Name = "Reference rasterizer";
-						break;
-					default:
-						this.Name = adapter1.Description1.Description;
-						break;
-				}
-				this.UUID = adapter1.Description1.Luid;
-				this.Revision = adapter1.Description1.Revision;
-				this.SharedSystemMemory = adapter1.Description1.SharedSystemMemory;
-				this.SubSystemID = adapter1.Description1.SubsystemId;
-				this.VendorID = adapter1.Description1.VendorId;
-			}
-			else
-			{
-				this.Index = index;
-				this.DedicatedSystemMemory = adapter.Description.DedicatedSystemMemory;
-				this.DedicatedVideoMemory = adapter.Description.DedicatedVideoMemory;
-				this.DeviceID = adapter.Description.DeviceId;
-				this.HardwareFeatureLevel = DeviceFeatureLevel.Unsupported;
-				switch (deviceType)
-				{
-					case VideoDeviceType.Software:
-						this.Name = "WARP software rasterizer";
-						break;
-					case VideoDeviceType.ReferenceRasterizer:
-						this.Name = "Reference rasterizer";
-						break;
-					default:
-						this.Name = adapter.Description.Description;
-						break;
-				}
-				this.UUID = adapter.Description.Luid;
-				this.Revision = adapter.Description.Revision;
-				this.SharedSystemMemory = adapter.Description.SharedSystemMemory;
-				this.SubSystemID = adapter.Description.SubsystemId;
-				this.VendorID = adapter.Description.VendorId;
+				case VideoDeviceType.Software:
+					this.Name = "WARP software rasterizer";
+			        HardwareFeatureLevel = SupportedFeatureLevel = DeviceFeatureLevel.SM4_1;
+					break;
+				case VideoDeviceType.ReferenceRasterizer:
+					this.Name = "Reference rasterizer";
+			        HardwareFeatureLevel = SupportedFeatureLevel = DeviceFeatureLevel.SM5;
+					break;
+				default:
+					this.Name = adapter.Description1.Description;
+                    EnumerateFeatureLevels(D3D.Device.GetSupportedFeatureLevel(adapter));
+					break;
 			}
 
-			EnumerateFeatureLevels(D3D.Device.GetSupportedFeatureLevel(adapter));
+			
 			Outputs = new GorgonNamedObjectReadOnlyCollection<GorgonVideoOutput>(false, new GorgonVideoOutput[] { });
 		}
 		#endregion

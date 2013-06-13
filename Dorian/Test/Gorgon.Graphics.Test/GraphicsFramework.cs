@@ -283,11 +283,11 @@ namespace GorgonLibrary.Graphics.Test
 		/// </summary>
 		public GraphicsFramework()
 		{
-			GorgonVideoDeviceEnumerator.Enumerate(false, true);
+			GorgonVideoDeviceEnumerator.Enumerate(true, true);
 
 			_form = new TestForm();
-			Graphics = new GorgonGraphics(GorgonVideoDeviceEnumerator.VideoDevices.Single(item => item.VideoDeviceType == VideoDeviceType.ReferenceRasterizer));
-			//Graphics = new GorgonGraphics();
+			//Graphics = new GorgonGraphics(GorgonVideoDeviceEnumerator.VideoDevices.Single(item => item.VideoDeviceType == VideoDeviceType.ReferenceRasterizer));
+			Graphics = new GorgonGraphics();
 		}
 		#endregion
 
