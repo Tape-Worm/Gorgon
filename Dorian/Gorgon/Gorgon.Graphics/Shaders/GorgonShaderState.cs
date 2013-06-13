@@ -32,6 +32,7 @@ using D3D = SharpDX.Direct3D11;
 using GorgonLibrary.Diagnostics;
 using GorgonLibrary.Math;
 
+//#error TODO: Add Computer, Geometry, Hull and Domain shaders.
 namespace GorgonLibrary.Graphics
 {
 	/// <summary>
