@@ -612,7 +612,13 @@ namespace GorgonLibrary.Graphics
 			{
 				stagedMode.RefreshRateNumerator = output.DefaultVideoMode.RefreshRateNumerator;
 				stagedMode.RefreshRateDenominator = output.DefaultVideoMode.RefreshRateDenominator;
-			}					
+			}
+
+			// If the device does not support different full screen modes (e.g. WARP/Refrast on Windows 8), then reset the windowed switch.
+			if ((output.VideoModes.Count == 0) && (settings.IsWindowed))
+			{
+				settings.IsWindowed = true;
+			}
 
 			// If going full screen, ensure that whatever mode we've chosen can be used, otherwise go to the closest match.
 			if (!settings.IsWindowed)
@@ -632,11 +638,6 @@ namespace GorgonLibrary.Graphics
 				{
 					stagedMode = output.FindMode(stagedMode);
 				}
-			}
-			else
-			{
-				// We don't need a refresh rate for windowed mode.
-				stagedMode = new GorgonVideoMode(stagedMode.Width, stagedMode.Height, stagedMode.Format);
 			}
 					
 			// Ensure that the selected video format can be used.
@@ -828,8 +829,8 @@ namespace GorgonLibrary.Graphics
 		/// Function to update the settings for the swap chain.
 		/// </summary>
 		/// <param name="mode">New video mode to use.</param>
-		/// <param name="isWindowed">TRUE to switch to windowed mode, FALSE to switch to full screen.</param>
 		/// <param name="depthStencilFormat">The format of the internal depth/stencil buffer.</param>
+		/// <param name="isWindowed">TRUE to switch to windowed mode, FALSE to switch to full screen.</param>
 		/// <param name="bufferCount">Number of back buffers.</param>
 		/// <remarks>If the <see cref="P:GorgonLibrary.Graphics.GorgonSwapChainSettings.SwapEffect">SwapEffect</see> for the swap chain is set to discard, then the <paramref name="bufferCount"/> must be greater than 1.</remarks>
 		/// <exception cref="System.ArgumentException">Thrown when the <see cref="P:GorgonLibrary.Graphics.GorgonSwapChainSettings.Window">GorgonSwapChainSettings.Window</see> property is NULL (Nothing in VB.Net), and the <see cref="P:GorgonLibrary.Gorgon.ApplicationForm">Gorgon application window</see> is NULL.

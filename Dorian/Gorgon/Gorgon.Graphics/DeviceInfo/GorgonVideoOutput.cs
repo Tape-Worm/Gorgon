@@ -25,7 +25,9 @@
 #endregion
 
 using System;
-using System.Collections.ObjectModel;
+using System.Linq;
+using System.Collections.Generic;
+using System.Windows.Forms;
 using System.Drawing;
 using GI = SharpDX.DXGI;
 using D3D = SharpDX.Direct3D11;
@@ -88,7 +90,7 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Property to return the video modes for this output.
 		/// </summary>
-		public ReadOnlyCollection<GorgonVideoMode> VideoModes
+		public IList<GorgonVideoMode> VideoModes
 		{
 			get;
 			internal set;
@@ -191,6 +193,23 @@ namespace GorgonLibrary.Graphics
 					this.Rotation = 0;
 					break;
 			}				
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="GorgonVideoOutput"/> class.
+		/// </summary>
+		/// <param name="device">Video device that owns the output.</param>
+		internal GorgonVideoOutput(GorgonVideoDevice device)
+		{
+			var area = Screen.AllScreens.Aggregate(Rectangle.Empty, (current, t) => Rectangle.Union(current, t.Bounds));
+
+			Index = 0;
+			Handle = Native.Win32API.GetMonitor(null);
+			IsAttachedToDesktop = true;
+			Name = "Software device output";
+			OutputBounds = Screen.PrimaryScreen.Bounds;
+			Rotation = 0;
+			DefaultVideoMode = new GorgonVideoMode(area.Width, area.Height, BufferFormat.R8G8B8A8_UIntNormal);
 		}
 		#endregion
 	}

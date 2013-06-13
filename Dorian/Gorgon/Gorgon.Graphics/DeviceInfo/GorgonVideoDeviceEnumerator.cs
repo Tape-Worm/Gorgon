@@ -29,6 +29,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading;
+using SharpDX.Direct3D;
 using D3D = SharpDX.Direct3D11;
 using GorgonLibrary.Collections.Specialized;
 using GorgonLibrary.Graphics.Properties;
@@ -76,10 +77,10 @@ namespace GorgonLibrary.Graphics
 			GorgonVideoDevice device;
 
 #if DEBUG
-			using (var D3DDevice = new D3D.Device(SharpDX.Direct3D.DriverType.Warp, D3D.DeviceCreationFlags.Debug))
+			using (var D3DDevice = new D3D.Device(SharpDX.Direct3D.DriverType.Warp, D3D.DeviceCreationFlags.Debug, FeatureLevel.Level_10_1, FeatureLevel.Level_10_0, FeatureLevel.Level_9_3))
 			{
 #else
-			using (var D3DDevice = new D3D.Device(SharpDX.Direct3D.DriverType.Warp, D3D.DeviceCreationFlags.None))
+			using (var D3DDevice = new D3D.Device(SharpDX.Direct3D.DriverType.Warp, D3D.DeviceCreationFlags.None, FeatureLevel.Level_10_1, FeatureLevel.Level_10_0, FeatureLevel.Level_9_3))
 			{
 #endif
 				using (var giDevice = D3DDevice.QueryInterface<SharpDX.DXGI.Device1>())
@@ -91,8 +92,9 @@ namespace GorgonLibrary.Graphics
 						PrintLog(device);
 
 						// Get the outputs for the device.
-						int outputCount = adapter.GetOutputCount();						
-						GetOutputs(device, D3DDevice, adapter, outputCount);
+						int outputCount = adapter.GetOutputCount();
+
+						GetOutputs(device, D3DDevice, adapter, outputCount, outputCount == 0);
 					}
 				}
 			}
@@ -114,14 +116,14 @@ namespace GorgonLibrary.Graphics
 			{
 				using (var giDevice = D3DDevice.QueryInterface<SharpDX.DXGI.Device1>())
 				{
-					using (var adapter = giDevice.QueryInterface<SharpDX.DXGI.Adapter1>())
+					using(var adapter = giDevice.Adapter)
 					{
 						device = new GorgonVideoDevice(adapter, VideoDeviceType.ReferenceRasterizer, index);
-						
+
 						PrintLog(device);
 
 						int outputCount = adapter.GetOutputCount();
-						GetOutputs(device, D3DDevice, adapter, outputCount);
+						GetOutputs(device, D3DDevice, adapter, outputCount, outputCount == 0);
 					}
 				}
 			}
@@ -207,9 +209,35 @@ namespace GorgonLibrary.Graphics
 		/// <param name="D3Ddevice">D3D device to find closest matching mode.</param>
 		/// <param name="device">Device used to filter video modes that aren't supported.</param>
 		/// <param name="outputCount">The number of outputs attached to the device.</param>
-		private static void GetOutputs(GorgonVideoDevice device, D3D.Device D3Ddevice, SharpDX.DXGI.Adapter1 adapter, int outputCount)
+		/// <param name="noOutputDevice">TRUE if the device has no outputs, FALSE if it does.</param>
+		private static void GetOutputs(GorgonVideoDevice device, D3D.Device D3Ddevice, SharpDX.DXGI.Adapter adapter, int outputCount, bool noOutputDevice)
 		{
 			var outputs = new List<GorgonVideoOutput>(outputCount);
+			
+			// We need to fake outputs.
+			// Windows 8 does not support outputs on WARP devices and ref rasterizer devices.
+			if (noOutputDevice)
+			{
+				var output = new GorgonVideoOutput(device);
+
+				Gorgon.Log.Print("Found output {0}.", Diagnostics.LoggingLevel.Simple, output.Name);
+				Gorgon.Log.Print("===================================================================", Diagnostics.LoggingLevel.Verbose);
+				Gorgon.Log.Print("Output bounds: ({0}x{1})-({2}x{3})", Diagnostics.LoggingLevel.Verbose, output.OutputBounds.Left, output.OutputBounds.Top, output.OutputBounds.Right, output.OutputBounds.Bottom);
+				Gorgon.Log.Print("Monitor handle: 0x{0}", Diagnostics.LoggingLevel.Verbose, output.Handle.FormatHex());
+				Gorgon.Log.Print("Attached to desktop: {0}", Diagnostics.LoggingLevel.Verbose, output.IsAttachedToDesktop);
+				Gorgon.Log.Print("Monitor rotation: {0}\u00B0", Diagnostics.LoggingLevel.Verbose, output.Rotation);
+				Gorgon.Log.Print("===================================================================", Diagnostics.LoggingLevel.Verbose);
+
+				outputs.Add(output);
+
+				// No video modes for these devices.
+				output.VideoModes = new GorgonVideoMode[0];
+
+				device.Outputs = new GorgonNamedObjectReadOnlyCollection<GorgonVideoOutput>(false, outputs);
+
+				Gorgon.Log.Print("Output {0} on device {1} has no video modes.", Diagnostics.LoggingLevel.Verbose, output.Name, device.Name);
+				return;
+			}
 
 			// Get outputs.
 			for (int i = 0; i < outputCount; i++)
@@ -323,7 +351,7 @@ namespace GorgonLibrary.Graphics
 				                D3DDevice.DebugName = "Output enumerator device.";
 				                PrintLog(videoDevice);
 
-				                GetOutputs(videoDevice, D3DDevice, adapter, outputCount);
+				                GetOutputs(videoDevice, D3DDevice, adapter, outputCount, false);
 
 				                // Ensure we actually have outputs to use.
 				                if (videoDevice.Outputs.Count > 0)

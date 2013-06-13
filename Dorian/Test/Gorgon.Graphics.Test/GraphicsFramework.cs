@@ -153,7 +153,10 @@ namespace GorgonLibrary.Graphics.Test
 		/// <returns>TRUE to continue processing, FALSE to stop.</returns>
 		private bool Idle()
 		{
-			Screen.Clear(GorgonColor.Black);
+			if (Graphics.Output.GetRenderTarget(0) == (GorgonRenderTargetView)Screen)
+			{
+				Screen.Clear(GorgonColor.Black);
+			}
 
 			if (IdleFunc != null)
 			{
@@ -162,7 +165,10 @@ namespace GorgonLibrary.Graphics.Test
 
 			Graphics.Output.DrawIndexed(0, 0, 6);
 
-			Screen.Flip(1);
+			if (Graphics.Output.GetRenderTarget(0) == (GorgonRenderTargetView)Screen)
+			{
+				Screen.Flip(1);
+			}
 
 			if ((MaxTimeout > 0) && (GorgonTiming.MillisecondsSinceStart > MaxTimeout))
 			{
@@ -252,7 +258,7 @@ namespace GorgonLibrary.Graphics.Test
 			Graphics.Input.PrimitiveType = PrimitiveType.TriangleList;
 			Graphics.Input.VertexBuffers[0] = new GorgonVertexBufferBinding(Vertices, 40);
 			Graphics.Input.IndexBuffer = Indices;
-			Graphics.Rasterizer.SetViewport(new GorgonViewport(0, 0, _form.ClientSize.Width, _form.ClientSize.Height, 0, 1.0f));
+			Graphics.Rasterizer.SetViewport(new GorgonViewport(0, 0, _form.panelDisplay.ClientSize.Width, _form.panelDisplay.ClientSize.Height, 0, 1.0f));
 			Graphics.Rasterizer.States = GorgonRasterizerStates.DefaultStates;
 			Graphics.Shaders.VertexShader.Current = VertexShader;
 			Graphics.Shaders.PixelShader.Current = PixelShader;
@@ -277,8 +283,11 @@ namespace GorgonLibrary.Graphics.Test
 		/// </summary>
 		public GraphicsFramework()
 		{
+			GorgonVideoDeviceEnumerator.Enumerate(false, true);
+
 			_form = new TestForm();
-			Graphics = new GorgonGraphics();
+			Graphics = new GorgonGraphics(GorgonVideoDeviceEnumerator.VideoDevices.Single(item => item.VideoDeviceType == VideoDeviceType.ReferenceRasterizer));
+			//Graphics = new GorgonGraphics();
 		}
 		#endregion
 

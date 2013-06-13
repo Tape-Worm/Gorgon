@@ -620,31 +620,61 @@ namespace GorgonLibrary.Graphics
 		/// <param name="adapter">DXGI video adapter.</param>
 		/// <param name="deviceType">Type of video device.</param>
 		/// <param name="index">Index of the device.</param>
-		internal GorgonVideoDevice(GI.Adapter1 adapter, VideoDeviceType deviceType, int index)
+		internal GorgonVideoDevice(GI.Adapter adapter, VideoDeviceType deviceType, int index)
 		{
+			var adapter1 = adapter as GI.Adapter1;
+
 			VideoDeviceType = deviceType;
-			this.Index = index;
-			this.DedicatedSystemMemory = adapter.Description1.DedicatedSystemMemory;
-			this.DedicatedVideoMemory = adapter.Description1.DedicatedVideoMemory;
-			this.DeviceID = adapter.Description1.DeviceId;
-			this.HardwareFeatureLevel = DeviceFeatureLevel.Unsupported;
-			switch (deviceType)
+			if (adapter1 != null)
 			{
-				case VideoDeviceType.Software:
-					this.Name = "WARP software rasterizer";
-					break;
-				case VideoDeviceType.ReferenceRasterizer:
-					this.Name = "Reference rasterizer";
-					break;
-				default:
-					this.Name = adapter.Description1.Description;
-					break;
+				this.Index = index;
+				this.DedicatedSystemMemory = adapter1.Description1.DedicatedSystemMemory;
+				this.DedicatedVideoMemory = adapter1.Description1.DedicatedVideoMemory;
+				this.DeviceID = adapter1.Description1.DeviceId;
+				this.HardwareFeatureLevel = DeviceFeatureLevel.Unsupported;
+				switch (deviceType)
+				{
+					case VideoDeviceType.Software:
+						this.Name = "WARP software rasterizer";
+						break;
+					case VideoDeviceType.ReferenceRasterizer:
+						this.Name = "Reference rasterizer";
+						break;
+					default:
+						this.Name = adapter1.Description1.Description;
+						break;
+				}
+				this.UUID = adapter1.Description1.Luid;
+				this.Revision = adapter1.Description1.Revision;
+				this.SharedSystemMemory = adapter1.Description1.SharedSystemMemory;
+				this.SubSystemID = adapter1.Description1.SubsystemId;
+				this.VendorID = adapter1.Description1.VendorId;
 			}
-		    this.UUID = adapter.Description1.Luid;
-			this.Revision = adapter.Description1.Revision;
-			this.SharedSystemMemory = adapter.Description1.SharedSystemMemory;
-			this.SubSystemID = adapter.Description1.SubsystemId;
-			this.VendorID = adapter.Description1.VendorId;
+			else
+			{
+				this.Index = index;
+				this.DedicatedSystemMemory = adapter.Description.DedicatedSystemMemory;
+				this.DedicatedVideoMemory = adapter.Description.DedicatedVideoMemory;
+				this.DeviceID = adapter.Description.DeviceId;
+				this.HardwareFeatureLevel = DeviceFeatureLevel.Unsupported;
+				switch (deviceType)
+				{
+					case VideoDeviceType.Software:
+						this.Name = "WARP software rasterizer";
+						break;
+					case VideoDeviceType.ReferenceRasterizer:
+						this.Name = "Reference rasterizer";
+						break;
+					default:
+						this.Name = adapter.Description.Description;
+						break;
+				}
+				this.UUID = adapter.Description.Luid;
+				this.Revision = adapter.Description.Revision;
+				this.SharedSystemMemory = adapter.Description.SharedSystemMemory;
+				this.SubSystemID = adapter.Description.SubsystemId;
+				this.VendorID = adapter.Description.VendorId;
+			}
 
 			EnumerateFeatureLevels(D3D.Device.GetSupportedFeatureLevel(adapter));
 			Outputs = new GorgonNamedObjectReadOnlyCollection<GorgonVideoOutput>(false, new GorgonVideoOutput[] { });

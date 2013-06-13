@@ -130,7 +130,12 @@ namespace GorgonLibrary.Native
 		/// <returns>The handle to the monitor.</returns>
 		public static IntPtr GetMonitor(Control window)
 		{
-			return MonitorFromWindow(window.Handle, MonitorFlags.MONITOR_DEFAULTTOPRIMARY);
+			if (window != null)
+			{
+				return MonitorFromWindow(window.Handle, MonitorFlags.MONITOR_DEFAULTTOPRIMARY);
+			}
+
+			return MonitorFromWindow(IntPtr.Zero, MonitorFlags.MONITOR_DEFAULTTOPRIMARY);
 		}
 
 		/// <summary>
