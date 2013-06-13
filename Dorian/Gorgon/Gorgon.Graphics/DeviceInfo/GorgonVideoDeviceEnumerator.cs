@@ -29,6 +29,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading;
+using System.Windows.Forms;
 using SharpDX.Direct3D;
 using D3D = SharpDX.Direct3D11;
 using GorgonLibrary.Collections.Specialized;
@@ -216,7 +217,7 @@ namespace GorgonLibrary.Graphics
 			
 			// We need to fake outputs.
 			// Windows 8 does not support outputs on WARP devices and ref rasterizer devices.
-			if (noOutputDevice)
+			if ((noOutputDevice) || (SystemInformation.TerminalServerSession))
 			{
 				var output = new GorgonVideoOutput(device);
 
