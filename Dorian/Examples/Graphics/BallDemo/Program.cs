@@ -327,12 +327,12 @@ namespace GorgonLibrary.Graphics.Example
 			// Create the primary swap chain.
 			_mainScreen = _graphics.Output.CreateSwapChain("MainScreen", new GorgonSwapChainSettings
 			    {
-				Width = Properties.Settings.Default.ScreenWidth,
-				Height = Properties.Settings.Default.ScreenHeight,
-				Format = BufferFormat.R8G8B8A8_UIntNormal,
-				Window = _form,
-				IsWindowed = Properties.Settings.Default.Windowed
-			});
+					Width = Properties.Settings.Default.ScreenWidth,
+					Height = Properties.Settings.Default.ScreenHeight,
+					Format = BufferFormat.R8G8B8A8_UIntNormal,
+					Window = _form,
+					IsWindowed = Properties.Settings.Default.Windowed
+				});
 
 			// Center the display.
 			if (_mainScreen.Settings.IsWindowed)

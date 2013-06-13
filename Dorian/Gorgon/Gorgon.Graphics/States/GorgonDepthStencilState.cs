@@ -210,17 +210,68 @@ namespace GorgonLibrary.Graphics
 	public struct GorgonDepthStencilStates
 		: IEquatableByRef<GorgonDepthStencilStates>
 	{
-		#region Value Types.
-		#endregion
-
 		#region Variables.
 		/// <summary>
-		/// Default depth/stencil states.
+		/// No depth/stencil enabled.
 		/// </summary>
-		public static readonly GorgonDepthStencilStates DefaultStates = new GorgonDepthStencilStates()
+		public static readonly GorgonDepthStencilStates NoDepthStencil = new GorgonDepthStencilStates()
+		{
+			IsDepthEnabled = false,
+			IsDepthWriteEnabled = false,
+			IsStencilEnabled = false,
+			StencilReadMask = 0xff,
+			StencilWriteMask = 0xff,
+			DepthComparison = ComparisonOperators.Less,
+			StencilFrontFace = new GorgonDepthStencilOperations()
+			{
+				ComparisonOperator = ComparisonOperators.Always,
+				DepthFailOperation = StencilOperations.Keep,
+				FailOperation = StencilOperations.Keep,
+				PassOperation = StencilOperations.Keep
+			},
+			StencilBackFace = new GorgonDepthStencilOperations()
+			{
+				ComparisonOperator = ComparisonOperators.Always,
+				DepthFailOperation = StencilOperations.Keep,
+				FailOperation = StencilOperations.Keep,
+				PassOperation = StencilOperations.Keep
+			}
+		};
+
+		/// <summary>
+		/// Depth enabled.
+		/// </summary>
+		public static readonly GorgonDepthStencilStates DepthEnabled = new GorgonDepthStencilStates()
 		{
 			IsDepthEnabled = true,
 			IsDepthWriteEnabled = true,
+			IsStencilEnabled = false,
+			StencilReadMask = 0xff,
+			StencilWriteMask = 0xff,
+			DepthComparison = ComparisonOperators.Less,
+			StencilFrontFace = new GorgonDepthStencilOperations()
+			{
+				ComparisonOperator = ComparisonOperators.Always,
+				DepthFailOperation = StencilOperations.Keep,
+				FailOperation = StencilOperations.Keep,
+				PassOperation = StencilOperations.Keep
+			},
+			StencilBackFace = new GorgonDepthStencilOperations()
+			{
+				ComparisonOperator = ComparisonOperators.Always,
+				DepthFailOperation = StencilOperations.Keep,
+				FailOperation = StencilOperations.Keep,
+				PassOperation = StencilOperations.Keep
+			}
+		};
+
+		/// <summary>
+		/// Depth write disabled.
+		/// </summary>
+		public static readonly GorgonDepthStencilStates DepthWriteDisabled = new GorgonDepthStencilStates()
+		{
+			IsDepthEnabled = true,
+			IsDepthWriteEnabled = false,
 			IsStencilEnabled = false,
 			StencilReadMask = 0xff,
 			StencilWriteMask = 0xff,

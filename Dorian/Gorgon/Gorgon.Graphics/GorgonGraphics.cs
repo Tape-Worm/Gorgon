@@ -472,7 +472,7 @@ namespace GorgonLibrary.Graphics
             // Set default states.
 		    Rasterizer.States = GorgonRasterizerStates.DefaultStates;
 		    Output.BlendingState.States = GorgonBlendStates.DefaultStates;
-		    Output.DepthStencilState.States = GorgonDepthStencilStates.DefaultStates;
+		    Output.DepthStencilState.States = GorgonDepthStencilStates.NoDepthStencil;
 
             // Initialize the shaders with default texture sampler settings.
             for (int i = 0; i < Shaders.VertexShader.TextureSamplers.Count; i++)

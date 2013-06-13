@@ -35,10 +35,6 @@ namespace GorgonLibrary.Graphics
 	public class GorgonPixelShaderState
 		: GorgonShaderState<GorgonPixelShader>
     {
-        #region Variables.
-        private GorgonUnorderedAccessView[] _unorderedViews;
-        #endregion
-
         #region Methods.
         /// <summary>
 		/// Property to set or return the current shader.
@@ -102,7 +98,6 @@ namespace GorgonLibrary.Graphics
 		protected internal GorgonPixelShaderState(GorgonGraphics graphics)
 			: base(graphics)
 		{
-		    _unorderedViews = new GorgonUnorderedAccessView[8];
 		}
 		#endregion
 	}

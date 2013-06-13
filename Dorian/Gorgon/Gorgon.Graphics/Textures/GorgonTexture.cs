@@ -860,8 +860,8 @@ namespace GorgonLibrary.Graphics
                 }
             }
 
-            if (texture.GetType() != this.GetType())
-                throw new ArgumentException("The texure '" + texture.Name + "' is of type '" + texture.GetType().FullName + "' and cannot be copied to or from the type '" + this.GetType().FullName + "'.", "texture");
+            if (texture.ResourceType != ResourceType)
+                throw new ArgumentException("The texure '" + texture.Name + "' is of a '" + texture.ResourceType + "' and cannot be copied to or from the type '" + ResourceType + "'.", "texture");
 
 			if (Settings.Usage == BufferUsage.Immutable)
 				throw new InvalidOperationException("Cannot copy to an immutable resource.");

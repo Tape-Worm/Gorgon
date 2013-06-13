@@ -471,7 +471,7 @@ namespace GorgonLibrary.Graphics
             }
             else
             {
-                if (_viewPorts[0].Equals(viewPort))
+                if (GorgonViewport.Equals(ref _viewPorts[0], ref viewPort))
                 {
                     return;
                 }

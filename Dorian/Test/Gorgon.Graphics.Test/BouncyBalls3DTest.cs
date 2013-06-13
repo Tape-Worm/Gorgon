@@ -206,7 +206,7 @@ namespace GorgonLibrary.Graphics.Test
 		private GorgonSwapChain _swap = null;
 		private GorgonGraphics _graphics = null;
 		private TestForm _form = null;
-		private GorgonDepthStencilStates _depthStateAlpha = GorgonDepthStencilStates.DefaultStates;
+		private GorgonDepthStencilStates _depthStateAlpha = GorgonDepthStencilStates.NoDepthStencil;
 		private Vector4[] _pos = new Vector4[4];
 		private vertex[] _sprite = null;
 		private Matrix pvw = Matrix.Identity;

@@ -318,33 +318,33 @@ namespace GorgonLibrary.Graphics
         /// <param name="depthView">The Direct 3D depth/stencil view to set.</param>
         private void SetTargets(D3D.DepthStencilView depthView)
         {
-            // If we have no views to set, then get out.
-            if (((_D3DViews == null) || (_D3DViews.Length == 0))
-                && ((_D3DUnorderedViews == null) || (_D3DUnorderedViews.Length == 0)))
-            {
-                return;
-            }
+			// If we have no views to set, then get out.
+			if (((_D3DViews == null) || (_D3DViews.Length == 0))
+				&& ((_D3DUnorderedViews == null) || (_D3DUnorderedViews.Length == 0)))
+			{
+				return;
+			}
 
-            // We have UAV views, so we need to use the proper function.
-            if ((_graphics.VideoDevice.SupportedFeatureLevel >= DeviceFeatureLevel.SM5) && (_D3DUnorderedViews != null) && (_D3DUnorderedViews.Length > 0) && (_uavStartSlot > -1))
-            {
-                if ((_unorderedViews != null) && (_unorderedViews.Length != 0))
-                {
-                    _graphics.Context.OutputMerger.SetTargets(depthView,
-                                                              _uavStartSlot,
-                                                              _D3DUnorderedViews,
-                                                              _uavCounts,
-                                                              _D3DViews);
-                    return;
-                }
+			// We have UAV views, so we need to use the proper function.
+			if ((_graphics.VideoDevice.SupportedFeatureLevel >= DeviceFeatureLevel.SM5) && (_D3DUnorderedViews != null) && (_D3DUnorderedViews.Length > 0) && (_uavStartSlot > -1))
+			{
+				if ((_unorderedViews != null) && (_unorderedViews.Length != 0))
+				{
+					_graphics.Context.OutputMerger.SetTargets(depthView,
+															  _uavStartSlot,
+															  _D3DUnorderedViews,
+															  _uavCounts,
+															  _D3DViews);
+					return;
+				}
 
-                _graphics.Context.OutputMerger.SetUnorderedAccessViews(0, _D3DUnorderedViews);
-                _uavCounts = null;
-                _uavStartSlot = -1;
-            }
+				_graphics.Context.OutputMerger.SetUnorderedAccessViews(0, _D3DUnorderedViews);
+				_uavCounts = null;
+				_uavStartSlot = -1;
+			}
 
-            _graphics.Context.OutputMerger.SetTargets(depthView, _D3DViews);
-        }
+			_graphics.Context.OutputMerger.SetTargets(depthView, _D3DViews);
+		}
 
         /// <summary>
         /// Function to perform the binding of unordered access views.
@@ -913,11 +913,8 @@ namespace GorgonLibrary.Graphics
             }
             else
             {
-                if (_unorderedViews != null)
-                {
-                    _unorderedViews = null;
-                    hasChanged = true;
-                }
+				hasChanged = _unorderedViews != null;
+				_unorderedViews = null;
             }
 
             if (!hasChanged)
@@ -953,7 +950,7 @@ namespace GorgonLibrary.Graphics
         /// <para>Thrown when the render target view, depth/stencil view, or the unordered access views could not be bound to the pipeline.</para></exception>
         public void SetRenderTarget(GorgonRenderTargetView view, GorgonDepthStencilView depthStencilView = null, int startSlot = 1, params GorgonUnorderedAccessView[] unorderedAccessViews)
 		{
-		    bool uavsChanged = false;
+		    bool uavsChanged;
 			D3D.DepthStencilView depthView = depthStencilView == null ? null : depthStencilView.D3DView;
 
             // Set up UAVs for binding.
@@ -975,16 +972,8 @@ namespace GorgonLibrary.Graphics
             }
             else
             {
-                _unorderedViews = null;
-
-                // Reset all the views.
-                if (_D3DUnorderedViews != null)
-                {
-                    for (int i = 0; i < _D3DUnorderedViews.Length; i++)
-                    {
-                        _D3DUnorderedViews[i] = null;
-                    }
-                }
+	            uavsChanged = _unorderedViews != null;
+	            _unorderedViews = null;
             }
 
 
@@ -1006,7 +995,6 @@ namespace GorgonLibrary.Graphics
                 SetTargets(depthView);
 				return;
 			}
-
 
 			if ((_targetViews == null) || (_targetViews.Length != 1))
 			{
@@ -1083,7 +1071,8 @@ namespace GorgonLibrary.Graphics
             }
             else
             {
-                _unorderedViews = null;
+				hasChanged = _unorderedViews != null;
+				_unorderedViews = null;
             }
 
 			// If we didn't pass any views, then unbind all the views.
@@ -1660,7 +1649,7 @@ namespace GorgonLibrary.Graphics
 				};
 			DepthStencilState = new GorgonDepthStencilRenderState(_graphics)
 				{
-					States = GorgonDepthStencilStates.DefaultStates
+					States = GorgonDepthStencilStates.NoDepthStencil
 				};
 		}
 		#endregion
