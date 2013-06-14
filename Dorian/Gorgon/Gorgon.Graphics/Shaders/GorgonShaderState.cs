@@ -1150,58 +1150,6 @@ namespace GorgonLibrary.Graphics
 				_shader.SetResources(slot, count, _views);
 			}
 
-            /*/// <summary>
-            /// Function to retrieve a shader view at the specified index.
-            /// </summary>
-            /// <param name="index">Index of the shader view to retrieve.</param>
-            /// <returns>The shader view at the specified index.</returns>
-            /// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="index"/> is less than 0 or greater than or equal to the number of resource slots.</exception>
-            public GorgonShaderView GetView(int index)
-            {
-                GorgonDebug.AssertParamRange(index, 0, _resources.Length, "index");
-                return _resources[index];
-            }*/
-
-/*            /// <summary>
-            /// Function to set a shader view to the specified index.
-            /// </summary>
-            /// <param name="index">Index of the shader view to apply.</param>
-            /// <param name="view">View to apply to the shader.</param>
-            /// <remarks>Set a shader view to give a shader access to a resource.  You may also pass in the following resources: <see cref="GorgonLibrary.Graphics.GorgonBaseBuffer">a buffer</see>, <see cref="GorgonLibrary.Graphics.GorgonTexture">a texture</see> 
-            /// or one of the render target types.  These resources may be used as shader resources provided that the resource was created to allow shader view access.  If not, then the view will be unbound.
-			/// <para>Ensure that the view being set is not already bound to the shader.  If it is already bound, then an exception will be thrown.</para>
-            /// </remarks>
-            /// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="index"/> is less than 0 or greater than or equal to the number of resource slots.</exception>
-			/// <exception cref="GorgonLibrary.GorgonException">Thrown when a view is already bound to another slot.</exception>
-            public void SetView(int index, GorgonShaderView view)
-            {
-                GorgonDebug.AssertParamRange(index, 0, _resources.Length, "index");
-
-                if (_resources[index] == view)
-                {
-                    return;
-                }
-
-#if DEBUG
-                if (view != null)
-                {
-                    int currentIndex = IndexOf(view);
-
-                    if (currentIndex != -1)
-                    {
-	                    throw new GorgonException(GorgonResult.CannotBind,
-	                                              string.Format(Properties.Resources.GORGFX_VIEW_ALREADY_BOUND,
-	                                                            currentIndex));
-                    }
-                }
-#endif
-
-                _resources[index] = view;
-	            _views[0] = view == null ? null : view.D3DView;
-
-	            _shader.SetResources(index, 1, _views);
-            }*/
-
             /// <summary>
             /// Function to return the resource assigned to the view at the specified index.
             /// </summary>
