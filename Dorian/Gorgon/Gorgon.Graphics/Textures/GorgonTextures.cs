@@ -584,10 +584,10 @@ namespace GorgonLibrary.Graphics
         /// <description>Width</description><description>The image will be resized to match the width specified.  Set to 0 to use the original image width.</description>
         /// </item>
         /// <item>
-        /// <description>Height</description><description>The image will be resized to match the height specified.  Set to 0 to use the original image height.</description>
+        /// <description>Height</description><description>This is ignored for 1D images.</description>
         /// </item>
         /// <item>
-        /// <description>Depth</description><description>This is ignored for 2D images.</description>
+        /// <description>Depth</description><description>This is ignored for 1D images.</description>
         /// </item>
         /// <item>
         /// <description>Format</description><description>The image will be converted to the format specified.  Set to Unknown to map to the closest available format.</description>
