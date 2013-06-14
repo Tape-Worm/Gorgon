@@ -28,6 +28,7 @@ using System;
 using System.IO;
 using System.Text;
 using GorgonLibrary.Diagnostics;
+using GorgonLibrary.Graphics.Properties;
 using D3D = SharpDX.Direct3D11;
 using Shaders = SharpDX.D3DCompiler;
 
@@ -245,27 +246,29 @@ namespace GorgonLibrary.Graphics
 		/// <returns>The Direct3D shader version.</returns>
 		private string GetD3DVersion()
 		{			
-			string prefix = string.Empty;
-			string version = string.Empty;
+			string prefix;
+			string version;
 
-			if (((ShaderType == GorgonLibrary.Graphics.ShaderType.Compute) || (ShaderType == GorgonLibrary.Graphics.ShaderType.Domain) || (ShaderType == GorgonLibrary.Graphics.ShaderType.Hull)) &&
-				(Graphics.VideoDevice.SupportedFeatureLevel != DeviceFeatureLevel.SM5))
-				throw new NotSupportedException("Compute, domain and hull shaders are only supported by Shader Model 5 hardware.");
+		    if (((ShaderType == GorgonLibrary.Graphics.ShaderType.Compute)
+		         || (ShaderType == GorgonLibrary.Graphics.ShaderType.Domain)
+		         || (ShaderType == GorgonLibrary.Graphics.ShaderType.Hull))
+		        && (Graphics.VideoDevice.SupportedFeatureLevel < DeviceFeatureLevel.SM5))
+		    {
+		        throw new NotSupportedException(string.Format(Resources.GORGFX_REQUIRES_SM, DeviceFeatureLevel.SM5));
+		    }
 
-			if ((ShaderType == GorgonLibrary.Graphics.ShaderType.Geometry) && 
-				((Graphics.VideoDevice.SupportedFeatureLevel != DeviceFeatureLevel.SM5) 
-				|| ((Graphics.VideoDevice.SupportedFeatureLevel != DeviceFeatureLevel.SM4) 
-				|| (Graphics.VideoDevice.SupportedFeatureLevel != DeviceFeatureLevel.SM4_1))))
-				throw new NotSupportedException("Geometry shaders are only supported by Shader Model 4 and better hardware.");
-			
-			switch (ShaderType)
+		    if ((ShaderType == GorgonLibrary.Graphics.ShaderType.Geometry)
+		        && ((Graphics.VideoDevice.SupportedFeatureLevel < DeviceFeatureLevel.SM4)))
+		    {
+                throw new NotSupportedException(string.Format(Resources.GORGFX_REQUIRES_SM, DeviceFeatureLevel.SM4));
+		    }
+
+		    switch (ShaderType)
 			{
 				case GorgonLibrary.Graphics.ShaderType.Pixel:
 					prefix = "ps";
 					break;
 				case GorgonLibrary.Graphics.ShaderType.Compute:
-					if (Graphics.VideoDevice.SupportedFeatureLevel != DeviceFeatureLevel.SM5)
-						throw new GorgonException(GorgonResult.CannotCreate, "Cannot create the compute shader, the video device does not support compute shaders.");
 					prefix = "cs";
 					break;
 				case GorgonLibrary.Graphics.ShaderType.Geometry:
@@ -306,7 +309,7 @@ namespace GorgonLibrary.Graphics
 		private Shaders.ShaderBytecode CompileFromSource(bool includeDebugInfo)
 		{
 			var flags = Shaders.ShaderFlags.OptimizationLevel3;
-			string parsedCode = string.Empty;
+			string parsedCode;
 
 			try
 			{
@@ -338,11 +341,14 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Function to load a shader from preexisting byte code.
 		/// </summary>
-		internal void LoadShader()
+		internal void Initialize()
 		{
-			if (D3DByteCode != null)
-				CreateShader(D3DByteCode);
-			Graphics.Shaders.Reseat(this);
+		    if (D3DByteCode != null)
+		    {
+		        CreateShader(D3DByteCode);
+		    }
+
+		    Graphics.Shaders.Reseat(this);
 			HasChanged = false;
 		}
 
@@ -354,19 +360,23 @@ namespace GorgonLibrary.Graphics
 		/// <exception cref="GorgonLibrary.GorgonException">Thrown when the shader fails to compile.</exception>
 		public void Compile()
 		{
-			if (!HasChanged)
-				return;
+		    if (!HasChanged)
+		    {
+		        return;
+		    }
 
-			if (D3DByteCode != null)
+		    if (D3DByteCode != null)
 			{
 				D3DByteCode.Dispose();
 				D3DByteCode = null;
 			}
 
-			if (!string.IsNullOrEmpty(SourceCode))
-				D3DByteCode = CompileFromSource(IsDebug);
+		    if (!string.IsNullOrEmpty(SourceCode))
+		    {
+		        D3DByteCode = CompileFromSource(IsDebug);
+		    }
 
-			LoadShader();
+		    Initialize();
 		}
 
         /// <summary>
@@ -393,19 +403,19 @@ namespace GorgonLibrary.Graphics
 		/// Function to save the shader to a stream.
 		/// </summary>
 		/// <param name="stream">Stream to write into.</param>
-		/// <param name="binary">TRUE to save the binary version of the shader, FALSE to save the source.</param>
-		/// <param name="saveDebug">TRUE to save the debug information, FALSE to exclude it.</param>
+		/// <param name="binary">[Optional] TRUE to save the binary version of the shader, FALSE to save the source.</param>
+		/// <param name="saveDebug">[Optional] TRUE to save the debug information, FALSE to exclude it.</param>
 		/// <remarks>The <paramref name="saveDebug"/> parameter is only applicable when the <paramref name="binary"/> parameter is set to TRUE.</remarks>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="stream"/> parameter is NULL (Nothing in VB.Net).</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the shader is being saved as source code and the <see cref="GorgonLibrary.Graphics.GorgonShader.SourceCode">SourceCode</see> parameter is NULL (Nothing in VB.Net) or empty.</exception>
 		/// <exception cref="GorgonLibrary.GorgonException">Thrown when the shader fails to compile.</exception>
-		public void Save(Stream stream, bool binary, bool saveDebug)
+		public void Save(Stream stream, bool binary = false, bool saveDebug = false)
 		{
 			Shaders.ShaderBytecode compiledShader = null;
 			GorgonDebug.AssertNull<Stream>(stream, "stream");
 
 			if ((!binary) && (string.IsNullOrEmpty(SourceCode)))
-				throw new ArgumentException("Cannot save the shader source, no source code was found for the shader.", "compiled");
+				throw new ArgumentException("Cannot save the shader source, no source code was found for the shader.", "binary");
 
 			if (!binary)
 			{
@@ -434,8 +444,8 @@ namespace GorgonLibrary.Graphics
 		/// Function to save the shader to a file.
 		/// </summary>
 		/// <param name="fileName">File name and path for the shader file.</param>
-		/// <param name="binary">TRUE if saving as a binary version of the shader, FALSE if not.</param>
-		/// <param name="saveDebug">TRUE to save debug information with the shader, FALSE to exclude it.</param>
+		/// <param name="binary">[Optional] TRUE if saving as a binary version of the shader, FALSE if not.</param>
+		/// <param name="saveDebug">[Optional] TRUE to save debug information with the shader, FALSE to exclude it.</param>
 		/// <remarks>The <paramref name="saveDebug"/> parameter is only applicable when the <paramref name="binary"/> parameter is set to TRUE.</remarks>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="fileName"/> parameter is NULL (Nothing in VB.Net).</exception>
 		/// <exception cref="System.ArgumentException">Thrown is the fileName parameter is an empty string.
@@ -443,7 +453,7 @@ namespace GorgonLibrary.Graphics
 		/// <para>Thrown when the shader is being saved as source code and the <see cref="GorgonLibrary.Graphics.GorgonShader.SourceCode">SourceCode</see> parameter is NULL (Nothing in VB.Net) or empty.</para>
 		/// </exception>
 		/// <exception cref="GorgonLibrary.GorgonException">Thrown when the shader fails to compile.</exception>
-		public void Save(string fileName, bool binary, bool saveDebug)
+		public void Save(string fileName, bool binary = false, bool saveDebug = false)
 		{
 			FileStream stream = null;
 

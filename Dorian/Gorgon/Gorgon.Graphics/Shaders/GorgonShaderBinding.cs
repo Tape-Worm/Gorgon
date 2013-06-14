@@ -70,6 +70,15 @@ namespace GorgonLibrary.Graphics
 			private set;
 		}
 
+        /// <summary>
+        /// Property to return the current geometry shader states.
+        /// </summary>
+        public GorgonGeometryShaderState GeometryShader
+        {
+            get;
+            private set;
+        }
+
 		/// <summary>
 		/// Property to return a list of include files for the shaders.
 		/// </summary>
@@ -96,6 +105,11 @@ namespace GorgonLibrary.Graphics
 				VertexShader.CleanUp();
 			}
 
+            if (GeometryShader != null)
+            {
+                GeometryShader.CleanUp();
+            }
+
 			PixelShader = null;
 			VertexShader = null;
 		}
@@ -119,16 +133,31 @@ namespace GorgonLibrary.Graphics
 				return;
 			}
 
-			// Lastly, check for vertex shaders.
 			var vertexShader = shader as GorgonVertexShader;
 
-			if ((vertexShader == null) || (VertexShader.Current != vertexShader))
+			if (vertexShader != null)
 			{
-				return;
+			    if (VertexShader.Current == vertexShader)
+			    {
+                    VertexShader.Current = null;
+                    VertexShader.Current = vertexShader;
+			    }
+
+			    return;
 			}
 
-			VertexShader.Current = null;
-			VertexShader.Current = vertexShader;
+		    var geometryShader = shader as GorgonGeometryShader;
+
+            if ((geometryShader != null) && (GeometryShader != null))
+            {
+                if (GeometryShader.Current == geometryShader)
+                {
+                    GeometryShader.Current = null;
+                    GeometryShader.Current = geometryShader;
+                }
+
+                return;
+            }
 		}
 
 		/// <summary>
@@ -139,6 +168,10 @@ namespace GorgonLibrary.Graphics
 		{
 			PixelShader.Resources.Unbind(view);
 			VertexShader.Resources.Unbind(view);
+		    if (GeometryShader != null)
+		    {
+                GeometryShader.Resources.Unbind(view);
+		    }
 		}
         
         /// <summary>
@@ -149,6 +182,10 @@ namespace GorgonLibrary.Graphics
         {
             PixelShader.Resources.Unbind(resource);
             VertexShader.Resources.Unbind(resource);
+            if (GeometryShader != null)
+            {
+                GeometryShader.Resources.Unbind(resource);
+            }
         }
 
 		/// <summary>
@@ -159,6 +196,10 @@ namespace GorgonLibrary.Graphics
 		{
 			PixelShader.ConstantBuffers.Unbind(constantBuffer);
 			VertexShader.ConstantBuffers.Unbind(constantBuffer);
+            if (GeometryShader != null)
+            {
+                GeometryShader.ConstantBuffers.Unbind(constantBuffer);
+            }
 		}
 
 		/// <summary>
@@ -383,7 +424,7 @@ namespace GorgonLibrary.Graphics
 			{
 				shader = CreateShader<T>(name, entryPoint, string.Empty, isDebug);
 				shader.D3DByteCode = new Shaders.ShaderBytecode(shaderData);
-				shader.LoadShader();
+				shader.Initialize();
 			}
 			else
 			{
@@ -521,7 +562,11 @@ namespace GorgonLibrary.Graphics
 			IncludeFiles = new GorgonShaderIncludeCollection();
 			VertexShader = new GorgonVertexShaderState(graphics);
 			PixelShader = new GorgonPixelShaderState(graphics);
-			_graphics = graphics;
+		    if (graphics.VideoDevice.SupportedFeatureLevel < DeviceFeatureLevel.SM4)
+		    {
+		        GeometryShader = new GorgonGeometryShaderState(graphics);
+		    }
+		    _graphics = graphics;
 		}
 		#endregion
 	}
