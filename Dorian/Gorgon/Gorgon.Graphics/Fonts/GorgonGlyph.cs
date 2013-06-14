@@ -135,10 +135,10 @@ namespace GorgonLibrary.Graphics
 
 			Character = character;
 			GlyphCoordinates = glyphCoordinates;
-			TextureCoordinates = RectangleF.FromLTRB((float)glyphCoordinates.Left / (float)texture.Settings.Width,
-												(float)glyphCoordinates.Top / (float)texture.Settings.Height,
-												(float)glyphCoordinates.Right / (float)texture.Settings.Width,
-												(float)glyphCoordinates.Bottom / (float)texture.Settings.Height);
+			TextureCoordinates = RectangleF.FromLTRB(glyphCoordinates.Left / (float)texture.Settings.Width,
+												glyphCoordinates.Top / (float)texture.Settings.Height,
+												glyphCoordinates.Right / (float)texture.Settings.Width,
+												glyphCoordinates.Bottom / (float)texture.Settings.Height);
 			Texture = texture;
 			Offset = glyphOffset;
 			Advance = glyphAdvancing;

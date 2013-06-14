@@ -41,63 +41,6 @@ namespace GorgonLibrary.Graphics
         #endregion
 
         #region Methods.
-        /// <summary>
-        /// Function to perform validation upon the settings for a generic buffer.
-        /// </summary>
-        private static void ValidateGenericBufferSettings(IBufferSettings settings)
-        {
-			if (settings == null)
-			{
-				return;
-			}
-
-            // Ensure that we can actually put something into our buffer.
-            if (settings.SizeInBytes <= 4)
-            {
-                throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_BUFFER_SIZE_TOO_SMALL, 4));
-            }
-
-            // Only allow raw views if we've provided a shader view and/or an unordered access view.
-            if ((settings.AllowRawViews)
-                && (!settings.AllowShaderViews)
-                && (!settings.AllowUnorderedAccessViews))
-            {
-                throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_BUFFER_RAW_ACCESS_REQUIRES_VIEW_ACCESS);
-            }
-
-            if ((settings.IsOutput) && (settings.AllowUnorderedAccessViews))
-            {
-                throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_BUFFER_OUTPUT_NO_UNORDERED);
-            }
-
-            // Do not allow staging usage with any of these.
-            if ((settings.Usage == BufferUsage.Staging) 
-				&& ((settings.AllowIndirectArguments) 
-					|| (settings.AllowShaderViews) 
-					|| (settings.AllowRawViews) 
-					|| (settings.AllowUnorderedAccessViews) 
-					|| (settings.IsOutput)))
-            {
-
-                throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_BUFFER_NO_STAGING_INVALID_FLAGS);
-            }
-
-			// Do not allow dynamic usage with any of these.
-			if ((settings.Usage == BufferUsage.Dynamic)
-				&& ((settings.AllowIndirectArguments)
-					|| (settings.AllowUnorderedAccessViews)
-					|| (settings.IsOutput)))
-			{
-
-				throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_BUFFER_NO_DYNAMIC_INVALID_FLAGS);
-			}
-
-            if ((settings.DefaultShaderViewFormat != BufferFormat.Unknown) &&  (!settings.AllowShaderViews))
-            {
-                throw new GorgonException(GorgonResult.CannotBind, Resources.GORGFX_BUFFER_NO_SHADER_VIEWS);
-            }
-        }
-
 		/// <summary>
 		/// Function to perform validation upon the settings for a structured buffer.
 		/// </summary>
@@ -138,7 +81,64 @@ namespace GorgonLibrary.Graphics
 			ValidateGenericBufferSettings(settings);
         }
 
-        /// <summary>
+		/// <summary>
+		/// Function to perform validation upon the settings for a generic buffer.
+		/// </summary>
+		internal static void ValidateGenericBufferSettings(IBufferSettings settings)
+		{
+			if (settings == null)
+			{
+				return;
+			}
+
+			// Ensure that we can actually put something into our buffer.
+			if (settings.SizeInBytes <= 4)
+			{
+				throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_BUFFER_SIZE_TOO_SMALL, 4));
+			}
+
+			// Only allow raw views if we've provided a shader view and/or an unordered access view.
+			if ((settings.AllowRawViews)
+				&& (!settings.AllowShaderViews)
+				&& (!settings.AllowUnorderedAccessViews))
+			{
+				throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_BUFFER_RAW_ACCESS_REQUIRES_VIEW_ACCESS);
+			}
+
+			if ((settings.IsOutput) && (settings.AllowUnorderedAccessViews))
+			{
+				throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_BUFFER_OUTPUT_NO_UNORDERED);
+			}
+
+			// Do not allow staging usage with any of these.
+			if ((settings.Usage == BufferUsage.Staging)
+				&& ((settings.AllowIndirectArguments)
+					|| (settings.AllowShaderViews)
+					|| (settings.AllowRawViews)
+					|| (settings.AllowUnorderedAccessViews)
+					|| (settings.IsOutput)))
+			{
+
+				throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_BUFFER_NO_STAGING_INVALID_FLAGS);
+			}
+
+			// Do not allow dynamic usage with any of these.
+			if ((settings.Usage == BufferUsage.Dynamic)
+				&& ((settings.AllowIndirectArguments)
+					|| (settings.AllowUnorderedAccessViews)
+					|| (settings.IsOutput)))
+			{
+
+				throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_BUFFER_NO_DYNAMIC_INVALID_FLAGS);
+			}
+
+			if ((settings.DefaultShaderViewFormat != BufferFormat.Unknown) && (!settings.AllowShaderViews))
+			{
+				throw new GorgonException(GorgonResult.CannotBind, Resources.GORGFX_BUFFER_NO_SHADER_VIEWS);
+			}
+		}
+		
+		/// <summary>
         /// Function to create a generic buffer.
         /// </summary>
         /// <typeparam name="T">Type of data in the array.  Must be a value type.</typeparam>

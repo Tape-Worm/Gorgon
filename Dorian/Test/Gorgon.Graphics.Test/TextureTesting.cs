@@ -72,7 +72,7 @@ namespace GorgonLibrary.Graphics.Test
 
             try
             {
-                texture = _framework.Graphics.Textures.CreateTexture<GorgonTexture1D>("Test1D",
+                texture = _framework.Graphics.Textures.CreateTexture("Test1D",
                                                  new GorgonTexture1DSettings
                                                  {
                                                      Width = 256,
@@ -104,7 +104,7 @@ namespace GorgonLibrary.Graphics.Test
 
             try
             {
-                texture = _framework.Graphics.Textures.CreateTexture<GorgonTexture2D>("Test2D",
+                texture = _framework.Graphics.Textures.CreateTexture("Test2D",
                                                  new GorgonTexture2DSettings
                                                  {
                                                      Width = 256,
@@ -137,7 +137,7 @@ namespace GorgonLibrary.Graphics.Test
 
             try
             {
-                texture = _framework.Graphics.Textures.CreateTexture<GorgonTexture3D>("Test3D",
+                texture = _framework.Graphics.Textures.CreateTexture("Test3D",
                                                  new GorgonTexture3DSettings
                                                  {
                                                      Width = 256,
@@ -221,7 +221,7 @@ namespace GorgonLibrary.Graphics.Test
 
             try
             {
-                _1D = _framework.Graphics.Textures.CreateTexture<GorgonTexture1D>("Test1D",
+                _1D = _framework.Graphics.Textures.CreateTexture("Test1D",
                                                  new GorgonTexture1DSettings
                                                      {
                                                          Width = 256,
@@ -236,7 +236,7 @@ namespace GorgonLibrary.Graphics.Test
                 Assert.IsNotNull((GorgonShaderView)_1D);
 				Assert.AreEqual(_1D.Settings.Format, ((GorgonShaderView)_1D).Format);
 
-                _2D = _framework.Graphics.Textures.CreateTexture<GorgonTexture2D>("Test2D",
+                _2D = _framework.Graphics.Textures.CreateTexture("Test2D",
                                                  new GorgonTexture2DSettings
                                                  {
                                                      Width = 256,
@@ -252,7 +252,7 @@ namespace GorgonLibrary.Graphics.Test
 				Assert.IsNotNull((GorgonShaderView)_2D);
                 Assert.AreEqual(_2D.Settings.Format, ((GorgonShaderView)_2D).Format);
 
-                _3D = _framework.Graphics.Textures.CreateTexture<GorgonTexture3D>("Test3D",
+                _3D = _framework.Graphics.Textures.CreateTexture("Test3D",
                                                  new GorgonTexture3DSettings
                                                  {
                                                      Width = 256,

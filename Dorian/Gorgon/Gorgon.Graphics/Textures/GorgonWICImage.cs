@@ -806,7 +806,7 @@ namespace GorgonLibrary.Graphics
         /// <param name="destRect">Rectangle containing the area to scale or clip</param>
         /// <param name="clip">TRUE to perform clipping instead of scaling.</param>
         /// <param name="scaleFilter">Filter to apply to scaled data.</param>
-        public unsafe void TransformImageData(SharpDX.WIC.BitmapSource sourceData, IntPtr destData, int rowPitch, int slicePitch, Guid destFormat, ImageDithering dither, Rectangle destRect, bool clip, ImageFilter scaleFilter)
+        public void TransformImageData(SharpDX.WIC.BitmapSource sourceData, IntPtr destData, int rowPitch, int slicePitch, Guid destFormat, ImageDithering dither, Rectangle destRect, bool clip, ImageFilter scaleFilter)
         {
 			Guid pixelFormat = destFormat;
             SharpDX.WIC.BitmapSource source = sourceData;

@@ -143,7 +143,7 @@ namespace GorgonLibrary.IO
 	/// <remarks>A codec allows for reading and/or writing of data in an encoded format.  Users may inherit from this object to define their own 
 	/// image formats, or use one of the predefined image codecs available in Gorgon.
 	/// </remarks>
-	public abstract unsafe class GorgonCodecWIC
+	public abstract class GorgonCodecWIC
 		: GorgonImageCodec
 	{
 		#region Variables.
@@ -404,8 +404,8 @@ namespace GorgonLibrary.IO
         {
             var settings = new GorgonTexture2DSettings();
 
-            return new GorgonTexture2DSettings()
-            {
+            return new GorgonTexture2DSettings
+	            {
                 Width = frame.Size.Width,
                 Height = frame.Size.Height,
                 MipCount = 1,

@@ -372,8 +372,8 @@ namespace GorgonLibrary.IO
 			}
 
 			// Create our settings.
-			var settings = new GorgonTexture1DSettings()
-			{
+			var settings = new GorgonTexture1DSettings
+				{
 				Width = options.Width,
 				MipCount = options.MipCount,
 				ArrayCount = 1,
@@ -408,7 +408,7 @@ namespace GorgonLibrary.IO
 		/// <param name="images">Images to convert.</param>
         /// <param name="options">The options for the image conversion.</param>
 		/// <returns>The converted image data.</returns>
-		public static GorgonImageData Create1DImageDataFromImages(GorgonWICImage wic, IList<Image> images, GorgonGDIOptions options)
+		public static GorgonImageData Create1DImageDataFromImages(GorgonWICImage wic, Image[] images, GorgonGDIOptions options)
 		{
 			GorgonImageData data = null;
             
@@ -452,8 +452,8 @@ namespace GorgonLibrary.IO
 			}
 
 			// Create our settings.
-			var settings = new GorgonTexture1DSettings()
-			{
+			var settings = new GorgonTexture1DSettings
+				{
 				Width = options.Width,
 				MipCount = options.MipCount,
 				ArrayCount = options.ArrayCount,
@@ -463,7 +463,7 @@ namespace GorgonLibrary.IO
                 Usage = options.Usage
 			};
 			
-			if ((options.ArrayCount * options.MipCount) > images.Count)
+			if ((options.ArrayCount * options.MipCount) > images.Length)
 			{
 				throw new ArgumentOutOfRangeException("images", "The mip level count and the array count exceed the length of the array.");
 			}
@@ -537,8 +537,8 @@ namespace GorgonLibrary.IO
 			}
 			
 			// Create our settings.
-			var settings = new GorgonTexture2DSettings()
-			{
+			var settings = new GorgonTexture2DSettings
+				{
 				Width = options.Width,
 				Height = options.Height,
 				MipCount = options.MipCount,
@@ -572,11 +572,11 @@ namespace GorgonLibrary.IO
 		/// <param name="images">Images to convert.</param>
 		/// <param name="options">Options for conversion.</param>
 		/// <returns>The converted image data.</returns>
-		public static GorgonImageData Create2DImageDataFromImages(GorgonWICImage wic, IList<Image> images, GorgonGDIOptions options)
+		public static GorgonImageData Create2DImageDataFromImages(GorgonWICImage wic, Image[] images, GorgonGDIOptions options)
 		{
 			GorgonImageData data = null;
 
-			if ((images == null) || (images.Count == 0))
+			if ((images == null) || (images.Length == 0))
 			{
 				throw new ArgumentException("The parameter must not be NULL or empty.", "images");
 			}
@@ -626,8 +626,8 @@ namespace GorgonLibrary.IO
 			}
 
 			// Create our settings.
-			var settings = new GorgonTexture2DSettings()
-			{
+			var settings = new GorgonTexture2DSettings
+				{
 				Width = options.Width,
 				Height = options.Height,
 				MipCount = options.MipCount,
@@ -638,7 +638,7 @@ namespace GorgonLibrary.IO
                 Usage = options.Usage
 			};
 
-			if ((options.ArrayCount * options.MipCount) > images.Count)
+			if ((options.ArrayCount * options.MipCount) > images.Length)
 			{
 				throw new ArgumentOutOfRangeException("images", "The mip level count and the array count exceed the length of the array.");
 			}
@@ -672,11 +672,11 @@ namespace GorgonLibrary.IO
 		/// <param name="images">Images to convert.</param>
 		/// <param name="options">Conversion options.</param>
 		/// <returns>The converted image data.</returns>
-		public static GorgonImageData Create3DImageDataFromImages(GorgonWICImage wic, IList<Image> images, GorgonGDIOptions options)
+		public static GorgonImageData Create3DImageDataFromImages(GorgonWICImage wic, Image[] images, GorgonGDIOptions options)
 		{
 			GorgonImageData data = null;
 
-			if ((images == null) || (images.Count == 0))
+			if ((images == null) || (images.Length == 0))
 			{
 				throw new ArgumentException("The parameter must not be NULL or empty.", "images");
 			}
@@ -726,14 +726,14 @@ namespace GorgonLibrary.IO
 			}
 
 			// Set the depth to the number of images if there are no mip-maps.
-			if ((images.Count > 1) && (options.MipCount == 1))
+			if ((images.Length > 1) && (options.MipCount == 1))
 			{
-				options.Depth = images.Count;
+				options.Depth = images.Length;
 			}
 
 			// Create our settings.
-			var settings = new GorgonTexture3DSettings()
-			{
+			var settings = new GorgonTexture3DSettings
+				{
 				Width = options.Width,
 				Height = options.Height,
 				Depth = options.Depth,
@@ -757,7 +757,7 @@ namespace GorgonLibrary.IO
 			int imageIndex = 0;
 			for (int mipLevel = 0; mipLevel < data.Settings.MipCount; mipLevel++)
 			{
-				if (imageIndex >= images.Count)
+				if (imageIndex >= images.Length)
 				{
 					data.Dispose();
 					throw new ArgumentOutOfRangeException("images", "The mip level count and the depth slice count exceed the length of the array.");

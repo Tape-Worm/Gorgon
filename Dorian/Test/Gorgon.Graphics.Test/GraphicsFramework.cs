@@ -284,7 +284,7 @@ namespace GorgonLibrary.Graphics.Test
 		public GraphicsFramework()
 		{
 			GorgonVideoDeviceEnumerator.Enumerate(true, true);
-#error Test WARP/Refrast... for some reason the hardware colors are being mixed properly, but it looks like the software isn't.  This should be the same on both?
+
 			_form = new TestForm();
 			//Graphics = new GorgonGraphics(GorgonVideoDeviceEnumerator.VideoDevices.Single(item => item.VideoDeviceType == VideoDeviceType.ReferenceRasterizer));
 			Graphics = new GorgonGraphics();

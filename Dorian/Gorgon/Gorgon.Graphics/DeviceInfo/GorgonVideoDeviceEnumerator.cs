@@ -119,7 +119,6 @@ namespace GorgonLibrary.Graphics
 			{
 				using (var giDevice = D3DDevice.QueryInterface<SharpDX.DXGI.Device1>())
                 {
-#error TODO: Ensure that this works in Win8 - It didn't last night when it was using QueryInterface instead of GetParent.
                     using (var adapter = giDevice.GetParent<SharpDX.DXGI.Adapter1>())
 					{
 						device = new GorgonVideoDevice(adapter, VideoDeviceType.ReferenceRasterizer, index);

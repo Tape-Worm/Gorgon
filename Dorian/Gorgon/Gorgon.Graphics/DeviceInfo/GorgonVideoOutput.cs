@@ -173,24 +173,24 @@ namespace GorgonLibrary.Graphics
 		{
 			VideoDevice = device;
 			
-			this.Index = index;
-			this.Handle = output.Description.MonitorHandle;
-			this.IsAttachedToDesktop = output.Description.IsAttachedToDesktop;
-			this.Name = output.Description.DeviceName;
-			this.OutputBounds = new Rectangle(output.Description.DesktopBounds.Left, output.Description.DesktopBounds.Top, output.Description.DesktopBounds.Width, output.Description.DesktopBounds.Height);
+			Index = index;
+			Handle = output.Description.MonitorHandle;
+			IsAttachedToDesktop = output.Description.IsAttachedToDesktop;
+			Name = output.Description.DeviceName;
+			OutputBounds = new Rectangle(output.Description.DesktopBounds.Left, output.Description.DesktopBounds.Top, output.Description.DesktopBounds.Width, output.Description.DesktopBounds.Height);
 			switch (output.Description.Rotation)
 			{
 				case GI.DisplayModeRotation.Rotate90:
-					this.Rotation = 90;
+					Rotation = 90;
 					break;
 				case GI.DisplayModeRotation.Rotate270:
-					this.Rotation = 270;
+					Rotation = 270;
 					break;
 				case GI.DisplayModeRotation.Rotate180:
-					this.Rotation = 180;
+					Rotation = 180;
 					break;
 				default:
-					this.Rotation = 0;
+					Rotation = 0;
 					break;
 			}				
 		}

@@ -504,8 +504,8 @@ namespace GorgonLibrary.Graphics
 						GISwapChain.SetFullscreenState(true, null);
 						if (_parentForm != null)
 						{
-							_parentForm.Activated += new EventHandler(_parentForm_Activated);
-							_parentForm.Deactivate += new EventHandler(_parentForm_Deactivate);
+							_parentForm.Activated += _parentForm_Activated;
+							_parentForm.Deactivate += _parentForm_Deactivate;
 						}
 					}
 				}
@@ -709,7 +709,7 @@ namespace GorgonLibrary.Graphics
 
 			CreateResources();
 
-			Settings.Window.Resize += new EventHandler(Window_Resize);
+			Settings.Window.Resize += Window_Resize;
 			
 			if (_parentForm == null)
 			{
@@ -848,8 +848,8 @@ namespace GorgonLibrary.Graphics
 
 			if (_parentForm != null)
 			{
-				_parentForm.Activated -= new EventHandler(_parentForm_Activated);
-				_parentForm.Deactivate -= new EventHandler(_parentForm_Deactivate);
+				_parentForm.Activated -= _parentForm_Activated;
+				_parentForm.Deactivate -= _parentForm_Deactivate;
 			}
 
 			// Assign the new settings.	
@@ -1019,11 +1019,11 @@ namespace GorgonLibrary.Graphics
 				{
 					_parentForm.ResizeBegin -= _parentForm_ResizeBegin;
 					_parentForm.ResizeEnd -= _parentForm_ResizeEnd;
-					_parentForm.Activated -= new EventHandler(_parentForm_Activated);
-					_parentForm.Deactivate -= new EventHandler(_parentForm_Deactivate);
+					_parentForm.Activated -= _parentForm_Activated;
+					_parentForm.Deactivate -= _parentForm_Deactivate;
 				}
 
-				Settings.Window.Resize -= new EventHandler(Window_Resize);
+				Settings.Window.Resize -= Window_Resize;
 
 				if (_renderTarget != null)
 				{

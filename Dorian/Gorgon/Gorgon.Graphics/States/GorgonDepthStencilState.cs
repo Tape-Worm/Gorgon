@@ -128,10 +128,12 @@ namespace GorgonLibrary.Graphics
 		{
 			unchecked
 			{
+				// ReSharper disable NonReadonlyFieldInGetHashCode
 				return 281.GenerateHash(ComparisonOperator).
 							GenerateHash(FailOperation).
 							GenerateHash(DepthFailOperation).
 							GenerateHash(PassOperation);
+				// ReSharper restore NonReadonlyFieldInGetHashCode
 			}
 		}
 
@@ -145,7 +147,7 @@ namespace GorgonLibrary.Graphics
 		public override bool Equals(object obj)
 		{
 			if (obj is GorgonDepthStencilOperations)
-				return this.Equals((GorgonDepthStencilOperations)obj);
+				return Equals((GorgonDepthStencilOperations)obj);
 
 			return base.Equals(obj);
 		}
@@ -214,23 +216,23 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// No depth/stencil enabled.
 		/// </summary>
-		public static readonly GorgonDepthStencilStates NoDepthStencil = new GorgonDepthStencilStates()
-		{
+		public static readonly GorgonDepthStencilStates NoDepthStencil = new GorgonDepthStencilStates
+			{
 			IsDepthEnabled = false,
 			IsDepthWriteEnabled = false,
 			IsStencilEnabled = false,
 			StencilReadMask = 0xff,
 			StencilWriteMask = 0xff,
 			DepthComparison = ComparisonOperators.Less,
-			StencilFrontFace = new GorgonDepthStencilOperations()
-			{
+			StencilFrontFace = new GorgonDepthStencilOperations
+				{
 				ComparisonOperator = ComparisonOperators.Always,
 				DepthFailOperation = StencilOperations.Keep,
 				FailOperation = StencilOperations.Keep,
 				PassOperation = StencilOperations.Keep
 			},
-			StencilBackFace = new GorgonDepthStencilOperations()
-			{
+			StencilBackFace = new GorgonDepthStencilOperations
+				{
 				ComparisonOperator = ComparisonOperators.Always,
 				DepthFailOperation = StencilOperations.Keep,
 				FailOperation = StencilOperations.Keep,
@@ -241,23 +243,23 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Depth enabled.
 		/// </summary>
-		public static readonly GorgonDepthStencilStates DepthEnabled = new GorgonDepthStencilStates()
-		{
+		public static readonly GorgonDepthStencilStates DepthEnabled = new GorgonDepthStencilStates
+			{
 			IsDepthEnabled = true,
 			IsDepthWriteEnabled = true,
 			IsStencilEnabled = false,
 			StencilReadMask = 0xff,
 			StencilWriteMask = 0xff,
 			DepthComparison = ComparisonOperators.Less,
-			StencilFrontFace = new GorgonDepthStencilOperations()
-			{
+			StencilFrontFace = new GorgonDepthStencilOperations
+				{
 				ComparisonOperator = ComparisonOperators.Always,
 				DepthFailOperation = StencilOperations.Keep,
 				FailOperation = StencilOperations.Keep,
 				PassOperation = StencilOperations.Keep
 			},
-			StencilBackFace = new GorgonDepthStencilOperations()
-			{
+			StencilBackFace = new GorgonDepthStencilOperations
+				{
 				ComparisonOperator = ComparisonOperators.Always,
 				DepthFailOperation = StencilOperations.Keep,
 				FailOperation = StencilOperations.Keep,
@@ -268,23 +270,23 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Depth write disabled.
 		/// </summary>
-		public static readonly GorgonDepthStencilStates DepthWriteDisabled = new GorgonDepthStencilStates()
-		{
+		public static readonly GorgonDepthStencilStates DepthWriteDisabled = new GorgonDepthStencilStates
+			{
 			IsDepthEnabled = true,
 			IsDepthWriteEnabled = false,
 			IsStencilEnabled = false,
 			StencilReadMask = 0xff,
 			StencilWriteMask = 0xff,
 			DepthComparison = ComparisonOperators.Less,
-			StencilFrontFace = new GorgonDepthStencilOperations()
-			{
+			StencilFrontFace = new GorgonDepthStencilOperations
+				{
 				ComparisonOperator = ComparisonOperators.Always,
 				DepthFailOperation = StencilOperations.Keep,
 				FailOperation = StencilOperations.Keep,
 				PassOperation = StencilOperations.Keep
 			},
-			StencilBackFace = new GorgonDepthStencilOperations()
-			{
+			StencilBackFace = new GorgonDepthStencilOperations
+				{
 				ComparisonOperator = ComparisonOperators.Always,
 				DepthFailOperation = StencilOperations.Keep,
 				FailOperation = StencilOperations.Keep,
@@ -401,7 +403,7 @@ namespace GorgonLibrary.Graphics
 		/// </returns>
 		public static bool operator ==(GorgonDepthStencilStates left, GorgonDepthStencilStates right)
 		{
-			return GorgonDepthStencilStates.Equals(left, right);
+			return Object.Equals(left, right);
 		}
 
 		/// <summary>
@@ -414,7 +416,7 @@ namespace GorgonLibrary.Graphics
 		/// </returns>
 		public static bool operator !=(GorgonDepthStencilStates left, GorgonDepthStencilStates right)
 		{
-			return !GorgonDepthStencilStates.Equals(left, right);
+			return !Object.Equals(left, right);
 		}
 		#endregion
 

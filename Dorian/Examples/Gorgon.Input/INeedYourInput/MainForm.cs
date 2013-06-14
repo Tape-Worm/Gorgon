@@ -413,7 +413,7 @@ namespace GorgonLibrary.Examples
 				};
 
 				// Clear our backup image to white to match our primary screen.
-				_backupImage = _graphics.Textures.CreateTexture<GorgonTexture2D>("Backup", settings);
+				_backupImage = _graphics.Textures.CreateTexture("Backup", settings);
 				var textureData = _backupImage.Lock<GorgonTexture2DData>(BufferLockFlags.Write);
 				textureData.Data.Fill(0xFF);
 				_backupImage.Unlock();

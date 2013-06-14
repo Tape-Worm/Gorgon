@@ -84,8 +84,8 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Default rasterizer states.
 		/// </summary>
-		public static readonly GorgonRasterizerStates DefaultStates = new GorgonRasterizerStates()
-		{
+		public static readonly GorgonRasterizerStates DefaultStates = new GorgonRasterizerStates
+			{
 			CullingMode = CullingMode.Back,
 			FillMode = FillMode.Solid,
 			IsFrontFacingTriangleCounterClockwise = false,
@@ -101,8 +101,8 @@ namespace GorgonLibrary.Graphics
         /// <summary>
         /// Default raster states with front face culling.
         /// </summary>
-	    public static readonly GorgonRasterizerStates CullFrontFace = new GorgonRasterizerStates()
-	        {
+	    public static readonly GorgonRasterizerStates CullFrontFace = new GorgonRasterizerStates
+		    {
                 CullingMode = CullingMode.Front,
                 FillMode = FillMode.Solid,
                 IsFrontFacingTriangleCounterClockwise = false,
@@ -118,8 +118,8 @@ namespace GorgonLibrary.Graphics
         /// <summary>
         /// Default raster states with no culling.
         /// </summary>
-        public static readonly GorgonRasterizerStates NoCulling = new GorgonRasterizerStates()
-        {
+        public static readonly GorgonRasterizerStates NoCulling = new GorgonRasterizerStates
+	        {
             CullingMode = CullingMode.None,
             FillMode = FillMode.Solid,
             IsFrontFacingTriangleCounterClockwise = false,

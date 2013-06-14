@@ -164,7 +164,7 @@ namespace GorgonLibrary.Graphics
 		private IList<GorgonShaderInclude> GetIncludes(string searchPath, string sourceCode)
 		{
 			var paths = new List<GorgonShaderInclude>();
-			IList<string> lines = sourceCode.Split(new char[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
+			IList<string> lines = sourceCode.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
 
 			Directory.SetCurrentDirectory(searchPath);
 
@@ -257,7 +257,7 @@ namespace GorgonLibrary.Graphics
 		internal string ProcessSource(string sourceCode)
 		{
 			var result = new StringBuilder();
-			IList<string> lines = sourceCode.Replace("\r\n", "\n").Replace("\n\r", "\n").Split(new char[] { '\n' });
+			IList<string> lines = sourceCode.Replace("\r\n", "\n").Replace("\n\r", "\n").Split(new[] { '\n' });
 			int i = 0;
 
 			while (i < lines.Count)

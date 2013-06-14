@@ -84,8 +84,8 @@ namespace GorgonLibrary.Graphics
 		/// <param name="subResource">Sub resource index to use.</param>
 		protected override void OnUpdateSubResource(ISubResourceData data, int subResource)
 		{
-			var box = new SharpDX.DataBox()
-			{
+			var box = new SharpDX.DataBox
+				{
 				DataPointer = data.Data.PositionPointer,
 				RowPitch = data.RowPitch,
 				SlicePitch = data.SlicePitch
@@ -113,8 +113,8 @@ namespace GorgonLibrary.Graphics
 		{
 			GorgonTexture staging = null;
 
-			var settings3D = new GorgonTexture3DSettings()
-			{
+			var settings3D = new GorgonTexture3DSettings
+				{
 				Format = Settings.Format,
 				Width = Settings.Width,
 				Height = Settings.Height,
@@ -123,7 +123,7 @@ namespace GorgonLibrary.Graphics
 				Usage = BufferUsage.Staging
 			};
 
-			staging = Graphics.Textures.CreateTexture<GorgonTexture3D>(Name + ".Staging", settings3D);
+			staging = Graphics.Textures.CreateTexture(Name + ".Staging", settings3D);
 
 			staging.Copy(this);
 
@@ -446,7 +446,7 @@ namespace GorgonLibrary.Graphics
 			if (sourceRegion != null)
 				region = sourceRegion.Value.Convert;
 
-            Graphics.Context.CopySubresourceRegion(texture.D3DResource, subResource, region, this.D3DResource, destSubResource, (int)destination.X, (int)destination.Y, (int)destination.Z);
+            Graphics.Context.CopySubresourceRegion(texture.D3DResource, subResource, region, D3DResource, destSubResource, (int)destination.X, (int)destination.Y, (int)destination.Z);
 		}
 
 		/// <summary>
@@ -583,15 +583,15 @@ namespace GorgonLibrary.Graphics
 			if (destBox.Back >= Settings.Depth)
 				destBox.Width = Settings.Depth - destBox.Z - 1;
 
-			var box = new SharpDX.DataBox()
-			{
+			var box = new SharpDX.DataBox
+				{
 				DataPointer = data.Data.PositionPointer,
 				RowPitch = data.RowPitch,
 				SlicePitch = data.SlicePitch
 			};
 
-			var region = new D3D.ResourceRegion()
-			{
+			var region = new D3D.ResourceRegion
+				{
 				Front = destBox.Front,
 				Back = destBox.Back,
 				Top = destBox.Top,

@@ -28,28 +28,25 @@ PS_IN TestVS( VS_IN input )
 	return output;
 }
 
-float4 TestUAV(PS_IN input) : SV_Target
+void TestUAV(PS_IN input)
 {
 	float width;
 	float height;
 	
 	_uavText.GetDimensions(width, height);
 	
-	uint value = _uavText[uint2((uint)(input.uv.x * width) - 16, (uint)(input.uv.y * height) - 16)];
+	uint value = _uavText[uint2((uint)(input.uv.x * width), (uint)(input.uv.y * height))];
 	float4 srcColor = float4((value & 0xFF)  / 255.0f, ((value >> 8) & 0xFF)  / 255.0f, ((value >> 16) & 0xFF)  / 255.0f, ((value >> 24) & 0xFF) / 255.0f);
 	value = _uavText[uint2((uint)(input.uv.x * width), (uint)(input.uv.y * height))];
 	float4 destColor = float4((value & 0xFF)  / 255.0f, ((value >> 8) & 0xFF)  / 255.0f, ((value >> 16) & 0xFF)  / 255.0f, ((value >> 24) & 0xFF) / 255.0f);;
 	
 	destColor.b = destColor.g = destColor.r = (destColor.r + destColor.g + destColor.b) / 3.0f;
 
-	destColor.rgb = saturate(((srcColor.a * 0.35f) * srcColor.rgb) + ((1.0f - (srcColor.a * 0.35f)) * destColor.rgb));
+	destColor.rgb = saturate(((srcColor.a * 0.25f) * srcColor.rgb) + ((1.0f - (srcColor.a * 0.25f)) * destColor.rgb));
 
 	value = ((uint)(destColor.a * 255.0f) << 24) | ((uint)(destColor.b * 255.0f) << 16) | ((uint)(destColor.g * 255.0f) << 8) | (uint)(destColor.r * 255.0f);
 	
-
-	_uavText[uint2((uint)(input.uv.x * width)-16, (uint)(input.uv.y * height)-16)] = value;
-
-	return float4(1, 1, 1, 1);//srcColor;
+	_uavText[uint2((uint)(input.uv.x * width), (uint)(input.uv.y * height))] = value;
 }
 
 float4 TestPS(PS_IN input) : SV_Target
