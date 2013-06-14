@@ -55,8 +55,8 @@ namespace GorgonLibrary.Graphics
 				if (_default == null)
 				{
 					// Create the default font.
-					_default = new GorgonFont(_graphics, "Gorgon.Default.Font", new GorgonFontSettings()
-					{
+					_default = new GorgonFont(_graphics, "Gorgon.Default.Font", new GorgonFontSettings
+						{
 						AntiAliasingMode = FontAntiAliasMode.AntiAliasHQ,
 						TextContrast = 2,
 						Characters = Enumerable.Range(32, 127).
@@ -425,8 +425,8 @@ namespace GorgonLibrary.Graphics
 			if (pointSize < 1e-6f)
 				pointSize = 1e-6f;
 
-			var settings = new GorgonFontSettings()
-			{
+			var settings = new GorgonFontSettings
+				{
 				AntiAliasingMode = antiAliasMode,
 				Brush = null,
 				FontFamilyName = fontFamily,
@@ -479,8 +479,8 @@ namespace GorgonLibrary.Graphics
                 throw new ArgumentNullException("font");
             }
 
-			var settings = new GorgonFontSettings()
-			{
+			var settings = new GorgonFontSettings
+				{
 				AntiAliasingMode = antiAliasMode,
 				Brush = null,
 				FontFamilyName = font.FontFamily.Name,

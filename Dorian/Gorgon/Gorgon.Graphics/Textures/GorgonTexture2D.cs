@@ -83,8 +83,8 @@ namespace GorgonLibrary.Graphics
 		/// <param name="subResource">Sub resource index to use.</param>
 		protected override void OnUpdateSubResource(ISubResourceData data, int subResource)
 		{
-			var box = new SharpDX.DataBox()
-			{
+			var box = new SharpDX.DataBox
+				{
 				DataPointer = data.Data.PositionPointer,
 				RowPitch = data.RowPitch,
 				SlicePitch = data.SlicePitch
@@ -113,8 +113,8 @@ namespace GorgonLibrary.Graphics
 		{
 			GorgonTexture staging = null;
 
-			var settings2D = new GorgonTexture2DSettings()
-			{
+			var settings2D = new GorgonTexture2DSettings
+				{
 				ArrayCount = Settings.ArrayCount,
 				Format = Settings.Format,
 				Width = Settings.Width,
@@ -125,7 +125,7 @@ namespace GorgonLibrary.Graphics
 				Usage = BufferUsage.Staging
 			};
 
-			staging = Graphics.Textures.CreateTexture<GorgonTexture2D>(Name + ".Staging", settings2D);
+			staging = Graphics.Textures.CreateTexture(Name + ".Staging", settings2D);
 
 			staging.Copy(this);
 
@@ -468,19 +468,19 @@ namespace GorgonLibrary.Graphics
 			// If we have multisampling enabled, then copy the entire sub resource.            
             if ((Settings.Multisampling.Count > 1) || (Settings.Multisampling.Quality > 0) || (sourceRegion == null))
             {
-                Graphics.Context.CopySubresourceRegion(texture.D3DResource, subResource, null, this.D3DResource, destSubResource, 0, 0, 0);
+                Graphics.Context.CopySubresourceRegion(texture.D3DResource, subResource, null, D3DResource, destSubResource, 0, 0, 0);
             }
             else
             {
-                Graphics.Context.CopySubresourceRegion(texture.D3DResource, subResource, new D3D.ResourceRegion()
-                    {
+                Graphics.Context.CopySubresourceRegion(texture.D3DResource, subResource, new D3D.ResourceRegion
+	                {
                         Back = 1,
                         Front = 0,
                         Top = sourceRegion.Value.Top,
                         Left = sourceRegion.Value.Left,
                         Right = sourceRegion.Value.Right,
                         Bottom = sourceRegion.Value.Bottom
-                    }, this.D3DResource, destSubResource, (int)destination.X, (int)destination.Y, 0);
+                    }, D3DResource, destSubResource, (int)destination.X, (int)destination.Y, 0);
             }
 		}
 
@@ -605,15 +605,15 @@ namespace GorgonLibrary.Graphics
 			if (!textureSize.Contains(destRect))
 				destRect = Rectangle.Intersect(destRect, textureSize);
 
-			var box = new SharpDX.DataBox()
-			{
+			var box = new SharpDX.DataBox
+				{
 				DataPointer = data.Data.PositionPointer,
 				RowPitch = data.RowPitch,
 				SlicePitch = data.SlicePitch
 			};
 
-			var region = new D3D.ResourceRegion()
-			{
+			var region = new D3D.ResourceRegion
+				{
 				Front = 0,
 				Back = 1,
 				Top = destRect.Top,

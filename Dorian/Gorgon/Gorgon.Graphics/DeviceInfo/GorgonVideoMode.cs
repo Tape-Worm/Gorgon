@@ -149,7 +149,7 @@ namespace GorgonLibrary.Graphics
 		public override bool Equals(object obj)
 		{
 			if (obj is GorgonVideoMode)
-				return this.Equals((GorgonVideoMode)obj);
+				return Equals((GorgonVideoMode)obj);
 
 			return base.Equals(obj);
 		}

@@ -149,7 +149,7 @@ namespace GorgonLibrary.IO
     /// <summary>
     /// Descriptor flags.
     /// </summary>
-    [Flags()]
+    [Flags]
     enum TGADescriptor
         : byte
     {		
@@ -182,7 +182,7 @@ namespace GorgonLibrary.IO
     /// <summary>
     /// TGA specific conversion flags.
     /// </summary>
-    [Flags()]
+    [Flags]
     enum TGAConversionFlags
     {
         /// <summary>
@@ -245,10 +245,6 @@ namespace GorgonLibrary.IO
     public unsafe sealed class GorgonCodecTGA
 		: GorgonImageCodec
 	{
-		#region Constants.
-		private const string MagicNumber = "TRUEVISION-XFILE.";		// The TGA file magic string.
-		#endregion
-
 		#region Value Types.
         /// <summary>
         /// Header information.
@@ -513,7 +509,7 @@ namespace GorgonLibrary.IO
 			}
 
 			// Persist to stream.
-			writer.WriteValue<TGAHeader>(header);
+			writer.WriteValue(header);
 		}
 
 		/// <summary>
@@ -728,7 +724,7 @@ namespace GorgonLibrary.IO
 										throw new System.IO.IOException("Cannot decode TGA file.  The buffer is too small for the width of the image.");
 									}
 
-									pixel = ((uint)(*src << 16) | (uint)(*(src + 1) << 8) | (uint)(*(src + 2)) | 0xFF000000);
+									pixel = ((uint)(*src << 16) | (uint)(*(src + 1) << 8) | (*(src + 2)) | 0xFF000000);
 									src += 3;
 									setOpaque = false;
 								}
@@ -739,7 +735,7 @@ namespace GorgonLibrary.IO
 										throw new System.IO.IOException("Cannot decode TGA file.  The buffer is too small for the width of the image.");
 									}
 
-									pixel = ((uint)(*src << 16) | (uint)(*(src + 1) << 8) | (uint)(*(src + 2)) | (uint)(*(src + 3) << 24));									
+									pixel = ((uint)(*src << 16) | (uint)(*(src + 1) << 8) | (*(src + 2)) | (uint)(*(src + 3) << 24));									
 
 									if (*(src + 3) > 0)
 									{
@@ -797,7 +793,7 @@ namespace GorgonLibrary.IO
 											throw new System.IO.IOException("Cannot decode TGA file.  The buffer is too small for the width of the image.");
 										}
 
-										pixel = ((uint)(*src << 16) | (uint)(*(src + 1) << 8) | (uint)(*(src + 2)) | 0xFF000000);
+										pixel = ((uint)(*src << 16) | (uint)(*(src + 1) << 8) | (*(src + 2)) | 0xFF000000);
 										src += 3;
 
 										setOpaque = false;
@@ -809,7 +805,7 @@ namespace GorgonLibrary.IO
 											throw new System.IO.IOException("Cannot decode TGA file.  The buffer is too small for the width of the image.");
 										}
 
-										pixel = ((uint)(*src << 16) | (uint)(*(src + 1) << 8) | (uint)(*(src + 2)) | (uint)(*(src + 3) << 24));
+										pixel = ((uint)(*src << 16) | (uint)(*(src + 1) << 8) | (*(src + 2)) | (uint)(*(src + 3) << 24));
 
 										if (*(src + 3) > 0)
 										{
@@ -904,7 +900,7 @@ namespace GorgonLibrary.IO
 							// We need to expand from 24 bit.
 							if ((conversionFlags & TGAConversionFlags.Expand) == TGAConversionFlags.Expand)
 							{
-								pixel = ((uint)(*(src++) << 16) | (uint)(*(src++) << 8) | (uint)(*(src++)) | 0xFF000000);
+								pixel = ((uint)(*(src++) << 16) | (uint)(*(src++) << 8) | (*(src++)) | 0xFF000000);
 								setOpaque = false;
 								x += 3;
 							}
@@ -912,7 +908,7 @@ namespace GorgonLibrary.IO
 							{
 								uint alpha = 0;
 
-								pixel = ((uint)(*(src++) << 16) | (uint)(*(src++) << 8) | (uint)(*(src++)) | alpha);
+								pixel = ((uint)(*(src++) << 16) | (uint)(*(src++) << 8) | (*(src++)) | alpha);
 								alpha = (uint)(*(src++) << 24);
 
 								pixel |= alpha;									
@@ -1067,7 +1063,7 @@ namespace GorgonLibrary.IO
 		/// </summary>
 		/// <param name="imageData"><see cref="GorgonLibrary.Graphics.GorgonImageData">Gorgon image data</see> to persist.</param>
 		/// <param name="stream">Stream that will contain the data.</param>
-		protected internal unsafe override void SaveToStream(GorgonImageData imageData, System.IO.Stream stream)
+		protected internal override void SaveToStream(GorgonImageData imageData, System.IO.Stream stream)
 		{
 			var conversionFlags = TGAConversionFlags.None;
 			GorgonFormatPitch pitch = default(GorgonFormatPitch);
@@ -1269,7 +1265,7 @@ namespace GorgonLibrary.IO
 		{
 			SetOpaqueIfZeroAlpha = true;
 
-			this.CodecCommonExtensions = new[] { "tga", "tpic" };
+			CodecCommonExtensions = new[] { "tga", "tpic" };
 		}
 		#endregion
 	}

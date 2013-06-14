@@ -464,9 +464,9 @@ namespace GorgonLibrary.IO
                             pixel = *(destPtr);
                         }
 
-                        r = (uint)((pixel & 0x3FF00000) >> 20);
-                        g = (uint)(pixel & 0x000FFC00);
-                        b = (uint)((pixel & 0x000003FF) << 20);
+                        r = ((pixel & 0x3FF00000) >> 20);
+                        g = (pixel & 0x000FFC00);
+                        b = ((pixel & 0x000003FF) << 20);
                         a = ((bitFlags & ImageBitFlags.OpaqueAlpha) == ImageBitFlags.OpaqueAlpha) ? 0xC0000000 : pixel & 0xC0000000;
 
                         *destPtr = r | g | b | a;
@@ -493,9 +493,9 @@ namespace GorgonLibrary.IO
                             pixel = *(destPtr);
                         }
 
-                        r = (uint)((pixel & 0xFF0000) >> 16);
-                        g = (uint)(pixel & 0x00FF00);
-                        b = (uint)((pixel & 0x0000FF) << 16);
+                        r = ((pixel & 0xFF0000) >> 16);
+                        g = (pixel & 0x00FF00);
+                        b = ((pixel & 0x0000FF) << 16);
                         a = ((bitFlags & ImageBitFlags.OpaqueAlpha) == ImageBitFlags.OpaqueAlpha) ? 0xFF000000 : pixel & 0xFF000000;
 
                         *destPtr = r | g | b | a;

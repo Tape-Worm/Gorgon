@@ -351,9 +351,9 @@ namespace GorgonLibrary.Graphics
                         DebugName = string.Format("{0} D3D11 Device", Name)
                     };
 #else
-                    device = new D3D.Device(D3DCommon.DriverType.Warp, 
-                                            D3D.DeviceCreationFlags.None,
-                                            GetFeatureLevel(featureLevel))
+		            device = new D3D.Device(D3DCommon.DriverType.Warp,
+		                                    D3D.DeviceCreationFlags.None,
+		                                    GetFeatureLevel(featureLevel));
 #endif
                     using (var giDevice = device.QueryInterface<GI.Device1>())
                     {
@@ -682,29 +682,29 @@ namespace GorgonLibrary.Graphics
 		{
 			VideoDeviceType = deviceType;
 
-			this.Index = index;
-			this.DedicatedSystemMemory = adapter.Description1.DedicatedSystemMemory;
-			this.DedicatedVideoMemory = adapter.Description1.DedicatedVideoMemory;
-			this.DeviceID = adapter.Description1.DeviceId;
-			this.HardwareFeatureLevel = DeviceFeatureLevel.Unsupported;
-            this.UUID = adapter.Description1.Luid;
-            this.Revision = adapter.Description1.Revision;
-            this.SharedSystemMemory = adapter.Description1.SharedSystemMemory;
-            this.SubSystemID = adapter.Description1.SubsystemId;
-            this.VendorID = adapter.Description1.VendorId;
+			Index = index;
+			DedicatedSystemMemory = adapter.Description1.DedicatedSystemMemory;
+			DedicatedVideoMemory = adapter.Description1.DedicatedVideoMemory;
+			DeviceID = adapter.Description1.DeviceId;
+			HardwareFeatureLevel = DeviceFeatureLevel.Unsupported;
+            UUID = adapter.Description1.Luid;
+            Revision = adapter.Description1.Revision;
+            SharedSystemMemory = adapter.Description1.SharedSystemMemory;
+            SubSystemID = adapter.Description1.SubsystemId;
+            VendorID = adapter.Description1.VendorId;
 
             switch (deviceType)
 			{
 				case VideoDeviceType.Software:
-					this.Name = "WARP software rasterizer";
+					Name = "WARP software rasterizer";
 			        HardwareFeatureLevel = SupportedFeatureLevel = DeviceFeatureLevel.SM4_1;
 					break;
 				case VideoDeviceType.ReferenceRasterizer:
-					this.Name = "Reference rasterizer";
+					Name = "Reference rasterizer";
 			        HardwareFeatureLevel = SupportedFeatureLevel = DeviceFeatureLevel.SM5;
 					break;
 				default:
-					this.Name = adapter.Description1.Description;
+					Name = adapter.Description1.Description;
                     EnumerateFeatureLevels(D3D.Device.GetSupportedFeatureLevel(adapter));
 					break;
 			}

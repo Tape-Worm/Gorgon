@@ -218,7 +218,7 @@ namespace GorgonLibrary.IO
 	/// <summary>
 	/// Flags for the header.
 	/// </summary>
-	[Flags()]
+	[Flags]
 	enum DDSHeaderFlags
 		: uint
 	{
@@ -255,7 +255,7 @@ namespace GorgonLibrary.IO
 	/// <summary>
 	/// Misc. flags for the header.
 	/// </summary>
-	[Flags()]
+	[Flags]
 	enum DDSHeaderMiscFlags
 		: uint
 	{
@@ -268,7 +268,7 @@ namespace GorgonLibrary.IO
 	/// <summary>
 	/// Flags for the pixel format.
 	/// </summary>
-	[Flags()]
+	[Flags]
 	enum DDSPixelFormatFlags
 		: uint
 	{
@@ -306,7 +306,7 @@ namespace GorgonLibrary.IO
 	/// <summary>
 	/// DDS surface flags.
 	/// </summary>
-	[Flags()]
+	[Flags]
 	enum DDSCAPS1
 		: uint
 	{
@@ -327,7 +327,7 @@ namespace GorgonLibrary.IO
 	/// <summary>
 	/// DDS cube map directions.
 	/// </summary>
-	[Flags()]
+	[Flags]
 	enum DDSCAPS2
 		: uint
 	{
@@ -782,7 +782,7 @@ namespace GorgonLibrary.IO
 		{
 			unchecked
 			{
-				return ((uint)((byte)c1)) | (((uint)((byte)c2)) << 8) | (((uint)((byte)c3)) << 16) | (((uint)((byte)c4)) << 24);
+				return (((byte)c1)) | (((uint)((byte)c2)) << 8) | (((uint)((byte)c3)) << 16) | (((uint)((byte)c4)) << 24);
 			}
 		}
 
@@ -1490,7 +1490,7 @@ namespace GorgonLibrary.IO
 			header.PixelFormat = format ?? _pfDX10;
 
 			// Write out the header.
-			writer.WriteValue<DDSHeader>(header);
+			writer.WriteValue(header);
 
 			// If we didn't map a legacy format, then use the DX 10 header.
 			if (format == null)
@@ -1510,7 +1510,7 @@ namespace GorgonLibrary.IO
 					dx10Header.ArrayCount = (uint)(settings.ArrayCount / 6);
 				}
 
-				writer.WriteValue<DX10Header>(dx10Header);
+				writer.WriteValue(dx10Header);
 			}			
 		}
 
@@ -1613,7 +1613,7 @@ namespace GorgonLibrary.IO
 								// Perform expansion.
 								if ((conversionFlags & (DDSConversionFlags.RGB565 | DDSConversionFlags.RGB5551)) != 0)
 								{
-									this.Expand16BPPScanline(srcPointer, pitchInfo.RowPitch,
+									Expand16BPPScanline(srcPointer, pitchInfo.RowPitch,
 													((conversionFlags & DDSConversionFlags.RGB5551) == DDSConversionFlags.RGB5551) ? BufferFormat.B5G5R5A1_UIntNormal : BufferFormat.B5G6R5_UIntNormal,
 													destPointer, destBuffer.PitchInformation.RowPitch, expFlags);
 								}
@@ -1852,13 +1852,13 @@ namespace GorgonLibrary.IO
 
                 if (stream is GorgonDataStream)
                 {
-                    return this.ReadHeader((GorgonDataStream)stream, size, out flags);
+                    return ReadHeader((GorgonDataStream)stream, size, out flags);
                 }
 
                 using (var memoryStream = new GorgonDataStream(size))
                 {
                     memoryStream.ReadFromStream(stream, size);
-                    return this.ReadHeader(memoryStream, size, out flags);
+                    return ReadHeader(memoryStream, size, out flags);
                 }
             }
             finally

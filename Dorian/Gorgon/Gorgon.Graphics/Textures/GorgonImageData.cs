@@ -179,7 +179,7 @@ namespace GorgonLibrary.Graphics
 			/// <param name="height">The height for the buffer.</param>
 			/// <param name="depth">The depth for the buffer.</param>
 			/// <param name="format">Format of the buffer.</param>
-			internal unsafe ImageBuffer(void *dataStart, GorgonFormatPitch pitchInfo, int mipLevel, int arrayIndex, int sliceIndex, int width, int height, int depth, BufferFormat format)
+			internal ImageBuffer(void *dataStart, GorgonFormatPitch pitchInfo, int mipLevel, int arrayIndex, int sliceIndex, int width, int height, int depth, BufferFormat format)
 			{
 				Data = new GorgonDataStream(dataStart, pitchInfo.SlicePitch);
 				PitchInformation = pitchInfo;
@@ -690,25 +690,6 @@ namespace GorgonLibrary.Graphics
         /// Function to create a new 1D image data object from a GDI+ Image.
         /// </summary>
         /// <param name="image">A GDI+ image object to use as the source image data.</param>
-        /// <returns>
-        /// A new 1D image data object containing a copy of the System.Drawing.Image data.
-        /// </returns>
-        /// <exception cref="System.ArgumentNullException">Thrown when the image parameter is NULL (Nothing in VB.Net)
-        /// </exception>
-        /// <exception cref="System.ArgumentException">Thrown when pixel format in the options cannot be converted or is not supported.</exception>
-        /// <remarks>
-        /// This method will create a new <see cref="GorgonLibrary.Graphics.GorgonImageData">GorgonImageData</see> object from a <see cref="System.Drawing.Image">GDI+ Image</see>.
-        /// The method will copy the image information and do a best fit conversion.
-        /// </remarks>
-        public static GorgonImageData Create1DFromGDIImage(Image image)
-        {
-            return Create1DFromGDIImage(image, new GorgonGDIOptions());
-        }
-
-        /// <summary>
-        /// Function to create a new 1D image data object from a GDI+ Image.
-        /// </summary>
-        /// <param name="image">A GDI+ image object to use as the source image data.</param>
         /// <param name="options">Options for image conversion.</param>
         /// <returns>
         /// A new 1D image data object containing a copy of the System.Drawing.Image data.
@@ -755,7 +736,7 @@ namespace GorgonLibrary.Graphics
         /// </item>
         /// </list>
         /// </remarks>
-        public static GorgonImageData Create1DFromGDIImage(Image image, GorgonGDIOptions options)
+        public static GorgonImageData Create1DFromGDIImage(Image image, GorgonGDIOptions options = null)
         {            
             
             if (image == null)
@@ -765,7 +746,7 @@ namespace GorgonLibrary.Graphics
 
             if (options == null)
             {
-                throw new ArgumentNullException("options");
+                options = new GorgonGDIOptions();
             }
 
             // Default these values to 1 for 1D images.
@@ -777,25 +758,6 @@ namespace GorgonLibrary.Graphics
             {
                 return GorgonGDIImageConverter.Create1DImageDataFromImage(wic, image, options);
             }
-        }
-
-		/// <summary>
-		/// Function to create a new 2D image data object from a GDI+ Image.
-		/// </summary>
-		/// <param name="image">A GDI+ image object to use as the source image data.</param>
-		/// <returns>
-		/// A new 2D image data object containing a copy of the System.Drawing.Image data.
-		/// </returns>
-		/// <exception cref="System.ArgumentNullException">Thrown when the image parameter is NULL (Nothing in VB.Net)
-		/// </exception>
-		/// <exception cref="System.ArgumentException">Thrown when pixel format in the options cannot be converted or is not supported.</exception>
-		/// <remarks>
-		/// This method will create a new <see cref="GorgonLibrary.Graphics.GorgonImageData">GorgonImageData</see> object from a <see cref="System.Drawing.Image">GDI+ Image</see>.
-		/// The method will copy the image information and do a best fit conversion.
-		/// </remarks>
-        public static GorgonImageData Create2DFromGDIImage(Image image)
-        {
-            return Create2DFromGDIImage(image, new GorgonGDIOptions());
         }
 
 		/// <summary>
@@ -848,7 +810,7 @@ namespace GorgonLibrary.Graphics
 		/// </item>
 		/// </list>
 		/// </remarks>
-		public static GorgonImageData Create2DFromGDIImage(Image image, GorgonGDIOptions options)
+		public static GorgonImageData Create2DFromGDIImage(Image image, GorgonGDIOptions options = null)
 		{
 
 			if (image == null)
@@ -858,7 +820,7 @@ namespace GorgonLibrary.Graphics
 
 			if (options == null)
 			{
-				throw new ArgumentNullException("options");
+				options = new GorgonGDIOptions();
 			}
 
 			// Default these values to 1 for 2D images.
@@ -886,7 +848,6 @@ namespace GorgonLibrary.Graphics
 		/// <para>Thrown when an image in the list is NULL.</para>		
         /// </exception>
 		/// <exception cref="System.ArgumentOutOfRangeException">Thrown when the images parameter does not contain enough elements to satisfy the array and mip count.</exception>
-        /// <exception cref="System.ArgumentNullException">Thrown when the options parameter is NULL.</exception>
         /// <remarks>
         /// This method will create a new <see cref="GorgonLibrary.Graphics.GorgonImageData">GorgonImageData</see> object from a list of <see cref="System.Drawing.Image">GDI+ Images</see>.
         /// The method will copy the image information and do a best fit conversion.
@@ -941,16 +902,16 @@ namespace GorgonLibrary.Graphics
         /// mip-maps and will only use the images provided.</para>
         /// <para>Images in the list to be used as mip-map levels do not need to be resized because the method will automatically resize based on mip-map level.</para>
         /// </remarks>
-        public static GorgonImageData Create1DFromGDIImage(IList<Image> images, GorgonGDIOptions options)
+        public static GorgonImageData Create1DFromGDIImage(Image[] images, GorgonGDIOptions options = null)
         {
-            if ((images == null) || (images.Count == 0))
+            if ((images == null) || (images.Length == 0))
             {
                 throw new ArgumentException("The parameter must not be NULL or empty.", "images");
             }
 
             if (options == null)
             {
-                throw new ArgumentNullException("options");
+                options = new GorgonGDIOptions();
             }
             
             using (var wic = new GorgonWICImage())
@@ -974,7 +935,6 @@ namespace GorgonLibrary.Graphics
 		/// <para>Thrown when an image in the list is NULL.</para>		
 		/// </exception>
 		/// <exception cref="System.ArgumentOutOfRangeException">Thrown when the images parameter does not contain enough elements to satisfy the array and mip count.</exception>
-		/// <exception cref="System.ArgumentNullException">Thrown when the options parameter is NULL.</exception>
 		/// <remarks>
 		/// This method will create a new <see cref="GorgonLibrary.Graphics.GorgonImageData">GorgonImageData</see> object from a list of <see cref="System.Drawing.Image">GDI+ Images</see>.
 		/// The method will copy the image information and do a best fit conversion.
@@ -1029,16 +989,16 @@ namespace GorgonLibrary.Graphics
 		/// mip-maps and will only use the images provided.</para>
 		/// <para>Images in the list to be used as mip-map levels do not need to be resized because the method will automatically resize based on mip-map level.</para>
 		/// </remarks>
-		public static GorgonImageData Create2DFromGDIImage(IList<Image> images, GorgonGDIOptions options)
+		public static GorgonImageData Create2DFromGDIImage(Image[] images, GorgonGDIOptions options = null)
 		{
-			if ((images == null) || (images.Count == 0))
+			if ((images == null) || (images.Length == 0))
 			{
 				throw new ArgumentException("The parameter must not be NULL or empty.", "images");
 			}
 
 			if (options == null)
 			{
-				throw new ArgumentNullException("options");
+				options = new GorgonGDIOptions();
 			}
 
 			using (var wic = new GorgonWICImage())
@@ -1046,50 +1006,6 @@ namespace GorgonLibrary.Graphics
 				return GorgonGDIImageConverter.Create2DImageDataFromImages(wic, images, options);
 			}
 		}
-
-		/// <summary>
-		/// Function to create a new 3D image data object from a list of <see cref="System.Drawing.Image">GDI+ Images</see>.
-		/// </summary>
-		/// <param name="images">A list of GDI+ image objects to use as the source image data.</param>
-		/// <returns>
-		/// A new 3D image data object containing a copy of the System.Drawing.Image data.
-		/// </returns>
-		/// <exception cref="System.ArgumentException">Thrown when the images parameter is NULL (Nothing in VB.Net) or empty.
-		/// <para>-or-</para>
-		/// <para>Thrown when the pixel format is unsupported or not the same across all images.</para>
-		/// <para>-or-</para>
-		/// <para>Thrown when an image in the list is NULL.</para>		
-		/// </exception>
-		/// <exception cref="System.ArgumentOutOfRangeException">Thrown when the images parameter does not contain enough elements to satisfy the depth and mip count.</exception>
-		/// <remarks>
-		/// This method will create a new <see cref="GorgonLibrary.Graphics.GorgonImageData">GorgonImageData</see> object from a list of <see cref="System.Drawing.Image">GDI+ Images</see>.
-		/// The method will copy the image information and do a best fit conversion.
-		/// <para>This overload is used to create a 3D image from a list of images.  If the MipCount is set to 1, then
-		/// only the first image will be processed IF there is only one image in the list.  If there is more than 1 image in the list, and the mip count is set to 1, then the element count 
-		/// of the list will be taken as the depth size.</para>
-		/// <para>The layout of the image list is processed in the following order (assuming the MipCount = 2, and the depth is = 4):</para>
-		/// <code>
-		/// images[0]: Mip Level 0, Depth slice 0.
-		/// images[1]: Mip Level 0, Depth slice 1
-		/// images[2]: Mip Level 0, Depth slice 2
-		/// images[3]: Mip Level 0, Depth slice 3
-		/// images[4]: Mip Level 1, Depth slice 4
-		/// images[5]: Mip Level 1, Depth slice 5
-		/// </code>
-		/// <para>The depth is shrunk by a power of 2 for each mip level.  So, at mip level 0 we have 4 depth slices, and at mip level 1 we have 2.  If we had a third mip level, then 
-		/// the depth would be 1 at that mip level.</para>
-		/// <para>Note that unlike other image types, there is no array.  3D images do not support arrays and will ignore them.  Also note that a 3D image MUST have a width, height 
-		/// and depth that is a power of 2 if mip maps are to be used.  If the image does not meet the criteria, then an exception will be thrown.
-		/// </para>
-		/// <para>The list of images must be large enough to accomodate the number of mip map levels and the depth at each mip level, must not contain any NULL (Nothing in VB.Net) elements and all images must use
-		/// the same pixel format.  If the list is larger than the requested mip/array count, then only the first elements up until mip count and each depth for each mip level are used.  Unlike other overloads, 
-		/// this method will NOT auto-generate mip-maps and will only use the images provided.</para>
-		/// <para>Images in the list to be used as mip-map levels do not need to be resized because the method will automatically resize based on mip-map level.</para>
-		/// </remarks>
-        public static GorgonImageData Create3DFromGDIImage(IList<Image> images)
-        {
-            return Create3DFromGDIImage(images, new GorgonGDIOptions());
-        }
 
 		/// <summary>
 		/// Function to create a new 3D image data object from a list of <see cref="System.Drawing.Image">GDI+ Images</see>.
@@ -1106,7 +1022,6 @@ namespace GorgonLibrary.Graphics
 		/// <para>Thrown when an image in the list is NULL.</para>		
 		/// </exception>
 		/// <exception cref="System.ArgumentOutOfRangeException">Thrown when the images parameter does not contain enough elements to satisfy the depth and mip count.</exception>
-		/// <exception cref="System.ArgumentNullException">Thrown when the options parameter is NULL.</exception>
 		/// <remarks>
 		/// This method will create a new <see cref="GorgonLibrary.Graphics.GorgonImageData">GorgonImageData</see> object from a list of <see cref="System.Drawing.Image">GDI+ Images</see>.
 		/// The method will copy the image information and do a best fit conversion.
@@ -1165,16 +1080,16 @@ namespace GorgonLibrary.Graphics
 		/// this method will NOT auto-generate mip-maps and will only use the images provided.</para>
 		/// <para>Images in the list to be used as mip-map levels do not need to be resized because the method will automatically resize based on mip-map level.</para>
 		/// </remarks>
-		public static GorgonImageData Create3DFromGDIImage(IList<Image> images, GorgonGDIOptions options)
+		public static GorgonImageData Create3DFromGDIImage(Image[] images, GorgonGDIOptions options = null)
 		{
-			if ((images == null) || (images.Count == 0))
+			if ((images == null) || (images.Length == 0))
 			{
 				throw new ArgumentException("The parameter must not be NULL or empty.", "images");
 			}
 
 			if (options == null)
 			{
-				throw new ArgumentNullException("options");
+				options = new GorgonGDIOptions();
 			}
 
 			using (var wic = new GorgonWICImage())

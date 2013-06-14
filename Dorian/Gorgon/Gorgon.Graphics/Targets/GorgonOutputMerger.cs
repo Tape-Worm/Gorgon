@@ -103,6 +103,7 @@ namespace GorgonLibrary.Graphics
 		#endregion
 
 		#region Methods.
+#if DEBUG
         /// <summary>
         /// Function to validate the depth buffer.
         /// </summary>
@@ -313,6 +314,67 @@ namespace GorgonLibrary.Graphics
         }
 
         /// <summary>
+        /// Function to validate an unordered access view binding.
+        /// </summary>
+        /// <param name="view">Unordered access view to evaluate.</param>
+        /// <param name="slot">Slot for the view.</param>
+        private void ValidateUnorderedAccessViewBinding(GorgonUnorderedAccessView view, int slot)
+        {
+            if ((view == null) || (_unorderedViews == null) || (_unorderedViews.Length == 0))
+            {
+                return;
+            }
+
+            for (int i = 0; i < _unorderedViews.Length; i++)
+            {
+                var otherView = _unorderedViews[i];
+
+                if ((slot != i) || (otherView == null))
+                {
+                    continue;
+                }
+
+                if (otherView == view)
+                {
+                    throw new GorgonException(GorgonResult.CannotBind, string.Format(Resources.GORGFX_VIEW_ALREADY_BOUND, i));
+                }
+
+                if (otherView.Resource == view.Resource)
+                {
+                    throw new GorgonException(GorgonResult.CannotBind,
+                                              string.Format(Resources.GORGFX_VIEW_RESOURCE_ALREADY_BOUND,
+                                                            view.Resource.Name,
+                                                            i,
+                                                            view.GetType().FullName));
+                }
+
+                // Ensure the unordered access views and resource views don't have the same resource bound.
+	            if ((_targetViews == null) || (_targetViews.Length <= 0))
+	            {
+		            continue;
+	            }
+
+	            for (int j = 0; j < _targetViews.Length; j++)
+	            {
+		            if (_targetViews[j] == null)
+		            {
+			            continue;
+		            }
+
+		            if (_targetViews[j].Resource == view.Resource)
+		            {
+			            throw new GorgonException(GorgonResult.CannotBind,
+			                                      string.Format(Resources.GORGFX_VIEW_RESOURCE_ALREADY_BOUND,
+			                                                    view.Resource.Name,
+			                                                    j,
+			                                                    typeof(GorgonRenderTargetView).FullName));
+		            }
+	            }
+            }
+        }
+#endif
+
+		/// <summary>
         /// Function to perform the actual binding of the targets, uavs and depth/stencil buffers.
         /// </summary>
         /// <param name="depthView">The Direct 3D depth/stencil view to set.</param>
@@ -463,69 +525,13 @@ namespace GorgonLibrary.Graphics
         }
 
         /// <summary>
-        /// Function to validate an unordered access view binding.
-        /// </summary>
-        /// <param name="view">Unordered access view to evaluate.</param>
-        /// <param name="slot">Slot for the view.</param>
-        private void ValidateUnorderedAccessViewBinding(GorgonUnorderedAccessView view, int slot)
-        {
-            if ((view == null) || (_unorderedViews == null) || (_unorderedViews.Length == 0))
-            {
-                return;
-            }
-
-            for (int i = 0; i < _unorderedViews.Length; i++)
-            {
-                var otherView = _unorderedViews[i];
-
-                if ((slot != i) || (otherView == null))
-                {
-                    continue;
-                }
-
-                if (otherView == view)
-                {
-                    throw new GorgonException(GorgonResult.CannotBind, string.Format(Resources.GORGFX_VIEW_ALREADY_BOUND, i));
-                }
-
-                if (otherView.Resource == view.Resource)
-                {
-                    throw new GorgonException(GorgonResult.CannotBind,
-                                              string.Format(Resources.GORGFX_VIEW_RESOURCE_ALREADY_BOUND,
-                                                            view.Resource.Name,
-                                                            i,
-                                                            view.GetType().FullName));
-                }
-
-                // Ensure the unordered access views and resource views don't have the same resource bound.
-                if ((_targetViews != null) && (_targetViews.Length > 0))
-                {
-                    for (int j = 0; j < _targetViews.Length; j++)
-                    {
-                        if (_targetViews[j] == null)
-                        {
-                            continue;
-                        }
-
-                        if (_targetViews[j].Resource == view.Resource)
-                        {
-                            throw new GorgonException(GorgonResult.CannotBind,
-                                                      string.Format(Resources.GORGFX_VIEW_RESOURCE_ALREADY_BOUND,
-                                                                    view.Resource.Name,
-                                                                    j,
-                                                                    typeof(GorgonRenderTargetView).FullName));
-                        }
-                    }
-                }
-            }
-        }
-
-        /// <summary>
         /// Function to validate the settings for a render target.
         /// </summary>
         /// <param name="settings">Settings to validate.</param>
         private void ValidateRenderTargetSettings(GorgonRenderTargetBufferSettings settings)
         {
+			GorgonBuffers.ValidateGenericBufferSettings(settings);
+
             if (settings.RenderTargetType != RenderTargetType.Buffer)
             {
                 throw new GorgonException(GorgonResult.CannotCreate, "Cannot use 1D, 2D or 3D settings for buffer render targets.");
@@ -563,10 +569,23 @@ namespace GorgonLibrary.Graphics
         /// <param name="settings">Settings to validate.</param>
 	    internal void ValidateRenderTargetSettings(IRenderTargetTextureSettings settings)
         {
-            if (settings.RenderTargetType == RenderTargetType.Buffer)
-            {
-                throw new GorgonException(GorgonResult.CannotCreate, "Cannot use buffer settings for 1D, 2D or 3D render targets.");    
-            }
+	        var textureSettings = (ITextureSettings)settings;
+			
+	        switch (settings.ImageType)
+	        {
+				case ImageType.Image1D:
+					_graphics.Textures.ValidateTexture1D(ref textureSettings);
+			        break;
+				case ImageType.Image2D:
+				case ImageType.ImageCube:
+					_graphics.Textures.ValidateTexture2D(ref textureSettings);
+			        break;
+				case ImageType.Image3D:
+					_graphics.Textures.ValidateTexture3D(ref textureSettings);
+			        break;
+				default:
+					throw new GorgonException(GorgonResult.CannotCreate, "Cannot use buffer settings for 1D, 2D or 3D render targets.");    
+	        }
 
             if (_graphics.VideoDevice == null)
             {
@@ -633,10 +652,17 @@ namespace GorgonLibrary.Graphics
 		/// <param name="settings">Settings to validate.</param>
 		internal void ValidateDepthStencilSettings(IDepthStencilSettings settings)
 		{
-			ITextureSettings textureSettings = settings;
+			var textureSettings = (ITextureSettings)settings;
 
 			// Validate texture settings first.
-			_graphics.Textures.ValidateTexture2D(ref textureSettings);
+			if (settings.ImageType == ImageType.Image1D)
+			{
+				_graphics.Textures.ValidateTexture1D(ref textureSettings);
+			}
+			else
+			{
+				_graphics.Textures.ValidateTexture2D(ref textureSettings);
+			}
 
 			if (settings.Format == BufferFormat.Unknown)
 			{

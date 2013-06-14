@@ -775,8 +775,8 @@ namespace GorgonLibrary.Graphics
                 chunk.Begin("FONTDATA");
                 chunk.WriteString(Settings.FontFamilyName);
                 chunk.WriteFloat(Settings.Size);
-                chunk.Write<FontHeightMode>(Settings.FontHeightMode);
-                chunk.Write<FontStyle>(Settings.FontStyle);
+                chunk.Write(Settings.FontHeightMode);
+                chunk.Write(Settings.FontStyle);
                 chunk.WriteChar(Settings.DefaultCharacter);
                 chunk.WriteString(characterList);
                 chunk.WriteFloat(FontHeight);
@@ -787,7 +787,7 @@ namespace GorgonLibrary.Graphics
 
                 // Write rendering information.
                 chunk.Begin("RNDRDATA");
-                chunk.Write<FontAntiAliasMode>(Settings.AntiAliasingMode);
+                chunk.Write(Settings.AntiAliasingMode);
 				
 				if (Settings.BaseColors.Count < 1)
 				{
@@ -797,9 +797,9 @@ namespace GorgonLibrary.Graphics
                 chunk.WriteInt32(Settings.BaseColors.Count);
                 for (int i = 0; i < Settings.BaseColors.Count; i++)
                 {
-                    chunk.Write<GorgonColor>(Settings.BaseColors[i]);
+                    chunk.Write(Settings.BaseColors[i]);
                 }
-                chunk.Write<GorgonColor>(Settings.OutlineColor);
+                chunk.Write(Settings.OutlineColor);
                 chunk.WriteInt32(Settings.OutlineSize);
                 chunk.WriteInt32(Settings.TextContrast);
                 chunk.End();
@@ -873,8 +873,8 @@ namespace GorgonLibrary.Graphics
                     {
                         chunk.WriteChar(glyph.Character);
                         chunk.WriteRectangle(glyph.GlyphCoordinates);
-                        chunk.Write<Vector2>(glyph.Offset);
-                        chunk.Write<Vector3>(glyph.Advance);
+                        chunk.Write(glyph.Offset);
+                        chunk.Write(glyph.Advance);
                     }
                 }
                 chunk.End();
@@ -883,7 +883,7 @@ namespace GorgonLibrary.Graphics
                 if (KerningPairs.Count > 0)
                 {
                     chunk.Begin("KERNDATA");
-                    chunk.WriteInt32(this.KerningPairs.Count);
+                    chunk.WriteInt32(KerningPairs.Count);
                     foreach (var kernInfo in KerningPairs)
                     {
                         chunk.WriteChar(kernInfo.Key.LeftCharacter);
@@ -1527,8 +1527,8 @@ namespace GorgonLibrary.Graphics
 			Textures = new FontTextureCollection(this);
 			Glyphs = new GlyphCollection(this);
 			_textures = new List<GorgonTexture2D>();
-			_textureSettings = new GorgonTexture2DSettings()
-			{
+			_textureSettings = new GorgonTexture2DSettings
+				{
 				Width = Settings.TextureSize.Width,
 				Height = Settings.TextureSize.Height,
 				Format = BufferFormat.R8G8B8A8_UIntNormal,
