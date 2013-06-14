@@ -55,10 +55,8 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		public new GorgonTexture3DSettings Settings
 		{
-			get
-			{
-				return (GorgonTexture3DSettings)base.Settings;
-			}
+			get;
+			private set;
 		}
 		#endregion
 
@@ -617,6 +615,18 @@ namespace GorgonLibrary.Graphics
 		internal GorgonTexture3D(GorgonGraphics graphics, string name, ITextureSettings settings)
 			: base(graphics, name, settings)
 		{
+			// TODO: This is really kind of a hack.  I need to find a better way to make specific settings show up for their respective types.
+			Settings = settings as GorgonTexture3DSettings ?? new GorgonTexture3DSettings
+			{
+				Width = settings.Width,
+				Height = settings.Height,
+				Depth =  settings.Depth,
+				AllowUnorderedAccessViews = settings.AllowUnorderedAccessViews,
+				Format = settings.Format,
+				MipCount = settings.MipCount,
+				ShaderViewFormat = settings.ShaderViewFormat,
+				Usage = settings.Usage
+			};
 		}
 		#endregion
 	}
