@@ -947,7 +947,7 @@ namespace GorgonLibrary.IO
 		private void CopyImageData(GorgonDataStream stream, GorgonImageData image, TGAConversionFlags conversionFlags)
 		{
 			GorgonFormatPitch srcPitch;		// Source pitch.
-			var buffer = image[0, 0, 0];	// Get the first buffer only.
+			var buffer = image[0];	        // Get the first buffer only.
 			var formatInfo = GorgonBufferFormatInfo.GetInfo(image.Settings.Format);
 
 			if ((conversionFlags & TGAConversionFlags.Expand) == TGAConversionFlags.Expand)

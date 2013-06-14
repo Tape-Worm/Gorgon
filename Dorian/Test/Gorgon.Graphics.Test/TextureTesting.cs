@@ -292,7 +292,7 @@ namespace GorgonLibrary.Graphics.Test
 		{
 			int step = 0;
 			var uavOutputPS = Encoding.UTF8.GetString(Resources.UAVTexture);
-			var texture = _framework.Graphics.Textures.Create2DTextureFromGDIImage("Test", Properties.Resources.Glass, new GorgonGDIOptions
+			var texture = _framework.Graphics.Textures.CreateTexture<GorgonTexture2D>("Test", Properties.Resources.Glass, new GorgonGDIOptions
 				{
 					AllowUnorderedAccess = true,
 					Format = BufferFormat.R8G8B8A8_UIntNormal

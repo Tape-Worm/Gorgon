@@ -30,6 +30,7 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.Linq;
 using GorgonLibrary.Graphics;
+using GorgonLibrary.Graphics.Properties;
 using GorgonLibrary.Math;
 
 namespace GorgonLibrary.IO
@@ -145,7 +146,22 @@ namespace GorgonLibrary.IO
 			set;
 		}
 
-		/// <summary>
+        /// <summary>
+        /// Property to set or return the multisampling applied to the texture.
+        /// </summary>
+        /// <remarks>
+        /// Set this value to apply multisampling to the texture.  
+        /// <para>Note that if multisampling is applied, then the mip-map count and array count must be set to 1.  If these values are not set to 1, then this value will be ignored.</para>
+        /// <para>This property is for <see cref="GorgonLibrary.Graphics.GorgonTexture2D">2D textures</see> only, for <see cref="GorgonLibrary.Graphics.GorgonImageData">image data</see> or other texture types it is ignored.</para>
+        /// <para>The default value is a count of 1 and a quality of 0 (No multisampling).</para>
+        /// </remarks>
+        public GorgonMultisampling Multisampling
+        {
+            get;
+            set;
+        }
+        
+        /// <summary>
 		/// Property to set or return the dithering type to use on images with lower bit depths.
 		/// </summary>
 		/// <remarks>The default value is None.</remarks>
@@ -354,7 +370,7 @@ namespace GorgonLibrary.IO
 
 			if (options.Format == BufferFormat.Unknown)
 			{
-				throw new ArgumentException("The pixel format '" + image.PixelFormat.ToString() + "' is not supported.", "images");
+				throw new GorgonException(GorgonResult.FormatNotSupported, "The pixel format '" + image.PixelFormat.ToString() + "' is not supported.");
 			}
 
 			if (options.Width < 1)
@@ -419,17 +435,12 @@ namespace GorgonLibrary.IO
 
             if (options.Format == BufferFormat.Unknown)
 			{
-				throw new ArgumentException("The pixel format '" + images[0].PixelFormat.ToString() + "' is not supported.", "images");
-			}
-
-			if (images.Any(item => item == null))
-			{
-				throw new ArgumentException("The image array must contain non-NULL images.", "images");
+				throw new GorgonException(GorgonResult.FormatNotSupported, "The pixel format '" + images[0].PixelFormat.ToString() + "' is not supported.");
 			}
 
 			if (images.Any(item => item.PixelFormat != images[0].PixelFormat))
 			{
-				throw new ArgumentException("The pixel format for all elements must be '" + images[0].PixelFormat.ToString() + "'.", "images");
+				throw new GorgonException(GorgonResult.CannotCreate, "The pixel format for all elements must be '" + images[0].PixelFormat.ToString() + "'.");
 			}
 
 			if (options.Width < 1)
@@ -465,7 +476,7 @@ namespace GorgonLibrary.IO
 			
 			if ((options.ArrayCount * options.MipCount) > images.Length)
 			{
-				throw new ArgumentOutOfRangeException("images", "The mip level count and the array count exceed the length of the array.");
+				throw new GorgonException(GorgonResult.CannotCreate, "The mip level count and the array count exceed the length of the array.");
 			}
 
 			// Create our image data.
@@ -477,10 +488,15 @@ namespace GorgonLibrary.IO
 				{
 					var image = images[array * data.Settings.MipCount + mipLevel];
 
+                    if (image == null)
+                    {
+                        continue;
+                    }
+
 					// Using the image, convert to a WIC bitmap object.
 					using (var bitmap = wic.CreateWICImageFromImage(image))
 					{
-						var buffer = data[array, mipLevel];
+						var buffer = data[mipLevel, array];
 
 						wic.AddWICBitmapToImageData(bitmap, options.Filter, options.Dither, buffer, options.UseClipping);
 					}
@@ -501,11 +517,6 @@ namespace GorgonLibrary.IO
         {
             GorgonImageData data = null;
 
-			if (image == null)
-			{
-				throw new ArgumentNullException("image");
-			}
-
 			if (options.Format == BufferFormat.Unknown)
 			{
 				options.Format = GetBufferFormat(image.PixelFormat);
@@ -513,7 +524,7 @@ namespace GorgonLibrary.IO
 			
 			if (options.Format == BufferFormat.Unknown)
             {
-				throw new ArgumentException("The pixel format '" + image.PixelFormat.ToString() + "' is not supported.", "images");
+				throw new GorgonException(GorgonResult.FormatNotSupported, "The pixel format '" + image.PixelFormat.ToString() + "' is not supported.");
             }
 
 			if (options.Width < 1)
@@ -576,11 +587,6 @@ namespace GorgonLibrary.IO
 		{
 			GorgonImageData data = null;
 
-			if ((images == null) || (images.Length == 0))
-			{
-				throw new ArgumentException("The parameter must not be NULL or empty.", "images");
-			}
-
 			if (options.Format == BufferFormat.Unknown)
 			{
 				options.Format = GetBufferFormat(images[0].PixelFormat);
@@ -588,17 +594,12 @@ namespace GorgonLibrary.IO
 
 			if (options.Format == BufferFormat.Unknown)
 			{
-				throw new ArgumentException("The pixel format '" + images[0].PixelFormat.ToString() + "' is not supported.", "images");
-			}
-
-			if (images.Any(item => item == null))
-			{
-				throw new ArgumentException("The image array must contain non-NULL images.", "images");
+				throw new GorgonException(GorgonResult.FormatNotSupported, "The pixel format '" + images[0].PixelFormat.ToString() + "' is not supported.");
 			}
 
 			if (images.Any(item => item.PixelFormat != images[0].PixelFormat))
 			{
-				throw new ArgumentException("The pixel format for all elements must be '" + images[0].PixelFormat.ToString() + "'.", "images");
+				throw new GorgonException(GorgonResult.CannotCreate, "The pixel format for all elements must be '" + images[0].PixelFormat.ToString() + "'.");
 			}
 
 			if (options.Width < 1)
@@ -640,7 +641,7 @@ namespace GorgonLibrary.IO
 
 			if ((options.ArrayCount * options.MipCount) > images.Length)
 			{
-				throw new ArgumentOutOfRangeException("images", "The mip level count and the array count exceed the length of the array.");
+				throw new GorgonException(GorgonResult.CannotCreate, "The mip level count and the array count exceed the length of the array.");
 			}
 
 			// Create our image data.
@@ -652,10 +653,15 @@ namespace GorgonLibrary.IO
 				{
 					var image = images[array * data.Settings.MipCount + mipLevel];
 
+                    if (image == null)
+                    {
+                        continue;
+                    }
+
 					// Using the image, convert to a WIC bitmap object.
 					using (var bitmap = wic.CreateWICImageFromImage(image))
 					{
-						var buffer = data[array, mipLevel];
+						var buffer = data[mipLevel, array];
 
 						wic.AddWICBitmapToImageData(bitmap, options.Filter, options.Dither, buffer, options.UseClipping);
 					}
@@ -676,11 +682,6 @@ namespace GorgonLibrary.IO
 		{
 			GorgonImageData data = null;
 
-			if ((images == null) || (images.Length == 0))
-			{
-				throw new ArgumentException("The parameter must not be NULL or empty.", "images");
-			}
-
 			if (options.Format == BufferFormat.Unknown)
 			{
 				options.Format = GetBufferFormat(images[0].PixelFormat);
@@ -688,17 +689,12 @@ namespace GorgonLibrary.IO
 
 			if (options.Format == BufferFormat.Unknown)
 			{
-				throw new ArgumentException("The pixel format '" + images[0].PixelFormat.ToString() + "' is not supported.", "images");
-			}
-
-			if (images.Any(item => item == null))
-			{
-				throw new ArgumentException("The image array must contain non-NULL images.", "images");
+				throw new GorgonException(GorgonResult.FormatNotSupported, "The pixel format '" + images[0].PixelFormat.ToString() + "' is not supported.");
 			}
 
 			if (images.Any(item => item.PixelFormat != images[0].PixelFormat))
 			{
-				throw new ArgumentException("The pixel format for all elements must be '" + images[0].PixelFormat.ToString() + "'.", "images");
+				throw new GorgonException(GorgonResult.CannotCreate, "The pixel format for all elements must be '" + images[0].PixelFormat.ToString() + "'.");
 			}
 
 			if (options.Width <= 0)
@@ -747,7 +743,7 @@ namespace GorgonLibrary.IO
 			// Only volume textures that are size to a power of 2 can have mip maps.
 			if ((!settings.IsPowerOfTwo) && (options.MipCount > 1))
 			{
-				throw new ArgumentException("Cannot create a volume texture mip chain unless the dimensions are powers of 2.", "mipCount");
+				throw new GorgonException(GorgonResult.CannotCreate, "Cannot create a volume texture mip chain unless the dimensions are powers of 2.");
 			}
 
 			// Create our image data.
@@ -760,17 +756,23 @@ namespace GorgonLibrary.IO
 				if (imageIndex >= images.Length)
 				{
 					data.Dispose();
-					throw new ArgumentOutOfRangeException("images", "The mip level count and the depth slice count exceed the length of the array.");
+					throw new GorgonException(GorgonResult.CannotCreate,  "The mip level count and the depth slice count exceed the length of the array.");
 				}
 
                 for (int depth = 0; depth < depthMip; depth++)
                 {
                     var image = images[imageIndex + depth];
 
+                    // Skip NULL images.
+                    if (image == null)
+                    {
+                        continue;
+                    }
+
                     // Using the image, convert to a WIC bitmap object.
                     using (var bitmap = wic.CreateWICImageFromImage(image))
                     {
-                        var buffer = data[0, mipLevel, depth];
+                        var buffer = data[mipLevel, depth];
                         wic.AddWICBitmapToImageData(bitmap, options.Filter, options.Dither, buffer, options.UseClipping);
                     }
                 }
@@ -800,7 +802,7 @@ namespace GorgonLibrary.IO
 
             if (format == null)
             {
-                throw new ArgumentException("Cannot convert, the format '" + texture.Settings.Format.ToString() + "' is not supported.");
+                throw new GorgonException(GorgonResult.FormatNotSupported, "Cannot convert, the format '" + texture.Settings.Format.ToString() + "' is not supported.");
             }
 
             using (var wic = new GorgonWICImage())
@@ -834,47 +836,5 @@ namespace GorgonLibrary.IO
 
             return images;
         }
-
-
-		/*using (var stream = System.IO.File.Open(@"D:\unpak\myimage.gif", System.IO.FileMode.Create))
-		{
-			using (WIC.GifBitmapEncoder encoder = new WIC.GifBitmapEncoder(wic.Factory, WIC.ContainerFormatGuids.Gif,stream))
-			{
-				using (WIC.BitmapFrameEncode frame = new WIC.BitmapFrameEncode(encoder))
-				{
-					frame.Initialize();
-					frame.SetSize(settings.Width, settings.Height);
-					frame.SetResolution(currentImage.HorizontalResolution, currentImage.VerticalResolution);
-					Guid bmpFormat = bitmap.PixelFormat;
-					frame.SetPixelFormat(ref bmpFormat);
-																				
-					if (bmpFormat != bitmap.PixelFormat)
-					{
-						using (var convert = new WIC.FormatConverter(wic.Factory))
-						{
-							using (WIC.Palette palette = new WIC.Palette(wic.Factory))
-							{													
-								palette.Initialize(bitmap, 256, true);
-								convert.Initialize(bitmap, bmpFormat, WIC.BitmapDitherType.ErrorDiffusion, palette, 63.75, WIC.BitmapPaletteType.Custom);
-
-								int rowPitch = (32 * currentImage.Width + 7) / 8;
-								int size = rowPitch * currentImage.Height;
-
-								using (var converterstream = new GorgonLibrary.IO.GorgonDataStream(size))
-								{
-									convert.CopyPixels(rowPitch, converterstream.BasePointer, size);
-									frame.Palette = palette;
-									frame.WritePixels(currentImage.Height, converterstream.BasePointer, rowPitch, size);
-								}
-							}
-						}
-					}
-					else
-						frame.WriteSource(bitmap);
-					frame.Commit();
-					encoder.Commit();
-				}
-			}*/
-
     }
 }

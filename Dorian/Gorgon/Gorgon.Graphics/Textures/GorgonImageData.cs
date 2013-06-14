@@ -256,61 +256,31 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
-		/// Property to return the buffer for the given array index, mip map level and depth slice.
-		/// </summary>
-		/// <exception cref="System.ArgumentOutOfRangeException">Thrown when the array index, mip level or depth slice parameters are larger than their respective boundaries, or less than 0.</exception>
-		/// <remarks>To get the array length and/or the mip map count, use the <see cref="P:GorgonLibrary.Graphics.GorgonImageData{T}.Settings">Settings</see> property.
-		/// <para>To get the depth slice count, use the <see cref="P:GorgonLibrary.Graphics.GorgonImageData{T}.GetDepthCount">GetDepthCount</see> method.</para>
-		/// </remarks>
-		public ImageBuffer this[int arrayIndex, int mipLevel, int depthSlice]
-		{
-			get
-			{
-				GorgonDebug.AssertParamRange(arrayIndex, 0, Settings.ArrayCount, "arrayIndex");
-				GorgonDebug.AssertParamRange(mipLevel, 0, Settings.MipCount, "mipLevel");
-
-				Tuple<int, int> offsetSize = _mipOffsetSize[mipLevel + (arrayIndex * Settings.MipCount)];
-
-				GorgonDebug.AssertParamRange(depthSlice, 0, offsetSize.Item2, "depthSlice");
-
-				return _buffers[offsetSize.Item1 + depthSlice];
-			}
-		}
-
-		/// <summary>
 		/// Property to return the buffer for the given mip map level and depth slice.
 		/// </summary>
 		/// <exception cref="System.ArgumentOutOfRangeException">Thrown when the array index or the depth slice parameters are larger than their respective boundaries, or less than 0.</exception>
-		/// <remarks>To get the array length and/or the mip map count, use the <see cref="P:GorgonLibrary.Graphics.GorgonImageData{T}.Settings">Settings</see> property.
+		/// <remarks>To get the array length, or the mip map count, use the <see cref="P:GorgonLibrary.Graphics.GorgonImageData.Settings">Settings</see> property.
+        /// <para>To get the depth slice count, use the <see cref="GorgonLibrary.Graphics.GorgonImageData.GetDepthCount">GetDepthCount</see> method.</para>
+		/// <para>The <paramref name="arrayIndexDepthSlice"/> parameter is used as an array index if the image is 1D or 2D.  If it is a 3D image, then the value indicates a depth slice.</para>
 		/// </remarks>
-		public ImageBuffer this[int arrayIndex, int mipLevel]
+		public ImageBuffer this[int mipLevel, int arrayIndexDepthSlice = 0]
 		{
 			get
 			{
-				GorgonDebug.AssertParamRange(arrayIndex, 0, Settings.ArrayCount, "arrayIndex");
-				GorgonDebug.AssertParamRange(mipLevel, 0, Settings.MipCount, "mipLevel");
+			    Tuple<int, int> offsetSize;
 
-				Tuple<int, int> offsetSize = _mipOffsetSize[mipLevel + (arrayIndex * Settings.MipCount)];
+                GorgonDebug.AssertParamRange(mipLevel, 0, Settings.MipCount, "mipLevel");
 
-				return _buffers[offsetSize.Item1];
-			}
-		}
-
-		/// <summary>
-		/// Property to return the buffer for the given mip map level.
-		/// </summary>
-		/// <exception cref="System.ArgumentOutOfRangeException">Thrown when the mip map level parameter is larger than the number of mip levels, or less than 0.</exception>
-		/// <remarks>To get the mip map count, use the <see cref="P:GorgonLibrary.Graphics.GorgonImageData{T}.Settings">Settings</see> property.
-		/// </remarks>
-		public ImageBuffer this[int mipLevel]
-		{
-			get
-			{
-				GorgonDebug.AssertParamRange(mipLevel, 0, Settings.MipCount, "mipLevel");
-
-				Tuple<int, int> offsetSize = _mipOffsetSize[mipLevel];
-
-				return _buffers[offsetSize.Item1];
+			    if (Settings.ImageType == ImageType.Image3D)
+			    {
+			        GorgonDebug.AssertParamRange(arrayIndexDepthSlice, 0, Settings.Depth, "arrayIndexDepthSlice");
+                    offsetSize = _mipOffsetSize[mipLevel];
+			        return _buffers[offsetSize.Item1 + arrayIndexDepthSlice];
+			    }
+			    
+			    GorgonDebug.AssertParamRange(arrayIndexDepthSlice, 0, Settings.ArrayCount, "arrayIndexDepthSlice");
+                offsetSize = _mipOffsetSize[mipLevel + (arrayIndexDepthSlice * Settings.MipCount)];
+                return _buffers[offsetSize.Item1];
 			}
 		}
 		#endregion
@@ -581,7 +551,7 @@ namespace GorgonLibrary.Graphics
 			}
 
 			// Get the buffer to copy.
-			var buffer = this[arrayIndex, mipLevel];
+			var buffer = this[mipLevel, arrayIndex];
 			ISubResourceData textureData = null;
 			int resourceIndex = 0;			
 
@@ -687,58 +657,192 @@ namespace GorgonLibrary.Graphics
 		}
 
         /// <summary>
-        /// Function to create a new 1D image data object from a GDI+ Image.
+        /// Function to create a GorgonImageData object from an array of System.Drawing.Image objects.
         /// </summary>
-        /// <param name="image">A GDI+ image object to use as the source image data.</param>
-        /// <param name="options">Options for image conversion.</param>
-        /// <returns>
-        /// A new 1D image data object containing a copy of the System.Drawing.Image data.
-        /// </returns>
-        /// <exception cref="System.ArgumentNullException">Thrown when the image parameter is NULL (Nothing in VB.Net)
-        /// <para>-or-</para>
-        /// <para>Thrown when the options parameter is NULL.</para>
-        /// </exception>
-        /// <exception cref="System.ArgumentException">Thrown when pixel format in the options cannot be converted or is not supported.</exception>
+        /// <param name="images">Image objects to retrieve image data from.</param>
+        /// <param name="imageType">Type of image to build.</param>
+        /// <param name="options">[Optional] Options used to create the image data.</param>
+        /// <returns>A new image data object containing the image data from the image array.</returns>
+        /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="images"/> parameter is NULL.</exception>
+        /// <exception cref="System.ArgumentException">Thrown when the <paramref name="images"/> parameter is empty.</exception>
+        /// <exception cref="GorgonLibrary.GorgonException">Thrown when the image could not be created.</exception>
         /// <remarks>
-        /// This method will create a new <see cref="GorgonLibrary.Graphics.GorgonImageData">GorgonImageData</see> object from a <see cref="System.Drawing.Image">GDI+ Image</see>.
+        /// This method will create a new <see cref="GorgonLibrary.Graphics.GorgonImageData">GorgonImageData</see> object from an array of <see cref="System.Drawing.Image">System.Drawing.Images</see>. 
         /// The method will copy the image information and do a best fit conversion.
+        /// <para>If <paramref name="imageType"/> is set to Image1D/2D, then the array can be laid out as mip slices and array indices, if it is a 3D image, then it will be laid out as mip slices and depth slices. 
+        /// If the MipCount is set to 1, then only the first image will be processed IF there is only one image in the list.</para>
+        /// <para><strong>For 1D and 2D images:</strong> If there is more than 1 image in the list, and the mip count is set to 1, then the element count 
+        /// of the list will be taken as the array size. The layout of the image list is processed in the following order (assuming the MipCount = 2, and the array count is = 4):</para>
+        /// <para>
+        /// <code>
+        /// images[0]: Array Index 0, Mip Level 0<br/>
+        /// images[1]: Array Index 0, Mip Level 1<br/>
+        /// images[2]: Array Index 0, Mip Level 2<br/>
+        /// images[3]: Array Index 0, Mip Level 3<br/>
+        /// images[4]: Array Index 1, Mip Level 0<br/>
+        /// images[5]: Array Index 1, Mip Level 1<br/>
+        /// images[6]: Array Index 1, Mip Level 2<br/>
+        /// images[7]: Array Index 1, Mip Level 3<br/>
+        /// </code>
+        /// </para>
+        /// <para><strong>For 3D images:</strong> If there is more than 1 image in the list, and the mip count is set to 1, then the element count 
+        /// of the list will be taken as the depth size. The layout of the image list is processed in the following order (assuming the MipCount = 2, and the depth is = 4):</para>
+        /// <para>
+        /// <code>
+        /// images[0]: Mip Level 0, Depth slice 0<br/>
+        /// images[1]: Mip Level 0, Depth slice 1<br/>
+        /// images[2]: Mip Level 0, Depth slice 2<br/>
+        /// images[3]: Mip Level 0, Depth slice 3<br/>
+        /// images[4]: Mip Level 1, Depth slice 4<br/>
+        /// images[5]: Mip Level 1, Depth slice 5<br/>
+        /// </code>
+        /// The depth is shrunk by a power of 2 for each mip level.  So, at mip level 0 we have 4 depth slices, and at mip level 1 we have 2.  If we had a third mip level, then 
+        /// the depth would be 1 at that mip level.
+        /// </para>
+        /// <para>3D images MUST have a width, height and depth that is a power of 2 if mip maps are to be used.  If the image does not meet the criteria, then an exception will be thrown.
+        /// </para>
+        /// <para>The <paramref name="options" /> parameter controls how the <paramref name="images" /> are converted.  Here is a list of available conversion options:</para>
+        /// <list type="table">
+        /// <listheader>
+        /// <term>Setting</term><term>Description</term>
+        /// </listheader>
+        /// <item>
+        /// <term>Width</term><description>The image will be resized to match the width specified.  Set to 0 to use the original image width.</description>
+        /// </item>
+        /// <item>
+        /// <term>Height</term><description>For 2D and 3D images only. The image will be resized to match the height specified.  Set to 0 to use the original image height.</description>
+        /// </item>
+        /// <item>
+        /// <term>Depth</term><description>For 3D images only. This sets the depth for the image.  The default value is set to 1.  If there are no mip-maps (i.e. MipCount = 1), then the number of elements in the list will be used as the depth size.</description>
+        /// </item>
+        /// <item>
+        /// <term>Format</term><description>The image will be converted to the format specified.  Set to Unknown to map to the closest available format.</description>
+        /// </item>
+        /// <item>
+        /// <term>MipCount</term><description>Gorgon will generate the requested number of mip-maps from the source image.  Set to 1 if no mip-maps are required.</description>
+        /// </item>
+        /// <item>
+        /// <term>ArrayCount</term><description>For 1D/2D images only.  Gorgon will generate the requested number of image arrays from the source image.  Set to 1 if no image arrays are required.</description>
+        /// </item>
+        /// <item>
+        /// <term>Dither</term><description>Dithering to apply to images with a higher bit depth than the specified format.  The default value is None.</description>
+        /// </item>
+        /// <item>
+        /// <term>Filter</term><description>Filtering to apply to images that are scaled to the width/height specified.  The default value is Point.</description>
+        /// </item>
+        /// <item>
+        /// <term>UseClipping</term><description>Set to TRUE to clip the image instead of scaling when the width/height is smaller than the image width/height.  The default value is FALSE.</description>
+        /// </item>
+        /// <item>
+        /// <term>ViewFormat</term><description>This value is ignored for image data.</description>
+        /// </item>
+        /// <item>
+        /// <term>AllowUnorderedAccess</term><description>This value is ignored for image data.</description>
+        /// </item>
+        /// <item>
+        /// <term>Multisampling</term><description>This value is ignored for image data.</description>
+        /// </item>
+        /// </list>
+        /// <para>The list of images must be large enough to accomodate the number of mip map levels and the depth at each mip level, must not contain any NULL (Nothing in VB.Net) elements and all images must use
+        /// the same pixel format.  If the list is larger than the requested mip/array count, then only the first elements up until mip count and each depth for each mip level are used.  Unlike other overloads, 
+        /// this method will NOT auto-generate mip-maps and will only use the images provided.</para>
+        /// <para>Images in the list to be used as mip-map levels do not need to be resized because the method will automatically resize based on mip-map level.</para>
+        /// </remarks>
+        public static GorgonImageData CreateFromGDIImage(Image[] images, ImageType imageType, GorgonGDIOptions options = null)
+        {
+            if (images == null)
+            {
+                throw new ArgumentNullException("images");
+            }
+
+            if (images.Length == 0)
+            {
+                throw new ArgumentException(Resources.GORGFX_PARAMETER_MUST_NOT_BE_EMPTY, "images");
+            }
+
+            if (options == null)
+            {
+                options = new GorgonGDIOptions();
+            }
+
+            using (var wic = new GorgonWICImage())
+            {
+                switch (imageType)
+                {
+                    case ImageType.Image1D:
+                        return GorgonGDIImageConverter.Create1DImageDataFromImages(wic, images, options);
+                    case ImageType.Image2D:
+                    case ImageType.ImageCube:
+                        return GorgonGDIImageConverter.Create2DImageDataFromImages(wic, images, options);
+                    case ImageType.Image3D:
+                        return GorgonGDIImageConverter.Create3DImageDataFromImages(wic, images, options);
+                }
+
+                throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_IMAGE_TYPE_INVALID);
+            }
+        }
+
+
+        /// <summary>
+        /// Function to create a new image data object from a System.Drawing.Image object.
+        /// </summary>
+        /// <param name="image">An image object to use as the source image data.</param>
+        /// <param name="imageType">Type of image to create.</param>
+        /// <param name="options">[Optional] Options for image conversion.</param>
+        /// <returns>
+        /// A new image data object containing a copy of the System.Drawing.Image data.
+        /// </returns>
+        /// <exception cref="System.ArgumentNullException">Thrown when the image parameter is NULL (Nothing in VB.Net)</exception>
+        /// <exception cref="GorgonLibrary.GorgonException">Thrown when image could not be created.</exception>
+        /// <remarks>
+        /// This method will create a new <see cref="GorgonLibrary.Graphics.GorgonImageData">GorgonImageData</see> object from a <see cref="System.Drawing.Image"/>. 
+        /// The method will copy the image information and do a best fit conversion.
+        /// <para>This overload will only support 1D and 2D images (non-cubemap, since they require 6 array indices), other image types are not supported for this overload.</para>
         /// <para>The <paramref name="options"/> parameter controls how the <paramref name="image" /> is converted.  Here is a list of available conversion options:</para>
         /// <list type="table">
         /// <listheader>
         /// <term>Setting</term><term>Description</term>
         /// </listheader>
         /// <item>
-        /// <description>Width</description><description>The image will be resized to match the width specified.  Set to 0 to use the original image width.</description>
+        /// <term>Width</term><description>The image will be resized to match the width specified.  Set to 0 to use the original image width.</description>
         /// </item>
         /// <item>
-        /// <description>Height</description><description>This is ignored for 1D images.</description>
+        /// <term>Height</term><description>For 2d images only. The image will be resized to match the height specified.  Set to 0 to use the original image height.</description>
         /// </item>
         /// <item>
-        /// <description>Depth</description><description>This is ignored for 1D images.</description>
+        /// <term>Depth</term><description>This is ignored for 1D and 2D images.</description>
         /// </item>
         /// <item>
-        /// <description>Format</description><description>The image will be converted to the format specified.  Set to Unknown to map to the closest available format.</description>
+        /// <term>Format</term><description>The image will be converted to the format specified.  Set to Unknown to map to the closest available format.</description>
         /// </item>
         /// <item>
-        /// <description>MipCount</description><description>Gorgon will generate the requested number of mip-maps from the source image.  Set to 0 to generate a full mip-map chain, or set to 1 if no mip-maps are required.</description>
+        /// <term>MipCount</term><description>Gorgon will generate the requested number of mip-maps from the source image.  Set to 0 to generate a full mip-map chain, or set to 1 if no mip-maps are required.</description>
         /// </item>
         /// <item>
-        /// <description>ArrayCount</description><description>This is ignored for this overload.</description>
+        /// <term>ArrayCount</term><description>This is ignored for this overload.</description>
         /// </item>
         /// <item>
-        /// <description>Dither</description><description>Dithering to apply to images with a higher bit depth than the specified format.  The default value is None.</description>
+        /// <term>Dither</term><description>Dithering to apply to images with a higher bit depth than the specified format.  The default value is None.</description>
         /// </item>
         /// <item>
-        /// <description>Filter</description><description>Filtering to apply to images that are scaled to the width/height specified.  The default value is Point.</description>
+        /// <term>Filter</term><description>Filtering to apply to images that are scaled to the width/height specified.  The default value is Point.</description>
         /// </item>
         /// <item>
-        /// <description>UseClipping</description><description>Set to TRUE to clip the image instead of scaling when the width/height is smaller than the image width/height.  The default value is FALSE.</description>
+        /// <term>UseClipping</term><description>Set to TRUE to clip the image instead of scaling when the width/height is smaller than the image width/height.  The default value is FALSE.</description>
+        /// </item>
+        /// <item>
+        /// <term>ViewFormat</term><description>This value is ignored for image data.</description>
+        /// </item>
+        /// <item>
+        /// <term>AllowUnorderedAccess</term><description>This value is ignored for image data.</description>
+        /// </item>
+        /// <item>
+        /// <term>Multisampling</term><description>This value is ignored for image data.</description>
         /// </item>
         /// </list>
         /// </remarks>
-        public static GorgonImageData Create1DFromGDIImage(Image image, GorgonGDIOptions options = null)
-        {            
-            
+        public static GorgonImageData CreateFromGDIImage(Image image, ImageType imageType, GorgonGDIOptions options = null)
+        {
             if (image == null)
             {
                 throw new ArgumentNullException("image");
@@ -749,354 +853,23 @@ namespace GorgonLibrary.Graphics
                 options = new GorgonGDIOptions();
             }
 
-            // Default these values to 1 for 1D images.
-			options.ArrayCount = 1;
-            options.Height = 1;
+            // Default these values to 1 for 2D images.
+            options.ArrayCount = 1;
             options.Depth = 1;
 
             using (var wic = new GorgonWICImage())
             {
-                return GorgonGDIImageConverter.Create1DImageDataFromImage(wic, image, options);
+                switch (imageType)
+                {
+                    case ImageType.Image1D:
+                        return GorgonGDIImageConverter.Create1DImageDataFromImage(wic, image, options);
+                    case ImageType.Image2D:
+                        return GorgonGDIImageConverter.Create2DImageDataFromImage(wic, image, options);
+                }
+
+                throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_IMAGE_TYPE_INVALID);
             }
         }
-
-		/// <summary>
-		/// Function to create a new 2D image data object from a GDI+ Image.
-		/// </summary>
-		/// <param name="image">A GDI+ image object to use as the source image data.</param>
-		/// <param name="options">Options for image conversion.</param>
-		/// <returns>
-		/// A new 2D image data object containing a copy of the System.Drawing.Image data.
-		/// </returns>
-		/// <exception cref="System.ArgumentNullException">Thrown when the image parameter is NULL (Nothing in VB.Net)
-		/// <para>-or-</para>
-		/// <para>Thrown when the options parameter is NULL.</para>
-		/// </exception>
-		/// <exception cref="System.ArgumentException">Thrown when pixel format in the options cannot be converted or is not supported.</exception>
-		/// <remarks>
-		/// This method will create a new <see cref="GorgonLibrary.Graphics.GorgonImageData">GorgonImageData</see> object from a <see cref="System.Drawing.Image">GDI+ Image</see>.
-		/// The method will copy the image information and do a best fit conversion.
-		/// <para>The <paramref name="options"/> parameter controls how the <paramref name="image" /> is converted.  Here is a list of available conversion options:</para>
-		/// <list type="table">
-		/// <listheader>
-		/// <term>Setting</term><term>Description</term>
-		/// </listheader>
-		/// <item>
-		/// <description>Width</description><description>The image will be resized to match the width specified.  Set to 0 to use the original image width.</description>
-		/// </item>
-		/// <item>
-		/// <description>Height</description><description>The image will be resized to match the height specified.  Set to 0 to use the original image height.</description>
-		/// </item>
-		/// <item>
-		/// <description>Depth</description><description>This is ignored for 2D images.</description>
-		/// </item>
-		/// <item>
-		/// <description>Format</description><description>The image will be converted to the format specified.  Set to Unknown to map to the closest available format.</description>
-		/// </item>
-		/// <item>
-		/// <description>MipCount</description><description>Gorgon will generate the requested number of mip-maps from the source image.  Set to 0 to generate a full mip-map chain, or set to 1 if no mip-maps are required.</description>
-		/// </item>
-		/// <item>
-		/// <description>ArrayCount</description><description>This is ignored for this overload.</description>
-		/// </item>
-		/// <item>
-		/// <description>Dither</description><description>Dithering to apply to images with a higher bit depth than the specified format.  The default value is None.</description>
-		/// </item>
-		/// <item>
-		/// <description>Filter</description><description>Filtering to apply to images that are scaled to the width/height specified.  The default value is Point.</description>
-		/// </item>
-		/// <item>
-		/// <description>UseClipping</description><description>Set to TRUE to clip the image instead of scaling when the width/height is smaller than the image width/height.  The default value is FALSE.</description>
-		/// </item>
-		/// </list>
-		/// </remarks>
-		public static GorgonImageData Create2DFromGDIImage(Image image, GorgonGDIOptions options = null)
-		{
-
-			if (image == null)
-			{
-				throw new ArgumentNullException("image");
-			}
-
-			if (options == null)
-			{
-				options = new GorgonGDIOptions();
-			}
-
-			// Default these values to 1 for 2D images.
-			options.ArrayCount = 1;
-			options.Depth = 1;
-
-			using (var wic = new GorgonWICImage())
-			{
-				return GorgonGDIImageConverter.Create2DImageDataFromImage(wic, image, options);
-			}
-		}
-
-        /// <summary>
-        /// Function to create a new 1D image data object from a list of <see cref="System.Drawing.Image">GDI+ Images</see>.
-        /// </summary>
-        /// <param name="images">A list of GDI+ image objects to use as the source image data.</param>
-        /// <param name="options">Options for image conversion.</param>
-        /// <returns>
-        /// A new 1D image data object containing a copy of the System.Drawing.Image data.
-        /// </returns>
-        /// <exception cref="System.ArgumentException">Thrown when the images parameter is NULL (Nothing in VB.Net) or empty.
-		/// <para>-or-</para>
-		/// <para>Thrown when the pixel format is unsupported or not the same across all images.</para>
-		/// <para>-or-</para>
-		/// <para>Thrown when an image in the list is NULL.</para>		
-        /// </exception>
-		/// <exception cref="System.ArgumentOutOfRangeException">Thrown when the images parameter does not contain enough elements to satisfy the array and mip count.</exception>
-        /// <remarks>
-        /// This method will create a new <see cref="GorgonLibrary.Graphics.GorgonImageData">GorgonImageData</see> object from a list of <see cref="System.Drawing.Image">GDI+ Images</see>.
-        /// The method will copy the image information and do a best fit conversion.
-        /// <para>This overload is used to create image arrays and/or mip-map chains from a list of images.  If the MipCount and ArrayCount are set to 1, then
-        /// only the first image will be processed.</para>
-        /// <para>The layout of the image list is processed in the following order (assuming the ArrayCount = 2, and the MipCount = 4):</para>
-        /// <code>
-        /// images[0]: Array Index 0, Mip Level 0
-        /// images[1]: Array Index 0, Mip Level 1
-        /// images[2]: Array Index 0, Mip Level 2
-        /// images[3]: Array Index 0, Mip Level 3
-        /// images[4]: Array Index 1, Mip Level 0
-        /// images[5]: Array Index 1, Mip Level 1
-        /// images[6]: Array Index 1, Mip Level 2
-        /// images[7]: Array Index 1, Mip Level 3
-        /// </code>
-        /// <para>The <paramref name="options" /> parameter controls how the <paramref name="images" /> are converted.  Here is a list of available conversion options:</para>
-        /// <list type="table">
-        /// <listheader>
-        /// <term>Setting</term><term>Description</term>
-        /// </listheader>
-        /// <item>
-        /// <description>Width</description><description>The image will be resized to match the width specified.  Set to 0 to use the original image width.</description>
-        /// </item>
-        /// <item>
-        /// <description>Height</description><description>This is ignored for 1D images.</description>
-        /// </item>
-        /// <item>
-        /// <description>Depth</description><description>This is ignored for 1D images.</description>
-        /// </item>
-        /// <item>
-        /// <description>Format</description><description>The image will be converted to the format specified.  Set to Unknown to map to the closest available format.</description>
-        /// </item>
-        /// <item>
-        /// <description>MipCount</description><description>Gorgon will generate the requested number of mip-maps from the source image.  Set to 1 if no mip-maps are required.</description>
-        /// </item>
-        /// <item>
-        /// <description>ArrayCount</description><description>Gorgon will generate the requested number of image arrays from the source image.  Set to 1 if no image arrays are required.</description>
-        /// </item>
-        /// <item>
-        /// <description>Dither</description><description>Dithering to apply to images with a higher bit depth than the specified format.  The default value is None.</description>
-        /// </item>
-        /// <item>
-        /// <description>Filter</description><description>Filtering to apply to images that are scaled to the width/height specified.  The default value is Point.</description>
-        /// </item>
-        /// <item>
-        /// <description>UseClipping</description><description>Set to TRUE to clip the image instead of scaling when the width/height is smaller than the image width/height.  The default value is FALSE.</description>
-        /// </item>
-        /// </list>
-        /// <para>The list of images must be large enough to accomodate the number of array indices and mip map levels (ArrayCount * MipCount), must not contain any NULL (Nothing in VB.Net) elements and all images must use
-        /// the same pixel format.  If the list is larger than the requested mip/array count, then only the first elements up until ArrayCount * MipCount are used.  Unlike other overloads, this method will NOT auto-generate
-        /// mip-maps and will only use the images provided.</para>
-        /// <para>Images in the list to be used as mip-map levels do not need to be resized because the method will automatically resize based on mip-map level.</para>
-        /// </remarks>
-        public static GorgonImageData Create1DFromGDIImage(Image[] images, GorgonGDIOptions options = null)
-        {
-            if ((images == null) || (images.Length == 0))
-            {
-                throw new ArgumentException("The parameter must not be NULL or empty.", "images");
-            }
-
-            if (options == null)
-            {
-                options = new GorgonGDIOptions();
-            }
-            
-            using (var wic = new GorgonWICImage())
-            {
-                return GorgonGDIImageConverter.Create1DImageDataFromImages(wic, images, options);
-            }
-        }
-
-		/// <summary>
-		/// Function to create a new 2D image data object from a list of <see cref="System.Drawing.Image">GDI+ Images</see>.
-		/// </summary>
-		/// <param name="images">A list of GDI+ image objects to use as the source image data.</param>
-		/// <param name="options">Options for image conversion.</param>
-		/// <returns>
-		/// A new 2D image data object containing a copy of the System.Drawing.Image data.
-		/// </returns>
-		/// <exception cref="System.ArgumentException">Thrown when the images parameter is NULL (Nothing in VB.Net) or empty.
-		/// <para>-or-</para>
-		/// <para>Thrown when the pixel format is unsupported or not the same across all images.</para>
-		/// <para>-or-</para>
-		/// <para>Thrown when an image in the list is NULL.</para>		
-		/// </exception>
-		/// <exception cref="System.ArgumentOutOfRangeException">Thrown when the images parameter does not contain enough elements to satisfy the array and mip count.</exception>
-		/// <remarks>
-		/// This method will create a new <see cref="GorgonLibrary.Graphics.GorgonImageData">GorgonImageData</see> object from a list of <see cref="System.Drawing.Image">GDI+ Images</see>.
-		/// The method will copy the image information and do a best fit conversion.
-		/// <para>This overload is used to create image arrays and/or mip-map chains from a list of images.  If the MipCount and ArrayCount are set to 1, then
-		/// only the first image will be processed.</para>
-		/// <para>The layout of the image list is processed in the following order (assuming the ArrayCount = 2, and the MipCount = 4):</para>
-		/// <code>
-		/// images[0]: Array Index 0, Mip Level 0
-		/// images[1]: Array Index 0, Mip Level 1
-		/// images[2]: Array Index 0, Mip Level 2
-		/// images[3]: Array Index 0, Mip Level 3
-		/// images[4]: Array Index 1, Mip Level 0
-		/// images[5]: Array Index 1, Mip Level 1
-		/// images[6]: Array Index 1, Mip Level 2
-		/// images[7]: Array Index 1, Mip Level 3
-		/// </code>
-		/// <para>The <paramref name="options" /> parameter controls how the <paramref name="images" /> are converted.  Here is a list of available conversion options:</para>
-		/// <list type="table">
-		/// <listheader>
-		/// <term>Setting</term><term>Description</term>
-		/// </listheader>
-		/// <item>
-		/// <description>Width</description><description>The image will be resized to match the width specified.  Set to 0 to use the original image width.</description>
-		/// </item>
-		/// <item>
-		/// <description>Height</description><description>The image will be resized to match the height specified.  Set to 0 to use the original image height.</description>
-		/// </item>
-		/// <item>
-		/// <description>Depth</description><description>This is ignored for 2D images.</description>
-		/// </item>
-		/// <item>
-		/// <description>Format</description><description>The image will be converted to the format specified.  Set to Unknown to map to the closest available format.</description>
-		/// </item>
-		/// <item>
-		/// <description>MipCount</description><description>Gorgon will generate the requested number of mip-maps from the source image.  Set to 1 if no mip-maps are required.</description>
-		/// </item>
-		/// <item>
-		/// <description>ArrayCount</description><description>Gorgon will generate the requested number of image arrays from the source image.  Set to 1 if no image arrays are required.</description>
-		/// </item>
-		/// <item>
-		/// <description>Dither</description><description>Dithering to apply to images with a higher bit depth than the specified format.  The default value is None.</description>
-		/// </item>
-		/// <item>
-		/// <description>Filter</description><description>Filtering to apply to images that are scaled to the width/height specified.  The default value is Point.</description>
-		/// </item>
-		/// <item>
-		/// <description>UseClipping</description><description>Set to TRUE to clip the image instead of scaling when the width/height is smaller than the image width/height.  The default value is FALSE.</description>
-		/// </item>
-		/// </list>
-		/// <para>The list of images must be large enough to accomodate the number of array indices and mip map levels (ArrayCount * MipCount), must not contain any NULL (Nothing in VB.Net) elements and all images must use
-		/// the same pixel format.  If the list is larger than the requested mip/array count, then only the first elements up until ArrayCount * MipCount are used.  Unlike other overloads, this method will NOT auto-generate
-		/// mip-maps and will only use the images provided.</para>
-		/// <para>Images in the list to be used as mip-map levels do not need to be resized because the method will automatically resize based on mip-map level.</para>
-		/// </remarks>
-		public static GorgonImageData Create2DFromGDIImage(Image[] images, GorgonGDIOptions options = null)
-		{
-			if ((images == null) || (images.Length == 0))
-			{
-				throw new ArgumentException("The parameter must not be NULL or empty.", "images");
-			}
-
-			if (options == null)
-			{
-				options = new GorgonGDIOptions();
-			}
-
-			using (var wic = new GorgonWICImage())
-			{
-				return GorgonGDIImageConverter.Create2DImageDataFromImages(wic, images, options);
-			}
-		}
-
-		/// <summary>
-		/// Function to create a new 3D image data object from a list of <see cref="System.Drawing.Image">GDI+ Images</see>.
-		/// </summary>
-		/// <param name="images">A list of GDI+ image objects to use as the source image data.</param>
-		/// <param name="options">Options for image conversion.</param>
-		/// <returns>
-		/// A new 3D image data object containing a copy of the System.Drawing.Image data.
-		/// </returns>
-		/// <exception cref="System.ArgumentException">Thrown when the images parameter is NULL (Nothing in VB.Net) or empty.
-		/// <para>-or-</para>
-		/// <para>Thrown when the pixel format is unsupported or not the same across all images.</para>
-		/// <para>-or-</para>
-		/// <para>Thrown when an image in the list is NULL.</para>		
-		/// </exception>
-		/// <exception cref="System.ArgumentOutOfRangeException">Thrown when the images parameter does not contain enough elements to satisfy the depth and mip count.</exception>
-		/// <remarks>
-		/// This method will create a new <see cref="GorgonLibrary.Graphics.GorgonImageData">GorgonImageData</see> object from a list of <see cref="System.Drawing.Image">GDI+ Images</see>.
-		/// The method will copy the image information and do a best fit conversion.
-		/// <para>This overload is used to create a 3D image from a list of images.  If the MipCount is set to 1, then
-		/// only the first image will be processed IF there is only one image in the list.  If there is more than 1 image in the list, and the mip count is set to 1, then the element count 
-		/// of the list will be taken as the depth size.</para>
-		/// <para>The layout of the image list is processed in the following order (assuming the MipCount = 2, and the depth is = 4):</para>
-		/// <code>
-		/// images[0]: Mip Level 0, Depth slice 0.
-		/// images[1]: Mip Level 0, Depth slice 1
-		/// images[2]: Mip Level 0, Depth slice 2
-		/// images[3]: Mip Level 0, Depth slice 3
-		/// images[4]: Mip Level 1, Depth slice 4
-		/// images[5]: Mip Level 1, Depth slice 5
-		/// </code>
-		/// <para>The depth is shrunk by a power of 2 for each mip level.  So, at mip level 0 we have 4 depth slices, and at mip level 1 we have 2.  If we had a third mip level, then 
-		/// the depth would be 1 at that mip level.</para>
-		/// <para>Note that unlike other image types, there is no array.  3D images do not support arrays and will ignore them.  Also note that a 3D image MUST have a width, height 
-		/// and depth that is a power of 2 if mip maps are to be used.  If the image does not meet the criteria, then an exception will be thrown.
-		/// </para>
-		/// <para>The <paramref name="options" /> parameter controls how the <paramref name="images" /> are converted.  Here is a list of available conversion options:</para>
-		/// <list type="table">
-		/// <listheader>
-		/// <term>Setting</term><term>Description</term>
-		/// </listheader>
-		/// <item>
-		/// <description>Width</description><description>The image will be resized to match the width specified.  Set to 0 to use the original image width.</description>
-		/// </item>
-		/// <item>
-		/// <description>Height</description><description>The image will be resized to match the height specified.  Set to 0 to use the original image height.</description>
-		/// </item>
-		/// <item>
-		/// <description>Depth</description><description>This sets the depth for the image.  The default value is set to 1.  If there are no mip-maps (i.e. MipCount = 1), then the number of elements in the list will be used as the depth size.</description>
-		/// </item>
-		/// <item>
-		/// <description>Format</description><description>The image will be converted to the format specified.  Set to Unknown to map to the closest available format.</description>
-		/// </item>
-		/// <item>
-		/// <description>MipCount</description><description>Gorgon will generate the requested number of mip-maps from the source image.  Set to 1 if no mip-maps are required.</description>
-		/// </item>
-		/// <item>
-		/// <description>ArrayCount</description><description>Image arrays are not available for 3D images.</description>
-		/// </item>
-		/// <item>
-		/// <description>Dither</description><description>Dithering to apply to images with a higher bit depth than the specified format.  The default value is None.</description>
-		/// </item>
-		/// <item>
-		/// <description>Filter</description><description>Filtering to apply to images that are scaled to the width/height specified.  The default value is Point.</description>
-		/// </item>
-		/// <item>
-		/// <description>UseClipping</description><description>Set to TRUE to clip the image instead of scaling when the width/height is smaller than the image width/height.  The default value is FALSE.</description>
-		/// </item>
-		/// </list>
-		/// <para>The list of images must be large enough to accomodate the number of mip map levels and the depth at each mip level, must not contain any NULL (Nothing in VB.Net) elements and all images must use
-		/// the same pixel format.  If the list is larger than the requested mip/array count, then only the first elements up until mip count and each depth for each mip level are used.  Unlike other overloads, 
-		/// this method will NOT auto-generate mip-maps and will only use the images provided.</para>
-		/// <para>Images in the list to be used as mip-map levels do not need to be resized because the method will automatically resize based on mip-map level.</para>
-		/// </remarks>
-		public static GorgonImageData Create3DFromGDIImage(Image[] images, GorgonGDIOptions options = null)
-		{
-			if ((images == null) || (images.Length == 0))
-			{
-				throw new ArgumentException("The parameter must not be NULL or empty.", "images");
-			}
-
-			if (options == null)
-			{
-				options = new GorgonGDIOptions();
-			}
-
-			using (var wic = new GorgonWICImage())
-			{
-				return GorgonGDIImageConverter.Create3DImageDataFromImages(wic, images, options);
-			}
-		}
 
         /// <summary>
         /// Function to copy texture data into a buffer.
@@ -1174,30 +947,14 @@ namespace GorgonLibrary.Graphics
         /// </summary>
         /// <param name="texture">Texture used to create the image data.</param>
         /// <param name="mipLevel">Mip level to copy.</param>
-        /// <returns>A new image data object containing the data from the texture.</returns>
-        /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="texture"/> parameter is NULL (Nothing in VB.Net).</exception>
-        /// <exception cref="System.ArgumentException">Thrown when the texture parameter has a usage of Immutable.</exception>
-        /// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="mipLevel"/> parameter is greater than or equal to the number of mip map levels.</exception>
-        /// <remarks>This will create a system memory clone of the <see cref="GorgonLibrary.Graphics.GorgonTexture">texture</see>.  Only textures that do not have the Immutable usage can be converted, if an attempt to 
-        /// convert a texture with a usage of Immutable is made, then an exception will be thrown.</remarks>
-        public static GorgonImageData CreateFromTexture(GorgonTexture texture, int mipLevel)
-        {
-            return CreateFromTexture(texture, 0, mipLevel);
-        }
-
-        /// <summary>
-        /// Function to create an image data object from a texture.
-        /// </summary>
-        /// <param name="texture">Texture used to create the image data.</param>
-        /// <param name="arrayIndex">Index of the texture array to copy.</param>
-        /// <param name="mipLevel">Mip level to copy.</param>
+        /// <param name="arrayIndex">[Optional] Index of the texture array to copy.</param>
         /// <returns>A new image data object containing the data from the texture.</returns>
         /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="texture"/> parameter is NULL (Nothing in VB.Net).</exception>
         /// <exception cref="System.ArgumentException">Thrown when the texture parameter has a usage of Immutable.</exception>
         /// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="arrayIndex"/> or <paramref name="mipLevel"/> parameters are greater than or equal to the number of array indices or mip map levels.</exception>
         /// <remarks>This will create a system memory clone of the <see cref="GorgonLibrary.Graphics.GorgonTexture">texture</see>.  Only textures that do not have the Immutable usage can be converted, if an attempt to 
         /// convert a texture with a usage of Immutable is made, then an exception will be thrown.</remarks>
-        public static GorgonImageData CreateFromTexture(GorgonTexture texture, int arrayIndex, int mipLevel)
+        public static GorgonImageData CreateFromTexture(GorgonTexture texture, int mipLevel, int arrayIndex = 0)
         {
             GorgonImageData result = null;
             GorgonTexture staging = texture;
@@ -1244,7 +1001,7 @@ namespace GorgonLibrary.Graphics
                 result = new GorgonImageData(texture.Settings);
 
                 // Get the buffer for the array and mip level.
-                var buffer = result[arrayIndex, mipLevel];
+                var buffer = result[mipLevel, arrayIndex];
 
                 // Copy the data from the texture.
                 GetTextureData(staging, buffer.Data.UnsafePointer, arrayIndex, mipLevel, buffer.PitchInformation.RowPitch, buffer.Height, buffer.Depth);
@@ -1300,7 +1057,7 @@ namespace GorgonLibrary.Graphics
                     for (int mipLevel = 0; mipLevel < texture.Settings.MipCount; mipLevel++)
                     {
                         // Get the buffer for the array and mip level.
-                        var buffer = result[array, mipLevel];                        
+                        var buffer = result[mipLevel, array];
 
                         // Copy the data from the texture.
                         GetTextureData(staging, buffer.Data.UnsafePointer, array, mipLevel, buffer.PitchInformation.RowPitch, buffer.Height, buffer.Depth);
@@ -1324,38 +1081,13 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		/// <param name="width">Width of the 1D image.</param>
 		/// <param name="format">Format of the 1D image.</param>
+		/// <param name="arrayCount">[Optional] Number of array indices.</param>
+		/// <param name="mipCount">[Optional] Number of mip-map levels in the 1D image.</param>
 		/// <returns>The number of bytes for the 1D image.</returns>
-		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="format"/> parameter is set to Unknown.</exception>
-		public static int GetSizeInBytes(int width, BufferFormat format)
+        /// <exception cref="GorgonLibrary.GorgonException">Thrown when the <paramref name="format"/> is not supported.</exception>
+		public static int GetSizeInBytes(int width, BufferFormat format, int arrayCount = 1, int mipCount = 1)
 		{
-			return GetSizeInBytes(width, format, 1, 1);
-		}
-
-		/// <summary>
-		/// Function to return the size of a 1D image in bytes.
-		/// </summary>
-		/// <param name="width">Width of the 1D image.</param>
-		/// <param name="format">Format of the 1D image.</param>
-		/// <param name="mipCount">Number of mip-map levels in the 1D image.</param>
-		/// <returns>The number of bytes for the 1D image.</returns>
-		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="format"/> parameter is set to Unknown.</exception>
-		public static int GetSizeInBytes(int width, BufferFormat format, int mipCount)
-		{
-			return GetSizeInBytes(width, format, 1, mipCount);
-		}
-
-		/// <summary>
-		/// Function to return the size of a 1D image in bytes.
-		/// </summary>
-		/// <param name="width">Width of the 1D image.</param>
-		/// <param name="format">Format of the 1D image.</param>
-		/// <param name="arrayCount">Number of array indices.</param>
-		/// <param name="mipCount">Number of mip-map levels in the 1D image.</param>
-		/// <returns>The number of bytes for the 1D image.</returns>
-		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="format"/> parameter is set to Unknown.</exception>
-		public static int GetSizeInBytes(int width, BufferFormat format, int arrayCount, int mipCount)
-		{
-			return GetSizeInBytes(width, 1, format, arrayCount, mipCount, PitchFlags.None);
+			return GetSizeInBytes(width, 1, format, arrayCount, mipCount);
 		}
 
 		/// <summary>
@@ -1364,54 +1096,12 @@ namespace GorgonLibrary.Graphics
 		/// <param name="width">Width of the 2D image.</param>
 		/// <param name="height">Height of the 2D image.</param>
 		/// <param name="format">Format of the 2D image.</param>
+		/// <param name="arrayCount">[Optional] Number of array indices.</param>
+		/// <param name="mipCount">[Optional] Number of mip-map levels in the 2D image.</param>
+		/// <param name="pitchFlags">[Optional] Flags used to influence the row pitch size.</param>
 		/// <returns>The number of bytes for the 2D image.</returns>
-		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="format"/> parameter is set to Unknown.</exception>
-		public static int GetSizeInBytes(int width, int height, BufferFormat format)
-		{
-			return GetSizeInBytes(width, height, format, 1, 1, PitchFlags.None);
-		}
-
-		/// <summary>
-		/// Function to return the size of a 2D image in bytes.
-		/// </summary>
-		/// <param name="width">Width of the 2D image.</param>
-		/// <param name="height">Height of the 2D image.</param>
-		/// <param name="format">Format of the 2D image.</param>
-		/// <param name="mipCount">Number of mip-map levels in the 2D image.</param>
-		/// <returns>The number of bytes for the 2D image.</returns>
-		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="format"/> parameter is set to Unknown.</exception>
-		public static int GetSizeInBytes(int width, int height, BufferFormat format, int mipCount)
-		{
-			return GetSizeInBytes(width, height, format, 1, mipCount, PitchFlags.None);
-		}
-
-		/// <summary>
-		/// Function to return the size of a 2D image in bytes.
-		/// </summary>
-		/// <param name="width">Width of the 2D image.</param>
-		/// <param name="height">Height of the 2D image.</param>
-		/// <param name="format">Format of the 2D image.</param>
-		/// <param name="arrayCount">Number of array indices.</param>
-		/// <param name="mipCount">Number of mip-map levels in the 2D image.</param>
-		/// <returns>The number of bytes for the 2D image.</returns>
-		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="format"/> parameter is set to Unknown.</exception>
-		public static int GetSizeInBytes(int width, int height, BufferFormat format, int arrayCount, int mipCount)
-		{
-			return GetSizeInBytes(width, height, format, arrayCount, mipCount, PitchFlags.None);
-		}
-
-		/// <summary>
-		/// Function to return the size of a 2D image in bytes.
-		/// </summary>
-		/// <param name="width">Width of the 2D image.</param>
-		/// <param name="height">Height of the 2D image.</param>
-		/// <param name="format">Format of the 2D image.</param>
-		/// <param name="arrayCount">Number of array indices.</param>
-		/// <param name="mipCount">Number of mip-map levels in the 2D image.</param>
-		/// <param name="pitchFlags">Flags used to influence the row pitch size.</param>
-		/// <returns>The number of bytes for the 2D image.</returns>
-		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="format"/> parameter is set to Unknown.</exception>
-		public static int GetSizeInBytes(int width, int height, BufferFormat format, int arrayCount, int mipCount, PitchFlags pitchFlags)
+        /// <exception cref="GorgonLibrary.GorgonException">Thrown when the <paramref name="format"/> is not supported.</exception>
+		public static int GetSizeInBytes(int width, int height, BufferFormat format, int arrayCount = 1, int mipCount = 1, PitchFlags pitchFlags = PitchFlags.None)
 		{
 			int result = 0;
 
@@ -1432,44 +1122,15 @@ namespace GorgonLibrary.Graphics
 		/// <param name="height">Height of the 3D image.</param>
 		/// <param name="depth">Depth of the 3D image.</param>
 		/// <param name="format">Format of the 3D image.</param>
+		/// <param name="mipCount">[Optional] Number of mip-map levels in the 3D image.</param>
+		/// <param name="pitchFlags">[Optional] Flags used to influence the row pitch of the image.</param>
 		/// <returns>The number of bytes for the 3D image.</returns>
-		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="format"/> parameter is set to Unknown.</exception>
-		public static int GetSizeInBytes(int width, int height, int depth, BufferFormat format)
-		{
-			return GetSizeInBytes(width, height, depth, format, 1, PitchFlags.None);
-		}
-
-		/// <summary>
-		/// Function to return the size of a 3D image in bytes.
-		/// </summary>
-		/// <param name="width">Width of the 3D image.</param>
-		/// <param name="height">Height of the 3D image.</param>
-		/// <param name="depth">Depth of the 3D image.</param>
-		/// <param name="format">Format of the 3D image.</param>
-		/// <param name="mipCount">Number of mip-map levels in the 3D image.</param>
-		/// <returns>The number of bytes for the 3D image.</returns>
-		/// <exception cref="System.ArgumentException">Thrown when the value of the <paramref name="format"/> parameter is not supported.</exception>
-		public static int GetSizeInBytes(int width, int height, int depth, BufferFormat format, int mipCount)
-		{
-			return GetSizeInBytes(width, height, depth, format, mipCount, PitchFlags.None);
-		}
-
-		/// <summary>
-		/// Function to return the size of a 3D image in bytes.
-		/// </summary>
-		/// <param name="width">Width of the 3D image.</param>
-		/// <param name="height">Height of the 3D image.</param>
-		/// <param name="depth">Depth of the 3D image.</param>
-		/// <param name="format">Format of the 3D image.</param>
-		/// <param name="mipCount">Number of mip-map levels in the 3D image.</param>
-		/// <param name="pitchFlags">Flags used to influence the row pitch of the image.</param>
-		/// <returns>The number of bytes for the 3D image.</returns>
-		/// <exception cref="System.ArgumentException">Thrown when the value of the <paramref name="format"/> parameter is not supported.</exception>
-		public static int GetSizeInBytes(int width, int height, int depth, BufferFormat format, int mipCount, PitchFlags pitchFlags)
+		/// <exception cref="GorgonLibrary.GorgonException">Thrown when the <paramref name="format"/> is not supported.</exception>
+		public static int GetSizeInBytes(int width, int height, int depth, BufferFormat format, int mipCount = 1, PitchFlags pitchFlags = PitchFlags.None)
 		{
 			if (format == BufferFormat.Unknown)
 			{
-				throw new NotSupportedException("The buffer type 'Unknown' is not a valid format.");
+				throw new GorgonException(GorgonResult.FormatNotSupported, "The buffer type 'Unknown' is not a valid format.");
 			}
 
 			width = 1.Max(width);
@@ -1481,7 +1142,7 @@ namespace GorgonLibrary.Graphics
 
 			if (formatInfo.SizeInBytes == 0)
 			{
-				throw new ArgumentException("'" + format.ToString() + "' is not a supported format.", "format");
+				throw new GorgonException(GorgonResult.FormatNotSupported, "'" + format.ToString() + "' is not a supported format.");
 			}
 
 			int mipWidth = width;
@@ -1546,35 +1207,14 @@ namespace GorgonLibrary.Graphics
 		    return settings == null ? 0 : GetMaxMipCount(settings.Width, settings.Height, settings.Depth);
 	    }
 
-	    /// <summary>
-		/// Function to return the maximum number of mip levels supported in a 2D image.
-		/// </summary>
-		/// <param name="width">Width of the proposed image.</param>
-		/// <returns>The number of possible mip-map levels in the image.</returns>
-		public static int GetMaxMipCount(int width)
-		{
-			return GetMaxMipCount(width, 1, 1);
-		}
-
 		/// <summary>
-		/// Function to return the maximum number of mip levels supported in a 2D image.
+		/// Function to return the maximum number of mip levels supported in an image.
 		/// </summary>
 		/// <param name="width">Width of the proposed image.</param>
-		/// <param name="height">Height of the proposed image.</param>
+		/// <param name="height">[Optional] Height of the proposed image.</param>
+		/// <param name="depth">[Optional] Depth of the proposed image.</param>
 		/// <returns>The number of possible mip-map levels in the image.</returns>
-		public static int GetMaxMipCount(int width, int height)
-		{
-			return GetMaxMipCount(width, height, 1);
-		}
-
-		/// <summary>
-		/// Function to return the maximum number of mip levels supported in a 3D image.
-		/// </summary>
-		/// <param name="width">Width of the proposed image.</param>
-		/// <param name="height">Height of the proposed image.</param>
-		/// <param name="depth">Depth of the proposed image.</param>
-		/// <returns>The number of possible mip-map levels in the image.</returns>
-		public static int GetMaxMipCount(int width, int height, int depth)
+		public static int GetMaxMipCount(int width, int height = 1, int depth = 1)
 		{
 			int result = 1;
 			width = 1.Max(width);
@@ -2057,7 +1697,7 @@ namespace GorgonLibrary.Graphics
 					// Copy the first buffer from the source image to the dest image.
 					for (int array = 0; array < Settings.ArrayCount; array++)
 					{
-						DirectAccess.MemoryCopy(destData[array, 0].Data.UnsafePointer, this[array, 0].Data.UnsafePointer, this[array, 0].PitchInformation.SlicePitch * Settings.Depth);
+                        DirectAccess.MemoryCopy(destData[0, array].Data.UnsafePointer, this[0, array].Data.UnsafePointer, this[0, array].PitchInformation.SlicePitch * Settings.Depth);
 					}
 
 					// Assign the worker.
@@ -2085,8 +1725,8 @@ namespace GorgonLibrary.Graphics
 							{
 								for (int depth = 0; depth < mipDepth; depth++)
 								{
-									var sourceBuffer = mipWorker[array, 0, (Settings.Depth / mipDepth) * depth];
-									var depthBuffer = mipWorker[array, mipLevel, depth];
+									var sourceBuffer = mipWorker[0, Settings.ImageType == ImageType.Image3D ? (Settings.Depth / mipDepth) * depth : array];
+									var depthBuffer = mipWorker[mipLevel, Settings.ImageType == ImageType.Image3D ? depth : array];
 
 									var dataPtr = new DX.DataRectangle(sourceBuffer.Data.BasePointer, sourceBuffer.PitchInformation.RowPitch);
 									// Create a temporary bitmap and resize it.
@@ -2097,12 +1737,12 @@ namespace GorgonLibrary.Graphics
 																Guid.Empty, ImageDithering.None, new Rectangle(0, 0, depthBuffer.Width, depthBuffer.Height), false, filter);
 									}
 								}
-							}
 
-							// Scale the depth.
-							if (mipDepth > 1)
-							{
-								mipDepth >>= 1;
+                                // Scale the depth.
+                                if (mipDepth > 1)
+                                {
+                                    mipDepth >>= 1;
+                                }
 							}
 						}
 					}
@@ -2214,8 +1854,8 @@ namespace GorgonLibrary.Graphics
 						for (int depth = 0; depth < Settings.Depth; depth++)
 						{
 							// Get the array/mip/depth buffer.
-							var destBuffer = destData[array, 0, depth];
-							var srcBuffer = this[array, 0, depth];
+                            var destBuffer = destData[0, Settings.ImageType == ImageType.Image3D ? depth : array];
+                            var srcBuffer = this[0, Settings.ImageType == ImageType.Image3D ? depth : array];
 							var rect = new DX.DataRectangle(srcBuffer.Data.BasePointer, srcBuffer.PitchInformation.RowPitch);
 
 							// Create a WIC bitmap so we have a source for conversion.
@@ -2314,8 +1954,8 @@ namespace GorgonLibrary.Graphics
                             for (int depth = 0; depth < depthCount; depth++)
                             {
                                 // Get the array/mip/depth buffer.
-                                var destBuffer = destData[array, mip, depth];
-								var srcBuffer = this[array, mip, depth];
+                                var destBuffer = destData[mip, Settings.ImageType == ImageType.Image3D ? depth : array];
+                                var srcBuffer = this[mip, Settings.ImageType == ImageType.Image3D ? depth : array];
                                 var rect = new DX.DataRectangle(srcBuffer.Data.BasePointer, srcBuffer.PitchInformation.RowPitch);
                                
                                 // Create a WIC bitmap so we have a source for conversion.

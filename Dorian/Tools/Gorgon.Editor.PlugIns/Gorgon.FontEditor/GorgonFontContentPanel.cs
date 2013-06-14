@@ -667,7 +667,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 			_text.ShadowOffset = GorgonFontEditorPlugIn.Settings.ShadowOffset;
 			_text.ShadowEnabled = itemPreviewShadowEnable.Checked;
 
-            _pattern = _content.Graphics.Textures.Create2DTextureFromGDIImage("Background.Pattern", Properties.Resources.Pattern);
+            _pattern = _content.Graphics.Textures.CreateTexture<GorgonTexture2D>("Background.Pattern", Properties.Resources.Pattern);
 
             _patternSprite = _content.Renderer.Renderables.CreateSprite("Pattern", new GorgonSpriteSettings()
             {
