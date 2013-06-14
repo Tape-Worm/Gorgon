@@ -236,6 +236,21 @@ namespace GorgonLibrary.IO
 			get;
 			set;
 		}
+
+        /// <summary>
+        /// Property to set or return the multisampling applied to the texture.
+        /// </summary>
+        /// <remarks>
+        /// Set this value to apply multisampling to the texture.  
+        /// <para>Note that if multisampling is applied, then the mip-map count and array count must be set to 1.  If these values are not set to 1, then this value will be ignored.</para>
+        /// <para>This property is for <see cref="GorgonLibrary.Graphics.GorgonTexture2D">2D textures</see> only, for <see cref="GorgonLibrary.Graphics.GorgonImageData">image data</see> or other texture types it is ignored.</para>
+        /// <para>The default value is a count of 1 and a quality of 0 (No multisampling).</para>
+        /// </remarks>
+        public GorgonMultisampling Multisampling
+        {
+            get;
+            set;
+        }
 		
 		/// <summary>
 		/// Property to set or return whether to clip the image or to scale it if the size is mismatched.
@@ -776,8 +791,8 @@ namespace GorgonLibrary.IO
 							for (int depth = 0; depth < destSettings.Depth; depth++)
 							{
 								// Get our source/destination buffers.
-								var sourceBuffer = data[array, 0, depth];
-								var destBuffer = destData[array, 0, depth];
+								var sourceBuffer = data[0, data.Settings.ImageType == ImageType.Image3D ? depth : array];
+                                var destBuffer = destData[0, data.Settings.ImageType == ImageType.Image3D ? depth : array];
 
 								var dataRect = new SharpDX.DataRectangle(sourceBuffer.Data.BasePointer, sourceBuffer.PitchInformation.RowPitch);
 
@@ -808,8 +823,8 @@ namespace GorgonLibrary.IO
 								for (int depth = 0; depth < mipDepth; depth++)
 								{
 									// Get our source/destination buffers.
-									var sourceBuffer = destData[array, 0, (destSettings.Depth / mipDepth) * depth];
-									var destBuffer = destData[array, mip, depth];
+								    var sourceBuffer = destData[0, data.Settings.ImageType == ImageType.Image3D ? (destSettings.Depth / mipDepth) * depth : array];
+									var destBuffer = destData[mip, data.Settings.ImageType == ImageType.Image3D ? depth : array];
 
 									var dataRect = new SharpDX.DataRectangle(sourceBuffer.Data.BasePointer, sourceBuffer.PitchInformation.RowPitch);
 
@@ -900,6 +915,7 @@ namespace GorgonLibrary.IO
 			ViewFormat = BufferFormat.Unknown;
 			AllowUnorderedAccess = false;
 			Usage = BufferUsage.Default;
+		    Multisampling = GorgonMultisampling.NoMultiSampling;
 		}
 		#endregion
 

@@ -234,7 +234,7 @@ namespace GorgonLibrary.IO
 
 			for (int array = 0; array < arrayCount; array++)
 			{
-				var buffer = data[array, 0];
+				var buffer = data[0, array];
 
 				// Get the frame data.
 				using (var frame = decoder.GetFrame(array))
@@ -592,7 +592,7 @@ namespace GorgonLibrary.IO
 							{
 								using (var frame = new SharpDX.WIC.BitmapFrameEncode(encoder))
 								{
-									var buffer = imageData[frameIndex, 0];
+									var buffer = imageData[0, frameIndex];
 
 									frame.Initialize();
 									frame.SetSize(buffer.Width, buffer.Height);

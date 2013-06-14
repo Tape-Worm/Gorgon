@@ -1590,7 +1590,7 @@ namespace GorgonLibrary.IO
 				for (int mipLevel = 0; mipLevel < image.Settings.MipCount; mipLevel++)
 				{
 					// Get our destination buffer.
-					var destBuffer = image[array, mipLevel];
+					var destBuffer = image[mipLevel, array];
 					var pitchInfo = formatInfo.GetPitch(destBuffer.Width, destBuffer.Height, pitchFlags);		
 					var destPointer = (byte*)destBuffer.Data.UnsafePointer;
 
@@ -1782,7 +1782,7 @@ namespace GorgonLibrary.IO
 						{
 							for (int mipLevel = 0; mipLevel < imageData.Settings.MipCount; mipLevel++)
 							{
-								var buffer = imageData[array, mipLevel];
+								var buffer = imageData[mipLevel, array];
 								
 								writer.Write(buffer.Data.UnsafePointer, buffer.PitchInformation.SlicePitch);
 							}
@@ -1794,7 +1794,7 @@ namespace GorgonLibrary.IO
 						{							
 							for (int slice = 0; slice < depth; slice++)
 							{
-								var buffer = imageData[0, mipLevel, slice];
+								var buffer = imageData[mipLevel, slice];
 								writer.Write(buffer.Data.UnsafePointer, buffer.PitchInformation.SlicePitch);
 							}
 
