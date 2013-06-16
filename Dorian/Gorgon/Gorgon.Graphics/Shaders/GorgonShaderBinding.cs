@@ -73,6 +73,8 @@ namespace GorgonLibrary.Graphics
         /// <summary>
         /// Property to return the current geometry shader states.
         /// </summary>
+        /// <remarks>On video devices with a feature level of SM2_a_b, this property will return NULL (Nothing in VB.Net).  This is because devices 
+        /// require a feature level of SM4 or better to use geometry shaders.</remarks>
         public GorgonGeometryShaderState GeometryShader
         {
             get;
@@ -270,30 +272,6 @@ namespace GorgonLibrary.Graphics
 			return effect;
 		}
 
-		/// <summary>
-        /// Function to load a shader from a byte array.
-        /// </summary>
-        /// <typeparam name="T">The shader type.  Must be inherited from <see cref="GorgonLibrary.Graphics.GorgonShader">GorgonShader</see>.</typeparam>
-        /// <param name="name">Name of the shader object.</param>
-        /// <param name="entryPoint">Entry point method to call in the shader.</param>
-        /// <param name="shaderData">Array of bytes containing the shader data.</param>
-        /// <returns>The new shader loaded from the data stream.</returns>
-        /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="shaderData"/>, <paramref name="name"/> or <paramref name="entryPoint"/> parameters are NULL (Nothing in VB.Net).
-        /// </exception>
-        /// <exception cref="System.ArgumentException">Thrown when the name or entryPoint parameters are empty.</exception>
-        /// <exception cref="System.ArgumentOutOfRangeException">Thrown when the shaderData parameter length is less than or equal to 0.</exception>
-        /// <exception cref="System.TypeInitializationException">Thrown when the type of shader is unrecognized.</exception>
-        /// <exception cref="GorgonLibrary.GorgonException">Thrown when there are compile errors in the shader.</exception>
-        public T FromMemory<T>(string name, string entryPoint, byte[] shaderData)
-            where T : GorgonShader
-        {
-#if DEBUG
-            return FromMemory<T>(name, entryPoint, shaderData, true);
-#else
-            return FromMemory<T>(name, entryPoint, shaderData, false);
-#endif
-        }
-        
         /// <summary>
 		/// Function to load a shader from a byte array.
 		/// </summary>
@@ -301,7 +279,7 @@ namespace GorgonLibrary.Graphics
 		/// <param name="name">Name of the shader object.</param>
 		/// <param name="entryPoint">Entry point method to call in the shader.</param>
 		/// <param name="shaderData">Array of bytes containing the shader data.</param>
-        /// <param name="isDebug">TRUE to apply debug information, FALSE to exclude it.</param>
+        /// <param name="isDebug">[Optional] TRUE to apply debug information, FALSE to exclude it.</param>
         /// <returns>The new shader loaded from the data stream.</returns>
 		/// <remarks>The <paramref name="isDebug"/> parameter is only applicable to source code shaders.</remarks>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="shaderData"/>, <paramref name="name"/> or <paramref name="entryPoint"/> parameters are NULL (Nothing in VB.Net).
@@ -309,8 +287,12 @@ namespace GorgonLibrary.Graphics
 		/// <exception cref="System.ArgumentException">Thrown when the name or entryPoint parameters are empty.</exception>
         /// <exception cref="System.ArgumentOutOfRangeException">Thrown when the shaderData parameter length is less than or equal to 0.</exception>
 		/// <exception cref="System.TypeInitializationException">Thrown when the type of shader is unrecognized.</exception>
-		/// <exception cref="GorgonLibrary.GorgonException">Thrown when there are compile errors in the shader.</exception>
-        public T FromMemory<T>(string name, string entryPoint, byte[] shaderData, bool isDebug)
+        /// <exception cref="GorgonLibrary.GorgonException">Thrown when the shader could not be created.</exception>
+#if DEBUG
+        public T FromMemory<T>(string name, string entryPoint, byte[] shaderData, bool isDebug = true)
+#else
+        public T FromMemory<T>(string name, string entryPoint, byte[] shaderData, bool isDebug = false)
+#endif
             where T : GorgonShader
         {
             if (shaderData == null)
@@ -332,32 +314,7 @@ namespace GorgonLibrary.Graphics
 		/// <param name="entryPoint">Entry point method to call in the shader.</param>
 		/// <param name="stream">Stream to load the shader from.</param>
 		/// <param name="size">Size of the shader, in bytes.</param>
-		/// <returns>The new shader loaded from the data stream.</returns>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="stream"/>, <paramref name="name"/> or <paramref name="entryPoint"/> parameters are NULL (Nothing in VB.Net).
-		/// </exception>
-		/// <exception cref="System.ArgumentException">Thrown when the name or entryPoint parameters are empty.</exception>
-		/// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="size"/> parameter is less than or equal to 0.</exception>
-		/// <exception cref="System.TypeInitializationException">Thrown when the type of shader is unrecognized.</exception>
-		/// <exception cref="GorgonLibrary.GorgonException">Thrown when there are compile errors in the shader.</exception>
-		public T FromStream<T>(string name, string entryPoint, Stream stream, int size)
-			where T : GorgonShader
-		{
-#if DEBUG
-			return FromStream<T>(name, entryPoint, stream, size, true);
-#else
-			return FromStream<T>(name, entryPoint, stream, size, false);
-#endif
-		}
-
-		/// <summary>
-		/// Function to load a shader from a stream of data.
-		/// </summary>
-		/// <typeparam name="T">The shader type.  Must be inherited from <see cref="GorgonLibrary.Graphics.GorgonShader">GorgonShader</see>.</typeparam>
-		/// <param name="name">Name of the shader object.</param>
-		/// <param name="entryPoint">Entry point method to call in the shader.</param>
-		/// <param name="stream">Stream to load the shader from.</param>
-		/// <param name="size">Size of the shader, in bytes.</param>
-        /// <param name="isDebug">TRUE to apply debug information, FALSE to exclude it.</param>
+        /// <param name="isDebug">[Optional] TRUE to apply debug information, FALSE to exclude it.</param>
         /// <returns>The new shader loaded from the data stream.</returns>
 		/// <remarks>The <paramref name="isDebug"/> parameter is only applicable to source code shaders.</remarks>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="stream"/>, <paramref name="name"/> or <paramref name="entryPoint"/> parameters are NULL (Nothing in VB.Net).
@@ -365,9 +322,13 @@ namespace GorgonLibrary.Graphics
 		/// <exception cref="System.ArgumentException">Thrown when the name or entryPoint parameters are empty.</exception>
 		/// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="size"/> parameter is less than or equal to 0.</exception>
 		/// <exception cref="System.TypeInitializationException">Thrown when the type of shader is unrecognized.</exception>
-		/// <exception cref="GorgonLibrary.GorgonException">Thrown when there are compile errors in the shader.</exception>
-        public T FromStream<T>(string name, string entryPoint, Stream stream, int size, bool isDebug)
-			where T : GorgonShader
+        /// <exception cref="GorgonLibrary.GorgonException">Thrown when the shader could not be created.</exception>
+#if DEBUG
+        public T FromStream<T>(string name, string entryPoint, Stream stream, int size, bool isDebug = true)
+#else
+        public T FromStream<T>(string name, string entryPoint, Stream stream, int size, bool isDebug = false)
+#endif
+            where T : GorgonShader
 		{
 			GorgonShader shader;
 			byte[] shaderData;
@@ -442,39 +403,20 @@ namespace GorgonLibrary.Graphics
 		/// <param name="name">Name of the shader object.</param>
 		/// <param name="entryPoint">Entry point method to call in the shader.</param>
 		/// <param name="fileName">File name and path to the shader file.</param>
-		/// <returns>The new shader loaded from the file.</returns>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/>, <paramref name="entryPoint"/> or <paramref name="fileName"/> parameters are NULL (Nothing in VB.Net).
-		/// </exception>
-		/// <exception cref="System.ArgumentException">Thrown when the name, entryPoint or fileName parameters are empty.</exception>
-		/// <exception cref="System.TypeInitializationException">Thrown when the type of shader is unrecognized.</exception>
-		/// <exception cref="GorgonLibrary.GorgonException">Thrown when there are compile errors in the shader.</exception>
-		public T FromFile<T>(string name, string entryPoint, string fileName)
-			where T : GorgonShader
-		{
-#if DEBUG
-			return FromFile<T>(name, entryPoint, fileName, true);
-#else
-			return FromFile<T>(name, entryPoint, fileName, false);
-#endif
-		}
-
-		/// <summary>
-		/// Function to load a shader from a file.
-		/// </summary>
-		/// <typeparam name="T">The shader type.  Must be inherited from <see cref="GorgonLibrary.Graphics.GorgonShader">GorgonShader</see>.</typeparam>
-		/// <param name="name">Name of the shader object.</param>
-		/// <param name="entryPoint">Entry point method to call in the shader.</param>
-		/// <param name="fileName">File name and path to the shader file.</param>
-        /// <param name="isDebug">TRUE to apply debug information, FALSE to exclude it.</param>
+        /// <param name="isDebug">[Optional] TRUE to apply debug information, FALSE to exclude it.</param>
         /// <returns>The new shader loaded from the file.</returns>
 		/// <remarks>The <paramref name="isDebug"/> parameter is only applicable to source code shaders.</remarks>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/>, <paramref name="entryPoint"/> or <paramref name="fileName"/> parameters are NULL (Nothing in VB.Net).
 		/// </exception>
 		/// <exception cref="System.ArgumentException">Thrown when the name, entryPoint or fileName parameters are empty.</exception>
 		/// <exception cref="System.TypeInitializationException">Thrown when the type of shader is unrecognized.</exception>
-		/// <exception cref="GorgonLibrary.GorgonException">Thrown when there are compile errors in the shader.</exception>
-        public T FromFile<T>(string name, string entryPoint, string fileName, bool isDebug)
-			where T : GorgonShader
+        /// <exception cref="GorgonLibrary.GorgonException">Thrown when the shader could not be created.</exception>
+#if DEBUG
+        public T FromFile<T>(string name, string entryPoint, string fileName, bool isDebug = true)
+#else
+        public T FromFile<T>(string name, string entryPoint, string fileName, bool isDebug = false)
+#endif
+            where T : GorgonShader
 		{
 			FileStream stream = null;
 
@@ -509,14 +451,34 @@ namespace GorgonLibrary.Graphics
 		/// <param name="name">Name of the shader.</param>
 		/// <param name="entryPoint">Entry point for the shader.</param>
 		/// <param name="sourceCode">Source code for the shader.</param>
-		/// <param name="debug">TRUE to include debug information, FALSE to exclude.</param>
+		/// <param name="debug">[Optional] TRUE to include debug information, FALSE to exclude.</param>
 		/// <returns>A new vertex shader.</returns>
 		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="name"/> or <paramref name="entryPoint"/> parameters are empty strings.</exception>
 		/// <exception cref="System.ArgumentNullException">Thrown when the name or entryPoint parameters are NULL (Nothing in VB.Net).</exception>
 		/// <exception cref="System.TypeInitializationException">Thrown when the type of shader is unrecognized.</exception>
-		/// <exception cref="GorgonLibrary.GorgonException">Thrown when there are compile errors in the shader.</exception>
-		public T CreateShader<T>(string name, string entryPoint, string sourceCode, bool debug)
-			where T : GorgonShader
+		/// <exception cref="GorgonLibrary.GorgonException">Thrown when the shader could not be created.</exception>
+        /// <remarks>This method will create one of the 6 shader types (<see cref="GorgonLibrary.Graphics.GorgonVertexShader">vertex</see>, <see cref="GorgonLibrary.Graphics.GorgonPixelShader">pixel</see>, 
+        /// <see cref="GorgonLibrary.Graphics.GorgonGeometryShader">geometry</see>, <see cref="GorgonLibrary.Graphics.GorgonComputeShader">compute</see>, 
+        /// <see cref="GorgonLibrary.Graphics.GorgonHullShader">hull</see> and <see cref="GorgonLibrary.Graphics.GorgonDomainShader">domain</see>).  
+        /// Shaders are small programs that can be run on the GPU and are invoked 
+		/// when processing data on the GPU.  
+        /// <para>A vertex shader is used when processing a single vertex.<para> </para>
+        /// A pixel (aka fragment) shader is used when processing pixels when rasterizing
+        /// A geometry shader is unique in that it processes full primtivies (triangles, lines, points) but it may also be used to create or remove geometry.<para> </para>
+        /// A compute shader allows the GPU to be used for general computations.<para> </para>
+        /// A hull and domain shader are used in tessellation of geometry.
+        /// </para>
+        /// <para>For devices that have a feature level of SM2_a_b, only Vertex and Pixel shaders are supported, all other types will generate an exception upon creation.</para>
+        /// <para>Compute, Hull, and Domain shaders require a device with a feature level of SM5 or better.  Creation of these shaders on devices that do not have a feature level of SM5 or better will 
+        /// generate an exception.</para>
+        /// <para>If the DEBUG version of Gorgon is being used, then the <paramref name="debug"/> flag will be defaulted to TRUE, if the RELEASE version is used, then it will be defaulted to FALSE.</para>
+		/// </remarks>
+#if DEBUG
+		public T CreateShader<T>(string name, string entryPoint, string sourceCode, bool debug = true)
+#else
+        public T CreateShader<T>(string name, string entryPoint, string sourceCode, bool debug = false)
+#endif
+            where T : GorgonShader
 		{
 			if (name == null)
             {
