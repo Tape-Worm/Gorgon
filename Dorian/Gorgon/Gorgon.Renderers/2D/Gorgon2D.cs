@@ -924,7 +924,7 @@ namespace GorgonLibrary.Renderers
 			}
 
 			Graphics.Rasterizer.SetViewport(Target.Viewport);
-			Graphics.Rasterizer.States = GorgonRasterizerStates.DefaultStates;
+			Graphics.Rasterizer.States = GorgonRasterizerStates.CullBackFace;
 			Graphics.Output.BlendingState.States = GorgonBlendStates.DefaultStates;
 			Graphics.Output.DepthStencilState.States = GorgonDepthStencilStates.NoDepthStencil;
 			Graphics.Output.DepthStencilState.DepthStencilReference = 0;

@@ -124,6 +124,9 @@
   <data name="RawBufferShaders" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\RawBufferShaders.hlsl;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
+  <data name="ShaderTests" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\ShaderTests.hlsl;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
   <data name="StructuredBufferShaders" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\StructuredBufferShaders.hlsl;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>

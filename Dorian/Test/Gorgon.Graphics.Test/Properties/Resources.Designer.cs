@@ -83,6 +83,16 @@ namespace GorgonLibrary.Graphics.Test.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
+        internal static byte[] ShaderTests {
+            get {
+                object obj = ResourceManager.GetObject("ShaderTests", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
         internal static byte[] StructuredBufferShaders {
             get {
                 object obj = ResourceManager.GetObject("StructuredBufferShaders", resourceCulture);

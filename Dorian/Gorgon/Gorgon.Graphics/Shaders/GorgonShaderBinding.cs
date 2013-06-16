@@ -562,7 +562,7 @@ namespace GorgonLibrary.Graphics
 			IncludeFiles = new GorgonShaderIncludeCollection();
 			VertexShader = new GorgonVertexShaderState(graphics);
 			PixelShader = new GorgonPixelShaderState(graphics);
-		    if (graphics.VideoDevice.SupportedFeatureLevel < DeviceFeatureLevel.SM4)
+		    if (graphics.VideoDevice.SupportedFeatureLevel > DeviceFeatureLevel.SM2_a_b)
 		    {
 		        GeometryShader = new GorgonGeometryShaderState(graphics);
 		    }

@@ -115,8 +115,13 @@ namespace GorgonLibrary.Graphics
 		/// <param name="name">The name of the pixel shader.</param>
 		/// <param name="entryPoint">The entry point method for the shader.</param>
         internal GorgonGeometryShader(GorgonGraphics graphics, string name, string entryPoint)
-			: base(graphics, name, ShaderType.Pixel, entryPoint)
+			: base(graphics, name, ShaderType.Geometry, entryPoint)
 		{
+			if (graphics.VideoDevice.SupportedFeatureLevel < DeviceFeatureLevel.SM4)
+			{
+				throw new GorgonException(GorgonResult.CannotCreate,
+				                          string.Format(Properties.Resources.GORGFX_REQUIRES_SM, DeviceFeatureLevel.SM4));
+			}
 		}
         #endregion
     }

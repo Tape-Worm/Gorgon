@@ -462,7 +462,7 @@ namespace GorgonLibrary.Graphics
             Buffers = new GorgonBuffers(this);
 
             // Set default states.
-		    Rasterizer.States = GorgonRasterizerStates.DefaultStates;
+		    Rasterizer.States = GorgonRasterizerStates.CullBackFace;
 		    Output.BlendingState.States = GorgonBlendStates.DefaultStates;
 		    Output.DepthStencilState.States = GorgonDepthStencilStates.NoDepthStencil;
 
