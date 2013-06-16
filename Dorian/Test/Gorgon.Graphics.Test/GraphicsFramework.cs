@@ -259,7 +259,7 @@ namespace GorgonLibrary.Graphics.Test
 			Graphics.Input.VertexBuffers[0] = new GorgonVertexBufferBinding(Vertices, 40);
 			Graphics.Input.IndexBuffer = Indices;
 			Graphics.Rasterizer.SetViewport(new GorgonViewport(0, 0, _form.panelDisplay.ClientSize.Width, _form.panelDisplay.ClientSize.Height, 0, 1.0f));
-			Graphics.Rasterizer.States = GorgonRasterizerStates.DefaultStates;
+			Graphics.Rasterizer.States = GorgonRasterizerStates.CullBackFace;
 			Graphics.Shaders.VertexShader.Current = VertexShader;
 			Graphics.Shaders.PixelShader.Current = PixelShader;
 			Graphics.Shaders.PixelShader.TextureSamplers[0] = GorgonTextureSamplerStates.DefaultStates;

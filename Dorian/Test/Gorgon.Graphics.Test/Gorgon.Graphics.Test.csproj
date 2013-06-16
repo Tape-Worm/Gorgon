@@ -72,6 +72,7 @@
     </Compile>
     <Compile Include="TextureTesting.cs" />
     <Compile Include="BouncyBalls3DTest.cs" />
+    <Compile Include="ShaderTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Gorgon\Gorgon.Common\Gorgon.Common.csproj">
@@ -93,6 +94,7 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <None Include="ShaderTests.hlsl" />
     <Content Include="RawBufferShaders.hlsl" />
     <None Include="Resources\Glass.png" />
     <Content Include="StructuredBufferShaders.hlsl" />

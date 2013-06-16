@@ -507,7 +507,7 @@ namespace GorgonLibrary.Graphics.Example
 			// Finally bind our swap chain and set up the default
 			// rasterizer states.
 			Graphics.Output.SetRenderTarget(_swap, _swap.DepthStencilBuffer);
-			Graphics.Rasterizer.States = GorgonRasterizerStates.DefaultStates;
+			Graphics.Rasterizer.States = GorgonRasterizerStates.CullBackFace;
 			Graphics.Rasterizer.SetViewport(view);
 
 		    // I know, there's a lot in here.  Thing is, if this were Direct 3D 11 code, it'd probably MUCH 

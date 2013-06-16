@@ -82,9 +82,27 @@ namespace GorgonLibrary.Graphics
 	{
 		#region Variables.
 		/// <summary>
-		/// Default rasterizer states.
+		/// Wireframe, with no culling.
 		/// </summary>
-		public static readonly GorgonRasterizerStates DefaultStates = new GorgonRasterizerStates
+		public static readonly GorgonRasterizerStates WireFrame = new GorgonRasterizerStates
+		{
+			CullingMode = CullingMode.None,
+			FillMode = FillMode.Wireframe,
+			IsFrontFacingTriangleCounterClockwise = false,
+			DepthBias = 0,
+			DepthBiasClamp = 0.0f,
+			SlopeScaledDepthBias = 0.0f,
+			IsDepthClippingEnabled = true,
+			IsAntialiasedLinesEnabled = false,
+			IsMultisamplingEnabled = false,
+			IsScissorTestingEnabled = false
+		};
+
+		/// <summary>
+		/// Back face culling states.
+		/// </summary>
+		/// <remarks>This is the default state for the rasterizer states.</remarks>
+		public static readonly GorgonRasterizerStates CullBackFace = new GorgonRasterizerStates
 			{
 			CullingMode = CullingMode.Back,
 			FillMode = FillMode.Solid,
@@ -99,7 +117,7 @@ namespace GorgonLibrary.Graphics
 		};
 
         /// <summary>
-        /// Default raster states with front face culling.
+        /// Front face culling states.
         /// </summary>
 	    public static readonly GorgonRasterizerStates CullFrontFace = new GorgonRasterizerStates
 		    {
