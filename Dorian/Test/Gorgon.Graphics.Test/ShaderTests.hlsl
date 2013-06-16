@@ -26,23 +26,47 @@ PS_IN TestVS( VS_IN input )
 	return output;
 }
 
-[maxvertexcount(3)]
-void TestGS(triangle PS_IN input[3], inout TriangleStream<PS_IN> triangles)
+[maxvertexcount(12)]
+void TestGS(triangle PS_IN input[3], inout TriangleStream<PS_IN> triangles, uint primID : SV_PrimitiveID)
 {
 	PS_IN output;
 
 	for (uint i = 0; i < 3; i++)
 	{
-		output.pos = input[i].pos;
-		output.col = float4(1, 1, 1, 1);
-		output.uv = input[i].uv;
-		triangles.Append(output);
-	}
+		if ((i != 0) && (primID == 1))
+		{
+			continue;
+		}
 
-	triangles.RestartStrip();
+		float3 center = input[i].pos;
+
+		float4 corner1 = float4(center.x - ((i + 1) * 0.083333f), center.y - ((i + 1) * 0.083333f), 0, 1.0f);
+		float4 corner2 = float4(center.x - ((i + 1) * 0.083333f), center.y + ((i + 1) * 0.083333f), 0, 1.0f);
+		float4 corner3 = float4(center.x + ((i + 1) * 0.083333f), center.y - ((i + 1) * 0.083333f), 0, 1.0f);
+		float4 corner4 = float4(center.x + ((i + 1) * 0.083333f), center.y + ((i + 1) * 0.083333f), 0, 1.0f);
+
+		output.pos = corner1;
+		output.uv = float2(0, 1);
+		output.col = input[i].col;
+		triangles.Append(output);
+
+		output.pos = corner2;
+		output.uv = float2(0, 0);
+		triangles.Append(output);
+
+		output.pos = corner3;
+		output.uv = float2(1.0f, 1.0f);
+		triangles.Append(output);
+
+		output.pos = corner4;
+		output.uv = float2(1.0f, 0);
+		triangles.Append(output);
+
+		triangles.RestartStrip();
+	}	
 }
 
 float4 TestPS(PS_IN input) : SV_Target
 {
-	return input.col;
+	return _texture.Sample(_sampler, input.uv) * input.col;
 }

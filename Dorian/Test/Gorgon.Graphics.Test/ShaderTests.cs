@@ -72,10 +72,11 @@ namespace GorgonLibrary.Graphics.Test
 					                                                                          });
 
 				_framework.Graphics.Shaders.GeometryShader.Current = geoShader;
-				_framework.Graphics.Rasterizer.States = GorgonRasterizerStates.WireFrame;
-			}
+			    _framework.Graphics.Shaders.PixelShader.Resources[0] = texture;
+				//_framework.Graphics.Rasterizer.States = GorgonRasterizerStates.WireFrame;
 
-			Assert.IsTrue(_framework.Run() == DialogResult.Yes);
+                Assert.IsTrue(_framework.Run() == DialogResult.Yes);
+			}
 		}
 	}
 }

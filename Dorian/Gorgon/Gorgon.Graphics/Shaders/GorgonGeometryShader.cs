@@ -97,7 +97,7 @@ namespace GorgonLibrary.Graphics
             {
                 D3DShader.Dispose();
             }
-
+            
             D3DShader = new D3D.GeometryShader(Graphics.D3DDevice, byteCode)
                 {
 #if DEBUG
