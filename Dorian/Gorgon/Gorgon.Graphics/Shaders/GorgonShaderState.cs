@@ -32,7 +32,6 @@ using D3D = SharpDX.Direct3D11;
 using GorgonLibrary.Diagnostics;
 using GorgonLibrary.Math;
 
-//#error TODO: Add Computer, Geometry, Hull and Domain shaders.
 namespace GorgonLibrary.Graphics
 {
 	/// <summary>
@@ -962,7 +961,7 @@ namespace GorgonLibrary.Graphics
             /// Function to unbind a shader resource view.
             /// </summary>
             /// <param name="resource">Resource containing the view to unbind.</param>
-            internal void Unbind(GorgonResource resource)
+            internal void UnbindResource(GorgonResource resource)
             {
 				if (resource == null)
 				{
@@ -979,28 +978,6 @@ namespace GorgonLibrary.Graphics
                     this[index] = null;
                 }
             }
-            
-			/// <summary>
-			/// Function to re-seat a resource view after it's been altered.
-			/// </summary>
-			/// <param name="resource">Resource containing the view to re-seat.</param>
-            internal void ReSeat(GorgonResource resource)
-			{
-			    var views = this.Where(item => item != null && item.Resource == resource);
-
-			    foreach (var view in views)
-			    {
-			        int index = IndexOf(view);
-
-                    if (index == -1)
-                    {
-                        continue;
-                    }
-
-                    this[index] = null;
-			        this[index] = view;
-			    }
-			}
 
             /// <summary>
             /// Determines the index of a specific item in the <see cref="T:System.Collections.Generic.IList`1" />.
@@ -1151,13 +1128,13 @@ namespace GorgonLibrary.Graphics
 			}
 
             /// <summary>
-            /// Function to return the resource assigned to the view at the specified index.
+            /// Function to return the resource assigned to a view at the specified index.
             /// </summary>
             /// <typeparam name="TR">Type of resource.</typeparam>
-            /// <param name="index">Index of the texture to look up.</param>
+            /// <param name="index">Index of the resource to look up.</param>
             /// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="index"/> parameter is outside of the available resource view slots.</exception>
-            /// <exception cref="System.InvalidCastException">Thrown when the type of resource at the specified index is not a texture.</exception>
-            /// <returns>The texture assigned to the view at the specified index, or NULL if nothing is assigned to the specified index.</returns>
+            /// <exception cref="System.InvalidCastException">Thrown when the type of resource at the specified index is not the requested type.</exception>
+            /// <returns>The resource assigned to the view at the specified index, or NULL if nothing is assigned to the specified index.</returns>
             public TR GetResource<TR>(int index)
                 where TR : GorgonResource
             {

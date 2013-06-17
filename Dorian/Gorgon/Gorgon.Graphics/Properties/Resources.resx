@@ -405,4 +405,7 @@
   <data name="GORGFX_VIEW_RESOURCE_ALREADY_BOUND" xml:space="preserve">
     <value>This view has a resource '{0}' that is already bound with a {2} at index [{1}].</value>
   </data>
+  <data name="GORGFX_BUFFER_NOT_INDIRECT" xml:space="preserve">
+    <value>The buffer '{0}' was not created as an indirect argument buffer.</value>
+  </data>
 </root>

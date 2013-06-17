@@ -128,6 +128,8 @@
     <Compile Include="Resource\GorgonView.cs" />
     <Compile Include="Resource\GorgonViewCache.cs" />
     <Compile Include="Resource\GorgonShaderView.cs" />
+    <Compile Include="Shaders\GorgonComputeShader.cs" />
+    <Compile Include="Shaders\GorgonComputeShaderState.cs" />
     <Compile Include="Shaders\GorgonGeometryShaderState.cs" />
     <Compile Include="Shaders\GorgonEffect.cs" />
     <Compile Include="Shaders\GorgonEffectParameter.cs" />

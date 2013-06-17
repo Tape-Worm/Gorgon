@@ -81,6 +81,17 @@ namespace GorgonLibrary.Graphics
             private set;
         }
 
+        /// <summary>
+        /// Property to return the current compute shader states.
+        /// </summary>
+        /// <remarks>On video devices with a feature level less than SM5, this property will return NULL (Nothing in VB.Net).  This is because devices 
+        /// require a feature level of SM5 or better to use compute shaders.</remarks>
+        public GorgonComputeShaderState ComputeShader
+        {
+            get;
+            private set;
+        }
+
 		/// <summary>
 		/// Property to return a list of include files for the shaders.
 		/// </summary>
@@ -112,6 +123,13 @@ namespace GorgonLibrary.Graphics
                 GeometryShader.CleanUp();
             }
 
+            if (ComputeShader != null)
+            {
+                ComputeShader.CleanUp();
+            }
+
+		    ComputeShader = null;
+		    GeometryShader = null;
 			PixelShader = null;
 			VertexShader = null;
 		}
@@ -122,44 +140,37 @@ namespace GorgonLibrary.Graphics
 		/// <param name="shader">Shader to re-seat.</param>
 		internal void Reseat(GorgonShader shader)
 		{
-			var pixelShader = shader as GorgonPixelShader;
-
-			if (pixelShader != null)
-			{
-				if (PixelShader.Current == pixelShader)
-				{
-					PixelShader.Current = null;
-					PixelShader.Current = pixelShader;
-				}
-
-				return;
-			}
-
-			var vertexShader = shader as GorgonVertexShader;
-
-			if (vertexShader != null)
-			{
-			    if (VertexShader.Current == vertexShader)
-			    {
-                    VertexShader.Current = null;
-                    VertexShader.Current = vertexShader;
-			    }
-
-			    return;
-			}
-
-		    var geometryShader = shader as GorgonGeometryShader;
-
-            if ((geometryShader != null) && (GeometryShader != null))
-            {
-                if (GeometryShader.Current == geometryShader)
-                {
-                    GeometryShader.Current = null;
-                    GeometryShader.Current = geometryShader;
-                }
-
-                return;
-            }
+		    switch (shader.ShaderType)
+		    {
+                case ShaderType.Vertex:
+                    if (VertexShader.Current == shader)
+                    {
+                        VertexShader.Current = null;
+                        VertexShader.Current = (GorgonVertexShader)shader;
+                    }
+		            break;
+                case ShaderType.Pixel:
+                    if (PixelShader.Current == shader)
+                    {
+                        PixelShader.Current = null;
+                        PixelShader.Current = (GorgonPixelShader)shader;
+                    }
+		            break;
+                case ShaderType.Geometry:
+                    if ((GeometryShader != null) && (GeometryShader.Current == shader))
+                    {
+                        GeometryShader.Current = null;
+                        GeometryShader.Current = (GorgonGeometryShader)shader;
+                    }
+		            break;
+                case ShaderType.Compute:
+                    if ((ComputeShader != null) && (ComputeShader.Current == shader))
+                    {
+                        ComputeShader.Current = null;
+                        ComputeShader.Current = (GorgonComputeShader)shader;
+                    }
+		            break;
+		    }
 		}
 
 		/// <summary>
@@ -174,6 +185,10 @@ namespace GorgonLibrary.Graphics
 		    {
                 GeometryShader.Resources.Unbind(view);
 		    }
+            if (ComputeShader != null)
+            {
+                ComputeShader.Resources.Unbind(view);
+            }
 		}
         
         /// <summary>
@@ -182,12 +197,31 @@ namespace GorgonLibrary.Graphics
         /// <param name="resource">Shader resource to unbind.</param>
         internal void UnbindResource(GorgonResource resource)
         {
-            PixelShader.Resources.Unbind(resource);
-            VertexShader.Resources.Unbind(resource);
+            PixelShader.Resources.UnbindResource(resource);
+            VertexShader.Resources.UnbindResource(resource);
             if (GeometryShader != null)
             {
-                GeometryShader.Resources.Unbind(resource);
+                GeometryShader.Resources.UnbindResource(resource);
             }
+            if (ComputeShader != null)
+            {
+                ComputeShader.Resources.UnbindResource(resource);
+                ComputeShader.UnorderedAccessViews.UnbindResource(resource);
+            }
+        }
+
+        /// <summary>
+        /// Function to unbind UAVs bound to the compute shader.
+        /// </summary>
+        /// <param name="view">View to unbind.</param>
+        internal void Unbind(GorgonUnorderedAccessView view)
+        {
+            if (ComputeShader == null)
+            {
+                return;
+            }
+
+            ComputeShader.UnorderedAccessViews.Unbind(view);
         }
 
 		/// <summary>
@@ -202,7 +236,11 @@ namespace GorgonLibrary.Graphics
             {
                 GeometryShader.ConstantBuffers.Unbind(constantBuffer);
             }
-		}
+            if (ComputeShader != null)
+            {
+                ComputeShader.ConstantBuffers.Unbind(constantBuffer);
+            }
+        }
 
 		/// <summary>
 		/// Function to create an effect object.
@@ -528,6 +566,10 @@ namespace GorgonLibrary.Graphics
 		    {
 		        GeometryShader = new GorgonGeometryShaderState(graphics);
 		    }
+            if (graphics.VideoDevice.SupportedFeatureLevel > DeviceFeatureLevel.SM4_1)
+            {
+                ComputeShader = new GorgonComputeShaderState(graphics);
+            }
 		    _graphics = graphics;
 		}
 		#endregion
