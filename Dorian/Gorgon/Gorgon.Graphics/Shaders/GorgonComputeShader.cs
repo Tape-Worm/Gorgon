@@ -20,25 +20,20 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: Friday, June 14, 2013 10:40:16 PM
+// Created: Monday, June 17, 2013 9:27:00 PM
 // 
 #endregion
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Compiler = SharpDX.D3DCompiler;
 using D3D = SharpDX.Direct3D11;
 
 namespace GorgonLibrary.Graphics
 {
     /// <summary>
-    /// A geometry shader object.
+    /// A compute shader object.
     /// </summary>
-    /// <remarks>Use geometry shaders to create geometry (vertex data) on the GPU.</remarks>
-    public class GorgonGeometryShader
+    /// <remarks>Use compute shaders to perform general computation on the GPU.</remarks>
+    public class GorgonComputeShader
         : GorgonShader
     {
         #region Variables.
@@ -49,7 +44,7 @@ namespace GorgonLibrary.Graphics
         /// <summary>
         /// Property to return the Direct3D pixel shader.
         /// </summary>
-        internal D3D.GeometryShader D3DShader
+        internal D3D.ComputeShader D3DShader
         {
             get;
             private set;
@@ -68,9 +63,9 @@ namespace GorgonLibrary.Graphics
                 if (disposing)
                 {
                     // Disassociate any shaders after we've destroyed them.
-                    if (Graphics.Shaders.GeometryShader.Current == this)
+                    if (Graphics.Shaders.ComputeShader.Current == this)
                     {
-                        Graphics.Shaders.GeometryShader.Current = null;
+                        Graphics.Shaders.ComputeShader.Current = null;
                     }
 
                     if (D3DShader != null)
@@ -98,10 +93,10 @@ namespace GorgonLibrary.Graphics
                 D3DShader.Dispose();
             }
             
-            D3DShader = new D3D.GeometryShader(Graphics.D3DDevice, byteCode)
+            D3DShader = new D3D.ComputeShader(Graphics.D3DDevice, byteCode)
                 {
 #if DEBUG
-                    DebugName = string.Format("Gorgon Geometry Shader '{0}'", Name)
+                    DebugName = string.Format("Gorgon Compute Shader '{0}'", Name)
 #endif
                 };
         }
@@ -109,18 +104,18 @@ namespace GorgonLibrary.Graphics
 
         #region Constructor/Destructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonGeometryShader"/> class.
+		/// Initializes a new instance of the <see cref="GorgonComputeShader"/> class.
 		/// </summary>
 		/// <param name="graphics">The graphics interface that owns this object.</param>
 		/// <param name="name">The name of the pixel shader.</param>
 		/// <param name="entryPoint">The entry point method for the shader.</param>
-        internal GorgonGeometryShader(GorgonGraphics graphics, string name, string entryPoint)
+        internal GorgonComputeShader(GorgonGraphics graphics, string name, string entryPoint)
 			: base(graphics, name, ShaderType.Geometry, entryPoint)
 		{
-			if (graphics.VideoDevice.SupportedFeatureLevel < DeviceFeatureLevel.SM4)
+			if (graphics.VideoDevice.SupportedFeatureLevel < DeviceFeatureLevel.SM5)
 			{
 				throw new GorgonException(GorgonResult.CannotCreate,
-				                          string.Format(Properties.Resources.GORGFX_REQUIRES_SM, DeviceFeatureLevel.SM4));
+				                          string.Format(Properties.Resources.GORGFX_REQUIRES_SM, DeviceFeatureLevel.SM5));
 			}
 		}
         #endregion

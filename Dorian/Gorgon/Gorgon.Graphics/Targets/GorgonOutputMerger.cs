@@ -1312,7 +1312,7 @@ namespace GorgonLibrary.Graphics
 
 			if (!buffer.Settings.AllowIndirectArguments)
 			{
-				throw new ArgumentException("Cannot call DrawInstancedIndirect with a buffer than does not contain indirect arguments.", "buffer");
+				throw new ArgumentException(Resources.GORGFX_BUFFER_NOT_INDIRECT, "buffer");
 			}
 #endif
 			GorgonRenderStatistics.DrawCallCount++;

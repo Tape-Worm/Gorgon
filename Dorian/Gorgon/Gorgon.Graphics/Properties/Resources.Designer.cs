@@ -169,6 +169,15 @@ namespace GorgonLibrary.Graphics.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The buffer &apos;{0}&apos; was not created as an indirect argument buffer..
+        /// </summary>
+        internal static string GORGFX_BUFFER_NOT_INDIRECT {
+            get {
+                return ResourceManager.GetString("GORGFX_BUFFER_NOT_INDIRECT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Cannot create the buffer.  The buffer size of {0} bytes is not a multiple of {1}..
         /// </summary>
         internal static string GORGFX_BUFFER_NOT_MULTIPLE {
