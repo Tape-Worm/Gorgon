@@ -30,6 +30,7 @@ using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
 using GorgonLibrary.Diagnostics;
+using GorgonLibrary.Graphics.Properties;
 using GorgonLibrary.Native;
 using GI = SharpDX.DXGI;
 using D3D = SharpDX.Direct3D11;
@@ -313,7 +314,7 @@ namespace GorgonLibrary.Graphics
 			{
 				_renderTarget = new GorgonRenderTarget2D(Graphics, Name + "_Internal_Render_Target_" + Guid.NewGuid(), new GorgonRenderTarget2DSettings
 					{
-						AllowUnorderedAccessViews = false,
+						AllowUnorderedAccessViews = (Settings.Flags & SwapChainUsageFlags.AllowUnorderedAccessView) == SwapChainUsageFlags.AllowUnorderedAccessView,
 						ArrayCount = 1,
 						DepthStencilFormat = Settings.DepthStencilFormat,
 						Width = Settings.Width,
@@ -560,14 +561,30 @@ namespace GorgonLibrary.Graphics
 			IntPtr monitor = IntPtr.Zero;
 			GorgonVideoOutput output = null;
 
+            // Define as render target if we didn't specify the flags.
+            if (settings.Flags == SwapChainUsageFlags.Unknown)
+            {
+                settings.Flags = SwapChainUsageFlags.RenderTarget;
+            }
+
 			if (graphics.VideoDevice == null)
 				throw new GorgonException(GorgonResult.CannotCreate, "Cannot create the swap chain, no video device was selected.");
 
 			if ((graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM2_a_b) &&
 			    (settings.Flags != SwapChainUsageFlags.RenderTarget))
 			{
-				throw new GorgonException(GorgonResult.CannotCreate, "SM2_a_b video devices can only use [RenderTarget] as a flag.");
+			    throw new GorgonException(GorgonResult.CannotCreate,
+			                              string.Format(Resources.GORGFX_REQUIRES_SM, DeviceFeatureLevel.SM4));
 			}
+
+            // Ensure that we're using SM5 or better hardware if we want an unordered access view to our backbuffer.
+            if ((graphics.VideoDevice.SupportedFeatureLevel < DeviceFeatureLevel.SM5)
+                && ((settings.Flags & SwapChainUsageFlags.AllowUnorderedAccessView)
+                    == SwapChainUsageFlags.AllowUnorderedAccessView))
+            {
+                throw new GorgonException(GorgonResult.CannotCreate,
+                                          string.Format(Resources.GORGFX_REQUIRES_SM, DeviceFeatureLevel.SM5));
+            }
 
 			// Default to using the default Gorgon application window.
 			if (settings.Window == null)
@@ -689,11 +706,21 @@ namespace GorgonLibrary.Graphics
 			d3dSettings.SampleDescription = GorgonMultisampling.Convert(Settings.Multisampling);
 			d3dSettings.SwapEffect = GorgonSwapChainSettings.Convert(Settings.SwapEffect);
 
-			if ((Settings.Flags & SwapChainUsageFlags.RenderTarget) == SwapChainUsageFlags.RenderTarget)
-				d3dSettings.Usage = GI.Usage.RenderTargetOutput;
+		    if ((Settings.Flags & SwapChainUsageFlags.RenderTarget) == SwapChainUsageFlags.RenderTarget)
+		    {
+		        d3dSettings.Usage = GI.Usage.RenderTargetOutput;
+		    }
 
-			if ((Settings.Flags & SwapChainUsageFlags.ShaderInput) == SwapChainUsageFlags.ShaderInput)
-				d3dSettings.Usage |= GI.Usage.ShaderInput;
+		    if ((Settings.Flags & SwapChainUsageFlags.AllowShaderView) == SwapChainUsageFlags.AllowShaderView)
+		    {
+		        d3dSettings.Usage |= GI.Usage.ShaderInput;
+		    }
+
+		    if ((Settings.Flags & SwapChainUsageFlags.AllowUnorderedAccessView)
+                == SwapChainUsageFlags.AllowUnorderedAccessView)
+            {
+                d3dSettings.Usage |= GI.Usage.UnorderedAccess;
+            }
 
 			Gorgon.Log.Print("GorgonSwapChain '{0}': Creating D3D11 swap chain...", Diagnostics.LoggingLevel.Simple, Name);
 			GISwapChain = new GI.SwapChain(Graphics.GIFactory, Graphics.D3DDevice, d3dSettings);
@@ -927,11 +954,11 @@ namespace GorgonLibrary.Graphics
 		}
 
         /// <summary>
-        /// Function to retrieve the 2D render target for a swap chain.
+        /// Explicit operator to retrieve the 2D texture used as the render target for a swap chain.
         /// </summary>
         /// <param name="swapChain">Swap chain to evaluate.</param>
-        /// <returns>The 2D render target for a swap chain.</returns>
-        public static GorgonRenderTarget2D ToRenderTarget2D(GorgonSwapChain swapChain)
+        /// <returns>The 2D texture used as the render target for a swap chain.</returns>
+        public static explicit operator GorgonTexture2D(GorgonSwapChain swapChain)
         {
             return swapChain == null ? null : swapChain._renderTarget;
         }
@@ -941,7 +968,7 @@ namespace GorgonLibrary.Graphics
         /// </summary>
         /// <param name="swapChain">Swap chain to evaluate.</param>
         /// <returns>The 2D render target for a swap chain.</returns>
-        public static implicit operator GorgonRenderTarget2D(GorgonSwapChain swapChain)
+        public static explicit operator GorgonRenderTarget2D(GorgonSwapChain swapChain)
         {
             return swapChain == null ? null : swapChain._renderTarget;
         }

@@ -36,14 +36,22 @@ namespace GorgonLibrary.Graphics
 	[Flags]
 	public enum SwapChainUsageFlags
 	{
+        /// <summary>
+        /// Unknown usage flags.
+        /// </summary>
+        Unknown = 0,
 		/// <summary>
 		/// Specifies that the swap chain is used to display its data.
 		/// </summary>
 		RenderTarget = 1,
 		/// <summary>
-		/// Specifies that the swap chain is used as a shader input.
+		/// Specifies that the swap chain render target texture can be used as a shader view resource.
 		/// </summary>
-		ShaderInput = 2
+		AllowShaderView = 2,
+        /// <summary>
+        /// Specifies that the swap chain render target texture can be used as an unordered access view.
+        /// </summary>
+        AllowUnorderedAccessView = 3
 	}
 
 	/// <summary>

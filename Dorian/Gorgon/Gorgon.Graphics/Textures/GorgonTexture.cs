@@ -581,8 +581,7 @@ namespace GorgonLibrary.Graphics
 			try
 			{
 				Gorgon.Log.Print("{0} {1}: Creating D3D11 texture resource...", Diagnostics.LoggingLevel.Verbose, GetType().Name, Name);
-
-				FormatInformation = GorgonBufferFormatInfo.GetInfo(Settings.Format);
+                
 				OnInitialize(initialData);
 				CreateDefaultResourceView();
 
@@ -1088,6 +1087,7 @@ namespace GorgonLibrary.Graphics
 			_lock = new List<DX.DataStream>(16);
 			Settings = settings;
             _viewCache = new GorgonViewCache(this);
+            FormatInformation = GorgonBufferFormatInfo.GetInfo(Settings.Format);
 		}
 		#endregion
     }

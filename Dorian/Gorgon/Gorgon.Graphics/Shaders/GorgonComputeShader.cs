@@ -110,7 +110,7 @@ namespace GorgonLibrary.Graphics
 		/// <param name="name">The name of the pixel shader.</param>
 		/// <param name="entryPoint">The entry point method for the shader.</param>
         internal GorgonComputeShader(GorgonGraphics graphics, string name, string entryPoint)
-			: base(graphics, name, ShaderType.Geometry, entryPoint)
+			: base(graphics, name, ShaderType.Compute, entryPoint)
 		{
 			if (graphics.VideoDevice.SupportedFeatureLevel < DeviceFeatureLevel.SM5)
 			{
