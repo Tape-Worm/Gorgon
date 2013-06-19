@@ -253,8 +253,8 @@ namespace GorgonLibrary.Graphics
 			Settings.ArrayCount = desc.ArraySize;
 			Settings.Format = (BufferFormat)desc.Format;
 			Settings.MipCount = desc.MipLevels;
-			Settings.ShaderViewFormat = (swapChain.Settings.Flags & SwapChainUsageFlags.ShaderInput) ==
-			                            SwapChainUsageFlags.ShaderInput
+			Settings.ShaderViewFormat = (swapChain.Settings.Flags & SwapChainUsageFlags.AllowShaderView) ==
+			                            SwapChainUsageFlags.AllowShaderView
 				                            ? swapChain.Settings.Format
 				                            : BufferFormat.Unknown;
 			Settings.AllowUnorderedAccessViews = (desc.BindFlags & D3D.BindFlags.UnorderedAccess) == D3D.BindFlags.UnorderedAccess;
@@ -288,7 +288,7 @@ namespace GorgonLibrary.Graphics
 			// Create the default render target view.
 			_defaultRenderTargetView = CreateRenderTargetView(Settings.Format, 0, 0, 1);
 
-			if ((swapChain.Settings.Flags & SwapChainUsageFlags.ShaderInput) == SwapChainUsageFlags.ShaderInput)
+			if ((swapChain.Settings.Flags & SwapChainUsageFlags.AllowShaderView) == SwapChainUsageFlags.AllowShaderView)
 			{
 				CreateDefaultResourceView();
 			}

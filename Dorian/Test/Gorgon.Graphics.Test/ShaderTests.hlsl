@@ -1,5 +1,6 @@
 Texture2D _texture : register(t0);
 SamplerState _sampler : register(s0);
+RWTexture2D<float4> _csTexture : register(t0);
 
 struct VS_IN
 {
@@ -24,6 +25,16 @@ PS_IN TestVS( VS_IN input )
 	output.uv = input.uv;
 	
 	return output;
+}
+
+[numthreads(8, 8, 16)]
+void TestCS(uint3 threads : SV_DispatchThreadID)
+{
+	float r = (threads.x << threads.z) / 255.0f;
+	float g = (threads.y << threads.z) / 255.0f;
+	float b = ((threads.z * 1) / 255.0f);
+
+	_csTexture[threads.xy] = float4(r, g, b, 1);
 }
 
 [maxvertexcount(12)]

@@ -202,7 +202,8 @@ namespace GorgonLibrary.Graphics.Test
 		/// <param name="vs">Vertex Shader Code.</param>
 		/// <param name="ps">Pixel shader code.</param>
 		/// <param name="showTestPanel">TRUE to show the testing panel on the form, FALSE to hide it.</param>
-		public void CreateTestScene(string vs, string ps, bool showTestPanel)
+		/// <param name="allowUnorderedViewsSwap">TRUE to allow unordered access views to the swap chain, FALSE to disallow.</param>
+		public void CreateTestScene(string vs, string ps, bool showTestPanel, bool allowUnorderedViewsSwap = false)
 		{
 			_form.ClientSize = new Size(1280, 800);
 			_form.ShowTestPanel = showTestPanel;
@@ -270,7 +271,8 @@ namespace GorgonLibrary.Graphics.Test
 													   new GorgonSwapChainSettings
 													   {
 														   Window = _form.panelDisplay,
-														   IsWindowed = true
+														   IsWindowed = true,
+                                                           Flags = allowUnorderedViewsSwap ? SwapChainUsageFlags.AllowUnorderedAccessView | SwapChainUsageFlags.RenderTarget : SwapChainUsageFlags.RenderTarget
 													   });
 
             Graphics.Output.SetRenderTarget(Screen, Screen.DepthStencilBuffer);

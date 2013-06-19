@@ -53,6 +53,42 @@ namespace GorgonLibrary.Graphics.Test
 			_framework = new GraphicsFramework();
 		}
 
+        [TestMethod]
+        public void TestComputeShader()
+        {
+            _framework.CreateTestScene(BaseShaders, BaseShaders, true, true);
+
+            using(var compShader = _framework.Graphics.Shaders.CreateShader<GorgonComputeShader>("CompShader",
+                                                                                               "TestCS",
+                                                                                               BaseShaders))
+            {
+                _framework.Graphics.Output.SetRenderTarget(null);
+
+                var texture = _framework.Graphics.Textures.CreateTexture("Test",
+                                                                         new GorgonTexture2DSettings()
+                                                                             {
+                                                                                 AllowUnorderedAccessViews = true,
+                                                                                 Format = BufferFormat.R8G8B8A8,
+                                                                                 ShaderViewFormat = BufferFormat.R8G8B8A8_UIntNormal,
+                                                                                 Width = 256,
+                                                                                 Height = 256
+                                                                             });
+
+                var view = ((GorgonTexture2D)_framework.Screen).CreateUnorderedAccessView(BufferFormat.R8G8B8A8_UIntNormal);
+                
+
+                _framework.Graphics.Shaders.ComputeShader.Current = compShader;
+                _framework.Graphics.Shaders.ComputeShader.UnorderedAccessViews[0] = view;
+                _framework.Graphics.Shaders.ComputeShader.Dispatch(32, 32, 16);
+
+                _framework.Graphics.Output.SetRenderTarget(_framework.Screen);
+
+                _framework.Graphics.Shaders.ComputeShader.UnorderedAccessViews[0] = null;
+                _framework.Graphics.Shaders.PixelShader.Resources[0] = texture;
+
+                Assert.IsTrue(_framework.Run() == DialogResult.Yes);
+            }
+        }
 
 		[TestMethod]
 		public void TestGeometryShader()
