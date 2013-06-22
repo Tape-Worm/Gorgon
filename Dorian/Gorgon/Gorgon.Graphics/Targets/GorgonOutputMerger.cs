@@ -325,52 +325,73 @@ namespace GorgonLibrary.Graphics
                 return;
             }
 
-            for (int i = 0; i < _unorderedViews.Length; i++)
-            {
-                var otherView = _unorderedViews[i];
+			if (_graphics.Shaders.ComputeShader.UnorderedAccessViews.IndexOf(view) != -1)
+			{
+				throw new GorgonException(GorgonResult.CannotBind,
+				                          string.Format(Resources.GORGFX_VIEW_ALREADY_BOUND,
+				                                        _graphics.Shaders.ComputeShader.UnorderedAccessViews.IndexOf(view)));
+			}
 
-                if ((slot != i) || (otherView == null))
-                {
-                    continue;
-                }
+			for (int i = 0; i < _graphics.Shaders.ComputeShader.UnorderedAccessViews.Count; i++)
+			{
+				var otherView = _graphics.Shaders.ComputeShader.UnorderedAccessViews[i];
 
-                if (otherView == view)
-                {
-                    throw new GorgonException(GorgonResult.CannotBind, string.Format(Resources.GORGFX_VIEW_ALREADY_BOUND, i));
-                }
+				if ((otherView != null) && (otherView.Resource == view.Resource))
+				{
+					throw new GorgonException(GorgonResult.CannotBind,
+												string.Format(Resources.GORGFX_VIEW_RESOURCE_ALREADY_BOUND,
+															view.Resource.Name,
+															i,
+															view.GetType().FullName));
+				}
+			}
 
-                if (otherView.Resource == view.Resource)
-                {
-                    throw new GorgonException(GorgonResult.CannotBind,
-                                              string.Format(Resources.GORGFX_VIEW_RESOURCE_ALREADY_BOUND,
-                                                            view.Resource.Name,
-                                                            i,
-                                                            view.GetType().FullName));
-                }
+			for (int i = 0; i < _unorderedViews.Length; i++)
+			{
+				var otherView = _unorderedViews[i];
 
-                // Ensure the unordered access views and resource views don't have the same resource bound.
-	            if ((_targetViews == null) || (_targetViews.Length <= 0))
-	            {
-		            continue;
-	            }
+				if ((slot != i) || (otherView == null))
+				{
+					continue;
+				}
 
-	            for (int j = 0; j < _targetViews.Length; j++)
-	            {
-		            if (_targetViews[j] == null)
-		            {
-			            continue;
-		            }
+				if (otherView == view)
+				{
+					throw new GorgonException(GorgonResult.CannotBind, string.Format(Resources.GORGFX_VIEW_ALREADY_BOUND, i));
+				}
 
-		            if (_targetViews[j].Resource == view.Resource)
-		            {
-			            throw new GorgonException(GorgonResult.CannotBind,
-			                                      string.Format(Resources.GORGFX_VIEW_RESOURCE_ALREADY_BOUND,
-			                                                    view.Resource.Name,
-			                                                    j,
-			                                                    typeof(GorgonRenderTargetView).FullName));
-		            }
-	            }
-            }
+				if (otherView.Resource == view.Resource)
+				{
+					throw new GorgonException(GorgonResult.CannotBind,
+												string.Format(Resources.GORGFX_VIEW_RESOURCE_ALREADY_BOUND,
+															view.Resource.Name,
+															i,
+															view.GetType().FullName));
+				}
+
+				// Ensure the unordered access views and resource views don't have the same resource bound.
+				if ((_targetViews == null) || (_targetViews.Length <= 0))
+				{
+					continue;
+				}
+
+				for (int j = 0; j < _targetViews.Length; j++)
+				{
+					if (_targetViews[j] == null)
+					{
+						continue;
+					}
+
+					if (_targetViews[j].Resource == view.Resource)
+					{
+						throw new GorgonException(GorgonResult.CannotBind,
+													string.Format(Resources.GORGFX_VIEW_RESOURCE_ALREADY_BOUND,
+																view.Resource.Name,
+																j,
+																typeof(GorgonRenderTargetView).FullName));
+					}
+				}
+			}
         }
 #endif
 
@@ -380,13 +401,6 @@ namespace GorgonLibrary.Graphics
         /// <param name="depthView">The Direct 3D depth/stencil view to set.</param>
         private void SetTargets(D3D.DepthStencilView depthView)
         {
-			// If we have no views to set, then get out.
-			if (((_D3DViews == null) || (_D3DViews.Length == 0))
-				&& ((_D3DUnorderedViews == null) || (_D3DUnorderedViews.Length == 0)))
-			{
-				return;
-			}
-
 			// We have UAV views, so we need to use the proper function.
 			if ((_graphics.VideoDevice.SupportedFeatureLevel >= DeviceFeatureLevel.SM5) && (_D3DUnorderedViews != null) && (_D3DUnorderedViews.Length > 0) && (_uavStartSlot > -1))
 			{
@@ -1017,8 +1031,7 @@ namespace GorgonLibrary.Graphics
 			{
 				_D3DViews = null;
 				_targetViews = null;
-
-                SetTargets(depthView);
+				SetTargets(depthView);
 				return;
 			}
 
@@ -1455,7 +1468,7 @@ namespace GorgonLibrary.Graphics
 		/// </remarks>
 		public GorgonSwapChain CreateSwapChain(string name, GorgonSwapChainSettings settings)
 		{
-			GorgonSwapChain swapChain = null;
+			GorgonSwapChain swapChain;
 
             if (name == null)
             {

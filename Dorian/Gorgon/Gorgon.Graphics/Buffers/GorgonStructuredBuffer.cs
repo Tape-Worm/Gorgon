@@ -89,51 +89,47 @@ namespace GorgonLibrary.Graphics
 				return;
 			}
 
-			_defaultView = CreateShaderView(0, Settings.SizeInBytes / Settings.StructureSize);
+			_defaultView = GetShaderView(0, Settings.SizeInBytes / Settings.StructureSize);
 		}
 
         /// <summary>
-        /// Function to create a new shader view for the buffer.
+        /// Function to retrieve a new shader view for the buffer.
         /// </summary>
         /// <param name="start">Starting element.</param>
         /// <param name="count">Element count.</param>
-        /// <returns>A new shader view for the buffer.</returns>
+        /// <returns>A shader view for the buffer.</returns>
         /// <exception cref="GorgonLibrary.GorgonException">Thrown when the usage for this buffer is set to Staging.
         /// <para>-or-</para>
         /// <para>Thrown when the view could not be created.</para>
         /// </exception>
         /// <exception cref="System.ArgumentException">Thrown when the <paramref name="start"/> or <paramref name="count"/> parameters are less than 0 or greater than or equal to the 
         /// number of elements in the buffer.</exception>
-        /// <remarks>Use this to create additional shader views for the buffer.  Multiple views of the same resource can be bound to multiple stages in the pipeline.
+		/// <exception cref="GorgonLibrary.GorgonException">Thrown when the view could not be created or retrieved from the cache.</exception>
+		/// <remarks>Use this to create/retrieve additional shader views for the buffer.  Multiple views of the same resource can be bound to multiple stages in the pipeline.
         /// <para>This function only applies to buffers that have not been created with a Usage of Staging.</para>
         /// </remarks>
-        public GorgonBufferShaderView CreateShaderView(int start, int count)
+        public GorgonBufferShaderView GetShaderView(int start, int count)
         {
-	        return OnCreateShaderView(BufferFormat.Unknown, start, count, false);
+	        return OnGetShaderView(BufferFormat.Unknown, start, count, false);
         }
 
 		/// <summary>
-		/// Function to create an unordered access view for this buffer.
+		/// Function to retrieve an unordered access view for this buffer.
 		/// </summary>
 		/// <param name="start">First element to map to the view.</param>
 		/// <param name="count">The number of elements to map to the view.</param>
 		/// <param name="viewType">The type of unordered view to apply to the structured buffer.</param>
 		/// <returns>A new unordered access view for the buffer.</returns>
-		/// <remarks>Use this to create an unordered access view that will allow shaders to access the view using multiple threads at the same time.  Unlike a <see cref="CreateShaderView">Shader View</see>, only one 
+		/// <remarks>Use this to create/retrieve an unordered access view that will allow shaders to access the view using multiple threads at the same time.  Unlike a <see cref="GetShaderView">Shader View</see>, only one 
 		/// unordered access view can be bound to the pipeline at any given time.
 		/// <para>Unordered access views require a video device feature level of SM_5 or better.</para>
 		/// </remarks>
-		/// <exception cref="GorgonLibrary.GorgonException">Thrown when the usage for this buffer is set to Staging or Dynamic.
-		/// <para>-or-</para>
-		/// <para>Thrown when the resource settings do not allow unordered access views.</para>
-		/// <para>-or-</para>
-		/// <para>Thrown when the view could not be created.</para>
-		/// </exception>
+		/// <exception cref="GorgonLibrary.GorgonException">Thrown when the view could not be created or retrieved from the cache.</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="start"/> or <paramref name="count"/> parameters are less than 0 or greater than or equal to the 
 		/// number of elements in the buffer.</exception>
-		public GorgonStructuredBufferUnorderedAccessView CreateUnorderedAccessView(int start, int count, UnorderedAccessViewType viewType)
+		public GorgonStructuredBufferUnorderedAccessView GetUnorderedAccessView(int start, int count, UnorderedAccessViewType viewType)
 		{
-		    return (GorgonStructuredBufferUnorderedAccessView)OnCreateUnorderedAccessView(BufferFormat.Unknown, start, count, false, viewType);
+		    return (GorgonStructuredBufferUnorderedAccessView)OnGetUnorderedAccessView(BufferFormat.Unknown, start, count, false, viewType);
 		}
 		#endregion
 

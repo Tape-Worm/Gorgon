@@ -145,7 +145,7 @@ namespace GorgonLibrary.Graphics
 		/// <value></value>
 		/// <remarks>
 		/// When loading a texture from a file, leave this as Unknown to get the file format from the source file.
-        /// <para>This sets the format of the texture data. To reinterpret the format of the data inside of a shader, create a new <see cref="GorgonLibrary.Graphics.GorgonTexture2D.CreateShaderView(BufferFormat, int, int, int, int)">shader view</see> and assign it to the texture.</para></remarks>
+        /// <para>This sets the format of the texture data. To reinterpret the format of the data inside of a shader, create a new <see cref="GorgonLibrary.Graphics.GorgonTexture2D.GetShaderView(BufferFormat, int, int, int, int)">shader view</see> and assign it to the texture.</para></remarks>
 		public BufferFormat Format
 		{
 			get;
