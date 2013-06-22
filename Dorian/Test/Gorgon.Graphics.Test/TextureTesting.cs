@@ -83,7 +83,7 @@ namespace GorgonLibrary.Graphics.Test
                                                      Usage = BufferUsage.Staging
                                                  });
 
-                texture.CreateShaderView(BufferFormat.R8_Int);
+                texture.GetShaderView(BufferFormat.R8_Int);
             }
             finally
             {
@@ -116,7 +116,7 @@ namespace GorgonLibrary.Graphics.Test
                                                      Usage = BufferUsage.Staging
                                                  });
 
-                texture.CreateShaderView(BufferFormat.R8G8B8A8_Int);
+                texture.GetShaderView(BufferFormat.R8G8B8A8_Int);
             }
             finally
             {
@@ -148,7 +148,7 @@ namespace GorgonLibrary.Graphics.Test
                                                      AllowUnorderedAccessViews = false,
                                                      Usage = BufferUsage.Staging
                                                  });
-                texture.CreateShaderView(BufferFormat.R8G8B8A8_Int);
+                texture.GetShaderView(BufferFormat.R8G8B8A8_Int);
             }
             finally
             {
@@ -193,7 +193,7 @@ namespace GorgonLibrary.Graphics.Test
                     texture = _framework.Graphics.Textures.CreateTexture<GorgonTexture2D>("Test2D", data);
                 }
 
-                GorgonTextureShaderView view = texture.CreateShaderView(BufferFormat.R8G8B8A8_UIntNormal);
+                GorgonTextureShaderView view = texture.GetShaderView(BufferFormat.R8G8B8A8_UIntNormal);
                  
                 _framework.Graphics.Shaders.PixelShader.Resources[0] = texture;
                 _framework.Graphics.Shaders.PixelShader.Resources[1] = view;
@@ -303,7 +303,7 @@ namespace GorgonLibrary.Graphics.Test
                     Format = BufferFormat.R8G8B8A8_UIntNormal
                 });*/
 
-			var uav = texture.CreateUnorderedAccessView(BufferFormat.R32_UInt);
+			var uav = texture.GetUnorderedAccessView(BufferFormat.R32_UInt);
 			var uavShaderPS = _framework.Graphics.Shaders.CreateShader<GorgonPixelShader>("UAV", "TestUAV", uavOutputPS, true);
 			
 			_framework.CreateTestScene(uavOutputPS, uavOutputPS, true);

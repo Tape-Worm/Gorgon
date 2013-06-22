@@ -562,7 +562,7 @@ namespace GorgonLibrary.Graphics
 			GorgonVideoOutput output = null;
 
             // Define as render target if we didn't specify the flags.
-            if (settings.Flags == SwapChainUsageFlags.Unknown)
+            if (settings.Flags == SwapChainUsageFlags.None)
             {
                 settings.Flags = SwapChainUsageFlags.RenderTarget;
             }

@@ -158,7 +158,7 @@ namespace GorgonLibrary.Graphics.Test
                 Usage = BufferUsage.Default
             });
 
-            var uav = vb.CreateUnorderedAccessView(BufferFormat.R32G32B32A32_Float, 0, 3, false);
+            var uav = vb.GetUnorderedAccessView(BufferFormat.R32G32B32A32_Float, 0, 3, false);
         }
 
 		[TestMethod]
@@ -172,7 +172,7 @@ namespace GorgonLibrary.Graphics.Test
 					Usage = BufferUsage.Default
 				});
 
-			var uav = ib.CreateUnorderedAccessView(BufferFormat.R32_UInt, 0, 8, false);
+			var uav = ib.GetUnorderedAccessView(BufferFormat.R32_UInt, 0, 8, false);
 		}
 
         [TestMethod]
@@ -186,9 +186,9 @@ namespace GorgonLibrary.Graphics.Test
 					StructureSize = 16
                 });
 
-            structBuffer.CreateUnorderedAccessView(0, 5, UnorderedAccessViewType.Standard);
-            structBuffer.CreateUnorderedAccessView(0, 5, UnorderedAccessViewType.AppendConsume);
-            structBuffer.CreateUnorderedAccessView(0, 5, UnorderedAccessViewType.Counter);
+            structBuffer.GetUnorderedAccessView(0, 5, UnorderedAccessViewType.Standard);
+            structBuffer.GetUnorderedAccessView(0, 5, UnorderedAccessViewType.AppendConsume);
+            structBuffer.GetUnorderedAccessView(0, 5, UnorderedAccessViewType.Counter);
         }
 
         [TestMethod]

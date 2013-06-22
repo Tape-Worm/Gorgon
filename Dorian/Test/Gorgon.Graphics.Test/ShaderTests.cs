@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Text;
 using System.Windows.Forms;
+using GorgonLibrary.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using GorgonLibrary.IO;
+using GorgonLibrary.Math;
 using GorgonLibrary.Graphics.Test.Properties;
+using SlimMath;
 
 namespace GorgonLibrary.Graphics.Test
 {
@@ -62,31 +65,91 @@ namespace GorgonLibrary.Graphics.Test
                                                                                                "TestCS",
                                                                                                BaseShaders))
             {
-                _framework.Graphics.Output.SetRenderTarget(null);
+	            var cbuffer = _framework.Graphics.Buffers.CreateConstantBuffer("CBuffer", new GorgonConstantBufferSettings
+		            {
+			            SizeInBytes = 16
+		            });
+				var cbuffer2 = _framework.Graphics.Buffers.CreateConstantBuffer("CBuffer2", new GorgonConstantBufferSettings
+				{
+					SizeInBytes = 16
+				});
 
-                var texture = _framework.Graphics.Textures.CreateTexture("Test",
-                                                                         new GorgonTexture2DSettings()
-                                                                             {
-                                                                                 AllowUnorderedAccessViews = true,
-                                                                                 Format = BufferFormat.R8G8B8A8,
-                                                                                 ShaderViewFormat = BufferFormat.R8G8B8A8_UIntNormal,
-                                                                                 Width = 256,
-                                                                                 Height = 256
-                                                                             });
 
-                var view = ((GorgonTexture2D)_framework.Screen).CreateUnorderedAccessView(BufferFormat.R8G8B8A8_UIntNormal);
-                
 
-                _framework.Graphics.Shaders.ComputeShader.Current = compShader;
-                _framework.Graphics.Shaders.ComputeShader.UnorderedAccessViews[0] = view;
-                _framework.Graphics.Shaders.ComputeShader.Dispatch(32, 32, 16);
+                var view = ((GorgonTexture2D)_framework.Screen).GetUnorderedAccessView(BufferFormat.R8G8B8A8_UIntNormal);
 
-                _framework.Graphics.Output.SetRenderTarget(_framework.Screen);
+	            _framework.Screen.Resized += (sender, e) =>
+		            {
+			            view = ((GorgonTexture2D)_framework.Screen).GetUnorderedAccessView(BufferFormat.R8G8B8A8_UIntNormal);
+						using(var data = new GorgonDataStream(16))
+						{
+							data.Write(new Vector2(e.Width, e.Height));
+							data.Position = 0;
+							cbuffer.Update(data);
+						}
+		            };
 
-                _framework.Graphics.Shaders.ComputeShader.UnorderedAccessViews[0] = null;
-                _framework.Graphics.Shaders.PixelShader.Resources[0] = texture;
+				var texture = _framework.Graphics.Textures.CreateTexture<GorgonTexture2D>("Test", Resources.Glass,
+																						  new GorgonGDIOptions
+																						  {
+																							  AllowUnorderedAccess = true,
+																							  Format =
+																								  BufferFormat.R8G8B8A8_UIntNormal
+																						  });
+				var test = new Vector3(GorgonRandom.RandomSingle(0, 180.0f), GorgonRandom.RandomSingle(0, 180.0f), GorgonRandom.RandomSingle(0, 180.0f));
+	            var speed = new Vector3(GorgonRandom.RandomSingle(5, 45), GorgonRandom.RandomSingle(5, 45), GorgonRandom.RandomSingle(5, 45));
+	            var testDir = new Vector3(1);
+		        _framework.IdleFunc = () =>
+			        {
+				        //_framework.Screen.Clear(GorgonColor.White);
+				        _framework.Graphics.Output.SetRenderTarget(null);
+				        _framework.Graphics.Shaders.PixelShader.Resources[0] = null;
 
-                Assert.IsTrue(_framework.Run() == DialogResult.Yes);
+				        _framework.Graphics.Shaders.ComputeShader.Current = compShader;
+				        _framework.Graphics.Shaders.ComputeShader.ConstantBuffers[0] = cbuffer;
+				        _framework.Graphics.Shaders.ComputeShader.ConstantBuffers[1] = cbuffer2;
+				        _framework.Graphics.Shaders.ComputeShader.UnorderedAccessViews[0] = view;
+				        _framework.Graphics.Shaders.ComputeShader.Dispatch((_framework.Screen.Settings.Width + 10) / 10,
+				                                                            (_framework.Screen.Settings.Height + 10) / 10, 1);
+
+				        _framework.Graphics.Shaders.ComputeShader.UnorderedAccessViews[0] = null;
+				        _framework.Graphics.Output.SetRenderTarget(_framework.Screen);
+
+				        _framework.Graphics.Shaders.PixelShader.Resources[0] = texture;
+
+				        test += Vector3.Modulate(testDir * GorgonTiming.Delta, speed);
+						
+						/*if ((test >= 1.0f) || (test <= 0.0f))
+						{
+							testDir *= -1.0f;
+						}*/
+
+						if ((test.X > 359.9f) || (test.X <= 0.0f))
+						{
+							test.X = test.X - 359.9f * -testDir.X;
+							speed.X = GorgonRandom.RandomSingle(5, 180.0f);
+							testDir.X *= -1.0f;
+						}
+
+						if ((test.Y > 359.9f) || (test.Y <= 0.0f))
+						{
+							test.Y = test.Y - 359.9f * -testDir.X;
+							speed.Y = GorgonRandom.RandomSingle(5, 180);
+							testDir.Y *= -1.0f;
+						}
+
+						if ((test.Z > 359.9f) || (test.Z <= 0.0f))
+						{
+							test.Z = test.Z - 359.9f * -testDir.Y;
+							speed.Z = GorgonRandom.RandomSingle(5, 180);
+							testDir.Z *= -1.0f;
+						}
+
+				        var animVal = new Vector3(test.X.Radians().Cos(), test.Y.Radians().Sin(), test.Z.Radians().Cos() * test.Z.Radians().Cos());
+						cbuffer2.Update(ref animVal);
+			        };
+
+				Assert.IsTrue(_framework.Run() == DialogResult.Yes);
             }
         }
 

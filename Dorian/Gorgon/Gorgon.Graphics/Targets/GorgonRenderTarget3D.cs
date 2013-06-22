@@ -104,7 +104,7 @@ namespace GorgonLibrary.Graphics
                               : new D3D.Texture3D(Graphics.D3DDevice, desc);
 
             // Create the default render target view.
-            _defaultRenderTargetView = CreateRenderTargetView(Settings.Format, 0, 0, 1);
+            _defaultRenderTargetView = GetRenderTargetView(Settings.Format, 0, 0, 1);
 
             GorgonRenderStatistics.RenderTargetCount++;
             GorgonRenderStatistics.RenderTargetSize += SizeInBytes;
@@ -114,22 +114,22 @@ namespace GorgonLibrary.Graphics
         }
 
         /// <summary>
-        /// Function to create a new render target view.
+        /// Function to retrieve a render target view.
         /// </summary>
         /// <param name="format">Format of the new render target view.</param>
         /// <param name="mipSlice">Mip level index to use in the view.</param>
         /// <param name="arrayIndex">Array index to use in the view.</param>
         /// <param name="arrayCount">Number of array indices to use.</param>
         /// <returns>A render target view.</returns>
-        /// <remarks>Use this to create a render target view that can bind a portion of the target to the pipeline as a render target.
+        /// <remarks>Use this to create/retrieve a render target view that can bind a portion of the target to the pipeline as a render target.
         /// <para>The <paramref name="format"/> for the render target view does not have to be the same as the render target backing texture, and if the format is set to Unknown, then it will 
         /// use the format from the texture.</para>
         /// </remarks>
-        /// <exception cref="GorgonLibrary.GorgonException">Thrown when the render target view could not be created.</exception>
-        public GorgonRenderTargetTextureView CreateRenderTargetView(BufferFormat format, int mipSlice, int arrayIndex,
+		/// <exception cref="GorgonLibrary.GorgonException">Thrown when the view could not created or retrieved from the internal cache.</exception>
+        public GorgonRenderTargetTextureView GetRenderTargetView(BufferFormat format, int mipSlice, int arrayIndex,
                                                                int arrayCount)
         {
-            return OnCreateRenderTargetView(format, mipSlice, arrayIndex, arrayCount);
+            return OnGetRenderTargetView(format, mipSlice, arrayIndex, arrayCount);
         }
 
         /// <summary>

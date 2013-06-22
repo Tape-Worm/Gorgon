@@ -128,7 +128,7 @@ namespace GorgonLibrary.Graphics
 				Window = window
 			});
 
-			return Create2DRenderer(graphics, swapChain, true);
+			return Create2DRenderer(graphics, (GorgonRenderTarget2D)swapChain, true);
 		}
 
 		/// <summary>
@@ -167,7 +167,7 @@ namespace GorgonLibrary.Graphics
         /// <exception cref="System.ArgumentException">Thrown when the target was not created by the same graphics interface as the one creating the 2D interface.</exception>
         public static Gorgon2D Create2DRenderer(this GorgonOutputMerger graphics, GorgonSwapChain target)
         {
-            return Create2DRenderer(graphics, target, false);
+            return Create2DRenderer(graphics, (GorgonRenderTarget2D)target, false);
         }
 
 		/// <summary>

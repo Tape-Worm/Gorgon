@@ -123,11 +123,14 @@ namespace GorgonLibrary.Graphics
 
 	        BufferFormat format = Settings.ShaderViewFormat == BufferFormat.Unknown ? Settings.Format : Settings.ShaderViewFormat;
 
-		    _defaultShaderView = OnCreateShaderView(format, 0, Settings.MipCount, 0, Settings.ArrayCount);
+		    _defaultShaderView = OnGetShaderView(format, 0, Settings.MipCount, 0,
+		                                         Settings.ImageType == ImageType.Image3D
+			                                         ? Settings.Depth
+			                                         : Settings.ArrayCount);
 	    }
 
 		/// <summary>
-		/// Function to create a new depth/stencil view object.
+		/// Function to retrieve a new depth/stencil view object.
 		/// </summary>
 		/// <param name="format">The format of the depth/stencil view.</param>
 		/// <param name="mipSlice">Starting mip map for the view.</param>
@@ -153,7 +156,7 @@ namespace GorgonLibrary.Graphics
 		/// <para>Thrown when the <paramref name="flags"/> property is not set to None and the depth buffer does not allow shader access, or if the current video device feature level is not SM5 or better.</para>
 		/// </exception>
 		/// <returns>A texture shader view object.</returns>
-		protected GorgonDepthStencilView OnCreateDepthStencilView(BufferFormat format,
+		protected GorgonDepthStencilView OnGetDepthStencilView(BufferFormat format,
 													int mipSlice,
 													int arrayStart,
 													int arrayCount,
@@ -226,7 +229,7 @@ namespace GorgonLibrary.Graphics
 		}
 
 	    /// <summary>
-	    /// Function to create a new shader resource view object.
+	    /// Function to retrieve a new shader resource view object.
 	    /// </summary>
 	    /// <param name="format">The format of the resource view.</param>
 	    /// <param name="mipStart">Starting mip map for the view.</param>
@@ -248,7 +251,7 @@ namespace GorgonLibrary.Graphics
         /// <para>Thrown when the <paramref name="mipStart"/> and the <paramref name="mipCount"/> are less than 0 or 1 respectively, or greater than the number of mip levels in the texture.</para>
 	    /// </exception>
 	    /// <returns>A texture shader view object.</returns>
-	    protected GorgonTextureShaderView OnCreateShaderView(BufferFormat format,
+	    protected GorgonTextureShaderView OnGetShaderView(BufferFormat format,
                                                     int mipStart,
                                                     int mipCount,
                                                     int arrayStart,
@@ -327,19 +330,19 @@ namespace GorgonLibrary.Graphics
         }
 
 		/// <summary>
-		/// Function to create a new render target view.
+		/// Function to retrieve a new render target view.
 		/// </summary>
 		/// <param name="format">Format of the new render target view.</param>
 		/// <param name="mipSlice">Mip level index to use in the view.</param>
 		/// <param name="arrayOrDepthIndex">Array or depth slice index to use in the view.</param>
 		/// <param name="arrayOrDepthCount">Number of array indices or depth slices to use.</param>
 		/// <returns>A render target view.</returns>
-		/// <remarks>Use this to create a render target view that can bind a portion of the target to the pipeline as a render target.
+		/// <remarks>Use this to create/retrieve a render target view that can bind a portion of the target to the pipeline as a render target.
 		/// <para>The <paramref name="format"/> for the render target view does not have to be the same as the render target backing texture, and if the format is set to Unknown, then it will 
 		/// use the format from the texture.</para>
 		/// </remarks>
 		/// <exception cref="GorgonLibrary.GorgonException">Thrown when the render target view could not be created.</exception>
-		protected GorgonRenderTargetTextureView OnCreateRenderTargetView(BufferFormat format, int mipSlice, int arrayOrDepthIndex,
+		protected GorgonRenderTargetTextureView OnGetRenderTargetView(BufferFormat format, int mipSlice, int arrayOrDepthIndex,
 															   int arrayOrDepthCount)
 		{
 			// If we pass unknown, use the format from the texture.
@@ -413,14 +416,14 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
-		/// Function to create an unordered access view for this texture.
+		/// Function to retrieve an unordered access view for this texture.
 		/// </summary>
 		/// <param name="format">Format of the buffer.</param>
 		/// <param name="mipStart">First mip map level to map to the view.</param>
 		/// <param name="arrayStart">The first array index to map to the view.</param>
 		/// <param name="arrayCount">The number of array indices to map to the view.</param>
 		/// <returns>A new unordered access view for the texture.</returns>
-		/// <remarks>Use this to create an unordered access view that will allow shaders to access the view using multiple threads at the same time.  Unlike a shader view, only one 
+		/// <remarks>Use this to create/retrieve an unordered access view that will allow shaders to access the view using multiple threads at the same time.  Unlike a shader view, only one 
 		/// unordered access view can be bound to the pipeline at any given time.
 		/// <para>Unordered access views require a video device feature level of SM_5 or better.</para>
 		/// </remarks>
@@ -437,7 +440,7 @@ namespace GorgonLibrary.Graphics
 		/// <para>-or-</para>
 		/// <para>Thrown if the bit count of the <paramref name="format"/> and the texture format are different, or if format is not in the R32 group and is not in the same group as the texture format.</para>
 		/// </exception>
-		protected GorgonTextureUnorderedAccessView OnCreateUnorderedAccessView(BufferFormat format, int mipStart, int arrayStart, int arrayCount)
+		protected GorgonTextureUnorderedAccessView OnGetUnorderedAccessView(BufferFormat format, int mipStart, int arrayStart, int arrayCount)
 		{
 			if (Graphics.VideoDevice.SupportedFeatureLevel < DeviceFeatureLevel.SM5)
 			{

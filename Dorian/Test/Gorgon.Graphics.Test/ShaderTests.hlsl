@@ -16,6 +16,16 @@ struct PS_IN
 	float2 uv: TEXCOORD;
 };
 
+cbuffer info : register(c0)
+{
+	float2 size;
+};
+
+cbuffer anim : register(c1)
+{
+	float3 animValue;
+};
+
 PS_IN TestVS( VS_IN input )
 {
 	PS_IN output = (PS_IN)0;
@@ -27,12 +37,12 @@ PS_IN TestVS( VS_IN input )
 	return output;
 }
 
-[numthreads(8, 8, 16)]
+[numthreads(10, 10, 1)]
 void TestCS(uint3 threads : SV_DispatchThreadID)
 {
-	float r = (threads.x << threads.z) / 255.0f;
-	float g = (threads.y << threads.z) / 255.0f;
-	float b = ((threads.z * 1) / 255.0f);
+	float r = animValue.x - (threads.x / size.x);
+	float g = animValue.y - (threads.y / size.y);
+	float b = animValue.z - ((r * 2.0f) * (g * 2.0f));
 
 	_csTexture[threads.xy] = float4(r, g, b, 1);
 }

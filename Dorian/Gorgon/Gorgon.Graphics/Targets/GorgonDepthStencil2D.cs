@@ -131,7 +131,7 @@ namespace GorgonLibrary.Graphics
 			GorgonRenderStatistics.DepthBufferCount++;
 			GorgonRenderStatistics.DepthBufferSize += SizeInBytes;
 
-			_defaultView = CreateDepthStencilView(Settings.Format, 0, 0, 1, Settings.DefaultDepthStencilViewFlags);
+			_defaultView = GetDepthStencilView(Settings.Format, 0, 0, 1, Settings.DefaultDepthStencilViewFlags);
 		}
 
 		/// <summary>
@@ -199,7 +199,7 @@ namespace GorgonLibrary.Graphics
 		}
 
         /// <summary>
-        /// Function to create a new depth/stencil view object.
+        /// Function to retrieve a depth/stencil view object.
         /// </summary>
         /// <param name="format">The format of the depth/stencil view.</param>
         /// <param name="mipSlice">Starting mip map for the view.</param>
@@ -214,18 +214,9 @@ namespace GorgonLibrary.Graphics
         /// This would bind the depth/stencil as a read-only view and make it a read-only view accessible to shaders. If the flags are not set to None, then the depth/stencil buffer must allow shader access.</para>
         /// <para>Binding to simulatenous views require a video device with a feature level of SM5 or better.</para>
         /// </remarks>
-        /// <exception cref="GorgonLibrary.GorgonException">Thrown when the texture has a usage of staging.
-        /// <para>-or-</para>
-        /// <para>Thrown when the <paramref name="format"/> is not valid for the view.</para>
-        /// <para>-or-</para>
-        /// <para>Thrown when the <paramref name="arrayStart"/> and the <paramref name="arrayCount"/> are less than 0 or 1 respectively, or greater than the number of array indices in the texture.</para>
-        /// <para>-or-</para>
-        /// <para>Thrown when the <paramref name="mipSlice"/> is less than 0 or greater than the number of mip levels in the texture.</para>
-        /// <para>-or-</para>
-        /// <para>Thrown when the <paramref name="flags"/> property is not set to None and the depth buffer does not allow shader access, or if the current video device feature level is not SM5 or better.</para>
-        /// </exception>
+		/// <exception cref="GorgonLibrary.GorgonException">Thrown when the view could not created or retrieved from the internal cache.</exception>
         /// <returns>A texture shader view object.</returns>
-        public GorgonDepthStencilView CreateDepthStencilView(BufferFormat format, int mipSlice, int arrayStart, int arrayCount, DepthStencilViewFlags flags)
+        public GorgonDepthStencilView GetDepthStencilView(BufferFormat format, int mipSlice, int arrayStart, int arrayCount, DepthStencilViewFlags flags)
         {
             if (flags != DepthStencilViewFlags.None)
             {
@@ -240,7 +231,7 @@ namespace GorgonLibrary.Graphics
                 }
             }
 
-            return OnCreateDepthStencilView(format, mipSlice, arrayStart, arrayCount, flags);
+            return OnGetDepthStencilView(format, mipSlice, arrayStart, arrayCount, flags);
         }
 
 		/// <summary>

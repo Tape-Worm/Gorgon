@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using GorgonLibrary.Native;
 using DX = SharpDX;
 using D3D = SharpDX.Direct3D11;
 using GorgonLibrary.IO;
@@ -321,7 +322,7 @@ namespace GorgonLibrary.Graphics
             }
 
 			var info = GorgonBufferFormatInfo.GetInfo(Settings.DefaultShaderViewFormat);
-	        DefaultShaderView = OnCreateShaderView(Settings.DefaultShaderViewFormat, 0,
+	        DefaultShaderView = OnGetShaderView(Settings.DefaultShaderViewFormat, 0,
 	                                               Settings.SizeInBytes / info.SizeInBytes, false);
         }
 
@@ -429,7 +430,7 @@ namespace GorgonLibrary.Graphics
             Graphics.Context.UpdateSubresource(
                 new DX.DataBox
                 {
-                    DataPointer = (stream.PositionPointer + offset),
+                    DataPointer = stream.PositionPointer,
                     RowPitch = size,
                     SlicePitch = 0
                 },
@@ -437,15 +438,15 @@ namespace GorgonLibrary.Graphics
         }
 
         /// <summary>
-        /// Function to create an unordered access view for this buffer.
+        /// Function to retrieve an unordered access view for this buffer.
         /// </summary>
         /// <param name="format">Format of the buffer.</param>
         /// <param name="start">First element to map to the view.</param>
         /// <param name="count">The number of elements to map to the view.</param>
         /// <param name="isRaw">TRUE if using a raw view to the buffer, FALSE if not.</param>
         /// <param name="viewType">The type of view for a structured buffer.</param>
-        /// <returns>A new unordered access view for the buffer.</returns>
-        /// <remarks>Use this to create an unordered access view that will allow shaders to access the view using multiple threads at the same time.  Unlike a Shader View, only one 
+        /// <returns>An unordered access view for the buffer.</returns>
+        /// <remarks>Use this to create/retrieve an unordered access view that will allow shaders to access the view using multiple threads at the same time.  Unlike a Shader View, only one 
         /// unordered access view can be bound to the pipeline at any given time.
         /// <para>Raw views require that the format be set to R32 (typeless).</para>
         /// <para>Unordered access views require a video device feature level of SM_5 or better.</para>
@@ -460,7 +461,7 @@ namespace GorgonLibrary.Graphics
         /// </exception>
         /// <exception cref="System.ArgumentException">Thrown when the <paramref name="start"/> or <paramref name="count"/> parameters are less than 0 or greater than or equal to the 
         /// number of elements in the buffer.</exception>
-        protected GorgonBufferUnorderedAccessView OnCreateUnorderedAccessView(BufferFormat format, int start, int count, bool isRaw, UnorderedAccessViewType viewType)
+        protected GorgonBufferUnorderedAccessView OnGetUnorderedAccessView(BufferFormat format, int start, int count, bool isRaw, UnorderedAccessViewType viewType)
         {
             int elementCount;
 
@@ -530,25 +531,25 @@ namespace GorgonLibrary.Graphics
         }
 
         /// <summary>
-        /// Function to create a new shader view for the buffer.
+        /// Function to retrieve a new shader view for the buffer.
         /// </summary>
         /// <param name="format">The format of the view.</param>
         /// <param name="start">Starting element.</param>
         /// <param name="count">Element count.</param>
         /// <param name="isRaw">TRUE if using a raw view of the buffer, FALSE if not.</param>
-        /// <returns>A new shader view for the buffer.</returns>
+        /// <returns>A shader view for the buffer.</returns>
         /// <exception cref="GorgonLibrary.GorgonException">Thrown when the usage for this buffer is set to Staging.
         /// <para>-or-</para>
         /// <para>Thrown when the view could not be created.</para>
         /// </exception>
         /// <exception cref="System.ArgumentException">Thrown when the <paramref name="start"/> or <paramref name="count"/> parameters are less than 0 or greater than or equal to the 
         /// number of elements in the buffer.</exception>
-        /// <remarks>Use this to create additional shader views for the buffer.  Multiple views of the same resource can be bound to multiple stages in the pipeline.
+        /// <remarks>Use this to create/retrieve additional shader views for the buffer.  Multiple views of the same resource can be bound to multiple stages in the pipeline.
         /// <para>Raw views require that the buffer be created with the <see cref="GorgonLibrary.Graphics.IBufferSettings.AllowRawViews">AllowRawViews</see> property set to TRUE in its settings.</para>
         /// <para>Raw views can only be used on SM5 video devices or better. </para>
         /// <para>This function only applies to buffers that have not been created with a Usage of Staging.</para>
         /// </remarks>
-        protected GorgonBufferShaderView OnCreateShaderView(BufferFormat format, int start, int count, bool isRaw)
+        protected GorgonBufferShaderView OnGetShaderView(BufferFormat format, int start, int count, bool isRaw)
         {
             int elementCount;
 
@@ -793,7 +794,61 @@ namespace GorgonLibrary.Graphics
             }, D3DResource, 0, destOffset);
         }
 
-        /// <summary>
+		/// <summary>
+		/// Function to write a single value type to the buffer.
+		/// </summary>
+		/// <typeparam name="T">Type of value type.</typeparam>
+		/// <param name="data">Value type data to write into the buffer.</param>
+		/// <remarks>
+		/// This overload is useful for directly copying a value into the buffer without needing a data stream.  If the type of value is a 
+		/// struct and contains reference types (arrays, strings, and objects), then these members will not be copied.  Some form of 
+		/// marshalling will be required in order to copy structures with reference types.  
+		/// <para>This will only work on buffers created with a usage type of [Default].</para>
+		/// </remarks>
+		/// <exception cref="GorgonLibrary.GorgonException">Thrown when the buffer does not have a usage of Default.</exception>
+		public void Update<T>(ref T data)
+			where T : struct
+		{
+#if DEBUG
+			if (Settings.Usage != GorgonLibrary.Graphics.BufferUsage.Default)
+			{
+				throw new GorgonException(GorgonResult.AccessDenied, Resources.GORGFX_NOT_DEFAULT_USAGE);
+			}
+#endif
+
+			Graphics.Context.UpdateSubresource(ref data, D3DResource, 0, DirectAccess.SizeOf<T>());
+		}
+
+		/// <summary>
+		/// Function to write an array of value types to the buffer.
+		/// </summary>
+		/// <typeparam name="T">Type of value type.</typeparam>
+		/// <param name="data">Value type data to write into the buffer.</param>
+		/// <remarks>
+		/// This overload is useful for directly copying values into the buffer without needing a data stream.  If the type of value is a 
+		/// struct and contains reference types (arrays, strings, and objects), then these members will not be copied.  Some form of 
+		/// marshalling will be required in order to copy structures with reference types.  
+		/// <para>This will only work on buffers created with a usage type of [Default].</para>
+		/// </remarks>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="data"/> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="GorgonLibrary.GorgonException">Thrown when the buffer does not have a usage of Default.</exception>
+		public void Update<T>(T[] data)
+			where T : struct
+		{
+			GorgonDebug.AssertNull(data, "data");
+
+#if DEBUG
+			if (Settings.Usage != GorgonLibrary.Graphics.BufferUsage.Default)
+			{
+				throw new GorgonException(GorgonResult.AccessDenied, Resources.GORGFX_NOT_DEFAULT_USAGE);
+			}
+#endif
+
+			Graphics.Context.UpdateSubresource(data, D3DResource, 0, DirectAccess.SizeOf<T>() * data.Length, 0,
+			                                   new D3D.ResourceRegion(0, 0, 0, SizeInBytes, 1, 1));
+		}
+		
+		/// <summary>
         /// Function to update the buffer.
         /// </summary>
         /// <param name="stream">Stream containing the data used to update the buffer.</param>

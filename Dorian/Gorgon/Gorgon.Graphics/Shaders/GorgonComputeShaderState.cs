@@ -82,32 +82,13 @@ namespace GorgonLibrary.Graphics
                         return;
                     }
 
-                    var D3DView = new D3D.UnorderedAccessView[] { value == null ? null : value.D3DView };
-                    var initialCounts = new int[]
+                    var D3DView = new[] { value == null ? null : value.D3DView };
+                    var initialCounts = new[]
                         {
                             -1
                         };
 #if DEBUG
-                    if (value != null)
-                    {
-                        var oldIndex = IndexOf(value);
-                        var resIndex = IndexOf(value.Resource);
-
-                        if (oldIndex > -1)
-                        {
-                            throw new GorgonException(GorgonResult.CannotBind, string.Format(Properties.Resources.GORGFX_VIEW_ALREADY_BOUND, oldIndex));
-                        }
-
-                        if (resIndex > -1)
-                        {
-                            throw new GorgonException(GorgonResult.CannotBind,
-                                                      string.Format(
-                                                          Properties.Resources.GORGFX_VIEW_RESOURCE_ALREADY_BOUND,
-                                                          value.Resource.Name,
-                                                          typeof(GorgonUnorderedAccessView).Name,
-                                                          resIndex));
-                        }
-                    }
+					ValidateBinding(value);
 #endif
 
                     _unorderedViews[index] = value;
@@ -128,6 +109,44 @@ namespace GorgonLibrary.Graphics
             #endregion
 
             #region Methods.
+#if DEBUG
+			/// <summary>
+			/// Function to validate the unordered access view binding.
+			/// </summary>
+			/// <param name="view">View to validate.</param>
+			private void ValidateBinding(GorgonUnorderedAccessView view)
+			{
+				if (view == null)
+				{
+					return;
+				}
+
+				if (IndexOf(view) != -1)
+				{
+					throw new GorgonException(GorgonResult.CannotBind, string.Format(Properties.Resources.GORGFX_VIEW_ALREADY_BOUND, IndexOf(view)));
+				}
+
+				for (int i = 0; i < Count; i++)
+				{
+					if ((this[i] != null) && (this[i].Resource == view.Resource))
+					{
+						throw new GorgonException(GorgonResult.CannotBind,
+						                          string.Format(Properties.Resources.GORGFX_VIEW_RESOURCE_ALREADY_BOUND,
+						                                        view.Resource.Name,
+						                                        i,
+						                                        typeof(GorgonRenderTargetView).FullName));
+					}
+				}
+
+				var outputViews = _shader.Graphics.Output.GetUnorderedAccessViews();
+
+				if (Array.IndexOf(outputViews, view) != -1)
+				{
+					throw new GorgonException(GorgonResult.CannotBind, Properties.Resources.GORGFX_VIEW_ALREADY_BOUND);
+				}
+			}
+#endif
+
             /// <summary>
             /// Function to unbind an unordered access view.
             /// </summary>
@@ -319,28 +338,7 @@ namespace GorgonLibrary.Graphics
                     }
 
 #if DEBUG
-                    if (buffer != null)
-                    {
-                        var oldIndex = IndexOf(buffer);
-                        var resIndex = IndexOf(buffer.Resource);
-
-                        if (oldIndex > -1)
-                        {
-                            throw new GorgonException(GorgonResult.CannotBind,
-                                                      string.Format(Properties.Resources.GORGFX_VIEW_ALREADY_BOUND,
-                                                                    oldIndex));
-                        }
-
-                        if (resIndex > -1)
-                        {
-                            throw new GorgonException(GorgonResult.CannotBind,
-                                                      string.Format(
-                                                          Properties.Resources.GORGFX_VIEW_RESOURCE_ALREADY_BOUND,
-                                                          buffer.Resource.Name,
-                                                          typeof(GorgonUnorderedAccessView).Name,
-                                                          resIndex));
-                        }
-                    }
+					ValidateBinding(buffer);
 #endif
 
                     _unorderedViews[bufferIndex] = buffer;

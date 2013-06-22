@@ -173,14 +173,14 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
-		/// Function to create an unordered access view for this texture.
+		/// Function to retrieve an unordered access view for this texture.
 		/// </summary>
 		/// <param name="format">Format of the buffer.</param>
-		/// <param name="mipStart">First mip map level to map to the view.</param>
-		/// <param name="arrayStart">The first array index to map to the view.</param>
-		/// <param name="arrayCount">The number of array indices to map to the view.</param>
+		/// <param name="mipStart">[Optional] First mip map level to map to the view.</param>
+		/// <param name="arrayStart">[Optional] The first array index to map to the view.</param>
+		/// <param name="arrayCount">[Optional] The number of array indices to map to the view.</param>
 		/// <returns>A new unordered access view for the texture.</returns>
-		/// <remarks>Use this to create an unordered access view that will allow shaders to access the view using multiple threads at the same time.  Unlike a shader view, only one 
+		/// <remarks>Use this to retrieve an unordered access view that will allow shaders to access the view using multiple threads at the same time.  Unlike a shader view, only one 
 		/// unordered access view can be bound to the pipeline at any given time.
 		/// <para>Unordered access views require a video device feature level of SM_5 or better.</para>
         /// <para>Textures that have a usage of staging cannot create unordered views.</para>
@@ -198,136 +198,31 @@ namespace GorgonLibrary.Graphics
 		/// <para>-or-</para>
 		/// <para>Thrown if the bit count of the <paramref name="format"/> and the texture format are different, or if format is not in the R32 group and is not in the same group as the texture format.</para>
 		/// </exception>
-		public GorgonTextureUnorderedAccessView CreateUnorderedAccessView(BufferFormat format, int mipStart, int arrayStart,
-		                                                                     int arrayCount)
+		public GorgonTextureUnorderedAccessView GetUnorderedAccessView(BufferFormat format, int mipStart = 0, int arrayStart = 0,
+		                                                                     int arrayCount = 1)
 		{
-			return OnCreateUnorderedAccessView(format, mipStart, arrayStart, arrayCount);
-		}
-
-		/// <summary>
-		/// Function to create an unordered access view for this texture.
-		/// </summary>
-		/// <param name="format">Format of the buffer.</param>
-		/// <param name="mipStart">First mip map level to map to the view.</param>
-		/// <returns>A new unordered access view for the texture.</returns>
-		/// <remarks>Use this to create an unordered access view that will allow shaders to access the view using multiple threads at the same time.  Unlike a shader view, only one 
-		/// unordered access view can be bound to the pipeline at any given time.
-		/// <para>Unordered access views require a video device feature level of SM_5 or better.</para>
-        /// <para>Textures that have a usage of staging cannot create unordered views.</para>
-		/// </remarks>
-		/// <exception cref="GorgonLibrary.GorgonException">Thrown when the usage for this texture is set to Staging.
-		/// <para>-or-</para>
-		/// <para>Thrown when the video device feature level is not SM_5 or better.</para>
-		/// <para>-or-</para>
-		/// <para>Thrown when the resource settings do not allow unordered access views.</para>
-		/// <para>-or-</para>
-		/// <para>Thrown when the view could not be created.</para>
-		/// </exception>
-		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="mipStart"/> parameters is less than 0 or greater than or equal to the 
-		/// number of mip levels in the texture.
-		/// <para>-or-</para>
-		/// <para>Thrown if the bit count of the <paramref name="format"/> and the texture format are different, or if format is not in the R32 group and is not in the same group as the texture format.</para>
-		/// </exception>
-		public GorgonTextureUnorderedAccessView CreateUnorderedAccessView(BufferFormat format, int mipStart)
-		{
-			return OnCreateUnorderedAccessView(format, mipStart, 0, Settings.ArrayCount);
-		}
-
-		/// <summary>
-		/// Function to create an unordered access view for this texture.
-		/// </summary>
-		/// <param name="format">Format of the buffer.</param>
-		/// <returns>A new unordered access view for the texture.</returns>
-		/// <remarks>Use this to create an unordered access view that will allow shaders to access the view using multiple threads at the same time.  Unlike a shader view, only one 
-		/// unordered access view can be bound to the pipeline at any given time.
-		/// <para>Unordered access views require a video device feature level of SM_5 or better.</para>
-        /// <para>Textures that have a usage of staging cannot create unordered views.</para>
-		/// </remarks>
-		/// <exception cref="GorgonLibrary.GorgonException">Thrown when the usage for this texture is set to Staging.
-		/// <para>-or-</para>
-		/// <para>Thrown when the video device feature level is not SM_5 or better.</para>
-		/// <para>-or-</para>
-		/// <para>Thrown when the resource settings do not allow unordered access views.</para>
-		/// <para>-or-</para>
-		/// <para>Thrown when the view could not be created.</para>
-		/// </exception>
-		/// <exception cref="System.ArgumentException">Thrown if the bit count of the <paramref name="format"/> and the texture format are different, or if format is not in the R32 group and is not in the same group as the texture format.
-		/// </exception>
-		public GorgonTextureUnorderedAccessView CreateUnorderedAccessView(BufferFormat format)
-		{
-			return OnCreateUnorderedAccessView(format, 0, 0, Settings.ArrayCount);
+			return OnGetUnorderedAccessView(format, mipStart, arrayStart, arrayCount);
 		}
 
         /// <summary>
-        /// Function to create a new shader resource view object.
+        /// Function to retrieve a shader resource view object.
         /// </summary>
         /// <param name="format">The format of the resource view.</param>
-        /// <param name="mipStart">Starting mip map for the view.</param>
-        /// <param name="mipCount">Mip map count for the view.</param>
-        /// <param name="arrayIndex">Starting array index for the view.</param>
-        /// <param name="arrayCount">Array index count for the view.</param>
+        /// <param name="mipStart">[Optional] Starting mip map for the view.</param>
+        /// <param name="mipCount">[Optional] Mip map count for the view.</param>
+        /// <param name="arrayIndex">[Optional] Starting array index for the view.</param>
+        /// <param name="arrayCount">[Optional] Array index count for the view.</param>
         /// <remarks>Use a shader view to access a texture from a shader.  A shader view can view a select portion of the texture, and the view <paramref name="format"/> can be used to 
         /// cast the format of the texture into another type (as long as the view format is in the same group as the texture format).  For example, a texture with a format of R8G8B8A8 could be cast 
         /// to R8G8B8A8_UInt_Normal, or R8G8B8A8_UInt or any of the other R8G8B8A8 formats.
         /// <para>Multiple views of the texture can be bound to different parts of the shader pipeline.</para>
         /// <para>Textures that have a usage of staging cannot create shader views.</para>
         /// </remarks>
-        /// <exception cref="GorgonLibrary.GorgonException">Thrown when the texture has a usage of staging.
-        /// <para>-or-</para>
-        /// <para>Thrown when the <paramref name="format"/> is not valid for the view.</para>
-        /// <para>-or-</para>
-        /// <para>Thrown when the <paramref name="arrayIndex"/> and the <paramref name="arrayCount"/> are less than 0 or 1 respectively, or greater than the number of array indices in the texture.</para>
-        /// <para>-or-</para>
-        /// <para>Thrown when the <paramref name="mipStart"/> and the <paramref name="mipCount"/> are less than 0 or 1 respectively, or greater than the number of mip levels in the texture.</para>
-        /// </exception>
+		/// <exception cref="GorgonLibrary.GorgonException">Thrown when the view could not created or retrieved from the internal cache.</exception>
         /// <returns>A texture shader view object.</returns>
-        public GorgonTextureShaderView CreateShaderView(BufferFormat format, int mipStart, int mipCount, int arrayIndex, int arrayCount)
+        public GorgonTextureShaderView GetShaderView(BufferFormat format, int mipStart = 0, int mipCount = 1, int arrayIndex = 0, int arrayCount = 1)
         {
-            return OnCreateShaderView(format, mipStart, mipCount, arrayIndex, arrayCount);
-        }
-
-        /// <summary>
-        /// Function to create a new shader resource view object.
-        /// </summary>
-        /// <param name="format">The format of the resource view.</param>
-        /// <param name="mipStart">Starting mip map for the view.</param>
-        /// <param name="mipCount">Mip map count for the view.</param>
-        /// <remarks>Use a shader view to access a texture from a shader.  A shader view can view a select portion of the texture, and the view <paramref name="format"/> can be used to 
-        /// cast the format of the texture into another type (as long as the view format is in the same group as the texture format).  For example, a texture with a format of R8G8B8A8 could be cast 
-        /// to R8G8B8A8_UInt_Normal, or R8G8B8A8_UInt or any of the other R8G8B8A8 formats.
-        /// <para>Multiple views of the texture can be bound to different parts of the shader pipeline.</para>
-        /// <para>Textures that have a usage of staging cannot create shader views.</para>
-        /// </remarks>
-        /// <exception cref="GorgonLibrary.GorgonException">Thrown when the texture has a usage of staging.
-        /// <para>-or-</para>
-        /// <para>Thrown when the <paramref name="format"/> is not valid for the view.</para>
-        /// <para>-or-</para>
-        /// <para>Thrown when the <paramref name="mipStart"/> and the <paramref name="mipCount"/> are less than 0 or 1 respectively, or greater than the number of mip levels in the texture.</para>
-        /// </exception>
-        /// <returns>A texture shader view object.</returns>
-        public GorgonTextureShaderView CreateShaderView(BufferFormat format, int mipStart, int mipCount)
-        {
-            return OnCreateShaderView(format, mipStart, mipCount, 0, Settings.ArrayCount);
-        }
-
-        /// <summary>
-        /// Function to create a new shader resource view object.
-        /// </summary>
-        /// <param name="format">The format of the resource view.</param>
-        /// <remarks>Use a shader view to access a texture from a shader.  A shader view can view a select portion of the texture, and the view <paramref name="format"/> can be used to 
-        /// cast the format of the texture into another type (as long as the view format is in the same group as the texture format).  For example, a texture with a format of R8G8B8A8 could be cast 
-        /// to R8G8B8A8_UInt_Normal, or R8G8B8A8_UInt or any of the other R8G8B8A8 formats.
-        /// <para>Multiple views of the texture can be bound to different parts of the shader pipeline.</para>
-        /// <para>Textures that have a usage of staging cannot create shader views.</para>
-        /// </remarks>
-        /// <exception cref="GorgonLibrary.GorgonException">Thrown when the texture has a usage of staging.
-        /// <para>-or-</para>
-        /// <para>Thrown when the <paramref name="format"/> is not valid for the view.</para>
-        /// </exception>
-        /// <returns>A texture shader view object.</returns>
-        public GorgonTextureShaderView CreateShaderView(BufferFormat format)
-        {
-            return OnCreateShaderView(format, 0, Settings.MipCount, 0, Settings.ArrayCount);
+            return OnGetShaderView(format, mipStart, mipCount, arrayIndex, arrayCount);
         }
 
 		/// <summary>
