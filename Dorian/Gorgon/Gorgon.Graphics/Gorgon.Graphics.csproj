@@ -80,7 +80,6 @@
     <Compile Include="Buffers\GorgonVertexBufferBinding.cs" />
     <Compile Include="Collections\GorgonCustomValueCollection.cs" />
     <Compile Include="D3DErrors.cs" />
-    <Compile Include="D3DTesting\BufferInfo.cs" />
     <Compile Include="DeviceInfo\GorgonVideoDeviceEnumerator.cs" />
     <Compile Include="DeviceInfo\GorgonVideoDevice.cs" />
     <Compile Include="DeviceInfo\GorgonVideoMode.cs" />
@@ -128,6 +127,11 @@
     <Compile Include="Resource\GorgonView.cs" />
     <Compile Include="Resource\GorgonViewCache.cs" />
     <Compile Include="Resource\GorgonShaderView.cs" />
+    <Compile Include="Shaders\GorgonOutputGeometryShader.cs" />
+    <Compile Include="Shaders\GorgonHullShader.cs" />
+    <Compile Include="Shaders\GorgonHullShaderState.cs" />
+    <Compile Include="Shaders\GorgonDomainShader.cs" />
+    <Compile Include="Shaders\GorgonDomainShaderState.cs" />
     <Compile Include="Shaders\GorgonComputeShader.cs" />
     <Compile Include="Shaders\GorgonComputeShaderState.cs" />
     <Compile Include="Shaders\GorgonGeometryShaderState.cs" />
@@ -141,6 +145,7 @@
     <Compile Include="Shaders\GorgonShaderInclude.cs" />
     <Compile Include="Shaders\GorgonShaderIncludeCollection.cs" />
     <Compile Include="Shaders\GorgonShaderState.cs" />
+    <Compile Include="Shaders\GorgonStreamOutputElement.cs" />
     <Compile Include="Shaders\GorgonVertexShader.cs" />
     <Compile Include="Shaders\GorgonVertexShaderState.cs" />
     <Compile Include="States\GorgonBlendState.cs" />

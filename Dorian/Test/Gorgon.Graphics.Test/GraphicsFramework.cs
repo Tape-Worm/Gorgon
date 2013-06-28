@@ -155,7 +155,7 @@ namespace GorgonLibrary.Graphics.Test
 		{
 			if (Graphics.Output.GetRenderTarget(0) == (GorgonRenderTargetView)Screen)
 			{
-				//Screen.Clear(GorgonColor.Black);
+				Screen.Clear(GorgonColor.Black);
 			}
 
 			if (IdleFunc != null)
