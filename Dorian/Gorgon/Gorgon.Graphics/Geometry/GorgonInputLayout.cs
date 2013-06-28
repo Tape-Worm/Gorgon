@@ -39,7 +39,7 @@ namespace GorgonLibrary.Graphics
 	/// Defines the layout of an item in a buffer.
 	/// </summary>
 	/// <remarks>This is a collection of input elements used to describe the layout of an input object.  The user can create this by hand using explicit element types, or 
-	/// by passing the type of the input object to the <see cref="GorgonLibrary.Graphics.GorgonInputLayout.InitializeFromType">GetLayoutFromType</see> method.
+	/// by passing the type of .
 	/// </remarks>
 	public class GorgonInputLayout
 		: GorgonNamedObject, IDisposable

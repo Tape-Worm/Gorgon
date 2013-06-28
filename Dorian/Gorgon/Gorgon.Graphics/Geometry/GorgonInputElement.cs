@@ -118,6 +118,18 @@ namespace GorgonLibrary.Graphics
 			return base.Equals(obj);
 		}
 
+		/// <summary>
+		/// Function to determine if two instances are equal.
+		/// </summary>
+		/// <param name="left">The first instance to compare.</param>
+		/// <param name="right">The second instance to compare.</param>
+		/// <returns>TRUE if equal, FALSE if not.</returns>
+		public static bool Equals(ref GorgonInputElement left, ref GorgonInputElement right)
+		{
+			return (String.CompareOrdinal(left.Context, right.Context) == 0) && (left.Format == right.Format) && (left.Index == right.Index) &&
+					(left.InstanceCount == right.InstanceCount) && (left.Instanced == right.Instanced) && (left.Offset == right.Offset) &&
+					(left.Size == right.Size) && (left.Slot == right.Slot);
+		}
 
 		/// <summary>
 		/// Implements the operator ==.
@@ -129,7 +141,7 @@ namespace GorgonLibrary.Graphics
 		/// </returns>
 		public static bool operator ==(GorgonInputElement left, GorgonInputElement right)
 		{
-			return left.Equals(right);
+			return Equals(ref left, ref right);
 		}
 
 		/// <summary>
@@ -142,7 +154,7 @@ namespace GorgonLibrary.Graphics
 		/// </returns>
 		public static bool operator !=(GorgonInputElement left, GorgonInputElement right)
 		{
-			return !left.Equals(right);
+			return !Equals(ref left, ref right);
 		}
 
 		/// <summary>
@@ -235,9 +247,7 @@ namespace GorgonLibrary.Graphics
 		/// </returns>
 		public bool Equals(GorgonInputElement other)
 		{
-			return (String.CompareOrdinal(other.Context, Context) == 0) && (other.Format == Format) && (other.Index == Index) &&
-					(other.InstanceCount == InstanceCount) && (other.Instanced == Instanced) && (other.Offset == Offset) &&
-					(other.Size == Size) && (other.Slot == Slot);
+			return Equals(ref this, ref other);
 		}
 		#endregion
 	}
