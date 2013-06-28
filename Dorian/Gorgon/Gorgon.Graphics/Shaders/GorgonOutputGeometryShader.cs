@@ -24,65 +24,47 @@
 // 
 #endregion
 
+using System.Collections.Generic;
 using Compiler = SharpDX.D3DCompiler;
 using D3D = SharpDX.Direct3D11;
 
 namespace GorgonLibrary.Graphics
 {
     /// <summary>
-    /// A geometry shader object.
+    /// A geometry shader object which does stream output.
     /// </summary>
-    /// <remarks>Use geometry shaders to create geometry (vertex data) on the GPU.</remarks>
-    public class GorgonGeometryShader
-        : GorgonShader
+    /// <remarks>Use geometry shaders to create geometry (vertex data) on the GPU and output it to a buffer instead of passing it down the pipeline.</remarks>
+    public class GorgonOutputGeometryShader
+        : GorgonGeometryShader
     {
         #region Variables.
-        private bool _disposed;			// Flag to indicate that the object was disposed.
+	    private readonly D3D.StreamOutputElement[] _elements;	// The stream output elements.
+	    private readonly int[] _elementSizes;					// Size of the elements.
         #endregion
 
-        #region Properties.
-        /// <summary>
-        /// Property to return the Direct3D pixel shader.
-        /// </summary>
-        internal D3D.GeometryShader D3DShader
-        {
-            get;
-            set;
-        }
-        #endregion
+		#region Properties.
+		/// <summary>
+		/// Property to return the list of elements attached to this stream out shader.
+		/// </summary>
+		public IEnumerable<GorgonStreamOutputElement> Elements
+		{
+			get;
+			private set;
+		}
 
-        #region Methods.
-        /// <summary>
-        /// Releases unmanaged and - optionally - managed resources
-        /// </summary>
-        /// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
-        protected override void Dispose(bool disposing)
-        {
-            if (!_disposed)
-            {
-                if (disposing)
-                {
-                    // Disassociate any shaders after we've destroyed them.
-                    if (Graphics.Shaders.GeometryShader.Current == this)
-                    {
-                        Graphics.Shaders.GeometryShader.Current = null;
-                    }
+		/// <summary>
+		/// Property to return the stream to be sent to the rasterizer.
+		/// </summary>
+		/// <remarks>If this value is -1, then no rasterization will take place.</remarks>
+		public int RasterizedStream
+		{
+			get;
+			private set;
+		}
+		#endregion
 
-                    if (D3DShader != null)
-                    {
-                        D3DShader.Dispose();
-                    }
-
-                    D3DShader = null;
-                }
-
-                _disposed = true;
-            }
-
-            base.Dispose(disposing);
-        }
-
-        /// <summary>
+		#region Methods.
+		/// <summary>
         /// Function to create the shader.
         /// </summary>
         /// <param name="byteCode">Byte code for the shader.</param>
@@ -93,7 +75,7 @@ namespace GorgonLibrary.Graphics
                 D3DShader.Dispose();
             }
             
-            D3DShader = new D3D.GeometryShader(Graphics.D3DDevice, byteCode)
+            D3DShader = new D3D.GeometryShader(Graphics.D3DDevice, byteCode, _elements, _elementSizes, RasterizedStream)
                 {
 #if DEBUG
                     DebugName = string.Format("Gorgon Geometry Shader '{0}'", Name)
@@ -104,19 +86,38 @@ namespace GorgonLibrary.Graphics
 
         #region Constructor/Destructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonGeometryShader"/> class.
+		/// Initializes a new instance of the <see cref="GorgonOutputGeometryShader"/> class.
 		/// </summary>
 		/// <param name="graphics">The graphics interface that owns this object.</param>
 		/// <param name="name">The name of the pixel shader.</param>
 		/// <param name="entryPoint">The entry point method for the shader.</param>
-        internal GorgonGeometryShader(GorgonGraphics graphics, string name, string entryPoint)
-			: base(graphics, name, ShaderType.Geometry, entryPoint)
+		/// <param name="rasterizedStream">Stream number to be rasterized.</param>
+		/// <param name="outputElements">A list of elements to describe the layout of the data for output.</param>
+        internal GorgonOutputGeometryShader(GorgonGraphics graphics, string name, string entryPoint, int rasterizedStream, IList<GorgonStreamOutputElement> outputElements)
+			: base(graphics, name, entryPoint)
 		{
 			if (graphics.VideoDevice.SupportedFeatureLevel < DeviceFeatureLevel.SM4)
 			{
 				throw new GorgonException(GorgonResult.CannotCreate,
 				                          string.Format(Properties.Resources.GORGFX_REQUIRES_SM, DeviceFeatureLevel.SM4));
 			}
+
+			// If the stream to be rasterized is outside of the range for stream output, then set it to no rasterization.
+			if ((rasterizedStream < -1) || (rasterizedStream > 3))
+			{
+				rasterizedStream = -1;
+			}
+
+			_elements = new D3D.StreamOutputElement[outputElements.Count];
+			_elementSizes = new int[outputElements.Count];
+			for (int i = 0; i < _elements.Length; i++)
+			{
+				_elements[i] = outputElements[i].Convert();
+				_elementSizes[i] = outputElements[i].Size;
+			}
+
+			RasterizedStream = rasterizedStream;
+			Elements = outputElements;
 		}
         #endregion
     }

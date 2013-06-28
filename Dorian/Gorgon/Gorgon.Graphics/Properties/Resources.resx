@@ -408,4 +408,7 @@
   <data name="GORGFX_BUFFER_NOT_INDIRECT" xml:space="preserve">
     <value>The buffer '{0}' was not created as an indirect argument buffer.</value>
   </data>
+  <data name="GORGFX_SHADER_UNKNOWN_TYPE" xml:space="preserve">
+    <value>The shader type [{0}] is not a valid type.</value>
+  </data>
 </root>

@@ -154,6 +154,58 @@ namespace GorgonLibrary.Graphics.Test
         }
 
 		[TestMethod]
+		public void TestHSDSShaders()
+		{
+			float anim = 0;
+			float tessFactor = 1.0f;
+
+			_framework.CreateTestScene(BaseShaders, BaseShaders, true, true);
+			_framework.Graphics.Input.PrimitiveType = PrimitiveType.PatchListWith4ControlPoints;
+			_framework.Graphics.Rasterizer.States = GorgonRasterizerStates.WireFrame;
+
+			using (var cbuffer = _framework.Graphics.Buffers.CreateConstantBuffer("cbuff", new GorgonConstantBufferSettings
+				{
+					SizeInBytes = 16
+				}))
+			using (var vsShader = _framework.Graphics.Shaders.CreateShader<GorgonVertexShader>("TessVS", "TestVSTess", BaseShaders))
+			using (var hsShader = _framework.Graphics.Shaders.CreateShader<GorgonHullShader>("HullShader", "TestHS", BaseShaders))
+			using (var dsShader = _framework.Graphics.Shaders.CreateShader<GorgonDomainShader>("DomShader",
+																							   "TestDS",
+																							   BaseShaders))
+			{
+				var texture = _framework.Graphics.Textures.CreateTexture<GorgonTexture2D>("Test", Resources.Glass, new GorgonGDIOptions());
+				_framework.Graphics.Shaders.PixelShader.Resources[0] = texture;
+
+				_framework.Graphics.Shaders.VertexShader.Current = vsShader;
+				_framework.Graphics.Shaders.HullShader.Current = hsShader;
+				_framework.Graphics.Shaders.DomainShader.Current = dsShader;
+				_framework.Graphics.Shaders.DomainShader.ConstantBuffers[0] = cbuffer;
+				_framework.Graphics.Shaders.HullShader.ConstantBuffers[0] = cbuffer;
+
+				_framework.IdleFunc = () =>
+					{
+						anim += GorgonTiming.Delta;
+						tessFactor += GorgonTiming.Delta * 64.0f;
+
+						if (anim > 1.0f)
+						{
+							anim -= 1.0f;
+						}
+
+						if (tessFactor > 64.0f)
+						{
+							tessFactor = 1.0f;
+						}
+						
+						Vector2 animVal = new Vector2(anim, tessFactor);
+						cbuffer.Update(ref animVal);
+					};
+
+				Assert.IsTrue(_framework.Run() == DialogResult.Yes);
+			}
+		}
+
+		[TestMethod]
 		public void TestGeometryShader()
 		{
 			_framework.CreateTestScene(BaseShaders, BaseShaders, true);

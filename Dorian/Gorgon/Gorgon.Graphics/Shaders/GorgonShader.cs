@@ -265,21 +265,26 @@ namespace GorgonLibrary.Graphics
 
 		    switch (ShaderType)
 			{
-				case GorgonLibrary.Graphics.ShaderType.Pixel:
+				case ShaderType.Pixel:
 					prefix = "ps";
 					break;
-				case GorgonLibrary.Graphics.ShaderType.Compute:
+				case ShaderType.Compute:
 					prefix = "cs";
 					break;
-				case GorgonLibrary.Graphics.ShaderType.Geometry:
+				case ShaderType.Geometry:
 					prefix = "gs";
 					break;
-				case GorgonLibrary.Graphics.ShaderType.Domain:
+				case ShaderType.Domain:
 					prefix = "ds";
 					break;
-				default:
+				case ShaderType.Hull:
+					prefix = "hs";
+					break;
+				case ShaderType.Vertex:
 					prefix = "vs";
 					break;
+				default:
+					throw new NotSupportedException(string.Format(Resources.GORGFX_SHADER_UNKNOWN_TYPE, ShaderType));
 			}
 
 			switch (_version)
@@ -293,9 +298,11 @@ namespace GorgonLibrary.Graphics
 				case ShaderVersion.Version4:
 					version = "4_0";
 					break;
-				default:
+				case ShaderVersion.Version2A_B:
 					version = "4_0_level_9_3";
 					break;
+				default:
+					throw new NotSupportedException(string.Format(Resources.GORGFX_SHADER_UNKNOWN_TYPE, ShaderType));
 			}
 
 			return prefix + "_" + version;
@@ -320,8 +327,10 @@ namespace GorgonLibrary.Graphics
 				if (IsDebug)
 					flags = Shaders.ShaderFlags.Debug;
 
-				if (Graphics.VideoDevice.SupportedFeatureLevel != DeviceFeatureLevel.SM5)
+				if (Graphics.VideoDevice.SupportedFeatureLevel < DeviceFeatureLevel.SM5)
+				{
 					flags |= Shaders.ShaderFlags.EnableBackwardsCompatibility;
+				}
 
 				return Shaders.ShaderBytecode.Compile(parsedCode, EntryPoint, GetD3DVersion(), flags, Shaders.EffectFlags.None, null, null);
 			}

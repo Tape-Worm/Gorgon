@@ -93,6 +93,28 @@ namespace GorgonLibrary.Graphics
         }
 
 		/// <summary>
+		/// Property to return the current hull shader states.
+		/// </summary>
+		/// <remarks>On video devices with a feature level less than SM5, this property will return NULL (Nothing in VB.Net).  This is because devices 
+		/// require a feature level of SM5 or better to use hull shaders.</remarks>
+		public GorgonHullShaderState HullShader
+		{
+			get;
+			private set;
+		}
+
+		/// <summary>
+		/// Property to return the current domain shader states.
+		/// </summary>
+		/// <remarks>On video devices with a feature level less than SM5, this property will return NULL (Nothing in VB.Net).  This is because devices 
+		/// require a feature level of SM5 or better to use domain shaders.</remarks>
+		public GorgonDomainShaderState DomainShader
+		{
+			get;
+			private set;
+		}
+
+		/// <summary>
 		/// Property to return a list of include files for the shaders.
 		/// </summary>
 		public GorgonShaderIncludeCollection IncludeFiles
@@ -127,6 +149,16 @@ namespace GorgonLibrary.Graphics
             {
                 ComputeShader.CleanUp();
             }
+
+			if (HullShader != null)
+			{
+				HullShader.CleanUp();
+			}
+
+			if (DomainShader != null)
+			{
+				DomainShader.CleanUp();
+			}
 
 		    ComputeShader = null;
 		    GeometryShader = null;
@@ -170,6 +202,20 @@ namespace GorgonLibrary.Graphics
                         ComputeShader.Current = (GorgonComputeShader)shader;
                     }
 		            break;
+				case ShaderType.Hull:
+					if ((HullShader != null) && (HullShader.Current == shader))
+					{
+						HullShader.Current = null;
+						HullShader.Current = (GorgonHullShader)shader;
+					}
+				    break;
+				case ShaderType.Domain:
+					if ((DomainShader != null) && (DomainShader.Current == shader))
+					{
+						DomainShader.Current = null;
+						DomainShader.Current = (GorgonDomainShader)shader;
+					}
+				    break;
 		    }
 		}
 
@@ -189,6 +235,14 @@ namespace GorgonLibrary.Graphics
             {
                 ComputeShader.Resources.Unbind(view);
             }
+			if (HullShader != null)
+			{
+				HullShader.Resources.Unbind(view);
+			}
+			if (DomainShader != null)
+			{
+				DomainShader.Resources.Unbind(view);
+			}
 		}
         
         /// <summary>
@@ -208,6 +262,14 @@ namespace GorgonLibrary.Graphics
                 ComputeShader.Resources.UnbindResource(resource);
                 ComputeShader.UnorderedAccessViews.UnbindResource(resource);
             }
+			if (HullShader != null)
+			{
+				HullShader.Resources.UnbindResource(resource);
+			}
+			if (DomainShader != null)
+			{
+				DomainShader.Resources.UnbindResource(resource);
+			}
         }
 
         /// <summary>
@@ -240,6 +302,14 @@ namespace GorgonLibrary.Graphics
             {
                 ComputeShader.ConstantBuffers.Unbind(constantBuffer);
             }
+			if (HullShader != null)
+			{
+				HullShader.ConstantBuffers.Unbind(constantBuffer);
+			}
+			if (DomainShader != null)
+			{
+				DomainShader.ConstantBuffers.Unbind(constantBuffer);
+			}
         }
 
 		/// <summary>
@@ -550,6 +620,8 @@ namespace GorgonLibrary.Graphics
 
 			return shader;
 		}
+
+		// TODO: Add code to create stream output geometry shaders and build unit tests for the fuckers.
 		#endregion
 
 		#region Constructor/Destructor.
@@ -569,6 +641,8 @@ namespace GorgonLibrary.Graphics
             if (graphics.VideoDevice.SupportedFeatureLevel > DeviceFeatureLevel.SM4_1)
             {
                 ComputeShader = new GorgonComputeShaderState(graphics);
+				HullShader = new GorgonHullShaderState(graphics);
+				DomainShader = new GorgonDomainShaderState(graphics);
             }
 		    _graphics = graphics;
 		}
