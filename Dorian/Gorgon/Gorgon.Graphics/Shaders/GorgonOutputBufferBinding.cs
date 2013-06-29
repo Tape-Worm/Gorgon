@@ -31,25 +31,22 @@ using GorgonLibrary.Graphics.Properties;
 namespace GorgonLibrary.Graphics
 {
 	/// <summary>
-	/// A vertex buffer binding.
+	/// An ouput buffer binding.
 	/// </summary>
-	public struct GorgonVertexBufferBinding
-		: IEquatable<GorgonVertexBufferBinding>
+	/// <remarks>This is used to bind a buffer as a stream output.</remarks>
+	public struct GorgonOutputBufferBinding
+		: IEquatable<GorgonOutputBufferBinding>
 	{
 		#region Variables.
 		/// <summary>
-		/// Empty vertex buffer binding.
+		/// Empty buffer binding.
 		/// </summary>
-		public static readonly GorgonVertexBufferBinding Empty = new GorgonVertexBufferBinding();
+		public static readonly GorgonOutputBufferBinding Empty = new GorgonOutputBufferBinding();
 
 		/// <summary>
-		/// The vertex buffer to bind.
+		/// The buffer to bind.
 		/// </summary>
-		public readonly GorgonVertexBuffer VertexBuffer;
-		/// <summary>
-		/// Stride of the items within the vertex buffer, in bytes.
-		/// </summary>
-		public readonly int Stride;
+		public readonly GorgonBaseBuffer OutputBuffer;
 		/// <summary>
 		/// Offset within the buffer to start at, in bytes.
 		/// </summary>
@@ -61,11 +58,11 @@ namespace GorgonLibrary.Graphics
 		/// Function to convert this binding to a Direct3D vertex buffer binding.
 		/// </summary>
 		/// <returns>The vertex buffer binding.</returns>
-		internal D3D.VertexBufferBinding Convert()
+		internal D3D.StreamOutputBufferBinding Convert()
 		{
-			return VertexBuffer != null
-				       ? new D3D.VertexBufferBinding(VertexBuffer.D3DBuffer, Stride, Offset)
-				       : new D3D.VertexBufferBinding(null, 0, 0);
+			return OutputBuffer != null
+				       ? new D3D.StreamOutputBufferBinding(OutputBuffer.D3DBuffer, Offset)
+				       : new D3D.StreamOutputBufferBinding(null, 0);
 		}
 
 		/// <summary>
@@ -76,11 +73,11 @@ namespace GorgonLibrary.Graphics
 		/// </returns>
 		public override string ToString()
 		{
-		    return string.Format(Resources.GORGFX_VERTEXBUFFER_BINDING_TOSTR, Stride, Offset,
-		                         (VertexBuffer == null || VertexBuffer.D3DBuffer == null ||
-		                          VertexBuffer.Name == null)
+		    return string.Format(Resources.GORGFX_OUTPUTBUFFER_BINDING_TOSTR, Offset,
+		                         (OutputBuffer == null || OutputBuffer.D3DBuffer == null ||
+		                          OutputBuffer.Name == null)
 		                             ? "(NULL)"
-		                             : VertexBuffer.Name);
+		                             : OutputBuffer.Name);
 		}
 
 		/// <summary>
@@ -91,9 +88,9 @@ namespace GorgonLibrary.Graphics
 		/// </returns>
 		public override int GetHashCode()
 		{
-		    return VertexBuffer == null
-		               ? 281.GenerateHash(Stride).GenerateHash(Offset)
-		               : 281.GenerateHash(Stride).GenerateHash(Offset).GenerateHash(VertexBuffer.GetHashCode());
+		    return OutputBuffer == null
+		               ? 281.GenerateHash(Offset)
+		               : 281.GenerateHash(Offset).GenerateHash(OutputBuffer.GetHashCode());
 		}
 
 	    /// <summary>
@@ -105,9 +102,9 @@ namespace GorgonLibrary.Graphics
 		/// </returns>
 		public override bool Equals(object obj)
 		{
-		    if (obj is GorgonVertexBufferBinding)
+		    if (obj is GorgonOutputBufferBinding)
 		    {
-		        return Equals((GorgonVertexBufferBinding)obj);
+		        return Equals((GorgonOutputBufferBinding)obj);
 		    }
 
 		    return base.Equals(obj);
@@ -119,10 +116,9 @@ namespace GorgonLibrary.Graphics
         /// <param name="left">The left instance to compare.</param>
         /// <param name="right">The right instance to compare.</param>
         /// <returns>TRUE if equal, FALSE if not.</returns>
-        public static bool Equals(ref GorgonVertexBufferBinding left, ref GorgonVertexBufferBinding right)
+        public static bool Equals(ref GorgonOutputBufferBinding left, ref GorgonOutputBufferBinding right)
         {
-            return ((left.VertexBuffer == right.VertexBuffer) && (left.Offset == right.Offset) &&
-                    (left.Stride == right.Stride));
+	        return ((left.OutputBuffer == right.OutputBuffer) && (left.Offset == right.Offset));
         }
 
 		/// <summary>
@@ -131,7 +127,7 @@ namespace GorgonLibrary.Graphics
 		/// <param name="left">The left.</param>
 		/// <param name="right">The right.</param>
 		/// <returns>The result of the operator.</returns>
-		public static bool operator ==(GorgonVertexBufferBinding left, GorgonVertexBufferBinding right)
+		public static bool operator ==(GorgonOutputBufferBinding left, GorgonOutputBufferBinding right)
 		{
 		    return Equals(ref left, ref right);
 		}
@@ -142,7 +138,7 @@ namespace GorgonLibrary.Graphics
 		/// <param name="left">The left.</param>
 		/// <param name="right">The right.</param>
 		/// <returns>The result of the operator.</returns>
-		public static bool operator !=(GorgonVertexBufferBinding left, GorgonVertexBufferBinding right)
+		public static bool operator !=(GorgonOutputBufferBinding left, GorgonOutputBufferBinding right)
 		{
             return !Equals(ref left, ref right);
 		}
@@ -150,26 +146,29 @@ namespace GorgonLibrary.Graphics
 
 		#region Constructor/Destructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonVertexBufferBinding"/> struct.
+		/// Initializes a new instance of the <see cref="GorgonOutputBufferBinding"/> struct.
 		/// </summary>
 		/// <param name="buffer">The buffer to bind.</param>
-		/// <param name="stride">The stride of the data in the buffer, in bytes.</param>
-		/// <param name="offset">[Optional] The offset within the buffer to start at, in bytes.</param>
-		public GorgonVertexBufferBinding(GorgonVertexBuffer buffer, int stride, int offset = 0)
+		/// <param name="offset">The offset within the buffer to start at, in bytes.</param>
+		public GorgonOutputBufferBinding(GorgonBaseBuffer buffer, int offset = 0)
 		{			
-			VertexBuffer = buffer;
-			Stride = stride;
+			if ((buffer != null) && (!buffer.Settings.IsOutput))
+			{
+				throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_BUFFER_NOT_OUTPUT, buffer.Name));
+			}
+
+			OutputBuffer = buffer;
 			Offset = offset;
 		}
 		#endregion
 
-		#region IEquatable<GorgonVertexBufferBinding> Members
+		#region IEquatable<GorgonOutputBufferBinding> Members
 		/// <summary>
 		/// Function to determine if two instances are equal.
 		/// </summary>
 		/// <param name="other">The other instance.</param>
 		/// <returns>TRUE if equal, FALSE if not.</returns>
-		public bool Equals(GorgonVertexBufferBinding other)
+		public bool Equals(GorgonOutputBufferBinding other)
 		{
 		    return Equals(ref this, ref other);
 		}

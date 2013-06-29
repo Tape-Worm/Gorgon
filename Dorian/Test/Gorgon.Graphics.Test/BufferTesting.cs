@@ -122,6 +122,8 @@ namespace GorgonLibrary.Graphics.Test
                         // ReSharper disable AccessToDisposedClosure
                         buffer.Update(_bufferStream);
                         // ReSharper restore AccessToDisposedClosure
+
+						return false;
 					}; 
 
 				_framework.Run();
@@ -138,12 +140,6 @@ namespace GorgonLibrary.Graphics.Test
                                                                 SizeInBytes = 6144,
                                                                 Usage = BufferUsage.Default
                                                             });
-        }
-
-        [TestMethod]
-        public void TestInDirectSettings()
-        {
-            var id = new BufferInfo(_framework.Graphics);
         }
 
         [TestMethod]
@@ -254,6 +250,8 @@ namespace GorgonLibrary.Graphics.Test
 						    }
 
 						    buffer.Update(stream);
+
+							return false;
 					    }
 				    };
 				_framework.MaxTimeout = 15000;

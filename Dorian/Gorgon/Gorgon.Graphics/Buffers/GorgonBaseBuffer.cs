@@ -287,6 +287,11 @@ namespace GorgonLibrary.Graphics
 			        desc.BindFlags |= D3D.BindFlags.RenderTarget;
 		        }
 
+				if (Settings.IsOutput)
+				{
+					desc.BindFlags |= D3D.BindFlags.StreamOutput;
+				}
+
 		        if (Settings.AllowRawViews)
 		        {
 			        desc.OptionFlags = D3D.ResourceOptionFlags.BufferAllowRawViews;

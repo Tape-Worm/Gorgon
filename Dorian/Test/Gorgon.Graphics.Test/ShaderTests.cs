@@ -147,6 +147,8 @@ namespace GorgonLibrary.Graphics.Test
 
 				        var animVal = new Vector3(test.X.Radians().Cos(), test.Y.Radians().Sin(), test.Z.Radians().Cos() * test.Z.Radians().Cos());
 						cbuffer2.Update(ref animVal);
+
+						return false;
 			        };
 
 				Assert.IsTrue(_framework.Run() == DialogResult.Yes);
@@ -199,6 +201,56 @@ namespace GorgonLibrary.Graphics.Test
 						
 						Vector2 animVal = new Vector2(anim, tessFactor);
 						cbuffer.Update(ref animVal);
+
+						return false;
+					};
+
+				Assert.IsTrue(_framework.Run() == DialogResult.Yes);
+			}
+		}
+
+		[TestMethod]
+		public void TestGeometryShaderStreamOut()
+		{
+			_framework.CreateTestScene(BaseShaders, BaseShaders, true);
+
+			using (var geoShader = _framework.Graphics.Shaders.CreateShader("GeoShader", "TestGS", BaseShaders, -1, new GorgonStreamOutputElement[]
+				{
+					new GorgonStreamOutputElement(0, "SV_POSITION", 0, 0, 4, 0), 	
+					new GorgonStreamOutputElement(0, "COLOR", 0, 0, 4, 0), 	
+					new GorgonStreamOutputElement(0, "TEXCOORD", 0, 0, 2, 0), 
+				}, new [] {40}))
+			{
+				var vertexBuffer = _framework.Graphics.Buffers.CreateVertexBuffer("SOVB", new GorgonBufferSettings
+					{
+						SizeInBytes = 65536,
+						IsOutput = true
+					});
+				var texture = _framework.Graphics.Textures.CreateTexture<GorgonTexture2D>("Test", Resources.Glass,
+																						  new GorgonGDIOptions
+																						  {
+																							  AllowUnorderedAccess = true,
+																							  Format =
+																								  BufferFormat.R8G8B8A8_UIntNormal
+																						  });
+
+				_framework.Graphics.Shaders.GeometryShader.Current = geoShader;
+				_framework.Graphics.Shaders.GeometryShader.SetStreamOutputBuffer(new GorgonOutputBufferBinding(vertexBuffer));
+
+				_framework.Graphics.Output.DrawIndexed(0, 0, 6);
+
+				_framework.Graphics.Shaders.GeometryShader.SetStreamOutputBuffer(GorgonOutputBufferBinding.Empty);
+				_framework.Graphics.Input.VertexBuffers[0] = new GorgonVertexBufferBinding(vertexBuffer, 40);
+				//_framework.Graphics.Input.IndexBuffer = null;
+				_framework.Graphics.Shaders.GeometryShader.Current = null;
+				_framework.Graphics.Shaders.PixelShader.Resources[0] = texture;
+				//_framework.Graphics.Rasterizer.States = GorgonRasterizerStates.WireFrame;
+				
+				_framework.IdleFunc = () =>
+					{
+						_framework.Graphics.Output.DrawAuto();
+
+						return true;
 					};
 
 				Assert.IsTrue(_framework.Run() == DialogResult.Yes);

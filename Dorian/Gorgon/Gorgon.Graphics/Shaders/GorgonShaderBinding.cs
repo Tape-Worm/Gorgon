@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -557,7 +558,7 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		/// <typeparam name="T">The shader type.  Must be inherited from <see cref="GorgonLibrary.Graphics.GorgonShader">GorgonShader</see>.</typeparam>
 		/// <param name="name">Name of the shader.</param>
-		/// <param name="entryPoint">Entry point for the shader.</param>
+		/// <param name="entryPoint">Name of the function serves as the entry point to the shader program.</param>
 		/// <param name="sourceCode">Source code for the shader.</param>
 		/// <param name="debug">[Optional] TRUE to include debug information, FALSE to exclude.</param>
 		/// <returns>A new vertex shader.</returns>
@@ -565,6 +566,7 @@ namespace GorgonLibrary.Graphics
 		/// <exception cref="System.ArgumentNullException">Thrown when the name or entryPoint parameters are NULL (Nothing in VB.Net).</exception>
 		/// <exception cref="System.TypeInitializationException">Thrown when the type of shader is unrecognized.</exception>
 		/// <exception cref="GorgonLibrary.GorgonException">Thrown when the shader could not be created.</exception>
+		/// <exception cref="System.NotSupportedException">Thrown when T is a <see cref="GorgonLibrary.Graphics.GorgonOutputGeometryShader">GorgonOutputGeometryShader</see>.</exception>
         /// <remarks>This method will create one of the 6 shader types (<see cref="GorgonLibrary.Graphics.GorgonVertexShader">vertex</see>, <see cref="GorgonLibrary.Graphics.GorgonPixelShader">pixel</see>, 
         /// <see cref="GorgonLibrary.Graphics.GorgonGeometryShader">geometry</see>, <see cref="GorgonLibrary.Graphics.GorgonComputeShader">compute</see>, 
         /// <see cref="GorgonLibrary.Graphics.GorgonHullShader">hull</see> and <see cref="GorgonLibrary.Graphics.GorgonDomainShader">domain</see>).  
@@ -580,6 +582,8 @@ namespace GorgonLibrary.Graphics
         /// <para>Compute, Hull, and Domain shaders require a device with a feature level of SM5 or better.  Creation of these shaders on devices that do not have a feature level of SM5 or better will 
         /// generate an exception.</para>
         /// <para>If the DEBUG version of Gorgon is being used, then the <paramref name="debug"/> flag will be defaulted to TRUE, if the RELEASE version is used, then it will be defaulted to FALSE.</para>
+		/// <para>Do not use this method to create a <see cref="GorgonLibrary.Graphics.GorgonOutputGeometryShader">GorgonOutputGeometryShader</see> shader, use the <see cref="CreateShader(string, string, string, int, IList{GorgonStreamOutputElement}, bool)">overload</see> 
+		/// instead.</para>
 		/// </remarks>
 #if DEBUG
 		public T CreateShader<T>(string name, string entryPoint, string sourceCode, bool debug = true)
@@ -592,11 +596,26 @@ namespace GorgonLibrary.Graphics
             {
                 throw new ArgumentNullException("name");
             }
+			
+			if (entryPoint == null)
+			{
+				throw new ArgumentNullException("entryPoint");
+			}
 
-            if (string.IsNullOrWhiteSpace(name))
+			if (string.IsNullOrWhiteSpace(entryPoint))
+			{
+				throw new ArgumentException(Resources.GORGFX_PARAMETER_MUST_NOT_BE_EMPTY, "entryPoint");
+			}
+			
+			if (string.IsNullOrWhiteSpace(name))
             {
                 throw new ArgumentException(Resources.GORGFX_PARAMETER_MUST_NOT_BE_EMPTY, "name");
-            }
+			}
+
+			if (typeof(T) == typeof(GorgonOutputGeometryShader))
+			{
+				throw new NotSupportedException(Resources.GORGFX_SHADER_NO_SO);
+			}
 
 			var shader = (T)Activator.CreateInstance(typeof(T), BindingFlags.Instance | BindingFlags.NonPublic, null, new object[]
 				{
@@ -610,7 +629,7 @@ namespace GorgonLibrary.Graphics
 
 			shader.IsDebug = debug;
 
-			if (!string.IsNullOrEmpty(sourceCode))
+			if (!string.IsNullOrWhiteSpace(sourceCode))
 			{
 				shader.SourceCode = sourceCode;
 				shader.Compile();
@@ -621,7 +640,104 @@ namespace GorgonLibrary.Graphics
 			return shader;
 		}
 
-		// TODO: Add code to create stream output geometry shaders and build unit tests for the fuckers.
+		/// <summary>
+		/// Function to create a geometry shader that can stream out data into a buffer.
+		/// </summary>
+		/// <param name="name">Name of the shader.</param>
+		/// <param name="entryPoint">Name of the function serves as the entry point to the shader program.</param>
+		/// <param name="sourceCode">Source code for the shader.</param>
+		/// <param name="rasterizeStream">The stream to send on to the rasterizer.</param>
+		/// <param name="streamOutputElements">A list of layout elements to indicate how to organize the data in the buffer.</param>
+		/// <param name="bufferStrides">The size, in bytes, of an element in the buffer.</param>
+		/// <param name="debug">[Optional] TRUE to include debug information, FALSE to exclude.</param>
+		/// <returns>A new geometry shader that can stream output to a buffer.</returns>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/>, the <paramref name="entryPoint"/>, <paramref name="bufferStrides"/> or the <paramref name="streamOutputElements"/> parameters are NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="name"/>, the <paramref name="entryPoint"/>, <paramref name="bufferStrides"/> or the <paramref name="streamOutputElements"/> parameters are empty.</exception>
+		/// <exception cref="GorgonLibrary.GorgonException">Thrown when the shader could not be created.</exception>
+		/// <remarks>Create this shader when you need to stream the output of the shader pipeline into a buffer along with (or instead of) the rasterizer.  If the <paramref name="rasterizeStream"/> value is less than 0 or greater than 3 then 
+		/// it is assumed that the stream does not get rasterized. 
+		/// <para>The <paramref name="bufferStrides"/> is the size of an element inside of a buffer.  This value must not be larger than 2048 bytes, and must be at least the same size as the total of all the component counts per stream
+		///  in the stream output element multiplied by 4.</para>
+		/// <para>
+		/// Up to four stream out buffers may be used at the same time to receive data.  Because of this, the <paramref name="bufferStrides"/> parameter should contain no more than 4 values.
+		/// </para>
+		/// </remarks>
+#if DEBUG
+		public GorgonOutputGeometryShader CreateShader(string name, string entryPoint, string sourceCode, int rasterizeStream,
+		                                               IList<GorgonStreamOutputElement> streamOutputElements, IList<int> bufferStrides, bool debug = true)
+#else
+		public GorgonOutputGeometryShader CreateShader(string name, string entryPoint, string sourceCode,
+		                                               IList<GorgonStreamOutputElement> streamOutputElements, IList<int> bufferStrides, bool debug = false)
+#endif
+		{
+			if (name == null)
+			{
+				throw new ArgumentNullException("name");
+			}
+
+			if (bufferStrides == null)
+			{
+				throw new ArgumentNullException("bufferStrides");
+			}
+
+			if (streamOutputElements == null)
+			{
+				throw new ArgumentException("streamOutputElements");
+			}
+
+			if (string.IsNullOrWhiteSpace(name))
+			{
+				throw new ArgumentException(Resources.GORGFX_PARAMETER_MUST_NOT_BE_EMPTY, "name");
+			}
+
+			if (streamOutputElements.Count == 0)
+			{
+				throw new ArgumentException(Resources.GORGFX_PARAMETER_MUST_NOT_BE_EMPTY, "streamOutputElements");
+			}
+
+			if (bufferStrides.Count == 0)
+			{
+				throw new ArgumentException(Resources.GORGFX_PARAMETER_MUST_NOT_BE_EMPTY, "bufferStrides");
+			}
+			
+			// Validate the buffer strides.
+			for (int stream = 0; stream < bufferStrides.Count; stream++)
+			{
+				int componentSize = (streamOutputElements.Where(item => item.Stream == stream)
+				                                        .Sum(component => component.ComponentCount * 4));
+
+				if ((bufferStrides[stream] % 4) != 0)
+				{
+					throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_SO_BUFFER_NOT_MULTIPLE_OF_4, stream));
+				}
+
+				if (componentSize > bufferStrides[stream])
+				{
+					throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_SO_STRIDE_TOO_SMALL, stream, bufferStrides[stream], componentSize));
+				}
+
+				if (bufferStrides[stream] >= 2048)
+				{
+					throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_SO_STRIDE_TOO_LARGE, stream));
+				}
+			}
+			
+
+			var result = new GorgonOutputGeometryShader(_graphics, name, entryPoint, rasterizeStream, streamOutputElements, bufferStrides)
+				{
+					IsDebug = debug
+				};
+
+			if (!string.IsNullOrWhiteSpace(sourceCode))
+			{
+				result.SourceCode = sourceCode;
+				result.Compile();
+			}
+
+			_graphics.AddTrackedObject(result);
+
+			return result;
+		}
 		#endregion
 
 		#region Constructor/Destructor.

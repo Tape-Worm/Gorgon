@@ -1086,7 +1086,7 @@ namespace GorgonLibrary.Graphics
         /// <para>Thrown when the render target view, depth/stencil view, or the unordered access views could not be bound to the pipeline.</para></exception>
 		public void SetRenderTargets(GorgonRenderTargetView[] views, GorgonDepthStencilView depthStencilBuffer = null, int startSlot = 1, params GorgonUnorderedAccessView[] unorderedAccessViews)
 		{
-		    bool hasChanged = false;
+		    bool hasChanged;
 
 		    D3D.DepthStencilView depthView = depthStencilBuffer == null ? null : depthStencilBuffer.D3DView;
 			_depthView = depthStencilBuffer;

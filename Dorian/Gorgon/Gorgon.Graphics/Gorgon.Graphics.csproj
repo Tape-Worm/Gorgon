@@ -146,6 +146,7 @@
     <Compile Include="Shaders\GorgonShaderIncludeCollection.cs" />
     <Compile Include="Shaders\GorgonShaderState.cs" />
     <Compile Include="Shaders\GorgonStreamOutputElement.cs" />
+    <Compile Include="Shaders\GorgonOutputBufferBinding.cs" />
     <Compile Include="Shaders\GorgonVertexShader.cs" />
     <Compile Include="Shaders\GorgonVertexShaderState.cs" />
     <Compile Include="States\GorgonBlendState.cs" />
