@@ -411,4 +411,22 @@
   <data name="GORGFX_SHADER_UNKNOWN_TYPE" xml:space="preserve">
     <value>The shader type [{0}] is not a valid type.</value>
   </data>
+  <data name="GORGFX_SHADER_NO_SO" xml:space="preserve">
+    <value>Cannot create a stream output shader with this method.</value>
+  </data>
+  <data name="GORGFX_BUFFER_NOT_OUTPUT" xml:space="preserve">
+    <value>The buffer '{0}' was not created with IsOutput = true.</value>
+  </data>
+  <data name="GORGFX_OUTPUTBUFFER_BINDING_TOSTR" xml:space="preserve">
+    <value>Stream output buffer binding.  Offset: {0}, Buffer: {1}</value>
+  </data>
+  <data name="GORGFX_SO_BUFFER_NOT_MULTIPLE_OF_4" xml:space="preserve">
+    <value>The stride at index [{0}] is not a multiple of 4.</value>
+  </data>
+  <data name="GORGFX_SO_STRIDE_TOO_LARGE" xml:space="preserve">
+    <value>The stride at index [{0}] must be less than 2048 bytes.</value>
+  </data>
+  <data name="GORGFX_SO_STRIDE_TOO_SMALL" xml:space="preserve">
+    <value>The stride at index [{0}] has a size of {1} bytes. It must be equal to or greater than {2} bytes.  </value>
+  </data>
 </root>

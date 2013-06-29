@@ -38,8 +38,8 @@ namespace GorgonLibrary.Graphics
         : GorgonGeometryShader
     {
         #region Variables.
-	    private readonly D3D.StreamOutputElement[] _elements;	// The stream output elements.
-	    private readonly int[] _elementSizes;					// Size of the elements.
+	    private readonly D3D.StreamOutputElement[] _elements;		// The stream output elements.
+	    private readonly int[] _elementSizes;						// Size of the elements.
         #endregion
 
 		#region Properties.
@@ -93,7 +93,8 @@ namespace GorgonLibrary.Graphics
 		/// <param name="entryPoint">The entry point method for the shader.</param>
 		/// <param name="rasterizedStream">Stream number to be rasterized.</param>
 		/// <param name="outputElements">A list of elements to describe the layout of the data for output.</param>
-        internal GorgonOutputGeometryShader(GorgonGraphics graphics, string name, string entryPoint, int rasterizedStream, IList<GorgonStreamOutputElement> outputElements)
+		/// <param name="bufferStrides">The size of each buffer.</param>
+        internal GorgonOutputGeometryShader(GorgonGraphics graphics, string name, string entryPoint, int rasterizedStream, IList<GorgonStreamOutputElement> outputElements, IList<int> bufferStrides)
 			: base(graphics, name, entryPoint)
 		{
 			if (graphics.VideoDevice.SupportedFeatureLevel < DeviceFeatureLevel.SM4)
@@ -109,11 +110,15 @@ namespace GorgonLibrary.Graphics
 			}
 
 			_elements = new D3D.StreamOutputElement[outputElements.Count];
-			_elementSizes = new int[outputElements.Count];
+			_elementSizes = new int[bufferStrides.Count];
 			for (int i = 0; i < _elements.Length; i++)
 			{
 				_elements[i] = outputElements[i].Convert();
-				_elementSizes[i] = outputElements[i].Size;
+			}
+
+			for (int i = 0; i < bufferStrides.Count; i++)
+			{
+				_elementSizes[i] = bufferStrides[i];
 			}
 
 			RasterizedStream = rasterizedStream;

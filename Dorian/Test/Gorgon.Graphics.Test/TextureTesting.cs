@@ -346,6 +346,8 @@ namespace GorgonLibrary.Graphics.Test
 					{
 						step = 3;
 					}
+
+					return false;
 				};
 
 			Assert.IsTrue(_framework.Run() == DialogResult.Yes);

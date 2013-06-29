@@ -187,6 +187,15 @@ namespace GorgonLibrary.Graphics.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The buffer &apos;{0}&apos; was not created with IsOutput = true..
+        /// </summary>
+        internal static string GORGFX_BUFFER_NOT_OUTPUT {
+            get {
+                return ResourceManager.GetString("GORGFX_BUFFER_NOT_OUTPUT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to A buffer that allows stream output cannot have unordered access..
         /// </summary>
         internal static string GORGFX_BUFFER_OUTPUT_NO_UNORDERED {
@@ -448,6 +457,15 @@ namespace GorgonLibrary.Graphics.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Stream output buffer binding.  Offset: {0}, Buffer: {1}.
+        /// </summary>
+        internal static string GORGFX_OUTPUTBUFFER_BINDING_TOSTR {
+            get {
+                return ResourceManager.GetString("GORGFX_OUTPUTBUFFER_BINDING_TOSTR", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The parameter must not be empty..
         /// </summary>
         internal static string GORGFX_PARAMETER_MUST_NOT_BE_EMPTY {
@@ -619,6 +637,15 @@ namespace GorgonLibrary.Graphics.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Cannot create a stream output shader with this method..
+        /// </summary>
+        internal static string GORGFX_SHADER_NO_SO {
+            get {
+                return ResourceManager.GetString("GORGFX_SHADER_NO_SO", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The shader type [{0}] is not a valid type..
         /// </summary>
         internal static string GORGFX_SHADER_UNKNOWN_TYPE {
@@ -633,6 +660,33 @@ namespace GorgonLibrary.Graphics.Properties {
         internal static string GORGFX_SHADER_VIEW_TOSTR {
             get {
                 return ResourceManager.GetString("GORGFX_SHADER_VIEW_TOSTR", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The stride at index [{0}] is not a multiple of 4..
+        /// </summary>
+        internal static string GORGFX_SO_BUFFER_NOT_MULTIPLE_OF_4 {
+            get {
+                return ResourceManager.GetString("GORGFX_SO_BUFFER_NOT_MULTIPLE_OF_4", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The stride at index [{0}] must be less than 2048 bytes..
+        /// </summary>
+        internal static string GORGFX_SO_STRIDE_TOO_LARGE {
+            get {
+                return ResourceManager.GetString("GORGFX_SO_STRIDE_TOO_LARGE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The stride at index [{0}] has a size of {1} bytes. It must be equal to or greater than {2} bytes.  .
+        /// </summary>
+        internal static string GORGFX_SO_STRIDE_TOO_SMALL {
+            get {
+                return ResourceManager.GetString("GORGFX_SO_STRIDE_TOO_SMALL", resourceCulture);
             }
         }
         

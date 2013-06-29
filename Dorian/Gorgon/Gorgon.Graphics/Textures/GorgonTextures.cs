@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Threading;
@@ -456,7 +457,7 @@ namespace GorgonLibrary.Graphics
         /// this method will NOT auto-generate mip-maps and will only use the images provided.</para>
         /// <para>Images in the list to be used as mip-map levels do not need to be resized because the method will automatically resize based on mip-map level.</para>
         /// </remarks>
-        public T CreateTexture<T>(string name, Image[] images, GorgonGDIOptions options = null)
+        public T CreateTexture<T>(string name, IList<Image> images, GorgonGDIOptions options = null)
             where T : GorgonTexture
         {
             Type textureType = typeof(T);
@@ -467,13 +468,13 @@ namespace GorgonLibrary.Graphics
                 throw new ArgumentNullException("images");
             }
 
-            if (images.Length == 0)
+            if (images.Count == 0)
             {
                 throw new ArgumentException(Resources.GORGFX_PARAMETER_MUST_NOT_BE_EMPTY, "images");
             }
 
             // If we only have 1 image, then use that one.
-            if (images.Length == 1)
+            if (images.Count == 1)
             {
                 return CreateTexture<T>(name, images[0], options);
             }

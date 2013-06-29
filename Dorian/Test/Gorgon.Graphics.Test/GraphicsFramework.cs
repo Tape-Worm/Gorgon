@@ -139,7 +139,7 @@ namespace GorgonLibrary.Graphics.Test
 		/// <summary>
 		/// Property to set or return the function to run during idle time.
 		/// </summary>
-		public Action IdleFunc
+		public Func<bool> IdleFunc
 		{
 			get;
 			set;
@@ -160,10 +160,15 @@ namespace GorgonLibrary.Graphics.Test
 
 			if (IdleFunc != null)
 			{
-				IdleFunc();
+				if (!IdleFunc())
+				{
+					Graphics.Output.DrawIndexed(0, 0, 6);
+				}
 			}
-
-			Graphics.Output.DrawIndexed(0, 0, 6);
+			else
+			{
+				Graphics.Output.DrawIndexed(0, 0, 6);
+			}
 
 			if (Graphics.Output.GetRenderTarget(0) == (GorgonRenderTargetView)Screen)
 			{

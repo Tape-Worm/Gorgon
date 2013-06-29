@@ -74,10 +74,6 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		/// <remarks>The valid range is 0 to 3.</remarks>
 		public readonly int Slot;
-		/// <summary>
-		/// The size of an element, in bytes.
-		/// </summary>
-		public readonly int Size;
 		#endregion
 
 		#region Method.
@@ -124,7 +120,7 @@ namespace GorgonLibrary.Graphics
 		public static bool Equals(ref GorgonStreamOutputElement left, ref GorgonStreamOutputElement right)
 		{
 			return ((string.CompareOrdinal(left.Context, right.Context) == 0) && (left.ComponentCount == right.ComponentCount)
-			        && (left.Index == right.Index) && (left.Slot == right.Slot) && (left.Size == right.Size)
+			        && (left.Index == right.Index) && (left.Slot == right.Slot) 
 			        && (left.StartComponent == right.StartComponent) && (left.Stream == right.Stream));
 		}
 
@@ -167,8 +163,7 @@ namespace GorgonLibrary.Graphics
 				   .GenerateHash(Index)
 				   .GenerateHash(StartComponent)
 				   .GenerateHash(ComponentCount)
-				   .GenerateHash(Slot)
-				   .GenerateHash(Size);
+				   .GenerateHash(Slot);
 		}
 		#endregion
 
@@ -177,7 +172,6 @@ namespace GorgonLibrary.Graphics
 		/// Initializes a new instance of the <see cref="GorgonStreamOutputElement"/> class.
 		/// </summary>
 		/// <param name="stream">The zero based stream index number.</param>
-		/// <param name="size">Size of the element, in bytes.</param>
 		/// <param name="context">The context for the element.</param>
 		/// <param name="index">The index of the element.</param>
 		/// <param name="startComponent">The first component to start writing at.</param>
@@ -193,7 +187,7 @@ namespace GorgonLibrary.Graphics
 		/// <para>-or-</para>
 		/// <para>Thrown when the <paramref name="componentCount"/> is less than 1 or greater than 4.</para>
 		/// </exception>
-		public GorgonStreamOutputElement(int stream, int size, string context, int index, int startComponent, int componentCount, int slot)
+		public GorgonStreamOutputElement(int stream, string context, int index, int startComponent, int componentCount, int slot)
 		{
 			if (context == null)
 			{
@@ -226,7 +220,6 @@ namespace GorgonLibrary.Graphics
 			StartComponent = startComponent;
 			ComponentCount = componentCount;
 			Slot = slot;
-			Size = size;
 		}
 		#endregion
 

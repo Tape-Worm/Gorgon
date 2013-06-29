@@ -748,14 +748,14 @@ namespace GorgonLibrary.Graphics
         /// this method will NOT auto-generate mip-maps and will only use the images provided.</para>
         /// <para>Images in the list to be used as mip-map levels do not need to be resized because the method will automatically resize based on mip-map level.</para>
         /// </remarks>
-        public static GorgonImageData CreateFromGDIImage(Image[] images, ImageType imageType, GorgonGDIOptions options = null)
+        public static GorgonImageData CreateFromGDIImage(IList<Image> images, ImageType imageType, GorgonGDIOptions options = null)
         {
             if (images == null)
             {
                 throw new ArgumentNullException("images");
             }
 
-            if (images.Length == 0)
+            if (images.Count == 0)
             {
                 throw new ArgumentException(Resources.GORGFX_PARAMETER_MUST_NOT_BE_EMPTY, "images");
             }

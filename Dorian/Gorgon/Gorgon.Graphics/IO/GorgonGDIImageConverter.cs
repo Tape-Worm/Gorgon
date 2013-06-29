@@ -424,7 +424,7 @@ namespace GorgonLibrary.IO
 		/// <param name="images">Images to convert.</param>
         /// <param name="options">The options for the image conversion.</param>
 		/// <returns>The converted image data.</returns>
-		public static GorgonImageData Create1DImageDataFromImages(GorgonWICImage wic, Image[] images, GorgonGDIOptions options)
+		public static GorgonImageData Create1DImageDataFromImages(GorgonWICImage wic, IList<Image> images, GorgonGDIOptions options)
 		{
 			GorgonImageData data = null;
             
@@ -474,7 +474,7 @@ namespace GorgonLibrary.IO
                 Usage = options.Usage
 			};
 			
-			if ((options.ArrayCount * options.MipCount) > images.Length)
+			if ((options.ArrayCount * options.MipCount) > images.Count)
 			{
 				throw new GorgonException(GorgonResult.CannotCreate, "The mip level count and the array count exceed the length of the array.");
 			}
@@ -583,7 +583,7 @@ namespace GorgonLibrary.IO
 		/// <param name="images">Images to convert.</param>
 		/// <param name="options">Options for conversion.</param>
 		/// <returns>The converted image data.</returns>
-		public static GorgonImageData Create2DImageDataFromImages(GorgonWICImage wic, Image[] images, GorgonGDIOptions options)
+		public static GorgonImageData Create2DImageDataFromImages(GorgonWICImage wic, IList<Image> images, GorgonGDIOptions options)
 		{
 			GorgonImageData data = null;
 
@@ -639,7 +639,7 @@ namespace GorgonLibrary.IO
                 Usage = options.Usage
 			};
 
-			if ((options.ArrayCount * options.MipCount) > images.Length)
+			if ((options.ArrayCount * options.MipCount) > images.Count)
 			{
 				throw new GorgonException(GorgonResult.CannotCreate, "The mip level count and the array count exceed the length of the array.");
 			}
@@ -678,7 +678,7 @@ namespace GorgonLibrary.IO
 		/// <param name="images">Images to convert.</param>
 		/// <param name="options">Conversion options.</param>
 		/// <returns>The converted image data.</returns>
-		public static GorgonImageData Create3DImageDataFromImages(GorgonWICImage wic, Image[] images, GorgonGDIOptions options)
+		public static GorgonImageData Create3DImageDataFromImages(GorgonWICImage wic, IList<Image> images, GorgonGDIOptions options)
 		{
 			GorgonImageData data = null;
 
@@ -722,9 +722,9 @@ namespace GorgonLibrary.IO
 			}
 
 			// Set the depth to the number of images if there are no mip-maps.
-			if ((images.Length > 1) && (options.MipCount == 1))
+			if ((images.Count > 1) && (options.MipCount == 1))
 			{
-				options.Depth = images.Length;
+				options.Depth = images.Count;
 			}
 
 			// Create our settings.
@@ -753,7 +753,7 @@ namespace GorgonLibrary.IO
 			int imageIndex = 0;
 			for (int mipLevel = 0; mipLevel < data.Settings.MipCount; mipLevel++)
 			{
-				if (imageIndex >= images.Length)
+				if (imageIndex >= images.Count)
 				{
 					data.Dispose();
 					throw new GorgonException(GorgonResult.CannotCreate,  "The mip level count and the depth slice count exceed the length of the array.");
