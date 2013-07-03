@@ -57,7 +57,6 @@ namespace GorgonLibrary.Graphics.Test
 		}
 		#endregion
 
-
 		#region Variables.
 		private TestForm _form;								// Test form for interactive testing.
 		private bool _disposed;								// Flag to indicate that the object was disposed.

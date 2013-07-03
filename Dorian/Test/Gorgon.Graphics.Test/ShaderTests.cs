@@ -214,12 +214,12 @@ namespace GorgonLibrary.Graphics.Test
 		{
 			_framework.CreateTestScene(BaseShaders, BaseShaders, true);
 
-			using (var geoShader = _framework.Graphics.Shaders.CreateShader("GeoShader", "TestGS", BaseShaders, -1, new GorgonStreamOutputElement[]
+			using (var geoShader = _framework.Graphics.Shaders.CreateShader("GeoShader", "TestGS", BaseShaders, new GorgonStreamOutputElement[]
 				{
 					new GorgonStreamOutputElement(0, "SV_POSITION", 0, 0, 4, 0), 	
 					new GorgonStreamOutputElement(0, "COLOR", 0, 0, 4, 0), 	
 					new GorgonStreamOutputElement(0, "TEXCOORD", 0, 0, 2, 0), 
-				}, new [] {40}))
+				}))
 			{
 				var vertexBuffer = _framework.Graphics.Buffers.CreateVertexBuffer("SOVB", new GorgonBufferSettings
 					{
@@ -230,8 +230,7 @@ namespace GorgonLibrary.Graphics.Test
 																						  new GorgonGDIOptions
 																						  {
 																							  AllowUnorderedAccess = true,
-																							  Format =
-																								  BufferFormat.R8G8B8A8_UIntNormal
+																							  Format = BufferFormat.R8G8B8A8_UIntNormal
 																						  });
 
 				_framework.Graphics.Shaders.GeometryShader.Current = geoShader;
@@ -241,10 +240,8 @@ namespace GorgonLibrary.Graphics.Test
 
 				_framework.Graphics.Shaders.GeometryShader.SetStreamOutputBuffer(GorgonOutputBufferBinding.Empty);
 				_framework.Graphics.Input.VertexBuffers[0] = new GorgonVertexBufferBinding(vertexBuffer, 40);
-				//_framework.Graphics.Input.IndexBuffer = null;
 				_framework.Graphics.Shaders.GeometryShader.Current = null;
 				_framework.Graphics.Shaders.PixelShader.Resources[0] = texture;
-				//_framework.Graphics.Rasterizer.States = GorgonRasterizerStates.WireFrame;
 				
 				_framework.IdleFunc = () =>
 					{
