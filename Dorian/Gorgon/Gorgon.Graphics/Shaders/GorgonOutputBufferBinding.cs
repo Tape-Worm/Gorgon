@@ -50,6 +50,7 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Offset within the buffer to start at, in bytes.
 		/// </summary>
+		/// <remarks>If this value is set to -1, then data will be appended to the stream output buffer.</remarks>
 		public readonly int Offset;
 		#endregion
 
@@ -150,7 +151,9 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		/// <param name="buffer">The buffer to bind.</param>
 		/// <param name="offset">The offset within the buffer to start at, in bytes.</param>
-		public GorgonOutputBufferBinding(GorgonBaseBuffer buffer, int offset = 0)
+		/// <remarks>If the <paramref name="offset"/> parameter is set to -1, then data will be appended to the buffer from the last write.  Otherwise, 
+		/// writing will occur at the offset provided.</remarks>
+		public GorgonOutputBufferBinding(GorgonBaseBuffer buffer, int offset = -1)
 		{			
 			if ((buffer != null) && (!buffer.Settings.IsOutput))
 			{
