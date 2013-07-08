@@ -420,8 +420,7 @@ namespace GorgonLibrary.Graphics
 			        D3DLayout.Dispose();
 			    }
 
-			    Graphics.RemoveTrackedObject(this);
-
+                Graphics.RemoveTrackedObject(this);
                 GorgonRenderStatistics.InputLayoutCount--;
 			}
 

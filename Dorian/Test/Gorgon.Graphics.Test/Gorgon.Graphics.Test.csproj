@@ -73,6 +73,7 @@
     <Compile Include="TextureTesting.cs" />
     <Compile Include="BouncyBalls3DTest.cs" />
     <Compile Include="ShaderTests.cs" />
+    <Compile Include="ConcurrentRender.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Gorgon\Gorgon.Common\Gorgon.Common.csproj">

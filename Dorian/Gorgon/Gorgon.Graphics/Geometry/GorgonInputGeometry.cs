@@ -226,7 +226,7 @@ namespace GorgonLibrary.Graphics
 			#region Variables.
 			private D3D.VertexBufferBinding[] _D3DBindings;						// List of D3D bindings.
 			private readonly GorgonVertexBufferBinding[] _bindings;				// List of bindings.
-			private readonly GorgonGraphics _graphics;							// Graphics interface.
+			private readonly GorgonGraphics _graphics;					// Graphics interface.
 			#endregion
 
 			#region Properties.
@@ -428,7 +428,7 @@ namespace GorgonLibrary.Graphics
 			internal VertexBufferBindingList(GorgonGraphics graphics)
 			{
 				_graphics = graphics;
-				_bindings = new GorgonVertexBufferBinding[_graphics.VideoDevice.SupportedFeatureLevel < DeviceFeatureLevel.SM4_1 ? 16 : 32];
+                _bindings = new GorgonVertexBufferBinding[graphics.VideoDevice.SupportedFeatureLevel < DeviceFeatureLevel.SM4_1 ? 16 : 32];
 				for (int i = 0; i < _bindings.Length; i++)
 				{
 					_bindings[i] = GorgonVertexBufferBinding.Empty;
@@ -587,7 +587,7 @@ namespace GorgonLibrary.Graphics
 		#region Variables.
 		private PrimitiveType _primitiveType = PrimitiveType.Unknown;		// Primitive type to use.
 		private GorgonInputLayout _inputLayout;								// The current input layout.
-		private readonly GorgonGraphics _graphics;							// Current graphics interface.
+		private readonly GorgonGraphics _graphics;					// Current graphics interface.
 		private GorgonIndexBuffer _indexBuffer;								// The current index buffer.
 		#endregion
 
@@ -727,7 +727,7 @@ namespace GorgonLibrary.Graphics
             var layout = new GorgonInputLayout(_graphics, name, shader);
 			layout.InitializeFromType(type);
 
-			_graphics.AddTrackedObject(layout);
+            _graphics.AddTrackedObject(layout);
 
 			return layout;
 		}
@@ -779,6 +779,7 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Initializes a new instance of the <see cref="GorgonInputGeometry"/> class.
 		/// </summary>
+		/// <param name="graphics">The graphics instance that owns this instance.</param>
 		internal GorgonInputGeometry(GorgonGraphics graphics)
 		{
 			_graphics = graphics;

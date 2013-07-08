@@ -754,9 +754,7 @@ namespace GorgonLibrary.Renderers
 				return;
 			}
 
-			// Look through the tracked objects in the graphics object.
-			// FYI, LINQ is fucking awesome (if a little slow)...
-			Texture = (from texture in Gorgon2D.Graphics.GetGraphicsObjectOfType<GorgonTexture2D>()
+			Texture = (from texture in Gorgon2D.Graphics.GetTrackedObjectsOfType<GorgonTexture2D>()
 							where (texture != null) && (string.Compare(texture.Name, _textureName, true) == 0)
 							select texture).FirstOrDefault();
 			NeedsTextureUpdate = true;
