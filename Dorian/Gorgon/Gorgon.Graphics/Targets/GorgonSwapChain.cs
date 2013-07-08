@@ -267,7 +267,7 @@ namespace GorgonLibrary.Graphics
 			if ((GISwapChain == null) || (!Graphics.ResetFullscreenOnFocus))
 				return;
 
-			Graphics.GetFullscreenSwapChains();
+			Graphics.GetFullScreenSwapChains();
 
 			// Reset the video mode to windowed.
 			// Note:  For some reason, this is different than it was on SlimDX.  I never had to do this before, but with
@@ -290,7 +290,7 @@ namespace GorgonLibrary.Graphics
 			if ((GISwapChain == null) || (!Graphics.ResetFullscreenOnFocus))
 				return;
 
-			Graphics.GetFullscreenSwapChains();
+			Graphics.GetFullScreenSwapChains();
 						
 			if (!GISwapChain.IsFullScreen) 
 			{
@@ -641,12 +641,18 @@ namespace GorgonLibrary.Graphics
 			if (!settings.IsWindowed)
 			{
 				// Check to ensure that no other swap chain is on the video output if we're going to full screen mode.
-				var swapChainCount = graphics.GetGraphicsObjectOfType<GorgonSwapChain>().Count(item => (item.VideoOutput == output) && (!item.Settings.IsWindowed) && (item.Settings.Window != settings.Window));
+			    if (graphics.GetTrackedObjectsOfType<GorgonSwapChain>()
+			                .Any(
+			                    item =>
+			                    (item.VideoOutput == output) && (!item.Settings.IsWindowed)
+			                    && (item.Settings.Window != settings.Window)))
+			    {
+			        throw new GorgonException(GorgonResult.CannotCreate,
+			                                  "There is already a full screen swap chain active on the video output '"
+			                                  + output.Name + "'.");
+			    }
 
-				if (swapChainCount > 0)
-					throw new GorgonException(GorgonResult.CannotCreate, "There is already a full screen swap chain active on the video output '" + output.Name + "'.");
-
-				var modeCount = (from mode in output.VideoModes
+			    var modeCount = (from mode in output.VideoModes
 								 where mode == stagedMode
 								 select mode).Count();
 
@@ -695,7 +701,7 @@ namespace GorgonLibrary.Graphics
 				_parentForm.ClientSize = new Size(Settings.VideoMode.Width, Settings.VideoMode.Height);
 
 			AutoResize = !Settings.NoClientResize;
-			Graphics.GetFullscreenSwapChains();
+			Graphics.GetFullScreenSwapChains();
 
 			d3dSettings.BufferCount = Settings.BufferCount;
 			d3dSettings.Flags = flags;

@@ -429,4 +429,13 @@
   <data name="GORGFX_SO_STRIDE_TOO_SMALL" xml:space="preserve">
     <value>The stride at index [{0}] has a size of {1} bytes. It must be equal to or greater than {2} bytes.  </value>
   </data>
+  <data name="GORGFX_CANNOT_CREATE_CONTEXT_FROM_CONTEXT" xml:space="preserve">
+    <value>Cannot use a deferred context to create another deferred context.  Only an immediate context may created a deferred context.</value>
+  </data>
+  <data name="GORGFX_CANNOT_USE_DEFERRED_CONTEXT" xml:space="preserve">
+    <value>Cannot call this method from a deferred context.</value>
+  </data>
+  <data name="GORGFX_CANNOT_USE_IMMEDIATE_CONTEXT" xml:space="preserve">
+    <value>Cannot call this method from an immediate context.</value>
+  </data>
 </root>

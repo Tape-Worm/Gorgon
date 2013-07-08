@@ -106,7 +106,7 @@ namespace GorgonLibrary.Graphics
 			if ((!textureName.StartsWith("GorgonFont.", StringComparison.CurrentCultureIgnoreCase))
 				|| (textureName.IndexOf(".InternalTexture_", StringComparison.CurrentCultureIgnoreCase) == -1))
 			{
-				result = (from texture in _graphics.GetGraphicsObjectOfType<GorgonTexture2D>()
+				result = (from texture in _graphics.GetTrackedObjectsOfType<GorgonTexture2D>()
 						  where (string.Compare(texture.Name, textureName, true) == 0)
 						  select texture).FirstOrDefault();
 			}

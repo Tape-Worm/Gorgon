@@ -597,6 +597,86 @@ namespace GorgonLibrary.Graphics
             }
         }
 
+        /// <summary>
+        /// Function to determine if a device supports using rendering commands from multiple threads.
+        /// </summary>
+        /// <returns>TRUE if support is available, FALSE if not.</returns>
+        public bool SupportsMultithreadedCommands()
+        {
+            if (SupportedFeatureLevel < DeviceFeatureLevel.SM5)
+            {
+                return false;
+            }
+
+            D3D.Device device = (Graphics != null) ? Graphics.D3DDevice : null;
+            Tuple<GI.Factory1, GI.Adapter1, D3D.Device> tempInterfaces = null;
+
+            try
+            {
+                if (device == null)
+                {
+                    tempInterfaces = GetDevice(VideoDeviceType, HardwareFeatureLevel);
+                    device = tempInterfaces.Item3;
+                }
+
+                bool result;
+                bool dummy;
+
+                device.CheckThreadingSupport(out dummy, out result);
+
+                return result;
+            }
+            finally
+            {
+                if (tempInterfaces != null)
+                {
+                    tempInterfaces.Item3.Dispose();
+                    tempInterfaces.Item2.Dispose();
+                    tempInterfaces.Item1.Dispose();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Function to determine if a device supports creating resources from multiple threads.
+        /// </summary>
+        /// <returns>TRUE if support is available, FALSE if not.</returns>
+        public bool SupportsMultithreadedCreation()
+        {
+            if (SupportedFeatureLevel < DeviceFeatureLevel.SM5)
+            {
+                return false;
+            }
+
+            D3D.Device device = (Graphics != null) ? Graphics.D3DDevice : null;
+            Tuple<GI.Factory1, GI.Adapter1, D3D.Device> tempInterfaces = null;
+
+            try
+            {
+                if (device == null)
+                {
+                    tempInterfaces = GetDevice(VideoDeviceType, HardwareFeatureLevel);
+                    device = tempInterfaces.Item3;
+                }
+
+                bool result;
+                bool dummy;
+
+                device.CheckThreadingSupport(out result, out dummy);
+
+                return result;
+            }
+            finally
+            {
+                if (tempInterfaces != null)
+                {
+                    tempInterfaces.Item3.Dispose();
+                    tempInterfaces.Item2.Dispose();
+                    tempInterfaces.Item1.Dispose();
+                }
+            }
+        }
+
 		/// <summary>
 		/// Function to determine if the specified depth buffer format is supported.
 		/// </summary>

@@ -63,7 +63,7 @@ namespace GorgonLibrary.Animation
 		/// Function to retrieve the texture if it's not assigned.
 		/// </summary>
 		/// <returns>TRUE if the texture was found, FALSE if not.</returns>
-		internal bool  GetTexture()
+		internal bool GetTexture()
 		{
 			if (!string.IsNullOrEmpty(_textureName))
 			{
@@ -83,9 +83,12 @@ namespace GorgonLibrary.Animation
 			        throw new GorgonException(GorgonResult.NotInitialized, Resources.GORANM_KEYFRAME_TEXTURE_NOGFX);
 			    }
 
+			    var textures = (from graphicsObject in graphics
+			                    from graphicsTexture in graphicsObject.GetTrackedObjectsOfType<GorgonTexture2D>()
+			                    select graphicsTexture).ToArray();
+
 			    // Then, we begin our search by looking at -all- the texture information we have:
-				Value = (from graphicsObject in graphics
-						 from graphicsTexture in graphicsObject.GetGraphicsObjectOfType<GorgonTexture2D>()
+				Value = (from graphicsTexture in textures
 						 where (String.Compare(graphicsTexture.Name, textureName, StringComparison.OrdinalIgnoreCase) == 0) &&
 						  (graphicsTexture.Settings.ArrayCount == settings.ArrayCount) &&
 						  (graphicsTexture.Settings.Format == settings.Format) &&
@@ -99,14 +102,12 @@ namespace GorgonLibrary.Animation
 				if (Value == null)
 				{
 					// That one failed, so just try and look it up by name, width, height and format.
-					Value = (from graphicsObject in graphics
-					         from graphicsTexture in graphicsObject.GetGraphicsObjectOfType<GorgonTexture2D>()
+					Value = (from graphicsTexture in textures
 					         where (String.Compare(graphicsTexture.Name, textureName, StringComparison.OrdinalIgnoreCase) == 0) &&
 					               (graphicsTexture.Settings.Format == settings.Format) &&
 					               (graphicsTexture.Settings.Height == settings.Height) &&
 					               (graphicsTexture.Settings.Width == settings.Width)
-					         select graphicsTexture).FirstOrDefault() ?? (from graphicsObject in graphics
-					                                                      from graphicsTexture in graphicsObject.GetGraphicsObjectOfType<GorgonTexture2D>()
+					         select graphicsTexture).FirstOrDefault() ?? (from graphicsTexture in textures
 					                                                      where (String.Compare(graphicsTexture.Name, textureName, StringComparison.OrdinalIgnoreCase) == 0)
 					                                                      select graphicsTexture).FirstOrDefault();
 				}

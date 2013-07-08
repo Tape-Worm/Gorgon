@@ -27,12 +27,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using GorgonLibrary.Native;
+using D3D = SharpDX.Direct3D11;
+using GI = SharpDX.DXGI;
 using GorgonLibrary.Collections.Specialized;
 using GorgonLibrary.Diagnostics;
 using GorgonLibrary.Graphics.Properties;
-using GorgonLibrary.Native;
-using GI = SharpDX.DXGI;
-using D3D = SharpDX.Direct3D11;
 
 namespace GorgonLibrary.Graphics
 {
@@ -86,107 +86,121 @@ namespace GorgonLibrary.Graphics
 	/// multiple video devices, create additional graphics interfaces and assign the device to the <see cref="GorgonLibrary.Graphics.GorgonGraphics.VideoDevice">VideoDevice</see> property.
 	/// <para>This object will enumerate video devices, monitor outputs (for multi-head adapters), and video modes for each of the video devices in the system upon creation.  These
     /// items are accessible from the <see cref="GorgonLibrary.Graphics.GorgonVideoDeviceEnumerator">GorgonVideoDeviceEnumerator</see> class. </para>
+    /// <para>These objects can also be used in a deferred context.  This means that when a graphics object is deferred, it can be used in a multi threaded environment to allow set up of 
+    /// a scene by recording commands sent to the video device for execution later on the rendering process.  This is handy where multiple passes for the same scene are required (e.g. a deferred renderer).</para>
 	/// <para>Please note that this object requires Direct3D 11 (but not necessarily a Direct3D 11 video card) and at least Windows Vista Service Pack 2 or higher.  
 	/// Windows XP and operating systems before it will not work, and an exception will be thrown if this object is created on those platforms.</para>
+    /// <para>Deferred graphics contexts require a video device with a feature level of SM5 or better.</para>
 	/// </remarks>
-	public class GorgonGraphics
-		: IDisposable
-	{
-		#region Variables.
-		private static bool _isDWMEnabled = true;						    // Flag to indicate that the desktop window manager compositor is enabled.
-		private static readonly bool _dontEnableDWM;						// Flag to indicate that we should not enable the DWM.
-		private bool _disposed;									            // Flag to indicate that the object was disposed.
-		private readonly GorgonDisposableObjectCollection _trackedObjects;	// Tracked objects.
-		#endregion
+    public sealed class GorgonGraphics
+        : IDisposable
+    {
+        #region Variables.
+        private static readonly GorgonDisposableObjectCollection _trackedObjects = new GorgonDisposableObjectCollection();		// Tracked objects.
+        private static bool _isDWMEnabled = true;						                                                        // Flag to indicate that the desktop window manager compositor is enabled.
+        private static readonly bool _dontEnableDWM;						                                                    // Flag to indicate that we should not enable the DWM.
+        private bool _disposed;                                                                                                 // Flag to indicate that the context was disposed.
+        #endregion
 
-		#region Properties.
-		/// <summary>
-		/// Property to return the DX GI factory.
-		/// </summary>
-		internal GI.Factory1 GIFactory
-		{
-			get;
-			private set;
-		}
+        #region Properties.
+        /// <summary>
+        /// Property to set or return the D3D device context.
+        /// </summary>
+        internal D3D.DeviceContext Context
+        {
+            get;
+            set;
+        }
 
-		/// <summary>
-		/// Property to return the DXGI adapter to use.
-		/// </summary>
-		internal GI.Adapter1 Adapter
-		{
-			get;
-			private set;
-		}
+        /// <summary>
+        /// Property to return the Direct3D 11 device object.
+        /// </summary>
+        internal D3D.Device D3DDevice
+        {
+            get;
+            set;
+        }
 
-		/// <summary>
-		/// Property to return the current device context.
-		/// </summary>
-		internal D3D.DeviceContext Context
-		{
-			get
-			{
-#if DEBUG
-			    if (D3DDevice == null)
-			    {
-			        throw new GorgonException(GorgonResult.NotInitialized, "No D3D device object was found.");
-			    }
-#endif
+        /// <summary>
+        /// Property to return the DX GI factory.
+        /// </summary>
+        internal GI.Factory1 GIFactory
+        {
+            get;
+            set;
+        }
 
-				return D3DDevice.ImmediateContext;
-			}
-		}
+        /// <summary>
+        /// Property to return the DXGI adapter to use.
+        /// </summary>
+        internal GI.Adapter1 Adapter
+        {
+            get;
+            set;
+        }
 
-		/// <summary>
-		/// Property to return the Direct3D 11 device object.
-		/// </summary>
-		internal D3D.Device D3DDevice
-		{
-			get;
-			private set;
-		}
-					
-		/// <summary>
-		/// Property to set or return whether DWM composition is enabled or not.
-		/// </summary>
-		/// <remarks>This property will have no effect on systems that initially have the desktop window manager compositor disabled.</remarks>
-		public static bool IsDWMCompositionEnabled
-		{
-			get
-			{
-				return _isDWMEnabled;
-			}
-			set
-			{
-				if (!value)
-				{
-					if (_isDWMEnabled)
-					{
-						Win32API.DwmEnableComposition(0);
-						_isDWMEnabled = false;
-					}
-				}
-				else
-				{
-					if ((!_isDWMEnabled) && (!_dontEnableDWM))
-					{
-						Win32API.DwmEnableComposition(1);
-						_isDWMEnabled = true;
-					}
-				}
-			}
-		}
+        /// <summary>
+        /// Property to set or return whether DWM composition is enabled or not.
+        /// </summary>
+        /// <remarks>This property will have no effect on systems that initially have the desktop window manager compositor disabled.</remarks>
+        public static bool IsDWMCompositionEnabled
+        {
+            get
+            {
+                return _isDWMEnabled;
+            }
+            set
+            {
+                if (!value)
+                {
+                    if (_isDWMEnabled)
+                    {
+                        Win32API.DwmEnableComposition(0);
+                        _isDWMEnabled = false;
+                    }
+                }
+                else
+                {
+                    if ((!_isDWMEnabled) && (!_dontEnableDWM))
+                    {
+                        Win32API.DwmEnableComposition(1);
+                        _isDWMEnabled = true;
+                    }
+                }
+            }
+        }
 
-		/// <summary>
-		/// Property to return the input geometry interface.
-		/// </summary>
-		/// <remarks>
-		/// The input interface covers items such as the vertex buffer, index buffer, bindings of the aforementioned buffers, the primitive type, etc...
-		/// </remarks>
-		public GorgonInputGeometry Input
-		{
-			get;
-			private set;
-		}
+        /// <summary>
+        /// Property to return the immediate graphics object that owns this context.
+        /// </summary>
+        public GorgonGraphics ImmediateContext
+        {
+            get;
+            private set;
+        }
+
+        /// <summary>
+        /// Property to return whether this context is deferred or not.
+        /// </summary>
+        public bool IsDeferred
+        {
+            get
+            {
+                return ImmediateContext != this;
+            }
+        }
+
+        /// <summary>
+        /// Property to return the input geometry interface.
+        /// </summary>
+        /// <remarks>
+        /// The input interface covers items such as the vertex buffer, index buffer, bindings of the aforementioned buffers, the primitive type, etc...
+        /// </remarks>
+        public GorgonInputGeometry Input
+        {
+            get;
+            private set;
+        }
 
         /// <summary>
         /// Property to return the interface for buffers.
@@ -197,189 +211,352 @@ namespace GorgonLibrary.Graphics
             private set;
         }
 
-		/// <summary>
-		/// Property to return the shader interface.
-		/// </summary>
-		/// <remarks>This is used to create shaders, create constant buffers and bind them to the pipeline.</remarks>
-		public GorgonShaderBinding Shaders
-		{
-			get;
-			private set;
-		}
+        /// <summary>
+        /// Property to return the shader interface.
+        /// </summary>
+        /// <remarks>This is used to create shaders, create constant buffers and bind them to the pipeline.</remarks>
+        public GorgonShaderBinding Shaders
+        {
+            get;
+            private set;
+        }
 
-		/// <summary>
-		/// Property to return the current rasterizer states.
-		/// </summary>
-		public GorgonRasterizerRenderState Rasterizer
-		{
-			get;
-			private set;
-		}		
+        /// <summary>
+        /// Property to return the current rasterizer states.
+        /// </summary>
+        public GorgonRasterizerRenderState Rasterizer
+        {
+            get;
+            private set;
+        }
 
-		/// <summary>
-		/// Property to set or return whether object tracking is disabled.
-		/// </summary>
-		/// <remarks>This will enable SharpDX's object tracking to ensure references are destroyed upon application exit.
-		/// <para>The default value for DEBUG mode is TRUE, and for RELEASE it is set to FALSE.  Disabling object tracking will
-		/// give a slight performance increase.</para>
-		/// </remarks>
-		public bool IsObjectTrackingEnabled
-		{
-			get
-			{
-				return SharpDX.Configuration.EnableObjectTracking;
-			}
-			set
-			{
-				SharpDX.Configuration.EnableObjectTracking = value;
-			}
-		}
+        /// <summary>
+        /// Property to return the output merging interface.
+        /// </summary>
+        /// <remarks>This is responsible for setting blending states, depth/stencil states, creating render targets, etc...</remarks>
+        public GorgonOutputMerger Output
+        {
+            get;
+            private set;
+        }
 
-		/// <summary>
-		/// Property to return the output merging interface.
-		/// </summary>
-		/// <remarks>This is responsible for setting blending states, depth/stencil states, creating render targets, etc...</remarks>
-		public GorgonOutputMerger Output
-		{
-			get;
-			private set;
-		}
+        /// <summary>
+        /// Property to return the textures interface.
+        /// </summary>
+        public GorgonTextures Textures
+        {
+            get;
+            private set;
+        }
 
-		/// <summary>
-		/// Property to return the textures interface.
-		/// </summary>
-		public GorgonTextures Textures
-		{
-			get;
-			private set;
-		}
+        /// <summary>
+        /// Property to return the fonts interface.
+        /// </summary>
+        public GorgonFonts Fonts
+        {
+            get;
+            private set;
+        }
+        
+        /// <summary>
+        /// Property to set or return the video device to use for this graphics interface.
+        /// </summary>
+        public GorgonVideoDevice VideoDevice
+        {
+            get;
+            private set;
+        }
 
-		/// <summary>
-		/// Property to return the fonts interface.
-		/// </summary>
-		public GorgonFonts Fonts
-		{
-			get;
-			private set;
-		}
+        /// <summary>
+        /// Property to set or return whether object tracking is disabled.
+        /// </summary>
+        /// <remarks>This will enable SharpDX's object tracking to ensure references are destroyed upon application exit.
+        /// <para>The default value for DEBUG mode is TRUE, and for RELEASE it is set to FALSE.  Disabling object tracking will
+        /// give a slight performance increase.</para>
+        /// </remarks>
+        public bool IsObjectTrackingEnabled
+        {
+            get
+            {
+                return SharpDX.Configuration.EnableObjectTracking;
+            }
+            set
+            {
+                SharpDX.Configuration.EnableObjectTracking = value;
+            }
+        }
 
-		/// <summary>
-		/// Property to set or return the video device to use for this graphics interface.
-		/// </summary>
-		public GorgonVideoDevice VideoDevice
-		{
-			get;
-			private set;
-		}
+        /// <summary>
+        /// Property to set or return whether swap chains should reset their full screen setting on regaining focus.
+        /// </summary>
+        /// <remarks>
+        /// This will control whether Gorgon will try to reacquire full screen mode when a full screen swap chain window regains focus.  When this is set to FALSE, and the window 
+        /// containing the full screen swap chain loses focus, it will revert to windowed mode and remain in windowed mode.  When set to TRUE, it will try to reacquire full screen mode.
+        /// <para>The default value for this is TRUE.  However, for a full screen multimonitor scenario, this should be set to FALSE.</para>
+        /// </remarks>
+        public bool ResetFullscreenOnFocus
+        {
+            get;
+            set;
+        }
+        #endregion
 
-		/// <summary>
-		/// Property to set or return whether swap chains should reset their full screen setting on regaining focus.
-		/// </summary>
-		/// <remarks>
-		/// This will control whether Gorgon will try to reacquire full screen mode when a full screen swap chain window regains focus.  When this is set to FALSE, and the window 
-		/// containing the full screen swap chain loses focus, it will revert to windowed mode and remain in windowed mode.  When set to TRUE, it will try to reacquire full screen mode.
-		/// <para>The default value for this is TRUE.  However, for a full screen multimonitor scenario, this should be set to FALSE.</para>
-		/// </remarks>
-		public bool ResetFullscreenOnFocus
-		{
-			get;
-			set;
-		}
-		#endregion
+        #region Methods.
+        /// <summary>
+        /// Function to clean up the categorized interfaces.
+        /// </summary>
+        private void DestroyInterfaces()
+        {
+            if (Fonts != null)
+            {
+                Fonts.CleanUp();
+            }
 
-		#region Methods.
-		/// <summary>
-		/// Function to clean up the categorized interfaces.
-		/// </summary>
-		private void DestroyInterfaces()
-		{
-		    if (Fonts != null)
-		    {
-		        Fonts.CleanUp();
-		    }
+            Fonts = null;
 
-		    Fonts = null;
+            if (Textures != null)
+            {
+                Textures.CleanUp();
+            }
 
-		    if (Textures != null)
-		    {
-		        Textures.CleanUp();
-		    }
+            Textures = null;
 
-		    Textures = null;
+            if (Shaders != null)
+            {
+                Shaders.CleanUp();
+            }
 
-		    if (Shaders != null)
-		    {
-		        Shaders.CleanUp();
-		    }
+            Shaders = null;
 
-		    Shaders = null;
+            if (Output != null)
+            {
+                Output.CleanUp();
+            }
 
-		    if (Output != null)
-		    {
-		        Output.CleanUp();
-		    }
+            Output = null;
 
-		    Output = null;
-
-		    if (Rasterizer != null)
-		    {
+            if (Rasterizer != null)
+            {
                 Rasterizer.CleanUp();
-		    }
-		}
+            }
+        }
 
-		/// <summary>
-		/// Function to return the currently active full screen swap chains.
-		/// </summary>
-		/// <returns>A list of full screen swap chains.</returns>
-		internal IEnumerable<GorgonSwapChain> GetFullscreenSwapChains()
-		{
-			return (from item in _trackedObjects
-					let swapChain = item as GorgonSwapChain
-					where (swapChain != null) && (!swapChain.Settings.IsWindowed)
-					select swapChain);
-		}
+        /// <summary>
+        /// Function to create and initialize the various state objects.
+        /// </summary>
+        private void CreateStates()
+        {
+            // Create interfaces.
+            Rasterizer = new GorgonRasterizerRenderState(this);
+            Input = new GorgonInputGeometry(this);
+            Shaders = new GorgonShaderBinding(this);
+            Output = new GorgonOutputMerger(this);
+            Textures = new GorgonTextures(this);
+            Fonts = new GorgonFonts(this);
+            Buffers = new GorgonBuffers(this);
 
-		/// <summary>
-		/// Function to add a new object to the object tracker.
-		/// </summary>
-		/// <param name="trackedObject">Object to track.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="trackedObject"/> parameter is NULL (Nothing in VB.Net).</exception>
-		/// <remarks>Use this to have the graphics interface track your custom object so that it will be disposed when the graphics interface shuts down.</remarks>
-		public void AddTrackedObject(IDisposable trackedObject)
-		{
-			GorgonDebug.AssertNull(trackedObject, "trackedObject");
+            // Set default states.
+            Rasterizer.States = GorgonRasterizerStates.CullBackFace;
+            Output.BlendingState.States = GorgonBlendStates.DefaultStates;
+            Output.DepthStencilState.States = GorgonDepthStencilStates.NoDepthStencil;
 
-			_trackedObjects.Add(trackedObject);
-		}
+            // Initialize the shaders with default texture sampler settings.
+            for (int i = 0; i < Shaders.VertexShader.TextureSamplers.Count; i++)
+            {
+                Shaders.VertexShader.TextureSamplers[i] = GorgonTextureSamplerStates.DefaultStates;
+            }
 
-		/// <summary>
-		/// Function to remove a tracked object from the object tracker.
-		/// </summary>
-		/// <param name="trackedObject">Tracked object to remove.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="trackedObject"/> parameter is NULL (Nothing in VB.Net).</exception>
-		/// <remarks>If your custom object is being tracked by the graphics interface, then this must be called in the dispose method to remove it from the tracker.</remarks>
-		public void RemoveTrackedObject(IDisposable trackedObject)
-		{
-			GorgonDebug.AssertNull(trackedObject, "trackedObject");
+            for (int i = 0; i < Shaders.PixelShader.TextureSamplers.Count; i++)
+            {
+                Shaders.PixelShader.TextureSamplers[i] = GorgonTextureSamplerStates.DefaultStates;
+            }
 
-			_trackedObjects.Remove(trackedObject);
-		}
+            if (VideoDevice.SupportedFeatureLevel < DeviceFeatureLevel.SM4)
+            {
+                return;
+            }
 
-		/// <summary>
-		/// Function to retrieve a list of objects created by this interface by its type.
-		/// </summary>
-		/// <typeparam name="T">Type of object to retrieve.</typeparam>
-		/// <returns>A list of objects of the specified type.</returns>
-		public IList<T> GetGraphicsObjectOfType<T>()
-			where T : IDisposable
-		{
-			return (from trackedObject in _trackedObjects
-						  where trackedObject is T
-						  select (T)trackedObject).ToArray();
-		}
-		#endregion
+            for (int i = 0; i < Shaders.GeometryShader.TextureSamplers.Count; i++)
+            {
+                Shaders.GeometryShader.TextureSamplers[i] = GorgonTextureSamplerStates.DefaultStates;
+            }
 
-		#region Constructor/Destructor.
+            if (VideoDevice.SupportedFeatureLevel < DeviceFeatureLevel.SM5)
+            {
+                return;
+            }
+
+            for (int i = 0; i < Shaders.ComputeShader.TextureSamplers.Count; i++)
+            {
+                Shaders.ComputeShader.TextureSamplers[i] = GorgonTextureSamplerStates.DefaultStates;
+            }
+
+            for (int i = 0; i < Shaders.HullShader.TextureSamplers.Count; i++)
+            {
+                Shaders.HullShader.TextureSamplers[i] = GorgonTextureSamplerStates.DefaultStates;
+            }
+
+            for (int i = 0; i < Shaders.DomainShader.TextureSamplers.Count; i++)
+            {
+                Shaders.DomainShader.TextureSamplers[i] = GorgonTextureSamplerStates.DefaultStates;
+            }
+        }
+
+        /// <summary>
+        /// Function to retrieve a list of all swap chains that are currently full screen.
+        /// </summary>
+        /// <returns>The list of full screen swap chains.</returns>
+        internal IEnumerable<GorgonSwapChain> GetFullScreenSwapChains()
+        {
+            return (from graphicsObj in _trackedObjects
+                    let swap = graphicsObj as GorgonSwapChain
+                    where (swap != null) && (!swap.Settings.IsWindowed)
+                    select swap);
+        }
+
+        /// <summary>
+        /// Function to add an object for tracking by the main Gorgon interface.
+        /// </summary>
+        /// <param name="trackedObject">Object to add.</param>
+        /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="trackedObject"/> parameter is NULL (Nothing in VB.Net).</exception>
+        /// <remarks>This allows Gorgon to track objects and destroy them upon <see cref="GorgonLibrary.Gorgon.Quit">termination</see>.</remarks>
+        public void AddTrackedObject(IDisposable trackedObject)
+        {
+            if (trackedObject == null)
+            {
+                throw new ArgumentNullException("trackedObject");
+            }
+
+            _trackedObjects.Add(trackedObject);
+        }
+
+        /// <summary>
+        /// Function to remove a tracked object from the Gorgon interface.
+        /// </summary>
+        /// <param name="trackedObject">Object to remove.</param>
+        /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="trackedObject"/> parameter is NULL (Nothing in VB.Net).</exception>
+        /// <remarks>This will -not- destroy the tracked object.</remarks>
+        public void RemoveTrackedObject(IDisposable trackedObject)
+        {
+            if (trackedObject == null)
+            {
+                throw new ArgumentNullException("trackedObject");
+            }
+
+            _trackedObjects.Remove(trackedObject);
+        }
+
+        /// <summary>
+        /// Function to a list of objects being tracked by a type value.
+        /// </summary>
+        /// <typeparam name="T">Type to search for.</typeparam>
+        /// <returns>A list of objects that match the type.</returns>
+        public IList<T> GetTrackedObjectsOfType<T>()
+            where T : IDisposable
+        {
+            return (from trackedObject in _trackedObjects
+                    where trackedObject is T
+                    select (T)trackedObject).ToArray();
+        }
+
+        /// <summary>
+        /// Function to create a deferred graphics context.
+        /// </summary>
+        /// <returns>A new graphics object as a deferred graphics context.</returns>
+        /// <remarks>A deferred graphics context will allow for improved performance when used in a multi-threaded environment.  The deferred context takes rendering commands and queues them into a buffer 
+        /// for execution later from the immediate context.  Use the <see cref="ExecuteDeferred"/> method to execute these commands from the immediate graphics object.
+        /// <para>To use a deferred context the use needs to create a context with this method, then perform the rendering operations required.  Once the rendering operations are complete, then a call to 
+        /// <see cref="FinalizeDeferred"/> is called and will return an object that will contain the command list.  Then a call to ExecuteDeferred using the command list object from the immediate context will 
+        /// execute the commands.</para>
+        /// <para>This method must be called from the immediate context.</para>
+        /// <para>This method requires a video device with a feature level of SM5 or better.</para>
+        /// </remarks>
+        /// <exception cref="GorgonLibrary.GorgonException">Thrown when the deferred context could not be created.</exception>
+        public GorgonGraphics CreateDeferredGraphics()
+        {
+            if (VideoDevice.SupportedFeatureLevel < DeviceFeatureLevel.SM5)
+            {
+                throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_REQUIRES_SM, DeviceFeatureLevel.SM5));
+            }
+            if (IsDeferred)
+            {
+                throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_CANNOT_CREATE_CONTEXT_FROM_CONTEXT);
+            }
+
+            return new GorgonGraphics(this);
+        }
+
+        /// <summary>
+        /// Function to finalize the deferred rendering context.
+        /// </summary>
+        /// <param name="restoreState">[Optional] TRUE to restore the state of the context after rendering, FALSE to keep it as-is.</param>
+        /// <returns>An object containing the rendering commands to issue.</returns>
+        /// <exception cref="System.NotSupportedException">Thrown when the current context is an immediate context.
+        /// <para>-or-</para>
+        /// <para>Thrown if the current video device does not have a feature level of SM5 or better.</para>
+        /// </exception>
+        /// <remarks>
+        /// Use this method to finish recording of the rendering commands sent to a deferred context.  This method must be called from a deferred context.
+        /// <para>This method requires a video device with a feature level of SM5 or better.</para>
+        /// </remarks>
+        public GorgonRenderCommands FinalizeDeferred(bool restoreState = false)
+        {
+#if DEBUG
+            if (VideoDevice.SupportedFeatureLevel < DeviceFeatureLevel.SM5)
+            {
+                throw new NotSupportedException(string.Format(Resources.GORGFX_REQUIRES_SM, DeviceFeatureLevel.SM5));
+            }
+            if (!IsDeferred)
+            {
+                throw new NotSupportedException(Resources.GORGFX_CANNOT_USE_IMMEDIATE_CONTEXT);
+            }
+#endif
+
+            var result = new GorgonRenderCommands(this, restoreState);
+
+            AddTrackedObject(result);
+
+            return result;
+        }
+
+        /// <summary>
+        /// Function to execute rendering commands from a deferred context.
+        /// </summary>
+        /// <param name="commands">Commands to execute.</param>
+        /// <param name="restoreState">TRUE to save and restore the context state before and after execution, FALSE to keep the state of the context as-is.</param>
+        /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="commands"/> parameter is NULL (Nothing in VB.Net).</exception>
+        /// <exception cref="System.NotSupportedException">Thrown when the current context is a deferred context.
+        /// <para>-or-</para>
+        /// <para>Thrown if the current video device does not have a feature level of SM5 or better.</para>
+        /// </exception>
+        /// <remarks>
+        /// Use this method to execute previously recorded rendering commands on the immediate context.  This method must be called from the immediate context.
+        /// <para>Using FALSE for <paramref name="restoreState"/> can avoid unncessary and inefficient state transitions.</para>
+        /// <para>This method requires a video device with a feature level of SM5 or better.</para> 
+        /// </remarks>
+        public void ExecuteDeferred(GorgonRenderCommands commands, bool restoreState = false)
+        {
+#if DEBUG
+            if (VideoDevice.SupportedFeatureLevel < DeviceFeatureLevel.SM5)
+            {
+                throw new NotSupportedException(string.Format(Resources.GORGFX_REQUIRES_SM, DeviceFeatureLevel.SM5));
+            }
+            if (IsDeferred)
+            {
+                throw new NotSupportedException(Resources.GORGFX_CANNOT_USE_DEFERRED_CONTEXT);
+            }
+
+            if (commands == null)
+            {
+                throw new ArgumentNullException("commands");
+            }
+#endif
+
+            Context.ExecuteCommandList(commands.D3DCommands, restoreState);
+        }
+        #endregion
+
+        #region Constructor/Destructor.
 		/// <summary>
 		/// Initializes the <see cref="GorgonGraphics"/> class.
 		/// </summary>
@@ -400,87 +577,59 @@ namespace GorgonLibrary.Graphics
 		/// </remarks>
 		public GorgonGraphics(GorgonVideoDevice device, DeviceFeatureLevel featureLevel)
 		{
-		    if (featureLevel == DeviceFeatureLevel.Unsupported)
-		    {
+        	ResetFullscreenOnFocus = true;
+            ImmediateContext = this;
+
+            if (featureLevel == DeviceFeatureLevel.Unsupported)
+            {
                 throw new ArgumentException(Resources.GORGFX_FEATURE_LEVEL_UNKNOWN);
-		    }
+            }
 
-		    if (GorgonComputerInfo.OperatingSystemVersion.Major < 6)
-		    {
-		        throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_INVALID_OS);
-		    }
+            if (GorgonComputerInfo.OperatingSystemVersion.Major < 6)
+            {
+                throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_INVALID_OS);
+            }
 
-		    _trackedObjects = new GorgonDisposableObjectCollection();
-			ResetFullscreenOnFocus = true;
+            Gorgon.Log.Print("Gorgon Graphics initializing...", LoggingLevel.Simple);
 
-			Gorgon.Log.Print("Gorgon Graphics initializing...", LoggingLevel.Simple);
-			
 #if DEBUG
-			if (!SharpDX.Configuration.EnableObjectTracking)
-			{
-				SharpDX.Configuration.EnableObjectTracking = true;
-			}
+            if (!SharpDX.Configuration.EnableObjectTracking)
+            {
+                SharpDX.Configuration.EnableObjectTracking = true;
+            }
 #else
 			SharpDX.Configuration.EnableObjectTracking = false;
 #endif
 
-			if (device == null)
-			{
-				if (GorgonVideoDeviceEnumerator.VideoDevices.Count == 0)
-				{
-					GorgonVideoDeviceEnumerator.Enumerate(false, false);
-				}				
-
-				// Use the first device in the list.
-				device = GorgonVideoDeviceEnumerator.VideoDevices[0];
-			}
-
-			if (device != null)
-			{
-				VideoDevice = device;
-
-			    var D3DDeviceData = VideoDevice.GetDevice(VideoDevice.VideoDeviceType, featureLevel);
-
-				// Create the DXGI factory for the video device.
-                GIFactory = D3DDeviceData.Item1;
-                Adapter = D3DDeviceData.Item2;
-                D3DDevice = D3DDeviceData.Item3;
-
-                D3DDevice.ImmediateContext.ClearState();
-				VideoDevice.Graphics = this;
-			}
-
-			Gorgon.AddTrackedObject(this);
-
-			// Create interfaces.
-			Rasterizer = new GorgonRasterizerRenderState(this);
-			Input = new GorgonInputGeometry(this);
-			Shaders = new GorgonShaderBinding(this);
-			Output = new GorgonOutputMerger(this);
-			Textures = new GorgonTextures(this);
-			Fonts = new GorgonFonts(this);
-            Buffers = new GorgonBuffers(this);
-
-            // Set default states.
-		    Rasterizer.States = GorgonRasterizerStates.CullBackFace;
-		    Output.BlendingState.States = GorgonBlendStates.DefaultStates;
-		    Output.DepthStencilState.States = GorgonDepthStencilStates.NoDepthStencil;
-
-            // Initialize the shaders with default texture sampler settings.
-            for (int i = 0; i < Shaders.VertexShader.TextureSamplers.Count; i++)
+            if (device == null)
             {
-                Shaders.VertexShader.TextureSamplers[i] = GorgonTextureSamplerStates.DefaultStates;
+                if (GorgonVideoDeviceEnumerator.VideoDevices.Count == 0)
+                {
+                    GorgonVideoDeviceEnumerator.Enumerate(false, false);
+                }
+
+                // Use the first device in the list.
+                device = GorgonVideoDeviceEnumerator.VideoDevices[0];
             }
 
-            for (int i = 0; i < Shaders.PixelShader.TextureSamplers.Count; i++)
-            {
-                Shaders.PixelShader.TextureSamplers[i] = GorgonTextureSamplerStates.DefaultStates;
-            }
+            VideoDevice = device;
 
-            // TODO: For feature level capable devices, initialize Geometry, Hull, Domain and Compute shaders.
+            var D3DDeviceData = VideoDevice.GetDevice(VideoDevice.VideoDeviceType, featureLevel);
 
+            // Create the DXGI factory for the video device.
+            GIFactory = D3DDeviceData.Item1;
+            Adapter = D3DDeviceData.Item2;
+            D3DDevice = D3DDeviceData.Item3;
 
-			Gorgon.Log.Print("Gorgon Graphics initialized.", LoggingLevel.Simple);
+		    Context = D3DDevice.ImmediateContext;
+            Context.ClearState();
+            VideoDevice.Graphics = ImmediateContext;
+
+            CreateStates();
+
+            Gorgon.AddTrackedObject(this);
+
+		    Gorgon.Log.Print("Gorgon Graphics initialized.", LoggingLevel.Simple);
 		}
 
 		/// <summary>
@@ -542,78 +691,117 @@ namespace GorgonLibrary.Graphics
 				_dontEnableDWM = true;
 			}
 		}
-		#endregion
 
-		#region IDisposable Members
-		/// <summary>
-		/// Releases unmanaged and - optionally - managed resources
-		/// </summary>
-		/// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
-		private void Dispose(bool disposing)
-		{
-		    if (_disposed)
-		    {
-		        return;
-		    }
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GorgonGraphics"/> class.
+        /// </summary>
+        /// <param name="graphics">The immediate graphics context.</param>
+        internal GorgonGraphics(GorgonGraphics graphics)
+        {
+            // If we have an immediate context, then assume this one is deferred.
+            Context = new D3D.DeviceContext(graphics.D3DDevice);
+            Context.ClearState();
+            ImmediateContext = graphics;
 
-		    if (disposing)
-		    {
-		        Gorgon.Log.Print("Gorgon Graphics shutting down...", LoggingLevel.Simple);
+            VideoDevice = graphics.VideoDevice;
+            GIFactory = graphics.GIFactory;
+            Adapter = graphics.Adapter;
+            D3DDevice = graphics.D3DDevice;
 
-		        _trackedObjects.ReleaseAll();
-		        DestroyInterfaces();
+            CreateStates();
 
-		        Gorgon.Log.Print("Removing D3D11 Device object...", LoggingLevel.Verbose);
+            Gorgon.AddTrackedObject(this);
+        }
+        #endregion
 
-		        // Destroy the video device interface.
-		        if (D3DDevice != null)
-		        {
-		            Context.ClearState();
-		            D3DDevice.Dispose();
-		            D3DDevice = null;
-		        }
+        #region IDisposable Members
+        /// <summary>
+        /// Releases unmanaged and - optionally - managed resources.
+        /// </summary>
+        /// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
+        private void Dispose(bool disposing)
+        {
+            if (_disposed)
+            {
+                return;
+            }
 
-		        if (Adapter != null)
-		        {
-		            Adapter.Dispose();
-		            Adapter = null;
-		        }
+            if (disposing)
+            {
+                Gorgon.Log.Print("Gorgon Graphics Context shutting down...", LoggingLevel.Simple);
 
-		        if (GIFactory != null)
-		        {
-		            GIFactory.Dispose();
-		            GIFactory = null;
-		        }
+                if (Context != null)
+                {
+                    Context.ClearState();
+                }
 
-		        if (VideoDevice != null)
-		        {
-		            VideoDevice.Graphics = null;
-		        }
+                _trackedObjects.ReleaseAll();
 
-		        Gorgon.Log.Print("Removing DXGI factory interface...", LoggingLevel.Verbose);
-		        if (GIFactory != null)
-		        {
-		            GIFactory.Dispose();
-		            GIFactory = null;
-		        }
+                DestroyInterfaces();
+                
+                // Only clean up the context if the context is deferred.
+                if (IsDeferred)
+                {
+                    if (Context != null)
+                    {
+                        Context.Dispose();
+                    }
 
-		        // Remove us from the object tracker.
-		        Gorgon.RemoveTrackedObject(this);
+                    Context = null;
+                }
+                else
+                {
+                    Gorgon.Log.Print("Removing D3D11 Device object...", LoggingLevel.Verbose);
 
-		        Gorgon.Log.Print("Gorgon Graphics shut down successfully", LoggingLevel.Simple);
-		    }					
+                    // Destroy the video device interface.
+                    if (D3DDevice != null)
+                    {
+                        D3DDevice.Dispose();
+                        D3DDevice = null;
+                    }
 
-		    _disposed = true;
-		}
+                    if (Adapter != null)
+                    {
+                        Adapter.Dispose();
+                        Adapter = null;
+                    }
 
-		/// <summary>
-		/// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-		/// </summary>
-		public void Dispose()
-		{
-			Dispose(true);
-			GC.SuppressFinalize(this);
-		}
-		#endregion
-	}
+                    if (GIFactory != null)
+                    {
+                        GIFactory.Dispose();
+                        GIFactory = null;
+                    }
+
+                    if (VideoDevice != null)
+                    {
+                        VideoDevice.Graphics = null;
+                    }
+
+                    Gorgon.Log.Print("Removing DXGI factory interface...", LoggingLevel.Verbose);
+                    if (GIFactory != null)
+                    {
+                        GIFactory.Dispose();
+                        GIFactory = null;
+                    }
+                }
+
+                // Remove us from the object tracker.
+                Gorgon.RemoveTrackedObject(this);
+
+                Gorgon.Log.Print("Gorgon Graphics Context shut down successfully", LoggingLevel.Simple);
+            }
+
+            _disposed = true;
+        }
+
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+        #endregion
+    }
 }
