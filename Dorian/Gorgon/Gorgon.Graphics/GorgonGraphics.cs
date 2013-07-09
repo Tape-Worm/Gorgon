@@ -96,10 +96,10 @@ namespace GorgonLibrary.Graphics
         : IDisposable
     {
         #region Variables.
-        private static readonly GorgonDisposableObjectCollection _trackedObjects = new GorgonDisposableObjectCollection();		// Tracked objects.
-        private static bool _isDWMEnabled = true;						                                                        // Flag to indicate that the desktop window manager compositor is enabled.
-        private static readonly bool _dontEnableDWM;						                                                    // Flag to indicate that we should not enable the DWM.
-        private bool _disposed;                                                                                                 // Flag to indicate that the context was disposed.
+        private readonly GorgonDisposableObjectCollection _trackedObjects;	                // Tracked objects.
+        private static bool _isDWMEnabled = true;						                    // Flag to indicate that the desktop window manager compositor is enabled.
+        private static readonly bool _dontEnableDWM;						                // Flag to indicate that we should not enable the DWM.
+        private bool _disposed;                                                             // Flag to indicate that the context was disposed.
         #endregion
 
         #region Properties.
@@ -489,7 +489,6 @@ namespace GorgonLibrary.Graphics
         /// <summary>
         /// Function to finalize the deferred rendering context.
         /// </summary>
-        /// <param name="restoreState">[Optional] TRUE to restore the state of the context after rendering, FALSE to keep it as-is.</param>
         /// <returns>An object containing the rendering commands to issue.</returns>
         /// <exception cref="System.NotSupportedException">Thrown when the current context is an immediate context.
         /// <para>-or-</para>
@@ -499,7 +498,7 @@ namespace GorgonLibrary.Graphics
         /// Use this method to finish recording of the rendering commands sent to a deferred context.  This method must be called from a deferred context.
         /// <para>This method requires a video device with a feature level of SM5 or better.</para>
         /// </remarks>
-        public GorgonRenderCommands FinalizeDeferred(bool restoreState = false)
+        public GorgonRenderCommands FinalizeDeferred()
         {
 #if DEBUG
             if (VideoDevice.SupportedFeatureLevel < DeviceFeatureLevel.SM5)
@@ -512,7 +511,7 @@ namespace GorgonLibrary.Graphics
             }
 #endif
 
-            var result = new GorgonRenderCommands(this, restoreState);
+            var result = new GorgonRenderCommands(this, true);
 
             AddTrackedObject(result);
 
@@ -523,7 +522,6 @@ namespace GorgonLibrary.Graphics
         /// Function to execute rendering commands from a deferred context.
         /// </summary>
         /// <param name="commands">Commands to execute.</param>
-        /// <param name="restoreState">TRUE to save and restore the context state before and after execution, FALSE to keep the state of the context as-is.</param>
         /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="commands"/> parameter is NULL (Nothing in VB.Net).</exception>
         /// <exception cref="System.NotSupportedException">Thrown when the current context is a deferred context.
         /// <para>-or-</para>
@@ -531,10 +529,9 @@ namespace GorgonLibrary.Graphics
         /// </exception>
         /// <remarks>
         /// Use this method to execute previously recorded rendering commands on the immediate context.  This method must be called from the immediate context.
-        /// <para>Using FALSE for <paramref name="restoreState"/> can avoid unncessary and inefficient state transitions.</para>
         /// <para>This method requires a video device with a feature level of SM5 or better.</para> 
         /// </remarks>
-        public void ExecuteDeferred(GorgonRenderCommands commands, bool restoreState = false)
+        public void ExecuteDeferred(GorgonRenderCommands commands)
         {
 #if DEBUG
             if (VideoDevice.SupportedFeatureLevel < DeviceFeatureLevel.SM5)
@@ -552,7 +549,7 @@ namespace GorgonLibrary.Graphics
             }
 #endif
 
-            Context.ExecuteCommandList(commands.D3DCommands, restoreState);
+            Context.ExecuteCommandList(commands.D3DCommands, true);
         }
         #endregion
 
@@ -591,6 +588,9 @@ namespace GorgonLibrary.Graphics
             }
 
             Gorgon.Log.Print("Gorgon Graphics initializing...", LoggingLevel.Simple);
+
+            // Track our objects.
+            _trackedObjects = new GorgonDisposableObjectCollection();
 
 #if DEBUG
             if (!SharpDX.Configuration.EnableObjectTracking)
@@ -698,7 +698,9 @@ namespace GorgonLibrary.Graphics
         /// <param name="graphics">The immediate graphics context.</param>
         internal GorgonGraphics(GorgonGraphics graphics)
         {
-            // If we have an immediate context, then assume this one is deferred.
+            // Inherit the object tracker from the immediate context.
+            _trackedObjects = graphics._trackedObjects;
+            
             Context = new D3D.DeviceContext(graphics.D3DDevice);
             Context.ClearState();
             ImmediateContext = graphics;
@@ -710,7 +712,7 @@ namespace GorgonLibrary.Graphics
 
             CreateStates();
 
-            Gorgon.AddTrackedObject(this);
+            graphics.AddTrackedObject(this);
         }
         #endregion
 
@@ -735,7 +737,10 @@ namespace GorgonLibrary.Graphics
                     Context.ClearState();
                 }
 
-                _trackedObjects.ReleaseAll();
+                if (!IsDeferred)
+                {
+                    _trackedObjects.ReleaseAll();
+                }
 
                 DestroyInterfaces();
                 
@@ -744,10 +749,14 @@ namespace GorgonLibrary.Graphics
                 {
                     if (Context != null)
                     {
+                        Context.Flush();
                         Context.Dispose();
                     }
 
                     Context = null;
+
+                    // Remove us from object tracking.
+                    ImmediateContext.RemoveTrackedObject(this);
                 }
                 else
                 {
@@ -783,10 +792,10 @@ namespace GorgonLibrary.Graphics
                         GIFactory.Dispose();
                         GIFactory = null;
                     }
-                }
 
-                // Remove us from the object tracker.
-                Gorgon.RemoveTrackedObject(this);
+                    // Remove us from the object tracker.
+                    Gorgon.RemoveTrackedObject(this);
+                }
 
                 Gorgon.Log.Print("Gorgon Graphics Context shut down successfully", LoggingLevel.Simple);
             }
@@ -800,7 +809,6 @@ namespace GorgonLibrary.Graphics
         public void Dispose()
         {
             Dispose(true);
-            GC.SuppressFinalize(this);
         }
         #endregion
     }

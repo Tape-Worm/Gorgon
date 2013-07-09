@@ -364,9 +364,24 @@ namespace GorgonLibrary.Graphics
 			var depthReseat = DepthStencilBuffer != null && DepthStencilBuffer.OnDepthStencilResize();
 			var flags = GI.SwapChainFlags.AllowModeSwitch;
 
-			GISwapChain.ResizeBuffers(Settings.BufferCount, Settings.VideoMode.Width, Settings.VideoMode.Height, (GI.Format)Settings.VideoMode.Format, flags);
-			CreateResources(targetReseat, depthReseat);
+		    if (Graphics.ImmediateContext.VideoDevice.SupportedFeatureLevel >= DeviceFeatureLevel.SM5)
+		    {
+		        var contexts = Graphics.ImmediateContext.GetTrackedObjectsOfType<GorgonGraphics>();
+                foreach (var context in contexts)
+                {
+                    context.Context.OutputMerger.SetTargets(null,
+                                                            null,
+                                                            0,
+                                                            new D3D.UnorderedAccessView[]
+                                                                {
+                                                                    null
+                                                                });
+                }
+		    }
 
+		    GISwapChain.ResizeBuffers(Settings.BufferCount, Settings.VideoMode.Width, Settings.VideoMode.Height, (GI.Format)Settings.VideoMode.Format, flags);
+			CreateResources(targetReseat, depthReseat);
+            
 			if (Resized != null)
 			{
 				Resized(this, new GorgonSwapChainResizedEventArgs(this));

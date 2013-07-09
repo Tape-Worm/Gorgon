@@ -40,9 +40,9 @@ namespace GorgonLibrary.Graphics
 	public sealed class GorgonTextures
 	{
 		#region Variables.
+	    private static readonly object _syncLock = new object();
 		private readonly GorgonGraphics _graphics;
 		private GorgonTexture2D _logo;
-		private static int _incrementCount;
 		#endregion
 
 		#region Properties.
@@ -54,22 +54,21 @@ namespace GorgonLibrary.Graphics
 			get
 			{
 				// Keep other threads from creating this image multiple times.
-			    try
+                lock(_syncLock)
 			    {
-			        if (Interlocked.Increment(ref _incrementCount) == 1)
-			        {
-			            if (_logo == null)
-			            {
-			                _logo = _graphics.Textures.CreateTexture<GorgonTexture2D>("Gorgon.Logo", Resources.Gorgon_2_x_Logo_Small);
+                    // If we're in a deferred context, then return the logo from the immediate context.
+                    if (_graphics.IsDeferred)
+                    {
+                        return _graphics.ImmediateContext.Textures.GorgonLogo;
+                    }
 
-			                // Don't track this image.
-			                _graphics.RemoveTrackedObject(_logo);
-			            }
+			        if (_logo == null)
+			        {
+			            _logo = _graphics.Textures.CreateTexture<GorgonTexture2D>("Gorgon.Logo", Resources.Gorgon_2_x_Logo_Small);
+
+			            // Don't track this image.
+			            _graphics.RemoveTrackedObject(_logo);
 			        }
-			    }
-			    finally
-			    {
-                    Interlocked.Decrement(ref _incrementCount);
 			    }
 
 			    return _logo;
@@ -226,9 +225,12 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		internal void CleanUp()
 		{
-			if (_logo != null)
-				_logo.Dispose();
-			_logo = null;			
+		    if (_logo != null)
+		    {
+		        _logo.Dispose();
+		    }
+
+		    _logo = null;			
 		}
 
 		/// <summary>

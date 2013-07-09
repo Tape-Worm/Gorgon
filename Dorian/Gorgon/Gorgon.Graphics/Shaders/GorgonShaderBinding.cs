@@ -218,6 +218,17 @@ namespace GorgonLibrary.Graphics
 					}
 				    break;
 		    }
+
+            // If we have multiple contexts, then we need to unbind from those as well.
+            if ((_graphics.IsDeferred) || (_graphics.VideoDevice.SupportedFeatureLevel < DeviceFeatureLevel.SM5))
+            {
+                return;
+            }
+
+            foreach (var context in _graphics.GetTrackedObjectsOfType<GorgonGraphics>())
+            {
+                context.Shaders.Reseat(shader);
+            }
 		}
 
 		/// <summary>
@@ -244,6 +255,17 @@ namespace GorgonLibrary.Graphics
 			{
 				DomainShader.Resources.Unbind(view);
 			}
+
+            // If we have multiple contexts, then we need to unbind from those as well.
+            if ((_graphics.IsDeferred) || (_graphics.VideoDevice.SupportedFeatureLevel < DeviceFeatureLevel.SM5))
+		    {
+		        return;
+		    }
+
+		    foreach (var context in _graphics.GetTrackedObjectsOfType<GorgonGraphics>())
+		    {
+		        context.Shaders.Unbind(view);
+		    }
 		}
         
         /// <summary>
@@ -271,6 +293,17 @@ namespace GorgonLibrary.Graphics
 			{
 				DomainShader.Resources.UnbindResource(resource);
 			}
+
+            // If we have multiple contexts, then we need to unbind from those as well.
+            if ((_graphics.IsDeferred) || (_graphics.VideoDevice.SupportedFeatureLevel < DeviceFeatureLevel.SM5))
+            {
+                return;
+            }
+
+            foreach (var context in _graphics.GetTrackedObjectsOfType<GorgonGraphics>())
+            {
+                context.Shaders.UnbindResource(resource);
+            }
         }
 
         /// <summary>
@@ -285,6 +318,17 @@ namespace GorgonLibrary.Graphics
             }
 
             ComputeShader.UnorderedAccessViews.Unbind(view);
+
+            // If we have multiple contexts, then we need to unbind from those as well.
+            if ((_graphics.IsDeferred) || (_graphics.VideoDevice.SupportedFeatureLevel < DeviceFeatureLevel.SM5))
+            {
+                return;
+            }
+
+            foreach (var context in _graphics.GetTrackedObjectsOfType<GorgonGraphics>())
+            {
+                context.Shaders.Unbind(view);
+            }
         }
 
 		/// <summary>
@@ -311,6 +355,17 @@ namespace GorgonLibrary.Graphics
 			{
 				DomainShader.ConstantBuffers.Unbind(constantBuffer);
 			}
+
+            // If we have multiple contexts, then we need to unbind from those as well.
+            if ((_graphics.IsDeferred) || (_graphics.VideoDevice.SupportedFeatureLevel < DeviceFeatureLevel.SM5))
+            {
+                return;
+            }
+
+            foreach (var context in _graphics.GetTrackedObjectsOfType<GorgonGraphics>())
+            {
+                context.Shaders.UnbindConstantBuffer(constantBuffer);
+            }
         }
 
 		/// <summary>

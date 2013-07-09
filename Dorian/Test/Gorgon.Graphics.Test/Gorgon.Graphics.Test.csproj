@@ -35,6 +35,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Gorgon.MemoryAccess, Version=1.0.0.0, Culture=neutral, PublicKeyToken=c001d94e9acbbee7, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Gorgon\Gorgon.Memory\Gorgon.MemoryAccess.dll</HintPath>
+    </Reference>
     <Reference Include="SlimMath, Version=1.0.0.0, Culture=neutral, PublicKeyToken=eb5b190254be1642, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\Dependencies\SlimMath\SlimMath\bin\Release\SlimMath.dll</HintPath>
@@ -96,6 +100,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="ShaderTests.hlsl" />
+    <Content Include="Deferred.hlsl" />
     <Content Include="RawBufferShaders.hlsl" />
     <None Include="Resources\Glass.png" />
     <Content Include="StructuredBufferShaders.hlsl" />

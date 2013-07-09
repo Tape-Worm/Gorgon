@@ -40,8 +40,9 @@ namespace GorgonLibrary.Graphics
 	public class GorgonFonts
 	{
 		#region Variables.
-		private readonly GorgonGraphics _graphics;			// Graphics interface.
-		private GorgonFont _default;						// Default font for debugging, etc...
+		private readonly GorgonGraphics _graphics;			        // Graphics interface.
+		private GorgonFont _default;						        // Default font for debugging, etc...
+	    private static readonly object _syncLock = new object();    // Thread synchronization.
 		#endregion
 
 		#region Properties.
@@ -52,29 +53,40 @@ namespace GorgonLibrary.Graphics
 		{
 			get
 			{
-				if (_default == null)
-				{
-					// Create the default font.
-					_default = new GorgonFont(_graphics, "Gorgon.Default.Font", new GorgonFontSettings
-						{
-						AntiAliasingMode = FontAntiAliasMode.AntiAliasHQ,
-						TextContrast = 2,
-						Characters = Enumerable.Range(32, 127).
-							Select(Convert.ToChar).
-							Where(c => !char.IsControl(c)),
-						DefaultCharacter = ' ',
-						FontFamilyName = "Tahoma",
-						FontHeightMode = FontHeightMode.Pixels,
-						FontStyle = FontStyle.Bold,
-						OutlineSize = 0,
-						Size = 14,
-						TextureSize = new Size(128, 128)
-					});
+			    lock(_syncLock)
+			    {
+                    // If we're on a deferred context, then return the default font from the immediate context.
+                    if (_graphics.IsDeferred)
+                    {
+                        return _graphics.ImmediateContext.Fonts.DefaultFont;
+                    }
 
-					_default.Update(_default.Settings);
-				}
+			        if (_default == null) 
+			        {
+			            // Create the default font.
+			            _default = new GorgonFont(_graphics,
+			                                      "Gorgon.Default.Font",
+			                                      new GorgonFontSettings
+			                                          {
+			                                              AntiAliasingMode = FontAntiAliasMode.AntiAliasHQ,
+			                                              TextContrast = 2,
+			                                              Characters = Enumerable.Range(32, 127).
+			                                                                      Select(Convert.ToChar).
+			                                                                      Where(c => !char.IsControl(c)),
+			                                              DefaultCharacter = ' ',
+			                                              FontFamilyName = "Tahoma",
+			                                              FontHeightMode = FontHeightMode.Pixels,
+			                                              FontStyle = FontStyle.Bold,
+			                                              OutlineSize = 0,
+			                                              Size = 14,
+			                                              TextureSize = new Size(128, 128)
+			                                          });
 
-				return _default;
+			            _default.Update(_default.Settings);
+			        }
+			    }
+
+			    return _default;
 			}
 		}
 		#endregion
