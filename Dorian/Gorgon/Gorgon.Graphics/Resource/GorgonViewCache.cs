@@ -163,7 +163,7 @@ namespace GorgonLibrary.Graphics
 				item.Value.CleanUp();
 			}
 
-            foreach (var item in _targetViews)
+            foreach (var item in _depthViews)
             {
                 item.Value.CleanUp();
             }

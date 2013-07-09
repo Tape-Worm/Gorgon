@@ -750,7 +750,16 @@ namespace GorgonLibrary.Graphics
 		/// <param name="view">View to unbind.</param>
 		internal void Unbind(GorgonRenderTargetView view)
 		{
-			if ((_targetViews == null) || (_targetViews.Length == 0))
+            // If we have multiple contexts, then we need to unbind from those as well.
+            if ((!_graphics.IsDeferred) && (_graphics.VideoDevice.SupportedFeatureLevel >= DeviceFeatureLevel.SM5))
+            {
+                foreach (var context in _graphics.GetTrackedObjectsOfType<GorgonGraphics>())
+                {
+                    context.Output.Unbind(view);
+                }
+            }
+            
+            if ((_targetViews == null) || (_targetViews.Length == 0))
 			{
 				return;
 			}
@@ -783,6 +792,15 @@ namespace GorgonLibrary.Graphics
         /// <param name="view">Unordered access view to unbind.</param>
         internal void Unbind(GorgonUnorderedAccessView view)
         {
+            // If we have multiple contexts, then we need to unbind from those as well.
+            if ((!_graphics.IsDeferred) && (_graphics.VideoDevice.SupportedFeatureLevel >= DeviceFeatureLevel.SM5))
+            {
+                foreach (var context in _graphics.GetTrackedObjectsOfType<GorgonGraphics>())
+                {
+                    context.Output.Unbind(view);
+                }
+            }
+
             if ((_unorderedViews == null) || (_unorderedViews.Length == 0))
             {
                 return;
@@ -824,6 +842,15 @@ namespace GorgonLibrary.Graphics
         /// <param name="startSlot">Starting slot to unbind.</param>
         internal void UnbindSlots(int startSlot)
         {
+            // If we have multiple contexts, then we need to unbind from those as well.
+            if ((!_graphics.IsDeferred) && (_graphics.VideoDevice.SupportedFeatureLevel >= DeviceFeatureLevel.SM5))
+            {
+                foreach (var context in _graphics.GetTrackedObjectsOfType<GorgonGraphics>())
+                {
+                    context.Output.UnbindSlots(startSlot);
+                }
+            }
+
             if ((_targetViews == null)
                 || (startSlot >= _targetViews.Length))
             {
