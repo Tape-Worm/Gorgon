@@ -552,7 +552,7 @@ namespace GorgonLibrary.Renderers
 		{
 			// Remove any previous handler.
 			if (Target.SwapChain != null)
-				Target.SwapChain.Resized -= new EventHandler<GorgonSwapChainResizedEventArgs>(target_Resized);
+				Target.SwapChain.AfterSwapChainResized -= new EventHandler<GorgonAfterSwapChainResizedEventArgs>(target_Resized);
 
 			Graphics.Output.SetRenderTarget(target, target.DepthStencilBuffer);
 
@@ -574,7 +574,7 @@ namespace GorgonLibrary.Renderers
 
 			// Re-assign the event.
 			if (Target.SwapChain != null)
-				Target.SwapChain.Resized += new EventHandler<GorgonSwapChainResizedEventArgs>(target_Resized);
+				Target.SwapChain.AfterSwapChainResized += new EventHandler<GorgonAfterSwapChainResizedEventArgs>(target_Resized);
 		}
 
 		/// <summary>
@@ -582,7 +582,7 @@ namespace GorgonLibrary.Renderers
 		/// </summary>
 		/// <param name="sender">Object that sent the event.</param>
 		/// <param name="e">Event parameters.</param>
-		private void target_Resized(object sender, GorgonSwapChainResizedEventArgs e)
+		private void target_Resized(object sender, GorgonAfterSwapChainResizedEventArgs e)
 		{
 			UpdateTarget(Target);
 		}
@@ -609,7 +609,7 @@ namespace GorgonLibrary.Renderers
 			// Create the default projection matrix.
 			if ((Target != null) && (Target.SwapChain != null))
 			{
-				Target.SwapChain.Resized -= target_Resized;
+				Target.SwapChain.AfterSwapChainResized -= target_Resized;
 			}
 
 			// Create constant buffers.
@@ -1179,7 +1179,7 @@ namespace GorgonLibrary.Renderers
 
 				    if ((Target != null) && (Target.SwapChain != null))
 				    {
-				        Target.SwapChain.Resized -= new EventHandler<GorgonSwapChainResizedEventArgs>(target_Resized);
+				        Target.SwapChain.AfterSwapChainResized -= new EventHandler<GorgonAfterSwapChainResizedEventArgs>(target_Resized);
 				    }
 
 				    if (_layout != null)

@@ -61,15 +61,6 @@ namespace GorgonLibrary.Graphics
             get;
             private set;
         }
-
-        /// <summary>
-        /// Property to return whether the state will be restored after the execution of the commands.
-        /// </summary>
-        public bool RestoreState
-        {
-            get;
-            private set;
-        }
         #endregion
 
         #region Methods.
@@ -81,13 +72,11 @@ namespace GorgonLibrary.Graphics
         /// Initializes a new instance of the <see cref="GorgonRenderCommands"/> class.
         /// </summary>
         /// <param name="graphics">The graphics context.</param>
-        /// <param name="restoreState">TRUE to restore the state of the context after the commands are executed, FALSE to keep the states.</param>
-        internal GorgonRenderCommands(GorgonGraphics graphics, bool restoreState)
+        internal GorgonRenderCommands(GorgonGraphics graphics)
         {
             Graphics = graphics;
-            RestoreState = restoreState;
             
-            D3DCommands = graphics.Context.FinishCommandList(restoreState);
+            D3DCommands = graphics.Context.FinishCommandList(true);
         }
         #endregion
 
@@ -105,7 +94,8 @@ namespace GorgonLibrary.Graphics
 
             if (disposing)
             {
-                Graphics.RemoveTrackedObject(this);
+                Graphics.ReleaseCommands(this);
+
                 if (D3DCommands != null)
                 {
                     D3DCommands.Dispose();

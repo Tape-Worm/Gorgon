@@ -78,7 +78,7 @@ namespace GorgonLibrary.Graphics.Test
 
                 var view = ((GorgonTexture2D)_framework.Screen).GetUnorderedAccessView(BufferFormat.R8G8B8A8_UIntNormal);
 
-	            _framework.Screen.Resized += (sender, e) =>
+	            _framework.Screen.AfterSwapChainResized += (sender, e) =>
 		            {
 			            view = ((GorgonTexture2D)_framework.Screen).GetUnorderedAccessView(BufferFormat.R8G8B8A8_UIntNormal);
 						using(var data = new GorgonDataStream(16))

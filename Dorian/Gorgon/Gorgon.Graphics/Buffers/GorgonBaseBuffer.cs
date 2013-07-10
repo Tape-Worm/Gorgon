@@ -824,6 +824,20 @@ namespace GorgonLibrary.Graphics
 			Graphics.Context.UpdateSubresource(ref data, D3DResource, 0, DirectAccess.SizeOf<T>());
 		}
 
+        public void Update<T>(GorgonGraphics ctx, ref T data)
+            where T : struct
+        {
+#if DEBUG
+            if (Settings.Usage != GorgonLibrary.Graphics.BufferUsage.Default)
+            {
+                throw new GorgonException(GorgonResult.AccessDenied, Resources.GORGFX_NOT_DEFAULT_USAGE);
+            }
+#endif
+
+            ctx.Context.UpdateSubresource(ref data, D3DResource, 0, DirectAccess.SizeOf<T>());
+        }
+
+
 		/// <summary>
 		/// Function to write an array of value types to the buffer.
 		/// </summary>

@@ -259,7 +259,7 @@ namespace GorgonLibrary.Graphics.Test
                     DepthStencilFormat = BufferFormat.D24_UIntNormal_S8_UInt
 				});
 
-			_swap.Resized += (sender, args) =>
+			_swap.AfterSwapChainResized += (sender, args) =>
 			{
 				var currentMatrix = new MatrixBuffer();
 

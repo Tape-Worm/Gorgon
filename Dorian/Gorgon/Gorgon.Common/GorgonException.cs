@@ -231,10 +231,12 @@ namespace GorgonLibrary
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="ex"/> parameter is NULL (or Nothing in VB.NET).</exception>
 		public static Exception Catch(Exception ex)
 		{
-			if (ex == null)
-				throw new ArgumentNullException("ex");
+		    if (ex == null)
+		    {
+		        throw new ArgumentNullException("ex");
+		    }
 
-			LogException(ex);
+		    LogException(ex);
 
 			return ex;
 		}
