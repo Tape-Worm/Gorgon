@@ -354,7 +354,7 @@ namespace GorgonLibrary.Graphics.Example
 			// Handle any resizing.
 			// This is here because the base graphics library will NOT handle state loss due to resizing.
 			// This is up to the developer to handle.
-			_swap.Resized += _swap_Resized;
+			_swap.AfterSwapChainResized += _swap_Resized;
 
 			// Create the 2D interface for our text.
 			_2D = Graphics.Output.Create2DRenderer(_swap);									

@@ -100,6 +100,7 @@ namespace GorgonLibrary.Graphics
         private static bool _isDWMEnabled = true;						                    // Flag to indicate that the desktop window manager compositor is enabled.
         private static readonly bool _dontEnableDWM;						                // Flag to indicate that we should not enable the DWM.
         private bool _disposed;                                                             // Flag to indicate that the context was disposed.
+	    private List<GorgonRenderCommands> _commands;                                       // A list of rendering commands for deferred contexts.
         #endregion
 
         #region Properties.
@@ -355,51 +356,23 @@ namespace GorgonLibrary.Graphics
             Fonts = new GorgonFonts(this);
             Buffers = new GorgonBuffers(this);
 
-            // Set default states.
-            Rasterizer.States = GorgonRasterizerStates.CullBackFace;
-            Output.BlendingState.States = GorgonBlendStates.DefaultStates;
-            Output.DepthStencilState.States = GorgonDepthStencilStates.NoDepthStencil;
+            ClearState();
+        }
 
-            // Initialize the shaders with default texture sampler settings.
-            for (int i = 0; i < Shaders.VertexShader.TextureSamplers.Count; i++)
-            {
-                Shaders.VertexShader.TextureSamplers[i] = GorgonTextureSamplerStates.DefaultStates;
-            }
-
-            for (int i = 0; i < Shaders.PixelShader.TextureSamplers.Count; i++)
-            {
-                Shaders.PixelShader.TextureSamplers[i] = GorgonTextureSamplerStates.DefaultStates;
-            }
-
-            if (VideoDevice.SupportedFeatureLevel < DeviceFeatureLevel.SM4)
+        /// <summary>
+        /// Function to release the specified commands list.
+        /// </summary>
+        /// <param name="commands">Commands to release.</param>
+        internal void ReleaseCommands(GorgonRenderCommands commands)
+        {
+            if ((_commands == null)
+                || (commands == null)
+                || (!_commands.Contains(commands)))
             {
                 return;
             }
 
-            for (int i = 0; i < Shaders.GeometryShader.TextureSamplers.Count; i++)
-            {
-                Shaders.GeometryShader.TextureSamplers[i] = GorgonTextureSamplerStates.DefaultStates;
-            }
-
-            if (VideoDevice.SupportedFeatureLevel < DeviceFeatureLevel.SM5)
-            {
-                return;
-            }
-
-            for (int i = 0; i < Shaders.ComputeShader.TextureSamplers.Count; i++)
-            {
-                Shaders.ComputeShader.TextureSamplers[i] = GorgonTextureSamplerStates.DefaultStates;
-            }
-
-            for (int i = 0; i < Shaders.HullShader.TextureSamplers.Count; i++)
-            {
-                Shaders.HullShader.TextureSamplers[i] = GorgonTextureSamplerStates.DefaultStates;
-            }
-
-            for (int i = 0; i < Shaders.DomainShader.TextureSamplers.Count; i++)
-            {
-                Shaders.DomainShader.TextureSamplers[i] = GorgonTextureSamplerStates.DefaultStates;
-            }
+            _commands.Remove(commands);
         }
 
         /// <summary>
@@ -469,15 +442,10 @@ namespace GorgonLibrary.Graphics
         /// <see cref="FinalizeDeferred"/> is called and will return an object that will contain the command list.  Then a call to ExecuteDeferred using the command list object from the immediate context will 
         /// execute the commands.</para>
         /// <para>This method must be called from the immediate context.</para>
-        /// <para>This method requires a video device with a feature level of SM5 or better.</para>
         /// </remarks>
         /// <exception cref="GorgonLibrary.GorgonException">Thrown when the deferred context could not be created.</exception>
         public GorgonGraphics CreateDeferredGraphics()
         {
-            if (VideoDevice.SupportedFeatureLevel < DeviceFeatureLevel.SM5)
-            {
-                throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_REQUIRES_SM, DeviceFeatureLevel.SM5));
-            }
             if (IsDeferred)
             {
                 throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_CANNOT_CREATE_CONTEXT_FROM_CONTEXT);
@@ -496,24 +464,24 @@ namespace GorgonLibrary.Graphics
         /// </exception>
         /// <remarks>
         /// Use this method to finish recording of the rendering commands sent to a deferred context.  This method must be called from a deferred context.
-        /// <para>This method requires a video device with a feature level of SM5 or better.</para>
         /// </remarks>
         public GorgonRenderCommands FinalizeDeferred()
         {
 #if DEBUG
-            if (VideoDevice.SupportedFeatureLevel < DeviceFeatureLevel.SM5)
-            {
-                throw new NotSupportedException(string.Format(Resources.GORGFX_REQUIRES_SM, DeviceFeatureLevel.SM5));
-            }
             if (!IsDeferred)
             {
                 throw new NotSupportedException(Resources.GORGFX_CANNOT_USE_IMMEDIATE_CONTEXT);
             }
 #endif
 
-            var result = new GorgonRenderCommands(this, true);
+            var result = new GorgonRenderCommands(this);
 
-            AddTrackedObject(result);
+            if (_commands == null)
+            {
+                _commands = new List<GorgonRenderCommands>();
+            }
+
+            _commands.Add(result);
 
             return result;
         }
@@ -529,27 +497,135 @@ namespace GorgonLibrary.Graphics
         /// </exception>
         /// <remarks>
         /// Use this method to execute previously recorded rendering commands on the immediate context.  This method must be called from the immediate context.
-        /// <para>This method requires a video device with a feature level of SM5 or better.</para> 
         /// </remarks>
         public void ExecuteDeferred(GorgonRenderCommands commands)
         {
+            GorgonDebug.AssertNull(commands, "commands");
+
 #if DEBUG
-            if (VideoDevice.SupportedFeatureLevel < DeviceFeatureLevel.SM5)
-            {
-                throw new NotSupportedException(string.Format(Resources.GORGFX_REQUIRES_SM, DeviceFeatureLevel.SM5));
-            }
             if (IsDeferred)
             {
                 throw new NotSupportedException(Resources.GORGFX_CANNOT_USE_DEFERRED_CONTEXT);
             }
-
-            if (commands == null)
-            {
-                throw new ArgumentNullException("commands");
-            }
 #endif
 
             Context.ExecuteCommandList(commands.D3DCommands, true);
+        }
+
+        /// <summary>
+        /// Function to clear the states for the graphics object.
+        /// </summary>
+        public void ClearState()
+        {
+            // Set default states.
+            Input.IndexBuffer = null;
+            Input.Layout = null;
+            Input.PrimitiveType = PrimitiveType.Unknown;
+
+            for (int i = 0; i < Input.VertexBuffers.Count; i++)
+            {
+                Input.VertexBuffers[i] = GorgonVertexBufferBinding.Empty;
+            }
+            
+            Rasterizer.States = GorgonRasterizerStates.CullBackFace;
+            Rasterizer.SetScissorRectangles(null);
+            Rasterizer.SetViewports(null);
+
+            Output.BlendingState.States = GorgonBlendStates.DefaultStates;
+            Output.DepthStencilState.States = GorgonDepthStencilStates.NoDepthStencil;
+            Output.SetRenderTargets(null);
+            
+            // Initialize the shaders with default texture sampler settings.
+            for (int i = 0; i < Shaders.VertexShader.TextureSamplers.Count; i++)
+            {
+                Shaders.VertexShader.TextureSamplers[i] = GorgonTextureSamplerStates.DefaultStates;
+                Shaders.PixelShader.TextureSamplers[i] = GorgonTextureSamplerStates.DefaultStates;
+
+                if (VideoDevice.SupportedFeatureLevel < DeviceFeatureLevel.SM4)
+                {
+                    continue;
+                }
+
+                Shaders.GeometryShader.TextureSamplers[i] = GorgonTextureSamplerStates.DefaultStates;
+
+                if (VideoDevice.SupportedFeatureLevel < DeviceFeatureLevel.SM5)
+                {
+                    continue;
+                }
+
+                Shaders.ComputeShader.TextureSamplers[i] = GorgonTextureSamplerStates.DefaultStates;
+                Shaders.HullShader.TextureSamplers[i] = GorgonTextureSamplerStates.DefaultStates;
+                Shaders.DomainShader.TextureSamplers[i] = GorgonTextureSamplerStates.DefaultStates;
+            }
+
+            // Initialize the shaders with default constant buffer settings.
+            for (int i = 0; i < Shaders.VertexShader.ConstantBuffers.Count; i++)
+            {
+                Shaders.VertexShader.ConstantBuffers[i] = null;
+                Shaders.PixelShader.ConstantBuffers[i] = null;
+
+                if (VideoDevice.SupportedFeatureLevel < DeviceFeatureLevel.SM4)
+                {
+                    continue;
+                }
+
+                Shaders.GeometryShader.ConstantBuffers[i] = null;
+                
+
+                if (VideoDevice.SupportedFeatureLevel < DeviceFeatureLevel.SM5)
+                {
+                    continue;
+                }
+
+                Shaders.ComputeShader.ConstantBuffers[i] = null;
+                Shaders.HullShader.ConstantBuffers[i] = null;
+                Shaders.DomainShader.ConstantBuffers[i] = null;
+            }
+
+            // Initialize the shaders with default resource view settings.
+            for (int i = 0; i < Shaders.VertexShader.Resources.Count; i++)
+            {
+                if (VideoDevice.SupportedFeatureLevel > DeviceFeatureLevel.SM2_a_b)
+                {
+                    Shaders.VertexShader.Resources[i] = null;
+                }
+
+                Shaders.PixelShader.Resources[i] = null;
+
+                if (VideoDevice.SupportedFeatureLevel < DeviceFeatureLevel.SM4)
+                {
+                    continue;
+                }
+
+                Shaders.GeometryShader.Resources[i] = null;
+
+
+                if (VideoDevice.SupportedFeatureLevel < DeviceFeatureLevel.SM5)
+                {
+                    continue;
+                }
+
+                Shaders.ComputeShader.Resources[i] = null;
+                Shaders.HullShader.Resources[i] = null;
+                Shaders.DomainShader.Resources[i] = null;
+            }
+
+            if (VideoDevice.SupportedFeatureLevel >= DeviceFeatureLevel.SM4)
+            {
+                // Initialize the shaders with default constant buffer settings.
+                Shaders.GeometryShader.SetStreamOutputBuffers(null);
+            }
+
+            if (VideoDevice.SupportedFeatureLevel >= DeviceFeatureLevel.SM5)
+            {
+                for (int i = 0; i < Shaders.ComputeShader.UnorderedAccessViews.Count; i++)
+                {
+                    Shaders.ComputeShader.UnorderedAccessViews[i] = null;
+                }
+            }
+
+            Context.Flush();
+            Context.ClearState();
         }
         #endregion
 
@@ -747,6 +823,15 @@ namespace GorgonLibrary.Graphics
                 // Only clean up the context if the context is deferred.
                 if (IsDeferred)
                 {
+                    if (_commands != null)
+                    {
+                        // Release any outstanding command lists.
+                        while (_commands.Count > 0)
+                        {
+                            ReleaseCommands(_commands[_commands.Count - 1]);
+                        }
+                    }
+
                     if (Context != null)
                     {
                         Context.Flush();
@@ -799,7 +884,7 @@ namespace GorgonLibrary.Graphics
 
                 Gorgon.Log.Print("Gorgon Graphics Context shut down successfully", LoggingLevel.Simple);
             }
-
+            
             _disposed = true;
         }
 

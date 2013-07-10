@@ -38,9 +38,9 @@ using D3D = SharpDX.Direct3D11;
 namespace GorgonLibrary.Graphics
 {
 	/// <summary>
-	/// Render target resized event arguments.
+	/// Render target after resized event arguments.
 	/// </summary>
-	public class GorgonSwapChainResizedEventArgs
+	public class GorgonAfterSwapChainResizedEventArgs
 		: EventArgs
 	{
 		#region Properties.
@@ -74,10 +74,10 @@ namespace GorgonLibrary.Graphics
 
 		#region Constructor/Destructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonSwapChainResizedEventArgs" /> class.
+		/// Initializes a new instance of the <see cref="GorgonAfterSwapChainResizedEventArgs" /> class.
 		/// </summary>
 		/// <param name="target">Render target that was resized.</param>
-		public GorgonSwapChainResizedEventArgs(GorgonSwapChain target)
+		public GorgonAfterSwapChainResizedEventArgs(GorgonSwapChain target)
 		{
 			Width = target.Settings.Width;
 			Height = target.Settings.Height;
@@ -146,10 +146,14 @@ namespace GorgonLibrary.Graphics
 		#endregion
 
 		#region Events.
+        /// <summary>
+        /// Event called before the swap chain has been resized.
+        /// </summary>
+	    public event EventHandler<EventArgs> BeforeSwapChainResized;
 		/// <summary>
-		/// Event called after the render target has been resized.
+		/// Event called after the swap chain has been resized.
 		/// </summary>
-		public event EventHandler<GorgonSwapChainResizedEventArgs> Resized;
+		public event EventHandler<GorgonAfterSwapChainResizedEventArgs> AfterSwapChainResized;
 		/// <summary>
 		/// Event called before the swap chain transitions to full screen or windowed mode.
 		/// </summary>
@@ -157,7 +161,7 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Event called after the swap chain transiitons to full screen or windowed mode.
 		/// </summary>
-		public event EventHandler<GorgonSwapChainResizedEventArgs> AfterStateTransition;
+		public event EventHandler<GorgonAfterSwapChainResizedEventArgs> AfterStateTransition;
 		#endregion
 
 		#region Properties.
@@ -264,20 +268,39 @@ namespace GorgonLibrary.Graphics
 		/// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
 		private void _parentForm_Deactivate(object sender, EventArgs e)
 		{
-			if ((GISwapChain == null) || (!Graphics.ResetFullscreenOnFocus))
-				return;
+		    try
+		    {
+		        if ((GISwapChain == null)
+		            || (!Graphics.ResetFullscreenOnFocus))
+		            return;
 
-			Graphics.GetFullScreenSwapChains();
+		        Graphics.GetFullScreenSwapChains();
 
-			// Reset the video mode to windowed.
-			// Note:  For some reason, this is different than it was on SlimDX.  I never had to do this before, but with
-			// SharpDX I now have to handle the transition from full screen to windowed manually.
-			if (GISwapChain.IsFullScreen)
-			{
-				GISwapChain.SetFullscreenState(false, null);				
-				Settings.IsWindowed = true;
-				((Form)Settings.Window).WindowState = FormWindowState.Minimized;
-			}
+		        // Reset the video mode to windowed.
+		        // Note:  For some reason, this is different than it was on SlimDX.  I never had to do this before, but with
+		        // SharpDX I now have to handle the transition from full screen to windowed manually.
+		        if (GISwapChain.IsFullScreen)
+		        {
+		            GISwapChain.SetFullscreenState(false, null);
+		            Settings.IsWindowed = true;
+		            ((Form)Settings.Window).WindowState = FormWindowState.Minimized;
+		        }
+		    }
+            catch (Exception ex)
+            {
+#if DEBUG
+                GorgonException.Catch(ex,
+                                      () =>
+                                      UI.GorgonDialogs.ErrorBox(_parentForm,
+                                                                string.Format(Resources.GORGFX_CATASTROPHIC_ERROR, Gorgon.Log.LogPath),
+                                                                ex));
+
+                // If we fail in here, then we have a terminal error in Gorgon, don't risk further corruption.
+                Gorgon.Quit();
+#else
+		        GorgonException.Catch(ex);
+#endif
+            }
 		}
 
 		/// <summary>
@@ -287,18 +310,37 @@ namespace GorgonLibrary.Graphics
 		/// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
 		private void _parentForm_Activated(object sender, EventArgs e)
 		{
-			if ((GISwapChain == null) || (!Graphics.ResetFullscreenOnFocus))
-				return;
+		    try
+		    {
+		        if ((GISwapChain == null)
+		            || (!Graphics.ResetFullscreenOnFocus))
+		            return;
 
-			Graphics.GetFullScreenSwapChains();
-						
-			if (!GISwapChain.IsFullScreen) 
-			{
-				((Form)Settings.Window).WindowState = FormWindowState.Normal;
-				// Get the current video output.				
-				GISwapChain.SetFullscreenState(true, null);
-				Settings.IsWindowed = false;
-			}
+		        Graphics.GetFullScreenSwapChains();
+
+		        if (!GISwapChain.IsFullScreen)
+		        {
+		            ((Form)Settings.Window).WindowState = FormWindowState.Normal;
+		            // Get the current video output.				
+		            GISwapChain.SetFullscreenState(true, null);
+		            Settings.IsWindowed = false;
+		        }
+		    }
+            catch (Exception ex)
+            {
+#if DEBUG
+                GorgonException.Catch(ex,
+                                      () =>
+                                      UI.GorgonDialogs.ErrorBox(_parentForm,
+                                                                string.Format(Resources.GORGFX_CATASTROPHIC_ERROR, Gorgon.Log.LogPath),
+                                                                ex));
+
+                // If we fail in here, then we have a terminal error in Gorgon, don't risk further corruption.
+                Gorgon.Quit();
+#else
+		        GorgonException.Catch(ex);
+#endif
+            }
 		}
 
 		/// <summary>
@@ -360,31 +402,20 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		private void ResizeBuffers()
 		{
+            if (BeforeSwapChainResized != null)
+            {
+                BeforeSwapChainResized(this, EventArgs.Empty);
+            }
+
 			var targetReseat = _renderTarget.OnSwapChainResize();
 			var depthReseat = DepthStencilBuffer != null && DepthStencilBuffer.OnDepthStencilResize();
-			var flags = GI.SwapChainFlags.AllowModeSwitch;
 
-		    if (Graphics.ImmediateContext.VideoDevice.SupportedFeatureLevel >= DeviceFeatureLevel.SM5)
-		    {
-		        var contexts = Graphics.ImmediateContext.GetTrackedObjectsOfType<GorgonGraphics>();
-                foreach (var context in contexts)
-                {
-                    context.Context.OutputMerger.SetTargets(null,
-                                                            null,
-                                                            0,
-                                                            new D3D.UnorderedAccessView[]
-                                                                {
-                                                                    null
-                                                                });
-                }
-		    }
-
-		    GISwapChain.ResizeBuffers(Settings.BufferCount, Settings.VideoMode.Width, Settings.VideoMode.Height, (GI.Format)Settings.VideoMode.Format, flags);
+		    GISwapChain.ResizeBuffers(Settings.BufferCount, Settings.VideoMode.Width, Settings.VideoMode.Height, (GI.Format)Settings.VideoMode.Format, GI.SwapChainFlags.AllowModeSwitch);
 			CreateResources(targetReseat, depthReseat);
             
-			if (Resized != null)
+			if (AfterSwapChainResized != null)
 			{
-				Resized(this, new GorgonSwapChainResizedEventArgs(this));
+				AfterSwapChainResized(this, new GorgonAfterSwapChainResizedEventArgs(this));
 			}
 		}
 
@@ -395,40 +426,58 @@ namespace GorgonLibrary.Graphics
 		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
 		private void Window_ParentChanged(object sender, EventArgs e)
 		{
-			// If the actual control has changed parents, update the top level control.
-			if (sender == Settings.Window)
-			{
-				var newTopLevelParent = Gorgon.GetTopLevelControl(Settings.Window);
+		    try
+		    {
+		        // If the actual control has changed parents, update the top level control.
+		        if (sender == Settings.Window)
+		        {
+		            var newTopLevelParent = Gorgon.GetTopLevelControl(Settings.Window);
 
-				if (newTopLevelParent != _topLevelControl)
-				{
-					_topLevelControl.ParentChanged -= Window_ParentChanged;
+		            if (newTopLevelParent != _topLevelControl)
+		            {
+		                _topLevelControl.ParentChanged -= Window_ParentChanged;
 
-					// If we're not at the top of the chain, then find out which window is and set it up
-					// to handle changes to its hierarchy.
-					if (newTopLevelParent != Settings.Window)
-					{
-						_topLevelControl = newTopLevelParent;
-						_topLevelControl.ParentChanged += Window_ParentChanged;
-					}
-				}
-			}
+		                // If we're not at the top of the chain, then find out which window is and set it up
+		                // to handle changes to its hierarchy.
+		                if (newTopLevelParent != Settings.Window)
+		                {
+		                    _topLevelControl = newTopLevelParent;
+		                    _topLevelControl.ParentChanged += Window_ParentChanged;
+		                }
+		            }
+		        }
 
-			if (_parentForm != null)
-			{
-				_parentForm.ResizeBegin -= _parentForm_ResizeBegin;
-				_parentForm.ResizeEnd -= _parentForm_ResizeEnd;
-			}
+		        if (_parentForm != null)
+		        {
+		            _parentForm.ResizeBegin -= _parentForm_ResizeBegin;
+		            _parentForm.ResizeEnd -= _parentForm_ResizeEnd;
+		        }
 
-			_parentForm = Gorgon.GetTopLevelForm(Settings.Window);
+		        _parentForm = Gorgon.GetTopLevelForm(Settings.Window);
 
-			if (_parentForm == null)
-			{
-				return;
-			}
+		        if (_parentForm == null)
+		        {
+		            return;
+		        }
 
-			_parentForm.ResizeBegin += _parentForm_ResizeBegin;
-			_parentForm.ResizeEnd += _parentForm_ResizeEnd;
+		        _parentForm.ResizeBegin += _parentForm_ResizeBegin;
+		        _parentForm.ResizeEnd += _parentForm_ResizeEnd;
+		    }
+            catch (Exception ex)
+            {
+#if DEBUG
+                GorgonException.Catch(ex,
+                                      () =>
+                                      UI.GorgonDialogs.ErrorBox(_parentForm,
+                                                                string.Format(Resources.GORGFX_CATASTROPHIC_ERROR, Gorgon.Log.LogPath),
+                                                                ex));
+
+                // If we fail in here, then we have a terminal error in Gorgon, don't risk further corruption.
+                Gorgon.Quit();
+#else
+		        GorgonException.Catch(ex);
+#endif
+            }
 		}
 
 		/// <summary>
@@ -487,9 +536,28 @@ namespace GorgonLibrary.Graphics
 				return;
 			}
 
-			// Resize the video mode.
-			Settings.VideoMode = new GorgonVideoMode(Settings.Window.ClientSize, Settings.VideoMode);
-			ResizeBuffers();
+		    try
+		    {
+		        // Resize the video mode.
+		        Settings.VideoMode = new GorgonVideoMode(Settings.Window.ClientSize, Settings.VideoMode);
+		        ResizeBuffers();
+		    }
+		    catch (Exception ex)
+		    {
+#if DEBUG
+                GorgonException.Catch(ex,
+                                      () =>
+                                      UI.GorgonDialogs.ErrorBox(_parentForm,
+                                                                string.Format(Resources.GORGFX_CATASTROPHIC_ERROR, Gorgon.Log.LogPath),
+                                                                ex));
+
+                // If we fail in here, then we have a terminal error in Gorgon, don't risk further corruption.
+                Gorgon.Quit();
+#else
+                // Log the exception.
+		        GorgonException.Catch(ex);
+#endif
+		    }
 		}
 
 		/// <summary>
@@ -561,7 +629,7 @@ namespace GorgonLibrary.Graphics
 
 			if ((!e.Cancel) && (AfterStateTransition != null))
 			{
-				AfterStateTransition(this, new GorgonSwapChainResizedEventArgs(this));
+				AfterStateTransition(this, new GorgonAfterSwapChainResizedEventArgs(this));
 			}
 		}
 
