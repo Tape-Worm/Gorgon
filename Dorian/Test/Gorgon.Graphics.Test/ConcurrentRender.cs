@@ -105,13 +105,15 @@ namespace GorgonLibrary.Graphics.Test
                         constantBuffer.Update(_deferred, ref _wvp);
 
                         _deferred.Output.DrawIndexed(0, 0, 6);
+
+                        return _deferred.FinalizeDeferred();
                     }
                     catch (Exception ex)
                     {
                         UI.GorgonDialogs.ErrorBox(null, ex);
                     }
 
-                    return _deferred.FinalizeDeferred();
+                    return null;
                 }));
 
             for (int i = 0; i < _tasks.Count; i++)
