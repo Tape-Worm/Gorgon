@@ -20,9 +20,9 @@ namespace GorgonLibrary.Graphics.Test
     {
         private GraphicsFramework _framework;
         private string _shaders;
-        private GorgonRenderCommands _commands;
-        private GorgonGraphics _deferred;
-        private List<Task<GorgonRenderCommands>> _tasks;
+        private GorgonRenderCommands[] _commands;
+        private GorgonGraphics[] _deferred;
+        private List<Task> _tasks;
             
         [StructLayout(LayoutKind.Sequential)]
         struct WVPBuffer
@@ -74,70 +74,60 @@ namespace GorgonLibrary.Graphics.Test
             }
         }
 
-        async private Task<GorgonRenderCommands> UpdateDeferred(GorgonConstantBuffer constantBuffer)
+        private void UpdateDeferred(GorgonConstantBuffer constantBuffer)
         {
-            _tasks.Add(new Task<GorgonRenderCommands>(() =>
+            _tasks.Add(Task.Run(() =>
                 {
-                    try
-                    {
-                        Matrix.Translation(2.0f, 0, 6.0f, out _wvp.World);
-                        Matrix.Transpose(ref _wvp.World, out _wvp.World);
+                    Matrix.Translation(2.0f, 0, 6.0f, out _wvp.World);
+                    Matrix.Transpose(ref _wvp.World, out _wvp.World);
 
-                        constantBuffer.Update(_framework.Graphics, ref _wvp);
+                    constantBuffer.Update(_deferred[0], ref _wvp);
 
-                        _framework.Graphics.Output.DrawIndexed(0, 0, 6);
-                    }
-                    catch (Exception ex)
-                    {
-                        UI.GorgonDialogs.ErrorBox(null, ex);
-                    }
-
-                    return null;
+                    _deferred[0].Output.DrawIndexed(0, 0, 6);
+                    _commands[0] = _deferred[0].FinalizeDeferred();
                 }));
 
-            _tasks.Add(new Task<GorgonRenderCommands>(() =>
+            _tasks.Add(Task.Run(() =>
                 {
-                    try
-                    {
-                        Matrix.Translation(-2.0f, 0, 6.0f, out _wvp.World);
-                        Matrix.Transpose(ref _wvp.World, out _wvp.World);
+                    Matrix.Translation(-2.0f, 0, 6.0f, out _wvp.World);
+                    Matrix.Transpose(ref _wvp.World, out _wvp.World);
 
-                        constantBuffer.Update(_deferred, ref _wvp);
+                    constantBuffer.Update(_deferred[1], ref _wvp);
 
-                        _deferred.Output.DrawIndexed(0, 0, 6);
-
-                        return _deferred.FinalizeDeferred();
-                    }
-                    catch (Exception ex)
-                    {
-                        UI.GorgonDialogs.ErrorBox(null, ex);
-                    }
-
-                    return null;
+                    _deferred[1].Output.DrawIndexed(0, 0, 6);
+                    _commands[1] = _deferred[1].FinalizeDeferred();
+                    
                 }));
 
-            for (int i = 0; i < _tasks.Count; i++)
+            try
             {
-                _tasks[i].Start();
-            }
+                Action runDeferred = async () =>
+                    {
+                        var task = await Task.WhenAny(_tasks);
 
-            int taskCounter = 0;
-            while (taskCounter < 2)
+                        _tasks.Remove(task);
+
+                        await task;
+                    };
+
+                while (_tasks.Count > 0)
+                {
+                    runDeferred();
+                    
+                    System.Threading.Thread.Sleep(250);
+                }
+            }
+            catch (Exception ex)
             {
-                var task = await Task.WhenAny(_tasks);
-
-                _tasks.Remove(task);
-
-                taskCounter++;
+                UI.GorgonDialogs.ErrorBox(null, ex);
+                Gorgon.Quit();
             }
-
-            return _tasks[1].Result;
         }
 
         [TestMethod]
         public void ConcurrentRendering()
         {
-            _tasks = new List<Task<GorgonRenderCommands>>();
+            _tasks = new List<Task>();
 
             _wvp.World = Matrix.Identity;
             _wvp.Projection = Matrix.Identity;
@@ -151,21 +141,38 @@ namespace GorgonLibrary.Graphics.Test
                                                                                             SizeInBytes  = DirectAccess.SizeOf<WVPBuffer>()
                                                                                             }))
             {
-                _deferred = _framework.Graphics.CreateDeferredGraphics();
+                _commands = new GorgonRenderCommands[2];
+                _deferred = new GorgonGraphics[]
+                    {
+                        _framework.Graphics.CreateDeferredGraphics(),
+                        _framework.Graphics.CreateDeferredGraphics()
+                    };
                 _framework.Graphics.Shaders.VertexShader.ConstantBuffers[0] = constantBuffer;
 
                 _framework.Screen.BeforeSwapChainResized += (sender, e) =>
                     {
-                        if (_commands != null)
+                        for (int i = 0; i < _commands.Length; i++)
                         {
-                            _commands.Dispose();
+                            if (_commands[i] == null)
+                            {
+                                continue;
+                            }
+
+                            _commands[i].Dispose();
+                            _commands[i] = null;
                         }
 
                         if (_deferred == null)
                         {
                             return;
                         }
-                        _deferred.Dispose();
+
+                        for (int i = 0; i < _deferred.Length; i++)
+                        {
+                            _deferred[i].Dispose();
+                            _deferred[i] = null;
+                        }
+
                         _deferred = null;
                     };
 
@@ -173,31 +180,56 @@ namespace GorgonLibrary.Graphics.Test
                     {
                         if (_deferred == null)
                         {
-                            _deferred = _framework.Graphics.CreateDeferredGraphics();
+                            _deferred = new GorgonGraphics[]
+                                {
+                                    _framework.Graphics.CreateDeferredGraphics(),
+                                    _framework.Graphics.CreateDeferredGraphics()
+                                };
                         }
 
                         Matrix.PerspectiveFovLH(80.0f.Radians(), (float)_framework.Screen.Settings.Width / _framework.Screen.Settings.Height, 0.1f, 100.0f, out _wvp.Projection);
                         Matrix.Transpose(ref _wvp.Projection, out _wvp.Projection);
 
-                        _deferred.Shaders.VertexShader.ConstantBuffers[0] = constantBuffer;
-                        _deferred.Shaders.VertexShader.Current = _framework.VertexShader;
-                        _deferred.Shaders.PixelShader.Current = _framework.PixelShader;
+                        foreach (GorgonGraphics deferred in _deferred)
+                        {
+                            deferred.Shaders.VertexShader.ConstantBuffers[0] = constantBuffer;
+                            deferred.Shaders.VertexShader.Current = _framework.VertexShader;
+                            deferred.Shaders.PixelShader.Current = _framework.PixelShader;
 
-                        _deferred.Input.IndexBuffer = _framework.Indices;
-                        _deferred.Input.Layout = _framework.Layout;
-                        _deferred.Input.PrimitiveType = PrimitiveType.TriangleList;
-                        _deferred.Input.VertexBuffers[0] = new GorgonVertexBufferBinding(_framework.Vertices, 40);
+                            deferred.Input.IndexBuffer = _framework.Indices;
+                            deferred.Input.Layout = _framework.Layout;
+                            deferred.Input.PrimitiveType = PrimitiveType.TriangleList;
+                            deferred.Input.VertexBuffers[0] = new GorgonVertexBufferBinding(_framework.Vertices, 40);
 
-                        _deferred.Output.SetRenderTarget(_framework.Screen, _framework.Screen.DepthStencilBuffer);
+                            deferred.Output.SetRenderTarget(_framework.Screen, _framework.Screen.DepthStencilBuffer);
 
-                        _deferred.Rasterizer.SetViewport(new GorgonViewport(0, 0, _framework.Screen.Settings.Width, _framework.Screen.Settings.Height, 0, 1));
+                            deferred.Rasterizer.SetViewport(new GorgonViewport(0,
+                                                                        0,
+                                                                        _framework.Screen.Settings.Width,
+                                                                        _framework.Screen.Settings.Height,
+                                                                        0,
+                                                                        1));
+                        }
                     };
 
                 _framework.IdleFunc = () =>
                     {
-                        using(_commands = UpdateDeferred(constantBuffer).Result)
+                        _tasks.Clear();
+
+                        UpdateDeferred(constantBuffer);
+
+                        for (int i = 0; i < _commands.Length; i++)
                         {
-                            _framework.Graphics.ExecuteDeferred(_commands);
+                            if (_commands[i] == null)
+                            {
+                                continue;
+                            }
+
+                            using(_commands[i])
+                            {
+                                _framework.Graphics.ExecuteDeferred(_commands[i]);
+                            }
+                            _commands[i] = null;
                         }
 
                         return true;

@@ -242,30 +242,59 @@ namespace GorgonLibrary.Graphics
 				DebugName = string.Format("{0} '{1}' Depth Stencil View", Resource.ResourceType, Resource.Name)
 			};
 		}
-
+        
 		/// <summary>
 		/// Function to clear the depth portion of the depth/stencil buffer.
 		/// </summary>
 		/// <param name="depthValue">Value to fill the depth buffer with.</param>
-		public void ClearDepth(float depthValue)
+		/// <param name="deferred">[Optional] A deferred context to use when clearing the depth/stencil buffer.</param>
+		/// <remarks>If the <paramref name="deferred"/> parameter is NULL (Nothing in VB.Net), the immediate context will be used to clear the depth/stencil buffer.  If it is non-NULL, then it 
+		/// will use the specified deferred context to clear the depth/stencil buffer.  This is necessary because two threads cannot be used to clear the same resource on the same context.</remarks>
+		public void ClearDepth(float depthValue, GorgonGraphics deferred = null)
 		{
-			if (FormatInformation.HasDepth)
-			{
-				Resource.Graphics.Context.ClearDepthStencilView(D3DView, D3D.DepthStencilClearFlags.Depth, depthValue, 0);
-			}
+		    if (!FormatInformation.HasDepth)
+		    {
+		        return;
+		    }
+
+		    if (deferred != null)
+		    {
+		        deferred.Context.ClearDepthStencilView(D3DView, D3D.DepthStencilClearFlags.Depth, depthValue, 0);
+		    }
+		    else
+		    {
+		        Resource.Graphics.Context.ClearDepthStencilView(D3DView, D3D.DepthStencilClearFlags.Depth, depthValue, 0);
+		    }
 		}
 
-		/// <summary>
+	    /// <summary>
 		/// Function to clear the stencil portion of the depth/stencil buffer.
 		/// </summary>
 		/// <param name="stencilValue">Value to fill the stencil buffer with.</param>
-		public void ClearStencil(int stencilValue)
+        /// <param name="deferred">[Optional] A deferred context to use when clearing the depth/stencil buffer.</param>
+        /// <remarks>If the <paramref name="deferred"/> parameter is NULL (Nothing in VB.Net), the immediate context will be used to clear the depth/stencil buffer.  If it is non-NULL, then it 
+        /// will use the specified deferred context to clear the depth/stencil buffer.  This is necessary because two threads cannot be used to clear the same resource on the same context.</remarks>
+        public void ClearStencil(int stencilValue, GorgonGraphics deferred = null)
 		{
-			if (FormatInformation.HasStencil)
-			{
-				Resource.Graphics.Context.ClearDepthStencilView(D3DView, D3D.DepthStencilClearFlags.Stencil, 1.0f,
-				                                                (byte)stencilValue);
-			}
+	        if (!FormatInformation.HasStencil)
+	        {
+	            return;
+	        }
+
+	        if (deferred != null)
+	        {
+	            deferred.Context.ClearDepthStencilView(D3DView,
+	                                                   D3D.DepthStencilClearFlags.Stencil,
+	                                                   1.0f,
+	                                                   (byte)stencilValue);
+	        }
+	        else
+	        {
+	            Resource.Graphics.Context.ClearDepthStencilView(D3DView,
+	                                                            D3D.DepthStencilClearFlags.Stencil,
+	                                                            1.0f,
+	                                                            (byte)stencilValue);
+	        }
 		}
 
 		/// <summary>
