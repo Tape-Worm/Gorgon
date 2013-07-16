@@ -234,23 +234,54 @@ namespace GorgonLibrary.Graphics
             return OnGetDepthStencilView(format, mipSlice, arrayStart, arrayCount, flags);
         }
 
-		/// <summary>
-		/// Function to clear the depth portion of the depth/stencil buffer.
-		/// </summary>
-		/// <param name="depthValue">Value to fill the depth buffer with.</param>
-		public void ClearDepth(float depthValue)
-		{
-			_defaultView.ClearDepth(depthValue);
-		}
+        /// <summary>
+        /// Function to clear the depth and stencil buffers.
+        /// </summary>
+        /// <param name="depthValue">[Optional] The value to fill the depth portion with.</param>
+        /// <param name="stencilValue">[Optional] The value to fill the stencil portion with.</param>
+        /// <param name="deferred">[Optional] The deferred context to use when clearing.</param>
+        /// <remarks>
+        /// If the <paramref name="deferred"/> parameter is NULL (Nothing in VB.Net), the immediate context will be used to clear the depth/stencil buffer.  If it is non-NULL, then it 
+        /// will use the specified deferred context to clear the depth/stencil buffer.
+        /// <para>If you are using a deferred context, it is necessary to use that context to clear the depth/stencil because 2 threads may not access the same resource at the same time.  
+        /// Passing a separate deferred context will alleviate that.</para>
+        /// </remarks>
+        public void Clear(float depthValue, byte stencilValue, GorgonGraphics deferred = null)
+        {
+            _defaultView.Clear(depthValue, stencilValue, deferred);
+        }
 
-		/// <summary>
-		/// Function to clear the stencil portion of the depth/stencil buffer.
-		/// </summary>
-		/// <param name="stencilValue">Value to fill the stencil buffer with.</param>
-		public void ClearStencil(int stencilValue)
-		{
-			_defaultView.ClearStencil(stencilValue);
-		}
+        /// <summary>
+        /// Function to clear the depth portion of the buffer.
+        /// </summary>
+        /// <param name="depthValue">The value to fill the depth portion with.</param>
+        /// <param name="deferred">[Optional] The deferred context to use when clearing.</param>
+        /// <remarks>
+        /// If the <paramref name="deferred"/> parameter is NULL (Nothing in VB.Net), the immediate context will be used to clear the depth/stencil buffer.  If it is non-NULL, then it 
+        /// will use the specified deferred context to clear the depth/stencil buffer.
+        /// <para>If you are using a deferred context, it is necessary to use that context to clear the depth/stencil because 2 threads may not access the same resource at the same time.  
+        /// Passing a separate deferred context will alleviate that.</para>
+        /// </remarks>
+        public void ClearDepth(float depthValue, GorgonGraphics deferred = null)
+        {
+            _defaultView.ClearDepth(depthValue, deferred);
+        }
+
+        /// <summary>
+        /// Function to clear the stencil portion of the buffer.
+        /// </summary>
+        /// <param name="stencilValue">The value to fill the stencil portion with.</param>
+        /// <param name="deferred">[Optional] The deferred context to use when clearing.</param>
+        /// <remarks>
+        /// If the <paramref name="deferred"/> parameter is NULL (Nothing in VB.Net), the immediate context will be used to clear the depth/stencil buffer.  If it is non-NULL, then it 
+        /// will use the specified deferred context to clear the depth/stencil buffer.
+        /// <para>If you are using a deferred context, it is necessary to use that context to clear the depth/stencil because 2 threads may not access the same resource at the same time.  
+        /// Passing a separate deferred context will alleviate that.</para>
+        /// </remarks>
+        public void ClearStencil(byte stencilValue, GorgonGraphics deferred = null)
+        {
+            _defaultView.ClearStencil(stencilValue, deferred);
+        }
 
 		/// <summary>
 		/// Function to retrieve the depth stencil  view for a depth stencil .

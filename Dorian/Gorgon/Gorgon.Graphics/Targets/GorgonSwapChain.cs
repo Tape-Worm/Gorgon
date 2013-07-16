@@ -836,38 +836,85 @@ namespace GorgonLibrary.Graphics
 			_parentForm.ResizeEnd += _parentForm_ResizeEnd;
 		}
 
-		/// <summary>
-		/// Function to clear the swap chain and any depth buffer attached to it.
-		/// </summary>
-		/// <param name="color">Color used to clear the swap chain.</param>
-		/// <remarks>This will only clear the swap chain.  Any attached depth/stencil buffer will remain untouched.</remarks>
-		public void Clear(GorgonColor color)
-		{
-            _renderTarget.Clear(color);
-		}
+        /// <summary>
+        /// Function to clear the render target.
+        /// </summary>
+        /// <param name="color">Color used to clear the render target.</param>
+        /// <param name="deferred">[Optional] A deferred context to use when clearing the render target.</param>
+        /// <remarks>
+        /// This will only clear the default render target view. Any attached depth/stencil buffer will remain untouched.
+        /// <para>
+        /// If the <paramref name="deferred"/> parameter is NULL (Nothing in VB.Net), the immediate context will be used to clear the render target.  If it is non-NULL, then it 
+        /// will use the specified deferred context to clear the render target.
+        /// <para>If you are using a deferred context, it is necessary to use that context to clear the render target because 2 threads may not access the same resource at the same time.  
+        /// Passing a separate deferred context will alleviate that.</para>
+        /// </para>
+        /// </remarks>
+        public void Clear(GorgonColor color, GorgonGraphics deferred = null)
+        {
+            _renderTarget.Clear(color, deferred);
+        }
 
-		/// <summary>
-		/// Function to clear the swap chain and an associated depth buffer.
-		/// </summary>
-		/// <param name="color">Color used to clear the swap chain.</param>
-		/// <param name="depthValue">Value used to fill the depth buffer.</param>
-		/// <remarks>This will clear the swap chain and depth buffer, but depth buffers with a stencil component will remain untouched.</remarks>
-		public void Clear(GorgonColor color, float depthValue)
-		{
-		    _renderTarget.Clear(color, depthValue);
-		}
+        /// <summary>
+        /// Function to clear the render target and an attached depth buffer.
+        /// </summary>
+        /// <param name="color">Color used to clear the render target.</param>
+        /// <param name="depthValue">Value used to clear the depth buffer.</param>
+        /// <param name="deferred">[Optional] A deferred context to use when clearing the render target.</param>
+        /// <remarks>
+        /// This will only clear the default render target view. Any stencil buffer will remain untouched.
+        /// <para>
+        /// If the <paramref name="deferred"/> parameter is NULL (Nothing in VB.Net), the immediate context will be used to clear the render target.  If it is non-NULL, then it 
+        /// will use the specified deferred context to clear the render target.
+        /// <para>If you are using a deferred context, it is necessary to use that context to clear the render target because 2 threads may not access the same resource at the same time.  
+        /// Passing a separate deferred context will alleviate that.</para>
+        /// </para>
+        /// </remarks>
+        public void Clear(GorgonColor color, float depthValue, GorgonGraphics deferred = null)
+        {
+            _renderTarget.Clear(color, depthValue, deferred);
+        }
 
-		/// <summary>
-		/// Function to clear the swap chain and an associated depth buffer with a stencil component.
-		/// </summary>
-		/// <param name="color">Color used to clear the swap chain.</param>
-		/// <param name="depthValue">Value used to fill the depth buffer.</param>
-		/// <param name="stencilValue">Value used to fill the stencil component of the depth buffer.</param>
-		/// <remarks>This will clear the swap chain, depth buffer and stencil component of the depth buffer.</remarks>
-		public void Clear(GorgonColor color, float depthValue, int stencilValue)
-		{
-            _renderTarget.Clear(color, depthValue, stencilValue);
-		}
+        /// <summary>
+        /// Function to clear the render target and an attached depth buffer.
+        /// </summary>
+        /// <param name="color">Color used to clear the render target.</param>
+        /// <param name="stencilValue">Value used to clear the stencil buffer.</param>
+        /// <param name="deferred">[Optional] A deferred context to use when clearing the render target.</param>
+        /// <remarks>
+        /// This will only clear the default render target view.  Any depth buffer will remain untouched.
+        /// <para>
+        /// If the <paramref name="deferred"/> parameter is NULL (Nothing in VB.Net), the immediate context will be used to clear the render target.  If it is non-NULL, then it 
+        /// will use the specified deferred context to clear the render target.
+        /// <para>If you are using a deferred context, it is necessary to use that context to clear the render target because 2 threads may not access the same resource at the same time.  
+        /// Passing a separate deferred context will alleviate that.</para>
+        /// </para>
+        /// </remarks>
+        public void Clear(GorgonColor color, byte stencilValue, GorgonGraphics deferred = null)
+        {
+            _renderTarget.Clear(color, stencilValue, deferred);
+        }
+
+        /// <summary>
+        /// Function to clear the render target and an attached depth/stencil buffer.
+        /// </summary>
+        /// <param name="color">Color used to clear the render target.</param>
+        /// <param name="depthValue">Value used to clear the depth buffer.</param>
+        /// <param name="stencilValue">Value used to clear the stencil buffer.</param>
+        /// <param name="deferred">[Optional] A deferred context to use when clearing the render target.</param>
+        /// <remarks>
+        /// This will only clear the default render target view.
+        /// <para>
+        /// If the <paramref name="deferred"/> parameter is NULL (Nothing in VB.Net), the immediate context will be used to clear the render target.  If it is non-NULL, then it 
+        /// will use the specified deferred context to clear the render target.
+        /// <para>If you are using a deferred context, it is necessary to use that context to clear the render target because 2 threads may not access the same resource at the same time.  
+        /// Passing a separate deferred context will alleviate that.</para>
+        /// </para>
+        /// </remarks>
+        public void Clear(GorgonColor color, float depthValue, byte stencilValue, GorgonGraphics deferred = null)
+        {
+            _renderTarget.Clear(color, depthValue, stencilValue, deferred);
+        }
 
 		/// <summary>
 		/// Function to update the settings for the swap chain.

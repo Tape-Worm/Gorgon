@@ -12,6 +12,7 @@ using SlimMath;
 using GorgonLibrary;
 using GorgonLibrary.Native;
 using GorgonLibrary.Math;
+using GorgonLibrary.Diagnostics;
 
 namespace GorgonLibrary.Graphics.Test
 {
@@ -23,6 +24,8 @@ namespace GorgonLibrary.Graphics.Test
         private GorgonRenderCommands[] _commands;
         private GorgonGraphics[] _deferred;
         private List<Task> _tasks;
+        private Vector3[] _positions;
+        private bool[] _bouncy;
             
         [StructLayout(LayoutKind.Sequential)]
         struct WVPBuffer
@@ -78,10 +81,41 @@ namespace GorgonLibrary.Graphics.Test
         {
             _tasks.Add(Task.Run(() =>
                 {
-                    Matrix.Translation(2.0f, 0, 6.0f, out _wvp.World);
-                    Matrix.Transpose(ref _wvp.World, out _wvp.World);
+                    WVPBuffer wvp = new WVPBuffer();
+                    wvp.Projection = _wvp.Projection;
+                    wvp.View = _wvp.View;
 
-                    constantBuffer.Update(_deferred[0], ref _wvp);
+                    if (!_bouncy[0])
+                    {
+                        _positions[0] = new Vector3(_positions[0].X + 1.0f * GorgonTiming.Delta,
+                                                    _positions[0].Y - 2.5f * GorgonTiming.Delta,
+                                                    _positions[0].Z + 1.85f * GorgonTiming.Delta);
+                    }
+                    else
+                    {
+                        _positions[0] = new Vector3(_positions[0].X - 1.0f * GorgonTiming.Delta,
+                                                    _positions[0].Y + 2.5f * GorgonTiming.Delta,
+                                                    _positions[0].Z - 1.85f * GorgonTiming.Delta);
+                    }
+
+                    if ((_positions[0].X > 2.0f)
+                        || (_positions[0].Y < -2.0f)
+                        || (_positions[0].Z > 6.0))
+                    {
+                        _bouncy[0] = true;
+                    }
+                    
+                    if ((_positions[0].X < -2.0f)
+                        || (_positions[0].Y > 2.0f)
+                        || (_positions[0].Z < 1.0f))
+                    {
+                        _bouncy[0] = false;
+                    }
+
+                    Matrix.Translation(ref _positions[0], out wvp.World);
+                    Matrix.Transpose(ref wvp.World, out wvp.World);
+
+                    constantBuffer.Update(_deferred[0], ref wvp);
 
                     _deferred[0].Output.DrawIndexed(0, 0, 6);
                     _commands[0] = _deferred[0].FinalizeDeferred();
@@ -89,10 +123,45 @@ namespace GorgonLibrary.Graphics.Test
 
             _tasks.Add(Task.Run(() =>
                 {
-                    Matrix.Translation(-2.0f, 0, 6.0f, out _wvp.World);
-                    Matrix.Transpose(ref _wvp.World, out _wvp.World);
+                    var wvp = new WVPBuffer();
+                    Matrix rot;
+                    Quaternion quat;
+                    wvp.Projection = _wvp.Projection;
+                    wvp.View = _wvp.View;
 
-                    constantBuffer.Update(_deferred[1], ref _wvp);
+                    if (!_bouncy[1])
+                    {
+                        _positions[1].Z += (30.0f * GorgonTiming.Delta);
+                        _positions[1].Y += (15.0f * GorgonTiming.Delta);
+                        _positions[1].X += (10.0f * GorgonTiming.Delta);
+                    }
+                    else
+                    {
+                        _positions[1].Z -= (15.0f * GorgonTiming.Delta);
+                        _positions[1].Y -= (30.0f * GorgonTiming.Delta);
+                        _positions[1].X -= (25.0f * GorgonTiming.Delta);
+                    }
+
+                    if (_positions[1].Z > 195.0f)
+                    {
+                        _bouncy[1] = true;
+                        _positions[1].Z = 195.0f;
+                    }
+
+                    if (_positions[1].Z < 0.0f)
+                    {
+                        _bouncy[1] = true;
+                        _positions[1].Z = 0.0f;
+                    }
+
+                    Quaternion.RotationYawPitchRoll(_positions[1].Y.Radians(), _positions[1].X.Radians() * 0, _positions[1].Z.Radians() * 0, out quat);
+                    Matrix.RotationQuaternion(ref quat, out rot);
+                    Matrix.Translation(-2.0f, 0.0f, 6.0f, out wvp.World);
+                    Matrix.Multiply(ref rot, ref wvp.World, out wvp.World);
+
+                    Matrix.Transpose(ref wvp.World, out wvp.World);
+
+                    constantBuffer.Update(_deferred[1], ref wvp);
 
                     _deferred[1].Output.DrawIndexed(0, 0, 6);
                     _commands[1] = _deferred[1].FinalizeDeferred();
@@ -114,7 +183,7 @@ namespace GorgonLibrary.Graphics.Test
                 {
                     runDeferred();
                     
-                    System.Threading.Thread.Sleep(250);
+                    System.Threading.Thread.Sleep(5);
                 }
             }
             catch (Exception ex)
@@ -142,6 +211,9 @@ namespace GorgonLibrary.Graphics.Test
                                                                                             }))
             {
                 _commands = new GorgonRenderCommands[2];
+                _positions = new Vector3[_commands.Length];
+                _positions[0] = new Vector3(2.0f, 0, 6.0f);
+                _bouncy = new bool[_commands.Length];
                 _deferred = new GorgonGraphics[]
                     {
                         _framework.Graphics.CreateDeferredGraphics(),
@@ -220,14 +292,11 @@ namespace GorgonLibrary.Graphics.Test
 
                         for (int i = 0; i < _commands.Length; i++)
                         {
-                            if (_commands[i] == null)
-                            {
-                                continue;
-                            }
+                            var command = _commands[i];
 
-                            using(_commands[i])
+                            using(command)
                             {
-                                _framework.Graphics.ExecuteDeferred(_commands[i]);
+                                _framework.Graphics.ExecuteDeferred(command);
                             }
                             _commands[i] = null;
                         }

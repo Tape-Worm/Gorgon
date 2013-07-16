@@ -966,7 +966,7 @@ namespace GorgonLibrary.Renderers
 		/// <param name="stencil">Stencil value to clear with.</param>
 		/// <remarks>Unlike a render target <see cref="M:GorgonLibrary.Graphics.GorgonRenderTarget.Clear">Clear</see> method, this will respect any clipping and/or viewport.  
 		/// However, this only affects the color buffer, the depth/stencil will be cleared in their entirety.</remarks>
-		public void Clear(GorgonColor color, float depth, int stencil)
+		public void Clear(GorgonColor color, float depth, byte stencil)
 		{
 			if ((_clip == null) && (_viewPort == null))
 			{
