@@ -75,8 +75,20 @@ namespace GorgonLibrary.Graphics
         /// Function to clear the render target view.
         /// </summary>
         /// <param name="color">Color used to clear the render target view.</param>
-        public void Clear(GorgonColor color)
+        /// <param name="deferred">[Optional] A deferred context to use when clearing the depth/stencil buffer.</param>
+        /// <remarks>If the <paramref name="deferred"/> parameter is NULL (Nothing in VB.Net), the immediate context will be used to clear the render target.  If it is non-NULL, then it 
+        /// will use the specified deferred context to clear the render target.
+        /// <para>If you are using a deferred context, it is necessary to use that context to clear the render target because 2 threads may not access the same resource at the same time.  
+        /// Passing a separate deferred context will alleviate that.</para>
+        /// </remarks>
+        public void Clear(GorgonColor color, GorgonGraphics deferred = null)
         {
+            if (deferred != null)
+            {
+                deferred.Context.ClearRenderTargetView(D3DView, color.SharpDXColor4);
+                return;
+            }
+
             Resource.Graphics.Context.ClearRenderTargetView(D3DView, color.SharpDXColor4);
         }
         #endregion

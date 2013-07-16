@@ -143,6 +143,15 @@ namespace GorgonLibrary.Graphics.Test
 			get;
 			set;
 		}
+
+        /// <summary>
+        /// Property to set or return whether to clear the screen automatically or not.
+        /// </summary>
+        public bool ClearScreen
+        {
+            get;
+            set;
+        }
 		#endregion
 
 		#region Methods.
@@ -152,7 +161,8 @@ namespace GorgonLibrary.Graphics.Test
 		/// <returns>TRUE to continue processing, FALSE to stop.</returns>
 		private bool Idle()
 		{
-			if (Graphics.Output.GetRenderTarget(0) == (GorgonRenderTargetView)Screen)
+			if ((Graphics.Output.GetRenderTarget(0) == (GorgonRenderTargetView)Screen)
+                && (ClearScreen))
 			{
 				Screen.Clear(GorgonColor.Black);
 			}
@@ -289,6 +299,7 @@ namespace GorgonLibrary.Graphics.Test
 		/// </summary>
 		public GraphicsFramework()
 		{
+		    ClearScreen = true;
 			GorgonVideoDeviceEnumerator.Enumerate(true, true);
 
 			_form = new TestForm();

@@ -136,10 +136,18 @@ namespace GorgonLibrary.Graphics
         /// Function to clear the render target.
         /// </summary>
         /// <param name="color">Color used to clear the render target.</param>
-        /// <remarks>This will only clear the render target.  Only the default view will be cleared, any extra views will not be cleared. Any attached depth/stencil buffer will remain untouched.</remarks>
-        public void Clear(GorgonColor color)
+        /// <param name="deferred">[Optional] A deferred context to use when clearing the render target.</param>
+        /// <remarks>This will only clear the render target.  Only the default view will be cleared, any extra views will not be cleared. Any attached depth/stencil buffer will remain untouched.
+        /// <para>
+        /// If the <paramref name="deferred"/> parameter is NULL (Nothing in VB.Net), the immediate context will be used to clear the render target.  If it is non-NULL, then it 
+        /// will use the specified deferred context to clear the render target.
+        /// <para>If you are using a deferred context, it is necessary to use that context to clear the render target because 2 threads may not access the same resource at the same time.  
+        /// Passing a separate deferred context will alleviate that.</para>
+        /// </para>
+        /// </remarks>
+        public void Clear(GorgonColor color, GorgonGraphics deferred = null)
         {
-            _defaultRenderTargetView.Clear(color);
+            _defaultRenderTargetView.Clear(color, deferred);
         }
 
         /// <summary>

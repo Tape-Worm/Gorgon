@@ -824,6 +824,12 @@ namespace GorgonLibrary.Graphics
 			Graphics.Context.UpdateSubresource(ref data, D3DResource, 0, DirectAccess.SizeOf<T>());
 		}
 
+        /// <summary>
+        /// TODO:  Make the context optional and use it in the above function.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="ctx"></param>
+        /// <param name="data"></param>
         public void Update<T>(GorgonGraphics ctx, ref T data)
             where T : struct
         {
