@@ -183,17 +183,21 @@ namespace GorgonLibrary.Graphics.Example
 					currentBall.ScaleDelta = -currentBall.ScaleDelta;
 
 				// Adjust opacity.
-				if ((currentBall.Opacity > 1.0f) || (currentBall.Opacity < 0.04f))
-				{
-					if (currentBall.Opacity > 1.0f)
-						currentBall.Opacity = 1.0f;
-					if (currentBall.Opacity < 0.4f)
-					{
-						currentBall.Opacity = 0.4f;
-						currentBall.Checkered = !currentBall.Checkered;
-					}
-					currentBall.OpacityDelta = -currentBall.OpacityDelta;
-				}
+			    if ((!(currentBall.Opacity > 1.0f))
+			        && (!(currentBall.Opacity < 0.04f)))
+			    {
+			        continue;
+			    }
+
+			    if (currentBall.Opacity > 1.0f)
+			        currentBall.Opacity = 1.0f;
+
+			    if (currentBall.Opacity < 0.4f)
+			    {
+			        currentBall.Opacity = 0.4f;
+			        currentBall.Checkered = !currentBall.Checkered;
+			    }
+			    currentBall.OpacityDelta = -currentBall.OpacityDelta;
 			}
 		}
 
@@ -243,25 +247,27 @@ namespace GorgonLibrary.Graphics.Example
 				_ball.Draw();
 			}
 
-			if (_2D.Effects.GaussianBlur.BlurAmount < 10.0f)
-			{
-				_2D.Target = null;
-				_2D.Camera = null;
+		    if (!(_2D.Effects.GaussianBlur.BlurAmount < 10.0f))
+		    {
+		        return;
+		    }
 
-				_2D.Effects.GaussianBlur.Render(passIndex =>
-				{
-					if (passIndex == 0)
-					{
-						// Draw using the blur effect.
-						_2D.Drawing.Blit(_ballTarget, Vector2.Zero);
-					}
-					else
-					{
-						// Copy the blurred output.
-						_2D.Drawing.Blit(_2D.Effects.GaussianBlur.BlurredTexture, new RectangleF(Vector2.Zero, _mainScreen.Settings.Size));
-					}
-				});
-			}
+		    _2D.Target = null;
+		    _2D.Camera = null;
+
+		    _2D.Effects.GaussianBlur.Render(passIndex =>
+		        {
+		            if (passIndex == 0)
+		            {
+		                // Draw using the blur effect.
+		                _2D.Drawing.Blit(_ballTarget, Vector2.Zero);
+		            }
+		            else
+		            {
+		                // Copy the blurred output.
+		                _2D.Drawing.Blit(_2D.Effects.GaussianBlur.BlurredTexture, new RectangleF(Vector2.Zero, _mainScreen.Settings.Size));
+		            }
+		        });
 		}
 
 		/// <summary>

@@ -799,6 +799,22 @@ namespace GorgonLibrary.Graphics
 		#endregion
 
 		#region Methods.
+        /// <summary>
+        /// Function to reset the blending states.
+        /// </summary>
+        internal override void Reset()
+        {
+            base.Reset();
+
+            _blendFactor = GorgonColor.Transparent;
+            _sampleMask = 0xFFFFFFFF;
+
+            Graphics.Context.OutputMerger.BlendSampleMask = (int)_sampleMask;
+            Graphics.Context.OutputMerger.BlendFactor = _blendFactor.SharpDXColor4;
+
+            States = GorgonBlendStates.DefaultStates;
+        }
+
 		/// <summary>
 		/// Function to apply the state to the current rendering context.
 		/// </summary>

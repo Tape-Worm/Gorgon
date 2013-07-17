@@ -146,6 +146,21 @@ namespace GorgonLibrary.Graphics
 				}
 			}
 #endif
+            /// <summary>
+            /// Function to reset the state of the unordered access views.
+            /// </summary>
+            internal void Reset()
+            {
+                var views = new D3D.UnorderedAccessView[_unorderedViews.Length];
+
+                for (int i = 0; i < _unorderedViews.Length; i++)
+                {
+                    views[i] = null;
+                    _unorderedViews[i] = null;
+                }
+
+                _shader.Graphics.Context.ComputeShader.SetUnorderedAccessViews(0, views);
+            }
 
             /// <summary>
             /// Function to unbind an unordered access view.
@@ -614,6 +629,15 @@ namespace GorgonLibrary.Graphics
 		        Graphics.Context.ComputeShader.SetConstantBuffers(slot, count, buffers);
 		    }
 		}
+
+        /// <summary>
+        /// Function to reset the compute shader state.
+        /// </summary>
+        internal override void Reset()
+        {
+            base.Reset();
+            UnorderedAccessViews.Reset();
+        }
 
         /// <summary>
         /// Function to execute the current compute shader.

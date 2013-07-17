@@ -120,7 +120,6 @@ namespace GorgonLibrary.Graphics
         private static readonly object _syncLock = new object();        // Synchronization lock for threading.
 
         private GorgonViewCache _viewCache;         // Cache used to hold views for the resource.
-        private DX.DataStream _lockStream;			// Stream used to lock the buffer for read/write.
         #endregion
 
         #region Properties.
@@ -393,8 +392,13 @@ namespace GorgonLibrary.Graphics
         /// Function used to lock the underlying buffer for reading/writing.
         /// </summary>
         /// <param name="lockFlags">Flags used when locking the buffer.</param>
+        /// <param name="context">A graphics context to use when locking the buffer.</param>
         /// <returns>A data stream containing the buffer data.</returns>		
-        protected virtual GorgonDataStream OnLock(BufferLockFlags lockFlags)
+        /// <remarks>
+        /// Use the <paramref name="context"/> parameter to determine the context in which the buffer should be updated. This is necessary to use that context 
+        /// to update the buffer because 2 threads may not access the same resource at the same time.  
+        /// </remarks>
+        protected virtual GorgonDataStream OnLock(BufferLockFlags lockFlags, GorgonGraphics context)
         {
 #if DEBUG
             if (((lockFlags & BufferLockFlags.Discard) != BufferLockFlags.Discard)
@@ -408,20 +412,11 @@ namespace GorgonLibrary.Graphics
                 throw new ArgumentException(Resources.GORGFX_BUFFER_NO_OVERWRITE_NOT_VALID, "lockFlags");
             }
 #endif
+            DX.DataStream lockStream;
 
-            Graphics.Context.MapSubresource(D3DBuffer, D3D.MapMode.WriteDiscard, D3D.MapFlags.None, out _lockStream);
+            context.Context.MapSubresource(D3DBuffer, D3D.MapMode.WriteDiscard, D3D.MapFlags.None, out lockStream);
 
-            return new GorgonDataStream(_lockStream.DataPointer, (int)_lockStream.Length);
-        }
-
-        /// <summary>
-        /// Function called to unlock the underlying data buffer.
-        /// </summary>
-        protected virtual void OnUnlock()
-        {
-            Graphics.Context.UnmapSubresource(D3DBuffer, 0);
-            _lockStream.Dispose();
-            _lockStream = null;
+            return new GorgonDataStream(lockStream.DataPointer, (int)lockStream.Length);
         }
 
         /// <summary>
@@ -430,9 +425,14 @@ namespace GorgonLibrary.Graphics
         /// <param name="stream">Stream containing the data used to update the buffer.</param>
         /// <param name="offset">Offset, in bytes, into the buffer to start writing at.</param>
         /// <param name="size">The number of bytes to write.</param>
-        protected virtual void OnUpdate(GorgonDataStream stream, int offset, int size)
+        /// <param name="context">A graphics context to use when updating the buffer.</param>
+        /// <remarks>
+        /// Use the <paramref name="context"/> parameter to determine the context in which the buffer should be updated. This is necessary to use that context 
+        /// to update the buffer because 2 threads may not access the same resource at the same time.  
+        /// </remarks>
+        protected virtual void OnUpdate(GorgonDataStream stream, int offset, int size, GorgonGraphics context)
         {
-            Graphics.Context.UpdateSubresource(
+            context.Context.UpdateSubresource(
                 new DX.DataBox
                 {
                     DataPointer = stream.PositionPointer,
@@ -804,14 +804,21 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		/// <typeparam name="T">Type of value type.</typeparam>
 		/// <param name="data">Value type data to write into the buffer.</param>
+		/// <param name="deferred">[Optional] A deferred context to use when updating the buffer.</param>
 		/// <remarks>
 		/// This overload is useful for directly copying a value into the buffer without needing a data stream.  If the type of value is a 
 		/// struct and contains reference types (arrays, strings, and objects), then these members will not be copied.  Some form of 
 		/// marshalling will be required in order to copy structures with reference types.  
-		/// <para>This will only work on buffers created with a usage type of [Default].</para>
+        /// <para>
+        /// If the <paramref name="deferred"/> parameter is NULL (Nothing in VB.Net), the immediate context will be used to update the buffer.  If it is non-NULL, then it 
+        /// will use the specified deferred context to clear the render target.
+        /// <para>If you are using a deferred context, it is necessary to use that context to update the buffer because 2 threads may not access the same resource at the same time.  
+        /// Passing a separate deferred context will alleviate that.</para>
+        /// </para>
+        /// <para>This will only work on buffers created with a usage type of [Default].</para>
 		/// </remarks>
 		/// <exception cref="GorgonLibrary.GorgonException">Thrown when the buffer does not have a usage of Default.</exception>
-		public void Update<T>(ref T data)
+		public void Update<T>(ref T data, GorgonGraphics deferred = null)
 			where T : struct
 		{
 #if DEBUG
@@ -821,27 +828,13 @@ namespace GorgonLibrary.Graphics
 			}
 #endif
 
-			Graphics.Context.UpdateSubresource(ref data, D3DResource, 0, DirectAccess.SizeOf<T>());
-		}
-
-        /// <summary>
-        /// TODO:  Make the context optional and use it in the above function.
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="ctx"></param>
-        /// <param name="data"></param>
-        public void Update<T>(GorgonGraphics ctx, ref T data)
-            where T : struct
-        {
-#if DEBUG
-            if (Settings.Usage != GorgonLibrary.Graphics.BufferUsage.Default)
+            if (deferred == null)
             {
-                throw new GorgonException(GorgonResult.AccessDenied, Resources.GORGFX_NOT_DEFAULT_USAGE);
+                deferred = Graphics;
             }
-#endif
 
-            ctx.Context.UpdateSubresource(ref data, D3DResource, 0, DirectAccess.SizeOf<T>());
-        }
+            deferred.Context.UpdateSubresource(ref data, D3DResource, 0, DirectAccess.SizeOf<T>());
+		}
 
 
 		/// <summary>
@@ -849,15 +842,22 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		/// <typeparam name="T">Type of value type.</typeparam>
 		/// <param name="data">Value type data to write into the buffer.</param>
+		/// <param name="deferred">[Optional] A deferred context to use when updating the buffer.</param>
 		/// <remarks>
 		/// This overload is useful for directly copying values into the buffer without needing a data stream.  If the type of value is a 
 		/// struct and contains reference types (arrays, strings, and objects), then these members will not be copied.  Some form of 
 		/// marshalling will be required in order to copy structures with reference types.  
-		/// <para>This will only work on buffers created with a usage type of [Default].</para>
+        /// <para>
+        /// If the <paramref name="deferred"/> parameter is NULL (Nothing in VB.Net), the immediate context will be used to update the buffer.  If it is non-NULL, then it 
+        /// will use the specified deferred context to clear the render target.
+        /// <para>If you are using a deferred context, it is necessary to use that context to update the buffer because 2 threads may not access the same resource at the same time.  
+        /// Passing a separate deferred context will alleviate that.</para>
+        /// </para>
+        /// <para>This will only work on buffers created with a usage type of [Default].</para>
 		/// </remarks>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="data"/> parameter is NULL (Nothing in VB.Net).</exception>
 		/// <exception cref="GorgonLibrary.GorgonException">Thrown when the buffer does not have a usage of Default.</exception>
-		public void Update<T>(T[] data)
+		public void Update<T>(T[] data, GorgonGraphics deferred = null)
 			where T : struct
 		{
 			GorgonDebug.AssertNull(data, "data");
@@ -869,7 +869,12 @@ namespace GorgonLibrary.Graphics
 			}
 #endif
 
-			Graphics.Context.UpdateSubresource(data, D3DResource, 0, DirectAccess.SizeOf<T>() * data.Length, 0,
+            if (deferred == null)
+            {
+                deferred = Graphics;
+            }
+
+			deferred.Context.UpdateSubresource(data, D3DResource, 0, DirectAccess.SizeOf<T>() * data.Length, 0,
 			                                   new D3D.ResourceRegion(0, 0, 0, SizeInBytes, 1, 1));
 		}
 		
@@ -877,14 +882,21 @@ namespace GorgonLibrary.Graphics
         /// Function to update the buffer.
         /// </summary>
         /// <param name="stream">Stream containing the data used to update the buffer.</param>
+        /// <param name="deferred">[Optional] A deferred context to use when updating the buffer.</param>
         /// <remarks>This method can only be used with buffers that have Default usage.  Other buffer usages will thrown an exception.
         /// <para>This method will respect the <see cref="GorgonLibrary.IO.GorgonDataStream.Position">Position</see> property of the data stream.  
         /// This means that it will start reading from the stream at the current position.  To read from the beginning of the stream, set the position 
         /// to 0.</para>
+        /// <para>
+        /// If the <paramref name="deferred"/> parameter is NULL (Nothing in VB.Net), the immediate context will be used to update the buffer.  If it is non-NULL, then it 
+        /// will use the specified deferred context to clear the render target.
+        /// <para>If you are using a deferred context, it is necessary to use that context to update the buffer because 2 threads may not access the same resource at the same time.  
+        /// Passing a separate deferred context will alleviate that.</para>
+        /// </para>
         /// </remarks>
         /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="stream"/> parameter is NULL (Nothing in VB.Net).</exception>
         /// <exception cref="GorgonLibrary.GorgonException">Thrown when the buffer usage is not set to default.</exception>
-        public void Update(GorgonDataStream stream)
+        public void Update(GorgonDataStream stream, GorgonGraphics deferred = null)
         {
             GorgonDebug.AssertNull(stream, "stream");
 
@@ -894,21 +906,35 @@ namespace GorgonLibrary.Graphics
                 throw new GorgonException(GorgonResult.AccessDenied, Resources.GORGFX_NOT_DEFAULT_USAGE);
             }
 #endif
+            if (deferred == null)
+            {
+                deferred = Graphics;
+            }
 
-            OnUpdate(stream, 0, (int)(stream.Length - stream.Position));
+            OnUpdate(stream, 0, (int)(stream.Length - stream.Position), deferred);
         }
 
         /// <summary>
         /// Function to unlock a locked buffer.
         /// </summary>
-        public void Unlock()
+        /// <param name="deferred">[Optional] The deferred context that was used to lock the buffer.</param>
+        /// <remarks>If <paramref name="deferred"/> is NULL (Nothing in VB.Net), then the immediate graphics context will be used to unlock the buffer.  Otherwise, the specified deferred context will be used 
+        /// to unlock the buffer.
+        /// <para>Ensure that the context used to lock the buffer is the same as the one passed to <paramref name="deferred"/>.</para>
+        /// </remarks>
+        public void Unlock(GorgonGraphics deferred = null)
         {
             if (!IsLocked)
             {
                 return;
             }
 
-            OnUnlock();
+            if (deferred == null)
+            {
+                deferred = Graphics;
+            }
+
+            deferred.Context.UnmapSubresource(D3DBuffer, 0);
 
             IsLocked = false;
         }
@@ -917,6 +943,7 @@ namespace GorgonLibrary.Graphics
         /// Function to lock the buffer for reading/writing.
         /// </summary>
         /// <param name="lockFlags">The flags to use when locking the buffer.</param>
+        /// <param name="deferred">[Optional] A deferred context to use when locking the buffer.</param>
         /// <returns>A data stream pointing to the memory used by the buffer.</returns>
         /// <remarks>A data stream locked with this method does not have to be disposed of.  After it is <see cref="GorgonLibrary.Graphics.GorgonBaseBuffer.Unlock">unlocked</see>, the memory pointed 
         /// at by the stream will be considered invalid.  However, for the sake of following practice, it is a good idea to call the Dispose method 
@@ -924,6 +951,12 @@ namespace GorgonLibrary.Graphics
         /// <para>This method only works on buffers with a Dynamic or Staging usage.  Immutable or default buffers will throw an exception when an attempt 
         /// is made to lock them.</para>
         /// <para>Some buffers may raise an exception with locking with certain <paramref name="lockFlags"/>.  This is dependant upon the type of buffer.</para>
+        /// <para>
+        /// If the <paramref name="deferred"/> parameter is NULL (Nothing in VB.Net), the immediate context will be used to lock the buffer.  If it is non-NULL, then it 
+        /// will use the specified deferred context to clear the render target.
+        /// <para>If you are using a deferred context, it is necessary to use that context to lock the buffer because 2 threads may not access the same resource at the same time.  
+        /// Passing a separate deferred context will alleviate that.</para>
+        /// </para>
         /// </remarks>
         /// <exception cref="GorgonLibrary.GorgonException">Thrown when the buffer is already locked.
         /// <para>-or-</para>
@@ -933,7 +966,7 @@ namespace GorgonLibrary.Graphics
         /// <para>-or-</para>
         /// <para>Thrown when an index/vertex buffer is locked with with a read flag, or a write flag without discard or nooverwrite.</para>
         /// </exception>
-        public GorgonDataStream Lock(BufferLockFlags lockFlags)
+        public GorgonDataStream Lock(BufferLockFlags lockFlags, GorgonGraphics deferred = null)
         {
 #if DEBUG
             if (IsLocked)
@@ -947,7 +980,12 @@ namespace GorgonLibrary.Graphics
             }
 #endif
 
-            GorgonDataStream result = OnLock(lockFlags);
+            if (deferred == null)
+            {
+                deferred = Graphics;
+            }
+
+            GorgonDataStream result = OnLock(lockFlags, deferred);
 
             IsLocked = true;
 

@@ -36,7 +36,7 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Property to return the number of draw calls.
 		/// </summary>
-		public static int DrawCallCount
+		public static ulong DrawCallCount
 		{
 			get;
 			internal set;

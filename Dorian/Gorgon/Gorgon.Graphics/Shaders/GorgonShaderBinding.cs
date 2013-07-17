@@ -126,7 +126,37 @@ namespace GorgonLibrary.Graphics
 		#endregion
 
 		#region Methods.
-		/// <summary>
+        /// <summary>
+        /// Function to reset the shader states.
+        /// </summary>
+	    internal void Reset()
+	    {
+            VertexShader.Reset();
+            PixelShader.Reset();
+
+            if (GeometryShader != null)
+            {
+                GeometryShader.Reset();
+            }
+
+            if (ComputeShader != null)
+            {
+                ComputeShader.Reset();
+            }
+
+            if (HullShader != null)
+            {
+                HullShader.Reset();
+            }
+
+            if (DomainShader != null)
+            {
+                DomainShader.Reset();
+            }
+	    }
+
+
+	    /// <summary>
 		/// Function clean up any resources within this interface.
 		/// </summary>
 		internal void CleanUp()

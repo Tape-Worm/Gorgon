@@ -61,26 +61,34 @@ namespace GorgonLibrary.Graphics
 		#endregion
 
 		#region Methods.
-		/// <summary>
-		/// Function to return sub resource data for a lock operation.
-		/// </summary>
-		/// <param name="dataStream">Stream containing the data.</param>
-		/// <param name="rowPitch">The number of bytes per row of the texture.</param>
-		/// <param name="slicePitch">The number of bytes per depth slice of the texture.</param>
-		/// <returns>
-		/// The sub resource data.
-		/// </returns>
-		protected override ISubResourceData OnGetLockSubResourceData(IO.GorgonDataStream dataStream, int rowPitch, int slicePitch)
+        /// <summary>
+        /// Function to return sub resource data for a lock operation.
+        /// </summary>
+        /// <param name="dataStream">Stream containing the data.</param>
+        /// <param name="rowPitch">The number of bytes per row of the texture.</param>
+        /// <param name="slicePitch">The number of bytes per depth slice of the texture.</param>
+        /// <param name="context">The graphics context to use when locking the texture.</param>
+        /// <returns>
+        /// The sub resource data.
+        /// </returns>
+        /// <remarks>
+        /// The <paramref name="context" /> allows a separate thread to access the resource at the same time as another thread.
+        /// </remarks>
+		protected override ISubResourceData OnGetLockSubResourceData(IO.GorgonDataStream dataStream, int rowPitch, int slicePitch, GorgonGraphics context)
 		{
 			return new GorgonTexture3DData(dataStream, rowPitch, slicePitch);
 		}
 
-		/// <summary>
-		/// Function to copy data from the CPU to a texture.
-		/// </summary>
-		/// <param name="data">Data to copy to the texture.</param>
-		/// <param name="subResource">Sub resource index to use.</param>
-		protected override void OnUpdateSubResource(ISubResourceData data, int subResource)
+        /// <summary>
+        /// Function to copy data from the CPU to a texture.
+        /// </summary>
+        /// <param name="data">Data to copy to the texture.</param>
+        /// <param name="subResource">Sub resource index to use.</param>
+        /// <param name="context">The graphics context to use when updating the texture.</param>
+        /// <remarks>
+        /// The <paramref name="context" /> allows a separate thread to access the resource at the same time as another thread.
+        /// </remarks>
+		protected override void OnUpdateSubResource(ISubResourceData data, int subResource, GorgonGraphics context)
 		{
 			var box = new SharpDX.DataBox
 				{
@@ -98,7 +106,7 @@ namespace GorgonLibrary.Graphics
 			region.Top = 0;
 			region.Bottom = Settings.Height;
 		
-			Graphics.Context.UpdateSubresourceSafe(box, D3DResource, data.RowPitch, FormatInformation.SizeInBytes, region, FormatInformation.IsCompressed);
+			context.Context.UpdateSubresourceSafe(box, D3DResource, data.RowPitch, FormatInformation.SizeInBytes, region, FormatInformation.IsCompressed);
 		}
 
 		/// <summary>
@@ -121,7 +129,7 @@ namespace GorgonLibrary.Graphics
 				Usage = BufferUsage.Staging
 			};
 
-			staging = Graphics.Textures.CreateTexture(Name + ".Staging", settings3D);
+			staging = Graphics.ImmediateContext.Textures.CreateTexture(Name + ".Staging", settings3D);
 
 			staging.Copy(this);
 
@@ -452,17 +460,20 @@ namespace GorgonLibrary.Graphics
 			CopySubResource(texture, subResource, destSubResource, null, Vector3.Zero);
 		}
 
-		/// <summary>
-		/// Function to copy data from the CPU to a texture.
-		/// </summary>
-		/// <param name="data">Data to copy to the texture.</param>
-		/// <param name="subResource">Sub resource index to use.</param>
-		/// <param name="destBox">Destination region to copy into.</param>
-		/// <remarks>Use this to copy data to this texture.  If the texture is non CPU accessible texture then an exception is raised.</remarks>
-		/// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="destBox"/> parameter is less than 0 or larger than this texture.</exception>
-		/// <exception cref="System.InvalidOperationException">Thrown when this texture has an Immutable, Dynamic or a Staging usage.
-		/// </exception>
-		public void UpdateSubResource(ISubResourceData data, int subResource, GorgonBox destBox)
+        /// <summary>
+        /// Function to copy data from the CPU to a texture.
+        /// </summary>
+        /// <param name="data">Data to copy to the texture.</param>
+        /// <param name="subResource">Sub resource index to use.</param>
+        /// <param name="destBox">Destination region to copy into.</param>
+        /// <param name="deferred">[Optional] The deferred context to use when updating the sub resource.</param>
+        /// <exception cref="System.InvalidOperationException">Thrown when this texture has an Immutable, Dynamic or a Staging usage.</exception>
+        /// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="destBox" /> parameter is less than 0 or larger than this texture.</exception>
+        /// <remarks>
+        /// Use this to copy data to this texture.  If the texture is non CPU accessible texture then an exception is raised.
+        /// <para>If <paramref name="deferred"/> is NULL (Nothing in VB.Net), then the immediate context is used to update the texture.  Specify a deferred context when accessing the resource is being accessed by a separate thread.</para>
+        /// </remarks>
+		public void UpdateSubResource(ISubResourceData data, int subResource, GorgonBox destBox, GorgonGraphics deferred = null)
 		{
 #if DEBUG
 			if ((Settings.Usage == BufferUsage.Dynamic) || (Settings.Usage == BufferUsage.Immutable))
@@ -512,7 +523,12 @@ namespace GorgonLibrary.Graphics
 				Right = destBox.Right,
 			};
 
-			Graphics.Context.UpdateSubresource(box, D3DResource, subResource, region);
+            if (deferred == null)
+            {
+                deferred = Graphics;
+            }
+
+			deferred.Context.UpdateSubresource(box, D3DResource, subResource, region);
 		}
 		#endregion
 
