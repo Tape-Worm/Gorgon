@@ -477,16 +477,30 @@ namespace GorgonLibrary.Graphics
 				if (Graphics.Context == null)
 					throw new InvalidOperationException("No usable context was found.");
 		#endif
-				if (_depthRef != value)
-				{
-					Graphics.Context.OutputMerger.DepthStencilReference = value;
-					_depthRef = value;
-				}
+			    if (_depthRef == value)
+			    {
+			        return;
+			    }
+
+			    Graphics.Context.OutputMerger.DepthStencilReference = value;
+			    _depthRef = value;
 			}
 		}
 		#endregion
 
 		#region Methods.
+        /// <summary>
+        /// Function to reset the depth/stencil states.
+        /// </summary>
+        internal override void Reset()
+        {
+            base.Reset();
+
+            _depthRef = 0;
+            Graphics.Context.OutputMerger.DepthStencilReference = 0;
+            States = GorgonDepthStencilStates.NoDepthStencil;
+        }
+
 		/// <summary>
 		/// Function to apply the state to the current rendering context.
 		/// </summary>

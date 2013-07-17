@@ -576,6 +576,25 @@ namespace GorgonLibrary.Graphics
                                             + "' for a render target on the video device '" + _graphics.VideoDevice.Name + "'.");
             }
         }
+
+        /// <summary>
+        /// Function to reset the output merger states.
+        /// </summary>
+        internal void Reset()
+        {
+            BlendingState.Reset();
+            DepthStencilState.Reset();
+
+            _D3DUnorderedViews = null;
+            _D3DViews = null;
+            _depthView = null;
+            _targetViews = null;
+            _uavCounts = null;
+            _uavStartSlot = -1;
+            _unorderedViews = null;
+            
+            _graphics.Context.OutputMerger.SetTargets((D3D.RenderTargetView)null);
+        }
         
         /// <summary>
 	    /// Function to validate the settings for a render target.
@@ -1287,7 +1306,10 @@ namespace GorgonLibrary.Graphics
                 throw new GorgonException(GorgonResult.CannotBind, string.Format(Resources.GORGFX_REQUIRES_SM, DeviceFeatureLevel.SM2_a_b));
             }
 #endif
-			GorgonRenderStatistics.DrawCallCount++;
+		    unchecked
+		    {
+                GorgonRenderStatistics.DrawCallCount++;    
+		    }
 			_graphics.Context.DrawAuto();
 		}
 
@@ -1299,7 +1321,10 @@ namespace GorgonLibrary.Graphics
 		/// <param name="indexCount">Number of indices to use.</param>
 		public void DrawIndexed(int indexStart, int baseVertex, int indexCount)
 		{
-			GorgonRenderStatistics.DrawCallCount++;
+		    unchecked
+		    {
+                GorgonRenderStatistics.DrawCallCount++;        
+		    }
 			_graphics.Context.DrawIndexed(indexCount, indexStart, baseVertex);
 		}
 
@@ -1313,7 +1338,10 @@ namespace GorgonLibrary.Graphics
 		/// <param name="indexCount">Number of indices to read per instance.</param>
 		public void DrawIndexedInstanced(int startInstance, int indexStart, int baseVertex, int instanceCount, int indexCount)
 		{
-			GorgonRenderStatistics.DrawCallCount++;
+		    unchecked
+		    {
+                GorgonRenderStatistics.DrawCallCount++;    
+		    }
 			_graphics.Context.DrawIndexedInstanced(indexCount, instanceCount, indexStart, baseVertex, startInstance);
 		}
 
@@ -1326,7 +1354,10 @@ namespace GorgonLibrary.Graphics
 		/// <param name="vertexCount">Number of vertices to draw.</param>
 		public void DrawInstanced(int startInstance, int startVertex, int instanceCount, int vertexCount)
 		{
-			GorgonRenderStatistics.DrawCallCount++;
+		    unchecked
+		    {
+                GorgonRenderStatistics.DrawCallCount++;    
+		    }
 			_graphics.Context.DrawInstanced(vertexCount, instanceCount, startVertex, startInstance);
 		}
 
@@ -1355,7 +1386,10 @@ namespace GorgonLibrary.Graphics
 				throw new ArgumentException(Resources.GORGFX_BUFFER_NOT_INDIRECT, "buffer");
 			}
 #endif
-			GorgonRenderStatistics.DrawCallCount++;
+		    unchecked
+		    {
+                GorgonRenderStatistics.DrawCallCount++;    
+		    }
 			if (isIndexed)
 				_graphics.Context.DrawIndexedInstancedIndirect((D3D.Buffer)buffer.D3DResource, alignedByteOffset);
 			else

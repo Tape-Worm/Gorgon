@@ -134,44 +134,140 @@ namespace GorgonLibrary.Graphics
 			_defaultView = GetDepthStencilView(Settings.Format, 0, 0, 1, Settings.DefaultDepthStencilViewFlags);
 		}
 
-		/// <summary>
-		/// Function to copy data from the CPU to a texture.
-		/// </summary>
-		/// <param name="data">Data to copy to the texture.</param>
-		/// <param name="subResource">Sub resource index to use.</param>
-		/// <exception cref="System.NotSupportedException">This method is not supported for depth/stencil buffers.</exception>
+        /// <summary>
+        /// Function to copy data from the CPU to a texture.
+        /// </summary>
+        /// <param name="data">Data to copy to the texture.</param>
+        /// <param name="subResource">Sub resource index to use.</param>
+        /// <param name="context">The graphics context to use when updating the texture.</param>
+        /// <exception cref="System.NotSupportedException">This method is not supported for depth/stencil buffers.</exception>
+        /// <remarks>
+        /// The <paramref name="context" /> allows a separate thread to access the resource at the same time as another thread.
+        /// </remarks>
 		[EditorBrowsable(EditorBrowsableState.Never)]
-		protected override void OnUpdateSubResource(ISubResourceData data, int subResource)
+		protected override void OnUpdateSubResource(ISubResourceData data, int subResource, GorgonGraphics context)
 		{
 			throw new NotSupportedException(Resources.GORGFX_DEPTH_OPERATION_NOT_SUPPORTED);
 		}
 
-		/// <summary>
-		/// Function to copy data from the CPU to a texture.
-		/// </summary>
-		/// <param name="data">Data to copy to the texture.</param>
-		/// <exception cref="System.NotSupportedException">This method is not supported for depth/stencil buffers.</exception>
-		/// <remarks>This method is not supported for depth/stencil buffers.</remarks>
+        /// <summary>
+        /// Function to copy data from the CPU to a texture.
+        /// </summary>
+        /// <param name="data">Data to copy to the texture.</param>
+        /// <param name="deferred">[Optional] The deferred graphics context to use when updating the sub resource.</param>
+        /// <exception cref="System.NotSupportedException">This method is not supported for depth/stencil buffers.</exception>
+        /// <remarks>
+        /// This method is not supported for depth/stencil buffers.
+        /// </remarks>
 		[EditorBrowsable(EditorBrowsableState.Never)]
-		public new void UpdateSubResource(ISubResourceData data)
+		public new void UpdateSubResource(ISubResourceData data, GorgonGraphics deferred = null)
 		{
 			throw new NotSupportedException(Resources.GORGFX_DEPTH_OPERATION_NOT_SUPPORTED);
 		}
 
-		/// <summary>
-		/// Function to copy data from the CPU to a texture.
-		/// </summary>
-		/// <param name="data">Data to copy to the texture.</param>
-		/// <param name="subResource">Sub resource index to use.</param>
-		/// <exception cref="System.NotSupportedException">This method is not supported for depth/stencil buffers.</exception>
-		/// <remarks>This method is not supported for depth/stencil buffers.</remarks>
+        /// <summary>
+        /// Function to copy data from the CPU to a texture.
+        /// </summary>
+        /// <param name="data">Data to copy to the texture.</param>
+        /// <param name="subResource">Sub resource index to use.</param>
+        /// <param name="deferred">[Optional] The deferred graphics context to use when updating the sub resource.</param>
+        /// <exception cref="System.NotSupportedException">This method is not supported for depth/stencil buffers.</exception>
+        /// <remarks>
+        /// This method is not supported for depth/stencil buffers.
+        /// </remarks>
 		[EditorBrowsable(EditorBrowsableState.Never)]
-		public new void UpdateSubResource(ISubResourceData data, int subResource)
+		public new void UpdateSubResource(ISubResourceData data, int subResource, GorgonGraphics deferred = null)
 		{
 			throw new NotSupportedException(Resources.GORGFX_DEPTH_OPERATION_NOT_SUPPORTED);
 		}
 
-		/// <summary>
+        /// <summary>
+        /// Function to lock the texture for reading/writing.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="lockFlags">Flags used to lock.</param>
+        /// <param name="deferred">[Optional] The deferred context used to lock the texture.</param>
+        /// <returns>
+        /// The locked data stream and information about the lock.
+        /// </returns>
+        /// <exception cref="System.NotSupportedException"></exception>
+        /// <exception cref="System.ArgumentException">Thrown when the texture is not a dynamic or staging texture.
+        /// <para>-or-</para>
+        /// <para>Thrown when the texture is not a staging texture and the Read flag has been specified.</para>
+        /// <para>-or-</para>
+        /// <para>Thrown when the texture is not a dynamic texture and the discard flag has been specified.</para></exception>
+        /// <exception cref="System.InvalidOperationException">Thrown when the texture sub resource is already locked.</exception>
+        /// <remarks>
+        /// When locking a texture, the entire texture sub resource is locked and returned.  There is no setting to return a portion of the texture subresource.
+        /// <para>This overload locks the first sub resource (index 0) only.</para>
+        /// <para>This method is only available to textures created with a staging or dynamic usage setting.  Otherwise an exception will be raised.</para>
+        /// <para>The NoOverwrite flag is not valid with texture locking and will be ignored.</para>
+        /// <para>If the texture is not a staging texture and Read is specified, then an exception will be raised.</para>
+        /// <para>Discard is only applied to dynamic textures.  If the texture is not dynamic, then an exception will be raised.</para>
+        /// <para>If the <paramref name="deferred" /> parameter is NULL (Nothing in VB.Net), then the immediate context is used.  Use a deferred context to allow multiple threads to lock the
+        /// texture at the same time.</para>
+        /// </remarks>
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public new T Lock<T>(BufferLockFlags lockFlags, GorgonGraphics deferred = null)
+            where T : ISubResourceData
+        {
+            throw new NotSupportedException(Resources.GORGFX_DEPTH_OPERATION_NOT_SUPPORTED);
+        }
+
+        /// <summary>
+        /// Function to lock a CPU accessible texture sub resource for reading/writing.
+        /// </summary>
+        /// <param name="subResource">Sub resource to lock.</param>
+        /// <param name="lockFlags">Flags used to lock.</param>
+        /// <param name="deferred">[Optional] The deferred graphics context used to lock the texture.</param>
+        /// <returns>A stream used to write to the texture.</returns>
+        /// <remarks>When locking a texture, the entire texture sub resource is locked and returned.  There is no setting to return a portion of the texture subresource.
+        /// <para>This method is only available to textures created with a staging or dynamic usage setting.  Otherwise an exception will be raised.</para>
+        /// <para>The NoOverwrite flag is not valid with texture locking and will be ignored.</para>
+        /// <para>If the texture is not a staging texture and Read is specified, then an exception will be raised.</para>
+        /// <para>Discard is only applied to dynamic textures.  If the texture is not dynamic, then an exception will be raised.</para>
+        /// <para>If the <paramref name="deferred"/> parameter is NULL (Nothing in VB.Net), then the immediate context is used.  Use a deferred context to allow multiple threads to lock the 
+        /// texture at the same time.</para>
+        /// </remarks>
+        /// <returns>The locked data stream and information about the lock.</returns>
+        /// <exception cref="System.ArgumentException">Thrown when the texture is not a dynamic or staging texture.
+        /// <para>-or-</para>
+        /// <para>Thrown when the texture is not a staging texture and the Read flag has been specified.</para>
+        /// <para>-or-</para>
+        /// <para>Thrown when the texture is not a dynamic texture and the discard flag has been specified.</para>
+        /// </exception>
+        /// <typeparam name="T">The type of locking data.  This must be one of <see cref="GorgonLibrary.Graphics.GorgonTexture1DData">GorgonTexture1DData</see>, <see cref="GorgonLibrary.Graphics.GorgonTexture2DData">GorgonTexture2DData</see> or <see cref="GorgonLibrary.Graphics.GorgonTexture3DData">GorgonTexture3DData</see></typeparam>
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public new T Lock<T>(int subResource, BufferLockFlags lockFlags, GorgonGraphics deferred = null)
+            where T : ISubResourceData
+        {
+            throw new NotSupportedException(Resources.GORGFX_DEPTH_OPERATION_NOT_SUPPORTED);
+        }
+
+        /// <summary>
+        /// Function to unlock a locked texture.
+        /// </summary>
+        /// <param name="deferred">[Optional] The deferred context used to lock the texture.</param>
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public new void Unlock(GorgonGraphics deferred = null)
+        {
+            throw new NotSupportedException(Resources.GORGFX_DEPTH_OPERATION_NOT_SUPPORTED);
+        }
+
+        /// <summary>
+        /// Function to unlock a locked texture sub resource.
+        /// </summary>
+        /// <param name="subResource">The index of the sub resource to unlock.</param>
+        /// <param name="deferred">[Optional] The deferred graphics context to use when unlocking the texture.</param>
+        /// <remarks>If the <paramref name="deferred"/> parameter is NULL (Nothing in VB.Net), then the immediate context is used.  Ensure that the 
+        /// correct context is used when unlocking a resource or an exception will be thrown.</remarks>
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public new void Unlock(int subResource, GorgonGraphics deferred = null)
+        {
+            throw new NotSupportedException(Resources.GORGFX_DEPTH_OPERATION_NOT_SUPPORTED);
+        }
+        
+        /// <summary>
 		/// Function called if this buffer is attached to a swap chain and it's been resized.
 		/// </summary>
 		/// <returns>TRUE if this depth buffer was bound to the pipeline, FALSE if not.</returns>

@@ -154,7 +154,11 @@ namespace GorgonLibrary.Graphics
         /// <para>-or-</para>
         /// <para>Thrown when the <paramref name="values"/> parameter is empty.</para>
         /// </exception>
-        /// <remarks>This generic buffer type is not capable of being bound to a shader, but can be used as a stream output from a geometry/compute shader.</remarks>
+        /// <exception cref="GorgonLibrary.GorgonException">Thrown when the buffer could not be created.</exception>
+        /// <remarks>
+        /// This generic buffer type is not capable of being bound to a shader, but can be used as a stream output from a geometry/compute shader.
+        /// <para>This method should only be called from an immediate graphics context, if it is called from a deferred context an exception will be thrown.</para>
+        /// </remarks>
         public GorgonBuffer CreateBuffer<T>(string name, T[] values, BufferUsage usage)
             where T : struct
         {
@@ -200,10 +204,16 @@ namespace GorgonLibrary.Graphics
         /// </exception>
 		/// <remarks>The generic buffer is intended to be used with the [RW]Buffer&lt;&gt; HLSL type.
 		/// <para>Generic buffers are only available on video devices that are capable of SM4 or better.</para>
+        /// <para>This method should only be called from an immediate graphics context, if it is called from a deferred context an exception will be thrown.</para>
 		/// </remarks>
         public GorgonBuffer CreateBuffer(string name, GorgonBufferSettings settings, GorgonDataStream stream = null)
         {
-			if (_graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM2_a_b)
+            if (_graphics.IsDeferred)
+            {
+                throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_CANNOT_USE_DEFERRED_CONTEXT);
+            }
+
+            if (_graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM2_a_b)
 			{
 				throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_REQUIRES_SM, "SM4"));	
 			}
@@ -251,7 +261,9 @@ namespace GorgonLibrary.Graphics
         /// <param name="settings">The settings for the buffer.</param>
         /// <param name="stream">[Optional] Stream used to initialize the buffer.</param>
         /// <returns>A new constant buffer.</returns>
-        /// <remarks>The size of the buffer must be a multiple of 16.</remarks>
+        /// <remarks>The size of the buffer must be a multiple of 16.
+        /// <para>This method should only be called from an immediate graphics context, if it is called from a deferred context an exception will be thrown.</para>
+        /// </remarks>
         /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (Nothing in VB.Net).
         /// <para>-or-</para>
         /// <para>Thrown when the <paramref name="settings"/> parameter is NULL.</para>
@@ -261,6 +273,11 @@ namespace GorgonLibrary.Graphics
         /// <exception cref="GorgonLibrary.GorgonException">Thrown when the buffer size is less than 16 bytes.</exception>
         public GorgonConstantBuffer CreateConstantBuffer(string name, GorgonConstantBufferSettings settings, GorgonDataStream stream = null)
         {
+            if (_graphics.IsDeferred)
+            {
+                throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_CANNOT_USE_DEFERRED_CONTEXT);
+            }
+
             if (settings == null)
             {
                 throw new ArgumentNullException("settings");
@@ -289,13 +306,26 @@ namespace GorgonLibrary.Graphics
         /// <param name="value">Value to write to the buffer</param>
         /// <param name="usage">Usage for the buffer.</param>
         /// <returns>A new constant buffer.</returns>
+        /// <remarks>This method should only be called from an immediate graphics context, if it is called from a deferred context an exception will be thrown.</remarks>
         /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (Nothing in VB.Net).</exception>
         /// <exception cref="System.ArgumentException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
+        /// <exception cref="GorgonLibrary.GorgonException">Thrown when the buffer could not be created.</exception>
         public GorgonConstantBuffer CreateConstantBuffer<T>(string name, T value, BufferUsage usage)
             where T : struct
         {
-            using (GorgonDataStream stream = GorgonDataStream.ValueToStream(value))
+            int size = DirectAccess.SizeOf<T>();
+
+            // Ensure the total size of the object is a multiple of 16.
+            while ((size % 16) != 0)
             {
+                size++;
+            }
+
+            using (var stream = new GorgonDataStream(size))
+            {
+                stream.Write(value);
+                stream.Position = 0;
+
                 return CreateConstantBuffer(name, new GorgonConstantBufferSettings
                 {
                     Usage = usage,
@@ -312,6 +342,8 @@ namespace GorgonLibrary.Graphics
         /// <param name="usage">Usage for the buffer.</param>
         /// <returns>A new structured buffer.</returns>
         /// <typeparam name="T">Type of data to write.  Must be a value type.</typeparam>
+        /// <remarks>This method should only be called from an immediate graphics context, if it is called from a deferred context an exception will be thrown.</remarks>
+        /// <exception cref="GorgonLibrary.GorgonException">Thrown when the buffer could not be created.</exception>
         public GorgonStructuredBuffer CreateStructuredBuffer<T>(string name, T value, BufferUsage usage)
             where T : struct
         {
@@ -339,6 +371,8 @@ namespace GorgonLibrary.Graphics
         /// <para>Thrown when the <paramref name="values"/> parameter is NULL (Nothing in VB.Net).</para>
         /// </exception>
         /// <exception cref="System.ArgumentException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
+        /// <exception cref="GorgonLibrary.GorgonException">Thrown when the buffer could not be created.</exception>
+        /// <remarks>This method should only be called from an immediate graphics context, if it is called from a deferred context an exception will be thrown.</remarks>
         public GorgonStructuredBuffer CreateStructuredBuffer<T>(string name, T[] values, BufferUsage usage)
             where T : struct
         {
@@ -371,6 +405,7 @@ namespace GorgonLibrary.Graphics
         /// <param name="stream">[Optional] Stream containing the data used to initialize the buffer.</param>
         /// <returns>A new structured buffer.</returns>
         /// <remarks>This buffer type allows structures of data to be processed by the GPU without explicit byte mapping.
+        /// <para>This method should only be called from an immediate graphics context, if it is called from a deferred context an exception will be thrown.</para>
         /// <para>Structured buffers can only be used on SM_5 video devices.</para>
         /// </remarks>
         /// <exception cref="System.ArgumentException">Thrown when the <paramref name="name"/> parameter is empty.
@@ -391,6 +426,11 @@ namespace GorgonLibrary.Graphics
         /// </exception>
         public GorgonStructuredBuffer CreateStructuredBuffer(string name, GorgonStructuredBufferSettings settings, GorgonDataStream stream = null)
         {
+            if (_graphics.IsDeferred)
+            {
+                throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_CANNOT_USE_DEFERRED_CONTEXT);
+            }
+
             if (settings == null)
             {
                 throw new ArgumentNullException("settings");
@@ -429,7 +469,9 @@ namespace GorgonLibrary.Graphics
         /// <para>Thrown when the <paramref name="data"/> parameter is NULL.</para>
         /// </exception>
         /// <exception cref="System.ArgumentException">Thrown when the <paramref name="name"/> or the <paramref name="data"/> parameter is empty.</exception>
+        /// <exception cref="GorgonLibrary.GorgonException">Thrown when the buffer could not be created.</exception>
         /// <remarks>If creating an immutable vertex buffer, be sure to pre-populate it via the initialData parameter.
+        /// <para>This method should only be called from an immediate graphics context, if it is called from a deferred context an exception will be thrown.</para>
         /// </remarks>
         public GorgonVertexBuffer CreateVertexBuffer<T>(string name, T[] data, BufferUsage usage = BufferUsage.Default)
             where T : struct
@@ -464,6 +506,7 @@ namespace GorgonLibrary.Graphics
         /// <param name="settings">The settings for the buffer.</param>
         /// <param name="initialData">[Optional] Initial data to populate the vertex buffer with.</param>
         /// <returns>A new vertex buffer.</returns>
+        /// <remarks>This method should only be called from an immediate graphics context, if it is called from a deferred context an exception will be thrown.</remarks>
         /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (Nothing in VB.Net).
         /// <para>-or-</para>
         /// <para>Thrown when the <paramref name="settings"/> parameter is NULL.</para>
@@ -477,6 +520,11 @@ namespace GorgonLibrary.Graphics
         /// </exception>
         public GorgonVertexBuffer CreateVertexBuffer(string name, GorgonBufferSettings settings, GorgonDataStream initialData = null)
         {
+            if (_graphics.IsDeferred)
+            {
+                throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_CANNOT_USE_DEFERRED_CONTEXT);
+            }
+
             if (settings == null)
             {
                 throw new ArgumentNullException("settings");
@@ -509,8 +557,11 @@ namespace GorgonLibrary.Graphics
         /// <para>-or-</para>
         /// <para>Thrown when the <paramref name="data"/> parameter is NULL.</para>
         /// </exception> 
+        /// <exception cref="GorgonLibrary.GorgonException">Thrown when the buffer could not be created.</exception>
         /// <exception cref="System.ArgumentException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
-        /// <remarks>If creating an immutable index buffer, be sure to pre-populate it via the initialData parameter.</remarks>
+        /// <remarks>If creating an immutable index buffer, be sure to pre-populate it via the initialData parameter.
+        /// <para>This method should only be called from an immediate graphics context, if it is called from a deferred context an exception will be thrown.</para>
+        /// </remarks>
         public GorgonIndexBuffer CreateIndexBuffer<T>(string name, T[] data, BufferUsage usage = BufferUsage.Default, bool is32Bit = true)
             where T : struct
         {
@@ -545,6 +596,7 @@ namespace GorgonLibrary.Graphics
         /// <param name="settings">The settings for the buffer.</param>
         /// <param name="initialData">[Optional] Initial data to populate the index buffer with.</param>
         /// <returns>A new index buffer.</returns>
+        /// <remarks>This method should only be called from an immediate graphics context, if it is called from a deferred context an exception will be thrown.</remarks>
         /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (Nothing in VB.Net).
         /// <para>-or-</para>
         /// <para>Thrown when the <paramref name="settings"/> parameter is NULL.</para>
@@ -558,6 +610,11 @@ namespace GorgonLibrary.Graphics
         /// </exception>
         public GorgonIndexBuffer CreateIndexBuffer(string name, GorgonIndexBufferSettings settings, GorgonDataStream initialData = null)
         {
+            if (_graphics.IsDeferred)
+            {
+                throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_CANNOT_USE_DEFERRED_CONTEXT);
+            }
+
             if (settings == null)
             {
                 throw new ArgumentNullException("settings");

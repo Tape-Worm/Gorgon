@@ -106,6 +106,19 @@ namespace GorgonLibrary.Graphics
 		    }
 		}
 
+        /// <summary>
+        /// Function to reset the geometry shader state.
+        /// </summary>
+        internal override void Reset()
+        {
+            base.Reset();
+
+            _bindings = null;
+            _D3Dbindings = null;
+
+            Graphics.Context.StreamOutput.SetTargets(_D3Dbindings);
+        }
+
 		/// <summary>
 		/// Function to retrieve the list of output buffers bound to the pipeline.
 		/// </summary>

@@ -515,117 +515,25 @@ namespace GorgonLibrary.Graphics
         /// <summary>
         /// Function to clear the states for the graphics object.
         /// </summary>
-        public void ClearState()
+        /// <param name="flush">[Optional] TRUE to flush the queued graphics object commands, FALSE to leave as is.</param>
+        /// <remarks>If <paramref name="flush"/> is set to TRUE, then a performance penalty is incurred.</remarks>
+        public void ClearState(bool flush = false)
         {
+            if (flush)
+            {
+                Context.Flush();
+            }
+
+            if (IsDeferred)
+            {
+                Context.ClearState();
+            }
+
             // Set default states.
-            Input.IndexBuffer = null;
-            Input.Layout = null;
-            Input.PrimitiveType = PrimitiveType.Unknown;
-
-            for (int i = 0; i < Input.VertexBuffers.Count; i++)
-            {
-                Input.VertexBuffers[i] = GorgonVertexBufferBinding.Empty;
-            }
-            
-            Rasterizer.States = GorgonRasterizerStates.CullBackFace;
-            Rasterizer.SetScissorRectangles(null);
-            Rasterizer.SetViewports(null);
-
-            Output.BlendingState.States = GorgonBlendStates.DefaultStates;
-            Output.DepthStencilState.States = GorgonDepthStencilStates.NoDepthStencil;
-            Output.SetRenderTargets(null);
-            
-            // Initialize the shaders with default texture sampler settings.
-            for (int i = 0; i < Shaders.VertexShader.TextureSamplers.Count; i++)
-            {
-                Shaders.VertexShader.TextureSamplers[i] = GorgonTextureSamplerStates.DefaultStates;
-                Shaders.PixelShader.TextureSamplers[i] = GorgonTextureSamplerStates.DefaultStates;
-
-                if (VideoDevice.SupportedFeatureLevel < DeviceFeatureLevel.SM4)
-                {
-                    continue;
-                }
-
-                Shaders.GeometryShader.TextureSamplers[i] = GorgonTextureSamplerStates.DefaultStates;
-
-                if (VideoDevice.SupportedFeatureLevel < DeviceFeatureLevel.SM5)
-                {
-                    continue;
-                }
-
-                Shaders.ComputeShader.TextureSamplers[i] = GorgonTextureSamplerStates.DefaultStates;
-                Shaders.HullShader.TextureSamplers[i] = GorgonTextureSamplerStates.DefaultStates;
-                Shaders.DomainShader.TextureSamplers[i] = GorgonTextureSamplerStates.DefaultStates;
-            }
-
-            // Initialize the shaders with default constant buffer settings.
-            for (int i = 0; i < Shaders.VertexShader.ConstantBuffers.Count; i++)
-            {
-                Shaders.VertexShader.ConstantBuffers[i] = null;
-                Shaders.PixelShader.ConstantBuffers[i] = null;
-
-                if (VideoDevice.SupportedFeatureLevel < DeviceFeatureLevel.SM4)
-                {
-                    continue;
-                }
-
-                Shaders.GeometryShader.ConstantBuffers[i] = null;
-                
-
-                if (VideoDevice.SupportedFeatureLevel < DeviceFeatureLevel.SM5)
-                {
-                    continue;
-                }
-
-                Shaders.ComputeShader.ConstantBuffers[i] = null;
-                Shaders.HullShader.ConstantBuffers[i] = null;
-                Shaders.DomainShader.ConstantBuffers[i] = null;
-            }
-
-            // Initialize the shaders with default resource view settings.
-            for (int i = 0; i < Shaders.VertexShader.Resources.Count; i++)
-            {
-                if (VideoDevice.SupportedFeatureLevel > DeviceFeatureLevel.SM2_a_b)
-                {
-                    Shaders.VertexShader.Resources[i] = null;
-                }
-
-                Shaders.PixelShader.Resources[i] = null;
-
-                if (VideoDevice.SupportedFeatureLevel < DeviceFeatureLevel.SM4)
-                {
-                    continue;
-                }
-
-                Shaders.GeometryShader.Resources[i] = null;
-
-
-                if (VideoDevice.SupportedFeatureLevel < DeviceFeatureLevel.SM5)
-                {
-                    continue;
-                }
-
-                Shaders.ComputeShader.Resources[i] = null;
-                Shaders.HullShader.Resources[i] = null;
-                Shaders.DomainShader.Resources[i] = null;
-            }
-
-            if (VideoDevice.SupportedFeatureLevel >= DeviceFeatureLevel.SM4)
-            {
-                // Initialize the shaders with default constant buffer settings.
-                Shaders.GeometryShader.SetStreamOutputBuffers(null);
-            }
-
-            if (VideoDevice.SupportedFeatureLevel >= DeviceFeatureLevel.SM5)
-            {
-                for (int i = 0; i < Shaders.ComputeShader.UnorderedAccessViews.Count; i++)
-                {
-                    Shaders.ComputeShader.UnorderedAccessViews[i] = null;
-                }
-            }
-
-            Context.Flush();
-            Context.ClearState();
+            Input.Reset();
+            Rasterizer.Reset();
+            Output.Reset();
+            Shaders.Reset();
         }
         #endregion
 
@@ -808,14 +716,13 @@ namespace GorgonLibrary.Graphics
             {
                 Gorgon.Log.Print("Gorgon Graphics Context shutting down...", LoggingLevel.Simple);
 
-                if (Context != null)
-                {
-                    Context.ClearState();
-                }
-
                 if (!IsDeferred)
                 {
                     _trackedObjects.ReleaseAll();
+                }
+                else
+                {
+                    Context.ClearState();
                 }
 
                 DestroyInterfaces();

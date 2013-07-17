@@ -37,8 +37,6 @@ namespace GorgonLibrary.Graphics
 	/// <para>Typically, the user will define a value type that matches a constant buffer layout.  Then, if the value type uses nothing but blittable types, the user can then write the entire 
 	/// value type structure to the constant buffer.  If the value type contains more complex types, such as arrays, then the user can write each item in the value type to a variable in the constant 
 	/// buffer.  Please note that the names for the variables in the value type and the shader do -not- have to match, although, for the sake of clarity, it is a good idea that they do.</para>
-	/// <para>In order to write to a Dynamic usage constant buffer, the user must <see cref="GorgonLibrary.Graphics.GorgonBaseBuffer.Lock">lock</see> the buffer beforehand, write the data, and unlock it when done.  
-    /// If the buffer does not have a Dynamic usage, the <see cref="GorgonLibrary.Graphics.GorgonBaseBuffer.Update(GorgonDataStream)">Update</see> method will copy data to the buffer.</para>
 	/// <para>Constant buffers follow very specific rules, which are explained at http://msdn.microsoft.com/en-us/library/windows/desktop/bb509632(v=vs.85).aspx </para>
 	/// <para>When passing a value type to the constant buffer, ensure that the type has a System.Runtime.InteropServices.StructLayout attribute assigned to it, and that the layout is explicit or sequential.  
 	/// Also, the size of the value type must be a multiple of 16, so padding of the value type might be necessary.</para>
@@ -101,17 +99,22 @@ namespace GorgonLibrary.Graphics
             // Do nothing here.  Constant buffers don't support shader resource views.
         }
 
-		/// <summary>
-		/// Function to update the buffer.
-		/// </summary>
-		/// <param name="stream">Stream containing the data used to update the buffer.</param>
-		/// <param name="offset">Offset, in bytes, into the buffer to start writing at.</param>
-		/// <param name="size">The number of bytes to write.</param>
-		protected override void OnUpdate(GorgonDataStream stream, int offset, int size)
+        /// <summary>
+        /// Function to update the buffer.
+        /// </summary>
+        /// <param name="stream">Stream containing the data used to update the buffer.</param>
+        /// <param name="offset">Offset, in bytes, into the buffer to start writing at.</param>
+        /// <param name="size">The number of bytes to write.</param>
+        /// <param name="context">A graphics context to use when updating the buffer.</param>
+        /// <remarks>
+        /// Use the <paramref name="context" /> parameter to determine the context in which the buffer should be updated. This is necessary to use that context
+        /// to update the buffer because 2 threads may not access the same resource at the same time.
+        /// </remarks>
+		protected override void OnUpdate(GorgonDataStream stream, int offset, int size, GorgonGraphics context)
 		{
-			Graphics.Context.UpdateSubresource(
+			context.Context.UpdateSubresource(
 				new DX.DataBox
-				    {
+				{
 					DataPointer = stream.PositionPointer,
 					RowPitch = 0,
 					SlicePitch = 0

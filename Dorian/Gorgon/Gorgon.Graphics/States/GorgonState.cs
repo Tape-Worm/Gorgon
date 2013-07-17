@@ -106,6 +106,17 @@ namespace GorgonLibrary.Graphics
 		#endregion
 
 		#region Methods.
+        /// <summary>
+        /// Function to reset the state.
+        /// </summary>
+        internal virtual void Reset()
+        {
+            if (_cache != null)
+            {
+                _cache.EvictCache();
+            }
+        }
+
 		/// <summary>
 		/// Function to store the state object in the cache.
 		/// </summary>

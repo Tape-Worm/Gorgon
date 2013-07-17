@@ -280,6 +280,18 @@ namespace GorgonLibrary.Graphics
 			#endregion
 
 			#region Methods.
+            /// <summary>
+            /// Function to reset the vertex buffer states.
+            /// </summary>
+            internal void Reset()
+            {
+                for (int i = 0; i < _bindings.Length; i++)
+                {
+                    _bindings[i] = GorgonVertexBufferBinding.Empty;
+                    _graphics.Context.InputAssembler.SetVertexBuffers(i, new D3D.VertexBufferBinding(null, 0, 0));
+                }
+            }
+
 			/// <summary>
 			/// Function to return the index of the vertex buffer with the specified name.
 			/// </summary>
@@ -663,6 +675,21 @@ namespace GorgonLibrary.Graphics
 		#endregion
 
 		#region Methods.
+        /// <summary>
+        /// Function to reset the states for the input assembler.
+        /// </summary>
+        internal void Reset()
+        {
+            _graphics.Context.InputAssembler.SetIndexBuffer(null, GI.Format.Unknown, 0);
+            VertexBuffers.Reset();
+            _graphics.Context.InputAssembler.PrimitiveTopology = (SharpDX.Direct3D.PrimitiveTopology.TriangleList);
+            _graphics.Context.InputAssembler.InputLayout = null;
+
+            _indexBuffer = null;
+            _inputLayout = null;
+            _primitiveType = PrimitiveType.TriangleList;
+        }
+
 		/// <summary>
 		/// Function to set the current index buffer, with an offset inside the buffer.
 		/// </summary>

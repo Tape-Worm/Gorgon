@@ -44,7 +44,6 @@ namespace GorgonLibrary.Graphics
 	{
 		#region Variables.
 	    private bool _disposed;                                 // Flag to indicate that the object was disposed.
-		private readonly IList<DX.DataStream> _lock;			// Locks for the texture.
 		private GorgonViewCache _viewCache;						// Cache for views.
 		private GorgonTextureShaderView _defaultShaderView;		// The default shader view for the texture.
 		#endregion
@@ -514,15 +513,19 @@ namespace GorgonLibrary.Graphics
 		/// <param name="dataStream">Stream containing the data.</param>
 		/// <param name="rowPitch">The number of bytes per row of the texture.</param>
 		/// <param name="slicePitch">The number of bytes per depth slice of the texture.</param>
+		/// <param name="context">The graphics context to use when locking the texture.</param>
 		/// <returns>The sub resource data.</returns>
-		protected abstract ISubResourceData OnGetLockSubResourceData(GorgonDataStream dataStream, int rowPitch, int slicePitch);
+        /// <remarks>The <paramref name="context"/> allows a separate thread to access the resource at the same time as another thread.</remarks>
+		protected abstract ISubResourceData OnGetLockSubResourceData(GorgonDataStream dataStream, int rowPitch, int slicePitch, GorgonGraphics context);
 
 		/// <summary>
 		/// Function to copy data from the CPU to a texture.
 		/// </summary>
 		/// <param name="data">Data to copy to the texture.</param>
 		/// <param name="subResource">Sub resource index to use.</param>
-		protected abstract void OnUpdateSubResource(ISubResourceData data, int subResource);
+		/// <param name="context">The graphics context to use when updating the texture.</param>
+		/// <remarks>The <paramref name="context"/> allows a separate thread to access the resource at the same time as another thread.</remarks>
+		protected abstract void OnUpdateSubResource(ISubResourceData data, int subResource, GorgonGraphics context);
 
 		/// <summary>
 		/// Function to copy this texture into a new staging texture.
@@ -820,6 +823,7 @@ namespace GorgonLibrary.Graphics
 		/// Function to copy another texture into this texture.
 		/// </summary>
 		/// <param name="texture">Source texture to copy.</param>
+		/// <param name="deferred">[Optional] The deferred context to use when copying.</param>
 		/// <remarks>
 		/// This overload will copy the -entire- texture, including mipmaps, array levels, etc...  Use <see cref="M:GorgonLibrary.Graphics.GorgonTexture.CopySubResource(GorgonTexture2D, int, int, System.Drawing.Rectangle, SlimMath.Vector2)">CopySubResource</see> to copy a portion of the texture.
 		/// <para>This method will -not- perform stretching, filtering or clipping.</para>
@@ -828,6 +832,7 @@ namespace GorgonLibrary.Graphics
 		/// <para>For SM_4_1 and SM_5 video devices, texture formats can be converted if they belong to the same format group (e.g. R8G8B8A8, R8G8B8A8_UInt, R8G8B8A8_Int, R8G8B8A8_UIntNormal, etc.. are part of the R8G8B8A8 group).  If the 
 		/// video device is a SM_4 or SM_2_a_b device, then no format conversion will be done and an exception will be thrown if format conversion is attempted.</para>
 		/// <para>SM2_a_b devices may copy 2D textures, but there are format restrictions (must be compatible with a render target format).  3D textures can only be copied to textures that are in GPU memory, if either texture is a staging texture, then an exception will be thrown.</para>
+		/// <para>If <paramref name="deferred"/> is NULL (Nothing in VB.Net), then the immediate context is used to copy the texture.  Specify a deferred context when accessing the resource is being accessed by a separate thread.</para>
 		/// </remarks>
 		/// <exception cref="System.ArgumentNullException">Thrown when the texture parameter is NULL (Nothing in VB.Net).</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the formats cannot be converted because they're not of the same group or the current video device is a SM_2_a_b device or a SM_4 device.
@@ -844,7 +849,7 @@ namespace GorgonLibrary.Graphics
 		/// </exception>
         /// <exception cref="System.NotSupportedException">Thrown when the video device has a feature level of SM2_a_b, and the source texture 
         /// is not a staging texture and the this texture is a staging texture, or if the textures are 1D textures and neither texture is a staging texture.</exception>
-		public void Copy(GorgonTexture texture)
+		public void Copy(GorgonTexture texture, GorgonGraphics deferred = null)
 		{
 			GorgonDebug.AssertNull<GorgonTexture>(texture, "texture");
 
@@ -882,8 +887,12 @@ namespace GorgonLibrary.Graphics
 			if ((this is GorgonTexture3D) && (Graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM2_a_b) && (this.Settings.Usage == BufferUsage.Staging))
 				throw new InvalidOperationException("This 3D texture is CPU accessible and cannot be copied.");
 #endif
+            if (deferred == null)
+            {
+                deferred = Graphics;
+            }
 
-			Graphics.Context.CopyResource(texture.D3DResource, D3DResource);
+			deferred.Context.CopyResource(texture.D3DResource, D3DResource);
 		}
 
 		/// <summary>
@@ -891,14 +900,17 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		/// <param name="data">Data to copy to the texture.</param>
 		/// <param name="subResource">Sub resource index to use.</param>
-		/// <remarks>Use this to copy data to this texture.</remarks>
+		/// <param name="deferred">[Optional] The deferred graphics context to use when updating the sub resource.</param>
+		/// <remarks>Use this to copy data to this texture.
+        /// <para>If <paramref name="deferred"/> is NULL (Nothing in VB.Net), then the immediate context is used to update the texture.  Specify a deferred context when accessing the resource is being accessed by a separate thread.</para>
+		/// </remarks>
 		/// <exception cref="System.InvalidOperationException">Thrown when this texture has an Immutable, Dynamic or a Staging usage.
 		/// <para>-or-</para>
 		/// <para>Thrown when this texture has multisampling applied.</para>
 		/// <para>-or-</para>
 		/// <para>Thrown if this texture is a depth/stencil buffer texture.</para>
 		/// </exception>
-		public void UpdateSubResource(ISubResourceData data, int subResource)
+		public void UpdateSubResource(ISubResourceData data, int subResource, GorgonGraphics deferred = null)
 		{
 #if DEBUG
 			if ((Settings.Usage == BufferUsage.Dynamic) || (Settings.Usage == BufferUsage.Immutable))
@@ -907,49 +919,47 @@ namespace GorgonLibrary.Graphics
 			if ((Settings.Multisampling.Count > 1) || (Settings.Multisampling.Quality > 0))
 				throw new InvalidOperationException("Cannot update a texture that is multisampled.");
 #endif
-			OnUpdateSubResource(data, subResource);
+            if (deferred == null)
+            {
+                deferred = Graphics;
+            }
+
+			OnUpdateSubResource(data, subResource, deferred);
 		}
 
 		/// <summary>
 		/// Function to copy data from the CPU to a texture.
 		/// </summary>
 		/// <param name="data">Data to copy to the texture.</param>
-		/// <remarks>Use this to copy data to this texture.</remarks>
+        /// <param name="deferred">[Optional] The deferred graphics context to use when updating the sub resource.</param>
+		/// <remarks>Use this to copy data to this texture.
+        /// <para>If <paramref name="deferred"/> is NULL (Nothing in VB.Net), then the immediate context is used to update the texture.  Specify a deferred context when accessing the resource is being accessed by a separate thread.</para>
+		/// </remarks>
 		/// <exception cref="System.InvalidOperationException">Thrown when this texture has an Immutable, Dynamic or a Staging usage.
 		/// <para>-or-</para>
 		/// <para>Thrown when this texture has multisampling applied.</para>
 		/// <para>-or-</para>
 		/// <para>Thrown if this texture is a depth/stencil buffer texture.</para>
 		/// </exception>
-		public void UpdateSubResource(ISubResourceData data)
+		public void UpdateSubResource(ISubResourceData data, GorgonGraphics deferred = null)
 		{
-			UpdateSubResource(data, 0);
-		}
-
-		/// <summary>
-		/// Function to return whether a texture sub resource is locked or not.
-		/// </summary>
-		/// <param name="subResource">Sub resource to check.</param>
-		/// <returns>TRUE if it's locked, FALSE if not.</returns>
-		public bool IsLocked(int subResource)
-		{
-			if (subResource >= _lock.Count)
-				return false;
-
-			return _lock[subResource] != null;
+			UpdateSubResource(data, 0, deferred);
 		}
 
 		/// <summary>
 		/// Function to lock the texture for reading/writing.
 		/// </summary>
 		/// <param name="lockFlags">Flags used to lock.</param>
+		/// <param name="deferred">[Optional] The deferred context used to lock the texture.</param>
 		/// <remarks>When locking a texture, the entire texture sub resource is locked and returned.  There is no setting to return a portion of the texture subresource.
 		/// <para>This overload locks the first sub resource (index 0) only.</para>
 		/// <para>This method is only available to textures created with a staging or dynamic usage setting.  Otherwise an exception will be raised.</para>
 		/// <para>The NoOverwrite flag is not valid with texture locking and will be ignored.</para>
 		/// <para>If the texture is not a staging texture and Read is specified, then an exception will be raised.</para>
 		/// <para>Discard is only applied to dynamic textures.  If the texture is not dynamic, then an exception will be raised.</para>
-		/// </remarks>
+        /// <para>If the <paramref name="deferred"/> parameter is NULL (Nothing in VB.Net), then the immediate context is used.  Use a deferred context to allow multiple threads to lock the 
+        /// texture at the same time.</para>
+        /// </remarks>
 		/// <returns>The locked data stream and information about the lock.</returns>
 		/// <exception cref="System.ArgumentException">Thrown when the texture is not a dynamic or staging texture.
 		/// <para>-or-</para>
@@ -958,10 +968,10 @@ namespace GorgonLibrary.Graphics
 		/// <para>Thrown when the texture is not a dynamic texture and the discard flag has been specified.</para>
 		/// </exception>
 		/// <exception cref="System.InvalidOperationException">Thrown when the texture sub resource is already locked.</exception>
-		public T Lock<T>(BufferLockFlags lockFlags)
+		public T Lock<T>(BufferLockFlags lockFlags, GorgonGraphics deferred = null)
 			where T : ISubResourceData
 		{
-			return Lock<T>(0, lockFlags);
+			return Lock<T>(0, lockFlags, deferred);
 		}
 
 		/// <summary>
@@ -969,12 +979,15 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		/// <param name="subResource">Sub resource to lock.</param>
 		/// <param name="lockFlags">Flags used to lock.</param>
+		/// <param name="deferred">[Optional] The deferred graphics context used to lock the texture.</param>
 		/// <returns>A stream used to write to the texture.</returns>
 		/// <remarks>When locking a texture, the entire texture sub resource is locked and returned.  There is no setting to return a portion of the texture subresource.
 		/// <para>This method is only available to textures created with a staging or dynamic usage setting.  Otherwise an exception will be raised.</para>
 		/// <para>The NoOverwrite flag is not valid with texture locking and will be ignored.</para>
 		/// <para>If the texture is not a staging texture and Read is specified, then an exception will be raised.</para>
 		/// <para>Discard is only applied to dynamic textures.  If the texture is not dynamic, then an exception will be raised.</para>
+		/// <para>If the <paramref name="deferred"/> parameter is NULL (Nothing in VB.Net), then the immediate context is used.  Use a deferred context to allow multiple threads to lock the 
+		/// texture at the same time.</para>
 		/// </remarks>
 		/// <returns>The locked data stream and information about the lock.</returns>
 		/// <exception cref="System.ArgumentException">Thrown when the texture is not a dynamic or staging texture.
@@ -983,17 +996,13 @@ namespace GorgonLibrary.Graphics
 		/// <para>-or-</para>
 		/// <para>Thrown when the texture is not a dynamic texture and the discard flag has been specified.</para>
 		/// </exception>
-		/// <exception cref="System.InvalidOperationException">Thrown when the texture sub resource is already locked.</exception>
 		/// <typeparam name="T">The type of locking data.  This must be one of <see cref="GorgonLibrary.Graphics.GorgonTexture1DData">GorgonTexture1DData</see>, <see cref="GorgonLibrary.Graphics.GorgonTexture2DData">GorgonTexture2DData</see> or <see cref="GorgonLibrary.Graphics.GorgonTexture3DData">GorgonTexture3DData</see></typeparam>
-		public T Lock<T>(int subResource, BufferLockFlags lockFlags)
+		public T Lock<T>(int subResource, BufferLockFlags lockFlags, GorgonGraphics deferred = null)
 			where T : ISubResourceData
 		{
 			var mapMode = D3D.MapMode.Write;
 			DX.DataStream lockStream = null;
 			ISubResourceData data = default(ISubResourceData);
-
-			if (IsLocked(subResource))
-				throw new InvalidOperationException("This texture is already locked.");
 
 			// NoOverwrite is not valid for textures, so just remove it.
 			if ((lockFlags & BufferLockFlags.NoOverwrite) == BufferLockFlags.NoOverwrite)
@@ -1023,14 +1032,13 @@ namespace GorgonLibrary.Graphics
 			if ((lockFlags & BufferLockFlags.Discard) == BufferLockFlags.Discard)
 				mapMode = D3D.MapMode.WriteDiscard;
 
-			DX.DataBox box = Graphics.Context.MapSubresource(D3DResource, subResource, mapMode, D3D.MapFlags.None, out lockStream);
+            if (deferred == null)
+            {
+                deferred = Graphics;
+            }
 
-			if (subResource >= _lock.Count)
-				_lock.Add(lockStream);
-			else
-				_lock[subResource] = lockStream;
-
-			data = OnGetLockSubResourceData(new GorgonDataStream(lockStream.DataPointer, (int)lockStream.Length), box.RowPitch, box.SlicePitch); 
+			DX.DataBox box = deferred.Context.MapSubresource(D3DResource, subResource, mapMode, D3D.MapFlags.None, out lockStream);
+			data = OnGetLockSubResourceData(new GorgonDataStream(lockStream.DataPointer, (int)lockStream.Length), box.RowPitch, box.SlicePitch, deferred); 
 
 			return (T)data;
 		}
@@ -1038,22 +1046,22 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Function to unlock a locked texture.
 		/// </summary>
-		public void Unlock()
+		/// <param name="deferred">[Optional] The deferred context used to lock the texture.</param>
+		public void Unlock(GorgonGraphics deferred = null)
 		{
-			Unlock(0);
+			Unlock(0, deferred);
 		}
 
 		/// <summary>
 		/// Function to unlock a locked texture sub resource.
 		/// </summary>
-		public void Unlock(int subResource)
+		/// <param name="subResource">The index of the sub resource to unlock.</param>
+		/// <param name="deferred">[Optional] The deferred graphics context to use when unlocking the texture.</param>
+		/// <remarks>If the <paramref name="deferred"/> parameter is NULL (Nothing in VB.Net), then the immediate context is used.  Ensure that the 
+		/// correct context is used when unlocking a resource or an exception will be thrown.</remarks>
+		public void Unlock(int subResource, GorgonGraphics deferred = null)
 		{
-			if (!IsLocked(subResource))
-				return;
-
 			Graphics.Context.UnmapSubresource(D3DResource, subResource);
-			_lock[subResource].Dispose();
-			_lock[subResource] = null;
 		}
 
 		/// <summary>
@@ -1087,7 +1095,6 @@ namespace GorgonLibrary.Graphics
 		protected GorgonTexture(GorgonGraphics graphics, string name, ITextureSettings settings)
 			: base(graphics, name)
 		{
-			_lock = new List<DX.DataStream>(16);
 			Settings = settings;
             _viewCache = new GorgonViewCache(this);
             FormatInformation = GorgonBufferFormatInfo.GetInfo(Settings.Format);

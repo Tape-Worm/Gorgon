@@ -214,6 +214,19 @@ namespace GorgonLibrary.Graphics
 				return result;
 			}
 
+            /// <summary>
+            /// Function to reset the texture sampler states.
+            /// </summary>
+            internal override void Reset()
+            {
+                base.Reset();
+                
+                for (int i = 0; i < Count; i++)
+                {
+                    this[i] = GorgonTextureSamplerStates.DefaultStates;
+                }
+            }
+
 			/// <summary>
 			/// Applies the state.
 			/// </summary>
@@ -635,6 +648,20 @@ namespace GorgonLibrary.Graphics
 			#endregion
 
 			#region Methods.
+            /// <summary>
+            /// Function to reset the constant buffer states.
+            /// </summary>
+            internal void Reset()
+            {
+                for (int i = 0; i < _buffers.Length; i++)
+                {
+                    _buffers[i] = null;
+                    _D3DBufferArray[i] = null;
+                }
+
+                _shader.SetConstantBuffers(0, _buffers.Length, _D3DBufferArray);
+            }
+
 			/// <summary>
 			/// Function to unbind a constant buffer.
 			/// </summary>
@@ -941,7 +968,21 @@ namespace GorgonLibrary.Graphics
 			#endregion
 
             #region Methods.
-			/// <summary>
+            /// <summary>
+            /// Function to reset the constant buffer states.
+            /// </summary>
+            internal void Reset()
+            {
+                for (int i = 0; i < _views.Length; i++)
+                {
+                    _views[i] = null;
+                    _resources[i] = null;
+                }
+
+                _shader.SetResources(0, _views.Length, _views);
+            }
+            
+            /// <summary>
 			/// Function to unbind a shader view.
 			/// </summary>
 			/// <param name="view">View to unbind.</param>
@@ -1477,6 +1518,16 @@ namespace GorgonLibrary.Graphics
 		/// <param name="count">Number of constant buffers to update.</param>
 		/// <param name="buffers">Constant buffers to update.</param>
 		protected abstract void SetConstantBuffers(int slot, int count, D3D.Buffer[] buffers);
+
+        /// <summary>
+        /// Function to reset the internal shader states.
+        /// </summary>
+        internal virtual void Reset()
+        {
+            TextureSamplers.Reset();
+            ConstantBuffers.Reset();
+            Resources.Reset();
+        }
 
 		/// <summary>
 		/// Function to clean up.

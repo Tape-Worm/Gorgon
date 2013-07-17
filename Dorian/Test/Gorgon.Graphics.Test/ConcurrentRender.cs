@@ -115,7 +115,7 @@ namespace GorgonLibrary.Graphics.Test
                     Matrix.Translation(ref _positions[0], out wvp.World);
                     Matrix.Transpose(ref wvp.World, out wvp.World);
 
-                    constantBuffer.Update(_deferred[0], ref wvp);
+                    constantBuffer.Update(ref wvp, _deferred[0]);
 
                     _deferred[0].Output.DrawIndexed(0, 0, 6);
                     _commands[0] = _deferred[0].FinalizeDeferred();
@@ -161,7 +161,7 @@ namespace GorgonLibrary.Graphics.Test
 
                     Matrix.Transpose(ref wvp.World, out wvp.World);
 
-                    constantBuffer.Update(_deferred[1], ref wvp);
+                    constantBuffer.Update(ref wvp, _deferred[1]);
 
                     _deferred[1].Output.DrawIndexed(0, 0, 6);
                     _commands[1] = _deferred[1].FinalizeDeferred();

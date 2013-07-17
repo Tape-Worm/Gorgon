@@ -355,6 +355,24 @@ namespace GorgonLibrary.Graphics
 		#endregion
 
 		#region Methods.
+        /// <summary>
+        /// Function to reset the rasterizer state.
+        /// </summary>
+        internal override void Reset()
+        {
+            base.Reset();
+
+            States = GorgonRasterizerStates.CullBackFace;
+            
+            Graphics.Context.Rasterizer.SetViewports(null);
+            Graphics.Context.Rasterizer.SetScissorRectangles(null);
+
+            _dxRects = null;
+            _clipRects = null;
+            _viewPorts = null;
+            _dxViewports = null;
+        }
+
 		/// <summary>
 		/// Function to apply the state to the current rendering context.
 		/// </summary>
