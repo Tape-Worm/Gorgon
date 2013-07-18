@@ -204,6 +204,8 @@ namespace GorgonLibrary.Graphics.Test
 
             _framework.CreateTestScene(BaseShaders, BaseShaders, true);
 
+	        GorgonDepthStencil1D ds1;
+
             using(var constantBuffer = _framework.Graphics.Buffers.CreateConstantBuffer("WVP",
                                                                                         new GorgonConstantBufferSettings
                                                                                             {

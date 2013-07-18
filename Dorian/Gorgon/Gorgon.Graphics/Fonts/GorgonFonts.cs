@@ -29,6 +29,7 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text;
+using GorgonLibrary.Graphics.Properties;
 using GorgonLibrary.IO;
 using SlimMath;
 
@@ -307,11 +308,15 @@ namespace GorgonLibrary.Graphics
 		/// <param name="name">Name of the font object.</param>
 		/// <param name="stream">Stream to read from.</param>
 		/// <returns>The font in the stream.</returns>
+		/// <remarks>Fonts may only be created on the immediate context.</remarks>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="stream"/> or the <paramref name="name"/> parameters are NULL.</exception>
 		/// <exception cref="System.ArgumentException">Thrown if the name parameter is an empty string.
 		/// <para>-or-</para>
 		/// <para>Thrown if the font uses external textures, but the stream is not a file stream.</para></exception>
-		/// <exception cref="GorgonLibrary.GorgonException">Thrown if the font cannot be read.</exception>
+		/// <exception cref="GorgonLibrary.GorgonException">Thrown if the font cannot be read.
+		/// <para>-or-</para>
+		/// <para>Thrown if the graphics context is deferred.</para>
+		/// </exception>
 		public GorgonFont FromStream(string name, Stream stream)
 		{
             if (string.IsNullOrWhiteSpace(name))
@@ -338,6 +343,7 @@ namespace GorgonLibrary.Graphics
         /// <param name="name">Name of the font object.</param>
         /// <param name="fontData">Byte array containing the font data.</param>
         /// <returns>The font in the array.</returns>
+		/// <remarks>Fonts may only be created on the immediate context.</remarks>
         /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="fontData"/> or the <paramref name="name"/> parameters are NULL.</exception>
         /// <exception cref="System.ArgumentException">Thrown if the name parameter is an empty string.
         /// <para>-or-</para>
@@ -345,7 +351,10 @@ namespace GorgonLibrary.Graphics
         /// <para>-or-</para>
         /// <para>Thrown if the fontData array is empty.</para>
         /// </exception>
-        /// <exception cref="GorgonLibrary.GorgonException">Thrown if the font cannot be read.</exception>
+        /// <exception cref="GorgonLibrary.GorgonException">Thrown if the font cannot be read.
+		/// <para>-or-</para>
+		/// <para>Thrown if the graphics context is deferred.</para>
+		/// </exception>
         public GorgonFont FromMemory(string name, byte[] fontData)
         {
             using (var memoryStream = new GorgonDataStream(fontData))
@@ -359,12 +368,16 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		/// <param name="name">Name of the font object.</param>
 		/// <param name="fileName">Path and filename of the font to load.</param>
+		/// <remarks>Fonts may only be created on the immediate context.</remarks>
 		/// <returns>The font in the stream.</returns>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="fileName"/> or the <paramref name="name"/> parameters are NULL.</exception>
 		/// <exception cref="System.ArgumentException">Thrown if the fileName or name parameters are empty strings.
 		/// <para>-or-</para>
 		/// <para>Thrown if the font uses external textures, but the stream is not a file stream.</para></exception>
-		/// <exception cref="GorgonLibrary.GorgonException">Thrown if the font cannot be read.</exception>
+		/// <exception cref="GorgonLibrary.GorgonException">Thrown if the font cannot be read.
+		/// <para>-or-</para>
+		/// <para>Thrown if the graphics context is deferred.</para>
+		/// </exception>
 		public GorgonFont FromFile(string name, string fileName)
 		{
 			FileStream stream = null;
@@ -403,12 +416,15 @@ namespace GorgonLibrary.Graphics
 		/// <returns>The new font texture object.</returns>
 		/// <remarks>This method creates an object that contains a group of textures with font glyphs.  These textures can be used by another application to 
 		/// display text (or symbols) on the screen.  Kerning information (the proper spacing for a glyph) is included in the glyphs and font.
-		/// <para>Please note that the <paramref name="fontName"/> parameter is user defined and does not have to be the same as the <paramref name="fontFamily"/> parameter.</para></remarks>
+		/// <para>Please note that the <paramref name="fontName"/> parameter is user defined and does not have to be the same as the <paramref name="fontFamily"/> parameter.</para>
+		/// <para>Fonts may only be created on the immediate context.</para>
+		/// </remarks>
 		/// <exception cref="System.ArgumentNullException">Thrown when the fontName or fontFamily parameters are NULL (Nothing in VB.Net).</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the fontName or fontFamily parameters are empty strings.
 		/// <para>-or-</para>
 		/// <para>Thrown when the <paramref name="textureSize"/> width or height is larger than can be handled by the current feature level.</para>
 		/// </exception>
+		/// <exception cref="GorgonLibrary.GorgonException">Thrown if the graphics context is deferred.</exception>
 		public GorgonFont CreateFont(string fontName, string fontFamily, float pointSize, FontAntiAliasMode antiAliasMode, Size textureSize)
 		{
 			return CreateFont(fontName, fontFamily, pointSize, FontStyle.Regular, antiAliasMode, textureSize);
@@ -426,12 +442,15 @@ namespace GorgonLibrary.Graphics
 		/// <returns>The new font texture object.</returns>
 		/// <remarks>This method creates an object that contains a group of textures with font glyphs.  These textures can be used by another application to 
 		/// display text (or symbols) on the screen.  Kerning information (the proper spacing for a glyph) is included in the glyphs and font.
-		/// <para>Please note that the <paramref name="fontName"/> parameter is user defined and does not have to be the same as the <paramref name="fontFamily"/> parameter.</para></remarks>
+		/// <para>Please note that the <paramref name="fontName"/> parameter is user defined and does not have to be the same as the <paramref name="fontFamily"/> parameter.</para>
+		/// <para>Fonts may only be created on the immediate context.</para>
+		/// </remarks>
 		/// <exception cref="System.ArgumentNullException">Thrown when the fontName or fontFamily parameters are NULL (Nothing in VB.Net).</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the fontName or fontFamily parameters are empty strings.
 		/// <para>-or-</para>
 		/// <para>Thrown when the <paramref name="textureSize"/> width or height is larger than can be handled by the current feature level.</para>
 		/// </exception>
+		/// <exception cref="GorgonLibrary.GorgonException">Thrown if the graphics context is deferred.</exception>
 		public GorgonFont CreateFont(string fontName, string fontFamily, float pointSize, FontStyle style, FontAntiAliasMode antiAliasMode, Size textureSize)
 		{
 			if (pointSize < 1e-6f)
@@ -459,10 +478,12 @@ namespace GorgonLibrary.Graphics
 		/// <returns>The new font texture object.</returns>
 		/// <remarks>This method creates an object that contains a group of textures with font glyphs.  These textures can be used by another application to 
 		/// display text (or symbols) on the screen.  Kerning information (the proper spacing for a glyph) is included in the glyphs and font.
-		/// <para>Please note that the <paramref name="fontName"/> parameter is user defined and does not have to be the same as the font family name in the <paramref name="font"/> parameter.</para></remarks>
+		/// <para>Please note that the <paramref name="fontName"/> parameter is user defined and does not have to be the same as the font family name in the <paramref name="font"/> parameter.</para>
+		/// <para>Fonts may only be created on the immediate context.</para>
+		/// </remarks>
 		/// <exception cref="System.ArgumentNullException">Thrown when the fontName or <paramref name="font"/> parameters are NULL (Nothing in VB.Net).</exception>
-		/// <exception cref="System.ArgumentException">Thrown when the fontName parameter is an empty string.
-		/// </exception>
+		/// <exception cref="System.ArgumentException">Thrown when the fontName parameter is an empty string.</exception>
+		/// <exception cref="GorgonLibrary.GorgonException">Thrown if the graphics context is deferred.</exception>
 		public GorgonFont CreateFont(string fontName, Font font, FontAntiAliasMode antiAliasMode)
 		{
 			return CreateFont(fontName, font, antiAliasMode, new Size(256, 256));
@@ -478,12 +499,15 @@ namespace GorgonLibrary.Graphics
 		/// <returns>The new font texture object.</returns>
 		/// <remarks>This method creates an object that contains a group of textures with font glyphs.  These textures can be used by another application to 
 		/// display text (or symbols) on the screen.  Kerning information (the proper spacing for a glyph) is included in the glyphs and font.
-		/// <para>Please note that the <paramref name="fontName"/> parameter is user defined and does not have to be the same as the font family name in the <paramref name="font"/> parameter.</para></remarks>
+		/// <para>Please note that the <paramref name="fontName"/> parameter is user defined and does not have to be the same as the font family name in the <paramref name="font"/> parameter.</para>
+		/// <para>Fonts may only be created on the immediate context.</para>
+		/// </remarks>
 		/// <exception cref="System.ArgumentNullException">Thrown when the fontName or <paramref name="font"/> parameters are NULL (Nothing in VB.Net).</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the fontName parameter is an empty string.
 		/// <para>-or-</para>
 		/// <para>Thrown when the <paramref name="textureSize"/> width or height is larger than can be handled by the current feature level.</para>
 		/// </exception>
+		/// <exception cref="GorgonLibrary.GorgonException">Thrown if the graphics context is deferred.</exception>
 		public GorgonFont CreateFont(string fontName, Font font, FontAntiAliasMode antiAliasMode, Size textureSize)
 		{
             if (font == null)
@@ -512,7 +536,9 @@ namespace GorgonLibrary.Graphics
 		/// <returns>The new font texture object.</returns>
 		/// <remarks>This method creates an object that contains a group of textures with font glyphs.  These textures can be used by another application to 
 		/// display text (or symbols) on the screen.  Kerning information (the proper spacing for a glyph) is included in the glyphs and font.
-		/// <para>Please note that the <paramref name="fontName"/> parameter is user defined and does not have to be the same as the <see cref="P:GorgonLibrary.Graphics.GorgonFontSettings.FontFamilyName">FontFamilyName</see> in the <paramref name="settings"/> parameter.</para></remarks>
+		/// <para>Please note that the <paramref name="fontName"/> parameter is user defined and does not have to be the same as the <see cref="P:GorgonLibrary.Graphics.GorgonFontSettings.FontFamilyName">FontFamilyName</see> in the <paramref name="settings"/> parameter.</para>
+		/// <para>Fonts may only be created on the immediate context.</para>
+		/// </remarks>
 		/// <exception cref="System.ArgumentNullException">Thrown when the fontName or settings parameters are NULL (Nothing in VB.Net).</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the fontName parameter is an empty string.
 		/// <para>-or-</para>
@@ -520,8 +546,14 @@ namespace GorgonLibrary.Graphics
 		/// <para>-or-</para>
 		/// <para>Thrown when the <see cref="P:GorgonLibrary.Graphics.GorgonFontSettings.DefaultCharacter">settings.DefaultCharacter</see> cannot be located in the <see cref="P:GorgonLibrary.Graphics.GorgonFontSettings.Characters">settings.Characters</see> list.</para>
 		/// </exception>
+		/// <exception cref="GorgonLibrary.GorgonException">Thrown if the graphics context is deferred.</exception>
 		public GorgonFont CreateFont(string fontName, GorgonFontSettings settings)
 		{
+			if (_graphics.IsDeferred)
+			{
+				throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_CANNOT_USE_DEFERRED_CONTEXT);
+			}
+
             if (fontName == null)
             {
                 throw new ArgumentNullException("fontName");
