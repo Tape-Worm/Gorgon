@@ -408,15 +408,22 @@ namespace GorgonLibrary.Graphics
 		/// <remarks>Effects are used to simplify rendering with multiple passes when using a shader, similar to the old Direct 3D effects framework.
 		/// <para>The <paramref name="parameters"/> parameter is optional, however some effects may require a specific set of parameters passed upon creation. 
 		/// This is dependent on the effect and may thrown an exception if a parameter is missing.  Parameter names are case sensitive.</para>
+        /// <para>This method should not be called from a deferred graphics context.</para>
 		/// </remarks>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (Nothing in VB.Net).</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the name parameter is an empty string.
 		/// <para>-or-</para>
 		/// <para>Thrown when the parameter list does not contain a required parameter.</para>
 		/// </exception>
+		/// <exception cref="GorgonLibrary.GorgonException">Thrown when the graphics context is deferred.</exception>
 		public T CreateEffect<T>(string name, params GorgonEffectParameter[] parameters)
 			where T : GorgonEffect
 		{
+            if (_graphics.IsDeferred)
+            {
+                throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_CANNOT_USE_DEFERRED_CONTEXT);
+            }
+
             if (name == null)
             {
                 throw new ArgumentNullException("name");
@@ -475,7 +482,9 @@ namespace GorgonLibrary.Graphics
 		/// <param name="shaderData">Array of bytes containing the shader data.</param>
         /// <param name="isDebug">[Optional] TRUE to apply debug information, FALSE to exclude it.</param>
         /// <returns>The new shader loaded from the data stream.</returns>
-		/// <remarks>The <paramref name="isDebug"/> parameter is only applicable to source code shaders.</remarks>
+		/// <remarks>The <paramref name="isDebug"/> parameter is only applicable to source code shaders.
+        /// <para>This method should not be called from a deferred graphics context.</para>
+		/// </remarks>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="shaderData"/>, <paramref name="name"/> or <paramref name="entryPoint"/> parameters are NULL (Nothing in VB.Net).
 		/// </exception>
 		/// <exception cref="System.ArgumentException">Thrown when the name or entryPoint parameters are empty.</exception>
@@ -510,7 +519,9 @@ namespace GorgonLibrary.Graphics
 		/// <param name="size">Size of the shader, in bytes.</param>
         /// <param name="isDebug">[Optional] TRUE to apply debug information, FALSE to exclude it.</param>
         /// <returns>The new shader loaded from the data stream.</returns>
-		/// <remarks>The <paramref name="isDebug"/> parameter is only applicable to source code shaders.</remarks>
+		/// <remarks>The <paramref name="isDebug"/> parameter is only applicable to source code shaders.
+		/// <para>This method should not be called from a deferred graphics context.</para>
+		/// </remarks>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="stream"/>, <paramref name="name"/> or <paramref name="entryPoint"/> parameters are NULL (Nothing in VB.Net).
 		/// </exception>
 		/// <exception cref="System.ArgumentException">Thrown when the name or entryPoint parameters are empty.</exception>
@@ -527,7 +538,12 @@ namespace GorgonLibrary.Graphics
 			GorgonShader shader;
 			byte[] shaderData;
 
-			if (stream == null)
+            if (_graphics.IsDeferred)
+            {
+                throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_CANNOT_USE_DEFERRED_CONTEXT);
+            }
+            
+            if (stream == null)
             {
                 throw new ArgumentNullException("stream");
             }
@@ -599,7 +615,9 @@ namespace GorgonLibrary.Graphics
 		/// <param name="fileName">File name and path to the shader file.</param>
         /// <param name="isDebug">[Optional] TRUE to apply debug information, FALSE to exclude it.</param>
         /// <returns>The new shader loaded from the file.</returns>
-		/// <remarks>The <paramref name="isDebug"/> parameter is only applicable to source code shaders.</remarks>
+		/// <remarks>The <paramref name="isDebug"/> parameter is only applicable to source code shaders.
+        /// <para>This method should not be called from a deferred graphics context.</para>
+		/// </remarks>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/>, <paramref name="entryPoint"/> or <paramref name="fileName"/> parameters are NULL (Nothing in VB.Net).
 		/// </exception>
 		/// <exception cref="System.ArgumentException">Thrown when the name, entryPoint or fileName parameters are empty.</exception>
@@ -669,6 +687,7 @@ namespace GorgonLibrary.Graphics
         /// <para>If the DEBUG version of Gorgon is being used, then the <paramref name="debug"/> flag will be defaulted to TRUE, if the RELEASE version is used, then it will be defaulted to FALSE.</para>
 		/// <para>Do not use this method to create a <see cref="GorgonLibrary.Graphics.GorgonOutputGeometryShader">GorgonOutputGeometryShader</see> shader, use the <see cref="CreateShader(string, string, string, IList{GorgonStreamOutputElement}, IList{int}, int, bool)">overload</see> 
 		/// instead.</para>
+        /// <para>This method should not be called from a deferred graphics context.</para>
 		/// </remarks>
 #if DEBUG
 		public T CreateShader<T>(string name, string entryPoint, string sourceCode, bool debug = true)
@@ -677,7 +696,12 @@ namespace GorgonLibrary.Graphics
 #endif
             where T : GorgonShader
 		{
-			if (name == null)
+            if (_graphics.IsDeferred)
+            {
+                throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_CANNOT_USE_DEFERRED_CONTEXT);
+            }
+            
+            if (name == null)
             {
                 throw new ArgumentNullException("name");
             }
@@ -746,6 +770,7 @@ namespace GorgonLibrary.Graphics
 		/// <para>
 		/// Up to four stream out buffers may be used at the same time to receive data.  Because of this, the <paramref name="bufferStrides"/> parameter should contain no more than 4 values.
 		/// </para>
+        /// <para>This method should not be called from a deferred graphics context.</para>
 		/// </remarks>
 #if DEBUG
 		public GorgonOutputGeometryShader CreateShader(string name, string entryPoint, string sourceCode, 
@@ -757,7 +782,12 @@ namespace GorgonLibrary.Graphics
 	    {
 	        bool autoStride = bufferStrides == null;
 
-			if (name == null)
+            if (_graphics.IsDeferred)
+            {
+                throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_CANNOT_USE_DEFERRED_CONTEXT);
+            }
+            
+            if (name == null)
 			{
 				throw new ArgumentNullException("name");
 			}

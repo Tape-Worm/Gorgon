@@ -29,6 +29,7 @@ using System.Linq;
 using System.Collections.Generic;
 using System.Windows.Forms;
 using System.Drawing;
+using GorgonLibrary.Graphics.Properties;
 using GI = SharpDX.DXGI;
 using D3D = SharpDX.Direct3D11;
 
@@ -134,7 +135,7 @@ namespace GorgonLibrary.Graphics
 		internal GorgonVideoMode FindMode(GI.Output output, GorgonVideoMode mode)
 		{
 			GI.ModeDescription findMode = GorgonVideoMode.Convert(mode);
-			GI.ModeDescription result = default(GI.ModeDescription);
+			GI.ModeDescription result;
 			
 			output.GetClosestMatchingMode(VideoDevice.Graphics.D3DDevice, findMode, out result);
 
@@ -177,7 +178,10 @@ namespace GorgonLibrary.Graphics
 			Handle = output.Description.MonitorHandle;
 			IsAttachedToDesktop = output.Description.IsAttachedToDesktop;
 			Name = output.Description.DeviceName;
-			OutputBounds = new Rectangle(output.Description.DesktopBounds.Left, output.Description.DesktopBounds.Top, output.Description.DesktopBounds.Width, output.Description.DesktopBounds.Height);
+		    OutputBounds = new Rectangle(output.Description.DesktopBounds.Left,
+		                                 output.Description.DesktopBounds.Top,
+		                                 output.Description.DesktopBounds.Width,
+		                                 output.Description.DesktopBounds.Height);
 			switch (output.Description.Rotation)
 			{
 				case GI.DisplayModeRotation.Rotate90:
@@ -195,18 +199,17 @@ namespace GorgonLibrary.Graphics
 			}				
 		}
 
-		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonVideoOutput"/> class.
-		/// </summary>
-		/// <param name="device">Video device that owns the output.</param>
-		internal GorgonVideoOutput(GorgonVideoDevice device)
-		{
-			var area = Screen.AllScreens.Aggregate(Rectangle.Empty, (current, t) => Rectangle.Union(current, t.Bounds));
+	    /// <summary>
+	    /// Initializes a new instance of the <see cref="GorgonVideoOutput"/> class.
+	    /// </summary>
+	    internal GorgonVideoOutput()
+	    {
+	        var area = Screen.AllScreens.Aggregate(Rectangle.Empty, (current, t) => Rectangle.Union(current, t.Bounds));
 
 			Index = 0;
 			Handle = Native.Win32API.GetMonitor(null);
 			IsAttachedToDesktop = true;
-			Name = "Software device output";
+			Name = Resources.GORGFX_OUTPUT_SOFTWARE_DEV_NAME;
 			OutputBounds = Screen.PrimaryScreen.Bounds;
 			Rotation = 0;
 			DefaultVideoMode = new GorgonVideoMode(area.Width, area.Height, BufferFormat.R8G8B8A8_UIntNormal);

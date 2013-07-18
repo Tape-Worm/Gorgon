@@ -539,7 +539,11 @@ namespace GorgonLibrary.Graphics
 		    try
 		    {
 		        // Resize the video mode.
-		        Settings.VideoMode = new GorgonVideoMode(Settings.Window.ClientSize, Settings.VideoMode);
+		        Settings.VideoMode = new GorgonVideoMode(Settings.Window.ClientSize.Width,
+		                                                 Settings.Window.ClientSize.Height,
+		                                                 Settings.VideoMode.Format,
+		                                                 Settings.VideoMode.RefreshRateNumerator,
+		                                                 Settings.VideoMode.RefreshRateDenominator);
 		        ResizeBuffers();
 		    }
 		    catch (Exception ex)
@@ -702,16 +706,37 @@ namespace GorgonLibrary.Graphics
 			GorgonVideoMode stagedMode = settings.VideoMode;
 
 			// Fill in any missing settings.
-			if (stagedMode.Width == 0)
-				stagedMode.Width = settings.Window.ClientSize.Width;
-			if (stagedMode.Height == 0)
-				stagedMode.Height = settings.Window.ClientSize.Height;
-			if (stagedMode.Format == BufferFormat.Unknown)
-				stagedMode.Format = output.DefaultVideoMode.Format;
-			if ((stagedMode.RefreshRateDenominator == 0) || (stagedMode.RefreshRateNumerator == 0))
+		    if (stagedMode.Width == 0)
+		    {
+		        stagedMode = new GorgonVideoMode(settings.Window.ClientSize.Width,
+		                                         stagedMode.Height,
+		                                         stagedMode.Format,
+		                                         stagedMode.RefreshRateNumerator,
+		                                         stagedMode.RefreshRateDenominator);
+		    }
+		    if (stagedMode.Height == 0)
+		    {
+                stagedMode = new GorgonVideoMode(stagedMode.Width,
+                                                 settings.Window.ClientSize.Height,
+                                                 stagedMode.Format,
+                                                 stagedMode.RefreshRateNumerator,
+                                                 stagedMode.RefreshRateDenominator);
+            }
+		    if (stagedMode.Format == BufferFormat.Unknown)
+		    {
+                stagedMode = new GorgonVideoMode(stagedMode.Width,
+                                                 stagedMode.Height,
+                                                 output.DefaultVideoMode.Format,
+                                                 stagedMode.RefreshRateNumerator,
+                                                 stagedMode.RefreshRateDenominator);
+		    }
+		    if ((stagedMode.RefreshRateDenominator == 0) || (stagedMode.RefreshRateNumerator == 0))
 			{
-				stagedMode.RefreshRateNumerator = output.DefaultVideoMode.RefreshRateNumerator;
-				stagedMode.RefreshRateDenominator = output.DefaultVideoMode.RefreshRateDenominator;
+                stagedMode = new GorgonVideoMode(stagedMode.Width,
+                                                 stagedMode.Height,
+                                                 stagedMode.Format,
+                                                 output.DefaultVideoMode.RefreshRateNumerator,
+                                                 output.DefaultVideoMode.RefreshRateDenominator);
 			}
 
 			// If the device does not support different full screen modes (e.g. WARP/Refrast on Windows 8), then reset the windowed switch.

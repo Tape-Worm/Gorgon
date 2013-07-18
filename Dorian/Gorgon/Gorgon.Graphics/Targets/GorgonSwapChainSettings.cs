@@ -93,7 +93,7 @@ namespace GorgonLibrary.Graphics
 			}
 			set
 			{
-				_mode.SetSize(value);
+                _mode = new GorgonVideoMode(value.Width, value.Height, _mode.Format, _mode.RefreshRateNumerator, _mode.RefreshRateDenominator);
 			}
 		}
 
@@ -108,7 +108,7 @@ namespace GorgonLibrary.Graphics
 			}
 			set
 			{
-				_mode.Format = value;
+                _mode = new GorgonVideoMode(_mode.Width, _mode.Height, value, _mode.RefreshRateNumerator, _mode.RefreshRateDenominator);
 			}
 		}
 	
@@ -123,7 +123,7 @@ namespace GorgonLibrary.Graphics
 			}
 			set
 			{
-				_mode.SetSize(value, _mode.Height);
+                _mode = new GorgonVideoMode(value, _mode.Height, _mode.Format, _mode.RefreshRateNumerator, _mode.RefreshRateDenominator);
 			}
 		}
 
@@ -138,7 +138,7 @@ namespace GorgonLibrary.Graphics
 			}
 			set
 			{
-				_mode.SetSize(_mode.Width, value);
+                _mode = new GorgonVideoMode(_mode.Width, value, _mode.Format, _mode.RefreshRateNumerator, _mode.RefreshRateDenominator);
 			}
 		}
 

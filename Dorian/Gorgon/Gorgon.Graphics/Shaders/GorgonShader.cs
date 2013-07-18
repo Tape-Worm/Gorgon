@@ -92,7 +92,7 @@ namespace GorgonLibrary.Graphics
 	/// The base shader object.
 	/// </summary>
 	public abstract class GorgonShader
-		: GorgonNamedObject, INotifier, IDisposable
+		: GorgonNamedObject, IDisposable
 	{
 		#region Variables.
 		private bool _disposed;										// Flag to indicate that the object was disposed.
@@ -114,13 +114,24 @@ namespace GorgonLibrary.Graphics
 			}
 			set
 			{
-				if (_byteCode != value)
-				{
-					_byteCode = value;
-					HasChanged = true;
-				}
+			    if (_byteCode == value)
+			    {
+			        return;
+			    }
+
+			    _byteCode = value;
+			    HasChanged = true;
 			}
 		}
+
+        /// <summary>
+        /// Property to set or return whether an object has been updated.
+        /// </summary>
+        private bool HasChanged
+        {
+            get;
+            set;
+        }
 
 		/// <summary>
 		/// Property to return whether the shader is a binary object or not.
@@ -199,11 +210,13 @@ namespace GorgonLibrary.Graphics
 			}
 			set
 			{
-				if (_version != value)
-				{
-					_version = value;
-					HasChanged = true;
-				}
+			    if (_version == value)
+			    {
+			        return;
+			    }
+
+			    _version = value;
+			    HasChanged = true;
 			}
 		}
 
@@ -221,11 +234,13 @@ namespace GorgonLibrary.Graphics
 			}
 			set
 			{
-				if (_source != value)
-				{
-					_source = value;
-					HasChanged = true;
-				}
+			    if (_source == value)
+			    {
+			        return;
+			    }
+
+			    _source = value;
+			    HasChanged = true;
 			}
 		}
 
@@ -316,11 +331,10 @@ namespace GorgonLibrary.Graphics
 		private Shaders.ShaderBytecode CompileFromSource(bool includeDebugInfo)
 		{
 			var flags = Shaders.ShaderFlags.OptimizationLevel3;
-			string parsedCode;
 
-			try
+		    try
 			{
-				parsedCode = Graphics.Shaders.IncludeFiles.ProcessSource(SourceCode);
+				string parsedCode = Graphics.Shaders.IncludeFiles.ProcessSource(SourceCode);
 								
 				IsDebug = includeDebugInfo;
 
@@ -421,30 +435,34 @@ namespace GorgonLibrary.Graphics
 		public void Save(Stream stream, bool binary = false, bool saveDebug = false)
 		{
 			Shaders.ShaderBytecode compiledShader = null;
-			GorgonDebug.AssertNull<Stream>(stream, "stream");
+			GorgonDebug.AssertNull(stream, "stream");
 
-			if ((!binary) && (string.IsNullOrEmpty(SourceCode)))
-				throw new ArgumentException("Cannot save the shader source, no source code was found for the shader.", "binary");
+		    if ((!binary)
+		        && (string.IsNullOrEmpty(SourceCode)))
+		    {
+		        throw new ArgumentException(Resources.GORGFX_SHADER_NO_CODE, "binary");
+		    }
 
-			if (!binary)
+		    if (!binary)
 			{
 				byte[] shaderSource = Encoding.UTF8.GetBytes(SourceCode);
 				stream.Write(shaderSource, 0, shaderSource.Length);
+
+			    return;
 			}
-			else
+
+			try
 			{
-				try
+				compiledShader = CompileFromSource(saveDebug);
+				byte[] header = Encoding.UTF8.GetBytes(GorgonShaderBinding.BinaryShaderHeader);
+				stream.Write(header, 0, header.Length);
+				compiledShader.Save(stream);
+			}
+			finally
+			{
+				if (compiledShader != null)
 				{
-					compiledShader = CompileFromSource(saveDebug);
-					byte[] header = Encoding.UTF8.GetBytes(GorgonShaderBinding.BinaryShaderHeader);
-					stream.Write(header, 0, header.Length);
-					compiledShader.Save(stream);
-				}
-				finally
-				{
-					if (compiledShader != null)
-						compiledShader.Dispose();
-					compiledShader = null;
+				    compiledShader.Dispose();
 				}
 			}
 		}
@@ -475,9 +493,10 @@ namespace GorgonLibrary.Graphics
 			}
 			finally
 			{
-				if (stream != null)
-					stream.Dispose();
-				stream = null;
+			    if (stream != null)
+			    {
+			        stream.Dispose();
+			    }
 			}
 		}
 		#endregion
@@ -522,17 +541,6 @@ namespace GorgonLibrary.Graphics
 					Version = ShaderVersion.Version2A_B;
 					break;
 			}
-		}
-		#endregion
-
-		#region INotifier Members
-		/// <summary>
-		/// Property to set or return whether an object has been updated.
-		/// </summary>
-		public bool HasChanged
-		{
-			get;
-			set;
 		}
 		#endregion
 

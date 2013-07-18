@@ -26,9 +26,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using GorgonLibrary.Graphics.Properties;
 
 namespace GorgonLibrary.Graphics
@@ -41,7 +38,10 @@ namespace GorgonLibrary.Graphics
 		: IEquatable<GorgonEffectParameter>, INamedObject
 	{
 		#region Variables.
-		private readonly string _name;				// Name of the parameter.
+        /// <summary>
+        /// The name of the parameter.
+        /// </summary>
+		public readonly string Name;
 
 		/// <summary>
 		/// The value for the parameter.
@@ -58,7 +58,7 @@ namespace GorgonLibrary.Graphics
 		/// </returns>
 		public override string ToString()
 		{
-			return string.Format(Resources.GORGFX_EFFECT_PARAM_TOSTR, _name, Value == null ? "(NULL)" : Value.ToString());
+			return string.Format(Resources.GORGFX_EFFECT_PARAM_TOSTR, Name, Value == null ? "(NULL)" : Value.ToString());
 		}
 
 		/// <summary>
@@ -69,7 +69,7 @@ namespace GorgonLibrary.Graphics
 		/// </returns>
 		public override int GetHashCode()
 		{
-			return Value != null ? 281.GenerateHash(_name).GenerateHash(Value) : 281.GenerateHash(_name);
+			return Value != null ? 281.GenerateHash(Name).GenerateHash(Value) : 281.GenerateHash(Name);
 		}
 
 		/// <summary>
@@ -178,7 +178,7 @@ namespace GorgonLibrary.Graphics
 				throw new ArgumentException(Resources.GORGFX_PARAMETER_MUST_NOT_BE_EMPTY, "parameterName");
 			}
 
-			_name = parameterName;
+			Name = parameterName;
 			Value = value;
 		}
 		#endregion
@@ -187,11 +187,11 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Property to return the name of the parameter.
 		/// </summary>
-		public string Name
+		string INamedObject.Name
 		{
 			get
 			{
-				return _name;
+				return Name;
 			}
 		}
 		#endregion

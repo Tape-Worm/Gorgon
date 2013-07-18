@@ -28,7 +28,6 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
-using System.Threading;
 using GorgonLibrary.Graphics.Properties;
 using GorgonLibrary.IO;
 
@@ -458,6 +457,7 @@ namespace GorgonLibrary.Graphics
         /// the same pixel format.  If the list is larger than the requested mip/array count, then only the first elements up until mip count and each depth for each mip level are used.  Unlike other overloads, 
         /// this method will NOT auto-generate mip-maps and will only use the images provided.</para>
         /// <para>Images in the list to be used as mip-map levels do not need to be resized because the method will automatically resize based on mip-map level.</para>
+        /// <para>This method should not be called from a deferred graphics context.</para>
         /// </remarks>
         public T CreateTexture<T>(string name, IList<Image> images, GorgonGDIOptions options = null)
             where T : GorgonTexture
@@ -588,6 +588,7 @@ namespace GorgonLibrary.Graphics
         /// <description>Multisampling</description><description>For 2D textures only.  Multisampling values to apply to the texture.  The default is a count of 1 and a quality of 0 (no multisampling).</description>
         /// </item>
         /// </list>
+        /// <para>This method should not be called from a deferred graphics context.</para>
         /// </remarks>
         public T CreateTexture<T>(string name, Image image, GorgonGDIOptions options = null)
             where T : GorgonTexture
@@ -662,6 +663,7 @@ namespace GorgonLibrary.Graphics
 		/// <remarks>This will load a texture from a file.  The file must have been encoded by a supported image codec. 
         /// Gorgon supports several codecs such as Png, Dds, Tiff, Jpg, Bmp and Wmp "out of the box", additional user 
         /// codecs may be defined and used to load a texture.
+        /// <para>This method should not be called from a deferred graphics context.</para>
 		/// </remarks>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> or the <paramref name="filePath "/> parameter is NULL (Nothing in VB.Net).
 		/// <para>-or-</para>
@@ -708,6 +710,7 @@ namespace GorgonLibrary.Graphics
 		/// <remarks>This will load a texture from a byte array.  The texture data in the array must have been encoded by a supported image codec.  
         /// Gorgon supports several codecs such as Png, Dds, Tiff, Jpg, Bmp and Wmp "out of the box", additional user 
 		/// codecs may be defined and used to load a texture.
+        /// <para>This method should not be called from a deferred graphics context.</para>
 		/// </remarks>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (Nothing in VB.Net).
 		/// <para>-or-</para>
@@ -752,6 +755,7 @@ namespace GorgonLibrary.Graphics
 		/// <remarks>This will load a texture from a stream.  The texture data in the stream must have been encoded by a supported image codec.  
         /// Gorgon supports several codecs such as Png, Dds, Tiff, Jpg, Bmp and Wmp "out of the box", additional user 
         /// codecs may be defined and used to load a texture.
+        /// <para>This method should not be called from a deferred graphics context.</para>
         /// </remarks>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (Nothing in VB.Net).
 		/// <para>-or-</para>
@@ -773,7 +777,12 @@ namespace GorgonLibrary.Graphics
 		public T FromStream<T>(string name, Stream stream, int length, GorgonImageCodec codec)
 			where T : GorgonTexture
 		{
-			using (GorgonImageData imageData = GorgonImageData.FromStream(stream, length, codec))
+            if (_graphics.IsDeferred)
+            {
+                throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_CANNOT_USE_DEFERRED_CONTEXT);
+            }
+
+            using (GorgonImageData imageData = GorgonImageData.FromStream(stream, length, codec))
 			{
 				var settings = (ITextureSettings)imageData.Settings;
 
@@ -821,7 +830,9 @@ namespace GorgonLibrary.Graphics
 		/// <param name="depth">Depth of the texture.</param>
 		/// <param name="format">Format of the the texture.</param>
 		/// <param name="usage">Usage for the texture.</param>
-		/// <returns>A new 2D texture.</returns>
+		/// <returns>A new 2D texture.
+        /// <para>This method should not be called from a deferred graphics context.</para>
+		/// </returns>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (Nothing in VB.Net)</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the name parameter is an empty string.
 		/// <para>-or-</para>
@@ -852,7 +863,9 @@ namespace GorgonLibrary.Graphics
 		/// <param name="height">Height of the texture.</param>
 		/// <param name="format">Format of the the texture.</param>
 		/// <param name="usage">Usage for the texture.</param>
-		/// <returns>A new 2D texture.</returns>
+		/// <returns>A new 2D texture.
+        /// <para>This method should not be called from a deferred graphics context.</para>
+		/// </returns>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (Nothing in VB.Net)</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the name parameter is an empty string.
 		/// <para>-or-</para>
@@ -883,7 +896,9 @@ namespace GorgonLibrary.Graphics
 		/// <param name="width">Width of the texture.</param>
 		/// <param name="format">Format of the the texture.</param>
 		/// <param name="usage">Usage for the texture.</param>
-		/// <returns>A new 1D texture.</returns>
+		/// <returns>A new 1D texture.
+        /// <para>This method should not be called from a deferred graphics context.</para>
+		/// </returns>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (Nothing in VB.Net)</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the name parameter is an empty string.
 		/// <para>-or-</para>
@@ -911,6 +926,7 @@ namespace GorgonLibrary.Graphics
 		/// <param name="name">Name of the texture.</param>
 		/// <param name="settings">Settings for the texture.</param>
 		/// <returns>A new texture.</returns>
+        /// <remarks>This method should not be called from a deferred graphics context.</remarks>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> or the <paramref name="settings"/> parameters are NULL (Nothing in VB.Net)</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the name parameter is an empty string.
 		/// <para>-or-</para>
@@ -922,7 +938,12 @@ namespace GorgonLibrary.Graphics
 		/// </exception>
 		public GorgonTexture1D CreateTexture(string name, GorgonTexture1DSettings settings)
 		{
-			if (name == null)
+            if (_graphics.IsDeferred)
+            {
+                throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_CANNOT_USE_DEFERRED_CONTEXT);
+            }
+
+            if (name == null)
 			{
 				throw new ArgumentNullException("name");
 			}
@@ -959,6 +980,7 @@ namespace GorgonLibrary.Graphics
 		/// <param name="name">Name of the texture.</param>
 		/// <param name="settings">Settings for the texture.</param>
 		/// <returns>A new texture.</returns>
+        /// <remarks>This method should not be called from a deferred graphics context.</remarks>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> or the <paramref name="settings"/> parameters are NULL (Nothing in VB.Net)</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the name parameter is an empty string.
 		/// <para>-or-</para>
@@ -970,7 +992,12 @@ namespace GorgonLibrary.Graphics
 		/// </exception>
 		public GorgonTexture2D CreateTexture(string name, GorgonTexture2DSettings settings)
 		{
-			if (name == null)
+            if (_graphics.IsDeferred)
+            {
+                throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_CANNOT_USE_DEFERRED_CONTEXT);
+            }
+
+            if (name == null)
 			{
 				throw new ArgumentNullException("name");
 			}
@@ -1007,6 +1034,7 @@ namespace GorgonLibrary.Graphics
 		/// <param name="name">Name of the texture.</param>
 		/// <param name="settings">Settings for the texture.</param>
 		/// <returns>A new texture.</returns>
+        /// <remarks>This method should not be called from a deferred graphics context.</remarks>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> or the <paramref name="settings"/> parameters are NULL (Nothing in VB.Net)</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the name parameter is an empty string.
 		/// <para>-or-</para>
@@ -1018,7 +1046,12 @@ namespace GorgonLibrary.Graphics
 		/// </exception>
 		public GorgonTexture3D CreateTexture(string name, GorgonTexture3DSettings settings)
 		{
-			if (name == null)
+            if (_graphics.IsDeferred)
+            {
+                throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_CANNOT_USE_DEFERRED_CONTEXT);
+            }
+
+            if (name == null)
 			{
 				throw new ArgumentNullException("name");
 			}
@@ -1050,7 +1083,7 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
-		/// Function to create a new 1D texture.
+		/// Function to create a new texture.
 		/// </summary>
 		/// <param name="name">Name of the texture.</param>
 		/// <param name="data">Data used to initialize the texture.</param>
@@ -1059,6 +1092,7 @@ namespace GorgonLibrary.Graphics
 		/// <returns>A new texture.</returns>
 		/// <remarks>This will create a new texture from the image data specified.
 		/// <para>The texture settings width, height, depth, mip count, array count, and format will use the settings from the <paramref name="data"/> parameter.</para>
+        /// <para>This method should not be called from a deferred graphics context.</para>
 		/// </remarks>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> or the <paramref name="data"/> parameters are NULL (Nothing in VB.Net)</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the name parameter is an empty string.
@@ -1071,7 +1105,12 @@ namespace GorgonLibrary.Graphics
 		{
 			T texture = null;
 
-			if (name == null)
+            if (_graphics.IsDeferred)
+            {
+                throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_CANNOT_USE_DEFERRED_CONTEXT);
+            }
+
+            if (name == null)
 			{
 				throw new ArgumentNullException("name");
 			}

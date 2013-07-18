@@ -351,20 +351,53 @@ namespace GorgonLibrary.Renderers
 			}
 			set
 			{
-				if (value == null)
-					return;
+			    if (value == null)
+			    {
+			        return;
+			    }
 
-				if (value != _font)
-				{
-					_font = value;
-					_font.HasChanged = false;
-					UpdateText();
-				}
+			    if (value == _font)
+			    {
+			        return;
+			    }
+
+                if (_font != null)
+                {
+                    _font.FontChanged -= FontChanged;
+                }
+
+			    _font = value;
+
+                if (_font != null)
+                {
+                    _font.FontChanged += FontChanged;
+                }
+                
+			    UpdateText();
 			}
 		}
 		#endregion
 
 		#region Methods.
+        /// <summary>
+        /// Function to handle the font changing event.
+        /// </summary>
+        /// <param name="sender">The sender of the event.</param>
+        /// <param name="e">Event parameters.</param>
+        private void FontChanged(object sender, EventArgs e)
+        {
+            if ((_font != null)
+                && (_font.IsDisposed))
+            {
+                return;
+            }
+
+            UpdateText();
+
+            _needsColorUpdate = true;
+            _needsVertexUpdate = true;
+        }
+
 		/// <summary>
 		/// Function to perform an update on the text object.
 		/// </summary>
@@ -1028,17 +1061,7 @@ namespace GorgonLibrary.Renderers
 			// We don't need to draw anything if we don't have a font or text to draw.
 			if ((_text.Length == 0) || (_font == null))
 				return;
-
-			// If we've updated the font, then we need to update the text display.
-			if (_font.HasChanged)
-			{
-				UpdateText();
-
-				_needsColorUpdate = true;
-				_needsVertexUpdate = true;
-				_font.HasChanged = false;
-			}
-
+            
 			if ((ClipToRectangle) && (((lastClip == null) && (_textRect != null)) || ((lastClip != null) && (lastClip.Value != ClipRegion))))
 				Gorgon2D.ClipRegion = clipRegion;
 
@@ -1148,7 +1171,7 @@ namespace GorgonLibrary.Renderers
 			if (font != null)
 			{
 				_font = font;
-				_font.HasChanged = false;
+			    _font.FontChanged += FontChanged;
 			}
 			_shadowAlpha[3] = _shadowAlpha[2] = _shadowAlpha[1] = _shadowAlpha[0] = 0.25f;
 

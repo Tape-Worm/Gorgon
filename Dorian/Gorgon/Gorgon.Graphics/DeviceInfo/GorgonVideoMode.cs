@@ -25,6 +25,8 @@
 #endregion
 
 using System;
+using System.Drawing;
+using GorgonLibrary.Graphics.Properties;
 using GI = SharpDX.DXGI;
 
 namespace GorgonLibrary.Graphics
@@ -39,36 +41,27 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Width of the mode in pixels.
 		/// </summary>
-		public int Width;
+		public readonly int Width;
 		/// <summary>
 		/// Height of the mode in pixels.
 		/// </summary>
-		public int Height;								
+		public readonly int Height;								
 		/// <summary>
 		/// Format of the video mode.
 		/// </summary>
-		public BufferFormat Format;					
+		public readonly BufferFormat Format;					
 		/// <summary>
 		/// Refresh rate numerator.
 		/// </summary>
-		public int RefreshRateNumerator;						
+		public readonly int RefreshRateNumerator;						
 		/// <summary>
 		/// Refresh rate denominator.
 		/// </summary>
-		public int RefreshRateDenominator;					
-		#endregion
-
-		#region Properties.
-		/// <summary>
-		/// Property to return the video mode width and height as a .NET Size value.
-		/// </summary>
-		public System.Drawing.Size Size
-		{
-			get
-			{
-				return new System.Drawing.Size(Width, Height);
-			}
-		}
+		public readonly int RefreshRateDenominator;
+        /// <summary>
+        /// The size of the video mode.
+        /// </summary>
+	    public readonly Size Size;
 		#endregion
 
 		#region Methods.
@@ -100,7 +93,7 @@ namespace GorgonLibrary.Graphics
 		/// <returns>TRUE if equal, FALSE if not.</returns>
 		public static bool operator ==(GorgonVideoMode mode1, GorgonVideoMode mode2)
 		{
-			return GorgonVideoMode.Equals(ref mode1, ref mode2);
+			return Equals(ref mode1, ref mode2);
 		}
 
 		/// <summary>
@@ -111,7 +104,7 @@ namespace GorgonLibrary.Graphics
 		/// <returns>TRUE if not equal, FALSE if equal.</returns>
 		public static bool operator !=(GorgonVideoMode mode1, GorgonVideoMode mode2)
 		{
-			return !GorgonVideoMode.Equals(ref mode1, ref mode2);
+			return !Equals(ref mode1, ref mode2);
 		}
 
 		/// <summary>
@@ -122,7 +115,12 @@ namespace GorgonLibrary.Graphics
 		/// </returns>
 		public override string ToString()
 		{
-			return string.Format("Gorgon Video Mode: {0}x{1} Refresh Num/Denom: {2}/{3} Format: {4}", Width, Height, RefreshRateNumerator, RefreshRateDenominator, Format.ToString());
+		    return string.Format(Resources.GORGFX_VIDEOMODE_TOSTR,
+		                         Width,
+		                         Height,
+		                         RefreshRateNumerator,
+		                         RefreshRateDenominator,
+		                         Format);
 		}
 
 		/// <summary>
@@ -148,10 +146,12 @@ namespace GorgonLibrary.Graphics
 		/// </returns>
 		public override bool Equals(object obj)
 		{
-			if (obj is GorgonVideoMode)
-				return Equals((GorgonVideoMode)obj);
+		    if (obj is GorgonVideoMode)
+		    {
+		        return Equals((GorgonVideoMode)obj);
+		    }
 
-			return base.Equals(obj);
+		    return base.Equals(obj);
 		}
 
 		/// <summary>
@@ -164,27 +164,6 @@ namespace GorgonLibrary.Graphics
 		{
 			return (left.Width == right.Width) && (left.Height == right.Height) && (left.Format == right.Format) &&
 					(left.RefreshRateDenominator == right.RefreshRateDenominator) && (left.RefreshRateNumerator == right.RefreshRateNumerator);
-		}
-
-		/// <summary>
-		/// Method to set the width and height of the video mode.
-		/// </summary>
-		/// <param name="size">Width and height of the video mode, in pixels.</param>
-		public void SetSize(System.Drawing.Size size)
-		{
-			Width = size.Width;
-			Height = size.Height;
-		}
-
-		/// <summary>
-		/// Method to set the width and height of the video mode.
-		/// </summary>
-		/// <param name="width">Width of the video mode, in pixels.</param>
-		/// <param name="height">Height of the video mode, in pixels.</param>
-		public void SetSize(int width, int height)
-		{
-			Width = width;
-			Height = height;
 		}
 		#endregion
 
@@ -204,6 +183,7 @@ namespace GorgonLibrary.Graphics
 			RefreshRateNumerator = refreshNumerator;
 			RefreshRateDenominator = refreshDenominator;
 			Format = format;
+            Size = new Size(width, height);
 		}
 
 		/// <summary>
@@ -214,29 +194,6 @@ namespace GorgonLibrary.Graphics
 		/// <param name="format">The format for the video mode.</param>
 		public GorgonVideoMode(int width, int height, BufferFormat format)
 			: this(width, height, format, 0, 0)
-		{
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonVideoMode"/> struct.
-		/// </summary>
-		/// <param name="width">The width of the new video mode.</param>
-		/// <param name="height">The height of the new video mode.</param>
-		/// <param name="mode">The previous mode to copy settings from.</param>
-		/// <remarks>Use this to create a new video mode with the specified with and height.</remarks>
-		public GorgonVideoMode(int width, int height, GorgonVideoMode mode)
-			: this(width, height, mode.Format, mode.RefreshRateNumerator, mode.RefreshRateDenominator)
-		{
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonVideoMode"/> struct.
-		/// </summary>
-		/// <param name="size">The size of the new video mode.</param>
-		/// <param name="mode">The previous mode to copy settings from.</param>
-		/// <remarks>Use this to create a new video mode with the specified with and height.</remarks>
-		public GorgonVideoMode(System.Drawing.Size size, GorgonVideoMode mode)
-			: this(size.Width, size.Height, mode.Format, mode.RefreshRateNumerator, mode.RefreshRateDenominator)
 		{
 		}
 		#endregion
@@ -251,7 +208,7 @@ namespace GorgonLibrary.Graphics
 		/// </returns>
 		public bool Equals(GorgonVideoMode other)
 		{
-			return GorgonVideoMode.Equals(ref this, ref other);
+			return Equals(ref this, ref other);
 		}
 		#endregion
 	}
