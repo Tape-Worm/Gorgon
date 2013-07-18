@@ -63,16 +63,20 @@ namespace GorgonLibrary.Graphics
 		#endregion
 
 		#region Methods.
-        /// <summary>
+		/// <summary>
 		/// Function to return sub resource data for a lock operation.
 		/// </summary>
 		/// <param name="dataStream">Stream containing the data.</param>
 		/// <param name="rowPitch">The number of bytes per row of the texture.</param>
 		/// <param name="slicePitch">The number of bytes per depth slice of the texture.</param>
+		/// <param name="context">The graphics context to use when locking the texture.</param>
 		/// <returns>
 		/// The sub resource data.
 		/// </returns>
-		protected override ISubResourceData OnGetLockSubResourceData(IO.GorgonDataStream dataStream, int rowPitch, int slicePitch)
+		/// <remarks>
+		/// The <paramref name="context" /> allows a separate thread to access the resource at the same time as another thread.
+		/// </remarks>
+		protected override ISubResourceData OnGetLockSubResourceData(IO.GorgonDataStream dataStream, int rowPitch, int slicePitch, GorgonGraphics context)
 		{
 			return new GorgonTexture1DData(dataStream);
 		}
@@ -82,7 +86,11 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		/// <param name="data">Data to copy to the texture.</param>
 		/// <param name="subResource">Sub resource index to use.</param>
-		protected override void OnUpdateSubResource(ISubResourceData data, int subResource)
+		/// <param name="context">The graphics context to use when updating the texture.</param>
+		/// <remarks>
+		/// The <paramref name="context" /> allows a separate thread to access the resource at the same time as another thread.
+		/// </remarks>
+		protected override void OnUpdateSubResource(ISubResourceData data, int subResource, GorgonGraphics context)
 		{
 			var box = new SharpDX.DataBox
 				{
@@ -100,7 +108,7 @@ namespace GorgonLibrary.Graphics
 			region.Top = 0;
 			region.Bottom = 1;
 
-			Graphics.Context.UpdateSubresourceSafe(box, D3DResource, FormatInformation.SizeInBytes, subResource, region, FormatInformation.IsCompressed);
+			context.Context.UpdateSubresourceSafe(box, D3DResource, FormatInformation.SizeInBytes, subResource, region, FormatInformation.IsCompressed);
 		}
 
 		/// <summary>
@@ -288,6 +296,7 @@ namespace GorgonLibrary.Graphics
 		/// <param name="destSubResource">Sub resource in this texture to replace.</param>
 		/// <param name="sourceRange">Width of the source texture to copy.</param>
 		/// <param name="destination">Width of the destination area.</param>
+		/// <param name="deferred">[Optional] The deferred context to use when copying the sub resource.</param>
 		/// <remarks>This method will -not- perform stretching or filtering and will clip to the size of the destination texture.  
 		/// <para>The <paramref name="sourceRange"/> and ><paramref name="destination"/> must fit within the dimensions of this texture.  If they do not, then the copy will be clipped so that they fit.</para>
 		/// <para>The sourceRange uses absolute coorindates.  That is, Minimum is the Left coordinate, and Maximum is the Right coordinate.</para>
@@ -297,6 +306,8 @@ namespace GorgonLibrary.Graphics
 		/// <para>Sub resource indices can be calculated with the <see cref="M:GorgonLibrary.Graphics.GorgonTexture1D.GetSubResourceIndex">GetSubResourceIndex</see> static method.</para>
 		/// <para>Pass NULL (Nothing in VB.Net) to the sourceRange parameter to copy the entire sub resource.</para>
         /// <para>Video devices that have a feature level of SM2_a_b cannot copy sub resource data in a 1D texture if the texture is not a staging texture.</para>
+		/// <para>If the <paramref name="deferred"/> parameter is NULL (Nothing in VB.Net) then the immediate context will be used.  If this method is called from multiple threads, then a deferred context should be passed for each thread that is 
+		/// accessing the sub resource.</para>
 		/// </remarks>
 		/// <exception cref="System.ArgumentNullException">Thrown when the texture parameter is NULL (Nothing in VB.Net).</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the formats cannot be converted because they're not of the same group or the current video device is a SM_2_a_b device or a SM_4 device.
@@ -306,7 +317,7 @@ namespace GorgonLibrary.Graphics
 		/// <exception cref="System.InvalidOperationException">Thrown when this texture is an immutable texture.
 		/// </exception>
         /// <exception cref="System.NotSupportedException">Thrown when the video device has a feature level of SM2_a_b and this texture or the source texture are not staging textures.</exception>
-		public void CopySubResource(GorgonTexture1D texture, int subResource, int destSubResource, GorgonRange? sourceRange, int destination)
+		public void CopySubResource(GorgonTexture1D texture, int subResource, int destSubResource, GorgonRange? sourceRange, int destination, GorgonGraphics deferred = null)
 		{
 			GorgonDebug.AssertNull<GorgonTexture1D>(texture, "texture");
 
@@ -326,10 +337,14 @@ namespace GorgonLibrary.Graphics
 			if ((this == texture) && (subResource == destSubResource))
 				throw new ArgumentException("Cannot copy to and from the same sub resource on the same texture.");
 #endif
+			if (deferred == null)
+			{
+				deferred = Graphics;
+			}
 
             if (sourceRange != null)
             {
-                Graphics.Context.CopySubresourceRegion(texture.D3DResource, subResource, new D3D.ResourceRegion
+                deferred.Context.CopySubresourceRegion(texture.D3DResource, subResource, new D3D.ResourceRegion
 	                {
                         Back = 1,
                         Front = 0,
@@ -341,7 +356,7 @@ namespace GorgonLibrary.Graphics
             }
             else
             {
-                Graphics.Context.CopySubresourceRegion(texture.D3DResource, subResource, null, D3DResource, destSubResource, 0, 0, 0);
+                deferred.Context.CopySubresourceRegion(texture.D3DResource, subResource, null, D3DResource, destSubResource, 0, 0, 0);
             }
 		}
 
@@ -351,11 +366,14 @@ namespace GorgonLibrary.Graphics
 		/// <param name="texture">Source texture to copy.</param>
 		/// <param name="sourceRange">Region on the source texture to copy.</param>
 		/// <param name="destination">Destination point to copy to.</param>
+		/// <param name="deferred">[Optional] The deferred context used to copy the sub resource.</param>
 		/// <remarks>This method will -not- perform stretching or filtering and will clip to the size of the destination texture.  
 		/// <para>The <paramref name="sourceRange"/> and ><paramref name="destination"/> must fit within the dimensions of this texture.  If they do not, then the copy will be clipped so that they fit.</para>
 		/// <para>The sourceRange uses absolute coorindates.  That is, Minimum is the Left coordinate, and Maximum is the Right coordinate.</para>
 		/// <para>For SM_4_1 and SM_5 video devices, texture formats can be converted if they belong to the same format group (e.g. R8G8B8A8, R8G8B8A8_UInt, R8G8B8A8_Int, R8G8B8A8_UIntNormal, etc.. are part of the R8G8B8A8 group).  If the 
 		/// video device is a SM_4 or SM_2_a_b device, then no format conversion will be done and an exception will be thrown if format conversion is attempted.</para>
+		/// <para>If the <paramref name="deferred"/> parameter is NULL (Nothing in VB.Net) then the immediate context will be used.  If this method is called from multiple threads, then a deferred context should be passed for each thread that is 
+		/// accessing the sub resource.</para>
 		/// </remarks>
 		/// <exception cref="System.ArgumentNullException">Thrown when the texture parameter is NULL (Nothing in VB.Net).</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the formats cannot be converted because they're not of the same group or the current video device is a SM_2_a_b device or a SM_4 device.
@@ -364,23 +382,26 @@ namespace GorgonLibrary.Graphics
 		/// </exception>
 		/// <exception cref="System.InvalidOperationException">Thrown when this texture is an immutable texture.
 		/// </exception>
-		public void CopySubResource(GorgonTexture1D texture, GorgonRange sourceRange, int destination)
+		public void CopySubResource(GorgonTexture1D texture, GorgonRange sourceRange, int destination, GorgonGraphics deferred = null)
 		{
 #if DEBUG
 			if (texture == this)
 				throw new ArgumentException("The source texture and this texture are the same.  Cannot copy.", "texture");
 #endif
 
-			CopySubResource(texture, 0, 0, sourceRange, destination);
+			CopySubResource(texture, 0, 0, sourceRange, destination, deferred);
 		}
 
 		/// <summary>
 		/// Function to copy a texture subresource from another texture.
 		/// </summary>
 		/// <param name="texture">Source texture to copy.</param>
+		/// <param name="deferred">[Optional] The deferred context used to copy the sub resource.</param>
 		/// <remarks>This method will -not- perform stretching or filtering and will clip to the size of the destination texture.  
 		/// <para>For SM_4_1 and SM_5 video devices, texture formats can be converted if they belong to the same format group (e.g. R8G8B8A8, R8G8B8A8_UInt, R8G8B8A8_Int, R8G8B8A8_UIntNormal, etc.. are part of the R8G8B8A8 group).  If the 
 		/// video device is a SM_4 or SM_2_a_b device, then no format conversion will be done and an exception will be thrown if format conversion is attempted.</para>
+		/// <para>If the <paramref name="deferred"/> parameter is NULL (Nothing in VB.Net) then the immediate context will be used.  If this method is called from multiple threads, then a deferred context should be passed for each thread that is 
+		/// accessing the sub resource.</para>
 		/// </remarks>
 		/// <exception cref="System.ArgumentNullException">Thrown when the texture parameter is NULL (Nothing in VB.Net).</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the formats cannot be converted because they're not of the same group or the current video device is a SM_2_a_b device or a SM_4 device.
@@ -391,7 +412,7 @@ namespace GorgonLibrary.Graphics
 		/// </exception>
 		/// <exception cref="System.InvalidOperationException">Thrown when this texture is an immutable texture.
 		/// </exception>
-		public void CopySubResource(GorgonTexture1D texture)
+		public void CopySubResource(GorgonTexture1D texture, GorgonGraphics deferred = null)
 		{
 #if DEBUG
 			if (texture == this)
@@ -407,12 +428,15 @@ namespace GorgonLibrary.Graphics
 		/// <param name="texture">Source texture to copy.</param>
 		/// <param name="subResource">Sub resource in the source texture to copy.</param>
 		/// <param name="destSubResource">Sub resource in this texture to replace.</param>
+		/// <param name="deferred">[Optional] The deferred context used to copy the sub resource.</param>
 		/// <remarks>This method will -not- perform stretching or filtering and will clip to the size of the destination texture.  
 		/// <para>The source texture must fit within the dimensions of this texture.  If it does not, then the copy will be clipped so that it fits.</para>
 		/// <para>For SM_4_1 and SM_5 video devices, texture formats can be converted if they belong to the same format group (e.g. R8G8B8A8, R8G8B8A8_UInt, R8G8B8A8_Int, R8G8B8A8_UIntNormal, etc.. are part of the R8G8B8A8 group).  If the 
 		/// video device is a SM_4 or SM_2_a_b device, then no format conversion will be done and an exception will be thrown if format conversion is attempted.</para>
 		/// <para>When copying sub resources (e.g. mip-map levels), the <paramref name="subResource"/> and <paramref name="destSubResource"/> must be different if the source texture is the same as the destination texture.</para>
 		/// <para>Sub resource indices can be calculated with the <see cref="M:GorgonLibrary.Graphics.GorgonTexture1D.GetSubResourceIndex">GetSubResourceIndex</see> static method.</para>
+		/// <para>If the <paramref name="deferred"/> parameter is NULL (Nothing in VB.Net) then the immediate context will be used.  If this method is called from multiple threads, then a deferred context should be passed for each thread that is 
+		/// accessing the sub resource.</para>
 		/// </remarks>
 		/// <exception cref="System.ArgumentNullException">Thrown when the texture parameter is NULL (Nothing in VB.Net).</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the formats cannot be converted because they're not of the same group or the current video device is a SM_2_a_b device or a SM_4 device.
@@ -421,9 +445,9 @@ namespace GorgonLibrary.Graphics
 		/// </exception>
 		/// <exception cref="System.InvalidOperationException">Thrown when this texture is an immutable texture.
 		/// </exception>
-		public void CopySubResource(GorgonTexture1D texture, int subResource, int destSubResource)
+		public void CopySubResource(GorgonTexture1D texture, int subResource, int destSubResource, GorgonGraphics deferred = null)
 		{
-			CopySubResource(texture, subResource, destSubResource, null, 0);
+			CopySubResource(texture, subResource, destSubResource, null, 0, deferred);
 		}
 
 		/// <summary>
@@ -432,12 +456,15 @@ namespace GorgonLibrary.Graphics
 		/// <param name="data">Data to copy to the texture.</param>
 		/// <param name="subResource">Sub resource index to use.</param>
 		/// <param name="destRange">The destination range to write into.</param>
+		/// <param name="deferred">[Optional] The deferred context used to update the sub resource.</param>
 		/// <remarks>Use this to copy data to this texture.  If the texture is non CPU accessible texture then an exception is raised.
 		/// <para>The destRange uses absolute coorindates.  That is, Minimum is the Left coordinate, and Maximum is the Right coordinate.</para>
+		/// <para>If the <paramref name="deferred"/> parameter is NULL (Nothing in VB.Net) then the immediate context will be used.  If this method is called from multiple threads, then a deferred context should be passed for each thread that is 
+		/// accessing the sub resource.</para>
 		/// </remarks>
 		/// <exception cref="System.InvalidOperationException">Thrown when this texture has an Immutable, Dynamic or a Staging usage.
 		/// </exception>
-		public virtual void UpdateSubResource(ISubResourceData data, int subResource, GorgonRange destRange)
+		public virtual void UpdateSubResource(ISubResourceData data, int subResource, GorgonRange destRange, GorgonGraphics deferred = null)
 		{
 #if DEBUG
 			if ((Settings.Usage == BufferUsage.Dynamic) || (Settings.Usage == BufferUsage.Immutable))

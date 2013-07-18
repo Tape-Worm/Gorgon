@@ -286,10 +286,13 @@ namespace GorgonLibrary.Graphics
 		/// <param name="data">Data to copy to the texture.</param>
 		/// <param name="subResource">Sub resource index to use.</param>
 		/// <param name="destRect">Destination region to copy into.</param>
-		/// <remarks>This method is not supported for depth/stencil buffers.</remarks>
+		/// <param name="deferred">[Optional] The deferred context used to update the sub resource.</param>
 		/// <exception cref="System.NotSupportedException">This method is not supported by depth/stencil buffers.</exception>
+		/// <remarks>
+		/// This method is not supported for depth/stencil buffers.
+		/// </remarks>
 		[EditorBrowsable(EditorBrowsableState.Never)]
-		public override void UpdateSubResource(ISubResourceData data, int subResource, System.Drawing.Rectangle destRect)
+		public override void UpdateSubResource(ISubResourceData data, int subResource, System.Drawing.Rectangle destRect, GorgonGraphics deferred = null)
 		{
 			throw new NotSupportedException(Resources.GORGFX_DEPTH_OPERATION_NOT_SUPPORTED);
 		}
