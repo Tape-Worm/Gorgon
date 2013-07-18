@@ -26,6 +26,7 @@
 
 using System;
 using GorgonLibrary.Collections.Specialized;
+using GorgonLibrary.Graphics.Properties;
 using GI = SharpDX.DXGI;
 using D3DCommon = SharpDX.Direct3D;
 using D3D = SharpDX.Direct3D11;
@@ -305,9 +306,38 @@ namespace GorgonLibrary.Graphics
 							D3DCommon.FeatureLevel.Level_9_1
 					};
 				default:
-					throw new GorgonException(GorgonResult.CannotCreate, "Cannot create device.  Device is not supported.");
+					throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_DEVICE_CANNOT_FIND_DEVICES);
 			}
 		}
+
+        /// <summary>
+        /// Function to release any temporary interfaces.
+        /// </summary>
+        /// <param name="interfaces">Interfaces to release.</param>
+        private static void ReleaseInterfaces(Tuple<GI.Factory1, GI.Adapter1, D3D.Device> interfaces)
+        {
+            if (interfaces == null)
+            {
+                return;
+            }
+
+            if (interfaces.Item1 != null)
+            {
+                interfaces.Item1.Dispose();
+            }
+
+            if (interfaces.Item2 != null)
+            {
+                interfaces.Item2.Dispose();
+            }
+
+            if (interfaces.Item3 == null)
+            {
+                return;
+            }
+
+            interfaces.Item3.Dispose();
+        }
 
         /// <summary>
         /// Function to return a device object for this video device.
@@ -388,7 +418,7 @@ namespace GorgonLibrary.Graphics
 		/// </returns>
 		public override string ToString()
 		{
-			return string.Format("Gorgon Graphics Device: {0}", Name);
+			return string.Format(Resources.GORGFX_DEVICE_TOSTR, Name);
 		}
 
 		/// <summary>
@@ -413,12 +443,7 @@ namespace GorgonLibrary.Graphics
 			}
 			finally
 			{
-				if (tempInterfaces != null)
-				{
-					tempInterfaces.Item3.Dispose();
-					tempInterfaces.Item2.Dispose();
-					tempInterfaces.Item1.Dispose();
-				}
+                ReleaseInterfaces(tempInterfaces);
 			}
 		}
 
@@ -444,14 +469,7 @@ namespace GorgonLibrary.Graphics
 			}
 			finally
 			{
-				if (tempInterfaces != null)
-				{
-					tempInterfaces.Item3.Dispose();
-					tempInterfaces.Item2.Dispose();
-					tempInterfaces.Item1.Dispose();
-
-					tempInterfaces = null;
-				}
+                ReleaseInterfaces(tempInterfaces);
 			}
 		}
 
@@ -480,14 +498,7 @@ namespace GorgonLibrary.Graphics
 			}
 			finally
 			{
-				if (tempInterfaces != null)
-				{
-					tempInterfaces.Item3.Dispose();
-					tempInterfaces.Item2.Dispose();
-					tempInterfaces.Item1.Dispose();
-
-					tempInterfaces = null;
-				}
+                ReleaseInterfaces(tempInterfaces);
 			}
 		}
 
@@ -513,14 +524,7 @@ namespace GorgonLibrary.Graphics
 			}
 			finally
 			{
-				if (tempInterfaces != null)
-				{
-					tempInterfaces.Item3.Dispose();
-					tempInterfaces.Item2.Dispose();
-					tempInterfaces.Item1.Dispose();
-
-					tempInterfaces = null;
-				}
+                ReleaseInterfaces(tempInterfaces);
 			}
 		}
 
@@ -546,14 +550,7 @@ namespace GorgonLibrary.Graphics
 			}
 			finally
 			{
-				if (tempInterfaces != null)
-				{
-					tempInterfaces.Item3.Dispose();
-					tempInterfaces.Item2.Dispose();
-					tempInterfaces.Item1.Dispose();
-
-					tempInterfaces = null;
-				}
+                ReleaseInterfaces(tempInterfaces);
 			}
 		}
 
@@ -588,12 +585,7 @@ namespace GorgonLibrary.Graphics
             }
             finally
             {
-                if (tempInterfaces != null)
-                {
-                    tempInterfaces.Item3.Dispose();
-                    tempInterfaces.Item2.Dispose();
-                    tempInterfaces.Item1.Dispose();
-                }
+                ReleaseInterfaces(tempInterfaces);
             }
         }
 
@@ -628,12 +620,7 @@ namespace GorgonLibrary.Graphics
             }
             finally
             {
-                if (tempInterfaces != null)
-                {
-                    tempInterfaces.Item3.Dispose();
-                    tempInterfaces.Item2.Dispose();
-                    tempInterfaces.Item1.Dispose();
-                }
+                ReleaseInterfaces(tempInterfaces);
             }
         }
 
@@ -668,12 +655,7 @@ namespace GorgonLibrary.Graphics
             }
             finally
             {
-                if (tempInterfaces != null)
-                {
-                    tempInterfaces.Item3.Dispose();
-                    tempInterfaces.Item2.Dispose();
-                    tempInterfaces.Item1.Dispose();
-                }
+                ReleaseInterfaces(tempInterfaces);
             }
         }
 
@@ -699,14 +681,7 @@ namespace GorgonLibrary.Graphics
 			}
 			finally
 			{
-				if (tempInterfaces != null)
-				{
-					tempInterfaces.Item3.Dispose();
-					tempInterfaces.Item2.Dispose();
-					tempInterfaces.Item1.Dispose();
-
-					tempInterfaces = null;
-				}
+                ReleaseInterfaces(tempInterfaces);
 			}
 		}
 
@@ -739,14 +714,7 @@ namespace GorgonLibrary.Graphics
 			}
 			finally
 			{
-				if (tempInterfaces != null)
-				{
-					tempInterfaces.Item3.Dispose();
-					tempInterfaces.Item2.Dispose();
-					tempInterfaces.Item1.Dispose();
-
-					tempInterfaces = null;
-				}
+				ReleaseInterfaces(tempInterfaces);
 			}
 		}
 		#endregion
@@ -776,11 +744,11 @@ namespace GorgonLibrary.Graphics
             switch (deviceType)
 			{
 				case VideoDeviceType.Software:
-					Name = "WARP software rasterizer";
+					Name = Resources.GORGFX_DEVICE_NAME_WARP;
 			        HardwareFeatureLevel = SupportedFeatureLevel = DeviceFeatureLevel.SM4_1;
 					break;
 				case VideoDeviceType.ReferenceRasterizer:
-					Name = "Reference rasterizer";
+					Name = Resources.GORGFX_DEVICE_NAME_REFRAST;
 			        HardwareFeatureLevel = SupportedFeatureLevel = DeviceFeatureLevel.SM5;
 					break;
 				default:

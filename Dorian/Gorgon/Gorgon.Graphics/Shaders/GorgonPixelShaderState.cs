@@ -24,7 +24,6 @@
 // 
 #endregion
 
-using GorgonLibrary.Diagnostics;
 using D3D = SharpDX.Direct3D11;
 
 namespace GorgonLibrary.Graphics
@@ -41,10 +40,14 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		protected override void SetCurrent()
 		{
-			if (Current == null)
-				Graphics.Context.PixelShader.Set(null);
-			else
-				Graphics.Context.PixelShader.Set(Current.D3DShader);
+            if (Current == null)
+            {
+                Graphics.Context.PixelShader.Set(null);
+            }
+            else
+            {
+                Graphics.Context.PixelShader.Set(Current.D3DShader);
+            }
 		}
 
 		/// <summary>
@@ -55,10 +58,14 @@ namespace GorgonLibrary.Graphics
 		/// <param name="resources">Resources to update.</param>
 		protected override void SetResources(int slot, int count, SharpDX.Direct3D11.ShaderResourceView[] resources)
 		{
-			if (count == 1)
-				Graphics.Context.PixelShader.SetShaderResource(slot, resources[0]);
-			else
-				Graphics.Context.PixelShader.SetShaderResources(slot, count, resources);
+		    if (count == 1)
+		    {
+		        Graphics.Context.PixelShader.SetShaderResource(slot, resources[0]);
+		    }
+		    else
+            {
+                Graphics.Context.PixelShader.SetShaderResources(slot, count, resources);
+            }
 		}
 
 		/// <summary>
@@ -69,10 +76,14 @@ namespace GorgonLibrary.Graphics
 		/// <param name="samplers">Samplers to update.</param>
 		protected override void SetSamplers(int slot, int count, SharpDX.Direct3D11.SamplerState[] samplers)
 		{
-			if (count == 1)
-				Graphics.Context.PixelShader.SetSampler(slot, samplers[0]);
-			else
-				Graphics.Context.PixelShader.SetSamplers(slot, count, samplers);
+		    if (count == 1)
+		    {
+		        Graphics.Context.PixelShader.SetSampler(slot, samplers[0]);
+		    }
+		    else
+		    {
+		        Graphics.Context.PixelShader.SetSamplers(slot, count, samplers);
+		    }
 		}
 
 		/// <summary>
@@ -83,10 +94,14 @@ namespace GorgonLibrary.Graphics
 		/// <param name="buffers">Constant buffers to update.</param>
 		protected override void SetConstantBuffers(int slot, int count, SharpDX.Direct3D11.Buffer[] buffers)
 		{
-			if (count == 1)
-				Graphics.Context.PixelShader.SetConstantBuffer(slot, buffers[0]);
-			else
-				Graphics.Context.PixelShader.SetConstantBuffers(slot, count, buffers);
+		    if (count == 1)
+		    {
+		        Graphics.Context.PixelShader.SetConstantBuffer(slot, buffers[0]);
+		    }
+		    else
+            {
+                Graphics.Context.PixelShader.SetConstantBuffers(slot, count, buffers);
+            }
 		}
 		#endregion
 

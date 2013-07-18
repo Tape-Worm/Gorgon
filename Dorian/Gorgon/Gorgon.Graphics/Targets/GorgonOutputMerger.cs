@@ -1419,11 +1419,16 @@ namespace GorgonLibrary.Graphics
         /// <para>A <see cref="GorgonLibrary.Graphics.GorgonDepthStencilView">depth/stencil view</see> can be bound in read-only mode to the depth/stencil and the shader view if the current video device has 
         /// a feature level of SM5 or better. To set this up, create the depth/stencil view by setting the flags parameter appropriately.</para>
 		/// <para>Binding to a shader view requires video device that has a feature level of SM_4_0 or below.  If the depth/stencil is multisampled, then a feature level of SM4_1 is required.</para>
-		/// <para></para>
+		/// <para>This method should not be called from a deferred graphics context.</para>
 		/// </remarks>
 		public GorgonDepthStencil2D CreateDepthStencil(string name, GorgonDepthStencil2DSettings settings, GorgonImageData initialData = null)
 		{
-			if (name == null)
+            if (_graphics.IsDeferred)
+            {
+                throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_CANNOT_USE_DEFERRED_CONTEXT);
+            }
+
+            if (name == null)
             {
                 throw new ArgumentNullException("name");
             }
@@ -1470,10 +1475,15 @@ namespace GorgonLibrary.Graphics
         /// <para>A <see cref="GorgonLibrary.Graphics.GorgonDepthStencilView">depth/stencil view</see> can be bound in read-only mode to the depth/stencil and the shader view if the current video device has 
         /// a feature level of SM5 or better. To set this up, create the depth/stencil view by setting the flags parameter appropriately.</para>
         /// <para>Binding to a shader view requires video device that has a feature level of SM_4_0 or below.  If the depth/stencil is multisampled, then a feature level of SM4_1 is required.</para>
-        /// <para></para>
+        /// <para>This method should not be called from a deferred graphics context.</para>
         /// </remarks>
         public GorgonDepthStencil1D CreateDepthStencil(string name, GorgonDepthStencil1DSettings settings, GorgonImageData initialData = null)
         {
+            if (_graphics.IsDeferred)
+            {
+                throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_CANNOT_USE_DEFERRED_CONTEXT);
+            }
+
             if (name == null)
             {
                 throw new ArgumentNullException("name");
@@ -1520,17 +1530,25 @@ namespace GorgonLibrary.Graphics
 		/// <para>Thrown when the swap chain is going to full screen mode and another swap chain is already on the video output.</para>
 		/// <para>-or-</para>
 		/// <para>Thrown if the current video device is a SM2_a_b video device and the <see cref="P:GorgonLibrary.Graphics.GorgonSwapChainSettings.Flags">Flags</see> property is not equal to RenderTarget.</para>
+		/// <para>-or-</para>
+		/// <para>Thrown if the graphics context is deferred.</para>
 		/// </exception>
 		/// <remarks>This will create our output swap chains for display to a window or control.  All functionality for sending or retrieving data from the video device can be accessed through the swap chain.
 		/// <para>Passing default settings for the <see cref="GorgonLibrary.Graphics.GorgonSwapChainSettings">settings parameters</see> will make Gorgon choose the closest possible settings appropriate for the video device and output that the window is on.  For example, passing NULL (Nothing in VB.Net) to 
 		/// the <see cref="P:GorgonLibrary.Graphics.GorgonSwapChainSettings.VideoMode">GorgonSwapChainSettings.VideoMode</see> parameter will make Gorgon find the closest video mode available to the current window size and desktop format (for the output).</para>
 		/// <para>If the multisampling quality in the <see cref="P:GorgonLibrary.Graphics.GorgonSwapChainSettings.MultiSample.Quality">GorgonSwapChainSettings.MultiSample.Quality</see> property is higher than what the video device can support, an exception will be raised.  To determine 
 		/// what the maximum quality for the sample count for the video device should be, call the <see cref="M:GorgonLibrary.Graphics.GorgonVideoDevice.GetMultiSampleQuality">GorgonVideoDevice.GetMultiSampleQuality</see> method.</para>
+		/// <para>This method should not be called from a deferred graphics context.</para>
 		/// </remarks>
 		public GorgonSwapChain CreateSwapChain(string name, GorgonSwapChainSettings settings)
 		{
 			GorgonSwapChain swapChain;
 
+            if (_graphics.IsDeferred)
+            {
+                throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_CANNOT_USE_DEFERRED_CONTEXT);
+            }
+            
             if (name == null)
             {
                 throw new ArgumentNullException("name");
@@ -1562,7 +1580,9 @@ namespace GorgonLibrary.Graphics
         /// <param name="settings">Settings for the render target.</param>
         /// <param name="initialData">[Optional] Data used to initialize the underlying buffer.</param>
         /// <returns>A new render target object.</returns>
-        /// <remarks>This allows graphics data to be rendered to a <see cref="GorgonLibrary.Graphics.GorgonBuffer">buffer</see>.</remarks>
+        /// <remarks>This allows graphics data to be rendered to a <see cref="GorgonLibrary.Graphics.GorgonBuffer">buffer</see>.
+        /// <para>This method should not be called from a deferred graphics context.</para>
+        /// </remarks>
         /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (Nothing in VB.Net).</exception>
         /// <exception cref="System.ArgumentException">Thrown when the name parameter is an empty string.</exception>
         /// <exception cref="GorgonLibrary.GorgonException">Thrown when there is no <see cref="P:GorgonLibrary.Graphics.GorgonGraphics.VideoDevice">video device present on the graphics interface</see>.
@@ -1570,9 +1590,16 @@ namespace GorgonLibrary.Graphics
         /// <para>Thrown when the <see cref="P:GorgonLibrary.Graphics.GorgonRenderTargetBufferSettings.SizeInBytes">SizeInBytes</see> property is less than 4.</para>
         /// <para>-or-</para>
         /// <para>Thrown when the <see cref="P:GorgonLibrary.Graphics.GorgonRenderTargetBufferSettings.Format">Format</see> property is unknown or is not a supported render target format.</para>
+        /// <para>-or-</para>
+        /// <para>Thrown when the graphics context is deferred.</para>
         /// </exception>
         public GorgonRenderTargetBuffer CreateRenderTarget(string name, GorgonRenderTargetBufferSettings settings, GorgonDataStream initialData = null)
         {
+            if (_graphics.IsDeferred)
+            {
+                throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_CANNOT_USE_DEFERRED_CONTEXT);
+            }
+            
             if (name == null)
             {
                 throw new ArgumentNullException("name");
@@ -1605,7 +1632,9 @@ namespace GorgonLibrary.Graphics
         /// <param name="settings">Settings for the render target.</param>
         /// <param name="initialData">[Optional] Image data used to initialize the render target.</param>
         /// <returns>A new render target object.</returns>
-        /// <remarks>This allows graphics data to be rendered on to a <see cref="GorgonLibrary.Graphics.GorgonTexture1D">1D texture</see>.</remarks>
+        /// <remarks>This allows graphics data to be rendered on to a <see cref="GorgonLibrary.Graphics.GorgonTexture1D">1D texture</see>.
+        /// <para>This method should not be called from a deferred graphics context.</para>
+        /// </remarks>
         /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (Nothing in VB.Net).</exception>
         /// <exception cref="System.ArgumentException">Thrown when the name parameter is an empty string.</exception>
         /// <exception cref="GorgonLibrary.GorgonException">Thrown when there is no <see cref="P:GorgonLibrary.Graphics.GorgonGraphics.VideoDevice">video device present on the graphics interface</see>.
@@ -1613,9 +1642,16 @@ namespace GorgonLibrary.Graphics
         /// <para>Thrown when the Width value is 0 or greater than the maximum size for a texture that a video device can support.</para>
         /// <para>-or-</para>
         /// <para>Thrown when the Format is unknown or is not a supported render target format.</para>
+        /// <para>-or-</para>
+        /// <para>Thrown when the graphics context is deferred.</para>
         /// </exception>
         public GorgonRenderTarget1D CreateRenderTarget(string name, GorgonRenderTarget1DSettings settings, GorgonImageData initialData = null)
         {
+            if (_graphics.IsDeferred)
+            {
+                throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_CANNOT_USE_DEFERRED_CONTEXT);
+            }
+            
             if (name == null)
             {
                 throw new ArgumentNullException("name");
@@ -1651,6 +1687,7 @@ namespace GorgonLibrary.Graphics
 		/// <remarks>This allows graphics data to be rendered on to a <see cref="GorgonLibrary.Graphics.GorgonTexture2D">2D texture</see>.
 		/// <para>If the multisampling quality in the <see cref="GorgonLibrary.Graphics.GorgonRenderTarget2DSettings.Multisampling">GorgonRenderTarget2D.Multisampling.Quality</see> property is higher than what the video device can support, an exception will be raised.  To determine 
 		/// what the maximum quality for the sample count for the video device should be, call the <see cref="GorgonLibrary.Graphics.GorgonVideoDevice.GetMultiSampleQuality">GorgonVideoDevice.GetMultiSampleQuality</see> method.</para>
+        /// <para>This method should not be called from a deferred graphics context.</para>
 		/// </remarks>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (Nothing in VB.Net).</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the name parameter is an empty string.</exception>
@@ -1662,10 +1699,17 @@ namespace GorgonLibrary.Graphics
         /// <para>Thrown when the Format is unknown or is not a supported render target format.</para>
         /// <para>-or-</para>
 		/// <para>Thrown when the <see cref="P:GorgonLibrary.Graphics.GorgonRenderTarget2DSettings.Multisampling">GorgonRenderTarget2DSettings.Multisampling.Quality</see> property is less than 0 or not less than the value returned by <see cref="M:GorgonLibrary.Graphics.GorgonVideoDevice">GorgonVideoDevice.GetMultiSampleQuality</see>.</para>
-		/// </exception>
+        /// <para>-or-</para>
+        /// <para>Thrown when the graphics context is deferred.</para>
+        /// </exception>
 		public GorgonRenderTarget2D CreateRenderTarget(string name, GorgonRenderTarget2DSettings settings, GorgonImageData initialData = null)
 		{
-			if (name == null)
+            if (_graphics.IsDeferred)
+            {
+                throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_CANNOT_USE_DEFERRED_CONTEXT);
+            }
+            
+            if (name == null)
             {
                 throw new ArgumentNullException("name");
             }
@@ -1705,9 +1749,16 @@ namespace GorgonLibrary.Graphics
         /// <para>Thrown when the Width, Height or Depth values is 0 or greater than the maximum size for a texture that a video device can support.</para>
         /// <para>-or-</para>
         /// <para>Thrown when the Format is unknown or is not a supported render target format.</para>
+        /// <para>-or-</para>
+        /// <para>Thrown when the graphics context is deferred.</para>
         /// </exception>
         public GorgonRenderTarget3D CreateRenderTarget(string name, GorgonRenderTarget3DSettings settings, GorgonImageData initialData = null)
         {
+            if (_graphics.IsDeferred)
+            {
+                throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_CANNOT_USE_DEFERRED_CONTEXT);
+            }
+            
             if (name == null)
             {
                 throw new ArgumentNullException("name");

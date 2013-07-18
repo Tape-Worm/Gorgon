@@ -33,16 +33,10 @@ This list is not in order.  Please don't get excited.
 	+ Add Dispatch command for compute shaders (Done).
 		- Will need dispatch for indirect argument buffers too (Done).
 	+ Add class support to shaders for SM5 dynamic linking.
-* Add multi-threaded support for D3D 11 device contexts.
-	+ Add Object type that is similar to GorgonGraphics, but stripped to the items that are actually supported by threaded contexts.
-	+ Begin/End are not related to this and are used for Queries which will not be supported in Gorgon at this time.
-	+ Add a "Finish" command to this deferred object type:
-		1.  Create deferred graphics object type.
-		2.  Add drawing commands (clear, draw, etc...)
-		3.  Call Finish to indicate the end of the command list, this will return a command list object type. [FinishCommandList]
-		4.  Call execute on the command list when ready to use. [ExecuteCommandList]
-	+ Add command list type.  Will have Execute method.  Note that we can chain command lists to other command lists.
-	+ Add functionality to check for threading support.  Limit support to SM5 or better devices.
+* Add multi-threaded support for D3D 11 device contexts. (Done)	
+	+ Add a "Finish" command to this deferred object type (Done)
+	+ Add command list type.  Will have Execute method.  Note that we can chain command lists to other command lists. (Done)
+	+ Add functionality to check for threading support.  Limit support to SM5 or better devices. (Done)
 * Maybe update Gorgon2D to create a swap chain in its Create2DRenderer method in addition to passing one in. (Done)
 * Update 2D shader code (Not necessary, 2D specific shader types are now gone and integrated via #GorgonInclude in the shader).
 * Add bounding box/circle for renderable objects. (Done)

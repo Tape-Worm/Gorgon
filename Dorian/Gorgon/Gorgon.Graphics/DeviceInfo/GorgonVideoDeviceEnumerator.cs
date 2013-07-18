@@ -52,7 +52,6 @@ namespace GorgonLibrary.Graphics
 	{
 		#region Variables.
 		private static int _lockIncr;
-
 		#endregion
 
 		#region Properties.
@@ -221,7 +220,7 @@ namespace GorgonLibrary.Graphics
 			// Windows 8 does not support outputs on WARP devices and ref rasterizer devices.
 			if ((noOutputDevice) || (System.Windows.Forms.SystemInformation.TerminalServerSession))
 			{
-				var output = new GorgonVideoOutput(device);
+				var output = new GorgonVideoOutput();
 
 				Gorgon.Log.Print("Found output {0}.", Diagnostics.LoggingLevel.Simple, output.Name);
 				Gorgon.Log.Print("===================================================================", Diagnostics.LoggingLevel.Verbose);
@@ -284,11 +283,11 @@ namespace GorgonLibrary.Graphics
 		/// Function to perform an enumeration of the video devices attached to the system.
 		/// </summary>
 		/// <param name="enumerateWARPDevice">TRUE to enumerate the WARP software device.  FALSE to exclude it.</param>
-		/// <param name="enumerateREFDevice">TRUE to enumerate the reference device.  FALSE to exclude it.</param>
+		/// <param name="enumerateReferenceDevice">TRUE to enumerate the reference device.  FALSE to exclude it.</param>
 		/// <remarks>This method will populate the <see cref="GorgonLibrary.Graphics.GorgonVideoDeviceEnumerator">GorgonVideoDeviceEnumerator</see> with information about the video devices 
 		/// installed in the system.
 		/// <para>You may include the WARP device, which is a software based device that emulates most of the functionality of a video device, by setting the <paramref name="enumerateWARPDevice"/> to TRUE.</para>
-		/// <para>You may include the reference device, which is a software based device that all the functionality of a video device, by setting the <paramref name="enumerateREFDevice"/> to TRUE.  
+		/// <para>You may include the reference device, which is a software based device that all the functionality of a video device, by setting the <paramref name="enumerateReferenceDevice"/> to TRUE.  
 		/// If a reference device is used in rendering, the performance will be poor and as such, this device is only useful to diagnosing issues with video drivers.</para>
 		/// <para>The reference device is a DEBUG only device, and as such, it will only appear under the following conditions:
 		/// <list type="bullet">
@@ -299,7 +298,7 @@ namespace GorgonLibrary.Graphics
 		/// </list>
 		/// </para>
 		/// </remarks>
-		public static void Enumerate(bool enumerateWARPDevice, bool enumerateREFDevice)
+		public static void Enumerate(bool enumerateWARPDevice, bool enumerateReferenceDevice)
 		{
 #if DEBUG
 			// Turn on object tracking if it's not already enabled.
@@ -382,7 +381,7 @@ namespace GorgonLibrary.Graphics
 		            }
 
 #if DEBUG
-		            if (enumerateREFDevice)
+		            if (enumerateReferenceDevice)
 		            {
 		                var device = GetRefSoftwareDevice(devices.Count);
 
@@ -398,7 +397,7 @@ namespace GorgonLibrary.Graphics
 
                 if (devices.Count == 0)
                 {
-	                throw new GorgonException(GorgonResult.CannotEnumerate, Resources.GORGFX_NO_SUPPORTED_DEVICES);
+	                throw new GorgonException(GorgonResult.CannotEnumerate, Resources.GORGFX_DEVICE_CANNOT_FIND_DEVICES);
                 }
 
 		        Gorgon.Log.Print("Found {0} video devices.", Diagnostics.LoggingLevel.Simple, VideoDevices.Count);

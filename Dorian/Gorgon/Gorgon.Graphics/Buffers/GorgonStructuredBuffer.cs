@@ -24,9 +24,6 @@
 // 
 #endregion
 
-using System;
-using GorgonLibrary.Graphics.Properties;
-
 namespace GorgonLibrary.Graphics
 {
 	/// <summary>

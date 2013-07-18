@@ -362,6 +362,42 @@ namespace GorgonLibrary.Graphics.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Could not find any supported video devices.  Gorgon requires a device that can support a minimum of pixel shader model 2b and a vertex shader model of 2a..
+        /// </summary>
+        internal static string GORGFX_DEVICE_CANNOT_FIND_DEVICES {
+            get {
+                return ResourceManager.GetString("GORGFX_DEVICE_CANNOT_FIND_DEVICES", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Reference rasterizer.
+        /// </summary>
+        internal static string GORGFX_DEVICE_NAME_REFRAST {
+            get {
+                return ResourceManager.GetString("GORGFX_DEVICE_NAME_REFRAST", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to WARP software rasterizer.
+        /// </summary>
+        internal static string GORGFX_DEVICE_NAME_WARP {
+            get {
+                return ResourceManager.GetString("GORGFX_DEVICE_NAME_WARP", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Gorgon Graphics Video Device: {0}.
+        /// </summary>
+        internal static string GORGFX_DEVICE_TOSTR {
+            get {
+                return ResourceManager.GetString("GORGFX_DEVICE_TOSTR", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The parameter &apos;{0}&apos; was required for this effect, but is not present in the parameters list..
         /// </summary>
         internal static string GORGFX_EFFECT_MISSING_REQUIRED_PARAMS {
@@ -403,6 +439,87 @@ namespace GorgonLibrary.Graphics.Properties {
         internal static string GORGFX_FMTPITCH_TOSTR {
             get {
                 return ResourceManager.GetString("GORGFX_FMTPITCH_TOSTR", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The default character &apos;{0}&apos; does not exist in the font character set..
+        /// </summary>
+        internal static string GORGFX_FONT_DEFAULT_CHAR_DOES_NOT_EXIST {
+            get {
+                return ResourceManager.GetString("GORGFX_FONT_DEFAULT_CHAR_DOES_NOT_EXIST", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The font family name must not be NULL or empty..
+        /// </summary>
+        internal static string GORGFX_FONT_FAMILY_NAME_MUST_NOT_BE_EMPTY {
+            get {
+                return ResourceManager.GetString("GORGFX_FONT_FAMILY_NAME_MUST_NOT_BE_EMPTY", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The glyph for character &apos;{0}&apos; already exists in this collection..
+        /// </summary>
+        internal static string GORGFX_FONT_GLYPH_EXISTS {
+            get {
+                return ResourceManager.GetString("GORGFX_FONT_GLYPH_EXISTS", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The glyph for character &apos;{0}&apos; does not have a texture assigned to it..
+        /// </summary>
+        internal static string GORGFX_FONT_GLYPH_HAS_NO_TEXTURE {
+            get {
+                return ResourceManager.GetString("GORGFX_FONT_GLYPH_HAS_NO_TEXTURE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The glyph for character &apos;{0}&apos; does not exist in this collection..
+        /// </summary>
+        internal static string GORGFX_FONT_GLYPH_NOT_FOUND {
+            get {
+                return ResourceManager.GetString("GORGFX_FONT_GLYPH_NOT_FOUND", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to External textures require a System.IO.FileStream object..
+        /// </summary>
+        internal static string GORGFX_FONT_MUST_BE_FILE_STREAM {
+            get {
+                return ResourceManager.GetString("GORGFX_FONT_MUST_BE_FILE_STREAM", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The texture &apos;{0}&apos; already exists in this collection..
+        /// </summary>
+        internal static string GORGFX_FONT_TEXTURE_EXISTS {
+            get {
+                return ResourceManager.GetString("GORGFX_FONT_TEXTURE_EXISTS", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The texture &apos;{0}&apos; was not found in this collection..
+        /// </summary>
+        internal static string GORGFX_FONT_TEXTURE_NOT_FOUND {
+            get {
+                return ResourceManager.GetString("GORGFX_FONT_TEXTURE_NOT_FOUND", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The font texture size ({0}x{1}) is too large..
+        /// </summary>
+        internal static string GORGFX_FONT_TEXTURE_SIZE_TOO_LARGE {
+            get {
+                return ResourceManager.GetString("GORGFX_FONT_TEXTURE_SIZE_TOO_LARGE", resourceCulture);
             }
         }
         
@@ -479,20 +596,20 @@ namespace GorgonLibrary.Graphics.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Could not find any supported video devices.  Gorgon requires a device that can support a minimum of pixel shader model 2b and a vertex shader model of 2a..
-        /// </summary>
-        internal static string GORGFX_NO_SUPPORTED_DEVICES {
-            get {
-                return ResourceManager.GetString("GORGFX_NO_SUPPORTED_DEVICES", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to The usage for this object must be set to &apos;Default&apos;..
         /// </summary>
         internal static string GORGFX_NOT_DEFAULT_USAGE {
             get {
                 return ResourceManager.GetString("GORGFX_NOT_DEFAULT_USAGE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Software device output.
+        /// </summary>
+        internal static string GORGFX_OUTPUT_SOFTWARE_DEV_NAME {
+            get {
+                return ResourceManager.GetString("GORGFX_OUTPUT_SOFTWARE_DEV_NAME", resourceCulture);
             }
         }
         
@@ -677,6 +794,15 @@ namespace GorgonLibrary.Graphics.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Cannot save the shader as a source code file.  There was no source code found for the this shader..
+        /// </summary>
+        internal static string GORGFX_SHADER_NO_CODE {
+            get {
+                return ResourceManager.GetString("GORGFX_SHADER_NO_CODE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Cannot create a stream output shader with this method..
         /// </summary>
         internal static string GORGFX_SHADER_NO_SO {
@@ -731,6 +857,15 @@ namespace GorgonLibrary.Graphics.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The stream is read only..
+        /// </summary>
+        internal static string GORGFX_STREAM_READ_ONLY {
+            get {
+                return ResourceManager.GetString("GORGFX_STREAM_READ_ONLY", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The starting unordered access view slot must be between 0 and 7..
         /// </summary>
         internal static string GORGFX_UAV_SLOT_OUT_OF_RANGE {
@@ -772,6 +907,15 @@ namespace GorgonLibrary.Graphics.Properties {
         internal static string GORGFX_VERTEXBUFFER_BINDING_TOSTR {
             get {
                 return ResourceManager.GetString("GORGFX_VERTEXBUFFER_BINDING_TOSTR", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Gorgon Video Mode: {0}x{1} Refresh Num/Denom: {2}/{3} Format: {4}.
+        /// </summary>
+        internal static string GORGFX_VIDEOMODE_TOSTR {
+            get {
+                return ResourceManager.GetString("GORGFX_VIDEOMODE_TOSTR", resourceCulture);
             }
         }
         

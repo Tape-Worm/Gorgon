@@ -295,8 +295,6 @@ namespace GorgonLibrary.Graphics
 			font.Ascent = fontAscent;
 			font.Descent = fontDescent;
 
-			font.HasChanged = false;
-
 			_graphics.AddTrackedObject(font);
 
 			return font;

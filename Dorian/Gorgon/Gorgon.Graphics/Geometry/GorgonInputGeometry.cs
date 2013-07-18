@@ -736,8 +736,10 @@ namespace GorgonLibrary.Graphics
 		/// <para>-or-</para>
 		/// <para>Thrown when the name parameter is NULL.</para>
 		/// </exception>
+        /// <exception cref="GorgonLibrary.GorgonException">Thrown when the graphics context is deferred.</exception>
 		/// <remarks>The shader parameter is used to compare input layout on the shader side with the input layout.  If the layout is mismatched, a warning will appear in the debug output.
 		/// <para>Note that any shader can be used with the input layout as long as the shader contains the same layout for the input, i.e. there is no need to create a new layout for each shader if the element layouts are identical.</para>
+        /// <para>This function should not be called from a deferred context.</para>
 		/// </remarks>
 		public GorgonInputLayout CreateInputLayout(string name, Type type, GorgonShader shader)
 		{
@@ -765,21 +767,31 @@ namespace GorgonLibrary.Graphics
         /// <param name="name">The name of the input layout.</param>
         /// <param name="elements">The input elements to assign to the layout.</param>
 		/// <param name="shader">The shader that holds the input layout signature.</param>
-		/// <returns>The input layout object to create.</returns>
-		/// <exception cref="System.ArgumentException">Thrown when then name parameter is an empty string.</exception>
+		/// <returns>The input layout object to create.</returns> 
+		/// <exception cref="System.ArgumentException">
+		/// Thrown when then <paramref name="name"/> parameter is an empty string.
+		/// <para>-or-</para>
+        /// <para>Thrown when the <paramref name="elements"/> parameter is empty.</para>
+		/// </exception>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="shader"/> parameter is NULL (Nothing in VB.Net).
 		/// <para>-or-</para>
 		/// <para>Thrown when the <paramref name="elements"/> parameter is NULL.</para>
 		/// <para>-or-</para>
 		/// <para>Thrown when the <paramref name="name"/> parameter is NULL.</para>
 		/// </exception>
-		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="elements"/> parameter is empty.</exception>
+		/// <exception cref="GorgonLibrary.GorgonException">Thrown when the graphics context is deferred.</exception>
 		/// <remarks>The shader parameter is used to compare input layout on the shader side with the input layout.  If the layout is mismatched, a warning will appear in the debug output.
 		/// <para>Note that any shader can be used with the input layout as long as the shader contains the same layout for the input, i.e. there is no need to create a new layout for each shader if the element layouts are identical.</para>
+		/// <para>This function should not be called from a deferred context.</para>
 		/// </remarks>
 		public GorgonInputLayout CreateInputLayout(string name, IList<GorgonInputElement> elements, GorgonShader shader)
 		{
-		    if (shader == null)
+            if (_graphics.IsDeferred)
+            {
+                throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_CANNOT_USE_DEFERRED_CONTEXT);
+            }
+            
+            if (shader == null)
             {
                 throw new ArgumentNullException("shader");
             }

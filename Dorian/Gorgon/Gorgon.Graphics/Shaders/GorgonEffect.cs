@@ -75,7 +75,7 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Property to return a list of additional parameters for the effect.
 		/// </summary>
-		/// <remarks>These parameters can be passed in via construction of the effect using the <see cref="M:GorgonLibrary.Graphics.GorgonShaderBinding.CreateEffect{T}">CreateEffect</see> method 
+		/// <remarks>These parameters can be passed in via construction of the effect using the <see cref="GorgonLibrary.Graphics.GorgonShaderBinding.CreateEffect{T}">CreateEffect</see> method 
 		/// or they may be updated after the object was created.
 		/// </remarks>
 		public IDictionary<string, object> Parameters
@@ -152,8 +152,10 @@ namespace GorgonLibrary.Graphics
 		/// <remarks>The <paramref name="renderMethod"/> is an action delegate that must be defined with an integer value.  The parameter indicates which pass the rendering is currently on.</remarks>
 		protected virtual void RenderImpl(Action<int> renderMethod, int passIndex)
 		{
-			if (renderMethod != null)
-				renderMethod(passIndex);
+		    if (renderMethod != null)
+		    {
+		        renderMethod(passIndex);
+		    }
 		}
 
 		/// <summary>
@@ -176,13 +178,17 @@ namespace GorgonLibrary.Graphics
 		/// <remarks>The <paramref name="renderMethod"/> is an action delegate that must be defined with an integer value.  The parameter indicates which pass the rendering is currently on.</remarks>
 		public void Render(Action<int> renderMethod)
 		{
-			if (!OnBeforeRender())
-				return;
+		    if (!OnBeforeRender())
+		    {
+		        return;
+		    }
 
-			for (int i = 0; i < PassCount; i++)
-				RenderPass(renderMethod, i);
+		    for (int i = 0; i < PassCount; i++)
+		    {
+		        RenderPass(renderMethod, i);
+		    }
 
-			OnAfterRender();
+		    OnAfterRender();
 		}
 
 		/// <summary>
@@ -227,17 +233,19 @@ namespace GorgonLibrary.Graphics
 		/// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
 		protected virtual void Dispose(bool disposing)
 		{
-			if (!_disposed)
-			{
-				if (disposing)
-				{
-					Graphics.RemoveTrackedObject(this);
+		    if (_disposed)
+		    {
+		        return;
+		    }
 
-					FreeResources();
-				}
+		    if (disposing)
+		    {
+		        Graphics.RemoveTrackedObject(this);
 
-				_disposed = true;
-			}
+		        FreeResources();
+		    }
+
+		    _disposed = true;
 		}
 
 		/// <summary>
