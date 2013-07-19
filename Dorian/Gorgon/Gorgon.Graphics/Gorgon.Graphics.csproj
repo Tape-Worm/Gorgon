@@ -160,6 +160,7 @@
     <Compile Include="States\GorgonState.cs" />
     <Compile Include="States\GorgonStateCache.cs" />
     <Compile Include="States\GorgonTextureSamplerState.cs" />
+    <Compile Include="Targets\GorgonRenderTargetBufferView.cs" />
     <Compile Include="Targets\GorgonDepthStencil1D.cs" />
     <Compile Include="Targets\GorgonDepthStencil1DSettings.cs" />
     <Compile Include="Targets\GorgonDepthStencil2D.cs" />
@@ -175,6 +176,7 @@
     <Compile Include="Targets\GorgonRenderTarget3DSettings.cs" />
     <Compile Include="Targets\GorgonRenderTargetBuffer.cs" />
     <Compile Include="Targets\GorgonRenderTargetBufferSettings.cs" />
+    <Compile Include="Targets\GorgonRenderTargetTextureView.cs" />
     <Compile Include="Targets\GorgonRenderTargetView.cs" />
     <Compile Include="Targets\GorgonSwapChain.cs" />
     <Compile Include="Targets\IDepthStencilSettings.cs" />

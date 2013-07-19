@@ -362,9 +362,11 @@ namespace GorgonLibrary.Graphics
 		/// <returns>TRUE if equal, FALSE if not.</returns>
 		public static bool Equals(ref GorgonRenderTargetBlendState left, ref GorgonRenderTargetBlendState right)
 		{
-			return ((left.AlphaOperation == right.AlphaOperation) && (left.BlendingOperation == right.BlendingOperation) && (left.DestinationAlphaBlend == right.DestinationAlphaBlend) &&
-					(left.DestinationBlend == right.DestinationBlend) && (left.IsBlendingEnabled == right.IsBlendingEnabled) && (left.SourceAlphaBlend == right.SourceAlphaBlend) &&
-					(left.SourceBlend == right.SourceBlend) && (left.WriteMask == right.WriteMask));
+		    return ((left.AlphaOperation == right.AlphaOperation) && (left.BlendingOperation == right.BlendingOperation)
+		            && (left.DestinationAlphaBlend == right.DestinationAlphaBlend) &&
+		            (left.DestinationBlend == right.DestinationBlend) && (left.IsBlendingEnabled == right.IsBlendingEnabled)
+		            && (left.SourceAlphaBlend == right.SourceAlphaBlend) &&
+		            (left.SourceBlend == right.SourceBlend) && (left.WriteMask == right.WriteMask));
 		}
 
 		/// <summary>
@@ -376,10 +378,12 @@ namespace GorgonLibrary.Graphics
 		/// </returns>
 		public override bool Equals(object obj)
 		{
-			if (obj is GorgonRenderTargetBlendState)
-				return Equals((GorgonRenderTargetBlendState)obj);
+		    if (obj is GorgonRenderTargetBlendState)
+		    {
+		        return Equals((GorgonRenderTargetBlendState)obj);
+		    }
 
-			return base.Equals(obj);
+		    return base.Equals(obj);
 		}
 
 		/// <summary>
@@ -489,86 +493,86 @@ namespace GorgonLibrary.Graphics
         /// </summary>
         /// <remarks>The IsBlending flag is still set to TRUE, but the SourceBlend is set to One and the DestinatinBlend is set to Zero.</remarks>
         public static readonly GorgonBlendStates NoBlending = new GorgonBlendStates
-        {
-            IsAlphaCoverageEnabled = false,
-            IsIndependentBlendEnabled = false,
-            RenderTarget0 = GorgonRenderTargetBlendState.NoBlending,
-            RenderTarget1 = GorgonRenderTargetBlendState.DefaultStates,
-            RenderTarget2 = GorgonRenderTargetBlendState.DefaultStates,
-            RenderTarget3 = GorgonRenderTargetBlendState.DefaultStates,
-            RenderTarget4 = GorgonRenderTargetBlendState.DefaultStates,
-            RenderTarget5 = GorgonRenderTargetBlendState.DefaultStates,
-            RenderTarget6 = GorgonRenderTargetBlendState.DefaultStates,
-            RenderTarget7 = GorgonRenderTargetBlendState.DefaultStates
-        };
+            {
+                IsAlphaCoverageEnabled = false,
+                IsIndependentBlendEnabled = false,
+                RenderTarget0 = GorgonRenderTargetBlendState.NoBlending,
+                RenderTarget1 = GorgonRenderTargetBlendState.DefaultStates,
+                RenderTarget2 = GorgonRenderTargetBlendState.DefaultStates,
+                RenderTarget3 = GorgonRenderTargetBlendState.DefaultStates,
+                RenderTarget4 = GorgonRenderTargetBlendState.DefaultStates,
+                RenderTarget5 = GorgonRenderTargetBlendState.DefaultStates,
+                RenderTarget6 = GorgonRenderTargetBlendState.DefaultStates,
+                RenderTarget7 = GorgonRenderTargetBlendState.DefaultStates
+            };
 
 		/// <summary>
 		/// Modulated blending on the first render target.
 		/// </summary>
 		public static readonly GorgonBlendStates ModulatedBlending = new GorgonBlendStates
-		{
-			IsAlphaCoverageEnabled = false,
-			IsIndependentBlendEnabled = false,
-			RenderTarget0 = GorgonRenderTargetBlendState.ModulatedBlending,
-			RenderTarget1 = GorgonRenderTargetBlendState.DefaultStates,
-			RenderTarget2 = GorgonRenderTargetBlendState.DefaultStates,
-			RenderTarget3 = GorgonRenderTargetBlendState.DefaultStates,
-			RenderTarget4 = GorgonRenderTargetBlendState.DefaultStates,
-			RenderTarget5 = GorgonRenderTargetBlendState.DefaultStates,
-			RenderTarget6 = GorgonRenderTargetBlendState.DefaultStates,
-			RenderTarget7 = GorgonRenderTargetBlendState.DefaultStates
-		};
+		    {
+			    IsAlphaCoverageEnabled = false,
+			    IsIndependentBlendEnabled = false,
+			    RenderTarget0 = GorgonRenderTargetBlendState.ModulatedBlending,
+			    RenderTarget1 = GorgonRenderTargetBlendState.DefaultStates,
+			    RenderTarget2 = GorgonRenderTargetBlendState.DefaultStates,
+			    RenderTarget3 = GorgonRenderTargetBlendState.DefaultStates,
+			    RenderTarget4 = GorgonRenderTargetBlendState.DefaultStates,
+			    RenderTarget5 = GorgonRenderTargetBlendState.DefaultStates,
+			    RenderTarget6 = GorgonRenderTargetBlendState.DefaultStates,
+			    RenderTarget7 = GorgonRenderTargetBlendState.DefaultStates
+		    };
 
         /// <summary>
         /// Additive blending on the first render target.
         /// </summary>
         public static readonly GorgonBlendStates AdditiveBlending = new GorgonBlendStates
-        {
-            IsAlphaCoverageEnabled = false,
-            IsIndependentBlendEnabled = false,
-            RenderTarget0 = GorgonRenderTargetBlendState.AdditiveBlending,
-            RenderTarget1 = GorgonRenderTargetBlendState.DefaultStates,
-            RenderTarget2 = GorgonRenderTargetBlendState.DefaultStates,
-            RenderTarget3 = GorgonRenderTargetBlendState.DefaultStates,
-            RenderTarget4 = GorgonRenderTargetBlendState.DefaultStates,
-            RenderTarget5 = GorgonRenderTargetBlendState.DefaultStates,
-            RenderTarget6 = GorgonRenderTargetBlendState.DefaultStates,
-            RenderTarget7 = GorgonRenderTargetBlendState.DefaultStates
-        };
+            {
+                IsAlphaCoverageEnabled = false,
+                IsIndependentBlendEnabled = false,
+                RenderTarget0 = GorgonRenderTargetBlendState.AdditiveBlending,
+                RenderTarget1 = GorgonRenderTargetBlendState.DefaultStates,
+                RenderTarget2 = GorgonRenderTargetBlendState.DefaultStates,
+                RenderTarget3 = GorgonRenderTargetBlendState.DefaultStates,
+                RenderTarget4 = GorgonRenderTargetBlendState.DefaultStates,
+                RenderTarget5 = GorgonRenderTargetBlendState.DefaultStates,
+                RenderTarget6 = GorgonRenderTargetBlendState.DefaultStates,
+                RenderTarget7 = GorgonRenderTargetBlendState.DefaultStates
+            };
 
         /// <summary>
         /// Inverted blending on the first render target.
         /// </summary>
         public static readonly GorgonBlendStates InvertedBlending = new GorgonBlendStates
-        {
-            IsAlphaCoverageEnabled = false,
-            IsIndependentBlendEnabled = false,
-            RenderTarget0 = GorgonRenderTargetBlendState.InvertedBlending,
-            RenderTarget1 = GorgonRenderTargetBlendState.DefaultStates,
-            RenderTarget2 = GorgonRenderTargetBlendState.DefaultStates,
-            RenderTarget3 = GorgonRenderTargetBlendState.DefaultStates,
-            RenderTarget4 = GorgonRenderTargetBlendState.DefaultStates,
-            RenderTarget5 = GorgonRenderTargetBlendState.DefaultStates,
-            RenderTarget6 = GorgonRenderTargetBlendState.DefaultStates,
-            RenderTarget7 = GorgonRenderTargetBlendState.DefaultStates
-        };
+            {
+                IsAlphaCoverageEnabled = false,
+                IsIndependentBlendEnabled = false,
+                RenderTarget0 = GorgonRenderTargetBlendState.InvertedBlending,
+                RenderTarget1 = GorgonRenderTargetBlendState.DefaultStates,
+                RenderTarget2 = GorgonRenderTargetBlendState.DefaultStates,
+                RenderTarget3 = GorgonRenderTargetBlendState.DefaultStates,
+                RenderTarget4 = GorgonRenderTargetBlendState.DefaultStates,
+                RenderTarget5 = GorgonRenderTargetBlendState.DefaultStates,
+                RenderTarget6 = GorgonRenderTargetBlendState.DefaultStates,
+                RenderTarget7 = GorgonRenderTargetBlendState.DefaultStates
+            };
 
         /// <summary>
         /// Premultiplied blending on the first render target.
         /// </summary>
         public static readonly GorgonBlendStates PremultipliedBlending = new GorgonBlendStates
-        {
-            IsAlphaCoverageEnabled = false,
-            IsIndependentBlendEnabled = false,
-            RenderTarget0 = GorgonRenderTargetBlendState.PremultipliedBlending,
-            RenderTarget1 = GorgonRenderTargetBlendState.DefaultStates,
-            RenderTarget2 = GorgonRenderTargetBlendState.DefaultStates,
-            RenderTarget3 = GorgonRenderTargetBlendState.DefaultStates,
-            RenderTarget4 = GorgonRenderTargetBlendState.DefaultStates,
-            RenderTarget5 = GorgonRenderTargetBlendState.DefaultStates,
-            RenderTarget6 = GorgonRenderTargetBlendState.DefaultStates,
-            RenderTarget7 = GorgonRenderTargetBlendState.DefaultStates
-        };
+            {
+                IsAlphaCoverageEnabled = false,
+                IsIndependentBlendEnabled = false,
+                RenderTarget0 = GorgonRenderTargetBlendState.PremultipliedBlending,
+                RenderTarget1 = GorgonRenderTargetBlendState.DefaultStates,
+                RenderTarget2 = GorgonRenderTargetBlendState.DefaultStates,
+                RenderTarget3 = GorgonRenderTargetBlendState.DefaultStates,
+                RenderTarget4 = GorgonRenderTargetBlendState.DefaultStates,
+                RenderTarget5 = GorgonRenderTargetBlendState.DefaultStates,
+                RenderTarget6 = GorgonRenderTargetBlendState.DefaultStates,
+                RenderTarget7 = GorgonRenderTargetBlendState.DefaultStates
+            };
 
 		/// <summary>
 		/// Is alpha-to-coverage is enabled or not.
@@ -638,11 +642,16 @@ namespace GorgonLibrary.Graphics
 		/// <returns></returns>
 		public static bool Equals(ref GorgonBlendStates left, ref GorgonBlendStates right)
 		{
-			return ((left.IsAlphaCoverageEnabled == right.IsAlphaCoverageEnabled) && (left.IsIndependentBlendEnabled == right.IsIndependentBlendEnabled) &&
-					(GorgonRenderTargetBlendState.Equals(ref left.RenderTarget0, ref right.RenderTarget0)) && (GorgonRenderTargetBlendState.Equals(ref left.RenderTarget1, ref right.RenderTarget1)) &&
-					(GorgonRenderTargetBlendState.Equals(ref left.RenderTarget2, ref right.RenderTarget2)) && (GorgonRenderTargetBlendState.Equals(ref left.RenderTarget3, ref right.RenderTarget3)) &&
-					(GorgonRenderTargetBlendState.Equals(ref left.RenderTarget4, ref right.RenderTarget4)) && (GorgonRenderTargetBlendState.Equals(ref left.RenderTarget5, ref right.RenderTarget5)) &&
-					(GorgonRenderTargetBlendState.Equals(ref left.RenderTarget6, ref right.RenderTarget6)) && (GorgonRenderTargetBlendState.Equals(ref left.RenderTarget7, ref right.RenderTarget7)));
+		    return ((left.IsAlphaCoverageEnabled == right.IsAlphaCoverageEnabled)
+		            && (left.IsIndependentBlendEnabled == right.IsIndependentBlendEnabled) &&
+		            (GorgonRenderTargetBlendState.Equals(ref left.RenderTarget0, ref right.RenderTarget0))
+		            && (GorgonRenderTargetBlendState.Equals(ref left.RenderTarget1, ref right.RenderTarget1)) &&
+		            (GorgonRenderTargetBlendState.Equals(ref left.RenderTarget2, ref right.RenderTarget2))
+		            && (GorgonRenderTargetBlendState.Equals(ref left.RenderTarget3, ref right.RenderTarget3)) &&
+		            (GorgonRenderTargetBlendState.Equals(ref left.RenderTarget4, ref right.RenderTarget4))
+		            && (GorgonRenderTargetBlendState.Equals(ref left.RenderTarget5, ref right.RenderTarget5)) &&
+		            (GorgonRenderTargetBlendState.Equals(ref left.RenderTarget6, ref right.RenderTarget6))
+		            && (GorgonRenderTargetBlendState.Equals(ref left.RenderTarget7, ref right.RenderTarget7)));
 		}
 
 		/// <summary>
@@ -654,10 +663,12 @@ namespace GorgonLibrary.Graphics
 		/// </returns>
 		public override bool Equals(object obj)
 		{
-			if (obj is GorgonBlendStates)
-				return Equals((GorgonBlendStates)obj);
+		    if (obj is GorgonBlendStates)
+		    {
+		        return Equals((GorgonBlendStates)obj);
+		    }
 
-			return base.Equals(obj);
+		    return base.Equals(obj);
 		}
 
 		/// <summary>
@@ -933,8 +944,8 @@ namespace GorgonLibrary.Graphics
 
 			if ((stateType.IsAlphaCoverageEnabled) && (Graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM2_a_b))
 			{
-				throw new GorgonException(GorgonResult.CannotBind,
-				                          Resources.GORGFX_ALPHA_TO_COVERAGE_NOT_AVAILABLE);
+			    throw new GorgonException(GorgonResult.CannotBind,
+			        string.Format(Resources.GORGFX_REQUIRES_SM, DeviceFeatureLevel.SM4));
 			}
 			#endregion
 #endif

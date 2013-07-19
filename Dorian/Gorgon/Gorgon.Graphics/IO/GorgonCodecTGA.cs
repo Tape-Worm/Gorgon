@@ -427,16 +427,18 @@ namespace GorgonLibrary.IO
                 conversionFlags |= TGAConversionFlags.InvertY;
             }
 
-            // Skip these bytes.
-            if (header.IDLength > 0)
-            {
-                for (int i = 0; i < header.IDLength; i++)
-                {
-                    stream.ReadByte();
-                }
-            }
+		    if (header.IDLength <= 0)
+		    {
+		        return settings;
+		    }
 
-            return settings;
+            // Skip these bytes.
+            for (int i = 0; i < header.IDLength; i++)
+		    {
+		        stream.ReadByte();
+		    }
+
+		    return settings;
         }
 
 		/// <summary>

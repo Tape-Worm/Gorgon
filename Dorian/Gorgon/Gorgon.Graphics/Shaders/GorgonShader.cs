@@ -338,10 +338,12 @@ namespace GorgonLibrary.Graphics
 								
 				IsDebug = includeDebugInfo;
 
-				if (IsDebug)
-					flags = Shaders.ShaderFlags.Debug;
+			    if (IsDebug)
+			    {
+			        flags = Shaders.ShaderFlags.Debug;
+			    }
 
-				if (Graphics.VideoDevice.SupportedFeatureLevel < DeviceFeatureLevel.SM5)
+			    if (Graphics.VideoDevice.SupportedFeatureLevel < DeviceFeatureLevel.SM5)
 				{
 					flags |= Shaders.ShaderFlags.EnableBackwardsCompatibility;
 				}
@@ -437,8 +439,7 @@ namespace GorgonLibrary.Graphics
 			Shaders.ShaderBytecode compiledShader = null;
 			GorgonDebug.AssertNull(stream, "stream");
 
-		    if ((!binary)
-		        && (string.IsNullOrEmpty(SourceCode)))
+		    if ((!binary) && (string.IsNullOrEmpty(SourceCode)))
 		    {
 		        throw new ArgumentException(Resources.GORGFX_SHADER_NO_CODE, "binary");
 		    }
@@ -559,7 +560,9 @@ namespace GorgonLibrary.Graphics
 		    if (disposing)
 		    {
 		        if (D3DByteCode != null)
+		        {
 		            D3DByteCode.Dispose();
+		        }
 
 		        Graphics.RemoveTrackedObject(this);
 		    }

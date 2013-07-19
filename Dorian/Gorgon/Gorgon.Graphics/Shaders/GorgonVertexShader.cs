@@ -56,11 +56,15 @@ namespace GorgonLibrary.Graphics
 		/// <param name="byteCode">Byte code for the shader.</param>
 		protected override void CreateShader(SharpDX.D3DCompiler.ShaderBytecode byteCode)
 		{
-			if (D3DShader != null)
-				D3DShader.Dispose();
+		    if (D3DShader != null)
+		    {
+		        D3DShader.Dispose();
+		    }
 
-			D3DShader = new D3D.VertexShader(Graphics.D3DDevice, byteCode, null);
-			D3DShader.DebugName = "Gorgon Vertex Shader '" + Name + "'";
+		    D3DShader = new D3D.VertexShader(Graphics.D3DDevice, byteCode)
+			{
+			    DebugName = "Gorgon Vertex Shader '" + Name + "'"
+			};
 		}
 
 		/// <summary>
@@ -73,11 +77,15 @@ namespace GorgonLibrary.Graphics
 			{
 				if (disposing)
 				{
-					if (Graphics.Shaders.VertexShader.Current == this)
-						Graphics.Shaders.VertexShader.Current = null;
-					
-					if (D3DShader != null)
-						D3DShader.Dispose();
+				    if (Graphics.Shaders.VertexShader.Current == this)
+				    {
+				        Graphics.Shaders.VertexShader.Current = null;
+				    }
+
+				    if (D3DShader != null)
+				    {
+				        D3DShader.Dispose();
+				    }
 				}
 
 				D3DShader = null;

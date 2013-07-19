@@ -24,10 +24,6 @@
 // 
 #endregion
 
-using System;
-using System.Collections.Generic;
-using GorgonLibrary.Diagnostics;
-using GorgonLibrary.Math;
 using D3D = SharpDX.Direct3D11;
 
 namespace GorgonLibrary.Graphics
@@ -201,14 +197,16 @@ namespace GorgonLibrary.Graphics
 			// If we didn't pass any buffers, then unbind everything.
 			if ((buffers == null) || (buffers.Length == 0))
 			{
-				if (_bindings != null)
-				{
-					Graphics.Context.StreamOutput.SetTargets(null);
-					_bindings = null;
-					_D3Dbindings = null;
-				}
+			    if (_bindings == null)
+			    {
+			        return;
+			    }
 
-				return;
+			    Graphics.Context.StreamOutput.SetTargets(null);
+			    _bindings = null;
+			    _D3Dbindings = null;
+
+			    return;
 			}
 
 			if ((_bindings == null) || (_bindings.Length != buffers.Length))

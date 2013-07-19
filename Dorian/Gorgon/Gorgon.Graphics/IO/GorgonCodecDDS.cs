@@ -649,7 +649,8 @@ namespace GorgonLibrary.IO
 	    private static readonly DDSPixelFormat _pfA8 = new DDSPixelFormat(DDSPixelFormatFlags.Alpha, 0, 8, 0x00, 0x00, 0x00,0xff);							// A8
 	    private static DDSPixelFormat _pfDX10 = new DDSPixelFormat(DDSPixelFormatFlags.FourCC, MakeFourCC('D', 'X', '1', '0'), 0, 0, 0, 0, 0);				// DX10 extension
 
-	    private readonly DDSLegacyConversion[] _legacyMapping = new[] // Mappings for legacy formats.
+        // Mappings for legacy formats.
+	    private readonly DDSLegacyConversion[] _legacyMapping = 
 		    {
 			    new DDSLegacyConversion(BufferFormat.BC1_UIntNormal, DDSConversionFlags.None, _pfDxt1),
 			    new DDSLegacyConversion(BufferFormat.BC2_UIntNormal, DDSConversionFlags.None, _pfDxt3),
@@ -925,33 +926,43 @@ namespace GorgonLibrary.IO
 				// Check to see if the FOURCC values match.
 				if ((ddsFormat.PixelFormat.Flags & DDSPixelFormatFlags.FourCC) == DDSPixelFormatFlags.FourCC)
 				{
-					if (ddsFormat.PixelFormat.FourCC == format.FourCC)
-					{
-						conversion = ddsFormat;
-						break;
-					}
+				    if (ddsFormat.PixelFormat.FourCC != format.FourCC)
+				    {
+				        continue;
+				    }
+
+				    conversion = ddsFormat;
+				    break;
 				}
-				else if ((ddsFormat.PixelFormat.Flags & DDSPixelFormatFlags.PaletteIndexed) == DDSPixelFormatFlags.PaletteIndexed)
-				{
-					// If indexed, then check the bit count.
-					if (ddsFormat.PixelFormat.BitCount == format.BitCount)
-					{
-						conversion = ddsFormat;
-						break;
-					}
-				}
-				else if (ddsFormat.PixelFormat.BitCount == format.BitCount)
-				{
-					// If the bit masks are the same, then use this one.
-					if ((ddsFormat.PixelFormat.RBitMask == format.RBitMask)
-					    && (ddsFormat.PixelFormat.GBitMask == format.GBitMask)
-					    && (ddsFormat.PixelFormat.BBitMask == format.BBitMask)
-					    && (ddsFormat.PixelFormat.ABitMask == format.ABitMask))
-					{
-						conversion = ddsFormat;
-						break;
-					}
-				}
+
+			    if ((ddsFormat.PixelFormat.Flags & DDSPixelFormatFlags.PaletteIndexed) == DDSPixelFormatFlags.PaletteIndexed)
+			    {
+			        // If indexed, then check the bit count.
+			        if (ddsFormat.PixelFormat.BitCount != format.BitCount)
+			        {
+			            continue;
+			        }
+
+			        conversion = ddsFormat;
+			        break;
+			    }
+
+			    if (ddsFormat.PixelFormat.BitCount != format.BitCount)
+			    {
+			        continue;
+			    }
+
+			    // If the bit masks are the same, then use this one.
+			    if ((ddsFormat.PixelFormat.RBitMask != format.RBitMask)
+			        || (ddsFormat.PixelFormat.GBitMask != format.GBitMask)
+			        || (ddsFormat.PixelFormat.BBitMask != format.BBitMask)
+			        || (ddsFormat.PixelFormat.ABitMask != format.ABitMask))
+			    {
+			        continue;
+			    }
+
+			    conversion = ddsFormat;
+			    break;
 			}
 
             conversionFlags = conversion.Flags;
@@ -1113,23 +1124,25 @@ namespace GorgonLibrary.IO
             }
 
 			// Special flag for handling 16bpp formats
-			if ((LegacyConversionFlags & DDSFlags.No16BPP) == DDSFlags.No16BPP)
-			{
-				switch (settings.Format)
-				{
-					case BufferFormat.B5G6R5_UIntNormal:
-					case BufferFormat.B5G5R5A1_UIntNormal:
-						settings.Format = BufferFormat.R8G8B8A8_UIntNormal;
-						conversionFlags |= DDSConversionFlags.Expand;
-						if (settings.Format == BufferFormat.B5G6R5_UIntNormal)
-						{
-							conversionFlags |= DDSConversionFlags.NoAlpha;
-						}
-						break;
-				}
-			}
+		    if ((LegacyConversionFlags & DDSFlags.No16BPP) != DDSFlags.No16BPP)
+		    {
+		        return settings;
+		    }
 
-            return settings;
+		    switch (settings.Format)
+		    {
+		        case BufferFormat.B5G6R5_UIntNormal:
+		        case BufferFormat.B5G5R5A1_UIntNormal:
+		            settings.Format = BufferFormat.R8G8B8A8_UIntNormal;
+		            conversionFlags |= DDSConversionFlags.Expand;
+		            if (settings.Format == BufferFormat.B5G6R5_UIntNormal)
+		            {
+		                conversionFlags |= DDSConversionFlags.NoAlpha;
+		            }
+		            break;
+		    }
+
+		    return settings;
         }
 
 		/// <summary>

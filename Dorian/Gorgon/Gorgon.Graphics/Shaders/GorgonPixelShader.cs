@@ -61,13 +61,17 @@ namespace GorgonLibrary.Graphics
 				if (disposing)
 				{
 					// Disassociate any shaders after we've destroyed them.
-					if (Graphics.Shaders.PixelShader.Current == this)
-						Graphics.Shaders.PixelShader.Current = null;
+				    if (Graphics.Shaders.PixelShader.Current == this)
+				    {
+				        Graphics.Shaders.PixelShader.Current = null;
+				    }
 
-					if (D3DShader != null)
-						D3DShader.Dispose();
+				    if (D3DShader != null)
+				    {
+				        D3DShader.Dispose();
+				    }
 
-					D3DShader = null;
+				    D3DShader = null;
 				}
 
 			    _disposed = true;

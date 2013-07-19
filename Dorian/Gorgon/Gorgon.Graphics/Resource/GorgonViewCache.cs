@@ -196,26 +196,28 @@ namespace GorgonLibrary.Graphics
             {
                 GorgonDepthStencilView result;
 
-                if (!_depthViews.TryGetValue(key, out result))
+                if (_depthViews.TryGetValue(key, out result))
                 {
-                    switch (_resource.ResourceType)
-                    {
-                        case ResourceType.Texture1D:
-                        case ResourceType.Texture2D:
-                            result = new GorgonDepthStencilView(_resource, format, mipSlice, arrayIndex, arrayCount, flags);
-                            break;
-                    }
-
-                    // This should never happen.
-                    if (result == null)
-                    {
-                        throw new GorgonException(GorgonResult.CannotCreate,
-                                                  string.Format(Resources.GORGFX_IMAGE_TYPE_INVALID, _resource.ResourceType));
-                    }
-
-                    result.Initialize();
-                    _depthViews.Add(key, result);
+                    return result;
                 }
+
+                switch (_resource.ResourceType)
+                {
+                    case ResourceType.Texture1D:
+                    case ResourceType.Texture2D:
+                        result = new GorgonDepthStencilView(_resource, format, mipSlice, arrayIndex, arrayCount, flags);
+                        break;
+                }
+
+                // This should never happen.
+                if (result == null)
+                {
+                    throw new GorgonException(GorgonResult.CannotCreate,
+                        string.Format(Resources.GORGFX_IMAGE_TYPE_INVALID, _resource.ResourceType));
+                }
+
+                result.Initialize();
+                _depthViews.Add(key, result);
 
                 return result;
             }
@@ -244,40 +246,42 @@ namespace GorgonLibrary.Graphics
             {
                 GorgonUnorderedAccessView result;
 
-                if (!_unorderedViews.TryGetValue(key, out result))
+                if (_unorderedViews.TryGetValue(key, out result))
                 {
-                    switch (_resource.ResourceType)
-                    {
-                        case ResourceType.Buffer:
-                            if (_resource is GorgonStructuredBuffer)
-                            {
-                                result = new GorgonStructuredBufferUnorderedAccessView(_resource,
-                                                                                       mipSliceElementStart,
-                                                                                       arrayIndexElementCount,
-                                                                                       viewType);
-                            }
-                            else
-                            {
-                                result = new GorgonBufferUnorderedAccessView(_resource, format, mipSliceElementStart, arrayIndexElementCount, isRaw);
-                            }
-                            break;
-                        case ResourceType.Texture1D:
-                        case ResourceType.Texture2D:
-                        case ResourceType.Texture3D:
-                            result = new GorgonTextureUnorderedAccessView(_resource, format, mipSliceElementStart, arrayIndexElementCount, arrayCount);
-                            break;
-                    }
-
-                    // This should never happen.
-                    if (result == null)
-                    {
-                        throw new GorgonException(GorgonResult.CannotCreate,
-                                                  string.Format(Resources.GORGFX_IMAGE_TYPE_INVALID, _resource.ResourceType));
-                    }
-
-                    result.Initialize();
-                    _unorderedViews.Add(key, result);
+                    return result;
                 }
+
+                switch (_resource.ResourceType)
+                {
+                    case ResourceType.Buffer:
+                        if (_resource is GorgonStructuredBuffer)
+                        {
+                            result = new GorgonStructuredBufferUnorderedAccessView(_resource,
+                                mipSliceElementStart,
+                                arrayIndexElementCount,
+                                viewType);
+                        }
+                        else
+                        {
+                            result = new GorgonBufferUnorderedAccessView(_resource, format, mipSliceElementStart, arrayIndexElementCount, isRaw);
+                        }
+                        break;
+                    case ResourceType.Texture1D:
+                    case ResourceType.Texture2D:
+                    case ResourceType.Texture3D:
+                        result = new GorgonTextureUnorderedAccessView(_resource, format, mipSliceElementStart, arrayIndexElementCount, arrayCount);
+                        break;
+                }
+
+                // This should never happen.
+                if (result == null)
+                {
+                    throw new GorgonException(GorgonResult.CannotCreate,
+                        string.Format(Resources.GORGFX_IMAGE_TYPE_INVALID, _resource.ResourceType));
+                }
+
+                result.Initialize();
+                _unorderedViews.Add(key, result);
 
                 return result;
             }
@@ -302,31 +306,34 @@ namespace GorgonLibrary.Graphics
 			{
 				GorgonRenderTargetView result;
 
-				if (!_targetViews.TryGetValue(key, out result))
-				{
-					switch (_resource.ResourceType)
-					{
-						case ResourceType.Buffer:
-							break;
-						case ResourceType.Texture1D:
-                        case ResourceType.Texture2D:
-                        case ResourceType.Texture3D:
-							result = new GorgonRenderTargetTextureView(_resource, format, mipSlice, arrayDepthIndex, arrayDepthCount);
-							break;
-					}
+			    if (_targetViews.TryGetValue(key, out result))
+			    {
+			        return result;
+			    }
 
-					// This should never happen.
-					if (result == null)
-					{
-						throw new GorgonException(GorgonResult.CannotCreate,
-												  string.Format(Resources.GORGFX_IMAGE_TYPE_INVALID, _resource.ResourceType));
-					}
+			    switch (_resource.ResourceType)
+			    {
+			        case ResourceType.Buffer:
+			            result = new GorgonRenderTargetBufferView(_resource, format, mipSlice, arrayDepthIndex);
+			            break;
+			        case ResourceType.Texture1D:
+			        case ResourceType.Texture2D:
+			        case ResourceType.Texture3D:
+			            result = new GorgonRenderTargetTextureView(_resource, format, mipSlice, arrayDepthIndex, arrayDepthCount);
+			            break;
+			    }
 
-					result.Initialize();
-					_targetViews.Add(key, result);
-				}
+			    // This should never happen.
+			    if (result == null)
+			    {
+			        throw new GorgonException(GorgonResult.CannotCreate,
+			            string.Format(Resources.GORGFX_IMAGE_TYPE_INVALID, _resource.ResourceType));
+			    }
 
-				return result;
+			    result.Initialize();
+			    _targetViews.Add(key, result);
+
+			    return result;
 			}
 		}
 
@@ -356,17 +363,19 @@ namespace GorgonLibrary.Graphics
             {
                 GorgonTextureShaderView result;
 
-                if (!_textureViews.TryGetValue(key, out result))
+                if (_textureViews.TryGetValue(key, out result))
                 {
-                    result = new GorgonTextureShaderView(buffer,
-                                                         format,
-                                                         firstMip,
-                                                         mipCount,
-                                                         buffer.ResourceType != ResourceType.Texture3D ? arrayIndex : -1,
-                                                         buffer.ResourceType != ResourceType.Texture3D ? arrayCount : -1);
-                    result.Initialize();
-                    _textureViews.Add(key, result);
+                    return result;
                 }
+
+                result = new GorgonTextureShaderView(buffer,
+                    format,
+                    firstMip,
+                    mipCount,
+                    buffer.ResourceType != ResourceType.Texture3D ? arrayIndex : -1,
+                    buffer.ResourceType != ResourceType.Texture3D ? arrayCount : -1);
+                result.Initialize();
+                _textureViews.Add(key, result);
 
                 return result;
             }
@@ -388,13 +397,15 @@ namespace GorgonLibrary.Graphics
             {
                 GorgonBufferShaderView result;
 
-                if (!_bufferViews.TryGetValue(key, out result))
+                if (_bufferViews.TryGetValue(key, out result))
                 {
-	                result = new GorgonBufferShaderView(_resource, format, start, count, isRaw);
-
-                    result.Initialize();
-                    _bufferViews.Add(key, result);
+                    return result;
                 }
+
+                result = new GorgonBufferShaderView(_resource, format, start, count, isRaw);
+
+                result.Initialize();
+                _bufferViews.Add(key, result);
 
                 return result;
             }

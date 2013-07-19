@@ -24,7 +24,6 @@
 // 
 #endregion
 
-using System;
 using D3D = SharpDX.Direct3D11;
 
 namespace GorgonLibrary.Graphics
@@ -75,13 +74,6 @@ namespace GorgonLibrary.Graphics
 			}
 			set
 			{
-#if DEBUG
-				if (Graphics.Context == null)
-				{
-					throw new InvalidOperationException("No usable context was found.");
-				}
-#endif
-
 				// If the state is the same as the current, then leave.
 				if (_state.Equals(ref value))
 				{

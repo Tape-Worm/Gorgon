@@ -61,29 +61,31 @@ namespace GorgonLibrary.Graphics
                         return _graphics.ImmediateContext.Fonts.DefaultFont;
                     }
 
-			        if (_default == null) 
+			        if (_default != null)
 			        {
-			            // Create the default font.
-			            _default = new GorgonFont(_graphics,
-			                                      "Gorgon.Default.Font",
-			                                      new GorgonFontSettings
-			                                          {
-			                                              AntiAliasingMode = FontAntiAliasMode.AntiAliasHQ,
-			                                              TextContrast = 2,
-			                                              Characters = Enumerable.Range(32, 127).
-			                                                                      Select(Convert.ToChar).
-			                                                                      Where(c => !char.IsControl(c)),
-			                                              DefaultCharacter = ' ',
-			                                              FontFamilyName = "Tahoma",
-			                                              FontHeightMode = FontHeightMode.Pixels,
-			                                              FontStyle = FontStyle.Bold,
-			                                              OutlineSize = 0,
-			                                              Size = 14,
-			                                              TextureSize = new Size(128, 128)
-			                                          });
-
-			            _default.Update(_default.Settings);
+			            return _default;
 			        }
+
+			        // Create the default font.
+			        _default = new GorgonFont(_graphics,
+			            "Gorgon.Default.Font",
+			            new GorgonFontSettings
+			            {
+			                AntiAliasingMode = FontAntiAliasMode.AntiAliasHQ,
+			                TextContrast = 2,
+			                Characters = Enumerable.Range(32, 127).
+			                    Select(Convert.ToChar).
+			                    Where(c => !char.IsControl(c)),
+			                DefaultCharacter = ' ',
+			                FontFamilyName = "Tahoma",
+			                FontHeightMode = FontHeightMode.Pixels,
+			                FontStyle = FontStyle.Bold,
+			                OutlineSize = 0,
+			                Size = 14,
+			                TextureSize = new Size(128, 128)
+			            });
+
+			        _default.Update(_default.Settings);
 			    }
 
 			    return _default;
@@ -243,12 +245,14 @@ namespace GorgonLibrary.Graphics
 
                         // If the texture exists, then don't bother loading it.
                         // Otherwise load it in.
-                        if (texture == null)
+                        if (texture != null)
                         {
-                            texture = _graphics.Textures.FromFile<GorgonTexture2D>(textureName, texturePath, new GorgonCodecPNG());
-                            _graphics.RemoveTrackedObject(texture);
-                            font.Textures.AddBind(texture);
+                            continue;
                         }
+
+                        texture = _graphics.Textures.FromFile<GorgonTexture2D>(textureName, texturePath, new GorgonCodecPNG());
+                        _graphics.RemoveTrackedObject(texture);
+                        font.Textures.AddBind(texture);
                     }
                 }
                 chunk.End();

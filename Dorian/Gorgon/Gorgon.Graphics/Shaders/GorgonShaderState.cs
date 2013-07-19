@@ -367,10 +367,14 @@ namespace GorgonLibrary.Graphics
 				_shader = shaderState;
 				if (Graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM2_a_b)
 				{
-					if (shaderState is GorgonVertexShaderState)
-						count = 0;
-					else
-						count = 16;
+				    if (shaderState is GorgonVertexShaderState)
+				    {
+				        count = 0;
+				    }
+				    else
+				    {
+				        count = 16;
+				    }
 				}
 
 				_states = new GorgonTextureSamplerStates[count];
@@ -562,10 +566,12 @@ namespace GorgonLibrary.Graphics
 			public IEnumerator<GorgonTextureSamplerStates> GetEnumerator()
 			{
 				// ReSharper disable LoopCanBeConvertedToQuery
+			    // ReSharper disable ForCanBeConvertedToForeach
                 for (int i = 0; i < _states.Length; i++)
                 {
                     yield return _states[i];
                 }
+                // ReSharper restore ForCanBeConvertedToForeach
 				// ReSharper restore LoopCanBeConvertedToQuery
 			}
 			#endregion
@@ -930,10 +936,12 @@ namespace GorgonLibrary.Graphics
 			public IEnumerator<GorgonConstantBuffer> GetEnumerator()
 			{
 				// ReSharper disable LoopCanBeConvertedToQuery
+			    // ReSharper disable ForCanBeConvertedToForeach
                 for (int i = 0; i < _buffers.Length; i++)
                 {
                     yield return _buffers[i];
                 }
+                // ReSharper restore ForCanBeConvertedToForeach
 				// ReSharper restore LoopCanBeConvertedToQuery
 			}
 
@@ -1328,10 +1336,12 @@ namespace GorgonLibrary.Graphics
 			public IEnumerator<GorgonShaderView> GetEnumerator()
 			{
 				// ReSharper disable LoopCanBeConvertedToQuery
+			    // ReSharper disable ForCanBeConvertedToForeach
                 for (int i = 0; i < _resources.Length; i++)
                 {
                     yield return _resources[i];
                 }
+                // ReSharper restore ForCanBeConvertedToForeach
 				// ReSharper restore LoopCanBeConvertedToQuery
 			}
 			#endregion

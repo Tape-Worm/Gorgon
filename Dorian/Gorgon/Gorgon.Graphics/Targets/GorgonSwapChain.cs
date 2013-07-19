@@ -25,7 +25,6 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
@@ -227,15 +226,7 @@ namespace GorgonLibrary.Graphics
 
 				IntPtr handle = Win32API.GetMonitor(Settings.Window);
 
-				for (int i = 0; i < Graphics.VideoDevice.Outputs.Count; i++)
-				{
-					if (Graphics.VideoDevice.Outputs[i].Handle == handle)
-					{
-						return Graphics.VideoDevice.Outputs[i];
-					}
-				}
-
-				return null;
+			    return Graphics.VideoDevice.Outputs.FirstOrDefault(item => item.Handle == handle);
 			}
 		}
 
@@ -246,7 +237,7 @@ namespace GorgonLibrary.Graphics
 		{
 			get
 			{
-				return _renderTarget == null ? new GorgonViewport(0, 0, 0, 0, 0, 0) : _renderTarget.Viewport;
+			    return _renderTarget == null ? new GorgonViewport(0, 0, 0, 0, 0, 0) : _renderTarget.Viewport;
 			}
 		}
 
@@ -270,21 +261,24 @@ namespace GorgonLibrary.Graphics
 		{
 		    try
 		    {
-		        if ((GISwapChain == null)
-		            || (!Graphics.ResetFullscreenOnFocus))
+		        if ((GISwapChain == null) || (!Graphics.ResetFullscreenOnFocus))
+		        {
 		            return;
+		        }
 
 		        Graphics.GetFullScreenSwapChains();
 
 		        // Reset the video mode to windowed.
 		        // Note:  For some reason, this is different than it was on SlimDX.  I never had to do this before, but with
 		        // SharpDX I now have to handle the transition from full screen to windowed manually.
-		        if (GISwapChain.IsFullScreen)
+		        if (!GISwapChain.IsFullScreen)
 		        {
-		            GISwapChain.SetFullscreenState(false, null);
-		            Settings.IsWindowed = true;
-		            ((Form)Settings.Window).WindowState = FormWindowState.Minimized;
+		            return;
 		        }
+
+		        GISwapChain.SetFullscreenState(false, null);
+		        Settings.IsWindowed = true;
+		        ((Form)Settings.Window).WindowState = FormWindowState.Minimized;
 		    }
             catch (Exception ex)
             {
@@ -312,19 +306,22 @@ namespace GorgonLibrary.Graphics
 		{
 		    try
 		    {
-		        if ((GISwapChain == null)
-		            || (!Graphics.ResetFullscreenOnFocus))
+		        if ((GISwapChain == null) || (!Graphics.ResetFullscreenOnFocus))
+		        {
 		            return;
+		        }
 
 		        Graphics.GetFullScreenSwapChains();
 
-		        if (!GISwapChain.IsFullScreen)
+		        if (GISwapChain.IsFullScreen)
 		        {
-		            ((Form)Settings.Window).WindowState = FormWindowState.Normal;
-		            // Get the current video output.				
-		            GISwapChain.SetFullscreenState(true, null);
-		            Settings.IsWindowed = false;
+		            return;
 		        }
+
+		        ((Form)Settings.Window).WindowState = FormWindowState.Normal;
+		        // Get the current video output.				
+		        GISwapChain.SetFullscreenState(true, null);
+		        Settings.IsWindowed = false;
 		    }
             catch (Exception ex)
             {
@@ -350,7 +347,7 @@ namespace GorgonLibrary.Graphics
 		/// <param name="depthReseat">The depth/stencil view needs to be re-seated.</param>
 		private void CreateResources(bool targetReseat = false, bool depthReseat = false)
 		{
-			Gorgon.Log.Print("GorgonSwapChain '{0}': Creating D3D11 render target view...", Diagnostics.LoggingLevel.Intermediate, Name);
+			Gorgon.Log.Print("GorgonSwapChain '{0}': Creating D3D11 render target view...", LoggingLevel.Intermediate, Name);
 
 			if (_renderTarget == null)
 			{
@@ -527,10 +524,12 @@ namespace GorgonLibrary.Graphics
 				_parentForm.ResizeEnd += _parentForm_ResizeEnd;
 			}
 
-			if ((!AutoResize) || ((_parentForm != null) && (_parentForm.WindowState == FormWindowState.Minimized)))
-				return;
+		    if ((!AutoResize) || ((_parentForm != null) && (_parentForm.WindowState == FormWindowState.Minimized)))
+		    {
+		        return;
+		    }
 
-			// Only do this if the size has changed, if we're just restoring the window, then don't bother.
+		    // Only do this if the size has changed, if we're just restoring the window, then don't bother.
 			if (((GISwapChain == null)) || (Settings.Window.ClientSize.Width <= 0) || (Settings.Window.ClientSize.Height <= 0))
 			{
 				return;
@@ -569,7 +568,7 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		private void ModeStateUpdate()
 		{
-			GorgonBeforeStateTransitionEventArgs e = null;
+			var e = new GorgonBeforeStateTransitionEventArgs(!Settings.IsWindowed);
 
 			GI.ModeDescription mode = GorgonVideoMode.Convert(Settings.VideoMode);
 
@@ -579,11 +578,12 @@ namespace GorgonLibrary.Graphics
 
 				if (!Settings.IsWindowed)
 				{
-					e = new GorgonBeforeStateTransitionEventArgs(true);
-					if (BeforeStateTransition != null)
-						BeforeStateTransition(this, new GorgonBeforeStateTransitionEventArgs(true));
+				    if (BeforeStateTransition != null)
+				    {
+				        BeforeStateTransition(this, new GorgonBeforeStateTransitionEventArgs(true));
+				    }
 
-					if (!e.Cancel)
+				    if (!e.Cancel)
 					{
 						// We don't need to force an output.  We'll just let DXGI figure it out from the 
 						// window area on the monitor.  Currently SharpDX's ContainingOutput property is
@@ -599,33 +599,35 @@ namespace GorgonLibrary.Graphics
 				}
 				else
 				{
-					e = new GorgonBeforeStateTransitionEventArgs(false);
+				    if (BeforeStateTransition != null)
+				    {
+				        BeforeStateTransition(this, new GorgonBeforeStateTransitionEventArgs(false));
+				    }
 
-					if (BeforeStateTransition != null)
-						BeforeStateTransition(this, new GorgonBeforeStateTransitionEventArgs(false));
-
-					if (!e.Cancel)
-						GISwapChain.SetFullscreenState(false, null);
+				    if (!e.Cancel)
+				    {
+				        GISwapChain.SetFullscreenState(false, null);
+				    }
 				}
 			}
 			catch (SharpDX.SharpDXException sdEx)
 			{
-				if (sdEx.ResultCode.Code == (int)GI.DXGIStatus.ModeChangeInProgress)
+				switch (sdEx.ResultCode.Code)
 				{
-					Gorgon.Log.Print("GorgonSwapChain '{0}': Could not switch to full screen mode because the device was busy switching to full screen on another output.", LoggingLevel.All, Name);
-				}
-				else
-				{
-					if (sdEx.ResultCode == GI.ResultCode.NotCurrentlyAvailable)
-					{
-						Gorgon.Log.Print(
-							"GorgonSwapChain '{0}': Could not switch to full screen mode because the device is not currently available.  Possible causes are:  .",
-							LoggingLevel.All, Name);
-					}
-					else
-					{
-						throw;
-					}
+				    case (int)GI.DXGIStatus.ModeChangeInProgress:
+				        Gorgon.Log.Print("GorgonSwapChain '{0}': Could not switch to full screen mode because the device was busy switching to full screen on another output.", LoggingLevel.All, Name);
+				        break;
+				    default:
+				        if (sdEx.ResultCode != GI.ResultCode.NotCurrentlyAvailable)
+				        {
+				            throw;
+				        }
+
+				        Gorgon.Log.Print(
+				            "GorgonSwapChain '{0}': Could not switch to full screen mode because the device is not currently available.  Possible causes are:  .",
+				            LoggingLevel.All,
+				            Name);
+				        break;
 				}
 			}
 
@@ -638,209 +640,51 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
-		/// Function to perform updating of the swap chain settings.
-		/// </summary>
-		/// <param name="graphics">Gorgon graphics interface to use.</param>
-		/// <param name="settings">Settings to change.</param>
-		internal static void ValidateSwapChainSettings(GorgonGraphics graphics, GorgonSwapChainSettings settings)
-		{
-			D3D.Device d3dDevice = null;
-			IntPtr monitor = IntPtr.Zero;
-			GorgonVideoOutput output = null;
-
-            // Define as render target if we didn't specify the flags.
-            if (settings.Flags == SwapChainUsageFlags.None)
-            {
-                settings.Flags = SwapChainUsageFlags.RenderTarget;
-            }
-
-			if (graphics.VideoDevice == null)
-				throw new GorgonException(GorgonResult.CannotCreate, "Cannot create the swap chain, no video device was selected.");
-
-			if ((graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM2_a_b) &&
-			    (settings.Flags != SwapChainUsageFlags.RenderTarget))
-			{
-			    throw new GorgonException(GorgonResult.CannotCreate,
-			                              string.Format(Resources.GORGFX_REQUIRES_SM, DeviceFeatureLevel.SM4));
-			}
-
-            // Ensure that we're using SM5 or better hardware if we want an unordered access view to our backbuffer.
-            if ((graphics.VideoDevice.SupportedFeatureLevel < DeviceFeatureLevel.SM5)
-                && ((settings.Flags & SwapChainUsageFlags.AllowUnorderedAccessView)
-                    == SwapChainUsageFlags.AllowUnorderedAccessView))
-            {
-                throw new GorgonException(GorgonResult.CannotCreate,
-                                          string.Format(Resources.GORGFX_REQUIRES_SM, DeviceFeatureLevel.SM5));
-            }
-
-			// Default to using the default Gorgon application window.
-			if (settings.Window == null)
-			{
-				settings.Window = Gorgon.ApplicationForm;
-
-				// No application window, then we're out of luck.
-				if (settings.Window == null)
-					throw new ArgumentException("No window to bind with the swap chain.", "settings");
-			}
-
-			// Force to windowed mode if we're binding to a child control on a form.
-			if (!(settings.Window is Form))
-				settings.IsWindowed = true;
-
-			monitor = Win32API.GetMonitor(settings.Window);		// Get the monitor that the window is on.
-
-			// Find the video output for the window.
-			output = (from videoOutput in graphics.VideoDevice.Outputs
-					  where videoOutput.Handle == monitor
-					  select videoOutput).SingleOrDefault();
-
-			if (output == null)
-			{
-				throw new GorgonException(GorgonResult.CannotCreate, "Could not find the video output for the specified window.");
-			}
-
-			// Get the Direct 3D device instance.
-			d3dDevice = graphics.D3DDevice;
-
-			// If we've not defined a video mode, determine the best mode to use.
-			GorgonVideoMode stagedMode = settings.VideoMode;
-
-			// Fill in any missing settings.
-		    if (stagedMode.Width == 0)
-		    {
-		        stagedMode = new GorgonVideoMode(settings.Window.ClientSize.Width,
-		                                         stagedMode.Height,
-		                                         stagedMode.Format,
-		                                         stagedMode.RefreshRateNumerator,
-		                                         stagedMode.RefreshRateDenominator);
-		    }
-		    if (stagedMode.Height == 0)
-		    {
-                stagedMode = new GorgonVideoMode(stagedMode.Width,
-                                                 settings.Window.ClientSize.Height,
-                                                 stagedMode.Format,
-                                                 stagedMode.RefreshRateNumerator,
-                                                 stagedMode.RefreshRateDenominator);
-            }
-		    if (stagedMode.Format == BufferFormat.Unknown)
-		    {
-                stagedMode = new GorgonVideoMode(stagedMode.Width,
-                                                 stagedMode.Height,
-                                                 output.DefaultVideoMode.Format,
-                                                 stagedMode.RefreshRateNumerator,
-                                                 stagedMode.RefreshRateDenominator);
-		    }
-		    if ((stagedMode.RefreshRateDenominator == 0) || (stagedMode.RefreshRateNumerator == 0))
-			{
-                stagedMode = new GorgonVideoMode(stagedMode.Width,
-                                                 stagedMode.Height,
-                                                 stagedMode.Format,
-                                                 output.DefaultVideoMode.RefreshRateNumerator,
-                                                 output.DefaultVideoMode.RefreshRateDenominator);
-			}
-
-			// If the device does not support different full screen modes (e.g. WARP/Refrast on Windows 8), then reset the windowed switch.
-			if ((output.VideoModes.Count == 0) && (settings.IsWindowed))
-			{
-				settings.IsWindowed = true;
-			}
-
-			// If going full screen, ensure that whatever mode we've chosen can be used, otherwise go to the closest match.
-			if (!settings.IsWindowed)
-			{
-				// Check to ensure that no other swap chain is on the video output if we're going to full screen mode.
-			    if (graphics.GetTrackedObjectsOfType<GorgonSwapChain>()
-			                .Any(
-			                    item =>
-			                    (item.VideoOutput == output) && (!item.Settings.IsWindowed)
-			                    && (item.Settings.Window != settings.Window)))
-			    {
-			        throw new GorgonException(GorgonResult.CannotCreate,
-			                                  "There is already a full screen swap chain active on the video output '"
-			                                  + output.Name + "'.");
-			    }
-
-			    var modeCount = (from mode in output.VideoModes
-								 where mode == stagedMode
-								 select mode).Count();
-
-				// We couldn't find the mode in the list, find the nearest match.
-				if (modeCount == 0)
-				{
-					stagedMode = output.FindMode(stagedMode);
-				}
-			}
-					
-			// Ensure that the selected video format can be used.
-			if (!graphics.VideoDevice.SupportsDisplayFormat(stagedMode.Format))
-				throw new GorgonException(GorgonResult.CannotCreate, "Cannot use the format '" + stagedMode.Format.ToString() + "' for display on the video device '" + graphics.VideoDevice.Name + "'.");
-
-			settings.VideoMode = stagedMode;
-
-			// Check multi sampling levels.
-			if (settings.SwapEffect == SwapEffect.Sequential)
-				settings.Multisampling = new GorgonMultisampling(1, 0);
-			
-			int quality = graphics.VideoDevice.GetMultiSampleQuality(settings.VideoMode.Format, settings.Multisampling.Count);
-
-			// Ensure that the quality of the sampling does not exceed what the card can do.
-			if ((settings.Multisampling.Quality >= quality) || (settings.Multisampling.Quality < 0))
-				throw new GorgonException(GorgonResult.CannotCreate, "Video device '" + graphics.VideoDevice.Name + "' does not support multisampling with a count of '" + settings.Multisampling.Count.ToString() + "' and a quality of '" + settings.Multisampling.Quality.ToString() + " with a format of '" + settings.VideoMode.Format + "'");
-
-			// Force 2 buffers for discard.
-			if ((settings.BufferCount < 2) && (settings.SwapEffect == SwapEffect.Discard))
-				settings.BufferCount = 2;
-
-			// Perform window handling.
-			settings.Window.Visible = true;
-			settings.Window.Enabled = true;			
-		}
-
-		/// <summary>
 		/// Function to intialize the swap chain.
 		/// </summary>
 		internal void Initialize()
 		{
-			var flags = GI.SwapChainFlags.AllowModeSwitch;
-			var d3dSettings = new GI.SwapChainDescription();
+			var D3DSettings = new GI.SwapChainDescription();
 
 			// Resize the window to match requested mode size.
-			if ((_parentForm == Settings.Window) && (Settings.IsWindowed) && (!Settings.NoClientResize))
-				_parentForm.ClientSize = new Size(Settings.VideoMode.Width, Settings.VideoMode.Height);
+		    if ((_parentForm == Settings.Window) && (Settings.IsWindowed) && (!Settings.NoClientResize))
+		    {
+		        _parentForm.ClientSize = new Size(Settings.VideoMode.Width, Settings.VideoMode.Height);
+		    }
 
-			AutoResize = !Settings.NoClientResize;
+		    AutoResize = !Settings.NoClientResize;
 			Graphics.GetFullScreenSwapChains();
+			D3DSettings.BufferCount = Settings.BufferCount;
+            D3DSettings.Flags = GI.SwapChainFlags.AllowModeSwitch;
 
-			d3dSettings.BufferCount = Settings.BufferCount;
-			d3dSettings.Flags = flags;
-
-			d3dSettings.IsWindowed = true;
-			d3dSettings.ModeDescription = GorgonVideoMode.Convert(Settings.VideoMode);
-			d3dSettings.OutputHandle = Settings.Window.Handle;
-			d3dSettings.SampleDescription = GorgonMultisampling.Convert(Settings.Multisampling);
-			d3dSettings.SwapEffect = GorgonSwapChainSettings.Convert(Settings.SwapEffect);
+            D3DSettings.IsWindowed = true;
+            D3DSettings.ModeDescription = GorgonVideoMode.Convert(Settings.VideoMode);
+            D3DSettings.OutputHandle = Settings.Window.Handle;
+            D3DSettings.SampleDescription = GorgonMultisampling.Convert(Settings.Multisampling);
+            D3DSettings.SwapEffect = GorgonSwapChainSettings.Convert(Settings.SwapEffect);
 
 		    if ((Settings.Flags & SwapChainUsageFlags.RenderTarget) == SwapChainUsageFlags.RenderTarget)
 		    {
-		        d3dSettings.Usage = GI.Usage.RenderTargetOutput;
+                D3DSettings.Usage = GI.Usage.RenderTargetOutput;
 		    }
 
 		    if ((Settings.Flags & SwapChainUsageFlags.AllowShaderView) == SwapChainUsageFlags.AllowShaderView)
 		    {
-		        d3dSettings.Usage |= GI.Usage.ShaderInput;
+                D3DSettings.Usage |= GI.Usage.ShaderInput;
 		    }
 
-		    if ((Settings.Flags & SwapChainUsageFlags.AllowUnorderedAccessView)
-                == SwapChainUsageFlags.AllowUnorderedAccessView)
+		    if ((Settings.Flags & SwapChainUsageFlags.AllowUnorderedAccessView) == SwapChainUsageFlags.AllowUnorderedAccessView)
             {
-                d3dSettings.Usage |= GI.Usage.UnorderedAccess;
+                D3DSettings.Usage |= GI.Usage.UnorderedAccess;
             }
 
-			Gorgon.Log.Print("GorgonSwapChain '{0}': Creating D3D11 swap chain...", Diagnostics.LoggingLevel.Simple, Name);
-			GISwapChain = new GI.SwapChain(Graphics.GIFactory, Graphics.D3DDevice, d3dSettings);
-			GISwapChain.DebugName = Name + " DXGISwapChain";
+			Gorgon.Log.Print("GorgonSwapChain '{0}': Creating D3D11 swap chain...", LoggingLevel.Simple, Name);
+            GISwapChain = new GI.SwapChain(Graphics.GIFactory, Graphics.D3DDevice, D3DSettings)
+            {
+                DebugName = Name + " DXGISwapChain"
+            };
 
-			// Due to an issue with winforms and DXGI, we have to manually handle transitions ourselves.
+		    // Due to an issue with winforms and DXGI, we have to manually handle transitions ourselves.
 			Graphics.GIFactory.MakeWindowAssociation(Settings.Window.Handle, GI.WindowAssociationFlags.IgnoreAll);
 
 			if (!Settings.IsWindowed)
@@ -947,9 +791,9 @@ namespace GorgonLibrary.Graphics
 		/// <param name="mode">New video mode to use.</param>
 		/// <exception cref="System.ArgumentException">Thrown when the <see cref="P:GorgonLibrary.Graphics.GorgonSwapChainSettings.Window">GorgonSwapChainSettings.Window</see> property is NULL (Nothing in VB.Net), and the <see cref="P:GorgonLibrary.Gorgon.ApplicationForm">Gorgon application window</see> is NULL.
 		/// <para>-or-</para>
-		/// <para>Thrown when the <see cref="P:GorgonLibrary.Graphics.GorgonVideoMode.Format">GorgonSwapChainSettings.VideoMode.Format</see> property cannot be used by the video device for displaying data.</para>
+        /// <para>Thrown when the <see cref="GorgonLibrary.Graphics.GorgonVideoMode.Format">GorgonSwapChainSettings.VideoMode.Format</see> property cannot be used by the video device for displaying data.</para>
 		/// <para>-or-</para>
-		/// <para>Thrown when the <see cref="P:GorgonLibrary.Graphics.GorgonSwapChainSettings.MultSamples.Quality">GorgonSwapChainSettings.Multisamplings.Quality</see> property is higher than what the video device can support.</para>
+        /// <para>Thrown when the <see cref="GorgonLibrary.Graphics.GorgonMultisampling.Quality">GorgonSwapChainSettings.Multisamplings.Quality</see> property is higher than what the video device can support.</para>
 		/// </exception>
 		/// <exception cref="GorgonLibrary.GorgonException">Thrown when the video output could not be determined from the window.
 		/// <para>-or-</para>
@@ -966,10 +810,10 @@ namespace GorgonLibrary.Graphics
 		/// <param name="isWindowed">TRUE to use windowed mode, FALSE to use full screen mode.</param>
 		/// <exception cref="System.ArgumentException">Thrown when the <see cref="P:GorgonLibrary.Graphics.GorgonSwapChainSettings.Window">GorgonSwapChainSettings.Window</see> property is NULL (Nothing in VB.Net), and the <see cref="P:GorgonLibrary.Gorgon.ApplicationForm">Gorgon application window</see> is NULL.
 		/// <para>-or-</para>
-		/// <para>Thrown when the <see cref="P:GorgonLibrary.Graphics.GorgonVideoMode.Format">GorgonSwapChainSettings.VideoMode.Format</see> property cannot be used by the video device for displaying data.</para>
-		/// <para>-or-</para>
-		/// <para>Thrown when the <see cref="P:GorgonLibrary.Graphics.GorgonSwapChainSettings.MultSamples.Quality">GorgonSwapChainSettings.Multisamplings.Quality</see> property is higher than what the video device can support.</para>
-		/// </exception>
+        /// <para>Thrown when the <see cref="GorgonLibrary.Graphics.GorgonVideoMode.Format">GorgonSwapChainSettings.VideoMode.Format</see> property cannot be used by the video device for displaying data.</para>
+        /// <para>-or-</para>
+        /// <para>Thrown when the <see cref="GorgonLibrary.Graphics.GorgonMultisampling.Quality">GorgonSwapChainSettings.Multisamplings.Quality</see> property is higher than what the video device can support.</para>
+        /// </exception>
 		/// <exception cref="GorgonLibrary.GorgonException">Thrown when the video output could not be determined from the window.
 		/// <para>-or-</para>
 		/// <para>Thrown when the swap chain is going to full screen mode and another swap chain is already on the video output.</para>
@@ -986,10 +830,10 @@ namespace GorgonLibrary.Graphics
 		/// <param name="isWindowed">TRUE to use windowed mode, FALSE to use full screen mode.</param>
 		/// <exception cref="System.ArgumentException">Thrown when the <see cref="P:GorgonLibrary.Graphics.GorgonSwapChainSettings.Window">GorgonSwapChainSettings.Window</see> property is NULL (Nothing in VB.Net), and the <see cref="P:GorgonLibrary.Gorgon.ApplicationForm">Gorgon application window</see> is NULL.
 		/// <para>-or-</para>
-		/// <para>Thrown when the <see cref="P:GorgonLibrary.Graphics.GorgonVideoMode.Format">GorgonSwapChainSettings.VideoMode.Format</see> property cannot be used by the video device for displaying data.</para>
-		/// <para>-or-</para>
-		/// <para>Thrown when the <see cref="P:GorgonLibrary.Graphics.GorgonSwapChainSettings.MultSamples.Quality">GorgonSwapChainSettings.Multisamplings.Quality</see> property is higher than what the video device can support.</para>
-		/// </exception>
+        /// <para>Thrown when the <see cref="GorgonLibrary.Graphics.GorgonVideoMode.Format">GorgonSwapChainSettings.VideoMode.Format</see> property cannot be used by the video device for displaying data.</para>
+        /// <para>-or-</para>
+        /// <para>Thrown when the <see cref="GorgonLibrary.Graphics.GorgonMultisampling.Quality">GorgonSwapChainSettings.Multisamplings.Quality</see> property is higher than what the video device can support.</para>
+        /// </exception>
 		/// <exception cref="GorgonLibrary.GorgonException">Thrown when the video output could not be determined from the window.
 		/// <para>-or-</para>
 		/// <para>Thrown when the swap chain is going to full screen mode and another swap chain is already on the video output.</para>
@@ -1004,7 +848,8 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		/// <param name="mode">New video mode to use.</param>
 		/// <param name="depthStencilFormat">The format of the internal depth/stencil buffer.</param>
-		/// <exception cref="GorgonLibrary.GorgonException">Thrown when the <see cref="P:GorgonLibrary.Graphics.GorgonVideoMode.Format">GorgonRenderTargetSettings.VideoMode.Format</see> property cannot be used by the render target.
+		/// <exception cref="GorgonLibrary.GorgonException">
+        /// Thrown when the <see cref="GorgonLibrary.Graphics.GorgonVideoMode.Format">GorgonSwapChainSettings.VideoMode.Format</see> property cannot be used by the video device for displaying data.
 		///   <para>-or-</para>
 		///   <para>The width and height are not valid for the render target.</para>
 		///   </exception>
@@ -1023,7 +868,7 @@ namespace GorgonLibrary.Graphics
 		/// <remarks>If the <see cref="P:GorgonLibrary.Graphics.GorgonSwapChainSettings.SwapEffect">SwapEffect</see> for the swap chain is set to discard, then the <paramref name="bufferCount"/> must be greater than 1.</remarks>
 		/// <exception cref="System.ArgumentException">Thrown when the <see cref="P:GorgonLibrary.Graphics.GorgonSwapChainSettings.Window">GorgonSwapChainSettings.Window</see> property is NULL (Nothing in VB.Net), and the <see cref="P:GorgonLibrary.Gorgon.ApplicationForm">Gorgon application window</see> is NULL.
 		/// <para>-or-</para>
-		/// <para>Thrown when the <see cref="P:GorgonLibrary.Graphics.GorgonVideoMode.Format">GorgonSwapChainSettings.VideoMode.Format</see> property cannot be used by the video device for displaying data.</para>
+        /// <para>Thrown when the <see cref="GorgonLibrary.Graphics.GorgonVideoMode.Format">GorgonSwapChainSettings.VideoMode.Format</see> property cannot be used by the video device for displaying data.</para>
 		/// </exception>
 		/// <exception cref="GorgonLibrary.GorgonException">Thrown when the video output could not be determined from the window.
 		/// <para>-or-</para>
@@ -1031,10 +876,12 @@ namespace GorgonLibrary.Graphics
 		/// </exception>
 		public void UpdateSettings(GorgonVideoMode mode, bool isWindowed, BufferFormat depthStencilFormat, int bufferCount)
 		{
-			if (GISwapChain == null)
-				return;
+		    if (GISwapChain == null)
+		    {
+		        return;
+		    }
 
-			if (_parentForm != null)
+		    if (_parentForm != null)
 			{
 				_parentForm.Activated -= _parentForm_Activated;
 				_parentForm.Deactivate -= _parentForm_Deactivate;
@@ -1047,13 +894,18 @@ namespace GorgonLibrary.Graphics
 			Settings.DepthStencilFormat = depthStencilFormat;
 
 			// Validate and modify the settings as appropriate.
-			ValidateSwapChainSettings(Graphics, Settings);
+		    Graphics.ImmediateContext.Output.ValidateSwapChainSettings(Settings);
 
 			ModeStateUpdate();			
 			
 			// Ensure our window is the proper size.
-			if ((_parentForm == Settings.Window) && (Settings.IsWindowed) && ((Settings.VideoMode.Width != Settings.Window.ClientSize.Width) || (Settings.VideoMode.Height != Settings.Window.ClientSize.Height)))
-				Settings.Window.ClientSize = new Size(Settings.VideoMode.Width, Settings.VideoMode.Height);
+		    if ((_parentForm == Settings.Window)
+		        && (Settings.IsWindowed)
+		        && ((Settings.VideoMode.Width != Settings.Window.ClientSize.Width)
+		            || (Settings.VideoMode.Height != Settings.Window.ClientSize.Height)))
+		    {
+		        Settings.Window.ClientSize = new Size(Settings.VideoMode.Width, Settings.VideoMode.Height);
+		    }
 		}
 
 		/// <summary>
@@ -1096,7 +948,7 @@ namespace GorgonLibrary.Graphics
 
 			    if (!result.Success)
 			    {
-                    throw new GorgonException(GorgonResult.CannotWrite, "Cannot update the swap chain front buffer.\nAn unrecoverable error has occurred:\n" + D3DErrors.GetError(result.Code).Description + " (" + D3DErrors.GetError(result.Code).Code + ")");
+                    throw new GorgonException(GorgonResult.CannotWrite, Resources.GORGFX_CATASTROPHIC_ERROR);
 			    }
 
                 IsInStandBy = true;
@@ -1219,17 +1071,20 @@ namespace GorgonLibrary.Graphics
 					_renderTarget = null;
 				}
 
-				Gorgon.Log.Print("GorgonSwapChain '{0}': Removing D3D11 swap chain...", Diagnostics.LoggingLevel.Simple, Name);
+				Gorgon.Log.Print("GorgonSwapChain '{0}': Removing D3D11 swap chain...", LoggingLevel.Simple, Name);
+
 				if (GISwapChain != null)
 				{
 					// Always go to windowed mode before destroying the swap chain.
 					GISwapChain.SetFullscreenState(false, null);
 					GISwapChain.Dispose();
 				}
-				if (Graphics != null)
-					Graphics.RemoveTrackedObject(this);
+			    if (Graphics != null)
+			    {
+			        Graphics.RemoveTrackedObject(this);
+			    }
 
-				GISwapChain = null;
+			    GISwapChain = null;
 			}
 
 			Graphics = null;
@@ -1242,7 +1097,6 @@ namespace GorgonLibrary.Graphics
 		public void Dispose()
 		{
 			Dispose(true);
-			GC.SuppressFinalize(this);
 		}
 		#endregion
     }
