@@ -105,7 +105,7 @@ namespace GorgonLibrary.IO
         /// Initializes a new instance of the <see cref="GorgonCodecHDP"/> class.
         /// </summary>
         public GorgonCodecHDP()
-            : base("WMP", "HD Photo format", new[] { "hdp", "wmp" }, SharpDX.WIC.ContainerFormatGuids.Wmp)
+            : base("HDP", "HD Photo format", new[] { "hdp", "wmp" }, SharpDX.WIC.ContainerFormatGuids.Wmp)
         {
         }
         #endregion

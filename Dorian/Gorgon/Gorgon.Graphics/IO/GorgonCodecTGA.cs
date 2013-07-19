@@ -103,8 +103,10 @@
 #endregion
 
 using System;
+using System.IO;
 using System.Runtime.InteropServices;
 using GorgonLibrary.Graphics;
+using GorgonLibrary.Graphics.Properties;
 using GorgonLibrary.Native;
 
 namespace GorgonLibrary.IO
@@ -255,11 +257,11 @@ namespace GorgonLibrary.IO
             /// <summary>
             /// Length of the ID.
             /// </summary>
-            public byte IDLength;
+            public readonly byte IDLength;
             /// <summary>
             /// Color map type.
             /// </summary>
-            public byte ColorMapType;
+            public readonly byte ColorMapType;
             /// <summary>
             /// Image type.
             /// </summary>
@@ -267,23 +269,23 @@ namespace GorgonLibrary.IO
             /// <summary>
             /// First color map index.
             /// </summary>
-            public ushort ColorMapFirst;
+            private readonly ushort ColorMapFirst;
             /// <summary>
             /// Length of the color map indices.
             /// </summary>
-            public ushort ColorMapLength;
+            public readonly ushort ColorMapLength;
             /// <summary>
             /// Size of the color map.
             /// </summary>
-            public byte ColorMapSize;
+            private readonly byte ColorMapSize;
             /// <summary>
             /// Starting horizontal position.
             /// </summary>
-            public ushort XOrigin;
+            private readonly ushort XOrigin;
             /// <summary>
             /// Starting vertical position.
             /// </summary>
-            public ushort YOrigin;
+            private readonly ushort YOrigin;
             /// <summary>
             /// Width of the image.
             /// </summary>
@@ -325,7 +327,7 @@ namespace GorgonLibrary.IO
 		{
 			get 
 			{
-				return "Truevision Targa";
+				return Resources.GORGFX_IMAGE_TGA_CODEC_DESC;
 			}
 		}
 
@@ -348,7 +350,7 @@ namespace GorgonLibrary.IO
 		/// <param name="stream">Stream containing the data.</param>
         /// <param name="conversionFlags">Flags for conversion.</param>
 		/// <returns>New image settings.</returns>
-        private static IImageSettings ReadHeader(GorgonDataStream stream, out TGAConversionFlags conversionFlags)
+        private IImageSettings ReadHeader(GorgonDataStream stream, out TGAConversionFlags conversionFlags)
         {            
             IImageSettings settings = new GorgonTexture2DSettings();
 
@@ -357,19 +359,12 @@ namespace GorgonLibrary.IO
             // Get the header for the file.
             var header = stream.Read<TGAHeader>();
 
-            if ((header.ColorMapType != 0) || (header.ColorMapLength != 0))
+            if ((header.ColorMapType != 0) || (header.ColorMapLength != 0)
+				|| (header.Width <= 0) || (header.Height <= 0)
+				|| ((header.Descriptor & TGADescriptor.Interleaved2Way) == TGADescriptor.Interleaved2Way)
+				|| ((header.Descriptor & TGADescriptor.Interleaved4Way) == TGADescriptor.Interleaved4Way))
             {
-                throw new System.IO.IOException("Cannot decode the TGA file from the stream. Color mapped TGA files are not supported.");
-            }
-
-            if ((header.Descriptor & (TGADescriptor.Interleaved2Way | TGADescriptor.Interleaved4Way)) != 0)
-            {
-                throw new System.IO.IOException("Cannot decode the TGA file from the stream. Color mapped TGA files are not supported.");
-            }
-
-            if ((header.Width <= 0) || (header.Height <= 0))
-            {
-                throw new System.IO.IOException("Cannot decode the TGA file from the stream. Invalid width [" + header.Width.ToString() + "] or height [" + header.Height.ToString () + "].");
+                throw new IOException(string.Format(Resources.GORGFX_IMAGE_FILE_INCORRECT_DECODER, Codec));
             }
 
             settings.MipCount = 1;
@@ -407,7 +402,7 @@ namespace GorgonLibrary.IO
                     }
                     else
                     {
-                        throw new System.IO.IOException("Cannot decode the TGA file from the stream. Only 8bpp grayscale images are supported.");
+						throw new IOException(string.Format(Resources.GORGFX_FORMAT_NOT_SUPPORTED, header.ImageType));
                     }
 
                     if (header.ImageType == TGAImageType.BlackAndWhiteRLE)
@@ -416,7 +411,7 @@ namespace GorgonLibrary.IO
                     }
                     break;
                 default:
-                    throw new System.IO.IOException("Cannot decode the TGA file from the stream. The image type '" + header.ImageType.ToString() + "' is not supported.");
+					throw new IOException(string.Format(Resources.GORGFX_FORMAT_NOT_SUPPORTED, header.ImageType));
             }
 
             settings.Width = header.Width;
@@ -450,20 +445,16 @@ namespace GorgonLibrary.IO
 		/// <param name="settings">Meta data for the image header.</param>
 		/// <param name="writer">Writer interface for the stream.</param>
 		/// <param name="conversionFlags">Flags for image conversion.</param>
-		private static void WriteHeader(IImageSettings settings, GorgonBinaryWriter writer, out TGAConversionFlags conversionFlags)
+		private void WriteHeader(IImageSettings settings, GorgonBinaryWriter writer, out TGAConversionFlags conversionFlags)
 		{
 			TGAHeader header = default(TGAHeader);
 
 			conversionFlags = TGAConversionFlags.None;
 
-			if (settings.Width > 0xFFFF)
+			if ((settings.Width > 0xFFFF)
+				|| (settings.Height > 0xFFFF))
 			{
-				throw new System.IO.IOException("Cannot encode the TGA file.  The width [" + settings.Width.ToString() + "] must be less than 65536 pixels.");
-			}
-
-			if (settings.Height > 0xFFFF)
-			{
-				throw new System.IO.IOException("Cannot encode the TGA file.  The height [" + settings.Height.ToString() + "] must be less than 65536 pixels.");
+				throw new IOException(string.Format(Resources.GORGFX_IMAGE_FILE_INCORRECT_ENCODER, Codec));
 			}
 
 			header.Width = (ushort)(settings.Width);
@@ -505,7 +496,7 @@ namespace GorgonLibrary.IO
 					header.Descriptor = TGADescriptor.InvertY | TGADescriptor.RGB555A1;
 					break;
 				default:
-					throw new System.IO.IOException("Cannot encode the TGA file.  The format '" + settings.Format.ToString() + "' is not supported.");
+					throw new IOException(string.Format(Resources.GORGFX_FORMAT_NOT_SUPPORTED, settings.Format));
 			}
 
 			// Persist to stream.
@@ -549,7 +540,7 @@ namespace GorgonLibrary.IO
 	    /// <param name="end">End of the scan line.</param>
 	    /// <param name="format">Format of the destination buffer.</param>
 	    /// <param name="conversionFlags">Flags used for conversion.</param>
-	    private static bool ReadCompressed(ref byte *src, int width, byte *dest, byte *end, BufferFormat format, TGAConversionFlags conversionFlags)
+	    private bool ReadCompressed(ref byte *src, int width, byte *dest, byte *end, BufferFormat format, TGAConversionFlags conversionFlags)
 		{
 			bool setOpaque = true;
 			bool flipHorizontal = (conversionFlags & TGAConversionFlags.InvertX) == TGAConversionFlags.InvertX;			
@@ -561,7 +552,7 @@ namespace GorgonLibrary.IO
 					{
 						if (src >= end)
 						{
-							throw new System.IO.IOException("Cannot decode TGA file.  The buffer is too small for the width of the image.");
+							throw new IOException(string.Format(Resources.GORGFX_IMAGE_FILE_INCORRECT_DECODER, Codec));
 						}
 
 						int size = ((*src & 0x7F) + 1);
@@ -571,14 +562,14 @@ namespace GorgonLibrary.IO
 						{
 							if (src >= end)
 							{
-								throw new System.IO.IOException("Cannot decode TGA file.  The buffer is too small for the width of the image.");
+								throw new IOException(string.Format(Resources.GORGFX_IMAGE_FILE_INCORRECT_DECODER, Codec));
 							}
 
 							for (; size > 0; --size, ++x)
 							{
 								if (x >= width)
 								{
-									throw new System.IO.IOException("Cannot decode TGA file.  The buffer is too small for the width of the image.");
+									throw new IOException(string.Format(Resources.GORGFX_IMAGE_FILE_INCORRECT_DECODER, Codec));
 								}
 
 								if (!flipHorizontal)
@@ -597,14 +588,14 @@ namespace GorgonLibrary.IO
 						{
 							if (src + size > end)
 							{
-								throw new System.IO.IOException("Cannot decode TGA file.  The buffer is too small for the width of the image.");
+								throw new IOException(string.Format(Resources.GORGFX_IMAGE_FILE_INCORRECT_DECODER, Codec));
 							}
 
 							for (; size > 0; --size, ++x)
 							{
 								if (x >= width)
 								{
-									throw new System.IO.IOException("Cannot decode TGA file.  The buffer is too small for the width of the image.");
+									throw new IOException(string.Format(Resources.GORGFX_IMAGE_FILE_INCORRECT_DECODER, Codec));
 								}
 
 								if (!flipHorizontal)
@@ -627,7 +618,7 @@ namespace GorgonLibrary.IO
 						{
 							if (src >= end)
 							{
-								throw new System.IO.IOException("Cannot decode TGA file.  The buffer is too small for the width of the image.");
+								throw new IOException(string.Format(Resources.GORGFX_IMAGE_FILE_INCORRECT_DECODER, Codec));
 							}
 
 							int size = ((*src & 0x7F) + 1);							
@@ -637,7 +628,7 @@ namespace GorgonLibrary.IO
 							{
 								if ((src + 1) >= end)
 								{
-									throw new System.IO.IOException("Cannot decode TGA file.  The buffer is too small for the width of the image.");
+									throw new IOException(string.Format(Resources.GORGFX_IMAGE_FILE_INCORRECT_DECODER, Codec));
 								}
 
 								var pixel = (ushort)(*src | (*(src + 1) << 8));
@@ -652,7 +643,7 @@ namespace GorgonLibrary.IO
 								{
 									if (x >= width)
 									{
-										throw new System.IO.IOException("Cannot decode TGA file.  The buffer is too small for the width of the image.");
+										throw new IOException(string.Format(Resources.GORGFX_IMAGE_FILE_INCORRECT_DECODER, Codec));
 									}
 
 									if (!flipHorizontal)
@@ -669,14 +660,14 @@ namespace GorgonLibrary.IO
 							{
 								if (src + (size * 2) > end)
 								{
-									throw new System.IO.IOException("Cannot decode TGA file.  The buffer is too small for the width of the image.");
+									throw new IOException(string.Format(Resources.GORGFX_IMAGE_FILE_INCORRECT_DECODER, Codec));
 								}
 
 								for (; size > 0; size--, ++x)
 								{
 									if (x >= width)
 									{
-										throw new System.IO.IOException("Cannot decode TGA file.  The buffer is too small for the width of the image.");
+										throw new IOException(string.Format(Resources.GORGFX_IMAGE_FILE_INCORRECT_DECODER, Codec));
 									}
 
 									var pixel = (ushort)(*src | (*(src + 1) << 8));
@@ -708,10 +699,10 @@ namespace GorgonLibrary.IO
 						{
 							if (src >= end)
 							{
-								throw new System.IO.IOException("Cannot decode TGA file.  The buffer is too small for the width of the image.");
+								throw new IOException(string.Format(Resources.GORGFX_IMAGE_FILE_INCORRECT_DECODER, Codec));
 							}
 
-							uint pixel = 0;
+							uint pixel;
 							int size = (*src & 0x7F) + 1;							
 
 							if ((*(src++) & 0x80) != 0)
@@ -721,7 +712,7 @@ namespace GorgonLibrary.IO
 								{
 									if (src + 2 >= end)
 									{
-										throw new System.IO.IOException("Cannot decode TGA file.  The buffer is too small for the width of the image.");
+										throw new IOException(string.Format(Resources.GORGFX_IMAGE_FILE_INCORRECT_DECODER, Codec));
 									}
 
 									pixel = ((uint)(*src << 16) | (uint)(*(src + 1) << 8) | (*(src + 2)) | 0xFF000000);
@@ -732,7 +723,7 @@ namespace GorgonLibrary.IO
 								{
 									if (src + 3 >= end)
 									{
-										throw new System.IO.IOException("Cannot decode TGA file.  The buffer is too small for the width of the image.");
+										throw new IOException(string.Format(Resources.GORGFX_IMAGE_FILE_INCORRECT_DECODER, Codec));
 									}
 
 									pixel = ((uint)(*src << 16) | (uint)(*(src + 1) << 8) | (*(src + 2)) | (uint)(*(src + 3) << 24));									
@@ -749,7 +740,7 @@ namespace GorgonLibrary.IO
 								{
 									if (x >= width)
 									{
-										throw new System.IO.IOException("Cannot decode TGA file.  The buffer is too small for the width of the image.");
+										throw new IOException(string.Format(Resources.GORGFX_IMAGE_FILE_INCORRECT_DECODER, Codec));
 									}
 
 									if (!flipHorizontal)
@@ -768,14 +759,14 @@ namespace GorgonLibrary.IO
 								{
 									if (src + (size * 3) > end)
 									{
-										throw new System.IO.IOException("Cannot decode TGA file.  The buffer is too small for the width of the image.");
+										throw new IOException(string.Format(Resources.GORGFX_IMAGE_FILE_INCORRECT_DECODER, Codec));
 									}
 								}
 								else
 								{
 									if (src + (size * 4) > end)
 									{
-										throw new System.IO.IOException("Cannot decode TGA file.  The buffer is too small for the width of the image.");
+										throw new IOException(string.Format(Resources.GORGFX_IMAGE_FILE_INCORRECT_DECODER, Codec));
 									}
 								}
 
@@ -783,14 +774,14 @@ namespace GorgonLibrary.IO
 								{
 									if (x >= width)
 									{
-										throw new System.IO.IOException("Cannot decode TGA file.  The buffer is too small for the width of the image.");
+										throw new IOException(string.Format(Resources.GORGFX_IMAGE_FILE_INCORRECT_DECODER, Codec));
 									}
 
 									if ((conversionFlags & TGAConversionFlags.Expand) == TGAConversionFlags.Expand)
 									{
 										if (src + 2 >= end)
 										{
-											throw new System.IO.IOException("Cannot decode TGA file.  The buffer is too small for the width of the image.");
+											throw new IOException(string.Format(Resources.GORGFX_IMAGE_FILE_INCORRECT_DECODER, Codec));
 										}
 
 										pixel = ((uint)(*src << 16) | (uint)(*(src + 1) << 8) | (*(src + 2)) | 0xFF000000);
@@ -802,7 +793,7 @@ namespace GorgonLibrary.IO
 									{
 										if (src + 3 >= end)
 										{
-											throw new System.IO.IOException("Cannot decode TGA file.  The buffer is too small for the width of the image.");
+											throw new IOException(string.Format(Resources.GORGFX_IMAGE_FILE_INCORRECT_DECODER, Codec));
 										}
 
 										pixel = ((uint)(*src << 16) | (uint)(*(src + 1) << 8) | (*(src + 2)) | (uint)(*(src + 3) << 24));
@@ -895,7 +886,7 @@ namespace GorgonLibrary.IO
 
 						while (x < srcPitch)
 						{
-							uint pixel = 0;
+							uint pixel;
 
 							// We need to expand from 24 bit.
 							if ((conversionFlags & TGAConversionFlags.Expand) == TGAConversionFlags.Expand)
@@ -946,18 +937,12 @@ namespace GorgonLibrary.IO
 		/// <param name="conversionFlags">Flags used to convert the image.</param>
 		private void CopyImageData(GorgonDataStream stream, GorgonImageData image, TGAConversionFlags conversionFlags)
 		{
-			GorgonFormatPitch srcPitch;		// Source pitch.
 			var buffer = image[0];	        // Get the first buffer only.
 			var formatInfo = GorgonBufferFormatInfo.GetInfo(image.Settings.Format);
 
-			if ((conversionFlags & TGAConversionFlags.Expand) == TGAConversionFlags.Expand)
-			{
-				srcPitch = new GorgonFormatPitch(image.Settings.Width * 3, image.Settings.Width * 3 * image.Settings.Height);
-			}
-			else
-			{				
-				srcPitch = formatInfo.GetPitch(image.Settings.Width, image.Settings.Height, PitchFlags.None);
-			}
+			GorgonFormatPitch srcPitch = (conversionFlags & TGAConversionFlags.Expand) == TGAConversionFlags.Expand
+				                             ? new GorgonFormatPitch(image.Settings.Width * 3, image.Settings.Width * 3 * image.Settings.Height)
+				                             : formatInfo.GetPitch(image.Settings.Width, image.Settings.Height, PitchFlags.None);
 
 			// Otherwise, allocate a buffer for conversion.
 			var srcPtr = (byte*)stream.PositionPointerUnsafe;
@@ -1020,16 +1005,15 @@ namespace GorgonLibrary.IO
 		protected internal override GorgonImageData LoadFromStream(GorgonDataStream stream, int size)
 		{
 			GorgonImageData imageData = null;
-			IImageSettings settings = null;
-			var flags = TGAConversionFlags.None;
+	        TGAConversionFlags flags;
 
             if (DirectAccess.SizeOf<TGAHeader>() > size)
             {
-                throw new System.IO.EndOfStreamException("Cannot read beyond the end of the stream.");
+                throw new EndOfStreamException(Resources.GORGFX_STREAM_EOF);
             }
 
 			// Read the header information.
-			settings = ReadHeader(stream, out flags);
+			IImageSettings settings = ReadHeader(stream, out flags);
 
 			if (ArrayCount > 1)
 			{
@@ -1063,17 +1047,16 @@ namespace GorgonLibrary.IO
 		/// </summary>
 		/// <param name="imageData"><see cref="GorgonLibrary.Graphics.GorgonImageData">Gorgon image data</see> to persist.</param>
 		/// <param name="stream">Stream that will contain the data.</param>
-		protected internal override void SaveToStream(GorgonImageData imageData, System.IO.Stream stream)
+		protected internal override void SaveToStream(GorgonImageData imageData, Stream stream)
 		{
-			var conversionFlags = TGAConversionFlags.None;
-			GorgonFormatPitch pitch = default(GorgonFormatPitch);
-			
 			// Use a binary writer.
 			using (var writer = new GorgonBinaryWriter(stream, true))
 			{
 				// Write the header for the file.
+				TGAConversionFlags conversionFlags;
 				WriteHeader(imageData.Settings, writer, out conversionFlags);
 
+				GorgonFormatPitch pitch;
 				if ((conversionFlags & TGAConversionFlags.RGB888) == TGAConversionFlags.RGB888)
 				{
 					pitch = new GorgonFormatPitch(imageData.Settings.Width * 3, imageData.Settings.Width * 3 * imageData.Settings.Height);
@@ -1138,11 +1121,10 @@ namespace GorgonLibrary.IO
 		/// <para>Thrown if the file is corrupt or can't be read by the codec.</para>
 		/// </exception>
 		/// <exception cref="System.IO.EndOfStreamException">Thrown when an attempt to read beyond the end of the stream is made.</exception>
-		public override IImageSettings GetMetaData(System.IO.Stream stream)
+		public override IImageSettings GetMetaData(Stream stream)
 		{
             long position = 0;
-			var conversion = TGAConversionFlags.None;
-            int headerSize = DirectAccess.SizeOf<TGAHeader>();
+			int headerSize = DirectAccess.SizeOf<TGAHeader>();
 
             if (stream == null)
             {
@@ -1151,26 +1133,28 @@ namespace GorgonLibrary.IO
 
             if (!stream.CanRead)
             {
-                throw new System.IO.IOException("Stream is write-only.");
+                throw new IOException(Resources.GORGFX_STREAM_WRITE_ONLY);
             }
 
             if (!stream.CanSeek)
             {
-                throw new System.IO.IOException("The stream cannot perform seek operations.");
+                throw new IOException(Resources.GORGFX_STREAM_NO_SEEK);
             }
 
             if (stream.Length - stream.Position < sizeof(uint) + DirectAccess.SizeOf<TGAHeader>())
             {
-                throw new System.IO.EndOfStreamException("Cannot read beyond the end of the stream.");
+                throw new EndOfStreamException(Resources.GORGFX_STREAM_EOF);
             }
 
             try
             {
                 position = stream.Position;
 
-                if (stream is GorgonDataStream)
+	            TGAConversionFlags conversion;
+	            var gorgonDataStream = stream as GorgonDataStream;
+	            if (gorgonDataStream != null)
                 {
-                    return ReadHeader((GorgonDataStream)stream, out conversion);
+                    return ReadHeader(gorgonDataStream, out conversion);
                 }
 
                 using (var memoryStream = new GorgonDataStream(headerSize))
@@ -1194,25 +1178,24 @@ namespace GorgonLibrary.IO
 		/// </returns>
 		/// <exception cref="System.IO.IOException">Thrown when the <paramref name="stream"/> is write-only or if the stream cannot perform seek operations.</exception>
 		/// <exception cref="System.IO.EndOfStreamException">Thrown when an attempt to read beyond the end of the stream is made.</exception>
-		public override bool IsReadable(System.IO.Stream stream)
+		public override bool IsReadable(Stream stream)
         {
-			TGAHeader header = default(TGAHeader);
+			TGAHeader header;
 			long position = 0;
-			GorgonBinaryReader reader = null;
 
-            if (stream == null)
+			if (stream == null)
             {
                 throw new ArgumentNullException("stream");
             }
 
             if (!stream.CanRead)
             {
-                throw new System.IO.IOException("Stream is write-only.");
+                throw new IOException(Resources.GORGFX_STREAM_READ_ONLY);
             }
 
             if (!stream.CanSeek)
             {
-                throw new System.IO.IOException("The stream cannot perform seek operations.");
+                throw new IOException(Resources.GORGFX_STREAM_NO_SEEK);
             }
             
             if (stream.Length - stream.Position < DirectAccess.SizeOf<TGAHeader>())
@@ -1223,7 +1206,7 @@ namespace GorgonLibrary.IO
 			try
 			{
                 position = stream.Position;
-				reader = new GorgonBinaryReader(stream, true); 
+				var reader = new GorgonBinaryReader(stream, true); 
 				header = reader.ReadValue<TGAHeader>();
 			}
 			finally

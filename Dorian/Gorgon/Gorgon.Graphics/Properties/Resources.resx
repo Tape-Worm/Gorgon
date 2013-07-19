@@ -157,10 +157,10 @@
   <data name="GORGFX_ALPHA_TO_COVERAGE_NOT_AVAILABLE" xml:space="preserve">
     <value>Cannot bind the blending state.  Alpha to coverage is only available on SM 4.x or better video devices.</value>
   </data>
-  <data name="GORGFX_CANNOT_RETRIEVE_ABC" xml:space="preserve">
+  <data name="GORGFX_FONT_CANNOT_RETRIEVE_ABC" xml:space="preserve">
     <value>Could not retrieve character widths for the specified characters.</value>
   </data>
-  <data name="GORGFX_CANNOT_RETRIEVE_KERNING" xml:space="preserve">
+  <data name="GORGFX_FONT_CANNOT_RETRIEVE_KERNING" xml:space="preserve">
     <value>Cannot retrieve kerning pairs.</value>
   </data>
   <data name="GORGFX_INVALID_D3D_CONTEXT" xml:space="preserve">
@@ -492,5 +492,80 @@ Log file location: "{0}"</value>
   </data>
   <data name="GORGFX_VIDEOMODE_TOSTR" xml:space="preserve">
     <value>Gorgon Video Mode: {0}x{1} Refresh Num/Denom: {2}/{3} Format: {4}</value>
+  </data>
+  <data name="GORGFX_FONT_GLYPH_NODE_TOO_LARGE" xml:space="preserve">
+    <value>Glyph node size is too large for the image.</value>
+  </data>
+  <data name="GORGFX_FONT_GLYPH_TOSTR" xml:space="preserve">
+    <value>Gorgon Font Glyph: {0}</value>
+  </data>
+  <data name="GORGFX_FONT_KERNING_PAIR_TOSTR" xml:space="preserve">
+    <value>Gorgon Kerning Pair: {0}, {1}</value>
+  </data>
+  <data name="GORGFX_IMAGE_BMP_CODEC_DESC" xml:space="preserve">
+    <value />
+  </data>
+  <data name="GORGFX_IMAGE_CODEC_TOSTR" xml:space="preserve">
+    <value>Gorgon {0} Image Codec</value>
+  </data>
+  <data name="GORGFX_IMAGE_DDS_CODEC_DESC" xml:space="preserve">
+    <value>Direct Draw Surface</value>
+  </data>
+  <data name="GORGFX_IMAGE_FILE_INCORRECT_DECODER" xml:space="preserve">
+    <value>The data in the stream could not be decoded as a {0} file.</value>
+  </data>
+  <data name="GORGFX_IMAGE_FILE_INCORRECT_ENCODER" xml:space="preserve">
+    <value>The data could not be encoded into a {0} file.</value>
+  </data>
+  <data name="GORGFX_IMAGE_GIF_CODEC_DESC" xml:space="preserve">
+    <value />
+  </data>
+  <data name="GORGFX_IMAGE_HDP_CODEC_DESC" xml:space="preserve">
+    <value />
+  </data>
+  <data name="GORGFX_IMAGE_INDEXED_NO_PALETTE" xml:space="preserve">
+    <value>An indexed image requires a palette with {0} entries.</value>
+  </data>
+  <data name="GORGFX_IMAGE_JPG_CODEC_DESC" xml:space="preserve">
+    <value />
+  </data>
+  <data name="GORGFX_IMAGE_MIPCOUNT_ARRAYCOUNT_TOO_LARGE" xml:space="preserve">
+    <value>The mip level count and the array count exceed the length of the array.</value>
+  </data>
+  <data name="GORGFX_IMAGE_MUST_BE_SAME_FORMAT" xml:space="preserve">
+    <value>The pixel format for all elements must be [{0}].</value>
+  </data>
+  <data name="GORGFX_IMAGE_NOT_16BPP" xml:space="preserve">
+    <value>The format [0] is not a standard 16BPP format ([B5G6R5] or [B5G5R5A1]).</value>
+  </data>
+  <data name="GORGFX_IMAGE_PITCH_TOO_SMALL" xml:space="preserve">
+    <value>The pitch for the image must be greater than 0.</value>
+  </data>
+  <data name="GORGFX_IMAGE_PNG_CODEC_DESC" xml:space="preserve">
+    <value />
+  </data>
+  <data name="GORGFX_IMAGE_TGA_CODEC_DESC" xml:space="preserve">
+    <value>Truevision Targa</value>
+  </data>
+  <data name="GORGFX_IMAGE_TIF_CODEC_DESC" xml:space="preserve">
+    <value />
+  </data>
+  <data name="GORGFX_IMAGE_VOLUME_MIPCOUNT_DEPTHCOUNT_TOO_LARGE" xml:space="preserve">
+    <value>The mip level count and the depth slice count exceed the length of the array.</value>
+  </data>
+  <data name="GORGFX_IMAGE_VOLUME_NOT_POWER_OF_TWO" xml:space="preserve">
+    <value>Cannot create a volume texture mip chain unless the dimensions are powers of 2.</value>
+  </data>
+  <data name="GORGFX_LAYOUT_INVALID_ELEMENT_TYPE" xml:space="preserve">
+    <value>The type '{0}' is not a valid type for an input element.</value>
+  </data>
+  <data name="GORGFX_STREAM_EOF" xml:space="preserve">
+    <value>Cannot read beyond the end of a stream.</value>
+  </data>
+  <data name="GORGFX_STREAM_NO_SEEK" xml:space="preserve">
+    <value>The stream cannot perform seek operations.</value>
+  </data>
+  <data name="GORGFX_STREAM_WRITE_ONLY" xml:space="preserve">
+    <value>The stream is write-only.</value>
   </data>
 </root>

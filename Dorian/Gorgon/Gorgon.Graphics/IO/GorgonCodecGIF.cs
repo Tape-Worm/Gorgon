@@ -28,6 +28,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using GorgonLibrary.Graphics;
+using GorgonLibrary.Graphics.Properties;
 using GorgonLibrary.Math;
 using DX = SharpDX;
 
@@ -110,11 +111,11 @@ namespace GorgonLibrary.IO
 		{
 			get
 			{
-				return base.CodecUseAllFrames;
+				return CodecUseAllFrames;
 			}
 			set
 			{
-				base.CodecUseAllFrames = value;
+				CodecUseAllFrames = value;
 			}
 		}
 
@@ -182,31 +183,38 @@ namespace GorgonLibrary.IO
 				return;
 			}
 
-			if (frame != null)
+			if (frame == null)
 			{
-				if ((settings.ArrayCount > 1) && (UseAllFrames))
+				return;
+			}
+
+			if ((settings.ArrayCount <= 1) || (!UseAllFrames))
+			{
+				return;
+			}
+
+			using (var writer = frame.MetadataQueryWriter)
+			{
+				ushort delayValue = 0;
+
+				if ((FrameDelays != null) && (frameIndex >= 0) && (frameIndex < FrameDelays.Count))
 				{
-					using (var writer = frame.MetadataQueryWriter)
-					{
-						ushort delayValue = 0;
-
-						if ((FrameDelays != null) && (frameIndex >= 0) && (frameIndex < FrameDelays.Count))
-						{
-							delayValue = FrameDelays[frameIndex];
-						}
-
-						bool hasTransparency = paletteColors.Any(item => item.A == 0);
-
-						writer.SetMetadataByName("/grctlext/Delay", delayValue);
-						writer.SetMetadataByName("/grctlext/Disposal", (byte)1);
-						writer.SetMetadataByName("/grctlext/TransparencyFlag", hasTransparency);
-						if (hasTransparency)
-						{
-							var transparentIndex = (byte)Array.FindIndex(paletteColors, item => item.A == 0);
-							writer.SetMetadataByName("/grctlext/TransparentColorIndex", transparentIndex);
-						}
-					}
+					delayValue = FrameDelays[frameIndex];
 				}
+
+				bool hasTransparency = paletteColors.Any(item => item.A == 0);
+
+				writer.SetMetadataByName("/grctlext/Delay", delayValue);
+				writer.SetMetadataByName("/grctlext/Disposal", (byte)1);
+				writer.SetMetadataByName("/grctlext/TransparencyFlag", hasTransparency);
+
+				if (!hasTransparency)
+				{
+					return;
+				}
+
+				var transparentIndex = (byte)Array.FindIndex(paletteColors, item => item.A == 0);
+				writer.SetMetadataByName("/grctlext/TransparentColorIndex", transparentIndex);
 			}
 		}
 
@@ -255,7 +263,7 @@ namespace GorgonLibrary.IO
 		/// </returns>
 		internal override Tuple<SharpDX.WIC.Palette, double, SharpDX.WIC.BitmapPaletteType> GetPaletteInfo(GorgonWICImage wic, SharpDX.WIC.Bitmap bitmap)
 		{			
-			SharpDX.WIC.Palette palette = null;
+			SharpDX.WIC.Palette palette;
 
 			if (Palette == null)
 			{
@@ -307,7 +315,7 @@ namespace GorgonLibrary.IO
 
             if (string.IsNullOrWhiteSpace(filePath))
             {
-                throw new ArgumentException("The parameter must not be NULL or empty.", "filePath");
+                throw new ArgumentException(Resources.GORGFX_PARAMETER_MUST_NOT_BE_EMPTY, "filePath");
             }
 
             using (var fileStream = System.IO.File.Open(filePath, System.IO.FileMode.Open, System.IO.FileAccess.Read, System.IO.FileShare.Read))
@@ -333,24 +341,21 @@ namespace GorgonLibrary.IO
         /// <exception cref="System.IO.EndOfStreamException">Thrown when an attempt to read beyond the end of the stream is made.</exception>
         public ushort[] GetFrameDelays(System.IO.Stream stream)
         {
-            IImageSettings settings = null;
-            var result = new ushort[0];
-            Guid bestFormat = Guid.Empty;
-            long position = 0;
+	        var result = new ushort[0];
 
-            if (stream == null)
+	        if (stream == null)
             {
                 throw new ArgumentNullException("stream");
             }
 
             if (!stream.CanRead)
             {
-                throw new System.IO.IOException("Stream is write-only.");
+                throw new System.IO.IOException(Resources.GORGFX_STREAM_WRITE_ONLY);
             }
 
             if (!stream.CanSeek)
             {
-                throw new System.IO.IOException("The stream cannot perform seek operations.");
+                throw new System.IO.IOException(Resources.GORGFX_STREAM_NO_SEEK);
             }
 
 			if (!UseAllFrames)
@@ -358,7 +363,7 @@ namespace GorgonLibrary.IO
 				return result;
 			}
 
-            position = stream.Position;
+            long position = stream.Position;
             
 			try
 			{
@@ -396,11 +401,11 @@ namespace GorgonLibrary.IO
 									if (frame == 0)
 									{
 										Guid temp = Guid.Empty;
-										settings = ReadMetaData(wic, decoder, frameImage, ref temp);
+										IImageSettings settings = ReadMetaData(wic, decoder, frameImage, ref temp);
 
 										if (settings.Format == BufferFormat.Unknown)
 										{
-											throw new System.IO.IOException("Cannot decode the GIF file.  The data could not be decoded as a GIF file.");
+											throw new System.IO.IOException(string.Format(Resources.GORGFX_FORMAT_NOT_SUPPORTED, settings.Format));
 										}
 									}
 

@@ -26,6 +26,7 @@
 
 using System.Drawing;
 using GorgonLibrary.Diagnostics;
+using GorgonLibrary.Graphics.Properties;
 using SlimMath;
 
 namespace GorgonLibrary.Graphics
@@ -113,7 +114,7 @@ namespace GorgonLibrary.Graphics
 		/// </returns>
 		public override string ToString()
 		{
-			return "Gorgon Font Glyph: " + Character;
+			return string.Format(Resources.GORGFX_FONT_GLYPH_TOSTR, Character);
 		}
 		#endregion
 
@@ -131,7 +132,7 @@ namespace GorgonLibrary.Graphics
 		/// </exception>
 		public GorgonGlyph(char character, GorgonTexture2D texture, Rectangle glyphCoordinates, Vector2 glyphOffset, Vector3 glyphAdvancing)
 		{
-			GorgonDebug.AssertNull<GorgonTexture2D>(texture, "texture");
+			GorgonDebug.AssertNull(texture, "texture");
 
 			Character = character;
 			GlyphCoordinates = glyphCoordinates;
@@ -154,7 +155,7 @@ namespace GorgonLibrary.Graphics
 		{
 			get 
 			{
-				return Character.ToString(System.Globalization.CultureInfo.CurrentCulture);
+				return Character.ToString(System.Globalization.CultureInfo.CurrentUICulture);
 			}
 		}
 		#endregion

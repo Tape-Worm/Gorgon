@@ -28,6 +28,8 @@ using System.Runtime.InteropServices;
 
 namespace GorgonLibrary.Native
 {
+	// ReSharper disable InconsistentNaming
+
 	/// <summary>
 	/// Get monitor from window flags.
 	/// </summary>
@@ -125,4 +127,6 @@ namespace GorgonLibrary.Native
 		/// </summary>
 		public int KernAmount;
 	}
+
+	// ReSharper restore InconsistentNaming
 }

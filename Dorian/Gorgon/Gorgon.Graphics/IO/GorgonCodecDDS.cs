@@ -113,6 +113,8 @@ using GorgonLibrary.Graphics.Properties;
 
 namespace GorgonLibrary.IO
 {
+	// ReSharper disable ForCanBeConvertedToForeach
+
     #region Enums.
     /// <summary>
 	/// DDS Flags.
@@ -753,7 +755,7 @@ namespace GorgonLibrary.IO
 		{
 			get 
 			{
-				return "Direct Draw Surface";
+				return Resources.GORGFX_IMAGE_DDS_CODEC_DESC;
 			}
 		}
 
@@ -818,12 +820,9 @@ namespace GorgonLibrary.IO
 				return DDSConversionFlags.A4L4;
 			}
 
-			if ((flags & DDSConversionFlags.RGB4444) == DDSConversionFlags.RGB4444)
-			{
-				return DDSConversionFlags.RGB4444;
-			}
-
-			return DDSConversionFlags.None;
+			return (flags & DDSConversionFlags.RGB4444) == DDSConversionFlags.RGB4444
+				       ? DDSConversionFlags.RGB4444
+				       : DDSConversionFlags.None;
 		}
 
 		/// <summary>
@@ -835,24 +834,25 @@ namespace GorgonLibrary.IO
         /// <returns>A new image settings object.</returns>
         private IImageSettings ReadDX10Header(GorgonDataStream stream, ref DDSHeader header, out DDSConversionFlags flags)
         {
-            IImageSettings settings = null;
-            DX10Header dx10Header = default(DX10Header);
+            IImageSettings settings;
 
-            dx10Header = stream.Read<DX10Header>();
+			var dx10Header = stream.Read<DX10Header>();
             flags = DDSConversionFlags.DX10;
 
             // Default the array count if it's not valid.
             if (dx10Header.ArrayCount <= 0)
             {
-                throw new System.IO.IOException("The data in the stream cannot be decoded as a DDS file.  The array count is 0 or less than 0.");
+				throw new IOException(string.Format(Resources.GORGFX_IMAGE_FILE_INCORRECT_DECODER, Codec));
             }           
 
             switch (dx10Header.ResourceDimension)
             {
                 case ImageType.Image1D:
-                    settings = new GorgonTexture1DSettings();
-                    settings.ArrayCount = (int)dx10Header.ArrayCount;
-                    break;
+                    settings = new GorgonTexture1DSettings
+	                    {
+		                    ArrayCount = (int)dx10Header.ArrayCount
+	                    };
+		            break;
                 case ImageType.Image2D:
                     settings = new GorgonTexture2DSettings();
 
@@ -871,10 +871,12 @@ namespace GorgonLibrary.IO
 						throw new IOException(string.Format(Resources.GORGFX_IMAGE_TYPE_INVALID, dx10Header.ResourceDimension));
                     }
 
-                    settings = new GorgonTexture3DSettings();
-                    settings.Height = (int)header.Height;
-                    settings.Depth = (int)header.Depth;
-                    break;
+                    settings = new GorgonTexture3DSettings
+	                    {
+		                    Height = (int)header.Height,
+		                    Depth = (int)header.Depth
+	                    };
+		            break;
                 default:
 					throw new IOException(string.Format(Resources.GORGFX_IMAGE_TYPE_INVALID, dx10Header.ResourceDimension));
             }
@@ -884,18 +886,20 @@ namespace GorgonLibrary.IO
             // Ensure the format is correct.
             for (int i = 0; i < _formats.Length; i++)
             {
-                if (_formats[i] == dx10Header.Format)
-                {
-                    settings.Format = dx10Header.Format;
+	            if (_formats[i] != dx10Header.Format)
+	            {
+		            continue;
+	            }
 
-                    if (settings.Format != BufferFormat.Unknown)
-                    {
-                        return settings;
-                    }
-                }
+	            settings.Format = dx10Header.Format;
+
+	            if (settings.Format != BufferFormat.Unknown)
+	            {
+		            return settings;
+	            }
             }
 
-            throw new System.IO.IOException("The data in the stream cannot be decoded as a DDS file.  The buffer format is unrecognized.");
+            throw new IOException(string.Format(Resources.GORGFX_FORMAT_NOT_SUPPORTED, dx10Header.Format));
         }
 
         /// <summary>
@@ -907,48 +911,51 @@ namespace GorgonLibrary.IO
         /// <returns>The format of the buffer, or Unknown if the format is not supported.</returns>
         private BufferFormat GetFormat(ref DDSPixelFormat format, DDSFlags flags, out DDSConversionFlags conversionFlags)
         {
-            var result = BufferFormat.Unknown;
-            DDSLegacyConversion conversion = default(DDSLegacyConversion);
+	        DDSLegacyConversion conversion = default(DDSLegacyConversion);
 
-            foreach (var ddsFormat in _legacyMapping)
-            {
-                if ((format.Flags & ddsFormat.PixelFormat.Flags) != 0)
-                {
-                    // Check to see if the FOURCC values match.
-                    if ((ddsFormat.PixelFormat.Flags & DDSPixelFormatFlags.FourCC) == DDSPixelFormatFlags.FourCC)
-                    {
-                        if (ddsFormat.PixelFormat.FourCC == format.FourCC)
-                        {
-                            conversion = ddsFormat;
-                            break;
-                        }
-                    }
-                    else if ((ddsFormat.PixelFormat.Flags & DDSPixelFormatFlags.PaletteIndexed) == DDSPixelFormatFlags.PaletteIndexed)
-                    {
-                        // If indexed, then check the bit count.
-                        if (ddsFormat.PixelFormat.BitCount == format.BitCount)
-                        {
-                            conversion = ddsFormat;
-                            break;
-                        }
-                    }
-                    else if (ddsFormat.PixelFormat.BitCount == format.BitCount)
-                    {
-                        // If the bit masks are the same, then use this one.
-                        if ((ddsFormat.PixelFormat.RBitMask == format.RBitMask)
-                            && (ddsFormat.PixelFormat.GBitMask == format.GBitMask)
-                            && (ddsFormat.PixelFormat.BBitMask == format.BBitMask)
-                            && (ddsFormat.PixelFormat.ABitMask == format.ABitMask))
-                        {
-                            conversion = ddsFormat;
-                            break;
-                        }
-                    }
-                }
-            }
+			for (int i = 0; i < _legacyMapping.Length; i++)
+			{
+				var ddsFormat = _legacyMapping[i];
+
+				if ((format.Flags & ddsFormat.PixelFormat.Flags) == 0)
+				{
+					continue;
+				}
+
+				// Check to see if the FOURCC values match.
+				if ((ddsFormat.PixelFormat.Flags & DDSPixelFormatFlags.FourCC) == DDSPixelFormatFlags.FourCC)
+				{
+					if (ddsFormat.PixelFormat.FourCC == format.FourCC)
+					{
+						conversion = ddsFormat;
+						break;
+					}
+				}
+				else if ((ddsFormat.PixelFormat.Flags & DDSPixelFormatFlags.PaletteIndexed) == DDSPixelFormatFlags.PaletteIndexed)
+				{
+					// If indexed, then check the bit count.
+					if (ddsFormat.PixelFormat.BitCount == format.BitCount)
+					{
+						conversion = ddsFormat;
+						break;
+					}
+				}
+				else if (ddsFormat.PixelFormat.BitCount == format.BitCount)
+				{
+					// If the bit masks are the same, then use this one.
+					if ((ddsFormat.PixelFormat.RBitMask == format.RBitMask)
+					    && (ddsFormat.PixelFormat.GBitMask == format.GBitMask)
+					    && (ddsFormat.PixelFormat.BBitMask == format.BBitMask)
+					    && (ddsFormat.PixelFormat.ABitMask == format.ABitMask))
+					{
+						conversion = ddsFormat;
+						break;
+					}
+				}
+			}
 
             conversionFlags = conversion.Flags;
-            result = conversion.Format;
+            BufferFormat result = conversion.Format;
 
             if (conversion.Format == BufferFormat.Unknown)
             {
@@ -979,35 +986,27 @@ namespace GorgonLibrary.IO
 		/// <returns>New image settings.</returns>
         private IImageSettings ReadHeader(GorgonDataStream stream, int size, out DDSConversionFlags conversionFlags)
         {			
-            IImageSettings settings = null;
-            var header = new DDSHeader();            
-            uint magicNumber = 0;
+            IImageSettings settings;
 
 			// Start with no conversion.
 			conversionFlags = DDSConversionFlags.None;
 
             // Read the magic # from the header.
-            magicNumber = stream.ReadUInt32();
+            uint magicNumber = stream.ReadUInt32();
 
             // If the magic number doesn't match, then this is not a DDS file.
             if (magicNumber != MagicNumber)
             {
-                throw new System.IO.IOException("The data in the stream cannot be decoded as a DDS file.");
+                throw new IOException(string.Format(Resources.GORGFX_IMAGE_FILE_INCORRECT_DECODER, Codec));
             }            
 
             // Read the header from the file.
-            header = stream.Read<DDSHeader>();
+            var header = stream.Read<DDSHeader>();
 
-            if (header.Size != DirectAccess.SizeOf<DDSHeader>())
+            if ((header.Size != DirectAccess.SizeOf<DDSHeader>())
+				|| (header.PixelFormat.SizeInBytes != DirectAccess.SizeOf<DDSPixelFormat>()))
             {
-                throw new System.IO.IOException("The data in the stream cannot be decoded as a DDS file.  There was a size mismatch.  Expected: [" 
-                        + DirectAccess.SizeOf<DDSHeader>().ToString() + "], got: [" + header.Size.ToString() + "]");
-            }
-
-            if (header.PixelFormat.SizeInBytes != DirectAccess.SizeOf<DDSPixelFormat>())
-            {
-                throw new System.IO.IOException("The data in the stream cannot be decoded as a DDS file.  There was a pixel format size mismatch.  Expected: ["
-                        + DirectAccess.SizeOf<DDSPixelFormat>().ToString() + "], got: [" + header.PixelFormat.SizeInBytes.ToString() + "]");
+				throw new IOException(string.Format(Resources.GORGFX_IMAGE_FILE_INCORRECT_DECODER, Codec));
             }
 
             // Ensure that we have at least one mip level.
@@ -1021,7 +1020,7 @@ namespace GorgonLibrary.IO
             {
                 if (size < DirectAccess.SizeOf<DX10Header>() + DirectAccess.SizeOf<DDSHeader>() + sizeof(uint))
                 {
-                    throw new System.IO.EndOfStreamException("Cannot read beyond the end of the stream.");
+                    throw new EndOfStreamException(Resources.GORGFX_STREAM_EOF);
                 }
 
                 settings = ReadDX10Header(stream, ref header, out conversionFlags);
@@ -1031,19 +1030,23 @@ namespace GorgonLibrary.IO
 				// If we actually have a volume texture, or we want to make one.
                 if ((header.Flags & DDSHeaderFlags.Volume) == DDSHeaderFlags.Volume)
                 {
-                    settings = new GorgonTexture3DSettings();
-                    settings.Depth = (int)header.Depth.Min(1);
+                    settings = new GorgonTexture3DSettings
+	                    {
+		                    Depth = (int)header.Depth.Min(1)
+	                    };
                 }
                 else
                 {
-                    settings = new GorgonTexture2DSettings();
-                    settings.ArrayCount = 1;
-                    if ((header.Caps2 & DDSCAPS2.CubeMap) == DDSCAPS2.CubeMap)
+                    settings = new GorgonTexture2DSettings
+	                    {
+		                    ArrayCount = 1
+	                    };
+	                if ((header.Caps2 & DDSCAPS2.CubeMap) == DDSCAPS2.CubeMap)
                     {
                         // Only allow all faces.
                         if ((header.Caps2 & DDSCAPS2.AllFaces) != DDSCAPS2.AllFaces)
                         {
-                            throw new System.IO.IOException("The data in the stream cannot be decoded as a DDS file.  Image is a cube map, but faces are missing from the cube.");
+							throw new IOException(string.Format(Resources.GORGFX_IMAGE_FILE_INCORRECT_DECODER, Codec));
                         }
 
                         ((GorgonTexture2DSettings)settings).IsTextureCube = true;
@@ -1057,7 +1060,7 @@ namespace GorgonLibrary.IO
 
                 if (settings.Format == BufferFormat.Unknown)
                 {
-                    throw new System.IO.IOException("The data in the stream cannot be decoded as a DDS file.  The pixel format cannot be converted to a suitable buffer format.");
+                    throw new IOException(string.Format(Resources.GORGFX_FORMAT_NOT_SUPPORTED, settings.Format));
                 }
             }
 
@@ -1068,18 +1071,10 @@ namespace GorgonLibrary.IO
 				int modWidth = settings.Width % 4;
 				int modHeight = settings.Height % 4;
 
-				if ((modWidth != 0) && (modHeight != 0))
+				if ((modWidth != 0) || (modHeight != 0))
 				{
-					throw new System.IO.IOException("The data in the stream cannot be decoded as a DDS file.  The compressed file requires the width and height be a multiple of 4.  The current width [" + settings.Width.ToString() + "] and height [" + settings.Height.ToString() + "] are not a multiple of 4.");
+					throw new IOException(string.Format(Resources.GORGFX_IMAGE_FILE_INCORRECT_DECODER, Codec));
 				}
-				else if (modWidth != 0)
-				{
-					throw new System.IO.IOException("The data in the stream cannot be decoded as a DDS file.  The compressed file requires the width be a multiple of 4.  The current width [" + settings.Width.ToString() + "] is not a multiple of 4.");
-				}
-				else if (modHeight != 0)
-				{
-					throw new System.IO.IOException("The data in the stream cannot be decoded as a DDS file.  The compressed file requires the height be a multiple of 4.  The current height [" + settings.Height.ToString() + "] is not a multiple of 4.");
-				}					 
 			}
 
             settings.MipCount = (int)header.MipCount;
@@ -1150,19 +1145,15 @@ namespace GorgonLibrary.IO
 		/// <param name="palette">Palette to assigned to indexed images.</param>
 		private static void ExpandLegacyScanline(void* src, int srcPitch, DDSConversionFlags srcFormat, void* dest, int destPitch, BufferFormat destFormat, ImageBitFlags bitFlags, uint[] palette)
 		{
-			if ((srcFormat == DDSConversionFlags.RGB332) && (destFormat != BufferFormat.B5G6R5_UIntNormal))
+			if (((srcFormat == DDSConversionFlags.RGB332) && (destFormat != BufferFormat.B5G6R5_UIntNormal))
+				|| ((srcFormat != DDSConversionFlags.RGB332) && (destFormat != BufferFormat.R8G8B8A8_UIntNormal)))
 			{
-				throw new System.IO.IOException("The data in the stream cannot be decoded as a DDS file.  The target image buffer type (" + destFormat.ToString() + ") must be B5G6R5_UIntNormal.");
-			}
-
-			if ((srcFormat != DDSConversionFlags.RGB332) && (destFormat != BufferFormat.R8G8B8A8_UIntNormal))
-			{
-				throw new System.IO.IOException("The data in the stream cannot be decoded as a DDS file.  The target image buffer type (" + destFormat.ToString() + ") must be R8G8B8A8_UIntNormal.");
+				throw new IOException(string.Format(Resources.GORGFX_FORMAT_NOT_SUPPORTED, destFormat));
 			}
 
 			if (((srcFormat == DDSConversionFlags.Palette) || (srcFormat == DDSConversionFlags.A8P8)) && ((palette == null) || (palette.Length != 256)))
 			{
-				throw new System.IO.IOException("The data in the stream cannot be decoded as a DDS file.  An indexed image requires a palette with 256 entries.");
+				throw new IOException(string.Format(Resources.GORGFX_IMAGE_INDEXED_NO_PALETTE, 256));
 			}
 
 			switch(srcFormat)
@@ -1197,44 +1188,47 @@ namespace GorgonLibrary.IO
 					}
 					break;
 				case DDSConversionFlags.RGB332:
+				{
+					var srcPtr = (byte*)src;
+
+					switch (destFormat)
 					{
-						var srcPtr = (byte*)src;
-
-						if (destFormat == BufferFormat.R8G8B8A8_UIntNormal)
-						{
-							var destPtr = (uint*)dest;
-
-							// Copy 8 bit RGB.
-							for (int srcCount = 0, destCount = 0; ((srcCount < srcPitch) && (destCount < destPitch)); ++srcCount, destCount += 4)
+						case BufferFormat.R8G8B8A8_UIntNormal:
 							{
-								uint r = 0, g = 0, b = 0;
-								byte pixel = *(srcPtr++);
+								var destPtr = (uint*)dest;
 
-								r = (uint)((pixel & 0xE0) | ((pixel & 0xE0) >> 3) | ((pixel & 0xC0) >> 6));
-								g = (uint)(((pixel & 0x1C) << 11) | ((pixel & 0x1C) << 8) | ((pixel & 0x18) << 5));
-								b = (uint)(((pixel & 0x03) << 22) | ((pixel & 0x03) << 20) | ((pixel & 0x03) << 18) | ((pixel & 0x03) << 16));
+								// Copy 8 bit RGB.
+								for (int srcCount = 0, destCount = 0; ((srcCount < srcPitch) && (destCount < destPitch)); ++srcCount, destCount += 4)
+								{
+									byte pixel = *(srcPtr++);
 
-								*(destPtr++) = r | g | b | 0xFF000000;
+									var r = (uint)((pixel & 0xE0) | ((pixel & 0xE0) >> 3) | ((pixel & 0xC0) >> 6));
+									var g = (uint)(((pixel & 0x1C) << 11) | ((pixel & 0x1C) << 8) | ((pixel & 0x18) << 5));
+									var b = (uint)(((pixel & 0x03) << 22) | ((pixel & 0x03) << 20) | ((pixel & 0x03) << 18) | ((pixel & 0x03) << 16));
+
+									*(destPtr++) = r | g | b | 0xFF000000;
+								}
 							}
-						}
-						else if (destFormat == BufferFormat.B5G6R5_UIntNormal)
-						{
-							var destPtr = (ushort*)dest;
-
-							// Copy 8 bit RGB.
-							for (int srcCount = 0, destCount = 0; ((srcCount < srcPitch) && (destCount < destPitch)); ++srcCount, destCount += 2)
+							break;
+						case BufferFormat.B5G6R5_UIntNormal:
 							{
-								uint r = 0, g = 0, b = 0;
-								byte pixel = *(srcPtr++);
+								var destPtr = (ushort*)dest;
 
-								r = (uint)(((pixel & 0xE0) << 8) | ((pixel & 0xC0) << 5));
-								g = (uint)(((pixel & 0x1C) << 6) | ((pixel & 0x1C) << 3));
-								b = (uint)(((pixel & 0x03) << 3) | ((pixel & 0x03) << 1) | ((pixel & 0x02) >> 1));
+								// Copy 8 bit RGB.
+								for (int srcCount = 0, destCount = 0; ((srcCount < srcPitch) && (destCount < destPitch)); ++srcCount, destCount += 2)
+								{
+									byte pixel = *(srcPtr++);
 
-								*(destPtr++) = (ushort)(r | g | b);
+									var r = (uint)(((pixel & 0xE0) << 8) | ((pixel & 0xC0) << 5));
+									var g = (uint)(((pixel & 0x1C) << 6) | ((pixel & 0x1C) << 3));
+									var b = (uint)(((pixel & 0x03) << 3) | ((pixel & 0x03) << 1) | ((pixel & 0x02) >> 1));
+
+									*(destPtr++) = (ushort)(r | g | b);
+								}
 							}
-						}
+							break;
 					}
+				}
 					break;
 				case DDSConversionFlags.A8P8:
 					{
@@ -1245,7 +1239,6 @@ namespace GorgonLibrary.IO
 						for (int srcCount = 0, destCount = 0; ((srcCount < srcPitch) && (destCount < destPitch)); srcCount += 2, destCount += 4)
 						{
 							ushort pixel = *(srcPtr++);
-							uint color = palette[pixel & 0xFF];
 							uint alpha = ((bitFlags & ImageBitFlags.OpaqueAlpha) == ImageBitFlags.OpaqueAlpha) ? 0xFF000000 : (uint)((pixel & 0xFF00) << 16);
 
 							*(destPtr++) = pixel | alpha;
@@ -1260,13 +1253,12 @@ namespace GorgonLibrary.IO
 						// Copy 8 bit RGB with alpha.
 						for (int srcCount = 0, destCount = 0; ((srcCount < srcPitch) && (destCount < destPitch)); srcCount += 2, destCount += 4)
 						{
-							uint r = 0, g = 0, b = 0;
 							var pixel = (ushort)(*(srcPtr++) & 0xFF);
 							uint alpha = ((bitFlags & ImageBitFlags.OpaqueAlpha) == ImageBitFlags.OpaqueAlpha) ? 0xFF000000 : (uint)((pixel & 0xFF00) << 16);
 
-							r = (uint)((pixel & 0xE0) | ((pixel & 0xE0) >> 3) | ((pixel & 0xC0) >> 6));
-							g = (uint)(((pixel & 0x1C) << 11) | ((pixel & 0x1C) << 8) | ((pixel & 0x18) << 5));
-							b = (uint)(((pixel & 0x03) << 22) | ((pixel & 0x03) << 20) | ((pixel & 0x03) << 18) | ((pixel & 0x03) << 16));
+							var r = (uint)((pixel & 0xE0) | ((pixel & 0xE0) >> 3) | ((pixel & 0xC0) >> 6));
+							var g = (uint)(((pixel & 0x1C) << 11) | ((pixel & 0x1C) << 8) | ((pixel & 0x18) << 5));
+							var b = (uint)(((pixel & 0x03) << 22) | ((pixel & 0x03) << 20) | ((pixel & 0x03) << 18) | ((pixel & 0x03) << 16));
 
 							*(destPtr++) = r | g | b | alpha;
 						}
@@ -1280,13 +1272,12 @@ namespace GorgonLibrary.IO
 						// Copy 12 bit RGB with 4 bit alpha.
 						for (int srcCount = 0, destCount = 0; ((srcCount < srcPitch) && (destCount < destPitch)); srcCount += 2, destCount += 4)
 						{
-							uint r = 0, g = 0, b = 0;
 							ushort pixel = *(srcPtr++);
 							uint alpha = ((bitFlags & ImageBitFlags.OpaqueAlpha) == ImageBitFlags.OpaqueAlpha) ? 0xFF000000 : (uint)(((pixel & 0xF000) << 16) | ((pixel & 0xF000) << 12));
 
-							r = (uint)(((pixel & 0x0F00) >> 4) | ((pixel & 0x0F00) >> 8));
-							g = (uint)(((pixel & 0x00F0) << 4) | ((pixel & 0x00F0) << 8));
-							b = (uint)(((pixel & 0x000F) << 16) | ((pixel & 0x000F) << 20));
+							var r = (uint)(((pixel & 0x0F00) >> 4) | ((pixel & 0x0F00) >> 8));
+							var g = (uint)(((pixel & 0x00F0) << 4) | ((pixel & 0x00F0) << 8));
+							var b = (uint)(((pixel & 0x000F) << 16) | ((pixel & 0x000F) << 20));
 
 							*(destPtr++) = r | g | b | alpha;
 						}
@@ -1300,12 +1291,10 @@ namespace GorgonLibrary.IO
 						// Copy 24 bit RGB.
 						for (int srcCount = 0, destCount = 0; ((srcCount < srcPitch) && (destCount < destPitch)); ++srcCount, destCount += 4)
 						{
-							uint r = 0, g = 0, b = 0;							
-
 							// 24 bit DDS files are encoded as BGR, need to swizzle.
-							b = (uint)(*(srcPtr++) << 16);
-							g = (uint)(*(srcPtr++) << 8);
-							r = *(srcPtr++);	
+							var b = (uint)(*(srcPtr++) << 16);
+							var g = (uint)(*(srcPtr++) << 8);
+							var r = *(srcPtr++);	
 
 							*(destPtr++) = r | g | b | 0xFF000000;
 						}
@@ -1493,25 +1482,27 @@ namespace GorgonLibrary.IO
 			writer.WriteValue(header);
 
 			// If we didn't map a legacy format, then use the DX 10 header.
-			if (format == null)
+			if (format != null)
 			{
-				DX10Header dx10Header = default(DX10Header);
+				return;
+			}
 
-				dx10Header.Format = settings.Format;
-				if (settings.ImageType != ImageType.ImageCube)
-				{
-					dx10Header.ResourceDimension = settings.ImageType;
-					dx10Header.ArrayCount = (uint)settings.ArrayCount;
-				}
-				else
-				{
-					dx10Header.ResourceDimension = ImageType.Image2D;
-					dx10Header.MiscFlags |= DDSHeaderMiscFlags.TextureCube;
-					dx10Header.ArrayCount = (uint)(settings.ArrayCount / 6);
-				}
+			DX10Header dx10Header = default(DX10Header);
 
-				writer.WriteValue(dx10Header);
-			}			
+			dx10Header.Format = settings.Format;
+			if (settings.ImageType != ImageType.ImageCube)
+			{
+				dx10Header.ResourceDimension = settings.ImageType;
+				dx10Header.ArrayCount = (uint)settings.ArrayCount;
+			}
+			else
+			{
+				dx10Header.ResourceDimension = ImageType.Image2D;
+				dx10Header.MiscFlags |= DDSHeaderMiscFlags.TextureCube;
+				dx10Header.ArrayCount = (uint)(settings.ArrayCount / 6);
+			}
+
+			writer.WriteValue(dx10Header);
 		}
 
 		/// <summary>
@@ -1525,7 +1516,6 @@ namespace GorgonLibrary.IO
 		private void CopyImageData(GorgonDataStream stream, GorgonImageData image, PitchFlags pitchFlags, DDSConversionFlags conversionFlags, uint[] palette)
 		{
 			var formatInfo = GorgonBufferFormatInfo.GetInfo(image.Settings.Format);
-			int sizeInBytes = 0;
 
 			// Get copy flag bits per pixel if we have an expansion.
 			if ((conversionFlags & DDSConversionFlags.Expand) == DDSConversionFlags.Expand)
@@ -1551,11 +1541,11 @@ namespace GorgonLibrary.IO
 			}
 
 			// Get the size of the source image in bytes, and its pitch information.
-			sizeInBytes = GorgonImageData.GetSizeInBytes(image.Settings, pitchFlags);
+			int sizeInBytes = GorgonImageData.GetSizeInBytes(image.Settings, pitchFlags);
 
 			if (sizeInBytes > image.SizeInBytes)
 			{
-				throw new System.IO.IOException("The data in the stream cannot be decoded as a DDS file.  Data size mismatch.");
+				throw new IOException(string.Format(Resources.GORGFX_IMAGE_FILE_INCORRECT_DECODER, Codec));
 			}
 
 			// If no conversion is to take place, then just do a straight dump into memory.
@@ -1611,7 +1601,8 @@ namespace GorgonLibrary.IO
 							if ((conversionFlags & DDSConversionFlags.Expand) == DDSConversionFlags.Expand)
 							{
 								// Perform expansion.
-								if ((conversionFlags & (DDSConversionFlags.RGB565 | DDSConversionFlags.RGB5551)) != 0)
+								if (((conversionFlags & DDSConversionFlags.RGB565) == DDSConversionFlags.RGB565)
+									|| ((conversionFlags & DDSConversionFlags.RGB5551) == DDSConversionFlags.RGB5551))
 								{
 									Expand16BPPScanline(srcPointer, pitchInfo.RowPitch,
 													((conversionFlags & DDSConversionFlags.RGB5551) == DDSConversionFlags.RGB5551) ? BufferFormat.B5G5R5A1_UIntNormal : BufferFormat.B5G6R5_UIntNormal,
@@ -1624,7 +1615,7 @@ namespace GorgonLibrary.IO
 
 									if (expandLegacyFormat == DDSConversionFlags.None)
 									{
-										throw new System.IO.IOException("The data in the stream cannot be decoded as a DDS file.  The legacy format " + expandLegacyFormat.ToString() +  " is not supported.");
+										throw new IOException(string.Format(Resources.GORGFX_FORMAT_NOT_SUPPORTED, expandLegacyFormat));
 									}
 
 									ExpandLegacyScanline(srcPointer, pitchInfo.RowPitch, expandLegacyFormat, destPointer, destBuffer.PitchInformation.RowPitch, image.Settings.Format, expFlags, palette);
@@ -1665,18 +1656,16 @@ namespace GorgonLibrary.IO
         /// </returns>
 		protected internal override GorgonImageData LoadFromStream(GorgonDataStream stream, int size)
 		{
-			GorgonImageData imageData = null;
-			var flags = DDSConversionFlags.None;
-			IImageSettings settings = null;
-			uint[] palette = null;
+	        DDSConversionFlags flags;
+	        uint[] palette = null;
                         
             if (size < DirectAccess.SizeOf<DDSHeader>() + sizeof(uint))
             {
-                throw new EndOfStreamException("Cannot read beyond the end of the stream.");
+                throw new EndOfStreamException(Resources.GORGFX_STREAM_EOF);
             }
 
 			// Read the header information.
-			settings = ReadHeader(stream, size, out flags);			
+			IImageSettings settings = ReadHeader(stream, size, out flags);			
             
 			// Create our image data structure.
 			_actualDepth = settings.Depth;
@@ -1711,7 +1700,7 @@ namespace GorgonLibrary.IO
                 }
             }
 
-            imageData = new GorgonImageData(settings);
+            var imageData = new GorgonImageData(settings);
 
             try
             {
@@ -1746,8 +1735,11 @@ namespace GorgonLibrary.IO
 			    }
 
 				// Copy the data from the stream to the buffer.
-				CopyImageData(stream, imageData, ((LegacyConversionFlags & DDSFlags.LegacyDWORD) == DDSFlags.LegacyDWORD) ? PitchFlags.LegacyDWORD : PitchFlags.None, flags, palette);
-			}
+	            CopyImageData(stream, imageData,
+	                          ((LegacyConversionFlags & DDSFlags.LegacyDWORD) == DDSFlags.LegacyDWORD)
+		                          ? PitchFlags.LegacyDWORD
+		                          : PitchFlags.None, flags, palette);
+            }
 			catch 
 			{
 				// Clean up any memory allocated if we can't copy the image.
@@ -1764,7 +1756,7 @@ namespace GorgonLibrary.IO
 		/// </summary>
 		/// <param name="imageData"><see cref="GorgonLibrary.Graphics.GorgonImageData">Gorgon image data</see> to persist.</param>
 		/// <param name="stream">Stream that will contain the data.</param>
-		protected internal override void SaveToStream(GorgonImageData imageData, System.IO.Stream stream)
+		protected internal override void SaveToStream(GorgonImageData imageData, Stream stream)
 		{
 			// Use a binary writer.
 			using (var writer = new GorgonBinaryWriter(stream, true))
@@ -1820,11 +1812,10 @@ namespace GorgonLibrary.IO
 		/// <para>Thrown if the file is corrupt or can't be read by the codec.</para>
 		/// </exception>
 		/// <exception cref="System.IO.EndOfStreamException">Thrown when an attempt to read beyond the end of the stream is made.</exception>
-		public override IImageSettings GetMetaData(System.IO.Stream stream)
+		public override IImageSettings GetMetaData(Stream stream)
 		{
             long position = 0;
-			var flags = DDSConversionFlags.None;
-            int size = DirectAccess.SizeOf<DDSHeader>() + DirectAccess.SizeOf<DX10Header>() + sizeof(uint); // Allocate enough space to hold the header and the DX 10 header and the magic number.
+			int size = DirectAccess.SizeOf<DDSHeader>() + DirectAccess.SizeOf<DX10Header>() + sizeof(uint); // Allocate enough space to hold the header and the DX 10 header and the magic number.
 
             if (stream == null)
             {
@@ -1833,26 +1824,29 @@ namespace GorgonLibrary.IO
 
             if (!stream.CanRead)
             {
-                throw new System.IO.IOException("Stream is write-only.");
+                throw new IOException(Resources.GORGFX_STREAM_WRITE_ONLY);
             }
 
             if (!stream.CanSeek)
             {
-                throw new System.IO.IOException("The stream cannot perform seek operations.");
+                throw new IOException(Resources.GORGFX_STREAM_NO_SEEK);
             }
 
             if (stream.Length - stream.Position < size)
             {
-                throw new System.IO.EndOfStreamException("Cannot read beyond the end of the stream.");
+                throw new EndOfStreamException(Resources.GORGFX_STREAM_EOF);
             }
 
             try
             {
                 position = stream.Position;
 
-                if (stream is GorgonDataStream)
+	            DDSConversionFlags flags;
+	            var gorgonDataStream = stream as GorgonDataStream;
+
+	            if (gorgonDataStream != null)
                 {
-                    return ReadHeader((GorgonDataStream)stream, size, out flags);
+                    return ReadHeader(gorgonDataStream, size, out flags);
                 }
 
                 using (var memoryStream = new GorgonDataStream(size))
@@ -1876,9 +1870,9 @@ namespace GorgonLibrary.IO
 		/// </returns>
 		/// <exception cref="System.IO.IOException">Thrown when the <paramref name="stream"/> is write-only or if the stream cannot perform seek operations.</exception>
 		/// <exception cref="System.IO.EndOfStreamException">Thrown when an attempt to read beyond the end of the stream is made.</exception>
-		public override bool IsReadable(System.IO.Stream stream)
+		public override bool IsReadable(Stream stream)
         {
-            uint magicNumber = 0;
+            uint magicNumber;
             long position = 0;
 
             if (stream == null)
@@ -1888,12 +1882,12 @@ namespace GorgonLibrary.IO
 
             if (!stream.CanRead)
             {
-                throw new System.IO.IOException("Stream is write-only.");
+                throw new IOException(Resources.GORGFX_STREAM_WRITE_ONLY);
             }
 
             if (!stream.CanSeek)
             {
-                throw new System.IO.IOException("The stream cannot perform seek operations.");
+                throw new IOException(Resources.GORGFX_STREAM_NO_SEEK);
             }
 
             if (stream.Length - stream.Position < sizeof(uint) + DirectAccess.SizeOf<DDSHeader>())
@@ -1932,4 +1926,6 @@ namespace GorgonLibrary.IO
 		}
 		#endregion
 	}
+
+	// ReSharper restore ForCanBeConvertedToForeach
 }

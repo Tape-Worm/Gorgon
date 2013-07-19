@@ -26,6 +26,7 @@
 
 using System;
 using System.Drawing;
+using GorgonLibrary.Graphics.Properties;
 
 namespace GorgonLibrary.Graphics
 {
@@ -103,11 +104,15 @@ namespace GorgonLibrary.Graphics
 
 			// Do nothing if there's no more room.
 			if (_noMoreRoom)
+			{
 				return null;
+			}
 
 			// Ensure we can fit this node.
 			if ((dimensions.Width > Region.Width) || (dimensions.Height > Region.Height))
+			{
 				return null;
+			}
 
 			// We have an exact fit, so there will be no more room for other nodes.
 			if ((dimensions.Width == Region.Width) && (dimensions.Height == Region.Height))
@@ -145,6 +150,7 @@ namespace GorgonLibrary.Graphics
 		public GlyphNode(GlyphNode parentNode)
 		{
 			Region = Rectangle.Empty;
+			Parent = parentNode;
 		}
 		#endregion
 	}
@@ -167,28 +173,15 @@ namespace GorgonLibrary.Graphics
 
 		#region Methods.
 		/// <summary>
-		/// Function to remove a node.
-		/// </summary>
-		/// <param name="node">Node to remove.</param>
-		public static void RemoveNode(GlyphNode node)
-		{
-			if (node == null)
-				return;
-
-			if (node.Parent.Left == node)
-				node.Parent.Left = null;
-			else
-				node.Parent.Right = null;
-		}
-
-		/// <summary>
 		/// Function to create the root node.
 		/// </summary>
 		/// <param name="imageSize">Size of the image.</param>
 		public static void CreateRoot(Size imageSize)
 		{
-			Root = new GlyphNode(null);
-			Root.Region = new Rectangle(0, 0, imageSize.Width, imageSize.Height);
+			Root = new GlyphNode(null)
+				{
+					Region = new Rectangle(0, 0, imageSize.Width, imageSize.Height)
+				};
 		}
 
 		/// <summary>
@@ -198,19 +191,23 @@ namespace GorgonLibrary.Graphics
 		/// <returns>A rectangle for the area on the image that the glyph will be located at.  NULL if there's no room.</returns>
 		public static Rectangle? Add(Size dimensions)
 		{
-			GlyphNode newNode = null;
-
 			if ((dimensions.Width > Root.Region.Width) || (dimensions.Height > Root.Region.Height))
-				throw new ArgumentOutOfRangeException("dimensions", "Node size is too large for the image.");
+			{
+				throw new ArgumentOutOfRangeException("dimensions", Resources.GORGFX_FONT_GLYPH_NODE_TOO_LARGE);
+			}
 
 			// Do nothing here.
 			if ((dimensions.Width == 0) || (dimensions.Height == 0))
+			{
 				return Rectangle.Empty;
+			}
 
-			newNode = Root.AddNode(dimensions);
+			GlyphNode newNode = Root.AddNode(dimensions);
 
 			if (newNode == null)
+			{
 				return null;
+			}
 
 			return newNode.Region;
 		}
