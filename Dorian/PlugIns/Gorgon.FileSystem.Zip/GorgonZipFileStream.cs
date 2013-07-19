@@ -41,6 +41,7 @@ namespace GorgonLibrary.IO.Zip
 		private ZipInputStream _zipStream;		// Input stream for the zip file.
 		private long _position;					// Position in the stream.
 		private long _basePosition;				// Base position in the stream.
+		private long _length;					// File length.
 		#endregion
 
 		#region Properties.
@@ -107,7 +108,7 @@ namespace GorgonLibrary.IO.Zip
 		{
 			get
 			{
-				return _zipStream.Length;
+				return _length;
 			}
 		}
 
@@ -211,6 +212,7 @@ namespace GorgonLibrary.IO.Zip
 					continue;
 				}
 
+				_length = _zipStream.Length;
 				_basePosition = _zipStream.Position;
 				return;
 			}

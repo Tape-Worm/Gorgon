@@ -129,7 +129,7 @@ namespace GorgonLibrary.Configuration
 		{
 		    if (value == null)
 		    {
-		        return null;
+		        return string.Empty;
 		    }
 
 		    var type = value.GetType();
@@ -469,7 +469,6 @@ namespace GorgonLibrary.Configuration
             for (int i = 0; i < currentSetting.Length; i++)
             {
                 settings[i] = UnconvertValue(currentSetting[i].Attribute(settingName).Value, valueType);
-                i++;
             }
 
 			return settings;
