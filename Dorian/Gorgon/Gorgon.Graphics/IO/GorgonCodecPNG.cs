@@ -24,6 +24,8 @@
 // 
 #endregion
 
+using GorgonLibrary.Graphics.Properties;
+
 namespace GorgonLibrary.IO
 {
     /// <summary>
@@ -117,7 +119,7 @@ namespace GorgonLibrary.IO
         /// Initializes a new instance of the <see cref="GorgonCodecPNG"/> class.
         /// </summary>
         public GorgonCodecPNG()
-            : base("PNG", "Portable Network Graphics", new[] { "png" }, SharpDX.WIC.ContainerFormatGuids.Png)
+            : base("PNG", Resources.GORGFX_IMAGE_PNG_CODEC_DESC, new[] { "png" }, SharpDX.WIC.ContainerFormatGuids.Png)
         {
             UseInterlacing = false;
             CompressionFilter = PNGFilter.None;

@@ -560,7 +560,7 @@ namespace GorgonLibrary.Graphics.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to .
+        ///   Looks up a localized string similar to Windows Bitmap.
         /// </summary>
         internal static string GORGFX_IMAGE_BMP_CODEC_DESC {
             get {
@@ -605,7 +605,7 @@ namespace GorgonLibrary.Graphics.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to .
+        ///   Looks up a localized string similar to Graphics Interchange Format.
         /// </summary>
         internal static string GORGFX_IMAGE_GIF_CODEC_DESC {
             get {
@@ -614,7 +614,7 @@ namespace GorgonLibrary.Graphics.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to .
+        ///   Looks up a localized string similar to HD Photo format.
         /// </summary>
         internal static string GORGFX_IMAGE_HDP_CODEC_DESC {
             get {
@@ -632,7 +632,7 @@ namespace GorgonLibrary.Graphics.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to .
+        ///   Looks up a localized string similar to Joint Photographics Experts Group.
         /// </summary>
         internal static string GORGFX_IMAGE_JPG_CODEC_DESC {
             get {
@@ -677,7 +677,7 @@ namespace GorgonLibrary.Graphics.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to .
+        ///   Looks up a localized string similar to Portable Network Graphics.
         /// </summary>
         internal static string GORGFX_IMAGE_PNG_CODEC_DESC {
             get {
@@ -695,7 +695,7 @@ namespace GorgonLibrary.Graphics.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to .
+        ///   Looks up a localized string similar to Tagged Image File Format.
         /// </summary>
         internal static string GORGFX_IMAGE_TIF_CODEC_DESC {
             get {

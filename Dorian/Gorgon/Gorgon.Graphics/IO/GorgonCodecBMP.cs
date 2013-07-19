@@ -24,6 +24,8 @@
 // 
 #endregion
 
+using GorgonLibrary.Graphics.Properties;
+
 namespace GorgonLibrary.IO
 {
     /// <summary>
@@ -41,7 +43,7 @@ namespace GorgonLibrary.IO
         /// Initializes a new instance of the <see cref="GorgonCodecBMP"/> class.
         /// </summary>
         public GorgonCodecBMP()
-            : base("BMP", "Windows Bitmap", new[] { "bmp", "dib" }, SharpDX.WIC.ContainerFormatGuids.Bmp)
+            : base("BMP", Resources.GORGFX_IMAGE_BMP_CODEC_DESC, new[] { "bmp", "dib" }, SharpDX.WIC.ContainerFormatGuids.Bmp)
         {
         }
         #endregion

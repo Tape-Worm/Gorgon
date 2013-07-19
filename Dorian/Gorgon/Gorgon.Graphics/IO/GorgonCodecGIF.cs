@@ -442,7 +442,7 @@ namespace GorgonLibrary.IO
 		/// Initializes a new instance of the <see cref="GorgonCodecWIC" /> class.
 		/// </summary>
 		public GorgonCodecGIF()
-			: base("GIF", "Graphics Interchange Format", new[] { "gif" }, SharpDX.WIC.ContainerFormatGuids.Gif)
+			: base("GIF", Resources.GORGFX_IMAGE_GIF_CODEC_DESC, new[] { "gif" }, SharpDX.WIC.ContainerFormatGuids.Gif)
 		{
 			FrameDelays = null;
 			Palette = new GorgonColor[256];
