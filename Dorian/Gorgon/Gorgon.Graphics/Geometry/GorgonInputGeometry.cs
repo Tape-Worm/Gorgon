@@ -457,10 +457,14 @@ namespace GorgonLibrary.Graphics
 			/// </returns>
 			public IEnumerator<GorgonVertexBufferBinding> GetEnumerator()
 			{
+				// ReSharper disable LoopCanBeConvertedToQuery
+				// ReSharper disable ForCanBeConvertedToForeach
                 for (int i = 0; i < _bindings.Length; i++ )
                 {
                     yield return _bindings[i];
                 }
+				// ReSharper restore ForCanBeConvertedToForeach
+				// ReSharper restore LoopCanBeConvertedToQuery
 			}
 			#endregion
 

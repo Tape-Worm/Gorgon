@@ -29,6 +29,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using GorgonLibrary.Graphics;
+using GorgonLibrary.Graphics.Properties;
 using GorgonLibrary.Math;
 using GorgonLibrary.Native;
 
@@ -380,17 +381,17 @@ namespace GorgonLibrary.IO
 
 			if ((srcFormat != BufferFormat.B5G5R5A1_UIntNormal) && (srcFormat != BufferFormat.B5G6R5_UIntNormal))
 			{
-				throw new ArgumentException("The format '" + srcFormat.ToString() + "' is not a standard 16BPP format (B5G6R5 or B5G5R5A1).", "srcFormat");
+				throw new ArgumentException(string.Format(Resources.GORGFX_IMAGE_NOT_16BPP, srcFormat), "srcFormat");
 			}
 
-			if ((src == null) || (dest == null))
+			if (src == null)
 			{
-				throw new ArgumentNullException("The source/destination pointer must not be NULL.");
+				throw new ArgumentNullException("src");
 			}
 
-			if ((srcPitch <= 0) || (destPitch <= 0))
+			if (dest == null)
 			{
-				throw new ArgumentOutOfRangeException("The source/destination pitch must be greater than 0");
+				throw new ArgumentNullException("dest");
 			}
 
 			for (int srcCount = 0, destCount = 0; ((srcCount < srcPitch) && (destCount < destPitch)); srcCount += 2, destCount += 4)
@@ -398,28 +399,28 @@ namespace GorgonLibrary.IO
 				ushort srcPixel = *(srcPtr++);
 				uint R = 0, G = 0, B = 0, A = 0;
 
-				if (srcFormat == BufferFormat.B5G6R5_UIntNormal)
+				switch (srcFormat)
 				{
-					R = (uint)((srcPixel & 0xF800) >> 11);
-					G = (uint)((srcPixel & 0x07E0) >> 5);
-					B = (uint)(srcPixel & 0x001F);
-
-					R = ((R << 3) | (R >> 2));
-					G = ((G << 2) | (G >> 4)) << 8;
-					B = ((B << 3) | (B >> 2)) << 16;
-					A = 0xFF000000;
-				}
-				else if (srcFormat == BufferFormat.B5G5R5A1_UIntNormal)
-				{
-					R = (uint)((srcPixel & 0x7C00) >> 10);
-					G = (uint)((srcPixel & 0x03E0) >> 5);
-					B = (uint)(srcPixel & 0x001F);
-
-					R = ((R << 3) | (R >> 2));
-					G = ((G << 3) | (G >> 2)) << 8;
-					B = ((B << 3) | (B >> 2)) << 16;
-
-					A = ((bitFlags & ImageBitFlags.OpaqueAlpha) == ImageBitFlags.OpaqueAlpha) ? 0xFF000000 : (((srcPixel & 0x8000) != 0) ? 0xFF000000 : 0);
+					case BufferFormat.B5G6R5_UIntNormal:
+						R = (uint)((srcPixel & 0xF800) >> 11);
+						G = (uint)((srcPixel & 0x07E0) >> 5);
+						B = (uint)(srcPixel & 0x001F);
+						R = ((R << 3) | (R >> 2));
+						G = ((G << 2) | (G >> 4)) << 8;
+						B = ((B << 3) | (B >> 2)) << 16;
+						A = 0xFF000000;
+						break;
+					case BufferFormat.B5G5R5A1_UIntNormal:
+						R = (uint)((srcPixel & 0x7C00) >> 10);
+						G = (uint)((srcPixel & 0x03E0) >> 5);
+						B = (uint)(srcPixel & 0x001F);
+						R = ((R << 3) | (R >> 2));
+						G = ((G << 3) | (G >> 2)) << 8;
+						B = ((B << 3) | (B >> 2)) << 16;
+						A = ((bitFlags & ImageBitFlags.OpaqueAlpha) == ImageBitFlags.OpaqueAlpha)
+							    ? 0xFF000000
+							    : (((srcPixel & 0x8000) != 0) ? 0xFF000000 : 0);
+						break;
 				}
 
 				*(destPtr++) = R | G | B | A;
@@ -442,21 +443,22 @@ namespace GorgonLibrary.IO
 		protected unsafe void SwizzleScanline(void* src, int srcPitch, void* dest, int destPitch, BufferFormat format, ImageBitFlags bitFlags)
 		{
             int size = srcPitch.Min(destPitch);
-            uint r = 0, g = 0, b = 0, a = 0, pixel = 0;
+            uint r, g, b, a, pixel;
 
-            if ((src == null) || (dest == null))
-            {
-                throw new ArgumentNullException("The source/destination pointer must not be NULL.");
-            }
+			if (src == null)
+			{
+				throw new ArgumentNullException("src");
+			}
 
-            if ((srcPitch <= 0) || (destPitch <= 0))
-            {
-                throw new ArgumentOutOfRangeException("The source/destination pitch must be greater than 0");
-            }
+			if (dest == null)
+			{
+				throw new ArgumentNullException("dest");
+			}
 
             if (format == BufferFormat.Unknown)
             {
-                throw new ArgumentException("The format is unknown", "format");
+	            throw new ArgumentException(string.Format(Resources.GORGFX_FORMAT_NOT_SUPPORTED, BufferFormat.Unknown),
+	                                        "format");
             }
 
             var srcPtr = (uint*)src;
@@ -541,19 +543,20 @@ namespace GorgonLibrary.IO
 		/// <remarks>Use this method to copy a single scanline of an image and (optionally) set an opaque constant alpha value.</remarks>
 		protected unsafe void CopyScanline(void* src, int srcPitch, void* dest, int destPitch, BufferFormat format, ImageBitFlags bitFlags)
 		{
-			if ((src == null) || (dest == null))
+			if (src == null)
 			{
-				throw new ArgumentNullException("The source/destination pointer must not be NULL.");
+				throw new ArgumentNullException("src");
 			}
 
-			if ((srcPitch <= 0) || (destPitch <= 0))
+			if (dest == null)
 			{
-				throw new ArgumentOutOfRangeException("The source/destination pitch must be greater than 0");
+				throw new ArgumentNullException("dest");
 			}
 
 			if (format == BufferFormat.Unknown)
 			{
-				throw new ArgumentException("The format is unknown", "format");
+				throw new ArgumentException(string.Format(Resources.GORGFX_FORMAT_NOT_SUPPORTED, BufferFormat.Unknown),
+											"format");
 			}
 
 			int size = (src == dest) ? destPitch : (srcPitch.Min(destPitch));
@@ -597,13 +600,15 @@ namespace GorgonLibrary.IO
 						{
 							ushort alpha = 0xFFFF;
 
-							if (format == BufferFormat.R16G16B16A16_Float)
+							switch (format)
 							{
-								alpha = 0x3C00;
-							}
-							else if ((format == BufferFormat.R16G16B16A16_IntNormal) || (format == BufferFormat.R16G16B16A16_Int))
-							{
-								alpha = 0x7FFF;
+								case BufferFormat.R16G16B16A16_Float:
+									alpha = 0x3C00;
+									break;
+								case BufferFormat.R16G16B16A16_Int:
+								case BufferFormat.R16G16B16A16_IntNormal:
+									alpha = 0x7FFF;
+									break;
 							}
 
 							var srcPtr = (ushort*)src;
@@ -728,16 +733,14 @@ namespace GorgonLibrary.IO
 			int height = Height > 0 ? Height : data.Settings.Height;
 			int mipCount = MipCount > 0 ? MipCount : data.Settings.MipCount;
 			BufferFormat format = (Format != BufferFormat.Unknown) ? Format : data.Settings.Format;
-			Guid srcPixelFormat = Guid.Empty;
-			Guid destPixelFormat = Guid.Empty;
 			Rectangle newSize = Rectangle.Empty;
 			int mipStart = 0;
 
 			// First, confirm whether we can perform format conversions.
 			using (var wic = new GorgonWICImage())
 			{
-				srcPixelFormat = wic.GetGUID(data.Settings.Format);
-				destPixelFormat = wic.GetGUID(format);
+				Guid srcPixelFormat = wic.GetGUID(data.Settings.Format);
+				Guid destPixelFormat = wic.GetGUID(format);
 
 				// Do nothing if we can't do anything with the source format.
 				if (srcPixelFormat == Guid.Empty)
@@ -852,7 +855,6 @@ namespace GorgonLibrary.IO
 					if (destData != null)
 					{
 						destData.Dispose();
-						destData = null;
 					}
 
 					throw;
@@ -869,7 +871,7 @@ namespace GorgonLibrary.IO
         /// </returns>
         /// <exception cref="System.IO.IOException">Thrown when the <paramref name="stream"/> is write-only or if the stream cannot perform seek operations.</exception>
 		/// <exception cref="System.IO.EndOfStreamException">Thrown when an attempt to read beyond the end of the stream is made.</exception>
-		public abstract bool IsReadable(System.IO.Stream stream);
+		public abstract bool IsReadable(Stream stream);
 
 		/// <summary>
         /// Function to read file meta data.
@@ -883,7 +885,7 @@ namespace GorgonLibrary.IO
 		/// <para>Thrown if the file is corrupt or can't be read by the codec.</para>
 		/// </exception>
 		/// <exception cref="System.IO.EndOfStreamException">Thrown when an attempt to read beyond the end of the stream is made.</exception>
-		public abstract IImageSettings GetMetaData(System.IO.Stream stream);
+		public abstract IImageSettings GetMetaData(Stream stream);
 
         /// <summary>
         /// Returns a <see cref="System.String" /> that represents this instance.
@@ -893,7 +895,7 @@ namespace GorgonLibrary.IO
         /// </returns>
         public override string ToString()
         {
-            return "Gorgon " + Codec + " Image Codec";
+	        return string.Format(Resources.GORGFX_IMAGE_CODEC_TOSTR, Codec);
         }
 		#endregion
 

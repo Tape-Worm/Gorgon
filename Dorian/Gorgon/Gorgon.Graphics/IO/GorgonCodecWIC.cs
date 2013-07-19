@@ -104,7 +104,9 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using GorgonLibrary.Graphics;
+using GorgonLibrary.Graphics.Properties;
 using GorgonLibrary.Math;
 
 namespace GorgonLibrary.IO
@@ -226,7 +228,7 @@ namespace GorgonLibrary.IO
 			// Find the best fit pixel format.
 			if (bestPixelFormat == Guid.Empty)
 			{
-				throw new System.IO.IOException("Cannot decode " + Codec + " file.  The format '" + data.Settings.Format.ToString() + "' is not supported.");
+				throw new IOException(string.Format(Resources.GORGFX_FORMAT_NOT_SUPPORTED, data.Settings.Format));
 			}
 
 			// Use the image array as the frames.
@@ -358,7 +360,7 @@ namespace GorgonLibrary.IO
 					}
 
 					// If we've defined a palette for an indexed image, then copy it to a bitmap and set its palette.
-					if ((paletteInfo != null) && (paletteInfo.Item1 != null) && (isIndexed))
+					if ((paletteInfo != null) && (paletteInfo.Item1 != null))
 					{
 						using (var tempBitmap = new SharpDX.WIC.Bitmap(wic.Factory, frame, SharpDX.WIC.BitmapCreateCacheOption.CacheOnDemand))
 						{
@@ -402,9 +404,7 @@ namespace GorgonLibrary.IO
         /// <returns>Settings for the new image.</returns>
         internal IImageSettings ReadMetaData(GorgonWICImage wic, SharpDX.WIC.BitmapDecoder decoder, SharpDX.WIC.BitmapFrameDecode frame, ref Guid bestFormatMatch)
         {
-            var settings = new GorgonTexture2DSettings();
-
-            return new GorgonTexture2DSettings
+	        return new GorgonTexture2DSettings
 	            {
                 Width = frame.Size.Width,
                 Height = frame.Size.Height,
@@ -414,7 +414,7 @@ namespace GorgonLibrary.IO
             };
         }
 
-        /// <summary>
+		/// <summary>
 		/// Function to retrieve the offset for the frame being decoded.
 		/// </summary>
 		/// <param name="frame">Frame to decode.</param>
@@ -481,10 +481,10 @@ namespace GorgonLibrary.IO
 						{
 							decoder.Initialize(wicStream, SharpDX.WIC.DecodeOptions.CacheOnDemand);
 						}
-						catch (SharpDX.SharpDXException sdex)
+						catch (SharpDX.SharpDXException)
 						{
 							// Repackage this exception to keep in line with our API.
-							throw new System.IO.IOException("Cannot decode the " + Codec + " file. " + sdex.Descriptor.Description, sdex);
+							throw new IOException(string.Format(Resources.GORGFX_IMAGE_FILE_INCORRECT_DECODER, Codec));
 						}
 
 						using (var frame = decoder.GetFrame(0))
@@ -493,7 +493,7 @@ namespace GorgonLibrary.IO
 
 							if (settings.Format == BufferFormat.Unknown)
 							{
-								throw new System.IO.IOException("Cannot decode the " + Codec + " file.  Format is not supported.");
+								throw new IOException(string.Format(Resources.GORGFX_FORMAT_NOT_SUPPORTED, settings.Format));
 							}
 
 							// Create our image data.
@@ -530,7 +530,6 @@ namespace GorgonLibrary.IO
 								{
 									result.Dispose();
 								}
-								result = null;
 
 								throw;
 							}
@@ -547,11 +546,9 @@ namespace GorgonLibrary.IO
 		/// </summary>
 		/// <param name="imageData"><see cref="GorgonLibrary.Graphics.GorgonImageData">Gorgon image data</see> to persist.</param>
 		/// <param name="stream">Stream that will contain the data.</param>
-		protected internal override void SaveToStream(GorgonImageData imageData, System.IO.Stream stream)
+		protected internal override void SaveToStream(GorgonImageData imageData, Stream stream)
 		{
 			int frameCount = 1;
-			Guid targetFormat = Guid.Empty;
-			Guid actualFormat = Guid.Empty;
 
 			// Wrap the stream so WIC doesn't mess up the position.
 			using (var wrapperStream = new GorgonStreamWrapper(stream))
@@ -559,14 +556,14 @@ namespace GorgonLibrary.IO
 				using (var wic = new GorgonWICImage())
 				{
 					// Find a compatible format.
-					targetFormat = wic.GetGUID(imageData.Settings.Format);
+					Guid targetFormat = wic.GetGUID(imageData.Settings.Format);
 
 					if (targetFormat == Guid.Empty)
 					{
-						throw new System.IO.IOException("Cannot encode the " + Codec + " file. The format " + imageData.Settings.Format.ToString() + " is not supported.");
+						throw new IOException(string.Format(Resources.GORGFX_FORMAT_NOT_SUPPORTED, imageData.Settings.Format));
 					}
 
-					actualFormat = targetFormat;
+					Guid actualFormat = targetFormat;
 
 					using (var encoder = new SharpDX.WIC.BitmapEncoder(wic.Factory, SupportedFormat))
 					{
@@ -575,10 +572,10 @@ namespace GorgonLibrary.IO
 							encoder.Initialize(wrapperStream);
 							AddCustomMetaData(encoder, null, 0, imageData.Settings, null);
 						}
-						catch (SharpDX.SharpDXException sdex)
+						catch (SharpDX.SharpDXException)
 						{
 							// Repackage this exception to keep in line with our API.
-							throw new System.IO.IOException("Cannot encode the " + Codec + " file. " + sdex.Descriptor.Description, sdex);
+							throw new IOException(string.Format(Resources.GORGFX_IMAGE_FILE_INCORRECT_ENCODER, Codec));
 						}
 
 						using (var encoderInfo = encoder.EncoderInfo)
@@ -613,7 +610,7 @@ namespace GorgonLibrary.IO
 
 											if (paletteInfo == null)
 											{
-												throw new NullReferenceException("The codec does not return proper palette encoding information.");
+												throw new IOException(string.Format(Resources.GORGFX_IMAGE_FILE_INCORRECT_ENCODER, Codec));
 											}
 
 											try
@@ -632,10 +629,9 @@ namespace GorgonLibrary.IO
 											}
 											finally
 											{
-												if ((paletteInfo != null) && (paletteInfo.Item1 != null))
+												if (paletteInfo.Item1 != null)
 												{
 													paletteInfo.Item1.Dispose();
-													paletteInfo = null;
 												}
 											}
 										}
@@ -671,27 +667,26 @@ namespace GorgonLibrary.IO
 		/// <para>Thrown when the stream cannot perform seek operations.</para>
 		/// </exception>
 		/// <exception cref="System.IO.EndOfStreamException">Thrown when an attempt to read beyond the end of the stream is made.</exception>
-		public override IImageSettings GetMetaData(System.IO.Stream stream)
+		public override IImageSettings GetMetaData(Stream stream)
 		{
 			Guid bestFormat = Guid.Empty;
-            long position = 0;
 
-            if (stream == null)
+			if (stream == null)
             {
                 throw new ArgumentNullException("stream");
             }
 
             if (!stream.CanRead)
             {
-                throw new System.IO.IOException("Stream is write-only.");
+                throw new IOException(Resources.GORGFX_STREAM_WRITE_ONLY);
             }
 
             if (!stream.CanSeek)
             {
-                throw new System.IO.IOException("The stream cannot perform seek operations.");
+                throw new IOException(Resources.GORGFX_STREAM_NO_SEEK);
             }
 
-            position = stream.Position;
+            long position = stream.Position;
 
             try
             {
@@ -709,9 +704,9 @@ namespace GorgonLibrary.IO
 							{
 								decoder.Initialize(wicStream, SharpDX.WIC.DecodeOptions.CacheOnDemand);
 							}
-							catch (SharpDX.SharpDXException sdex)
+							catch (SharpDX.SharpDXException)
 							{
-								throw new System.IO.IOException("Cannot decode the " + Codec + " file. " + sdex.Descriptor.Description, sdex);
+								throw new IOException(string.Format(Resources.GORGFX_IMAGE_FILE_INCORRECT_ENCODER, Codec));
 							}
 
 							using (var frame = decoder.GetFrame(0))
@@ -720,7 +715,7 @@ namespace GorgonLibrary.IO
 
 								if (settings.Format == BufferFormat.Unknown)
 								{
-									throw new System.IO.IOException("Cannot decode the " + Codec + " file.  Format is not supported.");
+									throw new IOException(string.Format(Resources.GORGFX_FORMAT_NOT_SUPPORTED, settings.Format));
 								}
 
 								return settings;
@@ -747,9 +742,8 @@ namespace GorgonLibrary.IO
 		/// <para>-or-</para>
 		/// <para>Thrown when the stream cannot perform seek operations.</para>
 		/// </exception>		
-		public override bool IsReadable(System.IO.Stream stream)
+		public override bool IsReadable(Stream stream)
 		{
-			long position = 0;
 			Guid bestFormat = Guid.Empty;
 
             if (stream == null)
@@ -759,15 +753,15 @@ namespace GorgonLibrary.IO
 
             if (!stream.CanRead)
             {
-                throw new System.IO.IOException("Stream is write-only.");
+                throw new IOException(Resources.GORGFX_STREAM_READ_ONLY);
             }
 
             if (!stream.CanSeek)
             {
-                throw new System.IO.IOException("The stream cannot perform seek operations.");
+                throw new IOException(Resources.GORGFX_STREAM_EOF);
             }
 
-			position = stream.Position;
+			long position = stream.Position;
 
 			try
 			{

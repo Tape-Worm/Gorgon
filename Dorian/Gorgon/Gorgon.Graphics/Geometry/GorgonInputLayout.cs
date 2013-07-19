@@ -48,7 +48,50 @@ namespace GorgonLibrary.Graphics
 	    private GorgonInputElement[] _elements;                 // Elements used to build the layout.
 		private bool _disposed;									// Flag to indicate that the object was disposed.
 		private IDictionary<int, int> _slotSizes;				// List of slot sizes.
-		private readonly Type[] _allowedTypes;					// Types allowed when pulling information from an object.
+
+		// Type mapping for types.
+		private static readonly Dictionary<Type, BufferFormat> _typeMapping = new Dictionary<Type, BufferFormat>
+			{
+				{
+					typeof(byte), BufferFormat.R8_UInt
+				},
+				{
+					typeof(sbyte), BufferFormat.R8_Int
+				},
+				{
+					typeof(Int32), BufferFormat.R32_Int
+				},
+				{
+					typeof(UInt32), BufferFormat.R32_UInt
+				},
+				{
+					typeof(Int16), BufferFormat.R16_Int
+				},
+				{
+					typeof(UInt16), BufferFormat.R16_Int
+				},
+				{
+					typeof(Int64), BufferFormat.R32G32_Int
+				},
+				{
+					typeof(UInt64), BufferFormat.R32G32_UInt
+				},
+				{
+					typeof(float), BufferFormat.R32_Float
+				},
+				{
+					typeof(Vector2), BufferFormat.R32G32_Float
+				},
+				{
+					typeof(Vector3), BufferFormat.R32G32B32_Float
+				},
+				{
+					typeof(Vector4), BufferFormat.R32G32B32A32_Float
+				},
+				{
+					typeof(GorgonColor), BufferFormat.R32G32B32A32_Float
+				},
+			};
 		#endregion
 
 		#region Properties.
@@ -101,76 +144,6 @@ namespace GorgonLibrary.Graphics
 		#endregion
 
 		#region Methods.
-		/// <summary>
-		/// Function used to determine the type of a field/property from its type.
-		/// </summary>
-		/// <param name="type">Type to use when evaluating.</param>
-		/// <returns>The element format.</returns>
-		private static BufferFormat GetElementType(Type type)
-		{
-			if (type == typeof(byte))
-			{
-				return BufferFormat.R8_UInt;
-			}
-
-			if (type == typeof(SByte))
-			{
-				return BufferFormat.R8_Int;
-			}
-
-			if (type == typeof(Int32))
-			{
-				return BufferFormat.R32_Int;
-			}
-
-			if (type == typeof(UInt32))
-			{
-				return BufferFormat.R32_UInt;
-			}
-
-			if (type == typeof(Int16))
-			{
-				return BufferFormat.R16_Int;
-			}
-
-			if (type == typeof(UInt16))
-			{
-				return BufferFormat.R16_UInt;
-			}
-
-			if (type == typeof(Int64))
-			{
-				return BufferFormat.R32G32_Int;
-			}
-
-			if (type == typeof(UInt64))
-			{
-				return BufferFormat.R32G32_UInt;
-			}
-
-			if (type == typeof(float))
-			{
-				return BufferFormat.R32_Float;
-			}
-
-			if (type == typeof(Vector2))
-			{
-				return BufferFormat.R32G32_Float;
-			}
-
-			if (type == typeof(Vector3))
-			{
-				return BufferFormat.R32G32B32_Float;
-			}
-
-			if (type == typeof(Vector4))
-			{
-				return BufferFormat.R32G32B32A32_Float;
-			}
-
-			return type == typeof(GorgonColor) ? BufferFormat.R32G32B32A32_Float : BufferFormat.Unknown;
-		}		
-
         /// <summary>
         /// Function to determine if an element already exists with the same context, index and slot.
         /// </summary>
@@ -248,23 +221,17 @@ namespace GorgonLibrary.Graphics
                 BufferFormat format = item.Attribute.Format;
                 string contextName = item.Attribute.Context;
 
-                if (!_allowedTypes.Contains(item.ReturnType))
-                {
-                    throw new GorgonException(GorgonResult.CannotCreate,
-                                              "The type '" + item.ReturnType.FullName +
-                                              "' is not a valid type for an input element.");
-                }
-
                 // Try to determine the format from the type.
                 if (format == BufferFormat.Unknown)
                 {
-                    format = GetElementType(item.ReturnType);
-                    if (format == BufferFormat.Unknown)
-                    {
-                        throw new GorgonException(GorgonResult.CannotCreate,
-                                                  "The type '" + item.ReturnType.FullName + "' for the property/field '" +
-                                                  item.Name + "' cannot be mapped to a GorgonBufferFormat.");
-                    }
+					if (!_typeMapping.ContainsKey(item.ReturnType))
+					{
+						throw new GorgonException(GorgonResult.CannotCreate,
+												  string.Format(Resources.GORGFX_LAYOUT_INVALID_ELEMENT_TYPE,
+																item.ReturnType.FullName));
+					}
+
+					format = _typeMapping[item.ReturnType];
                 }
 
                 // Determine the context name from the field name.
@@ -380,23 +347,6 @@ namespace GorgonLibrary.Graphics
 		{
 			Graphics = graphics;
 			Shader = shader;
-
-			_allowedTypes = new [] {		
-									typeof(SByte),
-									typeof(byte),
-									typeof(ushort),
-									typeof(short),
-									typeof(int),
-									typeof(uint),
-									typeof(long),
-									typeof(ulong),
-									typeof(float),
-									typeof(Vector2),
-									typeof(Vector3),
-									typeof(Vector4),
-									typeof(GorgonColor)
-								};
-
 		    GorgonRenderStatistics.InputLayoutCount++;
 		}
 		#endregion

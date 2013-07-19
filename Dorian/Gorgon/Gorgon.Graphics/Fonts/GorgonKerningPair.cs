@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using GorgonLibrary.Graphics.Properties;
 
 namespace GorgonLibrary.Graphics
 {
@@ -39,11 +40,11 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Left character.
 		/// </summary>
-		public char LeftCharacter;
+		public readonly char LeftCharacter;
 		/// <summary>
 		/// Right character.
 		/// </summary>
-		public char RightCharacter;
+		public readonly char RightCharacter;
 		#endregion
 
 		#region Methods.
@@ -53,7 +54,7 @@ namespace GorgonLibrary.Graphics
 		/// <param name="left">Left kerning pair to compare.</param>
 		/// <param name="right">Right kerning pair to compare.</param>
 		/// <returns>TRUE if the same, FALSE if not.</returns>
-		public static bool Equals(GorgonKerningPair left, GorgonKerningPair right)
+		public static bool Equals(ref GorgonKerningPair left, ref GorgonKerningPair right)
 		{
 			return ((left.LeftCharacter == right.LeftCharacter) && (left.RightCharacter == right.RightCharacter));
 		}
@@ -68,7 +69,9 @@ namespace GorgonLibrary.Graphics
 		public override bool Equals(object obj)
 		{
 			if (obj is GorgonKerningPair)
-				return Equals((GorgonKerningPair)obj, this);
+			{
+				return ((GorgonKerningPair)obj).Equals(this);
+			}
 
 			return base.Equals(obj);
 		}
@@ -92,7 +95,7 @@ namespace GorgonLibrary.Graphics
 		/// </returns>
 		public override string ToString()
 		{
-			return "Kerning Pair: " + LeftCharacter.ToString() + ", " + RightCharacter.ToString();
+			return string.Format(Resources.GORGFX_FONT_KERNING_PAIR_TOSTR, LeftCharacter, RightCharacter);
 		}
 
 		/// <summary>
@@ -105,7 +108,7 @@ namespace GorgonLibrary.Graphics
 		/// </returns>
 		public static bool operator ==(GorgonKerningPair left, GorgonKerningPair right)
 		{
-			return GorgonKerningPair.Equals(left, right);
+			return Equals(ref left, ref right);
 		}
 
 		/// <summary>
@@ -118,7 +121,7 @@ namespace GorgonLibrary.Graphics
 		/// </returns>
 		public static bool operator !=(GorgonKerningPair left, GorgonKerningPair right)
 		{
-			return !GorgonKerningPair.Equals(left, right);
+			return !Equals(ref left, ref right);
 		}
 		#endregion
 
@@ -145,7 +148,7 @@ namespace GorgonLibrary.Graphics
 		/// </returns>
 		public bool Equals(GorgonKerningPair other)
 		{
-			return GorgonKerningPair.Equals(this, other);
+			return Equals(ref this, ref other);
 		}
 		#endregion
 	}

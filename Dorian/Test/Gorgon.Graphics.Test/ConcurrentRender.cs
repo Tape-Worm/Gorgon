@@ -1,15 +1,12 @@
 ﻿using System;
 using System.Text;
-using System.Linq;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using GorgonLibrary.Graphics.Test.Properties;
-using GorgonLibrary.IO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Runtime.InteropServices;
 using SlimMath;
-using GorgonLibrary;
 using GorgonLibrary.Native;
 using GorgonLibrary.Math;
 using GorgonLibrary.Diagnostics;
@@ -81,11 +78,13 @@ namespace GorgonLibrary.Graphics.Test
         {
             _tasks.Add(Task.Run(() =>
                 {
-                    WVPBuffer wvp = new WVPBuffer();
-                    wvp.Projection = _wvp.Projection;
-                    wvp.View = _wvp.View;
+                    var wvp = new WVPBuffer
+	                    {
+		                    Projection = _wvp.Projection,
+		                    View = _wvp.View
+	                    };
 
-                    if (!_bouncy[0])
+	                if (!_bouncy[0])
                     {
                         _positions[0] = new Vector3(_positions[0].X + 1.0f * GorgonTiming.Delta,
                                                     _positions[0].Y - 2.5f * GorgonTiming.Delta,
@@ -204,8 +203,6 @@ namespace GorgonLibrary.Graphics.Test
 
             _framework.CreateTestScene(BaseShaders, BaseShaders, true);
 
-	        GorgonDepthStencil1D ds1;
-
             using(var constantBuffer = _framework.Graphics.Buffers.CreateConstantBuffer("WVP",
                                                                                         new GorgonConstantBufferSettings
                                                                                             {
@@ -216,7 +213,7 @@ namespace GorgonLibrary.Graphics.Test
                 _positions = new Vector3[_commands.Length];
                 _positions[0] = new Vector3(2.0f, 0, 6.0f);
                 _bouncy = new bool[_commands.Length];
-                _deferred = new GorgonGraphics[]
+                _deferred = new[]
                     {
                         _framework.Graphics.CreateDeferredGraphics(),
                         _framework.Graphics.CreateDeferredGraphics()
@@ -254,7 +251,7 @@ namespace GorgonLibrary.Graphics.Test
                     {
                         if (_deferred == null)
                         {
-                            _deferred = new GorgonGraphics[]
+                            _deferred = new[]
                                 {
                                     _framework.Graphics.CreateDeferredGraphics(),
                                     _framework.Graphics.CreateDeferredGraphics()

@@ -149,12 +149,18 @@ namespace GorgonLibrary.Graphics
 		public InputElementAttribute(string context, BufferFormat format, int offset, int index, int slot, bool instanced, int instanceCount)
 		{
 			if (slot < 0)
+			{
 				slot = 0;
+			}
 			if (slot > 15)
+			{
 				slot = 15;
+			}
 
 			if (!instanced)
+			{
 				instanceCount = 0;
+			}
 
 			Context = context;
 			Format = format;

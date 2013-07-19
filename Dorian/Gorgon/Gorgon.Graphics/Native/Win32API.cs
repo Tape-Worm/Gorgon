@@ -210,7 +210,7 @@ namespace GorgonLibrary.Native
 
 			if (_hdc == IntPtr.Zero)
 			{
-				throw new GorgonException(GorgonResult.CannotEnumerate, Resources.GORGFX_CANNOT_RETRIEVE_KERNING);
+				throw new GorgonException(GorgonResult.CannotEnumerate, Resources.GORGFX_FONT_CANNOT_RETRIEVE_KERNING);
 			}
 
 			MapModes lastMode = SetMapMode(_hdc, MapModes.MM_TEXT);
@@ -231,7 +231,7 @@ namespace GorgonLibrary.Native
 
 				if (GetKerningPairsW(_hdc, (uint)size, pairPtr) == 0)
 				{
-					throw new GorgonException(GorgonResult.CannotEnumerate, Resources.GORGFX_CANNOT_RETRIEVE_KERNING);
+					throw new GorgonException(GorgonResult.CannotEnumerate, Resources.GORGFX_FONT_CANNOT_RETRIEVE_KERNING);
 				}
 
 				for (int i = 0; i < size; i++)
@@ -262,14 +262,14 @@ namespace GorgonLibrary.Native
 
 			if (_hdc == IntPtr.Zero)
 			{
-				throw new GorgonException(GorgonResult.CannotEnumerate, Resources.GORGFX_CANNOT_RETRIEVE_ABC);
+				throw new GorgonException(GorgonResult.CannotEnumerate, Resources.GORGFX_FONT_CANNOT_RETRIEVE_ABC);
 			}
 
 			ABC* abcData = stackalloc ABC[size];
 
 			if (!GetCharABCWidthsW(_hdc, firstCharIndex, lastCharIndex, abcData))
 			{
-				throw new GorgonException(GorgonResult.CannotEnumerate, Resources.GORGFX_CANNOT_RETRIEVE_ABC);
+				throw new GorgonException(GorgonResult.CannotEnumerate, Resources.GORGFX_FONT_CANNOT_RETRIEVE_ABC);
 			}
 
 			// Copy to our result.

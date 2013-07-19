@@ -28,7 +28,6 @@ using System;
 using System.Drawing;
 using System.IO;
 using System.Linq;
-using System.Text;
 using GorgonLibrary.Graphics.Properties;
 using GorgonLibrary.IO;
 using SlimMath;
@@ -120,7 +119,7 @@ namespace GorgonLibrary.Graphics
 				|| (textureName.IndexOf(".InternalTexture_", StringComparison.CurrentCultureIgnoreCase) == -1))
 			{
 				result = (from texture in _graphics.GetTrackedObjectsOfType<GorgonTexture2D>()
-						  where (string.Compare(texture.Name, textureName, true) == 0)
+						  where (string.Compare(texture.Name, textureName, StringComparison.OrdinalIgnoreCase) == 0)
 						  select texture).FirstOrDefault();
 			}
 						
@@ -136,12 +135,12 @@ namespace GorgonLibrary.Graphics
 		private GorgonFont LoadFont(string fontName, Stream stream)
 		{
 			var settings = new GorgonFontSettings();
-			GorgonFont font = null;
+			GorgonFont font;
 			FileStream fileStream = null;
-            float fontHeight = 0.0f;
-            float fontAscent = 0.0f;
-            float fontDescent = 0.0f;
-            float fontLineHeight = 0.0f;
+            float fontHeight;
+			float fontAscent;
+            float fontDescent;
+            float fontLineHeight;
 
             // Output the font in chunked format.
             using (var chunk = new GorgonChunkReader(stream))
@@ -200,7 +199,7 @@ namespace GorgonLibrary.Graphics
 					fileStream = stream as FileStream;
 					if (fileStream == null)
 					{
-						throw new ArgumentException("Cannot load external textures for the font because the stream is not a file stream.", "stream");
+						throw new ArgumentException(Resources.GORGFX_FONT_MUST_BE_FILE_STREAM, "stream");
 					}
                 }
                 else
@@ -211,10 +210,9 @@ namespace GorgonLibrary.Graphics
                 // Load in the textures.
                 for (int i = 0; i < textureCount; i++)
                 {
-                    GorgonTexture2D texture = null;
-                    string textureName = chunk.ReadString();
+	                string textureName = chunk.ReadString();
 
-                    texture = GetFontTexture(textureName);
+                    GorgonTexture2D texture = GetFontTexture(textureName);
 
                     // Add to the font.
                     if (texture != null)
@@ -319,7 +317,7 @@ namespace GorgonLibrary.Graphics
 		{
             if (string.IsNullOrWhiteSpace(name))
             {
-                throw new ArgumentException("The parameter must not be empty.", "name");
+                throw new ArgumentException(Resources.GORGFX_PARAMETER_MUST_NOT_BE_EMPTY, "name");
             }
 
             if (stream == null)
@@ -329,7 +327,7 @@ namespace GorgonLibrary.Graphics
 
             if (stream.Length == 0)
             {
-                throw new ArgumentException("The parameter must not be empty.", "stream");
+				throw new ArgumentException(Resources.GORGFX_PARAMETER_MUST_NOT_BE_EMPTY, "stream");
             }
             
             return LoadFont(name, stream);
@@ -387,7 +385,7 @@ namespace GorgonLibrary.Graphics
 
             if (string.IsNullOrWhiteSpace(fileName))
             {
-                throw new ArgumentException("The parameter must not be empty.", "fileName");
+                throw new ArgumentException(Resources.GORGFX_PARAMETER_MUST_NOT_BE_EMPTY, "fileName");
             }
             
             try
@@ -398,8 +396,9 @@ namespace GorgonLibrary.Graphics
 			finally
 			{
 				if (stream != null)
+				{
 					stream.Dispose();
-				stream = null;
+				}
 			}
 		}
 
@@ -452,10 +451,12 @@ namespace GorgonLibrary.Graphics
 		public GorgonFont CreateFont(string fontName, string fontFamily, float pointSize, FontStyle style, FontAntiAliasMode antiAliasMode, Size textureSize)
 		{
 			if (pointSize < 1e-6f)
+			{
 				pointSize = 1e-6f;
+			}
 
 			var settings = new GorgonFontSettings
-				{
+			{
 				AntiAliasingMode = antiAliasMode,
 				Brush = null,
 				FontFamilyName = fontFamily,
@@ -514,7 +515,7 @@ namespace GorgonLibrary.Graphics
             }
 
 			var settings = new GorgonFontSettings
-				{
+			{
 				AntiAliasingMode = antiAliasMode,
 				Brush = null,
 				FontFamilyName = font.FontFamily.Name,
@@ -559,7 +560,7 @@ namespace GorgonLibrary.Graphics
 
             if (string.IsNullOrWhiteSpace("fontName"))
             {
-                throw new ArgumentException("The parameter must not be empty.", "fontName");
+                throw new ArgumentException(Resources.GORGFX_PARAMETER_MUST_NOT_BE_EMPTY, "fontName");
             }
 
             if (settings == null)
@@ -569,7 +570,7 @@ namespace GorgonLibrary.Graphics
 
             if (string.IsNullOrWhiteSpace(settings.FontFamilyName))
             {
-                throw new ArgumentNullException("The font family name must not be NULL or empty.", "settings");
+                throw new ArgumentException(Resources.GORGFX_FONT_FAMILY_NAME_MUST_NOT_BE_EMPTY, "settings");
             }
 
 			var result = new GorgonFont(_graphics, fontName, settings);

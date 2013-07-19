@@ -891,18 +891,11 @@ namespace GorgonLibrary.Graphics
                 chunk.End();
 
                 // Write out actual textures.
-                if (!externalTextures)
-                {
-                    chunk.Begin("TXTRINTL");
-                }
-                else
-                {
-                    chunk.Begin("TXTREXTL");
-                }
+	            chunk.Begin(!externalTextures ? "TXTRINTL" : "TXTREXTL");
 
-                int textureCounter = 0;
+	            int textureCounter = 0;
 
-                foreach (var texture in Textures)
+	            foreach (var texture in Textures)
                 {
 					chunk.WriteString(texture.Name);
 
