@@ -508,7 +508,30 @@ namespace GorgonLibrary.Math
 			return Abs(right - left) <= delta;
 		}
 
-		/// <summary>
+        /// <summary>
+        /// Function to determine if this double floating point value is equal to another within a given delta range.
+        /// </summary>
+        /// <param name="left">Left value to compare.</param>
+        /// <param name="right">Right value to compare.</param>
+        /// <returns>TRUE if equal, FALSE if not.</returns>
+        public static bool EqualsEpsilon(this double left, double right)
+        {
+            return Abs(right - left) <= 1e-06f;
+        }
+
+        /// <summary>
+        /// Function to determine if this double floating point value is equal to another within a given delta range.
+        /// </summary>
+        /// <param name="left">Left value to compare.</param>
+        /// <param name="right">Right value to compare.</param>
+        /// <param name="delta">Delta to account for error between the two values.</param>
+        /// <returns>TRUE if equal, FALSE if not.</returns>
+        public static bool EqualsEpsilon(this double left, double right, double delta)
+        {
+            return Abs(right - left) <= delta;
+        }
+
+        /// <summary>
 		/// Function to return the square root of this floating point value.
 		/// </summary>
 		/// <param name="value">Value to get the square root of.</param>
