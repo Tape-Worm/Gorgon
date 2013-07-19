@@ -28,6 +28,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -2809,20 +2810,30 @@ namespace GorgonLibrary.Editor
         /// <param name="filePath">Path to the file.</param>
         private void AddToRecent(string filePath)
         {
-            var existing = Program.Settings.RecentFiles.Where(item => string.Compare(item, filePath, true) == 0).FirstOrDefault();
+			if (string.IsNullOrWhiteSpace(filePath))
+			{
+				return;
+			}
 
-            // It already exists, move it to the top of the list.
-            if (!string.IsNullOrWhiteSpace(existing))
-            {
-                Program.Settings.RecentFiles.Remove(existing);
-                Program.Settings.RecentFiles.Insert(0, filePath);
-                return;
-            }
+	        var existing =
+		        Program.Settings.RecentFiles.FirstOrDefault(
+			        item =>
+			        !string.IsNullOrWhiteSpace(item) &&
+			        string.Compare(item, filePath, StringComparison.CurrentCultureIgnoreCase) == 0);
+	        
 
-            Program.Settings.RecentFiles.Insert(0, filePath);
+			// It already exists, move it to the top of the list.
+			if (!string.IsNullOrWhiteSpace(existing))
+			{
+				Program.Settings.RecentFiles.Remove(existing);
+				Program.Settings.RecentFiles.Insert(0, filePath);
+				return;
+			}
 
-            FillRecent();
-            ValidateControls();
+			Program.Settings.RecentFiles.Insert(0, filePath);
+
+			FillRecent();
+			ValidateControls();
         }
 
         /// <summary>
@@ -2875,6 +2886,11 @@ namespace GorgonLibrary.Editor
             {
                 try
                 {
+					if (string.IsNullOrWhiteSpace(Program.Settings.RecentFiles[i]))
+					{
+						continue;
+					}
+
                     var file = Path.GetFullPath(Program.Settings.RecentFiles[i]);
                     var directory = Path.GetDirectoryName(file).FormatDirectory(Path.DirectorySeparatorChar);
                     var fileName = Path.GetFileName(file);
@@ -2887,7 +2903,7 @@ namespace GorgonLibrary.Editor
                         directory = directory.Ellipses(35, true);
                     }
 
-                    item.Text = (i + 1).ToString() + " " + root + directory + fileName;
+                    item.Text = (i + 1) + " " + root + directory + fileName;
 
                     item.Tag = file;
                     item.AutoToolTip = true;
@@ -3004,7 +3020,12 @@ namespace GorgonLibrary.Editor
                 {
                     try
                     {
-                        var file = Path.GetFullPath(Program.Settings.RecentFiles[i]);
+	                    if (string.IsNullOrWhiteSpace(Program.Settings.RecentFiles[i]))
+	                    {
+		                    continue;
+	                    }
+
+	                    var file = Path.GetFullPath(Program.Settings.RecentFiles[i]);
                         var directory = Path.GetDirectoryName(file).FormatDirectory(Path.DirectorySeparatorChar);
 
                         if ((!Directory.Exists(directory)) || (!File.Exists(file)))

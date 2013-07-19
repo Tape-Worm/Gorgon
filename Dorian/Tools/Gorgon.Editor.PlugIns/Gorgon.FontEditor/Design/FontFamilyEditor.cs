@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.Drawing;
 using System.Drawing.Design;
 using System.Windows.Forms.Design;
 
@@ -36,6 +37,10 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 	class FontFamilyEditor
 		: UITypeEditor
 	{
+		#region Variables.
+		private Size _listBoxSize = Size.Empty;			// The size of the list box.
+		#endregion
+
 		#region Properties.
 		/// <summary>
 		/// Gets a value indicating whether drop-down editors should be resizable by the user.
@@ -71,7 +76,14 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 				fonts.SelectedItem = value.ToString();
 				fonts.Service = editorSerivce;
 
+				if (_listBoxSize != Size.Empty)
+				{
+					fonts.Size = _listBoxSize;
+				}
+
 				editorSerivce.DropDownControl(fonts);
+
+				_listBoxSize = fonts.Size;
 
 				if ((fonts.SelectedItem != null) && (string.Compare(fonts.SelectedItem.ToString(), value.ToString(), true) != 0))
 					return fonts.SelectedItem.ToString();

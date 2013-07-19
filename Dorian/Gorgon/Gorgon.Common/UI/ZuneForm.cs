@@ -640,19 +640,19 @@ namespace GorgonLibrary.UI
 					return;
 				}
 
-				if ((e.Location.X < ResizeHandleSize) && (e.Location.Y < ResizeHandleSize))
+				if ((e.Location.X < ResizeHandleSize * 2) && (e.Location.Y < ResizeHandleSize * 2))
 				{
 					ResizeDir = ResizeDirection.TopLeft;
 				}
-				else if ((e.Location.X < ResizeHandleSize) && (e.Location.Y > Height - ResizeHandleSize))
+				else if ((e.Location.X < ResizeHandleSize * 2) && (e.Location.Y > Height - ResizeHandleSize * 2))
 				{
 					ResizeDir = ResizeDirection.BottomLeft;
 				}
-				if ((e.Location.X > Width - ResizeHandleSize) && (e.Location.Y > Height - ResizeHandleSize))
+				else if ((e.Location.X > Width - ResizeHandleSize * 2) && (e.Location.Y > Height - ResizeHandleSize * 2))
 				{
 					ResizeDir = ResizeDirection.BottomRight;
 				}
-				else if ((e.Location.X > Width - ResizeHandleSize) && (e.Location.Y < ResizeHandleSize))
+				else if ((e.Location.X > Width - ResizeHandleSize * 2) && (e.Location.Y < ResizeHandleSize * 2))
 				{
 					ResizeDir = ResizeDirection.TopRight;
 				}
