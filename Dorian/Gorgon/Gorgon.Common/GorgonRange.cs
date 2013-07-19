@@ -27,39 +27,17 @@
 using System;
 using System.Runtime.InteropServices;
 using GorgonLibrary.Properties;
+using GorgonLibrary.Math;
 
 namespace GorgonLibrary
 {
-	/// <summary>
-	/// Interface used to define a range type.
-	/// </summary>
-	/// <typeparam name="T">Type of values stored in the range.</typeparam>
-	internal interface IRange<out T>
-	{
-		/// <summary>
-		/// Property to return the range between the two values.
-		/// </summary>
-		T Range
-		{
-			get;
-		}
-
-		/// <summary>
-		/// Property to return whether the value is empty or not.
-		/// </summary>
-		bool IsEmpty
-		{
-			get;
-		}
-	}
-
 	#region Double
 	/// <summary>
 	/// Value type to indicate a range of double values.
 	/// </summary>
     [StructLayout(LayoutKind.Sequential, Pack = 4)]
 	public struct GorgonRangeD
-		: IRange<double>, IEquatable<GorgonRangeD>
+		: IEquatable<GorgonRangeD>, IComparable<GorgonRangeD>
 	{
 		#region Variables.
 		/// <summary>
@@ -77,8 +55,32 @@ namespace GorgonLibrary
 		public static readonly GorgonRangeD Empty = new GorgonRangeD(0.0, 0.0);
 		#endregion
 
-		#region Methods.
-		/// <summary>
+        #region Properties.
+        /// <summary>
+        /// Property to return whether the range is empty or not.
+        /// </summary>
+        public bool IsEmpty
+        {
+            get
+            {
+                return ((Maximum.EqualsEpsilon(0.0)) && (Minimum.EqualsEpsilon(0.0)));
+            }
+        }
+
+        /// <summary>
+        /// Property to return the range between the two values.
+        /// </summary>
+        public double Range
+        {
+            get
+            {
+                return (Minimum < Maximum) ? (Maximum - Minimum) : (Minimum - Maximum);
+            }
+        }
+        #endregion
+
+        #region Methods.
+        /// <summary>
 		/// Function to return whether the value falls within the range.
 		/// </summary>
 		/// <param name="value">Value to test.</param>
@@ -496,30 +498,50 @@ namespace GorgonLibrary
 			Divide(ref left, scalar, out result);
 			return result;
 		}
-		#endregion
 
-		#region IRange<double> Members
-		/// <summary>
-		/// Property to return whether the range is empty or not.
-		/// </summary>
-		public bool IsEmpty
-		{
-			get
-			{
-				return !((Maximum != 0.0) || (Minimum != 0.0));
-			}
-		}
+        /// <summary>
+        /// Implements the operator >.
+        /// </summary>
+        /// <param name="left">The left instance to compare.</param>
+        /// <param name="right">The right instance to compare.</param>
+        /// <returns>TRUE if left is greater than right.</returns>
+        public static bool operator >(GorgonRangeD left, GorgonRangeD right)
+        {
+            return left.Range > right.Range;
+        }
 
-		/// <summary>
-		/// Property to return the range between the two values.
-		/// </summary>
-		public double Range
-		{
-			get
-			{
-				return (Minimum < Maximum) ? (Maximum - Minimum) : (Minimum - Maximum);
-			}
-		}
+        /// <summary>
+        /// Implements the operator >=.
+        /// </summary>
+        /// <param name="left">The left instance to compare.</param>
+        /// <param name="right">The right instance to compare.</param>
+        /// <returns>TRUE if left is greater than right.</returns>
+        public static bool operator >=(GorgonRangeD left, GorgonRangeD right)
+        {
+            return left.Range >= right.Range;
+        }
+
+        /// <summary>
+        /// Implements the operator >.
+        /// </summary>
+        /// <param name="left">The left instance to compare.</param>
+        /// <param name="right">The right instance to compare.</param>
+        /// <returns>TRUE if left is greater than right.</returns>
+        public static bool operator <(GorgonRangeD left, GorgonRangeD right)
+        {
+            return left.Range < right.Range;
+        }
+
+        /// <summary>
+        /// Implements the operator >=.
+        /// </summary>
+        /// <param name="left">The left instance to compare.</param>
+        /// <param name="right">The right instance to compare.</param>
+        /// <returns>TRUE if left is greater than right.</returns>
+        public static bool operator <=(GorgonRangeD left, GorgonRangeD right)
+        {
+            return left.Range <= right.Range;
+        }
 		#endregion
 
 		#region IEquatable<GorgonMinMaxD> Members
@@ -532,10 +554,24 @@ namespace GorgonLibrary
 		/// </returns>
 		public bool Equals(GorgonRangeD other)
 		{
-			return (Minimum == other.Minimum) && (Maximum == other.Maximum);
+			return (Minimum.EqualsEpsilon(other.Minimum)) && (Maximum.EqualsEpsilon(other.Maximum));
 		}
 		#endregion
-	}
+
+        #region IComparable<GorgonRangeD> Members
+        /// <summary>
+        /// Compares the current object with another object of the same type.
+        /// </summary>
+        /// <param name="other">An object to compare with this object.</param>
+        /// <returns>
+        /// A 32-bit signed integer that indicates the relative order of the objects being compared. The return value has the following meanings: Value Meaning Less than zero This object is less than the other parameter.Zero This object is equal to other. Greater than zero This object is greater than other.
+        /// </returns>
+        public int CompareTo(GorgonRangeD other)
+        {
+            return Range.CompareTo(other.Range);
+        }
+        #endregion
+    }
 	#endregion
 
 	#region Decimal
@@ -544,7 +580,7 @@ namespace GorgonLibrary
 	/// </summary>
 	[StructLayout(LayoutKind.Sequential, Pack = 4)]
 	public struct GorgonRangeM
-		: IRange<decimal>, IEquatable<GorgonRangeM>
+		: IEquatable<GorgonRangeM>, IComparable<GorgonRangeM>
 	{
 		#region Variables.
 		/// <summary>
@@ -562,8 +598,32 @@ namespace GorgonLibrary
 		public static readonly GorgonRangeM Empty = new GorgonRangeM(0.0M, 0.0M);
 		#endregion
 
-		#region Methods.
-		/// <summary>
+        #region Properties.
+        /// <summary>
+        /// Property to return whether the range is empty or not.
+        /// </summary>
+        public bool IsEmpty
+        {
+            get
+            {
+                return !((Maximum != 0.0M) || (Minimum != 0.0M));
+            }
+        }
+
+        /// <summary>
+        /// Property to return the range between the two values.
+        /// </summary>
+        public decimal Range
+        {
+            get
+            {
+                return (Minimum < Maximum) ? (Maximum - Minimum) : (Minimum - Maximum);
+            }
+        }
+        #endregion
+
+        #region Methods.
+        /// <summary>
 		/// Function to return whether the value falls within the range.
 		/// </summary>
 		/// <param name="value">Value to test.</param>
@@ -981,31 +1041,51 @@ namespace GorgonLibrary
 			Divide(ref left, scalar, out result);
 			return result;
 		}
-		#endregion
 
-		#region IRange<decimal> Members
-		/// <summary>
-		/// Property to return whether the range is empty or not.
-		/// </summary>
-		public bool IsEmpty
-		{
-			get
-			{
-				return !((Maximum != 0.0M) || (Minimum != 0.0M));
-			}
-		}
+        /// <summary>
+        /// Implements the operator >.
+        /// </summary>
+        /// <param name="left">The left instance to compare.</param>
+        /// <param name="right">The right instance to compare.</param>
+        /// <returns>TRUE if left is greater than right.</returns>
+        public static bool operator >(GorgonRangeM left, GorgonRangeM right)
+        {
+            return left.Range > right.Range;
+        }
 
-		/// <summary>
-		/// Property to return the range between the two values.
-		/// </summary>
-		public decimal Range
-		{
-			get
-			{
-				return (Minimum < Maximum) ? (Maximum - Minimum) : (Minimum - Maximum);
-			}
-		}
-		#endregion
+        /// <summary>
+        /// Implements the operator >=.
+        /// </summary>
+        /// <param name="left">The left instance to compare.</param>
+        /// <param name="right">The right instance to compare.</param>
+        /// <returns>TRUE if left is greater than right.</returns>
+        public static bool operator >=(GorgonRangeM left, GorgonRangeM right)
+        {
+            return left.Range >= right.Range;
+        }
+
+        /// <summary>
+        /// Implements the operator >.
+        /// </summary>
+        /// <param name="left">The left instance to compare.</param>
+        /// <param name="right">The right instance to compare.</param>
+        /// <returns>TRUE if left is greater than right.</returns>
+        public static bool operator <(GorgonRangeM left, GorgonRangeM right)
+        {
+            return left.Range < right.Range;
+        }
+
+        /// <summary>
+        /// Implements the operator >=.
+        /// </summary>
+        /// <param name="left">The left instance to compare.</param>
+        /// <param name="right">The right instance to compare.</param>
+        /// <returns>TRUE if left is greater than right.</returns>
+        public static bool operator <=(GorgonRangeM left, GorgonRangeM right)
+        {
+            return left.Range <= right.Range;
+        }
+        #endregion
 
 		#region IEquatable<GorgonMinMaxD> Members
 		/// <summary>
@@ -1020,6 +1100,20 @@ namespace GorgonLibrary
 			return (Minimum == other.Minimum) && (Maximum == other.Maximum);
 		}
 		#endregion
+
+        #region IComparable<GorgonRangeM> Members
+        /// <summary>
+        /// Compares the current object with another object of the same type.
+        /// </summary>
+        /// <param name="other">An object to compare with this object.</param>
+        /// <returns>
+        /// A 32-bit signed integer that indicates the relative order of the objects being compared. The return value has the following meanings: Value Meaning Less than zero This object is less than the other parameter.Zero This object is equal to other. Greater than zero This object is greater than other.
+        /// </returns>
+        public int CompareTo(GorgonRangeM other)
+        {
+            return Range.CompareTo(other.Range);
+        }
+        #endregion
 	}
 	#endregion
 
@@ -1029,7 +1123,7 @@ namespace GorgonLibrary
 	/// </summary>
     [StructLayout(LayoutKind.Sequential, Pack = 4)]
 	public struct GorgonRangeF
-		: IRange<float>, IEquatable<GorgonRangeF>
+		: IEquatable<GorgonRangeF>, IComparable<GorgonRangeF>
 	{
 		#region Variables.
 		/// <summary>
@@ -1047,8 +1141,32 @@ namespace GorgonLibrary
 		public static readonly GorgonRangeF Empty = new GorgonRangeF(0.0f, 0.0f);
 		#endregion
 
-		#region Methods.
-		/// <summary>
+        #region Properties.
+        /// <summary>
+        /// Property to return whether the range is empty or not.
+        /// </summary>
+        public bool IsEmpty
+        {
+            get
+            {
+                return ((Maximum.EqualsEpsilon(0.0f)) && (Minimum.EqualsEpsilon(0.0f)));
+            }
+        }
+
+        /// <summary>
+        /// Property to return the range between the two values.
+        /// </summary>
+        public float Range
+        {
+            get
+            {
+                return (Minimum < Maximum) ? (Maximum - Minimum) : (Minimum - Maximum);
+            }
+        }
+        #endregion
+
+        #region Methods.
+        /// <summary>
 		/// Function to return whether the value falls within the range.
 		/// </summary>
 		/// <param name="value">Value to test.</param>
@@ -1466,31 +1584,51 @@ namespace GorgonLibrary
 			Divide(ref left, scalar, out result);
 			return result;
 		}
-		#endregion
 
-		#region IRange<float> Members
-		/// <summary>
-		/// Property to return whether the range is empty or not.
-		/// </summary>
-		public bool IsEmpty
-		{
-			get
-			{
-				return !((Maximum != 0.0f) || (Minimum != 0.0f));
-			}
-		}
+        /// <summary>
+        /// Implements the operator >.
+        /// </summary>
+        /// <param name="left">The left instance to compare.</param>
+        /// <param name="right">The right instance to compare.</param>
+        /// <returns>TRUE if left is greater than right.</returns>
+        public static bool operator >(GorgonRangeF left, GorgonRangeF right)
+        {
+            return left.Range > right.Range;
+        }
 
-		/// <summary>
-		/// Property to return the range between the two values.
-		/// </summary>
-		public float Range
-		{
-			get
-			{
-				return (Minimum < Maximum) ? (Maximum - Minimum) : (Minimum - Maximum);
-			}
-		}
-		#endregion
+        /// <summary>
+        /// Implements the operator >=.
+        /// </summary>
+        /// <param name="left">The left instance to compare.</param>
+        /// <param name="right">The right instance to compare.</param>
+        /// <returns>TRUE if left is greater than right.</returns>
+        public static bool operator >=(GorgonRangeF left, GorgonRangeF right)
+        {
+            return left.Range >= right.Range;
+        }
+
+        /// <summary>
+        /// Implements the operator >.
+        /// </summary>
+        /// <param name="left">The left instance to compare.</param>
+        /// <param name="right">The right instance to compare.</param>
+        /// <returns>TRUE if left is greater than right.</returns>
+        public static bool operator <(GorgonRangeF left, GorgonRangeF right)
+        {
+            return left.Range < right.Range;
+        }
+
+        /// <summary>
+        /// Implements the operator >=.
+        /// </summary>
+        /// <param name="left">The left instance to compare.</param>
+        /// <param name="right">The right instance to compare.</param>
+        /// <returns>TRUE if left is greater than right.</returns>
+        public static bool operator <=(GorgonRangeF left, GorgonRangeF right)
+        {
+            return left.Range <= right.Range;
+        }
+        #endregion
 
 		#region IEquatable<GorgonMinMaxF> Members
 		/// <summary>
@@ -1502,9 +1640,23 @@ namespace GorgonLibrary
 		/// </returns>
 		public bool Equals(GorgonRangeF other)
 		{
-			return other.Minimum == Minimum && other.Maximum == Maximum;
+			return other.Minimum.EqualsEpsilon(Minimum) && other.Maximum.EqualsEpsilon(Maximum);
 		}
 		#endregion
+
+        #region IComparable<GorgonRangeF> Members
+        /// <summary>
+        /// Compares the current object with another object of the same type.
+        /// </summary>
+        /// <param name="other">An object to compare with this object.</param>
+        /// <returns>
+        /// A 32-bit signed integer that indicates the relative order of the objects being compared. The return value has the following meanings: Value Meaning Less than zero This object is less than the other parameter.Zero This object is equal to other. Greater than zero This object is greater than other.
+        /// </returns>
+        public int CompareTo(GorgonRangeF other)
+        {
+            return Range.CompareTo(other.Range);
+        }
+        #endregion
 	}
 	#endregion
 
@@ -1514,7 +1666,7 @@ namespace GorgonLibrary
 	/// </summary>
     [StructLayout(LayoutKind.Sequential, Pack=4)]
 	public struct GorgonRange
-		: IRange<int>, IEquatable<GorgonRange>
+		: IEquatable<GorgonRange>, IComparable<GorgonRange>
 	{
 		#region Variables.
 		/// <summary>
@@ -1532,8 +1684,32 @@ namespace GorgonLibrary
 		public static readonly GorgonRange Empty = new GorgonRange(0, 0);
 		#endregion
 
-		#region Methods.
-		/// <summary>
+        #region Properties.
+        /// <summary>
+        /// Property to return whether the range is empty or not.
+        /// </summary>
+        public bool IsEmpty
+        {
+            get
+            {
+                return ((Maximum == 0) && (Minimum == 0));
+            }
+        }
+
+        /// <summary>
+        /// Property to return the range between the two values.
+        /// </summary>
+        public int Range
+        {
+            get
+            {
+                return (Minimum < Maximum) ? (Maximum - Minimum) : (Minimum - Maximum);
+            }
+        }
+        #endregion
+
+        #region Methods.
+        /// <summary>
 		/// Function to return whether the value falls within the range.
 		/// </summary>
 		/// <param name="value">Value to test.</param>
@@ -1952,31 +2128,51 @@ namespace GorgonLibrary
 			Divide(ref left, scalar, out result);
 			return result;
 		}
-		#endregion
 
-		#region IRange<int> Members
-		/// <summary>
-		/// Property to return whether the range is empty or not.
-		/// </summary>
-		public bool IsEmpty
-		{
-			get
-			{
-				return !((Maximum != 0) || (Minimum != 0));
-			}
-		}
+        /// <summary>
+        /// Implements the operator >.
+        /// </summary>
+        /// <param name="left">The left instance to compare.</param>
+        /// <param name="right">The right instance to compare.</param>
+        /// <returns>TRUE if left is greater than right.</returns>
+	    public static bool operator >(GorgonRange left, GorgonRange right)
+        {
+            return left.Range > right.Range;
+        }
 
-		/// <summary>
-		/// Property to return the range between the two values.
-		/// </summary>
-		public int Range
-		{
-			get
-			{
-				return (Minimum < Maximum) ? (Maximum - Minimum) : (Minimum - Maximum);
-			}
-		}
-		#endregion
+        /// <summary>
+        /// Implements the operator >=.
+        /// </summary>
+        /// <param name="left">The left instance to compare.</param>
+        /// <param name="right">The right instance to compare.</param>
+        /// <returns>TRUE if left is greater than right.</returns>
+        public static bool operator >=(GorgonRange left, GorgonRange right)
+        {
+            return left.Range >= right.Range;
+        }
+
+        /// <summary>
+        /// Implements the operator >.
+        /// </summary>
+        /// <param name="left">The left instance to compare.</param>
+        /// <param name="right">The right instance to compare.</param>
+        /// <returns>TRUE if left is greater than right.</returns>
+        public static bool operator <(GorgonRange left, GorgonRange right)
+        {
+            return left.Range < right.Range;
+        }
+
+        /// <summary>
+        /// Implements the operator >=.
+        /// </summary>
+        /// <param name="left">The left instance to compare.</param>
+        /// <param name="right">The right instance to compare.</param>
+        /// <returns>TRUE if left is greater than right.</returns>
+        public static bool operator <=(GorgonRange left, GorgonRange right)
+        {
+            return left.Range <= right.Range;
+        }
+        #endregion
 
 		#region IEquatable<GorgonMinMax> Members
 		/// <summary>
@@ -1991,6 +2187,20 @@ namespace GorgonLibrary
 			return (Minimum == other.Minimum) && (Maximum == other.Maximum);
 		}
 		#endregion
+
+        #region IComparable<GorgonRange> Members
+        /// <summary>
+        /// Compares the current object with another object of the same type.
+        /// </summary>
+        /// <param name="other">An object to compare with this object.</param>
+        /// <returns>
+        /// A 32-bit signed integer that indicates the relative order of the objects being compared. The return value has the following meanings: Value Meaning Less than zero This object is less than the other parameter.Zero This object is equal to other. Greater than zero This object is greater than other.
+        /// </returns>
+        public int CompareTo(GorgonRange other)
+        {
+            return Range.CompareTo(other.Range);
+        }
+        #endregion
 	}
 	#endregion
 }
