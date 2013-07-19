@@ -26,7 +26,6 @@
 
 using System;
 using System.Collections.Generic;
-using GorgonLibrary.Diagnostics;
 
 namespace GorgonLibrary.Graphics
 {
@@ -212,12 +211,13 @@ namespace GorgonLibrary.Graphics
 		/// <param name="graphics">Graphics interface that created this object.</param>
 		/// <param name="name">The name of the effect.</param>
 		/// <param name="passCount">Number of passes for the effect.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (Nothing in VB.Net).</exception>
-		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="name"/> parameter is an empty string.</exception>
 		protected GorgonEffect(GorgonGraphics graphics, string name, int passCount)
 			: base(name)
 		{
-			GorgonDebug.AssertParamRange(passCount, 1, Int32.MaxValue, false, true, "passCount");
+		    if (passCount < 0)
+		    {
+		        passCount = 1;
+		    }
 
 			Parameters = new Dictionary<string, object>();
 			RequiredParameters = new List<string>();

@@ -149,16 +149,16 @@ namespace GorgonLibrary.Graphics
 		/// <param name="mode">Mode to find.</param>
 		/// <returns>The closest matching video mode to the <paramref name="mode"/> parameter.</returns>
 		public GorgonVideoMode FindMode(GorgonVideoMode mode)
-		{			
-			if ((VideoDevice.Graphics != null) && (VideoDevice.Graphics.D3DDevice != null))
-			{
-				using (var output = VideoDevice.Graphics.Adapter.GetOutput(Index))
-				{
-					return FindMode(output, mode);
-				}
-			}
+		{
+		    if ((VideoDevice.Graphics == null) || (VideoDevice.Graphics.D3DDevice == null))
+		    {
+		        return mode;
+		    }
 
-			return mode;
+		    using (var output = VideoDevice.Graphics.Adapter.GetOutput(Index))
+		    {
+		        return FindMode(output, mode);
+		    }
 		}
 #pragma warning restore 0618
 		#endregion

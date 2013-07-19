@@ -27,9 +27,11 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using GorgonLibrary.Collections;
 using GorgonLibrary.Diagnostics;
+using GorgonLibrary.Graphics.Properties;
 
 namespace GorgonLibrary.Graphics
 {
@@ -51,10 +53,17 @@ namespace GorgonLibrary.Graphics
 			}
 			set
 			{
-				if (string.IsNullOrEmpty(value.Name))
-					throw new ArgumentException("File name cannot be NULL or empty.");
+			    if (includeName == null)
+			    {
+			        return;
+			    }
 
-				if (!Contains(value.Name))
+			    if (string.IsNullOrWhiteSpace(includeName))
+			    {
+			        return;
+			    }
+
+			    if (!Contains(value.Name))
 				{
 					AddItem(value);
 					return;
@@ -80,22 +89,18 @@ namespace GorgonLibrary.Graphics
 
 			if (string.IsNullOrEmpty(includeLine))
 			{
-				throw new GorgonException(GorgonResult.CannotRead,
-				                          "Cannot read the shader file.  The include line has no parameters.");
+			    throw new GorgonException(GorgonResult.CannotRead,
+			        string.Format(Resources.GORGFX_SHADER_INCLUDE_PATH_INVALID, originalLine));
 			}
 
 			// Get include files.
 			int endQuote = 0;
 			string includePath;
 
-			if (!includeLine.StartsWith("\""))
+			if ((!includeLine.StartsWith("\"")) || (!includeLine.EndsWith("\"")))
 			{
-				throw new GorgonException(GorgonResult.CannotRead, "Cannot read the file.  Include name is not enclosed in quotes.");
-			}
-
-			if (!includeLine.EndsWith("\""))
-			{
-				throw new GorgonException(GorgonResult.CannotRead, "Cannot read the file.  Include path is not enclosed in quotes.");
+			    throw new GorgonException(GorgonResult.CannotRead,
+			        string.Format(Resources.GORGFX_SHADER_INCLUDE_PATH_INVALID, originalLine));
 			}
 
 			// Get the include name.
@@ -112,8 +117,9 @@ namespace GorgonLibrary.Graphics
 
 			if (endQuote == 0)
 			{
-				throw new GorgonException(GorgonResult.CannotRead, "Cannot read the file.  Include name is not enclosed in quotes.");
-			}
+                throw new GorgonException(GorgonResult.CannotRead,
+                    string.Format(Resources.GORGFX_SHADER_INCLUDE_PATH_INVALID, originalLine));
+            }
 
 			string includeName = includeLine.Substring(1, endQuote - 1);
 			includeLine = includeLine.Substring(endQuote + 1).Trim();
@@ -124,7 +130,8 @@ namespace GorgonLibrary.Graphics
 
 				if (!includeLine.StartsWith("\""))
 				{
-					throw new GorgonException(GorgonResult.CannotRead, "Cannot read the file.  Include path is not enclosed in quotes.");
+				    throw new GorgonException(GorgonResult.CannotRead,
+				        string.Format(Resources.GORGFX_SHADER_INCLUDE_PATH_INVALID, originalLine));
 				}
 
 				endQuote = includeLine.Length - 1;
@@ -138,13 +145,13 @@ namespace GorgonLibrary.Graphics
 
 				if (!string.IsNullOrEmpty(includeLine))
 				{
-					throw new GorgonException(GorgonResult.CannotRead,
-					                          "Cannot read the file.  '" + originalLine + "' has invalid information.");
+                    throw new GorgonException(GorgonResult.CannotRead,
+                        string.Format(Resources.GORGFX_SHADER_INCLUDE_PATH_INVALID, originalLine));
 				}
 
 				if ((checkFileExists) && (!File.Exists(includePath)))
 				{
-					throw new IOException("The include file '" + includePath + "' was not found.");
+					throw new IOException(string.Format(Resources.GORGFX_FILE_NOT_FOUND, originalLine));
 				}
 			}
 			else
@@ -168,30 +175,37 @@ namespace GorgonLibrary.Graphics
 
 			Directory.SetCurrentDirectory(searchPath);
 
-			for (int i = 0; i < lines.Count; i++)
+		    var includeLines = (from line in lines
+		                        select line.Trim()
+		                        into includeLine
+		                        where includeLine.StartsWith("#GorgonInclude", StringComparison.OrdinalIgnoreCase)
+		                        select ParseIncludeLine(includeLine, true));
+
+			foreach (GorgonShaderInclude includeFile in includeLines)
 			{
-				string includeLine = lines[i].Trim();
+			    // If we already have this include, then parse it and continue on.
+			    if (!Contains(includeFile.Name))
+			    {
+			        // Otherwise, we need to load it.
+			        if (string.IsNullOrEmpty(includeFile.SourceCodeFile))
+			        {
+			            throw new IOException(string.Format(Resources.GORGFX_FILE_NOT_FOUND, includeFile.Name));
+			        }
 
-				if (includeLine.StartsWith("#GorgonInclude", StringComparison.CurrentCultureIgnoreCase))
-				{
-					GorgonShaderInclude includeFile = ParseIncludeLine(includeLine, true);
+			        sourceCode = File.ReadAllText(includeFile.SourceCodeFile);
+			        paths.AddRange(
+			            GetIncludes(Path.GetDirectoryName(includeFile.SourceCodeFile) + Path.DirectorySeparatorChar,
+			                sourceCode));
 
-					// If we already have this include, then parse it and continue on.
-					if (Contains(includeFile.Name))
-						paths.AddRange(GetIncludes(searchPath, this[includeFile.Name].SourceCodeFile));
-					else
-					{
-						// Otherwise, we need to load it.
-						if (string.IsNullOrEmpty(includeFile.SourceCodeFile))
-							throw new GorgonException(GorgonResult.CannotRead, "Cannot read the file.  The include '" + includeFile.Name + "' was not found and has no path.");
-
-						sourceCode = File.ReadAllText(includeFile.SourceCodeFile);
-						paths.AddRange(GetIncludes(Path.GetDirectoryName(includeFile.SourceCodeFile) + Path.DirectorySeparatorChar.ToString(), sourceCode));
-
-						if (!Contains(includeFile.Name))
-							paths.Add(new GorgonShaderInclude(includeFile.Name, sourceCode));
-					}
-				}
+			        if (!Contains(includeFile.Name))
+			        {
+			            paths.Add(new GorgonShaderInclude(includeFile.Name, sourceCode));
+			        }
+			    }
+			    else
+			    {
+			        paths.AddRange(GetIncludes(searchPath, this[includeFile.Name].SourceCodeFile));
+			    }
 			}
 
 			return paths;
@@ -223,18 +237,15 @@ namespace GorgonLibrary.Graphics
 			GorgonDebug.AssertParamString(shaderFileName, "shaderFileName");
 
 			string currentDirectory = string.Empty;
-			string sourceCode = string.Empty;
-			string fileName = string.Empty;
-			string path = string.Empty;
-			IList<GorgonShaderInclude> includeFiles = null;
+		    IList<GorgonShaderInclude> includeFiles;
 
 			shaderFileName = Path.GetFullPath(shaderFileName);
-			path = Path.GetDirectoryName(shaderFileName) + Path.DirectorySeparatorChar.ToString();
+			string path = Path.GetDirectoryName(shaderFileName) + Path.DirectorySeparatorChar;
 			path = path.Replace(Path.AltDirectorySeparatorChar, Path.DirectorySeparatorChar);
-			fileName = Path.GetFileName(shaderFileName);
+			string fileName = Path.GetFileName(shaderFileName);
 
 			// Load in the shader file for processing.
-			sourceCode = File.ReadAllText(path + fileName);
+			string sourceCode = File.ReadAllText(path + fileName);
 
 			try
 			{
@@ -257,7 +268,10 @@ namespace GorgonLibrary.Graphics
 		internal string ProcessSource(string sourceCode)
 		{
 			var result = new StringBuilder();
-			IList<string> lines = sourceCode.Replace("\r\n", "\n").Replace("\n\r", "\n").Split(new[] { '\n' });
+		    IList<string> lines = sourceCode.Replace("\r\n", "\n").Replace("\n\r", "\n").Split(new[]
+		    {
+		        '\n'
+		    });
 			int i = 0;
 
 			while (i < lines.Count)
@@ -268,24 +282,19 @@ namespace GorgonLibrary.Graphics
 				{
 					GorgonShaderInclude includeFile = ParseIncludeLine(includeLine, false);
 
-					if (!Contains(includeFile.Name))
-						throw new KeyNotFoundException("The include file in line '" + includeLine + "' was not found in the include list.");
+				    if (!Contains(includeFile.Name))
+				    {
+				        throw new KeyNotFoundException(string.Format(Resources.GORGFX_SHADER_INCLUDE_NOT_FOUND, includeLine));
+				    }
 
-					result.Append("// ------------------ Begin #include of '");
-					result.Append(includeFile.Name);
-					result.Append("' ------------------ \r\n");
-					result.Append(ProcessSource(this[includeFile.Name].SourceCodeFile));
-					result.Append("\r\n");
-					result.Append("// ------------------ End #include of '");
-					result.Append(includeFile.Name);
-					result.Append("'------------------ \r\n\r\n");
+				    result.AppendFormat("// ------------------ Begin #include of '{0}' ------------------ \r\n", includeFile.Name);
+					result.AppendFormat("{0}\r\n", ProcessSource(this[includeFile.Name].SourceCodeFile));
+                    result.AppendFormat("// ------------------ End #include of '{0}'------------------ \r\n\r\n", includeFile.Name);
 				}
 				else
 				{
-					result.Append(lines[i]);
-					result.Append("\r\n");
+					result.AppendFormat("{0}\r\n", lines[i]);
 				}
-				//result.Append("\r\n");
 				i++;
 			}
 

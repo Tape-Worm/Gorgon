@@ -24,12 +24,6 @@
 // 
 #endregion
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 namespace GorgonLibrary.Graphics
 {
 	/// <summary>
@@ -37,20 +31,16 @@ namespace GorgonLibrary.Graphics
 	/// </summary>
 	public class GorgonRenderTargetBuffer
 		: GorgonBuffer
-	{
-		#region Variables.
-
-		#endregion
-
-		#region Properties.
-		/// <summary>
-		/// Property to return the default render target view for this render target.
-		/// </summary>
-		public GorgonRenderTargetView DefaultRenderTargetView
-		{
-			get;
-			private set;
-		}
+    {
+        #region Properties.
+        /// <summary>
+        /// Property to return the default render target view for the buffer.
+        /// </summary>
+	    public GorgonRenderTargetView DefaultRenderTargetView
+	    {
+	        get;
+	        private set;
+	    }
 
 		/// <summary>
 		/// Property to return the settings for this render target.
@@ -60,15 +50,58 @@ namespace GorgonLibrary.Graphics
 			get;
 			private set;
 		}
-
 		#endregion
 
-		#region Methods.
+        #region Methods.
+        /// <summary>
+        /// Function to create a default render target view.
+        /// </summary>
+	    protected override void OnCreateDefaultRenderTargetView()
+	    {
+            var info = GorgonBufferFormatInfo.GetInfo(Settings.DefaultShaderViewFormat);
+            DefaultRenderTargetView = OnGetRenderTargetView(Settings.Format, Settings.Format, 0, Settings.SizeInBytes / info.SizeInBytes);
+        }
 
-		#endregion
+        /// <summary>
+        /// Function to retrieve a render target view.
+        /// </summary>
+        /// <param name="format">Format of the new render target view.</param>
+        /// <param name="firstElement">The first element in the buffer to map to the view.</param>
+        /// <param name="elementCount">The number of elements in the buffer to map to the view.</param>
+        /// <returns>A render target view.</returns>
+        /// <remarks>Use this to create/retrieve a render target view that can bind a portion of the target to the pipeline as a render target.
+        /// <para>The <paramref name="format"/> for the render target view does not have to be the same as the render target backing buffer, and if the format is set to Unknown, then it will 
+        /// use the format from the buffer.</para>
+        /// </remarks>
+        /// <exception cref="GorgonLibrary.GorgonException">Thrown when the view could not created or retrieved from the internal cache.</exception>
+        public GorgonRenderTargetBufferView GetRenderTargetView(BufferFormat format, int firstElement, int elementCount)
+        {
+            return OnGetRenderTargetView(format, Settings.Format, firstElement, elementCount);
+        }
 
-		#region Constructor/Destructor.
-		/// <summary>
+	    /// <summary>
+        /// Function to retrieve the render target view for a render target.
+        /// </summary>
+        /// <param name="target">Render target to evaluate.</param>
+        /// <returns>The render target view for the swap chain.</returns>
+        public static GorgonRenderTargetView ToRenderTargetView(GorgonRenderTargetBuffer target)
+        {
+            return target == null ? null : target.DefaultRenderTargetView;
+        }
+
+        /// <summary>
+        /// Implicit operator to return the render target view for a render target
+        /// </summary>
+        /// <param name="target">Render target to evaluate.</param>
+        /// <returns>The render target view for the swap chain.</returns>
+        public static implicit operator GorgonRenderTargetView(GorgonRenderTargetBuffer target)
+        {
+            return target == null ? null : target.DefaultRenderTargetView;
+        }
+        #endregion
+
+        #region Constructor/Destructor.
+        /// <summary>
 		/// Initializes a new instance of the <see cref="GorgonRenderTargetBuffer"/> class.
 		/// </summary>
 		/// <param name="graphics">The graphics interface that created this object.</param>
@@ -78,6 +111,7 @@ namespace GorgonLibrary.Graphics
 			: base(graphics, name, settings)
 		{
 			Settings = settings;
+            IsRenderTarget = true;
 		}
 		#endregion
 	}

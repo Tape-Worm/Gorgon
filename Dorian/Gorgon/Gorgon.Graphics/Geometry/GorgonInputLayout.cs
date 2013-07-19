@@ -323,12 +323,14 @@ namespace GorgonLibrary.Graphics
 		/// <returns>The size of the elements in the slot, in bytes.</returns>
 		public int GetSlotSize(int slot)
 		{
-		    if ((_slotSizes == null) || (_slotSizes.Count == 0))
+		    if ((_slotSizes != null) && (_slotSizes.Count != 0))
 		    {
-		        UpdateVertexSize();
-
-                Debug.Assert(_slotSizes != null, "_slotSizes != null");
+		        return _slotSizes[slot];
 		    }
+
+		    UpdateVertexSize();
+
+		    Debug.Assert(_slotSizes != null, "_slotSizes != null");
 
 		    return _slotSizes[slot];
 		}

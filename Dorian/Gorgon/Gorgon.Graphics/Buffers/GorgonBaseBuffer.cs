@@ -331,6 +331,14 @@ namespace GorgonLibrary.Graphics
         }
 
         /// <summary>
+        /// Function to create a default render target view.
+        /// </summary>
+        protected virtual void OnCreateDefaultRenderTargetView()
+        {
+            // Implemented on render target buffer.
+        }
+
+        /// <summary>
         /// Function to clean up the resource object.
         /// </summary>
         protected override void CleanUpResource()
@@ -536,6 +544,47 @@ namespace GorgonLibrary.Graphics
         }
 
         /// <summary>
+        /// Function to retrieve a render target view.
+        /// </summary>
+        /// <param name="format">Format of the new render target view.</param>
+        /// <param name="bufferFormat">The format of the buffer.</param>
+        /// <param name="firstElement">The first element in the buffer to map to the view.</param>
+        /// <param name="elementCount">The number of elements in the buffer to map to the view.</param>
+        /// <returns>A render target view.</returns>
+        /// <remarks>Use this to create/retrieve a render target view that can bind a portion of the target to the pipeline as a render target.
+        /// <para>The <paramref name="format"/> for the render target view does not have to be the same as the render target backing buffer, and if the format is set to Unknown, then it will 
+        /// use the format from the buffer.</para>
+        /// </remarks>
+        /// <exception cref="GorgonLibrary.GorgonException">Thrown when the view could not created or retrieved from the internal cache.</exception>
+        protected GorgonRenderTargetBufferView OnGetRenderTargetView(BufferFormat format, BufferFormat bufferFormat, int firstElement, int elementCount)
+        {
+            // If we pass unknown, use the format from the texture.
+            if (format == BufferFormat.Unknown)
+            {
+                format = bufferFormat;
+            }
+
+            var info = GorgonBufferFormatInfo.GetInfo(format);
+
+            if (info.IsTypeless)
+            {
+                throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_VIEW_NO_TYPELESS);
+            }
+
+            var bufferElementCount = Settings.SizeInBytes / info.SizeInBytes;
+
+            if ((firstElement < 0) || (firstElement >= bufferElementCount)
+                || (elementCount < 1) || (elementCount >= bufferElementCount))
+            {
+                throw new GorgonException(GorgonResult.CannotCreate,
+                    string.Format(Resources.GORGFX_VIEW_ELEMENT_OUT_OF_RANGE, elementCount, elementCount));
+            }
+
+
+            return (GorgonRenderTargetBufferView)_viewCache.GetRenderTargetView(format, firstElement, elementCount, 0);
+        }
+
+        /// <summary>
         /// Function to retrieve a new shader view for the buffer.
         /// </summary>
         /// <param name="format">The format of the view.</param>
@@ -686,6 +735,11 @@ namespace GorgonLibrary.Graphics
 
             // Create any default shader views that are required.
             OnCreateDefaultShaderView();
+
+            if (IsRenderTarget)
+            {
+                OnCreateDefaultRenderTargetView();
+            }
         }
 
         /// <summary>

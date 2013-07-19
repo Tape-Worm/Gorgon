@@ -532,10 +532,12 @@ namespace GorgonLibrary.Graphics
             public IEnumerator<GorgonUnorderedAccessView> GetEnumerator()
             {
                 // ReSharper disable LoopCanBeConvertedToQuery
+                // ReSharper disable ForCanBeConvertedToForeach
                 for (int i = 0; i < _unorderedViews.Length; i++)
                 {
                     yield return _unorderedViews[i];
                 }
+                // ReSharper restore ForCanBeConvertedToForeach
                 // ReSharper restore LoopCanBeConvertedToQuery
             }
 

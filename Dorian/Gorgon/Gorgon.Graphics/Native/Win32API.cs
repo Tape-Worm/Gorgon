@@ -130,15 +130,10 @@ namespace GorgonLibrary.Native
 		/// <returns>The handle to the monitor.</returns>
 		public static IntPtr GetMonitor(Control window)
 		{
-			if (window != null)
-			{
-				return MonitorFromWindow(window.Handle, MonitorFlags.MONITOR_DEFAULTTOPRIMARY);
-			}
-
-			return MonitorFromWindow(IntPtr.Zero, MonitorFlags.MONITOR_DEFAULTTOPRIMARY);
+		    return MonitorFromWindow(window != null ? window.Handle : IntPtr.Zero, MonitorFlags.MONITOR_DEFAULTTOPRIMARY);
 		}
 
-		/// <summary>
+	    /// <summary>
 		/// Function to set the active font.
 		/// </summary>
 		/// <param name="graphics">Graphics interface to use.</param>

@@ -874,9 +874,9 @@ namespace GorgonLibrary.Graphics
 				}
 
                 chunk.WriteInt32(Settings.BaseColors.Count);
-                for (int i = 0; i < Settings.BaseColors.Count; i++)
+                foreach (GorgonColor color in Settings.BaseColors)
                 {
-                    chunk.Write(Settings.BaseColors[i]);
+                    chunk.Write(color);
                 }
                 chunk.Write(Settings.OutlineColor);
                 chunk.WriteInt32(Settings.OutlineSize);
@@ -939,14 +939,12 @@ namespace GorgonLibrary.Graphics
 
                 chunk.Begin("GLYFDATA");
                 chunk.WriteInt32(textureGlyphs.Length);
-                for (int i = 0; i < textureGlyphs.Length; i++)
+                foreach (var glyphGroup in textureGlyphs)
                 {
-                    var group = textureGlyphs[i];
+                    chunk.WriteString(glyphGroup.Key.Name);
+                    chunk.WriteInt32(glyphGroup.Count());
 
-                    chunk.WriteString(group.Key.Name);
-                    chunk.WriteInt32(group.Count());
-
-                    foreach (var glyph in group)
+                    foreach (var glyph in glyphGroup)
                     {
                         chunk.WriteChar(glyph.Character);
                         chunk.WriteRectangle(glyph.GlyphCoordinates);
@@ -1242,11 +1240,13 @@ namespace GorgonLibrary.Graphics
 						cropRightBottom.X = (int)result.Width - 1;
 					}
 
+				    // ReSharper disable InvertIf
 					if (cropTopLeft.Y == cropRightBottom.Y)
 					{
 						cropTopLeft.Y = (int)result.Y;
 						cropRightBottom.Y = (int)result.Height - 1;
-					}					
+					}
+                    // ReSharper restore InvertIf
 				}
 
 			    return
@@ -1579,22 +1579,25 @@ namespace GorgonLibrary.Graphics
 						if (!Char.IsWhiteSpace(charBounds.Item3))
 						{
 						    Rectangle? placement = GorgonGlyphPacker.Add(new Size(charBounds.Item1.Size.Width + packingSpace, charBounds.Item1.Size.Height + packingSpace));
-						    if (placement != null)
-							{
-								Point location = placement.Value.Location;
+						    
+                            if (placement == null)
+						    {
+						        continue;
+						    }
 
-								location.X += Settings.PackingSpacing;
-								location.Y += Settings.PackingSpacing;
-								availableCharacters.Remove(c);
+						    Point location = placement.Value.Location;
 
-								graphics.DrawImage(_charBitmap, new Rectangle(location, size), new Rectangle(charBounds.Item1.Location, size), GraphicsUnit.Pixel);
-								ABC advanceData = default(ABC);
-							    if (charABC.ContainsKey(charBounds.Item3))
-							    {
-							        advanceData = charABC[charBounds.Item3];
-							    }
-							    Glyphs.Add(new GorgonGlyph(charBounds.Item3, currentTexture, new Rectangle(location, size), charBounds.Item2, new Vector3(advanceData.A, advanceData.B, advanceData.C)));								
-							}
+						    location.X += Settings.PackingSpacing;
+						    location.Y += Settings.PackingSpacing;
+						    availableCharacters.Remove(c);
+
+						    graphics.DrawImage(_charBitmap, new Rectangle(location, size), new Rectangle(charBounds.Item1.Location, size), GraphicsUnit.Pixel);
+						    ABC advanceData = default(ABC);
+						    if (charABC.ContainsKey(charBounds.Item3))
+						    {
+						        advanceData = charABC[charBounds.Item3];
+						    }
+						    Glyphs.Add(new GorgonGlyph(charBounds.Item3, currentTexture, new Rectangle(location, size), charBounds.Item2, new Vector3(advanceData.A, advanceData.B, advanceData.C)));
 						}
 						else
 						{

@@ -40,10 +40,14 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		protected override void SetCurrent()
 		{
-			if (Current == null)
-				Graphics.Context.VertexShader.Set(null);
-			else
-				Graphics.Context.VertexShader.Set(Current.D3DShader);
+		    if (Current == null)
+		    {
+		        Graphics.Context.VertexShader.Set(null);
+		    }
+		    else
+		    {
+		        Graphics.Context.VertexShader.Set(Current.D3DShader);
+		    }
 		}
 
 		/// <summary>
@@ -52,17 +56,24 @@ namespace GorgonLibrary.Graphics
 		/// <param name="slot">Slot to start at.</param>
 		/// <param name="count"></param>
 		/// <param name="resources">Resources to update.</param>
-		/// <exception cref="System.InvalidOperationException">Thrown when the current video device is a SM2_a_b device.</exception>
+		/// <exception cref="GorgonLibrary.GorgonException">Thrown when the current video device is a SM2_a_b device.</exception>
 		protected override void SetResources(int slot, int count, SharpDX.Direct3D11.ShaderResourceView[] resources)
 		{
 #if DEBUG
-			if (Graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM2_a_b)
-				throw new InvalidOperationException("Cannot set resources on a SM2_a_b device.");
+		    if (Graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM2_a_b)
+		    {
+		        throw new GorgonException(GorgonResult.CannotBind,
+		            string.Format(Properties.Resources.GORGFX_REQUIRES_SM, DeviceFeatureLevel.SM4));
+		    }
 #endif
-			if (count == 1)
-				Graphics.Context.VertexShader.SetShaderResource(slot, resources[0]);
-			else
-				Graphics.Context.VertexShader.SetShaderResources(slot, count, resources);
+		    if (count == 1)
+		    {
+		        Graphics.Context.VertexShader.SetShaderResource(slot, resources[0]);
+		    }
+		    else
+		    {
+		        Graphics.Context.VertexShader.SetShaderResources(slot, count, resources);
+		    }
 		}
 
 		/// <summary>
@@ -71,17 +82,24 @@ namespace GorgonLibrary.Graphics
 		/// <param name="slot">Slot to start at.</param>
 		/// <param name="count"></param>
 		/// <param name="samplers">Samplers to update.</param>
-		/// <exception cref="System.InvalidOperationException">Thrown when the current video device is a SM2_a_b device.</exception>
+        /// <exception cref="GorgonLibrary.GorgonException">Thrown when the current video device is a SM2_a_b device.</exception>
 		protected override void SetSamplers(int slot, int count, SharpDX.Direct3D11.SamplerState[] samplers)
 		{
 #if DEBUG
-			if (Graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM2_a_b)
-				throw new InvalidOperationException("Cannot set resources on a SM2_a_b device.");
+            if (Graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM2_a_b)
+            {
+                throw new GorgonException(GorgonResult.CannotBind,
+                    string.Format(Properties.Resources.GORGFX_REQUIRES_SM, DeviceFeatureLevel.SM4));
+            }
 #endif
-			if (count == 1)
-				Graphics.Context.VertexShader.SetSampler(slot, samplers[0]);
-			else
-				Graphics.Context.VertexShader.SetSamplers(slot, count, samplers);
+		    if (count == 1)
+		    {
+		        Graphics.Context.VertexShader.SetSampler(slot, samplers[0]);
+		    }
+		    else
+		    {
+		        Graphics.Context.VertexShader.SetSamplers(slot, count, samplers);
+		    }
 		}
 
 		/// <summary>
@@ -92,10 +110,14 @@ namespace GorgonLibrary.Graphics
 		/// <param name="buffers">Constant buffers to update.</param>
 		protected override void SetConstantBuffers(int slot, int count, SharpDX.Direct3D11.Buffer[] buffers)
 		{
-			if (count == 1)
-				Graphics.Context.VertexShader.SetConstantBuffer(slot, buffers[0]);
-			else
-				Graphics.Context.VertexShader.SetConstantBuffers(slot, count, buffers);
+		    if (count == 1)
+		    {
+		        Graphics.Context.VertexShader.SetConstantBuffer(slot, buffers[0]);
+		    }
+		    else
+		    {
+		        Graphics.Context.VertexShader.SetConstantBuffers(slot, count, buffers);
+		    }
 		}
 		#endregion
 

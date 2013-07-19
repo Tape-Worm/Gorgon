@@ -28,6 +28,7 @@ using System.Linq;
 using System.Drawing;
 using DX = SharpDX;
 using D3D = SharpDX.Direct3D11;
+using GorgonLibrary.Math;
 
 namespace GorgonLibrary.Graphics
 {
@@ -252,10 +253,12 @@ namespace GorgonLibrary.Graphics
 		/// </returns>
 		public override bool Equals(object obj)
 		{
-			if (obj is GorgonRasterizerStates)
-				return Equals((GorgonRasterizerStates)obj);
+		    if (obj is GorgonRasterizerStates)
+		    {
+		        return Equals((GorgonRasterizerStates)obj);
+		    }
 
-			return base.Equals(obj);
+		    return base.Equals(obj);
 		}
 
 		/// <summary>
@@ -266,9 +269,14 @@ namespace GorgonLibrary.Graphics
 		/// <returns>TRUE if equal, FALSE if not.</returns>
 		public static bool Equals(ref GorgonRasterizerStates left, ref GorgonRasterizerStates right)
 		{
-			return ((left.CullingMode == right.CullingMode) && (left.DepthBias == right.DepthBias) && (left.DepthBiasClamp == right.DepthBiasClamp) && (left.FillMode == right.FillMode) &&
-					(left.IsAntialiasedLinesEnabled == right.IsAntialiasedLinesEnabled) && (left.IsDepthClippingEnabled == right.IsDepthClippingEnabled) && (left.IsFrontFacingTriangleCounterClockwise == right.IsFrontFacingTriangleCounterClockwise) &&
-					(left.IsMultisamplingEnabled == right.IsMultisamplingEnabled) && (left.IsScissorTestingEnabled == right.IsScissorTestingEnabled) && (left.SlopeScaledDepthBias == right.SlopeScaledDepthBias));
+		    return ((left.CullingMode == right.CullingMode) && (left.DepthBias == right.DepthBias)
+		            && (left.DepthBiasClamp.EqualsEpsilon(right.DepthBiasClamp)) && (left.FillMode == right.FillMode) &&
+		            (left.IsAntialiasedLinesEnabled == right.IsAntialiasedLinesEnabled)
+		            && (left.IsDepthClippingEnabled == right.IsDepthClippingEnabled)
+		            && (left.IsFrontFacingTriangleCounterClockwise == right.IsFrontFacingTriangleCounterClockwise) &&
+		            (left.IsMultisamplingEnabled == right.IsMultisamplingEnabled)
+		            && (left.IsScissorTestingEnabled == right.IsScissorTestingEnabled)
+		            && (left.SlopeScaledDepthBias.EqualsEpsilon(right.SlopeScaledDepthBias)));
 		}
 
 		/// <summary>
@@ -281,7 +289,7 @@ namespace GorgonLibrary.Graphics
 		/// </returns>
 		public static bool operator ==(GorgonRasterizerStates left, GorgonRasterizerStates right)
 		{
-			return GorgonRasterizerStates.Equals(ref left, ref right);
+			return Equals(ref left, ref right);
 		}
 
 		/// <summary>
@@ -294,7 +302,7 @@ namespace GorgonLibrary.Graphics
 		/// </returns>
 		public static bool operator !=(GorgonRasterizerStates left, GorgonRasterizerStates right)
 		{
-			return !GorgonRasterizerStates.Equals(ref left, ref right);
+			return !Equals(ref left, ref right);
 		}
 		#endregion
 
@@ -308,7 +316,7 @@ namespace GorgonLibrary.Graphics
 		/// </returns>
 		public bool Equals(GorgonRasterizerStates other)
 		{
-			return GorgonRasterizerStates.Equals(ref this, ref other);
+			return Equals(ref this, ref other);
 		}
 		#endregion
 
@@ -322,7 +330,7 @@ namespace GorgonLibrary.Graphics
 		/// </returns>
 		public bool Equals(ref GorgonRasterizerStates other)
 		{
-			return GorgonRasterizerStates.Equals(ref this, ref other);
+			return Equals(ref this, ref other);
 		}
 		#endregion
 	}

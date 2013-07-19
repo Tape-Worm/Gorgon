@@ -433,13 +433,16 @@ namespace GorgonLibrary.Graphics
 
 			try
 			{
-				if (device == null)
-				{
-					tempInterfaces = GetDevice(VideoDeviceType, HardwareFeatureLevel);
-					device = tempInterfaces.Item3;
-				}
-				
-				return ((device.CheckFormatSupport((GI.Format)format) & D3D.FormatSupport.Display) == D3D.FormatSupport.Display);
+			    if (device != null)
+			    {
+			        return ((device.CheckFormatSupport((GI.Format)format) & D3D.FormatSupport.Display)
+			                == D3D.FormatSupport.Display);
+			    }
+
+			    tempInterfaces = GetDevice(VideoDeviceType, HardwareFeatureLevel);
+			    device = tempInterfaces.Item3;
+
+			    return ((device.CheckFormatSupport((GI.Format)format) & D3D.FormatSupport.Display) == D3D.FormatSupport.Display);
 			}
 			finally
 			{
@@ -459,13 +462,16 @@ namespace GorgonLibrary.Graphics
 
 			try
 			{
-				if (device == null)
-				{
-                    tempInterfaces = GetDevice(VideoDeviceType, HardwareFeatureLevel);
-					device = tempInterfaces.Item3;
-				}
+			    if (device != null)
+			    {
+			        return ((device.CheckFormatSupport((GI.Format)format) & D3D.FormatSupport.Texture3D)
+			                == D3D.FormatSupport.Texture3D);
+			    }
 
-				return ((device.CheckFormatSupport((GI.Format)format) & D3D.FormatSupport.Texture3D) == D3D.FormatSupport.Texture3D);
+			    tempInterfaces = GetDevice(VideoDeviceType, HardwareFeatureLevel);
+			    device = tempInterfaces.Item3;
+
+			    return ((device.CheckFormatSupport((GI.Format)format) & D3D.FormatSupport.Texture3D) == D3D.FormatSupport.Texture3D);
 			}
 			finally
 			{
@@ -486,13 +492,20 @@ namespace GorgonLibrary.Graphics
 
 			try
 			{
-				if (device == null)
-				{
-                    tempInterfaces = GetDevice(VideoDeviceType, HardwareFeatureLevel);
-					device = tempInterfaces.Item3;
-				}
-				
-				return (((device.CheckFormatSupport((GI.Format)format) & D3D.FormatSupport.RenderTarget) == D3D.FormatSupport.RenderTarget) &&
+			    if (device != null)
+			    {
+			        return (((device.CheckFormatSupport((GI.Format)format) & D3D.FormatSupport.RenderTarget)
+			                 == D3D.FormatSupport.RenderTarget) &&
+			                ((isMultiSampled)
+			                 && ((device.CheckFormatSupport((GI.Format)format) & D3D.FormatSupport.MultisampleRenderTarget)
+			                     == D3D.FormatSupport.MultisampleRenderTarget) ||
+			                 (!isMultiSampled)));
+			    }
+
+			    tempInterfaces = GetDevice(VideoDeviceType, HardwareFeatureLevel);
+			    device = tempInterfaces.Item3;
+
+			    return (((device.CheckFormatSupport((GI.Format)format) & D3D.FormatSupport.RenderTarget) == D3D.FormatSupport.RenderTarget) &&
 					((isMultiSampled) && ((device.CheckFormatSupport((GI.Format)format) & D3D.FormatSupport.MultisampleRenderTarget) == D3D.FormatSupport.MultisampleRenderTarget) ||
 					(!isMultiSampled)));
 			}
@@ -514,13 +527,16 @@ namespace GorgonLibrary.Graphics
 
 			try
 			{
-				if (device == null)
-				{
-                    tempInterfaces = GetDevice(VideoDeviceType, HardwareFeatureLevel);
-					device = tempInterfaces.Item3;
-				}
+			    if (device != null)
+			    {
+			        return ((device.CheckFormatSupport((GI.Format)format) & D3D.FormatSupport.Texture2D)
+			                == D3D.FormatSupport.Texture2D);
+			    }
 
-				return ((device.CheckFormatSupport((GI.Format)format) & D3D.FormatSupport.Texture2D) == D3D.FormatSupport.Texture2D);
+			    tempInterfaces = GetDevice(VideoDeviceType, HardwareFeatureLevel);
+			    device = tempInterfaces.Item3;
+
+			    return ((device.CheckFormatSupport((GI.Format)format) & D3D.FormatSupport.Texture2D) == D3D.FormatSupport.Texture2D);
 			}
 			finally
 			{
@@ -540,13 +556,16 @@ namespace GorgonLibrary.Graphics
 
 			try
 			{
-				if (device == null)
-				{
-                    tempInterfaces = GetDevice(VideoDeviceType, HardwareFeatureLevel);
-					device = tempInterfaces.Item3;
-				}
+			    if (device != null)
+			    {
+			        return ((device.CheckFormatSupport((GI.Format)format) & D3D.FormatSupport.Texture1D)
+			                == D3D.FormatSupport.Texture1D);
+			    }
 
-				return ((device.CheckFormatSupport((GI.Format)format) & D3D.FormatSupport.Texture1D) == D3D.FormatSupport.Texture1D);
+			    tempInterfaces = GetDevice(VideoDeviceType, HardwareFeatureLevel);
+			    device = tempInterfaces.Item3;
+
+			    return ((device.CheckFormatSupport((GI.Format)format) & D3D.FormatSupport.Texture1D) == D3D.FormatSupport.Texture1D);
 			}
 			finally
 			{
@@ -671,13 +690,16 @@ namespace GorgonLibrary.Graphics
 
 			try
 			{
-				if (device == null)
-				{
-                    tempInterfaces = GetDevice(VideoDeviceType, HardwareFeatureLevel);
-					device = tempInterfaces.Item3;
-				}
+			    if (device != null)
+			    {
+			        return ((device.CheckFormatSupport((GI.Format)format) & D3D.FormatSupport.DepthStencil)
+			                == D3D.FormatSupport.DepthStencil);
+			    }
 
-				return ((device.CheckFormatSupport((GI.Format)format) & D3D.FormatSupport.DepthStencil) == D3D.FormatSupport.DepthStencil);
+			    tempInterfaces = GetDevice(VideoDeviceType, HardwareFeatureLevel);
+			    device = tempInterfaces.Item3;
+
+			    return ((device.CheckFormatSupport((GI.Format)format) & D3D.FormatSupport.DepthStencil) == D3D.FormatSupport.DepthStencil);
 			}
 			finally
 			{
@@ -704,13 +726,15 @@ namespace GorgonLibrary.Graphics
 
 			try
 			{
-				if (device == null)
-				{
-                    tempInterfaces = GetDevice(VideoDeviceType, HardwareFeatureLevel);
-					device = tempInterfaces.Item3;
-				}
+			    if (device != null)
+			    {
+			        return device.CheckMultisampleQualityLevels((GI.Format)format, count);
+			    }
 
-				return device.CheckMultisampleQualityLevels((GI.Format)format, count);
+			    tempInterfaces = GetDevice(VideoDeviceType, HardwareFeatureLevel);
+			    device = tempInterfaces.Item3;
+
+			    return device.CheckMultisampleQualityLevels((GI.Format)format, count);
 			}
 			finally
 			{
