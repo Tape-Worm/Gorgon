@@ -503,7 +503,7 @@ Log file location: "{0}"</value>
     <value>Gorgon Kerning Pair: {0}, {1}</value>
   </data>
   <data name="GORGFX_IMAGE_BMP_CODEC_DESC" xml:space="preserve">
-    <value />
+    <value>Windows Bitmap</value>
   </data>
   <data name="GORGFX_IMAGE_CODEC_TOSTR" xml:space="preserve">
     <value>Gorgon {0} Image Codec</value>
@@ -518,16 +518,16 @@ Log file location: "{0}"</value>
     <value>The data could not be encoded into a {0} file.</value>
   </data>
   <data name="GORGFX_IMAGE_GIF_CODEC_DESC" xml:space="preserve">
-    <value />
+    <value>Graphics Interchange Format</value>
   </data>
   <data name="GORGFX_IMAGE_HDP_CODEC_DESC" xml:space="preserve">
-    <value />
+    <value>HD Photo format</value>
   </data>
   <data name="GORGFX_IMAGE_INDEXED_NO_PALETTE" xml:space="preserve">
     <value>An indexed image requires a palette with {0} entries.</value>
   </data>
   <data name="GORGFX_IMAGE_JPG_CODEC_DESC" xml:space="preserve">
-    <value />
+    <value>Joint Photographics Experts Group</value>
   </data>
   <data name="GORGFX_IMAGE_MIPCOUNT_ARRAYCOUNT_TOO_LARGE" xml:space="preserve">
     <value>The mip level count and the array count exceed the length of the array.</value>
@@ -542,13 +542,13 @@ Log file location: "{0}"</value>
     <value>The pitch for the image must be greater than 0.</value>
   </data>
   <data name="GORGFX_IMAGE_PNG_CODEC_DESC" xml:space="preserve">
-    <value />
+    <value>Portable Network Graphics</value>
   </data>
   <data name="GORGFX_IMAGE_TGA_CODEC_DESC" xml:space="preserve">
     <value>Truevision Targa</value>
   </data>
   <data name="GORGFX_IMAGE_TIF_CODEC_DESC" xml:space="preserve">
-    <value />
+    <value>Tagged Image File Format</value>
   </data>
   <data name="GORGFX_IMAGE_VOLUME_MIPCOUNT_DEPTHCOUNT_TOO_LARGE" xml:space="preserve">
     <value>The mip level count and the depth slice count exceed the length of the array.</value>

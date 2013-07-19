@@ -24,6 +24,8 @@
 // 
 #endregion
 
+using GorgonLibrary.Graphics.Properties;
+
 namespace GorgonLibrary.IO
 {
     /// <summary>
@@ -131,7 +133,7 @@ namespace GorgonLibrary.IO
         /// Initializes a new instance of the <see cref="GorgonCodecTIFF"/> class.
         /// </summary>
         public GorgonCodecTIFF()
-            : base("TIFF", "Tagged Image File Format", new[] { "tif", "tiff" }, SharpDX.WIC.ContainerFormatGuids.Tiff)
+            : base("TIFF", Resources.GORGFX_IMAGE_TIF_CODEC_DESC, new[] { "tif", "tiff" }, SharpDX.WIC.ContainerFormatGuids.Tiff)
         {
             CompressionType = TIFFCompressionType.None;
         }
