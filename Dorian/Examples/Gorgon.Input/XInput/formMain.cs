@@ -162,13 +162,15 @@ namespace GorgonLibrary.Examples
 			{
 				state.IsActive = false;
 			}
-			
-			if (state.IsActive)
-			{
-				// Update the state spray effect.
-				state.Update();
-				_surface.DrawPoint(Point.Round(state.Position), state.SprayColor, state.SprayPointSize);
-			}
+
+		    if (!state.IsActive)
+		    {
+			    return;
+		    }
+
+		    // Update the state spray effect.
+		    state.Update();
+		    _surface.DrawPoint(Point.Round(state.Position), state.SprayColor, state.SprayPointSize);
 		}
 
 		/// <summary>
@@ -314,14 +316,16 @@ namespace GorgonLibrary.Examples
 
                 // Check for connected controllers.
                 while (!_joystick.Any(item => item.IsConnected))
-                {                    
-                    if (MessageBox.Show(this, 
-                                        "There are no XBox controllers connected.\nPlease plug in an XBox controller and click OK.", 
-                                        "No Controllers", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning) == DialogResult.Cancel)
-                    {
-                        Gorgon.Quit();
-                        return;
-                    }
+                {
+	                if (MessageBox.Show(this,
+		                "There are no XBox controllers connected.\nPlease plug in an XBox controller and click OK.",
+		                "No Controllers", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning) != DialogResult.Cancel)
+	                {
+		                continue;
+	                }
+
+	                Gorgon.Quit();
+	                return;
                 }
 
 				// Get the graphics interface for our panel.
@@ -347,11 +351,13 @@ namespace GorgonLibrary.Examples
 		{
 			base.OnFormClosing(e);
 
-			if (_surface != null)
+			if (_surface == null)
 			{
-				_surface.Dispose();
-				_surface = null;
+				return;
 			}
+
+			_surface.Dispose();
+			_surface = null;
 		}
 		#endregion
 

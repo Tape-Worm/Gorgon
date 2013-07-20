@@ -154,19 +154,23 @@ namespace GorgonLibrary.Graphics
             {
                 if (!value)
                 {
-                    if (_isDWMEnabled)
-                    {
-                        Win32API.DwmEnableComposition(0);
-                        _isDWMEnabled = false;
-                    }
+	                if (!_isDWMEnabled)
+	                {
+		                return;
+	                }
+
+	                Win32API.DwmEnableComposition(0);
+	                _isDWMEnabled = false;
                 }
                 else
                 {
-                    if ((!_isDWMEnabled) && (!_dontEnableDWM))
-                    {
-                        Win32API.DwmEnableComposition(1);
-                        _isDWMEnabled = true;
-                    }
+	                if ((_isDWMEnabled) || (_dontEnableDWM))
+	                {
+		                return;
+	                }
+
+	                Win32API.DwmEnableComposition(1);
+	                _isDWMEnabled = true;
                 }
             }
         }

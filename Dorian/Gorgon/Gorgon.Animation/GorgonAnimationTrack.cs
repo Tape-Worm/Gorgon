@@ -130,12 +130,14 @@ namespace GorgonLibrary.Animation
 				{
 					for (i = 0; i < owner.KeyFrames.Count; i++)
 					{
-						if ((owner.KeyFrames[i].Time > requestedTime) && (i > 0))
+						if ((!(owner.KeyFrames[i].Time > requestedTime)) || (i <= 0))
 						{
-							PreviousKey = owner.KeyFrames[i - 1];
-							PreviousKeyIndex = i - 1;
-							break;
+							continue;
 						}
+
+						PreviousKey = owner.KeyFrames[i - 1];
+						PreviousKeyIndex = i - 1;
+						break;
 					}
 				}
 				else

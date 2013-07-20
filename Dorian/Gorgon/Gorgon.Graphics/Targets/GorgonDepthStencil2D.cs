@@ -317,20 +317,22 @@ namespace GorgonLibrary.Graphics
         /// <returns>A texture shader view object.</returns>
         public GorgonDepthStencilView GetDepthStencilView(BufferFormat format, int mipSlice, int arrayStart, int arrayCount, DepthStencilViewFlags flags)
         {
-            if (flags != DepthStencilViewFlags.None)
-            {
-                if (Graphics.VideoDevice.SupportedFeatureLevel < DeviceFeatureLevel.SM5)
-                {
-                    throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_REQUIRES_SM, DeviceFeatureLevel.SM5));
-                }
+	        if (flags == DepthStencilViewFlags.None)
+	        {
+		        return OnGetDepthStencilView(format, mipSlice, arrayStart, arrayCount, flags);
+	        }
 
-                if (!Settings.AllowShaderView)
-                {
-                    throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_VIEW_NO_SUPPORT, "GorgonShaderView"));
-                }
-            }
+	        if (Graphics.VideoDevice.SupportedFeatureLevel < DeviceFeatureLevel.SM5)
+	        {
+		        throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_REQUIRES_SM, DeviceFeatureLevel.SM5));
+	        }
 
-            return OnGetDepthStencilView(format, mipSlice, arrayStart, arrayCount, flags);
+	        if (!Settings.AllowShaderView)
+	        {
+		        throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_VIEW_NO_SUPPORT, "GorgonShaderView"));
+	        }
+
+	        return OnGetDepthStencilView(format, mipSlice, arrayStart, arrayCount, flags);
         }
 
         /// <summary>

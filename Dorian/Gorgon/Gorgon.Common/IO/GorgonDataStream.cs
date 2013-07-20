@@ -1449,11 +1449,13 @@ namespace GorgonLibrary.IO
 		        actualCount = (_length - _pointerPosition);
 		    }
 
-            if (actualCount > 0)
-            {
-		        DirectAccess.ReadArray(_dataPointer, buffer, offset, actualCount);
-			    Position += actualCount;
-            }
+			if (actualCount <= 0)
+			{
+				return actualCount;
+			}
+
+			DirectAccess.ReadArray(_dataPointer, buffer, offset, actualCount);
+			Position += actualCount;
 
 			return actualCount;
 		}

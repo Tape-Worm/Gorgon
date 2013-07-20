@@ -87,11 +87,13 @@ namespace GorgonLibrary.Examples
                 _imageGraphics = null;
             }
 
-            if (_mouseImage != null)
-            {
-                _mouseImage.Dispose();
-                _mouseImage = null;
-            }            
+			if (_mouseImage == null)
+			{
+				return;
+			}
+
+			_mouseImage.Dispose();
+			_mouseImage = null;
         }
 
         /// <summary>
@@ -168,15 +170,17 @@ namespace GorgonLibrary.Examples
         /// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
         private void Dispose(bool disposing)
         {
-            if (!_disposed)
-            {
-                if (disposing)
-                {
-                    CleanUp();
-                }
+	        if (_disposed)
+	        {
+		        return;
+	        }
 
-                _disposed = true;
-            }
+	        if (disposing)
+	        {
+		        CleanUp();
+	        }
+
+	        _disposed = true;
         }
 
         /// <summary>

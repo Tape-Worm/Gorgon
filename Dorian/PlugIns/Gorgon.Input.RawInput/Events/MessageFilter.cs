@@ -58,18 +58,20 @@ namespace GorgonLibrary.Input.Raw
 		public bool PreFilterMessage(ref System.Windows.Forms.Message m)
 		{
 			// Handle raw input messages.
-			if ((WindowMessages)m.Msg == WindowMessages.RawInput)
+			if ((WindowMessages)m.Msg != WindowMessages.RawInput)
 			{
-			    if (_data == null)
-			    {
-			        _data = new RawInputData();
-			    }
+				return false;
+			}
 
-			    _data.GetRawInputData(m.LParam);
-			    if (RawInputData != null)
-			    {
-			        RawInputData(this, new RawInputEventArgs(_data));
-			    }
+			if (_data == null)
+			{
+				_data = new RawInputData();
+			}
+
+			_data.GetRawInputData(m.LParam);
+			if (RawInputData != null)
+			{
+				RawInputData(this, new RawInputEventArgs(_data));
 			}
 
 			return false;

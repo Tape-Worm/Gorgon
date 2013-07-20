@@ -302,18 +302,20 @@ namespace GorgonLibrary
             int size = encoding.GetByteCount(value);
             int result = size;
 
-            if (includeLength)
-            {
-                result++;
+	        if (!includeLength)
+	        {
+		        return result;
+	        }
 
-                while (size >= 0x80)
-                {
-                    size >>= 7;
-                    result++;
-                }
-            }
+	        result++;
 
-            return result;
+	        while (size >= 0x80)
+	        {
+		        size >>= 7;
+		        result++;
+	        }
+
+	        return result;
         }
 	}
 }

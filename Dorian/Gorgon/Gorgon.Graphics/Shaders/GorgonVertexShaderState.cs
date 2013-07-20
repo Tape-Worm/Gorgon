@@ -24,8 +24,6 @@
 // 
 #endregion
 
-using System;
-
 namespace GorgonLibrary.Graphics
 {
 	/// <summary>
@@ -40,14 +38,7 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		protected override void SetCurrent()
 		{
-		    if (Current == null)
-		    {
-		        Graphics.Context.VertexShader.Set(null);
-		    }
-		    else
-		    {
-		        Graphics.Context.VertexShader.Set(Current.D3DShader);
-		    }
+			Graphics.Context.VertexShader.Set(Current == null ? null : Current.D3DShader);
 		}
 
 		/// <summary>

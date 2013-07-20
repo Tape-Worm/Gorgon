@@ -46,11 +46,11 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// The name of the shader include file.
 		/// </summary>
-		public readonly string Name;			// Name for the include file.
+		public readonly string Name;
 		/// <summary>
 		/// The source code for the shader include file.
 		/// </summary>
-		public readonly string SourceCodeFile;	// Source code for the include file.
+		public readonly string SourceCodeFile;
 		#endregion
 
 		#region Methods.

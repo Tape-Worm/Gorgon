@@ -617,13 +617,13 @@ namespace GorgonLibrary.UI
 		/// </returns>
 		protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
 		{
-	        if (keyData == (Keys.Alt | Keys.Space))
-			{
-				ShowSysMenu();
-				return true;
-			}
+		    if (keyData != (Keys.Alt | Keys.Space))
+		    {
+			    return base.ProcessCmdKey(ref msg, keyData);
+		    }
 
-			return base.ProcessCmdKey(ref msg, keyData);
+		    ShowSysMenu();
+		    return true;
 		}
 
 		/// <summary>
@@ -783,51 +783,53 @@ namespace GorgonLibrary.UI
 				}
 				else
 				{
-					if ((WindowState == FormWindowState.Normal) && (Resizable))
+					if ((WindowState != FormWindowState.Normal) || (!Resizable))
 					{
-						switch (ResizeDir)
-						{
-							case ResizeDirection.Left:
-								Win32API.ReleaseCapture();
-								Cursor.Current = Cursors.SizeWE;
-								Win32API.SendMessage(Handle, (uint)WindowMessages.NCLeftButtonDown, new IntPtr((int)HitTests.Left), IntPtr.Zero);
-								break;
-							case ResizeDirection.TopLeft:
-								Win32API.ReleaseCapture();
-								Cursor.Current = Cursors.SizeNWSE;
-								Win32API.SendMessage(Handle, (uint)WindowMessages.NCLeftButtonDown, new IntPtr((int)HitTests.TopLeft), IntPtr.Zero);
-								break;
-							case ResizeDirection.Top:
-								Win32API.ReleaseCapture();
-								Cursor.Current = Cursors.SizeNS;
-								Win32API.SendMessage(Handle, (uint)WindowMessages.NCLeftButtonDown, new IntPtr((int)HitTests.Top), IntPtr.Zero);
-								break;
-							case ResizeDirection.TopRight:
-								Win32API.ReleaseCapture();
-								Cursor.Current = Cursors.SizeNESW;
-								Win32API.SendMessage(Handle, (uint)WindowMessages.NCLeftButtonDown, new IntPtr((int)HitTests.TopRight), IntPtr.Zero);
-								break;
-							case ResizeDirection.Right:
-								Win32API.ReleaseCapture();
-								Cursor.Current = Cursors.SizeWE;
-								Win32API.SendMessage(Handle, (uint)WindowMessages.NCLeftButtonDown, new IntPtr((int)HitTests.Right), IntPtr.Zero);
-								break;
-							case ResizeDirection.BottomRight:
-								Win32API.ReleaseCapture();
-								Cursor.Current = Cursors.SizeNWSE;
-								Win32API.SendMessage(Handle, (uint)WindowMessages.NCLeftButtonDown, new IntPtr((int)HitTests.BottomRight), IntPtr.Zero);
-								break;
-							case ResizeDirection.Bottom:
-								Win32API.ReleaseCapture();
-								Cursor.Current = Cursors.SizeNS;
-								Win32API.SendMessage(Handle, (uint)WindowMessages.NCLeftButtonDown, new IntPtr((int)HitTests.Bottom), IntPtr.Zero);
-								break;
-							case ResizeDirection.BottomLeft:
-								Win32API.ReleaseCapture();
-								Cursor.Current = Cursors.SizeNESW;
-								Win32API.SendMessage(Handle, (uint)WindowMessages.NCLeftButtonDown, new IntPtr((int)HitTests.BottomLeft), IntPtr.Zero);
-								break;
-						}
+						return;
+					}
+
+					switch (ResizeDir)
+					{
+						case ResizeDirection.Left:
+							Win32API.ReleaseCapture();
+							Cursor.Current = Cursors.SizeWE;
+							Win32API.SendMessage(Handle, (uint)WindowMessages.NCLeftButtonDown, new IntPtr((int)HitTests.Left), IntPtr.Zero);
+							break;
+						case ResizeDirection.TopLeft:
+							Win32API.ReleaseCapture();
+							Cursor.Current = Cursors.SizeNWSE;
+							Win32API.SendMessage(Handle, (uint)WindowMessages.NCLeftButtonDown, new IntPtr((int)HitTests.TopLeft), IntPtr.Zero);
+							break;
+						case ResizeDirection.Top:
+							Win32API.ReleaseCapture();
+							Cursor.Current = Cursors.SizeNS;
+							Win32API.SendMessage(Handle, (uint)WindowMessages.NCLeftButtonDown, new IntPtr((int)HitTests.Top), IntPtr.Zero);
+							break;
+						case ResizeDirection.TopRight:
+							Win32API.ReleaseCapture();
+							Cursor.Current = Cursors.SizeNESW;
+							Win32API.SendMessage(Handle, (uint)WindowMessages.NCLeftButtonDown, new IntPtr((int)HitTests.TopRight), IntPtr.Zero);
+							break;
+						case ResizeDirection.Right:
+							Win32API.ReleaseCapture();
+							Cursor.Current = Cursors.SizeWE;
+							Win32API.SendMessage(Handle, (uint)WindowMessages.NCLeftButtonDown, new IntPtr((int)HitTests.Right), IntPtr.Zero);
+							break;
+						case ResizeDirection.BottomRight:
+							Win32API.ReleaseCapture();
+							Cursor.Current = Cursors.SizeNWSE;
+							Win32API.SendMessage(Handle, (uint)WindowMessages.NCLeftButtonDown, new IntPtr((int)HitTests.BottomRight), IntPtr.Zero);
+							break;
+						case ResizeDirection.Bottom:
+							Win32API.ReleaseCapture();
+							Cursor.Current = Cursors.SizeNS;
+							Win32API.SendMessage(Handle, (uint)WindowMessages.NCLeftButtonDown, new IntPtr((int)HitTests.Bottom), IntPtr.Zero);
+							break;
+						case ResizeDirection.BottomLeft:
+							Win32API.ReleaseCapture();
+							Cursor.Current = Cursors.SizeNESW;
+							Win32API.SendMessage(Handle, (uint)WindowMessages.NCLeftButtonDown, new IntPtr((int)HitTests.BottomLeft), IntPtr.Zero);
+							break;
 					}
 				}
 			}

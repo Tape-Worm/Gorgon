@@ -33,7 +33,7 @@ namespace GorgonLibrary
 	/// A defined error message to be packaged with <see cref="GorgonLibrary.GorgonException"/>.
 	/// </summary>
 	public struct GorgonResult
-		: INamedObject
+		: INamedObject, IEquatable<GorgonResult>
 	{
 		#region Predefined error codes.
 		private const int ErrorBase = 0x7FF000;		// Base error code.
@@ -203,6 +203,17 @@ namespace GorgonLibrary
 
 		#region Methods.
 		/// <summary>
+		/// Function to compare two instances for equality.
+		/// </summary>
+		/// <param name="left">The left instance to compare.</param>
+		/// <param name="right">The right instance to compare.</param>
+		/// <returns>TRUE if equal, FALSE if not.</returns>
+		public static bool Equals(ref GorgonResult left, ref GorgonResult right)
+		{
+			return ((left.Code == right.Code) && (string.Compare(left.Name, right.Name, StringComparison.OrdinalIgnoreCase) == 0));
+		}
+
+		/// <summary>
 		/// Indicates whether this instance and a specified object are equal.
 		/// </summary>
 		/// <param name="obj">Another object to compare to.</param>
@@ -213,8 +224,7 @@ namespace GorgonLibrary
 		{
 			if (obj is GorgonResult)
 			{
-				var error = (GorgonResult)obj;
-				return String.Compare(error.Name, Name, StringComparison.OrdinalIgnoreCase) == 0 && (error.Code == Code);
+				return ((GorgonResult)obj).Equals(this);
 			}
 
 			return false;
@@ -263,7 +273,7 @@ namespace GorgonLibrary
 		/// <returns>TRUE if not equal, FALSE if the items are equal.</returns>
 		public static bool operator !=(GorgonResult left, GorgonResult right)
 		{
-			return !(left == right);
+			return ((left.Code != right.Code) || (String.Compare(left.Name, right.Name, StringComparison.OrdinalIgnoreCase) != 0));
 		}
 		#endregion
 
@@ -301,6 +311,20 @@ namespace GorgonLibrary
 			_name = name;
 			_description = description;
 			_code = code;
+		}
+		#endregion
+
+		#region IEquatable<GorgonResult> Members
+		/// <summary>
+		/// Indicates whether the current object is equal to another object of the same type.
+		/// </summary>
+		/// <param name="other">An object to compare with this object.</param>
+		/// <returns>
+		/// true if the current object is equal to the <paramref name="other" /> parameter; otherwise, false.
+		/// </returns>
+		public bool Equals(GorgonResult other)
+		{
+			return Equals(ref this, ref other);
 		}
 		#endregion
 	}

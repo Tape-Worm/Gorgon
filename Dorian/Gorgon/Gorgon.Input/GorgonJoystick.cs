@@ -901,43 +901,45 @@ namespace GorgonLibrary.Input
 		{
 			var result = JoystickDirections.Center;
 
-			if ((deadZone == GorgonRange.Empty) || (!deadZone.Contains(value)))
+			if ((deadZone != GorgonRange.Empty) && (deadZone.Contains(value)))
 			{
-				switch (orientation)
-				{
-					case JoystickDirections.Horizontal:
-				        if (value > midRange)
-				        {
-				            result = JoystickDirections.Right;
-				        }
+				return result;
+			}
 
-				        if (value < midRange)
-				        {
-				            result = JoystickDirections.Left;
-				        }
-				        break;
-					case JoystickDirections.Vertical:
-				        if (value < midRange)
-				        {
-				            result = JoystickDirections.Down;
-				        }
+			switch (orientation)
+			{
+				case JoystickDirections.Horizontal:
+					if (value > midRange)
+					{
+						result = JoystickDirections.Right;
+					}
 
-				        if (value > midRange)
-				        {
-				            result = JoystickDirections.Up;
-				        }
-				        break;
-					default:
-				        if (value > midRange)
-				        {
-				            result = JoystickDirections.MoreThanCenter;
-				        }
-				        if (value < midRange)
-				        {
-				            result = JoystickDirections.LessThanCenter;
-				        }
-				        break;
-				}
+					if (value < midRange)
+					{
+						result = JoystickDirections.Left;
+					}
+					break;
+				case JoystickDirections.Vertical:
+					if (value < midRange)
+					{
+						result = JoystickDirections.Down;
+					}
+
+					if (value > midRange)
+					{
+						result = JoystickDirections.Up;
+					}
+					break;
+				default:
+					if (value > midRange)
+					{
+						result = JoystickDirections.MoreThanCenter;
+					}
+					if (value < midRange)
+					{
+						result = JoystickDirections.LessThanCenter;
+					}
+					break;
 			}
 
 			return result;

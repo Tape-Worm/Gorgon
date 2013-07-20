@@ -167,30 +167,30 @@ namespace GorgonLibrary.Native
 		{
 			int dataSize = 0;
 
-			if (GetRawInputDeviceInfo(deviceHandle, (int)RawInputDeviceInfo.DeviceInfo, IntPtr.Zero, ref dataSize) >= 0)
+			if (GetRawInputDeviceInfo(deviceHandle, (int)RawInputDeviceInfo.DeviceInfo, IntPtr.Zero, ref dataSize) < 0)
 			{
-				IntPtr data = Marshal.AllocHGlobal(dataSize * 2);
-
-				try
-				{
-				    if (GetRawInputDeviceInfo(deviceHandle, (int)RawInputCommand.DeviceInfo, data, ref dataSize) < 0)
-				    {
-				        throw new System.ComponentModel.Win32Exception();
-				    }
-				    
-				    var result = (RID_DEVICE_INFO)(Marshal.PtrToStructure(data, typeof(RID_DEVICE_INFO)));
-				    return result;
-				}
-				finally
-				{
-				    if (data != IntPtr.Zero)
-				    {
-				        Marshal.FreeHGlobal(data);
-				    }
-				}
+				throw new System.ComponentModel.Win32Exception();
 			}
 
-		    throw new System.ComponentModel.Win32Exception();
+			IntPtr data = Marshal.AllocHGlobal(dataSize * 2);
+
+			try
+			{
+				if (GetRawInputDeviceInfo(deviceHandle, (int)RawInputCommand.DeviceInfo, data, ref dataSize) < 0)
+				{
+					throw new System.ComponentModel.Win32Exception();
+				}
+				    
+				var result = (RID_DEVICE_INFO)(Marshal.PtrToStructure(data, typeof(RID_DEVICE_INFO)));
+				return result;
+			}
+			finally
+			{
+				if (data != IntPtr.Zero)
+				{
+					Marshal.FreeHGlobal(data);
+				}
+			}
 		}
 
 		/// <summary>
@@ -202,53 +202,53 @@ namespace GorgonLibrary.Native
 		    int deviceCount = 0;
 			int structSize = Marshal.SizeOf(typeof(RAWINPUTDEVICELIST));
 
-			if (GetRawInputDeviceList(IntPtr.Zero, ref deviceCount, structSize) >= 0)
+			if (GetRawInputDeviceList(IntPtr.Zero, ref deviceCount, structSize) < 0)
 			{
-			    if (deviceCount != 0)
+				throw new System.ComponentModel.Win32Exception();
+			}
+
+			if (deviceCount == 0)
+			{
+				return new RAWINPUTDEVICELIST[0];
+			}
+
+			IntPtr deviceList = Marshal.AllocHGlobal(structSize * deviceCount);
+			try
+			{
+				if (GetRawInputDeviceList(deviceList, ref deviceCount, structSize) < 0)
 				{
-					IntPtr deviceList = Marshal.AllocHGlobal(structSize * deviceCount);
-					try
+					throw new System.ComponentModel.Win32Exception();
+				}
+
+				var result = new RAWINPUTDEVICELIST[deviceCount];
+
+				for (int i = 0; i < result.Length; i++)
+				{
+					if (GorgonComputerInfo.PlatformArchitecture == PlatformArchitecture.x64)
 					{
-					    if (GetRawInputDeviceList(deviceList, ref deviceCount, structSize) < 0)
-					    {
-					        throw new System.ComponentModel.Win32Exception();
-					    }
-
-					    var result = new RAWINPUTDEVICELIST[deviceCount];
-
-					    for (int i = 0; i < result.Length; i++)
-					    {
-					        if (GorgonComputerInfo.PlatformArchitecture == PlatformArchitecture.x64)
-					        {
-					            result[i] =
-					                (RAWINPUTDEVICELIST)
-					                (Marshal.PtrToStructure(new IntPtr(deviceList.ToInt64() + (structSize * i)),
-					                                        typeof(RAWINPUTDEVICELIST)));
-					        }
-					        else
-					        {
-					            result[i] =
-					                (RAWINPUTDEVICELIST)
-					                (Marshal.PtrToStructure(new IntPtr(deviceList.ToInt32() + (structSize * i)),
-					                                        typeof(RAWINPUTDEVICELIST)));
-					        }
-					    }
-
-					    return result;
+						result[i] =
+							(RAWINPUTDEVICELIST)
+								(Marshal.PtrToStructure(new IntPtr(deviceList.ToInt64() + (structSize * i)),
+									typeof(RAWINPUTDEVICELIST)));
 					}
-					finally
+					else
 					{
-					    if (deviceList != IntPtr.Zero)
-					    {
-					        Marshal.FreeHGlobal(deviceList);
-					    }
+						result[i] =
+							(RAWINPUTDEVICELIST)
+								(Marshal.PtrToStructure(new IntPtr(deviceList.ToInt32() + (structSize * i)),
+									typeof(RAWINPUTDEVICELIST)));
 					}
 				}
 
-			    return new RAWINPUTDEVICELIST[0];
+				return result;
 			}
-
-		    throw new System.ComponentModel.Win32Exception();
+			finally
+			{
+				if (deviceList != IntPtr.Zero)
+				{
+					Marshal.FreeHGlobal(deviceList);
+				}
+			}
 		}
 
 		#endregion

@@ -135,22 +135,26 @@ namespace GorgonLibrary.Configuration
 		    var type = value.GetType();
 			var attrib = type.GetCustomAttributes(typeof(TypeConverterAttribute), true) as IList<TypeConverterAttribute>;
 
-			if ((attrib != null) && (attrib.Count > 0))
+			if ((attrib == null) || (attrib.Count <= 0))
 			{
-			    Type converterType = Type.GetType(attrib[0].ConverterTypeName);
-
-			    if (converterType != null)
-			    {
-			        var converter = Activator.CreateInstance(converterType) as TypeConverter;
-
-			        if ((converter != null) && (converter.CanConvertTo(typeof (string))))
-			        {
-			            return converter.ConvertToInvariantString(value);
-			        }
-			    }
+				return value.ToString();
 			}
 
-		    return value.ToString();
+			Type converterType = Type.GetType(attrib[0].ConverterTypeName);
+
+			if (converterType == null)
+			{
+				return value.ToString();
+			}
+
+			var converter = Activator.CreateInstance(converterType) as TypeConverter;
+
+			if ((converter != null) && (converter.CanConvertTo(typeof (string))))
+			{
+				return converter.ConvertToInvariantString(value);
+			}
+
+			return value.ToString();
 		}
 
 		/// <summary>
@@ -185,22 +189,26 @@ namespace GorgonLibrary.Configuration
 
 		    var attrib = type.GetCustomAttributes(typeof(TypeConverterAttribute), true) as IList<TypeConverterAttribute>;
 
-			if ((attrib != null) && (attrib.Count > 0))
+			if ((attrib == null) || (attrib.Count <= 0))
 			{
-			    Type converterType = Type.GetType(attrib[0].ConverterTypeName);
-
-			    if (converterType != null)
-			    {
-			        var converter = Activator.CreateInstance(converterType) as TypeConverter;
-
-			        if ((converter != null) && (converter.CanConvertFrom(typeof(string))))
-			        {
-			            return converter.ConvertFromInvariantString(value);
-			        }
-			    }
+				return Convert.ChangeType(value, type);
 			}
 
-		    return Convert.ChangeType(value, type);
+			Type converterType = Type.GetType(attrib[0].ConverterTypeName);
+
+			if (converterType == null)
+			{
+				return Convert.ChangeType(value, type);
+			}
+
+			var converter = Activator.CreateInstance(converterType) as TypeConverter;
+
+			if ((converter != null) && (converter.CanConvertFrom(typeof(string))))
+			{
+				return converter.ConvertFromInvariantString(value);
+			}
+
+			return Convert.ChangeType(value, type);
 		}
 
 		/// <summary>
@@ -307,21 +315,23 @@ namespace GorgonLibrary.Configuration
 
 					// If the list setting doesn't exist, then use a default (if any).
 					// If there are no settings in the list, then we can overwrite the default list.
-					if (values != null)
+					if (values == null)
 					{
-						object collection = property.Key.GetValue(this, null);
-						MethodInfo addMethod = collection.GetType().GetMethod("Add");
-						MethodInfo clearMethod = collection.GetType().GetMethod("Clear");
+						continue;
+					}
 
-						clearMethod.Invoke(collection, null);
+					object collection = property.Key.GetValue(this, null);
+					MethodInfo addMethod = collection.GetType().GetMethod("Add");
+					MethodInfo clearMethod = collection.GetType().GetMethod("Clear");
 
-					    for (int i = 0; i < values.Length; i++)
-					    {
-					        addMethod.Invoke(collection, new[]
-					            {
-					                values[i]
-					            });
-					    }
+					clearMethod.Invoke(collection, null);
+
+					foreach (object collectionValue in values)
+					{
+						addMethod.Invoke(collection, new[]
+						{
+							collectionValue
+						});
 					}
 				}                
 				else

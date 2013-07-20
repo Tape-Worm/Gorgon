@@ -163,22 +163,24 @@ namespace GorgonLibrary.PlugIns
             }
 
             // We can't find the plug-in assembly on the initial path, so check the path list.
-            if (!File.Exists(plugInPath))
-            {
-                var assemblyFile = Path.GetFileName(plugInPath);
+	        if (File.Exists(plugInPath))
+	        {
+		        return AssemblyName.GetAssemblyName(plugInPath);
+	        }
 
-                plugInPath = SearchPaths.FirstOrDefault(path => File.Exists(path + assemblyFile));
+	        var assemblyFile = Path.GetFileName(plugInPath);
 
-                if (string.IsNullOrWhiteSpace(plugInPath))
-                {
-                    throw new FileNotFoundException(string.Format(Resources.GOR_PLUGIN_CANNOT_FIND_FILE,
-                                                                  assemblyFile));
-                }
+	        plugInPath = SearchPaths.FirstOrDefault(path => File.Exists(path + assemblyFile));
 
-                plugInPath += assemblyFile;
-            }
+	        if (string.IsNullOrWhiteSpace(plugInPath))
+	        {
+		        throw new FileNotFoundException(string.Format(Resources.GOR_PLUGIN_CANNOT_FIND_FILE,
+			        assemblyFile));
+	        }
 
-            return AssemblyName.GetAssemblyName(plugInPath);
+	        plugInPath += assemblyFile;
+
+	        return AssemblyName.GetAssemblyName(plugInPath);
         }
 
         
@@ -378,25 +380,27 @@ namespace GorgonLibrary.PlugIns
 		        return PlugInSigningResult.NotSigned;
 		    }
 
-		    if (publicKey != null) 
+			if (publicKey == null)
 			{
-			    if (publicKey.Length != plugInPublicKey.Length)
-			    {
-			        result |= PlugInSigningResult.KeyMismatch;
-			    }
-			    else
-			    {
-			        for (int i = 0; i < publicKey.Length - 1; i++)
-			        {
-				        if (publicKey[i] == plugInPublicKey[i])
-				        {
-					        continue;
-				        }
+				return result;
+			}
 
-				        result |= PlugInSigningResult.KeyMismatch;
-				        break;
-			        }
-			    }
+			if (publicKey.Length != plugInPublicKey.Length)
+			{
+				result |= PlugInSigningResult.KeyMismatch;
+			}
+			else
+			{
+				for (int i = 0; i < publicKey.Length - 1; i++)
+				{
+					if (publicKey[i] == plugInPublicKey[i])
+					{
+						continue;
+					}
+
+					result |= PlugInSigningResult.KeyMismatch;
+					break;
+				}
 			}
 
 			return result;

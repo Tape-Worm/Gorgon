@@ -88,19 +88,21 @@ namespace GorgonLibrary.Examples
 
 			try
 			{
-				if (_bitmap != null)
+				if (_bitmap == null)
 				{
-					_formGraphics.Dispose();
-					_graphics.Dispose();
-					_bitmap.Dispose();
-					_bitmap = null;
-					_graphics = null;
-
-					_formGraphics = panelGraphics.CreateGraphics();
-					_bitmap = new Bitmap(panelGraphics.ClientSize.Width, panelGraphics.ClientSize.Height, _formGraphics);
-					_graphics = Graphics.FromImage(_bitmap);
-					_graphics.Clear(Color.Black);
+					return;
 				}
+
+				_formGraphics.Dispose();
+				_graphics.Dispose();
+				_bitmap.Dispose();
+				_bitmap = null;
+				_graphics = null;
+
+				_formGraphics = panelGraphics.CreateGraphics();
+				_bitmap = new Bitmap(panelGraphics.ClientSize.Width, panelGraphics.ClientSize.Height, _formGraphics);
+				_graphics = Graphics.FromImage(_bitmap);
+				_graphics.Clear(Color.Black);
 			}
 			catch (Exception ex)
 			{

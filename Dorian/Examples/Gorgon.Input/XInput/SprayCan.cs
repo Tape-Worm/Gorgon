@@ -273,7 +273,7 @@ namespace GorgonLibrary.Examples
 			float sprayAngle = 0.0f;
 
 			// Ensure that we get the correct angle.
-			if (sprayVectorDelta.Y == 0.0f)
+			if (sprayVectorDelta.Y.EqualsEpsilon(0.0f))
 			{
 				if (sprayVectorDelta.X < 0.0f)
 				{

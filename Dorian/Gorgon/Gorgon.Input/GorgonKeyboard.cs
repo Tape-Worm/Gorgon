@@ -1115,17 +1115,19 @@ namespace GorgonLibrary.Input
 			    }
 
 			}
-			if (KeyStates[KeyboardKeys.ShiftKey] == KeyState.Down)
+			if (KeyStates[KeyboardKeys.ShiftKey] != KeyState.Down)
 			{
-			    if (KeyStates[KeyboardKeys.LShiftKey] == KeyState.Down)
-			    {
-			        result |= KeyboardKeys.Shift | KeyboardKeys.LeftVersion;
-			    }
+				return result;
+			}
 
-			    if (KeyStates[KeyboardKeys.RShiftKey] == KeyState.Down)
-			    {
-			        result |= KeyboardKeys.Shift | KeyboardKeys.RightVersion;
-			    }
+			if (KeyStates[KeyboardKeys.LShiftKey] == KeyState.Down)
+			{
+				result |= KeyboardKeys.Shift | KeyboardKeys.LeftVersion;
+			}
+
+			if (KeyStates[KeyboardKeys.RShiftKey] == KeyState.Down)
+			{
+				result |= KeyboardKeys.Shift | KeyboardKeys.RightVersion;
 			}
 
 			return result;

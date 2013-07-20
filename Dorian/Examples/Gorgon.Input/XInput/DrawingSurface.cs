@@ -138,20 +138,24 @@ namespace GorgonLibrary.Examples
 				_sufaceBuffer = null;
 			}
 
-			if (clearDrawing)
+			if (!clearDrawing)
 			{
-				if (_imageGraphics != null)
-				{
-					_imageGraphics.Dispose();
-					_imageGraphics = null;
-				}
-
-				if (_drawing != null)
-				{
-					_drawing.Dispose();
-					_drawing = null;
-				}
+				return;
 			}
+
+			if (_imageGraphics != null)
+			{
+				_imageGraphics.Dispose();
+				_imageGraphics = null;
+			}
+
+			if (_drawing == null)
+			{
+				return;
+			}
+
+			_drawing.Dispose();
+			_drawing = null;
 		}
 
 		/// <summary>
@@ -169,11 +173,13 @@ namespace GorgonLibrary.Examples
 			_context = BufferedGraphicsManager.Current;
 			_buffer = _context.Allocate(_surfaceGraphics, _control.ClientRectangle);
 
-			if (clearDrawing)
+			if (!clearDrawing)
 			{
-				_drawing = new Bitmap(_control.ClientSize.Width, _control.ClientSize.Height, PixelFormat.Format32bppArgb);
-				_imageGraphics = Graphics.FromImage(_drawing);
+				return;
 			}
+
+			_drawing = new Bitmap(_control.ClientSize.Width, _control.ClientSize.Height, PixelFormat.Format32bppArgb);
+			_imageGraphics = Graphics.FromImage(_drawing);
 		}
 
 		/// <summary>
@@ -285,23 +291,25 @@ namespace GorgonLibrary.Examples
 		/// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
 		private void Dispose(bool disposing)
 		{
-			if (!_disposed)
+			if (_disposed)
 			{
-				if (disposing)
-				{					
-					_control.Resize -= surfaceControl_Resize;
+				return;
+			}
 
-					if (_cursorAttribs != null)
-					{
-						_cursorAttribs.Dispose();
-						_cursorAttribs = null;
-					}
+			if (disposing)
+			{					
+				_control.Resize -= surfaceControl_Resize;
 
-					CleanUp(true);
+				if (_cursorAttribs != null)
+				{
+					_cursorAttribs.Dispose();
+					_cursorAttribs = null;
 				}
 
-				_disposed = true;
+				CleanUp(true);
 			}
+
+			_disposed = true;
 		}
 
 		/// <summary>

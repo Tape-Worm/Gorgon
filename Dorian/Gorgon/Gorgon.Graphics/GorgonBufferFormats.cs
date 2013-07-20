@@ -677,17 +677,19 @@ namespace GorgonLibrary.Graphics
 			{
 				get
 				{
-					if (_sizeInBytes == 0)
+					if (_sizeInBytes != 0)
 					{
-						// Can't have a data type smaller than 1 byte.
-					    if (BitDepth >= 8)
-					    {
-					        _sizeInBytes = BitDepth / 8;
-					    }
-					    else
-					    {
-					        _sizeInBytes = 1;
-					    }
+						return _sizeInBytes;
+					}
+
+					// Can't have a data type smaller than 1 byte.
+					if (BitDepth >= 8)
+					{
+						_sizeInBytes = BitDepth / 8;
+					}
+					else
+					{
+						_sizeInBytes = 1;
 					}
 
 					return _sizeInBytes;

@@ -396,18 +396,20 @@ namespace GorgonLibrary.Graphics
 					// Find the best fit format if we couldn't find an exact match.
 					for (int i = 0; i < _wicBestFitFormat.Length; i++)
 					{
-						if (_wicBestFitFormat[i].Source == sourcePixelFormat)
+						if (_wicBestFitFormat[i].Source != sourcePixelFormat)
 						{
-							updatedPixelFormat = _wicBestFitFormat[i].Destination;
-							result = GetGorgonFormat(updatedPixelFormat);
-
-							// We couldn't find the format, bail out.
-							if (result == BufferFormat.Unknown)
-							{
-								return result;
-							}
-							break;
+							continue;
 						}
+
+						updatedPixelFormat = _wicBestFitFormat[i].Destination;
+						result = GetGorgonFormat(updatedPixelFormat);
+
+						// We couldn't find the format, bail out.
+						if (result == BufferFormat.Unknown)
+						{
+							return result;
+						}
+						break;
 					}
 				}
 			}
@@ -730,11 +732,13 @@ namespace GorgonLibrary.Graphics
 			}
 			else
 			{
-				if ((buffer.Width < bitmap.Size.Width) || (buffer.Height < bitmap.Size.Height))
+				if ((buffer.Width >= bitmap.Size.Width) && (buffer.Height >= bitmap.Size.Height))
 				{
-					ClipBitmap(bitmap, buffer);
-					return true;
+					return false;
 				}
+
+				ClipBitmap(bitmap, buffer);
+				return true;
 			}
 
 			return false;
@@ -913,19 +917,21 @@ namespace GorgonLibrary.Graphics
         /// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
         private void Dispose(bool disposing)
         {
-            if (!_disposed)
-            {
-                if (disposing)
-                {
-                    if (Factory != null)
-                    {
-                        Factory.Dispose();
-                    }
-                }
+	        if (_disposed)
+	        {
+		        return;
+	        }
 
-                Factory = null;
-                _disposed = true;
-            }
+	        if (disposing)
+	        {
+		        if (Factory != null)
+		        {
+			        Factory.Dispose();
+		        }
+	        }
+
+	        Factory = null;
+	        _disposed = true;
         }
 
         /// <summary>

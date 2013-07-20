@@ -80,16 +80,15 @@ namespace GorgonLibrary.IO
 		{
 			get
 			{
-				if (_mountListChanged)
+				if (!_mountListChanged)
 				{
-					lock (_syncLock)
-					{
-						if (_mountListChanged)
-						{
-							_mountListChanged = false;
-							_mountPointList = new ReadOnlyCollection<GorgonFileSystemMountPoint>(_mountPoints);							
-						}
-					}
+					return _mountPointList;
+				}
+
+				lock (_syncLock)
+				{
+					_mountListChanged = false;
+					_mountPointList = new ReadOnlyCollection<GorgonFileSystemMountPoint>(_mountPoints);
 				}
 
 				return _mountPointList;
@@ -284,13 +283,15 @@ namespace GorgonLibrary.IO
                 Directory.CreateDirectory(result);
             }
 
-            if (!string.IsNullOrWhiteSpace(fileName))
-            {
-                writePath.Append(fileName);
-                result = writePath.ToString();
-            }
+	        if (string.IsNullOrWhiteSpace(fileName))
+	        {
+		        return result;
+	        }
 
-            return result;
+	        writePath.Append(fileName);
+	        result = writePath.ToString();
+
+	        return result;
         }
 
 		/// <summary>
@@ -806,15 +807,17 @@ namespace GorgonLibrary.IO
 		    {
 			    lock(_syncLock)
 			    {
-				    if (file == null)
+				    if (file != null)
 				    {
-					    string writePath = GetWritePath(path);
-
-					    file = AddFileEntry(_defaultProvider, path,
-					                        WriteLocation,
-					                        writePath, 0,
-					                        0, DateTime.Now);
+					    return OpenStream(file, true);
 				    }
+
+				    string writePath = GetWritePath(path);
+
+				    file = AddFileEntry(_defaultProvider, path,
+					    WriteLocation,
+					    writePath, 0,
+					    0, DateTime.Now);
 
 				    return OpenStream(file, true);
 			    }
@@ -854,17 +857,19 @@ namespace GorgonLibrary.IO
 		    {
 		        GorgonFileSystemDirectory directory = GetDirectory(path) ?? AddDirectoryEntry(path);
 
-		        if (!string.IsNullOrWhiteSpace(WriteLocation))
-		        {
-		            string newPath = GetWritePath(directory.FullPath);
+			    if (string.IsNullOrWhiteSpace(WriteLocation))
+			    {
+				    return directory;
+			    }
 
-		            if (!Directory.Exists(newPath))
-		            {
-		                Directory.CreateDirectory(newPath);
-		            }
-		        }
+			    string newPath = GetWritePath(directory.FullPath);
 
-		        return directory;
+			    if (!Directory.Exists(newPath))
+			    {
+				    Directory.CreateDirectory(newPath);
+			    }
+
+			    return directory;
 		    }
 		}
 

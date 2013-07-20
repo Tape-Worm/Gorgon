@@ -39,16 +39,9 @@ namespace GorgonLibrary.Graphics
 		/// Property to set or return the current shader.
 		/// </summary>
 		protected override void SetCurrent()
-		{
-            if (Current == null)
-            {
-                Graphics.Context.PixelShader.Set(null);
-            }
-            else
-            {
-                Graphics.Context.PixelShader.Set(Current.D3DShader);
-            }
-		}
+        {
+	        Graphics.Context.PixelShader.Set(Current == null ? null : Current.D3DShader);
+        }
 
 		/// <summary>
 		/// Function to set resources for the shader.

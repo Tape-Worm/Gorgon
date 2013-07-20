@@ -387,12 +387,14 @@ namespace GorgonLibrary.Graphics
 			}
 
 			// If we're an image cube, and we don't have an array count that's a multiple of 6, then up size until we do.
-			if ((Settings.ImageType == ImageType.ImageCube) && ((Settings.ArrayCount % 6) != 0))
+			if ((Settings.ImageType != ImageType.ImageCube) || ((Settings.ArrayCount % 6) == 0))
 			{
-				while ((Settings.ArrayCount % 6) != 0)
-				{
-					Settings.ArrayCount++;
-				}
+				return;
+			}
+
+			while ((Settings.ArrayCount % 6) != 0)
+			{
+				Settings.ArrayCount++;
 			}
         }
 
@@ -1603,11 +1605,12 @@ namespace GorgonLibrary.Graphics
 			}
 			catch
 			{
-				if (result != null)
+				if (result == null)
 				{
-					result.Dispose();
-					result = null;
+					throw;
 				}
+
+				result.Dispose();
 
 				throw;
 			}
@@ -2070,31 +2073,33 @@ namespace GorgonLibrary.Graphics
         /// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
         private void Dispose(bool disposing)
         {
-            if (!_disposed)
-            {
-                if (disposing)
-                {
-                    if (_imageData != null)
-                    {
-                        _imageData.Dispose();
-                    }
+	        if (_disposed)
+	        {
+		        return;
+	        }
 
-					if (_buffers != null)
-					{
-						foreach (var buffer in _buffers)
-						{
-							if (buffer.Data != null)
-							{
-								buffer.Data.Dispose();
-							}
-						}
-					}
-                }
+	        if (disposing)
+	        {
+		        if (_imageData != null)
+		        {
+			        _imageData.Dispose();
+		        }
 
-				_buffers = null;
-                _imageData = null;
-                _disposed = true;
-            }
+		        if (_buffers != null)
+		        {
+			        foreach (var buffer in _buffers)
+			        {
+				        if (buffer.Data != null)
+				        {
+					        buffer.Data.Dispose();
+				        }
+			        }
+		        }
+	        }
+
+	        _buffers = null;
+	        _imageData = null;
+	        _disposed = true;
         }
 
         /// <summary>

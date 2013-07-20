@@ -263,6 +263,8 @@ namespace GorgonLibrary.Diagnostics
 			{
 				theTime = _timer.Milliseconds;
 				frameDelta = (theTime - _lastTimerValue);
+
+				// ReSharper disable once CompareOfFloatsByEqualityOperator
 			} while ((frameDelta < 0.000001) && (frameDelta != 0.0));
 
 			// If our delta since the last time was too high, then don't allow any movement until
@@ -345,13 +347,15 @@ namespace GorgonLibrary.Diagnostics
 				_averageCounter++;
 
 				// Reset the average.
-				if (_averageCounter >= _maxAverageCount)
+				if (_averageCounter < _maxAverageCount)
 				{
-					_averageCounter = 0;
-					_averageFPSTotal = 0;
-					_averageDeltaTotal = 0;
-					_averageScaledDeltaTotal = 0;
+					return;
 				}
+
+				_averageCounter = 0;
+				_averageFPSTotal = 0;
+				_averageDeltaTotal = 0;
+				_averageScaledDeltaTotal = 0;
 			}
 		}
 
