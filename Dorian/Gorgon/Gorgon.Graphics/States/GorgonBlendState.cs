@@ -953,7 +953,7 @@ namespace GorgonLibrary.Graphics
 			var desc = new D3D.BlendStateDescription
 				{
 					AlphaToCoverageEnable = stateType.IsAlphaCoverageEnabled,
-					IndependentBlendEnable = stateType.IsIndependentBlendEnabled
+					IndependentBlendEnable = stateType.IsIndependentBlendEnabled,
 				};
 
 			// Copy render targets.

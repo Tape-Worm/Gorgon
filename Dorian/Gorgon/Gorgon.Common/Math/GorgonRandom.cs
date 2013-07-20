@@ -231,11 +231,13 @@ namespace GorgonLibrary.Math
 				n1 = t1 * t1 * PerlinGradient(_permutations[index0 + offset1 + _permutations[index1 + offset2]], value1);
 			}
 
-			if (t2 >= 0.0f)
+			if (!(t2 >= 0.0f))
 			{
-				t2 *= t2;
-				n2 = t2 * t2 * PerlinGradient(_permutations[index0 + 1 + _permutations[index1 + 1]], value2);
+				return 40.0f * (n0 + n1 + n2);
 			}
+
+			t2 *= t2;
+			n2 = t2 * t2 * PerlinGradient(_permutations[index0 + 1 + _permutations[index1 + 1]], value2);
 
 			// Add contributions from each corner to get the final noise value.
 			// The result is scaled to return values in the interval [-1,1].

@@ -299,16 +299,18 @@ namespace GorgonLibrary.Examples
 				// Get files.
 				foreach (var file in files)
 				{
-					if (file.Extension != ".gorSprite")
+					if (file.Extension == ".gorSprite")
 					{
-						var fileNode = new TreeNode(file.Name)
-						    {
-						        Name = file.FullPath, 
-                                Tag = file
-						    };
-					    fileNode.SelectedImageIndex = fileNode.ImageIndex = 1;
-						parentNode.Nodes.Add(fileNode);
+						continue;
 					}
+
+					var fileNode = new TreeNode(file.Name)
+					{
+						Name = file.FullPath, 
+						Tag = file
+					};
+					fileNode.SelectedImageIndex = fileNode.ImageIndex = 1;
+					parentNode.Nodes.Add(fileNode);
 				}
 
 				parentNode.Expand();
@@ -348,11 +350,13 @@ namespace GorgonLibrary.Examples
 					_textDisplay = null;
 				}
 
-				if (_textFont != null)
+				if (_textFont == null)
 				{
-					_textFont.Dispose();
-					_textFont = null;
+					return;
 				}
+
+				_textFont.Dispose();
+				_textFont = null;
 			}
 			catch (Exception ex)
 			{

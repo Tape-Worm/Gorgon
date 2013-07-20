@@ -116,40 +116,42 @@ namespace GorgonLibrary.Examples
                 _joystick.Poll();
 
                 // Ensure that the joystick is connected and the button is pressed.
-                if (_joystick.IsConnected)
-                {
-                    // Get our joystick data and constrain it.
-                    // First get the normalized joystick value.
-                    // Do this by first shifting the coordinates to the minimum range value.
-					var stickNormalized = new PointF(_joystick.X - (float)_joystick.Capabilities.XAxisRange.Minimum,
-														_joystick.Y - (float)_joystick.Capabilities.YAxisRange.Minimum);
-					// Then normalize.
-                    stickNormalized = new PointF(stickNormalized.X / (_joystick.Capabilities.XAxisRange.Range + 1), 
-												stickNormalized.Y / (_joystick.Capabilities.YAxisRange.Range + 1));
+	            if (!_joystick.IsConnected)
+	            {
+		            return screenPosition;
+	            }
 
-                    // Now transform the normalized point into display space.
-                    screenPosition = new Point((int)(stickNormalized.X * (panelDisplay.ClientSize.Width - 1)) 
-                                                , (panelDisplay.ClientSize.Height - 1) - (int)(stickNormalized.Y * panelDisplay.ClientSize.Height));
+	            // Get our joystick data and constrain it.
+	            // First get the normalized joystick value.
+	            // Do this by first shifting the coordinates to the minimum range value.
+	            var stickNormalized = new PointF(_joystick.X - (float)_joystick.Capabilities.XAxisRange.Minimum,
+		            _joystick.Y - (float)_joystick.Capabilities.YAxisRange.Minimum);
+	            // Then normalize.
+	            stickNormalized = new PointF(stickNormalized.X / (_joystick.Capabilities.XAxisRange.Range + 1), 
+		            stickNormalized.Y / (_joystick.Capabilities.YAxisRange.Range + 1));
+
+	            // Now transform the normalized point into display space.
+	            screenPosition = new Point((int)(stickNormalized.X * (panelDisplay.ClientSize.Width - 1)) 
+		            , (panelDisplay.ClientSize.Height - 1) - (int)(stickNormalized.Y * panelDisplay.ClientSize.Height));
 
 					
-					if (_joystick.Button[0].IsPressed)
-					{
-						// Spray the screen.
-						_currentCursor = Properties.Resources.hand_pointer_icon;
-						_mouse.Position = _mousePosition = screenPosition;	
-						_spray.SprayPoint(_mousePosition);
-					}
-					else
-					{
-						// Turn off the cursor if the mouse button isn't held down.
-						if ((_mouse.Button & PointingDeviceButtons.Button1) != PointingDeviceButtons.Button1)
-						{
-							_currentCursor = Properties.Resources.hand_icon;
-						}
-					}
-                }
+	            if (_joystick.Button[0].IsPressed)
+	            {
+		            // Spray the screen.
+		            _currentCursor = Properties.Resources.hand_pointer_icon;
+		            _mouse.Position = _mousePosition = screenPosition;	
+		            _spray.SprayPoint(_mousePosition);
+	            }
+	            else
+	            {
+		            // Turn off the cursor if the mouse button isn't held down.
+		            if ((_mouse.Button & PointingDeviceButtons.Button1) != PointingDeviceButtons.Button1)
+		            {
+			            _currentCursor = Properties.Resources.hand_icon;
+		            }
+	            }
 
-                return screenPosition;
+	            return screenPosition;
             }
         }
 		#endregion
@@ -164,13 +166,15 @@ namespace GorgonLibrary.Examples
         {
             var control = sender as Control;
 
-            if (control != null)
-            {
-                using(var pen = new Pen(Color.Black, SystemInformation.BorderSize.Height))
-                {
-                    e.Graphics.DrawLine(pen, new Point(0, 0), new Point(control.Width, 0));
-                }
-            }
+	        if (control == null)
+	        {
+		        return;
+	        }
+
+	        using(var pen = new Pen(Color.Black, SystemInformation.BorderSize.Height))
+	        {
+		        e.Graphics.DrawLine(pen, new Point(0, 0), new Point(control.Width, 0));
+	        }
         }
         
         /// <summary>
@@ -438,26 +442,30 @@ namespace GorgonLibrary.Examples
         private void CreateJoystick()
         {
             // If we have a joystick controller, then let's activate it.
-            if (_factory.JoystickDevices.Count > 0)
-            {
-                // Find the first one that's active.
-                var activeDevice = (from joystick in _factory.JoystickDevices
-                                    where joystick.IsConnected
-                                    select joystick).FirstOrDefault();
+	        if (_factory.JoystickDevices.Count <= 0)
+	        {
+		        return;
+	        }
 
-                if (activeDevice != null)
-                {
-                    // Note that joysticks from Raw Input are always exclusive access,
-                    // so setting _joystick.Exclusive = true; does nothing.
-                    _joystick = _factory.CreateJoystick(this, activeDevice.Name);
+	        // Find the first one that's active.
+	        var activeDevice = (from joystick in _factory.JoystickDevices
+		        where joystick.IsConnected
+		        select joystick).FirstOrDefault();
 
-                    // Show our joystick information.
-                    labelJoystick.Text = string.Empty;
-                    panelJoystick.Visible = true;
+	        if (activeDevice == null)
+	        {
+		        return;
+	        }
 
-					UpdateJoystickLabel(JoystickTransformed);
-                }
-            }
+	        // Note that joysticks from Raw Input are always exclusive access,
+	        // so setting _joystick.Exclusive = true; does nothing.
+	        _joystick = _factory.CreateJoystick(this, activeDevice.Name);
+
+	        // Show our joystick information.
+	        labelJoystick.Text = string.Empty;
+	        panelJoystick.Visible = true;
+
+	        UpdateJoystickLabel(JoystickTransformed);
         }
 
 		/// <summary>
@@ -542,11 +550,13 @@ namespace GorgonLibrary.Examples
                 _cursor = null;
             }
 
-            if (_spray != null)
-            {
-                _spray.Dispose();
-                _spray = null;
-            }
+			if (_spray == null)
+			{
+				return;
+			}
+
+			_spray.Dispose();
+			_spray = null;
 		}
 		#endregion
 

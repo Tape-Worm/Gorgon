@@ -1318,21 +1318,23 @@ namespace GorgonLibrary.Graphics
 			// If we didn't pass any views, then unbind all the views.
 			if ((views == null) || (views.Length == 0))
 			{
-			    if ((_targetViews != null) && (_targetViews.Length != 0))
-			    {
-			        _D3DViews = null;
-			        _targetViews = null;
+				if ((_targetViews == null) || (_targetViews.Length == 0))
+				{
+					return;
+				}
+
+				_D3DViews = null;
+				_targetViews = null;
 
 #if DEBUG
-                    // Validate the depth/stencil buffer here because we need to have the current render target set before
-                    // evaluation.
-                    ValidateDepthBufferBinding(depthStencilBuffer);
+				// Validate the depth/stencil buffer here because we need to have the current render target set before
+				// evaluation.
+				ValidateDepthBufferBinding(depthStencilBuffer);
 #endif
 
-                    SetTargets(depthView);
-			    }
+				SetTargets(depthView);
 
-			    return;
+				return;
 			}
 
 #if DEBUG

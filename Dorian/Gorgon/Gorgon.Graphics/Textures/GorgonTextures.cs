@@ -61,13 +61,15 @@ namespace GorgonLibrary.Graphics
                         return _graphics.ImmediateContext.Textures.GorgonLogo;
                     }
 
-			        if (_logo == null)
-			        {
-			            _logo = _graphics.Textures.CreateTexture<GorgonTexture2D>("Gorgon.Logo", Resources.Gorgon_2_x_Logo_Small);
+				    if (_logo != null)
+				    {
+					    return _logo;
+				    }
 
-			            // Don't track this image.
-			            _graphics.RemoveTrackedObject(_logo);
-			        }
+				    _logo = _graphics.Textures.CreateTexture<GorgonTexture2D>("Gorgon.Logo", Resources.Gorgon_2_x_Logo_Small);
+
+				    // Don't track this image.
+				    _graphics.RemoveTrackedObject(_logo);
 			    }
 
 			    return _logo;
@@ -506,28 +508,26 @@ namespace GorgonLibrary.Graphics
 
             using (GorgonImageData data = GorgonImageData.CreateFromGDIImage(images, imageType, options))
             {
-                ITextureSettings settings = null;
+                var settings = (ITextureSettings)data.Settings;
+
+				var info = GorgonBufferFormatInfo.GetInfo(settings.Format);
 
                 // If we're using unordered access, then make the format typeless.
-                if (options.AllowUnorderedAccess)
-                {
-                    settings = (ITextureSettings)data.Settings;
+	            if ((info.Group == BufferFormat.Unknown)
+					|| (!options.AllowUnorderedAccess))
+	            {
+		            return CreateTexture<T>(name, data, settings);
+	            }
 
-                    var info = GorgonBufferFormatInfo.GetInfo(settings.Format);
+	            // Remap the shader view.
+	            if (settings.ShaderViewFormat == BufferFormat.Unknown)
+	            {
+		            settings.ShaderViewFormat = settings.Format;
+	            }
 
-                    if (info.Group != BufferFormat.Unknown)
-                    {
-                        // Remap the shader view.
-                        if (settings.ShaderViewFormat == BufferFormat.Unknown)
-                        {
-                            settings.ShaderViewFormat = settings.Format;
-                        }
+	            settings.Format = info.Group;
 
-                        settings.Format = info.Group;
-                    }
-                }
-
-                return CreateTexture<T>(name, data, settings);
+	            return CreateTexture<T>(name, data, settings);
             }
         }
 
@@ -630,25 +630,24 @@ namespace GorgonLibrary.Graphics
                     settings.Multisampling = options.Multisampling;
                 }
 
-                // If we're using unordered access, then make the format typeless.
-                if (options.AllowUnorderedAccess)
-                {
+	            var info = GorgonBufferFormatInfo.GetInfo(settings.Format);
 
-                    var info = GorgonBufferFormatInfo.GetInfo(settings.Format);
+				// If we're using unordered access, then make the format typeless.
+				if ((info.Group == BufferFormat.Unknown)
+					|| (!options.AllowUnorderedAccess))
+	            {
+		            return CreateTexture<T>(name, data, settings);
+	            }
 
-                    if (info.Group != BufferFormat.Unknown)
-                    {
-                        // Remap the shader view.
-                        if (settings.ShaderViewFormat == BufferFormat.Unknown)
-                        {
-                            settings.ShaderViewFormat = settings.Format;
-                        }
+	            // Remap the shader view.
+	            if (settings.ShaderViewFormat == BufferFormat.Unknown)
+	            {
+		            settings.ShaderViewFormat = settings.Format;
+	            }
 
-                        settings.Format = info.Group;
-                    }
-                }
+	            settings.Format = info.Group;
 
-                return CreateTexture<T>(name, data, settings);
+	            return CreateTexture<T>(name, data, settings);
             }
         }
 
@@ -800,24 +799,24 @@ namespace GorgonLibrary.Graphics
                     settings.Multisampling = codec.Multisampling;
                 }
 
-                // If we've opted for unordered access views, then make the current format typeless.
-                if (settings.AllowUnorderedAccessViews)
-                {
-                    var info = GorgonBufferFormatInfo.GetInfo(settings.Format);
+				var info = GorgonBufferFormatInfo.GetInfo(settings.Format);
 
-                    if (info.Group != BufferFormat.Unknown)
-                    {
-                        // Remap the shader view.
-                        if (settings.ShaderViewFormat == BufferFormat.Unknown)
-                        {
-                            settings.ShaderViewFormat = settings.Format;
-                        }
+				// If we've opted for unordered access views, then make the current format typeless.
+				if ((info.Group == BufferFormat.Unknown)
+					|| (!settings.AllowUnorderedAccessViews))
+				{
+					return CreateTexture<T>(name, imageData, settings);
+				}
 
-                        settings.Format = info.Group;
-                    }
-                }
+				// Remap the shader view.
+				if (settings.ShaderViewFormat == BufferFormat.Unknown)
+				{
+					settings.ShaderViewFormat = settings.Format;
+				}
 
-			    return CreateTexture<T>(name, imageData, settings);
+				settings.Format = info.Group;
+
+				return CreateTexture<T>(name, imageData, settings);
 			}
 		}
 

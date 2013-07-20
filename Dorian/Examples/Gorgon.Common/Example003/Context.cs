@@ -53,13 +53,20 @@ namespace GorgonLibrary.Examples
 		/// <exception cref="System.NotSupportedException"></exception>
 		private void MainForm_KeyDown(object sender, KeyEventArgs e)
 		{
-			if (e.KeyCode == Keys.Space)
+			if (e.KeyCode != Keys.Space)
 			{
-				((formMain)MainForm).Clear();
-				if (Gorgon.ApplicationIdleLoopMethod == Program.Idle)
-					Gorgon.ApplicationIdleLoopMethod = Program.NewIdle;
-				else
-					Gorgon.ApplicationIdleLoopMethod = Program.Idle;
+				return;
+			}
+
+			((formMain)MainForm).Clear();
+
+			if (Gorgon.ApplicationIdleLoopMethod == Program.Idle)
+			{
+				Gorgon.ApplicationIdleLoopMethod = Program.NewIdle;
+			}
+			else
+			{
+				Gorgon.ApplicationIdleLoopMethod = Program.Idle;
 			}
 		}
 
@@ -91,11 +98,13 @@ namespace GorgonLibrary.Examples
 				// Fade in the splash screen about 10% every 7 milliseconds.
 				while (_splashScreen.Opacity < 1)
 				{
-					if (_timer.Milliseconds > 7)
+					if (!(_timer.Milliseconds > 7))
 					{
-						_timer.Reset();
-						_splashScreen.Opacity += 0.01;
+						continue;
 					}
+
+					_timer.Reset();
+					_splashScreen.Opacity += 0.01;
 				}
 
 				// Annoy the user.  They're asking for it.
@@ -117,11 +126,13 @@ namespace GorgonLibrary.Examples
 				// Fade it out.
 				while (_splashScreen.Opacity > 0.02)
 				{
-					if (_timer.Milliseconds > 5)
+					if (!(_timer.Milliseconds > 5))
 					{
-						_timer.Reset();
-						_splashScreen.Opacity -= 0.01;
+						continue;
 					}
+
+					_timer.Reset();
+					_splashScreen.Opacity -= 0.01;
 				}
 
 				// Resize the main form to 640 x 480.

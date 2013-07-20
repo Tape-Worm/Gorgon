@@ -33,7 +33,13 @@ namespace GorgonLibrary.Graphics
     /// <summary>
     /// A render target bound to a 1D texture.
     /// </summary>
-    public class GorgonRenderTarget1D
+	/// <remarks>
+	/// A 1D render target is a texture that can be used to receive rendering data in the pipeline by binding it as a render target.  Because it is inherited from <see cref="GorgonLibrary.Graphics.GorgonTexture1D">GorgonTexture1D</see> 
+	/// it can be cast to that type and used as a normal 2D texture.  Also, for convenience, it can also be cast to a <see cref="GorgonLibrary.Graphics.GorgonRenderTargetView">GorgonRenderTargetView</see> or 
+	/// a <see cref="GorgonLibrary.Graphics.GorgonShaderView">GorgonTextureShaderView</see> to allow ease of <see cref="GorgonLibrary.Graphics.GorgonOutputMerger.SetRenderTarget">binding a render target</see> to the output merger stage in the pipeline or 
+	/// to the <see cref="GorgonLibrary.Graphics.GorgonShaderState{T}.Resources">shader resource list</see>.
+	/// </remarks>
+	public class GorgonRenderTarget1D
         : GorgonTexture2D
 	{
 		#region Variables.

@@ -106,11 +106,13 @@ namespace GorgonLibrary.Graphics.Example
 			}
 			set
 			{
-				if (!value.Equals(_position))
+				if (value.Equals(_position))
 				{
-					_position = value;
-					_isPositionChanged = true;
+					return;
 				}
+
+				_position = value;
+				_isPositionChanged = true;
 			}
 		}
 
@@ -125,11 +127,13 @@ namespace GorgonLibrary.Graphics.Example
 			}
 			set
 			{
-				if (!value.Equals(_scale))
+				if (value.Equals(_scale))
 				{
-					_scale = value;
-					_isScaleChanged = true;
+					return;
 				}
+
+				_scale = value;
+				_isScaleChanged = true;
 			}
 		}
 
@@ -144,11 +148,13 @@ namespace GorgonLibrary.Graphics.Example
 			}
 			set
 			{
-				if (!value.Equals(_rotation))
+				if (value.Equals(_rotation))
 				{
-					_rotation = value;
-					_isRotationChanged = true;
+					return;
 				}
+
+				_rotation = value;
+				_isRotationChanged = true;
 			}
 		}
 		#endregion

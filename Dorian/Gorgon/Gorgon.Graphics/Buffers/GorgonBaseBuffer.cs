@@ -531,16 +531,18 @@ namespace GorgonLibrary.Graphics
 	                                                      (elementCount - start)));
             }
 
-            if (BufferType != BufferType.Structured)
-            {
-                if (!Graphics.VideoDevice.SupportsUnorderedAccessViewFormat(format))
-                {
-                    throw new GorgonException(GorgonResult.CannotCreate,
-                                              string.Format(Resources.GORGFX_VIEW_FORMAT_NOT_SUPPORTED, format));
-                }
-            }
+	        if (BufferType == BufferType.Structured)
+	        {
+		        return (GorgonBufferUnorderedAccessView)_viewCache.GetUnorderedAccessView(format, start, count, 0, viewType, isRaw);
+	        }
 
-            return (GorgonBufferUnorderedAccessView)_viewCache.GetUnorderedAccessView(format, start, count, 0, viewType, isRaw);
+	        if (!Graphics.VideoDevice.SupportsUnorderedAccessViewFormat(format))
+	        {
+		        throw new GorgonException(GorgonResult.CannotCreate,
+			        string.Format(Resources.GORGFX_VIEW_FORMAT_NOT_SUPPORTED, format));
+	        }
+
+	        return (GorgonBufferUnorderedAccessView)_viewCache.GetUnorderedAccessView(format, start, count, 0, viewType, isRaw);
         }
 
         /// <summary>

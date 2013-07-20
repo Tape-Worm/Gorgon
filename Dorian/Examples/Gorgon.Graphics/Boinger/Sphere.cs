@@ -116,16 +116,18 @@ namespace GorgonLibrary.Graphics.Example
 							);
 
 					// Add the indices and skip the last ring.
-					if (ring != ringCount)
+					if (ring == ringCount)
 					{
-						Indices[indexIndex++] = (index + segmentCount + 1);
-						Indices[indexIndex++] = index;
-						Indices[indexIndex++] = (index + segmentCount);
-						Indices[indexIndex++] = (index + segmentCount + 1);
-						Indices[indexIndex++] = (index + 1);
-						Indices[indexIndex++] = index;
-						index++;
+						continue;
 					}
+
+					Indices[indexIndex++] = (index + segmentCount + 1);
+					Indices[indexIndex++] = index;
+					Indices[indexIndex++] = (index + segmentCount);
+					Indices[indexIndex++] = (index + segmentCount + 1);
+					Indices[indexIndex++] = (index + 1);
+					Indices[indexIndex++] = index;
+					index++;
 				}
 			}
 			

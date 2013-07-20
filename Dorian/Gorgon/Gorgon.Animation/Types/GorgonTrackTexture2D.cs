@@ -81,18 +81,18 @@ namespace GorgonLibrary.Animation
 		{
 			var prev = (GorgonKeyTexture2D)keyValues.PreviousKey;
 
-			if (InterpolationMode == TrackInterpolationMode.Linear)
+			if (InterpolationMode != TrackInterpolationMode.Linear)
 			{
-				var next = (GorgonKeyTexture2D)keyValues.NextKey;
-				var regionStart = new Vector4(prev.TextureRegion.X, prev.TextureRegion.Y, prev.TextureRegion.Width, prev.TextureRegion.Height);
-				var regionEnd = new Vector4(next.TextureRegion.X, next.TextureRegion.Y, next.TextureRegion.Width, next.TextureRegion.Height);
-				Vector4 result;
-
-				Vector4.Lerp(ref regionStart, ref regionEnd, unitTime, out result);
-				return new GorgonKeyTexture2D(keyTime, prev.Value, new RectangleF(result.X, result.Y, result.Z, result.W));
+				return prev;
 			}
 
-			return prev;
+			var next = (GorgonKeyTexture2D)keyValues.NextKey;
+			var regionStart = new Vector4(prev.TextureRegion.X, prev.TextureRegion.Y, prev.TextureRegion.Width, prev.TextureRegion.Height);
+			var regionEnd = new Vector4(next.TextureRegion.X, next.TextureRegion.Y, next.TextureRegion.Width, next.TextureRegion.Height);
+			Vector4 result;
+
+			Vector4.Lerp(ref regionStart, ref regionEnd, unitTime, out result);
+			return new GorgonKeyTexture2D(keyTime, prev.Value, new RectangleF(result.X, result.Y, result.Z, result.W));
 		}
 
 		/// <summary>

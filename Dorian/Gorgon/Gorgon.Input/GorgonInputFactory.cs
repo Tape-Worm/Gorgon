@@ -156,11 +156,11 @@ namespace GorgonLibrary.Input
 			if (Devices.ContainsKey(uuid))
 			{
 				device = Devices[uuid] as T;
+			}
 
-			    if (device == null)
-			    {
-			        throw new ArgumentException(string.Format(Resources.GORINP_DEVICE_ALREADY_EXISTS_TYPE_MISMATCH, devType.FullName), "name");
-			    }
+			if (device == null)
+			{
+			    throw new ArgumentException(string.Format(Resources.GORINP_DEVICE_ALREADY_EXISTS_TYPE_MISMATCH, devType.FullName), "name");
 			}
 
 			return device;

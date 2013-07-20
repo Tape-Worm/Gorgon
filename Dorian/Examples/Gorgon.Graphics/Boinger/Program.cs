@@ -327,11 +327,14 @@ namespace GorgonLibrary.Graphics.Example
 			if (!Graphics.VideoDevice.SupportsDepthFormat(depthFormat))
 			{
 				depthFormat = BufferFormat.D16_UIntNormal;
-				if (!Graphics.VideoDevice.SupportsDepthFormat(depthFormat))
+
+				if (Graphics.VideoDevice.SupportsDepthFormat(depthFormat))
 				{
-					GorgonDialogs.ErrorBox(_mainForm, "Video device does not support a 24 or 16 bit depth buffer.");
 					return;
 				}
+
+				GorgonDialogs.ErrorBox(_mainForm, "Video device does not support a 24 or 16 bit depth buffer.");
+				return;
 			}
 
 			// Create a 1280x800 window with a depth buffer.
@@ -370,12 +373,12 @@ namespace GorgonLibrary.Graphics.Example
 			// Create our shaders.
 			// Our vertex shader.  This is a simple shader, it just processes a vertex by multiplying it against
 			// the world/view/projection matrix and spits it back out.
-			_vertexShader = Graphics.Shaders.CreateShader<GorgonVertexShader>("VertexShader", "BoingerVS", Properties.Resources.Shader, true);
+			_vertexShader = Graphics.Shaders.CreateShader<GorgonVertexShader>("VertexShader", "BoingerVS", Properties.Resources.Shader);
 			// Our main pixel shader.  This is a very simple shader, it just reads a texture and spits it back out.  Has no
 			// diffuse capability.
-			_pixelShader = Graphics.Shaders.CreateShader<GorgonPixelShader>("PixelShader", "BoingerPS", Properties.Resources.Shader, true);
+			_pixelShader = Graphics.Shaders.CreateShader<GorgonPixelShader>("PixelShader", "BoingerPS", Properties.Resources.Shader);
 			// Our shadow shader for our ball "shadow".  This is hard coded to send back black (R:0, G:0, B:0) at 50% opacity (A: 0.5).
-			_pixelShaderShadow = Graphics.Shaders.CreateShader<GorgonPixelShader>("ShadowShader", "BoingerShadowPS", Properties.Resources.Shader, true);
+			_pixelShaderShadow = Graphics.Shaders.CreateShader<GorgonPixelShader>("ShadowShader", "BoingerShadowPS", Properties.Resources.Shader);
 
 			// Create the vertex input layout.
 			// We need to create a layout for our vertex type because the shader won't know

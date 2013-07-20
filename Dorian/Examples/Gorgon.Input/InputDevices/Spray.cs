@@ -117,25 +117,27 @@ namespace GorgonLibrary.Examples
         /// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
         private void Dispose(bool disposing)
         {
-            if (!_disposed)
-            {
-                if (disposing)
-                {
-                    if (Surface != null)
-                    {
-                        Surface.Dispose();
-                        Surface = null;
-                    }
+	        if (_disposed)
+	        {
+		        return;
+	        }
 
-                    if (_graphics != null)
-                    {
-                        _graphics.Dispose();
-                        _graphics = null;
-                    }
-                }
+	        if (disposing)
+	        {
+		        if (Surface != null)
+		        {
+			        Surface.Dispose();
+			        Surface = null;
+		        }
 
-                _disposed = true;
-            }
+		        if (_graphics != null)
+		        {
+			        _graphics.Dispose();
+			        _graphics = null;
+		        }
+	        }
+
+	        _disposed = true;
         }
 
         /// <summary>

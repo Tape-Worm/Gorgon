@@ -28,6 +28,7 @@ using System.IO;
 using System.Linq;
 using GorgonLibrary.Diagnostics;
 using GorgonLibrary.IO;
+using GorgonLibrary.Math;
 
 namespace GorgonLibrary.Animation
 {
@@ -146,28 +147,40 @@ namespace GorgonLibrary.Animation
 			}
 			set
 			{
-				if ((_time == value) || (_length <= 0))
+				if ((_time.EqualsEpsilon(value)) || (_length <= 0))
+				{
 					return;
+				}
 
 				_time = value;
 
 				if ((IsLooped) && ((_time > _length) || (_time < 0)))
 				{
 					// Loop the animation.
-					if ((_loopCount == 0) || (_looped != _loopCount))
+					if ((_loopCount != 0) && (_looped == _loopCount))
 					{
-						_looped++;
-						_time = _time % _length;
-						if (_time < 0)
-							_time += _length;
 						return;
 					}
+					
+					_looped++;
+					_time = _time % _length;
+
+					if (_time < 0)
+					{
+						_time += _length;
+					}
+					return;
 				}
 
 				if (_time < 0)
+				{
 					_time = 0;
+				}
+
 				if (_time > _length)
+				{
 					_time = _length;
+				}
 			}
 		}
 		
@@ -193,11 +206,13 @@ namespace GorgonLibrary.Animation
 			// Notify each track to update their animation to the current time.
 			foreach (var track in Tracks)
 			{
-				if (track.KeyFrames.Count > 0)
+				if (track.KeyFrames.Count <= 0)
 				{
-					IKeyFrame key = track.GetKeyAtTime(_time);
-					track.ApplyKey(ref key);
+					continue;
 				}
+
+				IKeyFrame key = track.GetKeyAtTime(_time);
+				track.ApplyKey(ref key);
 			}
 		}
 
@@ -230,12 +245,14 @@ namespace GorgonLibrary.Animation
 
 				foreach (var track in activeTracks)
 				{
-					if (track.KeyFrames.Count > 0)
+					if (track.KeyFrames.Count <= 0)
 					{
-						chunk.Begin("TRCKDATA");
-						track.ToChunk(chunk);
-						chunk.End();
+						continue;
 					}
+
+					chunk.Begin("TRCKDATA");
+					track.ToChunk(chunk);
+					chunk.End();
 				}
 			}
 		}
@@ -304,13 +321,17 @@ namespace GorgonLibrary.Animation
 			    };
 
 		    foreach (var track in Tracks)
-			{
-				if (clone.Tracks.Contains(track.Name))
-				{
-					foreach (var key in track.KeyFrames)
-						clone.Tracks[track.Name].KeyFrames.Add(key.Clone());
-				}
-			}
+		    {
+			    if (!clone.Tracks.Contains(track.Name))
+			    {
+				    continue;
+			    }
+
+			    foreach (var key in track.KeyFrames)
+			    {
+				    clone.Tracks[track.Name].KeyFrames.Add(key.Clone());
+			    }
+		    }
 
 			return clone;
 		}

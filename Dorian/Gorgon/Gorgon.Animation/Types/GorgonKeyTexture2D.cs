@@ -99,6 +99,7 @@ namespace GorgonLibrary.Animation
 						  (graphicsTexture.Settings.Multisampling == settings.Multisampling)
 						 select graphicsTexture).FirstOrDefault();
 
+				// ReSharper disable ConvertIfStatementToNullCoalescingExpression
 				if (Value == null)
 				{
 					// That one failed, so just try and look it up by name, width, height and format.
@@ -111,16 +112,17 @@ namespace GorgonLibrary.Animation
 					                                                      where (String.Compare(graphicsTexture.Name, textureName, StringComparison.OrdinalIgnoreCase) == 0)
 					                                                      select graphicsTexture).FirstOrDefault();
 				}
+				// ReSharper restore ConvertIfStatementToNullCoalescingExpression
 			}
 
 			// We have our texture, stop deferring.
-		    if (Value != null)
-		    {
-		        _textureName = string.Empty;
-		        return true;
-		    }
+			if (Value == null)
+			{
+				return false;
+			}
 
-		    return false;
+			_textureName = string.Empty;
+			return true;
 		}
 		#endregion
 
@@ -196,27 +198,29 @@ namespace GorgonLibrary.Animation
 			// Get the texture region we're using.
 			TextureRegion = chunk.ReadRectangleF();
 
-			if (hasTexture)
-			{
-				// Get our texture name.
-				_textureName = chunk.ReadString();
+	        if (!hasTexture)
+	        {
+		        return;
+	        }
 
-				// Read in our texture information.
-				_settings = new GorgonTexture2DSettings
-				    {
-				        ArrayCount = chunk.ReadInt32(),
-				        Format = chunk.Read<BufferFormat>(),
-				        Size = chunk.ReadSize(),
-				        IsTextureCube = chunk.ReadBoolean(),
-				        MipCount = chunk.ReadInt32(),
-				        Multisampling = new GorgonMultisampling(chunk.ReadInt32(), chunk.ReadInt32()),
-				        Usage = BufferUsage.Default,
-				        ShaderViewFormat = BufferFormat.Unknown
-				    };
+	        // Get our texture name.
+	        _textureName = chunk.ReadString();
 
-			    // Defer load the texture.
-				GetTexture();
-			}
+	        // Read in our texture information.
+	        _settings = new GorgonTexture2DSettings
+	        {
+		        ArrayCount = chunk.ReadInt32(),
+		        Format = chunk.Read<BufferFormat>(),
+		        Size = chunk.ReadSize(),
+		        IsTextureCube = chunk.ReadBoolean(),
+		        MipCount = chunk.ReadInt32(),
+		        Multisampling = new GorgonMultisampling(chunk.ReadInt32(), chunk.ReadInt32()),
+		        Usage = BufferUsage.Default,
+		        ShaderViewFormat = BufferFormat.Unknown
+	        };
+
+	        // Defer load the texture.
+	        GetTexture();
 		}
 
 		/// <summary>
@@ -229,17 +233,19 @@ namespace GorgonLibrary.Animation
 			chunk.WriteBoolean(Value != null);
 			chunk.WriteRectangle(TextureRegion);
 
-			if (Value != null)
+			if (Value == null)
 			{
-				chunk.WriteString(Value.Name);
-				chunk.WriteInt32(Value.Settings.ArrayCount);
-				chunk.Write(Value.Settings.Format);
-				chunk.WriteSize(Value.Settings.Size);
-				chunk.WriteBoolean(Value.Settings.IsTextureCube);
-				chunk.WriteInt32(Value.Settings.MipCount);
-				chunk.WriteInt32(Value.Settings.Multisampling.Count);
-				chunk.WriteInt32(Value.Settings.Multisampling.Quality);
+				return;
 			}
+
+			chunk.WriteString(Value.Name);
+			chunk.WriteInt32(Value.Settings.ArrayCount);
+			chunk.Write(Value.Settings.Format);
+			chunk.WriteSize(Value.Settings.Size);
+			chunk.WriteBoolean(Value.Settings.IsTextureCube);
+			chunk.WriteInt32(Value.Settings.MipCount);
+			chunk.WriteInt32(Value.Settings.Multisampling.Count);
+			chunk.WriteInt32(Value.Settings.Multisampling.Quality);
 		}
 		#endregion
 	}

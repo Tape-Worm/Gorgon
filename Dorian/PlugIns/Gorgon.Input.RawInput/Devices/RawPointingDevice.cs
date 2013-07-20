@@ -72,12 +72,14 @@ namespace GorgonLibrary.Input.Raw
 		/// <param name="button">Button used for double click.</param>
 		private void BeginDoubleClick(PointingDeviceButtons button)
 		{
-			if (_clickCount < 1)
-			{
-				_doubleClickPosition = Position;
-				_doubleClickButton = button;
-				_doubleClicker.Reset();
-			}
+		    if (_clickCount >= 1)
+		    {
+			    return;
+		    }
+
+		    _doubleClickPosition = Position;
+		    _doubleClickButton = button;
+		    _doubleClicker.Reset();
 		}
 
 		/// <summary>
