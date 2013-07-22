@@ -695,11 +695,18 @@ namespace GorgonLibrary.Renderers
 			_sampler = new GorgonRenderable.TextureSamplerState();
 			_blend = new GorgonRenderable.BlendState();
 
-			CullingMode = Graphics.CullingMode.Back;
+			CullingMode = CullingMode.Back;
 
-			_rect = new GorgonRectangle(gorgon2D, "Gorgon2D.Rectangle", RectangleF.Empty, Color.White, false);
+			_rect = new GorgonRectangle(gorgon2D, "Gorgon2D.Rectangle", false)
+			{
+				Position = Vector2.Zero,
+				Size = Vector2.Zero
+			};
 			_point = new GorgonPoint(gorgon2D, "Gorgon2D.Point", Vector2.Zero, Color.White);
-			_line = new GorgonLine(gorgon2D, "Gorgon2D.Line", Vector2.Zero, Vector2.Zero, Color.White);
+			_line = new GorgonLine(gorgon2D, "Gorgon2D.Line", Vector2.Zero, Vector2.Zero)
+			{
+				Color = Color.White
+			};
 			_ellipse = new GorgonEllipse(gorgon2D, "Gorgon2D.Ellipse", Vector2.Zero, Vector2.Zero, Color.White, 64, false);
 			_triangle = new GorgonTriangle(gorgon2D, "Gorgon2D.Triangle", new GorgonTriangle.TrianglePoint(), new GorgonTriangle.TrianglePoint(), new GorgonTriangle.TrianglePoint(), false);
 			_string = new GorgonText(gorgon2D, "Gorgon2D.String", null);

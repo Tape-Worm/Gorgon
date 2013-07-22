@@ -80,7 +80,12 @@ namespace GorgonLibrary.Renderers
                 throw new ArgumentException("The parameter must not be empty.", "name");
             }
 
-			result = (T)(Activator.CreateInstance(type, System.Reflection.BindingFlags.CreateInstance | System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance, null,  new object[] { _gorgon2D, name }, null));
+			result = (T)(Activator.CreateInstance(type,
+						System.Reflection.BindingFlags.CreateInstance | System.Reflection.BindingFlags.NonPublic |
+						System.Reflection.BindingFlags.Instance, null, new object[]
+						{
+							_gorgon2D, name
+						}, null));
 			result.Load(stream);
 
 			return result;
@@ -347,7 +352,13 @@ namespace GorgonLibrary.Renderers
 		public GorgonRectangle CreateRectangle(string name, RectangleF rectangle, GorgonColor color, bool filled)
 		{
 			GorgonDebug.AssertParamString(name, "name");
-			return new GorgonRectangle(_gorgon2D, name, rectangle, color, filled);
+			return new GorgonRectangle(_gorgon2D, name, filled)
+			{
+				TextureRegion = rectangle,
+				Color = color,
+				Size = new Vector2(rectangle.Width, rectangle.Height),
+				Position = new Vector2(rectangle.Left, rectangle.Top)
+			};
 		}
 
 		/// <summary>
@@ -378,7 +389,11 @@ namespace GorgonLibrary.Renderers
 		public GorgonLine CreateLine(string name, Vector2 startPosition, Vector2 endPosition, GorgonColor color)
 		{
 			GorgonDebug.AssertParamString(name, "name");
-			return new GorgonLine(_gorgon2D, name, startPosition, endPosition, color);
+
+			return new GorgonLine(_gorgon2D, name, startPosition, endPosition)
+						{
+							Color = color
+						};
 		}
 
 		/// <summary>

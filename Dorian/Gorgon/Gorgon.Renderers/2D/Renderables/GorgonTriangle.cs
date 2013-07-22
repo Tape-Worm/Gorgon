@@ -469,7 +469,10 @@ namespace GorgonLibrary.Renderers
 					point3
 				};
 
-			_line = new GorgonLine(gorgon2D, "Triangle.Line", Vector2.Zero, Vector2.Zero, point1.Color);
+			_line = new GorgonLine(gorgon2D, "Triangle.Line", Vector2.Zero, Vector2.Zero)
+			{
+				Color = point1.Color
+			};
 
             InitializeVertices(3);
 		}

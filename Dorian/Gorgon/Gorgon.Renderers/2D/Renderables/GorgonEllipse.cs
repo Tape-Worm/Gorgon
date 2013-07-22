@@ -501,7 +501,10 @@ namespace GorgonLibrary.Renderers
 			Size = size;
 			Quality = quality;
 			IsFilled = isFilled;
-			_line = new GorgonLine(gorgon2D, name + ".Line", Vector2.Zero, Vector2.Zero, color);
+			_line = new GorgonLine(gorgon2D, name + ".Line", Vector2.Zero, Vector2.Zero)
+			{
+				Color = color
+			};
 			Color = color;
 		}
 		#endregion
