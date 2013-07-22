@@ -45,8 +45,8 @@ namespace GorgonLibrary.Renderers
 		/// <summary>
 		/// Property to set or return the position of the renderable.
 		/// </summary>
-		[AnimatedProperty()]
-		public virtual Vector2 Position
+		[AnimatedProperty]
+		public Vector2 Position
 		{
 			get;
 			set;
@@ -55,8 +55,8 @@ namespace GorgonLibrary.Renderers
 		/// <summary>
 		/// Property to set or return the angle of rotation (in degrees) for a renderable.
 		/// </summary>
-		[AnimatedProperty()]
-		public virtual float Angle
+		[AnimatedProperty]
+		public float Angle
 		{
 			get;
 			set;
@@ -68,8 +68,8 @@ namespace GorgonLibrary.Renderers
 		/// <remarks>This property uses scalar values to provide a relative scale.  To set an absolute scale (i.e. pixel coordinates), use the <see cref="P:GorgonLibrary.Renderers.GorgonMoveable.Size">Size</see> property.
 		/// <para>Setting this value to a 0 vector will cause undefined behaviour and is not recommended.</para>
 		/// </remarks>
-		[AnimatedProperty()]
-		public virtual Vector2 Scale
+		[AnimatedProperty]
+		public Vector2 Scale
 		{
 			get;
 			set;
@@ -78,8 +78,8 @@ namespace GorgonLibrary.Renderers
 		/// <summary>
 		/// Property to set or return the anchor point of the renderable.
 		/// </summary>
-		[AnimatedProperty()]
-		public virtual Vector2 Anchor
+		[AnimatedProperty]
+		public Vector2 Anchor
 		{
 			get
 			{
@@ -87,18 +87,21 @@ namespace GorgonLibrary.Renderers
 			}
 			set
 			{
-				if (_anchor != value)
+				if (_anchor == value)
 				{
-					_anchor = value;
-					NeedsVertexUpdate = true;
+					return;
 				}
+
+				_anchor = value;
+				NeedsVertexUpdate = true;
 			}
 		}
 
 		/// <summary>
 		/// Property to set or return the "depth" of the renderable in a depth buffer.
 		/// </summary>
-		public virtual float Depth
+		[AnimatedProperty]
+		public float Depth
 		{
 			get;
 			set;
@@ -111,19 +114,22 @@ namespace GorgonLibrary.Renderers
 		/// then this property will return the size of the renderable with multiplied by the scale.  When assigning a value, the scale be set on value derived from the current size of the renderable.
 		/// <para>A renderable with a size of 1,1 will set/return the same value as <see cref="GorgonLibrary.Renderers.GorgonMoveable.Scale">Scale</see> property.</para></remarks>
 		/// <exception cref="System.DivideByZeroException">Thrown when one of the axes in the Size property of the renderable is 0.</exception>
-		public virtual Vector2 ScaledSize
+		public Vector2 ScaledSize
 		{
 			get
 			{
+				// ReSharper disable CompareOfFloatsByEqualityOperator
 				if ((Size.X == 1.0f) && (Size.Y == 1.0f))
 				{
 					return Size;
 				}
+				// ReSharper restore CompareOfFloatsByEqualityOperator
 
 				return new Vector2(Scale.X * Size.X, Scale.Y * Size.Y);
 			}
 			set
 			{
+				// ReSharper disable CompareOfFloatsByEqualityOperator
 				if ((Size.X == 1.0f) && (Size.Y == 1.0f))
 				{
 					Scale = value;
@@ -134,9 +140,10 @@ namespace GorgonLibrary.Renderers
 				// If the renderable has no dimensions, then leave.
 				if ((Size.X == 0) || (Size.Y == 0))
 				{
-					throw new DivideByZeroException("Divide by zero.  Cannot calculate scale, the size of the renderable is {" + Size.X.ToString() + ", " + Size.Y.ToString() + "}.");
+					throw new DivideByZeroException(string.Format("Divide by zero.  Cannot calculate scale, the size of the renderable is ({0}, {1}).", Size.X, Size.Y));
 				}
 #endif
+				// ReSharper restore CompareOfFloatsByEqualityOperator
 
 				Scale = new Vector2(value.X / Size.X, value.Y / Size.Y);
 			}
@@ -145,8 +152,8 @@ namespace GorgonLibrary.Renderers
 		/// <summary>
 		/// Property to set or return the size of the renderable.
 		/// </summary>
-		[AnimatedProperty()]
-		public virtual Vector2 Size
+		[AnimatedProperty]
+		public Vector2 Size
 		{
 			get
 			{
@@ -154,11 +161,13 @@ namespace GorgonLibrary.Renderers
 			}
 			set
 			{
-				if (_size != value)
+				if (_size == value)
 				{
-					_size = value;					
-					NeedsVertexUpdate = true;
+					return;
 				}
+
+				_size = value;					
+				NeedsVertexUpdate = true;
 			}
 		}
 		#endregion

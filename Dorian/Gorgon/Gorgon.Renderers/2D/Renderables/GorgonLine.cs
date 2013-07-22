@@ -72,10 +72,12 @@ namespace GorgonLibrary.Renderers
 		{
 			get
 			{
-				if ((_lineThickness.X == 1.0f) && (_lineThickness.Y == 1.0f))
-					return Graphics.PrimitiveType.LineList;
-				else
-					return Graphics.PrimitiveType.TriangleList;
+				if ((_lineThickness.X.EqualsEpsilon(1.0f)) && (_lineThickness.Y.EqualsEpsilon(1.0f)))
+				{
+					return PrimitiveType.LineList;
+				}
+
+				return PrimitiveType.TriangleList;
 			}
 		}
 
@@ -86,10 +88,12 @@ namespace GorgonLibrary.Renderers
 		{
 			get
 			{
-				if ((_lineThickness.X == 1.0f) && (_lineThickness.Y == 1.0f))
+				if ((_lineThickness.X.EqualsEpsilon(1.0f)) && (_lineThickness.Y.EqualsEpsilon(1.0f)))
+				{
 					return 0;
-				else
-					return 6;
+				}
+				
+				return 6;
 			}
 		}
 
@@ -100,27 +104,20 @@ namespace GorgonLibrary.Renderers
 		{
 			get
 			{
-				if ((_lineThickness.X == 1.0f) && (_lineThickness.Y == 1.0f))
+				if ((_lineThickness.X.EqualsEpsilon(1.0f)) && (_lineThickness.Y.EqualsEpsilon(1.0f)))
+				{
 					return null;
-				else
-					return Gorgon2D.DefaultIndexBuffer;
+				}
+				
+				return Gorgon2D.DefaultIndexBuffer;
 			}
-		}
-
-		/// <summary>
-		/// Property to return whether the vertices need to be updated due to an offset.
-		/// </summary>
-		protected bool NeedsVertexOffsetUpdate
-		{
-			get;
-			set;
 		}
 
 		/// <summary>
 		/// Property to set or return the thickness for the line.
 		/// </summary>
 		/// <remarks>This value cannot be less than 1.</remarks>
-		[AnimatedProperty()]
+		[AnimatedProperty]
 		public Vector2 LineThickness
 		{
 			get
@@ -129,24 +126,31 @@ namespace GorgonLibrary.Renderers
 			}
 			set
 			{
-				if (_lineThickness != value)
+				if (_lineThickness == value)
 				{
-					if (value.X < 1.0f)
-						value.X = 1.0f;
-					if (value.Y < 1.0f)
-						value.Y = 1.0f;
-
-					_lineThickness = value;
-					NeedsTextureUpdate = true;
-					NeedsVertexUpdate = true;
+					return;
 				}
+
+				if (value.X < 1.0f)
+				{
+					value.X = 1.0f;
+				}
+
+				if (value.Y < 1.0f)
+				{
+					value.Y = 1.0f;
+				}
+
+				_lineThickness = value;
+				NeedsTextureUpdate = true;
+				NeedsVertexUpdate = true;
 			}
 		}
 
 		/// <summary>
 		/// Property to set or return the color for the start point.
 		/// </summary>
-		[AnimatedProperty()]
+		[AnimatedProperty]
 		public GorgonColor StartColor
 		{
 			get
@@ -155,6 +159,11 @@ namespace GorgonLibrary.Renderers
 			}
 			set
 			{
+				if ((GorgonColor.Equals(ref value, ref Vertices[2].Color)) && (GorgonColor.Equals(ref value, ref Vertices[0].Color)))
+				{
+					return;
+				}
+					
 				Vertices[2].Color = Vertices[0].Color = value;
 			}
 		}
@@ -162,7 +171,7 @@ namespace GorgonLibrary.Renderers
 		/// <summary>
 		/// Property to set or return the color for the end point.
 		/// </summary>
-		[AnimatedProperty()]
+		[AnimatedProperty]
 		public GorgonColor EndColor
 		{
 			get
@@ -171,6 +180,11 @@ namespace GorgonLibrary.Renderers
 			}
 			set
 			{
+				if ((GorgonColor.Equals(ref value, ref Vertices[3].Color)) && (GorgonColor.Equals(ref value, ref Vertices[1].Color)))
+				{
+					return;
+				}
+
 				Vertices[3].Color = Vertices[1].Color = value;
 			}
 		}
@@ -178,7 +192,7 @@ namespace GorgonLibrary.Renderers
 		/// <summary>
 		/// Property to set or return the position of the line.
 		/// </summary>
-		[AnimatedProperty()]
+		[AnimatedProperty]
 		public Vector2 StartPoint
 		{
 			get
@@ -187,14 +201,14 @@ namespace GorgonLibrary.Renderers
 			}
 			set
 			{
-				_line = RectangleF.FromLTRB(value.X, value.Y, EndPoint.X, EndPoint.Y);
+				LineRegion = RectangleF.FromLTRB(value.X, value.Y, EndPoint.X, EndPoint.Y);
 			}
 		}
 
 		/// <summary>
 		/// Property to set or return the absolute end point for the line.
 		/// </summary>
-		[AnimatedProperty()]
+		[AnimatedProperty]
 		public Vector2 EndPoint
 		{
 			get
@@ -210,7 +224,7 @@ namespace GorgonLibrary.Renderers
 		/// <summary>
 		/// Property to set or return the size of the renderable.
 		/// </summary>
-		[AnimatedProperty()]
+		[AnimatedProperty]
 		public Vector2 Size
 		{
 			get
@@ -219,11 +233,13 @@ namespace GorgonLibrary.Renderers
 			}
 			set
 			{
-				if (value != (Vector2)_line.Size)
+				if (value.Equals(_line.Size))
 				{
-					_line.Size = value;
-					NeedsVertexUpdate = true;
+					return;
 				}
+
+				_line.Size = value;
+				NeedsVertexUpdate = true;
 			}
 		}
 
@@ -238,11 +254,13 @@ namespace GorgonLibrary.Renderers
 			}
 			set
 			{
-				if (_line != value)
+				if (_line == value)
 				{
-					_line = value;
-					NeedsVertexUpdate = true;
+					return;
 				}
+
+				_line = value;
+				NeedsVertexUpdate = true;
 			}
 		}
 
@@ -258,15 +276,22 @@ namespace GorgonLibrary.Renderers
 			}
 			set
 			{
+				if ((_textureStart.Equals(value.Location))
+					&& (_textureEnd.Equals(new Vector2(value.Right, value.Bottom))))
+				{
+					return;
+				}
+
 				_textureStart = value.Location;
 				_textureEnd = new Vector2(value.Right, value.Bottom);
+				NeedsTextureUpdate = true;
 			}
 		}
 
 		/// <summary>
 		/// Property to set or return the coordinates in the texture to use as a starting point for drawing.
 		/// </summary>
-		[AnimatedProperty()]
+		[AnimatedProperty]
 		public override Vector2 TextureOffset
 		{
 			get
@@ -275,14 +300,20 @@ namespace GorgonLibrary.Renderers
 			}
 			set
 			{
+				if (TextureStart == value)
+				{
+					return;
+				}
+				
 				TextureStart = value;
+				NeedsTextureUpdate = true;
 			}
 		}
 
 		/// <summary>
 		/// Property to set or return the scaling of the texture width and height.
 		/// </summary>
-		[AnimatedProperty()]
+		[AnimatedProperty]
 		public override Vector2 TextureSize
 		{
 			get
@@ -291,7 +322,14 @@ namespace GorgonLibrary.Renderers
 			}
 			set
 			{
+				value = Vector2.Add(_textureStart, value);
+				if (value == _textureEnd)
+				{
+					return;
+				}
+
 				_textureEnd = Vector2.Add(_textureStart, _textureEnd);
+				NeedsTextureUpdate = true;
 			}
 		}
 
@@ -299,7 +337,7 @@ namespace GorgonLibrary.Renderers
 		/// Property to set or return the texture offset for the start point.
 		/// </summary>
 		/// <remarks>This texture value is in texel space (0..1).</remarks>
-		[AnimatedProperty()]
+		[AnimatedProperty]
 		public Vector2 TextureStart
 		{
 			get
@@ -308,11 +346,13 @@ namespace GorgonLibrary.Renderers
 			}
 			set
 			{
-				if (value != _textureStart)
+				if (value == _textureStart)
 				{
-					_textureStart = value;
-					NeedsTextureUpdate = true;
+					return;
 				}
+
+				_textureStart = value;
+				NeedsTextureUpdate = true;
 			}
 		}
 
@@ -320,7 +360,7 @@ namespace GorgonLibrary.Renderers
 		/// Property to set or return the texture offset for the end point.
 		/// </summary>
 		/// <remarks>This texture value is in texel space (0..1) and is an absolute value (i.e. not relative to the starting position).</remarks>
-		[AnimatedProperty()]
+		[AnimatedProperty]
 		public Vector2 TextureEnd
 		{
 			get
@@ -329,17 +369,20 @@ namespace GorgonLibrary.Renderers
 			}
 			set
 			{
-				if (value != _textureEnd)
+				if (value == _textureEnd)
 				{
-					_textureEnd = value;
-					NeedsTextureUpdate = true;
+					return;
 				}
+
+				_textureEnd = value;
+				NeedsTextureUpdate = true;
 			}
 		}
 
 		/// <summary>
 		/// Property to set or return the "depth" of the renderable in a depth buffer.
 		/// </summary>
+		[AnimatedProperty]
 		public float Depth
 		{
 			get;
@@ -349,7 +392,7 @@ namespace GorgonLibrary.Renderers
 		/// <summary>
 		/// Property to set or return the angle of rotation (in degrees) for the line.
 		/// </summary>
-		[AnimatedProperty()]
+		[AnimatedProperty]
 		public float Angle
 		{
 			get;
@@ -383,6 +426,7 @@ namespace GorgonLibrary.Renderers
 			corner4.X = _corners[2] - _crossProduct.X;
 			corner4.Y = _corners[3] - _crossProduct.Y;
 
+			// ReSharper disable CompareOfFloatsByEqualityOperator
 			if (Angle != 0.0f)
 			{
 				float angle = Angle.Radians();						// Angle in radians.
@@ -428,13 +472,16 @@ namespace GorgonLibrary.Renderers
 			}
 
 			// Apply depth to the line.
-			if (Depth != 0.0f)
+			if (Depth == 0.0f)
 			{
-				Vertices[0].Position.Z = Depth;
-				Vertices[1].Position.Z = Depth;
-				Vertices[2].Position.Z = Depth;
-				Vertices[3].Position.Z = Depth;
+				return;
 			}
+
+			Vertices[0].Position.Z = Depth;
+			Vertices[1].Position.Z = Depth;
+			Vertices[2].Position.Z = Depth;
+			Vertices[3].Position.Z = Depth;
+			// ReSharper restore CompareOfFloatsByEqualityOperator
 		}
 
 		/// <summary>
@@ -442,11 +489,6 @@ namespace GorgonLibrary.Renderers
 		/// </summary>
 		private void TransformVertices()
 		{
-			float posX1;															// Horizontal position 1.
-			float posX2;															// Horizontal position 2.
-			float posY1;															// Vertical position 1.
-			float posY2;															// Vertical position 2.			
-
 			if ((_lineThickness.X > 1.0f) || (_lineThickness.Y > 1.0f))
 			{
 				TransformQuad();
@@ -456,12 +498,13 @@ namespace GorgonLibrary.Renderers
 			BaseVertexCount = 2;
 			VertexCount = 2;
 
-			posX1 = _corners[0];
-			posX2 = _corners[2];
-			posY1 = _corners[1];
-			posY2 = _corners[3];
+			float posX1 = _corners[0];
+			float posX2 = _corners[2];
+			float posY1 = _corners[1];
+			float posY2 = _corners[3];
 
 			// Calculate rotation if necessary.
+			// ReSharper disable CompareOfFloatsByEqualityOperator
 			if (Angle != 0.0f)
 			{
 				float angle = Angle.Radians();						// Angle in radians.
@@ -496,11 +539,14 @@ namespace GorgonLibrary.Renderers
 			}
 
 			// Apply depth to the line.
-			if (Depth != 0.0f)
+			if (Depth == 0.0f)
 			{
-				Vertices[0].Position.Z = Depth;
-				Vertices[1].Position.Z = Depth;
+				return;
 			}
+
+			Vertices[0].Position.Z = Depth;
+			Vertices[1].Position.Z = Depth;
+			// ReSharper restore CompareOfFloatsByEqualityOperator
 		}
 
         /// <summary>
@@ -508,29 +554,27 @@ namespace GorgonLibrary.Renderers
         /// </summary>
         protected override void UpdateTextureCoordinates()
         {
-            Vector2 textureDims = Vector2.Zero;
-            Vector2 textureNormal = Vector2.Zero;
-            Vector2 textureCrossProduct = Vector2.Zero;
-            float length = 0;
+            Vector2 textureDims;
+	        Vector2 textureCrossProduct = Vector2.Zero;
 
-            if (Texture == null)
+	        if (Texture == null)
             {
                 Vertices[3].UV = Vertices[2].UV = Vertices[0].UV = Vertices[1].UV = Vector2.Zero;
                 return;
             }
 
             Vector2.Subtract(ref _textureEnd, ref _textureStart, out textureDims);
-            length = textureDims.Length;
+            float length = textureDims.Length;
 
             if (length > 0)
             {
-                textureNormal = textureDims * (1.0f / length);
+                Vector2 textureNormal = textureDims * (1.0f / length);
                 textureCrossProduct = new Vector2(textureNormal.Y, -textureNormal.X);
-                textureCrossProduct.X *= LineThickness.X / (float)Texture.Settings.Width;
-                textureCrossProduct.Y *= LineThickness.Y / (float)Texture.Settings.Height;
+                textureCrossProduct.X *= LineThickness.X / Texture.Settings.Width;
+                textureCrossProduct.Y *= LineThickness.Y / Texture.Settings.Height;
             }
 
-            if ((LineThickness.X == 1.0f) && (LineThickness.Y == 1.0f))
+            if ((LineThickness.X.EqualsEpsilon(1.0f)) && (LineThickness.Y.EqualsEpsilon(1.0f)))
             {
                 Vector2.Add(ref _textureStart, ref textureCrossProduct, out Vertices[0].UV);
                 Vector2.Add(ref _textureEnd, ref textureCrossProduct, out Vertices[1].UV);
@@ -552,18 +596,20 @@ namespace GorgonLibrary.Renderers
             var lineDims = new Vector2(_line.Right - _line.Left, _line.Bottom - _line.Top);
             float lineLength = lineDims.Length;
 
-            if (lineLength > 0)
-            {
-                Vector2 lineNormal = lineDims * (1.0f / lineDims.Length);
+	        if (lineLength > 0)
+	        {
+		        Vector2 lineNormal = lineDims * (1.0f / lineDims.Length);
 
-                _crossProduct = new Vector2(lineNormal.Y, -lineNormal.X);
-                _crossProduct.X *= LineThickness.X;
-                _crossProduct.Y *= LineThickness.Y;
-            }
-            else
-                _crossProduct = Vector2.Zero;
+		        _crossProduct = new Vector2(lineNormal.Y, -lineNormal.X);
+		        _crossProduct.X *= LineThickness.X;
+		        _crossProduct.Y *= LineThickness.Y;
+	        }
+	        else
+	        {
+		        _crossProduct = Vector2.Zero;
+	        }
 
-            _corners[0] = -Anchor.X;
+	        _corners[0] = -Anchor.X;
             _corners[1] = -Anchor.Y;
             _corners[2] = _line.Width - Anchor.X;
             _corners[3] = _line.Height - Anchor.Y;
@@ -577,10 +623,14 @@ namespace GorgonLibrary.Renderers
 		/// <remarks>The <paramref name="point"/> parameter is </remarks>
 		public void SetVertexColor(LineEndPoints point, GorgonColor color)
 		{
-			if (point == LineEndPoints.Start)
-				Vertices[0].Color = color;
-			else
-				Vertices[1].Color = color;
+	        if (point == LineEndPoints.Start)
+	        {
+		        Vertices[0].Color = color;
+	        }
+	        else
+	        {
+		        Vertices[1].Color = color;
+	        }
 		}
 
 		/// <summary>
@@ -614,8 +664,7 @@ namespace GorgonLibrary.Renderers
 		/// <param name="name">The name of the line.</param>
 		/// <param name="start">Line starting point.</param>
 		/// <param name="end">Line ending point.</param>
-		/// <param name="color">Color of the line.</param>
-		internal GorgonLine(Gorgon2D gorgon2D, string name, Vector2 start, Vector2 end, GorgonColor color)
+		internal GorgonLine(Gorgon2D gorgon2D, string name, Vector2 start, Vector2 end)
 			: base(gorgon2D, name)
 		{
 			_corners = new float[4];
@@ -624,7 +673,6 @@ namespace GorgonLibrary.Renderers
 			EndPoint = end;
 			InitializeVertices(4);
 			LineThickness = new Vector2(1);
-			Color = color;
 		}
 		#endregion
 
@@ -636,11 +684,11 @@ namespace GorgonLibrary.Renderers
 		{
 			get
 			{
-				return _line.Location;
+				return StartPoint;
 			}
 			set
 			{
-				_line.Location = value;
+				StartPoint = value;
 			}
 		}
 
@@ -662,7 +710,7 @@ namespace GorgonLibrary.Renderers
 		/// <summary>
 		/// Property to set or return the anchor point of the line.
 		/// </summary>
-		[AnimatedProperty()]
+		[AnimatedProperty]
 		public Vector2 Anchor
 		{
 			get
@@ -671,11 +719,13 @@ namespace GorgonLibrary.Renderers
 			}
 			set
 			{
-				if (_anchor != value)
+				if (_anchor == value)
 				{
-					_anchor = value;
-					NeedsVertexUpdate = true;
+					return;
 				}
+
+				_anchor = value;
+				NeedsVertexUpdate = true;
 			}
 		}
 		#endregion

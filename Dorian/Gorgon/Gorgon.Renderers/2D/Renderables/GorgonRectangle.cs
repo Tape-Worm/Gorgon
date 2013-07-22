@@ -41,7 +41,6 @@ namespace GorgonLibrary.Renderers
 	{
 		#region Variables.
 		private readonly Vector2[] _corners;				// Corner points.
-		private RectangleF _rectangle = RectangleF.Empty;	// Rectangle dimensions.
 		private readonly GorgonColor[] _colors;				// Colors for each corner.
 		private readonly GorgonLine _line;					// Line used for outlined drawing.
 		private readonly GorgonSprite _filled;				// Sprite used for rectangle drawing.
@@ -65,36 +64,6 @@ namespace GorgonLibrary.Renderers
 		}
 
 		/// <summary>
-		/// Property to set or return the position of the sprite.
-		/// </summary>
-		public override Vector2 Position
-		{
-			get
-			{
-				return Rectangle.Location;
-			}
-			set
-			{
-				Rectangle = new RectangleF(value, Size);
-			}
-		}
-
-		/// <summary>
-		/// Property to set or return the size of the renderable.
-		/// </summary>
-		public override Vector2 Size
-		{
-			get
-			{
-				return Rectangle.Size;
-			}
-			set
-			{
-				Rectangle = new RectangleF(Position, value);
-			}
-		}
-
-		/// <summary>
 		/// Property to set or return the thickness of the lines for a rectangle outline.
 		/// </summary>
 		public Vector2 LineThickness
@@ -110,15 +79,19 @@ namespace GorgonLibrary.Renderers
 		{
 			get
 			{
-				return _rectangle;
+				return new RectangleF(Position, Size);
 			}
 			set
 			{
-				if (value != _rectangle)
+				if ((Position.Equals(value.Location))
+					&& (Size.Equals(value.Size)))
 				{
-					_rectangle = value;
-					NeedsVertexUpdate = true;
+					return;
 				}
+
+				Position = value.Location;
+				Size = value.Size;
+				NeedsVertexUpdate = true;
 			}
 		}
 
@@ -169,22 +142,18 @@ namespace GorgonLibrary.Renderers
 		/// </summary>
 		protected override void TransformVertices()
 		{
-			float posX1;					// Horizontal position 1.
-			float posX2;					// Horizontal position 2.
-			float posY1;					// Vertical position 1.
-			float posY2;					// Vertical position 2.			
-
 			_corners[0] = new Vector2(-Anchor.X, -Anchor.Y);
-			_corners[1] = new Vector2(_rectangle.Width - Anchor.X, -Anchor.Y);
-			_corners[2] = new Vector2(_rectangle.Width - Anchor.X, _rectangle.Height - Anchor.Y);
-			_corners[3] = new Vector2(-Anchor.X, _rectangle.Height - Anchor.Y);
+			_corners[1] = new Vector2(Size.X - Anchor.X, -Anchor.Y);
+			_corners[2] = new Vector2(Size.X - Anchor.X, Size.Y - Anchor.Y);
+			_corners[3] = new Vector2(-Anchor.X, Size.Y - Anchor.Y);
 			
-			posX1 = _corners[0].X;
-			posX2 = _corners[1].X;
-			posY1 = _corners[0].Y;
-			posY2 = _corners[2].Y;
+			float posX1 = _corners[0].X;
+			float posX2 = _corners[1].X;
+			float posY1 = _corners[0].Y;
+			float posY2 = _corners[2].Y;
 
 			// Scale horizontally if necessary.
+			// ReSharper disable CompareOfFloatsByEqualityOperator
 			if (Scale.X != 1.0f)
 			{
 				posX1 *= Scale.X;
@@ -238,13 +207,16 @@ namespace GorgonLibrary.Renderers
 				_corners[3].X += Position.X;
 			}
 
-			if (Position.Y != 0.0f)
+			if (Position.Y == 0.0f)
 			{
-				_corners[0].Y += Position.Y;
-				_corners[1].Y += Position.Y;
-				_corners[2].Y += Position.Y;
-				_corners[3].Y += Position.Y;
+				return;
 			}
+			
+			_corners[0].Y += Position.Y;
+			_corners[1].Y += Position.Y;
+			_corners[2].Y += Position.Y;
+			_corners[3].Y += Position.Y;		
+			// ReSharper restore CompareOfFloatsByEqualityOperator
 		}
 
 		/// <summary>
@@ -354,9 +326,13 @@ namespace GorgonLibrary.Renderers
 		public override void Draw()
 		{
 			if (!IsFilled)
+			{
 				DrawUnfilled();
+			}
 			else
+			{
 				DrawFilled();
+			}
 		}
 		#endregion
 
@@ -366,18 +342,16 @@ namespace GorgonLibrary.Renderers
 		/// </summary>
 		/// <param name="gorgon2D">Gorgon interface that owns this renderable.</param>
 		/// <param name="name">The name of the rectangle.</param>
-		/// <param name="rectangle">The rectangle position and size.</param>
-		/// <param name="color">Color of the rectangle.</param>
-		/// <param name="filled">TRUE to have a filled rectangle, FALSE to have an outline.</param>
-		internal GorgonRectangle(Gorgon2D gorgon2D, string name, RectangleF rectangle, GorgonColor color, bool filled)
+		/// <param name="filled">TRUE to draw a filled rectangle, FALSE to draw an outline.</param>
+		internal GorgonRectangle(Gorgon2D gorgon2D, string name, bool filled)
 			: base(gorgon2D, name)
 		{
-			_colors = new GorgonColor[]
+			_colors = new[]
 			{
-				color,
-				color,
-				color,
-				color
+				GorgonColor.White,
+				GorgonColor.White,
+				GorgonColor.White,
+				GorgonColor.White
 			};
 
 			_corners = new[]
@@ -388,16 +362,12 @@ namespace GorgonLibrary.Renderers
 				Vector2.Zero
 			};
 
-			TextureRegion = rectangle;
-			Size = new Vector2(rectangle.Width, rectangle.Height);
-			Position = new Vector2(rectangle.X, rectangle.Y);
 			IsFilled = filled;
-			_filled = gorgon2D.Renderables.CreateSprite("Rectangle.Sprite", Size, color);
-			_line = new GorgonLine(gorgon2D, "Rectangle.Line", Position, new Vector2(rectangle.Right, rectangle.Bottom), Color);
-
-			_line.Blending = _filled.Blending = this.Blending;
-			_line.DepthStencil = _filled.DepthStencil = this.DepthStencil;
-			_line.TextureSampler = _filled.TextureSampler = this.TextureSampler;			
+			_filled = gorgon2D.Renderables.CreateSprite("Rectangle.Sprite", new Vector2(1), GorgonColor.White);
+			_line = new GorgonLine(gorgon2D, "Rectangle.Line", Vector2.Zero, new Vector2(1))
+			{
+				Color = GorgonColor.White
+			};
 		}		
 		#endregion
 	}

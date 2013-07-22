@@ -102,13 +102,13 @@ namespace GorgonLibrary.Renderers
 		/// <summary>
 		/// A texture sampler state.
 		/// </summary>
-		public class TextureSamplerState
+		public sealed class TextureSamplerState
 		{
 			#region Properties.
 			/// <summary>
 			/// Property to set or return the border color for areas outside of the texture.
 			/// </summary>
-			public virtual GorgonColor BorderColor
+			public GorgonColor BorderColor
 			{
 				get;
 				set;
@@ -117,7 +117,7 @@ namespace GorgonLibrary.Renderers
 			/// <summary>
 			/// Property to set or return the horizontal wrapping mode for areas outside of the texture.
 			/// </summary>
-			public virtual TextureAddressing HorizontalWrapping
+			public TextureAddressing HorizontalWrapping
 			{
 				get;
 				set;
@@ -126,7 +126,7 @@ namespace GorgonLibrary.Renderers
 			/// <summary>
 			/// Property to set or return the vertical wrapping mode for areas outside of the texture.
 			/// </summary>
-			public virtual TextureAddressing VerticalWrapping
+			public TextureAddressing VerticalWrapping
 			{
 				get;
 				set;
@@ -135,7 +135,7 @@ namespace GorgonLibrary.Renderers
 			/// <summary>
 			/// Property to set or return the type of filtering for the texture.
 			/// </summary>
-			public virtual TextureFilter TextureFilter
+			public TextureFilter TextureFilter
 			{
 				get;
 				set;
@@ -159,7 +159,7 @@ namespace GorgonLibrary.Renderers
 		/// <summary>
 		/// A blending state.
 		/// </summary>
-		public class BlendState
+		public sealed class BlendState
 		{
 			#region Variables.
 			private BlendType _sourceAlphaBlend = BlendType.One;												// Source alpha blend.
@@ -251,7 +251,7 @@ namespace GorgonLibrary.Renderers
 			/// <summary>
 			/// Property to set or return the blend factor.
 			/// </summary>
-			/// <remarks>This is only valid when the <see cref="P:GorgonLibrary.Renderers.GorgonRenderable.SourceBlend">SourceBlend</see> or the <see cref="P:GorgonLibrary.Renderers.GorgonRenderable.DestinationBlend">DestinationBlend</see> are set to BlendFactor.</remarks>
+			/// <remarks>This is only valid when the <see cref="SourceBlend">SourceBlend</see> or the <see cref="DestinationBlend">DestinationBlend</see> are set to BlendFactor.</remarks>
 			public GorgonColor BlendFactor
 			{
 				get;
@@ -286,8 +286,8 @@ namespace GorgonLibrary.Renderers
 				SourceBlend = BlendType.SourceAlpha;
 				DestinationBlend = BlendType.InverseSourceAlpha;
 				BlendFactor = new GorgonColor(0);
-				BlendOperation = Graphics.BlendOperation.Add;
-				AlphaOperation = Graphics.BlendOperation.Add;
+				BlendOperation = BlendOperation.Add;
+				AlphaOperation = BlendOperation.Add;
 				WriteMask = ColorWriteMaskFlags.All;
 			}
 			#endregion
@@ -549,7 +549,7 @@ namespace GorgonLibrary.Renderers
 		/// <summary>
 		/// Property to set or return depth/stencil buffer states for this renderable.
 		/// </summary>
-		public virtual DepthStencilStates DepthStencil
+		public DepthStencilStates DepthStencil
 		{
 			get
 			{
@@ -567,7 +567,7 @@ namespace GorgonLibrary.Renderers
 		/// <summary>
 		/// Property to set or return advanced blending states for this renderable.
 		/// </summary>
-		public virtual BlendState Blending
+		public BlendState Blending
 		{
 			get
 			{
@@ -585,7 +585,7 @@ namespace GorgonLibrary.Renderers
 		/// <summary>
 		/// Property to set or return advanded texture sampler states for this renderable.
 		/// </summary>
-		public virtual TextureSamplerState TextureSampler
+		public TextureSamplerState TextureSampler
 		{
 			get
 			{
@@ -603,9 +603,9 @@ namespace GorgonLibrary.Renderers
 		/// <summary>
 		/// Property to set or return pre-defined smoothing states for the renderable.
 		/// </summary>
-		/// <remarks>These modes are pre-defined smoothing states, to get more control over the smoothing, use the <see cref="P:GorgonLibrary.Renderers.GorgonRenderable.TextureSamplerState.TextureFilter.">TextureFilter</see> 
-		/// property exposed by the <see cref="P:GorgonLibrary.Renderers.GorgonRenderable.TextureSampler.">TextureSampler</see> property.</remarks>
-		public virtual SmoothingMode SmoothingMode
+		/// <remarks>These modes are pre-defined smoothing states, to get more control over the smoothing, use the <see cref="GorgonLibrary.Renderers.GorgonRenderable.TextureSamplerState.TextureFilter">TextureFilter</see> 
+		/// property exposed by the <see cref="GorgonLibrary.Renderers.GorgonRenderable.TextureSampler">TextureSampler</see> property.</remarks>
+		public SmoothingMode SmoothingMode
 		{
 			get
 			{
@@ -646,53 +646,53 @@ namespace GorgonLibrary.Renderers
 		/// <summary>
 		/// Property to set or return a pre-defined blending states for the renderable.
 		/// </summary>
-		/// <remarks>These modes are pre-defined blending states, to get more control over the blending, use the <see cref="P:GorgonLibrary.Renderers.GorgonRenderable.BlendingState.SourceBlend">SourceBlend</see> 
-		/// or the <see cref="P:GorgonLibrary.Renderers.GorgonRenderable.Blending.DestinationBlend">DestinationBlend</see> property which are exposed by the 
+		/// <remarks>These modes are pre-defined blending states, to get more control over the blending, use the <see cref="GorgonLibrary.Renderers.GorgonRenderable.BlendState.SourceBlend">SourceBlend</see> 
+		/// or the <see cref="P:GorgonLibrary.Renderers.GorgonRenderable.BlendState.DestinationBlend">DestinationBlend</see> property which are exposed by the 
 		/// <see cref="P:GorgonLibrary.Renderers.GorgonRenderable.Blending">Blending</see> property.</remarks>
-		public virtual BlendingMode BlendingMode
+		public BlendingMode BlendingMode
 		{
 			get
 			{
 				if ((Blending.SourceBlend == BlendType.One) && (Blending.DestinationBlend == BlendType.Zero))
-					return Renderers.BlendingMode.None;
+					return BlendingMode.None;
 
 				if (Blending.SourceBlend == BlendType.SourceAlpha) 
 				{	
 					if (Blending.DestinationBlend == BlendType.InverseSourceAlpha)
-						return Renderers.BlendingMode.Modulate;
+						return BlendingMode.Modulate;
 					if (Blending.DestinationBlend == BlendType.One)
-						return Renderers.BlendingMode.Additive;
+						return BlendingMode.Additive;
 				}
 
 				if ((Blending.SourceBlend == BlendType.One) && (Blending.DestinationBlend == BlendType.InverseSourceAlpha))
-					return Renderers.BlendingMode.PreMultiplied;
+					return BlendingMode.PreMultiplied;
 
 				if ((Blending.SourceBlend == BlendType.InverseDestinationColor) && (Blending.DestinationBlend == BlendType.InverseSourceColor))
-					return Renderers.BlendingMode.Inverted;
+					return BlendingMode.Inverted;
 				
-				return Renderers.BlendingMode.Custom;
+				return BlendingMode.Custom;
 			}
 			set
 			{
 				switch (value)
 				{
-					case Renderers.BlendingMode.Additive:
+					case BlendingMode.Additive:
 						Blending.SourceBlend = BlendType.SourceAlpha;
 						Blending.DestinationBlend = BlendType.One;
 						break;
-					case Renderers.BlendingMode.Inverted:
+					case BlendingMode.Inverted:
 						Blending.SourceBlend = BlendType.InverseDestinationColor;
 						Blending.DestinationBlend = BlendType.InverseSourceColor;
 						break;
-					case Renderers.BlendingMode.Modulate:
+					case BlendingMode.Modulate:
 						Blending.SourceBlend = BlendType.SourceAlpha;
 						Blending.DestinationBlend = BlendType.InverseSourceAlpha;
 						break;
-					case Renderers.BlendingMode.PreMultiplied:
+					case BlendingMode.PreMultiplied:
 						Blending.SourceBlend = BlendType.One;
 						Blending.DestinationBlend = BlendType.InverseSourceAlpha;
 						break;
-					case Renderers.BlendingMode.None:
+					case BlendingMode.None:
 						Blending.SourceBlend = BlendType.One;
 						Blending.DestinationBlend = BlendType.Zero;
 						break;
@@ -704,7 +704,7 @@ namespace GorgonLibrary.Renderers
 		/// Property to set or return the culling mode.
 		/// </summary>
 		/// <remarks>Use this to make a renderable two-sided.</remarks>
-		public virtual CullingMode CullingMode
+		public CullingMode CullingMode
 		{
 			get;
 			set;
@@ -719,7 +719,7 @@ namespace GorgonLibrary.Renderers
 		/// <para>Be aware that the default shaders implement alpha testing.  However, a custom shader will have to make use of the GorgonAlphaTest constant buffer 
 		/// in order to take advantage of alpha testing.</para>
 		/// </remarks>
-		public virtual GorgonRangeF AlphaTestValues
+		public GorgonRangeF AlphaTestValues
 		{
 			get;
 			set;
@@ -729,8 +729,8 @@ namespace GorgonLibrary.Renderers
 		/// Property to set or return the opacity (Alpha channel) of the renderable object.
 		/// </summary>
 		/// <remarks>This will only return the alpha value for the first vertex of the renderable and consequently will set all the vertices to the same alpha value.</remarks>
-		[AnimatedProperty()]
-		public virtual float Opacity
+		[AnimatedProperty]
+		public float Opacity
 		{
 			get
 			{
@@ -738,10 +738,13 @@ namespace GorgonLibrary.Renderers
 			}
 			set
 			{
-			    if (value != Color.Alpha)
-			    {
-			        Color = new GorgonColor(Color, value);
-			    }
+				// ReSharper disable once CompareOfFloatsByEqualityOperator
+				if (value == Color.Alpha)
+				{
+					return;
+				}
+
+				Color = new GorgonColor(Color, value);
 			}
 		}
 
@@ -749,7 +752,7 @@ namespace GorgonLibrary.Renderers
 		/// Property to set or return the color for a renderable object.
 		/// </summary>
 		/// <remarks>This will only return the color for the first vertex of the renderable and consequently will set all the vertices to the same color.</remarks>
-		[AnimatedProperty()]
+		[AnimatedProperty]
 		public virtual GorgonColor Color
 		{
 			get
@@ -758,12 +761,14 @@ namespace GorgonLibrary.Renderers
 			}
 			set
 			{
-				if (value != Vertices[0].Color)
+				if (value == Vertices[0].Color)
 				{
-				    for (int i = 0; i < Vertices.Length; i++)
-				    {
-				        Vertices[i].Color = value;
-				    }
+					return;
+				}
+
+				for (int i = 0; i < Vertices.Length; i++)
+				{
+					Vertices[i].Color = value;
 				}
 			}
 		}
@@ -780,11 +785,13 @@ namespace GorgonLibrary.Renderers
 			}
 			set
 			{
-				if (_textureRegion != value)
+				if (_textureRegion == value)
 				{
-					_textureRegion = value;
-					NeedsTextureUpdate = true;
+					return;
 				}
+
+				_textureRegion = value;
+				NeedsTextureUpdate = true;
 			}
 		}
 
@@ -794,7 +801,7 @@ namespace GorgonLibrary.Renderers
 		/// <remarks>You can use this property to scroll the texture in the renderable.
 		/// <para>This texture value is in texel space (0..1).</para>
 		/// </remarks>
-		[AnimatedProperty()]
+		[AnimatedProperty]
 		public virtual Vector2 TextureOffset
 		{
 			get
@@ -803,11 +810,13 @@ namespace GorgonLibrary.Renderers
 			}
 			set
 			{
-				if (!value.Equals(_textureRegion.Location))
+				if (value.Equals(_textureRegion.Location))
 				{
-					_textureRegion.Location = value;
-					NeedsTextureUpdate = true;
+					return;
 				}
+
+				_textureRegion.Location = value;
+				NeedsTextureUpdate = true;
 			}
 		}
 
@@ -815,7 +824,7 @@ namespace GorgonLibrary.Renderers
 		/// Property to set or return the scaling of the texture width and height.
 		/// </summary>
 		/// <remarks>This texture value is in texel space (0..1).</remarks>
-		[AnimatedProperty()]
+		[AnimatedProperty]
 		public virtual Vector2 TextureSize
 		{
 			get
@@ -824,25 +833,20 @@ namespace GorgonLibrary.Renderers
 			}
 			set
 			{
-				if (!value.Equals(_textureRegion.Size))
+				if (value.Equals(_textureRegion.Size))
 				{
-					// Lock the size.
-					if (value.X == 0.0f)
-						value.X = 1e-6f;
-
-					if (value.Y == 0.0f)
-						value.Y = 1e-6f;
-
-					_textureRegion.Size = value;
-					NeedsTextureUpdate = true;
+					return;
 				}
+				
+				_textureRegion.Size = value;
+				NeedsTextureUpdate = true;
 			}
 		}
 
 		/// <summary>
 		/// Property to set or return a texture for the renderable.
 		/// </summary>
-		[AnimatedProperty()]
+		[AnimatedProperty]
 		public virtual GorgonTexture2D Texture
 		{
 			get
@@ -851,12 +855,14 @@ namespace GorgonLibrary.Renderers
 			}
 			set
 			{
-				if (_texture != value)
+				if (_texture == value)
 				{
-					_texture = value;
-
-					NeedsTextureUpdate = true;
+					return;
 				}
+
+				_texture = value;
+
+				NeedsTextureUpdate = true;
 			}
 		}
 
@@ -939,10 +945,10 @@ namespace GorgonLibrary.Renderers
 		protected GorgonRenderable(Gorgon2D gorgon2D, string name)
 			: base(name)
 		{			
-			GorgonDebug.AssertNull<Gorgon2D>(gorgon2D, "gorgon2D");
+			GorgonDebug.AssertNull(gorgon2D, "gorgon2D");
 						
 			Gorgon2D = gorgon2D;
-			CullingMode = Graphics.CullingMode.Back;
+			CullingMode = CullingMode.Back;
 	
 			AlphaTestValues = GorgonRangeF.Empty;
 			DepthStencil = new DepthStencilStates();
