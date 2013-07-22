@@ -767,6 +767,15 @@ namespace GorgonLibrary.Graphics.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Cannot use a &apos;{0}&apos; settings object with a &apos;{1}&apos; object..
+        /// </summary>
+        internal static string GORGFX_INVALID_SETTINGS {
+            get {
+                return ResourceManager.GetString("GORGFX_INVALID_SETTINGS", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The offset [{0}] or context &apos;{1}&apos; is in use by another item with the same index or slot..
         /// </summary>
         internal static string GORGFX_LAYOUT_ELEMENT_IN_USE {
@@ -781,6 +790,15 @@ namespace GorgonLibrary.Graphics.Properties {
         internal static string GORGFX_LAYOUT_INVALID_ELEMENT_TYPE {
             get {
                 return ResourceManager.GetString("GORGFX_LAYOUT_INVALID_ELEMENT_TYPE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The video device &apos;{0}&apos; does not support multisampling with a count of {1} and a quality of {2} for format [{3}]..
+        /// </summary>
+        internal static string GORGFX_MULTISAMPLE_INVALID {
+            get {
+                return ResourceManager.GetString("GORGFX_MULTISAMPLE_INVALID", resourceCulture);
             }
         }
         
@@ -826,6 +844,33 @@ namespace GorgonLibrary.Graphics.Properties {
         internal static string GORGFX_PARAMETER_MUST_NOT_BE_EMPTY {
             get {
                 return ResourceManager.GetString("GORGFX_PARAMETER_MUST_NOT_BE_EMPTY", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to There is already a full screen swap chain active on the video output &apos;{0}&apos;..
+        /// </summary>
+        internal static string GORGFX_RENDERTARGET_ALREADY_FULLSCREEN {
+            get {
+                return ResourceManager.GetString("GORGFX_RENDERTARGET_ALREADY_FULLSCREEN", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Could not find the video output for the specified window..
+        /// </summary>
+        internal static string GORGFX_RENDERTARGET_NO_OUTPUT {
+            get {
+                return ResourceManager.GetString("GORGFX_RENDERTARGET_NO_OUTPUT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No window to bind with the swap chain..
+        /// </summary>
+        internal static string GORGFX_RENDERTARGET_NO_WINDOW {
+            get {
+                return ResourceManager.GetString("GORGFX_RENDERTARGET_NO_WINDOW", resourceCulture);
             }
         }
         
@@ -1105,6 +1150,33 @@ namespace GorgonLibrary.Graphics.Properties {
         internal static string GORGFX_STREAM_WRITE_ONLY {
             get {
                 return ResourceManager.GetString("GORGFX_STREAM_WRITE_ONLY", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cannot create a &apos;{0}&apos; with a depth of {1}.  The depth must be between 0 and {2}..
+        /// </summary>
+        internal static string GORGFX_TEXTURE_DEPTH_INVALID {
+            get {
+                return ResourceManager.GetString("GORGFX_TEXTURE_DEPTH_INVALID", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cannot create a &apos;{0}&apos; with a height of {1}.  The height must be between 0 and {2}..
+        /// </summary>
+        internal static string GORGFX_TEXTURE_HEIGHT_INVALID {
+            get {
+                return ResourceManager.GetString("GORGFX_TEXTURE_HEIGHT_INVALID", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cannot create a &apos;{0}&apos; with a width of {1}.  The width must be between 0 and {2}..
+        /// </summary>
+        internal static string GORGFX_TEXTURE_WIDTH_INVALID {
+            get {
+                return ResourceManager.GetString("GORGFX_TEXTURE_WIDTH_INVALID", resourceCulture);
             }
         }
         

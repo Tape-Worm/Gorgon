@@ -106,6 +106,7 @@
 using System;
 using System.Drawing;
 using System.Drawing.Imaging;
+using GorgonLibrary.Graphics.Properties;
 using WIC = SharpDX.WIC;
 using DX = SharpDX;
 using GorgonLibrary.IO;
@@ -206,7 +207,8 @@ namespace GorgonLibrary.Graphics
 
 	    private bool _disposed;                             // Flag to indicate that the object was disposed.
 
-        private readonly WICPixelFormat[] _wicPixelFormats = new[]                                 // Formats for conversion between System.Drawing.Images and WIC.
+        // Formats for conversion between System.Drawing.Images and WIC.
+        private readonly WICPixelFormat[] _wicPixelFormats =                            
         {            
             new WICPixelFormat(WIC.PixelFormat.Format64bppPBGRA, PixelFormat.Format64bppPArgb),            
             new WICPixelFormat(WIC.PixelFormat.Format64bppBGRA, PixelFormat.Format64bppArgb),            
@@ -217,10 +219,11 @@ namespace GorgonLibrary.Graphics
             new WICPixelFormat(WIC.PixelFormat.Format16bppGray, PixelFormat.Format16bppGrayScale),
             new WICPixelFormat(WIC.PixelFormat.Format16bppBGRA5551, PixelFormat.Format16bppArgb1555),
             new WICPixelFormat(WIC.PixelFormat.Format16bppBGR565, PixelFormat.Format16bppRgb565),
-            new WICPixelFormat(WIC.PixelFormat.Format16bppBGR555, PixelFormat.Format16bppRgb555),
+            new WICPixelFormat(WIC.PixelFormat.Format16bppBGR555, PixelFormat.Format16bppRgb555)
         };
 
-        private readonly WICGorgonFormat[] _wicGorgonFormats = new[]								// Formats for conversion between Gorgon and WIC.
+        // Formats for conversion between Gorgon and WIC.
+        private readonly WICGorgonFormat[] _wicGorgonFormats = 
 		{
 			new WICGorgonFormat(WIC.PixelFormat.Format128bppRGBAFloat, BufferFormat.R32G32B32A32_Float),
 			new WICGorgonFormat(WIC.PixelFormat.Format64bppRGBAHalf, BufferFormat.R16G16B16A16_Float),
@@ -240,8 +243,9 @@ namespace GorgonLibrary.Graphics
 			new WICGorgonFormat(WIC.PixelFormat.Format8bppGray, BufferFormat.R8_UIntNormal),
 			new WICGorgonFormat(WIC.PixelFormat.Format8bppAlpha, BufferFormat.A8_UIntNormal)
 		};
-        
-        private readonly WICNearest[] _wicBestFitFormat = new[]										// Best fit for supported format conversions.
+
+        // Best fit for supported format conversions.
+        private readonly WICNearest[] _wicBestFitFormat = 
 		{
             new WICNearest(WIC.PixelFormat.Format1bppIndexed, WIC.PixelFormat.Format32bppRGBA),
             new WICNearest(WIC.PixelFormat.Format2bppIndexed, WIC.PixelFormat.Format32bppRGBA),
@@ -378,7 +382,7 @@ namespace GorgonLibrary.Graphics
 		/// <param name="flags">Flags to apply to the pixel format conversion.</param>
 		/// <param name="updatedPixelFormat">The updated pixel format after flags are applied.</param>
 		/// <returns>The buffer format, or Unknown if the format couldn't be converted.</returns>
-		public BufferFormat FindBestFormat(Guid sourcePixelFormat, WICFlags flags, ref Guid updatedPixelFormat)
+		public BufferFormat FindBestFormat(Guid sourcePixelFormat, WICFlags flags, out Guid updatedPixelFormat)
 		{
 			BufferFormat result = GetGorgonFormat(sourcePixelFormat);
 
@@ -455,21 +459,21 @@ namespace GorgonLibrary.Graphics
         /// Function to retrieve the bits per pixel in the specified WIC image format.
         /// </summary>
         /// <param name="wicPixelFormat">Image format to look up.</param>
-        /// <returns>The bits per pixel of the format.</returns>
+        /// <returns>The bits per pixel of the format, or -1 if the format/bpp could not be determined.</returns>
         public int GetBitsPerPixel(Guid wicPixelFormat)
         {
             using (var component = new WIC.ComponentInfo(Factory, wicPixelFormat))
             {
                 if (component.ComponentType != WIC.ComponentType.PixelFormat)
                 {
-                    throw new GorgonException(GorgonResult.CannotEnumerate, "The bits per pixel could not be determined from the pixel format.");
+                    return -1;
                 }
 
                 using (var formatInfo = component.QueryInterfaceOrNull<WIC.PixelFormatInfo>())
                 {
                     if (formatInfo == null)
                     {
-                        throw new GorgonException(GorgonResult.CannotEnumerate, "The bits per pixel could not be determined from the pixel format.");
+                        return -1;
                     }
 					
                     return formatInfo.BitsPerPixel;
@@ -485,16 +489,16 @@ namespace GorgonLibrary.Graphics
         public WIC.Bitmap[] CreateWICBitmapsFromImageData(GorgonImageData data)
         {
             int bitmapIndex = 0;
-            WIC.Bitmap[] bitmaps = null;
             Guid bitmapFormat = GetGUID(data.Settings.Format);
                        
             if (bitmapFormat == Guid.Empty)
             {
-                throw new GorgonException(GorgonResult.FormatNotSupported, "The format '" + data.Settings.Format.ToString() + "' is not supported.");
+                throw new GorgonException(GorgonResult.FormatNotSupported,
+                    string.Format(Resources.GORGFX_FORMAT_NOT_SUPPORTED, data.Settings.Format));
             }
 
             // Make room for all the buffers.
-            bitmaps = new WIC.Bitmap[data.Count];
+            var bitmaps = new WIC.Bitmap[data.Count];
 
             // Copy to the bitmap.
             foreach (var buffer in data)
@@ -521,7 +525,8 @@ namespace GorgonLibrary.Graphics
 
             if (conversionFormat == Guid.Empty)
             {
-                throw new GorgonException(GorgonResult.FormatNotSupported, "Cannot convert, the pixel format " + format.ToString() + " is not supported.");
+                throw new GorgonException(GorgonResult.FormatNotSupported,
+                    string.Format(Resources.GORGFX_FORMAT_NOT_SUPPORTED, format));
             }
 
             try
@@ -550,7 +555,7 @@ namespace GorgonLibrary.Graphics
             }
             finally
             {
-                if ((lockData != null) && (result != null))
+                if (lockData != null)
                 {
                     result.UnlockBits(lockData);
                 }
@@ -563,9 +568,7 @@ namespace GorgonLibrary.Graphics
         /// <param name="image">Image to convert.</param>
         public WIC.Bitmap CreateWICImageFromImage(Image image)
         {
-			DX.DataRectangle pointer = default(DX.DataRectangle);
-			WIC.Bitmap result = null;
-			BitmapData bmpData = null;
+            BitmapData bmpData = null;
             var imageBitmap = image as Bitmap;
             bool bitmapClone = false;
 
@@ -576,6 +579,7 @@ namespace GorgonLibrary.Graphics
 
 			// If the image being passed is not a bitmap, then make it into one.
 			// Or, if the image is a 32bpp RGB (without alpha), or if the image is indexed.
+            // ReSharper disable once BitwiseOperatorOnEnumWithoutFlags
             if ((imageBitmap == null) || (image.PixelFormat == PixelFormat.Format32bppRgb) 
 				|| ((image.PixelFormat & PixelFormat.Indexed) == PixelFormat.Indexed))
             {
@@ -590,32 +594,28 @@ namespace GorgonLibrary.Graphics
                 
 				if (guid == Guid.Empty)
 				{
-					throw new GorgonException(GorgonResult.FormatNotSupported, "The pixel format '" + image.PixelFormat.ToString() + "' is not supported.");
+					throw new GorgonException(GorgonResult.FormatNotSupported, string.Format(Resources.GORGFX_FORMAT_NOT_SUPPORTED, image.PixelFormat));
 				}
 						
 				bmpData = imageBitmap.LockBits(new Rectangle(0, 0, imageBitmap.Width, imageBitmap.Height), ImageLockMode.ReadOnly, imageBitmap.PixelFormat);
 
-				pointer = new DX.DataRectangle(bmpData.Scan0, bmpData.Stride);
-				result = new WIC.Bitmap(Factory, imageBitmap.Width, imageBitmap.Height, guid, pointer, bmpData.Stride * bmpData.Height);
+				var pointer = new DX.DataRectangle(bmpData.Scan0, bmpData.Stride);
+				var result = new WIC.Bitmap(Factory, imageBitmap.Width, imageBitmap.Height, guid, pointer, bmpData.Stride * bmpData.Height);
 				result.SetResolution(image.HorizontalResolution, image.VerticalResolution);
 
 				return result;
             }
             finally
             {
-				if (imageBitmap != null)
-				{
-					if (bmpData != null)
-					{
-						imageBitmap.UnlockBits(bmpData);						
-					}
+                if (bmpData != null)
+                {
+                    imageBitmap.UnlockBits(bmpData);						
+                }
 
-					if (bitmapClone)
-					{
-						imageBitmap.Dispose();
-						imageBitmap = null;
-					}
-				}
+                if (bitmapClone)
+                {
+                    imageBitmap.Dispose();
+                }
             }
         }
 
@@ -632,12 +632,13 @@ namespace GorgonLibrary.Graphics
 		/// <param name="buffer">Buffer holding the converted data.</param>
 		/// <param name="scale">TRUE to scale when converting, FALSE to keep at original size.</param>
 		/// <param name="clip">TRUE to perform clipping, FALSE to keep at original size.</param>
-		private void ConvertFormat(Guid sourceFormat, Guid destFormat, WIC.BitmapDitherType dithering, WIC.BitmapInterpolationMode filter, WIC.BitmapSource bitmap, WIC.Palette bitmapPalette, int alphaValue, GorgonImageData.ImageBuffer buffer, bool scale, bool clip)
+		private void ConvertFormat(Guid sourceFormat, Guid destFormat, WIC.BitmapDitherType dithering, 
+                                    WIC.BitmapInterpolationMode filter, WIC.BitmapSource bitmap, 
+                                    WIC.Palette bitmapPalette, int alphaValue, 
+                                    GorgonImageData.ImageBuffer buffer, bool scale, bool clip)
 		{
 			WIC.BitmapSource source = bitmap;
-			int rowPitch = 0;
-			int slicePitch = 0;
-			double alphaPercent = alphaValue / 255.0;
+		    double alphaPercent = alphaValue / 255.0;
 			var paletteType = WIC.BitmapPaletteType.Custom;
 
 			// If we have a palette, then confirm that the dithering method is valid.
@@ -682,19 +683,20 @@ namespace GorgonLibrary.Graphics
 				{
 					if (!converter.CanConvert(sourceFormat, destFormat))
 					{
-						throw new GorgonException(GorgonResult.FormatNotSupported, "The buffer format '" + buffer.Format.ToString() + "' is not supported.");
+					    throw new GorgonException(GorgonResult.FormatNotSupported,
+					        string.Format(Resources.GORGFX_FORMAT_NOT_SUPPORTED, buffer.Format));
 					}
 
 					converter.Initialize(source, destFormat, dithering, bitmapPalette, alphaPercent, paletteType);
 
 					if (!scale)
 					{
-						rowPitch = (GetBitsPerPixel(destFormat) * bitmap.Size.Width + 7) / 8;
-						slicePitch = rowPitch * bitmap.Size.Height;
+						int rowPitch = (GetBitsPerPixel(destFormat) * bitmap.Size.Width + 7) / 8;
+						int slicePitch = rowPitch * bitmap.Size.Height;
 
 						if ((rowPitch != buffer.PitchInformation.RowPitch) || (slicePitch != buffer.PitchInformation.SlicePitch))
 						{
-							throw new GorgonException(GorgonResult.CannotWrite, "The row pitch and/or the slice pitch of the image is not correct.");
+                            throw new GorgonException(GorgonResult.CannotWrite, Resources.GORGFX_IMAGE_PITCH_TOO_SMALL);
 						}
 					}
 					converter.CopyPixels(buffer.PitchInformation.RowPitch, buffer.Data.BasePointer, buffer.PitchInformation.SlicePitch);
@@ -706,7 +708,6 @@ namespace GorgonLibrary.Graphics
 				{
 					source.Dispose();
 				}
-				source = null;
 			}
 		}
 
@@ -730,18 +731,14 @@ namespace GorgonLibrary.Graphics
 
 				return true;
 			}
-			else
-			{
-				if ((buffer.Width >= bitmap.Size.Width) && (buffer.Height >= bitmap.Size.Height))
-				{
-					return false;
-				}
 
-				ClipBitmap(bitmap, buffer);
-				return true;
-			}
+		    if ((buffer.Width >= bitmap.Size.Width) && (buffer.Height >= bitmap.Size.Height))
+		    {
+		        return false;
+		    }
 
-			return false;
+		    ClipBitmap(bitmap, buffer);
+		    return true;
 		}
 
 		/// <summary>
@@ -774,7 +771,8 @@ namespace GorgonLibrary.Graphics
 
             if (conversionFormat == Guid.Empty)
             {
-                throw new GorgonException(GorgonResult.FormatNotSupported, "The buffer format '" + buffer.Format.ToString() + "' is not supported.");
+                throw new GorgonException(GorgonResult.FormatNotSupported,
+                    string.Format(Resources.GORGFX_FORMAT_NOT_SUPPORTED, buffer.Format));
             }
 
             // Turn off filtering if we're not resizing.
@@ -813,7 +811,6 @@ namespace GorgonLibrary.Graphics
         /// <param name="scaleFilter">Filter to apply to scaled data.</param>
         public void TransformImageData(WIC.BitmapSource sourceData, IntPtr destData, int rowPitch, int slicePitch, Guid destFormat, ImageDithering dither, Rectangle destRect, bool clip, ImageFilter scaleFilter)
         {
-			Guid pixelFormat = destFormat;
             WIC.BitmapSource source = sourceData;
             WIC.FormatConverter converter = null;
             WIC.BitmapClipper clipper = null;
@@ -827,7 +824,8 @@ namespace GorgonLibrary.Graphics
 
 					if (!converter.CanConvert(sourceData.PixelFormat, destFormat))
 					{
-						throw new GorgonException(GorgonResult.FormatNotSupported, "Cannot convert to the destination format.");
+					    throw new GorgonException(GorgonResult.FormatNotSupported,
+					        string.Format(Resources.GORGFX_FORMAT_NOT_SUPPORTED, destFormat));
 					}
 
                     converter.Initialize(source, destFormat, (WIC.BitmapDitherType)dither, null, 0, WIC.BitmapPaletteType.Custom);
@@ -836,7 +834,7 @@ namespace GorgonLibrary.Graphics
 
                 if (!destRect.IsEmpty)
                 {
-					pixelFormat = source.PixelFormat;
+					Guid pixelFormat = source.PixelFormat;
 
                     if (!clip)
                     {
@@ -864,8 +862,9 @@ namespace GorgonLibrary.Graphics
 
 						if (!converter.CanConvert(source.PixelFormat, pixelFormat))
 						{
-							throw new GorgonException(GorgonResult.FormatNotSupported, "Cannot convert to the destination format.");
-						}
+                            throw new GorgonException(GorgonResult.FormatNotSupported,
+                                string.Format(Resources.GORGFX_FORMAT_NOT_SUPPORTED, pixelFormat));
+                        }
 
 						converter.Initialize(source, pixelFormat, WIC.BitmapDitherType.None, null, 0, WIC.BitmapPaletteType.Custom);
 						source = converter;
@@ -876,8 +875,6 @@ namespace GorgonLibrary.Graphics
             }
             finally
             {
-				source = null;
-
                 if (converter != null)
                 {
                     converter.Dispose();
@@ -892,10 +889,6 @@ namespace GorgonLibrary.Graphics
                 {
                     clipper.Dispose();
                 }
-
-                scaler = null;
-                clipper = null;
-                converter = null;
             }
         }
         #endregion

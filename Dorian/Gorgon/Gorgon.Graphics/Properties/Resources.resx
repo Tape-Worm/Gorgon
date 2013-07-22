@@ -574,4 +574,28 @@ Log file location: "{0}"</value>
   <data name="GORGFX_SHADER_INCLUDE_PATH_INVALID" xml:space="preserve">
     <value>The include line '{0}' is not valid.</value>
   </data>
+  <data name="GORGFX_INVALID_SETTINGS" xml:space="preserve">
+    <value>Cannot use a '{0}' settings object with a '{1}' object.</value>
+  </data>
+  <data name="GORGFX_MULTISAMPLE_INVALID" xml:space="preserve">
+    <value>The video device '{0}' does not support multisampling with a count of {1} and a quality of {2} for format [{3}].</value>
+  </data>
+  <data name="GORGFX_RENDERTARGET_ALREADY_FULLSCREEN" xml:space="preserve">
+    <value>There is already a full screen swap chain active on the video output '{0}'.</value>
+  </data>
+  <data name="GORGFX_RENDERTARGET_NO_OUTPUT" xml:space="preserve">
+    <value>Could not find the video output for the specified window.</value>
+  </data>
+  <data name="GORGFX_RENDERTARGET_NO_WINDOW" xml:space="preserve">
+    <value>No window to bind with the swap chain.</value>
+  </data>
+  <data name="GORGFX_TEXTURE_DEPTH_INVALID" xml:space="preserve">
+    <value>Cannot create a '{0}' with a depth of {1}.  The depth must be between 0 and {2}.</value>
+  </data>
+  <data name="GORGFX_TEXTURE_HEIGHT_INVALID" xml:space="preserve">
+    <value>Cannot create a '{0}' with a height of {1}.  The height must be between 0 and {2}.</value>
+  </data>
+  <data name="GORGFX_TEXTURE_WIDTH_INVALID" xml:space="preserve">
+    <value>Cannot create a '{0}' with a width of {1}.  The width must be between 0 and {2}.</value>
+  </data>
 </root>

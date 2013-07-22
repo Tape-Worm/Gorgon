@@ -402,7 +402,7 @@ namespace GorgonLibrary.IO
         /// <param name="frame">Frame in the image to decode.</param>
         /// <param name="bestFormatMatch">The best match for the pixel format.</param>
         /// <returns>Settings for the new image.</returns>
-        internal IImageSettings ReadMetaData(GorgonWICImage wic, SharpDX.WIC.BitmapDecoder decoder, SharpDX.WIC.BitmapFrameDecode frame, ref Guid bestFormatMatch)
+        internal IImageSettings ReadMetaData(GorgonWICImage wic, SharpDX.WIC.BitmapDecoder decoder, SharpDX.WIC.BitmapFrameDecode frame, out Guid bestFormatMatch)
         {
 	        return new GorgonTexture2DSettings
 	            {
@@ -410,7 +410,7 @@ namespace GorgonLibrary.IO
                 Height = frame.Size.Height,
                 MipCount = 1,
                 ArrayCount = (CodecUseAllFrames && SupportsMultipleFrames) ? decoder.FrameCount : 1,
-                Format = wic.FindBestFormat(frame.PixelFormat, DecodeFlags, ref bestFormatMatch)
+                Format = wic.FindBestFormat(frame.PixelFormat, DecodeFlags, out bestFormatMatch)
             };
         }
 
@@ -466,9 +466,8 @@ namespace GorgonLibrary.IO
 		protected internal override GorgonImageData LoadFromStream(GorgonDataStream stream, int size)
 		{			
 			GorgonImageData result = null;
-			Guid bestFormat = Guid.Empty;
 
-			// Get our WIC interface.
+		    // Get our WIC interface.
 		    var wrapperStream = new GorgonStreamWrapper(stream);
 
 			using (var wic = new GorgonWICImage())
@@ -489,7 +488,8 @@ namespace GorgonLibrary.IO
 
 						using (var frame = decoder.GetFrame(0))
 						{
-							var settings = ReadMetaData(wic, decoder, frame, ref bestFormat);
+						    Guid bestFormat;
+						    var settings = ReadMetaData(wic, decoder, frame, out bestFormat);
 
 							if (settings.Format == BufferFormat.Unknown)
 							{
@@ -669,9 +669,7 @@ namespace GorgonLibrary.IO
 		/// <exception cref="System.IO.EndOfStreamException">Thrown when an attempt to read beyond the end of the stream is made.</exception>
 		public override IImageSettings GetMetaData(Stream stream)
 		{
-			Guid bestFormat = Guid.Empty;
-
-			if (stream == null)
+		    if (stream == null)
             {
                 throw new ArgumentNullException("stream");
             }
@@ -711,7 +709,8 @@ namespace GorgonLibrary.IO
 
 							using (var frame = decoder.GetFrame(0))
 							{
-								var settings = ReadMetaData(wic, decoder, frame, ref bestFormat);
+							    Guid bestFormat;
+							    var settings = ReadMetaData(wic, decoder, frame, out bestFormat);
 
 								if (settings.Format == BufferFormat.Unknown)
 								{
@@ -744,9 +743,7 @@ namespace GorgonLibrary.IO
 		/// </exception>		
 		public override bool IsReadable(Stream stream)
 		{
-			Guid bestFormat = Guid.Empty;
-
-            if (stream == null)
+		    if (stream == null)
             {
                 throw new ArgumentNullException("stream");
             }
@@ -792,7 +789,8 @@ namespace GorgonLibrary.IO
 
 							using (var frame = decoder.GetFrame(0))
 							{
-								var settings = ReadMetaData(wic, decoder, frame, ref bestFormat);
+							    Guid bestFormat;
+							    var settings = ReadMetaData(wic, decoder, frame, out bestFormat);
 
 								return (settings.Format != BufferFormat.Unknown);
 							}
