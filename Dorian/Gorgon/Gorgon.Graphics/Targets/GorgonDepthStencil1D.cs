@@ -136,15 +136,18 @@ namespace GorgonLibrary.Graphics
 			_defaultView = GetDepthStencilView(Settings.Format, 0, 0, 1, Settings.DefaultDepthStencilViewFlags);
 		}
 
-		/// <summary>
-		/// Function to copy data from the CPU to a texture.
-		/// </summary>
-		/// <param name="data">Data to copy to the texture.</param>
-		/// <param name="subResource">Sub resource index to use.</param>
-		/// <param name="deferred">The deferred.</param>
-		/// <exception cref="System.NotSupportedException">This method is not supported for depth/stencil buffers.</exception>
+        /// <summary>
+        /// Function to copy data from the CPU to a texture.
+        /// </summary>
+        /// <param name="data">Data to copy to the texture.</param>
+        /// <param name="subResource">Sub resource index to use.</param>
+        /// <param name="context">The graphics context to use when updating the texture.</param>
+        /// <exception cref="System.NotSupportedException">This method is not supported for depth/stencil buffers.</exception>
+        /// <remarks>
+        /// The <paramref name="context" /> allows a separate thread to access the resource at the same time as another thread.
+        /// </remarks>
 		[EditorBrowsable(EditorBrowsableState.Never)]
-		protected override void OnUpdateSubResource(ISubResourceData data, int subResource, GorgonGraphics deferred = null)
+		protected override void OnUpdateSubResource(ISubResourceData data, int subResource, GorgonGraphics context)
 		{
 			throw new NotSupportedException(Resources.GORGFX_DEPTH_OPERATION_NOT_SUPPORTED);
 		}

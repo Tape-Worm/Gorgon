@@ -25,11 +25,9 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
 using GorgonLibrary.IO;
-using GorgonLibrary.Math;
 using GorgonLibrary.Diagnostics;
 using GorgonLibrary.Graphics.Properties;
 using GorgonLibrary.Native;
@@ -548,34 +546,16 @@ namespace GorgonLibrary.Graphics
         {
 			GorgonBuffers.ValidateGenericBufferSettings(settings);
 
-            if (settings.RenderTargetType != RenderTargetType.Buffer)
-            {
-                throw new GorgonException(GorgonResult.CannotCreate, "Cannot use 1D, 2D or 3D settings for buffer render targets.");
-            }
-
-            if (_graphics.VideoDevice == null)
-            {
-                throw new GorgonException(GorgonResult.CannotCreate,
-                                          "Cannot create the render target, no video device was selected.");
-            }
-
             // Ensure the dimensions are valid.
             if (settings.SizeInBytes <= 4)
             {
-                throw new GorgonException(GorgonResult.CannotCreate,
-                                          "Render target must have a size of 4 or more bytes.");
+                throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_BUFFER_NOT_MULTIPLE, 4));
             }
 
-            if (settings.Format == BufferFormat.Unknown)
+            if ((settings.Format == BufferFormat.Unknown)
+                || (!_graphics.VideoDevice.SupportsRenderTargetFormat(settings.Format, false)))
             {
-                throw new GorgonException(GorgonResult.CannotCreate, "Render target must have a known buffer format.");
-            }
-
-            // Ensure that the selected video format can be used.
-            if (!_graphics.VideoDevice.SupportsRenderTargetFormat(settings.Format, false))
-            {
-                throw new GorgonException(GorgonResult.CannotCreate, "Cannot use the format '" + settings.Format
-                                            + "' for a render target on the video device '" + _graphics.VideoDevice.Name + "'.");
+                throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_FORMAT_NOT_SUPPORTED, BufferFormat.Unknown));
             }
         }
 
@@ -610,9 +590,6 @@ namespace GorgonLibrary.Graphics
                 settings.Flags = SwapChainUsageFlags.RenderTarget;
             }
 
-            if (_graphics.VideoDevice == null)
-                throw new GorgonException(GorgonResult.CannotCreate, "Cannot create the swap chain, no video device was selected.");
-
             if ((_graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM2_a_b) &&
                 (settings.Flags != SwapChainUsageFlags.RenderTarget))
             {
@@ -636,7 +613,9 @@ namespace GorgonLibrary.Graphics
 
                 // No application window, then we're out of luck.
                 if (settings.Window == null)
-                    throw new ArgumentException("No window to bind with the swap chain.", "settings");
+                {
+                    throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_RENDERTARGET_NO_WINDOW);
+                }
             }
 
             // Force to windowed mode if we're binding to a child control on a form.
@@ -652,7 +631,7 @@ namespace GorgonLibrary.Graphics
 
             if (output == null)
             {
-                throw new GorgonException(GorgonResult.CannotCreate, "Could not find the video output for the specified window.");
+                throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_RENDERTARGET_NO_OUTPUT);
             }
 
             // Get the Direct 3D device instance.
@@ -669,6 +648,7 @@ namespace GorgonLibrary.Graphics
                                                  stagedMode.RefreshRateNumerator,
                                                  stagedMode.RefreshRateDenominator);
             }
+
             if (stagedMode.Height == 0)
             {
                 stagedMode = new GorgonVideoMode(stagedMode.Width,
@@ -677,6 +657,7 @@ namespace GorgonLibrary.Graphics
                                                  stagedMode.RefreshRateNumerator,
                                                  stagedMode.RefreshRateDenominator);
             }
+
             if (stagedMode.Format == BufferFormat.Unknown)
             {
                 stagedMode = new GorgonVideoMode(stagedMode.Width,
@@ -685,6 +666,7 @@ namespace GorgonLibrary.Graphics
                                                  stagedMode.RefreshRateNumerator,
                                                  stagedMode.RefreshRateDenominator);
             }
+
             if ((stagedMode.RefreshRateDenominator == 0) || (stagedMode.RefreshRateNumerator == 0))
             {
                 stagedMode = new GorgonVideoMode(stagedMode.Width,
@@ -711,8 +693,7 @@ namespace GorgonLibrary.Graphics
                                 && (item.Settings.Window != settings.Window)))
                 {
                     throw new GorgonException(GorgonResult.CannotCreate,
-                                              "There is already a full screen swap chain active on the video output '"
-                                              + output.Name + "'.");
+                        string.Format(Resources.GORGFX_RENDERTARGET_ALREADY_FULLSCREEN, output.Name));
                 }
 
                 var modeCount = (from mode in output.VideoModes
@@ -728,23 +709,38 @@ namespace GorgonLibrary.Graphics
 
             // Ensure that the selected video format can be used.
             if (!_graphics.VideoDevice.SupportsDisplayFormat(stagedMode.Format))
-                throw new GorgonException(GorgonResult.CannotCreate, "Cannot use the format '" + stagedMode.Format.ToString() + "' for display on the video device '" + _graphics.VideoDevice.Name + "'.");
+            {
+                throw new GorgonException(GorgonResult.CannotCreate,
+                    string.Format(Resources.GORGFX_FORMAT_NOT_SUPPORTED, stagedMode.Format));
+            }
 
             settings.VideoMode = stagedMode;
 
             // Check multi sampling levels.
             if (settings.SwapEffect == SwapEffect.Sequential)
+            {
                 settings.Multisampling = new GorgonMultisampling(1, 0);
+            }
 
             int quality = _graphics.VideoDevice.GetMultiSampleQuality(settings.VideoMode.Format, settings.Multisampling.Count);
 
             // Ensure that the quality of the sampling does not exceed what the card can do.
-            if ((settings.Multisampling.Quality >= quality) || (settings.Multisampling.Quality < 0))
-                throw new GorgonException(GorgonResult.CannotCreate, "Video device '" + _graphics.VideoDevice.Name + "' does not support multisampling with a count of '" + settings.Multisampling.Count.ToString() + "' and a quality of '" + settings.Multisampling.Quality.ToString() + " with a format of '" + settings.VideoMode.Format + "'");
+            if ((settings.Multisampling.Quality >= quality)
+                || (settings.Multisampling.Quality < 0))
+            {
+                throw new GorgonException(GorgonResult.CannotCreate,
+                    string.Format(Resources.GORGFX_MULTISAMPLE_INVALID,
+                        settings.Multisampling.Count,
+                        settings.Multisampling.Quality,
+                        settings.VideoMode.Format));
+            }
 
             // Force 2 buffers for discard.
-            if ((settings.BufferCount < 2) && (settings.SwapEffect == SwapEffect.Discard))
+            if ((settings.BufferCount < 2)
+                && (settings.SwapEffect == SwapEffect.Discard))
+            {
                 settings.BufferCount = 2;
+            }
 
             // Perform window handling.
             settings.Window.Visible = true;
@@ -772,43 +768,41 @@ namespace GorgonLibrary.Graphics
 					_graphics.Textures.ValidateTexture3D(ref textureSettings);
 			        break;
 				default:
-					throw new GorgonException(GorgonResult.CannotCreate, "Cannot use buffer settings for 1D, 2D or 3D render targets.");    
+	                throw new GorgonException(GorgonResult.CannotCreate,
+	                    string.Format(Resources.GORGFX_INVALID_SETTINGS,
+	                        typeof(GorgonRenderTargetBufferSettings).FullName,
+	                        settings.GetType().FullName));
 	        }
-
-            if (_graphics.VideoDevice == null)
-            {
-                throw new GorgonException(GorgonResult.CannotCreate,
-                                          "Cannot create the render target, no video device was selected.");
-            }
 
             // Ensure the dimensions are valid.
             if ((settings.Width <= 0)
                 || (settings.Width >= _graphics.Textures.MaxWidth))
             {
                 throw new GorgonException(GorgonResult.CannotCreate,
-                                          "Render target must have a width greater than 0 or less than "
-                                          + _graphics.Textures.MaxWidth + ".");
+                    string.Format(Resources.GORGFX_TEXTURE_WIDTH_INVALID,
+                        settings.RenderTargetType,
+                        settings.Width,
+                        _graphics.Textures.MaxWidth));
             }
             
             if ((settings.RenderTargetType > RenderTargetType.Target1D) && ((settings.Height <= 0)
                 || (settings.Height >= _graphics.Textures.MaxHeight)))
             {
                 throw new GorgonException(GorgonResult.CannotCreate,
-                                          "Render target must have a height greater than 0 or less than "
-                                          + _graphics.Textures.MaxHeight + ".");
+                    string.Format(Resources.GORGFX_TEXTURE_HEIGHT_INVALID,
+                        settings.RenderTargetType,
+                        settings.Height,
+                        _graphics.Textures.MaxHeight));
             }
 
             if ((settings.RenderTargetType > RenderTargetType.Target3D) && ((settings.Depth <= 0)
                 || (settings.Depth >= _graphics.Textures.MaxDepth)))
             {
                 throw new GorgonException(GorgonResult.CannotCreate,
-                                          "Render target must have a depth greater than 0 or less than "
-                                          + _graphics.Textures.MaxDepth + ".");
-            }
-
-            if (settings.Format == BufferFormat.Unknown)
-            {
-                throw new GorgonException(GorgonResult.CannotCreate, "Render target must have a known buffer format.");
+                    string.Format(Resources.GORGFX_TEXTURE_WIDTH_INVALID,
+                        settings.RenderTargetType,
+                        settings.Depth,
+                        _graphics.Textures.MaxDepth));
             }
 
             int quality = _graphics.VideoDevice.GetMultiSampleQuality(settings.Format, settings.Multisampling.Count);
@@ -817,20 +811,19 @@ namespace GorgonLibrary.Graphics
             if ((settings.Multisampling.Quality >= quality)
                 || (settings.Multisampling.Quality < 0))
             {
-                throw new ArgumentException("Video device '" + _graphics.VideoDevice.Name
-                                            + "' does not support multisampling with a count of '"
-                                            + settings.Multisampling.Count + "' and a quality of '"
-                                            + settings.Multisampling.Quality + " with a format of '"
-                                            + settings.Format + "'");
+                throw new GorgonException(GorgonResult.CannotCreate,
+                    string.Format(Resources.GORGFX_MULTISAMPLE_INVALID,
+                        settings.Multisampling.Count,
+                        settings.Multisampling.Quality,
+                        settings.Format));
             }
 
-            // Ensure that the selected video format can be used.
-            if (!_graphics.VideoDevice.SupportsRenderTargetFormat(settings.Format,
+            if ((settings.Format == BufferFormat.Unknown)
+                || (!_graphics.VideoDevice.SupportsRenderTargetFormat(settings.Format,
                                                                  (settings.Multisampling.Quality > 0)
-                                                                 || (settings.Multisampling.Count > 1)))
+                                                                 || (settings.Multisampling.Count > 1))))
             {
-                throw new ArgumentException("Cannot use the format '" + settings.Format
-                                            + "' for a render target on the video device '" + _graphics.VideoDevice.Name + "'.");
+                throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_FORMAT_NOT_SUPPORTED, settings.Format));
             }
         }
 
@@ -852,15 +845,10 @@ namespace GorgonLibrary.Graphics
 				_graphics.Textures.ValidateTexture2D(ref textureSettings);
 			}
 
-			if (settings.Format == BufferFormat.Unknown)
+			if ((settings.Format == BufferFormat.Unknown) || (!_graphics.VideoDevice.SupportsDepthFormat(settings.Format)))
 			{
-				throw new ArgumentException("The format for the depth buffer ('" + settings.Format + "') is not valid.");
-			}
-
-			if (!_graphics.VideoDevice.SupportsDepthFormat(settings.Format))
-			{
-				throw new ArgumentException("Video device '" + _graphics.VideoDevice.Name + "' does not support '"
-											+ settings.Format + "' as a depth/stencil buffer format.");
+			    throw new GorgonException(GorgonResult.CannotCreate,
+			        string.Format(Resources.GORGFX_FORMAT_NOT_SUPPORTED, settings.Format));
 			}
 
 			// Make sure we can use the same multi-sampling with our depth buffer.
@@ -870,51 +858,50 @@ namespace GorgonLibrary.Graphics
 			if ((settings.Multisampling.Quality >= quality)
 				|| (settings.Multisampling.Quality < 0))
 			{
-				throw new ArgumentException("Video device '" + _graphics.VideoDevice.Name
-											+ "' does not support multisampling with a count of '"
-											+ settings.Multisampling.Count + "' and a quality of '"
-											+ settings.Multisampling.Quality + " with a format of '"
-											+ settings.Format + "'");
-			}
+                throw new GorgonException(GorgonResult.CannotCreate,
+                    string.Format(Resources.GORGFX_MULTISAMPLE_INVALID,
+                        settings.Multisampling.Count,
+                        settings.Multisampling.Quality,
+                        settings.Format));
+            }
 
 			if (!settings.AllowShaderView)
 			{
 				if (!_graphics.VideoDevice.Supports2DTextureFormat(settings.Format))
 				{
-					throw new ArgumentException("Video device '" + _graphics.VideoDevice.Name + "' does not support '"
-												+ settings.Format + "' as texture format for the depth buffer.");
-				}
+                    throw new GorgonException(GorgonResult.CannotCreate,
+                        string.Format(Resources.GORGFX_FORMAT_NOT_SUPPORTED, settings.Format));
+                }
 			}
 			else
 			{
                 if (_graphics.VideoDevice.SupportedFeatureLevel < DeviceFeatureLevel.SM4)
                 {
-                    throw new GorgonException(GorgonResult.CannotCreate, "Depth/stencil buffers cannot be bound to the shader pipeline with video devices that don't support SM4 or better.");
+                    throw new GorgonException(GorgonResult.CannotCreate,
+                        string.Format(Resources.GORGFX_REQUIRES_SM, DeviceFeatureLevel.SM4));
                 }
 
                 if ((_graphics.VideoDevice.SupportedFeatureLevel < DeviceFeatureLevel.SM4_1)
                     && ((settings.Multisampling.Count > 1) || (settings.Multisampling.Quality > 0)))
                 {
-                    throw new GorgonException(GorgonResult.CannotCreate, "Multisampled Depth/stencil buffers cannot be bound to the shader pipeline if the video device does not support SM4_1 or better.");
+                    throw new GorgonException(GorgonResult.CannotCreate,
+                        string.Format(Resources.GORGFX_REQUIRES_SM, DeviceFeatureLevel.SM4_1));
                 }
 
 				if (settings.TextureFormat == BufferFormat.Unknown)
 				{
-					throw new GorgonException(GorgonResult.CannotCreate, "The texture format must not be Unknown.");
-				}
+                    throw new GorgonException(GorgonResult.CannotCreate,
+                        string.Format(Resources.GORGFX_FORMAT_NOT_SUPPORTED, settings.TextureFormat));
+                }
 
 				var formatInfo = GorgonBufferFormatInfo.GetInfo(settings.TextureFormat);
 
-				if (!formatInfo.IsTypeless)
+				if ((!formatInfo.IsTypeless)
+                    || (!_graphics.VideoDevice.Supports2DTextureFormat(settings.TextureFormat)))
 				{
-					throw new GorgonException(GorgonResult.CannotCreate, "The texture format must be typeless.");
-				}
-
-				if (!_graphics.VideoDevice.Supports2DTextureFormat(settings.TextureFormat))
-				{
-					throw new ArgumentException("Video device '" + _graphics.VideoDevice.Name + "' does not support '"
-												+ settings.TextureFormat + "' as texture format for the depth buffer.");
-				}
+                    throw new GorgonException(GorgonResult.CannotCreate,
+                        string.Format(Resources.GORGFX_FORMAT_NOT_SUPPORTED, settings.TextureFormat));
+                }
 			}
 		}
 
@@ -1139,7 +1126,7 @@ namespace GorgonLibrary.Graphics
         /// <para>Thrown when the render target view, depth/stencil view, or the unordered access views could not be bound to the pipeline.</para></exception>
         public void SetUnorderedAccessViews(int startSlot, params GorgonUnorderedAccessView[] views)
         {
-            bool hasChanged = false;
+            bool hasChanged;
 
             if ((views != null)
                 && (views.Length > 0))
@@ -1678,9 +1665,9 @@ namespace GorgonLibrary.Graphics
 		/// <para>-or-</para>
 		/// <para>Thrown when the <see cref="P:GorgonLibrary.Graphics.GorgonSwapChainSettings.Window">GorgonSwapChainSettings.Window</see> property is NULL (Nothing in VB.Net), and the <see cref="P:GorgonLibrary.Gorgon.ApplicationForm">Gorgon application window</see> is NULL.</para>
 		/// <para>-or-</para>
-		/// <para>Thrown when the <see cref="P:GorgonLibrary.Graphics.GorgonVideoMode.Format">GorgonSwapChainSettings.VideoMode.Format</see> property cannot be used by the video device for displaying data or for the depth/stencil buffer.</para>
+		/// <para>Thrown when the <see cref="GorgonVideoMode.Format">GorgonSwapChainSettings.VideoMode.Format</see> property cannot be used by the video device for displaying data or for the depth/stencil buffer.</para>
 		/// <para>-or-</para>
-		/// <para>Thrown when the <see cref="P:GorgonLibrary.Graphics.GorgonSwapChainSettings.MultSamples.Quality">GorgonSwapChainSettings.MultiSamples.Quality</see> property is less than 0 or not less than the value returned by <see cref="M:GorgonLibrary.Graphics.GorgonVideoDevice">GorgonVideoDevice.GetMultiSampleQuality</see>.</para>
+		/// <para>Thrown when the <see cref="GorgonMultisampling.Quality">GorgonSwapChainSettings.MultiSamples.Quality</see> property is less than 0 or not less than the value returned by <see cref="GorgonVideoDevice.GetMultiSampleQuality">GorgonVideoDevice.GetMultiSampleQuality</see>.</para>
 		/// </exception>
 		/// <exception cref="GorgonLibrary.GorgonException">Thrown when the video output could not be determined from the window.
 		/// <para>-or-</para>
@@ -1693,14 +1680,12 @@ namespace GorgonLibrary.Graphics
 		/// <remarks>This will create our output swap chains for display to a window or control.  All functionality for sending or retrieving data from the video device can be accessed through the swap chain.
 		/// <para>Passing default settings for the <see cref="GorgonLibrary.Graphics.GorgonSwapChainSettings">settings parameters</see> will make Gorgon choose the closest possible settings appropriate for the video device and output that the window is on.  For example, passing NULL (Nothing in VB.Net) to 
 		/// the <see cref="P:GorgonLibrary.Graphics.GorgonSwapChainSettings.VideoMode">GorgonSwapChainSettings.VideoMode</see> parameter will make Gorgon find the closest video mode available to the current window size and desktop format (for the output).</para>
-		/// <para>If the multisampling quality in the <see cref="P:GorgonLibrary.Graphics.GorgonSwapChainSettings.MultiSample.Quality">GorgonSwapChainSettings.MultiSample.Quality</see> property is higher than what the video device can support, an exception will be raised.  To determine 
-		/// what the maximum quality for the sample count for the video device should be, call the <see cref="M:GorgonLibrary.Graphics.GorgonVideoDevice.GetMultiSampleQuality">GorgonVideoDevice.GetMultiSampleQuality</see> method.</para>
+        /// <para>If the multisampling quality in the <see cref="GorgonMultisampling.Quality">GorgonSwapChainSettings.MultiSample.Quality</see> property is higher than what the video device can support, an exception will be raised.  To determine 
+        /// what the maximum quality for the sample count for the video device should be, call the <see cref="GorgonVideoDevice.GetMultiSampleQuality">GorgonVideoDevice.GetMultiSampleQuality</see> method.</para>
 		/// <para>This method should not be called from a deferred graphics context.</para>
 		/// </remarks>
 		public GorgonSwapChain CreateSwapChain(string name, GorgonSwapChainSettings settings)
 		{
-			GorgonSwapChain swapChain;
-
             if (_graphics.IsDeferred)
             {
                 throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_CANNOT_USE_DEFERRED_CONTEXT);
@@ -1713,7 +1698,7 @@ namespace GorgonLibrary.Graphics
 
             if (string.IsNullOrWhiteSpace(name))
             {
-                throw new ArgumentException("The parameter must not be empty.", "name");
+                throw new ArgumentException(Resources.GORGFX_PARAMETER_MUST_NOT_BE_EMPTY, "name");
             }
 
             if (settings == null)
@@ -1723,7 +1708,7 @@ namespace GorgonLibrary.Graphics
 
 			ValidateSwapChainSettings(settings);
 
-			swapChain = new GorgonSwapChain(_graphics, name, settings);
+			var swapChain = new GorgonSwapChain(_graphics, name, settings);
 			_graphics.AddTrackedObject(swapChain);
 			swapChain.Initialize();
 
@@ -1855,7 +1840,7 @@ namespace GorgonLibrary.Graphics
         /// <para>-or-</para>
         /// <para>Thrown when the Format is unknown or is not a supported render target format.</para>
         /// <para>-or-</para>
-		/// <para>Thrown when the <see cref="P:GorgonLibrary.Graphics.GorgonRenderTarget2DSettings.Multisampling">GorgonRenderTarget2DSettings.Multisampling.Quality</see> property is less than 0 or not less than the value returned by <see cref="M:GorgonLibrary.Graphics.GorgonVideoDevice">GorgonVideoDevice.GetMultiSampleQuality</see>.</para>
+		/// <para>Thrown when the <see cref="P:GorgonLibrary.Graphics.GorgonRenderTarget2DSettings.Multisampling">GorgonRenderTarget2DSettings.Multisampling.Quality</see> property is less than 0 or not less than the value returned by <see cref="GorgonVideoDevice.GetMultiSampleQuality">GorgonVideoDevice.GetMultiSampleQuality</see>.</para>
         /// <para>-or-</para>
         /// <para>Thrown when the graphics context is deferred.</para>
         /// </exception>
