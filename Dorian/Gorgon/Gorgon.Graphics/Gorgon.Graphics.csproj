@@ -184,6 +184,7 @@
     <Compile Include="Targets\GorgonSwapChainSettings.cs" />
     <Compile Include="Targets\GorgonViewport.cs" />
     <Compile Include="IO\GorgonGDIImageConverter.cs" />
+    <Compile Include="Textures\GorgonImageBuffer.cs" />
     <Compile Include="Textures\GorgonImageData.cs" />
     <Compile Include="Textures\GorgonTexture.cs" />
     <Compile Include="Textures\GorgonTexture1D.cs">

@@ -598,4 +598,10 @@ Log file location: "{0}"</value>
   <data name="GORGFX_TEXTURE_WIDTH_INVALID" xml:space="preserve">
     <value>Cannot create a '{0}' with a width of {1}.  The width must be between 0 and {2}.</value>
   </data>
+  <data name="GORGFX_IMAGE_FORMAT_MISMATCH" xml:space="preserve">
+    <value>The texture format [{0}] must match the image data format [{1}].</value>
+  </data>
+  <data name="GORGFX_TEXTURE_IMMUTABLE" xml:space="preserve">
+    <value>The texture is immutable and cannot be updated.</value>
+  </data>
 </root>

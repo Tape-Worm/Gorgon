@@ -635,7 +635,7 @@ namespace GorgonLibrary.Graphics
 		private void ConvertFormat(Guid sourceFormat, Guid destFormat, WIC.BitmapDitherType dithering, 
                                     WIC.BitmapInterpolationMode filter, WIC.BitmapSource bitmap, 
                                     WIC.Palette bitmapPalette, int alphaValue, 
-                                    GorgonImageData.ImageBuffer buffer, bool scale, bool clip)
+                                    GorgonImageBuffer buffer, bool scale, bool clip)
 		{
 			WIC.BitmapSource source = bitmap;
 		    double alphaPercent = alphaValue / 255.0;
@@ -719,7 +719,7 @@ namespace GorgonLibrary.Graphics
 		/// <param name="buffer">Buffer to receive the scaled bitmap.</param>
 		/// <param name="clip">TRUE to clip, FALSE to scale.</param>
 		/// <returns>TRUE if clipping/scaling was performed, FALSE if not.</returns>
-		private bool ResizeBitmap(WIC.BitmapSource bitmap, WIC.BitmapInterpolationMode filter, GorgonImageData.ImageBuffer buffer, bool clip)
+		private bool ResizeBitmap(WIC.BitmapSource bitmap, WIC.BitmapInterpolationMode filter, GorgonImageBuffer buffer, bool clip)
 		{
 			if (!clip)
 			{
@@ -746,7 +746,7 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		/// <param name="bitmap">Bitmap to clip.</param>
 		/// <param name="buffer">Buffer containing clipped data.</param>
-		private void ClipBitmap(WIC.BitmapSource bitmap, GorgonImageData.ImageBuffer buffer)
+		private void ClipBitmap(WIC.BitmapSource bitmap, GorgonImageBuffer buffer)
 		{
 			using (var clipper = new WIC.BitmapClipper(Factory))
 			{
@@ -764,7 +764,7 @@ namespace GorgonLibrary.Graphics
 		/// <param name="ditherFlags">Flags used to dither the image.</param>
 		/// <param name="buffer">Buffer for holding the image data.</param>
 		/// <param name="clip">TRUE to clip the data, FALSE to scale it.</param>
-        public void AddWICBitmapToImageData(WIC.Bitmap bitmap, ImageFilter filter, ImageDithering ditherFlags, GorgonImageData.ImageBuffer buffer, bool clip)
+        public void AddWICBitmapToImageData(WIC.Bitmap bitmap, ImageFilter filter, ImageDithering ditherFlags, GorgonImageBuffer buffer, bool clip)
         {
             Guid conversionFormat = GetGUID(buffer.Format);
 			bool needsResize = (buffer.Width != bitmap.Size.Width) || (buffer.Height != bitmap.Size.Height);			

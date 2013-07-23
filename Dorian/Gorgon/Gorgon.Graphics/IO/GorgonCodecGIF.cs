@@ -400,8 +400,8 @@ namespace GorgonLibrary.IO
 									// Check to see if we can actually read this thing.
 									if (frame == 0)
 									{
-										Guid temp = Guid.Empty;
-										IImageSettings settings = ReadMetaData(wic, decoder, frameImage, ref temp);
+										Guid temp;
+										IImageSettings settings = ReadMetaData(wic, decoder, frameImage, out temp);
 
 										if (settings.Format == BufferFormat.Unknown)
 										{

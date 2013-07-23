@@ -605,6 +605,15 @@ namespace GorgonLibrary.Graphics.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The texture format [{0}] must match the image data format [{1}]..
+        /// </summary>
+        internal static string GORGFX_IMAGE_FORMAT_MISMATCH {
+            get {
+                return ResourceManager.GetString("GORGFX_IMAGE_FORMAT_MISMATCH", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Graphics Interchange Format.
         /// </summary>
         internal static string GORGFX_IMAGE_GIF_CODEC_DESC {
@@ -1168,6 +1177,15 @@ namespace GorgonLibrary.Graphics.Properties {
         internal static string GORGFX_TEXTURE_HEIGHT_INVALID {
             get {
                 return ResourceManager.GetString("GORGFX_TEXTURE_HEIGHT_INVALID", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The texture is immutable and cannot be updated..
+        /// </summary>
+        internal static string GORGFX_TEXTURE_IMMUTABLE {
+            get {
+                return ResourceManager.GetString("GORGFX_TEXTURE_IMMUTABLE", resourceCulture);
             }
         }
         
