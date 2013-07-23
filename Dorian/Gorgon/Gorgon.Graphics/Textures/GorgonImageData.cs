@@ -71,135 +71,13 @@ namespace GorgonLibrary.Graphics
 	/// <see cref="GorgonLibrary.Graphics.GorgonTexture3DSettings">GorgonTexture3DSettings</see> implement the IImageSettings interface and can be used with this object.</para>
 	/// </remarks>
     public unsafe class GorgonImageData
-        : IDisposable, IEnumerable<GorgonImageData.ImageBuffer>, System.Collections.IEnumerable        
+        : IDisposable, IEnumerable<GorgonImageBuffer>
 	{
-		#region Classes.
-		/// <summary>
-		/// An image buffer containing data about the image.
-		/// </summary>
-		public class ImageBuffer
-		{
-			#region Properties.
-			/// <summary>
-			/// Property to return the format of the buffer.
-			/// </summary>
-			public BufferFormat Format
-			{
-				get;
-				private set;
-			}
-
-			/// <summary>
-			/// Property to return the width for the current buffer.
-			/// </summary>
-			public int Width
-			{
-				get;
-				private set;
-			}
-
-			/// <summary>
-			/// Property to return the height for the current buffer.
-			/// </summary>
-			/// <remarks>This is only valid for 2D and 3D images.</remarks>
-			public int Height
-			{
-				get;
-				private set;
-			}
-
-			/// <summary>
-			/// Property to return the depth for the current buffer.
-			/// </summary>
-			/// <remarks>This is only valid for 3D images.</remarks>
-			public int Depth
-			{
-				get;
-				private set;
-			}
-			
-			/// <summary>
-			/// Property to return the mip map level this buffer represents.
-			/// </summary>
-			public int MipLevel
-			{
-				get;
-				private set;
-			}
-
-			/// <summary>
-			/// Property to return the array this buffer represents.
-			/// </summary>
-			/// <remarks>For 3D images, this will always be 0.</remarks>
-			public int ArrayIndex
-			{
-				get;
-				private set;
-			}
-
-			/// <summary>
-			/// Property to return the depth slice index.
-			/// </summary>
-			/// <remarks>For 1D or 2D images, this will always be 0.</remarks>
-			public int SliceIndex
-			{
-				get;
-				private set;
-			}
-
-			/// <summary>
-			/// Property to return the data stream for the image data.
-			/// </summary>
-			public GorgonDataStream Data
-			{
-				get;
-				private set;
-			}
-
-			/// <summary>
-			/// Property to return information about the pitch of the data for this buffer.
-			/// </summary>
-			public GorgonFormatPitch PitchInformation
-			{
-				get;
-				private set;
-			}
-			#endregion
-
-			#region Constructor/Destructor.
-			/// <summary>
-			/// Initializes a new instance of the <see cref="ImageBuffer" /> class.
-			/// </summary>
-			/// <param name="dataStart">The data start.</param>
-			/// <param name="pitchInfo">The pitch info.</param>
-			/// <param name="mipLevel">Mip map level.</param>
-			/// <param name="arrayIndex">Array index.</param>
-			/// <param name="sliceIndex">Slice index.</param>
-			/// <param name="width">The width for the buffer.</param>
-			/// <param name="height">The height for the buffer.</param>
-			/// <param name="depth">The depth for the buffer.</param>
-			/// <param name="format">Format of the buffer.</param>
-			internal ImageBuffer(void *dataStart, GorgonFormatPitch pitchInfo, int mipLevel, int arrayIndex, int sliceIndex, int width, int height, int depth, BufferFormat format)
-			{
-				Data = new GorgonDataStream(dataStart, pitchInfo.SlicePitch);
-				PitchInformation = pitchInfo;
-				MipLevel = mipLevel;
-				ArrayIndex = arrayIndex;
-				SliceIndex = sliceIndex;
-				Width = width;
-				Height = height;
-				Depth = depth;
-				Format = format;
-			}
-			#endregion
-		}
-		#endregion
-
 		#region Variables.
 		private DX.DataBox[] _dataBoxes;						// Data boxes for textures.
 		private bool _disposed;									// Flag to indicate whether the object was disposed.
         private GorgonDataStream _imageData;					// Base image data buffer.
-		private ImageBuffer[] _buffers;							// Buffers for access to the arrays, slices and mip maps.
+		private GorgonImageBuffer[] _buffers;					// Buffers for access to the arrays, slices and mip maps.
 		private Tuple<int, int>[] _mipOffsetSize;				// Offsets and sizes in the buffer list for mip maps.
         #endregion
 
@@ -263,7 +141,7 @@ namespace GorgonLibrary.Graphics
         /// <para>To get the depth slice count, use the <see cref="GorgonLibrary.Graphics.GorgonImageData.GetDepthCount">GetDepthCount</see> method.</para>
 		/// <para>The <paramref name="arrayIndexDepthSlice"/> parameter is used as an array index if the image is 1D or 2D.  If it is a 3D image, then the value indicates a depth slice.</para>
 		/// </remarks>
-		public ImageBuffer this[int mipLevel, int arrayIndexDepthSlice = 0]
+		public GorgonImageBuffer this[int mipLevel, int arrayIndexDepthSlice = 0]
 		{
 			get
 			{
@@ -307,10 +185,10 @@ namespace GorgonLibrary.Graphics
             }
 
 			// Create buffers.
-			_buffers = new ImageBuffer[GetDepthSliceCount(Settings.Depth, Settings.MipCount) * Settings.ArrayCount];	// Allocate enough room for the array and mip levels.
-			_mipOffsetSize = new Tuple<int, int>[Settings.MipCount * Settings.ArrayCount];								// Offsets for the mip maps.
-			_dataBoxes = new DX.DataBox[Settings.ArrayCount * Settings.MipCount];										// Create the data boxes for textures.
-			var imageData = (byte*)_imageData.UnsafePointer;															// Start at the beginning of our data block.
+			_buffers = new GorgonImageBuffer[GetDepthSliceCount(Settings.Depth, Settings.MipCount) * Settings.ArrayCount];	// Allocate enough room for the array and mip levels.
+			_mipOffsetSize = new Tuple<int, int>[Settings.MipCount * Settings.ArrayCount];								    // Offsets for the mip maps.
+			_dataBoxes = new DX.DataBox[Settings.ArrayCount * Settings.MipCount];										    // Create the data boxes for textures.
+			var imageData = (byte*)_imageData.UnsafePointer;															    // Start at the beginning of our data block.
 			
 			// Enumerate array indices. (For 1D and 2D only, 3D will always be 1)
 			for (int array = 0; array < Settings.ArrayCount; array++)
@@ -335,7 +213,7 @@ namespace GorgonLibrary.Graphics
 					for (int depth = 0; depth < mipDepth; depth++)
 					{
 						// Get mip information.						
-						_buffers[bufferIndex] = new ImageBuffer(imageData, pitchInformation, mip, array, depth, mipWidth, mipHeight, mipDepth, Settings.Format);
+						_buffers[bufferIndex] = new GorgonImageBuffer(imageData, pitchInformation, mip, array, depth, mipWidth, mipHeight, mipDepth, Settings.Format);
 
 						imageData += pitchInformation.SlicePitch;
 						bufferIndex++;
@@ -377,13 +255,13 @@ namespace GorgonLibrary.Graphics
 		    // Ensure mip values do not exceed more than what's available based on width, height and/or depth.
 			if (Settings.MipCount > 1)
 			{
-				Settings.MipCount = Settings.MipCount.Min(GorgonImageData.GetMaxMipCount(Settings));
+				Settings.MipCount = Settings.MipCount.Min(GetMaxMipCount(Settings));
 			}
 
 			// Create mip levels if we didn't specify any.
 			if (Settings.MipCount == 0)
 			{
-				Settings.MipCount = GorgonImageData.GetMaxMipCount(Settings);
+				Settings.MipCount = GetMaxMipCount(Settings);
 			}
 
 			// If we're an image cube, and we don't have an array count that's a multiple of 6, then up size until we do.
@@ -467,21 +345,6 @@ namespace GorgonLibrary.Graphics
 				throw new ArgumentNullException("texture");
 			}
 
-			if (texture.Settings.Format != Settings.Format)
-			{
-				throw new ArgumentException("The texture format [" + texture.Settings.Format.ToString() + "] must match the image data format [" + Settings.Format.ToString() + "].", "texture");
-			}
-
-			if (texture.Settings.ImageType != Settings.ImageType)
-			{
-				throw new ArgumentException("The texture is not a '" + texture.Settings.ImageType.ToString() + "'.", "texture");
-			}
-
-			if (texture.Settings.Usage == BufferUsage.Immutable)
-			{
-				throw new ArgumentException("The texture is immutable.", "texture");
-			}
-
 			int arrayCount = texture.Settings.ArrayCount.Min(Settings.ArrayCount);
 			int mipCount = texture.Settings.MipCount.Min(Settings.MipCount);
 
@@ -516,27 +379,29 @@ namespace GorgonLibrary.Graphics
 		public void CopyToTexture(GorgonTexture texture, int arrayIndex, int mipLevel)
 		{
 			int depth = 1;
-			int height = 1;
 
-			if (texture == null)
+		    if (texture == null)
 			{
 				throw new ArgumentNullException("texture");
 			}
 
-			if (texture.Settings.Format != Settings.Format)
-			{
-				throw new ArgumentException("The texture format [" + texture.Settings.Format.ToString() + "] must match the image data format [" + Settings.Format.ToString() + "].", "texture");
-			}
+            if (texture.Settings.Format != Settings.Format)
+            {
+                throw new ArgumentException(
+                    string.Format(Resources.GORGFX_IMAGE_FORMAT_MISMATCH, texture.Settings.Format, Settings.Format),
+                    "texture");
+            }
 
-			if (texture.Settings.ImageType != Settings.ImageType)
-			{
-				throw new ArgumentException("The texture is not a '" + texture.Settings.ImageType.ToString() + "'.", "texture");
-			}
+            if (texture.Settings.ImageType != Settings.ImageType)
+            {
+                throw new ArgumentException(string.Format(Resources.GORGFX_IMAGE_TYPE_INVALID, texture.Settings.ImageType),
+                    "texture");
+            }
 
-			if (texture.Settings.Usage == BufferUsage.Immutable)
-			{
-				throw new ArgumentException("The texture is immutable.", "texture");
-			}			
+            if (texture.Settings.Usage == BufferUsage.Immutable)
+            {
+                throw new ArgumentException(Resources.GORGFX_TEXTURE_IMMUTABLE, "texture");
+            }
 
 			int arrayCount = Settings.ArrayCount.Min(texture.Settings.ArrayCount);
 			int mipCount = Settings.MipCount.Min(texture.Settings.MipCount);
@@ -554,8 +419,8 @@ namespace GorgonLibrary.Graphics
 
 			// Get the buffer to copy.
 			var buffer = this[mipLevel, arrayIndex];
-			ISubResourceData textureData = null;
-			int resourceIndex = 0;			
+			ISubResourceData textureData;
+			int resourceIndex;			
 
 			switch (texture.Settings.ImageType)
 			{
@@ -578,7 +443,7 @@ namespace GorgonLibrary.Graphics
 					throw new ArgumentException(string.Format(Resources.GORGFX_IMAGE_TYPE_INVALID, texture.Settings.ImageType));
 			}
 
-			height = texture.Settings.Height.Min(Settings.Height);
+			int height = texture.Settings.Height.Min(Settings.Height);
 
 			// Calculate depth for the texture.
 			for (int mip = 1; mip <= mipLevel; mip++)
@@ -2117,10 +1982,11 @@ namespace GorgonLibrary.Graphics
 		/// Returns an enumerator that iterates through a collection.
 		/// </summary>
 		/// <returns>
-		/// An <see cref="T:System.Collections.Generic.IEnumerator{T}" /> object that can be used to iterate through the collection.
+		/// An <see cref="System.Collections.Generic.IEnumerator{T}" /> object that can be used to iterate through the collection.
 		/// </returns>
-		public IEnumerator<GorgonImageData.ImageBuffer> GetEnumerator()
+		public IEnumerator<GorgonImageBuffer> GetEnumerator()
 		{
+		    // ReSharper disable once LoopCanBeConvertedToQuery
 			foreach (var item in _buffers)
 			{
 				yield return item;

@@ -405,7 +405,7 @@ namespace GorgonLibrary.IO
         internal IImageSettings ReadMetaData(GorgonWICImage wic, SharpDX.WIC.BitmapDecoder decoder, SharpDX.WIC.BitmapFrameDecode frame, out Guid bestFormatMatch)
         {
 	        return new GorgonTexture2DSettings
-	            {
+	        {
                 Width = frame.Size.Width,
                 Height = frame.Size.Height,
                 MipCount = 1,
