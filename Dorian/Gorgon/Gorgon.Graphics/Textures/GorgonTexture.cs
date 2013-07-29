@@ -27,6 +27,7 @@
 using System;
 using System.Drawing;
 using System.IO;
+using GorgonLibrary.Math;
 using GorgonLibrary.Diagnostics;
 using GorgonLibrary.Graphics.Properties;
 using GorgonLibrary.IO;
@@ -877,25 +878,41 @@ namespace GorgonLibrary.Graphics
 					string.Format(Resources.GORGFX_TEXTURE_NOT_SAME_TYPE, texture.Name, texture.ResourceType, ResourceType), "texture");
 			}
 
-#error I left off here.
 			if (Settings.Usage == BufferUsage.Immutable)
 			{
 				throw new InvalidOperationException(Resources.GORGFX_TEXTURE_IMMUTABLE);
 			}
 
-			if ((Settings.Multisampling.Count != texture.Settings.Multisampling.Count) || (Settings.Multisampling.Quality != texture.Settings.Multisampling.Quality))
-				throw new InvalidOperationException("Cannot copy textures with different multisampling parameters.");
+		    if ((Settings.Multisampling.Count != texture.Settings.Multisampling.Count)
+		        || (Settings.Multisampling.Quality != texture.Settings.Multisampling.Quality))
+		    {
+		        throw new InvalidOperationException(Resources.GORGFX_TEXTURE_MULTISAMPLE_PARAMS_MISMATCH);
+		    }
 
 			// If the format is different, then check to see if the format group is the same.
-			if ((texture.Settings.Format != Settings.Format) && ((texture.FormatInformation.Group != FormatInformation.Group) || (Graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM2_a_b) || (Graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM4)))
-				throw new ArgumentException("Cannot copy because these formats: '" + texture.Settings.Format.ToString() + "' and '" + Settings.Format.ToString() + "', cannot be converted.", "texture");
+		    if ((texture.Settings.Format != Settings.Format)
+		        && ((texture.FormatInformation.Group != FormatInformation.Group)
+		            || (Graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM2_a_b)
+		            || (Graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM4)))
+		    {
+		        throw new ArgumentException(
+		            string.Format(Resources.GORGFX_TEXTURE_COPY_CANNOT_CONVERT, texture.Settings.Format, Settings.Format),
+		            "texture");
+		    }
 
-			if ((texture.Settings.Width != Settings.Width) || (texture.Settings.Height != Settings.Height))
-				throw new ArgumentException("The texture sizes do not match.", "texture");
+		    if ((texture.Settings.Width != Settings.Width)
+		        || (texture.Settings.Height != Settings.Height))
+		    {
+		        throw new ArgumentException(Resources.GORGFX_TEXTURE_MUST_BE_SAME_SIZE, "texture");
+		    }
 
-			// Ensure that the SM2_a_b devices don't try and copy between CPU and GPU accessible memory.
-			if ((this is GorgonTexture3D) && (Graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM2_a_b) && (this.Settings.Usage == BufferUsage.Staging))
-				throw new InvalidOperationException("This 3D texture is CPU accessible and cannot be copied.");
+		    // Ensure that the SM2_a_b devices don't try and copy between CPU and GPU accessible memory.
+		    if ((this is GorgonTexture3D)
+		        && (Graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM2_a_b)
+		        && (Settings.Usage == BufferUsage.Staging))
+		    {
+                throw new InvalidOperationException(string.Format(Resources.GORGFX_REQUIRES_SM, DeviceFeatureLevel.SM4));
+		    }
 #endif
             if (deferred == null)
             {
@@ -923,11 +940,17 @@ namespace GorgonLibrary.Graphics
 		public void UpdateSubResource(ISubResourceData data, int subResource, GorgonGraphics deferred = null)
 		{
 #if DEBUG
-			if ((Settings.Usage == BufferUsage.Dynamic) || (Settings.Usage == BufferUsage.Immutable))
-				throw new InvalidOperationException("Cannot update a texture that is Dynamic or Immutable");
+		    if ((Settings.Usage == BufferUsage.Dynamic)
+		        || (Settings.Usage == BufferUsage.Immutable))
+		    {
+		        throw new InvalidOperationException(Resources.GORGFX_TEXTURE_IS_DYNAMIC_IMMUTABLE);
+		    }
 
-			if ((Settings.Multisampling.Count > 1) || (Settings.Multisampling.Quality > 0))
-				throw new InvalidOperationException("Cannot update a texture that is multisampled.");
+		    if ((Settings.Multisampling.Count > 1)
+		        || (Settings.Multisampling.Quality > 0))
+		    {
+		        throw new InvalidOperationException(Resources.GORGFX_TEXTURE_MULTISAMPLED);
+		    }
 #endif
             if (deferred == null)
             {
@@ -936,6 +959,100 @@ namespace GorgonLibrary.Graphics
 
 			OnUpdateSubResource(data, subResource, deferred);
 		}
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="buffer"></param>
+        /// <param name="destBox"></param>
+        /// <param name="destArrayIndex"></param>
+        /// <param name="destMipLevel"></param>
+        /// <param name="deferred"></param>
+	    public void UpdateSubResource(GorgonImageBuffer buffer,
+	        GorgonBox destBox,
+	        int? destArrayIndex = null,
+	        int? destMipLevel = null,
+            GorgonGraphics deferred = null)
+	    {
+#if DEBUG
+            if ((Settings.Usage == BufferUsage.Dynamic)
+                || (Settings.Usage == BufferUsage.Immutable))
+            {
+                throw new InvalidOperationException(Resources.GORGFX_TEXTURE_IS_DYNAMIC_IMMUTABLE);
+            }
+
+            if ((Settings.Multisampling.Count > 1)
+                || (Settings.Multisampling.Quality > 0))
+            {
+                throw new InvalidOperationException(Resources.GORGFX_TEXTURE_MULTISAMPLED);
+            }
+
+            if ((destArrayIndex != null)
+                && ((destArrayIndex < 0) || (destArrayIndex >= Settings.ArrayCount)))
+            {
+                throw new ArgumentOutOfRangeException("destArrayIndex",
+                    string.Format(Resources.GORGFX_INDEX_OUT_OF_RANGE, destArrayIndex, 0, Settings.ArrayCount));
+            }
+
+            if ((destMipLevel != null)
+                && ((destMipLevel < 0) || (destMipLevel >= Settings.MipCount)))
+            {
+                throw new ArgumentOutOfRangeException("destMipLevel",
+                    string.Format(Resources.GORGFX_INDEX_OUT_OF_RANGE, destMipLevel, 0, Settings.MipCount));
+            }
+#endif
+            // Ensure the box fits the source.
+            destBox = new GorgonBox
+            {
+                Front = destBox.Front.Max(0).Min(buffer.Depth - 1).Min(Settings.Depth - 1),
+                Left = destBox.Left.Max(0).Min(buffer.Width - 1).Min(Settings.Width - 1),
+                Top = destBox.Top.Max(0).Min(buffer.Height - 1).Min(Settings.Height - 1),
+                Depth = destBox.Depth.Max(1).Min(buffer.Depth).Min(Settings.Depth),
+                Width = destBox.Width.Max(1).Min(buffer.Width).Min(Settings.Width),
+                Height = destBox.Height.Max(1).Min(buffer.Height).Min(Settings.Height)
+            };
+
+            if (destArrayIndex == null)
+            {
+                destArrayIndex = buffer.ArrayIndex;
+            }
+
+            if (destMipLevel == null)
+            {
+                destMipLevel = buffer.MipLevel;
+            }
+
+            if (deferred == null)
+            {
+                deferred = Graphics;
+            }
+
+            var box = new DX.DataBox
+            {
+                DataPointer = buffer.Data.BasePointer,
+                RowPitch = buffer.PitchInformation.RowPitch,
+                SlicePitch = buffer.PitchInformation.SlicePitch
+            };
+
+            var region = destBox.Convert;
+
+            if (!deferred.IsDeferred)
+            {
+                deferred.Context.UpdateSubresource(box,
+                    D3DResource,
+                    D3D.Resource.CalculateSubResourceIndex(destMipLevel.Value, destArrayIndex.Value, Settings.MipCount),
+                    region);
+            }
+            else
+            {
+                deferred.Context.UpdateSubresourceSafe(box,
+                    D3DResource,
+                    FormatInformation.SizeInBytes,
+                    D3D.Resource.CalculateSubResourceIndex(destMipLevel.Value, destArrayIndex.Value, Settings.MipCount),
+                    region,
+                    FormatInformation.IsCompressed);
+            }
+	    }
 
 		/// <summary>
 		/// Function to copy data from the CPU to a texture.
@@ -956,35 +1073,7 @@ namespace GorgonLibrary.Graphics
 			UpdateSubResource(data, 0, deferred);
 		}
 
-		/// <summary>
-		/// Function to lock the texture for reading/writing.
-		/// </summary>
-		/// <param name="lockFlags">Flags used to lock.</param>
-		/// <param name="deferred">[Optional] The deferred context used to lock the texture.</param>
-		/// <remarks>When locking a texture, the entire texture sub resource is locked and returned.  There is no setting to return a portion of the texture subresource.
-		/// <para>This overload locks the first sub resource (index 0) only.</para>
-		/// <para>This method is only available to textures created with a staging or dynamic usage setting.  Otherwise an exception will be raised.</para>
-		/// <para>The NoOverwrite flag is not valid with texture locking and will be ignored.</para>
-		/// <para>If the texture is not a staging texture and Read is specified, then an exception will be raised.</para>
-		/// <para>Discard is only applied to dynamic textures.  If the texture is not dynamic, then an exception will be raised.</para>
-        /// <para>If the <paramref name="deferred"/> parameter is NULL (Nothing in VB.Net), then the immediate context is used.  Use a deferred context to allow multiple threads to lock the 
-        /// texture at the same time.</para>
-        /// </remarks>
-		/// <returns>The locked data stream and information about the lock.</returns>
-		/// <exception cref="System.ArgumentException">Thrown when the texture is not a dynamic or staging texture.
-		/// <para>-or-</para>
-		/// <para>Thrown when the texture is not a staging texture and the Read flag has been specified.</para>
-		/// <para>-or-</para>
-		/// <para>Thrown when the texture is not a dynamic texture and the discard flag has been specified.</para>
-		/// </exception>
-		/// <exception cref="System.InvalidOperationException">Thrown when the texture sub resource is already locked.</exception>
-		public T Lock<T>(BufferLockFlags lockFlags, GorgonGraphics deferred = null)
-			where T : ISubResourceData
-		{
-			return Lock<T>(0, lockFlags, deferred);
-		}
-
-		/// <summary>
+        /// <summary>
 		/// Function to lock a CPU accessible texture sub resource for reading/writing.
 		/// </summary>
 		/// <param name="subResource">Sub resource to lock.</param>
@@ -1007,12 +1096,23 @@ namespace GorgonLibrary.Graphics
 		/// <para>Thrown when the texture is not a dynamic texture and the discard flag has been specified.</para>
 		/// </exception>
 		/// <typeparam name="T">The type of locking data.  This must be one of <see cref="GorgonLibrary.Graphics.GorgonTexture1DData">GorgonTexture1DData</see>, <see cref="GorgonLibrary.Graphics.GorgonTexture2DData">GorgonTexture2DData</see> or <see cref="GorgonLibrary.Graphics.GorgonTexture3DData">GorgonTexture3DData</see></typeparam>
-		public T Lock<T>(int subResource, BufferLockFlags lockFlags, GorgonGraphics deferred = null)
-			where T : ISubResourceData
+		public unsafe GorgonImageBuffer Lock(BufferLockFlags lockFlags, int arrayIndex = 0, int mipLevel = 0, GorgonGraphics deferred = null)
 		{
 			DX.DataStream lockStream;
 
 #if DEBUG
+		    if ((arrayIndex < 0) || (arrayIndex >= Settings.ArrayCount))
+		    {
+		        throw new ArgumentOutOfRangeException("arrayIndex",
+		            string.Format(Resources.GORGFX_INDEX_OUT_OF_RANGE, arrayIndex, 0, Settings.ArrayCount));
+		    }
+
+		    if ((mipLevel < 0) || (mipLevel >= Settings.MipCount))
+		    {
+		        throw new ArgumentOutOfRangeException("mipLevel",
+		            string.Format(Resources.GORGFX_INDEX_OUT_OF_RANGE, mipLevel, 0, Settings.MipCount));
+		    }
+
 			if ((Settings.Usage != BufferUsage.Staging) && (Settings.Usage != BufferUsage.Dynamic))
 			{
 				throw new GorgonException(GorgonResult.AccessDenied, string.Format(Resources.GORGFX_BUFFER_USAGE_CANT_LOCK, Settings.Usage));
@@ -1045,19 +1145,39 @@ namespace GorgonLibrary.Graphics
                 deferred = Graphics;
             }
 
+		    int subResource = D3D.Resource.CalculateSubResourceIndex(mipLevel, arrayIndex, Settings.MipCount);
 			DX.DataBox box = deferred.Context.MapSubresource(D3DResource, subResource, GetMapMode(lockFlags), D3D.MapFlags.None, out lockStream);
-			ISubResourceData data = OnGetLockSubResourceData(new GorgonDataStream(lockStream.DataPointer, (int)lockStream.Length), box.RowPitch, box.SlicePitch, deferred); 
+		    var pitch = new GorgonFormatPitch(box.RowPitch, box.SlicePitch);
 
-			return (T)data;
-		}
+		    int width = Settings.Width;
+		    int height = Settings.Height;
+		    int depth = Settings.Depth;
 
-		/// <summary>
-		/// Function to unlock a locked texture.
-		/// </summary>
-		/// <param name="deferred">[Optional] The deferred context used to lock the texture.</param>
-		public void Unlock(GorgonGraphics deferred = null)
-		{
-			Unlock(0, deferred);
+		    for (int mip = 0; mip < mipLevel; ++mip)
+		    {
+		        if (width > 1)
+		        {
+		            width >>= 1;
+		        }
+		        if (height > 1)
+		        {
+		            height >>= 1;
+		        }
+		        if (depth > 1)
+		        {
+		            depth >>= 1;
+		        }
+		    }
+
+		    return new GorgonImageBuffer(box.DataPointer.ToPointer(),
+		        pitch,
+		        mipLevel,
+		        arrayIndex,
+		        0,
+		        width,
+		        height,
+		        depth,
+		        Settings.Format);
 		}
 
 		/// <summary>
@@ -1067,9 +1187,9 @@ namespace GorgonLibrary.Graphics
 		/// <param name="deferred">[Optional] The deferred graphics context to use when unlocking the texture.</param>
 		/// <remarks>If the <paramref name="deferred"/> parameter is NULL (Nothing in VB.Net), then the immediate context is used.  Ensure that the 
 		/// correct context is used when unlocking a resource or an exception will be thrown.</remarks>
-		public void Unlock(int subResource, GorgonGraphics deferred = null)
+		public void Unlock(int arrayIndex = 0, int mipLevel = 0, GorgonGraphics deferred = null)
 		{
-			Graphics.Context.UnmapSubresource(D3DResource, subResource);
+			Graphics.Context.UnmapSubresource(D3DResource, D3D.Resource.CalculateSubResourceIndex(mipLevel, arrayIndex, Settings.MipCount));
 		}
 
 		/// <summary>

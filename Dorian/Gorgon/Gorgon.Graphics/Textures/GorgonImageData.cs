@@ -52,6 +52,8 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.IO;
+using System.Linq;
 using DX = SharpDX;
 using GorgonLibrary.Diagnostics;
 using GorgonLibrary.IO;
@@ -419,31 +421,8 @@ namespace GorgonLibrary.Graphics
 
 			// Get the buffer to copy.
 			var buffer = this[mipLevel, arrayIndex];
-			ISubResourceData textureData;
-			int resourceIndex;			
 
-			switch (texture.Settings.ImageType)
-			{
-				case ImageType.Image1D:
-					resourceIndex = GorgonTexture1D.GetSubResourceIndex(mipLevel, arrayIndex, mipCount, arrayCount);
-					textureData = new GorgonTexture1DData(buffer.Data);
-					break;
-				case ImageType.Image2D:
-				case ImageType.ImageCube:
-					resourceIndex = GorgonTexture2D.GetSubResourceIndex(mipLevel, arrayIndex, mipCount, arrayCount);
-					textureData = new GorgonTexture2DData(buffer.Data, buffer.PitchInformation.RowPitch);
-					break;
-				case ImageType.Image3D:
-					resourceIndex = GorgonTexture3D.GetSubResourceIndex(mipLevel, mipCount);
-					textureData = new GorgonTexture3DData(buffer.Data, buffer.PitchInformation.RowPitch, buffer.PitchInformation.SlicePitch);					
-
-					depth = texture.Settings.Depth;
-					break;
-				default:
-					throw new ArgumentException(string.Format(Resources.GORGFX_IMAGE_TYPE_INVALID, texture.Settings.ImageType));
-			}
-
-			int height = texture.Settings.Height.Min(Settings.Height);
+		    int height = texture.Settings.Height.Min(Settings.Height);
 
 			// Calculate depth for the texture.
 			for (int mip = 1; mip <= mipLevel; mip++)
@@ -462,64 +441,59 @@ namespace GorgonLibrary.Graphics
 			// Copy manually.
 			if (texture.Settings.Usage != BufferUsage.Default)
 			{
-				textureData = texture.Lock<ISubResourceData>(resourceIndex, BufferLockFlags.Write);
+			    GorgonImageBuffer textureData = texture.Lock(BufferLockFlags.Write, arrayIndex, mipLevel);
 
-				try
+			    try
 				{
-					if ((textureData.RowPitch == buffer.PitchInformation.RowPitch) && (textureData.SlicePitch == buffer.PitchInformation.SlicePitch) && (depth == buffer.Depth))
-					{
-						DirectAccess.MemoryCopy(textureData.Data.UnsafePointer, buffer.Data.UnsafePointer, buffer.PitchInformation.SlicePitch * buffer.Depth);
-					}
-					else
-					{
-						int clipRowPitch = textureData.RowPitch.Min(buffer.PitchInformation.RowPitch);
-						var destDepthPtr = (byte*)textureData.Data.UnsafePointer;
-						var srcPtr = (byte*)textureData.Data.UnsafePointer;
+				    if ((textureData.PitchInformation.RowPitch == buffer.PitchInformation.RowPitch)
+				        && (textureData.PitchInformation.SlicePitch == buffer.PitchInformation.SlicePitch)
+				        && (depth == buffer.Depth))
+				    {
+				        DirectAccess.MemoryCopy(textureData.Data.UnsafePointer,
+				            buffer.Data.UnsafePointer,
+				            buffer.PitchInformation.SlicePitch * buffer.Depth);
+				    }
+				    else
+				    {
+				        int clipRowPitch = textureData.PitchInformation.RowPitch.Min(buffer.PitchInformation.RowPitch);
+				        var destDepthPtr = (byte*)textureData.Data.UnsafePointer;
+				        var srcPtr = (byte*)textureData.Data.UnsafePointer;
 
-						// Copy all depth information.
-						for (int i = 0; i < depth; i++)
-						{
-							var destPtr = destDepthPtr;
+				        // Copy all depth information.
+				        for (int i = 0; i < depth; i++)
+				        {
+				            var destPtr = destDepthPtr;
 
-							for (int y = 0; y < height; y++)
-							{
-								DirectAccess.MemoryCopy(destPtr, srcPtr, clipRowPitch);
-								destPtr += textureData.RowPitch;
-								srcPtr += buffer.PitchInformation.RowPitch;
-							}
+				            for (int y = 0; y < height; y++)
+				            {
+				                DirectAccess.MemoryCopy(destPtr, srcPtr, clipRowPitch);
+				                destPtr += textureData.PitchInformation.RowPitch;
+				                srcPtr += buffer.PitchInformation.RowPitch;
+				            }
 
-							destDepthPtr += textureData.SlicePitch;
-						}
-					}
+				            destDepthPtr += textureData.PitchInformation.SlicePitch;
+				        }
+				    }
 				}
 				finally
 				{
-					texture.Unlock();
+					texture.Unlock(arrayIndex, mipLevel);
 				}
 			}
 			else
 			{
-				switch (texture.Settings.ImageType)
-				{
-					case ImageType.Image1D:
-						((GorgonTexture1D)texture).UpdateSubResource(textureData, resourceIndex, new GorgonRange(0, texture.Settings.Width.Min(Settings.Width)));
-						break;
-					case ImageType.Image2D:
-					case ImageType.ImageCube:
-						var destArea = new Rectangle(0, 0, texture.Settings.Width.Min(Settings.Width), height);
-						((GorgonTexture2D)texture).UpdateSubResource(textureData, resourceIndex, destArea);
-						break;
-					case ImageType.Image3D:
-						var destBox = new GorgonBox();
-						destBox.X = destBox.Y = destBox.Z = 0;
-						destBox.Width = texture.Settings.Width.Min(Settings.Width);
-						destBox.Height = height;
-						destBox.Depth = depth;
-						((GorgonTexture3D)texture).UpdateSubResource(textureData, resourceIndex, destBox);
-						break;
-					default:
-						throw new ArgumentException(string.Format(Resources.GORGFX_IMAGE_TYPE_INVALID, texture.Settings.ImageType));
-				}
+			    texture.UpdateSubResource(buffer,
+			        new GorgonBox
+			        {
+			            Front = 0,
+			            Depth = buffer.Depth,
+			            Left = 0,
+			            Width = buffer.Width,
+			            Top = 0,
+			            Height = buffer.Height
+			        },
+			        arrayIndex,
+			        mipLevel);
 			}				
 		}
 
@@ -751,33 +725,14 @@ namespace GorgonLibrary.Graphics
         private static void GetTextureData(GorgonTexture stagingTexture, void *buffer, int arrayIndex, int mipLevel, int rowStride, int height, int depthCount)
         {
             int sliceStride = rowStride * height;
-            int resourceIndex = 0;
-            
-            // Get the resource index from the texture.
-            switch (stagingTexture.Settings.ImageType)
-            {
-                case ImageType.Image1D:
-                    resourceIndex = GorgonTexture1D.GetSubResourceIndex(mipLevel, arrayIndex, stagingTexture.Settings.MipCount, stagingTexture.Settings.ArrayCount);
-                    break;
-                case ImageType.Image2D:
-				case ImageType.ImageCube:					
-                    resourceIndex = GorgonTexture2D.GetSubResourceIndex(mipLevel, arrayIndex, stagingTexture.Settings.MipCount, stagingTexture.Settings.ArrayCount);
-                    break;
-                case ImageType.Image3D:
-                    resourceIndex = GorgonTexture3D.GetSubResourceIndex(mipLevel, stagingTexture.Settings.MipCount);   
-                    sliceStride = (height * rowStride) * depthCount;        // Calculate how big the buffer should be with depth.
-                    break;
-				default:
-					throw new ArgumentException(string.Format(Resources.GORGFX_IMAGE_TYPE_INVALID, stagingTexture.Settings.ImageType));
-            }
 
             // Copy the texture data into the buffer.
             try
             {                
-                var textureLock = stagingTexture.Lock<ISubResourceData>(resourceIndex, BufferLockFlags.Read);
+                var textureLock = stagingTexture.Lock(BufferLockFlags.Read, arrayIndex, mipLevel);
 
                 // If the strides don't match, then the texture is using padding, so copy one scanline at a time for each depth index.
-                if ((textureLock.RowPitch != rowStride) || (textureLock.SlicePitch != sliceStride))
+                if ((textureLock.PitchInformation.RowPitch != rowStride) || (textureLock.PitchInformation.SlicePitch != sliceStride))
                 {
                     var destData = (byte*)buffer;
                     var sourceData = (byte*)textureLock.Data.UnsafePointer;
@@ -790,11 +745,11 @@ namespace GorgonLibrary.Graphics
                         for (int row = 0; row < height; row++)
                         {
                             DirectAccess.MemoryCopy(destData, sourceStart, rowStride);
-                            sourceStart += textureLock.RowPitch;
+                            sourceStart += textureLock.PitchInformation.RowPitch;
                             destData += rowStride;
                         }
 
-                        sourceData += textureLock.SlicePitch;
+                        sourceData += textureLock.PitchInformation.SlicePitch;
                     }
                 }
                 else
@@ -805,7 +760,7 @@ namespace GorgonLibrary.Graphics
             }
             finally
             {
-                stagingTexture.Unlock(resourceIndex);
+                stagingTexture.Unlock(arrayIndex, mipLevel);
             }
         }
 
@@ -823,7 +778,6 @@ namespace GorgonLibrary.Graphics
         /// convert a texture with a usage of Immutable is made, then an exception will be thrown.</remarks>
         public static GorgonImageData CreateFromTexture(GorgonTexture texture, int mipLevel, int arrayIndex = 0)
         {
-            GorgonImageData result = null;
             GorgonTexture staging = texture;
 
             if (texture == null)
@@ -833,7 +787,7 @@ namespace GorgonLibrary.Graphics
 
             if (texture.Settings.Usage == BufferUsage.Immutable)
             {
-                throw new ArgumentException("The texture is immutable and cannot be read.", "texture");
+                throw new ArgumentException(Resources.GORGFX_TEXTURE_IMMUTABLE, "texture");
             }
 
             // If the texture is a volume texture, then set the array index to 0.
@@ -849,12 +803,14 @@ namespace GorgonLibrary.Graphics
 
             if (arrayIndex >= texture.Settings.ArrayCount)
             {
-                throw new ArgumentOutOfRangeException("arrayIndex", "The array index is larger than or equal to " + texture.Settings.ArrayCount.ToString());
+                throw new ArgumentOutOfRangeException("arrayIndex",
+                    string.Format(Resources.GORGFX_INDEX_OUT_OF_RANGE, arrayIndex, 0, texture.Settings.ArrayCount));
             }
 
             if (mipLevel >= texture.Settings.MipCount)
             {
-                throw new ArgumentOutOfRangeException("mipLevel", "The mip map level is larger than or equal to " + texture.Settings.ArrayCount.ToString());
+                throw new ArgumentOutOfRangeException("mipLevel",
+                    string.Format(Resources.GORGFX_INDEX_OUT_OF_RANGE, mipLevel, 0, texture.Settings.MipCount));
             }
 
             if (texture.Settings.Usage != BufferUsage.Staging)
@@ -865,7 +821,7 @@ namespace GorgonLibrary.Graphics
             try
             {
                 // Build our structure.
-                result = new GorgonImageData(texture.Settings);
+                var result = new GorgonImageData(texture.Settings);
 
                 // Get the buffer for the array and mip level.
                 var buffer = result[mipLevel, arrayIndex];
@@ -881,7 +837,6 @@ namespace GorgonLibrary.Graphics
                 {
                     staging.Dispose();
                 }
-                staging = null;
             }            
         }
 
@@ -896,7 +851,6 @@ namespace GorgonLibrary.Graphics
         /// convert a texture with a usage of Immutable is made, then an exception will be thrown.</remarks>
         public static GorgonImageData CreateFromTexture(GorgonTexture texture)
         {
-            GorgonImageData result = null;
             GorgonTexture staging = texture;
 
             if (texture == null)
@@ -906,7 +860,7 @@ namespace GorgonLibrary.Graphics
 
             if (texture.Settings.Usage == BufferUsage.Immutable)
             {
-                throw new ArgumentException("The texture is immutable and cannot be read.", "texture");
+                throw new ArgumentException(Resources.GORGFX_TEXTURE_IMMUTABLE, "texture");
             }
 
             if (texture.Settings.Usage != BufferUsage.Staging)
@@ -917,7 +871,7 @@ namespace GorgonLibrary.Graphics
             try
             {
                 // Build our structure.
-                result = new GorgonImageData(texture.Settings);
+                var result = new GorgonImageData(texture.Settings);
 
                 for (int array = 0; array < texture.Settings.ArrayCount; array++)
                 {    
@@ -939,7 +893,6 @@ namespace GorgonLibrary.Graphics
                 {
                     staging.Dispose();
                 }
-                staging = null;
             }
         }
 
@@ -997,7 +950,8 @@ namespace GorgonLibrary.Graphics
 		{
 			if (format == BufferFormat.Unknown)
 			{
-				throw new GorgonException(GorgonResult.FormatNotSupported, "The buffer type 'Unknown' is not a valid format.");
+			    throw new GorgonException(GorgonResult.FormatNotSupported,
+			        string.Format(Resources.GORGFX_FORMAT_NOT_SUPPORTED, BufferFormat.Unknown));
 			}
 
 			width = 1.Max(width);
@@ -1009,7 +963,8 @@ namespace GorgonLibrary.Graphics
 
 			if (formatInfo.SizeInBytes == 0)
 			{
-				throw new GorgonException(GorgonResult.FormatNotSupported, "'" + format.ToString() + "' is not a supported format.");
+			    throw new GorgonException(GorgonResult.FormatNotSupported,
+			        string.Format(Resources.GORGFX_FORMAT_NOT_SUPPORTED, format));
 			}
 
 			int mipWidth = width;
@@ -1147,7 +1102,12 @@ namespace GorgonLibrary.Graphics
 		/// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="mipLevel"/> parameter exceeds the number of mip maps for the image or is less than 0.</exception>
 		public int GetDepthCount(int mipLevel)
 		{
-			GorgonDebug.AssertParamRange(mipLevel, 0, Settings.MipCount, "mipLevel");
+		    if ((mipLevel < 0)
+		        || (mipLevel >= Settings.MipCount))
+		    {
+		        throw new ArgumentOutOfRangeException("mipLevel",
+		            string.Format(Resources.GORGFX_INDEX_OUT_OF_RANGE, mipLevel, 0, Settings.MipCount));
+		    }
 
 			return Settings.Depth <= 1 ? 1 : _mipOffsetSize[mipLevel].Item2;
 		}
@@ -1200,10 +1160,10 @@ namespace GorgonLibrary.Graphics
 
 			if (string.IsNullOrWhiteSpace(filePath))
 			{
-				throw new ArgumentException("The parameter must not be empty.", "filePath");
+				throw new ArgumentException(Resources.GORGFX_PARAMETER_MUST_NOT_BE_EMPTY, "filePath");
 			}
 
-			using (System.IO.FileStream file = System.IO.File.Open(filePath, System.IO.FileMode.Create, System.IO.FileAccess.Write, System.IO.FileShare.None))
+			using (FileStream file = File.Open(filePath, FileMode.Create, FileAccess.Write, FileShare.None))
 			{
 				Save(file, codec);
 			}
@@ -1247,7 +1207,7 @@ namespace GorgonLibrary.Graphics
 		/// <para>The items with (WIC) indicate that the codec support is supplied by the Windows Imaging Component.  This component should be installed on most systems, but if it is not 
 		/// then it is required in order to read/save the files in those formats.</para>
 		/// </remarks>
-		public void Save(System.IO.Stream stream, GorgonImageCodec codec)
+		public void Save(Stream stream, GorgonImageCodec codec)
 		{
 			if (stream == null)
 			{
@@ -1261,7 +1221,7 @@ namespace GorgonLibrary.Graphics
 
 			if (!stream.CanWrite)
 			{
-				throw new System.IO.IOException("The stream is read-only.");
+				throw new IOException(Resources.GORGFX_STREAM_READ_ONLY);
 			}
 
 			codec.SaveToStream(this, stream);
@@ -1307,7 +1267,7 @@ namespace GorgonLibrary.Graphics
 		/// </remarks>
 		public byte[] Save(GorgonImageCodec codec)
 		{
-			using (var memoryStream = new System.IO.MemoryStream())
+			using (var memoryStream = new MemoryStream())
 			{
 				Save(memoryStream, codec);
 				memoryStream.Position = 0;
@@ -1342,7 +1302,7 @@ namespace GorgonLibrary.Graphics
 		/// data structure to another.</remarks>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="stream"/> parameter is NULL (Nothing in VB.Net).</exception>
 		/// <exception cref="System.IO.IOException">Thrown when the stream parameter is read only.</exception>
-		public void SaveRaw(System.IO.Stream stream)
+		public void SaveRaw(Stream stream)
 		{
 			if (stream == null)
 			{
@@ -1351,7 +1311,7 @@ namespace GorgonLibrary.Graphics
 
 			if (!stream.CanWrite)
 			{
-				throw new System.IO.IOException("The stream is read only.");
+				throw new IOException(Resources.GORGFX_STREAM_READ_ONLY);
 			}
 
 			using (var writer = new GorgonBinaryWriter(stream, true))
@@ -1383,9 +1343,9 @@ namespace GorgonLibrary.Graphics
 		/// </exception>
 		public static GorgonImageData FromFile(string filePath, GorgonImageCodec codec)
 		{
-			Gorgon.Log.Print("GorgonImageData : Loading image data from '{0}'...", Diagnostics.LoggingLevel.Verbose, filePath);
+			Gorgon.Log.Print("GorgonImageData : Loading image data from '{0}'...", LoggingLevel.Verbose, filePath);
 
-            using (var stream = System.IO.File.Open(filePath, System.IO.FileMode.Open, System.IO.FileAccess.Read, System.IO.FileShare.Read))
+            using (var stream = File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.Read))
             {
                 return FromStream(stream, (int)stream.Length, codec);
             }
@@ -1406,42 +1366,42 @@ namespace GorgonLibrary.Graphics
 		/// <para>-or-</para>
 		/// <para>The <paramref name="codec"/> parameter is NULL.</para>
 		/// </exception>
-        /// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="size"/> parameter is less than or equal to 0.</exception>
+        /// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="size"/> parameter is less than or equal to 0 or larger than the length of the <paramref name="stream"/>.</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the data in the stream cannot be read by the image codec.</exception>
 		/// <exception cref="System.IO.IOException">Thrown when the stream is write-only.
 		/// <para>-or-</para>
 		/// <para>The image file is corrupted or unable to be read by a codec.</para>
 		/// </exception>
 		/// <exception cref="System.IO.EndOfStreamException">Thrown if an attempt to read beyond the end of the stream is made.</exception>
-		public static GorgonImageData FromStream(System.IO.Stream stream, int size, GorgonImageCodec codec)
+		public static GorgonImageData FromStream(Stream stream, int size, GorgonImageCodec codec)
 		{
             GorgonDataStream memoryStream = null;
             GorgonImageData result = null;
 
-			if (codec == null)
+            if (stream == null)
+            {
+                throw new ArgumentNullException("stream");
+            }
+            
+            if (codec == null)
 			{
 				throw new ArgumentNullException("codec");
 			}
 
-            if (size <= 0)
+            if ((size <= 0) || (size > stream.Length))
             {
-                throw new ArgumentOutOfRangeException("The parameter must be greater than 0.", "size");
+                throw new ArgumentOutOfRangeException("size", string.Format(Resources.GORGFX_INDEX_OUT_OF_RANGE, size, 1, stream.Length));
             }
-
-			if (stream == null)
-			{
-				throw new ArgumentNullException("stream");
-			}
 
 			if (!stream.CanRead)
 			{
-				throw new System.IO.IOException("The stream is write-only.");
+			    throw new IOException(Resources.GORGFX_STREAM_WRITE_ONLY);
 			}
 
 			// Check to see if the decoder can actually read the data in the stream.
 			if (!codec.IsReadable(stream))
 			{
-				throw new System.IO.IOException("The data in the stream is not a valid " + codec.Codec + " file.");
+				throw new IOException(string.Format(Resources.GORGFX_IMAGE_FILE_INCORRECT_DECODER, codec.Codec));
 			}
 
             // Just apply directly if we're already using a data stream.
@@ -1470,12 +1430,10 @@ namespace GorgonLibrary.Graphics
 			}
 			catch
 			{
-				if (result == null)
+				if (result != null)
 				{
-					throw;
+                    result.Dispose();
 				}
-
-				result.Dispose();
 
 				throw;
 			}
@@ -1486,7 +1444,6 @@ namespace GorgonLibrary.Graphics
                 {
                     memoryStream.Dispose();
                 }
-                memoryStream = null;
             }
 
             return result;
@@ -1541,8 +1498,7 @@ namespace GorgonLibrary.Graphics
 		/// </remarks>
 		public int GenerateMipMaps(int mipCount, ImageFilter filter)
 		{
-			IImageSettings destSettings = null;
-			GorgonImageData destData = null;
+		    GorgonImageData destData = null;
 			GorgonImageData mipWorker = this;
 			int maxMips = GetMaxMipCount(Settings);
 
@@ -1557,7 +1513,7 @@ namespace GorgonLibrary.Graphics
 				// If we need more or less mip maps than we currently have, then we need to use an extra buffer.
 				if (mipCount != Settings.MipCount)
 				{
-					destSettings = Settings.Clone();
+					IImageSettings destSettings = Settings.Clone();
 					destSettings.MipCount = mipCount;
 
 					destData = new GorgonImageData(destSettings);
@@ -1580,7 +1536,7 @@ namespace GorgonLibrary.Graphics
 
 						if (format == Guid.Empty)
 						{
-							throw new GorgonException(GorgonResult.FormatNotSupported, "The format '" + Settings.Format.ToString() + "' cannot be converted to a mip map chain.");
+							throw new GorgonException(GorgonResult.FormatNotSupported, string.Format(Resources.GORGFX_FORMAT_NOT_SUPPORTED, Settings.Format));
 						}
 
 						// Begin scaling.
@@ -1628,9 +1584,8 @@ namespace GorgonLibrary.Graphics
 				{
 					destData.Dispose();
 				}
-				destData = null;
 
-				throw;
+			    throw;
 			}
 
 			return mipCount;
@@ -1678,12 +1633,12 @@ namespace GorgonLibrary.Graphics
 		{
 			if (width <= 0)
 			{
-				throw new ArgumentOutOfRangeException("width", "The width must be at least 1 pixel.");
+				throw new ArgumentOutOfRangeException("width");
 			}
 
 			if (height <= 0)
 			{
-				throw new ArgumentOutOfRangeException("height", "The height must be at least 1 pixel.");
+				throw new ArgumentOutOfRangeException("height");
 			}
 
 			// Well, that was easy...
@@ -1694,19 +1649,19 @@ namespace GorgonLibrary.Graphics
 
 			using (var wic = new GorgonWICImage())
 			{
-				IImageSettings destSettings = null;
-				GorgonImageData destData = null;
+			    GorgonImageData destData = null;
 				Guid sourceFormat = wic.GetGUID(Settings.Format);
 
 				if (sourceFormat == Guid.Empty)
 				{
-					throw new GorgonException(GorgonResult.FormatNotSupported, "The format '" + Settings.Format.ToString() + "' cannot be stretched.");
+				    throw new GorgonException(GorgonResult.FormatNotSupported,
+				        string.Format(Resources.GORGFX_FORMAT_NOT_SUPPORTED, Settings.Format));
 				}
 
 				try
 				{
 					// Create our destination buffer to hold the converted data.
-					destSettings = Settings.Clone();
+					IImageSettings destSettings = Settings.Clone();
 					destSettings.Width = width;
 
 					// Don't allow a 1D image to be stretched vertically.
@@ -1773,7 +1728,7 @@ namespace GorgonLibrary.Graphics
         {
             if (format == BufferFormat.Unknown)
             {
-                throw new ArgumentException("The parameter must be a known value.", "format");
+                throw new ArgumentException(string.Format(Resources.GORGFX_FORMAT_NOT_SUPPORTED, format), "format");
             }
 
             // We have the same format, why convert?
@@ -1784,19 +1739,18 @@ namespace GorgonLibrary.Graphics
 
             using (var wic = new GorgonWICImage())
             {
-                IImageSettings destSettings = null;
                 GorgonImageData destData = null;
                 Guid sourceFormat = wic.GetGUID(Settings.Format);
                 Guid destFormat = wic.GetGUID(format);
 
                 if (sourceFormat == Guid.Empty)
                 {
-                    throw new GorgonException(GorgonResult.FormatNotSupported, "The format of this image '" + Settings.Format.ToString() + "' is not supported for conversion.");
+                    throw new GorgonException(GorgonResult.FormatNotSupported, string.Format(Resources.GORGFX_FORMAT_NOT_SUPPORTED, Settings.Format));
                 }
 
                 if (destFormat == Guid.Empty)
                 {
-                    throw new GorgonException(GorgonResult.FormatNotSupported, "The destination format '" + format.ToString() + "' is not supported for conversion.");
+                    throw new GorgonException(GorgonResult.FormatNotSupported, string.Format(Resources.GORGFX_FORMAT_NOT_SUPPORTED, format));
                 }
 
 				// Well, that was easy...
@@ -1808,7 +1762,7 @@ namespace GorgonLibrary.Graphics
                 try
                 {
                     // Create our destination buffer to hold the converted data.
-                    destSettings = Settings.Clone();
+                    IImageSettings destSettings = Settings.Clone();
                     destSettings.Format = format;
 
                     destData = new GorgonImageData(destSettings);
@@ -1845,7 +1799,6 @@ namespace GorgonLibrary.Graphics
                     {
                         destData.Dispose();
                     }
-                    destData = null;
                 }                
             }                        
         }
@@ -1878,7 +1831,7 @@ namespace GorgonLibrary.Graphics
 
             if (settings.Format == BufferFormat.Unknown)
             {
-                throw new GorgonException(GorgonResult.CannotCreate, "The image format is not known.");
+                throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_FORMAT_NOT_SUPPORTED, settings.Format));
             }
 
             Settings = settings;            
@@ -1888,7 +1841,7 @@ namespace GorgonLibrary.Graphics
             // Validate the image size.
             if ((data != null) && (SizeInBytes > dataSize))
             {
-                throw new ArgumentOutOfRangeException("There is a mismatch between the image size, and the buffer size.", "dataSize");
+                throw new ArgumentException(Resources.GORGFX_IMAGE_BUFFER_SIZE_MISMATCH, "dataSize");
             }
 
             Initialize(data);
@@ -1952,12 +1905,9 @@ namespace GorgonLibrary.Graphics
 
 		        if (_buffers != null)
 		        {
-			        foreach (var buffer in _buffers)
+			        foreach (var buffer in _buffers.Where(buffer => buffer.Data != null))
 			        {
-				        if (buffer.Data != null)
-				        {
-					        buffer.Data.Dispose();
-				        }
+			            buffer.Data.Dispose();
 			        }
 		        }
 	        }

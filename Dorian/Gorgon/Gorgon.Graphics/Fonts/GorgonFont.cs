@@ -215,7 +215,7 @@ namespace GorgonLibrary.Graphics
                 if ((index < 0)
                     || (index >= _list.Count))
                 {
-                    throw new IndexOutOfRangeException(string.Format(Resources.GORGFX_INDEX_OUT_OF_RANGE, index, _list.Count));
+                    throw new IndexOutOfRangeException(string.Format(Resources.GORGFX_INDEX_OUT_OF_RANGE, index, 0, _list.Count));
                 }
 
 				_list.RemoveAt(index);
@@ -641,7 +641,7 @@ namespace GorgonLibrary.Graphics
                 if ((index < 0)
                     || (index >= Count))
                 {
-                    throw new IndexOutOfRangeException(string.Format(Resources.GORGFX_INDEX_OUT_OF_RANGE, index, Count));
+                    throw new IndexOutOfRangeException(string.Format(Resources.GORGFX_INDEX_OUT_OF_RANGE, index, 0, Count));
                 }
 				
 				RemoveItem(index);							
