@@ -76,6 +76,28 @@ namespace GorgonLibrary.Graphics.Test
 		}
 
 		[TestMethod]
+		public void TestDynamicBufferSRV()
+		{
+			using(var gfx = new GorgonGraphics(DeviceFeatureLevel.SM4))
+			{
+				var buff = gfx.Buffers.CreateBuffer("Test", new GorgonBufferSettings
+				{
+					AllowIndirectArguments = false,
+					AllowRawViews =  false,
+					AllowUnorderedAccessViews = false,
+					DefaultShaderViewFormat = BufferFormat.R8G8B8A8_Int,
+					AllowShaderViews = true,
+					IsOutput = false,
+					SizeInBytes = 6144,
+					Usage = BufferUsage.Dynamic
+				});
+
+				buff.Lock(BufferLockFlags.Write);
+				buff.Unlock();
+			}
+		}
+
+		[TestMethod]
 		public void CreateStagingBuffer()
 		{
 			using(var gfx = new GorgonGraphics(DeviceFeatureLevel.SM4))

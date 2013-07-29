@@ -26,6 +26,7 @@
 
 using System;
 using GorgonLibrary.Diagnostics;
+using GorgonLibrary.Graphics.Properties;
 using SlimMath;
 using DX = SharpDX;
 using D3D = SharpDX.Direct3D11;
@@ -35,6 +36,8 @@ namespace GorgonLibrary.Graphics
 	/// <summary>
 	/// A 3 dimensional texture object.
 	/// </summary>
+	/// <remarks>A 3D texture (volumn texture) contains not only width and height, but also depth.  The depth for a volume texture is defined by slices of a 2D texture.  For example 
+	/// if the texture is 320x240x160, then there will be 160 320x240 textures stacked.</remarks>
 	public class GorgonTexture3D
 		: GorgonTexture
 	{
@@ -97,16 +100,17 @@ namespace GorgonLibrary.Graphics
 				SlicePitch = data.SlicePitch
 			};
 
-			var region = new D3D.ResourceRegion();
+			var region = new D3D.ResourceRegion
+			{
+				Front = 0,
+				Back = Settings.Depth,
+				Left = 0,
+				Right = Settings.Width,
+				Top = 0,
+				Bottom = Settings.Height
+			};
 
-			region.Front = 0;
-			region.Back = Settings.Depth;
-			region.Left = 0;
-			region.Right = Settings.Width;
-			region.Top = 0;
-			region.Bottom = Settings.Height;
-		
-			context.Context.UpdateSubresourceSafe(box, D3DResource, data.RowPitch, FormatInformation.SizeInBytes, region, FormatInformation.IsCompressed);
+	        context.Context.UpdateSubresourceSafe(box, D3DResource, data.RowPitch, FormatInformation.SizeInBytes, region, FormatInformation.IsCompressed);
 		}
 
 		/// <summary>
@@ -117,8 +121,6 @@ namespace GorgonLibrary.Graphics
 		/// </returns>
 		protected override GorgonTexture OnGetStagingTexture()
 		{
-			GorgonTexture staging = null;
-
 			var settings3D = new GorgonTexture3DSettings
 				{
 				Format = Settings.Format,
@@ -129,7 +131,7 @@ namespace GorgonLibrary.Graphics
 				Usage = BufferUsage.Staging
 			};
 
-			staging = Graphics.ImmediateContext.Textures.CreateTexture(Name + ".Staging", settings3D);
+			GorgonTexture staging = Graphics.ImmediateContext.Textures.CreateTexture(Name + ".Staging", settings3D);
 
 			staging.Copy(this);
 
@@ -245,12 +247,12 @@ namespace GorgonLibrary.Graphics
 		public Vector3 ToTexel(Vector3 pixel)
 		{
 #if DEBUG
-			if (Settings.Width == 0)
-				throw new DivideByZeroException("The texture width is 0.");
-			if (Settings.Height == 0)
-				throw new DivideByZeroException("The texture height is 0.");
-			if (Settings.Depth == 0)
-				throw new DivideByZeroException("The texture depth is 0.");
+			if ((Settings.Width == 0)
+			    || (Settings.Height == 0)
+			    || (Settings.Depth == 0))
+			{
+				throw new DivideByZeroException();
+			}
 #endif
 
 			return new Vector3(pixel.X / Settings.Width, pixel.Y / Settings.Height, pixel.Z / Settings.Depth);
@@ -261,6 +263,7 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		/// <param name="texel">The texel coordinate to convert.</param>
 		/// <param name="result">The pixel space location of the texel.</param>
+		/// <exception cref="System.DivideByZeroException">Thrown when the texture width, height or depth is equal to 0.</exception>
 		public void ToPixel(ref Vector3 texel, out Vector3 result)
 		{
 			result = new Vector3(texel.X * Settings.Width, texel.Y * Settings.Height, texel.Z * Settings.Depth);
@@ -275,12 +278,12 @@ namespace GorgonLibrary.Graphics
 		public void ToTexel(ref Vector3 pixel, out Vector3 result)
 		{
 #if DEBUG
-			if (Settings.Width == 0)
-				throw new DivideByZeroException("The texture width is 0.");
-			if (Settings.Height == 0)
-				throw new DivideByZeroException("The texture height is 0.");
-			if (Settings.Depth == 0)
-				throw new DivideByZeroException("The texture depth is 0.");
+			if ((Settings.Width == 0)
+				|| (Settings.Height == 0)
+				|| (Settings.Depth == 0))
+			{
+				throw new DivideByZeroException();
+			}
 #endif
 
 			result = new Vector3(pixel.X / Settings.Width, pixel.Y / Settings.Height, pixel.Z / Settings.Depth);
@@ -292,14 +295,18 @@ namespace GorgonLibrary.Graphics
 		/// <param name="mipLevel">Mip level to look up.</param>
 		/// <param name="mipCount">The number of mip map levels in the texture.</param>
 		/// <returns>The sub resource index.</returns>
-		/// <remarks>Unlike the GetSubResourceIndex on the <see cref="M:GorgonLibrary.Graphics.GorgonTexture1D.GetSubResourceIndex">GorgonTexture1D</see> or <see cref="M:GorgonLibrary.Graphics.GorgonTexture2D.GetSubResourceIndex">GorgonTexture2D</see> objects, this version does not take an array index because 3D textures do not use array resources.</remarks>
+		/// <remarks>Unlike the GetSubResourceIndex on the <see cref="GorgonLibrary.Graphics.GorgonTexture1D.GetSubResourceIndex">GorgonTexture1D</see> or <see cref="GorgonLibrary.Graphics.GorgonTexture2D.GetSubResourceIndex">GorgonTexture2D</see> objects, this version does not take an array index because 3D textures do not use array resources.</remarks>
 		public static int GetSubResourceIndex(int mipLevel, int mipCount)
 		{
 			// Constrain to settings.
 			if (mipLevel < 0)
+			{
 				mipLevel = 0;
+			}
 			if (mipLevel >= mipCount)
+			{
 				mipLevel = mipCount - 1;
+			}
 
 			return D3D.Resource.CalculateSubResourceIndex(mipLevel, 0, mipCount);
 		}
@@ -317,7 +324,7 @@ namespace GorgonLibrary.Graphics
 		/// <para>For SM_4_1 and SM_5 video devices, texture formats can be converted if they belong to the same format group (e.g. R8G8B8A8, R8G8B8A8_UInt, R8G8B8A8_Int, R8G8B8A8_UIntNormal, etc.. are part of the R8G8B8A8 group).  If the 
 		/// video device is a SM_4 or SM_2_a_b device, then no format conversion will be done and an exception will be thrown if format conversion is attempted.</para>
 		/// <para>When copying sub resources (e.g. mip-map levels), the <paramref name="subResource"/> and <paramref name="destSubResource"/> must be different if the source texture is the same as the destination texture.</para>
-		/// <para>Sub resource indices can be calculated with the <see cref="M:GorgonLibrary.Graphics.GorgonTexture2D.GetSubResourceIndex">GetSubResourceIndex</see> static method.</para>
+		/// <para>Sub resource indices can be calculated with the <see cref="GorgonLibrary.Graphics.GorgonTexture3D.GetSubResourceIndex">GetSubResourceIndex</see> static method.</para>
 		/// <para>Pass NULL (Nothing in VB.Net) to the sourceRegion parameter to copy the entire sub resource.</para>
 		/// <para>SM2_a_b devices using 3D textures can only be copied to textures that are in GPU memory, if either texture is a staging texture, then an exception will be thrown.  Also, if both textures are not staging 
         /// textures, and the video device has a feature level of SM2_a_b, then an exception will be thrown.</para>
@@ -336,37 +343,52 @@ namespace GorgonLibrary.Graphics
         /// <exception cref="System.NotSupportedException">Thrown when the video device has a feature level of SM2_a_b, and this texture and the source texture are not staging textures.</exception>
 		public void CopySubResource(GorgonTexture3D texture, int subResource, int destSubResource, GorgonBox? sourceRegion, Vector3 destination)
 		{
-			GorgonDebug.AssertNull<GorgonTexture3D>(texture, "texture");
+			GorgonDebug.AssertNull(texture, "texture");
 
 #if DEBUG
             if ((Graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM2_a_b) && (Settings.Usage != BufferUsage.Staging) && (texture.Settings.Usage != BufferUsage.Staging))
             {
-                throw new NotSupportedException("Feature level SM2_a_b video devices cannot copy 1D non-staging textures.");
+				throw new NotSupportedException(string.Format(Resources.GORGFX_REQUIRES_SM, DeviceFeatureLevel.SM4));
             }
 
-            if (Settings.Usage == BufferUsage.Immutable)
-				throw new InvalidOperationException("Cannot copy to an immutable resource.");
+			if (Settings.Usage == BufferUsage.Immutable)
+			{
+				throw new InvalidOperationException(Resources.GORGFX_TEXTURE_IMMUTABLE);
+			}
 
 			// If the format is different, then check to see if the format group is the same.
-			if ((texture.Settings.Format != Settings.Format) && ((texture.FormatInformation.Group != FormatInformation.Group) || (Graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM2_a_b) || (Graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM4)))
-				throw new ArgumentException("Cannot copy because these formats: '" + texture.Settings.Format.ToString() + "' and '" + Settings.Format.ToString() + "', cannot be converted.", "texture");
+			if ((texture.Settings.Format != Settings.Format) &&
+			    ((texture.FormatInformation.Group != FormatInformation.Group) ||
+			     (Graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM2_a_b) ||
+			     (Graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM4)))
+			{
+				throw new ArgumentException(
+					string.Format(Resources.GORGFX_TEXTURE_COPY_CANNOT_CONVERT, texture.Settings.Format, Settings.Format), "texture");
+			}
 
 			if ((this == texture) && (subResource == destSubResource))
-				throw new ArgumentException("Cannot copy to and from the same sub resource on the same texture.");
+			{
+				throw new ArgumentException(Resources.GORGFX_TEXTURE_CANNOT_COPY_SAME_SUBRESOURCE, "destSubResource");
+			}
 
 			// Ensure that the SM2_a_b devices don't try and copy between CPU and GPU accessible memory.
-			if ((this is GorgonTexture3D) && (Graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM2_a_b) 
-                && (this.Settings.Usage == BufferUsage.Staging) && (texture.Settings.Usage != BufferUsage.Staging))
-				throw new InvalidOperationException("This 3D texture is CPU accessible and cannot be copied.");
+			if ((Graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM2_a_b)
+			    && (Settings.Usage == BufferUsage.Staging) && (texture.Settings.Usage != BufferUsage.Staging))
+			{
+				throw new InvalidOperationException(Resources.GORGFX_TEXTURE_3D_CPU_ACCESSIBLE);
+			}
 #endif
 
 			// If we have multisampling enabled, then copy the entire sub resource.
 			D3D.ResourceRegion? region = null;
 
 			if (sourceRegion != null)
+			{
 				region = sourceRegion.Value.Convert;
+			}
 
-            Graphics.Context.CopySubresourceRegion(texture.D3DResource, subResource, region, D3DResource, destSubResource, (int)destination.X, (int)destination.Y, (int)destination.Z);
+			Graphics.Context.CopySubresourceRegion(texture.D3DResource, subResource, region, D3DResource, destSubResource,
+				(int)destination.X, (int)destination.Y, (int)destination.Z);
 		}
 
 		/// <summary>
@@ -396,7 +418,9 @@ namespace GorgonLibrary.Graphics
 		{
 #if DEBUG
 			if (texture == this)
-				throw new ArgumentException("The source texture and this texture are the same.  Cannot copy.", "texture");
+			{
+				throw new ArgumentException(Resources.GORGFX_TEXTURE_IS_SAME, "texture");
+			}
 #endif
 
 			CopySubResource(texture, 0, 0, sourceRegion, destination);
@@ -426,7 +450,9 @@ namespace GorgonLibrary.Graphics
 		{
 #if DEBUG
 			if (texture == this)
-				throw new ArgumentException("The source texture and this texture are the same.  Cannot copy.", "texture");
+			{
+				throw new ArgumentException(Resources.GORGFX_TEXTURE_IS_SAME, "texture");
+			}
 #endif
 
 			CopySubResource(texture, 0, 0, null, Vector3.Zero);
@@ -443,7 +469,7 @@ namespace GorgonLibrary.Graphics
 		/// <para>For SM_4_1 and SM_5 video devices, texture formats can be converted if they belong to the same format group (e.g. R8G8B8A8, R8G8B8A8_UInt, R8G8B8A8_Int, R8G8B8A8_UIntNormal, etc.. are part of the R8G8B8A8 group).  If the 
 		/// video device is a SM_4 or SM_2_a_b device, then no format conversion will be done and an exception will be thrown if format conversion is attempted.</para>
 		/// <para>When copying sub resources (e.g. mip-map levels), the <paramref name="subResource"/> and <paramref name="destSubResource"/> must be different if the source texture is the same as the destination texture.</para>
-		/// <para>Sub resource indices can be calculated with the <see cref="M:GorgonLibrary.Graphics.GorgonTexture2D.GetSubResourceIndex">GetSubResourceIndex</see> static method.</para>
+		/// <para>Sub resource indices can be calculated with the <see cref="GorgonLibrary.Graphics.GorgonTexture3D.GetSubResourceIndex">GetSubResourceIndex</see> static method.</para>
 		/// <para>SM2_a_b devices using 3D textures can only be copied to textures that are in GPU memory, if either texture is a staging texture, then an exception will be thrown.</para>
 		/// </remarks>
 		/// <exception cref="System.ArgumentNullException">Thrown when the texture parameter is NULL (Nothing in VB.Net).</exception>
@@ -476,45 +502,71 @@ namespace GorgonLibrary.Graphics
 		public void UpdateSubResource(ISubResourceData data, int subResource, GorgonBox destBox, GorgonGraphics deferred = null)
 		{
 #if DEBUG
-			if ((Settings.Usage == BufferUsage.Dynamic) || (Settings.Usage == BufferUsage.Immutable))
-				throw new InvalidOperationException("Cannot update a texture that is Dynamic or Immutable");
+	        if ((Settings.Usage == BufferUsage.Dynamic) || (Settings.Usage == BufferUsage.Immutable))
+	        {
+		        throw new InvalidOperationException(Resources.GORGFX_TEXTURE_IS_DYNAMIC_IMMUTABLE);
+	        }
 #endif
-			if (destBox.Z < 0)
-				destBox.Z = 0;
-			if (destBox.Depth < 0)
-				destBox.Depth = 0;
-			if (destBox.X < 0)
-				destBox.X = 0;
-			if (destBox.Y < 0)
-				destBox.Y = 0;
-			if (destBox.Width < 0)
-				destBox.Width = 0;
-			if (destBox.Height < 0)
-				destBox.Height = 0;
+	        if (destBox.Z < 0)
+	        {
+		        destBox.Z = 0;
+	        }
+	        if (destBox.Depth < 0)
+	        {
+		        destBox.Depth = 0;
+	        }
+	        if (destBox.X < 0)
+	        {
+		        destBox.X = 0;
+	        }
+	        if (destBox.Y < 0)
+	        {
+		        destBox.Y = 0;
+	        }
+	        if (destBox.Width < 0)
+	        {
+		        destBox.Width = 0;
+	        }
+	        if (destBox.Height < 0)
+	        {
+		        destBox.Height = 0;
+	        }
 
-			if (destBox.X >= Settings.Width)
-				destBox.X = Settings.Width - 1;
-			if (destBox.Y >= Settings.Height)
-				destBox.Y = Settings.Height - 1;
-			if (destBox.Z >= Settings.Depth)
-				destBox.Z = Settings.Depth - 1;
+	        if (destBox.X >= Settings.Width)
+	        {
+		        destBox.X = Settings.Width - 1;
+	        }
+	        if (destBox.Y >= Settings.Height)
+	        {
+		        destBox.Y = Settings.Height - 1;
+	        }
+	        if (destBox.Z >= Settings.Depth)
+	        {
+		        destBox.Z = Settings.Depth - 1;
+	        }
 
-			if (destBox.Right >= Settings.Width)
-				destBox.Width = Settings.Width - destBox.X - 1;
-			if (destBox.Bottom >= Settings.Height)
-				destBox.Height = Settings.Height - destBox.Y - 1;
-			if (destBox.Back >= Settings.Depth)
-				destBox.Width = Settings.Depth - destBox.Z - 1;
+	        if (destBox.Right >= Settings.Width)
+	        {
+		        destBox.Width = Settings.Width - destBox.X - 1;
+	        }
+	        if (destBox.Bottom >= Settings.Height)
+	        {
+		        destBox.Height = Settings.Height - destBox.Y - 1;
+	        }
+	        if (destBox.Back >= Settings.Depth)
+	        {
+		        destBox.Width = Settings.Depth - destBox.Z - 1;
+	        }
 
-			var box = new SharpDX.DataBox
-				{
+	        var box = new SharpDX.DataBox
+			{
 				DataPointer = data.Data.PositionPointer,
 				RowPitch = data.RowPitch,
 				SlicePitch = data.SlicePitch
 			};
 
 			var region = new D3D.ResourceRegion
-				{
+			{
 				Front = destBox.Front,
 				Back = destBox.Back,
 				Top = destBox.Top,
@@ -539,9 +591,6 @@ namespace GorgonLibrary.Graphics
 		/// <param name="graphics">The graphics interface that owns this texture.</param>
 		/// <param name="name">The name of the texture.</param>
 		/// <param name="settings">Settings to pass to the texture.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (Nothing in VB.Net).</exception>
-		///   
-		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="name"/> parameter is an empty string.</exception>
 		internal GorgonTexture3D(GorgonGraphics graphics, string name, ITextureSettings settings)
 			: base(graphics, name, settings)
 		{

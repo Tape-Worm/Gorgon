@@ -172,9 +172,6 @@
   <data name="GORGFX_BUFFER_WRITE_ONLY" xml:space="preserve">
     <value>Cannot read this buffer.</value>
   </data>
-  <data name="GORGFX_BUFFER_LOCK_NOT_WRITE_DISCARD" xml:space="preserve">
-    <value>This buffer must be locked with the [Write] and [Discard] flags.</value>
-  </data>
   <data name="GORGFX_BUFFER_NOT_MULTIPLE" xml:space="preserve">
     <value>Cannot create the buffer.  The buffer size of {0} bytes is not a multiple of {1}.</value>
   </data>
@@ -310,8 +307,8 @@
   <data name="GORGFX_VIEW_ELEMENT_OUT_OF_RANGE" xml:space="preserve">
     <value>The start element must be between 0 and {0}, and the element count must be between 1 and {1}.</value>
   </data>
-  <data name="GORGFX_VIEW_SRV_NO_STAGING" xml:space="preserve">
-    <value>Shader resource views cannot be bound to resources that have a usage of [Staging].</value>
+  <data name="GORGFX_VIEW_SRV_NO_STAGING_OR_DYNAMIC" xml:space="preserve">
+    <value>Shader resource views cannot be bound to resources that have a usage of [Staging] or [Dynamic].</value>
     <comment>Applies to textures/buffers</comment>
   </data>
   <data name="GORGFX_VIEW_UNORDERED_NO_STAGING_DYNAMIC" xml:space="preserve">
@@ -369,7 +366,7 @@
   <data name="GORGFX_RTV_RESOURCE_TYPE_MISMATCH" xml:space="preserve">
     <value>Cannot bind the render target '{0}'. There is a render target bound with the resource type of [{1}] and the depth/stencil is bound to a [{2}] resource type.</value>
   </data>
-  <data name="GORGFX_RT_NEED_DEFAULT" xml:space="preserve">
+  <data name="GORGFX_RENDERTARGET_NEED_DEFAULT" xml:space="preserve">
     <value>A render target must have a usage of [Default].</value>
   </data>
   <data name="GORGFX_VIEWPORT_TOSTR" xml:space="preserve">
@@ -603,5 +600,41 @@ Log file location: "{0}"</value>
   </data>
   <data name="GORGFX_TEXTURE_IMMUTABLE" xml:space="preserve">
     <value>The texture is immutable and cannot be updated.</value>
+  </data>
+  <data name="GORGFX_TEXTURE_3D_CPU_ACCESSIBLE" xml:space="preserve">
+    <value>This 3D texture is CPU accessible and cannot be copied.</value>
+  </data>
+  <data name="GORGFX_TEXTURE_CANNOT_COPY_SAME_SUBRESOURCE" xml:space="preserve">
+    <value>Cannot copy to and from the same sub resource on the same texture.</value>
+  </data>
+  <data name="GORGFX_TEXTURE_COPY_CANNOT_CONVERT" xml:space="preserve">
+    <value>Cannot copy because these formats: [{0}] and [{1}] cannot be converted.</value>
+  </data>
+  <data name="GORGFX_TEXTURE_IS_DYNAMIC_IMMUTABLE" xml:space="preserve">
+    <value>Cannot update a texture that is Dynamic or Immutable.</value>
+  </data>
+  <data name="GORGFX_TEXTURE_IS_SAME" xml:space="preserve">
+    <value>The source texture and this texture are the same.  Cannot copy.</value>
+  </data>
+  <data name="GORGFX_TEXTURE_NOT_SAME_TYPE" xml:space="preserve">
+    <value>The texure '{0}' is a [{1}] and cannot be copied to or from the type [{2}].</value>
+  </data>
+  <data name="GORGFX_VIEW_DRV_NO_STAGING" xml:space="preserve">
+    <value>Depth views cannot be bound to resources that have a usage of [Staging].</value>
+  </data>
+  <data name="GORGFX_LOCK_CANNOT_READ_NON_STAGING" xml:space="preserve">
+    <value>Cannot lock a buffer for reading if the resource does not have a usage of [Staging].</value>
+  </data>
+  <data name="GORGFX_LOCK_CANNOT_USE_WITH_READ" xml:space="preserve">
+    <value>Cannot use [Discard] or [NoOverwrite] with a [Read] flag.</value>
+  </data>
+  <data name="GORGFX_LOCK_NEED_DISCARD_NOOVERWRITE" xml:space="preserve">
+    <value>Calling lock on a resource when using a deferred context requires at least the [Discard] and/or the [NoOverwrite] flags.</value>
+  </data>
+  <data name="GORGFX_TEXTURE_NO_OVERWRITE_NOT_VALID" xml:space="preserve">
+    <value>Cannot lock this texture with a lock type of [NoOverwrite]</value>
+  </data>
+  <data name="GORGFX_TEXTURE_USAGE_CANT_LOCK" xml:space="preserve">
+    <value>A texture with a usage of [{0}] cannot be locked.</value>
   </data>
 </root>
