@@ -24,11 +24,9 @@
 // 
 #endregion
 
-using System;
 using DX = SharpDX;
 using D3D11 = SharpDX.Direct3D11;
 using GorgonLibrary.IO;
-using GorgonLibrary.Graphics.Properties;
 
 namespace GorgonLibrary.Graphics
 {
@@ -84,32 +82,9 @@ namespace GorgonLibrary.Graphics
 		protected override GorgonDataStream OnLock(BufferLockFlags lockFlags, GorgonGraphics context)
         {
             DX.DataStream lockStream;
-			var mapMode = D3D11.MapMode.Write;
 
-#if DEBUG
-			// Read is mutually exclusive.
-		    if ((lockFlags & BufferLockFlags.Read) == BufferLockFlags.Read)
-		    {
-		        throw new ArgumentException(Resources.GORGFX_BUFFER_WRITE_ONLY, "lockFlags");
-		    }
+			context.Context.MapSubresource(D3DBuffer, GetMapMode(lockFlags), D3D11.MapFlags.None, out lockStream);
 
-		    if (lockFlags == BufferLockFlags.Write)
-		    {
-		        throw new ArgumentException(Resources.GORGFX_BUFFER_REQUIRES_NOOVERWRITE_DISCARD, "lockFlags");
-		    }
-#endif
-
-		    if ((lockFlags & BufferLockFlags.Discard) == BufferLockFlags.Discard)
-		    {
-		        mapMode = D3D11.MapMode.WriteDiscard;
-		    }
-
-		    if ((lockFlags & BufferLockFlags.NoOverwrite) == BufferLockFlags.NoOverwrite)
-            {
-				mapMode = D3D11.MapMode.WriteNoOverwrite;
-            }
-
-			context.Context.MapSubresource(D3DBuffer, mapMode, D3D11.MapFlags.None, out lockStream);
 			return new GorgonDataStream(lockStream.DataPointer, (int)lockStream.Length);
 		}
 

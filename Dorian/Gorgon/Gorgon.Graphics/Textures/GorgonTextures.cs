@@ -165,6 +165,12 @@ namespace GorgonLibrary.Graphics
 		/// <param name="settings">Settings to validate.</param>
 		internal void ValidateTexture3D(ref ITextureSettings settings)
 		{
+			if (((settings.Usage == BufferUsage.Dynamic) || (settings.Usage == BufferUsage.Staging))
+				&& (settings.AllowUnorderedAccessViews))
+			{
+				throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_VIEW_UNORDERED_NO_STAGING_DYNAMIC);
+			}
+
 			if (settings.MipCount < 0)
 				settings.MipCount = 0;
 
@@ -239,7 +245,12 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		/// <param name="settings">Settings to validate.</param>
 		internal void ValidateTexture2D(ref ITextureSettings settings)
-		{		
+		{
+			if (((settings.Usage == BufferUsage.Dynamic) || (settings.Usage == BufferUsage.Staging))
+				&& (settings.AllowUnorderedAccessViews))
+			{
+				throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_VIEW_UNORDERED_NO_STAGING_DYNAMIC);
+			}
 			
 			if (settings.ArrayCount < 1)
 				settings.ArrayCount = 1;
@@ -319,6 +330,12 @@ namespace GorgonLibrary.Graphics
 		{
 			if (_graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM2_a_b)
 				throw new GorgonException(GorgonResult.CannotCreate, "1 dimensional textures are not supported on SM2_a_b devices.");
+
+			if (((settings.Usage == BufferUsage.Dynamic) || (settings.Usage == BufferUsage.Staging))
+			    && (settings.AllowUnorderedAccessViews))
+			{
+				throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_VIEW_UNORDERED_NO_STAGING_DYNAMIC);
+			}
 
 			if (settings.ArrayCount < 1)
 				settings.ArrayCount = 1;

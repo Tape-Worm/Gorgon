@@ -25,7 +25,6 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using GorgonLibrary.Diagnostics;
@@ -81,6 +80,28 @@ namespace GorgonLibrary.Graphics
 		#endregion
 
 		#region Methods.
+		/// <summary>
+		/// Function to retrieve the mapping mode for locking a buffer.
+		/// </summary>
+		/// <param name="flags">Flags to use when locking.</param>
+		/// <returns>The D3D mapping mode.</returns>
+		private static D3D.MapMode GetMapMode(BufferLockFlags flags)
+		{
+			if ((flags & BufferLockFlags.Read) == BufferLockFlags.Read)
+			{
+				return (flags & BufferLockFlags.Write) == BufferLockFlags.Write ? D3D.MapMode.ReadWrite : D3D.MapMode.Read;
+			}
+
+			if ((flags & BufferLockFlags.Discard) == BufferLockFlags.Discard)
+			{
+				return D3D.MapMode.WriteDiscard;
+			}
+
+			return (flags & BufferLockFlags.NoOverwrite) == BufferLockFlags.NoOverwrite
+				? D3D.MapMode.WriteNoOverwrite
+				: D3D.MapMode.Write;
+		}
+
         /// <summary>
         /// Releases unmanaged and - optionally - managed resources.
         /// </summary>
@@ -92,7 +113,7 @@ namespace GorgonLibrary.Graphics
             {
                 if (disposing)
                 {
-                    Gorgon.Log.Print("Gorgon texture {0}: Unbound from shaders.", Diagnostics.LoggingLevel.Verbose, Name);
+                    Gorgon.Log.Print("Gorgon texture {0}: Unbound from shaders.", LoggingLevel.Verbose, Name);
                     Graphics.Shaders.UnbindResource(this);
 
                     // Unbind the view(s).
@@ -163,7 +184,7 @@ namespace GorgonLibrary.Graphics
 		{
 			if (Settings.Usage == BufferUsage.Staging)
 			{
-				throw new GorgonException(GorgonResult.CannotCreate, "A staging texture cannot create shader views.");
+				throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_VIEW_DRV_NO_STAGING);
 			}
 
 			if (format == BufferFormat.Unknown)
@@ -258,7 +279,7 @@ namespace GorgonLibrary.Graphics
         {
             if (Settings.Usage == BufferUsage.Staging)
             {
-                throw new GorgonException(GorgonResult.CannotCreate, "A staging texture cannot create shader views.");
+                throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_VIEW_SRV_NO_STAGING_OR_DYNAMIC);
             }
 
             if (format == BufferFormat.Unknown)
@@ -443,18 +464,13 @@ namespace GorgonLibrary.Graphics
 		{
 			if (Graphics.VideoDevice.SupportedFeatureLevel < DeviceFeatureLevel.SM5)
 			{
-				throw new GorgonException(GorgonResult.CannotCreate, "Unordered access views are only available on video devices that support SM_5 or better.");
+				throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_REQUIRES_SM, DeviceFeatureLevel.SM5));
 			}
 
             if (!Settings.AllowUnorderedAccessViews)
             {
                 throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_VIEW_NO_SUPPORT, "GorgonUnorderedAccessView"));
             }
-
-			if (Settings.Usage == BufferUsage.Staging)
-			{
-				throw new GorgonException(GorgonResult.CannotCreate, "Cannot create an unordered access resource view for a texture that has a usage of Staging.");
-			}
 
 			if (!Graphics.VideoDevice.SupportsUnorderedAccessViewFormat(format))
 			{
@@ -586,7 +602,7 @@ namespace GorgonLibrary.Graphics
 		{
 			try
 			{
-				Gorgon.Log.Print("{0} {1}: Creating D3D11 texture resource...", Diagnostics.LoggingLevel.Verbose, GetType().Name, Name);
+				Gorgon.Log.Print("{0} {1}: Creating D3D11 texture resource...", LoggingLevel.Verbose, GetType().Name, Name);
                 
 				OnInitialize(initialData);
 				CreateDefaultResourceView();
@@ -624,12 +640,12 @@ namespace GorgonLibrary.Graphics
 #if DEBUG
             if ((Graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM2_a_b) && (Settings.Usage != BufferUsage.Staging))
             {
-                throw new NotSupportedException("Feature level SM2_a_b video devices cannot build a staging texture from a non-staging texture.");
+                throw new NotSupportedException(string.Format(Resources.GORGFX_REQUIRES_SM, DeviceFeatureLevel.SM4));
             }
 
             if (Settings.Usage == BufferUsage.Immutable)
             {
-                throw new NotSupportedException("Textures with a usage of Immutable cannot be used as staging textures.");    
+                throw new NotSupportedException(Resources.GORGFX_TEXTURE_IMMUTABLE);    
             }
 #endif
 			return (T)OnGetStagingTexture();
@@ -673,7 +689,7 @@ namespace GorgonLibrary.Graphics
         /// <para>Note that devices with a feature level of SM2_a_b cannot save textures that don't have a usage of staging.  Also, these devices will only save 2D staging textures.  Attempting to 
         /// save 3D and 1D textures will throw an exception.</para>
         /// </remarks>
-        public byte[] Save(IO.GorgonImageCodec codec)
+        public byte[] Save(GorgonImageCodec codec)
         {
             using (var memoryStream = new MemoryStream())
             {
@@ -725,19 +741,13 @@ namespace GorgonLibrary.Graphics
         /// <para>Note that devices with a feature level of SM2_a_b cannot save textures that don't have a usage of staging.  Also, these devices will only save 2D staging textures.  Attempting to 
         /// save 3D and 1D textures will throw an exception.</para>
 		/// </remarks>
-		public void Save(Stream stream, IO.GorgonImageCodec codec)
+		public void Save(Stream stream, GorgonImageCodec codec)
 		{
-            if (Graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM2_a_b)
+            if ((Graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM2_a_b) 
+				&& ((Settings.Usage != BufferUsage.Staging)
+					|| (Settings.ImageType != ImageType.Image2D)))
             {
-                if (Settings.Usage != BufferUsage.Staging)
-                {
-                    throw new NotSupportedException("Feature level SM2_a_b video devices cannot save a non-staging texture.");
-                }
-
-                if (Settings.ImageType != ImageType.Image2D)
-                {
-                    throw new NotSupportedException("Feature level SM2_a_b video devices can only save 2D staging textures.");
-                }
+                throw new NotSupportedException(string.Format(Resources.GORGFX_REQUIRES_SM, DeviceFeatureLevel.SM4));
             }
 
             using (var textureData = GorgonImageData.CreateFromTexture(this))
@@ -797,23 +807,17 @@ namespace GorgonLibrary.Graphics
 
 			if (string.IsNullOrWhiteSpace(filePath))
 			{
-				throw new ArgumentException("The parameter must not be NULL or empty.", "fileName");
+				throw new ArgumentException(Resources.GORGFX_PARAMETER_MUST_NOT_BE_EMPTY, "filePath");
 			}
 
-            if (Graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM2_a_b)
-            {
-                if (Settings.Usage != BufferUsage.Staging)
-                {
-                    throw new NotSupportedException("Feature level SM2_a_b video devices cannot save a non-staging texture.");
-                }
+			if ((Graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM2_a_b)
+				&& ((Settings.Usage != BufferUsage.Staging)
+					|| (Settings.ImageType != ImageType.Image2D)))
+			{
+				throw new NotSupportedException(string.Format(Resources.GORGFX_REQUIRES_SM, DeviceFeatureLevel.SM4));
+			}
 
-                if (Settings.ImageType != ImageType.Image2D)
-                {
-                    throw new NotSupportedException("Feature level SM2_a_B video devices can only save 2D staging textures.");
-                }
-            }
-
-            using (FileStream stream = File.Open(filePath, FileMode.Create, FileAccess.Write, FileShare.None))
+			using (FileStream stream = File.Open(filePath, FileMode.Create, FileAccess.Write, FileShare.None))
             {
 				Save(stream, codec);
 			}
@@ -825,7 +829,7 @@ namespace GorgonLibrary.Graphics
 		/// <param name="texture">Source texture to copy.</param>
 		/// <param name="deferred">[Optional] The deferred context to use when copying.</param>
 		/// <remarks>
-		/// This overload will copy the -entire- texture, including mipmaps, array levels, etc...  Use <see cref="M:GorgonLibrary.Graphics.GorgonTexture.CopySubResource(GorgonTexture2D, int, int, System.Drawing.Rectangle, SlimMath.Vector2)">CopySubResource</see> to copy a portion of the texture.
+		/// This overload will copy the -entire- texture, including mipmaps, array levels, etc...  Use CopySubResource to copy a portion of the texture.
 		/// <para>This method will -not- perform stretching, filtering or clipping.</para>
 		/// <para>The <paramref name="texture"/> dimensions must be have the same dimensions as this texture.  If they do not, an exception will be thrown.</para>
 		/// <para>If the this texture is multisampled, then the <paramref name="texture"/> must use the same multisampling parameters.</para>
@@ -851,27 +855,33 @@ namespace GorgonLibrary.Graphics
         /// is not a staging texture and the this texture is a staging texture, or if the textures are 1D textures and neither texture is a staging texture.</exception>
 		public void Copy(GorgonTexture texture, GorgonGraphics deferred = null)
 		{
-			GorgonDebug.AssertNull<GorgonTexture>(texture, "texture");
+			GorgonDebug.AssertNull(texture, "texture");
 
 #if DEBUG            
             if (Graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM2_a_b)
             {
                 if ((texture.Settings.Usage != BufferUsage.Staging) && (Settings.Usage == BufferUsage.Staging))
                 {
-                    throw new NotSupportedException("Feature level SM2_a_b video devices cannot copy non staging texture data into a staging texture.");
+                    throw new NotSupportedException(string.Format(Resources.GORGFX_REQUIRES_SM, DeviceFeatureLevel.SM4));
                 }
 
                 if ((texture.Settings.ImageType == ImageType.Image1D) && (Settings.Usage != BufferUsage.Staging) && (texture.Settings.Usage != BufferUsage.Staging))
                 {
-                    throw new NotSupportedException("Feature level SM2_a_b video devices cannot copy 1D texture data in GPU memory.");
+					throw new NotSupportedException(string.Format(Resources.GORGFX_REQUIRES_SM, DeviceFeatureLevel.SM4));
                 }
             }
 
-            if (texture.ResourceType != ResourceType)
-                throw new ArgumentException("The texure '" + texture.Name + "' is of a '" + texture.ResourceType + "' and cannot be copied to or from the type '" + ResourceType + "'.", "texture");
+			if (texture.ResourceType != ResourceType)
+			{
+				throw new ArgumentException(
+					string.Format(Resources.GORGFX_TEXTURE_NOT_SAME_TYPE, texture.Name, texture.ResourceType, ResourceType), "texture");
+			}
 
+#error I left off here.
 			if (Settings.Usage == BufferUsage.Immutable)
-				throw new InvalidOperationException("Cannot copy to an immutable resource.");
+			{
+				throw new InvalidOperationException(Resources.GORGFX_TEXTURE_IMMUTABLE);
+			}
 
 			if ((Settings.Multisampling.Count != texture.Settings.Multisampling.Count) || (Settings.Multisampling.Quality != texture.Settings.Multisampling.Quality))
 				throw new InvalidOperationException("Cannot copy textures with different multisampling parameters.");
@@ -1000,45 +1010,43 @@ namespace GorgonLibrary.Graphics
 		public T Lock<T>(int subResource, BufferLockFlags lockFlags, GorgonGraphics deferred = null)
 			where T : ISubResourceData
 		{
-			var mapMode = D3D.MapMode.Write;
-			DX.DataStream lockStream = null;
-			ISubResourceData data = default(ISubResourceData);
-
-			// NoOverwrite is not valid for textures, so just remove it.
-			if ((lockFlags & BufferLockFlags.NoOverwrite) == BufferLockFlags.NoOverwrite)
-				lockFlags &= ~BufferLockFlags.NoOverwrite;
+			DX.DataStream lockStream;
 
 #if DEBUG
 			if ((Settings.Usage != BufferUsage.Staging) && (Settings.Usage != BufferUsage.Dynamic))
-				throw new ArgumentException("Only dynamic or staging textures may be locked.", "lockFlags");
-
-			if ((Settings.Usage != BufferUsage.Staging) && (((lockFlags & BufferLockFlags.Read) == BufferLockFlags.Read) || (lockFlags == BufferLockFlags.Write)))
-				throw new ArgumentException("Cannot use Read or Write (without Discard) unless the texture is a staging texture.", "lockFlags");
-
-			if (((lockFlags & BufferLockFlags.Discard) == BufferLockFlags.Discard) && (Settings.Usage != BufferUsage.Dynamic))
-				throw new ArgumentException("Cannot use discard unless the texture has dynamic usage.", "lockFlags");
-#endif
-
-			if (((lockFlags & BufferLockFlags.Read) == BufferLockFlags.Read) && (lockFlags & BufferLockFlags.Write) == BufferLockFlags.Write)
-				mapMode = D3D.MapMode.ReadWrite;
-			else
 			{
-				if ((lockFlags & BufferLockFlags.Read) == BufferLockFlags.Read)
-					mapMode = D3D.MapMode.Read;
-				if ((lockFlags & BufferLockFlags.Write) == BufferLockFlags.Write)
-					mapMode = D3D.MapMode.Write;
+				throw new GorgonException(GorgonResult.AccessDenied, string.Format(Resources.GORGFX_BUFFER_USAGE_CANT_LOCK, Settings.Usage));
 			}
 
-			if ((lockFlags & BufferLockFlags.Discard) == BufferLockFlags.Discard)
-				mapMode = D3D.MapMode.WriteDiscard;
+			if ((Settings.Usage != BufferUsage.Staging) && ((lockFlags & BufferLockFlags.Read) == BufferLockFlags.Read))
+			{
+				throw new GorgonException(GorgonResult.AccessDenied, Resources.GORGFX_LOCK_CANNOT_READ_NON_STAGING);
+			}
 
+			if ((lockFlags & BufferLockFlags.NoOverwrite) == BufferLockFlags.NoOverwrite)
+			{
+				throw new ArgumentException(Resources.GORGFX_BUFFER_NO_OVERWRITE_NOT_VALID, "lockFlags");
+			}
+
+			if (((lockFlags & BufferLockFlags.Discard) == BufferLockFlags.Discard)
+				&& ((lockFlags & BufferLockFlags.Read) == BufferLockFlags.Read))
+			{
+				throw new ArgumentException(Resources.GORGFX_LOCK_CANNOT_USE_WITH_READ, "lockFlags");
+			}
+
+			if ((deferred != null)
+				&& ((lockFlags & BufferLockFlags.Discard) != BufferLockFlags.Discard))
+			{
+				throw new ArgumentException(Resources.GORGFX_LOCK_NEED_DISCARD_NOOVERWRITE, "lockFlags");
+			}
+#endif
             if (deferred == null)
             {
                 deferred = Graphics;
             }
 
-			DX.DataBox box = deferred.Context.MapSubresource(D3DResource, subResource, mapMode, D3D.MapFlags.None, out lockStream);
-			data = OnGetLockSubResourceData(new GorgonDataStream(lockStream.DataPointer, (int)lockStream.Length), box.RowPitch, box.SlicePitch, deferred); 
+			DX.DataBox box = deferred.Context.MapSubresource(D3DResource, subResource, GetMapMode(lockFlags), D3D.MapFlags.None, out lockStream);
+			ISubResourceData data = OnGetLockSubResourceData(new GorgonDataStream(lockStream.DataPointer, (int)lockStream.Length), box.RowPitch, box.SlicePitch, deferred); 
 
 			return (T)data;
 		}

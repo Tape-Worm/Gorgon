@@ -117,8 +117,6 @@ namespace GorgonLibrary.Graphics
         : GorgonResource
     {
         #region Variables.
-        private static readonly object _syncLock = new object();        // Synchronization lock for threading.
-
         private GorgonViewCache _viewCache;         // Cache used to hold views for the resource.
         #endregion
 
@@ -190,15 +188,6 @@ namespace GorgonLibrary.Graphics
         }
 
         /// <summary>
-        /// Property to return whether the buffer is locked or not.
-        /// </summary>
-        public bool IsLocked
-        {
-            get;
-            private set;
-        }
-
-        /// <summary>
         /// Property to return the settings for the buffer.
         /// </summary>
         public IBufferSettings Settings
@@ -237,7 +226,7 @@ namespace GorgonLibrary.Graphics
 			// If this is a render target buffer, then ensure that we have a default resource.
 			if ((IsRenderTarget) && (Settings.Usage != BufferUsage.Default))
 			{
-				throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_RT_NEED_DEFAULT);
+				throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_RENDERTARGET_NEED_DEFAULT);
 			}
 
             // Set up the buffer.  If we're a staging buffer, then none of this stuff will 
@@ -343,11 +332,6 @@ namespace GorgonLibrary.Graphics
         /// </summary>
         protected override void CleanUpResource()
         {
-            if (IsLocked)
-            {
-                Unlock();
-            }
-
             if (D3DResource == null)
             {
                 return;
@@ -396,6 +380,28 @@ namespace GorgonLibrary.Graphics
             Gorgon.Log.Print("Destroyed {0} Buffer '{1}'.", LoggingLevel.Verbose, BufferType, Name);
         }
 
+		/// <summary>
+		/// Function to retrieve the mapping mode for locking a buffer.
+		/// </summary>
+		/// <param name="flags">Flags to use when locking.</param>
+		/// <returns>The D3D mapping mode.</returns>
+	    internal static D3D.MapMode GetMapMode(BufferLockFlags flags)
+	    {
+			if ((flags & BufferLockFlags.Read) == BufferLockFlags.Read)
+			{
+				return (flags & BufferLockFlags.Write) == BufferLockFlags.Write ? D3D.MapMode.ReadWrite : D3D.MapMode.Read;
+			}
+
+			if ((flags & BufferLockFlags.Discard) == BufferLockFlags.Discard)
+			{
+				return D3D.MapMode.WriteDiscard;
+			}
+
+			return (flags & BufferLockFlags.NoOverwrite) == BufferLockFlags.NoOverwrite
+				? D3D.MapMode.WriteNoOverwrite
+				: D3D.MapMode.Write;
+	    }
+
         /// <summary>
         /// Function used to lock the underlying buffer for reading/writing.
         /// </summary>
@@ -409,12 +415,6 @@ namespace GorgonLibrary.Graphics
         protected virtual GorgonDataStream OnLock(BufferLockFlags lockFlags, GorgonGraphics context)
         {
 #if DEBUG
-            if (((lockFlags & BufferLockFlags.Discard) != BufferLockFlags.Discard)
-                || ((lockFlags & BufferLockFlags.Write) != BufferLockFlags.Write))
-            {
-                throw new ArgumentException(Resources.GORGFX_BUFFER_LOCK_NOT_WRITE_DISCARD, "lockFlags");
-            }
-
             if ((lockFlags & BufferLockFlags.NoOverwrite) == BufferLockFlags.NoOverwrite)
             {
                 throw new ArgumentException(Resources.GORGFX_BUFFER_NO_OVERWRITE_NOT_VALID, "lockFlags");
@@ -422,7 +422,7 @@ namespace GorgonLibrary.Graphics
 #endif
             DX.DataStream lockStream;
 
-            context.Context.MapSubresource(D3DBuffer, D3D.MapMode.WriteDiscard, D3D.MapFlags.None, out lockStream);
+            context.Context.MapSubresource(D3DBuffer, GetMapMode(lockFlags), D3D.MapFlags.None, out lockStream);
 
             return new GorgonDataStream(lockStream.DataPointer, (int)lockStream.Length);
         }
@@ -611,7 +611,7 @@ namespace GorgonLibrary.Graphics
 
             if (Settings.Usage == BufferUsage.Staging)
             {
-                throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_VIEW_SRV_NO_STAGING);
+                throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_VIEW_SRV_NO_STAGING_OR_DYNAMIC);
             }
 
             if (!Settings.AllowShaderViews)
@@ -682,15 +682,7 @@ namespace GorgonLibrary.Graphics
 														  (elementCount - start)));
 			}
 
-            lock(_syncLock)
-            {
-                if (_viewCache == null)
-                {
-                    _viewCache = new GorgonViewCache(this);    
-                }
-
-                return _viewCache.GetBufferView(format, start, count, isRaw);
-            }
+            return _viewCache.GetBufferView(format, start, count, isRaw);
         }
 
         /// <summary>
@@ -980,19 +972,12 @@ namespace GorgonLibrary.Graphics
         /// </remarks>
         public void Unlock(GorgonGraphics deferred = null)
         {
-            if (!IsLocked)
-            {
-                return;
-            }
-
             if (deferred == null)
             {
                 deferred = Graphics;
             }
 
             deferred.Context.UnmapSubresource(D3DBuffer, 0);
-
-            IsLocked = false;
         }
 
         /// <summary>
@@ -1012,28 +997,43 @@ namespace GorgonLibrary.Graphics
         /// will use the specified deferred context to clear the render target.
         /// <para>If you are using a deferred context, it is necessary to use that context to lock the buffer because 2 threads may not access the same resource at the same time.  
         /// Passing a separate deferred context will alleviate that.</para>
+        /// <para>When locking using a deferred context, either the NoOverwrite or Discard flags must be provided along with a Write flag.  No other flags will work.</para>
         /// </para>
         /// </remarks>
         /// <exception cref="GorgonLibrary.GorgonException">Thrown when the buffer is already locked.
         /// <para>-or-</para>
         /// <para>Thrown when the usage for the buffer does not allow the buffer to be locked.</para>		
         /// </exception>		
-        /// <exception cref="System.ArgumentException">Thrown when a constant buffer is locked with any other flag other than Discard.
+        /// <exception cref="System.ArgumentException">Thrown when a buffer is locked with with a read flag and with discard or nooverwrite.
         /// <para>-or-</para>
-        /// <para>Thrown when an index/vertex buffer is locked with with a read flag, or a write flag without discard or nooverwrite.</para>
+        /// <para>Thrown when the lock is used with a deferred graphics context and the NoOverwrite and/or the Discard flags are not present.</para>
         /// </exception>
         public GorgonDataStream Lock(BufferLockFlags lockFlags, GorgonGraphics deferred = null)
         {
 #if DEBUG
-            if (IsLocked)
-            {
-                throw new GorgonException(GorgonResult.AccessDenied, Resources.GORGFX_BUFFER_ALREADY_LOCKED);
-            }
+			if ((Settings.Usage != BufferUsage.Staging) && (Settings.Usage != BufferUsage.Dynamic))
+			{
+				throw new GorgonException(GorgonResult.AccessDenied, string.Format(Resources.GORGFX_BUFFER_USAGE_CANT_LOCK, Settings.Usage));
+			}
 
-            if ((Settings.Usage == BufferUsage.Default) || (Settings.Usage == BufferUsage.Immutable))
-            {
-                throw new GorgonException(GorgonResult.AccessDenied, string.Format(Resources.GORGFX_BUFFER_USAGE_CANT_LOCK, Settings.Usage));
-            }
+			if ((Settings.Usage != BufferUsage.Staging) && ((lockFlags & BufferLockFlags.Read) == BufferLockFlags.Read))
+			{
+				throw new GorgonException(GorgonResult.AccessDenied, Resources.GORGFX_LOCK_CANNOT_READ_NON_STAGING);
+			}
+
+			if ((((lockFlags & BufferLockFlags.NoOverwrite) == BufferLockFlags.NoOverwrite)
+				|| ((lockFlags & BufferLockFlags.Discard) == BufferLockFlags.Discard))
+				&& ((lockFlags & BufferLockFlags.Read) == BufferLockFlags.Read))
+			{
+				throw new ArgumentException(Resources.GORGFX_LOCK_CANNOT_USE_WITH_READ, "lockFlags");
+			}
+
+	        if ((deferred != null)
+				&& (((lockFlags & BufferLockFlags.NoOverwrite) != BufferLockFlags.NoOverwrite)
+					|| ((lockFlags & BufferLockFlags.Discard) != BufferLockFlags.Discard)))
+	        {
+		        throw new ArgumentException(Resources.GORGFX_LOCK_NEED_DISCARD_NOOVERWRITE, "lockFlags");
+	        }
 #endif
 
             if (deferred == null)
@@ -1041,11 +1041,7 @@ namespace GorgonLibrary.Graphics
                 deferred = Graphics;
             }
 
-            GorgonDataStream result = OnLock(lockFlags, deferred);
-
-            IsLocked = true;
-
-            return result;
+            return OnLock(lockFlags, deferred);
         }
 
 		/// <summary>
@@ -1079,6 +1075,8 @@ namespace GorgonLibrary.Graphics
         protected GorgonBaseBuffer(GorgonGraphics graphics, string name, IBufferSettings settings)
             : base(graphics, name)
         {
+			_viewCache = new GorgonViewCache(this);
+
             Settings = settings;
 
             D3DUsage = (D3D.ResourceUsage)settings.Usage;

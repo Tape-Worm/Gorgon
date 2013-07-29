@@ -94,6 +94,37 @@ namespace GorgonLibrary.Graphics.Test
             }
         }
 
+	    [TestMethod]
+	    public void TestDynamicUnorderedView()
+	    {
+		    GorgonTexture2D texture = null;
+
+		    try
+		    {
+				texture = _framework.Graphics.Textures.CreateTexture("Test2D",
+												 new GorgonTexture2DSettings
+												 {
+													 Width = 256,
+													 Height = 256,
+													 ArrayCount = 1,
+													 Format = BufferFormat.R8G8B8A8,
+													 MipCount = 1,
+													 AllowUnorderedAccessViews = true,
+													 Usage = BufferUsage.Dynamic
+												 });
+
+			    texture.GetUnorderedAccessView(BufferFormat.R8G8B8A8_Int);
+		    }
+		    finally
+		    {
+			    if (texture != null)
+			    {
+				    texture.Dispose();
+			    }
+		    }
+	    }
+
+
         /// <summary>
         /// Test for failure on staging textures.
         /// </summary>
