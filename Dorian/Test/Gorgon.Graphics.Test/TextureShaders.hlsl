@@ -1,5 +1,6 @@
 Texture2D<int> _texture : register(t0);
 Texture2D _textureView2 : register(t1);
+Texture2D _dynTexture : register(t2);
 SamplerState _sampler : register(s0);
 
 struct VS_IN
@@ -37,4 +38,17 @@ float4 TestPS( PS_IN input ) : SV_Target
 	pixel.w = 1.0f;
 
 	return (_textureView2.Sample(_sampler, input.uv) + pixel) * input.col;		
+}
+
+float4 TestPSGeneric(PS_IN input) : SV_Target
+{
+	float4 dynTexel = _dynTexture.Sample(_sampler, input.uv);
+	float4 texel = _textureView2.Sample(_sampler, input.uv);
+
+	if (dynTexel.a > 0)
+	{
+		return dynTexel;
+	}
+
+	return texel;
 }

@@ -277,7 +277,7 @@ namespace GorgonLibrary.Graphics.Test
 			Graphics.Rasterizer.States = GorgonRasterizerStates.CullBackFace;
 			Graphics.Shaders.VertexShader.Current = VertexShader;
 			Graphics.Shaders.PixelShader.Current = PixelShader;
-			Graphics.Shaders.PixelShader.TextureSamplers[0] = GorgonTextureSamplerStates.DefaultStates;
+			Graphics.Shaders.PixelShader.TextureSamplers[0] = GorgonTextureSamplerStates.PointFilter;
 
 			//_form.TopMost = true;
 

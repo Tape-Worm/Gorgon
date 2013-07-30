@@ -107,7 +107,7 @@ namespace GorgonLibrary.Renderers
 		private readonly Gorgon2D _gorgon2D;
 		private GorgonBlendStates _blendState = GorgonBlendStates.DefaultStates;
 		private GorgonRasterizerStates _rasterState = GorgonRasterizerStates.CullBackFace;
-		private GorgonTextureSamplerStates _samplerState = GorgonTextureSamplerStates.DefaultStates;
+		private GorgonTextureSamplerStates _samplerState = GorgonTextureSamplerStates.LinearFilter;
 		private GorgonVertexBufferBinding _vertexBuffer = default(GorgonVertexBufferBinding);
 		private GorgonDepthStencilStates _depthState = GorgonDepthStencilStates.NoDepthStencil;
 		private GorgonColor _blendFactor = new GorgonColor(1.0f, 1.0f, 1.0f, 1.0f);
