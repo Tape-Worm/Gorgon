@@ -223,7 +223,7 @@ namespace GorgonLibrary.Graphics
                 
                 for (int i = 0; i < Count; i++)
                 {
-                    this[i] = GorgonTextureSamplerStates.DefaultStates;
+                    this[i] = GorgonTextureSamplerStates.LinearFilter;
                 }
             }
 

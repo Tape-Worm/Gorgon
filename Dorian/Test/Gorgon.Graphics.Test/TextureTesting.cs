@@ -62,6 +62,124 @@ namespace GorgonLibrary.Graphics.Test
 			_framework = new GraphicsFramework();
         }
 
+        [TestMethod]
+        public void TestTextureUpdate()
+        {
+            float diver = 1.0f;
+
+            var shader = _framework.Graphics.Shaders.FromMemory<GorgonPixelShader>("PS",
+                "TestPSGeneric",
+                Resources.TextureShaders);
+
+            var texture = _framework.Graphics.Textures.CreateTexture("Texture",
+                new GorgonTexture2DSettings
+                {
+                    ArrayCount = 1,
+                    Format = BufferFormat.R8G8B8A8_UIntNormal,
+                    MipCount = 4,
+                    Height = 256,
+                    Width = 256,
+                    Usage = BufferUsage.Default
+                });
+
+            var dynTexture = _framework.Graphics.Textures.CreateTexture("DynTexture",
+                new GorgonTexture2DSettings
+                {
+                    ArrayCount = 1,
+                    Format = BufferFormat.R8G8B8A8_UIntNormal,
+                    MipCount = 1,
+                    Height = 256,
+                    Width = 256,
+                    Usage = BufferUsage.Dynamic
+                });
+
+            var imageData = GorgonImageData.CreateFromGDIImage(Resources.Glass,
+                ImageType.Image2D,
+                new GorgonGDIOptions
+                {
+                    Format = BufferFormat.R8G8B8A8_UIntNormal,
+                    MipCount = 4
+                });
+
+            _framework.CreateTestScene(Shaders, Shaders, true);
+            _framework.Graphics.Shaders.PixelShader.Current = shader;
+            _framework.Graphics.Shaders.PixelShader.Resources[1] = texture;
+
+            texture.UpdateSubResource(imageData[0],
+                new GorgonBox
+                {
+                    Depth = 1,
+                    Front = 0,
+                    Width = 128,
+                    Height = 128,
+                    Left = 0,
+                    Top = 0
+                });
+
+            texture.UpdateSubResource(imageData[1],
+                new GorgonBox
+                {
+                    Depth = 1,
+                    Front = 0,
+                    Width = 64,
+                    Height = 64,
+                    Left = 128,
+                    Top = 0
+                }, 0, 0);
+
+
+            _framework.IdleFunc = () =>
+            {
+                _framework.Graphics.Shaders.PixelShader.Resources[2] = null;
+
+                var lockData = dynTexture.Lock(BufferLockFlags.Write | BufferLockFlags.Discard);
+
+                for (int i = 0; i < 8192; ++i)
+                {
+                    /*int y = GorgonRandom.RandomInt32(0, imageData[0].Height);
+                    int x = GorgonRandom.RandomInt32(0, imageData[0].Width);*/
+                    int y = 99;
+                    int x = 31;
+
+                    // 95417E
+
+                    imageData[0].Data.Position = (y * imageData[0].PitchInformation.RowPitch)
+                                                 + (x * 4);
+
+                    lockData.Data.Position = (y * lockData.PitchInformation.RowPitch)
+                                             + (x * dynTexture.FormatInformation.SizeInBytes);
+
+                    var color = GorgonColor.FromABGR(imageData[0].Data.ReadInt32());
+
+                    color = new GorgonColor(color.Red / diver, color.Green / diver, color.Blue / diver);
+
+                    lockData.Data.Write(color.ToABGR());
+                    
+                    /*lockData.Data.Write(Color.FromArgb(color.ToARGB()).R);
+                    lockData.Data.Write(Color.FromArgb(color.ToARGB()).G);
+                    lockData.Data.Write(Color.FromArgb(color.ToARGB()).B);
+                    lockData.Data.Write(Color.FromArgb(color.ToARGB()).A);*/
+                }
+
+                dynTexture.Unlock();
+
+                diver += 4 * GorgonTiming.Delta;
+
+                if (diver > 32.0f)
+                {
+                    diver = 1.0f;
+                }
+
+                _framework.Graphics.Shaders.PixelShader.Resources[2] = dynTexture;
+
+                return false;
+            };
+
+            
+
+            Assert.IsTrue(_framework.Run() == DialogResult.Yes);
+        }
+
         /// <summary>
         /// Test for failure on staging textures.
         /// </summary>

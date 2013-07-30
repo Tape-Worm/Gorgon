@@ -376,7 +376,7 @@ namespace GorgonLibrary.Graphics.Test
 			_graphics.Shaders.VertexShader.Current = _vs;
 			_graphics.Shaders.PixelShader.Current = _ps;
 
-			_graphics.Shaders.PixelShader.TextureSamplers.SetRange(0, new[] { GorgonTextureSamplerStates.DefaultStates, GorgonTextureSamplerStates.DefaultStates });
+			_graphics.Shaders.PixelShader.TextureSamplers.SetRange(0, new[] { GorgonTextureSamplerStates.LinearFilter, GorgonTextureSamplerStates.LinearFilter });
 
 			_graphics.Rasterizer.SetViewport(_swap.Viewport);
 		    _graphics.Output.DepthStencilState.States = _depthStateAlpha;

@@ -156,7 +156,7 @@ namespace GorgonLibrary.Graphics
 		{
 			GorgonColor channels = bgraColor;
 
-			return new GorgonColor(channels.Alpha, channels.Red, channels.Green, channels.Blue);
+			return new GorgonColor(channels.Green, channels.Red, channels.Alpha, channels.Blue);
 		}
 
 		/// <summary>

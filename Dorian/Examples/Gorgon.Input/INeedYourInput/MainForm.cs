@@ -116,7 +116,7 @@ namespace GorgonLibrary.Examples
 					break;
 				case KeyboardKeys.C:
 					// Fill the back up image with white.
-					var imageLock = _backupImage.Lock<GorgonTexture2DData>(BufferLockFlags.Write);					
+					var imageLock = _backupImage.Lock(BufferLockFlags.Write);					
 					imageLock.Data.Fill(0xFF);
 					_backupImage.Unlock();
 					_backBuffer.CopySubResource(_backupImage,
@@ -414,7 +414,7 @@ namespace GorgonLibrary.Examples
 
 				// Clear our backup image to white to match our primary screen.
 				_backupImage = _graphics.Textures.CreateTexture("Backup", settings);
-				var textureData = _backupImage.Lock<GorgonTexture2DData>(BufferLockFlags.Write);
+				var textureData = _backupImage.Lock(BufferLockFlags.Write);
 				textureData.Data.Fill(0xFF);
 				_backupImage.Unlock();
 

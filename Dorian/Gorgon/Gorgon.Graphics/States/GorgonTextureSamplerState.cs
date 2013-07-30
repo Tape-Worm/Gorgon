@@ -139,9 +139,9 @@ namespace GorgonLibrary.Graphics
 	{
 		#region Variables.
 		/// <summary>
-		/// Default texture sampler states.
+		/// Texture sampler state with linear filtering.
 		/// </summary>
-		public static readonly GorgonTextureSamplerStates DefaultStates = new GorgonTextureSamplerStates
+		public static readonly GorgonTextureSamplerStates LinearFilter = new GorgonTextureSamplerStates
 			{
 				TextureFilter = TextureFilter.Linear,
 				HorizontalAddressing = TextureAddressing.Clamp,
@@ -155,6 +155,22 @@ namespace GorgonLibrary.Graphics
 				MaxLOD = 3.402823466e+38f
 			};
 
+        /// <summary>
+        /// Texture sampler state with point filtering.
+        /// </summary>
+        public static readonly GorgonTextureSamplerStates PointFilter = new GorgonTextureSamplerStates
+        {
+            TextureFilter = TextureFilter.Point,
+            HorizontalAddressing = TextureAddressing.Clamp,
+            VerticalAddressing = TextureAddressing.Clamp,
+            DepthAddressing = TextureAddressing.Clamp,
+            MipLODBias = 0.0f,
+            MaxAnisotropy = 1,
+            ComparisonFunction = ComparisonOperators.Never,
+            BorderColor = System.Drawing.Color.White,
+            MinLOD = -3.402823466e+38f,
+            MaxLOD = 3.402823466e+38f
+        };
 
 		/// <summary>
 		/// Filtering to apply to the texture.

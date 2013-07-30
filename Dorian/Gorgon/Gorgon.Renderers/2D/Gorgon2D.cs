@@ -917,7 +917,7 @@ namespace GorgonLibrary.Renderers
 
 			if (PixelShader != null)
 			{
-				GorgonTextureSamplerStates sampler = GorgonTextureSamplerStates.DefaultStates;
+				GorgonTextureSamplerStates sampler = GorgonTextureSamplerStates.LinearFilter;
 				sampler.TextureFilter = TextureFilter.Point;
 				Graphics.Shaders.PixelShader.TextureSamplers[0] = sampler;
 				Graphics.Shaders.PixelShader.Resources[0] = null;

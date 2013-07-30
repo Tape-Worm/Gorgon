@@ -468,7 +468,7 @@ namespace GorgonLibrary.Graphics.Example
 			// is supposed to be bilinear filtered or point filtered?)
 			Graphics.Shaders.PixelShader.Current = _pixelShader;
 			Graphics.Shaders.PixelShader.Resources[0] = _texture;
-			Graphics.Shaders.PixelShader.TextureSamplers[0] = GorgonTextureSamplerStates.DefaultStates;
+			Graphics.Shaders.PixelShader.TextureSamplers[0] = GorgonTextureSamplerStates.LinearFilter;
 
 			// Turn on alpha blending.
 			// Pretty much what this is.  Turning on alpha blending (for our shadow).

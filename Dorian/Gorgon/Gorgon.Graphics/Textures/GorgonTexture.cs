@@ -1004,12 +1004,12 @@ namespace GorgonLibrary.Graphics
             // Ensure the box fits the source.
             destBox = new GorgonBox
             {
-                Front = destBox.Front.Max(0).Min(buffer.Depth - 1).Min(Settings.Depth - 1),
-                Left = destBox.Left.Max(0).Min(buffer.Width - 1).Min(Settings.Width - 1),
-                Top = destBox.Top.Max(0).Min(buffer.Height - 1).Min(Settings.Height - 1),
-                Depth = destBox.Depth.Max(1).Min(buffer.Depth).Min(Settings.Depth),
-                Width = destBox.Width.Max(1).Min(buffer.Width).Min(Settings.Width),
-                Height = destBox.Height.Max(1).Min(buffer.Height).Min(Settings.Height)
+                Front = destBox.Front.Max(0).Min(Settings.Depth - 1),
+                Left = destBox.Left.Max(0).Min(Settings.Width - 1),
+                Top = destBox.Top.Max(0).Min(Settings.Height - 1),
+                Depth = destBox.Depth.Max(1).Min(Settings.Depth),
+                Width = destBox.Width.Max(1).Min(Settings.Width),
+                Height = destBox.Height.Max(1).Min(Settings.Height)
             };
 
             if (destArrayIndex == null)
