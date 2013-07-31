@@ -97,7 +97,6 @@ namespace GorgonLibrary.Graphics.Test
                 ImageType.Image2D,
                 new GorgonGDIOptions
                 {
-                    Format = BufferFormat.R8G8B8A8_UIntNormal,
                     MipCount = 4
                 });
 
@@ -134,12 +133,10 @@ namespace GorgonLibrary.Graphics.Test
 
                 var lockData = dynTexture.Lock(BufferLockFlags.Write | BufferLockFlags.Discard);
 
-                for (int i = 0; i < 8192; ++i)
+                for (int i = 0; i < 4096; ++i)
                 {
-                    /*int y = GorgonRandom.RandomInt32(0, imageData[0].Height);
-                    int x = GorgonRandom.RandomInt32(0, imageData[0].Width);*/
-                    int y = 99;
-                    int x = 31;
+                    int y = GorgonRandom.RandomInt32(0, imageData[0].Height);
+                    int x = GorgonRandom.RandomInt32(0, imageData[0].Width);
 
                     // 95417E
 
@@ -149,12 +146,13 @@ namespace GorgonLibrary.Graphics.Test
                     lockData.Data.Position = (y * lockData.PitchInformation.RowPitch)
                                              + (x * dynTexture.FormatInformation.SizeInBytes);
 
-                    var color = GorgonColor.FromABGR(imageData[0].Data.ReadInt32());
+                    var color = new GorgonColor(imageData[0].Data.ReadInt32());
 
                     color = new GorgonColor(color.Red / diver, color.Green / diver, color.Blue / diver);
 
-                    lockData.Data.Write(color.ToABGR());
-                    
+                    lockData.Data.Write(color.ToARGB());
+                    //lockData.Data.Write(0xFF00FF00);
+
                     /*lockData.Data.Write(Color.FromArgb(color.ToARGB()).R);
                     lockData.Data.Write(Color.FromArgb(color.ToARGB()).G);
                     lockData.Data.Write(Color.FromArgb(color.ToARGB()).B);
