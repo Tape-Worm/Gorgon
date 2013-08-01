@@ -99,6 +99,7 @@
     <Compile Include="GorgonBufferFormats.cs" />
     <Compile Include="GorgonColor.cs" />
     <Compile Include="GorgonGraphics.cs" />
+    <Compile Include="Textures\GorgonTextureLockCache.cs" />
     <Compile Include="GorgonRenderCommands.cs" />
     <Compile Include="GorgonRenderStatistics.cs" />
     <Compile Include="IO\GorgonCodecHDP.cs" />
@@ -186,6 +187,7 @@
     <Compile Include="IO\GorgonGDIImageConverter.cs" />
     <Compile Include="Textures\GorgonImageBuffer.cs" />
     <Compile Include="Textures\GorgonImageData.cs" />
+    <Compile Include="Textures\GorgonTextureLockData.cs" />
     <Compile Include="Textures\GorgonTexture.cs" />
     <Compile Include="Textures\GorgonTexture1D.cs">
       <SubType>Code</SubType>

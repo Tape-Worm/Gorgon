@@ -65,24 +65,6 @@ namespace GorgonLibrary.Graphics
 
 		#region Methods.
         /// <summary>
-        /// Function to return sub resource data for a lock operation.
-        /// </summary>
-        /// <param name="dataStream">Stream containing the data.</param>
-        /// <param name="rowPitch">The number of bytes per row of the texture.</param>
-        /// <param name="slicePitch">The number of bytes per depth slice of the texture.</param>
-        /// <param name="context">The graphics context to use when locking the texture.</param>
-        /// <returns>
-        /// The sub resource data.
-        /// </returns>
-        /// <remarks>
-        /// The <paramref name="context" /> allows a separate thread to access the resource at the same time as another thread.
-        /// </remarks>
-		protected override ISubResourceData OnGetLockSubResourceData(IO.GorgonDataStream dataStream, int rowPitch, int slicePitch, GorgonGraphics context)
-		{
-			return new GorgonTexture3DData(dataStream, rowPitch, slicePitch);
-		}
-
-        /// <summary>
         /// Function to copy data from the CPU to a texture.
         /// </summary>
         /// <param name="data">Data to copy to the texture.</param>
@@ -183,6 +165,35 @@ namespace GorgonLibrary.Graphics
 				D3DResource = new D3D.Texture3D(Graphics.D3DDevice, desc);
 			}
 		}
+
+        /// <summary>
+        /// Function to lock a CPU accessible texture sub resource for reading/writing.
+        /// </summary>
+        /// <param name="lockFlags">Flags used to lock.</param>
+        /// <param name="mipLevel">[Optional] The mip-map level of the sub resource to lock.</param>
+        /// <param name="deferred">[Optional] The deferred graphics context used to lock the texture.</param>
+        /// <returns>A stream used to write to the texture.</returns>
+        /// <remarks>This method is used to lock down a sub resource in the texture for reading/writing. When locking a texture, the entire texture sub resource is locked and returned.  There is no setting to return a portion of the texture subresource.
+        /// <para>This method is only available to textures created with a staging or dynamic usage setting.  Otherwise an exception will be raised.</para>
+        /// <para>Only the Write, Discard (with the Write flag) and Read flags may be used in the <paramref name="lockFlags"/> parameter.  The Read flag can only be used with staging textures and is mutually exclusive.</para>
+        /// <para>If the <paramref name="deferred"/> parameter is NULL (Nothing in VB.Net), then the immediate context is used.  Use a deferred context to allow multiple threads to lock the 
+        /// texture at the same time.</para>
+        /// </remarks>
+        /// <returns>This method will return a <see cref="GorgonLibrary.Graphics.GorgonTextureLockData">GorgonTextureLockData</see> object containing information about the locked sub resource as well as 
+        /// a <see cref="GorgonLibrary.IO.GorgonDataStream">GorgonDataStream</see> that is used to access the locked sub resource data.</returns>
+        /// <exception cref="System.ArgumentException">Thrown when the texture is not a dynamic or staging texture.
+        /// <para>-or-</para>
+        /// <para>Thrown when the texture is not a staging texture and the Read flag has been specified.</para>
+        /// <para>-or-</para>
+        /// <para>Thrown when the texture is not a dynamic texture and the discard flag has been specified.</para>
+        /// </exception>
+        /// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="mipLevel"/> parameter is less than 0, or larger than the mip count in the texture settings.</exception>
+        public GorgonTextureLockData Lock(BufferLockFlags lockFlags,
+            int mipLevel = 0,
+            GorgonGraphics deferred = null)
+        {
+            return OnLock(lockFlags, 0, mipLevel, deferred);
+        }
 
         /// <summary>
         /// Function to retrieve a shader resource view object.

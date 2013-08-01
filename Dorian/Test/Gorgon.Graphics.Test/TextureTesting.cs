@@ -131,37 +131,36 @@ namespace GorgonLibrary.Graphics.Test
             {
                 _framework.Graphics.Shaders.PixelShader.Resources[2] = null;
 
-                var lockData = dynTexture.Lock(BufferLockFlags.Write | BufferLockFlags.Discard);
-
-                for (int i = 0; i < 4096; ++i)
+                using(var lockData = dynTexture.Lock(BufferLockFlags.Write | BufferLockFlags.Discard))
                 {
-                    int y = GorgonRandom.RandomInt32(0, imageData[0].Height);
-                    int x = GorgonRandom.RandomInt32(0, imageData[0].Width);
+                    for (int i = 0; i < 4096; ++i)
+                    {
+                        int y = GorgonRandom.RandomInt32(0, imageData[0].Height);
+                        int x = GorgonRandom.RandomInt32(0, imageData[0].Width);
 
-                    // 95417E
+                        // 95417E
 
-                    imageData[0].Data.Position = (y * imageData[0].PitchInformation.RowPitch)
-                                                 + (x * 4);
+                        imageData[0].Data.Position = (y * imageData[0].PitchInformation.RowPitch)
+                                                     + (x * 4);
 
-                    lockData.Data.Position = (y * lockData.PitchInformation.RowPitch)
-                                             + (x * dynTexture.FormatInformation.SizeInBytes);
+                        lockData.Data.Position = (y * lockData.PitchInformation.RowPitch)
+                                                 + (x * dynTexture.FormatInformation.SizeInBytes);
 
-                    var color = new GorgonColor(imageData[0].Data.ReadInt32());
+                        var color = new GorgonColor(imageData[0].Data.ReadInt32());
 
-                    color = new GorgonColor(color.Red / diver, color.Green / diver, color.Blue / diver);
+                        color = new GorgonColor(color.Red / diver, color.Green / diver, color.Blue / diver);
 
-                    lockData.Data.Write(color.ToARGB());
-                    //lockData.Data.Write(0xFF00FF00);
+                        lockData.Data.Write(color.ToARGB());
+                        //lockData.Data.Write(0xFF00FF00);
 
-                    /*lockData.Data.Write(Color.FromArgb(color.ToARGB()).R);
+                        /*lockData.Data.Write(Color.FromArgb(color.ToARGB()).R);
                     lockData.Data.Write(Color.FromArgb(color.ToARGB()).G);
                     lockData.Data.Write(Color.FromArgb(color.ToARGB()).B);
                     lockData.Data.Write(Color.FromArgb(color.ToARGB()).A);*/
+                    }
                 }
 
-                dynTexture.Unlock();
-
-                diver += 4 * GorgonTiming.Delta;
+                diver += 0.5f * GorgonTiming.Delta;
 
                 if (diver > 32.0f)
                 {

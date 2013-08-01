@@ -45,7 +45,7 @@ float4 TestPSGeneric(PS_IN input) : SV_Target
 	float4 dynTexel = _dynTexture.Sample(_sampler, input.uv);
 	float4 texel = _textureView2.Sample(_sampler, input.uv);
 
-	if (dynTexel.a > 0)
+	if (input.uv.x <= 0.5f)
 	{
 		return dynTexel;
 	}

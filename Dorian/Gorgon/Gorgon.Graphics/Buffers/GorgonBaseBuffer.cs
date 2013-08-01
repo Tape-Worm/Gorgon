@@ -25,12 +25,12 @@
 #endregion
 
 using System;
-using GorgonLibrary.Native;
 using DX = SharpDX;
 using D3D = SharpDX.Direct3D11;
 using GorgonLibrary.IO;
 using GorgonLibrary.Diagnostics;
 using GorgonLibrary.Graphics.Properties;
+using GorgonLibrary.Native;
 
 namespace GorgonLibrary.Graphics
 {
@@ -1041,7 +1041,9 @@ namespace GorgonLibrary.Graphics
                 deferred = Graphics;
             }
 
-            return OnLock(lockFlags, deferred);
+            var result = OnLock(lockFlags, deferred);
+
+            return result;
         }
 
 		/// <summary>

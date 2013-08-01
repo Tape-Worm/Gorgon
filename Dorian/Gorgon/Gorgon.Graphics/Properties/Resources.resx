@@ -117,9 +117,6 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="GORGFX_BUFFER_ALREADY_LOCKED" xml:space="preserve">
-    <value>The buffer is already locked.</value>
-  </data>
   <data name="GORGFX_BUFFER_IMMUTABLE" xml:space="preserve">
     <value>This buffer is immutable and this cannot be updated.</value>
   </data>
@@ -648,5 +645,8 @@ Log file location: "{0}"</value>
   </data>
   <data name="GORGFX_TEXTURE_MUST_BE_SAME_SIZE" xml:space="preserve">
     <value>The textures must be the same width and height.</value>
+  </data>
+  <data name="GORGFX_RESOURCE_INVALID" xml:space="preserve">
+    <value>The resource type [{0}] is invalid.</value>
   </data>
 </root>
