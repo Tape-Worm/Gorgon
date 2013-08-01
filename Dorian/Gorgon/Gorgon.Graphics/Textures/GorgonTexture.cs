@@ -45,6 +45,7 @@ namespace GorgonLibrary.Graphics
 		#region Variables.
 	    private bool _disposed;                                 // Flag to indicate that the object was disposed.
 		private GorgonViewCache _viewCache;						// Cache for views.
+	    private GorgonTextureLockCache _lockCache;              // Cache for locks.
 		private GorgonTextureShaderView _defaultShaderView;		// The default shader view for the texture.
 		#endregion
 
@@ -116,6 +117,12 @@ namespace GorgonLibrary.Graphics
                 {
                     Gorgon.Log.Print("Gorgon texture {0}: Unbound from shaders.", LoggingLevel.Verbose, Name);
                     Graphics.Shaders.UnbindResource(this);
+
+                    if (_lockCache != null)
+                    {
+                        _lockCache.Dispose();
+                        _lockCache = null;
+                    }
 
                     // Unbind the view(s).
                     if (_viewCache != null)
@@ -525,17 +532,6 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
-		/// Function to return sub resource data for a lock operation.
-		/// </summary>
-		/// <param name="dataStream">Stream containing the data.</param>
-		/// <param name="rowPitch">The number of bytes per row of the texture.</param>
-		/// <param name="slicePitch">The number of bytes per depth slice of the texture.</param>
-		/// <param name="context">The graphics context to use when locking the texture.</param>
-		/// <returns>The sub resource data.</returns>
-        /// <remarks>The <paramref name="context"/> allows a separate thread to access the resource at the same time as another thread.</remarks>
-		protected abstract ISubResourceData OnGetLockSubResourceData(GorgonDataStream dataStream, int rowPitch, int slicePitch, GorgonGraphics context);
-
-		/// <summary>
 		/// Function to copy data from the CPU to a texture.
 		/// </summary>
 		/// <param name="data">Data to copy to the texture.</param>
@@ -558,6 +554,79 @@ namespace GorgonLibrary.Graphics
 		/// <para>To initialize the texture, create a new <see cref="GorgonLibrary.Graphics.GorgonImageData">GorgonImageData</see> object and fill it with image information.</para>
 		/// </remarks>
 		protected abstract void OnInitialize(GorgonImageData initialData);
+
+        /// <summary>
+        /// Function to lock a CPU accessible texture sub resource for reading/writing.
+        /// </summary>
+        /// <param name="lockFlags">Flags used to lock.</param>
+        /// <param name="arrayIndex">Array index of the sub resource to lock.</param>
+        /// <param name="mipLevel">The mip-map level of the sub resource to lock.</param>
+        /// <param name="deferred">The deferred graphics context used to lock the texture.</param>
+        /// <returns>A stream used to write to the texture.</returns>
+        /// <remarks>This method is used to lock down a sub resource in the texture for reading/writing. When locking a texture, the entire texture sub resource is locked and returned.  There is no setting to return a portion of the texture subresource.
+        /// <para>This method is only available to textures created with a staging or dynamic usage setting.  Otherwise an exception will be raised.</para>
+        /// <para>Only the Write, Discard (with the Write flag) and Read flags may be used in the <paramref name="lockFlags"/> parameter.  The Read flag can only be used with staging textures and is mutually exclusive.</para>
+        /// <para>If the <paramref name="deferred"/> parameter is NULL (Nothing in VB.Net), then the immediate context is used.  Use a deferred context to allow multiple threads to lock the 
+        /// texture at the same time.</para>
+        /// </remarks>
+        /// <returns>This method will return a <see cref="GorgonLibrary.Graphics.GorgonTextureLockData">GorgonTextureLockData</see> object containing information about the locked sub resource as well as 
+        /// a <see cref="GorgonLibrary.IO.GorgonDataStream">GorgonDataStream</see> that is used to access the locked sub resource data.</returns>
+        /// <exception cref="System.ArgumentException">Thrown when the texture is not a dynamic or staging texture.
+        /// <para>-or-</para>
+        /// <para>Thrown when the texture is not a staging texture and the Read flag has been specified.</para>
+        /// <para>-or-</para>
+        /// <para>Thrown when the texture is not a dynamic texture and the discard flag has been specified.</para>
+        /// </exception>
+        /// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="arrayIndex"/> or the <paramref name="mipLevel"/> parameters are less than 0, or larger than their respective counts in the texture settings.</exception>
+        protected GorgonTextureLockData OnLock(BufferLockFlags lockFlags, int arrayIndex, int mipLevel, GorgonGraphics deferred)
+        {
+#if DEBUG
+            if ((arrayIndex < 0) || (arrayIndex >= Settings.ArrayCount))
+            {
+                throw new ArgumentOutOfRangeException("arrayIndex",
+                    string.Format(Resources.GORGFX_INDEX_OUT_OF_RANGE, arrayIndex, 0, Settings.ArrayCount));
+            }
+
+            if ((mipLevel < 0) || (mipLevel >= Settings.MipCount))
+            {
+                throw new ArgumentOutOfRangeException("mipLevel",
+                    string.Format(Resources.GORGFX_INDEX_OUT_OF_RANGE, mipLevel, 0, Settings.MipCount));
+            }
+
+            if ((Settings.Usage != BufferUsage.Staging) && (Settings.Usage != BufferUsage.Dynamic))
+            {
+                throw new GorgonException(GorgonResult.AccessDenied, string.Format(Resources.GORGFX_BUFFER_USAGE_CANT_LOCK, Settings.Usage));
+            }
+
+            if ((Settings.Usage != BufferUsage.Staging) && ((lockFlags & BufferLockFlags.Read) == BufferLockFlags.Read))
+            {
+                throw new GorgonException(GorgonResult.AccessDenied, Resources.GORGFX_LOCK_CANNOT_READ_NON_STAGING);
+            }
+
+            if ((lockFlags & BufferLockFlags.NoOverwrite) == BufferLockFlags.NoOverwrite)
+            {
+                throw new ArgumentException(Resources.GORGFX_BUFFER_NO_OVERWRITE_NOT_VALID, "lockFlags");
+            }
+
+            if (((lockFlags & BufferLockFlags.Discard) == BufferLockFlags.Discard)
+                && ((lockFlags & BufferLockFlags.Read) == BufferLockFlags.Read))
+            {
+                throw new ArgumentException(Resources.GORGFX_LOCK_CANNOT_USE_WITH_READ, "lockFlags");
+            }
+
+            if ((deferred != null)
+                && ((lockFlags & BufferLockFlags.Discard) != BufferLockFlags.Discard))
+            {
+                throw new ArgumentException(Resources.GORGFX_LOCK_NEED_DISCARD_NOOVERWRITE, "lockFlags");
+            }
+#endif
+            if (deferred == null)
+            {
+                deferred = Graphics;
+            }
+
+            return _lockCache.Lock(lockFlags, mipLevel, arrayIndex, deferred);
+        }
 
         /// <summary>
         /// Funtion to retrieve the binding flags for a resource.
@@ -1073,125 +1142,6 @@ namespace GorgonLibrary.Graphics
 			UpdateSubResource(data, 0, deferred);
 		}
 
-        /// <summary>
-		/// Function to lock a CPU accessible texture sub resource for reading/writing.
-		/// </summary>
-		/// <param name="subResource">Sub resource to lock.</param>
-		/// <param name="lockFlags">Flags used to lock.</param>
-		/// <param name="deferred">[Optional] The deferred graphics context used to lock the texture.</param>
-		/// <returns>A stream used to write to the texture.</returns>
-		/// <remarks>When locking a texture, the entire texture sub resource is locked and returned.  There is no setting to return a portion of the texture subresource.
-		/// <para>This method is only available to textures created with a staging or dynamic usage setting.  Otherwise an exception will be raised.</para>
-		/// <para>The NoOverwrite flag is not valid with texture locking and will be ignored.</para>
-		/// <para>If the texture is not a staging texture and Read is specified, then an exception will be raised.</para>
-		/// <para>Discard is only applied to dynamic textures.  If the texture is not dynamic, then an exception will be raised.</para>
-		/// <para>If the <paramref name="deferred"/> parameter is NULL (Nothing in VB.Net), then the immediate context is used.  Use a deferred context to allow multiple threads to lock the 
-		/// texture at the same time.</para>
-		/// </remarks>
-		/// <returns>The locked data stream and information about the lock.</returns>
-		/// <exception cref="System.ArgumentException">Thrown when the texture is not a dynamic or staging texture.
-		/// <para>-or-</para>
-		/// <para>Thrown when the texture is not a staging texture and the Read flag has been specified.</para>
-		/// <para>-or-</para>
-		/// <para>Thrown when the texture is not a dynamic texture and the discard flag has been specified.</para>
-		/// </exception>
-		/// <typeparam name="T">The type of locking data.  This must be one of <see cref="GorgonLibrary.Graphics.GorgonTexture1DData">GorgonTexture1DData</see>, <see cref="GorgonLibrary.Graphics.GorgonTexture2DData">GorgonTexture2DData</see> or <see cref="GorgonLibrary.Graphics.GorgonTexture3DData">GorgonTexture3DData</see></typeparam>
-		public unsafe GorgonImageBuffer Lock(BufferLockFlags lockFlags, int arrayIndex = 0, int mipLevel = 0, GorgonGraphics deferred = null)
-		{
-			DX.DataStream lockStream;
-
-#if DEBUG
-		    if ((arrayIndex < 0) || (arrayIndex >= Settings.ArrayCount))
-		    {
-		        throw new ArgumentOutOfRangeException("arrayIndex",
-		            string.Format(Resources.GORGFX_INDEX_OUT_OF_RANGE, arrayIndex, 0, Settings.ArrayCount));
-		    }
-
-		    if ((mipLevel < 0) || (mipLevel >= Settings.MipCount))
-		    {
-		        throw new ArgumentOutOfRangeException("mipLevel",
-		            string.Format(Resources.GORGFX_INDEX_OUT_OF_RANGE, mipLevel, 0, Settings.MipCount));
-		    }
-
-			if ((Settings.Usage != BufferUsage.Staging) && (Settings.Usage != BufferUsage.Dynamic))
-			{
-				throw new GorgonException(GorgonResult.AccessDenied, string.Format(Resources.GORGFX_BUFFER_USAGE_CANT_LOCK, Settings.Usage));
-			}
-
-			if ((Settings.Usage != BufferUsage.Staging) && ((lockFlags & BufferLockFlags.Read) == BufferLockFlags.Read))
-			{
-				throw new GorgonException(GorgonResult.AccessDenied, Resources.GORGFX_LOCK_CANNOT_READ_NON_STAGING);
-			}
-
-			if ((lockFlags & BufferLockFlags.NoOverwrite) == BufferLockFlags.NoOverwrite)
-			{
-				throw new ArgumentException(Resources.GORGFX_BUFFER_NO_OVERWRITE_NOT_VALID, "lockFlags");
-			}
-
-			if (((lockFlags & BufferLockFlags.Discard) == BufferLockFlags.Discard)
-				&& ((lockFlags & BufferLockFlags.Read) == BufferLockFlags.Read))
-			{
-				throw new ArgumentException(Resources.GORGFX_LOCK_CANNOT_USE_WITH_READ, "lockFlags");
-			}
-
-			if ((deferred != null)
-				&& ((lockFlags & BufferLockFlags.Discard) != BufferLockFlags.Discard))
-			{
-				throw new ArgumentException(Resources.GORGFX_LOCK_NEED_DISCARD_NOOVERWRITE, "lockFlags");
-			}
-#endif
-            if (deferred == null)
-            {
-                deferred = Graphics;
-            }
-
-		    int subResource = D3D.Resource.CalculateSubResourceIndex(mipLevel, arrayIndex, Settings.MipCount);
-			DX.DataBox box = deferred.Context.MapSubresource(D3DResource, subResource, GetMapMode(lockFlags), D3D.MapFlags.None, out lockStream);
-		    var pitch = new GorgonFormatPitch(box.RowPitch, box.SlicePitch);
-
-		    int width = Settings.Width;
-		    int height = Settings.Height;
-		    int depth = Settings.Depth;
-
-		    for (int mip = 0; mip < mipLevel; ++mip)
-		    {
-		        if (width > 1)
-		        {
-		            width >>= 1;
-		        }
-		        if (height > 1)
-		        {
-		            height >>= 1;
-		        }
-		        if (depth > 1)
-		        {
-		            depth >>= 1;
-		        }
-		    }
-
-		    return new GorgonImageBuffer(box.DataPointer.ToPointer(),
-		        pitch,
-		        mipLevel,
-		        arrayIndex,
-		        0,
-		        width,
-		        height,
-		        depth,
-		        Settings.Format);
-		}
-
-		/// <summary>
-		/// Function to unlock a locked texture sub resource.
-		/// </summary>
-		/// <param name="subResource">The index of the sub resource to unlock.</param>
-		/// <param name="deferred">[Optional] The deferred graphics context to use when unlocking the texture.</param>
-		/// <remarks>If the <paramref name="deferred"/> parameter is NULL (Nothing in VB.Net), then the immediate context is used.  Ensure that the 
-		/// correct context is used when unlocking a resource or an exception will be thrown.</remarks>
-		public void Unlock(int arrayIndex = 0, int mipLevel = 0, GorgonGraphics deferred = null)
-		{
-			Graphics.Context.UnmapSubresource(D3DResource, D3D.Resource.CalculateSubResourceIndex(mipLevel, arrayIndex, Settings.MipCount));
-		}
-
 		/// <summary>
 		/// Function to return the default shader view for a texture.
 		/// </summary>
@@ -1225,6 +1175,7 @@ namespace GorgonLibrary.Graphics
 		{
 			Settings = settings;
             _viewCache = new GorgonViewCache(this);
+		    _lockCache = new GorgonTextureLockCache(this);
             FormatInformation = GorgonBufferFormatInfo.GetInfo(Settings.Format);
 		}
 		#endregion

@@ -116,14 +116,17 @@ namespace GorgonLibrary.Examples
 					break;
 				case KeyboardKeys.C:
 					// Fill the back up image with white.
-					var imageLock = _backupImage.Lock(BufferLockFlags.Write);					
-					imageLock.Data.Fill(0xFF);
-					_backupImage.Unlock();
-					_backBuffer.CopySubResource(_backupImage,
-														0, 0,
-														new Rectangle(0, 0, _backBuffer.Settings.Width, _backBuffer.Settings.Height),
-														Vector2.Zero);
-					break;
+			        using(var imageLock = _backupImage.Lock(BufferLockFlags.Write))
+			        {
+			            imageLock.Data.Fill(0xFF);
+			        }
+
+			        _backBuffer.CopySubResource(_backupImage,
+			                0,
+			                0,
+			                new Rectangle(0, 0, _backBuffer.Settings.Width, _backBuffer.Settings.Height),
+			                Vector2.Zero);
+			        break;
 				case KeyboardKeys.J:
 					if (_input.JoystickDevices.Count != 0)
 					{
@@ -362,6 +365,14 @@ namespace GorgonLibrary.Examples
 					IsWindowed = Properties.Settings.Default.IsWindowed
 				});
 
+                // For the backup image. Used to make it as large as the monitor that we're on.
+			    Screen currentScreen = Screen.FromHandle(Handle);
+
+                // Relocate the window to the center of the screen.				
+                Location = new Point(currentScreen.Bounds.Left + (currentScreen.WorkingArea.Width / 2) - ClientSize.Width / 2,
+                                     currentScreen.Bounds.Top + (currentScreen.WorkingArea.Height / 2) - ClientSize.Height / 2);
+
+
 				// Create the 2D renderer.
 				_2D = _graphics.Output.Create2DRenderer(_screen);
 
@@ -401,9 +412,6 @@ namespace GorgonLibrary.Examples
 				        });
 				_backBuffer.Clear(Color.White);
 
-				// Create the backup image.  Make it as large as the monitor that we're on.
-				Screen currentScreen = Screen.FromHandle(Handle);				
-
 				var settings = new GorgonTexture2DSettings
 				    {
 					Width = currentScreen.Bounds.Width,
@@ -414,13 +422,10 @@ namespace GorgonLibrary.Examples
 
 				// Clear our backup image to white to match our primary screen.
 				_backupImage = _graphics.Textures.CreateTexture("Backup", settings);
-				var textureData = _backupImage.Lock(BufferLockFlags.Write);
-				textureData.Data.Fill(0xFF);
-				_backupImage.Unlock();
-
-				// Relocate the window to the center of the screen.				
-				Location = new Point(currentScreen.Bounds.Left + (currentScreen.WorkingArea.Width / 2) - ClientSize.Width / 2,
-									 currentScreen.Bounds.Top + (currentScreen.WorkingArea.Height / 2) - ClientSize.Height / 2);
+			    using(var textureData = _backupImage.Lock(BufferLockFlags.Write))
+			    {
+			        textureData.Data.Fill(0xFF);
+			    }
 
 				// Set the mouse range and position.
 				Cursor.Position = PointToScreen(new Point(Properties.Settings.Default.Resolution.Width / 2, Properties.Settings.Default.Resolution.Height / 2));

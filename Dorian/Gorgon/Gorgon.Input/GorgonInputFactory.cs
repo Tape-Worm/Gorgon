@@ -151,19 +151,20 @@ namespace GorgonLibrary.Input
 		{
 		    Type devType = typeof(T);
 			string uuid = GetDeviceUUID(name, devType);
-			T device = null;
 
-			if (Devices.ContainsKey(uuid))
-			{
-				device = Devices[uuid] as T;
-			}
+		    if (!Devices.ContainsKey(uuid))
+		    {
+		        return null;
+		    }
 
-			if (device == null)
-			{
-			    throw new ArgumentException(string.Format(Resources.GORINP_DEVICE_ALREADY_EXISTS_TYPE_MISMATCH, devType.FullName), "name");
-			}
+		    var device = Devices[uuid] as T;
 
-			return device;
+		    if (device == null)
+		    {
+		        throw new ArgumentException(string.Format(Resources.GORINP_DEVICE_ALREADY_EXISTS_TYPE_MISMATCH, devType.FullName), "name");
+		    }
+
+		    return device;
 		}
 
 		/// <summary>

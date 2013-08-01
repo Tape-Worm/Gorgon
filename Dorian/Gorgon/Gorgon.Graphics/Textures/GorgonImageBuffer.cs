@@ -49,7 +49,7 @@ namespace GorgonLibrary.Graphics
         public int Width
         {
             get;
-            private set;
+            protected set;
         }
 
         /// <summary>
@@ -59,7 +59,7 @@ namespace GorgonLibrary.Graphics
         public int Height
         {
             get;
-            private set;
+            protected set;
         }
 
         /// <summary>
@@ -69,7 +69,7 @@ namespace GorgonLibrary.Graphics
         public int Depth
         {
             get;
-            private set;
+            protected set;
         }
 
         /// <summary>
@@ -107,7 +107,7 @@ namespace GorgonLibrary.Graphics
         public GorgonDataStream Data
         {
             get;
-            private set;
+            protected set;
         }
 
         /// <summary>
@@ -116,11 +116,24 @@ namespace GorgonLibrary.Graphics
         public GorgonFormatPitch PitchInformation
         {
             get;
-            private set;
+            protected set;
         }
         #endregion
 
         #region Constructor/Destructor.
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GorgonImageBuffer"/> class.
+        /// </summary>
+        /// <param name="mipLevel">Mip map level.</param>
+        /// <param name="arrayIndex">Array index.</param>
+        /// <param name="sliceIndex">Slice index.</param>
+        protected GorgonImageBuffer(int mipLevel, int arrayIndex, int sliceIndex)
+        {
+            MipLevel = mipLevel;
+            ArrayIndex = arrayIndex;
+            SliceIndex = sliceIndex;
+        }
+
         /// <summary>
         /// Initializes a new instance of the <see cref="GorgonImageBuffer" /> class.
         /// </summary>

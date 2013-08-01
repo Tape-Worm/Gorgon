@@ -441,9 +441,31 @@ namespace GorgonLibrary.Graphics
 			// Copy manually.
 			if (texture.Settings.Usage != BufferUsage.Default)
 			{
-			    GorgonImageBuffer textureData = texture.Lock(BufferLockFlags.Write, arrayIndex, mipLevel);
+			    GorgonTextureLockData textureData;
 
-			    try
+			    switch (Settings.ImageType)
+			    {
+			        case ImageType.Image1D:
+			            textureData = ((GorgonTexture1D)texture).Lock(BufferLockFlags.Write | BufferLockFlags.Discard,
+			                arrayIndex,
+			                mipLevel);
+			            break;
+                    case ImageType.ImageCube:
+                    case ImageType.Image2D:
+			            textureData = ((GorgonTexture2D)texture).Lock(BufferLockFlags.Write | BufferLockFlags.Discard,
+			                arrayIndex,
+			                mipLevel);
+			            break;
+                    case ImageType.Image3D:
+			            textureData = ((GorgonTexture3D)texture).Lock(BufferLockFlags.Write | BufferLockFlags.Discard,
+			                mipLevel);
+			            break;
+                    default:
+			            throw new GorgonException(GorgonResult.NotInitialized,
+			                string.Format(Resources.GORGFX_IMAGE_TYPE_INVALID, Settings.ImageType));
+			    }
+
+			    using(textureData)
 				{
 				    if ((textureData.PitchInformation.RowPitch == buffer.PitchInformation.RowPitch)
 				        && (textureData.PitchInformation.SlicePitch == buffer.PitchInformation.SlicePitch)
@@ -474,10 +496,6 @@ namespace GorgonLibrary.Graphics
 				            destDepthPtr += textureData.PitchInformation.SlicePitch;
 				        }
 				    }
-				}
-				finally
-				{
-					texture.Unlock(arrayIndex, mipLevel);
 				}
 			}
 			else
@@ -727,12 +745,34 @@ namespace GorgonLibrary.Graphics
             int sliceStride = rowStride * height;
 
             // Copy the texture data into the buffer.
-            try
-            {                
-                var textureLock = stagingTexture.Lock(BufferLockFlags.Read, arrayIndex, mipLevel);
+            GorgonTextureLockData textureLock;
+            switch (stagingTexture.Settings.ImageType)
+            {
+                case ImageType.Image1D:
+                    textureLock = ((GorgonTexture1D)stagingTexture).Lock(BufferLockFlags.Write | BufferLockFlags.Discard,
+                        arrayIndex,
+                        mipLevel);
+                    break;
+                case ImageType.ImageCube:
+                case ImageType.Image2D:
+                    textureLock = ((GorgonTexture2D)stagingTexture).Lock(BufferLockFlags.Write | BufferLockFlags.Discard,
+                        arrayIndex,
+                        mipLevel);
+                    break;
+                case ImageType.Image3D:
+                    textureLock = ((GorgonTexture3D)stagingTexture).Lock(BufferLockFlags.Write | BufferLockFlags.Discard,
+                        mipLevel);
+                    break;
+                default:
+                    throw new GorgonException(GorgonResult.NotInitialized,
+                        string.Format(Resources.GORGFX_IMAGE_TYPE_INVALID, stagingTexture.Settings.ImageType));
+            }
 
+            using(textureLock)
+            {
                 // If the strides don't match, then the texture is using padding, so copy one scanline at a time for each depth index.
-                if ((textureLock.PitchInformation.RowPitch != rowStride) || (textureLock.PitchInformation.SlicePitch != sliceStride))
+                if ((textureLock.PitchInformation.RowPitch != rowStride)
+                    || (textureLock.PitchInformation.SlicePitch != sliceStride))
                 {
                     var destData = (byte*)buffer;
                     var sourceData = (byte*)textureLock.Data.UnsafePointer;
@@ -757,10 +797,6 @@ namespace GorgonLibrary.Graphics
                     // Since we have the same row and slice stride, copy everything in one shot.
                     DirectAccess.MemoryCopy(buffer, textureLock.Data.UnsafePointer, sliceStride);
                 }
-            }
-            finally
-            {
-                stagingTexture.Unlock(arrayIndex, mipLevel);
             }
         }
 

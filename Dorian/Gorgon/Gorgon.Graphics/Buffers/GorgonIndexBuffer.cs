@@ -85,7 +85,7 @@ namespace GorgonLibrary.Graphics
 
 			context.Context.MapSubresource(D3DBuffer, GetMapMode(lockFlags), D3D11.MapFlags.None, out lockStream);
 
-			return new GorgonDataStream(lockStream.DataPointer, (int)lockStream.Length);
+            return new GorgonDataStream(lockStream.DataPointer, (int)lockStream.Length);
 		}
 
         /// <summary>

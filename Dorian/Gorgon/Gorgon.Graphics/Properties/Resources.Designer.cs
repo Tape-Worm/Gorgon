@@ -61,15 +61,6 @@ namespace GorgonLibrary.Graphics.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The buffer is already locked..
-        /// </summary>
-        internal static string GORGFX_BUFFER_ALREADY_LOCKED {
-            get {
-                return ResourceManager.GetString("GORGFX_BUFFER_ALREADY_LOCKED", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to A generic dynamic buffer must be accessible via a shader view..
         /// </summary>
         internal static string GORGFX_BUFFER_DYNAMIC_NEEDS_SHADER_VIEW {
@@ -934,6 +925,15 @@ namespace GorgonLibrary.Graphics.Properties {
         internal static string GORGFX_REQUIRES_SM {
             get {
                 return ResourceManager.GetString("GORGFX_REQUIRES_SM", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The resource type [{0}] is invalid..
+        /// </summary>
+        internal static string GORGFX_RESOURCE_INVALID {
+            get {
+                return ResourceManager.GetString("GORGFX_RESOURCE_INVALID", resourceCulture);
             }
         }
         
