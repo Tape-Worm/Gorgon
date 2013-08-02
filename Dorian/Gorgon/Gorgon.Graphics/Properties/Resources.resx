@@ -649,4 +649,7 @@ Log file location: "{0}"</value>
   <data name="GORGFX_RESOURCE_INVALID" xml:space="preserve">
     <value>The resource type [{0}] is invalid.</value>
   </data>
+  <data name="GORGFX_TYPE_CANNOT_BE_USED" xml:space="preserve">
+    <value>The type '{0}' cannot use with this method.</value>
+  </data>
 </root>

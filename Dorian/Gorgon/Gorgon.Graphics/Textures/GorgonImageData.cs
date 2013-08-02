@@ -461,8 +461,7 @@ namespace GorgonLibrary.Graphics
 			                mipLevel);
 			            break;
                     default:
-			            throw new GorgonException(GorgonResult.NotInitialized,
-			                string.Format(Resources.GORGFX_IMAGE_TYPE_INVALID, Settings.ImageType));
+			            throw new NotSupportedException(string.Format(Resources.GORGFX_IMAGE_TYPE_INVALID, Settings.ImageType));
 			    }
 
 			    using(textureData)
@@ -500,18 +499,37 @@ namespace GorgonLibrary.Graphics
 			}
 			else
 			{
-			    texture.UpdateSubResource(buffer,
-			        new GorgonBox
-			        {
-			            Front = 0,
-			            Depth = buffer.Depth,
-			            Left = 0,
-			            Width = buffer.Width,
-			            Top = 0,
-			            Height = buffer.Height
-			        },
-			        arrayIndex,
-			        mipLevel);
+			    switch (texture.ResourceType)
+			    {
+			        case ResourceType.Texture1D:
+			            ((GorgonTexture1D)texture).UpdateSubResource(buffer,
+			                new GorgonRange(0, buffer.Width),
+			                arrayIndex,
+			                mipLevel);
+			            break;
+                    case ResourceType.Texture2D:
+			            ((GorgonTexture2D)texture).UpdateSubResource(buffer,
+			                new Rectangle(0, 0, buffer.Width, buffer.Height),
+			                arrayIndex,
+			                mipLevel);
+			            break;
+                    case ResourceType.Texture3D:
+			            ((GorgonTexture3D)texture).UpdateSubResource(buffer,
+			                new GorgonBox
+			                {
+			                    Front = 0,
+                                Left = 0,
+                                Top = 0,
+                                Depth = buffer.Depth,
+                                Width = buffer.Width,
+                                Height = buffer.Height
+			                },
+			                arrayIndex,
+			                mipLevel);
+			            break;
+                    default:
+			            throw new NotSupportedException(string.Format(Resources.GORGFX_IMAGE_TYPE_INVALID, Settings.ImageType));
+			    }
 			}				
 		}
 

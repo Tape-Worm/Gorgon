@@ -1294,22 +1294,20 @@ namespace GorgonLibrary.Graphics
 			{
 				var pixels = (int*)sourcePixels.Scan0.ToPointer();
 
-				using (var stream = new GorgonDataStream(texture.SizeInBytes))
+				using (var data = new GorgonImageData(texture.Settings, pixels, texture.SizeInBytes))
 				{
-					var data = new GorgonTexture2DData(stream, sourcePixels.Stride);
-
 					for (int y = 0; y < bitmap.Height; y++)
 					{
 						int* offset = pixels + (y * bitmap.Width);
 						for (int x = 0; x < bitmap.Width; x++)
 						{
-							stream.Write(GorgonColor.FromABGR(*offset).ToARGB());
+							data[0].Data.Write(GorgonColor.FromABGR(*offset).ToARGB());
 							offset++;
 						}
 					}
 
-					stream.Position = 0;
-					texture.UpdateSubResource(data);
+                    data[0].Data.Position = 0;
+                    texture.UpdateSubResource(data[0], new Rectangle(0, 0, bitmap.Width, bitmap.Height));
 				}
 			}
 			finally
