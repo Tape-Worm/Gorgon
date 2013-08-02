@@ -1325,6 +1325,15 @@ namespace GorgonLibrary.Graphics.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The type &apos;{0}&apos; cannot use with this method..
+        /// </summary>
+        internal static string GORGFX_TYPE_CANNOT_BE_USED {
+            get {
+                return ResourceManager.GetString("GORGFX_TYPE_CANNOT_BE_USED", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The starting unordered access view slot must be between 0 and 7..
         /// </summary>
         internal static string GORGFX_UAV_SLOT_OUT_OF_RANGE {

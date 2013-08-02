@@ -105,26 +105,22 @@ namespace GorgonLibrary.Graphics.Test
             _framework.Graphics.Shaders.PixelShader.Resources[1] = texture;
 
             texture.UpdateSubResource(imageData[0],
-                new GorgonBox
+                new Rectangle
                 {
-                    Depth = 1,
-                    Front = 0,
                     Width = 128,
                     Height = 128,
-                    Left = 0,
-                    Top = 0
+                    X = 0,
+                    Y = 0
                 });
 
             texture.UpdateSubResource(imageData[1],
-                new GorgonBox
+                new Rectangle
                 {
-                    Depth = 1,
-                    Front = 0,
                     Width = 64,
                     Height = 64,
-                    Left = 128,
-                    Top = 0
-                }, 0, 0);
+                    X = 128,
+                    Y = 0
+                });
 
 
             _framework.IdleFunc = () =>

@@ -63,37 +63,6 @@ namespace GorgonLibrary.Graphics
 
 		#region Methods.
 		/// <summary>
-		/// Function to copy data from the CPU to a texture.
-		/// </summary>
-		/// <param name="data">Data to copy to the texture.</param>
-		/// <param name="subResource">Sub resource index to use.</param>
-		/// <param name="context">The graphics context to use when updating the texture.</param>
-		/// <remarks>
-		/// The <paramref name="context" /> allows a separate thread to access the resource at the same time as another thread.
-		/// </remarks>
-		protected override void OnUpdateSubResource(ISubResourceData data, int subResource, GorgonGraphics context)
-		{
-			var box = new SharpDX.DataBox
-				{
-				DataPointer = data.Data.PositionPointer,
-				RowPitch = data.RowPitch,
-				SlicePitch = data.SlicePitch
-			};
-
-			var region = new D3D.ResourceRegion
-				{
-					Front = 0,
-					Back = 1,
-					Left = 0,
-					Right = Settings.Width,
-					Top = 0,
-					Bottom = Settings.Height
-				};
-			
-			context.Context.UpdateSubresourceSafe(box, D3DResource, FormatInformation.SizeInBytes, subResource, region, FormatInformation.IsCompressed);			
-		}
-
-		/// <summary>
 		/// Function to copy this texture into a new staging texture.
 		/// </summary>
 		/// <returns>
@@ -182,7 +151,7 @@ namespace GorgonLibrary.Graphics
         /// <para>Thrown when the texture is not a dynamic texture and the discard flag has been specified.</para>
         /// </exception>
         /// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="arrayIndex"/> or the <paramref name="mipLevel"/> parameters are less than 0, or larger than their respective counts in the texture settings.</exception>
-        public GorgonTextureLockData Lock(BufferLockFlags lockFlags,
+        public virtual GorgonTextureLockData Lock(BufferLockFlags lockFlags,
             int arrayIndex = 0,
             int mipLevel = 0,
             GorgonGraphics deferred = null)
@@ -500,59 +469,46 @@ namespace GorgonLibrary.Graphics
 			CopySubResource(texture, subResource, destSubResource, null, Vector2.Zero, deferred);
 		}
 
-		/// <summary>
-		/// Function to copy data from the CPU to a texture.
-		/// </summary>
-		/// <param name="data">Data to copy to the texture.</param>
-		/// <param name="subResource">Sub resource index to use.</param>
-		/// <param name="destRect">Destination region to copy into.</param>
-		/// <param name="deferred">[Optional] The deferred context used to update the sub resource.</param>
-		/// <remarks>
-		/// Use this to copy data to this texture.  If the texture is non CPU accessible texture then an exception is raised.
-		/// <para>If the <paramref name="deferred"/> parameter is NULL (Nothing in VB.Net) then the immediate context will be used.  If this method is called from multiple threads, then a deferred context should be passed for each thread that is 
-		/// accessing the sub resource.</para>
-		/// </remarks>
-		/// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="destRect"/> parameter is less than 0 or larger than this texture.</exception>
-		/// <exception cref="System.InvalidOperationException">Thrown when this texture has an Immutable, Dynamic or a Staging usage.
-		/// <para>-or-</para>
-		/// <para>Thrown when this texture has multisampling applied.</para>
-		/// </exception>
-		public virtual void UpdateSubResource(ISubResourceData data, int subResource, Rectangle destRect, GorgonGraphics deferred = null)
-		{
-#if DEBUG
-			if ((Settings.Usage == BufferUsage.Dynamic) || (Settings.Usage == BufferUsage.Immutable))
-				throw new InvalidOperationException("Cannot update a texture that is Dynamic or Immutable");
-
-			if ((Settings.Multisampling.Count > 1) || (Settings.Multisampling.Quality > 0))
-				throw new InvalidOperationException("Cannot update a texture that is multisampled.");
-#endif
-			var textureSize = new Rectangle(0, 0, Settings.Width, Settings.Height);
-			if (!textureSize.Contains(destRect))
-				destRect = Rectangle.Intersect(destRect, textureSize);
-
-			var box = new SharpDX.DataBox
-				{
-				DataPointer = data.Data.PositionPointer,
-				RowPitch = data.RowPitch,
-				SlicePitch = data.SlicePitch
-			};
-
-			var region = new D3D.ResourceRegion
-				{
-				Front = 0,
-				Back = 1,
-				Top = destRect.Top,
-				Left = destRect.Left,
-				Bottom = destRect.Bottom,
-				Right = destRect.Right,
-			};
-
-			if (deferred == null)
-			{
-				deferred = Graphics;
-			}
-
-			deferred.Context.UpdateSubresource(box, D3DResource, subResource, region);
+        /// <summary>
+        /// Function to copy data from the CPU to the texture on the GPU.
+        /// </summary>
+        /// <param name="buffer">A buffer containing the image data to copy.</param>
+        /// <param name="destRect">A rectangle that will specify the region that will receive the data.</param>
+        /// <param name="destArrayIndex">[Optional] The array index that will receive the data.</param>
+        /// <param name="destMipLevel">[Optional] The mip map level that will receive the data.</param>
+        /// <param name="deferred">[Optional] A deferred graphics context used to copy the data.</param>
+        /// <exception cref="System.InvalidOperationException">Thrown when the texture is dynamic or immutable.
+        /// <para>-or-</para>
+        /// <para>Thrown when the texture is multisampled.</para>
+        /// </exception>
+        /// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="destArrayIndex"/> or the <paramref name="destMipLevel"/> is less than 0 or greater than/equal to the 
+        /// number of array indices or mip levels in the texture.</exception>
+        /// <remarks>
+        /// Use this to copy data into a texture with a usage of staging or default.  If the <paramref name="destRect"/> values are larger than the dimensions of the texture, then the data will be clipped.
+        /// <para>Passing NULL (Nothing in VB.Net) to the <paramref name="destArrayIndex"/> and/or the <paramref name="destMipLevel"/> parameters will use the first array index and/or mip map level.</para>
+        /// <para>This method will not work with depth/stencil textures or with textures that have multisampling applied.</para>
+        /// <para>If the <paramref name="deferred"/> parameter is NULL (Nothing in VB.Net) then the immediate context will be used.  If this method is called from multiple threads, then a deferred context should be passed for each thread that is 
+        /// accessing the sub resource.</para>
+        /// </remarks>
+        public virtual void UpdateSubResource(GorgonImageBuffer buffer,
+            Rectangle destRect,
+            int destArrayIndex = 0,
+            int destMipLevel = 0,
+            GorgonGraphics deferred = null)
+        {
+            OnUpdateSubResource(buffer,
+                new GorgonBox
+                {
+                    Front = 0,
+                    Depth = 1,
+                    Left = destRect.Left,
+                    Width = destRect.Width,
+                    Top = destRect.Top,
+                    Height = destRect.Height
+                },
+                destArrayIndex,
+                destMipLevel,
+                deferred);
 		}
 		#endregion
 

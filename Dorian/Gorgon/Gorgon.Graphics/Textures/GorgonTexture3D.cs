@@ -64,37 +64,6 @@ namespace GorgonLibrary.Graphics
 		#endregion
 
 		#region Methods.
-        /// <summary>
-        /// Function to copy data from the CPU to a texture.
-        /// </summary>
-        /// <param name="data">Data to copy to the texture.</param>
-        /// <param name="subResource">Sub resource index to use.</param>
-        /// <param name="context">The graphics context to use when updating the texture.</param>
-        /// <remarks>
-        /// The <paramref name="context" /> allows a separate thread to access the resource at the same time as another thread.
-        /// </remarks>
-		protected override void OnUpdateSubResource(ISubResourceData data, int subResource, GorgonGraphics context)
-		{
-			var box = new SharpDX.DataBox
-				{
-				DataPointer = data.Data.PositionPointer,
-				RowPitch = data.RowPitch,
-				SlicePitch = data.SlicePitch
-			};
-
-			var region = new D3D.ResourceRegion
-			{
-				Front = 0,
-				Back = Settings.Depth,
-				Left = 0,
-				Right = Settings.Width,
-				Top = 0,
-				Bottom = Settings.Height
-			};
-
-	        context.Context.UpdateSubresourceSafe(box, D3DResource, data.RowPitch, FormatInformation.SizeInBytes, region, FormatInformation.IsCompressed);
-		}
-
 		/// <summary>
 		/// Function to copy this texture into a new staging texture.
 		/// </summary>
@@ -498,102 +467,39 @@ namespace GorgonLibrary.Graphics
 		}
 
         /// <summary>
-        /// Function to copy data from the CPU to a texture.
+        /// Function to copy data from the CPU to the texture on the GPU.
         /// </summary>
-        /// <param name="data">Data to copy to the texture.</param>
-        /// <param name="subResource">Sub resource index to use.</param>
-        /// <param name="destBox">Destination region to copy into.</param>
-        /// <param name="deferred">[Optional] The deferred context to use when updating the sub resource.</param>
-        /// <exception cref="System.InvalidOperationException">Thrown when this texture has an Immutable, Dynamic or a Staging usage.</exception>
-        /// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="destBox" /> parameter is less than 0 or larger than this texture.</exception>
+        /// <param name="buffer">A buffer containing the image data to copy.</param>
+        /// <param name="destBox">A 3D box that will specify the region that will receive the data.</param>
+        /// <param name="destArrayIndex">[Optional] The array index that will receive the data.</param>
+        /// <param name="destMipLevel">[Optional] The mip map level that will receive the data.</param>
+        /// <param name="deferred">[Optional] A deferred graphics context used to copy the data.</param>
+        /// <exception cref="System.InvalidOperationException">Thrown when the texture is dynamic or immutable.
+        /// <para>-or-</para>
+        /// <para>Thrown when the texture is multisampled.</para>
+        /// </exception>
+        /// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="destArrayIndex"/> or the <paramref name="destMipLevel"/> is less than 0 or greater than/equal to the 
+        /// number of array indices or mip levels in the texture.</exception>
         /// <remarks>
-        /// Use this to copy data to this texture.  If the texture is non CPU accessible texture then an exception is raised.
-        /// <para>If <paramref name="deferred"/> is NULL (Nothing in VB.Net), then the immediate context is used to update the texture.  Specify a deferred context when accessing the resource is being accessed by a separate thread.</para>
+        /// Use this to copy data into a texture with a usage of staging or default.  If the <paramref name="destBox"/> values are larger than the dimensions of the texture, then the data will be clipped.
+        /// <para>Passing NULL (Nothing in VB.Net) to the <paramref name="destArrayIndex"/> and/or the <paramref name="destMipLevel"/> parameters will use the first array index and/or mip map level.</para>
+        /// <para>This method will not work with depth/stencil textures or with textures that have multisampling applied.</para>
+        /// <para>If the <paramref name="deferred"/> parameter is NULL (Nothing in VB.Net) then the immediate context will be used.  If this method is called from multiple threads, then a deferred context should be passed for each thread that is 
+        /// accessing the sub resource.</para>
         /// </remarks>
-		public void UpdateSubResource(ISubResourceData data, int subResource, GorgonBox destBox, GorgonGraphics deferred = null)
-		{
-#if DEBUG
-	        if ((Settings.Usage == BufferUsage.Dynamic) || (Settings.Usage == BufferUsage.Immutable))
-	        {
-		        throw new InvalidOperationException(Resources.GORGFX_TEXTURE_IS_DYNAMIC_IMMUTABLE);
-	        }
-#endif
-	        if (destBox.Z < 0)
-	        {
-		        destBox.Z = 0;
-	        }
-	        if (destBox.Depth < 0)
-	        {
-		        destBox.Depth = 0;
-	        }
-	        if (destBox.X < 0)
-	        {
-		        destBox.X = 0;
-	        }
-	        if (destBox.Y < 0)
-	        {
-		        destBox.Y = 0;
-	        }
-	        if (destBox.Width < 0)
-	        {
-		        destBox.Width = 0;
-	        }
-	        if (destBox.Height < 0)
-	        {
-		        destBox.Height = 0;
-	        }
-
-	        if (destBox.X >= Settings.Width)
-	        {
-		        destBox.X = Settings.Width - 1;
-	        }
-	        if (destBox.Y >= Settings.Height)
-	        {
-		        destBox.Y = Settings.Height - 1;
-	        }
-	        if (destBox.Z >= Settings.Depth)
-	        {
-		        destBox.Z = Settings.Depth - 1;
-	        }
-
-	        if (destBox.Right >= Settings.Width)
-	        {
-		        destBox.Width = Settings.Width - destBox.X - 1;
-	        }
-	        if (destBox.Bottom >= Settings.Height)
-	        {
-		        destBox.Height = Settings.Height - destBox.Y - 1;
-	        }
-	        if (destBox.Back >= Settings.Depth)
-	        {
-		        destBox.Width = Settings.Depth - destBox.Z - 1;
-	        }
-
-	        var box = new SharpDX.DataBox
-			{
-				DataPointer = data.Data.PositionPointer,
-				RowPitch = data.RowPitch,
-				SlicePitch = data.SlicePitch
-			};
-
-			var region = new D3D.ResourceRegion
-			{
-				Front = destBox.Front,
-				Back = destBox.Back,
-				Top = destBox.Top,
-				Left = destBox.Left,
-				Bottom = destBox.Bottom,
-				Right = destBox.Right,
-			};
-
-            if (deferred == null)
-            {
-                deferred = Graphics;
-            }
-
-			deferred.Context.UpdateSubresource(box, D3DResource, subResource, region);
-		}
-		#endregion
+        public void UpdateSubResource(GorgonImageBuffer buffer,
+            GorgonBox destBox,
+            int destArrayIndex = 0,
+            int destMipLevel = 0,
+            GorgonGraphics deferred = null)
+        {
+            OnUpdateSubResource(buffer, 
+                destBox,
+                destArrayIndex,
+                destMipLevel,
+                deferred);
+        }
+        #endregion
 
 		#region Constructor/Destructor.
 		/// <summary>
