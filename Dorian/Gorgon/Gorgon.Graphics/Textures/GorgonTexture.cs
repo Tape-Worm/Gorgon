@@ -525,6 +525,123 @@ namespace GorgonLibrary.Graphics
 		protected abstract void OnInitialize(GorgonImageData initialData);
 
         /// <summary>
+        /// Function to copy a texture subresource from another texture.
+        /// </summary>
+        /// <param name="sourceTexture">Source texture to copy.</param>
+        /// <param name="sourceRange">The dimensions of the source area to copy.</param>
+        /// <param name="sourceArrayIndex">The array index of the sub resource to copy.</param>
+        /// <param name="sourceMipLevel">The mip map level of the sub resource to copy.</param>
+        /// <param name="destX">Horizontal offset into the destination texture to place the copied data.</param>
+        /// <param name="destY">Vertical offset into the destination texture to place the copied data.</param>
+        /// <param name="destZ">Depth offset into the destination texture to place the copied data.</param>
+        /// <param name="destArrayIndex">The array index of the destination sub resource to copy into.</param>
+        /// <param name="destMipLevel">The mip map level of the destination sub resource to copy into.</param>
+        /// <param name="deferred">The deferred context to use when copying the sub resource.</param>
+        /// <remarks>Use this method to copy a specific sub resource of a texture to another sub resource of another texture, or to a different sub resource of the same texture.  The <paramref name="sourceRange"/> 
+        /// coordinates must be inside of the destination, if it is not, then the source data will be clipped against the destination region. No stretching or filtering is supported by this method.
+        /// <para>For SM_4_1 and SM_5 video devices, texture formats can be converted if they belong to the same format group (e.g. R8G8B8A8, R8G8B8A8_UInt, R8G8B8A8_Int, R8G8B8A8_UIntNormal, etc.. are part of the R8G8B8A8 group).  If the 
+        /// video device is a SM_4 or SM_2_a_b device, then no format conversion will be done and an exception will be thrown if format conversion is attempted.</para>
+        /// <para>When copying sub resources (e.g. mip-map levels), the mip levels and array indices must be different if copying to the same texture.  If they are not, an exception will be thrown.</para>
+        /// <para>Pass NULL (Nothing in VB.Net) to the sourceRange parameter to copy the entire sub resource.</para>
+        /// <para>Video devices that have a feature level of SM2_a_b cannot copy sub resource data in a 1D texture if the texture is not a staging texture.</para>
+        /// <para>If the <paramref name="deferred"/> parameter is NULL (Nothing in VB.Net) then the immediate context will be used.  If this method is called from multiple threads, then a deferred context should be passed for each thread that is 
+        /// accessing the sub resource.</para>
+        /// </remarks>
+        /// <exception cref="System.ArgumentNullException">Thrown when the texture parameter is NULL (Nothing in VB.Net).</exception>
+        /// <exception cref="System.ArgumentException">Thrown when the formats cannot be converted because they're not of the same group or the current video device is a SM_2_a_b device or a SM_4 device.
+        /// <para>-or-</para>
+        /// <para>Thrown when the subResource and destSubResource are the same and the source texture is the same as this texture.</para>
+        /// </exception>
+        /// <exception cref="System.InvalidOperationException">Thrown when this texture is an immutable texture.
+        /// </exception>
+        /// <exception cref="System.NotSupportedException">Thrown when the video device has a feature level of SM2_a_b and this texture or the source texture are not staging textures.</exception>
+        protected void OnCopySubResource(GorgonTexture sourceTexture, GorgonBox? sourceRange, int sourceArrayIndex, int sourceMipLevel, int destX, int destY, int destZ, int destArrayIndex, int destMipLevel, GorgonGraphics deferred = null)
+        {
+            GorgonDebug.AssertNull(sourceTexture, "texture");
+
+            int sourceResource = D3D.Resource.CalculateSubResourceIndex(sourceMipLevel,
+                sourceArrayIndex,
+                Settings.MipCount);
+            int destResource = D3D.Resource.CalculateSubResourceIndex(destMipLevel,
+                destArrayIndex,
+                Settings.MipCount);
+
+#if DEBUG
+            if (Graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM2_a_b)
+            {
+                if ((sourceTexture.Settings.Usage != BufferUsage.Staging) && (Settings.Usage == BufferUsage.Staging))
+                {
+                    throw new NotSupportedException(Resources.GORGFX_TEXTURE_CANNOT_COPY_NONSTAGING);
+                }
+
+                if ((sourceTexture.Settings.ImageType == ImageType.Image1D) && (Settings.Usage != BufferUsage.Staging) && (sourceTexture.Settings.Usage != BufferUsage.Staging))
+                {
+                    throw new NotSupportedException(Resources.GORGFX_TEXTURE_CANNOT_COPY_NONSTAGING);
+                }
+            }
+
+            if (Settings.Usage == BufferUsage.Immutable)
+            {
+                throw new InvalidOperationException(Resources.GORGFX_TEXTURE_IMMUTABLE);
+            }
+
+            // If the format is different, then check to see if the format group is the same.
+            if ((sourceTexture.Settings.Format != Settings.Format)
+                && ((sourceTexture.FormatInformation.Group != FormatInformation.Group)
+                    || (Graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM2_a_b)
+                    || (Graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM4)))
+            {
+                throw new ArgumentException(string.Format(Resources.GORGFX_TEXTURE_COPY_CANNOT_CONVERT,
+                    sourceTexture.Settings.Format,
+                    Settings.Format), "sourceTexture");
+            }
+
+            if ((this == sourceTexture) && (sourceResource == destResource))
+            {
+                throw new ArgumentException(Resources.GORGFX_TEXTURE_CANNOT_COPY_SAME_SUBRESOURCE);
+            }
+#endif
+            if (deferred == null)
+            {
+                deferred = Graphics;
+            }
+
+            if (sourceRange == null)
+            {
+                sourceRange = new GorgonBox
+                {
+                    Front = 0,
+                    Top = 0,
+                    Left = 0,
+                    Depth = Settings.Depth.Min(sourceTexture.Settings.Depth).Max(1),
+                    Width = Settings.Width.Min(sourceTexture.Settings.Width).Max(1),
+                    Height = Settings.Height.Min(sourceTexture.Settings.Height).Max(1)
+                };
+            }
+            else
+            {
+                sourceRange = new GorgonBox
+                {
+                    Front = sourceRange.Value.Front.Min(Settings.Depth - 1).Min(sourceTexture.Settings.Depth - 1).Max(0),
+                    Top = sourceRange.Value.Top.Min(Settings.Height - 1).Min(sourceTexture.Settings.Height - 1).Max(0),
+                    Left = sourceRange.Value.Left.Min(Settings.Width - 1).Min(sourceTexture.Settings.Width - 1).Max(0),
+                    Depth = sourceRange.Value.Depth.Min(Settings.Depth).Min(sourceTexture.Settings.Depth).Max(1),
+                    Height = sourceRange.Value.Height.Min(Settings.Height).Min(sourceTexture.Settings.Height).Max(1),
+                    Width = sourceRange.Value.Width.Min(Settings.Width).Min(sourceTexture.Settings.Width).Max(1)
+                };
+            }
+
+            deferred.Context.CopySubresourceRegion(sourceTexture.D3DResource,
+                sourceResource,
+                sourceRange.Value.Convert,
+                D3DResource,
+                destResource,
+                destX,
+                destY,
+                destZ);
+        }
+
+        /// <summary>
         /// Function to lock a CPU accessible texture sub resource for reading/writing.
         /// </summary>
         /// <param name="lockFlags">Flags used to lock.</param>
@@ -909,12 +1026,12 @@ namespace GorgonLibrary.Graphics
             {
                 if ((texture.Settings.Usage != BufferUsage.Staging) && (Settings.Usage == BufferUsage.Staging))
                 {
-                    throw new NotSupportedException(string.Format(Resources.GORGFX_REQUIRES_SM, DeviceFeatureLevel.SM4));
+                    throw new NotSupportedException(Resources.GORGFX_TEXTURE_CANNOT_COPY_NONSTAGING);
                 }
 
                 if ((texture.Settings.ImageType == ImageType.Image1D) && (Settings.Usage != BufferUsage.Staging) && (texture.Settings.Usage != BufferUsage.Staging))
                 {
-					throw new NotSupportedException(string.Format(Resources.GORGFX_REQUIRES_SM, DeviceFeatureLevel.SM4));
+                    throw new NotSupportedException(Resources.GORGFX_TEXTURE_CANNOT_COPY_NONSTAGING);
                 }
             }
 
