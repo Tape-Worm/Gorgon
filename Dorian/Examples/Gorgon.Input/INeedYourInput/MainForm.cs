@@ -122,10 +122,7 @@ namespace GorgonLibrary.Examples
 			        }
 
 			        _backBuffer.CopySubResource(_backupImage,
-			                0,
-			                0,
-			                new Rectangle(0, 0, _backBuffer.Settings.Width, _backBuffer.Settings.Height),
-			                Vector2.Zero);
+			            new Rectangle(0, 0, _backBuffer.Settings.Width, _backBuffer.Settings.Height));
 			        break;
 				case KeyboardKeys.J:
 					if (_input.JoystickDevices.Count != 0)
@@ -305,11 +302,8 @@ namespace GorgonLibrary.Examples
 
 			// Copy the render target texture to a temporary buffer and resize the main buffer.
 			// The copy the temporary buffer back to the main buffer.
-			_backupImage.CopySubResource(_backBuffer,
-										0,
-										0,
-										new Rectangle(Point.Empty, currentImageSize),
-										Vector2.Zero);
+            _backupImage.CopySubResource(_backBuffer,
+                new Rectangle(Point.Empty, currentImageSize));
 
 			_backBuffer.Dispose();
 			_backBuffer = _graphics.Output.CreateRenderTarget("BackBuffer", new GorgonRenderTarget2DSettings
@@ -319,11 +313,8 @@ namespace GorgonLibrary.Examples
 				Format = BufferFormat.R8G8B8A8_UIntNormal
 			});
 			_backBuffer.Clear(Color.White);
-			_backBuffer.CopySubResource(_backupImage,
-												0,
-												0,
-												new Rectangle(0, 0, _backBuffer.Settings.Width, _backBuffer.Settings.Height),
-												Vector2.Zero);
+		    _backBuffer.CopySubResource(_backupImage,
+		        new Rectangle(0, 0, _backBuffer.Settings.Width, _backBuffer.Settings.Height));
 
 			// Set the mouse range to the new size.
 			_mouse.SetPositionRange(0, 0, ClientSize.Width, ClientSize.Height);

@@ -26,7 +26,6 @@
 
 using System;
 using System.Drawing;
-using GorgonLibrary.Diagnostics;
 using SlimMath;
 using DX = SharpDX;
 using D3D = SharpDX.Direct3D11;
@@ -70,10 +69,8 @@ namespace GorgonLibrary.Graphics
 		/// </returns>
 		protected override GorgonTexture OnGetStagingTexture()
 		{
-			GorgonTexture staging = null;
-
-			var settings2D = new GorgonTexture2DSettings
-				{
+		    var settings2D = new GorgonTexture2DSettings
+			{
 				ArrayCount = Settings.ArrayCount,
 				Format = Settings.Format,
 				Width = Settings.Width,
@@ -84,7 +81,7 @@ namespace GorgonLibrary.Graphics
 				Usage = BufferUsage.Staging
 			};
 
-			staging = Graphics.ImmediateContext.Textures.CreateTexture(Name + ".Staging", settings2D);
+			GorgonTexture staging = Graphics.ImmediateContext.Textures.CreateTexture(Name + ".Staging", settings2D);
 
 			staging.Copy(this);
 
@@ -255,220 +252,144 @@ namespace GorgonLibrary.Graphics
 			result = new Vector2(pixel.X / Settings.Width, pixel.Y / Settings.Height);
 		}
 
-		/// <summary>
-		/// Function to return the index of a sub resource (mip level, array item, etc...) in a texture.
-		/// </summary>
-		/// <param name="mipLevel">Mip level to look up.</param>
-		/// <param name="arrayIndex">Array index to look up.</param>
-		/// <param name="mipCount">Number of mip map levels in the texture.</param>
-		/// <param name="arrayCount">Number of array indices in the texture.</param>
-		/// <returns>The sub resource index.</returns>
-		public static int GetSubResourceIndex(int mipLevel, int arrayIndex, int mipCount, int arrayCount)
-		{
-			if (arrayCount < 1)
-				arrayCount = 1;
-			if (arrayCount >= 2048)
-				arrayCount = 2048;
+	    /// <summary>
+	    /// Function to copy a texture subresource from another texture.
+	    /// </summary>
+	    /// <param name="sourceTexture">Source texture to copy.</param>
+	    /// <param name="sourceRange">[Optional] The dimensions of the source area to copy.</param>
+        /// <param name="sourceArrayIndex">[Optional] The array index of the sub resource to copy.</param>
+        /// <param name="sourceMipLevel">[Optional] The mip map level of the sub resource to copy.</param>
+        /// <param name="destX">[Optional] Horizontal offset into the destination texture to place the copied data.</param>
+        /// <param name="destY">[Optional] Vertical offset into the destination texture to place the copied data.</param>
+        /// <param name="destArrayIndex">[Optional] The array index of the destination sub resource to copy into.</param>
+        /// <param name="destMipLevel">[Optional] The mip map level of the destination sub resource to copy into.</param>
+        /// <param name="deferred">[Optional] The deferred context to use when copying the sub resource.</param>
+	    /// <remarks>Use this method to copy a specific sub resource of a texture to another sub resource of another texture, or to a different sub resource of the same texture.  The <paramref name="sourceRange"/> 
+	    /// coordinates must be inside of the destination, if it is not, then the source data will be clipped against the destination region. No stretching or filtering is supported by this method.
+	    /// <para>For SM_4_1 and SM_5 video devices, texture formats can be converted if they belong to the same format group (e.g. R8G8B8A8, R8G8B8A8_UInt, R8G8B8A8_Int, R8G8B8A8_UIntNormal, etc.. are part of the R8G8B8A8 group).  If the 
+	    /// video device is a SM_4 or SM_2_a_b device, then no format conversion will be done and an exception will be thrown if format conversion is attempted.</para>
+	    /// <para>When copying sub resources (e.g. mip-map levels), the mip levels and array indices must be different if copying to the same texture.  If they are not, an exception will be thrown.</para>
+	    /// <para>Pass NULL (Nothing in VB.Net) to the sourceRange parameter to copy the entire sub resource.</para>
+	    /// <para>Video devices that have a feature level of SM2_a_b cannot copy sub resource data in a 1D texture if the texture is not a staging texture.</para>
+	    /// <para>If the <paramref name="deferred"/> parameter is NULL (Nothing in VB.Net) then the immediate context will be used.  If this method is called from multiple threads, then a deferred context should be passed for each thread that is 
+	    /// accessing the sub resource.</para>
+	    /// </remarks>
+	    /// <exception cref="System.ArgumentNullException">Thrown when the texture parameter is NULL (Nothing in VB.Net).</exception>
+	    /// <exception cref="System.ArgumentException">Thrown when the formats cannot be converted because they're not of the same group or the current video device is a SM_2_a_b device or a SM_4 device.
+	    /// <para>-or-</para>
+	    /// <para>Thrown when the subResource and destSubResource are the same and the source texture is the same as this texture.</para>
+	    /// </exception>
+	    /// <exception cref="System.InvalidOperationException">Thrown when this texture is an immutable texture.
+	    /// </exception>
+	    /// <exception cref="System.NotSupportedException">Thrown when the video device has a feature level of SM2_a_b and this texture or the source texture are not staging textures.</exception>
+	    public void CopySubResource(GorgonTexture2D sourceTexture,
+	        Rectangle? sourceRange = null,
+	        int sourceArrayIndex = 0,
+	        int sourceMipLevel = 0,
+	        int destX = 0,
+	        int destY = 0,
+	        int destArrayIndex = 0,
+	        int destMipLevel = 0,
+	        GorgonGraphics deferred = null)
+	    {
+	        OnCopySubResource(sourceTexture,
+	            new GorgonBox
+	            {
+	                Front = 0,
+	                Depth = 1,
+	                Left = sourceRange != null ? sourceRange.Value.Left : 0,
+	                Width = sourceRange != null ? sourceRange.Value.Width : 0,
+	                Top = sourceRange != null ? sourceRange.Value.Top : 0,
+	                Height = sourceRange != null ? sourceRange.Value.Height : 0
+	            },
+	            sourceArrayIndex,
+	            sourceMipLevel,
+	            destX,
+	            destY,
+	            0,
+	            destArrayIndex,
+	            destMipLevel);
+	    }
 
-			// Constrain to settings.
-			if (mipLevel < 0)
-				mipLevel = 0;
-			if (arrayIndex < 0)
-				arrayIndex = 0;
-			if (mipLevel >= mipCount)
-				mipLevel = mipCount - 1;
-			if (arrayIndex >= arrayCount)
-				arrayIndex = arrayCount - 1;
-
-			return D3D.Resource.CalculateSubResourceIndex(mipLevel, arrayIndex, mipCount);
-		}
-
-		/// <summary>
-		/// Function to copy a texture subresource from another texture.
-		/// </summary>
-		/// <param name="texture">Source texture to copy.</param>
-		/// <param name="subResource">Sub resource in the source texture to copy.</param>
-		/// <param name="destSubResource">Sub resource in this texture to replace.</param>
-		/// <param name="sourceRegion">Region on the source texture to copy.</param>
-		/// <param name="destination">Destination point to copy to.</param>
-		/// <param name="deferred">[Optional] The deferred context to use when copying the sub resource.</param>
-		/// <remarks>This method will -not- perform stretching or filtering and will clip to the size of the destination texture.  
-		/// <para>The <paramref name="sourceRegion"/> and ><paramref name="destination"/> must fit within the dimensions of this texture.  If they do not, then the copy will be clipped so that they fit.</para>
-		/// <para>If the this texture is multisampled, then the <paramref name="texture"/> must use the same multisampling parameters and the sourceRegion and destination parameters will be ignored.  The same is true for Depth/Stencil buffer textures.</para>
-		/// <para>For SM_4_1 and SM_5 video devices, texture formats can be converted if they belong to the same format group (e.g. R8G8B8A8, R8G8B8A8_UInt, R8G8B8A8_Int, R8G8B8A8_UIntNormal, etc.. are part of the R8G8B8A8 group).  If the 
-		/// video device is a SM_4 or SM_2_a_b device, then no format conversion will be done and an exception will be thrown if format conversion is attempted.</para>
-		/// <para>When copying sub resources (e.g. mip-map levels), the <paramref name="subResource"/> and <paramref name="destSubResource"/> must be different if the source texture is the same as the destination texture.</para>
-		/// <para>Sub resource indices can be calculated with the <see cref="M:GorgonLibrary.Graphics.GorgonTexture2D.GetSubResourceIndex">GetSubResourceIndex</see> static method.</para>
-		/// <para>Pass NULL (Nothing in VB.Net) to the sourceRegion parameter to copy the entire sub resource.</para>
-		/// <para>SM2_a_b devices may copy 2D textures, but there are format restrictions (must be compatible with a render target format).  3D textures can only be copied to textures that are in GPU memory, if either texture is a staging texture, then an exception will be thrown.</para>
-        /// <para>Video devices with a feature level of SM2_a_b cannot copy textures from GPU memory into staging textures, doing so will throw an exception.</para>
+        /// <summary>
+        /// Function to copy a texture subresource from another texture.
+        /// </summary>
+        /// <param name="sourceTexture">Source texture to copy.</param>
+        /// <param name="sourceRange">The dimensions of the source area to copy.</param>
+        /// <param name="destX">Horizontal offset into the destination texture to place the copied data.</param>
+        /// <param name="destY">Vertical offset into the destination texture to place the copied data.</param>
+        /// <param name="deferred">[Optional] The deferred context to use when copying the sub resource.</param>
+        /// <remarks>Use this method to copy a specific sub resource of a texture to another sub resource of another texture, or to a different sub resource of the same texture.  The <paramref name="sourceRange"/> 
+        /// coordinates must be inside of the destination, if it is not, then the source data will be clipped against the destination region. No stretching or filtering is supported by this method.
+        /// <para>For SM_4_1 and SM_5 video devices, texture formats can be converted if they belong to the same format group (e.g. R8G8B8A8, R8G8B8A8_UInt, R8G8B8A8_Int, R8G8B8A8_UIntNormal, etc.. are part of the R8G8B8A8 group).  If the 
+        /// video device is a SM_4 or SM_2_a_b device, then no format conversion will be done and an exception will be thrown if format conversion is attempted.</para>
+        /// <para>When copying sub resources (e.g. mip-map levels), the mip levels and array indices must be different if copying to the same texture.  If they are not, an exception will be thrown.</para>
+        /// <para>Pass NULL (Nothing in VB.Net) to the sourceRange parameter to copy the entire sub resource.</para>
+        /// <para>Video devices that have a feature level of SM2_a_b cannot copy sub resource data in a 1D texture if the texture is not a staging texture.</para>
         /// <para>If the <paramref name="deferred"/> parameter is NULL (Nothing in VB.Net) then the immediate context will be used.  If this method is called from multiple threads, then a deferred context should be passed for each thread that is 
         /// accessing the sub resource.</para>
-		/// </remarks>
-		/// <exception cref="System.ArgumentNullException">Thrown when the texture parameter is NULL (Nothing in VB.Net).</exception>
-		/// <exception cref="System.ArgumentException">Thrown when the formats cannot be converted because they're not of the same group or the current video device is a SM_2_a_b device or a SM_4 device.
-		/// <para>-or-</para>
-		/// <para>Thrown when the subResource and destSubResource are the same and the source texture is the same as this texture.</para>
-		/// <para>-or-</para>
-		/// <para>Thrown when the multisampling count is not the same for the source texture and this texture.</para>
-		/// <para>-or-</para>
-		/// <para>Thrown when the texture types are not the same.</para>
-		/// </exception>
-		/// <exception cref="System.InvalidOperationException">Thrown when this texture is an immutable texture.
-		/// </exception>
-        /// <exception cref="System.NotSupportedException">Thrown when the video device has a feature level of SM2_a_b and this texture is a staging texture and the source texture is not a staging texture.</exception>
-		public void CopySubResource(GorgonTexture2D texture, int subResource, int destSubResource, Rectangle? sourceRegion, Vector2 destination, GorgonGraphics deferred = null)
-		{
-			GorgonDebug.AssertNull<GorgonTexture>(texture, "texture");
+        /// </remarks>
+        /// <exception cref="System.ArgumentNullException">Thrown when the texture parameter is NULL (Nothing in VB.Net).</exception>
+        /// <exception cref="System.ArgumentException">Thrown when the formats cannot be converted because they're not of the same group or the current video device is a SM_2_a_b device or a SM_4 device.
+        /// <para>-or-</para>
+        /// <para>Thrown when the subResource and destSubResource are the same and the source texture is the same as this texture.</para>
+        /// </exception>
+        /// <exception cref="System.InvalidOperationException">Thrown when this texture is an immutable texture.
+        /// </exception>
+        /// <exception cref="System.NotSupportedException">Thrown when the video device has a feature level of SM2_a_b and this texture or the source texture are not staging textures.</exception>
+        public void CopySubResource(GorgonTexture2D sourceTexture,
+            Rectangle sourceRange,
+            int destX,
+            int destY,
+            GorgonGraphics deferred = null)
+        {
+            CopySubResource(sourceTexture, sourceRange, 0, 0, destX, destY, 0, 0, deferred);
+        }
 
-#if DEBUG
-            if ((Graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM2_a_b) && (Settings.Usage == BufferUsage.Staging) && (texture.Settings.Usage != BufferUsage.Staging))
-            {
-                throw new NotSupportedException("Feature level SM2_a_b video devices cannot copy sub resources from non staging textures to staging textures.");
-            }
-
-			if (Settings.Usage == BufferUsage.Immutable)
-				throw new InvalidOperationException("Cannot copy to an immutable resource.");
-
-			if ((Settings.Multisampling.Count != texture.Settings.Multisampling.Count) || (Settings.Multisampling.Quality != texture.Settings.Multisampling.Quality))
-				throw new ArgumentException("Cannot copy textures with different multisampling parameters.");
-
-			// If the format is different, then check to see if the format group is the same.
-			if ((texture.Settings.Format != Settings.Format) && ((texture.FormatInformation.Group != FormatInformation.Group) || (Graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM2_a_b) || (Graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM4)))
-				throw new ArgumentException("Cannot copy because these formats: '" + texture.Settings.Format.ToString() + "' and '" + Settings.Format.ToString() + "', cannot be converted.", "texture");
-
-			if ((this == texture) && (subResource == destSubResource))
-				throw new ArgumentException("Cannot copy to and from the same sub resource on the same texture.");
-#endif
-			if (deferred == null)
-			{
-				deferred = Graphics;
-			}
-
-			// If we have multisampling enabled, then copy the entire sub resource.            
-            if ((Settings.Multisampling.Count > 1) || (Settings.Multisampling.Quality > 0) || (sourceRegion == null))
-            {
-                deferred.Context.CopySubresourceRegion(texture.D3DResource, subResource, null, D3DResource, destSubResource, 0, 0, 0);
-            }
-            else
-            {
-                deferred.Context.CopySubresourceRegion(texture.D3DResource, subResource, new D3D.ResourceRegion
-	                {
-                        Back = 1,
-                        Front = 0,
-                        Top = sourceRegion.Value.Top,
-                        Left = sourceRegion.Value.Left,
-                        Right = sourceRegion.Value.Right,
-                        Bottom = sourceRegion.Value.Bottom
-                    }, D3DResource, destSubResource, (int)destination.X, (int)destination.Y, 0);
-            }
-		}
-
-		/// <summary>
-		/// Function to copy a texture subresource from another texture.
-		/// </summary>
-		/// <param name="texture">Source texture to copy.</param>
-		/// <param name="sourceRegion">Region on the source texture to copy.</param>
-		/// <param name="destination">Destination point to copy to.</param>
-		/// <param name="deferred">[Optional] The deferred context used to copy the sub resource.</param>
-		/// <remarks>This method will -not- perform stretching or filtering and will clip to the size of the destination texture.  
-		/// <para>The <paramref name="sourceRegion"/> and ><paramref name="destination"/> must fit within the dimensions of this texture.  If they do not, then the copy will be clipped so that they fit.</para>
-		/// <para>If the this texture is multisampled, then the <paramref name="texture"/> must use the same multisampling parameters and the sourceRegion and destination parameters will be ignored.  The same is true for Depth/Stencil buffer textures.</para>
-		/// <para>For SM_4_1 and SM_5 video devices, texture formats can be converted if they belong to the same format group (e.g. R8G8B8A8, R8G8B8A8_UInt, R8G8B8A8_Int, R8G8B8A8_UIntNormal, etc.. are part of the R8G8B8A8 group).  If the 
-		/// video device is a SM_4 or SM_2_a_b device, then no format conversion will be done and an exception will be thrown if format conversion is attempted.</para>
-		/// <para>SM2_a_b devices may copy 2D textures, but there are format restrictions (must be compatible with a render target format).  3D textures can only be copied to textures that are in GPU memory, if either texture is a staging texture, then an exception will be thrown.</para>
-		/// <para>If the <paramref name="deferred"/> parameter is NULL (Nothing in VB.Net) then the immediate context will be used.  If this method is called from multiple threads, then a deferred context should be passed for each thread that is 
-		/// accessing the sub resource.</para>
-		/// </remarks>
-		/// <exception cref="System.ArgumentNullException">Thrown when the texture parameter is NULL (Nothing in VB.Net).</exception>
-		/// <exception cref="System.ArgumentException">Thrown when the formats cannot be converted because they're not of the same group or the current video device is a SM_2_a_b device or a SM_4 device.
-		/// <para>-or-</para>
-		/// <para>Thrown when the source texture is the same as this texture.</para>
-		/// <para>-or-</para>
-		/// <para>Thrown when the multisampling count is not the same for the source texture and this texture.</para>
-		/// <para>-or-</para>
-		/// <para>Thrown when the texture types are not the same.</para>
-		/// </exception>
-		/// <exception cref="System.InvalidOperationException">Thrown when this texture is an immutable texture.
-		/// </exception>
-		public void CopySubResource(GorgonTexture2D texture, Rectangle sourceRegion, Vector2 destination, GorgonGraphics deferred = null)
-		{
-#if DEBUG
-			if (texture == this)
-				throw new ArgumentException("The source texture and this texture are the same.  Cannot copy.", "texture");
-#endif
-
-			CopySubResource(texture, 0, 0, sourceRegion, destination, deferred);
-		}
-
-		/// <summary>
-		/// Function to copy a texture subresource from another texture.
-		/// </summary>
-		/// <param name="texture">Source texture to copy.</param>
-		/// <param name="deferred">[Optional] The deferred context used to copy the sub resource.</param>
-		/// <remarks>This method will -not- perform stretching or filtering and will clip to the size of the destination texture.  
-		/// <para>If the this texture is multisampled, then the <paramref name="texture"/> must use the same multisampling parameters and the sourceRegion and destination parameters will be ignored.  The same is true for Depth/Stencil buffer textures.</para>
-		/// <para>For SM_4_1 and SM_5 video devices, texture formats can be converted if they belong to the same format group (e.g. R8G8B8A8, R8G8B8A8_UInt, R8G8B8A8_Int, R8G8B8A8_UIntNormal, etc.. are part of the R8G8B8A8 group).  If the 
-		/// video device is a SM_4 or SM_2_a_b device, then no format conversion will be done and an exception will be thrown if format conversion is attempted.</para>
-		/// <para>SM2_a_b devices may copy 2D textures, but there are format restrictions (must be compatible with a render target format).  3D textures can only be copied to textures that are in GPU memory, if either texture is a staging texture, then an exception will be thrown.</para>
-		/// <para>If the <paramref name="deferred"/> parameter is NULL (Nothing in VB.Net) then the immediate context will be used.  If this method is called from multiple threads, then a deferred context should be passed for each thread that is 
-		/// accessing the sub resource.</para>
-		/// </remarks>
-		/// <exception cref="System.ArgumentNullException">Thrown when the texture parameter is NULL (Nothing in VB.Net).</exception>
-		/// <exception cref="System.ArgumentException">Thrown when the formats cannot be converted because they're not of the same group or the current video device is a SM_2_a_b device or a SM_4 device.
-		/// <para>-or-</para>
-		/// <para>Thrown when the source texture is the same as this texture.</para>
-		/// <para>-or-</para>
-		/// <para>Thrown when the multisampling count is not the same for the source texture and this texture.</para>
-		/// <para>-or-</para>
-		/// <para>Thrown when the texture types are not the same.</para>
-		/// </exception>
-		/// <exception cref="System.InvalidOperationException">Thrown when this texture is an immutable texture.
-		/// </exception>
-		public void CopySubResource(GorgonTexture2D texture, GorgonGraphics deferred = null)
-		{
-#if DEBUG
-			if (texture == this)
-				throw new ArgumentException("The source texture and this texture are the same.  Cannot copy.", "texture");
-#endif
-
-			CopySubResource(texture, 0, 0, null, Vector2.Zero, deferred);
-		}
-
-		/// <summary>
-		/// Function to copy a texture sub resource from another texture.
-		/// </summary>
-		/// <param name="texture">Source texture to copy.</param>
-		/// <param name="subResource">Sub resource in the source texture to copy.</param>
-		/// <param name="destSubResource">Sub resource in this texture to replace.</param>
-		/// <param name="deferred">[Optional] The deferred context used to copy the sub resource.</param>
-		/// <remarks>This method will -not- perform stretching or filtering and will clip to the size of the destination texture.  
-		/// <para>The source texture must fit within the dimensions of this texture.  If it does not, then the copy will be clipped so that it fits.</para>
-		/// <para>If the this texture is multisampled, then the <paramref name="texture"/> must use the same multisampling parameters and the sourceRegion and destination parameters will be ignored.  The same is true for Depth/Stencil buffer textures.</para>
-		/// <para>For SM_4_1 and SM_5 video devices, texture formats can be converted if they belong to the same format group (e.g. R8G8B8A8, R8G8B8A8_UInt, R8G8B8A8_Int, R8G8B8A8_UIntNormal, etc.. are part of the R8G8B8A8 group).  If the 
-		/// video device is a SM_4 or SM_2_a_b device, then no format conversion will be done and an exception will be thrown if format conversion is attempted.</para>
-		/// <para>When copying sub resources (e.g. mip-map levels), the <paramref name="subResource"/> and <paramref name="destSubResource"/> must be different if the source texture is the same as the destination texture.</para>
-		/// <para>Sub resource indices can be calculated with the <see cref="M:GorgonLibrary.Graphics.GorgonTexture2D.GetSubResourceIndex">GetSubResourceIndex</see> static method.</para>
-		/// <para>SM2_a_b devices may copy 2D textures, but there are format restrictions (must be compatible with a render target format).  3D textures can only be copied to textures that are in GPU memory, if either texture is a staging texture, then an exception will be thrown.</para>
-		/// <para>If the <paramref name="deferred"/> parameter is NULL (Nothing in VB.Net) then the immediate context will be used.  If this method is called from multiple threads, then a deferred context should be passed for each thread that is 
-		/// accessing the sub resource.</para>
-		/// </remarks>
-		/// <exception cref="System.ArgumentNullException">Thrown when the texture parameter is NULL (Nothing in VB.Net).</exception>
-		/// <exception cref="System.ArgumentException">Thrown when the formats cannot be converted because they're not of the same group or the current video device is a SM_2_a_b device or a SM_4 device.
-		/// <para>-or-</para>
-		/// <para>Thrown when the subResource and destSubResource are the same and the source texture is the same as this texture.</para>
-		/// <para>-or-</para>
-		/// <para>Thrown when the multisampling count is not the same for the source texture and this texture.</para>
-		/// </exception>
-		/// <exception cref="System.InvalidOperationException">Thrown when this texture is an immutable texture.
-		/// </exception>
-		public void CopySubResource(GorgonTexture2D texture, int subResource, int destSubResource, GorgonGraphics deferred = null)
-		{
-			GorgonDebug.AssertNull<GorgonTexture>(texture, "texture");
-
-			CopySubResource(texture, subResource, destSubResource, null, Vector2.Zero, deferred);
-		}
-
+        /// <summary>
+        /// Function to copy a texture subresource from another texture.
+        /// </summary>
+        /// <param name="sourceTexture">Source texture to copy.</param>
+        /// <param name="sourceArrayIndex">The array index of the sub resource to copy.</param>
+        /// <param name="sourceMipLevel">The mip map level of the sub resource to copy.</param>
+        /// <param name="destArrayIndex">The array index of the destination sub resource to copy into.</param>
+        /// <param name="destMipLevel">The mip map level of the destination sub resource to copy into.</param>
+        /// <param name="deferred">[Optional] The deferred context to use when copying the sub resource.</param>
+        /// <remarks>Use this method to copy a specific sub resource of a texture to another sub resource of another texture, or to a different sub resource of the same texture.  
+        /// <para>For SM_4_1 and SM_5 video devices, texture formats can be converted if they belong to the same format group (e.g. R8G8B8A8, R8G8B8A8_UInt, R8G8B8A8_Int, R8G8B8A8_UIntNormal, etc.. are part of the R8G8B8A8 group).  If the 
+        /// video device is a SM_4 or SM_2_a_b device, then no format conversion will be done and an exception will be thrown if format conversion is attempted.</para>
+        /// <para>When copying sub resources (e.g. mip-map levels), the mip levels and array indices must be different if copying to the same texture.  If they are not, an exception will be thrown.</para>
+        /// <para>Pass NULL (Nothing in VB.Net) to the sourceRange parameter to copy the entire sub resource.</para>
+        /// <para>Video devices that have a feature level of SM2_a_b cannot copy sub resource data in a 1D texture if the texture is not a staging texture.</para>
+        /// <para>If the <paramref name="deferred"/> parameter is NULL (Nothing in VB.Net) then the immediate context will be used.  If this method is called from multiple threads, then a deferred context should be passed for each thread that is 
+        /// accessing the sub resource.</para>
+        /// </remarks>
+        /// <exception cref="System.ArgumentNullException">Thrown when the texture parameter is NULL (Nothing in VB.Net).</exception>
+        /// <exception cref="System.ArgumentException">Thrown when the formats cannot be converted because they're not of the same group or the current video device is a SM_2_a_b device or a SM_4 device.
+        /// <para>-or-</para>
+        /// <para>Thrown when the subResource and destSubResource are the same and the source texture is the same as this texture.</para>
+        /// </exception>
+        /// <exception cref="System.InvalidOperationException">Thrown when this texture is an immutable texture.
+        /// </exception>
+        /// <exception cref="System.NotSupportedException">Thrown when the video device has a feature level of SM2_a_b and this texture or the source texture are not staging textures.</exception>
+        public void CopySubResource(GorgonTexture2D sourceTexture,
+            int sourceArrayIndex,
+            int sourceMipLevel,
+            int destArrayIndex,
+            int destMipLevel,
+            GorgonGraphics deferred = null)
+        {
+            CopySubResource(sourceTexture,
+                null,
+                sourceArrayIndex,
+                sourceMipLevel,
+                0,
+                0,
+                destArrayIndex,
+                destMipLevel,
+                deferred);
+        }
+        
         /// <summary>
         /// Function to copy data from the CPU to the texture on the GPU.
         /// </summary>

@@ -1199,6 +1199,15 @@ namespace GorgonLibrary.Graphics.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Feature level SM2_a_b video devices cannot copy non-staging textures..
+        /// </summary>
+        internal static string GORGFX_TEXTURE_CANNOT_COPY_NONSTAGING {
+            get {
+                return ResourceManager.GetString("GORGFX_TEXTURE_CANNOT_COPY_NONSTAGING", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Cannot copy to and from the same sub resource on the same texture..
         /// </summary>
         internal static string GORGFX_TEXTURE_CANNOT_COPY_SAME_SUBRESOURCE {
