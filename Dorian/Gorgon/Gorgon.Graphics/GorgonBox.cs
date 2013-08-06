@@ -24,6 +24,9 @@
 // 
 #endregion
 
+using System.Reflection;
+using GorgonLibrary.Math;
+using GorgonLibrary.Graphics.Properties;
 using D3D = SharpDX.Direct3D11;
 
 namespace GorgonLibrary.Graphics
@@ -32,8 +35,23 @@ namespace GorgonLibrary.Graphics
 	/// A box structure with width, height and depth.
 	/// </summary>
 	public struct GorgonBox
-	{
-		/// <summary>
+        : IEquatableByRef<GorgonBox>
+    {
+        #region Variables.
+        /// <summary>
+        /// An empty box.
+        /// </summary>
+	    public static readonly GorgonBox Empty = new GorgonBox
+	    {
+            X = 0,
+            Y = 0,
+            Z = 0,
+            Width = 0,
+            Height = 0,
+            Depth = 0
+	    };
+
+        /// <summary>
 		/// Horizontal position.
 		/// </summary>
 		public int X;
@@ -57,8 +75,259 @@ namespace GorgonLibrary.Graphics
 		/// Depth of the box.
 		/// </summary>
 		public int Depth;
+        #endregion
 
-		/// <summary>
+
+        #region Properties.
+        /// <summary>
+        /// Property to determine if the box is empty.
+        /// </summary>
+	    public bool IsEmpty
+	    {
+            get
+            {
+                return Width == 0 && Height == 0 && Depth == 0 && X == 0 && Y == 0 && Z == 0;
+            }
+	    }
+
+        /// <summary>
+        /// Property to set or return the left value for the box.
+        /// </summary>
+        public int Left
+        {
+            get
+            {
+                return X;
+            }
+            set
+            {
+                X = value;
+            }
+        }
+
+        /// <summary>
+        /// Property to set or return the top value for the box.
+        /// </summary>
+        public int Top
+        {
+            get
+            {
+                return Y;
+            }
+            set
+            {
+                Y = value;
+            }
+        }
+
+        /// <summary>
+        /// Property to set or return the front value for the box.
+        /// </summary>
+        public int Front
+        {
+            get
+            {
+                return Z;
+            }
+            set
+            {
+                Z = value;
+            }
+        }
+
+        /// <summary>
+        /// Property to return the right value of the box.
+        /// </summary>
+        public int Right
+        {
+            get
+            {
+                return X + Width;
+            }
+        }
+
+        /// <summary>
+        /// Property to return the bottom value of the box.
+        /// </summary>
+        public int Bottom
+        {
+            get
+            {
+                return Y + Height;
+            }
+        }
+
+        /// <summary>
+        /// Property to return the back value of the box.
+        /// </summary>
+        public int Back
+        {
+            get
+            {
+                return Z + Depth;
+            }
+        }
+        #endregion
+
+        #region Methods.
+        /// <summary>
+        /// Returns a <see cref="System.String" /> that represents this instance.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="System.String" /> that represents this instance.
+        /// </returns>
+	    public override string ToString()
+	    {
+	        return string.Format(Resources.GORGFX_BOX_TOSTR, X, Y, Z, Right, Bottom, Back, Width, Height, Depth);
+	    }
+
+        // ReSharper disable once InconsistentNaming
+        /// <summary>
+        /// Function to return a box from top, left, front, right, bottom and back coordinates.
+        /// </summary>
+        /// <param name="top">Top coordinate.</param>
+        /// <param name="left">Left coordinate</param>
+        /// <param name="front">Front coordinate.</param>
+        /// <param name="right">Right coordinate.</param>
+        /// <param name="bottom">Bottom coordinate.</param>
+        /// <param name="back">Back coordinate.</param>
+        /// <returns>A new box with the specified coordinates.</returns>
+	    public static GorgonBox FromTLFRBB(int top, int left, int front, int right, int bottom, int back)
+	    {
+	        return new GorgonBox
+	        {
+	            X = left,
+	            Y = top,
+	            Z = front,
+	            Width = right - left,
+	            Height = bottom - top,
+	            Depth = back - front
+	        };
+	    }
+
+        /// <summary>
+        /// Function to determine the intersection between 2 boxes.
+        /// </summary>
+        /// <param name="box1">First box to intersect.</param>
+        /// <param name="box2">Second box to intersect.</param>
+        /// <param name="result">The resulting intersected box.</param>
+	    public static void Intersect(ref GorgonBox box1, ref GorgonBox box2, out GorgonBox result)
+        {
+            int left = box2.Left.Max(box1.Left);
+            int top = box2.Top.Max(box1.Top);
+            int front = box2.Front.Max(box1.Front);
+
+            int right = box2.Right.Min(box1.Right);
+            int bottom = box2.Bottom.Min(box1.Bottom);
+            int back = box2.Back.Min(box1.Back);
+
+            if ((right < left) || (bottom < top) || (back < front))
+            {
+                result = Empty;
+                return;
+            }
+
+            result = FromTLFRBB(left, top, front, right, bottom, back);
+        }
+
+        /// <summary>
+        /// Function to determine the intersection between 2 boxes.
+        /// </summary>
+        /// <param name="box1">First box to intersect.</param>
+        /// <param name="box2">Second box to intersect.</param>
+        /// <returns>The intersected box.</returns>
+        public static GorgonBox Intersect(GorgonBox box1, GorgonBox box2)
+        {
+            GorgonBox result;
+
+            Intersect(ref box1, ref box2, out result);
+
+            return result;
+        }
+
+        /// <summary>
+        /// Funciton to determine the intersection between this and another box.
+        /// </summary>
+        /// <param name="box">Box to intersect.</param>
+        /// <returns>The intersection between this box and the other box.</returns>
+	    public GorgonBox Intersect(GorgonBox box)
+        {
+            GorgonBox result;
+
+            Intersect(ref this, ref box, out result);
+
+            return result;
+        }
+
+        /// <summary>
+        /// Function to return whether two instances are equal or not.
+        /// </summary>
+        /// <param name="left">The left instance to compare.</param>
+        /// <param name="right">The right instance to compare.</param>
+        /// <returns>TRUE if equal, FALSE if not.</returns>
+	    public static bool Equals(ref GorgonBox left, ref GorgonBox right)
+	    {
+	        return ((left.X == right.X) && (left.Y == right.Y) && (left.Z == right.Z)
+	                && (left.Width == right.Width) && (left.Height == right.Height) && (left.Depth == right.Depth));
+	    }
+
+        /// <summary>
+        /// Determines whether the specified <see cref="System.Object" /> is equal to this instance.
+        /// </summary>
+        /// <param name="obj">The <see cref="System.Object" /> to compare with this instance.</param>
+        /// <returns>
+        ///   <c>true</c> if the specified <see cref="System.Object" /> is equal to this instance; otherwise, <c>false</c>.
+        /// </returns>
+	    public override bool Equals(object obj)
+	    {
+	        if (obj is GorgonBox)
+	        {
+	            ((GorgonBox)obj).Equals(ref this);
+	        }
+
+	        return base.Equals(obj);
+        }
+
+        /// <summary>
+        /// Operator to determine if 2 instances are equal.
+        /// </summary>
+        /// <param name="left">The left instance to compare.</param>
+        /// <param name="right">The right instance to compare.</param>
+        /// <returns>TRUE if equal, FALSE if not.</returns>
+	    public static bool operator ==(GorgonBox left, GorgonBox right)
+	    {
+	        return Equals(ref left, ref right);
+	    }
+
+        /// <summary>
+        /// Operator to determine if 2 instances are not equal.
+        /// </summary>
+        /// <param name="left">The left instance to compare.</param>
+        /// <param name="right">The right instance to compare.</param>
+        /// <returns>TRUE if not equal, FALSE if equal.</returns>
+        public static bool operator !=(GorgonBox left, GorgonBox right)
+	    {
+	        return !Equals(ref left, ref right);
+	    }
+
+        /// <summary>
+        /// Returns a hash code for this instance.
+        /// </summary>
+        /// <returns>
+        /// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table. 
+        /// </returns>
+	    public override int GetHashCode()
+        {
+            return
+                281.GenerateHash(Back)
+                    .GenerateHash(Right)
+                    .GenerateHash(Bottom)
+                    .GenerateHash(Left)
+                    .GenerateHash(Top)
+                    .GenerateHash(Front);
+        }
+
+	    /// <summary>
 		/// Property to retrieve the resource region.
 		/// </summary>
 		/// <returns>The D3D resource region.</returns>
@@ -77,83 +346,34 @@ namespace GorgonLibrary.Graphics
 				};
 			}
 		}
+        #endregion
 
-		/// <summary>
-		/// Property to set or return the left value for the box.
-		/// </summary>
-		public int Left
-		{
-			get
-			{
-				return X;
-			}
-			set
-			{
-				X = value;
-			}
-		}
+        #region IEquatable<GorgonBox> Members
+        /// <summary>
+        /// Indicates whether the current object is equal to another object of the same type.
+        /// </summary>
+        /// <param name="other">An object to compare with this object.</param>
+        /// <returns>
+        /// true if the current object is equal to the other parameter; otherwise, false.
+        /// </returns>
+        public bool Equals(GorgonBox other)
+        {
+            return Equals(ref this, ref other);
+        }
+        #endregion
 
-		/// <summary>
-		/// Property to set or return the top value for the box.
-		/// </summary>
-		public int Top
-		{
-			get
-			{
-				return Y;
-			}
-			set
-			{
-				Y = value;
-			}
-		}
-
-		/// <summary>
-		/// Property to set or return the front value for the box.
-		/// </summary>
-		public int Front
-		{
-			get
-			{
-				return Z;
-			}
-			set
-			{
-				Z = value;
-			}
-		}
-
-		/// <summary>
-		/// Property to return the right value of the box.
-		/// </summary>
-		public int Right
-		{
-			get
-			{
-				return X + Width;
-			}
-		}
-
-		/// <summary>
-		/// Property to return the bottom value of the box.
-		/// </summary>
-		public int Bottom
-		{
-			get
-			{
-				return Y + Height;
-			}
-		}
-
-		/// <summary>
-		/// Property to return the back value of the box.
-		/// </summary>
-		public int Back
-		{
-			get
-			{
-				return Z + Depth;
-			}
-		}		
-	}
+        #region IEquatableByRef<GorgonBox> Members
+        /// <summary>
+        /// Indicates whether the current object is equal to another object of the same type.
+        /// </summary>
+        /// <param name="other">An object to compare with this object.</param>
+        /// <returns>
+        /// true if the current object is equal to the other parameter; otherwise, false.
+        /// </returns>
+        public bool Equals(ref GorgonBox other)
+        {
+            return Equals(ref this, ref other);
+        }
+        #endregion
+    }
 }

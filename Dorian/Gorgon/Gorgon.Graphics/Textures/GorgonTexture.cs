@@ -528,7 +528,7 @@ namespace GorgonLibrary.Graphics
         /// Function to copy a texture subresource from another texture.
         /// </summary>
         /// <param name="sourceTexture">Source texture to copy.</param>
-        /// <param name="sourceRange">The dimensions of the source area to copy.</param>
+        /// <param name="sourceBox">The dimensions of the source area to copy.</param>
         /// <param name="sourceArrayIndex">The array index of the sub resource to copy.</param>
         /// <param name="sourceMipLevel">The mip map level of the sub resource to copy.</param>
         /// <param name="destX">Horizontal offset into the destination texture to place the copied data.</param>
@@ -536,15 +536,16 @@ namespace GorgonLibrary.Graphics
         /// <param name="destZ">Depth offset into the destination texture to place the copied data.</param>
         /// <param name="destArrayIndex">The array index of the destination sub resource to copy into.</param>
         /// <param name="destMipLevel">The mip map level of the destination sub resource to copy into.</param>
-        /// <param name="deferred">The deferred context to use when copying the sub resource.</param>
-        /// <remarks>Use this method to copy a specific sub resource of a texture to another sub resource of another texture, or to a different sub resource of the same texture.  The <paramref name="sourceRange"/> 
+        /// <param name="unsafeCopy">TRUE to disable all range checking for coorindates, FALSE to clip coorindates to safe ranges.</param>
+        /// <param name="context">The deferred context to use when copying the sub resource.</param>
+        /// <remarks>Use this method to copy a specific sub resource of a texture to another sub resource of another texture, or to a different sub resource of the same texture.  The <paramref name="sourceBox"/> 
         /// coordinates must be inside of the destination, if it is not, then the source data will be clipped against the destination region. No stretching or filtering is supported by this method.
         /// <para>For SM_4_1 and SM_5 video devices, texture formats can be converted if they belong to the same format group (e.g. R8G8B8A8, R8G8B8A8_UInt, R8G8B8A8_Int, R8G8B8A8_UIntNormal, etc.. are part of the R8G8B8A8 group).  If the 
         /// video device is a SM_4 or SM_2_a_b device, then no format conversion will be done and an exception will be thrown if format conversion is attempted.</para>
         /// <para>When copying sub resources (e.g. mip-map levels), the mip levels and array indices must be different if copying to the same texture.  If they are not, an exception will be thrown.</para>
         /// <para>Pass NULL (Nothing in VB.Net) to the sourceRange parameter to copy the entire sub resource.</para>
         /// <para>Video devices that have a feature level of SM2_a_b cannot copy sub resource data in a 1D texture if the texture is not a staging texture.</para>
-        /// <para>If the <paramref name="deferred"/> parameter is NULL (Nothing in VB.Net) then the immediate context will be used.  If this method is called from multiple threads, then a deferred context should be passed for each thread that is 
+        /// <para>If the <paramref name="context"/> parameter is NULL (Nothing in VB.Net) then the immediate context will be used.  If this method is called from multiple threads, then a deferred context should be passed for each thread that is 
         /// accessing the sub resource.</para>
         /// </remarks>
         /// <exception cref="System.ArgumentNullException">Thrown when the texture parameter is NULL (Nothing in VB.Net).</exception>
@@ -555,9 +556,17 @@ namespace GorgonLibrary.Graphics
         /// <exception cref="System.InvalidOperationException">Thrown when this texture is an immutable texture.
         /// </exception>
         /// <exception cref="System.NotSupportedException">Thrown when the video device has a feature level of SM2_a_b and this texture or the source texture are not staging textures.</exception>
-        protected void OnCopySubResource(GorgonTexture sourceTexture, GorgonBox? sourceRange, int sourceArrayIndex, int sourceMipLevel, int destX, int destY, int destZ, int destArrayIndex, int destMipLevel, GorgonGraphics deferred = null)
+        protected void OnCopySubResource(GorgonTexture sourceTexture, GorgonBox sourceBox, int sourceArrayIndex, int sourceMipLevel, int destX, int destY, int destZ, int destArrayIndex, int destMipLevel, bool unsafeCopy, GorgonGraphics context)
         {
             GorgonDebug.AssertNull(sourceTexture, "texture");
+
+            // If we're trying to place the image data outside of this texture, then leave.
+            if ((destX >= Settings.Width)
+                || (destY >= Settings.Height)
+                || (destZ >= Settings.Depth))
+            {
+                return;
+            }
 
             int sourceResource = D3D.Resource.CalculateSubResourceIndex(sourceMipLevel,
                 sourceArrayIndex,
@@ -596,44 +605,92 @@ namespace GorgonLibrary.Graphics
                     Settings.Format), "sourceTexture");
             }
 
+            if ((sourceArrayIndex < 0) || (sourceArrayIndex >= sourceTexture.Settings.ArrayCount))
+            {
+                throw new ArgumentOutOfRangeException("sourceArrayIndex",
+                    string.Format(Resources.GORGFX_INDEX_OUT_OF_RANGE, sourceArrayIndex, 0, sourceTexture.Settings.ArrayCount));
+            }
+
+            if ((sourceMipLevel < 0) || (sourceMipLevel >= sourceTexture.Settings.MipCount))
+            {
+                throw new ArgumentOutOfRangeException("sourceMipLevel",
+                    string.Format(Resources.GORGFX_INDEX_OUT_OF_RANGE, sourceMipLevel, 0, sourceTexture.Settings.MipCount));
+            }
+
+            if ((destArrayIndex < 0) || (destArrayIndex >= Settings.ArrayCount))
+            {
+                throw new ArgumentOutOfRangeException("destArrayIndex",
+                    string.Format(Resources.GORGFX_INDEX_OUT_OF_RANGE, destArrayIndex, 0, Settings.ArrayCount));
+            }
+
+            if ((destMipLevel < 0) || (destMipLevel >= Settings.MipCount))
+            {
+                throw new ArgumentOutOfRangeException("destMipLevel",
+                    string.Format(Resources.GORGFX_INDEX_OUT_OF_RANGE, destMipLevel, 0, Settings.MipCount));
+            }
+
             if ((this == sourceTexture) && (sourceResource == destResource))
             {
                 throw new ArgumentException(Resources.GORGFX_TEXTURE_CANNOT_COPY_SAME_SUBRESOURCE);
             }
 #endif
-            if (deferred == null)
+            if (context == null)
             {
-                deferred = Graphics;
+                context = Graphics;
+            }           
+
+            if (!unsafeCopy)
+            {
+                // Clip off any overlap if the destination is outside of the destination texture.
+                if (destX < 0)
+                {
+                    sourceBox.X -= destX;
+                    sourceBox.Width += destX;
+                }
+
+                if (destY < 0)
+                {
+                    sourceBox.Y -= destY;
+                    sourceBox.Height += destY;
+                }
+
+                if (destZ < 0)
+                {
+                    sourceBox.Z -= destZ;
+                    sourceBox.Depth += destZ;
+                }
+
+                // Clip source box.
+                int left = sourceBox.Left.Min(sourceTexture.Settings.Width - 1).Max(0);
+                int top = sourceBox.Top.Min(sourceTexture.Settings.Height - 1).Max(0);
+                int front = sourceBox.Front.Min(sourceTexture.Settings.Depth - 1).Max(0);
+                int right = sourceBox.Right.Min(sourceTexture.Settings.Width + left).Max(1);
+                int bottom = sourceBox.Bottom.Min(sourceTexture.Settings.Height + top).Max(1);
+                int back = sourceBox.Back.Min(sourceTexture.Settings.Depth + front).Max(1);
+
+                sourceBox = GorgonBox.FromTLFRBB(left, top, front, right, bottom, back);
+
+                // Adjust source box to fit within our destination.
+                destX = destX.Min(Settings.Width - 1).Max(0);
+                destY = destY.Min(Settings.Height - 1).Max(0);
+                destZ = destZ.Min(Settings.Depth - 1).Max(0);
+
+                sourceBox.Width = (destX + sourceBox.Width).Min(Settings.Width - destX).Max(1);
+                sourceBox.Height = (destY + sourceBox.Height).Min(Settings.Height - destY).Max(1);
+                sourceBox.Depth = (destZ + sourceBox.Depth).Min(Settings.Depth - destZ).Max(1);
+
+                // Nothing to copy, so get out.
+                if ((sourceBox.Width == 0)
+                    || (sourceBox.Height == 0)
+                    || (sourceBox.Depth == 0))
+                {
+                    return;
+                }
             }
 
-            if (sourceRange == null)
-            {
-                sourceRange = new GorgonBox
-                {
-                    Front = 0,
-                    Top = 0,
-                    Left = 0,
-                    Depth = Settings.Depth.Min(sourceTexture.Settings.Depth).Max(1),
-                    Width = Settings.Width.Min(sourceTexture.Settings.Width).Max(1),
-                    Height = Settings.Height.Min(sourceTexture.Settings.Height).Max(1)
-                };
-            }
-            else
-            {
-                sourceRange = new GorgonBox
-                {
-                    Front = sourceRange.Value.Front.Min(Settings.Depth - 1).Min(sourceTexture.Settings.Depth - 1).Max(0),
-                    Top = sourceRange.Value.Top.Min(Settings.Height - 1).Min(sourceTexture.Settings.Height - 1).Max(0),
-                    Left = sourceRange.Value.Left.Min(Settings.Width - 1).Min(sourceTexture.Settings.Width - 1).Max(0),
-                    Depth = sourceRange.Value.Depth.Min(Settings.Depth).Min(sourceTexture.Settings.Depth).Max(1),
-                    Height = sourceRange.Value.Height.Min(Settings.Height).Min(sourceTexture.Settings.Height).Max(1),
-                    Width = sourceRange.Value.Width.Min(Settings.Width).Min(sourceTexture.Settings.Width).Max(1)
-                };
-            }
-
-            deferred.Context.CopySubresourceRegion(sourceTexture.D3DResource,
+            context.Context.CopySubresourceRegion(sourceTexture.D3DResource,
                 sourceResource,
-                sourceRange.Value.Convert,
+                sourceBox.Convert,
                 D3DResource,
                 destResource,
                 destX,

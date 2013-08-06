@@ -63,12 +63,58 @@ namespace GorgonLibrary.Graphics.Test
         }
 
         [TestMethod]
+        public void TestTextureCopy()
+        {
+            var shader = _framework.Graphics.Shaders.FromMemory<GorgonPixelShader>("PS",
+                "TestPSGeneric",
+                Resources.TextureShaders);
+
+            var destTexture = _framework.Graphics.Textures.CreateTexture("Texture",
+                new GorgonTexture2DSettings
+                {
+                    ArrayCount = 1,
+                    Format = BufferFormat.R8G8B8A8_UIntNormal,
+                    MipCount = 4,
+                    Height = 64,
+                    Width = 64,
+                    Usage = BufferUsage.Default
+                });
+
+            var sourceTexture = _framework.Graphics.Textures.CreateTexture<GorgonTexture2D>("Source", Resources.Glass, new GorgonGDIOptions
+            {
+                MipCount = 4
+            });
+
+            _framework.CreateTestScene(Shaders, Shaders, true);
+            _framework.Graphics.Shaders.PixelShader.Current = shader;
+            _framework.Graphics.Shaders.PixelShader.Resources[1] = destTexture;
+
+            destTexture.CopySubResource(sourceTexture);
+            destTexture.CopySubResource(sourceTexture, new Rectangle(0, 0, 128, 128));
+            destTexture.CopySubResource(sourceTexture, new Rectangle(0, 0, 128, 128), 4, 4);
+            destTexture.CopySubResource(sourceTexture, new Rectangle(0, 0, 64, 64), 8, 8);
+            destTexture.CopySubResource(sourceTexture, new Rectangle(0, 0, 64, 64), -4, -4);
+            destTexture.CopySubResource(sourceTexture, new Rectangle(32, 32, 32, 32), 32, 32);
+            destTexture.CopySubResource(sourceTexture, new Rectangle(16, 16, 16, 16), 0, 0);
+            destTexture.CopySubResource(sourceTexture, new Rectangle(0, 0, 64, 64), 0, 1, 128);
+            destTexture.CopySubResource(sourceTexture, new Rectangle(0, 0, 32, 32), 0, 2, 192);
+            destTexture.CopySubResource(sourceTexture, new Rectangle(0, 0, 16, 16), 0, 3, 224);
+
+            /*_framework.IdleFunc = () =>
+            {
+                return false;
+            };*/
+
+            Assert.IsTrue(_framework.Run() == DialogResult.Yes);
+        }
+
+        [TestMethod]
         public void TestTextureUpdate()
         {
             float diver = 1.0f;
 
             var shader = _framework.Graphics.Shaders.FromMemory<GorgonPixelShader>("PS",
-                "TestPSGeneric",
+                "TestPSUpdateSub",
                 Resources.TextureShaders);
 
             var texture = _framework.Graphics.Textures.CreateTexture("Texture",

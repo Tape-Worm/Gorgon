@@ -655,4 +655,7 @@ Log file location: "{0}"</value>
   <data name="GORGFX_TEXTURE_CANNOT_COPY_NONSTAGING" xml:space="preserve">
     <value>Feature level SM2_a_b video devices cannot copy non-staging textures.</value>
   </data>
+  <data name="GORGFX_BOX_TOSTR" xml:space="preserve">
+    <value>Gorgon Box: {0}x{1}x{2}-{3}x{4}x{5} (Width: {6}, Height: {7}, Depth {8})</value>
+  </data>
 </root>

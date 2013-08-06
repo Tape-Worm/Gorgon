@@ -40,7 +40,7 @@ float4 TestPS( PS_IN input ) : SV_Target
 	return (_textureView2.Sample(_sampler, input.uv) + pixel) * input.col;		
 }
 
-float4 TestPSGeneric(PS_IN input) : SV_Target
+float4 TestPSUpdateSub(PS_IN input) : SV_Target
 {
 	float4 dynTexel = _dynTexture.Sample(_sampler, input.uv);
 	float4 texel = _textureView2.Sample(_sampler, input.uv);
@@ -51,4 +51,9 @@ float4 TestPSGeneric(PS_IN input) : SV_Target
 	}
 
 	return texel;
+}
+
+float4 TestPSGeneric(PS_IN input) : SV_Target
+{
+	return _textureView2.Sample(_sampler, input.uv);
 }
