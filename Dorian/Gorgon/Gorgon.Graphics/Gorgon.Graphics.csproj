@@ -114,7 +114,6 @@
     <Compile Include="IO\GorgonGDIOptions.cs" />
     <Compile Include="IO\GorgonImageCodec.cs" />
     <Compile Include="IO\GorgonStreamWrapper.cs" />
-    <Compile Include="ISubResourceData.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -200,9 +199,6 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Textures\GorgonTexture3DSettings.cs" />
-    <Compile Include="Textures\GorgonTextureData.cs">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="Textures\GorgonTextures.cs">
       <SubType>Code</SubType>
     </Compile>
