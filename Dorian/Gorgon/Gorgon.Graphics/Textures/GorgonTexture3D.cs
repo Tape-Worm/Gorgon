@@ -471,10 +471,9 @@ namespace GorgonLibrary.Graphics
 		/// <param name="name">The name of the texture.</param>
 		/// <param name="settings">Settings to pass to the texture.</param>
 		internal GorgonTexture3D(GorgonGraphics graphics, string name, ITextureSettings settings)
-			: base(graphics, name, settings)
+			: base(graphics, name, settings.Format)
 		{
-			// TODO: This is really kind of a hack.  I need to find a better way to make specific settings show up for their respective types.
-			Settings = settings as GorgonTexture3DSettings ?? new GorgonTexture3DSettings
+			Settings = new GorgonTexture3DSettings
 			{
 				Width = settings.Width,
 				Height = settings.Height,

@@ -446,7 +446,7 @@ namespace GorgonLibrary.Graphics
         internal GorgonRenderTarget2D(GorgonGraphics graphics, string name, GorgonRenderTarget2DSettings settings)
             : base(graphics, name, settings)
         {
-	        Settings = settings;
+            Settings = (GorgonRenderTarget2DSettings)settings.Clone();
         }
         #endregion
     }
