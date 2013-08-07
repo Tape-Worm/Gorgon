@@ -331,7 +331,7 @@ namespace GorgonLibrary.Graphics
         internal GorgonRenderTarget1D(GorgonGraphics graphics, string name, GorgonRenderTarget1DSettings settings)
             : base(graphics, name, settings)
         {
-	        Settings = settings;
+            Settings = (GorgonRenderTarget1DSettings)settings.Clone();
         }
         #endregion
     }

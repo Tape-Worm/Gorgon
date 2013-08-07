@@ -455,10 +455,9 @@ namespace GorgonLibrary.Graphics
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (Nothing in VB.Net).</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="name"/> parameter is an empty string.</exception>
 		internal GorgonTexture2D(GorgonGraphics graphics, string name, ITextureSettings settings)
-			: base(graphics, name, settings)
+			: base(graphics, name, settings.Format)
 		{
-            // TODO: This is really kind of a hack.  I need to find a better way to make specific settings show up for their respective types.
-		    Settings = settings as GorgonTexture2DSettings ?? new GorgonTexture2DSettings
+		    Settings = new GorgonTexture2DSettings
 		        {
 		            Width = settings.Width,
 		            Height = settings.Height,

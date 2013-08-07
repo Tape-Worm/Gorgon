@@ -187,7 +187,7 @@ namespace GorgonLibrary.Graphics
 		internal GorgonRenderTarget3D(GorgonGraphics graphics, string name, GorgonRenderTarget3DSettings settings)
 			: base(graphics, name, settings)
 		{
-			Settings = settings;
+            Settings = (GorgonRenderTarget3DSettings)settings.Clone();
 		}
 		#endregion
 	}

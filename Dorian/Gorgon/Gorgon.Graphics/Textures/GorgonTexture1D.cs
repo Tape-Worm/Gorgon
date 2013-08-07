@@ -49,7 +49,16 @@ namespace GorgonLibrary.Graphics
 				return ResourceType.Texture1D;
 			}
 		}
-		#endregion
+
+        /// <summary>
+        /// Property to return the settings for this texture.
+        /// </summary>
+        public new GorgonTexture1DSettings Settings
+        {
+            get;
+            private set;
+        }
+        #endregion
 
 		#region Methods.
 		/// <summary>
@@ -403,9 +412,19 @@ namespace GorgonLibrary.Graphics
 		///   
 		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="name"/> parameter is an empty string.</exception>
 		internal GorgonTexture1D(GorgonGraphics graphics, string name, ITextureSettings settings)
-			: base(graphics, name, settings)
+			: base(graphics, name, settings.Format)
 		{
-		}
+            Settings = new GorgonTexture1DSettings
+            {
+                Width = settings.Width,
+                AllowUnorderedAccessViews = settings.AllowUnorderedAccessViews,
+                ArrayCount = settings.ArrayCount,
+                Format = settings.Format,
+                MipCount = settings.MipCount,
+                ShaderViewFormat = settings.ShaderViewFormat,
+                Usage = settings.Usage
+            };
+        }
 		#endregion
 	}
 }

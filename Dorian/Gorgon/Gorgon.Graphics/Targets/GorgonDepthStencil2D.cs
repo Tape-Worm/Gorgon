@@ -313,7 +313,7 @@ namespace GorgonLibrary.Graphics
 		internal GorgonDepthStencil2D(GorgonGraphics graphics, string name, GorgonDepthStencil2DSettings settings)
 			: base(graphics, name, settings)
 		{
-			Settings = settings;
+            Settings = (GorgonDepthStencil2DSettings)settings.Clone();
 		}
 		#endregion
 
