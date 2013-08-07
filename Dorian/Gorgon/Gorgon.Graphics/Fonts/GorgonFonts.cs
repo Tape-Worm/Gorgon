@@ -117,8 +117,8 @@ namespace GorgonLibrary.Graphics
 			GorgonTexture2D result = null;
 
 			// Only look at textures that weren't created by Gorgon internally and aren't font textures.
-			if ((!textureName.StartsWith("GorgonFont.", StringComparison.CurrentCultureIgnoreCase))
-				|| (textureName.IndexOf(".InternalTexture_", StringComparison.CurrentCultureIgnoreCase) == -1))
+			if ((!textureName.StartsWith("GorgonFont.", StringComparison.OrdinalIgnoreCase))
+				|| (textureName.IndexOf(".InternalTexture_", StringComparison.OrdinalIgnoreCase) == -1))
 			{
 				result = (from texture in _graphics.GetTrackedObjectsOfType<GorgonTexture2D>()
 						  where (string.Compare(texture.Name, textureName, StringComparison.OrdinalIgnoreCase) == 0)
