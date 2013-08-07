@@ -25,8 +25,6 @@
 #endregion
 
 using System;
-using GorgonLibrary.Diagnostics;
-using GorgonLibrary.Graphics.Properties;
 using SlimMath;
 using DX = SharpDX;
 using D3D = SharpDX.Direct3D11;

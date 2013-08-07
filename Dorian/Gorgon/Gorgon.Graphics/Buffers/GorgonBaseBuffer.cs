@@ -810,25 +810,27 @@ namespace GorgonLibrary.Graphics
         /// Function to copy the contents of the specified buffer to this buffer.
         /// </summary>
         /// <param name="buffer">Buffer to copy.</param>
-        /// <param name="sourceStartingIndex">Starting byte index to start copying from.</param>
+        /// <param name="sourceOffset">Starting byte index to start copying from.</param>
         /// <param name="byteCount">The number of bytes to copy.</param>
         /// <param name="destOffset">The offset within the destination buffer.</param>
         /// <remarks>This is used to copy data from one GPU buffer to another.</remarks>
-        /// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="sourceStartingIndex"/> is less than 0 or larger than the size of the source <paramref name="buffer"/>.
+        /// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="sourceOffset"/> is less than 0 or larger than the size of the source <paramref name="buffer"/>.
         /// <para>-or-</para>
         /// <para>Thrown when the <paramref name="byteCount"/> + sourceStartIndex is greater than the size of the source buffer, or less than 0.</para>
         /// <para>-or-</para>
         /// <para>Thrown when the <paramref name="destOffset"/> + byteCount is greater than the size of this buffer, or less than 0.</para>
         /// </exception>
         /// <exception cref="GorgonLibrary.GorgonException">Thrown when this buffer has a usage of Immutable.</exception>
-        public void Copy(GorgonBaseBuffer buffer, int sourceStartingIndex, int byteCount, int destOffset)
+        public void Copy(GorgonBaseBuffer buffer, int sourceOffset, int byteCount, int destOffset)
         {
-            int endByteIndex = sourceStartingIndex + byteCount;
+            int sourceByteIndex = sourceOffset + byteCount;
+            int destByteIndex = destOffset + byteCount;
 
             GorgonDebug.AssertNull(buffer, "buffer");
-            GorgonDebug.AssertParamRange(sourceStartingIndex, 0, buffer.SizeInBytes, "sourceStartingIndex");
-            GorgonDebug.AssertParamRange(endByteIndex, 0, buffer.SizeInBytes, "sourceStartingIndex");
+            GorgonDebug.AssertParamRange(sourceOffset, 0, buffer.SizeInBytes, "sourceOffset");
+            GorgonDebug.AssertParamRange(sourceByteIndex, 0, buffer.SizeInBytes, "sourceOffset");
             GorgonDebug.AssertParamRange(destOffset, 0, SizeInBytes, "destOffset");
+            GorgonDebug.AssertParamRange(destByteIndex, 0, buffer.SizeInBytes, "destOffset");
 
 #if DEBUG
             if (Settings.Usage == GorgonLibrary.Graphics.BufferUsage.Immutable)
@@ -840,8 +842,8 @@ namespace GorgonLibrary.Graphics
             {
                 Top = 0,
                 Bottom = 1,
-                Left = sourceStartingIndex,
-                Right = endByteIndex,
+                Left = sourceOffset,
+                Right = sourceByteIndex,
                 Front = 0,
                 Back = 1
             }, D3DResource, 0, destOffset);
