@@ -471,7 +471,7 @@ namespace GorgonLibrary.Graphics
 		/// <param name="name">The name of the texture.</param>
 		/// <param name="settings">Settings to pass to the texture.</param>
 		internal GorgonTexture3D(GorgonGraphics graphics, string name, ITextureSettings settings)
-			: base(graphics, name, settings.Format)
+			: base(graphics, name, settings)
 		{
 			Settings = new GorgonTexture3DSettings
 			{

@@ -412,7 +412,7 @@ namespace GorgonLibrary.Graphics
 		///   
 		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="name"/> parameter is an empty string.</exception>
 		internal GorgonTexture1D(GorgonGraphics graphics, string name, ITextureSettings settings)
-			: base(graphics, name, settings.Format)
+			: base(graphics, name, settings)
 		{
             Settings = new GorgonTexture1DSettings
             {

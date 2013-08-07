@@ -1027,14 +1027,14 @@ namespace GorgonLibrary.Graphics
 						{
 							Rectangle offsetRect = position;
 							offsetRect.Offset(x, y);
-							graphics.DrawString(character.ToString(CultureInfo.CurrentUICulture), font, outlineBrush, offsetRect, format);
+							graphics.DrawString(character.ToString(CultureInfo.CurrentCulture), font, outlineBrush, offsetRect, format);
 						}
 					}
 
 					position.Offset(Settings.OutlineSize, Settings.OutlineSize);
 				}
 
-				graphics.DrawString(character.ToString(CultureInfo.CurrentUICulture), font, brush, position, format);
+				graphics.DrawString(character.ToString(CultureInfo.CurrentCulture), font, brush, position, format);
 				graphics.Flush();
 			}
 			finally
@@ -1118,11 +1118,11 @@ namespace GorgonLibrary.Graphics
 			try
 			{
 				// Try to get the character size.
-                size = g.MeasureCharacterRanges(currentCharacter.ToString(CultureInfo.CurrentUICulture),
+                size = g.MeasureCharacterRanges(currentCharacter.ToString(CultureInfo.CurrentCulture),
 			                                    font,
 			                                    new RectangleF(0, 0, Settings.TextureSize.Width, Settings.TextureSize.Height),
 			                                    format);
-			    defaultSize = g.MeasureCharacterRanges(Settings.DefaultCharacter.ToString(CultureInfo.CurrentUICulture),
+			    defaultSize = g.MeasureCharacterRanges(Settings.DefaultCharacter.ToString(CultureInfo.CurrentCulture),
 			                                           font,
 			                                           new RectangleF(0,
 			                                                          0,

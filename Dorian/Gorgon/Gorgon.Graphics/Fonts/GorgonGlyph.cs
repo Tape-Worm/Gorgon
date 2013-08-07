@@ -155,7 +155,7 @@ namespace GorgonLibrary.Graphics
 		{
 			get 
 			{
-				return Character.ToString(System.Globalization.CultureInfo.CurrentUICulture);
+				return Character.ToString(System.Globalization.CultureInfo.CurrentCulture);
 			}
 		}
 		#endregion

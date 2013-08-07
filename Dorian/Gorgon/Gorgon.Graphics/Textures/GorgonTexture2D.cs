@@ -455,7 +455,7 @@ namespace GorgonLibrary.Graphics
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (Nothing in VB.Net).</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="name"/> parameter is an empty string.</exception>
 		internal GorgonTexture2D(GorgonGraphics graphics, string name, ITextureSettings settings)
-			: base(graphics, name, settings.Format)
+			: base(graphics, name, settings)
 		{
 		    Settings = new GorgonTexture2DSettings
 		        {
