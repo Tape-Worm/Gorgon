@@ -1272,12 +1272,14 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		/// <param name="graphics">The graphics interface that owns the texture.</param>
 		/// <param name="name">The name of the texture.</param>
-		protected GorgonTexture(GorgonGraphics graphics, string name, BufferFormat textureFormat)
+		/// <param name="settings">Settings for the texture.</param>
+		protected GorgonTexture(GorgonGraphics graphics, string name, ITextureSettings settings)
 			: base(graphics, name)
 		{
+		    Settings = settings;
             _viewCache = new GorgonViewCache(this);
 		    _lockCache = new GorgonTextureLockCache(this);
-            FormatInformation = GorgonBufferFormatInfo.GetInfo(textureFormat);
+            FormatInformation = GorgonBufferFormatInfo.GetInfo(settings.Format);
 		}
 		#endregion
     }
