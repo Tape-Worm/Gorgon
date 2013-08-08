@@ -323,7 +323,7 @@ namespace GorgonLibrary.Renderers
 				if (value == null)
 					value = string.Empty;
 
-				if (string.Compare(value, _text, false) != 0)
+				if (string.Compare(value, _text, StringComparison.CurrentCulture) != 0)
 				{
 					_text = value;
 					UpdateText();
@@ -1032,7 +1032,7 @@ namespace GorgonLibrary.Renderers
 				// If the string is not the same as what we've stored, then temporarily
 				// replace that string with the one being passed in and use that to
 				// gauge size.  Otherwise, use the original size.
-				if (string.Compare(text, Text, false) != 0)
+				if (!string.Equals(text, Text, StringComparison.CurrentCulture))
 					Text = text;
 
 				return Size;

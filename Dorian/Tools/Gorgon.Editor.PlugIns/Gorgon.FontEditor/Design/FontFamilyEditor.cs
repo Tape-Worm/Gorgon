@@ -85,7 +85,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 
 				_listBoxSize = fonts.Size;
 
-				if ((fonts.SelectedItem != null) && (string.Compare(fonts.SelectedItem.ToString(), value.ToString(), true) != 0))
+				if ((fonts.SelectedItem != null) && (!string.Equals(fonts.SelectedItem.ToString(), value.ToString(), StringComparison.OrdinalIgnoreCase)))
 					return fonts.SelectedItem.ToString();
 
 				return value;

@@ -452,7 +452,7 @@ namespace GorgonLibrary.Graphics
 				foreach (var effectParam in effect.RequiredParameters)
 				{
 					if ((!string.IsNullOrWhiteSpace(effectParam)) 
-						&& (!validParameters.Any(item => string.Compare(item.Name, effectParam, StringComparison.OrdinalIgnoreCase) == 0)))
+						&& (!validParameters.Any(item => string.Equals(item.Name, effectParam, StringComparison.OrdinalIgnoreCase))))
 					{
 						throw new ArgumentException(string.Format(Resources.GORGFX_EFFECT_MISSING_REQUIRED_PARAMS, effectParam), "parameters");
 					}
@@ -578,7 +578,7 @@ namespace GorgonLibrary.Graphics
 			// Check for the binary header.  If we have it, load the file as a binary file.
 			// Otherwise load it as source code.
 			var header = new byte[Encoding.UTF8.GetBytes(BinaryShaderHeader).Length];
-			bool isBinary = (string.Compare(Encoding.UTF8.GetString(header), stream.ReadString(), StringComparison.OrdinalIgnoreCase) == 0);
+			bool isBinary = (string.Equals(Encoding.UTF8.GetString(header), stream.ReadString(), StringComparison.OrdinalIgnoreCase));
 			if (isBinary)
 			{
 				shaderData = new byte[size - BinaryShaderHeader.Length];

@@ -258,7 +258,7 @@ namespace GorgonLibrary.Graphics
 
                     if ((resource != null)
                         && (resource.Resource != null)
-                        && (string.Compare(name, resource.Resource.Name, StringComparison.OrdinalIgnoreCase) == 0))
+                        && (string.Equals(name, resource.Resource.Name, StringComparison.OrdinalIgnoreCase)))
                     {
                         return i;
                     }

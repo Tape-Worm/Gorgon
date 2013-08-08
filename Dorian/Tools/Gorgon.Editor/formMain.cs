@@ -226,7 +226,7 @@ namespace GorgonLibrary.Editor
                             extensions.Append("|");
                         }
 
-                        if (string.Compare(fileExtension, extension.Key, true) == 0)
+                        if (string.Equals(fileExtension, extension.Key, StringComparison.OrdinalIgnoreCase))
                         {
                             dialogExport.FilterIndex = index;
                             dialogExport.DefaultExt = extension.Value.Item1;
@@ -747,7 +747,7 @@ namespace GorgonLibrary.Editor
 					}
 
 					// We found our node, exit the loop.
-					if (string.Compare(nodePart.Name, name, true) == 0)
+					if (string.Equals(nodePart.Name, name, StringComparison.OrdinalIgnoreCase))
 					{
 						result = nodePart;
 						break;
@@ -1942,7 +1942,7 @@ namespace GorgonLibrary.Editor
             }
 
             // If we dropped the extension, then replace it.
-            if (!name.EndsWith(sourceFile.File.Extension, StringComparison.CurrentCultureIgnoreCase))
+            if (!name.EndsWith(sourceFile.File.Extension, StringComparison.OrdinalIgnoreCase))
             {
                 name += sourceFile.File.Extension;
             }
@@ -1954,7 +1954,7 @@ namespace GorgonLibrary.Editor
                 // If the file exists and we're renaming (not moving), then throw up an error and leave.
                 if (deleteSource)
                 {
-                    if (string.Compare(name, sourceFile.File.Name, true) != 0)
+                    if (!string.Equals(name, sourceFile.File.Name, StringComparison.OrdinalIgnoreCase))
                     {
                         GorgonDialogs.ErrorBox(this, "The file '" + newFilePath + "' already exists.");
                         return;
@@ -1989,7 +1989,7 @@ namespace GorgonLibrary.Editor
 				else
 				{
 					// Do not copy over ourselves.
-					if (string.Compare(newFilePath, sourceFile.File.FullPath, true) == 0)
+					if (string.Equals(newFilePath, sourceFile.File.FullPath, StringComparison.InvariantCultureIgnoreCase))
 					{
 						return;
 					}
@@ -2061,7 +2061,7 @@ namespace GorgonLibrary.Editor
             }
 
             // We're moving to the same place... leave.
-            if ((deleteSource) && (sourceDirectory.Parent == destDirectory) && (string.Compare(name, sourceDirectory.Directory.Name, true) == 0))
+            if ((deleteSource) && (sourceDirectory.Parent == destDirectory) && (string.Equals(name, sourceDirectory.Directory.Name, StringComparison.OrdinalIgnoreCase)))
             {
                 return;
             }
@@ -2070,7 +2070,7 @@ namespace GorgonLibrary.Editor
             name = (destDirectory.Directory.FullPath + name).FormatDirectory('/');
 
             // We have a directory with this new name already, throw an error.
-            if ((deleteSource) && (string.Compare(name, sourceDirectory.Directory.Name, true) != 0) && (Program.ScratchFiles.GetDirectory(name) != null))
+            if ((deleteSource) && (!string.Equals(name, sourceDirectory.Directory.Name, StringComparison.OrdinalIgnoreCase)) && (Program.ScratchFiles.GetDirectory(name) != null))
             {
                 GorgonDialogs.ErrorBox(this, "The directory '" + name + "' already exists.");
                 return;
@@ -2129,7 +2129,7 @@ namespace GorgonLibrary.Editor
 						else
 						{
 							// Don't overwrite ourselves.
-							if (String.Compare(newFilePath, file.FullPath, StringComparison.OrdinalIgnoreCase) == 0)
+							if (string.Equals(newFilePath, file.FullPath, StringComparison.OrdinalIgnoreCase))
 							{
 								continue;
 							}
@@ -2279,7 +2279,7 @@ namespace GorgonLibrary.Editor
 				}
 
 				// Do not copy files under our write folder.
-				if (filePath.StartsWith(Program.ScratchFiles.WriteLocation, StringComparison.CurrentCultureIgnoreCase))
+				if (filePath.StartsWith(Program.ScratchFiles.WriteLocation, StringComparison.OrdinalIgnoreCase))
 				{
 					continue;
 				}
@@ -2574,7 +2574,7 @@ namespace GorgonLibrary.Editor
 				if (e.Data.GetDataPresent(DataFormats.FileDrop, false))
 				{
 					var files = new List<string>((IEnumerable<string>)e.Data.GetData(DataFormats.FileDrop));
-					var excludedFiles = files.Where(item => item.StartsWith(Program.ScratchFiles.WriteLocation, StringComparison.CurrentCultureIgnoreCase));
+					var excludedFiles = files.Where(item => item.StartsWith(Program.ScratchFiles.WriteLocation, StringComparison.OrdinalIgnoreCase));
 
 					// Don't allow files in our write path to be imported.
 					if (excludedFiles.Count() > 0)
@@ -2819,7 +2819,7 @@ namespace GorgonLibrary.Editor
 		        Program.Settings.RecentFiles.FirstOrDefault(
 			        item =>
 			        !string.IsNullOrWhiteSpace(item) &&
-			        string.Compare(item, filePath, StringComparison.CurrentCultureIgnoreCase) == 0);
+			        string.Equals(item, filePath, StringComparison.OrdinalIgnoreCase));
 	        
 
 			// It already exists, move it to the top of the list.
@@ -2929,7 +2929,7 @@ namespace GorgonLibrary.Editor
         private void OpenFile(string filePath)
         {
             // If this file is already opened, then do nothing.
-            if (string.Compare(Program.EditorFilePath, filePath, true) == 0)
+            if (string.Equals(Program.EditorFilePath, filePath, StringComparison.OrdinalIgnoreCase))
             {
                 return;
             }

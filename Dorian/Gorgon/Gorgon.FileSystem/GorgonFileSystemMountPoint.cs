@@ -33,7 +33,7 @@ namespace GorgonLibrary.IO
 	/// A mount point for the virtual file system.
 	/// </summary>
 	public struct GorgonFileSystemMountPoint
-		: IEquatable<GorgonFileSystemMountPoint>, IComparable<GorgonFileSystemMountPoint>, IComparable
+		: IEquatable<GorgonFileSystemMountPoint>
 	{
 		#region Variables.
 		/// <summary>
@@ -55,8 +55,8 @@ namespace GorgonLibrary.IO
 		/// <returns>TRUE if equal, FALSE if not.</returns>
 		public static bool Equals(ref GorgonFileSystemMountPoint left, ref GorgonFileSystemMountPoint right)
 		{
-			return (String.Compare(left.MountLocation, right.MountLocation, StringComparison.OrdinalIgnoreCase) == 0)
-					&& (String.Compare(left.PhysicalPath, right.PhysicalPath, StringComparison.OrdinalIgnoreCase) == 0);
+			return (string.Equals(left.MountLocation, right.MountLocation, StringComparison.OrdinalIgnoreCase))
+					&& (string.Equals(left.PhysicalPath, right.PhysicalPath, StringComparison.OrdinalIgnoreCase));
 		}
 
 		/// <summary>
@@ -165,41 +165,6 @@ namespace GorgonLibrary.IO
 		public bool Equals(GorgonFileSystemMountPoint other)
 		{
 			return Equals(ref this, ref other);
-		}
-		#endregion
-
-		#region IComparable<MountPoint> Members
-		/// <summary>
-		/// Compares the current instance with another object of the same type and returns an integer that indicates whether the current instance precedes, follows, or occurs in the same position in the sort order as the other object.
-		/// </summary>
-		/// <param name="other">An object to compare with this instance.</param>
-		/// <returns>
-		/// A value that indicates the relative order of the objects being compared. The return value has these meanings: Value Meaning Less than zero This instance precedes <paramref name="other" /> in the sort order. Zero This instance occurs in the same position in the sort order as <paramref name="other" />. Greater than zero This instance follows <paramref name="other" /> in the sort order.
-		/// </returns>
-		public int CompareTo(GorgonFileSystemMountPoint other)
-		{
-			int result = String.Compare(PhysicalPath, other.PhysicalPath, StringComparison.OrdinalIgnoreCase);
-
-			if (result == 0)
-			{
-				result = String.Compare(MountLocation, other.MountLocation, StringComparison.OrdinalIgnoreCase);
-			}
-
-			return result;
-		}
-		#endregion
-
-		#region IComparable Members
-		/// <summary>
-		/// Compares the current instance with another object of the same type and returns an integer that indicates whether the current instance precedes, follows, or occurs in the same position in the sort order as the other object.
-		/// </summary>
-		/// <param name="obj">An object to compare with this instance.</param>
-		/// <returns>
-		/// A value that indicates the relative order of the objects being compared. The return value has these meanings: Value Meaning Less than zero This instance precedes <paramref name="obj" /> in the sort order. Zero This instance occurs in the same position in the sort order as <paramref name="obj" />. Greater than zero This instance follows <paramref name="obj" /> in the sort order.
-		/// </returns>
-		int IComparable.CompareTo(object obj)
-		{
-			return CompareTo((GorgonFileSystemMountPoint)obj);
 		}
 		#endregion
 	}

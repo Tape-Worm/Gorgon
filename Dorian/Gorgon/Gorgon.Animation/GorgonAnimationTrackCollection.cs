@@ -137,50 +137,50 @@ namespace GorgonLibrary.Animation
 				if (Contains(item.Value.DisplayName))		// Don't add tracks that are already here.
 					continue;
 
-				switch (item.Value.DataType.FullName.ToLower())
+				switch (item.Value.DataType.FullName.ToUpperInvariant())
 				{
-					case "system.byte":
+					case "SYSTEM.BYTE":
 						Add(new GorgonTrackByte<T>(item.Value));
 						break;
-					case "system.sbyte":
+					case "SYSTEM.SBYTE":
 						Add(new GorgonTrackSByte<T>(item.Value));
 						break;
-					case "system.int16":
+					case "SYSTEM.INT16":
 						Add(new GorgonTrackInt16<T>(item.Value));
 						break;
-					case "system.uint16":
+					case "SYSTEM.UINT16":
 						Add(new GorgonTrackUInt16<T>(item.Value));
 						break;
-					case "system.int32":
+					case "SYSTEM.INT32":
 						Add(new GorgonTrackInt32<T>(item.Value));
 						break;
-					case "system.uint32":
+					case "SYSTEM.UINT32":
 						Add(new GorgonTrackUInt32<T>(item.Value));
 						break;
-					case "system.int64":
+					case "SYSTEM.INT64":
 						Add(new GorgonTrackInt64<T>(item.Value));
 						break;
-					case "system.uint64":
+					case "SYSTEM.UINT64":
 						Add(new GorgonTrackUInt64<T>(item.Value));
 						break;
-					case "system.single":
+					case "SYSTEM.SINGLE":
 						Add(new GorgonTrackSingle<T>(item.Value));
 						break;
-					case "slimmath.vector2":
+					case "SLIMMATH.VECTOR2":
 						Add(new GorgonTrackVector2<T>(item.Value));
 						break;
-					case "slimmath.vector3":
+					case "SLIMMATH.VECTOR3":
 						Add(new GorgonTrackVector3<T>(item.Value));
 						break;
-					case "slimmath.vector4":
+					case "SLIMMATH.VECTOR4":
 						Add(new GorgonTrackVector4<T>(item.Value));
 						break;
-					case "gorgonlibrary.graphics.gorgontexture2d":
+					case "GORGONLIBRARY.GRAPHICS.GROGONTEXTURE2D":
 						// We need grab an additional property for texture animation.
 						var property = new GorgonAnimatedProperty(_animation.AnimationController.AnimatedObjectType.GetProperty("TextureRegion"));
 						Add(new GorgonTrackTexture2D<T>(item.Value, property));
 						break;
-					case "gorgonlibrary.graphics.gorgoncolor":
+					case "GORGONLIBRARY.GRAPHICS.GORGONCOLOR":
 						Add(new GorgonTrackGorgonColor<T>(item.Value));
 						break;
 				}

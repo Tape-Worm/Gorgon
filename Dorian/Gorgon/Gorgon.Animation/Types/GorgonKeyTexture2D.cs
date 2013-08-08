@@ -89,7 +89,7 @@ namespace GorgonLibrary.Animation
 
 			    // Then, we begin our search by looking at -all- the texture information we have:
 				Value = (from graphicsTexture in textures
-						 where (String.Compare(graphicsTexture.Name, textureName, StringComparison.OrdinalIgnoreCase) == 0) &&
+						 where (string.Equals(graphicsTexture.Name, textureName, StringComparison.OrdinalIgnoreCase)) &&
 						  (graphicsTexture.Settings.ArrayCount == settings.ArrayCount) &&
 						  (graphicsTexture.Settings.Format == settings.Format) &&
 						  (graphicsTexture.Settings.Height == settings.Height) &&
@@ -104,12 +104,12 @@ namespace GorgonLibrary.Animation
 				{
 					// That one failed, so just try and look it up by name, width, height and format.
 					Value = (from graphicsTexture in textures
-					         where (String.Compare(graphicsTexture.Name, textureName, StringComparison.OrdinalIgnoreCase) == 0) &&
+					         where (string.Equals(graphicsTexture.Name, textureName, StringComparison.OrdinalIgnoreCase)) &&
 					               (graphicsTexture.Settings.Format == settings.Format) &&
 					               (graphicsTexture.Settings.Height == settings.Height) &&
 					               (graphicsTexture.Settings.Width == settings.Width)
 					         select graphicsTexture).FirstOrDefault() ?? (from graphicsTexture in textures
-					                                                      where (String.Compare(graphicsTexture.Name, textureName, StringComparison.OrdinalIgnoreCase) == 0)
+					                                                      where (string.Equals(graphicsTexture.Name, textureName, StringComparison.OrdinalIgnoreCase))
 					                                                      select graphicsTexture).FirstOrDefault();
 				}
 				// ReSharper restore ConvertIfStatementToNullCoalescingExpression

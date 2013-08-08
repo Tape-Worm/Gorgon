@@ -222,7 +222,7 @@ namespace GorgonLibrary.Editor
 					return;
 				}
 
-                if (string.Compare(value, _name, true) != 0)
+                if (!string.Equals(value, _name, StringComparison.OrdinalIgnoreCase))
                 {
                     _name = ValidateName(value);
                     HasChanges = true;
@@ -250,7 +250,7 @@ namespace GorgonLibrary.Editor
 					return;
 				}
 
-                if (string.Compare(value.FullPath, _filePath, true) != 0)
+                if (!string.Equals(value.FullPath, _filePath, StringComparison.OrdinalIgnoreCase))
                 {
                     _filePath = value.FullPath;
                     _name = File.Name;

@@ -187,21 +187,21 @@ namespace GorgonLibrary.Renderers
 			reader.BaseStream.Position = 0;
 
 			headerVersion = reader.ReadString();
-			if ((!headerVersion.StartsWith("GORSPR", StringComparison.CurrentCultureIgnoreCase)) || (headerVersion.Length < 7))
+			if ((!headerVersion.StartsWith("GORSPR", StringComparison.OrdinalIgnoreCase)) || (headerVersion.Length < 7))
 			{
 				throw new GorgonException(GorgonResult.CannotRead, "Cannot read this sprite.  It is not a Gorgon sprite or it is a newer version.");
 			}
 
 			// Get the version information.
-			switch (headerVersion.ToLower())
+			switch (headerVersion.ToUpperInvariant())
 			{
-				case "gorspr1":
+				case "GORSPR1":
 					version = new Version(1, 0);
 					break;
-				case "gorspr1.1":
+				case "GORSPR1.1":
 					version = new Version(1, 1);
 					break;
-				case "gorspr1.2":
+				case "GORSPR1.2":
 					version = new Version(1, 2);
 					break;
 				default:

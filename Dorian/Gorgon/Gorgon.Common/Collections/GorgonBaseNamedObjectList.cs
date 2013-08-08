@@ -40,7 +40,7 @@ namespace GorgonLibrary.Collections
 	{
 		#region Variables.
 		private readonly List<T> _list;
-        private readonly StringComparison _stringComparison = StringComparison.Ordinal;
+        private readonly StringComparison _caseSensitivity;
 		#endregion
 
 		#region Properties.
@@ -86,7 +86,7 @@ namespace GorgonLibrary.Collections
 			for (int i = 0; i < Count; i++)
 			{
 				T item = GetItem(i);
-			    if (string.Compare(name, item.Name, !KeysAreCaseSensitive) == 0)
+			    if (string.Equals(name, item.Name, _caseSensitivity))
 			    {
 			        return item;
 			    }
@@ -202,9 +202,11 @@ namespace GorgonLibrary.Collections
 		/// <returns>TRUE if found, FALSE if not.</returns>
 		public virtual bool Contains(string name)
 		{
+			// ReSharper disable once LoopCanBeConvertedToQuery
+			// ReSharper disable once ForCanBeConvertedToForeach
 		    for (int i = 0; i < _list.Count; i++)
 		    {
-		        if (string.Compare(_list[i].Name, name, _stringComparison) == 0)
+		        if (string.Equals(_list[i].Name, name, _caseSensitivity))
 		        {
     		        return true;
 		        }
@@ -226,7 +228,7 @@ namespace GorgonLibrary.Collections
 			{
 				T item = GetItem(i);
 
-			    if (string.Compare(item.Name, name, _stringComparison) == 0)
+			    if (string.Equals(item.Name, name, _caseSensitivity))
 			    {
 			        return i;
 			    }
@@ -240,15 +242,12 @@ namespace GorgonLibrary.Collections
 		/// <summary>
 		/// Initializes a new instance of the <see cref="GorgonBaseNamedObjectList&lt;T&gt;"/> class.
 		/// </summary>
-		/// <param name="isCaseSensitive">TRUE to use case sensitive keys, FALSE to ignore casing.</param>
-		protected GorgonBaseNamedObjectList(bool isCaseSensitive)			
+		/// <param name="caseSensitive">TRUE to use case sensitive keys, FALSE to ignore casing.</param>
+		protected GorgonBaseNamedObjectList(bool caseSensitive)			
 		{
-			KeysAreCaseSensitive = isCaseSensitive;
-            
-            if (KeysAreCaseSensitive)
-            {
-                _stringComparison = StringComparison.OrdinalIgnoreCase;
-            }
+			KeysAreCaseSensitive = caseSensitive;
+
+			_caseSensitivity = caseSensitive ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase;
 
 			_list = new List<T>();
 		}
@@ -348,7 +347,10 @@ namespace GorgonLibrary.Collections
 		void ICollection<T>.Add(T item)
 		{
 			if (IsReadOnly)
-				throw new NotSupportedException("List is read-only.");
+			{
+				throw new NotSupportedException(Resources.GOR_COLLECTION_READ_ONLY);
+			}
+
 			AddItem(item);
 		}
 
@@ -361,7 +363,9 @@ namespace GorgonLibrary.Collections
 		void ICollection<T>.Clear()
 		{
 			if (IsReadOnly)
-				throw new NotSupportedException("List is read-only.");
+			{
+				throw new NotSupportedException(Resources.GOR_COLLECTION_READ_ONLY);
+			}
 			ClearItems();
 		}
 
@@ -400,7 +404,9 @@ namespace GorgonLibrary.Collections
 		public void CopyTo(T[] array, int arrayIndex)
 		{
 			if (Count == 0)
+			{
 				return;
+			}
 
 			_list.CopyTo(array, arrayIndex);
 		}
@@ -447,7 +453,10 @@ namespace GorgonLibrary.Collections
 		bool ICollection<T>.Remove(T item)
 		{
 			if (IsReadOnly)
-				throw new NotSupportedException("List is read-only.");
+			{
+				throw new NotSupportedException(Resources.GOR_COLLECTION_READ_ONLY);
+			}
+
 			RemoveItem(item);
 			return true;
 		}

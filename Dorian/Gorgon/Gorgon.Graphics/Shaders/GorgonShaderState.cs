@@ -708,7 +708,7 @@ namespace GorgonLibrary.Graphics
 				{
 					var buffer = _buffers[i];
 
-					if ((buffer != null) && (string.Compare(name, buffer.Name, StringComparison.OrdinalIgnoreCase) == 0))
+					if ((buffer != null) && (string.Equals(name, buffer.Name, StringComparison.OrdinalIgnoreCase)))
 					{
 						return i;
 					}
@@ -1096,7 +1096,7 @@ namespace GorgonLibrary.Graphics
 
 					if ((resource != null) 
 						&& (resource.Resource != null) 
-						&& (string.Compare(name, resource.Resource.Name, StringComparison.OrdinalIgnoreCase) == 0))
+						&& (string.Equals(name, resource.Resource.Name, StringComparison.OrdinalIgnoreCase)))
 					{
 						return i;
 					}

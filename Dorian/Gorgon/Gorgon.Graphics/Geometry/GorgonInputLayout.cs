@@ -154,7 +154,7 @@ namespace GorgonLibrary.Graphics
 		            elementItem =>
 		            !string.IsNullOrWhiteSpace(elementItem.Context) &&
 		            ((element.Offset == elementItem.Offset) ||
-		             (String.Compare(element.Context, elementItem.Context, StringComparison.OrdinalIgnoreCase) == 0)) &&
+		             (string.Equals(element.Context, elementItem.Context, StringComparison.OrdinalIgnoreCase))) &&
 		            element.Index == elementItem.Index && element.Slot == elementItem.Slot))
             {
 				throw new ArgumentException(

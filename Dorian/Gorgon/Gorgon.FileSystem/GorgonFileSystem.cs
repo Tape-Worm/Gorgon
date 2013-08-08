@@ -208,8 +208,10 @@ namespace GorgonLibrary.IO
 				if ((fileName.StartsWith("*")) && (fileName.Length > 1))
 				{
 					string endString = fileName.Substring(fileName.IndexOf('*') + 1);
-					if (entry.Name.EndsWith(endString, StringComparison.CurrentCultureIgnoreCase))
+					if (entry.Name.EndsWith(endString, StringComparison.OrdinalIgnoreCase))
+					{
 						entries.Add(entry);
+					}
 				}
 				else
 				{
@@ -1153,8 +1155,8 @@ namespace GorgonLibrary.IO
 			var mountPoints =
 				_mountPoints.Where(
 					item =>
-					String.Compare(Path.GetFullPath(physicalPath), Path.GetFullPath(item.PhysicalPath),
-					               StringComparison.OrdinalIgnoreCase) == 0);
+					String.Equals(Path.GetFullPath(physicalPath), Path.GetFullPath(item.PhysicalPath),
+					               StringComparison.OrdinalIgnoreCase));
 
 			foreach (var mountPoint in mountPoints)
 			{
@@ -1229,7 +1231,7 @@ namespace GorgonLibrary.IO
 			{
 				// Don't mount the write location.  It will be automatically queried every time we mount a physical location.
 				if ((!string.IsNullOrWhiteSpace(WriteLocation)) &&
-				    (String.Compare(physicalPath, WriteLocation, StringComparison.OrdinalIgnoreCase) == 0))
+				    (String.Equals(physicalPath, WriteLocation, StringComparison.OrdinalIgnoreCase)))
 				{
 					// Requery the write location if it exists.
 					QueryWriteLocation();

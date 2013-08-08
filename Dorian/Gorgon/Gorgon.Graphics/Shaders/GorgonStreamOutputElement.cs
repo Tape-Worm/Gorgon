@@ -119,7 +119,7 @@ namespace GorgonLibrary.Graphics
 		/// <returns>TRUE if equal, FALSE if not.</returns>
 		public static bool Equals(ref GorgonStreamOutputElement left, ref GorgonStreamOutputElement right)
 		{
-			return ((string.CompareOrdinal(left.Context, right.Context) == 0) && (left.ComponentCount == right.ComponentCount)
+			return ((string.Equals(left.Context, right.Context)) && (left.ComponentCount == right.ComponentCount)
 			        && (left.Index == right.Index) && (left.Slot == right.Slot) 
 			        && (left.StartComponent == right.StartComponent) && (left.Stream == right.Stream));
 		}

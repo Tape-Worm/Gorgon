@@ -121,7 +121,7 @@ namespace GorgonLibrary.Graphics
 				|| (textureName.IndexOf(".InternalTexture_", StringComparison.OrdinalIgnoreCase) == -1))
 			{
 				result = (from texture in _graphics.GetTrackedObjectsOfType<GorgonTexture2D>()
-						  where (string.Compare(texture.Name, textureName, StringComparison.OrdinalIgnoreCase) == 0)
+						  where (string.Equals(texture.Name, textureName, StringComparison.OrdinalIgnoreCase))
 						  select texture).FirstOrDefault();
 			}
 						

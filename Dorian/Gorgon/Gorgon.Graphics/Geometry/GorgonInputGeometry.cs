@@ -313,7 +313,7 @@ namespace GorgonLibrary.Graphics
 
 				for (int i = 0; i < _bindings.Length; i++)
 				{
-					if ((_bindings[i].VertexBuffer != null) && (string.Compare(name, _bindings[i].VertexBuffer.Name, StringComparison.OrdinalIgnoreCase) == 0))
+					if ((_bindings[i].VertexBuffer != null) && (string.Equals(name, _bindings[i].VertexBuffer.Name, StringComparison.OrdinalIgnoreCase)))
 					{
 						return i;
 					}
