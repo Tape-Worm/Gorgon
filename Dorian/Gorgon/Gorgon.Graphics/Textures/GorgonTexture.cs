@@ -765,7 +765,13 @@ namespace GorgonLibrary.Graphics
                 throw new ArgumentException(Resources.GORGFX_LOCK_CANNOT_USE_WITH_READ, "lockFlags");
             }
 
-            if ((deferred != null)
+	        if (((lockFlags & BufferLockFlags.Discard) == BufferLockFlags.Discard)
+	            && (Settings.Usage == BufferUsage.Staging))
+	        {
+				throw new ArgumentException(Resources.GORGFX_TEXTURE_DISCARD_NEEDS_DYNAMIC);
+	        }
+
+	        if ((deferred != null)
                 && ((lockFlags & BufferLockFlags.Discard) != BufferLockFlags.Discard))
             {
                 throw new ArgumentException(Resources.GORGFX_LOCK_NEED_DISCARD_NOOVERWRITE, "lockFlags");
