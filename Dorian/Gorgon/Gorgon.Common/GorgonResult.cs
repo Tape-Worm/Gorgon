@@ -210,7 +210,7 @@ namespace GorgonLibrary
 		/// <returns>TRUE if equal, FALSE if not.</returns>
 		public static bool Equals(ref GorgonResult left, ref GorgonResult right)
 		{
-			return ((left.Code == right.Code) && (string.Compare(left.Name, right.Name, StringComparison.OrdinalIgnoreCase) == 0));
+			return ((left.Code == right.Code) && (string.Equals(left.Name, right.Name, StringComparison.OrdinalIgnoreCase)));
 		}
 
 		/// <summary>
@@ -262,7 +262,7 @@ namespace GorgonLibrary
 		/// <returns>TRUE if equal, FALSE if not.</returns>
 		public static bool operator ==(GorgonResult left, GorgonResult right)
 		{
-			return ((left.Code == right.Code) && (String.Compare(left.Name, right.Name, StringComparison.OrdinalIgnoreCase) == 0));
+			return ((left.Code == right.Code) && (string.Equals(left.Name, right.Name, StringComparison.OrdinalIgnoreCase)));
 		}
 
 		/// <summary>
@@ -273,7 +273,7 @@ namespace GorgonLibrary
 		/// <returns>TRUE if not equal, FALSE if the items are equal.</returns>
 		public static bool operator !=(GorgonResult left, GorgonResult right)
 		{
-			return ((left.Code != right.Code) || (String.Compare(left.Name, right.Name, StringComparison.OrdinalIgnoreCase) != 0));
+			return ((left.Code != right.Code) || (string.Equals(left.Name, right.Name, StringComparison.OrdinalIgnoreCase)));
 		}
 		#endregion
 

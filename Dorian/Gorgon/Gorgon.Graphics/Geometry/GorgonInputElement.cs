@@ -126,7 +126,7 @@ namespace GorgonLibrary.Graphics
 		/// <returns>TRUE if equal, FALSE if not.</returns>
 		public static bool Equals(ref GorgonInputElement left, ref GorgonInputElement right)
 		{
-			return (String.CompareOrdinal(left.Context, right.Context) == 0) && (left.Format == right.Format) && (left.Index == right.Index) &&
+			return (string.Equals(left.Context, right.Context)) && (left.Format == right.Format) && (left.Index == right.Index) &&
 					(left.InstanceCount == right.InstanceCount) && (left.Instanced == right.Instanced) && (left.Offset == right.Offset) &&
 					(left.Size == right.Size) && (left.Slot == right.Slot);
 		}

@@ -478,7 +478,7 @@ namespace GorgonLibrary.Input
 
 		    var plugIn =
 		        Gorgon.PlugIns.FirstOrDefault(
-		            item => string.Compare(item.Name, plugInType, StringComparison.OrdinalIgnoreCase) == 0) as
+		            item => string.Equals(item.Name, plugInType, StringComparison.OrdinalIgnoreCase)) as
 		        GorgonInputPlugIn;
 
             if (plugIn == null)

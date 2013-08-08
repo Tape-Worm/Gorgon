@@ -151,7 +151,7 @@ namespace GorgonLibrary.IO
 				// Find the plug-in.
 				var plugIn =
 					Gorgon.PlugIns.FirstOrDefault(
-						item => string.Compare(providerName, item.Name, StringComparison.OrdinalIgnoreCase) == 0) as
+						item => string.Equals(providerName, item.Name, StringComparison.OrdinalIgnoreCase)) as
 					GorgonFileSystemProviderPlugIn;
 
 				if (plugIn == null)

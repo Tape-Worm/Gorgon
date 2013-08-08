@@ -207,7 +207,7 @@ namespace GorgonLibrary.IO.Zip
 			        newPath = "/" + newPath;
 			    }
 
-				if (String.Compare(newPath, filePath, StringComparison.OrdinalIgnoreCase) != 0)
+				if (!string.Equals(newPath, filePath, StringComparison.OrdinalIgnoreCase))
 				{
 					continue;
 				}

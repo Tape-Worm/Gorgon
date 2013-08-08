@@ -89,7 +89,7 @@ namespace GorgonLibrary.Input.Raw
 
 		        // Don't add RDP devices.
 		        if ((regValue.Length > 0) &&
-		            (regValue[1].StartsWith("RDP_", StringComparison.CurrentCultureIgnoreCase)))
+		            (regValue[1].StartsWith("RDP_", StringComparison.OrdinalIgnoreCase)))
 		        {
 		            return;
 		        }
@@ -140,7 +140,7 @@ namespace GorgonLibrary.Input.Raw
 		        string baseName;
 		        string name = baseName = regValue[regValue.Length - 1];
 
-		        while (deviceList.Find(item => String.Compare(item.Name, name, StringComparison.OrdinalIgnoreCase) == 0) != null)
+		        while (deviceList.Find(item => string.Equals(item.Name, name, StringComparison.OrdinalIgnoreCase)) != null)
 		        {
 		            counter++;
 		            name = baseName + " #" + counter;
@@ -310,7 +310,7 @@ namespace GorgonLibrary.Input.Raw
 
 			    string keyName = name;
 
-			    while (result.Find(item => String.Compare(item.Name, keyName, StringComparison.OrdinalIgnoreCase) == 0) != null)
+			    while (result.Find(item => string.Equals(item.Name, keyName, StringComparison.OrdinalIgnoreCase)) != null)
 			    {
 			        nameCount++;
 			        keyName = name + " " + nameCount;

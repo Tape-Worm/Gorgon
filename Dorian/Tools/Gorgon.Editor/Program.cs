@@ -280,7 +280,7 @@ namespace GorgonLibrary.Editor
                 // Ensure we actually have the plug-in loaded.
                 var writer = (from plugIn in WriterPlugIns
                               let plugInType = plugIn.Value.GetType().FullName
-                              where String.Compare(plugInType, plugInElement.Attribute("TypeName").Value, StringComparison.OrdinalIgnoreCase) == 0
+                              where string.Equals(plugInType, plugInElement.Attribute("TypeName").Value, StringComparison.OrdinalIgnoreCase)
                               select plugIn.Value).FirstOrDefault();
 
                 if (writer != null)
@@ -303,13 +303,13 @@ namespace GorgonLibrary.Editor
 			var info = new DirectoryInfo(Path.GetFullPath(path));
 
 			// Don't allow the root of the system drive as a scratch area.
-			if ((info.Parent == null) && (string.Compare(sysRoot, info.FullName, StringComparison.OrdinalIgnoreCase) == 0))
+			if ((info.Parent == null) && (string.Equals(sysRoot, info.FullName, StringComparison.OrdinalIgnoreCase)))
 			{
 				return true;
 			}
 
 			// Ensure the system files are not accessible.
-			return (_systemDirs.Any(item => String.Compare(path, item, StringComparison.OrdinalIgnoreCase) == 0));
+			return (_systemDirs.Any(item => string.Equals(path, item, StringComparison.OrdinalIgnoreCase)));
 		}
 
 		/// <summary>

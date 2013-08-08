@@ -300,7 +300,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
                 if (value == null)
                     value = string.Empty;
 
-                if (string.Compare(_settings.FontFamilyName, value, true) != 0)
+                if (!string.Equals(_settings.FontFamilyName, value, StringComparison.OrdinalIgnoreCase))
                 {
                     _settings.FontFamilyName = value;
                     CheckTextureSize();
@@ -667,7 +667,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
         /// </returns>
         protected override string ValidateName(string proposedName)
         {
-            if (!proposedName.EndsWith(".gorFont", StringComparison.CurrentCultureIgnoreCase))
+            if (!proposedName.EndsWith(".gorFont", StringComparison.OrdinalIgnoreCase))
             {
                 return proposedName + ".gorFont";
             }
@@ -696,7 +696,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 					Cursor.Current = Cursors.WaitCursor;
 
 					Name = newFont.FontName.FormatFileName();
-					if (!Name.EndsWith(".gorFont", StringComparison.CurrentCultureIgnoreCase))
+					if (!Name.EndsWith(".gorFont", StringComparison.OrdinalIgnoreCase))
 					{
 						Name = Name + ".gorFont";
 					}

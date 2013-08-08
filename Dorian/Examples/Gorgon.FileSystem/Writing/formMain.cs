@@ -84,7 +84,7 @@ namespace GorgonLibrary.Examples
 			finally
 			{
 				CommandEnable(true);
-				itemLoadChanged.Enabled = String.CompareOrdinal(textDisplay.Text, _originalText) != 0;
+				itemLoadChanged.Enabled = !string.Equals(textDisplay.Text, _originalText, StringComparison.CurrentCulture);
 				UpdateInfo();
 			}
 		}
@@ -152,7 +152,7 @@ namespace GorgonLibrary.Examples
 		/// </summary>
 		private void UpdateInfo()
 		{
-			if (String.CompareOrdinal(_originalText, textDisplay.Text) == 0)
+			if (string.Equals(_originalText, textDisplay.Text))
 			{
 				labelInfo.Text = string.Format("Using original text from {0}", Program.GetResourcePath(@"FolderSystem\").Ellipses(100, true));
 			}
@@ -181,7 +181,7 @@ namespace GorgonLibrary.Examples
 			textData = _fileSystem.ReadFile("/SomeText.txt");
 			string modifiedText = Encoding.UTF8.GetString(textData);
 
-			textDisplay.Text = String.CompareOrdinal(modifiedText, _originalText) == 0 ? _originalText : modifiedText;
+			textDisplay.Text = string.Equals(modifiedText, _originalText) ? _originalText : modifiedText;
 		}
 
 		/// <summary>
@@ -211,7 +211,7 @@ namespace GorgonLibrary.Examples
 			}
 			finally
 			{
-				itemLoadChanged.Enabled = String.CompareOrdinal(textDisplay.Text, _originalText) != 0;
+				itemLoadChanged.Enabled = !string.Equals(textDisplay.Text, _originalText, StringComparison.CurrentCulture);
 				UpdateInfo();
 			}
 		}

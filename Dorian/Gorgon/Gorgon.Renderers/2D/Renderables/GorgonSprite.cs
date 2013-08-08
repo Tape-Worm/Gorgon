@@ -727,7 +727,7 @@ namespace GorgonLibrary.Renderers
 				if (value == null)
 					value = string.Empty;
 
-				if (string.Compare(_textureName, value, true) != 0)
+				if (!string.Equals(_textureName, value, StringComparison.OrdinalIgnoreCase))
 				{
 					_textureName = value;
 					GetDeferredTexture();
@@ -755,7 +755,7 @@ namespace GorgonLibrary.Renderers
 			}
 
 			Texture = (from texture in Gorgon2D.Graphics.GetTrackedObjectsOfType<GorgonTexture2D>()
-							where (texture != null) && (string.Compare(texture.Name, _textureName, true) == 0)
+							where (texture != null) && (string.Equals(texture.Name, _textureName, StringComparison.OrdinalIgnoreCase))
 							select texture).FirstOrDefault();
 			NeedsTextureUpdate = true;
 		}

@@ -39,7 +39,8 @@ namespace GorgonLibrary.Collections
 		where T : INamedObject
 	{
 		#region Variables.
-		private readonly SortedList<string, T> _list;				// Internal collection to hold our objects.
+		private readonly StringComparison _caseSensitivity;		// Case sensitivity for key names.
+		private readonly SortedList<string, T> _list;			// Internal collection to hold our objects.
 		#endregion
 
 		#region Properties.
@@ -95,7 +96,7 @@ namespace GorgonLibrary.Collections
 		        throw new ArgumentException(Resources.GOR_PARAMETER_MUST_NOT_BE_EMPTY, "value");
 		    }
 
-		    _list.Add(!KeysAreCaseSensitive ? value.Name.ToLower() : value.Name, value);
+		    _list.Add(!KeysAreCaseSensitive ? value.Name.ToUpperInvariant() : value.Name, value);
 		}
 
 		/// <summary>
@@ -117,7 +118,7 @@ namespace GorgonLibrary.Collections
 		/// <returns>Item with the specified key.</returns>
 		protected virtual T GetItem(string name)
 		{
-		    return !KeysAreCaseSensitive ? _list[name.ToLower()] : _list[name];
+		    return !KeysAreCaseSensitive ? _list[name.ToUpperInvariant()] : _list[name];
 		}
 
 	    /// <summary>
@@ -127,7 +128,7 @@ namespace GorgonLibrary.Collections
 		/// <param name="value">Value to set to the item.</param>
 		protected virtual void SetItem(string name, T value)
 		{
-			if (string.Compare(name, value.Name, !KeysAreCaseSensitive) == 0)
+			if (string.Equals(name, value.Name, _caseSensitivity))
 			{
 				if (KeysAreCaseSensitive)
 				{
@@ -135,7 +136,7 @@ namespace GorgonLibrary.Collections
 				}
 				else
 				{
-					_list[name.ToLower()] = value;
+					_list[name.ToUpperInvariant()] = value;
 				}
 			}
 			else
@@ -160,7 +161,7 @@ namespace GorgonLibrary.Collections
 		/// <param name="name">Name of the item to remove.</param>
 		protected virtual void RemoveItem(string name)
 		{
-		    _list.Remove(!KeysAreCaseSensitive ? name.ToLower() : name);
+		    _list.Remove(!KeysAreCaseSensitive ? name.ToUpperInvariant() : name);
 		}
 
 	    /// <summary>
@@ -188,7 +189,9 @@ namespace GorgonLibrary.Collections
 		public int IndexOf(string name)
 		{
 			if (!Contains(name))
+			{
 				return -1;
+			}
 
 			return IndexOf(GetItem(name));
 		}
@@ -200,7 +203,7 @@ namespace GorgonLibrary.Collections
 		/// <returns>TRUE if found, FALSE if not.</returns>
 		public virtual bool Contains(string name)
 		{
-		    return _list.ContainsKey(!KeysAreCaseSensitive ? name.ToLower() : name);
+		    return _list.ContainsKey(!KeysAreCaseSensitive ? name.ToUpperInvariant() : name);
 		}
 
 	    /// <summary>
@@ -225,6 +228,7 @@ namespace GorgonLibrary.Collections
 		{
 			_list = new SortedList<string, T>();
 			KeysAreCaseSensitive = caseSensitive;
+			_caseSensitivity = caseSensitive ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase;
 		}
 		#endregion
 
@@ -368,7 +372,9 @@ namespace GorgonLibrary.Collections
 		public void CopyTo(T[] array, int arrayIndex)
 		{
 			if (Count == 0)
+			{
 				return;
+			}
 
 			_list.Values.CopyTo(array, arrayIndex);
 		}
@@ -433,6 +439,7 @@ namespace GorgonLibrary.Collections
 		/// </returns>
 		public virtual IEnumerator<T> GetEnumerator()
 		{
+			// ReSharper disable once LoopCanBeConvertedToQuery
 		    foreach (KeyValuePair<string, T> item in _list)
 		    {
 		        yield return item.Value;

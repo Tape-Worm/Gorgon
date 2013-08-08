@@ -289,7 +289,7 @@ namespace GorgonLibrary.IO.GorPack
 				header = reader.ReadString();
 			}
 
-			return (String.CompareOrdinal(header, GorgonGorPackPlugIn.GorPackHeader) == 0);
+			return (string.Equals(header, GorgonGorPackPlugIn.GorPackHeader));
 		}
 		#endregion
 

@@ -97,7 +97,7 @@ namespace GorgonLibrary.Graphics
 		/// <returns>TRUE if equal, FALSE if not.</returns>
 		public static bool Equals(ref GorgonEffectParameter left, ref GorgonEffectParameter right)
 		{
-			if (string.Compare(left.Name, right.Name, StringComparison.OrdinalIgnoreCase) != 0)
+			if (!string.Equals(left.Name, right.Name, StringComparison.OrdinalIgnoreCase))
 			{
 				return false;
 			}

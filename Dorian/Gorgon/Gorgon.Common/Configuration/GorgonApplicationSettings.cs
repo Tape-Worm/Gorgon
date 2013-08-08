@@ -431,7 +431,7 @@ namespace GorgonLibrary.Configuration
 
 			return _xmlSettings.Descendants("Section")
 			                  .FirstOrDefault(
-				                  item => string.CompareOrdinal(item.Attribute("SectionName").Value, sectionName) == 0);
+				                  item => string.Equals(item.Attribute("SectionName").Value, sectionName));
 		}
 
 		/// <summary>

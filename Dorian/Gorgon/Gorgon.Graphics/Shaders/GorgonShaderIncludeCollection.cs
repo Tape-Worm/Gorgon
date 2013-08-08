@@ -278,7 +278,7 @@ namespace GorgonLibrary.Graphics
 			{
 				string includeLine = lines[i].Trim();
 
-				if (includeLine.StartsWith("#GorgonInclude", StringComparison.CurrentCultureIgnoreCase))
+				if (includeLine.StartsWith("#GorgonInclude", StringComparison.CurrentCulture))
 				{
 					GorgonShaderInclude includeFile = ParseIncludeLine(includeLine, false);
 

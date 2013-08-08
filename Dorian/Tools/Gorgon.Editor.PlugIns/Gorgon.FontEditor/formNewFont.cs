@@ -92,7 +92,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		{
 			get
 			{
-				return (string.Compare(comboSizeType.Text, "points", true) == 0) ? Graphics.FontHeightMode.Points : Graphics.FontHeightMode.Pixels;
+				return (string.Equals(comboSizeType.Text, "points", StringComparison.OrdinalIgnoreCase)) ? Graphics.FontHeightMode.Points : Graphics.FontHeightMode.Pixels;
 			}
 		}
 
@@ -218,7 +218,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 				buttonCharacterList.Enabled = buttonOK.Enabled = checkBold.Enabled = checkUnderline.Enabled = checkItalic.Enabled = checkStrikeThrough.Enabled = false;
 			else
 			{
-				var family = FontFamily.Families.Where(item => string.Compare(item.Name, comboFonts.Text, true) == 0).SingleOrDefault();
+				var family = FontFamily.Families.SingleOrDefault(item => string.Equals(item.Name, comboFonts.Text, StringComparison.OrdinalIgnoreCase));
 
 				buttonCharacterList.Enabled = true;
 
@@ -264,7 +264,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 			if (checkStrikeThrough.Checked)
 				style |= FontStyle.Strikeout;
 
-			_font = new Font(comboFonts.Text, (float)numericSize.Value, style, (string.Compare(this.comboSizeType.Text, "points", true) == 0 ? GraphicsUnit.Point : GraphicsUnit.Pixel));
+			_font = new Font(comboFonts.Text, (float)numericSize.Value, style, (string.Equals(this.comboSizeType.Text, "points", StringComparison.OrdinalIgnoreCase) ? GraphicsUnit.Point : GraphicsUnit.Pixel));
 			labelPreview.Font = _font;
 		}
 
@@ -274,7 +274,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		private void RestrictTexture()
 		{
 			var fontSize = (float)numericSize.Value;
-			if (string.Compare(comboSizeType.Text, "points", true) == 0)
+			if (string.Equals(comboSizeType.Text, "points", StringComparison.OrdinalIgnoreCase))
 				fontSize = (float)System.Math.Ceiling(GorgonFontSettings.GetFontHeight(fontSize, 0));
 
 			if ((fontSize > (float)numericTextureHeight.Value) || (fontSize > (float)numericTextureWidth.Value))

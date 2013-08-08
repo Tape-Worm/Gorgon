@@ -287,7 +287,7 @@ namespace GorgonLibrary.Editor
             }
             else
             {
-                if (string.Compare(textScratchLocation.Text.FormatDirectory(Path.DirectorySeparatorChar), Program.Settings.ScratchPath, true) != 0)
+                if (!string.Equals(textScratchLocation.Text.FormatDirectory(Path.DirectorySeparatorChar), Program.Settings.ScratchPath, StringComparison.OrdinalIgnoreCase))
                 {
                     GorgonDialogs.InfoBox(ParentForm, "The scratch location has changed.  This will require that the application be restarted before this setting takes effect.");
                 }
@@ -301,7 +301,7 @@ namespace GorgonLibrary.Editor
                 }
                 else
                 {
-                    if (string.Compare(textPlugInLocation.Text.FormatDirectory(Path.DirectorySeparatorChar), Program.Settings.PlugInDirectory, true) != 0)
+                    if (!string.Equals(textPlugInLocation.Text.FormatDirectory(Path.DirectorySeparatorChar), Program.Settings.PlugInDirectory, StringComparison.OrdinalIgnoreCase))
                     {
                         GorgonDialogs.InfoBox(ParentForm, "The plug-in location has changed.  This will require that the application be restarted before this setting takes effect.");
                     }

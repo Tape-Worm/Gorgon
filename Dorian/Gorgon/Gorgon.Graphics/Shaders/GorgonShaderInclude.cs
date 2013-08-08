@@ -87,8 +87,8 @@ namespace GorgonLibrary.Graphics
 		/// <returns>TRUE if equal, FALSE if not.</returns>
 		public static bool Equals(ref GorgonShaderInclude left, ref GorgonShaderInclude right)
 		{
-			return (string.Compare(left.Name, right.Name, StringComparison.OrdinalIgnoreCase) == 0)
-			       && (string.Compare(left.SourceCodeFile, right.SourceCodeFile, StringComparison.CurrentCultureIgnoreCase) == 0);
+			return (string.Equals(left.Name, right.Name, StringComparison.OrdinalIgnoreCase))
+			       && (string.Equals(left.SourceCodeFile, right.SourceCodeFile, StringComparison.CurrentCulture));
 		}
 
 		/// <summary>
