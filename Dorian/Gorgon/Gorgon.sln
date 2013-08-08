@@ -95,6 +95,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{31B25F6B
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gorgon.Graphics.Test", "..\Test\Gorgon.Graphics.Test\Gorgon.Graphics.Test.csproj", "{042DEA65-F75B-46C7-808D-8C29A68C672A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gorgon.Common.Test", "..\Test\Gorgon.Common.Test\Gorgon.Common.Test.csproj", "{3BAEE0F8-CB7C-4FFC-80E3-976DF714399F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -237,6 +239,10 @@ Global
 		{042DEA65-F75B-46C7-808D-8C29A68C672A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{042DEA65-F75B-46C7-808D-8C29A68C672A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{042DEA65-F75B-46C7-808D-8C29A68C672A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3BAEE0F8-CB7C-4FFC-80E3-976DF714399F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3BAEE0F8-CB7C-4FFC-80E3-976DF714399F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3BAEE0F8-CB7C-4FFC-80E3-976DF714399F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3BAEE0F8-CB7C-4FFC-80E3-976DF714399F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -273,5 +279,6 @@ Global
 		{B4E8A97F-2DBC-4559-A535-2EC64A69F0E5} = {94E5BF16-684A-45DA-AA0E-895972EE792B}
 		{A38CC512-B17D-4793-80B8-E7C31D3AE436} = {4733C95B-70C0-4316-8EC0-83795AB07E75}
 		{042DEA65-F75B-46C7-808D-8C29A68C672A} = {31B25F6B-73AE-4096-890A-17616716BC11}
+		{3BAEE0F8-CB7C-4FFC-80E3-976DF714399F} = {31B25F6B-73AE-4096-890A-17616716BC11}
 	EndGlobalSection
 EndGlobal
