@@ -355,15 +355,6 @@ namespace GorgonLibrary.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to &apos;{0}&apos; is not a Gorgon application settings file..
-        /// </summary>
-        internal static string GOR_INVALID_SETTING_FILE {
-            get {
-                return ResourceManager.GetString("GOR_INVALID_SETTING_FILE", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to The item &apos;{0}&apos; already exists in this collection..
         /// </summary>
         internal static string GOR_ITEM_ALREADY_EXISTS {
@@ -496,6 +487,24 @@ namespace GorgonLibrary.Properties {
         internal static string GOR_PROPERTY_NOT_PRIMITIVE_OR_STRING {
             get {
                 return ResourceManager.GetString("GOR_PROPERTY_NOT_PRIMITIVE_OR_STRING", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Version type string could not be converted to a version type..
+        /// </summary>
+        internal static string GOR_SETTING_CANNOT_CONVERT_VERSION {
+            get {
+                return ResourceManager.GetString("GOR_SETTING_CANNOT_CONVERT_VERSION", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &apos;{0}&apos; is not a Gorgon application settings file..
+        /// </summary>
+        internal static string GOR_SETTING_INVALID_FILE {
+            get {
+                return ResourceManager.GetString("GOR_SETTING_INVALID_FILE", resourceCulture);
             }
         }
         

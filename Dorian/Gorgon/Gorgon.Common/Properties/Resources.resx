@@ -566,7 +566,7 @@ Code: 0x{2}</value>
   <data name="GOR_KEY_NOT_FOUND" xml:space="preserve">
     <value>The key '{0}' does not exist in this collection.</value>
   </data>
-  <data name="GOR_INVALID_SETTING_FILE" xml:space="preserve">
+  <data name="GOR_SETTING_INVALID_FILE" xml:space="preserve">
     <value>'{0}' is not a Gorgon application settings file.</value>
   </data>
   <data name="GOR_PROPERTY_NOT_PRIMITIVE_OR_STRING" xml:space="preserve">
@@ -770,5 +770,8 @@ Code: 0x{2}</value>
   </data>
   <data name="GOR_ZUNE_SIZE" xml:space="preserve">
     <value>&amp;Size</value>
+  </data>
+  <data name="GOR_SETTING_CANNOT_CONVERT_VERSION" xml:space="preserve">
+    <value>Version type string could not be converted to a version type.</value>
   </data>
 </root>

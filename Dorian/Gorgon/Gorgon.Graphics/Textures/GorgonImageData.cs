@@ -381,6 +381,7 @@ namespace GorgonLibrary.Graphics
 		public void CopyToTexture(GorgonTexture texture, int arrayIndex, int mipLevel)
 		{
 			int depth = 1;
+			var flags = BufferLockFlags.Write;
 
 		    if (texture == null)
 			{
@@ -443,21 +444,26 @@ namespace GorgonLibrary.Graphics
 			{
 			    GorgonTextureLockData textureData;
 
+				if (texture.Settings.Usage == BufferUsage.Dynamic)
+				{
+					flags |= BufferLockFlags.Discard;
+				}
+
 			    switch (Settings.ImageType)
 			    {
 			        case ImageType.Image1D:
-			            textureData = ((GorgonTexture1D)texture).Lock(BufferLockFlags.Write | BufferLockFlags.Discard,
+			            textureData = ((GorgonTexture1D)texture).Lock(flags,
 			                arrayIndex,
 			                mipLevel);
 			            break;
                     case ImageType.ImageCube:
                     case ImageType.Image2D:
-			            textureData = ((GorgonTexture2D)texture).Lock(BufferLockFlags.Write | BufferLockFlags.Discard,
+			            textureData = ((GorgonTexture2D)texture).Lock(flags,
 			                arrayIndex,
 			                mipLevel);
 			            break;
                     case ImageType.Image3D:
-			            textureData = ((GorgonTexture3D)texture).Lock(BufferLockFlags.Write | BufferLockFlags.Discard,
+			            textureData = ((GorgonTexture3D)texture).Lock(flags,
 			                mipLevel);
 			            break;
                     default:
@@ -761,24 +767,30 @@ namespace GorgonLibrary.Graphics
         private static void GetTextureData(GorgonTexture stagingTexture, void *buffer, int arrayIndex, int mipLevel, int rowStride, int height, int depthCount)
         {
             int sliceStride = rowStride * height;
+	        var flags = BufferLockFlags.Write;
+
+	        if (stagingTexture.Settings.Usage == BufferUsage.Dynamic)
+	        {
+		        flags |= BufferLockFlags.Discard;
+	        }
 
             // Copy the texture data into the buffer.
             GorgonTextureLockData textureLock;
             switch (stagingTexture.Settings.ImageType)
             {
                 case ImageType.Image1D:
-                    textureLock = ((GorgonTexture1D)stagingTexture).Lock(BufferLockFlags.Write | BufferLockFlags.Discard,
+                    textureLock = ((GorgonTexture1D)stagingTexture).Lock(flags,
                         arrayIndex,
                         mipLevel);
                     break;
                 case ImageType.ImageCube:
                 case ImageType.Image2D:
-                    textureLock = ((GorgonTexture2D)stagingTexture).Lock(BufferLockFlags.Write | BufferLockFlags.Discard,
+                    textureLock = ((GorgonTexture2D)stagingTexture).Lock(flags,
                         arrayIndex,
                         mipLevel);
                     break;
                 case ImageType.Image3D:
-                    textureLock = ((GorgonTexture3D)stagingTexture).Lock(BufferLockFlags.Write | BufferLockFlags.Discard,
+                    textureLock = ((GorgonTexture3D)stagingTexture).Lock(flags,
                         mipLevel);
                     break;
                 default:

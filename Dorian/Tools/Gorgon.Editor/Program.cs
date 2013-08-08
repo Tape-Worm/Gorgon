@@ -635,6 +635,7 @@ namespace GorgonLibrary.Editor
 						var assemblies = appDomain.GetAssemblies();
 
 						// ReSharper disable LoopCanBeConvertedToQuery
+						// ReSharper disable once ForCanBeConvertedToForeach
 						for (int i = 0; i < assemblies.Length; i++)
 						{
 							var assembly = assemblies[i];
