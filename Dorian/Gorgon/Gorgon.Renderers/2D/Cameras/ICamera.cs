@@ -24,11 +24,25 @@
 // 
 #endregion
 
-using GorgonLibrary.Graphics;
 using SlimMath;
 
 namespace GorgonLibrary.Renderers
-{	
+{
+    /// <summary>
+    /// The camera type.
+    /// </summary>
+    public enum CameraType
+    {
+        /// <summary>
+        /// A camera with orthogonal projection.
+        /// </summary>
+        Ortho = 0,
+        /// <summary>
+        /// A camera with perspective projection.
+        /// </summary>
+        Perspective = 1
+    }
+
 	/// <summary>
 	/// A camera interface.
 	/// </summary>
