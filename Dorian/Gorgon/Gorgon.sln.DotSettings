@@ -10,10 +10,13 @@
 	<s:String x:Key="/Default/CodeEditing/Intellisense/CodeCompletion/ParenthesesInsertType/@EntryValue">Left</s:String>
 	<s:Boolean x:Key="/Default/CodeEditing/Intellisense/LookupWindow/ShowSignatures/@EntryValue">True</s:Boolean>
 	<s:Boolean x:Key="/Default/CodeEditing/Intellisense/LookupWindow/ShowSummary/@EntryValue">True</s:Boolean>
+	<s:Boolean x:Key="/Default/CodeEditing/Intellisense/ParameterInfo/ShowAllCandidates/@EntryValue">False</s:Boolean>
 	<s:String x:Key="/Default/CodeEditing/TypingAssist/BraceInsertType/@EntryValue">ON_ENTER</s:String>
+	<s:String x:Key="/Default/CodeInspection/ExcludedFiles/FilesAndFoldersToSkip2/=042DEA65_002DF75B_002D46C7_002D808D_002D8C29A68C672A/@EntryIndexedValue">ExplicitlyExcluded</s:String>
 	<s:String x:Key="/Default/CodeInspection/ExcludedFiles/FilesAndFoldersToSkip2/=088982F3_002D9A3C_002D4A9A_002DB443_002DCC51FA33A79B/@EntryIndexedValue">ExplicitlyExcluded</s:String>
 	<s:String x:Key="/Default/CodeInspection/ExcludedFiles/FilesAndFoldersToSkip2/=0C1E79B4_002D0531_002D46FA_002D995A_002DD7413BBE9A1B/@EntryIndexedValue">ExplicitlyExcluded</s:String>
 	<s:String x:Key="/Default/CodeInspection/ExcludedFiles/FilesAndFoldersToSkip2/=33E13883_002DC323_002D436D_002D94E6_002D148414845A9C/@EntryIndexedValue">ExplicitlyExcluded</s:String>
+	<s:String x:Key="/Default/CodeInspection/ExcludedFiles/FilesAndFoldersToSkip2/=3BAEE0F8_002DCB7C_002D4FFC_002D80E3_002D976DF714399F/@EntryIndexedValue">ExplicitlyExcluded</s:String>
 	<s:String x:Key="/Default/CodeInspection/ExcludedFiles/FilesAndFoldersToSkip2/=558C7262_002D93C6_002D4597_002DBA9C_002D58A618911E88/@EntryIndexedValue">ExplicitlyExcluded</s:String>
 	<s:String x:Key="/Default/CodeInspection/ExcludedFiles/FilesAndFoldersToSkip2/=F00E19F5_002D5941_002D43C1_002DBC53_002D8A2430E7D71F/@EntryIndexedValue">ExplicitlyExcluded</s:String>
 	<s:String x:Key="/Default/CodeInspection/ExcludedFiles/FilesAndFoldersToSkip2/=F9B1B01F_002DC9B8_002D4937_002D8979_002DF79D0F62553F/@EntryIndexedValue">ExplicitlyExcluded</s:String>
@@ -651,6 +654,28 @@
 	<s:Boolean x:Key="/Default/CodeStyle/CodeFormatting/JavaScriptCodeFormatting/JavaScriptFormatLineBreaks/PLACE_FINALLY_ON_NEW_LINE/@EntryValue">True</s:Boolean>
 	<s:String x:Key="/Default/CodeStyle/CodeFormatting/JavaScriptCodeFormatting/JavaScriptFormatLineBreaks/SIMPLE_EMBEDDED_STATEMENT_STYLE/@EntryValue">LINE_BREAK</s:String>
 	<s:String x:Key="/Default/CodeStyle/CodeFormatting/JavaScriptCodeFormatting/JavaScriptFormatLineBreaks/SINGLE_STATEMENT_FUNCTION_STYLE/@EntryValue">ForceLineBreaks</s:String>
+	<s:String x:Key="/Default/CodeStyle/FileHeader/FileHeaderRegionName/@EntryValue">MIT.</s:String>
+	<s:String x:Key="/Default/CodeStyle/FileHeader/FileHeaderText/@EntryValue"> &#xD;
+$SOLUTION$&#xD;
+Copyright (C) $CURRENT_YEAR$ Michael Winsor&#xD;
+&#xD;
+Permission is hereby granted, free of charge, to any person obtaining a copy&#xD;
+of this software and associated documentation files (the "Software"), to deal&#xD;
+in the Software without restriction, including without limitation the rights&#xD;
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell&#xD;
+copies of the Software, and to permit persons to whom the Software is&#xD;
+furnished to do so, subject to the following conditions:&#xD;
+&#xD;
+The above copyright notice and this permission notice shall be included in&#xD;
+all copies or substantial portions of the Software.&#xD;
+&#xD;
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR&#xD;
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.&#xD;
+&#xD;
+Created: $CREATED_MONTH$/$CREATED_DAY$/$CREATED_YEAR$ $CREATED_TIME$&#xD;
+&#xD;
+&#xD;
+</s:String>
 	<s:String x:Key="/Default/CodeStyle/Naming/CSharpNaming/Abbreviations/=ABC/@EntryIndexedValue">ABC</s:String>
 	<s:String x:Key="/Default/CodeStyle/Naming/CSharpNaming/Abbreviations/=ABGR/@EntryIndexedValue">ABGR</s:String>
 	<s:String x:Key="/Default/CodeStyle/Naming/CSharpNaming/Abbreviations/=API/@EntryIndexedValue">API</s:String>
@@ -753,6 +778,9 @@
 	<s:String x:Key="/Default/Housekeeping/VsSavedAutocompletionValue/OverrideParameterInfo/=JavaScript/@EntryIndexedValue">NotOverridden</s:String>
 	<s:String x:Key="/Default/Housekeeping/VsSavedAutocompletionValue/OverrideParameterInfo/=JavaScriptVs11/@EntryIndexedValue">NotOverridden</s:String>
 	<s:String x:Key="/Default/Housekeeping/VsSavedAutocompletionValue/OverrideParameterInfo/=VB/@EntryIndexedValue">NotOverridden</s:String>
+	<s:String x:Key="/Default/CodeEditing/Intellisense/CodeCompletion/ParenthesesInsertType/@EntryValue">Both</s:String>
+	<s:String x:Key="/Default/CodeEditing/TypingAssist/BraceInsertType/@EntryValue">ON_LBRACE</s:String>
+	<s:String x:Key="/Default/CodeInspection/Highlighting/InspectionSeverities/=ConvertIfStatementToConditionalTernaryExpression/@EntryIndexedValue">SUGGESTION</s:String>
 	<s:Boolean x:Key="/Default/PatternsAndTemplates/StructuralSearch/RecentSearch/=201304161923083638/@KeyIndexDefined">True</s:Boolean>
 	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/RecentSearch/=201304161923083638/LanguageName/@EntryValue">CSHARP</s:String>
 	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/RecentSearch/=201304161923083638/SearchPattern/@EntryValue">project</s:String></wpf:ResourceDictionary>
