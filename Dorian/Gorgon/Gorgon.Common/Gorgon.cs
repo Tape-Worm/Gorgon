@@ -263,7 +263,7 @@ namespace GorgonLibrary
 		}
 
 		/// <summary>
-		/// Method to initialize the main form and idle loop..
+		/// Function to initialize the main form and idle loop..
 		/// </summary>
 		/// <returns>TRUE if the application has signalled to quit before it starts running, FALSE to continue.</returns>
 		private static bool Initialize()
@@ -317,7 +317,7 @@ namespace GorgonLibrary
 		}
 
 		/// <summary>
-		/// Method to clean up after an application exits.
+		/// Function to clean up after an application exits.
 		/// </summary>
 		private static void CleanUp()
 		{
@@ -388,7 +388,7 @@ namespace GorgonLibrary
 		}
 
 		/// <summary>
-		/// Method to quit the application.
+		/// Function to quit the application.
 		/// </summary>
 		public static void Quit()
 		{
@@ -401,16 +401,14 @@ namespace GorgonLibrary
 		}
 
 		/// <summary>
-		/// Method to run a Gorgon application.
+		/// Function to run a Gorgon application.
 		/// </summary>
 		/// <param name="context">Application context to use.</param>
-		/// <param name="loop">Idle loop method for the application.</param>
-		/// <remarks>Passing NULL (Nothing in VB.Net) to both the <paramref name="context"/> and <paramref name="loop"/> parameters will raise an exception.</remarks>
-		/// <exception cref="System.InvalidOperationException">Thrown when the mainForm and the loop parameters are NULL.
-		/// <para>-or-</para>
-		/// Thrown when the application is already in a <see cref="P:GorgonLibrary.Gorgon.IsRunning">running state</see>.
-		/// </exception>
-		public static void Run(ApplicationContext context, Func<bool> loop)
+		/// <param name="loop">[Optional] Idle loop method for the application.</param>
+		/// <remarks>This method requires an application context, but the <paramref name="loop"/> parameter is optional.</remarks>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="context"/> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.InvalidOperationException">Thrown when the application is already in a <see cref="P:GorgonLibrary.Gorgon.IsRunning">running state</see>.</exception>
+		public static void Run(ApplicationContext context, Func<bool> loop = null)
 		{
 		    if (context == null)
 		    {
@@ -422,7 +420,11 @@ namespace GorgonLibrary
                 throw new InvalidOperationException(Resources.GOR_APPLICATION_ALREADY_RUNNING);
             }
 
-			ApplicationIdleLoopMethod = loop;
+			if (loop != null)
+			{
+				ApplicationIdleLoopMethod = loop;
+			}
+
 			ApplicationContext = context;
 
 			try
@@ -446,44 +448,30 @@ namespace GorgonLibrary
 		}
 
 		/// <summary>
-		/// Method to run a Gorgon application.
-		/// </summary>
-		/// <param name="context">Application context to use.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="context"/> parameter is NULL (Nothing in VB.Net).</exception>
-		/// <exception cref="System.InvalidOperationException">Thrown when the application is already in a <see cref="P:GorgonLibrary.Gorgon.IsRunning">running state</see>.</exception>
-		public static void Run(ApplicationContext context)
-		{
-			if (context == null)
-			{
-				throw new ArgumentNullException("context");
-			}
-
-			Run(context, ApplicationIdleLoopMethod);
-		}
-
-		/// <summary>
-		/// Method to run a Gorgon application.
+		/// Function to run a Gorgon application.
 		/// </summary>
 		/// <param name="mainForm">Form to use as the main form for the application.</param>
-		/// <param name="loop">Idle loop method for the application.</param>
-		/// <remarks>Passing NULL (Nothing in VB.Net) to both the <paramref name="mainForm"/> and <paramref name="loop"/> parameters will raise an exception.</remarks>
-		/// <exception cref="System.InvalidOperationException">Thrown when the mainForm and the loop parameters are NULL.
-		/// <para>-or-</para>
-		/// Thrown when the application is already in a <see cref="P:GorgonLibrary.Gorgon.IsRunning">running state</see>.
-		/// </exception>
-		public static void Run(Form mainForm, Func<bool> loop)
+		/// <param name="loop">[Optional] Idle loop method for the application.</param>
+		/// <remarks>A form is required to use this method, but the <paramref name="loop"/> parameter is optional.</remarks>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="mainForm"/> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.InvalidOperationException">Thrown when the application is already in a <see cref="P:GorgonLibrary.Gorgon.IsRunning">running state</see>.</exception>
+		public static void Run(Form mainForm, Func<bool> loop = null)
 		{
-			if ((mainForm == null) && (loop == null))
+			if (mainForm == null)
 			{
-				throw new InvalidOperationException("Cannot run an application without either a main form, or a idle method.");
+				throw new ArgumentNullException("mainForm");
 			}
 
 			if (IsRunning)
 			{
-				throw new InvalidOperationException("The application is already running.");
+				throw new InvalidOperationException(Resources.GOR_APPLICATION_ALREADY_RUNNING);
 			}
 
-			ApplicationIdleLoopMethod = loop;
+			if (loop != null)
+			{
+				ApplicationIdleLoopMethod = loop;
+			}
+
 			_mainForm = mainForm;
 
 			try
@@ -507,23 +495,7 @@ namespace GorgonLibrary
 		}
 
 		/// <summary>
-		/// Method to run a Gorgon application.
-		/// </summary>
-		/// <param name="mainForm">Form to use as the main form for the application.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="mainForm"/> parameter is NULL (Nothing in VB.Net).</exception>
-		/// <exception cref="System.InvalidOperationException">Thrown when the application is already in a <see cref="P:GorgonLibrary.Gorgon.IsRunning">running state</see>.</exception>
-		public static void Run(Form mainForm)
-		{
-			if (mainForm == null)
-			{
-				throw new ArgumentNullException("mainForm");
-			}
-			
-			Run(mainForm, ApplicationIdleLoopMethod);
-		}
-
-		/// <summary>
-		/// Method to run a Gorgon application.
+		/// Function to run a Gorgon application.
 		/// </summary>
 		/// <param name="loop">Idle loop method for the application.</param>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="loop"/> parameter is NULL (Nothing in VB.Net).</exception>

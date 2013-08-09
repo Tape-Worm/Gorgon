@@ -113,7 +113,7 @@ namespace GorgonLibrary.Graphics
 		/// or R32_UInt/Int/Float (but only if the texture format is 32 bit).  Any other format will raise an exception.  Note that if the format is not set to R32_UInt/Int/Float,
 		/// then write-only access will be given to the UAV.</para>
 		/// <para>To check to see if a format is supported for UAV, use the <see cref="GorgonLibrary.Graphics.GorgonVideoDevice.SupportsUnorderedAccessViewFormat">GorgonVideoDevice.SupportsUnorderedAccessViewFormat</see>
-		/// method to determine if the format is supported.</para>
+		/// Function to determine if the format is supported.</para>
 		/// <para>The default value is FALSE.</para>
 		/// </remarks>
 		public bool AllowUnorderedAccessViews

@@ -122,7 +122,7 @@ namespace GorgonLibrary.Diagnostics
 		}
 
 		/// <summary>
-		/// Method to refresh the list of process specific environment variables.
+		/// Function to refresh the list of process specific environment variables.
 		/// </summary>
 		public static void RefreshEnvironmentVariables()
 		{

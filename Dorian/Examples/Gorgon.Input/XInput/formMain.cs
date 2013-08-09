@@ -93,8 +93,8 @@ namespace GorgonLibrary.Examples
 		/// <param name="index">Index of the joystick.</param>
 		private void UpdateControllerLabels(GorgonJoystick joystick, int index)
 		{			
-			var panel = (Panel)panelControllers.Controls["panelController" + index.ToString()];
-			var label = (Label)panel.Controls["labelController" + index.ToString()];			
+			var panel = (Panel)panelControllers.Controls["panelController" + index];
+			var label = (Label)panel.Controls["labelController" + index];			
 
 			// Update the label visibility for the controller.
 			if (joystick.IsConnected)

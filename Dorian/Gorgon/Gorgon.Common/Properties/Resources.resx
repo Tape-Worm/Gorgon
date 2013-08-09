@@ -774,4 +774,7 @@ Code: 0x{2}</value>
   <data name="GOR_SETTING_CANNOT_CONVERT_VERSION" xml:space="preserve">
     <value>Version type string could not be converted to a version type.</value>
   </data>
+  <data name="GOR_APPLICATION_REQUIRES_FORM_OR_IDLE" xml:space="preserve">
+    <value>The application requires either a form, an idle method or both.</value>
+  </data>
 </root>

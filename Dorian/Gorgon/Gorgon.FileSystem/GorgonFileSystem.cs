@@ -609,6 +609,7 @@ namespace GorgonLibrary.IO
 
 		    GorgonFileSystemDirectory directory = RootDirectory;
 
+			// ReSharper disable once ForCanBeConvertedToForeach
 			for (int i = 0; i < directories.Length; i++)
 			{
                 // Search our child directories.
@@ -1340,6 +1341,7 @@ namespace GorgonLibrary.IO
 			provider.Enumerate(physicalPath, mountDirectory, out physicalDirectories, out physicalFiles);
 
 			// Process the directories.
+			// ReSharper disable once ForCanBeConvertedToForeach
 			for (int i = 0; i < physicalDirectories.Length; i++)
 			{
 				string directory = physicalDirectories[i];

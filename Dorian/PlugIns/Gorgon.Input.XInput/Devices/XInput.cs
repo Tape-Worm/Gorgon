@@ -345,6 +345,7 @@ namespace GorgonLibrary.Input.XInput
 			// Get button info.
 			if (state.Gamepad.Buttons != XI.GamepadButtonFlags.None)
 			{
+				// ReSharper disable once ForCanBeConvertedToForeach
 				for (int i = 0; i < _button.Length; i++)
 				{
 				    _buttonList.SetButtonState(_button[i],

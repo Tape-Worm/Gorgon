@@ -142,10 +142,10 @@ namespace GorgonLibrary.Diagnostics
 				// Get a list of lines.
 				string[] lines = formatSpecifier.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
 
-				for (int i = 0; i < lines.Length; i++)
+				foreach (string line in lines)
 				{
 					outputLine.AppendFormat("[{0} {1}] ", DateTime.Now.ToShortDateString(), DateTime.Now.ToShortTimeString());
-					outputLine.Append(string.Format(lines[i] + "\r\n", arguments));
+					outputLine.Append(string.Format(line + "\r\n", arguments));
 				}
 			}
 

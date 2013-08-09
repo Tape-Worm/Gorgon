@@ -63,24 +63,13 @@ namespace GorgonLibrary.Input.XInput
 		/// <returns>A list of joystick device names.</returns>
 		protected override IEnumerable<GorgonInputDeviceInfo> EnumerateJoysticksDevices()
 		{
-			var controllerIndex = ((XI.UserIndex[])Enum.GetValues(typeof(XI.UserIndex))).OrderBy(item => item).ToArray();
-			var controllers = new XI.Controller[controllerIndex.Length];
-
-		    IList<GorgonXInputDeviceInfo> devices = new List<GorgonXInputDeviceInfo>();
-
 			// Enumerate all controllers.
-			for (int i = 0; i < controllerIndex.Length; i++)
-			{
-			    if (controllerIndex[i] == XI.UserIndex.Any)
-			    {
-			        continue;
-			    }
-
-			    controllers[i] = new XI.Controller(controllerIndex[i]);
-			    devices.Add(new GorgonXInputDeviceInfo(string.Format("{0}", i + 1) + ": XInput Controller", "XInput_" + controllerIndex[i].ToString(), controllers[i], i));
-			}
-
-			return devices.OrderBy(item => item.Name);
+			return (from xiDeviceIndex in (XI.UserIndex[])Enum.GetValues(typeof(XI.UserIndex))
+					where xiDeviceIndex != XI.UserIndex.Any
+					orderby xiDeviceIndex
+					select new GorgonXInputDeviceInfo(string.Format("{0}: XInput Controller", (int)xiDeviceIndex + 1),
+					string.Format("XInput_{0}", xiDeviceIndex), new XI.Controller(xiDeviceIndex), (int)xiDeviceIndex))
+						.OrderBy(item => item.Name);
 		}
 
 		/// <summary>
