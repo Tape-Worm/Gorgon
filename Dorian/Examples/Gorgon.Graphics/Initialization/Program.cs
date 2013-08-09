@@ -121,7 +121,7 @@ namespace GorgonLibrary.Graphics.Example
 			// Clear the swap chain.  
 			_swap.Clear(_clearColor);
 
-			// Animate our clear color so we know what's going on.
+			// Animate our clear color so we have something to look at instead of a blank screen.
 			_clearColor = new GorgonColor(
 				_clearColor.Red + (GorgonTiming.Delta * _colorDirection * 0.0125f),
 				_clearColor.Green + (GorgonTiming.Delta * _colorDirection * 0.0125f),
