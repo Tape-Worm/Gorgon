@@ -97,7 +97,10 @@ namespace GorgonLibrary.Graphics.Example
 		private static formMain _mainForm;										// Main application form.
 		private static GorgonSwapChain _swap;									// Our primary swap chain.
 		private static int _colorDirection = 1;									// Direction of our color.
-		private static GorgonColor _clearColor = Color.FromArgb(25, 25, 22);	// The color to clear our swap chain with.
+		private static GorgonColor _clearColor = new GorgonColor(				// The color to clear our swap chain with.
+													25.0f / 255.0f, 
+													24.5f / 255.0f, 
+													22.0f / 255.0f);	
 		#endregion
 
 		#region Properties.
@@ -125,13 +128,19 @@ namespace GorgonLibrary.Graphics.Example
 			_clearColor = new GorgonColor(
 				_clearColor.Red + (GorgonTiming.Delta * _colorDirection * 0.0125f),
 				_clearColor.Green + (GorgonTiming.Delta * _colorDirection * 0.0125f),
-				_clearColor.Blue + (GorgonTiming.Delta * _colorDirection * 0.0125f));
+				_clearColor.Blue + (GorgonTiming.Delta * _colorDirection * 0.0125f)
+			);
 
 			if (((_clearColor.Red > (250.0f / 255.0f)) || (_clearColor.Red < (25.0f / 255.0f)))
 				&& ((_clearColor.Green > (245.0f / 255.0f)) || (_clearColor.Green < (24.5f / 255.0f)))
 				&& ((_clearColor.Blue > (220.0f / 255.0f)) || (_clearColor.Blue < (22.0f / 255.0f))))
 			{
 				_colorDirection *= -1;
+
+				// Ensure that we don't get stuck.
+				_clearColor = _colorDirection < 0
+					? new GorgonColor(250.0f / 255.0f, 245f / 255.0f, 220f / 255.0f)
+					: new GorgonColor(25.0f / 255.0f, 24.5f / 255.0f, 22.0f / 255.0f);
 			}
 
 			// Now we flip our buffers on the swap chain.  
