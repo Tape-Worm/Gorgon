@@ -168,4 +168,7 @@
   <data name="GORFS_PROVIDER_NOT_FOUND" xml:space="preserve">
     <value>The provider '{0}' is not present in this file system.</value>
   </data>
+  <data name="GORGFS_MOUNTPOINT_NOT_FOUND" xml:space="preserve">
+    <value>The mount point '{0}' with physical location '{1}' was not found.</value>
+  </data>
 </root>
