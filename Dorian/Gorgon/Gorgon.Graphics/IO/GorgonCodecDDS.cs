@@ -1724,7 +1724,7 @@ namespace GorgonLibrary.IO
 
                     if (paletteSize > stream.Length - stream.Position)
                     {
-                        throw new EndOfStreamException("Cannot read beyond the end of the stream.");
+                        throw new EndOfStreamException(Resources.GORGFX_STREAM_EOF);
                     }
 
 				    palette = new uint[256];

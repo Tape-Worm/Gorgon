@@ -251,7 +251,7 @@ namespace GorgonLibrary.Animation
 				    if (!animation.Tracks.Contains(trackName))
 				    {
 				        throw new ArgumentException(
-				            string.Format(Resources.GORANM_TRACK_DOES_NOT_EXIST, trackName, AnimatedObjectType.FullName), "stream");
+				            string.Format(Resources.GORANM_TRACK_TYPE_DOES_NOT_EXIST, trackName, AnimatedObjectType.FullName), "stream");
 				    }
 
 				    animation.Tracks[trackName].FromChunk(chunk);

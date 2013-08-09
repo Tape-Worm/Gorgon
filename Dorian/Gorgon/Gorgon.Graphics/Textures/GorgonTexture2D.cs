@@ -212,16 +212,8 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		/// <param name="pixel">The pixel coordinate to convert.</param>
 		/// <returns>The texel space location of the pixel on the texture.</returns>
-		/// <exception cref="System.DivideByZeroException">Thrown when the texture width or height is equal to 0.</exception>
 		public Vector2 ToTexel(Vector2 pixel)
 		{
-#if DEBUG
-			if (Settings.Width == 0)
-				throw new DivideByZeroException("The texture width is 0.");
-			if (Settings.Height == 0)
-				throw new DivideByZeroException("The texture height is 0.");
-#endif
-
 			return new Vector2(pixel.X / Settings.Width, pixel.Y / Settings.Height);
 		}
 

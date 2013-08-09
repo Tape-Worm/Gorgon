@@ -227,7 +227,6 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		/// <param name="pixel">The pixel coordinate to convert.</param>
 		/// <returns>The texel space location of the pixel on the texture.</returns>
-		/// <exception cref="System.DivideByZeroException">Thrown when the texture width is equal to 0.</exception>
 		public float ToTexel(float pixel)
 		{
 			return pixel / Settings.Width;

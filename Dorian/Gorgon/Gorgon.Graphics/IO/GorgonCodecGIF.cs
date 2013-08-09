@@ -380,10 +380,10 @@ namespace GorgonLibrary.IO
 							{
 								decoder.Initialize(wicStream, SharpDX.WIC.DecodeOptions.CacheOnDemand);
 							}
-							catch (DX.SharpDXException sdex)
+							catch (DX.SharpDXException)
 							{
 								// Repackage the exception to keep in line with our API defintion.
-								throw new System.IO.IOException("Cannot decode the " + Codec + " file. " + sdex.Descriptor.Description, sdex);
+								throw new System.IO.IOException(string.Format(Resources.GORGFX_IMAGE_FILE_INCORRECT_DECODER, Codec));
 							}
 
 							if (decoder.FrameCount < 2)

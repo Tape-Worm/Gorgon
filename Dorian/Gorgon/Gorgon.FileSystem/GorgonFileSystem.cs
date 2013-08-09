@@ -236,7 +236,9 @@ namespace GorgonLibrary.IO
 
 			if (!_mountPoints.Contains(mountPoint))
 			{
-				throw new IOException("The mount point '" + mountPoint.MountLocation + "' with physical location '" + mountPoint.PhysicalPath + "' was not found.");
+			    throw new IOException(string.Format(Resources.GORGFS_MOUNTPOINT_NOT_FOUND,
+			        mountPoint.MountLocation,
+			        mountPoint.PhysicalPath));
 			}
 
 			_mountPoints.Remove(mountPoint);

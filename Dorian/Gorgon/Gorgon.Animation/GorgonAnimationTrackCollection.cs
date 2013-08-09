@@ -26,6 +26,7 @@
 
 using System;
 using System.Collections.Generic;
+using GorgonLibrary.Animation.Properties;
 using GorgonLibrary.Collections;
 using GorgonLibrary.Diagnostics;
 
@@ -200,7 +201,7 @@ namespace GorgonLibrary.Animation
 
 		    if (Contains(track.Name))
 		    {
-		        throw new ArgumentException(string.Format(Properties.Resources.GORANM_TRACK_ALREADY_EXISTS, track.Name), "track");
+		        throw new ArgumentException(string.Format(Resources.GORANM_TRACK_ALREADY_EXISTS, track.Name), "track");
 		    }
 
 		    AddItem(track);
@@ -225,11 +226,22 @@ namespace GorgonLibrary.Animation
 		/// <exception cref="System.Collections.Generic.KeyNotFoundException">Thrown when the track could not be found in the collection.</exception>
 		public void Remove(string name)
 		{
-			GorgonDebug.AssertParamString(name, "name");
-			if (!Contains(name))
-				throw new KeyNotFoundException("The track '" + name + "' could not be found in the collection.");
+		    if (name == null)
+		    {
+		        throw new ArgumentNullException("name");
+		    }
 
-			RemoveItem(name);
+		    if (name.Length == 0)
+		    {
+		        throw new ArgumentException(Resources.GORANM_PARAMETER_MUST_NOT_BE_EMPTY, "name");
+		    }
+
+		    if (!Contains(name))
+		    {
+		        throw new KeyNotFoundException(string.Format(Resources.GORANM_TRACK_DOES_NOT_EXIST, name));
+		    }
+
+		    RemoveItem(name);
 		}
 
 		/// <summary>

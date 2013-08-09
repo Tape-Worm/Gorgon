@@ -76,7 +76,7 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Always pass the comparison.
 		/// </summary>
-		Always = 8,
+		Always = 8
 	}
 
 	/// <summary>
