@@ -1,7 +1,7 @@
 ﻿#region MIT.
 // 
 // Gorgon.
-// Copyright (C) 2012 Michael Winsor
+// Copyright (C) 2013 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -20,7 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: Sunday, December 30, 2012 9:33:29 AM
+// Created: Thursday, August 8, 2013 10:46:19 PM
 // 
 #endregion
 
@@ -31,13 +31,13 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 #if DEBUG
-[assembly: AssemblyTitle("Boinger [DEBUG VERSION]")]
-[assembly: AssemblyDescription("A 3D example using just the base graphics library. [DEBUG VERSION]")]
+[assembly: AssemblyTitle("Initialization [DEBUG VERSION]")]
+[assembly: AssemblyDescription("A basic example showing how to initialize the graphics API. [DEBUG VERSION]")]
 [assembly: AssemblyConfiguration("DEBUG")]
 [assembly: AssemblyProduct("Gorgon [DEBUG VERSON]")]
 #else
-[assembly: AssemblyTitle("Boinger")]
-[assembly: AssemblyDescription("A 3D example using just the base graphics library.")]
+[assembly: AssemblyTitle("Initialization")]
+[assembly: AssemblyDescription("A basic example showing how to initialize the graphics API.")]
 [assembly: AssemblyConfiguration("RELEASE")]
 [assembly: AssemblyProduct("Gorgon")]
 #endif
@@ -52,7 +52,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("053f54a1-07b2-4244-b0ba-4ea3af00a16d")]
+[assembly: Guid("94b2a18d-25ab-4973-9526-99aa53d17bf6")]
 
 // Version information for an assembly consists of the following four values:
 //

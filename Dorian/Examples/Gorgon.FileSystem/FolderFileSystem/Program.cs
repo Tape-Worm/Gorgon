@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using GorgonLibrary.IO;
@@ -73,15 +74,15 @@ namespace GorgonLibrary.Examples
                 throw new ArgumentException("The resource was not specified.", "resourceItem");
 			}
 
-			if (!path.EndsWith(Path.DirectorySeparatorChar.ToString()))
+			if (!path.EndsWith(Path.DirectorySeparatorChar.ToString(CultureInfo.InvariantCulture)))
 			{
-				path += Path.DirectorySeparatorChar.ToString();
+				path += Path.DirectorySeparatorChar.ToString(CultureInfo.InvariantCulture);
 			}
 
 			path = path.RemoveIllegalPathChars();
 			
 			// If this is a directory, then sanitize it as such.
-			if (resourceItem.EndsWith(Path.DirectorySeparatorChar.ToString()))
+			if (resourceItem.EndsWith(Path.DirectorySeparatorChar.ToString(CultureInfo.InvariantCulture)))
 			{
 				path += resourceItem.RemoveIllegalPathChars();
 			}
@@ -161,14 +162,13 @@ namespace GorgonLibrary.Examples
                     Console.WriteLine("{0}", directory.FullPath);
                     
                     Console.ForegroundColor = ConsoleColor.Yellow;
-                    for (int j = 0; j < directory.Files.Count; j++)
+
+                    foreach (var file in directory.Files)
                     {
-                        var file = directory.Files[j];
-                        
-                        Console.Write("   {0}", file.Name);
-                        // Align the size to the same place.
-                        Console.CursorLeft = 65;
-                        Console.WriteLine("{0}", file.Size.FormatMemory());
+	                    Console.Write("   {0}", file.Name);
+	                    // Align the size to the same place.
+	                    Console.CursorLeft = 65;
+	                    Console.WriteLine("{0}", file.Size.FormatMemory());
                     }
                 }
 

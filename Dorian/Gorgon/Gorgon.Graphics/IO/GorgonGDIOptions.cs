@@ -197,7 +197,7 @@ namespace GorgonLibrary.IO
 		/// <para>If this value is set to TRUE, it will automatically change the format of the texture to the equivalent typeless format.  This is necessary because UAVs cannot be 
 		/// used with typed texture resources.</para>
 		/// <para>To check to see if a format is supported for UAV, use the <see cref="GorgonLibrary.Graphics.GorgonVideoDevice.SupportsUnorderedAccessViewFormat">GorgonVideoDevice.SupportsUnorderedAccessViewFormat</see> 
-		/// method to determine if the format is supported.</para>
+		/// Function to determine if the format is supported.</para>
 		/// <para>This property is for <see cref="GorgonLibrary.Graphics.GorgonTexture">textures</see> only, for <see cref="GorgonLibrary.Graphics.GorgonImageData">image data</see> it is ignored.</para>
 		/// <para>This property is only applied when decoding an image, otherwise it is ignored.</para>
 		/// <para>The default value is FALSE.</para>

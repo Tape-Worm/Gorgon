@@ -212,7 +212,7 @@ namespace GorgonLibrary.Diagnostics
 
 		#region Methods.
 		/// <summary>
-		/// Method to retrieve the path for a specialized folder.
+		/// Function to retrieve the path for a specialized folder.
 		/// </summary>
 		/// <param name="folder">Folder to return.</param>
 		/// <returns>The path to the folder.</returns>
@@ -222,7 +222,7 @@ namespace GorgonLibrary.Diagnostics
 		}
 
 		/// <summary>
-		/// Method to retrieve a list of logical drives for the computer.
+		/// Function to retrieve a list of logical drives for the computer.
 		/// </summary>
 		/// <returns>A list of logical drives for the computer.</returns>
 		public static IList<string> GetLogicalDrives()
@@ -231,7 +231,7 @@ namespace GorgonLibrary.Diagnostics
 		}
 
 		/// <summary>
-		/// Method to refresh the list of user and machine specific environment variables.
+		/// Function to refresh the list of user and machine specific environment variables.
 		/// </summary>
 		public static void RefreshEnvironmentVariables()
 		{

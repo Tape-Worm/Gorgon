@@ -34,6 +34,19 @@ namespace GorgonLibrary.Graphics
 	{
 		#region Methods.
 		/// <summary>
+		/// Function to reset the internal shader states.
+		/// </summary>
+		internal override void Reset()
+		{
+			if (Graphics.VideoDevice.SupportedFeatureLevel != DeviceFeatureLevel.SM2_a_b)
+			{
+				TextureSamplers.Reset();
+			}
+			ConstantBuffers.Reset();
+			Resources.Reset();
+		}
+
+		/// <summary>
 		/// Property to set or return the current shader.
 		/// </summary>
 		protected override void SetCurrent()
@@ -50,13 +63,6 @@ namespace GorgonLibrary.Graphics
 		/// <exception cref="GorgonLibrary.GorgonException">Thrown when the current video device is a SM2_a_b device.</exception>
 		protected override void SetResources(int slot, int count, SharpDX.Direct3D11.ShaderResourceView[] resources)
 		{
-#if DEBUG
-		    if (Graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM2_a_b)
-		    {
-		        throw new GorgonException(GorgonResult.CannotBind,
-		            string.Format(Properties.Resources.GORGFX_REQUIRES_SM, DeviceFeatureLevel.SM4));
-		    }
-#endif
 		    if (count == 1)
 		    {
 		        Graphics.Context.VertexShader.SetShaderResource(slot, resources[0]);

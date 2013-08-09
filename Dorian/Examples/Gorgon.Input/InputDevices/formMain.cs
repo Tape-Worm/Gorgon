@@ -250,7 +250,7 @@ namespace GorgonLibrary.Examples
                                 _mouse.Name,
                                 position.X.ToString("0.#"),
                                 position.Y.ToString("0.#"),
-                                button.ToString(),
+                                button,
                                 (_usePolling ? "Polling" : "Events"));
         }
 
@@ -280,8 +280,8 @@ namespace GorgonLibrary.Examples
 
 
 			labelKeyboard.Text = string.Format("{2}. Currently pressed key: {0}{1}  (Press 'P' to switch between polling and events for the mouse. Press 'ESC' to close.)"
-												, key.ToString()
-												, ((shiftKey != KeyboardKeys.None) && (shiftKey != key) ? " + " + shiftKey.ToString() : string.Empty)
+												, key
+												, ((shiftKey != KeyboardKeys.None) && (shiftKey != key) ? " + " + shiftKey : string.Empty)
                                                 , _keyboard.Name);				
 		}
 

@@ -378,10 +378,10 @@ namespace GorgonLibrary.Animation
 			chunk.WriteString(Name);
 			chunk.Write(InterpolationMode);
 
-			for (int i = 0; i < KeyFrames.Count; i++)
+			foreach (IKeyFrame keyFrame in KeyFrames)
 			{
 				chunk.Begin("KEYFRAME");
-				KeyFrames[i].ToChunk(chunk);
+				keyFrame.ToChunk(chunk);
 				chunk.End();
 			}
 		}

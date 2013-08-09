@@ -110,6 +110,15 @@ namespace GorgonLibrary.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The application requires either a form, an idle method or both..
+        /// </summary>
+        internal static string GOR_APPLICATION_REQUIRES_FORM_OR_IDLE {
+            get {
+                return ResourceManager.GetString("GOR_APPLICATION_REQUIRES_FORM_OR_IDLE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Cannot write surrogate character &apos;{0}&apos; as a single character..
         /// </summary>
         internal static string GOR_CHUNK_CANNOT_WRITE_SURROGATE {

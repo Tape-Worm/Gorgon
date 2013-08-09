@@ -412,7 +412,7 @@ namespace GorgonLibrary.Graphics.Example
 			// Statistics text buffer.
 			_fpsText = new StringBuilder(64);
 			_helpText = new StringBuilder("Device: " + _graphics.VideoDevice.Name +
-				"\nFeature Level: " + _graphics.VideoDevice.SupportedFeatureLevel.ToString() +
+				"\nFeature Level: " + _graphics.VideoDevice.SupportedFeatureLevel +
 				"\nVideo Memory: " + _graphics.VideoDevice.DedicatedVideoMemory.FormatMemory() +
 				"\n\n" + Properties.Resources.HelpText);
 		}
