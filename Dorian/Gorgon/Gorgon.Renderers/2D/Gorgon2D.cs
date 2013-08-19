@@ -681,7 +681,10 @@ namespace GorgonLibrary.Renderers
 		internal void Initialize()
 		{
 			// Add shader includes.
-			Graphics.ImmediateContext.Shaders.IncludeFiles.Add("Gorgon2DShaders", Encoding.UTF8.GetString(Resources.BasicSprite));
+			if (!Graphics.Shaders.IncludeFiles.Contains("Gorgon2DShaders"))
+			{
+				Graphics.ImmediateContext.Shaders.IncludeFiles.Add("Gorgon2DShaders", Encoding.UTF8.GetString(Resources.BasicSprite));
+			}
 
 			// Create shader states.
 			PixelShader = new Gorgon2DPixelShaderState(this);

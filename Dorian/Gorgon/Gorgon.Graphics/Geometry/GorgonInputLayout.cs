@@ -287,6 +287,12 @@ namespace GorgonLibrary.Graphics
 		        return D3DLayout;
 		    }
 
+			// If the shader that's linked to this layout is gone, then don't bother with a new layout object.
+	        if (Shader.D3DByteCode == null)
+	        {
+		        return null;
+	        }
+
 		    var elements = new D3D.InputElement[_elements.Length];
 
 		    for (int i = 0; i < elements.Length; i++)
