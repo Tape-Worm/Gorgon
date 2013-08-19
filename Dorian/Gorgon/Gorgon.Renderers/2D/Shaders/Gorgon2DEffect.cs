@@ -32,7 +32,7 @@ namespace GorgonLibrary.Renderers
 	/// Base effect for 2D effects.
 	/// </summary>
 	public abstract class Gorgon2DEffect
-		: GorgonEffect
+		: GorgonEffect_GOINGBYEBYE
 	{
 		#region Variables.
 		private bool _isDisposed;							// Flag to indicate that the object was disposed.

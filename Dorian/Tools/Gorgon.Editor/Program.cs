@@ -273,20 +273,22 @@ namespace GorgonLibrary.Editor
             }
 
             // Ensure the element is properly formed.
-            if ((plugInElement.HasAttributes) 
-                && (plugInElement.Attribute("TypeName") != null) 
-                && (!string.IsNullOrWhiteSpace(plugInElement.Attribute("TypeName").Value)))
+            if ((!plugInElement.HasAttributes)
+                || (plugInElement.Attribute("TypeName") == null)
+                || (string.IsNullOrWhiteSpace(plugInElement.Attribute("TypeName").Value)))
             {
-                // Ensure we actually have the plug-in loaded.
-                var writer = (from plugIn in WriterPlugIns
-                              let plugInType = plugIn.Value.GetType().FullName
-                              where string.Equals(plugInType, plugInElement.Attribute("TypeName").Value, StringComparison.OrdinalIgnoreCase)
-                              select plugIn.Value).FirstOrDefault();
+                return firstPlugIn;
+            }
 
-                if (writer != null)
-                {
-                    firstPlugIn = writer;
-                }
+            // Ensure we actually have the plug-in loaded.
+            var writer = (from plugIn in WriterPlugIns
+                let plugInType = plugIn.Value.GetType().FullName
+                where string.Equals(plugInType, plugInElement.Attribute("TypeName").Value, StringComparison.OrdinalIgnoreCase)
+                select plugIn.Value).FirstOrDefault();
+
+            if (writer != null)
+            {
+                firstPlugIn = writer;
             }
 
             return firstPlugIn;
@@ -634,7 +636,7 @@ namespace GorgonLibrary.Editor
 					{
 						var assemblies = appDomain.GetAssemblies();
 
-						// ReSharper disable LoopCanBeConvertedToQuery
+						// ReSharper disable once LoopCanBeConvertedToQuery
 						// ReSharper disable once ForCanBeConvertedToForeach
 						for (int i = 0; i < assemblies.Length; i++)
 						{
@@ -645,8 +647,6 @@ namespace GorgonLibrary.Editor
 								return assembly;
 							}
 						}
-						// ReSharper restore LoopCanBeConvertedToQuery
-
 						return null;
 					};
 

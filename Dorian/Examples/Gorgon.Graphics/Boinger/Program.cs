@@ -85,7 +85,7 @@ namespace GorgonLibrary.Graphics.Example
 	/// This example is a recreation of the Amiga "Boing" demo (http://www.youtube.com/watch?v=-ga41edXw3A).
 	/// 
 	/// 
-	/// Before I go any further: This example is NOT, and I stress this "NOT!" a good example of how to write a 3D application.  
+	/// Before I go any further: This example is NOT a good example of how to write a 3D application.  
 	/// A good 3D renderer is a monster to write, this example just shows a user the flexibility of Gorgon and that it's capable 
 	/// of rendering 3D with the lower API level.  Any funky 3D only tricks or complicated scene graph mechanisms that you might 
 	/// expect are up to the developer to figure out and write.
@@ -104,12 +104,11 @@ namespace GorgonLibrary.Graphics.Example
 	/// 1. Draw the text manually myself.  And, there was no way in hell I was doing that.
 	/// 2. Use the 2D renderer.
 	/// 
-	/// You'll note that we call _2D.End2D(); after we create the 2D interface.  This is so we can disable the 2D stuff up front or
-	/// it may interfere with our 3D stuff.  And in the render loop, before we render the text, we call _2D.Begin2D().  This takes
-	/// a copy of the current state and then overwrites that state with the 2D stuff and then we render the text.  Finally, we call
-	/// _2D.End2D() and that restores the previous state (the states are stored in a stack in a LIFO order) so the 3D renderer
-	/// doesn't get all messed up.  When mixing the renderers like this, it's crucial to ensure that state doesn't get clobbered
-	/// or else things won't show up properly.
+	/// You'll note that in the render loop, before we render the text, we call _2D.Begin2D().  This takes  a copy of the current 
+	/// state and then overwrites that state with the 2D stuff and then we render the text.  Finally, we call _2D.End2D() and that 
+	/// restores the previous state (the states are stored in a stack in a LIFO order) so the 3D renderer doesn't get all messed up.
+	/// When mixing the renderers like this, it's crucial to ensure that state doesn't get clobbered or else things won't show up 
+	/// properly.
 	/// 
 	/// This example is considered advanced, and a firm understanding of a graphics API like Direct 3D 11 is recommended.
 	/// It's also very "low level", in that there's not a whole lot that's done for you by the API.  It's a very manual process to 
@@ -275,7 +274,7 @@ namespace GorgonLibrary.Graphics.Example
 			// Note that we're rendering here but not flipping the buffer (the 'false' parameter).  This just delays the page
 			// flipping until later.  Technically, we don't need to do this here because it's the last thing we're doing, but
 			// if we had more rendering to do after, we'd have to flip manually.
-			_2D.Render(false);
+			_2D.Flush();
 
 			// Restore the 3D scene state.
 			_2D.End2D(_3DState);

@@ -1049,7 +1049,7 @@ namespace GorgonLibrary.Renderers
 		/// Function to draw the object.
 		/// </summary>
 		/// <remarks>Please note that this doesn't draw the object to the target right away, but queues it up to be
-		/// drawn when <see cref="M:GorgonLibrary.Renderers.Gorgon2D.Render">Render</see> is called.
+		/// drawn when <see cref="GorgonLibrary.Renderers.Gorgon2D.Render">Render</see> is called.
 		/// </remarks>
 		public void Draw()
 		{
@@ -1092,58 +1092,66 @@ namespace GorgonLibrary.Renderers
 
 			if (_shadowEnabled)
 			{
+			    // ReSharper disable once ForCanBeConvertedToForeach
 				for (int i = 0; i < _text.Length; i++)
 				{
 					char c = _text[i];
 
-					if ((c != '\n') && (c != '\t') && (c != ' '))
-					{
-						GorgonGlyph glyph = null;
+				    if ((c == '\n')
+				        || (c == '\t')
+				        || (c == ' ')
+                        || (c == '\r'))
+				    {
+				        continue;
+				    }
 
-						if (!_font.Glyphs.Contains(c))
-							c = _font.Settings.DefaultCharacter;
+				    if (!_font.Glyphs.Contains(c))
+				        c = _font.Settings.DefaultCharacter;
 
-						glyph = _font.Glyphs[c];
+				    GorgonGlyph glyph = _font.Glyphs[c];
 
-						// Change to the current texture.
-						if (Gorgon2D.PixelShader.Resources[0] != GorgonTexture.ToShaderView(glyph.Texture))
-						{
-							Gorgon2D.Flush();
-							Gorgon2D.PixelShader.Resources[0] = glyph.Texture;
-						}
+				    // Change to the current texture.
+				    if (Gorgon2D.PixelShader.Resources[0] != GorgonTexture.ToShaderView(glyph.Texture))
+				    {
+				        Gorgon2D.Flush();
+				        Gorgon2D.PixelShader.Resources[0] = glyph.Texture;
+				    }
 
-						// Add shadowed characters.
-						Gorgon2D.AddVertices(_vertices, 0, 6, vertexIndex, 4);
-						vertexIndex += 8;
-					}
+				    // Add shadowed characters.
+				    Gorgon2D.AddVertices(_vertices, 0, 6, vertexIndex, 4);
+				    vertexIndex += 8;
 				}
 
 				vertexIndex = 4;
 			}
 
+		    // ReSharper disable once ForCanBeConvertedToForeach
 			for (int i = 0; i < _text.Length; i++)
 			{
 				char c = _text[i];
 
-				if ((c != '\n') && (c != '\t') && (c != ' ') && (c != '\r'))
-				{
-					GorgonGlyph glyph = null;
+			    if ((c == '\n')
+			        || (c == '\t')
+			        || (c == ' ')
+			        || (c == '\r'))
+			    {
+			        continue;
+			    }
 
-					if (!_font.Glyphs.Contains(c))
-						c = _font.Settings.DefaultCharacter;
+			    if (!_font.Glyphs.Contains(c))
+			        c = _font.Settings.DefaultCharacter;
 
-					glyph = _font.Glyphs[c];
+			    GorgonGlyph glyph = _font.Glyphs[c];
 
-					// Change to the current texture.
-                    if (Gorgon2D.PixelShader.Resources[0] != GorgonTexture.ToShaderView(glyph.Texture))
-					{
-						Gorgon2D.Flush();
-						Gorgon2D.PixelShader.Resources[0] = glyph.Texture;
-					}
+			    // Change to the current texture.
+			    if (Gorgon2D.PixelShader.Resources[0] != GorgonTexture.ToShaderView(glyph.Texture))
+			    {
+			        Gorgon2D.Flush();
+			        Gorgon2D.PixelShader.Resources[0] = glyph.Texture;
+			    }
 
-					Gorgon2D.AddVertices(_vertices, 0, 6, vertexIndex, 4);
-					vertexIndex += _shadowEnabled ? 8 : 4;
-				}
+			    Gorgon2D.AddVertices(_vertices, 0, 6, vertexIndex, 4);
+			    vertexIndex += _shadowEnabled ? 8 : 4;
 			}
 
 			if (ClipToRectangle)

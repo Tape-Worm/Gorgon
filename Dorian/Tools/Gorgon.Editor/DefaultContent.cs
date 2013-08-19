@@ -164,11 +164,11 @@ namespace GorgonLibrary.Editor
 		/// </summary>
 		public override void Activate()
 		{
-			if (_2D != null)
+/*			if (_2D != null)
 			{
 				_2D.End2D();
 				_2D.Begin2D();
-			}
+			}*/
 		}
 
 		/// <summary>

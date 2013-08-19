@@ -601,7 +601,13 @@ namespace GorgonLibrary.Renderers
 		/// </summary>
 		private void SetDefaultStates()
 		{
-			// Record the initial state before set up.
+            // Add shader includes if they're gone.
+            if (!Graphics.Shaders.IncludeFiles.Contains("Gorgon2DShaders"))
+            {
+                Graphics.Shaders.IncludeFiles.Add("Gorgon2DShaders", Encoding.UTF8.GetString(Resources.BasicSprite));
+            }
+            
+            // Record the initial state before set up.
 			if (_initialState == null)
 			{
 				_initialState = new Gorgon2DStateRecall(this);
@@ -620,12 +626,6 @@ namespace GorgonLibrary.Renderers
 
 			IsMultisamplingEnabled = Graphics.Rasterizer.States.IsMultisamplingEnabled;
 
-			// Add shader includes if they're gone.
-			if (!Graphics.Shaders.IncludeFiles.Contains("Gorgon2DShaders"))
-			{
-				Graphics.Shaders.IncludeFiles.Add("Gorgon2DShaders", Encoding.UTF8.GetString(Resources.BasicSprite));
-			}
-
 			if (PixelShader != null)
 			{
 				GorgonTextureSamplerStates sampler = GorgonTextureSamplerStates.LinearFilter;
@@ -638,13 +638,16 @@ namespace GorgonLibrary.Renderers
 			Graphics.Output.BlendingState.States = GorgonBlendStates.DefaultStates;
 			Graphics.Output.DepthStencilState.States = GorgonDepthStencilStates.NoDepthStencil;
 			Graphics.Output.DepthStencilState.DepthStencilReference = 0;
+            Graphics.Output.SetRenderTarget(_defaultTarget.Target, _defaultTarget.DepthStencil);
 
-			UpdateTarget(ref _defaultTarget);
+		    _currentTarget = _defaultTarget;
+
+			UpdateTarget(ref _currentTarget);
 
 			// Get the current state.
 			DefaultState = new Gorgon2DStateRecall(this);
 
-			// By default, turn on multi sampling over a count of 2.
+			// By default, turn on multi sampling over a count of 1.
 			if (Target.Resource.ResourceType != ResourceType.Texture2D)
 			{
 				return;
@@ -653,7 +656,7 @@ namespace GorgonLibrary.Renderers
 			var target2D = (GorgonRenderTarget2D)Target.Resource;
 
 			if ((!IsMultisamplingEnabled)
-			    && (target2D.Settings.Multisampling.Count > 1)
+			    && ((target2D.Settings.Multisampling.Count > 1) || (target2D.Settings.Multisampling.Quality > 0))
 			    && ((Graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM4_1)
 			        || (Graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM5)))
 			{
@@ -675,7 +678,58 @@ namespace GorgonLibrary.Renderers
 			_cacheWritten = 0;
 		}
 
-		/// <summary>
+        /// <summary>
+        /// Function to render the scene and draw the Gorgon logo at the bottom-right of the screen.
+        /// </summary>
+        private void RenderWithLogo()
+        {
+            ICamera camera = _camera;
+            GorgonViewport? previousViewport = _viewPort;
+            Rectangle? previousClip = _clip;
+
+            // Reset any view/projection/clip/viewport.
+            // This will force a flush of the pipeline before drawing the logo.
+            // If none of these values have changed, the the flush will be 
+            // peformed when we draw the logo (due to a texture switch).
+            if (_camera != null)
+            {
+                Camera = null;
+            }
+
+            if (_viewPort != null)
+            {
+                Viewport = null;
+            }
+
+            if (_clip != null)
+            {
+                ClipRegion = null;
+            }
+
+            _logoSprite.Position = new Vector2(_currentTarget.Width, _currentTarget.Height);
+            _logoSprite.Draw();
+
+            // This flush will force the logo to appear.
+            Flush();
+
+            // Restore the active camera, viewport and clipping region.
+            if (camera != null)
+            {
+                Camera = camera;
+            }
+
+            if (previousViewport != null)
+            {
+                Viewport = previousViewport;
+            }
+
+            if (previousClip != null)
+            {
+                ClipRegion = previousClip;
+            }
+        }
+
+        /// <summary>
 		/// Function to initialize the 2D renderer.
 		/// </summary>
 		internal void Initialize()
@@ -823,99 +877,6 @@ namespace GorgonLibrary.Renderers
 		}
 
 		/// <summary>
-		/// Function to flush the rendering cache by rendering any outstanding objects.
-		/// </summary>
-		/// <remarks>This method is provided as a means to force the renderer to flush its cache in specific circumstances.  Calling this method manually 
-		/// is not recommended and may cause severe performance issues.</remarks>
-		public void Flush()
-		{
-			ICamera currentCamera = (_camera ?? _defaultCamera);
-			BufferLockFlags flags = BufferLockFlags.Discard | BufferLockFlags.Write;
-			GorgonVertexBufferBinding vbBinding = Graphics.Input.VertexBuffers[0];
-
-			if (_cacheWritten == 0)
-			{
-				return;
-			}
-
-			if (currentCamera.NeedsUpdate)
-			{
-				currentCamera.Update();
-			}
-
-			if (_cacheStart > 0)
-			{
-				flags = BufferLockFlags.NoOverwrite | BufferLockFlags.Write;
-			}
-
-			// If we're using the cache, then populate the default vertex buffer.
-			if (_useCache)
-			{
-				// Ensure that we have a vertex buffer bound.
-				if ((vbBinding.VertexBuffer == null) || (vbBinding.Stride == 0))
-				{
-					vbBinding = DefaultVertexBufferBinding;
-					Graphics.Input.VertexBuffers[0] = vbBinding;
-				}
-
-#if DEBUG
-				if (Graphics.Shaders.PixelShader.Current == null)
-				{
-					throw new NullReferenceException(string.Format(Resources.GOR2D_SHADER_NOT_BOUND, ShaderType.Pixel));
-				}
-
-				if (Graphics.Shaders.VertexShader.Current == null)
-				{
-					throw new NullReferenceException(string.Format(Resources.GOR2D_SHADER_NOT_BOUND, ShaderType.Vertex));
-				}
-
-				if ((Graphics.Input.VertexBuffers[0].Stride == 0) || (Graphics.Input.VertexBuffers[0].VertexBuffer == null))
-				{
-					throw new NullReferenceException(string.Format(Resources.GOR2D_VERTEX_BUFFER_NOT_BOUND));
-				}
-#endif
-
-				// Update buffers depending on type.
-				switch (vbBinding.VertexBuffer.Settings.Usage)
-				{
-					case BufferUsage.Dynamic:
-						using (GorgonDataStream stream = vbBinding.VertexBuffer.Lock(flags))
-						{
-							stream.Position = _cacheStart * Gorgon2DVertex.SizeInBytes;
-							stream.WriteRange(_vertexCache, _cacheStart, _cacheWritten);
-							vbBinding.VertexBuffer.Unlock();
-						}
-						break;
-					case BufferUsage.Default:
-						using (var stream = new GorgonDataStream(_vertexCache, _cacheStart, _cacheWritten))
-						{
-							vbBinding.VertexBuffer.Update(stream, _cacheStart * Gorgon2DVertex.SizeInBytes, (int)stream.Length);
-						}
-						break;
-				}
-			}
-
-			switch (Graphics.Input.PrimitiveType)
-			{
-				case PrimitiveType.PointList:
-				case PrimitiveType.LineList:
-					Graphics.Output.Draw(_cacheStart, _cacheWritten);
-					break;
-				case PrimitiveType.TriangleList:
-					if (Graphics.Input.IndexBuffer == null)
-						Graphics.Output.Draw(_cacheStart, _cacheWritten);
-					else
-						Graphics.Output.DrawIndexed(_renderIndexStart, _baseVertex, _renderIndexCount);
-					break;
-			}
-
-			_cacheStart = _cacheEnd;
-			_cacheWritten = 0;
-			_renderIndexStart += _renderIndexCount;
-			_renderIndexCount = 0;
-		}
-		
-		/// <summary>
         /// Function to prepare the renderer for 2D rendering.
         /// </summary>
         /// <returns>A state recall object that is used to recall the previous state before this method was called.</returns>
@@ -944,12 +905,15 @@ namespace GorgonLibrary.Renderers
 
             if (state == null)
             {
-	            if (_initialState != null)
-	            {
-		            _initialState.Restore(false);
-	            }
+                if (_initialState == null)
+                {
+                    return;
+                }
 
-	            return;
+                _initialState.Restore(false);
+                _initialState = null;
+
+                return;
             }
 
 			// Reset the cache before updating the states.
@@ -1048,131 +1012,132 @@ namespace GorgonLibrary.Renderers
 			return new GorgonOrthoCamera(this, name, viewDimensions, maxDepth);
 		}
 
-		/// <summary>
-		/// Function to draw the Gorgon logo at the bottom-right of the screen.
-		/// </summary>
-		private void DrawLogo()
-		{
-			_logoSprite.Position = new Vector2(_currentTarget.Width, _currentTarget.Height);
-			_logoSprite.Draw();
-		}
+        /// <summary>
+        /// Function to flush the rendering cache by rendering any outstanding objects.
+        /// </summary>
+        /// <remarks>
+        /// This will flush the rendering cache and persist any graphics data onto the currently active render target.  This method is useful when there is a need to render data but not display it.
+        /// <para>Care should be taken when calling this method, as calling it too often in a loop may cause performance issues.  Also note that this method is called internally when there are 
+        /// significant state changes and/or when the <see cref="Render"/> method is invoked.</para>
+        /// </remarks>
+        public void Flush()
+        {
+            ICamera currentCamera = (_camera ?? _defaultCamera);
+            BufferLockFlags flags = BufferLockFlags.Discard | BufferLockFlags.Write;
+            GorgonVertexBufferBinding vbBinding = Graphics.Input.VertexBuffers[0];
 
-		/// <summary>
+            if (_cacheWritten == 0)
+            {
+                return;
+            }
+
+            if (currentCamera.NeedsUpdate)
+            {
+                currentCamera.Update();
+            }
+
+            if (_cacheStart > 0)
+            {
+                flags = BufferLockFlags.NoOverwrite | BufferLockFlags.Write;
+            }
+
+            // If we're using the cache, then populate the default vertex buffer.
+            if (_useCache)
+            {
+                // Ensure that we have a vertex buffer bound.
+                if ((vbBinding.VertexBuffer == null) || (vbBinding.Stride == 0))
+                {
+                    vbBinding = DefaultVertexBufferBinding;
+                    Graphics.Input.VertexBuffers[0] = vbBinding;
+                }
+
+#if DEBUG
+                if (Graphics.Shaders.PixelShader.Current == null)
+                {
+                    throw new NullReferenceException(string.Format(Resources.GOR2D_SHADER_NOT_BOUND, ShaderType.Pixel));
+                }
+
+                if (Graphics.Shaders.VertexShader.Current == null)
+                {
+                    throw new NullReferenceException(string.Format(Resources.GOR2D_SHADER_NOT_BOUND, ShaderType.Vertex));
+                }
+
+                if ((Graphics.Input.VertexBuffers[0].Stride == 0) || (Graphics.Input.VertexBuffers[0].VertexBuffer == null))
+                {
+                    throw new NullReferenceException(string.Format(Resources.GOR2D_VERTEX_BUFFER_NOT_BOUND));
+                }
+#endif
+
+                // Update buffers depending on type.
+                switch (vbBinding.VertexBuffer.Settings.Usage)
+                {
+                    case BufferUsage.Dynamic:
+                        using (GorgonDataStream stream = vbBinding.VertexBuffer.Lock(flags))
+                        {
+                            stream.Position = _cacheStart * Gorgon2DVertex.SizeInBytes;
+                            stream.WriteRange(_vertexCache, _cacheStart, _cacheWritten);
+                            vbBinding.VertexBuffer.Unlock();
+                        }
+                        break;
+                    case BufferUsage.Default:
+                        using (var stream = new GorgonDataStream(_vertexCache, _cacheStart, _cacheWritten))
+                        {
+                            vbBinding.VertexBuffer.Update(stream, _cacheStart * Gorgon2DVertex.SizeInBytes, (int)stream.Length);
+                        }
+                        break;
+                }
+            }
+
+            switch (Graphics.Input.PrimitiveType)
+            {
+                case PrimitiveType.PointList:
+                case PrimitiveType.LineList:
+                    Graphics.Output.Draw(_cacheStart, _cacheWritten);
+                    break;
+                case PrimitiveType.TriangleList:
+                    if (Graphics.Input.IndexBuffer == null)
+                        Graphics.Output.Draw(_cacheStart, _cacheWritten);
+                    else
+                        Graphics.Output.DrawIndexed(_renderIndexStart, _baseVertex, _renderIndexCount);
+                    break;
+            }
+
+            _cacheStart = _cacheEnd;
+            _cacheWritten = 0;
+            _renderIndexStart += _renderIndexCount;
+            _renderIndexCount = 0;
+        }
+
+        /// <summary>
 		/// Function to force the renderer to render its data to the current render target.
 		/// </summary>
-		/// <param name="flip">TRUE to flip the back buffer to the front buffer of the render target.</param>
-		/// <param name="interval">Presentation interval.</param>
-		/// <remarks>Call this method to draw the renderable objects to the target.  If this method is not called, then nothing will appear on screen.
-		/// <para>Gorgon uses a cache of vertex data to queue up what needs to be drawn in order to maintain performance.  However, if this queue gets 
-		/// full or the state (i.e. Texture, Blending mode, etc...) changes then this method is called implicitly.</para>
+		/// <param name="interval">[Optional] The presentation interval used synchronize with the vertical blank of the monitor.</param>
+		/// <remarks>Call this method to draw the renderable objects to the target and perform a flip to display the objects (if the current target is a swap chain).  
+		/// If this method is not called, then nothing will appear on screen.
 		/// <para>In previous versions of Gorgon, this was automatic (on the primary screen) because the graphics library had control over the main loop.  
-		/// Since it does not any more, the user is now responsible for calling this method.</para>
-		/// <para>The <paramref name="interval"/> parameter is the number of vertical retraces to wait.  If the <paramref name="flip"/> parameter is FALSE, then the interval parameter has no effect.</para>
+		/// Since it does not any more, the user is now responsible for calling this method at the end of a frame.</para>
+		/// <para>The <paramref name="interval"/> parameter is the number of vertical retraces to wait.  If this value is set to 0, then the frame is immediately displayed.  This value 
+		/// is only applicable if the current render target is a swap chain.
+		/// </para>
 		/// </remarks>
-		public void Render(bool flip, int interval)
+		public void Render(int interval = 0)
 		{
-			ICamera camera = _camera;
-			GorgonViewport? previousViewport = _viewPort;
-			Rectangle? previousClip = _clip;
-
 			// Only draw the logo when we're flipping, and we're on the default target and the default target is a swap chain.
-			if ((flip) && (IsLogoVisible) && (_currentTarget.SwapChain != null) && (_currentTarget.Target == _defaultTarget.Target))
-			{
-				// Reset any view/projection/clip/viewport.
-				if (_camera != null)
-				{
-					Camera = null;
-				}
+            if ((IsLogoVisible)
+                && (_currentTarget.SwapChain != null)
+                && (_currentTarget.Target == _defaultTarget.Target))
+            {
+                RenderWithLogo();
+            }
+            else
+            {
+                Flush();
+            }
 
-				if (_viewPort != null)
-				{
-					Viewport = null;
-				}
-
-				if (_clip != null)
-				{
-					ClipRegion = null;
-				}
-
-				DrawLogo();
-			}
-
-			Flush();
-
-			if (!flip)
-			{
-				return;
-			}
-
-			if ((_currentTarget.SwapChain != null) && (!Graphics.IsDeferred))
+            if ((_currentTarget.SwapChain != null) && (!Graphics.IsDeferred))
 			{
 				_currentTarget.SwapChain.Flip(interval);
 			}
-
-			if (!IsLogoVisible)
-			{
-				return;
-			}
-
-			if (camera != null)
-			{
-				Camera = camera;
-			}
-
-			if (previousViewport != null)
-			{
-				Viewport = previousViewport;
-			}
-
-			if (previousClip != null)
-			{
-				ClipRegion = previousClip;
-			}
-		}
-
-		/// <summary>
-		/// Function to force the renderer to render its data to the current render target.
-		/// </summary>
-		/// <param name="flip">TRUE to flip the back buffer to the front buffer of the render target.</param>
-		/// <remarks>Call this method to draw the renderable objects to the target.  If this method is not called, then nothing will appear on screen.
-		/// <para>Gorgon uses a cache of vertex data to queue up what needs to be drawn in order to maintain performance.  However, if this queue gets 
-		/// full or the state (i.e. Texture, Blending mode, etc...) changes then this method is called implicitly.</para>
-		/// <para>In previous versions of Gorgon, this was automatic (on the primary screen) since the graphics library had control over the main loop.  Since it does not any more, the 
-		/// user is now responsible for calling this method.</para>
-		/// </remarks>
-		public void Render(bool flip)
-		{
-			Render(flip, 0);
-		}
-
-		/// <summary>
-		/// Function to force the renderer to render its data to the current render target.
-		/// </summary>
-		/// <param name="interval">Presentation interval.</param>
-		/// <remarks>Call this method to draw the renderable objects to the target.  If this method is not called, then nothing will appear on screen.
-		/// <para>Gorgon uses a cache of vertex data to queue up what needs to be drawn in order to maintain performance.  However, if this queue gets 
-		/// full or the state (i.e. Texture, Blending mode, etc...) changes then this method is called implicitly.</para>
-		/// <para>In previous versions of Gorgon, this was automatic (on the primary screen) since the graphics library had control over the main loop.  Since it does not any more, the 
-		/// user is now responsible for calling this method.</para>
-		/// <para>The <paramref name="interval"/> parameter is the number of vertical retraces to wait.</para>
-		/// </remarks>
-		public void Render(int interval)
-		{
-			Render(true, interval);
-		}
-
-		/// <summary>
-		/// Function to force the renderer to render its data to the current render target.
-		/// </summary>
-		/// <remarks>Call this method to draw the renderable objects to the target.  If this method is not called, then nothing will appear on screen.
-		/// <para>Gorgon uses a cache of vertex data to queue up what needs to be drawn in order to maintain performance.  However, if this queue gets 
-		/// full or the state (i.e. Texture, Blending mode, etc...) changes then this method is called implicitly.</para>
-		/// <para>In previous versions of Gorgon, this was automatic (on the primary screen) since the graphics library had control over the main loop.  Since it does not any more, the 
-		/// user is now responsible for calling this method.</para>
-		/// </remarks>
-		public void Render()
-		{
-			Render(true, 0);
 		}
 		#endregion
 
@@ -1229,19 +1194,22 @@ namespace GorgonLibrary.Renderers
 
 			if (disposing)
 			{
-				if (_initialState != null)
-				{
-					_initialState.Restore(true);
-					_initialState = null;
-				}
+                // Dump any pending rendering.
+                ClearCache();
 
-				if (Effects != null)
-				{
-					Effects.FreeShaders();
-					Effects = null;
-				}
+                if (_initialState != null)
+                {
+                    _initialState.Restore(true);
+                    _initialState = null;
+                }
 
-				TrackedObjects.ReleaseAll();
+                TrackedObjects.ReleaseAll();
+
+                if (Effects != null)
+                {
+                    Effects.FreeShaders();
+                    Effects = null;
+                }
 
 				if (_currentTarget.SwapChain != null)
 				{
@@ -1257,6 +1225,7 @@ namespace GorgonLibrary.Renderers
 				{
 					VertexShader.CleanUp();
 				}
+
 				if (PixelShader != null)
 				{
 					PixelShader.CleanUp();
