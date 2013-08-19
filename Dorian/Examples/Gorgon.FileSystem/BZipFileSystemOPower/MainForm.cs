@@ -78,8 +78,8 @@ namespace GorgonLibrary.Examples
         /// <returns>TRUE to continue processing, FALSE to stop.</returns>
         private bool Idle()
         {
-            int width = _2D.Target.Settings.Width;
-            int height = _2D.Target.Settings.Height;
+            int width = ClientSize.Width;
+			int height = ClientSize.Height;
 
             _2D.Clear(Color.FromArgb(250, 245, 220));
 
@@ -237,7 +237,7 @@ namespace GorgonLibrary.Examples
             _sprites[2] = _2D.Renderables.FromMemory<GorgonSprite>("Mother2c", _fileSystem.ReadFile("/Sprites/Mother2c.gorSprite"));
 
             // Get poetry.            
-            _textPosition = new Vector2(0, _2D.Target.Settings.Height + _textFont.LineHeight);
+            _textPosition = new Vector2(0, ClientSize.Height + _textFont.LineHeight);
             _poetry = _2D.Renderables.CreateText("Poetry", _textFont, Encoding.UTF8.GetString(_fileSystem.ReadFile("/SomeText.txt")), Color.Black);
             _poetry.Position = _textPosition;
 

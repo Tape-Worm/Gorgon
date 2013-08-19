@@ -510,6 +510,32 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
+		/// Function to release any resource views after a resource has been altered.
+		/// </summary>
+		protected void ReleaseResourceViews()
+		{
+			if (_viewCache == null)
+			{
+				return;
+			}
+
+			_viewCache.ReleaseResources();
+		}
+
+		/// <summary>
+		/// Function to reinitialize any resource views after a resource has been altered.
+		/// </summary>
+		protected void InitializeResourceViews()
+		{
+			if (_viewCache == null)
+			{
+				return;
+			}
+
+			_viewCache.InitializeResources();
+		}
+
+		/// <summary>
 		/// Function to copy this texture into a new staging texture.
 		/// </summary>
 		/// <returns>The new staging texture.</returns>

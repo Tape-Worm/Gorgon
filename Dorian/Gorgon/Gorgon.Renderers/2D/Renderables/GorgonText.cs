@@ -85,7 +85,7 @@ namespace GorgonLibrary.Renderers
 		{
 			get
 			{
-				return _textRect == null ? (RectangleF)Gorgon2D.Target.Viewport : _textRect.Value;
+				return _textRect == null ? (RectangleF)Gorgon2D.DefaultViewport : _textRect.Value;
 			}
 		}
 
@@ -1065,11 +1065,11 @@ namespace GorgonLibrary.Renderers
 			if ((ClipToRectangle) && (((lastClip == null) && (_textRect != null)) || ((lastClip != null) && (lastClip.Value != ClipRegion))))
 				Gorgon2D.ClipRegion = clipRegion;
 
-			states = Gorgon2D.StateManager.CheckState(this);
+			states = Gorgon2D.DefaultState.Compare(this);
 			if (states != StateChange.None)
 			{
 				Gorgon2D.RenderObjects();
-				Gorgon2D.StateManager.ApplyState(this, states);
+				Gorgon2D.DefaultState.UpdateState(this, states);
 			}
 
 			if (_needsVertexUpdate)

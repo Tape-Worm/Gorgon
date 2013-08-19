@@ -120,6 +120,7 @@ namespace GorgonLibrary.Graphics.Example
 	static class Program
 	{
 		#region Variables.
+		private static Gorgon2DStateRecall _3DState;				// State for 3D scene.
 		private static formMain _mainForm;						    // Main application form.
 		private static GorgonSwapChain _swap;					    // Our primary swap chain.
 		private static GorgonVertexShader _vertexShader;			// Our primary vertex shader.
@@ -254,7 +255,10 @@ namespace GorgonLibrary.Graphics.Example
 
 			// Draw our text.
 			// Use this to show how incredibly slow and terrible my 3D code is.
-			_2D.Begin2D();
+			
+			// Tell the 2D renderer to remember the current state of the 3D scene.
+			_3DState = _2D.Begin2D();
+
 			_2D.Drawing.FilledRectangle(new RectangleF(0, 0, _mainForm.ClientSize.Width - 1.0f, 38.0f), Color.FromArgb(128, 0, 0, 0));
 			_2D.Drawing.DrawRectangle(new RectangleF(0, 0, _mainForm.ClientSize.Width, 38.0f), Color.White);
 			_2D.Drawing.DrawString(Graphics.Fonts.DefaultFont, 
@@ -272,7 +276,9 @@ namespace GorgonLibrary.Graphics.Example
 			// flipping until later.  Technically, we don't need to do this here because it's the last thing we're doing, but
 			// if we had more rendering to do after, we'd have to flip manually.
 			_2D.Render(false);
-			_2D.End2D();
+
+			// Restore the 3D scene state.
+			_2D.End2D(_3DState);
 
 			// Now we flip our buffers.
 			// We need to this or we won't see anything.
@@ -361,14 +367,6 @@ namespace GorgonLibrary.Graphics.Example
 
 			// Create the 2D interface for our text.
 			_2D = Graphics.Output.Create2DRenderer(_swap);									
-
-			// Turn off the 2D stuff for now.
-			// We do this so we can have a clean slate for our state.
-			// The 2D renderer initially sets up a bunch of state values for us and
-			// these may interfere with our 3D display, so we'll just restore the
-			// defaults (i.e. the previous states before the renderer was created)
-			// by calling End2D.
-			_2D.End2D();
 
 			// Create our shaders.
 			// Our vertex shader.  This is a simple shader, it just processes a vertex by multiplying it against
@@ -471,22 +469,7 @@ namespace GorgonLibrary.Graphics.Example
 			Graphics.Shaders.PixelShader.TextureSamplers[0] = GorgonTextureSamplerStates.LinearFilter;
 
 			// Turn on alpha blending.
-			// Pretty much what this is.  Turning on alpha blending (for our shadow).
-			Graphics.Output.BlendingState.States = new GorgonBlendStates
-			    {
-				RenderTarget0 = new GorgonRenderTargetBlendState
-				    {
-					    AlphaOperation = BlendOperation.Add,
-					    DestinationAlphaBlend = BlendType.Zero,
-					    BlendingOperation = BlendOperation.Add,
-					    DestinationBlend = BlendType.InverseSourceAlpha,
-					    IsBlendingEnabled = true,
-					    SourceAlphaBlend = BlendType.One,
-					    SourceBlend = BlendType.SourceAlpha,
-					    WriteMask = ColorWriteMaskFlags.All
-				    }
-    			};
-
+			Graphics.Output.BlendingState.States = GorgonBlendStates.ModulatedBlending;
 
 			// Turn on depth writing.
 			// This is our depth writing state.  When this is on, all polygon data sent to the card
@@ -507,14 +490,13 @@ namespace GorgonLibrary.Graphics.Example
 			_noDepth.IsDepthWriteEnabled = false;
 			Graphics.Output.DepthStencilState.States = _depth;
 
-			// Finally bind our swap chain and set up the default
-			// rasterizer states.
+			// Bind our swap chain and set up the default rasterizer states.
 			Graphics.Output.SetRenderTarget(_swap, _swap.DepthStencilBuffer);
 			Graphics.Rasterizer.States = GorgonRasterizerStates.CullBackFace;
 			Graphics.Rasterizer.SetViewport(view);
 
-		    // I know, there's a lot in here.  Thing is, if this were Direct 3D 11 code, it'd probably MUCH 
-		    // more code and that's even before creating our planes and sphere.
+			// I know, there's a lot in here.  Thing is, if this were Direct 3D 11 code, it'd probably MUCH 
+			// more code and that's even before creating our planes and sphere.
 		}
 
 		/// <summary>

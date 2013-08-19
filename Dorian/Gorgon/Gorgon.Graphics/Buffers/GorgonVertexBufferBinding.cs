@@ -34,7 +34,7 @@ namespace GorgonLibrary.Graphics
 	/// A vertex buffer binding.
 	/// </summary>
 	public struct GorgonVertexBufferBinding
-		: IEquatable<GorgonVertexBufferBinding>
+		: IEquatableByRef<GorgonVertexBufferBinding>
 	{
 		#region Variables.
 		/// <summary>
@@ -172,6 +172,18 @@ namespace GorgonLibrary.Graphics
 		public bool Equals(GorgonVertexBufferBinding other)
 		{
 		    return Equals(ref this, ref other);
+		}
+		#endregion
+
+		#region IEquatableByRef<GorgonVertexBufferBinding> Members
+		/// <summary>
+		/// Function to determine if two instances are equal.
+		/// </summary>
+		/// <param name="other">The other instance.</param>
+		/// <returns>TRUE if equal, FALSE if not.</returns>
+		public bool Equals(ref GorgonVertexBufferBinding other)
+		{
+			return Equals(ref this, ref other);
 		}
 		#endregion
 	}

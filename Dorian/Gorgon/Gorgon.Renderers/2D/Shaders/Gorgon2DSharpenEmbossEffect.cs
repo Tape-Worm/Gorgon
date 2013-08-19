@@ -145,8 +145,8 @@ namespace GorgonLibrary.Renderers
 			if (_isUpdated)
 				SetValues();
 
-			if (Gorgon2D.PixelShader.ConstantBuffers[2] != _sharpenEmbossBuffer)
-				Gorgon2D.PixelShader.ConstantBuffers[2] = _sharpenEmbossBuffer;
+			if (Gorgon2D.PixelShader.ConstantBuffers[1] != _sharpenEmbossBuffer)
+				Gorgon2D.PixelShader.ConstantBuffers[1] = _sharpenEmbossBuffer;
 
 		}
 

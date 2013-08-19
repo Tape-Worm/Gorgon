@@ -139,10 +139,10 @@ namespace GorgonLibrary.Graphics
 
         #region Methods.
 		/// <summary>
-		/// Function to clear the cache.
+		/// Function to release the Direct3D resources for the views in the cache.
 		/// </summary>
-		public void Clear()
-		{
+	    public void ReleaseResources()
+	    {
 			foreach (var item in _textureViews)
 			{
 				item.Value.CleanUp();
@@ -153,20 +153,59 @@ namespace GorgonLibrary.Graphics
 				item.Value.CleanUp();
 			}
 
-            foreach (var item in _unorderedViews)
-            {
-                item.Value.CleanUp();
-            }
+			foreach (var item in _unorderedViews)
+			{
+				item.Value.CleanUp();
+			}
 
 			foreach (var item in _targetViews)
 			{
 				item.Value.CleanUp();
 			}
 
-            foreach (var item in _depthViews)
-            {
-                item.Value.CleanUp();
-            }
+			foreach (var item in _depthViews)
+			{
+				item.Value.CleanUp();
+			}
+		}
+
+		/// <summary>
+		/// Function to initialize Direct3D resources for the views in the cache.
+		/// </summary>
+	    public void InitializeResources()
+	    {
+			foreach (var item in _textureViews)
+			{
+				item.Value.Initialize();
+			}
+
+			foreach (var item in _bufferViews)
+			{
+				item.Value.Initialize();
+			}
+
+			foreach (var item in _unorderedViews)
+			{
+				item.Value.Initialize();
+			}
+
+			foreach (var item in _targetViews)
+			{
+				item.Value.Initialize();
+			}
+
+			foreach (var item in _depthViews)
+			{
+				item.Value.Initialize();
+			}
+		}
+
+		/// <summary>
+		/// Function to clear the cache.
+		/// </summary>
+		public void Clear()
+		{
+			ReleaseResources();
 
 			_bufferViews.Clear();
 			_textureViews.Clear();

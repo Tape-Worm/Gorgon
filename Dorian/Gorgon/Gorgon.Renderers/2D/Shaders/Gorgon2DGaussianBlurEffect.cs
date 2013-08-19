@@ -30,6 +30,7 @@ using System.Drawing;
 using GorgonLibrary.Graphics;
 using GorgonLibrary.IO;
 using GorgonLibrary.Math;
+using GorgonLibrary.Native;
 using SlimMath;
 
 namespace GorgonLibrary.Renderers
@@ -44,18 +45,18 @@ namespace GorgonLibrary.Renderers
 		private bool _disposed ;													// Flag to indicate that the object was disposed.
 		private readonly Vector4[] _xOffsets;										// Calculated offsets.
 		private readonly Vector4[] _yOffsets;										// Calculated offsets.
-		private readonly Vector4[] _kernel;											// Blur kernel.
+		private readonly float[] _kernel;											// Blur kernel.
 		private int _blurRadius = 6;												// Radius for the blur.
 		private float _blurAmount = 3.0f;											// Amount to blur.
 		private readonly GorgonConstantBuffer _blurBuffer;							// Buffer for blur data.
 		private readonly GorgonConstantBuffer _blurStaticBuffer;					// Buffer for blur data that does not change very often.
-		private readonly GorgonDataStream _blurStream;								// Stream for the buffer.
+		private readonly GorgonDataStream _blurKernelStream;						// Stream for the kernel buffer.
 		private GorgonRenderTarget2D _hTarget;										// Horizontal blur render target.
 		private GorgonRenderTarget2D _vTarget;										// Vertical blur render target.
 		private BufferFormat _blurTargetFormat = BufferFormat.R8G8B8A8_UIntNormal;	// Format of the blur render targets.
 		private Size _blurTargetSize = new Size(256, 256);							// Size of the render targets used for blurring.
-		private GorgonRenderTarget2D _currentTarget;								// Current render target.
-		private SmoothingMode _lastSmoothMode = SmoothingMode.None;					// Last smoothing mode.
+		private GorgonRenderTargetView _currentTarget;								// Current render target.
+		private readonly GorgonSprite _blurSprite;									// Sprite used to blur.
 		#endregion
 
 		#region Properties.
@@ -214,6 +215,8 @@ namespace GorgonLibrary.Renderers
 
 			_hTarget = Graphics.Output.CreateRenderTarget("Effect.GaussBlur.Target_Horizontal", settings);
 			_vTarget = Graphics.Output.CreateRenderTarget("Effect.GaussBlur.Target_Vertical", settings);
+			_blurSprite.Texture = _hTarget;
+			_blurSprite.Size = BlurRenderTargetsSize;
 			UpdateOffsets();
 		}
 
@@ -223,6 +226,7 @@ namespace GorgonLibrary.Renderers
 		private void UpdateOffsets()
 		{
 			int index = 0;
+			var unitSize = new Vector2(1.0f / BlurRenderTargetsSize.Width, 1.0f / BlurRenderTargetsSize.Height);
 
 			if (_vTarget == null)
 			{
@@ -233,8 +237,8 @@ namespace GorgonLibrary.Renderers
 
 			for (int i = -_blurRadius; i <= _blurRadius; i++)
 			{
-				_xOffsets[index] = new Vector4((1.0f / _vTarget.Settings.Width) * i, 0, 0, 0);
-				_yOffsets[index] = new Vector4(0, (1.0f / _vTarget.Settings.Height) * i, 0, 0);
+				_xOffsets[index] = new Vector2(unitSize.X * i, 0);
+				_yOffsets[index] = new Vector4(0, unitSize.Y * i, 0, 0);
 				index++;
 			}
 		}
@@ -250,28 +254,25 @@ namespace GorgonLibrary.Renderers
 			float sigmaRoot = (sqSigmaDouble * (float)System.Math.PI).Sqrt();
 			float total = 0.0f;
 			int blurKernelSize = (_blurRadius * 2) + 1;
-			int index = 0;
 
-			for (int i = -_blurRadius; i <= _blurRadius; i++)
+			for (int i = -_blurRadius, index = 0; i <= _blurRadius; ++i, ++index)
 			{
 				float distance = i * i;
-				_kernel[index] = new Vector4(0, 0, 0, (-distance / sqSigmaDouble).Exp() / sigmaRoot);
-				total += _kernel[index].W;
-				index++;
+				_kernel[index] = (-distance / sqSigmaDouble).Exp() / sigmaRoot;
+				total += _kernel[index];
 			}
+
+			_blurKernelStream.Position = 0;
+			_blurKernelStream.Write(_blurRadius);
 
 			for (int i = 0; i < blurKernelSize; i++)
 			{
-				_kernel[i].X /= total;
+				_blurKernelStream.Write(new Vector4(0, 0, 0, _kernel[i] / total));
 			}
-
-
+			
 			// Send to constant buffer.
-			_blurStream.Position = 0;
-			_blurStream.Write(_blurRadius);
-			_blurStream.WriteRange(_kernel);
-			_blurStream.Position = 0;
-			_blurStaticBuffer.Update(_blurStream);
+			_blurKernelStream.Position = 0;
+			_blurStaticBuffer.Update(_blurKernelStream);
 		}
 
 		/// <summary>
@@ -307,26 +308,22 @@ namespace GorgonLibrary.Renderers
 				Debug.Assert(_hTarget != null, "_hTarget != null");
 			}
 			
-			_blurStream.Position = 0;
 			if (passIndex == 0)
 			{
 				// Get the current target.
 				_currentTarget = Gorgon2D.Target;
 				_hTarget.Clear(GorgonColor.Transparent);
 				Gorgon2D.Target = _hTarget;
-				_blurStream.WriteRange(_xOffsets);
+				_blurBuffer.Update(_xOffsets);
 			}
 			else
 			{
 				Gorgon2D.Target = _vTarget;
-				_blurStream.WriteRange(_yOffsets);
+				_blurBuffer.Update(_yOffsets);
 			}
 
-			_blurStream.Position = 0;
-			_blurBuffer.Update(_blurStream);
-
-			Gorgon2D.PixelShader.ConstantBuffers[2] = _blurStaticBuffer;
-			Gorgon2D.PixelShader.ConstantBuffers[3] = _blurBuffer;
+			Gorgon2D.PixelShader.ConstantBuffers[1] = _blurStaticBuffer;
+			Gorgon2D.PixelShader.ConstantBuffers[2] = _blurBuffer;
 		}
 
 		/// <summary>
@@ -348,27 +345,11 @@ namespace GorgonLibrary.Renderers
 			else
 			{
 				// Copy the horizontal pass to the vertical pass target and blur the result.
-				_lastSmoothMode = Gorgon2D.Drawing.SmoothingMode;
-				Gorgon2D.Drawing.SmoothingMode = SmoothingMode.Smooth;
-				Gorgon2D.Drawing.Blit(_hTarget, Vector2.Zero);
+				_blurSprite.Draw();
 				Gorgon2D.Target = _currentTarget;
 			}
 
 			base.RenderImpl(renderMethod, passIndex);
-		}
-
-		/// <summary>
-		/// Function called after a pass has rendered.
-		/// </summary>
-		/// <param name="passIndex">Index of the pass being rendered.</param>
-		protected override void OnAfterRenderPass(int passIndex)
-		{
-			base.OnAfterRenderPass(passIndex);
-
-			if (passIndex == 1)
-			{
-				Gorgon2D.Drawing.SmoothingMode = _lastSmoothMode;
-			}
 		}
 
 		/// <summary>
@@ -389,9 +370,9 @@ namespace GorgonLibrary.Renderers
 					{
 						_blurBuffer.Dispose();
 					}
-					if (_blurStream != null)
+					if (_blurKernelStream != null)
 					{
-						_blurStream.Dispose();
+						_blurKernelStream.Dispose();
 					}
 					if (PixelShader != null)
 					{
@@ -417,24 +398,33 @@ namespace GorgonLibrary.Renderers
 		{
 			_xOffsets = new Vector4[13];
 			_yOffsets = new Vector4[13];
-			_kernel = new Vector4[13];
+			_kernel = new float[13];
 			_blurBuffer = Graphics.Buffers.CreateConstantBuffer("Gorgon2DGaussianBlurEffect Constant Buffer",
 			                                                    new GorgonConstantBufferSettings
 				                                                    {
-					                                                    SizeInBytes = 256
+					                                                    SizeInBytes = DirectAccess.SizeOf<Vector4>() * _xOffsets.Length
 				                                                    });
 			_blurStaticBuffer = Graphics.Buffers.CreateConstantBuffer("Gorgon2DGaussianBlurEffect Static Constant Buffer",
 																new GorgonConstantBufferSettings
 																{
-																	SizeInBytes = 256
+																	SizeInBytes = DirectAccess.SizeOf<Vector4>() * (_kernel.Length + 1)
 																});
-			_blurStream = new GorgonDataStream(256);
+
+			_blurKernelStream = new GorgonDataStream(_blurStaticBuffer.SizeInBytes);
 #if DEBUG
-			PixelShader = Graphics.Shaders.CreateShader<GorgonPixelShader>("Effect.PS.GaussBlur", "GorgonPixelShaderGaussBlur", "#GorgonInclude \"Gorgon2DShaders\"", true);
+			PixelShader = Graphics.Shaders.CreateShader<GorgonPixelShader>("Effect.PS.GaussBlur", "GorgonPixelShaderGaussBlur", "#GorgonInclude \"Gorgon2DShaders\"");
 #else
-			PixelShader = Graphics.Shaders.CreateShader<GorgonPixelShader>("Effect.PS.GaussBlur", "GorgonPixelShaderGaussBlur", "#GorgonInclude \"Gorgon2DShaders\"", true);
+			PixelShader = Graphics.Shaders.CreateShader<GorgonPixelShader>("Effect.PS.GaussBlur", "GorgonPixelShaderGaussBlur", "#GorgonInclude \"Gorgon2DShaders\"");
 #endif
 			UpdateKernel();
+
+			_blurSprite = graphics.Renderables.CreateSprite("Gorgon2DGaussianBlurEffect Sprite", new GorgonSpriteSettings
+			{
+				Size = BlurRenderTargetsSize
+			});
+			_blurSprite.BlendingMode = BlendingMode.None;
+			_blurSprite.SmoothingMode = SmoothingMode.Smooth;
+			_blurSprite.TextureRegion = new RectangleF(0, 0, 1, 1);
 		}
 		#endregion
 	}

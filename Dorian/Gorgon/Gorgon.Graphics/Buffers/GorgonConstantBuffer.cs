@@ -25,6 +25,9 @@
 #endregion
 
 using System.ComponentModel;
+using GorgonLibrary.Diagnostics;
+using GorgonLibrary.Graphics.Properties;
+using GorgonLibrary.Native;
 using DX = SharpDX;
 using GorgonLibrary.IO;
 
@@ -99,7 +102,7 @@ namespace GorgonLibrary.Graphics
             // Do nothing here.  Constant buffers don't support shader resource views.
         }
 
-        /// <summary>
+		/// <summary>
         /// Function to update the buffer.
         /// </summary>
         /// <param name="stream">Stream containing the data used to update the buffer.</param>
@@ -120,6 +123,43 @@ namespace GorgonLibrary.Graphics
 					SlicePitch = 0
 				}, 
 				D3DResource);
+		}
+
+		/// <summary>
+		/// Function to write an array of value types to the buffer.
+		/// </summary>
+		/// <typeparam name="T">Type of value type.</typeparam>
+		/// <param name="data">Value type data to write into the buffer.</param>
+		/// <param name="deferred">[Optional] A deferred context to use when updating the buffer.</param>
+		/// <remarks>
+		/// This overload is useful for directly copying values into the buffer without needing a data stream.  If the type of value is a
+		/// struct and contains reference types (arrays, strings, and objects), then these members will not be copied.  Some form of
+		/// marshalling will be required in order to copy structures with reference types.
+		/// <para>
+		/// If the <paramref name="deferred" /> parameter is NULL (Nothing in VB.Net), the immediate context will be used to update the buffer.  If it is non-NULL, then it
+		/// will use the specified deferred context to clear the render target.
+		/// <para>If you are using a deferred context, it is necessary to use that context to update the buffer because 2 threads may not access the same resource at the same time.
+		/// Passing a separate deferred context will alleviate that.</para>
+		/// </para>
+		/// <para>This will only work on buffers created with a usage type of [Default].</para>
+		/// </remarks>
+		public override void Update<T>(T[] data, GorgonGraphics deferred = null)
+		{
+			GorgonDebug.AssertNull(data, "data");
+
+#if DEBUG
+			if (Settings.Usage != GorgonLibrary.Graphics.BufferUsage.Default)
+			{
+				throw new GorgonException(GorgonResult.AccessDenied, Resources.GORGFX_NOT_DEFAULT_USAGE);
+			}
+#endif
+
+			if (deferred == null)
+			{
+				deferred = Graphics;
+			}
+
+			deferred.Context.UpdateSubresource(data, D3DResource, 0, DirectAccess.SizeOf<T>() * data.Length);
 		}
 		#endregion
 

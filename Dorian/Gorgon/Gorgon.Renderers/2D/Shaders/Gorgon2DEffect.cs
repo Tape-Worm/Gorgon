@@ -38,7 +38,7 @@ namespace GorgonLibrary.Renderers
 		private bool _isDisposed;							// Flag to indicate that the object was disposed.
 		private GorgonPixelShader _lastPixelShader;			// Last pixel shader.
 		private GorgonVertexShader _lastVertexShader;		// Last vertex shader.
-		private GorgonRenderTarget2D _currentTarget;		// Current render target.
+		private GorgonRenderTargetView _currentTarget;		// Current render target.
 		#endregion
 
 		#region Properties.

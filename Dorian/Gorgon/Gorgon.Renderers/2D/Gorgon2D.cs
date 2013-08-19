@@ -150,6 +150,8 @@ namespace GorgonLibrary.Renderers
 		#endregion
 
 		#region Variables.
+		private Gorgon2DTarget _currentTarget;											// Current render target.
+		private Gorgon2DTarget _defaultTarget;											// Default render target.
 		private int _baseVertex;														// Base vertex.		
 		private Gorgon2DVertex[] _vertexCache;											// List of vertices to cache.
 		private int _cacheStart;														// Starting cache vertex buffer index.
@@ -159,7 +161,7 @@ namespace GorgonLibrary.Renderers
 		private int _cacheWritten;														// Number of vertices written.
 		private bool _useCache = true;													// Flag to indicate that we want to use the cache.
 		private bool _disposed;															// Flag to indicate that the object was disposed.
-		private int _cacheSize;													        // Number of vertices that we can stuff into a vertex buffer.
+		private readonly int _cacheSize;												// Number of vertices that we can stuff into a vertex buffer.
 		private GorgonInputLayout _layout;												// Input layout.
 		private bool _multiSampleEnable;												// Flag to indicate that multi sampling is enabled.
 		private GorgonViewport? _viewPort;												// Viewport to use.
@@ -167,8 +169,8 @@ namespace GorgonLibrary.Renderers
 		private ICamera _camera;														// Current camera.
 		private readonly GorgonOrthoCamera _defaultCamera;								// Default camera.
 		private readonly GorgonSprite _logoSprite;										// Logo sprite.
-	    private GorgonViewport _targetViewport;                                         // The default viewport of the current target.
-	    private Vector2 _currentTargetSize;                                             // The size of the current render target.
+		private GorgonVertexBufferBinding _defaultVertexBuffer;							// Default vertex buffer binding.
+		private Gorgon2DStateRecall _initialState;										// The initial state of the graphics API before the renderer was created.
 		#endregion
 
 		#region Properties.
@@ -179,33 +181,6 @@ namespace GorgonLibrary.Renderers
 		{
 			get;
 			set;
-		}
-
-		/// <summary>
-		/// Property to return the global state manager.
-		/// </summary>
-		internal GorgonStateManager StateManager
-		{
-			get;
-			private set;
-		}
-
-		/// <summary>
-		/// Property to return the buffer for the projection/view matrix.
-		/// </summary>
-		internal GorgonConstantBuffer ProjectionViewBuffer
-		{
-			get;
-			private set;
-		}
-
-		/// <summary>
-		/// Property to return the alpha test constant buffer.
-		/// </summary>
-		internal GorgonConstantBuffer AlphaTestBuffer
-		{
-			get;
-			private set;
 		}
 
 		/// <summary>
@@ -222,8 +197,10 @@ namespace GorgonLibrary.Renderers
 		/// </summary>
 		internal GorgonVertexBufferBinding DefaultVertexBufferBinding
 		{
-			get;
-			private set;
+			get
+			{
+				return _defaultVertexBuffer;
+			}
 		}
 
 		/// <summary>
@@ -243,16 +220,14 @@ namespace GorgonLibrary.Renderers
 			get;
 			private set;
 		}
-
+		
 		/// <summary>
-		/// Property to return the currently active camera.
+		/// Property to return the default state for the 2D renderer.
 		/// </summary>
-		internal ICamera CurrentCamera
+		public Gorgon2DStateRecall DefaultState
 		{
-			get
-			{
-				return (_camera ?? _defaultCamera);
-			}
+			get;
+			private set;
 		}
 
         /// <summary>
@@ -262,13 +237,32 @@ namespace GorgonLibrary.Renderers
 	    {
 	        get
 	        {
-	            return Graphics.Output.DepthStencilView;
+	            return _currentTarget.DepthStencil;
 	        }
 	        set
 	        {
-	            Graphics.Output.DepthStencilView = value;
+		        if (_currentTarget.DepthStencil == value)
+		        {
+			        return;
+		        }
+
+		        var target = new Gorgon2DTarget(_currentTarget.Target, value);
+
+				UpdateTarget(ref target);
 	        }
 	    }
+
+		/// <summary>
+		/// Property to return the default view port.
+		/// </summary>
+		/// <remarks>This returns the default viewport that is bound to the currently active render target.</remarks>
+		public GorgonViewport DefaultViewport
+		{
+			get
+			{
+				return _currentTarget.Target == null ? _defaultTarget.Viewport : _currentTarget.Viewport;
+			}
+		}
         
 		/// <summary>
 		/// Property to return the default render target view.
@@ -276,8 +270,14 @@ namespace GorgonLibrary.Renderers
 		/// <remarks>This is the inital target view that the Gorgon2D interface was created with, or the one internally generated depending on how the 2D renderer was created.</remarks>
 		public GorgonRenderTargetView DefaultTarget
 		{
-			get;
-			private set;
+			get
+			{
+				return _defaultTarget.Target;
+			}
+			private set
+			{
+				_defaultTarget = new Gorgon2DTarget(value, null);
+			}
 		}
 
 		/// <summary>
@@ -324,8 +324,11 @@ namespace GorgonLibrary.Renderers
 			}
 			set
 			{
-				if ((Graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM4) || (Graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM2_a_b))
+				if ((Graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM4) ||
+				    (Graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM2_a_b))
+				{
 					_multiSampleEnable = value;
+				}
 			}
 		}
 
@@ -354,7 +357,7 @@ namespace GorgonLibrary.Renderers
 
 			    _viewPort = value;
 
-			    Graphics.Rasterizer.SetViewport(value != null ? _viewPort.Value : _targetViewport);
+			    Graphics.Rasterizer.SetViewport(value != null ? _viewPort.Value : _currentTarget.Viewport);
 			}
 		}
 
@@ -450,17 +453,19 @@ namespace GorgonLibrary.Renderers
 			    RenderObjects();
 			    _camera = value;
 
+				if (value == null)
+				{
+					value = _defaultCamera;
+				}
+
 			    // Refresh our camera information if we're jumping back to the default camera.
-			    if (value == null)
+			    if (value.AutoUpdate)
 			    {
-                    _defaultCamera.UpdateFromTarget(_currentTargetSize.X, _currentTargetSize.Y);
-                    _defaultCamera.Anchor = new Vector2(_currentTargetSize.X / 2.0f, _currentTargetSize.Y / 2.0f);
-			        _defaultCamera.Position = -_defaultCamera.Anchor;
+					value.UpdateRegion(Vector2.Zero, new Vector2(_currentTarget.Width, _currentTarget.Height));
 			    }
 
 			    // Force an update.
-			    CurrentCamera.Update();
-			    UpdateProjectionViewMatrix(CurrentCamera);
+			    value.Update();
 			}
 		}
 
@@ -484,17 +489,20 @@ namespace GorgonLibrary.Renderers
 		{
 			get
 			{
-				return Graphics.Output.GetRenderTarget(0) ?? DefaultTarget;
+				return _currentTarget.Target;
 			}
 			set
 			{
-				if (Graphics.Output.GetRenderTarget(0) == value)
+				if ((_currentTarget.Target == value)
+					|| ((value == null) && (Gorgon2DTarget.Equals(ref _currentTarget, ref _defaultTarget))))
 				{
 					return;
 				}
 
+				Gorgon2DTarget newTarget = value == null ? _defaultTarget : new Gorgon2DTarget(value, DepthStencil);
+
 				RenderObjects();
-				UpdateTarget(value ?? DefaultTarget);
+				UpdateTarget(ref newTarget);
 			}
 		}
 
@@ -529,84 +537,52 @@ namespace GorgonLibrary.Renderers
 
 		#region Methods.
 		/// <summary>
-		/// Function to update the projection view matrix.
-		/// </summary>
-		/// <param name="currentCamera">The currently active camera.</param>
-		private void UpdateProjectionViewMatrix(ICamera currentCamera)
-		{
-		    Matrix viewProjection = currentCamera.ViewProjection;
-		    ProjectionViewBuffer.Update(ref viewProjection);
-		}
-
-		/// <summary>
 		/// Function to update the current render target.
 		/// </summary>
-		/// <param name="target">The target being bound.</param>
-		private void UpdateTarget(GorgonRenderTargetView target)
+		/// <param name="target">The new target.</param>
+		private void UpdateTarget(ref Gorgon2DTarget target)
 		{
-		    GorgonDepthStencilView depthStencil = null;
-		    GorgonSwapChain swapChain = null;
-
             // If we currently have a swap chain bound, then we need to unbind its resize event.
-		    if (Target.Resource.ResourceType == ResourceType.Texture2D)
-		    {
-		        var target2D = (GorgonRenderTarget2D)Target.Resource;
-
-		        if (target2D.SwapChain != null)
-		        {
-		            target2D.SwapChain.AfterSwapChainResized -= target_Resized;
-		        }
-		    }
-
-            // Switch to the corret render target type.
-		    switch (target.Resource.ResourceType)
-		    {
-		        case ResourceType.Buffer:
-                    _currentTargetSize = new Vector2(target.Resource.SizeInBytes, 1.0f);
-                    _targetViewport = new GorgonViewport(0, 0, 16383, 16383, 0, 1.0f);
-		            break;
-                case ResourceType.Texture1D:
-		            var target1D = (GorgonRenderTarget1D)target.Resource;
-
-                    _currentTargetSize = new Vector2(target1D.Settings.Width, 1.0f);
-		            _targetViewport = target1D.Viewport;
-		            depthStencil = ((GorgonRenderTarget1D)target.Resource).DepthStencilBuffer;
-		            break;
-                case ResourceType.Texture2D:
-		            var target2D = (GorgonRenderTarget2D)target.Resource;
-
-                    _currentTargetSize = new Vector2(target2D.Settings.Width, target2D.Settings.Height);
-		            depthStencil = target2D.DepthStencilBuffer;
-                    _targetViewport = target2D.Viewport;
-		            swapChain = target2D.SwapChain;
-		            break;
-                case ResourceType.Texture3D:
-		            var target3D = (GorgonRenderTarget3D)target.Resource;
-
-                    _currentTargetSize = new Vector2(target3D.Settings.Width, target3D.Settings.Height);
-                    _targetViewport = target3D.Viewport;
-		            break;
-		    }
-
-            Graphics.Output.SetRenderTarget(target, depthStencil);
-
-			// Update our default camera.
-			// User cameras will need to be updated by the user on a resize or target change.
-			if (_camera == null)
+			if (_currentTarget.SwapChain != null)
 			{
-                _defaultCamera.UpdateFromTarget(_currentTargetSize.X, _currentTargetSize.Y);
-                _defaultCamera.Anchor = new Vector2(_currentTargetSize.X / 2.0f, _currentTargetSize.Y / 2.0f);
-				_defaultCamera.Position = -_defaultCamera.Anchor;
+				_currentTarget.SwapChain.AfterSwapChainResized -= target_Resized;
 			}
 
-			ClipRegion = null;
+			if (!Gorgon2DTarget.Equals(ref target, ref _currentTarget))
+			{
+				if (target.Target != _currentTarget.Target)
+				{
+					Graphics.Output.SetRenderTarget(target.Target, target.DepthStencil);
+				}
 
-            Graphics.Rasterizer.SetViewport(_viewPort == null ? _targetViewport : _viewPort.Value);
+				_currentTarget = target;
+			}
 
-		    if (swapChain != null)
-		    {
-		        swapChain.AfterSwapChainResized += target_Resized;
-		    }
+			// Update camera.
+			var camera = _camera ?? _defaultCamera;
+
+			if (camera.AutoUpdate)
+			{
+				camera.UpdateRegion(Vector2.Zero, new Vector2(_currentTarget.Width, _currentTarget.Height));
+			}
+
+			var clipRegion = ClipRegion;
+
+			// Restore the clipping region.
+			if (clipRegion != null)
+			{
+				ClipRegion = null;
+				ClipRegion = clipRegion;
+			}
+
+			Graphics.Rasterizer.SetViewport(_viewPort == null ? _currentTarget.Viewport : _viewPort.Value);
+
+			if (_currentTarget.SwapChain == null)
+			{
+				return;
+			}
+
+			_currentTarget.SwapChain.AfterSwapChainResized += target_Resized;
 		}
 
 		/// <summary>
@@ -616,67 +592,131 @@ namespace GorgonLibrary.Renderers
 		/// <param name="e">Event parameters.</param>
 		private void target_Resized(object sender, GorgonAfterSwapChainResizedEventArgs e)
 		{
-			UpdateTarget(Target);
+			GorgonDepthStencilView depthStencil = _currentTarget.SwapChain.DepthStencilBuffer;
+
+			if (DepthStencil != null)
+			{
+				depthStencil = DepthStencil;
+			}
+
+			var target = new Gorgon2DTarget(_currentTarget.SwapChain, depthStencil);
+
+			UpdateTarget(ref target);
 		}
 
-        /// <summary>
-        /// Function to clear up the vertex cache.
-        /// </summary>
-        internal void ClearCache()
-        {
-            // Clear up the cache.
-            _baseVertex = 0;
-            _cacheStart = 0;
-            _cacheEnd = 0;
-            _renderIndexCount = 0;
-            _renderIndexStart = 0;
-            _cacheWritten = 0;
-        }
+		/// <summary>
+		/// Function to set up the renderers initial state.
+		/// </summary>
+		private void SetDefaultStates()
+		{
+			// Record the initial state before set up.
+			if (_initialState == null)
+			{
+				_initialState = new Gorgon2DStateRecall(this);
+			}
+
+			// Reset the cache values.
+			ClearCache();
+
+			// Set our default shaders.
+			VertexShader.Current = VertexShader.DefaultVertexShader;
+			PixelShader.Current = PixelShader.DefaultPixelShaderDiffuse;
+			Graphics.Input.IndexBuffer = DefaultIndexBuffer;
+			Graphics.Input.VertexBuffers[0] = DefaultVertexBufferBinding;
+			Graphics.Input.Layout = _layout;
+			Graphics.Input.PrimitiveType = PrimitiveType.TriangleList;
+
+			IsMultisamplingEnabled = Graphics.Rasterizer.States.IsMultisamplingEnabled;
+
+			// Add shader includes if they're gone.
+			if (!Graphics.Shaders.IncludeFiles.Contains("Gorgon2DShaders"))
+			{
+				Graphics.Shaders.IncludeFiles.Add("Gorgon2DShaders", Encoding.UTF8.GetString(Properties.Resources.BasicSprite));
+			}
+
+			if (PixelShader != null)
+			{
+				GorgonTextureSamplerStates sampler = GorgonTextureSamplerStates.LinearFilter;
+				sampler.TextureFilter = TextureFilter.Point;
+				Graphics.Shaders.PixelShader.TextureSamplers[0] = sampler;
+				Graphics.Shaders.PixelShader.Resources[0] = null;
+			}
+
+			Graphics.Rasterizer.States = GorgonRasterizerStates.CullBackFace;
+			Graphics.Output.BlendingState.States = GorgonBlendStates.DefaultStates;
+			Graphics.Output.DepthStencilState.States = GorgonDepthStencilStates.NoDepthStencil;
+			Graphics.Output.DepthStencilState.DepthStencilReference = 0;
+
+			UpdateTarget(ref _defaultTarget);
+
+			// Get the current state.
+			DefaultState = new Gorgon2DStateRecall(this);
+
+			// By default, turn on multi sampling over a count of 2.
+			if (Target.Resource.ResourceType != ResourceType.Texture2D)
+			{
+				return;
+			}
+
+			var target2D = (GorgonRenderTarget2D)Target.Resource;
+
+			if ((!IsMultisamplingEnabled)
+			    && (target2D.Settings.Multisampling.Count > 1)
+			    && ((Graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM4_1)
+			        || (Graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM5)))
+			{
+				_multiSampleEnable = true;
+			}
+		}
+
+		/// <summary>
+		/// Function to clear up the vertex cache.
+		/// </summary>
+		private void ClearCache()
+		{
+			// Clear up the cache.
+			_baseVertex = 0;
+			_cacheStart = 0;
+			_cacheEnd = 0;
+			_renderIndexCount = 0;
+			_renderIndexStart = 0;
+			_cacheWritten = 0;
+		}
 
 		/// <summary>
 		/// Function to initialize the 2D renderer.
 		/// </summary>
 		internal void Initialize()
 		{
-			// Create constant buffers.
-			if (ProjectionViewBuffer == null)
-			{
-				ProjectionViewBuffer = Graphics.Buffers.CreateConstantBuffer("Gorgon2D Projection/View Matrix Constant Buffer",
-				                                                             new GorgonConstantBufferSettings
-					                                                             {
-						                                                             SizeInBytes = Matrix.SizeInBytes,
-					                                                             });
-			}
-
-			if (AlphaTestBuffer == null)
-			{
-				AlphaTestBuffer = Graphics.Buffers.CreateConstantBuffer("Gorgon2D Alpha Test Constant Buffer",
-				                                                        new GorgonConstantBufferSettings
-					                                                        {
-						                                                        SizeInBytes = 32
-					                                                        });
-			}
-
 			// Add shader includes.
 			if (!Graphics.Shaders.IncludeFiles.Contains("Gorgon2DShaders"))
+			{
 				Graphics.Shaders.IncludeFiles.Add("Gorgon2DShaders", Encoding.UTF8.GetString(Properties.Resources.BasicSprite));
+			}
 
 			// Create shader states.
 			if (PixelShader == null)
+			{
 				PixelShader = new Gorgon2DPixelShaderState(this);
+			}
 
 			if (VertexShader == null)
 			{
 				VertexShader = new Gorgon2DVertexShaderState(this);
 
 				if (_layout != null)
+				{
 					_layout.Dispose();
+				}
+
 				_layout = null;
 			}
 
 			// Create pre-defined effects objects.
 			if (Effects == null)
-			    Effects = new Gorgon2DEffects(this);
+			{
+				Effects = new Gorgon2DEffects(this);
+			}
 
 			// Create default shaders.
 			// Create layout information so we can bind our vertices to the shader.
@@ -686,30 +726,35 @@ namespace GorgonLibrary.Renderers
 			}
 
 			if (DefaultIndexBuffer != null)
+			{
 				DefaultIndexBuffer.Dispose();
+			}
+
 			if (DefaultVertexBufferBinding.VertexBuffer != null)
+			{
 				DefaultVertexBufferBinding.VertexBuffer.Dispose();
-						
-			int spriteVBSize = Gorgon2DVertex.SizeInBytes * _cacheSize;
-			int spriteIBSize = sizeof(int) * _cacheSize * 6;
+			}
+
+			int spriteVertexBufferSize = Gorgon2DVertex.SizeInBytes * _cacheSize;
+			int spriteIndexBufferSize = sizeof(int) * _cacheSize * 6;
 
 			// Set up our index buffer.
-			using (var ibData = new GorgonDataStream(spriteIBSize))
+			using (var ibData = new GorgonDataStream(spriteIndexBufferSize))
 			{
 				int index = 0;
 				for (int i = 0; i < _cacheSize; i++)
 				{
-					ibData.Write<int>(index);
-					ibData.Write<int>(index + 1);
-					ibData.Write<int>(index + 2);
-					ibData.Write<int>(index + 1);
-					ibData.Write<int>(index + 3);
-					ibData.Write<int>(index + 2);
+					ibData.Write(index);
+					ibData.Write(index + 1);
+					ibData.Write(index + 2);
+					ibData.Write(index + 1);
+					ibData.Write(index + 3);
+					ibData.Write(index + 2);
 					index += 4;
 				}
 
 				ibData.Position = 0;
-				DefaultIndexBuffer = Graphics.Buffers.CreateIndexBuffer("Gorgon2D Default Index Buffer", new GorgonIndexBufferSettings()
+				DefaultIndexBuffer = Graphics.Buffers.CreateIndexBuffer("Gorgon2D Default Index Buffer", new GorgonIndexBufferSettings
 					{
 						IsOutput = false,
 						SizeInBytes = (int)ibData.Length,
@@ -719,17 +764,19 @@ namespace GorgonLibrary.Renderers
 			}
 			
 			// Create our empty vertex buffer.
-			DefaultVertexBufferBinding =
+			_defaultVertexBuffer =
 				new GorgonVertexBufferBinding(
 					Graphics.Buffers.CreateVertexBuffer("Gorgon 2D Default Vertex Buffer", new GorgonBufferSettings
 						{
-							SizeInBytes = spriteVBSize,
+							SizeInBytes = spriteVertexBufferSize,
 							Usage = BufferUsage.Dynamic
 						}), Gorgon2DVertex.SizeInBytes);
 
 			// Create the vertex cache.
 			_vertexCache = new Gorgon2DVertex[_cacheSize];
-            ClearCache();
+            
+			// Set up the default render states.
+			SetDefaultStates();
 		}
 
 		/// <summary>
@@ -742,18 +789,19 @@ namespace GorgonLibrary.Renderers
 			GorgonVertexBufferBinding vbBinding = Graphics.Input.VertexBuffers[0];
 
 			if (_cacheWritten == 0)
+			{
 				return;
+			}
 
-			if ((currentCamera.NeedsProjectionUpdate) || (currentCamera.NeedsViewUpdate))
+			if (currentCamera.NeedsUpdate)
 			{
 				currentCamera.Update();
-
-				// Send projection/view to the shader.
-				UpdateProjectionViewMatrix(currentCamera);
 			}
 
 			if (_cacheStart > 0)
+			{
 				flags = BufferLockFlags.NoOverwrite | BufferLockFlags.Write;
+			}
 
 			// If we're using the cache, then populate the default vertex buffer.
 			if (_useCache)
@@ -789,13 +837,15 @@ namespace GorgonLibrary.Renderers
 						using (GorgonDataStream stream = vbBinding.VertexBuffer.Lock(flags))
 						{
 							stream.Position = _cacheStart * Gorgon2DVertex.SizeInBytes;
-							stream.WriteRange<Gorgon2DVertex>(_vertexCache, _cacheStart, _cacheWritten);
+							stream.WriteRange(_vertexCache, _cacheStart, _cacheWritten);
 							vbBinding.VertexBuffer.Unlock();
 						}
 						break;
 					case BufferUsage.Default:
-						using (var stream = new GorgonDataStream(_vertexCache, _cacheStart, _cacheWritten))
+						using(var stream = new GorgonDataStream(_vertexCache, _cacheStart, _cacheWritten))
+						{
 							vbBinding.VertexBuffer.Update(stream, _cacheStart * Gorgon2DVertex.SizeInBytes, (int)stream.Length);
+						}
 						break;
 				}
 			}
@@ -831,12 +881,11 @@ namespace GorgonLibrary.Renderers
 		/// <returns>The number of remaining vertices in the cache.</returns>
 		internal void AddVertices(Gorgon2DVertex[] vertices, int baseVertex, int indicesPerPrimitive, int vertexStart, int vertexCount)
 		{
-			int cacheIndex = 0;
-			int vertexIndex = 0;
-
 			// Do nothing if there aren't any vertices.
 			if (vertices.Length == 0)
+			{
 				return;
+			}
 
 			// If the next set of vertices is going to overflow the buffer, then render the buffer contents.
 			if (vertexCount + _cacheEnd > _cacheSize)
@@ -853,8 +902,8 @@ namespace GorgonLibrary.Renderers
 
 			for (int i = 0; i < vertexCount; i++)
 			{
-				cacheIndex = _cacheEnd + i;
-				vertexIndex = i + vertexStart;
+				int cacheIndex = _cacheEnd + i;
+				int vertexIndex = i + vertexStart;
 				_vertexCache[cacheIndex] = vertices[vertexIndex];
 			}
 
@@ -872,28 +921,28 @@ namespace GorgonLibrary.Renderers
 		/// <param name="renderable">Renderable object to add.</param>
 		internal void AddRenderable(IRenderable renderable)
 		{
-			var stateChange = StateChange.None;
-
 			// Check for state changes.
-			stateChange = StateManager.CheckState(renderable);
+			StateChange stateChange = DefaultState.Compare(renderable);
 
 			if (stateChange != StateChange.None)
 			{
 				if (_cacheWritten > 0)
+				{
 					RenderObjects();
+				}
 
-				StateManager.ApplyState(renderable, stateChange);
+				DefaultState.UpdateState(renderable, stateChange);
 
 				// If we switch vertex buffers, then reset the cache.
 				if ((stateChange & StateChange.VertexBuffer) == StateChange.VertexBuffer)
 				{
-                    ClearCache();
-					_useCache = Graphics.Input.VertexBuffers[0].Equals(DefaultVertexBufferBinding);
+					ClearCache();
+
+					_useCache = Graphics.Input.VertexBuffers[0].Equals(ref _defaultVertexBuffer);
 
 					// We skip the cache for objects that have their own vertex buffers.
 					if (!_useCache)
 					{
-						_cacheEnd = renderable.VertexCount;
 						return;
 					}
 				}
@@ -902,101 +951,45 @@ namespace GorgonLibrary.Renderers
 			AddVertices(renderable.Vertices, renderable.BaseVertexCount, renderable.IndexCount, 0, renderable.VertexCount);
 		}
 
-		/// <summary>
-		/// Function to set up the renderers initial state.
-		/// </summary>
-		internal void Setup()
-		{
-			// Reset the cache values.
-            ClearCache();
-
-			// Set our default shaders.
-			VertexShader.Current = VertexShader.DefaultVertexShader;
-			PixelShader.Current = PixelShader.DefaultPixelShaderDiffuse;
-			Graphics.Input.IndexBuffer = DefaultIndexBuffer;
-			Graphics.Input.VertexBuffers[0] = DefaultVertexBufferBinding;
-			Graphics.Input.Layout = _layout;
-			Graphics.Input.PrimitiveType = PrimitiveType.TriangleList;
-
-			IsMultisamplingEnabled = Graphics.Rasterizer.States.IsMultisamplingEnabled;
-
-			// By default, turn on multi sampling over a count of 2.
-		    if (Target.Resource.ResourceType == ResourceType.Texture2D)
-		    {
-		        var target2D = (GorgonRenderTarget2D)Target.Resource;
-
-		        if ((!IsMultisamplingEnabled)
-		            && (target2D.Settings.Multisampling.Count > 1)
-		            && ((Graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM4_1)
-		                || (Graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM5)))
-		        {
-		            IsMultisamplingEnabled = true;
-		        }
-		    }
-
-		    IsBlendingEnabled = true;
-			IsAlphaTestEnabled = true;
-
-			// Add shader includes if they're gone.
-			if (!Graphics.Shaders.IncludeFiles.Contains("Gorgon2DShaders"))
-				Graphics.Shaders.IncludeFiles.Add("Gorgon2DShaders", Encoding.UTF8.GetString(Properties.Resources.BasicSprite));
-
-			if (PixelShader != null)
-			{
-				GorgonTextureSamplerStates sampler = GorgonTextureSamplerStates.LinearFilter;
-				sampler.TextureFilter = TextureFilter.Point;
-				Graphics.Shaders.PixelShader.TextureSamplers[0] = sampler;
-				Graphics.Shaders.PixelShader.Resources[0] = null;
-			}
-            
-			Graphics.Rasterizer.States = GorgonRasterizerStates.CullBackFace;
-			Graphics.Output.BlendingState.States = GorgonBlendStates.DefaultStates;
-			Graphics.Output.DepthStencilState.States = GorgonDepthStencilStates.NoDepthStencil;
-			Graphics.Output.DepthStencilState.DepthStencilReference = 0;
-
-		    if (StateManager == null)
-		    {
-		        StateManager = new GorgonStateManager(this);
-		    }
-
-		    StateManager.GetDefaults();
-
-			UpdateTarget(DefaultTarget);
-		}
-
         /// <summary>
-        /// Function to remember the current state of the renderer.
+        /// Function to prepare the renderer for 2D rendering.
         /// </summary>
-        /// <returns>A state recall object that is used to recall the state that was remembered by this method.</returns>
-        /// <remarks>Use this method to remember the state of the <see cref="GorgonLibrary.Graphics.GorgonGraphics">graphics interface</see>. This is handy in situations when the 
-        /// state must be changed outside of our 2D renderer.
-        /// <para>When the 2D renderer is initialized for the first time it sets many states that are used to render 2D graphics. If these states are not set then the graphics generated by the renderer may appear 
-        /// incorrect when displayed. Most of the time, the 2D renderer will be used to handle changing of states and no interaction is required by the developer.  However, in some cases, it is necessary to 
-        /// override the states outside of the 2D renderer.  In these cases this may cause the 2D renderer to display graphics incorrectly because it is unaware of the changes to state since it was not involved 
-        /// in changing the state.  The RememberState method is useful in this situation because when paired with its counterpart method, <see cref="RecallState"/>, the renderer will remember the state of 
-        /// the graphics interface before any external changes are made and that previous state can be recalled to recover from those external changes.</para>
+        /// <returns>A state recall object that is used to recall the previous state before this method was called.</returns>
+        /// <remarks>This method should be used to initialize a scene for 2D rendering.  When this method is called, it will return an object that contains the current state before this method was called. 
+        /// Use this state object with the <see cref="End2D"/> method to return the state back to the original settings.
         /// </remarks>
-	    public Gorgon2DStateRecall RememberState()
+	    public Gorgon2DStateRecall Begin2D()
 	    {
-	        return new Gorgon2DStateRecall(this);
+			var currentState = new Gorgon2DStateRecall(this);
+
+			SetDefaultStates();
+
+	        return currentState;
 	    }
 
         /// <summary>
-        /// Function to recall a remembered state.
+        /// Function to end 2D rendering and restore the state of the graphics interface.
         /// </summary>
-        /// <param name="state">The state object that contains the remembered states of the renderer.</param>
-        /// <remarks>Use this method to reinstate the states of the renderer if those states were modified external to the renderer.  See the <see cref="RememberState"/> method for details on 
-        /// when to use these methods.
+        /// <param name="state">[Optional] The state object that contains the states returned by the <see cref="Begin2D"/> method.</param>
+        /// <remarks>This method is used to end 2D rendering and restore the state of the graphics API to the state recorded by the <paramref name="state"/> parameter.  If NULL (Nothing in VB.Net) 
+        /// is passed for the <paramref name="state"/> parameter, then the state will be reset to the state of the graphics interface before this renderer was created.
         /// </remarks>
-        /// <exception cref="System.ArgumentNullException">Thrown when then <paramref name="state"/> parameter is NULL (Nothing in VB.Net).</exception>
-	    public void RecallState(Gorgon2DStateRecall state)
+	    public void End2D(Gorgon2DStateRecall state = null)
 	    {
+			ClearCache();
+
             if (state == null)
             {
-                throw new ArgumentNullException("state");
+	            if (_initialState != null)
+	            {
+		            _initialState.Restore(false);
+	            }
+
+	            return;
             }
 
-            state.Restore();
+			// Reset the cache before updating the states.
+            state.Restore(false);
 	    }
 
 		/// <summary>
@@ -1049,7 +1042,11 @@ namespace GorgonLibrary.Renderers
 				DepthStencil.ClearStencil(stencil);
 			}
 
-			Drawing.FilledRectangle(new RectangleF(0, 0, _currentTargetSize.X, _currentTargetSize.Y), color);
+			var currentBlend = Drawing.BlendingMode;
+
+			Drawing.BlendingMode = BlendingMode.None;
+			Drawing.FilledRectangle(new RectangleF(0, 0, _currentTarget.Width, _currentTarget.Height), color);
+			Drawing.BlendingMode = currentBlend;
 		}
 
 		/// <summary>
@@ -1057,7 +1054,7 @@ namespace GorgonLibrary.Renderers
 		/// </summary>
 		/// <param name="color">Color to clear with.</param>
 		/// <param name="depth">Depth value to clear with.</param>
-		/// <remarks>Unlike a render target <see cref="M:GorgonLibrary.Graphics.GorgonRenderTarget.Clear">Clear</see> method, this will respect any clipping and/or viewport.  
+		/// <remarks>Unlike a render target <see cref="GorgonLibrary.Graphics.GorgonRenderTargetView.Clear">Clear</see> method, this will respect any clipping and/or viewport.  
 		/// However, this only affects the color buffer, the depth/stencil will be cleared in their entirety.</remarks>
 		public void Clear(GorgonColor color, float depth)
 		{
@@ -1068,7 +1065,7 @@ namespace GorgonLibrary.Renderers
 		/// Function to clear the current target and its depth/stencil buffer.
 		/// </summary>
 		/// <param name="color">Color to clear with.</param>
-		/// <remarks>Unlike a render target <see cref="M:GorgonLibrary.Graphics.GorgonRenderTarget.Clear">Clear</see> method, this will respect any clipping and/or viewport.  
+		/// <remarks>Unlike a render target <see cref="GorgonLibrary.Graphics.GorgonRenderTargetView.Clear">Clear</see> method, this will respect any clipping and/or viewport.  
 		/// However, this only affects the color buffer, the depth/stencil will be cleared in their entirety.</remarks>
 		public void Clear(GorgonColor color)
 		{
@@ -1092,7 +1089,7 @@ namespace GorgonLibrary.Renderers
 		/// </summary>
 		private void DrawLogo()
 		{
-			_logoSprite.Position = new Vector2(Target.Settings.Width, Target.Settings.Height);
+			_logoSprite.Position = new Vector2(_currentTarget.Width, _currentTarget.Height);
 			_logoSprite.Draw();
 		}
 
@@ -1115,37 +1112,57 @@ namespace GorgonLibrary.Renderers
 			Rectangle? previousClip = _clip;
 
 			// Only draw the logo when we're flipping, and we're on the default target and the default target is a swap chain.
-			if ((flip) && (IsLogoVisible) && (Target.SwapChain != null) && (Target == DefaultTarget))
+			if ((flip) && (IsLogoVisible) && (_currentTarget.SwapChain != null) && (_currentTarget.Target == _defaultTarget.Target))
 			{
 				// Reset any view/projection/clip/viewport.
 				if (_camera != null)
+				{
 					Camera = null;
+				}
+
 				if (_viewPort != null)
+				{
 					Viewport = null;
+				}
+
 				if (_clip != null)
+				{
 					ClipRegion = null;
+				}
 
 				DrawLogo();
 			}
 
 			RenderObjects();
 
-			if (flip)
+			if (!flip)
 			{
-			    if (Target.SwapChain != null)
-			    {
-			        Target.SwapChain.Flip(interval);
-			    }
+				return;
+			}
 
-			    if (IsLogoVisible)
-				{
-					if (camera != null)
-						Camera = camera;
-					if (previousViewport != null)
-						Viewport = previousViewport;
-					if (previousClip != null)
-						ClipRegion = previousClip;
-				}
+			if (_currentTarget.SwapChain != null)
+			{
+				_currentTarget.SwapChain.Flip(interval);
+			}
+
+			if (!IsLogoVisible)
+			{
+				return;
+			}
+
+			if (camera != null)
+			{
+				Camera = camera;
+			}
+
+			if (previousViewport != null)
+			{
+				Viewport = previousViewport;
+			}
+
+			if (previousClip != null)
+			{
+				ClipRegion = previousClip;
 			}
 		}
 
@@ -1202,14 +1219,17 @@ namespace GorgonLibrary.Renderers
 		/// <param name="target">The primary render target to use.</param>		
 		/// <param name="vertexCacheSize">The number of vertices that can be placed in vertex cache.</param>
 		internal Gorgon2D(GorgonRenderTargetView target, int vertexCacheSize)
-		{						
+		{
+			IsBlendingEnabled = true;
+			IsAlphaTestEnabled = true;
+
 			TrackedObjects = new GorgonDisposableObjectCollection();
 			Graphics = target.Resource.Graphics;
 			DefaultTarget = target;
 		    _cacheSize = vertexCacheSize.Max(1024);
 
 			Icons = Graphics.Textures.CreateTexture<GorgonTexture2D>("Gorgon2D.Icons", Properties.Resources.Icons);
-			_logoSprite = new GorgonSprite(this, "Gorgon2D.LogoSprite", new GorgonSpriteSettings()
+			_logoSprite = new GorgonSprite(this, "Gorgon2D.LogoSprite", new GorgonSpriteSettings
 			{
 				Anchor = new Vector2(Graphics.Textures.GorgonLogo.Settings.Size),
 				Texture = Graphics.Textures.GorgonLogo,
@@ -1217,7 +1237,12 @@ namespace GorgonLibrary.Renderers
 				Color = Color.White,
 				Size = Graphics.Textures.GorgonLogo.Settings.Size
 			});
-			_defaultCamera = new GorgonOrthoCamera(this, "Gorgon.Camera.Default", Vector2.Zero, 100.0f);			
+			_defaultCamera = new GorgonOrthoCamera(this, "Gorgon.Camera.Default", new Vector2(_defaultTarget.Width, _defaultTarget.Height), 100.0f)
+			{
+				AutoUpdate = true,
+				Anchor = new Vector2(_defaultTarget.Width * 0.5f, _defaultTarget.Height * 0.5f),
+				Position = new Vector2(-_defaultTarget.Width * 0.5f, -_defaultTarget.Height * 0.5f)
+			};
 
 			Renderables = new GorgonRenderables(this);
 			Drawing = new GorgonDrawing(this);
@@ -1231,65 +1256,72 @@ namespace GorgonLibrary.Renderers
 		/// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
 		private void Dispose(bool disposing)
 		{
-			if (!_disposed)
+			if (_disposed)
 			{
-				if (disposing)
+				return;
+			}
+
+			if (disposing)
+			{
+				if (_initialState != null)
 				{
-					this.End2D();
-
-					if (Icons != null)
-						Icons.Dispose();
-
-                    if (Effects != null)
-                    {
-                        Effects.FreeShaders();
-                        Effects = null;
-                    }
-
-					TrackedObjects.ReleaseAll();
-
-				    if ((Target != null) && (Target.SwapChain != null))
-				    {
-				        Target.SwapChain.AfterSwapChainResized -= new EventHandler<GorgonAfterSwapChainResizedEventArgs>(target_Resized);
-				    }
-
-				    if (_layout != null)
-						_layout.Dispose();
-
-					if (VertexShader != null)
-						VertexShader.CleanUp();
-					if (PixelShader != null)
-						PixelShader.CleanUp();
-
-					VertexShader = null;
-					PixelShader = null;
-
-					if (DefaultVertexBufferBinding != null)
-						DefaultVertexBufferBinding.VertexBuffer.Dispose();
-					if (DefaultIndexBuffer != null)
-						DefaultIndexBuffer.Dispose();
-
-					if (ProjectionViewBuffer != null)
-						ProjectionViewBuffer.Dispose();
-					if (_projectionViewStream != null)
-						_projectionViewStream.Dispose();
-					if (AlphaTestBuffer != null)
-						AlphaTestBuffer.Dispose();
-					if (AlphaTestStream != null)
-						AlphaTestStream.Dispose();
-
-					if ((SystemCreatedTarget) && (DefaultTarget != null))
-					{
-						DefaultTarget.Dispose();
-						DefaultTarget = null;
-					}
-
-					Graphics.RemoveTrackedObject(this);
+					_initialState.Restore(true);
+					_initialState = null;
 				}
 
-				Icons = null;
-				_disposed = true;
+				if (Icons != null)
+				{
+					Icons.Dispose();
+				}
+
+				if (Effects != null)
+				{
+					Effects.FreeShaders();
+					Effects = null;
+				}
+
+				TrackedObjects.ReleaseAll();
+
+				if (_currentTarget.SwapChain != null)
+				{
+					_currentTarget.SwapChain.AfterSwapChainResized -= target_Resized;
+				}
+
+				if (_layout != null)
+				{
+					_layout.Dispose();
+				}
+
+				if (VertexShader != null)
+				{
+					VertexShader.CleanUp();
+				}
+				if (PixelShader != null)
+				{
+					PixelShader.CleanUp();
+				}
+
+				VertexShader = null;
+				PixelShader = null;
+
+				DefaultVertexBufferBinding.VertexBuffer.Dispose();
+
+				if (DefaultIndexBuffer != null)
+				{
+					DefaultIndexBuffer.Dispose();
+				}
+
+				if ((SystemCreatedTarget) && (_defaultTarget.Target != null))
+				{
+					_defaultTarget.Target.Resource.Dispose();
+					_defaultTarget = default(Gorgon2DTarget);
+				}
+
+				Graphics.RemoveTrackedObject(this);
 			}
+
+			Icons = null;
+			_disposed = true;
 		}
 
 		/// <summary>
