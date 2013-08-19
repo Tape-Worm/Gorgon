@@ -84,6 +84,9 @@
     <Compile Include="DeviceInfo\GorgonVideoDevice.cs" />
     <Compile Include="DeviceInfo\GorgonVideoMode.cs" />
     <Compile Include="DeviceInfo\GorgonVideoOutput.cs" />
+    <Compile Include="Effects\GorgonEffect.cs" />
+    <Compile Include="Effects\GorgonEffectPass.cs" />
+    <Compile Include="Effects\GorgonEffectPassArray.cs" />
     <Compile Include="Fonts\GorgonFont.cs" />
     <Compile Include="Fonts\GorgonFonts.cs" />
     <Compile Include="Fonts\GorgonFontSettings.cs" />
