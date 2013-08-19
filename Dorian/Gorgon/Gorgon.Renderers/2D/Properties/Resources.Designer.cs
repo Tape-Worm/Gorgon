@@ -71,11 +71,29 @@ namespace GorgonLibrary.Renderers.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to There was no {0} shader bound to the pipeline. .
+        /// </summary>
+        internal static string GOR2D_SHADER_NOT_BOUND {
+            get {
+                return ResourceManager.GetString("GOR2D_SHADER_NOT_BOUND", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The render target type &apos;{0}&apos; is not supported by the 2D renderer..
         /// </summary>
         internal static string GOR2D_TARGET_TYPE_NOT_SUPPORTED {
             get {
                 return ResourceManager.GetString("GOR2D_TARGET_TYPE_NOT_SUPPORTED", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to There was no vertex buffer bound to the pipeline..
+        /// </summary>
+        internal static string GOR2D_VERTEX_BUFFER_NOT_BOUND {
+            get {
+                return ResourceManager.GetString("GOR2D_VERTEX_BUFFER_NOT_BOUND", resourceCulture);
             }
         }
         

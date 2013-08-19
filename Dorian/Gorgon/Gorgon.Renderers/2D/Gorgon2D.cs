@@ -33,6 +33,7 @@ using GorgonLibrary.Graphics;
 using GorgonLibrary.IO;
 using GorgonLibrary.Math;
 using GorgonLibrary.Native;
+using GorgonLibrary.Renderers.Properties;
 using SlimMath;
 
 namespace GorgonLibrary.Renderers
@@ -150,6 +151,7 @@ namespace GorgonLibrary.Renderers
 		#endregion
 
 		#region Variables.
+		private readonly bool _systemCreatedTarget;										// Flag to indicate whether Gorgon created the default target or not.
 		private Gorgon2DTarget _currentTarget;											// Current render target.
 		private Gorgon2DTarget _defaultTarget;											// Default render target.
 		private int _baseVertex;														// Base vertex.		
@@ -162,7 +164,6 @@ namespace GorgonLibrary.Renderers
 		private bool _useCache = true;													// Flag to indicate that we want to use the cache.
 		private bool _disposed;															// Flag to indicate that the object was disposed.
 		private readonly int _cacheSize;												// Number of vertices that we can stuff into a vertex buffer.
-		private GorgonInputLayout _layout;												// Input layout.
 		private bool _multiSampleEnable;												// Flag to indicate that multi sampling is enabled.
 		private GorgonViewport? _viewPort;												// Viewport to use.
 		private Rectangle? _clip;														// Clipping rectangle.
@@ -175,18 +176,18 @@ namespace GorgonLibrary.Renderers
 
 		#region Properties.
 		/// <summary>
-		/// Property to set or return whether the swap chain created was created by the system or by the user.
+		/// Property to return the tracked objects interface.
 		/// </summary>
-		internal bool SystemCreatedTarget
+		internal GorgonDisposableObjectCollection TrackedObjects
 		{
 			get;
-			set;
+			private set;
 		}
 
 		/// <summary>
-		/// Property to return the icons used for specific renderable items.
+		/// Property to return the default layout for our 2D vertex type.
 		/// </summary>
-		internal GorgonTexture2D Icons
+		public GorgonInputLayout DefaultLayout
 		{
 			get;
 			private set;
@@ -195,7 +196,7 @@ namespace GorgonLibrary.Renderers
 		/// <summary>
 		/// Property to return our default vertex buffer binding.
 		/// </summary>
-		internal GorgonVertexBufferBinding DefaultVertexBufferBinding
+		public GorgonVertexBufferBinding DefaultVertexBufferBinding
 		{
 			get
 			{
@@ -206,21 +207,12 @@ namespace GorgonLibrary.Renderers
 		/// <summary>
 		/// Property to return our default index buffer.
 		/// </summary>
-		internal GorgonIndexBuffer DefaultIndexBuffer
+		public GorgonIndexBuffer DefaultIndexBuffer
 		{
 			get;
 			private set;
 		}
 
-		/// <summary>
-		/// Property to return the tracked objects interface.
-		/// </summary>
-		internal GorgonDisposableObjectCollection TrackedObjects
-		{
-			get;
-			private set;
-		}
-		
 		/// <summary>
 		/// Property to return the default state for the 2D renderer.
 		/// </summary>
@@ -353,7 +345,7 @@ namespace GorgonLibrary.Renderers
 			    }
 
 			    // Force a render when switching viewports.
-			    RenderObjects();
+			    Flush();
 
 			    _viewPort = value;
 
@@ -378,7 +370,7 @@ namespace GorgonLibrary.Renderers
 			        return;
 			    }
 
-			    RenderObjects();
+			    Flush();
 
 			    _clip = value;
 
@@ -441,7 +433,7 @@ namespace GorgonLibrary.Renderers
 		{
 			get
 			{
-				return _camera;
+				return _camera ?? _defaultCamera;
 			}
 			set
 			{
@@ -450,7 +442,7 @@ namespace GorgonLibrary.Renderers
 			        return;
 			    }
 
-			    RenderObjects();
+			    Flush();
 			    _camera = value;
 
 				if (value == null)
@@ -501,7 +493,7 @@ namespace GorgonLibrary.Renderers
 
 				Gorgon2DTarget newTarget = value == null ? _defaultTarget : new Gorgon2DTarget(value, DepthStencil);
 
-				RenderObjects();
+				Flush();
 				UpdateTarget(ref newTarget);
 			}
 		}
@@ -623,7 +615,7 @@ namespace GorgonLibrary.Renderers
 			PixelShader.Current = PixelShader.DefaultPixelShaderDiffuse;
 			Graphics.Input.IndexBuffer = DefaultIndexBuffer;
 			Graphics.Input.VertexBuffers[0] = DefaultVertexBufferBinding;
-			Graphics.Input.Layout = _layout;
+			Graphics.Input.Layout = DefaultLayout;
 			Graphics.Input.PrimitiveType = PrimitiveType.TriangleList;
 
 			IsMultisamplingEnabled = Graphics.Rasterizer.States.IsMultisamplingEnabled;
@@ -631,7 +623,7 @@ namespace GorgonLibrary.Renderers
 			// Add shader includes if they're gone.
 			if (!Graphics.Shaders.IncludeFiles.Contains("Gorgon2DShaders"))
 			{
-				Graphics.Shaders.IncludeFiles.Add("Gorgon2DShaders", Encoding.UTF8.GetString(Properties.Resources.BasicSprite));
+				Graphics.Shaders.IncludeFiles.Add("Gorgon2DShaders", Encoding.UTF8.GetString(Resources.BasicSprite));
 			}
 
 			if (PixelShader != null)
@@ -689,51 +681,18 @@ namespace GorgonLibrary.Renderers
 		internal void Initialize()
 		{
 			// Add shader includes.
-			if (!Graphics.Shaders.IncludeFiles.Contains("Gorgon2DShaders"))
-			{
-				Graphics.Shaders.IncludeFiles.Add("Gorgon2DShaders", Encoding.UTF8.GetString(Properties.Resources.BasicSprite));
-			}
+			Graphics.ImmediateContext.Shaders.IncludeFiles.Add("Gorgon2DShaders", Encoding.UTF8.GetString(Resources.BasicSprite));
 
 			// Create shader states.
-			if (PixelShader == null)
-			{
-				PixelShader = new Gorgon2DPixelShaderState(this);
-			}
+			PixelShader = new Gorgon2DPixelShaderState(this);
 
-			if (VertexShader == null)
-			{
-				VertexShader = new Gorgon2DVertexShaderState(this);
+			VertexShader = new Gorgon2DVertexShaderState(this);
 
-				if (_layout != null)
-				{
-					_layout.Dispose();
-				}
-
-				_layout = null;
-			}
+			// Create layout information so we can bind our vertices to the shader.
+			DefaultLayout = Graphics.ImmediateContext.Input.CreateInputLayout("Gorgon2D Input Layout", typeof(Gorgon2DVertex), VertexShader.DefaultVertexShader);
 
 			// Create pre-defined effects objects.
-			if (Effects == null)
-			{
-				Effects = new Gorgon2DEffects(this);
-			}
-
-			// Create default shaders.
-			// Create layout information so we can bind our vertices to the shader.
-			if (_layout == null)
-			{
-				_layout = Graphics.Input.CreateInputLayout("Gorgon2D Input Layout", typeof(Gorgon2DVertex), VertexShader.DefaultVertexShader);
-			}
-
-			if (DefaultIndexBuffer != null)
-			{
-				DefaultIndexBuffer.Dispose();
-			}
-
-			if (DefaultVertexBufferBinding.VertexBuffer != null)
-			{
-				DefaultVertexBufferBinding.VertexBuffer.Dispose();
-			}
+			Effects = new Gorgon2DEffects(this);
 
 			int spriteVertexBufferSize = Gorgon2DVertex.SizeInBytes * _cacheSize;
 			int spriteIndexBufferSize = sizeof(int) * _cacheSize * 6;
@@ -754,7 +713,7 @@ namespace GorgonLibrary.Renderers
 				}
 
 				ibData.Position = 0;
-				DefaultIndexBuffer = Graphics.Buffers.CreateIndexBuffer("Gorgon2D Default Index Buffer", new GorgonIndexBufferSettings
+				DefaultIndexBuffer = Graphics.ImmediateContext.Buffers.CreateIndexBuffer("Gorgon2D Default Index Buffer", new GorgonIndexBufferSettings
 					{
 						IsOutput = false,
 						SizeInBytes = (int)ibData.Length,
@@ -766,7 +725,7 @@ namespace GorgonLibrary.Renderers
 			// Create our empty vertex buffer.
 			_defaultVertexBuffer =
 				new GorgonVertexBufferBinding(
-					Graphics.Buffers.CreateVertexBuffer("Gorgon 2D Default Vertex Buffer", new GorgonBufferSettings
+					Graphics.ImmediateContext.Buffers.CreateVertexBuffer("Gorgon 2D Default Vertex Buffer", new GorgonBufferSettings
 						{
 							SizeInBytes = spriteVertexBufferSize,
 							Usage = BufferUsage.Dynamic
@@ -774,100 +733,9 @@ namespace GorgonLibrary.Renderers
 
 			// Create the vertex cache.
 			_vertexCache = new Gorgon2DVertex[_cacheSize];
-            
+
 			// Set up the default render states.
 			SetDefaultStates();
-		}
-
-		/// <summary>
-		/// Function to render our objects with the current state.
-		/// </summary>
-		internal void RenderObjects()
-		{
-			ICamera currentCamera = (_camera ?? _defaultCamera);
-			BufferLockFlags flags = BufferLockFlags.Discard | BufferLockFlags.Write;
-			GorgonVertexBufferBinding vbBinding = Graphics.Input.VertexBuffers[0];
-
-			if (_cacheWritten == 0)
-			{
-				return;
-			}
-
-			if (currentCamera.NeedsUpdate)
-			{
-				currentCamera.Update();
-			}
-
-			if (_cacheStart > 0)
-			{
-				flags = BufferLockFlags.NoOverwrite | BufferLockFlags.Write;
-			}
-
-			// If we're using the cache, then populate the default vertex buffer.
-			if (_useCache)
-			{
-				// Ensure that we have a vertex buffer bound.
-				if ((vbBinding.VertexBuffer == null) || (vbBinding.Stride == 0))
-				{
-					vbBinding = DefaultVertexBufferBinding;
-					Graphics.Input.VertexBuffers[0] = vbBinding;
-				}
-
-#if DEBUG
-				if (Graphics.Shaders.PixelShader.Current == null)
-				{
-					throw new NullReferenceException("No pixel shader was bound to the pipeline.  Cannot render.");
-				}
-
-				if (Graphics.Shaders.VertexShader.Current == null)
-				{
-					throw new NullReferenceException("No vertex shader was bound to the pipeline.  Cannot render.");
-				}
-
-				if ((Graphics.Input.VertexBuffers[0].Stride == 0) || (Graphics.Input.VertexBuffers[0].VertexBuffer == null))
-				{
-					throw new NullReferenceException("No vertex buffer was bound to the pipeline.  Cannot render.");
-				}
-#endif
-
-				// Update buffers depending on type.
-				switch (vbBinding.VertexBuffer.Settings.Usage)
-				{
-					case BufferUsage.Dynamic:
-						using (GorgonDataStream stream = vbBinding.VertexBuffer.Lock(flags))
-						{
-							stream.Position = _cacheStart * Gorgon2DVertex.SizeInBytes;
-							stream.WriteRange(_vertexCache, _cacheStart, _cacheWritten);
-							vbBinding.VertexBuffer.Unlock();
-						}
-						break;
-					case BufferUsage.Default:
-						using(var stream = new GorgonDataStream(_vertexCache, _cacheStart, _cacheWritten))
-						{
-							vbBinding.VertexBuffer.Update(stream, _cacheStart * Gorgon2DVertex.SizeInBytes, (int)stream.Length);
-						}
-						break;
-				}
-			}
-
-			switch (Graphics.Input.PrimitiveType)
-			{
-				case PrimitiveType.PointList:
-				case PrimitiveType.LineList:
-					Graphics.Output.Draw(_cacheStart, _cacheWritten);
-					break;
-				case PrimitiveType.TriangleList:
-					if (Graphics.Input.IndexBuffer == null)
-						Graphics.Output.Draw(_cacheStart, _cacheWritten);
-					else
-						Graphics.Output.DrawIndexed(_renderIndexStart, _baseVertex, _renderIndexCount);
-					break;
-			}
-
-			_cacheStart = _cacheEnd;
-			_cacheWritten = 0;
-			_renderIndexStart += _renderIndexCount;
-			_renderIndexCount = 0;
 		}
 
 		/// <summary>
@@ -892,7 +760,7 @@ namespace GorgonLibrary.Renderers
 			{
 				// Ensure that we don't render the same scene twice.
 				if (_cacheWritten > 0)
-					RenderObjects();
+					Flush();
 
 				_baseVertex = 0;
 				_cacheStart = 0;
@@ -928,7 +796,7 @@ namespace GorgonLibrary.Renderers
 			{
 				if (_cacheWritten > 0)
 				{
-					RenderObjects();
+					Flush();
 				}
 
 				DefaultState.UpdateState(renderable, stateChange);
@@ -951,7 +819,100 @@ namespace GorgonLibrary.Renderers
 			AddVertices(renderable.Vertices, renderable.BaseVertexCount, renderable.IndexCount, 0, renderable.VertexCount);
 		}
 
-        /// <summary>
+		/// <summary>
+		/// Function to flush the rendering cache by rendering any outstanding objects.
+		/// </summary>
+		/// <remarks>This method is provided as a means to force the renderer to flush its cache in specific circumstances.  Calling this method manually 
+		/// is not recommended and may cause severe performance issues.</remarks>
+		public void Flush()
+		{
+			ICamera currentCamera = (_camera ?? _defaultCamera);
+			BufferLockFlags flags = BufferLockFlags.Discard | BufferLockFlags.Write;
+			GorgonVertexBufferBinding vbBinding = Graphics.Input.VertexBuffers[0];
+
+			if (_cacheWritten == 0)
+			{
+				return;
+			}
+
+			if (currentCamera.NeedsUpdate)
+			{
+				currentCamera.Update();
+			}
+
+			if (_cacheStart > 0)
+			{
+				flags = BufferLockFlags.NoOverwrite | BufferLockFlags.Write;
+			}
+
+			// If we're using the cache, then populate the default vertex buffer.
+			if (_useCache)
+			{
+				// Ensure that we have a vertex buffer bound.
+				if ((vbBinding.VertexBuffer == null) || (vbBinding.Stride == 0))
+				{
+					vbBinding = DefaultVertexBufferBinding;
+					Graphics.Input.VertexBuffers[0] = vbBinding;
+				}
+
+#if DEBUG
+				if (Graphics.Shaders.PixelShader.Current == null)
+				{
+					throw new NullReferenceException(string.Format(Resources.GOR2D_SHADER_NOT_BOUND, ShaderType.Pixel));
+				}
+
+				if (Graphics.Shaders.VertexShader.Current == null)
+				{
+					throw new NullReferenceException(string.Format(Resources.GOR2D_SHADER_NOT_BOUND, ShaderType.Vertex));
+				}
+
+				if ((Graphics.Input.VertexBuffers[0].Stride == 0) || (Graphics.Input.VertexBuffers[0].VertexBuffer == null))
+				{
+					throw new NullReferenceException(string.Format(Resources.GOR2D_VERTEX_BUFFER_NOT_BOUND));
+				}
+#endif
+
+				// Update buffers depending on type.
+				switch (vbBinding.VertexBuffer.Settings.Usage)
+				{
+					case BufferUsage.Dynamic:
+						using (GorgonDataStream stream = vbBinding.VertexBuffer.Lock(flags))
+						{
+							stream.Position = _cacheStart * Gorgon2DVertex.SizeInBytes;
+							stream.WriteRange(_vertexCache, _cacheStart, _cacheWritten);
+							vbBinding.VertexBuffer.Unlock();
+						}
+						break;
+					case BufferUsage.Default:
+						using (var stream = new GorgonDataStream(_vertexCache, _cacheStart, _cacheWritten))
+						{
+							vbBinding.VertexBuffer.Update(stream, _cacheStart * Gorgon2DVertex.SizeInBytes, (int)stream.Length);
+						}
+						break;
+				}
+			}
+
+			switch (Graphics.Input.PrimitiveType)
+			{
+				case PrimitiveType.PointList:
+				case PrimitiveType.LineList:
+					Graphics.Output.Draw(_cacheStart, _cacheWritten);
+					break;
+				case PrimitiveType.TriangleList:
+					if (Graphics.Input.IndexBuffer == null)
+						Graphics.Output.Draw(_cacheStart, _cacheWritten);
+					else
+						Graphics.Output.DrawIndexed(_renderIndexStart, _baseVertex, _renderIndexCount);
+					break;
+			}
+
+			_cacheStart = _cacheEnd;
+			_cacheWritten = 0;
+			_renderIndexStart += _renderIndexCount;
+			_renderIndexCount = 0;
+		}
+		
+		/// <summary>
         /// Function to prepare the renderer for 2D rendering.
         /// </summary>
         /// <returns>A state recall object that is used to recall the previous state before this method was called.</returns>
@@ -1133,14 +1094,14 @@ namespace GorgonLibrary.Renderers
 				DrawLogo();
 			}
 
-			RenderObjects();
+			Flush();
 
 			if (!flip)
 			{
 				return;
 			}
 
-			if (_currentTarget.SwapChain != null)
+			if ((_currentTarget.SwapChain != null) && (!Graphics.IsDeferred))
 			{
 				_currentTarget.SwapChain.Flip(interval);
 			}
@@ -1218,8 +1179,11 @@ namespace GorgonLibrary.Renderers
 		/// </summary>
 		/// <param name="target">The primary render target to use.</param>		
 		/// <param name="vertexCacheSize">The number of vertices that can be placed in vertex cache.</param>
-		internal Gorgon2D(GorgonRenderTargetView target, int vertexCacheSize)
+		/// <param name="autoCreatedTarget">TRUE if Gorgon created the target, FALSE if the user created the target.</param>
+		internal Gorgon2D(GorgonRenderTargetView target, int vertexCacheSize, bool autoCreatedTarget)
 		{
+			_systemCreatedTarget = autoCreatedTarget;
+
 			IsBlendingEnabled = true;
 			IsAlphaTestEnabled = true;
 
@@ -1227,8 +1191,7 @@ namespace GorgonLibrary.Renderers
 			Graphics = target.Resource.Graphics;
 			DefaultTarget = target;
 		    _cacheSize = vertexCacheSize.Max(1024);
-
-			Icons = Graphics.Textures.CreateTexture<GorgonTexture2D>("Gorgon2D.Icons", Properties.Resources.Icons);
+			
 			_logoSprite = new GorgonSprite(this, "Gorgon2D.LogoSprite", new GorgonSpriteSettings
 			{
 				Anchor = new Vector2(Graphics.Textures.GorgonLogo.Settings.Size),
@@ -1269,11 +1232,6 @@ namespace GorgonLibrary.Renderers
 					_initialState = null;
 				}
 
-				if (Icons != null)
-				{
-					Icons.Dispose();
-				}
-
 				if (Effects != null)
 				{
 					Effects.FreeShaders();
@@ -1287,9 +1245,9 @@ namespace GorgonLibrary.Renderers
 					_currentTarget.SwapChain.AfterSwapChainResized -= target_Resized;
 				}
 
-				if (_layout != null)
+				if (DefaultLayout != null)
 				{
-					_layout.Dispose();
+					DefaultLayout.Dispose();
 				}
 
 				if (VertexShader != null)
@@ -1311,7 +1269,7 @@ namespace GorgonLibrary.Renderers
 					DefaultIndexBuffer.Dispose();
 				}
 
-				if ((SystemCreatedTarget) && (_defaultTarget.Target != null))
+				if ((_systemCreatedTarget) && (_defaultTarget.Target != null))
 				{
 					_defaultTarget.Target.Resource.Dispose();
 					_defaultTarget = default(Gorgon2DTarget);
@@ -1319,8 +1277,7 @@ namespace GorgonLibrary.Renderers
 
 				Graphics.RemoveTrackedObject(this);
 			}
-
-			Icons = null;
+			
 			_disposed = true;
 		}
 

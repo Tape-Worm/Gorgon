@@ -218,13 +218,13 @@ namespace GorgonLibrary.Renderers
 		{
 			
 #if DEBUG
-			PixelShader = Graphics.Shaders.CreateShader<GorgonPixelShader>("Effect.2D.Wave.PS", "GorgonPixelShaderWaveEffect", "#GorgonInclude \"Gorgon2DShaders\"", true);
+			PixelShader = Graphics.ImmediateContext.Shaders.CreateShader<GorgonPixelShader>("Effect.2D.Wave.PS", "GorgonPixelShaderWaveEffect", "#GorgonInclude \"Gorgon2DShaders\"", true);
 #else
-			PixelShader = Graphics.Shaders.CreateShader<GorgonPixelShader>("Effect.2D.Wave.PS", "GorgonPixelShaderWaveEffect", "#GorgonInclude \"Gorgon2DShaders\"", false);
+			PixelShader = Graphics.ImmediateContext.Shaders.CreateShader<GorgonPixelShader>("Effect.2D.Wave.PS", "GorgonPixelShaderWaveEffect", "#GorgonInclude \"Gorgon2DShaders\"", false);
 #endif
 
 			_waveStream = new GorgonDataStream(16);
-			_waveBuffer = Graphics.Buffers.CreateConstantBuffer("Gorgon2DWaveEffect Constant Buffer",
+			_waveBuffer = Graphics.ImmediateContext.Buffers.CreateConstantBuffer("Gorgon2DWaveEffect Constant Buffer",
 																new GorgonConstantBufferSettings
 																{
 																	SizeInBytes = 16

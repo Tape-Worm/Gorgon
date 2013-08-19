@@ -77,7 +77,7 @@ namespace GorgonLibrary.Renderers
 					return;
 				}
 
-				_gorgon2D.RenderObjects();
+				_gorgon2D.Flush();
 
 				Graphics.Shaders.VertexShader.Current = value ?? DefaultVertexShader;
 
@@ -162,13 +162,13 @@ namespace GorgonLibrary.Renderers
 			if (DefaultVertexShader == null)
 			{
 #if DEBUG
-				DefaultVertexShader = Graphics.Shaders.CreateShader<GorgonVertexShader>("Default_Basic_Vertex_Shader", "GorgonVertexShader", "#GorgonInclude \"Gorgon2DShaders\"", true);
+				DefaultVertexShader = Graphics.ImmediateContext.Shaders.CreateShader<GorgonVertexShader>("Default_Basic_Vertex_Shader", "GorgonVertexShader", "#GorgonInclude \"Gorgon2DShaders\"", true);
 #else
-				DefaultVertexShader = Graphics.Shaders.CreateShader<GorgonVertexShader>("Default_Basic_Vertex_Shader", "GorgonVertexShader", "#GorgonInclude \"Gorgon2DShaders\"", true);
+				DefaultVertexShader = Graphics.ImmediateContext.Shaders.CreateShader<GorgonVertexShader>("Default_Basic_Vertex_Shader", "GorgonVertexShader", "#GorgonInclude \"Gorgon2DShaders\"", true);
 #endif
 			}
 
-			ProjectionViewMatrixBuffer = Graphics.Buffers.CreateConstantBuffer("Gorgon2D Projection/View Matrix Constant Buffer",
+			ProjectionViewMatrixBuffer = Graphics.ImmediateContext.Buffers.CreateConstantBuffer("Gorgon2D Projection/View Matrix Constant Buffer",
 																				 new GorgonConstantBufferSettings
 																				 {
 																					 SizeInBytes = Matrix.SizeInBytes,

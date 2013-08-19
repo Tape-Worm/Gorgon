@@ -169,19 +169,17 @@ namespace GorgonLibrary.Renderers
 			}
 			set
 			{
-				if (value != base.Texture)
+				if (value == base.Texture)
 				{
-					base.Texture = value;
-
-					// Assign the texture name.
-					if (Texture != null)
-						_textureName = Texture.Name;
-					else
-						_textureName = string.Empty;
-
-
-					NeedsTextureUpdate = true;
+					return;
 				}
+
+				base.Texture = value;
+
+				// Assign the texture name.
+				_textureName = Texture != null ? Texture.Name : string.Empty;
+
+				NeedsTextureUpdate = true;
 			}
 		}
 		#endregion
@@ -710,28 +708,31 @@ namespace GorgonLibrary.Renderers
 		{
 			get
 			{
-                if (Texture == null)
-                {
-                    // Check to see if the texture is loaded.
-                    if (!string.IsNullOrWhiteSpace(_textureName))
-                    {
-                        GetDeferredTexture();
-                    }
-                    return _textureName;
-                }
+				if (Texture != null)
+				{
+					return Texture.Name;
+				}
 
-                return Texture.Name;
+				// Check to see if the texture is loaded.
+				if (!string.IsNullOrWhiteSpace(_textureName))
+				{
+					GetDeferredTexture();
+				}
+
+				return _textureName;
 			}
 			set
 			{
 				if (value == null)
 					value = string.Empty;
 
-				if (!string.Equals(_textureName, value, StringComparison.OrdinalIgnoreCase))
+				if (string.Equals(_textureName, value, StringComparison.OrdinalIgnoreCase))
 				{
-					_textureName = value;
-					GetDeferredTexture();
+					return;
 				}
+
+				_textureName = value;
+				GetDeferredTexture();
 			}
 		}
 

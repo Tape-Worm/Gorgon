@@ -90,7 +90,7 @@ namespace GorgonLibrary.Renderers
 					return;
 				}
 
-				_gorgon2D.RenderObjects();
+				_gorgon2D.Flush();
 
 				if (value == null)
 				{
@@ -208,15 +208,15 @@ namespace GorgonLibrary.Renderers
 			_gorgon2D = gorgon2D;
 
 #if DEBUG
-			DefaultPixelShaderDiffuse = Graphics.Shaders.CreateShader<GorgonPixelShader>("Default_Basic_Pixel_Shader_Diffuse", "GorgonPixelShaderDiffuse", "#GorgonInclude \"Gorgon2DShaders\"", true);
-			DefaultPixelShaderTextured = Graphics.Shaders.CreateShader<GorgonPixelShader>("Default_Basic_Pixel_Shader_Texture", "GorgonPixelShaderTextured", "#GorgonInclude \"Gorgon2DShaders\"", true);
+			DefaultPixelShaderDiffuse = Graphics.ImmediateContext.Shaders.CreateShader<GorgonPixelShader>("Default_Basic_Pixel_Shader_Diffuse", "GorgonPixelShaderDiffuse", "#GorgonInclude \"Gorgon2DShaders\"", true);
+			DefaultPixelShaderTextured = Graphics.ImmediateContext.Shaders.CreateShader<GorgonPixelShader>("Default_Basic_Pixel_Shader_Texture", "GorgonPixelShaderTextured", "#GorgonInclude \"Gorgon2DShaders\"", true);
 #else
-			DefaultPixelShaderDiffuse = Graphics.Shaders.CreateShader<GorgonPixelShader>("Default_Basic_Pixel_Shader_Diffuse", "GorgonPixelShaderDiffuse", "#GorgonInclude \"Gorgon2DShaders\"", false);
-			DefaultPixelShaderTextured = Graphics.Shaders.CreateShader<GorgonPixelShader>("Default_Basic_Pixel_Shader_Texture", "GorgonPixelShaderTextured", "#GorgonInclude \"Gorgon2DShaders\"", false);
+			DefaultPixelShaderDiffuse = Graphics.ImmediateContext.Shaders.CreateShader<GorgonPixelShader>("Default_Basic_Pixel_Shader_Diffuse", "GorgonPixelShaderDiffuse", "#GorgonInclude \"Gorgon2DShaders\"", false);
+			DefaultPixelShaderTextured = Graphics.ImmediateContext.Shaders.CreateShader<GorgonPixelShader>("Default_Basic_Pixel_Shader_Texture", "GorgonPixelShaderTextured", "#GorgonInclude \"Gorgon2DShaders\"", false);
 #endif
 			var alphaTestValues = new Gorgon2DAlphaTest(gorgon2D.IsAlphaTestEnabled, GorgonRangeF.Empty);
 
-			AlphaTestValuesBuffer = Graphics.Buffers.CreateConstantBuffer("Gorgon2D Alpha Test Constant Buffer",
+			AlphaTestValuesBuffer = Graphics.ImmediateContext.Buffers.CreateConstantBuffer("Gorgon2D Alpha Test Constant Buffer",
 																			new GorgonConstantBufferSettings
 																			{
 																				SizeInBytes = DirectAccess.SizeOf<Gorgon2DAlphaTest>()
