@@ -143,8 +143,8 @@ namespace GorgonLibrary.Renderers
 				_isUpdated = false;
 			}
 
-			if (Gorgon2D.PixelShader.ConstantBuffers[2] != _sobelBuffer)
-			    Gorgon2D.PixelShader.ConstantBuffers[2] = _sobelBuffer;
+			if (Gorgon2D.PixelShader.ConstantBuffers[1] != _sobelBuffer)
+			    Gorgon2D.PixelShader.ConstantBuffers[1] = _sobelBuffer;
 		}
 
 		/// <summary>

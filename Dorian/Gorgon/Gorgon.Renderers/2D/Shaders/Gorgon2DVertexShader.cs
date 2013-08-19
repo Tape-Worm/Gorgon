@@ -24,6 +24,7 @@
 // 
 #endregion
 
+using SlimMath;
 using GorgonLibrary.Graphics;
 
 namespace GorgonLibrary.Renderers
@@ -35,14 +36,25 @@ namespace GorgonLibrary.Renderers
 		: GorgonVertexShaderState
 	{
 		#region Variables.
-		private readonly Gorgon2D _gorgon2D;				// The 2D interface that owns this object.
+		private readonly Gorgon2D _gorgon2D;					// The 2D interface that owns this object.
 		#endregion
 
 		#region Properties.
 		/// <summary>
 		/// Property to return the default vertex shader.
 		/// </summary>
-		internal GorgonVertexShader DefaultVertexShader
+		public GorgonVertexShader DefaultVertexShader
+		{
+			get;
+			private set;
+		}
+
+		/// <summary>
+		/// Property to return the buffer used to update the projection/view matrix for the vertex shader.
+		/// </summary>
+		/// <remarks>This buffer is always placed in slot 0 of the <see cref="GorgonShaderState{T}.ConstantBuffers">constant buffer list</see>.  If another buffer is found in this 
+		/// location, then it will be overridden by this buffer.</remarks>
+		public GorgonConstantBuffer ProjectionViewMatrixBuffer
 		{
 			get;
 			private set;
@@ -59,25 +71,25 @@ namespace GorgonLibrary.Renderers
 			}
 			set
 			{
-				if (((Graphics.Shaders.VertexShader.Current != value) && (value != null)) || ((value == null) && (Graphics.Shaders.VertexShader.Current != DefaultVertexShader)))
+				if (((Graphics.Shaders.VertexShader.Current == value) || (value == null)) &&
+				    ((value != null) || (Graphics.Shaders.VertexShader.Current == DefaultVertexShader)))
 				{
-					_gorgon2D.RenderObjects();
-
-					if (value == null)
-						Graphics.Shaders.VertexShader.Current = DefaultVertexShader;
-					else
-						Graphics.Shaders.VertexShader.Current = value;
-
-					// Assign buffers.
-					Graphics.Shaders.VertexShader.ConstantBuffers[0] = _gorgon2D.ProjectionViewBuffer;
+					return;
 				}
+
+				_gorgon2D.RenderObjects();
+
+				Graphics.Shaders.VertexShader.Current = value ?? DefaultVertexShader;
+
+				// Assign buffers.
+				ConstantBuffers[0] = ProjectionViewMatrixBuffer;
 			}
 		}
 
 		/// <summary>
 		/// Property to return the list of constant buffers for the vertex shader.
 		/// </summary>
-		public override GorgonShaderState<GorgonVertexShader>.ShaderConstantBuffers ConstantBuffers
+		public override ShaderConstantBuffers ConstantBuffers
 		{
 			get
 			{
@@ -90,7 +102,7 @@ namespace GorgonLibrary.Renderers
 		/// </summary>
 		/// <remarks>On a SM2_a_b device, and while using a Vertex Shader, setting a sampler will raise an exception.</remarks>
 		/// <exception cref="System.InvalidOperationException">Thrown when the current video device is a SM2_a_b device.</exception>
-		public override GorgonShaderState<GorgonVertexShader>.TextureSamplerState TextureSamplers
+		public override TextureSamplerState TextureSamplers
 		{
 			get
 			{
@@ -103,7 +115,7 @@ namespace GorgonLibrary.Renderers
 		/// </summary>
 		/// <remarks>On a SM2_a_b device, and while using a Vertex Shader, setting a texture will raise an exception.</remarks>
 		/// <exception cref="System.InvalidOperationException">Thrown when the current video device is a SM2_a_b device.</exception>
-		public override GorgonShaderState<GorgonVertexShader>.ShaderResourceViews Resources
+		public override ShaderResourceViews Resources
 		{
 			get
 			{
@@ -118,12 +130,22 @@ namespace GorgonLibrary.Renderers
 		/// </summary>
 		internal void CleanUp()
 		{
+			ConstantBuffers[0] = null;
+
 		    if (DefaultVertexShader != null)
 		    {
 		        DefaultVertexShader.Dispose();
 		    }
 
 		    DefaultVertexShader = null;
+
+			if (ProjectionViewMatrixBuffer == null)
+			{
+				return;
+			}
+
+			ProjectionViewMatrixBuffer.Dispose();
+			ProjectionViewMatrixBuffer = null;
 		}
 		#endregion
 
@@ -145,6 +167,12 @@ namespace GorgonLibrary.Renderers
 				DefaultVertexShader = Graphics.Shaders.CreateShader<GorgonVertexShader>("Default_Basic_Vertex_Shader", "GorgonVertexShader", "#GorgonInclude \"Gorgon2DShaders\"", true);
 #endif
 			}
+
+			ProjectionViewMatrixBuffer = Graphics.Buffers.CreateConstantBuffer("Gorgon2D Projection/View Matrix Constant Buffer",
+																				 new GorgonConstantBufferSettings
+																				 {
+																					 SizeInBytes = Matrix.SizeInBytes,
+																				 });
 		}
 		#endregion
 	}

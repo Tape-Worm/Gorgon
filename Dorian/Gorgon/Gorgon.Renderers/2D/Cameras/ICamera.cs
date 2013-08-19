@@ -28,35 +28,12 @@ using SlimMath;
 
 namespace GorgonLibrary.Renderers
 {
-    /// <summary>
-    /// The camera type.
-    /// </summary>
-    public enum CameraType
-    {
-        /// <summary>
-        /// A camera with orthogonal projection.
-        /// </summary>
-        Ortho = 0,
-        /// <summary>
-        /// A camera with perspective projection.
-        /// </summary>
-        Perspective = 1
-    }
-
 	/// <summary>
 	/// A camera interface.
 	/// </summary>
 	public interface ICamera
 	{
 		#region Properties.
-		/// <summary>
-		/// Property to return the pre-multiplied projection/view matrix.
-		/// </summary>
-		Matrix ViewProjection
-		{
-			get;
-		}
-
 		/// <summary>
 		/// Property to return the projection matrix for the camera.
 		/// </summary>
@@ -74,44 +51,41 @@ namespace GorgonLibrary.Renderers
 		}
 
 		/// <summary>
-		/// Property to return whether the projection matrix needs updating.
+		/// Property to return whether the camera needs updating.
 		/// </summary>
-		bool NeedsProjectionUpdate
+		bool NeedsUpdate
 		{
 			get;
 		}
 
 		/// <summary>
-		/// Property to return whether the view matrix needs updating.
+		/// Property to set or return whether to allow the renderer to automatically update this camera.
 		/// </summary>
-		bool NeedsViewUpdate
+		/// <remarks>Setting this to TRUE and setting this camera as the active camera for the renderer will allow the renderer to update the camera projection when the render target is resized.</remarks>
+		bool AutoUpdate
 		{
 			get;
+			set;
 		}
 		#endregion
 
 		#region Methods.
 		/// <summary>
-		/// Function to calculate the projection matrix.
+		/// Function to update the projection matrix from a specified region.
 		/// </summary>
-		void CalculateProjectionMatrix();
-
-		/// <summary>
-		/// Function to update the projection matrix from the current target.
-		/// </summary>
-		/// <param name="width">The width of the target.</param>
-		/// <param name="height">The height of the target.</param>
-		void UpdateFromTarget(float width, float height);
-
-		/// <summary>
-		/// Function to update the camera if necessary.
-		/// </summary>
-		void Update();
+		/// <param name="offset">The offset of the region.</param>
+		/// <param name="size">The width and the height for the region.</param>
+		void UpdateRegion(Vector2 offset, Vector2 size);
 
 		/// <summary>
 		/// Function to draw the camera icon.
 		/// </summary>
 		void Draw();
+
+		/// <summary>
+		/// Function to update the view projection matrix for the camera and populate a view/projection constant buffer.
+		/// </summary>
+		void Update();
 		#endregion
 	}
 }

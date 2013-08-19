@@ -87,7 +87,7 @@ namespace GorgonLibrary.Graphics
                 return;
             }
 
-            Resource.Graphics.Context.ClearRenderTargetView(D3DView, color.SharpDXColor4);
+		    Resource.Graphics.Context.ClearRenderTargetView(D3DView, color.SharpDXColor4);
         }
         #endregion
 

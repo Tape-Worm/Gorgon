@@ -79,8 +79,8 @@ namespace GorgonLibrary.Renderers
 		/// <remarks>The <paramref name="renderMethod"/> is an action delegate that must be defined with an integer value.  The parameter indicates which pass the rendering is currently on.</remarks>
 		protected override void RenderImpl(Action<int> renderMethod, int passIndex)
 		{
-			if (Gorgon2D.PixelShader.ConstantBuffers[2] != _invertBuffer)
-				Gorgon2D.PixelShader.ConstantBuffers[2] = _invertBuffer;
+			if (Gorgon2D.PixelShader.ConstantBuffers[1] != _invertBuffer)
+				Gorgon2D.PixelShader.ConstantBuffers[1] = _invertBuffer;
 
 			base.RenderImpl(renderMethod, passIndex);
 		}

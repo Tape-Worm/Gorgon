@@ -194,7 +194,7 @@ namespace GorgonLibrary.Renderers
 			_previousStates.Save(renderer.Graphics);
 
 			// Perform set up.
-			renderer.Setup();
+			//renderer.Setup();
 
 			// Set this as the active renderer.
 			_currentRenderer = renderer;
@@ -224,7 +224,7 @@ namespace GorgonLibrary.Renderers
 				return;
 			}
 
-		    renderer.ClearCache();
+		    //renderer.ClearCache();
 			_previousStates.Restore(renderer.Graphics);
 			_previousStates = null;
 			_currentRenderer = null;

@@ -43,11 +43,10 @@ namespace GorgonLibrary.Renderers
 		private Size _targetSize = new Size(512, 512);							// Displacement target size.
 		private BufferFormat _targetFormat = BufferFormat.R8G8B8A8_UIntNormal;	// Format for the displacement target.
 		private readonly GorgonConstantBuffer _displacementBuffer;				// Buffer used to send displacement data.
-		private readonly GorgonDataStream _displacementStream;					// Stream used to update the displacement buffer.
 		private bool _isUpdated = true;											// Flag to indicate that the parameters have been updated.
 		private float _displacementStrength = 1.0f;								// Strength of the displacement map.
 		private SmoothingMode _lastSmoothMode = SmoothingMode.None;				// Last global smoothing state.
-		private GorgonRenderTarget2D _currentTarget;							// Current render target.
+		private GorgonRenderTargetView _currentTarget;							// Current render target.
 		#endregion
 
 		#region Properties.
@@ -164,7 +163,7 @@ namespace GorgonLibrary.Renderers
 
 			_currentTarget = Gorgon2D.Target;
 
-			Gorgon2D.PixelShader.ConstantBuffers[2] = _displacementBuffer;
+			Gorgon2D.PixelShader.ConstantBuffers[1] = _displacementBuffer;
 
 			return base.OnBeforeRender();
 		}
@@ -179,10 +178,9 @@ namespace GorgonLibrary.Renderers
 
 			if (_isUpdated)
 			{
-				_displacementStream.Position = 0;
-				_displacementStream.Write(new Vector4(1.0f / _targetSize.Width, 1.0f / _targetSize.Height, _displacementStrength, 0));
-				_displacementStream.Position = 0;
-				_displacementBuffer.Update(_displacementStream);
+				var settings = new Vector4(1.0f / _targetSize.Width, 1.0f / _targetSize.Height, _displacementStrength, 0);
+				
+				_displacementBuffer.Update(ref settings);
 				_isUpdated = false;
 			}
 
@@ -190,28 +188,15 @@ namespace GorgonLibrary.Renderers
 			{
 				_displacementTarget.Clear(GorgonColor.Transparent);
 				Gorgon2D.PixelShader.Current = null;
+				Gorgon2D.PixelShader.Resources[1] = null;
 				Gorgon2D.Target = _displacementTarget;
 			}
 			else
 			{
-				_lastSmoothMode = Gorgon2D.Drawing.SmoothingMode;
-				Gorgon2D.Drawing.SmoothingMode = SmoothingMode.Smooth;
 				Gorgon2D.PixelShader.Current = PixelShader;
 				Gorgon2D.Target = _currentTarget;
-				if (Gorgon2D.PixelShader.Resources[1] != GorgonTexture.ToShaderView(_displacementTarget))
-					Gorgon2D.PixelShader.Resources[1] = _displacementTarget;
+				Gorgon2D.PixelShader.Resources[1] = _displacementTarget;
 			}				
-		}
-
-		/// <summary>
-		/// Function called after a pass has rendered.
-		/// </summary>
-		/// <param name="passIndex">Index of the pass being rendered.</param>
-		protected override void OnAfterRenderPass(int passIndex)
-		{
-			base.OnAfterRenderPass(passIndex);
-			if ((passIndex == 1) && (Gorgon2D.Drawing.SmoothingMode != _lastSmoothMode))
-				Gorgon2D.Drawing.SmoothingMode = _lastSmoothMode;
 		}
 
 		/// <summary>
@@ -224,10 +209,9 @@ namespace GorgonLibrary.Renderers
 			{
 				if (disposing)
 				{
-					if (disposing)
+					if (PixelShader != null)
 					{
-						if (PixelShader != null)
-							PixelShader.Dispose();
+						PixelShader.Dispose();
 					}
 				}
 
@@ -259,7 +243,6 @@ namespace GorgonLibrary.Renderers
 																{
 																	SizeInBytes = 16
 																});
-			_displacementStream = new GorgonDataStream(16);
 		}
 		#endregion
 	}

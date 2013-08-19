@@ -131,6 +131,8 @@ namespace GorgonLibrary.Graphics
 			GorgonRenderStatistics.DepthBufferCount++;
 			GorgonRenderStatistics.DepthBufferSize += SizeInBytes;
 
+			InitializeResourceViews();
+
 			_defaultView = GetDepthStencilView(Settings.Format, 0, 0, 1, Settings.DefaultDepthStencilViewFlags);
 		}
 
@@ -143,7 +145,10 @@ namespace GorgonLibrary.Graphics
 		{
 			bool result = (Graphics.Output.DepthStencilView != null) && (Graphics.Output.DepthStencilView.Resource == this);
 
-			CleanUpResource();
+			ReleaseResourceViews();
+
+			D3DResource.Dispose();
+	        D3DResource = null;
 
 			return result;
 		}

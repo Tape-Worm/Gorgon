@@ -7,7 +7,7 @@ Texture2D _gorgonTexture : register(t0);
 SamplerState _gorgonSampler : register(s0);
 
 // Additional effect texture buffer.
-Texture2D<float4> _gorgonEffectTexture : register(t1);
+Texture2D _gorgonEffectTexture : register(t1);
 SamplerState _gorgonEffectSampler : register(s1);
 
 // Our default sprite vertex.
@@ -18,14 +18,14 @@ struct GorgonSpriteVertex
    float2 uv : TEXCOORD;
 };
 
-// The transformation matrices.
+// The transformation matrices (for vertex shader).
 cbuffer GorgonViewProjection : register(b0)
 {
 	float4x4 ViewProjection;
 }
 
-// Alpha test value.
-cbuffer GorgonAlphaTest : register(b1)
+// Alpha test value (for pixel shader).
+cbuffer GorgonAlphaTest : register(b0)
 {
 	bool alphaTestEnabled = false;
 	float alphaTestValueLow = 0.0f;
@@ -241,7 +241,9 @@ float4 GorgonPixelShaderGaussBlur(GorgonSpriteVertex vertex) : SV_Target
 
 	[unroll]	
 	for (int i = 0; i < kernelSize; i++)
-		sample += _gorgonTexture.Sample(_gorgonSampler, vertex.uv + _offsets[i]) * vertex.color * _weights[i];
+	{
+		sample += _gorgonTexture.Sample(_gorgonSampler, vertex.uv + _offsets[i]) * vertex.color * _weights[i];	
+	}
 
 	return sample;
 }

@@ -176,8 +176,8 @@ namespace GorgonLibrary.Renderers
 			if (_isUpdated)
 				SetValues();
 
-			if (Gorgon2D.PixelShader.ConstantBuffers[2] != _waveBuffer)
-				Gorgon2D.PixelShader.ConstantBuffers[2] = _waveBuffer;
+			if (Gorgon2D.PixelShader.ConstantBuffers[1] != _waveBuffer)
+				Gorgon2D.PixelShader.ConstantBuffers[1] = _waveBuffer;
 
 		}
 

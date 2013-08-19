@@ -179,21 +179,22 @@ namespace GorgonLibrary.Editor
 			var defaultTarget = _2D.DefaultTarget;
 			RectangleF logoBounds = RectangleF.Empty;
 			SizeF logoSize = _logo.Settings.Size;
+			SizeF screenSize = _container.ClientSize;
 			float aspect = 0.0f;
 						
 			_2D.Clear(_container.BackColor);
 
 			logoSize.Height = 256;
 
-			if (defaultTarget.Settings.Width < logoSize.Width)
-				logoBounds.Width = logoSize.Width * defaultTarget.Settings.Width / logoSize.Width;
+			if (screenSize.Width < logoSize.Width)
+				logoBounds.Width = logoSize.Width * screenSize.Width / logoSize.Width;
 			else
 				logoBounds.Width = logoSize.Width;
 
 			aspect = logoSize.Height / logoSize.Width;
-			logoBounds.Height = logoBounds.Width * aspect;						
-			logoBounds.X = defaultTarget.Settings.Width / 2.0f - logoBounds.Width / 2.0f;
-			logoBounds.Y = defaultTarget.Settings.Height / 2.0f - logoBounds.Height / 2.0f;
+			logoBounds.Height = logoBounds.Width * aspect;
+			logoBounds.X = screenSize.Width / 2.0f - logoBounds.Width / 2.0f;
+			logoBounds.Y = screenSize.Height / 2.0f - logoBounds.Height / 2.0f;
 
 			_2D.Drawing.SmoothingMode = SmoothingMode.Smooth;
 			_2D.Drawing.BlendingMode = BlendingMode.Modulate;

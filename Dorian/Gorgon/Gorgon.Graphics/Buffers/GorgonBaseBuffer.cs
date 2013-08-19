@@ -907,7 +907,7 @@ namespace GorgonLibrary.Graphics
 		/// </remarks>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="data"/> parameter is NULL (Nothing in VB.Net).</exception>
 		/// <exception cref="GorgonLibrary.GorgonException">Thrown when the buffer does not have a usage of Default.</exception>
-		public void Update<T>(T[] data, GorgonGraphics deferred = null)
+		public virtual void Update<T>(T[] data, GorgonGraphics deferred = null)
 			where T : struct
 		{
 			GorgonDebug.AssertNull(data, "data");
@@ -925,7 +925,7 @@ namespace GorgonLibrary.Graphics
             }
 
 			deferred.Context.UpdateSubresource(data, D3DResource, 0, DirectAccess.SizeOf<T>() * data.Length, 0,
-			                                   new D3D.ResourceRegion(0, 0, 0, SizeInBytes, 1, 1));
+				new D3D.ResourceRegion(0, 0, 0, SizeInBytes, 1, 1));
 		}
 		
 		/// <summary>

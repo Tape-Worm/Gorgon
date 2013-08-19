@@ -229,7 +229,11 @@ namespace GorgonLibrary.Graphics
 			var currentTarget = Graphics.Output.GetRenderTarget(0);
 			bool result = currentTarget != null && currentTarget.Resource == this;
 
-			CleanUpResource();
+			ReleaseResourceViews();
+
+			// Destroy the resource data.
+			D3DResource.Dispose();
+			D3DResource = null;
 
 			return result;
 		}
@@ -277,6 +281,9 @@ namespace GorgonLibrary.Graphics
 
 			// Set default viewport.
 			Viewport = new GorgonViewport(0, 0, Settings.Width, Settings.Height, 0.0f, 1.0f);
+
+			// Re-initialize any released resource views.
+			InitializeResourceViews();
 
             CreateDepthStencilBuffer();
 

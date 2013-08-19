@@ -25,6 +25,7 @@
 #endregion
 
 using GorgonLibrary.Graphics;
+using GorgonLibrary.Native;
 
 namespace GorgonLibrary.Renderers
 {
@@ -35,14 +36,14 @@ namespace GorgonLibrary.Renderers
 		: GorgonPixelShaderState
 	{
 		#region Variables.
-		private readonly Gorgon2D _gorgon2D;				// The 2D interface that owns this object.
+		private readonly Gorgon2D _gorgon2D;							// The 2D interface that owns this object.
 		#endregion
 
 		#region Properties.
 		/// <summary>
 		/// Property to return the default diffuse pixel shader with alpha testing.
 		/// </summary>
-		internal GorgonPixelShader DefaultPixelShaderDiffuse
+		public GorgonPixelShader DefaultPixelShaderDiffuse
 		{
 			get;
 			private set;
@@ -51,12 +52,23 @@ namespace GorgonLibrary.Renderers
 		/// <summary>
 		/// Property to return the default textured pixel shader with alpha testing.
 		/// </summary>
-		internal GorgonPixelShader DefaultPixelShaderTextured
+		public GorgonPixelShader DefaultPixelShaderTextured
 		{
 			get;
 			private set;
 		}
-		
+
+		/// <summary>
+		/// Property to return the buffer used to update the values used for alpha testing.
+		/// </summary>
+		/// <remarks>This buffer is always placed in slot 0 of the <see cref="GorgonShaderState{T}.ConstantBuffers">constant buffer list</see>.  If another buffer is found in this 
+		/// location, then it will be overridden by thhe alpha test buffer.</remarks>
+		public GorgonConstantBuffer AlphaTestValuesBuffer
+		{
+			get;
+			private set;
+		}
+
 		/// <summary>
 		/// Property to set or return the current pixel shader.
 		/// </summary>
@@ -71,32 +83,36 @@ namespace GorgonLibrary.Renderers
 			}
 			set
 			{
-				if (((Graphics.Shaders.PixelShader.Current != value) && (value != null)) || ((value == null) && (Graphics.Shaders.PixelShader.Current != DefaultPixelShaderTextured) && (Graphics.Shaders.PixelShader.Current != DefaultPixelShaderDiffuse)))
+				if (((Graphics.Shaders.PixelShader.Current == value) || (value == null)) &&
+				    ((value != null) || (Graphics.Shaders.PixelShader.Current == DefaultPixelShaderTextured) ||
+				     (Graphics.Shaders.PixelShader.Current == DefaultPixelShaderDiffuse)))
 				{
-					_gorgon2D.RenderObjects();
-
-					if (value == null)
-					{
-						// If we have a texture in the first slot, then set the proper shader.
-						if (Graphics.Shaders.PixelShader.Resources[0] == null)
-							Graphics.Shaders.PixelShader.Current = DefaultPixelShaderDiffuse;
-						else
-							Graphics.Shaders.PixelShader.Current = DefaultPixelShaderTextured;
-					}
-					else
-						Graphics.Shaders.PixelShader.Current = value;
-
-					// Assign buffers.
-					Graphics.Shaders.PixelShader.ConstantBuffers[0] = _gorgon2D.ProjectionViewBuffer;
-					Graphics.Shaders.PixelShader.ConstantBuffers[1] = _gorgon2D.AlphaTestBuffer;
+					return;
 				}
+
+				_gorgon2D.RenderObjects();
+
+				if (value == null)
+				{
+					// If we have a texture in the first slot, then set the proper shader.
+					Graphics.Shaders.PixelShader.Current = Graphics.Shaders.PixelShader.Resources[0] == null
+						? DefaultPixelShaderDiffuse
+						: DefaultPixelShaderTextured;
+				}
+				else
+				{
+					Graphics.Shaders.PixelShader.Current = value;
+				}
+
+				// Assign buffers.
+				ConstantBuffers[0] = AlphaTestValuesBuffer;
 			}
 		}
 
 		/// <summary>
 		/// Property to return the list of constant buffers for the pixel shader.
 		/// </summary>
-		public override GorgonShaderState<GorgonPixelShader>.ShaderConstantBuffers ConstantBuffers
+		public override ShaderConstantBuffers ConstantBuffers
 		{
 			get
 			{
@@ -109,7 +125,7 @@ namespace GorgonLibrary.Renderers
 		/// </summary>
 		/// <remarks>On a SM2_a_b device, and while using a Vertex Shader, setting a sampler will raise an exception.</remarks>
 		/// <exception cref="System.InvalidOperationException">Thrown when the current video device is a SM2_a_b device.</exception>
-		public override GorgonShaderState<GorgonPixelShader>.TextureSamplerState TextureSamplers
+		public override TextureSamplerState TextureSamplers
 		{
 			get
 			{
@@ -122,7 +138,7 @@ namespace GorgonLibrary.Renderers
 		/// </summary>
 		/// <remarks>On a SM2_a_b device, and while using a Vertex Shader, setting a texture will raise an exception.</remarks>
 		/// <exception cref="System.InvalidOperationException">Thrown when the current video device is a SM2_a_b device.</exception>
-		public override GorgonShaderState<GorgonPixelShader>.ShaderResourceViews Resources
+		public override ShaderResourceViews Resources
 		{
 			get
 			{
@@ -140,11 +156,15 @@ namespace GorgonLibrary.Renderers
 		{
 			// If we have a texture change, and we have the default diffuse shader loaded, then switch to the textured shader.
 			if ((texture != null) && (Graphics.Shaders.PixelShader.Current == DefaultPixelShaderDiffuse))
+			{
 				Current = DefaultPixelShaderTextured;
+			}
 
 			// If we have a texture change, and we have the default textured shader loaded, then switch to the diffuse shader.
 			if ((texture == null) && (Graphics.Shaders.PixelShader.Current == DefaultPixelShaderTextured))
+			{
 				Current = DefaultPixelShaderDiffuse;
+			}
 		}
 
 		/// <summary>
@@ -152,7 +172,9 @@ namespace GorgonLibrary.Renderers
 		/// </summary>
 		internal void CleanUp()
 		{
-		    if (DefaultPixelShaderDiffuse != null)
+			ConstantBuffers[0] = null;
+			
+			if (DefaultPixelShaderDiffuse != null)
 		    {
 		        DefaultPixelShaderDiffuse.Dispose();
 		    }
@@ -164,6 +186,14 @@ namespace GorgonLibrary.Renderers
 
 		    DefaultPixelShaderTextured = null;
 			DefaultPixelShaderDiffuse = null;
+
+			if (AlphaTestValuesBuffer == null)
+			{
+				return;
+			}
+
+			AlphaTestValuesBuffer.Dispose();
+			AlphaTestValuesBuffer = null;
 		}
 		#endregion
 
@@ -184,6 +214,16 @@ namespace GorgonLibrary.Renderers
 			DefaultPixelShaderDiffuse = Graphics.Shaders.CreateShader<GorgonPixelShader>("Default_Basic_Pixel_Shader_Diffuse", "GorgonPixelShaderDiffuse", "#GorgonInclude \"Gorgon2DShaders\"", false);
 			DefaultPixelShaderTextured = Graphics.Shaders.CreateShader<GorgonPixelShader>("Default_Basic_Pixel_Shader_Texture", "GorgonPixelShaderTextured", "#GorgonInclude \"Gorgon2DShaders\"", false);
 #endif
+			var alphaTestValues = new Gorgon2DAlphaTest(gorgon2D.IsAlphaTestEnabled, GorgonRangeF.Empty);
+
+			AlphaTestValuesBuffer = Graphics.Buffers.CreateConstantBuffer("Gorgon2D Alpha Test Constant Buffer",
+																			new GorgonConstantBufferSettings
+																			{
+																				SizeInBytes = DirectAccess.SizeOf<Gorgon2DAlphaTest>()
+																			});
+
+			// Initialize the alpha testing values.
+			AlphaTestValuesBuffer.Update(ref alphaTestValues);
 		}
 		#endregion
 	}

@@ -415,10 +415,14 @@ namespace GorgonLibrary.Renderers
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="font"/> parameter is NULL (Nothing in VB.Net).</exception>
 		public void DrawString(GorgonFont font, string text, Vector2 position, GorgonColor color, bool useShadow, Vector2 shadowOffset, float shadowOpacity)
 		{
-			GorgonDebug.AssertNull<GorgonFont>(font, "font");
+			GorgonDebug.AssertNull(font, "font");
 
 			if (string.IsNullOrEmpty(text))
+			{
 				return;
+			}
+			
+			SetStates(_string);
 
 			_string.Position = position;
 			_string.Font = font;
@@ -694,6 +698,9 @@ namespace GorgonLibrary.Renderers
 			_depthStencil = new GorgonRenderable.DepthStencilStates();
 			_sampler = new GorgonRenderable.TextureSamplerState();
 			_blend = new GorgonRenderable.BlendState();
+
+			// Default to modulated blending for drawing operations.
+			BlendingMode = BlendingMode.Modulate;
 
 			CullingMode = CullingMode.Back;
 

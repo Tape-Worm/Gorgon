@@ -26,6 +26,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.Globalization;
 using System.IO;
@@ -44,7 +45,9 @@ namespace GorgonLibrary.Graphics.Example
 	/// </summary>
 	static class Program
 	{
-        private static readonly float _maxSimulationFPS = (float)GorgonTiming.FpsToMilliseconds(60) / 1000.0f;  // Maximum FPS for our ball simulation.
+		private const float MaxSimulationFPS = 1 / 55.0f;														// Maximum FPS for our ball simulation.
+		private const float MinSimulationFPS = 1 / 30.0f;														// Minimum FPS for our ball simulation.
+
 		private static MainForm _form;																            // Our application form.
 		private static GorgonGraphics _graphics;														        // Our main graphics interface.
 		private static Gorgon2D _2D;																	        // Our 2D interface.
@@ -58,9 +61,9 @@ namespace GorgonLibrary.Graphics.Example
 		private static GorgonFont _ballFont;															        // Font to display our FPS, etc...
 		private static GorgonRenderTarget2D _ballTarget;											            // Render target for the balls.
 		private static GorgonRenderTarget2D _statsTarget;											            // Render target for statistics.
-		private static GorgonOrthoCamera _camera;													            // Camera.
 		private static StringBuilder _fpsText;														            // Frames per second text.
 		private static StringBuilder _helpText;														            // Help text.
+		private static GorgonText _helpTextSprite;																// Text sprite for our help text.
 		private static bool _showHelp = true;																    // Flag to indicate that the help text should be shown.
 
 		/// <summary>
@@ -160,10 +163,14 @@ namespace GorgonLibrary.Graphics.Example
 				currentBall.Opacity += currentBall.OpacityDelta * frameTime;
 
 				if (currentBall.Rotation > 360.0f)
+				{
 					currentBall.Rotation = currentBall.Rotation - 360.0f;
+				}
 
 				if (currentBall.Rotation < 0.0f)
+				{
 					currentBall.Rotation = currentBall.Rotation + 360.0f;
+				}
 
 				// Adjust position.
 				if ((currentBall.Position.X > _mainScreen.Settings.Width) || (currentBall.Position.X < 0))
@@ -180,23 +187,28 @@ namespace GorgonLibrary.Graphics.Example
 
 				// Adjust scale.
 				if ((currentBall.Scale > 1.5f) || (currentBall.Scale < 0.5f))
+				{
 					currentBall.ScaleDelta = -currentBall.ScaleDelta;
+				}
 
 				// Adjust opacity.
-			    if ((!(currentBall.Opacity > 1.0f))
-			        && (!(currentBall.Opacity < 0.04f)))
+			    if ((currentBall.Opacity <= 1.0f)
+			        && (currentBall.Opacity >= 0.04f))
 			    {
 			        continue;
 			    }
 
-			    if (currentBall.Opacity > 1.0f)
-			        currentBall.Opacity = 1.0f;
+				if (currentBall.Opacity > 1.0f)
+				{
+					currentBall.Opacity = 1.0f;
+				}
 
-			    if (currentBall.Opacity < 0.4f)
+				if (currentBall.Opacity < 0.4f)
 			    {
 			        currentBall.Opacity = 0.4f;
 			        currentBall.Checkered = !currentBall.Checkered;
 			    }
+
 			    currentBall.OpacityDelta = -currentBall.OpacityDelta;
 			}
 		}
@@ -219,20 +231,10 @@ namespace GorgonLibrary.Graphics.Example
 		}
 
 		/// <summary>
-		/// Function to perform rendering with the blur filter.
+		/// Function to draw the balls without any effects.
 		/// </summary>
-		private static void DrawBlurred()
+		private static void DrawNoBlur()
 		{
-			if (_2D.Effects.GaussianBlur.BlurAmount < 10.0f)
-			{
-				_2D.Target = _ballTarget;
-				_2D.Target.Clear(GorgonColor.Transparent);
-				_2D.Camera = _camera;
-				_ball.Blending.DestinationAlphaBlend = BlendType.InverseSourceAlpha;
-			}
-			else
-				_ball.Blending.DestinationAlphaBlend = BlendType.Zero;
-
 			// Draw balls.
 			for (int i = 0; i < _ballCount; i++)
 			{
@@ -246,26 +248,33 @@ namespace GorgonLibrary.Graphics.Example
 
 				_ball.Draw();
 			}
+		}
 
-		    if (!(_2D.Effects.GaussianBlur.BlurAmount < 10.0f))
-		    {
-		        return;
-		    }
+		/// <summary>
+		/// Function to perform rendering with the blur filter.
+		/// </summary>
+		private static void DrawBlurred()
+		{
+			_2D.Target = _ballTarget;
+			_2D.Clear(GorgonColor.Transparent);
+			
+			DrawNoBlur();
 
-		    _2D.Target = null;
-		    _2D.Camera = null;
+			_2D.Target = null;
 
-		    _2D.Effects.GaussianBlur.Render(passIndex =>
+			_2D.Effects.GaussianBlur.Render(passIndex =>
 		        {
-		            if (passIndex == 0)
+					if (passIndex == 0)
 		            {
-		                // Draw using the blur effect.
-		                _2D.Drawing.Blit(_ballTarget, Vector2.Zero);
+						// Draw using the blur effect.
+						_2D.Drawing.SmoothingMode = SmoothingMode.Smooth;
+			            _2D.Drawing.Blit(_ballTarget, new RectangleF(Vector2.Zero, new Vector2(512, 512)));
 		            }
 		            else
-		            {
+					{
 		                // Copy the blurred output.
 		                _2D.Drawing.Blit(_2D.Effects.GaussianBlur.BlurredTexture, new RectangleF(Vector2.Zero, _mainScreen.Settings.Size));
+						_2D.Drawing.SmoothingMode = SmoothingMode.None;
 		            }
 		        });
 		}
@@ -275,14 +284,16 @@ namespace GorgonLibrary.Graphics.Example
 		/// </summary>
 		private static void DrawOverlay()
 		{
+			if (_showHelp)
+			{
+				_helpTextSprite.Draw();
+			}
+
 			_fpsText.Length = 0;
 			_fpsText.AppendFormat("FPS: {0:0.0}\nFrame delta: {1:0.0#} ms\nBall count: {2}", GorgonTiming.AverageFPS, GorgonTiming.AverageDelta * 1000.0f, _ballCount);
 
 			_2D.Drawing.Blit(_statsTarget, Vector2.Zero);
 			_2D.Drawing.DrawString(_ballFont, _fpsText.ToString(), new Vector2(3.0f, 0), Color.White);
-
-			if (_showHelp)
-				_2D.Drawing.DrawString(_ballFont, _helpText.ToString(), new Vector2(3.0f, 72.0f), Color.Yellow, true, new Vector2(2.0f, 2.0f), 0.5f);
 
 			// Draw the draw call counter.
 			_fpsText.Length = 0;
@@ -298,19 +309,34 @@ namespace GorgonLibrary.Graphics.Example
 		private static bool Idle()
 		{
 			// Update the simulation at our desired frame rate.
-			if (GorgonTiming.Delta < 0.166667f)
-				_accumulator += GorgonTiming.Delta;
-			else
-				_accumulator += 0.166667f;
-
-			while (_accumulator >= _maxSimulationFPS)
+			if (GorgonTiming.Delta < MinSimulationFPS)
 			{
-				Transform(_maxSimulationFPS);
-				_accumulator -= _maxSimulationFPS;
+				_accumulator += GorgonTiming.Delta;
+			}
+			else
+			{
+				_accumulator += MinSimulationFPS;
+			}
+
+			_2D.Clear(GorgonColor.Black);
+
+			while (_accumulator >= MaxSimulationFPS)
+			{
+				Transform(MaxSimulationFPS);
+				_accumulator -= MaxSimulationFPS;
 			}
 
 			DrawBackground();
-			DrawBlurred();
+
+			if (_2D.Effects.GaussianBlur.BlurAmount >= 10.0f)
+			{
+				DrawNoBlur();
+			}
+			else
+			{
+				DrawBlurred();
+			}
+
 			DrawOverlay();
 
 			_2D.Render();
@@ -342,7 +368,12 @@ namespace GorgonLibrary.Graphics.Example
 
 			// Center the display.
 			if (_mainScreen.Settings.IsWindowed)
-				_form.Location = new Point(_mainScreen.VideoOutput.OutputBounds.Width / 2 - _form.Width / 2 + _mainScreen.VideoOutput.OutputBounds.Left, _mainScreen.VideoOutput.OutputBounds.Height / 2 - _form.Height / 2 + _mainScreen.VideoOutput.OutputBounds.Top);
+			{
+				_form.Location =
+					new Point(
+						_mainScreen.VideoOutput.OutputBounds.Width / 2 - _form.Width / 2 + _mainScreen.VideoOutput.OutputBounds.Left,
+						_mainScreen.VideoOutput.OutputBounds.Height / 2 - _form.Height / 2 + _mainScreen.VideoOutput.OutputBounds.Top);
+			}
 
 			// Load the ball texture.
 			_ballTexture = _graphics.Textures.FromFile<GorgonTexture2D>("BallTexture", GetResourcePath(@"Images\BallDemo.png"), new GorgonCodecPNG());
@@ -353,6 +384,7 @@ namespace GorgonLibrary.Graphics.Example
 
 			// Set our drawing code to use modulated blending.
 			_2D.Drawing.BlendingMode = BlendingMode.Modulate;
+			_2D.Drawing.Blending.DestinationAlphaBlend = BlendType.InverseSourceAlpha;
 
 			// Create the wall sprite.
 			_wall = _2D.Renderables.CreateSprite("Wall", new Vector2(63, 63), _ballTexture);
@@ -362,32 +394,57 @@ namespace GorgonLibrary.Graphics.Example
 			_ball = _2D.Renderables.CreateSprite("Ball", new Vector2(64, 64), _ballTexture, new Vector2(0.5f, 0.5f));
 			_ball.SmoothingMode = SmoothingMode.Smooth;
 			_ball.Anchor = new Vector2(32, 32);
+			_ball.Blending.DestinationAlphaBlend = BlendType.InverseSourceAlpha;
 
 			// Create the ball render target.
 			_ballTarget = _graphics.Output.CreateRenderTarget("BallTarget", new GorgonRenderTarget2DSettings
-			    {
+			{
 				DepthStencilFormat = BufferFormat.Unknown,
-				Width = 512,
-				Height = 512,
+				Width = 1280,
+				Height = 800,
 				Format = BufferFormat.R8G8B8A8_UIntNormal,
 				Multisampling = GorgonMultisampling.NoMultiSampling
 			});
-			_2D.Effects.GaussianBlur.BlurRenderTargetsSize = new Size(_ballTarget.Settings.Width, _ballTarget.Settings.Height);
+			_2D.Effects.GaussianBlur.BlurRenderTargetsSize = new Size(512, 512);//new Size(_ballTarget.Settings.Width, _ballTarget.Settings.Height));
 			_2D.Effects.GaussianBlur.BlurAmount = 10.0f;
 
-			_camera = _2D.CreateCamera("Camera", new Vector2(Properties.Settings.Default.ScreenWidth, Properties.Settings.Default.ScreenHeight), 1000.0f);
+		
+			// Ensure that our secondary camera gets updated.
+			_mainScreen.AfterSwapChainResized += (sender, args) =>
+			{
+				// Fix any objects caught outside of the main target.
+				for (int i = 0; i < _ballCount; i++)
+				{
+					_ballList[i].Position.X = _ballList[i].Position.X.Max(0).Min(args.Width);
+					_ballList[i].Position.Y = _ballList[i].Position.Y.Max(0).Min(args.Height);
+				}
+				
+				_ballTarget.Dispose();
+
+				_ballTarget = _graphics.Output.CreateRenderTarget("BallTarget", new GorgonRenderTarget2DSettings
+				{
+					DepthStencilFormat = BufferFormat.Unknown,
+					Width = args.Width,
+					Height = args.Height,
+					Format = BufferFormat.R8G8B8A8_UIntNormal,
+					Multisampling = GorgonMultisampling.NoMultiSampling
+				});
+
+				Debug.Assert(_ballTarget != null, "_ballTarget != null");
+
+				_2D.Effects.GaussianBlur.BlurRenderTargetsSize = new Size(_ballTarget.Settings.Width, _ballTarget.Settings.Height);
+			};
 
 			// Generate the ball list.
 			GenerateBalls(Properties.Settings.Default.BallCount);
 
 			// Assign event handlers.
 			_form.KeyDown += _form_KeyDown;
-			_form.Resize += _form_Resize;
 
 			// Create statistics render target.
 			_statsTarget = _graphics.Output.CreateRenderTarget("Statistics", new GorgonRenderTarget2DSettings
 			{
-				Width = 140,
+				Width = 160,
 				Height = 66,
 				Format = BufferFormat.R8G8B8A8_UIntNormal
 			});
@@ -395,7 +452,8 @@ namespace GorgonLibrary.Graphics.Example
 			// Draw our stats window frame.
 			_2D.Target = _statsTarget;
 			_2D.Clear(new GorgonColor(0, 0, 0, 0.5f));
-			_2D.Drawing.DrawRectangle(new RectangleF(0, 0, 139, 65), new GorgonColor(0.86667f, 0.84314f, 0.7451f, 1.0f));
+			_2D.Drawing.DrawRectangle(new RectangleF(0, 0, _statsTarget.Settings.Width - 1, _statsTarget.Settings.Height - 1),
+				new GorgonColor(0.86667f, 0.84314f, 0.7451f, 1.0f));
 			_2D.Target = null;
 
 			// Create our font.
@@ -406,7 +464,9 @@ namespace GorgonLibrary.Graphics.Example
 				FontFamilyName = "Arial",
 				FontHeightMode = FontHeightMode.Points,
 				Characters = " ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890()_.-+:\u2191\u2193",				
-				Size = 9.0f
+				Size = 9.0f,
+				OutlineColor = GorgonColor.Black,
+				OutlineSize = 1
 			});
 
 			// Statistics text buffer.
@@ -415,32 +475,11 @@ namespace GorgonLibrary.Graphics.Example
 				"\nFeature Level: " + _graphics.VideoDevice.SupportedFeatureLevel +
 				"\nVideo Memory: " + _graphics.VideoDevice.DedicatedVideoMemory.FormatMemory() +
 				"\n\n" + Properties.Resources.HelpText);
-		}
 
-		/// <summary>
-		/// Handles the ResizeEnd event of the _form control.
-		/// </summary>
-		/// <param name="sender">The source of the event.</param>
-		/// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
-		private static void _form_Resize(object sender, EventArgs e)
-		{
-			// Fix any objects caught outside of the main target.
-			for (int i = 0; i < _ballCount; i++)
-			{
-				if (_ballList[i].Position.X < 0)
-					_ballList[i].Position.X = 0;
-
-				if (_ballList[i].Position.Y < 0)
-					_ballList[i].Position.Y = 0;
-
-				if (_ballList[i].Position.X > _mainScreen.Settings.Width)
-					_ballList[i].Position.X = _mainScreen.Settings.Width;
-
-				if (_ballList[i].Position.Y > _mainScreen.Settings.Height)
-					_ballList[i].Position.Y = _mainScreen.Settings.Height;
-			}
-
-			_camera.ViewDimensions = new Vector2(_mainScreen.Settings.Width, _mainScreen.Settings.Height);
+			// Create a static text block.  This will perform MUCH better than drawing the text 
+			// every frame with DrawString.
+			_helpTextSprite = _2D.Renderables.CreateText("Help Text", _ballFont, _helpText.ToString(), Color.Yellow);
+			_helpTextSprite.Position = new Vector2(3, 72);
 		}
 
 		/// <summary>

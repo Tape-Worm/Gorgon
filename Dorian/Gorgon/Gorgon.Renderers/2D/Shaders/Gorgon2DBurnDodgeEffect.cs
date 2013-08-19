@@ -116,8 +116,8 @@ namespace GorgonLibrary.Renderers
 				_isUpdated = false;
 			}
 
-			if (Gorgon2D.PixelShader.ConstantBuffers[2] != _burnDodgeBuffer)
-				Gorgon2D.PixelShader.ConstantBuffers[2] = _burnDodgeBuffer;
+			if (Gorgon2D.PixelShader.ConstantBuffers[1] != _burnDodgeBuffer)
+				Gorgon2D.PixelShader.ConstantBuffers[1] = _burnDodgeBuffer;
 		}
 
 		/// <summary>

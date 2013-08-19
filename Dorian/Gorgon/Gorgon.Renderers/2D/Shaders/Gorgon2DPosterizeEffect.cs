@@ -142,8 +142,7 @@ namespace GorgonLibrary.Renderers
 				_isUpdated = false;
 			}
 
-			if (Gorgon2D.PixelShader.ConstantBuffers[2] != _posterizeBuffer)
-			    Gorgon2D.PixelShader.ConstantBuffers[2] = _posterizeBuffer;
+		    Gorgon2D.PixelShader.ConstantBuffers[1] = _posterizeBuffer;
 		}
 
 		/// <summary>
