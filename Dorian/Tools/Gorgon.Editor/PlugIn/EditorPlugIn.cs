@@ -150,16 +150,8 @@ namespace GorgonLibrary.Editor
         /// <returns>A new content object interface.</returns>
         internal ContentObject CreateContentObject()
         {
-            ContentObject result = OnCreateContentObject();
-
-            if (result != null)
-            {
-                result.InitializeContent();
-            }
-
-            return result;
+            return OnCreateContentObject();
         }
-
 
         /// <summary>
         /// Function to create a tool strip menu item.

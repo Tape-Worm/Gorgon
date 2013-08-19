@@ -33,7 +33,7 @@ namespace GorgonLibrary.Graphics
 	/// An abstract effect used for applying shaders to rendering.
 	/// </summary>
 	/// <remarks>Users may use this to implement custom shading for objects.</remarks>
-	public abstract class GorgonEffect
+	public abstract class GorgonEffect_GOINGBYEBYE
 		: GorgonNamedObject, IDisposable
 	{
 		#region Variables.
@@ -206,12 +206,12 @@ namespace GorgonLibrary.Graphics
 
 		#region Constructor/Destructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonEffect"/> class.
+		/// Initializes a new instance of the <see cref="GorgonEffect_GOINGBYEBYE"/> class.
 		/// </summary>
 		/// <param name="graphics">Graphics interface that created this object.</param>
 		/// <param name="name">The name of the effect.</param>
 		/// <param name="passCount">Number of passes for the effect.</param>
-		protected GorgonEffect(GorgonGraphics graphics, string name, int passCount)
+		protected GorgonEffect_GOINGBYEBYE(GorgonGraphics graphics, string name, int passCount)
 			: base(name)
 		{
 		    if (passCount < 0)

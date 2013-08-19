@@ -416,8 +416,8 @@ namespace GorgonLibrary.Graphics
 		/// <para>Thrown when the parameter list does not contain a required parameter.</para>
 		/// </exception>
 		/// <exception cref="GorgonLibrary.GorgonException">Thrown when the graphics context is deferred.</exception>
-		public T CreateEffect<T>(string name, params GorgonEffectParameter[] parameters)
-			where T : GorgonEffect
+		public T CreateEffect<T>(string name, params GorgonEffectParameter_GOINGBYEBYE[] parameters)
+			where T : GorgonEffect_GOINGBYEBYE
 		{
             if (_graphics.IsDeferred)
             {

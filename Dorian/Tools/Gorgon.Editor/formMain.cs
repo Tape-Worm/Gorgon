@@ -405,11 +405,11 @@ namespace GorgonLibrary.Editor
 
 			var content = fileNode.PlugIn.CreateContentObject();
 
-			// Open the content from the file system.
-			content.OpenContent(fileNode.File);
-
             // Open the content pane.
             LoadContentPane(ref content);
+
+            // Open the content from the file system.
+            content.OpenContent(fileNode.File);
 
 			treeFiles.Refresh();
 		}
@@ -635,7 +635,8 @@ namespace GorgonLibrary.Editor
 			control.Parent = splitPanel1;
 
 			// Activate the content.
-			content.Activate();
+            // TODO: This is no longer necessary.
+			//content.Activate();
 
 			// If the current content has a renderer, then activate it.
 			// Otherwise, turn it off to conserve cycles.
