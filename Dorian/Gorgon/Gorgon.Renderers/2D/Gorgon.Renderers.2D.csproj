@@ -67,7 +67,6 @@
     <Compile Include="Collision\Gorgon2DCollider.cs" />
     <Compile Include="Collision\I2DCollisionObject.cs" />
     <Compile Include="Gorgon2D.cs" />
-    <Compile Include="Gorgon2DExtensions.cs" />
     <Compile Include="Gorgon2DAlphaTest.cs" />
     <Compile Include="Gorgon2DTarget.cs" />
     <Compile Include="GorgonGraphics2DExtensions.cs" />

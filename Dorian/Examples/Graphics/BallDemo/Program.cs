@@ -26,13 +26,13 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Drawing;
 using System.Globalization;
 using System.IO;
 using System.Text;
 using System.Windows.Forms;
 using GorgonLibrary.Diagnostics;
+using GorgonLibrary.Graphics.Example.Properties;
 using GorgonLibrary.IO;
 using GorgonLibrary.Math;
 using GorgonLibrary.Renderers;
@@ -73,7 +73,7 @@ namespace GorgonLibrary.Graphics.Example
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="resourceItem"/> was NULL (Nothing in VB.Net) or empty.</exception>
 		public static string GetResourcePath(string resourceItem)
 		{
-			string path = Properties.Settings.Default.ResourceLocation;
+			string path = Settings.Default.ResourceLocation;
 
 			if (string.IsNullOrEmpty(resourceItem))
 			{
@@ -268,7 +268,7 @@ namespace GorgonLibrary.Graphics.Example
 		            {
 						// Draw using the blur effect.
 						_2D.Drawing.SmoothingMode = SmoothingMode.Smooth;
-			            _2D.Drawing.Blit(_ballTarget, new RectangleF(Vector2.Zero, new Vector2(512, 512)));
+			            _2D.Drawing.Blit(_ballTarget, new RectangleF(Vector2.Zero, _2D.Effects.GaussianBlur.BlurRenderTargetsSize));
 		            }
 		            else
 					{
@@ -359,11 +359,11 @@ namespace GorgonLibrary.Graphics.Example
 			// Create the primary swap chain.
 			_mainScreen = _graphics.Output.CreateSwapChain("MainScreen", new GorgonSwapChainSettings
 			    {
-					Width = Properties.Settings.Default.ScreenWidth,
-					Height = Properties.Settings.Default.ScreenHeight,
+					Width = Settings.Default.ScreenWidth,
+					Height = Settings.Default.ScreenHeight,
 					Format = BufferFormat.R8G8B8A8_UIntNormal,
 					Window = _form,
-					IsWindowed = Properties.Settings.Default.Windowed
+					IsWindowed = Settings.Default.Windowed
 				});
 
 			// Center the display.
@@ -400,15 +400,14 @@ namespace GorgonLibrary.Graphics.Example
 			_ballTarget = _graphics.Output.CreateRenderTarget("BallTarget", new GorgonRenderTarget2DSettings
 			{
 				DepthStencilFormat = BufferFormat.Unknown,
-				Width = 1280,
-				Height = 800,
+				Width = Settings.Default.ScreenWidth,
+				Height = Settings.Default.ScreenHeight,
 				Format = BufferFormat.R8G8B8A8_UIntNormal,
 				Multisampling = GorgonMultisampling.NoMultiSampling
 			});
-			_2D.Effects.GaussianBlur.BlurRenderTargetsSize = new Size(512, 512);//new Size(_ballTarget.Settings.Width, _ballTarget.Settings.Height));
+			_2D.Effects.GaussianBlur.BlurRenderTargetsSize = new Size(512, 512);
 			_2D.Effects.GaussianBlur.BlurAmount = 10.0f;
-
-		
+			
 			// Ensure that our secondary camera gets updated.
 			_mainScreen.AfterSwapChainResized += (sender, args) =>
 			{
@@ -430,13 +429,15 @@ namespace GorgonLibrary.Graphics.Example
 					Multisampling = GorgonMultisampling.NoMultiSampling
 				});
 
-				Debug.Assert(_ballTarget != null, "_ballTarget != null");
+				Vector2 newTargetSize;
+				newTargetSize.X = (512.0f * (args.Width / (float)Settings.Default.ScreenWidth)).Min(512);
+				newTargetSize.Y = (512.0f * (args.Height / (float)Settings.Default.ScreenHeight)).Min(512);
 
-				_2D.Effects.GaussianBlur.BlurRenderTargetsSize = new Size(_ballTarget.Settings.Width, _ballTarget.Settings.Height);
+				_2D.Effects.GaussianBlur.BlurRenderTargetsSize = (Size)newTargetSize;
 			};
 
 			// Generate the ball list.
-			GenerateBalls(Properties.Settings.Default.BallCount);
+			GenerateBalls(Settings.Default.BallCount);
 
 			// Assign event handlers.
 			_form.KeyDown += _form_KeyDown;
@@ -474,7 +475,7 @@ namespace GorgonLibrary.Graphics.Example
 			_helpText = new StringBuilder("Device: " + _graphics.VideoDevice.Name +
 				"\nFeature Level: " + _graphics.VideoDevice.SupportedFeatureLevel +
 				"\nVideo Memory: " + _graphics.VideoDevice.DedicatedVideoMemory.FormatMemory() +
-				"\n\n" + Properties.Resources.HelpText);
+				"\n\n" + Resources.HelpText);
 
 			// Create a static text block.  This will perform MUCH better than drawing the text 
 			// every frame with DrawString.

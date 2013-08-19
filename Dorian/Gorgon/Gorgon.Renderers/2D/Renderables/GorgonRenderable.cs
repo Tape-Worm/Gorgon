@@ -481,28 +481,6 @@ namespace GorgonLibrary.Renderers
 		}
 
 		/// <summary>
-		/// Property to set or return the vertex buffer binding for this renderable.
-		/// </summary>
-		protected virtual internal GorgonVertexBufferBinding VertexBufferBinding
-		{
-			get
-			{
-				return Gorgon2D.DefaultVertexBufferBinding;
-			}			
-		}
-
-		/// <summary>
-		/// Property to set or return the index buffer for this renderable.
-		/// </summary>
-		protected internal virtual GorgonIndexBuffer IndexBuffer
-		{
-			get
-			{
-				return Gorgon2D.DefaultIndexBuffer;
-			}
-		}
-
-		/// <summary>
 		/// Property to return the type of primitive for the renderable.
 		/// </summary>
 		protected internal abstract PrimitiveType PrimitiveType
@@ -962,22 +940,22 @@ namespace GorgonLibrary.Renderers
 		/// <summary>
 		/// Property to set or return the vertex buffer binding for this renderable.
 		/// </summary>
-		GorgonVertexBufferBinding IRenderable.VertexBufferBinding
+		public virtual GorgonVertexBufferBinding VertexBufferBinding
 		{
 			get
 			{
-				return VertexBufferBinding;
+				return Gorgon2D.DefaultVertexBufferBinding;
 			}
 		}
 
 		/// <summary>
 		/// Property to set or return the index buffer for this renderable.
 		/// </summary>
-		GorgonIndexBuffer IRenderable.IndexBuffer
+		public virtual GorgonIndexBuffer IndexBuffer
 		{
-			get 
+			get
 			{
-				return IndexBuffer;				
+				return Gorgon2D.DefaultIndexBuffer;
 			}
 		}
 

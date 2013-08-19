@@ -81,9 +81,9 @@ namespace GorgonLibrary.Renderers
 		{
 			
 #if DEBUG
-			PixelShader = Graphics.Shaders.CreateShader<GorgonPixelShader>("Effect.2D.GrayScale.PS", "GorgonPixelShaderGrayScale", "#GorgonInclude \"Gorgon2DShaders\"", true);
+			PixelShader = Graphics.ImmediateContext.Shaders.CreateShader<GorgonPixelShader>("Effect.2D.GrayScale.PS", "GorgonPixelShaderGrayScale", "#GorgonInclude \"Gorgon2DShaders\"", true);
 #else
-			PixelShader = Graphics.Shaders.CreateShader<GorgonPixelShader>("Effect.2D.GrayScale.PS", "GorgonPixelShaderGrayScale", "#GorgonInclude \"Gorgon2DShaders\"", false);
+			PixelShader = Graphics.ImmediateContext.Shaders.CreateShader<GorgonPixelShader>("Effect.2D.GrayScale.PS", "GorgonPixelShaderGrayScale", "#GorgonInclude \"Gorgon2DShaders\"", false);
 #endif
 		}
 		#endregion

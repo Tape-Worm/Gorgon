@@ -181,11 +181,11 @@ namespace GorgonLibrary.Renderers
 		{
 			
 #if DEBUG
-			PixelShader = Graphics.Shaders.CreateShader<GorgonPixelShader>("Effect.2D.Posterized.PS", "GorgonPixelShaderPosterize", "#GorgonInclude \"Gorgon2DShaders\"", true);
+			PixelShader = Graphics.ImmediateContext.Shaders.CreateShader<GorgonPixelShader>("Effect.2D.Posterized.PS", "GorgonPixelShaderPosterize", "#GorgonInclude \"Gorgon2DShaders\"", true);
 #else
-			PixelShader = Graphics.Shaders.CreateShader<GorgonPixelShader>("Effect.2D.Posterized.PS", "GorgonPixelShaderPosterize", "#GorgonInclude \"Gorgon2DShaders\"", false);
+			PixelShader = Graphics.ImmediateContext.Shaders.CreateShader<GorgonPixelShader>("Effect.2D.Posterized.PS", "GorgonPixelShaderPosterize", "#GorgonInclude \"Gorgon2DShaders\"", false);
 #endif
-            _posterizeBuffer = Graphics.Buffers.CreateConstantBuffer("Gorgon2DPosterizedEffect Constant Buffer",
+			_posterizeBuffer = Graphics.ImmediateContext.Buffers.CreateConstantBuffer("Gorgon2DPosterizedEffect Constant Buffer",
 			                                                    new GorgonConstantBufferSettings
 				                                                    {
 					                                                    SizeInBytes = 16

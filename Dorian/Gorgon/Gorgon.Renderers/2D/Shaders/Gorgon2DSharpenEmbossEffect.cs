@@ -187,13 +187,13 @@ namespace GorgonLibrary.Renderers
 		{
 			
 #if DEBUG
-			PixelShader = Graphics.Shaders.CreateShader<GorgonPixelShader>("Effect.2D.SharpenEmboss.PS", "GorgonPixelShaderSharpenEmboss", "#GorgonInclude \"Gorgon2DShaders\"", true);
+			PixelShader = Graphics.ImmediateContext.Shaders.CreateShader<GorgonPixelShader>("Effect.2D.SharpenEmboss.PS", "GorgonPixelShaderSharpenEmboss", "#GorgonInclude \"Gorgon2DShaders\"", true);
 #else
-			PixelShader = Graphics.Shaders.CreateShader<GorgonPixelShader>("Effect.2D.SharpenEmboss.PS", "GorgonPixelShaderSharpenEmboss", "#GorgonInclude \"Gorgon2DShaders\"", false);
+			PixelShader = Graphics.ImmediateContext.Shaders.CreateShader<GorgonPixelShader>("Effect.2D.SharpenEmboss.PS", "GorgonPixelShaderSharpenEmboss", "#GorgonInclude \"Gorgon2DShaders\"", false);
 #endif
 
 			_sharpenEmbossStream = new GorgonDataStream(16);
-			_sharpenEmbossBuffer = Graphics.Buffers.CreateConstantBuffer("Gorgon2DSharpenEmbossEffect Constant Buffer",
+			_sharpenEmbossBuffer = Graphics.ImmediateContext.Buffers.CreateConstantBuffer("Gorgon2DSharpenEmbossEffect Constant Buffer",
 																new GorgonConstantBufferSettings
 																{
 																	SizeInBytes = 16

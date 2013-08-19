@@ -216,13 +216,13 @@ namespace GorgonLibrary.Renderers
 		{
 			
 #if DEBUG
-			PixelShader = Graphics.Shaders.CreateShader<GorgonPixelShader>("Effect.2D.1Bit.PS", "GorgonPixelShader1Bit", "#GorgonInclude \"Gorgon2DShaders\"", true);
+			PixelShader = Graphics.ImmediateContext.Shaders.CreateShader<GorgonPixelShader>("Effect.2D.1Bit.PS", "GorgonPixelShader1Bit", "#GorgonInclude \"Gorgon2DShaders\"", true);
 #else
-			PixelShader = Graphics.Shaders.CreateShader<GorgonPixelShader>("Effect.2D.1Bit.PS", "GorgonPixelShader1Bit", "#GorgonInclude \"Gorgon2DShaders\"", false);
+			PixelShader = Graphics.ImmediateContext.Shaders.CreateShader<GorgonPixelShader>("Effect.2D.1Bit.PS", "GorgonPixelShader1Bit", "#GorgonInclude \"Gorgon2DShaders\"", false);
 #endif
 
 			_1BitStream = new GorgonDataStream(32);
-			_1BitBuffer = Graphics.Buffers.CreateConstantBuffer("Gorgon2D1BitEffect Constant Buffer",
+			_1BitBuffer = Graphics.ImmediateContext.Buffers.CreateConstantBuffer("Gorgon2D1BitEffect Constant Buffer",
 																new GorgonConstantBufferSettings
 																{
 																	SizeInBytes = 32

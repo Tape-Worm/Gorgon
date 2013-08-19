@@ -399,12 +399,12 @@ namespace GorgonLibrary.Renderers
 			_xOffsets = new Vector4[13];
 			_yOffsets = new Vector4[13];
 			_kernel = new float[13];
-			_blurBuffer = Graphics.Buffers.CreateConstantBuffer("Gorgon2DGaussianBlurEffect Constant Buffer",
+			_blurBuffer = Graphics.ImmediateContext.Buffers.CreateConstantBuffer("Gorgon2DGaussianBlurEffect Constant Buffer",
 			                                                    new GorgonConstantBufferSettings
 				                                                    {
 					                                                    SizeInBytes = DirectAccess.SizeOf<Vector4>() * _xOffsets.Length
 				                                                    });
-			_blurStaticBuffer = Graphics.Buffers.CreateConstantBuffer("Gorgon2DGaussianBlurEffect Static Constant Buffer",
+			_blurStaticBuffer = Graphics.ImmediateContext.Buffers.CreateConstantBuffer("Gorgon2DGaussianBlurEffect Static Constant Buffer",
 																new GorgonConstantBufferSettings
 																{
 																	SizeInBytes = DirectAccess.SizeOf<Vector4>() * (_kernel.Length + 1)
@@ -412,9 +412,9 @@ namespace GorgonLibrary.Renderers
 
 			_blurKernelStream = new GorgonDataStream(_blurStaticBuffer.SizeInBytes);
 #if DEBUG
-			PixelShader = Graphics.Shaders.CreateShader<GorgonPixelShader>("Effect.PS.GaussBlur", "GorgonPixelShaderGaussBlur", "#GorgonInclude \"Gorgon2DShaders\"");
+			PixelShader = Graphics.ImmediateContext.Shaders.CreateShader<GorgonPixelShader>("Effect.PS.GaussBlur", "GorgonPixelShaderGaussBlur", "#GorgonInclude \"Gorgon2DShaders\"");
 #else
-			PixelShader = Graphics.Shaders.CreateShader<GorgonPixelShader>("Effect.PS.GaussBlur", "GorgonPixelShaderGaussBlur", "#GorgonInclude \"Gorgon2DShaders\"");
+			PixelShader = Graphics.ImmediateContext.Shaders.CreateShader<GorgonPixelShader>("Effect.PS.GaussBlur", "GorgonPixelShaderGaussBlur", "#GorgonInclude \"Gorgon2DShaders\"");
 #endif
 			UpdateKernel();
 

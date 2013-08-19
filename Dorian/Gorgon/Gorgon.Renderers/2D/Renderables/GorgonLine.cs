@@ -100,7 +100,7 @@ namespace GorgonLibrary.Renderers
 		/// <summary>
 		/// Property to set or return the index buffer for this renderable.
 		/// </summary>
-		protected internal override GorgonIndexBuffer IndexBuffer
+		public override GorgonIndexBuffer IndexBuffer
 		{
 			get
 			{

@@ -1068,7 +1068,7 @@ namespace GorgonLibrary.Renderers
 			states = Gorgon2D.DefaultState.Compare(this);
 			if (states != StateChange.None)
 			{
-				Gorgon2D.RenderObjects();
+				Gorgon2D.Flush();
 				Gorgon2D.DefaultState.UpdateState(this, states);
 			}
 
@@ -1108,7 +1108,7 @@ namespace GorgonLibrary.Renderers
 						// Change to the current texture.
 						if (Gorgon2D.PixelShader.Resources[0] != GorgonTexture.ToShaderView(glyph.Texture))
 						{
-							Gorgon2D.RenderObjects();
+							Gorgon2D.Flush();
 							Gorgon2D.PixelShader.Resources[0] = glyph.Texture;
 						}
 
@@ -1137,7 +1137,7 @@ namespace GorgonLibrary.Renderers
 					// Change to the current texture.
                     if (Gorgon2D.PixelShader.Resources[0] != GorgonTexture.ToShaderView(glyph.Texture))
 					{
-						Gorgon2D.RenderObjects();
+						Gorgon2D.Flush();
 						Gorgon2D.PixelShader.Resources[0] = glyph.Texture;
 					}
 

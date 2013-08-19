@@ -133,27 +133,11 @@ namespace GorgonLibrary.Renderers
 		/// <summary>
 		/// Property to set or return the index buffer for this renderable.
 		/// </summary>
-		protected internal override GorgonIndexBuffer IndexBuffer
+		public override GorgonIndexBuffer IndexBuffer
 		{
 			get
 			{
 				return null;
-			}
-		}
-
-		/// <summary>
-		/// Property to set or return a texture for the renderable.
-		/// </summary>
-		public override GorgonTexture2D Texture
-		{
-			get
-			{
-				// We override this to remove the animated attribute.
-				return base.Texture;
-			}
-			set
-			{
-				base.Texture = value;
 			}
 		}
 

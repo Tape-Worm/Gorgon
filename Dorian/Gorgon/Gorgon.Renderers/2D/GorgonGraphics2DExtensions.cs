@@ -26,7 +26,6 @@
 
 using System;
 using System.Windows.Forms;
-using GorgonLibrary.Diagnostics;
 using GorgonLibrary.Renderers;
 
 namespace GorgonLibrary.Graphics
@@ -45,17 +44,16 @@ namespace GorgonLibrary.Graphics
         /// <param name="vertexCacheSize">The number of vertices that can be placed in the vertex cache.</param>
         /// <returns>A new 2D graphics interface.</returns>
         /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="target"/> parameter is NULL (Nothing in VB.Net).</exception>
-        /// <exception cref="System.ArgumentException">Thrown when the target was not created by the same graphics interface as the one creating the 2D interface.</exception>
         private static Gorgon2D Create2DRenderer(GorgonRenderTargetView target, bool systemCreatedSwap, int vertexCacheSize)
         {
-            GorgonDebug.AssertNull(target, "target");
+	        if (target == null)
+	        {
+		        throw new ArgumentNullException("target");
+	        }
 
-            var result = new Gorgon2D(target, vertexCacheSize)
-            {
-                SystemCreatedTarget = systemCreatedSwap
-            };
+            var result = new Gorgon2D(target, vertexCacheSize, systemCreatedSwap);
             result.Initialize();
-            result.Graphics.AddTrackedObject(result);
+            result.Graphics.ImmediateContext.AddTrackedObject(result);
 
             return result;
         }
@@ -150,7 +148,6 @@ namespace GorgonLibrary.Graphics
         /// at a given time.  Any performance increase from this value depends upon multiple factors such as available RAM, video driver, video card, etc...</para>
         /// </remarks>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="target"/> parameter is NULL (Nothing in VB.Net).</exception>
-		/// <exception cref="System.ArgumentException">Thrown when the target was not created by the same graphics interface as the one creating the 2D interface.</exception>
 		public static Gorgon2D Create2DRenderer(this GorgonOutputMerger graphics, GorgonRenderTargetView target, int vertexCacheSize = 32768)
 		{
 			return Create2DRenderer(target, false, vertexCacheSize);

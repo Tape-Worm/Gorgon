@@ -24,7 +24,10 @@
 // 
 #endregion
 
+using System;
+using System.Linq;
 using System.Drawing;
+using GorgonLibrary.Graphics;
 using GorgonLibrary.Math;
 using SlimMath;
 
@@ -251,7 +254,9 @@ namespace GorgonLibrary.Renderers
 			_cameraIcon = new GorgonSprite(gorgon2D, "GorgonCamera.OrthoIcon", new GorgonSpriteSettings
 			{
 				Size = new Vector2(64, 50),
-				Texture = gorgon2D.Icons,
+				Texture = gorgon2D.Graphics.GetTrackedObjectsOfType<GorgonTexture2D>()
+							.FirstOrDefault(item => item.Name.Equals("Gorgon2D.Icons", StringComparison.OrdinalIgnoreCase)) ??
+						gorgon2D.Graphics.Textures.CreateTexture<GorgonTexture2D>("Gorgon2D.Icons", Properties.Resources.Icons),
 				TextureRegion = new RectangleF(0.253906f, 0, 0.253906f, 0.195313f),
 				Anchor = new Vector2(32.5f, 25),
 				InitialScale = new Vector2(1.0f),
