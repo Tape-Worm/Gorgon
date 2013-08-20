@@ -98,17 +98,17 @@
     <Compile Include="Renderables\IRenderable.cs" />
     <Compile Include="Renderables\GorgonText.cs" />
     <Compile Include="Effects\Gorgon2DBurnDodgeEffect.cs" />
-    <Compile Include="Shaders\Gorgon2DSobelEdgeDetectEffect.cs" />
-    <Compile Include="Shaders\Gorgon2DPosterizeEffect.cs" />
-    <Compile Include="Shaders\Gorgon2DInvertEffect.cs" />
-    <Compile Include="Shaders\Gorgon2DSharpenEmbossEffect.cs" />
+    <Compile Include="Effects\Gorgon2DSobelEdgeDetectEffect.cs" />
+    <Compile Include="Effects\Gorgon2DPosterizeEffect.cs" />
+    <Compile Include="Effects\Gorgon2DInvertEffect.cs" />
+    <Compile Include="Effects\Gorgon2DSharpenEmbossEffect.cs" />
     <Compile Include="Effects\Gorgon2D1BitEffect.cs" />
-    <Compile Include="Shaders\Gorgon2DWaveEffect.cs" />
+    <Compile Include="Effects\Gorgon2DWaveEffect.cs" />
     <Compile Include="Shaders\Gorgon2DEffect.cs" />
-    <Compile Include="Shaders\Gorgon2DEffects.cs" />
+    <Compile Include="Effects\Gorgon2DEffects.cs" />
     <Compile Include="Shaders\Gorgon2DVertexShader.cs" />
     <Compile Include="Shaders\Gorgon2DPixelShader.cs" />
-    <Compile Include="Shaders\Gorgon2DGrayScaleEffect.cs" />
+    <Compile Include="Effects\Gorgon2DGrayScaleEffect.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Gorgon2.ico" />
