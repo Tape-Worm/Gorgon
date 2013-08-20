@@ -262,9 +262,9 @@ namespace GorgonLibrary.Graphics.Example
 
 			_2D.Target = null;
 
-			if (_2D.Effects.GaussianBlur.Passes[0].RenderAction == null)
+			if (_2D.Effects.GaussianBlur.RenderScene == null)
 			{
-				_2D.Effects.GaussianBlur.Passes[0].RenderAction = pass =>
+				_2D.Effects.GaussianBlur.RenderScene = pass =>
 				{
 					// Draw using the blur effect.
 					_2D.Drawing.SmoothingMode = SmoothingMode.Smooth;
@@ -481,6 +481,7 @@ namespace GorgonLibrary.Graphics.Example
 			// every frame with DrawString.
 			_helpTextSprite = _2D.Renderables.CreateText("Help Text", _ballFont, _helpText.ToString(), Color.Yellow);
 			_helpTextSprite.Position = new Vector2(3, 72);
+			_helpTextSprite.Blending.DestinationAlphaBlend = BlendType.InverseSourceAlpha;
 		}
 
 		/// <summary>
