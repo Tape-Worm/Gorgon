@@ -34,7 +34,7 @@ namespace GorgonLibrary.Renderers
 	/// An effect that sharpens (and optionally embosses) an image.
 	/// </summary>
 	public class Gorgon2DSharpenEmbossEffect
-		: Gorgon2DEffect
+		: Gorgon2DEffect_GOINGBYEBYE2
 	{
 		#region Variables.
 		private bool _disposed;												// Flag to indicate that the object was disposed.

@@ -34,7 +34,7 @@ namespace GorgonLibrary.Renderers
 	/// An effect that renders an inverted image.
 	/// </summary>
 	public class Gorgon2DInvertEffect
-		: Gorgon2DEffect
+		: Gorgon2DEffect_GOINGBYEBYE2
 	{
 		#region Variables.
 		private bool _disposed;										// Flag to indicate that the object was disposed.

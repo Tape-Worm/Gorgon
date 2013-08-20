@@ -292,11 +292,13 @@ namespace GorgonLibrary.Renderers
 				_burnDodgeEffect = null;
 			}
 
-			if (_displacementEffect != null)
+			if (_displacementEffect == null)
 			{
-				_displacementEffect.Dispose();
-				_displacementEffect = null;
+				return;
 			}
+
+			_displacementEffect.Dispose();
+			_displacementEffect = null;
 		}
 		#endregion
 

@@ -66,6 +66,9 @@
     <Compile Include="Collision\Gorgon2DBoundingCircle.cs" />
     <Compile Include="Collision\Gorgon2DCollider.cs" />
     <Compile Include="Collision\I2DCollisionObject.cs" />
+    <Compile Include="Effects\Gorgon2DDisplacementEffect.cs" />
+    <Compile Include="Effects\Gorgon2DEffect.cs" />
+    <Compile Include="Effects\Gorgon2DGaussianBlurEffect.cs" />
     <Compile Include="Gorgon2D.cs" />
     <Compile Include="Gorgon2DAlphaTest.cs" />
     <Compile Include="Gorgon2DTarget.cs" />
@@ -94,11 +97,9 @@
     <Compile Include="Renderables\IPersistedRenderable.cs" />
     <Compile Include="Renderables\IRenderable.cs" />
     <Compile Include="Renderables\GorgonText.cs" />
-    <Compile Include="Shaders\Gorgon2DDisplacementEffect.cs" />
     <Compile Include="Shaders\Gorgon2DBurnDodgeEffect.cs" />
     <Compile Include="Shaders\Gorgon2DSobelEdgeDetectEffect.cs" />
     <Compile Include="Shaders\Gorgon2DPosterizeEffect.cs" />
-    <Compile Include="Shaders\Gorgon2DGaussianBlurEffect.cs" />
     <Compile Include="Shaders\Gorgon2DInvertEffect.cs" />
     <Compile Include="Shaders\Gorgon2DSharpenEmbossEffect.cs" />
     <Compile Include="Shaders\Gorgon2D1BitEffect.cs" />

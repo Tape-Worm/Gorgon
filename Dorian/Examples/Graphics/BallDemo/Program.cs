@@ -257,26 +257,26 @@ namespace GorgonLibrary.Graphics.Example
 		{
 			_2D.Target = _ballTarget;
 			_2D.Clear(GorgonColor.Transparent);
-			
+
 			DrawNoBlur();
 
 			_2D.Target = null;
 
-			_2D.Effects.GaussianBlur.Render(passIndex =>
-		        {
-					if (passIndex == 0)
-		            {
-						// Draw using the blur effect.
-						_2D.Drawing.SmoothingMode = SmoothingMode.Smooth;
-			            _2D.Drawing.Blit(_ballTarget, new RectangleF(Vector2.Zero, _2D.Effects.GaussianBlur.BlurRenderTargetsSize));
-		            }
-		            else
-					{
-		                // Copy the blurred output.
-		                _2D.Drawing.Blit(_2D.Effects.GaussianBlur.BlurredTexture, new RectangleF(Vector2.Zero, _mainScreen.Settings.Size));
-						_2D.Drawing.SmoothingMode = SmoothingMode.None;
-		            }
-		        });
+			if (_2D.Effects.GaussianBlur.Passes[0].RenderAction == null)
+			{
+				_2D.Effects.GaussianBlur.Passes[0].RenderAction = pass =>
+				{
+					// Draw using the blur effect.
+					_2D.Drawing.SmoothingMode = SmoothingMode.Smooth;
+			        _2D.Drawing.Blit(_ballTarget, new RectangleF(Vector2.Zero, _2D.Effects.GaussianBlur.BlurRenderTargetsSize));
+				};
+			}
+
+			_2D.Effects.GaussianBlur.Render();
+
+		    // Copy the blurred output.
+		    _2D.Drawing.Blit(_2D.Effects.GaussianBlur.Output, new RectangleF(Vector2.Zero, _mainScreen.Settings.Size));
+			_2D.Drawing.SmoothingMode = SmoothingMode.None;
 		}
 
 		/// <summary>

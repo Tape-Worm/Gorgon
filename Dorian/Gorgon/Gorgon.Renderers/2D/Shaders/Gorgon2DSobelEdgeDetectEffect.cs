@@ -35,7 +35,7 @@ namespace GorgonLibrary.Renderers
 	/// An effect that renders the edges of an image with Sobel edge detection.
 	/// </summary>
 	public class Gorgon2DSobelEdgeDetectEffect
-		: Gorgon2DEffect
+		: Gorgon2DEffect_GOINGBYEBYE2
 	{
 		#region Variables.
 		private bool _disposed;									// Flag to indicate that the object was disposed.

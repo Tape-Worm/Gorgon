@@ -32,7 +32,7 @@ namespace GorgonLibrary.Renderers
 	/// An effect that renders images as gray scale.
 	/// </summary>
 	public class Gorgon2DGrayScaleEffect
-		: Gorgon2DEffect
+		: Gorgon2DEffect_GOINGBYEBYE2
 	{
 		#region Variables.
 		private bool _disposed;				// Flag to indicate that the object was disposed.

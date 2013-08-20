@@ -33,7 +33,7 @@ namespace GorgonLibrary.Renderers
 	/// An effect that renders an image as if it were 1 bit image.
 	/// </summary>
 	public class Gorgon2D1BitEffect
-		: Gorgon2DEffect
+		: Gorgon2DEffect_GOINGBYEBYE2
 	{
 		#region Variables.
 		private bool _disposed;												// Flag to indicate that the object was disposed.

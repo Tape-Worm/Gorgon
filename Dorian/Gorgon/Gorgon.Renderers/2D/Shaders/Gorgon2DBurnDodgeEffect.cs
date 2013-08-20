@@ -33,7 +33,7 @@ namespace GorgonLibrary.Renderers
 	/// An effect that renders images burn/dodge effect.
 	/// </summary>
 	public class Gorgon2DBurnDodgeEffect
-		: Gorgon2DEffect
+		: Gorgon2DEffect_GOINGBYEBYE2
 	{
 		#region Variables.
 		private bool _disposed;											// Flag to indicate that the object was disposed.
