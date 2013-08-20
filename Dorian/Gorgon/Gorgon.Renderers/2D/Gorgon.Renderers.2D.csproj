@@ -97,12 +97,12 @@
     <Compile Include="Renderables\IPersistedRenderable.cs" />
     <Compile Include="Renderables\IRenderable.cs" />
     <Compile Include="Renderables\GorgonText.cs" />
-    <Compile Include="Shaders\Gorgon2DBurnDodgeEffect.cs" />
+    <Compile Include="Effects\Gorgon2DBurnDodgeEffect.cs" />
     <Compile Include="Shaders\Gorgon2DSobelEdgeDetectEffect.cs" />
     <Compile Include="Shaders\Gorgon2DPosterizeEffect.cs" />
     <Compile Include="Shaders\Gorgon2DInvertEffect.cs" />
     <Compile Include="Shaders\Gorgon2DSharpenEmbossEffect.cs" />
-    <Compile Include="Shaders\Gorgon2D1BitEffect.cs" />
+    <Compile Include="Effects\Gorgon2D1BitEffect.cs" />
     <Compile Include="Shaders\Gorgon2DWaveEffect.cs" />
     <Compile Include="Shaders\Gorgon2DEffect.cs" />
     <Compile Include="Shaders\Gorgon2DEffects.cs" />

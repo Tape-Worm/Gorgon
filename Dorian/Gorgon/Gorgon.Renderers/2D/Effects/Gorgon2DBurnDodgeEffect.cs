@@ -24,8 +24,8 @@
 // 
 #endregion
 
+using System;
 using GorgonLibrary.Graphics;
-using GorgonLibrary.IO;
 
 namespace GorgonLibrary.Renderers
 {
@@ -33,15 +33,15 @@ namespace GorgonLibrary.Renderers
 	/// An effect that renders images burn/dodge effect.
 	/// </summary>
 	public class Gorgon2DBurnDodgeEffect
-		: Gorgon2DEffect_GOINGBYEBYE2
+		: Gorgon2DEffect
 	{
 		#region Variables.
-		private bool _disposed;											// Flag to indicate that the object was disposed.
 		private readonly GorgonConstantBuffer _burnDodgeBuffer;			// Burn/dodge buffer.
-		private readonly GorgonDataStream _burnDodgeStream;				// Burn/dodge stream.
-		private bool _useDodge;											// Flag to indicate that we want a color dodge effect.
-		private bool _useLinear;										// Flag to use linear versions of the burn/dodge effects.
+		private GorgonPixelShader _dodgeBurn;							// Dodge/burn shader.
+		private GorgonPixelShader _linearDodgeBurn;						// Linear dodge/burn shader.
+		private bool _disposed;											// Flag to indicate that the object was disposed.
 		private bool _isUpdated = true;									// Flag to indicate that the effect parameters are updated.
+		private bool _useDodge;											// Flag to indicate whether to use dodging or burning.
 		#endregion
 
 		#region Properties.
@@ -56,11 +56,13 @@ namespace GorgonLibrary.Renderers
 			}
 			set
 			{
-				if (_useDodge != value)
+				if (_useDodge == value)
 				{
-					_useDodge = value;
-					_isUpdated = true;
+					return;
 				}
+
+				_useDodge = value;
+				_isUpdated = true;
 			}
 		}
 
@@ -69,55 +71,58 @@ namespace GorgonLibrary.Renderers
 		/// </summary>
 		public bool UseLinear
 		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Property to set or return the function used to render the scene when blurring.
+		/// </summary>
+		/// <remarks>Use this to render the image to be blurred.</remarks>
+		public Action<GorgonEffectPass> RenderScene
+		{
 			get
 			{
-				return _useLinear;
+				return Passes[0].RenderAction;
 			}
 			set
 			{
-				if (_useLinear != value)
-				{
-					_useLinear = value;
-					_isUpdated = true;
-				}
+				Passes[0].RenderAction = value;
 			}
 		}
 		#endregion
 
 		#region Methods.
 		/// <summary>
-		/// Function to free any resources allocated by the effect.
+		/// Function called before rendering begins.
 		/// </summary>
-		public override void FreeResources()
+		/// <returns>
+		/// TRUE to continue rendering, FALSE to exit.
+		/// </returns>
+		protected override bool OnBeforeRender()
 		{
-		}
-
-		/// <summary>
-		/// Function called when a pass is about to start rendering.
-		/// </summary>
-		/// <param name="passIndex">Index of the pass being rendered.</param>
-		protected override void OnBeforeRenderPass(int passIndex)
-		{
-			base.OnBeforeRenderPass(passIndex);
-
 			if (_isUpdated)
 			{
-				_burnDodgeStream.Position = 0;
-				_burnDodgeStream.Write(_useDodge);
-				_burnDodgeStream.Write<byte>(0);
-				_burnDodgeStream.Write<byte>(0);
-				_burnDodgeStream.Write<byte>(0);
-				_burnDodgeStream.Write(_useLinear);
-				_burnDodgeStream.Write<byte>(0);
-				_burnDodgeStream.Write<byte>(0);
-				_burnDodgeStream.Write<byte>(0);
-				_burnDodgeStream.Position = 0;
-				_burnDodgeBuffer.Update(_burnDodgeStream);
+				_burnDodgeBuffer.Update(ref _useDodge);
 				_isUpdated = false;
 			}
 
-			if (Gorgon2D.PixelShader.ConstantBuffers[1] != _burnDodgeBuffer)
-				Gorgon2D.PixelShader.ConstantBuffers[1] = _burnDodgeBuffer;
+			Gorgon2D.PixelShader.ConstantBuffers[1] = _burnDodgeBuffer;
+
+			return base.OnBeforeRender();
+		}
+
+		/// <summary>
+		/// Function called before a pass is rendered.
+		/// </summary>
+		/// <param name="pass">Pass to render.</param>
+		/// <returns>
+		/// TRUE to continue rendering, FALSE to stop.
+		/// </returns>
+		protected override bool OnBeforePassRender(GorgonEffectPass pass)
+		{
+			Passes[0].PixelShader = UseLinear ? _linearDodgeBurn : _dodgeBurn;
+			return base.OnBeforePassRender(pass);
 		}
 
 		/// <summary>
@@ -130,14 +135,20 @@ namespace GorgonLibrary.Renderers
 			{
 				if (disposing)
 				{
-					if (disposing)
+					if (_linearDodgeBurn != null)
 					{
-						if (PixelShader != null)
-							PixelShader.Dispose();
+						_linearDodgeBurn.Dispose();
+					}
+
+					if (_dodgeBurn != null)
+					{
+						_dodgeBurn.Dispose();
 					}
 				}
+				
+				_linearDodgeBurn = null;
+				_dodgeBurn = null;
 
-				PixelShader = null;
 				_disposed = true;
 			}
 
@@ -155,16 +166,17 @@ namespace GorgonLibrary.Renderers
 		{
 			
 #if DEBUG
-			PixelShader = Graphics.ImmediateContext.Shaders.CreateShader<GorgonPixelShader>("Effect.2D.BurnDodge.PS", "GorgonPixelShaderBurnDodge", "#GorgonInclude \"Gorgon2DShaders\"", true);
+			_linearDodgeBurn = Graphics.ImmediateContext.Shaders.CreateShader<GorgonPixelShader>("Effect.2D.BurnDodge.PS", "GorgonPixelShaderLinearBurnDodge", "#GorgonInclude \"Gorgon2DShaders\"");
+			_dodgeBurn = Graphics.ImmediateContext.Shaders.CreateShader<GorgonPixelShader>("Effect.2D.BurnDodge.PS", "GorgonPixelShaderBurnDodge", "#GorgonInclude \"Gorgon2DShaders\"");
 #else
-			PixelShader = Graphics.ImmediateContext.Shaders.CreateShader<GorgonPixelShader>("Effect.2D.BurnDodge.PS", "GorgonPixelShaderBurnDodge", "#GorgonInclude \"Gorgon2DShaders\"", false);
+			_linearDodgeBurn = Graphics.ImmediateContext.Shaders.CreateShader<GorgonPixelShader>("Effect.2D.BurnDodge.PS", "GorgonPixelShaderLinearBurnDodge", "#GorgonInclude \"Gorgon2DShaders\"");
+			_dodgeBurn = Graphics.ImmediateContext.Shaders.CreateShader<GorgonPixelShader>("Effect.2D.BurnDodge.PS", "GorgonPixelShaderBurnDodge", "#GorgonInclude \"Gorgon2DShaders\"");
 #endif
 			_burnDodgeBuffer = Graphics.ImmediateContext.Buffers.CreateConstantBuffer("Gorgon2DBurnDodgeEffect Constant Buffer",
 																new GorgonConstantBufferSettings
 																{
 																	SizeInBytes = 16
 																});
-			_burnDodgeStream = new GorgonDataStream(16);
 		}
 		#endregion
 	}

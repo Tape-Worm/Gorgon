@@ -120,7 +120,9 @@ namespace GorgonLibrary.Graphics.Example
 
 			// Create ball array.
 			if (_ballList == null)
+			{
 				_ballList = new Ball[1048576];
+			}
 
 			// Generate balls.
 			for (int i = start; i < _ballCount; i++)
@@ -130,16 +132,14 @@ namespace GorgonLibrary.Graphics.Example
 				        Position = new Vector2(halfWidth - (_ball.Size.X/2.0f), halfHeight - (_ball.Size.Y/2.0f)),
 				        PositionDelta = new Vector2((GorgonRandom.RandomSingle()*_mainScreen.Settings.Width) - (halfWidth),
 				                                    (GorgonRandom.RandomSingle()*_mainScreen.Settings.Height) - (halfHeight)),
-				        Scale = (GorgonRandom.RandomSingle()*1.5f) + 0.5f,
+				        Scale = 1.0f,
 				        ScaleDelta = (GorgonRandom.RandomSingle()*2.0f) - 1.0f,
-				        Rotation = (GorgonRandom.RandomSingle()*360.0f),
+				        Rotation = 0,
 				        RotationDelta = (GorgonRandom.RandomSingle()*360.0f) - 180.0f,
-				        Color =
-				            Color.FromArgb(255, GorgonRandom.RandomInt32(0, 255), GorgonRandom.RandomInt32(0, 255),
-				                           GorgonRandom.RandomInt32(0, 255)),
-				        Opacity = GorgonRandom.RandomSingle() + 0.4f,
+				        Color = Color.White,
+				        Opacity = 1.0f,
 				        OpacityDelta = GorgonRandom.RandomSingle() - 0.5f,
-				        Checkered = GorgonRandom.RandomInt32(_ballCount) <= (_ballCount/2)
+				        Checkered = true
 				    };
 
 			    _ballList[i] = ball;
@@ -186,14 +186,19 @@ namespace GorgonLibrary.Graphics.Example
 				}
 
 				// Adjust scale.
-				if ((currentBall.Scale > 1.5f) || (currentBall.Scale < 0.5f))
+				if ((currentBall.Scale > 2.0f) || (currentBall.Scale < 0.5f))
 				{
 					currentBall.ScaleDelta = -currentBall.ScaleDelta;
+
+					if (currentBall.Scale < 0.5f)
+					{
+						currentBall.OpacityDelta = GorgonRandom.RandomSingle() * 0.5f * (currentBall.OpacityDelta / currentBall.OpacityDelta.Abs());
+					}
 				}
 
 				// Adjust opacity.
 			    if ((currentBall.Opacity <= 1.0f)
-			        && (currentBall.Opacity >= 0.04f))
+			        && (currentBall.Opacity >= 0.0f))
 			    {
 			        continue;
 			    }
@@ -201,15 +206,15 @@ namespace GorgonLibrary.Graphics.Example
 				if (currentBall.Opacity > 1.0f)
 				{
 					currentBall.Opacity = 1.0f;
+					currentBall.OpacityDelta = -currentBall.OpacityDelta;
+					continue;
 				}
 
-				if (currentBall.Opacity < 0.4f)
-			    {
-			        currentBall.Opacity = 0.4f;
-			        currentBall.Checkered = !currentBall.Checkered;
-			    }
-
-			    currentBall.OpacityDelta = -currentBall.OpacityDelta;
+				currentBall.Opacity = 0.0f;
+				currentBall.Checkered = !currentBall.Checkered;
+				currentBall.Color = Color.FromArgb(255, GorgonRandom.RandomInt32(0, 255), GorgonRandom.RandomInt32(0, 255),
+					GorgonRandom.RandomInt32(0, 255));
+				currentBall.OpacityDelta = GorgonRandom.RandomSingle() * 0.5f;
 			}
 		}
 
@@ -274,8 +279,8 @@ namespace GorgonLibrary.Graphics.Example
 
 			_2D.Effects.GaussianBlur.Render();
 
-		    // Copy the blurred output.
-		    _2D.Drawing.Blit(_2D.Effects.GaussianBlur.Output, new RectangleF(Vector2.Zero, _mainScreen.Settings.Size));
+			// Copy the blurred output.
+			_2D.Drawing.Blit(_2D.Effects.GaussianBlur.Output, new RectangleF(Vector2.Zero, _mainScreen.Settings.Size));
 			_2D.Drawing.SmoothingMode = SmoothingMode.None;
 		}
 

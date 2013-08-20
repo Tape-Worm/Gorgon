@@ -64,10 +64,10 @@ cbuffer GorgonSharpenEmbossEffect
 // 1 bit color effect.
 cbuffer Gorgon1BitEffect
 {	
-	float2 oneBitRange = float2(0.2f, 0.8f);
-	bool oneBitUseAverage = false;
-	bool oneBitInvert = false;
-	bool oneBitUseAlpha = false;
+	bool oneBitUseAverage;
+	bool oneBitInvert;
+	bool oneBitUseAlpha;
+	float2 oneBitRange;
 }
 
 // Invert effect variables.
@@ -95,8 +95,7 @@ cbuffer GorgonSobelEdgeDetectEffect
 // Burn/dodge effect.
 cbuffer GorgonBurnDodgeEffect
 {
-	bool burnDodgeUseDodge = false;
-	bool burnDodgeLinear = false;
+	bool burnDodgeUseDodge;
 }
 
 // Our default vertex shader.
@@ -211,14 +210,18 @@ float4 GorgonPixelShader1Bit(GorgonSpriteVertex vertex) : SV_Target
 		color.rgb = (color.r + color.g + color.b) / 3.0f;
 	}
 	else
+	{
 		color = GorgonPixelShaderGrayScale(vertex);
+	}
 
 	color.r = RANGE_BW(color.r);
 	color.g = RANGE_BW(color.g);
 	color.b = RANGE_BW(color.b);
 
 	if (oneBitUseAlpha)
+	{
 		color.a = RANGE_BW(color.a);
+	}
 
 	if (oneBitInvert)
 	{
@@ -296,29 +299,48 @@ float4 GorgonPixelShaderSobelEdge(GorgonSpriteVertex vertex) : SV_Target
 	return color;
 }
 
+// Function to perform a linear image burn/dodge.
+float4 GorgonPixelShaderLinearBurnDodge(GorgonSpriteVertex vertex) : SV_Target
+{
+	float4 color = _gorgonTexture.Sample(_gorgonSampler, vertex.uv) * vertex.color;
+	
+	color.rgb = color.rgb * 2.0f;
+
+	if (!burnDodgeUseDodge)
+	{
+		color.rgb = color.rgb - 1.0f;
+	}
+
+	REJECT_ALPHA(color.a);
+	
+	return saturate(color);
+}
+
 // Function to perform an image burn/dodge.
 float4 GorgonPixelShaderBurnDodge(GorgonSpriteVertex vertex) : SV_Target
 {
 	float4 color = _gorgonTexture.Sample(_gorgonSampler, vertex.uv) * vertex.color;
 	
-	if (!burnDodgeLinear)
+	if (burnDodgeUseDodge)
 	{
-		if (burnDodgeUseDodge)
-			color.rgb = color.rgb / (1.0f - color.rgb);
-		else
-			color.rgb = 1.0f - (1.0f - color.rgb) / color.rgb;
+		float3 invColor = float3(color.r < 1.0f ? 1.0f - color.r : 1.0f, 
+								color.g < 1.0f ? 1.0f - color.g : 1.0f, 
+								color.b < 1.0f ? 1.0f - color.b : 1.0f);
+
+		color.r = min(color.r / invColor.r, 1.0f);
+		color.g = min(color.g / invColor.g, 1.0f);
+		color.b = min(color.b / invColor.b, 1.0f);		
 	}
 	else
 	{
-		color.rgb *= 2;
-
-		if (!burnDodgeUseDodge)
-			color.rgb = color.rgb - 1;
+		color.r = color.r == 0 ? 0 : max((1.0f - ((1.0f - color.r) / color.r)), 0); 
+		color.g = color.g == 0 ? 0 : max((1.0f - ((1.0f - color.g) / color.g)), 0); 
+		color.b = color.b == 0 ? 0 : max((1.0f - ((1.0f - color.b) / color.b)), 0); 
 	}
 
 	REJECT_ALPHA(color.a);
 	
-	return color;
+	return saturate(color);
 }
 
 // Displacement effect variables.
