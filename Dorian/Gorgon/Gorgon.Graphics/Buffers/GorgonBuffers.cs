@@ -310,7 +310,7 @@ namespace GorgonLibrary.Graphics
         /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (Nothing in VB.Net).</exception>
         /// <exception cref="System.ArgumentException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
         /// <exception cref="GorgonLibrary.GorgonException">Thrown when the buffer could not be created.</exception>
-        public GorgonConstantBuffer CreateConstantBuffer<T>(string name, T value, BufferUsage usage)
+        public GorgonConstantBuffer CreateConstantBuffer<T>(string name, ref T value, BufferUsage usage)
             where T : struct
         {
             int size = DirectAccess.SizeOf<T>();
@@ -321,17 +321,15 @@ namespace GorgonLibrary.Graphics
                 size++;
             }
 
-            using (var stream = new GorgonDataStream(size))
-            {
-                stream.Write(value);
-                stream.Position = 0;
+	        var result = CreateConstantBuffer(name, new GorgonConstantBufferSettings
+	        {
+		        Usage = usage,
+		        SizeInBytes = size
+	        });
 
-                return CreateConstantBuffer(name, new GorgonConstantBufferSettings
-                {
-                    Usage = usage,
-                    SizeInBytes = (int)stream.Length
-                }, stream);
-            }
+			result.Update(ref value);
+
+	        return result;
         }
 
         /// <summary>
