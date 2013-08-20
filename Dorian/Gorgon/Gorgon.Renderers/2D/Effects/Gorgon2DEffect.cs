@@ -29,19 +29,25 @@ using GorgonLibrary.Graphics;
 namespace GorgonLibrary.Renderers
 {
 	/// <summary>
-	/// Base effect for 2D effects.
+	/// A base effect for the 2D renderer.
 	/// </summary>
-	public abstract class Gorgon2DEffect_GOINGBYEBYE2
-		: GorgonEffect_GOINGBYEBYE
+	public abstract class Gorgon2DEffect
+		: GorgonEffect
 	{
 		#region Variables.
 		private bool _isDisposed;							// Flag to indicate that the object was disposed.
-		private GorgonPixelShader _lastPixelShader;			// Last pixel shader.
-		private GorgonVertexShader _lastVertexShader;		// Last vertex shader.
-		private GorgonRenderTargetView _currentTarget;		// Current render target.
 		#endregion
 
 		#region Properties.
+		/// <summary>
+		/// Property to return the current render target.
+		/// </summary>
+		public GorgonRenderTargetView CurrentTarget
+		{
+			get;
+			private set;
+		}
+
 		/// <summary>
 		/// Property to return the Gorgon 2D instance that created this object.
 		/// </summary>
@@ -61,9 +67,37 @@ namespace GorgonLibrary.Renderers
 		/// </returns>
 		protected override bool OnBeforeRender()
 		{
-			_currentTarget = Gorgon2D.Target;
+			CurrentTarget = Gorgon2D.Target;
 
 			return true;
+		}
+
+		/// <summary>
+		/// Function called before a pass is rendered.
+		/// </summary>
+		/// <param name="pass">Pass to render.</param>
+		/// <returns>
+		/// TRUE to continue rendering, FALSE to stop.
+		/// </returns>
+		protected override bool OnBeforePassRender(GorgonEffectPass pass)
+		{
+			StoredShaders.PixelShader = Gorgon2D.PixelShader.Current;
+			StoredShaders.VertexShader = Gorgon2D.VertexShader.Current;
+
+			Gorgon2D.PixelShader.Current = pass.PixelShader;
+			Gorgon2D.VertexShader.Current = pass.VertexShader;
+
+			return true;
+		}
+
+		/// <summary>
+		/// Function called after a pass has been rendered.
+		/// </summary>
+		/// <param name="pass">Pass that was rendered.</param>
+		protected override void OnAfterPassRender(GorgonEffectPass pass)
+		{
+			Gorgon2D.PixelShader.Current = StoredShaders.PixelShader;
+			Gorgon2D.VertexShader.Current = StoredShaders.VertexShader;
 		}
 
 		/// <summary>
@@ -71,30 +105,7 @@ namespace GorgonLibrary.Renderers
 		/// </summary>
 		protected override void OnAfterRender()
 		{
-			Gorgon2D.Target = _currentTarget;
-		}
-
-		/// <summary>
-		/// Function called when a pass is about to start rendering.
-		/// </summary>
-		/// <param name="passIndex">Index of the pass being rendered.</param>
-		protected override void OnBeforeRenderPass(int passIndex)
-		{
-			base.OnBeforeRenderPass(passIndex);
-			_lastPixelShader = Gorgon2D.PixelShader.Current;
-			_lastVertexShader = Gorgon2D.VertexShader.Current;
-			Gorgon2D.PixelShader.Current = PixelShader;
-			Gorgon2D.VertexShader.Current = VertexShader;
-		}
-
-		/// <summary>
-		/// Function called after a pass has rendered.
-		/// </summary>
-		/// <param name="passIndex">Index of the pass being rendered.</param>
-		protected override void OnAfterRenderPass(int passIndex)
-		{
-			Gorgon2D.PixelShader.Current = _lastPixelShader;
-			Gorgon2D.VertexShader.Current = _lastVertexShader;
+			Gorgon2D.Target = CurrentTarget;
 		}
 
 		/// <summary>
@@ -108,34 +119,22 @@ namespace GorgonLibrary.Renderers
 				if (disposing)
 				{
 					Gorgon2D.TrackedObjects.Remove(this);
-
-					Gorgon2D.PixelShader.Current = _lastPixelShader;
-					Gorgon2D.VertexShader.Current = _lastVertexShader;
 				}
 				
 				_isDisposed = true;
 			}
 			base.Dispose(disposing);
 		}
-
-		/// <summary>
-		/// Function to force pass settings to be applied.
-		/// </summary>
-		/// <param name="passIndex">Index of the pass to apply.</param>
-		public void ApplyPass(int passIndex)
-		{
-			OnBeforeRenderPass(passIndex);
-		}
 		#endregion
 
 		#region Constructor/Destructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="Gorgon2DEffect_GOINGBYEBYE2"/> class.
+		/// Initializes a new instance of the <see cref="Gorgon2DEffect"/> class.
 		/// </summary>
 		/// <param name="gorgon2D">The gorgon 2D instance that created this object.</param>
 		/// <param name="name">The name of the effect.</param>
 		/// <param name="passCount">The number of passes..</param>
-		protected Gorgon2DEffect_GOINGBYEBYE2(Gorgon2D gorgon2D, string name, int passCount)
+		protected Gorgon2DEffect(Gorgon2D gorgon2D, string name, int passCount)
 			: base(gorgon2D.Graphics, name, passCount)
 		{
 			Gorgon2D = gorgon2D;

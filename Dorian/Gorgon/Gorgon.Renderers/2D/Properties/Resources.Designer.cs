@@ -71,6 +71,24 @@ namespace GorgonLibrary.Renderers.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The gaussian blur render targets were not created.  Ensure that the render target width and height are greater than 0..
+        /// </summary>
+        internal static string GOR2D_EFFECT_NO_BLUR_TARGETS {
+            get {
+                return ResourceManager.GetString("GOR2D_EFFECT_NO_BLUR_TARGETS", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The displacement render target was not created.  Ensure that the render target width and height are greater than 0..
+        /// </summary>
+        internal static string GOR2D_EFFECT_NO_DISPLACEMENT_TARGET {
+            get {
+                return ResourceManager.GetString("GOR2D_EFFECT_NO_DISPLACEMENT_TARGET", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to There was no {0} shader bound to the pipeline. .
         /// </summary>
         internal static string GOR2D_SHADER_NOT_BOUND {

@@ -24,13 +24,13 @@
 // 
 #endregion
 
-using System;
 using System.Diagnostics;
 using System.Drawing;
 using GorgonLibrary.Graphics;
 using GorgonLibrary.IO;
 using GorgonLibrary.Math;
 using GorgonLibrary.Native;
+using GorgonLibrary.Renderers.Properties;
 using SlimMath;
 
 namespace GorgonLibrary.Renderers
@@ -55,7 +55,6 @@ namespace GorgonLibrary.Renderers
 		private GorgonRenderTarget2D _vTarget;										// Vertical blur render target.
 		private BufferFormat _blurTargetFormat = BufferFormat.R8G8B8A8_UIntNormal;	// Format of the blur render targets.
 		private Size _blurTargetSize = new Size(256, 256);							// Size of the render targets used for blurring.
-		private GorgonRenderTargetView _currentTarget;								// Current render target.
 		private readonly GorgonSprite _blurSprite;									// Sprite used to blur.
 		#endregion
 
@@ -187,7 +186,7 @@ namespace GorgonLibrary.Renderers
 		/// <summary>
 		/// Property to return the resulting blurred image data as a texture.
 		/// </summary>
-		public GorgonTexture2D BlurredTexture
+		public GorgonTexture2D Output
 		{
 			get
 			{
@@ -278,7 +277,7 @@ namespace GorgonLibrary.Renderers
 		/// <summary>
 		/// Function to free any resources allocated by the effect.
 		/// </summary>
-		public override void FreeResources()
+		public void FreeResources()
 		{
 			if (_hTarget != null)
 			{
@@ -294,62 +293,80 @@ namespace GorgonLibrary.Renderers
 		}
 
 		/// <summary>
-		/// Function called when a pass is about to start rendering.
+		/// Function called before rendering begins.
 		/// </summary>
-		/// <param name="passIndex">Index of the pass being rendered.</param>
-		protected override void OnBeforeRenderPass(int passIndex)
+		/// <returns>
+		/// TRUE to continue rendering, FALSE to exit.
+		/// </returns>
+		protected override bool OnBeforeRender()
 		{
-			base.OnBeforeRenderPass(passIndex);
-
 			if ((_hTarget == null) || (_vTarget == null))
 			{
 				UpdateRenderTarget();
-
-				Debug.Assert(_hTarget != null, "_hTarget != null");
-			}
-			
-			if (passIndex == 0)
-			{
-				// Get the current target.
-				_currentTarget = Gorgon2D.Target;
-				_hTarget.Clear(GorgonColor.Transparent);
-				Gorgon2D.Target = _hTarget;
-				_blurBuffer.Update(_xOffsets);
-			}
-			else
-			{
-				Gorgon2D.Target = _vTarget;
-				_blurBuffer.Update(_yOffsets);
 			}
 
+#if DEBUG
+			if ((_hTarget == null) || (_vTarget == null))
+			{
+				throw new GorgonException(GorgonResult.CannotWrite, Resources.GOR2D_EFFECT_NO_BLUR_TARGETS);
+			}
+#endif
+
+			StoredShaders.PixelShader = Gorgon2D.PixelShader.Current;
+			StoredShaders.VertexShader = Gorgon2D.VertexShader.Current;
+			Gorgon2D.PixelShader.Current = Passes[0].PixelShader;
+			Gorgon2D.VertexShader.Current = null;
+
+			// Assign the constant buffers to the pixel shader.
 			Gorgon2D.PixelShader.ConstantBuffers[1] = _blurStaticBuffer;
 			Gorgon2D.PixelShader.ConstantBuffers[2] = _blurBuffer;
+
+			return base.OnBeforeRender();
 		}
 
 		/// <summary>
-		/// Function to render a specific pass while using this effect.
+		/// Function called after rendering ends.
 		/// </summary>
-		/// <param name="renderMethod">Method to use to render the data.</param>
-		/// <param name="passIndex">Index of the pass to render.</param>
-		protected override void RenderImpl(Action<int> renderMethod, int passIndex)
+		protected override void OnAfterRender()
 		{
-			if ((_hTarget == null) || (_vTarget == null))
-			{
-				UpdateRenderTarget();
-			}
+			Gorgon2D.PixelShader.Current = StoredShaders.PixelShader;
+			Gorgon2D.VertexShader.Current = StoredShaders.VertexShader;
 
-			if (passIndex == 0)
-			{
-				Gorgon2D.Target = _hTarget;
-			}
-			else
-			{
-				// Copy the horizontal pass to the vertical pass target and blur the result.
-				_blurSprite.Draw();
-				Gorgon2D.Target = _currentTarget;
-			}
+			base.OnAfterRender();
+		}
 
-			base.RenderImpl(renderMethod, passIndex);
+		/// <summary>
+		/// Function called before a pass is rendered.
+		/// </summary>
+		/// <param name="pass">Pass to render.</param>
+		/// <returns>
+		/// TRUE to continue rendering, FALSE to stop.
+		/// </returns>
+		protected override bool OnBeforePassRender(GorgonEffectPass pass)
+		{
+			return pass.RenderAction != null;
+		}
+
+		/// <summary>
+		/// Function to render a pass.
+		/// </summary>
+		/// <param name="pass">Pass that is to be rendered.</param>
+		protected override void OnRenderPass(GorgonEffectPass pass)
+		{
+			Gorgon2D.Target = _hTarget;
+
+			// Render horizontal pass.
+			_hTarget.Clear(GorgonColor.Transparent);
+			_blurBuffer.Update(_xOffsets);
+
+			// Render the scene.
+			pass.RenderAction(pass);
+
+			// Render vertical pass.
+			Gorgon2D.Target = _vTarget;
+			_blurBuffer.Update(_yOffsets);
+
+			_blurSprite.Draw();
 		}
 
 		/// <summary>
@@ -374,13 +391,15 @@ namespace GorgonLibrary.Renderers
 					{
 						_blurKernelStream.Dispose();
 					}
-					if (PixelShader != null)
+					if (Passes[0].PixelShader != null)
 					{
-						PixelShader.Dispose();
+						Passes[0].PixelShader.Dispose();
 					}
+
+					FreeResources();
 				}
 
-				PixelShader = null;
+				Passes[0].PixelShader = null;
 				_disposed = true;
 			}
 
@@ -394,7 +413,7 @@ namespace GorgonLibrary.Renderers
 		/// </summary>
 		/// <param name="graphics">Graphics interface that created this object.</param>
 		internal Gorgon2DGaussianBlurEffect(Gorgon2D graphics)
-			: base(graphics, "Effect.GaussBlur", 2)
+			: base(graphics, "Effect.GaussBlur", 1)
 		{
 			_xOffsets = new Vector4[13];
 			_yOffsets = new Vector4[13];
@@ -411,17 +430,20 @@ namespace GorgonLibrary.Renderers
 																});
 
 			_blurKernelStream = new GorgonDataStream(_blurStaticBuffer.SizeInBytes);
+			
 #if DEBUG
-			PixelShader = Graphics.ImmediateContext.Shaders.CreateShader<GorgonPixelShader>("Effect.PS.GaussBlur", "GorgonPixelShaderGaussBlur", "#GorgonInclude \"Gorgon2DShaders\"");
+			Passes[0].PixelShader = Graphics.ImmediateContext.Shaders.CreateShader<GorgonPixelShader>("Effect.PS.GaussBlur", "GorgonPixelShaderGaussBlur", "#GorgonInclude \"Gorgon2DShaders\"");
 #else
-			PixelShader = Graphics.ImmediateContext.Shaders.CreateShader<GorgonPixelShader>("Effect.PS.GaussBlur", "GorgonPixelShaderGaussBlur", "#GorgonInclude \"Gorgon2DShaders\"");
+			Passes[0].PixelShader = Graphics.ImmediateContext.Shaders.CreateShader<GorgonPixelShader>("Effect.PS.GaussBlur", "GorgonPixelShaderGaussBlur", "#GorgonInclude \"Gorgon2DShaders\"");
 #endif
+
 			UpdateKernel();
 
 			_blurSprite = graphics.Renderables.CreateSprite("Gorgon2DGaussianBlurEffect Sprite", new GorgonSpriteSettings
 			{
 				Size = BlurRenderTargetsSize
 			});
+
 			_blurSprite.BlendingMode = BlendingMode.None;
 			_blurSprite.SmoothingMode = SmoothingMode.Smooth;
 			_blurSprite.TextureRegion = new RectangleF(0, 0, 1, 1);

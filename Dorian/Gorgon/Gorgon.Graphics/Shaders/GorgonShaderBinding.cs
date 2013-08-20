@@ -416,8 +416,8 @@ namespace GorgonLibrary.Graphics
 		/// <para>Thrown when the parameter list does not contain a required parameter.</para>
 		/// </exception>
 		/// <exception cref="GorgonLibrary.GorgonException">Thrown when the graphics context is deferred.</exception>
-		public T CreateEffect<T>(string name, params GorgonEffectParameter_GOINGBYEBYE[] parameters)
-			where T : GorgonEffect_GOINGBYEBYE
+		public T CreateEffect<T>(string name, params GorgonEffectParameter[] parameters)
+			where T : GorgonEffect
 		{
             if (_graphics.IsDeferred)
             {
@@ -464,9 +464,6 @@ namespace GorgonLibrary.Graphics
 					effect.Parameters[param.Name] = param.Value;
 				}
 			}
-
-			// Initialize our effect parameters.
-			effect.InitializeEffectParameters();
 
 			_graphics.AddTrackedObject(effect);
 

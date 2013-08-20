@@ -118,44 +118,6 @@ namespace GorgonLibrary.Graphics
         }
         #endregion
 
-        #region Methods.
-        /// <summary>
-        /// Function to apply the shaders for the pass.
-        /// </summary>
-        internal void ApplyShaders()
-        {
-            Effect.Graphics.Shaders.PixelShader.Current = PixelShader;
-            Effect.Graphics.Shaders.VertexShader.Current = VertexShader;
-
-            if (Effect.Graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM2_a_b)
-            {
-                return;
-            }
-
-            Effect.Graphics.Shaders.GeometryShader.Current = GeometryShader;
-
-            if (Effect.Graphics.VideoDevice.SupportedFeatureLevel < DeviceFeatureLevel.SM5)
-            {
-                return;
-            }
-
-            Effect.Graphics.Shaders.ComputeShader.Current = ComputeShader;
-        }
-
-        /// <summary>
-        /// Function to render the pass.
-        /// </summary>
-        internal void Render()
-        {
-            if (RenderAction == null)
-            {
-                return;
-            }
-
-            RenderAction(this);
-        }
-        #endregion
-
         #region Constructor/Destructor.
         /// <summary>
         /// Initializes a new instance of the <see cref="GorgonEffectPass"/> class.

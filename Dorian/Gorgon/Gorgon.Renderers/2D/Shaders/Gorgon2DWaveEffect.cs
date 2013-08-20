@@ -51,7 +51,7 @@ namespace GorgonLibrary.Renderers
 	/// An effect that renders a wavy image.
 	/// </summary>
 	public class Gorgon2DWaveEffect
-		: Gorgon2DEffect
+		: Gorgon2DEffect_GOINGBYEBYE2
 	{
 		#region Variables.
 		private bool _disposed;									// Flag to indicate that the object was disposed.

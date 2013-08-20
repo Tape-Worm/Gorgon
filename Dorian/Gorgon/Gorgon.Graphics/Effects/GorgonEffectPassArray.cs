@@ -48,7 +48,7 @@ namespace GorgonLibrary.Graphics
         /// <param name="passCount">The pass count.</param>
         internal GorgonEffectPassArray(GorgonEffect effect, int passCount)
         {
-            _passes = new GorgonEffectPass[passCount.Min(1)];
+            _passes = new GorgonEffectPass[passCount.Max(1)];
 
             for (int i = 0; i < _passes.Length; i++)
             {

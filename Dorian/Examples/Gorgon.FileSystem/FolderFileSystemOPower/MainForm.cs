@@ -114,42 +114,15 @@ namespace GorgonLibrary.Examples
 			_sprites[1].Draw();
 
             // Draw the blurred sprite.
-			_2D.Effects.GaussianBlur.Render(passIndex =>
-				{
-					if (passIndex == 0)
-					{
-						// Draw the sprite at the upper left corner instead of
-						// centered.  Otherwise it'll be centered in the blur 
-                        // render target and will be clipped.
-						_sprites[2].Anchor = Vector2.Zero;
-						_sprites[2].Position = Vector2.Zero;
-						// Scale to the size of the blur target.
-						_sprites[2].Scale = new Vector2(1.0f, _2D.Effects.GaussianBlur.BlurRenderTargetsSize.Height / _sprites[2].Size.Y);
-						// Adjust the texture size to avoid bleed when blurring.  
-                        // Bleed means that other portions of the texture get pulled
-                        // in to the texture because of bi-linear filtering (and the
-                        // blur operates in a similar manner, and therefore unwanted
-                        // pixels get pulled in as well).
-                        // See http://tape-worm.net/?page_id=277 for more info.
-						_sprites[2].TextureSize = new Vector2(125.0f / _spriteImage.Settings.Width, _sprites[2].TextureSize.Y);
+			_2D.Effects.GaussianBlur.Render();
 
-						_sprites[2].Draw();
-
-						// Reset.
-						_sprites[2].TextureSize = new Vector2(128.0f / _spriteImage.Settings.Width, _sprites[2].TextureSize.Y);
-					}
-					else
-					{
-						// Copy the target onto the screen (scaled to the original size of the sprite).
-                        // We scale the blit because the render targets used for blurring are much smaller
-                        // than the actual sprite.  If we didn't scale, the sprite would be clipped.
-						_2D.Drawing.Blit(_2D.Effects.GaussianBlur.BlurredTexture, new RectangleF(width / 2 - _sprites[2].Size.X / 2.0f,
-																								height / 2 - _sprites[2].Size.Y / 2.0f,
-																								_sprites[2].Size.X,
-																								_sprites[2].Size.Y));
-					}
-				});
-			
+			// Copy the target onto the screen (scaled to the original size of the sprite).
+            // We scale the blit because the render targets used for blurring are much smaller
+            // than the actual sprite.  If we didn't scale, the sprite would be clipped.
+			_2D.Drawing.Blit(_2D.Effects.GaussianBlur.Output, new RectangleF(width / 2 - _sprites[2].Size.X / 2.0f,
+																					height / 2 - _sprites[2].Size.Y / 2.0f,
+																					_sprites[2].Size.X,
+																					_sprites[2].Size.Y));
 
 			// Draw help text.
 			if (_showHelp)
@@ -236,6 +209,28 @@ namespace GorgonLibrary.Examples
             // speed up the effect.
 			_2D.Effects.GaussianBlur.BlurAmount = 13.0f;
 			_2D.Effects.GaussianBlur.BlurRenderTargetsSize = new Size(128, 128);
+			_2D.Effects.GaussianBlur.Passes[0].RenderAction = pass =>
+			{
+				// Draw the sprite at the upper left corner instead of
+				// centered.  Otherwise it'll be centered in the blur 
+				// render target and will be clipped.
+				_sprites[2].Anchor = Vector2.Zero;
+				_sprites[2].Position = Vector2.Zero;
+				// Scale to the size of the blur target.
+				_sprites[2].Scale = new Vector2(1.0f, _2D.Effects.GaussianBlur.BlurRenderTargetsSize.Height / _sprites[2].Size.Y);
+				// Adjust the texture size to avoid bleed when blurring.  
+				// Bleed means that other portions of the texture get pulled
+				// in to the texture because of bi-linear filtering (and the
+				// blur operates in a similar manner, and therefore unwanted
+				// pixels get pulled in as well).
+				// See http://tape-worm.net/?page_id=277 for more info.
+				_sprites[2].TextureSize = new Vector2(125.0f / _spriteImage.Settings.Width, _sprites[2].TextureSize.Y);
+
+				_sprites[2].Draw();
+
+				// Reset.
+				_sprites[2].TextureSize = new Vector2(128.0f / _spriteImage.Settings.Width, _sprites[2].TextureSize.Y);
+			};
 
 			Gorgon.ApplicationIdleLoopMethod = Idle;
 		}

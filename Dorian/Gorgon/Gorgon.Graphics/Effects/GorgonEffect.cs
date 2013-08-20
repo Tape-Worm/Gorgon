@@ -45,10 +45,18 @@ namespace GorgonLibrary.Graphics
     {
         #region Variables.
         private bool _disposed;                         // Flag to indicate that the object was disposed.
-        private GorgonEffectPass _storedShaders;        // List of stored shaders.
         #endregion
 
         #region Properties.
+		/// <summary>
+		/// Property to return a pass containing the original shaders before rendering started.
+		/// </summary>
+	    protected GorgonEffectPass StoredShaders
+	    {
+		    get;
+		    private set;
+	    }
+
         /// <summary>
         /// Property to return a list of required parameters for the effect.
         /// </summary>
@@ -93,6 +101,56 @@ namespace GorgonLibrary.Graphics
         #endregion
 
         #region Methods.
+		/// <summary>
+		/// Function to remember the currently set shaders.
+		/// </summary>
+	    protected void RememberCurrentShaders()
+	    {
+			StoredShaders.PixelShader = Graphics.Shaders.PixelShader.Current;
+			StoredShaders.VertexShader = Graphics.Shaders.VertexShader.Current;
+
+			if (Graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM2_a_b)
+			{
+				return;
+			}
+
+			StoredShaders.GeometryShader = Graphics.Shaders.GeometryShader.Current;
+
+			if (Graphics.VideoDevice.SupportedFeatureLevel < DeviceFeatureLevel.SM5)
+			{
+				return;
+			}
+
+			StoredShaders.ComputeShader = Graphics.Shaders.ComputeShader.Current;
+			StoredShaders.HullShader = Graphics.Shaders.HullShader.Current;
+			StoredShaders.DomainShader = Graphics.Shaders.DomainShader.Current;
+	    }
+
+		/// <summary>
+		/// Function to restore the previously remembered shaders.
+		/// </summary>
+	    protected void RestoreCurrentShaders()
+	    {
+			Graphics.Shaders.PixelShader.Current = StoredShaders.PixelShader;
+			Graphics.Shaders.VertexShader.Current = StoredShaders.VertexShader;
+
+			if (Graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM2_a_b)
+			{
+				return;
+			}
+
+			Graphics.Shaders.GeometryShader.Current = StoredShaders.GeometryShader;
+
+			if (Graphics.VideoDevice.SupportedFeatureLevel < DeviceFeatureLevel.SM5)
+			{
+				return;
+			}
+
+			Graphics.Shaders.ComputeShader.Current = StoredShaders.ComputeShader;
+			Graphics.Shaders.HullShader.Current = StoredShaders.HullShader;
+			Graphics.Shaders.DomainShader.Current = StoredShaders.DomainShader;
+	    }
+
         /// <summary>
         /// Function called before rendering begins.
         /// </summary>
@@ -116,16 +174,28 @@ namespace GorgonLibrary.Graphics
         /// <returns>TRUE to continue rendering, FALSE to stop.</returns>
         protected virtual bool OnBeforePassRender(GorgonEffectPass pass)
         {
-            _storedShaders.PixelShader = Graphics.Shaders.PixelShader.Current;
-            _storedShaders.VertexShader = Graphics.Shaders.VertexShader.Current;
-            _storedShaders.GeometryShader = Graphics.Shaders.GeometryShader.Current;
-            _storedShaders.ComputeShader = Graphics.Shaders.ComputeShader.Current;
-            _storedShaders.HullShader = Graphics.Shaders.HullShader.Current;
-            _storedShaders.DomainShader = Graphics.Shaders.DomainShader.Current;
+			RememberCurrentShaders();
 
-            pass.ApplyShaders();
-            
-            return true;
+			Graphics.Shaders.PixelShader.Current = pass.PixelShader;
+			Graphics.Shaders.VertexShader.Current = pass.VertexShader;
+
+			if (Graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM2_a_b)
+			{
+				return true;
+			}
+
+			Graphics.Shaders.GeometryShader.Current = pass.GeometryShader;
+
+			if (Graphics.VideoDevice.SupportedFeatureLevel < DeviceFeatureLevel.SM5)
+			{
+				return true;
+			}
+
+			Graphics.Shaders.ComputeShader.Current = pass.ComputeShader;
+			Graphics.Shaders.HullShader.Current = pass.HullShader;
+			Graphics.Shaders.DomainShader.Current = pass.DomainShader;
+
+			return true;
         }
 
         /// <summary>
@@ -134,8 +204,20 @@ namespace GorgonLibrary.Graphics
         /// <param name="pass">Pass that was rendered.</param>
         protected virtual void OnAfterPassRender(GorgonEffectPass pass)
         {
-            _storedShaders.ApplyShaders();
+            RestoreCurrentShaders();
         }
+
+		/// <summary>
+		/// Function to render a pass.
+		/// </summary>
+		/// <param name="pass">Pass that is to be rendered.</param>
+	    protected virtual void OnRenderPass(GorgonEffectPass pass)
+	    {
+			if (pass.RenderAction != null)
+			{
+				pass.RenderAction(pass);
+			}
+	    }
 
         /// <summary>
         /// Function to render a single pass.
@@ -152,7 +234,7 @@ namespace GorgonLibrary.Graphics
 
             if (OnBeforePassRender(pass))
             {
-                pass.Render();
+                OnRenderPass(pass);
             }
 
             OnAfterPassRender(pass);
@@ -177,7 +259,7 @@ namespace GorgonLibrary.Graphics
 
                 if (OnBeforePassRender(pass))
                 {
-                    pass.Render();
+                    OnRenderPass(pass);
                 }
 
                 OnAfterPassRender(pass);
@@ -199,7 +281,9 @@ namespace GorgonLibrary.Graphics
         {
             Graphics = graphics;
             Passes = new GorgonEffectPassArray(this, passCount);
-            _storedShaders = new GorgonEffectPass(this, -1);
+            StoredShaders = new GorgonEffectPass(this, -1);
+	        RequiredParameters = new List<string>();
+			Parameters = new Dictionary<string, object>();
         }
         #endregion
 

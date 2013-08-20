@@ -34,8 +34,8 @@ namespace GorgonLibrary.Graphics
 	/// A parameter to pass to an effect.
 	/// </summary>
 	/// <remarks>Some effects will require parameters be passed before they can function, or to alter their function.  Use this type to define an effect parameter.</remarks>
-	public struct GorgonEffectParameter_GOINGBYEBYE
-		: IEquatable<GorgonEffectParameter_GOINGBYEBYE>, INamedObject
+	public struct GorgonEffectParameter
+		: IEquatable<GorgonEffectParameter>, INamedObject
 	{
 		#region Variables.
         /// <summary>
@@ -81,9 +81,9 @@ namespace GorgonLibrary.Graphics
 		/// </returns>
 		public override bool Equals(object obj)
 		{
-			if (obj is GorgonEffectParameter_GOINGBYEBYE)
+			if (obj is GorgonEffectParameter)
 			{
-				return Equals((GorgonEffectParameter_GOINGBYEBYE)obj);
+				return Equals((GorgonEffectParameter)obj);
 			}
 
 			return base.Equals(obj);
@@ -95,7 +95,7 @@ namespace GorgonLibrary.Graphics
 		/// <param name="left">Left instance to compare.</param>
 		/// <param name="right">Right instance to compare.</param>
 		/// <returns>TRUE if equal, FALSE if not.</returns>
-		public static bool Equals(ref GorgonEffectParameter_GOINGBYEBYE left, ref GorgonEffectParameter_GOINGBYEBYE right)
+		public static bool Equals(ref GorgonEffectParameter left, ref GorgonEffectParameter right)
 		{
 			if (!string.Equals(left.Name, right.Name, StringComparison.OrdinalIgnoreCase))
 			{
@@ -121,7 +121,7 @@ namespace GorgonLibrary.Graphics
 		/// <param name="left">Left instance to compare.</param>
 		/// <param name="right">Right instance to compare.</param>
 		/// <returns>TRUE if equal, FALSE if not.</returns>
-		public static bool operator ==(GorgonEffectParameter_GOINGBYEBYE left, GorgonEffectParameter_GOINGBYEBYE right)
+		public static bool operator ==(GorgonEffectParameter left, GorgonEffectParameter right)
 		{
 			return Equals(ref left, ref right);
 		}
@@ -132,7 +132,7 @@ namespace GorgonLibrary.Graphics
 		/// <param name="left">Left instance to compare.</param>
 		/// <param name="right">Right instance to compare.</param>
 		/// <returns>TRUE if not equal, FALSE if equal.</returns>
-		public static bool operator !=(GorgonEffectParameter_GOINGBYEBYE left, GorgonEffectParameter_GOINGBYEBYE right)
+		public static bool operator !=(GorgonEffectParameter left, GorgonEffectParameter right)
 		{
 			return !Equals(ref left, ref right);
 		}
@@ -142,7 +142,7 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		/// <param name="param">The parameter to convert.</param>
 		/// <returns>The parameter converted to a key value pair type.</returns>
-		public static implicit operator KeyValuePair<string, object>(GorgonEffectParameter_GOINGBYEBYE param)
+		public static implicit operator KeyValuePair<string, object>(GorgonEffectParameter param)
 		{
 			return new KeyValuePair<string, object>(param.Name, param.Value);
 		}
@@ -152,21 +152,21 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		/// <param name="keyValue">The key value pair to convert.</param>
 		/// <returns>The key value pair converted into a Gorgon effect parameter.</returns>
-		public static implicit operator GorgonEffectParameter_GOINGBYEBYE(KeyValuePair<string, object> keyValue)
+		public static implicit operator GorgonEffectParameter(KeyValuePair<string, object> keyValue)
 		{
-			return new GorgonEffectParameter_GOINGBYEBYE(keyValue.Key, keyValue.Value);
+			return new GorgonEffectParameter(keyValue.Key, keyValue.Value);
 		}
 		#endregion
 
 		#region Constructor/Destructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonEffectParameter_GOINGBYEBYE"/> struct.
+		/// Initializes a new instance of the <see cref="GorgonEffectParameter"/> struct.
 		/// </summary>
 		/// <param name="parameterName">The name of the parameter.</param>
 		/// <param name="value">The value to assign.</param>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="parameterName"/> is NULL (Nothing in VB.Net).</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="parameterName"/> is empty.</exception>
-		public GorgonEffectParameter_GOINGBYEBYE(string parameterName, object value)
+		public GorgonEffectParameter(string parameterName, object value)
 		{
 			if (parameterName == null)
 			{
@@ -204,7 +204,7 @@ namespace GorgonLibrary.Graphics
 		/// <returns>
 		/// true if the current object is equal to the <paramref name="other" /> parameter; otherwise, false.
 		/// </returns>
-		public bool Equals(GorgonEffectParameter_GOINGBYEBYE other)
+		public bool Equals(GorgonEffectParameter other)
 		{
 			return Equals(ref this, ref other);
 		}
