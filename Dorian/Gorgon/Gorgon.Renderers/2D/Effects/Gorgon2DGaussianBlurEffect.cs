@@ -24,6 +24,7 @@
 // 
 #endregion
 
+using System;
 using System.Diagnostics;
 using System.Drawing;
 using GorgonLibrary.Graphics;
@@ -180,6 +181,22 @@ namespace GorgonLibrary.Renderers
 
 				_blurTargetSize = value;
 				UpdateRenderTarget();
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return the function used to render the scene when blurring.
+		/// </summary>
+		/// <remarks>Use this to render the image to be blurred.</remarks>
+		public Action<GorgonEffectPass> RenderScene
+		{
+			get
+			{
+				return Passes[0].RenderAction;
+			}
+			set
+			{
+				Passes[0].RenderAction = value;
 			}
 		}
 
