@@ -58,7 +58,7 @@ namespace GorgonLibrary.Renderers
 				{
 					if (_grayScaleEffect == null)
 					{
-						_grayScaleEffect = new Gorgon2DGrayScaleEffect(_gorgon2D);
+					    _grayScaleEffect = _gorgon2D.Create2DEffect<Gorgon2DGrayScaleEffect>("Effect.2D.GrayScale");
 					}
 				}
 
@@ -77,7 +77,7 @@ namespace GorgonLibrary.Renderers
 				{
 					if (_waveEffect == null)
 					{
-						_waveEffect = new Gorgon2DWaveEffect(_gorgon2D);
+					    _waveEffect = _gorgon2D.Create2DEffect<Gorgon2DWaveEffect>("Effect.2D.Wave");
 					}
 				}
 				return _waveEffect;
@@ -95,9 +95,10 @@ namespace GorgonLibrary.Renderers
 				{
 					if (_1BitEffect == null)
 					{
-						_1BitEffect = new Gorgon2D1BitEffect(_gorgon2D);
+                        _1BitEffect = _gorgon2D.Create2DEffect<Gorgon2D1BitEffect>("Effect.2D.1Bit");
 					}					
 				}
+
 				return _1BitEffect;
 			}			
 		}
@@ -113,7 +114,7 @@ namespace GorgonLibrary.Renderers
 				{
 					if (_sharpenEmbossEffect == null)
 					{
-						_sharpenEmbossEffect = new Gorgon2DSharpenEmbossEffect(_gorgon2D);
+					    _sharpenEmbossEffect = _gorgon2D.Create2DEffect<Gorgon2DSharpenEmbossEffect>("Effect.2D.SharpenEmboss");
 					}
 				}
 				return _sharpenEmbossEffect;
@@ -131,7 +132,7 @@ namespace GorgonLibrary.Renderers
 				{
 					if (_invertEffect == null)
 					{
-						_invertEffect = new Gorgon2DInvertEffect(_gorgon2D);
+						_invertEffect = _gorgon2D.Create2DEffect<Gorgon2DInvertEffect>("Effect.2D.Invert");
 					}
 				}
 				return _invertEffect;
@@ -149,7 +150,7 @@ namespace GorgonLibrary.Renderers
 				{
 					if (_gaussBlurEffect == null)
 					{
-						_gaussBlurEffect = new Gorgon2DGaussianBlurEffect(_gorgon2D);
+					    _gaussBlurEffect = _gorgon2D.Create2DEffect<Gorgon2DGaussianBlurEffect>("Effect.GaussBlur");
 					}
 				}
 				return _gaussBlurEffect;
@@ -167,7 +168,7 @@ namespace GorgonLibrary.Renderers
 				{
 					if (_posterizeEffect == null)
 					{
-						_posterizeEffect = new Gorgon2DPosterizedEffect(_gorgon2D);
+					    _posterizeEffect = _gorgon2D.Create2DEffect<Gorgon2DPosterizedEffect>("Effect.2D.Posterize");
 					}
 				}
 				return _posterizeEffect;
@@ -185,7 +186,7 @@ namespace GorgonLibrary.Renderers
 				{
 					if (_sobelEdgeDetectEffect == null)
 					{
-						_sobelEdgeDetectEffect = new Gorgon2DSobelEdgeDetectEffect(_gorgon2D);
+						_sobelEdgeDetectEffect = _gorgon2D.Create2DEffect<Gorgon2DSobelEdgeDetectEffect>("Effect.2D.SobelEdgeDetection");
 					}
 				}
 
@@ -204,7 +205,7 @@ namespace GorgonLibrary.Renderers
 				{
 					if (_burnDodgeEffect == null)
 					{
-						_burnDodgeEffect = new Gorgon2DBurnDodgeEffect(_gorgon2D);
+					    _burnDodgeEffect = _gorgon2D.Create2DEffect<Gorgon2DBurnDodgeEffect>("Effect.2D.BurnDodge");
 					}					
 				}
 
@@ -223,7 +224,7 @@ namespace GorgonLibrary.Renderers
 				{
 					if (_displacementEffect == null)
 					{
-						_displacementEffect = new Gorgon2DDisplacementEffect(_gorgon2D);
+					    _displacementEffect = _gorgon2D.Create2DEffect<Gorgon2DDisplacementEffect>("Effect.2D.Displacement");
 					}
 				}
 
@@ -236,7 +237,7 @@ namespace GorgonLibrary.Renderers
 		/// <summary>
 		/// Function to release the shaders and the resources allocated to them.
 		/// </summary>
-		public void FreeShaders()
+		public void FreeEffects()
 		{
 			if (_posterizeEffect != null)
 			{

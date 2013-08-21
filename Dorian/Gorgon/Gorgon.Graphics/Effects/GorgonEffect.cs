@@ -26,6 +26,9 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using GorgonLibrary.Graphics.Properties;
 
 namespace GorgonLibrary.Graphics
 {
@@ -218,6 +221,73 @@ namespace GorgonLibrary.Graphics
 				pass.RenderAction(pass);
 			}
 	    }
+
+        /// <summary>
+        /// Function called when the effect is being initialized.
+        /// </summary>
+        /// <remarks>Use this method to set up the effect upon its creation.  For example, this method could be used to create the required shaders for the effect.
+        /// <para>When creating a custom effect, use this method to initialize the effect.  Do not put initialization code in the effect constructor.</para>
+        /// </remarks>
+        protected virtual void OnInitialize()
+        {
+            
+        }
+
+        /// <summary>
+        /// Function to initialize the effect.
+        /// </summary>
+        /// <param name="parameters">The parameters used to initialize the effect.</param>
+        internal void InitializeEffect(GorgonEffectParameter[] parameters)
+        {
+            // Check its required parameters.
+            if ((RequiredParameters.Count > 0) && ((parameters == null) || (parameters.Length == 0)))
+            {
+                throw new ArgumentException(string.Format(Resources.GORGFX_EFFECT_MISSING_REQUIRED_PARAMS, RequiredParameters[0]), "parameters");
+            }
+
+            if ((parameters != null) && (parameters.Length > 0))
+            {
+                // Only get parameters where the key name has a value.
+                var validParameters = parameters.Where(item => !string.IsNullOrWhiteSpace(item.Name)).ToArray();
+
+                // Check for predefined required parameters from the effect.
+                var missingParams =
+                    RequiredParameters.Where(
+                        effectParam =>
+                            (!validParameters.Any(
+                                item => string.Equals(item.Name, effectParam, StringComparison.OrdinalIgnoreCase))));
+
+                StringBuilder missingList = null;
+                foreach (var effectParam in missingParams)
+                {
+                    if (missingList == null)
+                    {
+                        missingList = new StringBuilder(128);
+                    }
+
+                    if (missingList.Length > 0)
+                    {
+                        missingList.Append("\n");
+                    }
+
+                    missingList.AppendFormat("'{0}'", effectParam);
+                }
+
+                if ((missingList != null)
+                    && (missingList.Length > 0))
+                {
+                    throw new ArgumentException(string.Format(Resources.GORGFX_EFFECT_MISSING_REQUIRED_PARAMS, missingList), "parameters");
+                }
+
+                // Add/update the parameters.
+                foreach (var param in validParameters)
+                {
+                    Parameters[param.Name] = param.Value;
+                }
+            }
+
+            OnInitialize();
+        }
 
         /// <summary>
         /// Function to render a single pass.

@@ -435,35 +435,9 @@ namespace GorgonLibrary.Graphics
             }
 
 			// Create the effect.
-			var effect = (T)Activator.CreateInstance(typeof(T), new object[] {_graphics, name});
+			var effect = (T)Activator.CreateInstance(typeof(T), BindingFlags.Instance | BindingFlags.NonPublic, null, new object[] {_graphics, name}, null);
 
-			// Check its required parameters.
-			if ((effect.RequiredParameters.Count > 0) && ((parameters == null) || (parameters.Length == 0)))
-			{
-				throw new ArgumentException(string.Format(Resources.GORGFX_EFFECT_MISSING_REQUIRED_PARAMS, effect.RequiredParameters[0]), "parameters");
-			}
-
-			if ((parameters != null) && (parameters.Length > 0))
-			{
-				// Only get parameters where the key name has a value.
-				var validParameters = parameters.Where(item => !string.IsNullOrWhiteSpace(item.Name)).ToArray();
-
-				// Check for predefined required parameters from the effect.
-				foreach (var effectParam in effect.RequiredParameters)
-				{
-					if ((!string.IsNullOrWhiteSpace(effectParam)) 
-						&& (!validParameters.Any(item => string.Equals(item.Name, effectParam, StringComparison.OrdinalIgnoreCase))))
-					{
-						throw new ArgumentException(string.Format(Resources.GORGFX_EFFECT_MISSING_REQUIRED_PARAMS, effectParam), "parameters");
-					}
-				}
-
-				// Add/update the parameters.
-				foreach (var param in validParameters)
-				{
-					effect.Parameters[param.Name] = param.Value;
-				}
-			}
+            effect.InitializeEffect(parameters);
 
 			_graphics.AddTrackedObject(effect);
 

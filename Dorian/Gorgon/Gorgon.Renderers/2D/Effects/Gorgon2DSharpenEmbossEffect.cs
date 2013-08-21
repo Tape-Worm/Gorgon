@@ -39,7 +39,7 @@ namespace GorgonLibrary.Renderers
 	{
 		#region Variables.
 		private bool _disposed;												// Flag to indicate that the object was disposed.
-		private readonly GorgonConstantBuffer _sharpenEmbossBuffer;			// Constant buffer for the sharpen/emboss information.
+		private GorgonConstantBuffer _sharpenEmbossBuffer;			        // Constant buffer for the sharpen/emboss information.
 		private GorgonPixelShader _sharpenShader;							// Pixel shader used to sharpen an image.
 		private GorgonPixelShader _embossShader;							// Pixel shader used to emboss an image.
 		private float _amount = 1.0f;										// Amount to sharpen/emboss
@@ -118,7 +118,27 @@ namespace GorgonLibrary.Renderers
 		#endregion
 
 		#region Methods.
-		/// <summary>
+        /// <summary>
+        /// Function called when the effect is being initialized.
+        /// </summary>
+        /// <remarks>
+        /// Use this method to set up the effect upon its creation.  For example, this method could be used to create the required shaders for the effect.
+        /// <para>When creating a custom effect, use this method to initialize the effect.  Do not put initialization code in the effect constructor.</para>
+        /// </remarks>
+	    protected override void OnInitialize()
+	    {
+	        base.OnInitialize();
+            _sharpenShader = Graphics.ImmediateContext.Shaders.CreateShader<GorgonPixelShader>("Effect.2D.SharpenEmboss.PS", "GorgonPixelShaderSharpen", "#GorgonInclude \"Gorgon2DShaders\"");
+            _embossShader = Graphics.ImmediateContext.Shaders.CreateShader<GorgonPixelShader>("Effect.2D.SharpenEmboss.PS", "GorgonPixelShaderEmboss", "#GorgonInclude \"Gorgon2DShaders\"");
+
+            _sharpenEmbossBuffer = Graphics.ImmediateContext.Buffers.CreateConstantBuffer("Gorgon2DSharpenEmbossEffect Constant Buffer",
+                                                                new GorgonConstantBufferSettings
+                                                                {
+                                                                    SizeInBytes = 16
+                                                                });
+        }
+
+	    /// <summary>
 		/// Function called before rendering begins.
 		/// </summary>
 		/// <returns>
@@ -186,22 +206,15 @@ namespace GorgonLibrary.Renderers
 		#endregion
 
 		#region Constructor/Destructor.
-		/// <summary>
-		/// Initializes a new instance of the <see cref="Gorgon2DWaveEffect"/> class.
-		/// </summary>
-		/// <param name="gorgon2D">The gorgon 2D interface that created this object.</param>
-		internal Gorgon2DSharpenEmbossEffect(Gorgon2D gorgon2D)
-			: base(gorgon2D, "Effect.2D.SharpenEmboss", 1)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Gorgon2DWaveEffect" /> class.
+        /// </summary>
+        /// <param name="graphics">The graphics interface that owns this effect.</param>
+        /// <param name="name">The name of the effect.</param>
+		internal Gorgon2DSharpenEmbossEffect(GorgonGraphics graphics, string name)
+			: base(graphics, name, 1)
 		{
 			
-			_sharpenShader = Graphics.ImmediateContext.Shaders.CreateShader<GorgonPixelShader>("Effect.2D.SharpenEmboss.PS", "GorgonPixelShaderSharpen", "#GorgonInclude \"Gorgon2DShaders\"");
-			_embossShader = Graphics.ImmediateContext.Shaders.CreateShader<GorgonPixelShader>("Effect.2D.SharpenEmboss.PS", "GorgonPixelShaderEmboss", "#GorgonInclude \"Gorgon2DShaders\"");
-
-			_sharpenEmbossBuffer = Graphics.ImmediateContext.Buffers.CreateConstantBuffer("Gorgon2DSharpenEmbossEffect Constant Buffer",
-																new GorgonConstantBufferSettings
-																{
-																	SizeInBytes = 16
-																});
 		}
 		#endregion
 	}

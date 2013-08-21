@@ -44,19 +44,19 @@ namespace GorgonLibrary.Renderers
 	{
 		#region Variables.
 		private bool _disposed ;													// Flag to indicate that the object was disposed.
-		private readonly Vector4[] _xOffsets;										// Calculated offsets.
-		private readonly Vector4[] _yOffsets;										// Calculated offsets.
-		private readonly float[] _kernel;											// Blur kernel.
+		private Vector4[] _xOffsets;										        // Calculated offsets.
+		private Vector4[] _yOffsets;										        // Calculated offsets.
+		private float[] _kernel;											        // Blur kernel.
 		private int _blurRadius = 6;												// Radius for the blur.
 		private float _blurAmount = 3.0f;											// Amount to blur.
-		private readonly GorgonConstantBuffer _blurBuffer;							// Buffer for blur data.
-		private readonly GorgonConstantBuffer _blurStaticBuffer;					// Buffer for blur data that does not change very often.
-		private readonly GorgonDataStream _blurKernelStream;						// Stream for the kernel buffer.
+		private GorgonConstantBuffer _blurBuffer;							        // Buffer for blur data.
+		private GorgonConstantBuffer _blurStaticBuffer;					            // Buffer for blur data that does not change very often.
+		private GorgonDataStream _blurKernelStream;						            // Stream for the kernel buffer.
 		private GorgonRenderTarget2D _hTarget;										// Horizontal blur render target.
 		private GorgonRenderTarget2D _vTarget;										// Vertical blur render target.
 		private BufferFormat _blurTargetFormat = BufferFormat.R8G8B8A8_UIntNormal;	// Format of the blur render targets.
 		private Size _blurTargetSize = new Size(256, 256);							// Size of the render targets used for blurring.
-		private readonly GorgonSprite _blurSprite;									// Sprite used to blur.
+		private GorgonSprite _blurSprite;									        // Sprite used to blur.
 		#endregion
 
 		#region Properties.
@@ -291,7 +291,47 @@ namespace GorgonLibrary.Renderers
 			_blurStaticBuffer.Update(_blurKernelStream);
 		}
 
-		/// <summary>
+        /// <summary>
+        /// Function called when the effect is being initialized.
+        /// </summary>
+        /// <remarks>
+        /// Use this method to set up the effect upon its creation.  For example, this method could be used to create the required shaders for the effect.
+        /// </remarks>
+	    protected override void OnInitialize()
+	    {
+	        base.OnInitialize();
+
+            _xOffsets = new Vector4[13];
+            _yOffsets = new Vector4[13];
+            _kernel = new float[13];
+            _blurBuffer = Graphics.ImmediateContext.Buffers.CreateConstantBuffer("Gorgon2DGaussianBlurEffect Constant Buffer",
+                                                                new GorgonConstantBufferSettings
+                                                                {
+                                                                    SizeInBytes = DirectAccess.SizeOf<Vector4>() * _xOffsets.Length
+                                                                });
+            _blurStaticBuffer = Graphics.ImmediateContext.Buffers.CreateConstantBuffer("Gorgon2DGaussianBlurEffect Static Constant Buffer",
+                                                                new GorgonConstantBufferSettings
+                                                                {
+                                                                    SizeInBytes = DirectAccess.SizeOf<Vector4>() * (_kernel.Length + 1)
+                                                                });
+
+            _blurKernelStream = new GorgonDataStream(_blurStaticBuffer.SizeInBytes);
+
+            Passes[0].PixelShader = Graphics.ImmediateContext.Shaders.CreateShader<GorgonPixelShader>("Effect.PS.GaussBlur", "GorgonPixelShaderGaussBlur", "#GorgonInclude \"Gorgon2DShaders\"");
+
+            UpdateKernel();
+
+            _blurSprite = Gorgon2D.Renderables.CreateSprite("Gorgon2DGaussianBlurEffect Sprite", new GorgonSpriteSettings
+            {
+                Size = BlurRenderTargetsSize
+            });
+
+            _blurSprite.BlendingMode = BlendingMode.None;
+            _blurSprite.SmoothingMode = SmoothingMode.Smooth;
+            _blurSprite.TextureRegion = new RectangleF(0, 0, 1, 1);
+        }
+
+	    /// <summary>
 		/// Function to free any resources allocated by the effect.
 		/// </summary>
 		public void FreeResources()
@@ -428,38 +468,11 @@ namespace GorgonLibrary.Renderers
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Gorgon2DGaussianBlurEffect"/> class.
 		/// </summary>
-		/// <param name="graphics">Graphics interface that created this object.</param>
-		internal Gorgon2DGaussianBlurEffect(Gorgon2D graphics)
-			: base(graphics, "Effect.GaussBlur", 1)
+		/// <param name="graphics">The graphics interface that owns this effect.</param>
+		/// <param name="name">The name of the effect.</param>
+		internal Gorgon2DGaussianBlurEffect(GorgonGraphics graphics, string name)
+			: base(graphics, name, 1)
 		{
-			_xOffsets = new Vector4[13];
-			_yOffsets = new Vector4[13];
-			_kernel = new float[13];
-			_blurBuffer = Graphics.ImmediateContext.Buffers.CreateConstantBuffer("Gorgon2DGaussianBlurEffect Constant Buffer",
-			                                                    new GorgonConstantBufferSettings
-				                                                    {
-					                                                    SizeInBytes = DirectAccess.SizeOf<Vector4>() * _xOffsets.Length
-				                                                    });
-			_blurStaticBuffer = Graphics.ImmediateContext.Buffers.CreateConstantBuffer("Gorgon2DGaussianBlurEffect Static Constant Buffer",
-																new GorgonConstantBufferSettings
-																{
-																	SizeInBytes = DirectAccess.SizeOf<Vector4>() * (_kernel.Length + 1)
-																});
-
-			_blurKernelStream = new GorgonDataStream(_blurStaticBuffer.SizeInBytes);
-			
-			Passes[0].PixelShader = Graphics.ImmediateContext.Shaders.CreateShader<GorgonPixelShader>("Effect.PS.GaussBlur", "GorgonPixelShaderGaussBlur", "#GorgonInclude \"Gorgon2DShaders\"");
-
-			UpdateKernel();
-
-			_blurSprite = graphics.Renderables.CreateSprite("Gorgon2DGaussianBlurEffect Sprite", new GorgonSpriteSettings
-			{
-				Size = BlurRenderTargetsSize
-			});
-
-			_blurSprite.BlendingMode = BlendingMode.None;
-			_blurSprite.SmoothingMode = SmoothingMode.Smooth;
-			_blurSprite.TextureRegion = new RectangleF(0, 0, 1, 1);
 		}
 		#endregion
 	}
