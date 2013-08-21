@@ -36,7 +36,7 @@ namespace GorgonLibrary.Renderers
 		: Gorgon2DEffect
 	{
 		#region Variables.
-		private readonly GorgonConstantBuffer _burnDodgeBuffer;			// Burn/dodge buffer.
+		private GorgonConstantBuffer _burnDodgeBuffer;			        // Burn/dodge buffer.
 		private GorgonPixelShader _dodgeBurn;							// Dodge/burn shader.
 		private GorgonPixelShader _linearDodgeBurn;						// Linear dodge/burn shader.
 		private bool _disposed;											// Flag to indicate that the object was disposed.
@@ -93,7 +93,27 @@ namespace GorgonLibrary.Renderers
 		#endregion
 
 		#region Methods.
-		/// <summary>
+        /// <summary>
+        /// Function called when the effect is being initialized.
+        /// </summary>
+        /// <remarks>
+        /// Use this method to set up the effect upon its creation.  For example, this method could be used to create the required shaders for the effect.
+        /// </remarks>
+	    protected override void OnInitialize()
+	    {
+            base.OnInitialize();
+
+            _linearDodgeBurn = Graphics.ImmediateContext.Shaders.CreateShader<GorgonPixelShader>("Effect.2D.BurnDodge.PS", "GorgonPixelShaderLinearBurnDodge", "#GorgonInclude \"Gorgon2DShaders\"");
+            _dodgeBurn = Graphics.ImmediateContext.Shaders.CreateShader<GorgonPixelShader>("Effect.2D.BurnDodge.PS", "GorgonPixelShaderBurnDodge", "#GorgonInclude \"Gorgon2DShaders\"");
+
+            _burnDodgeBuffer = Graphics.ImmediateContext.Buffers.CreateConstantBuffer("Gorgon2DBurnDodgeEffect Constant Buffer",
+                                                                new GorgonConstantBufferSettings
+                                                                {
+                                                                    SizeInBytes = 16
+                                                                });
+        }
+
+	    /// <summary>
 		/// Function called before rendering begins.
 		/// </summary>
 		/// <returns>
@@ -160,19 +180,11 @@ namespace GorgonLibrary.Renderers
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Gorgon2DBurnDodgeEffect"/> class.
 		/// </summary>
-		/// <param name="gorgon2D">The gorgon 2D interface that created this object.</param>
-		internal Gorgon2DBurnDodgeEffect(Gorgon2D gorgon2D)
-			: base(gorgon2D, "Effect.2D.BurnDodge", 1)
+		/// <param name="graphics">The graphics interface that owns the effect.</param>
+		/// <param name="name">The name of the effect.</param>
+		internal Gorgon2DBurnDodgeEffect(GorgonGraphics graphics, string name)
+			: base(graphics, name, 1)
 		{
-			
-			_linearDodgeBurn = Graphics.ImmediateContext.Shaders.CreateShader<GorgonPixelShader>("Effect.2D.BurnDodge.PS", "GorgonPixelShaderLinearBurnDodge", "#GorgonInclude \"Gorgon2DShaders\"");
-			_dodgeBurn = Graphics.ImmediateContext.Shaders.CreateShader<GorgonPixelShader>("Effect.2D.BurnDodge.PS", "GorgonPixelShaderBurnDodge", "#GorgonInclude \"Gorgon2DShaders\"");
-
-			_burnDodgeBuffer = Graphics.ImmediateContext.Buffers.CreateConstantBuffer("Gorgon2DBurnDodgeEffect Constant Buffer",
-																new GorgonConstantBufferSettings
-																{
-																	SizeInBytes = 16
-																});
 		}
 		#endregion
 	}

@@ -114,7 +114,7 @@ namespace GorgonLibrary.Renderers
 
 		#region Variables.
 		private bool _disposed;									// Flag to indicate that the object was disposed.
-		private readonly GorgonConstantBuffer _waveBuffer;		// Constant buffer for the wave information.
+		private GorgonConstantBuffer _waveBuffer;		        // Constant buffer for the wave information.
 		private Settings _settings;								// Settings for the effect shader.
 		private bool _isUpdated = true;							// Flag to indicate that the parameters were updated.
 		#endregion
@@ -243,7 +243,29 @@ namespace GorgonLibrary.Renderers
 		#endregion
 
 		#region Methods.
-		/// <summary>
+        /// <summary>
+        /// Function called when the effect is being initialized.
+        /// </summary>
+        /// <remarks>
+        /// Use this method to set up the effect upon its creation.  For example, this method could be used to create the required shaders for the effect.
+        /// <para>When creating a custom effect, use this method to initialize the effect.  Do not put initialization code in the effect constructor.</para>
+        /// </remarks>
+	    protected override void OnInitialize()
+	    {
+	        base.OnInitialize();
+
+            Passes[0].PixelShader = Graphics.ImmediateContext.Shaders.CreateShader<GorgonPixelShader>("Effect.2D.Wave.PS", "GorgonPixelShaderWaveEffect", "#GorgonInclude \"Gorgon2DShaders\"");
+
+            _waveBuffer = Graphics.ImmediateContext.Buffers.CreateConstantBuffer("Gorgon2DWaveEffect Constant Buffer",
+                                                                new GorgonConstantBufferSettings
+                                                                {
+                                                                    SizeInBytes = DirectAccess.SizeOf<Settings>()
+                                                                });
+
+            _settings = new Settings(10.0f, 50.0f, 0.0f, 100.0f, WaveType.Horizontal);
+        }
+
+	    /// <summary>
 		/// Function called before rendering begins.
 		/// </summary>
 		/// <returns>
@@ -295,20 +317,11 @@ namespace GorgonLibrary.Renderers
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Gorgon2DWaveEffect"/> class.
 		/// </summary>
-		/// <param name="gorgon2D">The gorgon 2D interface that created this object.</param>
-		internal Gorgon2DWaveEffect(Gorgon2D gorgon2D)
-			: base(gorgon2D, "Effect.2D.Wave", 1)
+		/// <param name="graphics">The graphics interface that owns this effect.</param>
+		/// <param name="name">The name of the effect.</param>
+		internal Gorgon2DWaveEffect(GorgonGraphics graphics, string name)
+			: base(graphics, name, 1)
 		{
-			
-			Passes[0].PixelShader = Graphics.ImmediateContext.Shaders.CreateShader<GorgonPixelShader>("Effect.2D.Wave.PS", "GorgonPixelShaderWaveEffect", "#GorgonInclude \"Gorgon2DShaders\"");
-
-			_waveBuffer = Graphics.ImmediateContext.Buffers.CreateConstantBuffer("Gorgon2DWaveEffect Constant Buffer",
-																new GorgonConstantBufferSettings
-																{
-																	SizeInBytes = DirectAccess.SizeOf<Settings>()
-																});
-
-			_settings = new Settings(10.0f, 50.0f, 0.0f, 100.0f, WaveType.Horizontal);
 		}
 		#endregion
 	}

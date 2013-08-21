@@ -59,7 +59,20 @@ namespace GorgonLibrary.Renderers
 		#endregion
 
 		#region Methods.
-		/// <summary>
+        /// <summary>
+        /// Function called when the effect is being initialized.
+        /// </summary>
+        /// <remarks>
+        /// Use this method to set up the effect upon its creation.  For example, this method could be used to create the required shaders for the effect.
+        /// <para>When creating a custom effect, use this method to initialize the effect.  Do not put initialization code in the effect constructor.</para>
+        /// </remarks>
+	    protected override void OnInitialize()
+	    {
+            // Retrieve the Gorgon 2D instance for the effect.
+	        Gorgon2D = (Gorgon2D)Parameters["Gorgon2D"];
+	    }
+
+	    /// <summary>
 		/// Function called before rendering begins.
 		/// </summary>
 		/// <returns>
@@ -108,36 +121,37 @@ namespace GorgonLibrary.Renderers
 			Gorgon2D.Target = CurrentTarget;
 		}
 
-		/// <summary>
-		/// Releases unmanaged and - optionally - managed resources
-		/// </summary>
-		/// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
-		protected override void Dispose(bool disposing)
-		{
-			if (!_isDisposed)
-			{
-				if (disposing)
-				{
-					Gorgon2D.TrackedObjects.Remove(this);
-				}
-				
-				_isDisposed = true;
-			}
-			base.Dispose(disposing);
-		}
-		#endregion
+        /// <summary>
+        /// Releases unmanaged and - optionally - managed resources.
+        /// </summary>
+        /// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
+	    protected override void Dispose(bool disposing)
+	    {
+	        if (!_isDisposed)
+	        {
+	            if (disposing)
+	            {
+	                Gorgon2D.TrackedObjects.Remove(this);
+	            }
+
+	            _isDisposed = true;
+	        }
+
+	        base.Dispose(disposing);
+	    }
+	    #endregion
 
 		#region Constructor/Destructor.
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Gorgon2DEffect"/> class.
 		/// </summary>
-		/// <param name="gorgon2D">The gorgon 2D instance that created this object.</param>
+		/// <param name="graphics">The graphics interface that owns this effect.</param>
 		/// <param name="name">The name of the effect.</param>
 		/// <param name="passCount">The number of passes..</param>
-		protected Gorgon2DEffect(Gorgon2D gorgon2D, string name, int passCount)
-			: base(gorgon2D.Graphics, name, passCount)
+		protected Gorgon2DEffect(GorgonGraphics graphics, string name, int passCount)
+			: base(graphics, name, passCount)
 		{
-			Gorgon2D = gorgon2D;
+            RequiredParameters.Add("Gorgon2D");
 		}
 		#endregion
 	}

@@ -223,7 +223,28 @@ namespace GorgonLibrary.Renderers
 		#endregion
 
 		#region Methods.
-		/// <summary>
+        /// <summary>
+        /// Function called when the effect is being initialized.
+        /// </summary>
+        /// <remarks>
+        /// Use this method to set up the effect upon its creation.  For example, this method could be used to create the required shaders for the effect.
+        /// </remarks>
+	    protected override void OnInitialize()
+	    {
+            base.OnInitialize();
+
+            Passes[0].PixelShader = Graphics.ImmediateContext.Shaders.CreateShader<GorgonPixelShader>("Effect.2D.1Bit.PS", "GorgonPixelShader1Bit", "#GorgonInclude \"Gorgon2DShaders\"");
+
+            _1BitBuffer = Graphics.ImmediateContext.Buffers.CreateConstantBuffer("Gorgon2D1BitEffect Constant Buffer",
+                                                                new GorgonConstantBufferSettings
+                                                                {
+                                                                    SizeInBytes = Settings.SizeInBytes
+                                                                });
+
+            _settings = new Settings(new GorgonRangeF(0.5f, 1.0f), false, false, true);
+        }
+
+	    /// <summary>
 		/// Function called before rendering begins.
 		/// </summary>
 		/// <returns>
@@ -276,20 +297,11 @@ namespace GorgonLibrary.Renderers
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Gorgon2DWaveEffect"/> class.
 		/// </summary>
-		/// <param name="gorgon2D">The gorgon 2D interface that created this object.</param>
-		internal Gorgon2D1BitEffect(Gorgon2D gorgon2D)
-			: base(gorgon2D, "Effect.2D.1Bit", 1)
+		/// <param name="graphics">Graphics interface to use.</param>
+        /// <param name="name">Name of the effect.</param>
+        internal Gorgon2D1BitEffect(GorgonGraphics graphics, string name)
+			: base(graphics, name, 1)
 		{
-			
-			Passes[0].PixelShader = Graphics.ImmediateContext.Shaders.CreateShader<GorgonPixelShader>("Effect.2D.1Bit.PS", "GorgonPixelShader1Bit", "#GorgonInclude \"Gorgon2DShaders\"");
-			
-			_1BitBuffer = Graphics.ImmediateContext.Buffers.CreateConstantBuffer("Gorgon2D1BitEffect Constant Buffer",
-																new GorgonConstantBufferSettings
-																{
-																	SizeInBytes = Settings.SizeInBytes
-																});
-
-			_settings = new Settings(new GorgonRangeF(0.5f, 1.0f), false, false, true);
 		}
 		#endregion
 	}

@@ -45,7 +45,7 @@ namespace GorgonLibrary.Graphics.Example
 	/// </summary>
 	static class Program
 	{
-		private const float MaxSimulationFPS = 1 / 55.0f;														// Maximum FPS for our ball simulation.
+		private const float MaxSimulationFPS = 1 / 60.0f;														// Maximum FPS for our ball simulation.
 		private const float MinSimulationFPS = 1 / 30.0f;														// Minimum FPS for our ball simulation.
 
 		private static MainForm _form;																            // Our application form.
@@ -113,12 +113,16 @@ namespace GorgonLibrary.Graphics.Example
 			int start = _ballCount;
 
 			_ballCount += ballCount;
-			if (_ballCount < 1)
-				_ballCount = 1;
-			if (_ballCount > 1048576)
-				_ballCount = 1048576;
+		    if (_ballCount < 1)
+		    {
+		        _ballCount = 1;
+		    }
+		    if (_ballCount > 1048576)
+		    {
+		        _ballCount = 1048576;
+		    }
 
-			// Create ball array.
+		    // Create ball array.
 			if (_ballList == null)
 			{
 				_ballList = new Ball[1048576];

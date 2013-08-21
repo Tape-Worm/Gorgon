@@ -83,7 +83,7 @@ namespace GorgonLibrary.Renderers
 
 		#region Variables.
 		private bool _disposed;										// Flag to indicate that the object was disposed.
-		private readonly GorgonConstantBuffer _posterizeBuffer;		// Buffer for the posterize effect.
+		private GorgonConstantBuffer _posterizeBuffer;		        // Buffer for the posterize effect.
 		private Settings _settings;									// Settings for the effect shader.
 		private bool _isUpdated = true;								// Flag to indicate that the parameters have been updated.
 		#endregion
@@ -181,7 +181,28 @@ namespace GorgonLibrary.Renderers
 		#endregion
 
 		#region Methods.
-		/// <summary>
+        /// <summary>
+        /// Function called when the effect is being initialized.
+        /// </summary>
+        /// <remarks>
+        /// Use this method to set up the effect upon its creation.  For example, this method could be used to create the required shaders for the effect.
+        /// <para>When creating a custom effect, use this method to initialize the effect.  Do not put initialization code in the effect constructor.</para>
+        /// </remarks>
+	    protected override void OnInitialize()
+	    {
+	        base.OnInitialize();
+            Passes[0].PixelShader = Graphics.ImmediateContext.Shaders.CreateShader<GorgonPixelShader>("Effect.2D.Posterized.PS", "GorgonPixelShaderPosterize", "#GorgonInclude \"Gorgon2DShaders\"");
+
+            _posterizeBuffer = Graphics.ImmediateContext.Buffers.CreateConstantBuffer("Gorgon2DPosterizedEffect Constant Buffer",
+                                                                new GorgonConstantBufferSettings
+                                                                {
+                                                                    SizeInBytes = 16
+                                                                });
+
+            _settings = new Settings(false, 1.0f, 8);
+        }
+
+	    /// <summary>
 		/// Function called before rendering begins.
 		/// </summary>
 		/// <returns>
@@ -229,23 +250,14 @@ namespace GorgonLibrary.Renderers
 		#endregion
 
 		#region Constructor/Destructor.
-		/// <summary>
-		/// Initializes a new instance of the <see cref="Gorgon2DPosterizedEffect"/> class.
-		/// </summary>
-		/// <param name="gorgon2D">The gorgon 2D interface that created this object.</param>
-		internal Gorgon2DPosterizedEffect(Gorgon2D gorgon2D)
-			: base(gorgon2D, "Effect.2D.GrayScale", 1)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Gorgon2DPosterizedEffect" /> class.
+        /// </summary>
+        /// <param name="graphics">The graphics interface that owns the effect.</param>
+        /// <param name="name">The name of the effect.</param>
+		internal Gorgon2DPosterizedEffect(GorgonGraphics graphics, string name)
+			: base(graphics, name, 1)
 		{
-			
-			Passes[0].PixelShader = Graphics.ImmediateContext.Shaders.CreateShader<GorgonPixelShader>("Effect.2D.Posterized.PS", "GorgonPixelShaderPosterize", "#GorgonInclude \"Gorgon2DShaders\"");
-
-			_posterizeBuffer = Graphics.ImmediateContext.Buffers.CreateConstantBuffer("Gorgon2DPosterizedEffect Constant Buffer",
-			                                                    new GorgonConstantBufferSettings
-				                                                    {
-					                                                    SizeInBytes = 16
-				                                                    });
-
-			_settings = new Settings(false, 1.0f, 8);
 		}
 		#endregion
 	}

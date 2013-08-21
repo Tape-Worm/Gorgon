@@ -26,6 +26,7 @@
 
 using System;
 using System.Drawing;
+using System.Net.Sockets;
 using GorgonLibrary.Graphics;
 using GorgonLibrary.Math;
 using GorgonLibrary.Renderers.Properties;
@@ -46,10 +47,10 @@ namespace GorgonLibrary.Renderers
 		private GorgonRenderTarget2D _backgroundTarget;							// Background target.
 		private Size _targetSize = new Size(512, 512);							// Displacement target size.
 		private BufferFormat _targetFormat = BufferFormat.R16G16B16A16_Float;	// Format for the displacement target.
-		private readonly GorgonConstantBuffer _displacementBuffer;				// Buffer used to send displacement data.
+		private GorgonConstantBuffer _displacementBuffer;				        // Buffer used to send displacement data.
 		private bool _isUpdated = true;											// Flag to indicate that the parameters have been updated.
 		private float _displacementStrength = 1.0f;								// Strength of the displacement map.
-		private readonly GorgonSprite _displacementSprite;						// Sprite used to draw the displacement map.
+		private GorgonSprite _displacementSprite;						        // Sprite used to draw the displacement map.
 		#endregion
 
 		#region Properties.
@@ -211,7 +212,35 @@ namespace GorgonLibrary.Renderers
 			_isUpdated = true;
 		}
 
-		/// <summary>
+        /// <summary>
+        /// Function called when the effect is being initialized.
+        /// </summary>
+        /// <remarks>
+        /// Use this method to set up the effect upon its creation.  For example, this method could be used to create the required shaders for the effect.
+        /// </remarks>
+	    protected override void OnInitialize()
+	    {
+            base.OnInitialize();
+
+            Passes[2].PixelShader = Graphics.ImmediateContext.Shaders.CreateShader<GorgonPixelShader>("Effect.2D.DisplacementDecoder.PS", "GorgonPixelShaderDisplacementDecoder", "#GorgonInclude \"Gorgon2DShaders\"");
+
+            _displacementBuffer = Graphics.ImmediateContext.Buffers.CreateConstantBuffer("Gorgon2DDisplacementEffect Constant Buffer",
+                                                                                                    new GorgonConstantBufferSettings
+                                                                                                    {
+                                                                                                        SizeInBytes = 16
+                                                                                                    });
+            _displacementSprite = Gorgon2D.Renderables.CreateSprite("Gorgon2DDisplacementEffect Sprite", new GorgonSpriteSettings
+            {
+                Size = DisplacementRenderTargetSize
+            });
+            _displacementSprite.BlendingMode = BlendingMode.None;
+            _displacementSprite.SmoothingMode = SmoothingMode.Smooth;
+
+            // Set the drawing for rendering the displacement map.
+            Passes[2].RenderAction = pass => _displacementSprite.Draw();
+        }
+
+	    /// <summary>
 		/// Function to free any resources allocated by the effect.
 		/// </summary>
 		public void FreeResources()
@@ -351,27 +380,11 @@ namespace GorgonLibrary.Renderers
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Gorgon2DDisplacementEffect"/> class.
 		/// </summary>
-		/// <param name="gorgon2D">The gorgon 2D interface that created this object.</param>
-		internal Gorgon2DDisplacementEffect(Gorgon2D gorgon2D)
-			: base(gorgon2D, "Effect.2D.Displacement", 3)
+		/// <param name="graphics">The graphics interface that owns this effect.</param>
+		/// <param name="name">Name of the effect.</param>
+		internal Gorgon2DDisplacementEffect(GorgonGraphics graphics, string name)
+			: base(graphics, name, 3)
 		{
-			
-			Passes[2].PixelShader = Graphics.ImmediateContext.Shaders.CreateShader<GorgonPixelShader>("Effect.2D.DisplacementDecoder.PS", "GorgonPixelShaderDisplacementDecoder", "#GorgonInclude \"Gorgon2DShaders\"");
-
-			_displacementBuffer = Graphics.ImmediateContext.Buffers.CreateConstantBuffer("Gorgon2DDisplacementEffect Constant Buffer",
-																									new GorgonConstantBufferSettings
-																									{
-																										SizeInBytes = 16
-																									});
-			_displacementSprite = gorgon2D.Renderables.CreateSprite("Gorgon2DDisplacementEffect Sprite", new GorgonSpriteSettings
-			{
-				Size = DisplacementRenderTargetSize
-			});
-			_displacementSprite.BlendingMode = BlendingMode.None;
-			_displacementSprite.SmoothingMode = SmoothingMode.Smooth;
-
-			// Set the drawing for rendering the displacement map.
-			Passes[2].RenderAction = pass => _displacementSprite.Draw();
 		}
 		#endregion
 	}

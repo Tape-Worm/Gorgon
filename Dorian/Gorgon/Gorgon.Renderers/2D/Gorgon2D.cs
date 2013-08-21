@@ -816,13 +816,12 @@ namespace GorgonLibrary.Renderers
 			if (vertexCount + _cacheEnd > _cacheSize)
 			{
 				// Ensure that we don't render the same scene twice.
-				if (_cacheWritten > 0)
-					Flush();
+			    if (_cacheWritten > 0)
+			    {
+			        Flush();
+			    }
 
-				_baseVertex = 0;
-				_cacheStart = 0;
-				_cacheEnd = 0;
-				_renderIndexStart = 0;
+                ClearCache();
 			}
 
 			for (int i = 0; i < vertexCount; i++)
@@ -864,14 +863,18 @@ namespace GorgonLibrary.Renderers
 					ClearCache();
 
 					_useCache = Graphics.Input.VertexBuffers[0].Equals(ref _defaultVertexBuffer);
-
-					// We skip the cache for objects that have their own vertex buffers.
-					if (!_useCache)
-					{
-						return;
-					}
 				}
 			}
+
+            // We skip the cache for objects that have their own vertex buffers.
+            if (!_useCache)
+            {
+                _cacheStart = 0;
+                _cacheWritten = renderable.VertexCount;
+                _renderIndexCount = renderable.IndexCount;
+                _baseVertex = renderable.BaseVertexCount;
+                return;
+            }
 
 			AddVertices(renderable.Vertices, renderable.BaseVertexCount, renderable.IndexCount, 0, renderable.VertexCount);
 		}
@@ -925,20 +928,33 @@ namespace GorgonLibrary.Renderers
 		/// </summary>
 		/// <typeparam name="T">Type of effect to create.</typeparam>
 		/// <param name="name">Name of the effect.</param>
-		/// <param name="passCount">Number of passes in the effect.</param>
+		/// <param name="parameters">Parameters used to initialize the effect.</param>
 		/// <returns>The new effect object.</returns>
 		/// <remarks>Effects are used to simplify rendering with multiple passes when using a shader.</remarks>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (Nothing in VB.Net).</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the name parameter is an empty string.</exception>
-		/// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="passCount"/> parameter is less than 0.</exception>
-		public T Create2DEffect<T>(string name, int passCount)
+        public T Create2DEffect<T>(string name, params GorgonEffectParameter[] parameters)
 			where T : Gorgon2DEffect
 		{
-			var effect = (T)Activator.CreateInstance(typeof(T), new object[] { this, name, passCount });
+            var effectParameters = new GorgonEffectParameter[parameters == null ? 1 : parameters.Length + 1];
 
-			TrackedObjects.Add(effect);
+            effectParameters[0] = new GorgonEffectParameter("Gorgon2D", this);
 
-			return effect;
+		    if (parameters == null)
+		    {
+		        return Graphics.ImmediateContext.Shaders.CreateEffect<T>(name, effectParameters);
+		    }
+
+		    for (int i = 0; i < parameters.Length; i++)
+		    {
+		        effectParameters[i + 1] = parameters[i];
+		    }
+
+		    var result = Graphics.ImmediateContext.Shaders.CreateEffect<T>(name, effectParameters);
+
+            TrackedObjects.Add(result);
+
+		    return result;
 		}
 
 		/// <summary>
@@ -1207,7 +1223,7 @@ namespace GorgonLibrary.Renderers
 
                 if (Effects != null)
                 {
-                    Effects.FreeShaders();
+                    Effects.FreeEffects();
                     Effects = null;
                 }
 
