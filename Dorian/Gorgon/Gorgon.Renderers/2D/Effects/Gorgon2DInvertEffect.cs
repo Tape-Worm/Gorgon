@@ -26,7 +26,6 @@
 
 using System;
 using GorgonLibrary.Graphics;
-using GorgonLibrary.IO;
 
 namespace GorgonLibrary.Renderers
 {
@@ -34,12 +33,11 @@ namespace GorgonLibrary.Renderers
 	/// An effect that renders an inverted image.
 	/// </summary>
 	public class Gorgon2DInvertEffect
-		: Gorgon2DEffect_GOINGBYEBYE2
+		: Gorgon2DEffect
 	{
 		#region Variables.
 		private bool _disposed;										// Flag to indicate that the object was disposed.
 		private readonly GorgonConstantBuffer _invertBuffer;		// Buffer for the inversion effect.
-		private readonly GorgonDataStream _invertStream;			// Stream for the invert effect.
 		private bool _invertAlpha;									// Flag to invert the alpha channel.
 		#endregion
 
@@ -55,41 +53,45 @@ namespace GorgonLibrary.Renderers
 			}
 			set
 			{
-				if (_invertAlpha != value)
+				if (_invertAlpha == value)
 				{
-					_invertAlpha = value;
-					_invertStream.Position = 0;
-					_invertStream.Write(value);
-					_invertStream.Write<byte>(0);
-					_invertStream.Write<byte>(0);
-					_invertStream.Write<byte>(0);
-					_invertStream.Position = 0;
-					_invertBuffer.Update(_invertStream);
+					return;
 				}
+				
+				_invertAlpha = value;
+				_invertBuffer.Update(ref _invertAlpha);
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return the function used to render the scene when inverting.
+		/// </summary>
+		/// <remarks>Use this to render the image to be blurred.</remarks>
+		public Action<GorgonEffectPass> RenderScene
+		{
+			get
+			{
+				return Passes[0].RenderAction;
+			}
+			set
+			{
+				Passes[0].RenderAction = value;
 			}
 		}
 		#endregion
 
 		#region Methods.
 		/// <summary>
-		/// Function to render a specific pass while using this effect.
+		/// Function called before rendering begins.
 		/// </summary>
-		/// <param name="renderMethod">Method to use to render the data.</param>
-		/// <param name="passIndex">Index of the pass to render.</param>
-		/// <remarks>The <paramref name="renderMethod"/> is an action delegate that must be defined with an integer value.  The parameter indicates which pass the rendering is currently on.</remarks>
-		protected override void RenderImpl(Action<int> renderMethod, int passIndex)
+		/// <returns>
+		/// TRUE to continue rendering, FALSE to exit.
+		/// </returns>
+		protected override bool OnBeforeRender()
 		{
-			if (Gorgon2D.PixelShader.ConstantBuffers[1] != _invertBuffer)
-				Gorgon2D.PixelShader.ConstantBuffers[1] = _invertBuffer;
+			Gorgon2D.PixelShader.ConstantBuffers[1] = _invertBuffer;
 
-			base.RenderImpl(renderMethod, passIndex);
-		}
-
-		/// <summary>
-		/// Function to free any resources allocated by the effect.
-		/// </summary>
-		public override void FreeResources()
-		{
+			return base.OnBeforeRender();
 		}
 
 		/// <summary>
@@ -103,18 +105,17 @@ namespace GorgonLibrary.Renderers
 				if (disposing)
 				{
 					if (_invertBuffer != null)
-						_invertBuffer.Dispose();
-					if (_invertStream != null)
-						_invertStream.Dispose();
-
-					if (disposing)
 					{
-						if (PixelShader != null)
-							PixelShader.Dispose();
+						_invertBuffer.Dispose();
+					}
+
+					if (Passes[0].PixelShader != null)
+					{
+						Passes[0].PixelShader.Dispose();
 					}
 				}
 
-				PixelShader = null;
+				Passes[0].PixelShader = null;
 				_disposed = true;
 			}
 
@@ -130,18 +131,13 @@ namespace GorgonLibrary.Renderers
 		internal Gorgon2DInvertEffect(Gorgon2D gorgon2D)
 			: base(gorgon2D, "Effect.2D.GrayScale", 1)
 		{
-			
-#if DEBUG
-			PixelShader = Graphics.ImmediateContext.Shaders.CreateShader<GorgonPixelShader>("Effect.2D.Invert.PS", "GorgonPixelShaderInvert", "#GorgonInclude \"Gorgon2DShaders\"", true);
-#else
-			PixelShader = Graphics.ImmediateContext.Shaders.CreateShader<GorgonPixelShader>("Effect.2D.Invert.PS", "GorgonPixelShaderInvert", "#GorgonInclude \"Gorgon2DShaders\"", false);
-#endif
+			Passes[0].PixelShader = Graphics.ImmediateContext.Shaders.CreateShader<GorgonPixelShader>("Effect.2D.Invert.PS", "GorgonPixelShaderInvert", "#GorgonInclude \"Gorgon2DShaders\"");
+
 			_invertBuffer = Graphics.ImmediateContext.Buffers.CreateConstantBuffer("Gorgon2DInvertEffect Constant Buffer",
 																new GorgonConstantBufferSettings
 																{
 																	SizeInBytes = 16
 																});
-			_invertStream = new GorgonDataStream(16);
 		}
 		#endregion
 	}

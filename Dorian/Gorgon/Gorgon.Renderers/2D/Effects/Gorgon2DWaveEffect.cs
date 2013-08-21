@@ -24,8 +24,11 @@
 // 
 #endregion
 
+using System;
+using System.Runtime.InteropServices;
 using GorgonLibrary.Graphics;
-using GorgonLibrary.IO;
+using GorgonLibrary.Math;
+using GorgonLibrary.Native;
 
 namespace GorgonLibrary.Renderers
 {
@@ -51,17 +54,69 @@ namespace GorgonLibrary.Renderers
 	/// An effect that renders a wavy image.
 	/// </summary>
 	public class Gorgon2DWaveEffect
-		: Gorgon2DEffect_GOINGBYEBYE2
+		: Gorgon2DEffect
 	{
+		#region Value Types.
+		/// <summary>
+		/// Settings for the effect shader.
+		/// </summary>
+		[StructLayout(LayoutKind.Sequential, Size = 32)]
+		private struct Settings
+		{
+			private readonly int _waveType;							// Wave type.
+
+			/// <summary>
+			/// Amplitude for the wave.
+			/// </summary>
+			public readonly float Amplitude;						
+			/// <summary>
+			/// Length of the wave.
+			/// </summary>
+			public readonly float Length;							
+			/// <summary>
+			/// Period for the wave.
+			/// </summary>
+			public readonly float Period;
+			/// <summary>
+			/// Scale for the wave length.
+			/// </summary>
+			public readonly float LengthScale;
+
+			/// <summary>
+			/// Property to return the type of wave.
+			/// </summary>
+			public WaveType WaveType
+			{
+				get
+				{
+					return (WaveType)_waveType;
+				}
+			}
+
+			/// <summary>
+			/// Initializes a new instance of the <see cref="Settings"/> struct.
+			/// </summary>
+			/// <param name="amplitude">The amplitude.</param>
+			/// <param name="length">The length.</param>
+			/// <param name="period">The period.</param>
+			/// <param name="scale">Scale for the length.</param>
+			/// <param name="waveType">Type of the wave.</param>
+			public Settings(float amplitude, float length, float period, float scale, WaveType waveType)
+			{
+				Amplitude = amplitude;
+				Length = length;
+				Period = period;
+				LengthScale = scale.Max(1.0f);
+				_waveType = (int)waveType;
+			}
+		}
+		#endregion
+
 		#region Variables.
 		private bool _disposed;									// Flag to indicate that the object was disposed.
 		private readonly GorgonConstantBuffer _waveBuffer;		// Constant buffer for the wave information.
-		private readonly GorgonDataStream _waveStream;			// Stream used to write to the buffer.
-		private float _amplitude = 0.01f;						// Amplitude for the wave.
-		private float _length = 50.0f;							// Length of the wave.
-		private float _period;									// Period for the wave.
+		private Settings _settings;								// Settings for the effect shader.
 		private bool _isUpdated = true;							// Flag to indicate that the parameters were updated.
-		private WaveType _waveType = WaveType.Horizontal;		// Wave type.
 		#endregion
 
 		#region Properties.
@@ -72,15 +127,17 @@ namespace GorgonLibrary.Renderers
 		{
 			get
 			{
-				return _waveType;
+				return _settings.WaveType;
 			}
 			set
 			{
-				if (_waveType != value)
+				if (_settings.WaveType == value)
 				{
-					_waveType = value;
-					_isUpdated = true;
+					return;
 				}
+
+				_settings = new Settings(_settings.Amplitude, _settings.Length, _settings.Period, _settings.LengthScale, value);
+				_isUpdated = true;
 			}
 		}
 
@@ -91,15 +148,17 @@ namespace GorgonLibrary.Renderers
 		{
 			get
 			{
-				return _amplitude;
+				return _settings.Amplitude;
 			}
 			set
 			{
-				if (_amplitude != value)
+				if (_settings.Amplitude.EqualsEpsilon(value))
 				{
-					_amplitude = value;
-					_isUpdated = true;
+					return;
 				}
+
+				_settings = new Settings(value, _settings.Length, _settings.Period, _settings.LengthScale, _settings.WaveType);
+				_isUpdated = true;
 			}
 		}
 
@@ -110,15 +169,17 @@ namespace GorgonLibrary.Renderers
 		{
 			get
 			{
-				return _period;
+				return _settings.Period;
 			}
 			set
 			{
-				if (_period != value)
+				if (_settings.Period.EqualsEpsilon(value))
 				{
-					_period = value;
-					_isUpdated = true;
+					return;
 				}
+
+				_settings = new Settings(_settings.Amplitude, _settings.Length, value, _settings.LengthScale, _settings.WaveType);
+				_isUpdated = true;
 			}
 		}
 
@@ -129,56 +190,76 @@ namespace GorgonLibrary.Renderers
 		{
 			get
 			{
-				return _length;
+				return _settings.Length;
 			}
 			set
 			{
-				if (_length != value)
+				if (_settings.Length.EqualsEpsilon(value))
 				{
-					_length = value;
-					_isUpdated = true;
+					return;
 				}
+
+				_settings = new Settings(_settings.Amplitude, value, _settings.Period, _settings.LengthScale, _settings.WaveType);
+				_isUpdated = true;
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return the scale for the wave length.
+		/// </summary>
+		public float LengthScale
+		{
+			get
+			{
+				return _settings.LengthScale;
+			}
+			set
+			{
+				if (_settings.LengthScale.EqualsEpsilon(value))
+				{
+					return;
+				}
+
+				_settings = new Settings(_settings.Amplitude, _settings.Length, _settings.Period, value, _settings.WaveType);
+				_isUpdated = true;
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return the function used to render the scene when posterizing.
+		/// </summary>
+		/// <remarks>Use this to render the image to be blurred.</remarks>
+		public Action<GorgonEffectPass> RenderScene
+		{
+			get
+			{
+				return Passes[0].RenderAction;
+			}
+			set
+			{
+				Passes[0].RenderAction = value;
 			}
 		}
 		#endregion
 
 		#region Methods.
 		/// <summary>
-		/// Function to update the shader values.
+		/// Function called before rendering begins.
 		/// </summary>
-		private void SetValues()
+		/// <returns>
+		/// TRUE to continue rendering, FALSE to exit.
+		/// </returns>
+		protected override bool OnBeforeRender()
 		{
-			_waveStream.Position = 0;
-			_waveStream.Write(_amplitude);
-			_waveStream.Write(_length);
-			_waveStream.Write(_period);
-			_waveStream.Write(_waveType);
-			_waveStream.Position = 0;
-			_waveBuffer.Update(_waveStream);
-			_isUpdated = false;
-		}
-
-		/// <summary>
-		/// Function to free any resources allocated by the effect.
-		/// </summary>
-		public override void FreeResources()
-		{			
-		}
-
-		/// <summary>
-		/// Function called when a pass is about to start rendering.
-		/// </summary>
-		/// <param name="passIndex">Index of the pass being rendered.</param>
-		protected override void OnBeforeRenderPass(int passIndex)
-		{
-			base.OnBeforeRenderPass(passIndex);
-
 			if (_isUpdated)
-				SetValues();
+			{
+				_waveBuffer.Update(ref _settings);
+				_isUpdated = false;
+			}
 
-			if (Gorgon2D.PixelShader.ConstantBuffers[1] != _waveBuffer)
-				Gorgon2D.PixelShader.ConstantBuffers[1] = _waveBuffer;
+			Gorgon2D.PixelShader.ConstantBuffers[1] = _waveBuffer;
 
+			return base.OnBeforeRender();
 		}
 
 		/// <summary>
@@ -191,16 +272,18 @@ namespace GorgonLibrary.Renderers
 			{
 				if (disposing)
 				{
-					if (PixelShader != null)
-						PixelShader.Dispose();
+					if (Passes[0].PixelShader != null)
+					{
+						Passes[0].PixelShader.Dispose();
+					}
 
 					if (_waveBuffer != null)
+					{
 						_waveBuffer.Dispose();
-					if (_waveStream != null)
-						_waveStream.Dispose();
+					}
 				}
 
-				PixelShader = null; 
+				Passes[0].PixelShader = null; 
 				_disposed = true;
 			}
 			
@@ -217,18 +300,15 @@ namespace GorgonLibrary.Renderers
 			: base(gorgon2D, "Effect.2D.Wave", 1)
 		{
 			
-#if DEBUG
-			PixelShader = Graphics.ImmediateContext.Shaders.CreateShader<GorgonPixelShader>("Effect.2D.Wave.PS", "GorgonPixelShaderWaveEffect", "#GorgonInclude \"Gorgon2DShaders\"", true);
-#else
-			PixelShader = Graphics.ImmediateContext.Shaders.CreateShader<GorgonPixelShader>("Effect.2D.Wave.PS", "GorgonPixelShaderWaveEffect", "#GorgonInclude \"Gorgon2DShaders\"", false);
-#endif
+			Passes[0].PixelShader = Graphics.ImmediateContext.Shaders.CreateShader<GorgonPixelShader>("Effect.2D.Wave.PS", "GorgonPixelShaderWaveEffect", "#GorgonInclude \"Gorgon2DShaders\"");
 
-			_waveStream = new GorgonDataStream(16);
 			_waveBuffer = Graphics.ImmediateContext.Buffers.CreateConstantBuffer("Gorgon2DWaveEffect Constant Buffer",
 																new GorgonConstantBufferSettings
 																{
-																	SizeInBytes = 16
+																	SizeInBytes = DirectAccess.SizeOf<Settings>()
 																});
+
+			_settings = new Settings(10.0f, 50.0f, 0.0f, 100.0f, WaveType.Horizontal);
 		}
 		#endregion
 	}

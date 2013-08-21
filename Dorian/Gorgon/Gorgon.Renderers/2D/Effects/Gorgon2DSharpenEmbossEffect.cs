@@ -24,8 +24,9 @@
 // 
 #endregion
 
+using System;
 using GorgonLibrary.Graphics;
-using GorgonLibrary.IO;
+using GorgonLibrary.Math;
 using SlimMath;
 
 namespace GorgonLibrary.Renderers
@@ -34,14 +35,14 @@ namespace GorgonLibrary.Renderers
 	/// An effect that sharpens (and optionally embosses) an image.
 	/// </summary>
 	public class Gorgon2DSharpenEmbossEffect
-		: Gorgon2DEffect_GOINGBYEBYE2
+		: Gorgon2DEffect
 	{
 		#region Variables.
 		private bool _disposed;												// Flag to indicate that the object was disposed.
 		private readonly GorgonConstantBuffer _sharpenEmbossBuffer;			// Constant buffer for the sharpen/emboss information.
-		private readonly GorgonDataStream _sharpenEmbossStream;				// Stream used to write to the buffer.
+		private GorgonPixelShader _sharpenShader;							// Pixel shader used to sharpen an image.
+		private GorgonPixelShader _embossShader;							// Pixel shader used to emboss an image.
 		private float _amount = 1.0f;										// Amount to sharpen/emboss
-		private bool _useEmboss;											// Flag to indicate that the image should be embossed or not.
 		private bool _isUpdated = true;										// Flag to indicate that the parameters were updated.
 		private Vector2 _size = Vector2.Zero;								// Area to emboss.
 		#endregion
@@ -52,18 +53,8 @@ namespace GorgonLibrary.Renderers
 		/// </summary>
 		public bool UseEmbossing
 		{
-			get
-			{
-				return _useEmboss;
-			}
-			set
-			{
-				if (_useEmboss != value)
-				{
-					_useEmboss = value;
-					_isUpdated = true;
-				}
-			}
+			get;
+			set;
 		}
 
 		/// <summary>
@@ -77,11 +68,13 @@ namespace GorgonLibrary.Renderers
 			}
 			set
 			{
-				if (_amount != value)
+				if (_amount.EqualsEpsilon(value))
 				{
-					_amount = value;
-					_isUpdated = true;
+					return;
 				}
+
+				_amount = value;
+				_isUpdated = true;
 			}
 		}
 
@@ -97,57 +90,64 @@ namespace GorgonLibrary.Renderers
 			}
 			set
 			{
-				if (_size != value)
+				if (_size == value)
 				{
-					_size = value;
-					_isUpdated = true;
+					return;
 				}
+
+				_size = value;
+				_isUpdated = true;
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return the function used to render the scene when posterizing.
+		/// </summary>
+		/// <remarks>Use this to render the image to be blurred.</remarks>
+		public Action<GorgonEffectPass> RenderScene
+		{
+			get
+			{
+				return Passes[0].RenderAction;
+			}
+			set
+			{
+				Passes[0].RenderAction = value;
 			}
 		}
 		#endregion
 
 		#region Methods.
 		/// <summary>
-		/// Function to update the shader values.
+		/// Function called before rendering begins.
 		/// </summary>
-		private void SetValues()
+		/// <returns>
+		/// TRUE to continue rendering, FALSE to exit.
+		/// </returns>
+		protected override bool OnBeforeRender()
 		{
-			_sharpenEmbossStream.Position = 0;
-			_sharpenEmbossStream.Write(1.0f / _size.X);
-			_sharpenEmbossStream.Write(1.0f / _size.Y);
-			_sharpenEmbossStream.Write(_amount);
-
-			// .NET uses 1 byte for BOOL, HLSL uses 4 bytes.
-			_sharpenEmbossStream.Write(_useEmboss);
-			_sharpenEmbossStream.Write<byte>(0);
-			_sharpenEmbossStream.Write<byte>(0);
-			_sharpenEmbossStream.Write<byte>(0);
-			_sharpenEmbossStream.Position = 0;
-			_sharpenEmbossBuffer.Update(_sharpenEmbossStream);
-			_isUpdated = false;
-		}
-
-		/// <summary>
-		/// Function to free any resources allocated by the effect.
-		/// </summary>
-		public override void FreeResources()
-		{			
-		}
-
-		/// <summary>
-		/// Function called when a pass is about to start rendering.
-		/// </summary>
-		/// <param name="passIndex">Index of the pass being rendered.</param>
-		protected override void OnBeforeRenderPass(int passIndex)
-		{
-			base.OnBeforeRenderPass(passIndex);
-
 			if (_isUpdated)
-				SetValues();
+			{
+				var settings = new Vector3(1.0f / Area.X, 1.0f / Area.Y, _amount);
 
-			if (Gorgon2D.PixelShader.ConstantBuffers[1] != _sharpenEmbossBuffer)
-				Gorgon2D.PixelShader.ConstantBuffers[1] = _sharpenEmbossBuffer;
+				_sharpenEmbossBuffer.Update(ref settings);
+				_isUpdated = false;
+			}
+			Gorgon2D.PixelShader.ConstantBuffers[1] = _sharpenEmbossBuffer;
+			return base.OnBeforeRender();
+		}
 
+		/// <summary>
+		/// Function called before a pass is rendered.
+		/// </summary>
+		/// <param name="pass">Pass to render.</param>
+		/// <returns>
+		/// TRUE to continue rendering, FALSE to stop.
+		/// </returns>
+		protected override bool OnBeforePassRender(GorgonEffectPass pass)
+		{
+			pass.PixelShader = UseEmbossing ? _embossShader : _sharpenShader;
+			return base.OnBeforePassRender(pass);
 		}
 
 		/// <summary>
@@ -160,16 +160,24 @@ namespace GorgonLibrary.Renderers
 			{
 				if (disposing)
 				{
-					if (PixelShader != null)
-						PixelShader.Dispose();
+					if (_embossShader != null)
+					{
+						_embossShader.Dispose();
+					}
+
+					if (_sharpenShader != null)
+					{
+						_sharpenShader.Dispose();
+					}
 
 					if (_sharpenEmbossBuffer != null)
+					{
 						_sharpenEmbossBuffer.Dispose();
-					if (_sharpenEmbossStream != null)
-						_sharpenEmbossStream.Dispose();
+					}
 				}
 
-				PixelShader = null; 
+				_embossShader = null;
+				_sharpenShader = null;
 				_disposed = true;
 			}
 
@@ -186,13 +194,9 @@ namespace GorgonLibrary.Renderers
 			: base(gorgon2D, "Effect.2D.SharpenEmboss", 1)
 		{
 			
-#if DEBUG
-			PixelShader = Graphics.ImmediateContext.Shaders.CreateShader<GorgonPixelShader>("Effect.2D.SharpenEmboss.PS", "GorgonPixelShaderSharpenEmboss", "#GorgonInclude \"Gorgon2DShaders\"", true);
-#else
-			PixelShader = Graphics.ImmediateContext.Shaders.CreateShader<GorgonPixelShader>("Effect.2D.SharpenEmboss.PS", "GorgonPixelShaderSharpenEmboss", "#GorgonInclude \"Gorgon2DShaders\"", false);
-#endif
+			_sharpenShader = Graphics.ImmediateContext.Shaders.CreateShader<GorgonPixelShader>("Effect.2D.SharpenEmboss.PS", "GorgonPixelShaderSharpen", "#GorgonInclude \"Gorgon2DShaders\"");
+			_embossShader = Graphics.ImmediateContext.Shaders.CreateShader<GorgonPixelShader>("Effect.2D.SharpenEmboss.PS", "GorgonPixelShaderEmboss", "#GorgonInclude \"Gorgon2DShaders\"");
 
-			_sharpenEmbossStream = new GorgonDataStream(16);
 			_sharpenEmbossBuffer = Graphics.ImmediateContext.Buffers.CreateConstantBuffer("Gorgon2DSharpenEmbossEffect Constant Buffer",
 																new GorgonConstantBufferSettings
 																{

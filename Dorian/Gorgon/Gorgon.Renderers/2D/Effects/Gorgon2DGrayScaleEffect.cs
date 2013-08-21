@@ -24,6 +24,7 @@
 // 
 #endregion
 
+using System;
 using GorgonLibrary.Graphics;
 
 namespace GorgonLibrary.Renderers
@@ -32,10 +33,28 @@ namespace GorgonLibrary.Renderers
 	/// An effect that renders images as gray scale.
 	/// </summary>
 	public class Gorgon2DGrayScaleEffect
-		: Gorgon2DEffect_GOINGBYEBYE2
+		: Gorgon2DEffect
 	{
 		#region Variables.
 		private bool _disposed;				// Flag to indicate that the object was disposed.
+		#endregion
+
+		#region Properties.
+		/// <summary>
+		/// Property to set or return the function used to render the scene when converting to gray scale.
+		/// </summary>
+		/// <remarks>Use this to render the image to be blurred.</remarks>
+		public Action<GorgonEffectPass> RenderScene
+		{
+			get
+			{
+				return Passes[0].RenderAction;
+			}
+			set
+			{
+				Passes[0].RenderAction = value;
+			}
+		}
 		#endregion
 
 		#region Methods.
@@ -49,25 +68,17 @@ namespace GorgonLibrary.Renderers
 			{
 				if (disposing)
 				{
-					if (disposing)
+					if (Passes[0].PixelShader != null)
 					{
-						if (PixelShader != null)
-							PixelShader.Dispose();
+						Passes[0].PixelShader.Dispose();
 					}
 				}
 
-				PixelShader = null;
+				Passes[0].PixelShader = null;
 				_disposed = true;
 			}
 
 			base.Dispose(disposing);
-		}
-
-		/// <summary>
-		/// Function to free any resources allocated by the effect.
-		/// </summary>
-		public override void FreeResources()
-		{			
 		}
 		#endregion
 
@@ -79,12 +90,7 @@ namespace GorgonLibrary.Renderers
 		internal Gorgon2DGrayScaleEffect(Gorgon2D gorgon2D)
 			: base(gorgon2D, "Effect.2D.GrayScale", 1)
 		{
-			
-#if DEBUG
-			PixelShader = Graphics.ImmediateContext.Shaders.CreateShader<GorgonPixelShader>("Effect.2D.GrayScale.PS", "GorgonPixelShaderGrayScale", "#GorgonInclude \"Gorgon2DShaders\"", true);
-#else
-			PixelShader = Graphics.ImmediateContext.Shaders.CreateShader<GorgonPixelShader>("Effect.2D.GrayScale.PS", "GorgonPixelShaderGrayScale", "#GorgonInclude \"Gorgon2DShaders\"", false);
-#endif
+			Passes[0].PixelShader = Graphics.ImmediateContext.Shaders.CreateShader<GorgonPixelShader>("Effect.2D.GrayScale.PS", "GorgonPixelShaderGrayScale", "#GorgonInclude \"Gorgon2DShaders\"");
 		}
 		#endregion
 	}

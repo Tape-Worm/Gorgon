@@ -42,6 +42,7 @@ namespace GorgonLibrary.Renderers
 		#region Variables.
 		private bool _disposed;													// Flag to indicate that the object was disposed.
 		private GorgonRenderTarget2D _displacementTarget;						// Displacement buffer target.
+		// TODO: I don't like this.  The developer should be able to assign their own target.  Fix tomorrow or sometime this week (08202013).
 		private GorgonRenderTarget2D _backgroundTarget;							// Background target.
 		private Size _targetSize = new Size(512, 512);							// Displacement target size.
 		private BufferFormat _targetFormat = BufferFormat.R16G16B16A16_Float;	// Format for the displacement target.
@@ -355,11 +356,7 @@ namespace GorgonLibrary.Renderers
 			: base(gorgon2D, "Effect.2D.Displacement", 3)
 		{
 			
-#if DEBUG
 			Passes[2].PixelShader = Graphics.ImmediateContext.Shaders.CreateShader<GorgonPixelShader>("Effect.2D.DisplacementDecoder.PS", "GorgonPixelShaderDisplacementDecoder", "#GorgonInclude \"Gorgon2DShaders\"");
-#else
-			Passes[2].PixelShader = Graphics.ImmediateContext.Shaders.CreateShader<GorgonPixelShader>("Effect.2D.DisplacementDecoder.PS", "GorgonPixelShaderDisplacementDecoder", "#GorgonInclude \"Gorgon2DShaders\"");
-#endif
 
 			_displacementBuffer = Graphics.ImmediateContext.Buffers.CreateConstantBuffer("Gorgon2DDisplacementEffect Constant Buffer",
 																									new GorgonConstantBufferSettings

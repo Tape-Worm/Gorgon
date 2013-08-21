@@ -24,9 +24,12 @@
 // 
 #endregion
 
+using System;
 using System.Drawing;
+using System.Runtime.InteropServices;
 using GorgonLibrary.Graphics;
-using GorgonLibrary.IO;
+using GorgonLibrary.Math;
+using GorgonLibrary.Native;
 using SlimMath;
 
 namespace GorgonLibrary.Renderers
@@ -35,15 +38,62 @@ namespace GorgonLibrary.Renderers
 	/// An effect that renders the edges of an image with Sobel edge detection.
 	/// </summary>
 	public class Gorgon2DSobelEdgeDetectEffect
-		: Gorgon2DEffect_GOINGBYEBYE2
+		: Gorgon2DEffect
 	{
+		#region Value Types.
+		/// <summary>
+		/// Settings for the effect shader.
+		/// </summary>
+		[StructLayout(LayoutKind.Sequential, Pack = 4, Size = 32)]
+		private struct Settings
+		{
+			private readonly Vector4 _texelThreshold;			// Texel size and threshold.
+
+			/// <summary>
+			/// Line color.
+			/// </summary>
+			public readonly GorgonColor LineColor;
+
+			/// <summary>
+			/// Property to return the size of a texel.
+			/// </summary>
+			public Vector2 TexelSize
+			{
+				get
+				{
+					return (Vector2)_texelThreshold;
+				}
+			}
+
+			/// <summary>
+			/// Property to return the threshold for the effect.
+			/// </summary>
+			public float Threshold
+			{
+				get
+				{
+					return _texelThreshold.Z;
+				}
+			}
+
+			/// <summary>
+			/// Initializes a new instance of the <see cref="Settings"/> struct.
+			/// </summary>
+			/// <param name="linecolor">The linecolor.</param>
+			/// <param name="texelSize">Size of the texel.</param>
+			/// <param name="threshold">The threshold.</param>
+			public Settings(GorgonColor linecolor, Vector2 texelSize, float threshold)
+			{
+				LineColor = linecolor;
+				_texelThreshold = new Vector4(texelSize, threshold, 0);
+			}
+		}
+		#endregion
+
 		#region Variables.
 		private bool _disposed;									// Flag to indicate that the object was disposed.
 		private readonly GorgonConstantBuffer _sobelBuffer;		// Buffer for the sobel edge detection.
-		private readonly GorgonDataStream _sobelStream;			// Stream for the sobel edge detection.
-		private Vector2 _sobelTexelSize = Vector2.Zero;			// Size of a texel.
-		private GorgonColor _sobelLineColor = Color.Black;		// Line color for the edges.
-		private float _sobelThreshold = 0.75f;					// Threshhold for edges.
+		private Settings _settings;								// Settings for the effect.
 		private bool _isUpdated = true;							// Flag to indicate that the parameters have been updated.
 		#endregion
 
@@ -55,20 +105,26 @@ namespace GorgonLibrary.Renderers
 		{
 			get
 			{
-				return _sobelThreshold;
+				return _settings.Threshold;
 			}
 			set
 			{
-				if (value < 0)
-					value = 0.0f;
-				if (value > 1.0f)
-					value = 1.0f;
-
-				if (value != _sobelThreshold)
+				if (_settings.Threshold.EqualsEpsilon(value))
 				{
-					_sobelThreshold = value;
-					_isUpdated = true;
+					return;
 				}
+
+				if (value < 0)
+				{
+					value = 0.0f;
+				}
+				if (value > 1.0f)
+				{
+					value = 1.0f;
+				}
+
+				_settings = new Settings(_settings.LineColor, _settings.TexelSize, value);
+				_isUpdated = true;
 			}
 		}
 
@@ -79,15 +135,17 @@ namespace GorgonLibrary.Renderers
 		{
 			get
 			{
-				return _sobelTexelSize;
+				return _settings.TexelSize;
 			}
 			set
 			{
-				if (_sobelTexelSize != value)
+				if (_settings.TexelSize.Equals(value))
 				{
-					_sobelTexelSize = value;
-					_isUpdated = true;
+					return;
 				}
+
+				_settings = new Settings(_settings.LineColor, value, _settings.Threshold);
+				_isUpdated = true;
 			}
 		}
 
@@ -98,53 +156,54 @@ namespace GorgonLibrary.Renderers
 		{
 			get
 			{
-				return _sobelLineColor;
+				return _settings.LineColor;
 			}
 			set
 			{
-				if (_sobelLineColor != value)
+				if (_settings.LineColor.Equals(value))
 				{
-					_sobelLineColor = value;
-					_isUpdated = true;
+					return;
 				}
+
+				_settings = new Settings(value, _settings.TexelSize, _settings.Threshold);
+				_isUpdated = true;
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return the function used to render the scene when posterizing.
+		/// </summary>
+		/// <remarks>Use this to render the image to be blurred.</remarks>
+		public Action<GorgonEffectPass> RenderScene
+		{
+			get
+			{
+				return Passes[0].RenderAction;
+			}
+			set
+			{
+				Passes[0].RenderAction = value;
 			}
 		}
 		#endregion
 
 		#region Methods.
 		/// <summary>
-		/// Function to free any resources allocated by the effect.
+		/// Function called before rendering begins.
 		/// </summary>
-		public override void FreeResources()
-		{			
-		}
-
-		/// <summary>
-		/// Function called when a pass is about to start rendering.
-		/// </summary>
-		/// <param name="passIndex">Index of the pass being rendered.</param>
-		protected override void OnBeforeRenderPass(int passIndex)
+		/// <returns>
+		/// TRUE to continue rendering, FALSE to exit.
+		/// </returns>
+		protected override bool OnBeforeRender()
 		{
-			base.OnBeforeRenderPass(passIndex);
-
 			if (_isUpdated)
 			{
-				_sobelStream.Position = 0;
-				_sobelStream.Write(_sobelLineColor);
-				_sobelStream.Write(_sobelTexelSize);
-				_sobelStream.Write(_sobelThreshold);
-				_sobelStream.Write<byte>(0);
-				_sobelStream.Write<byte>(0);
-				_sobelStream.Write<byte>(0);
-				_sobelStream.Position = 0;
-
-				_sobelBuffer.Update(_sobelStream);
-
+				_sobelBuffer.Update(ref _settings);
 				_isUpdated = false;
 			}
 
-			if (Gorgon2D.PixelShader.ConstantBuffers[1] != _sobelBuffer)
-			    Gorgon2D.PixelShader.ConstantBuffers[1] = _sobelBuffer;
+			Gorgon2D.PixelShader.ConstantBuffers[1] = _sobelBuffer;
+			return base.OnBeforeRender();
 		}
 
 		/// <summary>
@@ -158,18 +217,17 @@ namespace GorgonLibrary.Renderers
 				if (disposing)
 				{
 					if (_sobelBuffer != null)
-						_sobelBuffer.Dispose();
-					if (_sobelStream != null)
-						_sobelStream.Dispose();
-
-					if (disposing)
 					{
-						if (PixelShader != null)
-							PixelShader.Dispose();
+						_sobelBuffer.Dispose();
+					}
+
+					if (Passes[0].PixelShader != null)
+					{
+						Passes[0].PixelShader.Dispose();
 					}
 				}
 
-				PixelShader = null;
+				Passes[0].PixelShader = null;
 				_disposed = true;
 			}
 
@@ -186,17 +244,14 @@ namespace GorgonLibrary.Renderers
 			: base(gorgon2D, "Effect.2D.GrayScale", 1)
 		{
 			
-#if DEBUG
-			PixelShader = Graphics.ImmediateContext.Shaders.CreateShader<GorgonPixelShader>("Effect.2D.SobelEdgeDetect.PS", "GorgonPixelShaderSobelEdge", "#GorgonInclude \"Gorgon2DShaders\"", true);
-#else
-			PixelShader = Graphics.ImmediateContext.Shaders.CreateShader<GorgonPixelShader>("Effect.2D.SobelEdgeDetect.PS", "GorgonPixelShaderSobelEdge", "#GorgonInclude \"Gorgon2DShaders\"", false);
-#endif
+			Passes[0].PixelShader = Graphics.ImmediateContext.Shaders.CreateShader<GorgonPixelShader>("Effect.2D.SobelEdgeDetect.PS", "GorgonPixelShaderSobelEdge", "#GorgonInclude \"Gorgon2DShaders\"");
+
 			_sobelBuffer = Graphics.ImmediateContext.Buffers.CreateConstantBuffer("Gorgon2DSobelEdgeDetectEffect Constant Buffer",
 																new GorgonConstantBufferSettings
 																{
-																	SizeInBytes = 32
+																	SizeInBytes = DirectAccess.SizeOf<Settings>()
 																});
-			_sobelStream = new GorgonDataStream(32);
+			_settings = new Settings(Color.Black, Vector2.Zero, 0.75f);
 		}
 		#endregion
 	}

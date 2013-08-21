@@ -932,7 +932,7 @@ namespace GorgonLibrary.Renderers
 		/// <exception cref="System.ArgumentException">Thrown when the name parameter is an empty string.</exception>
 		/// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="passCount"/> parameter is less than 0.</exception>
 		public T Create2DEffect<T>(string name, int passCount)
-			where T : Gorgon2DEffect_GOINGBYEBYE2
+			where T : Gorgon2DEffect
 		{
 			var effect = (T)Activator.CreateInstance(typeof(T), new object[] { this, name, passCount });
 

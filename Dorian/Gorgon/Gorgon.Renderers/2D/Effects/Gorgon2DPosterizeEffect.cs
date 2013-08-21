@@ -24,8 +24,10 @@
 // 
 #endregion
 
+using System;
+using System.Runtime.InteropServices;
 using GorgonLibrary.Graphics;
-using GorgonLibrary.IO;
+using GorgonLibrary.Math;
 
 namespace GorgonLibrary.Renderers
 {
@@ -33,15 +35,56 @@ namespace GorgonLibrary.Renderers
 	/// An effect that renders a posterized image.
 	/// </summary>
 	public class Gorgon2DPosterizedEffect
-		: Gorgon2DEffect_GOINGBYEBYE2
+		: Gorgon2DEffect
 	{
+		#region Value Types.
+		/// <summary>
+		/// Settings for the effect shader.
+		/// </summary>
+		[StructLayout(LayoutKind.Sequential, Pack = 4)]
+		private struct Settings
+		{
+			private readonly int _posterizeAlpha;								// Flag to posterize the alpha channel.
+
+			/// <summary>
+			/// Exponent power for the posterization.
+			/// </summary>
+			public readonly float PosterizeExponent;
+			/// <summary>
+			/// Number of bits to reduce down to.
+			/// </summary>
+			public readonly int PosterizeBits;
+			
+			/// <summary>
+			/// Property to return whether to posterize the alpha channel.
+			/// </summary>
+			public bool PosterizeAlpha
+			{
+				get
+				{
+					return _posterizeAlpha != 0;
+				}
+			}
+
+			/// <summary>
+			/// Initializes a new instance of the <see cref="Settings"/> struct.
+			/// </summary>
+			/// <param name="useAlpha">if set to <c>true</c> [use alpha].</param>
+			/// <param name="power">The power.</param>
+			/// <param name="bits">The bits.</param>
+			public Settings(bool useAlpha, float power, int bits)
+			{
+				_posterizeAlpha = Convert.ToInt32(useAlpha);
+				PosterizeExponent = power;
+				PosterizeBits = bits;
+			}
+		}
+		#endregion
+
 		#region Variables.
 		private bool _disposed;										// Flag to indicate that the object was disposed.
 		private readonly GorgonConstantBuffer _posterizeBuffer;		// Buffer for the posterize effect.
-		private readonly GorgonDataStream _posterizeStream;			// Stream for the posterize effect.
-		private bool _posterizeAlpha;								// Flag to posterize the alpha channel.
-		private float _posterizeExponent = 1.0f;					// Posterize exponent.
-		private int _posterizeBits = 8;								// Posterize bit count.
+		private Settings _settings;									// Settings for the effect shader.
 		private bool _isUpdated = true;								// Flag to indicate that the parameters have been updated.
 		#endregion
 
@@ -53,15 +96,17 @@ namespace GorgonLibrary.Renderers
 		{
 			get
 			{
-				return _posterizeAlpha;
+				return _settings.PosterizeAlpha;
 			}
 			set
 			{
-				if (_posterizeAlpha != value)
+				if (_settings.PosterizeAlpha == value)
 				{
-					_posterizeAlpha = value;
-					_isUpdated = true;
+					return;
 				}
+
+				_settings = new Settings(value, _settings.PosterizeExponent, _settings.PosterizeBits);
+				_isUpdated = true;
 			}
 		}
 
@@ -72,18 +117,22 @@ namespace GorgonLibrary.Renderers
 		{
 			get
 			{
-				return _posterizeExponent;
+				return _settings.PosterizeExponent;
 			}
 			set
 			{
-				if (value < 1e-6f)
-					value = 1e-6f;
-
-				if (_posterizeExponent != value)
+				if (_settings.PosterizeExponent.EqualsEpsilon(value))
 				{
-					_posterizeExponent = value;
-					_isUpdated = true;
+					return;
 				}
+
+				if (value < 1e-6f)
+				{
+					value = 1e-6f;
+				}
+
+				_settings = new Settings(_settings.PosterizeAlpha, value, _settings.PosterizeBits);
+				_isUpdated = true;
 			}
 		}
 
@@ -94,55 +143,60 @@ namespace GorgonLibrary.Renderers
 		{
 			get
 			{
-				return _posterizeBits;
+				return _settings.PosterizeBits;
 			}
 			set
 			{
-				if (value < 1)
-					value = 1;
-
-				if (_posterizeBits != value)
+				if (_settings.PosterizeBits == value)
 				{
-					_posterizeBits = value;
-					_isUpdated = true;
+					return;
 				}
+
+				if (value < 1)
+				{
+					value = 1;
+				}
+
+				_settings = new Settings(_settings.PosterizeAlpha, _settings.PosterizeExponent, value);
+				_isUpdated = true;
 			}
 		}
+
+		/// <summary>
+		/// Property to set or return the function used to render the scene when posterizing.
+		/// </summary>
+		/// <remarks>Use this to render the image to be blurred.</remarks>
+		public Action<GorgonEffectPass> RenderScene
+		{
+			get
+			{
+				return Passes[0].RenderAction;
+			}
+			set
+			{
+				Passes[0].RenderAction = value;
+			}
+		}
+
 		#endregion
 
 		#region Methods.
 		/// <summary>
-		/// Function to free any resources allocated by the effect.
+		/// Function called before rendering begins.
 		/// </summary>
-		public override void FreeResources()
-		{			
-		}
-
-		/// <summary>
-		/// Function called when a pass is about to start rendering.
-		/// </summary>
-		/// <param name="passIndex">Index of the pass being rendered.</param>
-		protected override void OnBeforeRenderPass(int passIndex)
+		/// <returns>
+		/// TRUE to continue rendering, FALSE to exit.
+		/// </returns>
+		protected override bool OnBeforeRender()
 		{
-			base.OnBeforeRenderPass(passIndex);
-
 			if (_isUpdated)
 			{
-				_posterizeStream.Position = 0;
-				_posterizeStream.Write(_posterizeBits);
-				_posterizeStream.Write(_posterizeExponent);
-				_posterizeStream.Write(_posterizeAlpha);
-				_posterizeStream.Write<byte>(0);
-				_posterizeStream.Write<byte>(0);
-				_posterizeStream.Write<byte>(0);
-				_posterizeStream.Position = 0;
-
-				_posterizeBuffer.Update(_posterizeStream);
-
+				_posterizeBuffer.Update(ref _settings);
 				_isUpdated = false;
 			}
 
-		    Gorgon2D.PixelShader.ConstantBuffers[1] = _posterizeBuffer;
+			Gorgon2D.PixelShader.ConstantBuffers[1] = _posterizeBuffer;
+			return base.OnBeforeRender();
 		}
 
 		/// <summary>
@@ -156,14 +210,17 @@ namespace GorgonLibrary.Renderers
 				if (disposing)
 				{
 					if (_posterizeBuffer != null)
+					{
 						_posterizeBuffer.Dispose();
-					if (_posterizeStream != null)
-						_posterizeStream.Dispose();
-					if (PixelShader != null)
-						PixelShader.Dispose();
+					}
+
+					if (Passes[0].PixelShader != null)
+					{
+						Passes[0].PixelShader.Dispose();
+					}
 				}
 
-				PixelShader = null;
+				Passes[0].PixelShader = null;
 				_disposed = true;
 			}
 
@@ -180,17 +237,15 @@ namespace GorgonLibrary.Renderers
 			: base(gorgon2D, "Effect.2D.GrayScale", 1)
 		{
 			
-#if DEBUG
-			PixelShader = Graphics.ImmediateContext.Shaders.CreateShader<GorgonPixelShader>("Effect.2D.Posterized.PS", "GorgonPixelShaderPosterize", "#GorgonInclude \"Gorgon2DShaders\"", true);
-#else
-			PixelShader = Graphics.ImmediateContext.Shaders.CreateShader<GorgonPixelShader>("Effect.2D.Posterized.PS", "GorgonPixelShaderPosterize", "#GorgonInclude \"Gorgon2DShaders\"", false);
-#endif
+			Passes[0].PixelShader = Graphics.ImmediateContext.Shaders.CreateShader<GorgonPixelShader>("Effect.2D.Posterized.PS", "GorgonPixelShaderPosterize", "#GorgonInclude \"Gorgon2DShaders\"");
+
 			_posterizeBuffer = Graphics.ImmediateContext.Buffers.CreateConstantBuffer("Gorgon2DPosterizedEffect Constant Buffer",
 			                                                    new GorgonConstantBufferSettings
 				                                                    {
 					                                                    SizeInBytes = 16
 				                                                    });
-			_posterizeStream = new GorgonDataStream(16);
+
+			_settings = new Settings(false, 1.0f, 8);
 		}
 		#endregion
 	}
