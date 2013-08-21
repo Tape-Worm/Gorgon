@@ -165,13 +165,9 @@ namespace GorgonLibrary.Renderers
 			: base(gorgon2D, "Effect.2D.BurnDodge", 1)
 		{
 			
-#if DEBUG
 			_linearDodgeBurn = Graphics.ImmediateContext.Shaders.CreateShader<GorgonPixelShader>("Effect.2D.BurnDodge.PS", "GorgonPixelShaderLinearBurnDodge", "#GorgonInclude \"Gorgon2DShaders\"");
 			_dodgeBurn = Graphics.ImmediateContext.Shaders.CreateShader<GorgonPixelShader>("Effect.2D.BurnDodge.PS", "GorgonPixelShaderBurnDodge", "#GorgonInclude \"Gorgon2DShaders\"");
-#else
-			_linearDodgeBurn = Graphics.ImmediateContext.Shaders.CreateShader<GorgonPixelShader>("Effect.2D.BurnDodge.PS", "GorgonPixelShaderLinearBurnDodge", "#GorgonInclude \"Gorgon2DShaders\"");
-			_dodgeBurn = Graphics.ImmediateContext.Shaders.CreateShader<GorgonPixelShader>("Effect.2D.BurnDodge.PS", "GorgonPixelShaderBurnDodge", "#GorgonInclude \"Gorgon2DShaders\"");
-#endif
+
 			_burnDodgeBuffer = Graphics.ImmediateContext.Buffers.CreateConstantBuffer("Gorgon2DBurnDodgeEffect Constant Buffer",
 																new GorgonConstantBufferSettings
 																{

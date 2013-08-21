@@ -35,10 +35,11 @@ cbuffer GorgonAlphaTest : register(b0)
 // Wave effect variables.
 cbuffer GorgonWaveEffect
 {
-	float waveAmplitude = 0.0f;
-	float waveLength = 0.0f;
-	float wavePeriod = 0.0f;
-	int waveType = 0;
+	int waveType;
+	float waveAmplitude;
+	float waveLength;
+	float wavePeriod;
+	float waveLengthScale;
 }
 
 // Gaussian blur variables.
@@ -58,7 +59,6 @@ cbuffer GorgonSharpenEmbossEffect
 {
 	float2 sharpEmbossTexelDistance = 0.0f;
 	float sharpEmbossAmount = 10.0f;
-	bool useEmboss = false;
 }
 
 // 1 bit color effect.
@@ -79,17 +79,17 @@ cbuffer GorgonInvertEffect
 // Posterize effect variables.
 cbuffer GorgonPosterizeEffect
 {
-	int posterizeBits = 8;
-	float posterizeExponent = 1.5f;
-	bool posterizeUseAlpha = false;
+	bool posterizeUseAlpha;
+	float posterizeExponent;
+	int posterizeBits;
 }
 
 // Sobel edge detection effect variables.
 cbuffer GorgonSobelEdgeDetectEffect
 {
-	float4 sobelLineColor = float4(0, 0, 0, 1);
 	float2 sobelOffset = float2(0, 0);
 	float sobelThreshold = 0.75f;
+	float4 sobelLineColor = float4(0, 0, 0, 1);
 }
 
 // Burn/dodge effect.
@@ -145,17 +145,17 @@ float4 GorgonPixelShaderWaveEffect(GorgonSpriteVertex vertex) : SV_Target
 {
 	float2 uv = vertex.uv;
 	float4 color;
-	
-	if (waveType == 0.0f)
-		uv.x += sin((uv.y + wavePeriod) * waveLength) * waveAmplitude;
-
-	if (waveType == 1.0f)
-		uv.y += cos((uv.x + wavePeriod) * waveLength) * waveAmplitude;
-
-	if (waveType == 2.0f)
+	float length = abs(1.0f - (waveLength / waveLengthScale)) * waveLength;
+	float amp = waveAmplitude / 360.0f;
+		
+	if ((waveType == 0) || (waveType == 2))
 	{
-		uv.x += sin((uv.y + wavePeriod) * waveLength) * waveAmplitude;
-		uv.y += cos((uv.x + wavePeriod) * waveLength) * waveAmplitude;
+		uv.x += sin((uv.y + wavePeriod) * length) * amp;
+	}
+
+	if ((waveType == 1) || (waveType == 2))
+	{
+		uv.y += cos((uv.x + wavePeriod) * length) * amp;
 	}
 			
 	color = _gorgonTexture.Sample(_gorgonSampler, uv) * vertex.color;
@@ -179,23 +179,31 @@ float4 GorgonPixelShaderInvert(GorgonSpriteVertex vertex) : SV_Target
 }
 
 // A pixel shader to sharpen the color on a texture.
-float4 GorgonPixelShaderSharpenEmboss(GorgonSpriteVertex vertex) : SV_Target
+float4 GorgonPixelShaderSharpen(GorgonSpriteVertex vertex) : SV_Target
 {
 	float4 color = _gorgonTexture.Sample(_gorgonSampler, vertex.uv) * vertex.color;
 	float alpha = color.a;
+	float amount = 3.5f * sharpEmbossAmount;
 	float2 texelPosition;
 			
 	REJECT_ALPHA(alpha);
 	
 	texelPosition = vertex.uv + sharpEmbossTexelDistance;
-	color -= (_gorgonTexture.Sample(_gorgonSampler, texelPosition) * sharpEmbossAmount);
+	color -= (_gorgonTexture.Sample(_gorgonSampler, texelPosition) * amount);
 	texelPosition = vertex.uv - sharpEmbossTexelDistance;
-	color += (_gorgonTexture.Sample(_gorgonSampler, texelPosition) * sharpEmbossAmount);
-
-	if (useEmboss)
-		color.rgb = (color.r + color.g + color.b) / 3.0f;
+	color += (_gorgonTexture.Sample(_gorgonSampler, texelPosition) * amount);
 
 	color.a = alpha;
+	return color;
+}
+
+// A pixel shader to sharpen the color on a texture.
+float4 GorgonPixelShaderEmboss(GorgonSpriteVertex vertex) : SV_Target
+{
+	float4 color = GorgonPixelShaderSharpen(vertex);
+
+	color.rgb = (color.r + color.g + color.b) / 3.0f;
+	
 	return color;
 }
 

@@ -448,11 +448,7 @@ namespace GorgonLibrary.Renderers
 
 			_blurKernelStream = new GorgonDataStream(_blurStaticBuffer.SizeInBytes);
 			
-#if DEBUG
 			Passes[0].PixelShader = Graphics.ImmediateContext.Shaders.CreateShader<GorgonPixelShader>("Effect.PS.GaussBlur", "GorgonPixelShaderGaussBlur", "#GorgonInclude \"Gorgon2DShaders\"");
-#else
-			Passes[0].PixelShader = Graphics.ImmediateContext.Shaders.CreateShader<GorgonPixelShader>("Effect.PS.GaussBlur", "GorgonPixelShaderGaussBlur", "#GorgonInclude \"Gorgon2DShaders\"");
-#endif
 
 			UpdateKernel();
 

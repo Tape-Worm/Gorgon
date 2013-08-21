@@ -104,7 +104,6 @@
     <Compile Include="Effects\Gorgon2DSharpenEmbossEffect.cs" />
     <Compile Include="Effects\Gorgon2D1BitEffect.cs" />
     <Compile Include="Effects\Gorgon2DWaveEffect.cs" />
-    <Compile Include="Shaders\Gorgon2DEffect.cs" />
     <Compile Include="Effects\Gorgon2DEffects.cs" />
     <Compile Include="Shaders\Gorgon2DVertexShader.cs" />
     <Compile Include="Shaders\Gorgon2DPixelShader.cs" />

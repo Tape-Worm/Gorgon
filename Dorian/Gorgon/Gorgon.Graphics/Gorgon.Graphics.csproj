@@ -140,8 +140,7 @@
     <Compile Include="Shaders\GorgonComputeShader.cs" />
     <Compile Include="Shaders\GorgonComputeShaderState.cs" />
     <Compile Include="Shaders\GorgonGeometryShaderState.cs" />
-    <Compile Include="Shaders\GorgonEffect.cs" />
-    <Compile Include="Shaders\GorgonEffectParameter.cs" />
+    <Compile Include="Effects\GorgonEffectParameter.cs" />
     <Compile Include="Shaders\GorgonGeometryShader.cs" />
     <Compile Include="Shaders\GorgonPixelShader.cs" />
     <Compile Include="Shaders\GorgonPixelShaderState.cs" />
