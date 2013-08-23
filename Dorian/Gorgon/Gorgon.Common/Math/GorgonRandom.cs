@@ -40,6 +40,9 @@ namespace GorgonLibrary.Math
 	public static class GorgonRandom
 	{
 		#region Variables.
+		private const float F3 = 0.333333333f;		// Skewing factors for 3D Perlin noise.
+		private const float G3 = 0.166666667f;
+
 		private static readonly byte[] _permutations = // Perlin noise permutations for gradients.
         {
 	        131,13,201,95,96,53,194,233,7,225,140,36,103,30,69,142,8,99,37,240,21,10,23,
@@ -125,7 +128,9 @@ namespace GorgonLibrary.Math
         private static float PerlinGradient(int hash, float x)
         {
             hash = hash & 15;
-            return (((hash & 8) != 0) ? -(1.0f + (hash & 7)) : (1.0f + (hash & 7))) * x;
+	        float grad = 1.0f + (hash & 7);
+
+            return (((hash & 8) != 0) ? -grad  : grad) * x;
         }
 
         /// <summary>
@@ -145,6 +150,35 @@ namespace GorgonLibrary.Math
 
 	        return ((hash & 1) != 0 ? -value.X : value.X) + ((hash & 2) != 0 ? -2.0f * value.Y : 2.0f * value.Y);
         }
+
+		/// <summary>
+		/// Function to return the gradient value for the perlin noise generator.
+		/// </summary>
+		/// <param name="hash">Hash value to use.</param>
+		/// <param name="value">Value to retrieve the gradient from.</param>
+		/// <returns>The gradient value.</returns>
+		private static float PerlinGradient(int hash, Vector3 value)
+		{
+			hash = hash & 15;     // Convert low 4 bits of hash code into 12 simple 
+			
+			value.X = hash < 8 ? value.X : value.Y;	// gradient directions, and compute dot product. 
+			value.Y = hash < 4 ? value.Y : ((hash == 12) || (hash == 14)) ? value.X : value.Z;	// Fix repeats at h = 12 to 15 
+
+			return ((hash & 1) != 0 ? -value.X : value.X) + ((hash & 2) != 0 ? -value.Y : value.Y);
+		}
+
+		/// <summary>
+		/// Function to return a specialized modulo that handles overflow.
+		/// </summary>
+		/// <param name="value">Value to calculate modulo from.</param>
+		/// <param name="modulo">Modulo value.</param>
+		/// <returns>The result of the modulo against the value.</returns>
+		private static int Modulo(int value, int modulo)
+		{
+			value = value % modulo;
+
+			return value < 0 ? value + modulo : value;
+		}
 		
 		/// <summary>
 		/// Function to generate 1 dimensional simplex noise.
@@ -246,6 +280,161 @@ namespace GorgonLibrary.Math
 			// The scale factor is preliminary!		
 			return 40.0f * (n0 + n1 + n2);
 		}
+
+		/// <summary>
+		/// Function to generate 2 dimensional simplex noise.
+		/// </summary>
+		/// <param name="value">The value to use to generate the Perline noise value.</param>
+		/// <returns>The Perlin noise value.</returns>
+		public static float Perlin(Vector3 value)
+		{
+			Vector3 originDistance;			// Distance from the origin point.
+			var corners = Vector4.Zero;		// Corner values.
+			int indexOffset0;				// Offsets for second corner of simplex 
+			int indexOffset1;
+			int indexOffset2;
+			int indexOffset3;				// Offsets for third corner of simplex
+			int indexOffset4;
+			int indexOffset5; 
+
+			// Skew the input space to determine which simplex cell we're in 
+			// Very nice and simple skew factor for 3D 
+			float s = (value.X + value.Y + value.Z) * F3;
+
+			var skew = new Vector3(value.X + s, value.Y + s, value.Z + s);
+			
+			var index0 = (int)skew.X.FastFloor();
+			var index1 = (int)skew.Y.FastFloor();
+			var index2 = (int)skew.Z.FastFloor();
+
+			float total = (index0 + index1 + index2) * G3;
+
+			var unSkew = new Vector3(index0 - total, index1 - total, index2 - total);	// Unskew the cell origin back to (x,y,z) space 
+			Vector3.Subtract(ref value, ref unSkew, out originDistance);
+
+			// For the 3D case, the simplex shape is a slightly irregular tetrahedron. 
+
+			// Determine which simplex we are in. 
+			if (originDistance.X >= originDistance.Y)
+			{
+				if (originDistance.Y >= originDistance.Z)
+				{
+					indexOffset0 = 1; 
+					indexOffset1 = 0; 
+					indexOffset2 = 0; 
+					indexOffset3 = 1; 
+					indexOffset4 = 1; 
+					indexOffset5 = 0;
+				} // X Y Z order 
+				else if (originDistance.X >= originDistance.Z)
+				{
+					indexOffset0 = 1;
+					indexOffset1 = 0;
+					indexOffset2 = 0;
+					indexOffset3 = 1;
+					indexOffset4 = 0;
+					indexOffset5 = 1;
+				} // X Z Y order 
+				else
+				{
+					indexOffset0 = 0; 
+					indexOffset1 = 0; 
+					indexOffset2 = 1; 
+					indexOffset3 = 1; 
+					indexOffset4 = 0; 
+					indexOffset5 = 1;
+				} // Z X Y order 
+			}
+			else
+			{ // originDistance.X<originDistance.Y 
+				if (originDistance.Y < originDistance.Z)
+				{
+					indexOffset0 = 0; 
+					indexOffset1 = 0; 
+					indexOffset2 = 1; 
+					indexOffset3 = 0; 
+					indexOffset4 = 1; 
+					indexOffset5 = 1;
+				} // Z Y X order 
+				else if (originDistance.X < originDistance.Z)
+				{
+					indexOffset0 = 0;
+					indexOffset1 = 1;
+					indexOffset2 = 0;
+					indexOffset3 = 0;
+					indexOffset4 = 1;
+					indexOffset5 = 1;
+				} // Y Z X order 
+				else
+				{
+					indexOffset0 = 0; 
+					indexOffset1 = 1; 
+					indexOffset2 = 0; 
+					indexOffset3 = 1; 
+					indexOffset4 = 1; 
+					indexOffset5 = 0;
+				} // Y X Z order 
+			}
+
+			// A step of (1,0,0) in (i,j,k) means a step of (1-c,-c,-c) in (x,y,z), 
+			// a step of (0,1,0) in (i,j,k) means a step of (-c,1-c,-c) in (x,y,z), and 
+			// a step of (0,0,1) in (i,j,k) means a step of (-c,-c,1-c) in (x,y,z), where 
+			// c = 1/6. 
+
+			// Offsets for second corner in (x,y,z) coords 
+			var corner2 = new Vector3(originDistance.X - indexOffset0 + G3, originDistance.Y - indexOffset1 + G3, originDistance.Z - indexOffset2 + G3);
+
+			// Offsets for third corner in (x,y,z) coords 
+			float cornerOffset = 2.0f * G3;
+			var corner3 = new Vector3(originDistance.X - indexOffset3 + cornerOffset, originDistance.Y - indexOffset4 + cornerOffset, originDistance.Z - indexOffset5 + cornerOffset);
+
+			// Offsets for last corner in (x,y,z) coords 
+			cornerOffset = 3.0f * G3 - 1.0f;
+			var corner4 = new Vector3(originDistance.X + cornerOffset, originDistance.Y + cornerOffset, originDistance.Z + cornerOffset);
+
+			// Wrap the integer indices at 256, to avoid indexing perm[] out of bounds 
+			index0 = Modulo(index0, 256);
+			index1 = Modulo(index1, 256);
+			index2 = Modulo(index2, 256);
+			
+			// Calculate the contribution from the four corners 
+			Vector3 squaredDist;
+			Vector3.Modulate(ref originDistance, ref originDistance, out squaredDist);
+			float t0 = 0.6f - squaredDist.X - squaredDist.Y - squaredDist.Z;
+
+			corners.X = t0 < 0.0f
+				? 0.0f
+				: (t0 * t0 * t0 * t0) * PerlinGradient(_permutations[index0 + _permutations[index1 + _permutations[index2]]], originDistance);
+
+			Vector3.Modulate(ref corner2, ref corner2, out squaredDist);
+			float t1 = 0.6f - squaredDist.X - squaredDist.Y - squaredDist.Z;
+
+			corners.Y = t1 < 0.0f
+				? 0.0f
+				: (t1 * t1 * t1 * t1) *
+				  PerlinGradient(_permutations[index0 + indexOffset0 + _permutations[index1 + indexOffset1 + _permutations[index2 + indexOffset2]]], corner2);
+
+			Vector3.Modulate(ref corner3, ref corner3, out squaredDist);
+			float t2 = 0.6f - squaredDist.X - squaredDist.Y - squaredDist.Z;
+
+			corners.Z = t2 < 0.0f
+				? 0.0f
+				: (t2 * t2 * t2 * t2) *
+				  PerlinGradient(_permutations[index0 + indexOffset3 + _permutations[index1 + indexOffset4 + _permutations[index2 + indexOffset5]]], corner3);
+
+			Vector3.Modulate(ref corner4, ref corner4, out squaredDist);
+			float t3 = 0.6f - squaredDist.X - squaredDist.Y - squaredDist.Z;
+
+			corners.W = t3 < 0.0f
+				? 0.0f
+				: (t3 * t3 * t3 * t3) *
+				  PerlinGradient(_permutations[index0 + 1 + _permutations[index1 + 1 + _permutations[index2 + 1]]], corner4);
+
+			// Add contributions from each corner to get the final noise value. 
+			// The result is scaled to stay just inside [-1,1] 
+			return 32.0f * (corners.X + corners.Y + corners.Z + corners.W); 
+		} 
+
 
 		/// <summary>
 		/// Function to return a random floating point number.

@@ -69,6 +69,7 @@
     <Compile Include="Effects\Gorgon2DDisplacementEffect.cs" />
     <Compile Include="Effects\Gorgon2DEffect.cs" />
     <Compile Include="Effects\Gorgon2DGaussianBlurEffect.cs" />
+    <Compile Include="Effects\Gorgon2DOldFilmEffect.cs" />
     <Compile Include="Gorgon2D.cs" />
     <Compile Include="Gorgon2DAlphaTest.cs" />
     <Compile Include="Gorgon2DTarget.cs" />
@@ -111,6 +112,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Gorgon2.ico" />
+    <Content Include="Resources\FilmGrain.hlsl" />
     <None Include="Resources\Icons.png" />
   </ItemGroup>
   <ItemGroup>

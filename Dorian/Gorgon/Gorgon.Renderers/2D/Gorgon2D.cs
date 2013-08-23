@@ -544,7 +544,7 @@ namespace GorgonLibrary.Renderers
 			{
 				if (target.Target != _currentTarget.Target)
 				{
-					Graphics.Output.SetRenderTarget(target.Target, target.DepthStencil);
+					Graphics.Output.SetRenderTarget(target.Target, DepthStencil ?? target.DepthStencil);
 				}
 
 				_currentTarget = target;

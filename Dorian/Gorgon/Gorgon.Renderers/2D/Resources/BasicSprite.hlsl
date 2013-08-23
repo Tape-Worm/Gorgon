@@ -8,7 +8,6 @@ SamplerState _gorgonSampler : register(s0);
 
 // Additional effect texture buffer.
 Texture2D _gorgonEffectTexture : register(t1);
-SamplerState _gorgonEffectSampler : register(s1);
 
 // Our default sprite vertex.
 struct GorgonSpriteVertex
@@ -360,7 +359,7 @@ cbuffer GorgonDisplacementEffect
 // The displacement shader encoder.
 float2 GorgonPixelShaderDisplacementEncoder(float2 uv)
 {
-	float4 offset = _gorgonEffectTexture.Sample(_gorgonEffectSampler, uv);
+	float4 offset = _gorgonEffectTexture.Sample(_gorgonSampler, uv);
 
 	float4 basisX = offset.x >= 0.5f ? float4(offset.x, 0.0f, 0.0f, 0) : float4(0.0f, 0.0f, -offset.x, 0.0f);
 	float4 basisY = offset.y >= 0.5f ? float4(0.0f, offset.y, 0.0f, 0) : float4(0.0f, 0.0f, 0.0f, -offset.y);	

@@ -71,6 +71,16 @@ namespace GorgonLibrary.Renderers.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] FilmGrain {
+            get {
+                object obj = ResourceManager.GetObject("FilmGrain", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The gaussian blur render targets were not created.  Ensure that the render target width and height are greater than 0..
         /// </summary>
         internal static string GOR2D_EFFECT_NO_BLUR_TARGETS {

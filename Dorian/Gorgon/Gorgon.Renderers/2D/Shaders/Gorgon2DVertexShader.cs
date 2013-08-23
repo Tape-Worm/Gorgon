@@ -161,11 +161,7 @@ namespace GorgonLibrary.Renderers
 
 			if (DefaultVertexShader == null)
 			{
-#if DEBUG
-				DefaultVertexShader = Graphics.ImmediateContext.Shaders.CreateShader<GorgonVertexShader>("Default_Basic_Vertex_Shader", "GorgonVertexShader", "#GorgonInclude \"Gorgon2DShaders\"", true);
-#else
-				DefaultVertexShader = Graphics.ImmediateContext.Shaders.CreateShader<GorgonVertexShader>("Default_Basic_Vertex_Shader", "GorgonVertexShader", "#GorgonInclude \"Gorgon2DShaders\"", true);
-#endif
+				DefaultVertexShader = Graphics.ImmediateContext.Shaders.CreateShader<GorgonVertexShader>("Default_Basic_Vertex_Shader", "GorgonVertexShader", "#GorgonInclude \"Gorgon2DShaders\"");
 			}
 
 			ProjectionViewMatrixBuffer = Graphics.ImmediateContext.Buffers.CreateConstantBuffer("Gorgon2D Projection/View Matrix Constant Buffer",

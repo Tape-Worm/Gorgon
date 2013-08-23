@@ -108,7 +108,7 @@ namespace GorgonLibrary.Graphics
                 }
             }
 
-            PitchInformation = Texture.FormatInformation.GetPitch(Width, Height, PitchFlags.None);
+			PitchInformation = new GorgonFormatPitch(data.RowPitch, data.SlicePitch);
             Data = new GorgonDataStream(data.DataPointer.ToPointer(), data.SlicePitch);
         }
         #endregion
