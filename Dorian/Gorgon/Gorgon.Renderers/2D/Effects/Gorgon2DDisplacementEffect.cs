@@ -26,7 +26,6 @@
 
 using System;
 using System.Drawing;
-using System.Net.Sockets;
 using GorgonLibrary.Graphics;
 using GorgonLibrary.Math;
 using GorgonLibrary.Renderers.Properties;
@@ -43,10 +42,8 @@ namespace GorgonLibrary.Renderers
 		#region Variables.
 		private bool _disposed;													// Flag to indicate that the object was disposed.
 		private GorgonRenderTarget2D _displacementTarget;						// Displacement buffer target.
-		// TODO: I don't like this.  The developer should be able to assign their own target.  Fix tomorrow or sometime this week (08202013).
-		private GorgonRenderTarget2D _backgroundTarget;							// Background target.
-		private Size _targetSize = new Size(512, 512);							// Displacement target size.
-		private BufferFormat _targetFormat = BufferFormat.R16G16B16A16_Float;	// Format for the displacement target.
+		private GorgonTexture2D _backgroundTarget;								// Background target.
+		private BufferFormat _targetFormat = BufferFormat.Unknown;				// Format for the displacement target.
 		private GorgonConstantBuffer _displacementBuffer;				        // Buffer used to send displacement data.
 		private bool _isUpdated = true;											// Flag to indicate that the parameters have been updated.
 		private float _displacementStrength = 1.0f;								// Strength of the displacement map.
@@ -69,7 +66,7 @@ namespace GorgonLibrary.Renderers
 				{
 					value = 0.0f;
 				}
-
+				
 				if (_displacementStrength.EqualsEpsilon(value))
 				{
 					return;
@@ -77,24 +74,6 @@ namespace GorgonLibrary.Renderers
 
 				_displacementStrength = value;
 				_isUpdated = true;
-			}
-		}
-
-		/// <summary>
-		/// Property to set or return the displacement render target size.
-		/// </summary>
-		public Size DisplacementRenderTargetSize
-		{
-			get
-			{
-				return _targetSize;
-			}
-			set
-			{
-				if (_targetSize != value)
-				{
-					UpdateDisplacementMap(value, _targetFormat);
-				}
 			}
 		}
 
@@ -111,32 +90,16 @@ namespace GorgonLibrary.Renderers
 			{
 				if (_targetFormat != value)
 				{
-					UpdateDisplacementMap(_targetSize, value);
+					UpdateDisplacementMap(value);
 				}
-			}
-		}
-
-		/// <summary>
-		/// Property to set or return the method used to render the objects for the background.
-		/// </summary>
-		/// <remarks>Use this method to render items to be displaced by the displacement map.  The graphics rendered here will be displaced by the graphics rendered by <see cref="DisplacementRender"/>.</remarks>
-		public Action<GorgonEffectPass> BackgroundRender
-		{
-			get
-			{
-				return Passes[1].RenderAction;
-			}
-			set
-			{
-				Passes[1].RenderAction = value;
 			}
 		}
 
 		/// <summary>
 		/// Property to set or return the method used to render the objects used to displace the background graphics.
 		/// </summary>
-		/// <remarks>Use this method to render items to displace the items rendered by <see cref="BackgroundRender"/>.</remarks>
-		public Action<GorgonEffectPass> DisplacementRender
+		/// <remarks>Use this method to render items to displace the texture specified by <see cref="BackgroundImage"/>.</remarks>
+		public Action<GorgonEffectPass> RenderDisplacement
 		{
 			get
 			{
@@ -149,13 +112,27 @@ namespace GorgonLibrary.Renderers
 		}
 
 		/// <summary>
-		/// Property to return the output from the effect.
+		/// Property to set or return the render target used as the background for the displacement.
 		/// </summary>
-		public GorgonTexture Output
+		public GorgonTexture2D BackgroundImage
 		{
 			get
 			{
 				return _backgroundTarget;
+			}
+			set
+			{
+				if (_backgroundTarget == value)
+				{
+					return;
+				}
+
+				_backgroundTarget = value;
+
+				if (_backgroundTarget != null)
+				{
+					UpdateDisplacementMap(_targetFormat);
+				}
 			}
 		}
 		#endregion
@@ -164,51 +141,34 @@ namespace GorgonLibrary.Renderers
 		/// <summary>
 		/// Function to update the displacement map render target.
 		/// </summary>
-		/// <param name="newSize">New size for the target.</param>
 		/// <param name="format">Format to use for the displacement target.</param>
-		private void UpdateDisplacementMap(Size newSize, BufferFormat format)
+		private void UpdateDisplacementMap(BufferFormat format)
 		{
 			if (_displacementTarget != null) 
 			{
 				_displacementTarget.Dispose();
 			}
 
-			if (_backgroundTarget != null)
-			{
-				_backgroundTarget.Dispose();
-			}
-
 			_displacementTarget = null;
-			_backgroundTarget = null;
 
-			if ((newSize.Width <= 0) || (newSize.Height <= 0))
+			if (_backgroundTarget == null)
 			{
 				return;
 			}
 
 			_displacementTarget = Graphics.Output.CreateRenderTarget("Effect.Displacement.RT", new GorgonRenderTarget2DSettings
 			{
-				Width = newSize.Width,
-				Height = newSize.Height,
+				Width = _backgroundTarget.Settings.Width,
+				Height = _backgroundTarget.Settings.Height,
 				DepthStencilFormat = BufferFormat.Unknown,
-				Format = format,
-				Multisampling = GorgonMultisampling.NoMultiSampling
-			});
-
-			_backgroundTarget = Graphics.Output.CreateRenderTarget("Effect.Background.RT", new GorgonRenderTarget2DSettings
-			{
-				Width = newSize.Width,
-				Height = newSize.Height,
-				DepthStencilFormat = BufferFormat.Unknown,
-				Format = BufferFormat.R8G8B8A8_UIntNormal,
+				Format = format == BufferFormat.Unknown ? _backgroundTarget.Settings.Format : format,
 				Multisampling = GorgonMultisampling.NoMultiSampling
 			});
 
 			_displacementSprite.Texture = _backgroundTarget;
-			_displacementSprite.Size = newSize;
+			_displacementSprite.Size = new Size(_backgroundTarget.Settings.Width, _backgroundTarget.Settings.Height);
 
 			_targetFormat = format;
-			_targetSize = newSize;
 			_isUpdated = true;
 		}
 
@@ -222,7 +182,7 @@ namespace GorgonLibrary.Renderers
 	    {
             base.OnInitialize();
 
-            Passes[2].PixelShader = Graphics.ImmediateContext.Shaders.CreateShader<GorgonPixelShader>("Effect.2D.DisplacementDecoder.PS", "GorgonPixelShaderDisplacementDecoder", "#GorgonInclude \"Gorgon2DShaders\"");
+            Passes[1].PixelShader = Graphics.ImmediateContext.Shaders.CreateShader<GorgonPixelShader>("Effect.2D.DisplacementDecoder.PS", "GorgonPixelShaderDisplacementDecoder", "#GorgonInclude \"Gorgon2DShaders\"");
 
             _displacementBuffer = Graphics.ImmediateContext.Buffers.CreateConstantBuffer("Gorgon2DDisplacementEffect Constant Buffer",
                                                                                                     new GorgonConstantBufferSettings
@@ -231,13 +191,13 @@ namespace GorgonLibrary.Renderers
                                                                                                     });
             _displacementSprite = Gorgon2D.Renderables.CreateSprite("Gorgon2DDisplacementEffect Sprite", new GorgonSpriteSettings
             {
-                Size = DisplacementRenderTargetSize
+                Size = new Vector2(1)
             });
             _displacementSprite.BlendingMode = BlendingMode.None;
             _displacementSprite.SmoothingMode = SmoothingMode.Smooth;
 
             // Set the drawing for rendering the displacement map.
-            Passes[2].RenderAction = pass => _displacementSprite.Draw();
+            Passes[1].RenderAction = pass => _displacementSprite.Draw();
         }
 
 	    /// <summary>
@@ -267,7 +227,7 @@ namespace GorgonLibrary.Renderers
 		{
 			if ((_displacementTarget == null) || (_backgroundTarget == null))
 			{
-				UpdateDisplacementMap(_targetSize, _targetFormat);
+				UpdateDisplacementMap(_targetFormat);
 			}
 
 #if DEBUG
@@ -284,7 +244,7 @@ namespace GorgonLibrary.Renderers
 				return base.OnBeforeRender();
 			}
 
-			var settings = new Vector4(1.0f / _targetSize.Width, 1.0f / _targetSize.Height, _displacementStrength, 0);
+			var settings = new Vector4(1.0f / _backgroundTarget.Settings.Width, 1.0f / _backgroundTarget.Settings.Height, _displacementStrength, 0);
 
 			_displacementBuffer.Update(ref settings);
 			_isUpdated = false;
@@ -306,25 +266,23 @@ namespace GorgonLibrary.Renderers
 				return false;
 			}
 
-			switch (pass.PassIndex)
+			if (pass.PassIndex == 0)
 			{
-				case 0:
-					StoredShaders.PixelShader = Gorgon2D.PixelShader.Current;
-					StoredShaders.VertexShader = Gorgon2D.VertexShader.Current;
+				StoredShaders.PixelShader = Gorgon2D.PixelShader.Current;
+				StoredShaders.VertexShader = Gorgon2D.VertexShader.Current;
 
-					Gorgon2D.PixelShader.Current = pass.PixelShader;
-					Gorgon2D.VertexShader.Current = pass.VertexShader;
-					Gorgon2D.PixelShader.Resources[1] = null;
+				Gorgon2D.PixelShader.Current = pass.PixelShader;
+				Gorgon2D.VertexShader.Current = pass.VertexShader;
+				Gorgon2D.PixelShader.Resources[1] = null;
 
-					_displacementTarget.Clear(GorgonColor.Transparent);
-					Gorgon2D.Target = _displacementTarget;
-					break;
-				case 2:
-					Gorgon2D.PixelShader.Current = pass.PixelShader;
-					Gorgon2D.VertexShader.Current = pass.VertexShader;
-					Gorgon2D.PixelShader.Resources[1] = _displacementTarget;
-					break;
+				_displacementTarget.Clear(GorgonColor.Transparent);
+				Gorgon2D.Target = _displacementTarget;
+				return true;
 			}
+			
+			Gorgon2D.PixelShader.Current = pass.PixelShader;
+			Gorgon2D.VertexShader.Current = pass.VertexShader;
+			Gorgon2D.PixelShader.Resources[1] = _displacementTarget;
 
 			return true;
 		}
@@ -335,19 +293,13 @@ namespace GorgonLibrary.Renderers
 		/// <param name="pass">Pass that was rendered.</param>
 		protected override void OnAfterPassRender(GorgonEffectPass pass)
 		{
-			switch (pass.PassIndex)
+			if (pass.PassIndex == 0)
 			{
-				case 0:
-					Gorgon2D.Target = _backgroundTarget;
-					break;
-				case 1:
-					Gorgon2D.Target = CurrentTarget;
-					break;
-				case 2:
-					Gorgon2D.PixelShader.Current = StoredShaders.PixelShader;
-					Gorgon2D.VertexShader.Current = StoredShaders.VertexShader;
-					break;
+				Gorgon2D.Target = CurrentTarget;
+				return;
 			}
+
+			base.OnAfterPassRender(pass);
 		}
 
 		/// <summary>
@@ -383,7 +335,7 @@ namespace GorgonLibrary.Renderers
 		/// <param name="graphics">The graphics interface that owns this effect.</param>
 		/// <param name="name">Name of the effect.</param>
 		internal Gorgon2DDisplacementEffect(GorgonGraphics graphics, string name)
-			: base(graphics, name, 3)
+			: base(graphics, name, 2)
 		{
 		}
 		#endregion

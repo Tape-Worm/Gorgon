@@ -44,6 +44,7 @@ namespace GorgonLibrary.Renderers
 		private Gorgon2DSharpenEmbossEffect _sharpenEmbossEffect;		// Sharpen/emboss effect.
 		private Gorgon2DSobelEdgeDetectEffect _sobelEdgeDetectEffect;	// Sobel edge detection effect.
 		private Gorgon2DWaveEffect _waveEffect;							// Wave effect.
+		private Gorgon2DOldFilmEffect _oldFilmEffect;					// Old film effect.
 		#endregion
 
 		#region Properties.
@@ -230,6 +231,25 @@ namespace GorgonLibrary.Renderers
 
 				return _displacementEffect;
 			}			
+		}
+
+		/// <summary>
+		/// Property to return the old film effect.
+		/// </summary>
+		public Gorgon2DOldFilmEffect OldFilm
+		{
+			get
+			{
+				lock(_syncLock)
+				{
+					if (_oldFilmEffect == null)
+					{
+						_oldFilmEffect = _gorgon2D.Create2DEffect<Gorgon2DOldFilmEffect>("Effect.2D.OldFilm");
+					}
+				}
+
+				return _oldFilmEffect;
+			}
 		}
 		#endregion
 

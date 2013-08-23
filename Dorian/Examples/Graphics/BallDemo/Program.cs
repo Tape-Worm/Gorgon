@@ -29,6 +29,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Globalization;
 using System.IO;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows.Forms;
 using GorgonLibrary.Diagnostics;
@@ -156,6 +157,11 @@ namespace GorgonLibrary.Graphics.Example
 		/// <param name="frameTime">Frame delta time.</param>
 		private static void Transform(float frameTime)
 		{
+			if (GorgonTiming.SecondsSinceStart > 5)
+			{
+				return;
+			}
+
 			// Transform balls.
 			for (int i = 0; i < _ballCount; i++)
 			{
@@ -275,16 +281,28 @@ namespace GorgonLibrary.Graphics.Example
 			{
 				_2D.Effects.GaussianBlur.RenderScene = pass =>
 				{
-					// Draw using the blur effect.
 					_2D.Drawing.SmoothingMode = SmoothingMode.Smooth;
-			        _2D.Drawing.Blit(_ballTarget, new RectangleF(Vector2.Zero, _2D.Effects.GaussianBlur.BlurRenderTargetsSize));
+					_2D.Effects.OldFilm.Render();
+				};
+
+				_2D.Effects.OldFilm.RenderScene = pass =>
+				{
+					// Copy the blurred output.
+					_2D.Drawing.Blit(_ballTarget, new RectangleF(Vector2.Zero, _2D.Effects.GaussianBlur.BlurRenderTargetsSize));
 				};
 			}
 
+			
 			_2D.Effects.GaussianBlur.Render();
 
-			// Copy the blurred output.
-			_2D.Drawing.Blit(_2D.Effects.GaussianBlur.Output, new RectangleF(Vector2.Zero, _mainScreen.Settings.Size));
+			_2D.Effects.OldFilm.Time += GorgonTiming.Delta;
+			if (_2D.Effects.OldFilm.Time > 10.0f)
+			{
+				_2D.Effects.OldFilm.Time = 0.0f;
+			}
+
+			// Draw using the blur effect.
+			_2D.Drawing.Blit(_2D.Effects.GaussianBlur.Output, new RectangleF(Vector2.Zero, new SizeF(_mainScreen.Settings.Width, _mainScreen.Settings.Height)));
 			_2D.Drawing.SmoothingMode = SmoothingMode.None;
 		}
 
@@ -443,6 +461,7 @@ namespace GorgonLibrary.Graphics.Example
 				newTargetSize.Y = (512.0f * (args.Height / (float)Settings.Default.ScreenHeight)).Min(512);
 
 				_2D.Effects.GaussianBlur.BlurRenderTargetsSize = (Size)newTargetSize;
+				_2D.Effects.Displacement.BackgroundImage = _ballTarget;
 			};
 
 			// Generate the ball list.

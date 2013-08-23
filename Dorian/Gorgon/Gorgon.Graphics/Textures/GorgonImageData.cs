@@ -215,7 +215,8 @@ namespace GorgonLibrary.Graphics
 					for (int depth = 0; depth < mipDepth; depth++)
 					{
 						// Get mip information.						
-						_buffers[bufferIndex] = new GorgonImageBuffer(imageData, pitchInformation, mip, array, depth, mipWidth, mipHeight, mipDepth, Settings.Format);
+						_buffers[bufferIndex] = new GorgonImageBuffer(imageData, pitchInformation, mip, array, depth, mipWidth, mipHeight,
+																		mipDepth, Settings.Format);
 
 						imageData += pitchInformation.SlicePitch;
 						bufferIndex++;

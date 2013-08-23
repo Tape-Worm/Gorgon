@@ -121,6 +121,9 @@
   <data name="BasicSprite" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\BasicSprite.hlsl;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
+  <data name="FilmGrain" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\FilmGrain.hlsl;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
   <data name="GOR2D_EFFECT_NO_BLUR_TARGETS" xml:space="preserve">
     <value>The gaussian blur render targets were not created.  Ensure that the render target width and height are greater than 0.</value>
   </data>
