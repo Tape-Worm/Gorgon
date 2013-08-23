@@ -156,11 +156,6 @@ namespace GorgonLibrary.Graphics.Example
 		/// <param name="frameTime">Frame delta time.</param>
 		private static void Transform(float frameTime)
 		{
-			if (GorgonTiming.SecondsSinceStart > 5)
-			{
-				return;
-			}
-
 			// Transform balls.
 			for (int i = 0; i < _ballCount; i++)
 			{
