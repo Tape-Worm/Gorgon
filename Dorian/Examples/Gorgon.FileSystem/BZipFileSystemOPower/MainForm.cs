@@ -224,7 +224,7 @@ namespace GorgonLibrary.Examples
             // speed up the effect.
             _2D.Effects.GaussianBlur.BlurAmount = 13.0f;
             _2D.Effects.GaussianBlur.BlurRenderTargetsSize = new Size(128, 128);
-			_2D.Effects.GaussianBlur.Passes[0].RenderAction = pass =>
+			_2D.Effects.GaussianBlur.RenderScene = pass =>
 			{
 				// Draw the sprite at the upper left corner instead of
 				// centered.  Otherwise it'll be centered in the blur 

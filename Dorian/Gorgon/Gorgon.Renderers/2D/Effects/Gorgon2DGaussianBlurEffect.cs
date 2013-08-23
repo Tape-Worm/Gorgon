@@ -27,6 +27,7 @@
 using System;
 using System.Diagnostics;
 using System.Drawing;
+using System.Runtime.InteropServices;
 using GorgonLibrary.Graphics;
 using GorgonLibrary.IO;
 using GorgonLibrary.Math;
@@ -41,9 +42,9 @@ namespace GorgonLibrary.Renderers
 	/// </summary>
 	public class Gorgon2DGaussianBlurEffect
 		: Gorgon2DEffect
-	{
-		#region Variables.
-		private bool _disposed ;													// Flag to indicate that the object was disposed.
+    {
+        #region Variables.
+        private bool _disposed ;													// Flag to indicate that the object was disposed.
 		private Vector4[] _xOffsets;										        // Calculated offsets.
 		private Vector4[] _yOffsets;										        // Calculated offsets.
 		private float[] _kernel;											        // Blur kernel.
@@ -368,11 +369,8 @@ namespace GorgonLibrary.Renderers
 				throw new GorgonException(GorgonResult.CannotWrite, Resources.GOR2D_EFFECT_NO_BLUR_TARGETS);
 			}
 #endif
-
-			StoredShaders.PixelShader = Gorgon2D.PixelShader.Current;
-			StoredShaders.VertexShader = Gorgon2D.VertexShader.Current;
-			Gorgon2D.PixelShader.Current = Passes[0].PixelShader;
-			Gorgon2D.VertexShader.Current = null;
+            RememberConstantBuffer(ShaderType.Pixel, 1);
+            RememberConstantBuffer(ShaderType.Pixel, 2);
 
 			// Assign the constant buffers to the pixel shader.
 			Gorgon2D.PixelShader.ConstantBuffers[1] = _blurStaticBuffer;
@@ -386,22 +384,10 @@ namespace GorgonLibrary.Renderers
 		/// </summary>
 		protected override void OnAfterRender()
 		{
-			Gorgon2D.PixelShader.Current = StoredShaders.PixelShader;
-			Gorgon2D.VertexShader.Current = StoredShaders.VertexShader;
+            RestoreConstantBuffer(ShaderType.Pixel, 1);
+            RestoreConstantBuffer(ShaderType.Pixel, 2);
 
 			base.OnAfterRender();
-		}
-
-		/// <summary>
-		/// Function called before a pass is rendered.
-		/// </summary>
-		/// <param name="pass">Pass to render.</param>
-		/// <returns>
-		/// TRUE to continue rendering, FALSE to stop.
-		/// </returns>
-		protected override bool OnBeforePassRender(GorgonEffectPass pass)
-		{
-			return pass.RenderAction != null;
 		}
 
 		/// <summary>

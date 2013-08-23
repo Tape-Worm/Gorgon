@@ -204,18 +204,17 @@ namespace GorgonLibrary.Renderers
 		/// Function to free any resources allocated by the effect.
 		/// </summary>
 		public void FreeResources()
-		{
-			if (_backgroundTarget != null)
-			{
-				_backgroundTarget.Dispose();
-			}
-			if (_displacementTarget != null)
-			{
-				_displacementTarget.Dispose();
-			}
-			_backgroundTarget = null;
-			_displacementTarget = null;
-		}
+	    {
+	        _backgroundTarget = null;
+	        
+            if (_displacementTarget == null)
+	        {
+	            return;
+	        }
+
+	        _displacementTarget.Dispose();
+	        _displacementTarget = null;
+	    }
 
 		/// <summary>
 		/// Function called before rendering begins.
@@ -236,6 +235,8 @@ namespace GorgonLibrary.Renderers
 				throw new GorgonException(GorgonResult.CannotWrite, Resources.GOR2D_EFFECT_NO_DISPLACEMENT_TARGET);
 			}
 #endif
+            RememberConstantBuffer(ShaderType.Pixel, 1);
+            RememberShaderResource(ShaderType.Pixel, 1);
 
 			Gorgon2D.PixelShader.ConstantBuffers[1] = _displacementBuffer;
 
@@ -252,7 +253,17 @@ namespace GorgonLibrary.Renderers
 			return base.OnBeforeRender();
 		}
 
-		/// <summary>
+        /// <summary>
+        /// Function called after rendering ends.
+        /// </summary>
+	    protected override void OnAfterRender()
+	    {
+            RestoreConstantBuffer(ShaderType.Pixel, 1);
+            RestoreShaderResource(ShaderType.Pixel, 1);
+	        base.OnAfterRender();
+	    }
+
+	    /// <summary>
 		/// Function called before a pass is rendered.
 		/// </summary>
 		/// <param name="pass">Pass to render.</param>
@@ -268,11 +279,10 @@ namespace GorgonLibrary.Renderers
 
 			if (pass.PassIndex == 0)
 			{
-				StoredShaders.PixelShader = Gorgon2D.PixelShader.Current;
-				StoredShaders.VertexShader = Gorgon2D.VertexShader.Current;
+			    base.OnBeforePassRender(pass);
 
-				Gorgon2D.PixelShader.Current = pass.PixelShader;
-				Gorgon2D.VertexShader.Current = pass.VertexShader;
+				Gorgon2D.PixelShader.Current = null;
+				Gorgon2D.VertexShader.Current = null;
 				Gorgon2D.PixelShader.Resources[1] = null;
 
 				_displacementTarget.Clear(GorgonColor.Transparent);
@@ -317,9 +327,15 @@ namespace GorgonLibrary.Renderers
 						Passes[1].PixelShader.Dispose();
 					}
 
+				    if (_displacementBuffer != null)
+				    {
+				        _displacementBuffer.Dispose();
+				    }
+        
 					FreeResources();
 				}
 
+			    _displacementBuffer = null;
 				Passes[1].PixelShader = null;
 				_disposed = true;
 			}

@@ -279,12 +279,24 @@ namespace GorgonLibrary.Renderers
 				_isUpdated = false;
 			}
 
+            RememberConstantBuffer(ShaderType.Pixel, 1);
+
 			Gorgon2D.PixelShader.ConstantBuffers[1] = _waveBuffer;
 
 			return base.OnBeforeRender();
 		}
 
-		/// <summary>
+        /// <summary>
+        /// Function called after rendering ends.
+        /// </summary>
+	    protected override void OnAfterRender()
+	    {
+            RestoreConstantBuffer(ShaderType.Pixel, 1);
+
+	        base.OnAfterRender();
+	    }
+
+	    /// <summary>
 		/// Releases unmanaged and - optionally - managed resources
 		/// </summary>
 		/// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>

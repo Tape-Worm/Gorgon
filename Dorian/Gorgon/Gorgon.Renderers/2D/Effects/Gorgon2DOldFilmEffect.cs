@@ -97,9 +97,6 @@ namespace GorgonLibrary.Renderers
 		private GorgonPoint _point;								// Point used for dust.
 		private GorgonConstantBuffer _timingBuffer;				// Constant buffer for timing.
 		private Vector2 _currentTargetSize;						// Current target size.
-		private GorgonTextureSamplerStates _prevSampler;		// Previous sampler state.
-		private GorgonShaderView _prevResource;					// Previous resource.
-		private GorgonConstantBuffer[] _prevBuffer;				// Previous constant buffers.
 		private bool _isScratchUpdated = true;					// Flag to indicate whether the effect has updated parameters or not.
 		private bool _isSepiaUpdated = true;					// Flag to indicate whether the effect has updated parameters or not.
 		private ScratchSettings _scratchSettings;				// Settings for film scratches.
@@ -397,8 +394,6 @@ namespace GorgonLibrary.Renderers
 			DirtPercent = 5;
 			DirtAmount = 10;
 
-			_prevBuffer = new GorgonConstantBuffer[3];
-
 			_scratchSettings = new ScratchSettings
 			{
 				ScratchIntensity = 0.49f,
@@ -414,6 +409,8 @@ namespace GorgonLibrary.Renderers
 				SepiaLightColor = new GorgonColor(1, 0.9f, 0.65f, 1.0f),
 				SepiaDarkColor = new GorgonColor(0.2f, 0.102f, 0, 1.0f)
 			};
+
+            GenerateRandomNoise();
 		}
 
 		/// <summary>
@@ -452,9 +449,13 @@ namespace GorgonLibrary.Renderers
 					break;
 			}
 
-			_prevResource = Gorgon2D.PixelShader.Resources[1];
+            RememberTextureSampler(ShaderType.Pixel, 1);
+            RememberShaderResource(ShaderType.Pixel, 1);
+            RememberConstantBuffer(ShaderType.Pixel, 1);
+            RememberConstantBuffer(ShaderType.Pixel, 2);
+            RememberConstantBuffer(ShaderType.Pixel, 3);
+
 			Gorgon2D.PixelShader.Resources[1] = _randomTexture;
-			_prevSampler = Gorgon2D.PixelShader.TextureSamplers[1];
 			Gorgon2D.PixelShader.TextureSamplers[1] = new GorgonTextureSamplerStates
 			{
 				TextureFilter = TextureFilter.Linear,
@@ -468,10 +469,6 @@ namespace GorgonLibrary.Renderers
 				MinLOD = -3.402823466e+38f,
 				MaxLOD = 3.402823466e+38f
 			};
-
-			_prevBuffer[0] = Gorgon2D.PixelShader.ConstantBuffers[1];
-			_prevBuffer[1] = Gorgon2D.PixelShader.ConstantBuffers[2];
-			_prevBuffer[2] = Gorgon2D.PixelShader.ConstantBuffers[3];
 			
 			Gorgon2D.PixelShader.ConstantBuffers[1] = _timingBuffer;
 			Gorgon2D.PixelShader.ConstantBuffers[2] = _scratchBuffer;
@@ -515,14 +512,14 @@ namespace GorgonLibrary.Renderers
 		protected override void OnAfterPassRender(GorgonEffectPass pass)
 		{
 			// We must set the pixel shader back to the default here.
-			// Otherwise our current shader won't like that we're trying to 
+			// Otherwise our current shader may not like that we're trying to 
 			// render lines and points with no textures attached.
 
 			// If this shader is nested with another (e.g. gauss blur), then 
 			// this situation can throw warnings up in the debug spew.
 
 			// Setting the pixel shader to the proper shader when rendering
-			// primitives with no textures is the only way to correct this.
+			// primitives with no textures is the best way to correct this.
 			Gorgon2D.PixelShader.Current = null;
 
 			var blend = Gorgon2D.Drawing.Blending;
@@ -622,13 +619,13 @@ namespace GorgonLibrary.Renderers
 		/// </summary>
 		protected override void OnAfterRender()
 		{
-			base.OnAfterRender();
+            RestoreTextureSampler(ShaderType.Pixel, 1);
+            RestoreShaderResource(ShaderType.Pixel, 1);
+            RestoreConstantBuffer(ShaderType.Pixel, 1);
+            RestoreConstantBuffer(ShaderType.Pixel, 2);
+            RestoreConstantBuffer(ShaderType.Pixel, 3);
 
-			Gorgon2D.PixelShader.Resources[1] = _prevResource;
-			Gorgon2D.PixelShader.TextureSamplers[1] = _prevSampler;
-			Gorgon2D.PixelShader.ConstantBuffers[1] = _prevBuffer[0];
-			Gorgon2D.PixelShader.ConstantBuffers[2] = _prevBuffer[1];
-			Gorgon2D.PixelShader.ConstantBuffers[3] = _prevBuffer[2];
+			base.OnAfterRender();
 		}
 
 		/// <summary>
@@ -639,30 +636,36 @@ namespace GorgonLibrary.Renderers
 		{
 			if (!_disposed)
 			{
-				if (disposing)
-				{
-					FreeResources();	
-				}
+			    if (disposing)
+			    {
+			        FreeResources();
 
-				if (_timingBuffer != null)
-				{
-					_timingBuffer.Dispose();
-					_timingBuffer = null;
-				}
+			        if (Passes[0].PixelShader != null)
+			        {
+			            Passes[0].PixelShader.Dispose();
+			            Passes[0].PixelShader = null;
+			        }
 
-				if (_scratchBuffer != null)
-				{
-					_scratchBuffer.Dispose();
-					_scratchBuffer = null;
-				}
+			        if (_timingBuffer != null)
+			        {
+			            _timingBuffer.Dispose();
+			            _timingBuffer = null;
+			        }
 
-				if (_sepiaBuffer != null)
-				{
-					_sepiaBuffer.Dispose();
-					_sepiaBuffer = null;
-				}
+			        if (_scratchBuffer != null)
+			        {
+			            _scratchBuffer.Dispose();
+			            _scratchBuffer = null;
+			        }
 
-				_disposed = true;
+			        if (_sepiaBuffer != null)
+			        {
+			            _sepiaBuffer.Dispose();
+			            _sepiaBuffer = null;
+			        }
+			    }
+
+			    _disposed = true;
 			}
 			base.Dispose(disposing);
 		}
