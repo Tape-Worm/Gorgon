@@ -127,12 +127,22 @@ namespace GorgonLibrary.Renderers
 				_isUpdated = false;
 			}
 
+            RememberConstantBuffer(ShaderType.Pixel, 1);
 			Gorgon2D.PixelShader.ConstantBuffers[1] = _burnDodgeBuffer;
 
 			return base.OnBeforeRender();
 		}
 
-		/// <summary>
+        /// <summary>
+        /// Function called after rendering ends.
+        /// </summary>
+	    protected override void OnAfterRender()
+	    {
+            RestoreConstantBuffer(ShaderType.Pixel, 1);
+	        base.OnAfterRender();
+	    }
+
+	    /// <summary>
 		/// Function called before a pass is rendered.
 		/// </summary>
 		/// <param name="pass">Pass to render.</param>
@@ -164,8 +174,14 @@ namespace GorgonLibrary.Renderers
 					{
 						_dodgeBurn.Dispose();
 					}
+
+				    if (_burnDodgeBuffer != null)
+				    {
+				        _burnDodgeBuffer.Dispose();
+				    }
 				}
-				
+
+			    _burnDodgeBuffer = null;
 				_linearDodgeBurn = null;
 				_dodgeBurn = null;
 

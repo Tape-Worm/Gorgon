@@ -46,19 +46,85 @@ namespace GorgonLibrary.Graphics
     public abstract class GorgonEffect
         : GorgonNamedObject, IDisposable
     {
+        #region Value Types.
+        /// <summary>
+        /// A key used to track states for various shader types.
+        /// </summary>
+        private struct StateKey
+            : IEquatable<StateKey>
+        {
+            private readonly ShaderType _shaderType;     // Type of shader.
+            private readonly int _stateSlot;             // Slot to use for the shader.
+
+            /// <summary>
+            /// Determines whether the specified <see cref="System.Object"/>, is equal to this instance.
+            /// </summary>
+            /// <param name="obj">The <see cref="System.Object" /> to compare with this instance.</param>
+            /// <returns>
+            ///   <c>true</c> if the specified <see cref="System.Object" /> is equal to this instance; otherwise, <c>false</c>.
+            /// </returns>
+            public override bool Equals(object obj)
+            {
+                if (obj is StateKey)
+                {
+                    return ((StateKey)obj).Equals(this);
+                }
+                return base.Equals(obj);
+            }
+
+            /// <summary>
+            /// Returns a hash code for this instance.
+            /// </summary>
+            /// <returns>
+            /// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table. 
+            /// </returns>
+            public override int GetHashCode()
+            {
+                return 281.GenerateHash(_shaderType).GenerateHash(_stateSlot);
+            }
+
+            /// <summary>
+            /// Indicates whether the current object is equal to another object of the same type.
+            /// </summary>
+            /// <param name="other">An object to compare with this object.</param>
+            /// <returns>
+            /// true if the current object is equal to the <paramref name="other" /> parameter; otherwise, false.
+            /// </returns>
+            public bool Equals(StateKey other)
+            {
+                return _shaderType == other._shaderType && _stateSlot == other._stateSlot;
+                }
+
+            /// <summary>
+            /// Initializes a new instance of the <see cref="StateKey"/> struct.
+            /// </summary>
+            /// <param name="shaderType">Type of the shader.</param>
+            /// <param name="slot">The slot.</param>
+            public StateKey(ShaderType shaderType, int slot)
+            {
+                _shaderType = shaderType;
+                _stateSlot = slot;
+            }
+        }
+        #endregion
+
         #region Variables.
-        private bool _disposed;                         // Flag to indicate that the object was disposed.
+        private bool _disposed;                                                     // Flag to indicate that the object was disposed.
+        private Dictionary<StateKey, GorgonShaderView> _prevShaderViews;            // A list of previous shader views.
+        private Dictionary<StateKey, GorgonConstantBuffer> _prevConstantBuffers;    // A list of previous constant buffers.
+        private Dictionary<StateKey, GorgonTextureSamplerStates> _prevSamplers;     // A list of previous texture sampler states.
+        private Dictionary<ShaderType, GorgonShader> _prevShaders;                  // A list of previous shaders.
         #endregion
 
         #region Properties.
-		/// <summary>
-		/// Property to return a pass containing the original shaders before rendering started.
-		/// </summary>
-	    protected GorgonEffectPass StoredShaders
-	    {
-		    get;
-		    private set;
-	    }
+        /// <summary>
+        /// Property to return the list of passes for this effect.
+        /// </summary>
+        protected GorgonEffectPassArray Passes
+        {
+            get;
+            private set;
+        }
 
         /// <summary>
         /// Property to return a list of required parameters for the effect.
@@ -92,67 +158,276 @@ namespace GorgonLibrary.Graphics
             get;
             private set;
         }
-
-        /// <summary>
-        /// Property to return the list of passes for this effect.
-        /// </summary>
-        public GorgonEffectPassArray Passes
-        {
-            get;
-            private set;
-        }
         #endregion
 
         #region Methods.
-		/// <summary>
-		/// Function to remember the currently set shaders.
-		/// </summary>
-	    protected void RememberCurrentShaders()
-	    {
-			StoredShaders.PixelShader = Graphics.Shaders.PixelShader.Current;
-			StoredShaders.VertexShader = Graphics.Shaders.VertexShader.Current;
+        /// <summary>
+        /// Function to remember the previously assigned constant buffer for a given shader and slot index.
+        /// </summary>
+        /// <param name="shaderType">Type of the shader that the constant buffer belongs to.</param>
+        /// <param name="slot">The slot for the constant buffer.</param>
+        protected void RememberConstantBuffer(ShaderType shaderType, int slot)
+        {
+            var key = new StateKey(shaderType, slot);
 
-			if (Graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM2_a_b)
-			{
-				return;
-			}
+            switch (shaderType)
+            {
+                case ShaderType.Vertex:
+                    _prevConstantBuffers[key] = Graphics.Shaders.VertexShader.ConstantBuffers[slot];
+                    break;
+                case ShaderType.Pixel:
+                    _prevConstantBuffers[key] = Graphics.Shaders.PixelShader.ConstantBuffers[slot];
+                    break;
+                case ShaderType.Geometry:
+                    _prevConstantBuffers[key] = Graphics.Shaders.GeometryShader.ConstantBuffers[slot];
+                    break;
+                case ShaderType.Compute:
+                    _prevConstantBuffers[key] = Graphics.Shaders.ComputeShader.ConstantBuffers[slot];
+                    break;
+                case ShaderType.Domain:
+                    _prevConstantBuffers[key] = Graphics.Shaders.DomainShader.ConstantBuffers[slot];
+                    break;
+                case ShaderType.Hull:
+                    _prevConstantBuffers[key] = Graphics.Shaders.HullShader.ConstantBuffers[slot];
+                    break;
+            }
+        }
 
-			StoredShaders.GeometryShader = Graphics.Shaders.GeometryShader.Current;
+        /// <summary>
+        /// Function to remember the previously assigned shader resource for a given shader and slot index.
+        /// </summary>
+        /// <param name="shaderType">Type of the shader that the shader resource belongs to.</param>
+        /// <param name="slot">The slot for the shader resource.</param>
+        protected void RememberShaderResource(ShaderType shaderType, int slot)
+        {
+            var key = new StateKey(shaderType, slot);
 
-			if (Graphics.VideoDevice.SupportedFeatureLevel < DeviceFeatureLevel.SM5)
-			{
-				return;
-			}
+            switch (shaderType)
+            {
+                case ShaderType.Vertex:
+                    _prevShaderViews[key] = Graphics.Shaders.VertexShader.Resources[slot];
+                    break;
+                case ShaderType.Pixel:
+                    _prevShaderViews[key] = Graphics.Shaders.PixelShader.Resources[slot];
+                    break;
+                case ShaderType.Geometry:
+                    _prevShaderViews[key] = Graphics.Shaders.GeometryShader.Resources[slot];
+                    break;
+                case ShaderType.Compute:
+                    _prevShaderViews[key] = Graphics.Shaders.ComputeShader.Resources[slot];
+                    break;
+                case ShaderType.Domain:
+                    _prevShaderViews[key] = Graphics.Shaders.DomainShader.Resources[slot];
+                    break;
+                case ShaderType.Hull:
+                    _prevShaderViews[key] = Graphics.Shaders.HullShader.Resources[slot];
+                    break;
+            }
+        }
 
-			StoredShaders.ComputeShader = Graphics.Shaders.ComputeShader.Current;
-			StoredShaders.HullShader = Graphics.Shaders.HullShader.Current;
-			StoredShaders.DomainShader = Graphics.Shaders.DomainShader.Current;
-	    }
+        /// <summary>
+        /// Function to remember the previously assigned texture sampler for a given shader and slot index.
+        /// </summary>
+        /// <param name="shaderType">Type of the shader that the texture sampler belongs to.</param>
+        /// <param name="slot">The slot for the texture sampler.</param>
+        protected void RememberTextureSampler(ShaderType shaderType, int slot)
+        {
+            var key = new StateKey(shaderType, slot);
 
-		/// <summary>
-		/// Function to restore the previously remembered shaders.
-		/// </summary>
-	    protected void RestoreCurrentShaders()
-	    {
-			Graphics.Shaders.PixelShader.Current = StoredShaders.PixelShader;
-			Graphics.Shaders.VertexShader.Current = StoredShaders.VertexShader;
+            switch (shaderType)
+            {
+                case ShaderType.Vertex:
+                    _prevSamplers[key] = Graphics.Shaders.VertexShader.TextureSamplers[slot];
+                    break;
+                case ShaderType.Pixel:
+                    _prevSamplers[key] = Graphics.Shaders.PixelShader.TextureSamplers[slot];
+                    break;
+                case ShaderType.Geometry:
+                    _prevSamplers[key] = Graphics.Shaders.GeometryShader.TextureSamplers[slot];
+                    break;
+                case ShaderType.Compute:
+                    _prevSamplers[key] = Graphics.Shaders.ComputeShader.TextureSamplers[slot];
+                    break;
+                case ShaderType.Domain:
+                    _prevSamplers[key] = Graphics.Shaders.DomainShader.TextureSamplers[slot];
+                    break;
+                case ShaderType.Hull:
+                    _prevSamplers[key] = Graphics.Shaders.HullShader.TextureSamplers[slot];
+                    break;
+            }
+        }
 
-			if (Graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM2_a_b)
-			{
-				return;
-			}
+        /// <summary>
+        /// Function to restore a previously remembered constant buffer for a given shader type and slot index.
+        /// </summary>
+        /// <param name="shaderType">The type of shader.</param>
+        /// <param name="slot">The index of the slot used to store the constant buffer.</param>
+        protected void RestoreConstantBuffer(ShaderType shaderType, int slot)
+        {
+            GorgonConstantBuffer result;
+            var key = new StateKey(shaderType, slot);
 
-			Graphics.Shaders.GeometryShader.Current = StoredShaders.GeometryShader;
+            if (!_prevConstantBuffers.TryGetValue(key, out result))
+            {
+                return;
+            }
 
-			if (Graphics.VideoDevice.SupportedFeatureLevel < DeviceFeatureLevel.SM5)
-			{
-				return;
-			}
+            switch (shaderType)
+            {
+                case ShaderType.Vertex:
+                    Graphics.Shaders.VertexShader.ConstantBuffers[slot] = result;
+                    break;
+                case ShaderType.Pixel:
+                    Graphics.Shaders.PixelShader.ConstantBuffers[slot] = result;
+                    break;
+                case ShaderType.Geometry:
+                    Graphics.Shaders.GeometryShader.ConstantBuffers[slot] = result;
+                    break;
+                case ShaderType.Compute:
+                    Graphics.Shaders.ComputeShader.ConstantBuffers[slot] = result;
+                    break;
+                case ShaderType.Domain:
+                    Graphics.Shaders.DomainShader.ConstantBuffers[slot] = result;
+                    break;
+                case ShaderType.Hull:
+                    Graphics.Shaders.HullShader.ConstantBuffers[slot] = result;
+                    break;
+            }
+        }
 
-			Graphics.Shaders.ComputeShader.Current = StoredShaders.ComputeShader;
-			Graphics.Shaders.HullShader.Current = StoredShaders.HullShader;
-			Graphics.Shaders.DomainShader.Current = StoredShaders.DomainShader;
-	    }
+        /// <summary>
+        /// Function to restore a previously remembered shader resource for a given shader type and slot index.
+        /// </summary>
+        /// <param name="shaderType">The type of shader.</param>
+        /// <param name="slot">The index of the slot used to store the resource.</param>
+        protected void RestoreShaderResource(ShaderType shaderType, int slot)
+        {
+            GorgonShaderView result;
+            var key = new StateKey(shaderType, slot);
+
+            if (!_prevShaderViews.TryGetValue(key, out result))
+            {
+                return;
+            }
+
+            switch (shaderType)
+            {
+                case ShaderType.Vertex:
+                    Graphics.Shaders.VertexShader.Resources[slot] = result;
+                    break;
+                case ShaderType.Pixel:
+                    Graphics.Shaders.PixelShader.Resources[slot] = result;
+                    break;
+                case ShaderType.Geometry:
+                    Graphics.Shaders.GeometryShader.Resources[slot] = result;
+                    break;
+                case ShaderType.Compute:
+                    Graphics.Shaders.ComputeShader.Resources[slot] = result;
+                    break;
+                case ShaderType.Domain:
+                    Graphics.Shaders.DomainShader.Resources[slot] = result;
+                    break;
+                case ShaderType.Hull:
+                    Graphics.Shaders.HullShader.Resources[slot] = result;
+                    break;
+            }
+        }
+
+        /// <summary>
+        /// Function to restore a previously remembered texture sampler for a given shader type and slot index.
+        /// </summary>
+        /// <param name="shaderType">The type of shader.</param>
+        /// <param name="slot">The index of the slot used to store the texture sampler.</param>
+        protected void RestoreTextureSampler(ShaderType shaderType, int slot)
+        {
+            GorgonTextureSamplerStates result;
+            var key = new StateKey(shaderType, slot);
+
+            if (!_prevSamplers.TryGetValue(key, out result))
+            {
+                return;
+            }
+
+            switch (shaderType)
+            {
+                case ShaderType.Vertex:
+                    Graphics.Shaders.VertexShader.TextureSamplers[slot] = result;
+                    break;
+                case ShaderType.Pixel:
+                    Graphics.Shaders.PixelShader.TextureSamplers[slot] = result;
+                    break;
+                case ShaderType.Geometry:
+                    Graphics.Shaders.GeometryShader.TextureSamplers[slot] = result;
+                    break;
+                case ShaderType.Compute:
+                    Graphics.Shaders.ComputeShader.TextureSamplers[slot] = result;
+                    break;
+                case ShaderType.Domain:
+                    Graphics.Shaders.DomainShader.TextureSamplers[slot] = result;
+                    break;
+                case ShaderType.Hull:
+                    Graphics.Shaders.HullShader.TextureSamplers[slot] = result;
+                    break;
+            }
+        }
+
+        /// <summary>
+        /// Function to remember the current shader for a given shader type.
+        /// </summary>
+        /// <param name="shaderType">Type of shader to remember.</param>
+        protected void RememberCurrentShader(ShaderType shaderType)
+        {
+            switch (shaderType)
+            {
+                case ShaderType.Vertex:
+                    _prevShaders[shaderType] = Graphics.Shaders.VertexShader.Current;
+                    break;
+                case ShaderType.Pixel:
+                    _prevShaders[shaderType] = Graphics.Shaders.PixelShader.Current;
+                    break;
+                case ShaderType.Geometry:
+                    _prevShaders[shaderType] = Graphics.Shaders.GeometryShader.Current;
+                    break;
+                case ShaderType.Compute:
+                    _prevShaders[shaderType] = Graphics.Shaders.ComputeShader.Current;
+                    break;
+                case ShaderType.Domain:
+                    _prevShaders[shaderType] = Graphics.Shaders.DomainShader.Current;
+                    break;
+                case ShaderType.Hull:
+                    _prevShaders[shaderType] = Graphics.Shaders.HullShader.Current;
+                    break;
+            }
+        }
+
+        /// <summary>
+        /// Function to restore the current shader for a given shader type.
+        /// </summary>
+        /// <param name="shaderType">Type of shader to remember.</param>
+        protected void RestoreCurrentShader(ShaderType shaderType)
+        {
+            switch (shaderType)
+            {
+                case ShaderType.Vertex:
+                    Graphics.Shaders.VertexShader.Current = (GorgonVertexShader)_prevShaders[shaderType];
+                    break;
+                case ShaderType.Pixel:
+                    Graphics.Shaders.PixelShader.Current = (GorgonPixelShader)_prevShaders[shaderType];
+                    break;
+                case ShaderType.Geometry:
+                    Graphics.Shaders.GeometryShader.Current = (GorgonGeometryShader)_prevShaders[shaderType];
+                    break;
+                case ShaderType.Compute:
+                    Graphics.Shaders.ComputeShader.Current = (GorgonComputeShader)_prevShaders[shaderType];
+                    break;
+                case ShaderType.Domain:
+                    Graphics.Shaders.DomainShader.Current = (GorgonDomainShader)_prevShaders[shaderType];
+                    break;
+                case ShaderType.Hull:
+                    Graphics.Shaders.HullShader.Current = (GorgonHullShader)_prevShaders[shaderType];
+                    break;
+            }
+        }
 
         /// <summary>
         /// Function called before rendering begins.
@@ -175,40 +450,13 @@ namespace GorgonLibrary.Graphics
         /// </summary>
         /// <param name="pass">Pass to render.</param>
         /// <returns>TRUE to continue rendering, FALSE to stop.</returns>
-        protected virtual bool OnBeforePassRender(GorgonEffectPass pass)
-        {
-			RememberCurrentShaders();
-
-			Graphics.Shaders.PixelShader.Current = pass.PixelShader;
-			Graphics.Shaders.VertexShader.Current = pass.VertexShader;
-
-			if (Graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM2_a_b)
-			{
-				return true;
-			}
-
-			Graphics.Shaders.GeometryShader.Current = pass.GeometryShader;
-
-			if (Graphics.VideoDevice.SupportedFeatureLevel < DeviceFeatureLevel.SM5)
-			{
-				return true;
-			}
-
-			Graphics.Shaders.ComputeShader.Current = pass.ComputeShader;
-			Graphics.Shaders.HullShader.Current = pass.HullShader;
-			Graphics.Shaders.DomainShader.Current = pass.DomainShader;
-
-			return true;
-        }
+        protected abstract bool OnBeforePassRender(GorgonEffectPass pass);
 
         /// <summary>
         /// Function called after a pass has been rendered.
         /// </summary>
         /// <param name="pass">Pass that was rendered.</param>
-        protected virtual void OnAfterPassRender(GorgonEffectPass pass)
-        {
-            RestoreCurrentShaders();
-        }
+        protected abstract void OnAfterPassRender(GorgonEffectPass pass);
 
 		/// <summary>
 		/// Function to render a pass.
@@ -230,7 +478,6 @@ namespace GorgonLibrary.Graphics
         /// </remarks>
         protected virtual void OnInitialize()
         {
-            
         }
 
         /// <summary>
@@ -351,9 +598,13 @@ namespace GorgonLibrary.Graphics
         {
             Graphics = graphics;
             Passes = new GorgonEffectPassArray(this, passCount);
-            StoredShaders = new GorgonEffectPass(this, -1);
 	        RequiredParameters = new List<string>();
 			Parameters = new Dictionary<string, object>();
+
+            _prevConstantBuffers = new Dictionary<StateKey, GorgonConstantBuffer>();
+            _prevSamplers = new Dictionary<StateKey, GorgonTextureSamplerStates>();
+            _prevShaderViews = new Dictionary<StateKey, GorgonShaderView>();
+            _prevShaders = new Dictionary<ShaderType, GorgonShader>();
         }
         #endregion
 

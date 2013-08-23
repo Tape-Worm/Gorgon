@@ -33,9 +33,11 @@ namespace GorgonLibrary.Renderers
 	/// </summary>
 	public abstract class Gorgon2DEffect
 		: GorgonEffect
-	{
-		#region Variables.
-		private bool _isDisposed;							// Flag to indicate that the object was disposed.
+    {
+        #region Variables.
+        private bool _isDisposed;							                        // Flag to indicate that the object was disposed.
+	    private GorgonPixelShader _prevPixelShader;                                 // Previously active pixel shader.
+	    private GorgonVertexShader _prevVertexShader;                               // Previously active vertex shader.
 		#endregion
 
 		#region Properties.
@@ -94,8 +96,13 @@ namespace GorgonLibrary.Renderers
 		/// </returns>
 		protected override bool OnBeforePassRender(GorgonEffectPass pass)
 		{
-			StoredShaders.PixelShader = Gorgon2D.PixelShader.Current;
-			StoredShaders.VertexShader = Gorgon2D.VertexShader.Current;
+		    if (pass.RenderAction == null)
+		    {
+		        return false;
+		    }
+
+		    _prevPixelShader = Gorgon2D.PixelShader.Current;
+		    _prevVertexShader = Gorgon2D.VertexShader.Current;
 
 			Gorgon2D.PixelShader.Current = pass.PixelShader;
 			Gorgon2D.VertexShader.Current = pass.VertexShader;
@@ -109,8 +116,8 @@ namespace GorgonLibrary.Renderers
 		/// <param name="pass">Pass that was rendered.</param>
 		protected override void OnAfterPassRender(GorgonEffectPass pass)
 		{
-			Gorgon2D.PixelShader.Current = StoredShaders.PixelShader;
-			Gorgon2D.VertexShader.Current = StoredShaders.VertexShader;
+		    Gorgon2D.PixelShader.Current = _prevPixelShader;
+		    Gorgon2D.VertexShader.Current = _prevVertexShader;
 		}
 
 		/// <summary>
