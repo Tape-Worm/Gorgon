@@ -661,4 +661,7 @@ Log file location: "{0}"</value>
   <data name="GORGFX_TEXTURE_DISCARD_NEEDS_DYNAMIC" xml:space="preserve">
     <value>Cannot use [Discard] with a texture that has not been created with a [Dynamic] usage.</value>
   </data>
+  <data name="GORGFX_SHADER_MACRO_TOSTR" xml:space="preserve">
+    <value>Gorgon Shader Macro Definition '{0}'.</value>
+  </data>
 </root>

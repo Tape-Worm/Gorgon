@@ -103,9 +103,45 @@ namespace GorgonLibrary.Renderers
 		private SepiaSettings _sepiaSettings;					// Settings for sepia tone.
 		private GorgonConstantBuffer _scratchBuffer;			// Constant buffer for scratch settings.
 		private GorgonConstantBuffer _sepiaBuffer;				// Constant buffer for sepia settings.
+		private float _noiseFrequency = 8.0f;					// Noise frequency.
 		#endregion
 
 		#region Properties.
+		/// <summary>
+		/// Property to set or return the noise frequency used in generating scratches in the film.
+		/// </summary>
+		/// <remarks>It is not recommended to update this value every frame, doing so may have a significant performance hit.</remarks>
+		public float NoiseFrequency
+		{
+			get
+			{
+				return _noiseFrequency;
+			}
+			set
+			{
+				if (_noiseFrequency.EqualsEpsilon(value))
+				{
+					return;
+				}
+
+				if (value < 1)
+				{
+					value = 1.0f;
+				}
+
+				_noiseFrequency = value;
+
+				// Prepare the random data texture for update.
+				if (_randomTexture == null)
+				{
+					return;
+				}
+
+				_randomTexture.Dispose();
+				_randomTexture = null;
+			}
+		}
+
 		/// <summary>
 		/// Property to set or return the speed of updates to the current set of scratches.
 		/// </summary>
@@ -340,7 +376,7 @@ namespace GorgonLibrary.Renderers
 			{
 				Width = textureSize,
 				Height = textureSize,
-				Format = BufferFormat.R8_IntNormal,
+				Format = Graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM2_a_b ? BufferFormat.R8G8B8A8_UIntNormal : BufferFormat.R8_UIntNormal,
 				Usage = BufferUsage.Default
 			}))
 			{
@@ -349,9 +385,33 @@ namespace GorgonLibrary.Renderers
 					var dataPtr = (byte*)image[0].Data.UnsafePointer;
 
 					// Write perlin noise to the texture.
-					for (int x = 0; x < textureSize * textureSize; ++x)
+					for (int y = 0; y < textureSize; ++y)
 					{
-						*(dataPtr++) = (byte)(GorgonRandom.Perlin(new Vector2(x / (float)textureSize)) * 255);
+						for (int x = 0; x < textureSize; ++x)
+						{
+							float simplexNoise = GorgonRandom.SimplexNoise(new Vector2(x * (1.0f / _noiseFrequency), y * (1.0f / _noiseFrequency)));
+
+							if (simplexNoise < -0.75f)
+							{
+								simplexNoise *= -1;
+							}
+							else
+							{
+								simplexNoise *= 0.85f;
+							}
+
+							if (simplexNoise < 0.25f)
+							{
+								simplexNoise = 0.0f;
+							}
+
+							*(dataPtr++) = (byte)(simplexNoise * 255.0f);
+							
+							if (Graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM2_a_b)
+							{
+								dataPtr += 3;
+							}
+						}
 					}
 				}
 				_randomTexture = Graphics.Textures.CreateTexture<GorgonTexture2D>("Effect.OldFilm.RandomTexture", image);
@@ -371,6 +431,7 @@ namespace GorgonLibrary.Renderers
 
 			_point = Gorgon2D.Renderables.CreatePoint("Effect.OldFilm.DustPoint", Vector2.Zero, GorgonColor.Black);
 
+			// Create pixel shader.
 			Passes[0].PixelShader = Graphics.Shaders.CreateShader<GorgonPixelShader>("Effect.OldFilm.PS",
 				"GorgonPixelShaderFilmGrain", Encoding.UTF8.GetString(Properties.Resources.FilmGrain));
 
@@ -410,7 +471,10 @@ namespace GorgonLibrary.Renderers
 				SepiaDarkColor = new GorgonColor(0.2f, 0.102f, 0, 1.0f)
 			};
 
-            GenerateRandomNoise();
+			if (Graphics.VideoDevice.SupportedFeatureLevel == DeviceFeatureLevel.SM2_a_b)
+			{
+				GenerateRandomNoise();
+			}
 		}
 
 		/// <summary>

@@ -492,7 +492,7 @@ namespace GorgonLibrary.Graphics.Test
                 });*/
 
 			var uav = texture.GetUnorderedAccessView(BufferFormat.R32_UInt);
-			var uavShaderPS = _framework.Graphics.Shaders.CreateShader<GorgonPixelShader>("UAV", "TestUAV", uavOutputPS, true);
+			var uavShaderPS = _framework.Graphics.Shaders.CreateShader<GorgonPixelShader>("UAV", "TestUAV", uavOutputPS, null, true);
 			
 			_framework.CreateTestScene(uavOutputPS, uavOutputPS, true);
 

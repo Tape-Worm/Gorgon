@@ -259,7 +259,7 @@ namespace GorgonLibrary.Graphics.Test
 		{
 			_framework.CreateTestScene(BaseShaders, BaseShaders, true);
 
-			using(var geoShader = _framework.Graphics.Shaders.CreateShader<GorgonGeometryShader>("GeoShader", "TestGS", BaseShaders,
+			using(var geoShader = _framework.Graphics.Shaders.CreateShader<GorgonGeometryShader>("GeoShader", "TestGS", BaseShaders,null,
 				                                                                               true))
 			{
 

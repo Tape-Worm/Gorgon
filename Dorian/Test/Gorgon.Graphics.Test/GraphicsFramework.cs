@@ -225,10 +225,12 @@ namespace GorgonLibrary.Graphics.Test
 			VertexShader = Graphics.Shaders.CreateShader<GorgonVertexShader>("VS",
 																			   "TestVS",
 																			   vs,
+																			   null,
 																			   true);
 			PixelShader = Graphics.Shaders.CreateShader<GorgonPixelShader>("PS",
 																			 "TestPS",
 																			 ps,
+																			 null,
 																			 true);
 
 			Layout = Graphics.Input.CreateInputLayout("Layout", typeof(Vertex), VertexShader);

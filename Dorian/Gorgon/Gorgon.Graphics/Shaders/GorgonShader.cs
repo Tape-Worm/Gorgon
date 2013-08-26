@@ -25,69 +25,17 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using GorgonLibrary.Diagnostics;
 using GorgonLibrary.Graphics.Properties;
+using Common = SharpDX.Direct3D;
 using D3D = SharpDX.Direct3D11;
 using Shaders = SharpDX.D3DCompiler;
 
 namespace GorgonLibrary.Graphics
 {
-	/// <summary>
-	/// Version for the shaders.
-	/// </summary>
-	public enum ShaderVersion
-	{
-		/// <summary>
-		/// Shader model 5.
-		/// </summary>
-		Version5 = 0,
-		/// <summary>
-		/// Shader model 4.
-		/// </summary>
-		Version4 = 1,
-		/// <summary>
-		/// Shader model 4, profile 1.
-		/// </summary>
-		Version4_1 = 2,
-		/// <summary>
-		/// Shader model 2, vertex shader profile a, pixel shader profile b.
-		/// </summary>
-		Version2A_B = 3
-	}
-
-	/// <summary>
-	/// Shader types.
-	/// </summary>
-	public enum ShaderType
-	{
-		/// <summary>
-		/// Vertex shader.
-		/// </summary>
-		Vertex = 0,
-		/// <summary>
-		/// Pixel shader.
-		/// </summary>
-		Pixel = 1,
-		/// <summary>
-		/// Geometry shader.
-		/// </summary>
-		Geometry = 2,
-		/// <summary>
-		/// Compute shader.
-		/// </summary>
-		Compute = 3,
-		/// <summary>
-		/// Domain shader.
-		/// </summary>
-		Domain = 4,
-		/// <summary>
-		/// Hull shader.
-		/// </summary>
-		Hull = 5
-	}
-
 	/// <summary>
 	/// The base shader object.
 	/// </summary>
@@ -95,11 +43,9 @@ namespace GorgonLibrary.Graphics
 		: GorgonNamedObject, IDisposable
 	{
 		#region Variables.
-		private bool _disposed;										// Flag to indicate that the object was disposed.
-		private string _source;										// Shader source code.
-		private ShaderVersion _version = ShaderVersion.Version2A_B;	// Shader model version.
-		private bool _isDebug;										// Flag to indicate that debug information is included.
-		private Shaders.ShaderBytecode _byteCode;					// Byte code for the shader.
+		private bool _disposed;													// Flag to indicate that the object was disposed.
+		private readonly StringBuilder _source = new StringBuilder(512);		// Shader source code.
+		private Common.ShaderMacro[] _shaderMacros;								// List of shader macros for this shader.
 		#endregion
 
 		#region Properties.
@@ -108,30 +54,9 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		internal Shaders.ShaderBytecode D3DByteCode
 		{
-			get
-			{
-				return _byteCode;
-			}
-			set
-			{
-			    if (_byteCode == value)
-			    {
-			        return;
-			    }
-
-			    _byteCode = value;
-			    HasChanged = true;
-			}
+			get;
+			set;
 		}
-
-        /// <summary>
-        /// Property to set or return whether an object has been updated.
-        /// </summary>
-        private bool HasChanged
-        {
-            get;
-            set;
-        }
 
 		/// <summary>
 		/// Property to return whether the shader is a binary object or not.
@@ -149,24 +74,12 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		/// <remarks>
 		/// This property has no effect when the shader is a <see cref="P:GorgonLibrary.Graphics.GorgonShader.IsBinary">binary shader</see> (i.e. no source code).
-		/// <para>After changing this property, use the <see cref="M:GorgonLibrary.Graphics.GorgonShader.Compile">Compile</see> method to update the shader.</para>
+		/// <para>After changing this property, use the <see cref="GorgonLibrary.Graphics.GorgonShader.Compile">Compile</see> method to update the shader.</para>
 		/// </remarks>
 		public bool IsDebug
 		{
-			get
-			{
-				return _isDebug;
-			}
-			set
-			{
-				if (_isDebug == value)
-				{
-					return;
-				}
-
-				_isDebug = value;
-				HasChanged = true;
-			}
+			get;
+			set;
 		}
 
 		/// <summary>
@@ -200,47 +113,30 @@ namespace GorgonLibrary.Graphics
 		/// Property to set or return the shader model version number for this shader.
 		/// </summary>
 		/// <remarks>It is not recommended to set this value manually.  Gorgon will attempt to find the best version for the supported feature level.
-		/// <para>After changing this property, use the <see cref="M:GorgonLibrary.Graphics.GorgonShader.Compile">Compile</see> method to update the shader.</para>
+		/// <para>After changing this property, use the <see cref="GorgonLibrary.Graphics.GorgonShader.Compile">Compile</see> method to update the shader.</para>
 		/// </remarks>
 		public ShaderVersion Version
 		{
-			get
-			{
-				return _version;
-			}
-			set
-			{
-			    if (_version == value)
-			    {
-			        return;
-			    }
-
-			    _version = value;
-			    HasChanged = true;
-			}
+			get;
+			set;
 		}
 
 		/// <summary>
 		/// Property to set or return the source code for the shader.
 		/// </summary>
 		/// <remarks>This value will be empty or NULL (Nothing in VB.Net) if the shader has no source code (i.e. it's loaded from a binary shader).
-		/// <para>After changing this property, use the <see cref="M:GorgonLibrary.Graphics.GorgonShader.Compile">Compile</see> method to update the shader.</para>
+		/// <para>After changing this property, use the <see cref="GorgonLibrary.Graphics.GorgonShader.Compile">Compile</see> method to update the shader.</para>
 		/// </remarks>
 		public string SourceCode
 		{
 			get
 			{
-				return _source;
+				return _source.ToString();
 			}
 			set
 			{
-			    if (_source == value)
-			    {
-			        return;
-			    }
-
-			    _source = value;
-			    HasChanged = true;
+				_source.Length = 0;
+				_source.Append(value);
 			}
 		}
 
@@ -302,7 +198,7 @@ namespace GorgonLibrary.Graphics
 					throw new NotSupportedException(string.Format(Resources.GORGFX_SHADER_UNKNOWN_TYPE, ShaderType));
 			}
 
-			switch (_version)
+			switch (Version)
 			{
 				case ShaderVersion.Version5:
 					version = "5_0";
@@ -322,7 +218,159 @@ namespace GorgonLibrary.Graphics
 
 			return prefix + "_" + version;
 		}
-		
+
+		/// <summary>
+		/// Function to retrieve the include line.
+		/// </summary>
+		/// <param name="includeLine">Include line.</param>
+		/// <param name="checkFileExists">TRUE to check if the file exists, FALSE to skip the check.</param>
+		/// <returns>A path to the include file.</returns>
+		private static GorgonShaderInclude ParseIncludeLine(string includeLine, bool checkFileExists)
+		{
+			string originalLine = includeLine;
+
+			includeLine = includeLine.Substring(14).Trim();
+
+			if (string.IsNullOrEmpty(includeLine))
+			{
+				throw new GorgonException(GorgonResult.CannotRead,
+					string.Format(Resources.GORGFX_SHADER_INCLUDE_PATH_INVALID, originalLine));
+			}
+
+			// Get include files.
+			int endQuote = 0;
+			string includePath;
+
+			if ((!includeLine.StartsWith("\"")) || (!includeLine.EndsWith("\"")))
+			{
+				throw new GorgonException(GorgonResult.CannotRead,
+					string.Format(Resources.GORGFX_SHADER_INCLUDE_PATH_INVALID, originalLine));
+			}
+
+			// Get the include name.
+			for (int c = 1; c < includeLine.Length; c++)
+			{
+				if (includeLine[c] != '\"')
+				{
+					continue;
+				}
+
+				endQuote = c;
+				break;
+			}
+
+			if (endQuote == 0)
+			{
+				throw new GorgonException(GorgonResult.CannotRead,
+					string.Format(Resources.GORGFX_SHADER_INCLUDE_PATH_INVALID, originalLine));
+			}
+
+			string includeName = includeLine.Substring(1, endQuote - 1);
+			includeLine = includeLine.Substring(endQuote + 1).Trim();
+
+			if (includeLine.StartsWith(","))
+			{
+				includeLine = includeLine.Substring(1).Trim();
+
+				if (!includeLine.StartsWith("\""))
+				{
+					throw new GorgonException(GorgonResult.CannotRead,
+						string.Format(Resources.GORGFX_SHADER_INCLUDE_PATH_INVALID, originalLine));
+				}
+
+				endQuote = includeLine.Length - 1;
+
+				includePath = Path.GetFullPath(includeLine.Substring(1, endQuote - 1));
+
+				if (endQuote + 1 <= includeLine.Length)
+				{
+					includeLine = includeLine.Substring(endQuote + 1);
+				}
+
+				if (!string.IsNullOrEmpty(includeLine))
+				{
+					throw new GorgonException(GorgonResult.CannotRead,
+						string.Format(Resources.GORGFX_SHADER_INCLUDE_PATH_INVALID, originalLine));
+				}
+
+				if ((checkFileExists) && (!File.Exists(includePath)))
+				{
+					throw new IOException(string.Format(Resources.GORGFX_FILE_NOT_FOUND, originalLine));
+				}
+			}
+			else
+			{
+				includePath = string.Empty;
+			}
+
+			return new GorgonShaderInclude(includeName, includePath);
+		}
+
+		/// <summary>
+		/// Function to process the source code and set up any includes.
+		/// </summary>
+		/// <param name="sourceCode">Code to process.</param>
+		/// <returns>The processed source.</returns>
+		private string ProcessSource(string sourceCode)
+		{
+			var result = new StringBuilder();
+			IList<string> lines = sourceCode.Replace("\r\n", "\n").Replace("\n\r", "\n").Split(new[]
+		    {
+		        '\n'
+		    });
+			int i = 0;
+
+			while (i < lines.Count)
+			{
+				string includeLine = lines[i].Trim();
+
+				if (includeLine.StartsWith("#GorgonInclude", StringComparison.OrdinalIgnoreCase))
+				{
+					GorgonShaderInclude includeFile = ParseIncludeLine(includeLine, false);
+
+					// If we have no file name, then assume we've already included it in the collection.
+					if ((string.IsNullOrWhiteSpace(includeFile.SourceCodeFile))
+						|| (Graphics.Shaders.IncludeFiles.Contains(includeFile.Name)))
+					{
+						if (!Graphics.Shaders.IncludeFiles.Contains(includeFile.Name))
+						{
+							throw new KeyNotFoundException(string.Format(Resources.GORGFX_SHADER_INCLUDE_NOT_FOUND, includeLine));
+						}
+
+						result.AppendFormat("// ------------------ Begin #include of '{0}' ------------------ \r\n", includeFile.Name);
+						result.AppendFormat("{0}\r\n", ProcessSource(Graphics.Shaders.IncludeFiles[includeFile.Name].SourceCodeFile));
+						result.AppendFormat("// ------------------ End #include of '{0}'------------------ \r\n\r\n", includeFile.Name);
+					}
+					else
+					{
+						if (!File.Exists(includeFile.SourceCodeFile))
+						{
+							throw new IOException(string.Format(Resources.GORGFX_SHADER_INCLUDE_NOT_FOUND, includeLine));
+						}
+
+						string includeSourceCode = File.ReadAllText(includeFile.SourceCodeFile);
+
+						if (!string.IsNullOrWhiteSpace(includeSourceCode))
+						{
+							result.AppendFormat("// ------------------ Begin #include of external include '{0}' ------------------ \r\n", includeFile.SourceCodeFile);
+							result.AppendFormat("{0}\r\n", ProcessSource(includeSourceCode));
+							result.AppendFormat("// ------------------ End #include of extneral include '{0}'------------------ \r\n\r\n", includeFile.SourceCodeFile);
+
+							// Add to the include list.
+							Graphics.Shaders.IncludeFiles[includeFile.Name] = new GorgonShaderInclude(includeFile.Name, includeSourceCode);
+						}
+					}
+				}
+				else
+				{
+					result.AppendFormat("{0}\r\n", lines[i]);
+				}
+				i++;
+			}
+
+			return result.ToString();
+		}
+
 		/// <summary>
 		/// Function to compile the shader.
 		/// </summary>
@@ -334,7 +382,7 @@ namespace GorgonLibrary.Graphics
 
 		    try
 			{
-				string parsedCode = Graphics.Shaders.IncludeFiles.ProcessSource(SourceCode);
+				string parsedCode = ProcessSource(SourceCode);
 								
 				IsDebug = includeDebugInfo;
 
@@ -348,7 +396,7 @@ namespace GorgonLibrary.Graphics
 					flags |= Shaders.ShaderFlags.EnableBackwardsCompatibility;
 				}
 
-				return Shaders.ShaderBytecode.Compile(parsedCode, EntryPoint, GetD3DVersion(), flags, Shaders.EffectFlags.None, null, null);
+				return Shaders.ShaderBytecode.Compile(parsedCode, EntryPoint, GetD3DVersion(), flags, Shaders.EffectFlags.None, _shaderMacros, null);
 			}
 			catch (SharpDX.CompilationException cex)
 			{
@@ -374,22 +422,20 @@ namespace GorgonLibrary.Graphics
 		    }
 
 		    Graphics.Shaders.Reseat(this);
-			HasChanged = false;
 		}
 
 		/// <summary>
 		/// Function to compile the shader.
 		/// </summary>
-		/// <remarks>Whenever a shader is changed (i.e. its <see cref="GorgonLibrary.Graphics.GorgonShader.SourceCode">SourceCode</see> parameter is modified), this method should be called to build the shader.</remarks>
+		/// <param name="macros">[Optional] A list of conditional compilation macro defintions to send to the shader.</param>
+		/// <remarks>Whenever a shader is changed (i.e. its <see cref="GorgonLibrary.Graphics.GorgonShader.SourceCode">SourceCode</see> parameter is modified), this method should be called to build the shader.
+		/// <para>If the <paramref name="macros"/> parameter is not NULL (Nothing in VB.Net), then a list of conditional compilation macro #define symbols will be sent to the shader.  This 
+		/// is handy when you wish to exclude parts of a shader upon compilation.  Please note that this parameter is only used if the <see cref="SourceCode"/> property is not NULL or empty.</para>
+		/// </remarks>
 		/// <exception cref="System.NotSupportedException">Thrown when the shader is not supported by the current supported feature level for the video hardware.</exception>
 		/// <exception cref="GorgonLibrary.GorgonException">Thrown when the shader fails to compile.</exception>
-		public void Compile()
+		public void Compile(IList<GorgonShaderMacro> macros = null)
 		{
-		    if (!HasChanged)
-		    {
-		        return;
-		    }
-
 		    if (D3DByteCode != null)
 			{
 				D3DByteCode.Dispose();
@@ -398,6 +444,16 @@ namespace GorgonLibrary.Graphics
 
 		    if (!string.IsNullOrEmpty(SourceCode))
 		    {
+			    if (macros != null)
+			    {
+					_shaderMacros = new Common.ShaderMacro[macros.Count];
+
+				    for (int i = 0; i < _shaderMacros.Length; i++)
+				    {
+					    _shaderMacros[i] = macros[i].Convert();
+				    }
+			    }
+
 		        D3DByteCode = CompileFromSource(IsDebug);
 		    }
 
