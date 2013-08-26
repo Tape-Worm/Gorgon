@@ -38,20 +38,24 @@ namespace GorgonLibrary.Math
 	/// A random number generator for floating point and integer values.
 	/// </summary>
 	public static class GorgonRandom
-	{
-		#region Variables.							
-		private const float F2 = 0.366025403f;						// Skewing factors for 2D Simplex noise.  F2 = 0.5*(sqrt(3.0)-1.0)
-		private const float G2 = 0.211324865f;						// G2 = (3.0-Math.sqrt(3.0))/6.0
-		private const float OffsetAmount2D = -1.0f + 2.0f * G2;		// Amount to offset corner values in 2D.
-		private const float F3 = 0.333333333f;						// Skewing factors for 3D Simplex noise.
-		private const float G3 = 0.166666667f;
-		private const float OffsetAmount3D1 = 2.0f * G3;			// Amount to offset third corner values in 3D.
-		private const float OffsetAmount3D2 = -1.0f + 3.0f * G3;	// Amount to offset last corner values in 3D.
-		private const float F4 = 0.309016994f;						// Skewing factors for 4D Simplex noise.
-		private const float G4 = 0.138196601f;
-		private const float OffsetAmount4D1 = 2.0f * G4;			// Amount to offset third corner values in 4D.
-		private const float OffsetAmount4D2 = 3.0f * G4;			// Amount to offset third corner values in 4D.
-		private const float OffsetAmount4D3 = -1.0f + 4.0f * G4;	// Amount to offset last corner values in 4D.
+    {
+        #region Constants.
+        private const float F2 = 0.366025403f;						// Skewing factors for 2D Simplex noise.  F2 = 0.5*(sqrt(3.0)-1.0)
+        private const float G2 = 0.211324865f;						// G2 = (3.0-Math.sqrt(3.0))/6.0
+        private const float F3 = 0.333333333f;						// Skewing factors for 3D Simplex noise.
+        private const float G3 = 0.166666667f;
+        private const float F4 = 0.309016994f;						// Skewing factors for 4D Simplex noise.
+        private const float G4 = 0.138196601f;
+
+        private const float OffsetAmount2D = -1.0f + 2.0f * G2;		// Amount to offset corner values in 2D.
+        private const float OffsetAmount3D1 = 2.0f * G3;			// Amount to offset third corner values in 3D.
+        private const float OffsetAmount3D2 = -1.0f + 3.0f * G3;	// Amount to offset last corner values in 3D.
+        private const float OffsetAmount4D1 = 2.0f * G4;			// Amount to offset third corner values in 4D.
+        private const float OffsetAmount4D2 = 3.0f * G4;			// Amount to offset third corner values in 4D.
+        private const float OffsetAmount4D3 = -1.0f + 4.0f * G4;	// Amount to offset last corner values in 4D.
+        #endregion
+
+        #region Variables.
 
 		// 1D and 2D and 3D gradient vectors.
 		private static readonly Vector3[] _grad3 = 
@@ -105,7 +109,8 @@ namespace GorgonLibrary.Math
 	        138,236,205,93,222,114,67,29,24,72,243,141,128,195,78,66,215,61,156,180 
         };
 
-		private static readonly byte[] _permMod12; // Simplex noise permutations mod 12.
+		private static readonly byte[] _permMod12;  // Simplex noise permutations pre modulo'd by 12 for performance.
+        private static readonly byte[] _permMod32;  // Simplex noise permutations pre modulo'd by 32 for performance.
 		private static int _seed;
 		private static Random _rnd;
 		#endregion
@@ -409,14 +414,14 @@ namespace GorgonLibrary.Math
 			if (t1 > 0.0f)
 			{
 				grad = _grad3[_permMod12[index0 + offset1 + _permutations[index1 + offset2 + _permutations[index2 + offset3]]]];
-				Vector3.Dot(ref grad, ref distance, out dot);
+				Vector3.Dot(ref grad, ref corner1, out dot);
 				contrib.Y = t1 * t1 * t1 * t1 * dot;
 			}
 
 			if (t2 > 0.0f)
 			{
 				grad = _grad3[_permMod12[index0 + offset4 + _permutations[index1 + offset5 + _permutations[index2 + offset6]]]];
-				Vector3.Dot(ref grad, ref distance, out dot);
+				Vector3.Dot(ref grad, ref corner2, out dot);
 				contrib.Z = t2 * t2 * t2 * t2 * dot;
 			}
 
@@ -426,8 +431,8 @@ namespace GorgonLibrary.Math
 			}
 
 			grad = _grad3[_permMod12[index0 + 1 + _permutations[index1 + 1 + _permutations[index2 + 1]]]];
-			Vector3.Dot(ref grad, ref distance, out dot);
-			contrib.W = t0 * t0 * t0 * t0 * dot;
+			Vector3.Dot(ref grad, ref corner3, out dot);
+			contrib.W = t3 * t3 * t3 * t3 * dot;
 
 			// Add contributions from each corner to get the final noise value.
 			// The result is scaled to stay just inside [-1,1]
@@ -570,28 +575,28 @@ namespace GorgonLibrary.Math
 			// Calculate the contribution from the five corners
 			if (t0 > 0.0f)
 			{
-				grad = _grad4[_permutations[index1 + _permutations[index2 + _permutations[index3 + _permutations[index4]]]] % 32];
+				grad = _grad4[_permMod32[index1 + _permutations[index2 + _permutations[index3 + _permutations[index4]]]]];
 				Vector4.Dot(ref grad, ref distance, out dot);
 				contrib.X = t0 * t0 * t0 * t0 * dot;
 			}
 
 			if (t1 > 0.0f)
 			{
-				grad = _grad4[_permutations[index1 + offset1 + _permutations[index2 + offset2 + _permutations[index3 + offset3 + _permutations[index4 + offset4]]]] % 32];
+				grad = _grad4[_permMod32[index1 + offset1 + _permutations[index2 + offset2 + _permutations[index3 + offset3 + _permutations[index4 + offset4]]]]];
 				Vector4.Dot(ref grad, ref corner1, out dot);
 				contrib.Y = t1 * t1 * t1 * t1 * dot;
 			}
 
 			if (t2 > 0.0f)
 			{
-				grad = _grad4[_permutations[index1 + offset5 + _permutations[index2 + offset6 + _permutations[index3 + offset7 + _permutations[index4 + offset8]]]] % 32];
+				grad = _grad4[_permMod32[index1 + offset5 + _permutations[index2 + offset6 + _permutations[index3 + offset7 + _permutations[index4 + offset8]]]]];
 				Vector4.Dot(ref grad, ref corner2, out dot);
 				contrib.Z = t2 * t2 * t2 * t2 * dot;
 			}
 
 			if (t3 > 0.0f)
 			{
-				grad = _grad4[_permutations[index1 + offset9 + _permutations[index2 + offset10 + _permutations[index3 + offset11 + _permutations[index4 + offset12]]]] % 32];
+				grad = _grad4[_permMod32[index1 + offset9 + _permutations[index2 + offset10 + _permutations[index3 + offset11 + _permutations[index4 + offset12]]]]];
 				Vector4.Dot(ref grad, ref corner3, out dot);
 				contrib.W = t3 * t3 * t3 * t3 * dot;
 			}
@@ -681,10 +686,12 @@ namespace GorgonLibrary.Math
 		{
 			Seed = (int)DateTime.Now.TimeOfDay.TotalMilliseconds;
 			_permMod12 = new byte[_permutations.Length];
+            _permMod32 = new byte[_permutations.Length];
 
 			for (int i = 0; i < _permMod12.Length; i++)
 			{
 				_permMod12[i] = (byte)(_permutations[i] % 12);
+			    _permMod32[i] = (byte)(_permutations[i] % 32);
 			}
 		}
 		#endregion
