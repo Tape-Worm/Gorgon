@@ -50,9 +50,9 @@ float4 GorgonPixelShaderFilmGrain(GorgonSpriteVertex vertex) : SV_Target
 
     float4 texel = _gorgonTexture.Sample(_gorgonSampler, vertex.uv) * vertex.color;
 	
-    float2 randomValue = float2(vertex.uv.x + side, scanLine);
-
-    float scratch = _gorgonEffectTexture.Sample(_gorgonFilmGrainSampler, randomValue).x;
+	float2 randomValue = float2(vertex.uv.x + side, scanLine);
+	float scratch = _gorgonEffectTexture.Sample(_gorgonFilmGrainSampler, randomValue).x;
+    
     scratch = 2.0f * (scratch - filmGrainIntensity) / filmGrainScratchWidth;
     scratch = 1.0f - abs(1.0f - scratch);
     scratch = max(0,scratch);

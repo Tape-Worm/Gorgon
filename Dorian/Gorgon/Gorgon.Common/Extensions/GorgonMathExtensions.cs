@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.Xml.Schema;
 
 namespace GorgonLibrary.Math
 {
@@ -854,7 +855,9 @@ namespace GorgonLibrary.Math
         /// <returns>The floored value.</returns>
         public static float FastFloor(this float value)
         {
-            return (value > 0) ? (int)value : ((int)value) - 1;
+	        var result = (int)value;
+
+            return (value < result) ? result - 1 : result;
         }
 
         /// <summary>
@@ -864,7 +867,9 @@ namespace GorgonLibrary.Math
         /// <returns>The ceiling value.</returns>
         public static float FastCeiling(this float value)
         {
-            return (value < 0) ? (int)value : ((int)value) + 1;
+	        var result = (int)value;
+
+	        return (value > result) ? result + 1 : result;
         }
         #endregion
 	}

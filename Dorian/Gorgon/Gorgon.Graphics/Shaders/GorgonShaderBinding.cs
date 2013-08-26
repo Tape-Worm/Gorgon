@@ -37,6 +37,60 @@ using GorgonLibrary.Graphics.Properties;
 namespace GorgonLibrary.Graphics
 {
 	/// <summary>
+	/// Version for the shaders.
+	/// </summary>
+	public enum ShaderVersion
+	{
+		/// <summary>
+		/// Shader model 5.
+		/// </summary>
+		Version5 = 0,
+		/// <summary>
+		/// Shader model 4.
+		/// </summary>
+		Version4 = 1,
+		/// <summary>
+		/// Shader model 4, profile 1.
+		/// </summary>
+		Version4_1 = 2,
+		/// <summary>
+		/// Shader model 2, vertex shader profile a, pixel shader profile b.
+		/// </summary>
+		Version2A_B = 3
+	}
+
+	/// <summary>
+	/// Shader types.
+	/// </summary>
+	public enum ShaderType
+	{
+		/// <summary>
+		/// Vertex shader.
+		/// </summary>
+		Vertex = 0,
+		/// <summary>
+		/// Pixel shader.
+		/// </summary>
+		Pixel = 1,
+		/// <summary>
+		/// Geometry shader.
+		/// </summary>
+		Geometry = 2,
+		/// <summary>
+		/// Compute shader.
+		/// </summary>
+		Compute = 3,
+		/// <summary>
+		/// Domain shader.
+		/// </summary>
+		Domain = 4,
+		/// <summary>
+		/// Hull shader.
+		/// </summary>
+		Hull = 5
+	}
+
+	/// <summary>
 	/// Used to manage shader bindings and shader buffers.
 	/// </summary>
 	public sealed class GorgonShaderBinding
@@ -451,10 +505,13 @@ namespace GorgonLibrary.Graphics
 		/// <param name="name">Name of the shader object.</param>
 		/// <param name="entryPoint">Entry point method to call in the shader.</param>
 		/// <param name="shaderData">Array of bytes containing the shader data.</param>
+		/// <param name="macros">[Optional] A list of conditional compilation macros to apply to the shader.</param>
         /// <param name="isDebug">[Optional] TRUE to apply debug information, FALSE to exclude it.</param>
         /// <returns>The new shader loaded from the data stream.</returns>
 		/// <remarks>The <paramref name="isDebug"/> parameter is only applicable to source code shaders.
-        /// <para>This method should not be called from a deferred graphics context.</para>
+		/// <para>If the <paramref name="macros"/> parameter is not NULL (Nothing in VB.Net), then a list of conditional compilation macro #define symbols will be sent to the shader.  This 
+		/// is handy when you wish to exclude parts of a shader upon compilation.  Please note that this parameter is only used if the data in memory contains source code to compile.</para>
+		/// <para>This method should not be called from a deferred graphics context.</para>
 		/// </remarks>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="shaderData"/>, <paramref name="name"/> or <paramref name="entryPoint"/> parameters are NULL (Nothing in VB.Net).
 		/// </exception>
@@ -463,11 +520,11 @@ namespace GorgonLibrary.Graphics
 		/// <exception cref="System.TypeInitializationException">Thrown when the type of shader is unrecognized.</exception>
         /// <exception cref="GorgonLibrary.GorgonException">Thrown when the shader could not be created.</exception>
 #if DEBUG
-        public T FromMemory<T>(string name, string entryPoint, byte[] shaderData, bool isDebug = true)
+        public T FromMemory<T>(string name, string entryPoint, byte[] shaderData, IList<GorgonShaderMacro> macros = null, bool isDebug = true)
 #else
-        public T FromMemory<T>(string name, string entryPoint, byte[] shaderData, bool isDebug = false)
+        public T FromMemory<T>(string name, string entryPoint, byte[] shaderData, IList<GorgonShaderMacro> macros = null, bool isDebug = false)
 #endif
-            where T : GorgonShader
+ where T : GorgonShader
         {
             if (shaderData == null)
             {
@@ -476,7 +533,7 @@ namespace GorgonLibrary.Graphics
 
             using (var memoryStream = new GorgonDataStream(shaderData))
             {
-                return FromStream<T>(name, entryPoint, memoryStream, shaderData.Length, isDebug);
+                return FromStream<T>(name, entryPoint, memoryStream, shaderData.Length, macros, isDebug);
             }
         }
 
@@ -488,9 +545,12 @@ namespace GorgonLibrary.Graphics
 		/// <param name="entryPoint">Entry point method to call in the shader.</param>
 		/// <param name="stream">Stream to load the shader from.</param>
 		/// <param name="size">Size of the shader, in bytes.</param>
+		/// <param name="macros">[Optional] A list of conditional compilation macros to apply to the shader.</param>
         /// <param name="isDebug">[Optional] TRUE to apply debug information, FALSE to exclude it.</param>
         /// <returns>The new shader loaded from the data stream.</returns>
 		/// <remarks>The <paramref name="isDebug"/> parameter is only applicable to source code shaders.
+		/// <para>If the <paramref name="macros"/> parameter is not NULL (Nothing in VB.Net), then a list of conditional compilation macro #define symbols will be sent to the shader.  This 
+		/// is handy when you wish to exclude parts of a shader upon compilation.  Please note that this parameter is only used if the data in the stream contains source code to compile.</para>
 		/// <para>This method should not be called from a deferred graphics context.</para>
 		/// </remarks>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="stream"/>, <paramref name="name"/> or <paramref name="entryPoint"/> parameters are NULL (Nothing in VB.Net).
@@ -500,11 +560,11 @@ namespace GorgonLibrary.Graphics
 		/// <exception cref="System.TypeInitializationException">Thrown when the type of shader is unrecognized.</exception>
         /// <exception cref="GorgonLibrary.GorgonException">Thrown when the shader could not be created.</exception>
 #if DEBUG
-        public T FromStream<T>(string name, string entryPoint, Stream stream, int size, bool isDebug = true)
+        public T FromStream<T>(string name, string entryPoint, Stream stream, int size, IList<GorgonShaderMacro> macros = null, bool isDebug = true)
 #else
-        public T FromStream<T>(string name, string entryPoint, Stream stream, int size, bool isDebug = false)
+        public T FromStream<T>(string name, string entryPoint, Stream stream, int size, IList<GorgonShaderMacro> macros = null, bool isDebug = false)
 #endif
-            where T : GorgonShader
+ where T : GorgonShader
 		{
 			GorgonShader shader;
 			byte[] shaderData;
@@ -564,14 +624,14 @@ namespace GorgonLibrary.Graphics
 
 			if (isBinary)
 			{
-				shader = CreateShader<T>(name, entryPoint, string.Empty, isDebug);
+				shader = CreateShader<T>(name, entryPoint, string.Empty, null, isDebug);
 				shader.D3DByteCode = new Shaders.ShaderBytecode(shaderData);
 				shader.Initialize();
 			}
 			else
 			{
 				string sourceCode = Encoding.UTF8.GetString(shaderData);
-				shader = CreateShader<T>(name, entryPoint, sourceCode, isDebug);
+				shader = CreateShader<T>(name, entryPoint, sourceCode, macros, isDebug);
 			}
 
 			return (T)shader;
@@ -584,8 +644,11 @@ namespace GorgonLibrary.Graphics
 		/// <param name="name">Name of the shader object.</param>
 		/// <param name="entryPoint">Entry point method to call in the shader.</param>
 		/// <param name="fileName">File name and path to the shader file.</param>
+		/// <param name="macros">[Optional] A list of conditional compilation macros to apply to the shader.</param>
         /// <param name="isDebug">[Optional] TRUE to apply debug information, FALSE to exclude it.</param>
         /// <returns>The new shader loaded from the file.</returns>
+		/// <para>If the <paramref name="macros"/> parameter is not NULL (Nothing in VB.Net), then a list of conditional compilation macro #define symbols will be sent to the shader.  This 
+		/// is handy when you wish to exclude parts of a shader upon compilation.  Please note that this parameter is only used if the data in the file contains source code to compile.</para>
 		/// <remarks>The <paramref name="isDebug"/> parameter is only applicable to source code shaders.
         /// <para>This method should not be called from a deferred graphics context.</para>
 		/// </remarks>
@@ -595,11 +658,11 @@ namespace GorgonLibrary.Graphics
 		/// <exception cref="System.TypeInitializationException">Thrown when the type of shader is unrecognized.</exception>
         /// <exception cref="GorgonLibrary.GorgonException">Thrown when the shader could not be created.</exception>
 #if DEBUG
-        public T FromFile<T>(string name, string entryPoint, string fileName, bool isDebug = true)
+        public T FromFile<T>(string name, string entryPoint, string fileName, IList<GorgonShaderMacro> macros = null, bool isDebug = true)
 #else
-        public T FromFile<T>(string name, string entryPoint, string fileName, bool isDebug = false)
+        public T FromFile<T>(string name, string entryPoint, string fileName, IList<GorgonShaderMacro> macros = null, bool isDebug = false)
 #endif
-            where T : GorgonShader
+ where T : GorgonShader
 		{
 			FileStream stream = null;
 
@@ -616,7 +679,7 @@ namespace GorgonLibrary.Graphics
 			try
 			{
 				stream = File.Open(fileName, FileMode.Open, FileAccess.Read, FileShare.Read);
-                return FromStream<T>(name, entryPoint, stream, (int)stream.Length, isDebug);
+                return FromStream<T>(name, entryPoint, stream, (int)stream.Length, macros, isDebug);
 			}
 			finally
 			{
@@ -634,6 +697,7 @@ namespace GorgonLibrary.Graphics
 		/// <param name="name">Name of the shader.</param>
 		/// <param name="entryPoint">Name of the function serves as the entry point to the shader program.</param>
 		/// <param name="sourceCode">Source code for the shader.</param>
+		/// <param name="macros">[Optional] A list of conditional compilation macros to apply to the shader.</param>
 		/// <param name="debug">[Optional] TRUE to include debug information, FALSE to exclude.</param>
 		/// <returns>A new vertex shader.</returns>
 		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="name"/> or <paramref name="entryPoint"/> parameters are empty strings.</exception>
@@ -656,16 +720,18 @@ namespace GorgonLibrary.Graphics
         /// <para>Compute, Hull, and Domain shaders require a device with a feature level of SM5 or better.  Creation of these shaders on devices that do not have a feature level of SM5 or better will 
         /// generate an exception.</para>
         /// <para>If the DEBUG version of Gorgon is being used, then the <paramref name="debug"/> flag will be defaulted to TRUE, if the RELEASE version is used, then it will be defaulted to FALSE.</para>
-		/// <para>Do not use this method to create a <see cref="GorgonLibrary.Graphics.GorgonOutputGeometryShader">GorgonOutputGeometryShader</see> shader, use the <see cref="CreateShader(string, string, string, IList{GorgonStreamOutputElement}, IList{int}, int, bool)">overload</see> 
+        /// <para>If the <paramref name="macros"/> parameter is not NULL (Nothing in VB.Net), then a list of conditional compilation macro #define symbols will be sent to the shader.  This 
+        /// is handy when you wish to exclude parts of a shader upon compilation.  Please note that this parameter is only used if the <paramref name="sourceCode"/> parameter is not NULL or empty.</para>
+		/// <para>Do not use this method to create a <see cref="GorgonLibrary.Graphics.GorgonOutputGeometryShader">GorgonOutputGeometryShader</see> shader, use the <see cref="CreateShader(string, string, string, IList{GorgonStreamOutputElement}, IList{int}, int, IList{GorgonShaderMacro}, bool)">overload</see> 
 		/// instead.</para>
         /// <para>This method should not be called from a deferred graphics context.</para>
 		/// </remarks>
 #if DEBUG
-		public T CreateShader<T>(string name, string entryPoint, string sourceCode, bool debug = true)
+		public T CreateShader<T>(string name, string entryPoint, string sourceCode, IList<GorgonShaderMacro> macros = null, bool debug = true)
 #else
-        public T CreateShader<T>(string name, string entryPoint, string sourceCode, bool debug = false)
+        public T CreateShader<T>(string name, string entryPoint, string sourceCode, IList<GorgonShaderMacro> macros = null, bool debug = false)
 #endif
-            where T : GorgonShader
+ where T : GorgonShader
 		{
             if (_graphics.IsDeferred)
             {
@@ -712,7 +778,7 @@ namespace GorgonLibrary.Graphics
 			if (!string.IsNullOrWhiteSpace(sourceCode))
 			{
 				shader.SourceCode = sourceCode;
-				shader.Compile();
+				shader.Compile(macros);
 			}
 
 			_graphics.AddTrackedObject(shader);
@@ -729,6 +795,7 @@ namespace GorgonLibrary.Graphics
 		/// <param name="streamOutputElements">A list of layout elements to indicate how to organize the data in the buffer.</param>
 		/// <param name="bufferStrides">The size, in bytes, of an element in the buffer.</param>
         /// <param name="rasterizeStream">[Optional] The stream to send on to the rasterizer.</param>
+		/// <param name="macros">[Optional] A list of conditional compilation macros to apply to the shader.</param>
         /// <param name="debug">[Optional] TRUE to include debug information, FALSE to exclude.</param>
 		/// <returns>A new geometry shader that can stream output to a buffer.</returns>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/>, the <paramref name="entryPoint"/>, <paramref name="bufferStrides"/> or the <paramref name="streamOutputElements"/> parameters are NULL (Nothing in VB.Net).</exception>
@@ -741,16 +808,18 @@ namespace GorgonLibrary.Graphics
 		/// <para>
 		/// Up to four stream out buffers may be used at the same time to receive data.  Because of this, the <paramref name="bufferStrides"/> parameter should contain no more than 4 values.
 		/// </para>
-        /// <para>This method should not be called from a deferred graphics context.</para>
+		/// <para>If the <paramref name="macros"/> parameter is not NULL (Nothing in VB.Net), then a list of conditional compilation macro #define symbols will be sent to the shader.  This 
+		/// is handy when you wish to exclude parts of a shader upon compilation.  Please note that this parameter is only used if the <paramref name="sourceCode"/> parameter is not NULL or empty.</para>
+		/// <para>This method should not be called from a deferred graphics context.</para>
 		/// </remarks>
 #if DEBUG
 		public GorgonOutputGeometryShader CreateShader(string name, string entryPoint, string sourceCode, 
-		                                               IList<GorgonStreamOutputElement> streamOutputElements, IList<int> bufferStrides = null, int rasterizeStream = -1, bool debug = true)
+		                                               IList<GorgonStreamOutputElement> streamOutputElements, IList<int> bufferStrides = null, int rasterizeStream = -1, IList<GorgonShaderMacro> macros = null, bool debug = true)
 #else
 		public GorgonOutputGeometryShader CreateShader(string name, string entryPoint, string sourceCode,
-		                                               IList<GorgonStreamOutputElement> streamOutputElements, IList<int> bufferStrides = null, int rasterizeStream = -1, bool debug = false)
+		                                               IList<GorgonStreamOutputElement> streamOutputElements, IList<int> bufferStrides = null, int rasterizeStream = -1, IList<GorgonShaderMacro> macros = null, bool debug = false)
 #endif
-	    {
+		{
 	        bool autoStride = bufferStrides == null;
 
             if (_graphics.IsDeferred)
@@ -818,7 +887,7 @@ namespace GorgonLibrary.Graphics
 			if (!string.IsNullOrWhiteSpace(sourceCode))
 			{
 				result.SourceCode = sourceCode;
-				result.Compile();
+				result.Compile(macros);
 			}
 
 			_graphics.AddTrackedObject(result);

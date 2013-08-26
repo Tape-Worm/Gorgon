@@ -323,8 +323,8 @@ namespace GorgonLibrary.Graphics.Test
 				_balls[i].Position = new Vector3((GorgonRandom.RandomSingle() * 2.0f) - 1.0f, (GorgonRandom.RandomSingle() * 2.0f) - 1.0f, GorgonRandom.RandomSingle());
 			}
 
-			_vs = _graphics.Shaders.CreateShader<GorgonVertexShader>("TestVShader", "VS", _shader, true);
-			_ps = _graphics.Shaders.CreateShader<GorgonPixelShader>("TestPShader", "PS", _shader, true);
+			_vs = _graphics.Shaders.CreateShader<GorgonVertexShader>("TestVShader", "VS", _shader, null, true);
+			_ps = _graphics.Shaders.CreateShader<GorgonPixelShader>("TestPShader", "PS", _shader, null, true);
 
 			_layout = _graphics.Input.CreateInputLayout("Input", typeof(vertex), _vs);
 

@@ -32,11 +32,13 @@ namespace GorgonLibrary.Graphics
 	/// <summary>
 	/// An include file for a shader.
 	/// </summary>
-	/// <remarks>Use this object to load in #include definitions for a shader.  If the shader source contains an #include, it will try to locate that include file on the file system.  However, this does not work when the files are 
-	/// loaded from a stream object (it wouldn't know where to find the include file).  So to facilitate this, this object will contain the source for the include file and will be looked up -before- the file system is 
-	/// checked for the include file.
-	/// <para>Gorgon does not use the #include keyword for HLSL, Ss it will not interfere with it.  However a new keyword must be used: '#GorgonInclude "&lt;include name&gt;"[, "&lt;include path&gt;"]'.  This keyword takes 2 parameters 
-	/// unlike the 1 parameter for #include.  The first parameter is the name of the include file, this is defined by the user.  The second parameter is the path to the include file.  The first parameter is required, but the second is optional.</para>
+	/// <remarks>Use this object to load in included external functions for a shader.  If the shader source contains an #include, it will try to locate that include file on the file system.  However, this does not work 
+	/// when the files are loaded from a stream object (it wouldn't know where to find the include file).  So to facilitate this, this object will contain the source for the include file and will be looked up 
+	/// -before- the file system is checked for the include file.
+	/// <para>Gorgon does not use the #include keyword for HLSL, so it will not interfere with it and it will operate as expected.  However a new keyword must be used: 
+	/// '#GorgonInclude "&lt;include name&gt;"[, "&lt;include path&gt;"]'.  This keyword takes 2 parameters unlike the 1 parameter for #include.  The first parameter is the name of the include file, this is defined by 
+	/// the user and is the name of the include file in the <see cref="GorgonShaderBinding.IncludeFiles">include collection</see>. The second parameter is the path to the include file.  The first parameter is required, 
+	/// but the second is optional.</para>
 	/// <para>The include object is only for shaders with source code, therefore, the objects will be ignored when used with a binary shader.  Binary shaders should already have the required information in them.</para>
 	/// </remarks>
 	public struct GorgonShaderInclude
@@ -73,10 +75,7 @@ namespace GorgonLibrary.Graphics
 		/// </returns>
 		public override int GetHashCode()
 		{
-			unchecked
-			{
-				return 281.GenerateHash(Name).GenerateHash(SourceCodeFile);
-			}
+			return Name.GetHashCode();
 		}
 
 		/// <summary>
@@ -87,8 +86,7 @@ namespace GorgonLibrary.Graphics
 		/// <returns>TRUE if equal, FALSE if not.</returns>
 		public static bool Equals(ref GorgonShaderInclude left, ref GorgonShaderInclude right)
 		{
-			return (string.Equals(left.Name, right.Name, StringComparison.OrdinalIgnoreCase))
-			       && (string.Equals(left.SourceCodeFile, right.SourceCodeFile, StringComparison.CurrentCulture));
+			return (string.Equals(left.Name, right.Name, StringComparison.OrdinalIgnoreCase));
 		}
 
 		/// <summary>
@@ -137,8 +135,7 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		/// <param name="includeName">Name of the include file.</param>
 		/// <param name="includeSourceFile">The include source code file.</param>
-		/// <remarks>The <paramref name="includeSourceFile"/> can be set to NULL (Nothing in VB.Net) or empty if the include source code is already included in the 
-		/// <see cref="GorgonLibrary.Graphics.GorgonShaderBinding.IncludeFiles">IncludeFiles</see> collection.</remarks>
+		/// <remarks>The <paramref name="includeSourceFile"/> can be set to NULL (Nothing in VB.Net) or empty if the include line is pointing to a file.</remarks>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="includeName"/> parameters is NULL (Nothing in VB.Net).</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the includeName parameter is empty.</exception>
 		public GorgonShaderInclude(string includeName, string includeSourceFile)
