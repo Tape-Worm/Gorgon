@@ -27,7 +27,6 @@
 using System;
 using System.Runtime.InteropServices;
 using System.Text;
-using GorgonLibrary.IO;
 using GorgonLibrary.Math;
 using GorgonLibrary.Native;
 using GorgonLibrary.Graphics;
@@ -104,7 +103,7 @@ namespace GorgonLibrary.Renderers
 		private SepiaSettings _sepiaSettings;					// Settings for sepia tone.
 		private GorgonConstantBuffer _scratchBuffer;			// Constant buffer for scratch settings.
 		private GorgonConstantBuffer _sepiaBuffer;				// Constant buffer for sepia settings.
-		private float _noiseFrequency = 8.0f;					// Noise frequency.
+		private float _noiseFrequency = 42.0f;					// Noise frequency.
 		#endregion
 
 		#region Properties.
@@ -372,7 +371,7 @@ namespace GorgonLibrary.Renderers
 					textureSize = size;
 				}
 			}
-		    _noiseFrequency = 127.0f;
+		    
 			using(var image = new GorgonImageData(new GorgonTexture2DSettings
 			{
 				Width = textureSize,
@@ -390,22 +389,21 @@ namespace GorgonLibrary.Renderers
 					{
 						for (int x = 0; x < textureSize; ++x)
 						{
-							float simplexNoise = GorgonRandom.SimplexNoise(new Vector3(x * (1.0f / _noiseFrequency), y * (1.0f / _noiseFrequency), ((float)(x * y) / textureSize) * (1.0f / _noiseFrequency))) + 1.0f;
-						    simplexNoise *= 0.5f;
+							float simplexNoise = GorgonRandom.SimplexNoise(new Vector2(x * (1.0f / _noiseFrequency), y * (1.0f / _noiseFrequency)));
 
-							/*if (simplexNoise < -0.75f)
+							if (simplexNoise < -0.75f)
 							{
 								simplexNoise *= -1;
 							}
 							else
 							{
-								simplexNoise *= 0.85f;
+								simplexNoise *= 0.95f;
 							}
 
-							if (simplexNoise < 0.25f)
+							if (simplexNoise < 0.125f)
 							{
 								simplexNoise = 0.0f;
-							}*/
+							}
 
 							*(dataPtr++) = (byte)(simplexNoise * 255.0f);
 							
@@ -416,8 +414,8 @@ namespace GorgonLibrary.Renderers
 						}
 					}
 				}
+
 				_randomTexture = Graphics.Textures.CreateTexture<GorgonTexture2D>("Effect.OldFilm.RandomTexture", image);
-                _randomTexture.Save(@"c:\mike\unpak\save.dds", new GorgonCodecDDS());
 			}
 		}
 

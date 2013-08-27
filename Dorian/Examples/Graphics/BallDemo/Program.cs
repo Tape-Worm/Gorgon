@@ -279,22 +279,13 @@ namespace GorgonLibrary.Graphics.Example
 					_2D.Drawing.SmoothingMode = SmoothingMode.Smooth;
 					_2D.Drawing.Blit(_ballTarget, new RectangleF(Vector2.Zero, _2D.Effects.GaussianBlur.BlurRenderTargetsSize));
 				};
-
-
-				_2D.Effects.OldFilm.DirtAmount = 20;
-				_2D.Effects.OldFilm.DirtPercent = 15;
-				_2D.Effects.OldFilm.RenderScene = pass =>
-				{
-					// Copy the blur output to our main target.
-					_2D.Drawing.Blit(_2D.Effects.GaussianBlur.Output, new RectangleF(Vector2.Zero, new SizeF(_mainScreen.Settings.Width, _mainScreen.Settings.Height)));
-					_2D.Drawing.SmoothingMode = SmoothingMode.None;
-				};
 			}
 
-			_2D.Effects.OldFilm.Time += GorgonTiming.Delta;
 			_2D.Effects.GaussianBlur.Render();
 
-			_2D.Effects.OldFilm.Render();
+			// Copy the blur output to our main target.
+			_2D.Drawing.Blit(_2D.Effects.GaussianBlur.Output, new RectangleF(Vector2.Zero, new SizeF(_mainScreen.Settings.Width, _mainScreen.Settings.Height)));
+			_2D.Drawing.SmoothingMode = SmoothingMode.None;
 		}
 
 		/// <summary>
