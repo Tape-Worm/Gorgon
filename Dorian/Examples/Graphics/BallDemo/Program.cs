@@ -363,7 +363,7 @@ namespace GorgonLibrary.Graphics.Example
 			_form.Show();
 
 			// Create the graphics interface.
-			_graphics = new GorgonGraphics(DeviceFeatureLevel.SM4);
+			_graphics = new GorgonGraphics();
 
 			// Create the primary swap chain.
 			_mainScreen = _graphics.Output.CreateSwapChain("MainScreen", new GorgonSwapChainSettings

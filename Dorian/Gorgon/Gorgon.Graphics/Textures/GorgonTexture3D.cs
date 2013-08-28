@@ -205,8 +205,56 @@ namespace GorgonLibrary.Graphics
 
 			return OnGetUnorderedAccessView(format, mipStart, depthStart, depthCount);
 		}
-		
-		/// <summary>
+
+        /// <summary>
+        /// Function to convert a pixel space coordinate into a texel space coordinate.
+        /// </summary>
+        /// <param name="x">The horizontal location to convert.</param>
+        /// <param name="y">The vertical location to convert.</param>
+        /// <param name="z">The depth location to convert.</param>
+        /// <returns>The converted coordinate.</returns>
+        public Vector3 ToTexel(float x, float y, float z)
+        {
+            return new Vector3(x / Settings.Width, y / Settings.Height, z / Settings.Depth);
+        }
+
+        /// <summary>
+        /// Function to convert a texel space coordinate into a pixel space coordinate.
+        /// </summary>
+        /// <param name="tu">The horizontal location to convert.</param>
+        /// <param name="tv">The vertical location to convert.</param>
+        /// <param name="tw">The depth location to convert.</param>
+        /// <returns>The converted coordinate.</returns>
+        public Vector3 ToPixel(float tu, float tv, float tw)
+        {
+            return new Vector3(tu * Settings.Width, tv * Settings.Height, tw * Settings.Depth);
+        }
+
+        /// <summary>
+        /// Function to convert a pixel space coordinate into a texel space coordinate.
+        /// </summary>
+        /// <param name="x">The horizontal location to convert.</param>
+        /// <param name="y">The vertical location to convert.</param>
+        /// <param name="z">The depth location to convert.</param>
+        /// <param name="texel">The resulting texel coordinate.</param>
+        public void ToTexel(float x, float y, float z, out Vector3 texel)
+        {
+            texel = new Vector3(x / Settings.Width, y / Settings.Height, z / Settings.Depth);
+        }
+
+        /// <summary>
+        /// Function to convert a texel space coordinate into a pixel space coordinate.
+        /// </summary>
+        /// <param name="tu">The horizontal location to convert.</param>
+        /// <param name="tv">The vertical location to convert.</param>
+        /// <param name="tw">The depth location to convert.</param>
+        /// <param name="pixel">The resulting pixel coordinate.</param>
+        public void ToPixel(float tu, float tv, float tw, out Vector3 pixel)
+        {
+            pixel = new Vector3(tu * Settings.Width, tv * Settings.Height, tw * Settings.Depth);
+        }
+
+        /// <summary>
 		/// Function to convert a texel space coordinate into a pixel space coordinate.
 		/// </summary>
 		/// <param name="texel">The texel coordinate to convert.</param>
@@ -221,18 +269,8 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		/// <param name="pixel">The pixel coordinate to convert.</param>
 		/// <returns>The texel space location of the pixel on the texture.</returns>
-		/// <exception cref="System.DivideByZeroException">Thrown when the texture width, height or depth is equal to 0.</exception>
 		public Vector3 ToTexel(Vector3 pixel)
 		{
-#if DEBUG
-			if ((Settings.Width == 0)
-			    || (Settings.Height == 0)
-			    || (Settings.Depth == 0))
-			{
-				throw new DivideByZeroException();
-			}
-#endif
-
 			return new Vector3(pixel.X / Settings.Width, pixel.Y / Settings.Height, pixel.Z / Settings.Depth);
 		}
 

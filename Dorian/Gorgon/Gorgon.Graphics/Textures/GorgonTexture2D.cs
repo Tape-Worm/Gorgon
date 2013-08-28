@@ -195,6 +195,50 @@ namespace GorgonLibrary.Graphics
 		{
 			return OnGetUnorderedAccessView(format, mipStart, arrayStart, arrayCount);
 		}
+
+        /// <summary>
+        /// Function to convert a pixel space coordinate into a texel space coordinate.
+        /// </summary>
+        /// <param name="x">The horizontal location to convert.</param>
+        /// <param name="y">The vertical location to convert.</param>
+        /// <returns>The converted coordinate.</returns>
+	    public Vector2 ToTexel(float x, float y)
+	    {
+            return new Vector2(x / Settings.Width, y / Settings.Height);
+	    }
+
+        /// <summary>
+        /// Function to convert a texel space coordinate into a pixel space coordinate.
+        /// </summary>
+        /// <param name="tu">The horizontal location to convert.</param>
+        /// <param name="tv">The vertical location to convert.</param>
+        /// <returns>The converted coordinate.</returns>
+        public Vector2 ToPixel(float tu, float tv)
+        {
+            return new Vector2(tu * Settings.Width, tv * Settings.Height);
+        }
+
+        /// <summary>
+        /// Function to convert a pixel space coordinate into a texel space coordinate.
+        /// </summary>
+        /// <param name="x">The horizontal location to convert.</param>
+        /// <param name="y">The vertical location to convert.</param>
+        /// <param name="texel">The resulting texel space coordinate.</param>
+        public void ToTexel(float x, float y, out Vector2 texel)
+        {
+            texel = new Vector2(x / Settings.Width, y / Settings.Height);
+        }
+
+        /// <summary>
+        /// Function to convert a texel space coordinate into a pixel space coordinate.
+        /// </summary>
+        /// <param name="tu">The horizontal location to convert.</param>
+        /// <param name="tv">The vertical location to convert.</param>
+        /// <param name="pixel">The resulting pixel space coordinate.</param>
+        public void ToPixel(float tu, float tv, out Vector2 pixel)
+        {
+            pixel = new Vector2(tu * Settings.Width, tv * Settings.Height);
+        }
 		
 		/// <summary>
 		/// Function to convert a texel space coordinate into a pixel space coordinate.
