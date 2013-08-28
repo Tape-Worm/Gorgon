@@ -57,6 +57,10 @@ namespace GorgonLibrary.Examples
 		#endregion
 
 		#region Variables.
+		private static GorgonColor _normalButtonState = Color.FromArgb(96, Color.Black);		// Normal button state.
+		private static GorgonColor _minButtonState = Color.FromArgb(255, Color.DarkGray);		// Minimize button hover state.
+		private static GorgonColor _closeButtonState = Color.FromArgb(255, Color.DarkRed);		// Close button hover state.
+
 		private static formMain _form;												// The application form.
 		private static GorgonGraphics _graphics;									// The graphics interface.
 		private static GorgonSwapChain _screen;										// Main screen.
@@ -69,7 +73,10 @@ namespace GorgonLibrary.Examples
 		private static GorgonTexture2D _logo;										// Logo texture.
 		private static GorgonSprite _logoSprite;									// Logo sprite.
 		private static GorgonTimer _timer;											// Timer.
-		private static float _startTime;											// Start time.
+		private static float _startTime = -1.0f;									// Start time.
+		private static Func<bool> _renderAction;									// Action for rendering.
+		private static GorgonFont _marlettFont;										// Marlett font.
+		private static GorgonFont _windowFont;										// Window font.
 		#endregion
 
 		#region Properties.
@@ -124,7 +131,8 @@ namespace GorgonLibrary.Examples
 		/// <summary>
 		/// Function to draw the logo for the application.
 		/// </summary>
-		private static void DrawLogo()
+		/// <returns>TRUE if done, FALSE if not.</returns>
+		private static bool FadeInLogo()
 		{
 			if (_logoSprite.Opacity < 1)
 			{
@@ -137,10 +145,11 @@ namespace GorgonLibrary.Examples
 				_renderer.Effects.Wave.Period -= GorgonTiming.Delta * (1.0f / _screen.Settings.Height);
 				_renderer.Effects.Wave.Render();
 
-				if (!(_renderer.Effects.Wave.Length < 0.01f))
+				if (_renderer.Effects.Wave.Length >= 0.01f)
 				{
-					return;
+					return false;
 				}
+
 				_timer.Reset();
 				_renderer.Effects.Wave.Length = 0.0f;
 			}
@@ -148,51 +157,69 @@ namespace GorgonLibrary.Examples
 			{
 				_logoSprite.Draw();
 
-				if (!(_timer.Seconds > 1))
+				if (_timer.Seconds < 1)
 				{
-					return;
+					return false;
 				}
 
 				_timer.Reset();
-				_currentState = ProgramState.MainExecution;
+				return true;
 			}
+
+			return false;
+		}
+		
+		/// <summary>
+		/// Function to move the logo.
+		/// </summary>
+		/// <returns>TRUE if finished, FALSE if not.</returns>
+		private static bool MoveLogo()
+		{
+			if (_startTime < 0)
+			{
+				_startTime = GorgonTiming.SecondsSinceStart;
+			}
+
+			float time = (GorgonTiming.SecondsSinceStart - _startTime) / 1.25f;
+
+			if (time > 1.0f)
+			{
+				time = 1.0f;
+			}
+
+			var startPosition = new Vector2(_screen.Settings.Width / 2.0f - _logo.Settings.Width / 2.0f,
+				_screen.Settings.Height / 2.0f - _logo.Settings.Height / 2.0f);
+			var startSize = new Vector2(653, 156);
+			var endSize = new Vector2(256, 61);
+			var endPosition = new Vector2(_screen.Settings.Width - 256, _screen.Settings.Height - 64);
+
+			_logoSprite.ScaledSize = startSize + ((endSize - startSize) * time);
+			_logoSprite.Position = startPosition + ((endPosition - startPosition) * time);
+
+			_logoSprite.Draw();
+
+			return time >= 1.0f;
 		}
 
 		/// <summary>
-		/// Function to update the main user interface.
+		/// Function to fade out the logo.
 		/// </summary>
-		private static void UpdateMainUI()
+		private static void FadeOutLogo()
 		{
-			float time = (GorgonTiming.SecondsSinceStart - _startTime) / 1.25f;
-
-			if (time <= 1.0f)
+			if (!_renderer.IsLogoVisible)
 			{
-				var startPosition = new Vector2(_screen.Settings.Width / 2.0f - _logo.Settings.Width / 2.0f,
-					_screen.Settings.Height / 2.0f - _logo.Settings.Height / 2.0f);
-				var startSize = new Vector2(653, 156);
-				var endSize = new Vector2(256, 61);
-				var endPosition = new Vector2(_screen.Settings.Width - 256, _screen.Settings.Height - 64);
+				_renderer.IsLogoVisible = true;
+			}
 
-				_logoSprite.ScaledSize = startSize + ((endSize - startSize) * time);
-				_logoSprite.Position = startPosition + ((endPosition - startPosition) * time);
-
+			if (_logoSprite.Opacity > 0)
+			{
+				_logoSprite.Opacity -= GorgonTiming.Delta * 0.75f;
 				_logoSprite.Draw();
+				return;
 			}
-			else
-			{
-				if (!_renderer.IsLogoVisible)
-				{
-					_renderer.IsLogoVisible = true;
-				}
 
-			    if (!(_logoSprite.Opacity > 0))
-			    {
-			        return;
-			    }
-
-			    _logoSprite.Opacity -= GorgonTiming.Delta * 0.75f;
-			    _logoSprite.Draw();
-			}
+			
+			_currentState = ProgramState.MainExecution;
 		}
 
 		/// <summary>
@@ -222,18 +249,57 @@ namespace GorgonLibrary.Examples
 			switch (_currentState)
 			{
 				case ProgramState.DrawLogo:
-					DrawLogo();
+					bool result = _renderAction != null && _renderAction();
+
+					if ((result) && (_renderAction == FadeInLogo))
+					{
+						_renderAction = MoveLogo;
+					}
+					else if ((result && (_renderAction == MoveLogo)))
+					{
+						_renderAction = null;
+					} 
+					else if (_renderAction == null)
+					{
+						FadeOutLogo();
+					}
 					break;
 				case ProgramState.MainExecution:
-					if (_startTime.EqualsEpsilon(0))
+					// TODO: This is an experiment, and thus, awful code.
+					var minButtonLocation = new RectangleF(_screen.Settings.Width - 86, 0, 43, 19);
+					var closeButtonLocation = new RectangleF(_screen.Settings.Width - 43, 0, 43, 19);
+
+					Vector2 textSize = _renderer.Drawing.MeasureString(_windowFont,
+						"Gorgon Demos/Examples",
+						false,
+						new RectangleF(0, 0, _screen.Settings.Width, closeButtonLocation.Height));
+
+					
+					_renderer.Drawing.FilledRectangle(new RectangleF(0, 0, _screen.Settings.Width, closeButtonLocation.Height), _normalButtonState);
+
+					Point position = Cursor.Position;
+					position.X -= _screen.VideoOutput.OutputBounds.X;
+					
+					if (minButtonLocation.Contains(position))
 					{
-						_startTime = GorgonTiming.SecondsSinceStart;
+						_renderer.Drawing.FilledRectangle(minButtonLocation, _minButtonState);
 					}
 
-					UpdateMainUI();
+					if (closeButtonLocation.Contains(position))
+					{
+						_renderer.Drawing.FilledRectangle(closeButtonLocation, _closeButtonState);
+					}
+					
+					_renderer.Drawing.DrawString(_marlettFont, "0", new Vector2(_screen.Settings.Width - 72, 2), Color.White);
+					_renderer.Drawing.DrawString(_marlettFont, "r", new Vector2(_screen.Settings.Width - 31, 2), Color.White);
+					_renderer.Drawing.DrawString(_windowFont, "Gorgon Demos/Examples", new Vector2(_screen.Settings.Width / 2.0f - textSize.X / 2.0f, -3), Color.White);
+
+					_renderer.Drawing.DrawString(_windowFont, minButtonLocation.ToString(), new Vector2(0, 84), Color.White);
+					_renderer.Drawing.DrawString(_windowFont, closeButtonLocation.ToString(), new Vector2(0, 104), Color.White);
 					break;
 			}
 
+			_renderer.Drawing.DrawString(_windowFont, Cursor.Position.ToString(), new Vector2(0, 64), Color.White);
 			_renderer.Render(1);
 
 			return true;
@@ -249,11 +315,11 @@ namespace GorgonLibrary.Examples
 			IntPtr screenHWND = GetDesktopWindow();
 			IntPtr screenDC = GetWindowDC(screenHWND);
 			IntPtr destDC = CreateCompatibleDC(screenDC);
-			IntPtr bitmap = CreateCompatibleBitmap(screenDC, currentScreen.Bounds.Width, currentScreen.Bounds.Height);
+			IntPtr bitmap = CreateCompatibleBitmap(screenDC, currentScreen.Bounds.Width, currentScreen.WorkingArea.Height);
 			IntPtr prevDC = SelectObject(destDC, bitmap);
 
 			// Copy to the bitmap.
-			BitBlt(destDC, 0, 0, currentScreen.Bounds.Width, currentScreen.Bounds.Height, screenDC, currentScreen.Bounds.X,
+			BitBlt(destDC, 0, 0, currentScreen.Bounds.Width, currentScreen.WorkingArea.Height, screenDC, currentScreen.Bounds.X,
 				currentScreen.Bounds.Y, SrcCopy);
 
 			SelectObject(destDC, prevDC);
@@ -315,6 +381,29 @@ namespace GorgonLibrary.Examples
 			using(Image backgroundImage = CaptureScreen())
 			{
 				_originalBackground = _graphics.Textures.CreateTexture<GorgonTexture2D>("BackgroundImage", backgroundImage);
+
+				_marlettFont = _graphics.Fonts.CreateFont("Marlett",
+					new GorgonFontSettings
+					{
+						FontFamilyName = "Marlett",
+						Size = 11.25f,
+						AntiAliasingMode = FontAntiAliasMode.AntiAliasHQ,
+						FontHeightMode = FontHeightMode.Points,
+						TextureSize = new Size(64, 32),
+						Characters = "0r "
+					});
+
+				_windowFont = _graphics.Fonts.CreateFont("Segoe UI",
+					new GorgonFontSettings
+					{
+						FontFamilyName = "Segoe UI",
+						FontStyle = FontStyle.Bold,
+						OutlineColor = Color.Black,
+						OutlineSize = 1,
+						Size = 11.25f,
+						AntiAliasingMode = FontAntiAliasMode.AntiAliasHQ,
+						FontHeightMode = FontHeightMode.Points
+					});
 			
 				_blurBackground = _graphics.Output.CreateRenderTarget("BlurSourceImage",
 					new GorgonRenderTarget2DSettings
@@ -379,6 +468,50 @@ namespace GorgonLibrary.Examples
                 _renderer.Effects.Wave.RenderScene = pass => _logoSprite.Draw();
 
 				_timer = new GorgonTimer();
+				_renderAction = FadeInLogo;
+
+				_form.MouseDoubleClick += OnFormOnMouseDoubleClick;
+				_form.KeyDown += OnFormOnKeyDown;
+			}
+		}
+
+		/// <summary>
+		/// Function to handle key presses on the form.
+		/// </summary>
+		/// <param name="sender">The sender.</param>
+		/// <param name="args">The <see cref="KeyEventArgs"/> instance containing the event data.</param>
+		private static void OnFormOnKeyDown(object sender, KeyEventArgs args)
+		{
+			if ((_currentState != ProgramState.MainExecution) && ((args.KeyCode == Keys.Space)
+			    || (args.KeyCode == Keys.Escape)
+			    || (args.KeyCode == Keys.Enter)))
+			{
+				OnFormOnMouseDoubleClick(sender, new MouseEventArgs(MouseButtons.None, 0, 0, 0, 0));
+				return;
+			}
+
+			switch (args.KeyCode)
+			{
+				case Keys.Escape:
+					Gorgon.Quit();
+					return;
+			}
+		}
+
+		/// <summary>
+		/// Function to handle a double click on the form to stop the animation.
+		/// </summary>
+		/// <param name="sender">The sender.</param>
+		/// <param name="args">The <see cref="MouseEventArgs"/> instance containing the event data.</param>
+		private static void OnFormOnMouseDoubleClick(object sender, MouseEventArgs args)
+		{
+			if (_currentState != ProgramState.MainExecution)
+			{
+				_blurSprite.Opacity = 1;
+				_backgroundSprite.Opacity = 0;
+				_logoSprite.Opacity = 0;
+				_renderer.IsLogoVisible = true;
+				_currentState = ProgramState.MainExecution;
 			}
 		}
 		#endregion
@@ -394,12 +527,20 @@ namespace GorgonLibrary.Examples
 
 			try
 			{
+				Gorgon.AllowBackground = true;
+
+				Screen currentScreen = Screen.FromPoint(Cursor.Position);
+
 				_form = new formMain
 				{
-					Location = Cursor.Position
+					Location = currentScreen.WorkingArea.Location,
+					Size = currentScreen.WorkingArea.Size,
+					Visible = true,
+					Opacity = 0
 				};
 
 				Initialize();
+				
 
 				Gorgon.Run(_form, Idle);
 			}
