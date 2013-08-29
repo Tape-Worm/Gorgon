@@ -26,7 +26,7 @@
 
 using System;
 using System.Drawing;
-using System.Runtime.InteropServices;
+using System.Drawing.Imaging;
 using System.Windows.Forms;
 using GorgonLibrary.Diagnostics;
 using GorgonLibrary.IO;
@@ -52,13 +52,9 @@ namespace GorgonLibrary.Examples
 	/// </summary>
 	static class Program
 	{
-		#region Constants.
-		private const int SrcCopy = 0x00CC0020; // BitBlt dwRop parameter
-		#endregion
-
 		#region Variables.
-	    private static GorgonColor _minButtonState = Color.FromArgb(128, Color.Black);		// Minimize button hover state.
-		private static GorgonColor _closeButtonState = Color.FromArgb(128, Color.Red);		// Close button hover state.
+	    private static readonly GorgonColor _minButtonState = Color.FromArgb(128, Color.Black);		// Minimize button hover state.
+		private static readonly GorgonColor _closeButtonState = Color.FromArgb(128, Color.Red);		// Close button hover state.
 
 		private static formMain _form;												// The application form.
 		private static GorgonGraphics _graphics;									// The graphics interface.
@@ -71,7 +67,6 @@ namespace GorgonLibrary.Examples
 		private static GorgonTexture2D _originalBackground;							// Original unblurred background image.
 		private static GorgonTexture2D _logo;										// Logo texture.
 		private static GorgonSprite _logoSprite;									// Logo sprite.
-		private static GorgonTimer _timer;											// Timer.
 		private static float _startTime = -1.0f;									// Start time.
 		private static Func<bool> _renderAction;									// Action for rendering.
 		private static GorgonFont _marlettFont;										// Marlett font.
@@ -87,27 +82,6 @@ namespace GorgonLibrary.Examples
 		#endregion
 
 		#region Methods.
-		#region Win32
-		[DllImport("gdi32.dll")]
-		private static extern bool BitBlt(IntPtr hObject, int nXDest, int nYDest, int nWidth, int nHeight, IntPtr hObjectSource, int nXSrc, int nYSrc, int dwRop);
-		[DllImport("gdi32.dll")]
-		private static extern IntPtr CreateCompatibleBitmap(IntPtr hDC, int nWidth, int nHeight);
-		[DllImport("gdi32.dll")]
-		private static extern IntPtr CreateCompatibleDC(IntPtr hDC);
-		[DllImport("gdi32.dll")]
-		private static extern bool DeleteDC(IntPtr hDC);
-		[DllImport("gdi32.dll")]
-		private static extern bool DeleteObject(IntPtr hObject);
-		[DllImport("gdi32.dll")]
-		private static extern IntPtr SelectObject(IntPtr hDC, IntPtr hObject);
-        [DllImport("user32.dll")]
-        private static extern IntPtr GetDesktopWindow();
-        [DllImport("user32.dll")]
-        private static extern IntPtr GetWindowDC(IntPtr hWnd);
-        [DllImport("user32.dll")]
-        private static extern IntPtr ReleaseDC(IntPtr hWnd,IntPtr hDC);
-		#endregion
-
 		/// <summary>
 		/// Function to perform a fading in of the background.
 		/// </summary>
@@ -126,10 +100,7 @@ namespace GorgonLibrary.Examples
 				_backgroundSprite.Draw();
 			}
 
-			if (_blurSprite.Opacity > 0.10f)
-			{
-				_currentState = ProgramState.DrawLogo;
-			}
+			_currentState = ProgramState.DrawLogo;
 		}
 
 		/// <summary>
@@ -138,39 +109,20 @@ namespace GorgonLibrary.Examples
 		/// <returns>TRUE if done, FALSE if not.</returns>
 		private static bool FadeInLogo()
 		{
+			_logoSprite.Opacity = _blurSprite.Opacity;
+			_logoSprite.Draw();
+
 			if (_logoSprite.Opacity < 1)
 			{
-				_logoSprite.Opacity += GorgonTiming.Delta * 0.25f;
+				return false;
 			}
 
-			if (_renderer.Effects.Wave.Length > 0)
+			if (_startTime < 0)
 			{
-				_renderer.Effects.Wave.Length -= GorgonTiming.Delta * _renderer.Effects.Wave.Length;
-				_renderer.Effects.Wave.Period -= GorgonTiming.Delta * (1.0f / _screen.Settings.Height);
-				_renderer.Effects.Wave.Render();
-
-				if (_renderer.Effects.Wave.Length >= 0.01f)
-				{
-					return false;
-				}
-
-				_timer.Reset();
-				_renderer.Effects.Wave.Length = 0.0f;
-			}
-			else
-			{
-				_logoSprite.Draw();
-
-				if (_timer.Seconds < 1)
-				{
-					return false;
-				}
-
-				_timer.Reset();
-				return true;
+				_startTime = GorgonTiming.SecondsSinceStart;
 			}
 
-			return false;
+			return (GorgonTiming.SecondsSinceStart - _startTime) > 1;
 		}
 		
 		/// <summary>
@@ -184,7 +136,7 @@ namespace GorgonLibrary.Examples
 				_startTime = GorgonTiming.SecondsSinceStart;
 			}
 
-			float time = (GorgonTiming.SecondsSinceStart - _startTime) / 1.25f;
+			float time = (GorgonTiming.SecondsSinceStart - _startTime) / 0.125f;
 
 			if (time > 1.0f)
 			{
@@ -217,7 +169,7 @@ namespace GorgonLibrary.Examples
 
 			if (_logoSprite.Opacity > 0)
 			{
-				_logoSprite.Opacity -= GorgonTiming.Delta * 0.75f;
+				_logoSprite.Opacity -= GorgonTiming.Delta * 1.5f;
 				_logoSprite.Draw();
 				return;
 			}
@@ -269,6 +221,7 @@ namespace GorgonLibrary.Examples
 
 					if ((result) && (_renderAction == FadeInLogo))
 					{
+						_startTime = -1;
 						_renderAction = MoveLogo;
 					}
 					else if ((result && (_renderAction == MoveLogo)))
@@ -330,7 +283,7 @@ namespace GorgonLibrary.Examples
 
 			_renderer.Drawing.DrawString(_windowFont, Cursor.Position.ToString(), new Vector2(500, 64), Color.White);
             _renderer.Drawing.DrawString(_windowFont, string.Format("{0:0.0}", GorgonTiming.FPS), new Vector2(0, _screen.Settings.Height - 20), Color.White);
-			_renderer.Render(1);
+			_renderer.Render();
 
 			return true;
 		}
@@ -342,22 +295,11 @@ namespace GorgonLibrary.Examples
 		private static Image CaptureScreen()
 		{
 			Screen currentScreen = Screen.FromControl(_form);
-			IntPtr screenHWND = GetDesktopWindow();
-			IntPtr screenDC = GetWindowDC(screenHWND);
-			IntPtr destDC = CreateCompatibleDC(screenDC);
-			IntPtr bitmap = CreateCompatibleBitmap(screenDC, currentScreen.Bounds.Width, currentScreen.WorkingArea.Height);
-			IntPtr prevDC = SelectObject(destDC, bitmap);
-
-			// Copy to the bitmap.
-			BitBlt(destDC, 0, 0, currentScreen.Bounds.Width, currentScreen.WorkingArea.Height, screenDC, currentScreen.Bounds.X,
-				currentScreen.Bounds.Y, SrcCopy);
-
-			SelectObject(destDC, prevDC);
-			DeleteDC(destDC);
-			ReleaseDC(screenHWND, screenDC);
-
-			Image result = Image.FromHbitmap(bitmap);
-			DeleteObject(bitmap);
+			Image result = new Bitmap(currentScreen.Bounds.Width, currentScreen.WorkingArea.Height, PixelFormat.Format32bppArgb);
+			using(var g = System.Drawing.Graphics.FromImage(result))
+			{
+				g.CopyFromScreen(currentScreen.Bounds.Left, currentScreen.Bounds.Top, 0, 0, new Size(currentScreen.Bounds.Width, currentScreen.WorkingArea.Height));
+			}
 
 			return result;
 		}
@@ -365,30 +307,43 @@ namespace GorgonLibrary.Examples
 		/// <summary>
 		/// Function to blur the background image.
 		/// </summary>
-		/// <param name="sourceImage">The image used to blur.</param>
-		private static void BlurBackground(GorgonTexture2D sourceImage)
+		private static void BlurBackground()
 		{
-            _renderer.Effects.GrayScale.RenderScene = pass =>
-            {
-                _renderer.Target = _blurBackground;
-                _renderer.Drawing.Blit(sourceImage, new RectangleF(0, 0, _blurBackground.Settings.Width, _blurBackground.Settings.Height));
-            };
+			using(Image backgroundImage = CaptureScreen())
+			{
+				if (_originalBackground != null)
+				{
+					_originalBackground.Dispose();
+					_originalBackground = null;
+				}
+				
+				_originalBackground = _graphics.Textures.CreateTexture<GorgonTexture2D>("BackgroundImage", backgroundImage);
+				_backgroundSprite.Texture = _originalBackground;
 
-            _renderer.Effects.GrayScale.Render();
+				_renderer.Effects.GrayScale.RenderScene = pass =>
+				{
+					_renderer.Target = _blurBackground;
+					_renderer.Drawing.Blit(_originalBackground,
+						new RectangleF(0, 0, _blurBackground.Settings.Width, _blurBackground.Settings.Height));
+				};
 
-            // Blur to the output.
-            _renderer.Effects.GaussianBlur.BlurRenderTargetsSize = new Size(_blurBackground.Settings.Width, _blurBackground.Settings.Height);
-            _renderer.Effects.GaussianBlur.BlurAmount = 4.5f;
-            _renderer.Effects.GaussianBlur.RenderScene = pass => _renderer.Drawing.Blit(_blurBackground, Vector2.Zero);
-            _renderer.Effects.GaussianBlur.Render();
+				_renderer.Effects.GrayScale.Render();
 
-		    _renderer.Target = _blurBackground;
-            _renderer.Drawing.Blit(_renderer.Effects.GaussianBlur.Output, new RectangleF(0, 0, _blurBackground.Settings.Width, _blurBackground.Settings.Height));
-		    _renderer.Target = null;
+				// Blur to the output.
+				_renderer.Effects.GaussianBlur.BlurRenderTargetsSize = new Size(_blurBackground.Settings.Width,
+					_blurBackground.Settings.Height);
+				_renderer.Effects.GaussianBlur.BlurAmount = 4.5f;
+				_renderer.Effects.GaussianBlur.RenderScene = pass => _renderer.Drawing.Blit(_blurBackground, Vector2.Zero);
+				_renderer.Effects.GaussianBlur.Render();
 
-            _renderer.Effects.GaussianBlur.FreeResources();
+				_renderer.Target = _blurBackground;
+				_renderer.Drawing.Blit(_renderer.Effects.GaussianBlur.Output,
+					new RectangleF(0, 0, _blurBackground.Settings.Width, _blurBackground.Settings.Height));
+				_renderer.Drawing.FilledRectangle(new RectangleF(0, 0, _blurBackground.Settings.Width, _blurBackground.Settings.Height), Color.FromArgb(132, Color.LightBlue));
+				_renderer.Target = null;
 
-            _blurSprite.Opacity = 0;
+				_renderer.Effects.GaussianBlur.FreeResources();
+			}
 		}
 			
 		/// <summary>
@@ -400,176 +355,179 @@ namespace GorgonLibrary.Examples
 
 			_graphics = new GorgonGraphics();
 
-			using(Image backgroundImage = CaptureScreen())
-			{
-				_originalBackground = _graphics.Textures.CreateTexture<GorgonTexture2D>("BackgroundImage", backgroundImage);
+			_marlettFont = _graphics.Fonts.CreateFont("Marlett",
+				new GorgonFontSettings
+				{
+					FontFamilyName = "Marlett",
+					Size = 11.25f,
+					AntiAliasingMode = FontAntiAliasMode.AntiAliasHQ,
+					FontHeightMode = FontHeightMode.Points,
+					TextureSize = new Size(64, 32),
+					Characters = "0r "
+				});
 
-				_marlettFont = _graphics.Fonts.CreateFont("Marlett",
-					new GorgonFontSettings
-					{
-						FontFamilyName = "Marlett",
-						Size = 11.25f,
-						AntiAliasingMode = FontAntiAliasMode.AntiAliasHQ,
-						FontHeightMode = FontHeightMode.Points,
-						TextureSize = new Size(64, 32),
-						Characters = "0r "
-					});
-
-				_windowFont = _graphics.Fonts.CreateFont("Segoe UI",
-					new GorgonFontSettings
-					{
-						FontFamilyName = "Segoe UI",
-						FontStyle = FontStyle.Bold,
-						OutlineColor = Color.FromArgb(96, Color.Black),
-						OutlineSize = 1,
-						Size = 11.25f,
-						AntiAliasingMode = FontAntiAliasMode.AntiAliasHQ,
-						FontHeightMode = FontHeightMode.Points
-					});
+			_windowFont = _graphics.Fonts.CreateFont("Segoe UI",
+				new GorgonFontSettings
+				{
+					FontFamilyName = "Segoe UI",
+					FontStyle = FontStyle.Bold,
+					OutlineColor = Color.FromArgb(96, Color.Black),
+					OutlineSize = 1,
+					Size = 11.25f,
+					AntiAliasingMode = FontAntiAliasMode.AntiAliasHQ,
+					FontHeightMode = FontHeightMode.Points
+				});
 			
-				_blurBackground = _graphics.Output.CreateRenderTarget("BlurSourceImage",
-					new GorgonRenderTarget2DSettings
-					{
-						Width = _form.Width / 2,
-						Height = _form.Height / 2,
-						Format = BufferFormat.R8G8B8A8_UIntNormal
-					});
+			_blurBackground = _graphics.Output.CreateRenderTarget("BlurSourceImage",
+				new GorgonRenderTarget2DSettings
+				{
+					Width = _form.Width / 2,
+					Height = _form.Height / 2,
+					Format = BufferFormat.R8G8B8A8_UIntNormal
+				});
 
-				_screen = _graphics.Output.CreateSwapChain("Screen",
-					new GorgonSwapChainSettings
-					{
-						Window = _form,
-						Format = BufferFormat.R8G8B8A8_UIntNormal,
-						IsWindowed = true
-					});
+			_screen = _graphics.Output.CreateSwapChain("Screen",
+				new GorgonSwapChainSettings
+				{
+					Window = _form,
+					Format = BufferFormat.R8G8B8A8_UIntNormal,
+					IsWindowed = true
+				});
 
-				_renderer = _graphics.Output.Create2DRenderer(_screen);
-				_renderer.Drawing.SmoothingMode = SmoothingMode.Smooth;
+			_renderer = _graphics.Output.Create2DRenderer(_screen);
+			_renderer.Drawing.SmoothingMode = SmoothingMode.Smooth;
 
-                _carouselImages = _graphics.Textures.FromFile<GorgonTexture2D>("Common", @"..\..\..\..\Resources\Examples\Common.png", new GorgonCodecPNG());
-                _carouselSprites = new GorgonSprite[4];
-			    _carouselSprites[0] = _renderer.Renderables.CreateSprite("Example 1",
-			        new GorgonSpriteSettings
-			        {
-                        Size = new Vector2(348, 176),
-                        Color = GorgonColor.White,
-                        TextureRegion = new RectangleF(_carouselImages.ToTexel(0, 0), _carouselImages.ToTexel(348, 176)),
-                        Texture = _carouselImages
-			        });
+            _carouselImages = _graphics.Textures.FromFile<GorgonTexture2D>("Common", @"..\..\..\..\Resources\Examples\Common.png", new GorgonCodecPNG());
+            _carouselSprites = new GorgonSprite[4];
+			_carouselSprites[0] = _renderer.Renderables.CreateSprite("Example 1",
+			    new GorgonSpriteSettings
+			    {
+                    Size = new Vector2(348, 176),
+                    Color = GorgonColor.White,
+                    TextureRegion = new RectangleF(_carouselImages.ToTexel(0, 0), _carouselImages.ToTexel(348, 176)),
+                    Texture = _carouselImages
+			    });
 
-                _carouselSprites[3] = _renderer.Renderables.CreateSprite("Example 4",
-                    new GorgonSpriteSettings
-                    {
-                        Size = new Vector2(348, 176),
-                        Color = GorgonColor.White,
-                        TextureRegion = new RectangleF(_carouselImages.ToTexel(0, 177), _carouselImages.ToTexel(348, 176)),
-                        Texture = _carouselImages,
-                    });
+            _carouselSprites[3] = _renderer.Renderables.CreateSprite("Example 4",
+                new GorgonSpriteSettings
+                {
+                    Size = new Vector2(348, 176),
+                    Color = GorgonColor.White,
+                    TextureRegion = new RectangleF(_carouselImages.ToTexel(0, 177), _carouselImages.ToTexel(348, 176)),
+                    Texture = _carouselImages,
+                });
 
-                _carouselSprites[1] = _renderer.Renderables.CreateSprite("Example 2",
-                    new GorgonSpriteSettings
-                    {
-                        Size = new Vector2(337, 266),
-                        Color = GorgonColor.White,
-                        TextureRegion = new RectangleF(_carouselImages.ToTexel(349, 0), _carouselImages.ToTexel(337, 266)),
-                        Texture = _carouselImages
-                    });
+            _carouselSprites[1] = _renderer.Renderables.CreateSprite("Example 2",
+                new GorgonSpriteSettings
+                {
+                    Size = new Vector2(337, 266),
+                    Color = GorgonColor.White,
+                    TextureRegion = new RectangleF(_carouselImages.ToTexel(349, 0), _carouselImages.ToTexel(337, 266)),
+                    Texture = _carouselImages
+                });
 
-                _carouselSprites[2] = _renderer.Renderables.CreateSprite("Example 3",
-                    new GorgonSpriteSettings
-                    {
-                        Size = new Vector2(337, 266),
-                        Color = GorgonColor.White,
-                        TextureRegion = new RectangleF(_carouselImages.ToTexel(687, 0), _carouselImages.ToTexel(337, 266)),
-                        Texture = _carouselImages
-                    });
+            _carouselSprites[2] = _renderer.Renderables.CreateSprite("Example 3",
+                new GorgonSpriteSettings
+                {
+                    Size = new Vector2(337, 266),
+                    Color = GorgonColor.White,
+                    TextureRegion = new RectangleF(_carouselImages.ToTexel(687, 0), _carouselImages.ToTexel(337, 266)),
+                    Texture = _carouselImages
+                });
 
-				_blurSprite = _renderer.Renderables.CreateSprite("Background",
-					new GorgonSpriteSettings
-					{
-						Size = new Vector2(_screen.Settings.Width, _screen.Settings.Height),
-						Color = Color.FromArgb(0, Color.LightBlue),
-						Texture = _blurBackground,
-						TextureRegion = new RectangleF(0, 0, 1.0f, 1.0f)
-					});
+			_blurSprite = _renderer.Renderables.CreateSprite("Background",
+				new GorgonSpriteSettings
+				{
+					Size = new Vector2(_screen.Settings.Width, _screen.Settings.Height),
+					Color = Color.FromArgb(0, Color.LightBlue),
+					Texture = _blurBackground,
+					TextureRegion = new RectangleF(0, 0, 1.0f, 1.0f)
+				});
 
-				_backgroundSprite = _renderer.Renderables.CreateSprite("Background",
-					new GorgonSpriteSettings
-					{
-						Size = new Vector2(_screen.Settings.Width, _screen.Settings.Height),
-						Color = GorgonColor.White,
-						Texture = _originalBackground,
-						TextureRegion = new RectangleF(0, 0, 1.0f, 1.0f)
-					});
+			_backgroundSprite = _renderer.Renderables.CreateSprite("Background",
+				new GorgonSpriteSettings
+				{
+					Size = new Vector2(_screen.Settings.Width, _screen.Settings.Height),
+					Color = GorgonColor.White,
+					Texture = _originalBackground,
+					TextureRegion = new RectangleF(0, 0, 1.0f, 1.0f)
+				});
 
-			    _blurSprite.TextureSampler.BorderColor = Color.Transparent;
-                _blurSprite.TextureSampler.HorizontalWrapping = TextureAddressing.Border;
-                _blurSprite.TextureSampler.VerticalWrapping = TextureAddressing.Border;
-			    _backgroundSprite.TextureSampler.BorderColor = Color.Transparent;
-                _backgroundSprite.TextureSampler.HorizontalWrapping = TextureAddressing.Border;
-                _backgroundSprite.TextureSampler.VerticalWrapping = TextureAddressing.Border;
+			_blurSprite.TextureSampler.BorderColor = Color.Transparent;
+            _blurSprite.TextureSampler.HorizontalWrapping = TextureAddressing.Border;
+            _blurSprite.TextureSampler.VerticalWrapping = TextureAddressing.Border;
+			_backgroundSprite.TextureSampler.BorderColor = Color.Transparent;
+            _backgroundSprite.TextureSampler.HorizontalWrapping = TextureAddressing.Border;
+            _backgroundSprite.TextureSampler.VerticalWrapping = TextureAddressing.Border;
                 
-			    _logo = _graphics.Textures.CreateTexture<GorgonTexture2D>("Logo", Properties.Resources.Gorgon_2_x_Logo_Full);
-				_logoSprite = _renderer.Renderables.CreateSprite("Logo",
-					new GorgonSpriteSettings
-					{
-						Size = new Vector2(653, 156),
-						Color = GorgonColor.White,
-						Texture = _logo,
-                        // Adjust the texture region to match the aspect of the internal logo badge.
-                        TextureRegion = new RectangleF(_logo.ToTexel(-16f, -16f), _logo.ToTexel(653.0f, 156.0f)),
-						InitialPosition = new Vector2(_screen.Settings.Width / 2.0f, _screen.Settings.Height / 2.0f)
-					});
+			_logo = _graphics.Textures.CreateTexture<GorgonTexture2D>("Logo", Properties.Resources.Gorgon_2_x_Logo_Full);
+			_logoSprite = _renderer.Renderables.CreateSprite("Logo",
+				new GorgonSpriteSettings
+				{
+					Size = new Vector2(653, 156),
+					Color = GorgonColor.White,
+					Texture = _logo,
+                    // Adjust the texture region to match the aspect of the internal logo badge.
+                    TextureRegion = new RectangleF(_logo.ToTexel(-16f, -16f), _logo.ToTexel(653.0f, 156.0f)),
+					InitialPosition = new Vector2(_screen.Settings.Width / 2.0f, _screen.Settings.Height / 2.0f)
+				});
 
-			    _logoSprite.TextureSampler.BorderColor = GorgonColor.Transparent;
-                _logoSprite.TextureSampler.HorizontalWrapping = TextureAddressing.Border;
-                _logoSprite.TextureSampler.VerticalWrapping = TextureAddressing.Border;
-				_logoSprite.Opacity = 0;
-				_logoSprite.SmoothingMode = SmoothingMode.Smooth;
-				_logoSprite.Position = new Vector2(_screen.Settings.Width / 2.0f - 327f, _screen.Settings.Height / 2.0f - 78f);
+			_logoSprite.TextureSampler.BorderColor = GorgonColor.Transparent;
+            _logoSprite.TextureSampler.HorizontalWrapping = TextureAddressing.Border;
+            _logoSprite.TextureSampler.VerticalWrapping = TextureAddressing.Border;
+			_logoSprite.Opacity = 0;
+			_logoSprite.SmoothingMode = SmoothingMode.Smooth;
+			_logoSprite.Position = new Vector2(_screen.Settings.Width / 2.0f - 327f, _screen.Settings.Height / 2.0f - 78f);
 
-                _renderer.Effects.Wave.Length = 50.0f;
-                _renderer.Effects.Wave.Period = 1.0f;
-                _renderer.Effects.Wave.RenderScene = pass => _logoSprite.Draw();
+            _renderer.Effects.Wave.Length = 50.0f;
+            _renderer.Effects.Wave.Period = 1.0f;
+            _renderer.Effects.Wave.RenderScene = pass => _logoSprite.Draw();
 
-                BlurBackground(_originalBackground);
+            BlurBackground();
 
-				_timer = new GorgonTimer();
-				_renderAction = FadeInLogo;
+			_renderAction = FadeInLogo;
 
-				_form.MouseDoubleClick += OnFormOnMouseDoubleClick;
-			    _form.MouseDown += (sender, args) =>
+			_form.MouseDoubleClick += OnFormOnMouseDoubleClick;
+			_form.MouseDown += (sender, args) =>
+			{
+			    var clickRegion = new RectangleF(7, 27, _screen.Settings.Width - 14, _screen.Settings.Height - 35);
+
+			    if ((args.Button != MouseButtons.Left)
+                    || (clickRegion.Contains(args.Location)))
 			    {
-			        var clickRegion = new RectangleF(7, 27, _screen.Settings.Width - 14, _screen.Settings.Height - 35);
+			        return;
+			    }
 
-			        if ((args.Button != MouseButtons.Left)
-                        || (clickRegion.Contains(args.Location)))
-			        {
-			            return;
-			        }
-
-			        _startDrag = new Point(Cursor.Position.X - _form.Left, Cursor.Position.Y - _form.Top);
-			        _inDrag = true;
-			    };
-			    _form.MouseMove += (sender, args) =>
+			    _startDrag = new Point(Cursor.Position.X - _form.Left, Cursor.Position.Y - _form.Top);
+			    _inDrag = true;
+			};
+			_form.MouseMove += (sender, args) =>
+			{
+			    if (!_inDrag)
 			    {
-			        if (!_inDrag)
-			        {
-			            return;
-			        }
+			        return;
+			    }
 
-			        _form.Location = new Point(Cursor.Position.X - _startDrag.X, Cursor.Position.Y - _startDrag.Y);
-			        Idle();
-			    };
-			    _form.MouseUp += (sender, args) =>
+			    _form.Location = new Point(Cursor.Position.X - _startDrag.X, Cursor.Position.Y - _startDrag.Y);
+			    Idle();
+			};
+			_form.MouseUp += (sender, args) =>
+			{
+			    if (_inDrag)
 			    {
-			        if (_inDrag)
-			        {
-			            _inDrag = false;
-			        }
-			    };
-				_form.KeyDown += OnFormOnKeyDown;
-			}
+			        _inDrag = false;
+			    }
+			};
+
+			_form.GotFocus += (sender, args) =>
+			{
+				_form.Opacity = 0;
+				BlurBackground();
+				_form.Opacity = 1;
+				_backgroundSprite.Opacity = 0;
+				_blurSprite.Opacity = 1;
+			};
+			_form.KeyDown += OnFormOnKeyDown;
 		}
 
 		/// <summary>
