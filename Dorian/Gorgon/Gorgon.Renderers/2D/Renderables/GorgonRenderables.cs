@@ -27,8 +27,8 @@
 using System;
 using System.Drawing;
 using System.IO;
-using GorgonLibrary.Diagnostics;
 using GorgonLibrary.Graphics;
+using GorgonLibrary.Renderers.Properties;
 using SlimMath;
 
 namespace GorgonLibrary.Renderers
@@ -43,10 +43,6 @@ namespace GorgonLibrary.Renderers
 	{
 		#region Variables.
 		private readonly Gorgon2D _gorgon2D;			// Gorgon 2D interface.
-		#endregion
-
-		#region Properties.
-
 		#endregion
 
 		#region Methods.
@@ -68,24 +64,27 @@ namespace GorgonLibrary.Renderers
 			where T : class, IPersistedRenderable
 		{
 			Type type = typeof(T);
-			T result = null;
 
-            if (name == null)
+		    if (name == null)
             {
                 throw new ArgumentNullException("name");
             }
 
             if (string.IsNullOrWhiteSpace(name))
             {
-                throw new ArgumentException("The parameter must not be empty.", "name");
+                throw new ArgumentException(Resources.GOR2D_PARAMETER_MUST_NOT_BE_EMPTY, "name");
             }
 
-			result = (T)(Activator.CreateInstance(type,
-						System.Reflection.BindingFlags.CreateInstance | System.Reflection.BindingFlags.NonPublic |
-						System.Reflection.BindingFlags.Instance, null, new object[]
-						{
-							_gorgon2D, name
-						}, null));
+		    var result = (T)(Activator.CreateInstance(type,
+		                System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance,
+		                null,
+		                new object[]
+		                {
+		                    _gorgon2D,
+		                    name
+		                },
+		                null));
+
 			result.Load(stream);
 
 			return result;
@@ -146,7 +145,7 @@ namespace GorgonLibrary.Renderers
 
             if (string.IsNullOrWhiteSpace(filePath))
             {
-                throw new ArgumentException("The parameter must not be empty.", "filePath");
+                throw new ArgumentException(Resources.GOR2D_PARAMETER_MUST_NOT_BE_EMPTY, "filePath");
             }
 
 			using (FileStream stream = File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.Read))
@@ -211,18 +210,26 @@ namespace GorgonLibrary.Renderers
 		/// <exception cref="System.ArgumentException">Thrown when the name parameter is an empty string.</exception>
 		public GorgonText CreateText(string name, GorgonFont font, string text, GorgonColor color, bool shadowed, Vector2 shadowOffset, float shadowOpacity)
 		{
-			GorgonText result = null;
+		    if (name == null)
+		    {
+		        throw new ArgumentNullException("name");
+		    }
 
-			GorgonDebug.AssertParamString(name, "name");
+		    if (string.IsNullOrWhiteSpace(name))
+		    {
+		        throw new ArgumentException(Resources.GOR2D_PARAMETER_MUST_NOT_BE_EMPTY, "name");
+		    }
 
-			result = new GorgonText(_gorgon2D, name, font);
-			result.ShadowEnabled = shadowed;
-			result.ShadowOffset = shadowOffset;
-			result.ShadowOpacity = shadowOpacity;
-			result.Color = color;
-			result.Text = text;
+			var result = new GorgonText(_gorgon2D, name, font)
+			{
+			    ShadowEnabled = shadowed,
+			    ShadowOffset = shadowOffset,
+			    ShadowOpacity = shadowOpacity,
+			    Color = color,
+			    Text = text
+			};
 
-			return result;
+		    return result;
 		}
 
 		/// <summary>
@@ -235,8 +242,17 @@ namespace GorgonLibrary.Renderers
 		/// <exception cref="System.ArgumentException">Thrown when the name parameter is an empty string.</exception>
 		public GorgonSprite CreateSprite(string name, GorgonSpriteSettings settings)
 		{
-			GorgonDebug.AssertParamString(name, "name");
-			return new GorgonSprite(_gorgon2D, name, settings);
+            if (name == null)
+            {
+                throw new ArgumentNullException("name");
+            }
+
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                throw new ArgumentException(Resources.GOR2D_PARAMETER_MUST_NOT_BE_EMPTY, "name");
+            }
+
+            return new GorgonSprite(_gorgon2D, name, settings);
 		}
 
 		/// <summary>
@@ -250,7 +266,7 @@ namespace GorgonLibrary.Renderers
 		/// <exception cref="System.ArgumentException">Thrown when the name parameter is an empty string.</exception>
 		public GorgonSprite CreateSprite(string name, Vector2 size, GorgonColor color)
 		{
-			return CreateSprite(name, new GorgonSpriteSettings()
+			return CreateSprite(name, new GorgonSpriteSettings
 			{
 				Color = color,
 				InitialScale = new Vector2(1.0f),
@@ -270,10 +286,12 @@ namespace GorgonLibrary.Renderers
 		/// <exception cref="System.ArgumentException">Thrown when the name parameter is an empty string.</exception>
 		public GorgonSprite CreateSprite(string name, Vector2 size, GorgonTexture2D texture, RectangleF textureRegion)
 		{
-			if (texture == null)
-				return CreateSprite(name, size, Color.White);
+		    if (texture == null)
+		    {
+		        return CreateSprite(name, size, Color.White);
+		    }
 
-			return CreateSprite(name, new GorgonSpriteSettings()
+		    return CreateSprite(name, new GorgonSpriteSettings
 			{
 				Color = Color.White,
 				Size = size,
@@ -297,9 +315,12 @@ namespace GorgonLibrary.Renderers
 		{
 			Vector2 texelSize = Vector2.Zero;
 
-			if (texture != null)
-				texelSize = texture.ToTexel(size);
-			return CreateSprite(name, size, texture, new RectangleF(textureOffset, texelSize));
+		    if (texture != null)
+		    {
+		        texelSize = texture.ToTexel(size);
+		    }
+
+		    return CreateSprite(name, size, texture, new RectangleF(textureOffset, texelSize));
 		}
 
 		/// <summary>
@@ -315,10 +336,12 @@ namespace GorgonLibrary.Renderers
 		{
 			Vector2 texelSize = Vector2.Zero;
 
-			if (texture != null)
-				texelSize = texture.ToTexel(size);
+		    if (texture != null)
+		    {
+		        texelSize = texture.ToTexel(size);
+		    }
 
-			return CreateSprite(name, size, texture, new RectangleF(Vector2.Zero, texelSize));
+		    return CreateSprite(name, size, texture, new RectangleF(Vector2.Zero, texelSize));
 		}		
 
 		/// <summary>
@@ -335,8 +358,17 @@ namespace GorgonLibrary.Renderers
 		/// <exception cref="System.ArgumentException">Thrown when the name parameter is an empty string.</exception>
 		public GorgonTriangle CreateTriangle(string name, GorgonTriangle.TrianglePoint point1, GorgonTriangle.TrianglePoint point2, GorgonTriangle.TrianglePoint point3, bool filled)
 		{
-			GorgonDebug.AssertParamString(name, "name");
-			return new GorgonTriangle(_gorgon2D, name, point1, point2, point3, filled);
+            if (name == null)
+            {
+                throw new ArgumentNullException("name");
+            }
+
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                throw new ArgumentException(Resources.GOR2D_PARAMETER_MUST_NOT_BE_EMPTY, "name");
+            }
+
+            return new GorgonTriangle(_gorgon2D, name, point1, point2, point3, filled);
 		}
 
 		/// <summary>
@@ -351,8 +383,17 @@ namespace GorgonLibrary.Renderers
 		/// <exception cref="System.ArgumentException">Thrown when the name parameter is an empty string.</exception>
 		public GorgonRectangle CreateRectangle(string name, RectangleF rectangle, GorgonColor color, bool filled)
 		{
-			GorgonDebug.AssertParamString(name, "name");
-			return new GorgonRectangle(_gorgon2D, name, filled)
+            if (name == null)
+            {
+                throw new ArgumentNullException("name");
+            }
+
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                throw new ArgumentException(Resources.GOR2D_PARAMETER_MUST_NOT_BE_EMPTY, "name");
+            }
+
+            return new GorgonRectangle(_gorgon2D, name, filled)
 			{
 				TextureRegion = rectangle,
 				Color = color,
@@ -388,7 +429,15 @@ namespace GorgonLibrary.Renderers
 		/// <exception cref="System.ArgumentException">Thrown when the name parameter is an empty string.</exception>
 		public GorgonLine CreateLine(string name, Vector2 startPosition, Vector2 endPosition, GorgonColor color)
 		{
-			GorgonDebug.AssertParamString(name, "name");
+            if (name == null)
+            {
+                throw new ArgumentNullException("name");
+            }
+
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                throw new ArgumentException(Resources.GOR2D_PARAMETER_MUST_NOT_BE_EMPTY, "name");
+            }
 
 			return new GorgonLine(_gorgon2D, name, startPosition, endPosition)
 						{
@@ -407,8 +456,17 @@ namespace GorgonLibrary.Renderers
 		/// <exception cref="System.ArgumentException">Thrown when the name parameter is an empty string.</exception>
 		public GorgonPoint CreatePoint(string name, Vector2 position, GorgonColor color)
 		{
-			GorgonDebug.AssertParamString(name, "name");
-			return new GorgonPoint(_gorgon2D, name, position, color);
+            if (name == null)
+            {
+                throw new ArgumentNullException("name");
+            }
+
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                throw new ArgumentException(Resources.GOR2D_PARAMETER_MUST_NOT_BE_EMPTY, "name");
+            }
+
+            return new GorgonPoint(_gorgon2D, name, position, color);
 		}
 
 		/// <summary>
@@ -425,8 +483,17 @@ namespace GorgonLibrary.Renderers
 		/// <exception cref="System.ArgumentException">Thrown when the name parameter is an empty string.</exception>
 		public GorgonEllipse CreateEllipse(string name, Vector2 position, Vector2 size, GorgonColor color, bool isFilled, int quality)
 		{
-			GorgonDebug.AssertParamString(name, "name");
-			return new GorgonEllipse(_gorgon2D, name, position, size, color, quality, isFilled);
+            if (name == null)
+            {
+                throw new ArgumentNullException("name");
+            }
+
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                throw new ArgumentException(Resources.GOR2D_PARAMETER_MUST_NOT_BE_EMPTY, "name");
+            }
+
+            return new GorgonEllipse(_gorgon2D, name, position, size, color, quality, isFilled);
 		}
 
 		/// <summary>

@@ -151,6 +151,7 @@ namespace GorgonLibrary.Examples
 
 			_logoSprite.ScaledSize = startSize + ((endSize - startSize) * time);
 			_logoSprite.Position = startPosition + ((endPosition - startPosition) * time);
+		    _logoSprite.Opacity = 1.0f - 1.0f * time;
 
 			_logoSprite.Draw();
 
@@ -166,15 +167,7 @@ namespace GorgonLibrary.Examples
 			{
 				_renderer.IsLogoVisible = true;
 			}
-
-			if (_logoSprite.Opacity > 0)
-			{
-				_logoSprite.Opacity -= GorgonTiming.Delta * 1.5f;
-				_logoSprite.Draw();
-				return;
-			}
-
-			
+		
 			_currentState = ProgramState.MainExecution;
 		}
 
@@ -371,7 +364,7 @@ namespace GorgonLibrary.Examples
 				{
 					FontFamilyName = "Segoe UI",
 					FontStyle = FontStyle.Bold,
-					OutlineColor = Color.FromArgb(96, Color.Black),
+					OutlineColor = GorgonColor.Black,
 					OutlineSize = 1,
 					Size = 11.25f,
 					AntiAliasingMode = FontAntiAliasMode.AntiAliasHQ,
@@ -596,7 +589,6 @@ namespace GorgonLibrary.Examples
 				};
 
 				Initialize();
-				
 
 				Gorgon.Run(_form, Idle);
 			}
