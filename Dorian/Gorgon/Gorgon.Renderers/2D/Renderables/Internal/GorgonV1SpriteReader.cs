@@ -27,12 +27,13 @@
 using System;
 using GorgonLibrary.Graphics;
 using GorgonLibrary.IO;
+using GorgonLibrary.Renderers.Properties;
 using SlimMath;
 
 namespace GorgonLibrary.Renderers
 {
 	/// <summary>
-	/// A Gorgon v1.x compatiable sprite reader.
+	/// A Gorgon v1.x compatible sprite reader.
 	/// </summary>
 	static class GorgonV1SpriteReader
 	{
@@ -180,16 +181,14 @@ namespace GorgonLibrary.Renderers
 		/// <param name="reader">Binary reader to use to read in the data.</param>
 		public static void LoadSprite(GorgonSprite sprite, GorgonBinaryReader reader)
 		{
-			string headerVersion = string.Empty;
-			string dummyString = string.Empty;
-			Version version = null;
+		    Version version;
 
 			reader.BaseStream.Position = 0;
 
-			headerVersion = reader.ReadString();
+			string headerVersion = reader.ReadString();
 			if ((!headerVersion.StartsWith("GORSPR", StringComparison.OrdinalIgnoreCase)) || (headerVersion.Length < 7))
 			{
-				throw new GorgonException(GorgonResult.CannotRead, "Cannot read this sprite.  It is not a Gorgon sprite or it is a newer version.");
+				throw new GorgonException(GorgonResult.CannotRead, Resources.GOR2D_CANNOT_READ_V1_SPRITE);
 			}
 
 			// Get the version information.
@@ -205,11 +204,11 @@ namespace GorgonLibrary.Renderers
 					version = new Version(1, 2);
 					break;
 				default:
-					throw new GorgonException(GorgonResult.CannotRead, "Cannot read this sprite.  It is not a Gorgon sprite or it is a newer version.");
+                    throw new GorgonException(GorgonResult.CannotRead, Resources.GOR2D_CANNOT_READ_V1_SPRITE);
 			}
 
 			// We don't need the sprite name.
-			dummyString = reader.ReadString();
+			reader.ReadString();
 
 			// Find out if we have an image.
 			if (reader.ReadBoolean())
@@ -271,9 +270,8 @@ namespace GorgonLibrary.Renderers
 			// Also, older versions used the size the determine the area on the texture to cover.  So use the size to
 			// get the texture bounds.
 			var textureOffset = new Vector2(reader.ReadSingle(), reader.ReadSingle());
-			Vector2 textureSize = Vector2.Zero;
 
-			if (sprite.Texture != null)
+		    if (sprite.Texture != null)
 			{
 				sprite.TextureOffset = sprite.Texture.ToTexel(textureOffset);
 				sprite.TextureSize = sprite.Texture.ToTexel(sprite.Size);
@@ -416,15 +414,6 @@ namespace GorgonLibrary.Renderers
 			// Get flipped flags.
 			sprite.HorizontalFlip = reader.ReadBoolean();
 			sprite.VerticalFlip = reader.ReadBoolean();
-		}
-		#endregion
-
-		#region Constructor/Destructor.
-		/// <summary>
-		/// Initializes the <see cref="GorgonV1SpriteReader" /> class.
-		/// </summary>
-		static GorgonV1SpriteReader()
-		{
 		}
 		#endregion
 	}

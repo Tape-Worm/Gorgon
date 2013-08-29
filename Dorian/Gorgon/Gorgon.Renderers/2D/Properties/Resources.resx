@@ -124,11 +124,17 @@
   <data name="FilmGrain" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\FilmGrain.hlsl;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
+  <data name="GOR2D_CANNOT_READ_V1_SPRITE" xml:space="preserve">
+    <value>Cannot read this sprite.  It is not a Gorgon sprite or it is a newer version.</value>
+  </data>
   <data name="GOR2D_EFFECT_NO_BLUR_TARGETS" xml:space="preserve">
     <value>The gaussian blur render targets were not created.  Ensure that the render target width and height are greater than 0.</value>
   </data>
   <data name="GOR2D_EFFECT_NO_DISPLACEMENT_TARGET" xml:space="preserve">
     <value>The displacement render target was not created.  Ensure that the render target width and height are greater than 0.</value>
+  </data>
+  <data name="GOR2D_PARAMETER_MUST_NOT_BE_EMPTY" xml:space="preserve">
+    <value>The parameter must not be empty.</value>
   </data>
   <data name="GOR2D_SHADER_NOT_BOUND" xml:space="preserve">
     <value>There was no {0} shader bound to the pipeline. </value>

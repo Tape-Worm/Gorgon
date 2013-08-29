@@ -155,8 +155,8 @@ namespace GorgonLibrary.Renderers
 		/// <summary>
 		/// Property to set or return pre-defined smoothing states for the renderable.
 		/// </summary>
-		/// <remarks>These modes are pre-defined smoothing states, to get more control over the smoothing, use the <see cref="P:GorgonLibrary.Renderers.GorgonRenderable.TextureSamplerState.TextureFilter.">TextureFilter</see> 
-		/// property exposed by the <see cref="P:GorgonLibrary.Renderers.GorgonRenderable.TextureSampler.">TextureSampler</see> property.</remarks>
+		/// <remarks>These modes are pre-defined smoothing states, to get more control over the smoothing, use the <see cref="GorgonLibrary.Renderers.GorgonRenderable.TextureSamplerState.TextureFilter">TextureFilter</see> 
+		/// property exposed by the <see cref="GorgonLibrary.Renderers.GorgonRenderable.TextureSampler">TextureSampler</see> property.</remarks>
 		SmoothingMode SmoothingMode
 		{
 			get;
@@ -166,9 +166,9 @@ namespace GorgonLibrary.Renderers
 		/// <summary>
 		/// Property to set or return a pre-defined blending states for the renderable.
 		/// </summary>
-		/// <remarks>These modes are pre-defined blending states, to get more control over the blending, use the <see cref="P:GorgonLibrary.Renderers.GorgonRenderable.BlendingState.SourceBlend">SourceBlend</see> 
-		/// or the <see cref="P:GorgonLibrary.Renderers.GorgonRenderable.Blending.DestinationBlend">DestinationBlend</see> property which are exposed by the 
-		/// <see cref="P:GorgonLibrary.Renderers.GorgonRenderable.Blending">Blending</see> property.</remarks>
+		/// <remarks>These modes are pre-defined blending states, to get more control over the blending, use the <see cref="GorgonRenderable.BlendState.SourceBlend">SourceBlend</see> 
+		/// or the <see cref="GorgonLibrary.Renderers.GorgonRenderable.BlendState.DestinationBlend">DestinationBlend</see> property which are exposed by the 
+		/// <see cref="GorgonLibrary.Renderers.GorgonRenderable.Blending">Blending</see> property.</remarks>
 		BlendingMode BlendingMode
 		{
 			get;
@@ -235,7 +235,7 @@ namespace GorgonLibrary.Renderers
 		/// Function to draw the object.
 		/// </summary>
 		/// <remarks>Please note that this doesn't draw the object to the target right away, but queues it up to be 
-		/// drawn when <see cref="M:GorgonLibrary.Renderers.Gorgon2D.Render">Render</see> is called.
+		/// drawn when <see cref="Gorgon2D.Render">Render</see> is called.
 		/// </remarks>
 		void Draw();
 		#endregion

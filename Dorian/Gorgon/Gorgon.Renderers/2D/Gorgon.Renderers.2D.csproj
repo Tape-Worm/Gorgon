@@ -82,6 +82,7 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="Renderables\GorgonDrawing.cs" />
+    <Compile Include="Renderables\GorgonPolygon.cs" />
     <Compile Include="Renderables\GorgonRectangle.cs" />
     <Compile Include="Renderables\GorgonEllipse.cs" />
     <Compile Include="Renderables\GorgonLine.cs" />
