@@ -42,9 +42,343 @@ namespace GorgonLibrary.Renderers
     /// A polygonal renderable.  This object is used to draw irregularly shaped areas.
     /// </summary>
     public class GorgonPolygon
-        : GorgonRenderable
+        : GorgonMoveable
     {
         #region Classes.
+        /// <summary>
+        /// A list of vertices.
+        /// </summary>
+        public class VertexList
+            : IList<Gorgon2DVertex>
+        {
+            #region Variables.
+            private int _count;                         // The number of vertices in the list.
+            private Gorgon2DVertex[] _list;             // Vertices.
+            private bool _wasUpdated;                   // Flag to indicate that the list was updated.
+            #endregion
+
+            #region Properties.
+            /// <summary>
+            /// Property to return the internal array for the list.
+            /// </summary>
+            internal Gorgon2DVertex[] InternalArray
+            {
+                get
+                {
+                    return _list;
+                }
+            }
+            #endregion
+
+            #region Methods.
+            /// <summary>
+            /// Function to add a list of vertices to the list.
+            /// </summary>
+            /// <param name="vertices">Vertices to add.</param>
+            public void AddRange(IList<Gorgon2DVertex> vertices)
+            {
+                if ((vertices == null)
+                    || (vertices.Count == 0))
+                {
+                    return;
+                }
+
+                if ((_count + vertices.Count) > _list.Length)
+                {
+                    Array.Resize(ref _list, (_count + vertices.Count) * 2);
+                }
+
+                for (int i = 0; i < vertices.Count; ++i)
+                {
+                    _list[i + _count] = vertices[i];
+                }
+
+                _count += vertices.Count;
+                _wasUpdated = true;
+            }
+
+            /// <summary>
+            /// Function to insert a list of indices into the list.
+            /// </summary>
+            /// <param name="index">Index to insert at.</param>
+            /// <param name="vertices">The list of vertices to insert.</param>
+            public void Insert(int index, IList<Gorgon2DVertex> vertices)
+            {
+                if ((vertices == null)
+                    || (vertices.Count == 0))
+                {
+                    return;
+                }
+
+                if (index >= _count)
+                {
+                    AddRange(vertices);
+                    return;
+                }
+
+                // Resize the list if necessary.
+                if (_count + vertices.Count > _list.Length)
+                {
+                    Array.Resize(ref _list, (_count + vertices.Count) * 2);
+                }
+
+                // Copy the original elements to their new slots.
+                Array.Copy(_list, index, _list, vertices.Count + index, (_count - index));
+
+                for (int i = 0; i < vertices.Count; ++i)
+                {
+                    _list[index + i] = vertices[i];
+                }
+
+                _count += vertices.Count;
+                _wasUpdated = true;
+            }
+
+            /// <summary>
+            /// Function to remove a vertex at the specified index.
+            /// </summary>
+            /// <param name="index">Index of the item to remove.</param>
+            public void Remove(int index)
+            {
+                if ((index < 0)
+                    || (index >= _count))
+                {
+                    throw new IndexOutOfRangeException();
+                }
+
+                if (_count == 1)
+                {
+                    _count = 0;
+                    _wasUpdated = true;
+                    return;
+                }
+
+                if (index < _count - 1)
+                {
+#error We should use Array.Copy here.
+                    for (int i = index + 1; i < _count; i++)
+                    {
+                        _list[i - 1] = _list[i];
+                    }
+                }
+
+                _count--;
+                _wasUpdated = true;
+            }
+            #endregion
+
+            #region Constructor/Destructor.
+            /// <summary>
+            /// Initializes a new instance of the <see cref="VertexList"/> class.
+            /// </summary>
+            internal VertexList()
+            {
+                _list = new Gorgon2DVertex[16];
+            }
+            #endregion
+
+            #region IList<Gorgon2DVertex> Members
+            #region Properties.
+            /// <summary>
+            /// Gets or sets the element at the specified index.
+            /// </summary>
+            public Gorgon2DVertex this[int index]
+            {
+                get
+                {
+                    if ((index < 0)
+                        || (index >= _count))
+                    {
+                        throw new IndexOutOfRangeException();
+                    }
+
+                    return _list[index];
+                }
+                set
+                {
+                    if ((index < 0)
+                        || (index >= _count))
+                    {
+                        throw new IndexOutOfRangeException();
+                    }
+
+                    _list[index] = value;
+                    _wasUpdated = true;
+                }
+            }
+            #endregion
+
+            #region Methods.
+            /// <summary>
+            /// Determines the index of a specific item in the <see cref="T:System.Collections.Generic.IList`1" />.
+            /// </summary>
+            /// <param name="item">The object to locate in the <see cref="T:System.Collections.Generic.IList`1" />.</param>
+            /// <returns>
+            /// The index of <paramref name="item" /> if found in the list; otherwise, -1.
+            /// </returns>
+            public int IndexOf(Gorgon2DVertex item)
+            {
+                return Array.IndexOf(_list, item);
+            }
+
+            /// <summary>
+            /// Inserts an item to the <see cref="T:System.Collections.Generic.IList`1" /> at the specified index.
+            /// </summary>
+            /// <param name="index">The zero-based index at which <paramref name="item" /> should be inserted.</param>
+            /// <param name="item">The object to insert into the <see cref="T:System.Collections.Generic.IList`1" />.</param>
+            public void Insert(int index, Gorgon2DVertex item)
+            {
+                if (index >= _count)
+                {
+                    Add(item);
+                    return;
+                }
+                
+                // Resize the list if necessary.
+                if (_count + 1 > _list.Length)
+                {
+                    Array.Resize(ref _list, (_count + 1) * 2);
+                }
+
+                // Shift all items down by 1 item.
+                for (int i = index; i < _count - 1; i++)
+                {
+                    _list[i + 1] = _list[i];
+                }
+
+                // Insert the new item.
+                _list[index] = item;
+                _count++;
+                _wasUpdated = true;
+            }
+
+            /// <summary>
+            /// Removes the <see cref="T:System.Collections.Generic.IList`1" /> item at the specified index.
+            /// </summary>
+            /// <param name="index">The zero-based index of the item to remove.</param>
+            void IList<Gorgon2DVertex>.RemoveAt(int index)
+            {
+                Remove(index);
+            }
+            #endregion
+            #endregion
+
+            #region ICollection<Gorgon2DVertex> Members
+            #region Properties.
+            #endregion
+
+            #region Methods.
+            /// <summary>
+            /// Gets the number of elements contained in the <see cref="T:System.Collections.Generic.ICollection`1" />.
+            /// </summary>
+            /// <returns>The number of elements contained in the <see cref="T:System.Collections.Generic.ICollection`1" />.</returns>
+            public int Count
+            {
+                get
+                {
+                    return _count;
+                }
+            }
+
+            /// <summary>
+            /// Gets a value indicating whether the <see cref="T:System.Collections.Generic.ICollection`1" /> is read-only.
+            /// </summary>
+            /// <returns>true if the <see cref="T:System.Collections.Generic.ICollection`1" /> is read-only; otherwise, false.</returns>
+            public bool IsReadOnly
+            {
+                get
+                {
+                    return false;
+                }
+            }
+
+            /// <summary>
+            /// Adds an item to the <see cref="T:System.Collections.Generic.ICollection`1" />.
+            /// </summary>
+            /// <param name="item">The object to add to the <see cref="T:System.Collections.Generic.ICollection`1" />.</param>
+            public void Add(Gorgon2DVertex item)
+            {
+                if (_count + 1 > _list.Length)
+                {
+                    Array.Resize(ref _list, (_count + 1) * 2);
+                }
+
+                _list[_count++] = item;
+                _wasUpdated = true;
+            }
+
+            /// <summary>
+            /// Removes all items from the <see cref="T:System.Collections.Generic.ICollection`1" />.
+            /// </summary>
+            public void Clear()
+            {
+                _count = 0;
+                _wasUpdated = true;
+            }
+
+            /// <summary>
+            /// Determines whether the <see cref="T:System.Collections.Generic.ICollection`1" /> contains a specific value.
+            /// </summary>
+            /// <param name="item">The object to locate in the <see cref="T:System.Collections.Generic.ICollection`1" />.</param>
+            /// <returns>
+            /// true if <paramref name="item" /> is found in the <see cref="T:System.Collections.Generic.ICollection`1" />; otherwise, false.
+            /// </returns>
+            public bool Contains(Gorgon2DVertex item)
+            {
+                return IndexOf(item) > -1;
+            }
+
+            /// <summary>
+            /// Copies the automatic.
+            /// </summary>
+            /// <param name="array">The array.</param>
+            /// <param name="arrayIndex">Index of the array.</param>
+            public void CopyTo(Gorgon2DVertex[] array, int arrayIndex)
+            {
+                _list.CopyTo(array, arrayIndex);
+            }
+
+            /// <summary>
+            /// Removes the first occurrence of a specific object from the <see cref="T:System.Collections.Generic.ICollection`1" />.
+            /// </summary>
+            /// <param name="item">The object to remove from the <see cref="T:System.Collections.Generic.ICollection`1" />.</param>
+            /// <returns>
+            /// true if <paramref name="item" /> was successfully removed from the <see cref="T:System.Collections.Generic.ICollection`1" />; otherwise, false. This method also returns false if <paramref name="item" /> is not found in the original <see cref="T:System.Collections.Generic.ICollection`1" />.
+            /// </returns>
+            public bool Remove(Gorgon2DVertex item)
+            {
+                int index = IndexOf(item);
+
+                if (index == -1)
+                {
+                    return false;
+                }
+
+                Remove(index);
+
+                return true;
+            }
+            #endregion
+            #endregion
+
+            #region IEnumerable<Gorgon2DVertex> Members
+
+            public IEnumerator<Gorgon2DVertex> GetEnumerator()
+            {
+                throw new NotImplementedException();
+            }
+
+            #endregion
+
+            #region IEnumerable Members
+
+            System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+            {
+                throw new NotImplementedException();
+            }
+
+            #endregion
+        }
         #endregion
 
         #region Variables.
@@ -53,8 +387,12 @@ namespace GorgonLibrary.Renderers
         private GorgonIndexBuffer _indexBuffer;                                                 // The index buffer for the polygon.
         private GorgonVertexBufferBinding _binding;                                             // The vertex buffer binding for the polygon.
         private GorgonVertexBuffer _vertexBuffer;                                               // The vertex buffer for the polygon.
+        private bool _isDynamicIndexBuffer;                                                     // Flag to indicate that the polygon uses a dynamic index buffer.
         private bool _isDynamicVertexBuffer;                                                    // Flag to indicate that the polygon uses a dynamic vertex buffer.
-        private bool _polygonUpdated = true;                                                    // True if the structure of the polygon is updated.
+        private bool _vertexBufferUpdated;                                                      // True if the structure of the polygon is updated.
+        private bool _indexBufferUpdated;                                                       // True if the structure of the polygon is updated.
+        private bool _needsVertexUpdate;                                                        // True if the vertices need updating.
+        private bool _needsIndexUpdate;                                                         // True if the indices need updating.
         private int _lastVertexIndexAdded;                                                      // Array index of the last vertex that was added to the list.
         #endregion
 
@@ -80,7 +418,7 @@ namespace GorgonLibrary.Renderers
         {
             get
             {
-                return _indices.Length;
+                return _indices.Count;
             }
         }
 
@@ -104,6 +442,29 @@ namespace GorgonLibrary.Renderers
         }
 
         /// <summary>
+        /// Property to set or return whether to use a dynamic index buffer for the polygon.
+        /// </summary>
+        /// <remarks>This property rebuilds the index buffer for the polygon and allows it to be used as a dynamic resource.  This means that the shape can be updated with less of a performance 
+        /// penalty.</remarks>
+        public bool UseDynamicIndexBuffer
+        {
+            get
+            {
+                return _isDynamicIndexBuffer;
+            }
+            set
+            {
+                if (value == _isDynamicIndexBuffer)
+                {
+                    return;
+                }
+
+                _isDynamicIndexBuffer = value;
+                _indexBufferUpdated = true;
+            }
+        }
+
+        /// <summary>
         /// Property to set or return whether to use a dynamic vertex buffer for the polygon.
         /// </summary>
         /// <remarks>This property rebuilds the vertex buffer for the polygon and allows it to be used as a dynamic resource.  This means that the shape can be updated with less of a performance 
@@ -122,77 +483,111 @@ namespace GorgonLibrary.Renderers
                 }
                 
                 _isDynamicVertexBuffer = value;
-                _polygonUpdated = true;
+                _vertexBufferUpdated = true;
             }
         }
         #endregion
 
         #region Methods.
+
         /// <summary>
-        /// Function to update the polygon data if the structure has changed.
+        /// Function to update the vertex data if the structure has changed.
         /// </summary>
-        private void UpdatePolygonData()
+        private void UpdateVertexBuffer()
         {
-            if ((_vertexBuffer == null) || (_vertexBuffer.SizeInBytes < _vertices.Count * Gorgon2DVertex.SizeInBytes))
+            int vbSize = _vertices.Count * Gorgon2DVertex.SizeInBytes * 2;
+            GorgonDataStream data = null;
+
+            if (_vertexBuffer != null)
             {
-                int vbSize = _vertices.Count * Gorgon2DVertex.SizeInBytes;
+                _vertexBuffer.Dispose();
+                _vertexBuffer = null;
+            }
 
-                if (_vertexBuffer != null)
-                {
-                    _vertexBuffer.Dispose();
-                    _vertexBuffer = null;
-                }
-
+            try
+            {
                 // Create our vertex buffer and pre-fill it.
-                using(var data = new GorgonDataStream(vbSize))
+                if (vbSize > 0)
                 {
+                    data = new GorgonDataStream(vbSize);
                     unsafe
                     {
                         // Copy into memory.
                         var vertex = (Gorgon2DVertex*)data.UnsafePointer;
 
                         // ReSharper disable once ForCanBeConvertedToForeach
-                        for (int i = 0; i < _vertices.Count; i++)
+                        for (int i = 0; i < _vertices.Count; ++i)
                         {
                             *vertex = _vertices[i];
                             vertex++;
                         }
                     }
-
-                    _vertexBuffer =
-                        Gorgon2D.Graphics.ImmediateContext.Buffers.CreateVertexBuffer(
-                            Name + ".GorgonPolygon.VertexBuffer",
-                            new GorgonBufferSettings
-                            {
-                                SizeInBytes = vbSize,
-                                Usage = _isDynamicVertexBuffer ? BufferUsage.Dynamic : BufferUsage.Default
-                            }, data);
                 }
 
-                _binding = new GorgonVertexBufferBinding(_vertexBuffer, Gorgon2DVertex.SizeInBytes);
+                _vertexBuffer = Gorgon2D.Graphics.ImmediateContext.Buffers.CreateVertexBuffer(
+                    Name + ".GorgonPolygon.VertexBuffer",
+                    new GorgonBufferSettings
+                    {
+                        SizeInBytes = vbSize,
+                        Usage = _isDynamicVertexBuffer ? BufferUsage.Dynamic : BufferUsage.Default
+                    },
+                    data);
+            }
+            finally
+            {
+                if (data != null)
+                {
+                    data.Dispose();
+                }
             }
 
+            _binding = new GorgonVertexBufferBinding(_vertexBuffer, Gorgon2DVertex.SizeInBytes);
+            _lastVertexIndexAdded = _vertices.Count;
+            _vertexBufferUpdated = false;
+        }
+
+        /// <summary>
+        /// Function to update the index buffer data.
+        /// </summary>
+        private void UpdateIndexData()
+        {
             // If the index buffer has changed, then remove the previous buffer.
-            if (((_indices == null) || (_indices.Length == 0) || (sizeof(int) * _indices.Length > _indexBuffer.SizeInBytes)) && (_indexBuffer != null))
+            if (_indexBuffer != null)
             {
                 _indexBuffer.Dispose();
                 _indexBuffer = null;
             }
 
-            if ((_indexBuffer == null)
-                && (_indices != null)
-                && (_indices.Length > 0))
+            int ibSize = sizeof(int) * _indices.Count * 2;
+
+            using(var data = new GorgonDataStream(ibSize))
             {
-                int ibSize = sizeof(int) * _indices.Count;
+                unsafe
+                {
+                    var index = (int*)data.UnsafePointer;
+
+                    // ReSharper disable once ForCanBeConvertedToForeach
+                    for (int i = 0; i < _indices.Count; ++i)
+                    {
+                        *index = _indices[i];
+                        index++;
+                    }
+                }
 
                 // Create our index buffer and pre-fill it.
                 _indexBuffer =
-                    Gorgon2D.Graphics.ImmediateContext.Buffers.CreateIndexBuffer(Name + ".GorgonPolygon.IndexBuffer",
-                    
-                        _indices);
+                    Gorgon2D.Graphics.ImmediateContext.Buffers.CreateIndexBuffer(
+                        Name + ".GorgonPolygon.IndexBuffer",
+                        new GorgonIndexBufferSettings
+                        {
+                            SizeInBytes = ibSize,
+                            Usage = _isDynamicIndexBuffer ? BufferUsage.Dynamic : BufferUsage.Default,
+                            Use32BitIndices = true
+                        },
+                        data);
             }
 
-            _polygonUpdated = false;
+            _indexBufferUpdated = false;
         }
 
         protected override void UpdateTextureCoordinates()
@@ -205,7 +600,7 @@ namespace GorgonLibrary.Renderers
         /// </summary>
         protected override void UpdateVertices()
         {
-            
+            _needsVertexUpdate = false;
         }
 
         /// <summary>
@@ -222,21 +617,31 @@ namespace GorgonLibrary.Renderers
                 return;
             }
 
-            // Resize the vertex list if it's too small.
-            if (vertices.Count + _vertices.Length > _vertices.Length)
+            _vertices.AddRange(vertices);
+
+            // Expand the buffer.
+            if (_vertices.Count * Gorgon2DVertex.SizeInBytes > _vertexBuffer.SizeInBytes)
             {
-                Array.Resize(ref _vertices, (vertices.Count + _vertices.Length) * 2);
-                UpdatePolygonData();
+                _vertexBufferUpdated = true;
             }
 
-            // Populate the list with the new vertices.
-            for (int i = 0; i < vertices.Count; i++)
-            {
-                _vertices[_lastVertexIndexAdded++] = vertices[i];
-            }
+            _lastVertexIndexAdded = _vertices.Count;
         }
 
         public void RemoveVertex(int vertexIndex)
+        {
+            
+        }
+        #endregion
+
+        #region Constructor.
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GorgonPolygon"/> class.
+        /// </summary>
+        /// <param name="gorgon2D">The gorgon 2D interface that created this object.</param>
+        /// <param name="name">The name of the renderable.</param>
+        internal GorgonPolygon(Gorgon2D gorgon2D, string name)
+            : base(gorgon2D, name)
         {
             
         }
@@ -1890,5 +2295,10 @@ namespace GorgonLibrary.Renderers
                         set;
                 }
                 #endregion*/
+
+        protected override void TransformVertices()
+        {
+            throw new NotImplementedException();
+        }
     }
 }
