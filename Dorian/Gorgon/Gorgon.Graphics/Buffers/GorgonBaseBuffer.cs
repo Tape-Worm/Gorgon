@@ -1030,7 +1030,7 @@ namespace GorgonLibrary.Graphics
 				throw new ArgumentException(Resources.GORGFX_LOCK_CANNOT_USE_WITH_READ, "lockFlags");
 			}
 
-	        if ((deferred != null)
+	        if ((deferred != null) && (deferred.IsDeferred)
 				&& (((lockFlags & BufferLockFlags.NoOverwrite) != BufferLockFlags.NoOverwrite)
 					|| ((lockFlags & BufferLockFlags.Discard) != BufferLockFlags.Discard)))
 	        {
