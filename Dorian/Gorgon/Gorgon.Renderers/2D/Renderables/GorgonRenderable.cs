@@ -491,7 +491,7 @@ namespace GorgonLibrary.Renderers
 		/// <summary>
 		/// Property to return a list of vertices to render.
 		/// </summary>
-		protected internal Gorgon2DVertex[] Vertices
+		protected Gorgon2DVertex[] Vertices
 		{
 			get;
 			private set;
@@ -895,18 +895,25 @@ namespace GorgonLibrary.Renderers
 			}
 
 			InitializeCustomVertexInformation();
-		}		
+		}
+
+		/// <summary>
+		/// Function to add this renderable object to the cache of objects that need rendering.
+		/// </summary>
+		/// <remarks>Functions that manipulate raw vertex/index data must call this function when drawing.  This method adds the vertices for this object into 
+		/// an internal cache of vertices that will be rendered upon a state change, or a call to the <see cref="Renderers.Gorgon2D.Render"/>, or the <see cref="Renderers.Gorgon2D.Flush"/> methods.</remarks>
+		protected virtual void AddToRenderQueue()
+		{
+			Gorgon2D.AddRenderable(this);
+		}
 
 		/// <summary>
 		/// Function to draw the object.
 		/// </summary>
 		/// <remarks>Please note that this doesn't draw the object to the target right away, but queues it up to be 
-		/// drawn when <see cref="M:GorgonLibrary.Renderers.Gorgon2D.Render">Render</see> is called.
+		/// drawn when <see cref="GorgonLibrary.Renderers.Gorgon2D.Render">Render</see> is called.
 		/// </remarks>
-		public virtual void Draw()
-		{
-			Gorgon2D.AddRenderable(this);
-		}
+		public abstract void Draw();
 		#endregion
 
 		#region Constructor.

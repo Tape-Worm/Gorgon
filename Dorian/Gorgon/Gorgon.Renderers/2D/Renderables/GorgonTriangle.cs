@@ -358,7 +358,7 @@ namespace GorgonLibrary.Renderers
 
 				UpdateVertices();
 
-				base.Draw();
+				AddToRenderQueue();
 				return;
 			}
 

@@ -179,9 +179,13 @@ namespace GorgonLibrary.Renderers
 		protected abstract void TransformVertices();
 
 		/// <summary>
-		/// Function to draw the object.
+		/// Function to add this renderable object to the cache of objects that need rendering.
 		/// </summary>
-		public override void Draw()
+		/// <remarks>
+		/// Functions that manipulate raw vertex/index data must call this function when drawing.  This method adds the vertices for this object into
+		/// an internal cache of vertices that will be rendered upon a state change, or a call to the <see cref="Renderers.Gorgon2D.Render" />, or the <see cref="Renderers.Gorgon2D.Flush" /> methods.
+		/// </remarks>
+		protected override void AddToRenderQueue()
 		{
 			if (NeedsVertexUpdate)
 			{
@@ -197,7 +201,7 @@ namespace GorgonLibrary.Renderers
 
 			TransformVertices();
 
-			base.Draw();
+			base.AddToRenderQueue();
 		}
 		#endregion
 

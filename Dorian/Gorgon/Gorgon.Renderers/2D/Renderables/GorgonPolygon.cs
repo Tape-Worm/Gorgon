@@ -1,4 +1,4 @@
-﻿#region MIT.
+﻿/*#region MIT.
 // 
 // Gorgon.
 // Copyright (C) 2013 Michael Winsor
@@ -42,7 +42,7 @@ namespace GorgonLibrary.Renderers
     /// A polygonal renderable.  This object is used to draw irregularly shaped areas.
     /// </summary>
     public class GorgonPolygon
-        : GorgonMoveable
+        : GorgonNamedObject, IRenderable, IMoveable
     {
         #region Classes.
         /// <summary>
@@ -52,10 +52,8 @@ namespace GorgonLibrary.Renderers
             : IList<Gorgon2DVertex>
         {
             #region Variables.
-            private int _count;                         // The number of vertices in the list.
-            private Gorgon2DVertex[] _list;             // Vertices.
-            private bool _wasUpdated;                   // Flag to indicate that the list was updated.
-            #endregion
+	        private Gorgon2DVertex[] _list;             // Vertices.
+	        #endregion
 
             #region Properties.
             /// <summary>
@@ -68,7 +66,16 @@ namespace GorgonLibrary.Renderers
                     return _list;
                 }
             }
-            #endregion
+
+	        /// <summary>
+	        /// Property to return whether the list was updated or not.
+	        /// </summary>
+	        internal bool WasUpdated
+	        {
+		        get;
+		        set;
+	        }
+	        #endregion
 
             #region Methods.
             /// <summary>
@@ -83,18 +90,18 @@ namespace GorgonLibrary.Renderers
                     return;
                 }
 
-                if ((_count + vertices.Count) > _list.Length)
+                if ((Count + vertices.Count) > _list.Length)
                 {
-                    Array.Resize(ref _list, (_count + vertices.Count) * 2);
+                    Array.Resize(ref _list, (Count + vertices.Count) * 2);
                 }
 
                 for (int i = 0; i < vertices.Count; ++i)
                 {
-                    _list[i + _count] = vertices[i];
+                    _list[i + Count] = vertices[i];
                 }
 
-                _count += vertices.Count;
-                _wasUpdated = true;
+                Count += vertices.Count;
+                WasUpdated = true;
             }
 
             /// <summary>
@@ -102,7 +109,7 @@ namespace GorgonLibrary.Renderers
             /// </summary>
             /// <param name="index">Index to insert at.</param>
             /// <param name="vertices">The list of vertices to insert.</param>
-            public void Insert(int index, IList<Gorgon2DVertex> vertices)
+            public void InsertRange(int index, IList<Gorgon2DVertex> vertices)
             {
                 if ((vertices == null)
                     || (vertices.Count == 0))
@@ -110,28 +117,28 @@ namespace GorgonLibrary.Renderers
                     return;
                 }
 
-                if (index >= _count)
+                if (index >= Count)
                 {
                     AddRange(vertices);
                     return;
                 }
 
                 // Resize the list if necessary.
-                if (_count + vertices.Count > _list.Length)
+                if (Count + vertices.Count > _list.Length)
                 {
-                    Array.Resize(ref _list, (_count + vertices.Count) * 2);
+                    Array.Resize(ref _list, (Count + vertices.Count) * 2);
                 }
 
                 // Copy the original elements to their new slots.
-                Array.Copy(_list, index, _list, vertices.Count + index, (_count - index));
+                Array.Copy(_list, index, _list, vertices.Count + index, (Count - index));
 
                 for (int i = 0; i < vertices.Count; ++i)
                 {
                     _list[index + i] = vertices[i];
                 }
 
-                _count += vertices.Count;
-                _wasUpdated = true;
+                Count += vertices.Count;
+                WasUpdated = true;
             }
 
             /// <summary>
@@ -141,29 +148,24 @@ namespace GorgonLibrary.Renderers
             public void Remove(int index)
             {
                 if ((index < 0)
-                    || (index >= _count))
+                    || (index >= Count))
                 {
                     throw new IndexOutOfRangeException();
                 }
 
-                if (_count == 1)
+                if (Count == 1)
                 {
-                    _count = 0;
-                    _wasUpdated = true;
+                    Count = 0;
+                    WasUpdated = true;
                     return;
                 }
 
-                if (index < _count - 1)
+	            Count--;
+                if (index < Count)
                 {
-#error We should use Array.Copy here.
-                    for (int i = index + 1; i < _count; i++)
-                    {
-                        _list[i - 1] = _list[i];
-                    }
+					Array.Copy(_list, index + 1, _list, index, Count);
                 }
-
-                _count--;
-                _wasUpdated = true;
+                WasUpdated = true;
             }
             #endregion
 
@@ -187,7 +189,7 @@ namespace GorgonLibrary.Renderers
                 get
                 {
                     if ((index < 0)
-                        || (index >= _count))
+                        || (index >= Count))
                     {
                         throw new IndexOutOfRangeException();
                     }
@@ -197,13 +199,13 @@ namespace GorgonLibrary.Renderers
                 set
                 {
                     if ((index < 0)
-                        || (index >= _count))
+                        || (index >= Count))
                     {
                         throw new IndexOutOfRangeException();
                     }
 
                     _list[index] = value;
-                    _wasUpdated = true;
+                    WasUpdated = true;
                 }
             }
             #endregion
@@ -228,28 +230,25 @@ namespace GorgonLibrary.Renderers
             /// <param name="item">The object to insert into the <see cref="T:System.Collections.Generic.IList`1" />.</param>
             public void Insert(int index, Gorgon2DVertex item)
             {
-                if (index >= _count)
+                if (index >= Count)
                 {
                     Add(item);
                     return;
                 }
                 
                 // Resize the list if necessary.
-                if (_count + 1 > _list.Length)
+                if (Count + 1 > _list.Length)
                 {
-                    Array.Resize(ref _list, (_count + 1) * 2);
+                    Array.Resize(ref _list, (Count + 1) * 2);
                 }
 
                 // Shift all items down by 1 item.
-                for (int i = index; i < _count - 1; i++)
-                {
-                    _list[i + 1] = _list[i];
-                }
+				Array.Copy(_list, index, _list, index + 1, Count - index);
 
                 // Insert the new item.
                 _list[index] = item;
-                _count++;
-                _wasUpdated = true;
+                Count++;
+                WasUpdated = true;
             }
 
             /// <summary>
@@ -265,46 +264,43 @@ namespace GorgonLibrary.Renderers
 
             #region ICollection<Gorgon2DVertex> Members
             #region Properties.
-            #endregion
+			/// <summary>
+			/// Gets the number of elements contained in the <see cref="T:System.Collections.Generic.ICollection`1" />.
+			/// </summary>
+			/// <returns>The number of elements contained in the <see cref="T:System.Collections.Generic.ICollection`1" />.</returns>
+			public int Count
+			{
+				get;
+				private set;
+			}
+
+			/// <summary>
+			/// Gets a value indicating whether the <see cref="T:System.Collections.Generic.ICollection`1" /> is read-only.
+			/// </summary>
+			/// <returns>true if the <see cref="T:System.Collections.Generic.ICollection`1" /> is read-only; otherwise, false.</returns>
+			public bool IsReadOnly
+			{
+				get
+				{
+					return false;
+				}
+			}
+			#endregion
 
             #region Methods.
-            /// <summary>
-            /// Gets the number of elements contained in the <see cref="T:System.Collections.Generic.ICollection`1" />.
-            /// </summary>
-            /// <returns>The number of elements contained in the <see cref="T:System.Collections.Generic.ICollection`1" />.</returns>
-            public int Count
-            {
-                get
-                {
-                    return _count;
-                }
-            }
-
-            /// <summary>
-            /// Gets a value indicating whether the <see cref="T:System.Collections.Generic.ICollection`1" /> is read-only.
-            /// </summary>
-            /// <returns>true if the <see cref="T:System.Collections.Generic.ICollection`1" /> is read-only; otherwise, false.</returns>
-            public bool IsReadOnly
-            {
-                get
-                {
-                    return false;
-                }
-            }
-
             /// <summary>
             /// Adds an item to the <see cref="T:System.Collections.Generic.ICollection`1" />.
             /// </summary>
             /// <param name="item">The object to add to the <see cref="T:System.Collections.Generic.ICollection`1" />.</param>
             public void Add(Gorgon2DVertex item)
             {
-                if (_count + 1 > _list.Length)
+                if (Count + 1 > _list.Length)
                 {
-                    Array.Resize(ref _list, (_count + 1) * 2);
+                    Array.Resize(ref _list, (Count + 1) * 2);
                 }
 
-                _list[_count++] = item;
-                _wasUpdated = true;
+                _list[Count++] = item;
+                WasUpdated = true;
             }
 
             /// <summary>
@@ -312,8 +308,8 @@ namespace GorgonLibrary.Renderers
             /// </summary>
             public void Clear()
             {
-                _count = 0;
-                _wasUpdated = true;
+                Count = 0;
+                WasUpdated = true;
             }
 
             /// <summary>
@@ -362,24 +358,385 @@ namespace GorgonLibrary.Renderers
             #endregion
 
             #region IEnumerable<Gorgon2DVertex> Members
-
+			/// <summary>
+			/// Returns an enumerator that iterates through the collection.
+			/// </summary>
+			/// <returns>
+			/// A <see cref="T:System.Collections.Generic.IEnumerator`1" /> that can be used to iterate through the collection.
+			/// </returns>
             public IEnumerator<Gorgon2DVertex> GetEnumerator()
             {
-                throw new NotImplementedException();
+	            for (int i = 0; i < Count; ++i)
+	            {
+		            yield return _list[i];
+	            }
             }
-
             #endregion
 
             #region IEnumerable Members
-
+			/// <summary>
+			/// Returns an enumerator that iterates through a collection.
+			/// </summary>
+			/// <returns>
+			/// An <see cref="T:System.Collections.IEnumerator" /> object that can be used to iterate through the collection.
+			/// </returns>
+			/// <exception cref="System.NotImplementedException"></exception>
             System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
             {
-                throw new NotImplementedException();
-            }
-
+				for (int i = 0; i < Count; ++i)
+				{
+					yield return _list[i];
+				}
+			}
             #endregion
         }
-        #endregion
+
+		/// <summary>
+		/// A list of indices.
+		/// </summary>
+		public class IndexList
+			: IList<int>
+		{
+			#region Variables.
+			private int[] _list;						// indices.
+			#endregion
+
+			#region Properties.
+			/// <summary>
+			/// Property to return the internal array for the list.
+			/// </summary>
+			internal int[] InternalArray
+			{
+				get
+				{
+					return _list;
+				}
+			}
+
+			/// <summary>
+			/// Property to set or return whether the list has been updated or not.
+			/// </summary>
+			internal bool WasUpdated
+			{
+				get;
+				set;
+			}
+			#endregion
+
+			#region Methods.
+			/// <summary>
+			/// Function to add a list of indices to the list.
+			/// </summary>
+			/// <param name="indices">indices to add.</param>
+			public void AddRange(IList<int> indices)
+			{
+				if ((indices == null)
+					|| (indices.Count == 0))
+				{
+					return;
+				}
+
+				if ((Count + indices.Count) > _list.Length)
+				{
+					Array.Resize(ref _list, (Count + indices.Count) * 2);
+				}
+
+				for (int i = 0; i < indices.Count; ++i)
+				{
+					_list[i + Count] = indices[i];
+				}
+
+				Count += indices.Count;
+				WasUpdated = true;
+			}
+
+			/// <summary>
+			/// Function to insert a list of indices into the list.
+			/// </summary>
+			/// <param name="index">Index to insert at.</param>
+			/// <param name="indices">The list of indices to insert.</param>
+			public void InsertRange(int index, IList<int> indices)
+			{
+				if ((indices == null)
+					|| (indices.Count == 0))
+				{
+					return;
+				}
+
+				if (index >= Count)
+				{
+					AddRange(indices);
+					return;
+				}
+
+				// Resize the list if necessary.
+				if (Count + indices.Count > _list.Length)
+				{
+					Array.Resize(ref _list, (Count + indices.Count) * 2);
+				}
+
+				// Copy the original elements to their new slots.
+				Array.Copy(_list, index, _list, indices.Count + index, (Count - index));
+
+				for (int i = 0; i < indices.Count; ++i)
+				{
+					_list[index + i] = indices[i];
+				}
+
+				Count += indices.Count;
+				WasUpdated = true;
+			}
+
+			/// <summary>
+			/// Function to remove an index at the specified index.
+			/// </summary>
+			/// <param name="index">Index of the item to remove.</param>
+			public void Remove(int index)
+			{
+				if ((index < 0)
+					|| (index >= Count))
+				{
+					throw new IndexOutOfRangeException();
+				}
+
+				if (Count == 1)
+				{
+					Count = 0;
+					WasUpdated = true;
+					return;
+				}
+
+				Count--;
+				if (index < Count)
+				{
+					Array.Copy(_list, index + 1, _list, index, Count);
+				}
+				WasUpdated = true;
+			}
+			#endregion
+
+			#region Constructor/Destructor.
+			/// <summary>
+			/// Initializes a new instance of the <see cref="IndexList"/> class.
+			/// </summary>
+			internal IndexList()
+			{
+				_list = new int[16];
+			}
+			#endregion
+
+			#region IList<int> Members
+			#region Properties.
+			/// <summary>
+			/// Gets or sets the element at the specified index.
+			/// </summary>
+			public int this[int index]
+			{
+				get
+				{
+					if ((index < 0)
+						|| (index >= Count))
+					{
+						throw new IndexOutOfRangeException();
+					}
+
+					return _list[index];
+				}
+				set
+				{
+					if ((index < 0)
+						|| (index >= Count))
+					{
+						throw new IndexOutOfRangeException();
+					}
+
+					_list[index] = value;
+					WasUpdated = true;
+				}
+			}
+			#endregion
+
+			#region Methods.
+			/// <summary>
+			/// Determines the index of a specific item in the <see cref="T:System.Collections.Generic.IList`1" />.
+			/// </summary>
+			/// <param name="item">The object to locate in the <see cref="T:System.Collections.Generic.IList`1" />.</param>
+			/// <returns>
+			/// The index of <paramref name="item" /> if found in the list; otherwise, -1.
+			/// </returns>
+			public int IndexOf(int item)
+			{
+				return Array.IndexOf(_list, item);
+			}
+
+			/// <summary>
+			/// Inserts an item to the <see cref="T:System.Collections.Generic.IList`1" /> at the specified index.
+			/// </summary>
+			/// <param name="index">The zero-based index at which <paramref name="item" /> should be inserted.</param>
+			/// <param name="item">The object to insert into the <see cref="T:System.Collections.Generic.IList`1" />.</param>
+			public void Insert(int index, int item)
+			{
+				if (index >= Count)
+				{
+					Add(item);
+					return;
+				}
+
+				// Resize the list if necessary.
+				if (Count + 1 > _list.Length)
+				{
+					Array.Resize(ref _list, (Count + 1) * 2);
+				}
+
+				// Shift all items down by 1 item.
+				Array.Copy(_list, index, _list, index + 1, Count - index);
+
+				// Insert the new item.
+				_list[index] = item;
+				Count++;
+				WasUpdated = true;
+			}
+
+			/// <summary>
+			/// Removes the <see cref="T:System.Collections.Generic.IList`1" /> item at the specified index.
+			/// </summary>
+			/// <param name="index">The zero-based index of the item to remove.</param>
+			void IList<int>.RemoveAt(int index)
+			{
+				Remove(index);
+			}
+			#endregion
+			#endregion
+
+			#region ICollection<int> Members
+			#region Properties.
+			/// <summary>
+			/// Gets the number of elements contained in the <see cref="T:System.Collections.Generic.ICollection`1" />.
+			/// </summary>
+			/// <returns>The number of elements contained in the <see cref="T:System.Collections.Generic.ICollection`1" />.</returns>
+			public int Count
+			{
+				get;
+				private set;
+			}
+
+			/// <summary>
+			/// Gets a value indicating whether the <see cref="T:System.Collections.Generic.ICollection`1" /> is read-only.
+			/// </summary>
+			/// <returns>true if the <see cref="T:System.Collections.Generic.ICollection`1" /> is read-only; otherwise, false.</returns>
+			public bool IsReadOnly
+			{
+				get
+				{
+					return false;
+				}
+			}
+			#endregion
+
+			#region Methods.
+			/// <summary>
+			/// Adds an item to the <see cref="T:System.Collections.Generic.ICollection`1" />.
+			/// </summary>
+			/// <param name="item">The object to add to the <see cref="T:System.Collections.Generic.ICollection`1" />.</param>
+			public void Add(int item)
+			{
+				if (Count + 1 > _list.Length)
+				{
+					Array.Resize(ref _list, (Count + 1) * 2);
+				}
+
+				_list[Count++] = item;
+				WasUpdated = true;
+			}
+
+			/// <summary>
+			/// Removes all items from the <see cref="T:System.Collections.Generic.ICollection`1" />.
+			/// </summary>
+			public void Clear()
+			{
+				Count = 0;
+				WasUpdated = true;
+			}
+
+			/// <summary>
+			/// Determines whether the <see cref="T:System.Collections.Generic.ICollection`1" /> contains a specific value.
+			/// </summary>
+			/// <param name="item">The object to locate in the <see cref="T:System.Collections.Generic.ICollection`1" />.</param>
+			/// <returns>
+			/// true if <paramref name="item" /> is found in the <see cref="T:System.Collections.Generic.ICollection`1" />; otherwise, false.
+			/// </returns>
+			public bool Contains(int item)
+			{
+				return IndexOf(item) > -1;
+			}
+
+			/// <summary>
+			/// Copies the automatic.
+			/// </summary>
+			/// <param name="array">The array.</param>
+			/// <param name="arrayIndex">Index of the array.</param>
+			public void CopyTo(int[] array, int arrayIndex)
+			{
+				_list.CopyTo(array, arrayIndex);
+			}
+
+			/// <summary>
+			/// Removes the first occurrence of a specific object from the <see cref="T:System.Collections.Generic.ICollection`1" />.
+			/// </summary>
+			/// <param name="item">The object to remove from the <see cref="T:System.Collections.Generic.ICollection`1" />.</param>
+			/// <returns>
+			/// true if <paramref name="item" /> was successfully removed from the <see cref="T:System.Collections.Generic.ICollection`1" />; otherwise, false. This method also returns false if <paramref name="item" /> is not found in the original <see cref="T:System.Collections.Generic.ICollection`1" />.
+			/// </returns>
+			bool ICollection<int>.Remove(int item)
+			{
+				int index = IndexOf(item);
+
+				if (index == -1)
+				{
+					return false;
+				}
+
+				Remove(index);
+
+				return true;
+			}
+			#endregion
+			#endregion
+
+			#region IEnumerable<int> Members
+			/// <summary>
+			/// Returns an enumerator that iterates through the collection.
+			/// </summary>
+			/// <returns>
+			/// A <see cref="T:System.Collections.Generic.IEnumerator`1" /> that can be used to iterate through the collection.
+			/// </returns>
+			public IEnumerator<int> GetEnumerator()
+			{
+				for (int i = 0; i < Count; ++i)
+				{
+					yield return _list[i];
+				}
+			}
+			#endregion
+
+			#region IEnumerable Members
+			/// <summary>
+			/// Returns an enumerator that iterates through a collection.
+			/// </summary>
+			/// <returns>
+			/// An <see cref="T:System.Collections.IEnumerator" /> object that can be used to iterate through the collection.
+			/// </returns>
+			/// <exception cref="System.NotImplementedException"></exception>
+			System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+			{
+				for (int i = 0; i < Count; ++i)
+				{
+					yield return _list[i];
+				}
+			}
+			#endregion
+		}
+		#endregion
 
         #region Variables.
         private List<int> _indices = new List<int>();                                           // Vertex indices.
@@ -397,49 +754,14 @@ namespace GorgonLibrary.Renderers
         #endregion
 
         #region Properties.
-        /// <summary>
-        /// Property to return the type of primitive for the renderable.
-        /// </summary>
-        protected internal override PrimitiveType PrimitiveType
-        {
-            get
-            {
-                return PrimitiveType.TriangleList;
-            }
-        }
-
-        /// <summary>
-        /// Property to return the number of indices that make up this renderable.
-        /// </summary>
-        /// <remarks>
-        /// This is only matters when the renderable uses an index buffer.
-        /// </remarks>
-        protected internal override int IndexCount
-        {
-            get
-            {
-                return _indices.Count;
-            }
-        }
-
-        public override GorgonVertexBufferBinding VertexBufferBinding
-        {
-            get
-            {
-                return _binding;
-            }
-        }
-
-        /// <summary>
-        /// Property to set or return the index buffer for this renderable.
-        /// </summary>
-        public override GorgonIndexBuffer IndexBuffer
-        {
-            get
-            {
-                return _indexBuffer;
-            }
-        }
+		/// <summary>
+		/// Property to return the renderer that created this object.
+		/// </summary>
+	    public Gorgon2D Gorgon2D
+	    {
+		    get;
+		    private set;
+	    }
 
         /// <summary>
         /// Property to set or return whether to use a dynamic index buffer for the polygon.
@@ -486,10 +808,27 @@ namespace GorgonLibrary.Renderers
                 _vertexBufferUpdated = true;
             }
         }
+		
+		/// <summary>
+		/// Property to return the list of vertices for the polygon.
+		/// </summary>
+	    public VertexList Vertex
+	    {
+		    get;
+		    private set;
+	    }
+
+		/// <summary>
+		/// Property to return the list of indices for the polygon.
+		/// </summary>
+	    public IndexList Index
+	    {
+		    get;
+		    private set;
+	    }
         #endregion
 
         #region Methods.
-
         /// <summary>
         /// Function to update the vertex data if the structure has changed.
         /// </summary>
@@ -627,11 +966,6 @@ namespace GorgonLibrary.Renderers
 
             _lastVertexIndexAdded = _vertices.Count;
         }
-
-        public void RemoveVertex(int vertexIndex)
-        {
-            
-        }
         #endregion
 
         #region Constructor.
@@ -641,7 +975,7 @@ namespace GorgonLibrary.Renderers
         /// <param name="gorgon2D">The gorgon 2D interface that created this object.</param>
         /// <param name="name">The name of the renderable.</param>
         internal GorgonPolygon(Gorgon2D gorgon2D, string name)
-            : base(gorgon2D, name)
+            : base(name)
         {
             
         }
@@ -2295,10 +2629,5 @@ namespace GorgonLibrary.Renderers
                         set;
                 }
                 #endregion*/
-
-        protected override void TransformVertices()
-        {
-            throw new NotImplementedException();
-        }
-    }
-}
+/*    }
+}*/

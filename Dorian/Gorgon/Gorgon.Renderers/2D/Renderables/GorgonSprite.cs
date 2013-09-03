@@ -435,6 +435,18 @@ namespace GorgonLibrary.Renderers
 				Save(stream);
 			}
 		}
+
+		/// <summary>
+		/// Function to draw the object.
+		/// </summary>
+		/// <remarks>
+		/// Please note that this doesn't draw the object to the target right away, but queues it up to be
+		/// drawn when <see cref="GorgonLibrary.Renderers.Gorgon2D.Render">Render</see> is called.
+		/// </remarks>
+		public override void Draw()
+		{
+			AddToRenderQueue();
+		}
 		#endregion
 
 		#region Constructor/Destructor.

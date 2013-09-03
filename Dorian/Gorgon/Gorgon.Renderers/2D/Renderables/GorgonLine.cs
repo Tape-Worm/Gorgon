@@ -652,7 +652,7 @@ namespace GorgonLibrary.Renderers
 
 			TransformVertices();
 
-			base.Draw();
+			AddToRenderQueue();
 		}
 		#endregion
 
