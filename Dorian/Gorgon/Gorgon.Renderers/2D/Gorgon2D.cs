@@ -154,16 +154,17 @@ namespace GorgonLibrary.Renderers
 		private readonly bool _systemCreatedTarget;										// Flag to indicate whether Gorgon created the default target or not.
 		private Gorgon2DTarget _currentTarget;											// Current render target.
 		private Gorgon2DTarget _defaultTarget;											// Default render target.
-		private int _baseVertex;														// Base vertex.		
-		private Gorgon2DVertex[] _vertexCache;											// List of vertices to cache.
-		private int _cacheStart;														// Starting cache vertex buffer index.
-		private int _renderIndexStart;													// Starting index to render.
-		private int _renderIndexCount;													// Number of indices to render.
-		private int _cacheEnd;															// Ending vertex buffer cache index.
-		private int _cacheWritten;														// Number of vertices written.
+	    private Gorgon2DVertexCache _cache;                                             // Our vertex cache for the renderer.
+		//private int _baseVertex;														// Base vertex.		
+		//private Gorgon2DVertex[] _vertexCache;											// List of vertices to cache.
+		//private int _cacheStart;														// Starting cache vertex buffer index.
+		//private int _renderIndexStart;													// Starting index to render.
+		//private int _renderIndexCount;													// Number of indices to render.
+		//private int _cacheEnd;															// Ending vertex buffer cache index.
+		//private int _cacheWritten;														// Number of vertices written.
 		private bool _useCache = true;													// Flag to indicate that we want to use the cache.
 		private bool _disposed;															// Flag to indicate that the object was disposed.
-		private readonly int _cacheSize;												// Number of vertices that we can stuff into a vertex buffer.
+		//private readonly int _cacheSize;												// Number of vertices that we can stuff into a vertex buffer.
 		private bool _multiSampleEnable;												// Flag to indicate that multi sampling is enabled.
 		private GorgonViewport? _viewPort;												// Viewport to use.
 		private Rectangle? _clip;														// Clipping rectangle.
@@ -614,7 +615,7 @@ namespace GorgonLibrary.Renderers
 			}
 
 			// Reset the cache values.
-			ClearCache();
+			_cache.Reset();
 
 			// Set our default shaders.
 			VertexShader.Current = VertexShader.DefaultVertexShader;
@@ -664,7 +665,7 @@ namespace GorgonLibrary.Renderers
 			}
 		}
 
-		/// <summary>
+		/*/// <summary>
 		/// Function to clear up the vertex cache.
 		/// </summary>
 		private void ClearCache()
@@ -676,7 +677,7 @@ namespace GorgonLibrary.Renderers
 			_renderIndexCount = 0;
 			_renderIndexStart = 0;
 			_cacheWritten = 0;
-		}
+		}*/
 
         /// <summary>
         /// Function to render the scene and draw the Gorgon logo at the bottom-right of the screen.
@@ -751,14 +752,14 @@ namespace GorgonLibrary.Renderers
 			// Create pre-defined effects objects.
 			Effects = new Gorgon2DEffects(this);
 
-			int spriteVertexBufferSize = Gorgon2DVertex.SizeInBytes * _cacheSize;
-			int spriteIndexBufferSize = sizeof(int) * _cacheSize * 6;
+			int spriteVertexBufferSize = Gorgon2DVertex.SizeInBytes * _cache.CacheSize;
+			int spriteIndexBufferSize = sizeof(int) * _cache.CacheSize * 6;
 
 			// Set up our index buffer.
 			using (var ibData = new GorgonDataStream(spriteIndexBufferSize))
 			{
 				int index = 0;
-				for (int i = 0; i < _cacheSize; i++)
+				for (int i = 0; i < _cache.CacheSize; i++)
 				{
 					ibData.Write(index);
 					ibData.Write(index + 1);
@@ -788,14 +789,11 @@ namespace GorgonLibrary.Renderers
 							Usage = BufferUsage.Dynamic
 						}), Gorgon2DVertex.SizeInBytes);
 
-			// Create the vertex cache.
-			_vertexCache = new Gorgon2DVertex[_cacheSize];
-
 			// Set up the default render states.
 			SetDefaultStates();
 		}
 
-		/// <summary>
+		/*/// <summary>
 		/// Function to add vertices to the vertex cache without any state checking.
 		/// </summary>
 		/// <param name="vertices">Vertices to add.</param>
@@ -837,7 +835,7 @@ namespace GorgonLibrary.Renderers
 
 			// We need to shift the vertices for those items that change the index buffer.
 			_baseVertex += baseVertex;
-		}
+		}*/
 
 		/// <summary>
 		/// Function to add a renderable object to the vertex buffer.
@@ -850,9 +848,9 @@ namespace GorgonLibrary.Renderers
 
 			if (stateChange != StateChange.None)
 			{
-				if (_cacheWritten > 0)
+				if (_cache.NeedsFlush)
 				{
-					Flush();
+					_cache.Flush();
 				}
 
 				DefaultState.UpdateState(renderable, stateChange);
@@ -860,8 +858,6 @@ namespace GorgonLibrary.Renderers
 				// If we switch vertex buffers, then reset the cache.
 				if ((stateChange & StateChange.VertexBuffer) == StateChange.VertexBuffer)
 				{
-					ClearCache();
-
 					_useCache = Graphics.Input.VertexBuffers[0].Equals(ref _defaultVertexBuffer);
 				}
 			}
@@ -869,14 +865,10 @@ namespace GorgonLibrary.Renderers
             // We skip the cache for objects that have their own vertex buffers.
             if (!_useCache)
             {
-                _cacheStart = 0;
-                _cacheWritten = renderable.VertexCount;
-                _renderIndexCount = renderable.IndexCount;
-                _baseVertex = renderable.BaseVertexCount;
                 return;
             }
 
-			AddVertices(renderable.Vertices, renderable.BaseVertexCount, renderable.IndexCount, 0, renderable.VertexCount);
+            _cache.AddVertices(renderable.Vertices, renderable.BaseVertexCount, renderable.IndexCount, 0, renderable.VertexCount);
 		}
 
 		/// <summary>
@@ -904,7 +896,7 @@ namespace GorgonLibrary.Renderers
         /// </remarks>
 	    public void End2D(Gorgon2DStateRecall state = null)
 	    {
-			ClearCache();
+            _cache.Reset();
 
             if (state == null)
             {
@@ -1039,10 +1031,10 @@ namespace GorgonLibrary.Renderers
         public void Flush()
         {
             ICamera currentCamera = (_camera ?? _defaultCamera);
-            BufferLockFlags flags = BufferLockFlags.Discard | BufferLockFlags.Write;
-            GorgonVertexBufferBinding vbBinding = Graphics.Input.VertexBuffers[0];
+            //BufferLockFlags flags = BufferLockFlags.Discard | BufferLockFlags.Write;
+            //GorgonVertexBufferBinding vbBinding = Graphics.Input.VertexBuffers[0];
 
-            if (_cacheWritten == 0)
+            if (!_cache.NeedsFlush)
             {
                 return;
             }
@@ -1052,7 +1044,9 @@ namespace GorgonLibrary.Renderers
                 currentCamera.Update();
             }
 
-            if (_cacheStart > 0)
+            _cache.Flush();
+
+            /*if (_cacheStart > 0)
             {
                 flags = BufferLockFlags.NoOverwrite | BufferLockFlags.Write;
             }
@@ -1121,7 +1115,7 @@ namespace GorgonLibrary.Renderers
             _cacheStart = _cacheEnd;
             _cacheWritten = 0;
             _renderIndexStart += _renderIndexCount;
-            _renderIndexCount = 0;
+            _renderIndexCount = 0;*/
         }
 
         /// <summary>
@@ -1168,13 +1162,14 @@ namespace GorgonLibrary.Renderers
 		{
 			_systemCreatedTarget = autoCreatedTarget;
 
+            _cache = new Gorgon2DVertexCache(this, vertexCacheSize.Max(1024));
+
 			IsBlendingEnabled = true;
 			IsAlphaTestEnabled = true;
 
 			TrackedObjects = new GorgonDisposableObjectCollection();
 			Graphics = target.Resource.Graphics;
 			DefaultTarget = target;
-		    _cacheSize = vertexCacheSize.Max(1024);
 			
 			_logoSprite = new GorgonSprite(this, "Gorgon2D.LogoSprite", new GorgonSpriteSettings
 			{
@@ -1191,7 +1186,7 @@ namespace GorgonLibrary.Renderers
 				Position = new Vector2(-_defaultTarget.Width * 0.5f, -_defaultTarget.Height * 0.5f)
 			};
 
-			Renderables = new GorgonRenderables(this);
+			Renderables = new GorgonRenderables(this, _cache);
 			Drawing = new GorgonDrawing(this);
 		}
 		#endregion
@@ -1211,7 +1206,7 @@ namespace GorgonLibrary.Renderers
 			if (disposing)
 			{
                 // Dump any pending rendering.
-                ClearCache();
+                _cache.Reset();
 
                 if (_initialState != null)
                 {

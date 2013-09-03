@@ -44,6 +44,7 @@ namespace GorgonLibrary.Renderers
 	{
 		#region Variables.
 		private readonly StringBuilder _tabText;								// Tab spacing text.
+	    private readonly Gorgon2DVertexCache _vertexCache;                      // The internal vertex cache used by the renderer.
 		private Gorgon2DCollider _collider;                                     // Collision object.
 		private int _colliderVertexCount;                                       // Collider vertex count.
 		private RectangleF? _textRect;											// Text rectangle.
@@ -1118,7 +1119,7 @@ namespace GorgonLibrary.Renderers
 				    }
 
 				    // Add shadowed characters.
-				    Gorgon2D.AddVertices(_vertices, 0, 6, vertexIndex, 4);
+                    _vertexCache.AddVertices(_vertices, 0, 6, vertexIndex, 4);
 				    vertexIndex += 8;
 				}
 
@@ -1150,7 +1151,7 @@ namespace GorgonLibrary.Renderers
 			        Gorgon2D.PixelShader.Resources[0] = glyph.Texture;
 			    }
 
-			    Gorgon2D.AddVertices(_vertices, 0, 6, vertexIndex, 4);
+                _vertexCache.AddVertices(_vertices, 0, 6, vertexIndex, 4);
 			    vertexIndex += _shadowEnabled ? 8 : 4;
 			}
 
@@ -1166,13 +1167,15 @@ namespace GorgonLibrary.Renderers
 		/// Initializes a new instance of the <see cref="GorgonText"/> class.
 		/// </summary>
 		/// <param name="gorgon2D">2D interface that created this object.</param>
+		/// <param name="cache">The internal cache used by the renderer.</param>
 		/// <param name="name">Name of the text object.</param>
 		/// <param name="font">The font to use.</param>
-		internal GorgonText(Gorgon2D gorgon2D, string name, GorgonFont font)
+		internal GorgonText(Gorgon2D gorgon2D, Gorgon2DVertexCache cache, string name, GorgonFont font)
 			: base(name)
 		{
 			Gorgon2D = gorgon2D;
 
+		    _vertexCache = cache;
 			_text = string.Empty;
 			_formattedText = new StringBuilder(256);
 			_lines = new List<string>();

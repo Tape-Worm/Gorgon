@@ -716,7 +716,7 @@ namespace GorgonLibrary.Renderers
 			};
 			_ellipse = new GorgonEllipse(gorgon2D, "Gorgon2D.Ellipse", Vector2.Zero, Vector2.Zero, Color.White, 64, false);
 			_triangle = new GorgonTriangle(gorgon2D, "Gorgon2D.Triangle", new GorgonTriangle.TrianglePoint(), new GorgonTriangle.TrianglePoint(), new GorgonTriangle.TrianglePoint(), false);
-			_string = new GorgonText(gorgon2D, "Gorgon2D.String", null);
+			_string = gorgon2D.Renderables.CreateText("Gorgon2D.String");
 		}
 		#endregion
 	}

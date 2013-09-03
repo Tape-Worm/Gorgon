@@ -797,7 +797,7 @@ namespace GorgonLibrary.Graphics
 				throw new ArgumentException(Resources.GORGFX_TEXTURE_DISCARD_NEEDS_DYNAMIC);
 	        }
 
-	        if ((deferred != null)
+	        if ((deferred != null) && (deferred.IsDeferred)
                 && ((lockFlags & BufferLockFlags.Discard) != BufferLockFlags.Discard))
             {
                 throw new ArgumentException(Resources.GORGFX_LOCK_NEED_DISCARD_NOOVERWRITE, "lockFlags");

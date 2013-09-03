@@ -25,226 +25,181 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using GorgonLibrary.IO;
 using GorgonLibrary.Graphics;
 
 namespace GorgonLibrary.Renderers
 {
-	/// <summary>
-	/// A cache used to hold vertices for rendering.
-	/// </summary>
-	class Gorgon2DVertexCache
-	{
-		#region Variables.
-		private readonly Gorgon2DVertex[] _vertices;					// The list of vertices in the cache.
-		private readonly Gorgon2D _renderer;							// The renderer that owns this cache.
-		private bool _verticesUpdated;									// Flag to indicate that the vertices were updated.
-		#endregion
+    /// <summary>
+    /// A cache used to hold vertices for rendering.
+    /// </summary>
+    class Gorgon2DVertexCache
+    {
+        #region Variables.
+        private Gorgon2DVertex[] _vertices;         // The list of vertices in the cache.
+        private int _verticesWritten;               // The number of vertices written to the cache since the last flush.
+        private int _indexCount;                    // The number of indices that use the vertices in the cache.
+        private int _firstIndex;                    // The first index to use when looking up vertices.
+        private int _vertexOffset;                  // An offset in the vertex list.  Used when data in the vertex buffer does not match up to its index buffer.
+        private int _currentVertex;                 // The most current vertex in the cache.
+        private Gorgon2D _renderer;                 // The renderer bound to this cache.
+        #endregion
 
-		#region Properties.
-		/// <summary>
-		/// Property to return the size of the cache, in vertices.
-		/// </summary>
-		public int CacheSize
-		{
-			get;
-			private set;
-		}
+        #region Properties.
 
-		/// <summary>
-		/// Property to return the starting vertex for rendering.
-		/// </summary>
-		public int StartingVertex
-		{
-			get;
-			private set;
-		}
+        /// <summary>
+        /// Property to return the size of the cache, in vertices.
+        /// </summary>
+        public int CacheSize
+        {
+            get;
+            private set;
+        }
 
-		/// <summary>
-		/// Property to return the ending vertex for rendering.
-		/// </summary>
-		public int EndingVertex
-		{
-			get;
-			private set;
-		}
+        /// <summary>
+        /// Property to return whether the cache needs to be flushed.
+        /// </summary>
+        public bool NeedsFlush
+        {
+            get;
+            private set;
+        }
 
-		/// <summary>
-		/// Property to return the first index to start rendering.
-		/// </summary>
-		public int StartingIndex
-		{
-			get;
-			private set;
-		}
+        #endregion
 
-		/// <summary>
-		/// Property to return the number of indices to render.
-		/// </summary>
-		public int IndexCount
-		{
-			get;
-			private set;
-		}
+        #region Methods.
 
-		/// <summary>
-		/// Property to return the current position in the cache.
-		/// </summary>
-		public int CachePosition
-		{
-			get;
-			private set;
-		}
+        /// <summary>
+        /// Function to reset the cache.
+        /// </summary>
+        public void Reset()
+        {
+            NeedsFlush = false;
+            _vertexOffset = 0;
+            _verticesWritten = 0;
+            _indexCount = 0;
+            _firstIndex = 0;
+            _currentVertex = 0;
+        }
 
-		/// <summary>
-		/// Property to return the current base vertex to use as an offset.
-		/// </summary>
-		public int BaseVertexOffset
-		{
-			get;
-			private set;
-		}
-		#endregion
+        /// <summary>
+        /// Function to add vertices to the cache.
+        /// </summary>
+        /// <param name="vertices">An array of vertices to add to the cache.</param>
+        /// <param name="baseVertex">Base vertex offset to apply to this set of vertices.</param>
+        /// <param name="indexCount">Number of indices for this set of vertices.</param>
+        /// <param name="firstVertex">First vertex in the array to start copying from.</param>
+        /// <param name="vertexCount">Number of vertices in the array to copy.</param>
+        public void AddVertices(
+            Gorgon2DVertex[] vertices,
+            int baseVertex,
+            int indexCount,
+            int firstVertex,
+            int vertexCount)
+        {
+            // Do nothing.
+            if ((vertices == null)
+                || (vertices.Length == 0))
+            {
+                return;
+            }
 
-		#region Methods.
-		/// <summary>
-		/// Function to reset the cache.
-		/// </summary>
-		public void Reset()
-		{
-			BaseVertexOffset = 0;
-			CachePosition = 0;
-			IndexCount = 0;
-			StartingIndex = 0;
-			EndingVertex = 0;
-			StartingVertex = 0;
-		}
+            int lastVertex = _currentVertex + _verticesWritten;
 
-		/// <summary>
-		/// Function to add vertices to the cache.
-		/// </summary>
-		/// <param name="vertices">An array of vertices to add to the cache.</param>
-		/// <param name="baseVertex">Base vertex offset to apply to this set of vertices.</param>
-		/// <param name="indexCount">Number of indices for this set of vertices.</param>
-		/// <param name="firstVertex">First vertex in the array to start copying from.</param>
-		/// <param name="vertexCount">Number of vertices in the array to copy.</param>
-		public void AddVertices(Gorgon2DVertex[] vertices, int baseVertex, int indexCount, int firstVertex, int vertexCount)
-		{
-			// Do nothing.
-			if ((vertices == null)
-			    || (vertices.Length == 0))
-			{
-				return;
-			}
+            // If this set of vertices will overflow the cache, then we need to flush the vertices that we have and reset.
+            if (vertexCount + lastVertex > CacheSize)
+            {
+                if (_verticesWritten > 0)
+                {
+                    Flush();
+                }
 
-			// If this set of vertices will overflow the cache, then we need to flush the vertices that we have and reset.
-			if (vertexCount + EndingVertex > CacheSize)
-			{
-				if (CachePosition > 0)
-				{
-					_renderer.Flush();
-				}
+                Reset();
 
-				Reset();
-			}
+                lastVertex = 0;
+            }
 
-			// Copy into our cache.
-			for (int i = 0; i < vertexCount; i++)
-			{
-				_vertices[i + EndingVertex] = vertices[i + firstVertex];
-			}
+            // Copy into our cache.
+            Array.Copy(vertices, firstVertex, _vertices, lastVertex, vertexCount);
+  
+            _indexCount += indexCount;
+            _verticesWritten += vertexCount;
 
-			IndexCount += indexCount;
-			EndingVertex += vertexCount;
-			CachePosition += EndingVertex - StartingVertex;
+            // Update the offset.
+            _vertexOffset += baseVertex;
 
-			// Update the offset.
-			BaseVertexOffset += baseVertex;
+            NeedsFlush = true;
+        }
 
-			_verticesUpdated = true;
-		}
+        /// <summary>
+        /// Function to flush the cache by rendering its contents.
+        /// </summary>
+        public void Flush()
+        {
+            GorgonVertexBufferBinding binding = _renderer.Graphics.Input.VertexBuffers[0];
 
-		/// <summary>
-		/// Function to flush the cache by rendering its contents.
-		/// </summary>
-		public void Flush()
-		{
-			GorgonVertexBufferBinding binding = _renderer.Graphics.Input.VertexBuffers[0];
+            // Only advance the cache when we've got something to copy into the buffer.
+            switch (binding.VertexBuffer.Settings.Usage)
+            {
+                case BufferUsage.Dynamic:
+                    // If we're not at the beginning of the cache, then 
+                    // do a no overwrite lock.  This will help performance.
+                    var flags = BufferLockFlags.Write
+                                | (_currentVertex > 0 ? BufferLockFlags.NoOverwrite : BufferLockFlags.Discard);
 
-			// Only advance the cache when we've got something to copy into the buffer.
-			if (_verticesUpdated)
-			{
-				switch (binding.VertexBuffer.Settings.Usage)
-				{
-					case BufferUsage.Dynamic:
-						var flags = BufferLockFlags.Discard | BufferLockFlags.Write;
+                    using(GorgonDataStream stream = binding.VertexBuffer.Lock(flags, _renderer.Graphics))
+                    {
+                        stream.Position = _currentVertex * Gorgon2DVertex.SizeInBytes;
+                        stream.WriteRange(_vertices, _currentVertex, _verticesWritten);
+                        binding.VertexBuffer.Unlock();
+                    }
+                    break;
+                default:
+                    binding.VertexBuffer.Update(_vertices,
+                        _currentVertex * Gorgon2DVertex.SizeInBytes,
+                        _renderer.Graphics);
+                    break;
+            }
 
-						if (StartingVertex > 0)
-						{
-							flags = BufferLockFlags.NoOverwrite | BufferLockFlags.Write;
-						}
+            // Draw the buffer data.
+            switch (_renderer.Graphics.Input.PrimitiveType)
+            {
+                case PrimitiveType.PointList:
+                case PrimitiveType.LineList:
+                    _renderer.Graphics.Output.Draw(_currentVertex, _verticesWritten);
+                    break;
+                case PrimitiveType.TriangleList:
+                    if (_renderer.Graphics.Input.IndexBuffer == null)
+                    {
+                        _renderer.Graphics.Output.Draw(_currentVertex, _verticesWritten);
+                    }
+                    else
+                    {
+                        _renderer.Graphics.Output.DrawIndexed(_firstIndex, _vertexOffset, _indexCount);
+                    }
+                    break;
+            }
 
-						using(GorgonDataStream stream = binding.VertexBuffer.Lock(flags, _renderer.Graphics))
-						{
-							stream.Position = StartingVertex * Gorgon2DVertex.SizeInBytes;
-							stream.WriteRange(_vertices, StartingVertex, CachePosition);
-							binding.VertexBuffer.Unlock();
-						}
-						break;
-					default:
-						binding.VertexBuffer.Update(_vertices, StartingVertex * Gorgon2DVertex.SizeInBytes, _renderer.Graphics);
-						break;
-				}
-			}
+            _currentVertex += _verticesWritten;
+            _firstIndex += _indexCount;
+            _verticesWritten = 0;
+            _indexCount = 0;
+            NeedsFlush = false;
+        }
+        #endregion
 
-			// Draw the buffer data.
-			switch (_renderer.Graphics.Input.PrimitiveType)
-			{
-				case PrimitiveType.PointList:
-				case PrimitiveType.LineList:
-					_renderer.Graphics.Output.Draw(StartingVertex, CachePosition);
-					break;
-				case PrimitiveType.TriangleList:
-					if (_renderer.Graphics.Input.IndexBuffer == null)
-					{
-						_renderer.Graphics.Output.Draw(StartingVertex, CachePosition);
-					}
-					else
-					{
-						_renderer.Graphics.Output.DrawIndexed(StartingIndex, BaseVertexOffset, IndexCount);
-					}
-					break;
-			}
-
-			if (!_verticesUpdated)
-			{
-				return;
-			}
-
-			StartingVertex = EndingVertex;
-			StartingIndex += IndexCount;
-			CachePosition = 0;
-			IndexCount = 0;
-			_verticesUpdated = false;
-		}
-		#endregion
-
-		#region Constructor/Destructor.
-		/// <summary>
-		/// Initializes a new instance of the <see cref="Gorgon2DVertexCache"/> class.
-		/// </summary>
-		/// <param name="gorgon2D">The renderer that is using this interface.</param>
-		/// <param name="cacheSize">Size of the cache, in vertices.</param>
-		public Gorgon2DVertexCache(Gorgon2D gorgon2D, int cacheSize)
-		{
-			_vertices = new Gorgon2DVertex[cacheSize];
-			_renderer = gorgon2D;
-			CacheSize = cacheSize;
-		}
-		#endregion
-	}
+        #region Constructor.
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Gorgon2DVertexCache"/> class.
+        /// </summary>
+        /// <param name="renderer">The renderer.</param>
+        /// <param name="cacheSize">Size of the cache.</param>
+        public Gorgon2DVertexCache(Gorgon2D renderer, int cacheSize)
+        {
+            _renderer = renderer;
+            _vertices = new Gorgon2DVertex[cacheSize];
+            CacheSize = cacheSize;
+        }
+        #endregion
+    }
 }

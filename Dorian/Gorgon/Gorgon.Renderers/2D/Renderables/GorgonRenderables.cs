@@ -43,7 +43,8 @@ namespace GorgonLibrary.Renderers
 	{
 		#region Variables.
 		private readonly Gorgon2D _gorgon2D;			// Gorgon 2D interface.
-		#endregion
+	    private readonly Gorgon2DVertexCache _cache;    // Gorgon vertex cache.
+        #endregion
 
 		#region Methods.
 		/// <summary>
@@ -220,7 +221,7 @@ namespace GorgonLibrary.Renderers
 		        throw new ArgumentException(Resources.GOR2D_PARAMETER_MUST_NOT_BE_EMPTY, "name");
 		    }
 
-			var result = new GorgonText(_gorgon2D, name, font)
+			var result = new GorgonText(_gorgon2D, _cache, name, font)
 			{
 			    ShadowEnabled = shadowed,
 			    ShadowOffset = shadowOffset,
@@ -535,9 +536,11 @@ namespace GorgonLibrary.Renderers
 		/// Initializes a new instance of the <see cref="GorgonRenderables"/> class.
 		/// </summary>
 		/// <param name="gorgon2D">The gorgon 2D interface that owns this object.</param>
-		internal GorgonRenderables(Gorgon2D gorgon2D)
+		/// <param name="cache">The vertex cache used by the renderer.</param>
+		internal GorgonRenderables(Gorgon2D gorgon2D, Gorgon2DVertexCache cache)
 		{
 			_gorgon2D = gorgon2D;
+		    _cache = cache;
 		}
 		#endregion
 	}
