@@ -435,7 +435,7 @@ namespace GorgonLibrary.Renderers
 		{
 			if (_isFilled)
 			{
-				base.Draw();
+				AddToRenderQueue();
 				return;
 			}
 

@@ -24,6 +24,8 @@
 // 
 #endregion
 
+using GorgonLibrary.Diagnostics;
+using GorgonLibrary.Graphics.Properties;
 using DX = SharpDX;
 using D3D11 = SharpDX.Direct3D11;
 using GorgonLibrary.IO;
@@ -101,6 +103,15 @@ namespace GorgonLibrary.Graphics
         /// </remarks>
 		protected override void OnUpdate(GorgonDataStream stream, int offset, int size, GorgonGraphics context)
 		{
+			GorgonDebug.AssertNull(stream, "stream");
+
+#if DEBUG
+			if (Settings.Usage != GorgonLibrary.Graphics.BufferUsage.Default)
+			{
+				throw new GorgonException(GorgonResult.AccessDenied, Resources.GORGFX_NOT_DEFAULT_USAGE);
+			}
+#endif
+	
 			context.Context.UpdateSubresource(
 				new DX.DataBox
 				    {
@@ -121,6 +132,87 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
+		/// Function to update the buffer with data.
+		/// </summary>
+		/// <param name="value">Value to write to the buffer.</param>
+		/// <param name="offset">Offset in the buffer, in bytes, to write at.</param>
+		/// <param name="deferred">[Optional] The deferred context used to update the buffer.</param>
+		/// <remarks>This method can only be used with buffers that have Default usage.  Other buffer usages will thrown an exception.
+		/// <para>
+		/// If the <paramref name="deferred"/> parameter is NULL (Nothing in VB.Net), the immediate context will be used to update the buffer.  If it is non-NULL, then it 
+		/// will use the specified deferred context.
+		/// <para>If you are using a deferred context, it is necessary to use that context to update the buffer because 2 threads may not access the same resource at the same time.  
+		/// Passing a separate deferred context will alleviate that.</para>
+		/// </para>
+		/// </remarks>
+		/// <exception cref="GorgonLibrary.GorgonException">Thrown when the buffer usage is not set to default.</exception>
+		public void Update(ref int value, int offset, GorgonGraphics deferred = null)
+		{
+#if DEBUG
+			if (Settings.Usage != GorgonLibrary.Graphics.BufferUsage.Default)
+			{
+				throw new GorgonException(GorgonResult.AccessDenied, Resources.GORGFX_NOT_DEFAULT_USAGE);
+			}
+#endif
+			if (deferred == null)
+			{
+				deferred = Graphics;
+			}
+
+			deferred.Context.UpdateSubresource(ref value, D3DResource, 0, 0, 0, new D3D11.ResourceRegion
+			{
+				Left = offset,
+				Right = offset + (Settings.Use32BitIndices ? sizeof(int) : sizeof(short)),
+				Top = 0,
+				Bottom = 1,
+				Front = 0,
+				Back = 1
+			});
+		}
+
+		/// <summary>
+		/// Function to update the buffer with data.
+		/// </summary>
+		/// <param name="values">Values to write to the buffer.</param>
+		/// <param name="offset">Offset in the buffer, in bytes, to write at.</param>
+		/// <param name="deferred">[Optional] The deferred context used to update the buffer.</param>
+		/// <remarks>This method can only be used with buffers that have Default usage.  Other buffer usages will thrown an exception.
+		/// <para>
+		/// If the <paramref name="deferred"/> parameter is NULL (Nothing in VB.Net), the immediate context will be used to update the buffer.  If it is non-NULL, then it 
+		/// will use the specified deferred context.
+		/// <para>If you are using a deferred context, it is necessary to use that context to update the buffer because 2 threads may not access the same resource at the same time.  
+		/// Passing a separate deferred context will alleviate that.</para>
+		/// </para>
+		/// </remarks>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="values"/> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="GorgonLibrary.GorgonException">Thrown when the buffer usage is not set to default.</exception>
+		public void Update(int[] values, int offset, GorgonGraphics deferred = null)
+		{
+			GorgonDebug.AssertNull(values, "values");
+
+#if DEBUG
+			if (Settings.Usage != GorgonLibrary.Graphics.BufferUsage.Default)
+			{
+				throw new GorgonException(GorgonResult.AccessDenied, Resources.GORGFX_NOT_DEFAULT_USAGE);
+			}
+#endif
+			if (deferred == null)
+			{
+				deferred = Graphics;
+			}
+
+			deferred.Context.UpdateSubresource(values, D3DResource, 0, 0, 0, new D3D11.ResourceRegion
+			{
+				Left = offset,
+				Right = offset + (Settings.Use32BitIndices ? sizeof(int) : sizeof(short)) * values.Length,
+				Top = 0,
+				Bottom = 1,
+				Front = 0,
+				Back = 1
+			});
+		}
+
+		/// <summary>
 		/// Function to update the buffer.
 		/// </summary>
 		/// <param name="stream">Stream containing the data used to update the buffer.</param>
@@ -134,7 +226,7 @@ namespace GorgonLibrary.Graphics
 		/// to 0.</para>
         /// <para>
         /// If the <paramref name="deferred"/> parameter is NULL (Nothing in VB.Net), the immediate context will be used to update the buffer.  If it is non-NULL, then it 
-        /// will use the specified deferred context to clear the render target.
+        /// will use the specified deferred context.
         /// <para>If you are using a deferred context, it is necessary to use that context to update the buffer because 2 threads may not access the same resource at the same time.  
         /// Passing a separate deferred context will alleviate that.</para>
         /// </para>

@@ -73,6 +73,7 @@
     <Compile Include="Gorgon2D.cs" />
     <Compile Include="Gorgon2DAlphaTest.cs" />
     <Compile Include="Gorgon2DTarget.cs" />
+    <Compile Include="Gorgon2DVertexCache.cs" />
     <Compile Include="GorgonGraphics2DExtensions.cs" />
     <Compile Include="Gorgon2DStateRecall.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
