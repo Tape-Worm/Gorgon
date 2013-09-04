@@ -476,7 +476,7 @@ namespace GorgonLibrary.Renderers
 		/// Function to draw the object.
 		/// </summary>
 		/// <remarks>Please note that this doesn't draw the object to the target right away, but queues it up to be 
-		/// drawn when <see cref="M:GorgonLibrary.Renderers.Gorgon2D.Render">Render</see> is called.
+		/// drawn when <see cref="GorgonLibrary.Renderers.Gorgon2D.Render">Render</see> is called.
 		/// </remarks>
 		public void Draw()
 		{

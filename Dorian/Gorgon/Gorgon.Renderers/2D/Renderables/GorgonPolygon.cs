@@ -1,4 +1,4 @@
-﻿/*#region MIT.
+﻿#region MIT.
 // 
 // Gorgon.
 // Copyright (C) 2013 Michael Winsor
@@ -30,6 +30,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms.VisualStyles;
+using System.Drawing;
 using GorgonLibrary.IO;
 using GorgonLibrary.Native;
 using GorgonLibrary.Diagnostics;
@@ -38,6 +39,27 @@ using GorgonLibrary.Graphics;
 
 namespace GorgonLibrary.Renderers
 {
+    /// <summary>
+    /// The type of drawing to use when drawing the polygon.
+    /// </summary>
+    [Flags]
+    public enum PolygonType
+    {
+        /// <summary>
+        /// Use a triangle list to draw the polygon.
+        /// </summary>
+        Triangle = 1,
+        /// <summary>
+        /// Use a line list to draw the polygon.
+        /// </summary>
+        Line = 2,
+        /// <summary>
+        /// Use the stripped version of the drawing type.
+        /// </summary>
+        /// <remarks>This flag must be combined with either Triangle or Line.</remarks>
+        Strip = 4
+    }
+
     /// <summary>
     /// A polygonal renderable.  This object is used to draw irregularly shaped areas.
     /// </summary>
@@ -739,10 +761,6 @@ namespace GorgonLibrary.Renderers
 		#endregion
 
         #region Variables.
-        private List<int> _indices = new List<int>();                                           // Vertex indices.
-        private List<Gorgon2DVertex> _vertices = new List<Gorgon2DVertex>();                    // Vertices for the polygon.
-        private GorgonIndexBuffer _indexBuffer;                                                 // The index buffer for the polygon.
-        private GorgonVertexBufferBinding _binding;                                             // The vertex buffer binding for the polygon.
         private GorgonVertexBuffer _vertexBuffer;                                               // The vertex buffer for the polygon.
         private bool _isDynamicIndexBuffer;                                                     // Flag to indicate that the polygon uses a dynamic index buffer.
         private bool _isDynamicVertexBuffer;                                                    // Flag to indicate that the polygon uses a dynamic vertex buffer.
@@ -751,9 +769,22 @@ namespace GorgonLibrary.Renderers
         private bool _needsVertexUpdate;                                                        // True if the vertices need updating.
         private bool _needsIndexUpdate;                                                         // True if the indices need updating.
         private int _lastVertexIndexAdded;                                                      // Array index of the last vertex that was added to the list.
+        private GorgonRenderable.DepthStencilStates _depthStencilState;                         // Depth stencil state for the renderable.
+        private GorgonRenderable.TextureSamplerState _samplerState;                             // Texture sampler state for the renderable.
+        private GorgonRenderable.BlendState _blendState;                                        // Blending state for the renderable.
         #endregion
 
         #region Properties.
+        /// <summary>
+        /// Property to set or return the type of primitive to use for drawing the polygon.
+        /// </summary>
+        /// <remarks>The default is </remarks>
+        public PolygonType PrimitiveType
+        {
+            get;
+            set;
+        }
+
 		/// <summary>
 		/// Property to return the renderer that created this object.
 		/// </summary>
@@ -812,7 +843,7 @@ namespace GorgonLibrary.Renderers
 		/// <summary>
 		/// Property to return the list of vertices for the polygon.
 		/// </summary>
-	    public VertexList Vertex
+	    public VertexList Vertices
 	    {
 		    get;
 		    private set;
@@ -821,7 +852,7 @@ namespace GorgonLibrary.Renderers
 		/// <summary>
 		/// Property to return the list of indices for the polygon.
 		/// </summary>
-	    public IndexList Index
+	    public IndexList Indices
 	    {
 		    get;
 		    private set;
@@ -834,7 +865,7 @@ namespace GorgonLibrary.Renderers
         /// </summary>
         private void UpdateVertexBuffer()
         {
-            int vbSize = _vertices.Count * Gorgon2DVertex.SizeInBytes * 2;
+            int vbSize = Vertices.Count * Gorgon2DVertex.SizeInBytes * 2;
             GorgonDataStream data = null;
 
             if (_vertexBuffer != null)
@@ -855,9 +886,9 @@ namespace GorgonLibrary.Renderers
                         var vertex = (Gorgon2DVertex*)data.UnsafePointer;
 
                         // ReSharper disable once ForCanBeConvertedToForeach
-                        for (int i = 0; i < _vertices.Count; ++i)
+                        for (int i = 0; i < Vertices.Count; ++i)
                         {
-                            *vertex = _vertices[i];
+                            *vertex = Vertices[i];
                             vertex++;
                         }
                     }
@@ -880,24 +911,24 @@ namespace GorgonLibrary.Renderers
                 }
             }
 
-            _binding = new GorgonVertexBufferBinding(_vertexBuffer, Gorgon2DVertex.SizeInBytes);
-            _lastVertexIndexAdded = _vertices.Count;
+            VertexBufferBinding = new GorgonVertexBufferBinding(_vertexBuffer, Gorgon2DVertex.SizeInBytes);
+            _lastVertexIndexAdded = Vertices.Count;
             _vertexBufferUpdated = false;
         }
 
         /// <summary>
         /// Function to update the index buffer data.
         /// </summary>
-        private void UpdateIndexData()
+        private void UpdateIndexBuffer()
         {
             // If the index buffer has changed, then remove the previous buffer.
-            if (_indexBuffer != null)
+            if (IndexBuffer != null)
             {
-                _indexBuffer.Dispose();
-                _indexBuffer = null;
+                IndexBuffer.Dispose();
+                IndexBuffer = null;
             }
 
-            int ibSize = sizeof(int) * _indices.Count * 2;
+            int ibSize = sizeof(int) * Indices.Count * 2;
 
             using(var data = new GorgonDataStream(ibSize))
             {
@@ -906,15 +937,15 @@ namespace GorgonLibrary.Renderers
                     var index = (int*)data.UnsafePointer;
 
                     // ReSharper disable once ForCanBeConvertedToForeach
-                    for (int i = 0; i < _indices.Count; ++i)
+                    for (int i = 0; i < Indices.Count; ++i)
                     {
-                        *index = _indices[i];
+                        *index = Indices[i];
                         index++;
                     }
                 }
 
                 // Create our index buffer and pre-fill it.
-                _indexBuffer =
+                IndexBuffer =
                     Gorgon2D.Graphics.ImmediateContext.Buffers.CreateIndexBuffer(
                         Name + ".GorgonPolygon.IndexBuffer",
                         new GorgonIndexBufferSettings
@@ -928,44 +959,6 @@ namespace GorgonLibrary.Renderers
 
             _indexBufferUpdated = false;
         }
-
-        protected override void UpdateTextureCoordinates()
-        {
-            
-        }
-
-        /// <summary>
-        /// Function to update the vertices for the renderable.
-        /// </summary>
-        protected override void UpdateVertices()
-        {
-            _needsVertexUpdate = false;
-        }
-
-        /// <summary>
-        /// Function to add vertices to the polygon.
-        /// </summary>
-        /// <param name="vertices">The vertices to add to the polygon.</param>
-        /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="vertices"/> parameter is NULL (Nothing in VB.Net).</exception>
-        public void AddVertexData(IList<Gorgon2DVertex> vertices)
-        {
-            GorgonDebug.AssertNull(vertices, "vertices");
-
-            if (vertices.Count == 0)
-            {
-                return;
-            }
-
-            _vertices.AddRange(vertices);
-
-            // Expand the buffer.
-            if (_vertices.Count * Gorgon2DVertex.SizeInBytes > _vertexBuffer.SizeInBytes)
-            {
-                _vertexBufferUpdated = true;
-            }
-
-            _lastVertexIndexAdded = _vertices.Count;
-        }
         #endregion
 
         #region Constructor.
@@ -974,1660 +967,2152 @@ namespace GorgonLibrary.Renderers
         /// </summary>
         /// <param name="gorgon2D">The gorgon 2D interface that created this object.</param>
         /// <param name="name">The name of the renderable.</param>
-        internal GorgonPolygon(Gorgon2D gorgon2D, string name)
+        public GorgonPolygon(Gorgon2D gorgon2D, string name)
             : base(name)
         {
-            
+            Gorgon2D = gorgon2D;
+
+            CullingMode = CullingMode.Back;
+
+            AlphaTestValues = GorgonRangeF.Empty;
+            DepthStencil = new GorgonRenderable.DepthStencilStates();
+            Blending = new GorgonRenderable.BlendState();
+            TextureSampler = new GorgonRenderable.TextureSamplerState();
+
+            PrimitiveType = PolygonType.Triangle;
+
+            Vertices = new VertexList
+            {
+                new Gorgon2DVertex
+                {
+                    Position = new Vector4(0, 20, 0, 1.0f),
+                    Color = GorgonColor.White,
+                    UV = new Vector2(0.0f, 0.2f)
+                },
+                new Gorgon2DVertex
+                {
+                    Position = new Vector4(30, 0, 0, 1.0f),
+                    Color = GorgonColor.White,
+                    UV = new Vector2(0.5f, 0.0f)
+                },
+                new Gorgon2DVertex
+                {
+                    Position = new Vector4(60, 20, 0, 1.0f),
+                    Color = GorgonColor.White,
+                    UV = new Vector2(1.0f, 0.2f)
+                },
+                new Gorgon2DVertex
+                {
+                    Position = new Vector4(15, 60, 0, 1.0f),
+                    Color = GorgonColor.White,
+                    UV = new Vector2(0.25f, 1.0f)
+                },
+                new Gorgon2DVertex
+                {
+                    Position = new Vector4(45, 60, 0, 1.0f),
+                    Color = GorgonColor.White,
+                    UV = new Vector2(0.75f, 1.0f)
+                }     
+            };
+            Indices = new IndexList
+            {
+                0, 1, 2,
+                0, 2, 3,
+                3, 2, 4
+            };
+
+            UpdateVertexBuffer();
+            UpdateIndexBuffer();
         }
         #endregion
 
-        /*
-        #region Classes.
+        #region IRenderable Members
         /// <summary>
-        /// A list of polygon indices.
+        /// Property to set or return the texture region.
         /// </summary>
-        public class IndexList
-                : IList<int>
+        /// <remarks>This has no meaning for this renderable type.</remarks>
+        /// <exception cref="NotSupportedException">Thrown if an attempt to set this property is made.</exception>
+        RectangleF IRenderable.TextureRegion
         {
-            #region Variables.
-            private GorgonPolygon _polygon = null;                  // Polygon that owns the indices.
-            #endregion
-
-                #region Methods.
-                /// <summary>
-                /// Function to add a range of indices.
-                /// </summary>
-                /// <param name="items">Indices to add to the collection.</param>
-                public void AddRange(int[] items)
-                {
-                        if ((items == null) || (items.Length == 0))
-                                return;
-                        for (int i = 0; i < items.Length - 1; i++)
-                                Add(items[i]);
-                        _polygon.NeedsUpdate = true;
-                }
-
-                /// <summary>
-                /// Function to remove a vertex from the list by its index (note, this is the collection index, not the vertex index).
-                /// </summary>
-                /// <param name="index">Collection index of the vertex index to remove.</param>
-                public void Remove(int index)
-                {
-                        RemoveItem(index);
-                        _polygon.NeedsUpdate = true;
-                }
-                #endregion
-
-                #region Constructor.
-                /// <summary>
-                /// Initializes a new instance of the <see cref="IndexList"/> class.
-                /// </summary>
-                /// <param name="polygon">Polygon that owns the indices.</param>
-                internal IndexList(PolygonSprite polygon)
-                        : base(4)
-                {
-                        if (polygon == null)
-                                throw new ArgumentNullException("polygon");
-
-                        _polygon = polygon;
-                }
-                #endregion
-
-                #region IList<int> Members
-                /// <summary>
-                /// Determines the index of a specific item in the <see cref="T:System.Collections.Generic.IList`1"/>.
-                /// </summary>
-                /// <param name="item">The object to locate in the <see cref="T:System.Collections.Generic.IList`1"/>.</param>
-                /// <returns>
-                /// The index of <paramref name="item"/> if found in the list; otherwise, -1.
-                /// </returns>
-                public int IndexOf(int item)
-                {
-                        return Items.IndexOf(item);
-                }
-
-                /// <summary>
-                /// Inserts an item to the <see cref="T:System.Collections.Generic.IList`1"/> at the specified index.
-                /// </summary>
-                /// <param name="index">The zero-based index at which <paramref name="item"/> should be inserted.</param>
-                /// <param name="item">The object to insert into the <see cref="T:System.Collections.Generic.IList`1"/>.</param>
-                /// <exception cref="T:System.ArgumentOutOfRangeException">
-                ///     <paramref name="index"/> is not a valid index in the <see cref="T:System.Collections.Generic.IList`1"/>.
-                /// </exception>
-                /// <exception cref="T:System.NotSupportedException">
-                /// The <see cref="T:System.Collections.Generic.IList`1"/> is read-only.
-                /// </exception>
-                public void Insert(int index, int item)
-                {
-                        Items.Insert(index, item);
-                        _polygon.NeedsUpdate = true;
-                }
-
-                /// <summary>
-                /// Removes the <see cref="T:System.Collections.Generic.IList`1"/> item at the specified index.
-                /// </summary>
-                /// <param name="index">The zero-based index of the item to remove.</param>
-                /// <exception cref="T:System.ArgumentOutOfRangeException">
-                ///     <paramref name="index"/> is not a valid index in the <see cref="T:System.Collections.Generic.IList`1"/>.
-                /// </exception>
-                /// <exception cref="T:System.NotSupportedException">
-                /// The <see cref="T:System.Collections.Generic.IList`1"/> is read-only.
-                /// </exception>
-                void IList<int>.RemoveAt(int index)
-                {
-                        Remove(index);
-                }
-
-                /// <summary>
-                /// Gets or sets the <see cref="System.Int32"/> at the specified index.
-                /// </summary>
-                /// <value></value>
-                public int this[int index]
-                {
-                        get
-                        {
-                                return GetItem(index);
-                        }
-                        set
-                        {
-                                SetItem(index, value);
-                                _polygon.NeedsUpdate = true;
-                        }
-                }
-                #endregion
-
-                #region ICollection<int> Members
-                /// <summary>
-                /// Adds an item to the <see cref="T:System.Collections.Generic.ICollection`1"/>.
-                /// </summary>
-                /// <param name="item">The object to add to the <see cref="T:System.Collections.Generic.ICollection`1"/>.</param>
-                /// <exception cref="T:System.NotSupportedException">
-                /// The <see cref="T:System.Collections.Generic.ICollection`1"/> is read-only.
-                /// </exception>
-                public void Add(int item)
-                {
-                        Items.Add(item);
-                        _polygon.NeedsUpdate = true;
-                }
-
-                /// <summary>
-                /// Removes all items from the <see cref="T:System.Collections.Generic.ICollection`1"/>.
-                /// </summary>
-                /// <exception cref="T:System.NotSupportedException">
-                /// The <see cref="T:System.Collections.Generic.ICollection`1"/> is read-only.
-                /// </exception>
-                public void Clear()
-                {
-                        ClearItems();
-                        _polygon.NeedsUpdate = true;
-                }
-
-                /// <summary>
-                /// Copies the elements of the <see cref="T:System.Collections.Generic.ICollection`1"/> to an <see cref="T:System.Array"/>, starting at a particular <see cref="T:System.Array"/> index.
-                /// </summary>
-                /// <param name="array">The one-dimensional <see cref="T:System.Array"/> that is the destination of the elements copied from <see cref="T:System.Collections.Generic.ICollection`1"/>. The <see cref="T:System.Array"/> must have zero-based indexing.</param>
-                /// <param name="arrayIndex">The zero-based index in <paramref name="array"/> at which copying begins.</param>
-                /// <exception cref="T:System.ArgumentNullException">
-                ///     <paramref name="array"/> is null.
-                /// </exception>
-                /// <exception cref="T:System.ArgumentOutOfRangeException">
-                ///     <paramref name="arrayIndex"/> is less than 0.
-                /// </exception>
-                /// <exception cref="T:System.ArgumentException">
-                ///     <paramref name="array"/> is multidimensional.
-                /// -or-
-                /// <paramref name="arrayIndex"/> is equal to or greater than the length of <paramref name="array"/>.
-                /// -or-
-                /// The number of elements in the source <see cref="T:System.Collections.Generic.ICollection`1"/> is greater than the available space from <paramref name="arrayIndex"/> to the end of the destination <paramref name="array"/>.
-                /// -or-
-                /// The type cannot be cast automatically to the type of the destination <paramref name="array"/>.
-                /// </exception>
-                public void CopyTo(int[] array, int arrayIndex)
-                {
-                        Items.CopyTo(array, arrayIndex);
-                }
-
-                /// <summary>
-                /// Gets a value indicating whether the <see cref="T:System.Collections.Generic.ICollection`1"/> is read-only.
-                /// </summary>
-                /// <value></value>
-                /// <returns>true if the <see cref="T:System.Collections.Generic.ICollection`1"/> is read-only; otherwise, false.
-                /// </returns>
-                public bool IsReadOnly
-                {
-                        get 
-                        { 
-                                return false; 
-                        }
-                }
-
-                /// <summary>
-                /// Removes the first occurrence of a specific object from the <see cref="T:System.Collections.Generic.ICollection`1"/>.
-                /// </summary>
-                /// <param name="item">The object to remove from the <see cref="T:System.Collections.Generic.ICollection`1"/>.</param>
-                /// <returns>
-                /// true if <paramref name="item"/> was successfully removed from the <see cref="T:System.Collections.Generic.ICollection`1"/>; otherwise, false. This method also returns false if <paramref name="item"/> is not found in the original <see cref="T:System.Collections.Generic.ICollection`1"/>.
-                /// </returns>
-                /// <exception cref="T:System.NotSupportedException">
-                /// The <see cref="T:System.Collections.Generic.ICollection`1"/> is read-only.
-                /// </exception>
-                bool ICollection<int>.Remove(int item)
-                {
-                        Remove(item);
-                        return true;
-                }
-                #endregion
+            get
+            {
+                return RectangleF.Empty;
+            }
+            set
+            {
+                throw new NotSupportedException();
+            }
         }
 
-    /// <summary>
-    /// A list of polygon vertices.
-    /// </summary>
-    public class PolygonVertexList
-            : BaseDynamicArray<VertexTypeList.PositionDiffuse2DTexture1>, IList<VertexTypeList.PositionDiffuse2DTexture1>
-    {
-            #region Variables.
-            private PolygonSprite _polygon = null;                  // Polygon that owns the vertices.
-            #endregion
-
-            #region Methods.
-            /// <summary>
-            /// Function to set the vertex position at the vertex specified by the index.
-            /// </summary>
-            /// <param name="vertexIndex">The index of the vertex to update.</param>
-            /// <param name="position">Position of the vertex.</param>
-            public void SetVertexPosition(int vertexIndex, Vector3D position)
+        /// <summary>
+        /// Property to set or return the coordinates in the texture to use as a starting point for drawing.
+        /// </summary>
+        /// <remarks>This has no meaning for this renderable type.</remarks>
+        /// <exception cref="NotSupportedException">Thrown if an attempt to set this property is made.</exception>
+        Vector2 IRenderable.TextureOffset
+        {
+            get
             {
-                    Items[vertexIndex] = new VertexTypeList.PositionDiffuse2DTexture1(position, Items[vertexIndex].Color, Items[vertexIndex].TextureCoordinates);
-                    _polygon.NeedsUpdate = true;
+                return Vector2.Zero;
             }
-
-            /// <summary>
-            /// Function to set the vertex texture coordinates at the vertex specified by the index.
-            /// </summary>
-            /// <param name="vertexIndex">The index of the vertex to update.</param>
-            /// <param name="coordinates">Texture coordinates of the vertex.</param>
-            public void SetVertexTextureCoordinates(int vertexIndex, Vector2D coordinates)
+            set
             {
-                    Items[vertexIndex] = new VertexTypeList.PositionDiffuse2DTexture1(Items[vertexIndex].Position, Items[vertexIndex].Color, coordinates);
-                    _polygon.NeedsUpdate = true;
+                throw new NotSupportedException();
             }
+        }
 
-            /// <summary>
-            /// Function to set the color of the vertex specified by the index.
-            /// </summary>
-            /// <param name="vertexIndex">The index of the vertex to update.</param>
-            /// <param name="color">Color of the vertex.</param>
-            public void SetVertexColor(int vertexIndex, Drawing.Color color)
+        /// <summary>
+        /// Property to set or return the scaling of the texture width and height.
+        /// </summary>
+        /// <remarks>This has no meaning for this renderable type.</remarks>
+        /// <exception cref="NotSupportedException">Thrown if an attempt to set this property is made.</exception>
+        Vector2 IRenderable.TextureSize
+        {
+            get
             {
-                    Items[vertexIndex] = new VertexTypeList.PositionDiffuse2DTexture1(Items[vertexIndex].Position, color, Items[vertexIndex].TextureCoordinates);
-                    _polygon.NeedsUpdate = true;
+                return Vector2.Zero;
             }
-
-            /// <summary>
-            /// Function to add a range of vertices.
-            /// </summary>
-            /// <param name="items">Vertices to add to the collection.</param>
-            public void AddRange(VertexTypeList.PositionDiffuse2DTexture1[] items)
+            set
             {
-                    if ((items == null) || (items.Length == 0))
-                            return;
-                    for (int i = 0; i < items.Length - 1; i++)
-                            Add(items[i]);
-                    _polygon.NeedsUpdate = true;
+                throw new NotSupportedException();
             }
+        }
 
-            /// <summary>
-            /// Function to add a vertex to the polygon.
-            /// </summary>
-            /// <param name="position">3D position of the vertex.  The Z value is used to interact with the depth buffer.</param>
-            /// <param name="imageCoordinate">The relative coordinate of the image being mapped to the polygon.</param>
-            /// <param name="diffuse">The diffuse color of the vertex.</param>
-            /// <returns>The vertex that was added to the polygon.</returns>
-            /// <remarks>The <paramref name="imageCoordinate"/> parameter is different from that of other objects that use image mapping (e.g. a <see cref="GorgonLibrary.Graphics.Sprite">Sprite</see>).
-            ///   The other objects express their image mapping in absolute image coordinates, that is if a 32x32 image is used then the image is mapped from 0 to 32 for width and/or height.
-            ///   However in this case the image mapping is relative to the image.  This means that to map the aforementioned image you would pass 0.0 to 1.0.  Where 1.0 is the width or height 
-            /// of our image.</remarks>
-            public VertexTypeList.PositionDiffuse2DTexture1 AddVertex(Vector3D position, Vector2D imageCoordinate, Drawing.Color diffuse)
-            {                               
-                    VertexTypeList.PositionDiffuse2DTexture1 vertex = new VertexTypeList.PositionDiffuse2DTexture1(position, diffuse, imageCoordinate);
-                    Add(vertex);
-                    _polygon.NeedsUpdate = true;
-                    return vertex;
-            }
+        /// <summary>
+        /// Property to set or return the vertex buffer binding for this renderable.
+        /// </summary>
+        public GorgonVertexBufferBinding VertexBufferBinding
+        {
+            get;
+            private set;
+        }
 
-            /// <summary>
-            /// Function to remove a vertex from the list by its index.
-            /// </summary>
-            /// <param name="index">Index of the vertex to remove.</param>
-            public void Remove(int index)
+        /// <summary>
+        /// Property to set or return the index buffer for this renderable.
+        /// </summary>
+        public GorgonIndexBuffer IndexBuffer
+        {
+            get;
+            private set;
+        }
+
+        /// <summary>
+        /// Property to return the type of primitive for the renderable.
+        /// </summary>
+        PrimitiveType IRenderable.PrimitiveType
+        {
+            get
             {
-                    RemoveItem(index);
-                    _polygon.NeedsUpdate = true;
-            }
-            #endregion
+                if ((PrimitiveType & PolygonType.Line) == PolygonType.Line)
+                {
+                    return (PrimitiveType & PolygonType.Strip) == PolygonType.Strip
+                        ? Graphics.PrimitiveType.LineStrip
+                        : Graphics.PrimitiveType.LineList;
+                }
 
-            #region Constructor/Destructor.
-            /// <summary>
-            /// Initializes a new instance of the <see cref="PolygonVertexList"/> class.
-            /// </summary>
-            /// <param name="polygon">Polygon that owns the indices.</param>
-            internal PolygonVertexList(PolygonSprite polygon)
-                    : base(4)
-            {
-                    if (polygon == null)
-                            throw new ArgumentNullException("polygon");
+                return (PrimitiveType & PolygonType.Strip) == PolygonType.Strip
+                    ? Graphics.PrimitiveType.TriangleStrip
+                    : Graphics.PrimitiveType.TriangleList;
+            }
+        }
 
-                    _polygon = polygon;
-            }
-            #endregion
-                        
-            #region IList<PositionDiffuse2DTexture1> Members
-            /// <summary>
-            /// Gets or sets the <see cref="GorgonLibrary.Graphics.VertexTypeList.PositionDiffuse2DTexture1"/> at the specified index.
-            /// </summary>
-            /// <value></value>
-            public VertexTypeList.PositionDiffuse2DTexture1 this[int index]
+        /// <summary>
+        /// Property to return a list of vertices to render.
+        /// </summary>
+        Gorgon2DVertex[] IRenderable.Vertices
+        {
+            get
             {
-                    get
-                    {
-                            return GetItem(index);
-                    }
-                    set
-                    {
-                            SetItem(index, value);
-                            _polygon.NeedsUpdate = true;
-                    }
+                return Vertices.InternalArray;
             }
+        }
 
-            /// <summary>
-            /// Determines the index of a specific item in the <see cref="T:System.Collections.Generic.IList`1"/>.
-            /// </summary>
-            /// <param name="item">The object to locate in the <see cref="T:System.Collections.Generic.IList`1"/>.</param>
-            /// <returns>
-            /// The index of <paramref name="item"/> if found in the list; otherwise, -1.
-            /// </returns>
-            public int IndexOf(VertexTypeList.PositionDiffuse2DTexture1 item)
+        /// <summary>
+        /// Property to return the number of indices that make up this renderable.
+        /// </summary>
+        /// <remarks>
+        /// This only matters when the renderable uses an index buffer.
+        /// </remarks>
+        int IRenderable.IndexCount
+        {
+            get
             {
-                    return Items.IndexOf(item);
+                return Indices.Count;
             }
+        }
 
-            /// <summary>
-            /// Inserts an item to the <see cref="T:System.Collections.Generic.IList`1"/> at the specified index.
-            /// </summary>
-            /// <param name="index">The zero-based index at which <paramref name="item"/> should be inserted.</param>
-            /// <param name="item">The object to insert into the <see cref="T:System.Collections.Generic.IList`1"/>.</param>
-            /// <exception cref="T:System.ArgumentOutOfRangeException">
-            ///     <paramref name="index"/> is not a valid index in the <see cref="T:System.Collections.Generic.IList`1"/>.
-            /// </exception>
-            /// <exception cref="T:System.NotSupportedException">
-            /// The <see cref="T:System.Collections.Generic.IList`1"/> is read-only.
-            /// </exception>
-            public void Insert(int index, VertexTypeList.PositionDiffuse2DTexture1 item)
+        /// <summary>
+        /// Property to return the number of vertices to add to the base starting index.
+        /// </summary>
+        int IRenderable.BaseVertexCount
+        {
+            get
             {
-                    Items.Insert(index, item);
-                    _polygon.NeedsUpdate = true;
+                return 0;
             }
+        }
 
-            /// <summary>
-            /// Removes the <see cref="T:System.Collections.Generic.IList`1"/> item at the specified index.
-            /// </summary>
-            /// <param name="index">The zero-based index of the item to remove.</param>
-            /// <exception cref="T:System.ArgumentOutOfRangeException">
-            ///     <paramref name="index"/> is not a valid index in the <see cref="T:System.Collections.Generic.IList`1"/>.
-            /// </exception>
-            /// <exception cref="T:System.NotSupportedException">
-            /// The <see cref="T:System.Collections.Generic.IList`1"/> is read-only.
-            /// </exception>
-            void IList<VertexTypeList.PositionDiffuse2DTexture1>.RemoveAt(int index)
+        /// <summary>
+        /// Property to return the number of vertices for the renderable.
+        /// </summary>
+        int IRenderable.VertexCount
+        {
+            get
             {
-                    Remove(index);
+                return Vertices.Count;
             }
-            #endregion
+        }
 
-            #region ICollection<PositionDiffuse2DTexture1> Members
-            /// <summary>
-            /// Adds an item to the <see cref="T:System.Collections.Generic.ICollection`1"/>.
-            /// </summary>
-            /// <param name="item">The object to add to the <see cref="T:System.Collections.Generic.ICollection`1"/>.</param>
-            /// <exception cref="T:System.NotSupportedException">
-            /// The <see cref="T:System.Collections.Generic.ICollection`1"/> is read-only.
-            /// </exception>
-            public void Add(VertexTypeList.PositionDiffuse2DTexture1 item)
+        /// <summary>
+        /// Property to set or return depth/stencil buffer states for this renderable.
+        /// </summary>
+        public GorgonRenderable.DepthStencilStates DepthStencil
+        {
+            get
             {
-                    Items.Add(item);
-                    _polygon.NeedsUpdate = true;
+                return _depthStencilState;
             }
+            set
+            {
+                if (value == null)
+                {
+                    return;
+                }
 
-            /// <summary>
-            /// Copies the elements of the <see cref="T:System.Collections.Generic.ICollection`1"/> to an <see cref="T:System.Array"/>, starting at a particular <see cref="T:System.Array"/> index.
-            /// </summary>
-            /// <param name="array">The one-dimensional <see cref="T:System.Array"/> that is the destination of the elements copied from <see cref="T:System.Collections.Generic.ICollection`1"/>. The <see cref="T:System.Array"/> must have zero-based indexing.</param>
-            /// <param name="arrayIndex">The zero-based index in <paramref name="array"/> at which copying begins.</param>
-            /// <exception cref="T:System.ArgumentNullException">
-            ///     <paramref name="array"/> is null.
-            /// </exception>
-            /// <exception cref="T:System.ArgumentOutOfRangeException">
-            ///     <paramref name="arrayIndex"/> is less than 0.
-            /// </exception>
-            /// <exception cref="T:System.ArgumentException">
-            ///     <paramref name="array"/> is multidimensional.
-            /// -or-
-            /// <paramref name="arrayIndex"/> is equal to or greater than the length of <paramref name="array"/>.
-            /// -or-
-            /// The number of elements in the source <see cref="T:System.Collections.Generic.ICollection`1"/> is greater than the available space from <paramref name="arrayIndex"/> to the end of the destination <paramref name="array"/>.
-            /// -or-
-            /// The type cannot be cast automatically to the type of the destination <paramref name="array"/>.
-            /// </exception>
-            public void CopyTo(VertexTypeList.PositionDiffuse2DTexture1[] array, int arrayIndex)
-            {
-                    Items.CopyTo(array, arrayIndex);
+                _depthStencilState = value;
             }
+        }
 
-            /// <summary>
-            /// Removes all items from the <see cref="T:System.Collections.Generic.ICollection`1"/>.
-            /// </summary>
-            /// <exception cref="T:System.NotSupportedException">
-            /// The <see cref="T:System.Collections.Generic.ICollection`1"/> is read-only.
-            /// </exception>
-            public void Clear()
+        /// <summary>
+        /// Property to set or return advanced blending states for this renderable.
+        /// </summary>
+        public GorgonRenderable.BlendState Blending
+        {
+            get
             {
-                    ClearItems();
-                    _polygon.NeedsUpdate = true;
+                return _blendState;
             }
+            set
+            {
+                if (value == null)
+                    return;
 
-            /// <summary>
-            /// Gets a value indicating whether the <see cref="T:System.Collections.Generic.ICollection`1"/> is read-only.
-            /// </summary>
-            /// <value></value>
-            /// <returns>true if the <see cref="T:System.Collections.Generic.ICollection`1"/> is read-only; otherwise, false.
-            /// </returns>
-            public bool IsReadOnly
-            {
-                    get 
-                    {
-                            return false;
-                    }
+                _blendState = value;
             }
+        }
 
-            /// <summary>
-            /// Removes the first occurrence of a specific object from the <see cref="T:System.Collections.Generic.ICollection`1"/>.
-            /// </summary>
-            /// <param name="item">The object to remove from the <see cref="T:System.Collections.Generic.ICollection`1"/>.</param>
-            /// <returns>
-            /// true if <paramref name="item"/> was successfully removed from the <see cref="T:System.Collections.Generic.ICollection`1"/>; otherwise, false. This method also returns false if <paramref name="item"/> is not found in the original <see cref="T:System.Collections.Generic.ICollection`1"/>.
-            /// </returns>
-            /// <exception cref="T:System.NotSupportedException">
-            /// The <see cref="T:System.Collections.Generic.ICollection`1"/> is read-only.
-            /// </exception>
-            public bool Remove(VertexTypeList.PositionDiffuse2DTexture1 item)
+        /// <summary>
+        /// Property to set or return advanded texture sampler states for this renderable.
+        /// </summary>
+        public GorgonRenderable.TextureSamplerState TextureSampler
+        {
+            get
             {
-                    return Items.Remove(item);
+                return _samplerState;
             }
-            #endregion
+            set
+            {
+                if (value == null)
+                {
+                    return;
+                }
+
+                _samplerState = value;
+            }
+        }
+
+        /// <summary>
+        /// Property to set or return pre-defined smoothing states for the renderable.
+        /// </summary>
+        /// <remarks>These modes are pre-defined smoothing states, to get more control over the smoothing, use the <see cref="GorgonLibrary.Renderers.GorgonRenderable.TextureSamplerState.TextureFilter">TextureFilter</see> 
+        /// property exposed by the <see cref="GorgonLibrary.Renderers.GorgonRenderable.TextureSampler">TextureSampler</see> property.</remarks>
+        public SmoothingMode SmoothingMode
+        {
+            get
+            {
+                switch (TextureSampler.TextureFilter)
+                {
+                    case TextureFilter.Point:
+                        return SmoothingMode.None;
+                    case TextureFilter.Linear:
+                        return SmoothingMode.Smooth;
+                    case TextureFilter.MinLinear | TextureFilter.MipLinear:
+                        return SmoothingMode.SmoothMinify;
+                    case TextureFilter.MagLinear | TextureFilter.MipLinear:
+                        return SmoothingMode.SmoothMagnify;
+                    default:
+                        return SmoothingMode.Custom;
+                }
+            }
+            set
+            {
+                switch (value)
+                {
+                    case SmoothingMode.None:
+                        TextureSampler.TextureFilter = TextureFilter.Point;
+                        break;
+                    case SmoothingMode.Smooth:
+                        TextureSampler.TextureFilter = TextureFilter.Linear;
+                        break;
+                    case SmoothingMode.SmoothMinify:
+                        TextureSampler.TextureFilter = TextureFilter.MinLinear | TextureFilter.MipLinear;
+                        break;
+                    case SmoothingMode.SmoothMagnify:
+                        TextureSampler.TextureFilter = TextureFilter.MagLinear | TextureFilter.MipLinear;
+                        break;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Property to set or return a pre-defined blending states for the renderable.
+        /// </summary>
+        /// <remarks>These modes are pre-defined blending states, to get more control over the blending, use the <see cref="GorgonLibrary.Renderers.GorgonRenderable.BlendState.SourceBlend">SourceBlend</see> 
+        /// or the <see cref="P:GorgonLibrary.Renderers.GorgonRenderable.BlendState.DestinationBlend">DestinationBlend</see> property which are exposed by the 
+        /// <see cref="P:GorgonLibrary.Renderers.GorgonRenderable.Blending">Blending</see> property.</remarks>
+        public BlendingMode BlendingMode
+        {
+            get
+            {
+                if ((Blending.SourceBlend == BlendType.One) && (Blending.DestinationBlend == BlendType.Zero))
+                    return BlendingMode.None;
+
+                if (Blending.SourceBlend == BlendType.SourceAlpha)
+                {
+                    if (Blending.DestinationBlend == BlendType.InverseSourceAlpha)
+                        return BlendingMode.Modulate;
+                    if (Blending.DestinationBlend == BlendType.One)
+                        return BlendingMode.Additive;
+                }
+
+                if ((Blending.SourceBlend == BlendType.One) && (Blending.DestinationBlend == BlendType.InverseSourceAlpha))
+                    return BlendingMode.PreMultiplied;
+
+                if ((Blending.SourceBlend == BlendType.InverseDestinationColor) && (Blending.DestinationBlend == BlendType.InverseSourceColor))
+                    return BlendingMode.Inverted;
+
+                return BlendingMode.Custom;
+            }
+            set
+            {
+                switch (value)
+                {
+                    case BlendingMode.Additive:
+                        Blending.SourceBlend = BlendType.SourceAlpha;
+                        Blending.DestinationBlend = BlendType.One;
+                        break;
+                    case BlendingMode.Inverted:
+                        Blending.SourceBlend = BlendType.InverseDestinationColor;
+                        Blending.DestinationBlend = BlendType.InverseSourceColor;
+                        break;
+                    case BlendingMode.Modulate:
+                        Blending.SourceBlend = BlendType.SourceAlpha;
+                        Blending.DestinationBlend = BlendType.InverseSourceAlpha;
+                        break;
+                    case BlendingMode.PreMultiplied:
+                        Blending.SourceBlend = BlendType.One;
+                        Blending.DestinationBlend = BlendType.InverseSourceAlpha;
+                        break;
+                    case BlendingMode.None:
+                        Blending.SourceBlend = BlendType.One;
+                        Blending.DestinationBlend = BlendType.Zero;
+                        break;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Property to set or return the culling mode.
+        /// </summary>
+        /// <remarks>Use this to make a renderable two-sided.</remarks>
+        public CullingMode CullingMode
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Property to set or return the range of alpha values to reject on this renderable.
+        /// </summary>
+        /// <remarks>The alpha testing tests to see if an alpha value is between or equal to the values and rejects the pixel if it is not.
+        /// <para>This value will not take effect until <see cref="P:GorgonLibrary.Renderers.Gorgon2D.IsAlphaTestEnabled">IsAlphaTestEnabled</see> is set to TRUE.</para>
+        /// <para>Typically, performance is improved when alpha testing is turned on with a range of 0.  This will reject any pixels with an alpha of 0.</para>
+        /// <para>Be aware that the default shaders implement alpha testing.  However, a custom shader will have to make use of the GorgonAlphaTest constant buffer 
+        /// in order to take advantage of alpha testing.</para>
+        /// </remarks>
+        public GorgonRangeF AlphaTestValues
+        {
+            get;
+            set;
+        }
+
+        public float Opacity
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+            set
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        public GorgonColor Color
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+            set
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        /// <summary>
+        /// Property to set or return a texture for the renderable.
+        /// </summary>
+        public GorgonTexture2D Texture
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Function to draw the object.
+        /// </summary>
+        /// <remarks>
+        /// Please note that this doesn't draw the object to the target right away, but queues it up to be
+        /// drawn when <see cref="GorgonLibrary.Renderers.Gorgon2D.Render">Render</see> is called.
+        /// </remarks>
+        public void Draw()
+        {
+            Gorgon2D.AddRenderable(this);
+        }
+        #endregion
+
+        #region IMoveable Members
+        public Vector2 Position
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+            set
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        public float Angle
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+            set
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        public Vector2 Scale
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+            set
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        public Vector2 Anchor
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+            set
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        public float Depth
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+            set
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        public Vector2 Size
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+            set
+            {
+                throw new NotImplementedException();
+            }
+        }
+        #endregion
     }
+}
 
+/*
+#region Classes.
+/// <summary>
+/// A list of polygon indices.
+/// </summary>
+public class IndexList
+        : IList<int>
+{
+    #region Variables.
+    private GorgonPolygon _polygon = null;                  // Polygon that owns the indices.
     #endregion
 
-                #region Variables.
-                private bool _disposed = false;                                                                 // Flag to indicate that we've disposed this object.
-                private PolygonVertexList _vertices = null;                                             // Vertex list.
-                private IndexList _indices = null;                                                              // Index list.
-                private VertexBuffer _vertexBuffer = null;                                              // Vertex buffer.
-                private IndexBuffer _indexBuffer = null;                                                // Index buffer.
-                private Smoothing _smoothing;                                                                   // Smoothing mode.
-                private AlphaBlendOperation _sourceBlendOp;                                             // Alphablend source operation.
-                private AlphaBlendOperation _destBlendOp;                                               // Alphablend destination operation.
-        private AlphaBlendOperation _sourceAlphaBlendOp;                            // Alphablend source operation for the alpha.
-        private AlphaBlendOperation _destAlphaBlendOp;                                  // Alphablend destination operation for the alpha.
-                private BlendingModes _blendMode;                                                               // Alpha blending preset mode.
-                private ImageAddressing _hwrapMode;                                                             // Horizontal wrapping mode.
-                private ImageAddressing _vwrapMode;                                                             // Vertical wrapping mode.
-                private CompareFunctions _alphaCompareFunction;                                 // Alpha test compare function.
-                private int _alphaTestCompareValue;                                                             // Alpha test compare value.
-                private StencilOperations _stencilPassOperation;                                // Stencil pass operation.
-                private StencilOperations _stencilFailOperation;                                // Stencil fail operation.
-                private StencilOperations _stencilZFailOperation;                               // Stencil Z fail operation.
-                private CompareFunctions _stencilCompare;                                               // Stencil compare operation.
-                private int _stencilReference;                                                                  // Stencil reference value.
-                private int _stencilMask;                                                                               // Stencil mask value.
-                private bool _useStencil;                                                                               // Flag to indicate whether to use the stencil or not.
-                private float _depthBias;                                                                               // Depth bias.
-                private bool _depthWriteEnabled;                                                                // Depth writing enabled flag.
-                private CompareFunctions _depthCompare;                                                 // Depth test comparison function.
-                private Matrix _worldMatrix = Matrix.Identity;                                  // World matrix.
-                private Drawing.RectangleF _aabb = Drawing.RectangleF.Empty;    // Axis aligned bounding box for the sprite.
-                private Vector2D _size = Vector2D.Zero;                                                 // Size of the polygon sprite.
-                private bool _needsUpdate = false;                                                              // Flag to indicate that we need to update.
-                private bool _needsAABB = false;                                                                // Flag to indicate that we need an AABB update.
-                private float _rotation = 0.0f;                                                                 // Rotation angle in degrees.
-                private Vector2D _scale = Vector2D.Unit;                                                // Scale of the sprite.
-                private Vector3D _position = Vector3D.Zero;                                             // Position of the sprite.
-                private Vector2D _axis = Vector2D.Zero;                                                 // Pivot axis  for the sprite.
-                private BoundingCircle _boundCircle = BoundingCircle.Empty;             // Bounding circle.
-                #endregion
+        #region Methods.
+        /// <summary>
+        /// Function to add a range of indices.
+        /// </summary>
+        /// <param name="items">Indices to add to the collection.</param>
+        public void AddRange(int[] items)
+        {
+                if ((items == null) || (items.Length == 0))
+                        return;
+                for (int i = 0; i < items.Length - 1; i++)
+                        Add(items[i]);
+                _polygon.NeedsUpdate = true;
+        }
 
-                #region Properties.
-                /// <summary>
-                /// Property to set or return whether the buffers need updating.
-                /// </summary>
-                internal bool NeedsUpdate
+        /// <summary>
+        /// Function to remove a vertex from the list by its index (note, this is the collection index, not the vertex index).
+        /// </summary>
+        /// <param name="index">Collection index of the vertex index to remove.</param>
+        public void Remove(int index)
+        {
+                RemoveItem(index);
+                _polygon.NeedsUpdate = true;
+        }
+        #endregion
+
+        #region Constructor.
+        /// <summary>
+        /// Initializes a new instance of the <see cref="IndexList"/> class.
+        /// </summary>
+        /// <param name="polygon">Polygon that owns the indices.</param>
+        internal IndexList(PolygonSprite polygon)
+                : base(4)
+        {
+                if (polygon == null)
+                        throw new ArgumentNullException("polygon");
+
+                _polygon = polygon;
+        }
+        #endregion
+
+        #region IList<int> Members
+        /// <summary>
+        /// Determines the index of a specific item in the <see cref="T:System.Collections.Generic.IList`1"/>.
+        /// </summary>
+        /// <param name="item">The object to locate in the <see cref="T:System.Collections.Generic.IList`1"/>.</param>
+        /// <returns>
+        /// The index of <paramref name="item"/> if found in the list; otherwise, -1.
+        /// </returns>
+        public int IndexOf(int item)
+        {
+                return Items.IndexOf(item);
+        }
+
+        /// <summary>
+        /// Inserts an item to the <see cref="T:System.Collections.Generic.IList`1"/> at the specified index.
+        /// </summary>
+        /// <param name="index">The zero-based index at which <paramref name="item"/> should be inserted.</param>
+        /// <param name="item">The object to insert into the <see cref="T:System.Collections.Generic.IList`1"/>.</param>
+        /// <exception cref="T:System.ArgumentOutOfRangeException">
+        ///     <paramref name="index"/> is not a valid index in the <see cref="T:System.Collections.Generic.IList`1"/>.
+        /// </exception>
+        /// <exception cref="T:System.NotSupportedException">
+        /// The <see cref="T:System.Collections.Generic.IList`1"/> is read-only.
+        /// </exception>
+        public void Insert(int index, int item)
+        {
+                Items.Insert(index, item);
+                _polygon.NeedsUpdate = true;
+        }
+
+        /// <summary>
+        /// Removes the <see cref="T:System.Collections.Generic.IList`1"/> item at the specified index.
+        /// </summary>
+        /// <param name="index">The zero-based index of the item to remove.</param>
+        /// <exception cref="T:System.ArgumentOutOfRangeException">
+        ///     <paramref name="index"/> is not a valid index in the <see cref="T:System.Collections.Generic.IList`1"/>.
+        /// </exception>
+        /// <exception cref="T:System.NotSupportedException">
+        /// The <see cref="T:System.Collections.Generic.IList`1"/> is read-only.
+        /// </exception>
+        void IList<int>.RemoveAt(int index)
+        {
+                Remove(index);
+        }
+
+        /// <summary>
+        /// Gets or sets the <see cref="System.Int32"/> at the specified index.
+        /// </summary>
+        /// <value></value>
+        public int this[int index]
+        {
+                get
                 {
-                        get
-                        {
-                                return _needsUpdate;
-                        }
-                        set
-                        {
-                                _needsUpdate = value;
-                                _needsAABB = value;
-                        }
+                        return GetItem(index);
                 }
-
-                /// <summary>
-                /// Property to return the width of the polygon sprite.
-                /// </summary>
-                public float Width
+                set
                 {
-                        get
-                        {
-                                if (NeedsUpdate)
-                                        CalculateWidthHeight();
-                                return _size.X;
-                        }
+                        SetItem(index, value);
+                        _polygon.NeedsUpdate = true;
                 }
+        }
+        #endregion
 
-                /// <summary>
-                /// Property to return the height of the polygon sprite.
-                /// </summary>
-                public float Height
+        #region ICollection<int> Members
+        /// <summary>
+        /// Adds an item to the <see cref="T:System.Collections.Generic.ICollection`1"/>.
+        /// </summary>
+        /// <param name="item">The object to add to the <see cref="T:System.Collections.Generic.ICollection`1"/>.</param>
+        /// <exception cref="T:System.NotSupportedException">
+        /// The <see cref="T:System.Collections.Generic.ICollection`1"/> is read-only.
+        /// </exception>
+        public void Add(int item)
+        {
+                Items.Add(item);
+                _polygon.NeedsUpdate = true;
+        }
+
+        /// <summary>
+        /// Removes all items from the <see cref="T:System.Collections.Generic.ICollection`1"/>.
+        /// </summary>
+        /// <exception cref="T:System.NotSupportedException">
+        /// The <see cref="T:System.Collections.Generic.ICollection`1"/> is read-only.
+        /// </exception>
+        public void Clear()
+        {
+                ClearItems();
+                _polygon.NeedsUpdate = true;
+        }
+
+        /// <summary>
+        /// Copies the elements of the <see cref="T:System.Collections.Generic.ICollection`1"/> to an <see cref="T:System.Array"/>, starting at a particular <see cref="T:System.Array"/> index.
+        /// </summary>
+        /// <param name="array">The one-dimensional <see cref="T:System.Array"/> that is the destination of the elements copied from <see cref="T:System.Collections.Generic.ICollection`1"/>. The <see cref="T:System.Array"/> must have zero-based indexing.</param>
+        /// <param name="arrayIndex">The zero-based index in <paramref name="array"/> at which copying begins.</param>
+        /// <exception cref="T:System.ArgumentNullException">
+        ///     <paramref name="array"/> is null.
+        /// </exception>
+        /// <exception cref="T:System.ArgumentOutOfRangeException">
+        ///     <paramref name="arrayIndex"/> is less than 0.
+        /// </exception>
+        /// <exception cref="T:System.ArgumentException">
+        ///     <paramref name="array"/> is multidimensional.
+        /// -or-
+        /// <paramref name="arrayIndex"/> is equal to or greater than the length of <paramref name="array"/>.
+        /// -or-
+        /// The number of elements in the source <see cref="T:System.Collections.Generic.ICollection`1"/> is greater than the available space from <paramref name="arrayIndex"/> to the end of the destination <paramref name="array"/>.
+        /// -or-
+        /// The type cannot be cast automatically to the type of the destination <paramref name="array"/>.
+        /// </exception>
+        public void CopyTo(int[] array, int arrayIndex)
+        {
+                Items.CopyTo(array, arrayIndex);
+        }
+
+        /// <summary>
+        /// Gets a value indicating whether the <see cref="T:System.Collections.Generic.ICollection`1"/> is read-only.
+        /// </summary>
+        /// <value></value>
+        /// <returns>true if the <see cref="T:System.Collections.Generic.ICollection`1"/> is read-only; otherwise, false.
+        /// </returns>
+        public bool IsReadOnly
+        {
+                get 
+                { 
+                        return false; 
+                }
+        }
+
+        /// <summary>
+        /// Removes the first occurrence of a specific object from the <see cref="T:System.Collections.Generic.ICollection`1"/>.
+        /// </summary>
+        /// <param name="item">The object to remove from the <see cref="T:System.Collections.Generic.ICollection`1"/>.</param>
+        /// <returns>
+        /// true if <paramref name="item"/> was successfully removed from the <see cref="T:System.Collections.Generic.ICollection`1"/>; otherwise, false. This method also returns false if <paramref name="item"/> is not found in the original <see cref="T:System.Collections.Generic.ICollection`1"/>.
+        /// </returns>
+        /// <exception cref="T:System.NotSupportedException">
+        /// The <see cref="T:System.Collections.Generic.ICollection`1"/> is read-only.
+        /// </exception>
+        bool ICollection<int>.Remove(int item)
+        {
+                Remove(item);
+                return true;
+        }
+        #endregion
+}
+
+/// <summary>
+/// A list of polygon vertices.
+/// </summary>
+public class PolygonVertexList
+    : BaseDynamicArray<VertexTypeList.PositionDiffuse2DTexture1>, IList<VertexTypeList.PositionDiffuse2DTexture1>
+{
+    #region Variables.
+    private PolygonSprite _polygon = null;                  // Polygon that owns the vertices.
+    #endregion
+
+    #region Methods.
+    /// <summary>
+    /// Function to set the vertex position at the vertex specified by the index.
+    /// </summary>
+    /// <param name="vertexIndex">The index of the vertex to update.</param>
+    /// <param name="position">Position of the vertex.</param>
+    public void SetVertexPosition(int vertexIndex, Vector3D position)
+    {
+            Items[vertexIndex] = new VertexTypeList.PositionDiffuse2DTexture1(position, Items[vertexIndex].Color, Items[vertexIndex].TextureCoordinates);
+            _polygon.NeedsUpdate = true;
+    }
+
+    /// <summary>
+    /// Function to set the vertex texture coordinates at the vertex specified by the index.
+    /// </summary>
+    /// <param name="vertexIndex">The index of the vertex to update.</param>
+    /// <param name="coordinates">Texture coordinates of the vertex.</param>
+    public void SetVertexTextureCoordinates(int vertexIndex, Vector2D coordinates)
+    {
+            Items[vertexIndex] = new VertexTypeList.PositionDiffuse2DTexture1(Items[vertexIndex].Position, Items[vertexIndex].Color, coordinates);
+            _polygon.NeedsUpdate = true;
+    }
+
+    /// <summary>
+    /// Function to set the color of the vertex specified by the index.
+    /// </summary>
+    /// <param name="vertexIndex">The index of the vertex to update.</param>
+    /// <param name="color">Color of the vertex.</param>
+    public void SetVertexColor(int vertexIndex, Drawing.Color color)
+    {
+            Items[vertexIndex] = new VertexTypeList.PositionDiffuse2DTexture1(Items[vertexIndex].Position, color, Items[vertexIndex].TextureCoordinates);
+            _polygon.NeedsUpdate = true;
+    }
+
+    /// <summary>
+    /// Function to add a range of vertices.
+    /// </summary>
+    /// <param name="items">Vertices to add to the collection.</param>
+    public void AddRange(VertexTypeList.PositionDiffuse2DTexture1[] items)
+    {
+            if ((items == null) || (items.Length == 0))
+                    return;
+            for (int i = 0; i < items.Length - 1; i++)
+                    Add(items[i]);
+            _polygon.NeedsUpdate = true;
+    }
+
+    /// <summary>
+    /// Function to add a vertex to the polygon.
+    /// </summary>
+    /// <param name="position">3D position of the vertex.  The Z value is used to interact with the depth buffer.</param>
+    /// <param name="imageCoordinate">The relative coordinate of the image being mapped to the polygon.</param>
+    /// <param name="diffuse">The diffuse color of the vertex.</param>
+    /// <returns>The vertex that was added to the polygon.</returns>
+    /// <remarks>The <paramref name="imageCoordinate"/> parameter is different from that of other objects that use image mapping (e.g. a <see cref="GorgonLibrary.Graphics.Sprite">Sprite</see>).
+    ///   The other objects express their image mapping in absolute image coordinates, that is if a 32x32 image is used then the image is mapped from 0 to 32 for width and/or height.
+    ///   However in this case the image mapping is relative to the image.  This means that to map the aforementioned image you would pass 0.0 to 1.0.  Where 1.0 is the width or height 
+    /// of our image.</remarks>
+    public VertexTypeList.PositionDiffuse2DTexture1 AddVertex(Vector3D position, Vector2D imageCoordinate, Drawing.Color diffuse)
+    {                               
+            VertexTypeList.PositionDiffuse2DTexture1 vertex = new VertexTypeList.PositionDiffuse2DTexture1(position, diffuse, imageCoordinate);
+            Add(vertex);
+            _polygon.NeedsUpdate = true;
+            return vertex;
+    }
+
+    /// <summary>
+    /// Function to remove a vertex from the list by its index.
+    /// </summary>
+    /// <param name="index">Index of the vertex to remove.</param>
+    public void Remove(int index)
+    {
+            RemoveItem(index);
+            _polygon.NeedsUpdate = true;
+    }
+    #endregion
+
+    #region Constructor/Destructor.
+    /// <summary>
+    /// Initializes a new instance of the <see cref="PolygonVertexList"/> class.
+    /// </summary>
+    /// <param name="polygon">Polygon that owns the indices.</param>
+    internal PolygonVertexList(PolygonSprite polygon)
+            : base(4)
+    {
+            if (polygon == null)
+                    throw new ArgumentNullException("polygon");
+
+            _polygon = polygon;
+    }
+    #endregion
+                        
+    #region IList<PositionDiffuse2DTexture1> Members
+    /// <summary>
+    /// Gets or sets the <see cref="GorgonLibrary.Graphics.VertexTypeList.PositionDiffuse2DTexture1"/> at the specified index.
+    /// </summary>
+    /// <value></value>
+    public VertexTypeList.PositionDiffuse2DTexture1 this[int index]
+    {
+            get
+            {
+                    return GetItem(index);
+            }
+            set
+            {
+                    SetItem(index, value);
+                    _polygon.NeedsUpdate = true;
+            }
+    }
+
+    /// <summary>
+    /// Determines the index of a specific item in the <see cref="T:System.Collections.Generic.IList`1"/>.
+    /// </summary>
+    /// <param name="item">The object to locate in the <see cref="T:System.Collections.Generic.IList`1"/>.</param>
+    /// <returns>
+    /// The index of <paramref name="item"/> if found in the list; otherwise, -1.
+    /// </returns>
+    public int IndexOf(VertexTypeList.PositionDiffuse2DTexture1 item)
+    {
+            return Items.IndexOf(item);
+    }
+
+    /// <summary>
+    /// Inserts an item to the <see cref="T:System.Collections.Generic.IList`1"/> at the specified index.
+    /// </summary>
+    /// <param name="index">The zero-based index at which <paramref name="item"/> should be inserted.</param>
+    /// <param name="item">The object to insert into the <see cref="T:System.Collections.Generic.IList`1"/>.</param>
+    /// <exception cref="T:System.ArgumentOutOfRangeException">
+    ///     <paramref name="index"/> is not a valid index in the <see cref="T:System.Collections.Generic.IList`1"/>.
+    /// </exception>
+    /// <exception cref="T:System.NotSupportedException">
+    /// The <see cref="T:System.Collections.Generic.IList`1"/> is read-only.
+    /// </exception>
+    public void Insert(int index, VertexTypeList.PositionDiffuse2DTexture1 item)
+    {
+            Items.Insert(index, item);
+            _polygon.NeedsUpdate = true;
+    }
+
+    /// <summary>
+    /// Removes the <see cref="T:System.Collections.Generic.IList`1"/> item at the specified index.
+    /// </summary>
+    /// <param name="index">The zero-based index of the item to remove.</param>
+    /// <exception cref="T:System.ArgumentOutOfRangeException">
+    ///     <paramref name="index"/> is not a valid index in the <see cref="T:System.Collections.Generic.IList`1"/>.
+    /// </exception>
+    /// <exception cref="T:System.NotSupportedException">
+    /// The <see cref="T:System.Collections.Generic.IList`1"/> is read-only.
+    /// </exception>
+    void IList<VertexTypeList.PositionDiffuse2DTexture1>.RemoveAt(int index)
+    {
+            Remove(index);
+    }
+    #endregion
+
+    #region ICollection<PositionDiffuse2DTexture1> Members
+    /// <summary>
+    /// Adds an item to the <see cref="T:System.Collections.Generic.ICollection`1"/>.
+    /// </summary>
+    /// <param name="item">The object to add to the <see cref="T:System.Collections.Generic.ICollection`1"/>.</param>
+    /// <exception cref="T:System.NotSupportedException">
+    /// The <see cref="T:System.Collections.Generic.ICollection`1"/> is read-only.
+    /// </exception>
+    public void Add(VertexTypeList.PositionDiffuse2DTexture1 item)
+    {
+            Items.Add(item);
+            _polygon.NeedsUpdate = true;
+    }
+
+    /// <summary>
+    /// Copies the elements of the <see cref="T:System.Collections.Generic.ICollection`1"/> to an <see cref="T:System.Array"/>, starting at a particular <see cref="T:System.Array"/> index.
+    /// </summary>
+    /// <param name="array">The one-dimensional <see cref="T:System.Array"/> that is the destination of the elements copied from <see cref="T:System.Collections.Generic.ICollection`1"/>. The <see cref="T:System.Array"/> must have zero-based indexing.</param>
+    /// <param name="arrayIndex">The zero-based index in <paramref name="array"/> at which copying begins.</param>
+    /// <exception cref="T:System.ArgumentNullException">
+    ///     <paramref name="array"/> is null.
+    /// </exception>
+    /// <exception cref="T:System.ArgumentOutOfRangeException">
+    ///     <paramref name="arrayIndex"/> is less than 0.
+    /// </exception>
+    /// <exception cref="T:System.ArgumentException">
+    ///     <paramref name="array"/> is multidimensional.
+    /// -or-
+    /// <paramref name="arrayIndex"/> is equal to or greater than the length of <paramref name="array"/>.
+    /// -or-
+    /// The number of elements in the source <see cref="T:System.Collections.Generic.ICollection`1"/> is greater than the available space from <paramref name="arrayIndex"/> to the end of the destination <paramref name="array"/>.
+    /// -or-
+    /// The type cannot be cast automatically to the type of the destination <paramref name="array"/>.
+    /// </exception>
+    public void CopyTo(VertexTypeList.PositionDiffuse2DTexture1[] array, int arrayIndex)
+    {
+            Items.CopyTo(array, arrayIndex);
+    }
+
+    /// <summary>
+    /// Removes all items from the <see cref="T:System.Collections.Generic.ICollection`1"/>.
+    /// </summary>
+    /// <exception cref="T:System.NotSupportedException">
+    /// The <see cref="T:System.Collections.Generic.ICollection`1"/> is read-only.
+    /// </exception>
+    public void Clear()
+    {
+            ClearItems();
+            _polygon.NeedsUpdate = true;
+    }
+
+    /// <summary>
+    /// Gets a value indicating whether the <see cref="T:System.Collections.Generic.ICollection`1"/> is read-only.
+    /// </summary>
+    /// <value></value>
+    /// <returns>true if the <see cref="T:System.Collections.Generic.ICollection`1"/> is read-only; otherwise, false.
+    /// </returns>
+    public bool IsReadOnly
+    {
+            get 
+            {
+                    return false;
+            }
+    }
+
+    /// <summary>
+    /// Removes the first occurrence of a specific object from the <see cref="T:System.Collections.Generic.ICollection`1"/>.
+    /// </summary>
+    /// <param name="item">The object to remove from the <see cref="T:System.Collections.Generic.ICollection`1"/>.</param>
+    /// <returns>
+    /// true if <paramref name="item"/> was successfully removed from the <see cref="T:System.Collections.Generic.ICollection`1"/>; otherwise, false. This method also returns false if <paramref name="item"/> is not found in the original <see cref="T:System.Collections.Generic.ICollection`1"/>.
+    /// </returns>
+    /// <exception cref="T:System.NotSupportedException">
+    /// The <see cref="T:System.Collections.Generic.ICollection`1"/> is read-only.
+    /// </exception>
+    public bool Remove(VertexTypeList.PositionDiffuse2DTexture1 item)
+    {
+            return Items.Remove(item);
+    }
+    #endregion
+}
+
+#endregion
+
+        #region Variables.
+        private bool _disposed = false;                                                                 // Flag to indicate that we've disposed this object.
+        private PolygonVertexList _vertices = null;                                             // Vertex list.
+        private IndexList _indices = null;                                                              // Index list.
+        private VertexBuffer _vertexBuffer = null;                                              // Vertex buffer.
+        private IndexBuffer _indexBuffer = null;                                                // Index buffer.
+        private Smoothing _smoothing;                                                                   // Smoothing mode.
+        private AlphaBlendOperation _sourceBlendOp;                                             // Alphablend source operation.
+        private AlphaBlendOperation _destBlendOp;                                               // Alphablend destination operation.
+private AlphaBlendOperation _sourceAlphaBlendOp;                            // Alphablend source operation for the alpha.
+private AlphaBlendOperation _destAlphaBlendOp;                                  // Alphablend destination operation for the alpha.
+        private BlendingModes _blendMode;                                                               // Alpha blending preset mode.
+        private ImageAddressing _hwrapMode;                                                             // Horizontal wrapping mode.
+        private ImageAddressing _vwrapMode;                                                             // Vertical wrapping mode.
+        private CompareFunctions _alphaCompareFunction;                                 // Alpha test compare function.
+        private int _alphaTestCompareValue;                                                             // Alpha test compare value.
+        private StencilOperations _stencilPassOperation;                                // Stencil pass operation.
+        private StencilOperations _stencilFailOperation;                                // Stencil fail operation.
+        private StencilOperations _stencilZFailOperation;                               // Stencil Z fail operation.
+        private CompareFunctions _stencilCompare;                                               // Stencil compare operation.
+        private int _stencilReference;                                                                  // Stencil reference value.
+        private int _stencilMask;                                                                               // Stencil mask value.
+        private bool _useStencil;                                                                               // Flag to indicate whether to use the stencil or not.
+        private float _depthBias;                                                                               // Depth bias.
+        private bool _depthWriteEnabled;                                                                // Depth writing enabled flag.
+        private CompareFunctions _depthCompare;                                                 // Depth test comparison function.
+        private Matrix _worldMatrix = Matrix.Identity;                                  // World matrix.
+        private Drawing.RectangleF _aabb = Drawing.RectangleF.Empty;    // Axis aligned bounding box for the sprite.
+        private Vector2D _size = Vector2D.Zero;                                                 // Size of the polygon sprite.
+        private bool _needsUpdate = false;                                                              // Flag to indicate that we need to update.
+        private bool _needsAABB = false;                                                                // Flag to indicate that we need an AABB update.
+        private float _rotation = 0.0f;                                                                 // Rotation angle in degrees.
+        private Vector2D _scale = Vector2D.Unit;                                                // Scale of the sprite.
+        private Vector3D _position = Vector3D.Zero;                                             // Position of the sprite.
+        private Vector2D _axis = Vector2D.Zero;                                                 // Pivot axis  for the sprite.
+        private BoundingCircle _boundCircle = BoundingCircle.Empty;             // Bounding circle.
+        #endregion
+
+        #region Properties.
+        /// <summary>
+        /// Property to set or return whether the buffers need updating.
+        /// </summary>
+        internal bool NeedsUpdate
+        {
+                get
                 {
-                        get
-                        {
-                                if (NeedsUpdate)
-                                        CalculateWidthHeight();
-                                return _size.Y;
-                        }
+                        return _needsUpdate;
                 }
-
-                /// <summary>
-                /// Property to return the AABB rectangle for the sprite.
-                /// </summary>
-                public Drawing.RectangleF AABB
+                set
                 {
-                        get
-                        {
-                                if (_needsAABB)
-                                        CalculateAABB();
-                                return _aabb;
-                        }
+                        _needsUpdate = value;
+                        _needsAABB = value;
                 }
+        }
 
-                /// <summary>
-                /// Property to return the bounding circle for the sprite.
-                /// </summary>
-                public BoundingCircle BoundingCircle
-                {
-                        get
-                        {
-                                if (_needsAABB)
-                                        CalculateAABB();
-                                return _boundCircle;
-                        }
-                }
-
-                /// <summary>
-                /// Property to set or return the rotation (in degrees) of the polygon.
-                /// </summary>
-                public float Rotation
-                {
-                        get
-                        {
-                                return _rotation;
-                        }
-                        set
-                        {
-                                _rotation = value;
-                                _needsAABB = true;
-                        }
-                }
-
-                /// <summary>
-                /// Property to set or return the position of the polygon.
-                /// </summary>
-                public Vector3D Position
-                {
-                        get
-                        {
-                                return _position;
-                        }
-                        set
-                        {
-                                _position = value;
-                                _needsAABB = true;
-                        }
-                }
-
-                /// <summary>
-                /// Property to set or return the scale of the polygon.
-                /// </summary>
-                public Vector2D Scale
-                {
-                        get
-                        {
-                                return _scale;
-                        }
-                        set
-                        {
-                                _scale = value;
-                                _needsAABB = true;
-                        }
-                }
-
-                /// <summary>
-                /// Property to set or return the pivot axis of the polygon.
-                /// </summary>
-                public Vector2D Axis
-                {
-                        get
-                        {
-                                return _axis;
-                        }
-                        set
-                        {
-                                _axis = value;
-                                _needsAABB = true;
-                        }
-                }
-
-                /// <summary>
-                /// Property to set or return the uniform scale of the polygon.
-                /// </summary>
-                public float UniformScale
-                {
-                        get
-                        {
-                                return Scale.X;
-                        }
-                        set
-                        {
-                                Scale = new Vector2D(value, value);
-                        }
-                }
-
-                /// <summary>
-                /// Property to set or return the image to map to the polygon.
-                /// </summary>
-                public Image Image
-                {
-                        get;
-                        set;
-                }
-
-                /// <summary>
-                /// Property to set or return whether we inherit the depth bias.
-                /// </summary>
-                public bool InheritDepthBias
-                {
-                        get;
-                        set;
-                }
-
-                /// <summary>
-                /// Property to set or return whether we inherit the depth writing enabled flag.
-                /// </summary>
-                public virtual bool InheritDepthWriteEnabled
-                {
-                        get;
-                        set;
-                }
-
-                /// <summary>
-                /// Property to set or return whether we inherit the depth testing function.
-                /// </summary>
-                public virtual bool InheritDepthTestFunction
-                {
-                        get;
-                        set;
-                }
-
-                /// <summary>
-                /// Property to set or return whether we inherit the stencil enabled flag from the layer.
-                /// </summary>
-                /// <value></value>
-                public bool InheritStencilEnabled
-                {
-                        get;
-                        set;
-                }
-
-                /// <summary>
-                /// Property to set or return whether we inherit the stencil reference from the layer.
-                /// </summary>
-                /// <value></value>
-                public bool InheritStencilReference
-                {
-                        get;
-                        set;
-                }
-
-                /// <summary>
-                /// Property to set or return whether we inherit the stencil mask from the layer.
-                /// </summary>
-                /// <value></value>
-                public bool InheritStencilMask
-                {
-                        get;
-                        set;
-                }
-
-                /// <summary>
-                /// Property to set or return whether we inherit the stencil pass operation from the layer.
-                /// </summary>
-                /// <value></value>
-                public bool InheritStencilPassOperation
-                {
-                        get;
-                        set;
-                }
-
-                /// <summary>
-                /// Property to set or return whether we inherit the stencil failed operation from the layer.
-                /// </summary>
-                /// <value></value>
-                public bool InheritStencilFailOperation
-                {
-                        get;
-                        set;
-                }
-
-                /// <summary>
-                /// Property to set or return whether we inherit the stencil z-failed operation from the layer.
-                /// </summary>
-                /// <value></value>
-                public bool InheritStencilZFailOperation
-                {
-                        get;
-                        set;
-                }
-
-                /// <summary>
-                /// Property to set or return whether we inherit the stencil compare from the layer.
-                /// </summary>
-                /// <value></value>
-                public bool InheritStencilCompare
-                {
-                        get;
-                        set;
-                }
-
-
-                /// <summary>
-                /// Property to set or return whether we inherit the alpha mask function from the layer.
-                /// </summary>
-                public bool InheritAlphaMaskFunction
-                {
-                        get;
-                        set;
-                }
-
-                /// <summary>
-                /// Property to set or return whether we inherit the alpha mask value from the layer.
-                /// </summary>
-                public virtual bool InheritAlphaMaskValue
-                {
-                        get;
-                        set;
-                }
-
-                /// <summary>
-                /// Property to set or return whether we inherit the horizontal wrapping from the layer.
-                /// </summary>
-                public bool InheritHorizontalWrapping
-                {
-                        get;
-                        set;
-                }
-
-                /// <summary>
-                /// Property to set or return whether we inherit the vertical wrapping from the layer.
-                /// </summary>
-                public bool InheritVerticalWrapping
-                {
-                        get;
-                        set;
-                }
-
-                /// <summary>
-                /// Property to set or return whether to inherit the smoothing mode from the global states.
-                /// </summary>
-                public bool InheritSmoothing
-                {
-                        get;
-                        set;
-                }
-
-                /// <summary>
-                /// Property to set or return whether to inherit the blending mode from the global states.
-                /// </summary>
-                public bool InheritBlending
-                {
-                        get;
-                        set;
-                }
-
-                /// <summary>
-                /// Property to return the vertex list for this polygon.
-                /// </summary>
-                public PolygonVertexList PolygonVertices
-                {
-                        get
-                        {
-                                return _vertices;
-                        }
-                }
-
-                /// <summary>
-                /// Property to return the vertex index list for this polygon.
-                /// </summary>
-                public IndexList PolygonIndices
-                {
-                        get
-                        {
-                                return _indices;
-                        }
-                }
-
-                /// <summary>
-                /// Property to return the primitive style for the object.
-                /// </summary>
-                /// <value></value>
-                public PrimitiveStyle PrimitiveStyle
-                {
-                        get;
-                        set;
-                }
-                #endregion
-
-                #region Methods.
-                /// <summary>
-                /// Function to refresh the vertex/index buffers.
-                /// </summary>
-                private void RefreshBuffers()
-                {
-                        IndexBufferType indexType = (Gorgon.CurrentDriver.SupportIndex32) ? IndexBufferType.Index32 : IndexBufferType.Index16;
-
-                        if (_vertexBuffer != null)
-                        {
-                                _vertexBuffer.Dispose();
-                                _vertexBuffer = null;
-                        }
-
-                        if (_indexBuffer != null)
-                        {
-                                _indexBuffer.Dispose();
-                                _indexBuffer = null;
-                        }
-
-                        if (_vertices.Count < 1)
-                                return;
-
-                        if (_indices.Count < 1)
-                                return;
-
-                        _vertexBuffer = new VertexBuffer(Gorgon.Renderer.VertexTypes["PositionDiffuse2DTexture1"].VertexSize(0), _vertices.Count, BufferUsages.WriteOnly | BufferUsages.Dynamic);
-                        _indexBuffer = new IndexBuffer(indexType, _indices.Count, BufferUsages.WriteOnly | BufferUsages.Dynamic);
-                        NeedsUpdate = true;
-                }
-
-                /// <summary>
-                /// Function to calculate the actual (untransformed) width and height of the polygon sprite.
-                /// </summary>
-                protected void CalculateWidthHeight()
+        /// <summary>
+        /// Property to return the width of the polygon sprite.
+        /// </summary>
+        public float Width
+        {
+                get
                 {
                         if (NeedsUpdate)
-                        {
-                                Vector2D sizemin = Vector2D.Zero;
-                                Vector2D sizemax = Vector2D.Zero;
-
-                                sizemin = new Vector3D(float.MaxValue, float.MaxValue, 0.0f);
-                                sizemax = new Vector3D(float.MinValue, float.MinValue, 0.0f);
-
-                                for (int i = 0; i < _vertices.Count; i++)
-                                {
-                                        Vector3D position = _vertices[i].Position;
-                                        if (position.X < sizemin.X)
-                                                sizemin.X = position.X;
-                                        if (position.Y < sizemin.Y)
-                                                sizemin.Y = position.Y;
-                                        if (position.X > sizemax.X)
-                                                sizemax.X = position.X;
-                                        if (position.Y > sizemax.Y)
-                                                sizemax.Y = position.Y;
-                                }
-
-                                _size = Vector2D.Subtract(sizemax, sizemin);
-                        }
+                                CalculateWidthHeight();
+                        return _size.X;
                 }
+        }
 
-                /// <summary>
-                /// Function to calculate the Axis Aligned bounding box for the polygon sprite.
-                /// </summary>
-                protected void CalculateAABB()
+        /// <summary>
+        /// Property to return the height of the polygon sprite.
+        /// </summary>
+        public float Height
+        {
+                get
+                {
+                        if (NeedsUpdate)
+                                CalculateWidthHeight();
+                        return _size.Y;
+                }
+        }
+
+        /// <summary>
+        /// Property to return the AABB rectangle for the sprite.
+        /// </summary>
+        public Drawing.RectangleF AABB
+        {
+                get
                 {
                         if (_needsAABB)
-                        {
-                                Vector3D min = Vector3D.Zero;
-                                Vector3D max = Vector3D.Zero;
-                                Matrix position = Matrix.Identity;
-                                Matrix rotation = Matrix.Identity;
-                                Matrix scale = Matrix.Identity;
-
-                                _worldMatrix = Matrix.Identity;
-                                position.Translate(Position);
-                                _worldMatrix.Translate(-Axis.X, -Axis.Y, 0.0f);
-
-                                if (!MathUtility.EqualFloat(Rotation, 0.0f))
-                                {
-                                        rotation.RotateZ(Rotation);
-                                        _worldMatrix = Matrix.Multiply(rotation, _worldMatrix);
-                                }
-
-                                if (!(MathUtility.EqualFloat(Scale.X, 1.0f)) || (!MathUtility.EqualFloat(Scale.Y, 1.0f)))
-                                {
-                                        scale.Scale(Scale.X, Scale.Y, 1.0f);
-                                        _worldMatrix = Matrix.Multiply(scale, _worldMatrix);
-                                }
-
-                                _worldMatrix = Matrix.Multiply(position, _worldMatrix);
-
-                                min = new Vector3D(float.MaxValue, float.MaxValue, 0.0f);
-                                max = new Vector3D(float.MinValue, float.MinValue, 0.0f);
-
-                                for (int i = 0; i < _vertices.Count; i++)
-                                {
-                                        Vector3D transformed = Matrix.Multiply(_worldMatrix, Vector3D.Subtract(_vertices[i].Position, Axis));
-
-                                        if (transformed.X < min.X)
-                                                min.X = transformed.X;
-                                        if (transformed.Y < min.Y)
-                                                min.Y = transformed.Y;
-                                        if (transformed.X > max.X)
-                                                max.X = transformed.X;
-                                        if (transformed.Y > max.Y)
-                                                max.Y = transformed.Y;
-                                }
-
-                                min = Vector3D.Add(min, Position);
-                                max = Vector3D.Add(max, Position);
-                                _aabb = new Drawing.RectangleF(min.X, min.Y, max.X - min.X, max.Y - min.Y);
-
-                                _boundCircle.Center = new Vector2D(min.X + (max.X - min.X) / 2.0f, min.Y + (max.Y - min.Y) / 2.0f);
-                                float xradius = MathUtility.Abs(max.X - min.X) / 2.0f;
-                                float yradius = MathUtility.Abs(max.Y - min.Y) / 2.0f;
-                                if (xradius > yradius)
-                                        _boundCircle.Radius = xradius;
-                                else
-                                        _boundCircle.Radius = yradius;
-                                
-                                _needsAABB = false;
-                        }                       
+                                CalculateAABB();
+                        return _aabb;
                 }
+        }
 
-                /// <summary>
-                /// Function to update the dimensions for an object.
-                /// </summary>
-                protected void UpdateDimensions()
+        /// <summary>
+        /// Property to return the bounding circle for the sprite.
+        /// </summary>
+        public BoundingCircle BoundingCircle
+        {
+                get
                 {
-                        if (NeedsUpdate)
-                        {
-                                CalculateWidthHeight();
-
-                                // Copy the values into the vertex/index buffers.
-                                _vertexBuffer.Lock(BufferLockFlags.Discard);
-                                _vertexBuffer.Write<VertexTypeList.PositionDiffuse2DTexture1>(_vertices.ToArray());
-                                _vertexBuffer.Unlock();
-
-                                _indexBuffer.Lock(BufferLockFlags.Discard);
-                                if (Gorgon.CurrentDriver.SupportIndex32)
-                                        _indexBuffer.Write<int>(_indices.ToArray());
-                                else
-                                {
-                                        ushort[] shortIndices = new ushort[_indices.Count];
-                                        for (int i = 0; i < _indices.Count; i++)
-                                                shortIndices[i] = (ushort)_indices[i];
-
-                                        _indexBuffer.Write<ushort>(shortIndices);
-                                }
-                                _indexBuffer.Unlock();                          
-                        }
-
-                        CalculateAABB();
-
-                        NeedsUpdate = false;
+                        if (_needsAABB)
+                                CalculateAABB();
+                        return _boundCircle;
                 }
+        }
 
-                /// <summary>
-                /// Function to draw the object.
-                /// </summary>
-                public void Draw()
+        /// <summary>
+        /// Property to set or return the rotation (in degrees) of the polygon.
+        /// </summary>
+        public float Rotation
+        {
+                get
                 {
-                        // Update the buffers.
-                        if ((_indexBuffer == null) || (_vertexBuffer == null) || (_indexBuffer.IndexCount < _indices.Count) || (_vertexBuffer.VertexCount < _vertices.Count))
-                                RefreshBuffers();
-
-                        if ((_indexBuffer == null) || (_vertexBuffer == null))
-                                return;
-
-                        UpdateDimensions();
-
-                        // Flush the renderer before drawing.
-                        Gorgon.Renderer.Render();
-
-                        if (Gorgon.GlobalStateSettings.StateChanged(this, Gorgon.Renderer.GetImage(0)))
-                                Gorgon.GlobalStateSettings.SetStates(this);
-
-                        // Reset the world transform.
-                        Gorgon.Renderer.SetWorldTransform(0, _worldMatrix);
-
-                        Gorgon.Renderer.SetImage(0, Image);
-                        Gorgon.Renderer.Render(Gorgon.Renderer.VertexTypes["PositionDiffuse2DTexture1"], _vertexBuffer, _indexBuffer, PrimitiveStyle, 0, _vertices.Count, 0, _indices.Count);
-
-                        // Reset the world transform.
-                        Gorgon.Renderer.SetWorldTransform(0, Matrix.Identity);
+                        return _rotation;
                 }
-
-                /// <summary>
-                /// Creates a new object that is a copy of the current instance.
-                /// </summary>
-                /// <returns>
-                /// A new object that is a copy of this instance.
-                /// </returns>
-                public PolygonSprite Clone()
+                set
                 {
-                        PolygonSprite clone = new PolygonSprite(Name + ".Clone", Image);
-
-                        clone.PolygonVertices.AddRange(_vertices.ToArray());
-                        clone.PolygonIndices.AddRange(_indices.ToArray());
-                        clone.AlphaMaskFunction = AlphaMaskFunction;
-                        clone.AlphaMaskValue = AlphaMaskValue;
-                        clone.BlendingMode = BlendingMode;
-                        clone.BorderColor = BorderColor;
-                        clone.DepthBufferBias = DepthBufferBias;
-                        clone.DepthTestFunction = DepthTestFunction;
-                        clone.DepthWriteEnabled = DepthWriteEnabled;
-                        clone.DestinationBlend = DestinationBlend;
-            clone.DestinationBlendAlpha = DestinationBlendAlpha;
-                        clone.PrimitiveStyle = PrimitiveStyle;
-                        clone.Smoothing = Smoothing;
-                        clone.SourceBlend = SourceBlend;
-            clone.SourceBlendAlpha = SourceBlendAlpha;
-                        clone.StencilCompare = StencilCompare;
-                        clone.StencilEnabled = StencilEnabled;
-                        clone.StencilFailOperation = StencilFailOperation;
-                        clone.StencilMask = StencilMask;
-                        clone.StencilPassOperation = StencilPassOperation;
-                        clone.StencilReference = StencilReference;
-                        clone.StencilZFailOperation = StencilZFailOperation;
-                        clone.VerticalWrapMode = VerticalWrapMode;
-                        clone.HorizontalWrapMode = HorizontalWrapMode;
-                        clone.InheritAlphaMaskFunction = clone.InheritAlphaMaskFunction;
-                        clone.InheritAlphaMaskValue = clone.InheritAlphaMaskValue;
-                        clone.InheritBlending = clone.InheritBlending;
-                        clone.InheritDepthBias = clone.InheritDepthBias;
-                        clone.InheritDepthTestFunction = clone.InheritDepthTestFunction;
-                        clone.InheritDepthWriteEnabled = clone.InheritDepthWriteEnabled;
-                        clone.InheritHorizontalWrapping = clone.InheritHorizontalWrapping;
-                        clone.InheritSmoothing = clone.InheritSmoothing;
-                        clone.InheritStencilCompare = clone.InheritStencilCompare;
-                        clone.InheritStencilEnabled = clone.InheritStencilEnabled;
-                        clone.InheritStencilFailOperation = clone.InheritStencilFailOperation;
-                        clone.InheritStencilMask = clone.InheritStencilMask;
-                        clone.InheritStencilPassOperation = clone.InheritStencilPassOperation;
-                        clone.InheritStencilReference = clone.InheritStencilReference;
-                        clone.InheritStencilZFailOperation = clone.InheritStencilZFailOperation;
-                        clone.InheritVerticalWrapping = clone.InheritVerticalWrapping;
-
-                        return clone;
+                        _rotation = value;
+                        _needsAABB = true;
                 }
+        }
 
-                /// <summary>
-                /// Function to set the position of the polygon sprite.
-                /// </summary>
-                /// <param name="x">Horizontal position of the sprite.</param>
-                /// <param name="y">Vertical position of the sprite.</param>
-                /// <param name="depth">Depth of the sprite when using depth buffer.</param>
-                public void SetPosition(float x, float y, float depth)
+        /// <summary>
+        /// Property to set or return the position of the polygon.
+        /// </summary>
+        public Vector3D Position
+        {
+                get
                 {
-                        Position = new Vector3D(x, y, depth);
+                        return _position;
                 }
-
-                /// <summary>
-                /// Function to set the scale of the polygon sprite.
-                /// </summary>
-                /// <param name="x">Horizontal scale.</param>
-                /// <param name="y">Vertical scale.</param>
-                public void SetScale(float x, float y)
+                set
                 {
-                        Scale = new Vector2D(x, y);
+                        _position = value;
+                        _needsAABB = true;
                 }
+        }
 
-                /// <summary>
-                /// Function to set the pivot axis of the polygon sprite.
-                /// </summary>
-                /// <param name="x">Horizontal position of the pivot axis.</param>
-                /// <param name="y">Vertical position of the pivot axis.</param>
-                public void SetAxis(float x, float y)
+        /// <summary>
+        /// Property to set or return the scale of the polygon.
+        /// </summary>
+        public Vector2D Scale
+        {
+                get
                 {
-                        Axis = new Vector2D(x, y);
+                        return _scale;
                 }
-                #endregion
-
-                #region Constructor/Destructor.
-                /// <summary>
-                /// Initializes a new instance of the <see cref="PolygonSprite"/> class.
-                /// </summary>
-                /// <param name="name">The name of the sprite object.</param>
-                /// <param name="image">The image to map to the polygon.</param>
-                public PolygonSprite(string name, Image image)
-                        : base(name)
+                set
                 {
-                        Image = image;
-                        PrimitiveStyle = PrimitiveStyle.TriangleStrip;
-                        _vertices = new PolygonVertexList(this);
-                        _indices = new IndexList(this);
-                        DeviceStateList.Add(this);
-
-                        UniformScale = 1.0f;
-                        BorderColor = Drawing.Color.Black;
-
-                        // Inherit all global states.
-                        InheritAlphaMaskFunction = true;
-                        InheritAlphaMaskValue = true;
-                        InheritBlending = true;
-                        InheritDepthBias = true;
-                        InheritDepthTestFunction = true;
-                        InheritDepthWriteEnabled = true;
-                        InheritHorizontalWrapping = true;
-                        InheritSmoothing = true;
-                        InheritStencilCompare = true;
-                        InheritStencilEnabled = true;
-                        InheritStencilFailOperation = true;
-                        InheritStencilMask = true;
-                        InheritStencilPassOperation = true;
-                        InheritStencilReference = true;
-                        InheritStencilZFailOperation = true;
-                        InheritVerticalWrapping = true;
-                        CullingMode = CullingMode.None;
+                        _scale = value;
+                        _needsAABB = true;
                 }
-                #endregion
+        }
 
-                #region IDisposable Members
-                /// <summary>
-                /// Releases unmanaged and - optionally - managed resources
-                /// </summary>
-                /// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
-                private void Dispose(bool disposing)
+        /// <summary>
+        /// Property to set or return the pivot axis of the polygon.
+        /// </summary>
+        public Vector2D Axis
+        {
+                get
                 {
-                        if (!_disposed)
-                        {
-                                if (disposing)
-                                {
-                                        if (_vertexBuffer != null)
-                                                _vertexBuffer.Dispose();
-                                        if (_indexBuffer != null)
-                                                _indexBuffer.Dispose();
-
-                                        _vertexBuffer = null;
-                                        _indexBuffer = null;
-
-                                        if (DeviceStateList.Contains(this))
-                                                DeviceStateList.Remove(this);
-                                }
-
-                                _disposed = true;
-                        }
+                        return _axis;
                 }
-
-                /// <summary>
-                /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-                /// </summary>
-                public void Dispose()
+                set
                 {
-                        Dispose(true);
-                        GC.SuppressFinalize(this);
+                        _axis = value;
+                        _needsAABB = true;
                 }
-                #endregion
+        }
 
-                #region IDeviceStateObject Members
-                /// <summary>
-                /// Function called when the device is in a lost state.
-                /// </summary>
-                public void DeviceLost()
+        /// <summary>
+        /// Property to set or return the uniform scale of the polygon.
+        /// </summary>
+        public float UniformScale
+        {
+                get
                 {
-                        if (_vertexBuffer != null)
-                                _vertexBuffer.Dispose();
-                        if (_indexBuffer != null)
-                                _indexBuffer.Dispose();
+                        return Scale.X;
+                }
+                set
+                {
+                        Scale = new Vector2D(value, value);
+                }
+        }
 
+        /// <summary>
+        /// Property to set or return the image to map to the polygon.
+        /// </summary>
+        public Image Image
+        {
+                get;
+                set;
+        }
+
+        /// <summary>
+        /// Property to set or return whether we inherit the depth bias.
+        /// </summary>
+        public bool InheritDepthBias
+        {
+                get;
+                set;
+        }
+
+        /// <summary>
+        /// Property to set or return whether we inherit the depth writing enabled flag.
+        /// </summary>
+        public virtual bool InheritDepthWriteEnabled
+        {
+                get;
+                set;
+        }
+
+        /// <summary>
+        /// Property to set or return whether we inherit the depth testing function.
+        /// </summary>
+        public virtual bool InheritDepthTestFunction
+        {
+                get;
+                set;
+        }
+
+        /// <summary>
+        /// Property to set or return whether we inherit the stencil enabled flag from the layer.
+        /// </summary>
+        /// <value></value>
+        public bool InheritStencilEnabled
+        {
+                get;
+                set;
+        }
+
+        /// <summary>
+        /// Property to set or return whether we inherit the stencil reference from the layer.
+        /// </summary>
+        /// <value></value>
+        public bool InheritStencilReference
+        {
+                get;
+                set;
+        }
+
+        /// <summary>
+        /// Property to set or return whether we inherit the stencil mask from the layer.
+        /// </summary>
+        /// <value></value>
+        public bool InheritStencilMask
+        {
+                get;
+                set;
+        }
+
+        /// <summary>
+        /// Property to set or return whether we inherit the stencil pass operation from the layer.
+        /// </summary>
+        /// <value></value>
+        public bool InheritStencilPassOperation
+        {
+                get;
+                set;
+        }
+
+        /// <summary>
+        /// Property to set or return whether we inherit the stencil failed operation from the layer.
+        /// </summary>
+        /// <value></value>
+        public bool InheritStencilFailOperation
+        {
+                get;
+                set;
+        }
+
+        /// <summary>
+        /// Property to set or return whether we inherit the stencil z-failed operation from the layer.
+        /// </summary>
+        /// <value></value>
+        public bool InheritStencilZFailOperation
+        {
+                get;
+                set;
+        }
+
+        /// <summary>
+        /// Property to set or return whether we inherit the stencil compare from the layer.
+        /// </summary>
+        /// <value></value>
+        public bool InheritStencilCompare
+        {
+                get;
+                set;
+        }
+
+
+        /// <summary>
+        /// Property to set or return whether we inherit the alpha mask function from the layer.
+        /// </summary>
+        public bool InheritAlphaMaskFunction
+        {
+                get;
+                set;
+        }
+
+        /// <summary>
+        /// Property to set or return whether we inherit the alpha mask value from the layer.
+        /// </summary>
+        public virtual bool InheritAlphaMaskValue
+        {
+                get;
+                set;
+        }
+
+        /// <summary>
+        /// Property to set or return whether we inherit the horizontal wrapping from the layer.
+        /// </summary>
+        public bool InheritHorizontalWrapping
+        {
+                get;
+                set;
+        }
+
+        /// <summary>
+        /// Property to set or return whether we inherit the vertical wrapping from the layer.
+        /// </summary>
+        public bool InheritVerticalWrapping
+        {
+                get;
+                set;
+        }
+
+        /// <summary>
+        /// Property to set or return whether to inherit the smoothing mode from the global states.
+        /// </summary>
+        public bool InheritSmoothing
+        {
+                get;
+                set;
+        }
+
+        /// <summary>
+        /// Property to set or return whether to inherit the blending mode from the global states.
+        /// </summary>
+        public bool InheritBlending
+        {
+                get;
+                set;
+        }
+
+        /// <summary>
+        /// Property to return the vertex list for this polygon.
+        /// </summary>
+        public PolygonVertexList PolygonVertices
+        {
+                get
+                {
+                        return _vertices;
+                }
+        }
+
+        /// <summary>
+        /// Property to return the vertex index list for this polygon.
+        /// </summary>
+        public IndexList PolygonIndices
+        {
+                get
+                {
+                        return _indices;
+                }
+        }
+
+        /// <summary>
+        /// Property to return the primitive style for the object.
+        /// </summary>
+        /// <value></value>
+        public PrimitiveStyle PrimitiveStyle
+        {
+                get;
+                set;
+        }
+        #endregion
+
+        #region Methods.
+        /// <summary>
+        /// Function to refresh the vertex/index buffers.
+        /// </summary>
+        private void RefreshBuffers()
+        {
+                IndexBufferType indexType = (Gorgon.CurrentDriver.SupportIndex32) ? IndexBufferType.Index32 : IndexBufferType.Index16;
+
+                if (_vertexBuffer != null)
+                {
+                        _vertexBuffer.Dispose();
                         _vertexBuffer = null;
+                }
+
+                if (_indexBuffer != null)
+                {
+                        _indexBuffer.Dispose();
                         _indexBuffer = null;
                 }
 
-                /// <summary>
-                /// Function called when the device is reset.
-                /// </summary>
-                public void DeviceReset()
-                {
-                        NeedsUpdate = true;
-                }
+                if (_vertices.Count < 1)
+                        return;
 
-                /// <summary>
-                /// Function to force the loss of the objects data.
-                /// </summary>
-                public void ForceRelease()
-                {
-                        DeviceLost();
-                }
-                #endregion
+                if (_indices.Count < 1)
+                        return;
 
-                #region IRenderableStates Members
-                /// <summary>
-                /// Property to set or return the horizontal wrapping mode to use.
-                /// </summary>
-                /// <value></value>
-                public ImageAddressing HorizontalWrapMode
+                _vertexBuffer = new VertexBuffer(Gorgon.Renderer.VertexTypes["PositionDiffuse2DTexture1"].VertexSize(0), _vertices.Count, BufferUsages.WriteOnly | BufferUsages.Dynamic);
+                _indexBuffer = new IndexBuffer(indexType, _indices.Count, BufferUsages.WriteOnly | BufferUsages.Dynamic);
+                NeedsUpdate = true;
+        }
+
+        /// <summary>
+        /// Function to calculate the actual (untransformed) width and height of the polygon sprite.
+        /// </summary>
+        protected void CalculateWidthHeight()
+        {
+                if (NeedsUpdate)
                 {
-                        get
+                        Vector2D sizemin = Vector2D.Zero;
+                        Vector2D sizemax = Vector2D.Zero;
+
+                        sizemin = new Vector3D(float.MaxValue, float.MaxValue, 0.0f);
+                        sizemax = new Vector3D(float.MinValue, float.MinValue, 0.0f);
+
+                        for (int i = 0; i < _vertices.Count; i++)
                         {
-                                if (InheritHorizontalWrapping)
-                                        return Gorgon.GlobalStateSettings.GlobalHorizontalWrapMode;
+                                Vector3D position = _vertices[i].Position;
+                                if (position.X < sizemin.X)
+                                        sizemin.X = position.X;
+                                if (position.Y < sizemin.Y)
+                                        sizemin.Y = position.Y;
+                                if (position.X > sizemax.X)
+                                        sizemax.X = position.X;
+                                if (position.Y > sizemax.Y)
+                                        sizemax.Y = position.Y;
+                        }
+
+                        _size = Vector2D.Subtract(sizemax, sizemin);
+                }
+        }
+
+        /// <summary>
+        /// Function to calculate the Axis Aligned bounding box for the polygon sprite.
+        /// </summary>
+        protected void CalculateAABB()
+        {
+                if (_needsAABB)
+                {
+                        Vector3D min = Vector3D.Zero;
+                        Vector3D max = Vector3D.Zero;
+                        Matrix position = Matrix.Identity;
+                        Matrix rotation = Matrix.Identity;
+                        Matrix scale = Matrix.Identity;
+
+                        _worldMatrix = Matrix.Identity;
+                        position.Translate(Position);
+                        _worldMatrix.Translate(-Axis.X, -Axis.Y, 0.0f);
+
+                        if (!MathUtility.EqualFloat(Rotation, 0.0f))
+                        {
+                                rotation.RotateZ(Rotation);
+                                _worldMatrix = Matrix.Multiply(rotation, _worldMatrix);
+                        }
+
+                        if (!(MathUtility.EqualFloat(Scale.X, 1.0f)) || (!MathUtility.EqualFloat(Scale.Y, 1.0f)))
+                        {
+                                scale.Scale(Scale.X, Scale.Y, 1.0f);
+                                _worldMatrix = Matrix.Multiply(scale, _worldMatrix);
+                        }
+
+                        _worldMatrix = Matrix.Multiply(position, _worldMatrix);
+
+                        min = new Vector3D(float.MaxValue, float.MaxValue, 0.0f);
+                        max = new Vector3D(float.MinValue, float.MinValue, 0.0f);
+
+                        for (int i = 0; i < _vertices.Count; i++)
+                        {
+                                Vector3D transformed = Matrix.Multiply(_worldMatrix, Vector3D.Subtract(_vertices[i].Position, Axis));
+
+                                if (transformed.X < min.X)
+                                        min.X = transformed.X;
+                                if (transformed.Y < min.Y)
+                                        min.Y = transformed.Y;
+                                if (transformed.X > max.X)
+                                        max.X = transformed.X;
+                                if (transformed.Y > max.Y)
+                                        max.Y = transformed.Y;
+                        }
+
+                        min = Vector3D.Add(min, Position);
+                        max = Vector3D.Add(max, Position);
+                        _aabb = new Drawing.RectangleF(min.X, min.Y, max.X - min.X, max.Y - min.Y);
+
+                        _boundCircle.Center = new Vector2D(min.X + (max.X - min.X) / 2.0f, min.Y + (max.Y - min.Y) / 2.0f);
+                        float xradius = MathUtility.Abs(max.X - min.X) / 2.0f;
+                        float yradius = MathUtility.Abs(max.Y - min.Y) / 2.0f;
+                        if (xradius > yradius)
+                                _boundCircle.Radius = xradius;
+                        else
+                                _boundCircle.Radius = yradius;
+                                
+                        _needsAABB = false;
+                }                       
+        }
+
+        /// <summary>
+        /// Function to update the dimensions for an object.
+        /// </summary>
+        protected void UpdateDimensions()
+        {
+                if (NeedsUpdate)
+                {
+                        CalculateWidthHeight();
+
+                        // Copy the values into the vertex/index buffers.
+                        _vertexBuffer.Lock(BufferLockFlags.Discard);
+                        _vertexBuffer.Write<VertexTypeList.PositionDiffuse2DTexture1>(_vertices.ToArray());
+                        _vertexBuffer.Unlock();
+
+                        _indexBuffer.Lock(BufferLockFlags.Discard);
+                        if (Gorgon.CurrentDriver.SupportIndex32)
+                                _indexBuffer.Write<int>(_indices.ToArray());
+                        else
+                        {
+                                ushort[] shortIndices = new ushort[_indices.Count];
+                                for (int i = 0; i < _indices.Count; i++)
+                                        shortIndices[i] = (ushort)_indices[i];
+
+                                _indexBuffer.Write<ushort>(shortIndices);
+                        }
+                        _indexBuffer.Unlock();                          
+                }
+
+                CalculateAABB();
+
+                NeedsUpdate = false;
+        }
+
+        /// <summary>
+        /// Function to draw the object.
+        /// </summary>
+        public void Draw()
+        {
+                // Update the buffers.
+                if ((_indexBuffer == null) || (_vertexBuffer == null) || (_indexBuffer.IndexCount < _indices.Count) || (_vertexBuffer.VertexCount < _vertices.Count))
+                        RefreshBuffers();
+
+                if ((_indexBuffer == null) || (_vertexBuffer == null))
+                        return;
+
+                UpdateDimensions();
+
+                // Flush the renderer before drawing.
+                Gorgon.Renderer.Render();
+
+                if (Gorgon.GlobalStateSettings.StateChanged(this, Gorgon.Renderer.GetImage(0)))
+                        Gorgon.GlobalStateSettings.SetStates(this);
+
+                // Reset the world transform.
+                Gorgon.Renderer.SetWorldTransform(0, _worldMatrix);
+
+                Gorgon.Renderer.SetImage(0, Image);
+                Gorgon.Renderer.Render(Gorgon.Renderer.VertexTypes["PositionDiffuse2DTexture1"], _vertexBuffer, _indexBuffer, PrimitiveStyle, 0, _vertices.Count, 0, _indices.Count);
+
+                // Reset the world transform.
+                Gorgon.Renderer.SetWorldTransform(0, Matrix.Identity);
+        }
+
+        /// <summary>
+        /// Creates a new object that is a copy of the current instance.
+        /// </summary>
+        /// <returns>
+        /// A new object that is a copy of this instance.
+        /// </returns>
+        public PolygonSprite Clone()
+        {
+                PolygonSprite clone = new PolygonSprite(Name + ".Clone", Image);
+
+                clone.PolygonVertices.AddRange(_vertices.ToArray());
+                clone.PolygonIndices.AddRange(_indices.ToArray());
+                clone.AlphaMaskFunction = AlphaMaskFunction;
+                clone.AlphaMaskValue = AlphaMaskValue;
+                clone.BlendingMode = BlendingMode;
+                clone.BorderColor = BorderColor;
+                clone.DepthBufferBias = DepthBufferBias;
+                clone.DepthTestFunction = DepthTestFunction;
+                clone.DepthWriteEnabled = DepthWriteEnabled;
+                clone.DestinationBlend = DestinationBlend;
+    clone.DestinationBlendAlpha = DestinationBlendAlpha;
+                clone.PrimitiveStyle = PrimitiveStyle;
+                clone.Smoothing = Smoothing;
+                clone.SourceBlend = SourceBlend;
+    clone.SourceBlendAlpha = SourceBlendAlpha;
+                clone.StencilCompare = StencilCompare;
+                clone.StencilEnabled = StencilEnabled;
+                clone.StencilFailOperation = StencilFailOperation;
+                clone.StencilMask = StencilMask;
+                clone.StencilPassOperation = StencilPassOperation;
+                clone.StencilReference = StencilReference;
+                clone.StencilZFailOperation = StencilZFailOperation;
+                clone.VerticalWrapMode = VerticalWrapMode;
+                clone.HorizontalWrapMode = HorizontalWrapMode;
+                clone.InheritAlphaMaskFunction = clone.InheritAlphaMaskFunction;
+                clone.InheritAlphaMaskValue = clone.InheritAlphaMaskValue;
+                clone.InheritBlending = clone.InheritBlending;
+                clone.InheritDepthBias = clone.InheritDepthBias;
+                clone.InheritDepthTestFunction = clone.InheritDepthTestFunction;
+                clone.InheritDepthWriteEnabled = clone.InheritDepthWriteEnabled;
+                clone.InheritHorizontalWrapping = clone.InheritHorizontalWrapping;
+                clone.InheritSmoothing = clone.InheritSmoothing;
+                clone.InheritStencilCompare = clone.InheritStencilCompare;
+                clone.InheritStencilEnabled = clone.InheritStencilEnabled;
+                clone.InheritStencilFailOperation = clone.InheritStencilFailOperation;
+                clone.InheritStencilMask = clone.InheritStencilMask;
+                clone.InheritStencilPassOperation = clone.InheritStencilPassOperation;
+                clone.InheritStencilReference = clone.InheritStencilReference;
+                clone.InheritStencilZFailOperation = clone.InheritStencilZFailOperation;
+                clone.InheritVerticalWrapping = clone.InheritVerticalWrapping;
+
+                return clone;
+        }
+
+        /// <summary>
+        /// Function to set the position of the polygon sprite.
+        /// </summary>
+        /// <param name="x">Horizontal position of the sprite.</param>
+        /// <param name="y">Vertical position of the sprite.</param>
+        /// <param name="depth">Depth of the sprite when using depth buffer.</param>
+        public void SetPosition(float x, float y, float depth)
+        {
+                Position = new Vector3D(x, y, depth);
+        }
+
+        /// <summary>
+        /// Function to set the scale of the polygon sprite.
+        /// </summary>
+        /// <param name="x">Horizontal scale.</param>
+        /// <param name="y">Vertical scale.</param>
+        public void SetScale(float x, float y)
+        {
+                Scale = new Vector2D(x, y);
+        }
+
+        /// <summary>
+        /// Function to set the pivot axis of the polygon sprite.
+        /// </summary>
+        /// <param name="x">Horizontal position of the pivot axis.</param>
+        /// <param name="y">Vertical position of the pivot axis.</param>
+        public void SetAxis(float x, float y)
+        {
+                Axis = new Vector2D(x, y);
+        }
+        #endregion
+
+        #region Constructor/Destructor.
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PolygonSprite"/> class.
+        /// </summary>
+        /// <param name="name">The name of the sprite object.</param>
+        /// <param name="image">The image to map to the polygon.</param>
+        public PolygonSprite(string name, Image image)
+                : base(name)
+        {
+                Image = image;
+                PrimitiveStyle = PrimitiveStyle.TriangleStrip;
+                _vertices = new PolygonVertexList(this);
+                _indices = new IndexList(this);
+                DeviceStateList.Add(this);
+
+                UniformScale = 1.0f;
+                BorderColor = Drawing.Color.Black;
+
+                // Inherit all global states.
+                InheritAlphaMaskFunction = true;
+                InheritAlphaMaskValue = true;
+                InheritBlending = true;
+                InheritDepthBias = true;
+                InheritDepthTestFunction = true;
+                InheritDepthWriteEnabled = true;
+                InheritHorizontalWrapping = true;
+                InheritSmoothing = true;
+                InheritStencilCompare = true;
+                InheritStencilEnabled = true;
+                InheritStencilFailOperation = true;
+                InheritStencilMask = true;
+                InheritStencilPassOperation = true;
+                InheritStencilReference = true;
+                InheritStencilZFailOperation = true;
+                InheritVerticalWrapping = true;
+                CullingMode = CullingMode.None;
+        }
+        #endregion
+
+        #region IDisposable Members
+        /// <summary>
+        /// Releases unmanaged and - optionally - managed resources
+        /// </summary>
+        /// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
+        private void Dispose(bool disposing)
+        {
+                if (!_disposed)
+                {
+                        if (disposing)
+                        {
+                                if (_vertexBuffer != null)
+                                        _vertexBuffer.Dispose();
+                                if (_indexBuffer != null)
+                                        _indexBuffer.Dispose();
+
+                                _vertexBuffer = null;
+                                _indexBuffer = null;
+
+                                if (DeviceStateList.Contains(this))
+                                        DeviceStateList.Remove(this);
+                        }
+
+                        _disposed = true;
+                }
+        }
+
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        public void Dispose()
+        {
+                Dispose(true);
+                GC.SuppressFinalize(this);
+        }
+        #endregion
+
+        #region IDeviceStateObject Members
+        /// <summary>
+        /// Function called when the device is in a lost state.
+        /// </summary>
+        public void DeviceLost()
+        {
+                if (_vertexBuffer != null)
+                        _vertexBuffer.Dispose();
+                if (_indexBuffer != null)
+                        _indexBuffer.Dispose();
+
+                _vertexBuffer = null;
+                _indexBuffer = null;
+        }
+
+        /// <summary>
+        /// Function called when the device is reset.
+        /// </summary>
+        public void DeviceReset()
+        {
+                NeedsUpdate = true;
+        }
+
+        /// <summary>
+        /// Function to force the loss of the objects data.
+        /// </summary>
+        public void ForceRelease()
+        {
+                DeviceLost();
+        }
+        #endregion
+
+        #region IRenderableStates Members
+        /// <summary>
+        /// Property to set or return the horizontal wrapping mode to use.
+        /// </summary>
+        /// <value></value>
+        public ImageAddressing HorizontalWrapMode
+        {
+                get
+                {
+                        if (InheritHorizontalWrapping)
+                                return Gorgon.GlobalStateSettings.GlobalHorizontalWrapMode;
+                        return _hwrapMode;
+                }
+                set
+                {
+                        _hwrapMode = value;
+                        InheritHorizontalWrapping = false;
+                }
+        }
+
+        /// <summary>
+        /// Property to set or return the vertical wrapping mode to use.
+        /// </summary>
+        /// <value></value>
+        public ImageAddressing VerticalWrapMode
+        {
+                get
+                {
+                        if (InheritVerticalWrapping)
+                                return Gorgon.GlobalStateSettings.GlobalVerticalWrapMode;
+                        return _vwrapMode;
+                }
+                set
+                {
+                        _vwrapMode = value;
+                        InheritVerticalWrapping = false;
+                }
+        }
+
+        /// <summary>
+        /// Property to set or return the color of the border when the wrapping mode is set to Border.
+        /// </summary>
+        /// <value></value>
+        public Color BorderColor
+        {
+                get;
+                set;
+        }
+
+        /// <summary>
+        /// Property to set or return the type of smoothing for the sprites.
+        /// </summary>
+        /// <value></value>
+        public Smoothing Smoothing
+        {
+                get
+                {
+                        if (InheritSmoothing)
+                                return Gorgon.GlobalStateSettings.GlobalSmoothing;
+
+                        return _smoothing;
+                }
+                set
+                {
+                        _smoothing = value;
+                        InheritSmoothing = false;
+                }
+        }
+
+        /// <summary>
+        /// Property to set or return the function used for alpha masking.
+        /// </summary>
+        /// <value></value>
+        public CompareFunctions AlphaMaskFunction
+        {
+                get
+                {
+                        if (InheritAlphaMaskFunction)
+                                return Gorgon.GlobalStateSettings.GlobalAlphaMaskFunction;
+
+                        return _alphaCompareFunction;
+                }
+                set
+                {
+                        _alphaCompareFunction = value;
+                        InheritAlphaMaskFunction = false;
+                }
+        }
+
+        /// <summary>
+        /// Property to set or return the alpha value used for alpha masking.
+        /// </summary>
+        /// <value></value>
+        public int AlphaMaskValue
+        {
+                get
+                {
+                        if (InheritAlphaMaskValue)
+                                return Gorgon.GlobalStateSettings.GlobalAlphaMaskValue;
+
+                        return _alphaTestCompareValue;
+                }
+                set
+                {
+                        _alphaTestCompareValue = value;
+                        InheritAlphaMaskValue = false;
+                }
+        }
+
+        /// <summary>
+        /// Property to set or return the blending mode.
+        /// </summary>
+        /// <value></value>
+        public BlendingModes BlendingMode
+        {
+                get
+                {
+                        if (InheritBlending)
+                                return Gorgon.GlobalStateSettings.GlobalBlending;
+
+                        return _blendMode;
+                }
+                set
+                {
+                        _blendMode = value;
+                        InheritBlending = false;
+                }
+        }
+
+        /// <summary>
+        /// Property to set or return the source blending operation.
+        /// </summary>
+        /// <value></value>
+        public AlphaBlendOperation SourceBlend
+        {
+                get
+                {
+                        if (InheritBlending)
+                                return Gorgon.GlobalStateSettings.GlobalSourceBlend;
+
+                        return _sourceBlendOp;
+                }
+                set
+                {
+                        _sourceBlendOp = value;
+                        InheritBlending = false;
+                }
+        }
+
+        /// <summary>
+        /// Property to set or return the destination blending operation.
+        /// </summary>
+        /// <value></value>
+        public AlphaBlendOperation DestinationBlend
+        {
+                get
+                {
+                        if (InheritBlending)
+                                return Gorgon.GlobalStateSettings.GlobalDestinationBlend;
+
+                        return _destBlendOp;
+                }
+                set
+                {
+                        _destBlendOp = value;
+                        InheritBlending = false;
+                }
+        }
+
+/// <summary>
+/// Property to set or return the source alpha blending operation.
+/// </summary>
+/// <value></value>
+public AlphaBlendOperation SourceBlendAlpha
+{
+    get
+    {
+        return _sourceAlphaBlendOp;
+    }
+    set
+    {
+        _sourceAlphaBlendOp = value;
+    }
+}
+
+/// <summary>
+/// Property to set or return the destination alpha blending operation.
+/// </summary>
+/// <value></value>
+public AlphaBlendOperation DestinationBlendAlpha
+{
+    get
+    {
+        return _destAlphaBlendOp;
+    }
+    set
+    {
+        _destAlphaBlendOp = value;
+    }
+}
+
+        /// <summary>
+        /// Property to set or return whether to enable the use of the stencil buffer or not.
+        /// </summary>
+        public bool StencilEnabled
+        {
+                get
+                {
+                        if (InheritStencilEnabled)
+                                return Gorgon.GlobalStateSettings.GlobalStencilEnabled;
+                        return _useStencil;
+                }
+                set
+                {
+                        _useStencil = value;
+                        InheritStencilEnabled = false;
+                }
+        }
+
+        /// <summary>
+        /// Property to set or return the reference value for the stencil buffer.
+        /// </summary>
+        public int StencilReference
+        {
+                get
+                {
+                        if (InheritStencilReference)
+                                return Gorgon.GlobalStateSettings.GlobalStencilReference;
+                        return _stencilReference;
+                }
+                set
+                {
+                        _stencilReference = value;
+                        InheritStencilReference = false;
+                }
+        }
+
+        /// <summary>
+        /// Property to set or return the mask value for the stencil buffer.
+        /// </summary>
+        public int StencilMask
+        {
+                get
+                {
+                        if (InheritStencilMask)
+                                return Gorgon.GlobalStateSettings.GlobalStencilMask;
+
+                        return _stencilMask;
+                }
+                set
+                {
+                        _stencilMask = value;
+                        InheritStencilMask = false;
+                }
+        }
+
+        /// <summary>
+        /// Property to set or return the operation for passing stencil values.
+        /// </summary>
+        public StencilOperations StencilPassOperation
+        {
+                get
+                {
+                        if (InheritStencilPassOperation)
+                                return Gorgon.GlobalStateSettings.GlobalStencilPassOperation;
+
+                        return _stencilPassOperation;
+                }
+                set
+                {
+                        _stencilPassOperation = value;
+                        InheritStencilPassOperation = false;
+                }
+        }
+
+        /// <summary>
+        /// Property to set or return the operation for the failing stencil values.
+        /// </summary>
+        public StencilOperations StencilFailOperation
+        {
+                get
+                {
+                        if (InheritStencilFailOperation)
+                                return Gorgon.GlobalStateSettings.GlobalStencilFailOperation;
+
+                        return _stencilFailOperation;
+                }
+                set
+                {
+                        _stencilFailOperation = value;
+                        InheritStencilFailOperation = false;
+                }
+        }
+
+        /// <summary>
+        /// Property to set or return the stencil operation for the failing depth values.
+        /// </summary>
+        public StencilOperations StencilZFailOperation
+        {
+                get
+                {
+                        if (InheritStencilZFailOperation)
+                                return Gorgon.GlobalStateSettings.GlobalStencilZFailOperation;
+
+                        return _stencilZFailOperation;
+                }
+                set
+                {
+                        _stencilZFailOperation = value;
+                        InheritStencilZFailOperation = false;
+                }
+        }
+
+        /// <summary>
+        /// Property to set or return the stencil comparison function.
+        /// </summary>
+        public CompareFunctions StencilCompare
+        {
+                get
+                {
+                        if (InheritStencilCompare)
+                                return Gorgon.GlobalStateSettings.GlobalStencilCompare;
+
+                        return _stencilCompare;
+                }
+                set
+                {
+                        _stencilCompare = value;
+                        InheritStencilCompare = false;
+                }
+        }
+
+        /// <summary>
+        /// Property to return whether to use an index buffer or not.
+        /// </summary>
+        /// <value></value>
+        bool IRenderableStates.UseIndices
+        {
+                get
+                {
+                        return true;
+                }
+        }
+
+        /// <summary>
+        /// Property to return the primitive style for the object.
+        /// </summary>
+        /// <value></value>
+        PrimitiveStyle IRenderableStates.PrimitiveStyle
+        {
+                get
+                {
+                        return PrimitiveStyle.TriangleList;
+                }
+        }
+
+        /// <summary>
+        /// Property to set or return the wrapping mode to use.
+        /// </summary>
+        /// <value></value>
+        public ImageAddressing WrapMode
+        {
+                get
+                {
+                        if (InheritHorizontalWrapping)
+                                return Gorgon.GlobalStateSettings.GlobalHorizontalWrapMode;
+                        else
                                 return _hwrapMode;
-                        }
-                        set
-                        {
-                                _hwrapMode = value;
-                                InheritHorizontalWrapping = false;
-                        }
                 }
-
-                /// <summary>
-                /// Property to set or return the vertical wrapping mode to use.
-                /// </summary>
-                /// <value></value>
-                public ImageAddressing VerticalWrapMode
+                set
                 {
-                        get
-                        {
-                                if (InheritVerticalWrapping)
-                                        return Gorgon.GlobalStateSettings.GlobalVerticalWrapMode;
-                                return _vwrapMode;
-                        }
-                        set
-                        {
-                                _vwrapMode = value;
-                                InheritVerticalWrapping = false;
-                        }
+                        HorizontalWrapMode = VerticalWrapMode = value;
                 }
-
-                /// <summary>
-                /// Property to set or return the color of the border when the wrapping mode is set to Border.
-                /// </summary>
-                /// <value></value>
-                public System.Drawing.Color BorderColor
-                {
-                        get;
-                        set;
-                }
-
-                /// <summary>
-                /// Property to set or return the type of smoothing for the sprites.
-                /// </summary>
-                /// <value></value>
-                public Smoothing Smoothing
-                {
-                        get
-                        {
-                                if (InheritSmoothing)
-                                        return Gorgon.GlobalStateSettings.GlobalSmoothing;
-
-                                return _smoothing;
-                        }
-                        set
-                        {
-                                _smoothing = value;
-                                InheritSmoothing = false;
-                        }
-                }
-
-                /// <summary>
-                /// Property to set or return the function used for alpha masking.
-                /// </summary>
-                /// <value></value>
-                public CompareFunctions AlphaMaskFunction
-                {
-                        get
-                        {
-                                if (InheritAlphaMaskFunction)
-                                        return Gorgon.GlobalStateSettings.GlobalAlphaMaskFunction;
-
-                                return _alphaCompareFunction;
-                        }
-                        set
-                        {
-                                _alphaCompareFunction = value;
-                                InheritAlphaMaskFunction = false;
-                        }
-                }
-
-                /// <summary>
-                /// Property to set or return the alpha value used for alpha masking.
-                /// </summary>
-                /// <value></value>
-                public int AlphaMaskValue
-                {
-                        get
-                        {
-                                if (InheritAlphaMaskValue)
-                                        return Gorgon.GlobalStateSettings.GlobalAlphaMaskValue;
-
-                                return _alphaTestCompareValue;
-                        }
-                        set
-                        {
-                                _alphaTestCompareValue = value;
-                                InheritAlphaMaskValue = false;
-                        }
-                }
-
-                /// <summary>
-                /// Property to set or return the blending mode.
-                /// </summary>
-                /// <value></value>
-                public BlendingModes BlendingMode
-                {
-                        get
-                        {
-                                if (InheritBlending)
-                                        return Gorgon.GlobalStateSettings.GlobalBlending;
-
-                                return _blendMode;
-                        }
-                        set
-                        {
-                                _blendMode = value;
-                                InheritBlending = false;
-                        }
-                }
-
-                /// <summary>
-                /// Property to set or return the source blending operation.
-                /// </summary>
-                /// <value></value>
-                public AlphaBlendOperation SourceBlend
-                {
-                        get
-                        {
-                                if (InheritBlending)
-                                        return Gorgon.GlobalStateSettings.GlobalSourceBlend;
-
-                                return _sourceBlendOp;
-                        }
-                        set
-                        {
-                                _sourceBlendOp = value;
-                                InheritBlending = false;
-                        }
-                }
-
-                /// <summary>
-                /// Property to set or return the destination blending operation.
-                /// </summary>
-                /// <value></value>
-                public AlphaBlendOperation DestinationBlend
-                {
-                        get
-                        {
-                                if (InheritBlending)
-                                        return Gorgon.GlobalStateSettings.GlobalDestinationBlend;
-
-                                return _destBlendOp;
-                        }
-                        set
-                        {
-                                _destBlendOp = value;
-                                InheritBlending = false;
-                        }
-                }
-
-        /// <summary>
-        /// Property to set or return the source alpha blending operation.
-        /// </summary>
-        /// <value></value>
-        public AlphaBlendOperation SourceBlendAlpha
-        {
-            get
-            {
-                return _sourceAlphaBlendOp;
-            }
-            set
-            {
-                _sourceAlphaBlendOp = value;
-            }
         }
 
         /// <summary>
-        /// Property to set or return the destination alpha blending operation.
+        /// Property to set or return whether to enable the depth buffer (if applicable) writing or not.
         /// </summary>
-        /// <value></value>
-        public AlphaBlendOperation DestinationBlendAlpha
+        public virtual bool DepthWriteEnabled
         {
-            get
-            {
-                return _destAlphaBlendOp;
-            }
-            set
-            {
-                _destAlphaBlendOp = value;
-            }
+                get
+                {
+                        if (InheritDepthWriteEnabled)
+                                return Gorgon.GlobalStateSettings.GlobalDepthWriteEnabled;
+                        return _depthWriteEnabled;
+                }
+                set
+                {
+                        _depthWriteEnabled = value;
+                        InheritDepthWriteEnabled = false;
+                }
         }
 
-                /// <summary>
-                /// Property to set or return whether to enable the use of the stencil buffer or not.
-                /// </summary>
-                public bool StencilEnabled
+        /// <summary>
+        /// Property to set or return (if applicable) the depth buffer bias.
+        /// </summary>
+        public virtual float DepthBufferBias
+        {
+                get
                 {
-                        get
-                        {
-                                if (InheritStencilEnabled)
-                                        return Gorgon.GlobalStateSettings.GlobalStencilEnabled;
-                                return _useStencil;
-                        }
-                        set
-                        {
-                                _useStencil = value;
-                                InheritStencilEnabled = false;
-                        }
+                        if (InheritDepthBias)
+                                return Gorgon.GlobalStateSettings.GlobalDepthBufferBias;
+                        return _depthBias;
                 }
-
-                /// <summary>
-                /// Property to set or return the reference value for the stencil buffer.
-                /// </summary>
-                public int StencilReference
+                set
                 {
-                        get
-                        {
-                                if (InheritStencilReference)
-                                        return Gorgon.GlobalStateSettings.GlobalStencilReference;
-                                return _stencilReference;
-                        }
-                        set
-                        {
-                                _stencilReference = value;
-                                InheritStencilReference = false;
-                        }
+                        _depthBias = value;
+                        InheritDepthBias = false;
                 }
+        }
 
-                /// <summary>
-                /// Property to set or return the mask value for the stencil buffer.
-                /// </summary>
-                public int StencilMask
+        /// <summary>
+        /// Property to set or return the depth buffer (if applicable) testing comparison function.
+        /// </summary>
+        public virtual CompareFunctions DepthTestFunction
+        {
+                get
                 {
-                        get
-                        {
-                                if (InheritStencilMask)
-                                        return Gorgon.GlobalStateSettings.GlobalStencilMask;
-
-                                return _stencilMask;
-                        }
-                        set
-                        {
-                                _stencilMask = value;
-                                InheritStencilMask = false;
-                        }
+                        if (InheritDepthTestFunction)
+                                return Gorgon.GlobalStateSettings.GlobalDepthBufferTestFunction;
+                        return _depthCompare;
                 }
-
-                /// <summary>
-                /// Property to set or return the operation for passing stencil values.
-                /// </summary>
-                public StencilOperations StencilPassOperation
+                set
                 {
-                        get
-                        {
-                                if (InheritStencilPassOperation)
-                                        return Gorgon.GlobalStateSettings.GlobalStencilPassOperation;
-
-                                return _stencilPassOperation;
-                        }
-                        set
-                        {
-                                _stencilPassOperation = value;
-                                InheritStencilPassOperation = false;
-                        }
+                        _depthCompare = value;
+                        InheritDepthTestFunction = false;
                 }
+        }
 
-                /// <summary>
-                /// Property to set or return the operation for the failing stencil values.
-                /// </summary>
-                public StencilOperations StencilFailOperation
-                {
-                        get
-                        {
-                                if (InheritStencilFailOperation)
-                                        return Gorgon.GlobalStateSettings.GlobalStencilFailOperation;
-
-                                return _stencilFailOperation;
-                        }
-                        set
-                        {
-                                _stencilFailOperation = value;
-                                InheritStencilFailOperation = false;
-                        }
-                }
-
-                /// <summary>
-                /// Property to set or return the stencil operation for the failing depth values.
-                /// </summary>
-                public StencilOperations StencilZFailOperation
-                {
-                        get
-                        {
-                                if (InheritStencilZFailOperation)
-                                        return Gorgon.GlobalStateSettings.GlobalStencilZFailOperation;
-
-                                return _stencilZFailOperation;
-                        }
-                        set
-                        {
-                                _stencilZFailOperation = value;
-                                InheritStencilZFailOperation = false;
-                        }
-                }
-
-                /// <summary>
-                /// Property to set or return the stencil comparison function.
-                /// </summary>
-                public CompareFunctions StencilCompare
-                {
-                        get
-                        {
-                                if (InheritStencilCompare)
-                                        return Gorgon.GlobalStateSettings.GlobalStencilCompare;
-
-                                return _stencilCompare;
-                        }
-                        set
-                        {
-                                _stencilCompare = value;
-                                InheritStencilCompare = false;
-                        }
-                }
-
-                /// <summary>
-                /// Property to return whether to use an index buffer or not.
-                /// </summary>
-                /// <value></value>
-                bool IRenderableStates.UseIndices
-                {
-                        get
-                        {
-                                return true;
-                        }
-                }
-
-                /// <summary>
-                /// Property to return the primitive style for the object.
-                /// </summary>
-                /// <value></value>
-                PrimitiveStyle IRenderableStates.PrimitiveStyle
-                {
-                        get
-                        {
-                                return PrimitiveStyle.TriangleList;
-                        }
-                }
-
-                /// <summary>
-                /// Property to set or return the wrapping mode to use.
-                /// </summary>
-                /// <value></value>
-                public ImageAddressing WrapMode
-                {
-                        get
-                        {
-                                if (InheritHorizontalWrapping)
-                                        return Gorgon.GlobalStateSettings.GlobalHorizontalWrapMode;
-                                else
-                                        return _hwrapMode;
-                        }
-                        set
-                        {
-                                HorizontalWrapMode = VerticalWrapMode = value;
-                        }
-                }
-
-                /// <summary>
-                /// Property to set or return whether to enable the depth buffer (if applicable) writing or not.
-                /// </summary>
-                public virtual bool DepthWriteEnabled
-                {
-                        get
-                        {
-                                if (InheritDepthWriteEnabled)
-                                        return Gorgon.GlobalStateSettings.GlobalDepthWriteEnabled;
-                                return _depthWriteEnabled;
-                        }
-                        set
-                        {
-                                _depthWriteEnabled = value;
-                                InheritDepthWriteEnabled = false;
-                        }
-                }
-
-                /// <summary>
-                /// Property to set or return (if applicable) the depth buffer bias.
-                /// </summary>
-                public virtual float DepthBufferBias
-                {
-                        get
-                        {
-                                if (InheritDepthBias)
-                                        return Gorgon.GlobalStateSettings.GlobalDepthBufferBias;
-                                return _depthBias;
-                        }
-                        set
-                        {
-                                _depthBias = value;
-                                InheritDepthBias = false;
-                        }
-                }
-
-                /// <summary>
-                /// Property to set or return the depth buffer (if applicable) testing comparison function.
-                /// </summary>
-                public virtual CompareFunctions DepthTestFunction
-                {
-                        get
-                        {
-                                if (InheritDepthTestFunction)
-                                        return Gorgon.GlobalStateSettings.GlobalDepthBufferTestFunction;
-                                return _depthCompare;
-                        }
-                        set
-                        {
-                                _depthCompare = value;
-                                InheritDepthTestFunction = false;
-                        }
-                }
-
-                /// <summary>
-                /// Property to set or return the culling mode.
-                /// </summary>
-                /// <remarks>The default value is <see cref="GorgonLibrary.Graphics.CullingMode">CullingMode.None</see>.</remarks>
-                public CullingMode CullingMode
-                {
-                        get;
-                        set;
-                }
-                #endregion*/
-/*    }
-}*/
+        /// <summary>
+        /// Property to set or return the culling mode.
+        /// </summary>
+        /// <remarks>The default value is <see cref="GorgonLibrary.Graphics.CullingMode">CullingMode.None</see>.</remarks>
+        public CullingMode CullingMode
+        {
+                get;
+                set;
+        }
+        #endregion*/

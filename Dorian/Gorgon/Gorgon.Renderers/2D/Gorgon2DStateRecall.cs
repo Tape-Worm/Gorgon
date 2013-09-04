@@ -303,18 +303,17 @@ namespace GorgonLibrary.Renderers
 
 			if ((state & StateChange.PrimitiveType) == StateChange.PrimitiveType)
 			{
-				_graphics.Input.PrimitiveType = renderable.PrimitiveType;
+                _primitiveType = _graphics.Input.PrimitiveType = renderable.PrimitiveType;
 			}
 
 			if ((state & StateChange.IndexBuffer) == StateChange.IndexBuffer)
 			{
-				_graphics.Input.IndexBuffer = renderable.IndexBuffer;
+				_indexBuffer = _graphics.Input.IndexBuffer = renderable.IndexBuffer;
 			}
 
 			if ((state & StateChange.VertexBuffer) == StateChange.VertexBuffer)
 			{
-				_vertexBuffer = renderable.VertexBufferBinding;
-				_graphics.Input.VertexBuffers[0] = renderable.VertexBufferBinding;
+                _vertexBuffer = _graphics.Input.VertexBuffers[0] = renderable.VertexBufferBinding;
 			}
 
 			if ((state & StateChange.AlphaTest) == StateChange.AlphaTest)
@@ -325,7 +324,7 @@ namespace GorgonLibrary.Renderers
 
 			if ((state & StateChange.DepthStencilReference) == StateChange.DepthStencilReference)
 			{
-				_graphics.Output.DepthStencilState.DepthStencilReference = depthStencil.DepthStencilReference;
+                _depthStencilReference = _graphics.Output.DepthStencilState.DepthStencilReference = depthStencil.DepthStencilReference;
 			}
 
 			if ((state & StateChange.DepthStencil) != StateChange.DepthStencil)

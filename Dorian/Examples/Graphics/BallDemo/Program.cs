@@ -66,6 +66,8 @@ namespace GorgonLibrary.Graphics.Example
 		private static GorgonText _helpTextSprite;																// Text sprite for our help text.
 		private static bool _showHelp = true;																    // Flag to indicate that the help text should be shown.
 
+	    private static GorgonPolygon _testPoly;
+
 		/// <summary>
 		/// Property to return the path to the resources for the example.
 		/// </summary>
@@ -346,6 +348,8 @@ namespace GorgonLibrary.Graphics.Example
 				DrawBlurred();
 			}
 
+		    _testPoly.Draw();
+
 			DrawOverlay();
 
 			_2D.Render();
@@ -492,6 +496,9 @@ namespace GorgonLibrary.Graphics.Example
 			_helpTextSprite = _2D.Renderables.CreateText("Help Text", _ballFont, _helpText.ToString(), Color.Yellow);
 			_helpTextSprite.Position = new Vector2(3, 72);
 			_helpTextSprite.Blending.DestinationAlphaBlend = BlendType.InverseSourceAlpha;
+
+            // TODO: Get rid of this.
+            _testPoly = new GorgonPolygon(_2D, "TestPoly");
 		}
 
 		/// <summary>

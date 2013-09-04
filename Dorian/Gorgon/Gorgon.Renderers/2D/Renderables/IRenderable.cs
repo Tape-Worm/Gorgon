@@ -39,7 +39,7 @@ namespace GorgonLibrary.Renderers
 		/// <summary>
 		/// Property to set or return the texture region.
 		/// </summary>
-		/// <para>This texture value is in texel space (0..1).</para>
+		/// <remarks>This texture value is in texel space (0..1).</remarks>
 		RectangleF TextureRegion
 		{
 			get;
@@ -61,7 +61,7 @@ namespace GorgonLibrary.Renderers
 		/// <summary>
 		/// Property to set or return the scaling of the texture width and height.
 		/// </summary>
-		/// <para>This texture value is in texel space (0..1).</para>        
+		/// <remarks>This texture value is in texel space (0..1).</remarks>        
 		Vector2 TextureSize
 		{
 			get;
@@ -100,10 +100,10 @@ namespace GorgonLibrary.Renderers
 			get;
 		}
 
-		/// <summary>
+	    /// <summary>
 		/// Property to return the number of indices that make up this renderable.
 		/// </summary>
-		/// <remarks>This is only matters when the renderable uses an index buffer.</remarks>
+		/// <remarks>This only matters when the renderable uses an index buffer.</remarks>
 		int IndexCount
 		{
 			get;

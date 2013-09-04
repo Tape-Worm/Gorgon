@@ -155,16 +155,8 @@ namespace GorgonLibrary.Renderers
 		private Gorgon2DTarget _currentTarget;											// Current render target.
 		private Gorgon2DTarget _defaultTarget;											// Default render target.
 	    private Gorgon2DVertexCache _cache;                                             // Our vertex cache for the renderer.
-		//private int _baseVertex;														// Base vertex.		
-		//private Gorgon2DVertex[] _vertexCache;											// List of vertices to cache.
-		//private int _cacheStart;														// Starting cache vertex buffer index.
-		//private int _renderIndexStart;													// Starting index to render.
-		//private int _renderIndexCount;													// Number of indices to render.
-		//private int _cacheEnd;															// Ending vertex buffer cache index.
-		//private int _cacheWritten;														// Number of vertices written.
 		private bool _useCache = true;													// Flag to indicate that we want to use the cache.
 		private bool _disposed;															// Flag to indicate that the object was disposed.
-		//private readonly int _cacheSize;												// Number of vertices that we can stuff into a vertex buffer.
 		private bool _multiSampleEnable;												// Flag to indicate that multi sampling is enabled.
 		private GorgonViewport? _viewPort;												// Viewport to use.
 		private Rectangle? _clip;														// Clipping rectangle.
@@ -645,6 +637,8 @@ namespace GorgonLibrary.Renderers
 
 			UpdateTarget(ref _currentTarget);
 
+            _defaultCamera.Update();
+
 			// Get the current state.
 			DefaultState = new Gorgon2DStateRecall(this);
 
@@ -664,20 +658,6 @@ namespace GorgonLibrary.Renderers
 				_multiSampleEnable = true;
 			}
 		}
-
-		/*/// <summary>
-		/// Function to clear up the vertex cache.
-		/// </summary>
-		private void ClearCache()
-		{
-			// Clear up the cache.
-			_baseVertex = 0;
-			_cacheStart = 0;
-			_cacheEnd = 0;
-			_renderIndexCount = 0;
-			_renderIndexStart = 0;
-			_cacheWritten = 0;
-		}*/
 
         /// <summary>
         /// Function to render the scene and draw the Gorgon logo at the bottom-right of the screen.
@@ -733,7 +713,7 @@ namespace GorgonLibrary.Renderers
         /// <summary>
 		/// Function to initialize the 2D renderer.
 		/// </summary>
-		internal void Initialize()
+		private void Initialize()
 		{
 			// Add shader includes.
 			if (!Graphics.Shaders.IncludeFiles.Contains("Gorgon2DShaders"))
@@ -793,49 +773,24 @@ namespace GorgonLibrary.Renderers
 			SetDefaultStates();
 		}
 
-		/*/// <summary>
-		/// Function to add vertices to the vertex cache without any state checking.
-		/// </summary>
-		/// <param name="vertices">Vertices to add.</param>
-		/// <param name="baseVertex">Base vertex to start rendering with.</param>
-		/// <param name="indicesPerPrimitive">Number of indices per primitive object.</param>
-		/// <param name="vertexStart">Starting vertex to add.</param>
-		/// <param name="vertexCount">Number of vertices to add.</param>
-		/// <returns>The number of remaining vertices in the cache.</returns>
-		internal void AddVertices(Gorgon2DVertex[] vertices, int baseVertex, int indicesPerPrimitive, int vertexStart, int vertexCount)
-		{
-			// Do nothing if there aren't any vertices.
-			if (vertices.Length == 0)
-			{
-				return;
-			}
-
-			// If the next set of vertices is going to overflow the buffer, then render the buffer contents.
-			if (vertexCount + _cacheEnd > _cacheSize)
-			{
-				// Ensure that we don't render the same scene twice.
-			    if (_cacheWritten > 0)
-			    {
-			        Flush();
-			    }
-
-                ClearCache();
-			}
-
-			for (int i = 0; i < vertexCount; i++)
-			{
-				int cacheIndex = _cacheEnd + i;
-				int vertexIndex = i + vertexStart;
-				_vertexCache[cacheIndex] = vertices[vertexIndex];
-			}
-
-			_renderIndexCount += indicesPerPrimitive;
-			_cacheEnd += vertexCount;
-			_cacheWritten = _cacheEnd - _cacheStart;
-
-			// We need to shift the vertices for those items that change the index buffer.
-			_baseVertex += baseVertex;
-		}*/
+        /// <summary>
+        /// Function to draw a renderable immediately to the output target.
+        /// </summary>
+        /// <param name="vertexOffset">Offset within the vertex buffer to start at.</param>
+        /// <param name="indexCount">Number of indices to draw.</param>
+        /// <param name="vertexCount">Number of vertices to draw.</param>
+	    private void DrawImmediate(int vertexOffset, int indexCount, int vertexCount)
+	    {
+            // Draw the buffer data.
+            if (Graphics.Input.IndexBuffer == null)
+            {
+                Graphics.Output.Draw(0, vertexCount);
+            }
+            else
+            {
+                Graphics.Output.DrawIndexed(0, vertexOffset, indexCount);
+            }
+	    }
 
 		/// <summary>
 		/// Function to add a renderable object to the vertex buffer.
@@ -850,7 +805,7 @@ namespace GorgonLibrary.Renderers
 			{
 				if (_cache.NeedsFlush)
 				{
-					_cache.Flush();
+					Flush();
 				}
 
 				DefaultState.UpdateState(renderable, stateChange);
@@ -865,6 +820,7 @@ namespace GorgonLibrary.Renderers
             // We skip the cache for objects that have their own vertex buffers.
             if (!_useCache)
             {
+                DrawImmediate(renderable.BaseVertexCount, renderable.IndexCount, renderable.VertexCount);
                 return;
             }
 
@@ -1030,9 +986,12 @@ namespace GorgonLibrary.Renderers
         /// </remarks>
         public void Flush()
         {
+            if (!_useCache)
+            {
+                return;
+            }
+
             ICamera currentCamera = (_camera ?? _defaultCamera);
-            //BufferLockFlags flags = BufferLockFlags.Discard | BufferLockFlags.Write;
-            //GorgonVertexBufferBinding vbBinding = Graphics.Input.VertexBuffers[0];
 
             if (!_cache.NeedsFlush)
             {
@@ -1045,77 +1004,6 @@ namespace GorgonLibrary.Renderers
             }
 
             _cache.Flush();
-
-            /*if (_cacheStart > 0)
-            {
-                flags = BufferLockFlags.NoOverwrite | BufferLockFlags.Write;
-            }
-
-            // If we're using the cache, then populate the default vertex buffer.
-            if (_useCache)
-            {
-                // Ensure that we have a vertex buffer bound.
-                if ((vbBinding.VertexBuffer == null) || (vbBinding.Stride == 0))
-                {
-                    vbBinding = DefaultVertexBufferBinding;
-                    Graphics.Input.VertexBuffers[0] = vbBinding;
-                }
-
-#if DEBUG
-                if (Graphics.Shaders.PixelShader.Current == null)
-                {
-                    throw new NullReferenceException(string.Format(Resources.GOR2D_SHADER_NOT_BOUND, ShaderType.Pixel));
-                }
-
-                if (Graphics.Shaders.VertexShader.Current == null)
-                {
-                    throw new NullReferenceException(string.Format(Resources.GOR2D_SHADER_NOT_BOUND, ShaderType.Vertex));
-                }
-
-                if ((Graphics.Input.VertexBuffers[0].Stride == 0) || (Graphics.Input.VertexBuffers[0].VertexBuffer == null))
-                {
-                    throw new NullReferenceException(string.Format(Resources.GOR2D_VERTEX_BUFFER_NOT_BOUND));
-                }
-#endif
-
-                // Update buffers depending on type.
-                switch (vbBinding.VertexBuffer.Settings.Usage)
-                {
-                    case BufferUsage.Dynamic:
-                        using (GorgonDataStream stream = vbBinding.VertexBuffer.Lock(flags))
-                        {
-                            stream.Position = _cacheStart * Gorgon2DVertex.SizeInBytes;
-                            stream.WriteRange(_vertexCache, _cacheStart, _cacheWritten);
-                            vbBinding.VertexBuffer.Unlock();
-                        }
-                        break;
-                    case BufferUsage.Default:
-                        using (var stream = new GorgonDataStream(_vertexCache, _cacheStart, _cacheWritten))
-                        {
-                            vbBinding.VertexBuffer.Update(stream, _cacheStart * Gorgon2DVertex.SizeInBytes, (int)stream.Length);
-                        }
-                        break;
-                }
-            }
-
-            switch (Graphics.Input.PrimitiveType)
-            {
-                case PrimitiveType.PointList:
-                case PrimitiveType.LineList:
-                    Graphics.Output.Draw(_cacheStart, _cacheWritten);
-                    break;
-                case PrimitiveType.TriangleList:
-                    if (Graphics.Input.IndexBuffer == null)
-                        Graphics.Output.Draw(_cacheStart, _cacheWritten);
-                    else
-                        Graphics.Output.DrawIndexed(_renderIndexStart, _baseVertex, _renderIndexCount);
-                    break;
-            }
-
-            _cacheStart = _cacheEnd;
-            _cacheWritten = 0;
-            _renderIndexStart += _renderIndexCount;
-            _renderIndexCount = 0;*/
         }
 
         /// <summary>
@@ -1188,6 +1076,9 @@ namespace GorgonLibrary.Renderers
 
 			Renderables = new GorgonRenderables(this, _cache);
 			Drawing = new GorgonDrawing(this);
+
+            // Perform further initialization.
+            Initialize();
 		}
 		#endregion
 
