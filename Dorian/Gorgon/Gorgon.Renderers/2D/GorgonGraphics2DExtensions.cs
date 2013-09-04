@@ -52,7 +52,6 @@ namespace GorgonLibrary.Graphics
 	        }
 
             var result = new Gorgon2D(target, vertexCacheSize, systemCreatedSwap);
-            result.Initialize();
             result.Graphics.ImmediateContext.AddTrackedObject(result);
 
             return result;

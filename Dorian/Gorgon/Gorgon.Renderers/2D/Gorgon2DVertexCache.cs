@@ -42,11 +42,11 @@ namespace GorgonLibrary.Renderers
         private int _firstIndex;                    // The first index to use when looking up vertices.
         private int _vertexOffset;                  // An offset in the vertex list.  Used when data in the vertex buffer does not match up to its index buffer.
         private int _currentVertex;                 // The most current vertex in the cache.
+        private int _nextVertex;                    // Next vertex slots in the cache.
         private Gorgon2D _renderer;                 // The renderer bound to this cache.
         #endregion
 
         #region Properties.
-
         /// <summary>
         /// Property to return the size of the cache, in vertices.
         /// </summary>
@@ -64,7 +64,6 @@ namespace GorgonLibrary.Renderers
             get;
             private set;
         }
-
         #endregion
 
         #region Methods.
@@ -80,6 +79,7 @@ namespace GorgonLibrary.Renderers
             _indexCount = 0;
             _firstIndex = 0;
             _currentVertex = 0;
+            _nextVertex = 0;
         }
 
         /// <summary>
@@ -99,15 +99,14 @@ namespace GorgonLibrary.Renderers
         {
             // Do nothing.
             if ((vertices == null)
-                || (vertices.Length == 0))
+                || (vertices.Length == 0)
+                || (vertexCount == 0))
             {
                 return;
             }
 
-            int lastVertex = _currentVertex + _verticesWritten;
-
             // If this set of vertices will overflow the cache, then we need to flush the vertices that we have and reset.
-            if (vertexCount + lastVertex > CacheSize)
+            if (vertexCount + _nextVertex > CacheSize)
             {
                 if (_verticesWritten > 0)
                 {
@@ -115,15 +114,14 @@ namespace GorgonLibrary.Renderers
                 }
 
                 Reset();
-
-                lastVertex = 0;
             }
 
             // Copy into our cache.
-            Array.Copy(vertices, firstVertex, _vertices, lastVertex, vertexCount);
+            Array.Copy(vertices, firstVertex, _vertices, _nextVertex, vertexCount);
   
             _indexCount += indexCount;
-            _verticesWritten += vertexCount;
+            _nextVertex += vertexCount;
+            _verticesWritten = _nextVertex - _currentVertex;
 
             // Update the offset.
             _vertexOffset += baseVertex;
@@ -180,7 +178,7 @@ namespace GorgonLibrary.Renderers
                     break;
             }
 
-            _currentVertex += _verticesWritten;
+            _currentVertex = _nextVertex;
             _firstIndex += _indexCount;
             _verticesWritten = 0;
             _indexCount = 0;

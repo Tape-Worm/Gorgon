@@ -310,9 +310,12 @@ namespace GorgonLibrary.Renderers
 			}
 		}
 
-		/// <summary>
-		/// Property to set or return the scaling of the texture width and height.
-		/// </summary>
+        /// <summary>
+        /// Property to set or return the scaling of the texture width and height.
+        /// </summary>
+        /// <remarks>
+        /// This texture value is in texel space (0..1).
+        /// </remarks>
 		[AnimatedProperty]
 		public override Vector2 TextureSize
 		{

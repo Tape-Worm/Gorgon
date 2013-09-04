@@ -1069,6 +1069,12 @@ namespace GorgonLibrary.Renderers
 			states = Gorgon2D.DefaultState.Compare(this);
 			if (states != StateChange.None)
 			{
+                // BUG: We need to fix a problem where we're coming in from a vertex buffer that isn't the default.
+                //      The renderer uses a flag in the AddRenderable to determine if we should use the default 
+                //      vertex buffer in the cache.  However, we can't set that here so we end up drawing 
+                //      text to the correct buffer, but it the system no longer thinks its using cached
+                //      vertices and the draw methods end up with incorrect vertices/indices and cause weird
+                //      things to get drawn.
 				Gorgon2D.Flush();
 				Gorgon2D.DefaultState.UpdateState(this, states);
 			}
