@@ -155,7 +155,6 @@ namespace GorgonLibrary.Renderers
 		private Gorgon2DTarget _currentTarget;											// Current render target.
 		private Gorgon2DTarget _defaultTarget;											// Default render target.
 	    private Gorgon2DVertexCache _cache;                                             // Our vertex cache for the renderer.
-		private bool _useCache = true;													// Flag to indicate that we want to use the cache.
 		private bool _disposed;															// Flag to indicate that the object was disposed.
 		private bool _multiSampleEnable;												// Flag to indicate that multi sampling is enabled.
 		private GorgonViewport? _viewPort;												// Viewport to use.
@@ -773,25 +772,6 @@ namespace GorgonLibrary.Renderers
 			SetDefaultStates();
 		}
 
-        /// <summary>
-        /// Function to draw a renderable immediately to the output target.
-        /// </summary>
-        /// <param name="vertexOffset">Offset within the vertex buffer to start at.</param>
-        /// <param name="indexCount">Number of indices to draw.</param>
-        /// <param name="vertexCount">Number of vertices to draw.</param>
-	    private void DrawImmediate(int vertexOffset, int indexCount, int vertexCount)
-	    {
-            // Draw the buffer data.
-            if (Graphics.Input.IndexBuffer == null)
-            {
-                Graphics.Output.Draw(0, vertexCount);
-            }
-            else
-            {
-                Graphics.Output.DrawIndexed(0, vertexOffset, indexCount);
-            }
-	    }
-
 		/// <summary>
 		/// Function to add a renderable object to the vertex buffer.
 		/// </summary>
@@ -813,14 +793,13 @@ namespace GorgonLibrary.Renderers
 				// If we switch vertex buffers, then reset the cache.
 				if ((stateChange & StateChange.VertexBuffer) == StateChange.VertexBuffer)
 				{
-					_useCache = Graphics.Input.VertexBuffers[0].Equals(ref _defaultVertexBuffer);
+					_cache.Enabled = Graphics.Input.VertexBuffers[0].Equals(ref _defaultVertexBuffer);
 				}
 			}
 
             // We skip the cache for objects that have their own vertex buffers.
-            if (!_useCache)
+            if (!_cache.Enabled)
             {
-                DrawImmediate(renderable.BaseVertexCount, renderable.IndexCount, renderable.VertexCount);
                 return;
             }
 
@@ -986,21 +965,17 @@ namespace GorgonLibrary.Renderers
         /// </remarks>
         public void Flush()
         {
-            if (!_useCache)
-            {
-                return;
-            }
-
             ICamera currentCamera = (_camera ?? _defaultCamera);
-
-            if (!_cache.NeedsFlush)
-            {
-                return;
-            }
 
             if (currentCamera.NeedsUpdate)
             {
                 currentCamera.Update();
+            }
+
+            if ((!_cache.Enabled)
+                || !(_cache.NeedsFlush))
+            {
+                return;
             }
 
             _cache.Flush();

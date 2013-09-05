@@ -50,11 +50,11 @@ namespace GorgonLibrary.Renderers
 		}
 
 		/// <summary>
-		/// Property to return the buffer used to update the projection/view matrix for the vertex shader.
+		/// Property to return the buffer used to update the transform matrix for the vertex shader.
 		/// </summary>
 		/// <remarks>This buffer is always placed in slot 0 of the <see cref="GorgonShaderState{T}.ConstantBuffers">constant buffer list</see>.  If another buffer is found in this 
 		/// location, then it will be overridden by this buffer.</remarks>
-		public GorgonConstantBuffer ProjectionViewMatrixBuffer
+		public GorgonConstantBuffer TransformBuffer
 		{
 			get;
 			private set;
@@ -82,7 +82,7 @@ namespace GorgonLibrary.Renderers
 				Graphics.Shaders.VertexShader.Current = value ?? DefaultVertexShader;
 
 				// Assign buffers.
-				ConstantBuffers[0] = ProjectionViewMatrixBuffer;
+				ConstantBuffers[0] = TransformBuffer;
 			}
 		}
 
@@ -139,13 +139,13 @@ namespace GorgonLibrary.Renderers
 
 		    DefaultVertexShader = null;
 
-			if (ProjectionViewMatrixBuffer == null)
+			if (TransformBuffer == null)
 			{
 				return;
 			}
 
-			ProjectionViewMatrixBuffer.Dispose();
-			ProjectionViewMatrixBuffer = null;
+			TransformBuffer.Dispose();
+			TransformBuffer = null;
 		}
 		#endregion
 
@@ -164,7 +164,7 @@ namespace GorgonLibrary.Renderers
 				DefaultVertexShader = Graphics.ImmediateContext.Shaders.CreateShader<GorgonVertexShader>("Default_Basic_Vertex_Shader", "GorgonVertexShader", "#GorgonInclude \"Gorgon2DShaders\"");
 			}
 
-			ProjectionViewMatrixBuffer = Graphics.ImmediateContext.Buffers.CreateConstantBuffer("Gorgon2D Projection/View Matrix Constant Buffer",
+			TransformBuffer = Graphics.ImmediateContext.Buffers.CreateConstantBuffer("Gorgon2D Projection/View Matrix Constant Buffer",
 																				 new GorgonConstantBufferSettings
 																				 {
 																					 SizeInBytes = Matrix.SizeInBytes,

@@ -52,8 +52,8 @@ This list is not in order.  Please don't get excited.
 * Add horizontal/vertical flip to sprites. (Done)
 * Add animation to renderable objects. (Done)
 * Add more primitives:
-	+ Line polygon
-	+ Filled polygon (may need to be a separate object because it works quite differently).
+	+ Line polygon (Done)
+	+ Filled polygon (Done, same as line polygon).
 * Add a batch renderable using a static vertex buffer (possible with dynamic, may be worth looking into)
 * Add perspective camera
 * Add perspective sprites

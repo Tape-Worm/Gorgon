@@ -20,7 +20,7 @@ struct GorgonSpriteVertex
 // The transformation matrices (for vertex shader).
 cbuffer GorgonViewProjection : register(b0)
 {
-	float4x4 ViewProjection;
+	float4x4 WorldViewProjection;
 }
 
 // Alpha test value (for pixel shader).
@@ -29,6 +29,13 @@ cbuffer GorgonAlphaTest : register(b0)
 	bool alphaTestEnabled = false;
 	float alphaTestValueLow = 0.0f;
 	float alphaTestValueHi = 0.0f;
+}
+
+// Material.
+cbuffer GorgonMaterial : register(b1)
+{
+	float4 matDiffuse;
+	float4 matTextureTransform;
 }
 
 // Wave effect variables.
@@ -102,9 +109,29 @@ GorgonSpriteVertex GorgonVertexShader(GorgonSpriteVertex vertex)
 {
 	GorgonSpriteVertex output = vertex;
 
-	output.position = mul(ViewProjection, output.position);
+	output.position = mul(WorldViewProjection, output.position);
 
 	return output;
+}
+
+// Our default pixel shader with textures, alpha testing and materials.
+float4 GorgonPixelShaderTexturedMaterial(GorgonSpriteVertex vertex) : SV_Target
+{
+	float4 color = _gorgonTexture.Sample(_gorgonSampler, (vertex.uv * matTextureTransform.zw) + matTextureTransform.xy) * vertex.color * matDiffuse;
+
+	REJECT_ALPHA(color.a);
+		
+	return color;
+}
+
+// Our default pixel shader with diffuse, alpha testing and materials.
+float4 GorgonPixelShaderDiffuseMaterial(GorgonSpriteVertex vertex) : SV_Target
+{
+	float4 color = vertex.color * matDiffuse;
+
+	REJECT_ALPHA(color.a);
+		
+	return color;
 }
 
 // Our default pixel shader with textures with alpha testing.

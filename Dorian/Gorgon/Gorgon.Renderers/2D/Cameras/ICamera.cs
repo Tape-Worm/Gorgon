@@ -50,6 +50,14 @@ namespace GorgonLibrary.Renderers
 			get;
 		}
 
+        /// <summary>
+        /// Property to return the combined view and projection matrix.
+        /// </summary>
+	    Matrix ViewProjection
+	    {
+	        get;
+	    }
+
 		/// <summary>
 		/// Property to return whether the camera needs updating.
 		/// </summary>

@@ -278,6 +278,17 @@ namespace GorgonLibrary.Renderers
 			}
 		}
 
+        /// <summary>
+        /// Property to return the 
+        /// </summary>
+        public Matrix ViewProjection
+        {
+            get
+            {
+                return _viewProjecton;
+            }
+        }
+
 		/// <summary>
 		/// Property to return the projection matrix for the camera.
 		/// </summary>
@@ -335,7 +346,7 @@ namespace GorgonLibrary.Renderers
 			}
 
 			// Update the projection view matrix on the vertex shader.
-			Gorgon2D.VertexShader.ProjectionViewMatrixBuffer.Update(ref _viewProjecton);
+			Gorgon2D.VertexShader.TransformBuffer.Update(ref _viewProjecton);
 
 			_needsProjectionUpdate = false;
 			_needsViewUpdate = false;
