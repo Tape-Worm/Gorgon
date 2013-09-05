@@ -312,6 +312,8 @@ namespace GorgonLibrary.Graphics.Example
 			_2D.Drawing.DrawString(_ballFont, _fpsText.ToString(), new Vector2(3.0f, 48.0f), Color.White);
 		}
 
+	    static float rot = 0.0f;
+
 		/// <summary>
 		/// Function for the main idle loop.
 		/// </summary>
@@ -348,7 +350,69 @@ namespace GorgonLibrary.Graphics.Example
 				DrawBlurred();
 			}
 
+		    _testPoly.UseDynamicVertexBuffer = true;
+		    _testPoly.UseDynamicIndexBuffer = true;
+
+            var vertices = new Gorgon2DVertex[]
+            {
+                new Gorgon2DVertex
+                {
+                    Position = new Vector4(_ball.Position / 4.0f, 0, 1.0f),
+                    Color = GorgonColor.White,
+                    UV = new Vector2(0.0f, 0.05f)
+                },
+                new Gorgon2DVertex
+                {
+                    Position = new Vector4(30, 0, 0, 1.0f),
+                    Color = GorgonColor.White,
+                    UV = new Vector2(0.5f, 0.0f)
+                },
+                new Gorgon2DVertex
+                {
+                    Position = new Vector4(60, 20, 0, 1.0f),
+                    Color = GorgonColor.White,
+                    UV = new Vector2(1.0f, 0.2f)
+                },
+                new Gorgon2DVertex
+                {
+                    Position = new Vector4(15, 60, 0, 1.0f),
+                    Color = GorgonColor.White,
+                    UV = new Vector2(0.25f, 1.0f)
+                },
+                new Gorgon2DVertex
+                {
+                    Position = new Vector4(45, 60, 0, 1.0f),
+                    Color = GorgonColor.White,
+                    UV = new Vector2(0.75f, 1.0f)
+                }     
+            };
+
+            _testPoly.SetVertexData(vertices);
+
+            int[] indices = 
+            {
+                0, 1, 2,
+                0, 2, 3,
+                3, 2, 4
+            };
+
+            _testPoly.SetIndexData(indices);
+
+		    _testPoly.Texture = _ballTexture;
+		    _testPoly.TextureScale = new Vector2(0.5f, 0.5f);
+		    _testPoly.Scale = new Vector2(3);
+		    _testPoly.Anchor = new Vector2(30, 30);
+		    _testPoly.Angle = rot;
+		    _testPoly.Position = new Vector2(_mainScreen.Settings.Width / 2.0f, _mainScreen.Settings.Height / 2.0f);
+		    _testPoly.Color = Color.ForestGreen;
+		    _testPoly.Opacity = 0.5f;
 		    _testPoly.Draw();
+
+		    rot += 1.0f * GorgonTiming.Delta;
+		    if (rot > 360.0f)
+		    {
+		        rot = 0.0f;
+		    }
 
 			DrawOverlay();
 
@@ -498,7 +562,7 @@ namespace GorgonLibrary.Graphics.Example
 			_helpTextSprite.Blending.DestinationAlphaBlend = BlendType.InverseSourceAlpha;
 
             // TODO: Get rid of this.
-            _testPoly = new GorgonPolygon(_2D, "TestPoly");
+            _testPoly = new GorgonPolygon(_2D, "TestPoly", PolygonType.Triangle);
 		}
 
 		/// <summary>

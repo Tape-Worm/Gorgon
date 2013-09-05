@@ -292,6 +292,21 @@ namespace GorgonLibrary.Graphics
                 }
             }
 
+            /// <summary>
+            /// Function to unbind any bindings with the specified vertex buffer.
+            /// </summary>
+            /// <param name="buffer">Buffer to unbind.</param>
+		    internal void Unbind(GorgonVertexBuffer buffer)
+		    {
+                for (int i = 0; i < _bindings.Length; ++i)
+                {
+                    if (_bindings[i].VertexBuffer == buffer)
+                    {
+                        _bindings[i] = GorgonVertexBufferBinding.Empty;
+                    }
+                }
+		    }
+
 			/// <summary>
 			/// Function to return the index of the vertex buffer with the specified name.
 			/// </summary>

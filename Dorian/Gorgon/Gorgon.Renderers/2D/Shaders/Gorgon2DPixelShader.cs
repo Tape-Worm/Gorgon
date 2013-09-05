@@ -24,7 +24,9 @@
 // 
 #endregion
 
+using System.Drawing;
 using GorgonLibrary.Graphics;
+using GorgonLibrary.Math;
 using GorgonLibrary.Native;
 
 namespace GorgonLibrary.Renderers
@@ -40,6 +42,33 @@ namespace GorgonLibrary.Renderers
 		#endregion
 
 		#region Properties.
+        /// <summary>
+        /// Property to return the default diffuse pixel shader with alpha testing and material.
+        /// </summary>
+	    internal GorgonPixelShader DefaultPixelShaderDiffuseMaterial
+	    {
+	        get;
+	        private set;
+	    }
+
+        /// <summary>
+        /// Property to return the default textured pixel shader with alpha testing and material.
+        /// </summary>
+	    internal GorgonPixelShader DefaultPixelShaderTexturedMaterial
+	    {
+	        get;
+	        private set;
+	    }
+
+        /// <summary>
+        /// Property to return the buffer used to apply a material.
+        /// </summary>
+        internal GorgonConstantBuffer MaterialBuffer
+        {
+            get;
+            private set;
+        }
+
 		/// <summary>
 		/// Property to return the default diffuse pixel shader with alpha testing.
 		/// </summary>
@@ -173,6 +202,16 @@ namespace GorgonLibrary.Renderers
 		internal void CleanUp()
 		{
 			ConstantBuffers[0] = null;
+
+		    if (DefaultPixelShaderDiffuseMaterial != null)
+		    {
+		        DefaultPixelShaderDiffuseMaterial.Dispose();
+		    }
+
+		    if (DefaultPixelShaderTexturedMaterial != null)
+		    {
+		        DefaultPixelShaderTexturedMaterial.Dispose();
+		    }
 			
 			if (DefaultPixelShaderDiffuse != null)
 		    {
@@ -186,6 +225,15 @@ namespace GorgonLibrary.Renderers
 
 		    DefaultPixelShaderTextured = null;
 			DefaultPixelShaderDiffuse = null;
+		    DefaultPixelShaderDiffuseMaterial = null;
+		    DefaultPixelShaderTexturedMaterial = null;
+
+		    if (MaterialBuffer != null)
+		    {
+		        MaterialBuffer.Dispose();
+		    }
+
+		    MaterialBuffer = null;
 
 			if (AlphaTestValuesBuffer == null)
 			{
@@ -207,8 +255,25 @@ namespace GorgonLibrary.Renderers
 		{
 			_gorgon2D = gorgon2D;
 
-			DefaultPixelShaderDiffuse = Graphics.ImmediateContext.Shaders.CreateShader<GorgonPixelShader>("Default_Basic_Pixel_Shader_Diffuse", "GorgonPixelShaderDiffuse", "#GorgonInclude \"Gorgon2DShaders\"");
-			DefaultPixelShaderTextured = Graphics.ImmediateContext.Shaders.CreateShader<GorgonPixelShader>("Default_Basic_Pixel_Shader_Texture", "GorgonPixelShaderTextured", "#GorgonInclude \"Gorgon2DShaders\"");
+		    DefaultPixelShaderDiffuse =
+		        Graphics.ImmediateContext.Shaders.CreateShader<GorgonPixelShader>("Default_Basic_Pixel_Shader_Diffuse",
+		            "GorgonPixelShaderDiffuse",
+		            "#GorgonInclude \"Gorgon2DShaders\"");
+		    DefaultPixelShaderTextured =
+		        Graphics.ImmediateContext.Shaders.CreateShader<GorgonPixelShader>("Default_Basic_Pixel_Shader_Texture",
+		            "GorgonPixelShaderTextured",
+		            "#GorgonInclude \"Gorgon2DShaders\"");
+
+		    DefaultPixelShaderDiffuseMaterial =
+		        Graphics.ImmediateContext.Shaders.CreateShader<GorgonPixelShader>(
+		            "Default_Basic_Pixel_Shader_Diffuse_Material",
+		            "GorgonPixelShaderDiffuseMaterial",
+		            "#GorgonInclude \"Gorgon2DShaders\"");
+		    DefaultPixelShaderTexturedMaterial =
+		        Graphics.ImmediateContext.Shaders.CreateShader<GorgonPixelShader>(
+		            "Default_Basic_Pixel_Shader_Texture_Material",
+		            "GorgonPixelShaderTexturedMaterial",
+		            "#GorgonInclude \"Gorgon2DShaders\"");
 
 			var alphaTestValues = new Gorgon2DAlphaTest(gorgon2D.IsAlphaTestEnabled, GorgonRangeF.Empty);
 
@@ -220,6 +285,13 @@ namespace GorgonLibrary.Renderers
 
 			// Initialize the alpha testing values.
 			AlphaTestValuesBuffer.Update(ref alphaTestValues);
+
+            MaterialBuffer = Graphics.ImmediateContext.Buffers.CreateConstantBuffer("Gorgon2D Material Constant Buffer",
+		        new GorgonConstantBufferSettings
+                {
+                    SizeInBytes = 32,
+                    Usage = BufferUsage.Default
+                });
 		}
 		#endregion
 	}

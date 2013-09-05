@@ -48,6 +48,15 @@ namespace GorgonLibrary.Renderers
 
         #region Properties.
         /// <summary>
+        /// Property to set or return whether to use this cache or not.
+        /// </summary>
+        public bool Enabled
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
         /// Property to return the size of the cache, in vertices.
         /// </summary>
         public int CacheSize
@@ -196,6 +205,7 @@ namespace GorgonLibrary.Renderers
         {
             _renderer = renderer;
             _vertices = new Gorgon2DVertex[cacheSize];
+            Enabled = true;
             CacheSize = cacheSize;
         }
         #endregion

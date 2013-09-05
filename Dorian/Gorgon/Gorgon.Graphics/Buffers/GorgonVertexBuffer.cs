@@ -66,6 +66,16 @@ namespace GorgonLibrary.Graphics
 
 		#region Methods.
         /// <summary>
+        /// Function to clean up the resource object.
+        /// </summary>
+        protected override void CleanUpResource()
+        {
+            Graphics.Input.VertexBuffers.Unbind(this);
+
+            base.CleanUpResource();
+        }
+
+        /// <summary>
         /// Function used to lock the underlying buffer for reading/writing.
         /// </summary>
         /// <param name="lockFlags">Flags used when locking the buffer.</param>
