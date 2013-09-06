@@ -674,7 +674,7 @@ namespace GorgonLibrary.Graphics
 				if ((clip) && (scale) && ((buffer.Width < bitmap.Size.Width) || (buffer.Height < bitmap.Size.Height)))
 				{
 					var clipper = new WIC.BitmapClipper(Factory);
-					clipper.Initialize(bitmap, new DX.DrawingRectangle(0, 0, buffer.Width < bitmap.Size.Width ? buffer.Width : bitmap.Size.Width, 
+					clipper.Initialize(bitmap, new DX.Rectangle(0, 0, buffer.Width < bitmap.Size.Width ? buffer.Width : bitmap.Size.Width, 
 																			 buffer.Height < bitmap.Size.Height ? buffer.Height : bitmap.Size.Height));
 					source = clipper;
 				}
@@ -750,7 +750,7 @@ namespace GorgonLibrary.Graphics
 		{
 			using (var clipper = new WIC.BitmapClipper(Factory))
 			{
-				clipper.Initialize(bitmap, new DX.DrawingRectangle(0, 0, buffer.Width < bitmap.Size.Width ? buffer.Width : bitmap.Size.Width, 
+				clipper.Initialize(bitmap, new DX.Rectangle(0, 0, buffer.Width < bitmap.Size.Width ? buffer.Width : bitmap.Size.Width, 
 																		 buffer.Height < bitmap.Size.Height ? buffer.Height : bitmap.Size.Height));
 				clipper.CopyPixels(buffer.PitchInformation.RowPitch, buffer.Data.BasePointer, buffer.PitchInformation.SlicePitch);
 			}
@@ -850,7 +850,7 @@ namespace GorgonLibrary.Graphics
 						if ((destRect.Width < source.Size.Width) || (destRect.Height < source.Size.Height))
 						{
 							clipper = new WIC.BitmapClipper(Factory);
-							clipper.Initialize(source, new DX.DrawingRectangle(destRect.X, destRect.Y, destRect.Width, destRect.Height));
+							clipper.Initialize(source, new DX.Rectangle(destRect.X, destRect.Y, destRect.Width, destRect.Height));
 							source = clipper;
 						}
                     }

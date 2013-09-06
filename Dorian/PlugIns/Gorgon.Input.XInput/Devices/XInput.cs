@@ -255,12 +255,12 @@ namespace GorgonLibrary.Input.XInput
 
 		    if (motorIndex == 0)
 		    {
-		        vibeData.LeftMotorSpeed = (short)value;
+		        vibeData.LeftMotorSpeed = (ushort)value;
 		    }
 
 		    if (motorIndex == 1)
 		    {
-		        vibeData.RightMotorSpeed = (short)value;
+		        vibeData.RightMotorSpeed = (ushort)value;
 		    }
 
 		    _controller.SetVibration(vibeData);

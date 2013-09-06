@@ -104,6 +104,12 @@ cbuffer GorgonBurnDodgeEffect : register(b1)
 	bool burnDodgeUseDodge;
 }
 
+// Displacement effect variables.
+cbuffer GorgonDisplacementEffect : register(b1)
+{
+	float4 displaceSizeAmount = 0;
+}
+
 // Our default vertex shader.
 GorgonSpriteVertex GorgonVertexShader(GorgonSpriteVertex vertex)
 {
@@ -375,12 +381,6 @@ float4 GorgonPixelShaderBurnDodge(GorgonSpriteVertex vertex) : SV_Target
 	REJECT_ALPHA(color.a);
 	
 	return saturate(color);
-}
-
-// Displacement effect variables.
-cbuffer GorgonDisplacementEffect : register(b1)
-{
-	float4 displaceSizeAmount = 0;
 }
 
 // The displacement shader encoder.
