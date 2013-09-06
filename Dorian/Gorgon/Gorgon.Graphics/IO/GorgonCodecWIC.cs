@@ -279,7 +279,7 @@ namespace GorgonLibrary.IO
 							{
 								using (var clipper = new SharpDX.WIC.BitmapClipper(wic.Factory))
 								{
-									clipper.Initialize(frame, new SharpDX.DrawingRectangle(0, 0, data.Settings.Width, data.Settings.Height));
+									clipper.Initialize(frame, new SharpDX.Rectangle(0, 0, data.Settings.Width, data.Settings.Height));
 									clipper.CopyPixels(buffer.PitchInformation.RowPitch, bufferPointer, buffer.PitchInformation.SlicePitch);
 								}
 							}
@@ -312,7 +312,7 @@ namespace GorgonLibrary.IO
 								{
 									using (var clipper = new SharpDX.WIC.BitmapClipper(wic.Factory))
 									{
-										clipper.Initialize(frame, new SharpDX.DrawingRectangle(0, 0, data.Settings.Width, data.Settings.Height));
+										clipper.Initialize(frame, new SharpDX.Rectangle(0, 0, data.Settings.Width, data.Settings.Height));
 										clipper.CopyPixels(buffer.PitchInformation.RowPitch, bufferPointer, buffer.PitchInformation.SlicePitch);
 									}
 								}

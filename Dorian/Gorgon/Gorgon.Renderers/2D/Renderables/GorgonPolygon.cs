@@ -1253,8 +1253,7 @@ namespace GorgonLibrary.Renderers
             GorgonPixelShader previousShader = Gorgon2D.PixelShader.Current;
             GorgonConstantBuffer previousBuffer = Gorgon2D.PixelShader.ConstantBuffers[1];
 
-            if ((previousShader != Gorgon2D.PixelShader.DefaultPixelShaderDiffuseMaterial)
-                && (previousShader != Gorgon2D.PixelShader.DefaultPixelShaderTexturedMaterial))
+            if (previousShader == null)
             {
                 Gorgon2D.PixelShader.Current = Texture != null
                     ? Gorgon2D.PixelShader.DefaultPixelShaderTexturedMaterial
@@ -1280,11 +1279,12 @@ namespace GorgonLibrary.Renderers
             Gorgon2D.Camera.Update();
             Gorgon2D.PixelShader.ConstantBuffers[1] = previousBuffer;
 
-            if ((previousShader != Gorgon2D.PixelShader.DefaultPixelShaderDiffuseMaterial)
-                && (previousShader != Gorgon2D.PixelShader.DefaultPixelShaderTexturedMaterial))
+            if (previousShader != null)
             {
-                Gorgon2D.PixelShader.Current = previousShader;
+                return;
             }
+
+            Gorgon2D.PixelShader.Current = null;
         }
         #endregion
         #endregion
