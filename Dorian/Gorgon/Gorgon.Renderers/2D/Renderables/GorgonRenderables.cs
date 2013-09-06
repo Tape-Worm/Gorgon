@@ -529,6 +529,64 @@ namespace GorgonLibrary.Renderers
 		{
 			return CreateEllipse(name, position, size, color, false, 64);
 		}
+
+		/// <summary>
+		/// Function to create a polygon object.
+		/// </summary>
+		/// <param name="name">Name of the polygon.</param>
+		/// <param name="position">Position of the polygon.</param>
+		/// <param name="color">Color of the polygon.</param>
+		/// <param name="vertices">[Optional] Vertices for the polygon.</param>
+		/// <param name="indices">[Optional] Indices for the polygon.</param>
+		/// <param name="type">[Optional] The type of primitive to use when drawing the polygon.</param>
+		/// <param name="useDynamicVertexBuffer">[Optional] TRUE to use a dynamic buffer to hold the vertices, FALSE to use a static buffer.</param>
+		/// <param name="useDynamicIndexBuffer">[Optional] TRUE to use a dynamic buffer to hold the indices, FALSE to use a static buffer.</param>
+		/// <returns>A new polygon object.</returns>
+		/// <remarks>Passing NULL (Nothing in VB.Net) to the <paramref name="indices"/> parameter will disable the index buffer on the polygon.  An index buffer can help with performance by 
+		/// decreasing the required number of vertices to be sent to the video device.</remarks>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (Nothing in VB.Net). </exception>
+		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
+		public GorgonPolygon CreatePolygon(string name,
+			Vector2 position,
+			GorgonColor color,
+			Gorgon2DVertex[] vertices = null,
+			int[] indices = null,
+			PolygonType type = PolygonType.Triangle,
+			bool useDynamicVertexBuffer = false,
+			bool useDynamicIndexBuffer = false)
+		{
+			if (name == null)
+			{
+				throw new ArgumentNullException("name");
+			}
+
+			if (string.IsNullOrWhiteSpace(name))
+			{
+				throw new ArgumentException(Resources.GOR2D_PARAMETER_MUST_NOT_BE_EMPTY, "name");
+			}
+
+			var result = new GorgonPolygon(_gorgon2D, name, type);
+
+			result.UseDynamicVertexBuffer = useDynamicVertexBuffer;
+			result.UseDynamicIndexBuffer = useDynamicIndexBuffer;
+
+			result.Color = color;
+			result.Position = position;
+
+			if (vertices != null)
+			{
+				result.SetVertexData(vertices);
+			}
+
+			if (indices != null)
+			{
+				result.SetIndexData(indices);
+			}
+
+			_gorgon2D.TrackedObjects.Add(result);
+
+			return result;
+		}
 		#endregion
 
 		#region Constructor/Destructor.

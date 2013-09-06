@@ -759,7 +759,7 @@ namespace GorgonLibrary.Renderers
 		/// to the texture name stored in the sprite data.</para>
 		/// <para>If there are multiple textures with the same name, then the first texture will be chosen.</para>
 		/// </remarks>
-		public virtual void GetDeferredTexture()
+		public void GetDeferredTexture()
 		{
 			if (string.IsNullOrEmpty(_textureName))
 			{
@@ -823,7 +823,7 @@ namespace GorgonLibrary.Renderers
 		{
 			get
 			{
-				return this.Vertices;
+				return Vertices;
 			}
 		}
 		#endregion

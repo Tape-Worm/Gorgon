@@ -40,6 +40,7 @@ namespace GorgonLibrary.Renderers
 	/// <para>A <see cref="P:GorgonLibrary.Renderers.Gorgon2DCollider.CollisionObject">CollisionObject</see> is not required to use this, and in such a case, the ColliderBoundaries property will 
 	/// be the same as the Location and Size properties (i.e. in screen space).</para>
 	/// </remarks>
+	// ReSharper disable once InconsistentNaming
 	public class Gorgon2DAABB
 		: Gorgon2DCollider
 	{
@@ -141,7 +142,7 @@ namespace GorgonLibrary.Renderers
         /// <param name="reader">The reader for the chunk.</param>
         /// <remarks>
         /// This method must be implemented to read in collider information to a stream (e.g. reading a sprite with collider information).
-        /// <para>Unlike the <see cref="M:GorgonLibrary.Renderers.Gorgon2DCollider.WriteToChunk">WriteToChunk</see> method, the reader only needs to read in any custom information
+        /// <para>Unlike the <see cref="GorgonLibrary.Renderers.Gorgon2DCollider.WriteToChunk">WriteToChunk</see> method, the reader only needs to read in any custom information
         /// about the collider (e.g. location, width, height, etc...).</para>
         /// <para>This method assumes the chunk writer has already positioned at the collider chunk.</para>
         /// </remarks>
@@ -191,16 +192,6 @@ namespace GorgonLibrary.Renderers
 
 			Vector2.Modulate(ref size, ref _size, out size);
 			ColliderBoundaries = new RectangleF(location.X - size.X, location.Y - size.Y, size.X * 2.0f, size.Y * 2.0f);
-		}
-		#endregion
-
-		#region Constructor/Destructor.
-		/// <summary>
-		/// Initializes a new instance of the <see cref="Gorgon2DAABB"/> class.
-		/// </summary>
-		public Gorgon2DAABB()
-		{
-
 		}
 		#endregion
 	}

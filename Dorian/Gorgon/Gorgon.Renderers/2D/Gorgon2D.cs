@@ -151,10 +151,10 @@ namespace GorgonLibrary.Renderers
 		#endregion
 
 		#region Variables.
+		private readonly Gorgon2DVertexCache _cache;                                    // Our vertex cache for the renderer.
 		private readonly bool _systemCreatedTarget;										// Flag to indicate whether Gorgon created the default target or not.
 		private Gorgon2DTarget _currentTarget;											// Current render target.
 		private Gorgon2DTarget _defaultTarget;											// Default render target.
-	    private Gorgon2DVertexCache _cache;                                             // Our vertex cache for the renderer.
 		private bool _disposed;															// Flag to indicate that the object was disposed.
 		private bool _multiSampleEnable;												// Flag to indicate that multi sampling is enabled.
 		private GorgonViewport? _viewPort;												// Viewport to use.

@@ -25,11 +25,16 @@
 #endregion
 
 using System;
+using System.Diagnostics;
+using System.IO;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Drawing;
+using GorgonLibrary.Animation;
 using GorgonLibrary.IO;
 using GorgonLibrary.Math;
 using GorgonLibrary.Diagnostics;
+using GorgonLibrary.Renderers.Properties;
 using SlimMath;
 using GorgonLibrary.Graphics;
 
@@ -70,9 +75,16 @@ namespace GorgonLibrary.Renderers
     /// be arranged in counter clockwise order.</para>
     /// </remarks>
     public class GorgonPolygon
-        : GorgonNamedObject, IRenderable, IMoveable
+        : GorgonNamedObject, IRenderable, IMoveable, IDisposable, I2DCollisionObject, IDeferredTextureLoad, IPersistedRenderable
     {
-        #region Value Types.
+		#region Constants.
+		/// <summary>
+		/// Header for the Gorgon polygon file.
+		/// </summary>		
+		public const string FileHeader = "GORPLY20";
+		#endregion
+
+		#region Value Types.
         /// <summary>
         /// Material for a polygon.
         /// </summary>
@@ -102,7 +114,12 @@ namespace GorgonLibrary.Renderers
         #endregion
 
         #region Variables.
-        private GorgonVertexBuffer _vertexBuffer;                                               // The vertex buffer for the polygon.
+		private string _textureName = string.Empty;												// Name of the texture for the polygon.
+	    private GorgonTexture2D _texture;														// Texture for the polygon.
+	    private bool _disposed;																	// Flag to indicate that the object was disposed.
+	    private readonly Vector2[] _boundVertexPositions;										// Boundaries for the min/max vertex positions in object space.
+		private readonly Gorgon2DVertex[] _boundVertices;										// Min/max boundary vertices.
+		private GorgonVertexBuffer _vertexBuffer;                                               // The vertex buffer for the polygon.
         private bool _isDynamicIndexBuffer;                                                     // Flag to indicate that the polygon uses a dynamic index buffer.
         private bool _isDynamicVertexBuffer;                                                    // Flag to indicate that the polygon uses a dynamic vertex buffer.
         private GorgonRenderable.DepthStencilStates _depthStencilState;                         // Depth stencil state for the renderable.
@@ -116,6 +133,7 @@ namespace GorgonLibrary.Renderers
         private Vector2 _scale = Vector2.Zero;                                                  // The scale of the polygon.
         private float _depth;                                                                   // Depth value.
         private PolygonMaterial _material;                                                      // Material for the polygon.
+		private Gorgon2DCollider _collider;														// Collider for the sprite.
         #endregion
 
         #region Properties.
@@ -223,6 +241,7 @@ namespace GorgonLibrary.Renderers
         /// <summary>
         /// Property to set or return the texture scale.
         /// </summary>
+        [AnimatedProperty]
         public Vector2 TextureScale
         {
             get
@@ -274,8 +293,22 @@ namespace GorgonLibrary.Renderers
                 Matrix.Translation(-_anchor.X, -_anchor.Y, 0.0f, out anchorMatrix);
                 Matrix.Multiply(ref anchorMatrix, ref translateMatrix, out translateMatrix);
             }
-            
-            Matrix viewProj = Gorgon2D.Camera.ViewProjection;
+
+			// Update boundaries.
+	        if (Collider != null)
+	        {
+		        for (int i = 0; i < _boundVertexPositions.Length; ++i)
+		        {
+			        Vector2 position = _boundVertexPositions[i];
+			        Vector4 bound;
+			        Vector2.Transform(ref position, ref translateMatrix, out bound);
+			        _boundVertices[i].Position = bound;
+		        }
+
+		        Collider.UpdateFromCollisionObject();
+	        }
+
+	        Matrix viewProj = Gorgon2D.Camera.ViewProjection;
 
             Matrix.Multiply(ref translateMatrix, ref viewProj, out _transformMatrix);
 
@@ -395,7 +428,7 @@ namespace GorgonLibrary.Renderers
         /// </remarks>
         /// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="offset"/> parameter is less than 0.
         /// <para>-or-</para>
-        /// <para>The <paramref name="indexListOffset"/> parameter is less than 0 or greater than or equal to the number of indices in the <paramref name="indices parameter"/>.</para>
+        /// <para>The <paramref name="indexListOffset"/> parameter is less than 0 or greater than or equal to the number of indices in the <paramref name="indices"/> parameter.</para>
         /// </exception>
         public void SetIndexData(int[] indices, int indexListOffset, int offset)
         {
@@ -420,7 +453,7 @@ namespace GorgonLibrary.Renderers
         /// </remarks>
         /// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="offset"/> parameter is less than 0.
         /// <para>-or-</para>
-        /// <para>The <paramref name="indexListOffset"/> parameter is less than 0 or greater than or equal to the number of indices in the <paramref name="indices parameter"/>.</para>
+        /// <para>The <paramref name="indexListOffset"/> parameter is less than 0 or greater than or equal to the number of indices in the <paramref name="indices"/> parameter.</para>
         /// <para>-or-</para>
         /// <para>The <paramref name="count"/> parameter is less than 0 or greater than the number of indices in the <paramref name="indices"/> parameter.</para>
         /// </exception>
@@ -481,7 +514,7 @@ namespace GorgonLibrary.Renderers
                     GorgonDataStream lockStream = IndexBuffer.Lock(lockFlags | BufferLockFlags.Write,
                         Gorgon2D.Graphics);
 
-                    var vertexPtr = (int*)lockStream.BasePointer;
+                    var vertexPtr = (int*)lockStream.UnsafePointer;
 
                     // Move to the offset.
                     vertexPtr += offset;
@@ -491,6 +524,8 @@ namespace GorgonLibrary.Renderers
                         *vertexPtr = indices[i + indexListOffset];
                         vertexPtr++;
                     }
+
+					IndexBuffer.Unlock(Gorgon2D.Graphics);
                 }
                 else
                 {
@@ -543,7 +578,7 @@ namespace GorgonLibrary.Renderers
         /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="vertices"/> parameter is NULL (Nothing in VB.Net).</exception>
         /// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="offset"/> parameter is less than 0.
         /// <para>-or-</para>
-        /// <para>The <paramref name="vertexListOffset"/> parameter is less than 0 or greater than or equal to the number of vertices in the <paramref name="vertices parameter"/>.</para>
+        /// <para>The <paramref name="vertexListOffset"/> parameter is less than 0 or greater than or equal to the number of vertices in the <paramref name="vertices"/> parameter.</para>
         /// </exception>
         public void SetVertexData(Gorgon2DVertex[] vertices, int vertexListOffset, int offset)
         {
@@ -570,7 +605,7 @@ namespace GorgonLibrary.Renderers
         /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="vertices"/> parameter is NULL (Nothing in VB.Net).</exception>
         /// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="offset"/> parameter is less than 0.
         /// <para>-or-</para>
-        /// <para>The <paramref name="vertexListOffset"/> parameter is less than 0 or greater than or equal to the number of vertices in the <paramref name="vertices parameter"/>.</para>
+        /// <para>The <paramref name="vertexListOffset"/> parameter is less than 0 or greater than or equal to the number of vertices in the <paramref name="vertices"/> parameter.</para>
         /// <para>-or-</para>
         /// <para>The <paramref name="count"/> parameter is less than 0 or greater than the number of vertices in the <paramref name="vertices"/> parameter.</para>
         /// </exception>
@@ -614,13 +649,16 @@ namespace GorgonLibrary.Renderers
             // If we're using a dynamic vertex buffer, then we need to lock and write our data.
             unsafe
             {
-                float maxX = Size.X;
-                float maxY = Size.Y;
+	            float minX = _boundVertices[0].Position.X;
+	            float minY = _boundVertices[0].Position.Y;
+                float maxX = _boundVertices[1].Position.X;
+                float maxY = _boundVertices[1].Position.Y;
 
                 // If we're replacing the entire buffer, then update our max size entirely.
                 if ((count >= VertexCount) && (offset == 0))
                 {
                     maxY = maxX = float.MinValue;
+	                minY = minX = float.MaxValue;
                 }
 
                 if (UseDynamicVertexBuffer)
@@ -629,7 +667,7 @@ namespace GorgonLibrary.Renderers
                     GorgonDataStream lockStream = _vertexBuffer.Lock(lockFlags | BufferLockFlags.Write,
                         Gorgon2D.Graphics);
 
-                    var vertexPtr = (Gorgon2DVertex*)lockStream.BasePointer;
+                    var vertexPtr = (Gorgon2DVertex*)lockStream.UnsafePointer;
 
                     // Move to the offset.
                     vertexPtr += offset;
@@ -655,9 +693,13 @@ namespace GorgonLibrary.Renderers
 
                         maxX = maxX.Max(position.X);
                         maxY = maxY.Max(position.Y);
+	                    minX = minX.Min(position.X);
+	                    minY = minY.Min(position.Y);
 
                         vertexPtr++;
                     }
+
+					_vertexBuffer.Unlock(Gorgon2D.Graphics);
                 }
                 else
                 {
@@ -678,9 +720,11 @@ namespace GorgonLibrary.Renderers
                             vertices[i].Position = position;
                         }
 
-                        maxX = maxX.Max(position.X);
-                        maxY = maxY.Max(position.Y);
-                    }
+						maxX = maxX.Max(position.X);
+						maxY = maxY.Max(position.Y);
+						minX = minX.Min(position.X);
+						minY = minY.Min(position.Y);
+					}
 
                     fixed(Gorgon2DVertex* ptr = &vertices[vertexListOffset])
                     {
@@ -694,24 +738,89 @@ namespace GorgonLibrary.Renderers
                     }
                 }
 
-                Size = new Vector2(maxX, maxY);
+				// Assign boundaries.
+	            _boundVertexPositions[0] = new Vector2(minX, minY);
+				_boundVertexPositions[1] = new Vector2(maxX, minY);
+				_boundVertexPositions[2] = new Vector2(minX, maxY);
+	            _boundVertexPositions[3] = new Vector2(maxX, maxY);
+
+                Size = new Vector2(maxX - minX, maxY - minY);
             }
         }
+
+		/// <summary>
+		/// Function to save the sprite into memory.
+		/// </summary>
+		/// <returns>A byte array containing the sprite data.</returns>
+		public byte[] Save()
+		{
+			using (var stream = new MemoryStream())
+			{
+				Save(stream);
+
+				return stream.ToArray();
+			}
+		}
+
+		/// <summary>
+		/// Function to save the sprite to a file.
+		/// </summary>
+		/// <param name="filePath">Path to the file to write the sprite information into.</param>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="filePath"/> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentException">Thrown when the filePath parameter is empty.</exception>
+		public void Save(string filePath)
+		{
+			if (filePath == null)
+			{
+				throw new ArgumentNullException("filePath");
+			}
+
+			if (string.IsNullOrWhiteSpace(filePath))
+			{
+				throw new ArgumentException(Resources.GOR2D_PARAMETER_MUST_NOT_BE_EMPTY, filePath);
+			}
+
+			using (FileStream stream = File.Open(filePath, FileMode.Create, FileAccess.Write, FileShare.None))
+			{
+				Save(stream);
+			}
+		}
         #endregion
 
         #region Constructor.
+		/// <summary>
+		/// Initializes a new instance of the <see cref="GorgonPolygon"/> class.
+		/// </summary>
+		/// <param name="gorgon2D">The gorgon 2D interface that created this object.</param>
+		/// <param name="name">The name of the renderable.</param>
+		internal GorgonPolygon(Gorgon2D gorgon2D, string name)
+			: this(gorgon2D, name, PolygonType.Triangle)
+	    {
+	    }
+
         /// <summary>
         /// Initializes a new instance of the <see cref="GorgonPolygon"/> class.
         /// </summary>
         /// <param name="gorgon2D">The gorgon 2D interface that created this object.</param>
         /// <param name="name">The name of the renderable.</param>
         /// <param name="polygonType">The type of polygon to draw.</param>
-        public GorgonPolygon(Gorgon2D gorgon2D, string name, PolygonType polygonType)
+        internal GorgonPolygon(Gorgon2D gorgon2D, string name, PolygonType polygonType)
             : base(name)
         {
             Gorgon2D = gorgon2D;
 
-            CullingMode = CullingMode.Back;
+			// Update bound vertex positions.
+	        _boundVertexPositions = new[]
+	        {
+		        new Vector2(float.MaxValue, float.MaxValue),
+				new Vector2(float.MinValue, float.MaxValue), 
+				new Vector2(float.MaxValue, float.MinValue),
+				new Vector2(float.MinValue, float.MinValue)
+	        };
+
+			_boundVertices = new Gorgon2DVertex[_boundVertexPositions.Length];
+
+	        CullingMode = CullingMode.Back;
             Size = new Vector2(float.MinValue, float.MinValue);
             Scale = new Vector2(1);
             _material = new PolygonMaterial(GorgonColor.White, new Vector4(0, 0, 1, 1));
@@ -748,6 +857,7 @@ namespace GorgonLibrary.Renderers
         /// Property to set or return the coordinates in the texture to use as a starting point for drawing.
         /// </summary>
         /// <remarks>This value is in texels.</remarks>
+        [AnimatedProperty]
         public Vector2 TextureOffset
         {
             get
@@ -1061,6 +1171,7 @@ namespace GorgonLibrary.Renderers
         /// <remarks>
         /// This will only return the alpha value for the first vertex of the renderable and consequently will set all the vertices to the same alpha value.
         /// </remarks>
+        [AnimatedProperty]
         public float Opacity
         {
             get
@@ -1079,6 +1190,7 @@ namespace GorgonLibrary.Renderers
         /// <remarks>
         /// This will only return the color for the first vertex of the renderable and consequently will set all the vertices to the same color.
         /// </remarks>
+        [AnimatedProperty]
         public GorgonColor Color
         {
             get
@@ -1094,10 +1206,23 @@ namespace GorgonLibrary.Renderers
         /// <summary>
         /// Property to set or return a texture for the renderable.
         /// </summary>
+        [AnimatedProperty]
         public GorgonTexture2D Texture
         {
-            get;
-            set;
+	        get
+	        {
+		        return _texture;
+	        }
+	        set
+	        {
+		        if (_texture == value)
+		        {
+			        return;
+		        }
+
+		        _texture = value;
+		        _textureName = _texture != null ? _texture.Name : string.Empty;
+	        }
         }
         #endregion
 
@@ -1136,11 +1261,11 @@ namespace GorgonLibrary.Renderers
                     : Gorgon2D.PixelShader.DefaultPixelShaderDiffuseMaterial;
             }
 
-            Gorgon2D.PixelShader.ConstantBuffers[1] = Gorgon2D.PixelShader.MaterialBuffer;
             Gorgon2D.PixelShader.MaterialBuffer.Update(ref _material);
+			Gorgon2D.PixelShader.ConstantBuffers[1] = Gorgon2D.PixelShader.MaterialBuffer;
 
             // Draw the renderable.
-            Gorgon2D.VertexShader.TransformBuffer.Update(ref _transformMatrix);
+			Gorgon2D.VertexShader.TransformBuffer.Update(ref _transformMatrix);
 
             if (IndexCount == 0)
             {
@@ -1292,5 +1417,411 @@ namespace GorgonLibrary.Renderers
         }
         #endregion
         #endregion
-    }
+
+		#region IDisposable Members
+		/// <summary>
+		/// Releases unmanaged and - optionally - managed resources.
+		/// </summary>
+		/// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
+	    private void Dispose(bool disposing)
+	    {
+			if (_disposed)
+			{
+				return;
+			}
+
+			if (disposing)
+			{
+				if (_vertexBuffer != null)
+				{
+					_vertexBuffer.Dispose();
+					_vertexBuffer = null;
+				}
+
+				if (IndexBuffer != null)
+				{
+					IndexBuffer.Dispose();
+					IndexBuffer = null;
+				}
+			}
+
+			_disposed = true;
+	    }
+
+		/// <summary>
+		/// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+		/// </summary>
+		public void Dispose()
+		{
+			Dispose(true);
+			GC.SuppressFinalize(this);
+		}
+
+		#endregion
+
+		#region I2DCollisionObject Members
+		/// <summary>
+		/// Property to set or return the collider that is assigned to the object.
+		/// </summary>
+		public Gorgon2DCollider Collider
+		{
+			get
+			{
+				return _collider;
+			}
+			set
+			{
+				if (value == _collider)
+				{
+					return;
+				}
+
+				if (value == null)
+				{
+					if (_collider != null)
+					{
+						_collider.CollisionObject = null;
+					}
+
+					return;
+				}
+
+				// Force a transform to get the latest vertices.
+				value.CollisionObject = this;
+				_collider = value;
+				UpdateTransform();
+			}
+		}
+
+		/// <summary>
+		/// Property to return the number of vertices for the renderable.
+		/// </summary>
+	    int I2DCollisionObject.VertexCount
+	    {
+		    get
+		    {
+			    return 4;
+		    }
+	    }
+
+		/// <summary>
+		/// Property to return a list of vertices to render.
+		/// </summary>
+		Gorgon2DVertex[] I2DCollisionObject.Vertices
+		{
+			get
+			{
+				return _boundVertices;
+			}
+		}
+		#endregion
+
+		#region IDeferredTextureLoad Members
+		/// <summary>
+		/// Property to set or return the name of the deferred texture.
+		/// </summary>
+		/// <remarks>This is used to defer the texture assignment until it the texture with the specified name is loaded.</remarks>
+		public string DeferredTextureName
+		{
+			get
+			{
+				if (Texture != null)
+				{
+					return Texture.Name;
+				}
+
+				// Check to see if the texture is loaded.
+				if (!string.IsNullOrWhiteSpace(_textureName))
+				{
+					GetDeferredTexture();
+				}
+
+				return _textureName;
+
+			}
+			set
+			{
+				if (value == null)
+				{
+					value = string.Empty;
+				}
+
+				if (string.Equals(_textureName, value, StringComparison.OrdinalIgnoreCase))
+				{
+					return;
+				}
+
+				_textureName = value;
+				GetDeferredTexture();
+			}
+		}
+
+		/// <summary>
+		/// Function to assign a deferred texture.
+		/// </summary>
+		/// <remarks>
+		/// Call this method to assign a texture that's been deferred.  If a sprite is created/loaded before its texture has been loaded, then the 
+		/// sprite will just appear with the color assigned to it and no image.  To counteract this we can assign the <see cref="P:GorgonLibrary.Renderers.GorgonSprite.DeferredTextureName">DeferredTextureName</see> 
+		/// property to the name of the texture.  Once the texture with the right name is loaded, call this method to get the sprite to update its texture value from the deferred name.
+		/// <para>If loading a sprite from a data source, then this method will be called upon load.  If the texture is not bound successfully (i.e. Texture == null), then it will set the deferred name 
+		/// to the texture name stored in the sprite data.</para>
+		/// <para>If there are multiple textures with the same name, then the first texture will be chosen.</para>
+		/// </remarks>
+		public void GetDeferredTexture()
+		{
+			if (string.IsNullOrEmpty(_textureName))
+			{
+				Texture = null;
+				return;
+			}
+
+			Texture = (from texture in Gorgon2D.Graphics.GetTrackedObjectsOfType<GorgonTexture2D>()
+					   where (texture != null) && (string.Equals(texture.Name, _textureName, StringComparison.OrdinalIgnoreCase))
+					   select texture).FirstOrDefault();
+		}
+		#endregion
+
+		#region IPersistedRenderable Members
+		/// <summary>
+		/// Function to save the renderable to a stream.
+		/// </summary>
+		/// <param name="stream">Stream to write into.</param>
+		public void Save(Stream stream)
+		{
+			if (stream == null)
+			{
+				throw new ArgumentNullException("stream");
+			}
+
+			if (!stream.CanWrite)
+			{
+				throw new IOException("Stream is not open for writing.");
+			}
+
+			// Chunk the file.            
+			using (var chunk = new GorgonChunkWriter(stream))
+			{
+				// Write anchor information.
+				chunk.Begin(FileHeader);
+
+				chunk.Begin("POLYDATA");
+				chunk.Write(PolygonType);
+				chunk.Write(Anchor);
+				chunk.Write(Color);
+				chunk.Write(VertexCount);
+				chunk.Write(IndexCount);
+
+				// Get the vertices.
+				var stagingVertex = _vertexBuffer.GetStagingBuffer();
+				GorgonBuffer stagingIndex = null;
+
+				// Write polygon vertices/indices.
+				try
+				{
+					if (IndexBuffer != null)
+					{
+						stagingIndex = IndexBuffer.GetStagingBuffer();
+					}
+
+					unsafe
+					{
+						using(var lockStream = stagingVertex.Lock(BufferLockFlags.Read, Gorgon2D.Graphics))
+						{
+							var vertexPtr = (Gorgon2DVertex*)lockStream.UnsafePointer;
+
+							for (int i = 0; i < VertexCount; ++i)
+							{
+								chunk.Write(*vertexPtr);
+								vertexPtr++;
+							}
+						}
+
+						if (stagingIndex != null)
+						{
+							using(var lockStream = stagingIndex.Lock(BufferLockFlags.Read, Gorgon2D.Graphics))
+							{
+								var indexPtr = (int*)lockStream.UnsafePointer;
+
+								for (int i = 0; i < IndexCount; ++i)
+								{
+									chunk.Write(*indexPtr);
+									indexPtr++;
+								}
+							}
+						}
+					}
+				}
+				finally
+				{
+					if (stagingIndex != null)
+					{
+						stagingIndex.Dispose();
+					}
+
+					if (stagingVertex != null)
+					{
+						stagingVertex.Dispose();
+					}
+				}
+
+				// Write vertex offsets.
+				chunk.End();
+
+				// Write rendering information.
+				chunk.Begin("RNDRDATA");
+				chunk.Write(CullingMode);
+				chunk.Write(AlphaTestValues);
+				chunk.Write(Blending.AlphaOperation);
+				chunk.Write(Blending.BlendOperation);
+				chunk.Write(Blending.BlendFactor);
+				chunk.Write(Blending.DestinationAlphaBlend);
+				chunk.Write(Blending.DestinationBlend);
+				chunk.Write(Blending.SourceAlphaBlend);
+				chunk.Write(Blending.SourceBlend);
+				chunk.Write(Blending.WriteMask);
+				chunk.Write(DepthStencil.BackFace.ComparisonOperator);
+				chunk.Write(DepthStencil.BackFace.DepthFailOperation);
+				chunk.Write(DepthStencil.BackFace.FailOperation);
+				chunk.Write(DepthStencil.BackFace.PassOperation);
+				chunk.Write(DepthStencil.FrontFace.ComparisonOperator);
+				chunk.Write(DepthStencil.FrontFace.DepthFailOperation);
+				chunk.Write(DepthStencil.FrontFace.FailOperation);
+				chunk.Write(DepthStencil.FrontFace.PassOperation);
+				chunk.WriteInt32(DepthStencil.DepthBias);
+				chunk.Write(DepthStencil.DepthComparison);
+				chunk.WriteInt32(DepthStencil.DepthStencilReference);
+				chunk.WriteBoolean(DepthStencil.IsDepthWriteEnabled);
+				chunk.WriteByte(DepthStencil.StencilReadMask);
+				chunk.WriteByte(DepthStencil.StencilWriteMask);
+				chunk.End();
+
+				// Write collider information.                    
+				if (_collider != null)
+				{
+					chunk.Begin("COLLIDER");
+					_collider.WriteToChunk(chunk);
+					chunk.End();
+				}
+
+				// Write texture information.
+				if (string.IsNullOrWhiteSpace(DeferredTextureName))
+				{
+					return;
+				}
+
+				chunk.Begin("TXTRDATA");
+				chunk.Write(TextureSampler.BorderColor);
+				chunk.Write(TextureSampler.HorizontalWrapping);
+				chunk.Write(TextureSampler.VerticalWrapping);
+				chunk.Write(TextureSampler.TextureFilter);
+				chunk.WriteString(DeferredTextureName);
+				chunk.Write(TextureOffset);
+				chunk.Write(TextureScale);
+				chunk.End();
+			}
+		}
+
+		/// <summary>
+		/// Function to read the renderable data from a stream.
+		/// </summary>
+		/// <param name="stream">Open file stream containing the renderable data.</param>
+		void IPersistedRenderable.Load(Stream stream)
+		{
+			if (stream == null)
+			{
+				throw new ArgumentNullException("stream");
+			}
+
+			if (!stream.CanRead)
+			{
+				throw new IOException("Stream is not open for reading.");
+			}
+
+			if (stream.Length <= 0)
+			{
+				throw new ArgumentOutOfRangeException("stream", "The parameter length must be greater than 0.");
+			}
+
+			// Read the sprite in.
+			using (var chunk = new GorgonChunkReader(stream))
+			{
+				// Read in the file header.
+				chunk.Begin(FileHeader);
+
+				chunk.Begin("POLYDATA");
+				PolygonType = chunk.Read<PolygonType>();
+				Anchor = chunk.Read<Vector2>();
+				Color = chunk.Read<GorgonColor>();
+				VertexCount = chunk.Read<int>();
+				IndexCount = chunk.Read<int>();
+
+				var vertices = new Gorgon2DVertex[VertexCount];
+
+				chunk.ReadRange(vertices);
+
+				SetVertexData(vertices);
+				
+				if (IndexCount > 0)
+				{
+					var indices = new int[IndexCount];
+
+					chunk.ReadRange(indices);
+
+					SetIndexData(indices);
+				}
+
+				chunk.End();
+
+				// Read rendering information.
+				chunk.Begin("RNDRDATA");
+				CullingMode = chunk.Read<CullingMode>();
+				AlphaTestValues = chunk.Read<GorgonRangeF>();
+				Blending.AlphaOperation = chunk.Read<BlendOperation>();
+				Blending.BlendOperation = chunk.Read<BlendOperation>();
+				Blending.BlendFactor = chunk.Read<GorgonColor>();
+				Blending.DestinationAlphaBlend = chunk.Read<BlendType>();
+				Blending.DestinationBlend = chunk.Read<BlendType>();
+				Blending.SourceAlphaBlend = chunk.Read<BlendType>();
+				Blending.SourceBlend = chunk.Read<BlendType>();
+				Blending.WriteMask = chunk.Read<ColorWriteMaskFlags>();
+				DepthStencil.BackFace.ComparisonOperator = chunk.Read<ComparisonOperators>();
+				DepthStencil.BackFace.DepthFailOperation = chunk.Read<StencilOperations>();
+				DepthStencil.BackFace.FailOperation = chunk.Read<StencilOperations>();
+				DepthStencil.BackFace.PassOperation = chunk.Read<StencilOperations>();
+				DepthStencil.FrontFace.ComparisonOperator = chunk.Read<ComparisonOperators>();
+				DepthStencil.FrontFace.DepthFailOperation = chunk.Read<StencilOperations>();
+				DepthStencil.FrontFace.FailOperation = chunk.Read<StencilOperations>();
+				DepthStencil.FrontFace.PassOperation = chunk.Read<StencilOperations>();
+				DepthStencil.DepthBias = chunk.ReadInt32();
+				DepthStencil.DepthComparison = chunk.Read<ComparisonOperators>();
+				DepthStencil.DepthStencilReference = chunk.ReadInt32();
+				DepthStencil.IsDepthWriteEnabled = chunk.ReadBoolean();
+				DepthStencil.StencilReadMask = chunk.ReadByte();
+				DepthStencil.StencilReadMask = chunk.ReadByte();
+				chunk.End();
+
+				// Read collider information.                    
+				if (chunk.HasChunk("COLLIDER"))
+				{
+					chunk.Begin("COLLIDER");
+					Type colliderType = Type.GetType(chunk.ReadString());
+					Debug.Assert(colliderType != null, "collider type is NULL!!");
+					var collider = (Gorgon2DCollider)Activator.CreateInstance(colliderType);
+					collider.ReadFromChunk(chunk);
+					chunk.End();
+				}
+
+				// Read texture information.
+				chunk.Begin("TXTRDATA");
+				TextureSampler.BorderColor = chunk.Read<GorgonColor>();
+				TextureSampler.HorizontalWrapping = chunk.Read<TextureAddressing>();
+				TextureSampler.VerticalWrapping = chunk.Read<TextureAddressing>();
+				TextureSampler.TextureFilter = chunk.Read<TextureFilter>();
+				DeferredTextureName = chunk.ReadString();
+				TextureOffset = chunk.Read<Vector2>();
+				TextureScale = chunk.Read<Vector2>();
+			}
+		}
+		#endregion
+	}
 }
