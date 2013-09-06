@@ -39,7 +39,7 @@ cbuffer GorgonMaterial : register(b1)
 }
 
 // Wave effect variables.
-cbuffer GorgonWaveEffect
+cbuffer GorgonWaveEffect : register(b1)
 {
 	int waveType;
 	float waveAmplitude;
@@ -49,26 +49,26 @@ cbuffer GorgonWaveEffect
 }
 
 // Gaussian blur variables.
-cbuffer GorgonGaussBlurEffectStatic
+cbuffer GorgonGaussBlurEffectStatic : register(b1)
 {
 	int blurRadius = 7;
 	float _weights[MAX_KERNEL_SIZE];
 }
 
-cbuffer GorgonGaussEffectBlur
+cbuffer GorgonGaussEffectBlur : register(b2)
 {
 	float2 _offsets[MAX_KERNEL_SIZE];
 }
 
 // Sharpen/emboss effect variables.
-cbuffer GorgonSharpenEmbossEffect
+cbuffer GorgonSharpenEmbossEffect : register(b1)
 {
 	float2 sharpEmbossTexelDistance = 0.0f;
 	float sharpEmbossAmount = 10.0f;
 }
 
 // 1 bit color effect.
-cbuffer Gorgon1BitEffect
+cbuffer Gorgon1BitEffect : register(b1)
 {	
 	bool oneBitUseAverage;
 	bool oneBitInvert;
@@ -77,13 +77,13 @@ cbuffer Gorgon1BitEffect
 }
 
 // Invert effect variables.
-cbuffer GorgonInvertEffect
+cbuffer GorgonInvertEffect : register(b1)
 {
 	bool invertUseAlpha = false;
 }
 
 // Posterize effect variables.
-cbuffer GorgonPosterizeEffect
+cbuffer GorgonPosterizeEffect : register(b1)
 {
 	bool posterizeUseAlpha;
 	float posterizeExponent;
@@ -91,7 +91,7 @@ cbuffer GorgonPosterizeEffect
 }
 
 // Sobel edge detection effect variables.
-cbuffer GorgonSobelEdgeDetectEffect
+cbuffer GorgonSobelEdgeDetectEffect : register(b1)
 {
 	float2 sobelOffset = float2(0, 0);
 	float sobelThreshold = 0.75f;
@@ -99,7 +99,7 @@ cbuffer GorgonSobelEdgeDetectEffect
 }
 
 // Burn/dodge effect.
-cbuffer GorgonBurnDodgeEffect
+cbuffer GorgonBurnDodgeEffect : register(b1)
 {
 	bool burnDodgeUseDodge;
 }
@@ -378,7 +378,7 @@ float4 GorgonPixelShaderBurnDodge(GorgonSpriteVertex vertex) : SV_Target
 }
 
 // Displacement effect variables.
-cbuffer GorgonDisplacementEffect
+cbuffer GorgonDisplacementEffect : register(b1)
 {
 	float4 displaceSizeAmount = 0;
 }
