@@ -66,8 +66,6 @@ namespace GorgonLibrary.Graphics.Example
 		private static GorgonText _helpTextSprite;																// Text sprite for our help text.
 		private static bool _showHelp = true;																    // Flag to indicate that the help text should be shown.
 
-	    private static GorgonPolygon _testPoly;
-
 		/// <summary>
 		/// Property to return the path to the resources for the example.
 		/// </summary>
@@ -312,8 +310,6 @@ namespace GorgonLibrary.Graphics.Example
 			_2D.Drawing.DrawString(_ballFont, _fpsText.ToString(), new Vector2(3.0f, 48.0f), Color.White);
 		}
 
-	    static float rot = 0.0f;
-
 		/// <summary>
 		/// Function for the main idle loop.
 		/// </summary>
@@ -349,21 +345,6 @@ namespace GorgonLibrary.Graphics.Example
 			{
 				DrawBlurred();
 			}
-
-			// TODO: Get rid of this.
-			_testPoly.Angle = rot;
-			_testPoly.Position = new Vector2(_mainScreen.Settings.Width / 2.0f - 60.0f, _mainScreen.Settings.Height / 2.0f);
-		    _testPoly.Draw();
-
-			_testPoly.Angle = 0;
-			_testPoly.Position = new Vector2(_mainScreen.Settings.Width / 2.0f + 60.0f, _mainScreen.Settings.Height / 2.0f);
-			_testPoly.Draw();
-
-		    rot += 1.0f * GorgonTiming.Delta;
-		    if (rot > 360.0f)
-		    {
-		        rot = 0.0f;
-		    }
 
 			DrawOverlay();
 
@@ -511,64 +492,6 @@ namespace GorgonLibrary.Graphics.Example
 			_helpTextSprite = _2D.Renderables.CreateText("Help Text", _ballFont, _helpText.ToString(), Color.Yellow);
 			_helpTextSprite.Position = new Vector2(3, 72);
 			_helpTextSprite.Blending.DestinationAlphaBlend = BlendType.InverseSourceAlpha;
-
-            // TODO: Get rid of this.
-			_testPoly = _2D.Renderables.FromFile<GorgonPolygon>("TestPoly", @"d:\unpak\test.gorPly");
-			/*_testPoly = _2D.Renderables.CreatePolygon("TestPoly", Vector2.Zero, Color.ForestGreen);
-
-			Gorgon2DVertex[] vertices = 
-            {
-                new Gorgon2DVertex
-                {
-                    Position = new Vector4(0, 20, 0, 1.0f),
-                    Color = GorgonColor.White,
-                    UV = new Vector2(0.0f, 0.05f)
-                },
-                new Gorgon2DVertex
-                {
-                    Position = new Vector4(30, 0, 0, 1.0f),
-                    Color = GorgonColor.White,
-                    UV = new Vector2(0.5f, 0.0f)
-                },
-                new Gorgon2DVertex
-                {
-                    Position = new Vector4(60, 20, 0, 1.0f),
-                    Color = GorgonColor.White,
-                    UV = new Vector2(1.0f, 0.2f)
-                },
-                new Gorgon2DVertex
-                {
-                    Position = new Vector4(15, 60, 0, 1.0f),
-                    Color = GorgonColor.White,
-                    UV = new Vector2(0.25f, 1.0f)
-                },
-                new Gorgon2DVertex
-                {
-                    Position = new Vector4(45, 60, 0, 1.0f),
-                    Color = GorgonColor.White,
-                    UV = new Vector2(0.75f, 1.0f)
-                }     
-            };
-
-			_testPoly.SetVertexData(vertices);
-
-			int[] indices = 
-            {
-                0, 1, 2,
-                0, 2, 3,
-                3, 2, 4
-            };
-
-			_testPoly.SetIndexData(indices);
-
-			_testPoly.Texture = _ballTexture;
-			_testPoly.TextureScale = new Vector2(0.5f, 0.5f);
-			_testPoly.Anchor = new Vector2(30, 30);
-			_testPoly.Opacity = 0.75f;
-			_testPoly.Save(@"d:\unpak\Test.gorPly");*/
-
-			_testPoly.Scale = new Vector2(3);			
-			_testPoly.Position = new Vector2(_mainScreen.Settings.Width / 2.0f, _mainScreen.Settings.Height / 2.0f);
 		}
 
 		/// <summary>
