@@ -24,6 +24,7 @@
 // 
 #endregion
 
+using System;
 using GorgonLibrary.Diagnostics;
 using GorgonLibrary.Graphics.Properties;
 using D3D = SharpDX.Direct3D11;
@@ -37,9 +38,15 @@ namespace GorgonLibrary.Graphics
 	/// the resource to be cast to any format within the same group.</remarks>
 	public sealed class GorgonTextureShaderView
 		: GorgonShaderView
-	{
-		#region Properties.
-		/// <summary>
+    {
+        #region Variables.
+	    private GorgonTexture1D _texture1D;             // 1D texture attached to this view.
+	    private GorgonTexture2D _texture2D;             // 2D texture attached to this view.
+        private GorgonTexture3D _texture3D;             // 3D texture attached to this view.
+        #endregion
+
+        #region Properties.
+        /// <summary>
 		/// Property to return the index of the first mip map in the resource to view.
 		/// </summary>
 		public int MipStart
@@ -215,7 +222,103 @@ namespace GorgonLibrary.Graphics
 				}
 			}
 		}
-		#endregion
+
+        /// <summary>
+        /// Explicit operator to convert this view into its attached 1D texture.
+        /// </summary>
+        /// <param name="view">View to convert.</param>
+        /// <returns>The texture attached to the view.</returns>
+        /// <exception cref="System.InvalidCastException">Thrown when the view is not attached to a 1D texture.</exception>
+	    public static explicit operator GorgonTexture1D(GorgonTextureShaderView view)
+	    {
+            if (view._texture1D == null)
+            {
+                throw new InvalidCastException(string.Format(Resources.GORGFX_VIEW_RESOURCE_NOT_TEXTURE, "1D"));
+            }
+
+            return view._texture1D;
+	    }
+
+        /// <summary>
+        /// Explicit operator to convert this view into its attached 2D texture.
+        /// </summary>
+        /// <param name="view">View to convert.</param>
+        /// <returns>The texture attached to the view.</returns>
+        /// <exception cref="System.InvalidCastException">Thrown when the view is not attached to a 2D texture.</exception>
+        public static explicit operator GorgonTexture2D(GorgonTextureShaderView view)
+        {
+            if (view._texture2D == null)
+            {
+                throw new InvalidCastException(string.Format(Resources.GORGFX_VIEW_RESOURCE_NOT_TEXTURE, "2D"));
+            }
+
+            return view._texture2D;
+        }
+
+        /// <summary>
+        /// Explicit operator to convert this view into its attached 3D texture.
+        /// </summary>
+        /// <param name="view">View to convert.</param>
+        /// <returns>The texture attached to the view.</returns>
+        /// <exception cref="System.InvalidCastException">Thrown when the view is not attached to a 3D texture.</exception>
+        public static explicit operator GorgonTexture3D(GorgonTextureShaderView view)
+        {
+            if (view._texture3D == null)
+            {
+                throw new InvalidCastException(string.Format(Resources.GORGFX_VIEW_RESOURCE_NOT_TEXTURE, "3D"));
+            }
+
+            return view._texture3D;
+        }
+
+        /// <summary>
+        /// Function to convert this view into its attached 1D texture.
+        /// </summary>
+        /// <param name="view">View to convert.</param>
+        /// <returns>The texture attached to the view.</returns>
+        /// <exception cref="System.InvalidCastException">Thrown when the view is not attached to a 1D texture.</exception>
+        public static GorgonTexture1D ToTexture1D(GorgonTextureShaderView view)
+        {
+            if (view._texture1D == null)
+            {
+                throw new InvalidCastException(string.Format(Resources.GORGFX_VIEW_RESOURCE_NOT_TEXTURE, "1D"));
+            }
+
+            return view._texture1D;
+        }
+
+        /// <summary>
+        /// Function to convert this view into its attached 2D texture.
+        /// </summary>
+        /// <param name="view">View to convert.</param>
+        /// <returns>The texture attached to the view.</returns>
+        /// <exception cref="System.InvalidCastException">Thrown when the view is not attached to a 2D texture.</exception>
+        public static GorgonTexture2D ToTexture2D(GorgonTextureShaderView view)
+        {
+            if (view._texture2D == null)
+            {
+                throw new InvalidCastException(string.Format(Resources.GORGFX_VIEW_RESOURCE_NOT_TEXTURE, "2D"));
+            }
+
+            return view._texture2D;
+        }
+
+        /// <summary>
+        /// Function to convert this view into its attached 3D texture.
+        /// </summary>
+        /// <param name="view">View to convert.</param>
+        /// <returns>The texture attached to the view.</returns>
+        /// <exception cref="System.InvalidCastException">Thrown when the view is not attached to a 3D texture.</exception>
+        public static GorgonTexture3D ToTexture3D(GorgonTextureShaderView view)
+        {
+            if (view._texture3D == null)
+            {
+                throw new InvalidCastException(string.Format(Resources.GORGFX_VIEW_RESOURCE_NOT_TEXTURE, "3D"));
+            }
+
+            return view._texture3D;
+        }
+        #endregion
 
 		#region Constructor/Destructor.
 		/// <summary>
@@ -239,6 +342,19 @@ namespace GorgonLibrary.Graphics
 			MipCount = mipCount;
 			ArrayStart = arrayIndex;
 			ArrayCount = arrayCount;
+
+		    switch (texture.ResourceType)
+		    {
+		        case ResourceType.Texture1D:
+		            _texture1D = (GorgonTexture1D)texture;
+		            break;
+                case ResourceType.Texture2D:
+                    _texture2D = (GorgonTexture2D)texture;
+		            break;
+                case ResourceType.Texture3D:
+                    _texture3D = (GorgonTexture3D)texture;
+		            break;
+		    }
 		}
 		#endregion
 	}

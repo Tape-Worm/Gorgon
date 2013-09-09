@@ -81,11 +81,29 @@ namespace GorgonLibrary.Renderers.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Cannot read this sprite.  It is not a Gorgon sprite or it is a newer version..
+        ///   Looks up a localized string similar to The value &apos;{0}&apos; is less than 0..
         /// </summary>
-        internal static string GOR2D_CANNOT_READ_V1_SPRITE {
+        internal static string GOR2D_ARG_LESS_THAN_ZERO {
             get {
-                return ResourceManager.GetString("GOR2D_CANNOT_READ_V1_SPRITE", resourceCulture);
+                return ResourceManager.GetString("GOR2D_ARG_LESS_THAN_ZERO", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The value &apos;{0}&apos; must be between &apos;{1}&apos; and &apos;{2}&apos;..
+        /// </summary>
+        internal static string GOR2D_ARG_OUT_OF_RANGE {
+            get {
+                return ResourceManager.GetString("GOR2D_ARG_OUT_OF_RANGE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The values &apos;{0}&apos; and &apos;{1}&apos; have a total larger than the array size of &apos;{2}&apos;..
+        /// </summary>
+        internal static string GOR2D_ARGS_LARGER_THAN_ARRAY {
+            get {
+                return ResourceManager.GetString("GOR2D_ARGS_LARGER_THAN_ARRAY", resourceCulture);
             }
         }
         
@@ -117,29 +135,29 @@ namespace GorgonLibrary.Renderers.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to There was no {0} shader bound to the pipeline. .
+        ///   Looks up a localized string similar to Cannot read this sprite.  It is not a Gorgon sprite or it is a newer version..
         /// </summary>
-        internal static string GOR2D_SHADER_NOT_BOUND {
+        internal static string GOR2D_SPRITE_CANNOT_READ_V1_SPRITE {
             get {
-                return ResourceManager.GetString("GOR2D_SHADER_NOT_BOUND", resourceCulture);
+                return ResourceManager.GetString("GOR2D_SPRITE_CANNOT_READ_V1_SPRITE", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The render target type &apos;{0}&apos; is not supported by the 2D renderer..
+        ///   Looks up a localized string similar to The stream is read only..
         /// </summary>
-        internal static string GOR2D_TARGET_TYPE_NOT_SUPPORTED {
+        internal static string GOR2D_STREAM_READ_ONLY {
             get {
-                return ResourceManager.GetString("GOR2D_TARGET_TYPE_NOT_SUPPORTED", resourceCulture);
+                return ResourceManager.GetString("GOR2D_STREAM_READ_ONLY", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to There was no vertex buffer bound to the pipeline..
+        ///   Looks up a localized string similar to The stream is write-only..
         /// </summary>
-        internal static string GOR2D_VERTEX_BUFFER_NOT_BOUND {
+        internal static string GOR2D_STREAM_WRITE_ONLY {
             get {
-                return ResourceManager.GetString("GOR2D_VERTEX_BUFFER_NOT_BOUND", resourceCulture);
+                return ResourceManager.GetString("GOR2D_STREAM_WRITE_ONLY", resourceCulture);
             }
         }
         

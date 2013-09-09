@@ -34,8 +34,11 @@ using SlimMath;
 namespace GorgonLibrary.Renderers
 {
 	/// <summary>
-	/// An orthographic camera for Gorgon.
+    /// A camera that performs orthographic (2D) projection.
 	/// </summary>
+	/// <remarks>The orthographic camera is the default camera used in Gorgon.  This camera performs 2D projection of sprites and other renderables on to a target. 
+	/// By default, the camera will use absolute screen space coordinates e.g. 160x120 will be the center of a 320x240 render target.  The user may define their own  
+	/// coordinate system to apply to the projection.</remarks>
 	public class GorgonOrthoCamera
 		: GorgonNamedObject, ICamera
 	{
@@ -257,8 +260,8 @@ namespace GorgonLibrary.Renderers
 				Texture = gorgon2D.Graphics.GetTrackedObjectsOfType<GorgonTexture2D>()
 							.FirstOrDefault(item => item.Name.Equals("Gorgon2D.Icons", StringComparison.OrdinalIgnoreCase)) ??
 						gorgon2D.Graphics.Textures.CreateTexture<GorgonTexture2D>("Gorgon2D.Icons", Properties.Resources.Icons),
-				TextureRegion = new RectangleF(0.253906f, 0, 0.253906f, 0.195313f),
-				Anchor = new Vector2(32.5f, 25),
+				TextureRegion = new RectangleF(0.253906f, 0, 0.25f, 0.195313f),
+				Anchor = new Vector2(32f, 25),
 				InitialScale = new Vector2(1.0f),
 				Color = Color.White
 			});

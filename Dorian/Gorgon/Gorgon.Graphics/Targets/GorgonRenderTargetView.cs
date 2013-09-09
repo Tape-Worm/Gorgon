@@ -24,7 +24,9 @@
 // 
 #endregion
 
+using System;
 using GorgonLibrary.Diagnostics;
+using GorgonLibrary.Graphics.Properties;
 using D3D = SharpDX.Direct3D11;
 
 namespace GorgonLibrary.Graphics
@@ -38,6 +40,14 @@ namespace GorgonLibrary.Graphics
     public abstract class GorgonRenderTargetView
 		: GorgonView
     {
+        #region Variables.
+        private GorgonRenderTargetBuffer _bufferTarget;
+        private GorgonRenderTarget1D _1DTarget;
+        private GorgonRenderTarget2D _2DTarget;
+        private GorgonRenderTarget3D _3DTarget;
+        private GorgonSwapChain _swapChain;
+        #endregion
+
         #region Properties.
         /// <summary>
         /// Property to return the render target view.
@@ -89,6 +99,166 @@ namespace GorgonLibrary.Graphics
 
 		    Resource.Graphics.Context.ClearRenderTargetView(D3DView, color.SharpDXColor4);
         }
+
+        /// <summary>
+        /// Explicit operator to convert a render target view into a 1D render target.
+        /// </summary>
+        /// <param name="view">View to convert.</param>
+        /// <returns>The render target attached to the view.</returns>
+        /// <exception cref="System.InvalidCastException">Thrown when the view is not a attached to a 1D render target.</exception>
+        public static explicit operator GorgonRenderTarget1D(GorgonRenderTargetView view)
+        {
+            if (view._1DTarget == null)
+            {
+                throw new InvalidCastException(string.Format(Resources.GORGFX_VIEW_RESOURCE_NOT_TARGET, "1D"));
+            }
+
+            return view._1DTarget;
+        }
+
+        /// <summary>
+        /// Explicit operator to convert a render target view into a 2D render target.
+        /// </summary>
+        /// <param name="view">View to convert.</param>
+        /// <returns>The render target attached to the view.</returns>
+        /// <exception cref="System.InvalidCastException">Thrown when the view is not a attached to a 2D render target.</exception>
+        public static explicit operator GorgonRenderTarget2D(GorgonRenderTargetView view)
+        {
+            if (view._2DTarget == null)
+            {
+                throw new InvalidCastException(string.Format(Resources.GORGFX_VIEW_RESOURCE_NOT_TARGET, "2D"));
+            }
+
+            return view._2DTarget;
+        }
+
+        /// <summary>
+        /// Explicit operator to convert a render target view into a 3D render target.
+        /// </summary>
+        /// <param name="view">View to convert.</param>
+        /// <returns>The render target attached to the view.</returns>
+        /// <exception cref="System.InvalidCastException">Thrown when the view is not a attached to a 3D render target.</exception>
+        public static explicit operator GorgonRenderTarget3D(GorgonRenderTargetView view)
+        {
+            if (view._3DTarget == null)
+            {
+                throw new InvalidCastException(string.Format(Resources.GORGFX_VIEW_RESOURCE_NOT_TARGET, "3D"));
+            }
+
+            return view._3DTarget;
+        }
+
+        /// <summary>
+        /// Explicit operator to convert a render target view into a buffer render target.
+        /// </summary>
+        /// <param name="view">View to convert.</param>
+        /// <returns>The render target attached to the view.</returns>
+        /// <exception cref="System.InvalidCastException">Thrown when the view is not a attached to a buffer render target.</exception>
+        public static explicit operator GorgonRenderTargetBuffer(GorgonRenderTargetView view)
+        {
+            if (view._bufferTarget == null)
+            {
+                throw new InvalidCastException(string.Format(Resources.GORGFX_VIEW_RESOURCE_NOT_TARGET, "buffer"));
+            }
+
+            return view._bufferTarget;
+        }
+
+        /// <summary>
+        /// Explicit operator to convert a render target view into swap chain.
+        /// </summary>
+        /// <param name="view">View to convert.</param>
+        /// <returns>The render target attached to the view.</returns>
+        /// <exception cref="System.InvalidCastException">Thrown when the view is not a attached to a swap chain.</exception>
+        public static explicit operator GorgonSwapChain(GorgonRenderTargetView view)
+        {
+            if (view._swapChain == null)
+            {
+                throw new InvalidCastException(string.Format(Resources.GORGFX_VIEW_RESOURCE_NOT_TARGET, "swap chain"));
+            }
+
+            return view._swapChain;
+        }
+
+        /// <summary>
+        /// Function to convert a render target view into a 1D render target.
+        /// </summary>
+        /// <param name="view">View to convert.</param>
+        /// <returns>The render target attached to the view.</returns>
+        /// <exception cref="System.InvalidCastException">Thrown when the view is not a attached to a 1D render target.</exception>
+        public static GorgonRenderTarget1D ToRenderTarget1D(GorgonRenderTargetView view)
+        {
+            if (view._1DTarget == null)
+            {
+                throw new InvalidCastException(string.Format(Resources.GORGFX_VIEW_RESOURCE_NOT_TARGET, "1D"));
+            }
+
+            return view._1DTarget;
+        }
+
+        /// <summary>
+        /// Function to convert a render target view into a 2D render target.
+        /// </summary>
+        /// <param name="view">View to convert.</param>
+        /// <returns>The render target attached to the view.</returns>
+        /// <exception cref="System.InvalidCastException">Thrown when the view is not a attached to a 2D render target.</exception>
+        public static GorgonRenderTarget2D ToRenderTarget2D(GorgonRenderTargetView view)
+        {
+            if (view._2DTarget == null)
+            {
+                throw new InvalidCastException(string.Format(Resources.GORGFX_VIEW_RESOURCE_NOT_TARGET, "2D"));
+            }
+
+            return view._2DTarget;
+        }
+
+        /// <summary>
+        /// Function to convert a render target view into a 3D render target.
+        /// </summary>
+        /// <param name="view">View to convert.</param>
+        /// <returns>The render target attached to the view.</returns>
+        /// <exception cref="System.InvalidCastException">Thrown when the view is not a attached to a 3D render target.</exception>
+        public static GorgonRenderTarget3D ToRenderTarget3D(GorgonRenderTargetView view)
+        {
+            if (view._3DTarget == null)
+            {
+                throw new InvalidCastException(string.Format(Resources.GORGFX_VIEW_RESOURCE_NOT_TARGET, "3D"));
+            }
+
+            return view._3DTarget;
+        }
+
+        /// <summary>
+        /// Function to convert a render target view into a buffer render target.
+        /// </summary>
+        /// <param name="view">View to convert.</param>
+        /// <returns>The render target attached to the view.</returns>
+        /// <exception cref="System.InvalidCastException">Thrown when the view is not a attached to a buffer render target.</exception>
+        public static GorgonRenderTargetBuffer ToRenderTargetBuffer(GorgonRenderTargetView view)
+        {
+            if (view._bufferTarget == null)
+            {
+                throw new InvalidCastException(string.Format(Resources.GORGFX_VIEW_RESOURCE_NOT_TARGET, "buffer"));
+            }
+
+            return view._bufferTarget;
+        }
+
+        /// <summary>
+        /// Function to convert a render target view into swap chain.
+        /// </summary>
+        /// <param name="view">View to convert.</param>
+        /// <returns>The render target attached to the view.</returns>
+        /// <exception cref="System.InvalidCastException">Thrown when the view is not a attached to a swap chain.</exception>
+        public static GorgonSwapChain ToSwapChain(GorgonRenderTargetView view)
+        {
+            if (view._swapChain == null)
+            {
+                throw new InvalidCastException(string.Format(Resources.GORGFX_VIEW_RESOURCE_NOT_TARGET, "swap chain"));
+            }
+
+            return view._swapChain;
+        }
         #endregion
 
         #region Constructor/Destructor.
@@ -100,6 +270,25 @@ namespace GorgonLibrary.Graphics
 		protected GorgonRenderTargetView(GorgonResource resource, BufferFormat format)
 			: base(resource, format)
 		{
+		    switch (resource.ResourceType)
+		    {
+		        case ResourceType.Buffer:
+		            _bufferTarget = (GorgonRenderTargetBuffer)resource;
+		            break;
+                case ResourceType.Texture1D:
+		            _1DTarget = (GorgonRenderTarget1D)resource;
+		            break;
+                case ResourceType.Texture2D:
+		            _2DTarget = (GorgonRenderTarget2D)resource;
+		            if (_2DTarget.IsSwapChain)
+		            {
+		                _swapChain = (GorgonSwapChain)_2DTarget;
+		            }
+		            break;
+                case ResourceType.Texture3D:
+		            _3DTarget = (GorgonRenderTarget3D)resource;
+		            break;
+		    }
 		}
         #endregion
     }

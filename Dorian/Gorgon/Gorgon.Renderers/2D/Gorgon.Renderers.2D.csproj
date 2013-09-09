@@ -61,6 +61,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Cameras\GorgonOrthoCamera.cs" />
+    <Compile Include="Cameras\GorgonPerspectiveCamera.cs" />
     <Compile Include="Cameras\ICamera.cs" />
     <Compile Include="Collision\Gorgon2DAABB.cs" />
     <Compile Include="Collision\Gorgon2DBoundingCircle.cs" />

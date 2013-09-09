@@ -664,4 +664,19 @@ Log file location: "{0}"</value>
   <data name="GORGFX_SHADER_MACRO_TOSTR" xml:space="preserve">
     <value>Gorgon Shader Macro Definition '{0}'.</value>
   </data>
+  <data name="GORGFX_TARGET_IS_NOT_SWAPCHAIN" xml:space="preserve">
+    <value>This render target is not a swap chain.</value>
+  </data>
+  <data name="GORGFX_VIEW_RESOURCE_NOT_BUFFER" xml:space="preserve">
+    <value>The resource attached to this view is not a {0} buffer.</value>
+  </data>
+  <data name="GORGFX_VIEW_RESOURCE_NOT_DEPTHSTENCIL" xml:space="preserve">
+    <value>The resource attached to this view is not a {0} depth/stencil buffer.</value>
+  </data>
+  <data name="GORGFX_VIEW_RESOURCE_NOT_TARGET" xml:space="preserve">
+    <value>The resource attached to this view is not a {0} render target.</value>
+  </data>
+  <data name="GORGFX_VIEW_RESOURCE_NOT_TEXTURE" xml:space="preserve">
+    <value>This resource attched to this view is not a {0} texture.</value>
+  </data>
 </root>

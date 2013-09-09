@@ -60,9 +60,14 @@ namespace GorgonLibrary.Graphics
 	/// </summary>
 	public class GorgonDepthStencilView
 		: GorgonView
-	{
-		#region Properties.
-		/// <summary>
+    {
+        #region Variables.
+	    private GorgonDepthStencil1D _depth1D;             // 1D depth/stencil attached to this view.
+	    private GorgonDepthStencil2D _depth2D;             // 2D depth/stencil attached to this view.
+        #endregion
+
+        #region Properties.
+        /// <summary>
 		/// Property to return the Direct3D depth/stencil view.
 		/// </summary>
 		internal D3D.DepthStencilView D3DView
@@ -338,45 +343,65 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
-		/// Function to retrieve the 1D depth/stencil buffer associated with this view.
+		/// Explicit operator to retrieve the 1D depth/stencil buffer associated with this view.
 		/// </summary>
 		/// <param name="view">The view to evaluate.</param>
 		/// <returns>The 1D depth/stencil buffer associated with this view.</returns>
-		public static GorgonDepthStencil1D ToDepthStencil1D(GorgonDepthStencilView view)
+		public static explicit operator GorgonDepthStencil1D(GorgonDepthStencilView view)
 		{
-			return view == null ? null : (GorgonDepthStencil1D)view.Resource;
+		    if (view._depth1D == null)
+		    {
+		        throw new InvalidCastException(string.Format(Resources.GORGFX_VIEW_RESOURCE_NOT_DEPTHSTENCIL, "1D"));
+		    }
+
+		    return view._depth1D;
 		}
 
 		/// <summary>
-		/// Implicit operator to retrieve the 1D depth/stencil buffer associated with this view.
-		/// </summary>
-		/// <param name="view">The view to evaluate.</param>
-		/// <returns>The 1D depth/stencil buffer associated with this view.</returns>
-		public static implicit operator GorgonDepthStencil1D(GorgonDepthStencilView view)
-		{
-			return view == null ? null : (GorgonDepthStencil1D)view.Resource;
-		}
-
-		/// <summary>
-		/// Function to retrieve the 2D depth/stencil buffer associated with this view.
+		/// Explicit operator to retrieve the 2D depth/stencil buffer associated with this view.
 		/// </summary>
 		/// <param name="view">The view to evaluate.</param>
 		/// <returns>The 2D depth/stencil buffer associated with this view.</returns>
-		public static GorgonDepthStencil2D ToDepthStencil2D(GorgonDepthStencilView view)
+		public static explicit operator GorgonDepthStencil2D(GorgonDepthStencilView view)
 		{
-			return view == null ? null : (GorgonDepthStencil2D)view.Resource;
-		}
+            if (view._depth2D == null)
+            {
+                throw new InvalidCastException(string.Format(Resources.GORGFX_VIEW_RESOURCE_NOT_DEPTHSTENCIL, "2D"));
+            }
 
-		/// <summary>
-		/// Implicit operator to retrieve the 2D depth/stencil buffer associated with this view.
-		/// </summary>
-		/// <param name="view">The view to evaluate.</param>
-		/// <returns>The 2D depth/stencil buffer associated with this view.</returns>
-		public static implicit operator GorgonDepthStencil2D(GorgonDepthStencilView view)
-		{
-			return view == null ? null : (GorgonDepthStencil2D)view.Resource;
-		}
-		#endregion
+            return view._depth2D;
+        }
+
+        /// <summary>
+        /// Function to retrieve the 1D depth/stencil buffer associated with this view.
+        /// </summary>
+        /// <param name="view">The view to evaluate.</param>
+        /// <returns>The 1D depth/stencil buffer associated with this view.</returns>
+        public static GorgonDepthStencil1D ToDepthStencil1D(GorgonDepthStencilView view)
+        {
+            if (view._depth1D == null)
+            {
+                throw new InvalidCastException(string.Format(Resources.GORGFX_VIEW_RESOURCE_NOT_DEPTHSTENCIL, "1D"));
+            }
+
+            return view._depth1D;
+        }
+
+        /// <summary>
+        /// Function to retrieve the 2D depth/stencil buffer associated with this view.
+        /// </summary>
+        /// <param name="view">The view to evaluate.</param>
+        /// <returns>The 2D depth/stencil buffer associated with this view.</returns>
+        public static GorgonDepthStencil2D ToDepthStencil2D(GorgonDepthStencilView view)
+        {
+            if (view._depth2D == null)
+            {
+                throw new InvalidCastException(string.Format(Resources.GORGFX_VIEW_RESOURCE_NOT_DEPTHSTENCIL, "2D"));
+            }
+
+            return view._depth2D;
+        }
+        #endregion
 
 		#region Constructor/Destructor.
 		/// <summary>
@@ -395,6 +420,16 @@ namespace GorgonLibrary.Graphics
 			FirstArrayIndex = firstArrayIndex;
 			ArrayCount = arrayCount;
 		    Flags = flags;
+
+		    switch (resource.ResourceType)
+		    {
+		        case ResourceType.Texture1D:
+		            _depth1D = (GorgonDepthStencil1D)resource;
+		            break;
+                case ResourceType.Texture2D:
+		            _depth2D = (GorgonDepthStencil2D)resource;
+		            break;
+		    }
 		}
 		#endregion
 	}

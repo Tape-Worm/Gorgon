@@ -26,6 +26,7 @@
 
 using System;
 using System.Drawing;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
 using GorgonLibrary.Collections.Specialized;
@@ -944,15 +945,39 @@ namespace GorgonLibrary.Renderers
 		}
 
 		/// <summary>
-		/// Function to create a new orthographic camera object.
+		/// Function to create a new camera object.
 		/// </summary>
+		/// <typeparam name="T">Type of camera object.  Must implement <see cref="ICamera"/>.</typeparam>
 		/// <param name="name">Name of the camera.</param>
 		/// <param name="viewDimensions">Dimensions for the ortho camera.</param>
 		/// <param name="maxDepth">Maximum depth of the camera.</param>
-		/// <returns>A new orthographic camera.</returns>
-		public GorgonOrthoCamera CreateCamera(string name, Vector2 viewDimensions, float maxDepth)
+		/// <returns>A new camera.</returns>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
+		public T CreateCamera<T>(string name, Vector2 viewDimensions, float maxDepth)
+            where T : ICamera
 		{
-			return new GorgonOrthoCamera(this, name, viewDimensions, maxDepth);
+		    if (name == null)
+		    {
+		        throw new ArgumentNullException("name");
+		    }
+
+		    if (string.IsNullOrWhiteSpace(name))
+		    {
+		        throw new ArgumentException(Resources.GOR2D_PARAMETER_MUST_NOT_BE_EMPTY, "name");
+		    }
+
+		    return (T)Activator.CreateInstance(typeof(T),
+		                BindingFlags.Instance | BindingFlags.NonPublic,
+		                null,
+		                new object[]
+		                {
+                            this,
+                            name,
+                            viewDimensions,
+                            maxDepth
+		                },
+		                null);
 		}
 
         /// <summary>
