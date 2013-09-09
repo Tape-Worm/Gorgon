@@ -140,7 +140,7 @@ namespace GorgonLibrary.Renderers
 					Width = target2D.Settings.Width;
 					Height = target2D.Settings.Height;
 					Viewport = target2D.Viewport;
-					SwapChain = target2D.SwapChain;
+					SwapChain = (GorgonSwapChain)target2D;
 					DepthStencil = depthStencil ?? target2D.DepthStencilBuffer;
 					break;
 				case ResourceType.Texture3D:

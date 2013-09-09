@@ -124,8 +124,14 @@
   <data name="FilmGrain" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\FilmGrain.hlsl;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="GOR2D_CANNOT_READ_V1_SPRITE" xml:space="preserve">
-    <value>Cannot read this sprite.  It is not a Gorgon sprite or it is a newer version.</value>
+  <data name="GOR2D_ARGS_LARGER_THAN_ARRAY" xml:space="preserve">
+    <value>The values '{0}' and '{1}' have a total larger than the array size of '{2}'.</value>
+  </data>
+  <data name="GOR2D_ARG_LESS_THAN_ZERO" xml:space="preserve">
+    <value>The value '{0}' is less than 0.</value>
+  </data>
+  <data name="GOR2D_ARG_OUT_OF_RANGE" xml:space="preserve">
+    <value>The value '{0}' must be between '{1}' and '{2}'.</value>
   </data>
   <data name="GOR2D_EFFECT_NO_BLUR_TARGETS" xml:space="preserve">
     <value>The gaussian blur render targets were not created.  Ensure that the render target width and height are greater than 0.</value>
@@ -136,14 +142,14 @@
   <data name="GOR2D_PARAMETER_MUST_NOT_BE_EMPTY" xml:space="preserve">
     <value>The parameter must not be empty.</value>
   </data>
-  <data name="GOR2D_SHADER_NOT_BOUND" xml:space="preserve">
-    <value>There was no {0} shader bound to the pipeline. </value>
+  <data name="GOR2D_SPRITE_CANNOT_READ_V1_SPRITE" xml:space="preserve">
+    <value>Cannot read this sprite.  It is not a Gorgon sprite or it is a newer version.</value>
   </data>
-  <data name="GOR2D_TARGET_TYPE_NOT_SUPPORTED" xml:space="preserve">
-    <value>The render target type '{0}' is not supported by the 2D renderer.</value>
+  <data name="GOR2D_STREAM_READ_ONLY" xml:space="preserve">
+    <value>The stream is read only.</value>
   </data>
-  <data name="GOR2D_VERTEX_BUFFER_NOT_BOUND" xml:space="preserve">
-    <value>There was no vertex buffer bound to the pipeline.</value>
+  <data name="GOR2D_STREAM_WRITE_ONLY" xml:space="preserve">
+    <value>The stream is write-only.</value>
   </data>
   <data name="Icons" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Icons.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>

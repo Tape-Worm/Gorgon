@@ -482,13 +482,14 @@ namespace GorgonLibrary.Renderers
 #if DEBUG
             if (offset < 0)
             {
-                throw new ArgumentOutOfRangeException("offset");
+                throw new ArgumentOutOfRangeException("offset", string.Format(Resources.GOR2D_ARG_LESS_THAN_ZERO, offset));
             }
 
             if ((indexListOffset < 0)
                 || (indexListOffset >= indices.Length))
             {
-                throw new ArgumentOutOfRangeException("indexListOffset");
+                throw new ArgumentOutOfRangeException("indexListOffset",
+                    string.Format(Resources.GOR2D_ARG_OUT_OF_RANGE, indexListOffset, 0, indices.Length - 1));
             }
 
             if  ((count > indices.Length)
@@ -499,7 +500,7 @@ namespace GorgonLibrary.Renderers
 
             if (indexListOffset + count > indices.Length)
             {
-                throw new ArgumentException("The index list offset and the count are larger than the index list.");
+                throw new ArgumentException(string.Format(Resources.GOR2D_ARGS_LARGER_THAN_ARRAY, indexListOffset, count, indices.Length));
             }
 #endif
             // Ensure that the vertex buffer has enough room to hold our vertices.
@@ -623,13 +624,15 @@ namespace GorgonLibrary.Renderers
 #if DEBUG
             if (offset < 0)
             {
-                throw new ArgumentOutOfRangeException("offset");
+                throw new ArgumentOutOfRangeException("offset",
+                    string.Format(Resources.GOR2D_ARG_LESS_THAN_ZERO, offset));
             }
 
             if ((vertexListOffset < 0)
                 || (vertexListOffset >= vertices.Length))
             {
-                throw new ArgumentOutOfRangeException("vertexListOffset");
+                throw new ArgumentOutOfRangeException("vertexListOffset",
+                    string.Format(Resources.GOR2D_ARG_OUT_OF_RANGE, vertexListOffset, 0, vertices.Length - 1));
             }
 
             if ((count > vertices.Length)
@@ -640,7 +643,10 @@ namespace GorgonLibrary.Renderers
 
             if (vertexListOffset + count > vertices.Length)
             {
-                throw new ArgumentException("The vertex list offset and the count are larger than the vertex list.");
+                throw new ArgumentException(string.Format(Resources.GOR2D_ARGS_LARGER_THAN_ARRAY,
+                    vertexListOffset,
+                    count,
+                    vertices.Length));
             }
 #endif
             // Ensure that the vertex buffer has enough room to hold our vertices.
@@ -1595,7 +1601,7 @@ namespace GorgonLibrary.Renderers
 
 			if (!stream.CanWrite)
 			{
-				throw new IOException("Stream is not open for writing.");
+                throw new IOException(Resources.GOR2D_STREAM_READ_ONLY);
 			}
 
 			// Chunk the file.            
@@ -1734,12 +1740,7 @@ namespace GorgonLibrary.Renderers
 
 			if (!stream.CanRead)
 			{
-				throw new IOException("Stream is not open for reading.");
-			}
-
-			if (stream.Length <= 0)
-			{
-				throw new ArgumentOutOfRangeException("stream", "The parameter length must be greater than 0.");
+				throw new IOException(Resources.GOR2D_STREAM_WRITE_ONLY);
 			}
 
 			// Read the sprite in.

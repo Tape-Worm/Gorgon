@@ -24,6 +24,7 @@
 // 
 #endregion
 
+using System;
 using GorgonLibrary.Diagnostics;
 using GorgonLibrary.Graphics.Properties;
 
@@ -54,12 +55,16 @@ namespace GorgonLibrary.Graphics
     /// <remarks>Use a resource view to allow a multiple threads inside of a shader access to the contents of a resource (or sub resource) at the same time.  
     /// <para>Ordered access views can be read/write in the shader if the format is set to one of R32_Uint, R32_Int or R32_Float.  Otherwise the view will be read-only.  An unordered access view must 
     /// have a format that is the same bit-depth and in the same group as its bound resource.</para>
-    /// <para>Unlike a <see cref="GorgonLibrary.Graphics.GorgonBufferShaderView">GorgonBufferShaderView</see>, only one unordered access view may be applied to a resource.</para>
+    /// <para>Unlike a <see cref="GorgonLibrary.Graphics.GorgonBufferUnorderedAccessView">GorgonBufferUnorderedAccessView</see>, only one unordered access view may be applied to a resource.</para>
     /// <para>This view allows structured views to be viewed as append/consume or count buffers.</para>
     /// </remarks>
     public sealed class GorgonStructuredBufferUnorderedAccessView
         : GorgonBufferUnorderedAccessView
     {
+        #region Variables.
+        private GorgonStructuredBuffer _structuredBuffer;               // Structured buffer attached to this view.
+        #endregion
+
         #region Properties.
         /// <summary>
         /// Property to return the type of view.
@@ -142,6 +147,38 @@ namespace GorgonLibrary.Graphics
 #endif
 			Resource.Graphics.Context.CopyStructureCount(buffer.D3DBuffer, offset, D3DView);
 		}
+
+        /// <summary>
+        /// Explicit operator to convert this view into its attached structured buffer.
+        /// </summary>
+        /// <param name="view">View to convert.</param>
+        /// <returns>The attached buffer.</returns>
+        /// <exception cref="System.InvalidCastException">Thrown when the buffer is not a structured buffer.</exception>
+        public static explicit operator GorgonStructuredBuffer(GorgonStructuredBufferUnorderedAccessView view)
+        {
+            if (view._structuredBuffer == null)
+            {
+                throw new InvalidCastException(string.Format(Resources.GORGFX_VIEW_RESOURCE_NOT_BUFFER, "structured"));
+            }
+
+            return view._structuredBuffer;
+        }
+
+        /// <summary>
+        /// Function to convert this view into its attached structured buffer.
+        /// </summary>
+        /// <param name="view">View to convert.</param>
+        /// <returns>The attached buffer.</returns>
+        /// <exception cref="System.InvalidCastException">Thrown when the buffer is not a structured buffer.</exception>
+        public static GorgonStructuredBuffer ToStructuredBuffer(GorgonStructuredBufferUnorderedAccessView view)
+        {
+            if (view._structuredBuffer == null)
+            {
+                throw new InvalidCastException(string.Format(Resources.GORGFX_VIEW_RESOURCE_NOT_BUFFER, "structured"));
+            }
+
+            return view._structuredBuffer;
+        }
         #endregion
 
         #region Constructor/Destructor.
@@ -157,6 +194,7 @@ namespace GorgonLibrary.Graphics
         {
             ViewType = viewType;
             InitialCount = -1;
+            _structuredBuffer = (GorgonStructuredBuffer)resource;
         }
         #endregion
     }

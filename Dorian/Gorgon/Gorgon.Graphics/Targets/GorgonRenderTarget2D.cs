@@ -26,6 +26,7 @@
 
 using System;
 using GorgonLibrary.Diagnostics;
+using GorgonLibrary.Graphics.Properties;
 using GI = SharpDX.DXGI;
 using D3D = SharpDX.Direct3D11;
 
@@ -46,18 +47,20 @@ namespace GorgonLibrary.Graphics
 		#region Variables.
         private GorgonRenderTargetView _defaultRenderTargetView;    // The default render target view for this render target.
         private bool _disposed;				                        // Flag to indicate that the object was disposed.
+        private GorgonSwapChain _swapChain;                         // The swap chain that this target is attached to.
 		#endregion
 
 		#region Properties.
-		/// <summary>
-		/// Property to return the swap chain that this texture is attached to.
-		/// </summary>
-		public GorgonSwapChain SwapChain
-		{
-			get;
-			private set;
-		}
-
+        /// <summary>
+        /// Property to return whether this target is attached to a swap chain or not.
+        /// </summary>
+        public bool IsSwapChain
+        {
+            get
+            {
+                return _swapChain != null;
+            }
+        }
 	    /// <summary>
 	    /// Property to return the settings for this render target.
 	    /// </summary>
@@ -144,7 +147,7 @@ namespace GorgonLibrary.Graphics
 			if (disposing)
 			{
 				// Remove link to a swap chain.
-				SwapChain = null;
+				_swapChain = null;
 			}
 
 			base.Dispose(disposing);
@@ -158,12 +161,12 @@ namespace GorgonLibrary.Graphics
 		{
 			Gorgon.Log.Print("Destroying GorgonRenderTarget '{0}'...", LoggingLevel.Intermediate, Name);
 		    GorgonRenderStatistics.RenderTargetCount--;
-		    GorgonRenderStatistics.RenderTargetSize -= SizeInBytes * (SwapChain == null ? 1 : SwapChain.Settings.BufferCount);
+		    GorgonRenderStatistics.RenderTargetSize -= SizeInBytes * (_swapChain == null ? 1 : _swapChain.Settings.BufferCount);
 
 		    if (DepthStencilBuffer != null)
 		    {
                 // If the swap chain is resized, we don't want to destroy these objects.
-		        if (SwapChain == null)
+		        if (_swapChain == null)
 		        {
 			        Gorgon.Log.Print("GorgonRenderTarget '{0}': Releasing internal depth stencil...",
 			                         LoggingLevel.Verbose,
@@ -268,7 +271,7 @@ namespace GorgonLibrary.Graphics
 			Settings.DepthStencilFormat = swapChain.Settings.DepthStencilFormat;
 			Settings.TextureFormat = swapChain.Settings.Format;
 
-			SwapChain = swapChain;
+			_swapChain = swapChain;
 
 #if DEBUG
 			Graphics.Output.ValidateRenderTargetSettings(Settings);
@@ -441,6 +444,22 @@ namespace GorgonLibrary.Graphics
 		{
 			return target == null ? null : target._defaultRenderTargetView;
 		}
+
+        /// <summary>
+        /// Implicit operator to return the swap chain for this render target.
+        /// </summary>
+        /// <param name="target">Render target to convert.</param>
+        /// <returns>The swap chain for the render target.</returns>
+        /// <exception cref="System.InvalidCastException">Thrown when the render target is not a swap chain.</exception>
+        public static explicit operator GorgonSwapChain(GorgonRenderTarget2D target)
+        {
+            if (target._swapChain != null)
+            {
+                return target._swapChain;
+            }
+
+            throw new InvalidCastException(Resources.GORGFX_TARGET_IS_NOT_SWAPCHAIN);
+        }
 		#endregion
 
         #region Constructor/Destructor.

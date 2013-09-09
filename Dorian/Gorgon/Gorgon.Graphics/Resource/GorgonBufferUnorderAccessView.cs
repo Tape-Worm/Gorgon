@@ -24,7 +24,9 @@
 // 
 #endregion
 
+using System;
 using GorgonLibrary.Diagnostics;
+using GorgonLibrary.Graphics.Properties;
 using D3D = SharpDX.Direct3D11;
 
 namespace GorgonLibrary.Graphics
@@ -35,11 +37,17 @@ namespace GorgonLibrary.Graphics
 	/// <remarks>Use a resource view to allow a multiple threads inside of a shader access to the contents of a resource (or sub resource) at the same time.  
 	/// <para>Ordered access views can be read/write in the shader if the format is set to one of R32_Uint, R32_Int or R32_Float.  Otherwise the view will be read-only.  An unordered access view must 
 	/// have a format that is the same bit-depth and in the same group as its bound resource.</para>
-	/// <para>Unlike a <see cref="GorgonLibrary.Graphics.GorgonBufferShaderView">GorgonBufferShaderView</see>, only one unordered access view may be applied to a resource.</para>
+	/// <para>Unlike a <see cref="GorgonLibrary.Graphics.GorgonBufferUnorderedAccessView">GorgonBufferUnorderedAccessView</see>, only one unordered access view may be applied to a resource.</para>
 	/// </remarks>
 	public class GorgonBufferUnorderedAccessView
 		: GorgonUnorderedAccessView
 	{
+        #region Variables.
+        private GorgonBuffer _buffer;                                   // Buffer attached to this view.
+        private GorgonVertexBuffer _vertexBuffer;                       // Vertex buffer attached to this view.
+        private GorgonIndexBuffer _indexBuffer;                         // Index buffer attached to this view.
+        #endregion
+
 		#region Properties.
 		/// <summary>
 		/// Property to return the offset of the view from first element in the buffer.
@@ -93,6 +101,102 @@ namespace GorgonLibrary.Graphics
 					DebugName = "Gorgon Unordered Access View for " + Resource.Name
 				};
 		}
+
+        /// <summary>
+        /// Explicit operator to convert this view into its attached generic buffer.
+        /// </summary>
+        /// <param name="view">View to convert.</param>
+        /// <returns>The attached buffer.</returns>
+        /// <exception cref="System.InvalidCastException">Thrown when the buffer is not a generic buffer.</exception>
+        public static explicit operator GorgonBuffer(GorgonBufferUnorderedAccessView view)
+        {
+            if (view._buffer == null)
+            {
+                throw new InvalidCastException(string.Format(Resources.GORGFX_VIEW_RESOURCE_NOT_BUFFER, "generic"));
+            }
+
+            return view._buffer;
+        }
+
+        /// <summary>
+        /// Explicit operator to convert this view into its attached vertex buffer.
+        /// </summary>
+        /// <param name="view">View to convert.</param>
+        /// <returns>The attached buffer.</returns>
+        /// <exception cref="System.InvalidCastException">Thrown when the buffer is not a vertex buffer.</exception>
+        public static explicit operator GorgonVertexBuffer(GorgonBufferUnorderedAccessView view)
+        {
+            if (view._vertexBuffer == null)
+            {
+                throw new InvalidCastException(string.Format(Resources.GORGFX_VIEW_RESOURCE_NOT_BUFFER, "vertex"));
+            }
+
+            return view._vertexBuffer;
+        }
+
+        /// <summary>
+        /// Explicit operator to convert this view into its attached index buffer.
+        /// </summary>
+        /// <param name="view">View to convert.</param>
+        /// <returns>The attached buffer.</returns>
+        /// <exception cref="System.InvalidCastException">Thrown when the buffer is not a index buffer.</exception>
+        public static explicit operator GorgonIndexBuffer(GorgonBufferUnorderedAccessView view)
+        {
+            if (view._indexBuffer == null)
+            {
+                throw new InvalidCastException(string.Format(Resources.GORGFX_VIEW_RESOURCE_NOT_BUFFER, "index"));
+            }
+
+            return view._indexBuffer;
+        }
+
+        /// <summary>
+        /// Function to convert this view into its attached generic buffer.
+        /// </summary>
+        /// <param name="view">View to convert.</param>
+        /// <returns>The attached buffer.</returns>
+        /// <exception cref="System.InvalidCastException">Thrown when the buffer is not a generic buffer.</exception>
+        public static GorgonBuffer ToBuffer(GorgonBufferUnorderedAccessView view)
+        {
+            if (view._buffer == null)
+            {
+                throw new InvalidCastException(string.Format(Resources.GORGFX_VIEW_RESOURCE_NOT_BUFFER, "generic"));
+            }
+
+            return view._buffer;
+        }
+
+        /// <summary>
+        /// Explicit operator to convert this view into its attached vertex buffer.
+        /// </summary>
+        /// <param name="view">View to convert.</param>
+        /// <returns>The attached buffer.</returns>
+        /// <exception cref="System.InvalidCastException">Thrown when the buffer is not a vertex buffer.</exception>
+        public static GorgonVertexBuffer ToVertexBuffer(GorgonBufferUnorderedAccessView view)
+        {
+            if (view._vertexBuffer == null)
+            {
+                throw new InvalidCastException(string.Format(Resources.GORGFX_VIEW_RESOURCE_NOT_BUFFER, "vertex"));
+            }
+
+            return view._vertexBuffer;
+        }
+
+        /// <summary>
+        /// Explicit operator to convert this view into its attached index buffer.
+        /// </summary>
+        /// <param name="view">View to convert.</param>
+        /// <returns>The attached buffer.</returns>
+        /// <exception cref="System.InvalidCastException">Thrown when the buffer is not a index buffer.</exception>
+        public static GorgonIndexBuffer ToIndexBuffer(GorgonBufferUnorderedAccessView view)
+        {
+            if (view._indexBuffer == null)
+            {
+                throw new InvalidCastException(string.Format(Resources.GORGFX_VIEW_RESOURCE_NOT_BUFFER, "index"));
+            }
+
+            return view._indexBuffer;
+        }
 		#endregion
 
 		#region Constructor/Destructor.
@@ -110,7 +214,11 @@ namespace GorgonLibrary.Graphics
 		    IsRaw = isRaw;
 			ElementStart = firstElement;
 			ElementCount = elementCount;
-		}
+
+            _buffer = resource as GorgonBuffer;
+            _indexBuffer = resource as GorgonIndexBuffer;
+            _vertexBuffer = resource as GorgonVertexBuffer;
+        }
 		#endregion
 	}
 }

@@ -24,7 +24,9 @@
 // 
 #endregion
 
+using System;
 using GorgonLibrary.Diagnostics;
+using GorgonLibrary.Graphics.Properties;
 using DX = SharpDX;
 using GI = SharpDX.DXGI;
 using DXCommon = SharpDX.Direct3D;
@@ -39,9 +41,16 @@ namespace GorgonLibrary.Graphics
 	/// the resource to be cast to any format within the same group.</remarks>
 	public class GorgonBufferShaderView
 		: GorgonShaderView
-	{
-		#region Properties.
-		/// <summary>
+    {
+        #region Variables.
+	    private GorgonBuffer _buffer;                                   // Buffer attached to this view.
+	    private GorgonStructuredBuffer _structuredBuffer;               // Structured buffer attached to this view.
+	    private GorgonVertexBuffer _vertexBuffer;                       // Vertex buffer attached to this view.
+	    private GorgonIndexBuffer _indexBuffer;                         // Index buffer attached to this view.
+        #endregion
+
+        #region Properties.
+        /// <summary>
 		/// Property to return the offset of the view from the first element in the buffer.
 		/// </summary>
 		public int ElementStart
@@ -95,6 +104,134 @@ namespace GorgonLibrary.Graphics
 					DebugName = "Gorgon Shader View for " + Resource.GetType().FullName
 				};
 		}
+
+        /// <summary>
+        /// Explicit operator to convert this view into its attached generic buffer.
+        /// </summary>
+        /// <param name="view">View to convert.</param>
+        /// <returns>The attached buffer.</returns>
+        /// <exception cref="System.InvalidCastException">Thrown when the buffer is not a generic buffer.</exception>
+	    public static explicit operator GorgonBuffer(GorgonBufferShaderView view)
+	    {
+            if (view._buffer == null)
+            {
+                throw new InvalidCastException(string.Format(Resources.GORGFX_VIEW_RESOURCE_NOT_BUFFER, "generic"));
+            }
+
+            return view._buffer;
+	    }
+
+        /// <summary>
+        /// Explicit operator to convert this view into its attached structured buffer.
+        /// </summary>
+        /// <param name="view">View to convert.</param>
+        /// <returns>The attached buffer.</returns>
+        /// <exception cref="System.InvalidCastException">Thrown when the buffer is not a structured buffer.</exception>
+        public static explicit operator GorgonStructuredBuffer(GorgonBufferShaderView view)
+        {
+            if (view._structuredBuffer == null)
+            {
+                throw new InvalidCastException(string.Format(Resources.GORGFX_VIEW_RESOURCE_NOT_BUFFER, "structured"));
+            }
+
+            return view._structuredBuffer;
+        }
+
+        /// <summary>
+        /// Explicit operator to convert this view into its attached vertex buffer.
+        /// </summary>
+        /// <param name="view">View to convert.</param>
+        /// <returns>The attached buffer.</returns>
+        /// <exception cref="System.InvalidCastException">Thrown when the buffer is not a vertex buffer.</exception>
+        public static explicit operator GorgonVertexBuffer(GorgonBufferShaderView view)
+	    {
+	        if (view._vertexBuffer == null)
+	        {
+                throw new InvalidCastException(string.Format(Resources.GORGFX_VIEW_RESOURCE_NOT_BUFFER, "vertex"));
+	        }
+
+	        return view._vertexBuffer;
+	    }
+
+        /// <summary>
+        /// Explicit operator to convert this view into its attached index buffer.
+        /// </summary>
+        /// <param name="view">View to convert.</param>
+        /// <returns>The attached buffer.</returns>
+        /// <exception cref="System.InvalidCastException">Thrown when the buffer is not a index buffer.</exception>
+        public static explicit operator GorgonIndexBuffer(GorgonBufferShaderView view)
+	    {
+	        if (view._indexBuffer == null)
+	        {
+                throw new InvalidCastException(string.Format(Resources.GORGFX_VIEW_RESOURCE_NOT_BUFFER, "index"));
+	        }
+
+            return view._indexBuffer;
+	    }
+
+        /// <summary>
+        /// Function to convert this view into its attached generic buffer.
+        /// </summary>
+        /// <param name="view">View to convert.</param>
+        /// <returns>The attached buffer.</returns>
+        /// <exception cref="System.InvalidCastException">Thrown when the buffer is not a generic buffer.</exception>
+        public static GorgonBuffer ToBuffer(GorgonBufferShaderView view)
+        {
+            if (view._buffer == null)
+            {
+                throw new InvalidCastException(string.Format(Resources.GORGFX_VIEW_RESOURCE_NOT_BUFFER, "generic"));
+            }
+
+            return view._buffer;
+        }
+
+        /// <summary>
+        /// Function to convert this view into its attached structured buffer.
+        /// </summary>
+        /// <param name="view">View to convert.</param>
+        /// <returns>The attached buffer.</returns>
+        /// <exception cref="System.InvalidCastException">Thrown when the buffer is not a structured buffer.</exception>
+        public static GorgonStructuredBuffer ToStructuredBuffer(GorgonBufferShaderView view)
+        {
+            if (view._structuredBuffer == null)
+            {
+                throw new InvalidCastException(string.Format(Resources.GORGFX_VIEW_RESOURCE_NOT_BUFFER, "structured"));
+            }
+
+            return view._structuredBuffer;
+        }
+
+        /// <summary>
+        /// Explicit operator to convert this view into its attached vertex buffer.
+        /// </summary>
+        /// <param name="view">View to convert.</param>
+        /// <returns>The attached buffer.</returns>
+        /// <exception cref="System.InvalidCastException">Thrown when the buffer is not a vertex buffer.</exception>
+        public static GorgonVertexBuffer ToVertexBuffer(GorgonBufferShaderView view)
+        {
+            if (view._vertexBuffer == null)
+            {
+                throw new InvalidCastException(string.Format(Resources.GORGFX_VIEW_RESOURCE_NOT_BUFFER, "vertex"));
+            }
+
+            return view._vertexBuffer;
+        }
+
+        /// <summary>
+        /// Explicit operator to convert this view into its attached index buffer.
+        /// </summary>
+        /// <param name="view">View to convert.</param>
+        /// <returns>The attached buffer.</returns>
+        /// <exception cref="System.InvalidCastException">Thrown when the buffer is not a index buffer.</exception>
+        public static GorgonIndexBuffer ToIndexBuffer(GorgonBufferShaderView view)
+        {
+            if (view._indexBuffer == null)
+            {
+                throw new InvalidCastException(string.Format(Resources.GORGFX_VIEW_RESOURCE_NOT_BUFFER, "index"));
+            }
+
+            return view._indexBuffer;
+        }
 		#endregion
 
 		#region Constructor/Destructor.
@@ -112,6 +249,11 @@ namespace GorgonLibrary.Graphics
 		    IsRaw = isRaw;
 			ElementStart = elementStart;
 			ElementCount = elementCount;
+
+		    _buffer = buffer as GorgonBuffer;
+		    _structuredBuffer = buffer as GorgonStructuredBuffer;
+		    _indexBuffer = buffer as GorgonIndexBuffer;
+		    _vertexBuffer = buffer as GorgonVertexBuffer;
 		}
 		#endregion
     }

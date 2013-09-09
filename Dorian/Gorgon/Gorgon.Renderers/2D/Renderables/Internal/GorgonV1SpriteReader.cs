@@ -188,7 +188,7 @@ namespace GorgonLibrary.Renderers
 			string headerVersion = reader.ReadString();
 			if ((!headerVersion.StartsWith("GORSPR", StringComparison.OrdinalIgnoreCase)) || (headerVersion.Length < 7))
 			{
-				throw new GorgonException(GorgonResult.CannotRead, Resources.GOR2D_CANNOT_READ_V1_SPRITE);
+				throw new GorgonException(GorgonResult.CannotRead, Resources.GOR2D_SPRITE_CANNOT_READ_V1_SPRITE);
 			}
 
 			// Get the version information.
@@ -204,7 +204,7 @@ namespace GorgonLibrary.Renderers
 					version = new Version(1, 2);
 					break;
 				default:
-                    throw new GorgonException(GorgonResult.CannotRead, Resources.GOR2D_CANNOT_READ_V1_SPRITE);
+                    throw new GorgonException(GorgonResult.CannotRead, Resources.GOR2D_SPRITE_CANNOT_READ_V1_SPRITE);
 			}
 
 			// We don't need the sprite name.
