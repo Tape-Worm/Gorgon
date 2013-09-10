@@ -35,6 +35,22 @@ namespace GorgonLibrary.Renderers
 	{
 		#region Properties.
 		/// <summary>
+		/// Property to return the width of the current target.
+		/// </summary>
+		int TargetWidth
+		{
+			get;
+		}
+
+		/// <summary>
+		/// Property to return the height of the current target.
+		/// </summary>
+		int TargetHeight
+		{
+			get;
+		}
+
+		/// <summary>
 		/// Property to return the projection matrix for the camera.
 		/// </summary>
 		Matrix Projection
@@ -48,6 +64,42 @@ namespace GorgonLibrary.Renderers
 		Matrix View
 		{
 			get;
+		}
+
+		/// <summary>
+		/// Property to set or return the projection view dimensions for the camera.
+		/// </summary>
+		Vector2 ViewDimensions
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Property to set or return the projection view offset for the camera.
+		/// </summary>
+		Vector2 ViewOffset
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Property to set or return the minimum depth for the camera.
+		/// </summary>
+		float MinimumDepth
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Property to set or return the maximum depth for the camera.
+		/// </summary>
+		float MaximumDepth
+		{
+			get;
+			set;
 		}
 
         /// <summary>
@@ -67,9 +119,8 @@ namespace GorgonLibrary.Renderers
 		}
 
 		/// <summary>
-		/// Property to set or return whether to allow the renderer to automatically update this camera.
+		/// Property to set or return whether the dimensions of the camera should be automatically adjusted to match the current render target.
 		/// </summary>
-		/// <remarks>Setting this to TRUE and setting this camera as the active camera for the renderer will allow the renderer to update the camera projection when the render target is resized.</remarks>
 		bool AutoUpdate
 		{
 			get;
@@ -78,13 +129,6 @@ namespace GorgonLibrary.Renderers
 		#endregion
 
 		#region Methods.
-		/// <summary>
-		/// Function to update the projection matrix from a specified region.
-		/// </summary>
-		/// <param name="offset">The offset of the region.</param>
-		/// <param name="size">The width and the height for the region.</param>
-		void UpdateRegion(Vector2 offset, Vector2 size);
-
 		/// <summary>
 		/// Function to draw the camera icon.
 		/// </summary>

@@ -51,6 +51,7 @@ namespace GorgonLibrary.Renderers
 		private float _maxDepth;										// Maximum depth.
 		private readonly GorgonSprite _cameraIcon;						// Camera icon.
 		private float _angle;											// Angle of rotation.
+		private float _minDepth;										// Minimum depth value.
 		private Vector2 _scale = new Vector2(1.0f);						// Scale.
 		private Vector2 _position = Vector2.Zero;						// Position.
 		private Vector2 _anchor = Vector2.Zero;							// Target position.
@@ -66,57 +67,6 @@ namespace GorgonLibrary.Renderers
 		{
 			get;
 			private set;
-		}
-
-		/// <summary>
-		/// Property to set or return the projection view dimensions for the camera.
-		/// </summary>
-		public Vector2 ViewDimensions
-		{
-			get
-			{
-				return _viewDimensions;
-			}
-			set
-			{
-				UpdateRegion(_viewOffset, value);
-			}
-		}
-
-		/// <summary>
-		/// Property to set or return the projection view offset for the camera.
-		/// </summary>
-		public Vector2 ViewOffset
-		{
-			get
-			{
-				return _viewOffset;
-			}
-			set
-			{
-				UpdateRegion(value, _viewDimensions);
-			}
-		}
-
-		/// <summary>
-		/// Property to set or return the maximum depth for the camera.
-		/// </summary>
-		public float MaximumDepth
-		{
-			get
-			{
-				return _maxDepth;
-			}
-			set
-			{
-				if (value < 1.0f)
-				{
-					value = 1.0f;
-				}
-
-				_maxDepth = value;
-				_needsProjectionUpdate = true;
-			}
 		}
 
 		/// <summary>
@@ -200,7 +150,7 @@ namespace GorgonLibrary.Renderers
 				}
 
 				_anchor = value;
-				_needsViewUpdate = true;
+				_needsProjectionUpdate = true;
 			}
 		}
 		#endregion
@@ -211,11 +161,8 @@ namespace GorgonLibrary.Renderers
 		/// </summary>
 		private void UpdateViewMatrix()
 		{
-			Matrix center;						// Centering matrix.
+			Matrix center = Matrix.Identity;	// Centering matrix.
 			Matrix translation;					// Translation matrix.
-
-			// Anchor the view.
-			Matrix.Translation(_anchor.X, _anchor.Y, 0.0f, out center);
 
 			// Scale it.
 			if ((!_scale.X.EqualsEpsilon(1.0f)) || (!_scale.Y.EqualsEpsilon(1.0f)))
@@ -247,13 +194,16 @@ namespace GorgonLibrary.Renderers
 		/// <param name="gorgon2D">The 2D interface that created this object.</param>
 		/// <param name="name">The name.</param>
 		/// <param name="viewDimensions">The view dimensions.</param>
-		/// <param name="maximumDepth">The maximum depth.</param>
-		internal GorgonOrthoCamera(Gorgon2D gorgon2D, string name, Vector2 viewDimensions, float maximumDepth)
+		/// <param name="minDepth">The minimum depth value.</param>
+		/// <param name="maximumDepth">The maximum depth value.</param>
+		internal GorgonOrthoCamera(Gorgon2D gorgon2D, string name, RectangleF viewDimensions,float minDepth, float maximumDepth)
 			: base(name)
 		{
 			Gorgon2D = gorgon2D;
+			_minDepth = minDepth;
 			_maxDepth = maximumDepth;
-			_viewDimensions = viewDimensions;
+			_viewOffset = viewDimensions.Location;
+			_viewDimensions = viewDimensions.Size;
 			_cameraIcon = new GorgonSprite(gorgon2D, "GorgonCamera.OrthoIcon", new GorgonSpriteSettings
 			{
 				Size = new Vector2(64, 50),
@@ -270,6 +220,85 @@ namespace GorgonLibrary.Renderers
 
 		#region ICamera Members
 		#region Properties.
+		/// <summary>
+		/// Property to set or return the projection view dimensions for the camera.
+		/// </summary>
+		public Vector2 ViewDimensions
+		{
+			get
+			{
+				return _viewDimensions;
+			}
+			set
+			{
+				if (_viewDimensions == value)
+				{
+					return;
+				}
+
+				_viewDimensions = value;
+				_needsProjectionUpdate = true;
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return the projection view offset for the camera.
+		/// </summary>
+		public Vector2 ViewOffset
+		{
+			get
+			{
+				return _viewOffset;
+			}
+			set
+			{
+				if (_viewOffset == value)
+				{
+					return;
+				}
+
+				_viewOffset = value;
+				_needsProjectionUpdate = true;
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return the minimum depth for the camera.
+		/// </summary>
+		public float MinimumDepth
+		{
+			get
+			{
+				return _minDepth;
+			}
+			set
+			{
+				_minDepth = value;
+				_needsProjectionUpdate = true;
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return the maximum depth for the camera.
+		/// </summary>
+		public float MaximumDepth
+		{
+			get
+			{
+				return _maxDepth;
+			}
+			set
+			{
+				if (value < 1.0f)
+				{
+					value = 1.0f;
+				}
+
+				_maxDepth = value;
+				_needsProjectionUpdate = true;
+			}
+		}
+
 		/// <summary>
 		/// Property to return whether the camera needs updating.
 		/// </summary>
@@ -315,15 +344,30 @@ namespace GorgonLibrary.Renderers
 		}
 
 		/// <summary>
-		/// Property to set or return whether to allow the renderer to automatically update this camera.
+		/// Property to set or return whether the dimensions of the camera should be automatically adjusted to match the current render target.
 		/// </summary>
-		/// <remarks>
-		/// Setting this to TRUE and setting this camera as the active camera for the renderer will allow the renderer to update the camera projection when the render target is resized.
-		/// </remarks>
 		public bool AutoUpdate
 		{
 			get;
 			set;
+		}
+
+		/// <summary>
+		/// Property to return the width of the current target.
+		/// </summary>
+		public int TargetWidth
+		{
+			get;
+			internal set;
+		}
+
+		/// <summary>
+		/// Property to return the height of the current target.
+		/// </summary>
+		public int TargetHeight
+		{
+			get;
+			internal set;
 		}
 		#endregion
 
@@ -335,7 +379,13 @@ namespace GorgonLibrary.Renderers
 		{
 			if (_needsProjectionUpdate)
 			{
-				Matrix.OrthoOffCenterLH(_viewOffset.X, _viewDimensions.X, _viewDimensions.Y, _viewOffset.Y, 0.0f, _maxDepth, out _projection);
+				Matrix.OrthoOffCenterLH(_viewOffset.X - _anchor.X,
+					_viewDimensions.X - _anchor.X,
+					_viewDimensions.Y - _anchor.Y,
+					_viewOffset.Y - _anchor.Y,
+					_minDepth,
+					_maxDepth,
+					out _projection);
 			}
 			
 			if (_needsViewUpdate)
@@ -356,26 +406,6 @@ namespace GorgonLibrary.Renderers
 		}
 
 		/// <summary>
-		/// Function to update the projection matrix from a specified region.
-		/// </summary>
-		/// <param name="offset">The offset of the region.</param>
-		/// <param name="size">The width and the height for the region.</param>
-		public void UpdateRegion(Vector2 offset, Vector2 size)
-		{
-			_viewOffset = offset;
-			_viewDimensions = size;
-
-			if (AutoUpdate)
-			{
-				Vector2.Multiply(ref size, 0.5f, out _anchor);
-				Vector2.Negate(ref _anchor, out _position);
-			}
-
-			_needsProjectionUpdate = true;
-			_needsViewUpdate = true;
-		}
-
-		/// <summary>
 		/// Function to draw the camera icon.
 		/// </summary>
 		public void Draw()
@@ -386,11 +416,18 @@ namespace GorgonLibrary.Renderers
 			}
 
 			// Highlight current camera.
+			_cameraIcon.Depth = Gorgon2D.Camera.MinimumDepth;
 			_cameraIcon.Color = Gorgon2D.Camera == this ? Color.Green : Color.White;
-
+			
 			_cameraIcon.Position = -Position;
 			_cameraIcon.Angle = -Angle;
+
+			var prevCamera = Gorgon2D.Camera;
+			Gorgon2D.Camera = this;
+
 			_cameraIcon.Draw();
+
+			Gorgon2D.Camera = prevCamera;
 		}
 		#endregion
 		#endregion
