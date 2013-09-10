@@ -446,7 +446,8 @@ namespace GorgonLibrary.Renderers
 			    // Refresh our camera information if we're jumping back to the default camera.
 			    if (value.AutoUpdate)
 			    {
-					value.UpdateRegion(Vector2.Zero, new Vector2(_currentTarget.Width, _currentTarget.Height));
+				    value.ViewOffset = Vector2.Zero;
+				    value.ViewDimensions = new Vector2(_currentTarget.Width, _currentTarget.Height);
 			    }
 
 			    // Force an update.
@@ -545,10 +546,11 @@ namespace GorgonLibrary.Renderers
 
 			// Update camera.
 			var camera = _camera ?? _defaultCamera;
-
+			
 			if (camera.AutoUpdate)
 			{
-				camera.UpdateRegion(Vector2.Zero, new Vector2(_currentTarget.Width, _currentTarget.Height));
+				camera.ViewOffset = Vector2.Zero;
+				camera.ViewDimensions = new Vector2(_currentTarget.Width, _currentTarget.Height);
 			}
 
 			var clipRegion = ClipRegion;
@@ -949,12 +951,19 @@ namespace GorgonLibrary.Renderers
 		/// </summary>
 		/// <typeparam name="T">Type of camera object.  Must implement <see cref="ICamera"/>.</typeparam>
 		/// <param name="name">Name of the camera.</param>
-		/// <param name="viewDimensions">Dimensions for the ortho camera.</param>
-		/// <param name="maxDepth">Maximum depth of the camera.</param>
+		/// <param name="viewDimensions">The dimensions for the camera view.</param>
+		/// <param name="minDepth">Minimum depth value of the camera.</param>
+		/// <param name="maxDepth">Maximum depth value of the camera.</param>
 		/// <returns>A new camera.</returns>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (Nothing in VB.Net).</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
-		public T CreateCamera<T>(string name, Vector2 viewDimensions, float maxDepth)
+		/// <remarks>This will create a camera object which allows the user to pan, rotate and scale the entire scene. 
+		/// <para>The <paramref name="viewDimensions"/> allows the camera to change the coordinate system used by the various objects in Gorgon.  For example, passing a value of (-1, -1) - (1, 1) 
+		/// will change the coordinate system to use -1, -1 as the upper left most corner and 1,1 as the right most corner.  Please note that changing the coordinate system affects the size of 
+		/// objects created by Gorgon.  For example, if using the aforementioned coordinate system and you have a sprite sized at 32, 32, that sprite will now be much larger because the view space 
+		/// is confined to -1, -1 x 1, 1.  Pass NULL (Nothing in VB.Net) to the <paramref name="viewDimensions"/> parameter to use the current render target dimensions.</para> 
+		/// </remarks>
+		public T CreateCamera<T>(string name, RectangleF? viewDimensions, float minDepth, float maxDepth)
             where T : ICamera
 		{
 		    if (name == null)
@@ -967,6 +976,11 @@ namespace GorgonLibrary.Renderers
 		        throw new ArgumentException(Resources.GOR2D_PARAMETER_MUST_NOT_BE_EMPTY, "name");
 		    }
 
+			if (viewDimensions == null)
+			{
+				viewDimensions = new RectangleF(0, 0, _currentTarget.Width, _currentTarget.Height);
+			}
+
 		    return (T)Activator.CreateInstance(typeof(T),
 		                BindingFlags.Instance | BindingFlags.NonPublic,
 		                null,
@@ -975,6 +989,7 @@ namespace GorgonLibrary.Renderers
                             this,
                             name,
                             viewDimensions,
+							minDepth,
                             maxDepth
 		                },
 		                null);
@@ -1067,11 +1082,13 @@ namespace GorgonLibrary.Renderers
 				Color = Color.White,
 				Size = Graphics.Textures.GorgonLogo.Settings.Size
 			});
-			_defaultCamera = new GorgonOrthoCamera(this, "Gorgon.Camera.Default", new Vector2(_defaultTarget.Width, _defaultTarget.Height), 100.0f)
+			_defaultCamera = new GorgonOrthoCamera(this,
+				"Gorgon.Camera.Default",
+				new RectangleF(0, 0, _defaultTarget.Width, _defaultTarget.Height),
+				0,
+				1.0f)
 			{
-				AutoUpdate = true,
-				Anchor = new Vector2(_defaultTarget.Width * 0.5f, _defaultTarget.Height * 0.5f),
-				Position = new Vector2(-_defaultTarget.Width * 0.5f, -_defaultTarget.Height * 0.5f)
+				AutoUpdate = true
 			};
 
 			Renderables = new GorgonRenderables(this, _cache);
