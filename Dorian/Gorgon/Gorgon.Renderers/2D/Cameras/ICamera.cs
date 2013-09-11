@@ -24,6 +24,7 @@
 // 
 #endregion
 
+using System.Drawing;
 using SlimMath;
 
 namespace GorgonLibrary.Renderers
@@ -34,6 +35,14 @@ namespace GorgonLibrary.Renderers
 	public interface ICamera
 	{
 		#region Properties.
+		/// <summary>
+		/// Property to return the horizontal and vertical aspect ratio for the camera view area.
+		/// </summary>
+		Vector2 AspectRatio
+		{
+			get;
+		}
+
 		/// <summary>
 		/// Property to return the width of the current target.
 		/// </summary>
@@ -69,16 +78,7 @@ namespace GorgonLibrary.Renderers
 		/// <summary>
 		/// Property to set or return the projection view dimensions for the camera.
 		/// </summary>
-		Vector2 ViewDimensions
-		{
-			get;
-			set;
-		}
-
-		/// <summary>
-		/// Property to set or return the projection view offset for the camera.
-		/// </summary>
-		Vector2 ViewOffset
+		RectangleF ViewDimensions
 		{
 			get;
 			set;
