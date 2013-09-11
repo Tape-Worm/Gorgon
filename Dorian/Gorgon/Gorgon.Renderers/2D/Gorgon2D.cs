@@ -161,7 +161,6 @@ namespace GorgonLibrary.Renderers
 		private GorgonViewport? _viewPort;												// Viewport to use.
 		private Rectangle? _clip;														// Clipping rectangle.
 		private ICamera _camera;														// Current camera.
-		private readonly GorgonOrthoCamera _defaultCamera;								// Default camera.
 		private readonly GorgonSprite _logoSprite;										// Logo sprite.
 		private GorgonVertexBufferBinding _defaultVertexBuffer;							// Default vertex buffer binding.
 		private Gorgon2DStateRecall _initialState;										// The initial state of the graphics API before the renderer was created.
@@ -185,6 +184,15 @@ namespace GorgonLibrary.Renderers
 			get;
 			private set;
 		}
+
+        /// <summary>
+        /// Property to return the default camera for the 2D renderer.
+        /// </summary>
+	    public GorgonOrthoCamera DefaultCamera
+	    {
+	        get;
+	        private set;
+	    }
 
 		/// <summary>
 		/// Property to return our default vertex buffer binding.
@@ -422,11 +430,12 @@ namespace GorgonLibrary.Renderers
 		/// <summary>
 		/// Property to set or return the current camera.
 		/// </summary>
+		/// <remarks>Set this value to NULL (Nothing in VB.Net) to use the default camera.</remarks>
 		public ICamera Camera
 		{
 			get
 			{
-				return _camera ?? _defaultCamera;
+				return _camera ?? DefaultCamera;
 			}
 			set
 			{
@@ -440,7 +449,7 @@ namespace GorgonLibrary.Renderers
 
 				if (value == null)
 				{
-					value = _defaultCamera;
+					value = DefaultCamera;
 				}
 
 			    // Refresh our camera information if we're jumping back to the default camera.
@@ -544,7 +553,7 @@ namespace GorgonLibrary.Renderers
 			}
 
 			// Update camera.
-			var camera = _camera ?? _defaultCamera;
+			var camera = _camera ?? DefaultCamera;
 			
 			if (camera.AutoUpdate)
 			{
@@ -637,7 +646,7 @@ namespace GorgonLibrary.Renderers
 
 			UpdateTarget(ref _currentTarget);
 
-            _defaultCamera.Update();
+            DefaultCamera.Update();
 
 			// Get the current state.
 			DefaultState = new Gorgon2DStateRecall(this);
@@ -1003,7 +1012,7 @@ namespace GorgonLibrary.Renderers
         /// </remarks>
         public void Flush()
         {
-            ICamera currentCamera = (_camera ?? _defaultCamera);
+            ICamera currentCamera = (_camera ?? DefaultCamera);
 
             if (currentCamera.NeedsUpdate)
             {
@@ -1080,7 +1089,7 @@ namespace GorgonLibrary.Renderers
 				Color = Color.White,
 				Size = Graphics.Textures.GorgonLogo.Settings.Size
 			});
-			_defaultCamera = new GorgonOrthoCamera(this,
+			DefaultCamera = new GorgonOrthoCamera(this,
 				"Gorgon.Camera.Default",
 				new RectangleF(0, 0, _defaultTarget.Width, _defaultTarget.Height),
 				0,

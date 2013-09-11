@@ -216,70 +216,6 @@ namespace GorgonLibrary.Renderers
 
 			_view = center;
 		}
-
-		/// <summary>
-		/// Function to project a screen position into camera space.
-		/// </summary>
-		/// <param name="screenPosition">2D Position on the screen.</param>
-		/// <param name="includeViewTransform">[Optional] TRUE to include the view transformation in the projection calculations, FALSE to only use the projection.</param>
-		/// <returns>The projected 2D position of the screen.</returns>
-		/// <remarks>Use this to convert a position in screen space into the camera view/projection space.  If the <paramref name="includeViewTransform"/> is set to 
-		/// TRUE, then both the camera position, rotation and zoom will be taken into account when projecting.  If it is set to FALSE only the projection will 
-		/// be used to convert the position.  This means if the camera is moved or moving, then the converted screen point will not reflect that.</remarks>
-		public Vector2 Project(Vector2 screenPosition, bool includeViewTransform = true)
-		{
-			Matrix transformMatrix;
-			
-			UpdateMatrices();
-
-			if (includeViewTransform)
-			{
-				Matrix.Invert(ref _viewProjecton, out transformMatrix);
-			}
-			else
-			{
-				Matrix.Invert(ref _projection, out transformMatrix);
-			}
-
-			// Calculate relative position of our screen position.
-			var relativePosition = new Vector2(2.0f * screenPosition.X / TargetWidth - 1.0f,
-											   1.0f - screenPosition.Y / TargetHeight * 2.0f);
-
-			// Transform our screen position by our inverse matrix.
-			Vector4 result;
-			Vector2.Transform(ref relativePosition, ref transformMatrix, out result);
-
-			if (!result.W.EqualsEpsilon(1.0f))
-			{
-				Vector4.Divide(ref result, result.W, out result);
-			}
-
-			return (Vector2)result;
-		}
-
-		/// <summary>
-		/// Function to unproject a world space position into screen space.
-		/// </summary>
-		/// <param name="worldSpacePosition">A position in world space.</param>
-		/// <param name="includeViewTransform">[Optional] TRUE to include the view transformation in the projection calculations, FALSE to only use the projection.</param>
-		/// <returns>The unprojected world space coordinates.</returns>
-		/// <remarks>Use this to convert a position in world space into the screen space.  If the <paramref name="includeViewTransform"/> is set to 
-		/// TRUE, then both the camera position, rotation and zoom will be taken into account when projecting.  If it is set to FALSE only the projection will 
-		/// be used to convert the position.  This means if the camera is moved or moving, then the converted screen point will not reflect that.</remarks>
-		public Vector2 Unproject(Vector2 worldSpacePosition, bool includeViewTransform = true)
-		{
-			UpdateMatrices();
-
-			Matrix transformMatrix = includeViewTransform ? _viewProjecton : _projection;
-
-			Vector4 transform;
-			Vector2.Transform(ref worldSpacePosition, ref transformMatrix, out transform);
-
-			Vector4.Divide(ref transform, transform.W, out transform);
-
-			return new Vector2((transform.X + 1.0f) * 0.5f * TargetWidth,
-				(1.0f - transform.Y) * 0.5f * TargetHeight);
-		}
 		#endregion
 
 		#region Constructor/Destructor.
@@ -485,7 +421,115 @@ namespace GorgonLibrary.Renderers
 		#endregion
 
 		#region Methods.
-		/// <summary>
+        /// <summary>
+        /// Function to project a screen position into camera space.
+        /// </summary>
+        /// <param name="screenPosition">3D Position on the screen.</param>
+        /// <param name="result">The resulting projected position.</param>
+        /// <param name="includeViewTransform">[Optional] TRUE to include the view transformation in the projection calculations, FALSE to only use the projection.</param>
+        /// <remarks>Use this to convert a position in screen space into the camera view/projection space.  If the <paramref name="includeViewTransform"/> is set to 
+        /// TRUE, then both the camera position, rotation and zoom will be taken into account when projecting.  If it is set to FALSE only the projection will 
+        /// be used to convert the position.  This means if the camera is moved or moving, then the converted screen point will not reflect that.</remarks>
+        public void Project(ref Vector3 screenPosition, out Vector3 result, bool includeViewTransform = true)
+        {
+            Matrix transformMatrix;
+
+            UpdateMatrices();
+
+            if (includeViewTransform)
+            {
+                Matrix.Invert(ref _viewProjecton, out transformMatrix);
+            }
+            else
+            {
+                Matrix.Invert(ref _projection, out transformMatrix);
+            }
+
+            // Calculate relative position of our screen position.
+            var relativePosition = new Vector2(2.0f * screenPosition.X / TargetWidth - 1.0f,
+                                               1.0f - screenPosition.Y / TargetHeight * 2.0f);
+
+            // Transform our screen position by our inverse matrix.
+            Vector4 transformed;
+            Vector2.Transform(ref relativePosition, ref transformMatrix, out transformed);
+
+            result = (Vector3)transformed;
+
+            if (!transformed.W.EqualsEpsilon(1.0f))
+            {
+                Vector3.Divide(ref result, transformed.W, out result);
+            }
+        }
+
+        /// <summary>
+        /// Function to unproject a world space position into screen space.
+        /// </summary>
+        /// <param name="worldSpacePosition">A position in world space.</param>
+        /// <param name="result">The resulting projected position.</param>
+        /// <param name="includeViewTransform">[Optional] TRUE to include the view transformation in the projection calculations, FALSE to only use the projection.</param>
+        /// <returns>The unprojected world space coordinates.</returns>
+        /// <remarks>Use this to convert a position in world space into the screen space.  If the <paramref name="includeViewTransform"/> is set to 
+        /// TRUE, then both the camera position, rotation and zoom will be taken into account when projecting.  If it is set to FALSE only the projection will 
+        /// be used to convert the position.  This means if the camera is moved or moving, then the converted screen point will not reflect that.</remarks>
+        public void Unproject(ref Vector3 worldSpacePosition, out Vector3 result, bool includeViewTransform = true)
+        {
+            UpdateMatrices();
+
+            Matrix transformMatrix = includeViewTransform ? _viewProjecton : _projection;
+
+            Vector4 transform;
+            Vector3.Transform(ref worldSpacePosition, ref transformMatrix, out transform);
+
+            if (!transform.W.EqualsEpsilon(1.0f))
+            {
+                Vector4.Divide(ref transform, transform.W, out transform);
+            }
+
+            result = new Vector3((transform.X + 1.0f) * 0.5f * TargetWidth,
+                (1.0f - transform.Y) * 0.5f * TargetHeight, 0);
+        }
+
+        /// <summary>
+        /// Function to project a screen position into camera space.
+        /// </summary>
+        /// <param name="screenPosition">3D Position on the screen.</param>
+        /// <param name="includeViewTransform">[Optional] TRUE to include the view transformation in the projection calculations, FALSE to only use the projection.</param>
+        /// <returns>
+        /// The projected 3D position of the screen.
+        /// </returns>
+        /// <remarks>
+        /// Use this to convert a position in screen space into the camera view/projection space.  If the <paramref name="includeViewTransform" /> is set to
+        /// TRUE, then both the camera position, rotation and zoom will be taken into account when projecting.  If it is set to FALSE only the projection will
+        /// be used to convert the position.  This means if the camera is moved or moving, then the converted screen point will not reflect that.
+        /// </remarks>
+        public Vector3 Project(Vector3 screenPosition, bool includeViewTransform = true)
+        {
+            Vector3 result;
+
+            Project(ref screenPosition, out result, includeViewTransform);
+
+            return result;
+        }
+
+        /// <summary>
+        /// Function to unproject a world space position into screen space.
+        /// </summary>
+        /// <param name="worldSpacePosition">A position in world space.</param>
+        /// <param name="includeViewTransform">[Optional] TRUE to include the view transformation in the projection calculations, FALSE to only use the projection.</param>
+        /// <returns>The unprojected world space coordinates.</returns>
+        /// <remarks>Use this to convert a position in world space into the screen space.  If the <paramref name="includeViewTransform"/> is set to 
+        /// TRUE, then both the camera position, rotation and zoom will be taken into account when projecting.  If it is set to FALSE only the projection will 
+        /// be used to convert the position.  This means if the camera is moved or moving, then the converted screen point will not reflect that.</remarks>
+        public Vector3 Unproject(Vector3 worldSpacePosition, bool includeViewTransform = true)
+        {
+            Vector3 result;
+
+            Unproject(ref worldSpacePosition, out result, includeViewTransform);
+
+            return result;
+        }
+        
+        /// <summary>
 		/// Function to update the view projection matrix for the camera and populate a view/projection constant buffer.
 		/// </summary>
 		public void Update()
@@ -503,41 +547,56 @@ namespace GorgonLibrary.Renderers
 		/// </summary>
 		public void Draw()
 		{
-			// Calculate the size of the camera icon in our camera space.
-			var newSize = new Vector2(64.0f * _viewDimensions.Width / TargetWidth, 50.0f * _viewDimensions.Height / TargetHeight);
+            var position = new Vector3(-_position.X, -_position.Y, 0);
+		    Vector3 iconPosition;
 
-			if ((!_zoom.X.EqualsEpsilon(1.0f)) || (!_zoom.Y.EqualsEpsilon(1.0f)))
-			{
-				_cameraIcon.Scale = new Vector2(1.0f / _zoom.X, 1.0f / _zoom.Y);
-			}
+            Unproject(ref position, out iconPosition);      // Convert to screen space.
 
-			// Highlight current camera.
-			_cameraIcon.Color = Gorgon2D.Camera == this ? Color.Green : Color.White;
-			
-			_cameraIcon.Depth = Gorgon2D.Camera.MinimumDepth;
-			_cameraIcon.Position = new Vector2(-_position.X, -_position.Y);
-			_cameraIcon.Angle = -_angle;
-			_cameraIcon.Size = newSize;
-			_cameraIcon.Opacity = 0.8f;
-			_cameraIcon.Anchor = new Vector2(_cameraIcon.Size.X / 2.0f, _cameraIcon.Size.Y / 2.0f);
+            // Update the position to be projected into the current camera space.
+		    if (Gorgon2D.Camera != this)
+		    {
+		        iconPosition.Z = (Gorgon2D.Camera.MaximumDepth - Gorgon2D.Camera.MinimumDepth) / Gorgon2D.Camera.MinimumDepth;
+		        Gorgon2D.Camera.Project(ref iconPosition, out iconPosition);
 
-			// Draw the icon in our camera space, otherwise it won't look right.
-			var prevCamera = Gorgon2D.Camera;
-			
-			if (prevCamera != this)
-			{
-				Gorgon2D.Camera = this;
-			}
+		        // Now update that position to reflect in screen space relative to our current camera.
+                // We do this without the view transform because we only want to undo the projection and
+                // not the camera transformation.
+                Gorgon2D.Camera.Unproject(ref iconPosition, out iconPosition, false);
+		    }
 
-			_cameraIcon.Draw();
+            // Project back to the default camera.
+            iconPosition = Gorgon2D.DefaultCamera.Project(iconPosition);
 
-			if (prevCamera == this)
-			{
-				return;
-			}
+		    if ((!Gorgon2D.DefaultCamera.Zoom.X.EqualsEpsilon(1.0f))
+                || (!Gorgon2D.DefaultCamera.Zoom.Y.EqualsEpsilon(1.0f)))
+            {
+                _cameraIcon.Scale = new Vector2(1.0f / Gorgon2D.DefaultCamera.Zoom.X,
+                    1.0f / Gorgon2D.DefaultCamera.Zoom.Y);
+            }
 
-			Gorgon2D.Camera = prevCamera;
-		}
+            // Highlight current camera.
+		    _cameraIcon.Color = Gorgon2D.Camera == this ? Color.FromArgb(204, Color.Green) : Color.FromArgb(204, Color.White);
+
+            _cameraIcon.Position = (Vector2)iconPosition;
+            _cameraIcon.Angle = -Gorgon2D.DefaultCamera.Angle;
+
+            // Draw the icon in our camera space, otherwise it won't look right.
+            var prevCamera = Gorgon2D.Camera;
+
+            if (prevCamera != Gorgon2D.DefaultCamera)
+            {
+                Gorgon2D.Camera = null;
+            }
+
+            _cameraIcon.Draw();
+
+            if (prevCamera == Gorgon2D.DefaultCamera)
+            {
+                return;
+            }
+
+            Gorgon2D.Camera = prevCamera;
+        }
 		#endregion
 		#endregion
 	}

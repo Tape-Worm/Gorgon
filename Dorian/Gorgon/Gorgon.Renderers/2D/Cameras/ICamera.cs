@@ -129,7 +129,52 @@ namespace GorgonLibrary.Renderers
 		#endregion
 
 		#region Methods.
-		/// <summary>
+        /// <summary>
+        /// Function to project a screen position into camera space.
+        /// </summary>
+        /// <param name="screenPosition">3D Position on the screen.</param>
+        /// <param name="result">The resulting projected position.</param>
+        /// <param name="includeViewTransform">[Optional] TRUE to include the view transformation in the projection calculations, FALSE to only use the projection.</param>
+        /// <remarks>Use this to convert a position in screen space into the camera view/projection space.  If the <paramref name="includeViewTransform"/> is set to 
+        /// TRUE, then both the camera position, rotation and zoom will be taken into account when projecting.  If it is set to FALSE only the projection will 
+        /// be used to convert the position.  This means if the camera is moved or moving, then the converted screen point will not reflect that.</remarks>
+        void Project(ref Vector3 screenPosition, out Vector3 result, bool includeViewTransform = true);
+
+        /// <summary>
+        /// Function to unproject a world space position into screen space.
+        /// </summary>
+        /// <param name="worldSpacePosition">A position in world space.</param>
+        /// <param name="result">The resulting projected position.</param>
+        /// <param name="includeViewTransform">[Optional] TRUE to include the view transformation in the projection calculations, FALSE to only use the projection.</param>
+        /// <returns>The unprojected world space coordinates.</returns>
+        /// <remarks>Use this to convert a position in world space into the screen space.  If the <paramref name="includeViewTransform"/> is set to 
+        /// TRUE, then both the camera position, rotation and zoom will be taken into account when projecting.  If it is set to FALSE only the projection will 
+        /// be used to convert the position.  This means if the camera is moved or moving, then the converted screen point will not reflect that.</remarks>
+        void Unproject(ref Vector3 worldSpacePosition, out Vector3 result, bool includeViewTransform = true);
+        
+        /// <summary>
+	    /// Function to project a screen position into camera space.
+	    /// </summary>
+	    /// <param name="screenPosition">3D Position on the screen.</param>
+	    /// <param name="includeViewTransform">[Optional] TRUE to include the view transformation in the projection calculations, FALSE to only use the projection.</param>
+	    /// <returns>The projected 3D position of the screen.</returns>
+	    /// <remarks>Use this to convert a position in screen space into the camera view/projection space.  If the <paramref name="includeViewTransform"/> is set to 
+	    /// TRUE, then both the camera position, rotation and zoom will be taken into account when projecting.  If it is set to FALSE only the projection will 
+	    /// be used to convert the position.  This means if the camera is moved or moving, then the converted screen point will not reflect that.</remarks>
+	    Vector3 Project(Vector3 screenPosition, bool includeViewTransform = true);
+
+	    /// <summary>
+	    /// Function to unproject a world space position into screen space.
+	    /// </summary>
+	    /// <param name="worldSpacePosition">A position in world space.</param>
+	    /// <param name="includeViewTransform">[Optional] TRUE to include the view transformation in the projection calculations, FALSE to only use the projection.</param>
+	    /// <returns>The unprojected world space coordinates.</returns>
+	    /// <remarks>Use this to convert a position in world space into the screen space.  If the <paramref name="includeViewTransform"/> is set to 
+	    /// TRUE, then both the camera position, rotation and zoom will be taken into account when projecting.  If it is set to FALSE only the projection will 
+	    /// be used to convert the position.  This means if the camera is moved or moving, then the converted screen point will not reflect that.</remarks>
+	    Vector3 Unproject(Vector3 worldSpacePosition, bool includeViewTransform = true);
+
+        /// <summary>
 		/// Function to draw the camera icon.
 		/// </summary>
 		void Draw();

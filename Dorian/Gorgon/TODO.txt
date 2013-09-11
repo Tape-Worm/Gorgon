@@ -55,7 +55,7 @@ This list is not in order.  Please don't get excited.
 	+ Line polygon (Done)
 	+ Filled polygon (Done, same as line polygon).
 * Add a batch renderable using a static vertex buffer (possible with dynamic, may be worth looking into)
-* Add perspective camera
+* Add perspective camera (Done)
 * Add perspective sprites
 * Write editor for creating/editing sprites, fonts, shaders (maybe), textures (maybe, probably not)
 	+ This time make it one large program that uses a project so everything can be integrated.
