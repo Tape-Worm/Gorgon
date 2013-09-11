@@ -446,8 +446,7 @@ namespace GorgonLibrary.Renderers
 			    // Refresh our camera information if we're jumping back to the default camera.
 			    if (value.AutoUpdate)
 			    {
-				    value.ViewOffset = Vector2.Zero;
-				    value.ViewDimensions = new Vector2(_currentTarget.Width, _currentTarget.Height);
+				    value.ViewDimensions = new RectangleF(Vector2.Zero, new Vector2(_currentTarget.Width, _currentTarget.Height));
 			    }
 
 			    // Force an update.
@@ -549,8 +548,7 @@ namespace GorgonLibrary.Renderers
 			
 			if (camera.AutoUpdate)
 			{
-				camera.ViewOffset = Vector2.Zero;
-				camera.ViewDimensions = new Vector2(_currentTarget.Width, _currentTarget.Height);
+				camera.ViewDimensions = new RectangleF(Vector2.Zero, new Vector2(_currentTarget.Width, _currentTarget.Height));
 			}
 
 			var clipRegion = ClipRegion;
