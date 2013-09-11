@@ -102,14 +102,14 @@ namespace GorgonLibrary.Renderers
 
 				sprite.Depth = 0.0f;
 
-				sprite.Position = camera.Project(new Vector2(320, 200));
+				sprite.Position = (Vector2)camera.Project(new Vector2(320, 200));
 
 				Gorgon.Run(_form, () =>
 				{
-					Vector2 projectedSpace = camera.Project(_form.PointToClient(Cursor.Position), false);
-					Vector2 projectedViewSpace = camera.Project(new Vector2(320, 200));
-					Vector2 unprojectedSpace = camera.Unproject(projectedSpace, false);
-					Vector2 unprojectedViewSpace = camera.Unproject(projectedViewSpace);
+					var projectedSpace = -(Vector2)camera.Project(new Vector3(_form.PointToClient(Cursor.Position), 0), false);
+					var projectedViewSpace = (Vector2)camera.Project(new Vector2(320, 200));
+					var unprojectedSpace = (Vector2)camera.Unproject(projectedSpace, false);
+					var unprojectedViewSpace = (Vector2)camera.Unproject(projectedViewSpace);
 
 					_renderer.Clear(Color.Black);
 
@@ -121,6 +121,8 @@ namespace GorgonLibrary.Renderers
 
 					camera.Position = projectedSpace;
 					camera.Draw();
+
+                    _renderer.DefaultCamera.Draw();
 
 					_renderer.Camera = null;
 					_renderer.Drawing.DrawEllipse(new RectangleF(310, 190, 20, 20), Color.Firebrick, 64, new Vector2(1));
@@ -152,7 +154,7 @@ namespace GorgonLibrary.Renderers
             var camera = _renderer.CreateCamera<GorgonPerspectiveCamera>("TestCam",
                 new RectangleF(Vector2.Zero, _form.ClientSize),
 				0.01f,
-                1.0f);
+                1000.0f);
 
 			
             using(var texture = _graphics.Textures.FromFile<GorgonTexture2D>("Test", @"..\..\..\..\Resources\Images\Ship.png", new GorgonCodecPNG()))
@@ -176,8 +178,8 @@ namespace GorgonLibrary.Renderers
 				
                 _renderer.Camera = camera;
 
-				sprite.Depth = 0.0f;
-				sprite.Position = (Vector2)camera.Project(new Vector3(320, 200, sprite.Depth));
+				sprite.Depth = 0.0001f;
+				//sprite.Position = (Vector2)camera.Project(new Vector3(320, 200, sprite.Depth));
 
 	            //camera.Anchor = new Vector2(_screen.Settings.Width / 2.0f, _screen.Settings.Height / 2.0f);
 	            //_screen.AfterSwapChainResized += (sender, args) => camera.Anchor = new Vector2(_screen.Settings.Width / 2.0f, _screen.Settings.Height / 2.0f);
@@ -190,10 +192,12 @@ namespace GorgonLibrary.Renderers
                 Gorgon.Run(_form, () =>
                     {
 						Vector2 cursorPos = _form.PointToClient(Cursor.Position);
-						Vector3 projectedSpace = camera.Project(new Vector3(cursorPos, 0.01f), false);
+						Vector3 projectedSpace = camera.Project(new Vector3(cursorPos, 0.0f), false);
 						Vector3 projectedViewSpace = camera.Project(new Vector3(320, 200, 0.01f));
 						Vector3 unprojectedSpace = camera.Unproject(projectedSpace, false);
 						Vector3 unprojectedViewSpace = camera.Unproject(projectedViewSpace);
+
+                        //_renderer.DefaultCamera.Position = cursorPos;
 
 						_renderer.Clear(Color.Black);
 
@@ -204,7 +208,8 @@ namespace GorgonLibrary.Renderers
 						sprite.Draw();
 	                    
 	                    camera.Position = projectedSpace;
-	                    camera.Draw();
+                        camera.Draw();
+                        _renderer.DefaultCamera.Draw();
 
 						_renderer.Camera = null;
 						_renderer.Drawing.DrawEllipse(new RectangleF(310, 190, 20, 20), Color.Firebrick, 64, new Vector2(1));
