@@ -555,13 +555,14 @@ namespace GorgonLibrary.Renderers
             // Update the position to be projected into the current camera space.
 		    if (Gorgon2D.Camera != this)
 		    {
+			    Vector3.Negate(ref iconPosition, out iconPosition);
 		        iconPosition.Z = (Gorgon2D.Camera.MaximumDepth - Gorgon2D.Camera.MinimumDepth) / Gorgon2D.Camera.MinimumDepth;
-		        Gorgon2D.Camera.Project(ref iconPosition, out iconPosition);
+		        Gorgon2D.Camera.Project(ref iconPosition, out iconPosition, false);
 
 		        // Now update that position to reflect in screen space relative to our current camera.
                 // We do this without the view transform because we only want to undo the projection and
                 // not the camera transformation.
-                Gorgon2D.Camera.Unproject(ref iconPosition, out iconPosition, false);
+				Gorgon2D.Camera.Unproject(ref iconPosition, out iconPosition);
 		    }
 
             // Project back to the default camera.

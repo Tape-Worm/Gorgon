@@ -3,6 +3,7 @@ using System.Drawing;
 using System.Text;
 using System.Collections.Generic;
 using System.Windows.Forms;
+using GorgonLibrary.Diagnostics;
 using GorgonLibrary.Graphics;
 using GorgonLibrary.Graphics.Test;
 using GorgonLibrary.IO;
@@ -71,6 +72,11 @@ namespace GorgonLibrary.Renderers
 				0.0f,
 				1.0f);
 
+			var camera2 = _renderer.CreateCamera<GorgonPerspectiveCamera>("TestCam2",
+				new RectangleF(-1, -1, 2, 2),
+				0.01f,
+				100.0f);
+
 			using (var texture = _graphics.Textures.FromFile<GorgonTexture2D>("Test", @"..\..\..\..\Resources\Images\Ship.png", new GorgonCodecPNG()))
 			{
 				//camera.ViewDimensions = new RectangleF(0, 0, 1, 1);
@@ -120,6 +126,7 @@ namespace GorgonLibrary.Renderers
 					//Vector2 projectedSpace = camera.Project(new Vector2(320, 200));
 
 					camera.Position = projectedSpace;
+					camera2.Draw();
 					camera.Draw();
 
                     _renderer.DefaultCamera.Draw();
@@ -156,14 +163,19 @@ namespace GorgonLibrary.Renderers
 				0.01f,
                 1000.0f);
 
+			var camera2 = _renderer.CreateCamera<GorgonPerspectiveCamera>("TestCam2",
+				new RectangleF(-1, -1, 2, 2),
+				0.1f,
+				1.0f);
 			
             using(var texture = _graphics.Textures.FromFile<GorgonTexture2D>("Test", @"..\..\..\..\Resources\Images\Ship.png", new GorgonCodecPNG()))
             {
+				//camera.ViewDimensions = new RectangleF(0, 0, 1, 1);
 				camera.ViewDimensions = new RectangleF(-1, -1, 2, 2);
 				//camera.ViewDimensions = new RectangleF(-640, -400, 1280, 800);
 
-				var size = new Vector2(texture.Settings.Width * (camera.ViewDimensions.Width / _screen.Settings.Width),
-					texture.Settings.Height * (camera.ViewDimensions.Height / _screen.Settings.Height));
+				var size = new Vector2(texture.Settings.Width * (camera.ViewDimensions.Width / _screen.Settings.Width) * 12.80f,
+					texture.Settings.Height * (camera.ViewDimensions.Height / _screen.Settings.Height) * 12.80f);
 
                 var sprite = _renderer.Renderables.CreateSprite("Test",
                     new GorgonSpriteSettings
@@ -189,10 +201,27 @@ namespace GorgonLibrary.Renderers
 		            sprite.Depth += args.Delta / 32000.0f;
 	            };
 
+
+	            float camDepth = 0.01f;
+	            _form.KeyPreview = true;
+				_form.Focus();
+				_form.KeyPress += (sender, args) =>
+	            {
+		            if (args.KeyChar == 'w')
+		            {
+			            camDepth -= 12.0f * GorgonTiming.Delta;
+		            }
+
+		            if (args.KeyChar == 's')
+		            {
+						camDepth += 12.0f * GorgonTiming.Delta;
+		            }
+	            };
+
                 Gorgon.Run(_form, () =>
                     {
 						Vector2 cursorPos = _form.PointToClient(Cursor.Position);
-						Vector3 projectedSpace = camera.Project(new Vector3(cursorPos, 0.0f), false);
+						Vector3 projectedSpace = camera.Project(new Vector3(cursorPos, 0), false);
 						Vector3 projectedViewSpace = camera.Project(new Vector3(320, 200, 0.01f));
 						Vector3 unprojectedSpace = camera.Unproject(projectedSpace, false);
 						Vector3 unprojectedViewSpace = camera.Unproject(projectedViewSpace);
@@ -203,11 +232,14 @@ namespace GorgonLibrary.Renderers
 
 	                    projectedSpace.X = -projectedSpace.X;
 						projectedSpace.Y = -projectedSpace.Y;
+	                    projectedSpace.Z = camDepth;
 
 						_renderer.Camera = camera;
 						sprite.Draw();
-	                    
+                    
 	                    camera.Position = projectedSpace;
+
+						camera2.Draw();
                         camera.Draw();
                         _renderer.DefaultCamera.Draw();
 
