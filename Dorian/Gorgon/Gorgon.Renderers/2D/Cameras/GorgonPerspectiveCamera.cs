@@ -535,7 +535,7 @@ namespace GorgonLibrary.Renderers
         /// </summary>
         public void Draw()
         {
-            var position = new Vector3(-_position.X, -_position.Y, _position.Z.EqualsEpsilon(0) ? _minDepth : _position.Z);
+            var position = new Vector3(-_position.X, -_position.Y, _position.Z);
             Vector3 iconPosition;
 
             Unproject(ref position, out iconPosition);      // Convert to screen space.
@@ -558,12 +558,12 @@ namespace GorgonLibrary.Renderers
                     return;
                 }
 
-                Gorgon2D.Camera.Project(ref iconPosition, out iconPosition);
+                Gorgon2D.Camera.Project(ref iconPosition, out iconPosition, false);
 
                 // Now update that position to reflect in screen space relative to our current camera.
                 // We do this without the view transform because we only want to undo the projection and
                 // not the camera transformation.
-                Gorgon2D.Camera.Unproject(ref iconPosition, out iconPosition, false);
+                Gorgon2D.Camera.Unproject(ref iconPosition, out iconPosition);
             }
 
             // Project back to the default camera.
