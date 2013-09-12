@@ -69,7 +69,6 @@ This list is not in order.  Please don't get excited.
 * Add encoding options to codecs (Done)
 * Add FromMemory to Gorgon Fonts (Done)
 * Make save/load methods orthogonal. (Done)
-* Try to fix up unreleased COM objects for DXGI/WIC.  This problem is in SharpDX, and may not be resolved until an update is released.
 
 ----
 Examples
