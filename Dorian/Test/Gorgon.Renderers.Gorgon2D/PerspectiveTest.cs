@@ -25,7 +25,8 @@ namespace GorgonLibrary.Renderers
 
         [TestInitialize]
         public void TestInitialize()
-        {
+        { 
+
             _form = new TestForm();
             _graphics = new GorgonGraphics();
             _renderer = _graphics.Output.Create2DRenderer(_form.panelDisplay);
