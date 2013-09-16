@@ -60,10 +60,12 @@ namespace GorgonLibrary.Renderers
 			}
 			set
 			{
-				if (value == null)
-					return;
+			    if (value == null)
+			    {
+			        return;
+			    }
 
-				_depthStencil = value;
+			    _depthStencil = value;
 			}
 		}
 
@@ -78,10 +80,12 @@ namespace GorgonLibrary.Renderers
 			}
 			set
 			{
-				if (value == null)
-					return;
+			    if (value == null)
+			    {
+			        return;
+			    }
 
-				_blend = value;
+			    _blend = value;
 			}
 		}
 
@@ -96,10 +100,12 @@ namespace GorgonLibrary.Renderers
 			}
 			set
 			{
-				if (value == null)
-					return;
+			    if (value == null)
+			    {
+			        return;
+			    }
 
-				_sampler = value;
+			    _sampler = value;
 			}
 		}
 
@@ -151,24 +157,37 @@ namespace GorgonLibrary.Renderers
 		{
 			get
 			{
-				if ((Blending.SourceBlend == BlendType.One) && (Blending.DestinationBlend == BlendType.Zero))
-					return BlendingMode.None;
+			    if ((Blending.SourceBlend == BlendType.One)
+			        && (Blending.DestinationBlend == BlendType.Zero))
+			    {
+			        return BlendingMode.None;
+			    }
 
-				if (Blending.SourceBlend == BlendType.SourceAlpha)
+			    if (Blending.SourceBlend == BlendType.SourceAlpha)
 				{
-					if (Blending.DestinationBlend == BlendType.InverseSourceAlpha)
-						return BlendingMode.Modulate;
-					if (Blending.DestinationBlend == BlendType.One)
-						return BlendingMode.Additive;
+				    if (Blending.DestinationBlend == BlendType.InverseSourceAlpha)
+				    {
+				        return BlendingMode.Modulate;
+				    }
+				    if (Blending.DestinationBlend == BlendType.One)
+				    {
+				        return BlendingMode.Additive;
+				    }
 				}
 
-				if ((Blending.SourceBlend == BlendType.One) && (Blending.DestinationBlend == BlendType.InverseSourceAlpha))
-					return BlendingMode.PreMultiplied;
+			    if ((Blending.SourceBlend == BlendType.One)
+			        && (Blending.DestinationBlend == BlendType.InverseSourceAlpha))
+			    {
+			        return BlendingMode.PreMultiplied;
+			    }
 
-				if ((Blending.SourceBlend == BlendType.InverseDestinationColor) && (Blending.DestinationBlend == BlendType.InverseSourceColor))
-					return BlendingMode.Inverted;
+			    if ((Blending.SourceBlend == BlendType.InverseDestinationColor)
+			        && (Blending.DestinationBlend == BlendType.InverseSourceColor))
+			    {
+			        return BlendingMode.Inverted;
+			    }
 
-				return BlendingMode.Custom;
+			    return BlendingMode.Custom;
 			}
 			set
 			{
@@ -254,7 +273,6 @@ namespace GorgonLibrary.Renderers
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="texture"/> parameter is NULL (Nothing in VB.Net).</exception>
 		public void Blit(GorgonTexture2D texture, RectangleF blitRegion)
 		{
-			GorgonDebug.AssertNull(texture, "texture");
 			Blit(texture, blitRegion, new RectangleF(Vector2.Zero, new Vector2(1)));
 		}
 
@@ -267,7 +285,6 @@ namespace GorgonLibrary.Renderers
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="texture"/> parameter is NULL (Nothing in VB.Net).</exception>
 		public void Blit(GorgonTexture2D texture, Vector2 position)
 		{
-			GorgonDebug.AssertNull(texture, "texture");
 			Blit(texture, new RectangleF(position, texture.Settings.Size), new RectangleF(Vector2.Zero, new Vector2(1)));
 		}
 
@@ -440,17 +457,21 @@ namespace GorgonLibrary.Renderers
 		/// <param name="font">Font to use when measuring.</param>
 		/// <param name="text">Text to measure.</param>
 		/// <param name="wordWrap">TRUE if word wrapping should be used.</param>
-		/// <param name="bounds">Boundaries for the size.</param>
+		/// <param name="bounds">Boundaries for the size of the string.</param>
 		/// <returns>The size of the string.</returns>
-		public Vector2 MeasureString(GorgonFont font, string text, bool wordWrap, RectangleF bounds)
+		public Vector2 MeasureString(GorgonFont font, string text, bool wordWrap, SizeF bounds)
 		{
 			_string.Font = font;
 			Vector2 size = _string.MeasureText(text, wordWrap, bounds.Width);
 
-			if (size.X > bounds.Width)
-				size.X = bounds.Width;
-			if (size.Y > bounds.Height)
+		    if (size.X > bounds.Width)
+		    {
+		        size.X = bounds.Width;
+		    }
+		    if (size.Y > bounds.Height)
+            {
 				size.Y = bounds.Height;
+            }
 
 			return size;
 		}
