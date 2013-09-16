@@ -152,45 +152,45 @@ namespace GorgonLibrary.Renderers
 			get
 			{
 				if ((Blending.SourceBlend == BlendType.One) && (Blending.DestinationBlend == BlendType.Zero))
-					return Renderers.BlendingMode.None;
+					return BlendingMode.None;
 
 				if (Blending.SourceBlend == BlendType.SourceAlpha)
 				{
 					if (Blending.DestinationBlend == BlendType.InverseSourceAlpha)
-						return Renderers.BlendingMode.Modulate;
+						return BlendingMode.Modulate;
 					if (Blending.DestinationBlend == BlendType.One)
-						return Renderers.BlendingMode.Additive;
+						return BlendingMode.Additive;
 				}
 
 				if ((Blending.SourceBlend == BlendType.One) && (Blending.DestinationBlend == BlendType.InverseSourceAlpha))
-					return Renderers.BlendingMode.PreMultiplied;
+					return BlendingMode.PreMultiplied;
 
 				if ((Blending.SourceBlend == BlendType.InverseDestinationColor) && (Blending.DestinationBlend == BlendType.InverseSourceColor))
-					return Renderers.BlendingMode.Inverted;
+					return BlendingMode.Inverted;
 
-				return Renderers.BlendingMode.Custom;
+				return BlendingMode.Custom;
 			}
 			set
 			{
 				switch (value)
 				{
-					case Renderers.BlendingMode.Additive:
+					case BlendingMode.Additive:
 						Blending.SourceBlend = BlendType.SourceAlpha;
 						Blending.DestinationBlend = BlendType.One;
 						break;
-					case Renderers.BlendingMode.Inverted:
+					case BlendingMode.Inverted:
 						Blending.SourceBlend = BlendType.InverseDestinationColor;
 						Blending.DestinationBlend = BlendType.InverseSourceColor;
 						break;
-					case Renderers.BlendingMode.Modulate:
+					case BlendingMode.Modulate:
 						Blending.SourceBlend = BlendType.SourceAlpha;
 						Blending.DestinationBlend = BlendType.InverseSourceAlpha;
 						break;
-					case Renderers.BlendingMode.PreMultiplied:
+					case BlendingMode.PreMultiplied:
 						Blending.SourceBlend = BlendType.One;
 						Blending.DestinationBlend = BlendType.InverseSourceAlpha;
 						break;
-					case Renderers.BlendingMode.None:
+					case BlendingMode.None:
 						Blending.SourceBlend = BlendType.One;
 						Blending.DestinationBlend = BlendType.Zero;
 						break;
@@ -241,7 +241,7 @@ namespace GorgonLibrary.Renderers
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="texture"/> parameter is NULL (Nothing in VB.Net).</exception>
 		public void Blit(GorgonTexture2D texture, RectangleF blitRegion, RectangleF textureRegion)
 		{
-			GorgonDebug.AssertNull<GorgonTexture2D>(texture, "texture");
+			GorgonDebug.AssertNull(texture, "texture");
 			FilledRectangle(blitRegion, Color.White, texture, textureRegion);
 		}
 
@@ -254,7 +254,7 @@ namespace GorgonLibrary.Renderers
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="texture"/> parameter is NULL (Nothing in VB.Net).</exception>
 		public void Blit(GorgonTexture2D texture, RectangleF blitRegion)
 		{
-			GorgonDebug.AssertNull<GorgonTexture2D>(texture, "texture");
+			GorgonDebug.AssertNull(texture, "texture");
 			Blit(texture, blitRegion, new RectangleF(Vector2.Zero, new Vector2(1)));
 		}
 
@@ -267,7 +267,7 @@ namespace GorgonLibrary.Renderers
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="texture"/> parameter is NULL (Nothing in VB.Net).</exception>
 		public void Blit(GorgonTexture2D texture, Vector2 position)
 		{
-			GorgonDebug.AssertNull<GorgonTexture2D>(texture, "texture");
+			GorgonDebug.AssertNull(texture, "texture");
 			Blit(texture, new RectangleF(position, texture.Settings.Size), new RectangleF(Vector2.Zero, new Vector2(1)));
 		}
 
