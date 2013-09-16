@@ -494,7 +494,15 @@ namespace GorgonLibrary.Renderers
                 throw new ArgumentException(Resources.GOR2D_PARAMETER_MUST_NOT_BE_EMPTY, "name");
             }
 
-            return new GorgonEllipse(_gorgon2D, name, position, size, color, quality, isFilled);
+		    return new GorgonEllipse(_gorgon2D, name)
+		           {
+		               Quality = quality,
+		               Anchor = size / 2.0f,
+		               Position = position,
+		               Size = size,
+		               Color = color,
+		               IsFilled = isFilled,
+		           };
 		}
 
 		/// <summary>

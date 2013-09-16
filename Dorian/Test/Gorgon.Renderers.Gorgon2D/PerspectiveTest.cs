@@ -188,6 +188,8 @@ namespace GorgonLibrary.Renderers
                                 texture.ToTexel(texture.Settings.Width, texture.Settings.Height))
                     });
 
+                sprite.Anchor = size / 2.0f;
+
 				
                 _renderer.Camera = camera;
 
