@@ -430,18 +430,18 @@ namespace GorgonLibrary.Renderers
 		/// </summary>
 		public override void Draw()
 		{
-			if (_isFilled)
-			{
-				AddToRenderQueue();
-				return;
-			}
-
 			// Draw unfilled with a line object.
 			if (NeedsVertexUpdate)
 			{
 				UpdateVertices();
 				NeedsVertexUpdate = false;
 			}
+
+            if (_isFilled)
+            {
+                AddToRenderQueue();
+                return;
+            }
 
 			_line.Blending = Blending;
 			_line.DepthStencil = DepthStencil;
@@ -451,18 +451,23 @@ namespace GorgonLibrary.Renderers
 			{
 				int endPointIndex = i + 1;
 
-				if (endPointIndex >= _points.Length)
-					endPointIndex = 0;
+			    if (endPointIndex >= _points.Length)
+			    {
+			        endPointIndex = 0;
+			    }
 
-				Vector2 start = TransformUnfilled(ref _points[i]);
+			    Vector2 start = TransformUnfilled(ref _points[i]);
 				Vector2 end = TransformUnfilled(ref _points[endPointIndex]);
 
 				Vector2 uvStart = Vector2.Zero;
 				Vector2 uvEnd = Vector2.Zero;
 
-				if (Texture != null)
-					UpdateUnfilledTextureCoordinates(i, endPointIndex, out uvStart, out uvEnd);
-				_line.TextureStart = uvStart;
+			    if (Texture != null)
+			    {
+			        UpdateUnfilledTextureCoordinates(i, endPointIndex, out uvStart, out uvEnd);
+			    }
+
+			    _line.TextureStart = uvStart;
 				_line.TextureEnd = uvEnd;
 
 				_line.StartColor = _colors[i];
@@ -484,25 +489,11 @@ namespace GorgonLibrary.Renderers
 		/// </summary>
 		/// <param name="gorgon2D">The gorgon 2D interface that created this object.</param>
 		/// <param name="name">The name of the object.</param>
-		/// <param name="position">The position of the ellipse.</param>
-		/// <param name="size">The size of the ellipse.</param>
-		/// <param name="color">Color of the ellipse.</param>
-		/// <param name="quality">Quality of the ellipse.</param>
-		/// <param name="isFilled">TRUE if the ellipse should be filled.</param>
-		internal GorgonEllipse(Gorgon2D gorgon2D, string name, Vector2 position, Vector2 size, GorgonColor color, int quality, bool isFilled)
+		internal GorgonEllipse(Gorgon2D gorgon2D, string name)
 			: base(gorgon2D, name)
 		{
-			Anchor = new Vector2(size.X / 2.0f, size.Y / 2.0f);
-			TextureRegion = new System.Drawing.RectangleF(0, 0, size.X, size.Y);
-			Position = position;
-			Size = size;
-			Quality = quality;
-			IsFilled = isFilled;
-			_line = new GorgonLine(gorgon2D, name + ".Line", Vector2.Zero, Vector2.Zero)
-			{
-				Color = color
-			};
-			Color = color;
+		    _line = new GorgonLine(gorgon2D, name + ".Line", Vector2.Zero, Vector2.Zero);
+		    Quality = 64;
 		}
 		#endregion
 	}
