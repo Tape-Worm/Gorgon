@@ -230,9 +230,12 @@ namespace GorgonLibrary.Renderers
 
 			if (Texture == null)
 			{
-				for (int i = 0; i < Vertices.Length; i++)
-					Vertices[i].UV = Vector2.Zero;
-				return;
+			    for (int i = 0; i < Vertices.Length; i++)
+			    {
+			        Vertices[i].UV = Vector2.Zero;
+			    }
+
+			    return;
 			}
 
 			var midPoint = new Vector2(TextureRegion.Width / 2.0f, TextureRegion.Height / 2.0f);
@@ -347,43 +350,41 @@ namespace GorgonLibrary.Renderers
 				if (!Angle.EqualsEpsilon(0.0f))
 				{
 					float angle = Angle.Radians();		// Angle in radians.
-					float cosVal = angle.Cos();		// Cached cosine.
-					float sinVal = angle.Sin();		// Cached sine.
+					float cosVal = angle.Cos();		    // Cached cosine.
+					float sinVal = angle.Sin();		    // Cached sine.
 
-					Vertices[vertexIndex].Position.X = (center.X * cosVal - center.Y * sinVal);
-					Vertices[vertexIndex].Position.Y = (center.X * sinVal + center.Y * cosVal);
+					Vertices[vertexIndex].Position.X = (center.X * cosVal - center.Y * sinVal) + Position.X;
+					Vertices[vertexIndex].Position.Y = (center.X * sinVal + center.Y * cosVal) + Position.Y;
 
-					Vertices[vertexIndex + 1].Position.X = (startPosition.X * cosVal - startPosition.Y * sinVal);
-					Vertices[vertexIndex + 1].Position.Y = (startPosition.X * sinVal + startPosition.Y * cosVal);
+					Vertices[vertexIndex + 1].Position.X = (startPosition.X * cosVal - startPosition.Y * sinVal) + Position.X;
+					Vertices[vertexIndex + 1].Position.Y = (startPosition.X * sinVal + startPosition.Y * cosVal) + Position.Y;
 
-					Vertices[vertexIndex + 2].Position.X = (endPosition.X * cosVal - endPosition.Y * sinVal);
-					Vertices[vertexIndex + 2].Position.Y = (endPosition.X * sinVal + endPosition.Y * cosVal);
+					Vertices[vertexIndex + 2].Position.X = (endPosition.X * cosVal - endPosition.Y * sinVal) + Position.X;
+					Vertices[vertexIndex + 2].Position.Y = (endPosition.X * sinVal + endPosition.Y * cosVal) + Position.Y;
 				}
 				else
 				{
-					Vertices[vertexIndex].Position.X = center.X;
-					Vertices[vertexIndex].Position.Y = center.Y;
-					Vertices[vertexIndex + 1].Position.X = startPosition.X;
-					Vertices[vertexIndex + 1].Position.Y = startPosition.Y;
-					Vertices[vertexIndex + 2].Position.X = endPosition.X;
-					Vertices[vertexIndex + 2].Position.Y = endPosition.Y;
+					Vertices[vertexIndex].Position.X = center.X + Position.X;
+					Vertices[vertexIndex].Position.Y = center.Y + Position.Y;
+					Vertices[vertexIndex + 1].Position.X = startPosition.X + Position.X;
+					Vertices[vertexIndex + 1].Position.Y = startPosition.Y + Position.Y;
+					Vertices[vertexIndex + 2].Position.X = endPosition.X + Position.X;
+					Vertices[vertexIndex + 2].Position.Y = endPosition.Y + Position.Y;
 				}
 
-				Vertices[vertexIndex].Position.X += Position.X;
-				Vertices[vertexIndex + 1].Position.X += Position.X;
-				Vertices[vertexIndex + 2].Position.X += Position.X;
+			    if (!Depth.EqualsEpsilon(0.0f))
+			    {
+			        Vertices[vertexIndex].Position.Z = Depth;
+			        Vertices[vertexIndex + 1].Position.Z = Depth;
+			        Vertices[vertexIndex + 2].Position.Z = Depth;
+			    }
 
-				Vertices[vertexIndex].Position.Y += Position.Y;
-				Vertices[vertexIndex + 1].Position.Y += Position.Y;
-				Vertices[vertexIndex + 2].Position.Y += Position.Y;
+			    if (!_colors[i].Equals(Vertices[vertexIndex].Color))
+			    {
+			        Vertices[vertexIndex + 2].Color = Vertices[vertexIndex + 1].Color = Vertices[vertexIndex].Color = _colors[i];
+			    }
 
-				Vertices[vertexIndex].Position.Z = Depth;
-				Vertices[vertexIndex + 1].Position.Z = Depth;
-				Vertices[vertexIndex + 2].Position.Z = Depth;
-
-				Vertices[vertexIndex + 2].Color = Vertices[vertexIndex + 1].Color = Vertices[vertexIndex].Color = _colors[i];
-
-				vertexIndex += 3;
+			    vertexIndex += 3;
 			}
 		}
 
@@ -417,13 +418,23 @@ namespace GorgonLibrary.Renderers
 		/// <summary>
 		/// Function to set a color for an individual point on the ellipse.
 		/// </summary>
-		/// <param name="pointIndex">Index of the point (0 - (Quality-1)).</param>
+		/// <param name="pointIndex">Index of the point.</param>
 		/// <param name="color">Color to set.</param>
 		/// <remarks>The <paramref name="pointIndex"/> must be between 0 and <see cref="P:GorgonLibrary.Renderers.GorgonEllipse.Quality">Quality - 1</see>.</remarks>
 		public void SetPointColor(int pointIndex, GorgonColor color)
 		{
 			_colors[pointIndex] = color;
 		}
+
+        /// <summary>
+        /// Function to return a color for an individual point on the ellipse.
+        /// </summary>
+        /// <param name="pointIndex">Index of the point.</param>
+        /// <returns>The color of the point on the index.  The <paramref name="pointIndex"/> parameter must be between 0 and <see cref="P:GorgonLibrary.Renderers.GorgonEllipse.Quality">Quality - 1</see>.</returns>
+	    public GorgonColor GetPointColor(int pointIndex)
+        {
+            return _colors[pointIndex];
+        }
 
 		/// <summary>
 		/// Function to draw the ellipse.
