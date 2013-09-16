@@ -24,9 +24,7 @@
 // 
 #endregion
 
-using System.Drawing;
 using GorgonLibrary.Graphics;
-using GorgonLibrary.Math;
 using GorgonLibrary.Native;
 
 namespace GorgonLibrary.Renderers

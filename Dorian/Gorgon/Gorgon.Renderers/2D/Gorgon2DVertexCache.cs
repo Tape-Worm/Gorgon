@@ -36,14 +36,14 @@ namespace GorgonLibrary.Renderers
     class Gorgon2DVertexCache
     {
         #region Variables.
-        private Gorgon2DVertex[] _vertices;         // The list of vertices in the cache.
-        private int _verticesWritten;               // The number of vertices written to the cache since the last flush.
-        private int _indexCount;                    // The number of indices that use the vertices in the cache.
-        private int _firstIndex;                    // The first index to use when looking up vertices.
-        private int _vertexOffset;                  // An offset in the vertex list.  Used when data in the vertex buffer does not match up to its index buffer.
-        private int _currentVertex;                 // The most current vertex in the cache.
-        private int _nextVertex;                    // Next vertex slots in the cache.
-        private Gorgon2D _renderer;                 // The renderer bound to this cache.
+		private readonly Gorgon2D _renderer;                // The renderer bound to this cache.
+		private readonly Gorgon2DVertex[] _vertices;        // The list of vertices in the cache.
+        private int _verticesWritten;						// The number of vertices written to the cache since the last flush.
+        private int _indexCount;							// The number of indices that use the vertices in the cache.
+        private int _firstIndex;							// The first index to use when looking up vertices.
+        private int _vertexOffset;							// An offset in the vertex list.  Used when data in the vertex buffer does not match up to its index buffer.
+        private int _currentVertex;							// The most current vertex in the cache.
+        private int _nextVertex;							// Next vertex slots in the cache.
         #endregion
 
         #region Properties.

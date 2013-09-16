@@ -58,7 +58,7 @@ namespace GorgonLibrary.Renderers
 		{
 			get
 			{
-				return Graphics.PrimitiveType.TriangleList;
+				return PrimitiveType.TriangleList;
 			}
 		}
 
@@ -95,13 +95,15 @@ namespace GorgonLibrary.Renderers
 			}
 			set
 			{
-				if (value != _isFilled)
+				if (value == _isFilled)
 				{
-					_isFilled = value;
-
-					NeedsTextureUpdate = true;
-					NeedsVertexUpdate = true;
+					return;
 				}
+
+				_isFilled = value;
+
+				NeedsTextureUpdate = true;
+				NeedsVertexUpdate = true;
 			}
 		}
 
@@ -118,15 +120,19 @@ namespace GorgonLibrary.Renderers
 			set
 			{
 				if ((value < 4) || (value > 256))
-					return;
-
-				if (_quality != value)
 				{
-					_quality = value;
-					BaseVertexCount = _quality * 3;
-					VertexCount = _quality * 3;
-					InitializeVertices(_quality * 3);
+					return;
 				}
+
+				if (_quality == value)
+				{
+					return;
+				}
+
+				_quality = value;
+				BaseVertexCount = _quality * 3;
+				VertexCount = _quality * 3;
+				InitializeVertices(_quality * 3);
 			}
 		}
 
@@ -142,7 +148,9 @@ namespace GorgonLibrary.Renderers
 			set
 			{
 				for (int i = 0; i < _colors.Length; i++)
+				{
 					_colors[i] = value;
+				}
 			}
 		}
 
@@ -158,8 +166,7 @@ namespace GorgonLibrary.Renderers
 			}
 			set
 			{
-				if (_line.LineThickness != value)
-					_line.LineThickness = value;
+				_line.LineThickness = value;
 			}
 		}
 
@@ -175,11 +182,13 @@ namespace GorgonLibrary.Renderers
 			}
 			set
 			{
-				if (base.Texture != value)
+				if (base.Texture == value)
 				{
-					base.Texture = value;
-					_line.Texture = value;
+					return;
 				}
+
+				base.Texture = value;
+				_line.Texture = value;
 			}
 		}
 		#endregion
@@ -194,9 +203,6 @@ namespace GorgonLibrary.Renderers
 		/// <param name="endUV">Ending UV coordinate.</param>
 		private void UpdateUnfilledTextureCoordinates(int index, int nextIndex, out Vector2 startUV, out Vector2 endUV)
 		{
-			Vector2 scaledTexture = Vector2.Zero;
-			Vector2 scaledPos = Vector2.Zero;
-
 			if (Texture == null)
 			{
 				startUV = Vector2.Zero;
@@ -204,8 +210,8 @@ namespace GorgonLibrary.Renderers
 				return;
 			}
 
-			scaledPos = TextureOffset;
-			scaledTexture = TextureRegion.Size;
+			Vector2 scaledPos = TextureOffset;
+			Vector2 scaledTexture = TextureRegion.Size;
 
 			Vector2.Modulate(ref _offsets[index], ref scaledTexture, out startUV);
 			Vector2.Modulate(ref _offsets[nextIndex], ref scaledTexture, out endUV);
@@ -220,11 +226,6 @@ namespace GorgonLibrary.Renderers
 		protected override void UpdateTextureCoordinates()
 		{
 			// Calculate texture coordinates.
-			Vector2 scaleUV = Vector2.Zero;
-			Vector2 offsetUV = Vector2.Zero;
-			Vector2 midPoint = Vector2.Zero;
-			Vector2 scaledPos = Vector2.Zero;
-			Vector2 scaledTexture = Vector2.Zero;
 			int vertexIndex = 0;
 
 			if (Texture == null)
@@ -234,17 +235,25 @@ namespace GorgonLibrary.Renderers
 				return;
 			}
 
-			midPoint = new Vector2(TextureRegion.Width / 2.0f, TextureRegion.Height / 2.0f);
-			scaledPos = TextureOffset;
-			scaledTexture = TextureRegion.Size;
+			var midPoint = new Vector2(TextureRegion.Width / 2.0f, TextureRegion.Height / 2.0f);
+			Vector2 scaledPos = TextureOffset;
+			Vector2 scaledTexture = TextureRegion.Size;
+
 			for (int i = 0; i < _offsets.Length; i++)
 			{
+				Vector2 offsetUV;
+				Vector2 scaleUV;
+
 				Vector2.Modulate(ref _offsets[i], ref scaledTexture, out offsetUV);
 
 				if (i + 1 < _offsets.Length)
+				{
 					Vector2.Modulate(ref _offsets[i + 1], ref scaledTexture, out scaleUV);
+				}
 				else
+				{
 					Vector2.Modulate(ref _offsets[0], ref scaledTexture, out scaleUV);
+				}
 
 				Vector2.Add(ref scaleUV, ref scaledPos, out scaleUV);
 				Vector2.Add(ref offsetUV, ref scaledPos, out offsetUV);
@@ -281,13 +290,17 @@ namespace GorgonLibrary.Renderers
 		{
 			Vector2 result = vector;
 
-			if (Scale.X != 1.0f)
+			if (!Scale.X.EqualsEpsilon(1.0f))
+			{
 				result.X *= Scale.X;
+			}
 
-			if (Scale.Y != 1.0f)
+			if (!Scale.Y.EqualsEpsilon(1.0f))
+			{
 				result.Y *= Scale.Y;
+			}
 
-			if (Angle != 0.0f)
+			if (!Angle.EqualsEpsilon(0.0f))
 			{
 				Vector2 rotVector = result;
 				float angle = Angle.Radians();						// Angle in radians.
@@ -298,11 +311,8 @@ namespace GorgonLibrary.Renderers
 				result.Y = (rotVector.X * sinVal + rotVector.Y * cosVal);
 			}
 
-			if (Position.X != 0.0f)
-				result.X += Position.X;
-
-			if (Position.Y != 0.0f)
-				result.Y += Position.Y;
+			result.X += Position.X;
+			result.Y += Position.Y;
 
 			return result;
 		}
@@ -318,27 +328,23 @@ namespace GorgonLibrary.Renderers
 			for (int i = 0; i < _points.Length; i++)
 			{
 				Vector2 startPosition = _points[i];
-				Vector2 endPosition = Vector2.Zero;
-				if (i + 1 < _points.Length)
-					endPosition = _points[i + 1];
-				else
-					endPosition = _points[0];
+				Vector2 endPosition = i + 1 < _points.Length ? _points[i + 1] : _points[0];
 
-				if (Scale.X != 1.0f)
+				if (!Scale.X.EqualsEpsilon(1.0f))
 				{
 					startPosition.X *= Scale.X;
 					endPosition.X *= Scale.X;
 					center.X *= Scale.X;
 				}
 
-				if (Scale.Y != 1.0f)
+				if (!Scale.Y.EqualsEpsilon(1.0f))
 				{
 					startPosition.Y *= Scale.Y;
 					endPosition.Y *= Scale.Y;
 					center.Y *= Scale.Y;
 				}
 
-				if (Angle != 0.0f)
+				if (!Angle.EqualsEpsilon(0.0f))
 				{
 					float angle = Angle.Radians();		// Angle in radians.
 					float cosVal = angle.Cos();		// Cached cosine.
@@ -363,26 +369,17 @@ namespace GorgonLibrary.Renderers
 					Vertices[vertexIndex + 2].Position.Y = endPosition.Y;
 				}
 
-				if (Position.X != 0.0f)
-				{
-					Vertices[vertexIndex].Position.X += Position.X;
-					Vertices[vertexIndex + 1].Position.X += Position.X;
-					Vertices[vertexIndex + 2].Position.X += Position.X;
-				}
+				Vertices[vertexIndex].Position.X += Position.X;
+				Vertices[vertexIndex + 1].Position.X += Position.X;
+				Vertices[vertexIndex + 2].Position.X += Position.X;
 
-				if (Position.Y != 0.0f)
-				{
-					Vertices[vertexIndex].Position.Y += Position.Y;
-					Vertices[vertexIndex + 1].Position.Y += Position.Y;
-					Vertices[vertexIndex + 2].Position.Y += Position.Y;
-				}
+				Vertices[vertexIndex].Position.Y += Position.Y;
+				Vertices[vertexIndex + 1].Position.Y += Position.Y;
+				Vertices[vertexIndex + 2].Position.Y += Position.Y;
 
-				if (Depth != 0.0f)
-				{
-					Vertices[vertexIndex].Position.Z = Depth;
-					Vertices[vertexIndex + 1].Position.Z = Depth;
-					Vertices[vertexIndex + 2].Position.Z = Depth;
-				}
+				Vertices[vertexIndex].Position.Z = Depth;
+				Vertices[vertexIndex + 1].Position.Z = Depth;
+				Vertices[vertexIndex + 2].Position.Z = Depth;
 
 				Vertices[vertexIndex + 2].Color = Vertices[vertexIndex + 1].Color = Vertices[vertexIndex].Color = _colors[i];
 
