@@ -535,10 +535,12 @@ namespace GorgonLibrary.Renderers
 			}
 			set
 			{
-				if (value == null)
-					return;
+			    if (value == null)
+			    {
+			        return;
+			    }
 
-				_depthStencil = value;
+			    _depthStencil = value;
 			}
 		}
 
@@ -553,10 +555,12 @@ namespace GorgonLibrary.Renderers
 			}
 			set
 			{
-				if (value == null)
-					return;
+			    if (value == null)
+			    {
+			        return;
+			    }
 
-				_blendState = value;
+			    _blendState = value;
 			}
 		}
 
@@ -571,10 +575,12 @@ namespace GorgonLibrary.Renderers
 			}
 			set
 			{
-				if (value == null)
-					return;
+			    if (value == null)
+			    {
+			        return;
+			    }
 
-				_samplerState = value;
+			    _samplerState = value;
 			}
 		}
 

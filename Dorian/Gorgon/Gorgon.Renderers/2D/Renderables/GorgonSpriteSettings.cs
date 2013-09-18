@@ -36,8 +36,8 @@ namespace GorgonLibrary.Renderers
 	public class GorgonSpriteSettings
     {
         #region Variables.
-        private Vector2 _initialScale = new Vector2(1);
-        private Vector2 _size = Vector2.Zero;
+
+	    private Vector2 _size = Vector2.Zero;
         #endregion
 
         #region Properties.
@@ -112,32 +112,16 @@ namespace GorgonLibrary.Renderers
             set;
         }
 
-		/// <summary>
-		/// Property to set or return the initial scale of the sprite.
-		/// </summary>
-        public Vector2 InitialScale
-        {
-            get
-            {
-                return _initialScale;
-            }
-            set
-            {
-                if (value.X == 0.0f)
-                {
-                    value.X = 1e-6f;
-                }
+	    /// <summary>
+	    /// Property to set or return the initial scale of the sprite.
+	    /// </summary>
+	    public Vector2 InitialScale
+	    {
+	        get;
+	        set;
+	    }
 
-                if (value.Y == 0.0f)
-                {
-                    value.Y = 1e-6f;
-                }
-
-                _initialScale = value;
-            }
-        }
-
-		/// <summary>
+	    /// <summary>
 		/// Property to set or return the initial angle of the sprite.
 		/// </summary>
         public float InitialAngle
@@ -153,6 +137,7 @@ namespace GorgonLibrary.Renderers
         /// </summary>
         public GorgonSpriteSettings()
         {
+            InitialScale = new Vector2(1);
             Color = GorgonColor.White;
             InitialPosition = Vector2.Zero;
             InitialAngle = 0.0f;

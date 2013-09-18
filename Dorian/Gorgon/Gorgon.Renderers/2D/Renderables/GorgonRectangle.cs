@@ -26,6 +26,7 @@
 
 using System;
 using System.Drawing;
+using GorgonLibrary.Animation;
 using GorgonLibrary.Graphics;
 using GorgonLibrary.Math;
 using SlimMath;
@@ -52,7 +53,10 @@ namespace GorgonLibrary.Renderers
 		/// </summary>
 		protected internal override PrimitiveType PrimitiveType
 		{
-			get { throw new NotSupportedException(); }
+		    get
+		    {
+                return IsFilled ? PrimitiveType.TriangleList : PrimitiveType.LineList;
+		    }
 		}
 
 		/// <summary>
@@ -60,12 +64,16 @@ namespace GorgonLibrary.Renderers
 		/// </summary>
 		protected internal override int IndexCount
 		{
-			get { throw new NotSupportedException(); }
+		    get
+		    {
+		        return IsFilled ? 6 : 0;
+		    }
 		}
 
 		/// <summary>
 		/// Property to set or return the thickness of the lines for a rectangle outline.
 		/// </summary>
+		[AnimatedProperty]
 		public Vector2 LineThickness
 		{
 			get;
@@ -107,6 +115,7 @@ namespace GorgonLibrary.Renderers
 		/// <summary>
 		/// Property to set or return the color for a renderable object.
 		/// </summary>
+		[AnimatedProperty]
 		public override GorgonColor Color
 		{
 			get
@@ -153,70 +162,49 @@ namespace GorgonLibrary.Renderers
 			float posY2 = _corners[2].Y;
 
 			// Scale horizontally if necessary.
-			// ReSharper disable CompareOfFloatsByEqualityOperator
-			if (Scale.X != 1.0f)
+			if (!Scale.X.EqualsEpsilon(1.0f))
 			{
 				posX1 *= Scale.X;
 				posX2 *= Scale.X;
 			}
 
 			// Scale vertically.
-			if (Scale.Y != 1.0f)
+			if (!Scale.Y.EqualsEpsilon(1.0f))
 			{
 				posY1 *= Scale.Y;
 				posY2 *= Scale.Y;
 			}
 
 			// Calculate rotation if necessary.
-			if (Angle != 0.0f)
+			if (!Angle.EqualsEpsilon(0.0f))
 			{
 				float angle = Angle.Radians();						// Angle in radians.
 				float cosVal = angle.Cos();							// Cached cosine.
 				float sinVal = angle.Sin();							// Cached sine.
 
-				_corners[0].X = (posX1 * cosVal - posY1 * sinVal);
-				_corners[0].Y = (posX1 * sinVal + posY1 * cosVal);
+				_corners[0].X = (posX1 * cosVal - posY1 * sinVal) + Position.X;
+				_corners[0].Y = (posX1 * sinVal + posY1 * cosVal) + Position.Y;
 
-				_corners[1].X = (posX2 * cosVal - posY1 * sinVal);
-				_corners[1].Y = (posX2 * sinVal + posY1 * cosVal);
+                _corners[1].X = (posX2 * cosVal - posY1 * sinVal) + Position.X;
+                _corners[1].Y = (posX2 * sinVal + posY1 * cosVal) + Position.Y;
 
-				_corners[2].X = (posX2 * cosVal - posY2 * sinVal);
-				_corners[2].Y = (posX2 * sinVal + posY2 * cosVal);
+                _corners[2].X = (posX2 * cosVal - posY2 * sinVal) + Position.X;
+                _corners[2].Y = (posX2 * sinVal + posY2 * cosVal) + Position.Y;
 
-				_corners[3].X = (posX1 * cosVal - posY2 * sinVal);
-				_corners[3].Y = (posX1 * sinVal + posY2 * cosVal);
+                _corners[3].X = (posX1 * cosVal - posY2 * sinVal) + Position.X;
+                _corners[3].Y = (posX1 * sinVal + posY2 * cosVal) + Position.Y;
 			}
 			else
 			{
-				_corners[0].X = posX1;
-				_corners[0].Y = posY1;
-				_corners[1].X = posX2;
-				_corners[1].Y = posY1;
-				_corners[2].X = posX2;
-				_corners[2].Y = posY2;
-				_corners[3].X = posX1;
-				_corners[3].Y = posY2;
+                _corners[0].X = posX1 + Position.X;
+                _corners[0].Y = posY1 + Position.Y;
+                _corners[1].X = posX2 + Position.X;
+                _corners[1].Y = posY1 + Position.Y;
+                _corners[2].X = posX2 + Position.X;
+                _corners[2].Y = posY2 + Position.Y;
+                _corners[3].X = posX1 + Position.X;
+                _corners[3].Y = posY2 + Position.Y;
 			}
-
-			// Translate.
-			if (Position.X != 0.0f)
-			{
-				_corners[0].X += Position.X;
-				_corners[1].X += Position.X;
-				_corners[2].X += Position.X;
-				_corners[3].X += Position.X;
-			}
-
-			if (Position.Y == 0.0f)
-			{
-				return;
-			}
-			
-			_corners[0].Y += Position.Y;
-			_corners[1].Y += Position.Y;
-			_corners[2].Y += Position.Y;
-			_corners[3].Y += Position.Y;		
-			// ReSharper restore CompareOfFloatsByEqualityOperator
 		}
 
 		/// <summary>
@@ -364,9 +352,12 @@ namespace GorgonLibrary.Renderers
 
 			IsFilled = filled;
 			_filled = gorgon2D.Renderables.CreateSprite("Rectangle.Sprite", new Vector2(1), GorgonColor.White);
-			_line = new GorgonLine(gorgon2D, "Rectangle.Line", Vector2.Zero, new Vector2(1))
+			_line = new GorgonLine(gorgon2D, "Rectangle.Line")
 			{
-				Color = GorgonColor.White
+				Color = GorgonColor.White,
+                TextureEnd = new Vector2(1),
+                StartPoint = Vector2.Zero,
+                EndPoint = new Vector2(1)
 			};
 		}		
 		#endregion

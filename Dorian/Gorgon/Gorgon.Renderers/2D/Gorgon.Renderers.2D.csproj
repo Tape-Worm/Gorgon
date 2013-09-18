@@ -95,6 +95,7 @@
     <Compile Include="Renderables\GorgonSprite.cs" />
     <Compile Include="Renderables\GorgonSpriteSettings.cs" />
     <Compile Include="Renderables\GorgonTriangle.cs" />
+    <Compile Include="Renderables\GorgonPolygonPoint.cs" />
     <Compile Include="Renderables\Internal\GorgonV1SpriteReader.cs" />
     <Compile Include="Renderables\IDeferredTextureLoad.cs" />
     <Compile Include="Renderables\IMoveable.cs" />

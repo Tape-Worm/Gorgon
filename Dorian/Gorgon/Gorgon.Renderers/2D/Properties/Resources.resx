@@ -142,6 +142,9 @@
   <data name="GOR2D_PARAMETER_MUST_NOT_BE_EMPTY" xml:space="preserve">
     <value>The parameter must not be empty.</value>
   </data>
+  <data name="GOR2D_POLY_POINT_TOSTR" xml:space="preserve">
+    <value>Gorgon polygon/triangle point.  X:{0}, Y:{1}, R:{2}, G:{3}, B:{4}, A:{5}, U:{6}, V:{7}</value>
+  </data>
   <data name="GOR2D_SPRITE_CANNOT_READ_V1_SPRITE" xml:space="preserve">
     <value>Cannot read this sprite.  It is not a Gorgon sprite or it is a newer version.</value>
   </data>

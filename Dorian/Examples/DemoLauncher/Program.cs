@@ -236,7 +236,7 @@ namespace GorgonLibrary.Examples
 					Vector2 textSize = _renderer.Drawing.MeasureString(_windowFont,
 						"Gorgon Demos/Examples",
 						false,
-						new RectangleF(0, 0, _screen.Settings.Width, closeButtonLocation.Height));
+						new SizeF(_screen.Settings.Width, closeButtonLocation.Height));
 
                     _renderer.Drawing.FilledRectangle(new RectangleF(8, 28, _screen.Settings.Width - 16, _screen.Settings.Height - 36), Color.FromArgb(225, Color.White));
                     _renderer.Drawing.DrawRectangle(new RectangleF(7, 27, _screen.Settings.Width - 14, _screen.Settings.Height - 35), Color.Black);
