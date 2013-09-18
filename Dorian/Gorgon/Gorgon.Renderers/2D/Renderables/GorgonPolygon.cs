@@ -152,7 +152,7 @@ namespace GorgonLibrary.Renderers
         public PolygonType PolygonType
         {
             get;
-            private set;
+            set;
         }
 
 		/// <summary>
@@ -552,10 +552,9 @@ namespace GorgonLibrary.Renderers
         /// Use this method to upload vertices to the polygon.  You may use this method to update all, or a portion of the vertex buffer.
         /// <para>If the data in the vertex buffer needs to be updated frequently, then it is best to ensure that the vertex buffer is dynamic and to update only the portion of the buffer 
         /// that requires updating.</para>
-        /// <para>Please ensure that the W component of the Position in the vertex is set to 1.0.  Gorgon will ensure that this is set to 1.0, but it is more efficient if it is already set prior to upload.</para>
         /// </remarks>
         /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="vertices"/> parameter is NULL (Nothing in VB.Net).</exception>
-        public void SetVertexData(Gorgon2DVertex[] vertices)
+        public void SetVertexData(GorgonPolygonPoint[] vertices)
         {
             GorgonDebug.AssertNull(vertices, "vertices");
 
@@ -574,14 +573,13 @@ namespace GorgonLibrary.Renderers
         /// of the <paramref name="vertices"/> parameters.  This means that a gap could be allocated in the buffer before the <paramref name="offset"/>.</para>
         /// <para>If the data in the vertex buffer needs to be updated frequently, then it is best to ensure that the vertex buffer is dynamic and to update only the portion of the buffer 
         /// that requires updating.</para>
-        /// <para>Please ensure that the W component of the Position in the vertex is set to 1.0.  Gorgon will ensure that this is set to 1.0, but it is more efficient if it is already set prior to upload.</para>
         /// </remarks>
         /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="vertices"/> parameter is NULL (Nothing in VB.Net).</exception>
         /// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="offset"/> parameter is less than 0.
         /// <para>-or-</para>
         /// <para>The <paramref name="vertexListOffset"/> parameter is less than 0 or greater than or equal to the number of vertices in the <paramref name="vertices"/> parameter.</para>
         /// </exception>
-        public void SetVertexData(Gorgon2DVertex[] vertices, int vertexListOffset, int offset)
+        public void SetVertexData(GorgonPolygonPoint[] vertices, int vertexListOffset, int offset)
         {
             GorgonDebug.AssertNull(vertices, "vertices");
 
@@ -601,7 +599,6 @@ namespace GorgonLibrary.Renderers
         /// parameters.  This means that a gap could be allocated in the buffer before the <paramref name="offset"/>.</para>
         /// <para>If the data in the vertex buffer needs to be updated frequently, then it is best to ensure that the vertex buffer is dynamic and to update only the portion of the buffer 
         /// that requires updating.</para>
-        /// <para>Please ensure that the W component of the Position in the vertex is set to 1.0.  Gorgon will ensure that this is set to 1.0, but it is more efficient if it is already set prior to upload.</para>
         /// </remarks>
         /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="vertices"/> parameter is NULL (Nothing in VB.Net).</exception>
         /// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="offset"/> parameter is less than 0.
@@ -612,7 +609,7 @@ namespace GorgonLibrary.Renderers
         /// </exception>
         /// <exception cref="System.ArgumentException">Thrown when the <paramref name="vertexListOffset"/> parameter and the <paramref name="count"/> parameter are greater than the 
         /// number of vertices in the <paramref name="vertices"/> parameter.</exception>
-        public void SetVertexData(Gorgon2DVertex[] vertices, int vertexListOffset, int offset, int count)
+        public void SetVertexData(GorgonPolygonPoint[] vertices, int vertexListOffset, int offset, int count)
         {
             GorgonDebug.AssertNull(vertices, "vertices");
 
@@ -685,13 +682,7 @@ namespace GorgonLibrary.Renderers
 
                         if (!Depth.EqualsEpsilon(0.0f))
                         {
-                            position.Z += Depth;
-                            vertex.Position = position;
-                        }
-
-                        if (!vertex.Position.W.EqualsEpsilon(1.0f))
-                        {
-                            position.W = 1.0f;
+                            position.Z = Depth;
                             vertex.Position = position;
                         }
                         
@@ -709,38 +700,29 @@ namespace GorgonLibrary.Renderers
                 }
                 else
                 {
-                    // Find the new size if necessary.
-                    for (int i = 0; i < count; ++i)
+                    using(var data = new GorgonDataStream(Gorgon2DVertex.SizeInBytes * count))
                     {
-                        Vector4 position = vertices[i].Position;
+                        var ptr = (Gorgon2DVertex *)data.UnsafePointer;
 
-                        if (!Depth.EqualsEpsilon(0.0f))
+                        // Find the new size if necessary.
+                        for (int i = 0; i < count; ++i)
                         {
-                            position.Z += Depth;
-                            vertices[i].Position = position;
+                            *ptr = vertices[i];
+
+                            if (!Depth.EqualsEpsilon(0.0f))
+                            {
+                                ptr->Position.Z = Depth;
+                            }
+
+                            maxX = maxX.Max(ptr->Position.X);
+                            maxY = maxY.Max(ptr->Position.Y);
+                            minX = minX.Min(ptr->Position.X);
+                            minY = minY.Min(ptr->Position.Y);
+
+                            ptr++;
                         }
 
-                        if (!position.W.Equals(1.0f))
-                        {
-                            position.W = 1.0f;
-                            vertices[i].Position = position;
-                        }
-
-						maxX = maxX.Max(position.X);
-						maxY = maxY.Max(position.Y);
-						minX = minX.Min(position.X);
-						minY = minY.Min(position.Y);
-					}
-
-                    fixed(Gorgon2DVertex* ptr = &vertices[vertexListOffset])
-                    {
-                        using(var data = new GorgonDataStream(ptr, count * Gorgon2DVertex.SizeInBytes))
-                        {
-                            _vertexBuffer.Update(data,
-                                offset * Gorgon2DVertex.SizeInBytes,
-                                count * Gorgon2DVertex.SizeInBytes,
-                                Gorgon2D.Graphics);
-                        }
+                        _vertexBuffer.Update(data, offset * Gorgon2DVertex.SizeInBytes, count * Gorgon2DVertex.SizeInBytes);
                     }
                 }
 
@@ -1300,6 +1282,7 @@ namespace GorgonLibrary.Renderers
         /// <summary>
         /// Property to set or return the position of the renderable.
         /// </summary>
+        [AnimatedProperty]
         public Vector2 Position
         {
             get
@@ -1321,6 +1304,7 @@ namespace GorgonLibrary.Renderers
         /// <summary>
         /// Property to set or return the angle of rotation (in degrees) for a renderable.
         /// </summary>
+        [AnimatedProperty]
         public float Angle
         {
             get
@@ -1346,6 +1330,7 @@ namespace GorgonLibrary.Renderers
         /// This property uses scalar values to provide a relative scale.  To set an absolute scale (i.e. pixel coordinates), use the <see cref="P:GorgonLibrary.Renderers.GorgonMoveable.Size">Size</see> property.
         /// <para>Setting this value to a 0 vector will cause undefined behaviour and is not recommended.</para>
         /// </remarks>
+        [AnimatedProperty]
         public Vector2 Scale
         {
             get
@@ -1367,6 +1352,7 @@ namespace GorgonLibrary.Renderers
         /// <summary>
         /// Property to set or return the anchor point of the renderable.
         /// </summary>
+        [AnimatedProperty]
         public Vector2 Anchor
         {
             get
@@ -1388,6 +1374,7 @@ namespace GorgonLibrary.Renderers
         /// <summary>
         /// Property to set or return the "depth" of the renderable in a depth buffer.
         /// </summary>
+        [AnimatedProperty]
         public float Depth
         {
             get
@@ -1756,7 +1743,7 @@ namespace GorgonLibrary.Renderers
 				VertexCount = chunk.Read<int>();
 				IndexCount = chunk.Read<int>();
 
-				var vertices = new Gorgon2DVertex[VertexCount];
+				var vertices = new GorgonPolygonPoint[VertexCount];
 
 				chunk.ReadRange(vertices);
 

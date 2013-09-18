@@ -393,7 +393,7 @@ namespace GorgonLibrary.Renderers
 		/// <param name="point2">Second point in the triangle.</param>
 		/// <param name="point3">Third point in the triangle.</param>
 		/// <param name="texture">Texture to apply to the triangle.</param>
-		public void FilledTriangle(Vector2 position, GorgonTriangle.TrianglePoint point1, GorgonTriangle.TrianglePoint point2, GorgonTriangle.TrianglePoint point3, GorgonTexture2D texture)
+        public void FilledTriangle(Vector2 position, GorgonPolygonPoint point1, GorgonPolygonPoint point2, GorgonPolygonPoint point3, GorgonTexture2D texture)
 		{
 			SetStates(_triangle);
 			_triangle.IsFilled = true;
@@ -485,7 +485,7 @@ namespace GorgonLibrary.Renderers
 		/// <param name="point3">Third point in the triangle.</param>
 		/// <param name="thickness">Line thickness.</param>
 		/// <param name="texture">Texture to apply to the triangle.</param>
-		public void DrawTriangle(Vector2 position, GorgonTriangle.TrianglePoint point1, GorgonTriangle.TrianglePoint point2, GorgonTriangle.TrianglePoint point3, Vector2 thickness, GorgonTexture2D texture)
+        public void DrawTriangle(Vector2 position, GorgonPolygonPoint point1, GorgonPolygonPoint point2, GorgonPolygonPoint point3, Vector2 thickness, GorgonTexture2D texture)
 		{
 			SetStates(_triangle);
 			_triangle.IsFilled = false;
@@ -730,17 +730,27 @@ namespace GorgonLibrary.Renderers
 				Position = Vector2.Zero,
 				Size = Vector2.Zero
 			};
-			_point = new GorgonPoint(gorgon2D, "Gorgon2D.Point", Vector2.Zero, Color.White);
-			_line = new GorgonLine(gorgon2D, "Gorgon2D.Line", Vector2.Zero, Vector2.Zero)
+		    _point = new GorgonPoint(gorgon2D, "Gorgon2D.Point")
+		             {
+		                 Position = Vector2.Zero,
+		                 Color = GorgonColor.White
+		             };
+			_line = new GorgonLine(gorgon2D, "Gorgon2D.Line")
 			{
-				Color = Color.White
+				Color = GorgonColor.White,
+    			StartPoint = Vector2.Zero,
+	    		EndPoint = Vector2.Zero
 			};
 			_ellipse = new GorgonEllipse(gorgon2D, "Gorgon2D.Ellipse")
 			           {
 			               Quality = 64,
-			               Color = Color.White
+			               Color = GorgonColor.White
 			           };
-		    _triangle = new GorgonTriangle(gorgon2D, "Gorgon2D.Triangle", new GorgonTriangle.TrianglePoint(), new GorgonTriangle.TrianglePoint(), new GorgonTriangle.TrianglePoint(), false);
+		    _triangle = new GorgonTriangle(gorgon2D,
+		                                   "Gorgon2D.Triangle")
+		                {
+		                    IsFilled = false
+		                };
 			_string = gorgon2D.Renderables.CreateText("Gorgon2D.String");
 		}
 		#endregion

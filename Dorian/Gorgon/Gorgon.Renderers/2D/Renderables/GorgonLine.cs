@@ -428,63 +428,38 @@ namespace GorgonLibrary.Renderers
 
 			corner4.X = _corners[2] - _crossProduct.X;
 			corner4.Y = _corners[3] - _crossProduct.Y;
-
-			// ReSharper disable CompareOfFloatsByEqualityOperator
-			if (Angle != 0.0f)
+            
+			if (!Angle.EqualsEpsilon(0.0f))
 			{
 				float angle = Angle.Radians();						// Angle in radians.
 				float cosVal = angle.Cos();							// Cached cosine.
 				float sinVal = angle.Sin();							// Cached sine.
 
-				Vertices[0].Position.X = (corner1.X * cosVal - corner1.Y * sinVal);
-				Vertices[0].Position.Y = (corner1.X * sinVal + corner1.Y * cosVal);
-				Vertices[1].Position.X = (corner3.X * cosVal - corner3.Y * sinVal);
-				Vertices[1].Position.Y = (corner3.X * sinVal + corner3.Y * cosVal);
-				Vertices[2].Position.X = (corner2.X * cosVal - corner2.Y * sinVal);
-				Vertices[2].Position.Y = (corner2.X * sinVal + corner2.Y * cosVal);
-				Vertices[3].Position.X = (corner4.X * cosVal - corner4.Y * sinVal);
-				Vertices[3].Position.Y = (corner4.X * sinVal + corner4.Y * cosVal);
+				Vertices[0].Position.X = (corner1.X * cosVal - corner1.Y * sinVal) + _line.Location.X;
+				Vertices[0].Position.Y = (corner1.X * sinVal + corner1.Y * cosVal) + _line.Location.Y;
+				Vertices[1].Position.X = (corner3.X * cosVal - corner3.Y * sinVal) + _line.Location.X;
+				Vertices[1].Position.Y = (corner3.X * sinVal + corner3.Y * cosVal) + _line.Location.Y;
+				Vertices[2].Position.X = (corner2.X * cosVal - corner2.Y * sinVal) + _line.Location.X;
+				Vertices[2].Position.Y = (corner2.X * sinVal + corner2.Y * cosVal) + _line.Location.Y;
+				Vertices[3].Position.X = (corner4.X * cosVal - corner4.Y * sinVal) + _line.Location.X;
+				Vertices[3].Position.Y = (corner4.X * sinVal + corner4.Y * cosVal) + _line.Location.Y;
 			}
 			else
 			{
-				Vertices[0].Position.X = corner1.X;
-				Vertices[0].Position.Y = corner1.Y;
-				Vertices[1].Position.X = corner3.X;
-				Vertices[1].Position.Y = corner3.Y;
-				Vertices[2].Position.X = corner2.X;
-				Vertices[2].Position.Y = corner2.Y;
-				Vertices[3].Position.X = corner4.X;
-				Vertices[3].Position.Y = corner4.Y;
-			}
-
-			// Translate.
-			if (StartPoint.X != 0.0f)
-			{
-				Vertices[0].Position.X += StartPoint.X;
-				Vertices[1].Position.X += StartPoint.X;
-				Vertices[2].Position.X += StartPoint.X;
-				Vertices[3].Position.X += StartPoint.X;
-			}
-
-			if (StartPoint.Y != 0.0f)
-			{
-				Vertices[0].Position.Y += StartPoint.Y;
-				Vertices[1].Position.Y += StartPoint.Y;
-				Vertices[2].Position.Y += StartPoint.Y;
-				Vertices[3].Position.Y += StartPoint.Y;
-			}
-
-			// Apply depth to the line.
-			if (Depth == 0.0f)
-			{
-				return;
+				Vertices[0].Position.X = corner1.X + _line.Location.X;
+				Vertices[0].Position.Y = corner1.Y + _line.Location.X;
+				Vertices[1].Position.X = corner3.X + _line.Location.X;
+                Vertices[1].Position.Y = corner3.Y + _line.Location.Y;
+                Vertices[2].Position.X = corner2.X + _line.Location.X;
+                Vertices[2].Position.Y = corner2.Y + _line.Location.Y;
+                Vertices[3].Position.X = corner4.X + _line.Location.X;
+                Vertices[3].Position.Y = corner4.Y + _line.Location.Y;
 			}
 
 			Vertices[0].Position.Z = Depth;
 			Vertices[1].Position.Z = Depth;
 			Vertices[2].Position.Z = Depth;
 			Vertices[3].Position.Z = Depth;
-			// ReSharper restore CompareOfFloatsByEqualityOperator
 		}
 
 		/// <summary>
@@ -507,49 +482,28 @@ namespace GorgonLibrary.Renderers
 			float posY2 = _corners[3];
 
 			// Calculate rotation if necessary.
-			// ReSharper disable CompareOfFloatsByEqualityOperator
-			if (Angle != 0.0f)
+			if (!Angle.EqualsEpsilon(0.0f))
 			{
 				float angle = Angle.Radians();						// Angle in radians.
 				float cosVal = angle.Cos();							// Cached cosine.
 				float sinVal = angle.Sin();							// Cached sine.
 
-				Vertices[0].Position.X = (posX1 * cosVal - posY1 * sinVal);
-				Vertices[0].Position.Y = (posX1 * sinVal + posY1 * cosVal);
+				Vertices[0].Position.X = (posX1 * cosVal - posY1 * sinVal) + _line.Location.X;
+				Vertices[0].Position.Y = (posX1 * sinVal + posY1 * cosVal) + _line.Location.Y;
 
-				Vertices[1].Position.X = (posX2 * cosVal - posY2 * sinVal);
-				Vertices[1].Position.Y = (posX2 * sinVal + posY2 * cosVal);
+				Vertices[1].Position.X = (posX2 * cosVal - posY2 * sinVal) + _line.Location.X;
+				Vertices[1].Position.Y = (posX2 * sinVal + posY2 * cosVal) + _line.Location.Y;
 			}
 			else
 			{
-				Vertices[0].Position.X = posX1;
-				Vertices[0].Position.Y = posY1;
-				Vertices[1].Position.X = posX2;
-				Vertices[1].Position.Y = posY2;
-			}
-
-			// Translate.
-			if (StartPoint.X != 0.0f)
-			{
-				Vertices[0].Position.X += StartPoint.X;
-				Vertices[1].Position.X += StartPoint.X;
-			}
-
-			if (StartPoint.Y != 0.0f)
-			{
-				Vertices[0].Position.Y += StartPoint.Y;
-				Vertices[1].Position.Y += StartPoint.Y;
-			}
-
-			// Apply depth to the line.
-			if (Depth == 0.0f)
-			{
-				return;
+				Vertices[0].Position.X = posX1 + _line.Location.X;
+				Vertices[0].Position.Y = posY1 + _line.Location.Y;
+				Vertices[1].Position.X = posX2 + _line.Location.X;
+				Vertices[1].Position.Y = posY2 + _line.Location.Y;
 			}
 
 			Vertices[0].Position.Z = Depth;
 			Vertices[1].Position.Z = Depth;
-			// ReSharper restore CompareOfFloatsByEqualityOperator
 		}
 
         /// <summary>
@@ -665,15 +619,10 @@ namespace GorgonLibrary.Renderers
 		/// </summary>
 		/// <param name="gorgon2D">Gorgon interface that owns this renderable.</param>
 		/// <param name="name">The name of the line.</param>
-		/// <param name="start">Line starting point.</param>
-		/// <param name="end">Line ending point.</param>
-		internal GorgonLine(Gorgon2D gorgon2D, string name, Vector2 start, Vector2 end)
+		internal GorgonLine(Gorgon2D gorgon2D, string name)
 			: base(gorgon2D, name)
 		{
 			_corners = new float[4];
-			_textureEnd = end;
-			StartPoint = start;
-			EndPoint = end;
 			InitializeVertices(4);
 			LineThickness = new Vector2(1);
 		}

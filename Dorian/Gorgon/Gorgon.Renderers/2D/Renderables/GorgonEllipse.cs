@@ -27,6 +27,7 @@
 // Portions of this code were adapted from the Vortex 2D graphics library by Alex Khomich.
 // Vortex2D.Net is available from http://www.vortex2d.net/
 
+using GorgonLibrary.Animation;
 using GorgonLibrary.Graphics;
 using GorgonLibrary.Math;
 using SlimMath;
@@ -36,7 +37,9 @@ namespace GorgonLibrary.Renderers
 	/// <summary>
 	/// A renderable object for drawing an ellipse on the screen.
 	/// </summary>
-	/// <remarks>Unlike other primitive types: line, rectangle, etc... the ellipse starts with its <see cref="P:GorgonLibrary.Renderers.GorgonMoveable.Anchor">anchor</see> set to center the around the position.</remarks>
+	/// <remarks>
+	/// Unlike other primitive types: line, rectangle, etc... the ellipse starts with its <see cref="P:GorgonLibrary.Renderers.GorgonMoveable.Anchor">anchor</see> set to center the around the position.
+	/// </remarks>
 	public class GorgonEllipse
 		: GorgonMoveable
 	{
@@ -111,6 +114,7 @@ namespace GorgonLibrary.Renderers
 		/// Property to set or return the quality level for the ellipse.
 		/// </summary>
 		/// <remarks>The quality level cannot be less than 4 or greater than 256.</remarks>
+		[AnimatedProperty]
 		public int Quality
 		{
 			get
@@ -139,6 +143,7 @@ namespace GorgonLibrary.Renderers
 		/// <summary>
 		/// Property to set or return the color for a renderable object.
 		/// </summary>
+		[AnimatedProperty]
 		public override GorgonColor Color
 		{
 			get
@@ -158,6 +163,7 @@ namespace GorgonLibrary.Renderers
 		/// Property to set or return the thickness of the lines for an outlined ellipse.
 		/// </summary>
 		/// <remarks>These values cannot be less than 1.</remarks>
+		[AnimatedProperty]
 		public Vector2 LineThickness
 		{
 			get
@@ -173,7 +179,7 @@ namespace GorgonLibrary.Renderers
 		/// <summary>
 		/// Property to set or return a texture for the renderable.
 		/// </summary>
-		/// <value></value>
+		[AnimatedProperty]
 		public override GorgonTexture2D Texture
 		{
 			get
@@ -372,12 +378,9 @@ namespace GorgonLibrary.Renderers
 					Vertices[vertexIndex + 2].Position.Y = endPosition.Y + Position.Y;
 				}
 
-			    if (!Depth.EqualsEpsilon(0.0f))
-			    {
-			        Vertices[vertexIndex].Position.Z = Depth;
-			        Vertices[vertexIndex + 1].Position.Z = Depth;
-			        Vertices[vertexIndex + 2].Position.Z = Depth;
-			    }
+			    Vertices[vertexIndex].Position.Z = Depth;
+			    Vertices[vertexIndex + 1].Position.Z = Depth;
+			    Vertices[vertexIndex + 2].Position.Z = Depth;
 
 			    if (!_colors[i].Equals(Vertices[vertexIndex].Color))
 			    {
@@ -503,7 +506,7 @@ namespace GorgonLibrary.Renderers
 		internal GorgonEllipse(Gorgon2D gorgon2D, string name)
 			: base(gorgon2D, name)
 		{
-		    _line = new GorgonLine(gorgon2D, name + ".Line", Vector2.Zero, Vector2.Zero);
+		    _line = new GorgonLine(gorgon2D, name + ".Line");
 		    Quality = 64;
 		}
 		#endregion

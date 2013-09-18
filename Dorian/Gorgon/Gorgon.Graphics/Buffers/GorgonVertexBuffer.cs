@@ -125,7 +125,7 @@ namespace GorgonLibrary.Graphics
 
 			context.Context.UpdateSubresource(
 				new DX.DataBox
-				    {
+				{
 					DataPointer = stream.PositionPointer,
 					RowPitch = size
 				},

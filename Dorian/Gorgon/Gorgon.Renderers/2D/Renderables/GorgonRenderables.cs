@@ -357,7 +357,7 @@ namespace GorgonLibrary.Renderers
 		/// <remarks>The points defined in the triangle use relative coordinates, and are offset from an origin that is defined by the <see cref="P:GorgonLibrary.Renderers.GorgonTriangle.Anchor">Anchor</see> property.</remarks>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (Nothing in VB.Net).</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the name parameter is an empty string.</exception>
-		public GorgonTriangle CreateTriangle(string name, GorgonTriangle.TrianglePoint point1, GorgonTriangle.TrianglePoint point2, GorgonTriangle.TrianglePoint point3, bool filled)
+        public GorgonTriangle CreateTriangle(string name, GorgonPolygonPoint point1, GorgonPolygonPoint point2, GorgonPolygonPoint point3, bool filled)
 		{
             if (name == null)
             {
@@ -369,7 +369,16 @@ namespace GorgonLibrary.Renderers
                 throw new ArgumentException(Resources.GOR2D_PARAMETER_MUST_NOT_BE_EMPTY, "name");
             }
 
-            return new GorgonTriangle(_gorgon2D, name, point1, point2, point3, filled);
+		    var result = new GorgonTriangle(_gorgon2D, name)
+		                 {
+		                     IsFilled = filled
+		                 };
+
+            result.SetPoint(0, point1);
+            result.SetPoint(1, point2);
+            result.SetPoint(2, point3);
+
+		    return result;
 		}
 
 		/// <summary>
@@ -440,9 +449,12 @@ namespace GorgonLibrary.Renderers
                 throw new ArgumentException(Resources.GOR2D_PARAMETER_MUST_NOT_BE_EMPTY, "name");
             }
 
-			return new GorgonLine(_gorgon2D, name, startPosition, endPosition)
+			return new GorgonLine(_gorgon2D, name)
 						{
-							Color = color
+							Color = color,
+                            TextureEnd = endPosition,
+                            StartPoint = startPosition,
+                            EndPoint = endPosition
 						};
 		}
 
@@ -467,7 +479,11 @@ namespace GorgonLibrary.Renderers
                 throw new ArgumentException(Resources.GOR2D_PARAMETER_MUST_NOT_BE_EMPTY, "name");
             }
 
-            return new GorgonPoint(_gorgon2D, name, position, color);
+		    return new GorgonPoint(_gorgon2D, name)
+		           {
+		               Position = position,
+		               Color = color
+		           };
 		}
 
 		/// <summary>
@@ -557,7 +573,7 @@ namespace GorgonLibrary.Renderers
 		public GorgonPolygon CreatePolygon(string name,
 			Vector2 position,
 			GorgonColor color,
-			Gorgon2DVertex[] vertices = null,
+			GorgonPolygonPoint[] vertices = null,
 			int[] indices = null,
 			PolygonType type = PolygonType.Triangle,
 			bool useDynamicVertexBuffer = false,
@@ -573,15 +589,15 @@ namespace GorgonLibrary.Renderers
 				throw new ArgumentException(Resources.GOR2D_PARAMETER_MUST_NOT_BE_EMPTY, "name");
 			}
 
-			var result = new GorgonPolygon(_gorgon2D, name, type);
+			var result = new GorgonPolygon(_gorgon2D, name, type)
+			             {
+			                 UseDynamicVertexBuffer = useDynamicVertexBuffer,
+			                 UseDynamicIndexBuffer = useDynamicIndexBuffer,
+			                 Color = color,
+			                 Position = position
+			             };
 
-			result.UseDynamicVertexBuffer = useDynamicVertexBuffer;
-			result.UseDynamicIndexBuffer = useDynamicIndexBuffer;
-
-			result.Color = color;
-			result.Position = position;
-
-			if (vertices != null)
+		    if (vertices != null)
 			{
 				result.SetVertexData(vertices);
 			}

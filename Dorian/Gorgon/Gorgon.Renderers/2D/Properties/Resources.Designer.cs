@@ -135,6 +135,15 @@ namespace GorgonLibrary.Renderers.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Gorgon polygon/triangle point.  X:{0}, Y:{1}, R:{2}, G:{3}, B:{4}, A:{5}, U:{6}, V:{7}.
+        /// </summary>
+        internal static string GOR2D_POLY_POINT_TOSTR {
+            get {
+                return ResourceManager.GetString("GOR2D_POLY_POINT_TOSTR", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Cannot read this sprite.  It is not a Gorgon sprite or it is a newer version..
         /// </summary>
         internal static string GOR2D_SPRITE_CANNOT_READ_V1_SPRITE {
