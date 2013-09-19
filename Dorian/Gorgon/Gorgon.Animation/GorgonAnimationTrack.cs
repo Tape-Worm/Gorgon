@@ -27,7 +27,6 @@
 using System;
 using System.Linq.Expressions;
 using System.Reflection;
-using GorgonLibrary.Animation.Properties;
 using GorgonLibrary.Math;
 
 namespace GorgonLibrary.Animation

@@ -26,8 +26,8 @@
 
 using System;
 using System.Runtime.InteropServices;
-using GorgonLibrary.Properties;
 using GorgonLibrary.Math;
+using GorgonLibrary.Properties;
 
 namespace GorgonLibrary
 {

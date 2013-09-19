@@ -28,7 +28,6 @@ using System;
 using System.Drawing;
 using System.Runtime.InteropServices;
 using GorgonLibrary.Graphics.Properties;
-using GorgonLibrary.Math;
 using SlimMath;
 
 namespace GorgonLibrary.Graphics
@@ -180,8 +179,9 @@ namespace GorgonLibrary.Graphics
 		/// <returns>TRUE if equal, FALSE if not.</returns>
 		public static bool Equals(ref GorgonColor left, ref GorgonColor right)
 		{
-		    return (left.Red.EqualsEpsilon(right.Red)) && (left.Green.EqualsEpsilon(right.Green)) &&
-		           (left.Blue.EqualsEpsilon(right.Blue)) && (left.Alpha.EqualsEpsilon(right.Alpha));
+			// ReSharper disable CompareOfFloatsByEqualityOperator
+			return left.Red == right.Red && left.Green == right.Green && left.Blue == right.Blue && left.Alpha == right.Alpha;
+			// ReSharper restore CompareOfFloatsByEqualityOperator
 		}
 
 		/// <summary>

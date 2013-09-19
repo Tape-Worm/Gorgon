@@ -26,7 +26,6 @@
 
 using System;
 using D3D = SharpDX.Direct3D11;
-using GorgonLibrary.Graphics.Properties;
 
 namespace GorgonLibrary.Graphics
 {

@@ -62,6 +62,7 @@ namespace GorgonLibrary.Renderers
 		private Vector2 _anchor = Vector2.Zero;											// Anchor point for rotation and scaling.
 		private Vector2 _lineThickness = new Vector2(1.0f);								// Thickness for the line.
 		private Vector2 _crossProduct = Vector2.Zero;									// Cross product of the line.
+		private bool _isUnitLine = true;												// Flag to indicate that the line is using a single pixel for thickness.
 		#endregion
 
 		#region Properties.
@@ -72,12 +73,7 @@ namespace GorgonLibrary.Renderers
 		{
 			get
 			{
-				if ((_lineThickness.X.EqualsEpsilon(1.0f)) && (_lineThickness.Y.EqualsEpsilon(1.0f)))
-				{
-					return PrimitiveType.LineList;
-				}
-
-				return PrimitiveType.TriangleList;
+				return _isUnitLine ? PrimitiveType.LineList : PrimitiveType.TriangleList;
 			}
 		}
 
@@ -88,12 +84,7 @@ namespace GorgonLibrary.Renderers
 		{
 			get
 			{
-				if ((_lineThickness.X.EqualsEpsilon(1.0f)) && (_lineThickness.Y.EqualsEpsilon(1.0f)))
-				{
-					return 0;
-				}
-				
-				return 6;
+				return _isUnitLine ? 0 : 6;
 			}
 		}
 
@@ -104,12 +95,7 @@ namespace GorgonLibrary.Renderers
 		{
 			get
 			{
-				if ((_lineThickness.X.EqualsEpsilon(1.0f)) && (_lineThickness.Y.EqualsEpsilon(1.0f)))
-				{
-					return null;
-				}
-				
-				return Gorgon2D.DefaultIndexBuffer;
+				return _isUnitLine ? null : Gorgon2D.DefaultIndexBuffer;
 			}
 		}
 
@@ -142,6 +128,7 @@ namespace GorgonLibrary.Renderers
 				}
 
 				_lineThickness = value;
+				_isUnitLine = _lineThickness.X.EqualsEpsilon(1.0f) && _lineThickness.Y.EqualsEpsilon(1.0f);
 				NeedsTextureUpdate = true;
 				NeedsVertexUpdate = true;
 			}
@@ -429,7 +416,8 @@ namespace GorgonLibrary.Renderers
 			corner4.X = _corners[2] - _crossProduct.X;
 			corner4.Y = _corners[3] - _crossProduct.Y;
             
-			if (!Angle.EqualsEpsilon(0.0f))
+			// ReSharper disable once CompareOfFloatsByEqualityOperator
+			if (Angle != 0.0f)
 			{
 				float angle = Angle.Radians();						// Angle in radians.
 				float cosVal = angle.Cos();							// Cached cosine.
@@ -482,7 +470,8 @@ namespace GorgonLibrary.Renderers
 			float posY2 = _corners[3];
 
 			// Calculate rotation if necessary.
-			if (!Angle.EqualsEpsilon(0.0f))
+			// ReSharper disable once CompareOfFloatsByEqualityOperator
+			if (Angle != 0.0f)
 			{
 				float angle = Angle.Radians();						// Angle in radians.
 				float cosVal = angle.Cos();							// Cached cosine.
@@ -531,7 +520,7 @@ namespace GorgonLibrary.Renderers
                 textureCrossProduct.Y *= LineThickness.Y / Texture.Settings.Height;
             }
 
-            if ((LineThickness.X.EqualsEpsilon(1.0f)) && (LineThickness.Y.EqualsEpsilon(1.0f)))
+            if (_isUnitLine)
             {
                 Vector2.Add(ref _textureStart, ref textureCrossProduct, out Vertices[0].UV);
                 Vector2.Add(ref _textureEnd, ref textureCrossProduct, out Vertices[1].UV);

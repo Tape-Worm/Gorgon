@@ -162,21 +162,22 @@ namespace GorgonLibrary.Renderers
 			float posY2 = _corners[2].Y;
 
 			// Scale horizontally if necessary.
-			if (!Scale.X.EqualsEpsilon(1.0f))
+			// ReSharper disable CompareOfFloatsByEqualityOperator
+			if (Scale.X != 1.0f)
 			{
 				posX1 *= Scale.X;
 				posX2 *= Scale.X;
 			}
 
 			// Scale vertically.
-			if (!Scale.Y.EqualsEpsilon(1.0f))
+			if (Scale.Y != 1.0f)
 			{
 				posY1 *= Scale.Y;
 				posY2 *= Scale.Y;
 			}
 
 			// Calculate rotation if necessary.
-			if (!Angle.EqualsEpsilon(0.0f))
+			if (Angle != 0.0f)
 			{
 				float angle = Angle.Radians();						// Angle in radians.
 				float cosVal = angle.Cos();							// Cached cosine.
@@ -205,6 +206,7 @@ namespace GorgonLibrary.Renderers
                 _corners[3].X = posX1 + Position.X;
                 _corners[3].Y = posY2 + Position.Y;
 			}
+			// ReSharper restore CompareOfFloatsByEqualityOperator
 		}
 
 		/// <summary>

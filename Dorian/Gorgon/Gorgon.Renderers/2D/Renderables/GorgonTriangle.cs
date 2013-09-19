@@ -193,8 +193,9 @@ namespace GorgonLibrary.Renderers
 			Vector2 point2 = _points[1].Position;
 			Vector2 point3 = _points[2].Position;
 
-			if ((!Anchor.X.EqualsEpsilon(0.0f)) 
-                || (!Anchor.Y.EqualsEpsilon(0.0f)))
+			// ReSharper disable CompareOfFloatsByEqualityOperator
+			if ((Anchor.X != 0.0f) 
+                || (Anchor.Y != 0.0f))
 			{
 				point1 = Vector2.Subtract(point1, Anchor);
 				point2 = Vector2.Subtract(point2, Anchor);
@@ -202,7 +203,7 @@ namespace GorgonLibrary.Renderers
 			}
 
 			// Scale horizontally if necessary.
-			if (!Scale.X.EqualsEpsilon(1.0f))
+			if (Scale.X != 1.0f)
 			{
 				point1.X *= Scale.X;
 				point2.X *= Scale.X;
@@ -210,7 +211,7 @@ namespace GorgonLibrary.Renderers
 			}
 
 			// Scale vertically.
-			if (!Scale.Y.EqualsEpsilon(1.0f))
+			if (Scale.Y != 1.0f)
 			{
 				point1.Y *= Scale.Y;
 				point2.Y *= Scale.Y;
@@ -218,7 +219,7 @@ namespace GorgonLibrary.Renderers
 			}
 
 			// Calculate rotation if necessary.
-			if (!Angle.EqualsEpsilon(0.0f))
+			if (Angle != 0.0f)
 			{
 				float angle = Angle.Radians();						// Angle in radians.
 				float cosVal = angle.Cos();							// Cached cosine.
@@ -254,6 +255,7 @@ namespace GorgonLibrary.Renderers
 			Vertices[0].Color = _points[0].Color;
 			Vertices[1].Color = _points[1].Color;
 			Vertices[2].Color = _points[2].Color;
+			// ReSharper restore CompareOfFloatsByEqualityOperator
 		}
 
         /// <summary>

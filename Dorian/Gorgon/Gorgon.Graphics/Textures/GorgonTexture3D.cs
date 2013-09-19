@@ -24,7 +24,6 @@
 // 
 #endregion
 
-using System;
 using SlimMath;
 using DX = SharpDX;
 using D3D = SharpDX.Direct3D11;
