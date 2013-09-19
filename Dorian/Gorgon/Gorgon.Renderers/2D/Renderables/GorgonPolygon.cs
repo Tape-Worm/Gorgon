@@ -267,8 +267,9 @@ namespace GorgonLibrary.Renderers
 
             Matrix.Translation(_position.X, _position.Y, Depth, out translateMatrix);
 
-            if ((!_scale.X.EqualsEpsilon(1.0f))
-                || (!_scale.Y.EqualsEpsilon(1.0f)))
+	        // ReSharper disable CompareOfFloatsByEqualityOperator
+            if ((_scale.X != 1.0f)
+                || (_scale.Y != 1.0f))
             {
                 Matrix scaleMatrix;
 
@@ -277,7 +278,7 @@ namespace GorgonLibrary.Renderers
                 Matrix.Multiply(ref scaleMatrix, ref translateMatrix, out translateMatrix);
             }
 
-            if (!_angle.EqualsEpsilon(0.0f))
+            if (_angle != 0.0f)
             {
                 Matrix rotationMatrix;
 
@@ -286,13 +287,14 @@ namespace GorgonLibrary.Renderers
                 Matrix.Multiply(ref rotationMatrix, ref translateMatrix, out translateMatrix);
             }
 
-            if ((!Anchor.X.EqualsEpsilon(0.0f))
-                || (!Anchor.Y.EqualsEpsilon(0.0f)))
+            if ((Anchor.X != 0.0f)
+                || (Anchor.Y != 0.0f))
             {
                 Matrix anchorMatrix;
                 Matrix.Translation(-_anchor.X, -_anchor.Y, 0.0f, out anchorMatrix);
                 Matrix.Multiply(ref anchorMatrix, ref translateMatrix, out translateMatrix);
             }
+			// ReSharper restore CompareOfFloatsByEqualityOperator
 
 			// Update boundaries.
 	        if (Collider != null)
@@ -680,11 +682,8 @@ namespace GorgonLibrary.Renderers
                         Gorgon2DVertex vertex = vertices[i + vertexListOffset];
                         Vector4 position = vertex.Position;
 
-                        if (!Depth.EqualsEpsilon(0.0f))
-                        {
-                            position.Z = Depth;
-                            vertex.Position = position;
-                        }
+                        position.Z = Depth;
+                        vertex.Position = position;
                         
                         *vertexPtr = vertex;
 
@@ -709,10 +708,7 @@ namespace GorgonLibrary.Renderers
                         {
                             *ptr = vertices[i];
 
-                            if (!Depth.EqualsEpsilon(0.0f))
-                            {
-                                ptr->Position.Z = Depth;
-                            }
+                            ptr->Position.Z = Depth;
 
                             maxX = maxX.Max(ptr->Position.X);
                             maxY = maxY.Max(ptr->Position.Y);
@@ -1313,7 +1309,8 @@ namespace GorgonLibrary.Renderers
             }
             set
             {
-                if (_angle.EqualsEpsilon(value))
+	            // ReSharper disable once CompareOfFloatsByEqualityOperator
+                if (_angle == value)
                 {
                     return;
                 }
@@ -1383,7 +1380,8 @@ namespace GorgonLibrary.Renderers
             }
             set
             {
-                if (_depth.EqualsEpsilon(value))
+	            // ReSharper disable once CompareOfFloatsByEqualityOperator
+                if (_depth == value)
                 {
                     return;
                 }

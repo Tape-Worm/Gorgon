@@ -25,7 +25,6 @@
 #endregion
 
 using System;
-using System.Xml.Schema;
 
 namespace GorgonLibrary.Math
 {

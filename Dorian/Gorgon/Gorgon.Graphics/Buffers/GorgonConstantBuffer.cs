@@ -26,7 +26,6 @@
 
 using System.ComponentModel;
 using GorgonLibrary.Diagnostics;
-using GorgonLibrary.Graphics.Properties;
 using GorgonLibrary.Native;
 using DX = SharpDX;
 using GorgonLibrary.IO;

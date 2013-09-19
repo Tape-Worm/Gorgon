@@ -26,7 +26,6 @@
 
 using System;
 using D3D = SharpDX.Direct3D11;
-using GorgonLibrary.Math;
 
 namespace GorgonLibrary.Graphics
 {
@@ -224,10 +223,12 @@ namespace GorgonLibrary.Graphics
 		/// <returns>TRUE if equal, FALSE if not.</returns>
 		public static bool Equals(ref GorgonTextureSamplerStates left, ref GorgonTextureSamplerStates right)
 		{
+			// ReSharper disable CompareOfFloatsByEqualityOperator
 			return ((GorgonColor.Equals(ref left.BorderColor, ref right.BorderColor)) && (left.ComparisonFunction == right.ComparisonFunction) && (left.DepthAddressing == right.DepthAddressing) &&
-				(left.HorizontalAddressing == right.HorizontalAddressing) && (left.MaxAnisotropy == right.MaxAnisotropy) && (left.MaxLOD.EqualsEpsilon(right.MaxLOD)) &&
-				(left.MinLOD.EqualsEpsilon(right.MinLOD)) && (left.MipLODBias.EqualsEpsilon(right.MipLODBias)) && (left.TextureFilter == right.TextureFilter) &&
+				(left.HorizontalAddressing == right.HorizontalAddressing) && (left.MaxAnisotropy == right.MaxAnisotropy) && (left.MaxLOD == right.MaxLOD) &&
+				(left.MinLOD == right.MinLOD) && (left.MipLODBias == right.MipLODBias) && (left.TextureFilter == right.TextureFilter) &&
 				(left.VerticalAddressing == right.VerticalAddressing));
+			// ReSharper restore CompareOfFloatsByEqualityOperator
 		}
 
 		/// <summary>

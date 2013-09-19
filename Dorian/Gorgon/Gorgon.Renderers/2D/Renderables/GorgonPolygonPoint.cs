@@ -24,7 +24,6 @@
 // 
 #endregion
 
-using GorgonLibrary.Math;
 using GorgonLibrary.Renderers.Properties;
 using SlimMath;
 using GorgonLibrary.Graphics;
@@ -114,10 +113,12 @@ namespace GorgonLibrary.Renderers
         /// <returns>TRUE if equal, FALSE if not.</returns>
         public static bool Equals(ref GorgonPolygonPoint left, ref GorgonPolygonPoint right)
         {
-            return left.Position.X.EqualsEpsilon(right.Position.X) && left.Position.Y.EqualsEpsilon(right.Position.Y)
+	        // ReSharper disable CompareOfFloatsByEqualityOperator
+            return left.Position.X == right.Position.X && left.Position.Y == right.Position.Y
                    && left.Color.Equals(right.Color)
-                   && left.TextureCoordinate.X.EqualsEpsilon(right.TextureCoordinate.X)
-                   && left.TextureCoordinate.Y.EqualsEpsilon(right.TextureCoordinate.Y);
+                   && left.TextureCoordinate.X == right.TextureCoordinate.X
+                   && left.TextureCoordinate.Y == right.TextureCoordinate.Y;
+			// ReSharper restore CompareOfFloatsByEqualityOperator
         }
 
         /// <summary>

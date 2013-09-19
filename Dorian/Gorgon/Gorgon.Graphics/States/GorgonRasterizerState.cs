@@ -28,7 +28,6 @@ using System.Linq;
 using System.Drawing;
 using DX = SharpDX;
 using D3D = SharpDX.Direct3D11;
-using GorgonLibrary.Math;
 
 namespace GorgonLibrary.Graphics
 {
@@ -269,14 +268,16 @@ namespace GorgonLibrary.Graphics
 		/// <returns>TRUE if equal, FALSE if not.</returns>
 		public static bool Equals(ref GorgonRasterizerStates left, ref GorgonRasterizerStates right)
 		{
-		    return ((left.CullingMode == right.CullingMode) && (left.DepthBias == right.DepthBias)
-		            && (left.DepthBiasClamp.EqualsEpsilon(right.DepthBiasClamp)) && (left.FillMode == right.FillMode) &&
+			// ReSharper disable CompareOfFloatsByEqualityOperator
+			return ((left.CullingMode == right.CullingMode) && (left.DepthBias == right.DepthBias)
+		            && (left.DepthBiasClamp == right.DepthBiasClamp) && (left.FillMode == right.FillMode) &&
 		            (left.IsAntialiasedLinesEnabled == right.IsAntialiasedLinesEnabled)
 		            && (left.IsDepthClippingEnabled == right.IsDepthClippingEnabled)
 		            && (left.IsFrontFacingTriangleCounterClockwise == right.IsFrontFacingTriangleCounterClockwise) &&
 		            (left.IsMultisamplingEnabled == right.IsMultisamplingEnabled)
 		            && (left.IsScissorTestingEnabled == right.IsScissorTestingEnabled)
-		            && (left.SlopeScaledDepthBias.EqualsEpsilon(right.SlopeScaledDepthBias)));
+		            && (left.SlopeScaledDepthBias == right.SlopeScaledDepthBias));
+			// ReSharper restore CompareOfFloatsByEqualityOperator
 		}
 
 		/// <summary>

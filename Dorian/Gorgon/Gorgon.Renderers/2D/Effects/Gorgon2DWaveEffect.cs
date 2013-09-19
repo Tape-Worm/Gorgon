@@ -152,7 +152,8 @@ namespace GorgonLibrary.Renderers
 			}
 			set
 			{
-				if (_settings.Amplitude.EqualsEpsilon(value))
+				// ReSharper disable once CompareOfFloatsByEqualityOperator
+				if (_settings.Amplitude == value)
 				{
 					return;
 				}
@@ -173,7 +174,8 @@ namespace GorgonLibrary.Renderers
 			}
 			set
 			{
-				if (_settings.Period.EqualsEpsilon(value))
+				// ReSharper disable once CompareOfFloatsByEqualityOperator
+				if (_settings.Period == value)
 				{
 					return;
 				}
@@ -194,7 +196,8 @@ namespace GorgonLibrary.Renderers
 			}
 			set
 			{
-				if (_settings.Length.EqualsEpsilon(value))
+				// ReSharper disable once CompareOfFloatsByEqualityOperator
+				if (_settings.Length == value)
 				{
 					return;
 				}
@@ -215,7 +218,8 @@ namespace GorgonLibrary.Renderers
 			}
 			set
 			{
-				if (_settings.LengthScale.EqualsEpsilon(value))
+				// ReSharper disable once CompareOfFloatsByEqualityOperator
+				if (_settings.LengthScale == value)
 				{
 					return;
 				}

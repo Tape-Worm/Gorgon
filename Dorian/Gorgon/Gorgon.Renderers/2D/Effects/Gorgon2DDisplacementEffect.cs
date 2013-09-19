@@ -27,8 +27,6 @@
 using System;
 using System.Drawing;
 using GorgonLibrary.Graphics;
-using GorgonLibrary.Math;
-using GorgonLibrary.Renderers.Properties;
 using SlimMath;
 
 namespace GorgonLibrary.Renderers
@@ -67,7 +65,8 @@ namespace GorgonLibrary.Renderers
 					value = 0.0f;
 				}
 				
-				if (_displacementStrength.EqualsEpsilon(value))
+				// ReSharper disable once CompareOfFloatsByEqualityOperator
+				if (_displacementStrength == value)
 				{
 					return;
 				}

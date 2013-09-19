@@ -24,8 +24,6 @@
 // 
 #endregion
 
-using GorgonLibrary.Math;
-
 namespace GorgonLibrary.Diagnostics
 {	
 	/// <summary>
@@ -277,7 +275,7 @@ namespace GorgonLibrary.Diagnostics
 			Delta = (float)frameDelta / 1000.0f;
 
 			// If the delta is 0, then put in the smallest possible positive value.
-			if (Delta.EqualsEpsilon(0.0f))
+			if (Delta < 1e-6f)
 			{
 				Delta = 1e-6f;
 			}

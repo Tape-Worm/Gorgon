@@ -26,7 +26,6 @@
 
 using System;
 using System.Runtime.InteropServices;
-using GorgonLibrary.Math;
 
 namespace GorgonLibrary.Renderers
 {
@@ -66,8 +65,10 @@ namespace GorgonLibrary.Renderers
 		/// <returns></returns>
 		public static bool Equals(ref Gorgon2DAlphaTest left, ref Gorgon2DAlphaTest right)
 		{
+			// ReSharper disable CompareOfFloatsByEqualityOperator
 			return ((left.IsEnabled == right.IsEnabled) &&
-			        (left.UpperAlpha.EqualsEpsilon(right.UpperAlpha)) && (left.LowerAlpha.EqualsEpsilon(right.LowerAlpha)));
+			        (left.UpperAlpha == right.UpperAlpha) && (left.LowerAlpha == right.LowerAlpha));
+			// ReSharper restore CompareOfFloatsByEqualityOperator
 		}
 
 		/// <summary>

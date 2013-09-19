@@ -81,7 +81,8 @@ namespace GorgonLibrary.Renderers
 			}
 			set
 			{
-				if (_angle.EqualsEpsilon(value))
+				// ReSharper disable once CompareOfFloatsByEqualityOperator
+				if (_angle == value)
 				{
 					return;
 				}
@@ -196,20 +197,22 @@ namespace GorgonLibrary.Renderers
 			Matrix translation;					// Translation matrix.
 
 			// Scale it.
-			if ((!_zoom.X.EqualsEpsilon(1.0f)) || (!_zoom.Y.EqualsEpsilon(1.0f)))
+			// ReSharper disable CompareOfFloatsByEqualityOperator
+			if ((_zoom.X != 1.0f) || (_zoom.Y != 1.0f))
 			{
 				center.M11 = _zoom.X;
 				center.M22 = _zoom.Y;
 				center.M33 = 1.0f;
 			}
 
-			if (!_angle.EqualsEpsilon(0.0f))
+			if (_angle != 0.0f)
 			{
 				Matrix rotation;						// Rotation matrix.
 
 				Matrix.RotationZ(_angle.Radians(), out rotation);
 				Matrix.Multiply(ref rotation, ref center, out center);
 			}
+			// ReSharper restore CompareOfFloatsByEqualityOperator
 
 			Matrix.Translation(_position.X, _position.Y, 0.0f, out translation);
 			Matrix.Multiply(ref translation, ref center, out center);
@@ -455,7 +458,8 @@ namespace GorgonLibrary.Renderers
 
             result = (Vector3)transformed;
 
-            if (!transformed.W.EqualsEpsilon(1.0f))
+	        // ReSharper disable once CompareOfFloatsByEqualityOperator
+            if (transformed.W != 1.0f)
             {
                 Vector3.Divide(ref result, transformed.W, out result);
             }
@@ -480,7 +484,8 @@ namespace GorgonLibrary.Renderers
             Vector4 transform;
             Vector3.Transform(ref worldSpacePosition, ref transformMatrix, out transform);
 
-            if (!transform.W.EqualsEpsilon(1.0f))
+	        // ReSharper disable once CompareOfFloatsByEqualityOperator
+            if (transform.W != 1.0f)
             {
                 Vector4.Divide(ref transform, transform.W, out transform);
             }
@@ -568,12 +573,14 @@ namespace GorgonLibrary.Renderers
             // Project back to the default camera.
             iconPosition = Gorgon2D.DefaultCamera.Project(iconPosition);
 
-		    if ((!Gorgon2D.DefaultCamera.Zoom.X.EqualsEpsilon(1.0f))
-                || (!Gorgon2D.DefaultCamera.Zoom.Y.EqualsEpsilon(1.0f)))
+			// ReSharper disable CompareOfFloatsByEqualityOperator
+		    if ((Gorgon2D.DefaultCamera.Zoom.X != 1.0f)
+                || (Gorgon2D.DefaultCamera.Zoom.Y != 1.0f))
             {
                 _cameraIcon.Scale = new Vector2(1.0f / Gorgon2D.DefaultCamera.Zoom.X,
                     1.0f / Gorgon2D.DefaultCamera.Zoom.Y);
             }
+			// ReSharper restore CompareOfFloatsByEqualityOperator
 
             // Highlight current camera.
 		    _cameraIcon.Color = Gorgon2D.Camera == this ? Color.FromArgb(204, Color.Green) : Color.FromArgb(204, Color.White);

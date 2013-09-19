@@ -26,7 +26,6 @@
 
 using System;
 using GorgonLibrary.Graphics;
-using GorgonLibrary.Math;
 using SlimMath;
 
 namespace GorgonLibrary.Renderers
@@ -68,7 +67,8 @@ namespace GorgonLibrary.Renderers
 			}
 			set
 			{
-				if (_amount.EqualsEpsilon(value))
+				// ReSharper disable once CompareOfFloatsByEqualityOperator
+				if (_amount == value)
 				{
 					return;
 				}

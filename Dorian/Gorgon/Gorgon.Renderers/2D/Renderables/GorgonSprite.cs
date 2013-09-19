@@ -27,7 +27,6 @@
 using System;
 using System.IO;
 using System.Linq;
-using System.Text;
 using GorgonLibrary.Animation;
 using GorgonLibrary.Graphics;
 using GorgonLibrary.IO;

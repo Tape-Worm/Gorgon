@@ -119,7 +119,8 @@ namespace GorgonLibrary.Renderers
 			}
 			set
 			{
-				if (_noiseFrequency.EqualsEpsilon(value))
+				// ReSharper disable once CompareOfFloatsByEqualityOperator
+				if (_noiseFrequency == value)
 				{
 					return;
 				}
@@ -154,7 +155,8 @@ namespace GorgonLibrary.Renderers
 			}
 			set
 			{
-				if (_scratchSettings.ScratchVisibleTime.EqualsEpsilon(value))
+				// ReSharper disable once CompareOfFloatsByEqualityOperator
+				if (_scratchSettings.ScratchVisibleTime == value)
 				{
 					return;
 				}
@@ -175,7 +177,8 @@ namespace GorgonLibrary.Renderers
 			}
 			set
 			{
-				if (_scratchSettings.ScratchVisibleTime.EqualsEpsilon(value))
+				// ReSharper disable once CompareOfFloatsByEqualityOperator
+				if (_scratchSettings.ScratchVisibleTime == value)
 				{
 					return;
 				}
@@ -196,7 +199,8 @@ namespace GorgonLibrary.Renderers
 			}
 			set
 			{
-				if (_scratchSettings.ScratchIntensity.EqualsEpsilon(value))
+				// ReSharper disable once CompareOfFloatsByEqualityOperator
+				if (_scratchSettings.ScratchIntensity == value)
 				{
 					return;
 				}
@@ -217,7 +221,8 @@ namespace GorgonLibrary.Renderers
 			}
 			set
 			{
-				if (_scratchSettings.ScratchWidth.EqualsEpsilon(value))
+				// ReSharper disable once CompareOfFloatsByEqualityOperator
+				if (_scratchSettings.ScratchWidth == value)
 				{
 					return;
 				}
@@ -238,7 +243,8 @@ namespace GorgonLibrary.Renderers
 			}
 			set
 			{
-				if (_sepiaSettings.SepiaDesaturationAmount.EqualsEpsilon(value))
+				// ReSharper disable once CompareOfFloatsByEqualityOperator
+				if (_sepiaSettings.SepiaDesaturationAmount == value)
 				{
 					return;
 				}
@@ -259,7 +265,8 @@ namespace GorgonLibrary.Renderers
 			}
 			set
 			{
-				if (_sepiaSettings.SepiaToneAmount.EqualsEpsilon(value))
+				// ReSharper disable once CompareOfFloatsByEqualityOperator
+				if (_sepiaSettings.SepiaToneAmount == value)
 				{
 					return;
 				}
@@ -280,7 +287,7 @@ namespace GorgonLibrary.Renderers
 			}
 			set
 			{
-				if (_sepiaSettings.SepiaLightColor.Equals(value))
+				if (GorgonColor.Equals(ref _sepiaSettings.SepiaLightColor, ref value))
 				{
 					return;
 				}
@@ -301,7 +308,7 @@ namespace GorgonLibrary.Renderers
 			}
 			set
 			{
-				if (_sepiaSettings.SepiaDarkColor.Equals(value))
+				if (GorgonColor.Equals(ref _sepiaSettings.SepiaDarkColor, ref value))
 				{
 					return;
 				}

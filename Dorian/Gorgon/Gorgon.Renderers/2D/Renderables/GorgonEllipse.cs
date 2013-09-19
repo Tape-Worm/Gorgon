@@ -299,17 +299,18 @@ namespace GorgonLibrary.Renderers
 		{
 			Vector2 result = vector;
 
-			if (!Scale.X.EqualsEpsilon(1.0f))
+			// ReSharper disable CompareOfFloatsByEqualityOperator
+			if (Scale.X != 1.0f)
 			{
 				result.X *= Scale.X;
 			}
 
-			if (!Scale.Y.EqualsEpsilon(1.0f))
+			if (Scale.Y != 1.0f)
 			{
 				result.Y *= Scale.Y;
 			}
 
-			if (!Angle.EqualsEpsilon(0.0f))
+			if (Angle != 0.0f)
 			{
 				Vector2 rotVector = result;
 				float angle = Angle.Radians();						// Angle in radians.
@@ -319,6 +320,7 @@ namespace GorgonLibrary.Renderers
 				result.X = (rotVector.X * cosVal - rotVector.Y * sinVal);
 				result.Y = (rotVector.X * sinVal + rotVector.Y * cosVal);
 			}
+			// ReSharper restore CompareOfFloatsByEqualityOperator
 
 			result.X += Position.X;
 			result.Y += Position.Y;
@@ -339,21 +341,22 @@ namespace GorgonLibrary.Renderers
 				Vector2 startPosition = _points[i];
 				Vector2 endPosition = i + 1 < _points.Length ? _points[i + 1] : _points[0];
 
-				if (!Scale.X.EqualsEpsilon(1.0f))
+				// ReSharper disable CompareOfFloatsByEqualityOperator
+				if (Scale.X != 1.0f)
 				{
 					startPosition.X *= Scale.X;
 					endPosition.X *= Scale.X;
 					center.X *= Scale.X;
 				}
 
-				if (!Scale.Y.EqualsEpsilon(1.0f))
+				if (Scale.Y != 1.0f)
 				{
 					startPosition.Y *= Scale.Y;
 					endPosition.Y *= Scale.Y;
 					center.Y *= Scale.Y;
 				}
 
-				if (!Angle.EqualsEpsilon(0.0f))
+				if (Angle != 0.0f)
 				{
 					float angle = Angle.Radians();		// Angle in radians.
 					float cosVal = angle.Cos();		    // Cached cosine.
@@ -377,12 +380,13 @@ namespace GorgonLibrary.Renderers
 					Vertices[vertexIndex + 2].Position.X = endPosition.X + Position.X;
 					Vertices[vertexIndex + 2].Position.Y = endPosition.Y + Position.Y;
 				}
+				// ReSharper restore CompareOfFloatsByEqualityOperator
 
 			    Vertices[vertexIndex].Position.Z = Depth;
 			    Vertices[vertexIndex + 1].Position.Z = Depth;
 			    Vertices[vertexIndex + 2].Position.Z = Depth;
 
-			    if (!_colors[i].Equals(Vertices[vertexIndex].Color))
+				if (!GorgonColor.Equals(ref _colors[i], ref Vertices[vertexIndex].Color))
 			    {
 			        Vertices[vertexIndex + 2].Color = Vertices[vertexIndex + 1].Color = Vertices[vertexIndex].Color = _colors[i];
 			    }

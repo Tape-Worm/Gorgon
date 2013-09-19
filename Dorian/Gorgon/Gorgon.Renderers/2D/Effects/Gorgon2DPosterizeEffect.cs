@@ -27,7 +27,6 @@
 using System;
 using System.Runtime.InteropServices;
 using GorgonLibrary.Graphics;
-using GorgonLibrary.Math;
 
 namespace GorgonLibrary.Renderers
 {
@@ -121,7 +120,8 @@ namespace GorgonLibrary.Renderers
 			}
 			set
 			{
-				if (_settings.PosterizeExponent.EqualsEpsilon(value))
+				// ReSharper disable once CompareOfFloatsByEqualityOperator
+				if (_settings.PosterizeExponent == value)
 				{
 					return;
 				}
