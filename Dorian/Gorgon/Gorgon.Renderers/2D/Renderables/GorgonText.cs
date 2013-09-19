@@ -39,6 +39,9 @@ namespace GorgonLibrary.Renderers
 	/// <summary>
 	/// A renderable object that renders a block of text.
 	/// </summary>
+	/// <remarks>Text in Gorgon is like any other renderable.  It can be used as a discrete object that can be translated, scaled, or rotated.  Additionally it can 
+	/// wrap text at a boundary, change its horizontal alignment and line spacing.  Text objects require the use of <see cref="GorgonLibrary.Graphics.GorgonFont">font</see> 
+	/// objects in order to render the glyphs used in the text.</remarks>
 	public class GorgonText
 		: GorgonNamedObject, IRenderable, IMoveable, I2DCollisionObject
 	{
@@ -60,6 +63,7 @@ namespace GorgonLibrary.Renderers
 		private bool _needsVertexUpdate = true;									// Flag to indicate that we need a vertex update.
 		private bool _needsColorUpdate = true;									// Flag to indicate that the color needs updating.
 		private bool _needsShadowUpdate = true;									// Flag to indicate that the shadow alpha needs updating.
+		private bool _needsTextUpdate = true;									// Flag to indicate that the text formatting needs to be updated.
 		private readonly StringBuilder _formattedText;							// Formatted text.
 		private readonly List<string> _lines;									// Lines in the text.
 		private Vector2 _size = Vector2.Zero;									// Size of the text block.
@@ -115,7 +119,7 @@ namespace GorgonLibrary.Renderers
 		/// Property to set or return the offset for the shadow.
 		/// </summary>
 		/// <remarks>This value only applies when <see cref="P:GorgonLibrary.Renderers.GorgonText.ShadowEnabled">ShadowEnabled</see> is TRUE.</remarks>
-		[AnimatedProperty()]
+		[AnimatedProperty]
 		public Vector2 ShadowOffset
 		{
 			get
@@ -124,11 +128,13 @@ namespace GorgonLibrary.Renderers
 			}
 			set
 			{
-				if (_shadowOffset != value)
+				if (_shadowOffset == value)
 				{
-					_shadowOffset = value;
-					_needsVertexUpdate = true;
+					return;
 				}
+
+				_shadowOffset = value;
+				_needsVertexUpdate = true;
 			}
 		}
 
@@ -143,14 +149,16 @@ namespace GorgonLibrary.Renderers
 			}
 			set
 			{
-				if (_shadowEnabled != value)
+				if (_shadowEnabled == value)
 				{
-					_shadowEnabled = value;
-					_needsShadowUpdate = value;
-					_needsVertexUpdate = true;
-					_needsColorUpdate = true;
-					UpdateText();
+					return;
 				}
+
+				_shadowEnabled = value;
+				_needsShadowUpdate = value;
+				_needsVertexUpdate = true;
+				_needsColorUpdate = true;
+				UpdateText();
 			}
 		}
 
@@ -158,7 +166,7 @@ namespace GorgonLibrary.Renderers
 		/// Property to set or return the shadow opacity.
 		/// </summary>
 		/// <remarks>This value only applies when <see cref="P:GorgonLibrary.Renderers.GorgonText.ShadowEnabled">ShadowEnabled</see> is TRUE.</remarks>
-		[AnimatedProperty()]
+		[AnimatedProperty]
 		public float ShadowOpacity
 		{
 			get
@@ -168,7 +176,10 @@ namespace GorgonLibrary.Renderers
 			set
 			{
 				for (int i = 0; i < 4; i++)
+				{
 					_shadowAlpha[i] = value;
+				}
+
 				_needsShadowUpdate = true;
 			}
 		}
@@ -176,7 +187,7 @@ namespace GorgonLibrary.Renderers
 		/// <summary>
 		/// Property to set or return the spacing for the lines.
 		/// </summary>
-		[AnimatedProperty()]
+		[AnimatedProperty]
 		public float LineSpacing
 		{
 			get
@@ -185,12 +196,15 @@ namespace GorgonLibrary.Renderers
 			}
 			set
 			{
-				if (_lineSpace != value)
+				// ReSharper disable once CompareOfFloatsByEqualityOperator
+				if (_lineSpace == value)
 				{
-					_lineSpace = value;
-					_size = GetTextSize();
-					_needsVertexUpdate = true;
+					return;
 				}
+
+				_lineSpace = value;
+				_size = GetTextSize();
+				_needsVertexUpdate = true;
 			}
 		}
 
@@ -206,12 +220,13 @@ namespace GorgonLibrary.Renderers
 			}
 			set
 			{
-				if (_alignment != value)
+				if (_alignment == value)
 				{
-					_alignment = value;
-					FormatText();
-					_needsVertexUpdate = true;
+					return;
 				}
+
+				_alignment = value;
+				_needsTextUpdate = _needsVertexUpdate = true;
 			}
 		}
 
@@ -232,12 +247,13 @@ namespace GorgonLibrary.Renderers
 			}
 			set
 			{
-				if (value != _wordWrap)
+				if (value == _wordWrap)
 				{
-					_wordWrap = value;
-					FormatText();
-					_needsVertexUpdate = true;
+					return;
 				}
+
+				_wordWrap = value;
+				_needsTextUpdate = _needsVertexUpdate = true;
 			}
 		}
 
@@ -254,7 +270,9 @@ namespace GorgonLibrary.Renderers
 			set
 			{
 				if (value < 1)
+				{
 					value = 1;
+				}
 
 				_tabSpace = value;
 				_tabText.Length = 0;
@@ -280,12 +298,13 @@ namespace GorgonLibrary.Renderers
 			}
 			set
 			{
-				if (_textRect != value)
+				if (_textRect == value)
 				{
-					_textRect = value;
-					_needsVertexUpdate = true;
-					FormatText();
+					return;
 				}
+
+				_textRect = value;
+				_needsTextUpdate = _needsVertexUpdate = true;
 			}
 		}
 
@@ -322,7 +341,9 @@ namespace GorgonLibrary.Renderers
 				int prevLength = _text.Length;
 
 				if (value == null)
+				{
 					value = string.Empty;
+				}
 
 				if (string.Compare(value, _text, StringComparison.CurrentCulture) != 0)
 				{
@@ -331,11 +352,15 @@ namespace GorgonLibrary.Renderers
 				}
 
 				// Update the colors for the rest of the string if the text length is longer.
-				if (prevLength < _text.Length)
+				if (prevLength >= _text.Length)
 				{
-					_needsColorUpdate = true;
-					if (ShadowEnabled)
-						_needsShadowUpdate = true;
+					return;
+				}
+
+				_needsColorUpdate = true;
+				if (ShadowEnabled)
+				{
+					_needsShadowUpdate = true;
 				}
 			}
 		}
@@ -448,16 +473,20 @@ namespace GorgonLibrary.Renderers
 			}
 
 			// Get the first texture.
+			// ReSharper disable once ForCanBeConvertedToForeach
 			for (int i = 0; i < _text.Length; i++)
 			{
-				if (_font.Glyphs.Contains(_text[i]))
+				if (!_font.Glyphs.Contains(_text[i]))
 				{
-					_currentTexture = _font.Glyphs[_text[i]].Texture;
-					break;
+					continue;
 				}
+
+				_currentTexture = _font.Glyphs[_text[i]].Texture;
+				break;
 			}
 
 			_needsVertexUpdate = true;
+
 			FormatText();
 		}
 
@@ -469,30 +498,26 @@ namespace GorgonLibrary.Renderers
 		/// <param name="lineLength">Length of the line, in pixels.</param>
 		private void GetAlignmentExtents(ref Vector2 leftTop, ref Vector2 rightBottom, float lineLength)
 		{
-			int outlineOffset = 0;
-			int calc = 0;
-
-			if (_font.Settings.OutlineColor.Alpha > 0)
-				outlineOffset = _font.Settings.OutlineSize;
+			int calc;
 
 			switch (_alignment)
 			{
-				case UI.Alignment.UpperCenter:
+				case Alignment.UpperCenter:
 					calc = (int)((ClipRegion.Width / 2.0f) - (lineLength / 2.0f));
 					leftTop.X += calc;
 					rightBottom.X += calc;
 					break;
-				case UI.Alignment.UpperRight:
+				case Alignment.UpperRight:
 					calc = (int)(ClipRegion.Width - lineLength);
 					leftTop.X += calc;
 					rightBottom.X += calc;
 					break;
-				case UI.Alignment.CenterLeft:
+				case Alignment.CenterLeft:
 					calc = (int)(ClipRegion.Height / 2.0f - _size.Y / 2.0f);
 					leftTop.Y += calc;
 					rightBottom.Y += calc;
 					break;
-				case UI.Alignment.Center:
+				case Alignment.Center:
 					calc = (int)((ClipRegion.Width / 2.0f) - (lineLength / 2.0f));
 					leftTop.X += calc;
 					rightBottom.X += calc;
@@ -500,7 +525,7 @@ namespace GorgonLibrary.Renderers
 					leftTop.Y += calc;
 					rightBottom.Y += calc;
 					break;
-				case UI.Alignment.CenterRight:
+				case Alignment.CenterRight:
 					calc = (int)(ClipRegion.Width - lineLength);
 					leftTop.X += calc;
 					rightBottom.X += calc;
@@ -508,12 +533,12 @@ namespace GorgonLibrary.Renderers
 					leftTop.Y += calc;
 					rightBottom.Y += calc;
 					break;
-				case UI.Alignment.LowerLeft:
+				case Alignment.LowerLeft:
 					calc = (int)(ClipRegion.Height - _size.Y);
 					leftTop.Y += calc;
 					rightBottom.Y += calc;
 					break;
-				case UI.Alignment.LowerCenter:
+				case Alignment.LowerCenter:
 					calc = (int)((ClipRegion.Width / 2.0f) - (lineLength / 2.0f));
 					leftTop.X += calc;
 					rightBottom.X += calc;
@@ -521,7 +546,7 @@ namespace GorgonLibrary.Renderers
 					leftTop.Y += calc;
 					rightBottom.Y += calc;
 					break;
-				case UI.Alignment.LowerRight:
+				case Alignment.LowerRight:
 					calc = (int)(ClipRegion.Width - lineLength);
 					leftTop.X += calc;
 					rightBottom.X += calc;
@@ -547,9 +572,12 @@ namespace GorgonLibrary.Renderers
 			Vector2 rbCorner = Vector2.Add(ltCorner, glyph.GlyphCoordinates.Size);
 
 			if ((_alignment != Alignment.UpperLeft) && (_textRect != null))
+			{
 				GetAlignmentExtents(ref ltCorner, ref rbCorner, lineLength);
+			}
 
 			// Scale.
+			// ReSharper disable CompareOfFloatsByEqualityOperator
 			if (_scale.X != 1.0f)
 			{
 				ltCorner.X *= Scale.X;
@@ -601,8 +629,8 @@ namespace GorgonLibrary.Renderers
 			_vertices[vertexIndex + 3].UV = new Vector2(glyph.TextureCoordinates.Right, glyph.TextureCoordinates.Bottom);
 
 			// Set depth.
-			if (_depth != 0.0f)
-				_vertices[vertexIndex + 3].Position.Z = _vertices[vertexIndex + 2].Position.Z = _vertices[vertexIndex + 1].Position.Z = _vertices[vertexIndex].Position.Z = -Depth;
+			_vertices[vertexIndex + 3].Position.Z = _vertices[vertexIndex + 2].Position.Z = _vertices[vertexIndex + 1].Position.Z = _vertices[vertexIndex].Position.Z = -Depth;
+			// ReSharper restore CompareOfFloatsByEqualityOperator
 		}
 
 		/// <summary>
@@ -613,22 +641,26 @@ namespace GorgonLibrary.Renderers
 			int vertexIndex = 0;
 			Vector2 pos = Vector2.Zero;
 			Vector2 outlineOffset = Vector2.Zero;
-			GorgonGlyph glyph = null;
 			float angle = _angle.Radians();						// Angle in radians.
 			float cosVal = angle.Cos();							// Cached cosine.
 			float sinVal = angle.Sin();							// Cached sine.
 
 			if ((_font.Settings.OutlineColor.Alpha > 0) && (_font.Settings.OutlineSize > 0))
+			{
 				outlineOffset = new Vector2(_font.Settings.OutlineSize, _font.Settings.OutlineSize);
+			}
 
 			_colliderVertexCount = 0;
+			// ReSharper disable once ForCanBeConvertedToForeach
 			for (int line = 0; line < _lines.Count; line++)
 			{
 				float lineLength = 0;
 				string currentLine = _lines[line];
 
-				if ((_alignment != UI.Alignment.UpperLeft) && (_textRect.HasValue))
+				if ((_alignment != Alignment.UpperLeft) && (_textRect.HasValue))
+				{
 					lineLength = LineMeasure(_lines[line], outlineOffset.X);
+				}
 
 				for (int i = 0; i < currentLine.Length; i++)
 				{
@@ -637,7 +669,7 @@ namespace GorgonLibrary.Renderers
 					if (!_font.Glyphs.Contains(c))
 						c = _font.Settings.DefaultCharacter;
 
-					glyph = _font.Glyphs[c];
+					GorgonGlyph glyph = _font.Glyphs[c];
 
 					if (c == ' ')
 					{
@@ -666,18 +698,25 @@ namespace GorgonLibrary.Renderers
 						{
 							var kerning = new GorgonKerningPair(c, currentLine[i + 1]);
 							if (_font.KerningPairs.ContainsKey(kerning))
+							{
 								pos.X += _font.KerningPairs[kerning];
+							}
 							else
+							{
 								pos.X += glyph.Advance.Z;
+							}
 						}
 						else
+						{
 							pos.X += glyph.Advance.Z;
+						}
 					}
 					else
+					{
 						pos.X += glyph.GlyphCoordinates.Width + outlineOffset.X;
+					}
 				}
 
-				// TODO: Ensure that this is documented somewhere.				
 				// If we have texture filtering on, this is going to look weird because it's a sub-pixel.
 				// In order to get the font to look right on a second line, we need to use point filtering.
 				// We -could- use a Floor here, but then movement becomes very jerky.  We're better off turning
@@ -687,7 +726,9 @@ namespace GorgonLibrary.Renderers
 			}
 
 			if (_collider != null)
+			{
 				_collider.UpdateFromCollisionObject();
+			}
 		}
 
 		/// <summary>
@@ -718,16 +759,16 @@ namespace GorgonLibrary.Renderers
 					_vertices[i + 2].Color = _colors[2];
 					_vertices[i + 3].Color = _colors[3];
 				}
+
+				return;
 			}
-			else
+
+			for (int i = 4; i < _vertexCount; i += 8)
 			{
-				for (int i = 4; i < _vertexCount; i += 8)
-				{
-					_vertices[i].Color = _colors[0];
-					_vertices[i + 1].Color = _colors[1];
-					_vertices[i + 2].Color = _colors[2];
-					_vertices[i + 3].Color = _colors[3];
-				}
+				_vertices[i].Color = _colors[0];
+				_vertices[i + 1].Color = _colors[1];
+				_vertices[i + 2].Color = _colors[2];
+				_vertices[i + 3].Color = _colors[3];
 			}
 		}
 
@@ -737,23 +778,21 @@ namespace GorgonLibrary.Renderers
 		private void WordWrapText()
 		{
 			int i = 0;
-			char character = ' ';
-			GorgonGlyph glyph = null;
 			float pos = 0;
 			int outlineSize = 0;
 			RectangleF region = ClipRegion;
 
 			// If we don't have a font, then we have nothing to wrap.  Yet.
-			if (_font == null)
+			if ((_font == null)
+				|| (pos >= region.Width))
 			{
 				return;
 			}
 
 			if (_font.Settings.OutlineColor.Alpha > 0)
+			{
 				outlineSize = _font.Settings.OutlineSize;
-
-			if (pos >= region.Width)
-				return;
+			}
 
 			_formattedText.Append(_text);
 			_formattedText.Replace("\n\r", "\n");
@@ -763,7 +802,7 @@ namespace GorgonLibrary.Renderers
 
 			while (i < _formattedText.Length)
 			{
-				character = _formattedText[i];
+				char character = _formattedText[i];
 
 				if (character == '\n')
 				{
@@ -777,11 +816,13 @@ namespace GorgonLibrary.Renderers
 					character = _font.Settings.DefaultCharacter;
 				}
 
-				glyph = _font.Glyphs[character];
+				GorgonGlyph glyph = _font.Glyphs[character];
 
 				// If we can't fit a single glyph into the boundaries, then just leave.  Else we'll have an infinite loop on our hands.
 				if (glyph.GlyphCoordinates.Width > region.Width)
+				{
 					return;
+				}
 
 				switch (character)
 				{
@@ -796,15 +837,19 @@ namespace GorgonLibrary.Renderers
 							if ((i < _formattedText.Length - 1) && (_font.KerningPairs.Count > 0))
 							{
 								var kernPair = new GorgonKerningPair(character, _formattedText[i + 1]);
+
 								if (_font.KerningPairs.ContainsKey(kernPair))
+								{
 									kernValue = _font.KerningPairs[kernPair];
+								}
 							}
 
 							pos += glyph.Advance.X + glyph.Advance.Y + kernValue + outlineSize;
 						}
 						else
+						{
 							pos += glyph.GlyphCoordinates.Width + outlineSize;
-
+						}
 						break;
 				}
 
@@ -834,7 +879,9 @@ namespace GorgonLibrary.Renderers
 
 					// If we reach end of line without finding a line break, add a line break.
 					if ((i > 0) && (j < 0))
+					{
 						_formattedText.Insert(i, "\n");
+					}
 
 					pos = 0;
 				}
@@ -865,6 +912,7 @@ namespace GorgonLibrary.Renderers
 			_lines.Clear();
 			_lines.AddRange(_formattedText.ToString().Split('\n'));
 			_size = GetTextSize();
+			_needsTextUpdate = false;
 		}
 
 		/// <summary>
@@ -879,14 +927,15 @@ namespace GorgonLibrary.Renderers
 			float size = 0;
 
 			for (int i = 0; i < line.Length; i++)
-			{				
-				GorgonGlyph glyph = null;
+			{
 				char c = line[i];
 
 				if (!_font.Glyphs.Contains(c))
+				{
 					c = _font.Settings.DefaultCharacter;
+				}
 
-				glyph = _font.Glyphs[c];
+				GorgonGlyph glyph = _font.Glyphs[c];
 
 				switch (c)
 				{
@@ -914,15 +963,23 @@ namespace GorgonLibrary.Renderers
 					{
 						var kerning = new GorgonKerningPair(c, line[i + 1]);
 						if (_font.KerningPairs.ContainsKey(kerning))
+						{
 							size += _font.KerningPairs[kerning];
+						}
 						else
+						{
 							size += glyph.Advance.Z;
+						}
 					}
 					else
+					{
 						size += glyph.Advance.Z;
+					}
 				}
 				else
+				{
 					size += glyph.GlyphCoordinates.Width + outlineOffset;
+				}
 			}
 			return size;
 		}
@@ -937,18 +994,30 @@ namespace GorgonLibrary.Renderers
 			float outlineSize = 0;
 
 			if ((_text.Length == 0) || (_formattedText.Length == 0) || (_lines.Count == 0) || (_font == null))
+			{
 				return result;
+			}
 
 			if (_font.Settings.OutlineColor.Alpha > 0)
+			{
 				outlineSize = _font.Settings.OutlineSize;
+			}
 
-			if (_lineSpace != 1.0)
-				result.Y = (_lines.Count - 1) * (((_font.FontHeight + (outlineSize * 2.0f)) * _lineSpace)) + (_font.FontHeight + (outlineSize * 2.0f));
+			if (!_lineSpace.EqualsEpsilon(1.0f))
+			{
+				result.Y = (_lines.Count - 1) * (((_font.FontHeight + (outlineSize * 2.0f)) * _lineSpace)) +
+				           (_font.FontHeight + (outlineSize * 2.0f));
+			}
 			else
+			{
 				result.Y = (_lines.Count * (_font.FontHeight + (outlineSize * 2.0f)));
+			}
 
+			// ReSharper disable once ForCanBeConvertedToForeach
 			for (int i = 0; i < _lines.Count; i++)
+			{
 				result.X = result.X.Max(LineMeasure(_lines[i], outlineSize));
+			}
 
 			return result;
 		}
@@ -962,11 +1031,13 @@ namespace GorgonLibrary.Renderers
 		{
 			var index = (int)corner;
 
-			if (color != _colors[index])
+			if (color == _colors[index])
 			{
-				_colors[index] = color;
-				_needsColorUpdate = true;
+				return;
 			}
+
+			_colors[index] = color;
+			_needsColorUpdate = true;
 		}
 
 		/// <summary>
@@ -998,8 +1069,10 @@ namespace GorgonLibrary.Renderers
 		{
 			float size = float.MaxValue - 1;
 
-			if (this.TextRectangle != null)
-				size = this.TextRectangle.Value.Width;
+			if (TextRectangle != null)
+			{
+				size = TextRectangle.Value.Width;
+			}
 
 			return MeasureText(text, WordWrap, size);
 		}
@@ -1021,20 +1094,33 @@ namespace GorgonLibrary.Renderers
 			try
 			{
 				if (string.IsNullOrEmpty(text))
+				{
 					return Vector2.Zero;
+				}
 
 				if (wrapBoundaryWidth <= 0.0f)
+				{
 					useWordWrap = false;
+				}
 
 				WordWrap = useWordWrap;
 				if (WordWrap)
+				{
 					TextRectangle = new RectangleF(0, 0, wrapBoundaryWidth, 0);
+				}
 
 				// If the string is not the same as what we've stored, then temporarily
 				// replace that string with the one being passed in and use that to
 				// gauge size.  Otherwise, use the original size.
 				if (!string.Equals(text, Text, StringComparison.CurrentCulture))
+				{
 					Text = text;
+				}
+
+				if (_needsTextUpdate)
+				{
+					FormatText();
+				}
 
 				return Size;
 			}
@@ -1051,22 +1137,35 @@ namespace GorgonLibrary.Renderers
 		/// </summary>
 		/// <remarks>Please note that this doesn't draw the object to the target right away, but queues it up to be
 		/// drawn when <see cref="GorgonLibrary.Renderers.Gorgon2D.Render">Render</see> is called.
+		/// <para>
+		/// If texture filtering is turned on, then the text will not look quite right because of sub-pixel accuracy.  In order to ensure the 
+		/// vertical spacing is aligned with a pixel we need to ensure point filtering is turned on.
+		/// </para>
 		/// </remarks>
 		public void Draw()
 		{
 			Rectangle clipRegion = Rectangle.Round(ClipRegion);
 			Rectangle? lastClip = Gorgon2D.ClipRegion;
-			var states = StateChange.None;
 			int vertexIndex = 0;
+
+			if (_needsTextUpdate)
+			{
+				FormatText();
+			}
 
 			// We don't need to draw anything if we don't have a font or text to draw.
 			if ((_text.Length == 0) || (_font == null))
+			{
 				return;
-            
-			if ((ClipToRectangle) && (((lastClip == null) && (_textRect != null)) || ((lastClip != null) && (lastClip.Value != ClipRegion))))
-				Gorgon2D.ClipRegion = clipRegion;
+			}
 
-			states = Gorgon2D.DefaultState.Compare(this);
+			if ((ClipToRectangle) &&
+			    (((lastClip == null) && (_textRect != null)) || ((lastClip != null) && (lastClip.Value != ClipRegion))))
+			{
+				Gorgon2D.ClipRegion = clipRegion;
+			}
+
+			StateChange states = Gorgon2D.DefaultState.Compare(this);
 			if (states != StateChange.None)
 			{
 				Gorgon2D.Flush();
@@ -1194,7 +1293,7 @@ namespace GorgonLibrary.Renderers
 			_blend = new GorgonRenderable.BlendState();
 			_sampler = new GorgonRenderable.TextureSamplerState();
 			Color = new GorgonColor(1, 1, 1, 1);
-			CullingMode = Graphics.CullingMode.Back;
+			CullingMode = CullingMode.Back;
 			AlphaTestValues = GorgonRangeF.Empty;
 			BlendingMode = BlendingMode.Modulate;
 			_tabText = new StringBuilder("   ", 8);
@@ -1300,7 +1399,9 @@ namespace GorgonLibrary.Renderers
 			set
 			{
 				if (value == null)
+				{
 					return;
+				}
 
 				_depthStencil = value;
 			}
@@ -1318,7 +1419,9 @@ namespace GorgonLibrary.Renderers
 			set
 			{
 				if (value == null)
+				{
 					return;
+				}
 
 				_blend = value;
 			}
@@ -1336,7 +1439,9 @@ namespace GorgonLibrary.Renderers
 			set
 			{
 				if (value == null)
+				{
 					return;
+				}
 
 				_sampler = value;
 			}
@@ -1345,8 +1450,8 @@ namespace GorgonLibrary.Renderers
 		/// <summary>
 		/// Property to set or return pre-defined smoothing states for the renderable.
 		/// </summary>
-		/// <remarks>These modes are pre-defined smoothing states, to get more control over the smoothing, use the <see cref="P:GorgonLibrary.Renderers.GorgonRenderable.TextureSamplerState.TextureFilter.">TextureFilter</see> 
-		/// property exposed by the <see cref="P:GorgonLibrary.Renderers.GorgonRenderable.TextureSampler.">TextureSampler</see> property.</remarks>
+		/// <remarks>These modes are pre-defined smoothing states, to get more control over the smoothing, use the <see cref="GorgonRenderable.TextureSamplerState.TextureFilter">TextureFilter</see> 
+		/// property exposed by the <see cref="GorgonRenderable.TextureSampler">TextureSampler</see> property.</remarks>
 		public virtual SmoothingMode SmoothingMode
 		{
 			get
@@ -1388,53 +1493,65 @@ namespace GorgonLibrary.Renderers
 		/// <summary>
 		/// Property to set or return a pre-defined blending states for the renderable.
 		/// </summary>
-		/// <remarks>These modes are pre-defined blending states, to get more control over the blending, use the <see cref="P:GorgonLibrary.Renderers.GorgonRenderable.BlendingState.SourceBlend">SourceBlend</see> 
-		/// or the <see cref="P:GorgonLibrary.Renderers.GorgonRenderable.Blending.DestinationBlend">DestinationBlend</see> property which are exposed by the 
+		/// <remarks>These modes are pre-defined blending states, to get more control over the blending, use the <see cref="GorgonRenderable.BlendState.SourceBlend">SourceBlend</see> 
+		/// or the <see cref="GorgonRenderable.BlendState.DestinationBlend">DestinationBlend</see> property which are exposed by the 
 		/// <see cref="P:GorgonLibrary.Renderers.GorgonRenderable.Blending">Blending</see> property.</remarks>
-		public virtual BlendingMode BlendingMode
+		public BlendingMode BlendingMode
 		{
 			get
 			{
 				if ((Blending.SourceBlend == BlendType.One) && (Blending.DestinationBlend == BlendType.Zero))
-					return Renderers.BlendingMode.None;
+				{
+					return BlendingMode.None;
+				}
 
 				if (Blending.SourceBlend == BlendType.SourceAlpha)
 				{
 					if (Blending.DestinationBlend == BlendType.InverseSourceAlpha)
-						return Renderers.BlendingMode.Modulate;
+					{
+						return BlendingMode.Modulate;
+					}
+
 					if (Blending.DestinationBlend == BlendType.One)
-						return Renderers.BlendingMode.Additive;
+					{
+						return BlendingMode.Additive;
+					}
 				}
 
 				if ((Blending.SourceBlend == BlendType.One) && (Blending.DestinationBlend == BlendType.InverseSourceAlpha))
-					return Renderers.BlendingMode.PreMultiplied;
+				{
+					return BlendingMode.PreMultiplied;
+				}
 
-				if ((Blending.SourceBlend == BlendType.InverseDestinationColor) && (Blending.DestinationBlend == BlendType.InverseSourceColor))
-					return Renderers.BlendingMode.Inverted;
+				if ((Blending.SourceBlend == BlendType.InverseDestinationColor) &&
+				    (Blending.DestinationBlend == BlendType.InverseSourceColor))
+				{
+					return BlendingMode.Inverted;
+				}
 
-				return Renderers.BlendingMode.Custom;
+				return BlendingMode.Custom;
 			}
 			set
 			{
 				switch (value)
 				{
-					case Renderers.BlendingMode.Additive:
+					case BlendingMode.Additive:
 						Blending.SourceBlend = BlendType.SourceAlpha;
 						Blending.DestinationBlend = BlendType.One;
 						break;
-					case Renderers.BlendingMode.Inverted:
+					case BlendingMode.Inverted:
 						Blending.SourceBlend = BlendType.InverseDestinationColor;
 						Blending.DestinationBlend = BlendType.InverseSourceColor;
 						break;
-					case Renderers.BlendingMode.Modulate:
+					case BlendingMode.Modulate:
 						Blending.SourceBlend = BlendType.SourceAlpha;
 						Blending.DestinationBlend = BlendType.InverseSourceAlpha;
 						break;
-					case Renderers.BlendingMode.PreMultiplied:
+					case BlendingMode.PreMultiplied:
 						Blending.SourceBlend = BlendType.One;
 						Blending.DestinationBlend = BlendType.InverseSourceAlpha;
 						break;
-					case Renderers.BlendingMode.None:
+					case BlendingMode.None:
 						Blending.SourceBlend = BlendType.One;
 						Blending.DestinationBlend = BlendType.Zero;
 						break;
@@ -1463,7 +1580,7 @@ namespace GorgonLibrary.Renderers
 		/// <summary>
 		/// Property to set or return the opacity (Alpha channel) of the renderable object.
 		/// </summary>
-		[AnimatedProperty()]
+		[AnimatedProperty]
 		public float Opacity
 		{
 			get
@@ -1472,15 +1589,21 @@ namespace GorgonLibrary.Renderers
 			}
 			set
 			{
-				if (value != Color.Alpha)
-					Color = new GorgonColor(Color.Red, Color.Green, Color.Blue, value);
+				// ReSharper disable once CompareOfFloatsByEqualityOperator
+				if (value == Color.Alpha)
+				{
+					return;
+				}
+
+				_colors[3] = _colors[2] = _colors[1] = _colors[0] = new GorgonColor(Color, value);
+				_needsColorUpdate = true;
 			}
 		}
 
 		/// <summary>
 		/// Property to set or return the color for a renderable object.
 		/// </summary>
-		[AnimatedProperty()]
+		[AnimatedProperty]
 		public GorgonColor Color
 		{
 			get
@@ -1489,17 +1612,20 @@ namespace GorgonLibrary.Renderers
 			}
 			set
 			{
-				if (value != _colors[0])
+				if (value == _colors[0])
 				{
-					_colors[3] = _colors[2] = _colors[1] = _colors[0] = value;
-					_needsColorUpdate = true;
+					return;
 				}
+
+				_colors[3] = _colors[2] = _colors[1] = _colors[0] = value;
+				_needsColorUpdate = true;
 			}
 		}
 
 		/// <summary>
 		/// Property to return the texture being used by the renderable.
 		/// </summary>
+		/// <exception cref="System.NotSupportedException">Thrown when an attempt to set this property is made.</exception>
 		GorgonTexture2D IRenderable.Texture
 		{
 			get
@@ -1508,12 +1634,14 @@ namespace GorgonLibrary.Renderers
 			}
 			set
 			{
+				throw new NotSupportedException();
 			}
 		}
 
 		/// <summary>
 		/// Property to set or return the texture region.
 		/// </summary>
+		/// <exception cref="System.NotSupportedException">Thrown when an attempt to set this property is made.</exception>
 		RectangleF IRenderable.TextureRegion
 		{
 			get
@@ -1529,6 +1657,7 @@ namespace GorgonLibrary.Renderers
 		/// <summary>
 		/// Property to set or return the coordinates in the texture to use as a starting point for drawing.
 		/// </summary>
+		/// <exception cref="System.NotSupportedException">Thrown when an attempt to set this property is made.</exception>
 		Vector2 IRenderable.TextureOffset
 		{
 			get
@@ -1544,6 +1673,7 @@ namespace GorgonLibrary.Renderers
 		/// <summary>
 		/// Property to set or return the scaling of the texture width and height.
 		/// </summary>
+		/// <exception cref="System.NotSupportedException">Thrown when an attempt to set this property is made.</exception>
 		Vector2 IRenderable.TextureSize
 		{
 			get
@@ -1561,7 +1691,7 @@ namespace GorgonLibrary.Renderers
 		/// <summary>
 		/// Property to set or return the position of the renderable.
 		/// </summary>
-		[AnimatedProperty()]
+		[AnimatedProperty]
 		public Vector2 Position
 		{
 			get
@@ -1570,18 +1700,20 @@ namespace GorgonLibrary.Renderers
 			}
 			set
 			{
-				if (_position != value)
+				if (_position == value)
 				{
-					_position = value;
-					_needsVertexUpdate = true;
+					return;
 				}
+
+				_position = value;
+				_needsVertexUpdate = true;
 			}
 		}
 
 		/// <summary>
 		/// Property to set or return the angle of rotation (in degrees) for a renderable.
 		/// </summary>
-		[AnimatedProperty()]
+		[AnimatedProperty]
 		public float Angle
 		{
 			get
@@ -1590,18 +1722,21 @@ namespace GorgonLibrary.Renderers
 			}
 			set
 			{
-				if (_angle != value)
+				// ReSharper disable once CompareOfFloatsByEqualityOperator
+				if (_angle == value)
 				{
-					_angle = value;
-					_needsVertexUpdate = true;
+					return;
 				}
+
+				_angle = value;
+				_needsVertexUpdate = true;
 			}
 		}
 
 		/// <summary>
 		/// Property to set or return the scale of the renderable.
 		/// </summary>
-		[AnimatedProperty()]
+		[AnimatedProperty]
 		public Vector2 Scale
 		{
 			get
@@ -1610,18 +1745,20 @@ namespace GorgonLibrary.Renderers
 			}
 			set
 			{
-				if (_scale != value)
+				if (_scale == value)
 				{
-					_scale = value;
-					_needsVertexUpdate = true;
+					return;
 				}
+
+				_scale = value;
+				_needsVertexUpdate = true;
 			}
 		}
 
 		/// <summary>
 		/// Property to set or return the anchor point of the renderable.
 		/// </summary>
-		[AnimatedProperty()]
+		[AnimatedProperty]
 		public Vector2 Anchor
 		{
 			get
@@ -1630,17 +1767,20 @@ namespace GorgonLibrary.Renderers
 			}
 			set
 			{
-				if (_anchor != value)
+				if (_anchor == value)
 				{
-					_anchor = value;
-					_needsVertexUpdate = true;
+					return;
 				}
+
+				_anchor = value;
+				_needsVertexUpdate = true;
 			}
 		}
 
 		/// <summary>
 		/// Property to set or return the "depth" of the renderable in a depth buffer.
 		/// </summary>
+		[AnimatedProperty]
 		public float Depth
 		{
 			get
@@ -1649,17 +1789,21 @@ namespace GorgonLibrary.Renderers
 			}
 			set
 			{
-				if (_depth != value)
+				// ReSharper disable once CompareOfFloatsByEqualityOperator
+				if (_depth == value)
 				{
-					_depth = value;
-					_needsVertexUpdate = true;
+					return;
 				}
+
+				_depth = value;
+				_needsVertexUpdate = true;
 			}
 		}
 
 		/// <summary>
 		/// Property to set or return the size of the renderable.
 		/// </summary>
+		/// <exception cref="System.NotSupportedException">Thrown when an attempt to set this property is made.</exception>
 		public Vector2 Size
 		{
 			get
@@ -1686,12 +1830,17 @@ namespace GorgonLibrary.Renderers
 			set
 			{
 				if (value == _collider)
+				{
 					return;
+				}
 
 				if (value == null)
 				{
 					if (_collider != null)
+					{
 						_collider.CollisionObject = null;
+					}
+
 					return;
 				}
 
