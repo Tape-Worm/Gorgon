@@ -380,7 +380,7 @@ namespace GorgonLibrary.Renderers
 				// If blending is enabled, then track the blending changes.
 				if (Gorgon2D.IsBlendingEnabled)
 				{
-					if (!blending.BlendFactor.Equals(_blendFactor))
+					if (!blending.BlendFactor.Equals(ref _blendFactor))
 					{
 						result |= StateChange.BlendFactor;
 					}
@@ -405,7 +405,7 @@ namespace GorgonLibrary.Renderers
 			if ((sampler.TextureFilter != _samplerState.TextureFilter)
 				|| (sampler.VerticalWrapping != _samplerState.VerticalAddressing)
 				|| (sampler.HorizontalWrapping != _samplerState.HorizontalAddressing)
-				|| (!sampler.BorderColor.Equals(_samplerState.BorderColor)))
+				|| (!sampler.BorderColor.Equals(ref _samplerState.BorderColor)))
 			{
 				result |= StateChange.Sampler;
 			}
@@ -428,7 +428,7 @@ namespace GorgonLibrary.Renderers
 				result |= StateChange.IndexBuffer;
 			}
 
-			if (!renderable.VertexBufferBinding.Equals(_vertexBuffer))
+			if (!renderable.VertexBufferBinding.Equals(ref _vertexBuffer))
 			{
 				result |= StateChange.VertexBuffer;
 			}

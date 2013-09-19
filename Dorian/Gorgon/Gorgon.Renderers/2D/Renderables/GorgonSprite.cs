@@ -190,15 +190,11 @@ namespace GorgonLibrary.Renderers
 		protected override void TransformVertices()
 		{
 			bool changed = false;	// Flag to indicate that the object changed.
-			float posX1;			// Horizontal position 1.
-			float posX2;			// Horizontal position 2.
-			float posY1;			// Vertical position 1.
-			float posY2;			// Vertical position 2.			
 
-			posX1 = _corners[0];
-			posX2 = _corners[2];
-			posY1 = _corners[1];
-			posY2 = _corners[3];
+			float posX1 = _corners[0];
+			float posY1 = _corners[1];
+			float posX2 = _corners[2];
+			float posY2 = _corners[3];
 
 			// Scale horizontally if necessary.
 			if (Scale.X != 1.0f)
