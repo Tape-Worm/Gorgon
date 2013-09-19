@@ -26,6 +26,7 @@
 
 using System;
 using System.Runtime.InteropServices;
+using GorgonLibrary.Properties;
 
 namespace GorgonLibrary.Native
 {

@@ -68,12 +68,12 @@ namespace GorgonLibrary.Renderers
 			_form.WindowState = FormWindowState.Minimized;
 			_form.WindowState = FormWindowState.Normal;
 
-			var camera = _renderer.CreateCamera<GorgonOrthoCamera>("TestCam",
+			var camera = _renderer.CreateCamera<Gorgon2DOrthoCamera>("TestCam",
 				new RectangleF(Vector2.Zero, _form.ClientSize),
 				0.0f,
 				1.0f);
 
-			var camera2 = _renderer.CreateCamera<GorgonPerspectiveCamera>("TestCam2",
+			var camera2 = _renderer.CreateCamera<Gorgon2DPerspectiveCamera>("TestCam2",
 				new RectangleF(-1, -1, 2, 2),
 				0.01f,
 				100.0f);
@@ -159,12 +159,12 @@ namespace GorgonLibrary.Renderers
             _form.WindowState = FormWindowState.Minimized;
             _form.WindowState = FormWindowState.Normal;
 
-            var camera = _renderer.CreateCamera<GorgonPerspectiveCamera>("TestCam",
+            var camera = _renderer.CreateCamera<Gorgon2DPerspectiveCamera>("TestCam",
                 new RectangleF(Vector2.Zero, _form.ClientSize),
 				0.01f,
                 1000.0f);
 
-			var camera2 = _renderer.CreateCamera<GorgonPerspectiveCamera>("TestCam2",
+			var camera2 = _renderer.CreateCamera<Gorgon2DPerspectiveCamera>("TestCam2",
 				new RectangleF(-1, -1, 2, 2),
 				0.1f,
 				1.0f);

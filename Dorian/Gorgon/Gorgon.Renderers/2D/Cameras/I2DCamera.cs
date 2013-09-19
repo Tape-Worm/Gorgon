@@ -32,7 +32,7 @@ namespace GorgonLibrary.Renderers
 	/// <summary>
 	/// A camera interface.
 	/// </summary>
-	public interface ICamera
+	public interface I2DCamera
 	{
 		#region Properties.
 		/// <summary>

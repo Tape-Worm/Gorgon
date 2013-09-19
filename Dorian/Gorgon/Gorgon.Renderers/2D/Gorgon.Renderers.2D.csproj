@@ -60,9 +60,9 @@
     <Reference Include="System.Windows.Forms" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Cameras\GorgonOrthoCamera.cs" />
-    <Compile Include="Cameras\GorgonPerspectiveCamera.cs" />
-    <Compile Include="Cameras\ICamera.cs" />
+    <Compile Include="Cameras\Gorgon2DOrthoCamera.cs" />
+    <Compile Include="Cameras\Gorgon2DPerspectiveCamera.cs" />
+    <Compile Include="Cameras\I2DCamera.cs" />
     <Compile Include="Collision\Gorgon2DAABB.cs" />
     <Compile Include="Collision\Gorgon2DBoundingCircle.cs" />
     <Compile Include="Collision\Gorgon2DCollider.cs" />

@@ -160,7 +160,7 @@ namespace GorgonLibrary.Renderers
 		private bool _multiSampleEnable;												// Flag to indicate that multi sampling is enabled.
 		private GorgonViewport? _viewPort;												// Viewport to use.
 		private Rectangle? _clip;														// Clipping rectangle.
-		private ICamera _camera;														// Current camera.
+		private I2DCamera _camera;														// Current camera.
 		private readonly GorgonSprite _logoSprite;										// Logo sprite.
 		private GorgonVertexBufferBinding _defaultVertexBuffer;							// Default vertex buffer binding.
 		private Gorgon2DStateRecall _initialState;										// The initial state of the graphics API before the renderer was created.
@@ -188,7 +188,7 @@ namespace GorgonLibrary.Renderers
         /// <summary>
         /// Property to return the default camera for the 2D renderer.
         /// </summary>
-	    public GorgonOrthoCamera DefaultCamera
+	    public Gorgon2DOrthoCamera DefaultCamera
 	    {
 	        get;
 	        private set;
@@ -431,7 +431,7 @@ namespace GorgonLibrary.Renderers
 		/// Property to set or return the current camera.
 		/// </summary>
 		/// <remarks>Set this value to NULL (Nothing in VB.Net) to use the default camera.</remarks>
-		public ICamera Camera
+		public I2DCamera Camera
 		{
 			get
 			{
@@ -673,7 +673,7 @@ namespace GorgonLibrary.Renderers
         /// </summary>
         private void RenderWithLogo()
         {
-            ICamera camera = _camera;
+            I2DCamera camera = _camera;
             GorgonViewport? previousViewport = _viewPort;
             Rectangle? previousClip = _clip;
 
@@ -956,7 +956,7 @@ namespace GorgonLibrary.Renderers
 		/// <summary>
 		/// Function to create a new camera object.
 		/// </summary>
-		/// <typeparam name="T">Type of camera object.  Must implement <see cref="ICamera"/>.</typeparam>
+		/// <typeparam name="T">Type of camera object.  Must implement <see cref="I2DCamera"/>.</typeparam>
 		/// <param name="name">Name of the camera.</param>
 		/// <param name="viewDimensions">The dimensions for the camera view.</param>
 		/// <param name="minDepth">Minimum depth value of the camera.</param>
@@ -971,7 +971,7 @@ namespace GorgonLibrary.Renderers
 		/// is confined to -1, -1 x 1, 1.  Pass NULL (Nothing in VB.Net) to the <paramref name="viewDimensions"/> parameter to use the current render target dimensions.</para> 
 		/// </remarks>
 		public T CreateCamera<T>(string name, RectangleF? viewDimensions, float minDepth, float maxDepth)
-            where T : ICamera
+            where T : I2DCamera
 		{
 		    if (name == null)
 		    {
@@ -1012,7 +1012,7 @@ namespace GorgonLibrary.Renderers
         /// </remarks>
         public void Flush()
         {
-            ICamera currentCamera = (_camera ?? DefaultCamera);
+            I2DCamera currentCamera = (_camera ?? DefaultCamera);
 
             if (currentCamera.NeedsUpdate)
             {
@@ -1080,16 +1080,16 @@ namespace GorgonLibrary.Renderers
 			TrackedObjects = new GorgonDisposableObjectCollection();
 			Graphics = target.Resource.Graphics;
 			DefaultTarget = target;
-			
-			_logoSprite = new GorgonSprite(this, "Gorgon2D.LogoSprite", new GorgonSpriteSettings
-			{
-				Anchor = new Vector2(Graphics.Textures.GorgonLogo.Settings.Size),
-				Texture = Graphics.Textures.GorgonLogo,
-				TextureRegion = new RectangleF(Vector2.Zero, new Vector2(1)),
-				Color = Color.White,
-				Size = Graphics.Textures.GorgonLogo.Settings.Size
-			});
-			DefaultCamera = new GorgonOrthoCamera(this,
+
+			_logoSprite = new GorgonSprite(this, "Gorgon2D.LogoSprite")
+			              {
+				              Anchor = new Vector2(Graphics.Textures.GorgonLogo.Settings.Size),
+				              Texture = Graphics.Textures.GorgonLogo,
+				              TextureRegion = new RectangleF(Vector2.Zero, new Vector2(1)),
+				              Color = Color.White,
+				              Size = Graphics.Textures.GorgonLogo.Settings.Size
+			              };
+			DefaultCamera = new Gorgon2DOrthoCamera(this,
 				"Gorgon.Camera.Default",
 				new RectangleF(0, 0, _defaultTarget.Width, _defaultTarget.Height),
 				0,

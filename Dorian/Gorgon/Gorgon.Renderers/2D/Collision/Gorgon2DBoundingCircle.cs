@@ -84,7 +84,9 @@ namespace GorgonLibrary.Renderers
 			set
 			{
 				if (_center == value)
+				{
 					return;
+				}
 
 				_center = value;
 
@@ -105,8 +107,10 @@ namespace GorgonLibrary.Renderers
 			}
 			set
 			{
-				if (_radius == value)
+				if (_radius.EqualsEpsilon(value))
+				{
 					return;
+				}
 
 				_radius = value;
 
@@ -123,15 +127,17 @@ namespace GorgonLibrary.Renderers
 		{
 			if (CollisionObject == null)
 			{
-				ColliderBoundaries = new System.Drawing.RectangleF(_center.X, _center.Y, _radius * 2.0f, _radius * 2.0f);
+				ColliderBoundaries = new RectangleF(_center.X, _center.Y, _radius * 2.0f, _radius * 2.0f);
 				ColliderRadius = _radius;
 				ColliderCenter = _center;
+
+				return;
 			}
-			else
-				UpdateFromCollisionObject();
+
+			UpdateFromCollisionObject();
 		}
 
-        /// <summary>
+		/// <summary>
         /// Function to write the collider information into a chunk.
         /// </summary>
         /// <param name="writer">The writer for the chunk.</param>
@@ -140,10 +146,10 @@ namespace GorgonLibrary.Renderers
         /// <para>The format is as follows:  Write the full type name of the collider, then any relevant information pertaining the collider (e.g. location, width, height, etc...).</para>
         /// <para>This method assumes the chunk writer has already started the collider chunk.</para>
         /// </remarks>
-        protected internal override void WriteToChunk(GorgonLibrary.IO.GorgonChunkWriter writer)
+        protected internal override void WriteToChunk(IO.GorgonChunkWriter writer)
         {
-            writer.WriteString(this.GetType().FullName);
-            writer.Write<Vector2>(Center);
+            writer.WriteString(GetType().FullName);
+            writer.Write(Center);
             writer.WriteFloat(Radius);
         }
 
@@ -153,11 +159,11 @@ namespace GorgonLibrary.Renderers
         /// <param name="reader">The reader for the chunk.</param>
         /// <remarks>
         /// This method must be implemented to read in collider information to a stream (e.g. reading a sprite with collider information).
-        /// <para>Unlike the <see cref="M:GorgonLibrary.Renderers.Gorgon2DCollider.WriteToChunk">WriteToChunk</see> method, the reader only needs to read in any custom information
+        /// <para>Unlike the <see cref="GorgonLibrary.Renderers.Gorgon2DCollider.WriteToChunk">WriteToChunk</see> method, the reader only needs to read in any custom information
         /// about the collider (e.g. location, width, height, etc...).</para>
         /// <para>This method assumes the chunk writer has already positioned at the collider chunk.</para>
         /// </remarks>
-        protected internal override void ReadFromChunk(GorgonLibrary.IO.GorgonChunkReader reader)
+        protected internal override void ReadFromChunk(IO.GorgonChunkReader reader)
         {
             _center = reader.Read<Vector2>();
             _radius = reader.ReadFloat();
@@ -171,15 +177,14 @@ namespace GorgonLibrary.Renderers
 		/// <remarks>This function must be called to update the collider object boundaries from the collision object after transformation.</remarks>
 		protected internal override void UpdateFromCollisionObject()
 		{
-			Vector2 center = Vector2.Zero;
-			Vector2 size = Vector2.Zero;
-
 			if ((CollisionObject == null) || (!Enabled))
+			{
 				return;
+			}
 
 			if ((CollisionObject.Vertices == null) || (CollisionObject.Vertices.Length == 0) || (CollisionObject.VertexCount == 0))
 			{
-				ColliderBoundaries = new System.Drawing.RectangleF(_center.X, _center.Y, _radius * 2.0f, _radius * 2.0f);
+				ColliderBoundaries = new RectangleF(_center.X, _center.Y, _radius * 2.0f, _radius * 2.0f);
 				return;
 			}
 
@@ -198,22 +203,13 @@ namespace GorgonLibrary.Renderers
 				max.Y = max.Y.Max(position.Y);
 			}
 
-			size = new Vector2((max.X - min.X).Abs() / 2.0f, (max.Y - min.Y).Abs() / 2.0f);
-			center = new Vector2(min.X + _center.X + size.X, _center.Y + min.Y + size.Y);
+			var size = new Vector2((max.X - min.X).Abs() / 2.0f, (max.Y - min.Y).Abs() / 2.0f);
+			var center = new Vector2(min.X + _center.X + size.X, _center.Y + min.Y + size.Y);
 			Vector2.Multiply(ref size, _radius, out size);
 			ColliderRadius = size.X.Max(size.Y);
 			ColliderCenter = center;
 
 			ColliderBoundaries = new RectangleF(center.X - ColliderRadius, center.Y - ColliderRadius, ColliderRadius * 2.0f, ColliderRadius * 2.0f);
-		}
-		#endregion
-
-		#region Constructor.
-		/// <summary>
-		/// Initializes a new instance of the <see cref="Gorgon2DBoundingCircle"/> class.
-		/// </summary>
-		public Gorgon2DBoundingCircle()
-		{
 		}
 		#endregion
 	}

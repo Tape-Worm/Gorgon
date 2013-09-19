@@ -133,6 +133,9 @@
   <data name="GOR2D_ARG_OUT_OF_RANGE" xml:space="preserve">
     <value>The value '{0}' must be between '{1}' and '{2}'.</value>
   </data>
+  <data name="GOR2D_CANNOT_USER_COLOR_WITH_ALPHA_OP" xml:space="preserve">
+    <value>Cannot use a color operation with an alpha blend function.</value>
+  </data>
   <data name="GOR2D_EFFECT_NO_BLUR_TARGETS" xml:space="preserve">
     <value>The gaussian blur render targets were not created.  Ensure that the render target width and height are greater than 0.</value>
   </data>

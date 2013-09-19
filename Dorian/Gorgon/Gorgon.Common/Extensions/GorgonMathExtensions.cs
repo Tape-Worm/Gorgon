@@ -36,6 +36,11 @@ namespace GorgonLibrary.Math
 		#region Constants.
 		private const float DegConvert = ((float)System.Math.PI / 180.0f);		// Constant containing the value used to convert degrees to radians.
 		private const float RadConvert = (180.0f / (float)System.Math.PI);		// Constant containing the value used to convert radians to degrees.
+
+		/// <summary>
+		/// PI
+		/// </summary>
+		public const float PI = 3.141593f;
 		#endregion
 
 		#region Methods.

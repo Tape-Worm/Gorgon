@@ -24,10 +24,12 @@
 // 
 #endregion
 
+using System;
 using System.Drawing;
 using GorgonLibrary.Animation;
 using GorgonLibrary.Diagnostics;
 using GorgonLibrary.Graphics;
+using GorgonLibrary.Renderers.Properties;
 using SlimMath;
 
 namespace GorgonLibrary.Renderers
@@ -213,7 +215,7 @@ namespace GorgonLibrary.Renderers
 					case BlendType.InverseSourceColor:
 					case BlendType.SecondarySourceColor:
 					case BlendType.SourceColor:
-						throw new ArgumentException("Cannot use a color operation with an alpha blend function.");
+						throw new NotSupportedException(Resources.GOR2D_CANNOT_USER_COLOR_WITH_ALPHA_OP);
 				}
 #endif
 					_sourceAlphaBlend = value;
@@ -240,7 +242,7 @@ namespace GorgonLibrary.Renderers
 					case BlendType.InverseSourceColor:
 					case BlendType.SecondarySourceColor:
 					case BlendType.SourceColor:
-						throw new ArgumentException("Cannot use a color operation with an alpha blend function.");
+						throw new NotSupportedException(Resources.GOR2D_CANNOT_USER_COLOR_WITH_ALPHA_OP);
 				}
 #endif
 					_destAlphaBlend = value;
@@ -717,17 +719,20 @@ namespace GorgonLibrary.Renderers
 		{
 			get
 			{
-				return Color.Alpha;
+				return Vertices[0].Color.Alpha;
 			}
 			set
 			{
 				// ReSharper disable once CompareOfFloatsByEqualityOperator
-				if (value == Color.Alpha)
+				if (value == Vertices[0].Color.Alpha)
 				{
 					return;
 				}
 
-				Color = new GorgonColor(Color, value);
+				for (int i = 0; i < Vertices.Length; ++i)
+				{
+					Vertices[i].Color = new GorgonColor(Vertices[i].Color, value);
+				}
 			}
 		}
 
