@@ -38,7 +38,7 @@ namespace GorgonLibrary.Graphics
 	/// <remarks>This type is immutable.</remarks>
 	[StructLayout(LayoutKind.Sequential)]
 	public struct GorgonColor
-		: IEquatable<GorgonColor>
+		: IEquatableByRef<GorgonColor>
 	{
 		#region Variables.
 		/// <summary>
@@ -656,6 +656,20 @@ namespace GorgonLibrary.Graphics
 		/// true if the current object is equal to the <paramref name="other"/> parameter; otherwise, false.
 		/// </returns>
 		public bool Equals(GorgonColor other)
+		{
+			return Equals(ref this, ref other);
+		}
+		#endregion
+
+		#region IEquatableByRef<GorgonColor> Members
+		/// <summary>
+		/// Indicates whether the current object is equal to another object of the same type by reference.
+		/// </summary>
+		/// <param name="other">An object to compare with this object.</param>
+		/// <returns>
+		/// true if the current object is equal to the <paramref name="other"/> parameter; otherwise, false.
+		/// </returns>
+		public bool Equals(ref GorgonColor other)
 		{
 			return Equals(ref this, ref other);
 		}
