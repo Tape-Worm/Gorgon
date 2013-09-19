@@ -64,7 +64,9 @@ namespace GorgonLibrary.Renderers
 			set
 			{
 				if (_location == value)
+				{
 					return;
+				}
 
 				_location = value;
 				OnPropertyUpdated();
@@ -100,7 +102,9 @@ namespace GorgonLibrary.Renderers
 			set
 			{
 				if (_size == value)
+				{
 					return;
+				}
 
 				_size = value;
 				OnPropertyUpdated();
@@ -129,11 +133,11 @@ namespace GorgonLibrary.Renderers
         /// <para>The format is as follows:  Write the full type name of the collider, then any relevant information pertaining the collider (e.g. location, width, height, etc...).</para>
         /// <para>This method assumes the chunk writer has already started the collider chunk.</para>
         /// </remarks>
-		protected internal override void WriteToChunk(GorgonLibrary.IO.GorgonChunkWriter writer)
+		protected internal override void WriteToChunk(IO.GorgonChunkWriter writer)
 		{
-            writer.WriteString(this.GetType().FullName);
-            writer.Write<Vector2>(Location);
-            writer.Write<Vector2>(Size);
+            writer.WriteString(GetType().FullName);
+            writer.Write(Location);
+            writer.Write(Size);
 		}
 
         /// <summary>
@@ -146,7 +150,7 @@ namespace GorgonLibrary.Renderers
         /// about the collider (e.g. location, width, height, etc...).</para>
         /// <para>This method assumes the chunk writer has already positioned at the collider chunk.</para>
         /// </remarks>
-        protected internal override void ReadFromChunk(GorgonLibrary.IO.GorgonChunkReader reader)
+        protected internal override void ReadFromChunk(IO.GorgonChunkReader reader)
 		{
             _location = reader.Read<Vector2>();
             _size = reader.Read<Vector2>();
@@ -160,11 +164,10 @@ namespace GorgonLibrary.Renderers
 		/// <remarks>This function must be called to update the collider object boundaries from the collision object after transformation.</remarks>
 		protected internal override void UpdateFromCollisionObject()
 		{
-			Vector2 location = Vector2.Zero;
-			Vector2 size = Vector2.Zero;
-
 			if ((CollisionObject == null) || (!Enabled))
+			{
 				return;
+			}
 
 			if ((CollisionObject.Vertices == null) || (CollisionObject.Vertices.Length == 0) || (CollisionObject.VertexCount == 0))
 			{
@@ -187,8 +190,8 @@ namespace GorgonLibrary.Renderers
 				max.Y = max.Y.Max(position.Y);
 			}
 
-			size = new Vector2((max.X - min.X).Abs() / 2.0f, (max.Y - min.Y).Abs() / 2.0f);
-			location = new Vector2(_location.X + min.X + size.X, _location.Y + min.Y + size.Y);
+			var size = new Vector2((max.X - min.X).Abs() / 2.0f, (max.Y - min.Y).Abs() / 2.0f);
+			var location = new Vector2(_location.X + min.X + size.X, _location.Y + min.Y + size.Y);
 
 			Vector2.Modulate(ref size, ref _size, out size);
 			ColliderBoundaries = new RectangleF(location.X - size.X, location.Y - size.Y, size.X * 2.0f, size.Y * 2.0f);

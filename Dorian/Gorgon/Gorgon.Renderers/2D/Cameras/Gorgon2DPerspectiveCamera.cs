@@ -43,8 +43,8 @@ namespace GorgonLibrary.Renderers
     /// planes, please consult http://www.sjbaker.org/steve/omniv/love_your_z_buffer.html.
     /// </para>
     /// </remarks>
-    public class GorgonPerspectiveCamera
-        : GorgonNamedObject, ICamera
+    public class Gorgon2DPerspectiveCamera
+        : GorgonNamedObject, I2DCamera
     {
         #region Variables.
         private Matrix _viewProjecton = Matrix.Identity;				// Projection view matrix.
@@ -341,14 +341,14 @@ namespace GorgonLibrary.Renderers
 
         #region Constructor/Destructor.
         /// <summary>
-        /// Initializes a new instance of the <see cref="GorgonPerspectiveCamera"/> class.
+        /// Initializes a new instance of the <see cref="Gorgon2DPerspectiveCamera"/> class.
         /// </summary>
         /// <param name="gorgon2D">The gorgon 2D interface that owns the camera.</param>
         /// <param name="name">The name of the camera.</param>
         /// <param name="viewDimensions">The view dimensions.</param>
         /// <param name="minDepth">The minimum depth value.</param>
         /// <param name="maximumDepth">The maximum depth of the projection.</param>
-        internal GorgonPerspectiveCamera(Gorgon2D gorgon2D, string name, RectangleF viewDimensions, float minDepth, float maximumDepth)
+        internal Gorgon2DPerspectiveCamera(Gorgon2D gorgon2D, string name, RectangleF viewDimensions, float minDepth, float maximumDepth)
             : base(name)
         {
             Gorgon2D = gorgon2D;
@@ -356,17 +356,20 @@ namespace GorgonLibrary.Renderers
 	        _minDepth = minDepth;
 	        _viewDimensions = viewDimensions;
 
-            _cameraIcon = new GorgonSprite(gorgon2D, "GorgonCamera.PerspIcon", new GorgonSpriteSettings
-            {
-                Size = new Vector2(64, 50),
-                Texture = gorgon2D.Graphics.GetTrackedObjectsOfType<GorgonTexture2D>()
-                            .FirstOrDefault(item => item.Name.Equals("Gorgon2D.Icons", StringComparison.OrdinalIgnoreCase)) ??
-                        gorgon2D.Graphics.Textures.CreateTexture<GorgonTexture2D>("Gorgon2D.Icons", Properties.Resources.Icons),
-                TextureRegion = new RectangleF(0, 0, 0.25f, 0.195313f),
-                Anchor = new Vector2(32f, 25),
-                InitialScale = new Vector2(1.0f),
-                Color = Color.White
-            });
+	        _cameraIcon = new GorgonSprite(gorgon2D, "GorgonCamera.PerspIcon")
+	                      {
+		                      Size = new Vector2(64, 50),
+		                      Texture = gorgon2D.Graphics.GetTrackedObjectsOfType<GorgonTexture2D>()
+		                                        .FirstOrDefault(item =>
+		                                                        item.Name.Equals("Gorgon2D.Icons",
+		                                                                         StringComparison.OrdinalIgnoreCase)) ??
+		                                gorgon2D.Graphics.Textures.CreateTexture<GorgonTexture2D>("Gorgon2D.Icons",
+		                                                                                          Properties.Resources.Icons),
+		                      TextureRegion = new RectangleF(0, 0, 0.25f, 0.195313f),
+		                      Anchor = new Vector2(32f, 25),
+		                      Scale = new Vector2(1.0f),
+		                      Color = Color.White
+	                      };
         }
         #endregion
 

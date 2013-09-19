@@ -25,12 +25,14 @@
 #endregion
 
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using GorgonLibrary.Animation;
 using GorgonLibrary.Graphics;
 using GorgonLibrary.IO;
 using GorgonLibrary.Math;
+using GorgonLibrary.Renderers.Properties;
 using SlimMath;
 
 namespace GorgonLibrary.Renderers
@@ -76,9 +78,9 @@ namespace GorgonLibrary.Renderers
 		#endregion
 
 		#region Variables.
-		private readonly float[] _corners = new float[4];						// Corners for the sprite.
+		private readonly Vector2[] _offsets = new Vector2[4];					// A list of vertex offsets.
+		private Vector4 _corners = new Vector4(0);								// Corners for the sprite.
 		private string _textureName = string.Empty;								// Name of the texture for the sprite.
-		private readonly Vector2[] _offsets;									// A list of vertex offsets.
 		private bool _horizontalFlip;											// Flag to indicate that the sprite is flipped horizontally.
 		private bool _verticalFlip;												// Flag to indicate that the sprite is flipped vertically.
 		private Gorgon2DCollider _collider;										// Collider for the sprite.
@@ -112,7 +114,7 @@ namespace GorgonLibrary.Renderers
 		{
 			get
 			{
-				return Graphics.PrimitiveType.TriangleList;
+				return PrimitiveType.TriangleList;
 			}
 		}
 
@@ -129,7 +131,9 @@ namespace GorgonLibrary.Renderers
 			set
 			{
 				if (value == _horizontalFlip)
+				{
 					return;
+				}
 
 				_horizontalFlip = value;
 				NeedsTextureUpdate = true;
@@ -149,7 +153,9 @@ namespace GorgonLibrary.Renderers
 			set
 			{
 				if (value == _verticalFlip)
+				{
 					return;
+				}
 
 				_verticalFlip = value;
 				NeedsTextureUpdate = true;
@@ -159,7 +165,7 @@ namespace GorgonLibrary.Renderers
 		/// <summary>
 		/// Property to set or return a texture for the renderable.
 		/// </summary>
-        [AnimatedProperty()]
+        [AnimatedProperty]
 		public override GorgonTexture2D Texture
 		{
 			get
@@ -189,27 +195,21 @@ namespace GorgonLibrary.Renderers
 		/// </summary>
 		protected override void TransformVertices()
 		{
-			bool changed = false;	// Flag to indicate that the object changed.
-
-			float posX1 = _corners[0];
-			float posY1 = _corners[1];
-			float posX2 = _corners[2];
-			float posY2 = _corners[3];
+			Vector4 corners = _corners;
 
 			// Scale horizontally if necessary.
+			// ReSharper disable CompareOfFloatsByEqualityOperator
 			if (Scale.X != 1.0f)
 			{
-				posX1 *= Scale.X;
-				posX2 *= Scale.X;
-				changed = true;
+				corners.X *= Scale.X;
+				corners.Z *= Scale.X;
 			}
 
 			// Scale vertically.
 			if (Scale.Y != 1.0f)
 			{
-				posY1 *= Scale.Y;
-				posY2 *= Scale.Y;
-				changed = true;
+				corners.Y *= Scale.Y;
+				corners.W *= Scale.Y;
 			}
 
 			// Calculate rotation if necessary.
@@ -219,78 +219,42 @@ namespace GorgonLibrary.Renderers
 				float cosVal = angle.Cos();							// Cached cosine.
 				float sinVal = angle.Sin();							// Cached sine.
 
-				Vertices[0].Position.X = (posX1 * cosVal - posY1 * sinVal);
-				Vertices[0].Position.Y = (posX1 * sinVal + posY1 * cosVal);
+				Vertices[0].Position.X = (corners.X * cosVal - corners.Y * sinVal) + Position.X + _offsets[0].X;
+				Vertices[0].Position.Y = (corners.X * sinVal + corners.Y * cosVal) + Position.Y + _offsets[0].Y;
 
-				Vertices[1].Position.X = (posX2 * cosVal - posY1 * sinVal);
-				Vertices[1].Position.Y = (posX2 * sinVal + posY1 * cosVal);
+				Vertices[1].Position.X = (corners.Z * cosVal - corners.Y * sinVal) + Position.X + _offsets[1].X;
+				Vertices[1].Position.Y = (corners.Z * sinVal + corners.Y * cosVal) + Position.Y + _offsets[1].Y;
 
-				Vertices[2].Position.X = (posX1 * cosVal - posY2 * sinVal);
-				Vertices[2].Position.Y = (posX1 * sinVal + posY2 * cosVal);
+				Vertices[2].Position.X = (corners.X * cosVal - corners.W * sinVal) + Position.X + _offsets[2].X;
+				Vertices[2].Position.Y = (corners.X * sinVal + corners.W * cosVal) + Position.Y + _offsets[2].Y;
 
-				Vertices[3].Position.X = (posX2 * cosVal - posY2 * sinVal);
-				Vertices[3].Position.Y = (posX2 * sinVal + posY2 * cosVal);
-
-				changed = true;
+				Vertices[3].Position.X = (corners.Z * cosVal - corners.W * sinVal) + Position.X + _offsets[3].X;
+				Vertices[3].Position.Y = (corners.Z * sinVal + corners.W * cosVal) + Position.Y + _offsets[3].Y;
 			}
 			else
 			{
-				Vertices[0].Position.X = posX1;
-				Vertices[0].Position.Y = posY1;
-				Vertices[1].Position.X = posX2;
-				Vertices[1].Position.Y = posY1;
-				Vertices[2].Position.X = posX1;
-				Vertices[2].Position.Y = posY2;
-				Vertices[3].Position.X = posX2;
-				Vertices[3].Position.Y = posY2;
-			}
-
-			// Translate.
-			if (Position.X != 0.0f)
-			{
-				Vertices[0].Position.X += Position.X;
-				Vertices[1].Position.X += Position.X;
-				Vertices[2].Position.X += Position.X;
-				Vertices[3].Position.X += Position.X;
-				changed = true;
-			}
-
-			if (Position.Y != 0.0f)
-			{
-				Vertices[0].Position.Y += Position.Y;
-				Vertices[1].Position.Y += Position.Y;
-				Vertices[2].Position.Y += Position.Y;
-				Vertices[3].Position.Y += Position.Y;
-				changed = true;
+				Vertices[0].Position.X = corners.X + Position.X + _offsets[0].X;
+				Vertices[0].Position.Y = corners.Y + Position.Y + _offsets[0].Y;
+				Vertices[1].Position.X = corners.Z + Position.X + _offsets[1].X;
+				Vertices[1].Position.Y = corners.Y + Position.Y + _offsets[1].Y;
+				Vertices[2].Position.X = corners.X + Position.X + _offsets[2].X;
+				Vertices[2].Position.Y = corners.W + Position.Y + _offsets[2].Y;
+				Vertices[3].Position.X = corners.Z + Position.X + _offsets[3].X;
+				Vertices[3].Position.Y = corners.W + Position.Y + _offsets[3].Y;
 			}
 
 			// Apply depth to the sprite.
-			if (Depth != 0.0f)
-			{
-				Vertices[0].Position.Z = Depth;
-				Vertices[1].Position.Z = Depth;
-				Vertices[2].Position.Z = Depth;
-				Vertices[3].Position.Z = Depth;
-			}
-
-			for (int i = 0; i < Vertices.Length; i++)
-			{
-				if (Vertices[i].Position.X != _offsets[i].X)
-				{
-					Vertices[i].Position.X += _offsets[i].X;
-					changed = true;
-				}
-
-				if (Vertices[i].Position.Y != _offsets[i].Y)
-				{
-					Vertices[i].Position.Y += _offsets[i].Y;
-					changed = true;
-				}
-			}
+			Vertices[0].Position.Z = Depth;
+			Vertices[1].Position.Z = Depth;
+			Vertices[2].Position.Z = Depth;
+			Vertices[3].Position.Z = Depth;
 
 			// Update the collider boundaries.
-			if ((Collider != null) && (changed))
+			if (Collider != null)
+			{
 				Collider.UpdateFromCollisionObject();
+			}
+			// ReSharper restore CompareOfFloatsByEqualityOperator
 		}
 
 		/// <summary>
@@ -341,10 +305,10 @@ namespace GorgonLibrary.Renderers
 		/// </summary>
 		protected override void UpdateVertices()
 		{
-			_corners[0] = -Anchor.X;
-			_corners[1] = -Anchor.Y;
-			_corners[2] = Size.X - Anchor.X;
-			_corners[3] = Size.Y - Anchor.Y;
+			_corners.X = -Anchor.X;
+			_corners.Y = -Anchor.Y;
+			_corners.Z = Size.X - Anchor.X;
+			_corners.W = Size.Y - Anchor.Y;
 		}
 
 		/// <summary>
@@ -356,11 +320,13 @@ namespace GorgonLibrary.Renderers
 		{
 			var index = (int)corner;
 
-			if (_offsets[index] != offset)
+			if (_offsets[index] == offset)
 			{
-				_offsets[index] = offset;
-				NeedsVertexOffsetUpdate = true;
+				return;
 			}
+
+			_offsets[index] = offset;
+			NeedsVertexOffsetUpdate = true;
 		}
 
 		/// <summary>
@@ -422,7 +388,7 @@ namespace GorgonLibrary.Renderers
 
 			if (string.IsNullOrWhiteSpace(filePath))
 			{
-				throw new ArgumentException("The parameter must not be empty.", filePath);
+				throw new ArgumentException(Resources.GOR2D_PARAMETER_MUST_NOT_BE_EMPTY, filePath);
 			}
 
 			using (FileStream stream = File.Open(filePath, FileMode.Create, FileAccess.Write, FileShare.None))
@@ -455,49 +421,12 @@ namespace GorgonLibrary.Renderers
 		{
 			InitializeVertices(4);
 
-			Size = Vector2.Zero;
-			Color = GorgonColor.White;
-			Angle = 0;
-			Scale = new Vector2(1.0f);
-			Position = Vector2.Zero;
-			Texture = null;
-			TextureRegion = System.Drawing.RectangleF.Empty;
-			Anchor = Vector2.Zero;
-
 			_offsets = new[] { 
 				Vector2.Zero, 
 				Vector2.Zero, 
 				Vector2.Zero, 
-				Vector2.Zero, 
+				Vector2.Zero 
 			};
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonSprite"/> class.
-		/// </summary>
-		/// <param name="gorgon2D">The interface that owns this object.</param>
-		/// <param name="name">Name of the sprite.</param>
-		/// <param name="settings">Settings for the sprite.</param>
-		internal GorgonSprite(Gorgon2D gorgon2D, string name, GorgonSpriteSettings settings)
-			: this(gorgon2D, name)
-		{
-			Size = settings.Size;
-			Color = settings.Color;
-			Angle = settings.InitialAngle;
-			// Ensure scale is not set to 0.
-            if (settings.InitialScale.X == 0.0f)
-            {
-                settings.InitialScale = new Vector2(1.0f, settings.InitialScale.Y);
-            }
-            if (settings.InitialScale.Y == 0.0f)
-            {
-                settings.InitialScale = new Vector2(settings.InitialScale.X, 1.0f);
-            }
-			Scale = settings.InitialScale;
-			Position = settings.InitialPosition;
-			Texture = settings.Texture;
-			TextureRegion = settings.TextureRegion;
-			Anchor = settings.Anchor;
 		}
 		#endregion
 
@@ -511,8 +440,6 @@ namespace GorgonLibrary.Renderers
 		/// <exception cref="GorgonLibrary.GorgonException">Thrown when the data in the stream does not contain valid renderable data, or contains a newer version of the renderable than Gorgon can handle.</exception>
 		void IPersistedRenderable.Load(Stream stream)
 		{		
-			string currentHeader = string.Empty;			// Current header from the file.
-
 			if (stream == null)
 			{
 				throw new ArgumentNullException("stream");
@@ -520,13 +447,8 @@ namespace GorgonLibrary.Renderers
 
 			if (!stream.CanRead)
 			{
-				throw new IOException("Stream is not open for reading.");
+				throw new IOException(Resources.GOR2D_STREAM_WRITE_ONLY);
 			}
-
-            if (stream.Length <= 0)
-            {
-                throw new ArgumentOutOfRangeException("stream", "The parameter length must be greater than 0.");
-            }
 
             // Read the sprite in.
             using (var chunk = new GorgonChunkReader(stream))
@@ -540,11 +462,9 @@ namespace GorgonLibrary.Renderers
                     }
                     return;
                 }
-                else
-                {
-                    // Read in the file header.
-					chunk.Begin(FileHeader);
-                }
+                
+                // Read in the file header.
+				chunk.Begin(FileHeader);
                 
                 chunk.Begin("SPRTDATA");
                 Anchor = chunk.Read<Vector2>();
@@ -559,7 +479,7 @@ namespace GorgonLibrary.Renderers
                 }
 
                 // Write vertex offsets.
-                chunk.ReadRange<Vector2>(_offsets);
+                chunk.ReadRange(_offsets);
                 chunk.End();
 
                 // Read rendering information.
@@ -593,12 +513,10 @@ namespace GorgonLibrary.Renderers
                 // Read collider information.                    
                 if (chunk.HasChunk("COLLIDER"))
                 {
-                    Type colliderType = null;
-                    Gorgon2DCollider collider = null;
-
-                    chunk.Begin("COLLIDER");
-                    colliderType = Type.GetType(chunk.ReadString());
-                    collider = Activator.CreateInstance(colliderType) as Gorgon2DCollider;
+	                chunk.Begin("COLLIDER");
+                    Type colliderType = Type.GetType(chunk.ReadString());
+	                Debug.Assert(colliderType != null, "Collider is NULL!!");
+					var collider = (Gorgon2DCollider)Activator.CreateInstance(colliderType);
                     collider.ReadFromChunk(chunk);
                     chunk.End();
                 }
@@ -629,7 +547,7 @@ namespace GorgonLibrary.Renderers
 
 			if (!stream.CanWrite)
 			{
-				throw new IOException("Stream is not open for writing.");
+				throw new IOException(Resources.GOR2D_STREAM_READ_ONLY);
 			}
 
             // Chunk the file.            
@@ -639,43 +557,43 @@ namespace GorgonLibrary.Renderers
 				chunk.Begin(FileHeader);
 
 				chunk.Begin("SPRTDATA");
-				chunk.Write<Vector2>(Anchor);
-				chunk.Write<Vector2>(Size);
+				chunk.Write(Anchor);
+				chunk.Write(Size);
 				chunk.WriteBoolean(HorizontalFlip);
 				chunk.WriteBoolean(VerticalFlip);
 				
                 // Write vertex colors.
 				for (int i = 0; i < Vertices.Length; i++)
 				{
-					chunk.Write<GorgonColor>(Vertices[i].Color);
+					chunk.Write(Vertices[i].Color);
 	    		}
 
                 // Write vertex offsets.
-                chunk.WriteRange<Vector2>(_offsets);
+                chunk.WriteRange(_offsets);
 				chunk.End();
 
                 // Write rendering information.
 				chunk.Begin("RNDRDATA");                
-                chunk.Write<CullingMode>(CullingMode);
-                chunk.Write<GorgonRangeF>(AlphaTestValues);
-                chunk.Write<BlendOperation>(Blending.AlphaOperation);
-                chunk.Write<BlendOperation>(Blending.BlendOperation);
-                chunk.Write<GorgonColor>(Blending.BlendFactor);
-                chunk.Write<BlendType>(Blending.DestinationAlphaBlend);
-                chunk.Write<BlendType>(Blending.DestinationBlend);
-                chunk.Write<BlendType>(Blending.SourceAlphaBlend);
-                chunk.Write<BlendType>(Blending.SourceBlend);
-                chunk.Write<ColorWriteMaskFlags>(Blending.WriteMask);
-				chunk.Write<ComparisonOperators>(DepthStencil.BackFace.ComparisonOperator);
-				chunk.Write<StencilOperations>(DepthStencil.BackFace.DepthFailOperation);
-				chunk.Write<StencilOperations>(DepthStencil.BackFace.FailOperation);
-				chunk.Write<StencilOperations>(DepthStencil.BackFace.PassOperation);
-				chunk.Write<ComparisonOperators>(DepthStencil.FrontFace.ComparisonOperator);
-				chunk.Write<StencilOperations>(DepthStencil.FrontFace.DepthFailOperation);
-				chunk.Write<StencilOperations>(DepthStencil.FrontFace.FailOperation);
-				chunk.Write<StencilOperations>(DepthStencil.FrontFace.PassOperation);
+                chunk.Write(CullingMode);
+                chunk.Write(AlphaTestValues);
+                chunk.Write(Blending.AlphaOperation);
+                chunk.Write(Blending.BlendOperation);
+                chunk.Write(Blending.BlendFactor);
+                chunk.Write(Blending.DestinationAlphaBlend);
+                chunk.Write(Blending.DestinationBlend);
+                chunk.Write(Blending.SourceAlphaBlend);
+                chunk.Write(Blending.SourceBlend);
+                chunk.Write(Blending.WriteMask);
+				chunk.Write(DepthStencil.BackFace.ComparisonOperator);
+				chunk.Write(DepthStencil.BackFace.DepthFailOperation);
+				chunk.Write(DepthStencil.BackFace.FailOperation);
+				chunk.Write(DepthStencil.BackFace.PassOperation);
+				chunk.Write(DepthStencil.FrontFace.ComparisonOperator);
+				chunk.Write(DepthStencil.FrontFace.DepthFailOperation);
+				chunk.Write(DepthStencil.FrontFace.FailOperation);
+				chunk.Write(DepthStencil.FrontFace.PassOperation);
 				chunk.WriteInt32(DepthStencil.DepthBias);
-				chunk.Write<ComparisonOperators>(DepthStencil.DepthComparison);
+				chunk.Write(DepthStencil.DepthComparison);
 				chunk.WriteInt32(DepthStencil.DepthStencilReference);
 				chunk.WriteBoolean(DepthStencil.IsDepthWriteEnabled);
 				chunk.WriteByte(DepthStencil.StencilReadMask);
@@ -691,17 +609,19 @@ namespace GorgonLibrary.Renderers
                 }
 
                 // Write texture information.
-                if (!string.IsNullOrWhiteSpace(DeferredTextureName))
-                {
-                    chunk.Begin("TXTRDATA");
-                    chunk.Write<GorgonColor>(TextureSampler.BorderColor);
-                    chunk.Write<TextureAddressing>(TextureSampler.HorizontalWrapping);
-                    chunk.Write<TextureAddressing>(TextureSampler.VerticalWrapping);
-                    chunk.Write<TextureFilter>(TextureSampler.TextureFilter);
-                    chunk.WriteString(DeferredTextureName);
-                    chunk.WriteRectangle(TextureRegion);
-                    chunk.End();
-                }
+	            if (string.IsNullOrWhiteSpace(DeferredTextureName))
+	            {
+		            return;
+	            }
+
+	            chunk.Begin("TXTRDATA");
+	            chunk.Write(TextureSampler.BorderColor);
+	            chunk.Write(TextureSampler.HorizontalWrapping);
+	            chunk.Write(TextureSampler.VerticalWrapping);
+	            chunk.Write(TextureSampler.TextureFilter);
+	            chunk.WriteString(DeferredTextureName);
+	            chunk.WriteRectangle(TextureRegion);
+	            chunk.End();
             }
 		}
 		#endregion
@@ -731,7 +651,9 @@ namespace GorgonLibrary.Renderers
 			set
 			{
 				if (value == null)
+				{
 					value = string.Empty;
+				}
 
 				if (string.Equals(_textureName, value, StringComparison.OrdinalIgnoreCase))
 				{
@@ -782,12 +704,16 @@ namespace GorgonLibrary.Renderers
 			set
 			{
 				if (value == _collider)
+				{
 					return;
+				}
 
 				if (value == null)
 				{
 					if (_collider != null)
+					{
 						_collider.CollisionObject = null;
+					}
 
 					return;
 				}

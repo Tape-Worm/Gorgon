@@ -253,7 +253,17 @@ namespace GorgonLibrary.Renderers
                 throw new ArgumentException(Resources.GOR2D_PARAMETER_MUST_NOT_BE_EMPTY, "name");
             }
 
-            return new GorgonSprite(_gorgon2D, name, settings);
+			return new GorgonSprite(_gorgon2D, name)
+			       {
+						Size = settings.Size,
+						Color = settings.Color,
+						Angle = settings.InitialAngle,
+						Scale = settings.InitialScale,
+						Position = settings.InitialPosition,
+						Texture = settings.Texture,
+						TextureRegion = settings.TextureRegion,
+						Anchor = settings.Anchor
+			       };
 		}
 
 		/// <summary>
