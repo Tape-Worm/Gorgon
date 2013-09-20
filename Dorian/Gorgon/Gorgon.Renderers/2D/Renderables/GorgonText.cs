@@ -42,7 +42,7 @@ namespace GorgonLibrary.Renderers
 	/// <remarks>Text in Gorgon is like any other renderable.  It can be used as a discrete object that can be translated, scaled, or rotated.  Additionally it can 
 	/// wrap text at a boundary, change its horizontal alignment and line spacing.  Text objects require the use of <see cref="GorgonLibrary.Graphics.GorgonFont">font</see> 
 	/// objects in order to render the glyphs used in the text.</remarks>
-#error There's a problem with text rendering.  Might be in the vertex caching system.
+//#error There's a problem with text rendering.  Might be in the vertex caching system.
 	public class GorgonText
 		: GorgonNamedObject, IRenderable, IMoveable, I2DCollisionObject
 	{
@@ -1214,7 +1214,9 @@ namespace GorgonLibrary.Renderers
 				    }
 
 				    if (!_font.Glyphs.Contains(c))
+				    {
 				        c = _font.Settings.DefaultCharacter;
+				    }
 
 				    GorgonGlyph glyph = _font.Glyphs[c];
 
@@ -1247,7 +1249,9 @@ namespace GorgonLibrary.Renderers
 			    }
 
 			    if (!_font.Glyphs.Contains(c))
+			    {
 			        c = _font.Settings.DefaultCharacter;
+			    }
 
 			    GorgonGlyph glyph = _font.Glyphs[c];
 
@@ -1258,6 +1262,7 @@ namespace GorgonLibrary.Renderers
 			        Gorgon2D.PixelShader.Resources[0] = glyph.Texture;
 			    }
 
+#error There's definitely something wrong with the vertex cache.  It's messing up the text drawing something fierce.  It seems to be a very unique condition, not isolated yet.
                 _vertexCache.AddVertices(_vertices, 0, 6, vertexIndex, 4);
 			    vertexIndex += _shadowEnabled ? 8 : 4;
 			}

@@ -1072,7 +1072,9 @@ namespace GorgonLibrary.Renderers
 		{
 			_systemCreatedTarget = autoCreatedTarget;
 
-            _cache = new Gorgon2DVertexCache(this, vertexCacheSize.Max(1024));
+		    _cache = new Gorgon2DVertexCache(this, 32);
+		    
+		    //vertexCacheSize.Max(1024));
 
 			IsBlendingEnabled = true;
 			IsAlphaTestEnabled = true;
