@@ -469,20 +469,20 @@ namespace GorgonLibrary.Editor
 				}
 				dialog.ShowNewFolderButton = true;
 
-				if (dialog.ShowDialog() == DialogResult.OK)
-				{
-					// We chose poorly.
-					if (IsSystemLocation(dialog.SelectedPath))
-					{
-						GorgonDialogs.ErrorBox(null, Resources.GOREDIT_CANNOT_USESYS_SCRATCH);
-						return null;
-					}
+			    if (dialog.ShowDialog() != DialogResult.OK)
+			    {
+			        return null;
+			    }
 
-					// Append the scratch directory.
-					return dialog.SelectedPath.FormatDirectory(Path.DirectorySeparatorChar);
-				}
+			    // We chose poorly.
+			    if (!IsSystemLocation(dialog.SelectedPath))
+			    {
+			        return dialog.SelectedPath.FormatDirectory(Path.DirectorySeparatorChar);
+			    }
 
-				return null;
+			    GorgonDialogs.ErrorBox(null, Resources.GOREDIT_CANNOT_USESYS_SCRATCH);
+
+			    return null;
 			}
 			catch (Exception ex)
 			{
