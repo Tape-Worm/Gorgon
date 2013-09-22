@@ -710,8 +710,6 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 
 			_text.Position = textPosition;
 			_text.Draw();
-
-            System.Threading.Thread.Sleep(500);
 		}
 
 		/// <summary>
@@ -722,7 +720,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 			GorgonTexture2D currentTexture = _content.Font.Textures[_currentTextureIndex];
 			_content.Renderer.Clear(PanelDisplay.BackColor);
 
-			/*_content.Renderer.Drawing.SmoothingMode = SmoothingMode.Smooth;
+			_content.Renderer.Drawing.SmoothingMode = SmoothingMode.Smooth;
 
 			float alpha = 0.0f;
 
@@ -838,7 +836,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
                 _patternSprite.Color = new GorgonColor(0.25f, 0.25f, 1.0f, 0.4f);
 				_patternSprite.TextureRegion = new RectangleF(_selectorBackGroundPos.X, _selectorBackGroundPos.Y, rect.Width / _pattern.Settings.Width, rect.Height / _pattern.Settings.Height);
                 _patternSprite.Draw();
-            }*/
+            }
 		}
 		#endregion
 
