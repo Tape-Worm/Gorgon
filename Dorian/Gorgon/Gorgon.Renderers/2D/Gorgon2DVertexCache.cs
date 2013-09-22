@@ -119,7 +119,7 @@ namespace GorgonLibrary.Renderers
             {
                 if (_verticesWritten > 0)
                 {
-                    Flush();
+	                Flush();
                 }
 
                 Reset();
@@ -144,6 +144,12 @@ namespace GorgonLibrary.Renderers
         public void Flush()
         {
             GorgonVertexBufferBinding binding = _renderer.Graphics.Input.VertexBuffers[0];
+
+			// Apply the current projection/view matrix.
+			if (_renderer.Camera.NeedsUpdate)
+			{
+				_renderer.Camera.Update();
+			}
 
             // Only advance the cache when we've got something to copy into the buffer.
             switch (binding.VertexBuffer.Settings.Usage)

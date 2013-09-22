@@ -1012,13 +1012,6 @@ namespace GorgonLibrary.Renderers
         /// </remarks>
         public void Flush()
         {
-            I2DCamera currentCamera = (_camera ?? DefaultCamera);
-
-            if (currentCamera.NeedsUpdate)
-            {
-                currentCamera.Update();
-            }
-
             if ((!_cache.Enabled)
                 || !(_cache.NeedsFlush))
             {
@@ -1072,9 +1065,7 @@ namespace GorgonLibrary.Renderers
 		{
 			_systemCreatedTarget = autoCreatedTarget;
 
-		    _cache = new Gorgon2DVertexCache(this, 32);
-		    
-		    //vertexCacheSize.Max(1024));
+		    _cache = new Gorgon2DVertexCache(this, vertexCacheSize.Max(1024));
 
 			IsBlendingEnabled = true;
 			IsAlphaTestEnabled = true;

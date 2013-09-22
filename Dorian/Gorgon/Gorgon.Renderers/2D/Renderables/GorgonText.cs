@@ -1262,7 +1262,6 @@ namespace GorgonLibrary.Renderers
 			        Gorgon2D.PixelShader.Resources[0] = glyph.Texture;
 			    }
 
-#error There's definitely something wrong with the vertex cache.  It's messing up the text drawing something fierce.  It seems to be a very unique condition, not isolated yet.
                 _vertexCache.AddVertices(_vertices, 0, 6, vertexIndex, 4);
 			    vertexIndex += _shadowEnabled ? 8 : 4;
 			}
