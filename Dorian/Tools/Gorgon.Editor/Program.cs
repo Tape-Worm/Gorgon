@@ -44,19 +44,7 @@ namespace GorgonLibrary.Editor
 	/// </summary>
 	static class Program
     {
-        #region Constants.
-        /// <summary>
-        /// Meta data file name.
-        /// </summary>
-        public const string MetaDataFile = ".gorgon.editor.metadata";
-        /// <summary>
-        /// Meta data file path.
-        /// </summary>
-        public const string MetaDataFilePath = "/" + MetaDataFile;
-        #endregion
-
         #region Variables.
-        private static readonly XElement _metadataRootNode;
         private static FileWriterPlugIn _writerPlugIn;
         #endregion
 
@@ -217,82 +205,9 @@ namespace GorgonLibrary.Editor
             get;
             private set;
         }
-
-        /// <summary>
-        /// Property to return a hashset of file names that will not be allowed in the editor.
-        /// </summary>
-        public static HashSet<string> BlockedFiles
-        {
-            get;
-            private set;
-        }
 		#endregion
 
 		#region Methods.
-        /// <summary>
-        /// Function to retrieve the writer plug-in that was used to write this file.
-        /// </summary>
-        /// <param name="path">Path to the current file.</param>
-        /// <returns>The writer plug-in, if found.  NULL if not.</returns>
-        private static FileWriterPlugIn GetWriterPlugIn(string path)
-        {
-            // Short circuit.
-            if (WriterPlugIns.Count == 0)
-            {
-                return null;
-            }
-
-            var file = ScratchArea.ScratchFiles.GetFile(MetaDataFilePath);
-	        var extension = Path.GetExtension(path);
-
-	        var firstPlugIn = (from plugIn in WriterPlugIns
-                               where extension != null && plugIn.Value.FileExtensions.Contains(extension)
-                               select plugIn.Value).FirstOrDefault();
-
-            if (file == null)
-            {
-                // We don't have any meta data in this file, so use the first 
-                // available plug-in.
-                return firstPlugIn;
-            }
-
-            // Read in the meta data file.
-			using (var stream = ScratchArea.ScratchFiles.OpenStream(file, false))
-            {
-                EditorFileMetaData = XDocument.Load(stream);
-            }
-
-            // Find the writer plug-in element.
-            var plugInElement = EditorFileMetaData.Descendants("WriterPlugIn").FirstOrDefault();
-
-            // No element, use the first plug-in.
-            if (plugInElement == null)
-            {
-                return firstPlugIn;
-            }
-
-            // Ensure the element is properly formed.
-            if ((!plugInElement.HasAttributes)
-                || (plugInElement.Attribute("TypeName") == null)
-                || (string.IsNullOrWhiteSpace(plugInElement.Attribute("TypeName").Value)))
-            {
-                return firstPlugIn;
-            }
-
-            // Ensure we actually have the plug-in loaded.
-            var writer = (from plugIn in WriterPlugIns
-                let plugInType = plugIn.Value.GetType().FullName
-                where string.Equals(plugInType, plugInElement.Attribute("TypeName").Value, StringComparison.OrdinalIgnoreCase)
-                select plugIn.Value).FirstOrDefault();
-
-            if (writer != null)
-            {
-                firstPlugIn = writer;
-            }
-
-            return firstPlugIn;
-        }
-
 		/// <summary>
         /// Function to open the editor file.
         /// </summary>
@@ -342,7 +257,7 @@ namespace GorgonLibrary.Editor
 				Settings.LastEditorFile = path;
 
 				// Find the writer plug-in that can write this file.
-				CurrentWriterPlugIn = GetWriterPlugIn(path);
+				CurrentWriterPlugIn = FileManagement.GetWriterPlugIn(path);
 
 				// If we can't write the file, then leave the editor file path as blank.
 				if (CurrentWriterPlugIn != null)
@@ -402,8 +317,9 @@ namespace GorgonLibrary.Editor
 			}
 
             // Write the meta data file to the file system.
-            using (var metaDataStream = ScratchArea.ScratchFiles.OpenStream(MetaDataFilePath, true))
+            using (var metaDataStream = ScratchArea.ScratchFiles.OpenStream(ScratchArea.MetaDataFilePath, true))
             {
+#error Set this up to save the meta data from the file management interface.
                 EditorFileMetaData.Save(metaDataStream);
             }
 
@@ -433,15 +349,10 @@ namespace GorgonLibrary.Editor
             WriterPlugIns = new Dictionary<string, FileWriterPlugIn>();
 			EditorFileChanged = false;
             DisabledPlugIns = new Dictionary<EditorPlugIn, string>();
-            EditorFileMetaData = new XDocument(new XDeclaration("1.0", "utf-8", "yes"));
-            BlockedFiles = new HashSet<string>();
 
             // Create our meta data root node.
             _metadataRootNode = new XElement("Gorgon.Editor.MetaData");
             EditorFileMetaData.Add(_metadataRootNode);
-
-            // Add our list of blocked files.
-            BlockedFiles.Add(MetaDataFile);
 
 			EditorFile = "Untitled";
             EditorFilePath = string.Empty;
