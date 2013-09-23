@@ -30,6 +30,7 @@ using System.Linq;
 using System.Windows.Forms;
 using GorgonLibrary.Diagnostics;
 using GorgonLibrary.Editor.Properties;
+using GorgonLibrary.Graphics;
 using GorgonLibrary.UI;
 
 namespace GorgonLibrary.Editor
@@ -55,11 +56,152 @@ namespace GorgonLibrary.Editor
 			// about accessing a disposed object from a closure.  Even though the
 			// _splash object could not be disposed until well after the closure
 			// had completed execution.  By all rights, this should fail too, and
-			// does not.
+			// does not, therefore resharper is wrong.
 			_splash.UpdateVersion(string.Format(Resources.GOREDIT_SPLASH_LOAD_PLUGIN,
 												Path.GetFileNameWithoutExtension(text)
 													.Ellipses(40, true)));
 		}
+
+        /// <summary>
+        /// Function to fade the splash screen in or out.
+        /// </summary>
+        /// <param name="fadeIn">TRUE to fade in, FALSE to fade out.</param>
+        /// <param name="time">Time, in milliseconds, for the fade.</param>
+	    private void FadeSplashScreen(bool fadeIn, float time)
+        {
+            double startTime = GorgonTiming.MillisecondsSinceStart;
+            double delta = 0;
+
+            // Fade the splash screen in.
+            while (delta <= 1)
+            {
+                delta = (GorgonTiming.MillisecondsSinceStart - startTime) / time;
+
+                _splash.Opacity = fadeIn ? delta  : 1.0f - delta;
+            }
+	    }
+
+        /// <summary>
+        /// Function to initialize the log file.
+        /// </summary>
+	    private void InitializeLogFile()
+	    {
+            _splash.UpdateVersion("Creating logger...");
+            Program.LogFile = new GorgonLogFile("Gorgon.Editor", "Tape_Worm");
+            try
+            {
+                Program.LogFile.Open();
+            }
+            catch (Exception ex)
+            {
+#if DEBUG
+                // If we can't open the log file in debug mode, let us know about it.
+                GorgonDialogs.ErrorBox(null, ex);
+#endif
+            }
+	    }
+
+        /// <summary>
+        /// Function to initialize the graphics interface.
+        /// </summary>
+	    private void InitializeGraphics()
+	    {
+            // Initialize our graphics interface.
+            _splash.UpdateVersion(Resources.GOREDIT_SPLASH_INIT_GFX);
+
+            // Find the best device in the system.
+            GorgonVideoDeviceEnumerator.Enumerate(false, false);
+
+            GorgonVideoDevice bestDevice = GorgonVideoDeviceEnumerator.VideoDevices[0];
+
+            // If we have more than one device, use the best available device.
+            if (GorgonVideoDeviceEnumerator.VideoDevices.Count > 1)
+            {
+                bestDevice = (from device in GorgonVideoDeviceEnumerator.VideoDevices
+                              orderby device.SupportedFeatureLevel descending, GorgonVideoDeviceEnumerator.VideoDevices.IndexOf(device)
+                              select device).First();
+            }
+
+            Program.Graphics = new GorgonGraphics(bestDevice);
+	    }
+
+        /// <summary>
+        /// Function to initialize the plug-ins interface.
+        /// </summary>
+	    private void InitializePlugIns()
+	    {
+            Program.LogFile.Print("Loading plug-ins...", LoggingLevel.Verbose);
+            _splash.UpdateVersion(Resources.GOREDIT_SPLASH_LOAD_PLUGINS);
+
+            PlugIns.LoadPlugIns(UpdateSplashPlugInText);
+	    }
+
+        /// <summary>
+        /// Function to initialize the scratch files area.
+        /// </summary>
+	    private void InitializeScratchArea()
+	    {
+            Program.LogFile.Print("Creating scratch area at \"{0}\"", LoggingLevel.Verbose, Program.Settings.ScratchPath);
+
+            _splash.UpdateVersion(Resources.GOREDIT_SPLASH_CREATE_SCRATCH);
+
+            // Ensure that we're not being clever and trying to mess up our system.
+            if (ScratchArea.CanAccessScratch(Program.Settings.ScratchPath) == ScratchAccessibility.SystemArea)
+            {
+                GorgonDialogs.ErrorBox(null, Resources.GOREDIT_CANNOT_USESYS_SCRATCH);
+            }
+            else
+            {
+                // Destroy previous scratch area files if possible.
+                // Do not do this when we have it set to a system area, this will keep us from 
+                // destroying anything critical.
+                ScratchArea.CleanOldScratchAreas();
+            }
+
+            // Ensure we can actually access the scratch area.
+            while (ScratchArea.CanAccessScratch(Program.Settings.ScratchPath) != ScratchAccessibility.Accessible)
+            {
+                Program.LogFile.Print("Could not access scratch area at \"{0}\"", LoggingLevel.Verbose, Program.Settings.ScratchPath);
+
+                if (ScratchArea.SetScratchLocation() == ScratchAccessibility.Canceled)
+                {
+                    // Exit the application if we cancel.
+                    MainForm.Dispose();
+                    Gorgon.Quit();
+                    return;
+                }
+
+                Program.LogFile.Print("Setting scratch area to \"{0}\".", LoggingLevel.Verbose, Program.Settings.ScratchPath);
+
+                // Update with the new scratch path.
+                Program.Settings.Save();
+            }
+
+            ScratchArea.InitializeScratch();
+            ScratchArea.ScratchFiles.Providers.LoadAllProviders();
+	    }
+
+        /// <summary>
+        /// Function to load the previous file.
+        /// </summary>
+	    private void LoadLastFile()
+	    {
+            try
+            {
+                if (!ScratchArea.ScratchFiles.Providers.Any(item => item.CanReadFile(Program.Settings.LastEditorFile)))
+                {
+                    return;
+                }
+
+                _splash.UpdateVersion(Resources.GOREDIT_SPLASH_LOAD_PREV_FILE);
+                Program.OpenEditorFile(Program.Settings.LastEditorFile);
+            }
+            catch (Exception ex)
+            {
+                GorgonDialogs.ErrorBox(null, "There was an error opening '" + Program.Settings.LastEditorFile + "'", ex);
+                Program.Settings.LastEditorFile = string.Empty;
+            }
+	    }
 
 		/// <summary>
 		/// Calls <see cref="M:System.Windows.Forms.ApplicationContext.ExitThreadCore"/>, which raises the <see cref="E:System.Windows.Forms.ApplicationContext.ThreadExit"/> event.
@@ -79,6 +221,8 @@ namespace GorgonLibrary.Editor
 		/// </summary>
 		public AppContext()
 		{
+		    float startTime = GorgonTiming.SecondsSinceStart;
+
 			try
 			{
 				_splash = new formSplash();
@@ -87,122 +231,30 @@ namespace GorgonLibrary.Editor
 				_splash.Show();
 				_splash.Refresh();
 
-				var timer = new GorgonTimer();
+                // Fade in our splash screen.
+				FadeSplashScreen(true, 500.0f);
 
-				// Fade the splash screen in.
-				while (_splash.Opacity < 1)
-				{
-					if (timer.Milliseconds <= 7)
-					{
-						continue;
-					}
-
-					timer.Reset();
-					_splash.Opacity += 0.01;
-				}
-								
-				timer.Reset();
-
-				_splash.UpdateVersion("Creating logger...");
-				Program.LogFile = new GorgonLogFile("Gorgon.Editor", "Tape_Worm");
-				try
-				{
-					Program.LogFile.Open();
-				}
-				catch (Exception ex)
-				{
-#if DEBUG
-					// If we can't open the log file in debug mode, let us know about it.
-					GorgonDialogs.ErrorBox(null, ex);
-#endif
-				}
-
-                // Initialize our graphics interface.
-                _splash.UpdateVersion(Resources.GOREDIT_SPLASH_INIT_GFX);
-                Program.InitializeGraphics();
-
-                Program.LogFile.Print("Loading plug-ins...", LoggingLevel.Verbose);
-                _splash.UpdateVersion(Resources.GOREDIT_SPLASH_LOAD_PLUGINS);
-
-				PlugIns.LoadPlugIns(UpdateSplashPlugInText);
-
-				Program.LogFile.Print("Creating scratch area at \"{0}\"", LoggingLevel.Verbose, Program.Settings.ScratchPath);
-
-				_splash.UpdateVersion(Resources.GOREDIT_SPLASH_CREATE_SCRATCH);
-							
-				// Ensure that we're not being clever and trying to mess up our system.
-				if (ScratchArea.CanAccessScratch(Program.Settings.ScratchPath) == ScratchAccessibility.SystemArea)
-				{
-					GorgonDialogs.ErrorBox(null, Resources.GOREDIT_CANNOT_USESYS_SCRATCH);
-				}
-				else
-				{
-					// Destroy previous scratch area files if possible.
-					// Do not do this when we have it set to a system area, this will keep us from 
-					// destroying anything critical.
-					ScratchArea.CleanOldScratchAreas();
-				}
-
-				// Ensure we can actually access the scratch area.
-				while (ScratchArea.CanAccessScratch(Program.Settings.ScratchPath) != ScratchAccessibility.Accessible)
-				{
-					Program.LogFile.Print("Could not access scratch area at \"{0}\"", LoggingLevel.Verbose, Program.Settings.ScratchPath);
-
-					if (ScratchArea.SetScratchLocation() == ScratchAccessibility.Canceled)
-					{
-						// Exit the application if we cancel.
-						MainForm.Dispose();
-						Gorgon.Quit();
-						return;
-					}
-
-					Program.LogFile.Print("Setting scratch area to \"{0}\".", LoggingLevel.Verbose, Program.Settings.ScratchPath);
-
-					// Update with the new scratch path.
-					Program.Settings.Save();
-				}
-                
-                ScratchArea.InitializeScratch();
-				ScratchArea.ScratchFiles.Providers.LoadAllProviders();
+                InitializeLogFile();
+                InitializeGraphics();
+                InitializePlugIns();
+                InitializeScratchArea();
 
                 // Load the last opened file.
                 if ((Program.Settings.AutoLoadLastFile) && (!string.IsNullOrWhiteSpace(Program.Settings.LastEditorFile)))
                 {
-                    try
-                    {
-						if (ScratchArea.ScratchFiles.Providers.Any(item => item.CanReadFile(Program.Settings.LastEditorFile)))
-						{
-							_splash.UpdateVersion(Resources.GOREDIT_SPLASH_LOAD_PREV_FILE);
-							Program.OpenEditorFile(Program.Settings.LastEditorFile);
-						}
-                    }
-                    catch (Exception ex)
-                    {
-                        GorgonDialogs.ErrorBox(null, "There was an error opening '" + Program.Settings.LastEditorFile + "'", ex);
-                        Program.Settings.LastEditorFile = string.Empty;
-                    }
+                    LoadLastFile();
                 }
 
                 // Set up the default pane.
 				((formMain)MainForm).LoadContentPane<DefaultContent>();
-
+                
                 // Keep showing the splash screen.
-				while (timer.Milliseconds < 3000)
+				while ((GorgonTiming.SecondsSinceStart - startTime) < 3)
 				{
 					System.Threading.Thread.Sleep(1);
 				}
 
-				// Fade it out.
-				while (_splash.Opacity > 0.02)
-				{
-					if (timer.Milliseconds <= 5)
-					{
-						continue;
-					}
-
-					timer.Reset();
-					_splash.Opacity -= 0.01;
-				}
+                FadeSplashScreen(false, 250.0f);
 
 				// Bring up our application form.
 				MainForm.Show();

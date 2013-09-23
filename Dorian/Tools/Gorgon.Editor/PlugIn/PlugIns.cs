@@ -42,21 +42,51 @@ namespace GorgonLibrary.Editor
 	/// The primary plug-in interface.
 	/// </summary>
 	static class PlugIns
-	{
-		#region Variables.
-		private readonly static Dictionary<string, FileWriterPlugIn> _writerPlugIns;
+    {
+        #region Variables.
+        private readonly static Dictionary<string, FileWriterPlugIn> _writerPlugIns;
 		private readonly static Dictionary<string, GorgonFileSystemProviderPlugIn> _readerPlugIns;
 		private readonly static Dictionary<string, ContentPlugIn> _contentPlugIns;
-		private readonly static Dictionary<FileExtension, ContentPlugIn> _contentFiles;
 		private readonly static List<DisabledPlugIn> _disabled;
 		#endregion
 
-		#region Properties.
+        #region Properties.
+        /// <summary>
+        /// Property to return the list of writer plug-ins.
+        /// </summary>
+	    public static IReadOnlyDictionary<string, FileWriterPlugIn> WriterPlugIns
+	    {
+	        get
+	        {
+	            return _writerPlugIns;
+	        }
+	    }
 
-		#endregion
+        /// <summary>
+        /// Property to return the list of reader plug-ins.
+        /// </summary>
+	    public static IReadOnlyDictionary<string, GorgonFileSystemProviderPlugIn> ReaderPlugIns
+	    {
+	        get
+	        {
+	            return _readerPlugIns;
+	        }
+	    }
 
-		#region Methods.
-		/// <summary>
+        /// <summary>
+        /// Property to return the list of content plug-ins.
+        /// </summary>
+	    public static IReadOnlyDictionary<string, ContentPlugIn> ContentPlugIns
+	    {
+	        get
+	        {
+	            return _contentPlugIns;
+	        }
+	    }
+        #endregion
+
+        #region Methods.
+        /// <summary>
 		/// Function to load all the plug-in assemblies from the plug-in directory.
 		/// </summary>
 		/// <param name="plugInDirectory">Plug-in directory that contains the assemblies.</param>
@@ -90,62 +120,6 @@ namespace GorgonLibrary.Editor
 			}
 
 			return results;
-		}
-
-		/// <summary>
-		/// Function to retrieve the content file types available in the plug-in.
-		/// </summary>
-		/// <param name="plugIn">Plug-in containing the content types.</param>
-		private static void GetContentFileTypes(ContentPlugIn plugIn)
-		{
-			if (plugIn.FileExtensions.Count == 0)
-			{
-				return;
-			}
-
-			// Associate the content file type with the plug-in.
-			foreach (var extension in plugIn.FileExtensions)
-			{
-				_contentFiles[extension] = plugIn;
-			}
-		}
-
-		/// <summary>
-		/// Function to retrieve the list of available content extensions.
-		/// </summary>
-		/// <returns>A list of content file name extensions.</returns>
-		public static IEnumerable<FileExtension> GetContentExtensions()
-		{
-			return _contentFiles.Keys;
-		}
-
-		/// <summary>
-		/// Function to return a related plug-in for the given content file.
-		/// </summary>
-		/// <param name="fileName">Name of the content file.</param>
-		/// <returns>The plug-in used to access the file.</returns>
-		public static ContentPlugIn GetContentPlugInForFile(string fileName)
-		{
-			string extension = Path.GetExtension(fileName);
-
-			return !CanOpenContent(extension) ? null : _contentFiles[new FileExtension(extension, null)];
-		}
-
-		/// <summary>
-		/// Function to determine if a certain type of content can be opened by a plug-in.
-		/// </summary>
-		/// <param name="fileName">Filename of the content.</param>
-		/// <returns>TRUE if the content can be opened, FALSE if not.</returns>
-		public static bool CanOpenContent(string fileName)
-		{
-			if (string.IsNullOrWhiteSpace(fileName))
-			{
-				return false;
-			}
-
-			string extension = Path.GetExtension(fileName);
-
-			return !string.IsNullOrWhiteSpace(extension) && _contentFiles.ContainsKey(new FileExtension(extension, null));
 		}
 
 		/// <summary>
@@ -206,8 +180,6 @@ namespace GorgonLibrary.Editor
 						if (contentPlugIn != null)
 						{
 							_contentPlugIns[editorPlugIn.Name] = contentPlugIn;
-
-							GetContentFileTypes(contentPlugIn);
 						}
 						break;
 					case PlugInType.FileWriter:
@@ -240,7 +212,7 @@ namespace GorgonLibrary.Editor
 			_contentPlugIns = new Dictionary<string, ContentPlugIn>();
 			_readerPlugIns = new Dictionary<string, GorgonFileSystemProviderPlugIn>();
 			_writerPlugIns = new Dictionary<string, FileWriterPlugIn>();
-			_contentFiles = new Dictionary<FileExtension, ContentPlugIn>();
+			
 			_disabled = new List<DisabledPlugIn>();
 		}
 		#endregion

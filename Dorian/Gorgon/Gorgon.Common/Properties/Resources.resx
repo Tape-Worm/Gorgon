@@ -777,4 +777,10 @@ Code: 0x{2}</value>
   <data name="GOR_APPLICATION_REQUIRES_FORM_OR_IDLE" xml:space="preserve">
     <value>The application requires either a form, an idle method or both.</value>
   </data>
+  <data name="GOR_FILE_EXTENSION_EXISTS" xml:space="preserve">
+    <value>The file extension '{0}' already exists in this collection.</value>
+  </data>
+  <data name="GOR_FILE_EXTENSION_TOSTR" xml:space="preserve">
+    <value>Writer plug-in file extension: .{0} - {1}</value>
+  </data>
 </root>

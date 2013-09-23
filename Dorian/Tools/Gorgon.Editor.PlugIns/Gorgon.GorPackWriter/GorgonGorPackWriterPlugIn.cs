@@ -393,7 +393,7 @@ namespace GorgonLibrary.Editor.GorPackWriterPlugIn
         public GorgonGorPackWriterPlugIn()
             : base(Resources.GORPKW_DESC)
         {
-			FileExtensions.Add(new FileExtension("gorPack", Resources.GORPKW_GORPACK_FILE_EXT_DESC));
+			FileExtensions.Add(new GorgonFileExtension("gorPack", Resources.GORPKW_GORPACK_FILE_EXT_DESC));
         }
         #endregion
     }

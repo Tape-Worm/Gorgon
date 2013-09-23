@@ -71,6 +71,7 @@ namespace GorgonLibrary
         private static Form _mainForm;																							// Main application form.
 		private static bool _quitSignalled;																						// Flag to indicate that the application needs to close.
 		private static Func<bool> _loop;																						// Application loop method.
+        private static bool _beginFrameTiming = true;                                                                           // Flag to begin frame rate timing.
 		#endregion
 
 		#region Properties.
@@ -131,10 +132,14 @@ namespace GorgonLibrary
 			set
 			{
 				// We can't set all to NULL.
-				if ((ApplicationForm == null) && (value == null) && (ApplicationContext == null))
-					return;
+			    if ((ApplicationForm == null)
+			        && (value == null)
+			        && (ApplicationContext == null))
+			    {
+			        return;
+			    }
 
-				// Remove the previous event.
+			    // Remove the previous event.
 				if (IsRunning)
 				{
 					Application.Idle -= Application_Idle;
@@ -235,7 +240,7 @@ namespace GorgonLibrary
 		/// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
 		private static void Application_Idle(object sender, EventArgs e)
 		{
-			MSG message;		// Message to retrieve.
+			MSG message;		            // Message to retrieve.
 
 			// We have nothing to execute, just leave.
 			if ((ApplicationIdleLoopMethod == null) || (!IsRunning))
@@ -245,6 +250,13 @@ namespace GorgonLibrary
 
 			while ((HasFocus) && (!Win32API.PeekMessage(out message, IntPtr.Zero, 0, 0, PeekMessageFlags.NoRemove)))
 			{
+                // Reset the timer so that frame rate timing can start with the first iteration of the loop.
+			    if (_beginFrameTiming)
+			    {
+			        GorgonTiming.Reset();
+			        _beginFrameTiming = false;
+			    }
+
 				GorgonTiming.Update();
 				
 				if (!ApplicationIdleLoopMethod())
@@ -420,10 +432,10 @@ namespace GorgonLibrary
                 throw new InvalidOperationException(Resources.GOR_APPLICATION_ALREADY_RUNNING);
             }
 
-			if (loop != null)
-			{
-				ApplicationIdleLoopMethod = loop;
-			}
+		    if (loop != null)
+		    {
+		        ApplicationIdleLoopMethod = loop;
+		    }
 
 			ApplicationContext = context;
 
@@ -435,7 +447,8 @@ namespace GorgonLibrary
 			    }
 
 			    IsRunning = true;
-				Application.Run(context);
+			    _beginFrameTiming = true;
+                Application.Run(context);
 			}
 			catch (Exception ex)
 			{
@@ -482,6 +495,7 @@ namespace GorgonLibrary
 				}
 
 				IsRunning = true;
+                _beginFrameTiming = true;
 				Application.Run(ApplicationForm);
 			}
 			catch (Exception ex)
@@ -522,6 +536,7 @@ namespace GorgonLibrary
 				}
 
 				IsRunning = true;
+                _beginFrameTiming = true;
 				Application.Run();
 			}
 			catch (Exception ex)
@@ -669,6 +684,9 @@ namespace GorgonLibrary
 
 			// Default to using 10 milliseconds of sleep time when the application is not focused.
 			UnfocusedSleepTime = 10;
+
+            // Initializing application timing.
+            GorgonTiming.Reset();
 		}
 		#endregion
 	}

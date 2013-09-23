@@ -30,6 +30,7 @@ using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
 using GorgonLibrary.Editor.FontEditorPlugIn.Properties;
+using GorgonLibrary.IO;
 
 namespace GorgonLibrary.Editor.FontEditorPlugIn
 {
@@ -207,7 +208,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
         public GorgonFontEditorPlugIn()
             : base(Resources.GORFNT_DESC)
         {
-			FileExtensions.Add(new FileExtension("gorfont", Resources.GORFNT_CONTENT_EXTENSION_DESC));
+			FileExtensions.Add(new GorgonFileExtension("gorFont", Resources.GORFNT_CONTENT_EXTENSION_DESC));
 			UpdateCachedFonts();
 			
 			Settings = new GorgonFontContentSettings();

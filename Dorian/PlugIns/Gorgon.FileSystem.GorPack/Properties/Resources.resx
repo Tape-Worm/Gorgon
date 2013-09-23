@@ -129,6 +129,9 @@
   <data name="GORFS_FILEINDEX_CORRUPT" xml:space="preserve">
     <value>A file is corrupted or empty in the index table.</value>
   </data>
+  <data name="GORFS_FILE_DESC" xml:space="preserve">
+    <value>Gorgon Packed Files (*.gorPack)</value>
+  </data>
   <data name="GORFS_PLUGIN_DESC" xml:space="preserve">
     <value>Gorgon 1.x BZip2 compressed packed file.</value>
   </data>

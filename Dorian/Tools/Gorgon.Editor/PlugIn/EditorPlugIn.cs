@@ -116,7 +116,7 @@ namespace GorgonLibrary.Editor
 		/// Property to return the file extensions (and descriptions) for this content type.
 		/// </summary>
 		/// <remarks>This dictionary contains the file extension including the leading period as the key (in lowercase), and a tuple containing the file extension, and a description of the file (for display).</remarks>
-		public FileExtensionCollection FileExtensions
+		public GorgonFileExtensionCollection FileExtensions
 		{
 			get;
 			private set;
@@ -197,7 +197,7 @@ namespace GorgonLibrary.Editor
         protected ContentPlugIn(string description)
             : base(description)
         {
-			FileExtensions = new FileExtensionCollection();
+			FileExtensions = new GorgonFileExtensionCollection();
         }
         #endregion
 
