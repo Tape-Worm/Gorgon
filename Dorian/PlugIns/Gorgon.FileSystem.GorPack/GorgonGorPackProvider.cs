@@ -31,7 +31,6 @@ using System.IO;
 using System.Text;
 using System.Xml.Linq;
 using GorgonLibrary.Diagnostics;
-using GorgonLibrary.FileSystem.GorPack.Properties;
 using GorgonLibrary.IO.GorPack.Properties;
 using ICSharpCode.SharpZipLib.BZip2;
 

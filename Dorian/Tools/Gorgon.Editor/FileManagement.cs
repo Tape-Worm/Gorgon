@@ -26,6 +26,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -42,6 +43,40 @@ namespace GorgonLibrary.Editor
     static class FileManagement
     {
         #region Classes.
+		/// <summary>
+		/// A case insensitive string comparer.
+		/// </summary>
+	    private class StringOrdinalCaseInsensitiveComparer
+			: IEqualityComparer<string>
+		{
+			#region IEqualityComparer<string> Members
+			/// <summary>
+			/// Determines whether the specified objects are equal.
+			/// </summary>
+			/// <param name="x">The first object of type string to compare.</param>
+			/// <param name="y">The second object of type string to compare.</param>
+			/// <returns>
+			/// true if the specified objects are equal; otherwise, false.
+			/// </returns>
+			public bool Equals(string x, string y)
+			{
+				return string.Equals(x, y, StringComparison.OrdinalIgnoreCase);
+			}
+
+			/// <summary>
+			/// Returns a hash code for this instance.
+			/// </summary>
+			/// <param name="obj">The object.</param>
+			/// <returns>
+			/// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table. 
+			/// </returns>
+			public int GetHashCode(string obj)
+			{
+				return obj.ToUpperInvariant().GetHashCode();
+			}
+			#endregion
+		}
+
         /// <summary>
         /// A case insensitive comparer for file extensions.
         /// </summary>
@@ -52,8 +87,8 @@ namespace GorgonLibrary.Editor
             /// <summary>
             /// Determines whether the specified objects are equal.
             /// </summary>
-            /// <param name="x">The first object of type <paramref name="T" /> to compare.</param>
-            /// <param name="y">The second object of type <paramref name="T" /> to compare.</param>
+            /// <param name="x">The first object of type string to compare.</param>
+            /// <param name="y">The second object of type string to compare.</param>
             /// <returns>
             /// true if the specified objects are equal; otherwise, false.
             /// </returns>
@@ -129,6 +164,16 @@ namespace GorgonLibrary.Editor
                 _writerFiles[extension] = plugIn;
             }
         }
+
+		/// <summary>
+		/// Function to return whether or not a file is in the blocked list.
+		/// </summary>
+		/// <param name="file">File to check.</param>
+		/// <returns>TRUE if blocked, FALSE if not.</returns>
+	    public static bool IsBlocked(GorgonFileSystemFileEntry file)
+		{
+			return _blockedFiles.Contains(file.Name);
+		}
 
         /// <summary>
         /// Function to initialize the file types available to the application.
@@ -274,11 +319,11 @@ namespace GorgonLibrary.Editor
             _contentFiles = new Dictionary<GorgonFileExtension, ContentPlugIn>(new FileExtensionComparer());
             _readerFiles = new Dictionary<GorgonFileExtension, GorgonFileSystemProvider>(new FileExtensionComparer());
             _writerFiles = new Dictionary<GorgonFileExtension, FileWriterPlugIn>(new FileExtensionComparer());
-            
-            _blockedFiles = new HashSet<string>
-                            {
-                                ScratchArea.MetaDataFile
-                            };
+
+	        _blockedFiles = new HashSet<string>(new[]
+	                                            {
+		                                            ScratchArea.MetaDataFile
+	                                            }, new StringOrdinalCaseInsensitiveComparer());
         }
         #endregion
     }
