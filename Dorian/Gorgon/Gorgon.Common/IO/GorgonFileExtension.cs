@@ -165,7 +165,7 @@ namespace GorgonLibrary.IO
 		/// </returns>
 		public override int GetHashCode()
 		{
-			return 281.GenerateHash(Extension.ToLower());
+			return 281.GenerateHash(Extension.ToUpperInvariant());
 		}
 
         /// <summary>
