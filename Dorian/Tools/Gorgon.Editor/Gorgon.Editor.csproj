@@ -129,6 +129,7 @@
     <Compile Include="Designers\PointFConverter.cs" />
     <Compile Include="Designers\RGBAEditor.cs" />
     <Compile Include="Designers\RGBATypeConverter.cs" />
+    <Compile Include="FileManagement.cs" />
     <Compile Include="formAlphaPicker.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -162,8 +163,6 @@
     <Compile Include="PlugIn\DisabledPlugIn.cs" />
     <Compile Include="PlugIn\EditorPlugIn.cs" />
     <Compile Include="PlugIn\EditorPlugInSettings.cs" />
-    <Compile Include="PlugIn\FileExtension.cs" />
-    <Compile Include="PlugIn\FileExtensionCollection.cs" />
     <Compile Include="PlugIn\FileWriterPlugIn.cs" />
     <Compile Include="PlugIn\PlugIns.cs" />
     <Compile Include="PropertyGrid\ContentProperty.cs" />

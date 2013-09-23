@@ -31,6 +31,7 @@ using System.IO;
 using System.Text;
 using System.Xml.Linq;
 using GorgonLibrary.Diagnostics;
+using GorgonLibrary.FileSystem.GorPack.Properties;
 using GorgonLibrary.IO.GorPack.Properties;
 using ICSharpCode.SharpZipLib.BZip2;
 
@@ -301,8 +302,7 @@ namespace GorgonLibrary.IO.GorPack
 		internal GorgonGorPackProvider(string description)
 		{
             _description = description;
-            PreferredExtensions = new List<string>
-                { "Gorgon Packed Files (*.gorPack)|*.gorPack" };
+		    PreferredExtensions.Add(new GorgonFileExtension("gorPack", Resources.GORFS_FILE_DESC));
 		}
 		#endregion
 	}

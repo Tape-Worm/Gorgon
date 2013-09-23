@@ -197,7 +197,7 @@ namespace GorgonLibrary.Editor
 		public static GorgonGraphics Graphics
 		{
 			get;
-			private set;
+			set;
 		}
 
 		/// <summary>
@@ -420,33 +420,6 @@ namespace GorgonLibrary.Editor
             // Remove all changed items.
 			EditorFileChanged = false;
         }
-
-		/// <summary>
-		/// Function to initialize the graphics interface.
-		/// </summary>
-		public static void InitializeGraphics()
-		{
-			if (Graphics != null)
-			{
-				Graphics.Dispose();
-				Graphics = null;
-			}
-
-            // Find the best device in the system.
-            GorgonVideoDeviceEnumerator.Enumerate(false, false);
-
-            GorgonVideoDevice bestDevice = GorgonVideoDeviceEnumerator.VideoDevices[0];
-
-            // If we have more than one device, use the best available device.
-            if (GorgonVideoDeviceEnumerator.VideoDevices.Count > 1)
-            {
-                bestDevice = (from device in GorgonVideoDeviceEnumerator.VideoDevices
-                             orderby device.SupportedFeatureLevel descending, GorgonVideoDeviceEnumerator.VideoDevices.IndexOf(device)
-                             select device).First();
-            }
-                        
-			Graphics = new GorgonGraphics(bestDevice);
-		}
 		#endregion
 
 		#region Constructor/Destructor.

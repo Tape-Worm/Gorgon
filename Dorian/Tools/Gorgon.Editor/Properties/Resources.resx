@@ -199,12 +199,6 @@
   <data name="GOREDIT_BTN_CANCEL" xml:space="preserve">
     <value>&amp;Cancel</value>
   </data>
-  <data name="GOREDIT_FILE_EXTENSION_EXISTS" xml:space="preserve">
-    <value>The file extension '{0}' already exists in this collection.</value>
-  </data>
-  <data name="GOREDIT_FILE_EXTENSION_TOSTR" xml:space="preserve">
-    <value>Writer plug-in file extension: .{0} - {1}</value>
-  </data>
   <data name="GOREDIT_FILE_WRITE_SAVE_DLG_TITLE" xml:space="preserve">
     <value>Saving '{0}'</value>
   </data>
@@ -264,5 +258,11 @@
   </data>
   <data name="GOREDIT_VERSION" xml:space="preserve">
     <value>Version: {0} - {1}</value>
+  </data>
+  <data name="GOREDIT_ALL_CONTENT" xml:space="preserve">
+    <value>All Content Types</value>
+  </data>
+  <data name="GOREDIT_ALL_FILES" xml:space="preserve">
+    <value>All Files (*.*)</value>
   </data>
 </root>

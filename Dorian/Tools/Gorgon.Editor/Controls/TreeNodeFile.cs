@@ -121,7 +121,7 @@ namespace GorgonLibrary.Editor
 				return;
 			}
 
-			PlugIn = PlugIns.GetContentPlugInForFile(File.Extension);
+			PlugIn = FileManagement.GetContentPlugInForFile(File.Extension);
 
 			if (PlugIn != null)
 			{

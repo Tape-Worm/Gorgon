@@ -26,22 +26,24 @@
 
 using System;
 using System.Collections.Generic;
+using System.Text;
 using GorgonLibrary.Collections;
-using GorgonLibrary.Editor.Properties;
+using GorgonLibrary.Properties;
 
-namespace GorgonLibrary.Editor
+namespace GorgonLibrary.IO
 {
 	/// <summary>
-	/// A collection of file extensions for a writer plug-in.
+	/// A collection of file extensions.
 	/// </summary>
-	public class FileExtensionCollection
-		: GorgonBaseNamedObjectDictionary<FileExtension>
+	/// <remarks>This collection is useful for building a series of file type descriptions for a file dialog.</remarks>
+	public class GorgonFileExtensionCollection
+		: GorgonBaseNamedObjectDictionary<GorgonFileExtension>
 	{
 		#region Properties.
 		/// <summary>
 		/// Property to set or return an extension in the list.
 		/// </summary>
-		public FileExtension this[string extension]
+		public GorgonFileExtension this[string extension]
 		{
 			get
 			{
@@ -75,16 +77,16 @@ namespace GorgonLibrary.Editor
 		/// Function to add a file extension to the list.
 		/// </summary>
 		/// <param name="extension">Extension to add.</param>
-		public void Add(FileExtension extension)
+		public void Add(GorgonFileExtension extension)
 		{
 			if (extension.Extension == null)
 			{
-				extension = new FileExtension(string.Empty, extension.Description);
+				extension = new GorgonFileExtension(string.Empty, extension.Description);
 			}
 
 			if (Contains(extension))
 			{
-				throw new ArgumentException(string.Format(Resources.GOREDIT_FILE_EXTENSION_EXISTS, extension.Extension));
+				throw new ArgumentException(string.Format(Resources.GOR_FILE_EXTENSION_EXISTS, extension.Extension));
 			}
 
 			AddItem(extension);
@@ -113,7 +115,7 @@ namespace GorgonLibrary.Editor
 		/// Function to remove a file extension from the list.
 		/// </summary>
 		/// <param name="extension"></param>
-		public void Remove(FileExtension extension)
+		public void Remove(GorgonFileExtension extension)
 		{
 			if (!Contains(extension))
 			{
@@ -122,6 +124,60 @@ namespace GorgonLibrary.Editor
 
 			RemoveItem(extension);
 		}
+
+        /// <summary>
+        /// Function to retrieve all extensions and descriptions as a file dialog filter string.
+        /// </summary>
+        /// <returns>The file dialog filter string.</returns>
+	    public string GetFilters()
+	    {
+	        var result = new StringBuilder(512);
+
+	        foreach (var extension in this)
+	        {
+	            if (result.Length > 0)
+	            {
+	                result.Append("|");
+	            }
+
+	            result.Append(extension.GetFilter());
+	        }
+
+	        return result.ToString();
+	    }
+
+        /// <summary>
+        /// Function to return the all files extension filter.
+        /// </summary>
+        /// <returns>The all files extension filter.</returns>
+	    public string GetAllFiles()
+        {
+            return "All Files (*.*)|*.*";
+        }
+
+        /// <summary>
+        /// Function to retrieve all extensions with a single description as a filter.
+        /// </summary>
+        /// <param name="description">Description to apply to all filters.</param>
+        /// <returns>The file dialog filter string.</returns>
+	    public string GetExtensionsFilter(string description)
+	    {
+            var result = new StringBuilder(512);
+
+            foreach (var extension in this)
+            {
+                if (result.Length > 0)
+                {
+                    result.Append(";");
+                }
+
+                result.Append(extension.GetFilter());
+            }
+
+            result.AppendFormat("{0}|{1}", description ?? "Unknown Files", result);
+
+            return result.ToString();
+        }
 
 		/// <summary>
 		/// Function to clear all items from the list.
@@ -134,9 +190,9 @@ namespace GorgonLibrary.Editor
 
 		#region Constructor/Destructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="FileExtensionCollection"/> class.
+		/// Initializes a new instance of the <see cref="GorgonFileExtensionCollection"/> class.
 		/// </summary>
-		internal FileExtensionCollection()
+		public GorgonFileExtensionCollection()
 			: base(false)
 		{
 		}

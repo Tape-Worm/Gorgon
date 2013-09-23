@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -211,11 +212,9 @@ namespace GorgonLibrary.Examples
 					// concatenate each preferred extension description into a single string.  
 					//
 					// Note that a provider may have multiple preferred extensions.
-                    var extensionList = (from preferred in provider.PreferredExtensions 
-                                         select preferred.Split(new[] { '|' }) 
-                                         into splitString 
-                                            where splitString.Length > 0 
-                                            select splitString[0]).ToArray();
+                    var extensionList =
+                        (from preferred in (IEnumerable<GorgonFileExtension>)provider.PreferredExtensions
+                         select string.Format("*.{0}", preferred.Extension)).ToArray();
 
                     if (extensionList.Length > 0)
                     {

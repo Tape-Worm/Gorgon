@@ -25,7 +25,6 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using GorgonLibrary.IO.Properties;
@@ -98,10 +97,10 @@ namespace GorgonLibrary.IO
 		/// <summary>
 		/// Property to return a list of preferred file extensions (if applicable).
 		/// </summary>
-		public IEnumerable<string> PreferredExtensions
+		public GorgonFileExtensionCollection PreferredExtensions
 		{
 			get;
-			protected set;
+			private set;
 		}
 
         /// <summary>
@@ -261,7 +260,7 @@ namespace GorgonLibrary.IO
 		/// </summary>
 		protected internal GorgonFileSystemProvider()			
 		{
-			PreferredExtensions = new List<string>();
+			PreferredExtensions = new GorgonFileExtensionCollection();
 		}
 		#endregion
 

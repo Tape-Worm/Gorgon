@@ -154,6 +154,8 @@
     <Compile Include="Diagnostics\GorgonTiming.cs" />
     <Compile Include="Diagnostics\GorgonTimer.cs" />
     <Compile Include="INamedObject.cs" />
+    <Compile Include="IO\GorgonFileExtension.cs" />
+    <Compile Include="IO\GorgonFileExtensionCollection.cs" />
     <Compile Include="IO\GorgonBinaryReader.cs" />
     <Compile Include="IO\GorgonBinaryWriter.cs" />
     <Compile Include="IO\GorgonChunkReader.cs" />

@@ -28,6 +28,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using GorgonLibrary.Diagnostics;
+using GorgonLibrary.IO.Zip.Properties;
 using ICSharpCode.SharpZipLib.Zip;
 
 namespace GorgonLibrary.IO.Zip
@@ -152,8 +153,7 @@ namespace GorgonLibrary.IO.Zip
 		internal GorgonZipProvider(string description)
 		{
             _description = description;
-			PreferredExtensions = new List<string>
-			    { "Zip files (*.zip)|*.zip" };
+            PreferredExtensions.Add(new GorgonFileExtension("Zip", Resources.GORFS_FILE_DESC));
 		}
 		#endregion
 	}

@@ -25,15 +25,16 @@
 #endregion
 
 using System;
-using GorgonLibrary.Editor.Properties;
+using GorgonLibrary.Properties;
 
-namespace GorgonLibrary.Editor
+namespace GorgonLibrary.IO
 {
 	/// <summary>
-	/// An extension to be used with a file system writer plug-in.
+	/// An extension and description for a file.
 	/// </summary>
-	public struct FileExtension
-		: IEquatable<FileExtension>, IComparable<FileExtension>, IEquatable<string>, IComparable<string>, INamedObject
+	/// <remarks>This type is useful when building a filter list for a file dialog.</remarks>
+	public struct GorgonFileExtension
+		: IEquatable<GorgonFileExtension>, IComparable<GorgonFileExtension>, IEquatable<string>, IComparable<string>, INamedObject
 	{
 		#region Variables.
 		/// <summary>
@@ -58,7 +59,7 @@ namespace GorgonLibrary.Editor
 		/// <param name="left">Left instance to compare.</param>
 		/// <param name="right">Right instance to compare.</param>
 		/// <returns>TRUE if equal, FALSE if not.</returns>
-		public static bool operator ==(FileExtension left, FileExtension right)
+		public static bool operator ==(GorgonFileExtension left, GorgonFileExtension right)
 		{
 			return Equals(ref left, ref right);
 		}
@@ -69,7 +70,7 @@ namespace GorgonLibrary.Editor
 		/// <param name="left">Left instance to compare.</param>
 		/// <param name="right">Right instance to compare.</param>
 		/// <returns>TRUE if not equal, FALSE if equal.</returns>
-		public static bool operator !=(FileExtension left, FileExtension right)
+		public static bool operator !=(GorgonFileExtension left, GorgonFileExtension right)
 		{
 			return !Equals(ref left, ref right);
 		}
@@ -80,7 +81,7 @@ namespace GorgonLibrary.Editor
 		/// <param name="left">Left instance to compare.</param>
 		/// <param name="right">Right instance to compare.</param>
 		/// <returns>TRUE if less than or equal, FALSE if not.</returns>
-		public static bool operator <=(FileExtension left, FileExtension right)
+		public static bool operator <=(GorgonFileExtension left, GorgonFileExtension right)
 		{
 			if (Equals(ref left, ref right))
 			{
@@ -96,7 +97,7 @@ namespace GorgonLibrary.Editor
 		/// <param name="left">Left instance to compare.</param>
 		/// <param name="right">Right instance to compare.</param>
 		/// <returns>TRUE if greater or equal, FALSE if not.</returns>
-		public static bool operator >=(FileExtension left, FileExtension right)
+		public static bool operator >=(GorgonFileExtension left, GorgonFileExtension right)
 		{
 			if (Equals(ref left, ref right))
 			{
@@ -112,7 +113,7 @@ namespace GorgonLibrary.Editor
 		/// <param name="left">Left instance to compare.</param>
 		/// <param name="right">Right instance to compare.</param>
 		/// <returns>TRUE if less than, FALSE if not.</returns>
-		public static bool operator <(FileExtension left, FileExtension right)
+		public static bool operator <(GorgonFileExtension left, GorgonFileExtension right)
 		{
 			return string.Compare(left.Extension, right.Extension, StringComparison.OrdinalIgnoreCase) == -1;
 		}
@@ -123,7 +124,7 @@ namespace GorgonLibrary.Editor
 		/// <param name="left">Left instance to compare.</param>
 		/// <param name="right">Right instance to compare.</param>
 		/// <returns>TRUE if greater than, FALSE if not.</returns>
-		public static bool operator >(FileExtension left, FileExtension right)
+		public static bool operator >(GorgonFileExtension left, GorgonFileExtension right)
 		{
 			return string.Compare(left.Extension, right.Extension, StringComparison.OrdinalIgnoreCase) == 1;
 		}
@@ -134,7 +135,7 @@ namespace GorgonLibrary.Editor
 		/// <param name="left">Left instance to compare.</param>
 		/// <param name="right">Right instance to compare.</param>
 		/// <returns>TRUE if equal, FALSE if not.</returns>
-		public static bool Equals(ref FileExtension left, ref FileExtension right)
+		public static bool Equals(ref GorgonFileExtension left, ref GorgonFileExtension right)
 		{
 			return string.Equals(left.Extension, right.Extension, StringComparison.OrdinalIgnoreCase);
 		}
@@ -148,9 +149,9 @@ namespace GorgonLibrary.Editor
 		/// </returns>
 		public override bool Equals(object obj)
 		{
-			if (obj is FileExtension)
+			if (obj is GorgonFileExtension)
 			{
-				return ((FileExtension)obj).Equals(this);
+				return ((GorgonFileExtension)obj).Equals(this);
 			}
 
 			return base.Equals(obj);
@@ -164,8 +165,17 @@ namespace GorgonLibrary.Editor
 		/// </returns>
 		public override int GetHashCode()
 		{
-			return 281.GenerateHash(Extension);
+			return 281.GenerateHash(Extension.ToLower());
 		}
+
+        /// <summary>
+        /// Function to retrieve a file dialog filter string.
+        /// </summary>
+        /// <returns>The file dialog filter string.</returns>
+	    public string GetFilter()
+	    {
+	        return string.Format("{0}|*.{1}", Description ?? "Unknown file", Extension);
+	    }
 
 		/// <summary>
 		/// Returns a <see cref="System.String" /> that represents this instance.
@@ -175,17 +185,17 @@ namespace GorgonLibrary.Editor
 		/// </returns>
 		public override string ToString()
 		{
-			return string.Format(Resources.GOREDIT_FILE_EXTENSION_TOSTR, Extension, Description);
+			return string.Format(Resources.GOR_FILE_EXTENSION_TOSTR, Extension, Description);
 		}
 		#endregion
 
 		#region Constructor/Destructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="FileExtension"/> struct.
+		/// Initializes a new instance of the <see cref="GorgonFileExtension"/> struct.
 		/// </summary>
 		/// <param name="extension">The extension.</param>
 		/// <param name="description">The description.</param>
-		public FileExtension(string extension, string description)
+		public GorgonFileExtension(string extension, string description)
 		{
 			if (extension == null)
 			{
@@ -199,12 +209,21 @@ namespace GorgonLibrary.Editor
 
 			if (string.IsNullOrWhiteSpace(extension))
 			{
-				throw new ArgumentException(Resources.GOREDIT_PARAMETER_MUST_NOT_BE_EMPTY, "extension");
+				throw new ArgumentException(Resources.GOR_PARAMETER_MUST_NOT_BE_EMPTY, "extension");
 			}
 
 			Extension = extension;
 			Description = description;
 		}
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GorgonFileExtension"/> struct.
+        /// </summary>
+        /// <param name="extension">The extension.</param>
+	    public GorgonFileExtension(string extension)
+            : this(extension, string.Empty)
+	    {
+	    }
 		#endregion
 
 		#region IEquatable<FileExtension> Members
@@ -215,7 +234,7 @@ namespace GorgonLibrary.Editor
 		/// <returns>
 		/// true if the current object is equal to the <paramref name="other" /> parameter; otherwise, false.
 		/// </returns>
-		public bool Equals(FileExtension other)
+		public bool Equals(GorgonFileExtension other)
 		{
 			return Equals(ref this, ref other);
 		}
@@ -229,7 +248,7 @@ namespace GorgonLibrary.Editor
 		/// <returns>
 		/// A value that indicates the relative order of the objects being compared. The return value has the following meanings: Value Meaning Less than zero This object is less than the <paramref name="other" /> parameter.Zero This object is equal to <paramref name="other" />. Greater than zero This object is greater than <paramref name="other" />.
 		/// </returns>
-		public int CompareTo(FileExtension other)
+		public int CompareTo(GorgonFileExtension other)
 		{
 			return string.Compare(Extension, other.Extension, StringComparison.OrdinalIgnoreCase);
 		}

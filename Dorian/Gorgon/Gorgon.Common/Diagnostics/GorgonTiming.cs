@@ -36,9 +36,9 @@ namespace GorgonLibrary.Diagnostics
 	public static class GorgonTiming
 	{
 		#region Variables.
-		private static float _baseTime;						// Base time at which the system started.
 		private static bool _useHighResTimer = true;        // Flag to indicate that we're using a high resolution timer.
 		private static GorgonTimer _timer;					// Timer used in calculations.
+	    private static GorgonTimer _appTimer;               // Timer used to measure how long the application has been running.
 		private static long _frameCounter;					// Frame counter.
 		private static long _averageCounter;				// Counter for averages.
 		private static double _lastTime;					// Last recorded time since update.
@@ -47,7 +47,6 @@ namespace GorgonLibrary.Diagnostics
 		private static float _averageScaledDeltaTotal;		// Average scaled delta draw time total.
 		private static float _averageDeltaTotal;			// Average delta draw time total.
 		private static long _maxAverageCount = 500;			// Maximum number of iterations for average reset.
-		private static bool _firstCall = true;				// Flag to indicate that this is the first call.
 		#endregion
 
 		#region Properties.
@@ -64,28 +63,38 @@ namespace GorgonLibrary.Diagnostics
 		/// <summary>
 		/// Property to return the number of seconds since a Gorgon application was started.
 		/// </summary>
-		/// <remarks>This property starts counting at the first start of a Gorgon application and will continue to end of the application.
+		/// <remarks>This property starts counting at the first start of a Gorgon application and will continue to the end of the application.
 		/// <para>This value is not affected by the <see cref="P:GorgonLibrary.Diagnostics.GorgonTiming.TimeScale">TimeScale</see> property.</para>
 		/// </remarks>
 		public static float SecondsSinceStart
 		{
 			get
 			{
-				return MillisecondsSinceStart / 1000.0f;
+                if (_appTimer == null)
+                {
+                    return float.NaN;
+                }
+
+                return MillisecondsSinceStart / 1000.0f;
 			}
 		}
 
 		/// <summary>
 		/// Property to return the number of milliseconds since a Gorgon application was started.
 		/// </summary>
-		/// <remarks>This property starts counting at the first start of a Gorgon application and will continue to end of the application.
+		/// <remarks>This property starts counting at the first start of a Gorgon application and will continue to the end of the application.
 		/// <para>This value is not affected by the <see cref="P:GorgonLibrary.Diagnostics.GorgonTiming.TimeScale">TimeScale</see> property.</para>
 		/// </remarks>
-		public  static float MillisecondsSinceStart
+		public static float MillisecondsSinceStart
 		{
 			get
 			{
-				return (float)_timer.Milliseconds - _baseTime;
+			    if (_appTimer == null)
+			    {
+			        return float.NaN;
+			    }
+
+				return (float)_appTimer.Milliseconds;
 			}
 		}
 
@@ -207,10 +216,12 @@ namespace GorgonLibrary.Diagnostics
 			}
 			set
 			{
-				if (_maxAverageCount < 0)
-					_maxAverageCount = 0;
+			    if (_maxAverageCount < 0)
+			    {
+			        _maxAverageCount = 0;
+			    }
 
-				_maxAverageCount = value;
+			    _maxAverageCount = value;
 			}
 		}
 
@@ -250,12 +261,6 @@ namespace GorgonLibrary.Diagnostics
 		{
 			double theTime;				// Time value.
 			double frameDelta;			// Frame delta.
-
-			if (!_firstCall)
-			{
-				Reset();
-				_firstCall = true;
-			}
 
 			do
 			{
@@ -390,9 +395,7 @@ namespace GorgonLibrary.Diagnostics
 			_averageFPSTotal = 0.0f;
 			_averageScaledDeltaTotal = 0.0f;
 			_timer.Reset();
-			_baseTime = (float)_timer.Milliseconds;
 		}
-
 
 		/// <summary>
 		/// Function to convert the desired frames per second to milliseconds.
@@ -413,7 +416,6 @@ namespace GorgonLibrary.Diagnostics
 	    {
 	        return fps > 0 ? 1000000/fps : 0;
 	    }
-
 	    #endregion
 
 		#region Constructor/Destructor.
@@ -424,6 +426,7 @@ namespace GorgonLibrary.Diagnostics
 		{
 			Reset();
 			TimeScale = 1;
+            _appTimer = new GorgonTimer();
 		}
 		#endregion
 	}
