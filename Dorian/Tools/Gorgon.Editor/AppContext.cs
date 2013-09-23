@@ -30,7 +30,6 @@ using System.Linq;
 using System.Windows.Forms;
 using GorgonLibrary.Diagnostics;
 using GorgonLibrary.Editor.Properties;
-using GorgonLibrary.IO;
 using GorgonLibrary.UI;
 
 namespace GorgonLibrary.Editor
@@ -46,191 +45,20 @@ namespace GorgonLibrary.Editor
 		#endregion
 
 		#region Methods.
-        /// <summary>
-        /// Function to load the plug-ins for the editor.
-        /// </summary>
-        private void LoadPlugIns()
-        {
-            var plugInDir = new DirectoryInfo(Program.Settings.PlugInDirectory);
-
-            if (!plugInDir.Exists)
-            {
-                plugInDir.Create();
-            }
-
-            // Get a list of plug-in assemblies.
-            var plugInAssemblies = plugInDir.GetFiles("*.dll", SearchOption.AllDirectories).ToArray();
-
-            // Load plug-ins.
-            for(int i = 0; i < plugInAssemblies.Length; i++)
-            {
-                string plugInPath = plugInAssemblies[i].FullName;
-
-                Program.LogFile.Print("Loading plug-in assembly \"{0}\".", LoggingLevel.Verbose, plugInPath);
-
-                _splash.UpdateVersion("Plug-in: " + Path.GetFileNameWithoutExtension(plugInPath));
-
-                // Ensure that we can load this assembly.
-                if (!Gorgon.PlugIns.IsPlugInAssembly(plugInPath))
-                {
-                    Program.LogFile.Print("Assembly \"{0}\" is not a valid plug-in assembly.", LoggingLevel.Verbose, plugInPath);
-                    continue;
-                }
-
-                // Finally load the assembly.
-                var assemblyName = Gorgon.PlugIns.LoadPlugInAssembly(plugInPath);
-                // Get the plug-ins from the assembly.
-                var plugIns = Gorgon.PlugIns.EnumeratePlugIns(assemblyName).Where(item => item is EditorPlugIn || item is GorgonFileSystemProviderPlugIn).ToArray();
-
-                if (plugIns.Length == 0)
-                {
-                    Program.LogFile.Print("Assembly \"{0}\" does not contain any editor compatible plug-ins.", LoggingLevel.Verbose, plugInPath);
-                    GorgonDialogs.ErrorBox(null, "The assembly '" + plugInPath + "' does not contain any editor compatible plug-ins.");
-                    continue;
-                }
-
-                foreach (var plugIn in plugIns)
-                {
-                    var fileSystemProvider = plugIn as GorgonFileSystemProviderPlugIn;
-                    var editorPlugIn = plugIn as EditorPlugIn;                        
-
-                    if (fileSystemProvider != null)
-                    {
-                        Program.LogFile.Print("Found a file system provider plug-in: \"{0}\".", LoggingLevel.Verbose, fileSystemProvider.Name);
-                    }
-
-                    if (editorPlugIn == null)
-                    {
-                        continue;
-                    }
-
-                    var validationData = editorPlugIn.ValidatePlugIn();
-
-                    // Validate the plug-in.
-                    if (!string.IsNullOrWhiteSpace(validationData))
-                    {
-                        Program.LogFile.Print("Found a {0} plug-in: \"{1}\".  But it is disabled for the following reasons:", LoggingLevel.Verbose, editorPlugIn.PlugInType, editorPlugIn.Description);
-                        Program.LogFile.Print("{0}", LoggingLevel.Verbose, validationData);
-
-                        // Add to the disabled plug-ins list.
-                        Program.DisabledPlugIns[editorPlugIn] = validationData;
-                        continue;
-                    }
-
-                    Program.LogFile.Print("Found a {0} plug-in: \"{1}\".", LoggingLevel.Verbose, editorPlugIn.PlugInType.ToString(), editorPlugIn.Description);
-
-                    // Categorize the editor plug-ins.
-                    switch (editorPlugIn.PlugInType)
-                    {
-                        case PlugInType.Content:
-                            var contentPlugIn = editorPlugIn as ContentPlugIn;
-
-                            if (contentPlugIn != null)
-                            {
-                                Program.ContentPlugIns[editorPlugIn.Name] = contentPlugIn;
-                            }
-                            break;
-                        case PlugInType.FileWriter:
-                            var writerPlugIn = editorPlugIn as FileWriterPlugIn;
-
-                            if (writerPlugIn != null)
-                            {
-                                Program.WriterPlugIns[editorPlugIn.Name] = writerPlugIn;
-                            }
-                            break;
-                    }
-                }
-            }
-        }
-
-        /// <summary>
-        /// Function to determine if the scratch area is accessible.
-        /// </summary>
-        /// <returns>TRUE if accessible, FALSE if not.</returns>
-        private static bool CanAccessScratch()
-		{
-            string directoryName = Path.GetFullPath(Program.Settings.ScratchPath).FormatDirectory(Path.DirectorySeparatorChar);
-
-			// Ensure that the device exists or is ready.
-			var root = Path.GetPathRoot(directoryName);
-			
-			if ((string.IsNullOrWhiteSpace(root)) || !Directory.Exists(root))
-			{
-				return false;
-			}			
-
-			try
-			{
-				// Do not allow access to a system location.
-                if (Program.IsSystemLocation(directoryName))
-				{
-					return false;
-				}
-
-                var directoryInfo = new DirectoryInfo(directoryName);
-				if (!directoryInfo.Exists)
-				{
-					// If we created the directory, then hide it.
-					directoryInfo.Create();					
-					return true;
-				}
-                
-				directoryInfo.GetAccessControl();				
-
-                // Ensure that we can actually write to this directory.
-                var testWrite = new FileInfo(directoryName + "TestWrite.tst");
-                using (Stream stream = testWrite.OpenWrite())
-                {
-                    stream.WriteByte(127);
-                }
-                testWrite.Delete();
-			}
-			catch(Exception ex)
-			{
-				GorgonException.Log = Program.LogFile;
-				GorgonException.Catch(ex);
-				GorgonException.Log = Gorgon.Log;
-				return false;
-			}
-
-			return true;
-		}
-
 		/// <summary>
-		/// Function to clean up all scratch file locations.
+		/// Function to update the splash screen when a plug-in is loaded.
 		/// </summary>
-		private static void CleanAllScratchFiles()
+		/// <param name="text">Plug-in name to display.</param>
+		private void UpdateSplashPlugInText(string text)
 		{
-			if (string.IsNullOrWhiteSpace(Program.Settings.ScratchPath))
-			{
-				return;
-			}
-
-			var scratchInfo = new DirectoryInfo(Program.Settings.ScratchPath);
-
-			if (!scratchInfo.Exists)
-			{
-				return;
-			}
-
-			// Get all the directories in the scratch area.
-			var directories = scratchInfo.GetDirectories("Gorgon.Editor.*", SearchOption.TopDirectoryOnly)
-				.Where(item => (((item.Attributes & FileAttributes.Hidden) == FileAttributes.Hidden)
-					&& ((item.Attributes & FileAttributes.NotContentIndexed) == FileAttributes.NotContentIndexed)));
-				
-			foreach(var directory in directories)
-			{
-				try
-				{
-					directory.Delete(true);
-				}
-				catch(Exception ex)
-				{
-					// If we can't delete, then something else is amiss and we'll have to try again later.
-					// So just eat the exception and move on to the next directory.
-					GorgonException.Catch(ex);
-				}
-			}
+			// This had to be moved into this function because resharper complained
+			// about accessing a disposed object from a closure.  Even though the
+			// _splash object could not be disposed until well after the closure
+			// had completed execution.  By all rights, this should fail too, and
+			// does not.
+			_splash.UpdateVersion(string.Format(Resources.GOREDIT_SPLASH_LOAD_PLUGIN,
+												Path.GetFileNameWithoutExtension(text)
+													.Ellipses(40, true)));
 		}
 
 		/// <summary>
@@ -254,8 +82,7 @@ namespace GorgonLibrary.Editor
 			try
 			{
 				_splash = new formSplash();
-				formMain mainForm;
-				MainForm = mainForm = new formMain();
+				MainForm = new formMain();
 
 				_splash.Show();
 				_splash.Refresh();
@@ -265,11 +92,13 @@ namespace GorgonLibrary.Editor
 				// Fade the splash screen in.
 				while (_splash.Opacity < 1)
 				{
-					if (timer.Milliseconds > 7)
+					if (timer.Milliseconds <= 7)
 					{
-						timer.Reset();
-						_splash.Opacity += 0.01;
+						continue;
 					}
+
+					timer.Reset();
+					_splash.Opacity += 0.01;
 				}
 								
 				timer.Reset();
@@ -280,70 +109,46 @@ namespace GorgonLibrary.Editor
 				{
 					Program.LogFile.Open();
 				}
-#if DEBUG
 				catch (Exception ex)
 				{
+#if DEBUG
 					// If we can't open the log file in debug mode, let us know about it.
 					GorgonDialogs.ErrorBox(null, ex);
-				}
-#else
-				catch
-				{
-					// Do nothing.
-				}
 #endif
+				}
+
                 // Initialize our graphics interface.
-                _splash.UpdateVersion("Initializing graphics...");
+                _splash.UpdateVersion(Resources.GOREDIT_SPLASH_INIT_GFX);
                 Program.InitializeGraphics();
 
                 Program.LogFile.Print("Loading plug-ins...", LoggingLevel.Verbose);
-                _splash.UpdateVersion("Loading plug-ins...");
-                LoadPlugIns();
+                _splash.UpdateVersion(Resources.GOREDIT_SPLASH_LOAD_PLUGINS);
 
-				string scratchPath = Path.GetFullPath(Program.Settings.ScratchPath.FormatDirectory(Path.DirectorySeparatorChar));
+				PlugIns.LoadPlugIns(UpdateSplashPlugInText);
 
-				Program.LogFile.Print("Creating scratch area at \"{0}\"", LoggingLevel.Verbose, scratchPath);
+				Program.LogFile.Print("Creating scratch area at \"{0}\"", LoggingLevel.Verbose, Program.Settings.ScratchPath);
 
-				_splash.UpdateVersion("Creating scratch area...");
-
-				Program.ScratchFiles = new GorgonFileSystem();
-								
+				_splash.UpdateVersion(Resources.GOREDIT_SPLASH_CREATE_SCRATCH);
+							
 				// Ensure that we're not being clever and trying to mess up our system.
-				if (Program.IsSystemLocation(scratchPath))
+				if (ScratchArea.CanAccessScratch(Program.Settings.ScratchPath) == ScratchAccessibility.SystemArea)
 				{
 					GorgonDialogs.ErrorBox(null, Resources.GOREDIT_CANNOT_USESYS_SCRATCH);
-
-					// Ensure we can actually access the scratch area.
-					while (!CanAccessScratch())
-					{
-						Program.LogFile.Print("Could not access scratch area at \"{0}\"", LoggingLevel.Verbose, scratchPath);
-						Program.Settings.ScratchPath = Program.SetScratchLocation();
-
-						if (Program.Settings.ScratchPath == null)
-						{
-							// Exit the application if we cancel.
-							MainForm.Dispose();
-							Gorgon.Quit();
-							return;
-						}
-
-						Program.LogFile.Print("Setting scratch area to \"{0}\".", LoggingLevel.Verbose, Program.Settings.ScratchPath);
-
-						// Update with the new scratch path.
-						Program.Settings.Save();
-					}
+				}
+				else
+				{
+					// Destroy previous scratch area files if possible.
+					// Do not do this when we have it set to a system area, this will keep us from 
+					// destroying anything critical.
+					ScratchArea.CleanOldScratchAreas();
 				}
 
-				// Destroy previous scratch areas if possible.
-				CleanAllScratchFiles();
-
 				// Ensure we can actually access the scratch area.
-				while (!CanAccessScratch())
+				while (ScratchArea.CanAccessScratch(Program.Settings.ScratchPath) != ScratchAccessibility.Accessible)
 				{
 					Program.LogFile.Print("Could not access scratch area at \"{0}\"", LoggingLevel.Verbose, Program.Settings.ScratchPath);
-					Program.Settings.ScratchPath = Program.SetScratchLocation();
 
-					if (Program.Settings.ScratchPath == null)
+					if (ScratchArea.SetScratchLocation() == ScratchAccessibility.Canceled)
 					{
 						// Exit the application if we cancel.
 						MainForm.Dispose();
@@ -357,17 +162,17 @@ namespace GorgonLibrary.Editor
 					Program.Settings.Save();
 				}
                 
-                Program.InitializeScratch();
-				Program.ScratchFiles.Providers.LoadAllProviders();
+                ScratchArea.InitializeScratch();
+				ScratchArea.ScratchFiles.Providers.LoadAllProviders();
 
                 // Load the last opened file.
                 if ((Program.Settings.AutoLoadLastFile) && (!string.IsNullOrWhiteSpace(Program.Settings.LastEditorFile)))
                 {
                     try
                     {
-						if (Program.ScratchFiles.Providers.Any(item => item.CanReadFile(Program.Settings.LastEditorFile)))
+						if (ScratchArea.ScratchFiles.Providers.Any(item => item.CanReadFile(Program.Settings.LastEditorFile)))
 						{
-							_splash.UpdateVersion("Loading previous editor file...");
+							_splash.UpdateVersion(Resources.GOREDIT_SPLASH_LOAD_PREV_FILE);
 							Program.OpenEditorFile(Program.Settings.LastEditorFile);
 						}
                     }
@@ -379,22 +184,24 @@ namespace GorgonLibrary.Editor
                 }
 
                 // Set up the default pane.
-				mainForm.LoadContentPane<DefaultContent>();
-
-				_splash.UpdateVersion(string.Empty);
+				((formMain)MainForm).LoadContentPane<DefaultContent>();
 
                 // Keep showing the splash screen.
 				while (timer.Milliseconds < 3000)
+				{
 					System.Threading.Thread.Sleep(1);
+				}
 
 				// Fade it out.
 				while (_splash.Opacity > 0.02)
 				{
-					if (timer.Milliseconds > 5)
+					if (timer.Milliseconds <= 5)
 					{
-						timer.Reset();
-						_splash.Opacity -= 0.01;
+						continue;
 					}
+
+					timer.Reset();
+					_splash.Opacity -= 0.01;
 				}
 
 				// Bring up our application form.
@@ -415,7 +222,9 @@ namespace GorgonLibrary.Editor
 			finally
 			{
 				if (_splash != null)
+				{
 					_splash.Dispose();
+				}
 				_splash = null;
 			}
 		}

@@ -327,6 +327,8 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
         /// </summary>
         private void UpdateGlyphInfo()
         {
+			buttonEditGlyph.Enabled = buttonGlyphKern.Enabled = buttonGlyphSizeSpace.Enabled = _selectedGlyph != null;
+
             if (_selectedGlyph != null)
             {
                 labelSelectedGlyphInfo.Text = string.Format("Selected Glyph: {0} (U+{1})",

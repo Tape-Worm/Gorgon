@@ -42,7 +42,6 @@ namespace GorgonLibrary.Renderers
 	/// <remarks>Text in Gorgon is like any other renderable.  It can be used as a discrete object that can be translated, scaled, or rotated.  Additionally it can 
 	/// wrap text at a boundary, change its horizontal alignment and line spacing.  Text objects require the use of <see cref="GorgonLibrary.Graphics.GorgonFont">font</see> 
 	/// objects in order to render the glyphs used in the text.</remarks>
-//#error There's a problem with text rendering.  Might be in the vertex caching system.
 	public class GorgonText
 		: GorgonNamedObject, IRenderable, IMoveable, I2DCollisionObject
 	{
@@ -1300,10 +1299,6 @@ namespace GorgonLibrary.Renderers
 			_depthStencil = new GorgonRenderable.DepthStencilStates();
 			_blend = new GorgonRenderable.BlendState();
 			_sampler = new GorgonRenderable.TextureSamplerState();
-			Color = new GorgonColor(1, 1, 1, 1);
-			CullingMode = CullingMode.Back;
-			AlphaTestValues = GorgonRangeF.Empty;
-			BlendingMode = BlendingMode.Modulate;
 			_tabText = new StringBuilder("   ", 8);
 
 			UpdateText();

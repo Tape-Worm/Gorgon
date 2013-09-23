@@ -54,7 +54,7 @@ namespace GorgonLibrary.Editor
 			numericPulseRate.Visible = true;
 			labelClosePanel.Visible = true;
 			panelOptions.Height = 33;
-			panelOptions.Top = this.ClientSize.Height - 33;
+			panelOptions.Top = ClientSize.Height - 33;
 			panelOptions.BackColor = DarkFormsRenderer.DisabledColor;
 		}
 

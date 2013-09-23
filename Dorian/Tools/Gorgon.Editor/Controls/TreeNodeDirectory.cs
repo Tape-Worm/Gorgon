@@ -72,7 +72,7 @@ namespace GorgonLibrary.Editor
 		{
 			get
 			{
-				return Program.ScratchFiles == null ? null : Program.ScratchFiles.GetDirectory(Name);
+				return ScratchArea.ScratchFiles == null ? null : ScratchArea.ScratchFiles.GetDirectory(Name);
 			}
 		}
 		#endregion
@@ -151,7 +151,7 @@ namespace GorgonLibrary.Editor
 		{
 			get
 			{
-				return Program.ScratchFiles == null ? null : Program.ScratchFiles.RootDirectory;
+				return ScratchArea.ScratchFiles == null ? null : ScratchArea.ScratchFiles.RootDirectory;
 			}
 		}
 
@@ -181,7 +181,7 @@ namespace GorgonLibrary.Editor
 		/// Initializes a new instance of the <see cref="RootNodeDirectory"/> class.
 		/// </summary>
 		public RootNodeDirectory()
-			: base(Program.ScratchFiles.RootDirectory)
+			: base(ScratchArea.ScratchFiles.RootDirectory)
 		{
 			ExpandedImage = CollapsedImage = Properties.Resources.project_node_16x16;
 		}

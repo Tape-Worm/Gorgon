@@ -164,11 +164,6 @@ namespace GorgonLibrary.Editor
 		/// </summary>
 		public override void Activate()
 		{
-/*			if (_2D != null)
-			{
-				_2D.End2D();
-				_2D.Begin2D();
-			}*/
 		}
 
 		/// <summary>
@@ -176,12 +171,10 @@ namespace GorgonLibrary.Editor
 		/// </summary>
 		public override void Draw()
 		{
-			var defaultTarget = _2D.DefaultTarget;
 			RectangleF logoBounds = RectangleF.Empty;
 			SizeF logoSize = _logo.Settings.Size;
 			SizeF screenSize = _container.ClientSize;
-			float aspect = 0.0f;
-						
+
 			_2D.Clear(_container.BackColor);
 
 			logoSize.Height = 256;
@@ -191,7 +184,7 @@ namespace GorgonLibrary.Editor
 			else
 				logoBounds.Width = logoSize.Width;
 
-			aspect = logoSize.Height / logoSize.Width;
+			float aspect = logoSize.Height / logoSize.Width;
 			logoBounds.Height = logoBounds.Width * aspect;
 			logoBounds.X = screenSize.Width / 2.0f - logoBounds.Width / 2.0f;
 			logoBounds.Y = screenSize.Height / 2.0f - logoBounds.Height / 2.0f;
@@ -199,7 +192,7 @@ namespace GorgonLibrary.Editor
 			_2D.Drawing.SmoothingMode = SmoothingMode.Smooth;
 			_2D.Drawing.BlendingMode = BlendingMode.Modulate;
 
-			if ((_container.checkPulse.Checked) && (_alphaDelta != 0))
+			if ((_container.checkPulse.Checked) && (!_alphaDelta.EqualsEpsilon(0)))
 			{
 				_2D.Drawing.FilledRectangle(logoBounds, new GorgonColor(1, 1, 1, 1.0f - _alpha), _logo, _sourceState);
 				_2D.Drawing.FilledRectangle(logoBounds, new GorgonColor(1, 1, 1, _alpha), _logo, _destState);
@@ -253,12 +246,22 @@ namespace GorgonLibrary.Editor
 		/// </summary>
 		/// <returns>A control to embed into the container interface.</returns>
         protected override Control OnInitialize()
-		{		
-			_container = new DefaultContentPanel();
-			_container.BackColor = DarkFormsRenderer.DarkBackground;
-			_container.checkPulse.Checked = Program.Settings.AnimateStartPage;
+		{
 			_alphaDelta = Program.Settings.StartPageAnimationPulseRate;
-			_container.numericPulseRate.Value = (decimal)_alphaDelta.Abs();
+			
+			_container = new DefaultContentPanel
+			             {
+				             BackColor = DarkFormsRenderer.DarkBackground,
+				             checkPulse =
+				             {
+					             Checked = Program.Settings.AnimateStartPage
+				             },
+				             numericPulseRate =
+				             {
+					             Value = (decimal)_alphaDelta.Abs()
+				             },
+			             };
+
 			_container.checkPulse.Click += checkPulse_Click;
 			_container.numericPulseRate.ValueChanged += numericPulseRate_ValueChanged;
 
@@ -270,11 +273,12 @@ namespace GorgonLibrary.Editor
 			var textureCoordinates = new RectangleF(Vector2.Zero, _logo.ToTexel(new Vector2(_logo.Settings.Width, _logo.Settings.Height / 3)));
 
 			// Set up coordinates for our blurred images.
-			_blurStates = new[] {
-					textureCoordinates,																			// No blur.
-					new RectangleF(new Vector2(0, textureCoordinates.Height), textureCoordinates.Size),			// Medium blur.
-					new RectangleF(new Vector2(0, textureCoordinates.Height * 2), textureCoordinates.Size),		// Max blur.
-					};
+			_blurStates = new[]
+			              {
+				              textureCoordinates, // No blur.
+				              new RectangleF(new Vector2(0, textureCoordinates.Height), textureCoordinates.Size), // Medium blur.
+				              new RectangleF(new Vector2(0, textureCoordinates.Height * 2), textureCoordinates.Size) // Max blur.
+			              };
 
 			_sourceState = _blurStates[2];
 			_destState = _blurStates[1];
@@ -300,31 +304,33 @@ namespace GorgonLibrary.Editor
 		/// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
 		protected override void Dispose(bool disposing)
 		{
-			if (!_disposed)
+			if (_disposed)
 			{
-				if (disposing)
+				return;
+			}
+
+			if (disposing)
+			{
+				if (_logo != null)
 				{
-					if (_logo != null)
-					{
-						_logo.Dispose();
-					}
-
-					if (_2D != null)
-					{
-						_2D.Dispose();						
-					}
-
-					if (_container != null)
-					{
-						_container.Dispose();						
-					}
+					_logo.Dispose();
 				}
 
-				_container = null;
-				_2D = null;
-				_logo = null;
-				_disposed = true;
+				if (_2D != null)
+				{
+					_2D.Dispose();						
+				}
+
+				if (_container != null)
+				{
+					_container.Dispose();						
+				}
 			}
+
+			_container = null;
+			_2D = null;
+			_logo = null;
+			_disposed = true;
 		}
 		#endregion
 	}

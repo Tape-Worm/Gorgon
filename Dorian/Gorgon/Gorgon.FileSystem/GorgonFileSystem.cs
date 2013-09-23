@@ -66,7 +66,7 @@ namespace GorgonLibrary.IO
 		private bool _mountListChanged;												// Flag to indicate that the mount point list was changed.
 		private static readonly object _syncLock = new object();					// Synchronization object.
 		private ReadOnlyCollection<GorgonFileSystemMountPoint> _mountPointList;		// The list of mount points to expose to the user.
-		private readonly IList<GorgonFileSystemMountPoint> _mountPoints;			// Mount points.
+		private readonly List<GorgonFileSystemMountPoint> _mountPoints;				// Mount points.
 		private string _writeLocation = string.Empty;								// The area on the physical file system that we can write into.
 		private readonly GorgonFileSystemProvider _defaultProvider;					// The default file system provider.
 	    private int _refreshSemaphore;                                              // Interlock increment variable.
@@ -180,11 +180,16 @@ namespace GorgonLibrary.IO
 		{
 			foreach (GorgonFileSystemDirectory entry in parent.Directories)
 			{
-				if (Regex.IsMatch(entry.Name, Regex.Escape(fileName).Replace(@"\*", ".*").Replace(@"\?", "."), RegexOptions.Singleline | RegexOptions.IgnoreCase))
+				if (Regex.IsMatch(entry.Name, Regex.Escape(fileName).Replace(@"\*", ".*").Replace(@"\?", "."),
+				                  RegexOptions.Singleline | RegexOptions.IgnoreCase))
+				{
 					entries.Add(entry);
+				}
 
 				if ((recurse) && (entry.Directories.Count > 0))
+				{
 					SearchDirectories(entry, entries, true, fileName);
+				}
 			}
 		}
 

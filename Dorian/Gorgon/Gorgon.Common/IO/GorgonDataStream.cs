@@ -438,13 +438,12 @@ namespace GorgonLibrary.IO
 		}
 
 	    /// <summary>
-	    /// When overridden in a derived class, clears all buffers for this stream and causes any buffered data to be written to the underlying device.
+	    /// Does nothing for a data stream.
 	    /// </summary>
-	    /// <exception cref="NotSupportedException">This method is not implemented.</exception>
 	    public override void Flush()
-		{
-			throw new NotSupportedException();
-		}
+	    {
+		    // Do nothing.
+	    }
 
 	    /// <summary>
 	    /// When overridden in a derived class, reads a sequence of bytes from the current stream and advances the position within the stream by the number of bytes read.

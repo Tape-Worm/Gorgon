@@ -45,6 +45,11 @@
   <ItemGroup>
     <Compile Include="GorgonGorPackWriterPlugIn.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Content Include="Gorgon2.ico" />
@@ -63,7 +68,12 @@
       <Name>Gorgon.Editor %28Tools\Gorgon.Editor\Gorgon.Editor%29</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>copy "$(TargetDir)$(TargetName).*" "$(SolutionDir)..\Tools\Gorgon.Editor\bin\$(ConfigurationName)\PlugIns"</PostBuildEvent>

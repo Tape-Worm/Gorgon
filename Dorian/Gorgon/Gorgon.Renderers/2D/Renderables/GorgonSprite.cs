@@ -450,86 +450,102 @@ namespace GorgonLibrary.Renderers
 				throw new IOException(Resources.GOR2D_STREAM_WRITE_ONLY);
 			}
 
+			GorgonChunkReader chunk = null;
+
             // Read the sprite in.
-            using (var chunk = new GorgonChunkReader(stream))
-            {
-                if (!chunk.HasChunk(FileHeader))
-                {
-                    // Check to see if it's an older version of the Gorgon sprite data.
-                    using (var oldReader = new GorgonBinaryReader(stream, true))
-                    {
-                        GorgonV1SpriteReader.LoadSprite(this, oldReader);
-                    }
-                    return;
-                }
-                
-                // Read in the file header.
+			try
+			{
+				chunk = new GorgonChunkReader(stream);
+
+				if (!chunk.HasChunk(FileHeader))
+				{
+					// The old format doesn't use the chunker.
+					chunk.Dispose();
+					chunk = null;
+
+					// Check to see if it's an older version of the Gorgon sprite data.
+					using (var oldReader = new GorgonBinaryReader(stream, true))
+					{
+						GorgonV1SpriteReader.LoadSprite(this, oldReader);
+
+						return;
+					}
+				}
+
+				// Read in the file header.
 				chunk.Begin(FileHeader);
-                
-                chunk.Begin("SPRTDATA");
-                Anchor = chunk.Read<Vector2>();
-                Size = chunk.Read<Vector2>();
-                HorizontalFlip = chunk.ReadBoolean();
-                VerticalFlip = chunk.ReadBoolean();
 
-                // Read vertex colors.
-                for (int i = 0; i < Vertices.Length; i++)
-                {
-                    Vertices[i].Color = chunk.Read<GorgonColor>();
-                }
+				chunk.Begin("SPRTDATA");
+				Anchor = chunk.Read<Vector2>();
+				Size = chunk.Read<Vector2>();
+				HorizontalFlip = chunk.ReadBoolean();
+				VerticalFlip = chunk.ReadBoolean();
 
-                // Write vertex offsets.
-                chunk.ReadRange(_offsets);
-                chunk.End();
+				// Read vertex colors.
+				for (int i = 0; i < Vertices.Length; i++)
+				{
+					Vertices[i].Color = chunk.Read<GorgonColor>();
+				}
 
-                // Read rendering information.
-                chunk.Begin("RNDRDATA");
-                CullingMode = chunk.Read<CullingMode>();
-                AlphaTestValues = chunk.Read<GorgonRangeF>();
-                Blending.AlphaOperation = chunk.Read<BlendOperation>();
-                Blending.BlendOperation = chunk.Read<BlendOperation>();
-                Blending.BlendFactor = chunk.Read<GorgonColor>();
-                Blending.DestinationAlphaBlend = chunk.Read<BlendType>();
-                Blending.DestinationBlend = chunk.Read<BlendType>();
-                Blending.SourceAlphaBlend = chunk.Read<BlendType>();
-                Blending.SourceBlend = chunk.Read<BlendType>();
-                Blending.WriteMask = chunk.Read<ColorWriteMaskFlags>();
-                DepthStencil.BackFace.ComparisonOperator = chunk.Read<ComparisonOperators>();
-                DepthStencil.BackFace.DepthFailOperation = chunk.Read<StencilOperations>();
-                DepthStencil.BackFace.FailOperation = chunk.Read<StencilOperations>();
-                DepthStencil.BackFace.PassOperation = chunk.Read<StencilOperations>();
-                DepthStencil.FrontFace.ComparisonOperator = chunk.Read<ComparisonOperators>();
-                DepthStencil.FrontFace.DepthFailOperation = chunk.Read<StencilOperations>();
-                DepthStencil.FrontFace.FailOperation = chunk.Read<StencilOperations>();
-                DepthStencil.FrontFace.PassOperation = chunk.Read<StencilOperations>();
-                DepthStencil.DepthBias = chunk.ReadInt32();
-                DepthStencil.DepthComparison = chunk.Read<ComparisonOperators>();
-                DepthStencil.DepthStencilReference = chunk.ReadInt32();
-                DepthStencil.IsDepthWriteEnabled = chunk.ReadBoolean();
-                DepthStencil.StencilReadMask = chunk.ReadByte();
-                DepthStencil.StencilReadMask = chunk.ReadByte();
-                chunk.End();
+				// Write vertex offsets.
+				chunk.ReadRange(_offsets);
+				chunk.End();
 
-                // Read collider information.                    
-                if (chunk.HasChunk("COLLIDER"))
-                {
-	                chunk.Begin("COLLIDER");
-                    Type colliderType = Type.GetType(chunk.ReadString());
-	                Debug.Assert(colliderType != null, "Collider is NULL!!");
+				// Read rendering information.
+				chunk.Begin("RNDRDATA");
+				CullingMode = chunk.Read<CullingMode>();
+				AlphaTestValues = chunk.Read<GorgonRangeF>();
+				Blending.AlphaOperation = chunk.Read<BlendOperation>();
+				Blending.BlendOperation = chunk.Read<BlendOperation>();
+				Blending.BlendFactor = chunk.Read<GorgonColor>();
+				Blending.DestinationAlphaBlend = chunk.Read<BlendType>();
+				Blending.DestinationBlend = chunk.Read<BlendType>();
+				Blending.SourceAlphaBlend = chunk.Read<BlendType>();
+				Blending.SourceBlend = chunk.Read<BlendType>();
+				Blending.WriteMask = chunk.Read<ColorWriteMaskFlags>();
+				DepthStencil.BackFace.ComparisonOperator = chunk.Read<ComparisonOperators>();
+				DepthStencil.BackFace.DepthFailOperation = chunk.Read<StencilOperations>();
+				DepthStencil.BackFace.FailOperation = chunk.Read<StencilOperations>();
+				DepthStencil.BackFace.PassOperation = chunk.Read<StencilOperations>();
+				DepthStencil.FrontFace.ComparisonOperator = chunk.Read<ComparisonOperators>();
+				DepthStencil.FrontFace.DepthFailOperation = chunk.Read<StencilOperations>();
+				DepthStencil.FrontFace.FailOperation = chunk.Read<StencilOperations>();
+				DepthStencil.FrontFace.PassOperation = chunk.Read<StencilOperations>();
+				DepthStencil.DepthBias = chunk.ReadInt32();
+				DepthStencil.DepthComparison = chunk.Read<ComparisonOperators>();
+				DepthStencil.DepthStencilReference = chunk.ReadInt32();
+				DepthStencil.IsDepthWriteEnabled = chunk.ReadBoolean();
+				DepthStencil.StencilReadMask = chunk.ReadByte();
+				DepthStencil.StencilReadMask = chunk.ReadByte();
+				chunk.End();
+
+				// Read collider information.                    
+				if (chunk.HasChunk("COLLIDER"))
+				{
+					chunk.Begin("COLLIDER");
+					Type colliderType = Type.GetType(chunk.ReadString());
+					Debug.Assert(colliderType != null, "Collider is NULL!!");
 					var collider = (Gorgon2DCollider)Activator.CreateInstance(colliderType);
-                    collider.ReadFromChunk(chunk);
-                    chunk.End();
-                }
+					collider.ReadFromChunk(chunk);
+					chunk.End();
+				}
 
-                // Read texture information.
-                chunk.Begin("TXTRDATA");
-                TextureSampler.BorderColor = chunk.Read<GorgonColor>();
-                TextureSampler.HorizontalWrapping = chunk.Read<TextureAddressing>();
-                TextureSampler.VerticalWrapping = chunk.Read<TextureAddressing>();
-                TextureSampler.TextureFilter = chunk.Read<TextureFilter>();
-                DeferredTextureName = chunk.ReadString();
-                TextureRegion = chunk.ReadRectangleF();
-            }
+				// Read texture information.
+				chunk.Begin("TXTRDATA");
+				TextureSampler.BorderColor = chunk.Read<GorgonColor>();
+				TextureSampler.HorizontalWrapping = chunk.Read<TextureAddressing>();
+				TextureSampler.VerticalWrapping = chunk.Read<TextureAddressing>();
+				TextureSampler.TextureFilter = chunk.Read<TextureFilter>();
+				DeferredTextureName = chunk.ReadString();
+				TextureRegion = chunk.ReadRectangleF();
+			}
+			finally
+			{
+				if (chunk != null)
+				{
+					chunk.Dispose();
+				}
+			}
 		}
 
 		/// <summary>
