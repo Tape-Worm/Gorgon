@@ -25,20 +25,42 @@
 #endregion
 
 using System;
+using System.ComponentModel;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using GorgonLibrary.Editor.Properties;
 using GorgonLibrary.UI;
 
 namespace GorgonLibrary.Editor
 {
 	/// <summary>
+	/// Type of process.
+	/// </summary>
+	enum ProcessType
+	{
+		/// <summary>
+		/// File writer process.
+		/// </summary>
+		FileWriter = 0,
+		/// <summary>
+		/// File importer process.
+		/// </summary>
+		FileImporter = 1,
+		/// <summary>
+		/// File info gather process.
+		/// </summary>
+		FileInfo = 2
+	}
+
+	/// <summary>
 	/// A dialog used to indicate a time consuming action is taking place.
 	/// </summary>
-	public partial class formProcess 
+	partial class formProcess 
 		: ZuneForm
 	{
 		#region Variables.
-		private bool _forceClose;			// Flag to indicate that we should force the window to shut down.
+		private bool _forceClose;					// Flag to indicate that we should force the window to shut down.
+		private readonly ProcessType _processType;	// Type of process.
 		#endregion
 
 		#region Properties.
@@ -49,6 +71,44 @@ namespace GorgonLibrary.Editor
 		{
 			get;
 			set;
+		}
+
+		/// <summary>
+		/// Property to set or return the text associated with the control.
+		/// </summary>
+		/// <returns>The text associated with this control.</returns>
+		[Browsable(true), EditorBrowsable(EditorBrowsableState.Always)]
+		public override string Text
+		{
+			get
+			{
+				return base.Text;
+			}
+			set
+			{
+				switch (_processType)
+				{
+					case ProcessType.FileWriter:
+						base.Text = string.Format(Resources.GOREDIT_FILE_WRITE_SAVE_DLG_TITLE,
+						                          System.IO.Path.GetFileName(value).Ellipses(35, true));
+						break;
+					case ProcessType.FileImporter:
+						base.Text = Resources.GOREDIT_IMPORT_DLG_TITLE;
+						break;
+					case ProcessType.FileInfo:
+						base.Text = Resources.GOREDIT_IMPORT_INFO_DLG_TITLE;
+						break;
+					default:
+#if DEBUG
+						// ReSharper disable once LocalizableElement
+						base.Text = value + " NOT LOCALIZED!!!";
+#else
+						base.Text = value;
+#endif
+						break;
+				}
+
+			}
 		}
 		#endregion
 
@@ -176,6 +236,33 @@ namespace GorgonLibrary.Editor
 		public formProcess()
 		{
 			InitializeComponent();
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="formProcess"/> class.
+		/// </summary>
+		/// <param name="processType">Type of the process.</param>
+		public formProcess(ProcessType processType)
+			: this()
+		{
+			_processType = processType;
+
+			switch (processType)
+			{
+				case ProcessType.FileWriter:
+					progressMeter.Style = ProgressBarStyle.Marquee;
+					labelStatus.Text = Resources.GOREDIT_FILE_WRITE_SAVE_LABEL;
+					break;
+				case ProcessType.FileImporter:
+					progressMeter.Style = ProgressBarStyle.Continuous;
+					labelStatus.Text = string.Empty;
+					break;
+				case ProcessType.FileInfo:
+					progressMeter.Style = ProgressBarStyle.Marquee;
+					labelStatus.Text = Resources.GOREDIT_IMPORT_INFO_LABEL;
+					break;
+			}
+
 		}
 		#endregion
 	}

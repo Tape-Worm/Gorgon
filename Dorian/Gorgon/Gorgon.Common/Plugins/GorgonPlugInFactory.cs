@@ -540,24 +540,12 @@ namespace GorgonLibrary.PlugIns
 		/// <exception cref="GorgonLibrary.GorgonException">The assembly contains a plug-in type that was already loaded by another assembly.</exception>
 		public void LoadPlugInAssembly(AssemblyName assemblyName)
 		{
-			Assembly plugInAssembly;
-
-		    if (assemblyName == null)
+			if (assemblyName == null)
 		    {
 		        throw new ArgumentNullException("assemblyName");
 		    }
 			
-			try
-			{
-				
-
-				plugInAssembly = AssemblyCache.LoadAssembly(assemblyName);
-			}
-			finally
-			{
-				//AppDomain.CurrentDomain.AssemblyResolve -= ResolveAssembly;				
-			}
-
+			Assembly plugInAssembly = AssemblyCache.LoadAssembly(assemblyName);
 
 			try
 			{

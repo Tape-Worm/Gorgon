@@ -29,6 +29,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
+using GorgonLibrary.Editor.FontEditorPlugIn.Properties;
 
 namespace GorgonLibrary.Editor.FontEditorPlugIn
 {
@@ -204,9 +205,9 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
         /// Initializes a new instance of the <see cref="GorgonFontEditorPlugIn"/> class.
         /// </summary>
         public GorgonFontEditorPlugIn()
-            : base("Gorgon Font Editor")
+            : base(Resources.GORFNT_DESC)
         {
-			FileExtensions.Add(".gorfont", new Tuple<string, string>("gorFont", "Gorgon Font File (*.gorFont)"));
+			FileExtensions.Add(new FileExtension("gorfont", Resources.GORFNT_CONTENT_EXTENSION_DESC));
 			UpdateCachedFonts();
 			
 			Settings = new GorgonFontContentSettings();

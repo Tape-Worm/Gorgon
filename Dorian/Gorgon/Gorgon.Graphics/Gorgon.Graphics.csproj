@@ -87,10 +87,12 @@
     <Compile Include="Effects\GorgonEffectPass.cs" />
     <Compile Include="Effects\GorgonEffectPassArray.cs" />
     <Compile Include="Fonts\GorgonFont.cs" />
+    <Compile Include="Fonts\GorgonFontGlyphCollection.cs" />
     <Compile Include="Fonts\GorgonFonts.cs" />
     <Compile Include="Fonts\GorgonFontSettings.cs" />
     <Compile Include="Fonts\GorgonGlyph.cs" />
     <Compile Include="Fonts\GorgonGlyphPacker.cs" />
+    <Compile Include="Fonts\GorgonFontTextureCollection.cs" />
     <Compile Include="Fonts\GorgonKerningPair.cs" />
     <Compile Include="Geometry\GorgonInputGeometry.cs" />
     <Compile Include="Geometry\GorgonInputElement.cs" />

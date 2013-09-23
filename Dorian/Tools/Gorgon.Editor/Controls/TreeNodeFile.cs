@@ -101,7 +101,7 @@ namespace GorgonLibrary.Editor
 		{
 			get
 			{
-				return Program.ScratchFiles == null ? null : Program.ScratchFiles.GetFile(Name);
+				return ScratchArea.ScratchFiles == null ? null : ScratchArea.ScratchFiles.GetFile(Name);
 			}
 		}
 		#endregion
@@ -115,17 +115,17 @@ namespace GorgonLibrary.Editor
 			ExpandedImage = Properties.Resources.unknown_document_16x16;
 			CollapsedImage = ExpandedImage;
 			PlugIn = null;
-						
-			if (!string.IsNullOrWhiteSpace(File.Extension))
-			{
-				PlugIn = (from plugIn in Program.ContentPlugIns
-							where plugIn.Value.FileExtensions.ContainsKey(File.Extension.ToLower())
-							select plugIn.Value).FirstOrDefault();
 
-				if (PlugIn != null)
-				{
-					ExpandedImage = CollapsedImage = PlugIn.GetContentIcon();
-				}
+			if (string.IsNullOrWhiteSpace(File.Extension))
+			{
+				return;
+			}
+
+			PlugIn = PlugIns.GetContentPlugInForFile(File.Extension);
+
+			if (PlugIn != null)
+			{
+				ExpandedImage = CollapsedImage = PlugIn.GetContentIcon();
 			}
 		}
 

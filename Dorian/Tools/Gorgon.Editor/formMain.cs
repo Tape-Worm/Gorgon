@@ -93,46 +93,40 @@ namespace GorgonLibrary.Editor
             try
             {
                 var contentExtensions = new Dictionary<string, Tuple<string, string>>();
-
-                var extensions = (from plugIn in Program.ContentPlugIns
-                                  from extension in plugIn.Value.FileExtensions                            
-                                  select extension.Value).Distinct();
+				var allExtensions = new StringBuilder(256);
+				var filter = new StringBuilder(1024);
+	            var extensions = PlugIns.GetContentExtensions();
+	            bool multiExtension = false;
 
                 dialogImport.Filter = string.Empty;
 
-                // Add extension filter(s) to import dialog.
-                if (extensions.Count() > 0)
+                // Add each extension.
+                foreach (var extension in extensions)
                 {
-                    var allExtensions = new StringBuilder(256);
-                    var filter = new StringBuilder(1024);
-
-                    // Add each extension.
-                    foreach (var extension in extensions)
+                    if (filter.Length > 0)
                     {
-                        if (filter.Length > 0)
-                        {
-                            filter.Append("|");
-                        }
-
-                        if (allExtensions.Length > 0)
-                        {
-                            allExtensions.Append(";");
-                        }
-
-                        filter.AppendFormat("{0}|*.{1}", extension.Item2, extension.Item1);
-                        allExtensions.Append(extension.Item1);
+                        filter.Append("|");
+	                    multiExtension = true;
                     }
 
-                    if (extensions.Count() > 1)
+                    if (allExtensions.Length > 0)
                     {
-                        dialogImport.Filter = string.Format("All Content Types|*.{0}|{1}", allExtensions.ToString(), filter.ToString());
-                        dialogImport.FilterIndex = 1;
+                        allExtensions.Append(";");
                     }
-                    else
-                    {
-                        dialogImport.Filter = filter.ToString();
-                        dialogImport.FilterIndex = 2;
-                    }
+
+                    filter.AppendFormat("{0}|*.{1}", extension.Description, extension.Extension);
+                    allExtensions.AppendFormat("*.{0}", extension.Extension);
+                }
+
+                if (multiExtension)
+                {
+                    dialogImport.Filter = string.Format("All Content Types|*.{0}|{1}", allExtensions.ToString(), filter.ToString());
+                    dialogImport.FilterIndex = 1;
+                }
+                else
+                {
+                    dialogImport.Filter = filter.ToString();
+                    dialogImport.FilterIndex = 2;
                 }
 
                 if (dialogImport.Filter.Length > 0)
@@ -204,12 +198,7 @@ namespace GorgonLibrary.Editor
                 ContentPlugIn contentPlugIn = null;
 
                 // Find the plug-in for this content.
-                if (!string.IsNullOrWhiteSpace(fileExtension))
-                {
-                    contentPlugIn = (from plugIn in Program.ContentPlugIns
-                                     where plugIn.Value.FileExtensions.ContainsKey(fileExtension.ToLower())
-                                     select plugIn.Value).FirstOrDefault();
-                }
+	            contentPlugIn = PlugIns.GetContentPlugInForFile(fileExtension);
 
                 if (contentPlugIn != null)
                 {
@@ -226,13 +215,13 @@ namespace GorgonLibrary.Editor
                             extensions.Append("|");
                         }
 
-                        if (string.Equals(fileExtension, extension.Key, StringComparison.OrdinalIgnoreCase))
+                        if (extension.Equals(fileExtension))
                         {
                             dialogExport.FilterIndex = index;
-                            dialogExport.DefaultExt = extension.Value.Item1;
+                            dialogExport.DefaultExt = "*." + extension.Extension;
                         }
 
-                        extensions.AppendFormat("{0}|*.{1}", extension.Value.Item2, extension.Value.Item1);
+                        extensions.AppendFormat("{0}|*.{1}", extension.Description, extension.Extension);
                         index++;
                     }
 
@@ -293,7 +282,7 @@ namespace GorgonLibrary.Editor
 				_rootNode.Redraw();
 			}
 
-            itemOpen.Enabled = Program.ScratchFiles.Providers.Count > 1;
+            itemOpen.Enabled = ScratchArea.ScratchFiles.Providers.Count > 1;
             itemSaveAs.Enabled = (Program.WriterPlugIns.Count > 0);
             itemSave.Enabled = !string.IsNullOrWhiteSpace(Program.EditorFilePath) 
 								&& ((Program.EditorFileChanged) 
@@ -374,7 +363,7 @@ namespace GorgonLibrary.Editor
 				popupItemPaste.Enabled = itemPaste.Enabled = (_cutCopyObject != null);
 				popupItemCut.Enabled = popupItemCopy.Enabled = itemCopy.Enabled = itemCut.Enabled = true;
 				buttonDeleteContent.Enabled = true;
-                toolStripSeparator4.Visible = buttonEditContent.Enabled = itemEdit.Visible = itemEdit.Enabled = Program.ContentPlugIns.Any(item => item.Value.FileExtensions.ContainsKey(file.Extension.ToLower()));
+                toolStripSeparator4.Visible = buttonEditContent.Enabled = itemEdit.Visible = itemEdit.Enabled = PlugIns.CanOpenContent(file.Extension);
                 itemDelete.Enabled = popupItemDelete.Enabled = (tabDocumentManager.SelectedTab == pageItems);
                 itemRenameFolder.Enabled = true;
             }
@@ -1115,7 +1104,6 @@ namespace GorgonLibrary.Editor
 				if (directoryNode != null)
 				{
 					GetFolders(directoryNode);
-					return;
 				}
 			}
 			catch (Exception ex)
@@ -1184,9 +1172,9 @@ namespace GorgonLibrary.Editor
 			_rootNode = new RootNodeDirectory();
 
 			// If we have files or sub directories, dump them in here.
-			if ((Program.ScratchFiles.RootDirectory.Directories.Count > 0) 
-                || ((Program.ScratchFiles.RootDirectory.Files.Count > 0)
-                && (CanShowDirectoryFiles(Program.ScratchFiles.RootDirectory))))
+			if ((ScratchArea.ScratchFiles.RootDirectory.Directories.Count > 0)
+				|| ((ScratchArea.ScratchFiles.RootDirectory.Files.Count > 0)
+				&& (CanShowDirectoryFiles(ScratchArea.ScratchFiles.RootDirectory))))
 			{
                 _rootNode.Nodes.Add(new TreeNode("DummyNode"));
 			}
@@ -1250,7 +1238,7 @@ namespace GorgonLibrary.Editor
         {
             var directoryNode = GetDirectoryFromNode();
 			string filePath = directoryNode.Directory.FullPath + content.Name;
-            GorgonFileSystemFileEntry file = Program.ScratchFiles.GetFile(filePath);
+			GorgonFileSystemFileEntry file = ScratchArea.ScratchFiles.GetFile(filePath);
             TreeNodeFile newNode = null;
             string extension = Path.GetExtension(content.Name).ToLower();
 
@@ -1260,7 +1248,7 @@ namespace GorgonLibrary.Editor
 			}
 
 			// Write the file.
-			file = Program.ScratchFiles.WriteFile(directoryNode.Directory.FullPath + content.Name, null);
+			file = ScratchArea.ScratchFiles.WriteFile(directoryNode.Directory.FullPath + content.Name, null);
 			newNode = new TreeNodeFile(file);
 
 			content.HasChanges = true;
@@ -1402,7 +1390,7 @@ namespace GorgonLibrary.Editor
 			if (directoryNode == _rootNode)
 			{
 				// Wipe out all the files/subdirs under the root.
-				Program.ScratchFiles.DeleteDirectory("/");
+				ScratchArea.ScratchFiles.DeleteDirectory("/");
 
 				LoadContentPane<DefaultContent>();
 
@@ -1414,7 +1402,7 @@ namespace GorgonLibrary.Editor
 			if ((Program.CurrentContent != null) && (Program.CurrentContent.File != null))
 			{
 				// If we have this file open, then close it.
-				var files = Program.ScratchFiles.FindFiles(directoryNode.Directory.FullPath, Program.CurrentContent.File.Name, true).Any(item => item == Program.CurrentContent.File);
+				var files = ScratchArea.ScratchFiles.FindFiles(directoryNode.Directory.FullPath, Program.CurrentContent.File.Name, true).Any(item => item == Program.CurrentContent.File);
 
 				if (files)
 				{
@@ -1426,7 +1414,7 @@ namespace GorgonLibrary.Editor
 				}
 			}
 
-			Program.ScratchFiles.DeleteDirectory(directoryNode.Directory.FullPath);
+			ScratchArea.ScratchFiles.DeleteDirectory(directoryNode.Directory.FullPath);
 			Program.EditorFileChanged = true;
 			if (directoryNode.Parent.Nodes.Count == 1)
 			{
@@ -1458,7 +1446,7 @@ namespace GorgonLibrary.Editor
 				LoadContentPane<DefaultContent>();
 			}
 
-			Program.ScratchFiles.DeleteFile(fileNode.File.FullPath);
+			ScratchArea.ScratchFiles.DeleteFile(fileNode.File.FullPath);
 			Program.EditorFileChanged = true;
 			if (fileNode.Parent.Nodes.Count == 1)
 			{
@@ -1529,10 +1517,12 @@ namespace GorgonLibrary.Editor
 			var extensions = new StringBuilder(512);
 			int counter = 0;
 			int filterIndex = 0;
-			string extension = string.Empty;
 
 			try
 			{
+				FileExtension defaultExtension = default(FileExtension);
+
+				// Build the file extension and description lines for the save dialog.
 				foreach (var writerPlugIn in Program.WriterPlugIns)
 				{
 					// Create extensions for the dialog.
@@ -1543,24 +1533,12 @@ namespace GorgonLibrary.Editor
 							extensions.Append("|");
 						}
 
-						var wildCardExtension = extensionValue.Value.Item1;
-						if (!wildCardExtension.StartsWith("*."))
-						{
-							wildCardExtension = "*." + wildCardExtension;
-						}
-						
-						extensions.AppendFormat("{0}|{1}", extensionValue.Value.Item2, wildCardExtension);
+						extensions.AppendFormat("{0}|*.{1}", extensionValue.Description, extensionValue.Extension);
 
 						// If we have a current writer plug-in selected, then pick it as the default extension and index.
-						if (Program.CurrentWriterPlugIn == writerPlugIn.Value)
+						if ((Program.CurrentWriterPlugIn == writerPlugIn.Value) && (string.IsNullOrWhiteSpace(defaultExtension.Extension)))
 						{
-							extension = writerPlugIn.Value.FileExtensions.First().Value.Item2;
-
-							if (extension.StartsWith("."))
-							{
-								extension = extension.Substring(1);						
-							}
-
+							defaultExtension = ((IEnumerable<FileExtension>)writerPlugIn.Value.FileExtensions).First();
 							filterIndex = counter;
 						}
 
@@ -1569,17 +1547,8 @@ namespace GorgonLibrary.Editor
 					}					
 				}
 
-				// Set default extension and correct filter.
-				if (string.IsNullOrWhiteSpace(extension))
-				{
-					dialogSaveFile.DefaultExt = Program.WriterPlugIns.First().Value.FileExtensions.First().Value.Item2;
-					dialogSaveFile.FilterIndex = 1;
-				}
-				else
-				{
-					dialogSaveFile.DefaultExt = extension;
-					dialogSaveFile.FilterIndex = filterIndex + 1;
-				}
+				dialogSaveFile.DefaultExt = defaultExtension.Extension;
+				dialogSaveFile.FilterIndex = filterIndex + 1;
 				dialogSaveFile.Filter = extensions.ToString();
 
 				if (!string.IsNullOrWhiteSpace(Program.Settings.LastEditorFile))
@@ -1588,7 +1557,7 @@ namespace GorgonLibrary.Editor
 				}
 
 				// Open dialog.
-				if (dialogSaveFile.ShowDialog(this) == System.Windows.Forms.DialogResult.OK)
+				if (dialogSaveFile.ShowDialog(this) == DialogResult.OK)
 				{					
 					Cursor.Current = Cursors.WaitCursor;
 					Program.CurrentWriterPlugIn = plugIns[dialogSaveFile.FilterIndex - 1];
@@ -1684,7 +1653,7 @@ namespace GorgonLibrary.Editor
 						label = label.FormatDirectory('/');
 
 						var parentNode = node.Parent as TreeNodeDirectory;
-						var newDirectory = Program.ScratchFiles.CreateDirectory(parentNode.Directory.FullPath + label);
+						var newDirectory = ScratchArea.ScratchFiles.CreateDirectory(parentNode.Directory.FullPath + label);
 
 						// Set up a new node for the directory since our current node is here as a proxy.
 						var treeNode = new TreeNodeDirectory(newDirectory);
@@ -1950,7 +1919,7 @@ namespace GorgonLibrary.Editor
 
             var newFilePath = destDirectory.Directory.FullPath + name.FormatFileName();
 
-            if (Program.ScratchFiles.GetFile(newFilePath) != null)
+            if (ScratchArea.ScratchFiles.GetFile(newFilePath) != null)
             {
                 // If the file exists and we're renaming (not moving), then throw up an error and leave.
                 if (deleteSource)
@@ -1980,7 +1949,7 @@ namespace GorgonLibrary.Editor
 					int counter = 1;
 					string newName = sourceFile.File.BaseFileName + " (" + counter.ToString() + ")" + sourceFile.File.Extension;
 
-					while (Program.ScratchFiles.GetFile(newName) != null)
+					while (ScratchArea.ScratchFiles.GetFile(newName) != null)
 					{
 						newName = sourceFile.File.BaseFileName + " (" + (++counter).ToString() + ")" + sourceFile.File.Extension;
 					}
@@ -1999,9 +1968,9 @@ namespace GorgonLibrary.Editor
 
 			Cursor.Current = Cursors.WaitCursor;
 
-            using (var inputStream = Program.ScratchFiles.OpenStream(sourceFile.File, false))
+            using (var inputStream = ScratchArea.ScratchFiles.OpenStream(sourceFile.File, false))
             {
-                using (var outputStream = Program.ScratchFiles.OpenStream(newFilePath, true))
+                using (var outputStream = ScratchArea.ScratchFiles.OpenStream(newFilePath, true))
                 {
                     inputStream.CopyTo(outputStream);
                 }
@@ -2019,7 +1988,7 @@ namespace GorgonLibrary.Editor
 				if ((Program.CurrentContent != null)
 					&& (Program.CurrentContent.File == sourceFile.File))
 				{
-					var newFile = Program.ScratchFiles.GetFile(newFilePath);
+					var newFile = ScratchArea.ScratchFiles.GetFile(newFilePath);
 					Program.CurrentContent.File = newFile;
 				}
 			}
@@ -2071,7 +2040,9 @@ namespace GorgonLibrary.Editor
             name = (destDirectory.Directory.FullPath + name).FormatDirectory('/');
 
             // We have a directory with this new name already, throw an error.
-            if ((deleteSource) && (!string.Equals(name, sourceDirectory.Directory.Name, StringComparison.OrdinalIgnoreCase)) && (Program.ScratchFiles.GetDirectory(name) != null))
+            if ((deleteSource) 
+				&& (!string.Equals(name, sourceDirectory.Directory.Name, StringComparison.OrdinalIgnoreCase)) 
+				&& (ScratchArea.ScratchFiles.GetDirectory(name) != null))
             {
                 GorgonDialogs.ErrorBox(this, "The directory '" + name + "' already exists.");
                 return;
@@ -2083,7 +2054,7 @@ namespace GorgonLibrary.Editor
                 currentFile = Program.CurrentContent.File;
             }
 
-            var directories = new List<GorgonFileSystemDirectory>(Program.ScratchFiles.FindDirectories(sourceDirectory.Directory.FullPath, "*", true))
+            var directories = new List<GorgonFileSystemDirectory>(ScratchArea.ScratchFiles.FindDirectories(sourceDirectory.Directory.FullPath, "*", true))
 	            {
 		            sourceDirectory.Directory
 	            };
@@ -2093,7 +2064,7 @@ namespace GorgonLibrary.Editor
                 // Update the path to point at the new parent.
                 var newDirPath = name + directory.FullPath.Substring(directory.FullPath.Length);
                 
-				Program.ScratchFiles.CreateDirectory(newDirPath);
+				ScratchArea.ScratchFiles.CreateDirectory(newDirPath);
 
                 // Copy each file.
                 foreach (var file in directory.Files)
@@ -2101,7 +2072,7 @@ namespace GorgonLibrary.Editor
                     var newFilePath = newDirPath + file.Name;
 
                     // The file exists in the destination.  Ask the user what to do.
-                    if (Program.ScratchFiles.GetFile(newFilePath) != null)
+                    if (ScratchArea.ScratchFiles.GetFile(newFilePath) != null)
                     {
                         if ((result & ConfirmationResult.ToAll) == 0)
                         {
@@ -2120,7 +2091,7 @@ namespace GorgonLibrary.Editor
 							int counter = 1;
 							string newName = file.BaseFileName + " (" + counter.ToString() + ")" + file.Extension;
 
-							while (Program.ScratchFiles.GetFile(newName) != null)
+							while (ScratchArea.ScratchFiles.GetFile(newName) != null)
 							{
 								newName = file.BaseFileName + " (" + (++counter).ToString() + ")" + file.Extension;
 							}
@@ -2137,9 +2108,9 @@ namespace GorgonLibrary.Editor
 						}                            
                     }
 
-                    using (var inputStream = Program.ScratchFiles.OpenStream(file, false))
+                    using (var inputStream = ScratchArea.ScratchFiles.OpenStream(file, false))
                     {
-                        using (var outputStream = Program.ScratchFiles.OpenStream(newFilePath, true))
+                        using (var outputStream = ScratchArea.ScratchFiles.OpenStream(newFilePath, true))
                         {
                             inputStream.CopyTo(outputStream);
                         }
@@ -2162,7 +2133,7 @@ namespace GorgonLibrary.Editor
 		                continue;
 	                }
 
-	                var newFile = Program.ScratchFiles.GetFile(newFilePath);
+	                var newFile = ScratchArea.ScratchFiles.GetFile(newFilePath);
 	                Program.CurrentContent.File = newFile;
                 }
 
@@ -2280,7 +2251,7 @@ namespace GorgonLibrary.Editor
 				}
 
 				// Do not copy files under our write folder.
-				if (filePath.StartsWith(Program.ScratchFiles.WriteLocation, StringComparison.OrdinalIgnoreCase))
+				if (filePath.StartsWith(ScratchArea.ScratchFiles.WriteLocation, StringComparison.OrdinalIgnoreCase))
 				{
 					continue;
 				}
@@ -2295,7 +2266,7 @@ namespace GorgonLibrary.Editor
 										  Path.GetDirectoryName(path.Item2).FormatDirectory('/'))).Distinct();
 					var filePaths = from path in paths
 									where !string.IsNullOrWhiteSpace(Path.GetFileName(path.Item2))
-										&& (!path.Item1.StartsWith(Program.ScratchFiles.WriteLocation))
+										&& (!path.Item1.StartsWith(ScratchArea.ScratchFiles.WriteLocation))
 									select path;
 
 					if (directories.Count() > 0)
@@ -2336,20 +2307,17 @@ namespace GorgonLibrary.Editor
 		/// <param name="destDir">Destination directory node.</param>
 		/// <param name="files">Paths to the files/directories to copy.</param>
 		private void AddFilesFromExplorer(TreeNodeDirectory destDir, List<string> files)
-		{			
+		{
+			// TODO: This seriously needs a refactoring/rewrite.
 			var sourceDirectories = new List<Tuple<string, string>>();
 			var sourceFiles = new List<Tuple<string, string>>();
 			
-			using (var progForm = new formProcess())
+			using (var progForm = new formProcess(ProcessType.FileInfo))
 			{
 				using (var tokenSource = new CancellationTokenSource(Int32.MaxValue))
 				{
 					CancellationToken token = tokenSource.Token;
 
-					progForm.labelStatus.Text = "Getting file info...";
-					progForm.progressMeter.Style = ProgressBarStyle.Marquee;
-					progForm.progressMeter.Value = 0;
-					progForm.Text = "Scanning files";
 					progForm.Task = Task.Factory.StartNew(() =>
 						{
 							GetFilesAndDirectories(destDir.Directory, files, sourceDirectories, sourceFiles, token);
@@ -2376,20 +2344,15 @@ namespace GorgonLibrary.Editor
 				return;
 			}
 
-			using (var progForm = new formProcess())
+			var destinationDirectory = destDir;
+
+			using (var progForm = new formProcess(ProcessType.FileImporter))
 			{
 				using (var tokenSource = new CancellationTokenSource(Int32.MaxValue))
 				{
 					int counter = 0;
 					CancellationToken token = tokenSource.Token;
-
-					progForm.progressMeter.Style = ProgressBarStyle.Continuous;
-					progForm.progressMeter.Value = 0;
-					progForm.progressMeter.Maximum = 100;
-					progForm.progressMeter.Minimum = 0;
-					progForm.labelStatus.Text = string.Empty;
-					progForm.Text = "Importing files";
-
+				
 					progForm.Task = Task.Factory.StartNew(() =>
 						{
 							// Begin copy procedure.
@@ -2406,8 +2369,8 @@ namespace GorgonLibrary.Editor
 								var directory = sourceDirectories[i];
 
 								progForm.UpdateStatusText("Creating '" + directory.Item2.Ellipses(45, true) + "'");
-								Program.ScratchFiles.CreateDirectory(directory.Item2);
-								progForm.SetProgress((int)(((decimal)i / max) * 100M));
+								ScratchArea.ScratchFiles.CreateDirectory(directory.Item2);
+								progForm.SetProgress((int)((i / max) * 100M));
 
 								if (token.IsCancellationRequested)
 								{
@@ -2427,7 +2390,7 @@ namespace GorgonLibrary.Editor
 								progForm.SetProgress((int)(((decimal)(i + sourceDirectories.Count) / max) * 100M));
 
 								// Find out if this file already exists.
-								var fileEntry = Program.ScratchFiles.GetFile(sourceFile.Item2);
+								var fileEntry = ScratchArea.ScratchFiles.GetFile(sourceFile.Item2);
 
 								if (fileEntry != null)
 								{
@@ -2469,10 +2432,7 @@ namespace GorgonLibrary.Editor
 									{
 										if (this.InvokeRequired)
 										{
-											this.Invoke(new MethodInvoker(() =>
-												{
-													GorgonDialogs.ErrorBox(progForm, "The file '" + fileEntry.FullPath + "' is opened for editing.  You must close this file and reimport it if you wish to overwrite it.");
-												}));
+											this.Invoke(new MethodInvoker(() => GorgonDialogs.ErrorBox(progForm, "The file '" + fileEntry.FullPath + "' is opened for editing.  You must close this file and reimport it if you wish to overwrite it.")));
 										}
 										else
 										{
@@ -2491,7 +2451,7 @@ namespace GorgonLibrary.Editor
 								{
 									using (var inputStream = File.Open(sourceFile.Item1, FileMode.Open, FileAccess.Read, FileShare.Read))
 									{
-										using (var outputStream = Program.ScratchFiles.OpenStream(sourceFile.Item2, true))
+										using (var outputStream = ScratchArea.ScratchFiles.OpenStream(sourceFile.Item2, true))
 										{
 											inputStream.CopyTo(outputStream);
 										}
@@ -2502,10 +2462,7 @@ namespace GorgonLibrary.Editor
 									// Record the error and move on.
 									if (this.InvokeRequired)
 									{
-										this.Invoke(new MethodInvoker(() =>
-											{
-												GorgonDialogs.ErrorBox(progForm, ex);
-											}));
+										this.Invoke(new MethodInvoker(() => GorgonDialogs.ErrorBox(progForm, ex)));
 									}
 									else
 									{
@@ -2528,18 +2485,18 @@ namespace GorgonLibrary.Editor
 						tokenSource.Cancel();
 					}
 
-					if (destDir.IsExpanded)
+					if (destinationDirectory.IsExpanded)
 					{
-						destDir.Collapse();
+						destinationDirectory.Collapse();
 					}
 
-					if (destDir.Nodes.Count == 0)
+					if (destinationDirectory.Nodes.Count == 0)
 					{
-						destDir.Nodes.Add(new TreeNode("DUMMYNODE"));
+						destinationDirectory.Nodes.Add(new TreeNode("DUMMYNODE"));
 					}
 
-					destDir.Expand();
-					treeFiles.SelectedNode = destDir;
+					destinationDirectory.Expand();
+					treeFiles.SelectedNode = destinationDirectory;
 
                     if (counter > 0)
                     {
@@ -2575,7 +2532,7 @@ namespace GorgonLibrary.Editor
 				if (e.Data.GetDataPresent(DataFormats.FileDrop, false))
 				{
 					var files = new List<string>((IEnumerable<string>)e.Data.GetData(DataFormats.FileDrop));
-					var excludedFiles = files.Where(item => item.StartsWith(Program.ScratchFiles.WriteLocation, StringComparison.OrdinalIgnoreCase));
+					var excludedFiles = files.Where(item => item.StartsWith(ScratchArea.ScratchFiles.WriteLocation, StringComparison.OrdinalIgnoreCase));
 
 					// Don't allow files in our write path to be imported.
 					if (excludedFiles.Count() > 0)
@@ -2767,9 +2724,9 @@ namespace GorgonLibrary.Editor
                     dialogOpenFile.InitialDirectory = Path.GetDirectoryName(Program.Settings.LastEditorFile);
                 }
 
-				var distinctExtensions = (from provider in Program.ScratchFiles.Providers
-								  from extension in provider.PreferredExtensions
-								  select extension).Distinct();
+	            var distinctExtensions = (from provider in ScratchArea.ScratchFiles.Providers
+	                                      from extension in provider.PreferredExtensions
+	                                      select extension).Distinct();
 
                 // Add extensions from file system providers.				
                 foreach (var extension in distinctExtensions)

@@ -239,7 +239,7 @@ namespace GorgonLibrary.Editor
 		{
 			get
 			{
-				return string.IsNullOrWhiteSpace(_filePath) ? null : Program.ScratchFiles.GetFile(_filePath);
+				return string.IsNullOrWhiteSpace(_filePath) ? null : ScratchArea.ScratchFiles.GetFile(_filePath);
 			}
 			internal set
 			{

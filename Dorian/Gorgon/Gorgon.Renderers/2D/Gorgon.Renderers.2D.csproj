@@ -30,6 +30,8 @@
     <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
     <Prefer32Bit>false</Prefer32Bit>
     <UseVSHostingProcess>false</UseVSHostingProcess>
+    <RunCodeAnalysis>true</RunCodeAnalysis>
+    <CodeAnalysisRuleSet>..\..\NoLiteralBugFix.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -71,6 +73,7 @@
     <Compile Include="Effects\Gorgon2DEffect.cs" />
     <Compile Include="Effects\Gorgon2DGaussianBlurEffect.cs" />
     <Compile Include="Effects\Gorgon2DOldFilmEffect.cs" />
+    <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="Gorgon2D.cs" />
     <Compile Include="Gorgon2DAlphaTest.cs" />
     <Compile Include="Gorgon2DTarget.cs" />

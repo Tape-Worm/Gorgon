@@ -30,6 +30,7 @@ using System.IO;
 using System.Text;
 using System.Threading;
 using System.Xml.Linq;
+using GorgonLibrary.Editor.GorPackWriterPlugIn.Properties;
 using GorgonLibrary.IO;
 using ICSharpCode.SharpZipLib.BZip2;
 
@@ -158,124 +159,122 @@ namespace GorgonLibrary.Editor.GorPackWriterPlugIn
         /// <param name="rootNode">Root node for the file allocation table.</param>
         private void CompressFiles(Stream output, GorgonFileSystemDirectory directory, XElement rootNode)
         {
-            // If we have sub directories, then create those entries.
-            for (int i = 0; i < directory.Directories.Count; i++)
-            {
-                var subDir = directory.Directories[i];
-                var dirNode = CreatePathNode(subDir);
+	        // If we have sub directories, then create those entries.
+	        foreach (var subDir in directory.Directories)
+	        {
+		        var dirNode = CreatePathNode(subDir);
 
-				if (_token.IsCancellationRequested)
-				{
-					return;
-				}
+		        if (_token.IsCancellationRequested)
+		        {
+			        return;
+		        }
 
-                CompressFiles(output, subDir, dirNode);
+		        CompressFiles(output, subDir, dirNode);
 
-				if (_token.IsCancellationRequested)
-				{
-					return;
-				}
+		        if (_token.IsCancellationRequested)
+		        {
+			        return;
+		        }
 
-                // Attach to the root.
-                rootNode.Add(dirNode);
-            }
+		        // Attach to the root.
+		        rootNode.Add(dirNode);
+	        }
 
-            // Compress the files.
-            for (int i = 0; i < directory.Files.Count; i++)
-            {
-                var fileEntry = directory.Files[i];
+	        // Compress the files.
+	        foreach (var fileEntry in directory.Files)
+	        {
+		        // Load the file into a buffer for compression.
+		        long fileStart = output.Position;
+		        long fileSize;
+		        long compressedSize = 0;
 
-                // Load the file into a buffer for compression.
-                long fileStart = output.Position;
-                long fileSize;
-				long compressedSize = 0;
 
-				UpdateStatus("Saving " + fileEntry.FullPath.Ellipses(45, true), 0);
+		        UpdateStatus(string.Format(Resources.GORPKW_SAVING_MSG, fileEntry.FullPath.Ellipses(45, true)), 0);
 
-				if (_token.IsCancellationRequested)
-				{
-					return;
-				}
+		        if (_token.IsCancellationRequested)
+		        {
+			        return;
+		        }
 
-                using (var sourceData = ScratchFileSystem.OpenStream(fileEntry, false))
-                {
-                    // Load the data into memory.
-                    using (var fileData = new GorgonDataStream((int)sourceData.Length))
-                    {
-						if (_token.IsCancellationRequested)
-						{
-							return;
-						}
+		        using (var sourceData = ScratchFileSystem.OpenStream(fileEntry, false))
+		        {
+			        // Load the data into memory.
+			        using (var fileData = new GorgonDataStream((int)sourceData.Length))
+			        {
+				        if (_token.IsCancellationRequested)
+				        {
+					        return;
+				        }
 
-                        sourceData.CopyTo(fileData);
+				        sourceData.CopyTo(fileData);
 
-						if (_token.IsCancellationRequested)
-						{
-							return;
-						}
+				        if (_token.IsCancellationRequested)
+				        {
+					        return;
+				        }
 
-						fileSize = fileData.Length;
-                        fileData.Position = 0;
+				        fileSize = fileData.Length;
+				        fileData.Position = 0;
 
-                        using (var compressedData = new MemoryStream())
-                        {
-							if (_token.IsCancellationRequested)
-							{
-								return;
-							}
+				        using (var compressedData = new MemoryStream())
+				        {
+					        if (_token.IsCancellationRequested)
+					        {
+						        return;
+					        }
 
-							CompressData(fileData, compressedData);
+					        CompressData(fileData, compressedData);
 
-							if (_token.IsCancellationRequested)
-							{
-								return;
-							}
+					        if (_token.IsCancellationRequested)
+					        {
+						        return;
+					        }
 
-                            compressedData.Position = 0;							
-                            fileData.Position = 0;
+					        compressedData.Position = 0;							
+					        fileData.Position = 0;
 
-                            // Write the compressed data out to our blob file.
-                            if (compressedData.Length < fileSize)
-                            {
-								if (_token.IsCancellationRequested)
-								{
-									return;
-								}
+					        // Write the compressed data out to our blob file.
+					        if (compressedData.Length < fileSize)
+					        {
+						        if (_token.IsCancellationRequested)
+						        {
+							        return;
+						        }
 
-                                compressedData.CopyTo(output);
+						        compressedData.CopyTo(output);
 
-								if (_token.IsCancellationRequested)
-								{
-									return;
-								}
+						        if (_token.IsCancellationRequested)
+						        {
+							        return;
+						        }
 
-                                compressedSize = compressedData.Length;
-                            }
-                            else
-                            {
-								if (_token.IsCancellationRequested)
-								{
-									return;
-								}
+						        compressedSize = compressedData.Length;
+					        }
+					        else
+					        {
+						        if (_token.IsCancellationRequested)
+						        {
+							        return;
+						        }
 								
-								// We didn't compress anything, so just dump the file.
-                                fileData.CopyTo(output);
+						        // We didn't compress anything, so just dump the file.
+						        fileData.CopyTo(output);
 
-								if (_token.IsCancellationRequested)
-								{
-									return;
-								}
-                            }							
-                        }
-                    }
-                }
+						        if (_token.IsCancellationRequested)
+						        {
+							        return;
+						        }
+					        }							
+				        }
+			        }
+		        }
 
-                // Add to our directory.
-                rootNode.Add(CreateFileNode(fileEntry, fileStart, fileSize, compressedSize));
-            }
+		        // Add to our directory.
+		        rootNode.Add(CreateFileNode(fileEntry, fileStart, fileSize, compressedSize));
+	        }
         }
 
-        /// <summary>
+	    /// <summary>
         /// Function to build the file system.
         /// </summary>
         public void BuildFileSystem()
@@ -392,9 +391,9 @@ namespace GorgonLibrary.Editor.GorPackWriterPlugIn
         /// Initializes a new instance of the <see cref="GorgonGorPackWriterPlugIn"/> class.
         /// </summary>
         public GorgonGorPackWriterPlugIn()
-            : base("Gorgon packed file writer")
+            : base(Resources.GORPKW_DESC)
         {
-			FileExtensions.Add(".gorpack", new Tuple<string, string>("gorPack", "Gorgon Packed File (*.gorPack)"));
+			FileExtensions.Add(new FileExtension("gorPack", Resources.GORPKW_GORPACK_FILE_EXT_DESC));
         }
         #endregion
     }

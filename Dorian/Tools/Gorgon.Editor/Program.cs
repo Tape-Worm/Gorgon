@@ -34,6 +34,7 @@ using GorgonLibrary.Diagnostics;
 using GorgonLibrary.Editor.Properties;
 using GorgonLibrary.Graphics;
 using GorgonLibrary.IO;
+using GorgonLibrary.Renderers;
 using GorgonLibrary.UI;
 
 namespace GorgonLibrary.Editor
@@ -55,8 +56,6 @@ namespace GorgonLibrary.Editor
         #endregion
 
         #region Variables.
-		private static Guid _scratchID = Guid.NewGuid();
-		private static readonly string[] _systemDirs;
         private static readonly XElement _metadataRootNode;
         private static FileWriterPlugIn _writerPlugIn;
         #endregion
@@ -175,15 +174,6 @@ namespace GorgonLibrary.Editor
 		}
 
 		/// <summary>
-		/// Property to return the file system for the scratch files.
-		/// </summary>
-		public static GorgonFileSystem ScratchFiles
-		{
-			get;
-			set;
-		}
-
-		/// <summary>
 		/// Property to return the currently loaded content.
 		/// </summary>
 		public static ContentObject CurrentContent
@@ -205,6 +195,15 @@ namespace GorgonLibrary.Editor
 		/// Property to return the graphics interface.
 		/// </summary>
 		public static GorgonGraphics Graphics
+		{
+			get;
+			private set;
+		}
+
+		/// <summary>
+		/// Property to return the 2D renderer interface.
+		/// </summary>
+		public static Gorgon2D Renderer2D
 		{
 			get;
 			private set;
@@ -243,11 +242,11 @@ namespace GorgonLibrary.Editor
                 return null;
             }
 
-            var file = ScratchFiles.GetFile(MetaDataFilePath);
+            var file = ScratchArea.ScratchFiles.GetFile(MetaDataFilePath);
 	        var extension = Path.GetExtension(path);
 
 	        var firstPlugIn = (from plugIn in WriterPlugIns
-                               where extension != null && plugIn.Value.FileExtensions.ContainsKey(extension.ToLower())
+                               where extension != null && plugIn.Value.FileExtensions.Contains(extension)
                                select plugIn.Value).FirstOrDefault();
 
             if (file == null)
@@ -258,7 +257,7 @@ namespace GorgonLibrary.Editor
             }
 
             // Read in the meta data file.
-            using (var stream = ScratchFiles.OpenStream(file, false))
+			using (var stream = ScratchArea.ScratchFiles.OpenStream(file, false))
             {
                 EditorFileMetaData = XDocument.Load(stream);
             }
@@ -295,26 +294,6 @@ namespace GorgonLibrary.Editor
         }
 
 		/// <summary>
-		/// Function to determine if the path is a root path or system location.
-		/// </summary>
-		/// <param name="path">Path to evaluate.</param>
-		/// <returns>TRUE if a system location or root directory.</returns>
-		public static bool IsSystemLocation(string path)
-		{
-			var sysRoot = Path.GetPathRoot(Environment.GetFolderPath(Environment.SpecialFolder.System));
-			var info = new DirectoryInfo(Path.GetFullPath(path));
-
-			// Don't allow the root of the system drive as a scratch area.
-			if ((info.Parent == null) && (string.Equals(sysRoot, info.FullName, StringComparison.OrdinalIgnoreCase)))
-			{
-				return true;
-			}
-
-			// Ensure the system files are not accessible.
-			return (_systemDirs.Any(item => string.Equals(path, item, StringComparison.OrdinalIgnoreCase)));
-		}
-
-		/// <summary>
         /// Function to open the editor file.
         /// </summary>
         /// <param name="path">Path to the editor file.</param>
@@ -327,8 +306,8 @@ namespace GorgonLibrary.Editor
 			try
 			{
 				// Remove our scratch data.
-				CleanUpScratchArea();
-				InitializeScratch();
+				ScratchArea.DestroyScratchArea();
+				ScratchArea.InitializeScratch();
 
 				// Add the new file system as a mount point.
 				packFileSystem.Providers.LoadAllProviders();
@@ -342,7 +321,7 @@ namespace GorgonLibrary.Editor
 				// Create our directories.
 				foreach (var directory in directories)
 				{
-					ScratchFiles.CreateDirectory(directory.FullPath);
+					ScratchArea.ScratchFiles.CreateDirectory(directory.FullPath);
 				}
 
 				// Copy our files.
@@ -350,7 +329,7 @@ namespace GorgonLibrary.Editor
 				{
 					using (var inputStream = packFileSystem.OpenStream(file, false))
 					{
-						using (var outputStream = ScratchFiles.OpenStream(file.FullPath, true))
+						using (var outputStream = ScratchArea.ScratchFiles.OpenStream(file.FullPath, true))
 						{
 							inputStream.CopyTo(outputStream);
 						}
@@ -374,8 +353,8 @@ namespace GorgonLibrary.Editor
 			catch
 			{
 				// We have a problem, reset whatever changes we've made.
-				CleanUpScratchArea();
-				InitializeScratch();
+				ScratchArea.DestroyScratchArea();
+				ScratchArea.InitializeScratch();
 				throw;
 			}
 			finally
@@ -391,15 +370,9 @@ namespace GorgonLibrary.Editor
 		/// </summary>
 		public static void NewEditorFile()
 		{
-			// Unmount all the file systems.
-			foreach (var mountPoint in ScratchFiles.MountPoints.ToArray())
-			{
-				ScratchFiles.Unmount(mountPoint);
-			}
-
 			// Initialize the scratch area.
-			CleanUpScratchArea();
-			InitializeScratch();
+			ScratchArea.DestroyScratchArea();
+			ScratchArea.InitializeScratch();
 
 			EditorFile = "Untitled";
 			EditorFilePath = string.Empty;
@@ -429,7 +402,7 @@ namespace GorgonLibrary.Editor
 			}
 
             // Write the meta data file to the file system.
-            using (var metaDataStream = ScratchFiles.OpenStream(MetaDataFilePath, true))
+            using (var metaDataStream = ScratchArea.ScratchFiles.OpenStream(MetaDataFilePath, true))
             {
                 EditorFileMetaData.Save(metaDataStream);
             }
@@ -447,120 +420,6 @@ namespace GorgonLibrary.Editor
             // Remove all changed items.
 			EditorFileChanged = false;
         }
-
-		/// <summary>
-		/// Function to allow the user to select a new scratch file location.
-		/// </summary>
-		/// <returns>The new path for the scratch data, or NULL if canceled.</returns>
-		public static string SetScratchLocation()
-		{
-			FolderBrowserDialog dialog = null;
-
-			try
-			{
-				dialog = new FolderBrowserDialog
-					{
-						Description = Resources.GOREDIT_SCRATCH_PATH_DLG_DESC
-					};
-
-				if (Directory.Exists(Settings.ScratchPath))
-				{
-					dialog.SelectedPath = Settings.ScratchPath;
-				}
-				dialog.ShowNewFolderButton = true;
-
-			    if (dialog.ShowDialog() != DialogResult.OK)
-			    {
-			        return null;
-			    }
-
-			    // We chose poorly.
-			    if (!IsSystemLocation(dialog.SelectedPath))
-			    {
-			        return dialog.SelectedPath.FormatDirectory(Path.DirectorySeparatorChar);
-			    }
-
-			    GorgonDialogs.ErrorBox(null, Resources.GOREDIT_CANNOT_USESYS_SCRATCH);
-
-			    return null;
-			}
-			catch (Exception ex)
-			{
-				GorgonDialogs.ErrorBox(null, ex);
-				return null;
-			}
-			finally
-			{
-				if (dialog != null)
-				{
-					dialog.Dispose();
-				}
-			}
-		}
-
-        /// <summary>
-        /// Function to intialize the scratch area.
-        /// </summary>
-        public static void InitializeScratch()
-        {			
-			_scratchID = Guid.NewGuid();
-			ScratchFiles.Clear();
-            ScratchFiles.WriteLocation = Settings.ScratchPath + ("Gorgon.Editor." + _scratchID.ToString("N")).FormatDirectory(Path.DirectorySeparatorChar); 
-
-            // Set the directory to hidden.  We don't want users really messing around in here if we can help it.
-            var scratchDir = new DirectoryInfo(ScratchFiles.WriteLocation);
-            if (((scratchDir.Attributes & FileAttributes.Hidden) != FileAttributes.Hidden)
-                || ((scratchDir.Attributes & FileAttributes.NotContentIndexed) != FileAttributes.NotContentIndexed))
-            {
-                scratchDir.Attributes = FileAttributes.NotContentIndexed | FileAttributes.Hidden;
-            }
-        }
-
-		/// <summary>
-		/// Function to clean up the scratch area when the program exits.
-		/// </summary>
-        /// <returns>TRUE if the clean up operation was successful, FALSE if not.</returns>
-		public static bool CleanUpScratchArea()
-		{
-			if (Settings == null) 
-			{
-				throw new ApplicationException(Resources.GOREDIT_NO_APP_SETTINGS);
-			}
-            			
-			try
-			{
-                string scratchLocation = Settings.ScratchPath + _scratchID.ToString("N").FormatDirectory(Path.DirectorySeparatorChar);
-
-                // Use the write location of the currently mounted file system if possible.
-                if ((ScratchFiles != null) && (!string.IsNullOrWhiteSpace(ScratchFiles.WriteLocation)))
-                {
-                    scratchLocation = ScratchFiles.WriteLocation;
-                }
-
-                // The scratch directory is gone, nothing to clean up.
-                if (!Directory.Exists(scratchLocation))
-                {
-                    return true;
-                }
-
-				LogFile.Print("Cleaning up scratch area at \"{0}\".", LoggingLevel.Simple, scratchLocation);
-
-				var directory = new DirectoryInfo(scratchLocation);
-
-				// Wipe out everything in this directory and the directory proper.				
-				directory.Delete(true);
-			}
-			catch (Exception ex)
-			{
-				GorgonException.Log = LogFile;
-				GorgonException.Catch(ex);
-				GorgonException.Log = Gorgon.Log;
-
-                return false;
-			}
-
-            return true;
-		}
 
 		/// <summary>
 		/// Function to initialize the graphics interface.
@@ -596,9 +455,6 @@ namespace GorgonLibrary.Editor
 		/// </summary>
 		static Program()
 		{
-			_systemDirs = ((Environment.SpecialFolder[])Enum.GetValues(typeof(Environment.SpecialFolder)))
-							.Select(Environment.GetFolderPath)
-							.ToArray();
 			Settings = new GorgonEditorSettings();
             ContentPlugIns = new Dictionary<string, ContentPlugIn>();
             WriterPlugIns = new Dictionary<string, FileWriterPlugIn>();
@@ -677,7 +533,7 @@ namespace GorgonLibrary.Editor
 				// Clean up temporary files in scratch area.
 				if (Settings != null)
 				{
-					CleanUpScratchArea();
+					ScratchArea.DestroyScratchArea();
 				}
 
 				// Close the logging file.

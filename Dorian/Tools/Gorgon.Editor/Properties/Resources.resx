@@ -196,4 +196,73 @@
   <data name="GOREDIT_SCRATCH_PATH_DLG_DESC" xml:space="preserve">
     <value>Select a new temporary scratch path.</value>
   </data>
+  <data name="GOREDIT_BTN_CANCEL" xml:space="preserve">
+    <value>&amp;Cancel</value>
+  </data>
+  <data name="GOREDIT_FILE_EXTENSION_EXISTS" xml:space="preserve">
+    <value>The file extension '{0}' already exists in this collection.</value>
+  </data>
+  <data name="GOREDIT_FILE_EXTENSION_TOSTR" xml:space="preserve">
+    <value>Writer plug-in file extension: .{0} - {1}</value>
+  </data>
+  <data name="GOREDIT_FILE_WRITE_SAVE_DLG_TITLE" xml:space="preserve">
+    <value>Saving '{0}'</value>
+  </data>
+  <data name="GOREDIT_FILE_WRITE_SAVE_LABEL" xml:space="preserve">
+    <value>Saving...</value>
+  </data>
+  <data name="GOREDIT_PARAMETER_MUST_NOT_BE_EMPTY" xml:space="preserve">
+    <value>The parameter must not be empty.</value>
+  </data>
+  <data name="GOREDIT_IMPORT_DLG_TITLE" xml:space="preserve">
+    <value>Importing Files</value>
+  </data>
+  <data name="GOREDIT_IMPORT_INFO_DLG_TITLE" xml:space="preserve">
+    <value>Scanning Files</value>
+  </data>
+  <data name="GOREDIT_IMPORT_INFO_LABEL" xml:space="preserve">
+    <value>Getting file information...</value>
+  </data>
+  <data name="GOREDIT_NO_EDITOR_PLUGINS" xml:space="preserve">
+    <value>The assembly '{0}' does not contain any editor compatible plug-ins.</value>
+  </data>
+  <data name="GOREDIT_PLUGIN_TYPE_CONTENT" xml:space="preserve">
+    <value>Content</value>
+  </data>
+  <data name="GOREDIT_PLUGIN_TYPE_DISABLED" xml:space="preserve">
+    <value>Disabled</value>
+  </data>
+  <data name="GOREDIT_PLUGIN_TYPE_FILE_READER" xml:space="preserve">
+    <value>File Reader</value>
+  </data>
+  <data name="GOREDIT_PLUGIN_TYPE_FILE_WRITER" xml:space="preserve">
+    <value>File Writer</value>
+  </data>
+  <data name="GOREDIT_SETTING_PLUGIN_LOC_CHANGE_MSG" xml:space="preserve">
+    <value>The plug-in location has changed.  This will require that the application be restarted before this setting takes effect.</value>
+  </data>
+  <data name="GOREDIT_SETTING_SCRATCH_LOC_CHANGE_MSG" xml:space="preserve">
+    <value>The scratch location has changed.  This will require that the application be restarted before this setting takes effect.</value>
+  </data>
+  <data name="GOREDIT_SPLASH_CREATE_SCRATCH" xml:space="preserve">
+    <value>Creating scratch area...</value>
+  </data>
+  <data name="GOREDIT_SPLASH_INIT_GFX" xml:space="preserve">
+    <value>Initializing graphics...</value>
+  </data>
+  <data name="GOREDIT_SPLASH_LOAD_PLUGIN" xml:space="preserve">
+    <value>Plug-in: {0}</value>
+  </data>
+  <data name="GOREDIT_SPLASH_LOAD_PLUGINS" xml:space="preserve">
+    <value>Loading plug-ins...</value>
+  </data>
+  <data name="GOREDIT_SPLASH_LOAD_PREV_FILE" xml:space="preserve">
+    <value>Loading previous editor file...</value>
+  </data>
+  <data name="GOREDIT_SPLASH_INITIALIZING" xml:space="preserve">
+    <value>Initializing</value>
+  </data>
+  <data name="GOREDIT_VERSION" xml:space="preserve">
+    <value>Version: {0} - {1}</value>
+  </data>
 </root>

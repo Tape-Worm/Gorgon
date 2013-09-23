@@ -227,7 +227,10 @@ namespace GorgonLibrary.Renderers
 			    ShadowOffset = shadowOffset,
 			    ShadowOpacity = shadowOpacity,
 			    Color = color,
-			    Text = text
+			    Text = text,
+				CullingMode = CullingMode.Back,
+				AlphaTestValues = GorgonRangeF.Empty,
+				BlendingMode = BlendingMode.Modulate
 			};
 
 		    return result;

@@ -47,6 +47,10 @@
 			this.splitContent = new System.Windows.Forms.Splitter();
 			this.panel1 = new System.Windows.Forms.Panel();
 			this.panelToolbar = new System.Windows.Forms.Panel();
+			this.stripGlyphs = new System.Windows.Forms.ToolStrip();
+			this.buttonEditGlyph = new System.Windows.Forms.ToolStripButton();
+			this.buttonGlyphSizeSpace = new System.Windows.Forms.ToolStripButton();
+			this.buttonGlyphKern = new System.Windows.Forms.ToolStripButton();
 			this.panelControls = new System.Windows.Forms.Panel();
 			this.stripFontDisplay = new System.Windows.Forms.ToolStrip();
 			this.buttonPrevTexture = new System.Windows.Forms.ToolStripButton();
@@ -83,6 +87,8 @@
 			this.panel2 = new System.Windows.Forms.Panel();
 			this.PanelDisplay.SuspendLayout();
 			this.panel1.SuspendLayout();
+			this.panelToolbar.SuspendLayout();
+			this.stripGlyphs.SuspendLayout();
 			this.panelControls.SuspendLayout();
 			this.stripFontDisplay.SuspendLayout();
 			this.stripCommands.SuspendLayout();
@@ -147,13 +153,58 @@
 			// 
 			// panelToolbar
 			// 
-			this.panelToolbar.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(58)))), ((int)(((byte)(58)))), ((int)(((byte)(58)))));
+			this.panelToolbar.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(68)))), ((int)(((byte)(68)))), ((int)(((byte)(68)))));
 			this.panelToolbar.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			this.panelToolbar.Controls.Add(this.stripGlyphs);
 			this.panelToolbar.Dock = System.Windows.Forms.DockStyle.Top;
 			this.panelToolbar.Location = new System.Drawing.Point(0, 0);
 			this.panelToolbar.Name = "panelToolbar";
 			this.panelToolbar.Size = new System.Drawing.Size(806, 25);
 			this.panelToolbar.TabIndex = 3;
+			// 
+			// stripGlyphs
+			// 
+			this.stripGlyphs.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
+			this.stripGlyphs.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.buttonEditGlyph,
+            this.buttonGlyphSizeSpace,
+            this.buttonGlyphKern});
+			this.stripGlyphs.Location = new System.Drawing.Point(0, 0);
+			this.stripGlyphs.Name = "stripGlyphs";
+			this.stripGlyphs.Size = new System.Drawing.Size(804, 25);
+			this.stripGlyphs.Stretch = true;
+			this.stripGlyphs.TabIndex = 0;
+			this.stripGlyphs.Text = "GlyphEditing";
+			// 
+			// buttonEditGlyph
+			// 
+			this.buttonEditGlyph.Enabled = false;
+			this.buttonEditGlyph.Image = global::GorgonLibrary.Editor.FontEditorPlugIn.Properties.Resources.edit_16x16;
+			this.buttonEditGlyph.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.buttonEditGlyph.Name = "buttonEditGlyph";
+			this.buttonEditGlyph.Size = new System.Drawing.Size(81, 22);
+			this.buttonEditGlyph.Text = "Edit Glyph";
+			// 
+			// buttonGlyphSizeSpace
+			// 
+			this.buttonGlyphSizeSpace.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.buttonGlyphSizeSpace.Enabled = false;
+			this.buttonGlyphSizeSpace.Image = global::GorgonLibrary.Editor.FontEditorPlugIn.Properties.Resources.glyph_sizing_16x16;
+			this.buttonGlyphSizeSpace.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.buttonGlyphSizeSpace.Name = "buttonGlyphSizeSpace";
+			this.buttonGlyphSizeSpace.Size = new System.Drawing.Size(23, 22);
+			this.buttonGlyphSizeSpace.Text = "Glyph sizing/spacing";
+			this.buttonGlyphSizeSpace.ToolTipText = "Set the sizing/spacing of the selected glyph.";
+			// 
+			// buttonGlyphKern
+			// 
+			this.buttonGlyphKern.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.buttonGlyphKern.Enabled = false;
+			this.buttonGlyphKern.Image = global::GorgonLibrary.Editor.FontEditorPlugIn.Properties.Resources.glyph_kerning_16x16;
+			this.buttonGlyphKern.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.buttonGlyphKern.Name = "buttonGlyphKern";
+			this.buttonGlyphKern.Size = new System.Drawing.Size(23, 22);
+			this.buttonGlyphKern.ToolTipText = "Sets the kerning value between the selected glyph and another glyph.";
 			// 
 			// panelControls
 			// 
@@ -482,6 +533,10 @@
 			this.MouseClick += new System.Windows.Forms.MouseEventHandler(this.GorgonFontContentPanel_MouseClick);
 			this.PanelDisplay.ResumeLayout(false);
 			this.panel1.ResumeLayout(false);
+			this.panelToolbar.ResumeLayout(false);
+			this.panelToolbar.PerformLayout();
+			this.stripGlyphs.ResumeLayout(false);
+			this.stripGlyphs.PerformLayout();
 			this.panelControls.ResumeLayout(false);
 			this.panelControls.PerformLayout();
 			this.stripFontDisplay.ResumeLayout(false);
@@ -535,6 +590,10 @@
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparator5;
 		private System.Windows.Forms.ToolStripLabel toolStripLabel1;
 		private System.Windows.Forms.ToolStripTextBox textPreviewText;
+		private System.Windows.Forms.ToolStrip stripGlyphs;
+		private System.Windows.Forms.ToolStripButton buttonGlyphSizeSpace;
+		private System.Windows.Forms.ToolStripButton buttonEditGlyph;
+		private System.Windows.Forms.ToolStripButton buttonGlyphKern;
 
     }
 }
