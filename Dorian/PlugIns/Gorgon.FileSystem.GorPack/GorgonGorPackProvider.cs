@@ -30,7 +30,6 @@ using System.Globalization;
 using System.IO;
 using System.Text;
 using System.Xml.Linq;
-using GorgonLibrary.Diagnostics;
 using GorgonLibrary.IO.GorPack.Properties;
 using ICSharpCode.SharpZipLib.BZip2;
 
@@ -282,11 +281,20 @@ namespace GorgonLibrary.IO.GorPack
 		{
 			string header;
 
-			GorgonDebug.AssertParamString(physicalPath, "physicalPath");
+		    if (physicalPath == null)
+		    {
+		        throw new ArgumentNullException("physicalPath");
+		    }
+
+		    if (string.IsNullOrWhiteSpace(physicalPath))
+		    {
+		        throw new ArgumentException(Resources.GORFS_PARAMETER_MUST_NOT_BE_EMPTY, "physicalPath");
+		    }
 
 			using (var reader = new GorgonBinaryReader(File.Open(physicalPath, FileMode.Open, FileAccess.Read, FileShare.Read), false))
 			{
-				header = reader.ReadString();
+			    reader.ReadByte();
+				header = new string(reader.ReadChars(GorgonGorPackPlugIn.GorPackHeader.Length));
 			}
 
 			return (string.Equals(header, GorgonGorPackPlugIn.GorPackHeader));

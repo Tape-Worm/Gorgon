@@ -25,6 +25,7 @@
 #endregion
 
 using System.Collections.Generic;
+using GorgonLibrary.IO.Zip.Properties;
 
 namespace GorgonLibrary.IO
 {
@@ -45,14 +46,14 @@ namespace GorgonLibrary.IO
 		/// <returns>The file system provider plug-in.</returns>
 		protected override GorgonFileSystemProvider OnCreateProvider()
 		{
-			return new Zip.GorgonZipProvider("A provider to mount a zip file as a file system.");
+			return new Zip.GorgonZipProvider(Resources.GORFS_DESC);
 		}
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="GorgonZipPlugIn"/> class.
 		/// </summary>
 		public GorgonZipPlugIn()
-            : base("Zip compressed file.")
+            : base(Resources.GORFS_PLUGIN_DESC)
 		{
 		}
 	}

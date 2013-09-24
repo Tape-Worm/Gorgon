@@ -80,6 +80,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AppContext.cs" />
+    <Compile Include="ContentManagement.cs" />
     <Compile Include="ContentObject.cs" />
     <Compile Include="Controls\ContentPanel.cs">
       <SubType>UserControl</SubType>

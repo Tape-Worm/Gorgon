@@ -170,6 +170,15 @@ namespace GorgonLibrary.Editor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Gorgon Editor Files.
+        /// </summary>
+        internal static string GOREDIT_ALL_FILE_TYPES {
+            get {
+                return ResourceManager.GetString("GOREDIT_ALL_FILE_TYPES", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to All Files (*.*).
         /// </summary>
         internal static string GOREDIT_ALL_FILES {
@@ -193,6 +202,15 @@ namespace GorgonLibrary.Editor.Properties {
         internal static string GOREDIT_CANNOT_USESYS_SCRATCH {
             get {
                 return ResourceManager.GetString("GOREDIT_CANNOT_USESYS_SCRATCH", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Gorgon Editor.
+        /// </summary>
+        internal static string GOREDIT_DEFAULT_TITLE {
+            get {
+                return ResourceManager.GetString("GOREDIT_DEFAULT_TITLE", resourceCulture);
             }
         }
         
@@ -265,6 +283,15 @@ namespace GorgonLibrary.Editor.Properties {
         internal static string GOREDIT_NO_EDITOR_PLUGINS {
             get {
                 return ResourceManager.GetString("GOREDIT_NO_EDITOR_PLUGINS", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The editor does not know how to read the file &apos;{0}&apos;..
+        /// </summary>
+        internal static string GOREDIT_NO_PROVIDERS_TO_READ_FILE {
+            get {
+                return ResourceManager.GetString("GOREDIT_NO_PROVIDERS_TO_READ_FILE", resourceCulture);
             }
         }
         

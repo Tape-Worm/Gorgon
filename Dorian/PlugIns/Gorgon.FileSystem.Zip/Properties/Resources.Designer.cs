@@ -70,6 +70,15 @@ namespace GorgonLibrary.IO.Zip.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to A provider to mount a zip file as a file system..
+        /// </summary>
+        internal static string GORFS_DESC {
+            get {
+                return ResourceManager.GetString("GORFS_DESC", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Cannot read beyond the end of the stream..
         /// </summary>
         internal static string GORFS_EOS {
@@ -93,6 +102,24 @@ namespace GorgonLibrary.IO.Zip.Properties {
         internal static string GORFS_FILE_NOT_FOUND {
             get {
                 return ResourceManager.GetString("GORFS_FILE_NOT_FOUND", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The parameter must not be empty..
+        /// </summary>
+        internal static string GORFS_PARAMETER_MUST_NOT_BE_EMPTY {
+            get {
+                return ResourceManager.GetString("GORFS_PARAMETER_MUST_NOT_BE_EMPTY", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Zip compressed file..
+        /// </summary>
+        internal static string GORFS_PLUGIN_DESC {
+            get {
+                return ResourceManager.GetString("GORFS_PLUGIN_DESC", resourceCulture);
             }
         }
     }

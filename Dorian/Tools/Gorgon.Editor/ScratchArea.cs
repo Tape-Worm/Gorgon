@@ -68,21 +68,8 @@ namespace GorgonLibrary.Editor
 	/// <remarks>This interface is used to maintain the scratch area.</remarks>
 	static class ScratchArea
 	{
-        #region Constants.
-        /// <summary>
-        /// Meta data file name.
-        /// </summary>
-        public const string MetaDataFile = ".gorgon.editor.metadata";
-        /// <summary>
-        /// Meta data file path.
-        /// </summary>
-        public const string MetaDataFilePath = "/" + MetaDataFile;
-        #endregion
-
 		#region Variables.
-        private readonly static XElement _metaDataRootNode = new XElement("Gorgon.Editor.MetaData");
         private readonly static string[] _systemDirs;
-	    private static XDocument _metaDataXML;
         private static Guid _scratchID = Guid.NewGuid();
 		#endregion
 
@@ -117,52 +104,6 @@ namespace GorgonLibrary.Editor
 			// Ensure the system files are not accessible.
 			return (_systemDirs.Any(item => string.Equals(path, item, StringComparison.OrdinalIgnoreCase)));
 		}
-
-        /// <summary>
-        /// Function to retrieve the meta data for the scratch area files.
-        /// </summary>
-        /// <returns>The XML document containing the metadata, or NULL (Nothing in VB.Net) if no meta data was found.</returns>
-	    public static XDocument GetMetaData()
-        {
-            if (_metaDataXML != null)
-            {
-                return _metaDataXML;
-            }
-
-            _metaDataXML = new XDocument(new XDeclaration("1.0", "utf-8", "yes"), _metaDataRootNode);
-
-            // If we have no files, then there's no metadata.
-            if ((ScratchFiles == null)
-                || ((ScratchFiles.RootDirectory.Directories.Count == 0)
-                    && (ScratchFiles.RootDirectory.Files.Count == 0)))
-            {
-                return _metaDataXML;
-            }
-
-            var file = ScratchFiles.GetFile(MetaDataFilePath);
-
-            if (file == null)
-            {
-                return _metaDataXML;
-            }
-
-            XDocument metaDataFile;
-
-            using(var metaStream = file.OpenStream(false))
-            {
-                metaDataFile = XDocument.Load(metaStream);
-            }
-
-            // If this file is invalid, then do not return it.
-            if (!metaDataFile.Descendants(_metaDataRootNode.Name).Any())
-            {
-                return _metaDataXML;
-            }
-
-            _metaDataXML = metaDataFile;
-
-            return _metaDataXML;
-        }
 
 		/// <summary>
 		/// Function to remove all old scratch area directories from the scratch path.
@@ -199,9 +140,6 @@ namespace GorgonLibrary.Editor
 					GorgonException.Catch(ex);
 				}
 			}
-
-            _metaDataXML = null;
-		    GetMetaData();
 		}
 
 		/// <summary>
@@ -245,10 +183,6 @@ namespace GorgonLibrary.Editor
 
 				// Wipe out everything in this directory and the directory proper.				
 				directory.Delete(true);
-
-                // This will refresh the metadata.
-			    _metaDataXML = null;
-			    GetMetaData();
 			}
 			catch (Exception ex)
 			{
@@ -384,9 +318,6 @@ namespace GorgonLibrary.Editor
 			{
 				scratchDir.Attributes = FileAttributes.NotContentIndexed | FileAttributes.Hidden;
 			}
-
-		    _metaDataXML = null;
-		    GetMetaData();
 		}
 		#endregion
 
@@ -400,9 +331,6 @@ namespace GorgonLibrary.Editor
 							.Select(Environment.GetFolderPath)
 							.ToArray();
 			ScratchFiles = new GorgonFileSystem();
-
-            // Create default metadata.
-            _metaDataXML = new XDocument(new XDeclaration("1.0", "utf-8", "yes"), _metaDataRootNode);
 		}
 		#endregion
 	}
