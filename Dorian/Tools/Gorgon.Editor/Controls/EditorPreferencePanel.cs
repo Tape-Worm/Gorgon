@@ -137,7 +137,11 @@ namespace GorgonLibrary.Editor
             checkAutoLoadFile.Checked = Program.Settings.AutoLoadLastFile;
 
             listContentPlugIns.BeginUpdate();
+            listDisabledPlugIns.BeginUpdate();
+
+            listDisabledPlugIns.Items.Clear();
             listContentPlugIns.Items.Clear();
+
             foreach (var plugIn in Gorgon.PlugIns)
             {
                 var item = new ListViewItem();
@@ -163,12 +167,26 @@ namespace GorgonLibrary.Editor
                     {
                         item.SubItems.Add(Resources.GOREDIT_PLUGIN_TYPE_FILE_READER);
                     }
-
-                    if ((editorPlugIn != null) && (Program.DisabledPlugIns.ContainsKey(editorPlugIn)))
+                    
+                    if ((editorPlugIn != null) && (PlugIns.IsDisabled(editorPlugIn)))
                     {
                         item.SubItems[1].Text = Resources.GOREDIT_PLUGIN_TYPE_DISABLED;
                         item.ForeColor = Color.FromKnownColor(KnownColor.DimGray);
                         item.Tag = null;
+
+                        // We've got a disabled plug-in, add to the secondary list view
+                        // to show why the plug-in was disabled.
+                        var disabledItem = new ListViewItem
+                        {
+                            Name = plugIn.Name,
+                            Text = plugIn.Description,
+                            Tag = plugIn
+                        };
+
+                        disabledItem.SubItems.Add(PlugIns.GetDisabledReason(plugIn));
+                        disabledItem.SubItems.Add(plugIn.PlugInPath);
+
+                        listDisabledPlugIns.Items.Add(disabledItem);
                     }
                     else
                     {
@@ -183,24 +201,6 @@ namespace GorgonLibrary.Editor
 
             listContentPlugIns.EndUpdate();
             listContentPlugIns.AutoResizeColumns(ColumnHeaderAutoResizeStyle.HeaderSize);
-
-            listDisabledPlugIns.BeginUpdate();
-            listDisabledPlugIns.Items.Clear();
-            foreach (var plugIn in Program.DisabledPlugIns)
-            {
-                var item = new ListViewItem
-                           {
-	                           Name = plugIn.Key.Name,
-	                           Text = plugIn.Key.Description,
-							   Tag = plugIn
-                           };
-
-	            item.SubItems.Add(plugIn.Value);
-                item.SubItems.Add(plugIn.Key.PlugInPath);
-
-                listDisabledPlugIns.Items.Add(item);
-            }
-
             listDisabledPlugIns.EndUpdate();
             listDisabledPlugIns.AutoResizeColumns(ColumnHeaderAutoResizeStyle.HeaderSize);
         }

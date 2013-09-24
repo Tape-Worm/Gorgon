@@ -122,6 +122,29 @@ namespace GorgonLibrary.Editor
 			return results;
 		}
 
+        /// <summary>
+        /// Function to determine if a plug-in has been disabled.
+        /// </summary>
+        /// <param name="plugIn">Plug-in to check.</param>
+        /// <returns>TRUE if the plug-in has been disabled, FALSE if not.</returns>
+	    public static bool IsDisabled(GorgonPlugIn plugIn)
+        {
+            return _disabled.Contains(new DisabledPlugIn(plugIn, string.Empty));
+        }
+
+        /// <summary>
+        /// Function to return the reason that a plug-in was disabled.
+        /// </summary>
+        /// <param name="plugIn">Plug-in to look up.</param>
+        /// <returns>A string containing the reason that a plug-in was disabled.</returns>
+	    public static string GetDisabledReason(GorgonPlugIn plugIn)
+        {
+            var disabled = new DisabledPlugIn(plugIn, string.Empty);
+            int index = _disabled.IndexOf(disabled);
+
+            return index > -1 ? _disabled[index].Reason : string.Empty;
+        }
+
 		/// <summary>
 		/// Function to load the plug-ins for the application.
 		/// </summary>

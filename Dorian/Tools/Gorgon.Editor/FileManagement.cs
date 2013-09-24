@@ -26,22 +26,33 @@
 
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms.VisualStyles;
 using System.Windows.Markup;
 using System.Xml.Linq;
+using GorgonLibrary.Editor.Properties;
 using GorgonLibrary.IO;
 
 namespace GorgonLibrary.Editor
 {
     /// <summary>
-    /// Interface used to import content files or load/save 
+    /// Interface used to import content files or load/save the current editor file.
     /// </summary>
     static class FileManagement
     {
+        #region Constants.
+        private const string MetaDataRootName = "Gorgon.Editor.MetaData";           // Name of the root node in the meta data.
+        private const string MetaDataWriterPlugIn = "WriterPlugIn";                 // Name of the node that contains meta data for the plug-in writer..
+        private const string MetaDataTypeName = "TypeName";                         // Name of attribute/element with type name information.
+        private const string MetaDataFile = ".gorgon.editor.metadata";              // Meta data file name.
+        private const string MetaDataFilePath = "/" + MetaDataFile;                 // Meta data file path.
+        #endregion
+
         #region Classes.
 		/// <summary>
 		/// A case insensitive string comparer.
@@ -111,36 +122,91 @@ namespace GorgonLibrary.Editor
             #endregion
         }
         #endregion
-        
+
         #region Variables.
         private readonly static HashSet<string> _blockedFiles;
-        private readonly static Dictionary<GorgonFileExtension, ContentPlugIn> _contentFiles;
         private readonly static Dictionary<GorgonFileExtension, GorgonFileSystemProvider> _readerFiles;
         private readonly static Dictionary<GorgonFileExtension, FileWriterPlugIn> _writerFiles;
+        private readonly static XElement _metaDataRootNode = new XElement(MetaDataRootName);
+        private static XDocument _metaDataXML;
         #endregion
 
         #region Properties.
+        /// <summary>
+        /// Property to set or return whether the file has changed or not.
+        /// </summary>
+        public static bool FileChanged
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Property to set or return the name of the file.
+        /// </summary>
+        public static string Filename
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Property to set or return the path to the file.
+        /// </summary>
+        public static string FilePath
+        {
+            get;
+            set;
+        }
         #endregion
 
         #region Methods.
         /// <summary>
-        /// Function to retrieve the content file types available in the plug-in.
+        /// Function to retrieve the meta data for the scratch area files.
         /// </summary>
-        /// <param name="plugIn">Plug-in containing the content types.</param>
-        private static void GetContentFileTypes(ContentPlugIn plugIn)
+        /// <returns>The XML document containing the metadata, or NULL (Nothing in VB.Net) if no meta data was found.</returns>
+        private static XDocument GetMetaData()
         {
-            if (plugIn.FileExtensions.Count == 0)
+            if (_metaDataXML != null)
             {
-                return;
+                return _metaDataXML;
             }
 
-            // Associate the content file type with the plug-in.
-            foreach (var extension in plugIn.FileExtensions)
+            _metaDataXML = new XDocument(new XDeclaration("1.0", "utf-8", "yes"), _metaDataRootNode);
+
+            // If we have no files, then there's no metadata.
+            if ((ScratchArea.ScratchFiles == null)
+                || ((ScratchArea.ScratchFiles.RootDirectory.Directories.Count == 0)
+                    && (ScratchArea.ScratchFiles.RootDirectory.Files.Count == 0)))
             {
-                _contentFiles[extension] = plugIn;
+                return _metaDataXML;
             }
+
+            var file = ScratchArea.ScratchFiles.GetFile(MetaDataFilePath);
+
+            if (file == null)
+            {
+                return _metaDataXML;
+            }
+
+            XDocument metaDataFile;
+
+            using (var metaStream = file.OpenStream(false))
+            {
+                metaDataFile = XDocument.Load(metaStream);
+            }
+
+            // If this file is invalid, then do not return it.
+            if (!metaDataFile.Descendants(_metaDataRootNode.Name).Any())
+            {
+                return _metaDataXML;
+            }
+
+            _metaDataXML = metaDataFile;
+
+            return _metaDataXML;
         }
-
+        
         /// <summary>
         /// Function to retrieve the file types that can be read by the available file system providers.
         /// </summary>
@@ -163,6 +229,16 @@ namespace GorgonLibrary.Editor
             {
                 _writerFiles[extension] = plugIn;
             }
+        }
+
+        /// <summary>
+        /// Function to reset the file data.
+        /// </summary>
+        private static void ResetFile()
+        {
+            ScratchArea.DestroyScratchArea();
+            ScratchArea.InitializeScratch();
+            _metaDataXML = null;
         }
 
 		/// <summary>
@@ -191,12 +267,6 @@ namespace GorgonLibrary.Editor
             {
                 GetWriterFileTypes(writerPlugIn.Value);
             }
-
-            // Get content extensions.
-            foreach (var contentPlugIn in PlugIns.ContentPlugIns)
-            {
-                GetContentFileTypes(contentPlugIn.Value);
-            }
         }
 
         /// <summary>
@@ -209,15 +279,6 @@ namespace GorgonLibrary.Editor
         }
 
         /// <summary>
-        /// Function to retrieve the list of available content extensions.
-        /// </summary>
-        /// <returns>A list of content file name extensions.</returns>
-        public static IEnumerable<GorgonFileExtension> GetContentExtensions()
-        {
-            return _contentFiles.Keys;
-        }
-
-        /// <summary>
         /// Function to retrieve the list of available reader extensions.
         /// </summary>
         /// <returns>A list of readable file name extensions.</returns>
@@ -227,86 +288,253 @@ namespace GorgonLibrary.Editor
         }
 
         /// <summary>
-        /// Function to find a writer plug-in for a given file name extension.
+        /// Function to assign the specified writer plug-in as current in the meta data.
         /// </summary>
-        /// <param name="fileName">Full file name or extension of the file to write.</param>
-        /// <returns>The plug-in used to write the file.</returns>
-        public static FileWriterPlugIn GetWriterPlugIn(string fileName)
+        /// <param name="plugIn">Plug-in to assign.</param>
+        public static void SetWriterPlugIn(FileWriterPlugIn plugIn)
         {
-            XDocument tempMetaData = ScratchArea.GetMetaData();
+            XDocument tempMetaData = GetMetaData();
 
-            if (string.IsNullOrWhiteSpace(fileName))
-            {
-                return null;
-            }
-
-            // Get the metadata file.
-            var extension = new GorgonFileExtension(Path.GetExtension(fileName));
-
-            // If we cannot find the extension, then return nothing.
-            if ((string.IsNullOrWhiteSpace(extension.Extension)) || ((!_writerFiles.ContainsKey(extension) && (tempMetaData == null))))
-            {
-                return null;
-            }
-
-            FileWriterPlugIn plugInByExtension = _writerFiles[extension];
-
-            // There's no metadata, so just rely on the extension.
             if (tempMetaData == null)
             {
-                return plugInByExtension;
+                return;
             }
 
-            // Read the meta data for the file.
-            var plugInElement = tempMetaData.Descendants("WriterPlugIn").FirstOrDefault();
-
-            if (plugInElement == null)
+            XElement rootNode = tempMetaData.Descendants(MetaDataRootName).FirstOrDefault();
+            
+            // If we cannot find the root node in the metadata, then leave.
+            if (rootNode == null)
             {
-                return plugInByExtension;
+                return;
             }
 
-            // Ensure this is properly formed.
-            if ((!plugInElement.HasAttributes)
-                || (plugInElement.Attribute("TypeName") == null)
-                || (string.IsNullOrWhiteSpace(plugInElement.Attribute("TypeName").Value)))
+            XElement writerNode = tempMetaData.Descendants(MetaDataWriterPlugIn).FirstOrDefault();
+
+            // If passing NULL, then remove the setting from the metadata.
+            if (plugIn == null)
             {
-                return plugInByExtension;
-            }
+                if (writerNode == null)
+                {
+                    return;
+                }
 
-            return (from plugIn in PlugIns.WriterPlugIns
-                    where string.Equals(plugIn.Value.GetType().FullName,
-                                        plugInElement.Attribute("TypeName").Value,
-                                        StringComparison.OrdinalIgnoreCase)
-                    select plugIn.Value).FirstOrDefault() ?? plugInByExtension;
+                writerNode.Remove();
+            }
+            else
+            {
+                if (writerNode == null)
+                {
+                    rootNode.Add(new XElement(MetaDataWriterPlugIn,
+                                              new XAttribute(MetaDataTypeName, plugIn.GetType().FullName)));
+                }
+                else
+                {
+                    XAttribute type = writerNode.Attribute(MetaDataTypeName);
+
+                    if (type == null)
+                    {
+                        writerNode.Add(new XAttribute(MetaDataTypeName, plugIn.GetType().FullName));
+                    }
+                    else
+                    {
+                        type.Value = plugIn.GetType().FullName;
+                    }
+                }
+            }
         }
 
         /// <summary>
-        /// Function to return a related plug-in for the given content file.
+        /// Function to find a writer plug-in for a given file name extension.
         /// </summary>
-        /// <param name="fileName">Name of the content file.</param>
-        /// <returns>The plug-in used to access the file.</returns>
-        public static ContentPlugIn GetContentPlugInForFile(string fileName)
+        /// <param name="fileExtension">Full file name or extension of the file to write.</param>
+        /// <returns>The plug-in used to write the file.</returns>
+        public static FileWriterPlugIn GetWriterPlugIn(string fileExtension = null)
         {
-            string extension = Path.GetExtension(fileName);
+            XDocument tempMetaData = GetMetaData();
+            FileWriterPlugIn result = null;
 
-            return !CanOpenContent(extension) ? null : _contentFiles[new GorgonFileExtension(extension, null)];
+            // If we have meta-data, then use that to determine which file writer is used.
+            if (tempMetaData != null)
+            {
+                // Read the meta data for the file.
+                var plugInElement = tempMetaData.Descendants(MetaDataWriterPlugIn).FirstOrDefault();
+
+                if (plugInElement != null)
+                {
+                    // Ensure this is properly formed.
+                    if ((plugInElement.HasAttributes)
+                        && (plugInElement.Attribute(MetaDataTypeName) != null)
+                        && (!string.IsNullOrWhiteSpace(plugInElement.Attribute(MetaDataTypeName).Value)))
+                    {
+                        result = (from plugIn in PlugIns.WriterPlugIns
+                                  where string.Equals(plugIn.Value.GetType().FullName,
+                                                      plugInElement.Attribute(MetaDataTypeName).Value,
+                                                      StringComparison.OrdinalIgnoreCase)
+                                  select plugIn.Value).FirstOrDefault();
+                    }
+                }
+
+                if (result != null)
+                {
+                    return result;
+                }
+            }
+
+            // We did not find a file writer in the meta data, try to derive which plug-in to use from the extension.
+            if (string.IsNullOrWhiteSpace(fileExtension))
+            {
+                // We didn't give an extension, try and take it from the file name.
+                fileExtension = Path.GetExtension(Path.GetExtension(Filename));
+            }
+
+            // If we passed in a full file name, then get its extension.
+            if ((!string.IsNullOrWhiteSpace(fileExtension)) && (fileExtension.IndexOf('.') > 0))
+            {
+                fileExtension = Path.GetExtension(fileExtension);
+            }
+            
+            var extension = new GorgonFileExtension(fileExtension);
+            
+            // Try to find the plug-in.
+            _writerFiles.TryGetValue(extension, out result);
+
+            return result;
         }
 
         /// <summary>
-        /// Function to determine if a certain type of content can be opened by a plug-in.
+        /// Function to create a new file.
         /// </summary>
-        /// <param name="fileName">Filename of the content.</param>
-        /// <returns>TRUE if the content can be opened, FALSE if not.</returns>
-        public static bool CanOpenContent(string fileName)
+        public static void New()
         {
-            if (string.IsNullOrWhiteSpace(fileName))
+            // Initialize the scratch area.
+            ResetFile();
+
+            Filename = "Untitled";
+            FilePath = string.Empty;
+
+            Program.Settings.LastEditorFile = string.Empty;
+
+            FileChanged = false;
+        }
+
+        /// <summary>
+        /// Function to save the editor file.
+        /// </summary>
+        /// <param name="path">Path to the new file.</param>
+        /// <param name="plugIn">The plug-in used to save the file.</param>
+        public static void Save(string path, FileWriterPlugIn plugIn)
+        {
+            if (path == null)
             {
-                return false;
+                throw new ArgumentNullException("path");
             }
 
-            string extension = Path.GetExtension(fileName);
+            if (string.IsNullOrWhiteSpace(path))
+            {
+                throw new ArgumentException(Resources.GOREDIT_PARAMETER_MUST_NOT_BE_EMPTY, "path");
+            }
 
-            return !string.IsNullOrWhiteSpace(extension) && _contentFiles.ContainsKey(new GorgonFileExtension(extension, null));
+            // We don't have a writer plug-in, at this point, that's not good.
+            if (plugIn == null)
+            {
+                throw new IOException(string.Format(Resources.GOREDIT_NO_WRITER_PLUGIN, path));
+            }
+
+            // Write the meta data file to the file system.
+            XDocument metaData = GetMetaData();
+            using (var metaDataStream = ScratchArea.ScratchFiles.OpenStream(MetaDataFilePath, true))
+            {
+                metaData.Save(metaDataStream);
+            }
+
+            // Write the file.
+            if (!plugIn.Save(path))
+            {
+                return;
+            }
+
+            Filename = Path.GetFileName(path);
+            FilePath = path;
+            Program.Settings.LastEditorFile = path;
+
+            // Remove all changed items.
+            FileChanged = false;
+        }
+
+        /// <summary>
+        /// Function to open the editor file.
+        /// </summary>
+        /// <param name="path">Path to the editor file.</param>
+        public static void Open(string path)
+        {
+            var packFileSystem = new GorgonFileSystem();
+
+            FileChanged = false;
+
+            // Add the new file system as a mount point.
+            packFileSystem.Providers.LoadAllProviders();
+
+            if (!packFileSystem.Providers.Any(item => item.CanReadFile(path)))
+            {
+                throw new FileLoadException(string.Format(Resources.GOREDIT_NO_PROVIDERS_TO_READ_FILE,
+                                                          Path.GetFileName(path)));
+            }
+
+            packFileSystem.Mount(path);
+
+            try
+            {
+                // Remove our previous scratch data.
+                ResetFile();
+
+                // At this point we should have a clean scratch area, so all files will exist in the packed file.
+                // Unpack the file structure so we can work with it.
+                var directories = packFileSystem.FindDirectories("*", true);
+                var files = packFileSystem.FindFiles("*", true);
+
+                // Create our directories.
+                foreach (var directory in directories)
+                {
+                    ScratchArea.ScratchFiles.CreateDirectory(directory.FullPath);
+                }
+
+                // Copy our files.
+                foreach (var file in files)
+                {
+                    using (var inputStream = packFileSystem.OpenStream(file, false))
+                    {
+                        using (var outputStream = ScratchArea.ScratchFiles.OpenStream(file.FullPath, true))
+                        {
+                            inputStream.CopyTo(outputStream);
+                        }
+                    }
+                }
+                
+                FilePath = string.Empty;
+                Filename = Path.GetFileName(path);
+                Program.Settings.LastEditorFile = path;
+
+                // If we can't write the file, then leave the editor file path as blank.
+                // If the file path is blank, then the Save As function will be triggered if we attempt to save so we 
+                // can save it in a format that we DO understand.  This is of course assuming we have any plug-ins loaded
+                // that will allow us to save.
+                if (GetWriterPlugIn(path) == null)
+                {
+                    FilePath = path;
+                }
+            }
+            catch
+            {
+                // We have a problem, reset whatever changes we've made.
+                ResetFile();
+                throw;
+            }
+            finally
+            {
+                // At this point we don't need this file system any more.  We'll 
+                // be using our scratch system instead.
+                packFileSystem.Clear();
+            }
         }
         #endregion
 
@@ -316,14 +544,19 @@ namespace GorgonLibrary.Editor
         /// </summary>
         static FileManagement()
         {
-            _contentFiles = new Dictionary<GorgonFileExtension, ContentPlugIn>(new FileExtensionComparer());
             _readerFiles = new Dictionary<GorgonFileExtension, GorgonFileSystemProvider>(new FileExtensionComparer());
             _writerFiles = new Dictionary<GorgonFileExtension, FileWriterPlugIn>(new FileExtensionComparer());
 
+            // Create default metadata.
+            _metaDataXML = new XDocument(new XDeclaration("1.0", "utf-8", "yes"), _metaDataRootNode);
+
 	        _blockedFiles = new HashSet<string>(new[]
 	                                            {
-		                                            ScratchArea.MetaDataFile
+		                                            MetaDataFile
 	                                            }, new StringOrdinalCaseInsensitiveComparer());
+
+            Filename = "Untitled";
+            FilePath = string.Empty;
         }
         #endregion
     }

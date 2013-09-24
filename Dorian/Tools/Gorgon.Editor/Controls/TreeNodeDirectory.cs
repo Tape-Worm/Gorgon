@@ -137,7 +137,7 @@ namespace GorgonLibrary.Editor
                     return DarkFormsRenderer.MenuHilightForeground;
                 }
 
-                return Program.EditorFileChanged ? Color.FromArgb(94, 126, 255) : Color.White;
+                return FileManagement.FileChanged ? Color.FromArgb(94, 126, 255) : Color.White;
             }
             set
             {                
@@ -163,7 +163,7 @@ namespace GorgonLibrary.Editor
 		{
 			get
 			{
-				return Program.EditorFile;
+				return FileManagement.Filename;
 			}
 			set
 			{

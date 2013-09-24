@@ -194,7 +194,7 @@ namespace GorgonLibrary.Editor
                 }
 
                 _splash.UpdateVersion(Resources.GOREDIT_SPLASH_LOAD_PREV_FILE);
-                Program.OpenEditorFile(Program.Settings.LastEditorFile);
+                FileManagement.Open(Program.Settings.LastEditorFile);
             }
             catch (Exception ex)
             {
@@ -238,6 +238,9 @@ namespace GorgonLibrary.Editor
                 InitializeGraphics();
                 InitializePlugIns();
                 InitializeScratchArea();
+
+                FileManagement.InitializeFileTypes();
+                ContentManagement.InitializeContentFileTypes();
 
                 // Load the last opened file.
                 if ((Program.Settings.AutoLoadLastFile) && (!string.IsNullOrWhiteSpace(Program.Settings.LastEditorFile)))

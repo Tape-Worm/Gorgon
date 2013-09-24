@@ -24,10 +24,11 @@
 // 
 #endregion
 
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using GorgonLibrary.Diagnostics;
+using System.Net;
 using GorgonLibrary.IO.Zip.Properties;
 using ICSharpCode.SharpZipLib.Zip;
 
@@ -132,7 +133,15 @@ namespace GorgonLibrary.IO.Zip
 		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="physicalPath"/> parameter is an empty string.</exception>
 		public override bool CanReadFile(string physicalPath)
 		{
-			GorgonDebug.AssertParamString(physicalPath, "physicalPath");
+		    if (physicalPath == null)
+		    {
+		        throw new ArgumentNullException("physicalPath");
+		    }
+
+		    if (string.IsNullOrWhiteSpace(physicalPath))
+		    {
+		        throw new ArgumentException(Resources.GORFS_PARAMETER_MUST_NOT_BE_EMPTY, "physicalPath");
+		    }
 
 			var headerBytes = new byte[4];
 

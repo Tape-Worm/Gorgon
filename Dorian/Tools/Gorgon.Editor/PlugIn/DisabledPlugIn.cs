@@ -55,8 +55,7 @@ namespace GorgonLibrary.Editor
 		/// <returns>TRUE if equal, FALSE if not.</returns>
 		public static bool Equals(ref DisabledPlugIn left, ref DisabledPlugIn right)
 		{
-			return (left.PlugIn == right.PlugIn) ||
-			       (string.Equals(left.PlugIn.Name, right.PlugIn.Name, StringComparison.OrdinalIgnoreCase)
+			return (string.Equals(left.PlugIn.Name, right.PlugIn.Name, StringComparison.OrdinalIgnoreCase)
 				   && string.Equals(left.PlugIn.PlugInPath, right.PlugIn.PlugInPath, StringComparison.OrdinalIgnoreCase));
 		}
 
@@ -106,7 +105,7 @@ namespace GorgonLibrary.Editor
 		/// </returns>
 		public override int GetHashCode()
 		{
-			return 281.GenerateHash(PlugIn.Name).GenerateHash(PlugIn.Description);
+			return 281.GenerateHash(PlugIn.Name).GenerateHash(PlugIn.PlugInPath);
 		}
 		#endregion
 
@@ -119,6 +118,10 @@ namespace GorgonLibrary.Editor
 		public DisabledPlugIn(GorgonPlugIn plugIn, string reason)
 		{
 			PlugIn = plugIn;
+		    if (reason == null)
+		    {
+		        reason = string.Empty;
+		    }
 			Reason = reason;
 		}
 		#endregion

@@ -120,6 +120,9 @@
   <data name="GORFS_BOS" xml:space="preserve">
     <value>Cannot read beyond the beginning of the stream.</value>
   </data>
+  <data name="GORFS_DESC" xml:space="preserve">
+    <value>A provider to mount a zip file as a file system.</value>
+  </data>
   <data name="GORFS_EOS" xml:space="preserve">
     <value>Cannot read beyond the end of the stream.</value>
   </data>
@@ -128,5 +131,11 @@
   </data>
   <data name="GORFS_FILE_NOT_FOUND" xml:space="preserve">
     <value>Cannot find the file '{0}'entry in the zip file.</value>
+  </data>
+  <data name="GORFS_PARAMETER_MUST_NOT_BE_EMPTY" xml:space="preserve">
+    <value>The parameter must not be empty.</value>
+  </data>
+  <data name="GORFS_PLUGIN_DESC" xml:space="preserve">
+    <value>Zip compressed file.</value>
   </data>
 </root>
