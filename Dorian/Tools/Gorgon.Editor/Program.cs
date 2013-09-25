@@ -44,10 +44,6 @@ namespace GorgonLibrary.Editor
 	/// </summary>
 	static class Program
     {
-        #region Variables.
-        private static FileWriterPlugIn _writerPlugIn;
-        #endregion
-
         #region Properties.
 		/// <summary>
 		/// Property to return the logging interface for the application.
@@ -84,15 +80,6 @@ namespace GorgonLibrary.Editor
 			get;
 			set;
 		}
-
-		/// <summary>
-		/// Property to return the 2D renderer interface.
-		/// </summary>
-		public static Gorgon2D Renderer2D
-		{
-			get;
-			private set;
-		}
 		#endregion
 
 		#region Constructor/Destructor.
@@ -119,22 +106,22 @@ namespace GorgonLibrary.Editor
 				Settings.Load();
 
 				Gorgon.PlugIns.AssemblyResolver = (appDomain, e) =>
-					{
-						var assemblies = appDomain.GetAssemblies();
+				                                  {
+					                                  var assemblies = appDomain.GetAssemblies();
 
-						// ReSharper disable once LoopCanBeConvertedToQuery
-						// ReSharper disable once ForCanBeConvertedToForeach
-						for (int i = 0; i < assemblies.Length; i++)
-						{
-							var assembly = assemblies[i];
+					                                  // ReSharper disable once LoopCanBeConvertedToQuery
+					                                  // ReSharper disable once ForCanBeConvertedToForeach
+					                                  for (int i = 0; i < assemblies.Length; i++)
+					                                  {
+						                                  var assembly = assemblies[i];
 
-							if (assembly.FullName == e.Name)
-							{
-								return assembly;
-							}
-						}
-						return null;
-					};
+						                                  if (assembly.FullName == e.Name)
+						                                  {
+							                                  return assembly;
+						                                  }
+					                                  }
+					                                  return null;
+				                                  };
 
 				Gorgon.Run(new AppContext());
 			}

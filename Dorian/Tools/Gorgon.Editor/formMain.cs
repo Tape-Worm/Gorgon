@@ -28,7 +28,6 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
-using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -45,7 +44,7 @@ namespace GorgonLibrary.Editor
 	/// <summary>
 	/// Main application object.
 	/// </summary>
-	public partial class formMain
+	partial class formMain
 		: ZuneForm
     {
         #region Variables.
@@ -57,7 +56,7 @@ namespace GorgonLibrary.Editor
 		#endregion
 
 		#region Methods.
-        /// <summary>
+		/// <summary>
         /// Handles the Click event of the itemPreferences control.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
@@ -83,6 +82,87 @@ namespace GorgonLibrary.Editor
                 }
             }        
         }
+
+		/// <summary>
+		/// Function to assign extensions to the file open/save dialogs.
+		/// </summary>
+		/// <param name="dialog">Dialog to update.</param>
+		/// <param name="extensions">Extensions to use as a filter.</param>
+		/// <param name="includeAllFiles">TRUE to include all files in the filter, FALSE to exclude.</param>
+		/// <param name="allSupportedDesc">The description to apply to the all supported files line.  Setting this value will add a filter for all supported file types.</param>
+		/// <param name="defaultExt">The default extension to append if none is given.</param>
+		/// <param name="defaultFilterExpr">The expression used to determine the default filter.</param>
+		private static void AssignFilter(FileDialog dialog, 
+								IEnumerable<GorgonFileExtension> extensions, 
+								bool includeAllFiles = false, 
+								string allSupportedDesc = null, 
+								GorgonFileExtension? defaultExt = null, 
+								Func<GorgonFileExtension, bool> defaultFilterExpr = null)
+		{
+			var allTypes = new StringBuilder(256);
+			var filter = new StringBuilder(256);
+			int currentIndex = 0;
+
+			dialog.Filter = string.Empty;
+			dialog.DefaultExt = string.Empty;
+			dialog.FilterIndex = 0;
+
+			// Build the extension filter(s).
+			foreach (var extension in extensions)
+			{
+				if (filter.Length > 0)
+				{
+					filter.Append("|");
+				}
+				
+				if ((!string.IsNullOrWhiteSpace(allSupportedDesc)) && (allTypes.Length > 0))
+				{
+					allTypes.Append(";");
+				}
+
+				// If we supply a default filter expression, then apply it to the dialog box.
+				if (defaultFilterExpr != null)
+				{
+					if (defaultFilterExpr(extension))
+					{
+						dialog.FilterIndex = currentIndex + 1;
+						dialog.DefaultExt = extension.Extension;
+					}
+				}
+				else
+				{
+					// Assign the default extension if requested.
+					if ((defaultExt != null) && (defaultExt.Value == extension))
+					{
+						dialog.DefaultExt = defaultExt.Value.Extension;
+					}
+				}
+
+				filter.Append(extension.GetFilter());
+
+				if (!string.IsNullOrWhiteSpace(allSupportedDesc))
+				{
+					allTypes.AppendFormat("*.{0}", extension.Extension);
+				}
+
+				currentIndex++;
+			}
+
+			if (includeAllFiles)
+			{
+				filter.AppendFormat("{0}|*.*", Resources.GOREDIT_ALL_FILES);
+			}
+
+			// If we do have multiple file types, and a description, then update.
+			if ((!string.IsNullOrWhiteSpace(allSupportedDesc)) && (allTypes.ToString().Contains(";")))
+			{
+				dialog.Filter = string.Format("{0}|{1}|{2}", allSupportedDesc, allTypes, filter);
+			}
+			else
+			{
+				dialog.Filter = filter.ToString();
+			}
+		}
 
         /// <summary>
         /// Handles the Click event of the itemImport control.
@@ -141,38 +221,40 @@ namespace GorgonLibrary.Editor
                 dialogImport.InitialDirectory = Program.Settings.ImportLastFilePath;                
 
                 // Perform import.
-                if (dialogImport.ShowDialog(this) == DialogResult.OK)
-                {
-                    TreeNodeDirectory directoryNode;
+	            if (dialogImport.ShowDialog(this) != DialogResult.OK)
+	            {
+		            return;
+	            }
 
-                    // Find our destination directory node.
-                    if (treeFiles.SelectedNode == null)
-                    {
-                        directoryNode = _rootNode;
-                    }
-                    else
-                    {
-                        var parentNode = treeFiles.SelectedNode.Parent as EditorTreeNode;
-                        directoryNode = treeFiles.SelectedNode as TreeNodeDirectory;
+	            TreeNodeDirectory directoryNode;
+
+	            // Find our destination directory node.
+	            if (treeFiles.SelectedNode == null)
+	            {
+		            directoryNode = _rootNode;
+	            }
+	            else
+	            {
+		            var parentNode = treeFiles.SelectedNode.Parent as EditorTreeNode;
+		            directoryNode = treeFiles.SelectedNode as TreeNodeDirectory;
                                                 
-                        while ((directoryNode == null) && (parentNode != null))
-                        {                            
-                            directoryNode = parentNode as TreeNodeDirectory;
-                            parentNode = parentNode.Parent as EditorTreeNode;
-                        }
-                    }
+		            while ((directoryNode == null) && (parentNode != null))
+		            {                            
+			            directoryNode = parentNode as TreeNodeDirectory;
+			            parentNode = parentNode.Parent as EditorTreeNode;
+		            }
+	            }
 
-                    if (directoryNode == null)
-                    {
-                        GorgonDialogs.ErrorBox(this, "Cannot retrieve destination directory.");
-                        return;
-                    }
+	            if (directoryNode == null)
+	            {
+		            GorgonDialogs.ErrorBox(this, "Cannot retrieve destination directory.");
+		            return;
+	            }
                     
-                    Cursor.Current = Cursors.WaitCursor;
-                    AddFilesFromExplorer(directoryNode, dialogImport.FileNames.ToList());
+	            Cursor.Current = Cursors.WaitCursor;
+	            AddFilesFromExplorer(directoryNode, dialogImport.FileNames.ToList());
                     
-                    Program.Settings.ImportLastFilePath = Path.GetDirectoryName(dialogImport.FileNames[0]).FormatDirectory(Path.DirectorySeparatorChar);
-                }
+	            Program.Settings.ImportLastFilePath = Path.GetDirectoryName(dialogImport.FileNames[0]).FormatDirectory(Path.DirectorySeparatorChar);
             }
             catch (Exception ex)
             {
@@ -202,42 +284,22 @@ namespace GorgonLibrary.Editor
 
                 if (contentPlugIn != null)
                 {
-                    var extensions = new StringBuilder(512);
-
-                    // Build our filter.
-                    int index = 1;
-                    dialogExport.Filter = string.Empty;
-
-                    foreach (var extension in contentPlugIn.FileExtensions)
-                    {
-                        if (extensions.Length > 0)
-                        {
-                            extensions.Append("|");
-                        }
-
-                        if (extension.Equals(fileExtension))
-                        {
-                            dialogExport.FilterIndex = index;
-                            dialogExport.DefaultExt = "*." + extension.Extension;
-                        }
-
-                        extensions.Append(extension.GetFilter());
-                        index++;
-                    }
-
-                    dialogExport.Filter = extensions.ToString();
+					AssignFilter(dialogExport, contentPlugIn.FileExtensions, false, null, null, 
+						currentExtension => string.Equals(currentExtension.Extension,fileExtension,StringComparison.OrdinalIgnoreCase));
                 }                
 
-                dialogExport.Title = "Export " + Program.CurrentContent.ContentType;
+                dialogExport.Title = string.Format(Resources.GOREDIT_EXPORT_DLG_TITLE, ContentManagement.Current.ContentType);
                 dialogExport.InitialDirectory = Program.Settings.ExportLastFilePath;
 
                 // Export the content data.
-                if (dialogExport.ShowDialog(this) == System.Windows.Forms.DialogResult.OK)
-                {
-                    Cursor.Current = Cursors.WaitCursor;
-                    Program.CurrentContent.Export(dialogExport.FileName);
-                    Program.Settings.ExportLastFilePath = Path.GetDirectoryName(dialogExport.FileName).FormatDirectory(Path.DirectorySeparatorChar);
-                }
+	            if (dialogExport.ShowDialog(this) != DialogResult.OK)
+	            {
+		            return;
+	            }
+
+	            Cursor.Current = Cursors.WaitCursor;
+	            Program.CurrentContent.Export(dialogExport.FileName);
+	            Program.Settings.ExportLastFilePath = Path.GetDirectoryName(dialogExport.FileName).FormatDirectory(Path.DirectorySeparatorChar);
             }
             catch (Exception ex)
             {
@@ -291,8 +353,7 @@ namespace GorgonLibrary.Editor
 								&& itemSaveAs.Enabled;
 
             // Check to see if the current content can export.
-            itemExport.Enabled = ((Program.CurrentContent != null) && (Program.CurrentContent.CanExport));
-
+	        itemExport.Enabled = false;
             popupItemAdd.Visible = true;
             itemAdd.Enabled = false;
             popupItemAdd.Enabled = false;
@@ -360,6 +421,7 @@ namespace GorgonLibrary.Editor
             {
 				GorgonFileSystemFileEntry file = ((TreeNodeFile)node).File;
 
+	            itemExport.Enabled = true;
                 popupItemAdd.Visible = false;
 				popupItemPaste.Enabled = itemPaste.Enabled = (_cutCopyObject != null);
 				popupItemCut.Enabled = popupItemCopy.Enabled = itemCopy.Enabled = itemCut.Enabled = true;
@@ -599,7 +661,7 @@ namespace GorgonLibrary.Editor
 				}
 
 				// Destroy the previous content.
-                Program.CurrentContent.ContentPropertyChanged -= CurrentContent_ContentPropertyChanged;
+                //Program.CurrentContent.ContentPropertyChanged -= CurrentContent_ContentPropertyChanged;
 				Program.CurrentContent.Dispose();
 				Program.CurrentContent = null;
 
@@ -618,15 +680,10 @@ namespace GorgonLibrary.Editor
 				contentPreLoad = null;
 			}
 
-			control.Dock = DockStyle.Fill;
+			
 
 			// Add to the main interface.
 			Program.CurrentContent = content;
-			control.Parent = splitPanel1;
-
-			// Activate the content.
-            // TODO: This is no longer necessary.
-			//content.Activate();
 
 			// If the current content has a renderer, then activate it.
 			// Otherwise, turn it off to conserve cycles.
@@ -643,7 +700,7 @@ namespace GorgonLibrary.Editor
                 tabDocumentManager.SelectedTab = pageProperties;
     
                 // Set up event.
-                content.ContentPropertyChanged += CurrentContent_ContentPropertyChanged;
+                //content.ContentPropertyChanged += CurrentContent_ContentPropertyChanged;
             }
             else
             {                
@@ -658,25 +715,28 @@ namespace GorgonLibrary.Editor
         /// <summary>
         /// Handles the ContentPropertyChanged event of the CurrentContent control.
         /// </summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="ContentPropertyChangedEventArgs"/> instance containing the event data.</param>
-        private void CurrentContent_ContentPropertyChanged(object sender, ContentPropertyChangedEventArgs e)
+        /// <param name="changedArgs">Information about the property that changed.</param>
+        private void OnContentPropertyChanged(ContentPropertyChangedEventArgs changedArgs)
         {
-            var content = sender as ContentObject;
-
 			try
 			{
 				// If we change the name of an item, we must rename it.
-				switch (e.PropertyName.ToLower())
+				switch (changedArgs.PropertyName.ToLower())
 				{
 					case "name":
 						// Find our node that corresponds to this content.
-						var sourceNode = FindNode(content.File.FullPath) as TreeNodeFile;
+						var sourceNode = FindNode(ContentManagement.Current.File.FullPath) as TreeNodeFile;
+
+						if (sourceNode == null)
+						{
+							return;
+						}
+
 						var destNode = sourceNode.Parent as TreeNodeDirectory;
 
-						if ((sourceNode != null) && (destNode != null))
+						if (destNode != null)
 						{
-							CopyFileNode(sourceNode, destNode, e.Value.ToString(), true);
+							CopyFileNode(sourceNode, destNode, changedArgs.Value.ToString(), true);
 						}
 						break;
 					default:
@@ -985,38 +1045,47 @@ namespace GorgonLibrary.Editor
 		/// <returns>TRUE if canceled, FALSE if not.</returns>
 		private bool ConfirmSave()
 		{
-			if ((FileManagement.FileChanged) && (PlugIns.WriterPlugIns.Count > 0))
+			// Ensure both the content and the file change flags are checked.
+			if (((!FileManagement.FileChanged) &&
+			     ((ContentManagement.Current == null) || (!ContentManagement.Current.HasChanges))) 
+				 || (PlugIns.WriterPlugIns.Count == 0))
 			{
-				var result = GorgonDialogs.ConfirmBox(this, "The editor file '" + FileManagement.Filename + "' has unsaved changes.  Would you like to save these changes?", true, false);
+				return false;
+			}
 
-				if (result == ConfirmationResult.Cancel)
+			var result = GorgonDialogs.ConfirmBox(this,
+			                                      "The editor file '" + FileManagement.Filename +
+			                                      "' has unsaved changes.  Would you like to save these changes?", true, false);
+
+			if (result == ConfirmationResult.Cancel)
+			{
+				return true;
+			}
+
+			if (result != ConfirmationResult.Yes)
+			{
+				return false;
+			}
+
+			// If we have content open and it hasn't been persisted to the file system, 
+			// then persist those changes.
+			if ((Program.CurrentContent != null) && (Program.CurrentContent.HasChanges))
+			{
+				if (!Program.CurrentContent.Close())
 				{
 					return true;
 				}
 
-				if (result == ConfirmationResult.Yes)
-				{
-					// If we have content open and it hasn't been persisted to the file system, 
-					// then persist those changes.
-					if ((Program.CurrentContent != null) && (Program.CurrentContent.HasChanges))
-					{
-						if (!Program.CurrentContent.Close())
-						{
-							return true;
-						}
+			}
 
-					}
-
-					// If we haven't saved the file yet, then prompt us with a file name.
-					if (string.IsNullOrWhiteSpace(FileManagement.FilePath))
-					{
-						itemSaveAs_Click(this, EventArgs.Empty);
-					}
-					else
-					{
-						itemSave_Click(this, EventArgs.Empty);
-					}
-				}
+			// If we haven't saved the file yet, then prompt us with a file name.
+			if (string.IsNullOrWhiteSpace(FileManagement.FilePath))
+			{
+				itemSaveAs_Click(this, EventArgs.Empty);
+			}
+			else
+			{
+				itemSave_Click(this, EventArgs.Empty);
 			}
 
 			return false;
@@ -1038,24 +1107,21 @@ namespace GorgonLibrary.Editor
 					return;
 				}
 
-				// Destroy the current content.
-                Program.CurrentContent.ContentPropertyChanged -= CurrentContent_ContentPropertyChanged;
-				Program.CurrentContent.Dispose();
-				Program.CurrentContent = null;
+				// Unhook from the content functionality.
+				ContentManagement.ContentPropertyChanged = null;
+				ContentManagement.ContentPaneUnloadAction = null;
+				ContentManagement.ContentEnumerateProperties = null;
+				ContentManagement.ContentInitializedAction = null;
+
+				// Unload any current content.
+				ContentManagement.UnloadCurrentContent();
 				
-				if (this.WindowState != FormWindowState.Minimized)
+				if (WindowState != FormWindowState.Minimized)
 				{
-					Program.Settings.FormState = this.WindowState;
+					Program.Settings.FormState = WindowState;
 				}
 
-				if (this.WindowState != FormWindowState.Normal)
-				{
-					Program.Settings.WindowDimensions = this.RestoreBounds;
-				}
-				else
-				{
-					Program.Settings.WindowDimensions = this.DesktopBounds;
-				}
+				Program.Settings.WindowDimensions = WindowState != FormWindowState.Normal ? RestoreBounds : DesktopBounds;
                 
                 // Remember the last file we had open.
                 if (!string.IsNullOrWhiteSpace(FileManagement.FilePath))
@@ -1083,7 +1149,8 @@ namespace GorgonLibrary.Editor
 		/// <returns>TRUE to continue, FALSE to exit.</returns>
 		private static bool Idle()
 		{
-			Program.CurrentContent.Draw();
+			//Program.CurrentContent.Draw();
+
 
 			return true;
 		}
@@ -1405,7 +1472,7 @@ namespace GorgonLibrary.Editor
 
 				if (files)
 				{
-                    Program.CurrentContent.ContentPropertyChanged -= CurrentContent_ContentPropertyChanged;
+                    //Program.CurrentContent.ContentPropertyChanged -= CurrentContent_ContentPropertyChanged;
 					Program.CurrentContent.Dispose();
 					Program.CurrentContent = null;
 
@@ -1438,7 +1505,7 @@ namespace GorgonLibrary.Editor
 
 			if ((Program.CurrentContent != null) && (Program.CurrentContent.File == fileNode.File))
 			{
-                Program.CurrentContent.ContentPropertyChanged -= CurrentContent_ContentPropertyChanged;
+                //Program.CurrentContent.ContentPropertyChanged -= CurrentContent_ContentPropertyChanged;
 				Program.CurrentContent.Dispose();
 				Program.CurrentContent = null;
 
@@ -1513,40 +1580,17 @@ namespace GorgonLibrary.Editor
 		private void itemSaveAs_Click(object sender, EventArgs e)
 		{
 			var plugIns = new List<FileWriterPlugIn>();
-			var extensions = new StringBuilder(512);
-			int counter = 0;
 
 			try
 			{
-				// Build the file extension and description lines for the save dialog.
-				foreach (var extensionValue in FileManagement.GetWriterExtensions())
+				AssignFilter(dialogSaveFile, FileManagement.GetWriterExtensions(), false, null, null, extension =>
 				{
-				    FileWriterPlugIn plugIn = FileManagement.GetWriterPlugIn(extensionValue.Extension);
+					FileWriterPlugIn extPlugIn = FileManagement.GetWriterPlugIn(extension.Extension, true);
 
-				    if (plugIn == null)
-				    {
-				        continue;
-				    }
+					plugIns.Add(extPlugIn);
 
-					if (extensions.Length > 0)
-					{
-						extensions.Append("|");
-					}
-
-					extensions.AppendFormat(extensionValue.GetFilter());
-
-					// If we have a current writer plug-in selected, then pick it as the default extension and index.
-					if ((FileManagement.GetWriterPlugIn() == plugIn) && (!string.IsNullOrWhiteSpace(extensionValue.Extension)))
-					{
-					    dialogSaveFile.DefaultExt = extensionValue.Extension;
-					    dialogSaveFile.FilterIndex = counter + 1;
-					}
-
-					plugIns.Add(plugIn);
-					counter++;
-				}					
-
-				dialogSaveFile.Filter = extensions.ToString();
+					return (FileManagement.GetWriterPlugIn() == extPlugIn);
+				});
 
 				if (!string.IsNullOrWhiteSpace(Program.Settings.LastEditorFile))
 				{
@@ -1554,25 +1598,27 @@ namespace GorgonLibrary.Editor
 				}
 
 				// Open dialog.
-				if (dialogSaveFile.ShowDialog(this) == DialogResult.OK)
-				{					
-					Cursor.Current = Cursors.WaitCursor;
-                    // Save outstanding edits on the content.
-                    // TODO: Move this code into the content interface.
-                    if ((Program.CurrentContent != null) && (Program.CurrentContent.HasChanges))
-                    {
-                        Program.CurrentContent.Persist(Program.CurrentContent.File);
-                    }
-
-                    // Get the plug-in and write out the file.
-				    FileWriterPlugIn plugIn = plugIns[dialogSaveFile.FilterIndex - 1];
-                    FileManagement.SetWriterPlugIn(plugIn);
-					FileManagement.Save(dialogSaveFile.FileName, plugIn);
-
-					treeFiles.Refresh();
-
-                    AddToRecent(dialogSaveFile.FileName);
+				if (dialogSaveFile.ShowDialog(this) != DialogResult.OK)
+				{
+					return;
 				}
+
+				Cursor.Current = Cursors.WaitCursor;
+				// Save outstanding edits on the content.
+				// TODO: Move this code into the content interface.
+				if ((Program.CurrentContent != null) && (Program.CurrentContent.HasChanges))
+				{
+					Program.CurrentContent.Persist(Program.CurrentContent.File);
+				}
+
+				// Get the plug-in and write out the file.
+				FileWriterPlugIn plugIn = plugIns[dialogSaveFile.FilterIndex - 1];
+				FileManagement.SetWriterPlugIn(plugIn);
+				FileManagement.Save(dialogSaveFile.FileName, plugIn);
+
+				treeFiles.Refresh();
+
+				AddToRecent(dialogSaveFile.FileName);
 			}
 			catch (Exception ex)
 			{
@@ -3050,6 +3096,33 @@ namespace GorgonLibrary.Editor
 		public formMain()
 		{
 			InitializeComponent();
+
+			// Set up linkage to the content management interface.
+			ContentManagement.ContentPaneUnloadAction = () => treeFiles.Refresh();
+			ContentManagement.ContentEnumerateProperties = hasProperties =>
+			{
+				if (hasProperties)
+				{
+					pageProperties.Enabled = true;
+					propertyItem.SelectedObject = Program.CurrentContent.TypeDescriptor;
+					propertyItem.Refresh();
+					tabDocumentManager.SelectedTab = pageProperties;
+    
+					// Set up event.
+					ContentManagement.ContentPropertyChanged = OnContentPropertyChanged;
+				}
+				else
+				{                
+					tabDocumentManager.SelectedTab = pageItems;
+					pageProperties.Enabled = false;
+					ContentManagement.ContentPropertyChanged = null;
+				}
+			};
+			ContentManagement.ContentInitializedAction = control =>
+			                                             {
+															control.Dock = DockStyle.Fill;
+															control.Parent = splitPanel1;
+			                                             };
 		}
 		#endregion
 	}

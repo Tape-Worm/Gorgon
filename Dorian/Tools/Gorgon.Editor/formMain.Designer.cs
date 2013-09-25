@@ -393,7 +393,7 @@ namespace GorgonLibrary.Editor
 			this.pageItems.Location = new System.Drawing.Point(1, 1);
 			this.pageItems.Margin = new System.Windows.Forms.Padding(3, 365819531, 3, 365819531);
 			this.pageItems.Name = "pageItems";
-			this.pageItems.Size = new System.Drawing.Size(232, 656);
+			this.pageItems.Size = new System.Drawing.Size(232, 680);
 			this.pageItems.TabIndex = 1;
 			this.pageItems.Text = "Items";
 			// 
@@ -406,12 +406,12 @@ namespace GorgonLibrary.Editor
 			this.containerFiles.ContentPanel.Controls.Add(this.treeFiles);
 			this.containerFiles.ContentPanel.ForeColor = System.Drawing.Color.White;
 			this.containerFiles.ContentPanel.Margin = new System.Windows.Forms.Padding(3, 365819531, 3, 365819531);
-			this.containerFiles.ContentPanel.Size = new System.Drawing.Size(232, 631);
+			this.containerFiles.ContentPanel.Size = new System.Drawing.Size(232, 655);
 			this.containerFiles.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.containerFiles.Location = new System.Drawing.Point(0, 0);
 			this.containerFiles.Margin = new System.Windows.Forms.Padding(3, 365819531, 3, 365819531);
 			this.containerFiles.Name = "containerFiles";
-			this.containerFiles.Size = new System.Drawing.Size(232, 656);
+			this.containerFiles.Size = new System.Drawing.Size(232, 680);
 			this.containerFiles.TabIndex = 0;
 			this.containerFiles.Text = "toolStripContainer1";
 			// 
@@ -431,7 +431,7 @@ namespace GorgonLibrary.Editor
 			this.treeFiles.Location = new System.Drawing.Point(0, 0);
 			this.treeFiles.Name = "treeFiles";
 			this.treeFiles.ShowLines = false;
-			this.treeFiles.Size = new System.Drawing.Size(232, 631);
+			this.treeFiles.Size = new System.Drawing.Size(232, 655);
 			this.treeFiles.TabIndex = 0;
 			this.treeFiles.BeforeLabelEdit += new System.Windows.Forms.NodeLabelEditEventHandler(this.treeFiles_BeforeLabelEdit);
 			this.treeFiles.AfterLabelEdit += new System.Windows.Forms.NodeLabelEditEventHandler(this.treeFiles_AfterLabelEdit);
@@ -728,7 +728,6 @@ namespace GorgonLibrary.Editor
 			this.Name = "formMain";
 			this.Padding = new System.Windows.Forms.Padding(4);
 			this.ResizeHandleSize = 4;
-			this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide;
 			this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
 			this.Text = "Gorgon Editor";
 			this.Controls.SetChildIndex(this.panelEditor, 0);
@@ -814,7 +813,7 @@ namespace GorgonLibrary.Editor
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator7;
         private System.Windows.Forms.ToolStripMenuItem itemPreferences;
         private System.Windows.Forms.ToolStripMenuItem menuRecent;
-        private System.Windows.Forms.ToolStripSeparator toolStripSeparator8;
+		private System.Windows.Forms.ToolStripSeparator toolStripSeparator8;
 	}
 }
 

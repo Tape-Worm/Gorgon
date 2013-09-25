@@ -30,6 +30,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 using GorgonLibrary.IO;
 
 namespace GorgonLibrary.Editor
@@ -41,14 +42,86 @@ namespace GorgonLibrary.Editor
     {
         #region Variables.
         private readonly static Dictionary<GorgonFileExtension, ContentPlugIn> _contentFiles;
+	    private static ContentObject _currentContentObject;
         #endregion
 
-        #region Properties.
+		#region Properties.
+		/// <summary>
+		/// Property to set or return the method to call after a content pane is unloaded.
+		/// </summary>
+	    public static Action ContentPaneUnloadAction
+	    {
+		    get;
+		    set;
+	    }
 
+		/// <summary>
+		/// Property to set or return the method to call after the content object is initialized.
+		/// </summary>
+	    public static Action<Control> ContentInitializedAction
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Property to set or return the method to call to enumerate the properties for a content pane.
+		/// </summary>
+		/// <remarks>The parameter of the method indicates whether properties are used by the content or not.</remarks>
+	    public static Action<bool> ContentEnumerateProperties
+	    {
+		    get;
+		    set;
+	    }
+
+		/// <summary>
+		/// Property to set or return the method to call when a property on the content has changed.
+		/// </summary>
+		/// <remarks>This only takes effect if properties are available for public use on the content.</remarks>
+	    public static Action<ContentPropertyChangedEventArgs> ContentPropertyChanged
+	    {
+		    get;
+		    set;
+	    }
+
+		/// <summary>
+		/// Property to return the currently active content.
+		/// </summary>
+	    public static ContentObject Current
+	    {
+		    get;
+		    private set;
+	    }
         #endregion
 
         #region Methods.
-        /// <summary>
+		/// <summary>
+		/// Function called during idle time for rendering.
+		/// </summary>
+		/// <returns>TRUE to continue rendering, FALSE to stop.</returns>
+	    private static bool IdleLoop()
+	    {
+		    if (_currentContentObject != null)
+		    {
+			    _currentContentObject.Draw();
+		    }
+		    return true;
+	    }
+
+		/// <summary>
+		/// Event handler fired when any content property is changed.
+		/// </summary>
+		/// <param name="sender">Sender of the event.</param>
+		/// <param name="e">Event parameters.</param>
+		private static void OnContentChanged(object sender, ContentPropertyChangedEventArgs e)
+		{
+			if (ContentPropertyChanged != null)
+			{
+				ContentPropertyChanged(e);
+			}
+		}
+
+		/// <summary>
         /// Function to retrieve the list of available content extensions.
         /// </summary>
         /// <returns>A list of content file name extensions.</returns>
@@ -91,6 +164,106 @@ namespace GorgonLibrary.Editor
 
             return !string.IsNullOrWhiteSpace(fileName) && _contentFiles.ContainsKey(new GorgonFileExtension(fileName, null));
         }
+
+		/// <summary>
+		/// Function to unload any current content.
+		/// </summary>
+	    public static void UnloadCurrentContent()
+	    {
+			if (_currentContentObject == null)
+			{
+				return;
+			}
+
+			// Turn off the public facing content object.
+			Current = null;
+
+			// Turn off any idle time activity during the load.
+			Gorgon.ApplicationIdleLoopMethod = null;
+
+			// Close the content object.  This should preserve any changes.
+			_currentContentObject.Close();
+
+			_currentContentObject.ContentPropertyChanged -= OnContentChanged;
+			_currentContentObject.Dispose();
+			_currentContentObject = null;
+
+			if (ContentPaneUnloadAction != null)
+			{
+				ContentPaneUnloadAction();
+			}
+	    }
+
+		/// <summary>
+		/// Function to load a content object into the content pane in the interface.
+		/// </summary>
+		/// <param name="contentObject">Content object to load into the interface.</param>
+	    public static void LoadContentPane(ContentObject contentObject)
+	    {
+			if (contentObject == null)
+			{
+				throw new ArgumentNullException("contentObject");
+			}
+			
+			// Unload any content that's currently active.
+			UnloadCurrentContent();
+
+			// Initialize content resources.
+			Control contentWindow = contentObject.InitializeContent();
+
+			_currentContentObject = contentObject;
+
+			// Do not count the default content pane as being "content".
+			// This "Current" content being null will be our indicator that no content is currently active.
+			if (!(contentObject is DefaultContent))
+			{
+				Current = contentObject;
+			}
+
+			if (contentWindow == null)
+			{
+				return;
+			}
+
+			if (ContentInitializedAction != null)
+			{
+				contentWindow.Dock = DockStyle.Fill;
+				ContentInitializedAction(contentWindow);
+			}
+
+			if (ContentEnumerateProperties != null)
+			{
+				// Enumerate properties for the content.
+				ContentEnumerateProperties(contentObject.HasProperties);
+
+				contentObject.ContentPropertyChanged += OnContentChanged;
+			}
+
+			// Force focus to the content window.
+			if (contentWindow.Parent != null)
+			{
+				contentWindow.Focus();
+			}
+
+			if (contentObject.HasRenderer)
+			{
+				Gorgon.ApplicationIdleLoopMethod = IdleLoop;
+			}
+	    }
+		
+		/// <summary>
+		/// Function load the default content pane into the interface.
+		/// </summary>
+	    public static void LoadDefaultContentPane()
+	    {
+			// We already have the default pane loaded.
+		    if ((Current == null) && (_currentContentObject != null))
+		    {
+			    return;
+		    }
+
+		    LoadContentPane(new DefaultContent());
+	    }
 
         /// <summary>
         /// Function used to initialize the file types for the content types.
