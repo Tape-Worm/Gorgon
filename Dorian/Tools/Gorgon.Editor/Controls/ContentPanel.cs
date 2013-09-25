@@ -44,6 +44,38 @@ namespace GorgonLibrary.Editor
 
 		#region Properties.
 		/// <summary>
+		/// Property to return the background color for the panel.
+		/// </summary>
+		[Browsable(false), EditorBrowsable(EditorBrowsableState.Never)]
+		public override Color BackColor
+		{
+			get
+			{
+				return DarkFormsRenderer.DarkBackground;
+			}
+			set
+			{
+				// Do nothing.
+			}
+		}
+
+		/// <summary>
+		/// Property to return the foreground color for the panel.
+		/// </summary>
+		[Browsable(false), EditorBrowsable(EditorBrowsableState.Never)]
+		public override Color ForeColor
+		{
+			get
+			{
+				return DarkFormsRenderer.ForeColor;
+			}
+			set
+			{
+				// Do nothing.
+			}
+		}
+
+		/// <summary>
 		/// Property to return the display panel.
 		/// </summary>
         [Browsable(false)]
@@ -129,7 +161,7 @@ namespace GorgonLibrary.Editor
 
             if (_contentChanged)
             {
-                labelCaption.Text += "*";
+                labelCaption.Text += @"*";
             }
         }
 
@@ -178,7 +210,7 @@ namespace GorgonLibrary.Editor
             }
             catch (Exception ex)
             {
-                GorgonLibrary.UI.GorgonDialogs.ErrorBox(ParentForm, ex);
+                UI.GorgonDialogs.ErrorBox(ParentForm, ex);
             }
             finally
             {
@@ -201,14 +233,16 @@ namespace GorgonLibrary.Editor
 		/// </summary>
 		protected virtual void OnCloseClicked()
 		{
-			if (Content != null)
+			if (Content == null)
 			{
-				var form = FindForm() as formMain;
+				return;
+			}
 
-				if (form != null)
-				{
-					form.LoadContentPane<DefaultContent>();
-				}
+			var form = FindForm() as formMain;
+
+			if (form != null)
+			{
+				form.LoadContentPane<DefaultContent>();
 			}
 		}
 
@@ -221,22 +255,15 @@ namespace GorgonLibrary.Editor
 		{
 		}
 
-        /// <summary>
+		/// <summary>
         /// Function called when the content has changed.
         /// </summary>
         public virtual void OnContentChanged()
-        {
-            if (Content != null)
-            {
-                _contentChanged = Content.HasChanges;
-            }
-            else
-            {
-                _contentChanged = false;
-            }
+		{
+			_contentChanged = Content != null && Content.HasChanges;
 
-            UpdateCaption();
-        }
+			UpdateCaption();
+		}
 		#endregion
 
 		#region Constructor/Destructor.
@@ -246,6 +273,16 @@ namespace GorgonLibrary.Editor
 		public ContentPanel()
 		{
 			InitializeComponent();			
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="ContentPanel"/> class.
+		/// </summary>
+		/// <param name="content">The content.</param>
+		public ContentPanel(ContentObject content)
+			: this()
+		{
+			Content = content;
 		}
 		#endregion
 	}

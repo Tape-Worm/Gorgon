@@ -33,16 +33,14 @@ namespace GorgonLibrary.Editor
 	/// <summary>
 	/// Default content.
 	/// </summary>
-	partial class DefaultContentPanel : UserControl
+	partial class DefaultContentPanel 
+		: ContentPanel
 	{
-		/// <summary>
-		/// Initializes a new instance of the <see cref="DefaultContentPanel"/> class.
-		/// </summary>
-		public DefaultContentPanel()
-		{
-			InitializeComponent();
-		}
+		#region Variables.
+		private readonly DefaultContent _content;			// Content for the panel.
+		#endregion
 
+		#region Methods.
 		/// <summary>
 		/// Handles the MouseDown event of the panelOptions control.
 		/// </summary>
@@ -99,7 +97,7 @@ namespace GorgonLibrary.Editor
 			numericPulseRate.Visible = false;
 			labelClosePanel.Visible = false;
 			panelOptions.Height = 4;
-			panelOptions.Top = this.ClientSize.Height - 4;
+			panelOptions.Top = ClientSize.Height - 4;
 		}
 
 		/// <summary>
@@ -109,14 +107,7 @@ namespace GorgonLibrary.Editor
 		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
 		private void panelOptions_MouseEnter(object sender, EventArgs e)
 		{
-			if (panelOptions.Height != 33)
-			{
-				panelOptions.BackColor = Color.SteelBlue;
-			}
-			else
-			{
-				panelOptions.BackColor = DarkFormsRenderer.DisabledColor;
-			}
+			panelOptions.BackColor = panelOptions.Height != 33 ? Color.SteelBlue : DarkFormsRenderer.DisabledColor;
 		}
 
 		/// <summary>
@@ -127,6 +118,64 @@ namespace GorgonLibrary.Editor
 		private void panelOptions_MouseLeave(object sender, EventArgs e)
 		{
 			panelOptions.BackColor = DarkFormsRenderer.DisabledColor;
-		}		
+		}
+
+		/// <summary>
+		/// Handles the Click event of the checkPulse control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+		private void checkPulse_Click(object sender, EventArgs e)
+		{
+			Program.Settings.StartPageAnimationPulseRate =
+				_content.AlphaDelta = checkPulse.Checked ? (float)numericPulseRate.Value : 0;
+			numericPulseRate.Enabled = checkPulse.Checked;
+		}
+
+		/// <summary>
+		/// Handles the ValueChanged event of the numericPulseRate control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+		private void numericPulseRate_ValueChanged(object sender, EventArgs e)
+		{
+			Program.Settings.StartPageAnimationPulseRate = _content.AlphaDelta = (float)numericPulseRate.Value;
+		}
+
+		/// <summary>
+		/// Raises the <see cref="E:System.Windows.Forms.UserControl.Load" /> event.
+		/// </summary>
+		/// <param name="e">An <see cref="T:System.EventArgs" /> that contains the event data.</param>
+		protected override void OnLoad(EventArgs e)
+		{
+			base.OnLoad(e);
+
+			checkPulse.Checked = _content.AlphaDelta > 0.0f;
+			numericPulseRate.Value = (decimal)_content.AlphaDelta;
+		}
+		#endregion
+
+		#region Constructor.
+		/// <summary>
+		/// Initializes a new instance of the <see cref="DefaultContentPanel"/> class.
+		/// </summary>
+		public DefaultContentPanel()
+		{
+			InitializeComponent();
+		}
+
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="DefaultContentPanel"/> class.
+		/// </summary>
+		/// <param name="content">The content accessed by the panel.</param>
+		public DefaultContentPanel(DefaultContent content)
+			: base(content)
+		{
+			InitializeComponent();
+
+			_content = content;
+		}
+		#endregion
 	}
 }

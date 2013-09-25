@@ -92,14 +92,19 @@ namespace GorgonLibrary.Editor
             {
                 Program.LogFile.Open();
             }
-            catch (Exception ex)
-            {
 #if DEBUG
+			catch (Exception ex)
+            {
                 // If we can't open the log file in debug mode, let us know about it.
                 GorgonDialogs.ErrorBox(null, ex);
+			}
+#else
+			catch
+			{
+				// Purposely left empty.  We don't care about the log file in release mode.
+			}
 #endif
-            }
-	    }
+		}
 
         /// <summary>
         /// Function to initialize the graphics interface.
@@ -249,7 +254,8 @@ namespace GorgonLibrary.Editor
                 }
 
                 // Set up the default pane.
-				((formMain)MainForm).LoadContentPane<DefaultContent>();
+				_splash.UpdateVersion(Resources.GOREDIT_SPLASH_LOAD_DEFAULT_CONTENT);
+				ContentManagement.LoadDefaultContentPane();
                 
                 // Keep showing the splash screen.
 				while ((GorgonTiming.SecondsSinceStart - startTime) < 3)

@@ -24,7 +24,6 @@
 // 
 #endregion
 
-using System;
 using System.Drawing;
 using System.Windows.Forms;
 using GorgonLibrary.Diagnostics;
@@ -50,8 +49,8 @@ namespace GorgonLibrary.Editor
 		private RectangleF[] _blurStates;					// Images for blur states.
 		private RectangleF _sourceState = RectangleF.Empty;	// Source image state.
 		private RectangleF _destState = RectangleF.Empty;	// Destination image state.
-		private float _alphaDelta;							// Alpha delta value.
 		private float _alpha;								// Alpha value.
+		private float _delta;								// Alpha delta.
 		#endregion
 
 		#region Properties.
@@ -65,6 +64,27 @@ namespace GorgonLibrary.Editor
                 return true;
             }
         }
+
+		/// <summary>
+		/// Property to set or return the alpha delta time value.
+		/// </summary>
+		public float AlphaDelta
+		{
+			get
+			{
+				return _delta;
+			}
+			set
+			{
+				// If the current delta is less than 0, then make the value less than 0.
+				if (_delta < 0)
+				{
+					value = -value;
+				}
+
+				_delta = value;
+			}
+		}
 
         /// <summary>
         /// Property to return whether this content has properties that can be manipulated in the properties tab.
@@ -112,35 +132,6 @@ namespace GorgonLibrary.Editor
 		#endregion
 
 		#region Methods.
-		/// <summary>
-		/// Handles the Click event of the checkPulse control.
-		/// </summary>
-		/// <param name="sender">The source of the event.</param>
-		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-		private void checkPulse_Click(object sender, EventArgs e)
-		{
-			Program.Settings.AnimateStartPage = _container.checkPulse.Checked;
-			_container.numericPulseRate.Enabled = _container.checkPulse.Checked;
-		}
-
-		/// <summary>
-		/// Handles the ValueChanged event of the numericPulseRate control.
-		/// </summary>
-		/// <param name="sender">The source of the event.</param>
-		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-		private void numericPulseRate_ValueChanged(object sender, EventArgs e)
-		{
-			Program.Settings.StartPageAnimationPulseRate = (float)_container.numericPulseRate.Value;
-			if (_alphaDelta < 0)
-			{
-				_alphaDelta = -Program.Settings.StartPageAnimationPulseRate;
-			}
-			else
-			{
-				_alphaDelta = Program.Settings.StartPageAnimationPulseRate;
-			}			
-		}
-
         /// <summary>
         /// Function to persist the content to the file system.
         /// </summary>
@@ -180,9 +171,13 @@ namespace GorgonLibrary.Editor
 			logoSize.Height = 256;
 
 			if (screenSize.Width < logoSize.Width)
+			{
 				logoBounds.Width = logoSize.Width * screenSize.Width / logoSize.Width;
+			}
 			else
+			{
 				logoBounds.Width = logoSize.Width;
+			}
 
 			float aspect = logoSize.Height / logoSize.Width;
 			logoBounds.Height = logoBounds.Width * aspect;
@@ -192,7 +187,7 @@ namespace GorgonLibrary.Editor
 			_2D.Drawing.SmoothingMode = SmoothingMode.Smooth;
 			_2D.Drawing.BlendingMode = BlendingMode.Modulate;
 
-			if ((_container.checkPulse.Checked) && (!_alphaDelta.EqualsEpsilon(0)))
+			if (!_delta.EqualsEpsilon(0.0f))
 			{
 				_2D.Drawing.FilledRectangle(logoBounds, new GorgonColor(1, 1, 1, 1.0f - _alpha), _logo, _sourceState);
 				_2D.Drawing.FilledRectangle(logoBounds, new GorgonColor(1, 1, 1, _alpha), _logo, _destState);
@@ -200,7 +195,7 @@ namespace GorgonLibrary.Editor
 				_2D.Drawing.BlendingMode = BlendingMode.Additive;
 				_2D.Drawing.FilledRectangle(logoBounds, new GorgonColor(1, 1, 1, 0.25f), _logo, _blurStates[2]);
 
-				_alpha += _alphaDelta * GorgonTiming.ScaledDelta;
+				_alpha += _delta * GorgonTiming.ScaledDelta;
 
 				if (_alpha > 1.0f)
 				{
@@ -213,7 +208,7 @@ namespace GorgonLibrary.Editor
 					else
 					{
 						_alpha = 1.0f;
-						_alphaDelta = -_alphaDelta;
+						_delta = -_delta;
 					}
 				}
 				else if (_alpha < 0.0f)
@@ -227,7 +222,7 @@ namespace GorgonLibrary.Editor
 					else
 					{
 						_alpha = 0.0f;
-						_alphaDelta = -_alphaDelta;
+						_delta = -_delta;
 					}
 				}
 			}
@@ -247,25 +242,11 @@ namespace GorgonLibrary.Editor
 		/// <returns>A control to embed into the container interface.</returns>
         protected override Control OnInitialize()
 		{
-			_alphaDelta = Program.Settings.StartPageAnimationPulseRate;
-			
-			_container = new DefaultContentPanel
-			             {
-				             BackColor = DarkFormsRenderer.DarkBackground,
-				             checkPulse =
-				             {
-					             Checked = Program.Settings.AnimateStartPage
-				             },
-				             numericPulseRate =
-				             {
-					             Value = (decimal)_alphaDelta.Abs()
-				             },
-			             };
+			AlphaDelta = Program.Settings.StartPageAnimationPulseRate.Abs();
 
-			_container.checkPulse.Click += checkPulse_Click;
-			_container.numericPulseRate.ValueChanged += numericPulseRate_ValueChanged;
+			_container = new DefaultContentPanel(this);
 
-			_2D = Program.Graphics.Output.Create2DRenderer(_container.panelDisplay);
+			_2D = Program.Graphics.Output.Create2DRenderer(_container.PanelDisplay);
 
 			// Create the logo for display.
 			_logo = Program.Graphics.Textures.FromMemory<GorgonTexture2D>("Logo", Properties.Resources.Gorgon_2_x_Logo_Blurry, new GorgonCodecDDS());

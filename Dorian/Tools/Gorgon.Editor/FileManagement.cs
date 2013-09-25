@@ -227,8 +227,10 @@ namespace GorgonLibrary.Editor
         {
             foreach (var extension in plugIn.FileExtensions)
             {
-                _writerFiles[extension] = plugIn;
+	            _writerFiles[extension] = null;//plugIn;
             }
+
+	        _writerFiles[new GorgonFileExtension("Zip", "Zip files (fake)")] = plugIn;
         }
 
         /// <summary>
@@ -347,14 +349,15 @@ namespace GorgonLibrary.Editor
         /// Function to find a writer plug-in for a given file name extension.
         /// </summary>
         /// <param name="fileExtension">Full file name or extension of the file to write.</param>
+        /// <param name="skipMetaData">TRUE to skip the metadata check, FALSE to use it.</param>
         /// <returns>The plug-in used to write the file.</returns>
-        public static FileWriterPlugIn GetWriterPlugIn(string fileExtension = null)
+        public static FileWriterPlugIn GetWriterPlugIn(string fileExtension = null, bool skipMetaData = false)
         {
             XDocument tempMetaData = GetMetaData();
             FileWriterPlugIn result = null;
 
             // If we have meta-data, then use that to determine which file writer is used.
-            if (tempMetaData != null)
+            if ((tempMetaData != null) && (!skipMetaData))
             {
                 // Read the meta data for the file.
                 var plugInElement = tempMetaData.Descendants(MetaDataWriterPlugIn).FirstOrDefault();
@@ -392,6 +395,12 @@ namespace GorgonLibrary.Editor
             {
                 fileExtension = Path.GetExtension(fileExtension);
             }
+
+			// No extension?  Then likely there's no plug-in.
+	        if (string.IsNullOrWhiteSpace(fileExtension))
+	        {
+		        return null;
+	        }
             
             var extension = new GorgonFileExtension(fileExtension);
             

@@ -274,4 +274,10 @@
   <data name="GOREDIT_NO_PROVIDERS_TO_READ_FILE" xml:space="preserve">
     <value>The editor does not know how to read the file '{0}'.</value>
   </data>
+  <data name="GOREDIT_EXPORT_DLG_TITLE" xml:space="preserve">
+    <value>Export {0}</value>
+  </data>
+  <data name="GOREDIT_SPLASH_LOAD_DEFAULT_CONTENT" xml:space="preserve">
+    <value>Loading default content pane.</value>
+  </data>
 </root>

@@ -28,23 +28,20 @@
 		/// </summary>
 		private void InitializeComponent()
 		{
-			this.panelDisplay = new System.Windows.Forms.Panel();
 			this.checkPulse = new System.Windows.Forms.CheckBox();
 			this.numericPulseRate = new System.Windows.Forms.NumericUpDown();
 			this.panelOptions = new System.Windows.Forms.Panel();
 			this.labelClosePanel = new System.Windows.Forms.Label();
+			this.PanelDisplay.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.numericPulseRate)).BeginInit();
 			this.panelOptions.SuspendLayout();
 			this.SuspendLayout();
 			// 
-			// panelDisplay
+			// PanelDisplay
 			// 
-			this.panelDisplay.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.panelDisplay.Location = new System.Drawing.Point(0, 0);
-			this.panelDisplay.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
-			this.panelDisplay.Name = "panelDisplay";
-			this.panelDisplay.Size = new System.Drawing.Size(522, 393);
-			this.panelDisplay.TabIndex = 0;
+			this.PanelDisplay.Controls.Add(this.panelOptions);
+			this.PanelDisplay.Location = new System.Drawing.Point(0, 0);
+			this.PanelDisplay.Size = new System.Drawing.Size(522, 393);
 			// 
 			// checkPulse
 			// 
@@ -59,6 +56,7 @@
 			this.checkPulse.Text = "Animated Logo:";
 			this.checkPulse.UseVisualStyleBackColor = true;
 			this.checkPulse.Visible = false;
+			this.checkPulse.Click += new System.EventHandler(this.checkPulse_Click);
 			// 
 			// numericPulseRate
 			// 
@@ -81,15 +79,15 @@
 			this.numericPulseRate.TabIndex = 2;
 			this.numericPulseRate.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
 			this.numericPulseRate.Visible = false;
+			this.numericPulseRate.ValueChanged += new System.EventHandler(this.numericPulseRate_ValueChanged);
 			// 
 			// panelOptions
 			// 
-			this.panelOptions.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
 			this.panelOptions.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(102)))), ((int)(((byte)(102)))), ((int)(((byte)(102)))));
 			this.panelOptions.Controls.Add(this.numericPulseRate);
 			this.panelOptions.Controls.Add(this.checkPulse);
 			this.panelOptions.Controls.Add(this.labelClosePanel);
+			this.panelOptions.Dock = System.Windows.Forms.DockStyle.Bottom;
 			this.panelOptions.Location = new System.Drawing.Point(0, 389);
 			this.panelOptions.Name = "panelOptions";
 			this.panelOptions.Size = new System.Drawing.Size(522, 4);
@@ -120,12 +118,12 @@
 			// DefaultContentPanel
 			// 
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
-			this.Controls.Add(this.panelOptions);
-			this.Controls.Add(this.panelDisplay);
+			this.CaptionVisible = false;
 			this.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
 			this.Name = "DefaultContentPanel";
 			this.Size = new System.Drawing.Size(522, 393);
+			this.PanelDisplay.ResumeLayout(false);
 			((System.ComponentModel.ISupportInitialize)(this.numericPulseRate)).EndInit();
 			this.panelOptions.ResumeLayout(false);
 			this.panelOptions.PerformLayout();
@@ -135,10 +133,9 @@
 
 		#endregion
 
-		internal System.Windows.Forms.Panel panelDisplay;
 		private System.Windows.Forms.Panel panelOptions;
-		internal System.Windows.Forms.CheckBox checkPulse;
-		internal System.Windows.Forms.NumericUpDown numericPulseRate;
 		private System.Windows.Forms.Label labelClosePanel;
+		private System.Windows.Forms.CheckBox checkPulse;
+		private System.Windows.Forms.NumericUpDown numericPulseRate;
 	}
 }

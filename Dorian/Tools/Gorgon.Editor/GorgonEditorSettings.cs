@@ -88,16 +88,6 @@ namespace GorgonLibrary.Editor
 		}
 
 		/// <summary>
-		/// Property to set or return whether to animate the start page for the editor.
-		/// </summary>
-		[ApplicationSetting("StartPageAnimation", true, typeof(bool), "Options")]
-		public bool AnimateStartPage
-		{
-			get;
-			set;
-		}
-
-		/// <summary>
 		/// Property to set or return the rate of animation for the default start page.
 		/// </summary>
 		[ApplicationSetting("StartPageAnimationRate", 0.1f, typeof(float), "Options")]
@@ -263,17 +253,19 @@ namespace GorgonLibrary.Editor
 
 			var dirInfo = new DirectoryInfo(ScratchPath);
 
-			if (dirInfo.Exists)
+			if (!dirInfo.Exists)
 			{
-				try
-				{
-					// Attempt to find the directory and write to it.
-					dirInfo.GetAccessControl();
-				}
-				catch (UnauthorizedAccessException)
-				{
-					ScratchPath = GetBestDrive().Name;
-				}
+				return;
+			}
+
+			try
+			{
+				// Attempt to find the directory and write to it.
+				dirInfo.GetAccessControl();
+			}
+			catch (UnauthorizedAccessException)
+			{
+				ScratchPath = GetBestDrive().Name;
 			}
 		}
 		#endregion
