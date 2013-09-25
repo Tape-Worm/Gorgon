@@ -49,7 +49,11 @@ namespace GorgonLibrary.Editor
 		/// <summary>
 		/// File info gather process.
 		/// </summary>
-		FileInfo = 2
+		FileInfo = 2,
+        /// <summary>
+        /// File exporter process.
+        /// </summary>
+        FileExporter = 3
 	}
 
 	/// <summary>
@@ -93,8 +97,11 @@ namespace GorgonLibrary.Editor
 						                          System.IO.Path.GetFileName(value).Ellipses(35, true));
 						break;
 					case ProcessType.FileImporter:
-						base.Text = Resources.GOREDIT_IMPORT_DLG_TITLE;
+						base.Text = Resources.GOREDIT_PROC_IMPORT_DLG_TITLE;
 						break;
+                    case ProcessType.FileExporter:
+				        base.Text = Resources.GOREDIT_PROC_IMPORT_DLG_TITLE;
+				        break;
 					case ProcessType.FileInfo:
 						base.Text = Resources.GOREDIT_IMPORT_INFO_DLG_TITLE;
 						break;
@@ -113,7 +120,18 @@ namespace GorgonLibrary.Editor
 		#endregion
 
 		#region Methods.
-		/// <summary>
+        /// <summary>
+        /// Handles the Click event of the buttonCancel control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void buttonCancel_Click(object sender, EventArgs e)
+        {
+            buttonCancel.Enabled = false;
+            DialogResult = DialogResult.Cancel;
+        }
+
+        /// <summary>
 		/// Raises the <see cref="E:System.Windows.Forms.Form.Shown" /> event.
 		/// </summary>
 		/// <param name="e">A <see cref="T:System.EventArgs" /> that contains the event data.</param>
@@ -131,7 +149,7 @@ namespace GorgonLibrary.Editor
 			finally
 			{
 				_forceClose = true;
-				DialogResult = System.Windows.Forms.DialogResult.OK;
+				DialogResult = DialogResult.OK;
 			}
 		}
 
@@ -154,25 +172,25 @@ namespace GorgonLibrary.Editor
 		{
 			if (InvokeRequired)
 			{
-				BeginInvoke(new MethodInvoker(() =>
-					{
-						SetProgress(value);
-					}));
+				BeginInvoke(new MethodInvoker(() => SetProgress(value)));
 			}
 			else
 			{
 				// If the window shows up and closes right away, this method may still be called.
 				// And since there's no handle, InvokeRequired won't tell us the truth, so check 
 				// to see if we have a handle as well.
-				if ((IsHandleCreated) && (!IsDisposed))
-				{
-					if ((value < progressMeter.Minimum) || (value > progressMeter.Maximum))
-					{
-						return;
-					}
+			    if ((!IsHandleCreated)
+			        || (IsDisposed))
+			    {
+			        return;
+			    }
 
-					progressMeter.Value = value;
-				}
+			    if ((value < progressMeter.Minimum) || (value > progressMeter.Maximum))
+			    {
+			        return;
+			    }
+
+			    progressMeter.Value = value;
 			}
 		}
 
@@ -184,25 +202,25 @@ namespace GorgonLibrary.Editor
 		{
 			if (InvokeRequired)
 			{
-				BeginInvoke(new MethodInvoker(() =>
-					{
-						UpdateStatusText(text);
-					}));
+				BeginInvoke(new MethodInvoker(() => UpdateStatusText(text)));
 			}
 			else
 			{
 				// If the window shows up and closes right away, this method may still be called.
 				// And since there's no handle, InvokeRequired won't tell us the truth, so check 
 				// to see if we have a handle as well.
-				if ((IsHandleCreated) && (!IsDisposed))
-				{
-					if (string.IsNullOrWhiteSpace(text))
-					{
-						return;
-					}
+			    if ((!IsHandleCreated)
+			        || (IsDisposed))
+			    {
+			        return;
+			    }
 
-					labelStatus.Text = text;
-				}
+			    if (string.IsNullOrWhiteSpace(text))
+			    {
+			        return;
+			    }
+
+			    labelStatus.Text = text;
 			}
 		}
 
@@ -214,10 +232,7 @@ namespace GorgonLibrary.Editor
 		{
 			if (InvokeRequired)
 			{
-				BeginInvoke(new MethodInvoker(() =>
-					{
-						EnableCancel(cancel);
-					}));
+				BeginInvoke(new MethodInvoker(() => EnableCancel(cancel)));
 			}
 			else
 			{
@@ -253,6 +268,7 @@ namespace GorgonLibrary.Editor
 					progressMeter.Style = ProgressBarStyle.Marquee;
 					labelStatus.Text = Resources.GOREDIT_FILE_WRITE_SAVE_LABEL;
 					break;
+                case ProcessType.FileExporter:
 				case ProcessType.FileImporter:
 					progressMeter.Style = ProgressBarStyle.Continuous;
 					labelStatus.Text = string.Empty;
