@@ -108,48 +108,58 @@ namespace GorgonLibrary.Editor
 			dialog.FilterIndex = 0;
 
 			// Build the extension filter(s).
-			foreach (var extension in extensions)
+		    if (extensions != null)
+		    {
+		        foreach (var extension in extensions)
+		        {
+		            if (filter.Length > 0)
+		            {
+		                filter.Append("|");
+		            }
+
+		            if ((!string.IsNullOrWhiteSpace(allSupportedDesc))
+		                && (allTypes.Length > 0))
+		            {
+		                allTypes.Append(";");
+		            }
+
+		            // If we supply a default filter expression, then apply it to the dialog box.
+		            if (defaultFilterExpr != null)
+		            {
+		                if (defaultFilterExpr(extension))
+		                {
+		                    dialog.FilterIndex = currentIndex + 1;
+		                    dialog.DefaultExt = extension.Extension;
+		                }
+		            }
+		            else
+		            {
+		                // Assign the default extension if requested.
+		                if ((defaultExt != null)
+		                    && (defaultExt.Value == extension))
+		                {
+		                    dialog.DefaultExt = defaultExt.Value.Extension;
+		                }
+		            }
+
+		            filter.Append(extension.GetFilter());
+
+		            if (!string.IsNullOrWhiteSpace(allSupportedDesc))
+		            {
+		                allTypes.AppendFormat("*.{0}", extension.Extension);
+		            }
+
+		            currentIndex++;
+		        }
+		    }
+
+		    if (includeAllFiles)
 			{
-				if (filter.Length > 0)
-				{
-					filter.Append("|");
-				}
-				
-				if ((!string.IsNullOrWhiteSpace(allSupportedDesc)) && (allTypes.Length > 0))
-				{
-					allTypes.Append(";");
-				}
+			    if (filter.Length > 0)
+			    {
+			        filter.Append("|");
+			    }
 
-				// If we supply a default filter expression, then apply it to the dialog box.
-				if (defaultFilterExpr != null)
-				{
-					if (defaultFilterExpr(extension))
-					{
-						dialog.FilterIndex = currentIndex + 1;
-						dialog.DefaultExt = extension.Extension;
-					}
-				}
-				else
-				{
-					// Assign the default extension if requested.
-					if ((defaultExt != null) && (defaultExt.Value == extension))
-					{
-						dialog.DefaultExt = defaultExt.Value.Extension;
-					}
-				}
-
-				filter.Append(extension.GetFilter());
-
-				if (!string.IsNullOrWhiteSpace(allSupportedDesc))
-				{
-					allTypes.AppendFormat("*.{0}", extension.Extension);
-				}
-
-				currentIndex++;
-			}
-
-			if (includeAllFiles)
-			{
 				filter.AppendFormat("{0}|*.*", Resources.GOREDIT_ALL_FILES);
 			}
 
@@ -173,50 +183,7 @@ namespace GorgonLibrary.Editor
         {
             try
             {
-				var allExtensions = new StringBuilder(256);
-				var filter = new StringBuilder(1024);
-	            var extensions = ContentManagement.GetContentExtensions();
-	            bool multiExtension = false;
-
-                dialogImport.Filter = string.Empty;
-
-                // Add each extension.
-                foreach (var extension in extensions)
-                {
-                    if (filter.Length > 0)
-                    {
-                        filter.Append("|");
-	                    multiExtension = true;
-                    }
-
-                    if (allExtensions.Length > 0)
-                    {
-                        allExtensions.Append(";");
-                    }
-
-                    filter.Append(extension.GetFilter());
-                    allExtensions.AppendFormat("*.{0}", extension.Extension);
-                }
-
-                if (multiExtension)
-                {
-                    dialogImport.Filter = string.Format("{0}|{1}|{2}", Resources.GOREDIT_ALL_CONTENT, allExtensions, filter);
-                    dialogImport.FilterIndex = 1;
-                }
-                else
-                {
-                    dialogImport.Filter = filter.ToString();
-                    dialogImport.FilterIndex = 2;
-                }
-
-                if (dialogImport.Filter.Length > 0)
-                {
-                    dialogImport.Filter += string.Format("{0}|{1}|*.*", dialogImport.Filter, Resources.GOREDIT_ALL_FILES);
-                }
-                else
-                {
-                    dialogImport.Filter = string.Format("{0}|*.*", Resources.GOREDIT_ALL_FILES);
-                }
+                AssignFilter(dialogImport, ContentManagement.GetContentExtensions(), true, Resources.GOREDIT_ALL_CONTENT);
 
                 dialogImport.InitialDirectory = Program.Settings.ImportLastFilePath;                
 
@@ -268,6 +235,67 @@ namespace GorgonLibrary.Editor
         }
 
         /// <summary>
+        /// Function called when a file export is completed.
+        /// </summary>
+        /// <param name="cancelled">Flag to indicate whether the operation was cancelled or not.</param>
+        /// <param name="filesCopied">The number of files copied.</param>
+        /// <param name="totalFiles">The total number of files to copy.</param>
+	    private void FileExportCompleted(bool cancelled, int filesCopied, int totalFiles)
+	    {
+            if (InvokeRequired)
+            {
+                Invoke(new MethodInvoker(() => FileExportCompleted(cancelled, filesCopied, totalFiles)));
+            }
+            else
+            {
+                int skipped = totalFiles - filesCopied;
+
+                if (cancelled)
+                {
+                    GorgonDialogs.WarningBox(this,
+                                             string.Format("The export operation was cancelled.\n{0}/{1} files copied.\n{2}/{1} files skipped.",
+                                                        filesCopied,
+                                                        totalFiles,
+                                                        skipped));
+                }
+                else
+                {
+                    GorgonDialogs.InfoBox(this,
+                                          string.Format("The export operation was completed successfully.\n{0}/{1} files copied.\n{2}/{1} files skipped.",
+                                                        filesCopied,
+                                                        totalFiles,
+                                                        skipped));
+                }
+            }
+	    }
+
+        /// <summary>
+        /// Function to confirm a file overwrite operation.
+        /// </summary>
+        /// <param name="filePath">Path to the file.</param>
+        /// <param name="totalFileCount">The total number of files.</param>
+        /// <returns>The result of the dialog operation.</returns>
+	    private ConfirmationResult ConfirmFileOverwrite(string filePath, int totalFileCount)
+	    {
+            var result = ConfirmationResult.None;
+	        Action invokeAction = () => result = GorgonDialogs.ConfirmBox(null,
+	                                                                      string.Format("The file '{0}' already exists.  Would you like to overwrite it?",
+	                                                                                    filePath),
+	                                                                      totalFileCount > 1,
+                                                                          totalFileCount > 1);
+	        if (InvokeRequired)
+	        {
+                Invoke(new MethodInvoker(invokeAction));
+	        }
+            else
+	        {
+	            invokeAction();
+	        }
+
+            return result;
+	    }
+
+        /// <summary>
         /// Handles the Click event of the itemExport control.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
@@ -276,20 +304,18 @@ namespace GorgonLibrary.Editor
         {
             try
             {
-                string fileExtension = Program.CurrentContent.File.Extension;
-                ContentPlugIn contentPlugIn = null;
+                var directoryNode = treeFiles.SelectedNode as TreeNodeDirectory;
+                var fileNode = treeFiles.SelectedNode as TreeNodeFile;
 
-                // Find the plug-in for this content.
-                contentPlugIn = ContentManagement.GetContentPlugInForFile(fileExtension);
-
-                if (contentPlugIn != null)
+                if ((directoryNode == null)
+                    && (fileNode == null))
                 {
-					AssignFilter(dialogExport, contentPlugIn.FileExtensions, false, null, null, 
-						currentExtension => string.Equals(currentExtension.Extension,fileExtension,StringComparison.OrdinalIgnoreCase));
-                }                
+                    return;
+                }
 
-                dialogExport.Title = string.Format(Resources.GOREDIT_EXPORT_DLG_TITLE, ContentManagement.Current.ContentType);
-                dialogExport.InitialDirectory = Program.Settings.ExportLastFilePath;
+                dialogExport.Description = Resources.GOREDIT_EXPORT_DLG_TITLE;
+                dialogExport.SelectedPath = Program.Settings.ExportLastFilePath;
+                dialogExport.ShowNewFolderButton = true;
 
                 // Export the content data.
 	            if (dialogExport.ShowDialog(this) != DialogResult.OK)
@@ -298,8 +324,16 @@ namespace GorgonLibrary.Editor
 	            }
 
 	            Cursor.Current = Cursors.WaitCursor;
-	            Program.CurrentContent.Export(dialogExport.FileName);
-	            Program.Settings.ExportLastFilePath = Path.GetDirectoryName(dialogExport.FileName).FormatDirectory(Path.DirectorySeparatorChar);
+
+                if (fileNode != null)
+                {
+                    FileManagement.Export(fileNode.File, dialogExport.SelectedPath, false);
+                }
+                else
+                {
+                    FileManagement.Export(directoryNode.Directory, dialogExport.SelectedPath);
+                }
+                Program.Settings.ExportLastFilePath = dialogExport.SelectedPath.FormatDirectory(Path.DirectorySeparatorChar);
             }
             catch (Exception ex)
             {
@@ -353,7 +387,7 @@ namespace GorgonLibrary.Editor
 								&& itemSaveAs.Enabled;
 
             // Check to see if the current content can export.
-	        itemExport.Enabled = false;
+	        itemExport.Enabled = (_rootNode != null) && (_rootNode.Nodes.Count > 1) && (treeFiles.SelectedNode != null);
             popupItemAdd.Visible = true;
             itemAdd.Enabled = false;
             popupItemAdd.Enabled = false;
@@ -421,7 +455,6 @@ namespace GorgonLibrary.Editor
             {
 				GorgonFileSystemFileEntry file = ((TreeNodeFile)node).File;
 
-	            itemExport.Enabled = true;
                 popupItemAdd.Visible = false;
 				popupItemPaste.Enabled = itemPaste.Enabled = (_cutCopyObject != null);
 				popupItemCut.Enabled = popupItemCopy.Enabled = itemCopy.Enabled = itemCut.Enabled = true;
@@ -1112,6 +1145,10 @@ namespace GorgonLibrary.Editor
 				ContentManagement.ContentPaneUnloadAction = null;
 				ContentManagement.ContentEnumerateProperties = null;
 				ContentManagement.ContentInitializedAction = null;
+
+                // Unhook from file management functionality.
+			    FileManagement.ExportFileConflictFunction = null;
+			    FileManagement.ExportFileCompleteAction = null;
 
 				// Unload any current content.
 				ContentManagement.UnloadCurrentContent();
@@ -2761,9 +2798,6 @@ namespace GorgonLibrary.Editor
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void itemOpen_Click(object sender, EventArgs e)
         {
-            var extensions = new StringBuilder(512);
-            var allExtensions = new StringBuilder(512);
-
             try
             {
 				// Save the file if it's changed.
@@ -2777,41 +2811,7 @@ namespace GorgonLibrary.Editor
                     dialogOpenFile.InitialDirectory = Path.GetDirectoryName(Program.Settings.LastEditorFile);
                 }
 
-                var fileExtensions = FileManagement.GetReaderExtensions();
-
-                // Add extensions from file system providers.				
-                foreach (var extension in fileExtensions)
-                {
-                    if (extensions.Length > 0)
-                    {
-                        extensions.Append("|");
-                    }
-
-                    if (allExtensions.Length > 0)
-                    {
-                        allExtensions.Append(";");
-                    }
-
-                    extensions.Append(extension.GetFilter());
-                    allExtensions.AppendFormat("*.{0}", extension.Extension);
-                }
-
-                if (extensions.Length > 0)
-                {
-                    extensions.Append("|");
-                }
-                extensions.AppendFormat("{0}|*.*", Resources.GOREDIT_ALL_FILES);
-
-                dialogOpenFile.Filter = extensions.ToString();
-
-                // If we have more than 1 type of file available, then update the filter string.
-                if (allExtensions.ToString().Contains(";"))
-                {
-                    dialogOpenFile.Filter = string.Format("{0}|{1}|{2}",
-                                                          Resources.GOREDIT_ALL_FILE_TYPES,
-                                                          allExtensions,
-                                                          extensions);
-                }
+                AssignFilter(dialogOpenFile, FileManagement.GetReaderExtensions(), true, Resources.GOREDIT_ALL_FILE_TYPES);
 
                 if (dialogOpenFile.ShowDialog(this) != DialogResult.OK)
                 {
@@ -3123,6 +3123,10 @@ namespace GorgonLibrary.Editor
 															control.Dock = DockStyle.Fill;
 															control.Parent = splitPanel1;
 			                                             };
+
+            // Assign file management linkage.
+            FileManagement.ExportFileConflictFunction = (file, totalFileCount) => ConfirmFileOverwrite(file, totalFileCount);
+            FileManagement.ExportFileCompleteAction = FileExportCompleted;
 		}
 		#endregion
 	}

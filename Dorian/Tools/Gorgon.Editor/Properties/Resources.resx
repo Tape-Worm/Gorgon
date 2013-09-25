@@ -208,7 +208,7 @@
   <data name="GOREDIT_PARAMETER_MUST_NOT_BE_EMPTY" xml:space="preserve">
     <value>The parameter must not be empty.</value>
   </data>
-  <data name="GOREDIT_IMPORT_DLG_TITLE" xml:space="preserve">
+  <data name="GOREDIT_PROC_IMPORT_DLG_TITLE" xml:space="preserve">
     <value>Importing Files</value>
   </data>
   <data name="GOREDIT_IMPORT_INFO_DLG_TITLE" xml:space="preserve">
@@ -275,9 +275,12 @@
     <value>The editor does not know how to read the file '{0}'.</value>
   </data>
   <data name="GOREDIT_EXPORT_DLG_TITLE" xml:space="preserve">
-    <value>Export {0}</value>
+    <value>Select a directory to export the files into.</value>
   </data>
   <data name="GOREDIT_SPLASH_LOAD_DEFAULT_CONTENT" xml:space="preserve">
     <value>Loading default content pane.</value>
+  </data>
+  <data name="GOREDIT_PROC_EXPORT_DLG_TITLE" xml:space="preserve">
+    <value>Exporting files</value>
   </data>
 </root>
