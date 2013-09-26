@@ -58,7 +58,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		/// <summary>
 		/// Property to return the settings for the plug-in.
 		/// </summary>
-		internal static GorgonFontContentSettings Settings
+		internal static GorgonFontProperties Settings
 		{
 			get;
 			private set;
@@ -130,16 +130,16 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
             return invalidReasons.ToString();
         }
 
-		/// <summary>
+        /// <summary>
         /// Function to create a content object interface.
         /// </summary>
-        /// <param name="name">The initial name for the content.</param>
+        /// <param name="settings">The initial settings for the content.</param>
         /// <returns>
         /// A new content object interface.
         /// </returns>
-        protected override ContentObject OnCreateContentObject(string name)
+        protected override ContentObject OnCreateContentObject(IContentSettings settings)
         {
-            return new GorgonFontContent(this, name);
+            return new GorgonFontContent(this, (GorgonFontContentSettings)settings);
         }
 
 		/// <summary>
@@ -175,21 +175,28 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 			base.Dispose(disposing);
 		}
 
+        /// <summary>
+        /// Funciton to create settings for a content object.
+        /// </summary>
+        /// <returns>
+        /// The settings interface for the content.
+        /// </returns>
+        public override IContentSettings GetContentSettings()
+        {
+            return new GorgonFontContentSettings(new Size(Graphics.Textures.MaxWidth, Graphics.Textures.MaxHeight));
+        }
+
 		/// <summary>
 		/// Function to retrieve the create menu item for this content.
 		/// </summary>
 		/// <returns>The menu item for this </returns>
 		public override ToolStripMenuItem GetCreateMenuItem()
 		{
-			if (_createItem == null)
-			{
-				_createItem = CreateMenuItem("itemCreateGorgonFont", "Create new font...", GetContentIcon());
-			}
-
-			return _createItem;
+		    return _createItem
+		           ?? (_createItem = CreateMenuItem("itemCreateGorgonFont", "Create new font...", GetContentIcon()));
 		}
 
-		/// <summary>
+        /// <summary>
 		/// Function to return the icon for the content.
 		/// </summary>
 		/// <returns>
@@ -211,7 +218,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 			FileExtensions.Add(new GorgonFileExtension("gorFont", Resources.GORFNT_CONTENT_EXTENSION_DESC));
 			UpdateCachedFonts();
 			
-			Settings = new GorgonFontContentSettings();
+			Settings = new GorgonFontProperties();
 			Settings.Load();
         }
         #endregion

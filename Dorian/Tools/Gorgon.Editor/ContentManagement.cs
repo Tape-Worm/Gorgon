@@ -26,6 +26,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -48,15 +49,6 @@ namespace GorgonLibrary.Editor
         #endregion
 
 		#region Properties.
-		/// <summary>
-		/// Property to return the currently opened content file.
-		/// </summary>
-	    public static GorgonFileSystemFileEntry ContentFile
-	    {
-		    get;
-		    private set;
-	    }
-
 		/// <summary>
 		/// Property to return whether the current content has been changed or not.
 		/// </summary>
@@ -208,7 +200,6 @@ namespace GorgonLibrary.Editor
 			}
 
 			// Turn off the public facing content object.
-			ContentFile = null;
 			Current = null;
 
 			// Turn off any idle time activity during the load.
@@ -231,8 +222,7 @@ namespace GorgonLibrary.Editor
 		/// Function to load a content object into the content pane in the interface.
 		/// </summary>
 		/// <param name="contentObject">Content object to load into the interface.</param>
-		/// <param name="contentFile">The file associated with the content (if any).</param>
-	    public static void LoadContentPane(ContentObject contentObject, GorgonFileSystemFileEntry contentFile)
+	    public static void LoadContentPane(ContentObject contentObject)
 	    {
 			if (contentObject == null)
 			{
@@ -279,8 +269,6 @@ namespace GorgonLibrary.Editor
 				contentWindow.Focus();
 			}
 
-			ContentFile = contentFile;
-
 			if (contentObject.HasRenderer)
 			{
 				Gorgon.ApplicationIdleLoopMethod = IdleLoop;
@@ -298,46 +286,73 @@ namespace GorgonLibrary.Editor
 			    return;
 		    }
 
-		    LoadContentPane(new DefaultContent(), null);
+		    LoadContentPane(new DefaultContent());
 	    }
 
 		/// <summary>
-		/// Function to open a content object from the file system.
+		/// Function to load content data from the file system.
 		/// </summary>
 		/// <param name="file">The file system file that contains the content data.</param>
-		/// <returns>The content object.</returns>
-	    public static ContentObject Open(GorgonFileSystemFileEntry file)
+	    public static void Load(GorgonFileSystemFileEntry file)
 	    {
-			if (file == null)
-			{
-				throw new ArgumentNullException("file");
-			}
+		    if (file == null)
+		    {
+		        throw new ArgumentNullException("file");
+		    }
 
-			ContentPlugIn plugIn = GetContentPlugInForFile(file.Extension);
+		    ContentPlugIn plugIn = GetContentPlugInForFile(file.Name);
 
-			if (plugIn == null)
-			{
-				throw new IOException(string.Format(Resources.GOREDIT_NO_CONTENT_PLUG_IN_FOR_FILE, file.Name, file.Extension));
-			}
+            if (plugIn == null)
+            {
+                throw new IOException(string.Format(Resources.GOREDIT_NO_CONTENT_PLUG_IN_FOR_FILE, file.Name, file.Extension));
+            }
 
-			return plugIn.CreateContentObject(file.BaseFileName);
+		    IContentSettings settings = plugIn.GetContentSettings();        // Get default settings.
+
+		    if (settings != null)
+		    {
+                // Assign the name from the file.
+                settings.Name = file.Name;
+		    }
+
+            ContentObject content = plugIn.CreateContentObject(settings);
+
+            Debug.Assert(_currentContentObject != null, "Content should not be NULL!");
+
+            LoadContentPane(content);
+
+            // Load in the content data.
+		    using(Stream stream = file.OpenStream(false))
+		    {
+		        content.Read(stream);
+		    }
+
+		    _contentChanged = false;
 	    }
 
 		/// <summary>
 		/// Function to save the current content.
 		/// </summary>
-	    public static void Save()
+		/// <param name="file">The file that will contain the content data.</param>
+	    public static void Save(GorgonFileSystemFileEntry file)
 	    {
-		    if ((ContentFile == null) || (Current == null))
+		    if (Current == null)
 		    {
 			    return;
 		    }
 
+		    if (file == null)
+		    {
+		        throw new ArgumentNullException("file");
+		    }
+
 			// Write the content out to the scratch file system.
-			using (var contentStream = ContentFile.OpenStream(true))
+			using (var contentStream = file.OpenStream(true))
 			{
 				Current.Persist(contentStream);
 			}
+
+            _contentChanged = false;
 
 			// Indicate that we've saved the content.
 			if (ContentSaved != null)

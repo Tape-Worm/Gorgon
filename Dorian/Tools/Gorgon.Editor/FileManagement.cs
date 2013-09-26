@@ -26,21 +26,11 @@
 
 using System;
 using System.Collections.Generic;
-using System.Configuration;
-using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Security.Cryptography;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-using System.Windows.Forms.VisualStyles;
-using System.Windows.Markup;
 using System.Xml.Linq;
 using GorgonLibrary.Editor.Properties;
 using GorgonLibrary.IO;
-using GorgonLibrary.UI;
 
 namespace GorgonLibrary.Editor
 {
@@ -58,70 +48,6 @@ namespace GorgonLibrary.Editor
         #endregion
 
         #region Classes.
-        /// <summary>
-        /// Settings for export.
-        /// </summary>
-        private class ExportSettings
-        {
-            #region Properties.
-            /// <summary>
-            /// Property to set or return the process form to use.
-            /// </summary>
-            public formProcess ProcessForm
-            {
-                get;
-                set;
-            }
-
-            /// <summary>
-            /// Property to set or return the total number of files.
-            /// </summary>
-            public int TotalFiles
-            {
-                get;
-                set;
-            }
-
-            /// <summary>
-            /// Property to set or return the file counter.
-            /// </summary>
-            public int FileCount
-            {
-                get;
-                set;
-            }
-           
-            /// <summary>
-            /// Property to set or return the cancellation token.
-            /// </summary>
-            public CancellationToken CancelToken
-            {
-                get;
-                set;
-            }
-
-            /// <summary>
-            /// Property to set or return whether the operation is cancelled or not.
-            /// </summary>
-            public bool IsCancelled
-            {
-                get
-                {
-                    return ConflictResult == ConfirmationResult.Cancel || CancelToken.IsCancellationRequested;
-                }
-            }
-
-            /// <summary>
-            /// Property to set or return the current conflict result.
-            /// </summary>
-            public ConfirmationResult ConflictResult
-            {
-                get;
-                set;
-            }
-            #endregion
-        }
-
 		/// <summary>
 		/// A case insensitive string comparer.
 		/// </summary>
@@ -200,26 +126,6 @@ namespace GorgonLibrary.Editor
         #endregion
 
         #region Properties.
-        /// <summary>
-        /// Property to set or return the method that is called when there's a file conflict (file already exists) when exporting.
-        /// </summary>
-        /// <remarks>This will return a confirmation result so that a dialog can be used to determine the results of the action.</remarks>
-        public static Func<string, int, ConfirmationResult> ExportFileConflictFunction
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Property to set or return the method that is called when the file export is completed or cancelled.
-        /// </summary>
-        /// <remarks>The first parameter will be TRUE if the export is cancelled, the second is the number of files exported, and the third is the total number of files.</remarks>
-        public static Action<bool, int, int> ExportFileCompleteAction
-        {
-            get;
-            set;
-        }
-
         /// <summary>
         /// Property to set or return whether the file has changed or not.
         /// </summary>
@@ -327,183 +233,6 @@ namespace GorgonLibrary.Editor
             ScratchArea.DestroyScratchArea();
             ScratchArea.InitializeScratch();
             _metaDataXML = null;
-        }
-
-        /// <summary>
-        /// Function to export files and directories from the file system.
-        /// </summary>
-        /// <param name="directory">The directory containing the files to copy.</param>
-        /// <param name="destinationPath">The path to export into.</param>
-        /// <param name="settings">Settings to apply to the export.</param>
-        /// <returns>A result to indicate that the action is cancelled.</returns>
-        private static void ExportFilesAndDirectoriesThread(GorgonFileSystemDirectory directory, string destinationPath, ExportSettings settings)
-        {
-            destinationPath = Path.GetFullPath(destinationPath).FormatDirectory(Path.DirectorySeparatorChar);
-            string newDirectory = destinationPath;
-
-            if (settings.IsCancelled)
-            {
-                return;
-            }
-
-            if (!Directory.Exists(newDirectory))
-            {
-                Directory.CreateDirectory(newDirectory);
-            }
-
-            // Copy the files to the directory.
-            foreach (var file in directory.Files)
-            {
-                if (settings.IsCancelled)
-                {
-                    return;
-                }
-
-                if (_blockedFiles.Contains(file.Name))
-                {
-                    continue;
-                }
-
-                string newFileName = string.Format("{0}{1}", newDirectory, file.Name.FormatFileName());
-
-                if (((settings.ConflictResult & ConfirmationResult.ToAll) != ConfirmationResult.ToAll) 
-                    && (ExportFileConflictFunction != null)
-                    && (File.Exists(newFileName)))
-                {
-                    settings.ConflictResult = ExportFileConflictFunction(newFileName, settings.TotalFiles);
-
-                    if ((settings.ConflictResult & ConfirmationResult.No) == ConfirmationResult.No)
-                    {
-                        continue;
-                    }
-
-                    if (settings.ConflictResult == ConfirmationResult.Cancel)
-                    {
-                        return;
-                    }
-                }
-
-                // Update the process dialog.
-                settings.ProcessForm.UpdateStatusText(string.Format("Copying '{0}'", newFileName.Ellipses(45, true)));
-                
-                Export(file, newDirectory, true);
-
-                settings.FileCount++;
-
-                settings.ProcessForm.SetProgress((int)((settings.FileCount / (decimal)settings.TotalFiles) * 100M));
-            }
-
-            // Copy any sub directories.
-            foreach (var subDirectory in directory.Directories)
-            {
-                if (settings.IsCancelled)
-                {
-                    return;
-                }
-
-                newDirectory = string.Format("{0}{1}", destinationPath, subDirectory.Name);
-
-                // Recursively copy everything.
-                ExportFilesAndDirectoriesThread(subDirectory, newDirectory, settings);
-            }
-        }
-        
-        /// <summary>
-        /// Function to export a directory to an external location.
-        /// </summary>
-        /// <param name="directory">Directory to export.</param>
-        /// <param name="destinationPath">Path to export the files and directories into.</param>
-        public static void Export(GorgonFileSystemDirectory directory, string destinationPath)
-        {
-            // Bring up the progress form.
-            using(var processForm = new formProcess(ProcessType.FileExporter))
-            {
-                using(var tokenSource = new CancellationTokenSource(Int32.MaxValue))
-                {
-                    var settings = new ExportSettings
-                                   {
-                                       CancelToken = tokenSource.Token,
-                                       ConflictResult = ConfirmationResult.None,
-                                       FileCount = 0,
-                                       TotalFiles = ScratchArea.ScratchFiles.FindFiles(directory.FullPath, "*", true).Count(item => !_blockedFiles.Contains(item.Name)),
-                                       ProcessForm = processForm
-                                   };
-
-                    processForm.Task = Task.Factory.StartNew(() =>
-                                                             {
-                                                                 ExportFilesAndDirectoriesThread(directory,
-                                                                                                 destinationPath,
-                                                                                                 settings);
-
-                                                                 if (ExportFileCompleteAction != null)
-                                                                 {
-                                                                     ExportFileCompleteAction(settings.IsCancelled, settings.FileCount, settings.TotalFiles);
-                                                                 }
-                                                             },
-                    settings.CancelToken);
-
-                    if (processForm.ShowDialog() == DialogResult.Cancel)
-                    {
-                        tokenSource.Cancel();
-                    }
-                }
-            }
-        }
-
-        /// <summary>
-        /// Function to export a file to an external location
-        /// </summary>
-        /// <param name="file">File to export.</param>
-        /// <param name="destinationPath">Path to export the file into.</param>
-        /// <param name="overwriteIfExists">TRUE to overwrite the file if it already exists, FALSE to prompt.</param>
-        public static void Export(GorgonFileSystemFileEntry file, string destinationPath, bool overwriteIfExists)
-        {
-            if ((file == null)
-                || (string.IsNullOrWhiteSpace(destinationPath)))
-            {
-                return;
-            }
-
-            // Do not export our blocked files list.
-            if (_blockedFiles.Contains(file.Name))
-            {
-                return;
-            }
-
-            destinationPath = Path.GetFullPath(destinationPath);
-            string directory = destinationPath.FormatDirectory(Path.DirectorySeparatorChar);
-            string fileName = file.Name.FormatFileName();
-
-            if ((string.IsNullOrWhiteSpace(fileName))
-                || (string.IsNullOrWhiteSpace(directory)))
-            {
-                return;
-            }
-
-            if (!Directory.Exists(directory))
-            {
-                Directory.CreateDirectory(directory);
-            }
-
-            string newPath = string.Format("{0}{1}", directory, fileName);
-
-            if ((!overwriteIfExists) && (File.Exists(newPath)) && (ExportFileConflictFunction != null))
-            {
-                ExportFileConflictFunction(newPath, 1);
-            }
-
-            // Open the destination file for writing.
-            using(var outStream = new FileStream(string.Format("{0}{1}", directory, fileName),
-                                            FileMode.Create,
-                                            FileAccess.Write,
-                                            FileShare.None))
-            {
-                // Copy the file data.
-                using(var inStream = file.OpenStream(false))
-                {
-                    inStream.CopyTo(outStream);
-                }
-            }
         }
 
 		/// <summary>

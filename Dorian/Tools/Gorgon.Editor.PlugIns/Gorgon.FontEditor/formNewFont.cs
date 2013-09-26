@@ -29,6 +29,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
+using GorgonLibrary.Editor.FontEditorPlugIn.Properties;
 using GorgonLibrary.Graphics;
 using GorgonLibrary.UI;
 
@@ -49,15 +50,6 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		/// Property to return the selected font characters to use.
 		/// </summary>
 		public IEnumerable<char> FontCharacters
-		{
-			get;
-			set;
-		}
-
-		/// <summary>
-		/// Property to set or return the content object to design.
-		/// </summary>
-		public GorgonFontContent Content
 		{
 			get;
 			set;
@@ -88,11 +80,11 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		/// <summary>
 		/// Property to return whether to use points or pixels for the font size.
 		/// </summary>
-		public Graphics.FontHeightMode FontHeightMode
+		public FontHeightMode FontHeightMode
 		{
 			get
 			{
-				return (string.Equals(comboSizeType.Text, "points", StringComparison.OrdinalIgnoreCase)) ? Graphics.FontHeightMode.Points : Graphics.FontHeightMode.Pixels;
+				return (string.Equals(comboSizeType.Text, "points", StringComparison.OrdinalIgnoreCase)) ? FontHeightMode.Points : FontHeightMode.Pixels;
 			}
 		}
 
@@ -110,18 +102,18 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		/// <summary>
 		/// Property to return the anti-aliasing mode.
 		/// </summary>
-		public Graphics.FontAntiAliasMode FontAntiAliasMode
+		public FontAntiAliasMode FontAntiAliasMode
 		{
 			get
 			{
 				switch (comboAA.Text.ToLower())
 				{
 					case "none":
-						return Graphics.FontAntiAliasMode.None;
+						return FontAntiAliasMode.None;
 					case "anti-alias":
-						return Graphics.FontAntiAliasMode.AntiAlias;
+						return FontAntiAliasMode.AntiAlias;
 					default:
-						return Graphics.FontAntiAliasMode.AntiAliasHQ;
+						return FontAntiAliasMode.AntiAliasHQ;
 				}
 			}
 		}
@@ -137,6 +129,22 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 			}			
 		}
 
+        /// <summary>
+        /// Property to set or return the maximum texture size.
+        /// </summary>
+	    public Size MaxTextureSize
+	    {
+	        get
+	        {
+	            return new Size((int)numericTextureWidth.Maximum, (int)numericTextureHeight.Maximum);
+	        }
+	        set
+	        {
+	            numericTextureWidth.Maximum = value.Width;
+	            numericTextureHeight.Maximum = value.Height;
+	        }
+	    }
+
 		/// <summary>
 		/// Property to return the font style.
 		/// </summary>
@@ -144,16 +152,16 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		{
 			get
 			{
-				var result = System.Drawing.FontStyle.Regular;
+				var result = FontStyle.Regular;
 
 				if (checkBold.Checked)
-					result |= System.Drawing.FontStyle.Bold;
+					result |= FontStyle.Bold;
 				if (checkUnderline.Checked)
-					result |= System.Drawing.FontStyle.Underline;
+					result |= FontStyle.Underline;
 				if (checkStrikeThrough.Checked)
-					result |= System.Drawing.FontStyle.Strikeout;
+					result |= FontStyle.Strikeout;
 				if (checkItalic.Checked)
-					result |= System.Drawing.FontStyle.Italic;
+					result |= FontStyle.Italic;
 
 				return result;
 			}
@@ -173,13 +181,15 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 
 			try
 			{
-				currentFont = new System.Drawing.Font(FontFamilyName, 16.0f, GraphicsUnit.Pixel);
+				currentFont = new Font(FontFamilyName, 16.0f, GraphicsUnit.Pixel);
 
-				picker = new formCharacterPicker();
-				picker.Characters = FontCharacters;
-				picker.CurrentFont = currentFont;
+				picker = new formCharacterPicker
+				         {
+				             Characters = FontCharacters,
+				             CurrentFont = currentFont
+				         };
 
-				if (picker.ShowDialog(this) == System.Windows.Forms.DialogResult.OK)
+			    if (picker.ShowDialog(this) == DialogResult.OK)
 				{
 					FontCharacters = picker.Characters;
 				}
@@ -193,13 +203,11 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 				if (currentFont != null)
 				{
 					currentFont.Dispose();
-					currentFont = null;
 				}
 
 				if (picker != null)
 				{
 					picker.Dispose();
-					picker = null;
 				}
 			}
 		}
@@ -209,10 +217,12 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		/// </summary>
 		private void ValidateControls()
 		{
-			if (string.IsNullOrEmpty(comboAA.Text))
-				comboAA.Text = "Anti-Alias (High Quality)";
-						
-			buttonOK.Enabled = checkBold.Enabled = checkUnderline.Enabled = checkItalic.Enabled = checkStrikeThrough.Enabled = false;
+		    if (string.IsNullOrEmpty(comboAA.Text))
+		    {
+		        comboAA.Text = "Anti-Alias (High Quality)";
+		    }
+
+		    buttonOK.Enabled = checkBold.Enabled = checkUnderline.Enabled = checkItalic.Enabled = checkStrikeThrough.Enabled = false;
 
 			if (string.IsNullOrEmpty(comboFonts.Text))
 				buttonCharacterList.Enabled = buttonOK.Enabled = checkBold.Enabled = checkUnderline.Enabled = checkItalic.Enabled = checkStrikeThrough.Enabled = false;
@@ -250,7 +260,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		{
 			var style = FontStyle.Regular;
 
-			labelPreview.Font = this.Font;
+			labelPreview.Font = Font;
 			if (_font != null)
 				_font.Dispose();
 			_font = null;
@@ -264,7 +274,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 			if (checkStrikeThrough.Checked)
 				style |= FontStyle.Strikeout;
 
-			_font = new Font(comboFonts.Text, (float)numericSize.Value, style, (string.Equals(this.comboSizeType.Text, "points", StringComparison.OrdinalIgnoreCase) ? GraphicsUnit.Point : GraphicsUnit.Pixel));
+			_font = new Font(comboFonts.Text, (float)numericSize.Value, style, (string.Equals(comboSizeType.Text, "points", StringComparison.OrdinalIgnoreCase) ? GraphicsUnit.Point : GraphicsUnit.Pixel));
 			labelPreview.Font = _font;
 		}
 
@@ -344,20 +354,23 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		{
 			base.OnLoad(e);
 
-			numericTextureWidth.Maximum = Content.Graphics.Textures.MaxWidth;
-			numericTextureHeight.Maximum = Content.Graphics.Textures.MaxHeight;
+            comboAA.Items.Clear();
+		    comboAA.Items.Add(Resources.GORFNT_ANTIALIAS_NONE);
+            comboAA.Items.Add(Resources.GORFNT_ANTIALIAS_STANDARD);
+            comboAA.Items.Add(Resources.GORFNT_ANTIALIAS_HQ);
+
 			comboSizeType.Text = GorgonFontEditorPlugIn.Settings.FontSizeType.ToString();
 
 			switch (GorgonFontEditorPlugIn.Settings.FontAntiAliasMode)
 			{
-				case Graphics.FontAntiAliasMode.None:
-					comboAA.Text = "None";
+				case FontAntiAliasMode.None:
+					comboAA.Text = Resources.GORFNT_ANTIALIAS_NONE;
 					break;
-				case Graphics.FontAntiAliasMode.AntiAlias:
-					comboAA.Text = "Anti-Alias";
+				case FontAntiAliasMode.AntiAlias:
+					comboAA.Text = Resources.GORFNT_ANTIALIAS_STANDARD;
 					break;
 				default:
-					comboAA.Text = "Anti-Alias (High Quality)";
+					comboAA.Text = Resources.GORFNT_ANTIALIAS_HQ;
 					break;
 			}
 

@@ -126,7 +126,7 @@ namespace GorgonLibrary.Editor
 			{
 				var ptValue = (PointF)value;		// Point value.
 
-				return ptValue.X.ToString() + ", " + ptValue.Y.ToString();
+				return ptValue.X + ", " + ptValue.Y;
 			}
 
 			return base.ConvertTo(context, culture, value, destinationType);

@@ -523,8 +523,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
 		private void GorgonFontContentPanel_Resize(object sender, EventArgs e)
 		{
-            GorgonTexture2D currentTexture = null;
-			try
+		    try
 			{
 				if ((_content == null) || (_content.Font == null))
 				{
@@ -547,7 +546,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 					}
 				}
 
-                currentTexture = _content.Font.Textures[_currentTextureIndex];
+                GorgonTexture2D currentTexture = _content.Font.Textures[_currentTextureIndex];
 
 				if (menuItemToWindow.Checked)
 				{
@@ -621,7 +620,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 			// the new font.  Otherwise, deselect it.
 			if (_selectedGlyph != null)
 			{
-				_selectedGlyph = _content.Font.Glyphs.Where((GorgonGlyph item) => item.Character == _selectedGlyph.Character).FirstOrDefault();
+			    _selectedGlyph = ((IEnumerable<GorgonGlyph>)_content.Font.Glyphs).FirstOrDefault(item => item.Character == _selectedGlyph.Character);
 
 				// We found the glyph, let's see if we can't focus on the texture it was on.
 				if (_selectedGlyph != null)

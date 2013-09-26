@@ -212,7 +212,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 			// Go through each character.			
 			for (int i = 1; i <= 48; i++)
 			{
-				fontControl = panelCharacters.Controls["checkBox" + i.ToString()] as CheckBox;
+				fontControl = panelCharacters.Controls["checkBox" + i] as CheckBox;
 				
 				if (fontControl.Enabled)
 				{
@@ -324,7 +324,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 				// Set the font.
 				for (int i = 1; i <= 48; i++)
 				{
-					string checkBoxName = "checkBox" + i.ToString();
+					string checkBoxName = "checkBox" + i;
 					fontControl = panelCharacters.Controls[checkBoxName] as CheckBox;
 
 					fontControl.MouseEnter -= new EventHandler(fontControl_MouseEnter);

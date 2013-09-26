@@ -702,76 +702,20 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
         }
 
 		/// <summary>
-		/// Function to create new content.
-		/// </summary>
-		/// <returns>
-		/// TRUE if successful, FALSE if not or canceled.
-		/// </returns>
-		protected override bool CreateNew()
-		{
-			formNewFont newFont = null;
-
-			try
-			{
-				newFont = new formNewFont();
-				newFont.Content = this;
-				newFont.FontCharacters = _settings.Characters;
-
-				if (newFont.ShowDialog() == DialogResult.OK)
-				{
-					Cursor.Current = Cursors.WaitCursor;
-
-					Name = newFont.FontName.FormatFileName();
-					if (!Name.EndsWith(".gorFont", StringComparison.OrdinalIgnoreCase))
-					{
-						Name = Name + ".gorFont";
-					}
-
-					_settings.FontFamilyName = newFont.FontFamilyName;
-					_settings.Size = newFont.FontSize;
-					_settings.FontHeightMode = newFont.FontHeightMode;
-					_settings.AntiAliasingMode = newFont.FontAntiAliasMode;
-					_settings.FontStyle = newFont.FontStyle;
-					_settings.TextureSize = newFont.FontTextureSize;
-					_settings.Characters = newFont.FontCharacters;
-
-                    Font = Graphics.Fonts.CreateFont(this.Name, _settings);
-
-					return true;
-				}
-
-				return false;
-			}
-			catch (Exception ex)
-			{
-				GorgonDialogs.ErrorBox(null, ex);
-				return false;
-			}
-			finally
-			{
-				Cursor.Current = Cursors.Default;
-
-				if (newFont != null)
-				{
-					newFont.Dispose();
-					newFont = null;
-				}
-			}
-		}
-
-		/// <summary>
 		/// Function to initialize the content editor.
 		/// </summary>
 		/// <returns>
 		/// A control to place in the primary interface window.
 		/// </returns>        
-		protected override Control OnInitialize()
+		protected override ContentPanel OnInitialize()
 		{
-			_panel = new GorgonFontContentPanel();
-			_panel.Content = this;
-			_panel.Text = "Gorgon Font - " + Name;
+			_panel = new GorgonFontContentPanel
+			         {
+			             Content = this,
+			             Text = "Gorgon Font - " + Name
+			         };
 
-			_swap = Graphics.Output.CreateSwapChain("FontEditor.SwapChain", new GorgonSwapChainSettings()
+		    _swap = Graphics.Output.CreateSwapChain("FontEditor.SwapChain", new GorgonSwapChainSettings()
 			{
 				Window = _panel.panelTextures,
 				Format = BufferFormat.R8G8B8A8_UIntNormal
@@ -826,12 +770,12 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
         /// Initializes a new instance of the <see cref="GorgonFontContent"/> class.
         /// </summary>
 		/// <param name="plugIn">The plug-in that creates this object.</param>
-		/// <param name="name">The initial name for the content.</param>
-        public GorgonFontContent(ContentPlugIn plugIn, string name)
-			: base(name)
+		/// <param name="initialSettings">The initial settings for the content.</param>
+        public GorgonFontContent(ContentPlugIn plugIn, GorgonFontContentSettings initialSettings)
+			: base(initialSettings.Name)
         {
 			PlugIn = plugIn;
-			_settings = new GorgonFontSettings();
+			_settings = initialSettings.Settings;
         }
         #endregion
     }

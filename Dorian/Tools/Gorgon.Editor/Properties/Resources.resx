@@ -295,4 +295,16 @@
   <data name="GOREDIT_STREAM_WRITE_ONLY" xml:space="preserve">
     <value>The stream is write only.</value>
   </data>
+  <data name="GOREDIT_FILE_ALREADY_EXISTS" xml:space="preserve">
+    <value>The {0} '{1}' already exists.</value>
+  </data>
+  <data name="GOREDIT_FILE_DEFAULT_TYPE" xml:space="preserve">
+    <value>file</value>
+  </data>
+  <data name="GOREDIT_IMPORT_EXPORT_PROCESS_LABEL" xml:space="preserve">
+    <value>Copying '{0}'</value>
+  </data>
+  <data name="GOREDIT_OVERWRITE_PROMPT" xml:space="preserve">
+    <value>The {0} '{1}' already exists.  Do you wish to overwrite it?</value>
+  </data>
 </root>

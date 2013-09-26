@@ -27,6 +27,7 @@
 using System;
 using System.ComponentModel;
 using System.IO;
+using System.Linq;
 using System.Windows.Forms;
 using GorgonLibrary.Editor.Properties;
 using GorgonLibrary.Graphics;
@@ -85,7 +86,7 @@ namespace GorgonLibrary.Editor
 		: IDisposable, INamedObject
 	{
 		#region Variables.
-        private Control _contentControl;			// Control used to edit/display the content.
+        private ContentPanel _contentControl;		// Control used to edit/display the content.
         private bool _hasChanged;					// Flag to indicate that the object was changed.
 		private string _name = "Content";			// Name of the content.
 		private string _filePath = string.Empty;	// Path to the file for the content.
@@ -316,15 +317,6 @@ namespace GorgonLibrary.Editor
 		{
 		}
 
-		/// <summary>
-		/// Function to create new content.
-		/// </summary>
-		/// <returns>TRUE if successful, FALSE if not or canceled.</returns>
-		protected internal virtual bool CreateNew()
-		{
-			return true;
-		}
-
         /// <summary>
         /// Function called when the name is about to be changed.
         /// </summary>
@@ -357,7 +349,7 @@ namespace GorgonLibrary.Editor
         /// Function called when the content is being initialized.
         /// </summary>
         /// <returns>A control to place in the primary interface window.</returns>
-        protected abstract Control OnInitialize();
+        protected abstract ContentPanel OnInitialize();
 
 		/// <summary>
 		/// Function called when the content is shown for the first time.
@@ -377,13 +369,12 @@ namespace GorgonLibrary.Editor
         /// </summary>
         internal void SetDefaults()
         {
-            foreach (var descriptor in TypeDescriptor)
+            foreach (var descriptor in TypeDescriptor.Where(descriptor => descriptor.HasDefaultValue))
             {
-                if (descriptor.HasDefaultValue)
-                    descriptor.DefaultValue = descriptor.GetValue<object>();
+                descriptor.DefaultValue = descriptor.GetValue<object>();
             }
         }
-        
+
         /// <summary>
 		/// Function to open the content from the file system.
 		/// </summary>
@@ -426,6 +417,12 @@ namespace GorgonLibrary.Editor
 			}
 
 			OnRead(stream);
+
+            // Update the properties.
+            SetDefaults();
+
+            // Update the panel
+            _contentControl.OnContentChanged();
 	    }
 
 		/// <summary>
@@ -470,11 +467,13 @@ namespace GorgonLibrary.Editor
 
             File = file;
 
-            if (HasChanges)
+            if (!HasChanges)
             {
-                OnPersist();
-                HasChanges = false;    
+                return;
             }
+
+            OnPersist();
+            HasChanges = false;
         }
 
 		/// <summary>
@@ -497,7 +496,7 @@ namespace GorgonLibrary.Editor
 		/// Function to initialize the content editor.
 		/// </summary>
 		/// <returns>A control to place in the primary interface window.</returns>
-        public Control InitializeContent()
+        public ContentPanel InitializeContent()
 		{
 			// TODO:  Find out why this is being called multiple times such that we would need to cache the control.
 			return _contentControl ?? (_contentControl = OnInitialize());
@@ -516,8 +515,6 @@ namespace GorgonLibrary.Editor
             TypeDescriptor.Enumerate(GetType());
 
 			Name = name;
-
-			HasChanges = false;
 		}
 		#endregion
 

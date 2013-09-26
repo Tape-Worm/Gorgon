@@ -27,6 +27,7 @@
 using System;
 using System.Drawing;
 using System.Windows.Forms;
+using GorgonLibrary.Graphics;
 using GorgonLibrary.IO;
 
 namespace GorgonLibrary.Editor
@@ -60,7 +61,7 @@ namespace GorgonLibrary.Editor
 		{
 			get 
 			{
-				return Editor.PlugInType.Content;
+				return PlugInType.Content;
 			}
 		}
 		#endregion
@@ -69,18 +70,18 @@ namespace GorgonLibrary.Editor
 		/// <summary>
 		/// Function to create a content object interface.
 		/// </summary>
-		/// <param name="contentName">The name of the content.</param>
+		/// <param name="settings">The initial settings for the content.</param>
 		/// <returns>A new content object interface.</returns>
-		protected abstract ContentObject OnCreateContentObject(string contentName);
+		protected abstract ContentObject OnCreateContentObject(IContentSettings settings);
 
 		/// <summary>
 		/// Function to create a content object interface.
 		/// </summary>
-		/// <param name="contentName">The name of the content.</param>
+		/// <param name="settings">The initial settings for the content.</param>
 		/// <returns>A new content object interface.</returns>
-		internal ContentObject CreateContentObject(string contentName)
+		internal ContentObject CreateContentObject(IContentSettings settings)
 		{
-			return OnCreateContentObject(contentName);
+			return OnCreateContentObject(settings ?? GetContentSettings());
 		}
 
 		/// <summary>
@@ -92,12 +93,20 @@ namespace GorgonLibrary.Editor
 		/// <returns>A new tool strip menu item.</returns>
 		protected ToolStripMenuItem CreateMenuItem(string name, string text, Image icon)
 		{
-			var result = new ToolStripMenuItem(text, icon);
-			result.Name = name;
-			result.Tag = this;
+			var result = new ToolStripMenuItem(text, icon)
+			             {
+			                 Name = name,
+			                 Tag = this
+			             };
 
-			return result;
+		    return result;
 		}
+
+        /// <summary>
+        /// Function to create settings for a content object.
+        /// </summary>
+        /// <returns>The settings interface for the content.</returns>
+	    public abstract IContentSettings GetContentSettings();
         
 		/// <summary>
 		/// Function to return the icon for the content.
