@@ -54,13 +54,21 @@ namespace GorgonLibrary.Editor
 			set;
 		}
 
+		private static ContentObject _current;
+
 		/// <summary>
 		/// Property to return the currently loaded content.
 		/// </summary>
 		public static ContentObject CurrentContent
 		{
-			get;
-			set;
+			get
+			{
+				return _current;
+			}
+			set
+			{
+				_current = value;
+			}
 		}
 
 		/// <summary>

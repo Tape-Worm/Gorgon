@@ -31,6 +31,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using GorgonLibrary.Editor.Properties;
 using GorgonLibrary.IO;
 
 namespace GorgonLibrary.Editor
@@ -43,9 +44,30 @@ namespace GorgonLibrary.Editor
         #region Variables.
         private readonly static Dictionary<GorgonFileExtension, ContentPlugIn> _contentFiles;
 	    private static ContentObject _currentContentObject;
+	    private static bool _contentChanged ;
         #endregion
 
 		#region Properties.
+		/// <summary>
+		/// Property to return the currently opened content file.
+		/// </summary>
+	    public static GorgonFileSystemFileEntry ContentFile
+	    {
+		    get;
+		    private set;
+	    }
+
+		/// <summary>
+		/// Property to return whether the current content has been changed or not.
+		/// </summary>
+	    public static bool Changed
+	    {
+		    get
+		    {
+			    return ((Current != null) && (_contentChanged));
+			}
+	    }
+
 		/// <summary>
 		/// Property to set or return the method to call after a content pane is unloaded.
 		/// </summary>
@@ -85,6 +107,15 @@ namespace GorgonLibrary.Editor
 	    }
 
 		/// <summary>
+		/// Property to set or return the method to call when the current content is persisted back to the file system.
+		/// </summary>
+	    public static Action ContentSaved
+	    {
+		    get;
+		    set;
+	    }
+
+		/// <summary>
 		/// Property to return the currently active content.
 		/// </summary>
 	    public static ContentObject Current
@@ -115,6 +146,7 @@ namespace GorgonLibrary.Editor
 		/// <param name="e">Event parameters.</param>
 		private static void OnContentChanged(object sender, ContentPropertyChangedEventArgs e)
 		{
+			_contentChanged = true;
 			if (ContentPropertyChanged != null)
 			{
 				ContentPropertyChanged(e);
@@ -176,6 +208,7 @@ namespace GorgonLibrary.Editor
 			}
 
 			// Turn off the public facing content object.
+			ContentFile = null;
 			Current = null;
 
 			// Turn off any idle time activity during the load.
@@ -198,7 +231,8 @@ namespace GorgonLibrary.Editor
 		/// Function to load a content object into the content pane in the interface.
 		/// </summary>
 		/// <param name="contentObject">Content object to load into the interface.</param>
-	    public static void LoadContentPane(ContentObject contentObject)
+		/// <param name="contentFile">The file associated with the content (if any).</param>
+	    public static void LoadContentPane(ContentObject contentObject, GorgonFileSystemFileEntry contentFile)
 	    {
 			if (contentObject == null)
 			{
@@ -245,6 +279,8 @@ namespace GorgonLibrary.Editor
 				contentWindow.Focus();
 			}
 
+			ContentFile = contentFile;
+
 			if (contentObject.HasRenderer)
 			{
 				Gorgon.ApplicationIdleLoopMethod = IdleLoop;
@@ -262,7 +298,52 @@ namespace GorgonLibrary.Editor
 			    return;
 		    }
 
-		    LoadContentPane(new DefaultContent());
+		    LoadContentPane(new DefaultContent(), null);
+	    }
+
+		/// <summary>
+		/// Function to open a content object from the file system.
+		/// </summary>
+		/// <param name="file">The file system file that contains the content data.</param>
+		/// <returns>The content object.</returns>
+	    public static ContentObject Open(GorgonFileSystemFileEntry file)
+	    {
+			if (file == null)
+			{
+				throw new ArgumentNullException("file");
+			}
+
+			ContentPlugIn plugIn = GetContentPlugInForFile(file.Extension);
+
+			if (plugIn == null)
+			{
+				throw new IOException(string.Format(Resources.GOREDIT_NO_CONTENT_PLUG_IN_FOR_FILE, file.Name, file.Extension));
+			}
+
+			return plugIn.CreateContentObject(file.BaseFileName);
+	    }
+
+		/// <summary>
+		/// Function to save the current content.
+		/// </summary>
+	    public static void Save()
+	    {
+		    if ((ContentFile == null) || (Current == null))
+		    {
+			    return;
+		    }
+
+			// Write the content out to the scratch file system.
+			using (var contentStream = ContentFile.OpenStream(true))
+			{
+				Current.Persist(contentStream);
+			}
+
+			// Indicate that we've saved the content.
+			if (ContentSaved != null)
+			{
+				ContentSaved();
+			}
 	    }
 
         /// <summary>

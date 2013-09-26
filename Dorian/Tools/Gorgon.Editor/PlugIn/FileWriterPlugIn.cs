@@ -33,6 +33,35 @@ using GorgonLibrary.IO;
 namespace GorgonLibrary.Editor
 {
 	/// <summary>
+	/// Event parameters for the file write event.
+	/// </summary>
+	public class FileWriteEventArgs
+		: EventArgs
+	{
+		#region Properties.
+		/// <summary>
+		/// Property to return the file being processed.
+		/// </summary>
+		public GorgonFileSystemFileEntry File
+		{
+			get;
+			private set;
+		}
+		#endregion
+
+		#region Constructor/Destructor.
+		/// <summary>
+		/// Initializes a new instance of the <see cref="FileWriteEventArgs"/> class.
+		/// </summary>
+		/// <param name="file">The file.</param>
+		public FileWriteEventArgs(GorgonFileSystemFileEntry file)
+		{
+			File = file;
+		}
+		#endregion
+	}
+
+	/// <summary>
 	/// An interface for file output plug-ins.
 	/// </summary>
 	public abstract class FileWriterPlugIn

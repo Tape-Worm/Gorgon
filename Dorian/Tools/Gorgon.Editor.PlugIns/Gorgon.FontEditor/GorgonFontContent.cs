@@ -29,8 +29,10 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
 using System.Drawing.Design;
+using System.IO;
 using System.Linq;
 using System.Windows.Forms;
+using GorgonLibrary.Editor.FontEditorPlugIn.Properties;
 using GorgonLibrary.Graphics;
 using GorgonLibrary.IO;
 using GorgonLibrary.Renderers;
@@ -607,7 +609,16 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
             }
         }
 
-        /// <summary>
+		/// <summary>
+		/// Function to persist the content data into a stream.
+		/// </summary>
+		/// <param name="stream">Stream that will receive the data for the content.</param>
+		protected override void OnPersist(Stream stream)
+		{
+			Font.Save(stream);
+	    }
+
+	    /// <summary>
         /// Function to persist the content to the file system.
         /// </summary>
         protected override void OnPersist()
@@ -638,7 +649,17 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
             return true;
         }
 
-		/// <summary>
+	    /// <summary>
+	    /// Function to read the content data from a stream.
+	    /// </summary>
+	    /// <param name="stream">Stream containing the content data.</param>
+	    protected override void OnRead(Stream stream)
+	    {
+		    Font = Graphics.Fonts.FromStream(Path.GetFileNameWithoutExtension(Name), stream);
+		    _settings = Font.Settings;
+	    }
+
+	    /// <summary>
 		/// Function to open the content from the file system.
 		/// </summary>
 		protected override void OnOpenContent()
@@ -667,6 +688,11 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
         /// </returns>
         protected override string ValidateName(string proposedName)
         {
+	        if (string.IsNullOrWhiteSpace(proposedName))
+	        {
+		        return string.Empty;
+	        }
+
             if (!proposedName.EndsWith(".gorFont", StringComparison.OrdinalIgnoreCase))
             {
                 return proposedName + ".gorFont";
@@ -800,8 +826,9 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
         /// Initializes a new instance of the <see cref="GorgonFontContent"/> class.
         /// </summary>
 		/// <param name="plugIn">The plug-in that creates this object.</param>
-        public GorgonFontContent(ContentPlugIn plugIn)
-            : base()
+		/// <param name="name">The initial name for the content.</param>
+        public GorgonFontContent(ContentPlugIn plugIn, string name)
+			: base(name)
         {
 			PlugIn = plugIn;
 			_settings = new GorgonFontSettings();

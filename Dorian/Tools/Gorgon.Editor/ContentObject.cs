@@ -26,7 +26,9 @@
 
 using System;
 using System.ComponentModel;
+using System.IO;
 using System.Windows.Forms;
+using GorgonLibrary.Editor.Properties;
 using GorgonLibrary.Graphics;
 using GorgonLibrary.IO;
 
@@ -209,7 +211,7 @@ namespace GorgonLibrary.Editor
 		/// Property to return the name of the content object.
 		/// </summary>
         [Browsable(true), Category("Design"), Description("Provides a name for the content.  The name should conform to a standard file name.")]
-		public virtual string Name
+		public string Name
 		{
 			get
 			{
@@ -222,12 +224,20 @@ namespace GorgonLibrary.Editor
 					return;
 				}
 
-                if (!string.Equals(value, _name, StringComparison.OrdinalIgnoreCase))
-                {
-                    _name = ValidateName(value);
-                    HasChanges = true;
-                    OnContentPropertyChanged("Name", _name);
-                }
+				if (string.Equals(value, _name, StringComparison.OrdinalIgnoreCase))
+				{
+					return;
+				}
+
+				_name = ValidateName(value);
+
+				if (string.IsNullOrWhiteSpace(_name))
+				{
+					return;
+				}
+
+				HasChanges = true;
+				OnContentPropertyChanged("Name", _name);
 			}
 		}
 
@@ -246,14 +256,14 @@ namespace GorgonLibrary.Editor
 				if ((value == null) && (!string.IsNullOrWhiteSpace(_filePath)))
 				{
 					_filePath = string.Empty;
-                    _name = string.Empty;
+                    //_name = string.Empty;
 					return;
 				}
 
                 if (!string.Equals(value.FullPath, _filePath, StringComparison.OrdinalIgnoreCase))
                 {
                     _filePath = value.FullPath;
-                    _name = File.Name;
+                    //_name = File.Name;
                     HasChanges = true;
                 }
 			}
@@ -280,6 +290,18 @@ namespace GorgonLibrary.Editor
         /// Function to persist the content to the file system.
         /// </summary>
         protected abstract void OnPersist();
+
+		/// <summary>
+		/// Function to persist the content data to a stream.
+		/// </summary>
+		/// <param name="stream">Stream that will receive the data.</param>
+	    protected abstract void OnPersist(Stream stream);
+
+		/// <summary>
+		/// Function to read the content data from a stream.
+		/// </summary>
+		/// <param name="stream">Stream containing the content data.</param>
+	    protected abstract void OnRead(Stream stream);
 
 		/// <summary>
 		/// Function called when the content window is closed.
@@ -322,7 +344,7 @@ namespace GorgonLibrary.Editor
         {
             if (string.IsNullOrWhiteSpace(propertyName))
             {
-                throw new ArgumentException("The parameter must not be NULL or empty.", "propertyName");
+                throw new ArgumentException(Resources.GOREDIT_PARAMETER_MUST_NOT_BE_EMPTY, "propertyName");
             }
 
             if (ContentPropertyChanged != null)
@@ -382,6 +404,49 @@ namespace GorgonLibrary.Editor
             }
 		}
 
+		/// <summary>
+		/// Function to read the content from a stream.
+		/// </summary>
+		/// <param name="stream">Stream containing the content data.</param>
+	    internal void Read(Stream stream)
+	    {
+			if (stream == null)
+			{
+				throw new ArgumentNullException("stream");
+			}
+
+			if (!stream.CanRead)
+			{
+				throw new IOException(Resources.GOREDIT_STREAM_WRITE_ONLY);
+			}
+
+			if (stream.Position >= stream.Length)
+			{
+				throw new EndOfStreamException(Resources.GOREDIT_STREAM_EOS);
+			}
+
+			OnRead(stream);
+	    }
+
+		/// <summary>
+		/// Function to persist the content data into a stream.
+		/// </summary>
+		/// <param name="stream">Stream that will receive the data for the content.</param>
+		internal void Persist(Stream stream)
+		{
+			if (stream == null)
+			{
+				throw new ArgumentNullException("stream");
+			}
+
+			if (!stream.CanWrite)
+			{
+				throw new IOException(Resources.GOREDIT_STREAM_READ_ONLY);
+			}
+
+			OnPersist(stream);
+		}
+
         /// <summary>
         /// Function called when a property is changed from the property grid.
         /// </summary>
@@ -433,26 +498,26 @@ namespace GorgonLibrary.Editor
 		/// </summary>
 		/// <returns>A control to place in the primary interface window.</returns>
         public Control InitializeContent()
-        {
-            if (_contentControl == null)
-            {
-                _contentControl = OnInitialize();
-            }
+		{
+			// TODO:  Find out why this is being called multiple times such that we would need to cache the control.
+			return _contentControl ?? (_contentControl = OnInitialize());
+		}
 
-            return _contentControl;
-        }
-		#endregion
+	    #endregion
 
 		#region Constructor/Destructor.
 		/// <summary>
 		/// Initializes a new instance of the <see cref="ContentObject"/> class.
 		/// </summary>
-		protected ContentObject()
+		/// <param name="name">Name of the content.</param>
+		protected ContentObject(string name)
 		{
-			HasChanges = false;
-
-            TypeDescriptor = new ContentTypeDescriptor(this);
+			TypeDescriptor = new ContentTypeDescriptor(this);
             TypeDescriptor.Enumerate(GetType());
+
+			Name = name;
+
+			HasChanges = false;
 		}
 		#endregion
 

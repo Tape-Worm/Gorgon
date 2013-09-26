@@ -283,4 +283,16 @@
   <data name="GOREDIT_PROC_EXPORT_DLG_TITLE" xml:space="preserve">
     <value>Exporting files</value>
   </data>
+  <data name="GOREDIT_NO_CONTENT_PLUG_IN_FOR_FILE" xml:space="preserve">
+    <value>Cannot open '{0}'.  There are no content plug-ins loaded that can open '{2}' files.</value>
+  </data>
+  <data name="GOREDIT_STREAM_EOS" xml:space="preserve">
+    <value>Cannot read beyond the end of the stream.</value>
+  </data>
+  <data name="GOREDIT_STREAM_READ_ONLY" xml:space="preserve">
+    <value>The stream is read only.</value>
+  </data>
+  <data name="GOREDIT_STREAM_WRITE_ONLY" xml:space="preserve">
+    <value>The stream is write only.</value>
+  </data>
 </root>

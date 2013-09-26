@@ -133,13 +133,13 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		/// <summary>
         /// Function to create a content object interface.
         /// </summary>
-        /// <param name="editorObjects">Editor information to pass to the interface.</param>
+        /// <param name="name">The initial name for the content.</param>
         /// <returns>
         /// A new content object interface.
         /// </returns>
-        protected override ContentObject OnCreateContentObject()
+        protected override ContentObject OnCreateContentObject(string name)
         {
-            return new GorgonFontContent(this);
+            return new GorgonFontContent(this, name);
         }
 
 		/// <summary>

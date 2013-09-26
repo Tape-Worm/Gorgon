@@ -238,12 +238,7 @@ namespace GorgonLibrary.Editor
 				return;
 			}
 
-			var form = FindForm() as formMain;
-
-			if (form != null)
-			{
-				form.LoadContentPane<DefaultContent>();
-			}
+			ContentManagement.LoadDefaultContentPane();
 		}
 
 		/// <summary>
