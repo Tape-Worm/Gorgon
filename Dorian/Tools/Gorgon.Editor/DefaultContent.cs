@@ -25,6 +25,7 @@
 #endregion
 
 using System.Drawing;
+using System.IO;
 using System.Windows.Forms;
 using GorgonLibrary.Diagnostics;
 using GorgonLibrary.Graphics;
@@ -151,10 +152,29 @@ namespace GorgonLibrary.Editor
 		}
 
 		/// <summary>
+		/// Function to persist the content data into a stream.
+		/// </summary>
+		/// <param name="stream">Stream that will receive the data for the content.</param>
+		protected override void OnPersist(Stream stream)
+		{
+			// No saving is required for this content.	
+		}
+
+		/// <summary>
+		/// Function to read the content data from a stream.
+		/// </summary>
+		/// <param name="stream">Stream containing the content data.</param>
+		protected override void OnRead(Stream stream)
+		{
+			// No need to read this content.
+		}
+
+		/// <summary>
 		/// Function called when the content is shown for the first time.
 		/// </summary>
 		public override void Activate()
 		{
+			// TODO: Get rid of this!
 		}
 
 		/// <summary>
@@ -273,6 +293,7 @@ namespace GorgonLibrary.Editor
 		/// Initializes a new instance of the <see cref="DefaultContent"/> class.
 		/// </summary>
 		public DefaultContent()
+			: base(null)
 		{
 			HasChanges = false;
 		}

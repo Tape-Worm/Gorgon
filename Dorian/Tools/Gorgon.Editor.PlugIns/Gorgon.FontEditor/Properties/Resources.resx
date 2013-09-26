@@ -163,4 +163,7 @@
   <data name="GORFNT_DESC" xml:space="preserve">
     <value>Gorgon Font Editor</value>
   </data>
+  <data name="GORFNT_STREAM_READ_ONLY" xml:space="preserve">
+    <value>The stream is read only.</value>
+  </data>
 </root>

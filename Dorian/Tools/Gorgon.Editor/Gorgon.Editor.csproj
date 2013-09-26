@@ -161,6 +161,7 @@
     <Compile Include="formProcess.Designer.cs">
       <DependentUpon>formProcess.cs</DependentUpon>
     </Compile>
+    <Compile Include="PlugIn\ContentPlugIn.cs" />
     <Compile Include="PlugIn\DisabledPlugIn.cs" />
     <Compile Include="PlugIn\EditorPlugIn.cs" />
     <Compile Include="PlugIn\EditorPlugInSettings.cs" />

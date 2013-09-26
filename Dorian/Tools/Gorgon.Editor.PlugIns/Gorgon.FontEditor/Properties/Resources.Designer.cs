@@ -148,6 +148,15 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The stream is read only..
+        /// </summary>
+        internal static string GORFNT_STREAM_READ_ONLY {
+            get {
+                return ResourceManager.GetString("GORFNT_STREAM_READ_ONLY", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
         internal static System.Drawing.Bitmap ok_16x16 {

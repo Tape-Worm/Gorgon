@@ -27,6 +27,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -383,7 +384,7 @@ namespace GorgonLibrary.Editor
             itemSave.Enabled = !string.IsNullOrWhiteSpace(FileManagement.FilePath)
                                 && (FileManagement.GetWriterPlugIn(FileManagement.FilePath) != null)
                                 && ((FileManagement.FileChanged) 
-									|| ((Program.CurrentContent != null) && (Program.CurrentContent.HasChanges)))
+									|| (ContentManagement.Changed))
 								&& itemSaveAs.Enabled;
 
             // Check to see if the current content can export.
@@ -470,28 +471,19 @@ namespace GorgonLibrary.Editor
 		/// </summary>
 		private void ContentOpen()
 		{
-			TreeNodeFile fileNode = null;
-			
-			// If we have no node selected, then assume it's the top of the chain.
-			if ((treeFiles.SelectedNode != null) && (!(treeFiles.SelectedNode is TreeNodeDirectory)))
-			{
-				fileNode = treeFiles.SelectedNode as TreeNodeFile;
-			}
-			else
+			var fileNode = treeFiles.SelectedNode as TreeNodeFile;
+
+			if (fileNode == null)
 			{
 				return;
 			}
 
-			// Otherwise, we need to open this file.
-			if (fileNode.PlugIn == null)
-			{
-				throw new IOException("Cannot open '" + fileNode.File.FullPath + "'.  There are no content plug-ins loaded that can open '" + fileNode.File.Extension + "' files.");
-			}
+			ContentObject content = ContentManagement.Open(fileNode.File);
 
-			var content = fileNode.PlugIn.CreateContentObject();
+			Debug.Assert(content != null, "Content should not be NULL!");
 
             // Open the content pane.
-            LoadContentPane(ref content);
+			ContentManagement.LoadContentPane(content, fileNode.File);
 
             // Open the content from the file system.
             content.OpenContent(fileNode.File);
@@ -1080,7 +1072,7 @@ namespace GorgonLibrary.Editor
 		{
 			// Ensure both the content and the file change flags are checked.
 			if (((!FileManagement.FileChanged) &&
-			     ((ContentManagement.Current == null) || (!ContentManagement.Current.HasChanges))) 
+			     (!ContentManagement.Changed)) 
 				 || (PlugIns.WriterPlugIns.Count == 0))
 			{
 				return false;
@@ -1102,13 +1094,9 @@ namespace GorgonLibrary.Editor
 
 			// If we have content open and it hasn't been persisted to the file system, 
 			// then persist those changes.
-			if ((Program.CurrentContent != null) && (Program.CurrentContent.HasChanges))
+			if (ContentManagement.Changed)
 			{
-				if (!Program.CurrentContent.Close())
-				{
-					return true;
-				}
-
+				ContentManagement.Save();
 			}
 
 			// If we haven't saved the file yet, then prompt us with a file name.
@@ -1396,7 +1384,7 @@ namespace GorgonLibrary.Editor
 			Cursor.Current = Cursors.WaitCursor;
 			try
 			{
-				content = plugIn.CreateContentObject();
+				content = plugIn.CreateContentObject(null);
 
 				// Create the content settings.
 				if (!content.CreateNew())
@@ -1451,11 +1439,10 @@ namespace GorgonLibrary.Editor
 			try
 			{
                 // Save outstanding edits on the content.
-                // TODO: Move this code into the content interface.
-                if ((Program.CurrentContent != null) && (Program.CurrentContent.HasChanges))
-                {
-                    Program.CurrentContent.Persist(Program.CurrentContent.File);
-                }
+				if (ContentManagement.Changed)
+				{
+					ContentManagement.Save();
+				}
 
 			    FileWriterPlugIn plugIn = FileManagement.GetWriterPlugIn(FileManagement.FilePath);
 
@@ -1641,11 +1628,11 @@ namespace GorgonLibrary.Editor
 				}
 
 				Cursor.Current = Cursors.WaitCursor;
+
 				// Save outstanding edits on the content.
-				// TODO: Move this code into the content interface.
-				if ((Program.CurrentContent != null) && (Program.CurrentContent.HasChanges))
+				if (ContentManagement.Changed)
 				{
-					Program.CurrentContent.Persist(Program.CurrentContent.File);
+					ContentManagement.Save();
 				}
 
 				// Get the plug-in and write out the file.
@@ -2074,8 +2061,8 @@ namespace GorgonLibrary.Editor
 				}
 
 				// If this file is open, then update its handle.
-				if ((Program.CurrentContent != null)
-					&& (Program.CurrentContent.File == sourceFile.File))
+				if ((ContentManagement.Current != null)
+					&& (ContentManagement.ContentFile == sourceFile.File))
 				{
 					var newFile = ScratchArea.ScratchFiles.GetFile(newFilePath);
 					Program.CurrentContent.File = newFile;
@@ -3104,7 +3091,7 @@ namespace GorgonLibrary.Editor
 				if (hasProperties)
 				{
 					pageProperties.Enabled = true;
-					propertyItem.SelectedObject = Program.CurrentContent.TypeDescriptor;
+					propertyItem.SelectedObject = ContentManagement.Current.TypeDescriptor;
 					propertyItem.Refresh();
 					tabDocumentManager.SelectedTab = pageProperties;
     
