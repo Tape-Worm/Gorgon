@@ -166,4 +166,13 @@
   <data name="GORFNT_STREAM_READ_ONLY" xml:space="preserve">
     <value>The stream is read only.</value>
   </data>
+  <data name="GORFNT_ANTIALIAS_HQ" xml:space="preserve">
+    <value>Anti-alias (High quality)</value>
+  </data>
+  <data name="GORFNT_ANTIALIAS_NONE" xml:space="preserve">
+    <value>None</value>
+  </data>
+  <data name="GORFNT_ANTIALIAS_STANDARD" xml:space="preserve">
+    <value>Anti-alias</value>
+  </data>
 </root>

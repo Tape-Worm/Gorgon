@@ -260,7 +260,7 @@ namespace GorgonLibrary.Editor
 		/// Function to perform initialization on the content.
 		/// </summary>
 		/// <returns>A control to embed into the container interface.</returns>
-        protected override Control OnInitialize()
+        protected override ContentPanel OnInitialize()
 		{
 			AlphaDelta = Program.Settings.StartPageAnimationPulseRate.Abs();
 

@@ -66,6 +66,7 @@
     <Compile Include="Design\CharacterSetTypeConverter.cs" />
     <Compile Include="Design\FontFamilyEditor.cs" />
     <Compile Include="Design\FontStyleEditor.cs" />
+    <Compile Include="GorgonFontContentSettings.cs" />
     <Compile Include="formCharacterPicker.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -85,8 +86,8 @@
     <Compile Include="GorgonFontContentPanel.Designer.cs">
       <DependentUpon>GorgonFontContentPanel.cs</DependentUpon>
     </Compile>
-    <Compile Include="GorgonFontContentSettings.cs" />
     <Compile Include="GorgonFontEditorPlugIn.cs" />
+    <Compile Include="GorgonFontProperties.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
