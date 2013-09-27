@@ -75,6 +75,11 @@ namespace GorgonLibrary.Renderers
 		/// Header for the Gorgon sprite file.
 		/// </summary>		
 		public const string FileHeader = "GORSPR20";
+
+        /// <summary>
+        /// Default extension for sprite files.
+        /// </summary>
+        public const string DefaultExtension = ".gorSprite";
 		#endregion
 
 		#region Variables.

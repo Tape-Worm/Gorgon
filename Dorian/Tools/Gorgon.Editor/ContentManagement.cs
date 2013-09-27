@@ -289,6 +289,41 @@ namespace GorgonLibrary.Editor
 		    LoadContentPane(new DefaultContent());
 	    }
 
+        /// <summary>
+        /// Function to create a new content object.
+        /// </summary>
+        /// <param name="plugIn">The plug-in used to create the object.</param>
+        /// <returns>The content object or NULL if the content object was not created.</returns>
+        public static ContentObject Create(ContentPlugIn plugIn)
+        {
+            if (plugIn == null)
+            {
+                throw new ArgumentNullException("plugIn");
+            }
+
+            // Perform any set up required on the content.
+            ContentSettings settings = plugIn.GetContentSettings();
+
+            if (settings != null)
+            {
+                if (!settings.PerformSetup())
+                {
+                    return null;
+                }
+
+                settings.CreateContent = true;
+            }
+
+            ContentObject content = plugIn.CreateContentObject(settings);
+
+            if (content.HasProperties)
+            {
+                content.SetDefaults();
+            }
+
+            return content;
+        }
+
 		/// <summary>
 		/// Function to load content data from the file system.
 		/// </summary>
@@ -307,12 +342,13 @@ namespace GorgonLibrary.Editor
                 throw new IOException(string.Format(Resources.GOREDIT_NO_CONTENT_PLUG_IN_FOR_FILE, file.Name, file.Extension));
             }
 
-		    IContentSettings settings = plugIn.GetContentSettings();        // Get default settings.
+		    ContentSettings settings = plugIn.GetContentSettings();        // Get default settings.
 
 		    if (settings != null)
 		    {
                 // Assign the name from the file.
                 settings.Name = file.Name;
+		        settings.CreateContent = false;
 		    }
 
             ContentObject content = plugIn.CreateContentObject(settings);

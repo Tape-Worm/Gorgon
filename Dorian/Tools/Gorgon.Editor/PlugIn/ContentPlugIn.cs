@@ -72,14 +72,14 @@ namespace GorgonLibrary.Editor
 		/// </summary>
 		/// <param name="settings">The initial settings for the content.</param>
 		/// <returns>A new content object interface.</returns>
-		protected abstract ContentObject OnCreateContentObject(IContentSettings settings);
+		protected abstract ContentObject OnCreateContentObject(ContentSettings settings);
 
 		/// <summary>
 		/// Function to create a content object interface.
 		/// </summary>
 		/// <param name="settings">The initial settings for the content.</param>
 		/// <returns>A new content object interface.</returns>
-		internal ContentObject CreateContentObject(IContentSettings settings)
+		internal ContentObject CreateContentObject(ContentSettings settings)
 		{
 			return OnCreateContentObject(settings ?? GetContentSettings());
 		}
@@ -106,7 +106,7 @@ namespace GorgonLibrary.Editor
         /// Function to create settings for a content object.
         /// </summary>
         /// <returns>The settings interface for the content.</returns>
-	    public abstract IContentSettings GetContentSettings();
+	    public abstract ContentSettings GetContentSettings();
         
 		/// <summary>
 		/// Function to return the icon for the content.

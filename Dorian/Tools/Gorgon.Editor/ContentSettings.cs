@@ -36,31 +36,49 @@ namespace GorgonLibrary.Editor
     public abstract class ContentSettings
     {
         #region Variables.
+        private string _name = string.Empty;                // Name for the content object.
         #endregion
 
         #region Properties.
         /// <summary>
-        /// Property to set or return whether the content should be created.
+        /// Property to return whether the content should be created.
         /// </summary>
         /// <remarks>
         /// When set to TRUE this property will determine if the content object creates content after the content object has been initialized.
         /// </remarks>
-        internal bool CreateContent
+        public bool CreateContent
         {
             get;
-            set;
+            internal set;
         }
 
         /// <summary>
-        /// Property to return the name of the content.
+        /// Property to set or return the name of the content.
         /// </summary>
+        /// <remarks>This property will return NULL (Nothing in VB.Net) if the name is not valid.</remarks>
         public string Name
         {
             get
             {
-                return 
+                return _name;
             }
-            internal set;
+            set
+            {
+                if (value == null)
+                {
+                    value = string.Empty;
+                }
+
+                value = ValidateName(value);
+
+                if (value == null)
+                {
+                    _name = null;
+                    return;
+                }
+
+                _name = value;
+            }
         }
         #endregion
 

@@ -52,6 +52,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		private GorgonFontSettings _settings;				// Settings for the font.
 		private GorgonSwapChain _swap;						// Swap chain for our display.
         private GorgonSwapChain _textDisplay;               // Swap chain for sample text display.
+        private bool _createFont;                           // Flag to indicate that the font should be created after initialization.
         #endregion
 
         #region Properties.
@@ -729,7 +730,13 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 				Format = BufferFormat.R8G8B8A8_UIntNormal
 			});
 
-			_panel.CreateResources();
+            // If the font needs to be created, do so now.
+		    if (_createFont)
+		    {
+		        Font = Graphics.Fonts.CreateFont(Name, _settings);
+		    }
+
+		    _panel.CreateResources();
 
 			return _panel;
 		}
@@ -776,6 +783,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
         {
 			PlugIn = plugIn;
 			_settings = initialSettings.Settings;
+            _createFont = initialSettings.CreateContent;
         }
         #endregion
     }

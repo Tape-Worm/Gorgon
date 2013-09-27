@@ -82,6 +82,7 @@
     <Compile Include="AppContext.cs" />
     <Compile Include="ContentManagement.cs" />
     <Compile Include="ContentObject.cs" />
+    <Compile Include="ContentSettings.cs" />
     <Compile Include="Controls\ContentPanel.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -166,7 +167,6 @@
     <Compile Include="PlugIn\EditorPlugIn.cs" />
     <Compile Include="PlugIn\EditorPlugInSettings.cs" />
     <Compile Include="PlugIn\FileWriterPlugIn.cs" />
-    <Compile Include="PlugIn\IContentSettings.cs" />
     <Compile Include="PlugIn\PlugIns.cs" />
     <Compile Include="PropertyGrid\ContentProperty.cs" />
     <Compile Include="PropertyGrid\ContentPropertyDescriptor.cs" />
