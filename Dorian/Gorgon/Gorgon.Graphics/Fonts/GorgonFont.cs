@@ -51,6 +51,11 @@ namespace GorgonLibrary.Graphics
 		/// Header for a Gorgon font file.
 		/// </summary>
 		public const string FileHeader = "GORFNT10";
+
+        /// <summary>
+        /// Default extension for font files.
+        /// </summary>
+	    public const string DefaultExtension = ".gorFont";
 		#endregion
 
         #region Events

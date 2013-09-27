@@ -1314,7 +1314,7 @@ namespace GorgonLibrary.Editor
 		private void AddContent(object sender, EventArgs e)
 		{
 		    TreeNodeDirectory directoryNode = GetSelectedDirectoryNode();
-			ContentObject content = null;
+		    ContentObject content = null;
 			var item = sender as ToolStripMenuItem;
 
 			if (item == null)
@@ -1333,28 +1333,20 @@ namespace GorgonLibrary.Editor
 
 			try
 			{
-                // Get the set up for the content.
-                IContentSettings contentSettings = plugIn.GetContentSettings();
-
-                if ((contentSettings != null) && (!contentSettings.PerformSetup()))
-                {
-                    return;
-                }
-
                 // If we have a file open, and it is changed, then persist it back to the scratch area
                 // before closing it.
-			    if ((_currentOpenFile != null) && (ContentManagement.Changed))
-			    {
-			        ContentManagement.Save(_currentOpenFile);
-			    }
-
-				content = plugIn.CreateContentObject(contentSettings);
-
-                // Set the defaults for the content.
-                if (content.HasProperties)
+                if ((_currentOpenFile != null) && (ContentManagement.Changed))
                 {
-                    content.SetDefaults();
+                    ContentManagement.Save(_currentOpenFile);
                 }
+
+                // Create the content object.
+                content = ContentManagement.Create(plugIn);
+
+			    if (content == null)
+			    {
+			        return;
+			    }
 
                 // Reset to a wait cursor.
                 Cursor.Current = Cursors.WaitCursor;
@@ -1366,7 +1358,6 @@ namespace GorgonLibrary.Editor
                 if (_currentOpenFile == null)
 			    {
 			        content.Dispose();
-			        content = null;
 			        return;
 			    }
 

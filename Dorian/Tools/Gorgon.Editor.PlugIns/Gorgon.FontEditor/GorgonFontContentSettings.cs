@@ -26,7 +26,6 @@
 
 using System;
 using System.Drawing;
-using System.IO;
 using System.Windows.Forms;
 using GorgonLibrary.IO;
 using GorgonLibrary.Graphics;
@@ -38,11 +37,10 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
     /// Settings for font content.
     /// </summary>
     class GorgonFontContentSettings
-        : IContentSettings
+        : ContentSettings
     {
         #region Variables.
         private Size _maxTextureSize;               // Maximum texture size.
-        private string _name;                       // Name of the font.
         #endregion
 
         #region Properties.
@@ -56,50 +54,40 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
         }
         #endregion
 
-        #region Constructor/Destructor.
-        /// <summary>
-        /// Initializes a new instance of the <see cref="GorgonFontContentSettings"/> struct.
-        /// </summary>
-        /// <param name="maxTextureSize">The maximum size of a texture.</param>
-        public GorgonFontContentSettings(Size maxTextureSize)
-        {
-            Settings = new GorgonFontSettings();
-            _maxTextureSize = maxTextureSize;
-        }
-        #endregion
-
-        #region IContentSettings Members
-        #region Properties.
-        /// <summary>
-        /// Property to return the name for the content.
-        /// </summary>
-        public string Name
-        {
-            get
-            {
-                return _name;
-            }
-            set
-            {
-                _name = value;
-                if (!_name.EndsWith(".gorFont", StringComparison.OrdinalIgnoreCase))
-                {
-                    _name += ".gorFont";
-                }
-
-                _name = _name.FormatFileName();
-            }
-        }
-        #endregion
-
         #region Methods.
+        /// <summary>
+        /// Function used to validate the name of the content object.
+        /// </summary>
+        /// <param name="name">Current name of the object.</param>
+        /// <returns>
+        /// The updated and validated name of the content object.
+        /// </returns>
+        /// <remarks>
+        /// This method should be used to determine if a name for a content object is valid or not.  Implementors should return NULL (Nothing in VB.Net) to indicate that the
+        /// name was not valid.
+        /// </remarks>
+        protected override string ValidateName(string name)
+        {
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                return null;
+            }
+
+            if (!name.EndsWith(GorgonFont.DefaultExtension, StringComparison.OrdinalIgnoreCase))
+            {
+                return name + GorgonFont.DefaultExtension;
+            }
+
+            return name;
+        }
+
         /// <summary>
         /// Function to initialize the settings for the content.
         /// </summary>
         /// <returns>
         /// TRUE if the object was set up, FALSE if not.
         /// </returns>
-        public bool PerformSetup()
+        public override bool PerformSetup()
         {
             formNewFont newFont = null;
 
@@ -119,11 +107,6 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
                 Cursor.Current = Cursors.WaitCursor;
 
                 Name = newFont.FontName.FormatFileName();
-
-                if (!Name.EndsWith(".gorFont", StringComparison.OrdinalIgnoreCase))
-                {
-                    Name = Name + ".gorFont";
-                }
 
                 Settings.FontFamilyName = newFont.FontFamilyName;
                 Settings.Size = newFont.FontSize;
@@ -151,6 +134,17 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
             }
         }
         #endregion
+
+        #region Constructor/Destructor.
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GorgonFontContentSettings"/> struct.
+        /// </summary>
+        /// <param name="maxTextureSize">The maximum size of a texture.</param>
+        public GorgonFontContentSettings(Size maxTextureSize)
+        {
+            Settings = new GorgonFontSettings();
+            _maxTextureSize = maxTextureSize;
+        }
         #endregion
     }
 }
