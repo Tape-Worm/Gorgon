@@ -29,25 +29,56 @@ namespace GorgonLibrary.Editor
     /// <summary>
     /// Content settings.
     /// </summary>
-    public interface IContentSettings
+    /// <remarks>
+    /// This interface is used to provide initial settings to the content.  It can provide a user interface via the <see cref="PerformSetup"/> method to accomplish this.
+    /// <para>Implementors of this interface should provide default settings upon object creation.</para>
+    /// </remarks>
+    public abstract class ContentSettings
     {
+        #region Variables.
+        #endregion
+
         #region Properties.
         /// <summary>
-        /// Property to return the name of the content.
+        /// Property to set or return whether the content should be created.
         /// </summary>
-        string Name
+        /// <remarks>
+        /// When set to TRUE this property will determine if the content object creates content after the content object has been initialized.
+        /// </remarks>
+        internal bool CreateContent
         {
             get;
             set;
+        }
+
+        /// <summary>
+        /// Property to return the name of the content.
+        /// </summary>
+        public string Name
+        {
+            get
+            {
+                return 
+            }
+            internal set;
         }
         #endregion
 
         #region Methods.
         /// <summary>
+        /// Function used to validate the name of the content object.
+        /// </summary>
+        /// <param name="name">Current name of the object.</param>
+        /// <returns>The updated and validated name of the content object.</returns>
+        /// <remarks>This method should be used to determine if a name for a content object is valid or not.  Implementors should return NULL (Nothing in VB.Net) to indicate that the 
+        /// name was not valid.</remarks>
+        protected abstract string ValidateName(string name);
+
+        /// <summary>
         /// Function to initialize the settings for the content.
         /// </summary>
         /// <returns>TRUE if the object was set up, FALSE if not.</returns>
-        bool PerformSetup();
+        public abstract bool PerformSetup();
         #endregion
     }
 }
