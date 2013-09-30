@@ -403,10 +403,10 @@ namespace GorgonLibrary.Editor
         /// <param name="filePath">Path to the file.</param>
         /// <param name="totalFileCount">The total number of files.</param>
         /// <returns>The result of the dialog operation.</returns>
-	    private ConfirmationResult ConfirmFileOverwrite(string filePath, int totalFileCount)
+	    private ConfirmationResult ImportConfirmFileOverwrite(string filePath, int totalFileCount)
 	    {
             var result = ConfirmationResult.None;
-            Action invokeAction =() => result = GorgonDialogs.ConfirmBox(null, string.Format(Resources.GOREDIT_OVERWRITE_PROMPT,
+            Action invokeAction =() => result = GorgonDialogs.ConfirmBox(null, string.Format(Resources.GOREDIT_OVERWRITE_FILE_PROMPT,
                                                                       Resources.GOREDIT_FILE_DEFAULT_TYPE,
                                                                       filePath),
                                                                 totalFileCount > 1,
@@ -422,6 +422,57 @@ namespace GorgonLibrary.Editor
 
             return result;
 	    }
+
+        /// <summary>
+        /// Function to confirm a file overwrite operation.
+        /// </summary>
+        /// <param name="filePath">Path to the file.</param>
+        /// <param name="totalFileCount">The total number of files.</param>
+        /// <returns>The result of the dialog operation.</returns>
+        private ConfirmationResult CopyConfirmFileOverwrite(string filePath, int totalFileCount)
+        {
+            var result = ConfirmationResult.None;
+            Action invokeAction = () => result = GorgonDialogs.ConfirmBox(null, string.Format(Resources.GOREDIT_OVERWRITE_FILE_PROMPT,
+                                                                      Resources.GOREDIT_FILE_DEFAULT_TYPE,
+                                                                      filePath),
+                                                                true,
+                                                                totalFileCount > 1);
+            if (InvokeRequired)
+            {
+                Invoke(new MethodInvoker(invokeAction));
+            }
+            else
+            {
+                invokeAction();
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Function to confirm a directory overwrite operation.
+        /// </summary>
+        /// <param name="directoryPath">Path to the directory.</param>
+        /// <param name="totalDirectoryCount">The total number of directories.</param>
+        /// <returns>The result of the dialog operation.</returns>
+        private ConfirmationResult CopyConfirmDirectoryOverwrite(string directoryPath, int totalDirectoryCount)
+        {
+            var result = ConfirmationResult.None;
+            Action invokeAction = () => result = GorgonDialogs.ConfirmBox(null, string.Format(Resources.GOREDIT_OVERWRITE_DIRECTORY_PROMPT,
+                                                                      directoryPath),
+                                                                true,
+                                                                totalDirectoryCount > 1);
+            if (InvokeRequired)
+            {
+                Invoke(new MethodInvoker(invokeAction));
+            }
+            else
+            {
+                invokeAction();
+            }
+
+            return result;
+        }
 
         /// <summary>
         /// Handles the Click event of the itemExport control.
@@ -1042,9 +1093,15 @@ namespace GorgonLibrary.Editor
 				ContentManagement.ContentEnumerateProperties = null;
 				ContentManagement.ContentInitializedAction = null;
 
+
                 // Unhook from file management functionality.
 			    ScratchArea.ImportExportFileConflictFunction = null;
                 ScratchArea.ImportExportFileCompleteAction = null;
+			    ScratchArea.ImportExportFileCopyExceptionAction = null;
+			    ScratchArea.CanImportFunction = null;
+			    ScratchArea.CreateFileConflictFunction = null;
+			    ScratchArea.CopyFileConflictFunction = null;
+			    ScratchArea.CopyDirectoryConflictFunction = null;
 
 				// Unload any current content.
 				ContentManagement.UnloadCurrentContent();
@@ -1254,7 +1311,7 @@ namespace GorgonLibrary.Editor
 
 				// If the file already exists, then ask the user if they want to overwrite it.
 				if ((directoryNode.Directory.Files.Contains(content.Name))
-					&& (ConfirmFileOverwrite(directoryNode.Directory.FullPath + content.Name, 1) == ConfirmationResult.No))
+					&& (ImportConfirmFileOverwrite(directoryNode.Directory.FullPath + content.Name, 1) == ConfirmationResult.No))
 				{
 					return;
 				}
@@ -1374,78 +1431,34 @@ namespace GorgonLibrary.Editor
 		}
 
 		/// <summary>
-		/// Function to delete a directory and all the files and subdirectories underneath it.
+		/// Function to delete a directory and all the files and subdirectories underneath it or a single file.
 		/// </summary>
-		/// <param name="directoryNode">The node for the directory.</param>
-		private void DeleteDirectory(TreeNodeDirectory directoryNode)
+		/// <param name="node">Node that contained the deleted file/driectory</param>
+		private void PruneTree(TreeNode node)
 		{
 			Cursor.Current = Cursors.WaitCursor;
 
-			if ((_cutCopyObject != null) && (_cutCopyObject.ToString() == directoryNode.Name))
-			{
-				_cutCopyObject = null;
-			}
+            // Turn off pasting ability if we delete the object being held on the clip board.
+            if ((_cutCopyObject != null)
+                && (_cutCopyObject.Value.Node == node))
+            {
+                _cutCopyObject = null;
+            }
 
 			// If we've selected the root node, then we need to destroy everything.
-			if (directoryNode == _rootNode)
+			if (node == _rootNode)
 			{
-				// Wipe out all the files/subdirs under the root.
-				ScratchArea.ScratchFiles.DeleteDirectory("/");
-
-				ContentManagement.LoadDefaultContentPane();
-
 				_rootNode.Nodes.Clear();
-				FileManagement.FileChanged = true;
 				return;
 			}
 
-			if (CurrentOpenFile != null)
+            // If there's a single node contained within the selected node, then collapse the parent and
+            // remove the node so that the child node indicator goes away.
+			if (node.Parent.Nodes.Count == 1)
 			{
-				// If we have this file open, then close it.
-				var files = ScratchArea.ScratchFiles.FindFiles(directoryNode.Directory.FullPath, CurrentOpenFile.Name, true).Any(item => item == CurrentOpenFile);
-
-				if (files)
-				{
-					ContentManagement.LoadDefaultContentPane();
-				}
+				node.Parent.Collapse();
 			}
-
-			ScratchArea.ScratchFiles.DeleteDirectory(directoryNode.Directory.FullPath);
-			FileManagement.FileChanged = true;
-			if (directoryNode.Parent.Nodes.Count == 1)
-			{
-				directoryNode.Parent.Collapse();
-			}
-			directoryNode.Remove();
-			treeFiles.Refresh();
-		}
-
-		/// <summary>
-		/// Function to delete a file.
-		/// </summary>
-		/// <param name="fileNode">The node for the file.</param>
-		private void DeleteFile(TreeNodeFile fileNode)
-		{
-			Cursor.Current = Cursors.WaitCursor;
-
-			if ((_cutCopyObject != null) && (_cutCopyObject.ToString() == fileNode.Name))
-			{
-				_cutCopyObject = null;
-			}
-
-			if (fileNode.File == CurrentOpenFile)
-			{
-                //Program.CurrentContent.ContentPropertyChanged -= CurrentContent_ContentPropertyChanged;
-				ContentManagement.LoadDefaultContentPane();
-			}
-
-			ScratchArea.ScratchFiles.DeleteFile(fileNode.File.FullPath);
-			FileManagement.FileChanged = true;
-			if (fileNode.Parent.Nodes.Count == 1)
-			{
-				fileNode.Parent.Collapse();
-			}
-			fileNode.Remove();
+			node.Remove();
 			treeFiles.Refresh();
 		}
 
@@ -1458,38 +1471,61 @@ namespace GorgonLibrary.Editor
 		{
 			try
 			{
-				var directory = treeFiles.SelectedNode as TreeNodeDirectory;
+				var directoryNode = treeFiles.SelectedNode as TreeNodeDirectory;
 
                 if (treeFiles.SelectedNode == null)
                 {
-                    directory = _rootNode;
+                    directoryNode = _rootNode;
                 }
 
-				if (directory != null)
+				if (directoryNode != null)
 				{
-                    if (GorgonDialogs.ConfirmBox(this, string.Format(Resources.GOREDIT_FILE_DELETE_DIRECTORY_CONFIRM, directory.Directory.FullPath)) == ConfirmationResult.No)
+                    if (GorgonDialogs.ConfirmBox(this, string.Format(Resources.GOREDIT_FILE_DELETE_DIRECTORY_CONFIRM, directoryNode.Directory.FullPath)) == ConfirmationResult.No)
                     {
                         return;
-                    }			
-										
-					DeleteDirectory(directory);
+                    }
+
+				    GorgonFileSystemDirectory directory = directoryNode.Directory;
+			
+                    // If the currently open file is within the directory being deleted, then close it.
+				    if ((CurrentOpenFile != null)
+				        && ((directory == ScratchArea.ScratchFiles.RootDirectory) || (directory.Contains(CurrentOpenFile))))
+				    {
+				        ContentManagement.LoadDefaultContentPane();
+				    }
+
+                    ScratchArea.ScratchFiles.DeleteDirectory(directory);
+
+                    PruneTree(directoryNode);
+
+				    FileManagement.FileChanged = true;
+				    return;
 				}
-				else
+				
+				var fileNode = treeFiles.SelectedNode as TreeNodeFile;
+
+				if (fileNode == null)
 				{
-					var file = treeFiles.SelectedNode as TreeNodeFile;
-
-					if (file == null)
-					{
-						return;
-					}
-
-					if (GorgonDialogs.ConfirmBox(this, string.Format(Resources.GOREDIT_FILE_DELETE_FILE_CONFIRM, file.File.FullPath)) == ConfirmationResult.No)
-					{
-						return;
-					}
-
-					DeleteFile(file);
+					return;
 				}
+
+				if (GorgonDialogs.ConfirmBox(this, string.Format(Resources.GOREDIT_FILE_DELETE_FILE_CONFIRM, fileNode.File.FullPath)) == ConfirmationResult.No)
+				{
+					return;
+				}
+
+			    GorgonFileSystemFileEntry file = fileNode.File;
+
+                // Close the currently open file.
+			    if (CurrentOpenFile == file)
+			    {
+			        ContentManagement.LoadDefaultContentPane();
+			    }
+
+                ScratchArea.ScratchFiles.DeleteFile(file);
+
+				PruneTree(fileNode);
+			    FileManagement.FileChanged = true;
 			}
 			catch (Exception ex)
 			{
@@ -1915,7 +1951,7 @@ namespace GorgonLibrary.Editor
                 }
 
 	            var result = GorgonDialogs.ConfirmBox(this,
-	                                                  string.Format(Resources.GOREDIT_OVERWRITE_PROMPT,
+	                                                  string.Format(Resources.GOREDIT_OVERWRITE_FILE_PROMPT,
 	                                                                Resources.GOREDIT_FILE_DEFAULT_TYPE, newFilePath), true,
 	                                                  false);
 
@@ -2045,7 +2081,7 @@ namespace GorgonLibrary.Editor
                     {
                         if ((result & ConfirmationResult.ToAll) == 0)
                         {
-	                        result = GorgonDialogs.ConfirmBox(this, string.Format(Resources.GOREDIT_OVERWRITE_PROMPT,
+	                        result = GorgonDialogs.ConfirmBox(this, string.Format(Resources.GOREDIT_OVERWRITE_FILE_PROMPT,
 	                                                                              Resources.GOREDIT_FILE_DEFAULT_TYPE,
 	                                                                              newFilePath), true, true);
 							Cursor.Current = Cursors.WaitCursor;
@@ -2118,7 +2154,7 @@ namespace GorgonLibrary.Editor
             // Wipe out the source.
             if (deleteSource)
             {
-                DeleteDirectory(sourceDirectory);
+                PruneTree(sourceDirectory);
             }
 
             // Copy is done, update our tree nodes.            
@@ -2727,11 +2763,13 @@ namespace GorgonLibrary.Editor
             // Assign file management linkage.
 			ScratchArea.CanImportFunction = EvaluateFileImport;
 			ScratchArea.ImportExportFileCopyExceptionAction = FileCopyException;
-            ScratchArea.ImportExportFileConflictFunction = ConfirmFileOverwrite;
+            ScratchArea.ImportExportFileConflictFunction = ImportConfirmFileOverwrite;
             ScratchArea.ImportExportFileCompleteAction = FileImportExportCompleted;
-		    ScratchArea.CreateFileConflictFunction = (fileName, fileType) => GorgonDialogs.ConfirmBox(null,string.Format(Resources.GOREDIT_OVERWRITE_PROMPT,
+		    ScratchArea.CreateFileConflictFunction = (fileName, fileType) => GorgonDialogs.ConfirmBox(null,string.Format(Resources.GOREDIT_OVERWRITE_FILE_PROMPT,
 		                                                                                                        fileType,
 		                                                                                                        fileName));
+		    ScratchArea.CopyFileConflictFunction = CopyConfirmFileOverwrite;
+            ScratchArea.CopyFileConflictFunction = CopyConfirmDirectoryOverwrite;
 		}
 		#endregion
 	}

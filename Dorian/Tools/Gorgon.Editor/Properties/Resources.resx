@@ -304,7 +304,7 @@
   <data name="GOREDIT_IMPORT_EXPORT_PROCESS_LABEL" xml:space="preserve">
     <value>Copying '{0}'</value>
   </data>
-  <data name="GOREDIT_OVERWRITE_PROMPT" xml:space="preserve">
+  <data name="GOREDIT_OVERWRITE_FILE_PROMPT" xml:space="preserve">
     <value>The {0} '{1}' already exists.  Do you wish to overwrite it?</value>
   </data>
   <data name="GOREDIT_CONTENT_DEFAULT_NAME" xml:space="preserve">
@@ -453,5 +453,11 @@ The following characters are not allowed:
     <value>The import operation was cancelled.
 {0}/{1} files and directories copied.
 {2}/{1} files and directories skipped.</value>
+  </data>
+  <data name="GOREDIT_FILE_CANNOT_OPEN" xml:space="preserve">
+    <value>There was an error opening the file '{0}'.</value>
+  </data>
+  <data name="GOREDIT_OVERWRITE_DIRECTORY_PROMPT" xml:space="preserve">
+    <value>The directory '{0}' already exists.  Would you like to merge the two directories together?</value>
   </data>
 </root>
