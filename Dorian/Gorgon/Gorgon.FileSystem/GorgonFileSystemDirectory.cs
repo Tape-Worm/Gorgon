@@ -24,6 +24,9 @@
 // 
 #endregion
 
+using System;
+using System.Linq;
+
 namespace GorgonLibrary.IO
 {
 	/// <summary>
@@ -92,6 +95,59 @@ namespace GorgonLibrary.IO
         {
             FileSystem.DeleteDirectory(this);
         }
+
+        /// <summary>
+        /// Funciton to retrieve the total number of directoryes in this directory including any directories under this one.
+        /// </summary>
+        /// <returns>The total number of directories.</returns>
+        /// <remarks>The difference between the count property on the <see cref="Directories"/> collection and this method is that this method will enumerate child directories.  The count 
+        /// property will only count directories in the immediate directory.</remarks>
+        public int GetDirectoryCount()
+        {
+            int count = Directories.Count;
+
+            if (count > 0)
+            {
+                count += Directories.Sum(item => item.GetDirectoryCount());
+            }
+
+            return count;
+        }
+
+        /// <summary>
+        /// Funciton to retrieve the total number of files in this directory and optionally, any directories under this one.
+        /// </summary>
+        /// <param name="includeChildren">[Optional] TRUE to include child directories, FALSE to only use this directory.</param>
+        /// <returns>The total number of files.</returns>
+	    public int GetFileCount(bool includeChildren = true)
+        {
+            int count = Files.Count;
+
+            if ((includeChildren) && (Directories.Count > 0))
+            {
+                count += Directories.Sum(item => item.GetFileCount());
+            }
+
+            return count;
+        }
+
+        /// <summary>
+        /// Function to determine if the directory contains the specified file.
+        /// </summary>
+        /// <param name="file">File to look for.</param>
+        /// <param name="searchChildren">[Optional] TRUE to search through child directories, FALSE to only search this directory.</param>
+        /// <returns>TRUE if found, FALSE if not.</returns>
+        /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="file"/> parameter is NULL (Nothing in VB.Net).</exception>
+	    public bool Contains(GorgonFileSystemFileEntry file, bool searchChildren = true)
+	    {
+            if (file == null)
+            {
+                throw new ArgumentNullException("file");
+            }
+
+            return Files.Any(item => item == file)
+                   || ((searchChildren) && (Directories.Any(directory => directory.Contains(file))));
+	    }
         #endregion
 
         #region Constructor/Destructor.
