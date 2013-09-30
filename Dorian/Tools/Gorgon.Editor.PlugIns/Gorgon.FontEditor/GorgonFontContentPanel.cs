@@ -638,9 +638,9 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		/// <summary>
 		/// Function called when the content has changed.
 		/// </summary>
-		public override void OnContentChanged()
+		public override void RefreshContent()
 		{
-			base.OnContentChanged();
+			base.RefreshContent();
 
 			_content = Content as GorgonFontContent;
 
@@ -849,7 +849,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
         {
             InitializeComponent();
 
-			this.MouseWheel += PanelDisplay_MouseWheel;
+			MouseWheel += PanelDisplay_MouseWheel;
         }
         #endregion
 	}

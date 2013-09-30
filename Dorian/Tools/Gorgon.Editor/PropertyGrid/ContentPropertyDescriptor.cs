@@ -90,7 +90,7 @@ namespace GorgonLibrary.Editor
 			if ((!_property.HasDefaultValue) || (_property.IsReadOnly))
 				return false;
 
-			return !object.Equals(GetValue(component), _property.DefaultValue);
+			return !Equals(GetValue(component), _property.DefaultValue);
 		}
 
 		/// <summary>
@@ -117,7 +117,7 @@ namespace GorgonLibrary.Editor
 			if (!_property.HasDefaultValue)
 				return false;
 
-			return !object.Equals(GetValue(component), _property.DefaultValue);
+			return !Equals(GetValue(component), _property.DefaultValue);
 		}
 
 		/// <summary>

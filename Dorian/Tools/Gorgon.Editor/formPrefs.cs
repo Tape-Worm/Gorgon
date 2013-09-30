@@ -98,7 +98,7 @@ namespace GorgonLibrary.Editor
 
                     if (!panel.ValidateSettings())
                     {
-                        DialogResult = System.Windows.Forms.DialogResult.None;
+                        DialogResult = DialogResult.None;
                     }
                     else
                     {

@@ -27,7 +27,10 @@
 using System;
 using System.ComponentModel;
 using System.Drawing;
+using System.Runtime.Versioning;
 using System.Windows.Forms;
+using GorgonLibrary.Editor.Properties;
+using GorgonLibrary.UI;
 
 namespace GorgonLibrary.Editor
 {
@@ -39,10 +42,27 @@ namespace GorgonLibrary.Editor
 		#region Variables.
         private ContentObject _content;
 		private bool _captionVisible = true;
-        private bool _contentChanged;
+		#endregion
+
+		#region Events.
+		/// <summary>
+		/// Event fired when the content has been closed from the interface.
+		/// </summary>
+		[Browsable(false)]
+		internal event EventHandler ContentClosed;
 		#endregion
 
 		#region Properties.
+		/// <summary>
+		/// Property to set or return whether there have been changes made to the content.
+		/// </summary>
+		[Browsable(false)]
+		public bool HasChanged
+		{
+			get;
+			private set;
+		}
+
 		/// <summary>
 		/// Property to return the background color for the panel.
 		/// </summary>
@@ -111,7 +131,7 @@ namespace GorgonLibrary.Editor
 					_content.ContentPropertyChanged += _content_ContentPropertyChanged;
 				}
 
-                OnContentChanged();
+                RefreshContent();
             }
 		}
 
@@ -157,13 +177,14 @@ namespace GorgonLibrary.Editor
         /// </summary>
         private void UpdateCaption()
         {
-            labelCaption.Text = base.Text;
+	        if (_content == null)
+	        {
+				labelCaption.Text = string.Format("{0} - {1}{2}", base.Text, Resources.GOREDIT_CONTENT_DEFAULT_NAME, HasChanged ? "*" : string.Empty);
+		        return;
+	        }
 
-            if (_contentChanged)
-            {
-                labelCaption.Text += @"*";
-            }
-        }
+            labelCaption.Text = string.Format("{0} - {1}{2}", base.Text, _content.Name, HasChanged ? "*" : string.Empty);
+		}
 
 		/// <summary>
 		/// Handles the MouseEnter event of the labelClose control.
@@ -210,7 +231,7 @@ namespace GorgonLibrary.Editor
             }
             catch (Exception ex)
             {
-                UI.GorgonDialogs.ErrorBox(ParentForm, ex);
+                GorgonDialogs.ErrorBox(ParentForm, ex);
             }
             finally
             {
@@ -238,6 +259,11 @@ namespace GorgonLibrary.Editor
 				return;
 			}
 
+			if (ContentClosed != null)
+			{
+				ContentClosed(this, EventArgs.Empty);
+			}
+
 			ContentManagement.LoadDefaultContentPane();
 		}
 
@@ -248,15 +274,24 @@ namespace GorgonLibrary.Editor
 		/// <param name="value">New value assigned to the property.</param>
 		protected internal virtual void OnContentPropertyChanged(string propertyName, object value)
 		{
+			HasChanged = true;
+			UpdateCaption();
+		}
+
+		/// <summary>
+		/// Function called when the content data has been persisted.
+		/// </summary>
+		internal void ContentPersisted()
+		{
+			HasChanged = false;
+			RefreshContent();
 		}
 
 		/// <summary>
         /// Function called when the content has changed.
         /// </summary>
-        public virtual void OnContentChanged()
+        public virtual void RefreshContent()
 		{
-			_contentChanged = Content != null && Content.HasChanges;
-
 			UpdateCaption();
 		}
 		#endregion

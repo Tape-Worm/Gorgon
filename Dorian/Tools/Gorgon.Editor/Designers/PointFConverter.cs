@@ -27,6 +27,7 @@
 using System;
 using System.ComponentModel;
 using System.Drawing;
+using System.Globalization;
 
 namespace GorgonLibrary.Editor
 {
@@ -73,7 +74,7 @@ namespace GorgonLibrary.Editor
 		/// An <see cref="T:System.Object"></see> that represents the converted value.
 		/// </returns>
 		/// <exception cref="T:System.NotSupportedException">The conversion cannot be performed. </exception>
-		public override object ConvertFrom(ITypeDescriptorContext context, System.Globalization.CultureInfo culture, object value)
+		public override object ConvertFrom(ITypeDescriptorContext context, CultureInfo culture, object value)
 		{
 			var text = value as string;		// Value to convert.
 
@@ -87,7 +88,7 @@ namespace GorgonLibrary.Editor
 
 				// Get the culture.
 				if (culture == null)
-					culture = System.Globalization.CultureInfo.CurrentCulture;
+					culture = CultureInfo.CurrentCulture;
 
 				// Get the separator for the value.
 				char ch = culture.TextInfo.ListSeparator[0];
@@ -120,7 +121,7 @@ namespace GorgonLibrary.Editor
 		/// </returns>
 		/// <exception cref="T:System.NotSupportedException">The conversion cannot be performed. </exception>
 		/// <exception cref="T:System.ArgumentNullException">The destinationType parameter is null. </exception>
-		public override object ConvertTo(ITypeDescriptorContext context, System.Globalization.CultureInfo culture, object value, Type destinationType)
+		public override object ConvertTo(ITypeDescriptorContext context, CultureInfo culture, object value, Type destinationType)
 		{
 			if (destinationType == typeof(string))
 			{
@@ -137,7 +138,7 @@ namespace GorgonLibrary.Editor
 		/// </summary>
 		/// <param name="context">The context.</param>
 		/// <returns></returns>
-		public override bool GetPropertiesSupported(System.ComponentModel.ITypeDescriptorContext context)
+		public override bool GetPropertiesSupported(ITypeDescriptorContext context)
 		{
 			return true;
 		}

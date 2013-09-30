@@ -54,23 +54,6 @@ namespace GorgonLibrary.Editor
 			set;
 		}
 
-		private static ContentObject _current;
-
-		/// <summary>
-		/// Property to return the currently loaded content.
-		/// </summary>
-		public static ContentObject CurrentContent
-		{
-			get
-			{
-				return _current;
-			}
-			set
-			{
-				_current = value;
-			}
-		}
-
 		/// <summary>
 		/// Property to set or return the settings for the application.
 		/// </summary>
@@ -141,12 +124,7 @@ namespace GorgonLibrary.Editor
 			{
                 Gorgon.PlugIns.AssemblyResolver = null;
 
-				// Destroy the current content.
-				if (CurrentContent != null)
-				{
-					CurrentContent.Dispose();
-					CurrentContent = null;
-				}
+				ContentManagement.UnloadCurrentContent();
 
 				// Shut down the graphics interface.
 				if (Graphics != null)

@@ -519,7 +519,7 @@ namespace GorgonLibrary.Editor
                 // If the file path is blank, then the Save As function will be triggered if we attempt to save so we 
                 // can save it in a format that we DO understand.  This is of course assuming we have any plug-ins loaded
                 // that will allow us to save.
-                if (GetWriterPlugIn(path) == null)
+                if (GetWriterPlugIn(path) != null)
                 {
                     FilePath = path;
                 }

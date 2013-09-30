@@ -27,6 +27,7 @@
 using System;
 using System.Drawing;
 using System.Windows.Forms;
+using GorgonLibrary.Editor.Properties;
 using GorgonLibrary.Graphics;
 using GorgonLibrary.IO;
 
@@ -114,7 +115,7 @@ namespace GorgonLibrary.Editor
 		/// <returns>The 16x16 image for the content.</returns>
 		public virtual Image GetContentIcon()
 		{
-			return Properties.Resources.unknown_document_16x16;
+			return Resources.unknown_document_16x16;
 		}
 		
 		/// <summary>

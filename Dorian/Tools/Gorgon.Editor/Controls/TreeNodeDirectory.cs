@@ -25,6 +25,7 @@
 #endregion
 
 using System.Drawing;
+using GorgonLibrary.Editor.Properties;
 using GorgonLibrary.IO;
 
 namespace GorgonLibrary.Editor
@@ -84,8 +85,8 @@ namespace GorgonLibrary.Editor
 		/// <param name="newDir">New directory info.</param>
 		public void UpdateNode(GorgonFileSystemDirectory newDir)
 		{
-			this.Name = newDir.FullPath;
-			this.Text = newDir.Name;
+			Name = newDir.FullPath;
+			Text = newDir.Name;
 
 			if ((Nodes.Count > 0) && (IsExpanded))
 			{
@@ -102,10 +103,10 @@ namespace GorgonLibrary.Editor
 		public TreeNodeDirectory(GorgonFileSystemDirectory directory)
 		{
 			ForeColor = Color.White;
-			this.Name = directory.FullPath;
-			this.Text = directory.Name;
-			ExpandedImage = Properties.Resources.folder_open_16x16;
-			CollapsedImage = Properties.Resources.folder_16x16;
+			Name = directory.FullPath;
+			Text = directory.Name;
+			ExpandedImage = Resources.folder_open_16x16;
+			CollapsedImage = Resources.folder_16x16;
 		}
 		#endregion
 	}
@@ -183,7 +184,7 @@ namespace GorgonLibrary.Editor
 		public RootNodeDirectory()
 			: base(ScratchArea.ScratchFiles.RootDirectory)
 		{
-			ExpandedImage = CollapsedImage = Properties.Resources.project_node_16x16;
+			ExpandedImage = CollapsedImage = Resources.project_node_16x16;
 		}
 		#endregion
 	}

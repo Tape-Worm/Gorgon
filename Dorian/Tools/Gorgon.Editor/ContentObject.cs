@@ -31,7 +31,6 @@ using System.Linq;
 using System.Windows.Forms;
 using GorgonLibrary.Editor.Properties;
 using GorgonLibrary.Graphics;
-using GorgonLibrary.IO;
 
 namespace GorgonLibrary.Editor
 {
@@ -41,10 +40,6 @@ namespace GorgonLibrary.Editor
     class ContentPropertyChangedEventArgs
         : EventArgs
     {
-        #region Variables.
-
-        #endregion
-
         #region Properties.
         /// <summary>
         /// Property to set or return the name of the property that was updated.
@@ -87,9 +82,8 @@ namespace GorgonLibrary.Editor
 	{
 		#region Variables.
         private ContentPanel _contentControl;		// Control used to edit/display the content.
-        private bool _hasChanged;					// Flag to indicate that the object was changed.
 		private string _name = "Content";			// Name of the content.
-		private string _filePath = string.Empty;	// Path to the file for the content.
+	    private bool _disposed;						// Flag to indicate that the object was disposed.
 		#endregion
 
         #region Events.
@@ -101,33 +95,6 @@ namespace GorgonLibrary.Editor
         #endregion
 
         #region Properties.
-        /// <summary>
-		/// Property to return whether the content has unsaved changes.
-		/// </summary>
-		protected internal bool HasChanges
-		{
-            get
-            {
-                return _hasChanged;
-            }
-            internal set
-            {
-                _hasChanged = value;				
-                OnHasChangesUpdated();
-            }
-		}
-
-        /// <summary>
-        /// Property to return whether this is an internal content object only.
-        /// </summary>
-        internal virtual bool IsInternal
-        {
-            get
-            {
-                return false;
-            }
-        }
-
         /// <summary>
         /// Property to return the type descriptor for this content.
         /// </summary>
@@ -236,61 +203,19 @@ namespace GorgonLibrary.Editor
 				{
 					return;
 				}
-
-				HasChanges = true;
+				
 				OnContentPropertyChanged("Name", _name);
-			}
-		}
-
-		/// <summary>
-		/// Property to return the file system file that contains this content.
-		/// </summary>
-        [Browsable(false)]
-		public GorgonFileSystemFileEntry File
-		{
-			get
-			{
-				return string.IsNullOrWhiteSpace(_filePath) ? null : ScratchArea.ScratchFiles.GetFile(_filePath);
-			}
-			internal set
-			{
-				if ((value == null) && (!string.IsNullOrWhiteSpace(_filePath)))
-				{
-					_filePath = string.Empty;
-                    //_name = string.Empty;
-					return;
-				}
-
-                if (!string.Equals(value.FullPath, _filePath, StringComparison.OrdinalIgnoreCase))
-                {
-                    _filePath = value.FullPath;
-                    //_name = File.Name;
-                    HasChanges = true;
-                }
 			}
 		}
 		#endregion
 
 		#region Methods.
         /// <summary>
-        /// Function called when the HasChanges property is updated.
+        /// Function called after the content data has been updated.
         /// </summary>
-        protected virtual void OnHasChangesUpdated()
+        protected virtual void OnContentUpdated()
         {
         }
-
-        /// <summary>
-        /// Function to update the content.
-        /// </summary>
-        protected virtual void UpdateContent()
-        {
-            HasChanges = true;
-        }
-
-        /// <summary>
-        /// Function to persist the content to the file system.
-        /// </summary>
-        protected abstract void OnPersist();
 
 		/// <summary>
 		/// Function to persist the content data to a stream.
@@ -303,19 +228,6 @@ namespace GorgonLibrary.Editor
 		/// </summary>
 		/// <param name="stream">Stream containing the content data.</param>
 	    protected abstract void OnRead(Stream stream);
-
-		/// <summary>
-		/// Function called when the content window is closed.
-		/// </summary>
-		/// <returns>TRUE to continue closing the window, FALSE to cancel the close.</returns>
-		protected abstract bool OnClose();
-
-		/// <summary>
-		/// Function to open the content from the file system.
-		/// </summary>
-		protected internal virtual void OnOpenContent()
-		{
-		}
 
         /// <summary>
         /// Function called when the name is about to be changed.
@@ -357,14 +269,6 @@ namespace GorgonLibrary.Editor
 		public abstract void Activate();
 
         /// <summary>
-        /// Function to export the content to an external file.
-        /// </summary>
-        /// <param name="filePath">Path to the file.</param>
-        public virtual void Export(string filePath)
-        {
-        }
-
-        /// <summary>
         /// Function to retrieve default values for properties with the DefaultValue attribute.
         /// </summary>
         internal void SetDefaults()
@@ -374,26 +278,6 @@ namespace GorgonLibrary.Editor
                 descriptor.DefaultValue = descriptor.GetValue<object>();
             }
         }
-
-        /// <summary>
-		/// Function to open the content from the file system.
-		/// </summary>
-		/// <param name="file">File containing the content to open.</param>
-		internal void OpenContent(GorgonFileSystemFileEntry file)
-		{
-            try
-            {
-                File = file;
-                OnOpenContent();
-
-                // Update the properties.
-                SetDefaults();
-            }
-            finally
-            {
-                HasChanges = false;
-            }
-		}
 
 		/// <summary>
 		/// Function to read the content from a stream.
@@ -422,7 +306,10 @@ namespace GorgonLibrary.Editor
             SetDefaults();
 
             // Update the panel
-            _contentControl.OnContentChanged();
+			if (_contentControl != null)
+			{
+				_contentControl.RefreshContent();
+			}
 	    }
 
 		/// <summary>
@@ -442,6 +329,11 @@ namespace GorgonLibrary.Editor
 			}
 
 			OnPersist(stream);
+
+			if (_contentControl != null)
+			{
+				_contentControl.ContentPersisted();
+			}
 		}
 
         /// <summary>
@@ -452,38 +344,6 @@ namespace GorgonLibrary.Editor
         {
             
         }
-
-        /// <summary>
-        /// Function to persist the content to a file in the file system.
-        /// </summary>
-        /// <param name="file">The file to persist the data into.</param>
-        /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="file"/> parameter is NULL (Nothing in VB.Net).</exception>
-        public void Persist(GorgonFileSystemFileEntry file)
-        {
-            if (file == null)
-            {
-                throw new ArgumentNullException("file");
-            }
-
-            File = file;
-
-            if (!HasChanges)
-            {
-                return;
-            }
-
-            OnPersist();
-            HasChanges = false;
-        }
-
-		/// <summary>
-		/// Function to close the content window.
-		/// </summary>
-		/// <returns>TRUE to continue closing the window, FALSE to cancel the close.</returns>
-		public bool Close()
-		{
-            return OnClose();
-		}
 
 		/// <summary>
 		/// Function to draw the interface for the content editor.
@@ -498,8 +358,8 @@ namespace GorgonLibrary.Editor
 		/// <returns>A control to place in the primary interface window.</returns>
         public ContentPanel InitializeContent()
 		{
-			// TODO:  Find out why this is being called multiple times such that we would need to cache the control.
-			return _contentControl ?? (_contentControl = OnInitialize());
+			_contentControl = OnInitialize();
+			return _contentControl;
 		}
 
 	    #endregion
@@ -538,6 +398,12 @@ namespace GorgonLibrary.Editor
 		/// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
 		protected virtual void Dispose(bool disposing)
 		{
+			if (_disposed)
+			{
+				return;
+			}
+
+			_disposed = true;
             _contentControl = null;
 		}
 

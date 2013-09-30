@@ -26,6 +26,7 @@
 
 using System.Drawing;
 using System.Windows.Forms;
+using GorgonLibrary.Editor.Properties;
 
 namespace GorgonLibrary.Editor
 {
@@ -238,11 +239,11 @@ namespace GorgonLibrary.Editor
 			var newRect = new Rectangle(e.Item.Width - e.Image.Width - 5, e.ImageRectangle.Top, e.ImageRectangle.Width, e.ImageRectangle.Height);
 			if ((e.Item.Enabled) && (!e.Item.Selected))
 			{
-				e.Graphics.DrawImage(Properties.Resources.Check_Enabled, newRect);
+				e.Graphics.DrawImage(Resources.Check_Enabled, newRect);
 			}
 			else
 			{
-				e.Graphics.DrawImage(Properties.Resources.Check_Disabled, newRect);
+				e.Graphics.DrawImage(Resources.Check_Disabled, newRect);
 			}
 		}
 

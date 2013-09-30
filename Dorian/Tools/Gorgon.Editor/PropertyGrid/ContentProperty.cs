@@ -238,7 +238,7 @@ namespace GorgonLibrary.Editor
 			attributes.Add(new BrowsableAttribute(true));
 			attributes.Add(new ReadOnlyAttribute(IsReadOnly));
 			
-			if (RefreshProperties != System.ComponentModel.RefreshProperties.None)
+			if (RefreshProperties != RefreshProperties.None)
 				attributes.Add(new RefreshPropertiesAttribute(RefreshProperties));
 
 			if (HasDefaultValue)

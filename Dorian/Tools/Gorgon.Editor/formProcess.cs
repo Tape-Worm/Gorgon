@@ -26,6 +26,7 @@
 
 using System;
 using System.ComponentModel;
+using System.IO;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using GorgonLibrary.Editor.Properties;
@@ -94,13 +95,13 @@ namespace GorgonLibrary.Editor
 				{
 					case ProcessType.FileWriter:
 						base.Text = string.Format(Resources.GOREDIT_FILE_WRITE_SAVE_DLG_TITLE,
-						                          System.IO.Path.GetFileName(value).Ellipses(35, true));
+						                          Path.GetFileName(value).Ellipses(35, true));
 						break;
 					case ProcessType.FileImporter:
 						base.Text = Resources.GOREDIT_PROC_IMPORT_DLG_TITLE;
 						break;
                     case ProcessType.FileExporter:
-				        base.Text = Resources.GOREDIT_PROC_IMPORT_DLG_TITLE;
+				        base.Text = Resources.GOREDIT_PROC_EXPORT_DLG_TITLE;
 				        break;
 					case ProcessType.FileInfo:
 						base.Text = Resources.GOREDIT_IMPORT_INFO_DLG_TITLE;
@@ -258,9 +259,10 @@ namespace GorgonLibrary.Editor
 		/// </summary>
 		/// <param name="processType">Type of the process.</param>
 		public formProcess(ProcessType processType)
-			: this()
 		{
 			_processType = processType;
+
+			InitializeComponent();
 
 			switch (processType)
 			{
@@ -278,7 +280,6 @@ namespace GorgonLibrary.Editor
 					labelStatus.Text = Resources.GOREDIT_IMPORT_INFO_LABEL;
 					break;
 			}
-
 		}
 		#endregion
 	}

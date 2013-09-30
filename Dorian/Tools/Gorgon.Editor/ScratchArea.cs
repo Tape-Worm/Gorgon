@@ -33,7 +33,6 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using System.Xml.Linq;
 using GorgonLibrary.Diagnostics;
 using GorgonLibrary.Editor.Properties;
 using GorgonLibrary.IO;
@@ -71,47 +70,79 @@ namespace GorgonLibrary.Editor
 	static class ScratchArea
     {
         #region Classes.
+		/// <summary>
+		/// Settings for import.
+		/// </summary>
+		private class ImportSettings
+		{
+			#region Properties.
+			/// <summary>
+			/// The process form to use.
+			/// </summary>
+			public formProcess ProcessForm;
+
+			/// <summary>
+			/// Files to copy.
+			/// </summary>
+			public IList<Tuple<string, string>> Files;
+			/// <summary>
+			/// Directories to import.
+			/// </summary>
+			public IList<Tuple<string, string>> Directories;
+
+			/// <summary>
+			/// The file counter.
+			/// </summary>
+			public int FileCounter;
+
+			/// <summary>
+			/// The current conflict result.
+			/// </summary>
+			public ConfirmationResult ConflictResult;
+
+			/// <summary>
+			/// The cancellation token.
+			/// </summary>
+			public CancellationToken CancelToken;
+
+			/// <summary>
+			/// Property to set or return whether the operation is cancelled or not.
+			/// </summary>
+			public bool IsCancelled
+			{
+				get
+				{
+					return ConflictResult == ConfirmationResult.Cancel || CancelToken.IsCancellationRequested;
+				}
+			}
+			#endregion
+		}
+
         /// <summary>
         /// Settings for export.
         /// </summary>
         private class ExportSettings
         {
             #region Properties.
-            /// <summary>
-            /// Property to set or return the process form to use.
-            /// </summary>
-            public formProcess ProcessForm
-            {
-                get;
-                set;
-            }
+	        /// <summary>
+	        /// The process form to use.
+	        /// </summary>
+	        public formProcess ProcessForm;
 
-            /// <summary>
-            /// Property to set or return the total number of files.
-            /// </summary>
-            public int TotalFiles
-            {
-                get;
-                set;
-            }
+	        /// <summary>
+	        /// The total number of files.
+	        /// </summary>
+	        public int TotalFiles;
 
-            /// <summary>
-            /// Property to set or return the file counter.
-            /// </summary>
-            public int FileCount
-            {
-                get;
-                set;
-            }
+	        /// <summary>
+	        /// The file counter.
+	        /// </summary>
+	        public int FileCount;
 
-            /// <summary>
-            /// Property to set or return the cancellation token.
-            /// </summary>
-            public CancellationToken CancelToken
-            {
-                get;
-                set;
-            }
+	        /// <summary>
+	        /// The cancellation token.
+	        /// </summary>
+	        public CancellationToken CancelToken;
 
             /// <summary>
             /// Property to set or return whether the operation is cancelled or not.
@@ -124,15 +155,11 @@ namespace GorgonLibrary.Editor
                 }
             }
 
-            /// <summary>
-            /// Property to set or return the current conflict result.
-            /// </summary>
-            public ConfirmationResult ConflictResult
-            {
-                get;
-                set;
-            }
-            #endregion
+	        /// <summary>
+	        /// The current conflict result.
+	        /// </summary>
+	        public ConfirmationResult ConflictResult;
+	        #endregion
         }
         #endregion
 
@@ -142,21 +169,39 @@ namespace GorgonLibrary.Editor
 		#endregion
 
 		#region Properties.
+		/// <summary>
+		/// Property to set or return the method called to determine if a file is able to be imported or not.
+		/// </summary>
+		public static Func<GorgonFileSystemFileEntry, bool> CanImportFunction
+		{
+			get;
+			set;
+		}
+
         /// <summary>
-        /// Property to set or return the method that is called when there's a file conflict (file already exists) when exporting.
+        /// Property to set or return the method that is called when there's a file conflict (file already exists) when importing/exporting.
         /// </summary>
         /// <remarks>This will return a confirmation result so that a dialog can be used to determine the results of the action.</remarks>
-        public static Func<string, int, ConfirmationResult> ExportFileConflictFunction
+        public static Func<string, int, ConfirmationResult> ImportExportFileConflictFunction
         {
             get;
             set;
         }
 
+		/// <summary>
+		/// Property to set or return the method that is called if a file copy operation throws an exception.
+		/// </summary>
+		public static Action<Exception> ImportExportFileCopyExceptionAction
+		{
+			get;
+			set;
+		}
+
         /// <summary>
-        /// Property to set or return the method that is called when the file export is completed or cancelled.
+        /// Property to set or return the method that is called when the file import/export is completed or cancelled.
         /// </summary>
-        /// <remarks>The first parameter will be TRUE if the export is cancelled, the second is the number of files exported, and the third is the total number of files.</remarks>
-        public static Action<bool, int, int> ExportFileCompleteAction
+        /// <remarks>The first parameter will be TRUE if the export is cancelled, the 2nd indicates TRUE for import, FALSE for export, the third is the number of files imported or exported, and the fourth is the total number of files.</remarks>
+        public static Action<bool, bool, int, int> ImportExportFileCompleteAction
         {
             get;
             set;
@@ -183,6 +228,217 @@ namespace GorgonLibrary.Editor
 		#endregion
 
 		#region Methods.
+		/// <summary>
+		/// Function to retrieve the directory/file names for import.
+		/// </summary>
+		/// <param name="parentDirectory">Parent directory for the children.</param>
+		/// <param name="destination">The destination directory.</param>
+		/// <param name="settings">Settings for the files.</param>
+		private static void GetImportNames(DirectoryInfo parentDirectory, string destination, ImportSettings settings)
+		{
+			var directories = (from directory in parentDirectory.EnumerateDirectories()
+							   where (((directory.Attributes & FileAttributes.Encrypted) != FileAttributes.Encrypted)
+									  && ((directory.Attributes & FileAttributes.Hidden) != FileAttributes.Hidden)
+									  && ((directory.Attributes & FileAttributes.System) != FileAttributes.System))
+							   select
+								   new Tuple<DirectoryInfo, string>(directory, (destination + directory.Name).FormatDirectory('/')));
+
+			var files = (from file in parentDirectory.EnumerateFiles()
+						 where (((file.Attributes & FileAttributes.Encrypted) != FileAttributes.Encrypted)
+								&& ((file.Attributes & FileAttributes.Hidden) != FileAttributes.Hidden)
+								&& ((file.Attributes & FileAttributes.System) != FileAttributes.System))
+						 select new Tuple<string, string>(file.FullName, destination + file.Name.FormatFileName()));
+
+			// Get directories.
+			foreach (var directory in directories.Distinct())
+			{
+				if (settings.IsCancelled)
+				{
+					return;
+				}
+
+				GetImportNames(directory.Item1, directory.Item2, settings);
+
+				settings.Directories.Add(new Tuple<string, string>(directory.Item1.FullName, directory.Item2));
+			}
+
+			// Get files.
+			foreach (var file in files)
+			{
+				if (settings.IsCancelled)
+				{
+					return;
+				}
+
+				settings.Files.Add(file);
+			}
+		}
+
+		/// <summary>
+		/// Function to retrieve the file information for the import procedure.
+		/// </summary>
+		/// <param name="importFiles">Files to import.</param>
+		/// <param name="destination">Destination directory for the files.</param>
+		/// <param name="settings">Settings for the file import.</param>
+		private static void GetFileInfoThread(IEnumerable<string> importFiles, GorgonFileSystemDirectory destination, ImportSettings settings)
+		{
+			var paths = from path in importFiles
+						let Info = new DirectoryInfo(path)
+						where (((Info.Attributes & FileAttributes.Encrypted) != FileAttributes.Encrypted)
+							   && ((Info.Attributes & FileAttributes.Hidden) != FileAttributes.Hidden)
+							   && ((Info.Attributes & FileAttributes.System) != FileAttributes.System))
+						select new
+						{
+							Info,
+							DestPath = ((Info.Attributes & FileAttributes.Directory) == FileAttributes.Directory) ? 
+										(destination.FullPath + Info.Name).FormatDirectory('/')
+										: destination.FullPath.FormatDirectory('/') + Info.Name.FormatFileName()
+						};
+
+			// Get information.
+			foreach (var file in paths.Where(item => !item.DestPath.StartsWith(ScratchFiles.WriteLocation, StringComparison.OrdinalIgnoreCase)))
+			{
+				if (settings.IsCancelled)
+				{
+					return;
+				}
+
+				if ((file.Info.Attributes & FileAttributes.Directory) == FileAttributes.Directory)
+				{
+					settings.Directories.Add(new Tuple<string, string>(file.Info.FullName, file.DestPath.FormatDirectory('/')));
+					GetImportNames(file.Info, file.DestPath, settings);
+				}
+				else
+				{
+					settings.Files.Add(new Tuple<string, string>(file.Info.FullName, file.DestPath));
+				}
+			}
+		}
+
+		/// <summary>
+		/// Function to perform the file import.
+		/// </summary>
+		/// <param name="settings">Settings for the import.</param>
+		private static void ImportFilesThread(ImportSettings settings)
+		{
+			// Begin copy procedure.
+			var result = ConfirmationResult.None;
+			decimal totalEntries = settings.Files.Count + settings.Directories.Count;
+
+			// Create the directory layout first.
+			for (int i = 0; i < settings.Directories.Count; i++)
+			{
+				if (settings.IsCancelled)
+				{
+					return;
+				}
+
+				var directory = settings.Directories[i];
+
+				settings.ProcessForm.UpdateStatusText(string.Format(Resources.GOREDIT_IMPORT_STATUS_CREATING,
+																	directory.Item2.Ellipses(45, true)));
+
+				ScratchFiles.CreateDirectory(directory.Item2);
+
+				settings.ProcessForm.SetProgress((int)((i / totalEntries) * 100M));
+			}
+
+			// Copy the files in.
+			for (int i = 0; i < settings.Files.Count; i++)
+			{
+				if (settings.IsCancelled)
+				{
+					return;
+				}
+
+				var sourceFile = settings.Files[i];
+
+				settings.ProcessForm.UpdateStatusText(string.Format(Resources.GOREDIT_IMPORT_STATUS_COPYING,
+																	sourceFile.Item2.Ellipses(45, true)));
+				settings.ProcessForm.SetProgress((int)(((i + settings.Directories.Count) / totalEntries) * 100M));
+
+				// Find out if this file already exists.
+				var fileEntry = ScratchFiles.GetFile(sourceFile.Item2);
+
+				if (fileEntry != null)
+				{
+					if ((result & ConfirmationResult.ToAll) != ConfirmationResult.ToAll)
+					{
+						result = ImportExportFileConflictFunction(fileEntry.FullPath, settings.Files.Count);
+					}
+
+					// Stop copying.
+					if (result == ConfirmationResult.Cancel)
+					{
+						return;
+					}
+
+					// Skip this file.
+					if ((result & ConfirmationResult.No) == ConfirmationResult.No)
+					{
+						continue;
+					}
+
+					if (!CanImportFunction(fileEntry))
+					{
+						continue;
+					}
+				}
+
+				try
+				{
+					// Copy file data.
+					using (var inputStream = File.Open(sourceFile.Item1, FileMode.Open, FileAccess.Read, FileShare.Read))
+					{
+						using (var outputStream = ScratchFiles.OpenStream(sourceFile.Item2, true))
+						{
+							inputStream.CopyTo(outputStream);
+						}
+					}
+
+					// Increment the file counter.
+					settings.FileCounter++;
+				}
+				catch (Exception ex)
+				{
+					ImportExportFileCopyExceptionAction(ex);
+				}
+			}
+		}
+
+		/// <summary>
+		/// Function to perform the file copy operation for the import.
+		/// </summary>
+		/// <param name="settings">Settings for the import.</param>
+		/// <returns>The number of files and directories imported.</returns>
+		private static int CopyFileData(ImportSettings settings)
+		{
+			using (var processForm = new formProcess(ProcessType.FileImporter))
+			{
+				using (var tokenSource = new CancellationTokenSource(Int32.MaxValue))
+				{
+					settings.ProcessForm = processForm;
+					settings.CancelToken = tokenSource.Token;
+
+					processForm.Task = Task.Factory.StartNew(() =>
+					{
+						ImportFilesThread(settings);
+
+						ImportExportFileCompleteAction(settings.IsCancelled, true, settings.FileCounter + settings.Directories.Count,
+													   settings.Files.Count + settings.Directories.Count);
+					},
+					settings.CancelToken);
+					
+					if (processForm.ShowDialog() == DialogResult.Cancel)
+					{
+						tokenSource.Cancel();
+					}
+				}
+			}
+
+			return settings.Directories.Count + settings.FileCounter;
+		}
+
 		/// <summary>
 		/// Function to determine if the path is a root path or system location.
 		/// </summary>
@@ -243,7 +499,7 @@ namespace GorgonLibrary.Editor
                 if (((settings.ConflictResult & ConfirmationResult.ToAll) != ConfirmationResult.ToAll)
                     && (File.Exists(newFileName)))
                 {
-                    settings.ConflictResult = ExportFileConflictFunction(newFileName, settings.TotalFiles);
+                    settings.ConflictResult = ImportExportFileConflictFunction(newFileName, settings.TotalFiles);
 
                     if ((settings.ConflictResult & ConfirmationResult.No) == ConfirmationResult.No)
                     {
@@ -319,8 +575,9 @@ namespace GorgonLibrary.Editor
         /// <param name="destinationPath">Path to export the files and directories into.</param>
         public static void Export(GorgonFileSystemDirectory directory, string destinationPath)
         {
-            Debug.Assert(ExportFileCompleteAction != null, "No file completion action assigned in export.");
-            Debug.Assert(ExportFileConflictFunction != null, "No file conflict action assigned in export.");
+            Debug.Assert(ImportExportFileCompleteAction != null, "No file completion action assigned in export.");
+            Debug.Assert(ImportExportFileConflictFunction != null, "No file conflict action assigned in export.");
+			Debug.Assert(ImportExportFileCopyExceptionAction != null, "No file exception action assigned in export");
 
             // Bring up the progress form.
             using (var processForm = new formProcess(ProcessType.FileExporter))
@@ -342,7 +599,7 @@ namespace GorgonLibrary.Editor
                                                         destinationPath,
                                                         settings);
 
-                        ExportFileCompleteAction(settings.IsCancelled, settings.FileCount, settings.TotalFiles);
+                        ImportExportFileCompleteAction(settings.IsCancelled, false, settings.FileCount, settings.TotalFiles);
                     },
                     settings.CancelToken);
 
@@ -362,7 +619,8 @@ namespace GorgonLibrary.Editor
         /// <param name="overwriteIfExists">TRUE to overwrite the file if it already exists, FALSE to prompt.</param>
         public static void Export(GorgonFileSystemFileEntry file, string destinationPath, bool overwriteIfExists)
         {
-            Debug.Assert(ExportFileConflictFunction != null, "No file conflict action assigned in single file Export");
+            Debug.Assert(ImportExportFileConflictFunction != null, "No file conflict action assigned in single file Export");
+			Debug.Assert(ImportExportFileCopyExceptionAction != null, "No file exception action assigned in single file Export");
 
             if ((file == null)
                 || (string.IsNullOrWhiteSpace(destinationPath)))
@@ -395,22 +653,84 @@ namespace GorgonLibrary.Editor
 
             if ((!overwriteIfExists) && (File.Exists(newPath)))
             {
-                ExportFileConflictFunction(newPath, 1);
+                ImportExportFileConflictFunction(newPath, 1);
             }
 
-            // Open the destination file for writing.
-            using (var outStream = new FileStream(string.Format("{0}{1}", directory, fileName),
-                                            FileMode.Create,
-                                            FileAccess.Write,
-                                            FileShare.None))
-            {
-                // Copy the file data.
-                using (var inStream = file.OpenStream(false))
-                {
-                    inStream.CopyTo(outStream);
-                }
-            }
+	        try
+	        {
+		        // Open the destination file for writing.
+		        using (var outStream = new FileStream(string.Format("{0}{1}", directory, fileName),
+		                                              FileMode.Create,
+		                                              FileAccess.Write,
+		                                              FileShare.None))
+		        {
+			        // Copy the file data.
+			        using (var inStream = file.OpenStream(false))
+			        {
+				        inStream.CopyTo(outStream);
+			        }
+		        }
+	        }
+	        catch (Exception ex)
+	        {
+		        ImportExportFileCopyExceptionAction(ex);
+	        }
         }
+
+		/// <summary>
+		/// Function to perform an import of files and directories into the file system.
+		/// </summary>
+		/// <param name="importFiles">Files to import.</param>
+		/// <param name="destination">Destination directory for the files/directories.</param>
+		/// <returns>The number of files and directories imported.</returns>
+		public static int Import(IEnumerable<string> importFiles, GorgonFileSystemDirectory destination)
+		{
+			ImportSettings settings;
+
+			Debug.Assert(ImportExportFileCompleteAction != null, "No file completion action assigned in import.");
+			Debug.Assert(ImportExportFileConflictFunction != null, "No file conflict action assigned in import.");
+			Debug.Assert(ImportExportFileCopyExceptionAction != null, "No file exception action assigned in import.");
+
+			// Bring up the progress form.
+			using (var processForm = new formProcess(ProcessType.FileInfo))
+			{
+				using (var tokenSource = new CancellationTokenSource(Int32.MaxValue))
+				{
+					settings = new ImportSettings
+					{
+						CancelToken = tokenSource.Token,
+						ConflictResult = ConfirmationResult.None,
+						FileCounter = 0,
+						Files = new List<Tuple<string, string>>(),
+						Directories = new List<Tuple<string, string>>(),
+						ProcessForm = processForm
+					};
+
+					processForm.Task = Task.Factory.StartNew(() => GetFileInfoThread(importFiles, destination, settings),
+					settings.CancelToken);
+
+					// ReSharper disable once InvertIf
+					if (processForm.ShowDialog() == DialogResult.Cancel)
+					{
+						tokenSource.Cancel();
+						return 0;
+					}
+				}
+			}
+
+			// If we have nothing to import, then we should leave.
+			if ((settings.Files.Count != 0) || (settings.Directories.Count != 0))
+			{
+				// Don't just assume we want this.
+				return GorgonDialogs.ConfirmBox(null, string.Format(Resources.GOREDIT_IMPORT_CONFIRM, settings.Files.Count,
+				                                                    settings.Directories.Count)) == ConfirmationResult.No
+					       ? 0
+					       : CopyFileData(settings);
+			}
+
+			GorgonDialogs.InfoBox(null, Resources.GOREDIT_IMPORT_NO_DATA);
+			return 0;
+		}
 
         /// <summary>
 		/// Function to remove all old scratch area directories from the scratch path.

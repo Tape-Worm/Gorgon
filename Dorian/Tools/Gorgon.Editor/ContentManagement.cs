@@ -34,6 +34,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using GorgonLibrary.Editor.Properties;
 using GorgonLibrary.IO;
+using GorgonLibrary.UI;
 
 namespace GorgonLibrary.Editor
 {
@@ -72,7 +73,7 @@ namespace GorgonLibrary.Editor
 		/// <summary>
 		/// Property to set or return the method to call after the content object is initialized.
 		/// </summary>
-	    public static Action<Control> ContentInitializedAction
+	    public static Action<ContentPanel> ContentInitializedAction
 		{
 			get;
 			set;
@@ -138,12 +139,33 @@ namespace GorgonLibrary.Editor
 		/// <param name="e">Event parameters.</param>
 		private static void OnContentChanged(object sender, ContentPropertyChangedEventArgs e)
 		{
+			if (Current == null)
+			{
+				return;
+			}
+
 			_contentChanged = true;
 			if (ContentPropertyChanged != null)
 			{
 				ContentPropertyChanged(e);
 			}
 		}
+
+		/// <summary>
+		/// Function to update the content properties.
+		/// </summary>
+		/// <param name="propertyValue">The updated property and value information.</param>
+	    public static void UpdateProperties(PropertyValueChangedEventArgs propertyValue)
+	    {
+			if ((Current == null)
+			    || (!Current.HasProperties))
+			{
+				return;
+			}
+
+			Current.PropertyChanged(propertyValue);
+			_contentChanged = true;
+	    }
 
 		/// <summary>
         /// Function to retrieve the list of available content extensions.
@@ -206,8 +228,6 @@ namespace GorgonLibrary.Editor
 			Gorgon.ApplicationIdleLoopMethod = null;
 
 			// Close the content object.  This should preserve any changes.
-			_currentContentObject.Close();
-
 			_currentContentObject.ContentPropertyChanged -= OnContentChanged;
 			_currentContentObject.Dispose();
 			_currentContentObject = null;
@@ -233,7 +253,7 @@ namespace GorgonLibrary.Editor
 			UnloadCurrentContent();
 
 			// Initialize content resources.
-			Control contentWindow = contentObject.InitializeContent();
+			ContentPanel contentWindow = contentObject.InitializeContent();
 
 			_currentContentObject = contentObject;
 
@@ -259,7 +279,10 @@ namespace GorgonLibrary.Editor
 			{
 				// Enumerate properties for the content.
 				ContentEnumerateProperties(contentObject.HasProperties);
+			}
 
+			if (contentObject.HasProperties)
+			{
 				contentObject.ContentPropertyChanged += OnContentChanged;
 			}
 

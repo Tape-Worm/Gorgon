@@ -79,7 +79,7 @@ namespace GorgonLibrary.Editor
 #if !DEBUG
                       + this.ApplicationName.FormatFileName() + ".config.xml";		
 #else
-                      + this.ApplicationName.FormatFileName() + ".DEBUG.config.xml";		
+                      + ApplicationName.FormatFileName() + ".DEBUG.config.xml";		
 #endif
 		}
 		#endregion

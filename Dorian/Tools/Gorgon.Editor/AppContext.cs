@@ -27,6 +27,7 @@
 using System;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Windows.Forms;
 using GorgonLibrary.Diagnostics;
 using GorgonLibrary.Editor.Properties;
@@ -260,7 +261,7 @@ namespace GorgonLibrary.Editor
                 // Keep showing the splash screen.
 				while ((GorgonTiming.SecondsSinceStart - startTime) < 3)
 				{
-					System.Threading.Thread.Sleep(1);
+					Thread.Sleep(1);
 				}
 
                 FadeSplashScreen(false, 250.0f);
