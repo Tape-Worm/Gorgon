@@ -25,10 +25,15 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
+using System.Linq;
 using System.Windows.Forms;
+using GorgonLibrary.Editor.Properties;
+using GorgonLibrary.Math;
 
 namespace GorgonLibrary.Editor
 {
@@ -59,6 +64,37 @@ namespace GorgonLibrary.Editor
 		RenameFile = 4
 	}
 
+	/// <summary>
+	/// Extension method for the tree node collection.
+	/// </summary>
+	static class TreeNodeCollectionExtension
+	{
+		/// <summary>
+		/// Function to return all nodes under this collection.
+		/// </summary>
+		/// <param name="nodes">Source collection.</param>
+		/// <returns>An enumerator for the nodes.</returns>
+		public static IEnumerable<EditorTreeNode> AllNodes(this TreeNodeCollection nodes)
+		{
+			foreach (EditorTreeNode node in nodes.Cast<TreeNode>().Where(nodeItem => nodeItem is EditorTreeNode))
+			{
+				yield return node;
+
+				// Skip if there aren't any children.
+				if (node.Nodes.Count == 0)
+				{
+					continue;
+				}
+
+				// Gather the children for this node.
+				foreach (EditorTreeNode childNode in AllNodes(node.Nodes))
+				{
+					yield return childNode;
+				}
+			}
+		}
+	}
+
     /// <summary>
     /// Custom treeview for the editor.
     /// </summary>
@@ -72,8 +108,8 @@ namespace GorgonLibrary.Editor
         private Pen _focusPen;							// Pen used for focus.
 		private TextBox _renameBox;						// Text box used to rename a node.
 		private EditorTreeNode _editNode;				// Node being edited.
-		private readonly ColorMatrix _fadeMatrix;		// Fade matrix.
-		private ImageAttributes _fadeAttributes;		// Attributes for faded items.
+	    private ImageAttributes _fadeAttributes;		// Attributes for faded items.	    
+		private formMain _parentForm;					// The parent form for this control.
         #endregion
 
 		#region Properties.
@@ -91,14 +127,39 @@ namespace GorgonLibrary.Editor
             {
                 return TreeViewDrawMode.OwnerDrawAll;
             }
-            set
-            {
-            }
         }
         #endregion
 
         #region Methods.
-        /// <summary>
+		/// <summary>
+		/// Handles the LostFocus event of the _renameBox control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+		/// <exception cref="System.NotSupportedException"></exception>
+		private void _renameBox_LostFocus(object sender, EventArgs e)
+		{
+			HideRenameBox(false);
+		}
+
+		/// <summary>
+		/// Handles the KeyDown event of the _renameBox control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="KeyEventArgs"/> instance containing the event data.</param>
+		/// <exception cref="System.NotSupportedException"></exception>
+		private void _renameBox_KeyDown(object sender, KeyEventArgs e)
+		{
+			if (e.KeyCode != Keys.Enter)
+			{
+				return;
+			}
+
+			HideRenameBox(false);
+			e.Handled = true;
+		}
+
+	    /// <summary>
         /// Releases the unmanaged resources used by the <see cref="T:System.Windows.Forms.TreeView" /> and optionally releases the managed resources.
         /// </summary>
         /// <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
@@ -175,7 +236,7 @@ namespace GorgonLibrary.Editor
                 _openContent = null;
             }
 
-            _openContent = new Font(this.Font, FontStyle.Bold);
+            _openContent = new Font(Font, FontStyle.Bold);
         }
             	
         /// <summary>
@@ -184,14 +245,11 @@ namespace GorgonLibrary.Editor
         /// <param name="e">A <see cref="T:System.Windows.Forms.DrawTreeNodeEventArgs" /> that contains the event data.</param>
         protected override void OnDrawNode(DrawTreeNodeEventArgs e)
         {
-            Image currentImage = null;
-            Image plusMinusImage = null;
-            Font font = null;
-            var node = e.Node as EditorTreeNode;
-            TreeNodeFile nodeFile = null;
-            Point position = e.Bounds.Location;
-            Size size = e.Bounds.Size;
-			ImageAttributes attribs = null;
+            Image currentImage;
+            Image plusMinusImage;
+	        var node = e.Node as EditorTreeNode;
+	        Point position = e.Bounds.Location;
+	        ImageAttributes attribs = null;
 
             if ((e.Bounds.Width == 0) || (e.Bounds.Height == 0) && ((e.Bounds.X == 0) && (e.Bounds.Y == 0)))
             {
@@ -204,6 +262,11 @@ namespace GorgonLibrary.Editor
                 return;
             }
 
+	        if (_parentForm == null)
+	        {
+		        _parentForm = (formMain)FindForm();
+	        }
+
             // Create graphics resources.
             if (_selectBrush == null)
             {
@@ -212,25 +275,22 @@ namespace GorgonLibrary.Editor
 
             if (_focusPen == null)
             {
-                _focusPen = new Pen(DarkFormsRenderer.BorderColor);
-                _focusPen.DashStyle = System.Drawing.Drawing2D.DashStyle.DashDot;
+                _focusPen = new Pen(DarkFormsRenderer.BorderColor)
+                            {
+	                            DashStyle = DashStyle.DashDot
+                            };
             }
 
-            font = node.NodeFont;
+			// Use parent font if no font is assigned.
+            Font font = node.NodeFont ?? Font;
 
-            // Use parent font if no font is assigned.
-            if (font == null)
-            {
-                font = this.Font;
-            }
-
-            // Shift the position.
+	        // Shift the position.
             position.X = position.X + (e.Node.Level * 16);
 
             if (node.IsExpanded)
             {
                 currentImage = node.ExpandedImage;
-                plusMinusImage = Properties.Resources.tree_expand_16x16;
+                plusMinusImage = Resources.tree_expand_16x16;
 
                 if (currentImage == null)
                 {
@@ -239,26 +299,29 @@ namespace GorgonLibrary.Editor
             }
             else
             {
-                plusMinusImage = Properties.Resources.tree_collapse_16x16;
+                plusMinusImage = Resources.tree_collapse_16x16;
                 currentImage = node.CollapsedImage;
             }
 
-            nodeFile = e.Node as TreeNodeFile;
+            var nodeFile = e.Node as TreeNodeFile;
 
 			if (node.IsCut)
 			{
 				attribs = _fadeAttributes;
 			}
 
-            if ((Program.CurrentContent != null) && (nodeFile != null) && (Program.CurrentContent.File == nodeFile.File))
+            if ((ContentManagement.Current != null) && (_parentForm != null) && (nodeFile != null) && (_parentForm.CurrentOpenFile == nodeFile.File))
             {
                 // Create the open content font if it's been changed or doesn't exist.
-                if ((_openContent == null) || (_openContent.FontFamily.Name != font.FontFamily.Name) || (_openContent.Size != font.Size))
+                if ((_openContent == null) 
+					|| (_openContent.FontFamily.Name != font.FontFamily.Name) 
+					|| (!_openContent.Size.EqualsEpsilon(font.Size)))
                 {
                     if (_openContent != null)
                     {
                         _openContent.Dispose();
                     }
+
                     _openContent = new Font(font, FontStyle.Bold);
                 }
 
@@ -302,79 +365,7 @@ namespace GorgonLibrary.Editor
             {
                 TextRenderer.DrawText(e.Graphics, node.Text, font, position, node.ForeColor);
             }
-        }		
-
-		/// <summary>
-		/// Function to show the rename text box.
-		/// </summary>
-		/// <param name="node">Node to edit.</param>
-		internal void ShowRenameBox(EditorTreeNode node)
-		{
-			Point nodePosition = Point.Empty;
-
-			if (node == null)
-			{
-				return;
-			}
-
-			if (_renameBox == null)
-			{
-				_renameBox = new TextBox();
-				_renameBox.Name = this.Name + "_EditBox";
-				_renameBox.Visible = false;
-				_renameBox.BorderStyle = System.Windows.Forms.BorderStyle.None;
-				_renameBox.BackColor = Color.White;
-				_renameBox.ForeColor = Color.Black;
-				_renameBox.Height = node.Bounds.Height;
-				_renameBox.AcceptsTab = false;
-				_renameBox.Anchor = AnchorStyles.Left | AnchorStyles.Right;
-				this.Controls.Add(_renameBox);
-			}
-
-			// Wipe out the background.
-			using (var g = this.CreateGraphics())
-			{
-				// Create graphics resources.
-				if (_selectBrush == null)
-				{
-					_selectBrush = new SolidBrush(DarkFormsRenderer.MenuHilightBackground);
-				}
-
-				g.FillRectangle(_selectBrush, new Rectangle(0, node.Bounds.Y, ClientSize.Width, node.Bounds.Height));
-			}
-
-			nodePosition = node.Bounds.Location;
-			nodePosition.X += node.Level * 16 + 24;
-			nodePosition.Y++;
-			if (node.CollapsedImage != null)
-			{
-				nodePosition.X += node.CollapsedImage.Width + 2;
-			}
-
-			_renameBox.Location = nodePosition;
-			_renameBox.Width = ClientSize.Width - nodePosition.X;
-			_renameBox.Text = node.Text;
-
-			var editArgs = new NodeLabelEditEventArgs(node, node.Text);
-			editArgs.CancelEdit = false;
-
-			OnBeforeLabelEdit(editArgs);
-
-			if (!editArgs.CancelEdit)
-			{
-				_editNode = node;
-				_editNode.Redraw();
-				_renameBox.Visible = true;
-				_renameBox.Focus();
-				if (node.Text.Length > 0)
-				{
-					_renameBox.Select(0, node.Text.Length);
-				}
-
-				_renameBox.KeyDown += _renameBox_KeyDown;
-				_renameBox.LostFocus += _renameBox_LostFocus;
-			}
-		}
+        }
 
 		/// <summary>
 		/// Processes a command key.
@@ -386,69 +377,143 @@ namespace GorgonLibrary.Editor
 		/// </returns>
 		protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
 		{
-			if ((_renameBox != null) && (_renameBox.Visible) && (_renameBox.Focused))
+			if ((_renameBox == null) || (!_renameBox.Visible) || (!_renameBox.Focused))
 			{
-				if (keyData == Keys.Escape)
-				{
-					HideRenameBox(true);
-					return true;
-				}
+				return base.ProcessCmdKey(ref msg, keyData);
 			}
 
-			return base.ProcessCmdKey(ref msg, keyData);
+			switch (keyData)
+			{
+				case Keys.Escape:
+					HideRenameBox(true);
+					return true;
+				case Keys.Delete:
+					int selectionStart = _renameBox.SelectionStart;
+					int selectionLength = _renameBox.SelectionLength == 0 ? 1 : _renameBox.SelectionLength;
+
+					if (selectionStart < _renameBox.TextLength)
+					{
+						_renameBox.Text = _renameBox.Text.Remove(selectionStart, selectionLength);
+						_renameBox.SelectionStart = selectionStart;
+					}
+					return true;
+				default:
+					return base.ProcessCmdKey(ref msg, keyData);
+			}
 		}
 
 		/// <summary>
-		/// Handles the LostFocus event of the _renameBox control.
+		/// Function to show the rename text box.
 		/// </summary>
-		/// <param name="sender">The source of the event.</param>
-		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-		/// <exception cref="System.NotSupportedException"></exception>
-		private void _renameBox_LostFocus(object sender, EventArgs e)
+		/// <param name="node">Node to edit.</param>
+		public void ShowRenameBox(EditorTreeNode node)
 		{
-			HideRenameBox(false);
-		}	
-
-		/// <summary>
-		/// Handles the KeyDown event of the _renameBox control.
-		/// </summary>
-		/// <param name="sender">The source of the event.</param>
-		/// <param name="e">The <see cref="KeyEventArgs"/> instance containing the event data.</param>
-		/// <exception cref="System.NotSupportedException"></exception>
-		private void _renameBox_KeyDown(object sender, KeyEventArgs e)
-		{
-			if (e.KeyCode == Keys.Enter)
+			if (node == null)
 			{
-				HideRenameBox(false);
-				e.Handled = true;
 				return;
 			}
+
+			if (_renameBox == null)
+			{
+				_renameBox = new TextBox
+				             {
+					             Name = Name + "_EditBox",
+					             Visible = false,
+					             BorderStyle = BorderStyle.None,
+					             BackColor = Color.White,
+					             ForeColor = Color.Black,
+					             Height = node.Bounds.Height,
+					             AcceptsTab = false,
+					             Anchor = AnchorStyles.Left | AnchorStyles.Right
+				             };
+				Controls.Add(_renameBox);
+			}
+
+			// Wipe out the background.
+			using (var g = CreateGraphics())
+			{
+				// Create graphics resources.
+				if (_selectBrush == null)
+				{
+					_selectBrush = new SolidBrush(DarkFormsRenderer.MenuHilightBackground);
+				}
+
+				g.FillRectangle(_selectBrush, new Rectangle(0, node.Bounds.Y, ClientSize.Width, node.Bounds.Height));
+			}
+
+			Point nodePosition = node.Bounds.Location;
+			nodePosition.X += node.Level * 16 + 24;
+			nodePosition.Y++;
+			if (node.CollapsedImage != null)
+			{
+				nodePosition.X += node.CollapsedImage.Width + 2;
+			}
+
+			_renameBox.Location = nodePosition;
+			_renameBox.Width = ClientSize.Width - nodePosition.X;
+			_renameBox.Text = node.Text;
+
+			var editArgs = new NodeLabelEditEventArgs(node, node.Text)
+			               {
+				               CancelEdit = false
+			               };
+
+			OnBeforeLabelEdit(editArgs);
+
+			if (editArgs.CancelEdit)
+			{
+				return;
+			}
+
+			_editNode = node;
+			_editNode.Redraw();
+			_renameBox.Visible = true;
+			_renameBox.Focus();
+
+			if (node.Text.Length > 0)
+			{
+				_renameBox.Select(0, node.Text.Length);
+			}
+
+			_renameBox.KeyDown += _renameBox_KeyDown;
+			_renameBox.LostFocus += _renameBox_LostFocus;
 		}
 
 		/// <summary>
 		/// Function to hide the rename box.
 		/// </summary>
 		/// <param name="canceled">TRUE if the edit was canceled, FALSE if not.</param>
-		internal void HideRenameBox(bool canceled)
+		public void HideRenameBox(bool canceled)
 		{
-			if (_renameBox != null)
+			if (_renameBox == null)
 			{
-				var editNode = _editNode;
+				return;
+			}
 
-				_renameBox.KeyDown -= _renameBox_KeyDown;
-				_renameBox.LostFocus -= _renameBox_LostFocus;
-				_renameBox.Visible = false;
-				_editNode = null;
+			var editNode = _editNode;
 
-				var eventArgs = new NodeLabelEditEventArgs(editNode, canceled ? editNode.Text : _renameBox.Text);
-				OnAfterLabelEdit(eventArgs);
+			_renameBox.KeyDown -= _renameBox_KeyDown;
+			_renameBox.LostFocus -= _renameBox_LostFocus;
+			_renameBox.Visible = false;
+			_editNode = null;
 
-				if (!eventArgs.CancelEdit)
-				{
-					editNode.Text = eventArgs.Label;
-				}
+			var eventArgs = new NodeLabelEditEventArgs(editNode, canceled ? editNode.Text : _renameBox.Text);
+			OnAfterLabelEdit(eventArgs);
+
+			if (!eventArgs.CancelEdit)
+			{
+				editNode.Text = eventArgs.Label;
 			}
 		}
+
+		/// <summary>
+		/// Function to return an iterator that will search through all nodes in the tree.
+		/// </summary>
+		/// <returns>An enumerator for all the nodes in the tree.</returns>
+	    public IEnumerable<EditorTreeNode> AllNodes()
+		{
+			return Nodes.AllNodes();
+	    }
         #endregion
 
         #region Constructor/Destructor.
@@ -457,17 +522,35 @@ namespace GorgonLibrary.Editor
         /// </summary>
         public EditorTreeView()
         {
-            SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.OptimizedDoubleBuffer, true);
+	        SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.OptimizedDoubleBuffer, true);
             base.DrawMode = TreeViewDrawMode.OwnerDrawAll;
 
-			_fadeMatrix = new ColorMatrix(new float[][] {	new [] {1.0f, 0.0f, 0.0f, 0.0f, 0.0f}, 
-															new [] {0.0f, 1.0f, 0.0f, 0.0f, 0.0f},
-															new [] {0.0f, 0.0f, 1.0f, 0.0f, 0.0f},
-															new [] {0.0f, 0.0f, 0.0f, 0.25f, 0.0f},
-															new [] {0.0f, 0.0f, 0.0f, 0.0f, 1.0f}});
+	        var fadeMatrix = new ColorMatrix(new []
+	                                         {
+		                                         new[]
+		                                         {
+			                                         1.0f, 0.0f, 0.0f, 0.0f, 0.0f
+		                                         },
+		                                         new[]
+		                                         {
+			                                         0.0f, 1.0f, 0.0f, 0.0f, 0.0f
+		                                         },
+		                                         new[]
+		                                         {
+			                                         0.0f, 0.0f, 1.0f, 0.0f, 0.0f
+		                                         },
+		                                         new[]
+		                                         {
+			                                         0.0f, 0.0f, 0.0f, 0.25f, 0.0f
+		                                         },
+		                                         new[]
+		                                         {
+			                                         0.0f, 0.0f, 0.0f, 0.0f, 1.0f
+		                                         }
+	                                         });
 
 			_fadeAttributes = new ImageAttributes();
-			_fadeAttributes.SetColorMatrix(_fadeMatrix, ColorMatrixFlag.Default, ColorAdjustType.Bitmap);
+			_fadeAttributes.SetColorMatrix(fadeMatrix, ColorMatrixFlag.Default, ColorAdjustType.Bitmap);
         }
         #endregion
     }

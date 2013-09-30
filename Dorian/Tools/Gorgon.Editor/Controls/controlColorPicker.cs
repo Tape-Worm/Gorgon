@@ -27,6 +27,7 @@
 using System;
 using System.Drawing;
 using System.Windows.Forms;
+using System.Windows.Forms.Design;
 using Fetze.WinFormsColor;
 using GorgonLibrary.UI;
 
@@ -40,7 +41,7 @@ namespace GorgonLibrary.Editor
 		/// <summary>
 		/// Property to set or return the editor service.
 		/// </summary>
-		public System.Windows.Forms.Design.IWindowsFormsEditorService EditorService
+		public IWindowsFormsEditorService EditorService
 		{
 			get;
 			set;
@@ -172,7 +173,7 @@ namespace GorgonLibrary.Editor
 					sliderAlpha.Location = panelColor.Location;
 					sliderAlpha.Width = 64;
 					sliderAlpha.Height = panelColor.Height;					
-					this.Width = 64 + (panelColor.Left * 2);
+					Width = 64 + (panelColor.Left * 2);
 				}
 			}
 			catch (Exception ex)

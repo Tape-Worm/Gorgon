@@ -52,7 +52,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		private GorgonFontSettings _settings;				// Settings for the font.
 		private GorgonSwapChain _swap;						// Swap chain for our display.
         private GorgonSwapChain _textDisplay;               // Swap chain for sample text display.
-        private bool _createFont;                           // Flag to indicate that the font should be created after initialization.
+        private readonly bool _createFont;                  // Flag to indicate that the font should be created after initialization.
         #endregion
 
         #region Properties.
@@ -81,7 +81,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 	            }
 
 	            _settings.BaseColors[0] = value;
-	            UpdateContent();
+	            OnContentUpdated();
 	            OnContentPropertyChanged("BaseColor", value);
             }
         }
@@ -106,7 +106,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
                 if (_settings.OutlineSize != value)
                 {
                     _settings.OutlineSize = value;
-                    UpdateContent();
+                    OnContentUpdated();
 					OnContentPropertyChanged("OutlineSize", value);
 				}
             }
@@ -131,7 +131,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 	            }
 
 	            _settings.OutlineColor = value;
-	            UpdateContent();
+	            OnContentUpdated();
 	            OnContentPropertyChanged("OutlineColor", value);
             }
         }
@@ -155,7 +155,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
                 {
                     _settings.Size = value;
                     CheckTextureSize();
-                    UpdateContent();
+                    OnContentUpdated();
 					OnContentPropertyChanged("FontSize", value);
 				}
             }
@@ -182,7 +182,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 				{
 					_settings.PackingSpacing = value;
 					CheckTextureSize();
-					UpdateContent();
+					OnContentUpdated();
 					OnContentPropertyChanged("PackingSpace", value);
 				}
 			}
@@ -213,7 +213,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
                 {
                     _settings.TextureSize = value;
                     CheckTextureSize();
-                    UpdateContent();
+                    OnContentUpdated();
 					OnContentPropertyChanged("FontTextureSize", value);
 				}
             }
@@ -234,7 +234,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
                 if (_settings.AntiAliasingMode != value)
                 {
                     _settings.AntiAliasingMode = value;
-                    UpdateContent();
+                    OnContentUpdated();
 					OnContentPropertyChanged("FontAntiAliasMode", value);
 				}
             }
@@ -260,7 +260,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 				if (value != _settings.TextContrast)
 				{
 					_settings.TextContrast = value;
-					UpdateContent();
+					OnContentUpdated();
 					OnContentPropertyChanged("TextContrast", value);
 				}
 			}
@@ -282,7 +282,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
                 {
                     _settings.FontHeightMode = value;
                     CheckTextureSize();
-                    UpdateContent();
+                    OnContentUpdated();
 					OnContentPropertyChanged("UsePointSize", value);
 				}
             }
@@ -307,7 +307,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
                 {
                     _settings.FontFamilyName = value;
                     CheckTextureSize();
-                    UpdateContent();
+                    OnContentUpdated();
 					OnContentPropertyChanged("FontFamily", value);
 				}
             }
@@ -332,7 +332,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
                 {
                     _settings.Characters = value;
                     CheckTextureSize();
-                    UpdateContent();
+                    OnContentUpdated();
 					OnContentPropertyChanged("Characters", value);
 				}
             }
@@ -357,7 +357,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 
 	            _settings.FontStyle = value;
 	            CheckTextureSize();
-	            UpdateContent();
+	            OnContentUpdated();
 	            OnContentPropertyChanged("FontStyle", value);
             }
         }
@@ -444,27 +444,9 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
         }
 
         /// <summary>
-        /// Function to export the content to an external file.
-        /// </summary>
-        /// <param name="filePath">Path to the file.</param>
-        public override void Export(string filePath)
-        {
-            if (Font == null)
-            {
-                UpdateContent();
-            }
-
-            // Update the file in our file system first.
-            Persist(File);
-
-            // Export.
-            Font.Save(filePath);
-        }
-
-        /// <summary>
         /// Function to update the content.
         /// </summary>
-        protected override void UpdateContent()
+        protected override void OnContentUpdated()
         {
 			GorgonFont newFont = null;
 
@@ -484,21 +466,18 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 			}
 
 			// If we're left with regular and the font doesn't support it, then use the next available style.
-			if ((!cachedFont.FontFamily.IsStyleAvailable(System.Drawing.FontStyle.Regular)) && (_settings.FontStyle == System.Drawing.FontStyle.Regular))
+			if ((!cachedFont.FontFamily.IsStyleAvailable(FontStyle.Regular)) && (_settings.FontStyle == FontStyle.Regular))
 			{
-				for (int i = 0; i < styles.Length; i++)
+				foreach (FontStyle style in styles.Where(style => cachedFont.FontFamily.IsStyleAvailable(style)))
 				{
-					if (cachedFont.FontFamily.IsStyleAvailable(styles[i]))
-					{
-						_settings.FontStyle |= styles[i];
-						break;
-					}
+					_settings.FontStyle |= style;
+					break;
 				}
 			}
 
 			try
 			{
-				var fontSettings = new GorgonFontSettings()
+				var fontSettings = new GorgonFontSettings
 					{
 						AntiAliasingMode = _settings.AntiAliasingMode,
 						Brush = _settings.Brush,
@@ -542,8 +521,6 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 			}
 
 			Font = newFont;
-
-            base.UpdateContent();
         }
 
         /// <summary>
@@ -596,20 +573,6 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
             base.Dispose(disposing);
         }
 
-        /// <summary>
-        /// Function called when the HasChanges property is updated.
-        /// </summary>
-        protected override void OnHasChangesUpdated()
-        {
-			base.OnHasChangesUpdated();
-
-            if (_panel != null)
-            {
-				_panel.Text = "Gorgon Font - " + Name;
-                _panel.OnContentChanged();
-            }
-        }
-
 		/// <summary>
 		/// Function to persist the content data into a stream.
 		/// </summary>
@@ -620,37 +583,6 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 	    }
 
 	    /// <summary>
-        /// Function to persist the content to the file system.
-        /// </summary>
-        protected override void OnPersist()
-        {
-            if ((Font != null) && (File != null) && (HasChanges))
-            {
-                using (var stream = File.OpenStream(true))
-                {
-                    Font.Save(stream);
-                }
-            }            
-        }
-
-        /// <summary>
-        /// Function called when the content window is closed.
-        /// </summary>
-        /// <returns>
-        /// TRUE to continue closing the window, FALSE to cancel the close.
-        /// </returns>
-        protected override bool OnClose()
-        {
-            if (HasChanges)
-            {
-                // Write the changes to the file.
-                OnPersist();
-            }
-
-            return true;
-        }
-
-	    /// <summary>
 	    /// Function to read the content data from a stream.
 	    /// </summary>
 	    /// <param name="stream">Stream containing the content data.</param>
@@ -659,26 +591,6 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		    Font = Graphics.Fonts.FromStream(Path.GetFileNameWithoutExtension(Name), stream);
 		    _settings = Font.Settings;
 	    }
-
-	    /// <summary>
-		/// Function to open the content from the file system.
-		/// </summary>
-		protected override void OnOpenContent()
-		{
-			if (File == null)
-			{
-				return;
-			}
-
-			// Open the file.
-			using (var stream = File.OpenStream(false))
-			{
-				Font = Graphics.Fonts.FromStream(File.Name, stream);
-			}            
-
-			// Get the settings.
-			_settings = Font.Settings;
-		}
 
         /// <summary>
         /// Function called when the name is about to be changed.
@@ -712,8 +624,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		{
 			_panel = new GorgonFontContentPanel
 			         {
-			             Content = this,
-			             Text = "Gorgon Font - " + Name
+			             Content = this
 			         };
 
 		    _swap = Graphics.Output.CreateSwapChain("FontEditor.SwapChain", new GorgonSwapChainSettings()

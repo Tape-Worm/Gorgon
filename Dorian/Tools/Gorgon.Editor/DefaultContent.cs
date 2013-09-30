@@ -28,6 +28,7 @@ using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
 using GorgonLibrary.Diagnostics;
+using GorgonLibrary.Editor.Properties;
 using GorgonLibrary.Graphics;
 using GorgonLibrary.IO;
 using GorgonLibrary.Math;
@@ -55,17 +56,6 @@ namespace GorgonLibrary.Editor
 		#endregion
 
 		#region Properties.
-        /// <summary>
-        /// Property to return whether this is an internal content object only.
-        /// </summary>
-        internal override bool IsInternal
-        {
-            get
-            {
-                return true;
-            }
-        }
-
 		/// <summary>
 		/// Property to set or return the alpha delta time value.
 		/// </summary>
@@ -133,24 +123,6 @@ namespace GorgonLibrary.Editor
 		#endregion
 
 		#region Methods.
-        /// <summary>
-        /// Function to persist the content to the file system.
-        /// </summary>
-        protected override void OnPersist()
-        {            
-        }
-
-		/// <summary>
-		/// Function called when the content window is closed.
-		/// </summary>
-		/// <returns>
-		/// TRUE to continue closing the window, FALSE to cancel the close.
-		/// </returns>
-		protected override bool OnClose()
-		{
-			return true;
-		}
-
 		/// <summary>
 		/// Function to persist the content data into a stream.
 		/// </summary>
@@ -269,7 +241,7 @@ namespace GorgonLibrary.Editor
 			_2D = Program.Graphics.Output.Create2DRenderer(_container.PanelDisplay);
 
 			// Create the logo for display.
-			_logo = Program.Graphics.Textures.FromMemory<GorgonTexture2D>("Logo", Properties.Resources.Gorgon_2_x_Logo_Blurry, new GorgonCodecDDS());
+			_logo = Program.Graphics.Textures.FromMemory<GorgonTexture2D>("Logo", Resources.Gorgon_2_x_Logo_Blurry, new GorgonCodecDDS());
 
 			var textureCoordinates = new RectangleF(Vector2.Zero, _logo.ToTexel(new Vector2(_logo.Settings.Width, _logo.Settings.Height / 3)));
 
@@ -295,7 +267,6 @@ namespace GorgonLibrary.Editor
 		public DefaultContent()
 			: base(null)
 		{
-			HasChanges = false;
 		}
 		#endregion
 

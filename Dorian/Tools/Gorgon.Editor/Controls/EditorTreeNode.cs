@@ -153,6 +153,29 @@ namespace GorgonLibrary.Editor
 
 		#region Methods.
 		/// <summary>
+		/// Function to determine if this node is an ancestor of the parent node.
+		/// </summary>
+		/// <param name="parentNode">Parent node to evaluate for ancestry.</param>
+		/// <returns>TRUE if the child is ancestor of parent, FALSE if not.</returns>
+		public bool IsAncestorOf(EditorTreeNode parentNode)
+		{
+			TreeNode node = Parent;
+
+			// Walk up the chain.
+			while (node != null)
+			{
+				if (node == parentNode)
+				{
+					return true;
+				}
+
+				node = node.Parent;
+			}
+
+			return false;
+		}
+
+		/// <summary>
 		/// Function to begin the edit process.
 		/// </summary>
 		public new void BeginEdit()
@@ -179,9 +202,9 @@ namespace GorgonLibrary.Editor
 		/// </summary>
 		public void Redraw()
 		{
-			if (this.TreeView != null)
+			if (TreeView != null)
 			{
-				this.TreeView.Invalidate(new Rectangle(0, base.Bounds.Top, this.TreeView.ClientSize.Width, base.Bounds.Height), true);
+				TreeView.Invalidate(new Rectangle(0, base.Bounds.Top, TreeView.ClientSize.Width, base.Bounds.Height), true);
 			}			
 		}
 		#endregion

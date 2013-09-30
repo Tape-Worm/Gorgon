@@ -307,4 +307,151 @@
   <data name="GOREDIT_OVERWRITE_PROMPT" xml:space="preserve">
     <value>The {0} '{1}' already exists.  Do you wish to overwrite it?</value>
   </data>
+  <data name="GOREDIT_CONTENT_DEFAULT_NAME" xml:space="preserve">
+    <value>Untitled</value>
+  </data>
+  <data name="GOREDIT_BUTTON_DELETE" xml:space="preserve">
+    <value>Delete selected content</value>
+  </data>
+  <data name="GOREDIT_BUTTON_EDIT" xml:space="preserve">
+    <value>Edit selected content</value>
+  </data>
+  <data name="GOREDIT_BUTTON_NEWCONTENT" xml:space="preserve">
+    <value>New content item</value>
+  </data>
+  <data name="GOREDIT_EXPORT_CANCELLED" xml:space="preserve">
+    <value>The export operation was cancelled.
+{0}/{1} files copied.
+{2}/{1} files skipped.</value>
+  </data>
+  <data name="GOREDIT_EXPORT_SUCCESSFUL" xml:space="preserve">
+    <value>The export operation was completed successfully.
+{0}/{1} files copied.
+{2}/{1} files skipped.</value>
+  </data>
+  <data name="GOREDIT_FILE_CANNOT_MOVE_TO_CHILD" xml:space="preserve">
+    <value>The destination directory must not be a sub-directory of this directory.</value>
+  </data>
+  <data name="GOREDIT_FILE_DEFAULT_DIRECTORY_NAME" xml:space="preserve">
+    <value>Untitled</value>
+  </data>
+  <data name="GOREDIT_FILE_DELETE_DIRECTORY_CONFIRM" xml:space="preserve">
+    <value>This will delete '{0}' and any files and/or directories it contains.  Are you sure you wish to do this?</value>
+  </data>
+  <data name="GOREDIT_FILE_DELETE_FILE_CONFIRM" xml:space="preserve">
+    <value>This will delete '{0}'.  Are you sure you wish to do this?</value>
+  </data>
+  <data name="GOREDIT_FILE_HAS_CHANGES_CONFIRM" xml:space="preserve">
+    <value>The editor file '{0}' has unsaved changes.  Would you like to save these changes?</value>
+  </data>
+  <data name="GOREDIT_FILE_PATH_HAS_INVALID_CHARS" xml:space="preserve">
+    <value>The name contains invalid characters.
+The following characters are not allowed:
+{0}</value>
+  </data>
+  <data name="GOREDIT_FILE_SOURCE_SAME_AS_DEST" xml:space="preserve">
+    <value>The source file must not be the same as the destination file.</value>
+  </data>
+  <data name="GOREDIT_IMPORT_CONFIRM" xml:space="preserve">
+    <value>{0} files and {1} directories will be imported.  Are you sure you wish to do this?</value>
+  </data>
+  <data name="GOREDIT_IMPORT_FILE_OPEN_FOR_EDIT" xml:space="preserve">
+    <value>The file '{0}' is opened for editing.  You must close this file and reimport it if you wish to overwrite it.</value>
+  </data>
+  <data name="GOREDIT_IMPORT_NO_DATA" xml:space="preserve">
+    <value>There were no files/directories found that could be imported.</value>
+  </data>
+  <data name="GOREDIT_IMPORT_STATUS_COPYING" xml:space="preserve">
+    <value>Copying '{0}'</value>
+  </data>
+  <data name="GOREDIT_IMPORT_STATUS_CREATING" xml:space="preserve">
+    <value>Creating '{0}'</value>
+  </data>
+  <data name="GOREDIT_IMPORT_SUCCESS" xml:space="preserve">
+    <value>{0}/{1} files and directories successfully imported.
+{2}/{1} files and directories were skipped.</value>
+  </data>
+  <data name="GOREDIT_MENU_ADDCONTENT" xml:space="preserve">
+    <value>Add &amp;content</value>
+  </data>
+  <data name="GOREDIT_MENU_COPY" xml:space="preserve">
+    <value>&amp;Copy</value>
+  </data>
+  <data name="GOREDIT_MENU_CREATEFOLDER" xml:space="preserve">
+    <value>Create &amp;folder</value>
+  </data>
+  <data name="GOREDIT_MENU_CUT" xml:space="preserve">
+    <value>Cu&amp;t</value>
+  </data>
+  <data name="GOREDIT_MENU_DELETE_ALL" xml:space="preserve">
+    <value>&amp;Delete all files and folders</value>
+  </data>
+  <data name="GOREDIT_MENU_DELETE_DEFAULT" xml:space="preserve">
+    <value>&amp;Delete</value>
+  </data>
+  <data name="GOREDIT_MENU_DELETE_FOLDER" xml:space="preserve">
+    <value>&amp;Delete folder</value>
+  </data>
+  <data name="GOREDIT_MENU_EDIT" xml:space="preserve">
+    <value>&amp;Edit</value>
+  </data>
+  <data name="GOREDIT_MENU_EXIT" xml:space="preserve">
+    <value>E&amp;xit</value>
+  </data>
+  <data name="GOREDIT_MENU_EXPORT" xml:space="preserve">
+    <value>&amp;Export</value>
+  </data>
+  <data name="GOREDIT_MENU_FILE" xml:space="preserve">
+    <value>&amp;File</value>
+  </data>
+  <data name="GOREDIT_MENU_IMPORT" xml:space="preserve">
+    <value>&amp;Import</value>
+  </data>
+  <data name="GOREDIT_MENU_NEW" xml:space="preserve">
+    <value>&amp;New</value>
+  </data>
+  <data name="GOREDIT_MENU_OPEN" xml:space="preserve">
+    <value>&amp;Open</value>
+  </data>
+  <data name="GOREDIT_MENU_PASTE" xml:space="preserve">
+    <value>&amp;Paste</value>
+  </data>
+  <data name="GOREDIT_MENU_PREFERENCES" xml:space="preserve">
+    <value>&amp;Preferences</value>
+  </data>
+  <data name="GOREDIT_MENU_RECENTFILES" xml:space="preserve">
+    <value>&amp;Recent files</value>
+  </data>
+  <data name="GOREDIT_MENU_RENAME_DEFAULT" xml:space="preserve">
+    <value>&amp;Rename</value>
+  </data>
+  <data name="GOREDIT_MENU_RENAME_FOLDER" xml:space="preserve">
+    <value>&amp;Rename folder</value>
+  </data>
+  <data name="GOREDIT_MENU_RESETVALUE" xml:space="preserve">
+    <value>&amp;Reset value</value>
+  </data>
+  <data name="GOREDIT_MENU_SAVE" xml:space="preserve">
+    <value>&amp;Save</value>
+  </data>
+  <data name="GOREDIT_MENU_SAVEAS" xml:space="preserve">
+    <value>Save &amp;as</value>
+  </data>
+  <data name="GOREDIT_NODE_DIRECTORY" xml:space="preserve">
+    <value>directory</value>
+  </data>
+  <data name="GOREDIT_PASTE_MUST_BE_DIRECTORY" xml:space="preserve">
+    <value>The destination must be a directory.</value>
+  </data>
+  <data name="GOREDIT_TAB_CONTENTFILES" xml:space="preserve">
+    <value>Content files</value>
+  </data>
+  <data name="GOREDIT_TAB_PROPERTIES" xml:space="preserve">
+    <value>Properties</value>
+  </data>
+  <data name="GOREDIT_IMPORT_CANCELLED" xml:space="preserve">
+    <value>The import operation was cancelled.
+{0}/{1} files and directories copied.
+{2}/{1} files and directories skipped.</value>
+  </data>
 </root>

@@ -26,6 +26,7 @@
 
 using System.Drawing;
 using System.Linq;
+using GorgonLibrary.Editor.Properties;
 using GorgonLibrary.IO;
 
 namespace GorgonLibrary.Editor
@@ -112,7 +113,7 @@ namespace GorgonLibrary.Editor
 		/// </summary>
 		private void GetFileData()
 		{
-			ExpandedImage = Properties.Resources.unknown_document_16x16;
+			ExpandedImage = Resources.unknown_document_16x16;
 			CollapsedImage = ExpandedImage;
 			PlugIn = null;
 
@@ -135,8 +136,8 @@ namespace GorgonLibrary.Editor
 		/// <param name="file">File system file entry to use.</param>
 		public void UpdateFile(GorgonFileSystemFileEntry file)
 		{
-			this.Name = file.FullPath;
-			this.Text = file.Name;
+			Name = file.FullPath;
+			Text = file.Name;
 			GetFileData();
 		}
 		#endregion
@@ -148,8 +149,8 @@ namespace GorgonLibrary.Editor
 		/// <param name="file">File to associate with the node.</param>
 		public TreeNodeFile(GorgonFileSystemFileEntry file)
 		{
-			this.Name = file.FullPath;
-			this.Text = file.Name;
+			Name = file.FullPath;
+			Text = file.Name;
 			GetFileData();
 		}
 		#endregion
