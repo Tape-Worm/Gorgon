@@ -72,6 +72,29 @@ namespace GorgonLibrary.Editor
     {
         #region Classes.
 		/// <summary>
+		/// Settings for directory copy.
+		/// </summary>
+		private class CopyDirectorySettings
+		{
+			#region Properties.
+			/// <summary>
+			/// The directory to copy.
+			/// </summary>
+			public GorgonFileSystemDirectory SourceDirectory;
+
+			/// <summary>
+			/// The path to the destination.
+			/// </summary>
+			public string DestPath;
+
+			/// <summary>
+			/// The current conflict result.
+			/// </summary>
+			public ConfirmationResult ConflictResult;
+			#endregion
+		}
+
+		/// <summary>
 		/// Settings for import.
 		/// </summary>
 		private class ImportSettings
@@ -611,7 +634,7 @@ namespace GorgonLibrary.Editor
             // If we have a root directory, always assume yes for the merge.
             var overwriteResult = destPath != "/" ? ConfirmationResult.None : (ConfirmationResult.Yes | ConfirmationResult.ToAll);
 
-            // Enumerate sub directories.
+			// Enumerate sub directories.
             foreach (var subDirectory in directory.Directories)
             {
                 string newDirectoryPath = (destPath + subDirectory.Name).FormatDirectory('/');
