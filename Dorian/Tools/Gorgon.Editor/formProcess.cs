@@ -54,7 +54,11 @@ namespace GorgonLibrary.Editor
         /// <summary>
         /// File exporter process.
         /// </summary>
-        FileExporter = 3
+        FileExporter = 3,
+		/// <summary>
+		/// File copy process.
+		/// </summary>
+		FileCopy = 4
 	}
 
 	/// <summary>
@@ -104,7 +108,10 @@ namespace GorgonLibrary.Editor
 				        base.Text = Resources.GOREDIT_PROC_EXPORT_DLG_TITLE;
 				        break;
 					case ProcessType.FileInfo:
-						base.Text = Resources.GOREDIT_IMPORT_INFO_DLG_TITLE;
+						base.Text = Resources.GOREDIT_PROC_IMPORT_INFO_DLG_TITLE;
+						break;
+					case ProcessType.FileCopy:
+						base.Text = Resources.GOREDIT_PROC_COPY_DLG_TITLE;
 						break;
 					default:
 #if DEBUG
@@ -270,6 +277,7 @@ namespace GorgonLibrary.Editor
 					progressMeter.Style = ProgressBarStyle.Marquee;
 					labelStatus.Text = Resources.GOREDIT_FILE_WRITE_SAVE_LABEL;
 					break;
+				case ProcessType.FileCopy:
                 case ProcessType.FileExporter:
 				case ProcessType.FileImporter:
 					progressMeter.Style = ProgressBarStyle.Continuous;
