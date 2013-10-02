@@ -108,15 +108,25 @@ namespace GorgonLibrary.Editor
 				throw new ArgumentNullException("directory");
 			}
 
-			var result = new TreeNodeDirectory(directory);
+            // Find check to ensure the node is unique.
+		    TreeNodeDirectory result = (from node in nodes.Cast<TreeNode>()
+		                                let dirNode = node as TreeNodeDirectory
+		                                where dirNode != null
+		                                    && string.Equals(node.Name, directory.FullPath, StringComparison.OrdinalIgnoreCase)
+		                                select dirNode).FirstOrDefault();
+
+		    if (result != null)
+		    {
+		        return result;
+		    }
+
+			result = new TreeNodeDirectory(directory);
 
 			if ((directory.Directories.Count > 0) || (directory.Files.Count > 0))
 			{
 				// Add a dummy node to indicate that there are children.
 				result.Nodes.Add("DummyNode");
 			}
-
-			// TODO: Check for dupe nodes here and return original node instead,
 
 			nodes.Add(result);
 
@@ -136,14 +146,24 @@ namespace GorgonLibrary.Editor
 				throw new ArgumentNullException("file");
 			}
 
-			var result = new TreeNodeFile(file);
+            // Find check to ensure the node is unique.
+		    TreeNodeFile result = (from node in nodes.Cast<TreeNode>()
+		                           let dirNode = node as TreeNodeFile
+		                           where dirNode != null
+		                                 && string.Equals(node.Name, file.FullPath, StringComparison.OrdinalIgnoreCase)
+		                           select dirNode).FirstOrDefault();
+
+		    if (result != null)
+		    {
+		        return result;
+		    }
+
+			result = new TreeNodeFile(file);
 
 			// TODO: Eventually file nodes may have children (associated files, like sprites are associated with an image).  
 			//		 Add that code here when we need that functionality.
 
 			nodes.Add(result);
-
-			// TODO: Check for dupe nodes here and return original node instead,
 
 			return result;
 		}
