@@ -709,16 +709,18 @@ namespace GorgonLibrary.Editor
                     if ((settings.FileConflictResult & ConfirmationResult.No) == ConfirmationResult.No)
                     {
                         int nameCounter = 0;
+                        string newName = file.Name;
 
                         // Find an unoccupied name.
-                        while (newDirectory.Files.Contains(destFilePath))
+                        while (newDirectory.Files.Contains(newName))
                         {
-                            destFilePath = string.Format("{0}{1} ({2}){3}",
-                                                            newDirectory.FullPath,
+                            newName = string.Format("{0} ({1}){2}",
                                                             file.BaseFileName,
                                                             ++nameCounter,
                                                             file.Extension);
                         }
+
+                        destFilePath = newDirectory.FullPath + newName;
                     }
                 }
 
