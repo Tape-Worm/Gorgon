@@ -2015,8 +2015,10 @@ namespace GorgonLibrary.Editor
 
             if (deleteSource)
             {
-                DeleteFile(sourceFile);
-            }
+				ScratchArea.ScratchFiles.DeleteFile(sourceFile.File);
+
+				PruneTree(sourceFile);
+			}
 
             destDirectory.Expand();
 
@@ -2251,8 +2253,37 @@ namespace GorgonLibrary.Editor
 			    // Our source data is a directory, so move it.
 			    if ((directory != null) && (destDir != null))
 			    {
-			        CopyDirectoryNode(directory, destDir, directory.Directory.Name, (data.Item2 == MouseButtons.Left));
-			        return;
+				    GorgonFileSystemDirectory destDirectory = null;
+
+				    if (data.Item2 != MouseButtons.Left)
+				    {
+					    destDirectory = ScratchArea.Copy(directory.Directory, destDir.Directory.FullPath);
+				    }
+				    else
+				    {
+					    CopyDirectoryNode(directory, destDir, directory.Directory.Name, (data.Item2 == MouseButtons.Left));
+				    }
+
+				    if (destDirectory == null)
+				    {
+					    return;
+				    }
+
+					// TODO: If we merge we have to ensure that we don't duplicate the node.
+				    TreeNodeDirectory newDirNode = destDir.Nodes.AddDirectory(destDirectory);
+					
+				    if (!destDir.IsExpanded)
+				    {
+					    destDir.Expand();
+				    }
+
+				    if (newDirNode.Nodes.Count > 0)
+				    {
+					    newDirNode.Expand();
+				    }
+
+					FileManagement.FileChanged = true;
+				    return;
 			    }
 
 			    // We didn't have a directory, so move the file.
@@ -2264,16 +2295,35 @@ namespace GorgonLibrary.Editor
 			        return;
 			    }
 
-				CopyFileNode(file, destDir, file.Name, data.Item2 == MouseButtons.Left);
+				GorgonFileSystemFileEntry newFile = null;
+
+				if (data.Item2 != MouseButtons.Left)
+				{
+					newFile = ScratchArea.Copy(file.File, destDir.Directory.FullPath, false);
+				}
+				else
+				{
+					CopyFileNode(file, destDir, file.Name, data.Item2 == MouseButtons.Left);	
+				}
+
+				if (newFile == null)
+				{
+					return;
+				}
+
+				// TODO: If we overwrite, then we cannot duplicate the node.
+				destDir.Nodes.AddFile(newFile);
+
+				if (!destDir.IsExpanded)
+				{
+					destDir.Expand();
+				}
+
+				FileManagement.FileChanged = true;
 			}
 			catch (Exception ex)
 			{
 				GorgonDialogs.ErrorBox(this, ex);
-
-				if (ContentManagement.Current == null)
-				{
-					ContentManagement.LoadDefaultContentPane();
-				}
 			}
 			finally
 			{

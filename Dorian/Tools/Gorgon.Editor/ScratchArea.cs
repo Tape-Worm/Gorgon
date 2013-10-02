@@ -29,7 +29,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -78,19 +77,46 @@ namespace GorgonLibrary.Editor
 		{
 			#region Properties.
 			/// <summary>
-			/// The directory to copy.
+			/// The process form to use.
 			/// </summary>
-			public GorgonFileSystemDirectory SourceDirectory;
+			public formProcess ProcessForm;
 
 			/// <summary>
-			/// The path to the destination.
+			/// The directory conflict result.
 			/// </summary>
-			public string DestPath;
+			public ConfirmationResult DirectoryConflictResult;
 
 			/// <summary>
-			/// The current conflict result.
+			/// The directory conflict result.
 			/// </summary>
-			public ConfirmationResult ConflictResult;
+			public ConfirmationResult FileConflictResult;
+
+			/// <summary>
+			/// The cancellation token.
+			/// </summary>
+			public CancellationToken CancelToken;
+
+			/// <summary>
+			/// The total number of files and directories.
+			/// </summary>
+			public int TotalItemCount;
+
+			/// <summary>
+			/// The number of items copied.
+			/// </summary>
+			public int ItemCounter;
+
+			/// <summary>
+			/// Property to set or return whether the operation is cancelled or not.
+			/// </summary>
+			public bool IsCancelled
+			{
+				get
+				{
+					return FileConflictResult == ConfirmationResult.Cancel || DirectoryConflictResult == ConfirmationResult.Cancel ||
+					       CancelToken.IsCancellationRequested;
+				}
+			}
 			#endregion
 		}
 
@@ -597,139 +623,120 @@ namespace GorgonLibrary.Editor
         /// </summary>
         /// <param name="directory">Directory to copy.</param>
         /// <param name="destination">Destination directory.</param>
-        /// <returns>The new file system directory or NULL if the directory was not copied.</returns>
-        public static GorgonFileSystemDirectory Copy(GorgonFileSystemDirectory directory, string destination)
+		/// <param name="settings">Settings for the copy procedure.</param>
+		/// <returns>The new file system directory or NULL if the directory was not copied.</returns>
+		private static GorgonFileSystemDirectory CopyDirectoryThread(GorgonFileSystemDirectory directory, string destination, CopyDirectorySettings settings)
         {
-            Debug.Assert(CopyDirectoryConflictFunction != null, "Copy directory conflict action is not assigned for copy.");
-            Debug.Assert(CopyFileConflictFunction != null, "Copy file conflict action is not assigned for copy.");
+	        if (settings.IsCancelled)
+	        {
+		        return null;
+	        }
 
-            GorgonFileSystemFileEntry result;
+	        string destPath = (destination + directory.Name).FormatDirectory('/');
+	        GorgonFileSystemDirectory newDirectory = ScratchFiles.GetDirectory(destPath);
 
-            if (directory == null)
-            {
-                throw new ArgumentNullException("directory");
-            }
+	        settings.ProcessForm.UpdateStatusText(string.Format(Resources.GOREDIT_IMPORT_EXPORT_PROCESS_LABEL,
+	                                                            directory.FullPath.Ellipses(45, true)));
 
-            if (string.IsNullOrWhiteSpace(destination))
-            {
-                throw new ArgumentException(Resources.GOREDIT_PARAMETER_MUST_NOT_BE_EMPTY, "destination");
-            }
+			// If the directory doesn't already exist, then create it.
+			// Otherwise, prompt the user.
+	        if (newDirectory == null)
+	        {
+		        newDirectory = ScratchFiles.CreateDirectory(destPath);
+	        }
+	        else
+	        {
+		        if ((settings.DirectoryConflictResult & ConfirmationResult.ToAll) != ConfirmationResult.ToAll)
+		        {
+			        settings.DirectoryConflictResult = CopyDirectoryConflictFunction(destPath, directory.GetDirectoryCount());
+		        }
 
-            // Don't copy ourselves,
-            string destPath = Path.GetDirectoryName(destination);
+		        if (settings.DirectoryConflictResult == ConfirmationResult.Cancel)
+		        {
+			        return null;
+		        }
+
+				// If we don't want to merge the directory, then we need to rename it.
+		        if ((settings.DirectoryConflictResult & ConfirmationResult.No) != ConfirmationResult.No)
+		        {
+			        int nameCounter = 0;
+
+					// Search for an unoccupied name.
+			        while (newDirectory != null)
+			        {
+				        destPath = string.Format("{0}{1} ({2})", destination, directory.Name, ++nameCounter).FormatDirectory('/');
+				        newDirectory = ScratchFiles.GetDirectory(destPath);
+			        }
+
+					newDirectory = ScratchFiles.CreateDirectory(destPath);
+		        }
+	        }
+
+	        ++settings.ItemCounter;
+			settings.ProcessForm.SetProgress((int)((settings.ItemCounter / (decimal)settings.TotalItemCount) * 100M));
+
+            // Copy the files for this directory.
+	        foreach (GorgonFileSystemFileEntry file in directory.Files)
+	        {
+		        if (settings.IsCancelled)
+		        {
+			        return null;
+		        }
+
+				string destFilePath = destPath + file.Name;
+
+		        settings.ProcessForm.UpdateStatusText(string.Format(Resources.GOREDIT_IMPORT_EXPORT_PROCESS_LABEL,
+		                                                            file.FullPath.Ellipses(45, true)));
+
+				// If the file exists, prompt to overwrite.
+		        if (newDirectory.Files.Contains(file.Name))
+		        {
+			        if ((settings.FileConflictResult & ConfirmationResult.ToAll) != ConfirmationResult.ToAll)
+			        {
+				        settings.FileConflictResult = CopyFileConflictFunction(destFilePath, directory.GetFileCount());
+			        }
+
+			        if (settings.FileConflictResult == ConfirmationResult.Cancel)
+			        {
+				        return null;
+			        }
+
+					// Rename the file if we don't want to overwrite it.
+			        if ((settings.FileConflictResult & ConfirmationResult.No) == ConfirmationResult.No)
+			        {
+				        int nameCounter = 0;
+
+						// Find an unoccupied name.
+				        while (newDirectory.Files.Contains(destFilePath))
+				        {
+					        destFilePath = string.Format("{0}{1} ({2}){3}", newDirectory.FullPath, file.BaseFileName, ++nameCounter,
+					                                     file.Extension);
+				        }
+			        }
+		        }
+
+				// Copy the file into the directory.
+		        Copy(file, destFilePath, true);
+
+				++settings.ItemCounter;
+				settings.ProcessForm.SetProgress((int)((settings.ItemCounter / (decimal)settings.TotalItemCount) * 100M));
+			}
             
-            if (string.IsNullOrWhiteSpace(destPath))
-            {
-                destPath = ScratchFiles.RootDirectory.FullPath + directory.Name;
-            }
-            else
-            {
-                destPath = destPath.FormatDirectory('/') + directory.Name;
-            }
-            
-            // Get the total number of files and directories that will be copied.
-            int directoryCount = directory.GetDirectoryCount();
-            int fileCount = directory.GetFileCount();
 
-            // If we have a root directory, always assume yes for the merge.
-            var overwriteResult = destPath != "/" ? ConfirmationResult.None : (ConfirmationResult.Yes | ConfirmationResult.ToAll);
+			// Copy any subdirectories.
+	        foreach (GorgonFileSystemDirectory subDirectory in directory.Directories)
+	        {
+		        if (settings.IsCancelled)
+		        {
+			        return null;
+		        }
 
-			// Enumerate sub directories.
-            foreach (var subDirectory in directory.Directories)
-            {
-                string newDirectoryPath = (destPath + subDirectory.Name).FormatDirectory('/');
+		        string newPath = (newDirectory.FullPath + subDirectory.Name).FormatDirectory('/');
 
-                // Determine if the directory already exists.
-                GorgonFileSystemDirectory newSubDirectory = ScratchFiles.GetDirectory(newDirectoryPath);
+				CopyDirectoryThread(subDirectory, newPath, settings);
+	        }
 
-                if (newSubDirectory == null)
-                {
-                    newSubDirectory = ScratchFiles.CreateDirectory(newDirectoryPath);
-                }
-                else
-                {
-                    // TODO: overwrite result is going to be forgotten on subsequent recursion levels.  Employ settings like the async stuff (perhaps make this all async).
-                    if ((overwriteResult & ConfirmationResult.ToAll) != ConfirmationResult.ToAll)
-                    {
-                        overwriteResult = CopyDirectoryConflictFunction(newDirectoryPath, directoryCount);
-                    }
-
-                    if ((overwriteResult & ConfirmationResult.No) == ConfirmationResult.No)
-                    {
-                        int nameCounter = 0;
-
-                        // Rename the directory if we don't want to merge.
-                        while (newSubDirectory != null)
-                        {
-                            destPath = string.Format("{0} ({1})", destPath.Substring(0, destPath.Length - 1), ++nameCounter)
-                                      .FormatDirectory('/');
-
-                            newSubDirectory = ScratchFiles.GetDirectory(destPath);
-                        }
-                    }
-                    
-                    // Do nothing if we cancel.
-                    if (overwriteResult == ConfirmationResult.Cancel)
-                    {
-                        return null;
-                    }
-                }
-
-                // Copy the contents of this sub directory.
-                Copy(subDirectory, newDirectoryPath);
-            }
-
-            // For files, always prompt the user.
-            overwriteResult = ConfirmationResult.None;
-
-            // Copy the files.
-            foreach (var file in directory.Files)
-            {
-                string newFilePath = destPath + file.Name;
-                GorgonFileSystemFileEntry newFile = ScratchFiles.GetFile(newFilePath);
-
-                // If the new file
-                if (newFile != null)
-                {
-                    if ((overwriteResult & ConfirmationResult.ToAll) != ConfirmationResult.ToAll)
-                    {
-                        overwriteResult = CopyFileConflictFunction(newFilePath, fileCount);
-                    }
-
-                    if (overwriteResult == ConfirmationResult.Cancel)
-                    {
-                        return null;
-                    }
-                }
-            }
-
-            using (Stream inputStream = file.OpenStream(false))
-            {
-                string newPath = destination.FullPath + file.Name;
-
-                if ((ScratchFiles.GetFile(newPath) != null) && (forceOverwrite))
-                {
-                    ConfirmationResult copyResult = CopyFileConflictFunction(newPath, 1);
-
-                    if (copyResult == ConfirmationResult.No)
-                    {
-                        return null;
-                    }
-
-                    ScratchFiles.DeleteFile(newPath);
-                }
-
-                // Create the 0 byte file.
-                result = ScratchFiles.WriteFile(newPath, null);
-
-                // Dump the source data into it.
-                using (Stream outputStream = result.OpenStream(true))
-                {
-                    inputStream.CopyTo(outputStream);
-                }
-            }
-
-            return result;
+	        return newDirectory;
         }
 
         /// <summary>
@@ -763,23 +770,11 @@ namespace GorgonLibrary.Editor
             string destFileName = Path.GetFileName(destination);
 
             // If we didn't supply a destination path, then create one.
-            if (string.IsNullOrWhiteSpace(destDirectoryPath))
-            {
-                destDirectoryPath = ScratchFiles.RootDirectory.FullPath;
-            }
-            else
-            {
-                destDirectoryPath = destDirectoryPath.FormatDirectory('/');
-            }
+	        destDirectoryPath = string.IsNullOrWhiteSpace(destDirectoryPath)
+		                            ? ScratchFiles.RootDirectory.FullPath
+		                            : destDirectoryPath.FormatDirectory('/');
 
-            if (string.IsNullOrWhiteSpace(destFileName))
-            {
-                destFileName = file.Name;
-            }
-            else
-            {
-                destFileName = destFileName.FormatFileName();
-            }
+	        destFileName = string.IsNullOrWhiteSpace(destFileName) ? file.Name : destFileName.FormatFileName();
 
             string newPath = destDirectoryPath + destFileName;
             GorgonFileSystemFileEntry existingFile = ScratchFiles.GetFile(newPath);
@@ -865,6 +860,62 @@ namespace GorgonLibrary.Editor
             return ScratchFiles.WriteFile(directory.FullPath + fileName, null);
 	    }
 
+		/// <summary>
+		/// Function to copy a directory into another location.
+		/// </summary>
+		/// <param name="directory">Directory to copy.</param>
+		/// <param name="destinationPath">Path to copy the directory into.</param>
+		/// <returns>The new file system directory.</returns>
+		public static GorgonFileSystemDirectory Copy(GorgonFileSystemDirectory directory, string destinationPath)
+		{
+			GorgonFileSystemDirectory result = null;
+
+			Debug.Assert(CopyDirectoryConflictFunction != null, "No directory copy conflict action assigned in copy.");
+			Debug.Assert(CopyFileConflictFunction != null, "No file copy conflict action assigned in copy.");
+			Debug.Assert(ImportExportFileCopyExceptionAction != null, "No file copy exception action assigned in copy.");
+
+			if (directory == null)
+			{
+				throw new ArgumentNullException("directory");
+			}
+
+			if (string.IsNullOrWhiteSpace(destinationPath))
+			{
+				throw new ArgumentException(Resources.GOREDIT_PARAMETER_MUST_NOT_BE_EMPTY, "destinationPath");
+			}
+
+			// Ensure that we're not trying to copy a parent directory into one of its ancestors.
+			if (destinationPath.FormatDirectory('/').StartsWith(directory.FullPath, StringComparison.OrdinalIgnoreCase))
+			{
+				throw new IOException(string.Format(Resources.GOREDIT_FILE_DIRECTORY_IS_CHILD, directory.FullPath));
+			}
+
+			// Bring up the progress form.
+			using (var processForm = new formProcess(ProcessType.FileCopy))
+			{
+				using (var tokenSource = new CancellationTokenSource(Int32.MaxValue))
+				{
+					var settings = new CopyDirectorySettings
+					{
+						CancelToken = tokenSource.Token,
+						DirectoryConflictResult = ConfirmationResult.None,
+						TotalItemCount = directory.GetFileCount() + directory.GetDirectoryCount(),
+						ProcessForm = processForm
+					};
+
+					processForm.Task = Task.Factory.StartNew(() => result = CopyDirectoryThread(directory, destinationPath, settings),
+					                                         settings.CancelToken);
+
+					if (processForm.ShowDialog() == DialogResult.Cancel)
+					{
+						tokenSource.Cancel();
+					}
+				}
+			}
+
+			return result;
+		}
+
         /// <summary>
         /// Function to export a directory to an external location.
         /// </summary>
@@ -875,6 +926,16 @@ namespace GorgonLibrary.Editor
             Debug.Assert(ImportExportFileCompleteAction != null, "No file completion action assigned in export.");
             Debug.Assert(ImportExportFileConflictFunction != null, "No file conflict action assigned in export.");
 			Debug.Assert(ImportExportFileCopyExceptionAction != null, "No file exception action assigned in export");
+
+			if (directory == null)
+			{
+				throw new ArgumentNullException("directory");
+			}
+
+			if (string.IsNullOrWhiteSpace(destinationPath))
+			{
+				throw new ArgumentException(Resources.GOREDIT_PARAMETER_MUST_NOT_BE_EMPTY, "destinationPath");
+			}
 
             // Bring up the progress form.
             using (var processForm = new formProcess(ProcessType.FileExporter))

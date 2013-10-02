@@ -211,7 +211,7 @@
   <data name="GOREDIT_PROC_IMPORT_DLG_TITLE" xml:space="preserve">
     <value>Importing Files</value>
   </data>
-  <data name="GOREDIT_IMPORT_INFO_DLG_TITLE" xml:space="preserve">
+  <data name="GOREDIT_PROC_IMPORT_INFO_DLG_TITLE" xml:space="preserve">
     <value>Scanning Files</value>
   </data>
   <data name="GOREDIT_IMPORT_INFO_LABEL" xml:space="preserve">
@@ -281,7 +281,7 @@
     <value>Loading default content pane.</value>
   </data>
   <data name="GOREDIT_PROC_EXPORT_DLG_TITLE" xml:space="preserve">
-    <value>Exporting files</value>
+    <value>Exporting Files</value>
   </data>
   <data name="GOREDIT_NO_CONTENT_PLUG_IN_FOR_FILE" xml:space="preserve">
     <value>Cannot open '{0}'.  There are no content plug-ins loaded that can open '{2}' files.</value>
@@ -459,5 +459,11 @@ The following characters are not allowed:
   </data>
   <data name="GOREDIT_OVERWRITE_DIRECTORY_PROMPT" xml:space="preserve">
     <value>The directory '{0}' already exists.  Would you like to merge the two directories together?</value>
+  </data>
+  <data name="GOREDIT_FILE_DIRECTORY_IS_CHILD" xml:space="preserve">
+    <value>Cannot copy '{0}' because the destination is a sub folder of this folder.</value>
+  </data>
+  <data name="GOREDIT_PROC_COPY_DLG_TITLE" xml:space="preserve">
+    <value>Copying Files</value>
   </data>
 </root>

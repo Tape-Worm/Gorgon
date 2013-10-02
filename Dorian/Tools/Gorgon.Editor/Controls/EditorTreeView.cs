@@ -33,6 +33,7 @@ using System.Drawing.Imaging;
 using System.Linq;
 using System.Windows.Forms;
 using GorgonLibrary.Editor.Properties;
+using GorgonLibrary.IO;
 using GorgonLibrary.Math;
 
 namespace GorgonLibrary.Editor
@@ -92,6 +93,59 @@ namespace GorgonLibrary.Editor
 					yield return childNode;
 				}
 			}
+		}
+
+		/// <summary>
+		/// Function to add a directory to the tree.
+		/// </summary>
+		/// <param name="nodes">Source collection.</param>
+		/// <param name="directory">Directory to add.</param>
+		/// <returns>The new node.</returns>
+		public static TreeNodeDirectory AddDirectory(this TreeNodeCollection nodes, GorgonFileSystemDirectory directory)
+		{
+			if (directory == null)
+			{
+				throw new ArgumentNullException("directory");
+			}
+
+			var result = new TreeNodeDirectory(directory);
+
+			if ((directory.Directories.Count > 0) || (directory.Files.Count > 0))
+			{
+				// Add a dummy node to indicate that there are children.
+				result.Nodes.Add("DummyNode");
+			}
+
+			// TODO: Check for dupe nodes here and return original node instead,
+
+			nodes.Add(result);
+
+			return result;
+		}
+
+		/// <summary>
+		/// Function to add a file to the tree.
+		/// </summary>
+		/// <param name="nodes">Source collection.</param>
+		/// <param name="file">File to add.</param>
+		/// <returns>The new node.</returns>
+		public static TreeNodeFile AddFile(this TreeNodeCollection nodes, GorgonFileSystemFileEntry file)
+		{
+			if (file == null)
+			{
+				throw new ArgumentNullException("file");
+			}
+
+			var result = new TreeNodeFile(file);
+
+			// TODO: Eventually file nodes may have children (associated files, like sprites are associated with an image).  
+			//		 Add that code here when we need that functionality.
+
+			nodes.Add(result);
+
+			// TODO: Check for dupe nodes here and return original node instead,
+
+			return result;
 		}
 	}
 
