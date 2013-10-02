@@ -2277,8 +2277,10 @@ namespace GorgonLibrary.Editor
 					    destDir.Expand();
 				    }
 
-				    if (newDirNode.Nodes.Count > 0)
+                    // TODO: This is not expanding
+				    if ((newDirNode.Nodes.Count > 0) && (directory.IsExpanded))
 				    {
+                        newDirNode.Collapse();
 					    newDirNode.Expand();
 				    }
 
@@ -2819,7 +2821,7 @@ namespace GorgonLibrary.Editor
 		                                                                                                        fileType,
 		                                                                                                        fileName));
 		    ScratchArea.CopyFileConflictFunction = CopyConfirmFileOverwrite;
-            ScratchArea.CopyFileConflictFunction = CopyConfirmDirectoryOverwrite;
+            ScratchArea.CopyDirectoryConflictFunction = CopyConfirmDirectoryOverwrite;
 		}
 		#endregion
 	}
