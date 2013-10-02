@@ -100,8 +100,9 @@ namespace GorgonLibrary.Editor
 		/// </summary>
 		/// <param name="nodes">Source collection.</param>
 		/// <param name="directory">Directory to add.</param>
+		/// <param name="autoExpand">TRUE to expand the new node (if it has children) after it's been added, FALSE to leave collapsed.</param>
 		/// <returns>The new node.</returns>
-		public static TreeNodeDirectory AddDirectory(this TreeNodeCollection nodes, GorgonFileSystemDirectory directory)
+		public static TreeNodeDirectory AddDirectory(this TreeNodeCollection nodes, GorgonFileSystemDirectory directory, bool autoExpand)
 		{
 			if (directory == null)
 			{
@@ -129,6 +130,20 @@ namespace GorgonLibrary.Editor
 			}
 
 			nodes.Add(result);
+
+            // Expand the parent.
+		    if ((result.Parent != null)
+		        && (!result.Parent.IsExpanded))
+		    {
+		        result.Parent.Expand();
+		    }
+
+            // Expand the node if necessary.
+		    if ((autoExpand)
+		        && (result.Nodes.Count > 0))
+		    {
+		        result.Expand();
+		    }
 
 			return result;
 		}
@@ -160,10 +175,13 @@ namespace GorgonLibrary.Editor
 
 			result = new TreeNodeFile(file);
 
-			// TODO: Eventually file nodes may have children (associated files, like sprites are associated with an image).  
-			//		 Add that code here when we need that functionality.
-
 			nodes.Add(result);
+
+		    if ((result.Parent != null)
+		        && (!result.Parent.IsExpanded))
+		    {
+		        result.Parent.Expand();
+		    }
 
 			return result;
 		}

@@ -1,4 +1,4 @@
-﻿#region MIT.
+#region MIT.
 // 
 // Gorgon.
 // Copyright (C) 2012 Michael Winsor
@@ -877,6 +877,10 @@ namespace GorgonLibrary.Editor
 		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
 		private void itemPaste_Click(object sender, EventArgs e)
 		{
+		    GorgonFileSystemDirectory newDirectory = null;
+		    GorgonFileSystemFileEntry newFile = null;
+
+            // TODO: Make this use the actual windows clip board?
 			try
 			{
 				// Use a lockless pattern to keep this method from becoming reentrant.
@@ -926,8 +930,23 @@ namespace GorgonLibrary.Editor
 
 					if (directory != null)
 					{
-						CopyDirectoryNode(directory, dest, directory.Text, _cutCopyObject.Value.IsCut);
-						return;
+					    if (!_cutCopyObject.Value.IsCut)
+					    {
+					    	#error This is not working.  Investigate.
+					        newDirectory = ScratchArea.Copy(directory.Directory, dest.FullPath);
+					    }
+					    else
+					    {
+                            CopyDirectoryNode(directory, dest, directory.Text, _cutCopyObject.Value.IsCut);    
+					    }
+
+					    if (newDirectory == null)
+					    {
+					        return;
+					    }
+
+                        dest.Nodes.AddDirectory(newDirectory, true);
+					    return;
 					}
 
 					var file = node as TreeNodeFile;
@@ -943,7 +962,21 @@ namespace GorgonLibrary.Editor
 						return;
 					}
 
-					CopyFileNode(file, dest, file.Text, _cutCopyObject.Value.IsCut);
+				    if (!_cutCopyObject.Value.IsCut)
+				    {
+				        newFile = ScratchArea.Copy(file.File, dest.FullPath, false);
+				    }
+				    else
+				    {
+				        CopyFileNode(file, dest, file.Text, _cutCopyObject.Value.IsCut);
+				    }
+
+				    if (newFile == null)
+				    {
+				        return;
+				    }
+
+				    dest.Nodes.AddFile(newFile);
 				}
 				catch (Exception ex)
 				{
@@ -951,8 +984,13 @@ namespace GorgonLibrary.Editor
 				}
 				finally
 				{
-					_cutCopyObject = null;
-					ValidateControls();
+                    // If the object was cut, then clear the "clipboard".
+				    if ((_cutCopyObject != null) && (_cutCopyObject.Value.IsCut))
+				    {
+				        _cutCopyObject = null;
+				    }
+
+				    ValidateControls();
 					Cursor.Current = Cursors.Default;
 				}
 			}
@@ -977,10 +1015,9 @@ namespace GorgonLibrary.Editor
 				}
 
 				var node = (EditorTreeNode)treeFiles.SelectedNode;
-				node.IsCut = ((sender == itemCut) || (sender == popupItemCut));
 				node.Redraw();
 
-				_cutCopyObject = new CutCopyObject(node, node.Name, node.IsCut);
+				_cutCopyObject = new CutCopyObject(node, node.Name, ((sender == itemCut) || (sender == popupItemCut)));
 			}
 			finally
 			{
@@ -2269,20 +2306,7 @@ namespace GorgonLibrary.Editor
 					    return;
 				    }
 
-					// TODO: If we merge we have to ensure that we don't duplicate the node.
-				    TreeNodeDirectory newDirNode = destDir.Nodes.AddDirectory(destDirectory);
-					
-				    if (!destDir.IsExpanded)
-				    {
-					    destDir.Expand();
-				    }
-
-                    // TODO: This is not expanding
-				    if ((newDirNode.Nodes.Count > 0) && (directory.IsExpanded))
-				    {
-                        newDirNode.Collapse();
-					    newDirNode.Expand();
-				    }
+                    destDir.Nodes.AddDirectory(destDirectory, true);
 
 					FileManagement.FileChanged = true;
 				    return;
@@ -2313,7 +2337,6 @@ namespace GorgonLibrary.Editor
 					return;
 				}
 
-				// TODO: If we overwrite, then we cannot duplicate the node.
 				destDir.Nodes.AddFile(newFile);
 
 				if (!destDir.IsExpanded)
