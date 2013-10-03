@@ -24,15 +24,37 @@
 // 
 #endregion
 
+using System;
 using System.Drawing;
 using System.Windows.Forms;
 
 namespace GorgonLibrary.Editor
 {
+	[Flags]
+	enum NodeType
+	{
+		/// <summary>
+		/// Unknown node type.
+		/// </summary>
+		Unknown = 0,
+		/// <summary>
+		/// Root node.
+		/// </summary>
+		Root = 1,
+		/// <summary>
+		/// Directory node.
+		/// </summary>
+		Directory = 2,
+		/// <summary>
+		/// File node.
+		/// </summary>
+		File = 4
+	}
+
 	/// <summary>
 	/// A tree node for the editor.
 	/// </summary>
-	class EditorTreeNode
+	abstract class EditorTreeNode
 		: TreeNode
 	{
 		#region Properties.
@@ -52,6 +74,14 @@ namespace GorgonLibrary.Editor
 		{
 			get;
 			set;
+		}
+
+		/// <summary>
+		/// Property to return the type of node.
+		/// </summary>
+		public abstract NodeType NodeType
+		{
+			get;
 		}
 
         /// <summary>
@@ -213,7 +243,7 @@ namespace GorgonLibrary.Editor
 		/// <summary>
 		/// Initializes a new instance of the <see cref="EditorTreeNode"/> class.
 		/// </summary>
-		public EditorTreeNode()
+		protected EditorTreeNode()
 		{
 				
 		}

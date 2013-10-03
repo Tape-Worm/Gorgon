@@ -42,6 +42,17 @@ namespace GorgonLibrary.Editor
 
 		#region Properties.
 		/// <summary>
+		/// Property to return the type of node.
+		/// </summary>
+		public override NodeType NodeType
+		{
+			get
+			{
+				return NodeType.File;
+			}
+		}
+
+		/// <summary>
 		/// Property to set or return the font for open files.
 		/// </summary>
 		public Font OpenFont

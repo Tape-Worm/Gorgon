@@ -746,6 +746,45 @@ namespace GorgonLibrary.Editor
             return newDirectory;
         }
 
+		/// <summary>
+		/// Function to move a file from one location to another.
+		/// </summary>
+		/// <param name="file">File to move.</param>
+		/// <param name="destination">Destination directory/file.</param>
+		/// <param name="forceOverwrite">TRUE to force an overwrite if the file exists, FALSE to prompt the user.</param>
+		/// <returns>The new file system file or NULL if the file was not copied.</returns>
+		public static GorgonFileSystemFileEntry Move(GorgonFileSystemFileEntry file, string destination, bool forceOverwrite)
+		{
+			GorgonFileSystemFileEntry result = null;
+
+			if (file == null)
+			{
+				throw new ArgumentNullException("file");
+			}
+
+			if (string.IsNullOrWhiteSpace(destination))
+			{
+				throw new ArgumentException(Resources.GOREDIT_PARAMETER_MUST_NOT_BE_EMPTY, "destination");
+			}
+
+			try
+			{
+				result = Copy(file, destination, forceOverwrite);
+
+				// Delete the original.
+				if (result != null)
+				{
+					ScratchFiles.DeleteFile(file);
+				}
+			}
+			catch (Exception ex)
+			{
+				ImportExportFileCopyExceptionAction(ex);
+			}
+
+			return result;
+		}
+
         /// <summary>
         /// Function to copy a file from one location to another.
         /// </summary>
@@ -755,8 +794,9 @@ namespace GorgonLibrary.Editor
         /// <returns>The new file system file or NULL if the file was not copied.</returns>
 	    public static GorgonFileSystemFileEntry Copy(GorgonFileSystemFileEntry file, string destination, bool forceOverwrite)
         {
-            GorgonFileSystemFileEntry result = null;
+            GorgonFileSystemFileEntry result;
 
+			Debug.Assert(ImportExportFileCopyExceptionAction != null, "Copy exception action is not assigned for copy.");
             Debug.Assert(CopyFileConflictFunction != null, "Copy file conflict action is not assigned for copy.");
 
             if (file == null)
@@ -777,17 +817,24 @@ namespace GorgonLibrary.Editor
 
             try
             {
-                string destDirectoryPath = Path.GetDirectoryName(destination);
+                string destDirectoryPath = destination == "/" ? "/" : Path.GetDirectoryName(destination);
                 string destFileName = Path.GetFileName(destination);
 
                 // If we didn't supply a destination path, then create one.
                 destDirectoryPath = string.IsNullOrWhiteSpace(destDirectoryPath)
-                                        ? ScratchFiles.RootDirectory.FullPath
+                                        ? file.Directory.FullPath
                                         : destDirectoryPath.FormatDirectory('/');
 
                 destFileName = string.IsNullOrWhiteSpace(destFileName) ? file.Name : destFileName.FormatFileName();
 
                 string newPath = destDirectoryPath + destFileName;
+
+				// If we try to copy this file on top of itself, then don't bother.  It'd be redundant.
+				if (string.Equals(newPath, file.FullPath, StringComparison.OrdinalIgnoreCase))
+				{
+					return null;
+				}
+
                 GorgonFileSystemFileEntry existingFile = ScratchFiles.GetFile(newPath);
 
                 if ((existingFile != null) && (!forceOverwrite))
@@ -815,12 +862,6 @@ namespace GorgonLibrary.Editor
                     {
                         return null;
                     }
-                }
-
-                // If we try to copy this file on top of itself, then don't bother.  It'd be redundant.
-                if (string.Equals(newPath, file.FullPath, StringComparison.OrdinalIgnoreCase))
-                {
-                    return null;
                 }
 
                 // Create the 0 byte file.

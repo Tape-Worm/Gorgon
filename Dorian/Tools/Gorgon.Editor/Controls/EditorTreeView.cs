@@ -206,6 +206,22 @@ namespace GorgonLibrary.Editor
 
 		#region Properties.
 		/// <summary>
+		/// Property to return the selected editor tree node.
+		/// </summary>
+		[Browsable(false)]
+	    public new EditorTreeNode SelectedNode
+	    {
+			get
+			{
+				return base.SelectedNode as EditorTreeNode;
+			}
+			set
+			{
+				base.SelectedNode = value;
+			}
+	    }
+
+		/// <summary>
         /// Gets or sets the mode in which the control is drawn.
         /// </summary>
         /// <returns>One of the <see cref="T:System.Windows.Forms.TreeViewDrawMode" /> values. The default is <see cref="F:System.Windows.Forms.TreeViewDrawMode.Normal" />.</returns>

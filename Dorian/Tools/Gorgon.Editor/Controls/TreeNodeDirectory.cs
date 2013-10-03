@@ -37,6 +37,17 @@ namespace GorgonLibrary.Editor
 		: EditorTreeNode
 	{
 		#region Properties.
+		/// <summary>
+		/// Property to return the type of node.
+		/// </summary>
+		public override NodeType NodeType
+		{
+			get
+			{
+				return NodeType.Directory;
+			}
+		}
+
         /// <summary>
         /// Gets or sets the foreground color of the tree node.
         /// </summary>
@@ -108,6 +119,15 @@ namespace GorgonLibrary.Editor
 			ExpandedImage = Resources.folder_open_16x16;
 			CollapsedImage = Resources.folder_16x16;
 		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="TreeNodeDirectory"/> class.
+		/// </summary>
+		public TreeNodeDirectory()
+		{
+			ExpandedImage = Resources.folder_open_16x16;
+			CollapsedImage = Resources.folder_16x16;
+		}
 		#endregion
 	}
 
@@ -122,7 +142,18 @@ namespace GorgonLibrary.Editor
 		#endregion
 
 		#region Properties.
-        /// <summary>
+		/// <summary>
+		/// Property to return the type of node.
+		/// </summary>
+		public override NodeType NodeType
+		{
+			get
+			{
+				return NodeType.Root | NodeType.Directory;
+			}
+		}
+
+		/// <summary>
         /// Gets or sets the foreground color of the tree node.
         /// </summary>
         /// <returns>The foreground <see cref="T:System.Drawing.Color" /> of the tree node.</returns>
