@@ -58,7 +58,11 @@ namespace GorgonLibrary.Editor
 		/// <summary>
 		/// File copy process.
 		/// </summary>
-		FileCopy = 4
+		FileCopy = 4,
+        /// <summary>
+        /// File move process.
+        /// </summary>
+        FileMove = 5
 	}
 
 	/// <summary>
@@ -113,6 +117,9 @@ namespace GorgonLibrary.Editor
 					case ProcessType.FileCopy:
 						base.Text = Resources.GOREDIT_PROC_COPY_DLG_TITLE;
 						break;
+                    case ProcessType.FileMove:
+                        base.Text = Resources.GOREDIT_PROC_MOVE_DLG_TITLE;
+				        break;
 					default:
 #if DEBUG
 						// ReSharper disable once LocalizableElement
@@ -277,6 +284,7 @@ namespace GorgonLibrary.Editor
 					progressMeter.Style = ProgressBarStyle.Marquee;
 					labelStatus.Text = Resources.GOREDIT_FILE_WRITE_SAVE_LABEL;
 					break;
+                case ProcessType.FileMove:
 				case ProcessType.FileCopy:
                 case ProcessType.FileExporter:
 				case ProcessType.FileImporter:

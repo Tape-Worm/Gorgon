@@ -415,11 +415,21 @@ namespace GorgonLibrary.Editor
         private ConfirmationResult CopyConfirmFileOverwrite(string filePath, int totalFileCount)
         {
             var result = ConfirmationResult.None;
-            Action invokeAction = () => result = GorgonDialogs.ConfirmBox(null, string.Format(Resources.GOREDIT_OVERWRITE_FILE_PROMPT,
-                                                                      Resources.GOREDIT_FILE_DEFAULT_TYPE,
-                                                                      filePath),
-                                                                true,
-                                                                totalFileCount > 1);
+            Action invokeAction = () =>
+                                  {
+                                      Cursor current = Cursor.Current;
+
+                                      result = GorgonDialogs.ConfirmBox(null,
+                                                                        string.Format(Resources
+                                                                                          .GOREDIT_OVERWRITE_FILE_PROMPT,
+                                                                                      Resources
+                                                                                          .GOREDIT_FILE_DEFAULT_TYPE,
+                                                                                      filePath),
+                                                                        true,
+                                                                        totalFileCount > 1);
+
+                                      Cursor.Current = current;
+                                  };
             if (InvokeRequired)
             {
                 Invoke(new MethodInvoker(invokeAction));
@@ -441,10 +451,21 @@ namespace GorgonLibrary.Editor
         private ConfirmationResult CopyConfirmDirectoryOverwrite(string directoryPath, int totalDirectoryCount)
         {
             var result = ConfirmationResult.None;
-            Action invokeAction = () => result = GorgonDialogs.ConfirmBox(null, string.Format(Resources.GOREDIT_OVERWRITE_DIRECTORY_PROMPT,
-                                                                      directoryPath),
-                                                                true,
-                                                                totalDirectoryCount > 1);
+            Action invokeAction = () =>
+                                  {
+                                      Cursor current = Cursor.Current;
+
+                                      result = GorgonDialogs.ConfirmBox(null,
+                                                                        string.Format(Resources
+                                                                                          .GOREDIT_OVERWRITE_DIRECTORY_PROMPT,
+                                                                                      directoryPath),
+                                                                        true,
+                                                                        totalDirectoryCount > 1);
+
+                                      Cursor.Current = current;
+                                  };
+            
+            
             if (InvokeRequired)
             {
                 Invoke(new MethodInvoker(invokeAction));
@@ -466,6 +487,8 @@ namespace GorgonLibrary.Editor
         {
             try
             {
+                EditorTreeNode selectedNode = treeFiles.SelectedNode;
+
                 dialogExport.Description = Resources.GOREDIT_EXPORT_DLG_TITLE;
                 dialogExport.SelectedPath = Program.Settings.ExportLastFilePath;
                 dialogExport.ShowNewFolderButton = true;
@@ -478,12 +501,12 @@ namespace GorgonLibrary.Editor
 				
 	            Cursor.Current = Cursors.WaitCursor;
 
-				if ((treeFiles.SelectedNode.NodeType & NodeType.File) == NodeType.File)
+				if ((selectedNode.NodeType & NodeType.File) == NodeType.File)
                 {
                     ScratchArea.Export(((TreeNodeFile)treeFiles.SelectedNode).File, dialogExport.SelectedPath, false);
-                }
+                } 
                 
-				if ((treeFiles.SelectedNode.NodeType & NodeType.Directory) == NodeType.Directory)
+                if ((selectedNode.NodeType & NodeType.Directory) == NodeType.Directory)
                 {
 					ScratchArea.Export(((TreeNodeDirectory)treeFiles.SelectedNode).Directory, dialogExport.SelectedPath);
                 }
@@ -506,6 +529,8 @@ namespace GorgonLibrary.Editor
         /// </summary>
         private void ValidateControls()
         {
+            EditorTreeNode selectedNode = treeFiles.SelectedNode;
+
             Text = string.Format("{0} - {1}", FileManagement.Filename, Resources.GOREDIT_DEFAULT_TITLE);
 
 			Debug.Assert(_rootNode != null, "Root node is NULL!");
@@ -543,12 +568,12 @@ namespace GorgonLibrary.Editor
             menuRecentFiles.Enabled = Program.Settings.RecentFiles.Count > 0;
 
             // No node is the same as selecting the root.
-            if (treeFiles.SelectedNode == null)
+            if (selectedNode == null)
             {
-				treeFiles.SelectedNode = _rootNode;
+				selectedNode = treeFiles.SelectedNode = _rootNode;
             }
 
-			if ((treeFiles.SelectedNode.NodeType & NodeType.Directory) == NodeType.Directory)
+			if ((selectedNode.NodeType & NodeType.Directory) == NodeType.Directory)
 	        {
 		        toolStripSeparator4.Visible = true;
 		        popupItemAddContent.Visible = itemAddContent.Enabled = itemAddContent.DropDownItems.Count > 0;
@@ -585,20 +610,23 @@ namespace GorgonLibrary.Editor
 			        popupItemRename.Visible = false;
 		        }
 	        }
-	        else
-	        {
-		        GorgonFileSystemFileEntry file = ((TreeNodeFile)treeFiles.SelectedNode).File;
 
-		        popupItemAddContent.Visible = false;
-		        popupItemPaste.Enabled = itemPaste.Enabled = (_cutCopyObject != null);
-		        popupItemCut.Enabled = popupItemCopy.Enabled = itemCopy.Enabled = itemCut.Enabled = true;
-		        buttonDeleteContent.Enabled = true;
-		        toolStripSeparator4.Visible =
-			        buttonEditContent.Enabled =
-			        popupItemEdit.Visible = popupItemEdit.Enabled = ContentManagement.CanOpenContent(file.Extension);
-		        itemDelete.Enabled = popupItemDelete.Enabled = (tabDocumentManager.SelectedTab == pageItems);
-		        popupItemRename.Enabled = true;
-	        }
+            if ((selectedNode.NodeType & NodeType.File) != NodeType.File)
+            {
+                return;
+            }
+
+            GorgonFileSystemFileEntry file = ((TreeNodeFile)selectedNode).File;
+
+            popupItemAddContent.Visible = false;
+            popupItemPaste.Enabled = itemPaste.Enabled = (_cutCopyObject != null);
+            popupItemCut.Enabled = popupItemCopy.Enabled = itemCopy.Enabled = itemCut.Enabled = true;
+            buttonDeleteContent.Enabled = true;
+            toolStripSeparator4.Visible =
+                buttonEditContent.Enabled =
+                popupItemEdit.Visible = popupItemEdit.Enabled = ContentManagement.CanOpenContent(file.Extension);
+            itemDelete.Enabled = popupItemDelete.Enabled = (tabDocumentManager.SelectedTab == pageItems);
+            popupItemRename.Enabled = true;
         }
 
         /// <summary>
@@ -833,15 +861,12 @@ namespace GorgonLibrary.Editor
 			// Turn off the event.
 			panel.ContentClosed -= OnContentClose;
 
-			if ((CurrentOpenFile == null)
-				|| (!ContentManagement.Changed))
+			if ((CurrentOpenFile!= null) && (ContentManagement.Changed))
 			{
-				return;
+                ContentManagement.Save(CurrentOpenFile);
 			}
-
-			ContentManagement.Save(CurrentOpenFile);
-
-			CurrentOpenFile = null;
+			
+            CurrentOpenFile = null;
 		}
 
 		/// <summary>
@@ -851,65 +876,59 @@ namespace GorgonLibrary.Editor
 		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
 		private void itemPaste_Click(object sender, EventArgs e)
 		{
+		    Cursor.Current = Cursors.WaitCursor;
+
             // TODO: Make this use the actual windows clip board?
 			try
 			{
-				// Use a lockless pattern to keep this method from becoming reentrant.
+                // Use a lockless pattern to keep this method from becoming reentrant.
 			    if (Interlocked.Increment(ref _syncCounter) > 1)
 			    {
 			        return;
 			    }
 
-			    Cursor.Current = Cursors.WaitCursor;
-
-				try
+				if ((_cutCopyObject == null) || (_cutCopyObject.Value.Object == null) || (_cutCopyObject.Value.Node == null))
 				{
-					if ((_cutCopyObject == null) || (_cutCopyObject.Value.Object == null) || (_cutCopyObject.Value.Node == null))
-					{
-						return;
-					}
-
-					// If we're cutting/copying some tree node, then find the current node
-					// and perform the operation.
-					var node = _cutCopyObject.Value.Node;
-
-					node.IsCut = false;
-					node.Redraw();
-
-					if ((treeFiles.SelectedNode.NodeType & NodeType.Directory) == NodeType.Directory)
-					{
-						GorgonDialogs.ErrorBox(this, Resources.GOREDIT_PASTE_MUST_BE_DIRECTORY);
-						return;
-					}
-
-					// If we're moving, there are some restrictions.
-					if ((treeFiles.SelectedNode == node) && (_cutCopyObject.Value.IsCut))
-					{
-						GorgonDialogs.ErrorBox(this, Resources.GOREDIT_FILE_SOURCE_SAME_AS_DEST);
-						return;
-					}
-
-					if ((_cutCopyObject.Value.IsCut) && (treeFiles.SelectedNode.IsAncestorOf(node)))
-					{
-						GorgonDialogs.ErrorBox(this, Resources.GOREDIT_FILE_CANNOT_MOVE_TO_CHILD);
-						return;
-					}
-
-					MoveCopyNode(node, (TreeNodeDirectory)treeFiles.SelectedNode, !_cutCopyObject.Value.IsCut);
+					return;
 				}
-				catch (Exception ex)
+
+				// If we're cutting/copying some tree node, then find the current node
+				// and perform the operation.
+				var node = _cutCopyObject.Value.Node;
+
+				node.IsCut = false;
+				node.Redraw();
+
+				if ((treeFiles.SelectedNode.NodeType & NodeType.Directory) != NodeType.Directory)
 				{
-					GorgonDialogs.ErrorBox(this, ex);
+					GorgonDialogs.ErrorBox(this, Resources.GOREDIT_PASTE_MUST_BE_DIRECTORY);
+					return;
 				}
-				finally
+
+				// If we're moving, there are some restrictions.
+				if ((treeFiles.SelectedNode == node) && (_cutCopyObject.Value.IsCut))
 				{
-				    ValidateControls();
-					Cursor.Current = Cursors.Default;
+					GorgonDialogs.ErrorBox(this, Resources.GOREDIT_FILE_SOURCE_SAME_AS_DEST);
+					return;
 				}
+
+				if ((_cutCopyObject.Value.IsCut) && (treeFiles.SelectedNode.IsAncestorOf(node)))
+				{
+					GorgonDialogs.ErrorBox(this, Resources.GOREDIT_FILE_CANNOT_MOVE_TO_CHILD);
+					return;
+				}
+
+				MoveCopyNode(node, (TreeNodeDirectory)treeFiles.SelectedNode, !_cutCopyObject.Value.IsCut);
+			}
+			catch (Exception ex)
+			{
+				GorgonDialogs.ErrorBox(this, ex);
 			}
 			finally
 			{
-				Interlocked.Decrement(ref _syncCounter);
+                ValidateControls();
+                Cursor.Current = Cursors.Default;
+                Interlocked.Decrement(ref _syncCounter);
 			}
 		}
 
@@ -1433,7 +1452,9 @@ namespace GorgonLibrary.Editor
 	                return;
                 }
 
-				if ((treeFiles.SelectedNode.NodeType & NodeType.Directory) == NodeType.Directory)
+			    EditorTreeNode selectedNode = treeFiles.SelectedNode;
+
+				if ((selectedNode.NodeType & NodeType.Directory) == NodeType.Directory)
 				{
 					var directoryNode = (TreeNodeDirectory)treeFiles.SelectedNode;
 
@@ -1456,7 +1477,7 @@ namespace GorgonLibrary.Editor
                     PruneTree(directoryNode);
 				}
 
-				if ((treeFiles.SelectedNode.NodeType & NodeType.File) == NodeType.File)
+                if ((selectedNode.NodeType & NodeType.File) == NodeType.File)
 				{
 					var fileNode = (TreeNodeFile)treeFiles.SelectedNode;
 
@@ -1487,6 +1508,7 @@ namespace GorgonLibrary.Editor
 			finally
 			{
 				Cursor.Current = Cursors.Default;
+                ValidateControls();
 			}
 		}
 
@@ -2200,6 +2222,76 @@ namespace GorgonLibrary.Editor
 			}
 		}
 
+        /// <summary>
+        /// Function to move or copy a directory node.
+        /// </summary>
+        /// <param name="sourceNode">Source node directory to move/copy.</param>
+        /// <param name="destinationNode">The destination directory for the copied/moved node.</param>
+        /// <param name="isCopy">TRUE to copy the directory, FALSE to move.</param>
+        /// <returns>The new node.</returns>
+	    private EditorTreeNode MoveCopyNodeDirectory(TreeNodeDirectory sourceNode,
+	                                                 TreeNodeDirectory destinationNode,
+	                                                 bool isCopy)
+        {
+            TreeNodeDirectory result;
+            string openContent = string.Empty;
+
+            if (sourceNode == null)
+            {
+                return null;
+            }
+
+            treeFiles.BeginUpdate();
+            try
+            {
+                // If this or one of the ancestor directories contains the file that is currently open, then save it and reopen it after the move.
+                if ((!isCopy)
+                    && (CurrentOpenFile != null)
+                    && (CurrentOpenFile.FullPath.StartsWith(sourceNode.Directory.FullPath)))
+                {
+#error This is not linking to the currently open file properly.  Need to find some way to link it together.
+                    openContent = (CurrentOpenFile.FullPath.Replace(sourceNode.Directory.FullPath,
+                                                                   destinationNode.Directory.FullPath + sourceNode.Name)).FormatDirectory('/') + CurrentOpenFile.Name;
+                    CurrentOpenFile = null;
+                }
+
+                GorgonFileSystemDirectory newDirectory = isCopy
+                                                             ? ScratchArea.Copy(sourceNode.Directory,
+                                                                                destinationNode.Directory.FullPath)
+                                                             : ScratchArea.Move(sourceNode.Directory,
+                                                                                destinationNode.Directory.FullPath);
+
+                if (newDirectory == null)
+                {
+                    return null;
+                }
+
+                result = destinationNode.Nodes.AddDirectory(newDirectory, sourceNode.IsExpanded);
+
+                // Remove the file if this is a move operation.
+                if (!isCopy)
+                {
+                    sourceNode.Remove();
+                }
+
+                FileManagement.FileChanged = true;
+
+                // If we've moved the file that's already open, then close it and reopen it.
+                if (string.IsNullOrWhiteSpace(openContent))
+                {
+                    return result;
+                }
+
+                CurrentOpenFile = ScratchArea.ScratchFiles.GetFile(openContent);
+            }
+            finally
+            {
+                treeFiles.EndUpdate();
+            }
+            
+            return result;
+        }
+
 		/// <summary>
 		/// Function to move or copy a file node.
 		/// </summary>
@@ -2209,54 +2301,60 @@ namespace GorgonLibrary.Editor
 		/// <returns>The new node.</returns>
 		private EditorTreeNode MoveCopyNodeFile(TreeNodeFile sourceNode, TreeNodeDirectory destinationNode, bool isCopy)
 		{
-			bool reopenContent = false;
+		    TreeNodeFile result;
+			bool updateOpenContent = false;
 
 			if (sourceNode == null)
 			{
 				return null;
 			}
 
-			if (sourceNode.File == CurrentOpenFile)
-			{
-				if (ContentManagement.Changed)
-				{
-					ContentManagement.Save(CurrentOpenFile);
-				}
+            treeFiles.BeginUpdate();
+		    try
+		    {
+		        if ((sourceNode.File == CurrentOpenFile)
+		            && (!isCopy))
+		        {
+		            CurrentOpenFile = null;
+		            updateOpenContent = true;
+		        }
 
-				ContentManagement.LoadDefaultContentPane();
-				CurrentOpenFile = null;
-				reopenContent = true;
-			}
+		        // Copy/move the file.
+		        GorgonFileSystemFileEntry newFile = isCopy
+		                                                ? ScratchArea.Copy(sourceNode.File,
+		                                                                   destinationNode.Directory.FullPath,
+		                                                                   false)
+		                                                : ScratchArea.Move(sourceNode.File,
+		                                                                   destinationNode.Directory.FullPath,
+		                                                                   false);
 
-			// Copy/move the file.
-			GorgonFileSystemFileEntry newFile = isCopy
-													? ScratchArea.Copy(sourceNode.File, destinationNode.Directory.FullPath, false)
-													: ScratchArea.Move(sourceNode.File, destinationNode.Directory.FullPath, false);
+		        if (newFile == null)
+		        {
+		            return null;
+		        }
 
-			if (newFile == null)
-			{
-				return null;
-			}
+		        result = destinationNode.Nodes.AddFile(newFile);
 
-			TreeNodeFile result = destinationNode.Nodes.AddFile(newFile);
+		        // Remove the file if this is a move operation.
+		        if (!isCopy)
+		        {
+		            sourceNode.Remove();
+		        }
 
-			// Remove the file if this is a move operation.
-			if (!isCopy)
-			{
-				sourceNode.Remove();
-			}
+		        FileManagement.FileChanged = true;
+                
+		        // If we've moved the file that's already open, then close it and reopen it.
+		        if (!updateOpenContent)
+		        {
+		            return result;
+		        }
 
-			FileManagement.FileChanged = true;
-
-			// If we've moved the file that's already open, then close it and reopen it.
-			if (!reopenContent)
-			{
-				return result;
-			}
-
-			ContentManagement.Load(newFile);
-			CurrentOpenFile = newFile;
-			treeFiles.Refresh();
+                CurrentOpenFile = newFile;
+		    }
+		    finally
+		    {
+                treeFiles.EndUpdate();
+		    }
 
 			return result;
 		}
@@ -2281,28 +2379,8 @@ namespace GorgonLibrary.Editor
 				// Our source data is a directory, so move it.
 				if ((sourceNode.NodeType & NodeType.Directory) == NodeType.Directory)
 				{
-					// TODO: Modify this to use scratch area move/copy functions.
-					var directory = (TreeNodeDirectory)sourceNode;
-					GorgonFileSystemDirectory destDirectory = null;
-
-					if (isCopy)
-					{
-						destDirectory = ScratchArea.Copy(directory.Directory, destinationNode.Directory.FullPath);
-					}
-					else
-					{
-						CopyDirectoryNode(directory, destinationNode, directory.Directory.Name, !isCopy);
-					}
-
-					if (destDirectory == null)
-					{
-						return;
-					}
-
-					destinationNode.Nodes.AddDirectory(destDirectory, true);
-
-					FileManagement.FileChanged = true;
-					return;
+				    var directory = sourceNode as TreeNodeDirectory;
+				    newNode = MoveCopyNodeDirectory(directory, destinationNode, isCopy);
 				}
 
 				if ((sourceNode.NodeType & NodeType.File) == NodeType.File)
@@ -2319,12 +2397,13 @@ namespace GorgonLibrary.Editor
 				}
 
 				// Select the moved/copied file.
+                //treeFiles.Sort();
 				treeFiles.SelectedNode = newNode;
 			}
 			finally
 			{
 				// If this object was marked for a cut operation, then remove it from the "clipboard".
-				if ((_cutCopyObject != null) && (_cutCopyObject.Value.Node == sourceNode))
+				if ((_cutCopyObject != null) && (_cutCopyObject.Value.Node == sourceNode) && (!isCopy))
 				{
 					_cutCopyObject = null;
 				}
