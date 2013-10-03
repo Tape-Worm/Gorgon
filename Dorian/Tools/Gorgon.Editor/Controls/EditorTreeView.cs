@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
@@ -69,8 +70,8 @@ namespace GorgonLibrary.Editor
 	/// Extension method for the tree node collection.
 	/// </summary>
 	static class TreeNodeCollectionExtension
-	{
-		/// <summary>
+    {
+        /// <summary>
 		/// Function to return all nodes under this collection.
 		/// </summary>
 		/// <param name="nodes">Source collection.</param>
@@ -129,13 +130,15 @@ namespace GorgonLibrary.Editor
 				result.Nodes.Add("DummyNode");
 			}
 
-			nodes.Add(result);
+            nodes.Add(result);
 
             // Expand the parent.
 		    if ((result.Parent != null)
 		        && (!result.Parent.IsExpanded))
 		    {
-		        result.Parent.Expand();
+		        TreeNode parent = result.Parent;
+		        parent.Expand();
+		        result = (TreeNodeDirectory)parent.Nodes[result.Name];
 		    }
 
             // Expand the node if necessary.
@@ -193,6 +196,80 @@ namespace GorgonLibrary.Editor
     class EditorTreeView
         : TreeView
     {
+        #region Classes.
+        /// <summary>
+        /// A comparer for node sorting.
+        /// </summary>
+        private class EditorNodeComparer
+            : IComparer<EditorTreeNode>, IComparer
+        {
+            #region IComparer<EditorTreeNode> Members
+            /// <summary>
+            /// Compares two objects and returns a value indicating whether one is less than, equal to, or greater than the other.
+            /// </summary>
+            /// <param name="x">The first object to compare.</param>
+            /// <param name="y">The second object to compare.</param>
+            /// <returns>
+            /// A signed integer that indicates the relative values of <paramref name="x" /> and <paramref name="y" />, as shown in the following table.Value Meaning Less than zero<paramref name="x" /> is less than <paramref name="y" />.Zero<paramref name="x" /> equals <paramref name="y" />.Greater than zero<paramref name="x" /> is greater than <paramref name="y" />.
+            /// </returns>
+            /// <exception cref="System.NotImplementedException"></exception>
+            public int Compare(EditorTreeNode x, EditorTreeNode y)
+            {
+                // For a root node always return it before other nodes.
+                if ((x.NodeType & NodeType.Root) == NodeType.Root)
+                {
+                    return -1;
+                }
+
+                if ((y.NodeType & NodeType.Root) == NodeType.Root)
+                {
+                    return 1;
+                }
+
+                // If this is a directory, we need to place it before files.
+                if (((x.NodeType & NodeType.Directory) == NodeType.Directory)
+                    && ((y.NodeType & NodeType.Directory) != NodeType.Directory))
+                {
+                    return -1;
+                }
+
+                if (((y.NodeType & NodeType.Directory) == NodeType.Directory)
+                    && ((x.NodeType & NodeType.Directory) != NodeType.Directory))
+                {
+                    return 1;
+                }
+
+                // Otherwise, sort by text.
+                return string.Compare(x.Text, y.Text, StringComparison.OrdinalIgnoreCase);
+            }
+            #endregion
+
+            #region IComparer Members
+            /// <summary>
+            /// Compares two objects and returns a value indicating whether one is less than, equal to, or greater than the other.
+            /// </summary>
+            /// <param name="x">The first object to compare.</param>
+            /// <param name="y">The second object to compare.</param>
+            /// <returns>
+            /// A signed integer that indicates the relative values of <paramref name="x" /> and <paramref name="y" />, as shown in the following table.Value Meaning Less than zero <paramref name="x" /> is less than <paramref name="y" />. Zero <paramref name="x" /> equals <paramref name="y" />. Greater than zero <paramref name="x" /> is greater than <paramref name="y" />.
+            /// </returns>
+            public int Compare(object x, object y)
+            {
+                var xNode = x as EditorTreeNode;
+                var yNode = y as EditorTreeNode;
+
+                if ((xNode == null)
+                    || (yNode == null))
+                {
+                    return 0;
+                }
+
+                return Compare(xNode, yNode);
+            }
+            #endregion
+        }
+        #endregion
+
         #region Variables.
         private bool _disposed;							// Flag to indicate that the object was disposed.
         private Font _openContent;						// Font used for open content items.
@@ -659,6 +736,7 @@ namespace GorgonLibrary.Editor
 
 			_fadeAttributes = new ImageAttributes();
 			_fadeAttributes.SetColorMatrix(fadeMatrix, ColorMatrixFlag.Default, ColorAdjustType.Bitmap);
+            TreeViewNodeSorter = new EditorNodeComparer();
         }
         #endregion
     }

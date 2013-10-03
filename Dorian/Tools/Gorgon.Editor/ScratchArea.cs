@@ -106,6 +106,11 @@ namespace GorgonLibrary.Editor
 			/// </summary>
 			public int ItemCounter;
 
+            /// <summary>
+            /// Flag to delete the source files/directories after they've been copied.
+            /// </summary>
+		    public bool DeleteSource;
+
 			/// <summary>
 			/// Property to set or return whether the operation is cancelled or not.
 			/// </summary>
@@ -619,24 +624,24 @@ namespace GorgonLibrary.Editor
         }
 
         /// <summary>
-        /// Function to copy a directory from one location to another.
+        /// Function to copy or move a directory from one location to another.
         /// </summary>
-        /// <param name="directory">Directory to copy.</param>
+        /// <param name="directory">Directory to copy/move.</param>
         /// <param name="destination">Destination directory.</param>
-		/// <param name="settings">Settings for the copy procedure.</param>
-		/// <returns>The new file system directory or NULL if the directory was not copied.</returns>
-		private static GorgonFileSystemDirectory CopyDirectoryThread(GorgonFileSystemDirectory directory, string destination, CopyDirectorySettings settings)
+        /// <param name="settings">Settings for the copy/move procedure.</param>
+        /// <returns>The new file system directory or NULL if the directory was not copied/moved.</returns>
+        private static GorgonFileSystemDirectory CopyMoveDirectoryThread(GorgonFileSystemDirectory directory, string destination, CopyDirectorySettings settings)
         {
-	        if (settings.IsCancelled)
-	        {
-		        return null;
-	        }
+            if (settings.IsCancelled)
+            {
+                return null;
+            }
 
-	        string destPath = (destination + directory.Name).FormatDirectory('/');
-	        GorgonFileSystemDirectory newDirectory = ScratchFiles.GetDirectory(destPath);
+            string destPath = (destination + directory.Name).FormatDirectory('/');
+            GorgonFileSystemDirectory newDirectory = ScratchFiles.GetDirectory(destPath);
 
-	        settings.ProcessForm.UpdateStatusText(string.Format(Resources.GOREDIT_IMPORT_EXPORT_PROCESS_LABEL,
-	                                                            directory.FullPath.Ellipses(45, true)));
+            settings.ProcessForm.UpdateStatusText(string.Format(Resources.GOREDIT_IMPORT_EXPORT_PROCESS_LABEL,
+                                                                directory.FullPath.Ellipses(45, true)));
 
             // If the directory doesn't already exist, then create it.
             // Otherwise, prompt the user.
@@ -675,11 +680,18 @@ namespace GorgonLibrary.Editor
                 }
             }
 
-            ++settings.ItemCounter;
-            settings.ProcessForm.SetProgress((int)((settings.ItemCounter / (decimal)settings.TotalItemCount) * 100M));
-
             // Copy the files for this directory.
-            foreach (GorgonFileSystemFileEntry file in directory.Files)
+            IEnumerable<GorgonFileSystemFileEntry> files = directory.Files;
+
+            if (settings.DeleteSource)
+            {
+                // If we're moving the source, then make a copy of the file collection.
+                // If we don't do this the collection will be modified during enumeration and that
+                // will cause a crash.
+                files = directory.Files.ToArray();
+            }
+
+            foreach(GorgonFileSystemFileEntry file in files)
             {
                 if (settings.IsCancelled)
                 {
@@ -697,7 +709,7 @@ namespace GorgonLibrary.Editor
                     if ((settings.FileConflictResult & ConfirmationResult.ToAll) != ConfirmationResult.ToAll)
                     {
                         settings.FileConflictResult = CopyFileConflictFunction(destFilePath,
-                                                                                directory.GetFileCount());
+                                                                               directory.GetFileCount());
                     }
 
                     if (settings.FileConflictResult == ConfirmationResult.Cancel)
@@ -714,24 +726,40 @@ namespace GorgonLibrary.Editor
                         // Find an unoccupied name.
                         while (newDirectory.Files.Contains(newName))
                         {
-                            newName = string.Format("{0} ({1}){2}",
-                                                            file.BaseFileName,
-                                                            ++nameCounter,
-                                                            file.Extension);
+                            newName = string.Format("{0} ({1}){2}", file.BaseFileName, ++nameCounter, file.Extension);
                         }
 
                         destFilePath = newDirectory.FullPath + newName;
                     }
                 }
 
-                // Copy the file into the directory.
-                Copy(file, destFilePath, true);
+                // Move or Copy the file into the directory.
+                if (settings.DeleteSource)
+                {
+                    Move(file, destFilePath, true);
+                }
+                else
+                {
+                    Copy(file, destFilePath, true);
+                }
+
                 ++settings.ItemCounter;
                 settings.ProcessForm.SetProgress((int)((settings.ItemCounter / (decimal)settings.TotalItemCount) * 100M));
             }
 
+            // Copy the files for this directory.
+            IEnumerable<GorgonFileSystemDirectory> subDirectories = directory.Directories;
+
+            if (settings.DeleteSource)
+            {
+                // If we're moving the source, then make a copy of the sub directory collection.
+                // If we don't do this the collection will be modified during enumeration and that
+                // will cause a crash.
+                subDirectories = directory.Directories.ToArray();
+            }
+
             // Copy any subdirectories.
-            foreach (GorgonFileSystemDirectory subDirectory in directory.Directories)
+            foreach (GorgonFileSystemDirectory subDirectory in subDirectories)
             {
                 if (settings.IsCancelled)
                 {
@@ -740,11 +768,90 @@ namespace GorgonLibrary.Editor
 
                 string newPath = (newDirectory.FullPath + subDirectory.Name).FormatDirectory('/');
 
-                CopyDirectoryThread(subDirectory, newPath, settings);
+                CopyMoveDirectoryThread(subDirectory, newPath, settings);
             }
+
+            if (settings.DeleteSource)
+            {
+                // Delete this directory after it's been copied.
+                ScratchFiles.DeleteDirectory(directory);
+            }
+
+            ++settings.ItemCounter;
+            settings.ProcessForm.SetProgress((int)((settings.ItemCounter / (decimal)settings.TotalItemCount) * 100M));
 
             return newDirectory;
         }
+
+	    /// <summary>
+	    /// Function to copy a directory into another location.
+	    /// </summary>
+	    /// <param name="directory">Directory to move.</param>
+	    /// <param name="destinationPath">Path to move the directory into.</param>
+	    /// <returns>The new file system directory.</returns>
+	    public static GorgonFileSystemDirectory Move(GorgonFileSystemDirectory directory, string destinationPath)
+	    {
+            GorgonFileSystemDirectory result = null;
+
+            Debug.Assert(CopyDirectoryConflictFunction != null, "No directory copy conflict action assigned in copy.");
+            Debug.Assert(CopyFileConflictFunction != null, "No file copy conflict action assigned in copy.");
+            Debug.Assert(ImportExportFileCopyExceptionAction != null, "No file copy exception action assigned in copy.");
+
+            if (directory == null)
+            {
+                throw new ArgumentNullException("directory");
+            }
+
+            if (string.IsNullOrWhiteSpace(destinationPath))
+            {
+                throw new ArgumentException(Resources.GOREDIT_PARAMETER_MUST_NOT_BE_EMPTY, "destinationPath");
+            }
+
+            // Ensure that we're not trying to copy a parent directory into one of its ancestors.
+            if (destinationPath.FormatDirectory('/').StartsWith(directory.FullPath, StringComparison.OrdinalIgnoreCase))
+            {
+                throw new IOException(string.Format(Resources.GOREDIT_FILE_DIRECTORY_IS_CHILD, directory.FullPath));
+            }
+
+            // Bring up the progress form.
+            using (var processForm = new formProcess(ProcessType.FileMove))
+            {
+                using (var tokenSource = new CancellationTokenSource(Int32.MaxValue))
+                {
+                    var settings = new CopyDirectorySettings
+                    {
+                        CancelToken = tokenSource.Token,
+                        DirectoryConflictResult = ConfirmationResult.None,
+                        TotalItemCount = directory.GetFileCount() + directory.GetDirectoryCount(),
+                        DeleteSource = true,
+                        ProcessForm = processForm
+                    };
+
+                    processForm.Task = Task.Factory.StartNew(() =>
+                                                             {
+                                                                 try
+                                                                 {
+                                                                     result = CopyMoveDirectoryThread(directory,
+                                                                                                      destinationPath,
+                                                                                                      settings);
+                                                                 }
+                                                                 catch (Exception ex)
+                                                                 {
+                                                                     ImportExportFileCopyExceptionAction(ex);
+                                                                 }
+                                                             },
+                                                             settings.CancelToken);
+
+                    if (processForm.ShowDialog() == DialogResult.Cancel)
+                    {
+                        tokenSource.Cancel();
+                    }
+                }
+            }
+
+            return result;
+        }
+
 
 		/// <summary>
 		/// Function to move a file from one location to another.
@@ -962,7 +1069,9 @@ namespace GorgonLibrary.Editor
 					                                         {
                                                                  try
                                                                  {
-					                                                result = CopyDirectoryThread(directory, destinationPath, settings);
+                                                                     result = CopyMoveDirectoryThread(directory,
+                                                                                                      destinationPath,
+                                                                                                      settings);
                                                                  }
                                                                  catch (Exception ex)
                                                                  {

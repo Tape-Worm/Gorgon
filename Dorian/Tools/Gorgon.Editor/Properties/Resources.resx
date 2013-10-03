@@ -466,4 +466,10 @@ The following characters are not allowed:
   <data name="GOREDIT_PROC_COPY_DLG_TITLE" xml:space="preserve">
     <value>Copying Files</value>
   </data>
+  <data name="GOREDIT_FILE_DESTINATION_SAME" xml:space="preserve">
+    <value>The destination directory is the same as the source directory.</value>
+  </data>
+  <data name="GOREDIT_PROC_MOVE_DLG_TITLE" xml:space="preserve">
+    <value>Moving Files</value>
+  </data>
 </root>
