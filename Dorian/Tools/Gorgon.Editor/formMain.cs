@@ -267,26 +267,9 @@ namespace GorgonLibrary.Editor
 		            return;
 	            }
 
-	            TreeNodeDirectory directoryNode;
+	            TreeNodeDirectory directoryNode = GetSelectedDirectoryNode(false);
 
-	            // Find our destination directory node.
-	            if (treeFiles.SelectedNode == null)
-	            {
-		            directoryNode = _rootNode;
-	            }
-	            else
-	            {
-		            var parentNode = treeFiles.SelectedNode.Parent as EditorTreeNode;
-		            directoryNode = treeFiles.SelectedNode as TreeNodeDirectory;
-                                                
-		            while ((directoryNode == null) && (parentNode != null))
-		            {                            
-			            directoryNode = parentNode as TreeNodeDirectory;
-			            parentNode = parentNode.Parent as EditorTreeNode;
-		            }
-	            }
-
-				Debug.Assert(directoryNode == null, "Directory for select node is NULL!");
+				Debug.Assert(directoryNode != null, "Directory for select node is NULL!");
                     
 	            Cursor.Current = Cursors.WaitCursor;
 	            AddFilesFromExplorer(directoryNode, dialogImport.FileNames);
@@ -483,15 +466,6 @@ namespace GorgonLibrary.Editor
         {
             try
             {
-                var directoryNode = treeFiles.SelectedNode as TreeNodeDirectory;
-                var fileNode = treeFiles.SelectedNode as TreeNodeFile;
-
-                if ((directoryNode == null)
-                    && (fileNode == null))
-                {
-                    return;
-                }
-
                 dialogExport.Description = Resources.GOREDIT_EXPORT_DLG_TITLE;
                 dialogExport.SelectedPath = Program.Settings.ExportLastFilePath;
                 dialogExport.ShowNewFolderButton = true;
@@ -501,17 +475,19 @@ namespace GorgonLibrary.Editor
 	            {
 		            return;
 	            }
-
+				
 	            Cursor.Current = Cursors.WaitCursor;
 
-                if (fileNode != null)
+				if ((treeFiles.SelectedNode.NodeType & NodeType.File) == NodeType.File)
                 {
-                    ScratchArea.Export(fileNode.File, dialogExport.SelectedPath, false);
+                    ScratchArea.Export(((TreeNodeFile)treeFiles.SelectedNode).File, dialogExport.SelectedPath, false);
                 }
-                else
+                
+				if ((treeFiles.SelectedNode.NodeType & NodeType.Directory) == NodeType.Directory)
                 {
-                    ScratchArea.Export(directoryNode.Directory, dialogExport.SelectedPath);
+					ScratchArea.Export(((TreeNodeDirectory)treeFiles.SelectedNode).Directory, dialogExport.SelectedPath);
                 }
+
                 Program.Settings.ExportLastFilePath = dialogExport.SelectedPath.FormatDirectory(Path.DirectorySeparatorChar);
             }
             catch (Exception ex)
@@ -566,68 +542,63 @@ namespace GorgonLibrary.Editor
 
             menuRecentFiles.Enabled = Program.Settings.RecentFiles.Count > 0;
 
-            var node = treeFiles.SelectedNode as EditorTreeNode;
-
             // No node is the same as selecting the root.
             if (treeFiles.SelectedNode == null)
             {
-                node = _rootNode;
+				treeFiles.SelectedNode = _rootNode;
             }
 
-            var fileNode = node as TreeNodeFile;
-                                
-            if (node is TreeNodeDirectory)
-            {
-                toolStripSeparator4.Visible = true;
-                popupItemAddContent.Visible = itemAddContent.Enabled = itemAddContent.DropDownItems.Count > 0;
-                popupItemAddContent.Enabled = itemAddContent.Enabled;
-                dropNewContent.Enabled = dropNewContent.DropDownItems.Count > 0;
-				buttonDeleteContent.Enabled = true;
-				popupItemCreateFolder.Enabled = itemCreateFolder.Enabled = true;
-				popupItemCreateFolder.Visible = true;
-				itemDelete.Enabled = popupItemDelete.Enabled = (tabDocumentManager.SelectedTab == pageItems);
-				itemDelete.Text = popupItemDelete.Text = string.Format("{0}...", Resources.GOREDIT_MENU_DELETE_FOLDER);
-				popupItemPaste.Enabled = itemPaste.Enabled = (_cutCopyObject != null);
-					
-				if (node != _rootNode)
-                {
-					popupItemCut.Enabled = popupItemCopy.Enabled = itemCopy.Enabled = itemCut.Enabled = true;
-					popupItemRename.Enabled = true;
-                    popupItemRename.Text = string.Format("{0}...", Resources.GOREDIT_MENU_RENAME_FOLDER);
-                }
-                else
-                {                        
-					if (_rootNode.Nodes.Count == 0)
-					{
-                        buttonDeleteContent.Enabled = false;
-						popupItemDelete.Visible = false;
-						itemDelete.Enabled = false;
-						itemDelete.Text = string.Format("{0}...", Resources.GOREDIT_MENU_DELETE_DEFAULT);
-					}
-					else
-					{
-						itemDelete.Text = popupItemDelete.Text = string.Format("{0}...", Resources.GOREDIT_MENU_DELETE_ALL);
-					}
+			if ((treeFiles.SelectedNode.NodeType & NodeType.Directory) == NodeType.Directory)
+	        {
+		        toolStripSeparator4.Visible = true;
+		        popupItemAddContent.Visible = itemAddContent.Enabled = itemAddContent.DropDownItems.Count > 0;
+		        popupItemAddContent.Enabled = itemAddContent.Enabled;
+		        dropNewContent.Enabled = dropNewContent.DropDownItems.Count > 0;
+		        buttonDeleteContent.Enabled = true;
+		        popupItemCreateFolder.Enabled = itemCreateFolder.Enabled = true;
+		        popupItemCreateFolder.Visible = true;
+		        itemDelete.Enabled = popupItemDelete.Enabled = (tabDocumentManager.SelectedTab == pageItems);
+		        itemDelete.Text = popupItemDelete.Text = string.Format("{0}...", Resources.GOREDIT_MENU_DELETE_FOLDER);
+		        popupItemPaste.Enabled = itemPaste.Enabled = (_cutCopyObject != null);
 
-                    toolStripSeparator5.Visible = false;
-                    popupItemRename.Visible = false;
-                }                    
-            }
+		        if (treeFiles.SelectedNode != _rootNode)
+		        {
+			        popupItemCut.Enabled = popupItemCopy.Enabled = itemCopy.Enabled = itemCut.Enabled = true;
+			        popupItemRename.Enabled = true;
+			        popupItemRename.Text = string.Format("{0}...", Resources.GOREDIT_MENU_RENAME_FOLDER);
+		        }
+		        else
+		        {
+			        if (_rootNode.Nodes.Count == 0)
+			        {
+				        buttonDeleteContent.Enabled = false;
+				        popupItemDelete.Visible = false;
+				        itemDelete.Enabled = false;
+				        itemDelete.Text = string.Format("{0}...", Resources.GOREDIT_MENU_DELETE_DEFAULT);
+			        }
+			        else
+			        {
+				        itemDelete.Text = popupItemDelete.Text = string.Format("{0}...", Resources.GOREDIT_MENU_DELETE_ALL);
+			        }
 
-            if (fileNode == null)
-            {
-                return;
-            }
+			        toolStripSeparator5.Visible = false;
+			        popupItemRename.Visible = false;
+		        }
+	        }
+	        else
+	        {
+		        GorgonFileSystemFileEntry file = ((TreeNodeFile)treeFiles.SelectedNode).File;
 
-            GorgonFileSystemFileEntry file = fileNode.File;
-
-            popupItemAddContent.Visible = false;
-            popupItemPaste.Enabled = itemPaste.Enabled = (_cutCopyObject != null);
-            popupItemCut.Enabled = popupItemCopy.Enabled = itemCopy.Enabled = itemCut.Enabled = true;
-            buttonDeleteContent.Enabled = true;
-            toolStripSeparator4.Visible = buttonEditContent.Enabled = popupItemEdit.Visible = popupItemEdit.Enabled = ContentManagement.CanOpenContent(file.Extension);
-            itemDelete.Enabled = popupItemDelete.Enabled = (tabDocumentManager.SelectedTab == pageItems);
-            popupItemRename.Enabled = true;
+		        popupItemAddContent.Visible = false;
+		        popupItemPaste.Enabled = itemPaste.Enabled = (_cutCopyObject != null);
+		        popupItemCut.Enabled = popupItemCopy.Enabled = itemCopy.Enabled = itemCut.Enabled = true;
+		        buttonDeleteContent.Enabled = true;
+		        toolStripSeparator4.Visible =
+			        buttonEditContent.Enabled =
+			        popupItemEdit.Visible = popupItemEdit.Enabled = ContentManagement.CanOpenContent(file.Extension);
+		        itemDelete.Enabled = popupItemDelete.Enabled = (tabDocumentManager.SelectedTab == pageItems);
+		        popupItemRename.Enabled = true;
+	        }
         }
 
         /// <summary>
@@ -657,14 +628,16 @@ namespace GorgonLibrary.Editor
 		private void treeFiles_NodeMouseDoubleClick(object sender, TreeNodeMouseClickEventArgs e)
 		{
 			Cursor.Current = Cursors.WaitCursor;
-            var fileNode = treeFiles.SelectedNode as TreeNodeFile;
-
-            if (fileNode == null)
-            {
-                return;
-            }
+			
+			// Only open files.
+	        if ((((EditorTreeNode)e.Node).NodeType & NodeType.File) != NodeType.File)
+	        {
+		        return;
+	        }
 
 			// Do not re-open the file.
+	        var fileNode = (TreeNodeFile)e.Node;
+
 	        if (fileNode.File == CurrentOpenFile)
 	        {
 		        return;
@@ -827,11 +800,12 @@ namespace GorgonLibrary.Editor
 						return;
 					}
 
-					var destNode = node.Parent as TreeNodeDirectory;
+					var destNode = (EditorTreeNode)node.Parent;
 
-					if (destNode != null)
+					if ((destNode.NodeType & NodeType.Directory) == NodeType.Directory)
 					{
-						CopyFileNode(node, destNode, changedArgs.Value.ToString(), true);
+						// TODO: Rename file - Use scratch area functionality.
+						CopyFileNode(node, (TreeNodeDirectory)destNode, changedArgs.Value.ToString(), true);
 					}
 				}
 
@@ -877,9 +851,6 @@ namespace GorgonLibrary.Editor
 		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
 		private void itemPaste_Click(object sender, EventArgs e)
 		{
-		    GorgonFileSystemDirectory newDirectory = null;
-		    GorgonFileSystemFileEntry newFile = null;
-
             // TODO: Make this use the actual windows clip board?
 			try
 			{
@@ -905,78 +876,26 @@ namespace GorgonLibrary.Editor
 					node.IsCut = false;
 					node.Redraw();
 
-					var dest = treeFiles.SelectedNode as TreeNodeDirectory;
-
-					if (dest == null)
+					if ((treeFiles.SelectedNode.NodeType & NodeType.Directory) == NodeType.Directory)
 					{
 						GorgonDialogs.ErrorBox(this, Resources.GOREDIT_PASTE_MUST_BE_DIRECTORY);
 						return;
 					}
 
 					// If we're moving, there are some restrictions.
-					if ((dest == node) && (_cutCopyObject.Value.IsCut))
+					if ((treeFiles.SelectedNode == node) && (_cutCopyObject.Value.IsCut))
 					{
 						GorgonDialogs.ErrorBox(this, Resources.GOREDIT_FILE_SOURCE_SAME_AS_DEST);
 						return;
 					}
 
-					if ((_cutCopyObject.Value.IsCut) && (dest.IsAncestorOf(node)))
+					if ((_cutCopyObject.Value.IsCut) && (treeFiles.SelectedNode.IsAncestorOf(node)))
 					{
 						GorgonDialogs.ErrorBox(this, Resources.GOREDIT_FILE_CANNOT_MOVE_TO_CHILD);
 						return;
 					}
 
-					var directory = node as TreeNodeDirectory;
-
-					if (directory != null)
-					{
-					    if (!_cutCopyObject.Value.IsCut)
-					    {
-					    	#error This is not working.  Investigate.
-					        newDirectory = ScratchArea.Copy(directory.Directory, dest.FullPath);
-					    }
-					    else
-					    {
-                            CopyDirectoryNode(directory, dest, directory.Text, _cutCopyObject.Value.IsCut);    
-					    }
-
-					    if (newDirectory == null)
-					    {
-					        return;
-					    }
-
-                        dest.Nodes.AddDirectory(newDirectory, true);
-					    return;
-					}
-
-					var file = node as TreeNodeFile;
-
-					if (file == null)
-					{
-						return;
-					}
-
-					// Don't copy over the same file.
-					if ((dest == file.Parent) && (_cutCopyObject.Value.IsCut))
-					{
-						return;
-					}
-
-				    if (!_cutCopyObject.Value.IsCut)
-				    {
-				        newFile = ScratchArea.Copy(file.File, dest.FullPath, false);
-				    }
-				    else
-				    {
-				        CopyFileNode(file, dest, file.Text, _cutCopyObject.Value.IsCut);
-				    }
-
-				    if (newFile == null)
-				    {
-				        return;
-				    }
-
-				    dest.Nodes.AddFile(newFile);
+					MoveCopyNode(node, (TreeNodeDirectory)treeFiles.SelectedNode, !_cutCopyObject.Value.IsCut);
 				}
 				catch (Exception ex)
 				{
@@ -984,12 +903,6 @@ namespace GorgonLibrary.Editor
 				}
 				finally
 				{
-                    // If the object was cut, then clear the "clipboard".
-				    if ((_cutCopyObject != null) && (_cutCopyObject.Value.IsCut))
-				    {
-				        _cutCopyObject = null;
-				    }
-
 				    ValidateControls();
 					Cursor.Current = Cursors.Default;
 				}
@@ -1014,10 +927,9 @@ namespace GorgonLibrary.Editor
 					return;
 				}
 
-				var node = (EditorTreeNode)treeFiles.SelectedNode;
-				node.Redraw();
+				treeFiles.SelectedNode.Redraw();
 
-				_cutCopyObject = new CutCopyObject(node, node.Name, ((sender == itemCut) || (sender == popupItemCut)));
+				_cutCopyObject = new CutCopyObject(treeFiles.SelectedNode, treeFiles.SelectedNode.Name, ((sender == itemCut) || (sender == popupItemCut)));
 			}
 			finally
 			{
@@ -1270,44 +1182,52 @@ namespace GorgonLibrary.Editor
         /// <summary>
         /// Function to retrieve the directory from the selected node.
         /// </summary>
+        /// <param name="expandDirectory">TRUE to expand the directory for the selected node, FALSE to leave alone.</param>
         /// <returns>The selected node.</returns>
-        private TreeNodeDirectory GetSelectedDirectoryNode()
+        private TreeNodeDirectory GetSelectedDirectoryNode(bool expandDirectory)
         {
-			TreeNodeDirectory directory;
+	        if (treeFiles.SelectedNode == null)
+	        {
+				Debug.Assert(_rootNode != null, "Root should not be NULL!");
 
-            if (treeFiles.SelectedNode != null)
-            {
-				directory = treeFiles.SelectedNode as TreeNodeDirectory;		
+		        if (expandDirectory)
+		        {
+			        _rootNode.Expand();
+		        }
 
-				if (directory == null)
-                {					
-                    // If we've got a file hilighted, then add to the same directory that we're in.
-					TreeNode parentNode = treeFiles.SelectedNode.Parent;
+		        treeFiles.SelectedNode = _rootNode;
 
-					while (!(parentNode is TreeNodeDirectory))
-					{
-						parentNode = parentNode.Parent;
+		        return _rootNode;
+	        }
 
-						if (parentNode == null)
-						{
-							break;
-						}
-					}
+	        var directory = treeFiles.SelectedNode as TreeNodeDirectory;		
 
-					directory = (TreeNodeDirectory)parentNode;
-                }
+	        if (directory == null)
+	        {					
+		        // If we've got a file hilighted, then add to the same directory that we're in.
+		        TreeNode parentNode = treeFiles.SelectedNode.Parent;
 
-                Debug.Assert(directory != null, "Directory should not be NULL.");
+		        while (!(parentNode is TreeNodeDirectory))
+		        {
+			        parentNode = parentNode.Parent;
 
-				directory.Expand();
-            }
-            else
-            {
-				treeFiles.Nodes[0].Expand();
-				directory = ((TreeNodeDirectory)treeFiles.Nodes[0]);
-            }
+			        if (parentNode == null)
+			        {
+				        break;
+			        }
+		        }
 
-            return directory;
+		        if (expandDirectory)
+		        {
+			        directory = (TreeNodeDirectory)parentNode;
+		        }
+	        }
+
+	        Debug.Assert(directory != null, "Directory should not be NULL.");
+
+	        directory.Expand();
+
+	        return directory;
         }
 
 		/// <summary>
@@ -1317,7 +1237,7 @@ namespace GorgonLibrary.Editor
 		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
 		private void AddContent(object sender, EventArgs e)
 		{
-		    TreeNodeDirectory directoryNode = GetSelectedDirectoryNode();
+		    TreeNodeDirectory directoryNode = GetSelectedDirectoryNode(true);
 			TreeNodeFile newNode = null;
 		    ContentObject content = null;
 			var item = sender as ToolStripMenuItem;
@@ -1508,15 +1428,15 @@ namespace GorgonLibrary.Editor
 		{
 			try
 			{
-				var directoryNode = treeFiles.SelectedNode as TreeNodeDirectory;
-
                 if (treeFiles.SelectedNode == null)
                 {
-                    directoryNode = _rootNode;
+	                return;
                 }
 
-				if (directoryNode != null)
+				if ((treeFiles.SelectedNode.NodeType & NodeType.Directory) == NodeType.Directory)
 				{
+					var directoryNode = (TreeNodeDirectory)treeFiles.SelectedNode;
+
                     if (GorgonDialogs.ConfirmBox(this, string.Format(Resources.GOREDIT_FILE_DELETE_DIRECTORY_CONFIRM, directoryNode.Directory.FullPath)) == ConfirmationResult.No)
                     {
                         return;
@@ -1534,34 +1454,30 @@ namespace GorgonLibrary.Editor
                     ScratchArea.ScratchFiles.DeleteDirectory(directory);
 
                     PruneTree(directoryNode);
-
-				    FileManagement.FileChanged = true;
-				    return;
 				}
-				
-				var fileNode = treeFiles.SelectedNode as TreeNodeFile;
 
-				if (fileNode == null)
+				if ((treeFiles.SelectedNode.NodeType & NodeType.File) == NodeType.File)
 				{
-					return;
+					var fileNode = (TreeNodeFile)treeFiles.SelectedNode;
+
+					if (GorgonDialogs.ConfirmBox(this, string.Format(Resources.GOREDIT_FILE_DELETE_FILE_CONFIRM, fileNode.File.FullPath)) == ConfirmationResult.No)
+					{
+						return;
+					}
+
+					GorgonFileSystemFileEntry file = fileNode.File;
+
+					// Close the currently open file.
+					if (CurrentOpenFile == file)
+					{
+						ContentManagement.LoadDefaultContentPane();
+					}
+
+					ScratchArea.ScratchFiles.DeleteFile(file);
+
+					PruneTree(fileNode);
 				}
 
-				if (GorgonDialogs.ConfirmBox(this, string.Format(Resources.GOREDIT_FILE_DELETE_FILE_CONFIRM, fileNode.File.FullPath)) == ConfirmationResult.No)
-				{
-					return;
-				}
-
-			    GorgonFileSystemFileEntry file = fileNode.File;
-
-                // Close the currently open file.
-			    if (CurrentOpenFile == file)
-			    {
-			        ContentManagement.LoadDefaultContentPane();
-			    }
-
-                ScratchArea.ScratchFiles.DeleteFile(file);
-
-				PruneTree(fileNode);
 			    FileManagement.FileChanged = true;
 			}
 			catch (Exception ex)
@@ -1825,25 +1741,18 @@ namespace GorgonLibrary.Editor
 		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
 		private void itemRenameFolder_Click(object sender, EventArgs e)
 		{
-			var selectedNode = treeFiles.SelectedNode as EditorTreeNode;
-
 			try
 			{
-				if (selectedNode == null)
+				if (treeFiles.SelectedNode == null)
 				{
 					return;
 				}
 
-				if (selectedNode is TreeNodeDirectory)
-				{
-					selectedNode.EditState = NodeEditState.RenameDirectory;
-				}
-				else
-				{
-					selectedNode.EditState = NodeEditState.RenameFile;
-				}
+				treeFiles.SelectedNode.EditState = (treeFiles.SelectedNode.NodeType & NodeType.Directory) == NodeType.Directory
+					                                   ? NodeEditState.RenameDirectory
+					                                   : NodeEditState.RenameFile;
 
-				selectedNode.BeginEdit();
+				treeFiles.SelectedNode.BeginEdit();
 			}
 			catch (Exception ex)
 			{
@@ -1891,7 +1800,7 @@ namespace GorgonLibrary.Editor
 		private void itemCreateFolder_Click(object sender, EventArgs e)
 		{
 			bool expandDisabled = false;
-			var tempNode = new EditorTreeNode();
+			var tempNode = new TreeNodeDirectory();
 
 			try
 			{
@@ -1917,7 +1826,7 @@ namespace GorgonLibrary.Editor
 						|| (selectedNode.Directory.Files.Contains(defaultName)))
 				{
 					nameIndex++;
-					defaultName = string.Format("{0}_{1}", Resources.GOREDIT_FILE_DEFAULT_DIRECTORY_NAME, nameIndex);
+					defaultName = string.Format("{0} ({1})", Resources.GOREDIT_FILE_DEFAULT_DIRECTORY_NAME, nameIndex);
 				}
 
 				tempNode.Text = defaultName;
@@ -2058,8 +1967,6 @@ namespace GorgonLibrary.Editor
 			}
 
             destDirectory.Expand();
-
-            treeFiles.SelectedNode = destDirectory.Nodes[newFilePath];
 
             FileManagement.FileChanged = true;
         }
@@ -2260,14 +2167,10 @@ namespace GorgonLibrary.Editor
 				// Handle explorer files.
 				if (e.Data.GetDataPresent(DataFormats.FileDrop, false))
 				{
-					var files = new List<string>((IEnumerable<string>)e.Data.GetData(DataFormats.FileDrop));
-					var excludedFiles = files.Where(item => item.StartsWith(ScratchArea.ScratchFiles.WriteLocation, StringComparison.OrdinalIgnoreCase));
-
-					// Don't allow files in our write path to be imported.
-					foreach(var filePath in excludedFiles)
-					{
-						files.Remove(filePath);
-					}
+					var dropData = (IEnumerable<string>)e.Data.GetData(DataFormats.FileDrop);
+					var files = new List<string>(dropData.Where(item =>
+					                                            !item.StartsWith(ScratchArea.ScratchFiles.WriteLocation,
+					                                                             StringComparison.OrdinalIgnoreCase)));
 
 					if (files.Count > 0)
 					{
@@ -2284,67 +2187,7 @@ namespace GorgonLibrary.Editor
 
 			    var data = (Tuple<EditorTreeNode, MouseButtons>)e.Data.GetData(typeof(Tuple<EditorTreeNode, MouseButtons>));
 
-			    // Perform a move.
-			    var directory = data.Item1 as TreeNodeDirectory;
-
-			    // Our source data is a directory, so move it.
-			    if ((directory != null) && (destDir != null))
-			    {
-				    GorgonFileSystemDirectory destDirectory = null;
-
-				    if (data.Item2 != MouseButtons.Left)
-				    {
-					    destDirectory = ScratchArea.Copy(directory.Directory, destDir.Directory.FullPath);
-				    }
-				    else
-				    {
-					    CopyDirectoryNode(directory, destDir, directory.Directory.Name, (data.Item2 == MouseButtons.Left));
-				    }
-
-				    if (destDirectory == null)
-				    {
-					    return;
-				    }
-
-                    destDir.Nodes.AddDirectory(destDirectory, true);
-
-					FileManagement.FileChanged = true;
-				    return;
-			    }
-
-			    // We didn't have a directory, so move the file.
-			    var file = data.Item1 as TreeNodeFile;
-
-			    if ((destDir == null)
-			        || (file == null))
-			    {
-			        return;
-			    }
-
-				GorgonFileSystemFileEntry newFile = null;
-
-				if (data.Item2 != MouseButtons.Left)
-				{
-					newFile = ScratchArea.Copy(file.File, destDir.Directory.FullPath, false);
-				}
-				else
-				{
-					CopyFileNode(file, destDir, file.Name, data.Item2 == MouseButtons.Left);	
-				}
-
-				if (newFile == null)
-				{
-					return;
-				}
-
-				destDir.Nodes.AddFile(newFile);
-
-				if (!destDir.IsExpanded)
-				{
-					destDir.Expand();
-				}
-
-				FileManagement.FileChanged = true;
+				MoveCopyNode(data.Item1, destDir, data.Item2 != MouseButtons.Left);
 			}
 			catch (Exception ex)
 			{
@@ -2354,6 +2197,137 @@ namespace GorgonLibrary.Editor
 			{
 				ValidateControls();
 				Cursor.Current = Cursors.Default;
+			}
+		}
+
+		/// <summary>
+		/// Function to move or copy a file node.
+		/// </summary>
+		/// <param name="sourceNode">Source node file to move/copy.</param>
+		/// <param name="destinationNode">The destination directory for the copied/moved node.</param>
+		/// <param name="isCopy">TRUE to copy the file, FALSE to move.</param>
+		/// <returns>The new node.</returns>
+		private EditorTreeNode MoveCopyNodeFile(TreeNodeFile sourceNode, TreeNodeDirectory destinationNode, bool isCopy)
+		{
+			bool reopenContent = false;
+
+			if (sourceNode == null)
+			{
+				return null;
+			}
+
+			if (sourceNode.File == CurrentOpenFile)
+			{
+				if (ContentManagement.Changed)
+				{
+					ContentManagement.Save(CurrentOpenFile);
+				}
+
+				ContentManagement.LoadDefaultContentPane();
+				CurrentOpenFile = null;
+				reopenContent = true;
+			}
+
+			// Copy/move the file.
+			GorgonFileSystemFileEntry newFile = isCopy
+													? ScratchArea.Copy(sourceNode.File, destinationNode.Directory.FullPath, false)
+													: ScratchArea.Move(sourceNode.File, destinationNode.Directory.FullPath, false);
+
+			if (newFile == null)
+			{
+				return null;
+			}
+
+			TreeNodeFile result = destinationNode.Nodes.AddFile(newFile);
+
+			// Remove the file if this is a move operation.
+			if (!isCopy)
+			{
+				sourceNode.Remove();
+			}
+
+			FileManagement.FileChanged = true;
+
+			// If we've moved the file that's already open, then close it and reopen it.
+			if (!reopenContent)
+			{
+				return result;
+			}
+
+			ContentManagement.Load(newFile);
+			CurrentOpenFile = newFile;
+			treeFiles.Refresh();
+
+			return result;
+		}
+
+		/// <summary>
+		/// Function to perform a move or a copy on a tree node.
+		/// </summary>
+		/// <param name="sourceNode">Source node to move/copy.</param>
+		/// <param name="destinationNode">Destination directory node that will receive the copied/moved node.</param>
+		/// <param name="isCopy">TRUE if the function should copy instead of move.</param>
+		private void MoveCopyNode(EditorTreeNode sourceNode, TreeNodeDirectory destinationNode, bool isCopy)
+		{
+			EditorTreeNode newNode = null;
+
+			if (destinationNode == null)
+			{
+				return;
+			}
+
+			try
+			{
+				// Our source data is a directory, so move it.
+				if ((sourceNode.NodeType & NodeType.Directory) == NodeType.Directory)
+				{
+					// TODO: Modify this to use scratch area move/copy functions.
+					var directory = (TreeNodeDirectory)sourceNode;
+					GorgonFileSystemDirectory destDirectory = null;
+
+					if (isCopy)
+					{
+						destDirectory = ScratchArea.Copy(directory.Directory, destinationNode.Directory.FullPath);
+					}
+					else
+					{
+						CopyDirectoryNode(directory, destinationNode, directory.Directory.Name, !isCopy);
+					}
+
+					if (destDirectory == null)
+					{
+						return;
+					}
+
+					destinationNode.Nodes.AddDirectory(destDirectory, true);
+
+					FileManagement.FileChanged = true;
+					return;
+				}
+
+				if ((sourceNode.NodeType & NodeType.File) == NodeType.File)
+				{
+					// We didn't have a directory, so move the file.
+					var file = sourceNode as TreeNodeFile;
+					newNode = MoveCopyNodeFile(file, destinationNode, isCopy);
+				}
+				
+				// Do not select any node if no node is returned.
+				if (newNode == null)
+				{
+					return;
+				}
+
+				// Select the moved/copied file.
+				treeFiles.SelectedNode = newNode;
+			}
+			finally
+			{
+				// If this object was marked for a cut operation, then remove it from the "clipboard".
+				if ((_cutCopyObject != null) && (_cutCopyObject.Value.Node == sourceNode))
+				{
+					_cutCopyObject = null;
+				}
 			}
 		}
 
@@ -2425,7 +2399,7 @@ namespace GorgonLibrary.Editor
 
 			    // Don't drag into ourselves, that's just dumb.
 			    // Likewise, if we're over our current parent, do nothing.
-			    if ((sourceDirectory == overNode) || (overNode == dragData.Item1.Parent))
+				if ((sourceDirectory == overNode) || (overNode == dragData.Item1.Parent))
 			    {
 			        return;
 			    }
