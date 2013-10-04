@@ -238,6 +238,23 @@ namespace GorgonLibrary.IO
 		{
 		}
 
+	    /// <summary>
+	    /// Function to retrieve the information about a file in the physical file system.
+	    /// </summary>
+	    /// <param name="file">File to get information about.</param>
+	    /// <returns>The information about the file, or NULL if not found.</returns>
+	    protected internal virtual PhysicalFileInfo? GetFileInfo(GorgonFileSystemFileEntry file)
+	    {
+	        if (!File.Exists(file.PhysicalFileSystemPath))
+	        {
+	            return null;
+	        }
+
+            var fileInfo = new FileInfo(file.PhysicalFileSystemPath);
+
+            return new PhysicalFileInfo(fileInfo.FullName, fileInfo.Name, fileInfo.CreationTime, 0, fileInfo.Length, file.FullPath);
+	    }
+
 		/// <summary>
 		/// Function to determine if a file can be read by this provider.
 		/// </summary>
