@@ -25,6 +25,10 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
 
 namespace GorgonLibrary.IO
@@ -34,8 +38,44 @@ namespace GorgonLibrary.IO
 	/// </summary>
 	public sealed class GorgonFileSystemDirectory
 		: GorgonNamedObject
-	{
-		#region Properties.
+    {
+        #region Classes.
+        /// <summary>
+        /// An equality comparer for file mount points and providers.
+        /// </summary>
+	    private class FileMountProviderComparer
+            : IEqualityComparer<Tuple<string, GorgonFileSystemProvider>>
+        {
+            #region IEqualityComparer<Tuple<string,GorgonFileSystemProvider>> Members
+            /// <summary>
+            /// Determines whether the specified objects are equal.
+            /// </summary>
+            /// <param name="x">The first object of type <paramref name="T" /> to compare.</param>
+            /// <param name="y">The second object of type <paramref name="T" /> to compare.</param>
+            /// <returns>
+            /// true if the specified objects are equal; otherwise, false.
+            /// </returns>
+            public bool Equals(Tuple<string, GorgonFileSystemProvider> x, Tuple<string, GorgonFileSystemProvider> y)
+            {
+                return ((x.Item2 == y.Item2) && (string.Equals(x.Item1, y.Item1, StringComparison.OrdinalIgnoreCase)));
+            }
+
+            /// <summary>
+            /// Returns a hash code for this instance.
+            /// </summary>
+            /// <param name="obj">The object.</param>
+            /// <returns>
+            /// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table. 
+            /// </returns>
+            public int GetHashCode(Tuple<string, GorgonFileSystemProvider> obj)
+            {
+                return 281.GenerateHash(obj.Item1).GenerateHash(obj.Item2);
+            }
+            #endregion
+        }
+        #endregion
+
+        #region Properties.
         /// <summary>
         /// Property to return the file system that owns this directory.
         /// </summary>
@@ -88,6 +128,53 @@ namespace GorgonLibrary.IO
 		#endregion
 
         #region Methods.
+        /// <summary>
+        /// Function to refresh the file mount points for a directory and any child directories.
+        /// </summary>
+        /// <param name="includeChildren">[Optional] TRUE to include child directories, FALSE to just refresh this directory.</param>
+	    public void RefreshFiles(bool includeChildren = true)
+	    {
+            if (includeChildren)
+            {
+                foreach (var directory in Directories)
+                {
+                    directory.RefreshFiles();
+                }
+            }
+
+			string[] physicalDirectories;
+			GorgonFileSystemProvider.PhysicalFileInfo[] physicalFiles;
+            var fileMountPoints = Files.Select(item => new Tuple<string, GorgonFileSystemProvider>(item.MountPoint, item.Provider))
+                                   .Distinct(new FileMountProviderComparer());
+
+            foreach(var fileMount in fileMountPoints)
+            {
+                string fileMountDirectory = Path.GetDirectoryName(fileMount.Item1);
+
+                Debug.Assert(!string.IsNullOrWhiteSpace(fileMountDirectory), "Mount directory is NULL!!");
+
+                fileMountDirectory = fileMountDirectory.FormatDirectory(Path.DirectorySeparatorChar);
+
+                // Find the mount point.
+                var mountPoints = FileSystem.MountPoints.Where(item => string.Equals(item.PhysicalPath,
+                                                                               fileMountDirectory,
+                                                                               StringComparison.OrdinalIgnoreCase));
+
+                foreach (GorgonFileSystemDirectory mountDirectory in mountPoints.Select(mountPoint => 
+                                                                                        FileSystem
+                                                                                            .GetDirectory(mountPoint.MountLocation))
+                                                                                            .Where(mountDirectory => mountDirectory != null))
+                {
+                    fileMount.Item2.Enumerate(fileMountDirectory,
+                                              mountDirectory,
+                                              out physicalDirectories,
+                                              out physicalFiles);
+
+#error Refresh the files and directories for this guy.
+                }
+            }
+	    }
+
         /// <summary>
         /// Function to delete the directory.
         /// </summary>

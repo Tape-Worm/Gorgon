@@ -25,7 +25,6 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -43,7 +42,8 @@ namespace GorgonLibrary.IO
         private static readonly string _directoryPathSeparator = Path.DirectorySeparatorChar.ToString(CultureInfo.InvariantCulture);
         private static readonly string _altPathSeparator = Path.AltDirectorySeparatorChar.ToString(CultureInfo.InvariantCulture);
 
-        private static readonly List<string> _pathParts;			// Parts for a path.
+        private static readonly char[] _illegalPathChars = Path.GetInvalidPathChars();          // Illegal path characters.
+        private static readonly char[] _illegalFileChars = Path.GetInvalidFileNameChars();      // Illegal file name characters.
         #endregion
 
         #region Methods.
@@ -214,54 +214,6 @@ namespace GorgonLibrary.IO
         }
 
         /// <summary>
-        /// Function to determine if this path is valid.
-        /// </summary>
-        /// <param name="path">Path to a file or directory.</param>
-        /// <returns>TRUE if valid, FALSE if not.</returns>
-        public static bool IsValidPath(this string path)
-        {
-            if (string.IsNullOrEmpty(path))
-                return false;
-
-            string fileName = string.Empty;
-            string directory = string.Empty;
-
-            var illegalChars = Path.GetInvalidFileNameChars();
-
-            int lastIndexOfSep = path.LastIndexOf(_directoryPathSeparator, StringComparison.Ordinal);
-
-            if (lastIndexOfSep == -1)
-            {
-                lastIndexOfSep = path.LastIndexOf(_altPathSeparator, StringComparison.Ordinal);
-            }
-
-            if (lastIndexOfSep == -1)
-                fileName = path;
-            else
-            {
-                directory = path.Substring(0, lastIndexOfSep);
-                if (lastIndexOfSep < path.Length - 1)
-                {
-                    fileName = path.Substring(lastIndexOfSep + 1);
-                }
-            }
-
-            _pathParts.Clear();
-            if (!string.IsNullOrEmpty(directory))
-            {
-                directory = directory.Replace(Path.AltDirectorySeparatorChar, Path.DirectorySeparatorChar);
-                _pathParts.AddRange(directory.Split(new[] { Path.DirectorySeparatorChar }, StringSplitOptions.RemoveEmptyEntries));
-            }
-
-            if (!string.IsNullOrEmpty(fileName))
-            {
-                _pathParts.Add(fileName);
-            }
-
-            return _pathParts.All(part => !illegalChars.Any(part.Contains));
-        }
-
-        /// <summary>
         /// Function to return a properly file name.
         /// </summary>
         /// <param name="path">Path to the file.</param>
@@ -280,7 +232,6 @@ namespace GorgonLibrary.IO
         /// <remarks>When the <paramref name="directorySeparator"/> character is whitespace or illegal, then the system will use the <see cref="F:System.IO.Path.DirectorySeparatorChar"/> character.</remarks>
         public static string FormatDirectory(this string path, char directorySeparator)
         {
-            char[] illegalChars = Path.GetInvalidPathChars();
             string directorySep = _directoryPathSeparator;
             var doubleSeparator = new string(new [] { directorySeparator, directorySeparator});
 
@@ -289,7 +240,7 @@ namespace GorgonLibrary.IO
                 return string.Empty;
             }
 
-            if ((char.IsWhiteSpace(directorySeparator)) || (illegalChars.Contains(directorySeparator)))
+            if ((char.IsWhiteSpace(directorySeparator)) || (_illegalPathChars.Contains(directorySeparator)))
             {
                 directorySeparator = Path.DirectorySeparatorChar;
             }
@@ -331,8 +282,6 @@ namespace GorgonLibrary.IO
         /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="path"/> is NULL (or Nothing in VB.NET).</exception>
         public static string RemoveIllegalPathChars(this string path)
         {
-            char[] illegalChars = Path.GetInvalidPathChars();
-
             if (path == null)
             {
                 throw new ArgumentNullException("path");
@@ -345,7 +294,7 @@ namespace GorgonLibrary.IO
 
             var output = new StringBuilder(path);
 
-            output = illegalChars.Aggregate(output, (current, illegalChar) => current.Replace(illegalChar, '_'));
+            output = _illegalPathChars.Aggregate(output, (current, illegalChar) => current.Replace(illegalChar, '_'));
 
             return output.ToString();
         }
@@ -359,8 +308,6 @@ namespace GorgonLibrary.IO
         /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="path"/> is NULL (or Nothing in VB.NET).</exception>
         public static string RemoveIllegalFilenameChars(this string path)
         {
-            char[] illegalChars = Path.GetInvalidFileNameChars();
-
             if (path == null)
             {
                 throw new ArgumentNullException("path");
@@ -374,21 +321,11 @@ namespace GorgonLibrary.IO
             var filePath = new StringBuilder(FormatDirectory(Path.GetDirectoryName(path), Path.DirectorySeparatorChar));
             var output = new StringBuilder(Path.GetFileName(path));
 
-            output = illegalChars.Aggregate(output, (current, illegalChar) => current.Replace(illegalChar, '_'));
+            output = _illegalFileChars.Aggregate(output, (current, illegalChar) => current.Replace(illegalChar, '_'));
 
             filePath.Append(output);
 
             return filePath.ToString();
-        }
-        #endregion
-
-        #region Constructor/Destructor.
-        /// <summary>
-        /// Initializes the <see cref="GorgonIOExtensions" /> class.
-        /// </summary>
-        static GorgonIOExtensions()
-        {
-            _pathParts = new List<string>();
         }
         #endregion
     }
