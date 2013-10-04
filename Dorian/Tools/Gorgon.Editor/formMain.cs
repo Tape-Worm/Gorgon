@@ -90,7 +90,6 @@ namespace GorgonLibrary.Editor
 		#region Variables.
 		private static int _syncCounter;										// Synchronization counter for multiple threads.
 		private RootNodeDirectory _rootNode;									// Our root node for the tree.
-		private readonly char[] _fileChars = Path.GetInvalidFileNameChars();	// Invalid filename characters.
 		private CutCopyObject? _cutCopyObject;									// Cut/copy object.
 		#endregion
 
@@ -819,8 +818,9 @@ namespace GorgonLibrary.Editor
 				{
 					// Find our node that corresponds to this content.
 					var node = (from treeNode in treeFiles.AllNodes()
-					            where string.Equals(treeNode.Name, CurrentOpenFile.FullPath, StringComparison.OrdinalIgnoreCase)
-					            select treeNode).FirstOrDefault() as TreeNodeFile;
+					            let fileNode = treeNode as TreeNodeFile 
+					            where fileNode != null && fileNode.File == CurrentOpenFile
+					            select fileNode).FirstOrDefault();
 
 					// If the node isn't here, then it may not have been enumerated, so it's OK if we get out.
 					if (node == null)
@@ -828,13 +828,7 @@ namespace GorgonLibrary.Editor
 						return;
 					}
 
-					var destNode = (EditorTreeNode)node.Parent;
-
-					if ((destNode.NodeType & NodeType.Directory) == NodeType.Directory)
-					{
-						// TODO: Rename file - Use scratch area functionality.
-						CopyFileNode(node, (TreeNodeDirectory)destNode, changedArgs.Value.ToString(), true);
-					}
+					RenameFileNode(node, changedArgs.Value.ToString());
 				}
 
 				FileManagement.FileChanged = true;
@@ -1604,31 +1598,37 @@ namespace GorgonLibrary.Editor
 			var currentState = NodeEditState.None;
 			string label = e.Label;
 
+
+			e.CancelEdit = true;
+
+			// If this is not an editor node, then cancel the editing process.
+			if (node == null)
+			{
+				return;
+			}
+
+			// We can't have blank names.
+			if (string.IsNullOrWhiteSpace(label))
+			{
+				// Destroy the new node if we've entered a blank name.
+				if (currentState == NodeEditState.CreateDirectory)
+				{
+					e.Node.Remove();
+				}
+
+				return;
+			}
+
 			Cursor.Current = Cursors.WaitCursor;
 
 			try
 			{
-				e.CancelEdit = true;
-
-				// This node isn't an editor node, we should get rid of it.
-				if (node == null)
+				if (node.EditState == NodeEditState.RenameFile)
 				{
-					if (e.Node != null)
-					{
-						e.Node.Remove();
-					}
-					return;
+					RenameFileNode((TreeNodeFile)node, label);
 				}
 
-				// Ensure that whatever we type will work in the file system.
-				if ((label.IndexOfAny(_fileChars) > -1) || (label.IndexOf('/') > -1) || (label.IndexOf('\\') > -1))
-				{
-					GorgonDialogs.ErrorBox(this,string.Format(Resources.GOREDIT_FILE_PATH_HAS_INVALID_CHARS,
-					                                     string.Join(" ", _fileChars.Where(item => item > 32))));
-					node.BeginEdit();
-					return;
-				}
-
+				// TODO: Fix this mess.  What the fuck is this?
 				if ((node.EditState == NodeEditState.CreateDirectory) || (node.EditState == NodeEditState.RenameDirectory))
 				{
 					currentState = node.EditState;
@@ -1636,13 +1636,6 @@ namespace GorgonLibrary.Editor
 					// Create the directory in the scratch area.
 					if (currentState == NodeEditState.CreateDirectory)
 					{
-						// Empty strings can't be used.
-						if (string.IsNullOrWhiteSpace(label))
-						{
-							e.Node.Remove();
-							return;
-						}
-
 						label = label.FormatDirectory('/');
 
 						var parentNode = node.Parent as TreeNodeDirectory;
@@ -1678,26 +1671,11 @@ namespace GorgonLibrary.Editor
                         CopyDirectoryNode(selectedNode, parentNode, label, true);
 					}
 				}
-				else
-				{
-					if (string.IsNullOrWhiteSpace(label))
-					{
-						return;
-					}
-					
-					// Rename the file by moving it.
-					var selectedNode = node as TreeNodeFile;
-					Debug.Assert(selectedNode != null, "File node is not a file!");
-					var parentNode = selectedNode.Parent as TreeNodeDirectory;
-
-                    CopyFileNode(selectedNode, parentNode, label, true);
-				}
 			}
 			catch (Exception ex)
 			{
 				// If we get an error, just remove any new nodes.
-				if (((currentState == NodeEditState.CreateDirectory) || (currentState == NodeEditState.CreateFile))
-					&& (node != null))
+				if ((currentState == NodeEditState.CreateDirectory) || (currentState == NodeEditState.CreateFile))
 				{
 					node.Remove();
 				}
@@ -1712,6 +1690,7 @@ namespace GorgonLibrary.Editor
 			}
 			finally
 			{
+				treeFiles.Refresh();
 				Cursor.Current = Cursors.Default;
 				ValidateControls();
 			}
@@ -1883,114 +1862,34 @@ namespace GorgonLibrary.Editor
 		}
 
         /// <summary>
-        /// Function to copy a file node to another location.
+        /// Function to rename a file node.
         /// </summary>
-        /// <param name="sourceFile">The file to copy.</param>
-        /// <param name="destDirectory">The destination directory.</param>
-        /// <param name="name">The new name for the file.</param>
-        /// <param name="deleteSource">TRUE to delete the source file, FALSE to leave alone.</param>
-        private void CopyFileNode(TreeNodeFile sourceFile, TreeNodeDirectory destDirectory, string name, bool deleteSource)
+        /// <param name="sourceFileNode">The file to rename.</param>
+        /// <param name="newName">The new name for the file.</param>
+        private void RenameFileNode(TreeNodeFile sourceFileNode, string newName)
         {
-	        if (string.IsNullOrWhiteSpace(name))
-            {
-                name = sourceFile.File.Name;
-            }
+	        bool openContentRenamed = sourceFileNode.File == CurrentOpenFile;
+			
+			GorgonFileSystemFileEntry newFile = ScratchArea.Rename(sourceFileNode.File, newName);
 
-            // If we dropped the extension, then replace it.
-            if (!name.EndsWith(sourceFile.File.Extension, StringComparison.OrdinalIgnoreCase))
-            {
-                name += sourceFile.File.Extension;
-            }
-
-            var newFilePath = destDirectory.Directory.FullPath + name.FormatFileName();
-
-            if (ScratchArea.ScratchFiles.GetFile(newFilePath) != null)
-            {
-                // If the file exists and we're renaming (not moving), then throw up an error and leave.
-                if (deleteSource)
-                {
-                    if (!string.Equals(name, sourceFile.File.Name, StringComparison.OrdinalIgnoreCase))
-                    {
-                        GorgonDialogs.ErrorBox(this, string.Format(Resources.GOREDIT_FILE_ALREADY_EXISTS, Resources.GOREDIT_FILE_DEFAULT_TYPE, newFilePath));
-                    }
-
-	                // We're trying to copy over ourselves, do nothing.
-	                return;
-                }
-
-	            var result = GorgonDialogs.ConfirmBox(this,
-	                                                  string.Format(Resources.GOREDIT_OVERWRITE_FILE_PROMPT,
-	                                                                Resources.GOREDIT_FILE_DEFAULT_TYPE, newFilePath), true,
-	                                                  false);
-
-                if (result == ConfirmationResult.Cancel)
-                {
-                    return;
-                }
-
-                // If we specified no, then we have to create a new name.
-				if (result == ConfirmationResult.No)
-				{
-					int counter = 1;
-					string newName = sourceFile.File.BaseFileName + " (" + counter + ")" + sourceFile.File.Extension;
-
-					while (ScratchArea.ScratchFiles.GetFile(newName) != null)
-					{
-						newName = sourceFile.File.BaseFileName + " (" + (++counter) + ")" + sourceFile.File.Extension;
-					}
-
-					newFilePath = destDirectory.Directory.FullPath + newName;
-				}
-				else
-				{
-					// Do not copy over ourselves.
-					if (string.Equals(newFilePath, sourceFile.File.FullPath, StringComparison.InvariantCultureIgnoreCase))
-					{
-						return;
-					}
-				}
-            }
-
-			Cursor.Current = Cursors.WaitCursor;
-
-            using (var inputStream = ScratchArea.ScratchFiles.OpenStream(sourceFile.File, false))
-            {
-                using (var outputStream = ScratchArea.ScratchFiles.OpenStream(newFilePath, true))
-                {
-                    inputStream.CopyTo(outputStream);
-                }
-            }
-
-			// Reroute any cut/copy operation.
-			if (deleteSource)
+			if (newFile == null)
 			{
-				// If this file is open, then update its handle.
-				if ((ContentManagement.Current != null)
-					&& (CurrentOpenFile == sourceFile.File))
-				{
-					var newFile = ScratchArea.ScratchFiles.GetFile(newFilePath);
-					CurrentOpenFile = newFile;
-					ContentManagement.Current.Name = newFile.Name;
-				}
+				return;
 			}
 
-            destDirectory.Collapse();
+			sourceFileNode.Text = newFile.Name;
+			sourceFileNode.Name = newFile.FullPath;
 
-            if (destDirectory.Nodes.Count == 0)
-            {
-                destDirectory.Nodes.Add(new TreeNode("DUMMYNODE"));
-            }
+			FileManagement.FileChanged = true;
 
-            if (deleteSource)
-            {
-				ScratchArea.ScratchFiles.DeleteFile(sourceFile.File);
-
-				PruneTree(sourceFile);
+			if (!openContentRenamed)
+			{
+				return;
 			}
 
-            destDirectory.Expand();
-
-            FileManagement.FileChanged = true;
+			// Update the current name in the current content.
+			ContentManagement.Current.Name = newFile.Name;
+			CurrentOpenFile = newFile;
         }
 
         /// <summary>
@@ -2249,9 +2148,10 @@ namespace GorgonLibrary.Editor
                     && (CurrentOpenFile != null)
                     && (CurrentOpenFile.FullPath.StartsWith(sourceNode.Directory.FullPath)))
                 {
-#error This is not linking to the currently open file properly.  Need to find some way to link it together.
-                    openContent = (CurrentOpenFile.FullPath.Replace(sourceNode.Directory.FullPath,
-                                                                   destinationNode.Directory.FullPath + sourceNode.Name)).FormatDirectory('/') + CurrentOpenFile.Name;
+	                openContent = (CurrentOpenFile.Directory.FullPath.Replace(sourceNode.Directory.FullPath,
+	                                                                          destinationNode.Directory.FullPath +
+	                                                                          sourceNode.Directory.Name)).FormatDirectory('/') +
+	                              CurrentOpenFile.Name;
                     CurrentOpenFile = null;
                 }
 
@@ -2276,7 +2176,7 @@ namespace GorgonLibrary.Editor
 
                 FileManagement.FileChanged = true;
 
-                // If we've moved the file that's already open, then close it and reopen it.
+                // If we've moved the file that's already open, then update its location.
                 if (string.IsNullOrWhiteSpace(openContent))
                 {
                     return result;
@@ -2343,7 +2243,7 @@ namespace GorgonLibrary.Editor
 
 		        FileManagement.FileChanged = true;
                 
-		        // If we've moved the file that's already open, then close it and reopen it.
+		        // If we've moved the file that's already open, then update its location.
 		        if (!updateOpenContent)
 		        {
 		            return result;

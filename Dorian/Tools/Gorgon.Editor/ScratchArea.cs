@@ -221,6 +221,7 @@ namespace GorgonLibrary.Editor
         #region Variables.
         private readonly static string[] _systemDirs;
         private static Guid _scratchID = Guid.NewGuid();
+		private readonly static char[] _fileChars = Path.GetInvalidFileNameChars();	// Invalid filename characters.
 		#endregion
 
 		#region Properties.
@@ -991,6 +992,51 @@ namespace GorgonLibrary.Editor
 
             return result;
         }
+
+		/// <summary>
+		/// Function to rename a file.
+		/// </summary>
+		/// <param name="file">File to rename.</param>
+		/// <param name="newName">New name for the file.</param>
+		/// <returns>The file with the new name.</returns>
+		public static GorgonFileSystemFileEntry Rename(GorgonFileSystemFileEntry file, string newName)
+		{
+			if (file == null)
+			{
+				throw new ArgumentNullException("file");
+			}
+
+			newName = Path.GetFileName(newName);
+
+			if (string.IsNullOrWhiteSpace(newName))
+			{
+				throw new ArgumentException(Resources.GOREDIT_PARAMETER_MUST_NOT_BE_EMPTY, "newName");
+			}
+
+			// Ensure we've got a valid file name.
+			if ((newName.IndexOfAny(_fileChars) > -1) || (newName.IndexOf('/') > -1) || (newName.IndexOf('\\') > -1))
+			{
+				throw new ArgumentException(string.Format(Resources.GOREDIT_FILE_PATH_HAS_INVALID_CHARS,
+				                                          string.Join(" ", _fileChars.Where(item => item > 32))), "newName");
+			}
+
+			newName = newName.FormatFileName();
+
+			// Don't bother.
+			if (newName == file.Name)
+			{
+				return null;
+			}
+
+			if (file.Directory.Files.Contains(newName))
+			{
+				throw new ArgumentException(string.Format(Resources.GOREDIT_FILE_ALREADY_EXISTS,
+				                                          Resources.GOREDIT_FILE_DEFAULT_TYPE,
+				                                          newName));
+			}
+
+			return Move(file, file.Directory.FullPath + newName, false);
+		}
 
         /// <summary>
         /// Function to create a new file in the scratch area.
