@@ -245,9 +245,9 @@ namespace GorgonLibrary.Editor
         }
 
 		/// <summary>
-		/// Property to set or return the method that is called if a file copy operation throws an exception.
+		/// Property to set or return the method that is called if an import, export, copy or rename operation throws an exception.
 		/// </summary>
-		public static Action<Exception> ImportExportFileCopyExceptionAction
+		public static Action<Exception> ExceptionAction
 		{
 			get;
 			set;
@@ -478,7 +478,7 @@ namespace GorgonLibrary.Editor
 		        }
 		        catch (Exception ex)
 		        {
-		            ImportExportFileCopyExceptionAction(ex);
+		            ExceptionAction(ex);
 		        }
 		        finally
 		        {
@@ -796,7 +796,7 @@ namespace GorgonLibrary.Editor
 
             Debug.Assert(CopyDirectoryConflictFunction != null, "No directory copy conflict action assigned in copy.");
             Debug.Assert(CopyFileConflictFunction != null, "No file copy conflict action assigned in copy.");
-            Debug.Assert(ImportExportFileCopyExceptionAction != null, "No file copy exception action assigned in copy.");
+            Debug.Assert(ExceptionAction != null, "No file copy exception action assigned in copy.");
 
             if (directory == null)
             {
@@ -838,7 +838,7 @@ namespace GorgonLibrary.Editor
                                                                  }
                                                                  catch (Exception ex)
                                                                  {
-                                                                     ImportExportFileCopyExceptionAction(ex);
+                                                                     ExceptionAction(ex);
                                                                  }
                                                              },
                                                              settings.CancelToken);
@@ -887,7 +887,7 @@ namespace GorgonLibrary.Editor
 			}
 			catch (Exception ex)
 			{
-				ImportExportFileCopyExceptionAction(ex);
+				ExceptionAction(ex);
 			}
 
 			return result;
@@ -904,7 +904,7 @@ namespace GorgonLibrary.Editor
         {
             GorgonFileSystemFileEntry result;
 
-			Debug.Assert(ImportExportFileCopyExceptionAction != null, "Copy exception action is not assigned for copy.");
+			Debug.Assert(ExceptionAction != null, "Copy exception action is not assigned for copy.");
             Debug.Assert(CopyFileConflictFunction != null, "Copy file conflict action is not assigned for copy.");
 
             if (file == null)
@@ -986,11 +986,75 @@ namespace GorgonLibrary.Editor
             }
             catch (Exception ex)
             {
-                ImportExportFileCopyExceptionAction(ex);
+                ExceptionAction(ex);
                 result = null;
             }
 
             return result;
+        }
+
+        /// <summary>
+        /// Function to rename a directory.
+        /// </summary>
+        /// <param name="directory">Directory to rename.</param>
+        /// <param name="newName">New name for the directory.</param>
+        /// <returns>The directory with the new name.</returns>
+        public static GorgonFileSystemDirectory Rename(GorgonFileSystemDirectory directory, string newName)
+        {
+            Debug.Assert(ExceptionAction != null, "No rename exception action is assigned in rename.");
+
+            if (directory == null)
+            {
+                throw new ArgumentNullException("directory");
+            }
+
+            if (string.IsNullOrWhiteSpace(newName))
+            {
+                throw new ArgumentException(Resources.GOREDIT_PARAMETER_MUST_NOT_BE_EMPTY, "newName");
+            }
+
+            // Ensure we've got a valid file name.
+            if ((newName.IndexOfAny(_fileChars) > -1) || (newName.IndexOf('/') > -1) || (newName.IndexOf('\\') > -1))
+            {
+                throw new ArgumentException(string.Format(Resources.GOREDIT_FILE_PATH_HAS_INVALID_CHARS,
+                                                          string.Join(" ", _fileChars.Where(item => item > 32))), "newName");
+            }
+
+            // Don't bother.
+            if (string.Equals(newName, directory.Name, StringComparison.OrdinalIgnoreCase))
+            {
+                return null;
+            }
+
+            if (directory.Directories.Contains(newName))
+            {
+                throw new ArgumentException(string.Format(Resources.GOREDIT_FILE_ALREADY_EXISTS,
+                                                          Resources.GOREDIT_NODE_DIRECTORY,
+                                                          newName));
+            }
+
+            try
+            {
+                newName = directory.FullPath + newName;
+
+                // Convert the names to a physical location.
+                string oldName = directory.FullPath.FormatDirectory(Path.DirectorySeparatorChar);
+                oldName = ScratchFiles.WriteLocation + oldName.Substring(1);
+                string physicalNewName = newName.FormatDirectory(Path.DirectorySeparatorChar);
+                physicalNewName = ScratchFiles.WriteLocation + physicalNewName.Substring(1);
+
+                Directory.Move(oldName, physicalNewName);
+
+                ScratchFiles.Refresh();
+
+                return ScratchFiles.GetDirectory(newName);
+            }
+            catch (Exception ex)
+            {
+                ExceptionAction(ex);
+            }
+
+            return null;
         }
 
 		/// <summary>
@@ -1023,7 +1087,7 @@ namespace GorgonLibrary.Editor
 			newName = newName.FormatFileName();
 
 			// Don't bother.
-			if (newName == file.Name)
+			if (string.Equals(newName, file.Name, StringComparison.OrdinalIgnoreCase))
 			{
 				return null;
 			}
@@ -1035,7 +1099,23 @@ namespace GorgonLibrary.Editor
 				                                          newName));
 			}
 
-			return Move(file, file.Directory.FullPath + newName, false);
+		    try
+		    {
+		        newName = file.Directory.FullPath + newName;
+
+		        string physicalNewName = newName.FormatDirectory('/');
+		        physicalNewName = ScratchFiles.WriteLocation + physicalNewName.Substring(1);
+                
+                File.Move(file.PhysicalFileSystemPath, physicalNewName);
+
+                ScratchFiles.Refresh();
+
+                return Move(file, file.Directory.FullPath + newName, false);
+		    }
+		    catch (Exception ex)
+		    {
+		        ExceptionAction(ex);
+		    }
 		}
 
         /// <summary>
@@ -1080,7 +1160,7 @@ namespace GorgonLibrary.Editor
 
 			Debug.Assert(CopyDirectoryConflictFunction != null, "No directory copy conflict action assigned in copy.");
 			Debug.Assert(CopyFileConflictFunction != null, "No file copy conflict action assigned in copy.");
-			Debug.Assert(ImportExportFileCopyExceptionAction != null, "No file copy exception action assigned in copy.");
+			Debug.Assert(ExceptionAction != null, "No file copy exception action assigned in copy.");
 
 			if (directory == null)
 			{
@@ -1121,7 +1201,7 @@ namespace GorgonLibrary.Editor
                                                                  }
                                                                  catch (Exception ex)
                                                                  {
-                                                                     ImportExportFileCopyExceptionAction(ex);
+                                                                     ExceptionAction(ex);
                                                                  }
 					                                         },
 					                                         settings.CancelToken);
@@ -1145,7 +1225,7 @@ namespace GorgonLibrary.Editor
         {
             Debug.Assert(ImportExportFileCompleteAction != null, "No file completion action assigned in export.");
             Debug.Assert(ImportExportFileConflictFunction != null, "No file conflict action assigned in export.");
-			Debug.Assert(ImportExportFileCopyExceptionAction != null, "No file exception action assigned in export");
+			Debug.Assert(ExceptionAction != null, "No file exception action assigned in export");
 
 			if (directory == null)
 			{
@@ -1181,7 +1261,7 @@ namespace GorgonLibrary.Editor
                         }
                         catch(Exception ex)
                         {
-                            ImportExportFileCopyExceptionAction(ex);
+                            ExceptionAction(ex);
                             return;
                         }
 
@@ -1207,7 +1287,7 @@ namespace GorgonLibrary.Editor
         public static bool Export(GorgonFileSystemFileEntry file, string destinationPath, bool overwriteIfExists)
         {
             Debug.Assert(ImportExportFileConflictFunction != null, "No file conflict action assigned in single file Export");
-			Debug.Assert(ImportExportFileCopyExceptionAction != null, "No file exception action assigned in single file Export");
+			Debug.Assert(ExceptionAction != null, "No file exception action assigned in single file Export");
 
             if ((file == null)
                 || (string.IsNullOrWhiteSpace(destinationPath)))
@@ -1260,7 +1340,7 @@ namespace GorgonLibrary.Editor
 	        }
 	        catch (Exception ex)
 	        {
-		        ImportExportFileCopyExceptionAction(ex);
+		        ExceptionAction(ex);
 	            return false;
 	        }
 
@@ -1279,7 +1359,7 @@ namespace GorgonLibrary.Editor
 
 			Debug.Assert(ImportExportFileCompleteAction != null, "No file completion action assigned in import.");
 			Debug.Assert(ImportExportFileConflictFunction != null, "No file conflict action assigned in import.");
-			Debug.Assert(ImportExportFileCopyExceptionAction != null, "No file exception action assigned in import.");
+			Debug.Assert(ExceptionAction != null, "No file exception action assigned in import.");
             Debug.Assert(CanImportFunction != null, "No file validation action assigned in import.");
 
 			// Bring up the progress form.
@@ -1381,10 +1461,10 @@ namespace GorgonLibrary.Editor
 				// Use the write location of the currently mounted file system if possible.
 				if ((ScratchFiles != null) && (!string.IsNullOrWhiteSpace(ScratchFiles.WriteLocation)))
 				{
-					ScratchFiles.Clear();
+                    scratchLocation.Length = 0;
+                    scratchLocation.Append(ScratchFiles.WriteLocation);
 
-					scratchLocation.Length = 0;
-					scratchLocation.Append(ScratchFiles.WriteLocation);
+                    ScratchFiles.Clear();
 				}
 
 				string scratchPath = scratchLocation.ToString();

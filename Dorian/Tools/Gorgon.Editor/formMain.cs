@@ -1059,7 +1059,7 @@ namespace GorgonLibrary.Editor
                 // Unhook from file management functionality.
 			    ScratchArea.ImportExportFileConflictFunction = null;
                 ScratchArea.ImportExportFileCompleteAction = null;
-			    ScratchArea.ImportExportFileCopyExceptionAction = null;
+			    ScratchArea.ExceptionAction = null;
 			    ScratchArea.CanImportFunction = null;
 			    ScratchArea.CreateFileConflictFunction = null;
 			    ScratchArea.CopyFileConflictFunction = null;
@@ -2790,7 +2790,7 @@ namespace GorgonLibrary.Editor
 
             // Assign file management linkage.
 			ScratchArea.CanImportFunction = EvaluateFileImport;
-			ScratchArea.ImportExportFileCopyExceptionAction = FileCopyException;
+			ScratchArea.ExceptionAction = FileCopyException;
             ScratchArea.ImportExportFileConflictFunction = ImportConfirmFileOverwrite;
             ScratchArea.ImportExportFileCompleteAction = FileImportExportCompleted;
 		    ScratchArea.CreateFileConflictFunction = (fileName, fileType) => GorgonDialogs.ConfirmBox(null,string.Format(Resources.GOREDIT_OVERWRITE_FILE_PROMPT,
