@@ -27,7 +27,6 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -466,106 +465,6 @@ namespace GorgonLibrary.IO
 
 			return result;
 		}
-
-        /// <summary>
-        /// Function to update an existing file entry.
-        /// </summary>
-        /// <param name="filePath">Path to the file.</param>
-	    private void UpdateFileEntry(string filePath)
-	    {
-            GorgonFileSystemFileEntry file = GetFile(filePath);
-
-            if (file == null)
-            {
-                throw new FileNotFoundException(string.Format(Resources.GORFS_FILE_NOT_FOUND, filePath));
-            }
-
-            GorgonFileSystemProvider provider = file.Provider;
-            var fileInfo = provider.GetFileInfo(file);
-            
-            file.Directory.Files.Remove(file);
-
-            // If we couldn't find the file in the physical file system, then we're done here.
-            if (fileInfo == null)
-            {
-                return;
-            }
-
-            AddFileEntry(provider, fileInfo.Value.VirtualPath, file.MountPoint, fileInfo.Value.FullPath, fileInfo.Value.Length, file.Offset, file.CreateDate);
-	    }
-
-        /// <summary>
-        /// Function to update an existing directory entry.
-        /// </summary>
-        /// <param name="directoryPath">Directory to update.</param>
-	    private void UpdateDirectoryEntry(string directoryPath)
-        {
-            GorgonFileSystemDirectory directory = GetDirectory(directoryPath);
-
-            if (directory == null)
-            {
-                throw new DirectoryNotFoundException(string.Format(Resources.GORFS_DIRECTORY_NOT_FOUND, directoryPath));
-            }
-
-            // TODO: Update a directory entry.
-        }
-
-        /// <summary>
-        /// Function to perform a rescan of the virtual path from its physical mount point.
-        /// </summary>
-        /// <param name="virtualPath">The path to the virtual location to rescan.</param>
-        /// <remarks>This method will rescan an area on the physical file system that is related to the virtual path entered.  This is useful in situations where 
-        /// only a part of the file system needs to be updated.</remarks>
-        /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="virtualPath"/> parameter is NULL (Nothing in VB.Net).</exception>
-        /// <exception cref="System.ArgumentException">Thrown when the <paramref name="virtualPath"/> parameter is empty.</exception>
-        /// <exception cref="System.IO.FileNotFoundException">Thrown if the file in the <paramref name="virtualPath"/> parameter could not be found in the file system.</exception>
-        /// <exception cref="System.IO.DirectoryNotFoundException">Thrown if the directory in the <paramref name="virtualPath"/> parameter could not be found in the file system.</exception>
-	    public void Rescan(string virtualPath)
-	    {
-            if (virtualPath == null)
-            {
-                throw new ArgumentNullException("virtualPath");
-            }
-
-            if (string.IsNullOrWhiteSpace(virtualPath))
-            {
-                throw new ArgumentException(Resources.GORFS_PARAMETER_EMPTY, "virtualPath");
-            }
-
-            string fileName = Path.GetFileName(virtualPath);
-            string directoryPath = Path.GetDirectoryName(virtualPath);
-
-            Debug.Assert(!string.IsNullOrWhiteSpace(directoryPath) || !string.IsNullOrWhiteSpace(fileName),
-                         "Directory and file name is NULL or Empty!!");
-
-            if (string.IsNullOrWhiteSpace(directoryPath))
-            {
-                directoryPath = "/";
-            }
-            else
-            {
-                directoryPath = directoryPath.FormatDirectory('/');
-            }
-
-            // If we rescan the root, then rebuild the entire thing.
-            if ((string.IsNullOrWhiteSpace(fileName))
-                && (directoryPath == "/"))
-            {
-                Refresh();
-                return;
-            }
-
-            // We're scanning a file...
-            if (!string.IsNullOrWhiteSpace(fileName))
-            {
-                string filePath = directoryPath + fileName.FormatFileName();
-
-                UpdateFileEntry(filePath);
-                return;
-            }
-
-            UpdateDirectoryEntry(directoryPath);
-	    }
 
 		/// <summary>
 		/// Function to find all the directories specified in the directory mask.
