@@ -873,11 +873,13 @@ namespace GorgonLibrary.Graphics
 						{
 							char first = Convert.ToChar(pair.First);
 							char second = Convert.ToChar(pair.Second);
+                            var kernPair = new GorgonKerningPair(Convert.ToChar(first), Convert.ToChar(second));
 
 						    if (((availableCharacters.Contains(first)) || (availableCharacters.Contains(second)))
-						        && (pair.KernAmount != 0))
+						        && (pair.KernAmount != 0)
+                                && (!KerningPairs.ContainsKey(kernPair)))
 						    {
-						        KerningPairs.Add(new GorgonKerningPair(Convert.ToChar(first), Convert.ToChar(second)), pair.KernAmount);
+						        KerningPairs.Add(kernPair, pair.KernAmount);
 						    }
 						}
 					}
