@@ -472,4 +472,7 @@ The following characters are not allowed:
   <data name="GOREDIT_PROC_MOVE_DLG_TITLE" xml:space="preserve">
     <value>Moving Files</value>
   </data>
+  <data name="GOREDIT_CONTENT_OPEN_ERROR" xml:space="preserve">
+    <value>There was an error opening '{0}'.</value>
+  </data>
 </root>

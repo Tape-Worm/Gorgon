@@ -681,7 +681,8 @@ namespace GorgonLibrary.Editor
 			catch (Exception ex)
 			{
 			    CurrentOpenFile = null;
-                GorgonDialogs.ErrorBox(this, ex);
+				ContentManagement.LoadDefaultContentPane();
+                GorgonDialogs.ErrorBox(this, string.Format(Resources.GOREDIT_CONTENT_OPEN_ERROR, fileNode.File.Name), ex);
 			}
 			finally
 			{
