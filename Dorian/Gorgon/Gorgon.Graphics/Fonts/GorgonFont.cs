@@ -172,12 +172,12 @@ namespace GorgonLibrary.Graphics
 		/// Function to save the font to a stream.
 		/// </summary>
 		/// <param name="stream">Stream to write into.</param>
-		/// <param name="externalTextures">TRUE to save the textures as external files, FALSE to bundle them with the font.</param>
+		/// <param name="externalTextures">[Optional] TRUE to save the textures as external files, FALSE to bundle them with the font.</param>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="stream"/> parameter is NULL.</exception>
 		/// <exception cref="System.IO.IOException">Thrown when the stream parameter does not allow for writing.</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the externalTextures parameter is TRUE and the stream is not a file stream.</exception>
 		/// <remarks>The <paramref name="externalTextures"/> parameter will only work on file streams, if the stream is not a file stream, then an exception will be thrown.</remarks>
-		private void Save(Stream stream, bool externalTextures)
+		public void Save(Stream stream, bool externalTextures = false)
 		{
 		    var fileStream = stream as FileStream;
 
@@ -251,6 +251,16 @@ namespace GorgonLibrary.Graphics
 	            foreach (var texture in Textures)
                 {
 					chunk.WriteString(texture.Name);
+
+					// If we're referencing an outside texture, do not save it.
+	                if (!Textures.IsInternal(texture))
+	                {
+						// Write "true" here to indicate that the texture is not an internal texture and must be referenced from the outside.
+						chunk.WriteBoolean(true);
+		                continue;
+	                }
+					
+					chunk.WriteBoolean(false);
 
                     if (!externalTextures)
                     {
@@ -673,26 +683,15 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
-		/// Function to save the font to a stream.
-		/// </summary>
-		/// <param name="stream">Stream to write into.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="stream"/> parameter is NULL (Nothing in VB.Net).</exception>
-		/// <exception cref="System.IO.IOException">Thrown when the stream parameter does not allow for writing.</exception>
-		public void Save(Stream stream)
-		{
-			Save(stream, false);
-		}
-
-		/// <summary>
 		/// Function to save the font to a file.
 		/// </summary>
 		/// <param name="fileName">File name and path of the font to save.</param>
-		/// <param name="externalTextures">TRUE to save the textures external to the font file, FALSE to bundle together with the font file.</param>
+		/// <param name="externalTextures">[Optional] TRUE to save the textures external to the font file, FALSE to bundle together with the font file.</param>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="fileName"/> parameter is NULL (Nothing in VB.Net).</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the fileName parameter is an empty string.</exception>
 		/// <remarks>Saving the textures externally with the <paramref name="externalTextures"/> parameter set to TRUE is good for altering the textures in an image 
 		/// editing application.  Ultimately, it is recommended that the textures be bundled with the font by setting externalTextures to FALSE.</remarks>
-		public void Save(string fileName, bool externalTextures)
+		public void Save(string fileName, bool externalTextures = false)
 		{
 			FileStream stream = null;
 
@@ -713,24 +712,13 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
-		/// Function to save the font to a file.
-		/// </summary>
-		/// <param name="fileName">File name and path of the font to save.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="fileName"/> parameter is NULL (Nothing in VB.Net).</exception>
-		/// <exception cref="System.ArgumentException">Thrown when the fileName parameter is an empty string.</exception>
-		/// <remarks>This overload will always save the textures with the font.</remarks>
-		public void Save(string fileName)
-		{
-			Save(fileName, false);
-		}
-
-		/// <summary>
 		/// Function to create or update the font.
 		/// </summary>
 		/// <param name="settings">Font settings to use.</param>
 		/// <remarks>
 		/// This is used to generate a new set of font textures, and essentially "create" the font object.
-		/// <para>This method will clear all the glyphs and textures in the font and rebuild the font with the specified parameters.</para>
+		/// <para>This method will clear all the glyphs and textures in the font and rebuild the font with the specified parameters. This means that any 
+		/// custom glyphs, texture mapping, and/or kerning will be lost. Users must find a way to remember and restore any custom font info when updating.</para>
 		/// <para>Internal textures used by the glyph will be destroyed.  However, if there's a user defined texture or glyph using a user defined texture, then it will not be destroyed 
 		/// and clean up will be the responsibility of the user.</para>
 		/// </remarks>
@@ -876,8 +864,7 @@ namespace GorgonLibrary.Graphics
                             var kernPair = new GorgonKerningPair(Convert.ToChar(first), Convert.ToChar(second));
 
 						    if (((availableCharacters.Contains(first)) || (availableCharacters.Contains(second)))
-						        && (pair.KernAmount != 0)
-                                && (!KerningPairs.ContainsKey(kernPair)))
+						        && (pair.KernAmount != 0))
 						    {
 						        KerningPairs.Add(kernPair, pair.KernAmount);
 						    }
