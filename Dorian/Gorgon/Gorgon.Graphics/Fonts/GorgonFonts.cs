@@ -213,46 +213,50 @@ namespace GorgonLibrary.Graphics
                 for (int i = 0; i < textureCount; i++)
                 {
 	                string textureName = chunk.ReadString();
-
+	                bool userTexture = chunk.ReadBoolean();
+					
                     GorgonTexture2D texture = GetFontTexture(textureName);
 
                     // Add to the font.
-                    if (texture != null)
-                    {
-                        font.Textures.Add(texture);
-                    }
+	                if (userTexture)
+	                {
+		                if (texture != null)
+		                {
+			                font.Textures.Add(texture);
+		                }
 
-                    if (!isExternal)
+		                continue;
+	                }
+
+	                if (!isExternal)
                     {
                         int textureSize = chunk.ReadInt32();
 
-                        if (texture == null)
-                        {
-                            texture = _graphics.Textures.FromStream<GorgonTexture2D>(textureName, stream, textureSize, new GorgonCodecPNG());
-                            // Don't track these textures.
-                            _graphics.RemoveTrackedObject(texture);
-                            font.Textures.AddBind(texture);
-                        }
-                        else
-                        {
-                            chunk.SkipBytes(textureSize);
-                        }
+	                    if (textureSize == 0)
+	                    {
+		                    continue;
+	                    }
+
+                        texture = _graphics.Textures.FromStream<GorgonTexture2D>(textureName, stream, textureSize, new GorgonCodecPNG());
+                        // Don't track these textures.
+                        _graphics.RemoveTrackedObject(texture);
+                        font.Textures.AddBind(texture);
                     }
                     else
                     {
                         // Get the path to the texture (must be local to the font file).
                         string texturePath = Path.GetDirectoryName(fileStream.Name).FormatDirectory(Path.DirectorySeparatorChar) + chunk.ReadString();
 
-                        // If the texture exists, then don't bother loading it.
-                        // Otherwise load it in.
-                        if (texture != null)
-                        {
-                            continue;
-                        }
+	                    if ((string.IsNullOrWhiteSpace(texturePath)) || (!File.Exists(texturePath)))
+	                    {
+		                    continue;
+	                    }
 
-                        texture = _graphics.Textures.FromFile<GorgonTexture2D>(textureName, texturePath, new GorgonCodecPNG());
-                        _graphics.RemoveTrackedObject(texture);
-                        font.Textures.AddBind(texture);
+	                    texture = _graphics.Textures.FromFile<GorgonTexture2D>(textureName,
+	                                                                           texturePath,
+	                                                                           new GorgonCodecPNG());
+	                    _graphics.RemoveTrackedObject(texture);
+	                    font.Textures.AddBind(texture);
                     }
                 }
                 chunk.End();
@@ -268,12 +272,21 @@ namespace GorgonLibrary.Graphics
 
                     for (int j = 0; j < glyphCount; j++)
                     {
-                        var glyph = new GorgonGlyph(chunk.ReadChar(), font.Textures[textureName],
-                            chunk.ReadRectangle(),
-                            chunk.Read<Vector2>(),
-                            chunk.Read<Vector3>());
+	                    char glyphChar = chunk.ReadChar();
 
-                        font.Glyphs.Add(glyph);
+						// If the texture does not exist (hasn't been loaded or something), then do now allow the glyph to be rendered.
+	                    if (!font.Textures.Contains(textureName))
+	                    {
+		                    throw new IOException(string.Format(Resources.GORGFX_FONT_GLYPH_TEXTURE_NOT_FOUND, textureName, glyphChar));
+	                    }
+
+	                    var glyph = new GorgonGlyph(glyphChar,
+	                                                font.Textures[textureName],
+	                                                chunk.ReadRectangle(),
+	                                                chunk.Read<Vector2>(),
+	                                                chunk.Read<Vector3>());
+
+	                    font.Glyphs.Add(glyph);
                     }
                 }
                 chunk.End();

@@ -125,6 +125,16 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
+		/// Function to determine if the texture referenced is internal (created by Gorgon) or external.
+		/// </summary>
+		/// <param name="texture">The texture to evaluate.</param>
+		/// <returns>TRUE if internal, FALSE if not.</returns>
+		internal bool IsInternal(GorgonTexture2D texture)
+		{
+			return _internal.Contains(texture);
+		}
+
+		/// <summary>
 		/// Function add a texture to the collection and bind it to the internal font texture list.
 		/// </summary>
 		/// <param name="texture">Texture to add.</param>
