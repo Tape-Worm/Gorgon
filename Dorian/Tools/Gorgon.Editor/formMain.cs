@@ -856,6 +856,7 @@ namespace GorgonLibrary.Editor
 			// Turn off the event.
 			panel.ContentClosed -= OnContentClose;
 
+			// If the content file does not exist, then persist it.
 			if ((CurrentOpenFile!= null) && (ContentManagement.Changed))
 			{
                 ContentManagement.Save(CurrentOpenFile);
@@ -1150,10 +1151,12 @@ namespace GorgonLibrary.Editor
 			}
 
 			// Add file nodes.
-			foreach (var fileNode in from file in rootNode.Directory.Files.OrderBy(item => item.Name) 
+			foreach (var fileEntry in from file in rootNode.Directory.Files.OrderBy(item => item.Name) 
                                      where !FileManagement.IsBlocked(file) 
-                                     select new TreeNodeFile(file))
+                                     select file)
 			{
+				var fileNode = new TreeNodeFile();
+				fileNode.UpdateFile(fileEntry);
 			    rootNode.Nodes.Add(fileNode);
 			}
 		}
@@ -1253,6 +1256,7 @@ namespace GorgonLibrary.Editor
 		{
 		    TreeNodeDirectory directoryNode = GetSelectedDirectoryNode(true);
 			TreeNodeFile newNode = null;
+			GorgonFileSystemFileEntry newFile = null;
 		    ContentObject content = null;
 			var item = sender as ToolStripMenuItem;
 
@@ -1290,40 +1294,50 @@ namespace GorgonLibrary.Editor
                 // Reset to a wait cursor.
                 Cursor.Current = Cursors.WaitCursor;
 
-                // Create the file in the scratch area.
-                CurrentOpenFile = ScratchArea.CreateFile(content.Name, content.ContentType, directoryNode.Directory);
+				// Load the content.
+				ContentManagement.LoadContentPane(content);
 
-                // The file did not get created, leave.
-                if (CurrentOpenFile == null)
+                // Create the file in the scratch area.
+                newFile = ScratchArea.CreateFile(content.Name, content.ContentType, directoryNode.Directory);
+
+                // The file did not get created, then display an error to that effect.
+                if (newFile == null)
 			    {
-			        content.Dispose();
-			        return;
+					throw new IOException(string.Format(Resources.GOREDIT_CONTENT_CANNOT_CREATE_FILE, content.Name));
 			    }
+				
+				// Persist the content to the file.
+				ContentManagement.Save(newFile);
 
                 // Create the file node in our tree.
-                newNode = new TreeNodeFile(CurrentOpenFile);
+                newNode = new TreeNodeFile();
+				newNode.UpdateFile(newFile);
 
                 // Add to tree and select.
                 directoryNode.Nodes.Add(newNode);
                 treeFiles.SelectedNode = newNode;
 
-			    ContentManagement.LoadContentPane(content);
-
                 // We set this to true to indicate that this is a new file.
                 FileManagement.FileChanged = true;
+				CurrentOpenFile = newFile;
 			}
 			catch (Exception ex)
 			{
                 // Load the default pane.
                 ContentManagement.LoadDefaultContentPane();
 				
+				if (content != null)
+				{
+					content.Dispose();
+				}
+
 				// Roll back the changes to the file system.
-				if (CurrentOpenFile != null)
+				if (newFile != null)
 				{
 					try
 					{
 						// Destroy this file.
-						ScratchArea.ScratchFiles.DeleteFile(CurrentOpenFile);
+						ScratchArea.ScratchFiles.DeleteFile(newFile);
 					}
 #if DEBUG
 					catch (Exception innerEx)
@@ -1348,14 +1362,7 @@ namespace GorgonLibrary.Editor
 					newNode.Remove();
 				}
 
-			    CurrentOpenFile = null;
-
                 GorgonDialogs.ErrorBox(this, ex);
-
-				if (content != null)
-				{
-					content.Dispose();
-				}
 			}
 			finally
 			{

@@ -176,7 +176,8 @@ namespace GorgonLibrary.Editor
 		        return result;
 		    }
 
-			result = new TreeNodeFile(file);
+			result = new TreeNodeFile();
+			result.UpdateFile(file);
 
 			nodes.Add(result);
 

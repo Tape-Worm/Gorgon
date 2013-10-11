@@ -24,6 +24,7 @@
 // 
 #endregion
 
+using System;
 using System.Drawing;
 using System.Linq;
 using GorgonLibrary.Editor.Properties;
@@ -146,19 +147,6 @@ namespace GorgonLibrary.Editor
 		/// </summary>
 		/// <param name="file">File system file entry to use.</param>
 		public void UpdateFile(GorgonFileSystemFileEntry file)
-		{
-			Name = file.FullPath;
-			Text = file.Name;
-			GetFileData();
-		}
-		#endregion
-
-		#region Constructor/Destructor.
-		/// <summary>
-		/// Initializes a new instance of the <see cref="TreeNodeFile"/> class.
-		/// </summary>
-		/// <param name="file">File to associate with the node.</param>
-		public TreeNodeFile(GorgonFileSystemFileEntry file)
 		{
 			Name = file.FullPath;
 			Text = file.Name;
