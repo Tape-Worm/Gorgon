@@ -54,7 +54,7 @@ namespace GorgonLibrary.Editor
 
 		#region Properties.
 		/// <summary>
-		/// Property to set or return whether there have been changes made to the content.
+		/// Property to return whether there have been changes made to the content.
 		/// </summary>
 		[Browsable(false)]
 		public bool HasChanged

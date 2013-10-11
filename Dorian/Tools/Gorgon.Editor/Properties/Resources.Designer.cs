@@ -233,6 +233,15 @@ namespace GorgonLibrary.Editor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Could not create the content file &apos;{0}&apos;..
+        /// </summary>
+        internal static string GOREDIT_CONTENT_CANNOT_CREATE_FILE {
+            get {
+                return ResourceManager.GetString("GOREDIT_CONTENT_CANNOT_CREATE_FILE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Untitled.
         /// </summary>
         internal static string GOREDIT_CONTENT_DEFAULT_NAME {

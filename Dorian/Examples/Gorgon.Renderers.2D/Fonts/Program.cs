@@ -140,19 +140,19 @@ namespace Fonts
 			// TODO: This is for testing font capabilities.
 			_renderer.Drawing.BlendingMode = BlendingMode.Modulate;
 
-			/*_font.KerningPairs[new GorgonKerningPair('T', 'e')] = -10;*/
+			_font.KerningPairs[new GorgonKerningPair('T', 'e')] = -10;
 
 			_specialGlyphTexture = _graphics.Textures.FromFile<GorgonTexture2D>("StyledT", GetResourcePath(@"Fonts\StylizedT.png"),
 			                                                                    new GorgonCodecPNG());
 
-			/*_font.Textures.Add(_specialGlyphTexture);
+			_font.Textures.Add(_specialGlyphTexture);
 			_font.Glyphs['T'] = new GorgonGlyph('T', _specialGlyphTexture, new Rectangle(11, 14, 111, 97), new Vector2(3, -8), new Vector3(-7, 104, 0));
 
-			_font.Save(@"d:\unpak\fontTest.gorFont");
+			/*_font.Save(@"d:\unpak\fontTest.gorFont");
 
 			_font.Dispose();*/
 
-			_font = _graphics.Fonts.FromFile("TestFont", @"d:\unpak\fontTest.gorFont");
+			//_font = _graphics.Fonts.FromFile("TestFont", @"d:\unpak\fontTest.gorFont");
 		}
 		#endregion
 

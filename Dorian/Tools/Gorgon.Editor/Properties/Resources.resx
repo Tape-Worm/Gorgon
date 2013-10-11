@@ -475,4 +475,7 @@ The following characters are not allowed:
   <data name="GOREDIT_CONTENT_OPEN_ERROR" xml:space="preserve">
     <value>There was an error opening '{0}'.</value>
   </data>
+  <data name="GOREDIT_CONTENT_CANNOT_CREATE_FILE" xml:space="preserve">
+    <value>Could not create the content file '{0}'.</value>
+  </data>
 </root>

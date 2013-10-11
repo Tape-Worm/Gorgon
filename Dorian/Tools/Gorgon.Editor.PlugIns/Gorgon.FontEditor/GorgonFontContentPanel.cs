@@ -133,14 +133,16 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 
 			try
 			{
-				componentEdit = new formValueComponentEditDialog();
-				componentEdit.ValueComponents = 2;
-				componentEdit.DecimalPlaces = 0;
-				componentEdit.MaxValue = 8;
-				componentEdit.MinValue = -8;
-				componentEdit.Value1 = GorgonFontEditorPlugIn.Settings.ShadowOffset.X;
-				componentEdit.Value2 = GorgonFontEditorPlugIn.Settings.ShadowOffset.Y;
-				componentEdit.Text = "Edit preview text shadow offset";
+				componentEdit = new formValueComponentEditDialog
+				                {
+					                ValueComponents = 2,
+					                DecimalPlaces = 0,
+					                MaxValue = 8,
+					                MinValue = -8,
+					                Value1 = GorgonFontEditorPlugIn.Settings.ShadowOffset.X,
+					                Value2 = GorgonFontEditorPlugIn.Settings.ShadowOffset.Y,
+					                Text = "Edit preview text shadow offset"
+				                };
 				componentEdit.ValueChanged += componentEdit_ValueChanged;
 
 				if (componentEdit.ShowDialog() == DialogResult.OK)
@@ -163,7 +165,6 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 					componentEdit.ValueChanged -= componentEdit_ValueChanged;
 					componentEdit.Dispose();
 				}
-				componentEdit = null;
 			}
 		}
 
@@ -174,7 +175,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
 		private void componentEdit_ValueChanged(object sender, EventArgs e)
 		{
-			var dialog = sender as formValueComponentEditDialog;
+			var dialog = (formValueComponentEditDialog)sender;
 						
 			_text.ShadowOffset = new Point((int)dialog.Value1, (int)dialog.Value2);
 			DrawText();
@@ -188,7 +189,6 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
 		private void itemShadowOpacity_Click(object sender, EventArgs e)
 		{
-			var opacity = (int)(GorgonFontEditorPlugIn.Settings.ShadowOpacity * 255.0f);
 			formAlphaPicker picker = null;
 
 			try
