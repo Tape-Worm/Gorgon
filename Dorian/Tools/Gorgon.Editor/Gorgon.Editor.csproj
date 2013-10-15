@@ -125,12 +125,15 @@
       <DependentUpon>panelEx.cs</DependentUpon>
     </Compile>
     <Compile Include="Controls\TreeNodeDirectory.cs" />
+    <Compile Include="EditorDisplayNameAttribute.cs" />
     <Compile Include="DefaultContent.cs" />
     <Compile Include="Designers\AlphaChannelEditor.cs" />
     <Compile Include="Designers\AlphaChannelTypeConverter.cs" />
     <Compile Include="Designers\PointFConverter.cs" />
     <Compile Include="Designers\RGBAEditor.cs" />
     <Compile Include="Designers\RGBATypeConverter.cs" />
+    <Compile Include="EditorCategoryAttribute.cs" />
+    <Compile Include="EditorDescriptionAttribute.cs" />
     <Compile Include="FileManagement.cs" />
     <Compile Include="formAlphaPicker.cs">
       <SubType>Form</SubType>

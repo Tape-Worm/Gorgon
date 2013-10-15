@@ -2622,6 +2622,9 @@ namespace GorgonLibrary.Editor
 			ContentManagement.ContentPaneUnloadAction = () => treeFiles.Refresh();
 			ContentManagement.ContentEnumerateProperties = hasProperties =>
 			{
+				propertyItem.PropertyValueChanged -= OnPropertyValueChanged;
+				ContentManagement.ContentPropertyChanged = null;
+
 				if (hasProperties)
 				{
 					pageProperties.Enabled = true;
@@ -2638,8 +2641,6 @@ namespace GorgonLibrary.Editor
 				{                
 					tabDocumentManager.SelectedTab = pageItems;
 					pageProperties.Enabled = false;
-					ContentManagement.ContentPropertyChanged = null;
-					propertyItem.PropertyValueChanged -= OnPropertyValueChanged;
 				}
 			};
 			ContentManagement.ContentInitializedAction = control =>

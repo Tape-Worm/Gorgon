@@ -99,17 +99,6 @@ namespace GorgonLibrary.Editor
 			}		
 		}
 
-        /// <summary>
-        /// Property to return whether the content can be exported.
-        /// </summary>
-        public override bool CanExport
-        {
-            get 
-            {
-                return false;
-            }
-        }
-
 		/// <summary>
 		/// Property to return whether the content uses a renderer.
 		/// </summary>

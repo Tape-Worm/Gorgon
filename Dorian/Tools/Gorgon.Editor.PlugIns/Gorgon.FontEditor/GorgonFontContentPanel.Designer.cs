@@ -27,6 +27,12 @@
                     _pattern.Dispose();
                 }
 
+	            if (_editGlyph != null)
+	            {
+		            _editGlyph.Dispose();
+	            }
+
+	            _editGlyph = null;
                 _pattern = null;
                 _disposed = true;
             }
@@ -111,6 +117,7 @@
 			this.panelTextures.Size = new System.Drawing.Size(806, 347);
 			this.panelTextures.TabIndex = 0;
 			this.panelTextures.MouseClick += new System.Windows.Forms.MouseEventHandler(this.GorgonFontContentPanel_MouseClick);
+			this.panelTextures.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.panelTextures_MouseDoubleClick);
 			this.panelTextures.MouseDown += new System.Windows.Forms.MouseEventHandler(this.panelTextures_MouseDown);
 			this.panelTextures.MouseMove += new System.Windows.Forms.MouseEventHandler(this.panelTextures_MouseMove);
 			this.panelTextures.Resize += new System.EventHandler(this.GorgonFontContentPanel_Resize);
@@ -178,12 +185,15 @@
 			// 
 			// buttonEditGlyph
 			// 
+			this.buttonEditGlyph.AutoToolTip = false;
+			this.buttonEditGlyph.CheckOnClick = true;
 			this.buttonEditGlyph.Enabled = false;
 			this.buttonEditGlyph.Image = global::GorgonLibrary.Editor.FontEditorPlugIn.Properties.Resources.edit_16x16;
 			this.buttonEditGlyph.ImageTransparentColor = System.Drawing.Color.Magenta;
 			this.buttonEditGlyph.Name = "buttonEditGlyph";
 			this.buttonEditGlyph.Size = new System.Drawing.Size(81, 22);
-			this.buttonEditGlyph.Text = "Edit Glyph";
+			this.buttonEditGlyph.Text = "&Edit Glyph";
+			this.buttonEditGlyph.Click += new System.EventHandler(this.buttonEditGlyph_Click);
 			// 
 			// buttonGlyphSizeSpace
 			// 

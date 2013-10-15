@@ -478,4 +478,13 @@ The following characters are not allowed:
   <data name="GOREDIT_CONTENT_CANNOT_CREATE_FILE" xml:space="preserve">
     <value>Could not create the content file '{0}'.</value>
   </data>
+  <data name="CATEGORY_DESIGN" xml:space="preserve">
+    <value>Design</value>
+  </data>
+  <data name="PROP_NAME_DESC" xml:space="preserve">
+    <value>Provides a name for the content.  The name should conform to a standard file name.</value>
+  </data>
+  <data name="PROP_NAME_NAME" xml:space="preserve">
+    <value>Name</value>
+  </data>
 </root>

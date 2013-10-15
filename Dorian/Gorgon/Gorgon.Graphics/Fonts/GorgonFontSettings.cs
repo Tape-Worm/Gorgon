@@ -141,7 +141,6 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		/// <remarks>Use this decrease or increase the number of textures used for a font.  If the number of glyphs cannot fit onto a single texture, a new texture will be created to 
 		/// store the remaining glyphs.  This value will control the width and height of the textures created.
-		/// <para>To retrieve the count of textures used, call the <c>Count</c> property on the <see cref="P:GorgonLibrary.Graphics.GorgonFont.Textures">Textures</see> property.</para>
 		/// <para>The default size is 256x256, the minimum size is 16x16 and the maximum size depends on the maximum texture size that's supported by the feature level.</para>
 		/// </remarks>
 		public Size TextureSize
@@ -210,13 +209,13 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
-		/// Property to set or return a list of colors to use for filling the glyph with a gradient fill.
+		/// Property to set or return the color to use for the glyphs when rendering to the font textures.
 		/// </summary>
 		/// <remarks>The default value is a single color of White (A=1.0f, R=1.0f, G=1.0f, B=1.0f).</remarks>
-		public IList<GorgonColor> BaseColors
+		public GorgonColor BaseColor
 		{
 			get;
-			private set;
+			set;
 		}
 
 		/// <summary>
@@ -245,8 +244,10 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Property to set or return a brush to use for special effects on the font.
 		/// </summary>
-		/// <remarks>The default value is NULL (Nothing in VB.Net).</remarks>
-		public Brush Brush
+		/// <remarks>This allows the font generation code to use special effects for the glyphs in the font.  For example, using a textured 
+		/// brush, glyphs could be painted with a texture.  Or, using a gradient brush, glyphs could be painted using linear or path based gradients.
+		/// <para>The default value is NULL (Nothing in VB.Net).</para></remarks>
+		public GorgonGlyphBrush Brush
 		{
 			get;
 			set;
@@ -308,6 +309,28 @@ namespace GorgonLibrary.Graphics
 			get;
 			set;
 		}
+
+		/// <summary>
+		/// Property to return custom kerning pairs for glyphs in the font.
+		/// </summary>
+		/// <remarks>
+		/// Use this to define customized kerning pairs for a font.  Fonts with the kerning pairs previously defined will use the kerning pairs present in this 
+		/// list instead.
+		/// </remarks>
+		public Dictionary<GorgonKerningPair, int> KerningPairs
+		{
+			get;
+			private set;
+		}
+
+		/// <summary>
+		/// Property to return custom glyphs for the font.
+		/// </summary>
+		public List<GorgonGlyph> Glyphs
+		{
+			get;
+			private set;
+		}
 		#endregion
 
 		#region Methods.
@@ -335,6 +358,9 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		public GorgonFontSettings()
 		{
+			Glyphs = new List<GorgonGlyph>();
+			KerningPairs = new Dictionary<GorgonKerningPair, int>();
+			
 			UseKerningPairs = true;
 			Characters = Enumerable.Range(32, 224).
 						 Select(Convert.ToChar).
@@ -343,10 +369,7 @@ namespace GorgonLibrary.Graphics
 			FontHeightMode = FontHeightMode.Points;
 			OutlineColor = Color.Black;
 			OutlineSize = 0;
-			BaseColors = new List<GorgonColor>
-				{
-					new GorgonColor(1.0f, 1.0f, 1.0f, 1.0f)
-				};
+			BaseColor = GorgonColor.White;
 			FontStyle = FontStyle.Regular;
 			DefaultCharacter = ' ';
 			AntiAliasingMode = FontAntiAliasMode.AntiAliasHQ;

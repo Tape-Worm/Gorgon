@@ -35,7 +35,7 @@ namespace GorgonLibrary.Collections
 	/// </summary>
 	/// <typeparam name="T">Type of object, must implement <see cref="GorgonLibrary.INamedObject">INamedObject</see>.</typeparam>
 	public abstract class GorgonBaseNamedObjectDictionary<T>
-		: IDictionary<string, T>, IEnumerable<T>
+		: IDictionary<string, T>, IEnumerable<T>, IReadOnlyDictionary<string, T>
 		where T : INamedObject
 	{
 		#region Variables.
@@ -511,6 +511,61 @@ namespace GorgonLibrary.Collections
 		{
 		    return _list.GetEnumerator();
 		}
+		#endregion
+
+		#region IReadOnlyDictionary<string,T> Members
+		#region Properties.
+		/// <summary>
+		/// Gets an <see cref="T:System.Collections.Generic.ICollection`1" /> containing the keys of the <see cref="T:System.Collections.Generic.IDictionary`2" />.
+		/// </summary>
+		/// <returns>An <see cref="T:System.Collections.Generic.ICollection`1" /> containing the keys of the object that implements <see cref="T:System.Collections.Generic.IDictionary`2" />.</returns>
+		IEnumerable<string> IReadOnlyDictionary<string, T>.Keys
+		{
+			get
+			{
+				return Keys;
+			}
+		}
+
+		/// <summary>
+		/// Gets an <see cref="T:System.Collections.Generic.ICollection`1" /> containing the values in the <see cref="T:System.Collections.Generic.IDictionary`2" />.
+		/// </summary>
+		/// <returns>An <see cref="T:System.Collections.Generic.ICollection`1" /> containing the values in the object that implements <see cref="T:System.Collections.Generic.IDictionary`2" />.</returns>
+		IEnumerable<T> IReadOnlyDictionary<string, T>.Values
+		{
+			get
+			{
+				return Values;
+			}
+		}
+
+		/// <summary>
+		/// Gets or sets the element with the specified key.
+		/// </summary>
+		/// <param name="key">The key.</param>
+		/// <returns></returns>
+		T IReadOnlyDictionary<string, T>.this[string key]
+		{
+			get
+			{
+				return GetItem(key);
+			}
+		}
+		#endregion
+
+		#region Methods.
+		/// <summary>
+		/// Determines whether the <see cref="T:System.Collections.Generic.IDictionary`2" /> contains an element with the specified key.
+		/// </summary>
+		/// <param name="key">The key to locate in the <see cref="T:System.Collections.Generic.IDictionary`2" />.</param>
+		/// <returns>
+		/// true if the <see cref="T:System.Collections.Generic.IDictionary`2" /> contains an element with the key; otherwise, false.
+		/// </returns>
+		bool IReadOnlyDictionary<string, T>.ContainsKey(string key)
+		{
+			return Contains(key);
+		}
+		#endregion
 		#endregion
 	}
 }

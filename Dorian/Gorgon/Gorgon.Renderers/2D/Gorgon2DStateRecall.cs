@@ -370,7 +370,10 @@ namespace GorgonLibrary.Renderers
 				textureView = renderable.Texture;
 			}
 
-			if (textureView != _resource)
+			// Ensure that the stored resource is up to date.  If it's been changed outside of the
+			// state management, then we can have issues (text does this).
+			if ((textureView != _resource)
+				|| (_resource != Gorgon2D.PixelShader.Resources[0]))
 			{
 				result |= StateChange.Texture;
 			}
