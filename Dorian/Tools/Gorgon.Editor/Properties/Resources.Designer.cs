@@ -81,6 +81,15 @@ namespace GorgonLibrary.Editor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Design.
+        /// </summary>
+        internal static string CATEGORY_DESIGN {
+            get {
+                return ResourceManager.GetString("CATEGORY_DESIGN", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
         internal static System.Drawing.Bitmap Check_Disabled {
@@ -1080,6 +1089,24 @@ namespace GorgonLibrary.Editor.Properties {
             get {
                 object obj = ResourceManager.GetObject("project_node_16x16", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Provides a name for the content.  The name should conform to a standard file name..
+        /// </summary>
+        internal static string PROP_NAME_DESC {
+            get {
+                return ResourceManager.GetString("PROP_NAME_DESC", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Name.
+        /// </summary>
+        internal static string PROP_NAME_NAME {
+            get {
+                return ResourceManager.GetString("PROP_NAME_NAME", resourceCulture);
             }
         }
         

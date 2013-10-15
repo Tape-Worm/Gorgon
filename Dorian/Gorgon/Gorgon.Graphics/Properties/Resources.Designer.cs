@@ -452,15 +452,6 @@ namespace GorgonLibrary.Graphics.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The glyph for character &apos;{0}&apos; already exists in this collection..
-        /// </summary>
-        internal static string GORGFX_FONT_GLYPH_EXISTS {
-            get {
-                return ResourceManager.GetString("GORGFX_FONT_GLYPH_EXISTS", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to The glyph for character &apos;{0}&apos; does not have a texture assigned to it..
         /// </summary>
         internal static string GORGFX_FONT_GLYPH_HAS_NO_TEXTURE {
@@ -479,16 +470,7 @@ namespace GorgonLibrary.Graphics.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The glyph for character &apos;{0}&apos; does not exist in this collection..
-        /// </summary>
-        internal static string GORGFX_FONT_GLYPH_NOT_FOUND {
-            get {
-                return ResourceManager.GetString("GORGFX_FONT_GLYPH_NOT_FOUND", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The texture &apos;{0}&apos; was not found for the glyph &apos;{1}&apos;..
+        ///   Looks up a localized string similar to The texture &apos;{0}&apos; was not found..
         /// </summary>
         internal static string GORGFX_FONT_GLYPH_TEXTURE_NOT_FOUND {
             get {

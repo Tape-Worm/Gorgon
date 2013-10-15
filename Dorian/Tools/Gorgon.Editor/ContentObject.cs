@@ -136,15 +136,6 @@ namespace GorgonLibrary.Editor
             get;
         }
 
-        /// <summary>
-        /// Property to return whether the content can be exported.
-        /// </summary>
-        [Browsable(false)]
-        public abstract bool CanExport
-        {
-            get;
-        }
-
 		/// <summary>
 		/// Property to return the type of content.
 		/// </summary>
@@ -178,7 +169,10 @@ namespace GorgonLibrary.Editor
 		/// <summary>
 		/// Property to return the name of the content object.
 		/// </summary>
-        [Browsable(true), Category("Design"), Description("Provides a name for the content.  The name should conform to a standard file name.")]
+        [Browsable(true),
+		EditorDisplayName(typeof(Resources), "PROP_NAME_NAME"),
+		EditorCategory(typeof(Resources), "CATEGORY_DESIGN"), 
+		EditorDescription(typeof(Resources), "PROP_NAME_DESC")]
 		public string Name
 		{
 			get

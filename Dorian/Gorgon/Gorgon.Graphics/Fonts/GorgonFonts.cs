@@ -30,7 +30,6 @@ using System.IO;
 using System.Linq;
 using GorgonLibrary.Graphics.Properties;
 using GorgonLibrary.IO;
-using SlimMath;
 
 namespace GorgonLibrary.Graphics
 {
@@ -85,7 +84,7 @@ namespace GorgonLibrary.Graphics
 			                TextureSize = new Size(128, 128)
 			            });
 
-			        _default.Update(_default.Settings);
+			        _default.GenerateFont(_default.Settings);
 			    }
 
 			    return _default;
@@ -108,220 +107,17 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
-		/// Function to retrieve an existing font (if it was not generated interally) texture for a texture.
-		/// </summary>
-		/// <param name="textureName">Name of the texture to look up.</param>
-		/// <returns>The texture if found, NULL if not.</returns>
-		private GorgonTexture2D GetFontTexture(string textureName)
-		{
-			GorgonTexture2D result = null;
-
-			// Only look at textures that weren't created by Gorgon internally and aren't font textures.
-			if ((!textureName.StartsWith("GorgonFont.", StringComparison.OrdinalIgnoreCase))
-				|| (textureName.IndexOf(".InternalTexture_", StringComparison.OrdinalIgnoreCase) == -1))
-			{
-				result = (from texture in _graphics.GetTrackedObjectsOfType<GorgonTexture2D>()
-						  where (string.Equals(texture.Name, textureName, StringComparison.OrdinalIgnoreCase))
-						  select texture).FirstOrDefault();
-			}
-						
-			return result;
-		}
-
-		/// <summary>
-		/// Function to load the font from a stream.
-		/// </summary>
-		/// <param name="fontName">Name of the font object.</param>
-		/// <param name="stream">Stream to load from.</param>
-		/// <returns>The font loaded from the stream.</returns>
-		private GorgonFont LoadFont(string fontName, Stream stream)
-		{
-			var settings = new GorgonFontSettings();
-			GorgonFont font;
-			FileStream fileStream = null;
-            float fontHeight;
-			float fontAscent;
-            float fontDescent;
-            float fontLineHeight;
-
-            // Output the font in chunked format.
-            using (var chunk = new GorgonChunkReader(stream))
-            {
-                chunk.Begin(GorgonFont.FileHeader);
-
-                // Write font information.
-                chunk.Begin("FONTDATA");
-                settings.FontFamilyName = chunk.ReadString();
-                settings.Size = chunk.ReadFloat();
-                settings.FontHeightMode = chunk.Read<FontHeightMode>();
-                settings.FontStyle = chunk.Read<FontStyle>();
-                settings.DefaultCharacter = chunk.ReadChar();
-                settings.Characters = chunk.ReadString();
-                fontHeight = chunk.ReadFloat();
-                fontLineHeight = chunk.ReadFloat();
-                fontAscent = chunk.ReadFloat();
-                fontDescent = chunk.ReadFloat();
-                chunk.End();
-
-                // Write rendering information.
-                chunk.Begin("RNDRDATA");
-                settings.AntiAliasingMode = chunk.Read<FontAntiAliasMode>();
-				settings.BaseColors.Clear();
-                var colorCount = chunk.ReadInt32();
-
-                for (int i = 0; i < colorCount; i++)
-                {
-                    settings.BaseColors.Add(chunk.Read<GorgonColor>());
-                }
-
-				if (settings.BaseColors.Count < 1)
-				{
-					settings.BaseColors.Add(GorgonColor.White);
-				}
-                settings.OutlineColor = chunk.Read<GorgonColor>();
-                settings.OutlineSize = chunk.ReadInt32();
-                settings.TextContrast = chunk.ReadInt32();
-                chunk.End();
-
-                // Create the font object.
-                font = new GorgonFont(_graphics, fontName, settings);                
-
-                // Write texture information.
-                chunk.Begin("TXTRDATA");
-                settings.PackingSpacing = chunk.ReadInt32();
-                settings.TextureSize = chunk.ReadSize();
-                int textureCount = chunk.ReadInt32();
-                bool isExternal = false;
-
-                if (chunk.HasChunk("TXTREXTL"))
-                {
-                    isExternal = true;
-                    chunk.Begin("TXTREXTL");
-
-					fileStream = stream as FileStream;
-					if (fileStream == null)
-					{
-						throw new ArgumentException(Resources.GORGFX_FONT_MUST_BE_FILE_STREAM, "stream");
-					}
-                }
-                else
-                {
-                    chunk.Begin("TXTRINTL");
-                }
-
-                // Load in the textures.
-                for (int i = 0; i < textureCount; i++)
-                {
-	                string textureName = chunk.ReadString();
-	                bool userTexture = chunk.ReadBoolean();
-					
-                    GorgonTexture2D texture = GetFontTexture(textureName);
-
-                    // Add to the font.
-	                if (userTexture)
-	                {
-		                if (texture != null)
-		                {
-			                font.Textures.Add(texture);
-		                }
-
-		                continue;
-	                }
-
-	                if (!isExternal)
-                    {
-                        int textureSize = chunk.ReadInt32();
-
-	                    if (textureSize == 0)
-	                    {
-		                    continue;
-	                    }
-
-                        texture = _graphics.Textures.FromStream<GorgonTexture2D>(textureName, stream, textureSize, new GorgonCodecPNG());
-                        // Don't track these textures.
-                        _graphics.RemoveTrackedObject(texture);
-                        font.Textures.AddBind(texture);
-                    }
-                    else
-                    {
-                        // Get the path to the texture (must be local to the font file).
-                        string texturePath = Path.GetDirectoryName(fileStream.Name).FormatDirectory(Path.DirectorySeparatorChar) + chunk.ReadString();
-
-	                    if ((string.IsNullOrWhiteSpace(texturePath)) || (!File.Exists(texturePath)))
-	                    {
-		                    continue;
-	                    }
-
-	                    texture = _graphics.Textures.FromFile<GorgonTexture2D>(textureName,
-	                                                                           texturePath,
-	                                                                           new GorgonCodecPNG());
-	                    _graphics.RemoveTrackedObject(texture);
-	                    font.Textures.AddBind(texture);
-                    }
-                }
-                chunk.End();
-
-                // Get glyph information.
-                chunk.Begin("GLYFDATA");
-                int groupCount = chunk.ReadInt32();
-
-                for (int i = 0; i < groupCount; i++)
-                {
-                    string textureName = chunk.ReadString();
-                    int glyphCount = chunk.ReadInt32();
-
-                    for (int j = 0; j < glyphCount; j++)
-                    {
-	                    char glyphChar = chunk.ReadChar();
-
-						// If the texture does not exist (hasn't been loaded or something), then do now allow the glyph to be rendered.
-	                    if (!font.Textures.Contains(textureName))
-	                    {
-		                    throw new IOException(string.Format(Resources.GORGFX_FONT_GLYPH_TEXTURE_NOT_FOUND, textureName, glyphChar));
-	                    }
-
-	                    var glyph = new GorgonGlyph(glyphChar,
-	                                                font.Textures[textureName],
-	                                                chunk.ReadRectangle(),
-	                                                chunk.Read<Vector2>(),
-	                                                chunk.Read<Vector3>());
-
-	                    font.Glyphs.Add(glyph);
-                    }
-                }
-                chunk.End();
-
-                // Read optional kerning information.
-                if (chunk.HasChunk("KERNDATA"))
-                {
-                    chunk.Begin("KERNDATA");
-                    int kernCount = chunk.ReadInt32();
-                    for (int i = 0; i < kernCount; i++)
-                    {
-                        var pair = new GorgonKerningPair(chunk.ReadChar(), chunk.ReadChar());
-                        font.KerningPairs.Add(pair, chunk.ReadInt32());
-                    }
-                    chunk.End();
-                }
-            }
-            
-			font.FontHeight = fontHeight;
-			font.LineHeight = fontLineHeight;
-			font.Ascent = fontAscent;
-			font.Descent = fontDescent;
-
-			_graphics.AddTrackedObject(font);
-
-			return font;
-		}
-
-		/// <summary>
 		/// Function to read a font from a stream.
 		/// </summary>
 		/// <param name="name">Name of the font object.</param>
 		/// <param name="stream">Stream to read from.</param>
+		/// <param name="missingTextureFunction">[Optional] A function that is called if a required user defined texture has not been loaded for the font.</param>
 		/// <returns>The font in the stream.</returns>
-		/// <remarks>Fonts may only be created on the immediate context.</remarks>
+		/// <remarks>
+		/// The fonts will not store user defined glyph textures, in order to facilitate the loading of the textures the users must either load the texture 
+		/// before loading the font or specify a callback method in the <paramref name="missingTextureFunction"/> parameter.  This function will pass a name 
+		/// for the texture and will expect a texture to be returned.  If NULL is returned, then an exception will be raised.
+		/// <para>Fonts may only be created on the immediate context.</para></remarks>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="stream"/> or the <paramref name="name"/> parameters are NULL.</exception>
 		/// <exception cref="System.ArgumentException">Thrown if the name parameter is an empty string.
 		/// <para>-or-</para>
@@ -330,7 +126,7 @@ namespace GorgonLibrary.Graphics
 		/// <para>-or-</para>
 		/// <para>Thrown if the graphics context is deferred.</para>
 		/// </exception>
-		public GorgonFont FromStream(string name, Stream stream)
+		public GorgonFont FromStream(string name, Stream stream, Func<string, GorgonTexture2D> missingTextureFunction = null)
 		{
             if (string.IsNullOrWhiteSpace(name))
             {
@@ -346,8 +142,18 @@ namespace GorgonLibrary.Graphics
             {
 				throw new ArgumentException(Resources.GORGFX_PARAMETER_MUST_NOT_BE_EMPTY, "stream");
             }
-            
-            return LoadFont(name, stream);
+
+			var font = new GorgonFont(_graphics, name, new GorgonFontSettings());
+
+			using (var chunk = new GorgonChunkReader(stream))
+			{
+				chunk.Begin(GorgonFont.FileHeader);
+				font.ReadFont(chunk, missingTextureFunction);
+			}
+
+			_graphics.AddTrackedObject(font);
+
+            return font;
 		}
 
         /// <summary>
@@ -355,9 +161,14 @@ namespace GorgonLibrary.Graphics
         /// </summary>
         /// <param name="name">Name of the font object.</param>
         /// <param name="fontData">Byte array containing the font data.</param>
+		/// <param name="missingTextureFunction">[Optional] A function that is called if a required user defined texture has not been loaded for the font.</param>
         /// <returns>The font in the array.</returns>
-		/// <remarks>Fonts may only be created on the immediate context.</remarks>
-        /// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="fontData"/> or the <paramref name="name"/> parameters are NULL.</exception>
+		/// <remarks>
+		/// The fonts will not store user defined glyph textures, in order to facilitate the loading of the textures the users must either load the texture 
+		/// before loading the font or specify a callback method in the <paramref name="missingTextureFunction"/> parameter.  This function will pass a name 
+		/// for the texture and will expect a texture to be returned.  If NULL is returned, then an exception will be raised.
+		/// <para>Fonts may only be created on the immediate context.</para></remarks>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="fontData"/> or the <paramref name="name"/> parameters are NULL.</exception>
         /// <exception cref="System.ArgumentException">Thrown if the name parameter is an empty string.
         /// <para>-or-</para>
         /// <para>Thrown if the font uses external textures.</para>
@@ -368,11 +179,11 @@ namespace GorgonLibrary.Graphics
 		/// <para>-or-</para>
 		/// <para>Thrown if the graphics context is deferred.</para>
 		/// </exception>
-        public GorgonFont FromMemory(string name, byte[] fontData)
+        public GorgonFont FromMemory(string name, byte[] fontData, Func<string, GorgonTexture2D> missingTextureFunction = null)
         {
             using (var memoryStream = new GorgonDataStream(fontData))
             {
-                return FromStream(name, memoryStream);
+                return FromStream(name, memoryStream, missingTextureFunction);
             }
         }
 
@@ -381,8 +192,13 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		/// <param name="name">Name of the font object.</param>
 		/// <param name="fileName">Path and filename of the font to load.</param>
-		/// <remarks>Fonts may only be created on the immediate context.</remarks>
-		/// <returns>The font in the stream.</returns>
+		/// <param name="missingTextureFunction">[Optional] A function that is called if a required user defined texture has not been loaded for the font.</param>
+		/// <remarks>
+		/// The fonts will not store user defined glyph textures, in order to facilitate the loading of the textures the users must either load the texture 
+		/// before loading the font or specify a callback method in the <paramref name="missingTextureFunction"/> parameter.  This function will pass a name 
+		/// for the texture and will expect a texture to be returned.  If NULL is returned, then an exception will be raised.
+		/// <para>Fonts may only be created on the immediate context.</para></remarks>
+		/// <returns>The font in the file.</returns>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="fileName"/> or the <paramref name="name"/> parameters are NULL.</exception>
 		/// <exception cref="System.ArgumentException">Thrown if the fileName or name parameters are empty strings.
 		/// <para>-or-</para>
@@ -391,7 +207,7 @@ namespace GorgonLibrary.Graphics
 		/// <para>-or-</para>
 		/// <para>Thrown if the graphics context is deferred.</para>
 		/// </exception>
-		public GorgonFont FromFile(string name, string fileName)
+		public GorgonFont FromFile(string name, string fileName, Func<string, GorgonTexture2D> missingTextureFunction = null)
 		{
 			FileStream stream = null;
 
@@ -408,7 +224,7 @@ namespace GorgonLibrary.Graphics
             try
 			{
 				stream = File.Open(fileName, FileMode.Open, FileAccess.Read, FileShare.Read);
-				return LoadFont(name, stream);
+				return FromStream(name, stream, missingTextureFunction);
 			}
 			finally
 			{
@@ -592,7 +408,7 @@ namespace GorgonLibrary.Graphics
 
 			var result = new GorgonFont(_graphics, fontName, settings);
 
-			result.Update(settings);
+			result.GenerateFont(settings);
 
 			_graphics.AddTrackedObject(result);
 

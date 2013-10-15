@@ -165,54 +165,82 @@ namespace GorgonLibrary.Editor
 		/// </summary>
 		private void GetAttributes()
 		{
-			var Attributes = _descriptor.Attributes.Cast<Attribute>();
+			DefaultValueAttribute defaultValue = null;
+			ReadOnlyAttribute readOnly = null;
+			RefreshPropertiesAttribute refresh = null;
+			DescriptionAttribute description = null;
+			CategoryAttribute category = null;
+			EditorAttribute editor = null;
+			TypeConverterAttribute typeConverter = null;
+			DisplayNameAttribute displayName = null;
 
-			var defaultValue = (from attribute in Attributes
-							   where attribute is DefaultValueAttribute
-							   select attribute as DefaultValueAttribute).SingleOrDefault();
+			foreach (Attribute attribute in _descriptor.Attributes.Cast<Attribute>())
+			{
+				if (defaultValue == null)
+				{
+					defaultValue = attribute as DefaultValueAttribute;
+				}
 
-			var readOnly = (from attribute in Attributes
-							where attribute is ReadOnlyAttribute
-							select attribute as ReadOnlyAttribute).SingleOrDefault();
+				if (readOnly == null)
+				{
+					readOnly = attribute as ReadOnlyAttribute;
+				}
 
-			var refresh = (from attribute in Attributes
-							where attribute is RefreshPropertiesAttribute
-							select attribute as RefreshPropertiesAttribute).SingleOrDefault();
+				if (refresh == null)
+				{
+					refresh = attribute as RefreshPropertiesAttribute;
+				}
 
-			var description = (from attribute in Attributes
-							where attribute is DescriptionAttribute
-							select attribute as DescriptionAttribute).SingleOrDefault();
+				if (description == null)
+				{
+					description = attribute as DescriptionAttribute;
+				}
 
-			var category = (from attribute in Attributes
-							   where attribute is CategoryAttribute
-							   select attribute as CategoryAttribute).SingleOrDefault();
+				if (category == null)
+				{
+					category = attribute as CategoryAttribute;
+				}
 
-			var editor = (from attribute in Attributes
-							   where attribute is EditorAttribute
-							   select attribute as EditorAttribute).SingleOrDefault();
+				if (editor == null)
+				{
+					editor = attribute as EditorAttribute;
+				}
 
-			var typeconverter = (from attribute in Attributes
-								 where attribute is TypeConverterAttribute
-								select attribute as TypeConverterAttribute).SingleOrDefault();
+				if (typeConverter == null)
+				{
+					typeConverter = attribute as TypeConverterAttribute;
+				}
 
-			var displayname = (from attribute in Attributes
-								 where attribute is DisplayNameAttribute
-							   select attribute as DisplayNameAttribute).SingleOrDefault();
-			
+				if (displayName == null)
+				{
+					displayName = attribute as DisplayNameAttribute;
+				}
+			}
+
 			if (defaultValue != null)
+			{
 				DefaultValue = defaultValue.Value;
+			}
 
 			if (readOnly != null)
+			{
 				IsReadOnly = readOnly.IsReadOnly;
+			}
 
 			if (refresh != null)
+			{
 				RefreshProperties = refresh.RefreshProperties;
+			}
 
 			if (description != null)
+			{
 				Description = description.Description;
+			}
 
 			if (category != null)
+			{
 				Category = category.Category;
+			}
 
 			if (editor != null)
 			{
@@ -220,11 +248,15 @@ namespace GorgonLibrary.Editor
 				Editor = editor.EditorTypeName;
 			}
 
-			if (displayname != null)
-				DisplayName = displayname.DisplayName;
+			if (displayName != null)
+			{
+				DisplayName = displayName.DisplayName;
+			}
 
-			if (typeconverter != null)
-				Converter = typeconverter.ConverterTypeName;
+			if (typeConverter != null)
+			{
+				Converter = typeConverter.ConverterTypeName;
+			}
 		}
 
 		/// <summary>
@@ -233,31 +265,46 @@ namespace GorgonLibrary.Editor
 		/// <returns>A list of attributes.</returns>
 		public Attribute[] RetrieveAttributes()
 		{
-			var attributes = new List<Attribute>();
+			var attributes = new List<Attribute>
+			                 {
+				                 new BrowsableAttribute(true),
+				                 new ReadOnlyAttribute(IsReadOnly)
+			                 };
 
-			attributes.Add(new BrowsableAttribute(true));
-			attributes.Add(new ReadOnlyAttribute(IsReadOnly));
-			
 			if (RefreshProperties != RefreshProperties.None)
+			{
 				attributes.Add(new RefreshPropertiesAttribute(RefreshProperties));
+			}
 
 			if (HasDefaultValue)
+			{
 				attributes.Add(new DefaultValueAttribute(DefaultValue));
+			}
 
 			if (!string.IsNullOrEmpty(Category))
+			{
 				attributes.Add(new CategoryAttribute(Category));
+			}
 
 			if (!string.IsNullOrEmpty(Description))
+			{
 				attributes.Add(new DescriptionAttribute(Description));
+			}
 
 			if (!string.IsNullOrEmpty(Editor))
+			{
 				attributes.Add(new EditorAttribute(Editor, _editorBase));
+			}
 
 			if (!string.IsNullOrEmpty(Converter))
+			{
 				attributes.Add(new TypeConverterAttribute(Converter));
+			}
 
 			if (!string.IsNullOrEmpty(DisplayName))
+			{
 				attributes.Add(new DisplayNameAttribute(DisplayName));
+			}
 
 			return attributes.ToArray();
 		}
@@ -279,7 +326,9 @@ namespace GorgonLibrary.Editor
 		public void SetValue(object value)
 		{
 			if (IsReadOnly)
+			{
 				return;
+			}
 
 			_descriptor.SetValue(_owner, value);
 		}

@@ -175,4 +175,88 @@
   <data name="GORFNT_ANTIALIAS_STANDARD" xml:space="preserve">
     <value>Anti-alias</value>
   </data>
+  <data name="CATEGORY_APPEARANCE" xml:space="preserve">
+    <value>Appearance</value>
+  </data>
+  <data name="CATEGORY_DESIGN" xml:space="preserve">
+    <value>Design</value>
+  </data>
+  <data name="PROP_ANTIALIASMODE_DESC" xml:space="preserve">
+    <value>Sets the type of anti-aliasing to use for the font.  High Quality (HQ) produces the best output, but doesn't get applied to fonts at certain sizes.  Non HQ, will attempt to anti-alias regardless, but the result will be worse.</value>
+  </data>
+  <data name="PROP_ANTIALIASMODE_NAME" xml:space="preserve">
+    <value>Anti Aliasing</value>
+  </data>
+  <data name="PROP_BASECOLOR_DESC" xml:space="preserve">
+    <value>Sets a base color for the glyphs on the texture.</value>
+  </data>
+  <data name="PROP_BASECOLOR_NAME" xml:space="preserve">
+    <value>Base Color</value>
+  </data>
+  <data name="PROP_CHARACTERS_DESC" xml:space="preserve">
+    <value>Sets the list of characters to convert into glyphs.</value>
+  </data>
+  <data name="PROP_CHARACTERS_NAME" xml:space="preserve">
+    <value>Characters</value>
+  </data>
+  <data name="PROP_FONTFAMILY_DESC" xml:space="preserve">
+    <value>The font family to use for the font.</value>
+  </data>
+  <data name="PROP_FONTFAMILY_NAME" xml:space="preserve">
+    <value>Family Name</value>
+  </data>
+  <data name="PROP_FONTSIZE_DESC" xml:space="preserve">
+    <value>The size of the font.  This value may be in Points or in Pixels depending on the font height mode.</value>
+  </data>
+  <data name="PROP_FONTSIZE_NAME" xml:space="preserve">
+    <value>Font Size</value>
+  </data>
+  <data name="PROP_HEIGHTMODE_DESC" xml:space="preserve">
+    <value>Sets whether to use points or pixels to determine the size of the font.</value>
+  </data>
+  <data name="PROP_HEIGHTMODE_NAME" xml:space="preserve">
+    <value>Height Mode</value>
+  </data>
+  <data name="PROP_OUTLINECOLOR_DESC" xml:space="preserve">
+    <value>Sets the outline color for the glyphs with outlines.  Note that the outline size must be greater than 0 before it is applied to the glyph.</value>
+  </data>
+  <data name="PROP_OUTLINECOLOR_NAME" xml:space="preserve">
+    <value>Outline Color</value>
+  </data>
+  <data name="PROP_OUTLINESIZE_DESC" xml:space="preserve">
+    <value>Sets the size, in pixels, of an outline to apply to each glyph.  Please note that the outline color must have an alpha greater than 0 before the outline is applied.</value>
+  </data>
+  <data name="PROP_OUTLINESIZE_NAME" xml:space="preserve">
+    <value>Outline Size</value>
+  </data>
+  <data name="PROP_PACKINGSIZE_DESC" xml:space="preserve">
+    <value>Specifies the number of pixels between each glyph on the texture.</value>
+  </data>
+  <data name="PROP_PACKINGSIZE_NAME" xml:space="preserve">
+    <value>Packing Size</value>
+  </data>
+  <data name="PROP_STYLE_DESC" xml:space="preserve">
+    <value>Sets whether the font should be bolded, underlined, italicized, or strike through.</value>
+  </data>
+  <data name="PROP_STYLE_NAME" xml:space="preserve">
+    <value>Style</value>
+  </data>
+  <data name="PROP_TEXTCONTRAST_DESC" xml:space="preserve">
+    <value>Sets the contrast for anti-aliased glyphs.</value>
+  </data>
+  <data name="PROP_TEXTCONTRAST_NAME" xml:space="preserve">
+    <value>Text Contrast</value>
+  </data>
+  <data name="PROP_TEXTURESIZE_DESC" xml:space="preserve">
+    <value>The size of the textures used to hold the font glyphs.</value>
+  </data>
+  <data name="PROP_TEXTURESIZE_NAME" xml:space="preserve">
+    <value>Texture Size</value>
+  </data>
+  <data name="GORFNT_FAMILY_NOT_FOUND" xml:space="preserve">
+    <value>The font family '{0}' was not found.</value>
+  </data>
+  <data name="stop_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\stop_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
 </root>

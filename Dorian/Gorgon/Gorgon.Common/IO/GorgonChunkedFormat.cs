@@ -282,7 +282,7 @@ namespace GorgonLibrary.IO
         /// <param name="byteCount">Number of bytes in the stream to skip.</param>
         public void SkipBytes(long byteCount)
         {
-            if (ChunkAccessMode == ChunkAccessMode.Write)
+            if (ChunkAccessMode == ChunkAccessMode.Read)
             {
                 Reader.BaseStream.Seek(byteCount, SeekOrigin.Current);
             }

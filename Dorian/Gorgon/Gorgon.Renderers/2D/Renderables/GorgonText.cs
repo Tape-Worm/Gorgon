@@ -429,7 +429,7 @@ namespace GorgonLibrary.Renderers
 		/// </summary>
 		private void UpdateText()
 		{
-			if ((_text.Length == 0) || (_font == null) || (_font.Glyphs.Count == 0) || (_font.Textures.Count == 0))
+			if ((_text.Length == 0) || (_font == null) || (_font.Glyphs.Count == 0))
 			{
 				_vertexCount = 0;
 			    if (_vertices == null)

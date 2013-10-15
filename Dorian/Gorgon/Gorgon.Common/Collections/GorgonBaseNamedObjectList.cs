@@ -35,7 +35,7 @@ namespace GorgonLibrary.Collections
 	/// </summary>
 	/// <typeparam name="T">Type of object, must implement <see cref="GorgonLibrary.INamedObject">INamedObject</see>.</typeparam>
 	public abstract class GorgonBaseNamedObjectList<T>
-		: IList<T>
+		: IList<T>, IReadOnlyList<T>
 		where T : INamedObject
 	{
 		#region Variables.
@@ -485,6 +485,19 @@ namespace GorgonLibrary.Collections
 		System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
 		{
 			return ((System.Collections.IEnumerable)_list).GetEnumerator();
+		}
+		#endregion
+
+		#region IReadOnlyList<T> Members
+		/// <summary>
+		/// Gets or sets the element at the specified index.
+		/// </summary>
+		T IReadOnlyList<T>.this[int index]
+		{
+			get
+			{
+				return GetItem(index);
+			}
 		}
 		#endregion
 	}

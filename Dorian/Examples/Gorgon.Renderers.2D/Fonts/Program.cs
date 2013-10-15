@@ -28,6 +28,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -99,9 +100,9 @@ namespace Fonts
 		/// <returns>TRUE to continue handling idle time, FALSE to stop.</returns>
 		private static bool Idle()
 		{
-			_renderer.Clear(Color.Ivory);
+			_renderer.Clear(Color.Blue);
 
-			_renderer.Drawing.DrawString(_font, "Test the font.\n\t\t\tBut this won't work will it?", new Vector2(0, 10), Color.Black);
+			_renderer.Drawing.DrawString(_font, "Test the font.\n\t\t\tBut this won't work will it?", new Vector2(0, 10), Color.White);
 
 			_renderer.Render();
 
@@ -113,6 +114,59 @@ namespace Fonts
 		/// </summary>
 		private static void Initialize()
 		{
+			var pathBrush = new GorgonGlyphPathGradientBrush
+			                {
+				                SurroundColors = {
+					                                 Color.Red,
+					                                 Color.Green,
+					                                 Color.Blue,
+					                                 Color.Yellow
+				                                 },
+				                CenterColor = Color.White,
+								Points =
+								{
+									new Vector2(0, 8),
+									new Vector2(8, 0),
+									new Vector2(16, 8),
+									new Vector2(8, 16),
+								},
+								CenterPoint = new Vector2(8, 8),
+								InterpolationColors =
+								{
+									Color.Purple,
+									Color.Cyan,
+									Color.Firebrick
+								},
+								InterpolationWeights =
+								{
+									0,
+									0.5f,
+									1.0f
+								},
+				                WrapMode = WrapMode.TileFlipXY
+			                };
+
+			var linBrush = new GorgonGlyphLinearGradientBrush
+			               {
+							   Angle = 45.0f,
+							   GradientRegion = new RectangleF(0, 0, 16, 16),
+							   StartColor = Color.Purple,
+							   EndColor = Color.Yellow
+			               };
+
+			var textBrush = new GorgonGlyphTextureBrush(Image.FromFile(GetResourcePath(@"Images\BallDemo.png")))
+			                {
+				                TextureRegion = new Rectangle(64, 0, 64, 64),
+								WrapMode = WrapMode.Tile
+			                };
+
+			var hatchBrush = new GorgonGlyphHatchBrush
+			                 {
+								 HatchStyle = HatchStyle.Percent50,
+								 ForegroundColor = Color.Purple,
+								 BackgroundColor = Color.Yellow
+			                 };
+
 			_formMain = new formMain();
 
 			// Create our graphics object(s).
@@ -129,30 +183,36 @@ namespace Fonts
 			// Center the window on the screen.
 			_formMain.Location = new Point(activeMonitor.WorkingArea.Width / 2 - _formMain.Width / 2, activeMonitor.WorkingArea.Height / 2 - _formMain.Height / 2);
 
+			_specialGlyphTexture = _graphics.Textures.FromFile<GorgonTexture2D>("StyledT", GetResourcePath(@"Fonts\StylizedT.png"),
+			                                                                    new GorgonCodecPNG());
+
 			_font = _graphics.Fonts.CreateFont("TestFont",
 			                                   new GorgonFontSettings
 			                                   {
 												   AntiAliasingMode = FontAntiAliasMode.AntiAliasHQ,
 												   FontFamilyName = "Times New Roman",
-												   Size = 24.0f
+												   Size = 24.0f,
+												   Brush = pathBrush,
+												   KerningPairs =
+												   {
+													   {
+														   new GorgonKerningPair('T', 'e'), -10
+													   }
+												   },
+												   Glyphs =
+												   {
+														new GorgonGlyph('T', _specialGlyphTexture, new Rectangle(11, 14, 111, 97), new Vector2(3, -8), new Vector3(-7, 104, 0))
+												   }
 			                                   });
 
 			// TODO: This is for testing font capabilities.
 			_renderer.Drawing.BlendingMode = BlendingMode.Modulate;
 
-			_font.KerningPairs[new GorgonKerningPair('T', 'e')] = -10;
+			_font.Save(@"d:\unpak\fontTest.gorFont");
 
-			_specialGlyphTexture = _graphics.Textures.FromFile<GorgonTexture2D>("StyledT", GetResourcePath(@"Fonts\StylizedT.png"),
-			                                                                    new GorgonCodecPNG());
-
-			_font.Textures.Add(_specialGlyphTexture);
-			_font.Glyphs['T'] = new GorgonGlyph('T', _specialGlyphTexture, new Rectangle(11, 14, 111, 97), new Vector2(3, -8), new Vector3(-7, 104, 0));
-
-			/*_font.Save(@"d:\unpak\fontTest.gorFont");
-
-			_font.Dispose();*/
-
-			//_font = _graphics.Fonts.FromFile("TestFont", @"d:\unpak\fontTest.gorFont");
+			_font.Dispose();
+			
+			_font = _graphics.Fonts.FromFile("TestFont", @"d:\unpak\fontTest.gorFont");
 		}
 		#endregion
 
