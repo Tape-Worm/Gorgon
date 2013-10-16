@@ -27,6 +27,7 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Globalization;
 using System.Linq;
 using System.Windows.Forms;
 using Fetze.WinFormsColor;
@@ -36,7 +37,6 @@ using GorgonLibrary.Graphics;
 using GorgonLibrary.Math;
 using GorgonLibrary.Renderers;
 using GorgonLibrary.UI;
-using Microsoft.Win32;
 using SlimMath;
 
 namespace GorgonLibrary.Editor.FontEditorPlugIn
@@ -47,7 +47,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
     partial class GorgonFontContentPanel 
 		: ContentPanel
 	{
-		#region Value Types
+		#region Classes
 		/// <summary>
 		/// Value type to hold the transition data.
 		/// </summary>
@@ -89,16 +89,6 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 			{
 				CurrentTime = 1.0f;
 				UpdateTransition();
-			}
-
-			/// <summary>
-			/// Function to reset the transition.
-			/// </summary>
-			public void Reset()
-			{
-				_startTime = -1;
-				CurrentTime = 0;
-				_hasEnded = false;
 			}
 
 			/// <summary>
@@ -168,10 +158,39 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
         #endregion
 
         #region Properties.
-		
         #endregion
 
         #region Methods.
+		/// <summary>
+		/// Function to localize the text of the controls on the form.
+		/// </summary>
+	    protected override void LocalizeControls()
+		{
+			Text = Resources.GORFNT_DEFAULT_TITLE_FILE;
+			buttonEditGlyph.Text = Resources.GORFNT_BUTTON_EDIT_GLYPH;
+			buttonGlyphSizeSpace.Text = Resources.GORFNT_BUTTON_EDIT_ADVANCE_TIP;
+			buttonGlyphKern.Text = Resources.GORFNT_BUTTON_EDIT_KERNING_TIP;
+			menuTextColor.Text = Resources.GORFNT_MENU_DISPLAY_COLORS;
+			itemSampleTextForeground.Text = Resources.GORFNT_MENU_FOREGROUND_COLOR;
+			itemSampleTextBackground.Text = Resources.GORFNT_MENU_BACKGROUND_COLOR;
+			menuShadow.Text = Resources.GORFNT_MENU_SHADOW_SETTINGS;
+			itemPreviewShadowEnable.Text = Resources.GORFNT_MENU_ENABLE_SHADOW;
+			itemShadowOpacity.Text = Resources.GORFNT_MENU_SHADOW_OPACITY;
+			itemShadowOffset.Text = Resources.GORFNT_MENU_SHADOW_OFFSET;
+			toolStripLabel1.Text = string.Format("{0}:", Resources.GORFNT_LABEL_PREVIEW_TEXT);
+			labelTextureCount.Text = string.Format("{0}: 0/0", Resources.GORFNT_LABEL_TEXTURE_COUNT);
+			dropDownZoom.Text = string.Format("{0}: {1}", Resources.GORFNT_MENU_ZOOM, Resources.GORFNT_MENU_TO_WINDOW);
+			menuItemToWindow.Text = Resources.GORFNT_MENU_TO_WINDOW;
+			menuItem1600.Text = 16.ToString("P0", CultureInfo.CurrentUICulture.NumberFormat);
+			menuItem800.Text = 8.ToString("P0", CultureInfo.CurrentUICulture.NumberFormat);
+			menuItem400.Text = 4.ToString("P0", CultureInfo.CurrentUICulture.NumberFormat);
+			menuItem200.Text = 2.ToString("P0", CultureInfo.CurrentUICulture.NumberFormat);
+			menuItem100.Text = 1.ToString("P0", CultureInfo.CurrentUICulture.NumberFormat);
+			menuItem75.Text = 0.75.ToString("P0", CultureInfo.CurrentUICulture.NumberFormat);
+			menuItem50.Text = 0.5.ToString("P0", CultureInfo.CurrentUICulture.NumberFormat);
+			menuItem25.Text = 0.25.ToString("P0", CultureInfo.CurrentUICulture.NumberFormat);
+		}
+
 		/// <summary>
 		/// Handles the TextChanged event of the textPreviewText control.
 		/// </summary>
@@ -207,7 +226,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		/// <param name="e">The <see cref="MouseEventArgs"/> instance containing the event data.</param>
 		private void GorgonFontContentPanel_MouseClick(object sender, MouseEventArgs e)
 		{
-			this.Focus();
+			Focus();
 		}
 
 		/// <summary>
@@ -247,7 +266,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 					                MinValue = -8,
 					                Value1 = GorgonFontEditorPlugIn.Settings.ShadowOffset.X,
 					                Value2 = GorgonFontEditorPlugIn.Settings.ShadowOffset.Y,
-					                Text = "Edit preview text shadow offset"
+					                Text = Resources.GORFNT_DLG_SHADOW_OFFSET_TEXT
 				                };
 				componentEdit.ValueChanged += componentEdit_ValueChanged;
 
@@ -299,9 +318,11 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 
 			try
 			{
-				picker = new formAlphaPicker();
-				picker.Text = "Select the opacity for the preview text shadow";
-				picker.SelectedAlphaValue = GorgonFontEditorPlugIn.Settings.ShadowOpacity;
+				picker = new formAlphaPicker
+				         {
+					         Text = Resources.GORFNT_DLG_SHADOW_ALPHA_TEXT,
+					         SelectedAlphaValue = GorgonFontEditorPlugIn.Settings.ShadowOpacity
+				         };
 				if (picker.ShowDialog() == DialogResult.OK)
 				{
 					GorgonFontEditorPlugIn.Settings.ShadowOpacity = _text.ShadowOpacity = picker.SelectedAlphaValue;
@@ -325,11 +346,13 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
 		private void itemPreviewShadowEnable_Click(object sender, EventArgs e)
 		{
-			if (_text != null)
+			if (_text == null)
 			{
-				_text.ShadowEnabled = GorgonFontEditorPlugIn.Settings.ShadowEnabled = itemPreviewShadowEnable.Checked;
-				ValidateControls();
+				return;
 			}
+
+			_text.ShadowEnabled = GorgonFontEditorPlugIn.Settings.ShadowEnabled = itemPreviewShadowEnable.Checked;
+			ValidateControls();
 		}
 
 		/// <summary>
@@ -343,15 +366,20 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 
 			try
 			{
-				picker = new ColorPickerDialog();
-				picker.Text = "Select a background color for the preview text";
-				picker.AlphaEnabled = false;
-				picker.OldColor = Color.FromArgb(GorgonFontEditorPlugIn.Settings.BackgroundColor);
-				if (picker.ShowDialog() == DialogResult.OK)
+				picker = new ColorPickerDialog
+				         {
+					         Text = Resources.GORFNT_DLG_BACKGROUND_COLOR_TEXT,
+					         AlphaEnabled = false,
+					         OldColor = Color.FromArgb(GorgonFontEditorPlugIn.Settings.BackgroundColor)
+				         };
+
+				if (picker.ShowDialog() != DialogResult.OK)
 				{
-					panelText.BackColor = picker.SelectedColor;
-					GorgonFontEditorPlugIn.Settings.BackgroundColor = picker.SelectedColor.ToArgb();
+					return;
 				}
+
+				panelText.BackColor = picker.SelectedColor;
+				GorgonFontEditorPlugIn.Settings.BackgroundColor = picker.SelectedColor.ToArgb();
 			}
 			catch (Exception ex)
 			{
@@ -360,7 +388,10 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 			finally
 			{
 				if (picker != null)
+				{
 					picker.Dispose();
+				}
+				ValidateControls();
 			}	
 		}
 
@@ -375,9 +406,12 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 
 			try
 			{
-				picker = new ColorPickerDialog();
-				picker.Text = "Select a color for the preview text";
-				picker.OldColor = Color.FromArgb(GorgonFontEditorPlugIn.Settings.TextColor);
+				picker = new ColorPickerDialog
+				         {
+					         Text = Resources.GORFNT_DLG_FOREGROUND_COLOR_TEXT,
+					         OldColor = Color.FromArgb(GorgonFontEditorPlugIn.Settings.TextColor)
+				         };
+
 				if (picker.ShowDialog() == DialogResult.OK)
 				{
 					GorgonFontEditorPlugIn.Settings.TextColor = picker.SelectedColor.ToArgb();
@@ -414,7 +448,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 				buttonPrevTexture.Enabled = _currentTextureIndex > 0 && (_content.CurrentState == DrawState.DrawFontTextures);
 				buttonNextTexture.Enabled = _currentTextureIndex < _textures.Length - 1 && (_content.CurrentState == DrawState.DrawFontTextures);
 
-				labelTextureCount.Text = string.Format("Texture: {0}/{1}", _currentTextureIndex + 1, _textures.Length);
+				labelTextureCount.Text = string.Format("{0}: {1}/{2}", Resources.GORFNT_LABEL_TEXTURE_COUNT, _currentTextureIndex + 1, _textures.Length);
 
 				UpdateGlyphInfo();
             }
@@ -422,7 +456,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
             {
 				buttonPrevTexture.Enabled = false;
 				buttonNextTexture.Enabled = false;
-                labelTextureCount.Text = "Texture: N/A";
+                labelTextureCount.Text = string.Format("{0}: 0/0", Resources.GORFNT_LABEL_TEXTURE_COUNT);
             }
 
 			itemShadowOffset.Enabled = itemShadowOpacity.Enabled = GorgonFontEditorPlugIn.Settings.ShadowEnabled;
@@ -442,20 +476,25 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
             {
 	            if (_content.CurrentState == DrawState.DrawFontTextures)
 	            {
-		            labelSelectedGlyphInfo.Text = string.Format("Selected Glyph: {0} (U+{1})",
+		            labelSelectedGlyphInfo.Text = string.Format("{0}: {1} (U+{2})",
+																Resources.GORFNT_LABEL_SELECTED_GLYPH,
 		                                                        _selectedGlyph.Character,
 		                                                        ((ushort)_selectedGlyph.Character).FormatHex())
 		                                                .Replace("&", "&&");
 	            }
 	            else
 	            {
-					labelSelectedGlyphInfo.Text = string.Format("Selected Glyph: {0} (U+{1}) Location: {2}, {3} Size: {4},{5} A:{6} B:{7}: C:{8}",
+					labelSelectedGlyphInfo.Text = string.Format("{0}: {1} (U+{2}) {3}: {4}, {5} {6}: {7},{8} {9}: A={10}, B={11}, C={12}",
+						Resources.GORFNT_LABEL_SELECTED_GLYPH,
 						_selectedGlyph.Character,
 						((ushort)_selectedGlyph.Character).FormatHex(),
+						Resources.GORFNT_LABEL_GLYPH_LOCATION,
 						_selectedGlyph.GlyphCoordinates.X,
 						_selectedGlyph.GlyphCoordinates.Y,
+						Resources.GORFNT_LABEL_GLYPH_SIZE,
 						_selectedGlyph.GlyphCoordinates.Width,
 						_selectedGlyph.GlyphCoordinates.Height,
+						Resources.GORFNT_LABEL_ADVANCE,
 						_selectedGlyph.Advance.X,
 						_selectedGlyph.Advance.Y,
 						_selectedGlyph.Advance.Z).Replace("&", "&&");
@@ -474,13 +513,17 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
                     separatorGlyphInfo.Visible = true;
                 }
 
-                labelHoverGlyphInfo.Text = string.Format("Glyph: {0} (U+{1}) Location: {2}, {3} Size: {4},{5} A:{6} B:{7}: C:{8}",
+                labelHoverGlyphInfo.Text = string.Format("{0}: {1} (U+{2}) {3}: {4}, {5} {6}: {7},{8} {9}: A={10}, B={11}, C={12}",
+					Resources.GORFNT_LABEL_HOVER_GLYPH,
                     _hoverGlyph.Character,
                     ((ushort)_hoverGlyph.Character).FormatHex(),
+					Resources.GORFNT_LABEL_GLYPH_LOCATION,
                     _hoverGlyph.GlyphCoordinates.X,
                     _hoverGlyph.GlyphCoordinates.Y,
+					Resources.GORFNT_LABEL_GLYPH_SIZE,
                     _hoverGlyph.GlyphCoordinates.Width,
                     _hoverGlyph.GlyphCoordinates.Height,
+					Resources.GORFNT_LABEL_ADVANCE,
                     _hoverGlyph.Advance.X,
                     _hoverGlyph.Advance.Y,
 					_hoverGlyph.Advance.Z).Replace("&", "&&");
@@ -550,6 +593,8 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
 		private void zoomItem_Click(object sender, EventArgs e)
 		{
+			var selectedItem = (ToolStripMenuItem)sender;
+
 			try
 			{
 				var items = dropDownZoom.DropDownItems.Cast<ToolStripItem>().Where(item => item is ToolStripMenuItem);
@@ -562,15 +607,14 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 					}
 				}
 
-				_currentZoom = float.Parse(((ToolStripMenuItem)sender).Tag.ToString(),
-				                           System.Globalization.NumberStyles.Float,
-				                           System.Globalization.NumberFormatInfo.InvariantInfo);
+				_currentZoom = float.Parse(selectedItem.Tag.ToString(),
+				                           NumberStyles.Float,
+				                           NumberFormatInfo.InvariantInfo);
 
-				dropDownZoom.Text = _currentZoom.EqualsEpsilon(-1)
-					                    ? "Zoom: To Window"
-					                    : string.Format("Zoom: {0}%", _currentZoom * 100.0f);
+				dropDownZoom.Text = string.Format("{0}: {1}", Resources.GORFNT_MENU_ZOOM, selectedItem.Text);
 
 				UpdateGlyphRegions();
+
 				if (_content.CurrentState != DrawState.DrawFontTextures)
 				{
 					UpdateGlyphEditor();
@@ -613,11 +657,13 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 								rect.X += _textureOffset.X;
 								rect.Y += _textureOffset.Y;
 
-								if (rect.Contains(e.Location))
+								if (!rect.Contains(e.Location))
 								{
-									_selectedGlyph = glyph.Key;
-									break;
+									continue;
 								}
+
+								_selectedGlyph = glyph.Key;
+								break;
 							}
 						}
 			            break;
@@ -866,9 +912,9 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 			_text.ShadowOffset = GorgonFontEditorPlugIn.Settings.ShadowOffset;
 			_text.ShadowEnabled = itemPreviewShadowEnable.Checked;
 
-            _pattern = _content.Graphics.Textures.CreateTexture<GorgonTexture2D>("Background.Pattern", Properties.Resources.Pattern);
+            _pattern = _content.Graphics.Textures.CreateTexture<GorgonTexture2D>("Background.Pattern", Resources.Pattern);
 
-            _patternSprite = _content.Renderer.Renderables.CreateSprite("Pattern", new GorgonSpriteSettings()
+            _patternSprite = _content.Renderer.Renderables.CreateSprite("Pattern", new GorgonSpriteSettings
             {
                 Color = new GorgonColor(1, 0, 0, 0.4f),
                 Texture = _pattern,
@@ -947,11 +993,13 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		{
 			try
 			{
-				if ((_selectedGlyph != null) && (_content.CurrentState == DrawState.DrawFontTextures))
+				if ((_selectedGlyph == null) || (_content.CurrentState != DrawState.DrawFontTextures))
 				{
-					buttonEditGlyph.Checked = true;
-					InitializeGlyphEditTransition(true);
+					return;
 				}
+
+				buttonEditGlyph.Checked = true;
+				InitializeGlyphEditTransition(true);
 			}
 			catch (Exception ex)
 			{
@@ -1112,7 +1160,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 				_animationTransition = new TransitionData(glyphScreenRegion,
 					                                        textureRegion,
 					                                        animationTime);
-				buttonEditGlyph.Text = "End Editing";
+				buttonEditGlyph.Text = Resources.GORFNT_BUTTON_END_EDIT_GLYPH;
 				buttonEditGlyph.Image = Resources.stop_16x16;
 			}
 			else
@@ -1124,7 +1172,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 				}
 
 				_animationTransition = new TransitionData(textureRegion, glyphScreenRegion, animationTime);
-				buttonEditGlyph.Text = "Edit Glyph";
+				buttonEditGlyph.Text = Resources.GORFNT_BUTTON_EDIT_GLYPH;
 				buttonEditGlyph.Image = Resources.edit_16x16;
 			}
 

@@ -27,7 +27,6 @@
 using System;
 using System.ComponentModel;
 using System.Drawing;
-using System.Runtime.Versioning;
 using System.Windows.Forms;
 using GorgonLibrary.Editor.Properties;
 using GorgonLibrary.UI;
@@ -140,7 +139,7 @@ namespace GorgonLibrary.Editor
 		/// </summary>
 		[Browsable(true), Category("Appearance"), Description("Sets the text for the caption on the content panel control."), 
 		DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
-		public new string Text
+		public new virtual string Text
 		{
 			get
 			{
@@ -247,7 +246,29 @@ namespace GorgonLibrary.Editor
 		private void _content_ContentPropertyChanged(object sender, ContentPropertyChangedEventArgs e)
 		{
 			OnContentPropertyChanged(e.PropertyName, e.Value);
-		}        
+		}
+
+
+		/// <summary>
+		/// Function to perform localization on the control text properties.
+		/// </summary>
+		protected virtual void LocalizeControls()
+		{
+			
+		}
+		
+		/// <summary>
+		/// Raises the <see cref="E:System.Windows.Forms.UserControl.Load" /> event.
+		/// </summary>
+		/// <param name="e">An <see cref="T:System.EventArgs" /> that contains the event data.</param>
+		protected override void OnLoad(EventArgs e)
+		{
+			if (!DesignMode)
+			{
+				LocalizeControls();
+			}
+			base.OnLoad(e);
+		}
 
 		/// <summary>
 		/// Function called when the close button is clicked.

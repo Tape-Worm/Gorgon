@@ -2546,6 +2546,14 @@ namespace GorgonLibrary.Editor
 		/// <param name="e">An <see cref="T:System.EventArgs"/> that contains the event data.</param>
 		protected override void OnLoad(EventArgs e)
 		{
+			if (DesignMode)
+			{
+				base.OnLoad(e);
+				return;
+			}
+
+			LocalizeControls();
+
 			base.OnLoad(e);
 
 			try
@@ -2615,8 +2623,6 @@ namespace GorgonLibrary.Editor
 		public formMain()
 		{
 			InitializeComponent();
-
-			LocalizeControls();
 
 			// Set up linkage to the content management interface.
 			ContentManagement.ContentPaneUnloadAction = () => treeFiles.Refresh();

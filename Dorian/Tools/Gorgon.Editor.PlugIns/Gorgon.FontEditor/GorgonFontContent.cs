@@ -736,17 +736,6 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		}
 
 		/// <summary>
-		/// Function called when the content is shown for the first time.
-		/// </summary>
-		public override void Activate()
-		{
-			if (Renderer != null)
-			{
-				Renderer.Begin2D();
-			}
-		}
-
-		/// <summary>
 		/// Function to draw the interface for the content editor.
 		/// </summary>
 		public override void Draw()
