@@ -26,7 +26,6 @@
 
 using System.Drawing;
 using System.IO;
-using System.Windows.Forms;
 using GorgonLibrary.Diagnostics;
 using GorgonLibrary.Editor.Properties;
 using GorgonLibrary.Graphics;
@@ -128,14 +127,6 @@ namespace GorgonLibrary.Editor
 		protected override void OnRead(Stream stream)
 		{
 			// No need to read this content.
-		}
-
-		/// <summary>
-		/// Function called when the content is shown for the first time.
-		/// </summary>
-		public override void Activate()
-		{
-			// TODO: Get rid of this!
 		}
 
 		/// <summary>

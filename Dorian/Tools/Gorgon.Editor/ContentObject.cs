@@ -257,11 +257,6 @@ namespace GorgonLibrary.Editor
         /// <returns>A control to place in the primary interface window.</returns>
         protected abstract ContentPanel OnInitialize();
 
-		/// <summary>
-		/// Function called when the content is shown for the first time.
-		/// </summary>
-		public abstract void Activate();
-
         /// <summary>
         /// Function to retrieve default values for properties with the DefaultValue attribute.
         /// </summary>

@@ -203,8 +203,7 @@
 			this.buttonGlyphSizeSpace.ImageTransparentColor = System.Drawing.Color.Magenta;
 			this.buttonGlyphSizeSpace.Name = "buttonGlyphSizeSpace";
 			this.buttonGlyphSizeSpace.Size = new System.Drawing.Size(23, 22);
-			this.buttonGlyphSizeSpace.Text = "Glyph sizing/spacing";
-			this.buttonGlyphSizeSpace.ToolTipText = "Set the sizing/spacing of the selected glyph.";
+			this.buttonGlyphSizeSpace.Text = "Sets the advancement placement values for the selected glyph.";
 			// 
 			// buttonGlyphKern
 			// 
@@ -214,7 +213,7 @@
 			this.buttonGlyphKern.ImageTransparentColor = System.Drawing.Color.Magenta;
 			this.buttonGlyphKern.Name = "buttonGlyphKern";
 			this.buttonGlyphKern.Size = new System.Drawing.Size(23, 22);
-			this.buttonGlyphKern.ToolTipText = "Sets the kerning value between the selected glyph and another glyph.";
+			this.buttonGlyphKern.Text = "Sets the kerning values for the selected glyph.";
 			// 
 			// panelControls
 			// 
@@ -445,6 +444,7 @@
 			this.menuTextColor.ImageTransparentColor = System.Drawing.Color.Magenta;
 			this.menuTextColor.Name = "menuTextColor";
 			this.menuTextColor.Size = new System.Drawing.Size(29, 22);
+			this.menuTextColor.Text = "Sets the text display colors.";
 			// 
 			// itemSampleTextForeground
 			// 
@@ -472,13 +472,14 @@
 			this.menuShadow.ImageTransparentColor = System.Drawing.Color.Magenta;
 			this.menuShadow.Name = "menuShadow";
 			this.menuShadow.Size = new System.Drawing.Size(29, 22);
+			this.menuShadow.Text = "Sets display text shadowing options.";
 			// 
 			// itemPreviewShadowEnable
 			// 
 			this.itemPreviewShadowEnable.CheckOnClick = true;
 			this.itemPreviewShadowEnable.Name = "itemPreviewShadowEnable";
 			this.itemPreviewShadowEnable.Size = new System.Drawing.Size(179, 22);
-			this.itemPreviewShadowEnable.Text = "Enable Text Shadow";
+			this.itemPreviewShadowEnable.Text = "&Enable Text Shadow";
 			this.itemPreviewShadowEnable.Click += new System.EventHandler(this.itemPreviewShadowEnable_Click);
 			// 
 			// toolStripSeparator4

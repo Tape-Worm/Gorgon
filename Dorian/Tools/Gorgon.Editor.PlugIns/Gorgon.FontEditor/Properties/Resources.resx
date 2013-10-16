@@ -259,4 +259,82 @@
   <data name="stop_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\stop_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="GORFNT_BUTTON_EDIT_ADVANCE_TIP" xml:space="preserve">
+    <value>Sets the advancement placement values for the selected glyph.</value>
+  </data>
+  <data name="GORFNT_BUTTON_EDIT_GLYPH" xml:space="preserve">
+    <value>&amp;Edit glyph</value>
+  </data>
+  <data name="GORFNT_BUTTON_EDIT_KERNING_TIP" xml:space="preserve">
+    <value>Sets the kerning values for the selected glyph.</value>
+  </data>
+  <data name="GORFNT_BUTTON_END_EDIT_GLYPH" xml:space="preserve">
+    <value>&amp;End editing</value>
+  </data>
+  <data name="GORFNT_DEFAULT_TITLE_FILE" xml:space="preserve">
+    <value>Untitled</value>
+  </data>
+  <data name="GORFNT_DLG_BACKGROUND_COLOR_TEXT" xml:space="preserve">
+    <value>Select a background color for the preview text</value>
+  </data>
+  <data name="GORFNT_DLG_FOREGROUND_COLOR_TEXT" xml:space="preserve">
+    <value>Select a color for the preview text</value>
+  </data>
+  <data name="GORFNT_DLG_SHADOW_ALPHA_TEXT" xml:space="preserve">
+    <value>Select the opacity for the preview text shadow</value>
+  </data>
+  <data name="GORFNT_DLG_SHADOW_OFFSET_TEXT" xml:space="preserve">
+    <value>Edit preview text shadow offset</value>
+  </data>
+  <data name="GORFNT_LABEL_ADVANCE" xml:space="preserve">
+    <value>Advancement</value>
+  </data>
+  <data name="GORFNT_LABEL_GLYPH_LOCATION" xml:space="preserve">
+    <value>Location</value>
+  </data>
+  <data name="GORFNT_LABEL_GLYPH_SIZE" xml:space="preserve">
+    <value>Size</value>
+  </data>
+  <data name="GORFNT_LABEL_HOVER_GLYPH" xml:space="preserve">
+    <value>Glyph</value>
+  </data>
+  <data name="GORFNT_LABEL_PREVIEW_TEXT" xml:space="preserve">
+    <value>Preview text</value>
+  </data>
+  <data name="GORFNT_LABEL_SELECTED_GLYPH" xml:space="preserve">
+    <value>Selected glyph</value>
+  </data>
+  <data name="GORFNT_LABEL_TEXTURE_COUNT" xml:space="preserve">
+    <value>Texture</value>
+  </data>
+  <data name="GORFNT_MENU_BACKGROUND_COLOR" xml:space="preserve">
+    <value>&amp;Background color...</value>
+  </data>
+  <data name="GORFNT_MENU_DISPLAY_COLORS" xml:space="preserve">
+    <value>Sets the text display colors.</value>
+  </data>
+  <data name="GORFNT_MENU_ENABLE_SHADOW" xml:space="preserve">
+    <value>&amp;Enable text shadow</value>
+  </data>
+  <data name="GORFNT_MENU_FOREGROUND_COLOR" xml:space="preserve">
+    <value>&amp;Foreground color...</value>
+  </data>
+  <data name="GORFNT_MENU_SHADOW_OFFSET" xml:space="preserve">
+    <value>Shadow o&amp;ffset...</value>
+  </data>
+  <data name="GORFNT_MENU_SHADOW_OPACITY" xml:space="preserve">
+    <value>Shadow &amp;opacity...</value>
+  </data>
+  <data name="GORFNT_MENU_SHADOW_SETTINGS" xml:space="preserve">
+    <value>Sets display text shadowing options.</value>
+  </data>
+  <data name="GORFNT_MENU_TO_WINDOW" xml:space="preserve">
+    <value>To window</value>
+  </data>
+  <data name="GORFNT_MENU_ZOOM" xml:space="preserve">
+    <value>Zoom</value>
+  </data>
+  <data name="GORFNT_TITLE" xml:space="preserve">
+    <value>Gorgon Font</value>
+  </data>
 </root>
