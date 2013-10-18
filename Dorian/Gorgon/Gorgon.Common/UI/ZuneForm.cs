@@ -32,6 +32,8 @@ using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
 using GorgonLibrary.Native;
+using GorgonLibrary.Design;
+using GorgonLibrary.Properties;
 
 namespace GorgonLibrary.UI
 {
@@ -137,7 +139,7 @@ namespace GorgonLibrary.UI
 		/// <summary>
 		/// Property to set or return the color of the border.
 		/// </summary>
-		[Browsable(true), Category("Appearance"), Description("Sets the color of the border on the form when Border is set to true."), 
+		[Browsable(true), LocalCategory(typeof(Resources), "PROP_CATEGORY_APPEARANCE"), LocalDescription(typeof(Resources), "PROP_BORDERCOLOR_DESC"), 
 		RefreshProperties(RefreshProperties.All)]
 		public Color BorderColor
 		{
@@ -169,6 +171,7 @@ namespace GorgonLibrary.UI
 			{
 				return FormBorderStyle.None;
 			}
+			// ReSharper disable once ValueParameterNotUsed
 			set
 			{
 				base.FormBorderStyle = FormBorderStyle.None;
@@ -178,7 +181,7 @@ namespace GorgonLibrary.UI
 		/// <summary>
 		/// Property to set or return whether a single pixel width border will be drawn on the form.
 		/// </summary>
-		[Browsable(true), Category("Appearance"), Description("When set to true, a border will be drawn on the form."), DefaultValue(false), 
+		[Browsable(true), LocalCategory(typeof(Resources), "PROP_CATEGORY_APPEARANCE"), LocalDescription(typeof(Resources), "PROP_BORDER_DESC"), DefaultValue(false), 
 		RefreshProperties(RefreshProperties.All)]
 		public bool Border
 		{
@@ -198,7 +201,7 @@ namespace GorgonLibrary.UI
 		/// Property to set or return the size of the border, in pixels.
 		/// </summary>
 		/// <remarks>This is only valid when <see cref="GorgonLibrary.UI.ZuneForm.Resizable">Resizable</see> is set to TRUE.</remarks>
-		[Browsable(true), Description("The size, in pixels, of the window border when the Border property is set to true."), Category("Appearance"),
+		[Browsable(true), LocalDescription(typeof(Resources), "PROP_BORDERSIZE_DESC"), LocalCategory(typeof(Resources), "PROP_CATEGORY_APPEARANCE"),
 		RefreshProperties(RefreshProperties.All), DefaultValue(1)]
 		public int BorderSize
 		{
@@ -222,7 +225,7 @@ namespace GorgonLibrary.UI
 		/// <summary>
 		/// Property to set or return whether the form can be resized by a user or not.
 		/// </summary>
-		[Browsable(true), Category("Behavior"), Description("Determines if a form can be resized by the user or not."), DefaultValue(true)]
+		[Browsable(true), LocalCategory(typeof(Resources), "PROP_CATEGORY_BEHAVIOR"), LocalDescription(typeof(Resources), "PROP_RESIZABLE_DESC"), DefaultValue(true)]
 		public bool Resizable
 		{
 			get;
@@ -233,7 +236,7 @@ namespace GorgonLibrary.UI
 		/// Property to set or return the size of the resize handle border, in pixels.
 		/// </summary>
 		/// <remarks>This is only valid when <see cref="GorgonLibrary.UI.ZuneForm.Resizable">Resizable</see> is set to TRUE.</remarks>
-		[Browsable(true), Description("The size, in pixels, of the resizable handles on the window border."), Category("Design"),
+		[Browsable(true), LocalDescription(typeof(Resources), "PROP_RESIZEHANDLE_DESC"), LocalCategory(typeof(Resources), "PROP_CATEGORY_DESIGN"),
 		RefreshProperties(RefreshProperties.All), DefaultValue(6)]
 		public int ResizeHandleSize
 		{
@@ -251,6 +254,7 @@ namespace GorgonLibrary.UI
 			{
 				return true;
 			}
+			// ReSharper disable once ValueParameterNotUsed
 			set
 			{
 			}
@@ -266,6 +270,7 @@ namespace GorgonLibrary.UI
 			{
 				return false;
 			}
+			// ReSharper disable once ValueParameterNotUsed
 			set
 			{
 			}
@@ -274,6 +279,7 @@ namespace GorgonLibrary.UI
 		/// <summary>
 		/// Property to set or return whether to show the icon for the form.
 		/// </summary>
+		[Browsable(true), LocalCategory(typeof(Resources), "PROP_CATEGORY_DESIGN"), LocalDescription(typeof(Resources), "PROP_SHOWICON_DESC")]
 		public new bool ShowIcon
 		{
 			get
@@ -290,7 +296,7 @@ namespace GorgonLibrary.UI
 		/// <summary>
 		/// Property to set or return whether the window caption, including the system menu, max/min buttons and the close button are visible.
 		/// </summary>
-		[Browsable(true), Category("Window Style"), Description("Shows or hides the caption for the window.  This will include the caption, system menu, and the minimize/maximize/close buttons.")]
+		[Browsable(true), LocalCategory(typeof(Resources), "Window Style"), LocalDescription(typeof(Resources), "PROP_WINDOWCAPTION_DESC")]
 		public bool ShowWindowCaption
 		{
 			get
@@ -307,7 +313,7 @@ namespace GorgonLibrary.UI
 		/// <summary>
 		/// </summary>
 		/// <returns>The text associated with this control.</returns>
-		[Browsable(true)]
+		[Browsable(true), LocalCategory(typeof(Resources), "PROP_CATEGORY_APPEARANCE"), LocalDescription(typeof(Resources), "PROP_TEXT_DESC")]
 		public override string Text
 		{
 			get
@@ -325,6 +331,7 @@ namespace GorgonLibrary.UI
 		/// <summary>
 		/// Property to set or return the icon for this form.
 		/// </summary>
+		[Browsable(true), LocalCategory(typeof(Resources), "PROP_CATEGORY_APPEARANCE"), LocalDescription(typeof(Resources), "PROP_ICON_DESC")]
 		public new Icon Icon
 		{
 			get
@@ -350,6 +357,7 @@ namespace GorgonLibrary.UI
 			{
 				return SizeGripStyle.Hide;
 			}
+			// ReSharper disable once ValueParameterNotUsed
 			set
 			{
 				// Do nothing.
@@ -587,7 +595,7 @@ namespace GorgonLibrary.UI
 					itemMinimize.Enabled = true;
 					itemMove.Enabled = false;
 					itemSize.Enabled = false;
-					labelMaxRestore.Text = Properties.Resources.GOR_ZUNE_MAX_ICON;
+					labelMaxRestore.Text = Resources.GOR_ZUNE_MAX_ICON;
 					break;
 				case FormWindowState.Minimized:
 					itemRestore.Enabled = true;
@@ -597,7 +605,7 @@ namespace GorgonLibrary.UI
 					itemMinimize.Enabled = false;
 					break;
 				case FormWindowState.Normal:
-					labelMaxRestore.Text = Properties.Resources.GOR_ZUNE_RESTORE_ICON;
+					labelMaxRestore.Text = Resources.GOR_ZUNE_RESTORE_ICON;
 					itemMove.Enabled = true;
 					itemSize.Enabled = true;
 					itemRestore.Enabled = false;

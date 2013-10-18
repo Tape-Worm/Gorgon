@@ -98,6 +98,8 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Gorgon2.ico" />
+    <None Include="Resources\glyph_select_16x16.png" />
+    <None Include="Resources\cut_16x16.png" />
     <None Include="Resources\stop_16x16.png" />
     <None Include="Resources\edit_16x16.png" />
     <None Include="Resources\glyph_sizing_16x16.png" />

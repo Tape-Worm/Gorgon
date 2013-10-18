@@ -28,13 +28,13 @@
 using System;
 using System.Windows.Forms;
 using GorgonLibrary.Native;
+using GorgonLibrary.Properties;
 
 namespace GorgonLibrary.UI
 {
 	/// <summary>
 	/// Extensions used for the list view object.
 	/// </summary>
-	[System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Never)]
 	public static class GorgonListViewExtensions
 	{
 		/// <summary>
@@ -43,10 +43,14 @@ namespace GorgonLibrary.UI
 		/// <param name="listViewControl">Listview to update.</param>
 		/// <param name="headerIndex">Column header index.</param>
 		/// <param name="order">Sort order.</param>
+		/// <exception cref="GorgonLibrary.GorgonException">Thrown if the column header was not found or could not be updated.</exception>
+		/// <remarks>Use this extension method to set a sorting icon for the specified column.  This will give users a clue as to how the 
+		/// list view is sorted.</remarks>
 		public static void SetSortIcon(this ListView listViewControl, int headerIndex, SortOrder order)
 		{
 			IntPtr columnHeader = Win32API.SendMessage(listViewControl.Handle, (uint)ListViewMessages.LVM_GETHEADER, IntPtr.Zero, IntPtr.Zero);
-			for (int columnNumber = 0; columnNumber <= listViewControl.Columns.Count - 1; columnNumber++)
+
+			for (int columnNumber = 0; columnNumber < listViewControl.Columns.Count; columnNumber++)
 			{
 				var columnPtr = new IntPtr(columnNumber);
 				var item = new HDITEM
@@ -55,7 +59,9 @@ namespace GorgonLibrary.UI
 				};
 
 				if (Win32API.SendMessage(columnHeader, (uint)HeaderMessages.HDM_GETITEM, columnPtr, ref item) == IntPtr.Zero)
-					throw new GorgonException(GorgonResult.CannotEnumerate, "Cannot find the column header.");
+				{
+					throw new GorgonException(GorgonResult.CannotEnumerate, Resources.GOR_LISTVIEW_CANNOT_FIND_HEADER);
+				}
 
 				if (order != SortOrder.None && columnNumber == headerIndex)
 				{
@@ -72,10 +78,14 @@ namespace GorgonLibrary.UI
 					}
 				}
 				else
+				{
 					item.fmt &= ~HeaderFormat.SortDown & ~HeaderFormat.SortUp;
+				}
 
 				if (Win32API.SendMessage(columnHeader, (uint)HeaderMessages.HDM_SETITEM, columnPtr, ref item) == IntPtr.Zero)
-					throw new GorgonException(GorgonResult.CannotWrite, "Cannot update the column.");
+				{
+					throw new GorgonException(GorgonResult.CannotWrite, Resources.GOR_LISTVIEW_CANNOT_UPDATE_COLUMN);
+				}
 			}
 		}
 	}

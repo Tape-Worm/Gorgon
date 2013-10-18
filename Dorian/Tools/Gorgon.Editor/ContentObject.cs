@@ -29,6 +29,8 @@ using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
+using System.Xml.Linq;
+using GorgonLibrary.Design;
 using GorgonLibrary.Editor.Properties;
 using GorgonLibrary.Graphics;
 
@@ -95,6 +97,16 @@ namespace GorgonLibrary.Editor
         #endregion
 
         #region Properties.
+		/// <summary>
+		/// Property to set or return the meta data for the content.
+		/// </summary>
+		[Browsable(false)]
+	    public EditorMetaDataFile MetaData
+	    {
+		    get;
+		    set;
+	    }
+
         /// <summary>
         /// Property to return the type descriptor for this content.
         /// </summary>
@@ -170,9 +182,9 @@ namespace GorgonLibrary.Editor
 		/// Property to return the name of the content object.
 		/// </summary>
         [Browsable(true),
-		EditorDisplayName(typeof(Resources), "PROP_NAME_NAME"),
-		EditorCategory(typeof(Resources), "CATEGORY_DESIGN"), 
-		EditorDescription(typeof(Resources), "PROP_NAME_DESC")]
+		LocalDisplayName(typeof(Resources), "PROP_NAME_NAME"),
+		LocalCategory(typeof(Resources), "CATEGORY_DESIGN"), 
+		LocalDescription(typeof(Resources), "PROP_NAME_DESC")]
 		public string Name
 		{
 			get

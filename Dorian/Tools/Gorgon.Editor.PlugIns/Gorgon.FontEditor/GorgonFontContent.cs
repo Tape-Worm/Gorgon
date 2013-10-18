@@ -32,6 +32,7 @@ using System.Drawing;
 using System.Drawing.Design;
 using System.IO;
 using System.Linq;
+using GorgonLibrary.Design;
 using GorgonLibrary.Editor.FontEditorPlugIn.Properties;
 using GorgonLibrary.Graphics;
 using GorgonLibrary.Math;
@@ -91,9 +92,9 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
         /// <summary>
         /// Function to set the base color for the font glyphs.
         /// </summary>
-		[EditorCategory(typeof(Resources), "CATEGORY_APPEARANCE"), 
-		EditorDescription(typeof(Resources), "PROP_BASECOLOR_DESC"), 
-		EditorDisplayName(typeof(Resources), "PROP_BASECOLOR_NAME"),
+		[LocalCategory(typeof(Resources), "CATEGORY_APPEARANCE"), 
+		LocalDescription(typeof(Resources), "PROP_BASECOLOR_DESC"), 
+		LocalDisplayName(typeof(Resources), "PROP_BASECOLOR_NAME"),
 		Editor(typeof(RGBAEditor), typeof(UITypeEditor)),
 		TypeConverter(typeof(RGBATypeConverter)), DefaultValue(0xFFFFFFFF)]
         public Color BaseColor
@@ -113,9 +114,9 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
         /// <summary>
         /// Property to set or return the outline size.
         /// </summary>
-        [EditorCategory(typeof(Resources), "CATEGORY_APPEARANCE"), 
-		EditorDescription(typeof(Resources), "PROP_OUTLINESIZE_DESC"),
-		EditorDisplayName(typeof(Resources), "PROP_OUTLINESIZE_NAME"),
+        [LocalCategory(typeof(Resources), "CATEGORY_APPEARANCE"), 
+		LocalDescription(typeof(Resources), "PROP_OUTLINESIZE_DESC"),
+		LocalDisplayName(typeof(Resources), "PROP_OUTLINESIZE_NAME"),
 		DefaultValue(0)]
         public int OutlineSize
         {
@@ -148,9 +149,9 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
         /// <summary>
         /// Function to set the base color for the font glyphs.
         /// </summary>
-		[EditorCategory(typeof(Resources), "CATEGORY_APPEARANCE"), 
-		EditorDescription(typeof(Resources), "PROP_OUTLINECOLOR_DESC"),
-		EditorDisplayName(typeof(Resources), "PROP_OUTLINECOLOR_NAME"),
+		[LocalCategory(typeof(Resources), "CATEGORY_APPEARANCE"), 
+		LocalDescription(typeof(Resources), "PROP_OUTLINECOLOR_DESC"),
+		LocalDisplayName(typeof(Resources), "PROP_OUTLINECOLOR_NAME"),
 		DefaultValue(0xFF000000), Editor(typeof(RGBAEditor), typeof(UITypeEditor)), TypeConverter(typeof(RGBATypeConverter))]
         public Color OutlineColor
         {
@@ -174,9 +175,9 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
         /// <summary>
         /// Property to set or return the font size.
         /// </summary>
-        [EditorCategory(typeof(Resources), "CATEGORY_DESIGN"), 
-		EditorDescription(typeof(Resources), "PROP_FONTSIZE_DESC"),
-		EditorDisplayName(typeof(Resources), "PROP_FONTSIZE_NAME"),
+        [LocalCategory(typeof(Resources), "CATEGORY_DESIGN"), 
+		LocalDescription(typeof(Resources), "PROP_FONTSIZE_DESC"),
+		LocalDisplayName(typeof(Resources), "PROP_FONTSIZE_NAME"),
 		DefaultValue(9.0f)]
         public float FontSize
         {
@@ -206,9 +207,9 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		/// <summary>
 		/// Property to set or return the packing space between glyphs on the texture.
 		/// </summary>
-		[EditorCategory(typeof(Resources), "CATEGORY_DESIGN"), 
-		EditorDescription(typeof(Resources), "PROP_PACKINGSIZE_DESC"),
-		EditorDisplayName(typeof(Resources), "PROP_PACKINGSIZE_NAME"),
+		[LocalCategory(typeof(Resources), "CATEGORY_DESIGN"), 
+		LocalDescription(typeof(Resources), "PROP_PACKINGSIZE_DESC"),
+		LocalDisplayName(typeof(Resources), "PROP_PACKINGSIZE_NAME"),
 		DefaultValue(1)]
 		public int PackingSpace
 		{
@@ -238,9 +239,9 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
         /// <summary>
         /// Property to set or return the texture size for the font.
         /// </summary>
-        [EditorCategory(typeof(Resources), "CATEGORY_DESIGN"), 
-		EditorDescription(typeof(Resources), "PROP_TEXTURESIZE_DESC"),
-		EditorDisplayName(typeof(Resources), "PROP_TEXTURESIZE_NAME"),
+        [LocalCategory(typeof(Resources), "CATEGORY_DESIGN"), 
+		LocalDescription(typeof(Resources), "PROP_TEXTURESIZE_DESC"),
+		LocalDisplayName(typeof(Resources), "PROP_TEXTURESIZE_NAME"),
 		DefaultValue(typeof(Size), "256,256")]
         public Size FontTextureSize
         {
@@ -274,9 +275,9 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
         /// <summary>
         /// Property to set or return the anti-alias mode.
         /// </summary>
-        [EditorCategory(typeof(Resources), "CATEGORY_APPEARANCE"), 
-		EditorDescription(typeof(Resources), "PROP_ANTIALIASMODE_DESC"),
-		EditorDisplayName(typeof(Resources), "PROP_ANTIALIASMODE_NAME"),
+        [LocalCategory(typeof(Resources), "CATEGORY_APPEARANCE"), 
+		LocalDescription(typeof(Resources), "PROP_ANTIALIASMODE_DESC"),
+		LocalDisplayName(typeof(Resources), "PROP_ANTIALIASMODE_NAME"),
 		DefaultValue(FontAntiAliasMode.AntiAliasHQ)]
         public FontAntiAliasMode FontAntiAliasMode
         {
@@ -300,9 +301,9 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		/// <summary>
 		/// Property to set or return the contrast of the glyphs.
 		/// </summary>
-		[EditorCategory(typeof(Resources), "CATEGORY_APPEARANCE"), 
-		EditorDescription(typeof(Resources), "PROP_TEXTCONTRAST_DESC"),
-		EditorDisplayName(typeof(Resources), "PROP_TEXTCONTRAST_NAME"),
+		[LocalCategory(typeof(Resources), "CATEGORY_APPEARANCE"), 
+		LocalDescription(typeof(Resources), "PROP_TEXTCONTRAST_DESC"),
+		LocalDisplayName(typeof(Resources), "PROP_TEXTCONTRAST_NAME"),
 		DefaultValue(4)]
 		public int TextContrast
 		{
@@ -335,9 +336,9 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		/// <summary>
         /// Property to set or return whether the font size should be in point size or pixel size.
         /// </summary>
-        [EditorCategory(typeof(Resources), "CATEGORY_DESIGN"), 
-		EditorDescription(typeof(Resources), "PROP_HEIGHTMODE_DESC"),
-		EditorDisplayName(typeof(Resources), "PROP_HEIGHTMODE_NAME"),
+        [LocalCategory(typeof(Resources), "CATEGORY_DESIGN"), 
+		LocalDescription(typeof(Resources), "PROP_HEIGHTMODE_DESC"),
+		LocalDisplayName(typeof(Resources), "PROP_HEIGHTMODE_NAME"),
 		DefaultValue(typeof(FontHeightMode), "Points")]
         public FontHeightMode FontHeightMode
         {
@@ -364,9 +365,9 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
         /// </summary>
         [Editor(typeof(FontFamilyEditor), typeof(UITypeEditor)), 
 		RefreshProperties(RefreshProperties.Repaint), 
-		EditorCategory(typeof(Resources), "CATEGORY_DESIGN"),
-		EditorDisplayName(typeof(Resources), "PROP_FONTFAMILY_NAME"),
-		EditorDescription(typeof(Resources), "PROP_FONTFAMILY_DESC")]
+		LocalCategory(typeof(Resources), "CATEGORY_DESIGN"),
+		LocalDisplayName(typeof(Resources), "PROP_FONTFAMILY_NAME"),
+		LocalDescription(typeof(Resources), "PROP_FONTFAMILY_DESC")]
         public string FontFamily
         {
             get
@@ -393,9 +394,9 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
         /// <summary>
         /// Property to set or return the list of characters that need to be turned into glyphs.
         /// </summary>
-        [EditorCategory(typeof(Resources), "CATEGORY_DESIGN"),
-		EditorDisplayName(typeof(Resources), "PROP_CHARACTERS_NAME"),
-		EditorDescription(typeof(Resources), "PROP_CHARACTERS_DESC"), 
+        [LocalCategory(typeof(Resources), "CATEGORY_DESIGN"),
+		LocalDisplayName(typeof(Resources), "PROP_CHARACTERS_NAME"),
+		LocalDescription(typeof(Resources), "PROP_CHARACTERS_DESC"), 
 		TypeConverter(typeof(CharacterSetTypeConverter)), 
 		Editor(typeof(CharacterSetEditor), typeof(UITypeEditor))]
         public IEnumerable<char> Characters
@@ -425,9 +426,9 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
         /// Property to set or return the font style.
         /// </summary>
         [Editor(typeof(FontStyleEditor), typeof(UITypeEditor)), 
-		EditorCategory(typeof(Resources), "CATEGORY_APPEARANCE"),
-		EditorDisplayName(typeof(Resources), "PROP_STYLE_NAME"),
-		EditorDescription(typeof(Resources), "PROP_STYLE_DESC"), 
+		LocalCategory(typeof(Resources), "CATEGORY_APPEARANCE"),
+		LocalDisplayName(typeof(Resources), "PROP_STYLE_NAME"),
+		LocalDescription(typeof(Resources), "PROP_STYLE_DESC"), 
 		DefaultValue(FontStyle.Regular)]
         public FontStyle FontStyle
         {

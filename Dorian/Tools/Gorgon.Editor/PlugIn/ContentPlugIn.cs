@@ -28,7 +28,6 @@ using System;
 using System.Drawing;
 using System.Windows.Forms;
 using GorgonLibrary.Editor.Properties;
-using GorgonLibrary.Graphics;
 using GorgonLibrary.IO;
 
 namespace GorgonLibrary.Editor
@@ -108,6 +107,16 @@ namespace GorgonLibrary.Editor
         /// </summary>
         /// <returns>The settings interface for the content.</returns>
 	    public abstract ContentSettings GetContentSettings();
+
+		/// <summary>
+		/// Function to return the meta data for the content.
+		/// </summary>
+		/// <param name="filePath">The path to the file that we're retrieving meta from.</param>
+		/// <returns></returns>
+		public virtual EditorMetaDataFile GetMetaData(string filePath)
+		{
+			return null;
+		}
         
 		/// <summary>
 		/// Function to return the icon for the content.

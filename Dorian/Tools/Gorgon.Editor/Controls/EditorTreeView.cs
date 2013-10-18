@@ -279,10 +279,19 @@ namespace GorgonLibrary.Editor
 		private TextBox _renameBox;						// Text box used to rename a node.
 		private EditorTreeNode _editNode;				// Node being edited.
 	    private ImageAttributes _fadeAttributes;		// Attributes for faded items.	    
-		private formMain _parentForm;					// The parent form for this control.
         #endregion
 
 		#region Properties.
+		/// <summary>
+		/// Property to set or return the currently open file.
+		/// </summary>
+		[Browsable(false)]
+	    public GorgonFileSystemFileEntry CurrentOpenFile
+	    {
+		    get;
+		    set;
+	    }
+
 		/// <summary>
 		/// Property to return the selected editor tree node.
 		/// </summary>
@@ -448,11 +457,6 @@ namespace GorgonLibrary.Editor
                 return;
             }
 
-	        if (_parentForm == null)
-	        {
-		        _parentForm = (formMain)FindForm();
-	        }
-
             // Create graphics resources.
             if (_selectBrush == null)
             {
@@ -496,7 +500,7 @@ namespace GorgonLibrary.Editor
 				attribs = _fadeAttributes;
 			}
 
-            if ((ContentManagement.Current != null) && (_parentForm != null) && (nodeFile != null) && (_parentForm.CurrentOpenFile == nodeFile.File))
+            if ((ContentManagement.Current != null) && (nodeFile != null) && (CurrentOpenFile == nodeFile.File))
             {
                 // Create the open content font if it's been changed or doesn't exist.
                 if ((_openContent == null) 

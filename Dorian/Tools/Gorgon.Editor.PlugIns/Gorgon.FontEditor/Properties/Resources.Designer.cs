@@ -101,6 +101,16 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap cut_16x16 {
+            get {
+                object obj = ResourceManager.GetObject("cut_16x16", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap edit_16x16 {
             get {
                 object obj = ResourceManager.GetObject("edit_16x16", resourceCulture);
@@ -124,6 +134,16 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Properties {
         internal static System.Drawing.Bitmap glyph_kerning_16x16 {
             get {
                 object obj = ResourceManager.GetObject("glyph_kerning_16x16", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap glyph_select_16x16 {
+            get {
+                object obj = ResourceManager.GetObject("glyph_select_16x16", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -162,6 +182,15 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Properties {
         internal static string GORFNT_ANTIALIAS_STANDARD {
             get {
                 return ResourceManager.GetString("GORFNT_ANTIALIAS_STANDARD", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Clip the glyph from a texture..
+        /// </summary>
+        internal static string GORFNT_BUTTON_CLIP_GLYPH_TIP {
+            get {
+                return ResourceManager.GetString("GORFNT_BUTTON_CLIP_GLYPH_TIP", resourceCulture);
             }
         }
         
@@ -220,15 +249,6 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Untitled.
-        /// </summary>
-        internal static string GORFNT_DEFAULT_TITLE_FILE {
-            get {
-                return ResourceManager.GetString("GORFNT_DEFAULT_TITLE_FILE", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Gorgon Font Editor.
         /// </summary>
         internal static string GORFNT_DESC {
@@ -252,6 +272,15 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Properties {
         internal static string GORFNT_DLG_FOREGROUND_COLOR_TEXT {
             get {
                 return ResourceManager.GetString("GORFNT_DLG_FOREGROUND_COLOR_TEXT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Open image.
+        /// </summary>
+        internal static string GORFNT_DLG_IMAGE_TEXT {
+            get {
+                return ResourceManager.GetString("GORFNT_DLG_IMAGE_TEXT", resourceCulture);
             }
         }
         

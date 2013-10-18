@@ -20,7 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: Monday, October 14, 2013 5:40:55 PM
+// Created: Monday, October 14, 2013 6:18:12 PM
 // 
 #endregion
 
@@ -28,14 +28,14 @@ using System;
 using System.ComponentModel;
 using System.Resources;
 
-namespace GorgonLibrary.Editor
+namespace GorgonLibrary.Design
 {
 	/// <summary>
-	/// A localizable version of the description attribute.
+	/// A localizable version of the display name attribute.
 	/// </summary>
 	[AttributeUsage(AttributeTargets.Property)]
-	public class EditorDescriptionAttribute
-		: DescriptionAttribute
+	public class LocalDisplayNameAttribute
+		: DisplayNameAttribute
 	{
 		#region Methods.
 		/// <summary>
@@ -53,11 +53,11 @@ namespace GorgonLibrary.Editor
 
 		#region Constructor/Destructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="EditorDescriptionAttribute"/> class.
+		/// Initializes a new instance of the <see cref="LocalDisplayNameAttribute"/> class.
 		/// </summary>
 		/// <param name="resourcesType">The type of resources for the assembly.</param>
 		/// <param name="resourceName">Name of the resource to look up.</param>
-		public EditorDescriptionAttribute(Type resourcesType, string resourceName)
+		public LocalDisplayNameAttribute(Type resourcesType, [Localizable(false)] string resourceName)
 			: base(GetString(resourcesType, resourceName))
 		{
 		}

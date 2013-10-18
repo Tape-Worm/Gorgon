@@ -28,13 +28,13 @@ using System;
 using System.ComponentModel;
 using System.Resources;
 
-namespace GorgonLibrary.Editor
+namespace GorgonLibrary.Design
 {
 	/// <summary>
 	/// A localizable version of the category attribute.
 	/// </summary>
 	[AttributeUsage(AttributeTargets.Property)]
-	public class EditorCategoryAttribute
+	public class LocalCategoryAttribute
 		: CategoryAttribute
 	{
 		#region Methods.
@@ -53,11 +53,11 @@ namespace GorgonLibrary.Editor
 
 		#region Constructor/Destructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="EditorCategoryAttribute"/> class.
+		/// Initializes a new instance of the <see cref="LocalCategoryAttribute"/> class.
 		/// </summary>
 		/// <param name="resourcesType">The type of resources for the assembly.</param>
 		/// <param name="resourceName">Name of the resource to look up.</param>
-		public EditorCategoryAttribute(Type resourcesType, string resourceName)
+		public LocalCategoryAttribute(Type resourcesType, [Localizable(false)] string resourceName)
 			: base(GetString(resourcesType, resourceName))
 		{
 		}

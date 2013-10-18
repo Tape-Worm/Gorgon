@@ -130,6 +130,9 @@
     <Compile Include="Collections\Specialized\GorgonNamedObjectReadOnlyCollection.cs" />
     <Compile Include="Configuration\GorgonApplicationSettingAttribute.cs" />
     <Compile Include="Configuration\GorgonApplicationSettings.cs" />
+    <Compile Include="Design\LocalCategoryAttribute.cs" />
+    <Compile Include="Design\LocalDescriptionAttribute.cs" />
+    <Compile Include="Design\LocalDisplayNameAttribute.cs" />
     <Compile Include="Diagnostics\GorgonComputerInfo.cs" />
     <Compile Include="Diagnostics\GorgonProcess.cs" />
     <Compile Include="Events\GorgonCancelEventArgs.cs" />

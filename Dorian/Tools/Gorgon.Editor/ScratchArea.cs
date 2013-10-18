@@ -71,6 +71,40 @@ namespace GorgonLibrary.Editor
     {
         #region Classes.
 		/// <summary>
+		/// A case insensitive string comparer.
+		/// </summary>
+		private class StringOrdinalCaseInsensitiveComparer
+			: IEqualityComparer<string>
+		{
+			#region IEqualityComparer<string> Members
+			/// <summary>
+			/// Determines whether the specified objects are equal.
+			/// </summary>
+			/// <param name="x">The first object of type string to compare.</param>
+			/// <param name="y">The second object of type string to compare.</param>
+			/// <returns>
+			/// true if the specified objects are equal; otherwise, false.
+			/// </returns>
+			public bool Equals(string x, string y)
+			{
+				return string.Equals(x, y, StringComparison.OrdinalIgnoreCase);
+			}
+
+			/// <summary>
+			/// Returns a hash code for this instance.
+			/// </summary>
+			/// <param name="obj">The object.</param>
+			/// <returns>
+			/// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table. 
+			/// </returns>
+			public int GetHashCode(string obj)
+			{
+				return obj.ToUpperInvariant().GetHashCode();
+			}
+			#endregion
+		}
+
+		/// <summary>
 		/// Settings for directory copy.
 		/// </summary>
 		private class CopyDirectorySettings
@@ -219,6 +253,7 @@ namespace GorgonLibrary.Editor
         #endregion
 
         #region Variables.
+		private readonly static HashSet<string> _blockedFiles;
         private readonly static string[] _systemDirs;
         private static Guid _scratchID = Guid.NewGuid();
 		private readonly static char[] _fileChars = Path.GetInvalidFileNameChars();	// Invalid filename characters.
@@ -572,7 +607,7 @@ namespace GorgonLibrary.Editor
                     return;
                 }
 
-                if (FileManagement.IsBlocked(file))
+                if (IsBlocked(file))
                 {
                     continue;
                 }
@@ -926,7 +961,7 @@ namespace GorgonLibrary.Editor
             }
 
             // Do not copy if this is a blocked file.
-            if (FileManagement.IsBlocked(file))
+            if (IsBlocked(file))
             {
                 return null;
             }
@@ -1313,7 +1348,7 @@ namespace GorgonLibrary.Editor
                         CancelToken = tokenSource.Token,
                         ConflictResult = ConfirmationResult.None,
                         FileCount = 0,
-                        TotalFiles = ScratchFiles.FindFiles(directory.FullPath, "*", true).Count(item => !FileManagement.IsBlocked(item)),
+                        TotalFiles = ScratchFiles.FindFiles(directory.FullPath, "*", true).Count(item => !IsBlocked(item)),
                         ProcessForm = processForm
                     };
 
@@ -1362,7 +1397,7 @@ namespace GorgonLibrary.Editor
             }
 
             // Do not export our blocked files list.
-            if (FileManagement.IsBlocked(file))
+            if (IsBlocked(file))
             {
                 return false;
             }
@@ -1683,6 +1718,30 @@ namespace GorgonLibrary.Editor
 				scratchDir.Attributes = FileAttributes.NotContentIndexed | FileAttributes.Hidden;
 			}
 		}
+
+		/// <summary>
+		/// Function to return whether or not a file is in the blocked list.
+		/// </summary>
+		/// <param name="file">File to check.</param>
+		/// <returns>TRUE if blocked, FALSE if not.</returns>
+		public static bool IsBlocked(GorgonFileSystemFileEntry file)
+		{
+			return _blockedFiles.Contains(file.Name);
+		}
+
+		/// <summary>
+		/// Function to add a file to the blocked list.
+		/// </summary>
+		/// <param name="file">File to block.</param>
+		public static void AddBlockedFile(GorgonFileSystemFileEntry file)
+		{
+			if (_blockedFiles.Contains(file.Name))
+			{
+				return;
+			}
+
+			_blockedFiles.Add(file.Name);
+		}
 		#endregion
 
 		#region Constructor/Destructor.
@@ -1694,6 +1753,9 @@ namespace GorgonLibrary.Editor
 			_systemDirs = ((Environment.SpecialFolder[])Enum.GetValues(typeof(Environment.SpecialFolder)))
 							.Select(Environment.GetFolderPath)
 							.ToArray();
+
+			_blockedFiles = new HashSet<string>(new StringOrdinalCaseInsensitiveComparer());
+
 			ScratchFiles = new GorgonFileSystem();
 		}
 		#endregion

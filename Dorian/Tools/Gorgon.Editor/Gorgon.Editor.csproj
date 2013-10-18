@@ -65,11 +65,15 @@
     <Reference Include="KRBTabControl">
       <HintPath>..\..\Dependencies\KRBTabControl\KRBTabControl.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.WindowsAPICodePack.Shell">
+      <HintPath>..\..\Dependencies\WindowsAPICodePack\Microsoft.WindowsAPICodePack.Shell.dll</HintPath>
+    </Reference>
     <Reference Include="SlimMath, Version=1.0.0.0, Culture=neutral, PublicKeyToken=eb5b190254be1642, processorArchitecture=MSIL">
       <HintPath>..\..\Dependencies\SlimMath\SlimMath\bin\Release\SlimMath.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Data" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
@@ -125,15 +129,23 @@
       <DependentUpon>panelEx.cs</DependentUpon>
     </Compile>
     <Compile Include="Controls\TreeNodeDirectory.cs" />
-    <Compile Include="EditorDisplayNameAttribute.cs" />
     <Compile Include="DefaultContent.cs" />
     <Compile Include="Designers\AlphaChannelEditor.cs" />
     <Compile Include="Designers\AlphaChannelTypeConverter.cs" />
     <Compile Include="Designers\PointFConverter.cs" />
     <Compile Include="Designers\RGBAEditor.cs" />
     <Compile Include="Designers\RGBATypeConverter.cs" />
-    <Compile Include="EditorCategoryAttribute.cs" />
-    <Compile Include="EditorDescriptionAttribute.cs" />
+    <Compile Include="EditorFileBrowser.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="EditorMetaDataFile.cs" />
+    <Compile Include="EditorMetaDataItem.cs" />
+    <Compile Include="formEditorFileSelector.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="formEditorFileSelector.Designer.cs">
+      <DependentUpon>formEditorFileSelector.cs</DependentUpon>
+    </Compile>
     <Compile Include="FileManagement.cs" />
     <Compile Include="formAlphaPicker.cs">
       <SubType>Form</SubType>
@@ -212,6 +224,9 @@
     <EmbeddedResource Include="Controls\PreferencePanel.resx">
       <DependentUpon>PreferencePanel.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="formEditorFileSelector.resx">
+      <DependentUpon>formEditorFileSelector.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="formAlphaPicker.resx">
       <DependentUpon>formAlphaPicker.cs</DependentUpon>
     </EmbeddedResource>
@@ -265,6 +280,8 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Gorgon2.ico" />
+    <None Include="Resources\find_16x16.png" />
+    <None Include="Resources\choose_view_16x16.png" />
     <None Include="Resources\remove_16x16.png" />
     <None Include="Resources\add_16x16.png" />
     <None Include="Resources\down_16x16.png" />
