@@ -34,6 +34,7 @@ using Fetze.WinFormsColor;
 using GorgonLibrary.Diagnostics;
 using GorgonLibrary.Editor.FontEditorPlugIn.Properties;
 using GorgonLibrary.Graphics;
+using GorgonLibrary.IO;
 using GorgonLibrary.Math;
 using GorgonLibrary.Renderers;
 using GorgonLibrary.UI;
@@ -157,38 +158,22 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 	    private GorgonRenderTarget2D _editGlyph;
         #endregion
 
-        #region Properties.
-        #endregion
-
         #region Methods.
 		/// <summary>
-		/// Function to localize the text of the controls on the form.
+		/// Handles the Click event of the buttonGlyphClip control.
 		/// </summary>
-	    protected override void LocalizeControls()
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+		private void buttonGlyphClip_Click(object sender, EventArgs e)
 		{
-			Text = Resources.GORFNT_DEFAULT_TITLE_FILE;
-			buttonEditGlyph.Text = Resources.GORFNT_BUTTON_EDIT_GLYPH;
-			buttonGlyphSizeSpace.Text = Resources.GORFNT_BUTTON_EDIT_ADVANCE_TIP;
-			buttonGlyphKern.Text = Resources.GORFNT_BUTTON_EDIT_KERNING_TIP;
-			menuTextColor.Text = Resources.GORFNT_MENU_DISPLAY_COLORS;
-			itemSampleTextForeground.Text = Resources.GORFNT_MENU_FOREGROUND_COLOR;
-			itemSampleTextBackground.Text = Resources.GORFNT_MENU_BACKGROUND_COLOR;
-			menuShadow.Text = Resources.GORFNT_MENU_SHADOW_SETTINGS;
-			itemPreviewShadowEnable.Text = Resources.GORFNT_MENU_ENABLE_SHADOW;
-			itemShadowOpacity.Text = Resources.GORFNT_MENU_SHADOW_OPACITY;
-			itemShadowOffset.Text = Resources.GORFNT_MENU_SHADOW_OFFSET;
-			toolStripLabel1.Text = string.Format("{0}:", Resources.GORFNT_LABEL_PREVIEW_TEXT);
-			labelTextureCount.Text = string.Format("{0}: 0/0", Resources.GORFNT_LABEL_TEXTURE_COUNT);
-			dropDownZoom.Text = string.Format("{0}: {1}", Resources.GORFNT_MENU_ZOOM, Resources.GORFNT_MENU_TO_WINDOW);
-			menuItemToWindow.Text = Resources.GORFNT_MENU_TO_WINDOW;
-			menuItem1600.Text = 16.ToString("P0", CultureInfo.CurrentUICulture.NumberFormat);
-			menuItem800.Text = 8.ToString("P0", CultureInfo.CurrentUICulture.NumberFormat);
-			menuItem400.Text = 4.ToString("P0", CultureInfo.CurrentUICulture.NumberFormat);
-			menuItem200.Text = 2.ToString("P0", CultureInfo.CurrentUICulture.NumberFormat);
-			menuItem100.Text = 1.ToString("P0", CultureInfo.CurrentUICulture.NumberFormat);
-			menuItem75.Text = 0.75.ToString("P0", CultureInfo.CurrentUICulture.NumberFormat);
-			menuItem50.Text = 0.5.ToString("P0", CultureInfo.CurrentUICulture.NumberFormat);
-			menuItem25.Text = 0.25.ToString("P0", CultureInfo.CurrentUICulture.NumberFormat);
+			imageFileBrowser.FileExtensions.Clear();
+			imageFileBrowser.FileExtensions.Add(new GorgonFileExtension("dds", "Direct Draw Surface (*.dds)"));
+			imageFileBrowser.FileExtensions.Add(new GorgonFileExtension("png", "Portable Network Graphics (*.png)"));
+			imageFileBrowser.FileExtensions.Add(new GorgonFileExtension("tga", "Truevision Targa Files (*.tga)"));
+			imageFileBrowser.FileExtensions.Add(new GorgonFileExtension("bmp", "Windows Bitmap (*.bmp)"));
+			imageFileBrowser.FileExtensions.Add(new GorgonFileExtension("jpg", "Joint Photographics Experts Group (*.jpg)"));
+			imageFileBrowser.FileExtensions.Add(new GorgonFileExtension("*", "All files (*.*)"));
+			imageFileBrowser.ShowDialog(ParentForm);
 		}
 
 		/// <summary>
@@ -469,8 +454,9 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
         {
 			buttonEditGlyph.Enabled = _selectedGlyph != null;
 
-	        buttonGlyphKern.Enabled = buttonGlyphSizeSpace.Enabled = buttonEditGlyph.Enabled
-	                                                                 && _content.CurrentState == DrawState.GlyphEdit;
+	        buttonGlyphClip.Enabled =
+		        buttonGlyphKern.Enabled =
+		        buttonGlyphSizeSpace.Enabled = buttonEditGlyph.Enabled && _content.CurrentState == DrawState.GlyphEdit;
 
             if (_selectedGlyph != null)
             {
@@ -862,6 +848,37 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 			{
 				ValidateControls();
 			}
+		}
+
+		/// <summary>
+		/// Function to localize the text of the controls on the form.
+		/// </summary>
+		protected override void LocalizeControls()
+		{
+			Text = Resources.GORFNT_TITLE;
+			buttonEditGlyph.Text = Resources.GORFNT_BUTTON_EDIT_GLYPH;
+			buttonGlyphSizeSpace.Text = Resources.GORFNT_BUTTON_EDIT_ADVANCE_TIP;
+			buttonGlyphKern.Text = Resources.GORFNT_BUTTON_EDIT_KERNING_TIP;
+			buttonGlyphClip.Text = Resources.GORFNT_BUTTON_CLIP_GLYPH_TIP;
+			menuTextColor.Text = Resources.GORFNT_MENU_DISPLAY_COLORS;
+			itemSampleTextForeground.Text = Resources.GORFNT_MENU_FOREGROUND_COLOR;
+			itemSampleTextBackground.Text = Resources.GORFNT_MENU_BACKGROUND_COLOR;
+			menuShadow.Text = Resources.GORFNT_MENU_SHADOW_SETTINGS;
+			itemPreviewShadowEnable.Text = Resources.GORFNT_MENU_ENABLE_SHADOW;
+			itemShadowOpacity.Text = Resources.GORFNT_MENU_SHADOW_OPACITY;
+			itemShadowOffset.Text = Resources.GORFNT_MENU_SHADOW_OFFSET;
+			toolStripLabel1.Text = string.Format("{0}:", Resources.GORFNT_LABEL_PREVIEW_TEXT);
+			labelTextureCount.Text = string.Format("{0}: 0/0", Resources.GORFNT_LABEL_TEXTURE_COUNT);
+			dropDownZoom.Text = string.Format("{0}: {1}", Resources.GORFNT_MENU_ZOOM, Resources.GORFNT_MENU_TO_WINDOW);
+			menuItemToWindow.Text = Resources.GORFNT_MENU_TO_WINDOW;
+			menuItem1600.Text = 16.ToString("P0", CultureInfo.CurrentUICulture.NumberFormat);
+			menuItem800.Text = 8.ToString("P0", CultureInfo.CurrentUICulture.NumberFormat);
+			menuItem400.Text = 4.ToString("P0", CultureInfo.CurrentUICulture.NumberFormat);
+			menuItem200.Text = 2.ToString("P0", CultureInfo.CurrentUICulture.NumberFormat);
+			menuItem100.Text = 1.ToString("P0", CultureInfo.CurrentUICulture.NumberFormat);
+			menuItem75.Text = 0.75.ToString("P0", CultureInfo.CurrentUICulture.NumberFormat);
+			menuItem50.Text = 0.5.ToString("P0", CultureInfo.CurrentUICulture.NumberFormat);
+			menuItem25.Text = 0.25.ToString("P0", CultureInfo.CurrentUICulture.NumberFormat);
 		}
 
 		/// <summary>

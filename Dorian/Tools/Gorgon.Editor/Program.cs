@@ -44,8 +44,12 @@ namespace GorgonLibrary.Editor
 	/// Main application interface.
 	/// </summary>
 	static class Program
-    {
-        #region Properties.
+	{
+		#region Constants.
+		private const string MetaDataFile = ".gorgon.editor.metadata";				// Metadata file name.
+		#endregion
+
+		#region Properties.
 		/// <summary>
 		/// Property to return the logging interface for the application.
 		/// </summary>
@@ -65,9 +69,18 @@ namespace GorgonLibrary.Editor
 		}
 
 		/// <summary>
-		/// Property to return the graphics interface.
+		/// Property to set or return the graphics interface.
 		/// </summary>
 		public static GorgonGraphics Graphics
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Property to set or return the editor meta data file.
+		/// </summary>
+		public static EditorMetaDataFile EditorMetaData
 		{
 			get;
 			set;
@@ -94,6 +107,8 @@ namespace GorgonLibrary.Editor
 			{
 				Application.EnableVisualStyles();
 				Application.SetCompatibleTextRenderingDefault(false);
+
+				EditorMetaData = new EditorMetaDataFile(MetaDataFile);
 
 				Settings.Load();
 

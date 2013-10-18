@@ -783,4 +783,49 @@ Code: 0x{2}</value>
   <data name="GOR_FILE_EXTENSION_TOSTR" xml:space="preserve">
     <value>Writer plug-in file extension: .{0} - {1}</value>
   </data>
+  <data name="PROP_BORDERCOLOR_DESC" xml:space="preserve">
+    <value>Sets the color of the border on the form when Border is set to true.</value>
+  </data>
+  <data name="PROP_BORDERSIZE_DESC" xml:space="preserve">
+    <value>The size, in pixels, of the window border when the Border property is set to true.</value>
+  </data>
+  <data name="PROP_BORDER_DESC" xml:space="preserve">
+    <value>When set to true, a border will be drawn on the form.</value>
+  </data>
+  <data name="PROP_CATEGORY_APPEARANCE" xml:space="preserve">
+    <value>Appearance</value>
+  </data>
+  <data name="PROP_CATEGORY_BEHAVIOR" xml:space="preserve">
+    <value>Behavior</value>
+  </data>
+  <data name="PROP_CATEGORY_DESIGN" xml:space="preserve">
+    <value>Design</value>
+  </data>
+  <data name="PROP_CATEGORY_WINDOWSTYLE" xml:space="preserve">
+    <value>Window style</value>
+  </data>
+  <data name="PROP_ICON_DESC" xml:space="preserve">
+    <value>Sets the icon for the window.</value>
+  </data>
+  <data name="PROP_RESIZABLE_DESC" xml:space="preserve">
+    <value>Determines if a form can be resized by the user or not.</value>
+  </data>
+  <data name="PROP_RESIZEHANDLE_DESC" xml:space="preserve">
+    <value>The size, in pixels, of the resizable handles on the window border.</value>
+  </data>
+  <data name="PROP_SHOWICON_DESC" xml:space="preserve">
+    <value>Shows or hides the icon for the window.</value>
+  </data>
+  <data name="PROP_TEXT_DESC" xml:space="preserve">
+    <value>Sets the text for the window caption.</value>
+  </data>
+  <data name="PROP_WINDOWCAPTION_DESC" xml:space="preserve">
+    <value>Shows or hides the caption for the window.  This will include the caption, system menu, and the minimize/maximize/close buttons.</value>
+  </data>
+  <data name="GOR_LISTVIEW_CANNOT_FIND_HEADER" xml:space="preserve">
+    <value>Cannot find the column header.</value>
+  </data>
+  <data name="GOR_LISTVIEW_CANNOT_UPDATE_COLUMN" xml:space="preserve">
+    <value>Cannot update the column.</value>
+  </data>
 </root>

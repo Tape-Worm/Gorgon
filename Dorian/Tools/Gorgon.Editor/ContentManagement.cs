@@ -370,7 +370,12 @@ namespace GorgonLibrary.Editor
 		        settings.CreateContent = false;
 		    }
 
+			EditorMetaDataFile metaData = plugIn.GetMetaData(file.FullPath);
+
             ContentObject content = plugIn.CreateContentObject(settings);
+
+			// Attach our meta data.
+			content.MetaData = metaData;
 
             Debug.Assert(_currentContentObject != null, "Content should not be NULL!");
 
@@ -405,6 +410,12 @@ namespace GorgonLibrary.Editor
 			using (var contentStream = file.OpenStream(true))
 			{
 				Current.Persist(contentStream);
+			}
+
+			// Persist any meta data we might have.
+			if (Current.MetaData != null)
+			{
+				Current.MetaData.Save();
 			}
 
             _contentChanged = false;

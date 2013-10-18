@@ -55,8 +55,11 @@
 			this.panelToolbar = new System.Windows.Forms.Panel();
 			this.stripGlyphs = new System.Windows.Forms.ToolStrip();
 			this.buttonEditGlyph = new System.Windows.Forms.ToolStripButton();
+			this.toolStripSeparator6 = new System.Windows.Forms.ToolStripSeparator();
 			this.buttonGlyphSizeSpace = new System.Windows.Forms.ToolStripButton();
 			this.buttonGlyphKern = new System.Windows.Forms.ToolStripButton();
+			this.toolStripSeparator7 = new System.Windows.Forms.ToolStripSeparator();
+			this.buttonGlyphClip = new System.Windows.Forms.ToolStripButton();
 			this.panelControls = new System.Windows.Forms.Panel();
 			this.stripFontDisplay = new System.Windows.Forms.ToolStrip();
 			this.buttonPrevTexture = new System.Windows.Forms.ToolStripButton();
@@ -91,6 +94,7 @@
 			this.toolStripLabel1 = new System.Windows.Forms.ToolStripLabel();
 			this.textPreviewText = new System.Windows.Forms.ToolStripTextBox();
 			this.panel2 = new System.Windows.Forms.Panel();
+			this.imageFileBrowser = new GorgonLibrary.Editor.EditorFileBrowser();
 			this.PanelDisplay.SuspendLayout();
 			this.panel1.SuspendLayout();
 			this.panelToolbar.SuspendLayout();
@@ -174,8 +178,11 @@
 			this.stripGlyphs.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
 			this.stripGlyphs.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.buttonEditGlyph,
+            this.toolStripSeparator6,
             this.buttonGlyphSizeSpace,
-            this.buttonGlyphKern});
+            this.buttonGlyphKern,
+            this.toolStripSeparator7,
+            this.buttonGlyphClip});
 			this.stripGlyphs.Location = new System.Drawing.Point(0, 0);
 			this.stripGlyphs.Name = "stripGlyphs";
 			this.stripGlyphs.Size = new System.Drawing.Size(804, 25);
@@ -194,6 +201,11 @@
 			this.buttonEditGlyph.Size = new System.Drawing.Size(81, 22);
 			this.buttonEditGlyph.Text = "&Edit Glyph";
 			this.buttonEditGlyph.Click += new System.EventHandler(this.buttonEditGlyph_Click);
+			// 
+			// toolStripSeparator6
+			// 
+			this.toolStripSeparator6.Name = "toolStripSeparator6";
+			this.toolStripSeparator6.Size = new System.Drawing.Size(6, 25);
 			// 
 			// buttonGlyphSizeSpace
 			// 
@@ -214,6 +226,22 @@
 			this.buttonGlyphKern.Name = "buttonGlyphKern";
 			this.buttonGlyphKern.Size = new System.Drawing.Size(23, 22);
 			this.buttonGlyphKern.Text = "Sets the kerning values for the selected glyph.";
+			// 
+			// toolStripSeparator7
+			// 
+			this.toolStripSeparator7.Name = "toolStripSeparator7";
+			this.toolStripSeparator7.Size = new System.Drawing.Size(6, 25);
+			// 
+			// buttonGlyphClip
+			// 
+			this.buttonGlyphClip.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.buttonGlyphClip.Enabled = false;
+			this.buttonGlyphClip.Image = global::GorgonLibrary.Editor.FontEditorPlugIn.Properties.Resources.glyph_select_16x16;
+			this.buttonGlyphClip.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.buttonGlyphClip.Name = "buttonGlyphClip";
+			this.buttonGlyphClip.Size = new System.Drawing.Size(23, 22);
+			this.buttonGlyphClip.Text = "Clip Glyph";
+			this.buttonGlyphClip.Click += new System.EventHandler(this.buttonGlyphClip_Click);
 			// 
 			// panelControls
 			// 
@@ -534,6 +562,11 @@
 			this.panel2.Size = new System.Drawing.Size(806, 208);
 			this.panel2.TabIndex = 4;
 			// 
+			// imageFileBrowser
+			// 
+			this.imageFileBrowser.DefaultExtension = "png";
+			this.imageFileBrowser.Text = "Open Image";
+			// 
 			// GorgonFontContentPanel
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
@@ -605,6 +638,10 @@
 		private System.Windows.Forms.ToolStripButton buttonGlyphSizeSpace;
 		private System.Windows.Forms.ToolStripButton buttonEditGlyph;
 		private System.Windows.Forms.ToolStripButton buttonGlyphKern;
+		private System.Windows.Forms.ToolStripSeparator toolStripSeparator6;
+		private System.Windows.Forms.ToolStripSeparator toolStripSeparator7;
+		private System.Windows.Forms.ToolStripButton buttonGlyphClip;
+		private EditorFileBrowser imageFileBrowser;
 
     }
 }

@@ -49,7 +49,16 @@ namespace GorgonLibrary.IO
 		#endregion
 
 		#region Properties.
-
+		/// <summary>
+		/// Property to return whether the extension is empty or not.
+		/// </summary>
+		public bool IsEmpty
+		{
+			get
+			{
+				return string.IsNullOrWhiteSpace(Extension);
+			}
+		}
 		#endregion
 
 		#region Methods.

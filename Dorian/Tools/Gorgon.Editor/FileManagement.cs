@@ -28,7 +28,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Xml.Linq;
 using GorgonLibrary.Editor.Properties;
 using GorgonLibrary.IO;
 
@@ -39,49 +38,7 @@ namespace GorgonLibrary.Editor
     /// </summary>
     static class FileManagement
     {
-        #region Constants.
-        private const string MetaDataRootName = "Gorgon.Editor.MetaData";           // Name of the root node in the meta data.
-        private const string MetaDataWriterPlugIn = "WriterPlugIn";                 // Name of the node that contains meta data for the plug-in writer..
-        private const string MetaDataTypeName = "TypeName";                         // Name of attribute/element with type name information.
-        private const string MetaDataFile = ".gorgon.editor.metadata";              // Meta data file name.
-        private const string MetaDataFilePath = "/" + MetaDataFile;                 // Meta data file path.
-        #endregion
-
         #region Classes.
-		/// <summary>
-		/// A case insensitive string comparer.
-		/// </summary>
-	    private class StringOrdinalCaseInsensitiveComparer
-			: IEqualityComparer<string>
-		{
-			#region IEqualityComparer<string> Members
-			/// <summary>
-			/// Determines whether the specified objects are equal.
-			/// </summary>
-			/// <param name="x">The first object of type string to compare.</param>
-			/// <param name="y">The second object of type string to compare.</param>
-			/// <returns>
-			/// true if the specified objects are equal; otherwise, false.
-			/// </returns>
-			public bool Equals(string x, string y)
-			{
-				return string.Equals(x, y, StringComparison.OrdinalIgnoreCase);
-			}
-
-			/// <summary>
-			/// Returns a hash code for this instance.
-			/// </summary>
-			/// <param name="obj">The object.</param>
-			/// <returns>
-			/// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table. 
-			/// </returns>
-			public int GetHashCode(string obj)
-			{
-				return obj.ToUpperInvariant().GetHashCode();
-			}
-			#endregion
-		}
-
         /// <summary>
         /// A case insensitive comparer for file extensions.
         /// </summary>
@@ -117,12 +74,14 @@ namespace GorgonLibrary.Editor
         }
         #endregion
 
-        #region Variables.
-        private readonly static HashSet<string> _blockedFiles;
-        private readonly static Dictionary<GorgonFileExtension, GorgonFileSystemProvider> _readerFiles;
+		#region Constants.
+		private const string MetaDataWriterPlugIn = "WriterPlugIn";                 // Name of the node that contains meta data for the plug-in writer..
+		private const string MetaDataTypeName = "TypeName";                         // Name of attribute/element with type name information.
+		#endregion
+
+		#region Variables.
+		private readonly static Dictionary<GorgonFileExtension, GorgonFileSystemProvider> _readerFiles;
         private readonly static Dictionary<GorgonFileExtension, FileWriterPlugIn> _writerFiles;
-        private readonly static XElement _metaDataRootNode = new XElement(MetaDataRootName);
-        private static XDocument _metaDataXML;
         #endregion
 
         #region Properties.
@@ -156,52 +115,6 @@ namespace GorgonLibrary.Editor
 
         #region Methods.
         /// <summary>
-        /// Function to retrieve the meta data for the scratch area files.
-        /// </summary>
-        /// <returns>The XML document containing the metadata, or NULL (Nothing in VB.Net) if no meta data was found.</returns>
-        private static XDocument GetMetaData()
-        {
-            if (_metaDataXML != null)
-            {
-                return _metaDataXML;
-            }
-
-            _metaDataXML = new XDocument(new XDeclaration("1.0", "utf-8", "yes"), _metaDataRootNode);
-
-            // If we have no files, then there's no metadata.
-            if ((ScratchArea.ScratchFiles == null)
-                || ((ScratchArea.ScratchFiles.RootDirectory.Directories.Count == 0)
-                    && (ScratchArea.ScratchFiles.RootDirectory.Files.Count == 0)))
-            {
-                return _metaDataXML;
-            }
-
-            var file = ScratchArea.ScratchFiles.GetFile(MetaDataFilePath);
-
-            if (file == null)
-            {
-                return _metaDataXML;
-            }
-
-            XDocument metaDataFile;
-
-            using (var metaStream = file.OpenStream(false))
-            {
-                metaDataFile = XDocument.Load(metaStream);
-            }
-
-            // If this file is invalid, then do not return it.
-            if (!metaDataFile.Descendants(_metaDataRootNode.Name).Any())
-            {
-                return _metaDataXML;
-            }
-
-            _metaDataXML = metaDataFile;
-
-            return _metaDataXML;
-        }
-        
-        /// <summary>
         /// Function to retrieve the file types that can be read by the available file system providers.
         /// </summary>
         /// <param name="provider">File system provider to evaluate.</param>
@@ -232,18 +145,8 @@ namespace GorgonLibrary.Editor
         {
             ScratchArea.DestroyScratchArea();
             ScratchArea.InitializeScratch();
-            _metaDataXML = null;
+			Program.EditorMetaData.MetaDataItems.Clear();
         }
-
-		/// <summary>
-		/// Function to return whether or not a file is in the blocked list.
-		/// </summary>
-		/// <param name="file">File to check.</param>
-		/// <returns>TRUE if blocked, FALSE if not.</returns>
-	    public static bool IsBlocked(GorgonFileSystemFileEntry file)
-		{
-			return _blockedFiles.Contains(file.Name);
-		}
 
         /// <summary>
         /// Function to initialize the file types available to the application.
@@ -287,54 +190,21 @@ namespace GorgonLibrary.Editor
         /// <param name="plugIn">Plug-in to assign.</param>
         public static void SetWriterPlugIn(FileWriterPlugIn plugIn)
         {
-            XDocument tempMetaData = GetMetaData();
+	        if (plugIn == null)
+	        {
+				// If the writer is not set, then remove it from the meta data.
+		        if (Program.EditorMetaData.MetaDataItems.ContainsKey(MetaDataWriterPlugIn))
+		        {
+			        Program.EditorMetaData.MetaDataItems.Remove(MetaDataWriterPlugIn);
+		        }
 
-            if (tempMetaData == null)
-            {
-                return;
-            }
+		        return;
+	        }
 
-            XElement rootNode = tempMetaData.Descendants(MetaDataRootName).FirstOrDefault();
-            
-            // If we cannot find the root node in the metadata, then leave.
-            if (rootNode == null)
-            {
-                return;
-            }
+			var item = new EditorMetaDataItem(MetaDataWriterPlugIn);
 
-            XElement writerNode = tempMetaData.Descendants(MetaDataWriterPlugIn).FirstOrDefault();
-
-            // If passing NULL, then remove the setting from the metadata.
-            if (plugIn == null)
-            {
-                if (writerNode == null)
-                {
-                    return;
-                }
-
-                writerNode.Remove();
-            }
-            else
-            {
-                if (writerNode == null)
-                {
-                    rootNode.Add(new XElement(MetaDataWriterPlugIn,
-                                              new XAttribute(MetaDataTypeName, plugIn.GetType().FullName)));
-                }
-                else
-                {
-                    XAttribute type = writerNode.Attribute(MetaDataTypeName);
-
-                    if (type == null)
-                    {
-                        writerNode.Add(new XAttribute(MetaDataTypeName, plugIn.GetType().FullName));
-                    }
-                    else
-                    {
-                        type.Value = plugIn.GetType().FullName;
-                    }
-                }
-            }
+	        item.Properties[MetaDataTypeName] = plugIn.Name;
+	        Program.EditorMetaData.MetaDataItems[item.Name] = item;
         }
 
         /// <summary>
@@ -345,35 +215,23 @@ namespace GorgonLibrary.Editor
         /// <returns>The plug-in used to write the file.</returns>
         public static FileWriterPlugIn GetWriterPlugIn(string fileExtension = null, bool skipMetaData = false)
         {
-            XDocument tempMetaData = GetMetaData();
-            FileWriterPlugIn result = null;
+			FileWriterPlugIn result;
 
-            // If we have meta-data, then use that to determine which file writer is used.
-            if ((tempMetaData != null) && (!skipMetaData))
-            {
-                // Read the meta data for the file.
-                var plugInElement = tempMetaData.Descendants(MetaDataWriterPlugIn).FirstOrDefault();
+			// If we have meta-data, then use that to determine which file writer is used.
+	        if ((!skipMetaData) && (Program.EditorMetaData.MetaDataItems.ContainsKey(MetaDataWriterPlugIn))
+					&& (Program.EditorMetaData.MetaDataItems[MetaDataWriterPlugIn].Properties.ContainsKey(MetaDataTypeName)))
+	        {
+				result = (from plugIn in PlugIns.WriterPlugIns
+						  where string.Equals(plugIn.Value.Name,
+											  Program.EditorMetaData.MetaDataItems[MetaDataWriterPlugIn].Properties[MetaDataTypeName],
+											  StringComparison.OrdinalIgnoreCase)
+						  select plugIn.Value).FirstOrDefault();
 
-                if (plugInElement != null)
-                {
-                    // Ensure this is properly formed.
-                    if ((plugInElement.HasAttributes)
-                        && (plugInElement.Attribute(MetaDataTypeName) != null)
-                        && (!string.IsNullOrWhiteSpace(plugInElement.Attribute(MetaDataTypeName).Value)))
-                    {
-                        result = (from plugIn in PlugIns.WriterPlugIns
-                                  where string.Equals(plugIn.Value.GetType().FullName,
-                                                      plugInElement.Attribute(MetaDataTypeName).Value,
-                                                      StringComparison.OrdinalIgnoreCase)
-                                  select plugIn.Value).FirstOrDefault();
-                    }
-                }
-
-                if (result != null)
-                {
-                    return result;
-                }
-            }
+		        if (result != null)
+		        {
+			        return result;
+		        }
+		    }
 
             // We did not find a file writer in the meta data, try to derive which plug-in to use from the extension.
             if (string.IsNullOrWhiteSpace(fileExtension))
@@ -442,11 +300,7 @@ namespace GorgonLibrary.Editor
             }
 
             // Write the meta data file to the file system.
-            XDocument metaData = GetMetaData();
-            using (var metaDataStream = ScratchArea.ScratchFiles.OpenStream(MetaDataFilePath, true))
-            {
-                metaData.Save(metaDataStream);
-            }
+			Program.EditorMetaData.Save();
 
             // Write the file.
             if (!plugIn.Save(path))
@@ -515,6 +369,9 @@ namespace GorgonLibrary.Editor
                 Filename = Path.GetFileName(path);
                 Program.Settings.LastEditorFile = path;
 
+				// Load the meta data if it exists.
+				Program.EditorMetaData.Load();
+
                 // If we can't write the file, then leave the editor file path as blank.
                 // If the file path is blank, then the Save As function will be triggered if we attempt to save so we 
                 // can save it in a format that we DO understand.  This is of course assuming we have any plug-ins loaded
@@ -547,14 +404,6 @@ namespace GorgonLibrary.Editor
         {
             _readerFiles = new Dictionary<GorgonFileExtension, GorgonFileSystemProvider>(new FileExtensionComparer());
             _writerFiles = new Dictionary<GorgonFileExtension, FileWriterPlugIn>(new FileExtensionComparer());
-
-            // Create default metadata.
-            _metaDataXML = new XDocument(new XDeclaration("1.0", "utf-8", "yes"), _metaDataRootNode);
-
-	        _blockedFiles = new HashSet<string>(new[]
-	                                            {
-		                                            MetaDataFile
-	                                            }, new StringOrdinalCaseInsensitiveComparer());
 
             Filename = "Untitled";
             FilePath = string.Empty;

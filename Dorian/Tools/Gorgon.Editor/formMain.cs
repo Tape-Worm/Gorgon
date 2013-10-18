@@ -99,8 +99,14 @@ namespace GorgonLibrary.Editor
 		/// </summary>
 		public GorgonFileSystemFileEntry CurrentOpenFile
 		{
-			get;
-			private set;
+			get
+			{
+				return treeFiles.CurrentOpenFile;
+			}
+			private set
+			{
+				treeFiles.CurrentOpenFile = value;
+			}
 		}
 		#endregion
 
@@ -1152,7 +1158,7 @@ namespace GorgonLibrary.Editor
 
 			// Add file nodes.
 			foreach (var fileEntry in from file in rootNode.Directory.Files.OrderBy(item => item.Name) 
-                                     where !FileManagement.IsBlocked(file) 
+                                     where !ScratchArea.IsBlocked(file) 
                                      select file)
 			{
 				var fileNode = new TreeNodeFile();
@@ -1168,7 +1174,7 @@ namespace GorgonLibrary.Editor
         /// <returns>TRUE if some files can be shown, FALSE if not.</returns>
         private static bool CanShowDirectoryFiles(GorgonFileSystemDirectory directory)
         {
-			return !directory.Files.All(FileManagement.IsBlocked);
+			return !directory.Files.All(ScratchArea.IsBlocked);
         }
 
 		/// <summary>
