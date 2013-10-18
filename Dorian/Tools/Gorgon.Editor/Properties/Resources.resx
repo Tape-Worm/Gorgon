@@ -514,4 +514,28 @@ The following characters are not allowed:
   <data name="GOREDIT_METADATA_CORRUPT" xml:space="preserve">
     <value>The meta data '{0}' is corrupted.</value>
   </data>
+  <data name="GOREDIT_BTN_OK" xml:space="preserve">
+    <value>&amp;OK</value>
+  </data>
+  <data name="GOREDIT_DLG_COLUMN_DATE" xml:space="preserve">
+    <value>Date</value>
+  </data>
+  <data name="GOREDIT_DLG_COLUMN_NAME" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="GOREDIT_DLG_COLUMN_SIZE" xml:space="preserve">
+    <value>Size</value>
+  </data>
+  <data name="GOREDIT_DLG_FILE_LABEL" xml:space="preserve">
+    <value>File</value>
+  </data>
+  <data name="GOREDIT_DLG_FILE_SELECT_TEXT" xml:space="preserve">
+    <value>Select a file</value>
+  </data>
+  <data name="GOREDIT_DLG_MENU_DETAILS" xml:space="preserve">
+    <value>Detail view</value>
+  </data>
+  <data name="GOREDIT_DLG_MENU_LARGE" xml:space="preserve">
+    <value>Thumbnail view</value>
+  </data>
 </root>

@@ -179,6 +179,16 @@ namespace GorgonLibrary.Editor
 		}
 
 		/// <summary>
+		/// Property to return whether this content has a thumbnail or not.
+		/// </summary>
+		[Browsable(false)]
+	    public bool HasThumbnail
+	    {
+		    get;
+		    protected set;
+	    }
+
+		/// <summary>
 		/// Property to return the name of the content object.
 		/// </summary>
         [Browsable(true),
@@ -335,6 +345,16 @@ namespace GorgonLibrary.Editor
 			{
 				_contentControl.ContentPersisted();
 			}
+		}
+
+		/// <summary>
+		/// Function to retrieve a thumbnail image for the content plug-in.
+		/// </summary>
+		/// <returns>The image for the thumbnail of the content.</returns>
+		/// <remarks>The size of the thumbnail should be set to 128x128.</remarks>
+		public virtual System.Drawing.Image GetThumbNailImage()
+		{
+			return null;
 		}
 
         /// <summary>
