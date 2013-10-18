@@ -30,13 +30,16 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Design;
+using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
+using System.Net.Sockets;
 using GorgonLibrary.Design;
 using GorgonLibrary.Editor.FontEditorPlugIn.Properties;
 using GorgonLibrary.Graphics;
 using GorgonLibrary.Math;
 using GorgonLibrary.Renderers;
+using SmoothingMode = System.Drawing.Drawing2D.SmoothingMode;
 
 namespace GorgonLibrary.Editor.FontEditorPlugIn
 {
@@ -737,6 +740,59 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		}
 
 		/// <summary>
+		/// Function to retrieve a thumbnail image for the content plug-in.
+		/// </summary>
+		/// <returns>
+		/// The image for the thumbnail of the content.
+		/// </returns>
+		/// <remarks>
+		/// The size of the thumbnail should be set to 128x128.
+		/// </remarks>
+	    public override Image GetThumbNailImage()
+	    {
+		    var result = new Bitmap(128, 128, PixelFormat.Format32bppArgb);
+
+			// Find the texture with the most characters.
+			var texture = (from glyph in Font.Glyphs
+			               group glyph by glyph.Texture
+			               into textureGroup
+			               orderby textureGroup.Count() descending
+			               select textureGroup.Key).First();
+
+			// Scale the image.
+			using (Image sourceImage = texture.ToGDIImage()[0])
+			{
+				using (var graphics = System.Drawing.Graphics.FromImage(result))
+				{
+					graphics.Clear(Color.Black);
+
+					float aspect = (float)sourceImage.Width / sourceImage.Height;
+					var size = new SizeF(128, 128);
+					var position = new PointF(0, 0);
+
+					if (aspect > 1.0f)
+					{
+						position = new PointF(0, 64.0f - size.Height / 2.0f);
+						size.Height /= aspect;
+					}
+					else if (aspect < 1.0f)
+					{
+						position = new PointF(64.0f - size.Width / 2.0f, 0);
+						size.Width *= aspect;
+					}
+
+					graphics.SmoothingMode = SmoothingMode.HighQuality;
+					graphics.DrawImage(sourceImage,
+					                   new RectangleF(position, size),
+					                   new RectangleF(0, 0, sourceImage.Width, sourceImage.Height),
+					                   GraphicsUnit.Pixel);
+				}
+			}
+
+			return result;
+	    }
+
+	    /// <summary>
 		/// Function to draw the interface for the content editor.
 		/// </summary>
 		public override void Draw()
@@ -781,6 +837,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 			PlugIn = plugIn;
 			_settings = initialSettings.Settings;
             _createFont = initialSettings.CreateContent;
+	        HasThumbnail = true;
         }
         #endregion
     }

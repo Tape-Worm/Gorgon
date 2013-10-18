@@ -832,8 +832,10 @@ namespace GorgonLibrary.IO
 				lock(_syncLock)
 				{
 					string writePath = GetWritePath(file.FullPath);
+					
+					var info = new FileInfo(writePath);
 					stream = new GorgonFileSystemStream(file, File.Open(writePath, FileMode.Create, FileAccess.Write, FileShare.None));
-					file.Update(0, 0, DateTime.Now, WriteLocation, writePath, _defaultProvider);
+					file.Update(info.Length, 0, DateTime.Now, WriteLocation, writePath, _defaultProvider);
 				}
 			}
 			else

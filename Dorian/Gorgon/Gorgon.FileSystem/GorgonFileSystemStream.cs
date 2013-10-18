@@ -225,10 +225,12 @@ namespace GorgonLibrary.IO
 			{
 				if (_baseStream != null)
 				{
-					OnUpdateFileEntry();
-
 					if (CloseUnderlyingStream)
+					{
 						_baseStream.Dispose();
+					}
+
+					OnUpdateFileEntry();
 				}
 				_baseStream = null;
 			}

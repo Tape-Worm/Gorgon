@@ -101,11 +101,11 @@ namespace GorgonLibrary.Editor
 		{
 			get
 			{
-				return treeFiles.CurrentOpenFile;
+				return ScratchArea.CurrentOpenFile;
 			}
 			private set
 			{
-				treeFiles.CurrentOpenFile = value;
+				ScratchArea.CurrentOpenFile = value;
 			}
 		}
 		#endregion

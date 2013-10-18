@@ -43,17 +43,13 @@ namespace GorgonLibrary.Editor
 	public enum FileViews
 	{
 		/// <summary>
-		/// List of files.
-		/// </summary>
-		List = 0,
-		/// <summary>
 		/// Details for the files.
 		/// </summary>
-		Details = 1,
+		Details = 0,
 		/// <summary>
 		/// Large icons for the files.
 		/// </summary>
-		Large = 2
+		Large = 1
 	}
 
 	/// <summary>
@@ -154,6 +150,7 @@ namespace GorgonLibrary.Editor
 		public EditorFileBrowser()
 		{
 			FileExtensions = new GorgonFileExtensionCollection();
+			Text = Resources.GOREDIT_DLG_FILE_SELECT_TEXT;
 		}
 		#endregion
 	}

@@ -116,6 +116,8 @@ namespace GorgonLibrary.IO
 
             switch (format)
             {
+				case BufferFormat.B8G8R8X8_UIntNormal:
+				case BufferFormat.B8G8R8A8_UIntNormal:
                 case BufferFormat.B8G8R8X8_UIntNormal_sRGB:
                 case BufferFormat.R8G8B8A8_UIntNormal_sRGB:
                 case BufferFormat.B8G8R8A8_UIntNormal_sRGB:

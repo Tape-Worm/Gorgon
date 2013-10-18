@@ -346,4 +346,11 @@
   <data name="GORFNT_DLG_IMAGE_TEXT" xml:space="preserve">
     <value>Open image</value>
   </data>
+  <data name="GORFNT_MENU_CREATE_FONT" xml:space="preserve">
+    <value>Create new font...</value>
+  </data>
+  <data name="GORFNT_PLUGIN_INVALID_SM" xml:space="preserve">
+    <value>This plug-in requires a video device with feature level SM4 or above.
+The current video device '{0}' has a feature level of {1}.</value>
+  </data>
 </root>

@@ -226,6 +226,15 @@ namespace GorgonLibrary.Editor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to &amp;OK.
+        /// </summary>
+        internal static string GOREDIT_BTN_OK {
+            get {
+                return ResourceManager.GetString("GOREDIT_BTN_OK", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Delete selected content.
         /// </summary>
         internal static string GOREDIT_BUTTON_DELETE {
@@ -294,6 +303,69 @@ namespace GorgonLibrary.Editor.Properties {
         internal static string GOREDIT_DEFAULT_TITLE {
             get {
                 return ResourceManager.GetString("GOREDIT_DEFAULT_TITLE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Date.
+        /// </summary>
+        internal static string GOREDIT_DLG_COLUMN_DATE {
+            get {
+                return ResourceManager.GetString("GOREDIT_DLG_COLUMN_DATE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Name.
+        /// </summary>
+        internal static string GOREDIT_DLG_COLUMN_NAME {
+            get {
+                return ResourceManager.GetString("GOREDIT_DLG_COLUMN_NAME", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Size.
+        /// </summary>
+        internal static string GOREDIT_DLG_COLUMN_SIZE {
+            get {
+                return ResourceManager.GetString("GOREDIT_DLG_COLUMN_SIZE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to File.
+        /// </summary>
+        internal static string GOREDIT_DLG_FILE_LABEL {
+            get {
+                return ResourceManager.GetString("GOREDIT_DLG_FILE_LABEL", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Select a file.
+        /// </summary>
+        internal static string GOREDIT_DLG_FILE_SELECT_TEXT {
+            get {
+                return ResourceManager.GetString("GOREDIT_DLG_FILE_SELECT_TEXT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Detail view.
+        /// </summary>
+        internal static string GOREDIT_DLG_MENU_DETAILS {
+            get {
+                return ResourceManager.GetString("GOREDIT_DLG_MENU_DETAILS", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Thumbnail view.
+        /// </summary>
+        internal static string GOREDIT_DLG_MENU_LARGE {
+            get {
+                return ResourceManager.GetString("GOREDIT_DLG_MENU_LARGE", resourceCulture);
             }
         }
         

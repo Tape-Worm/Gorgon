@@ -126,7 +126,7 @@ namespace GorgonLibrary.Editor
 		{
 			return Resources.unknown_document_16x16;
 		}
-		
+
 		/// <summary>
 		/// Function to retrieve the create menu item for this content.
 		/// </summary>

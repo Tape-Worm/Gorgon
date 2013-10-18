@@ -24,7 +24,6 @@
 // 
 #endregion
 
-using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Text;
@@ -71,8 +70,6 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		/// </summary>
 		private static void UpdateCachedFonts()
 		{
-			SortedDictionary<string, Font> fonts = null;
-
 			// Clear the cached fonts.
 			if (CachedFonts != null)
 			{
@@ -80,31 +77,35 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 					font.Value.Dispose();
 			}
 
-			fonts = new SortedDictionary<string, Font>();
+			var fonts = new SortedDictionary<string, Font>();
 
 			// Get font families.
 			foreach (var family in FontFamily.Families)
 			{
 				Font newFont = null;
 
-				if (!fonts.ContainsKey(family.Name.ToLower()))
+				if (fonts.ContainsKey(family.Name.ToLower()))
 				{
-					if (family.IsStyleAvailable(FontStyle.Regular))
-						newFont = new Font(family, 16.0f, FontStyle.Regular, GraphicsUnit.Pixel);
-					else
-					{
-						if (family.IsStyleAvailable(FontStyle.Bold))
-							newFont = new Font(family, 16.0f, FontStyle.Bold, GraphicsUnit.Pixel);
-						else
-						{
-							if (family.IsStyleAvailable(FontStyle.Italic))
-								newFont = new Font(family, 16.0f, FontStyle.Italic, GraphicsUnit.Pixel);
-						}
-					}
+					continue;
+				}
 
-					// Only add if we could use the regular, bold or italic style.
-					if (newFont != null)
-						fonts.Add(family.Name.ToLower(), newFont);
+				if (family.IsStyleAvailable(FontStyle.Regular))
+				{
+					newFont = new Font(family, 16.0f, FontStyle.Regular, GraphicsUnit.Pixel);
+				}
+				else if (family.IsStyleAvailable(FontStyle.Bold))
+				{
+					newFont = new Font(family, 16.0f, FontStyle.Bold, GraphicsUnit.Pixel);
+				}
+				else if (family.IsStyleAvailable(FontStyle.Italic))
+				{
+					newFont = new Font(family, 16.0f, FontStyle.Italic, GraphicsUnit.Pixel);
+				}
+
+				// Only add if we could use the regular, bold or italic style.
+				if (newFont != null)
+				{
+					fonts.Add(family.Name.ToLower(), newFont);
 				}
 			}
 
@@ -124,7 +125,9 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
             // Currently we won't work on Direct 3D 9 video devices because of issues when saving texture data.
             if (Graphics.VideoDevice.SupportedFeatureLevel == GorgonLibrary.Graphics.DeviceFeatureLevel.SM2_a_b)
             {
-                invalidReasons.AppendFormat("This plug-in requires a video device with feature level SM4 or above.\nThe current video device '" + Graphics.VideoDevice.Name + "' has a feature level of {0}.", Graphics.VideoDevice.SupportedFeatureLevel);
+	            invalidReasons.AppendFormat(Resources.GORFNT_PLUGIN_INVALID_SM,
+	                                        Graphics.VideoDevice.Name,
+	                                        Graphics.VideoDevice.SupportedFeatureLevel);
             }
 
             return invalidReasons.ToString();
@@ -193,7 +196,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		public override ToolStripMenuItem GetCreateMenuItem()
 		{
 		    return _createItem
-		           ?? (_createItem = CreateMenuItem("itemCreateGorgonFont", "Create new font...", GetContentIcon()));
+		           ?? (_createItem = CreateMenuItem("itemCreateGorgonFont", Resources.GORFNT_MENU_CREATE_FONT, GetContentIcon()));
 		}
 
         /// <summary>
@@ -202,11 +205,11 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		/// <returns>
 		/// The 16x16 image for the content.
 		/// </returns>
-		public override System.Drawing.Image GetContentIcon()
+		public override Image GetContentIcon()
 		{
-			return Properties.Resources.font_document_16x16;
+			return Resources.font_document_16x16;
 		}
-        #endregion
+	    #endregion
 
         #region Constructor/Destructor.
         /// <summary>

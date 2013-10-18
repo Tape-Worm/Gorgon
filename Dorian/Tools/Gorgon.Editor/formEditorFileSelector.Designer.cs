@@ -44,6 +44,15 @@ namespace GorgonLibrary.Editor
 				components.Dispose();
 			}
 
+			if (disposing)
+			{
+				if (_cancelSource != null)
+				{
+					_cancelSource.Dispose();
+				}
+				_cancelSource = null;
+			}
+
 			base.Dispose(disposing);
 		}
 
@@ -73,7 +82,6 @@ namespace GorgonLibrary.Editor
 			this.panelTools = new System.Windows.Forms.Panel();
 			this.stripFileFunctions = new System.Windows.Forms.ToolStrip();
 			this.buttonView = new System.Windows.Forms.ToolStripDropDownButton();
-			this.itemViewList = new System.Windows.Forms.ToolStripMenuItem();
 			this.itemViewDetails = new System.Windows.Forms.ToolStripMenuItem();
 			this.itemViewLarge = new System.Windows.Forms.ToolStripMenuItem();
 			this.panelSearch = new System.Windows.Forms.Panel();
@@ -186,7 +194,6 @@ namespace GorgonLibrary.Editor
 			// 
 			this.treeDirectories.AllowDrop = true;
 			this.treeDirectories.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(68)))), ((int)(((byte)(68)))), ((int)(((byte)(68)))));
-			this.treeDirectories.CurrentOpenFile = null;
 			this.treeDirectories.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.treeDirectories.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.treeDirectories.ForeColor = System.Drawing.Color.White;
@@ -224,6 +231,8 @@ namespace GorgonLibrary.Editor
 			this.listFiles.SmallImageList = this.imagesFilesSmall;
 			this.listFiles.TabIndex = 0;
 			this.listFiles.UseCompatibleStateImageBehavior = false;
+			this.listFiles.View = System.Windows.Forms.View.Details;
+			this.listFiles.ColumnClick += new System.Windows.Forms.ColumnClickEventHandler(this.listFiles_ColumnClick);
 			// 
 			// columnFileName
 			// 
@@ -289,7 +298,6 @@ namespace GorgonLibrary.Editor
 			// 
 			this.buttonView.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
 			this.buttonView.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.itemViewList,
             this.itemViewDetails,
             this.itemViewLarge});
 			this.buttonView.Image = global::GorgonLibrary.Editor.Properties.Resources.choose_view_16x16;
@@ -298,15 +306,10 @@ namespace GorgonLibrary.Editor
 			this.buttonView.Size = new System.Drawing.Size(29, 22);
 			this.buttonView.Text = "Change file views.";
 			// 
-			// itemViewList
-			// 
-			this.itemViewList.Name = "itemViewList";
-			this.itemViewList.Size = new System.Drawing.Size(152, 22);
-			this.itemViewList.Text = "&List";
-			this.itemViewList.Click += new System.EventHandler(this.itemViewLarge_Click);
-			// 
 			// itemViewDetails
 			// 
+			this.itemViewDetails.Checked = true;
+			this.itemViewDetails.CheckState = System.Windows.Forms.CheckState.Checked;
 			this.itemViewDetails.Name = "itemViewDetails";
 			this.itemViewDetails.Size = new System.Drawing.Size(152, 22);
 			this.itemViewDetails.Text = "&Details";
@@ -314,8 +317,6 @@ namespace GorgonLibrary.Editor
 			// 
 			// itemViewLarge
 			// 
-			this.itemViewLarge.Checked = true;
-			this.itemViewLarge.CheckState = System.Windows.Forms.CheckState.Checked;
 			this.itemViewLarge.Name = "itemViewLarge";
 			this.itemViewLarge.Size = new System.Drawing.Size(152, 22);
 			this.itemViewLarge.Text = "Lar&ge";
@@ -337,7 +338,7 @@ namespace GorgonLibrary.Editor
 			// 
 			this.buttonSearch.BackColor = System.Drawing.Color.White;
 			this.buttonSearch.Dock = System.Windows.Forms.DockStyle.Right;
-			this.buttonSearch.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
+			this.buttonSearch.FlatAppearance.BorderSize = 0;
 			this.buttonSearch.FlatAppearance.MouseOverBackColor = System.Drawing.Color.AliceBlue;
 			this.buttonSearch.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
 			this.buttonSearch.Image = global::GorgonLibrary.Editor.Properties.Resources.find_16x16;
@@ -496,7 +497,6 @@ namespace GorgonLibrary.Editor
 		private System.Windows.Forms.ImageList imagesFilesSmall;
 		private System.Windows.Forms.ImageList imagesFilesLarge;
 		private System.Windows.Forms.ToolStripDropDownButton buttonView;
-		private System.Windows.Forms.ToolStripMenuItem itemViewList;
 		private System.Windows.Forms.ToolStripMenuItem itemViewDetails;
 		private System.Windows.Forms.ToolStripMenuItem itemViewLarge;
 

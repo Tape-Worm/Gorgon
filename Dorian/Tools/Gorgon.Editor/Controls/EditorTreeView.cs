@@ -283,16 +283,6 @@ namespace GorgonLibrary.Editor
 
 		#region Properties.
 		/// <summary>
-		/// Property to set or return the currently open file.
-		/// </summary>
-		[Browsable(false)]
-	    public GorgonFileSystemFileEntry CurrentOpenFile
-	    {
-		    get;
-		    set;
-	    }
-
-		/// <summary>
 		/// Property to return the selected editor tree node.
 		/// </summary>
 		[Browsable(false)]
@@ -500,7 +490,7 @@ namespace GorgonLibrary.Editor
 				attribs = _fadeAttributes;
 			}
 
-            if ((ContentManagement.Current != null) && (nodeFile != null) && (CurrentOpenFile == nodeFile.File))
+            if ((ContentManagement.Current != null) && (nodeFile != null) && (ScratchArea.CurrentOpenFile == nodeFile.File))
             {
                 // Create the open content font if it's been changed or doesn't exist.
                 if ((_openContent == null) 
