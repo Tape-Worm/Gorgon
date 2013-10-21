@@ -27,6 +27,7 @@
 using System;
 using System.Drawing;
 using GorgonLibrary.Configuration;
+using GorgonLibrary.Editor.FontEditorPlugIn.Properties;
 
 namespace GorgonLibrary.Editor.FontEditorPlugIn
 {
@@ -36,10 +37,6 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 	class GorgonFontProperties
 		: EditorPlugInSettings
 	{
-		#region Variables.
-
-		#endregion
-
 		#region Properties.
         /// <summary>
         /// Property to set or return the sample text.
@@ -145,7 +142,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 			ShadowEnabled = false;
 			ShadowOffset = new Point(1, 1);
 			ShadowOpacity = 0.5f;
-            SampleText = "The quick brown fox jumps over the lazy dog.\\n1234567890 !@#$%^&*() ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz";
+            SampleText = Resources.GORFNT_DEFAULT_TEXT;
 		}
 		#endregion
 	}

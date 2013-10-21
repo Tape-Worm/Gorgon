@@ -107,6 +107,7 @@
     <Compile Include="GorgonBufferFormats.cs" />
     <Compile Include="GorgonColor.cs" />
     <Compile Include="GorgonGraphics.cs" />
+    <Compile Include="IO\GorgonCodecPlugIn.cs" />
     <Compile Include="Shaders\GorgonShaderMacro.cs" />
     <Compile Include="Textures\GorgonTextureLockCache.cs" />
     <Compile Include="GorgonRenderCommands.cs" />

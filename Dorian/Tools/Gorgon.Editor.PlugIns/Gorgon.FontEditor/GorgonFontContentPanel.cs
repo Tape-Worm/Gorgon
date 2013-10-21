@@ -221,15 +221,17 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		/// <param name="e">The <see cref="MouseEventArgs"/> instance containing the event data.</param>
 		private void PanelDisplay_MouseWheel(object sender, MouseEventArgs e)
 		{
-			if (e.Delta > 0)
-			{
-				buttonNextTexture.PerformClick();
-			}
+		    if ((e.Delta > 0)
+		        && (buttonNextTexture.Enabled))
+		    {
+		        buttonNextTexture.PerformClick();
+		    }
 
-			if (e.Delta < 0)
-			{
-				buttonPrevTexture.PerformClick();
-			}
+		    if ((e.Delta < 0)
+		        && (buttonPrevTexture.Enabled))
+		    {
+		        buttonPrevTexture.PerformClick();
+		    }
 		}
 
 		/// <summary>

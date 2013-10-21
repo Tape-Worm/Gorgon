@@ -257,6 +257,7 @@ namespace GorgonLibrary.IO
             }
 
             _data = Marshal.AllocHGlobal((int)value);
+            GC.AddMemoryPressure(value);
             _pointerOffset = _data;
             _dataPointer = _pointerOffset.ToPointer();
             _length = (int)value;
@@ -273,12 +274,23 @@ namespace GorgonLibrary.IO
 				if (_ownsPointer)
 				{
 					// Destroy the buffer if we own it.
-					if ((_data != IntPtr.Zero) && (!_handle.IsAllocated))
-						Marshal.FreeHGlobal(_data);
+				    if ((_data != IntPtr.Zero)
+				        && (!_handle.IsAllocated))
+				    {
+				        Marshal.FreeHGlobal(_data);
 
-					// Unpin any array that we've captured.
-					if (_handle.IsAllocated)
-						_handle.Free();
+				        if (_length > 0)
+				        {
+				            GC.RemoveMemoryPressure(_length);
+				            _length = 0;
+				        }
+				    }
+
+				    // Unpin any array that we've captured.
+				    if (_handle.IsAllocated)
+				    {
+				        _handle.Free();
+				    }
 				}
 
 				_data = IntPtr.Zero;

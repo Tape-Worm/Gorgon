@@ -24,6 +24,8 @@
 // 
 #endregion
 
+using System.Drawing;
+using System.Drawing.Imaging;
 using GorgonLibrary.IO;
 
 namespace GorgonLibrary.Graphics
@@ -117,6 +119,23 @@ namespace GorgonLibrary.Graphics
         {
             get;
             protected set;
+        }
+        #endregion
+
+        #region Methods.
+        /// <summary>
+        /// Function to convert this image buffer into a <see cref="System.Drawing.Image"/> object.
+        /// </summary>
+        /// <returns>The System.Drawing.Image object containing the image in the buffer.</returns>
+        public Image ToGDIImage()
+        {
+            using(var wic = new GorgonWICImage())
+            {
+                using(var wicBitmap = wic.CreateWICBitmapFromImageBuffer(this))
+                {
+                    return wic.CreateGDIImageFromWICBitmap(wicBitmap, PixelFormat.Format32bppArgb);
+                }
+            }
         }
         #endregion
 
