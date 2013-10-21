@@ -878,7 +878,8 @@ namespace GorgonLibrary.Editor
 		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
 		private void itemPaste_Click(object sender, EventArgs e)
 		{
-		    Cursor.Current = Cursors.WaitCursor;
+			Cursor.Current = Cursors.WaitCursor;
+
 
             // TODO: Make this use the actual windows clip board?
 			try
@@ -901,26 +902,28 @@ namespace GorgonLibrary.Editor
 				node.IsCut = false;
 				node.Redraw();
 
-				if ((treeFiles.SelectedNode.NodeType & NodeType.Directory) != NodeType.Directory)
+				TreeNodeDirectory currentNode = GetSelectedDirectoryNode(true);
+
+				if (currentNode == null)
 				{
 					GorgonDialogs.ErrorBox(this, Resources.GOREDIT_PASTE_MUST_BE_DIRECTORY);
 					return;
 				}
 
 				// If we're moving, there are some restrictions.
-				if ((treeFiles.SelectedNode == node) && (_cutCopyObject.Value.IsCut))
+				if ((currentNode == node) && (_cutCopyObject.Value.IsCut))
 				{
 					GorgonDialogs.ErrorBox(this, Resources.GOREDIT_FILE_SOURCE_SAME_AS_DEST);
 					return;
 				}
 
-				if ((_cutCopyObject.Value.IsCut) && (treeFiles.SelectedNode.IsAncestorOf(node)))
+				if ((_cutCopyObject.Value.IsCut) && (currentNode.IsAncestorOf(node)))
 				{
 					GorgonDialogs.ErrorBox(this, Resources.GOREDIT_FILE_CANNOT_MOVE_TO_CHILD);
 					return;
 				}
 
-				MoveCopyNode(node, (TreeNodeDirectory)treeFiles.SelectedNode, !_cutCopyObject.Value.IsCut);
+				MoveCopyNode(node, currentNode, !_cutCopyObject.Value.IsCut);
 			}
 			catch (Exception ex)
 			{
@@ -1248,7 +1251,10 @@ namespace GorgonLibrary.Editor
 
 	        Debug.Assert(directory != null, "Directory should not be NULL.");
 
-	        directory.Expand();
+	        if (expandDirectory)
+	        {
+		        directory.Expand();
+	        }
 
 	        return directory;
         }

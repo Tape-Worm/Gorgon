@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
@@ -241,13 +242,22 @@ namespace GorgonLibrary.Editor
 		private int _fillTreeLock;																		// Lock used to keep the call to fill the tree from being re-entrant.
 		private SortOrder _sort = SortOrder.Ascending;													// Current sort direction.
 		private SortColumn _currentSortColumn = SortColumn.Name;										// Currently sorted column.
-		private FileViews _currentView = FileViews.Details;												// Currently selected view.
 		private readonly GorgonFileExtensionCollection _fileExtensions;									// The list of file extensions to filter.
-		private readonly Stack<Tuple<GorgonFileSystemFileEntry,ListViewItem>> _thumbNailFiles;			// Thumbnails awaiting loading.
+		private readonly HashSet<GorgonFileSystemFileEntry> _thumbNailFiles;							// Thumbnails awaiting loading.
 		private CancellationTokenSource _cancelSource;													// Cancellation source.
+		private Size _thumbNailSize;																	// Thumbnail size.
 		#endregion
 
 		#region Properties.
+		/// <summary>
+		/// Property to set or return the currently selected file view mode.
+		/// </summary>
+		public FileViews CurrentView
+		{
+			get;
+			set;
+		}
+
 		/// <summary>
 		/// Property to set or return the default extension.
 		/// </summary>
@@ -268,6 +278,103 @@ namespace GorgonLibrary.Editor
 		#endregion
 
 		#region Methods.
+
+		/// <summary>
+		/// Function to switch the current directory and update the tree.
+		/// </summary>
+		/// <param name="directory">Directory to switch to.</param>
+		private void SwitchDirectory(GorgonFileSystemDirectory directory)
+		{
+			if (_selectedDirectory.Directory.Parent == directory)
+			{
+				_selectedDirectory = (TreeNodeDirectory)_selectedDirectory.Parent;
+			}
+			else
+			{
+				// Locate the tree node for the parent of this directory.
+				if ((_selectedDirectory.Nodes.Count > 0) && (!_selectedDirectory.IsExpanded))
+				{
+					_selectedDirectory.Expand();
+				}
+
+				_selectedDirectory = _selectedDirectory.Nodes.Cast<TreeNodeDirectory>().First(item => item.Directory == directory);
+			}
+
+			treeDirectories.SelectedNode = _selectedDirectory;
+		}
+
+		/// <summary>
+		/// Handles the Click event of the buttonGoUp control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+		private void buttonGoUp_Click(object sender, EventArgs e)
+		{
+			Cursor.Current = Cursors.WaitCursor;
+			try
+			{
+				SwitchDirectory(_selectedDirectory.Directory.Parent);
+
+				if ((_selectedDirectory != _rootDirectory) && (_selectedDirectory.IsExpanded))
+				{
+					_selectedDirectory.Collapse();
+				}
+			}
+			catch (Exception ex)
+			{
+				GorgonDialogs.ErrorBox(this, ex);
+			}
+			finally
+			{
+				Cursor.Current = Cursors.Default;
+				ValidateControls();
+			}
+		}
+
+		/// <summary>
+		/// Handles the DoubleClick event of the listFiles control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+		private void listFiles_DoubleClick(object sender, EventArgs e)
+		{
+			Cursor.Current = Cursors.WaitCursor;
+
+			try
+			{
+				ListViewHitTestInfo item = listFiles.HitTest(listFiles.PointToClient(Cursor.Position));
+
+				// We didn't click on anything, leave.
+				if (item.Item == null)
+				{
+					return;
+				}
+
+				var directory = item.Item.Tag as GorgonFileSystemDirectory;
+
+				if (directory != null)
+				{
+					SwitchDirectory(directory);
+
+					if ((_selectedDirectory.Nodes.Count > 0) && (!_selectedDirectory.IsExpanded))
+					{
+						_selectedDirectory.Expand();
+					}
+					return;
+				}
+			}
+			catch (Exception ex)
+			{
+
+				GorgonDialogs.ErrorBox(this, ex);
+			}
+			finally
+			{
+				Cursor.Current = Cursors.Default;
+				ValidateControls();
+			}
+		}
+
 		/// <summary>
 		/// Handles the ColumnClick event of the listFiles control.
 		/// </summary>
@@ -324,6 +431,7 @@ namespace GorgonLibrary.Editor
 			finally
 			{
 				Cursor.Current = Cursors.Default;
+				ValidateControls();
 			}
 		}
 
@@ -349,12 +457,12 @@ namespace GorgonLibrary.Editor
 				if (item == itemViewDetails)
 				{
 					listFiles.View = View.Details;
-					_currentView = FileViews.Details;
+					CurrentView = FileViews.Details;
 				}
 				else
 				{
 					listFiles.View = View.LargeIcon;
-					_currentView = FileViews.Large;
+					CurrentView = FileViews.Large;
 				}
 
 				FillFiles(_selectedDirectory.Directory);
@@ -366,6 +474,7 @@ namespace GorgonLibrary.Editor
 			finally
 			{
 				Cursor.Current = Cursors.Default;
+				ValidateControls();
 			}
 		}
 
@@ -389,6 +498,7 @@ namespace GorgonLibrary.Editor
 			finally
 			{
 				Cursor.Current = Cursors.Default;
+				ValidateControls();
 			}
 		}
 
@@ -416,7 +526,11 @@ namespace GorgonLibrary.Editor
 			{
 				GorgonDialogs.ErrorBox(this, ex);
 			}
-			Cursor.Current = Cursors.Default;
+			finally
+			{
+				Cursor.Current = Cursors.Default;
+				ValidateControls();
+			}
 		}
 
 		/// <summary>
@@ -439,7 +553,17 @@ namespace GorgonLibrary.Editor
 			finally
 			{
 				Cursor.Current = Cursors.Default;
+				ValidateControls();
 			}
+		}
+
+		/// <summary>
+		/// Function to validate the controls on the form.
+		/// </summary>
+		private void ValidateControls()
+		{
+			buttonOK.Enabled = comboFile.Text.Length > 0;
+			buttonGoUp.Enabled = _selectedDirectory != null && _selectedDirectory != _rootDirectory;
 		}
 
 		/// <summary>
@@ -454,6 +578,8 @@ namespace GorgonLibrary.Editor
 			columnFileName.Text = Resources.GOREDIT_DLG_COLUMN_NAME;
 			columnDate.Text = Resources.GOREDIT_DLG_COLUMN_DATE;
 			columnSize.Text = Resources.GOREDIT_DLG_COLUMN_SIZE;
+			buttonView.Text = Resources.GOREDIT_DLG_CHANGEVIEW_TEXT;
+			buttonGoUp.Text = Resources.GOREDIT_DLG_GOUP_BUTTON_TEXT;
 			buttonOK.Text = Resources.GOREDIT_BTN_OK;
 			buttonCancel.Text = Resources.GOREDIT_BTN_CANCEL;
 		}
@@ -607,7 +733,7 @@ namespace GorgonLibrary.Editor
 		/// </summary>
 		/// <param name="file">File that holds the content.</param>
 		/// <returns>The thumbnail bitmap for the content.</returns>
-		private static Image GetContentThumbNail(GorgonFileSystemFileEntry file)
+		private Image GetContentThumbNail(GorgonFileSystemFileEntry file)
 		{
 			// If we have this open in the editor, then use that so we get unsaved changes as well.
 			if ((ScratchArea.CurrentOpenFile == file) && (ContentManagement.Current != null))
@@ -644,31 +770,31 @@ namespace GorgonLibrary.Editor
 
 				Image result = content.GetThumbNailImage();
 
-				// If the image isn't 128x128 then we need to rescale it.
-				if ((result.Width == 128) && (result.Height == 128))
+				// If the image isn't the correct size then we need to rescale it.
+				if ((result.Width == _thumbNailSize.Width) && (result.Height == _thumbNailSize.Height))
 				{
 					return result;
 				}
 
-				var scaledThumbNail = new Bitmap(128, 128, PixelFormat.Format32bppArgb);
+				var scaledThumbNail = new Bitmap(_thumbNailSize.Width, _thumbNailSize.Height, PixelFormat.Format32bppArgb);
 
 				try
 				{
 					using (var graphics = System.Drawing.Graphics.FromImage(scaledThumbNail))
 					{
 						float aspect = (float)result.Width / result.Height;
-						var size = new SizeF(128, 128);
+						SizeF size = _thumbNailSize;
 						PointF location;
 
 						if (aspect > 1.0f)
 						{
 							size.Height = size.Height / aspect;
-							location = new PointF(0, 64.0f - size.Height / 2.0f);	
+							location = new PointF(0, _thumbNailSize.Height / 2 - size.Height / 2.0f);	
 						}
 						else
 						{
 							size.Width = size.Width * aspect;
-							location = new PointF(64.0f - size.Width / 2.0f, 0);
+							location = new PointF(_thumbNailSize.Width / 2 - size.Width / 2.0f, 0);
 						}
 
 						// Scale the image down.
@@ -696,34 +822,53 @@ namespace GorgonLibrary.Editor
 			// Get the first item that needs a thumbnail.
 			while ((_thumbNailFiles.Count > 0) && (!_cancelSource.Token.IsCancellationRequested))
 			{
-				Tuple<GorgonFileSystemFileEntry, ListViewItem> item = _thumbNailFiles.Pop();
+				GorgonFileSystemFileEntry item = _thumbNailFiles.First();
 
-				if (_cancelSource.Token.IsCancellationRequested)
+				try
 				{
-					return;
-				}
-
-				Image thumbNail = GetContentThumbNail(item.Item1);
-
-				// Attach the thumbnail to the proper list view item.  Do this on the form thread or else
-				// bad things will happen.
-				if ((thumbNail != null) && (!_cancelSource.Token.IsCancellationRequested))
-				{
-					Invoke(new MethodInvoker(() =>
+					if (_cancelSource.Token.IsCancellationRequested)
 					{
-						// Just a last minute check to ensure we aren't touching disposed objects.
-						if (IsDisposed)
-						{
-							return;
-						}
+						return;
+					}
 
-						if (!imagesFilesLarge.Images.ContainsKey(item.Item1.FullPath))
-						{
-							imagesFilesLarge.Images.Add(thumbNail);
-						}
+					Image thumbNail = GetContentThumbNail(item);
 
-						item.Item2.ImageKey = item.Item1.FullPath;
-					}));
+					// Attach the thumbnail to the proper list view item.  Do this on the form thread or else
+					// bad things will happen.
+					if ((thumbNail != null) && (!_cancelSource.Token.IsCancellationRequested))
+					{
+						Invoke(new MethodInvoker(() =>
+						                         {
+							                         // Just a last minute check to ensure we aren't touching disposed objects.
+							                         if (IsDisposed)
+							                         {
+								                         return;
+							                         }
+
+							                         if (!imagesFilesLarge.Images.ContainsKey(item.FullPath))
+							                         {
+								                         imagesFilesLarge.Images.Add(item.FullPath, thumbNail);
+							                         }
+
+							                         // Attempt to remove this item.
+							                         _thumbNailFiles.Remove(item);
+
+							                         // If the list view no longer contains this item, then we should dump it.
+							                         // It'll still be cached in our image list for later.
+							                         if (listFiles.Items.ContainsKey(item.FullPath))
+							                         {
+								                         listFiles.Items[item.FullPath].ImageKey = item.FullPath;
+							                         }
+						                         }));
+					}
+				}
+				finally
+				{
+					// Attempt to remove this item.
+					if (_thumbNailFiles.Contains(item))
+					{
+						_thumbNailFiles.Remove(item);
+					}
 				}
 			}
 
@@ -772,7 +917,8 @@ namespace GorgonLibrary.Editor
 				{
 					var item = new ListViewItem(subDirectory.Name)
 					           {
-						           ImageKey = subDirectory.Files.Count > 0 || subDirectory.Directories.Count > 0 ? @"directory_wfiles" : @"directory"
+						           ImageKey = subDirectory.Files.Count > 0 || subDirectory.Directories.Count > 0 ? @"directory_wfiles" : @"directory",
+								   Tag = subDirectory
 					           };
 
 					listFiles.Items.Add(item);
@@ -789,16 +935,18 @@ namespace GorgonLibrary.Editor
 						imagesFilesLarge.Images.RemoveAt(imagesFilesLarge.Images.Count - 1);
 					}
 				}
-				
+			
 				// Add the files.
 				foreach (var file in sortedFiles)
 				{
 					var item = new ListViewItem(file.Name)
 					           {
-						           ImageKey = @"unknown_file"
+								   Name = file.FullPath,
+						           ImageKey = @"unknown_file",
+								   Tag = file
 					           };
 
-					if (_currentView != FileViews.Large)
+					if (CurrentView != FileViews.Large)
 					{
 						ContentPlugIn plugIn = ContentManagement.GetContentPlugInForFile(file.Extension);
 
@@ -806,6 +954,9 @@ namespace GorgonLibrary.Editor
 						{
 							item.ImageKey = plugIn.Name;
 						}
+
+						item.SubItems.Add(file.CreateDate.ToString(CultureInfo.CurrentUICulture.DateTimeFormat));
+						item.SubItems.Add(file.Size.FormatMemory());
 					}
 					else
 					{
@@ -814,14 +965,18 @@ namespace GorgonLibrary.Editor
 						// and fill in the list view item image when the thumbnail creation is complete.
 						// This thread will run for a maximum of 10 minutes.  If all thumbnails are not generated in that time,
 						// then they will be generated on the next refresh (as they'll still be in the queue).
-						var key = new Tuple<GorgonFileSystemFileEntry, ListViewItem>(file, item);
-						_thumbNailFiles.Push(key);
-					}
-
-					if (listFiles.View == View.Details)
-					{
-						item.SubItems.Add(file.CreateDate.ToString(CultureInfo.CurrentUICulture.DateTimeFormat));
-						item.SubItems.Add(file.Size.FormatMemory());
+						if (imagesFilesLarge.Images.ContainsKey(file.FullPath))
+						{
+							// We already loaded this guy, so let's not add it to the queue.
+							item.ImageKey = file.FullPath;
+						}
+						else
+						{
+							if (!_thumbNailFiles.Contains(file))
+							{
+								_thumbNailFiles.Add(file);
+							}
+						}
 					}
 
 					listFiles.Items.Add(item);
@@ -837,7 +992,7 @@ namespace GorgonLibrary.Editor
 			}
 
 			// Launch a thread to retrieve the thumbnails.
-			if ((_currentView != FileViews.Large) || (_cancelSource != null))
+			if ((CurrentView != FileViews.Large) || (_cancelSource != null))
 			{
 				return;
 			}
@@ -975,6 +1130,7 @@ namespace GorgonLibrary.Editor
 			finally
 			{
 				Cursor.Current = Cursors.Default;
+				ValidateControls();
 			}
 		}
 		#endregion
@@ -988,8 +1144,10 @@ namespace GorgonLibrary.Editor
 		{
 			InitializeComponent();
 
+			CurrentView = FileViews.Details;
 			_fileExtensions = extensions;
-			_thumbNailFiles = new Stack<Tuple<GorgonFileSystemFileEntry, ListViewItem>>();
+			_thumbNailFiles = new HashSet<GorgonFileSystemFileEntry>();
+			_thumbNailSize = new Size(128, 128);
 		}
 		#endregion
 	}

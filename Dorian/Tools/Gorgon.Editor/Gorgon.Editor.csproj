@@ -277,12 +277,12 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Gorgon2.ico" />
+    <None Include="Resources\up_16x16.png" />
     <None Include="Resources\find_16x16.png" />
     <None Include="Resources\choose_view_16x16.png" />
     <None Include="Resources\remove_16x16.png" />
     <None Include="Resources\add_16x16.png" />
     <None Include="Resources\down_16x16.png" />
-    <None Include="Resources\up_16x16.png" />
     <None Include="Resources\Expando.png" />
     <None Include="Resources\tree_expand_16x16.png" />
     <None Include="Resources\tree_collapse_16x16.png" />

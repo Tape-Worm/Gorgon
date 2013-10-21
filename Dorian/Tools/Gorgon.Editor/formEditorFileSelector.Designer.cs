@@ -81,6 +81,8 @@ namespace GorgonLibrary.Editor
 			this.panelTopControls = new System.Windows.Forms.Panel();
 			this.panelTools = new System.Windows.Forms.Panel();
 			this.stripFileFunctions = new System.Windows.Forms.ToolStrip();
+			this.buttonGoUp = new System.Windows.Forms.ToolStripButton();
+			this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
 			this.buttonView = new System.Windows.Forms.ToolStripDropDownButton();
 			this.itemViewDetails = new System.Windows.Forms.ToolStripMenuItem();
 			this.itemViewLarge = new System.Windows.Forms.ToolStripMenuItem();
@@ -233,6 +235,7 @@ namespace GorgonLibrary.Editor
 			this.listFiles.UseCompatibleStateImageBehavior = false;
 			this.listFiles.View = System.Windows.Forms.View.Details;
 			this.listFiles.ColumnClick += new System.Windows.Forms.ColumnClickEventHandler(this.listFiles_ColumnClick);
+			this.listFiles.DoubleClick += new System.EventHandler(this.listFiles_DoubleClick);
 			// 
 			// columnFileName
 			// 
@@ -287,12 +290,30 @@ namespace GorgonLibrary.Editor
 			// 
 			this.stripFileFunctions.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
 			this.stripFileFunctions.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.buttonGoUp,
+            this.toolStripSeparator1,
             this.buttonView});
 			this.stripFileFunctions.Location = new System.Drawing.Point(0, 0);
 			this.stripFileFunctions.Name = "stripFileFunctions";
 			this.stripFileFunctions.Size = new System.Drawing.Size(404, 25);
 			this.stripFileFunctions.Stretch = true;
 			this.stripFileFunctions.TabIndex = 0;
+			// 
+			// buttonGoUp
+			// 
+			this.buttonGoUp.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.buttonGoUp.Enabled = false;
+			this.buttonGoUp.Image = ((System.Drawing.Image)(resources.GetObject("buttonGoUp.Image")));
+			this.buttonGoUp.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.buttonGoUp.Name = "buttonGoUp";
+			this.buttonGoUp.Size = new System.Drawing.Size(23, 22);
+			this.buttonGoUp.Text = "Go up.";
+			this.buttonGoUp.Click += new System.EventHandler(this.buttonGoUp_Click);
+			// 
+			// toolStripSeparator1
+			// 
+			this.toolStripSeparator1.Name = "toolStripSeparator1";
+			this.toolStripSeparator1.Size = new System.Drawing.Size(6, 25);
 			// 
 			// buttonView
 			// 
@@ -311,14 +332,14 @@ namespace GorgonLibrary.Editor
 			this.itemViewDetails.Checked = true;
 			this.itemViewDetails.CheckState = System.Windows.Forms.CheckState.Checked;
 			this.itemViewDetails.Name = "itemViewDetails";
-			this.itemViewDetails.Size = new System.Drawing.Size(152, 22);
+			this.itemViewDetails.Size = new System.Drawing.Size(109, 22);
 			this.itemViewDetails.Text = "&Details";
 			this.itemViewDetails.Click += new System.EventHandler(this.itemViewLarge_Click);
 			// 
 			// itemViewLarge
 			// 
 			this.itemViewLarge.Name = "itemViewLarge";
-			this.itemViewLarge.Size = new System.Drawing.Size(152, 22);
+			this.itemViewLarge.Size = new System.Drawing.Size(109, 22);
 			this.itemViewLarge.Text = "Lar&ge";
 			this.itemViewLarge.Click += new System.EventHandler(this.itemViewLarge_Click);
 			// 
@@ -499,6 +520,8 @@ namespace GorgonLibrary.Editor
 		private System.Windows.Forms.ToolStripDropDownButton buttonView;
 		private System.Windows.Forms.ToolStripMenuItem itemViewDetails;
 		private System.Windows.Forms.ToolStripMenuItem itemViewLarge;
+		private System.Windows.Forms.ToolStripButton buttonGoUp;
+		private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
 
 	}
 }
