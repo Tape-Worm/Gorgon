@@ -132,16 +132,6 @@ namespace GorgonLibrary.Editor.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap down_16x16 {
-            get {
-                object obj = ResourceManager.GetObject("down_16x16", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
         internal static System.Drawing.Bitmap edit_16x16 {
             get {
                 object obj = ResourceManager.GetObject("edit_16x16", resourceCulture);
@@ -307,6 +297,15 @@ namespace GorgonLibrary.Editor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Change file views..
+        /// </summary>
+        internal static string GOREDIT_DLG_CHANGEVIEW_TEXT {
+            get {
+                return ResourceManager.GetString("GOREDIT_DLG_CHANGEVIEW_TEXT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Date.
         /// </summary>
         internal static string GOREDIT_DLG_COLUMN_DATE {
@@ -348,6 +347,15 @@ namespace GorgonLibrary.Editor.Properties {
         internal static string GOREDIT_DLG_FILE_SELECT_TEXT {
             get {
                 return ResourceManager.GetString("GOREDIT_DLG_FILE_SELECT_TEXT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Go up to the parent of this directory..
+        /// </summary>
+        internal static string GOREDIT_DLG_GOUP_BUTTON_TEXT {
+            get {
+                return ResourceManager.GetString("GOREDIT_DLG_GOUP_BUTTON_TEXT", resourceCulture);
             }
         }
         

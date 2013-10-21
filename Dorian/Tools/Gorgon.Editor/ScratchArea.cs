@@ -989,12 +989,6 @@ namespace GorgonLibrary.Editor
 
                 string newPath = destDirectoryPath + destFileName;
 
-				// If we try to copy this file on top of itself, then don't bother.  It'd be redundant.
-				if (string.Equals(newPath, file.FullPath, StringComparison.OrdinalIgnoreCase))
-				{
-					return null;
-				}
-
                 // If there's a directory with the same name, then give us an error.
                 if (ScratchFiles.GetDirectory(newPath.FormatDirectory('/')) != null)
                 {
@@ -1025,6 +1019,12 @@ namespace GorgonLibrary.Editor
                             existingFile = ScratchFiles.GetFile(newPath);
                         }
                     }
+
+					// If we try to copy this file on top of itself, then don't bother.  It'd be redundant.
+					if (string.Equals(newPath, file.FullPath, StringComparison.OrdinalIgnoreCase))
+					{
+						return null;
+					}
 
                     if (copyResult == ConfirmationResult.Cancel)
                     {
