@@ -230,7 +230,7 @@
     <value>Sets the outline color for the glyphs with outlines.  Note that the outline size must be greater than 0 before it is applied to the glyph.</value>
   </data>
   <data name="GORFNT_CONTENT_EXTENSION_DESC" xml:space="preserve">
-    <value>Gorgon Font File (*.gorFont)</value>
+    <value>Gorgon Font File</value>
   </data>
   <data name="GORFNT_ANTIALIAS_STANDARD" xml:space="preserve">
     <value>Anti-alias</value>

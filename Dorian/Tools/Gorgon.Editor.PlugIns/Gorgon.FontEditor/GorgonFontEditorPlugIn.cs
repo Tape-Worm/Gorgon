@@ -218,7 +218,8 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
         public GorgonFontEditorPlugIn()
             : base(Resources.GORFNT_DESC)
         {
-			FileExtensions.Add(new GorgonFileExtension("gorFont", Resources.GORFNT_CONTENT_EXTENSION_DESC));
+            FileExtensions.Add(new GorgonFileExtension("gorFont", string.Format("{0} (*.gorFont)",
+                                                                     Resources.GORFNT_CONTENT_EXTENSION_DESC)));
 			UpdateCachedFonts();
 			
 			Settings = new GorgonFontProperties();

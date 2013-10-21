@@ -512,6 +512,31 @@ namespace GorgonLibrary.Graphics
         }
 
         /// <summary>
+        /// Function to create a WIC bitmap from a Gorgon image buffer.
+        /// </summary>
+        /// <param name="buffer">Image buffer containing the image data to convert.</param>
+        /// <returns>The WIC bitmap.</returns>
+        public WIC.Bitmap CreateWICBitmapFromImageBuffer(GorgonImageBuffer buffer)
+        {
+            var pointer = new DX.DataRectangle(buffer.Data.BasePointer, buffer.PitchInformation.RowPitch);
+
+            Guid bitmapFormat = GetGUID(buffer.Format);
+
+            if (bitmapFormat == Guid.Empty)
+            {
+                throw new GorgonException(GorgonResult.FormatNotSupported,
+                    string.Format(Resources.GORGFX_FORMAT_NOT_SUPPORTED, buffer.Format));
+            }
+
+            return new WIC.Bitmap(Factory,
+                                  buffer.Width,
+                                  buffer.Height,
+                                  bitmapFormat,
+                                  pointer,
+                                  pointer.Pitch * buffer.Height);
+        }
+
+        /// <summary>
         /// Function to convert a WIC bitmap to a System.Drawing.Image
         /// </summary>
         /// <param name="bitmap">Bitmap to convert.</param>

@@ -1873,6 +1873,14 @@ namespace GorgonLibrary.Graphics
 
         #region Constructor/Destructor.
         /// <summary>
+        /// Finalizes an instance of the <see cref="GorgonImageData"/> class.
+        /// </summary>
+        ~GorgonImageData()
+        {
+            Dispose(false);
+        }
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="GorgonImageData" /> class.
         /// </summary>
         /// <param name="settings">The settings to describe an image.</param>
