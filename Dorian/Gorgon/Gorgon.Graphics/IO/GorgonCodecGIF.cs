@@ -120,19 +120,19 @@ namespace GorgonLibrary.IO
 		}
 
 		/// <summary>
-		/// Property to set or return the palette to assign to the 8 bit indexed data for this image.
+		/// Property to return the palette to assign to the 8 bit indexed data for this image.
 		/// </summary>		
 		/// <remarks>
-		/// Use this to alter the color palette for the GIF as it's decoded or encoded.  This array will only support up to 256 indices.  More than 256 indices will 
-		/// be ignored.  Set this to NULL (Nothing in VB.Net) to use the palette contained within in the image.
+		/// Use this to alter the color palette for the GIF as it's decoded or encoded.  This list will only support up to 256 indices.  More than 256 indices will 
+		/// be ignored.  
 		/// <para>This value does not apply to GIF files with multiple frames.</para>
 		/// <para>This property affects both encoding and decoding.</para>
 		/// <para>The default value is NULL.</para>
 		/// </remarks>
-		public IList<GorgonColor> Palette
+		public List<GorgonColor> Palette
 		{
-			get;
-			set;
+		    get;
+		    private set;
 		}
 
 		/// <summary>
@@ -265,7 +265,7 @@ namespace GorgonLibrary.IO
 		{			
 			SharpDX.WIC.Palette palette;
 
-			if (Palette == null)
+			if (Palette.Count == 0)
 			{
 				// If decoding, just return the default, otherwise we'll need to generate from the frame.
 				if (bitmap == null)
@@ -445,6 +445,7 @@ namespace GorgonLibrary.IO
 			: base("GIF", Resources.GORGFX_IMAGE_GIF_CODEC_DESC, new[] { "gif" }, SharpDX.WIC.ContainerFormatGuids.Gif)
 		{
 			FrameDelays = null;
+            Palette = new List<GorgonColor>(256);
 		}
 		#endregion
 	}

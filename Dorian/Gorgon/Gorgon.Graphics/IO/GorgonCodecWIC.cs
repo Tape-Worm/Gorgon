@@ -263,62 +263,75 @@ namespace GorgonLibrary.IO
 						if (((frameWidth == data.Settings.Width) && (frameHeight == data.Settings.Height)) || ((!needsSizeAdjust) && (Clip)))
 						{
 							frame.CopyPixels(buffer.PitchInformation.RowPitch, bufferPointer, buffer.PitchInformation.SlicePitch);
+
+						    continue;
 						}
-						else
+
+						// We need to scale the image up/down to the size of our image data.
+						if (!Clip)
 						{
-							// We need to scale the image up/down to the size of our image data.
-							if (!Clip)
+							using (var scaler = new SharpDX.WIC.BitmapScaler(wic.Factory))
 							{
-								using (var scaler = new SharpDX.WIC.BitmapScaler(wic.Factory))
-								{
-									scaler.Initialize(frame, data.Settings.Width, data.Settings.Height, (SharpDX.WIC.BitmapInterpolationMode)Filter);
-									scaler.CopyPixels(buffer.PitchInformation.RowPitch, bufferPointer, buffer.PitchInformation.SlicePitch);
-								}
+								scaler.Initialize(frame, data.Settings.Width, data.Settings.Height, (SharpDX.WIC.BitmapInterpolationMode)Filter);
+								scaler.CopyPixels(buffer.PitchInformation.RowPitch, bufferPointer, buffer.PitchInformation.SlicePitch);
 							}
-							else
-							{
-								using (var clipper = new SharpDX.WIC.BitmapClipper(wic.Factory))
-								{
-									clipper.Initialize(frame, new SharpDX.Rectangle(0, 0, data.Settings.Width, data.Settings.Height));
-									clipper.CopyPixels(buffer.PitchInformation.RowPitch, bufferPointer, buffer.PitchInformation.SlicePitch);
-								}
-							}
-
+						    continue;
 						}
-					}
-					else
-					{
-						// Poop.  We need to convert this image.
-						using (var converter = new SharpDX.WIC.FormatConverter(wic.Factory))
-						{		
-							converter.Initialize(frame, bestPixelFormat, (SharpDX.WIC.BitmapDitherType)Dithering, null, 0.0, SharpDX.WIC.BitmapPaletteType.Custom);
 
-							if (((frameWidth == data.Settings.Width) && (frameHeight == data.Settings.Height)) || ((!needsSizeAdjust) && (Clip)))
-							{
-								converter.CopyPixels(buffer.PitchInformation.RowPitch, bufferPointer, buffer.PitchInformation.SlicePitch);
-							}
-							else
-							{
-								// And we need to scale the image.
-								if (!Clip)
-								{
-									using (var scaler = new SharpDX.WIC.BitmapScaler(wic.Factory))
-									{
-										scaler.Initialize(converter, data.Settings.Width, data.Settings.Height, (SharpDX.WIC.BitmapInterpolationMode)Filter);
-										scaler.CopyPixels(buffer.PitchInformation.RowPitch, bufferPointer, buffer.PitchInformation.SlicePitch);
-									}
-								}
-								else
-								{
-									using (var clipper = new SharpDX.WIC.BitmapClipper(wic.Factory))
-									{
-										clipper.Initialize(frame, new SharpDX.Rectangle(0, 0, data.Settings.Width, data.Settings.Height));
-										clipper.CopyPixels(buffer.PitchInformation.RowPitch, bufferPointer, buffer.PitchInformation.SlicePitch);
-									}
-								}
-							}
+						using (var clipper = new SharpDX.WIC.BitmapClipper(wic.Factory))
+						{
+							clipper.Initialize(frame, new SharpDX.Rectangle(0, 0, data.Settings.Width, data.Settings.Height));
+							clipper.CopyPixels(buffer.PitchInformation.RowPitch, bufferPointer, buffer.PitchInformation.SlicePitch);
 						}
+
+					    continue;
 					}
+
+				    // Poop.  We need to convert this image.
+				    using (var converter = new SharpDX.WIC.FormatConverter(wic.Factory))
+                    {
+				        converter.Initialize(frame,
+				                                bestPixelFormat,
+				                                (SharpDX.WIC.BitmapDitherType)Dithering,
+				                                null,
+				                                0.0,
+				                                SharpDX.WIC.BitmapPaletteType.Custom);
+
+				        if (((frameWidth == data.Settings.Width) && (frameHeight == data.Settings.Height))
+				            || ((!needsSizeAdjust) && (Clip)))
+				        {
+				            converter.CopyPixels(buffer.PitchInformation.RowPitch,
+				                                 bufferPointer,
+				                                 buffer.PitchInformation.SlicePitch);
+				            continue;
+				        }
+
+				        // And we need to scale the image.
+				        if (!Clip)
+				        {
+				            using(var scaler = new SharpDX.WIC.BitmapScaler(wic.Factory))
+				            {
+				                scaler.Initialize(converter,
+				                                    data.Settings.Width,
+				                                    data.Settings.Height,
+				                                    (SharpDX.WIC.BitmapInterpolationMode)Filter);
+				                scaler.CopyPixels(buffer.PitchInformation.RowPitch,
+				                                    bufferPointer,
+				                                    buffer.PitchInformation.SlicePitch);
+				            }
+
+				            continue;
+				        }
+
+				        using(var clipper = new SharpDX.WIC.BitmapClipper(wic.Factory))
+				        {
+				            clipper.Initialize(frame,
+				                                new SharpDX.Rectangle(0, 0, data.Settings.Width, data.Settings.Height));
+				            clipper.CopyPixels(buffer.PitchInformation.RowPitch,
+				                                bufferPointer,
+				                                buffer.PitchInformation.SlicePitch);
+				        }
+				    }
 				}
 			}
 		}
@@ -373,15 +386,7 @@ namespace GorgonLibrary.IO
 					}
 
 					// Only apply palettes to indexed image data.
-					if (paletteInfo != null)
-					{
-						converter.Initialize(frame, convertFormat, (SharpDX.WIC.BitmapDitherType)Dithering, paletteInfo.Item1, paletteInfo.Item2, paletteInfo.Item3);
-					}
-					else
-					{
-						converter.Initialize(frame, convertFormat, (SharpDX.WIC.BitmapDitherType)Dithering, null, 0.0, SharpDX.WIC.BitmapPaletteType.Custom);
-					}
-
+					converter.Initialize(frame, convertFormat, (SharpDX.WIC.BitmapDitherType)Dithering, null, 0.0, SharpDX.WIC.BitmapPaletteType.Custom);
 					converter.CopyPixels(buffer.PitchInformation.RowPitch, buffer.Data.BasePointer, buffer.PitchInformation.SlicePitch);
 				}
 				finally

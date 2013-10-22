@@ -277,16 +277,126 @@ namespace GorgonLibrary.Editor
 			get;
 			set;
 		}
+
+        /// <summary>
+        /// Property to set or return whether to allow multiple selection.
+        /// </summary>
+	    public bool AllowMultipleSelection
+	    {
+            get
+            {
+                return listFiles.MultiSelect;
+            }
+            set
+            {
+                listFiles.MultiSelect = value;
+            }
+	    }
 		#endregion
 
 		#region Methods.
-		/// <summary>
+        /// <summary>
+        /// Function to close the search dialog.
+        /// </summary>
+	    private void CloseSearch()
+        {
+            labelNoFilesFound.Visible = false;
+            splitFiles.Panel1Collapsed = false;
+            panelSearchLabel.Visible = false;
+            FillFiles(_selectedDirectory == null ? _rootDirectory.Directory : _selectedDirectory.Directory);
+        }
+
+        /// <summary>
+        /// Handles the Click event of the buttonCloseSearch control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void buttonCloseSearch_Click(object sender, EventArgs e)
+        {
+            Cursor.Current = Cursors.WaitCursor;
+
+            try
+            {
+                CloseSearch();
+            }
+            catch (Exception ex)
+            {
+                GorgonDialogs.ErrorBox(this, ex);
+            }
+            finally
+            {
+                Cursor.Current = Cursors.Default;
+                ValidateControls();
+            }
+        }
+        
+        
+        /// <summary>
+        /// Handles the KeyDown event of the textSearch control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="KeyEventArgs"/> instance containing the event data.</param>
+        private void textSearch_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode != Keys.Enter)
+            {
+                return;
+            }
+            Cursor.Current = Cursors.WaitCursor;
+
+            try
+            {
+                if (textSearch.TextLength == 0)
+                {
+                    if (panelSearchLabel.Visible)
+                    {
+                        CloseSearch();
+                    }
+                    return;
+                }
+
+                // Turn off the tree.
+                splitFiles.Panel1Collapsed = true;
+                panelSearchLabel.Visible = true;
+
+                FillFilesSearch(_selectedDirectory.Directory);
+            }
+            catch (Exception ex)
+            {
+                GorgonDialogs.ErrorBox(this, ex);
+            }
+            finally
+            {
+                e.Handled = true;
+                Cursor.Current = Cursors.Default;
+                ValidateControls();
+            }
+        }
+
+        /// <summary>
+        /// Function to look up files using the search dialog.
+        /// </summary>
+        /// <param name="rootDirectory">The directory that be the starting point of the search.</param>
+	    private void FillFilesSearch(GorgonFileSystemDirectory rootDirectory)
+        {
+            
+            labelNoFilesFound.Visible = true;
+            labelNoFilesFound.Text = string.Format(Resources.GOREDIT_DLG_SEARCH_NOFILES, textSearch.Text);
+            labelNoFilesFound.BringToFront();
+        }
+
+        /// <summary>
 		/// Function to find the file system directory attached to the tree node.
 		/// </summary>
 		/// <param name="directory">Directory to look up.</param>
 		/// <returns>The node for the directory in the tree.</returns>
 		private TreeNodeDirectory FindDirectoryNode(GorgonFileSystemDirectory directory)
 		{
+		    if (directory == null)
+		    {
+		        return _rootDirectory;
+            }
+
 			var parents = directory.GetParents();
 			var parentNode = _rootDirectory;
 
@@ -773,16 +883,16 @@ namespace GorgonLibrary.Editor
 					{
 						node.Nodes.Clear();
 					}
-
-					if ((!string.IsNullOrEmpty(StartDirectory)) && (string.Equals(StartDirectory, directory.FullPath)))
-					{
-						selectedNode = node;
-					}
 				}
 
 				if (setInitialSelected)
 				{
-					treeDirectories.SelectedNode = _selectedDirectory = selectedNode;
+				    if (!string.IsNullOrWhiteSpace(StartDirectory))
+				    {
+				        selectedNode = FindDirectoryNode(ScratchArea.ScratchFiles.GetDirectory(StartDirectory));
+				    }
+
+				    treeDirectories.SelectedNode = _selectedDirectory = selectedNode;
 					AddPath(selectedNode);
 				}
 
