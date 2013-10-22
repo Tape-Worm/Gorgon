@@ -27,6 +27,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
@@ -44,7 +45,7 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 		#region Variables.
 		private bool _disposed;                                                             // Flag to indicate whether the object was disposed.
         private static Dictionary<GorgonFileExtension, GorgonImageCodec> _codecs;           // Codecs for the image editor.
-        private static List<string> _codecPlugInErrors = new List<string>();                // List of errors that may occur when loading a codec plug-in.
+        private static readonly List<string> _codecPlugInErrors = new List<string>();       // List of errors that may occur when loading a codec plug-in.
 		#endregion
 
 		#region Properties.
@@ -229,7 +230,16 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
         /// </returns>
         protected override ContentObject OnCreateContentObject(ContentSettings settings)
         {
-            return new GorgonImageContent(settings.Name);
+	        GorgonImageCodec codec;
+	        var extension = new GorgonFileExtension(Path.GetExtension(settings.Name));
+
+			// Use the proper codec for the image.
+	        if (!Codecs.TryGetValue(extension, out codec))
+			{
+				throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GORIMG_NO_CODEC, settings.Name));
+	        }
+
+            return new GorgonImageContent(settings.Name, codec);
         }
 
 		/// <summary>

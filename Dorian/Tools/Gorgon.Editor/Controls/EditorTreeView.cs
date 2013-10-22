@@ -401,10 +401,14 @@ namespace GorgonLibrary.Editor
 
 			var node = GetNodeAt(e.Location) as EditorTreeNode;
 
-			if ((node != null) && (node != SelectedNode))
+			if ((node == null) || (node == SelectedNode))
 			{
-				SelectedNode = node;
+				return;
 			}
+
+			OnBeforeSelect(new TreeViewCancelEventArgs(node, false, TreeViewAction.ByMouse));
+			SelectedNode = node;
+			OnAfterSelect(new TreeViewEventArgs(node, TreeViewAction.ByMouse));
 		}
 
         /// <summary>

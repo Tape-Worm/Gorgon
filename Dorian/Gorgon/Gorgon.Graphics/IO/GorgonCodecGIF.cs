@@ -132,7 +132,7 @@ namespace GorgonLibrary.IO
 		public IList<GorgonColor> Palette
 		{
 			get;
-			private set;
+			set;
 		}
 
 		/// <summary>
@@ -445,7 +445,6 @@ namespace GorgonLibrary.IO
 			: base("GIF", Resources.GORGFX_IMAGE_GIF_CODEC_DESC, new[] { "gif" }, SharpDX.WIC.ContainerFormatGuids.Gif)
 		{
 			FrameDelays = null;
-			Palette = new GorgonColor[256];
 		}
 		#endregion
 	}

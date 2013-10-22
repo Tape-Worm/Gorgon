@@ -33,7 +33,6 @@ using System.Drawing.Design;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
-using System.Net.Sockets;
 using GorgonLibrary.Design;
 using GorgonLibrary.Editor.FontEditorPlugIn.Properties;
 using GorgonLibrary.Graphics;

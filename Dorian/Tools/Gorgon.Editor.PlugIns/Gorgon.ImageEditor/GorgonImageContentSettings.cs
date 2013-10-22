@@ -26,8 +26,10 @@
 
 using System;
 using System.Drawing;
+using System.IO;
 using System.Windows.Forms;
 using GorgonLibrary.Graphics;
+using GorgonLibrary.IO;
 using GorgonLibrary.UI;
 
 namespace GorgonLibrary.Editor.ImageEditorPlugIn
@@ -57,12 +59,14 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
                 return null;
             }
 
-            if (!name.EndsWith(GorgonFont.DefaultExtension, StringComparison.OrdinalIgnoreCase))
-            {
-                return name + GorgonFont.DefaultExtension;
-            }
+			var extension = new GorgonFileExtension(Path.GetExtension(name));
 
-            return name;
+	        if (string.IsNullOrWhiteSpace(extension.Extension))
+	        {
+		        return null;
+	        }
+
+	        return !GorgonImageEditorPlugIn.Codecs.ContainsKey(extension) ? null : name;
         }
 
         /// <summary>
