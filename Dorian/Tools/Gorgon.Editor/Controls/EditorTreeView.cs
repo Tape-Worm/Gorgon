@@ -399,13 +399,15 @@ namespace GorgonLibrary.Editor
 		{
 			base.OnMouseDown(e);
 
+#error This is probably not necessary.  Remove it and check the side effects.
+
 			var node = GetNodeAt(e.Location) as EditorTreeNode;
 
 			if ((node == null) || (node == SelectedNode))
 			{
 				return;
 			}
-
+            
 			OnBeforeSelect(new TreeViewCancelEventArgs(node, false, TreeViewAction.ByMouse));
 			SelectedNode = node;
 			OnAfterSelect(new TreeViewEventArgs(node, TreeViewAction.ByMouse));
