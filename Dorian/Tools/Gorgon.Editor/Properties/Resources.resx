@@ -553,4 +553,23 @@ The following characters are not allowed:
   <data name="GOREDIT_DLG_FORWARD_TEXT" xml:space="preserve">
     <value>Go forward.</value>
   </data>
+  <data name="PROP_MULTISELECT_DESC" xml:space="preserve">
+    <value>Controls whether multiple files can be selected or not.</value>
+  </data>
+  <data name="GOREDIT_DLG_SEARCHLABEL" xml:space="preserve">
+    <value>Files returned from the search</value>
+  </data>
+  <data name="GOREDIT_DLG_SEARCH_NOFILES" xml:space="preserve">
+    <value>No files were found for the search '{0}'</value>
+    <comment> </comment>
+  </data>
+  <data name="PROP_CATEGORY_DATA" xml:space="preserve">
+    <value>Data</value>
+  </data>
+  <data name="PROP_FILEVIEW_DESC" xml:space="preserve">
+    <value>The view used for the file dialog.</value>
+  </data>
+  <data name="PROP_STARTDIRECTORY_DESC" xml:space="preserve">
+    <value>The initial directory for the file dialog.</value>
+  </data>
 </root>

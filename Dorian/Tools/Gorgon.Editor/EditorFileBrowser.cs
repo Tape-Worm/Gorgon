@@ -28,6 +28,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Reflection.Emit;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -59,7 +60,7 @@ namespace GorgonLibrary.Editor
 		: Component
 	{
 		#region Variables.
-		private string _defaultExtension;
+		private string _defaultExtension = string.Empty;
 		#endregion
 
 		#region Properties.
@@ -73,6 +74,36 @@ namespace GorgonLibrary.Editor
 			get;
 			private set;
 		}
+
+        /// <summary>
+        /// Property to set or return whether to allow multiple selections.
+        /// </summary>
+        [Browsable(true), LocalCategory(typeof(Resources), "PROP_CATEGORY_BEHAVIOR"), LocalDescription(typeof(Resources), "PROP_MULTISELECT_DESC"), DefaultValue(false)]
+	    public bool MultipleSelection
+	    {
+	        get;
+	        set;
+	    }
+
+        /// <summary>
+        /// Property to set or return the default view for the dialog.
+        /// </summary>
+        [Browsable(true), LocalCategory(typeof(Resources), "PROP_CATEGORY_APPEARANCE"), LocalDescription(typeof(Resources), "PROP_FILEVIEW_DESC"), DefaultValue(typeof(FileViews), "Details")]
+	    public FileViews FileView
+	    {
+	        get;
+	        set;
+	    }
+
+        /// <summary>
+        /// Property to set or return the starting directory for the dialog.
+        /// </summary>
+        [Browsable(true), LocalCategory(typeof(Resources), "PROP_CATEGORY_DATA"), LocalDescription(typeof(Resources), "PROP_STARTDIRECTORY_DESC")]
+	    public string StartDirectory
+	    {
+	        get;
+	        set;
+	    }
 
 		/// <summary>
 		/// Property to set or return the default extension for the filter.
@@ -112,35 +143,29 @@ namespace GorgonLibrary.Editor
 		#endregion
 
 		#region Methods.
-		/// <summary>
-		/// Function to show the dialog on the screen.
-		/// </summary>
-		/// <param name="owner">[Optional] The window that owns this window.</param>
-		/// <returns>A dialog result from the window.</returns>
-		/// <remarks>Depending on which button was clicked, either DialogResult.OK or DialogResult.Cancel will be returned from this method.</remarks>
-		public DialogResult ShowDialog(IWin32Window owner = null)
-		{
-			formEditorFileSelector selector = null;
+	    /// <summary>
+	    /// Function to show the dialog on the screen.
+	    /// </summary>
+	    /// <param name="owner">[Optional] The window that owns this window.</param>
+	    /// <returns>A dialog result from the window.</returns>
+	    /// <remarks>Depending on which button was clicked, either DialogResult.OK or DialogResult.Cancel will be returned from this method.</remarks>
+	    public DialogResult ShowDialog(IWin32Window owner = null)
+	    {
+	        using(var selector = new formEditorFileSelector(FileExtensions))
+	        {
+	            selector.Text = Text;
+	            selector.DefaultExtension = DefaultExtension;
+	            selector.CurrentView = FileView;
+	            selector.StartDirectory = StartDirectory;
+	            selector.AllowMultipleSelection = MultipleSelection;
 
-			try
-			{
-				// TODO: Initialization.
-				selector = new formEditorFileSelector(FileExtensions)
-				           {
-					           Text = Text,
-							   DefaultExtension = DefaultExtension
-				           };
+	            DialogResult result = selector.ShowDialog(owner);
 
-				return selector.ShowDialog(owner);
-			}
-			finally
-			{
-				if (selector != null)
-				{
-					selector.Dispose();
-				}
-			}
-		}
+	            FileView = selector.CurrentView;
+
+                return result;
+	        }
+	    }
 		#endregion
 
 		#region Constructor.
