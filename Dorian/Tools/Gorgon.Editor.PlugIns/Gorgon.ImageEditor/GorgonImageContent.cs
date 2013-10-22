@@ -49,6 +49,7 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
         #region Variables.
         private GorgonImageContentPanel _contentPanel;                          // Panel used to display the content.
         private GorgonImageData _image;                                         // Image data.
+	    private readonly GorgonImageCodec _codec;								// Codec used for the image.
         #endregion
 
         #region Properties.
@@ -101,15 +102,7 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
         /// <param name="stream">Stream containing the content data.</param>
         protected override void OnRead(System.IO.Stream stream)
         {
-            GorgonImageCodec selectedCodec = null;
-
-            // Find the correct codec.
-            foreach (var codec in GorgonImageEditorPlugIn.Codecs.Where(codec => codec.Value.IsReadable(stream)))
-            {
-                selectedCodec = codec.Value;
-            }
-
-            _image = GorgonImageData.FromStream(stream, (int)stream.Length, selectedCodec);
+            _image = GorgonImageData.FromStream(stream, (int)stream.Length, _codec);
         }
 
         /// <summary>
@@ -139,6 +132,41 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
             Image resultImage;
             float aspect = (float)_image[0].Width / _image[0].Height;
             var newSize = new Size(128, 128);
+
+			// If this device can't support loading the image, then show
+			// a thumbnail that will indicate that we can't load it.
+	        if ((_image[0].Width >= Graphics.Textures.MaxWidth)
+	            || (_image[0].Height >= Graphics.Textures.MaxHeight)
+	            || (_image[0].Depth >= Graphics.Textures.MaxDepth))
+	        {
+		        return (Image)Resources.invalid_image_128x128.Clone();
+	        }
+
+			// Ensure that we support the image format as well.
+	        switch (_image.Settings.ImageType)
+	        {
+			    case ImageType.Image1D:
+			        if (!Graphics.VideoDevice.Supports1DTextureFormat(_image.Settings.Format))
+			        {
+						return (Image)Resources.invalid_image_128x128.Clone();
+			        }
+			        break;
+				case ImageType.Image2D:
+				case ImageType.ImageCube:
+			        if (!Graphics.VideoDevice.Supports2DTextureFormat(_image.Settings.Format))
+			        {
+						return (Image)Resources.invalid_image_128x128.Clone();
+			        }
+			        break;
+				case ImageType.Image3D:
+			        if (!Graphics.VideoDevice.Supports3DTextureFormat(_image.Settings.Format))
+			        {
+						return (Image)Resources.invalid_image_128x128.Clone();
+			        }
+			        break;
+				default:
+					return (Image)Resources.invalid_image_128x128.Clone();
+	        }
 
             // Resize our image.
             if ((_image[0].Width != 128)
@@ -183,10 +211,12 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
         /// Initializes a new instance of the <see cref="GorgonImageContent"/> class.
         /// </summary>
         /// <param name="name">Name of the content.</param>
-        public GorgonImageContent(string name)
+        /// <param name="codec">The codec used for the image.</param>
+        public GorgonImageContent(string name, GorgonImageCodec codec)
             : base(name)
         {
             HasThumbnail = true;
+	        _codec = codec;
         }
         #endregion
     }

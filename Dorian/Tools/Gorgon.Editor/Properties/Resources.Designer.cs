@@ -73,6 +73,16 @@ namespace GorgonLibrary.Editor.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap back_16x16png {
+            get {
+                object obj = ResourceManager.GetObject("back_16x16png", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap cancel_16x16 {
             get {
                 object obj = ResourceManager.GetObject("cancel_16x16", resourceCulture);
@@ -175,6 +185,16 @@ namespace GorgonLibrary.Editor.Properties {
         internal static System.Drawing.Bitmap folder_open_16x16 {
             get {
                 object obj = ResourceManager.GetObject("folder_open_16x16", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap forward_16x16 {
+            get {
+                object obj = ResourceManager.GetObject("forward_16x16", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -297,6 +317,15 @@ namespace GorgonLibrary.Editor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Go back..
+        /// </summary>
+        internal static string GOREDIT_DLG_BACK_TEXT {
+            get {
+                return ResourceManager.GetString("GOREDIT_DLG_BACK_TEXT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Change file views..
         /// </summary>
         internal static string GOREDIT_DLG_CHANGEVIEW_TEXT {
@@ -347,6 +376,15 @@ namespace GorgonLibrary.Editor.Properties {
         internal static string GOREDIT_DLG_FILE_SELECT_TEXT {
             get {
                 return ResourceManager.GetString("GOREDIT_DLG_FILE_SELECT_TEXT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Go forward..
+        /// </summary>
+        internal static string GOREDIT_DLG_FORWARD_TEXT {
+            get {
+                return ResourceManager.GetString("GOREDIT_DLG_FORWARD_TEXT", resourceCulture);
             }
         }
         

@@ -245,7 +245,9 @@ namespace GorgonLibrary.Editor
 		private readonly GorgonFileExtensionCollection _fileExtensions;									// The list of file extensions to filter.
 		private readonly HashSet<GorgonFileSystemFileEntry> _thumbNailFiles;							// Thumbnails awaiting loading.
 		private CancellationTokenSource _cancelSource;													// Cancellation source.
+		private readonly List<GorgonFileSystemDirectory> _paths = new List<GorgonFileSystemDirectory>();// The selected paths.
 		private Size _thumbNailSize;																	// Thumbnail size.
+		private int _pathIndex;																			// The current path index.
 		#endregion
 
 		#region Properties.
@@ -278,6 +280,108 @@ namespace GorgonLibrary.Editor
 		#endregion
 
 		#region Methods.
+		/// <summary>
+		/// Function to find the file system directory attached to the tree node.
+		/// </summary>
+		/// <param name="directory">Directory to look up.</param>
+		/// <returns>The node for the directory in the tree.</returns>
+		private TreeNodeDirectory FindDirectoryNode(GorgonFileSystemDirectory directory)
+		{
+			var parents = directory.GetParents();
+			var parentNode = _rootDirectory;
+
+			if (parents == null)
+			{
+				return _rootDirectory;
+			}
+
+			// Scan the root directory first.
+			if (!parentNode.IsExpanded)
+			{
+				parentNode.Expand();
+			}
+
+			var currentNode = parentNode.Nodes.Cast<TreeNodeDirectory>().FirstOrDefault(item => item.Directory == directory);
+
+			if (currentNode != null)
+			{
+				return currentNode;
+			}
+
+			// Get the parent directories.
+			foreach(var parentDirectory in parents.Where(item => item != _rootDirectory.Directory).Reverse())
+			{
+				// Find the parent directory.
+				parentNode = parentNode.Nodes.Cast<TreeNodeDirectory>().FirstOrDefault(item => item.Directory == parentDirectory);
+
+				if (parentNode == null)
+				{
+					break;
+				}
+
+				if (!parentNode.IsExpanded)
+				{
+					parentNode.Expand();
+				}
+
+				currentNode = parentNode.Nodes.Cast<TreeNodeDirectory>().FirstOrDefault(item => item.Directory == directory);
+
+				if (currentNode != null)
+				{
+					return currentNode;
+				}
+			}
+
+			return null;
+		}
+
+		/// <summary>
+		/// Handles the Click event of the buttonForward control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+		private void buttonForward_Click(object sender, EventArgs e)
+		{
+			Cursor.Current = Cursors.WaitCursor;
+
+			try
+			{
+				treeDirectories.SelectedNode = _selectedDirectory = FindDirectoryNode(_paths[++_pathIndex]);
+			}
+			catch (Exception ex)
+			{
+				GorgonDialogs.ErrorBox(this, ex);
+			}
+			finally
+			{
+				Cursor.Current = Cursors.Default;
+				ValidateControls();
+			}
+		}
+
+		/// <summary>
+		/// Handles the Click event of the buttonBack control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+		private void buttonBack_Click(object sender, EventArgs e)
+		{
+			Cursor.Current = Cursors.WaitCursor;
+
+			try
+			{
+				treeDirectories.SelectedNode = _selectedDirectory = FindDirectoryNode(_paths[--_pathIndex]);
+			}
+			catch (Exception ex)
+			{
+				GorgonDialogs.ErrorBox(this, ex);
+			}
+			finally
+			{
+				Cursor.Current = Cursors.Default;
+				ValidateControls();
+			}
+		}
 
 		/// <summary>
 		/// Function to switch the current directory and update the tree.
@@ -301,6 +405,7 @@ namespace GorgonLibrary.Editor
 			}
 
 			treeDirectories.SelectedNode = _selectedDirectory;
+			AddPath(_selectedDirectory);
 		}
 
 		/// <summary>
@@ -503,6 +608,36 @@ namespace GorgonLibrary.Editor
 		}
 
 		/// <summary>
+		/// Function to add a path to the back/forward list.
+		/// </summary>
+		/// <param name="node">Node containing the directory.</param>
+		private void AddPath(TreeNodeDirectory node)
+		{
+			if (node == null)
+			{
+				node = _rootDirectory;
+			}
+
+			// If we're beyond 2k worth of paths, then drop the first one.
+			if (_paths.Count > 0)
+			{
+				if (_paths.Count + 1 > 2048)
+				{
+					_paths.RemoveAt(0);
+				}
+
+				// Truncate the list if our current path index is not at the end.
+				while (_pathIndex != _paths.Count - 1)
+				{
+					_paths.RemoveAt(_paths.Count - 1);
+				}
+			}
+
+			_paths.Add(node.Directory);
+			_pathIndex = _paths.Count - 1;
+		}
+
+		/// <summary>
 		/// Handles the AfterSelect event of the treeDirectories control.
 		/// </summary>
 		/// <param name="sender">The source of the event.</param>
@@ -516,11 +651,21 @@ namespace GorgonLibrary.Editor
 				if (e.Node == null)
 				{
 					treeDirectories.SelectedNode = _selectedDirectory = _rootDirectory;
+					if ((e.Action == TreeViewAction.ByKeyboard)
+					    || (e.Action == TreeViewAction.ByMouse))
+					{
+						AddPath(_selectedDirectory);
+					}
 					return;
 				}
 
 				_selectedDirectory = (TreeNodeDirectory)e.Node;
 				FillFiles(_selectedDirectory.Directory);
+				if ((e.Action == TreeViewAction.ByKeyboard)
+					|| (e.Action == TreeViewAction.ByMouse))
+				{
+					AddPath(_selectedDirectory);
+				}
 			}
 			catch (Exception ex)
 			{
@@ -564,6 +709,8 @@ namespace GorgonLibrary.Editor
 		{
 			buttonOK.Enabled = comboFile.Text.Length > 0;
 			buttonGoUp.Enabled = _selectedDirectory != null && _selectedDirectory != _rootDirectory;
+			buttonBack.Enabled = _paths.Count > 1 && _pathIndex > 0;
+			buttonForward.Enabled = _paths.Count > 1 && _pathIndex < _paths.Count - 1;
 		}
 
 		/// <summary>
@@ -581,6 +728,8 @@ namespace GorgonLibrary.Editor
 			buttonView.Text = Resources.GOREDIT_DLG_CHANGEVIEW_TEXT;
 			buttonGoUp.Text = Resources.GOREDIT_DLG_GOUP_BUTTON_TEXT;
 			buttonOK.Text = Resources.GOREDIT_BTN_OK;
+			buttonBack.Text = Resources.GOREDIT_DLG_BACK_TEXT;
+			buttonForward.Text = Resources.GOREDIT_DLG_FORWARD_TEXT;
 			buttonCancel.Text = Resources.GOREDIT_BTN_CANCEL;
 		}
 
@@ -634,6 +783,7 @@ namespace GorgonLibrary.Editor
 				if (setInitialSelected)
 				{
 					treeDirectories.SelectedNode = _selectedDirectory = selectedNode;
+					AddPath(selectedNode);
 				}
 
 				if ((selectedNode == _rootDirectory) && (selectedNode != null))
@@ -1121,7 +1271,7 @@ namespace GorgonLibrary.Editor
 				// Default to sorted by name.
 				listFiles.SetSortIcon(0, SortOrder.Ascending);
 
-				FillDirectoryTree(null, false);
+				FillDirectoryTree(null, true);
 			}
 			catch (Exception ex)
 			{

@@ -120,6 +120,9 @@
   <data name="GOREDIT_MENU_RENAME_FOLDER" xml:space="preserve">
     <value>&amp;Rename folder</value>
   </data>
+  <data name="GOREDIT_MENU_NEW" xml:space="preserve">
+    <value>&amp;New</value>
+  </data>
   <data name="GOREDIT_NODE_DIRECTORY" xml:space="preserve">
     <value>directory</value>
   </data>
@@ -129,12 +132,15 @@
   <data name="GOREDIT_PROC_EXPORT_DLG_TITLE" xml:space="preserve">
     <value>Exporting Files</value>
   </data>
-  <data name="GOREDIT_MENU_EDIT" xml:space="preserve">
-    <value>&amp;Edit</value>
-  </data>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
-  <data name="choose_view_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\choose_view_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="Check_Disabled" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Check_Disabled.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="GOREDIT_PLUGIN_TYPE_DISABLED" xml:space="preserve">
+    <value>Disabled</value>
+  </data>
+  <data name="GOREDIT_DLG_SEARCH_TEXT" xml:space="preserve">
+    <value>Search...</value>
   </data>
   <data name="GOREDIT_NO_EDITOR_PLUGINS" xml:space="preserve">
     <value>The assembly '{0}' does not contain any editor compatible plug-ins.</value>
@@ -145,8 +151,11 @@
   <data name="GOREDIT_FILE_DEFAULT_TYPE" xml:space="preserve">
     <value>file</value>
   </data>
-  <data name="GOREDIT_BTN_CANCEL" xml:space="preserve">
-    <value>&amp;Cancel</value>
+  <data name="GOREDIT_METADATA_CORRUPT" xml:space="preserve">
+    <value>The meta data '{0}' is corrupted.</value>
+  </data>
+  <data name="GOREDIT_BTN_OK" xml:space="preserve">
+    <value>&amp;OK</value>
   </data>
   <data name="GOREDIT_PROC_COPY_DLG_TITLE" xml:space="preserve">
     <value>Copying Files</value>
@@ -156,6 +165,9 @@
   </data>
   <data name="GOREDIT_MENU_FILE" xml:space="preserve">
     <value>&amp;File</value>
+  </data>
+  <data name="GOREDIT_DLG_CHANGEVIEW_TEXT" xml:space="preserve">
+    <value>Change file views.</value>
   </data>
   <data name="remove_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\remove_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -171,8 +183,14 @@
 {0}/{1} files and directories copied.
 {2}/{1} files and directories skipped.</value>
   </data>
-  <data name="Check_Disabled" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Check_Disabled.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="find_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\find_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="PROP_DEFAULTEXTENSION_DESC" xml:space="preserve">
+    <value>Sets the default extension to use when filtering the file list for the dialog.</value>
+  </data>
+  <data name="GOREDIT_BUTTON_EDIT" xml:space="preserve">
+    <value>Edit selected content</value>
   </data>
   <data name="GOREDIT_FILE_DIRECTORY_IS_CHILD" xml:space="preserve">
     <value>Cannot copy '{0}' because the destination is a sub folder of this folder.</value>
@@ -198,11 +216,14 @@
   <data name="GOREDIT_PROC_MOVE_DLG_TITLE" xml:space="preserve">
     <value>Moving Files</value>
   </data>
-  <data name="GOREDIT_MENU_NEW" xml:space="preserve">
-    <value>&amp;New</value>
+  <data name="GOREDIT_DLG_COLUMN_NAME" xml:space="preserve">
+    <value>Name</value>
   </data>
   <data name="GOREDIT_MENU_SAVEAS" xml:space="preserve">
     <value>Save &amp;as</value>
+  </data>
+  <data name="GOREDIT_ALL_FILE_TYPES" xml:space="preserve">
+    <value>Gorgon Editor Files</value>
   </data>
   <data name="GOREDIT_FILE_WRITE_SAVE_LABEL" xml:space="preserve">
     <value>Saving...</value>
@@ -210,8 +231,8 @@
   <data name="GOREDIT_STREAM_READ_ONLY" xml:space="preserve">
     <value>The stream is read only.</value>
   </data>
-  <data name="GOREDIT_PLUGIN_TYPE_DISABLED" xml:space="preserve">
-    <value>Disabled</value>
+  <data name="add_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\add_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="GOREDIT_MENU_RENAME_DEFAULT" xml:space="preserve">
     <value>&amp;Rename</value>
@@ -222,8 +243,8 @@
   <data name="GOREDIT_FILE_ALREADY_EXISTS" xml:space="preserve">
     <value>The {0} '{1}' already exists.</value>
   </data>
-  <data name="GOREDIT_PROC_IMPORT_INFO_DLG_TITLE" xml:space="preserve">
-    <value>Scanning Files</value>
+  <data name="GOREDIT_MENU_COPY" xml:space="preserve">
+    <value>&amp;Copy</value>
   </data>
   <data name="GOREDIT_MENU_ADDCONTENT" xml:space="preserve">
     <value>Add &amp;content</value>
@@ -243,14 +264,14 @@
   <data name="GOREDIT_TAB_CONTENTFILES" xml:space="preserve">
     <value>Content files</value>
   </data>
-  <data name="Expando" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Expando.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="GOREDIT_MENU_EXPORT" xml:space="preserve">
+    <value>&amp;Export</value>
   </data>
   <data name="GOREDIT_MENU_DELETE_FOLDER" xml:space="preserve">
     <value>&amp;Delete folder</value>
   </data>
-  <data name="add_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\add_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="new_item_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\new_item_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="GOREDIT_PASTE_MUST_BE_DIRECTORY" xml:space="preserve">
     <value>The destination must be a directory.</value>
@@ -270,6 +291,9 @@
   <data name="tree_expand_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\tree_expand_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="PROP_TEXT_DESC" xml:space="preserve">
+    <value>Sets the text value to assign to the caption of the window.</value>
+  </data>
   <data name="GOREDIT_MENU_SAVE" xml:space="preserve">
     <value>&amp;Save</value>
   </data>
@@ -282,6 +306,12 @@
   <data name="GOREDIT_IMPORT_CONFIRM" xml:space="preserve">
     <value>{0} files and {1} directories will be imported.  Are you sure you wish to do this?</value>
   </data>
+  <data name="Expando" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Expando.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="GOREDIT_IMPORT_STATUS_COPYING" xml:space="preserve">
+    <value>Copying '{0}'</value>
+  </data>
   <data name="GOREDIT_OVERWRITE_FILE_PROMPT" xml:space="preserve">
     <value>The {0} '{1}' already exists.  Do you wish to overwrite it?</value>
   </data>
@@ -291,8 +321,14 @@
   <data name="PROP_NAME_DESC" xml:space="preserve">
     <value>Provides a name for the content.  The name should conform to a standard file name.</value>
   </data>
+  <data name="GOREDIT_FILE_DELETE_DIRECTORY_CONFIRM" xml:space="preserve">
+    <value>This will delete '{0}' and any files and/or directories it contains.  Are you sure you wish to do this?</value>
+  </data>
   <data name="project_node_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\project_node_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="forward_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\forward_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="GOREDIT_IMPORT_NO_DATA" xml:space="preserve">
     <value>There were no files/directories found that could be imported.</value>
@@ -300,18 +336,18 @@
   <data name="GOREDIT_FILE_SOURCE_SAME_AS_DEST" xml:space="preserve">
     <value>The source file must not be the same as the destination file.</value>
   </data>
-  <data name="GOREDIT_FILE_DELETE_DIRECTORY_CONFIRM" xml:space="preserve">
-    <value>This will delete '{0}' and any files and/or directories it contains.  Are you sure you wish to do this?</value>
+  <data name="GOREDIT_DLG_FILE_LABEL" xml:space="preserve">
+    <value>File</value>
   </data>
   <data name="GOREDIT_IMPORT_SUCCESS" xml:space="preserve">
     <value>{0}/{1} files and directories successfully imported.
 {2}/{1} files and directories were skipped.</value>
   </data>
-  <data name="GOREDIT_MENU_EXPORT" xml:space="preserve">
-    <value>&amp;Export</value>
+  <data name="GOREDIT_SPLASH_INIT_GFX" xml:space="preserve">
+    <value>Initializing graphics...</value>
   </data>
-  <data name="GOREDIT_IMPORT_INFO_LABEL" xml:space="preserve">
-    <value>Getting file information...</value>
+  <data name="PROP_CUETEXT_DESC" xml:space="preserve">
+    <value>Sets the value for the cue text on the textbox.  Cue text is used to indicate what type of text is expected to be received by the textbox.</value>
   </data>
   <data name="GOREDIT_CONTENT_CANNOT_CREATE_FILE" xml:space="preserve">
     <value>Could not create the content file '{0}'.</value>
@@ -319,11 +355,14 @@
   <data name="GOREDIT_SPLASH_LOAD_PLUGIN" xml:space="preserve">
     <value>Plug-in: {0}</value>
   </data>
+  <data name="PROP_CATEGORY_BEHAVIOR" xml:space="preserve">
+    <value>Behavior</value>
+  </data>
   <data name="GOREDIT_CANNOT_USESYS_SCRATCH" xml:space="preserve">
     <value>Cannot use a system location or the root of the system drive for scratch data.</value>
   </data>
-  <data name="GOREDIT_IMPORT_EXPORT_PROCESS_LABEL" xml:space="preserve">
-    <value>Copying '{0}'</value>
+  <data name="GOREDIT_IMPORT_INFO_LABEL" xml:space="preserve">
+    <value>Getting file information...</value>
   </data>
   <data name="GOREDIT_PLUGIN_TYPE_CONTENT" xml:space="preserve">
     <value>Content</value>
@@ -351,8 +390,14 @@
 {0}/{1} files copied.
 {2}/{1} files skipped.</value>
   </data>
+  <data name="GOREDIT_DLG_FILE_SELECT_TEXT" xml:space="preserve">
+    <value>Select a file</value>
+  </data>
   <data name="GOREDIT_PROC_IMPORT_DLG_TITLE" xml:space="preserve">
     <value>Importing Files</value>
+  </data>
+  <data name="PROP_CATEGORY_APPEARANCE" xml:space="preserve">
+    <value>Appearance</value>
   </data>
   <data name="cancel_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\cancel_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -394,8 +439,8 @@ The following characters are not allowed:
   <data name="GOREDIT_MENU_PREFERENCES" xml:space="preserve">
     <value>&amp;Preferences</value>
   </data>
-  <data name="GOREDIT_BUTTON_EDIT" xml:space="preserve">
-    <value>Edit selected content</value>
+  <data name="up_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\up_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="GOREDIT_NO_DRIVE_AVAILABLE" xml:space="preserve">
     <value>There are no drives on the system with enough free space.  The Gorgon Editor requires a minimum of 150 MB of free space for temporary files.</value>
@@ -406,8 +451,8 @@ The following characters are not allowed:
   <data name="GOREDIT_SPLASH_LOAD_DEFAULT_CONTENT" xml:space="preserve">
     <value>Loading default content pane.</value>
   </data>
-  <data name="GOREDIT_IMPORT_STATUS_COPYING" xml:space="preserve">
-    <value>Copying '{0}'</value>
+  <data name="GOREDIT_DLG_MENU_LARGE" xml:space="preserve">
+    <value>Thumbnail view</value>
   </data>
   <data name="GOREDIT_MENU_DELETE_DEFAULT" xml:space="preserve">
     <value>&amp;Delete</value>
@@ -424,17 +469,23 @@ The following characters are not allowed:
   <data name="tree_collapse_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\tree_collapse_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="GOREDIT_DLG_GOUP_BUTTON_TEXT" xml:space="preserve">
+    <value>Go up to the parent of this directory.</value>
+  </data>
   <data name="GOREDIT_IMPORT_FILE_OPEN_FOR_EDIT" xml:space="preserve">
     <value>The file '{0}' is opened for editing.  You must close this file and reimport it if you wish to overwrite it.</value>
   </data>
-  <data name="new_item_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\new_item_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="choose_view_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\choose_view_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="GOREDIT_PROC_IMPORT_INFO_DLG_TITLE" xml:space="preserve">
+    <value>Scanning Files</value>
   </data>
   <data name="GOREDIT_MENU_IMPORT" xml:space="preserve">
     <value>&amp;Import</value>
   </data>
-  <data name="GOREDIT_ALL_FILE_TYPES" xml:space="preserve">
-    <value>Gorgon Editor Files</value>
+  <data name="GOREDIT_BTN_CANCEL" xml:space="preserve">
+    <value>&amp;Cancel</value>
   </data>
   <data name="GOREDIT_MENU_CREATEFOLDER" xml:space="preserve">
     <value>Create &amp;folder</value>
@@ -442,8 +493,14 @@ The following characters are not allowed:
   <data name="Check_Enabled" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Check_Enabled.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="GOREDIT_DLG_COLUMN_DATE" xml:space="preserve">
+    <value>Date</value>
+  </data>
   <data name="GOREDIT_EXPORT_DLG_TITLE" xml:space="preserve">
     <value>Select a directory to export the files into.</value>
+  </data>
+  <data name="GOREDIT_FILE_DESTINATION_SAME" xml:space="preserve">
+    <value>The destination directory is the same as the source directory.</value>
   </data>
   <data name="GOREDIT_NO_PROVIDERS_TO_READ_FILE" xml:space="preserve">
     <value>The editor does not know how to read the file '{0}'.</value>
@@ -457,8 +514,8 @@ The following characters are not allowed:
   <data name="GOREDIT_FILE_DEFAULT_DIRECTORY_NAME" xml:space="preserve">
     <value>Untitled</value>
   </data>
-  <data name="GOREDIT_SPLASH_INIT_GFX" xml:space="preserve">
-    <value>Initializing graphics...</value>
+  <data name="GOREDIT_DLG_COLUMN_SIZE" xml:space="preserve">
+    <value>Size</value>
   </data>
   <data name="GOREDIT_SPLASH_LOAD_PLUGINS" xml:space="preserve">
     <value>Loading plug-ins...</value>
@@ -472,73 +529,28 @@ The following characters are not allowed:
   <data name="GOREDIT_MENU_EXIT" xml:space="preserve">
     <value>E&amp;xit</value>
   </data>
-  <data name="GOREDIT_MENU_COPY" xml:space="preserve">
-    <value>&amp;Copy</value>
+  <data name="GOREDIT_IMPORT_EXPORT_PROCESS_LABEL" xml:space="preserve">
+    <value>Copying '{0}'</value>
+  </data>
+  <data name="GOREDIT_MENU_EDIT" xml:space="preserve">
+    <value>&amp;Edit</value>
   </data>
   <data name="GOREDIT_FILE_DELETE_FILE_CONFIRM" xml:space="preserve">
     <value>This will delete '{0}'.  Are you sure you wish to do this?</value>
   </data>
-  <data name="GOREDIT_FILE_DESTINATION_SAME" xml:space="preserve">
-    <value>The destination directory is the same as the source directory.</value>
+  <data name="GOREDIT_DLG_MENU_DETAILS" xml:space="preserve">
+    <value>Detail view</value>
   </data>
   <data name="Gorgon_2_Logo_Full" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Gorgon_2.x_Logo_Full.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="find_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\find_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="back_16x16png" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\back_16x16png.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="GOREDIT_DLG_SEARCH_TEXT" xml:space="preserve">
-    <value>Search...</value>
+  <data name="GOREDIT_DLG_BACK_TEXT" xml:space="preserve">
+    <value>Go back.</value>
   </data>
-  <data name="PROP_CATEGORY_APPEARANCE" xml:space="preserve">
-    <value>Appearance</value>
-  </data>
-  <data name="PROP_CUETEXT_DESC" xml:space="preserve">
-    <value>Sets the value for the cue text on the textbox.  Cue text is used to indicate what type of text is expected to be received by the textbox.</value>
-  </data>
-  <data name="PROP_CATEGORY_BEHAVIOR" xml:space="preserve">
-    <value>Behavior</value>
-  </data>
-  <data name="PROP_DEFAULTEXTENSION_DESC" xml:space="preserve">
-    <value>Sets the default extension to use when filtering the file list for the dialog.</value>
-  </data>
-  <data name="PROP_TEXT_DESC" xml:space="preserve">
-    <value>Sets the text value to assign to the caption of the window.</value>
-  </data>
-  <data name="GOREDIT_METADATA_CORRUPT" xml:space="preserve">
-    <value>The meta data '{0}' is corrupted.</value>
-  </data>
-  <data name="GOREDIT_BTN_OK" xml:space="preserve">
-    <value>&amp;OK</value>
-  </data>
-  <data name="GOREDIT_DLG_COLUMN_DATE" xml:space="preserve">
-    <value>Date</value>
-  </data>
-  <data name="GOREDIT_DLG_COLUMN_NAME" xml:space="preserve">
-    <value>Name</value>
-  </data>
-  <data name="GOREDIT_DLG_COLUMN_SIZE" xml:space="preserve">
-    <value>Size</value>
-  </data>
-  <data name="GOREDIT_DLG_FILE_LABEL" xml:space="preserve">
-    <value>File</value>
-  </data>
-  <data name="GOREDIT_DLG_FILE_SELECT_TEXT" xml:space="preserve">
-    <value>Select a file</value>
-  </data>
-  <data name="GOREDIT_DLG_MENU_DETAILS" xml:space="preserve">
-    <value>Detail view</value>
-  </data>
-  <data name="GOREDIT_DLG_MENU_LARGE" xml:space="preserve">
-    <value>Thumbnail view</value>
-  </data>
-  <data name="up_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\up_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="GOREDIT_DLG_CHANGEVIEW_TEXT" xml:space="preserve">
-    <value>Change file views.</value>
-  </data>
-  <data name="GOREDIT_DLG_GOUP_BUTTON_TEXT" xml:space="preserve">
-    <value>Go up to the parent of this directory.</value>
+  <data name="GOREDIT_DLG_FORWARD_TEXT" xml:space="preserve">
+    <value>Go forward.</value>
   </data>
 </root>

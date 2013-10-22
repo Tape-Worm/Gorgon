@@ -475,6 +475,23 @@ namespace GorgonLibrary.Graphics.Test
             }
         }
 
+	    [TestMethod]
+	    public void TestLoadSingleFrameGIF()
+	    {
+			var shader = _framework.Graphics.Shaders.FromMemory<GorgonPixelShader>("PS",
+				"TestPSGeneric",
+				Resources.TextureShaders);
+
+			var texture = _framework.Graphics.Textures.FromFile<GorgonTexture2D>("TestImage", @"d:\images\rain_test_single.gif", new GorgonCodecGIF());
+
+			_framework.CreateTestScene(Shaders, Shaders, true);
+
+			_framework.Graphics.Shaders.PixelShader.Current = shader;
+			_framework.Graphics.Shaders.PixelShader.Resources[1] = texture;
+
+			Assert.IsTrue(_framework.Run() == DialogResult.Yes);
+	    }
+
 		[TestMethod]
 		public void TestUAVPSBinding()
 		{

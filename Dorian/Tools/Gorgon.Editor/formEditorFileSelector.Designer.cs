@@ -81,7 +81,9 @@ namespace GorgonLibrary.Editor
 			this.panelTopControls = new System.Windows.Forms.Panel();
 			this.panelTools = new System.Windows.Forms.Panel();
 			this.stripFileFunctions = new System.Windows.Forms.ToolStrip();
+			this.buttonBack = new System.Windows.Forms.ToolStripButton();
 			this.buttonGoUp = new System.Windows.Forms.ToolStripButton();
+			this.buttonForward = new System.Windows.Forms.ToolStripButton();
 			this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
 			this.buttonView = new System.Windows.Forms.ToolStripDropDownButton();
 			this.itemViewDetails = new System.Windows.Forms.ToolStripMenuItem();
@@ -290,7 +292,9 @@ namespace GorgonLibrary.Editor
 			// 
 			this.stripFileFunctions.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
 			this.stripFileFunctions.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.buttonBack,
             this.buttonGoUp,
+            this.buttonForward,
             this.toolStripSeparator1,
             this.buttonView});
 			this.stripFileFunctions.Location = new System.Drawing.Point(0, 0);
@@ -298,6 +302,17 @@ namespace GorgonLibrary.Editor
 			this.stripFileFunctions.Size = new System.Drawing.Size(404, 25);
 			this.stripFileFunctions.Stretch = true;
 			this.stripFileFunctions.TabIndex = 0;
+			// 
+			// buttonBack
+			// 
+			this.buttonBack.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.buttonBack.Enabled = false;
+			this.buttonBack.Image = global::GorgonLibrary.Editor.Properties.Resources.back_16x16png;
+			this.buttonBack.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.buttonBack.Name = "buttonBack";
+			this.buttonBack.Size = new System.Drawing.Size(23, 22);
+			this.buttonBack.Text = "Back";
+			this.buttonBack.Click += new System.EventHandler(this.buttonBack_Click);
 			// 
 			// buttonGoUp
 			// 
@@ -309,6 +324,17 @@ namespace GorgonLibrary.Editor
 			this.buttonGoUp.Size = new System.Drawing.Size(23, 22);
 			this.buttonGoUp.Text = "Go up.";
 			this.buttonGoUp.Click += new System.EventHandler(this.buttonGoUp_Click);
+			// 
+			// buttonForward
+			// 
+			this.buttonForward.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.buttonForward.Enabled = false;
+			this.buttonForward.Image = global::GorgonLibrary.Editor.Properties.Resources.forward_16x16;
+			this.buttonForward.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.buttonForward.Name = "buttonForward";
+			this.buttonForward.Size = new System.Drawing.Size(23, 22);
+			this.buttonForward.Text = "Foreward";
+			this.buttonForward.Click += new System.EventHandler(this.buttonForward_Click);
 			// 
 			// toolStripSeparator1
 			// 
@@ -522,6 +548,8 @@ namespace GorgonLibrary.Editor
 		private System.Windows.Forms.ToolStripMenuItem itemViewLarge;
 		private System.Windows.Forms.ToolStripButton buttonGoUp;
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
+		private System.Windows.Forms.ToolStripButton buttonBack;
+		private System.Windows.Forms.ToolStripButton buttonForward;
 
 	}
 }

@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace GorgonLibrary.IO
@@ -88,6 +89,33 @@ namespace GorgonLibrary.IO
 		#endregion
 
         #region Methods.
+		/// <summary>
+		/// Function to return all the parents up to the root of this directory.
+		/// </summary>
+		/// <returns>A list of all the parents, up to and including the root. Or NULL (Nothing in VB.Net) if there is no parent directory.</returns>
+		/// <remarks>A NULL (Nothing in VB.Net) return value indicates that this directory is the root directory.</remarks>
+		public IEnumerable<GorgonFileSystemDirectory> GetParents()
+		{
+			if (FileSystem.RootDirectory == this)
+			{
+				return null;
+			}
+
+			var result = new List<GorgonFileSystemDirectory>
+			             {
+				             Parent
+			             };
+
+			IEnumerable<GorgonFileSystemDirectory> parents = Parent.GetParents();
+
+			if (parents != null)
+			{
+				result.AddRange(parents);
+			}
+
+			return result;
+		}
+
         /// <summary>
         /// Function to delete the directory.
         /// </summary>

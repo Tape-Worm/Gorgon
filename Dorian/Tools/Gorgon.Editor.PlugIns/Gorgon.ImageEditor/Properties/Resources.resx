@@ -145,4 +145,10 @@
   <data name="GORIMG_CONTENT_NOT_IMAGE" xml:space="preserve">
     <value>The content '{0}' is not an image.</value>
   </data>
+  <data name="invalid_image_128x128" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\invalid_image_128x128.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="GORIMG_NO_CODEC" xml:space="preserve">
+    <value>There is no codec available that can open the file '{0}'.</value>
+  </data>
 </root>
