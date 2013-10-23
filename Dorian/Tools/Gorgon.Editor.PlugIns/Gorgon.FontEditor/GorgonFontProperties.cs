@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.Configuration;
 using System.Drawing;
 using GorgonLibrary.Configuration;
 using GorgonLibrary.Editor.FontEditorPlugIn.Properties;
@@ -127,6 +128,26 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 			get;
 			set;
 		}
+
+        /// <summary>
+        /// Property to set or return the last texture import path.
+        /// </summary>
+        [ApplicationSetting("LastTextureImportPath", typeof(string), "FontEditor")]
+	    public string LastTextureImportPath
+	    {
+	        get;
+	        set;
+	    }
+
+        /// <summary>
+        /// Property to set or return the last view used with the texture import dialog.
+        /// </summary>
+        [ApplicationSetting("LastTextureImportDialogview", typeof(FileViews), "FontEditor")]
+	    public FileViews LastTextureImportDialogView
+	    {
+	        get;
+	        set;
+	    }
 		#endregion
 
 		#region Constructor/Destructor.
@@ -143,6 +164,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 			ShadowOffset = new Point(1, 1);
 			ShadowOpacity = 0.5f;
             SampleText = Resources.GORFNT_DEFAULT_TEXT;
+            LastTextureImportDialogView = FileViews.Large;
 		}
 		#endregion
 	}

@@ -166,14 +166,25 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
 		private void buttonGlyphClip_Click(object sender, EventArgs e)
 		{
-			imageFileBrowser.FileExtensions.Clear();
-			imageFileBrowser.FileExtensions.Add(new GorgonFileExtension("dds", "Direct Draw Surface (*.dds)"));
-			imageFileBrowser.FileExtensions.Add(new GorgonFileExtension("png", "Portable Network Graphics (*.png)"));
-			imageFileBrowser.FileExtensions.Add(new GorgonFileExtension("tga", "Truevision Targa Files (*.tga)"));
-			imageFileBrowser.FileExtensions.Add(new GorgonFileExtension("bmp", "Windows Bitmap (*.bmp)"));
-			imageFileBrowser.FileExtensions.Add(new GorgonFileExtension("jpg", "Joint Photographics Experts Group (*.jpg)"));
-			imageFileBrowser.FileExtensions.Add(new GorgonFileExtension("*", "All files (*.*)"));
-			imageFileBrowser.ShowDialog(ParentForm);
+		    try
+		    {
+		        imageFileBrowser.FileExtensions.Clear();
+		        imageFileBrowser.FileExtensions.Add(new GorgonFileExtension("dds", "Direct Draw Surface (*.dds)"));
+		        imageFileBrowser.FileExtensions.Add(new GorgonFileExtension("png", "Portable Network Graphics (*.png)"));
+		        imageFileBrowser.FileExtensions.Add(new GorgonFileExtension("tga", "Truevision Targa Files (*.tga)"));
+		        imageFileBrowser.FileExtensions.Add(new GorgonFileExtension("bmp", "Windows Bitmap (*.bmp)"));
+		        imageFileBrowser.FileExtensions.Add(new GorgonFileExtension("jpg", "Joint Photographics Experts Group (*.jpg)"));
+		        imageFileBrowser.FileExtensions.Add(new GorgonFileExtension("*", "All files (*.*)"));
+    
+		        imageFileBrowser.FileView = GorgonFontEditorPlugIn.Settings.LastTextureImportDialogView;
+		        imageFileBrowser.ShowDialog(ParentForm);
+
+		        GorgonFontEditorPlugIn.Settings.LastTextureImportDialogView = imageFileBrowser.FileView;
+		    }
+		    catch (Exception ex)
+		    {
+		        GorgonDialogs.ErrorBox(ParentForm, ex);
+		    }
 		}
 
 		/// <summary>
