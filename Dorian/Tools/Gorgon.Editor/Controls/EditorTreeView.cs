@@ -391,28 +391,6 @@ namespace GorgonLibrary.Editor
             base.Dispose(disposing);
         }
 
-		/// <summary>
-		/// Raises the <see cref="E:System.Windows.Forms.Control.MouseDown" /> event.
-		/// </summary>
-		/// <param name="e">A <see cref="T:System.Windows.Forms.MouseEventArgs" /> that contains the event data.</param>
-		protected override void OnMouseDown(MouseEventArgs e)
-		{
-			base.OnMouseDown(e);
-
-#error This is probably not necessary.  Remove it and check the side effects.
-
-			var node = GetNodeAt(e.Location) as EditorTreeNode;
-
-			if ((node == null) || (node == SelectedNode))
-			{
-				return;
-			}
-            
-			OnBeforeSelect(new TreeViewCancelEventArgs(node, false, TreeViewAction.ByMouse));
-			SelectedNode = node;
-			OnAfterSelect(new TreeViewEventArgs(node, TreeViewAction.ByMouse));
-		}
-
         /// <summary>
         /// Raises the <see cref="E:System.Windows.Forms.Control.FontChanged" /> event.
         /// </summary>

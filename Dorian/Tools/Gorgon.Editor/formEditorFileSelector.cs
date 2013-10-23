@@ -237,6 +237,7 @@ namespace GorgonLibrary.Editor
 		#endregion
 
 		#region Variables.
+		private readonly static List<string> _searchAutoComplete = new List<string>();					// Auto complete for our search text box.
 		private TreeNodeDirectory _rootDirectory;														// The root directory node.
 		private TreeNodeDirectory _selectedDirectory;													// The currently selected directory node.
 		private int _fillTreeLock;																		// Lock used to keep the call to fill the tree from being re-entrant.
@@ -295,7 +296,7 @@ namespace GorgonLibrary.Editor
 		#endregion
 
 		#region Methods.
-        /// <summary>
+		/// <summary>
         /// Function to close the search dialog.
         /// </summary>
 	    private void CloseSearch()
@@ -304,7 +305,57 @@ namespace GorgonLibrary.Editor
             splitFiles.Panel1Collapsed = false;
             panelSearchLabel.Visible = false;
             FillFiles(_selectedDirectory == null ? _rootDirectory.Directory : _selectedDirectory.Directory);
+	        textSearch.Text = string.Empty;
         }
+
+		/// <summary>
+		/// Handles the KeyUp event of the listFiles control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="KeyEventArgs"/> instance containing the event data.</param>
+		private void listFiles_KeyUp(object sender, KeyEventArgs e)
+		{
+			if ((e.KeyCode != Keys.Escape)
+				|| (!panelSearchLabel.Visible))
+			{
+				return;
+			}
+
+			try
+			{
+				CloseSearch();
+				CancelButton = buttonCancel;
+			}
+			finally			
+			{
+				ValidateControls();
+			}
+		}
+
+		/// <summary>
+		/// Handles the Enter event of the listFiles control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+		private void listFiles_Enter(object sender, EventArgs e)
+		{
+			if (!panelSearchLabel.Visible)
+			{
+				return;
+			}
+
+			CancelButton = null;
+		}
+
+		/// <summary>
+		/// Handles the Leave event of the listFiles control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+		private void listFiles_Leave(object sender, EventArgs e)
+		{
+			CancelButton = buttonCancel;
+		}
 
         /// <summary>
         /// Handles the Click event of the buttonCloseSearch control.
@@ -329,60 +380,239 @@ namespace GorgonLibrary.Editor
                 ValidateControls();
             }
         }
-        
-        
-        /// <summary>
-        /// Handles the KeyDown event of the textSearch control.
-        /// </summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="KeyEventArgs"/> instance containing the event data.</param>
-        private void textSearch_KeyDown(object sender, KeyEventArgs e)
-        {
-            if (e.KeyCode != Keys.Enter)
-            {
-                return;
-            }
-            Cursor.Current = Cursors.WaitCursor;
 
-            try
-            {
-                if (textSearch.TextLength == 0)
-                {
-                    if (panelSearchLabel.Visible)
-                    {
-                        CloseSearch();
-                    }
-                    return;
-                }
 
-                // Turn off the tree.
-                splitFiles.Panel1Collapsed = true;
-                panelSearchLabel.Visible = true;
+		/// <summary>
+		/// Handles the Click event of the buttonSearch control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+		private void buttonSearch_Click(object sender, EventArgs e)
+		{
+			Cursor.Current = Cursors.WaitCursor;
 
-                FillFilesSearch(_selectedDirectory.Directory);
-            }
-            catch (Exception ex)
-            {
-                GorgonDialogs.ErrorBox(this, ex);
-            }
-            finally
-            {
-                e.Handled = true;
-                Cursor.Current = Cursors.Default;
-                ValidateControls();
-            }
-        }
+			try
+			{
+				FillFilesSearch(_selectedDirectory.Directory);
+			}
+			catch (Exception ex)
+			{
+				GorgonDialogs.ErrorBox(this, ex);
+			}
+			finally
+			{
+				Cursor.Current = Cursors.Default;
+				ValidateControls();
+			}
+		}
+
+		/// <summary>
+		/// Handles the Enter event of the textSearch control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+		private void textSearch_Enter(object sender, EventArgs e)
+		{
+			AcceptButton = null;
+			if (sender != buttonSearch)
+			{
+				CancelButton = null;
+			}
+		}
+
+		/// <summary>
+		/// Handles the Leave event of the textSearch control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+		private void textSearch_Leave(object sender, EventArgs e)
+		{
+			AcceptButton = buttonOK;
+			CancelButton = buttonCancel;
+		}
+
+		/// <summary>
+		/// Handles the KeyUp event of the textSearch control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="KeyEventArgs"/> instance containing the event data.</param>
+		private void textSearch_KeyUp(object sender, KeyEventArgs e)
+		{
+			switch (e.KeyCode)
+			{
+				case Keys.Enter:
+					Cursor.Current = Cursors.WaitCursor;
+
+					try
+					{
+						FillFilesSearch(_selectedDirectory.Directory);
+					}
+					catch (Exception ex)
+					{
+						GorgonDialogs.ErrorBox(this, ex);
+					}
+					finally
+					{
+						e.Handled = true;
+						Cursor.Current = Cursors.Default;
+						ValidateControls();
+					}
+					break;
+				case Keys.Escape:
+					if (panelSearchLabel.Visible)
+					{
+						CloseSearch();
+					}
+					else
+					{
+						textSearch.Text = string.Empty;
+					}
+					listFiles.Focus();
+					break;
+			}
+		}
+
+		/// <summary>
+		/// Function to populate the list view with file entries.
+		/// </summary>
+		/// <param name="files">File entries used to populate the list view.</param>
+		/// <param name="doNotClear">TRUE to disable the clearing of items in the list, FALSE to clear the items in the list.</param>
+		private void FillListView(IEnumerable<GorgonFileSystemFileEntry> files, bool doNotClear)
+		{
+			if (!doNotClear)
+			{
+				listFiles.BeginUpdate();
+				listFiles.Items.Clear();
+			}
+
+			try
+			{
+				comboFile.AutoCompleteCustomSource.Clear();
+
+				// Add to the list view.
+				foreach (var file in files)
+				{
+					var item = new ListViewItem(file.Name)
+					           {
+						           Name = file.FullPath,
+						           ImageKey = @"unknown_file",
+						           Tag = file
+					           };
+
+					// Add the files in this directory to the auto complete of the filename textbox.
+					comboFile.AutoCompleteCustomSource.Add(file.Name);
+
+					if (CurrentView != FileViews.Large)
+					{
+						using (ContentPlugIn plugIn = ContentManagement.GetContentPlugInForFile(file.Extension))
+						{
+							if (plugIn != null)
+							{
+								item.ImageKey = plugIn.Name;
+							}
+
+							item.SubItems.Add(file.CreateDate.ToString(CultureInfo.CurrentUICulture.DateTimeFormat));
+							item.SubItems.Add(file.Size.FormatMemory());
+						}
+					}
+					else
+					{
+						// Assign the full path to the tool tips.
+						if (panelSearchLabel.Visible)
+						{
+							listFiles.ShowItemToolTips = true;
+							item.ToolTipText = file.FullPath;
+						}
+						else
+						{
+							listFiles.ShowItemToolTips = false;
+						}
+
+						// This will queue up files to extract thumbnails from.
+						// The thumbnails will be extracted via a background thread which will load the content file
+						// and fill in the list view item image when the thumbnail creation is complete.
+						// This thread will run for a maximum of 10 minutes.  If all thumbnails are not generated in that time,
+						// then they will be generated on the next refresh (as they'll still be in the queue).
+						if (imagesFilesLarge.Images.ContainsKey(file.FullPath))
+						{
+							// We already loaded this guy, so let's not add it to the queue.
+							item.ImageKey = file.FullPath;
+						}
+						else
+						{
+							if (!_thumbNailFiles.Contains(file))
+							{
+								_thumbNailFiles.Add(file);
+							}
+						}
+					}
+
+					listFiles.Items.Add(item);
+				}
+			}
+			finally
+			{
+				if (!doNotClear)
+				{
+					listFiles.AutoResizeColumns(ColumnHeaderAutoResizeStyle.HeaderSize);
+					listFiles.EndUpdate();
+				}
+			}
+		}
 
         /// <summary>
         /// Function to look up files using the search dialog.
         /// </summary>
         /// <param name="rootDirectory">The directory that be the starting point of the search.</param>
-	    private void FillFilesSearch(GorgonFileSystemDirectory rootDirectory)
+	    private async void FillFilesSearch(GorgonFileSystemDirectory rootDirectory)
         {
-            
-            labelNoFilesFound.Visible = true;
-            labelNoFilesFound.Text = string.Format(Resources.GOREDIT_DLG_SEARCH_NOFILES, textSearch.Text);
-            labelNoFilesFound.BringToFront();
+			if (textSearch.TextLength == 0)
+			{
+				if (panelSearchLabel.Visible)
+				{
+					CloseSearch();
+				}
+				return;
+			}
+
+	        if (rootDirectory == null)
+	        {
+		        rootDirectory = _rootDirectory.Directory;
+	        }
+
+	        var files = ScratchArea.ScratchFiles.FindFiles(rootDirectory.FullPath, textSearch.Text, true);
+
+			// Turn off the tree.
+			splitFiles.Panel1Collapsed = true;
+			panelSearchLabel.Visible = true;
+			textSearch.AutoCompleteCustomSource.Add(textSearch.Text);
+
+			// Sort and filter our files.
+		    files = GetSortedFiles(files);
+			FillListView(files, false);
+
+	        if (listFiles.Items.Count == 0)
+	        {
+		        labelNoFilesFound.Visible = true;
+		        labelNoFilesFound.Text = string.Format(Resources.GOREDIT_DLG_SEARCH_NOFILES, textSearch.Text);
+		        labelNoFilesFound.BringToFront();
+	        }
+	        else
+	        {
+				labelNoFilesFound.Visible = false;
+	        }
+
+	        listFiles.Focus();
+
+			// Launch a thread to retrieve the thumbnails.
+			if ((CurrentView != FileViews.Large) || (_cancelSource != null))
+			{
+				return;
+			}
+
+			// Get the thumbnails on a separate thread.  This way loading the thumbnails won't be a painfully slow process.
+			_cancelSource = new CancellationTokenSource(600000);
+			await Task.Factory.StartNew(GetThumbNails, _cancelSource.Token);
         }
 
         /// <summary>
@@ -680,7 +910,14 @@ namespace GorgonLibrary.Editor
 					CurrentView = FileViews.Large;
 				}
 
-				FillFiles(_selectedDirectory.Directory);
+				if (!panelSearchLabel.Visible)
+				{
+					FillFiles(_selectedDirectory.Directory);
+				}
+				else
+				{
+					FillFilesSearch(_selectedDirectory == null ? _rootDirectory.Directory : _selectedDirectory.Directory);
+				}
 			}
 			catch (Exception ex)
 			{
@@ -818,9 +1055,10 @@ namespace GorgonLibrary.Editor
 		private void ValidateControls()
 		{
 			buttonOK.Enabled = comboFile.Text.Length > 0;
-			buttonGoUp.Enabled = _selectedDirectory != null && _selectedDirectory != _rootDirectory;
-			buttonBack.Enabled = _paths.Count > 1 && _pathIndex > 0;
-			buttonForward.Enabled = _paths.Count > 1 && _pathIndex < _paths.Count - 1;
+			buttonGoUp.Enabled = _selectedDirectory != null && _selectedDirectory != _rootDirectory && !panelSearchLabel.Visible;
+			buttonBack.Enabled = _paths.Count > 1 && _pathIndex > 0 && !panelSearchLabel.Visible;
+			buttonForward.Enabled = _paths.Count > 1 && _pathIndex < _paths.Count - 1 && !panelSearchLabel.Visible;
+			comboFilters.Enabled = !panelSearchLabel.Visible;
 		}
 
 		/// <summary>
@@ -841,6 +1079,7 @@ namespace GorgonLibrary.Editor
 			buttonBack.Text = Resources.GOREDIT_DLG_BACK_TEXT;
 			buttonForward.Text = Resources.GOREDIT_DLG_FORWARD_TEXT;
 			buttonCancel.Text = Resources.GOREDIT_BTN_CANCEL;
+			labelSearchBanner.Text = Resources.GOREDIT_DLG_SEARCHLABEL;
 		}
 
 		/// <summary>
@@ -913,27 +1152,30 @@ namespace GorgonLibrary.Editor
 		/// <summary>
 		/// Function to return a list of sorted files.
 		/// </summary>
-		/// <param name="directory">Directory containing the files.</param>
+		/// <param name="directoryFiles">Directory containing the files.</param>
 		/// <returns>A sorted list of files.</returns>
-		private IEnumerable<GorgonFileSystemFileEntry> GetSortedFiles(GorgonFileSystemDirectory directory)
+		private IEnumerable<GorgonFileSystemFileEntry> GetSortedFiles(IEnumerable<GorgonFileSystemFileEntry> directoryFiles)
 		{
 			FilterItem filter = default(FilterItem);
 
-			if (comboFilters.SelectedItem != null)
+			if (!panelSearchLabel.Visible)
 			{
-				filter = (FilterItem)comboFilters.SelectedItem;
-			}
+				if (comboFilters.SelectedItem != null)
+				{
+					filter = (FilterItem)comboFilters.SelectedItem;
+				}
 
-			// If we select all files, the just use the default.
-			if (filter.Extension.Extension == "*")
-			{
-				filter = default(FilterItem);
-			}
+				// If we select all files, the just use the default.
+				if (filter.Extension.Extension == "*")
+				{
+					filter = default(FilterItem);
+				}
 
-			// Filter the files.
-			var sortedFiles = directory.Files.Where(item => !ScratchArea.IsBlocked(item)
-			                                                && ((filter.Extension.IsEmpty)
-			                                                    || (filter.Extension.Equals(new GorgonFileExtension(item.Extension)))));
+				// Filter the files.
+				directoryFiles = directoryFiles.Where(item => !ScratchArea.IsBlocked(item)
+				                                              && ((filter.Extension.IsEmpty)
+				                                                  || (filter.Extension.Equals(new GorgonFileExtension(item.Extension)))));
+			}
 
 			if (listFiles.View == View.Details)
 			{
@@ -943,11 +1185,11 @@ namespace GorgonLibrary.Editor
 						switch (_sort)
 						{
 							case SortOrder.Ascending:
-								return from file in sortedFiles
+								return from file in directoryFiles
 								       orderby file.Name.ToLower(CultureInfo.CurrentUICulture)
 								       select file;
 							case SortOrder.Descending:
-								return from file in sortedFiles
+								return from file in directoryFiles
 								       orderby file.Name.ToLower(CultureInfo.CurrentUICulture) descending
 								       select file;
 						}
@@ -956,11 +1198,11 @@ namespace GorgonLibrary.Editor
 						switch (_sort)
 						{
 							case SortOrder.Ascending:
-								return from file in sortedFiles
+								return from file in directoryFiles
 								       orderby file.CreateDate
 								       select file;
 							case SortOrder.Descending:
-								return from file in sortedFiles
+								return from file in directoryFiles
 								       orderby file.CreateDate descending
 								       select file;
 						}
@@ -969,11 +1211,11 @@ namespace GorgonLibrary.Editor
 						switch (_sort)
 						{
 							case SortOrder.Ascending:
-								return from file in sortedFiles
+								return from file in directoryFiles
 								       orderby file.Size
 								       select file;
 							case SortOrder.Descending:
-								return from file in sortedFiles
+								return from file in directoryFiles
 								       orderby file.Size descending
 								       select file;
 						}
@@ -982,10 +1224,10 @@ namespace GorgonLibrary.Editor
 			}
 			else
 			{
-				return sortedFiles.OrderBy(item => item.Name.ToLower(CultureInfo.CurrentUICulture));
+				return directoryFiles.OrderBy(item => item.Name.ToLower(CultureInfo.CurrentUICulture));
 			}
 
-			return sortedFiles;
+			return directoryFiles;
 		}
 
 		/// <summary>
@@ -1001,76 +1243,77 @@ namespace GorgonLibrary.Editor
 				return ContentManagement.Current.HasThumbnail ? ContentManagement.Current.GetThumbNailImage() : null;
 			}
 
-			ContentPlugIn plugIn = ContentManagement.GetContentPlugInForFile(file.Extension);
-
-			if (plugIn == null)
+			using (ContentPlugIn plugIn = ContentManagement.GetContentPlugInForFile(file.Extension))
 			{
-				return null;
-			}
-
-			ContentSettings settings = plugIn.GetContentSettings();
-			settings.Name = file.Name;
-			settings.CreateContent = false;
-
-			// We need to load the content so we can generate a thumbnail (or retrieve cached version).
-			using (ContentObject content = plugIn.CreateContentObject(settings))
-			{
-				if (!content.HasThumbnail)
+				if (plugIn == null)
 				{
 					return null;
 				}
 
-				EditorMetaDataFile metaData = plugIn.GetMetaData(file.FullPath);
-				content.MetaData = metaData;
+				ContentSettings settings = plugIn.GetContentSettings();
+				settings.Name = file.Name;
+				settings.CreateContent = false;
 
-				using (Stream contentStream = file.OpenStream(false))
+				// We need to load the content so we can generate a thumbnail (or retrieve cached version).
+				using (ContentObject content = plugIn.CreateContentObject(settings))
 				{
-					content.Read(contentStream);
-				}
-
-				Image result = content.GetThumbNailImage();
-
-				// If the image isn't the correct size then we need to rescale it.
-				if ((result.Width == _thumbNailSize.Width) && (result.Height == _thumbNailSize.Height))
-				{
-					return result;
-				}
-
-				var scaledThumbNail = new Bitmap(_thumbNailSize.Width, _thumbNailSize.Height, PixelFormat.Format32bppArgb);
-
-				try
-				{
-					using (var graphics = System.Drawing.Graphics.FromImage(scaledThumbNail))
+					if (!content.HasThumbnail)
 					{
-						float aspect = (float)result.Width / result.Height;
-						SizeF size = _thumbNailSize;
-						PointF location;
-
-						if (aspect > 1.0f)
-						{
-							size.Height = size.Height / aspect;
-							location = new PointF(0, _thumbNailSize.Height / 2 - size.Height / 2.0f);	
-						}
-						else
-						{
-							size.Width = size.Width * aspect;
-							location = new PointF(_thumbNailSize.Width / 2 - size.Width / 2.0f, 0);
-						}
-
-						// Scale the image down.
-						graphics.SmoothingMode = SmoothingMode.HighQuality;
-						graphics.DrawImage(result,
-						                   new RectangleF(location, size),
-						                   new RectangleF(0, 0, result.Width, result.Height),
-						                   GraphicsUnit.Pixel);
+						return null;
 					}
-				}
-				finally
-				{
-					result.Dispose();
-				}
 
-				return scaledThumbNail;
+					EditorMetaDataFile metaData = plugIn.GetMetaData(file.FullPath);
+					content.MetaData = metaData;
+
+					using (Stream contentStream = file.OpenStream(false))
+					{
+						content.Read(contentStream);
+					}
+
+					Image result = content.GetThumbNailImage();
+
+					// If the image isn't the correct size then we need to rescale it.
+					if ((result.Width == _thumbNailSize.Width) && (result.Height == _thumbNailSize.Height))
+					{
+						return result;
+					}
+
+					var scaledThumbNail = new Bitmap(_thumbNailSize.Width, _thumbNailSize.Height, PixelFormat.Format32bppArgb);
+
+					try
+					{
+						using (var graphics = System.Drawing.Graphics.FromImage(scaledThumbNail))
+						{
+							float aspect = (float)result.Width / result.Height;
+							SizeF size = _thumbNailSize;
+							PointF location;
+
+							if (aspect > 1.0f)
+							{
+								size.Height = size.Height / aspect;
+								location = new PointF(0, _thumbNailSize.Height / 2 - size.Height / 2.0f);
+							}
+							else
+							{
+								size.Width = size.Width * aspect;
+								location = new PointF(_thumbNailSize.Width / 2 - size.Width / 2.0f, 0);
+							}
+
+							// Scale the image down.
+							graphics.SmoothingMode = SmoothingMode.HighQuality;
+							graphics.DrawImage(result,
+							                   new RectangleF(location, size),
+							                   new RectangleF(0, 0, result.Width, result.Height),
+							                   GraphicsUnit.Pixel);
+						}
+					}
+					finally
+					{
+						result.Dispose();
+					}
+
+					return scaledThumbNail;
+				}
 			}
 		}
 
@@ -1184,7 +1427,7 @@ namespace GorgonLibrary.Editor
 					listFiles.Items.Add(item);
 				}
 
-				IEnumerable<GorgonFileSystemFileEntry> sortedFiles = GetSortedFiles(directory);
+				IEnumerable<GorgonFileSystemFileEntry> sortedFiles = GetSortedFiles(directory.Files);
 
 				// If we have over 256 large images cached, then clear the cache.
 				if (imagesFilesLarge.Images.Count > 256)
@@ -1196,51 +1439,8 @@ namespace GorgonLibrary.Editor
 					}
 				}
 			
-				// Add the files.
-				foreach (var file in sortedFiles)
-				{
-					var item = new ListViewItem(file.Name)
-					           {
-								   Name = file.FullPath,
-						           ImageKey = @"unknown_file",
-								   Tag = file
-					           };
-
-					if (CurrentView != FileViews.Large)
-					{
-						ContentPlugIn plugIn = ContentManagement.GetContentPlugInForFile(file.Extension);
-
-						if (plugIn != null)
-						{
-							item.ImageKey = plugIn.Name;
-						}
-
-						item.SubItems.Add(file.CreateDate.ToString(CultureInfo.CurrentUICulture.DateTimeFormat));
-						item.SubItems.Add(file.Size.FormatMemory());
-					}
-					else
-					{
-						// This will queue up files to extract thumbnails from.
-						// The thumbnails will be extracted via a background thread which will load the content file
-						// and fill in the list view item image when the thumbnail creation is complete.
-						// This thread will run for a maximum of 10 minutes.  If all thumbnails are not generated in that time,
-						// then they will be generated on the next refresh (as they'll still be in the queue).
-						if (imagesFilesLarge.Images.ContainsKey(file.FullPath))
-						{
-							// We already loaded this guy, so let's not add it to the queue.
-							item.ImageKey = file.FullPath;
-						}
-						else
-						{
-							if (!_thumbNailFiles.Contains(file))
-							{
-								_thumbNailFiles.Add(file);
-							}
-						}
-					}
-
-					listFiles.Items.Add(item);
-				}
+				// Add the files
+				FillListView(sortedFiles, true);
 			}
 			finally 
 			{
@@ -1334,6 +1534,11 @@ namespace GorgonLibrary.Editor
 		{
 			base.OnFormClosing(e);
 
+			foreach (string item in textSearch.AutoCompleteCustomSource)
+			{
+				_searchAutoComplete.Add(item);
+			}
+
 			try
 			{
 				if (_cancelSource != null)
@@ -1370,6 +1575,12 @@ namespace GorgonLibrary.Editor
 			Cursor.Current = Cursors.WaitCursor;
 			try
 			{
+				// Copy the auto complete back into the search box.
+				foreach (var item in _searchAutoComplete)
+				{
+					textSearch.AutoCompleteCustomSource.Add(item);
+				}
+
 				columnFileName.Tag = SortColumn.Name;
 				columnDate.Tag = SortColumn.Date;
 				columnSize.Tag = SortColumn.Size;
