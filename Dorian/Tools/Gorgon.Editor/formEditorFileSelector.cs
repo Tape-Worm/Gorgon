@@ -252,13 +252,22 @@ namespace GorgonLibrary.Editor
 		#endregion
 
 		#region Properties.
+        /// <summary>
+        /// Property to set or return the default file name.
+        /// </summary>
+	    public string DefaultFilename
+	    {
+	        get;
+	        set;
+	    }
+
 		/// <summary>
 		/// Property to set or return the currently selected file view mode.
 		/// </summary>
 		public FileViews CurrentView
 		{
-			get;
-			set;
+		    get;
+		    set;
 		}
 
 		/// <summary>
@@ -561,6 +570,24 @@ namespace GorgonLibrary.Editor
 		}
 
         /// <summary>
+        /// Function to clear the thumbnail cache.
+        /// </summary>
+	    private void ClearThumbNailCache()
+        {
+            // If we have over 256 large images cached, then clear the cache.
+            if (imagesFilesLarge.Images.Count <= 256)
+            {
+                return;
+            }
+
+            while (imagesFilesLarge.Images.Count > 3)
+            {
+                imagesFilesLarge.Images[imagesFilesLarge.Images.Count - 1].Dispose();
+                imagesFilesLarge.Images.RemoveAt(imagesFilesLarge.Images.Count - 1);
+            }
+        }
+
+	    /// <summary>
         /// Function to look up files using the search dialog.
         /// </summary>
         /// <param name="rootDirectory">The directory that be the starting point of the search.</param>
@@ -586,6 +613,9 @@ namespace GorgonLibrary.Editor
 			splitFiles.Panel1Collapsed = true;
 			panelSearchLabel.Visible = true;
 			textSearch.AutoCompleteCustomSource.Add(textSearch.Text);
+
+            // If we have over 256 large images cached, then clear the cache.
+            ClearThumbNailCache();
 
 			// Sort and filter our files.
 		    files = GetSortedFiles(files);
@@ -899,16 +929,7 @@ namespace GorgonLibrary.Editor
 				}
 				item.Checked = true;
 
-				if (item == itemViewDetails)
-				{
-					listFiles.View = View.Details;
-					CurrentView = FileViews.Details;
-				}
-				else
-				{
-					listFiles.View = View.LargeIcon;
-					CurrentView = FileViews.Large;
-				}
+			    CurrentView = itemViewDetails.Checked ? FileViews.Details : FileViews.Large;
 
 				if (!panelSearchLabel.Visible)
 				{
@@ -1394,8 +1415,10 @@ namespace GorgonLibrary.Editor
 			{
 				listFiles.BeginUpdate();
 				listFiles.Items.Clear();
-				
-				// Add directories first and sort by name.
+
+			    listFiles.View = itemViewDetails.Checked ? View.Details : View.LargeIcon;
+
+			    // Add directories first and sort by name.
 				IEnumerable<GorgonFileSystemDirectory> sortedDirectories;
 
 				switch (_sort)
@@ -1430,14 +1453,7 @@ namespace GorgonLibrary.Editor
 				IEnumerable<GorgonFileSystemFileEntry> sortedFiles = GetSortedFiles(directory.Files);
 
 				// If we have over 256 large images cached, then clear the cache.
-				if (imagesFilesLarge.Images.Count > 256)
-				{
-					while (imagesFilesLarge.Images.Count > 3)
-					{
-						imagesFilesLarge.Images[imagesFilesLarge.Images.Count - 1].Dispose();
-						imagesFilesLarge.Images.RemoveAt(imagesFilesLarge.Images.Count - 1);
-					}
-				}
+                ClearThumbNailCache();
 			
 				// Add the files
 				FillListView(sortedFiles, true);
@@ -1562,6 +1578,54 @@ namespace GorgonLibrary.Editor
 			comboFilters.SelectedIndexChanged -= comboFilters_SelectedIndexChanged;
 		}
 
+        /// <summary>
+        /// Function to set the default file name.
+        /// </summary>
+	    private void SetDefaultFilename()
+	    {
+            if (string.IsNullOrWhiteSpace(DefaultFilename))
+            {
+                return;
+            }
+
+            comboFile.Text = DefaultFilename;
+
+            string directoryName = Path.GetDirectoryName(DefaultFilename).FormatDirectory('/');
+            string fileName = Path.GetFileName(DefaultFilename).FormatFileName();
+            GorgonFileSystemDirectory directory = null;
+            GorgonFileSystemFileEntry file = null;
+
+            if (!string.IsNullOrWhiteSpace(directoryName))
+            {
+                directory = ScratchArea.ScratchFiles.GetDirectory(directoryName);
+            }
+
+            if (!string.IsNullOrWhiteSpace(fileName))
+            {
+                file = ScratchArea.ScratchFiles.GetFile(directoryName + fileName);
+            }
+
+            if (directory != null)
+            {
+                treeDirectories.SelectedNode = _selectedDirectory = FindDirectoryNode(directory);
+            }
+
+            if (file == null)
+            {
+                return;
+            }
+
+            var selectedItem = listFiles.Items.Cast<ListViewItem>()
+                                        .FirstOrDefault(item => string.Equals(item.Text,
+                                                                              file.Name,
+                                                                              StringComparison.OrdinalIgnoreCase));
+
+            if (selectedItem != null)
+            {
+                selectedItem.Selected = true;
+            }
+	    }
+
 		/// <summary>
 		/// Raises the <see cref="E:System.Windows.Forms.Form.Load" /> event.
 		/// </summary>
@@ -1575,6 +1639,17 @@ namespace GorgonLibrary.Editor
 			Cursor.Current = Cursors.WaitCursor;
 			try
 			{
+                if (CurrentView == FileViews.Details)
+                {
+                    itemViewDetails.Checked = true;
+                    itemViewLarge.Checked = false;
+                }
+                else
+                {
+                    itemViewDetails.Checked = false;
+                    itemViewLarge.Checked = true;
+                }
+
 				// Copy the auto complete back into the search box.
 				foreach (var item in _searchAutoComplete)
 				{
@@ -1593,6 +1668,8 @@ namespace GorgonLibrary.Editor
 				listFiles.SetSortIcon(0, SortOrder.Ascending);
 
 				FillDirectoryTree(null, true);
+
+                SetDefaultFilename();
 			}
 			catch (Exception ex)
 			{
@@ -1604,6 +1681,18 @@ namespace GorgonLibrary.Editor
 				ValidateControls();
 			}
 		}
+
+        /// <summary>
+        /// Function to return the list of selected file names.
+        /// </summary>
+        /// <returns>An array containing the paths of all the selected files.</returns>
+        public string[] GetFilenames()
+        {
+            return (from selectedItem in listFiles.SelectedItems.Cast<ListViewItem>()
+                    let fileEntry = selectedItem.Tag as GorgonFileSystemFileEntry
+                    where fileEntry != null
+                    select fileEntry.FullPath).ToArray();
+        }
 		#endregion
 
 		#region Constructor/Destructor.

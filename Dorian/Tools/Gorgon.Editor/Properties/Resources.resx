@@ -558,7 +558,6 @@ The following characters are not allowed:
   </data>
   <data name="GOREDIT_DLG_SEARCHLABEL" xml:space="preserve">
     <value>Files returned from the search (hit ESC to go back)</value>
-    <comment> </comment>
   </data>
   <data name="GOREDIT_DLG_SEARCH_NOFILES" xml:space="preserve">
     <value>No files were found for the search '{0}'</value>
@@ -571,5 +570,8 @@ The following characters are not allowed:
   </data>
   <data name="PROP_STARTDIRECTORY_DESC" xml:space="preserve">
     <value>The initial directory for the file dialog.</value>
+  </data>
+  <data name="PROP_FILENAME_DESC" xml:space="preserve">
+    <value>Sets the default selected filename or the last selected file name.</value>
   </data>
 </root>
