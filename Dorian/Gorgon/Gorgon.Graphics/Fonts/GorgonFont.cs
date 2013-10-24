@@ -665,11 +665,14 @@ namespace GorgonLibrary.Graphics
 						throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GORGFX_FONT_GLYPH_TEXTURE_NOT_FOUND, textureName));
 					}
 
-					var glyph = new GorgonGlyph(glyphChar,
-												texture,
-												chunk.ReadRectangle(),
-												chunk.Read<Vector2>(),
-												chunk.Read<Vector3>());
+				    var glyph = new GorgonGlyph(glyphChar,
+				                                texture,
+				                                chunk.ReadRectangle(),
+				                                chunk.Read<Vector2>(),
+				                                chunk.Read<Vector3>())
+				                {
+				                    IsExternalTexture = !_internalTextures.Contains(texture)
+				                };
 					Glyphs.Add(glyph);
 				}
 			}
@@ -1236,11 +1239,14 @@ namespace GorgonLibrary.Graphics
 							ABC advanceData;
 							charABC.TryGetValue(charBounds.Item3, out advanceData);
 
-							Glyphs.Add(new GorgonGlyph(charBounds.Item3,
-							                           currentTexture,
-							                           new Rectangle(location, size),
-							                           charBounds.Item2,
-							                           new Vector3(advanceData.A, advanceData.B, advanceData.C)));
+						    Glyphs.Add(new GorgonGlyph(charBounds.Item3,
+						                               currentTexture,
+						                               new Rectangle(location, size),
+						                               charBounds.Item2,
+						                               new Vector3(advanceData.A, advanceData.B, advanceData.C))
+						               {
+						                   IsExternalTexture = false
+						               });
 						}
 						else
 						{
@@ -1248,11 +1254,14 @@ namespace GorgonLibrary.Graphics
 							availableCharacters.Remove(c);
 						    if (!Glyphs.Contains(settings.DefaultCharacter))
 						    {
-								Glyphs.Add(new GorgonGlyph(settings.DefaultCharacter,
-							                                                        currentTexture,
-							                                                        new Rectangle(0, 0, size.Width, size.Height),
-							                                                        Vector2.Zero,
-							                                                        Vector3.Zero));
+						        Glyphs.Add(new GorgonGlyph(settings.DefaultCharacter,
+						                                   currentTexture,
+						                                   new Rectangle(0, 0, size.Width, size.Height),
+						                                   Vector2.Zero,
+						                                   Vector3.Zero)
+						                   {
+						                       IsExternalTexture = false
+						                   });
 						    }
 						}
 					}

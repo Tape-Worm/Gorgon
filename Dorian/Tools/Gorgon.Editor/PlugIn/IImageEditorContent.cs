@@ -27,8 +27,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
+using GorgonLibrary.Graphics;
 
 namespace GorgonLibrary.Editor
 {
@@ -37,7 +39,14 @@ namespace GorgonLibrary.Editor
 	/// </summary>
 	/// <remarks>All image editing plug-ins must implement this on their content objects.</remarks>
 	public interface IImageEditorContent
+        : INamedObject, IDisposable
 	{
-
+        /// <summary>
+        /// Property to return the image held in the content object.
+        /// </summary>
+	    GorgonImageData Image
+	    {
+	        get;
+	    }
 	}
 }
