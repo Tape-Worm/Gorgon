@@ -67,6 +67,38 @@ namespace GorgonLibrary
 		}
 
 		/// <summary>
+		/// Function to find the index of a character in a string builder string.
+		/// </summary>
+		/// <param name="theString">The string to search.</param>
+		/// <param name="characters">Characters to search for.</param>
+		/// <param name="comparison">[Optional] Comparison type.</param>
+		/// <returns>The index of the character, or -1 if not found.</returns>
+		public static int IndexOf(this StringBuilder theString, string characters, StringComparison comparison = StringComparison.InvariantCulture)
+		{
+			if (theString == null)
+			{
+				throw new ArgumentNullException("theString");
+			}
+
+			if (theString.Length < 1)
+			{
+				return -1;
+			}
+
+			if (string.IsNullOrWhiteSpace(characters))
+			{
+				return -1;
+			}
+
+			if (characters.Length > theString.Length)
+			{
+				return -1;
+			}
+
+			return theString.ToString().IndexOf(characters, comparison);
+		}
+
+		/// <summary>
 		/// Function to find the last index of a character in a string builder string.
 		/// </summary>
 		/// <param name="theString">The string to search.</param>
@@ -93,6 +125,38 @@ namespace GorgonLibrary
 			}
 
 			return -1;
+		}
+
+		/// <summary>
+		/// Function to find the last index of a character in a string builder string.
+		/// </summary>
+		/// <param name="theString">The string to search.</param>
+		/// <param name="characters">Characters to search for.</param>
+		/// <param name="comparison">[Optional] Comparison type.</param>
+		/// <returns>The index of the character, or -1 if not found.</returns>
+		public static int LastIndexOf(this StringBuilder theString, string characters, StringComparison comparison = StringComparison.InvariantCulture)
+		{
+			if (theString == null)
+			{
+				throw new ArgumentNullException("theString");
+			}
+
+			if (theString.Length < 1)
+			{
+				return -1;
+			}
+
+			if (string.IsNullOrWhiteSpace(characters))
+			{
+				return -1;
+			}
+
+			if (characters.Length > theString.Length)
+			{
+				return -1;
+			}
+
+			return theString.ToString().LastIndexOf(characters, comparison);
 		}
 
 		/// <summary>
