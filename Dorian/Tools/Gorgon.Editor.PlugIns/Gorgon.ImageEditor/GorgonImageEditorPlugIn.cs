@@ -25,12 +25,10 @@
 #endregion
 
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Windows.Forms;
 using GorgonLibrary.Editor.ImageEditorPlugIn.Properties;
 using GorgonLibrary.IO;
 
@@ -40,7 +38,7 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
     /// Image editor plug-in interface.
     /// </summary>
     public class GorgonImageEditorPlugIn
-        : ContentPlugIn
+        : ContentPlugIn, IImageEditorPlugIn
 	{
 		#region Variables.
 		private bool _disposed;                                                             // Flag to indicate whether the object was disposed.
@@ -140,9 +138,11 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
                 }
 
                 // Retrieve extensions.
+				var description = new StringBuilder(256);
+				description.AppendFormat("{0} (*.{1})", codec.CodecDescription, string.Join("; *.", codec.CodecCommonExtensions));
                 foreach (string extension in codec.CodecCommonExtensions)
                 {
-                    _codecs[new GorgonFileExtension(extension, codec.CodecDescription)] = codec;
+                    _codecs[new GorgonFileExtension(extension, description.ToString())] = codec;
                 }
             }
         }
@@ -167,11 +167,15 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
             };
 
             // Get extensions and descriptions from the codecs.
+			var description = new StringBuilder(256);
             foreach (var codec in codecs)
             {
+	            description.Length = 0;
+	            description.AppendFormat("{0} (*.{1})", codec.CodecDescription, string.Join("; *.", codec.CodecCommonExtensions));
+
                 foreach (string extension in codec.CodecCommonExtensions)
                 {
-                    _codecs[new GorgonFileExtension(extension, codec.CodecDescription)] = codec;
+                    _codecs[new GorgonFileExtension(extension, description.ToString())] = codec;
                 }
             }
 
@@ -293,5 +297,18 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
             Settings = new GorgonImageProperties();
         }
         #endregion
-    }
+
+		#region IImageEditorPlugIn Members
+		/// <summary>
+		/// Property to return the image file extensions supported by the plug-in.
+		/// </summary>
+		public IEnumerable<GorgonFileExtension> Extensions
+		{
+			get
+			{
+				return Codecs.Keys;
+			}
+		}
+		#endregion
+	}
 }

@@ -82,6 +82,16 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 
         #region Properties.
 		/// <summary>
+		/// Property to return the image editor plug-in.
+		/// </summary>
+		[Browsable(false)]
+	    public IImageEditorPlugIn ImageEditor
+		{
+			get;
+			private set;
+		}
+
+		/// <summary>
 		/// Property to set or return the active state for the editor.
 		/// </summary>
 		[Browsable(false)]
@@ -734,6 +744,12 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 
 		    _panel.CreateResources();
 			CurrentState = DrawState.DrawFontTextures;
+
+			// Find out if the image editor is loaded.
+			ImageEditor = Gorgon.PlugIns.FirstOrDefault(
+				                              item => string.Equals(item.Name,
+				                                            "GorgonLibrary.Editor.ImageEditorPlugIn.GorgonImageEditorPlugIn",
+				                                            StringComparison.OrdinalIgnoreCase)) as IImageEditorPlugIn;
 
 			return _panel;
 		}

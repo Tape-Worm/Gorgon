@@ -781,7 +781,7 @@ Code: 0x{2}</value>
     <value>The file extension '{0}' already exists in this collection.</value>
   </data>
   <data name="GOR_FILE_EXTENSION_TOSTR" xml:space="preserve">
-    <value>Writer plug-in file extension: .{0} - {1}</value>
+    <value>File extension: .{0} - {1}</value>
   </data>
   <data name="PROP_BORDERCOLOR_DESC" xml:space="preserve">
     <value>Sets the color of the border on the form when Border is set to true.</value>

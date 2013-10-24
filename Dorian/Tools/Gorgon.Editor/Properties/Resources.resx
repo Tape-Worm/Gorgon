@@ -583,4 +583,10 @@ The following characters are not allowed:
   <data name="GOREDIT_DLG_NO_SUCH_FILE" xml:space="preserve">
     <value>There is no file named '{0}{1}'.</value>
   </data>
+  <data name="GOREDIT_DLG_COULD_NOT_LOAD_THUMBNAIL" xml:space="preserve">
+    <value>Could not load the thumbnail for the file '{0}'.</value>
+  </data>
+  <data name="image_missing_128x128" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\image_missing_128x128.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
 </root>

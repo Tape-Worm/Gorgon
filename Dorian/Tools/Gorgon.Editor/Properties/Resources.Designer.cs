@@ -362,6 +362,15 @@ namespace GorgonLibrary.Editor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Could not load the thumbnail for the file &apos;{0}&apos;..
+        /// </summary>
+        internal static string GOREDIT_DLG_COULD_NOT_LOAD_THUMBNAIL {
+            get {
+                return ResourceManager.GetString("GOREDIT_DLG_COULD_NOT_LOAD_THUMBNAIL", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to File.
         /// </summary>
         internal static string GOREDIT_DLG_FILE_LABEL {
@@ -1260,6 +1269,16 @@ namespace GorgonLibrary.Editor.Properties {
             get {
                 object obj = ResourceManager.GetObject("Gorgon_2_x_Logo_Blurry", resourceCulture);
                 return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap image_missing_128x128 {
+            get {
+                object obj = ResourceManager.GetObject("image_missing_128x128", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
             }
         }
         
