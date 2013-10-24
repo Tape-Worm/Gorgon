@@ -187,14 +187,7 @@ namespace GorgonLibrary.Editor
 	            FileView = selector.CurrentView;
 	            Filenames = selector.GetFilenames();
 
-	            if (Filenames.Length > 0)
-	            {
-	                Filename = Filenames[0];
-	            }
-	            else
-	            {
-	                Filename = string.Empty;
-	            }
+	            Filename = Filenames.Length > 0 ? Filenames[0] : string.Empty;
 
                 return result;
 	        }

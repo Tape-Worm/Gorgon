@@ -34,7 +34,9 @@ using System.Drawing.Imaging;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Runtime.InteropServices;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -237,6 +239,7 @@ namespace GorgonLibrary.Editor
 		#endregion
 
 		#region Variables.
+		private readonly static List<string> _fileComboList = new List<string>();						// List of previously selected files.
 		private readonly static List<string> _searchAutoComplete = new List<string>();					// Auto complete for our search text box.
 		private TreeNodeDirectory _rootDirectory;														// The root directory node.
 		private TreeNodeDirectory _selectedDirectory;													// The currently selected directory node.
@@ -249,6 +252,7 @@ namespace GorgonLibrary.Editor
 		private readonly List<GorgonFileSystemDirectory> _paths = new List<GorgonFileSystemDirectory>();// The selected paths.
 		private Size _thumbNailSize;																	// Thumbnail size.
 		private int _pathIndex;																			// The current path index.
+		private readonly List<string> _selectedFiles = new List<string>();								// The list of selected files.
 		#endregion
 
 		#region Properties.
@@ -305,6 +309,26 @@ namespace GorgonLibrary.Editor
 		#endregion
 
 		#region Methods.
+		/// <summary>
+		/// Handles the TextChanged event of the comboFile control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
+		private void comboFile_TextChanged(object sender, EventArgs e)
+		{
+			listFiles.ItemSelectionChanged -= listFiles_ItemSelectionChanged;
+
+			try
+			{
+				listFiles.SelectedItems.Clear();
+				ValidateControls();
+			}
+			finally
+			{
+				listFiles.ItemSelectionChanged += listFiles_ItemSelectionChanged;
+			}
+		}
+
 		/// <summary>
         /// Function to close the search dialog.
         /// </summary>
@@ -635,7 +659,7 @@ namespace GorgonLibrary.Editor
 	        listFiles.Focus();
 
 			// Launch a thread to retrieve the thumbnails.
-			if ((CurrentView != FileViews.Large) || (_cancelSource != null))
+			if ((CurrentView != FileViews.Large) || (_cancelSource != null) || (listFiles.Items.Count == 0))
 			{
 				return;
 			}
@@ -717,6 +741,9 @@ namespace GorgonLibrary.Editor
 			try
 			{
 				treeDirectories.SelectedNode = _selectedDirectory = FindDirectoryNode(_paths[++_pathIndex]);
+
+				// Clear the selected file if selecting a new directory.
+				comboFile.Text = string.Empty;
 			}
 			catch (Exception ex)
 			{
@@ -741,6 +768,9 @@ namespace GorgonLibrary.Editor
 			try
 			{
 				treeDirectories.SelectedNode = _selectedDirectory = FindDirectoryNode(_paths[--_pathIndex]);
+				
+				// Clear the selected file if selecting a new directory.
+				comboFile.Text = string.Empty;
 			}
 			catch (Exception ex)
 			{
@@ -776,6 +806,9 @@ namespace GorgonLibrary.Editor
 
 			treeDirectories.SelectedNode = _selectedDirectory;
 			AddPath(_selectedDirectory);
+
+			// Clear the selected file if selecting a new directory.
+			comboFile.Text = string.Empty;
 		}
 
 		/// <summary>
@@ -807,6 +840,55 @@ namespace GorgonLibrary.Editor
 		}
 
 		/// <summary>
+		/// Handles the ItemSelectionChanged event of the listFiles control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="ListViewItemSelectionChangedEventArgs"/> instance containing the event data.</param>
+		private void listFiles_ItemSelectionChanged(object sender, ListViewItemSelectionChangedEventArgs e)
+		{
+			comboFile.TextChanged -= comboFile_TextChanged;
+
+			try
+			{
+				var currentFiles = (from ListViewItem item in listFiles.SelectedItems select item.Tag)
+					.OfType<GorgonFileSystemFileEntry>()
+					.Select(fileEntry => !panelSearchLabel.Visible ? fileEntry.Name : fileEntry.FullPath)
+					.ToArray();
+
+				var fileText = new StringBuilder(512);
+
+				// Build the combo box list.
+				foreach (var fileName in currentFiles)
+				{
+					if (fileText.Length > 0)
+					{
+						fileText.Append(" ");
+					}
+
+					if (currentFiles.Length > 1)
+					{
+						fileText.AppendFormat("\"{0}\"", fileName);
+					}
+					else
+					{
+						fileText.Append(fileName);
+					}
+				}
+
+				comboFile.Text = fileText.ToString();
+			}
+			catch (Exception ex)
+			{
+				GorgonDialogs.ErrorBox(this, ex);
+			}
+			finally
+			{
+				comboFile.TextChanged += comboFile_TextChanged;
+				ValidateControls();
+			}
+		}
+
+		/// <summary>
 		/// Handles the DoubleClick event of the listFiles control.
 		/// </summary>
 		/// <param name="sender">The source of the event.</param>
@@ -814,6 +896,8 @@ namespace GorgonLibrary.Editor
 		private void listFiles_DoubleClick(object sender, EventArgs e)
 		{
 			Cursor.Current = Cursors.WaitCursor;
+
+			comboFile.TextChanged -= comboFile_TextChanged;
 
 			try
 			{
@@ -837,6 +921,17 @@ namespace GorgonLibrary.Editor
 					}
 					return;
 				}
+
+				var file = item.Item.Tag as GorgonFileSystemFileEntry;
+
+				if (file == null)
+				{
+					return;
+				}
+
+				comboFile.Text = !panelSearchLabel.Visible ? file.Name : file.FullPath;
+
+				buttonOK.PerformClick();
 			}
 			catch (Exception ex)
 			{
@@ -846,6 +941,7 @@ namespace GorgonLibrary.Editor
 			finally
 			{
 				Cursor.Current = Cursors.Default;
+				comboFile.TextChanged += comboFile_TextChanged;
 				ValidateControls();
 			}
 		}
@@ -1034,6 +1130,9 @@ namespace GorgonLibrary.Editor
 				{
 					AddPath(_selectedDirectory);
 				}
+
+				// Clear the selected file if selecting a new directory.
+				comboFile.Text = string.Empty;
 			}
 			catch (Exception ex)
 			{
@@ -1543,6 +1642,88 @@ namespace GorgonLibrary.Editor
 		}
 
 		/// <summary>
+		/// Function to retrieve the selected files from the view.
+		/// </summary>
+		/// <returns>TRUE if the selected files exist, FALSE if not.</returns>
+		private bool GetSelectedFiles()
+		{
+			if (string.IsNullOrWhiteSpace(comboFile.Text))
+			{
+				return true;
+			}
+
+			IEnumerable<string> files = GetFilenamesFromComboBox(comboFile.Text);
+			
+			_selectedFiles.Clear();
+
+			foreach (var file in files)
+			{
+				string directoryName = Path.GetDirectoryName(file).FormatDirectory('/');
+				string fileName = Path.GetFileName(file).FormatFileName();
+
+				if (string.IsNullOrWhiteSpace(fileName))
+				{
+					GorgonDialogs.ErrorBox(this, string.Format(Resources.GOREDIT_DLG_NO_FILE_IN_PATH, directoryName));
+					return false;
+				}
+
+				if (!string.IsNullOrWhiteSpace(directoryName))
+				{
+					GorgonFileSystemDirectory directoryEntry = ScratchArea.ScratchFiles.GetDirectory(directoryName);
+
+					if (directoryEntry == null)
+					{
+						GorgonDialogs.ErrorBox(this, string.Format(Resources.GOREDIT_DLG_NO_SUCH_DIRECTORY, directoryName));
+						return false;
+					}
+				}
+				else
+				{
+					if (!panelSearchLabel.Visible)
+					{
+						directoryName = _selectedDirectory.Directory.FullPath;
+					}
+					else
+					{
+						directoryName = (from item in listFiles.Items.Cast<ListViewItem>()
+						                    let filterFile = item.Tag as GorgonFileSystemFileEntry
+						                    where filterFile != null &&
+							                    (string.Equals(filterFile.Name, file, StringComparison.OrdinalIgnoreCase)
+							                     || string.Equals(filterFile.FullPath, file, StringComparison.OrdinalIgnoreCase))
+						                    select filterFile.Directory.FullPath).FirstOrDefault();
+
+						// If we can't find the directory, then default to the root.
+						if (string.IsNullOrWhiteSpace(directoryName))
+						{
+							directoryName = "/";
+						}
+					}
+				}
+
+				GorgonFileSystemFileEntry fileEntry = ScratchArea.ScratchFiles.GetFile(directoryName + fileName);
+
+				if (fileEntry == null)
+				{
+					GorgonDialogs.ErrorBox(this, string.Format(Resources.GOREDIT_DLG_NO_SUCH_FILE, directoryName, fileName));
+					return false;
+				}
+
+				_selectedFiles.Add(fileEntry.FullPath);
+			}
+
+			foreach (var file in _selectedFiles.Where(file => string.IsNullOrWhiteSpace(_fileComboList
+				                                                                            .Find(searchValue =>
+				                                                                                  string.Equals(searchValue,
+				                                                                                                file,
+				                                                                                                StringComparison.OrdinalIgnoreCase)))))
+			{
+				_fileComboList.Add(file);
+			}
+
+			return true;
+		}
+
+		/// <summary>
 		/// Raises the <see cref="E:System.Windows.Forms.Form.FormClosing" /> event.
 		/// </summary>
 		/// <param name="e">A <see cref="T:System.Windows.Forms.FormClosingEventArgs" /> that contains the event data.</param>
@@ -1553,6 +1734,12 @@ namespace GorgonLibrary.Editor
 			foreach (string item in textSearch.AutoCompleteCustomSource)
 			{
 				_searchAutoComplete.Add(item);
+			}
+
+			if ((DialogResult == DialogResult.OK) && (!GetSelectedFiles()))
+			{
+				e.Cancel = true;
+				return;
 			}
 
 			try
@@ -1578,53 +1765,163 @@ namespace GorgonLibrary.Editor
 			comboFilters.SelectedIndexChanged -= comboFilters_SelectedIndexChanged;
 		}
 
+		/// <summary>
+		/// Function to retrieve the filenames specified in the file name box.
+		/// </summary>
+		/// <param name="fileNameList">The list of file names.</param>
+		/// <returns>An array containing the selected file names.</returns>
+		private static IEnumerable<string> GetFilenamesFromComboBox(string fileNameList)
+		{
+			if (string.IsNullOrWhiteSpace(fileNameList))
+			{
+				return new string[0];
+			}
+
+			var fileNameString = new StringBuilder(fileNameList.Trim());
+			var fileNames = new List<string>();
+			string fileName;
+
+			if (fileNameString.Length == 0)
+			{
+				return fileNames;
+			}
+
+			// Get rid of any weird things like double quotes.
+			// This could potentially leave a single quote in the middle of the string.
+			// The parsing code below will filter these out.
+			while (fileNameString.IndexOf("\"\"", StringComparison.Ordinal) != -1)
+			{
+				fileNameString.Replace("\"\"", "\"");
+			}
+
+			// We've specified multiple files.
+			if (fileNameString.IndexOf("\" ", StringComparison.Ordinal) != -1)
+			{
+				// Split on spaces.
+				fileName = fileNameString.ToString();
+				fileNames.AddRange(fileName.Split(new[]
+				                                  {
+					                                  "\" "
+				                                  },
+				                                  StringSplitOptions.RemoveEmptyEntries));
+
+				// Sanitize our file names.
+				for (int i = 0; i < fileNames.Count; ++i)
+				{
+					fileNameString.Length = 0;
+					fileNameString.Append(fileNames[i]);
+					fileNameString.Replace("\"", string.Empty);
+
+					fileNames[i] = fileNameString.ToString().Trim();
+				}
+
+				return fileNames.Where(item => !string.IsNullOrWhiteSpace(item));
+			}
+
+			// Return the sanitized single file name.
+			fileNameString.Replace("\"", string.Empty);
+			fileName = fileNameString.ToString();
+
+			// Do not allow an empty file name after sanitization.
+			if (string.IsNullOrWhiteSpace(fileName))
+			{
+				return fileNames;
+			}
+
+			return new[]
+				    {
+					    fileName
+				    };
+		}
+
         /// <summary>
         /// Function to set the default file name.
         /// </summary>
 	    private void SetDefaultFilename()
-	    {
-            if (string.IsNullOrWhiteSpace(DefaultFilename))
+        {
+	        if (string.IsNullOrWhiteSpace(DefaultFilename))
             {
                 return;
             }
 
-            comboFile.Text = DefaultFilename;
+			var fileText = new StringBuilder(DefaultFilename.Length);
 
-            string directoryName = Path.GetDirectoryName(DefaultFilename).FormatDirectory('/');
-            string fileName = Path.GetFileName(DefaultFilename).FormatFileName();
-            GorgonFileSystemDirectory directory = null;
-            GorgonFileSystemFileEntry file = null;
+			// If we have multiple file names, then we need to find the files in the selected directory.
+			// Note, that if we have multiple directories selected, then the first directory will be selected.
+			// (Provided there is a directory to select).
+	        string[] fileNames = GetFilenamesFromComboBox(DefaultFilename.Trim()).ToArray();
 
-            if (!string.IsNullOrWhiteSpace(directoryName))
-            {
-                directory = ScratchArea.ScratchFiles.GetDirectory(directoryName);
-            }
+	        if (fileNames.Length == 0)
+	        {
+		        return;
+	        }
 
-            if (!string.IsNullOrWhiteSpace(fileName))
-            {
-                file = ScratchArea.ScratchFiles.GetFile(directoryName + fileName);
-            }
+			// Get the first directory.
+			string directoryName = Path.GetDirectoryName(fileNames[0]).FormatDirectory('/');
+			GorgonFileSystemDirectory directory = null;
 
-            if (directory != null)
-            {
-                treeDirectories.SelectedNode = _selectedDirectory = FindDirectoryNode(directory);
-            }
+			if (!string.IsNullOrWhiteSpace(directoryName))
+			{
+				directory = ScratchArea.ScratchFiles.GetDirectory(directoryName);
+			}
 
-            if (file == null)
-            {
-                return;
-            }
+			listFiles.ItemSelectionChanged -= listFiles_ItemSelectionChanged;
+	        try
+	        {
+		        foreach (var fileItem in fileNames)
+		        {
+			        if (fileText.Length > 0)
+			        {
+				        fileText.Append(" ");
+			        }
 
-            var selectedItem = listFiles.Items.Cast<ListViewItem>()
-                                        .FirstOrDefault(item => string.Equals(item.Text,
-                                                                              file.Name,
-                                                                              StringComparison.OrdinalIgnoreCase));
+			        if (fileNames.Length > 1)
+			        {
+				        fileText.AppendFormat("\"{0}\"", fileItem);
+			        }
+			        else
+			        {
+				        fileText.Append(fileItem);
+			        }
 
-            if (selectedItem != null)
-            {
-                selectedItem.Selected = true;
-            }
-	    }
+			        string fileName = Path.GetFileName(fileItem).FormatFileName();
+			        GorgonFileSystemFileEntry file = null;
+
+			        if (!string.IsNullOrWhiteSpace(fileName))
+			        {
+				        file = ScratchArea.ScratchFiles.GetFile(directoryName + fileName);
+			        }
+
+			        if ((directory != null) && ((_selectedDirectory == null) || (directory != _selectedDirectory.Directory)))
+			        {
+				        treeDirectories.SelectedNode = _selectedDirectory = FindDirectoryNode(directory);
+			        }
+
+			        if (file == null)
+			        {
+				        break;
+			        }
+
+			        var selectedItem = listFiles.Items.Cast<ListViewItem>()
+			                                    .FirstOrDefault(item => string.Equals(item.Text,
+			                                                                          file.Name,
+			                                                                          StringComparison.OrdinalIgnoreCase));
+
+			        if (selectedItem != null)
+			        {
+				        selectedItem.Selected = true;
+			        }
+		        }
+
+		        comboFile.TextChanged -= comboFile_TextChanged;
+		        comboFile.Text = fileText.ToString();
+		        comboFile.TextChanged += comboFile_TextChanged;
+	        }
+	        finally
+	        {
+		        listFiles.ItemSelectionChanged += listFiles_ItemSelectionChanged;
+	        }
+        }
 
 		/// <summary>
 		/// Raises the <see cref="E:System.Windows.Forms.Form.Load" /> event.
@@ -1649,6 +1946,12 @@ namespace GorgonLibrary.Editor
                     itemViewDetails.Checked = false;
                     itemViewLarge.Checked = true;
                 }
+
+				// Copy previously selected files into the combo box if the file exists in the current file system.
+				foreach (var item in _fileComboList.Where(item => ScratchArea.ScratchFiles.GetFile(item) != null))
+				{
+					comboFile.Items.Add(item);
+				}
 
 				// Copy the auto complete back into the search box.
 				foreach (var item in _searchAutoComplete)
@@ -1688,10 +1991,7 @@ namespace GorgonLibrary.Editor
         /// <returns>An array containing the paths of all the selected files.</returns>
         public string[] GetFilenames()
         {
-            return (from selectedItem in listFiles.SelectedItems.Cast<ListViewItem>()
-                    let fileEntry = selectedItem.Tag as GorgonFileSystemFileEntry
-                    where fileEntry != null
-                    select fileEntry.FullPath).ToArray();
+            return _selectedFiles.ToArray();
         }
 		#endregion
 

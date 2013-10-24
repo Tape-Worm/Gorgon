@@ -169,12 +169,15 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		    try
 		    {
 		        imageFileBrowser.FileExtensions.Clear();
-		        imageFileBrowser.FileExtensions.Add(new GorgonFileExtension("dds", "Direct Draw Surface (*.dds)"));
-		        imageFileBrowser.FileExtensions.Add(new GorgonFileExtension("png", "Portable Network Graphics (*.png)"));
-		        imageFileBrowser.FileExtensions.Add(new GorgonFileExtension("tga", "Truevision Targa Files (*.tga)"));
-		        imageFileBrowser.FileExtensions.Add(new GorgonFileExtension("bmp", "Windows Bitmap (*.bmp)"));
-		        imageFileBrowser.FileExtensions.Add(new GorgonFileExtension("jpg", "Joint Photographics Experts Group (*.jpg)"));
+		        //imageFileBrowser.FileExtensions.Add(new GorgonFileExtension("dds", "Direct Draw Surface (*.dds)"));
+		        //imageFileBrowser.FileExtensions.Add(new GorgonFileExtension("png", "Portable Network Graphics (*.png)"));
+		        //imageFileBrowser.FileExtensions.Add(new GorgonFileExtension("tga", "Truevision Targa Files (*.tga)"));
+		        //imageFileBrowser.FileExtensions.Add(new GorgonFileExtension("bmp", "Windows Bitmap (*.bmp)"));
+		        //imageFileBrowser.FileExtensions.Add(new GorgonFileExtension("jpg", "Joint Photographics Experts Group (*.jpg)"));
 		        imageFileBrowser.FileExtensions.Add(new GorgonFileExtension("*", "All files (*.*)"));
+
+			    imageFileBrowser.MultipleSelection = true;
+			    imageFileBrowser.Filename = "\"Font.gorFont\" \"Font (1).gorFont\" \"Font (2).gorFont\" \"/images/0_hardvacuum.png\" \"/images/osusers.gif\" \"/images/somefile.bmp\"";
     
 		        imageFileBrowser.FileView = GorgonFontEditorPlugIn.Settings.LastTextureImportDialogView;
 		        imageFileBrowser.ShowDialog(ParentForm);
