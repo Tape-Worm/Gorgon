@@ -24,6 +24,7 @@
 // 
 #endregion
 
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
@@ -308,6 +309,35 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 			{
 				return Codecs.Keys;
 			}
+		}
+		#endregion
+
+		#region IImageEditorPlugIn Members
+		/// <summary>
+		/// Function to import content from a file system file.
+		/// </summary>
+		/// <param name="file">File containing the image to load.</param>
+		/// <returns>
+		/// An image editor content object.
+		/// </returns>
+		IImageEditorContent IImageEditorPlugIn.ImportContent(GorgonFileSystemFileEntry file)
+		{
+			GorgonImageCodec codec;
+
+			if (file == null)
+			{
+				throw new ArgumentNullException("file");
+			}
+
+	        if (!Codecs.TryGetValue(new GorgonFileExtension(file.Extension), out codec))
+			{
+				throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GORIMG_NO_CODEC, file.Name));
+	        }
+
+			var content = new GorgonImageContent(file.Name, codec);
+			content.Load(file);
+
+			return content;
 		}
 		#endregion
 	}

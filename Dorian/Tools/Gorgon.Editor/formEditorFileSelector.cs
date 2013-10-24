@@ -252,7 +252,7 @@ namespace GorgonLibrary.Editor
 		private readonly List<GorgonFileSystemDirectory> _paths = new List<GorgonFileSystemDirectory>();// The selected paths.
 		private Size _thumbNailSize;																	// Thumbnail size.
 		private int _pathIndex;																			// The current path index.
-		private readonly List<string> _selectedFiles = new List<string>();								// The list of selected files.
+		private readonly List<GorgonFileSystemFileEntry> _selectedFiles;								// The list of selected files.
 		#endregion
 
 		#region Properties.
@@ -1755,16 +1755,16 @@ namespace GorgonLibrary.Editor
 					return false;
 				}
 
-				_selectedFiles.Add(fileEntry.FullPath);
+				_selectedFiles.Add(fileEntry);
 			}
 
 			foreach (var file in _selectedFiles.Where(file => string.IsNullOrWhiteSpace(_fileComboList
 				                                                                            .Find(searchValue =>
 				                                                                                  string.Equals(searchValue,
-				                                                                                                file,
+				                                                                                                file.FullPath,
 				                                                                                                StringComparison.OrdinalIgnoreCase)))))
 			{
-				_fileComboList.Add(file);
+				_fileComboList.Add(file.FullPath);
 			}
 
 			return true;
@@ -2036,7 +2036,7 @@ namespace GorgonLibrary.Editor
         /// Function to return the list of selected file names.
         /// </summary>
         /// <returns>An array containing the paths of all the selected files.</returns>
-        public string[] GetFilenames()
+        public GorgonFileSystemFileEntry[] GetFilenames()
         {
             return _selectedFiles.ToArray();
         }
@@ -2055,6 +2055,7 @@ namespace GorgonLibrary.Editor
 			_fileExtensions = extensions;
 			_thumbNailFiles = new HashSet<GorgonFileSystemFileEntry>();
 			_thumbNailSize = new Size(128, 128);
+			_selectedFiles = new List<GorgonFileSystemFileEntry>(); 
 		}
 		#endregion
 	}

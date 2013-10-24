@@ -46,5 +46,12 @@ namespace GorgonLibrary.Editor
 		{
 			get;
 		}
+
+		/// <summary>
+		/// Function to import content from a file system file.
+		/// </summary>
+		/// <param name="file">File containing the image to load.</param>
+		/// <returns>An image editor content object.</returns>
+		IImageEditorContent ImportContent(GorgonFileSystemFileEntry file);
     }
 }

@@ -177,7 +177,10 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
     
 		        imageFileBrowser.FileView = GorgonFontEditorPlugIn.Settings.LastTextureImportDialogView;
 
-		        imageFileBrowser.ShowDialog(ParentForm);
+			    if (imageFileBrowser.ShowDialog(ParentForm) == DialogResult.OK)
+			    {
+				    _content.ImageEditor.ImportContent(imageFileBrowser.Files[0]);
+			    }
 
 		        GorgonFontEditorPlugIn.Settings.LastTextureImportDialogView = imageFileBrowser.FileView;
 		    }

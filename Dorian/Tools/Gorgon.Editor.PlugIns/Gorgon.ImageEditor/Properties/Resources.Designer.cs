@@ -71,6 +71,15 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The file &apos;{0}&apos; could not be read by the &apos;{1}&apos; codec..
+        /// </summary>
+        internal static string GORIMG_CODEC_CANNOT_READ {
+            get {
+                return ResourceManager.GetString("GORIMG_CODEC_CANNOT_READ", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The file &apos;{0}&apos; is not a valid image codec plug-in..
         /// </summary>
         internal static string GORIMG_CODEC_LOAD_NOT_A_PLUGIN {
