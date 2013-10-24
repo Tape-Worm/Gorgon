@@ -92,6 +92,15 @@ namespace GorgonLibrary.Graphics
 			get;
 			private set;
 		}
+
+        /// <summary>
+        /// Property to return whether this texture is external to the font or not.
+        /// </summary>
+	    public bool IsExternalTexture
+	    {
+	        get;
+	        internal set;
+	    }
 		#endregion
 
 		#region Methods.
@@ -143,6 +152,7 @@ namespace GorgonLibrary.Graphics
 			Texture = texture;
 			Offset = glyphOffset;
 			Advance = glyphAdvancing;
+		    IsExternalTexture = true;
 		}
 		#endregion
 

@@ -31,6 +31,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using GorgonLibrary.Editor.ImageEditorPlugIn.Properties;
+using GorgonLibrary.Graphics;
 using GorgonLibrary.IO;
 
 namespace GorgonLibrary.Editor.ImageEditorPlugIn
@@ -70,27 +71,6 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
                 }
 
                 return _codecs;
-            }
-        }
-
-        
-        /// <summary>
-        /// Property to return the file extensions (and descriptions) for this content type.
-        /// </summary>
-        /// <remarks>
-        /// This dictionary contains the file extension including the leading period as the key (in lowercase), and a tuple containing the file extension, and a description of the file (for display).
-        /// </remarks>
-        public override GorgonFileExtensionCollection FileExtensions
-        {
-            get
-            {
-                // Update the list of available extensions (because they're not static) when we create our content for display.
-                foreach (var codec in Codecs.Where(codec => !base.FileExtensions.Contains(codec.Key)))
-                {
-                    base.FileExtensions.Add(codec.Key);
-                }
-
-                return base.FileExtensions;
             }
         }
         #endregion
@@ -296,49 +276,62 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
             : base(Resources.GORIMG_DESC)
         {
             Settings = new GorgonImageProperties();
+
+            // Update the list of available extensions (because they're not static) when we create our content for display.
+            foreach (var codec in Codecs.Where(codec => !FileExtensions.Contains(codec.Key)))
+            {
+                FileExtensions.Add(codec.Key);
+            }
         }
         #endregion
 
 		#region IImageEditorPlugIn Members
-		/// <summary>
-		/// Property to return the image file extensions supported by the plug-in.
-		/// </summary>
-		public IEnumerable<GorgonFileExtension> Extensions
-		{
-			get
-			{
-				return Codecs.Keys;
-			}
-		}
-		#endregion
+        /// <summary>
+        /// Function to import content from a file system file.
+        /// </summary>
+        /// <param name="file">File containing the image to load.</param>
+        /// <param name="newWidth">[Optional] The new width of the image.</param>
+        /// <param name="newHeight">[Optional] The new height of the image.</param>
+        /// <param name="clip">[Optional] TRUE to clip the image when changing its size, FALSE to stretch it.</param>
+        /// <param name="newFormat">[Optional] The new format for the image.</param>
+        /// <returns>
+        /// An image editor content object.
+        /// </returns>
+        /// <remarks>
+        /// Leave the <paramref name="newWidth" /> and <paramref name="newHeight" /> values at 0 to preserve the width and height of the image.  The overridden height will
+        /// only apply to 2D, Cube and 3D image types.  Leave the <paramref name="newFormat" /> parameter at Unknown to preserve the image format.
+        /// </remarks>
+        IImageEditorContent IImageEditorPlugIn.ImportContent(GorgonFileSystemFileEntry file, int newWidth, int newHeight, bool clip, BufferFormat newFormat)
+        {
+            GorgonImageCodec codec;
 
-		#region IImageEditorPlugIn Members
-		/// <summary>
-		/// Function to import content from a file system file.
-		/// </summary>
-		/// <param name="file">File containing the image to load.</param>
-		/// <returns>
-		/// An image editor content object.
-		/// </returns>
-		IImageEditorContent IImageEditorPlugIn.ImportContent(GorgonFileSystemFileEntry file)
-		{
-			GorgonImageCodec codec;
+            if (file == null)
+            {
+                throw new ArgumentNullException("file");
+            }
 
-			if (file == null)
-			{
-				throw new ArgumentNullException("file");
-			}
+            if (!Codecs.TryGetValue(new GorgonFileExtension(file.Extension), out codec))
+            {
+                throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GORIMG_NO_CODEC, file.Name));
+            }
 
-	        if (!Codecs.TryGetValue(new GorgonFileExtension(file.Extension), out codec))
-			{
-				throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GORIMG_NO_CODEC, file.Name));
-	        }
+            // Return the codec to the default overrides.
+            codec.Clip = clip;
+            codec.Format = newFormat;
+            codec.Height = newHeight;
+            codec.Width = newWidth;
 
-			var content = new GorgonImageContent(file.Name, codec);
-			content.Load(file);
+            var content = new GorgonImageContent(file.Name, codec);
+            content.Load(file);
 
-			return content;
-		}
-		#endregion
-	}
+            // Reset the codec to its default settings.
+            codec.Clip = true;
+            codec.Format = BufferFormat.Unknown;
+            codec.Height = 0;
+            codec.Width = 0;
+
+            return content;
+        }
+        #endregion
+    }
 }

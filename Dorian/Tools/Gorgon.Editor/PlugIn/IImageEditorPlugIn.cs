@@ -26,9 +26,11 @@
 
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using GorgonLibrary.Graphics;
 using GorgonLibrary.IO;
 
 namespace GorgonLibrary.Editor
@@ -39,19 +41,25 @@ namespace GorgonLibrary.Editor
 	/// <remarks>All image editing plug-ins must implement this on their plug-in entry objects.</remarks>
     public interface IImageEditorPlugIn
     {
-		/// <summary>
-		/// Property to return the image file extensions supported by the plug-in.
-		/// </summary>
-		IEnumerable<GorgonFileExtension> Extensions
-		{
-			get;
-		}
+        /// <summary>
+        /// Property to return the file extensions supported by the image editor.
+        /// </summary>
+	    GorgonFileExtensionCollection FileExtensions
+	    {
+	        get;
+	    }
 
 		/// <summary>
 		/// Function to import content from a file system file.
 		/// </summary>
 		/// <param name="file">File containing the image to load.</param>
+		/// <param name="newWidth">[Optional] The new width of the image.</param>
+		/// <param name="newHeight">[Optional] The new height of the image.</param>
+		/// <param name="clip">[Optional] TRUE to clip the image when changing its size, FALSE to stretch it.</param>
+		/// <param name="newFormat">[Optional] The new format for the image.</param>
+		/// <remarks>Leave the <paramref name="newWidth"/> and <paramref name="newHeight"/> values at 0 to preserve the width and height of the image.  The overridden height will 
+		/// only apply to 2D, Cube and 3D image types.  Leave the <paramref name="newFormat"/> parameter at Unknown to preserve the image format.</remarks>
 		/// <returns>An image editor content object.</returns>
-		IImageEditorContent ImportContent(GorgonFileSystemFileEntry file);
+        IImageEditorContent ImportContent(GorgonFileSystemFileEntry file, int newWidth = 0, int newHeight = 0, bool clip = true, BufferFormat newFormat = BufferFormat.Unknown);
     }
 }

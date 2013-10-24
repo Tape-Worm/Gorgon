@@ -258,6 +258,15 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to All files (*.*).
+        /// </summary>
+        internal static string GORFNT_DLG_ALL_FILES {
+            get {
+                return ResourceManager.GetString("GORFNT_DLG_ALL_FILES", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Select a background color for the preview text.
         /// </summary>
         internal static string GORFNT_DLG_BACKGROUND_COLOR_TEXT {
@@ -308,6 +317,26 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Properties {
         internal static string GORFNT_FAMILY_NOT_FOUND {
             get {
                 return ResourceManager.GetString("GORFNT_FAMILY_NOT_FOUND", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The file &apos;{0}&apos; must be a 2D image..
+        /// </summary>
+        internal static string GORFNT_IMAGE_NOT_2D {
+            get {
+                return ResourceManager.GetString("GORFNT_IMAGE_NOT_2D", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The image being loaded has a size of {0}x{1}, but the font requires textures sized to {2}x{3}.  Would you like to resize the image?
+        ///
+        ///Note: If &apos;No&apos; is selected, then the image will be clipped to the texture dimensions..
+        /// </summary>
+        internal static string GORFNT_IMAGE_SIZE_MISMATCH_MSG {
+            get {
+                return ResourceManager.GetString("GORFNT_IMAGE_SIZE_MISMATCH_MSG", resourceCulture);
             }
         }
         
@@ -471,6 +500,15 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Properties {
         internal static string GORFNT_PLUGIN_INVALID_SM {
             get {
                 return ResourceManager.GetString("GORFNT_PLUGIN_INVALID_SM", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This will remove the glyph &apos;{0}&apos; from the texture {1}.  Do you wish to continue?.
+        /// </summary>
+        internal static string GORFNT_REMOVE_TEXTURE_PROMPT {
+            get {
+                return ResourceManager.GetString("GORFNT_REMOVE_TEXTURE_PROMPT", resourceCulture);
             }
         }
         
@@ -725,6 +763,16 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Properties {
         internal static string PROP_TEXTURESIZE_NAME {
             get {
                 return ResourceManager.GetString("PROP_TEXTURESIZE_NAME", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap remove_image_16x16 {
+            get {
+                object obj = ResourceManager.GetObject("remove_image_16x16", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
             }
         }
         

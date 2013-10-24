@@ -24,16 +24,7 @@
 // 
 #endregion
 
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Drawing;
-using System.Drawing.Imaging;
-using System.Linq;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms.VisualStyles;
 using GorgonLibrary.Editor.ImageEditorPlugIn.Properties;
 using GorgonLibrary.Graphics;
 using GorgonLibrary.IO;
@@ -48,8 +39,7 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
     {
         #region Variables.
         private GorgonImageContentPanel _contentPanel;                          // Panel used to display the content.
-        private GorgonImageData _image;                                         // Image data.
-	    private readonly GorgonImageCodec _codec;								// Codec used for the image.
+        private readonly GorgonImageCodec _codec;								// Codec used for the image.
         #endregion
 
         #region Properties.
@@ -102,7 +92,7 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
         /// <param name="stream">Stream containing the content data.</param>
         protected override void OnRead(System.IO.Stream stream)
         {
-            _image = GorgonImageData.FromStream(stream, (int)stream.Length, _codec);
+            Image = GorgonImageData.FromStream(stream, (int)stream.Length, _codec);
         }
 
         /// <summary>
@@ -130,36 +120,36 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
         public override Image GetThumbNailImage()
         {
             Image resultImage;
-            float aspect = (float)_image[0].Width / _image[0].Height;
+            float aspect = (float)Image[0].Width / Image[0].Height;
             var newSize = new Size(128, 128);
 
 			// If this device can't support loading the image, then show
 			// a thumbnail that will indicate that we can't load it.
-	        if ((_image[0].Width >= Graphics.Textures.MaxWidth)
-	            || (_image[0].Height >= Graphics.Textures.MaxHeight)
-	            || (_image[0].Depth >= Graphics.Textures.MaxDepth))
+	        if ((Image[0].Width >= Graphics.Textures.MaxWidth)
+	            || (Image[0].Height >= Graphics.Textures.MaxHeight)
+	            || (Image[0].Depth >= Graphics.Textures.MaxDepth))
 	        {
 		        return (Image)Resources.invalid_image_128x128.Clone();
 	        }
 
 			// Ensure that we support the image format as well.
-	        switch (_image.Settings.ImageType)
+	        switch (Image.Settings.ImageType)
 	        {
 			    case ImageType.Image1D:
-			        if (!Graphics.VideoDevice.Supports1DTextureFormat(_image.Settings.Format))
+			        if (!Graphics.VideoDevice.Supports1DTextureFormat(Image.Settings.Format))
 			        {
 						return (Image)Resources.invalid_image_128x128.Clone();
 			        }
 			        break;
 				case ImageType.Image2D:
 				case ImageType.ImageCube:
-			        if (!Graphics.VideoDevice.Supports2DTextureFormat(_image.Settings.Format))
+			        if (!Graphics.VideoDevice.Supports2DTextureFormat(Image.Settings.Format))
 			        {
 						return (Image)Resources.invalid_image_128x128.Clone();
 			        }
 			        break;
 				case ImageType.Image3D:
-			        if (!Graphics.VideoDevice.Supports3DTextureFormat(_image.Settings.Format))
+			        if (!Graphics.VideoDevice.Supports3DTextureFormat(Image.Settings.Format))
 			        {
 						return (Image)Resources.invalid_image_128x128.Clone();
 			        }
@@ -169,8 +159,8 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 	        }
 
             // Resize our image.
-            if ((_image[0].Width != 128)
-                || (_image[0].Height != 128))
+            if ((Image[0].Width != 128)
+                || (Image[0].Height != 128))
             {
                 if (aspect > 1.0f)
                 {
@@ -181,12 +171,12 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
                     newSize.Width = (int)(128 * aspect);
                 }
 
-                _image.Resize(newSize.Width, newSize.Height, false, ImageFilter.Fant);
+                Image.Resize(newSize.Width, newSize.Height, false, ImageFilter.Fant);
             }
 
             try
             {
-                resultImage = _image[0].ToGDIImage();
+                resultImage = Image[0].ToGDIImage();
             }
             catch (GorgonException gex)
             {
@@ -233,6 +223,18 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
         {
             HasThumbnail = true;
 	        _codec = codec;
+        }
+        #endregion
+
+        #region IImageEditorContent Members
+
+        /// <summary>
+        /// Property to return the image held in the content object.
+        /// </summary>
+        public GorgonImageData Image
+        {
+            get;
+            private set;
         }
         #endregion
     }

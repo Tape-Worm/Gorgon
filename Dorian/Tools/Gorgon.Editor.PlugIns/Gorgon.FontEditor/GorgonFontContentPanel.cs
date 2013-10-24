@@ -159,7 +159,63 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
         #endregion
 
         #region Methods.
-		/// <summary>
+        /// <summary>
+        /// Handles the Click event of the buttonRemoveCustomTexture control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void buttonRemoveCustomTexture_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                if (GorgonDialogs.ConfirmBox(ParentForm,
+                                             string.Format(Resources.GORFNT_REMOVE_TEXTURE_PROMPT,
+                                                           string.Format("{0} (0x{1})",
+                                                                         _selectedGlyph.Character,
+                                                                         ((ushort)_selectedGlyph.Character).FormatHex()),
+                                                                         _selectedGlyph.Texture.Name))
+                    == ConfirmationResult.No)
+                {
+                    return;
+                }
+
+                Cursor.Current = Cursors.WaitCursor;
+
+                // Ensure that the selected glyph actually exists in the glyph overrides.
+                GorgonGlyph currentGlyph = _content.Font.Settings.Glyphs.FirstOrDefault(item => item.Character == _selectedGlyph.Character);
+
+                if (currentGlyph == null)
+                {
+                    return;
+                }
+
+                // Destroy the texture if it's not used by any other glyph.
+                while (_content.Font.Settings.Glyphs.Any(item => item.Character == currentGlyph.Character))
+                {
+                    if (!_content.Font.Settings.Glyphs.Any(item =>
+                                                           item.Texture == currentGlyph.Texture
+                                                           && item != currentGlyph))
+                    {
+                        _selectedGlyph.Texture.Dispose();
+                    }
+
+                    _content.Font.Settings.Glyphs.Remove(currentGlyph);
+                }
+
+                _content.UpdateFont();
+            }
+            catch (Exception ex)
+            {
+                GorgonDialogs.ErrorBox(ParentForm, ex);
+            }
+            finally
+            {
+                ValidateControls();
+                Cursor.Current = Cursors.Default;
+            }
+        }
+
+        /// <summary>
 		/// Handles the Click event of the buttonGlyphClip control.
 		/// </summary>
 		/// <param name="sender">The source of the event.</param>
@@ -169,24 +225,100 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		    try
 		    {
 		        imageFileBrowser.FileExtensions.Clear();
-			    foreach (var extension in _content.ImageEditor.Extensions)
-			    {
-				    imageFileBrowser.FileExtensions[extension.Extension] = extension;
-			    }
-			    imageFileBrowser.FileExtensions["*"] = new GorgonFileExtension("*", "All files (*.*)");
-    
+		        foreach (var extension in _content.ImageEditor.FileExtensions)
+		        {
+		            imageFileBrowser.FileExtensions[extension.Extension] = extension;
+		        }
+		        imageFileBrowser.FileExtensions["*"] = new GorgonFileExtension("*", Resources.GORFNT_DLG_ALL_FILES);
+
 		        imageFileBrowser.FileView = GorgonFontEditorPlugIn.Settings.LastTextureImportDialogView;
 
-			    if (imageFileBrowser.ShowDialog(ParentForm) == DialogResult.OK)
-			    {
-				    _content.ImageEditor.ImportContent(imageFileBrowser.Files[0]);
-			    }
+		        if (imageFileBrowser.ShowDialog(ParentForm) == DialogResult.OK)
+		        {
+		            using(var imageContent = _content.ImageEditor.ImportContent(imageFileBrowser.Files[0],
+		                                                                        0,
+		                                                                        0,
+		                                                                        true,
+		                                                                        BufferFormat.R8G8B8A8_UIntNormal))
+		            {
+		                // We can only use 2D content.
+		                if (imageContent.Image.Settings.ImageType != ImageType.Image2D)
+		                {
+		                    GorgonDialogs.ErrorBox(ParentForm, string.Format(Resources.GORFNT_IMAGE_NOT_2D, imageContent.Name));
+		                    return;
+		                }
+
+		                // If the size is mismatched with the font textures then ask the user if they wish to resize the 
+		                // texture.
+		                if ((imageContent.Image.Settings.Width != _content.Font.Settings.TextureSize.Width)
+		                    || (imageContent.Image.Settings.Height != _content.Font.Settings.TextureSize.Height))
+		                {
+		                    ConfirmationResult result = GorgonDialogs.ConfirmBox(ParentForm,
+		                                                                         string.Format(
+		                                                                                       Resources
+		                                                                                           .GORFNT_IMAGE_SIZE_MISMATCH_MSG,
+		                                                                                       imageContent.Image.Settings
+		                                                                                                   .Width,
+		                                                                                       imageContent.Image.Settings
+		                                                                                                   .Height,
+		                                                                                       _content.Font.Settings
+		                                                                                               .TextureSize.Width,
+		                                                                                       _content.Font.Settings
+		                                                                                               .TextureSize.Height),
+		                                                                         true,
+		                                                                         false);
+
+		                    if (result == ConfirmationResult.Cancel)
+		                    {
+		                        return;
+		                    }
+
+		                    // Resize or clip the image.
+		                    imageContent.Image.Resize(_content.Font.Settings.TextureSize.Width,
+		                                              _content.Font.Settings.TextureSize.Height,
+		                                              result == ConfirmationResult.No,
+		                                              ImageFilter.Point);
+		                }
+
+
+		                var texture = _content.Graphics.Textures.CreateTexture<GorgonTexture2D>(imageContent.Name,
+		                                                                                        imageContent.Image);
+
+		                GorgonGlyph newGlyph =
+		                    _content.Font.Settings.Glyphs.FirstOrDefault(item => item.Character == _selectedGlyph.Character);
+
+		                if (newGlyph != null)
+		                {
+		                    _content.Font.Settings.Glyphs.Remove(newGlyph);
+
+		                    // If this is the only glyph referencing this texture, then dump it.
+		                    if (!_content.Font.Glyphs.Any(item => item.Texture == newGlyph.Texture && item != newGlyph))
+		                    {
+		                        newGlyph.Texture.Dispose();
+		                    }
+		                }
+
+		                // Default to the full size of the texture.
+		                newGlyph = new GorgonGlyph(_selectedGlyph.Character,
+		                                           texture,
+		                                           new Rectangle(0, 0, texture.Settings.Width, texture.Settings.Height),
+		                                           Vector2.Zero,
+		                                           Vector3.Zero);
+
+		                _content.Font.Settings.Glyphs.Add(newGlyph);
+		                _content.UpdateFont();
+		            }
+		        }
 
 		        GorgonFontEditorPlugIn.Settings.LastTextureImportDialogView = imageFileBrowser.FileView;
 		    }
 		    catch (Exception ex)
 		    {
 		        GorgonDialogs.ErrorBox(ParentForm, ex);
+		    }
+		    finally
+		    {
+		        ValidateControls();
 		    }
 		}
 
@@ -437,7 +569,8 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
             if ((_content != null) && (_content.Font != null))
             {
 				// If we can't use the image editor plug-in, then don't allow us to edit the glyph image dimensions.
-	            buttonGlyphClip.Visible = _content.ImageEditor != null;
+	            buttonRemoveCustomTexture.Visible = buttonGlyphClip.Visible = _content.ImageEditor != null;
+                buttonRemoveCustomTexture.Enabled = (_content.ImageEditor != null) && (_selectedGlyph != null) && (_selectedGlyph.IsExternalTexture);
 
 				if (_currentTextureIndex < 0)
 				{
