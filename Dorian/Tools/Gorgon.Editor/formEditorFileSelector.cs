@@ -25,7 +25,6 @@
 #endregion
 
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
@@ -34,16 +33,12 @@ using System.Drawing.Imaging;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Net;
-using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using System.Windows.Forms.VisualStyles;
 using GorgonLibrary.Design;
 using GorgonLibrary.Editor.Properties;
-using GorgonLibrary.Graphics;
 using GorgonLibrary.IO;
 using GorgonLibrary.Math;
 using GorgonLibrary.UI;
@@ -186,10 +181,12 @@ namespace GorgonLibrary.Editor
 		/// </summary>
 		private struct FilterItem
 		{
+			private readonly string _description;			// Description of the extension.
+
 			/// <summary>
 			/// The extension for the filter.
 			/// </summary>
-			public readonly GorgonFileExtension Extension;
+			public readonly IEnumerable<GorgonFileExtension> Extensions;
 
 			/// <summary>
 			/// Returns a <see cref="System.String" /> that represents this instance.
@@ -199,16 +196,19 @@ namespace GorgonLibrary.Editor
 			/// </returns>
 			public override string ToString()
 			{
-				return Extension.Description;
+				return _description;
 			}
 
 			/// <summary>
 			/// Initializes a new instance of the <see cref="FilterItem"/> struct.
 			/// </summary>
-			/// <param name="extension">The extension.</param>
-			public FilterItem(GorgonFileExtension extension)
+			/// <param name="extensions">The extensions.</param>
+			public FilterItem(IEnumerable<GorgonFileExtension> extensions)
 			{
-				Extension = extension;
+				// ReSharper disable PossibleMultipleEnumeration
+				Extensions = extensions;
+				_description = extensions.FirstOrDefault().Description;
+				// ReSharper restore PossibleMultipleEnumeration
 			}
 		}
 		#endregion
@@ -1276,25 +1276,26 @@ namespace GorgonLibrary.Editor
 		/// <returns>A sorted list of files.</returns>
 		private IEnumerable<GorgonFileSystemFileEntry> GetSortedFiles(IEnumerable<GorgonFileSystemFileEntry> directoryFiles)
 		{
-			FilterItem filter = default(FilterItem);
+			GorgonFileExtension[] extension = null;
 
 			if (!panelSearchLabel.Visible)
 			{
 				if (comboFilters.SelectedItem != null)
 				{
-					filter = (FilterItem)comboFilters.SelectedItem;
+					extension = ((FilterItem)comboFilters.SelectedItem).Extensions.ToArray();
 				}
 
 				// If we select all files, the just use the default.
-				if (filter.Extension.Extension == "*")
+				if ((extension != null) && (extension[0].Equals("*")))
 				{
-					filter = default(FilterItem);
+					extension = null;
 				}
 
 				// Filter the files.
 				directoryFiles = directoryFiles.Where(item => !ScratchArea.IsBlocked(item)
-				                                              && ((filter.Extension.IsEmpty)
-				                                                  || (filter.Extension.Equals(new GorgonFileExtension(item.Extension)))));
+				                                              && ((extension == null)
+				                                                  || (extension.Any(ext =>
+				                                                                    ext.Equals(item.Extension)))));
 			}
 
 			if (listFiles.View == View.Details)
@@ -1454,30 +1455,56 @@ namespace GorgonLibrary.Editor
 						return;
 					}
 
-					Image thumbNail = GetContentThumbNail(item);
-
-					// Attach the thumbnail to the proper list view item.  Do this on the form thread or else
-					// bad things will happen.
-					if ((thumbNail != null) && (!_cancelSource.Token.IsCancellationRequested))
+					try
 					{
+						Image thumbNail = GetContentThumbNail(item);
+
+						// Attach the thumbnail to the proper list view item.  Do this on the form thread or else
+						// bad things will happen.
+						if ((thumbNail != null) && (!_cancelSource.Token.IsCancellationRequested))
+						{
+							Invoke(new MethodInvoker(() =>
+							                         {
+								                         // Just a last minute check to ensure we aren't touching disposed objects.
+								                         if (IsDisposed)
+								                         {
+									                         return;
+								                         }
+
+								                         if (!imagesFilesLarge.Images.ContainsKey(item.FullPath))
+								                         {
+									                         imagesFilesLarge.Images.Add(item.FullPath, thumbNail);
+								                         }
+
+								                         // Attempt to remove this item.
+								                         _thumbNailFiles.Remove(item);
+
+								                         // If the list view no longer contains this item, then we should dump it.
+								                         // It'll still be cached in our image list for later.
+								                         if (listFiles.Items.ContainsKey(item.FullPath))
+								                         {
+									                         listFiles.Items[item.FullPath].ImageKey = item.FullPath;
+								                         }
+							                         }));
+						}
+					}
+					catch (Exception ex)
+					{
+						if (_cancelSource.Token.IsCancellationRequested)
+						{
+							return;
+						}
+
 						Invoke(new MethodInvoker(() =>
 						                         {
-							                         // Just a last minute check to ensure we aren't touching disposed objects.
-							                         if (IsDisposed)
-							                         {
-								                         return;
-							                         }
+							                         GorgonDialogs.ErrorBox(this, string.Format(Resources.GOREDIT_DLG_COULD_NOT_LOAD_THUMBNAIL,
+							                                                              item.FullPath), ex);
 
-							                         if (!imagesFilesLarge.Images.ContainsKey(item.FullPath))
-							                         {
-								                         imagesFilesLarge.Images.Add(item.FullPath, thumbNail);
-							                         }
+													 if (!imagesFilesLarge.Images.ContainsKey(item.FullPath))
+													 {
+														 imagesFilesLarge.Images.Add(item.FullPath, (Bitmap)Resources.image_missing_128x128.Clone());
+													 }
 
-							                         // Attempt to remove this item.
-							                         _thumbNailFiles.Remove(item);
-
-							                         // If the list view no longer contains this item, then we should dump it.
-							                         // It'll still be cached in our image list for later.
 							                         if (listFiles.Items.ContainsKey(item.FullPath))
 							                         {
 								                         listFiles.Items[item.FullPath].ImageKey = item.FullPath;
@@ -1601,18 +1628,36 @@ namespace GorgonLibrary.Editor
 				{
 					panelFilters.Visible = true;
 
-					// Add extensions to the list.
-					foreach (var extension in _fileExtensions)
-					{
-						comboFilters.Items.Add(new FilterItem(extension));
+					var filterGroups = from fileExtension in (IEnumerable<GorgonFileExtension>)_fileExtensions
+					                   group fileExtension by fileExtension.Description.ToLower(CultureInfo.CurrentUICulture);
 
-						// Capture the default extension.
-						if (string.Equals(extension.Extension, DefaultExtension, StringComparison.OrdinalIgnoreCase))
+					// Add extensions to the list.
+					foreach (var filterGroup in filterGroups)
+					{
+						var filter = new FilterItem(filterGroup);
+						comboFilters.Items.Add(filter);
+
+						if (string.IsNullOrWhiteSpace(DefaultExtension))
 						{
-							comboFilters.Text = extension.Description;
+							continue;
+						}
+						
+						// Capture the default extension.
+						var currentFilter = filter.Extensions.FirstOrDefault(item =>
+						                                                     string.Equals(item.Extension,
+						                                                                   DefaultExtension,
+						                                                                   StringComparison.InvariantCultureIgnoreCase));
+
+						if (!string.IsNullOrWhiteSpace(currentFilter.Extension))
+						{
+							comboFilters.Text = currentFilter.Description;
 						}
 
-						maxWidth = maxWidth.Max(TextRenderer.MeasureText(g, extension.Description, comboFilters.Font).Width);
+						// Determine maximum combo box drop down width.
+						maxWidth = filterGroup.Aggregate(maxWidth,
+						                            (current, groupExtension) =>
+						                            current.Max(TextRenderer.MeasureText(g, groupExtension.Description, comboFilters.Font)
+						                                                    .Width));
 					}
 
 					comboFilters.DropDownWidth = maxWidth.Max(comboFilters.Width);
@@ -1685,11 +1730,13 @@ namespace GorgonLibrary.Editor
 					}
 					else
 					{
+						string selectedFileName = file;
+
 						directoryName = (from item in listFiles.Items.Cast<ListViewItem>()
 						                    let filterFile = item.Tag as GorgonFileSystemFileEntry
 						                    where filterFile != null &&
-							                    (string.Equals(filterFile.Name, file, StringComparison.OrdinalIgnoreCase)
-							                     || string.Equals(filterFile.FullPath, file, StringComparison.OrdinalIgnoreCase))
+							                    (string.Equals(filterFile.Name, fileName, StringComparison.OrdinalIgnoreCase)
+							                     || string.Equals(filterFile.FullPath, selectedFileName, StringComparison.OrdinalIgnoreCase))
 						                    select filterFile.Directory.FullPath).FirstOrDefault();
 
 						// If we can't find the directory, then default to the root.

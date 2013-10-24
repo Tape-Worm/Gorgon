@@ -179,6 +179,8 @@
     <Compile Include="PlugIn\EditorPlugIn.cs" />
     <Compile Include="PlugIn\EditorPlugInSettings.cs" />
     <Compile Include="PlugIn\FileWriterPlugIn.cs" />
+    <Compile Include="PlugIn\IImageEditorContent.cs" />
+    <Compile Include="PlugIn\IImageEditorPlugIn.cs" />
     <Compile Include="PlugIn\PlugIns.cs" />
     <Compile Include="PropertyGrid\ContentProperty.cs" />
     <Compile Include="PropertyGrid\ContentPropertyDescriptor.cs" />
@@ -277,6 +279,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Gorgon2.ico" />
+    <None Include="Resources\image_missing_128x128.png" />
     <None Include="Resources\back_16x16png.png" />
     <None Include="Resources\forward_16x16.png" />
     <None Include="Resources\up_16x16.png" />
