@@ -151,4 +151,7 @@
   <data name="GORIMG_NO_CODEC" xml:space="preserve">
     <value>There is no codec available that can open the file '{0}'.</value>
   </data>
+  <data name="GORIMG_CODEC_CANNOT_READ" xml:space="preserve">
+    <value>The file '{0}' could not be read by the '{1}' codec.</value>
+  </data>
 </root>

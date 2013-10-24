@@ -138,7 +138,7 @@ namespace GorgonLibrary.Editor
         /// <summary>
         /// Property to return the selected file name.
         /// </summary>
-        /// <remarks>If there are multiple file names selected, then this will return the first name on the <see cref="Filenames">file names list</see>.</remarks>
+        /// <remarks>If there are multiple file names selected, then this will return the first name on the <see cref="Files">file array</see>.</remarks>
         [Browsable(true), LocalCategory(typeof(Resources), "PROP_CATEGORY_DATA"), LocalDescription(typeof(Resources), "PROP_FILENAME_DESC")]
 	    public string Filename
 	    {
@@ -150,7 +150,7 @@ namespace GorgonLibrary.Editor
         /// Property to return the array of selected file names.
         /// </summary>
         [Browsable(false)]
-	    public string[] Filenames
+	    public GorgonFileSystemFileEntry[] Files
 	    {
 	        get;
             private set;
@@ -177,12 +177,18 @@ namespace GorgonLibrary.Editor
 
 	            DialogResult result = selector.ShowDialog(owner);
 
-	            FileView = selector.CurrentView;
-	            Filenames = selector.GetFilenames();
+				FileView = selector.CurrentView;
 
-	            Filename = Filenames.Length > 0 ? Filenames[0] : string.Empty;
+		        if (result != DialogResult.OK)
+		        {
+			        return result;
+		        }
 
-                return result;
+		        Files = selector.GetFilenames();
+
+		        Filename = Files.Length > 0 ? Files[0].FullPath : string.Empty;
+
+		        return result;
 	        }
 	    }
 		#endregion

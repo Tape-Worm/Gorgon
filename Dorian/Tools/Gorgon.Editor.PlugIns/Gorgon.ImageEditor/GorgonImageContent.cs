@@ -44,7 +44,7 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
     /// Image content.
     /// </summary>
     class GorgonImageContent
-        : ContentObject
+        : ContentObject, IImageEditorContent
     {
         #region Variables.
         private GorgonImageContentPanel _contentPanel;                          // Panel used to display the content.
@@ -204,6 +204,22 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
             return resultImage;
         }
 
+		/// <summary>
+		/// Function to load the image from a file system file entry.
+		/// </summary>
+		/// <param name="file">File to load from.</param>
+	    public void Load(GorgonFileSystemFileEntry file)
+	    {
+			using (var stream = file.OpenStream(false))
+			{
+				if (!_codec.IsReadable(stream))
+				{
+					throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GORIMG_CODEC_CANNOT_READ, file.Name, _codec.CodecDescription));
+				}
+
+				OnRead(stream);
+			}
+	    }
         #endregion
 
         #region Constructor/Destructor.
