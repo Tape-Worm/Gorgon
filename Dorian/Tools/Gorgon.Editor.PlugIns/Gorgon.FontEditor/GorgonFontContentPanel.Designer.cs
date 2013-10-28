@@ -589,6 +589,7 @@
             this.Name = "GorgonFontContentPanel";
             this.Size = new System.Drawing.Size(806, 636);
             this.Text = "Gorgon Font";
+            this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.GorgonFontContentPanel_KeyDown);
             this.MouseClick += new System.Windows.Forms.MouseEventHandler(this.GorgonFontContentPanel_MouseClick);
             this.PanelDisplay.ResumeLayout(false);
             this.panel1.ResumeLayout(false);
