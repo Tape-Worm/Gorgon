@@ -160,6 +160,46 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 
         #region Methods.
         /// <summary>
+        /// Handles the KeyDown event of the GorgonFontContentPanel control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="KeyEventArgs"/> instance containing the event data.</param>
+        private void GorgonFontContentPanel_KeyDown(object sender, KeyEventArgs e)
+        {
+            // If we don't have the panel "focused", then ignore these messages.
+            if (ActiveControl != null)
+            {
+                return;
+            }
+
+            switch (e.KeyCode)
+            {
+                case Keys.Enter:
+                    if ((_selectedGlyph == null)
+                        || (_content.CurrentState == DrawState.GlyphEdit)
+                        || (_content.CurrentState == DrawState.ToGlyphEdit))
+                    {
+                        return;
+                    }
+
+                    buttonEditGlyph.PerformClick();
+                    break;
+                case Keys.Escape:
+                    if ((_selectedGlyph == null)
+                        || ((_content.CurrentState != DrawState.GlyphEdit)
+                        && (_content.CurrentState != DrawState.ToGlyphEdit)))
+                    {
+                        return;
+                    }
+
+                    buttonEditGlyph.PerformClick();
+                    break;
+            }
+
+            e.Handled = true;
+        }
+
+        /// <summary>
         /// Handles the Click event of the buttonRemoveCustomTexture control.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
@@ -1298,7 +1338,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		/// <param name="editOn">TRUE when editing a glyph, FALSE when exiting the editor.</param>
 	    private void InitializeGlyphEditTransition(bool editOn)
 	    {
-		    float animationTime = 0.5f;
+		    float animationTime = 20.5f;
 
 			// Move back to the selected texture index.
 			if (_textures[_currentTextureIndex] != _selectedGlyph.Texture)
