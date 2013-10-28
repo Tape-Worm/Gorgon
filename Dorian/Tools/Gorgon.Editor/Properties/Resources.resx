@@ -187,7 +187,7 @@
     <value>..\Resources\find_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="PROP_DEFAULTEXTENSION_DESC" xml:space="preserve">
-    <value>Sets the default extension to use when filtering the file list for the dialog.</value>
+    <value>Sets the default extension to use when filtering the file list for the dialog and returns the selected filter when the dialog closes.</value>
   </data>
   <data name="GOREDIT_BUTTON_EDIT" xml:space="preserve">
     <value>Edit selected content</value>

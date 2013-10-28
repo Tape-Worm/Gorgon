@@ -184,8 +184,8 @@ namespace GorgonLibrary.Editor
 			        return result;
 		        }
 
+		        DefaultExtension = selector.DefaultExtension;
 		        Files = selector.GetFilenames();
-
 		        Filename = Files.Length > 0 ? Files[0].FullPath : string.Empty;
 
 		        return result;

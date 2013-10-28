@@ -232,6 +232,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		        imageFileBrowser.FileExtensions["*"] = new GorgonFileExtension("*", Resources.GORFNT_DLG_ALL_FILES);
 
 		        imageFileBrowser.FileView = GorgonFontEditorPlugIn.Settings.LastTextureImportDialogView;
+			    imageFileBrowser.DefaultExtension = GorgonFontEditorPlugIn.Settings.LastTextureExtension;
 
 		        if (imageFileBrowser.ShowDialog(ParentForm) == DialogResult.OK)
 		        {
@@ -281,8 +282,13 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		                }
 
 
+						// Remove any array indices from the texture, we don't need them for font glyphs.
+			            var settings = (GorgonTexture2DSettings)imageContent.Image.Settings.Clone();
+			            settings.ArrayCount = 1;
+
 		                var texture = _content.Graphics.Textures.CreateTexture<GorgonTexture2D>(imageContent.Name,
-		                                                                                        imageContent.Image);
+		                                                                                        imageContent.Image,
+																								settings);
 
 		                GorgonGlyph newGlyph =
 		                    _content.Font.Settings.Glyphs.FirstOrDefault(item => item.Character == _selectedGlyph.Character);
@@ -311,6 +317,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		        }
 
 		        GorgonFontEditorPlugIn.Settings.LastTextureImportDialogView = imageFileBrowser.FileView;
+			    GorgonFontEditorPlugIn.Settings.LastTextureExtension = imageFileBrowser.DefaultExtension;
 		    }
 		    catch (Exception ex)
 		    {
@@ -569,9 +576,6 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
             if ((_content != null) && (_content.Font != null))
             {
 				// If we can't use the image editor plug-in, then don't allow us to edit the glyph image dimensions.
-	            buttonRemoveCustomTexture.Visible = buttonGlyphClip.Visible = _content.ImageEditor != null;
-                buttonRemoveCustomTexture.Enabled = (_content.ImageEditor != null) && (_selectedGlyph != null) && (_selectedGlyph.IsExternalTexture);
-
 				if (_currentTextureIndex < 0)
 				{
 					_currentTextureIndex = 0;
@@ -605,12 +609,34 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
         private void UpdateGlyphInfo()
         {
 			buttonEditGlyph.Enabled = _selectedGlyph != null;
+			
+	        if ((!buttonEditGlyph.Enabled) && (buttonEditGlyph.Checked))
+	        {
+		        buttonEditGlyph.Checked = false;
+	        }
 
 	        buttonGlyphClip.Enabled =
 		        buttonGlyphKern.Enabled =
 		        buttonGlyphSizeSpace.Enabled = buttonEditGlyph.Enabled && _content.CurrentState == DrawState.GlyphEdit;
 
-            if (_selectedGlyph != null)
+			buttonRemoveCustomTexture.Visible = buttonGlyphClip.Visible = _content.ImageEditor != null;
+	        buttonRemoveCustomTexture.Enabled = (_content.ImageEditor != null) && (_selectedGlyph != null) &&
+	                                            (_selectedGlyph.IsExternalTexture) &&
+	                                            (_content.CurrentState == DrawState.GlyphEdit);
+
+	        if ((_content.CurrentState == DrawState.ToGlyphEdit)
+	            || (_content.CurrentState == DrawState.GlyphEdit))
+	        {
+		        buttonEditGlyph.Text = Resources.GORFNT_BUTTON_END_EDIT_GLYPH;
+		        buttonEditGlyph.Image = Resources.stop_16x16;
+	        }
+	        else
+	        {
+				buttonEditGlyph.Text = Resources.GORFNT_BUTTON_EDIT_GLYPH;
+				buttonEditGlyph.Image = Resources.edit_16x16;
+	        }
+
+	        if (_selectedGlyph != null)
             {
 	            if (_content.CurrentState == DrawState.DrawFontTextures)
 	            {

@@ -1349,7 +1349,7 @@ namespace GorgonLibrary.Editor.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Sets the default extension to use when filtering the file list for the dialog..
+        ///   Looks up a localized string similar to Sets the default extension to use when filtering the file list for the dialog and returns the selected filter when the dialog closes..
         /// </summary>
         internal static string PROP_DEFAULTEXTENSION_DESC {
             get {
