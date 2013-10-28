@@ -40,6 +40,14 @@ using GorgonLibrary.Renderers;
 using GorgonLibrary.UI;
 using SlimMath;
 
+// TODO: Add left/right arrow to swap textures.
+// TODO: Transition animation for texture swap.
+// TODO: Consider changing animations to use animation library (put textures into sprite objects).
+// TODO: Allow single click to select a texture.  Ensure mousewheel does texture swapping as well.
+// TODO: Add brush creation interface.
+// TODO: Add texture clipping for glyphs.
+// TODO: Add spacing/kerning interfaces for glyphs.
+
 namespace GorgonLibrary.Editor.FontEditorPlugIn
 {
     /// <summary>
@@ -1338,7 +1346,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		/// <param name="editOn">TRUE when editing a glyph, FALSE when exiting the editor.</param>
 	    private void InitializeGlyphEditTransition(bool editOn)
 	    {
-		    float animationTime = 20.5f;
+		    float animationTime = 0.5f;
 
 			// Move back to the selected texture index.
 			if (_textures[_currentTextureIndex] != _selectedGlyph.Texture)
