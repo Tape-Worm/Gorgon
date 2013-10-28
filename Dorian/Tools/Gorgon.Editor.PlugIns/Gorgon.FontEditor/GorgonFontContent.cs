@@ -564,38 +564,6 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 
 			try
 			{
-                // TODO: Remove, I think this may be redundant.
-                //var fontSettings = new GorgonFontSettings
-                //    {
-                //        AntiAliasingMode = _settings.AntiAliasingMode,
-                //        BaseColor = _settings.BaseColor,
-                //        Brush = _settings.Brush,
-                //        Characters = _settings.Characters,
-                //        DefaultCharacter = _settings.DefaultCharacter,
-                //        FontFamilyName = _settings.FontFamilyName,
-                //        FontHeightMode = _settings.FontHeightMode,
-                //        FontStyle = _settings.FontStyle,
-                //        OutlineColor = _settings.OutlineColor,
-                //        OutlineSize = _settings.OutlineSize,
-                //        PackingSpacing = _settings.PackingSpacing,
-                //        Size = _settings.Size,
-                //        TextContrast = _settings.TextContrast,
-                //        TextureSize = _settings.TextureSize
-                //    };
-
-                //if (_settings.Glyphs.Count > 0)
-                //{
-                //    fontSettings.Glyphs.AddRange(_settings.Glyphs);
-                //}
-
-                //if (_settings.KerningPairs.Count > 0)
-                //{
-                //    foreach (var pair in _settings.KerningPairs)
-                //    {
-                //        fontSettings.KerningPairs.Add(pair.Key, pair.Value);
-                //    }
-                //}
-
 				newFont = Graphics.Fonts.CreateFont(Name, _settings);
 			}
 			catch

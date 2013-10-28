@@ -148,6 +148,16 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 	        get;
 	        set;
 	    }
+
+		/// <summary>
+		/// Property to set or return the last view used with the texture import dialog.
+		/// </summary>
+		[ApplicationSetting("LastTextureExtension", "png", typeof(string), "FontEditor")]
+		public string LastTextureExtension
+		{
+			get;
+			set;
+		}
 		#endregion
 
 		#region Constructor/Destructor.

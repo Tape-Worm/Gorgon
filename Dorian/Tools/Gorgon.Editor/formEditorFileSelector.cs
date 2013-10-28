@@ -1364,77 +1364,76 @@ namespace GorgonLibrary.Editor
 				return ContentManagement.Current.HasThumbnail ? ContentManagement.Current.GetThumbNailImage() : null;
 			}
 
-			using (ContentPlugIn plugIn = ContentManagement.GetContentPlugInForFile(file.Extension))
+			ContentPlugIn plugIn = ContentManagement.GetContentPlugInForFile(file.Extension);
+
+			if (plugIn == null)
 			{
-				if (plugIn == null)
+				return null;
+			}
+
+			ContentSettings settings = plugIn.GetContentSettings();
+			settings.Name = file.Name;
+			settings.CreateContent = false;
+
+			// We need to load the content so we can generate a thumbnail (or retrieve cached version).
+			using (ContentObject content = plugIn.CreateContentObject(settings))
+			{
+				if (!content.HasThumbnail)
 				{
 					return null;
 				}
 
-				ContentSettings settings = plugIn.GetContentSettings();
-				settings.Name = file.Name;
-				settings.CreateContent = false;
+				EditorMetaDataFile metaData = plugIn.GetMetaData(file.FullPath);
+				content.MetaData = metaData;
 
-				// We need to load the content so we can generate a thumbnail (or retrieve cached version).
-				using (ContentObject content = plugIn.CreateContentObject(settings))
+				using (Stream contentStream = file.OpenStream(false))
 				{
-					if (!content.HasThumbnail)
-					{
-						return null;
-					}
-
-					EditorMetaDataFile metaData = plugIn.GetMetaData(file.FullPath);
-					content.MetaData = metaData;
-
-					using (Stream contentStream = file.OpenStream(false))
-					{
-						content.Read(contentStream);
-					}
-
-					Image result = content.GetThumbNailImage();
-
-					// If the image isn't the correct size then we need to rescale it.
-					if ((result.Width == _thumbNailSize.Width) && (result.Height == _thumbNailSize.Height))
-					{
-						return result;
-					}
-
-					var scaledThumbNail = new Bitmap(_thumbNailSize.Width, _thumbNailSize.Height, PixelFormat.Format32bppArgb);
-
-					try
-					{
-						using (var graphics = System.Drawing.Graphics.FromImage(scaledThumbNail))
-						{
-							float aspect = (float)result.Width / result.Height;
-							SizeF size = _thumbNailSize;
-							PointF location;
-
-							if (aspect > 1.0f)
-							{
-								size.Height = size.Height / aspect;
-								location = new PointF(0, _thumbNailSize.Height / 2 - size.Height / 2.0f);
-							}
-							else
-							{
-								size.Width = size.Width * aspect;
-								location = new PointF(_thumbNailSize.Width / 2 - size.Width / 2.0f, 0);
-							}
-
-							// Scale the image down.
-							graphics.SmoothingMode = SmoothingMode.HighQuality;
-							graphics.DrawImage(result,
-							                   new RectangleF(location, size),
-							                   new RectangleF(0, 0, result.Width, result.Height),
-							                   GraphicsUnit.Pixel);
-						}
-					}
-					finally
-					{
-						result.Dispose();
-					}
-
-					return scaledThumbNail;
+					content.Read(contentStream);
 				}
+
+				Image result = content.GetThumbNailImage();
+
+				// If the image isn't the correct size then we need to rescale it.
+				if ((result.Width == _thumbNailSize.Width) && (result.Height == _thumbNailSize.Height))
+				{
+					return result;
+				}
+
+				var scaledThumbNail = new Bitmap(_thumbNailSize.Width, _thumbNailSize.Height, PixelFormat.Format32bppArgb);
+
+				try
+				{
+					using (var graphics = System.Drawing.Graphics.FromImage(scaledThumbNail))
+					{
+						float aspect = (float)result.Width / result.Height;
+						SizeF size = _thumbNailSize;
+						PointF location;
+
+						if (aspect > 1.0f)
+						{
+							size.Height = size.Height / aspect;
+							location = new PointF(0, _thumbNailSize.Height / 2 - size.Height / 2.0f);
+						}
+						else
+						{
+							size.Width = size.Width * aspect;
+							location = new PointF(_thumbNailSize.Width / 2 - size.Width / 2.0f, 0);
+						}
+
+						// Scale the image down.
+						graphics.SmoothingMode = SmoothingMode.HighQuality;
+						graphics.DrawImage(result,
+							                new RectangleF(location, size),
+							                new RectangleF(0, 0, result.Width, result.Height),
+							                GraphicsUnit.Pixel);
+					}
+				}
+				finally
+				{
+					result.Dispose();
+				}
+
+				return scaledThumbNail;
 			}
 		}
 
@@ -1778,15 +1777,24 @@ namespace GorgonLibrary.Editor
 		{
 			base.OnFormClosing(e);
 
+			if ((DialogResult == DialogResult.OK) && (!GetSelectedFiles()))
+			{
+				e.Cancel = true;
+				return;
+			}
+			
+			comboFilters.SelectedIndexChanged -= comboFilters_SelectedIndexChanged;
+
+			_searchAutoComplete.Clear();
 			foreach (string item in textSearch.AutoCompleteCustomSource)
 			{
 				_searchAutoComplete.Add(item);
 			}
 
-			if ((DialogResult == DialogResult.OK) && (!GetSelectedFiles()))
+			// Retrieve the selected extension.
+			if (comboFilters.SelectedItem != null)
 			{
-				e.Cancel = true;
-				return;
+				DefaultExtension = ((FilterItem)comboFilters.SelectedItem).Extensions.First().Extension;
 			}
 
 			try
@@ -1808,8 +1816,6 @@ namespace GorgonLibrary.Editor
 			{
 				Cursor.Current = Cursors.Default;
 			}
-
-			comboFilters.SelectedIndexChanged -= comboFilters_SelectedIndexChanged;
 		}
 
 		/// <summary>

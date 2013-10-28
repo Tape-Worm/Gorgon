@@ -142,6 +142,17 @@ namespace GorgonLibrary.Editor
 
 				ContentManagement.UnloadCurrentContent();
 
+				// Clean up the plug-ins.
+				foreach (var plugInItem in PlugIns.ContentPlugIns)
+				{
+					plugInItem.Value.Dispose();
+				}
+
+				foreach (var plugInItem in PlugIns.WriterPlugIns)
+				{
+					plugInItem.Value.Dispose();
+				}
+
 				// Shut down the graphics interface.
 				if (Graphics != null)
 				{
