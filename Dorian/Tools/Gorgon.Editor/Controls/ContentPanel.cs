@@ -29,6 +29,7 @@ using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
 using GorgonLibrary.Editor.Properties;
+using GorgonLibrary.Input;
 using GorgonLibrary.UI;
 
 namespace GorgonLibrary.Editor
@@ -52,6 +53,17 @@ namespace GorgonLibrary.Editor
 		#endregion
 
 		#region Properties.
+		/// <summary>
+		/// Property to return the raw input interface.
+		/// </summary>
+		protected GorgonInputFactory RawInput
+		{
+			get
+			{
+				return Program.Input;
+			}
+		}
+
 		/// <summary>
 		/// Property to return whether there have been changes made to the content.
 		/// </summary>

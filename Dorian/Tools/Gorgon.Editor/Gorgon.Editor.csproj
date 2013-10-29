@@ -272,6 +272,10 @@
       <Project>{EA4B0A1A-586A-47A4-89C1-3E6A4E821C31}</Project>
       <Name>Gorgon.Graphics</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\Gorgon\Gorgon.Input\Gorgon.Input.csproj">
+      <Project>{780b5b61-77bb-4456-af77-e6681e7e48bf}</Project>
+      <Name>Gorgon.Input</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\Gorgon\Gorgon.Renderers\2D\Gorgon.Renderers.2D.csproj">
       <Project>{CE225F21-FB4D-4CB1-8B5B-48A61B5D0E54}</Project>
       <Name>Gorgon.Renderers.2D</Name>

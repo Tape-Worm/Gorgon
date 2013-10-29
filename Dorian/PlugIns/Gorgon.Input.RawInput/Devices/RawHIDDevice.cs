@@ -40,7 +40,7 @@ namespace GorgonLibrary.Input.Raw
 	{
 		#region Variables.
 		private readonly GorgonRawInputDeviceInfo _deviceData;		// Device data.
-		private MessageFilter _messageFilter;				        // Window message filter.
+		private readonly MessageFilter _messageFilter;		        // Window message filter.
 		private RAWINPUTDEVICE _device;								// Input device.
 		#endregion
 
@@ -86,13 +86,8 @@ namespace GorgonLibrary.Input.Raw
 			if (_messageFilter != null)
 			{
 				_messageFilter.RawInputData -= GetRawData;
-				Application.RemoveMessageFilter(_messageFilter);
-				_messageFilter.Dispose();
+				_messageFilter.RawInputData += GetRawData;
 			}
-
-			_messageFilter = new MessageFilter();
-			_messageFilter.RawInputData += GetRawData;
-			Application.AddMessageFilter(_messageFilter);
 
 			_device.UsagePage = _deviceData.UsagePage;
 			_device.Usage = (ushort)_deviceData.Usage;
@@ -127,9 +122,6 @@ namespace GorgonLibrary.Input.Raw
 			if (_messageFilter != null)
 			{
 				_messageFilter.RawInputData -= GetRawData;
-				Application.RemoveMessageFilter(_messageFilter);
-				_messageFilter.Dispose();
-				_messageFilter = null;
 			}
 
 			_device.UsagePage = _deviceData.UsagePage;
@@ -152,12 +144,13 @@ namespace GorgonLibrary.Input.Raw
 		/// <param name="owner">The control that owns this device.</param>
 		/// <param name="deviceData">The HID device name object.</param>
 		/// <exception cref="System.ArgumentNullException">Thrown when the owner parameter is NULL (or Nothing in VB.NET).</exception>
-		internal RawHIDDevice(GorgonInputFactory owner, GorgonRawInputDeviceInfo deviceData)
+		internal RawHIDDevice(GorgonRawInputFactory owner, GorgonRawInputDeviceInfo deviceData)
 			: base(owner, deviceData.Name)
 		{
 			Gorgon.Log.Print("Raw input HID interface created for handle 0x{0}.", LoggingLevel.Verbose, deviceData.Handle.FormatHex());
 
 			_deviceData = deviceData;
+			_messageFilter = owner.MessageFilter;
 			SetData("BinaryData", new byte[0]);
 		}
 		#endregion

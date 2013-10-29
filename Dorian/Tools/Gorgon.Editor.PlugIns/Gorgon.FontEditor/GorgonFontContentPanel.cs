@@ -26,6 +26,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.Globalization;
 using System.Linq;
@@ -34,13 +35,13 @@ using Fetze.WinFormsColor;
 using GorgonLibrary.Diagnostics;
 using GorgonLibrary.Editor.FontEditorPlugIn.Properties;
 using GorgonLibrary.Graphics;
+using GorgonLibrary.Input;
 using GorgonLibrary.IO;
 using GorgonLibrary.Math;
 using GorgonLibrary.Renderers;
 using GorgonLibrary.UI;
 using SlimMath;
 
-// TODO: Add left/right arrow to swap textures.
 // TODO: Transition animation for texture swap.
 // TODO: Consider changing animations to use animation library (put textures into sprite objects).
 // TODO: Allow single click to select a texture.  Ensure mousewheel does texture swapping as well.
@@ -148,6 +149,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		#endregion
 
 		#region Variables.
+	    private GorgonKeyboard _rawKeyboard;
 		private bool _disposed;
 	    private GorgonTexture2D _pattern;
 	    private float _currentZoom = -1;
@@ -167,45 +169,71 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
         #endregion
 
         #region Methods.
-        /// <summary>
-        /// Handles the KeyDown event of the GorgonFontContentPanel control.
-        /// </summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="KeyEventArgs"/> instance containing the event data.</param>
-        private void GorgonFontContentPanel_KeyDown(object sender, KeyEventArgs e)
-        {
-            // If we don't have the panel "focused", then ignore these messages.
-            if (ActiveControl != null)
-            {
-                return;
-            }
+		/// <summary>
+		/// Handles the Load event of the GorgonFontContentPanel control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+		private void GorgonFontContentPanel_Load(object sender, EventArgs e)
+		{
+			try
+			{
+				_rawKeyboard = RawInput.CreateKeyboard(panelTextures);
+				_rawKeyboard.Enabled = true;
+				_rawKeyboard.KeyUp += GorgonFontContentPanel_KeyUp;
+			}
+			catch (Exception ex)
+			{
+				GorgonDialogs.ErrorBox(ParentForm, ex);
+				_content.CloseContent();
+			}
+		}
 
-            switch (e.KeyCode)
-            {
-                case Keys.Enter:
-                    if ((_selectedGlyph == null)
-                        || (_content.CurrentState == DrawState.GlyphEdit)
-                        || (_content.CurrentState == DrawState.ToGlyphEdit))
-                    {
-                        return;
-                    }
+		/// <summary>
+		/// Handles the KeyUp event of the GorgonFontContentPanel control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="KeyEventArgs"/> instance containing the event data.</param>
+		private void GorgonFontContentPanel_KeyUp(object sender, KeyboardEventArgs e)
+		{
+			Debug.Assert(ParentForm != null, "No parent form!");
 
-                    buttonEditGlyph.PerformClick();
-                    break;
-                case Keys.Escape:
-                    if ((_selectedGlyph == null)
-                        || ((_content.CurrentState != DrawState.GlyphEdit)
-                        && (_content.CurrentState != DrawState.ToGlyphEdit)))
-                    {
-                        return;
-                    }
+			if ((ParentForm.ActiveControl != this) 
+				|| (!panelTextures.Focused))
+			{
+				return;
+			}
 
-                    buttonEditGlyph.PerformClick();
-                    break;
-            }
+			switch (e.Key)
+			{
+				case KeyboardKeys.Left:
+					buttonPrevTexture.PerformClick();
+					break;
+				case KeyboardKeys.Right:
+					buttonNextTexture.PerformClick();
+					break;
+				case KeyboardKeys.Enter:
+					if ((_selectedGlyph == null)
+						|| (_content.CurrentState == DrawState.GlyphEdit)
+						|| (_content.CurrentState == DrawState.ToGlyphEdit))
+					{
+						return;
+					}
 
-            e.Handled = true;
-        }
+					buttonEditGlyph.PerformClick();
+					break;
+				case KeyboardKeys.Escape:
+					if ((_selectedGlyph == null)
+						|| ((_content.CurrentState != DrawState.GlyphEdit)
+						&& (_content.CurrentState != DrawState.ToGlyphEdit)))
+					{
+						return;
+					}
+
+					buttonEditGlyph.PerformClick();
+					break;
+			}
+		}
 
         /// <summary>
         /// Handles the Click event of the buttonRemoveCustomTexture control.
@@ -1660,7 +1688,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
             InitializeComponent();
 
 			MouseWheel += PanelDisplay_MouseWheel;
-        }
+		}
         #endregion
 	}
 }

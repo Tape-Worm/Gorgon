@@ -589,4 +589,10 @@ The following characters are not allowed:
   <data name="image_missing_128x128" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\image_missing_128x128.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="GOREDIT_INPUT_COULD_NOT_LOAD" xml:space="preserve">
+    <value>Could not load the raw input interface DLL.</value>
+  </data>
+  <data name="GOREDIT_SPLASH_LOADING_INPUT" xml:space="preserve">
+    <value>Loading raw input interface...</value>
+  </data>
 </root>

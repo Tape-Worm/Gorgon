@@ -168,6 +168,17 @@ namespace GorgonLibrary.Input
 		}
 
 		/// <summary>
+		/// Function to unbind all devices.
+		/// </summary>
+		protected void UnbindAllDevices()
+		{
+			foreach (var device in Devices)
+			{
+				device.Value.Enabled = false;
+			}
+		}
+
+		/// <summary>
 		/// Function to enumerate the pointing devices on the system.
 		/// </summary>
 		/// <returns>A list of pointing device names.</returns>

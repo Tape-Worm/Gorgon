@@ -828,4 +828,10 @@ Code: 0x{2}</value>
   <data name="GOR_LISTVIEW_CANNOT_UPDATE_COLUMN" xml:space="preserve">
     <value>Cannot update the column.</value>
   </data>
+  <data name="PROP_SHOWFOCUS_DESC" xml:space="preserve">
+    <value>Sets whether to show a rectangle on this control when the control has been focused.</value>
+  </data>
+  <data name="PROP_TABSTOP_DESC" xml:space="preserve">
+    <value>Sets whether this control will be considered when navigating using the (Ctrl+)TAB key.</value>
+  </data>
 </root>
