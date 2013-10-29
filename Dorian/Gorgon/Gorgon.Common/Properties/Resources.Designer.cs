@@ -1041,11 +1041,29 @@ namespace GorgonLibrary.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Sets whether to show a rectangle on this control when the control has been focused..
+        /// </summary>
+        internal static string PROP_SHOWFOCUS_DESC {
+            get {
+                return ResourceManager.GetString("PROP_SHOWFOCUS_DESC", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Shows or hides the icon for the window..
         /// </summary>
         internal static string PROP_SHOWICON_DESC {
             get {
                 return ResourceManager.GetString("PROP_SHOWICON_DESC", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sets whether this control will be considered when navigating using the (Ctrl+)TAB key..
+        /// </summary>
+        internal static string PROP_TABSTOP_DESC {
+            get {
+                return ResourceManager.GetString("PROP_TABSTOP_DESC", resourceCulture);
             }
         }
         

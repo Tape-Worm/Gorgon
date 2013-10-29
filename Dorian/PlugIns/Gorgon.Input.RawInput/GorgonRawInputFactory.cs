@@ -29,6 +29,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Windows.Forms;
 using GorgonLibrary.Diagnostics;
 using GorgonLibrary.Input.Raw.Properties;
 using GorgonLibrary.Native;
@@ -42,6 +43,21 @@ namespace GorgonLibrary.Input.Raw
 	internal class GorgonRawInputFactory
 		: GorgonInputFactory
 	{
+		#region Variables.
+		private bool _disposed;			// Flag to indicate that the object was disposed.
+		#endregion
+
+		#region Properties.
+		/// <summary>
+		/// Property to return the filter used to forward raw input messages to the devices.
+		/// </summary>
+		public MessageFilter MessageFilter
+		{
+			get;
+			private set;
+		}
+		#endregion
+
 		#region Methods.
 		/// <summary>
 		/// Function to retrieve the device name.
@@ -353,7 +369,7 @@ namespace GorgonLibrary.Input.Raw
 		/// <returns>
 		/// A new custom HID interface.
 		/// </returns>
-		protected override GorgonCustomHID CreateCustomHIDImpl(System.Windows.Forms.Control window, GorgonInputDeviceInfo hidInfo)
+		protected override GorgonCustomHID CreateCustomHIDImpl(Control window, GorgonInputDeviceInfo hidInfo)
 		{
             var rawInfo = hidInfo as GorgonRawInputDeviceInfo;
 
@@ -373,7 +389,7 @@ namespace GorgonLibrary.Input.Raw
 		/// <returns>A new keyboard interface.</returns>
 		/// <remarks>Passing NULL for <paramref name="keyboardInfo"/> will use the system keyboard.
 		/// <para>Pass NULL to the <paramref name="window"/> parameter to use the <see cref="P:GorgonLibrary.Gorgon.ApplicationForm">Gorgon application window</see>.</para></remarks>
-		protected override GorgonKeyboard CreateKeyboardImpl(System.Windows.Forms.Control window, GorgonInputDeviceInfo keyboardInfo)
+		protected override GorgonKeyboard CreateKeyboardImpl(Control window, GorgonInputDeviceInfo keyboardInfo)
 		{
 		    RawKeyboard keyboard = keyboardInfo == null
 		                               ? new RawKeyboard(this, "System Keyboard", IntPtr.Zero)
@@ -390,7 +406,7 @@ namespace GorgonLibrary.Input.Raw
 		/// <remarks>Passing NULL for <paramref name="pointingDeviceInfo"/> will use the system pointing device.
 		/// <para>Pass NULL to the <paramref name="window"/> parameter to use the <see cref="P:GorgonLibrary.Gorgon.ApplicationForm">Gorgon application window</see>.</para>
 		/// </remarks>
-		protected override GorgonPointingDevice CreatePointingDeviceImpl(System.Windows.Forms.Control window, GorgonInputDeviceInfo pointingDeviceInfo)
+		protected override GorgonPointingDevice CreatePointingDeviceImpl(Control window, GorgonInputDeviceInfo pointingDeviceInfo)
 		{
 		    RawPointingDevice mouse = pointingDeviceInfo == null
 		                                  ? new RawPointingDevice(this, "System Mouse", IntPtr.Zero)
@@ -407,8 +423,7 @@ namespace GorgonLibrary.Input.Raw
 		/// <returns>A new joystick interface.</returns>
 		/// <remarks>Pass NULL to the <paramref name="window"/> parameter to use the <see cref="P:GorgonLibrary.Gorgon.ApplicationForm">Gorgon application window</see>.</remarks>
 		/// <exception cref="System.ArgumentNullException">The <paramRef name="joystickInfo"/> is NULL.</exception>
-		protected override GorgonJoystick CreateJoystickImpl(System.Windows.Forms.Control window,
-		                                                     GorgonInputDeviceInfo joystickInfo)
+		protected override GorgonJoystick CreateJoystickImpl(Control window, GorgonInputDeviceInfo joystickInfo)
 		{
 			var mmJoystick = joystickInfo as GorgonMultimediaDeviceInfo;
 
@@ -419,6 +434,31 @@ namespace GorgonLibrary.Input.Raw
 
 			return new MultimediaJoystick(this, mmJoystick.JoystickID, joystickInfo.Name);
 		}
+
+		/// <summary>
+		/// Releases unmanaged and - optionally - managed resources
+		/// </summary>
+		/// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
+		protected override void Dispose(bool disposing)
+		{
+			if (!_disposed)
+			{
+				if (disposing)
+				{
+					UnbindAllDevices();
+
+					if (MessageFilter != null)
+					{
+						Application.RemoveMessageFilter(MessageFilter);
+						MessageFilter.Dispose();
+					}
+				}
+
+				_disposed = true;
+			}
+
+			base.Dispose(disposing);
+		}
 		#endregion
 
 		#region Constructor/Destructor.
@@ -428,6 +468,8 @@ namespace GorgonLibrary.Input.Raw
 		public GorgonRawInputFactory()
 			: base("Gorgon Raw Input")
 		{
+			MessageFilter = new MessageFilter();
+			Application.AddMessageFilter(MessageFilter);
 		}
 		#endregion
 	}

@@ -215,6 +215,9 @@
     <Compile Include="GorgonException.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="UI\GorgonSelectablePanel.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="UI\ZuneForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -247,6 +250,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Gorgon2.ico" />
+    <EmbeddedResource Include="Resources\GorgonSelectablePanel.bmp" />
     <None Include="Resources\Close.png" />
     <None Include="Resources\Maximize.png" />
     <None Include="Resources\Minimize.png" />

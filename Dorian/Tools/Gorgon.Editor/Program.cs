@@ -25,17 +25,10 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.IO;
-using System.Linq;
 using System.Windows.Forms;
-using System.Xml.Linq;
 using GorgonLibrary.Diagnostics;
-using GorgonLibrary.Editor.Properties;
 using GorgonLibrary.Graphics;
-using GorgonLibrary.IO;
-using GorgonLibrary.Renderers;
+using GorgonLibrary.Input;
 using GorgonLibrary.UI;
 
 namespace GorgonLibrary.Editor
@@ -51,7 +44,16 @@ namespace GorgonLibrary.Editor
 
 		#region Properties.
 		/// <summary>
-		/// Property to return the logging interface for the application.
+		/// Property to set or return the input interface.
+		/// </summary>
+		public static GorgonInputFactory Input
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Property to set or return the logging interface for the application.
 		/// </summary>
 		public static GorgonLogFile LogFile
 		{
@@ -141,6 +143,12 @@ namespace GorgonLibrary.Editor
                 Gorgon.PlugIns.AssemblyResolver = null;
 
 				ContentManagement.UnloadCurrentContent();
+
+				// Turn off input interface.
+				if (Input != null)
+				{
+					Input.Dispose();
+				}
 
 				// Clean up the plug-ins.
 				foreach (var plugInItem in PlugIns.ContentPlugIns)

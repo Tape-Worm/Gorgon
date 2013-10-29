@@ -38,9 +38,9 @@ namespace GorgonLibrary.Input.Raw
 		: GorgonKeyboard
 	{
 		#region Variables.
-		private MessageFilter _messageFilter;	                // Window message filter.
-		private RAWINPUTDEVICE _device;					        // Input device.
-		private readonly IntPtr _deviceHandle = IntPtr.Zero;	// Device handle.
+		private readonly MessageFilter _messageFilter;	                // Window message filter.
+		private RAWINPUTDEVICE _device;									// Input device.
+		private readonly IntPtr _deviceHandle = IntPtr.Zero;			// Device handle.
 		#endregion
 
 		#region Methods.
@@ -134,13 +134,8 @@ namespace GorgonLibrary.Input.Raw
 			if (_messageFilter != null)
 			{
 				_messageFilter.RawInputData -= GetRawData;
-				System.Windows.Forms.Application.RemoveMessageFilter(_messageFilter);
-				_messageFilter.Dispose();
+				_messageFilter.RawInputData += GetRawData;
 			}
-
-			_messageFilter = new MessageFilter();
-			_messageFilter.RawInputData += GetRawData;
-			System.Windows.Forms.Application.AddMessageFilter(_messageFilter);
 
 			_device.UsagePage = HIDUsagePage.Generic;
 			_device.Usage = (ushort)HIDUsage.Keyboard;
@@ -175,9 +170,6 @@ namespace GorgonLibrary.Input.Raw
 			if (_messageFilter != null)
 			{
 				_messageFilter.RawInputData -= GetRawData;
-				System.Windows.Forms.Application.RemoveMessageFilter(_messageFilter);
-				_messageFilter.Dispose();
-				_messageFilter = null;
 			}
 
 			_device.UsagePage = HIDUsagePage.Generic;
@@ -201,12 +193,13 @@ namespace GorgonLibrary.Input.Raw
 		/// <param name="deviceName">Name of the device.</param>
 		/// <param name="handle">The handle to the device.</param>
 		/// <exception cref="System.ArgumentNullException">Thrown when the owner parameter is NULL (or Nothing in VB.NET).</exception>
-		internal RawKeyboard(GorgonInputFactory owner, string deviceName, IntPtr handle)
+		internal RawKeyboard(GorgonRawInputFactory owner, string deviceName, IntPtr handle)
 			: base(owner, deviceName)
 		{
 			Gorgon.Log.Print("Raw input keyboard interface created for handle 0x{0}.", LoggingLevel.Verbose, handle.FormatHex());
 
 			_deviceHandle = handle;
+			_messageFilter = owner.MessageFilter;
 		}
 		#endregion
 	}

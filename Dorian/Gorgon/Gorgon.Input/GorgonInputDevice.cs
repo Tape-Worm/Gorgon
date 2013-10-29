@@ -141,7 +141,9 @@ namespace GorgonLibrary.Input
 			{
 				_background = value;
 				if (_enabled)
+				{
 					BindDevice();
+				}
 			}
 		}
 
@@ -159,9 +161,13 @@ namespace GorgonLibrary.Input
 				Acquired = value;
 
 				if (value)
+				{
 					BindDevice();
+				}
 				else
+				{
 					UnbindDevice();
+				}
 
 				_enabled = value;
 			}

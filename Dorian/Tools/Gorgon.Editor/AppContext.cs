@@ -27,11 +27,14 @@
 using System;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Threading;
 using System.Windows.Forms;
 using GorgonLibrary.Diagnostics;
 using GorgonLibrary.Editor.Properties;
 using GorgonLibrary.Graphics;
+using GorgonLibrary.Input;
+using GorgonLibrary.PlugIns;
 using GorgonLibrary.UI;
 
 namespace GorgonLibrary.Editor
@@ -42,6 +45,10 @@ namespace GorgonLibrary.Editor
 	class AppContext
 		: ApplicationContext
 	{
+		#region Constants.
+		private string GorgonRawInputTypeName = "GorgonLibrary.Input.GorgonRawPlugIn";			// Type name for the raw input plug-in.
+		#endregion
+
 		#region Variables.
 		private readonly formSplash _splash;			// Main splash screen.
 		#endregion
@@ -210,6 +217,46 @@ namespace GorgonLibrary.Editor
 	    }
 
 		/// <summary>
+		/// Function to load the input interface.
+		/// </summary>
+		private void InitializeInput()
+		{
+			string inputPlugInPath = Path.Combine(Gorgon.ApplicationDirectory, "Gorgon.Input.Raw.dll");
+
+			_splash.UpdateVersion(Resources.GOREDIT_SPLASH_LOADING_INPUT);
+
+			if (!File.Exists(inputPlugInPath))
+			{
+				throw new GorgonException(GorgonResult.CannotRead, Resources.GOREDIT_INPUT_COULD_NOT_LOAD);
+			}
+
+			if (!Gorgon.PlugIns.IsPlugInAssembly(inputPlugInPath))
+			{
+				throw new GorgonException(GorgonResult.CannotRead, Resources.GOREDIT_INPUT_COULD_NOT_LOAD);
+			}
+
+			// Ensure that it's signed with the same public key.
+			byte[] key = GetType().Assembly.GetName().GetPublicKey();
+
+			if ((key != null) && (key.Length != 0) 
+				&& (Gorgon.PlugIns.IsAssemblySigned(inputPlugInPath, key) != PlugInSigningResult.Signed))
+			{
+				throw new GorgonException(GorgonResult.CannotRead, Resources.GOREDIT_INPUT_COULD_NOT_LOAD);
+			}
+
+			// Load the plug-in.
+			Gorgon.PlugIns.LoadPlugInAssembly(inputPlugInPath);
+
+			if (!Gorgon.PlugIns.Contains(GorgonRawInputTypeName))
+			{
+				throw new GorgonException(GorgonResult.CannotRead, Resources.GOREDIT_INPUT_COULD_NOT_LOAD);
+			}
+
+			// Create the factory.
+			Program.Input = GorgonInputFactory.CreateInputFactory(GorgonRawInputTypeName);
+		}
+
+		/// <summary>
 		/// Calls <see cref="M:System.Windows.Forms.ApplicationContext.ExitThreadCore"/>, which raises the <see cref="E:System.Windows.Forms.ApplicationContext.ThreadExit"/> event.
 		/// </summary>
 		/// <param name="sender">The object that raised the event.</param>
@@ -244,6 +291,7 @@ namespace GorgonLibrary.Editor
                 InitializeGraphics();
                 InitializePlugIns();
                 InitializeScratchArea();
+				InitializeInput();
 
                 FileManagement.InitializeFileTypes();
                 ContentManagement.InitializeContentFileTypes();

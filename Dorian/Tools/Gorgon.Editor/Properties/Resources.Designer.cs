@@ -722,6 +722,15 @@ namespace GorgonLibrary.Editor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Could not load the raw input interface DLL..
+        /// </summary>
+        internal static string GOREDIT_INPUT_COULD_NOT_LOAD {
+            get {
+                return ResourceManager.GetString("GOREDIT_INPUT_COULD_NOT_LOAD", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Add &amp;content.
         /// </summary>
         internal static string GOREDIT_MENU_ADDCONTENT {
@@ -1195,6 +1204,15 @@ namespace GorgonLibrary.Editor.Properties {
         internal static string GOREDIT_SPLASH_LOAD_PREV_FILE {
             get {
                 return ResourceManager.GetString("GOREDIT_SPLASH_LOAD_PREV_FILE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Loading raw input interface....
+        /// </summary>
+        internal static string GOREDIT_SPLASH_LOADING_INPUT {
+            get {
+                return ResourceManager.GetString("GOREDIT_SPLASH_LOADING_INPUT", resourceCulture);
             }
         }
         

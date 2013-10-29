@@ -383,6 +383,17 @@ namespace GorgonLibrary.Editor
 			return _contentControl;
 		}
 
+		/// <summary>
+		/// Function to close the content object.
+		/// </summary>
+		/// <remarks>Ensure that any changes to the content are persisted before calling this method, otherwise those changes will be lost.</remarks>
+	    public void CloseContent()
+	    {
+			if (ContentManagement.Current == this)
+			{
+				ContentManagement.LoadDefaultContentPane();
+			}
+	    }
 	    #endregion
 
 		#region Constructor/Destructor.
