@@ -78,6 +78,8 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 	    private GorgonRenderTarget2D _editGlyph;
 	    private GorgonAnimationController<GorgonSprite> _editGlyphAnimation;
 		private GorgonAnimationController<GorgonSprite> _editBackgroundAnimation;
+        private List<GorgonAnimationController<GorgonSprite>> _textureSwapAnimations;
+        private List<GorgonSprite> _textureSprites;
 	    private GorgonSprite _glyphSprite;
 	    private GorgonSprite _glyphBackgroundSprite;
         #endregion
@@ -714,6 +716,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 				_currentTextureIndex++;
 				ActiveControl = panelTextures;
 				UpdateGlyphRegions();
+                InitializeTextureTransition(true);
 			}
 			finally
 			{
@@ -733,6 +736,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 				_currentTextureIndex--;
 				ActiveControl = panelTextures;
 				UpdateGlyphRegions();
+                InitializeTextureTransition(false);
 			}
 			finally
 			{
@@ -1163,6 +1167,9 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 			animation.Tracks["Color"].InterpolationMode = TrackInterpolationMode.Linear;
 			animation.Tracks["Color"].KeyFrames.Add(new GorgonKeyGorgonColor(0.0f, new GorgonColor(0.125f, 0.125f, 0, 0)));
 			animation.Tracks["Color"].KeyFrames.Add(new GorgonKeyGorgonColor(animation.Length, new GorgonColor(0.125f, 0.125f, 0.7f, 1.0f)));
+
+            _textureSprites = new List<GorgonSprite>();
+            _textureSwapAnimations = new List<GorgonAnimationController<GorgonSprite>>();
 		}
 
 		/// <summary>
@@ -1338,6 +1345,35 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		    _content.CurrentState = DrawState.GlyphEdit;
 	    }
 
+        /// <summary>
+        /// Function to initialize the transition between textures.
+        /// </summary>
+        /// <param name="moveNext">TRUE to move to the next texture, FALSE to move to the previous.</param>
+        private void InitializeTextureTransition(bool moveNext)
+        {
+            _content.CurrentState = moveNext ? DrawState.NextTexture : DrawState.PrevTexture;
+
+            Vector2 startTextureSize = _textures[0].Settings.Size;
+            var startTexturePosition = new Vector2(((panelTextures.ClientSize.Width / 2.0f) - (_textures[0].Settings.Width * _currentZoom) / 2.0f), 0);
+            Vector2 endTextureSize = _textures[0].Settings.Size;
+            var endTexturePosition = new Vector2(((panelTextures.ClientSize.Width / 2.0f) - (_textures[0].Settings.Width * _currentZoom) / 2.0f), 0);
+            float alpha = 1.0f;
+
+            for (int i = 0; i < _currentTextureIndex; ++i)
+            {
+                GorgonTexture2D texture = _textures[i];
+
+                // Calculate texture size and opacity for each sprite.
+                startTextureSize = new Vector2();
+
+                var sprite = _content.Renderer.Renderables.CreateSprite(texture.Name,
+                                                                        new GorgonSpriteSettings
+                                                                        {
+
+                                                                        });
+            }
+        }
+
 	    /// <summary>
 		/// Function to initialize the editor transition.
 		/// </summary>
@@ -1498,6 +1534,14 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 			// TODO: Make an option to show or hide the alpha.
 			_glyphSprite.Draw();
 		}
+
+        /// <summary>
+        /// Function to draw the texture swap.
+        /// </summary>
+        public void DrawTextureSwap()
+        {
+            
+        }
 
 		/// <summary>
 		/// Function to draw the font texture(s).
