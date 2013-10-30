@@ -30,8 +30,11 @@ using System.Diagnostics;
 using System.Drawing;
 using System.Globalization;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Windows.Forms;
+using System.Windows.Forms.VisualStyles;
 using Fetze.WinFormsColor;
+using GorgonLibrary.Animation;
 using GorgonLibrary.Diagnostics;
 using GorgonLibrary.Editor.FontEditorPlugIn.Properties;
 using GorgonLibrary.Graphics;
@@ -43,7 +46,6 @@ using GorgonLibrary.UI;
 using SlimMath;
 
 // TODO: Transition animation for texture swap.
-// TODO: Consider changing animations to use animation library (put textures into sprite objects).
 // TODO: Allow single click to select a texture.  Ensure mousewheel does texture swapping as well.
 // TODO: Add brush creation interface.
 // TODO: Add texture clipping for glyphs.
@@ -57,97 +59,6 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
     partial class GorgonFontContentPanel 
 		: ContentPanel
 	{
-		#region Classes
-		/// <summary>
-		/// Value type to hold the transition data.
-		/// </summary>
-	    class TransitionData
-	    {
-			#region Variables.
-			private readonly float _time;						// Time for the transition.
-			private readonly RectangleF _sourceRegion;			// The source region.
-			private readonly RectangleF _destRegion;			// The destination region.
-			private float _startTime;							// The starting time.
-			private bool _hasEnded;								// Flag to indicate that the transition has started.
-			#endregion
-
-			#region Properties.
-			/// <summary>
-			/// Property to return the current region.
-			/// </summary>
-			public RectangleF CurrentRegion
-			{
-				get;
-				private set;
-			}
-
-			/// <summary>
-			/// Property to return the current time.
-			/// </summary>
-			public float CurrentTime
-			{
-				get;
-				private set;
-			}
-			#endregion
-
-			#region Methods.
-			/// <summary>
-			/// Function to end the transition.
-			/// </summary>
-			public void EndTransition()
-			{
-				CurrentTime = 1.0f;
-				UpdateTransition();
-			}
-
-			/// <summary>
-			/// Function to update the transition.
-			/// </summary>
-			/// <returns>TRUE if the transition has ended, FALSE to continue.</returns>
-			public bool UpdateTransition()
-			{
-				if (_hasEnded)
-				{
-					return true;
-				}
-
-				if (_startTime < 0)
-				{
-					_startTime = GorgonTiming.SecondsSinceStart;
-				}
-
-				CurrentTime = ((GorgonTiming.SecondsSinceStart - _startTime) / _time).Min(1.0f);
-
-				CurrentRegion = new RectangleF(_sourceRegion.X + ((_destRegion.X - _sourceRegion.X) * CurrentTime),
-				                               _sourceRegion.Y + ((_destRegion.Y - _sourceRegion.Y) * CurrentTime),
-				                               _sourceRegion.Width + ((_destRegion.Width - _sourceRegion.Width) * CurrentTime),
-				                               _sourceRegion.Height + ((_destRegion.Height - _sourceRegion.Height) * CurrentTime));
-
-				_hasEnded = CurrentTime >= 1.0f;
-				return _hasEnded;
-			}
-			#endregion
-
-			#region Constructor/Destructor.
-			/// <summary>
-			/// Initializes a new instance of the <see cref="TransitionData"/> class.
-			/// </summary>
-			/// <param name="sourceRegion">The source region.</param>
-			/// <param name="destRegion">The dest region.</param>
-			/// <param name="time">The time.</param>
-			public TransitionData(RectangleF sourceRegion, RectangleF destRegion, float time)
-			{
-				_time = time;
-				CurrentRegion = _sourceRegion = sourceRegion;
-				_destRegion = destRegion;
-				_startTime = -1;
-				CurrentTime = 0;
-			}
-			#endregion
-	    }
-		#endregion
-
 		#region Variables.
 	    private GorgonKeyboard _rawKeyboard;
 		private bool _disposed;
@@ -164,8 +75,11 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 	    private Vector2 _selectorBackGroundPos = Vector2.Zero;
 	    private GorgonGlyph _selectedGlyph;
 	    private GorgonTexture2D[] _textures;
-	    private TransitionData _animationTransition;
 	    private GorgonRenderTarget2D _editGlyph;
+	    private GorgonAnimationController<GorgonSprite> _editGlyphAnimation;
+		private GorgonAnimationController<GorgonSprite> _editBackgroundAnimation;
+	    private GorgonSprite _glyphSprite;
+	    private GorgonSprite _glyphBackgroundSprite;
         #endregion
 
         #region Methods.
@@ -1073,10 +987,18 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 				_text.Font = _content.Font;
 
 				// Kill any transition.
-				if (_animationTransition != null)
+				if (_editGlyphAnimation.CurrentAnimation != null)
 				{
-					_animationTransition.EndTransition();
-					_animationTransition = null;
+					_editGlyphAnimation.CurrentAnimation.Time = _editGlyphAnimation.CurrentAnimation.Speed > 0
+						                                            ? _editGlyphAnimation.CurrentAnimation.Length
+						                                            : 0;
+					_editBackgroundAnimation.CurrentAnimation.Time = _editBackgroundAnimation.CurrentAnimation.Speed > 0
+						                                                 ? _editBackgroundAnimation.CurrentAnimation.Length
+						                                                 : 0;
+					_editBackgroundAnimation.Update();
+					_editGlyphAnimation.Update();
+					_editBackgroundAnimation.Stop();
+					_editGlyphAnimation.Stop();
 				}
 
 				if ((_content.CurrentState == DrawState.ToGlyphEdit)
@@ -1172,6 +1094,8 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		/// </summary>
 		public void CreateResources()
 		{
+			const float animationTime = 0.5f;		// Time for the animation.
+
 			itemPreviewShadowEnable.Checked = GorgonFontEditorPlugIn.Settings.ShadowEnabled;
 			panelText.BackColor = Color.FromArgb(GorgonFontEditorPlugIn.Settings.BackgroundColor);
 
@@ -1199,7 +1123,46 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 
 			textPreviewText.Text = GorgonFontEditorPlugIn.Settings.SampleText;
 			textPreviewText.Select();
-			textPreviewText.Select(0, textPreviewText.Text.Length); 
+			textPreviewText.Select(0, textPreviewText.Text.Length);
+
+			// Create the glyph sprite.
+			_glyphSprite = _content.Renderer.Renderables.CreateSprite("GlyphSprite",
+																	  new GorgonSpriteSettings
+																	  {
+																		  InitialPosition = Vector2.Zero,
+																		  Size = new Vector2(1),
+																		  TextureRegion = new RectangleF(0, 0, 1, 1)
+																	  });
+			_glyphSprite.BlendingMode = BlendingMode.Modulate;
+
+			_glyphBackgroundSprite = _content.Renderer.Renderables.CreateSprite("GlyphBackgroundSprite",
+			                                                                    new GorgonSpriteSettings
+			                                                                    {
+				                                                                    InitialPosition = Vector2.Zero,
+				                                                                    Size = new Vector2(1),
+				                                                                    Color = GorgonColor.Transparent,
+				                                                                    Texture = _pattern
+			                                                                    });
+
+			_glyphBackgroundSprite.TextureSampler.HorizontalWrapping = TextureAddressing.Wrap;
+			_glyphBackgroundSprite.TextureSampler.VerticalWrapping = TextureAddressing.Wrap;
+
+			// Create initial animations.
+			_editGlyphAnimation = new GorgonAnimationController<GorgonSprite>();
+			var animation = _editGlyphAnimation.Add("TransitionTo", animationTime);
+			animation.Tracks["Position"].InterpolationMode = TrackInterpolationMode.Spline;
+			animation.Tracks["ScaledSize"].InterpolationMode = TrackInterpolationMode.Spline;
+			animation.Tracks["Position"].KeyFrames.Add(new GorgonKeyVector2(0, Vector2.Zero));
+			animation.Tracks["Position"].KeyFrames.Add(new GorgonKeyVector2(animation.Length, Vector2.Zero));
+			animation.Tracks["ScaledSize"].KeyFrames.Add(new GorgonKeyVector2(0, new Vector2(1)));
+			animation.Tracks["ScaledSize"].KeyFrames.Add(new GorgonKeyVector2(animation.Length, new Vector2(1)));
+
+
+			_editBackgroundAnimation = new GorgonAnimationController<GorgonSprite>();
+			animation = _editBackgroundAnimation.Add("GlyphBGColor", animationTime);
+			animation.Tracks["Color"].InterpolationMode = TrackInterpolationMode.Linear;
+			animation.Tracks["Color"].KeyFrames.Add(new GorgonKeyGorgonColor(0.0f, new GorgonColor(0.125f, 0.125f, 0, 0)));
+			animation.Tracks["Color"].KeyFrames.Add(new GorgonKeyGorgonColor(animation.Length, new GorgonColor(0.125f, 0.125f, 0.7f, 1.0f)));
 		}
 
 		/// <summary>
@@ -1365,6 +1328,13 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		    }
 
 		    CreateGlyphTexture(currentTexture, textureRegion.Size, glyphRegion);
+		    _glyphSprite.Texture = _editGlyph;
+		    if (_editGlyphAnimation.CurrentAnimation == null)
+		    {
+			    _glyphSprite.ScaledSize = Size.Round(textureRegion.Size);
+			    _glyphBackgroundSprite.Size = Size.Round(textureRegion.Size);
+			    _glyphBackgroundSprite.TextureRegion = new RectangleF(Vector2.Zero, _pattern.ToTexel(_glyphBackgroundSprite.Size));
+		    }
 		    _content.CurrentState = DrawState.GlyphEdit;
 	    }
 
@@ -1374,8 +1344,6 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		/// <param name="editOn">TRUE when editing a glyph, FALSE when exiting the editor.</param>
 	    private void InitializeGlyphEditTransition(bool editOn)
 	    {
-		    float animationTime = 0.5f;
-
 			// Move back to the selected texture index.
 			if (_textures[_currentTextureIndex] != _selectedGlyph.Texture)
 			{
@@ -1399,12 +1367,27 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 			if (aspect > 1.0f)
 			{
 				textureRegion.Height = (int)(textureRegion.Height / aspect);
-				textureRegion.Y = (int)((panelTextures.ClientSize.Height * 0.5f) - (textureRegion.Height * 0.5f));
+
+				if (!panelTextures.VerticalScroll.Visible)
+				{
+					textureRegion.Y = (int)((panelTextures.ClientSize.Height * 0.5f) - (textureRegion.Height * 0.5f));
+				}
+				else
+				{
+					textureRegion.Y = panelTextures.AutoScrollPosition.Y;
+				}
 			}
 			else
 			{
 				textureRegion.Width = (int)(textureRegion.Width * aspect);
-				textureRegion.X = (int)((panelTextures.ClientSize.Width * 0.5f) - (textureRegion.Width * 0.5f));
+				if (!panelTextures.HorizontalScroll.Visible)
+				{
+					textureRegion.X = (int)((panelTextures.ClientSize.Width * 0.5f) - (textureRegion.Width * 0.5f));
+				}
+				else
+				{
+					textureRegion.X = panelTextures.AutoScrollPosition.X;
+				}
 			}
 
 			if ((_editGlyph != null) && (editOn))
@@ -1419,34 +1402,43 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 				CreateGlyphTexture(currentTexture, textureRegion.Size, glyphRegion);
 			}
 
+			_editBackgroundAnimation.Stop();
+			_editGlyphAnimation.Stop();
+
+			var transitionAnimation = _editGlyphAnimation["TransitionTo"];
+
+		    transitionAnimation.Tracks["ScaledSize"].KeyFrames[0] = new GorgonKeyVector2(0.0f, glyphScreenRegion.Size);
+			transitionAnimation.Tracks["Position"].KeyFrames[0] = new GorgonKeyVector2(0.0f, glyphScreenRegion.Location);
+			transitionAnimation.Tracks["ScaledSize"].KeyFrames[1] = new GorgonKeyVector2(transitionAnimation.Length,
+			                                                                                textureRegion.Size);
+			transitionAnimation.Tracks["Position"].KeyFrames[1] = new GorgonKeyVector2(transitionAnimation.Length,
+			                                                                            textureRegion.Location);
+
+		    _glyphSprite.Texture = _editGlyph;
+
+		    _glyphBackgroundSprite.Scale = new Vector2(1);
+		    _glyphBackgroundSprite.Position = _textureRegion.Location;
+			_glyphBackgroundSprite.Size = _textureRegion.Size;
+		    _glyphBackgroundSprite.TextureRegion = new RectangleF(Vector2.Zero, _pattern.ToTexel(_textureRegion.Size));
+
 			if (editOn)
 			{
-				if (_animationTransition != null)
-				{
-					glyphScreenRegion = _animationTransition.CurrentRegion;
-					animationTime = _animationTransition.CurrentTime * animationTime;
-				}
+				_editBackgroundAnimation[0].Speed = 1.0f;
+				transitionAnimation.Speed = 1.0f;
 
-				// Calculate the destination rectangle.
-				_animationTransition = new TransitionData(glyphScreenRegion,
-					                                        textureRegion,
-					                                        animationTime);
 				buttonEditGlyph.Text = Resources.GORFNT_BUTTON_END_EDIT_GLYPH;
 				buttonEditGlyph.Image = Resources.stop_16x16;
 			}
 			else
 			{
-				if (_animationTransition != null)
-				{
-					textureRegion = Rectangle.Round(_animationTransition.CurrentRegion);
-					animationTime = _animationTransition.CurrentTime * animationTime;
-				}
-
-				_animationTransition = new TransitionData(textureRegion, glyphScreenRegion, animationTime);
+				_editBackgroundAnimation[0].Speed = -1.0f;
+				transitionAnimation.Speed = -1.0f;
 				buttonEditGlyph.Text = Resources.GORFNT_BUTTON_EDIT_GLYPH;
 				buttonEditGlyph.Image = Resources.edit_16x16;
 			}
 
+			_editGlyphAnimation.Play(_glyphSprite, "TransitionTo");
+			_editBackgroundAnimation.Play(_glyphBackgroundSprite, "GlyphBGColor");
 			_content.CurrentState = editOn ? DrawState.ToGlyphEdit : DrawState.FromGlyphEdit;
 	    }
 
@@ -1455,34 +1447,15 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		/// </summary>
 	    public void DrawGlyphEditTransition()
 		{
-			float color = _content.CurrentState == DrawState.ToGlyphEdit
-				              ? _animationTransition.CurrentTime
-				              : (1.0f - _animationTransition.CurrentTime);
-			
 			DrawFontTexture();
 
-			_content.Renderer.Drawing.TextureSampler.VerticalWrapping = TextureAddressing.Wrap;
-			_content.Renderer.Drawing.TextureSampler.HorizontalWrapping = TextureAddressing.Wrap;
+			_glyphBackgroundSprite.Draw();
+			_glyphSprite.Draw();
 
-			_content.Renderer.Drawing.FilledRectangle(_textureRegion,
-			                                          new GorgonColor(
-				                                          0.125f,
-				                                          0.125f,
-				                                          color * 0.7f,
-				                                          color),
-			                                          _pattern,
-			                                          new RectangleF(Vector2.Zero, _pattern.ToTexel(_textureRegion.Size)));
+			_editBackgroundAnimation.Update();
+			_editGlyphAnimation.Update();
 
-			_content.Renderer.Drawing.TextureSampler.VerticalWrapping = TextureAddressing.Clamp;
-			_content.Renderer.Drawing.TextureSampler.HorizontalWrapping = TextureAddressing.Clamp;
-
-
-			// TODO: Make an option to show/hide the alpha.
-			//_content.Renderer.Drawing.BlendingMode = BlendingMode.None;
-			_content.Renderer.Drawing.Blit(_editGlyph, _animationTransition.CurrentRegion);
-			//_content.Renderer.Drawing.BlendingMode = BlendingMode.Modulate;
-
-			if (!_animationTransition.UpdateTransition())
+			if (_editBackgroundAnimation.CurrentAnimation != null)
 			{
 				return;
 			}
@@ -1490,8 +1463,6 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 			_content.CurrentState = _content.CurrentState == DrawState.ToGlyphEdit
 				                        ? DrawState.GlyphEdit
 				                        : DrawState.DrawFontTextures;
-
-			_animationTransition = null;
 			ValidateControls();
 		}
 
@@ -1501,14 +1472,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 	    public void DrawGlyphEdit()
 		{
 			DrawFontTexture();
-
-			_content.Renderer.Drawing.TextureSampler.VerticalWrapping = TextureAddressing.Wrap;
-			_content.Renderer.Drawing.TextureSampler.HorizontalWrapping = TextureAddressing.Wrap;
-			_content.Renderer.Drawing.FilledRectangle(_textureRegion,
-			                                          new GorgonColor(0.125f, 0.125f, 0.7f, 1.0f),
-			                                          _pattern,
-			                                          new RectangleF(Vector2.Zero, _pattern.ToTexel(_textureRegion.Size)));
-
+			
 			var region = new RectangleF(panelTextures.Width / 2.0f - _editGlyph.Settings.Width / 2.0f,
 			                            panelTextures.Height / 2.0f - _editGlyph.Settings.Height / 2.0f,
 			                            _editGlyph.Settings.Width,
@@ -1523,14 +1487,16 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 			{
 				region.Y = panelTextures.AutoScrollPosition.Y;
 			}
+			
+			_glyphSprite.Position = region.Location;
+			_glyphSprite.ScaledSize = region.Size;
+			_glyphBackgroundSprite.Position = _textureRegion.Location;
+			_glyphBackgroundSprite.ScaledSize = _textureRegion.Size;
+			_glyphBackgroundSprite.TextureRegion = new RectangleF(Vector2.Zero, _pattern.ToTexel(_textureRegion.Size));
 
-			_content.Renderer.Drawing.TextureSampler.VerticalWrapping = TextureAddressing.Clamp;
-			_content.Renderer.Drawing.TextureSampler.HorizontalWrapping = TextureAddressing.Clamp;
-
+			_glyphBackgroundSprite.Draw();
 			// TODO: Make an option to show or hide the alpha.
-			//_content.Renderer.Drawing.BlendingMode = BlendingMode.None;
-			_content.Renderer.Drawing.Blit(_editGlyph, region);
-			//_content.Renderer.Drawing.BlendingMode = BlendingMode.Modulate;
+			_glyphSprite.Draw();
 		}
 
 		/// <summary>
@@ -1688,7 +1654,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
             InitializeComponent();
 
 			MouseWheel += PanelDisplay_MouseWheel;
-		}
+	    }
         #endregion
 	}
 }
