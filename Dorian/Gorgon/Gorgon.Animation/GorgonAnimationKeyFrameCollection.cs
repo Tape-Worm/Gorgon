@@ -141,6 +141,7 @@ namespace GorgonLibrary.Animation
 			set
 			{
 				_keyFrames[index] = value;
+				Times[value.Time] = value;
 				if (_track != null)
 					_track.SetupSpline();
 			}

@@ -79,7 +79,7 @@ namespace GorgonLibrary.Animation
 		}
 
 		/// <summary>
-		/// Property to set or return the object that is to be animated.
+		/// Property to return the object that is to be animated.
 		/// </summary>
 		public T AnimatedObject
 		{
@@ -300,7 +300,7 @@ namespace GorgonLibrary.Animation
 				return;
 
 			float lastTime = CurrentAnimation.Time;
-			float increment = (CurrentAnimation.Speed * GorgonTiming.Delta) * 1000.0f;
+			float increment = (CurrentAnimation.Speed * GorgonTiming.Delta);
 
 			// Push the animation time forward (or backward, depending on the Speed modifier).
 			CurrentAnimation.Time += increment;
@@ -309,10 +309,14 @@ namespace GorgonLibrary.Animation
 			CurrentAnimation.UpdateObject();
 
 			// If we're not looping, put the animation into a stopped state.
-		    if ((!CurrentAnimation.IsLooped) && ((lastTime + increment) > CurrentAnimation.Length))
-		    {
-		        Stop();
-		    }
+			lastTime += increment;
+			
+			if ((CurrentAnimation.IsLooped) || ((lastTime < CurrentAnimation.Length) && (lastTime > 0)))
+			{
+				return;
+			}
+
+			Stop();
 		}
 		
 		/// <summary>
@@ -350,7 +354,7 @@ namespace GorgonLibrary.Animation
 			CurrentAnimation = animation;
 
 			// Update to the first frame.
-			Update();
+			CurrentAnimation.UpdateObject();
 		}
 
 		/// <summary>
@@ -393,7 +397,10 @@ namespace GorgonLibrary.Animation
 		public void Stop()
 		{
 			if (CurrentAnimation == null)
+			{
 				return;
+			}
+
 			AnimatedObject = null;
 			CurrentAnimation = null;
 		}
@@ -442,7 +449,7 @@ namespace GorgonLibrary.Animation
 		/// Function to add an animation to the collection.
 		/// </summary>
 		/// <param name="name">Name of the animation to add.</param>
-		/// <param name="length">Length of the animation, in milliseconds.</param>
+		/// <param name="length">Length of the animation, in seconds.</param>
 		/// <returns>The newly created animation.</returns>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (Nothing in VB.Net).</exception>
 		/// <exception cref="System.ArgumentException">Thrown when the name parameter is an empty string.

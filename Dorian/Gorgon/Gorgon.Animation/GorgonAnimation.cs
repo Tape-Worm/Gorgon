@@ -110,7 +110,7 @@ namespace GorgonLibrary.Animation
 		}
 
 		/// <summary>
-		/// Property to set or return the length of the animation (in milliseconds).
+		/// Property to set or return the length of the animation (in seconds).
 		/// </summary>
 		public float Length
 		{
@@ -137,7 +137,7 @@ namespace GorgonLibrary.Animation
 		}
 
 		/// <summary>
-		/// Property to set or return the current time, in milliseconds, for this animation.
+		/// Property to set or return the current time, in seconds, for this animation.
 		/// </summary>
 		public float Time
 		{
