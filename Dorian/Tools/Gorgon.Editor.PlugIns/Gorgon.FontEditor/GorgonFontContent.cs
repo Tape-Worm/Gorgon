@@ -62,7 +62,15 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		/// <summary>
 		/// Draw the transition when moving back to the font texture.
 		/// </summary>
-		FromGlyphEdit = 3
+		FromGlyphEdit = 3,
+        /// <summary>
+        /// Draw the transition when moving between textures.
+        /// </summary>
+        NextTexture = 4,
+        /// <summary>
+        /// Draw the transition when moving between textures.
+        /// </summary>
+        PrevTexture = 5
 	}
 
     /// <summary>
@@ -804,6 +812,11 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 					_panel.DrawGlyphEdit();
 					Renderer.Render(2);
 					break;
+                case DrawState.NextTexture:
+                case DrawState.PrevTexture:
+                    _panel.DrawTextureSwap();
+			        Renderer.Render(1);
+			        break;
 				default:
 					_panel.DrawFontTexture();
 					Renderer.Render(2);
