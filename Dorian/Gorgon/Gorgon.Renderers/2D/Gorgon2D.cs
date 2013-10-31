@@ -550,6 +550,14 @@ namespace GorgonLibrary.Renderers
 				}
 
 				_currentTarget = target;
+
+				// If the current render target is the default render target, then copy the current target settings
+				// into the default.  This is just in case we've resized the current target and the default is out
+				// of sync.
+				if (_defaultTarget.Target == _currentTarget.Target)
+				{
+					_defaultTarget = _currentTarget;
+				}
 			}
 
 			// Update camera.
