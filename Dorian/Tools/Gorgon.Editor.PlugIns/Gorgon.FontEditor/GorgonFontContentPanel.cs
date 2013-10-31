@@ -713,10 +713,10 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		{
 			try
 			{
-				_currentTextureIndex++;
+                InitializeTextureTransition(true);
+                _currentTextureIndex++;
 				ActiveControl = panelTextures;
 				UpdateGlyphRegions();
-                InitializeTextureTransition(true);
 			}
 			finally
 			{
@@ -733,10 +733,10 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		{
 			try
 			{
-				_currentTextureIndex--;
+                InitializeTextureTransition(false);
+                _currentTextureIndex--;
 				ActiveControl = panelTextures;
 				UpdateGlyphRegions();
-                InitializeTextureTransition(false);
 			}
 			finally
 			{
@@ -771,7 +771,16 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 
 				dropDownZoom.Text = string.Format("{0}: {1}", Resources.GORFNT_MENU_ZOOM, selectedItem.Text);
 
-				UpdateGlyphRegions();
+
+			    if (_content.Font != null)
+			    {
+
+			        panelTextures.AutoScrollMinSize =
+			            new Size((int)System.Math.Ceiling(_currentZoom * _textures[_currentTextureIndex].Settings.Width),
+                                 (int)System.Math.Ceiling(_currentZoom * _textures[_currentTextureIndex].Settings.Height));
+			    }
+
+			    UpdateGlyphRegions();
 
 				if (_content.CurrentState != DrawState.DrawFontTextures)
 				{
@@ -987,6 +996,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 				}
 
 				UpdateGlyphRegions();
+                InitializeTextureSprites();
 
 				_text.Font = _content.Font;
 
@@ -1346,32 +1356,36 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 	    }
 
         /// <summary>
+        /// Function to initialize the texture sprites.
+        /// </summary>
+        private void InitializeTextureSprites()
+        {
+            _textureSprites.Clear();
+            _textureSwapAnimations.Clear();
+
+            // Create our sprites.
+            for (int i = 0; i < _textures.Length; ++i)
+            {
+                GorgonTexture2D texture = _textures[i];
+                _textureSprites.Add(_content.Renderer.Renderables.CreateSprite(texture.Name,
+                                                                               new GorgonSpriteSettings
+                                                                               {
+                                                                                   InitialPosition = Vector2.Zero,
+                                                                                   Anchor = new Vector2(_content.Font.Settings.TextureSize.Width / 2.0f, 
+                                                                                                        _content.Font.Settings.TextureSize.Height / 2.0f),
+                                                                                   Texture = texture,
+                                                                                   TextureRegion = new RectangleF(0, 0, 1, 1),
+                                                                                   Size = _content.Font.Settings.TextureSize
+                                                                               }));
+            }
+        }
+
+        /// <summary>
         /// Function to initialize the transition between textures.
         /// </summary>
         /// <param name="moveNext">TRUE to move to the next texture, FALSE to move to the previous.</param>
         private void InitializeTextureTransition(bool moveNext)
         {
-            _content.CurrentState = moveNext ? DrawState.NextTexture : DrawState.PrevTexture;
-
-            Vector2 startTextureSize = _textures[0].Settings.Size;
-            var startTexturePosition = new Vector2(((panelTextures.ClientSize.Width / 2.0f) - (_textures[0].Settings.Width * _currentZoom) / 2.0f), 0);
-            Vector2 endTextureSize = _textures[0].Settings.Size;
-            var endTexturePosition = new Vector2(((panelTextures.ClientSize.Width / 2.0f) - (_textures[0].Settings.Width * _currentZoom) / 2.0f), 0);
-            float alpha = 1.0f;
-
-            for (int i = 0; i < _currentTextureIndex; ++i)
-            {
-                GorgonTexture2D texture = _textures[i];
-
-                // Calculate texture size and opacity for each sprite.
-                startTextureSize = new Vector2();
-
-                var sprite = _content.Renderer.Renderables.CreateSprite(texture.Name,
-                                                                        new GorgonSpriteSettings
-                                                                        {
-
-                                                                        });
-            }
         }
 
 	    /// <summary>
@@ -1540,13 +1554,153 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
         /// </summary>
         public void DrawTextureSwap()
         {
-            
+            // ReSharper disable once ForCanBeConvertedToForeach
+            for (int i = 0; i < _textureSprites.Count; ++i)
+            {
+                _textureSprites[i].Draw();
+            }
         }
+
+        /// <summary>
+        /// Function to draw the font texture(s).
+        /// </summary>
+        public void DrawFontTexture()
+        {
+            GorgonTexture2D currentTexture = _textures[_currentTextureIndex];
+            const float colorValue = 0.75f;
+            GorgonSprite sprite;
+
+            // ReSharper disable once ForCanBeConvertedToForeach
+            if ((!panelTextures.HorizontalScroll.Visible)
+                && (!panelTextures.VerticalScroll.Visible))
+            {
+                for (int i = 0; i < _currentTextureIndex; ++i)
+                {
+                    float delta = ((_currentTextureIndex - i) / (float)_currentTextureIndex) * 0.75f;
+                    sprite = _textureSprites[i];
+
+                    sprite.SmoothingMode = SmoothingMode.Smooth;
+                    sprite.Scale = new Vector2(_currentZoom * delta);
+                    sprite.Color = new GorgonColor(colorValue, colorValue, colorValue, colorValue * delta);
+                    sprite.Position = new Vector2(panelTextures.ClientSize.Width / 2.0f - sprite.ScaledSize.X,
+                                                  panelTextures.ClientSize.Height / 2.0f);
+                    sprite.Draw();
+                }
+
+                // ReSharper disable once ForCanBeConvertedToForeach
+                int spriteCount = _textureSprites.Count - (_currentTextureIndex + 1);
+                for (int i = _textureSprites.Count - 1; i > _currentTextureIndex; --i)
+                {
+                    float delta = ((i - _currentTextureIndex) / (float)spriteCount) * 0.75f;
+                    sprite = _textureSprites[i];
+
+                    sprite.SmoothingMode = SmoothingMode.Smooth;
+                    sprite.Scale = new Vector2(_currentZoom * delta);
+                    sprite.Color = new GorgonColor(colorValue, colorValue, colorValue, colorValue * delta);
+                    sprite.Position = new Vector2(panelTextures.ClientSize.Width / 2.0f + sprite.ScaledSize.X,
+                                                  panelTextures.ClientSize.Height / 2.0f);
+                    sprite.Draw();
+                }
+            }
+
+            UpdateTextureRegion(currentTexture);
+
+            // Fill the background so we can clearly see the first page.
+            _content.Renderer.Drawing.FilledRectangle(_textureRegion, Color.Black);
+
+            if (_content.CurrentState == DrawState.DrawFontTextures)
+            {
+                // Draw the borders around each glyph.
+                foreach (var glyph in _glyphRegions)
+                {
+                    var glyphRect = glyph.Value;
+                    glyphRect.X += _textureOffset.X;
+                    glyphRect.Y += _textureOffset.Y;
+
+                    _content.Renderer.Drawing.DrawRectangle(glyphRect, Color.Red);
+                }
+            }
+
+            sprite = _textureSprites[_currentTextureIndex];
+            sprite.SmoothingMode = SmoothingMode.None;
+            sprite.Color = GorgonColor.White;
+            sprite.Scale = new Vector2(_currentZoom);
+
+            // If the scroller is active, then position it based on that.
+            if ((!panelTextures.HorizontalScroll.Visible)
+                && (!panelTextures.VerticalScroll.Visible))
+            {
+                sprite.Position = new Vector2(panelTextures.ClientSize.Width / 2.0f,
+                                              panelTextures.ClientSize.Height / 2.0f);
+            }
+            else
+            {
+                sprite.Position = new Vector2(_textureRegion.Left + sprite.ScaledSize.X / 2.0f,
+                                              _textureRegion.Top + sprite.ScaledSize.Y / 2.0f);
+            }
+
+            sprite.Draw();
+
+			// If the editor is visible, then don't draw the selected texture.
+			if (_content.CurrentState == DrawState.GlyphEdit)
+			{
+				return;
+			}
+
+			RectangleF rect;
+
+            _selectorBackGroundPos.X += (GorgonTiming.Delta * 16.0f) / _pattern.Settings.Width;
+            _selectorBackGroundPos.Y += (GorgonTiming.Delta * 16.0f) / _pattern.Settings.Height;
+
+            if (_selectorBackGroundPos.X > 1.0f)
+            {
+                _selectorBackGroundPos.X = 0.0f;
+            }
+
+            if (_selectorBackGroundPos.Y > 1.0f)
+            {
+                _selectorBackGroundPos.Y = 0.0f;
+            }
+
+			if (_hoverGlyph != null)
+			{
+				rect = _glyphRegions[_hoverGlyph];
+				rect.X += _textureOffset.X;
+				rect.Y += _textureOffset.Y;
+
+				_patternSprite.Position = rect.Location;
+				_patternSprite.Size = rect.Size;
+				_patternSprite.Color = new GorgonColor(1, 0, 0, 0.4f);
+				_patternSprite.TextureRegion = new RectangleF(_selectorBackGroundPos.X,
+							                                    _selectorBackGroundPos.Y,
+							                                    rect.Width / _pattern.Settings.Width,
+							                                    rect.Height / _pattern.Settings.Height);
+				_patternSprite.Draw();
+			}
+
+			if ((_selectedGlyph == null) || (_selectedGlyph.Texture != currentTexture))
+			{
+				return;
+			}
+
+			rect = _glyphRegions[_selectedGlyph];
+			rect.X += _textureOffset.X;
+			rect.Y += _textureOffset.Y;
+
+			_patternSprite.Position = rect.Location;
+			_patternSprite.Size = rect.Size;
+			_patternSprite.Color = new GorgonColor(0.25f, 0.25f, 1.0f, 0.4f);
+			_patternSprite.TextureRegion = new RectangleF(_selectorBackGroundPos.X,
+			                                              _selectorBackGroundPos.Y,
+			                                              rect.Width / _pattern.Settings.Width,
+			                                              rect.Height / _pattern.Settings.Height);
+			_patternSprite.Draw();
+	    }
 
 		/// <summary>
 		/// Function to draw the font texture(s).
 		/// </summary>
-		public void DrawFontTexture()
+		public void DrawFontTexture_OLDE()
 		{
 			float alpha;
 			GorgonTexture2D currentTexture = _textures[_currentTextureIndex];
