@@ -435,7 +435,7 @@ namespace GorgonLibrary.Renderers
 			else
 			{
 				Vertices[0].Position.X = corner1.X + _line.Location.X;
-				Vertices[0].Position.Y = corner1.Y + _line.Location.X;
+				Vertices[0].Position.Y = corner1.Y + _line.Location.Y;
 				Vertices[1].Position.X = corner3.X + _line.Location.X;
                 Vertices[1].Position.Y = corner3.Y + _line.Location.Y;
                 Vertices[2].Position.X = corner2.X + _line.Location.X;
