@@ -58,9 +58,13 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
     /// </summary>
     partial class GorgonFontContentPanel 
 		: ContentPanel
-	{
-		#region Variables.
-	    private GorgonKeyboard _rawKeyboard;
+    {
+        #region Constants.
+        private const int MaxSprites = 5;           // Maximum texture sprites to show at once.
+        #endregion
+
+        #region Variables.
+        private GorgonKeyboard _rawKeyboard;
 		private bool _disposed;
 	    private GorgonTexture2D _pattern;
 	    private float _currentZoom = -1;
@@ -1562,44 +1566,92 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
         }
 
         /// <summary>
+        /// Function to draw the background sprites for the font textures.
+        /// </summary>
+        /// <param name="sprite">Sprite for the font texture to draw.</param>
+        /// <param name="alpha">Alpha value for the sprite.</param>
+        /// <param name="scale">Scale of the sprite.</param>
+        /// <param name="position">Position for the sprite.</param>
+        private static void DrawBackgroundTextureSprite(GorgonSprite sprite, float alpha, Vector2 scale, Vector2 position)
+        {
+            const float colorValue = 0.75f;
+
+            sprite.Color = new GorgonColor(colorValue, colorValue, colorValue, colorValue * alpha);
+            sprite.Scale = scale;
+            sprite.Position = position;
+            sprite.SmoothingMode = SmoothingMode.Smooth;
+            sprite.Draw();
+        }
+
+        /// <summary>
         /// Function to draw the font texture(s).
         /// </summary>
         public void DrawFontTexture()
         {
             GorgonTexture2D currentTexture = _textures[_currentTextureIndex];
-            const float colorValue = 0.75f;
+            
             GorgonSprite sprite;
+
 
             // ReSharper disable once ForCanBeConvertedToForeach
             if ((!panelTextures.HorizontalScroll.Visible)
-                && (!panelTextures.VerticalScroll.Visible))
+                && (!panelTextures.VerticalScroll.Visible)
+                && (_textureSprites.Count > 1))
             {
-                for (int i = 0; i < _currentTextureIndex; ++i)
-                {
-                    float delta = ((_currentTextureIndex - i) / (float)_currentTextureIndex) * 0.75f;
-                    sprite = _textureSprites[i];
+                var panelMidPoint = new Vector2(panelTextures.ClientSize.Width / 2.0f,
+                                                panelTextures.ClientSize.Height / 2.0f);
+                var spritePosition = panelMidPoint;
+                float maxDistance = 0;
 
-                    sprite.SmoothingMode = SmoothingMode.Smooth;
-                    sprite.Scale = new Vector2(_currentZoom * delta);
-                    sprite.Color = new GorgonColor(colorValue, colorValue, colorValue, colorValue * delta);
-                    sprite.Position = new Vector2(panelTextures.ClientSize.Width / 2.0f - sprite.ScaledSize.X,
-                                                  panelTextures.ClientSize.Height / 2.0f);
-                    sprite.Draw();
+                // Calculate where the sprite edge should be.
+                for (int i = 1; i <= MaxSprites; ++i)
+                {
+                    maxDistance += i / (float)(MaxSprites + 1) * _currentZoom * _content.FontTextureSize.Width;
                 }
 
-                // ReSharper disable once ForCanBeConvertedToForeach
-                int spriteCount = _textureSprites.Count - (_currentTextureIndex + 1);
-                for (int i = _textureSprites.Count - 1; i > _currentTextureIndex; --i)
+                for (int i = 1; i <= MaxSprites; ++i)
                 {
-                    float delta = ((i - _currentTextureIndex) / (float)spriteCount) * 0.75f;
-                    sprite = _textureSprites[i];
+                    int leftSprite = _currentTextureIndex - i;
+                    int rightSprite = _currentTextureIndex + i;
+                    float delta = i / (float)(MaxSprites + 1);
+                    var scale = new Vector2(_currentZoom * delta);
 
-                    sprite.SmoothingMode = SmoothingMode.Smooth;
-                    sprite.Scale = new Vector2(_currentZoom * delta);
-                    sprite.Color = new GorgonColor(colorValue, colorValue, colorValue, colorValue * delta);
-                    sprite.Position = new Vector2(panelTextures.ClientSize.Width / 2.0f + sprite.ScaledSize.X,
-                                                  panelTextures.ClientSize.Height / 2.0f);
-                    sprite.Draw();
+                    // TODO: Examine this code
+                    // http://code.msdn.microsoft.com/windowsapps/Windows-8-Create-Carousel-d4f7c00e/sourcecode?fileId=79425&pathId=1900205532
+
+                    // Draw background sprites to the left of the current texture.
+                    if (leftSprite >= 0)
+                    {
+                        sprite = _textureSprites[leftSprite];
+
+                        spritePosition.X += sprite.Size.X * delta;
+
+                        DrawBackgroundTextureSprite(sprite,
+                                                    delta,
+                                                    scale,
+                                                    new Vector2(
+                                                        panelMidPoint.X - _content.FontTextureSize.Width * 0.65f
+                                                        - maxDistance + spritePosition.X,
+                                                        spritePosition.Y));
+                    }
+
+                    // Draw background sprites to the right of the current texture.
+                    if (rightSprite >= _textureSprites.Count)
+                    {
+                        continue;
+                    }
+
+                    sprite = _textureSprites[rightSprite];
+
+                    spritePosition.X += sprite.Size.X * delta;
+
+                    DrawBackgroundTextureSprite(sprite,
+                                                delta,
+                                                scale,
+                                                new Vector2(
+                                                    panelMidPoint.X + _content.FontTextureSize.Width * 0.65f
+                                                    + maxDistance - spritePosition.X,
+                                                    spritePosition.Y));
                 }
             }
 
@@ -1608,7 +1660,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
             // Fill the background so we can clearly see the first page.
             _content.Renderer.Drawing.FilledRectangle(_textureRegion, Color.Black);
 
-            if (_content.CurrentState == DrawState.DrawFontTextures)
+            if (_content.CurrentState != DrawState.GlyphEdit)
             {
                 // Draw the borders around each glyph.
                 foreach (var glyph in _glyphRegions)
