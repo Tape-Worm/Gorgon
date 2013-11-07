@@ -30,9 +30,7 @@ using System.Diagnostics;
 using System.Drawing;
 using System.Globalization;
 using System.Linq;
-using System.Runtime.InteropServices;
 using System.Windows.Forms;
-using System.Windows.Forms.VisualStyles;
 using Fetze.WinFormsColor;
 using GorgonLibrary.Animation;
 using GorgonLibrary.Diagnostics;
@@ -59,95 +57,6 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
     partial class GorgonFontContentPanel 
 		: ContentPanel
     {
-        #region Constants.
-        private const int MaxSprites = 5;           // Maximum texture sprites to show at once.
-        #endregion
-
-        #region Classes.
-        /// <summary>
-        /// A sprite for displaying the font texture(s) as background images.
-        /// </summary>
-        private class TextureSprite
-        {
-            #region Constants.
-            private const float ColorValue = 0.75f;         // The color for the sprite.
-            #endregion
-
-            #region Properties.
-            /// <summary>
-            /// Property to return the sprite associated with the texture sprite.
-            /// </summary>
-            public GorgonSprite Sprite
-            {
-                get;
-                private set;
-            }
-
-            /// <summary>
-            /// Property to set or return the location of the sprite.
-            /// </summary>
-            public Vector2 Position
-            {
-                get;
-                set;
-            }
-
-            /// <summary>
-            /// Property to set or return the scale of the sprite.
-            /// </summary>
-            public Vector2 Scale
-            {
-                get;
-                set;
-            }
-
-            /// <summary>
-            /// Property to set or return the alpha for the sprite.
-            /// </summary>
-            public float Alpha
-            {
-                get;
-                set;
-            }
-
-            /// <summary>
-            /// Property to return the animation to apply to the sprite.
-            /// </summary>
-            public GorgonAnimationController<GorgonSprite> Animation
-            {
-                get;
-                private set;
-            }
-            #endregion
-
-            #region Methods.
-            /// <summary>
-            /// Function to draw the sprite.
-            /// </summary>
-            public void Draw()
-            {
-                Sprite.Scale = Scale;
-                Sprite.Position = Position;
-                Sprite.Color = new GorgonColor(ColorValue, ColorValue, ColorValue, ColorValue * Alpha);
-                Sprite.SmoothingMode = SmoothingMode.Smooth;
-                Sprite.Draw();
-            }
-            #endregion
-
-            #region Constructor.
-            /// <summary>
-            /// Initializes a new instance of the <see cref="TextureSprite"/> class.
-            /// </summary>
-            /// <param name="sprite">The sprite to assign.</param>
-            public TextureSprite(GorgonSprite sprite)
-            {
-                Sprite = sprite;
-                Animation = new GorgonAnimationController<GorgonSprite>();
-            }
-            #endregion
-        }
-        #endregion
-
         #region Variables.
         private Vector2 _panelMidPoint = Vector2.Zero;
         private GorgonKeyboard _rawKeyboard;
@@ -168,9 +77,10 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 	    private GorgonRenderTarget2D _editGlyph;
 	    private GorgonAnimationController<GorgonSprite> _editGlyphAnimation;
 		private GorgonAnimationController<GorgonSprite> _editBackgroundAnimation;
-        private List<TextureSprite> _textureSprites;
+        private List<GorgonSprite> _textureSprites;
 	    private GorgonSprite _glyphSprite;
 	    private GorgonSprite _glyphBackgroundSprite;
+        private IEnumerable<GorgonSprite> _sortedTextures;
         #endregion
 
         #region Methods.
@@ -802,6 +712,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		{
 			try
 			{
+			    _sortedTextures = null;
                 InitializeTextureTransition(true);
                 _currentTextureIndex++;
 				ActiveControl = panelTextures;
@@ -822,6 +733,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		{
 			try
 			{
+                _sortedTextures = null;
                 InitializeTextureTransition(false);
                 _currentTextureIndex--;
 				ActiveControl = panelTextures;
@@ -870,6 +782,8 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 			    }
 
 			    UpdateGlyphRegions();
+
+                _sortedTextures = null;
 
 				if (_content.CurrentState != DrawState.DrawFontTextures)
 				{
@@ -1052,7 +966,9 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		private void GorgonFontContentPanel_Resize(object sender, EventArgs e)
 		{
 		    try
-			{
+		    {
+		        _sortedTextures = null;
+
                 _panelMidPoint = new Vector2(panelTextures.ClientSize.Width / 2.0f, panelTextures.ClientSize.Height / 2.0f);
 
 				if ((_content == null) || (_content.Font == null))
@@ -1269,7 +1185,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 			animation.Tracks["Color"].KeyFrames.Add(new GorgonKeyGorgonColor(0.0f, new GorgonColor(0.125f, 0.125f, 0, 0)));
 			animation.Tracks["Color"].KeyFrames.Add(new GorgonKeyGorgonColor(animation.Length, new GorgonColor(0.125f, 0.125f, 0.7f, 1.0f)));
 
-            _textureSprites = new List<TextureSprite>();
+            _textureSprites = new List<GorgonSprite>();
 		}
 
 		/// <summary>
@@ -1465,13 +1381,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
                                                    TextureRegion = new RectangleF(0, 0, 1, 1),
                                                    Size = _content.Font.Settings.TextureSize
                                                }
-                          select
-                              new TextureSprite(_content.Renderer.Renderables.CreateSprite(texture.Name, spriteSettings))
-                              {
-                                  Alpha = 1.0f,
-                                  Position = Vector2.Zero,
-                                  Scale = new Vector2(1)
-                              };
+                          select _content.Renderer.Renderables.CreateSprite(texture.Name, spriteSettings);
 
             _textureSprites.AddRange(sprites);
         }
@@ -1678,30 +1588,35 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
         /// <summary>
         /// Funciton to calculate the position and scale of the texture sprites.
         /// </summary>
-        private IEnumerable<TextureSprite> ArrangeTextureSprites()
+        private IEnumerable<GorgonSprite> ArrangeTextureSprites()
         {
             for (int i = 0; i < _textureSprites.Count; ++i)
             {
-                TextureSprite sprite = _textureSprites[i];
+                GorgonSprite sprite = _textureSprites[i];
 
                 if (i == _currentTextureIndex)
                 {
                     sprite.Scale = new Vector2(1);
                     continue;
                 }
-
                 
                 float delta = (i - _currentTextureIndex) / (float)_textureSprites.Count;
                 float deltaAbs = delta.Abs();
-
-                // TODO: Need to adjust this to spread the textures out more.
+                
                 sprite.Scale = new Vector2((1.0f - deltaAbs * 0.5f) * _currentZoom);
-                sprite.Position = new Vector2(_panelMidPoint.X + delta * _content.FontTextureSize.Width * _currentZoom,
+                sprite.Position = new Vector2(_panelMidPoint.X + delta * _content.FontTextureSize.Width * 2.0f * _currentZoom,
                                               _panelMidPoint.Y);
-                sprite.Alpha = 1.0f - deltaAbs * 0.5f;
+
+                sprite.Color = new GorgonColor(0.753f,
+                                               0.753f,
+                                               0.753f,
+                                               (1.0f - deltaAbs) * 0.5f + 0.227451f);
+                
+                sprite.SmoothingMode = SmoothingMode.Smooth;
             }
 
-            return _textureSprites.OrderBy(item => item.Scale.X);
+            return _textureSprites.Where(item => item.Texture != _textures[_currentTextureIndex])
+                                  .OrderBy(item => item.Scale.X);
         }
 
         /// <summary>
@@ -1717,8 +1632,16 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
                 && (!panelTextures.VerticalScroll.Visible)
                 && (_textureSprites.Count > 1))
             {
-                foreach (TextureSprite backSprite in ArrangeTextureSprites().Where(item => item.Sprite.Texture != currentTexture))
+                if (_sortedTextures == null)
                 {
+                    _sortedTextures = ArrangeTextureSprites();
+                }
+
+                foreach (GorgonSprite backSprite in _sortedTextures)
+                {
+                    float color = backSprite.Color.Red * (1.0f - backSprite.Color.Alpha) * 0.5f;
+                    _content.Renderer.Drawing.FilledRectangle(new RectangleF(backSprite.Position - (Vector2.Modulate(backSprite.Anchor, backSprite.Scale)), backSprite.ScaledSize),
+                                                              new GorgonColor(color, color, color, 1.0f));
                     backSprite.Draw();
                 }
             }
@@ -1741,7 +1664,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
                 }
             }
 
-            GorgonSprite sprite = _textureSprites[_currentTextureIndex].Sprite;
+            GorgonSprite sprite = _textureSprites[_currentTextureIndex];
             sprite.SmoothingMode = SmoothingMode.None;
             sprite.Color = GorgonColor.White;
             sprite.Scale = new Vector2(_currentZoom);
