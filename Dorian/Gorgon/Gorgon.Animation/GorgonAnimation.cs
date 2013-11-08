@@ -169,6 +169,8 @@ namespace GorgonLibrary.Animation
 					{
 						_time += _length;
 					}
+
+                    UpdateObject();
 					return;
 				}
 
@@ -181,6 +183,8 @@ namespace GorgonLibrary.Animation
 				{
 					_time = _length;
 				}
+
+                UpdateObject();
 			}
 		}
 		
@@ -206,10 +210,12 @@ namespace GorgonLibrary.Animation
 			// Notify each track to update their animation to the current time.
 			foreach (var track in Tracks)
 			{
-				if (track.KeyFrames.Count <= 0)
-				{
-					continue;
-				}
+			    if ((track.KeyFrames.Count <= 0) 
+                    || ((track.TimeUpdatedCallback != null) 
+                    && (!track.TimeUpdatedCallback(_controller.AnimatedObject, Time))))
+			    {
+			        continue;
+			    }
 
 				IKeyFrame key = track.GetKeyAtTime(_time);
 				track.ApplyKey(ref key);

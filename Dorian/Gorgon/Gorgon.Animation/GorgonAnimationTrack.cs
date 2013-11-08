@@ -257,6 +257,20 @@ namespace GorgonLibrary.Animation
 			get;
 			private set;
 		}
+
+        /// <summary>
+        /// Property set or return the function to call when time has been updated for animation.
+        /// </summary>
+        /// <remarks>
+        /// Assign a function to this property if you wish to override the keyframe animation code.  The override function should have 2 parameters: an object that matches the type 
+        /// T for the animation, and a float value that represents the current time in the animation.  The return value for the function should either return FALSE to indicate that 
+        /// the animation updating for this object has been handled, or TRUE if the animation should continue to update the object based on key frame information. 
+        /// </remarks>
+        public Func<T, float, bool> TimeUpdatedCallback
+        {
+            get;
+            set;
+        }
 		#endregion
 
 		#region Methods.

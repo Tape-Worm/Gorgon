@@ -305,9 +305,6 @@ namespace GorgonLibrary.Animation
 			// Push the animation time forward (or backward, depending on the Speed modifier).
 			CurrentAnimation.Time += increment;
 
-			// Update the bound properties.
-			CurrentAnimation.UpdateObject();
-
 			// If we're not looping, put the animation into a stopped state.
 			lastTime += increment;
 			

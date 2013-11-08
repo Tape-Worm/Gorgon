@@ -77,6 +77,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 	    private GorgonRenderTarget2D _editGlyph;
 	    private GorgonAnimationController<GorgonSprite> _editGlyphAnimation;
 		private GorgonAnimationController<GorgonSprite> _editBackgroundAnimation;
+        private GorgonAnimationController<GorgonSprite> _textureAnimation;
         private List<GorgonSprite> _textureSprites;
 	    private GorgonSprite _glyphSprite;
 	    private GorgonSprite _glyphBackgroundSprite;
@@ -713,7 +714,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 			try
 			{
 			    _sortedTextures = null;
-                InitializeTextureTransition(true);
+                InitializeTextureTransition();
                 _currentTextureIndex++;
 				ActiveControl = panelTextures;
 				UpdateGlyphRegions();
@@ -734,7 +735,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 			try
 			{
                 _sortedTextures = null;
-                InitializeTextureTransition(false);
+                InitializeTextureTransition();
                 _currentTextureIndex--;
 				ActiveControl = panelTextures;
 				UpdateGlyphRegions();
@@ -1389,9 +1390,12 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
         /// <summary>
         /// Function to initialize the transition between textures.
         /// </summary>
-        /// <param name="moveNext">TRUE to move to the next texture, FALSE to move to the previous.</param>
-        private void InitializeTextureTransition(bool moveNext)
+        private void InitializeTextureTransition()
         {
+            _textureAnimation = new GorgonAnimationController<GorgonSprite>();
+
+            //GorgonAni_textureAnimation.Add("")
+
         }
 
 	    /// <summary>
@@ -1588,7 +1592,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
         /// <summary>
         /// Funciton to calculate the position and scale of the texture sprites.
         /// </summary>
-        private IEnumerable<GorgonSprite> ArrangeTextureSprites()
+        private void ArrangeTextureSprites()
         {
             for (int i = 0; i < _textureSprites.Count; ++i)
             {
@@ -1610,13 +1614,13 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
                 sprite.Color = new GorgonColor(0.753f,
                                                0.753f,
                                                0.753f,
-                                               (1.0f - deltaAbs) * 0.5f + 0.227451f);
+                                               (1.0f - (deltaAbs * 0.5f + 0.227451f)));
                 
                 sprite.SmoothingMode = SmoothingMode.Smooth;
             }
 
-            return _textureSprites.Where(item => item.Texture != _textures[_currentTextureIndex])
-                                  .OrderBy(item => item.Scale.X);
+            _sortedTextures = _textureSprites.Where(item => item.Texture != _textures[_currentTextureIndex])
+                                             .OrderBy(item => item.Scale.X);
         }
 
         /// <summary>
@@ -1625,8 +1629,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
         public void DrawFontTexture()
         {
             GorgonTexture2D currentTexture = _textures[_currentTextureIndex];
-
-
+            
             // ReSharper disable once ForCanBeConvertedToForeach
             if ((!panelTextures.HorizontalScroll.Visible)
                 && (!panelTextures.VerticalScroll.Visible)
@@ -1634,7 +1637,9 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
             {
                 if (_sortedTextures == null)
                 {
-                    _sortedTextures = ArrangeTextureSprites();
+                    ArrangeTextureSprites();
+
+                    Debug.Assert(_sortedTextures != null, "No sorted textures.");
                 }
 
                 foreach (GorgonSprite backSprite in _sortedTextures)
