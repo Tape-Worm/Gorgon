@@ -814,7 +814,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 					break;
                 case DrawState.NextTexture:
                 case DrawState.PrevTexture:
-                    _panel.DrawTextureSwap();
+					_panel.DrawFontTexture();
 			        Renderer.Render(1);
 			        break;
 				default:
