@@ -370,4 +370,28 @@ Note: If 'No' is selected, then the image will be clipped to the texture dimensi
   <data name="GORFNT_REMOVE_TEXTURE_PROMPT" xml:space="preserve">
     <value>This will remove the glyph '{0}' from the texture {1}.  Do you wish to continue?</value>
   </data>
+  <data name="GORFNT_PROP_VALUE_GRADIENT_BRUSH" xml:space="preserve">
+    <value>Gradient brush</value>
+  </data>
+  <data name="GORFNT_PROP_VALUE_NONE" xml:space="preserve">
+    <value>None</value>
+  </data>
+  <data name="GORFNT_PROP_VALUE_PATTERN_BRUSH" xml:space="preserve">
+    <value>Pattern brush</value>
+  </data>
+  <data name="GORFNT_PROP_VALUE_SOLID_BRUSH" xml:space="preserve">
+    <value>Solid brush</value>
+  </data>
+  <data name="GORFNT_PROP_VALUE_TEXTURE_BRUSH" xml:space="preserve">
+    <value>Texture brush</value>
+  </data>
+  <data name="GORFNT_PROP_VALUE_UNKNOWN_BRUSH" xml:space="preserve">
+    <value>Unknown brush</value>
+  </data>
+  <data name="PROP_BRUSH_DESC" xml:space="preserve">
+    <value>Sets the brush used to paint the glyphs for the font.</value>
+  </data>
+  <data name="PROP_BRUSH_NAME" xml:space="preserve">
+    <value>Glyph Brush</value>
+  </data>
 </root>
