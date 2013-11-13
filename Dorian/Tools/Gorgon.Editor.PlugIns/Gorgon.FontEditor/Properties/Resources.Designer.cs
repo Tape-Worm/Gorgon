@@ -504,6 +504,60 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Gradient brush.
+        /// </summary>
+        internal static string GORFNT_PROP_VALUE_GRADIENT_BRUSH {
+            get {
+                return ResourceManager.GetString("GORFNT_PROP_VALUE_GRADIENT_BRUSH", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to None.
+        /// </summary>
+        internal static string GORFNT_PROP_VALUE_NONE {
+            get {
+                return ResourceManager.GetString("GORFNT_PROP_VALUE_NONE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Pattern brush.
+        /// </summary>
+        internal static string GORFNT_PROP_VALUE_PATTERN_BRUSH {
+            get {
+                return ResourceManager.GetString("GORFNT_PROP_VALUE_PATTERN_BRUSH", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Solid brush.
+        /// </summary>
+        internal static string GORFNT_PROP_VALUE_SOLID_BRUSH {
+            get {
+                return ResourceManager.GetString("GORFNT_PROP_VALUE_SOLID_BRUSH", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Texture brush.
+        /// </summary>
+        internal static string GORFNT_PROP_VALUE_TEXTURE_BRUSH {
+            get {
+                return ResourceManager.GetString("GORFNT_PROP_VALUE_TEXTURE_BRUSH", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unknown brush.
+        /// </summary>
+        internal static string GORFNT_PROP_VALUE_UNKNOWN_BRUSH {
+            get {
+                return ResourceManager.GetString("GORFNT_PROP_VALUE_UNKNOWN_BRUSH", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to This will remove the glyph &apos;{0}&apos; from the texture {1}.  Do you wish to continue?.
         /// </summary>
         internal static string GORFNT_REMOVE_TEXTURE_PROMPT {
@@ -583,6 +637,24 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Properties {
         internal static string PROP_BASECOLOR_NAME {
             get {
                 return ResourceManager.GetString("PROP_BASECOLOR_NAME", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sets the brush used to paint the glyphs for the font..
+        /// </summary>
+        internal static string PROP_BRUSH_DESC {
+            get {
+                return ResourceManager.GetString("PROP_BRUSH_DESC", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Glyph Brush.
+        /// </summary>
+        internal static string PROP_BRUSH_NAME {
+            get {
+                return ResourceManager.GetString("PROP_BRUSH_NAME", resourceCulture);
             }
         }
         

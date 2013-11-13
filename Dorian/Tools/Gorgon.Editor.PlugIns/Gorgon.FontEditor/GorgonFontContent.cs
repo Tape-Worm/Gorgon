@@ -110,6 +110,28 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 	    }
 
         /// <summary>
+        /// Property to set or return the brush used to paint the glyphs.
+        /// </summary>
+        [LocalCategory(typeof(Resources), "CATEGORY_APPEARANCE"),
+        LocalDescription(typeof(Resources), "PROP_BRUSH_DESC"),
+        LocalDisplayName(typeof(Resources), "PROP_BRUSH_NAME"),
+        Editor(typeof(FontBrushEditor), typeof(UITypeEditor)),
+        TypeConverter(typeof(FontBrushTypeConverter)), DefaultValue(null)]
+        public GorgonGlyphBrush Brush
+        {
+            get
+            {
+                return _settings.Brush;
+            }
+            set
+            {
+                _settings.Brush = value;
+                OnContentUpdated();
+                OnContentPropertyChanged("Brush", value);
+            }
+        }
+
+        /// <summary>
         /// Function to set the base color for the font glyphs.
         /// </summary>
 		[LocalCategory(typeof(Resources), "CATEGORY_APPEARANCE"), 
