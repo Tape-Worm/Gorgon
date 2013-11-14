@@ -125,27 +125,28 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 				}
                 GorgonGlyphBrush brush = document.Brush;
 
-                // TODO: Change the font settings so that a "Solid" brush is always available.  Use this to replace the "BaseColor" property.
-			    if (brushEditor.ShowDialog() == DialogResult.OK)
+			    if (brushEditor.ShowDialog() != DialogResult.OK)
 			    {
-					// Destroy the previous brush.
-				    if (document.Brush.BrushType == GlyphBrushType.Texture)
-				    {
-						((GorgonGlyphTextureBrush)document.Brush).Dispose();
-				    }
-
-					// TODO: Set brush here.
-				    switch (brushEditor.BrushType)
-				    {
-						case GlyphBrushType.Texture:
-						case GlyphBrushType.Solid:
-						case GlyphBrushType.LinearGradient:
-						case GlyphBrushType.Hatched:
-						    break;
-				    }
+			        return brush;
 			    }
 
-				return brush;
+			    // Destroy the previous brush.
+			    if (document.Brush.BrushType == GlyphBrushType.Texture)
+			    {
+			        ((GorgonGlyphTextureBrush)document.Brush).Dispose();
+			    }
+
+			    // TODO: Set brush here.
+			    switch (brushEditor.BrushType)
+			    {
+			        case GlyphBrushType.Texture:
+			        case GlyphBrushType.Solid:
+			        case GlyphBrushType.LinearGradient:
+			        case GlyphBrushType.Hatched:
+			            break;
+			    }
+
+			    return brush;
 			}
 			finally
 			{
@@ -162,8 +163,6 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
         /// <param name="e">A <see cref="T:System.Drawing.Design.PaintValueEventArgs" /> that indicates what to paint and where to paint it.</param>
 	    public override void PaintValue(PaintValueEventArgs e)
 	    {
-            var descriptor = (ContentTypeDescriptor)e.Context.Instance;
-            var content = (GorgonFontContent)descriptor.Content;
             var sourceBrush = e.Value as GorgonGlyphBrush;
             Brush brush = null;
 
@@ -181,38 +180,38 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
                         var hatchBrush = (GorgonGlyphHatchBrush)sourceBrush;
 
                         brush = new HatchBrush(hatchBrush.HatchStyle, hatchBrush.ForegroundColor, hatchBrush.BackgroundColor);
-
+                        e.Graphics.FillRectangle(brush, e.Bounds);
                         break;
                     case GlyphBrushType.LinearGradient:
                         brush = CreateLinearGradBrush(sourceBrush);
-
+                        e.Graphics.FillRectangle(brush, e.Bounds);
                         break;
                     case GlyphBrushType.Texture:
                         var textureBrush = (GorgonGlyphTextureBrush)sourceBrush;
-
                         if (textureBrush.TextureRegion != null)
                         {
-                            brush = new TextureBrush(textureBrush.Texture,
-                                                     textureBrush.WrapMode,
-                                                     textureBrush.TextureRegion.Value);
+                            e.Graphics.DrawImage(textureBrush.Texture,
+                                                 e.Bounds,
+                                                 textureBrush.TextureRegion.Value,
+                                                 GraphicsUnit.Pixel);
                         }
                         else
                         {
-                            brush = new TextureBrush(textureBrush.Texture,
-                                                     textureBrush.WrapMode);
+                            e.Graphics.DrawImage(textureBrush.Texture,
+                                                 e.Bounds,
+                                                 new Rectangle(0, 0, textureBrush.Texture.Width, textureBrush.Texture.Height), 
+                                                 GraphicsUnit.Pixel);
                         }
-
                         break;
                     case GlyphBrushType.Solid:
 		                var solidBrush = (GorgonGlyphSolidBrush)sourceBrush;
 
                         brush = new SolidBrush(solidBrush.Color);
+                        e.Graphics.FillRectangle(brush, e.Bounds);
                         break;
                     default:
                         return;
                 }
-
-                e.Graphics.FillRectangle(brush, e.Bounds);
             }
             finally
             {

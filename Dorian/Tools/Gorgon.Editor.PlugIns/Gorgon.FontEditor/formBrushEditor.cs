@@ -50,8 +50,9 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
         : ZuneForm
     {
         #region Variables.
-	    private GorgonGlyphTextureBrush _textureBrush;
-	    private GorgonGlyphTextureBrush _defaultTextureBrush;
+	    private GorgonGlyphTextureBrush _textureBrush;                  // The current texture brush.
+	    private GorgonGlyphTextureBrush _defaultTextureBrush;           // Default texture brush when a texture brush has not been initialized.
+        private bool _disableSolidFields;                               // Flag to indicate that the numeric fields on the solid brush editor are disabled.
         #endregion
 
         #region Properties.
@@ -131,13 +132,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		{
 			try
 			{
-				numericRed.ValueChanged -= NumericValueUpdated;
-				numericGreen.ValueChanged -= NumericValueUpdated;
-				numericBlue.ValueChanged -= NumericValueUpdated;
-				numericAlpha.ValueChanged -= NumericValueUpdated;
-				panelColor.ValueChanged -= panelColor_ValueChanged;
-				sliderColor.ValueChanged -= panelColor_ValueChanged;
-				sliderAlpha.ValueChanged -= panelColor_ValueChanged;
+			    _disableSolidFields = true;
 
 				Color color = Color.FromArgb((int)(sliderAlpha.ValuePercentual * 255.0f).FastFloor(),
 											 ExtMethodsSystemDrawingColor.ColorFromHSV(sliderColor.ValuePercentual,
@@ -159,13 +154,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 			}
 			finally
 			{
-				numericRed.ValueChanged += NumericValueUpdated;
-				numericGreen.ValueChanged += NumericValueUpdated;
-				numericBlue.ValueChanged += NumericValueUpdated;
-				numericAlpha.ValueChanged += NumericValueUpdated;
-				panelColor.ValueChanged += panelColor_ValueChanged;
-				sliderColor.ValueChanged += panelColor_ValueChanged;
-				sliderAlpha.ValueChanged += panelColor_ValueChanged;
+			    _disableSolidFields = false;
 			}
 		}
 
@@ -180,15 +169,8 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 			{
 				if (tabBrushEditor.SelectedTab == pageSolid)
 				{
-					numericRed.ValueChanged -= NumericValueUpdated;
-					numericGreen.ValueChanged -= NumericValueUpdated;
-					numericBlue.ValueChanged -= NumericValueUpdated;
-					numericAlpha.ValueChanged -= NumericValueUpdated;
-					panelColor.ValueChanged -= panelColor_ValueChanged;
-					sliderColor.ValueChanged -= panelColor_ValueChanged;
-					sliderAlpha.ValueChanged -= panelColor_ValueChanged;
-
 					DrawSolid();
+				    return;
 				}
 			}
 			catch (Exception ex)
@@ -204,14 +186,6 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 	    protected override void OnFormClosing(FormClosingEventArgs e)
 	    {
 		    base.OnFormClosing(e);
-
-			numericRed.ValueChanged -= NumericValueUpdated;
-			numericGreen.ValueChanged -= NumericValueUpdated;
-			numericBlue.ValueChanged -= NumericValueUpdated;
-			numericAlpha.ValueChanged -= NumericValueUpdated;
-			panelColor.ValueChanged -= panelColor_ValueChanged;
-			sliderColor.ValueChanged -= panelColor_ValueChanged;
-			sliderAlpha.ValueChanged -= panelColor_ValueChanged;
 
 			if (_defaultTextureBrush == null)
 			{
@@ -248,6 +222,10 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		{
 			try
 			{
+			    if (_disableSolidFields)
+			    {
+			        return;
+			    }
 
 				Color newColor = Color.FromArgb((int)numericAlpha.Value,
 				                                (int)numericRed.Value,
@@ -272,32 +250,41 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 	    {
 		    base.OnLoad(e);
 
-			Localize();
+	        try
+	        {
+	            Localize();
 
-		    switch (BrushType)
-		    {
-				case GlyphBrushType.Solid:
-				    Color brushColor = SolidBrush.Color;
+	            Color brushColor = SolidBrush.Color;
+                
+	            boxCurrentColor.LowerColor = boxCurrentColor.UpperColor = SolidBrush.Color;
+	            sliderAlpha.ValuePercentual = SolidBrush.Color.Alpha;
+	            sliderColor.ValuePercentual = brushColor.GetHSVHue();
+	            panelColor.ValuePercentual = new PointF(brushColor.GetHSVSaturation(), brushColor.GetHSVBrightness());
 
-				    comboBrushType.Text = Resources.GORFNT_PROP_VALUE_SOLID_BRUSH;
-				    tabBrushEditor.SelectedTab = pageSolid;
-					boxCurrentColor.LowerColor = boxCurrentColor.UpperColor = SolidBrush.Color;
-				    sliderAlpha.ValuePercentual = SolidBrush.Color.Alpha;
-				    sliderColor.ValuePercentual = brushColor.GetHSVHue();
-					panelColor.ValuePercentual = new PointF(brushColor.GetHSVSaturation(), brushColor.GetHSVBrightness());
-					DrawSolid();
-				    break;
-				case GlyphBrushType.LinearGradient:
-					comboBrushType.Text = Resources.GORFNT_PROP_VALUE_GRADIENT_BRUSH;
-				    break;
-				case GlyphBrushType.Hatched:
-				    comboBrushType.Text = Resources.GORFNT_PROP_VALUE_PATTERN_BRUSH;
-				    break;
-				case GlyphBrushType.Texture:
-				    comboBrushType.Text = Resources.GORFNT_PROP_VALUE_TEXTURE_BRUSH;
-					tabBrushEditor.SelectedTab = pageTexture;
-				    break;
-		    }
+	            switch (BrushType)
+	            {
+	                case GlyphBrushType.Solid:
+	                    comboBrushType.Text = Resources.GORFNT_PROP_VALUE_SOLID_BRUSH;
+	                    tabBrushEditor.SelectedTab = pageSolid;
+	                    DrawSolid();
+	                    break;
+	                case GlyphBrushType.LinearGradient:
+	                    comboBrushType.Text = Resources.GORFNT_PROP_VALUE_GRADIENT_BRUSH;
+	                    break;
+	                case GlyphBrushType.Hatched:
+	                    comboBrushType.Text = Resources.GORFNT_PROP_VALUE_PATTERN_BRUSH;
+	                    break;
+	                case GlyphBrushType.Texture:
+	                    comboBrushType.Text = Resources.GORFNT_PROP_VALUE_TEXTURE_BRUSH;
+	                    tabBrushEditor.SelectedTab = pageTexture;
+	                    break;
+	            }
+	        }
+	        catch (Exception ex)
+	        {
+	            GorgonDialogs.ErrorBox(this, ex);
+                Close();
+	        }
 	    }
 	    #endregion
 
