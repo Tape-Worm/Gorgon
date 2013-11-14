@@ -132,28 +132,6 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
         }
 
         /// <summary>
-        /// Function to set the base color for the font glyphs.
-        /// </summary>
-		[LocalCategory(typeof(Resources), "CATEGORY_APPEARANCE"), 
-		LocalDescription(typeof(Resources), "PROP_BASECOLOR_DESC"), 
-		LocalDisplayName(typeof(Resources), "PROP_BASECOLOR_NAME"),
-		Editor(typeof(RGBAEditor), typeof(UITypeEditor)),
-		TypeConverter(typeof(RGBATypeConverter)), DefaultValue(0xFFFFFFFF)]
-        public Color BaseColor
-        {
-            get
-            {
-                return _settings.BaseColor;
-            }
-            set
-            {
-	            _settings.BaseColor = value;
-	            OnContentUpdated();
-	            OnContentPropertyChanged("BaseColor", value);
-            }
-        }
-
-        /// <summary>
         /// Property to set or return the outline size.
         /// </summary>
         [LocalCategory(typeof(Resources), "CATEGORY_APPEARANCE"), 

@@ -128,6 +128,7 @@ Ctrl + ↑ (up arrow) - Increase the ball count by 100 balls.
 Ctrl + ↓ (down arrow) - Decrease the ball count by 100 balls.
 Shift + Ctrl + ↑ (up arrow) - Increase the ball count by 1000 balls.
 Shift + Ctrl + ↓ (down arrow) - Decrease the ball count by 1000 balls.
+Pause - Pause the animation.
 + - Increase blur.
 - - Decrease blur.
 Alt + Enter - Switch to fullscreen (or windowed).</value>

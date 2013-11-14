@@ -103,14 +103,46 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 
 			try
 			{
-                brushEditor = new formBrushEditor();
+				brushEditor = new formBrushEditor
+				              {
+					              BrushType = document.Brush.BrushType
+				              };
 
+				switch (document.Brush.BrushType)
+				{
+					case GlyphBrushType.Texture:
+						brushEditor.TextureBrush = (GorgonGlyphTextureBrush)document.Brush;
+						break;
+					case GlyphBrushType.Hatched:
+						brushEditor.PatternBrush = (GorgonGlyphHatchBrush)document.Brush;
+						break;
+					case GlyphBrushType.LinearGradient:
+						brushEditor.GradientBrush = (GorgonGlyphLinearGradientBrush)document.Brush;
+						break;
+					case GlyphBrushType.Solid:
+						brushEditor.SolidBrush = (GorgonGlyphSolidBrush)document.Brush;
+						break;
+				}
                 GorgonGlyphBrush brush = document.Brush;
 
                 // TODO: Change the font settings so that a "Solid" brush is always available.  Use this to replace the "BaseColor" property.
 			    if (brushEditor.ShowDialog() == DialogResult.OK)
 			    {
-			        
+					// Destroy the previous brush.
+				    if (document.Brush.BrushType == GlyphBrushType.Texture)
+				    {
+						((GorgonGlyphTextureBrush)document.Brush).Dispose();
+				    }
+
+					// TODO: Set brush here.
+				    switch (brushEditor.BrushType)
+				    {
+						case GlyphBrushType.Texture:
+						case GlyphBrushType.Solid:
+						case GlyphBrushType.LinearGradient:
+						case GlyphBrushType.Hatched:
+						    break;
+				    }
 			    }
 
 				return brush;
@@ -140,9 +172,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
                 // If we haven't assigned a brush, then fall back to a solid brush.
                 if (sourceBrush == null)
                 {
-                    brush = new SolidBrush(content.BaseColor);
-                    e.Graphics.FillRectangle(brush, e.Bounds);
-                    return;
+	                sourceBrush = new GorgonGlyphSolidBrush();
                 }
 
                 switch (sourceBrush.BrushType)
@@ -174,7 +204,9 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 
                         break;
                     case GlyphBrushType.Solid:
-                        brush = new SolidBrush(content.BaseColor);
+		                var solidBrush = (GorgonGlyphSolidBrush)sourceBrush;
+
+                        brush = new SolidBrush(solidBrush.Color);
                         break;
                     default:
                         return;
@@ -205,7 +237,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 
 	        if (document.Brush == null)
 	        {
-	            return true;
+	            return false;
 	        }
 
             switch (document.Brush.BrushType)
@@ -231,7 +263,6 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 	    {
 	        return !GetPaintValueSupported(context) ? UITypeEditorEditStyle.None : UITypeEditorEditStyle.Modal;
 	    }
-
 	    #endregion
 	}
 }

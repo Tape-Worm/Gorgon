@@ -73,29 +73,6 @@ namespace GorgonLibrary.Editor
 				panelColor.ValuePercentual = new PointF(value.GetHSVSaturation(), value.GetHSVBrightness());
 			}
 		}
-		
-		/// <summary>
-		/// Function to return the 
-		/// </summary>
-		/// <param name="color">Color to retrieve from.</param>
-		/// <returns>The brightness of the color</returns>
-		private float GetBrightness(Color color)
-		{
-			return System.Math.Max(System.Math.Max(color.R, color.G), color.B) / 255.0f;
-		}
-
-		/// <summary>
-		/// Function to retrieve the color saturation.
-		/// </summary>
-		/// <param name="color">Color to retrieve from.</param>
-		/// <returns>The saturation of the color.</returns>
-		private float GetSaturation(Color color)
-		{
-			int max = System.Math.Max(color.R, System.Math.Max(color.G, color.B));
-			int min = System.Math.Min(color.R, System.Math.Min(color.G, color.B));
-
-			return (max == 0) ? 0.0f : 1.0f - (1.0f * (float)min / (float)max);
-		}
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="controlColorPicker"/> class.

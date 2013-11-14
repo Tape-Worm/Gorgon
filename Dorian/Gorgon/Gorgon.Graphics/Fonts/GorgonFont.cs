@@ -502,7 +502,6 @@ namespace GorgonLibrary.Graphics
 			// Write rendering information.
 			chunk.Begin("RNDRDATA");
 			Settings.AntiAliasingMode = chunk.Read<FontAntiAliasMode>();
-			Settings.BaseColor = chunk.Read<GorgonColor>();
 			Settings.OutlineColor = chunk.Read<GorgonColor>();
 			Settings.OutlineSize = chunk.ReadInt32();
 			Settings.TextContrast = chunk.ReadInt32();
@@ -522,6 +521,10 @@ namespace GorgonLibrary.Graphics
 				}
 
 				chunk.End();
+			}
+			else if (Settings.Brush == null)
+			{
+				Settings.Brush = new GorgonGlyphSolidBrush();
 			}
 
 			// Write texture information.
@@ -799,17 +802,17 @@ namespace GorgonLibrary.Graphics
 				// Write rendering information.
 				chunk.Begin("RNDRDATA");
 				chunk.Write(Settings.AntiAliasingMode);
-				chunk.Write(Settings.BaseColor);
 				chunk.Write(Settings.OutlineColor);
 				chunk.WriteInt32(Settings.OutlineSize);
 				chunk.WriteInt32(Settings.TextContrast);
 				chunk.End();
 
 				// If we assigned a brush to render the glyph, then serialize it.
-				if (Settings.Brush != null)
+				if (Settings.Brush == null)
 				{
-					Settings.Brush.Write(chunk);
+					Settings.Brush = new GorgonGlyphSolidBrush();
 				}
+				Settings.Brush.Write(chunk);
 
 				// Write out glyph data.
 				var textureGlyphs = (from GorgonGlyph glyph in Glyphs
@@ -1094,7 +1097,12 @@ namespace GorgonLibrary.Graphics
 				// Remove all previous glyphs.
 				Settings = settings;
 
-				glyphBrush = Settings.Brush == null ? new SolidBrush(Settings.BaseColor) : Settings.Brush.ToGDIBrush();
+				if (Settings.Brush == null)
+				{
+					Settings.Brush = new GorgonGlyphSolidBrush();
+				}
+
+				glyphBrush = Settings.Brush.ToGDIBrush();
 
 				if ((Settings.OutlineColor.Alpha > 0) && (Settings.OutlineSize > 0))
 				{

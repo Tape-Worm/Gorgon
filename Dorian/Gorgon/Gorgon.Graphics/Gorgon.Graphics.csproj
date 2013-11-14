@@ -86,6 +86,7 @@
     <Compile Include="Effects\GorgonEffect.cs" />
     <Compile Include="Effects\GorgonEffectPass.cs" />
     <Compile Include="Effects\GorgonEffectPassArray.cs" />
+    <Compile Include="Fonts\GorgonGlyphSolidBrush.cs" />
     <Compile Include="Fonts\GorgonGlyphHatchBrush.cs" />
     <Compile Include="Fonts\GorgonGlyphTextureBrush.cs" />
     <Compile Include="Fonts\GorgonFont.cs" />

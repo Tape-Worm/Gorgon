@@ -20,97 +20,86 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: Saturday, October 12, 2013 9:03:05 PM
+// Created: Saturday, October 12, 2013 11:22:36 PM
 // 
 #endregion
 
 using System.Drawing;
+using System.Drawing.Drawing2D;
 using GorgonLibrary.IO;
 
 namespace GorgonLibrary.Graphics
 {
 	/// <summary>
-	/// The type of glyph brush to use when painting the glyphs for the font.
+	/// A brush used to draw glyphs using a solid fill color.
 	/// </summary>
-	public enum GlyphBrushType
-	{
-		/// <summary>
-		/// A solid color.
-		/// </summary>
-		Solid = 0,
-		/// <summary>
-		/// Texture.
-		/// </summary>
-		Texture = 1,
-		/// <summary>
-		/// Hatch pattern.
-		/// </summary>
-		Hatched = 2,
-		/// <summary>
-		/// Linear gradient colors.
-		/// </summary>
-		LinearGradient = 3,
-		/// <summary>
-		/// Path gradient colors.
-		/// </summary>
-		PathGradient = 4
-	}
-
-	/// <summary>
-	/// A brush used to paint the glyphs when generating a font.
-	/// </summary>
-	public abstract class GorgonGlyphBrush
+	public class GorgonGlyphSolidBrush
+		: GorgonGlyphBrush
 	{
 		#region Properties.
 		/// <summary>
 		/// Property to return the type of brush.
 		/// </summary>
-		public abstract GlyphBrushType BrushType
+		public override GlyphBrushType BrushType
+		{
+			get
+			{
+				return GlyphBrushType.Solid;
+			}
+		}
+
+		/// <summary>
+		/// Property to set or return the color for the brush.
+		/// </summary>
+		public GorgonColor Color
 		{
 			get;
+			set;
 		}
 		#endregion
 
 		#region Methods.
 		/// <summary>
-		/// Function to create a glyph brush object.
-		/// </summary>
-		/// <param name="type">Type of glyph brush object.</param>
-		/// <returns>The glyph brush object.</returns>
-		internal static GorgonGlyphBrush CreateBrush(GlyphBrushType type)
-		{
-			switch (type)
-			{
-				case GlyphBrushType.PathGradient:
-					return new GorgonGlyphPathGradientBrush();
-				case GlyphBrushType.LinearGradient:
-					return new GorgonGlyphLinearGradientBrush();
-				case GlyphBrushType.Texture:
-					return new GorgonGlyphTextureBrush();
-				case GlyphBrushType.Hatched:
-					return new GorgonGlyphHatchBrush();
-				default:
-					return new GorgonGlyphSolidBrush();
-			}
-		}
-
-		/// <summary>
 		/// Function to convert this brush to the equivalent GDI+ brush type.
 		/// </summary>
-		/// <returns>The GDI+ brush type for this object.</returns>
-		abstract internal Brush ToGDIBrush();
+		/// <returns>
+		/// The GDI+ brush type for this object.
+		/// </returns>
+		internal override Brush ToGDIBrush()
+		{
+			return new SolidBrush(Color);
+		}
 
 		/// <summary>
 		/// Function to write the brush elements out to a chunked file.
 		/// </summary>
 		/// <param name="chunk">Chunk writer used to persist the data.</param>
-		abstract internal void Write(GorgonChunkWriter chunk);
+		internal override void Write(GorgonChunkWriter chunk)
+		{
+			chunk.Begin("BRSHDATA");
+			chunk.Write(BrushType);
+			chunk.Write(Color);
+			chunk.End();
+		}
 
 		/// <summary>
 		/// Function to read the brush elements in from a chunked file.
 		/// </summary>
 		/// <param name="chunk">Chunk reader used to read the data.</param>
-		abstract internal void Read(GorgonChunkReader chunk);
+		internal override void Read(GorgonChunkReader chunk)
+		{
+			Color = chunk.Read<GorgonColor>();
+		}
+		#endregion
+
+		#region Constructor.
+		/// <summary>
+		/// Initializes a new instance of the <see cref="GorgonGlyphSolidBrush"/> class.
+		/// </summary>
+		public GorgonGlyphSolidBrush()
+		{
+			Color = GorgonColor.White;
+		}
 		#endregion
 	}
 }
