@@ -65,6 +65,7 @@ namespace GorgonLibrary.Graphics.Example
 		private static StringBuilder _helpText;														            // Help text.
 		private static GorgonText _helpTextSprite;																// Text sprite for our help text.
 		private static bool _showHelp = true;																    // Flag to indicate that the help text should be shown.
+		private static bool _paused;																			// Flag to indicate that the animation is paused.
 
 		/// <summary>
 		/// Property to return the path to the resources for the example.
@@ -317,22 +318,23 @@ namespace GorgonLibrary.Graphics.Example
 		/// <returns>TRUE to keep running, FALSE to exit.</returns>
 		private static bool Idle()
 		{
-			// Update the simulation at our desired frame rate.
-			if (GorgonTiming.Delta < MinSimulationFPS)
+			if (!_paused)
 			{
-				_accumulator += GorgonTiming.Delta;
-			}
-			else
-			{
-				_accumulator += MinSimulationFPS;
-			}
+				// Update the simulation at our desired frame rate.
+				if (GorgonTiming.Delta < MinSimulationFPS)
+				{
+					_accumulator += GorgonTiming.Delta;
+				}
+				else
+				{
+					_accumulator += MinSimulationFPS;
+				}
 
-			_2D.Clear(GorgonColor.Black);
-
-			while (_accumulator >= MaxSimulationFPS)
-			{
-				Transform(MaxSimulationFPS);
-				_accumulator -= MaxSimulationFPS;
+				while (_accumulator >= MaxSimulationFPS)
+				{
+					Transform(MaxSimulationFPS);
+					_accumulator -= MaxSimulationFPS;
+				}
 			}
 
 			DrawBackground();
@@ -504,6 +506,9 @@ namespace GorgonLibrary.Graphics.Example
 			int ballIncrement = 1;
 			switch (e.KeyCode)
 			{
+				case Keys.Pause:
+					_paused = !_paused;
+					break;
 				case Keys.F1:
 					_showHelp = !_showHelp;
 					break;

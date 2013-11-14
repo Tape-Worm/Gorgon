@@ -209,16 +209,6 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
-		/// Property to set or return the color to use for the glyphs when rendering to the font textures.
-		/// </summary>
-		/// <remarks>The default value is a single color of White (A=1.0f, R=1.0f, G=1.0f, B=1.0f).</remarks>
-		public GorgonColor BaseColor
-		{
-			get;
-			set;
-		}
-
-		/// <summary>
 		/// Property to set or return the size of an outline.
 		/// </summary>
 		/// <remarks>The size of the outline is in pixels, and a value of 0 indicates that outlining is disabled.
@@ -289,9 +279,13 @@ namespace GorgonLibrary.Graphics
 			set
 			{
 				if (value < 0)
+				{
 					value = 0;
+				}
 				if (value > 8)
+				{
 					value = 8;
+				}
 				_packSpace = value;
 			}
 		}
@@ -369,7 +363,10 @@ namespace GorgonLibrary.Graphics
 			FontHeightMode = FontHeightMode.Points;
 			OutlineColor = Color.Black;
 			OutlineSize = 0;
-			BaseColor = GorgonColor.White;
+			Brush = new GorgonGlyphSolidBrush
+			        {
+				        Color = GorgonColor.White
+			        };
 			FontStyle = FontStyle.Regular;
 			DefaultCharacter = ' ';
 			AntiAliasingMode = FontAntiAliasMode.AntiAliasHQ;
