@@ -1,4 +1,5 @@
 ﻿using System;
+using System.CodeDom.Compiler;
 using System.Drawing;
 using System.Globalization;
 using System.Windows.Forms;
@@ -156,28 +157,28 @@ namespace Fetze.WinFormsColor
 				case PrimaryAttrib.Red:
 					tmp = _selColor.ToColor();
 					colorPanel.SetupGradient(
-						Color.FromArgb(255, tmp.R, 255, 0),
-						Color.FromArgb(255, tmp.R, 255, 255),
-						Color.FromArgb(255, tmp.R, 0, 0),
-						Color.FromArgb(255, tmp.R, 0, 255),
+						Color.FromArgb(tmp.A, tmp.R, 255, 0),
+                        Color.FromArgb(tmp.A, tmp.R, 255, 255),
+                        Color.FromArgb(tmp.A, tmp.R, 0, 0),
+                        Color.FromArgb(tmp.A, tmp.R, 0, 255),
 						32);
 					break;
 				case PrimaryAttrib.Green:
 					tmp = _selColor.ToColor();
 					colorPanel.SetupGradient(
-						Color.FromArgb(255, 255, tmp.G, 0),
-						Color.FromArgb(255, 255, tmp.G, 255),
-						Color.FromArgb(255, 0, tmp.G, 0),
-						Color.FromArgb(255, 0, tmp.G, 255),
+                        Color.FromArgb(tmp.A, 255, tmp.G, 0),
+                        Color.FromArgb(tmp.A, 255, tmp.G, 255),
+                        Color.FromArgb(tmp.A, 0, tmp.G, 0),
+                        Color.FromArgb(tmp.A, 0, tmp.G, 255),
 						32);
 					break;
 				case PrimaryAttrib.Blue:
 					tmp = _selColor.ToColor();
 					colorPanel.SetupGradient(
-						Color.FromArgb(255, 255, 0, tmp.B),
-						Color.FromArgb(255, 255, 255, tmp.B),
-						Color.FromArgb(255, 0, 0, tmp.B),
-						Color.FromArgb(255, 0, 255, tmp.B),
+                        Color.FromArgb(tmp.A, 255, 0, tmp.B),
+                        Color.FromArgb(tmp.A, 255, 255, tmp.B),
+                        Color.FromArgb(tmp.A, 0, 0, tmp.B),
+                        Color.FromArgb(tmp.A, 0, 255, tmp.B),
 						32);
 					break;
 			}

@@ -52,7 +52,6 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
         #region Variables.
 	    private GorgonGlyphTextureBrush _textureBrush;                  // The current texture brush.
 	    private GorgonGlyphTextureBrush _defaultTextureBrush;           // Default texture brush when a texture brush has not been initialized.
-        private bool _disableSolidFields;                               // Flag to indicate that the numeric fields on the solid brush editor are disabled.
         #endregion
 
         #region Properties.
@@ -126,39 +125,6 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 	    }
 
 		/// <summary>
-		/// Function to update the solid brush color settings.
-		/// </summary>
-	    private void DrawSolid()
-		{
-			try
-			{
-			    _disableSolidFields = true;
-
-				Color color = Color.FromArgb((int)(sliderAlpha.ValuePercentual * 255.0f).FastFloor(),
-											 ExtMethodsSystemDrawingColor.ColorFromHSV(sliderColor.ValuePercentual,
-																					   panelColor.ValuePercentual.X,
-																					   panelColor.ValuePercentual.Y));
-
-				boxCurrentColor.LowerColor = color;
-				panelColor.TopRightColor = Color.FromArgb(sliderAlpha.Value.A, sliderColor.Value);
-				panelColor.TopLeftColor = Color.FromArgb(sliderAlpha.Value.A, Color.White);
-				panelColor.BottomLeftColor = Color.FromArgb(sliderAlpha.Value.A, Color.Black);
-				panelColor.BottomRightColor = Color.FromArgb(sliderAlpha.Value.A, Color.Black);
-				panelColor.ValuePercentual = new PointF(color.GetHSVSaturation(), color.GetHSVBrightness());
-
-
-				numericRed.Value = color.R;
-				numericGreen.Value = color.G;
-				numericBlue.Value = color.B;
-				numericAlpha.Value = color.A;
-			}
-			finally
-			{
-			    _disableSolidFields = false;
-			}
-		}
-
-		/// <summary>
 		/// Handles the SelectedIndexChanged event of the tabBrushEditor control.
 		/// </summary>
 		/// <param name="sender">The source of the event.</param>
@@ -167,11 +133,6 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		{
 			try
 			{
-				if (tabBrushEditor.SelectedTab == pageSolid)
-				{
-					DrawSolid();
-				    return;
-				}
 			}
 			catch (Exception ex)
 			{
@@ -196,51 +157,6 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 			_defaultTextureBrush = null;
 	    }
 
-		/// <summary>
-		/// Handles the ValueChanged event of the panelColor control.
-		/// </summary>
-		/// <param name="sender">The source of the event.</param>
-		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-		private void panelColor_ValueChanged(object sender, EventArgs e)
-		{
-			try
-			{
-				DrawSolid();
-			}
-			catch (Exception ex)
-			{
-				GorgonDialogs.ErrorBox(this, ex);
-			}
-		}
-
-		/// <summary>
-		/// Function called when the numeric value is updated for the solid color selector.
-		/// </summary>
-		/// <param name="sender">Sender of the event.</param>
-		/// <param name="e">Event parameters.</param>
-	    private void NumericValueUpdated(object sender, EventArgs e)
-		{
-			try
-			{
-			    if (_disableSolidFields)
-			    {
-			        return;
-			    }
-
-				Color newColor = Color.FromArgb((int)numericAlpha.Value,
-				                                (int)numericRed.Value,
-				                                (int)numericGreen.Value,
-				                                (int)numericBlue.Value);
-
-				panelColor.ValuePercentual = new PointF(newColor.GetHSVSaturation(), newColor.GetHSVBrightness());
-				sliderAlpha.ValuePercentual = newColor.A / 255.0f;
-				sliderColor.ValuePercentual = newColor.GetHSVHue();
-			}
-			catch (Exception ex)
-			{
-				GorgonDialogs.ErrorBox(this, ex);
-			}
-		}
 
 	    /// <summary>
 		/// Raises the <see cref="E:System.Windows.Forms.Form.Load" /> event.
@@ -254,19 +170,16 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 	        {
 	            Localize();
 
-	            Color brushColor = SolidBrush.Color;
-                
-	            boxCurrentColor.LowerColor = boxCurrentColor.UpperColor = SolidBrush.Color;
-	            sliderAlpha.ValuePercentual = SolidBrush.Color.Alpha;
-	            sliderColor.ValuePercentual = brushColor.GetHSVHue();
-	            panelColor.ValuePercentual = new PointF(brushColor.GetHSVSaturation(), brushColor.GetHSVBrightness());
+                // TODO: Make Primaryattribute static or put them into a configuration value.
+	            colorSolidBrush.PrimaryAttribute = ColorPickerPanel.PrimaryAttrib.Red;
+	            colorSolidBrush.OldColor = SolidBrush.Color;
+	            colorSolidBrush.SelectedColor = SolidBrush.Color;
 
 	            switch (BrushType)
 	            {
 	                case GlyphBrushType.Solid:
 	                    comboBrushType.Text = Resources.GORFNT_PROP_VALUE_SOLID_BRUSH;
 	                    tabBrushEditor.SelectedTab = pageSolid;
-	                    DrawSolid();
 	                    break;
 	                case GlyphBrushType.LinearGradient:
 	                    comboBrushType.Text = Resources.GORFNT_PROP_VALUE_GRADIENT_BRUSH;

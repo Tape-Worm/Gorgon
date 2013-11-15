@@ -117,11 +117,14 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="radioHue.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
+    <value>Top, Right</value>
+  </data>
   <assembly alias="mscorlib" name="mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   <data name="radioHue.AutoSize" type="System.Boolean, mscorlib">
     <value>True</value>
   </data>
-  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   <data name="radioHue.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
     <value>NoControl</value>
   </data>
@@ -148,7 +151,10 @@
     <value>$this</value>
   </data>
   <data name="&gt;&gt;radioHue.ZOrder" xml:space="preserve">
-    <value>21</value>
+    <value>18</value>
+  </data>
+  <data name="radioSaturation.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
+    <value>Top, Right</value>
   </data>
   <data name="radioSaturation.AutoSize" type="System.Boolean, mscorlib">
     <value>True</value>
@@ -157,13 +163,13 @@
     <value>NoControl</value>
   </data>
   <data name="radioSaturation.Location" type="System.Drawing.Point, System.Drawing">
-    <value>363, 105</value>
+    <value>363, 108</value>
   </data>
   <data name="radioSaturation.Size" type="System.Drawing.Size, System.Drawing">
     <value>32, 17</value>
   </data>
   <data name="radioSaturation.TabIndex" type="System.Int32, mscorlib">
-    <value>4</value>
+    <value>5</value>
   </data>
   <data name="radioSaturation.Text" xml:space="preserve">
     <value>S</value>
@@ -178,7 +184,10 @@
     <value>$this</value>
   </data>
   <data name="&gt;&gt;radioSaturation.ZOrder" xml:space="preserve">
-    <value>20</value>
+    <value>17</value>
+  </data>
+  <data name="radioValue.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
+    <value>Top, Right</value>
   </data>
   <data name="radioValue.AutoSize" type="System.Boolean, mscorlib">
     <value>True</value>
@@ -187,13 +196,13 @@
     <value>NoControl</value>
   </data>
   <data name="radioValue.Location" type="System.Drawing.Point, System.Drawing">
-    <value>363, 128</value>
+    <value>363, 134</value>
   </data>
   <data name="radioValue.Size" type="System.Drawing.Size, System.Drawing">
     <value>32, 17</value>
   </data>
   <data name="radioValue.TabIndex" type="System.Int32, mscorlib">
-    <value>5</value>
+    <value>7</value>
   </data>
   <data name="radioValue.Text" xml:space="preserve">
     <value>V</value>
@@ -208,7 +217,10 @@
     <value>$this</value>
   </data>
   <data name="&gt;&gt;radioValue.ZOrder" xml:space="preserve">
-    <value>19</value>
+    <value>16</value>
+  </data>
+  <data name="radioRed.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
+    <value>Top, Right</value>
   </data>
   <data name="radioRed.AutoSize" type="System.Boolean, mscorlib">
     <value>True</value>
@@ -217,13 +229,13 @@
     <value>NoControl</value>
   </data>
   <data name="radioRed.Location" type="System.Drawing.Point, System.Drawing">
-    <value>363, 159</value>
+    <value>363, 165</value>
   </data>
   <data name="radioRed.Size" type="System.Drawing.Size, System.Drawing">
     <value>33, 17</value>
   </data>
   <data name="radioRed.TabIndex" type="System.Int32, mscorlib">
-    <value>6</value>
+    <value>9</value>
   </data>
   <data name="radioRed.Text" xml:space="preserve">
     <value>R</value>
@@ -238,7 +250,10 @@
     <value>$this</value>
   </data>
   <data name="&gt;&gt;radioRed.ZOrder" xml:space="preserve">
-    <value>18</value>
+    <value>15</value>
+  </data>
+  <data name="radioBlue.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
+    <value>Top, Right</value>
   </data>
   <data name="radioBlue.AutoSize" type="System.Boolean, mscorlib">
     <value>True</value>
@@ -247,13 +262,13 @@
     <value>NoControl</value>
   </data>
   <data name="radioBlue.Location" type="System.Drawing.Point, System.Drawing">
-    <value>363, 205</value>
+    <value>363, 217</value>
   </data>
   <data name="radioBlue.Size" type="System.Drawing.Size, System.Drawing">
     <value>32, 17</value>
   </data>
   <data name="radioBlue.TabIndex" type="System.Int32, mscorlib">
-    <value>7</value>
+    <value>13</value>
   </data>
   <data name="radioBlue.Text" xml:space="preserve">
     <value>B</value>
@@ -268,7 +283,10 @@
     <value>$this</value>
   </data>
   <data name="&gt;&gt;radioBlue.ZOrder" xml:space="preserve">
-    <value>17</value>
+    <value>14</value>
+  </data>
+  <data name="radioGreen.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
+    <value>Top, Right</value>
   </data>
   <data name="radioGreen.AutoSize" type="System.Boolean, mscorlib">
     <value>True</value>
@@ -277,13 +295,13 @@
     <value>NoControl</value>
   </data>
   <data name="radioGreen.Location" type="System.Drawing.Point, System.Drawing">
-    <value>363, 182</value>
+    <value>363, 191</value>
   </data>
   <data name="radioGreen.Size" type="System.Drawing.Size, System.Drawing">
     <value>33, 17</value>
   </data>
   <data name="radioGreen.TabIndex" type="System.Int32, mscorlib">
-    <value>8</value>
+    <value>11</value>
   </data>
   <data name="radioGreen.Text" xml:space="preserve">
     <value>G</value>
@@ -298,16 +316,22 @@
     <value>$this</value>
   </data>
   <data name="&gt;&gt;radioGreen.ZOrder" xml:space="preserve">
-    <value>16</value>
+    <value>13</value>
+  </data>
+  <data name="numHue.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
+    <value>Top, Right</value>
   </data>
   <data name="numHue.Location" type="System.Drawing.Point, System.Drawing">
     <value>402, 82</value>
   </data>
   <data name="numHue.Size" type="System.Drawing.Size, System.Drawing">
-    <value>54, 20</value>
+    <value>65, 20</value>
   </data>
   <data name="numHue.TabIndex" type="System.Int32, mscorlib">
-    <value>9</value>
+    <value>4</value>
+  </data>
+  <data name="numHue.TextAlign" type="System.Windows.Forms.HorizontalAlignment, System.Windows.Forms">
+    <value>Right</value>
   </data>
   <data name="&gt;&gt;numHue.Name" xml:space="preserve">
     <value>numHue</value>
@@ -319,16 +343,22 @@
     <value>$this</value>
   </data>
   <data name="&gt;&gt;numHue.ZOrder" xml:space="preserve">
-    <value>15</value>
+    <value>12</value>
+  </data>
+  <data name="numSaturation.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
+    <value>Top, Right</value>
   </data>
   <data name="numSaturation.Location" type="System.Drawing.Point, System.Drawing">
-    <value>402, 105</value>
+    <value>402, 108</value>
   </data>
   <data name="numSaturation.Size" type="System.Drawing.Size, System.Drawing">
-    <value>54, 20</value>
+    <value>65, 20</value>
   </data>
   <data name="numSaturation.TabIndex" type="System.Int32, mscorlib">
-    <value>10</value>
+    <value>6</value>
+  </data>
+  <data name="numSaturation.TextAlign" type="System.Windows.Forms.HorizontalAlignment, System.Windows.Forms">
+    <value>Right</value>
   </data>
   <data name="&gt;&gt;numSaturation.Name" xml:space="preserve">
     <value>numSaturation</value>
@@ -340,16 +370,22 @@
     <value>$this</value>
   </data>
   <data name="&gt;&gt;numSaturation.ZOrder" xml:space="preserve">
-    <value>14</value>
+    <value>11</value>
+  </data>
+  <data name="numValue.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
+    <value>Top, Right</value>
   </data>
   <data name="numValue.Location" type="System.Drawing.Point, System.Drawing">
-    <value>402, 128</value>
+    <value>402, 134</value>
   </data>
   <data name="numValue.Size" type="System.Drawing.Size, System.Drawing">
-    <value>54, 20</value>
+    <value>65, 20</value>
   </data>
   <data name="numValue.TabIndex" type="System.Int32, mscorlib">
-    <value>11</value>
+    <value>8</value>
+  </data>
+  <data name="numValue.TextAlign" type="System.Windows.Forms.HorizontalAlignment, System.Windows.Forms">
+    <value>Right</value>
   </data>
   <data name="&gt;&gt;numValue.Name" xml:space="preserve">
     <value>numValue</value>
@@ -361,16 +397,22 @@
     <value>$this</value>
   </data>
   <data name="&gt;&gt;numValue.ZOrder" xml:space="preserve">
-    <value>13</value>
+    <value>10</value>
+  </data>
+  <data name="numRed.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
+    <value>Top, Right</value>
   </data>
   <data name="numRed.Location" type="System.Drawing.Point, System.Drawing">
-    <value>402, 159</value>
+    <value>402, 165</value>
   </data>
   <data name="numRed.Size" type="System.Drawing.Size, System.Drawing">
-    <value>54, 20</value>
+    <value>65, 20</value>
   </data>
   <data name="numRed.TabIndex" type="System.Int32, mscorlib">
-    <value>12</value>
+    <value>10</value>
+  </data>
+  <data name="numRed.TextAlign" type="System.Windows.Forms.HorizontalAlignment, System.Windows.Forms">
+    <value>Right</value>
   </data>
   <data name="&gt;&gt;numRed.Name" xml:space="preserve">
     <value>numRed</value>
@@ -382,16 +424,22 @@
     <value>$this</value>
   </data>
   <data name="&gt;&gt;numRed.ZOrder" xml:space="preserve">
-    <value>12</value>
+    <value>9</value>
+  </data>
+  <data name="numGreen.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
+    <value>Top, Right</value>
   </data>
   <data name="numGreen.Location" type="System.Drawing.Point, System.Drawing">
-    <value>402, 182</value>
+    <value>402, 191</value>
   </data>
   <data name="numGreen.Size" type="System.Drawing.Size, System.Drawing">
-    <value>54, 20</value>
+    <value>65, 20</value>
   </data>
   <data name="numGreen.TabIndex" type="System.Int32, mscorlib">
-    <value>13</value>
+    <value>12</value>
+  </data>
+  <data name="numGreen.TextAlign" type="System.Windows.Forms.HorizontalAlignment, System.Windows.Forms">
+    <value>Right</value>
   </data>
   <data name="&gt;&gt;numGreen.Name" xml:space="preserve">
     <value>numGreen</value>
@@ -403,16 +451,22 @@
     <value>$this</value>
   </data>
   <data name="&gt;&gt;numGreen.ZOrder" xml:space="preserve">
-    <value>11</value>
+    <value>8</value>
+  </data>
+  <data name="numBlue.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
+    <value>Top, Right</value>
   </data>
   <data name="numBlue.Location" type="System.Drawing.Point, System.Drawing">
-    <value>402, 205</value>
+    <value>402, 217</value>
   </data>
   <data name="numBlue.Size" type="System.Drawing.Size, System.Drawing">
-    <value>54, 20</value>
+    <value>65, 20</value>
   </data>
   <data name="numBlue.TabIndex" type="System.Int32, mscorlib">
     <value>14</value>
+  </data>
+  <data name="numBlue.TextAlign" type="System.Windows.Forms.HorizontalAlignment, System.Windows.Forms">
+    <value>Right</value>
   </data>
   <data name="&gt;&gt;numBlue.Name" xml:space="preserve">
     <value>numBlue</value>
@@ -424,16 +478,22 @@
     <value>$this</value>
   </data>
   <data name="&gt;&gt;numBlue.ZOrder" xml:space="preserve">
-    <value>10</value>
+    <value>7</value>
+  </data>
+  <data name="textBoxHex.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
+    <value>Top, Right</value>
   </data>
   <data name="textBoxHex.Location" type="System.Drawing.Point, System.Drawing">
-    <value>32, 279</value>
+    <value>402, 279</value>
   </data>
   <data name="textBoxHex.Size" type="System.Drawing.Size, System.Drawing">
-    <value>75, 20</value>
+    <value>65, 20</value>
   </data>
   <data name="textBoxHex.TabIndex" type="System.Int32, mscorlib">
     <value>16</value>
+  </data>
+  <data name="textBoxHex.TextAlign" type="System.Windows.Forms.HorizontalAlignment, System.Windows.Forms">
+    <value>Right</value>
   </data>
   <data name="&gt;&gt;textBoxHex.Name" xml:space="preserve">
     <value>textBoxHex</value>
@@ -445,7 +505,10 @@
     <value>$this</value>
   </data>
   <data name="&gt;&gt;textBoxHex.ZOrder" xml:space="preserve">
-    <value>8</value>
+    <value>5</value>
+  </data>
+  <data name="labelHex.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
+    <value>Top, Right</value>
   </data>
   <data name="labelHex.AutoSize" type="System.Boolean, mscorlib">
     <value>True</value>
@@ -454,7 +517,7 @@
     <value>NoControl</value>
   </data>
   <data name="labelHex.Location" type="System.Drawing.Point, System.Drawing">
-    <value>12, 282</value>
+    <value>379, 281</value>
   </data>
   <data name="labelHex.Size" type="System.Drawing.Size, System.Drawing">
     <value>14, 13</value>
@@ -475,16 +538,22 @@
     <value>$this</value>
   </data>
   <data name="&gt;&gt;labelHex.ZOrder" xml:space="preserve">
-    <value>7</value>
+    <value>4</value>
+  </data>
+  <data name="labelOld.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
+    <value>Top, Right</value>
+  </data>
+  <data name="labelOld.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
   </data>
   <data name="labelOld.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
     <value>NoControl</value>
   </data>
   <data name="labelOld.Location" type="System.Drawing.Point, System.Drawing">
-    <value>423, 12</value>
+    <value>438, 18</value>
   </data>
   <data name="labelOld.Size" type="System.Drawing.Size, System.Drawing">
-    <value>33, 26</value>
+    <value>23, 13</value>
   </data>
   <data name="labelOld.TabIndex" type="System.Int32, mscorlib">
     <value>18</value>
@@ -505,16 +574,22 @@
     <value>$this</value>
   </data>
   <data name="&gt;&gt;labelOld.ZOrder" xml:space="preserve">
-    <value>6</value>
+    <value>3</value>
+  </data>
+  <data name="labelNew.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
+    <value>Top, Right</value>
+  </data>
+  <data name="labelNew.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
   </data>
   <data name="labelNew.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
     <value>NoControl</value>
   </data>
   <data name="labelNew.Location" type="System.Drawing.Point, System.Drawing">
-    <value>423, 36</value>
+    <value>438, 43</value>
   </data>
   <data name="labelNew.Size" type="System.Drawing.Size, System.Drawing">
-    <value>33, 26</value>
+    <value>29, 13</value>
   </data>
   <data name="labelNew.TabIndex" type="System.Int32, mscorlib">
     <value>19</value>
@@ -535,16 +610,22 @@
     <value>$this</value>
   </data>
   <data name="&gt;&gt;labelNew.ZOrder" xml:space="preserve">
-    <value>5</value>
+    <value>2</value>
+  </data>
+  <data name="numAlpha.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
+    <value>Top, Right</value>
   </data>
   <data name="numAlpha.Location" type="System.Drawing.Point, System.Drawing">
-    <value>402, 236</value>
+    <value>402, 248</value>
   </data>
   <data name="numAlpha.Size" type="System.Drawing.Size, System.Drawing">
-    <value>54, 20</value>
+    <value>65, 20</value>
   </data>
   <data name="numAlpha.TabIndex" type="System.Int32, mscorlib">
-    <value>22</value>
+    <value>15</value>
+  </data>
+  <data name="numAlpha.TextAlign" type="System.Windows.Forms.HorizontalAlignment, System.Windows.Forms">
+    <value>Right</value>
   </data>
   <data name="&gt;&gt;numAlpha.Name" xml:space="preserve">
     <value>numAlpha</value>
@@ -556,7 +637,10 @@
     <value>$this</value>
   </data>
   <data name="&gt;&gt;numAlpha.ZOrder" xml:space="preserve">
-    <value>4</value>
+    <value>1</value>
+  </data>
+  <data name="labelAlpha.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
+    <value>Top, Right</value>
   </data>
   <data name="labelAlpha.AutoSize" type="System.Boolean, mscorlib">
     <value>True</value>
@@ -565,7 +649,7 @@
     <value>NoControl</value>
   </data>
   <data name="labelAlpha.Location" type="System.Drawing.Point, System.Drawing">
-    <value>379, 238</value>
+    <value>379, 250</value>
   </data>
   <data name="labelAlpha.Size" type="System.Drawing.Size, System.Drawing">
     <value>14, 13</value>
@@ -586,106 +670,19 @@
     <value>$this</value>
   </data>
   <data name="&gt;&gt;labelAlpha.ZOrder" xml:space="preserve">
-    <value>3</value>
-  </data>
-  <data name="labelHueUnit.AutoSize" type="System.Boolean, mscorlib">
-    <value>True</value>
-  </data>
-  <data name="labelHueUnit.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
-    <value>NoControl</value>
-  </data>
-  <data name="labelHueUnit.Location" type="System.Drawing.Point, System.Drawing">
-    <value>461, 84</value>
-  </data>
-  <data name="labelHueUnit.Size" type="System.Drawing.Size, System.Drawing">
-    <value>11, 13</value>
-  </data>
-  <data name="labelHueUnit.TabIndex" type="System.Int32, mscorlib">
-    <value>24</value>
-  </data>
-  <data name="labelHueUnit.Text" xml:space="preserve">
-    <value>°</value>
-  </data>
-  <data name="&gt;&gt;labelHueUnit.Name" xml:space="preserve">
-    <value>labelHueUnit</value>
-  </data>
-  <data name="&gt;&gt;labelHueUnit.Type" xml:space="preserve">
-    <value>System.Windows.Forms.Label, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;labelHueUnit.Parent" xml:space="preserve">
-    <value>$this</value>
-  </data>
-  <data name="&gt;&gt;labelHueUnit.ZOrder" xml:space="preserve">
-    <value>2</value>
-  </data>
-  <data name="labelSaturationUnit.AutoSize" type="System.Boolean, mscorlib">
-    <value>True</value>
-  </data>
-  <data name="labelSaturationUnit.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
-    <value>NoControl</value>
-  </data>
-  <data name="labelSaturationUnit.Location" type="System.Drawing.Point, System.Drawing">
-    <value>462, 107</value>
-  </data>
-  <data name="labelSaturationUnit.Size" type="System.Drawing.Size, System.Drawing">
-    <value>15, 13</value>
-  </data>
-  <data name="labelSaturationUnit.TabIndex" type="System.Int32, mscorlib">
-    <value>25</value>
-  </data>
-  <data name="labelSaturationUnit.Text" xml:space="preserve">
-    <value>%</value>
-  </data>
-  <data name="&gt;&gt;labelSaturationUnit.Name" xml:space="preserve">
-    <value>labelSaturationUnit</value>
-  </data>
-  <data name="&gt;&gt;labelSaturationUnit.Type" xml:space="preserve">
-    <value>System.Windows.Forms.Label, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;labelSaturationUnit.Parent" xml:space="preserve">
-    <value>$this</value>
-  </data>
-  <data name="&gt;&gt;labelSaturationUnit.ZOrder" xml:space="preserve">
-    <value>1</value>
-  </data>
-  <data name="labelValueUnit.AutoSize" type="System.Boolean, mscorlib">
-    <value>True</value>
-  </data>
-  <data name="labelValueUnit.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
-    <value>NoControl</value>
-  </data>
-  <data name="labelValueUnit.Location" type="System.Drawing.Point, System.Drawing">
-    <value>461, 130</value>
-  </data>
-  <data name="labelValueUnit.Size" type="System.Drawing.Size, System.Drawing">
-    <value>15, 13</value>
-  </data>
-  <data name="labelValueUnit.TabIndex" type="System.Int32, mscorlib">
-    <value>26</value>
-  </data>
-  <data name="labelValueUnit.Text" xml:space="preserve">
-    <value>%</value>
-  </data>
-  <data name="&gt;&gt;labelValueUnit.Name" xml:space="preserve">
-    <value>labelValueUnit</value>
-  </data>
-  <data name="&gt;&gt;labelValueUnit.Type" xml:space="preserve">
-    <value>System.Windows.Forms.Label, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;labelValueUnit.Parent" xml:space="preserve">
-    <value>$this</value>
-  </data>
-  <data name="&gt;&gt;labelValueUnit.ZOrder" xml:space="preserve">
     <value>0</value>
   </data>
+  <data name="alphaSlider.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
+    <value>Top, Bottom, Right</value>
+  </data>
   <data name="alphaSlider.Location" type="System.Drawing.Point, System.Drawing">
-    <value>312, 7</value>
+    <value>312, 0</value>
   </data>
   <data name="alphaSlider.Size" type="System.Drawing.Size, System.Drawing">
-    <value>32, 266</value>
+    <value>32, 309</value>
   </data>
   <data name="alphaSlider.TabIndex" type="System.Int32, mscorlib">
-    <value>15</value>
+    <value>2</value>
   </data>
   <data name="&gt;&gt;alphaSlider.Name" xml:space="preserve">
     <value>alphaSlider</value>
@@ -697,13 +694,16 @@
     <value>$this</value>
   </data>
   <data name="&gt;&gt;alphaSlider.ZOrder" xml:space="preserve">
-    <value>9</value>
+    <value>6</value>
+  </data>
+  <data name="colorShowBox.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
+    <value>Top, Right</value>
   </data>
   <data name="colorShowBox.Location" type="System.Drawing.Point, System.Drawing">
     <value>363, 12</value>
   </data>
   <data name="colorShowBox.Size" type="System.Drawing.Size, System.Drawing">
-    <value>54, 50</value>
+    <value>69, 50</value>
   </data>
   <data name="colorShowBox.TabIndex" type="System.Int32, mscorlib">
     <value>2</value>
@@ -718,13 +718,16 @@
     <value>$this</value>
   </data>
   <data name="&gt;&gt;colorShowBox.ZOrder" xml:space="preserve">
-    <value>22</value>
+    <value>19</value>
+  </data>
+  <data name="colorSlider.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
+    <value>Top, Bottom, Right</value>
   </data>
   <data name="colorSlider.Location" type="System.Drawing.Point, System.Drawing">
-    <value>274, 7</value>
+    <value>274, 0</value>
   </data>
   <data name="colorSlider.Size" type="System.Drawing.Size, System.Drawing">
-    <value>32, 266</value>
+    <value>32, 309</value>
   </data>
   <data name="colorSlider.TabIndex" type="System.Int32, mscorlib">
     <value>1</value>
@@ -739,13 +742,16 @@
     <value>$this</value>
   </data>
   <data name="&gt;&gt;colorSlider.ZOrder" xml:space="preserve">
-    <value>23</value>
+    <value>20</value>
+  </data>
+  <data name="colorPanel.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
+    <value>Top, Bottom, Left, Right</value>
   </data>
   <data name="colorPanel.Location" type="System.Drawing.Point, System.Drawing">
-    <value>12, 12</value>
+    <value>3, 3</value>
   </data>
   <data name="colorPanel.Size" type="System.Drawing.Size, System.Drawing">
-    <value>256, 256</value>
+    <value>265, 306</value>
   </data>
   <data name="colorPanel.TabIndex" type="System.Int32, mscorlib">
     <value>0</value>
@@ -767,14 +773,11 @@
     <value>$this</value>
   </data>
   <data name="&gt;&gt;colorPanel.ZOrder" xml:space="preserve">
-    <value>24</value>
+    <value>21</value>
   </data>
   <metadata name="$this.Localizable" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>True</value>
   </metadata>
-  <data name="$this.AutoScaleDimensions" type="System.Drawing.SizeF, System.Drawing">
-    <value>6, 13</value>
-  </data>
   <data name="$this.Size" type="System.Drawing.Size, System.Drawing">
     <value>484, 312</value>
   </data>
