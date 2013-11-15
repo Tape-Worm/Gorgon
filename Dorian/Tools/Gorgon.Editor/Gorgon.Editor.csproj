@@ -137,6 +137,12 @@
     </Compile>
     <Compile Include="EditorMetaDataFile.cs" />
     <Compile Include="EditorMetaDataItem.cs" />
+    <Compile Include="formColorDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="formColorDialog.Designer.cs">
+      <DependentUpon>formColorDialog.cs</DependentUpon>
+    </Compile>
     <Compile Include="formEditorFileSelector.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -222,6 +228,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Controls\PreferencePanel.resx">
       <DependentUpon>PreferencePanel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="formColorDialog.resx">
+      <DependentUpon>formColorDialog.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="formEditorFileSelector.resx">
       <DependentUpon>formEditorFileSelector.cs</DependentUpon>
