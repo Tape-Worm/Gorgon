@@ -24,8 +24,11 @@
 // 
 #endregion
 
+using System;
 using System.Drawing;
+using GorgonLibrary.Graphics.Properties;
 using SlimMath;
+using GI = SharpDX.DXGI;
 using DX = SharpDX;
 using D3D = SharpDX.Direct3D11;
 
@@ -124,7 +127,161 @@ namespace GorgonLibrary.Graphics
 		                      : new D3D.Texture2D(Graphics.D3DDevice, desc);
 		}
 
-        /// <summary>
+
+		/// <summary>
+		/// Function to resolve a multisampled texture resource into another non-multisampled resource.
+		/// </summary>
+		/// <param name="destination">The texture that will receive the resolved texture.</param>
+		/// <param name="destArrayIndex">[Optional] Index in the array that will receive the resolved texture data.</param>
+		/// <param name="destMipLevel">[Optional] The mip map level that will receive the resolved texture data.</param>
+		/// <param name="srcArrayIndex">[Optional] The array index in the source to resolve.</param>
+		/// <param name="srcMipLevel">[Optional] The source mip level to resolve.</param>
+		/// <param name="resolveFormat">[Optional] A format that will determine how to resolve the multisampled texture into a non-multisampled texture.</param>
+		/// <param name="context">[Optional] A deferred graphics context used to copy the data.</param>
+		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="destination"/> parameter is NULL (Nothing in VB.Net).</exception>
+		/// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="destArrayIndex"/>, <paramref name="destMipLevel"/>, <paramref name="srcArrayIndex"/>, or the 
+		/// <paramref name="srcMipLevel"/> parameters are not within the the range of the array indices or mip levels of the respective textures.</exception>
+		/// <exception cref="System.NotSupportedException">Thrown when the source texture is not multisampled or the destination texture is multisampled or has a non default usage.</exception>
+		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="resolveFormat"/> is not compatible with the formats of the source or destination texture.</exception>
+		/// <remarks>Use this method to resolve a multisampled texture into a non multisampled texture.  This is most useful when transferring a multisampled render target pass as an input to 
+		/// a secondary pass.
+		/// <para>The <paramref name="resolveFormat"/> parameter is used to determine how to interpret the data in the texture.  There are 3 ways this data may be interpreted:  
+		/// <list type="number">
+		/// <item><description>If both textures have a typed format, then the resolve format must be the same as the format of the textures.  Both textures must have the same format.</description></item>
+		/// <item><description>If one of the textures have a typeless format and one has a typed format, then the resolve format must be in the same group as the typed format.</description></item>
+		/// <item><description>If the textures both have a typeless format, then the resolve format must be in the same group as the typeless format.</description></item>
+		/// </list>
+		/// Leaving the resolve format as Unknown will automatically use the format of the source texture.
+		/// </para>
+		/// <para>If the <paramref name="context"/> parameter is NULL (Nothing in VB.Net) then the immediate context will be used.  If this method is called from multiple threads, then a deferred context should be passed for each thread that is 
+		/// accessing the sub resource.</para>
+		/// </remarks>
+		public void ResolveTo(GorgonTexture destination,
+							  int destArrayIndex = 0,
+							  int destMipLevel = 0,
+							  int srcArrayIndex = 0,
+							  int srcMipLevel = 0,
+							  BufferFormat resolveFormat = BufferFormat.Unknown,
+							  GorgonGraphics context = null)
+		{
+			if (resolveFormat == BufferFormat.Unknown)
+			{
+				resolveFormat = Settings.Format;
+			}
+
+#if DEBUG
+			if (destination == null)
+			{
+				throw new ArgumentNullException("destination");	
+			}
+
+			if ((destArrayIndex >= destination.Settings.ArrayCount)
+				&& (destArrayIndex < 0))
+			{
+				throw new ArgumentOutOfRangeException("destArrayIndex",
+					                                    string.Format(Resources.GORGFX_ARG_OUT_OF_RANGE,
+					                                                0,
+					                                                destination.Settings.ArrayCount));
+			}
+
+			if ((destMipLevel < 0) || (destMipLevel >= destination.Settings.MipCount))
+			{
+				throw new ArgumentOutOfRangeException("destMipLevel", string.Format(Resources.GORGFX_ARG_OUT_OF_RANGE, 0,
+					                                                destination.Settings.MipCount));
+			}
+
+			if ((srcArrayIndex >= Settings.ArrayCount)
+				&& (srcArrayIndex < 0))
+			{
+				throw new ArgumentOutOfRangeException("srcArrayIndex",
+					                                    string.Format(Resources.GORGFX_ARG_OUT_OF_RANGE,
+					                                                0,
+					                                                Settings.ArrayCount));
+			}
+
+			if ((srcMipLevel < 0) || (srcMipLevel >= Settings.MipCount))
+			{
+				throw new ArgumentOutOfRangeException("srcMipLevel", string.Format(Resources.GORGFX_ARG_OUT_OF_RANGE, 0,
+					                                                Settings.MipCount));
+			}
+
+			if (Settings.Multisampling.Equals(GorgonMultisampling.NoMultiSampling))
+			{
+				throw new NotSupportedException(string.Format(Resources.GORGFX_TEXTURE_SRC_NOT_MULTISAMPLED, Name));
+			}
+
+			if (destination.Settings.Usage != BufferUsage.Default)
+			{
+				throw new NotSupportedException(string.Format(Resources.GORGFX_TEXTURE_RESOLVE_DEST_NOT_DEFAULT, destination.Name));
+			}
+
+			var srcFormatInfo = GorgonBufferFormatInfo.GetInfo(Settings.Format);
+			var destFormatInfo = GorgonBufferFormatInfo.GetInfo(destination.Settings.Format);
+			var resolveFormatInfo = GorgonBufferFormatInfo.GetInfo(resolveFormat);
+
+			// Ensure that the resource formats and resolve format all match up.
+			if ((!srcFormatInfo.IsTypeless) && (!destFormatInfo.IsTypeless))
+			{
+				if (Settings.Format != destination.Settings.Format)
+				{
+					throw new ArgumentException(string.Format(Resources.GORGFX_TEXTURE_RESOLVE_FORMATS_NOT_SAME, Settings.Format),
+					                            "destination");
+				}
+
+				if (resolveFormat != Settings.Format)
+				{
+					throw new ArgumentException(string.Format(Resources.GORGFX_TEXTURE_RESOLVE_FORMAT_MUST_BE_UNKNOWN), "resolveFormat");
+				}
+			}
+			else if ((srcFormatInfo.IsTypeless) && (destFormatInfo.IsTypeless))
+			{
+				if (Settings.Format != destination.Settings.Format)
+				{
+					throw new ArgumentException(string.Format(Resources.GORGFX_TEXTURE_RESOLVE_FORMATS_NOT_SAME, Settings.Format),
+												"destination");
+				}
+
+				if ((resolveFormatInfo.Group != srcFormatInfo.Group)
+				    || (resolveFormatInfo.Group != destFormatInfo.Group))
+				{
+					throw new ArgumentException(
+						string.Format(Resources.GORGFX_TEXTURE_RESOLVE_FORMAT_NOT_SAME_GROUP, Settings.Format),
+						"resolveFormat");
+				}
+			} 
+			else if ((srcFormatInfo.IsTypeless) || (destFormatInfo.IsTypeless))
+			{
+				if (resolveFormatInfo.IsTypeless)
+				{
+					throw new ArgumentException(string.Format(Resources.GORGFX_TEXTURE_RESOLVE_FORMAT_CANNOT_BE_TYPELESS),
+					                            "resolveFormat");
+				}
+
+				if (srcFormatInfo.Group != destFormatInfo.Group)
+				{
+					throw new ArgumentException(
+						string.Format(Resources.GORGFX_TEXTURE_RESOLVE_SRC_DEST_NOT_SAME_GROUP,
+						              Settings.Format,
+						              destination.Settings.Format),
+						"destination");
+				}
+			}
+#endif
+
+			int sourceIndex = D3D.Resource.CalculateSubResourceIndex(srcMipLevel, srcArrayIndex, Settings.MipCount);
+			int destIndex = D3D.Resource.CalculateSubResourceIndex(destMipLevel,
+			                                                       destArrayIndex,
+			                                                       destination.Settings.MipCount);
+
+			if (context == null)
+			{
+				context = Graphics;
+			}
+
+			context.Context.ResolveSubresource(D3DResource, sourceIndex, destination.D3DResource, destIndex, (GI.Format)resolveFormat);
+		}
+
+		/// <summary>
         /// Function to lock a CPU accessible texture sub resource for reading/writing.
         /// </summary>
         /// <param name="lockFlags">Flags used to lock.</param>
