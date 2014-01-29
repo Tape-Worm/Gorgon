@@ -112,7 +112,32 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
         #endregion
 
         #region Methods.
-		/// <summary>
+        /// <summary>
+        /// Handles the Click event of the buttonOK control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void buttonOK_Click(object sender, EventArgs e)
+        {
+            switch (BrushType)
+            {
+                case GlyphBrushType.Solid:
+                    SolidBrush.Color = colorSolidBrush.SelectedColor;
+                    break;
+            }
+        }
+
+        /// <summary>
+        /// Handles the ColorChanged event of the colorSolidBrush control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void colorSolidBrush_ColorChanged(object sender, EventArgs e)
+        {
+            buttonOK.Enabled = colorSolidBrush.SelectedColor != colorSolidBrush.OldColor;
+        }
+
+        /// <summary>
 		/// Function to localize the form.
 		/// </summary>
 	    private void Localize()

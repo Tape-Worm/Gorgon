@@ -33,12 +33,12 @@
             this.buttonOK = new System.Windows.Forms.Button();
             this.tabBrushEditor = new KRBTabControl.KRBTabControl();
             this.pageSolid = new KRBTabControl.TabPageEx();
+            this.colorSolidBrush = new Fetze.WinFormsColor.ColorPickerPanel();
             this.pageTexture = new KRBTabControl.TabPageEx();
             this.panel1 = new System.Windows.Forms.Panel();
             this.panel2 = new System.Windows.Forms.Panel();
             this.comboBrushType = new System.Windows.Forms.ComboBox();
             this.label1 = new System.Windows.Forms.Label();
-            this.colorSolidBrush = new Fetze.WinFormsColor.ColorPickerPanel();
             this.tabBrushEditor.SuspendLayout();
             this.pageSolid.SuspendLayout();
             this.panel1.SuspendLayout();
@@ -85,6 +85,7 @@
             this.buttonOK.Text = "OK";
             this.buttonOK.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             this.buttonOK.UseVisualStyleBackColor = false;
+            this.buttonOK.Click += new System.EventHandler(this.buttonOK_Click);
             // 
             // tabBrushEditor
             // 
@@ -130,6 +131,19 @@
             this.pageSolid.Size = new System.Drawing.Size(608, 336);
             this.pageSolid.TabIndex = 1;
             this.pageSolid.Text = "Solid";
+            // 
+            // colorSolidBrush
+            // 
+            this.colorSolidBrush.AlphaEnabled = true;
+            this.colorSolidBrush.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.colorSolidBrush.Location = new System.Drawing.Point(0, 0);
+            this.colorSolidBrush.Name = "colorSolidBrush";
+            this.colorSolidBrush.OldColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
+            this.colorSolidBrush.PrimaryAttribute = Fetze.WinFormsColor.ColorPickerPanel.PrimaryAttrib.Hue;
+            this.colorSolidBrush.SelectedColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
+            this.colorSolidBrush.Size = new System.Drawing.Size(608, 336);
+            this.colorSolidBrush.TabIndex = 0;
+            this.colorSolidBrush.ColorChanged += new System.EventHandler(this.colorSolidBrush_ColorChanged);
             // 
             // pageTexture
             // 
@@ -182,18 +196,6 @@
             this.label1.Size = new System.Drawing.Size(66, 15);
             this.label1.TabIndex = 0;
             this.label1.Text = "Brush type:";
-            // 
-            // colorSolidBrush
-            // 
-            this.colorSolidBrush.AlphaEnabled = true;
-            this.colorSolidBrush.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.colorSolidBrush.Location = new System.Drawing.Point(0, 0);
-            this.colorSolidBrush.Name = "colorSolidBrush";
-            this.colorSolidBrush.OldColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
-            this.colorSolidBrush.PrimaryAttribute = Fetze.WinFormsColor.ColorPickerPanel.PrimaryAttrib.Hue;
-            this.colorSolidBrush.SelectedColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
-            this.colorSolidBrush.Size = new System.Drawing.Size(608, 336);
-            this.colorSolidBrush.TabIndex = 0;
             // 
             // formBrushEditor
             // 

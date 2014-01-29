@@ -1799,18 +1799,20 @@ namespace GorgonLibrary.Editor
 
 			try
 			{
-				if (_cancelSource != null)
-				{
-					Cursor.Current = Cursors.WaitCursor;
+			    if (_cancelSource == null)
+			    {
+			        return;
+			    }
 
-					_cancelSource.Cancel();
+			    Cursor.Current = Cursors.WaitCursor;
 
-					// Ensure that the thumbnail thread is exited.
-					while (_cancelSource != null)
-					{
-						Thread.Sleep(0);
-					}
-				}
+			    _cancelSource.Cancel();
+                
+			    // Ensure that the thumbnail thread is exited.
+			    while (_cancelSource != null)
+			    {
+			        Thread.Sleep(0);
+			    }
 			}
 			finally
 			{

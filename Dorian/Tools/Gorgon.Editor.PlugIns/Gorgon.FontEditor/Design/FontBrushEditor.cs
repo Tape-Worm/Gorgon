@@ -136,13 +136,19 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 			        ((GorgonGlyphTextureBrush)document.Brush).Dispose();
 			    }
 
-			    // TODO: Set brush here.
 			    switch (brushEditor.BrushType)
 			    {
 			        case GlyphBrushType.Texture:
+			            brush = brushEditor.TextureBrush;
+			            break;
 			        case GlyphBrushType.Solid:
+			            brush = brushEditor.SolidBrush;
+			            break;
 			        case GlyphBrushType.LinearGradient:
+			            brush = brushEditor.GradientBrush;
+			            break;
 			        case GlyphBrushType.Hatched:
+			            brush = brushEditor.PatternBrush;
 			            break;
 			    }
 
