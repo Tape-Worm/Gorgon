@@ -767,6 +767,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 			{
 				var items = dropDownZoom.DropDownItems.Cast<ToolStripItem>().Where(item => item is ToolStripMenuItem);
 
+			    // ReSharper disable once PossibleInvalidCastExceptionInForeachLoop
 				foreach (ToolStripMenuItem control in items)
 				{
 					if (control != sender)
@@ -1729,6 +1730,15 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 
                     _content.Renderer.Drawing.DrawRectangle(glyphRect, Color.Red);
                 }
+            }
+            
+            // If we're animating into/out of or are currently at the glyph editor, then overlay the background textures.
+            if ((_content.CurrentState == DrawState.ToGlyphEdit)
+                || (_content.CurrentState == DrawState.FromGlyphEdit)
+                || (_content.CurrentState == DrawState.GlyphEdit))
+            {
+                _content.Renderer.Drawing.FilledRectangle(panelTextures.ClientRectangle,
+                                                          new GorgonColor(Color.Black, _glyphBackgroundSprite.Opacity * 0.5f));
             }
 
             GorgonSprite sprite = _textureSprites[_currentTextureIndex];
