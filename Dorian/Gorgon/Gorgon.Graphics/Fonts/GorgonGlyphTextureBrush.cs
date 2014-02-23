@@ -25,10 +25,9 @@
 #endregion
 
 using System;
-using System.Drawing.Imaging;
 using System.Drawing;
 using System.Drawing.Drawing2D;
-using System.IO;
+using System.Linq;
 using GorgonLibrary.IO;
 
 namespace GorgonLibrary.Graphics
@@ -38,12 +37,8 @@ namespace GorgonLibrary.Graphics
 	/// </summary>
 	/// <remarks>The texture used by this brush is a System.Drawing.Image object and not a Gorgon texture.</remarks>
 	public class GorgonGlyphTextureBrush
-		: GorgonGlyphBrush, IDisposable
+		: GorgonGlyphBrush
 	{
-		#region Variables.
-		private bool _disposed;			// Flag to indicate that the object was disposed.
-		#endregion
-
 		#region Properties.
 		/// <summary>
 		/// Property to return the type of brush.
@@ -68,7 +63,8 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Property to set or return the region for a single gradient run.
 		/// </summary>
-		public Rectangle? TextureRegion
+		/// <remarks>This value is in texture coordinates.  To use image coordinates, use one of the <see cref="GorgonTexture2D.ToTexel(SlimMath.Vector2)"/> functions to convert.</remarks>
+		public RectangleF? TextureRegion
 		{
 			get;
 			set;
@@ -77,7 +73,7 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Property to set or return the texture to apply to the brush.
 		/// </summary>
-		public Image Texture
+		public GorgonTexture2D Texture
 		{
 			get;
 			private set;
@@ -93,12 +89,38 @@ namespace GorgonLibrary.Graphics
 		/// </returns>
 		internal override Brush ToGDIBrush()
 		{
-			return Texture == null
-				       ? null
-				       : new TextureBrush(Texture, TextureRegion ?? new RectangleF(0, 0, Texture.Width, Texture.Height))
-				         {
-					         WrapMode = WrapMode
-				         };
+			if (Texture == null)
+			{
+				return null;
+			}
+
+			Image[] gdiImage = GorgonGDIImageConverter.CreateGDIImagesFromTexture(Texture);
+
+			if (gdiImage.Length == 0)
+			{
+				return null;
+			}
+
+			// Only use the first level.
+			for (int i = 1; i < gdiImage.Length; ++i)
+			{
+				gdiImage[i].Dispose();
+			}
+
+			var textureRect = new RectangleF(0, 0, Texture.Settings.Width, Texture.Settings.Height);
+			var imageRect = TextureRegion != null ? Texture.ToPixel(TextureRegion.Value) : textureRect;
+
+			imageRect = RectangleF.Intersect(textureRect, imageRect);
+			
+			if (imageRect == RectangleF.Empty)
+			{
+				imageRect = textureRect;
+			}
+
+			return new TextureBrush(gdiImage[0], imageRect)
+			       {
+				       WrapMode = WrapMode
+			       };
 		}
 
 		/// <summary>
@@ -107,21 +129,30 @@ namespace GorgonLibrary.Graphics
 		/// <param name="chunk">Chunk writer used to persist the data.</param>
 		internal override void Write(GorgonChunkWriter chunk)
 		{
+			// We have no texture.
+			if (Texture == null)
+			{
+				return;
+			}
+
 			chunk.Begin("BRSHDATA");
 			chunk.Write(BrushType);
 			chunk.Write(WrapMode);
 
-			chunk.Write(TextureRegion != null ? TextureRegion.Value : new Rectangle(0, 0, Texture.Width, Texture.Height));
+			chunk.WriteRectangle(TextureRegion != null ? TextureRegion.Value : new RectangleF(0, 0, 1, 1));
+			chunk.WriteString(Texture.Name);
 
-			// Write the dummy size.
-			using (var stream = new MemoryStream())
-			{
-				Texture.Save(stream, ImageFormat.Png);
+			long streamPosition = chunk.BaseStream.Position;
 
-				stream.Position = 0;
-				chunk.Write((int)stream.Length);
-				stream.CopyTo(chunk.BaseStream);
-			}
+			chunk.WriteInt32(0);		
+
+			Texture.Save(chunk.BaseStream, new GorgonCodecPNG());
+
+			long size = chunk.BaseStream.Position - streamPosition;
+
+			chunk.BaseStream.Position = streamPosition;
+			chunk.WriteInt32((int)size);
+			chunk.BaseStream.Position += size;
 
 			chunk.End();
 		}
@@ -129,8 +160,9 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Function to read the brush elements in from a chunked file.
 		/// </summary>
+		/// <param name="graphics">The graphics interface.</param>
 		/// <param name="chunk">Chunk reader used to read the data.</param>
-		internal override void Read(GorgonChunkReader chunk)
+		internal override void Read(GorgonGraphics graphics, GorgonChunkReader chunk)
 		{
 			WrapMode = chunk.Read<WrapMode>();
 
@@ -140,32 +172,21 @@ namespace GorgonLibrary.Graphics
 				Texture = null;
 			}
 
-			TextureRegion = chunk.ReadRectangle();
-
+			TextureRegion = chunk.ReadRectangleF();
+			string textureName = chunk.ReadString();
 			int size = chunk.ReadInt32();
-			var buffer = new byte[80000];
 
-			using (var stream = new MemoryStream(size))
+			// Attempt to load the image from the textures that are already loaded.
+			Texture = graphics.GetTrackedObjectsOfType<GorgonTexture2D>()
+				        .FirstOrDefault(item => string.Equals(item.Name, textureName, StringComparison.OrdinalIgnoreCase));
+
+			if (Texture == null)
 			{
-				// Copy into the memory stream.
-				// GDI+ has some weird issues with streams that 
-				// are embedded within other streams.
-				while (size > 0)
-				{
-					if (size >= 80000)
-					{
-						chunk.ReadRange(buffer);
-						stream.Write(buffer, 0, buffer.Length);
-					}
-					else
-					{
-						chunk.ReadRange(buffer, 0, size);
-						stream.Write(buffer, 0, size);
-					}
-					size -= 80000;
-				}
-				stream.Position = 0;
-				Texture = Image.FromStream(stream);
+				Texture = graphics.Textures.FromStream<GorgonTexture2D>(textureName, chunk.BaseStream, size, new GorgonCodecPNG());
+			}
+			else
+			{
+				chunk.SkipBytes(size);
 			}
 		}
 		#endregion
@@ -176,51 +197,21 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		internal GorgonGlyphTextureBrush()
 		{
-			
 		}
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="GorgonGlyphPathGradientBrush"/> class.
 		/// </summary>
-		/// <param name="textureImage">The image to use as the texture.</param>
+		/// <param name="textureImage">The texture to use.</param>
 		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="textureImage"/> parameter is NULL (Nothing in VB.Net).</exception>
-		public GorgonGlyphTextureBrush(Image textureImage)
+		public GorgonGlyphTextureBrush(GorgonTexture2D textureImage)
 		{
-			Texture = (Image)textureImage.Clone();
-		}
-		#endregion
-
-		#region IDisposable Members
-		/// <summary>
-		/// Releases unmanaged and - optionally - managed resources.
-		/// </summary>
-		/// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
-		private void Dispose(bool disposing)
-		{
-			if (_disposed)
+			if (textureImage == null)
 			{
-				return;
+				throw new ArgumentNullException("textureImage");	
 			}
 
-			if (disposing)
-			{
-				if (Texture != null)
-				{
-					Texture.Dispose();
-				}
-				Texture = null;
-			}
-
-			_disposed = true;
-		}
-
-		/// <summary>
-		/// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-		/// </summary>
-		public void Dispose()
-		{
-			Dispose(true);
-			GC.SuppressFinalize(this);
+			Texture = textureImage;
 		}
 		#endregion
 	}

@@ -536,6 +536,56 @@ namespace GorgonLibrary.IO
 			return data;
 		}
 
+		/// <summary>
+		/// Function to create an array of System.Drawing.Images from an image data object.
+		/// </summary>
+		/// <param name="imageData">Image data to process.</param>
+		/// <returns>A list of GDI+ images.</returns>
+		public static Image[] CreateGDIImagesFromImageData(GorgonImageData imageData)
+		{
+			PixelFormat? format = GetPixelFormat(imageData.Settings.Format);
+			SharpDX.WIC.Bitmap[] bitmaps = null;
+			Image[] images;
+
+			if (format == null)
+			{
+				format = GetPixelFormat(imageData.Settings.Format);
+
+				if (format == null)
+				{
+					throw new GorgonException(GorgonResult.FormatNotSupported,
+											  string.Format(Resources.GORGFX_FORMAT_NOT_SUPPORTED, imageData.Settings.Format));
+				}
+			}
+
+			using (var wic = new GorgonWICImage())
+			{
+				try
+				{
+					bitmaps = wic.CreateWICBitmapsFromImageData(imageData);
+					images = new Image[bitmaps.Length];
+
+					for (int i = 0; i < bitmaps.Length; i++)
+					{
+						images[i] = wic.CreateGDIImageFromWICBitmap(bitmaps[i], format.Value);
+					}
+				}
+				finally
+				{
+					// Clean up.
+					if (bitmaps != null)
+					{
+						foreach (var bitmap in bitmaps)
+						{
+							bitmap.Dispose();
+						}
+					}
+				}
+			}
+
+			return images;
+		}
+
         /// <summary>
         /// Function to create an array of System.Drawing.Images from a given texture.
         /// </summary>
@@ -543,45 +593,10 @@ namespace GorgonLibrary.IO
         /// <returns>A list of GDI+ images.</returns>
         public static Image[] CreateGDIImagesFromTexture(GorgonTexture texture)
         {
-            PixelFormat? format = GetPixelFormat(texture.Settings.Format);
-            SharpDX.WIC.Bitmap[] bitmaps = null;
-            Image[] images;
-
-            if (format == null)
-            {
-	            throw new GorgonException(GorgonResult.FormatNotSupported,
-	                                      string.Format(Resources.GORGFX_FORMAT_NOT_SUPPORTED, texture.Settings.Format));
+			using (var data = GorgonImageData.CreateFromTexture(texture))
+			{
+				return CreateGDIImagesFromImageData(data);
             }
-
-            using (var wic = new GorgonWICImage())
-            {
-                try
-                {                    
-                    using (var data = GorgonImageData.CreateFromTexture(texture))
-                    {   
-                        bitmaps = wic.CreateWICBitmapsFromImageData(data);
-                        images = new Image[bitmaps.Length];
-
-                        for (int i = 0; i < bitmaps.Length; i++)
-                        {
-                            images[i] = wic.CreateGDIImageFromWICBitmap(bitmaps[i], format.Value);
-                        }
-                    }
-                }
-                finally
-                {
-                    // Clean up.
-                    if (bitmaps != null)
-                    {
-                        foreach(var bitmap in bitmaps)
-                        {
-                            bitmap.Dispose();
-                        }
-                    }
-                }
-            }
-
-            return images;
         }
     }
 

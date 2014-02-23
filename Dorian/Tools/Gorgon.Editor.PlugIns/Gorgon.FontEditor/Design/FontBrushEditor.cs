@@ -30,7 +30,9 @@ using System.Drawing;
 using System.Drawing.Design;
 using System.Drawing.Drawing2D;
 using System.Linq;
+using System.Runtime.Versioning;
 using System.Windows.Forms;
+using GorgonLibrary.Editor.FontEditorPlugIn.Properties;
 using GorgonLibrary.Graphics;
 using GorgonLibrary.Math;
 
@@ -103,7 +105,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 
 			try
 			{
-				brushEditor = new formBrushEditor
+				brushEditor = new formBrushEditor(document)
 				              {
 					              BrushType = document.Brush.BrushType
 				              };
@@ -133,7 +135,13 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 			    // Destroy the previous brush.
 			    if (document.Brush.BrushType == GlyphBrushType.Texture)
 			    {
-			        ((GorgonGlyphTextureBrush)document.Brush).Dispose();
+				    var textureBrush = (GorgonGlyphTextureBrush)document.Brush;
+
+				    if ((brushEditor.BrushType != GlyphBrushType.Texture)
+				        || (brushEditor.TextureBrush.Texture != textureBrush.Texture))
+				    {
+					    textureBrush.Texture.Dispose();
+				    }
 			    }
 
 			    switch (brushEditor.BrushType)
@@ -193,21 +201,33 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
                         e.Graphics.FillRectangle(brush, e.Bounds);
                         break;
                     case GlyphBrushType.Texture:
-                        var textureBrush = (GorgonGlyphTextureBrush)sourceBrush;
-                        if (textureBrush.TextureRegion != null)
-                        {
-                            e.Graphics.DrawImage(textureBrush.Texture,
-                                                 e.Bounds,
-                                                 textureBrush.TextureRegion.Value,
-                                                 GraphicsUnit.Pixel);
-                        }
-                        else
-                        {
-                            e.Graphics.DrawImage(textureBrush.Texture,
-                                                 e.Bounds,
-                                                 new Rectangle(0, 0, textureBrush.Texture.Width, textureBrush.Texture.Height), 
-                                                 GraphicsUnit.Pixel);
-                        }
+
+		                var textureBrush = (GorgonGlyphTextureBrush)sourceBrush;
+
+						// If we can't find the image, then display the broken image icon.
+		                if (textureBrush.Texture == null)
+		                {
+							e.Graphics.DrawImage(Resources.image_missing_16x16,
+												 e.Bounds,
+												 new Rectangle(0, 0, Resources.image_missing_16x16.Width, Resources.image_missing_16x16.Height),
+												 GraphicsUnit.Pixel);
+			                return;
+		                }
+
+						// Convert to a GDI image so the property pane can display the texture.
+		                Image gdiImage = textureBrush.Texture.ToGDIImage()[0];
+
+		                e.Graphics.DrawImage(gdiImage,
+		                                     e.Bounds,
+		                                     textureBrush.TextureRegion != null
+			                                     ? textureBrush.Texture.ToPixel(textureBrush.TextureRegion.Value)
+			                                     : new Rectangle(0,
+			                                                     0,
+			                                                     textureBrush.Texture.Settings.Width,
+			                                                     textureBrush.Texture.Settings.Height),
+		                                     GraphicsUnit.Pixel);
+
+		                gdiImage.Dispose();
                         break;
                     case GlyphBrushType.Solid:
 		                var solidBrush = (GorgonGlyphSolidBrush)sourceBrush;

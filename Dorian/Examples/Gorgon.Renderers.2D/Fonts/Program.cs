@@ -154,12 +154,6 @@ namespace Fonts
 							   EndColor = Color.Yellow
 			               };
 
-			var textBrush = new GorgonGlyphTextureBrush(Image.FromFile(GetResourcePath(@"Images\BallDemo.png")))
-			                {
-				                TextureRegion = new Rectangle(64, 0, 64, 64),
-								WrapMode = WrapMode.Tile
-			                };
-
 			var hatchBrush = new GorgonGlyphHatchBrush
 			                 {
 								 HatchStyle = HatchStyle.Percent50,
@@ -171,6 +165,15 @@ namespace Fonts
 
 			// Create our graphics object(s).
 			_graphics = new GorgonGraphics();
+
+			var textBrush = new GorgonGlyphTextureBrush(_graphics.Textures.FromFile<GorgonTexture2D>("Stars",
+				                                                                         GetResourcePath(@"Images\Stars-12.jpg"),
+				                                                                         new GorgonCodecJPEG()))
+			{
+				TextureRegion = new RectangleF(0.0f, 0.0f, 0.5f, 0.5f),
+				WrapMode = WrapMode.Tile
+			};
+
 
 			_renderer = _graphics.Output.Create2DRenderer(_formMain,
 			                                              Settings.Default.ScreenResolution.Width,
@@ -191,8 +194,9 @@ namespace Fonts
 			                                   {
 												   AntiAliasingMode = FontAntiAliasMode.AntiAliasHQ,
 												   FontFamilyName = "Times New Roman",
+												   FontStyle = FontStyle.Bold,
 												   Size = 24.0f,
-												   Brush = pathBrush,
+												   Brush = textBrush,
 												   KerningPairs =
 												   {
 													   {
@@ -211,6 +215,8 @@ namespace Fonts
 			_font.Save(@"d:\unpak\fontTest.gorFont");
 
 			_font.Dispose();
+
+			textBrush.Texture.Dispose();
 			
 			_font = _graphics.Fonts.FromFile("TestFont", @"d:\unpak\fontTest.gorFont");
 		}

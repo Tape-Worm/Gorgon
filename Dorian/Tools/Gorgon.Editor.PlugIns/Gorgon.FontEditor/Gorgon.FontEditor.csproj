@@ -112,6 +112,8 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Gorgon2.ico" />
+    <None Include="Resources\open_image_16x16.png" />
+    <None Include="Resources\image_missing_16x16.png" />
     <None Include="Resources\remove_image_16x16.png" />
     <None Include="Resources\glyph_select_16x16.png" />
     <None Include="Resources\cut_16x16.png" />
@@ -175,6 +177,7 @@
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup />
