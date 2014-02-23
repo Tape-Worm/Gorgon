@@ -438,6 +438,56 @@ namespace GorgonLibrary.Graphics
 			result = new Vector2(pixel.X / Settings.Width, pixel.Y / Settings.Height);
 		}
 
+		/// <summary>
+		/// Function to convert a pixel coordinate rectangle into a texel space coordinate rectangle.
+		/// </summary>
+		/// <param name="pixel">The pixel coordinates to convert.</param>
+		/// <param name="result">The texel space location and size of the pixel rectangle on the texture.</param>
+		public void ToTexel(ref RectangleF pixel, out RectangleF result)
+		{
+			result = new RectangleF(pixel.X / Settings.Width,
+			                        pixel.Y / Settings.Height,
+			                        pixel.Width / Settings.Width,
+			                        pixel.Height / Settings.Height);
+		}
+
+		/// <summary>
+		/// Function to convert a texel coordinate rectangle into a pixel space coordinate rectangle.
+		/// </summary>
+		/// <param name="texel">The texel coordinates to convert.</param>
+		/// <param name="result">The pixel space location and size of the texel rectangle on the texture.</param>
+		public void ToPixel(ref RectangleF texel, out RectangleF result)
+		{
+			result = new RectangleF(texel.X * Settings.Width,
+									texel.Y * Settings.Height,
+									texel.Width * Settings.Width,
+									texel.Height * Settings.Height);
+		}
+
+		/// <summary>
+		/// Function to convert a pixel coordinate rectangle into a texel space coordinate rectangle.
+		/// </summary>
+		/// <param name="pixel">The pixel coordinates to convert.</param>
+		public RectangleF ToTexel(RectangleF pixel)
+		{
+			return new RectangleF(pixel.X / Settings.Width,
+									pixel.Y / Settings.Height,
+									pixel.Width / Settings.Width,
+									pixel.Height / Settings.Height);
+		}
+
+		/// <summary>
+		/// Function to convert a texel coordinate rectangle into a pixel space coordinate rectangle.
+		/// </summary>
+		/// <param name="texel">The texel coordinates to convert.</param>
+		public RectangleF ToPixel(RectangleF texel)
+		{
+			return new RectangleF(texel.X * Settings.Width,
+			                      texel.Y * Settings.Height,
+			                      texel.Width * Settings.Width,
+			                      texel.Height * Settings.Height);
+		}
+
 	    /// <summary>
 	    /// Function to copy a texture subresource from another texture.
 	    /// </summary>

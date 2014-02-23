@@ -109,8 +109,9 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Function to read the brush elements in from a chunked file.
 		/// </summary>
+		/// <param name="graphics">The graphics interface.</param>
 		/// <param name="chunk">Chunk reader used to read the data.</param>
-		abstract internal void Read(GorgonChunkReader chunk);
+		abstract internal void Read(GorgonGraphics graphics, GorgonChunkReader chunk);
 		#endregion
 	}
 }

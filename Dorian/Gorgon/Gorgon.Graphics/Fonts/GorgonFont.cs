@@ -517,7 +517,7 @@ namespace GorgonLibrary.Graphics
 
 				if (Settings.Brush != null)
 				{
-					Settings.Brush.Read(chunk);
+					Settings.Brush.Read(Graphics, chunk);
 				}
 
 				chunk.End();
@@ -1386,19 +1386,6 @@ namespace GorgonLibrary.Graphics
 			if (disposing)
 			{
 				Graphics.RemoveTrackedObject(this);
-
-				if ((Settings != null) && (Settings.Brush != null))
-				{
-					// We have to destroy any brushes we're using here.  Otherwise
-					// we may end up with leaked memory.
-					var textureBrush = Settings.Brush as GorgonGlyphTextureBrush;
-
-					if (textureBrush != null)
-					{
-						textureBrush.Dispose();
-						Settings.Brush = null;
-					}
-				}
 
 				if (_charBitmap != null)
 				{
