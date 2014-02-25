@@ -83,7 +83,7 @@ namespace GorgonLibrary.Editor
 		: IDisposable, INamedObject
 	{
 		#region Variables.
-        private ContentPanel _contentControl;		// Control used to edit/display the content.
+		private ContentPanel _contentControl;		// Control used to edit/display the content.
 		private string _name = "Content";			// Name of the content.
 	    private bool _disposed;						// Flag to indicate that the object was disposed.
 		#endregion
@@ -97,16 +97,6 @@ namespace GorgonLibrary.Editor
         #endregion
 
         #region Properties.
-		/// <summary>
-		/// Property to set or return the meta data for the content.
-		/// </summary>
-		[Browsable(false)]
-	    public EditorMetaDataFile MetaData
-	    {
-		    get;
-		    set;
-	    }
-
         /// <summary>
         /// Property to return the type descriptor for this content.
         /// </summary>
@@ -223,6 +213,16 @@ namespace GorgonLibrary.Editor
 				OnContentPropertyChanged("Name", _name);
 			}
 		}
+
+		/// <summary>
+		/// Property to return the list of dependencies for this content.
+		/// </summary>
+		[Browsable(false)]
+	    public EditorMetaDataItemCollection Dependencies
+	    {
+		    get;
+		    internal set;
+	    }
 		#endregion
 
 		#region Methods.
@@ -244,6 +244,15 @@ namespace GorgonLibrary.Editor
 		/// </summary>
 		/// <param name="stream">Stream containing the content data.</param>
 	    protected abstract void OnRead(Stream stream);
+
+		/// <summary>
+		/// Function to load a dependency file.
+		/// </summary>
+		/// <param name="metaData">Meta data item to load.</param>
+		/// <param name="stream">Stream containing the dependency file.</param>
+	    protected virtual void OnLoadDependencyFile(EditorMetaDataItem metaData, Stream stream)
+	    {
+	    }
 
         /// <summary>
         /// Function called when the name is about to be changed.
@@ -289,6 +298,31 @@ namespace GorgonLibrary.Editor
                 descriptor.DefaultValue = descriptor.GetValue<object>();
             }
         }
+
+		/// <summary>
+		/// Function to read a dependency file from a stream.
+		/// </summary>
+		/// <param name="item">Metadata item for the dependency.</param>
+		/// <param name="stream">Stream containing the file to read.</param>
+	    internal void LoadDependencyFile(EditorMetaDataItem item, Stream stream)
+	    {
+			if (stream == null)
+			{
+				throw new ArgumentNullException("stream");
+			}
+
+			if (!stream.CanRead)
+			{
+				throw new IOException(Resources.GOREDIT_STREAM_WRITE_ONLY);
+			}
+
+			if (stream.Position >= stream.Length)
+			{
+				throw new EndOfStreamException(Resources.GOREDIT_STREAM_EOS);
+			}
+
+			OnLoadDependencyFile(item, stream);
+		}
 
 		/// <summary>
 		/// Function to read the content from a stream.
@@ -403,6 +437,7 @@ namespace GorgonLibrary.Editor
 		/// <param name="name">Name of the content.</param>
 		protected ContentObject(string name)
 		{
+			Dependencies = new EditorMetaDataItemCollection();
 			TypeDescriptor = new ContentTypeDescriptor(this);
             TypeDescriptor.Enumerate(GetType());
 

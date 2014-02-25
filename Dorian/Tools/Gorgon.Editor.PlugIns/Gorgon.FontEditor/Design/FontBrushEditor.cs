@@ -30,6 +30,7 @@ using System.Drawing;
 using System.Drawing.Design;
 using System.Drawing.Drawing2D;
 using System.Linq;
+using System.Net.Mime;
 using System.Runtime.Versioning;
 using System.Windows.Forms;
 using GorgonLibrary.Editor.FontEditorPlugIn.Properties;
@@ -102,10 +103,16 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 			var descriptor = (ContentTypeDescriptor)context.Instance;
             var document = (GorgonFontContent)descriptor.Content;
 		    formBrushEditor brushEditor = null;
+	        EditorMetaDataItem textureBrushPath = null;
 
 			try
 			{
-				brushEditor = new formBrushEditor(document)
+				if (document.Dependencies.Contains(GorgonFontContent.TextureBrushDependency))
+				{
+					textureBrushPath = document.Dependencies[GorgonFontContent.TextureBrushDependency];
+				}
+
+				brushEditor = new formBrushEditor(document, textureBrushPath)
 				              {
 					              BrushType = document.Brush.BrushType
 				              };
@@ -131,36 +138,43 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 			    {
 			        return brush;
 			    }
-
+				
 			    // Destroy the previous brush.
 			    if (document.Brush.BrushType == GlyphBrushType.Texture)
 			    {
 				    var textureBrush = (GorgonGlyphTextureBrush)document.Brush;
 
-				    if ((brushEditor.BrushType != GlyphBrushType.Texture)
-				        || (brushEditor.TextureBrush.Texture != textureBrush.Texture))
-				    {
-					    textureBrush.Texture.Dispose();
-				    }
+					if (((brushEditor.BrushType != GlyphBrushType.Texture)
+						|| (brushEditor.TextureBrush.Texture != textureBrush.Texture))
+						&& (textureBrush.Texture != null))
+					{
+						textureBrush.Texture.Dispose();
+					}
 			    }
 
 			    switch (brushEditor.BrushType)
 			    {
 			        case GlyphBrushType.Texture:
+					    textureBrushPath = brushEditor.TextureBrushPath;
 			            brush = brushEditor.TextureBrush;
 			            break;
 			        case GlyphBrushType.Solid:
+						textureBrushPath = null;
 			            brush = brushEditor.SolidBrush;
 			            break;
 			        case GlyphBrushType.LinearGradient:
+						textureBrushPath = null;
 			            brush = brushEditor.GradientBrush;
 			            break;
 			        case GlyphBrushType.Hatched:
+						textureBrushPath = null;
 			            brush = brushEditor.PatternBrush;
 			            break;
 			    }
 
-			    return brush;
+				document.Dependencies[GorgonFontContent.TextureBrushDependency] = textureBrushPath;
+
+				return brush;
 			}
 			finally
 			{

@@ -28,6 +28,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Windows.Forms;
 using GorgonLibrary.Editor.Properties;
 using GorgonLibrary.IO;
@@ -99,6 +100,15 @@ namespace GorgonLibrary.Editor
 		/// Property to set or return the method to call when the current content is persisted back to the file system.
 		/// </summary>
 	    public static Action ContentSaved
+	    {
+		    get;
+		    set;
+	    }
+
+		/// <summary>
+		/// Property to set or return the method to call when a dependency needs to be loaded for content..
+		/// </summary>
+	    public static Func<string, GorgonFileSystemFileEntry> OnGetDependency
 	    {
 		    get;
 		    set;
@@ -370,12 +380,7 @@ namespace GorgonLibrary.Editor
 		        settings.CreateContent = false;
 		    }
 
-			EditorMetaDataFile metaData = plugIn.GetMetaData(file.FullPath);
-
             ContentObject content = plugIn.CreateContentObject(settings);
-
-			// Attach our meta data.
-			content.MetaData = metaData;
 
             Debug.Assert(_currentContentObject != null, "Content should not be NULL!");
 
@@ -384,6 +389,42 @@ namespace GorgonLibrary.Editor
             // Load in the content data.
 		    using(Stream stream = file.OpenStream(false))
 		    {
+			    EditorMetaDataFile metaData = Program.EditorMetaData;
+
+				// Check for dependencies.
+			    if (metaData.MetaDataItems.Contains(EditorMetaDataFile.ContentDependencyFiles))
+			    {
+				    EditorMetaDataItem dependencies = metaData.MetaDataItems[EditorMetaDataFile.ContentDependencyFiles];
+				    EditorMetaDataItem fileList = dependencies.MetaDataItems.FirstOrDefault((EditorMetaDataItem item) =>
+				                                                                            string.Equals("Content_" + file.FullPath.Replace('/', '_'),
+				                                                                                          item.Name,
+				                                                                                          StringComparison
+					                                                                                          .OrdinalIgnoreCase));
+
+				    if (fileList != null)
+				    {
+						content.Dependencies.Clear();
+					    content.Dependencies.AddRange(fileList.MetaDataItems);
+
+					    foreach (EditorMetaDataItem dependencyFile in content.Dependencies)
+					    {
+							GorgonFileSystemFileEntry externalFile = OnGetDependency(dependencyFile.Value);
+
+							if (externalFile == null)
+							{
+								// TODO: Change this to a callback which displays a warning and continue the loop.
+								throw new FileNotFoundException(string.Format(Resources.GOREDIT_FILE_NOT_FOUND, dependencyFile.Name));
+							}
+
+							// Read the external content.
+						    using (Stream dependencyStream = externalFile.OpenStream(false))
+						    {
+							    content.LoadDependencyFile(dependencyFile, dependencyStream);
+						    }
+					    }
+				    }
+			    }
+
 		        content.Read(stream);
 		    }
 
@@ -412,13 +453,53 @@ namespace GorgonLibrary.Editor
 				Current.Persist(contentStream);
 			}
 
-			// Persist any meta data we might have.
-			if (Current.MetaData != null)
+			EditorMetaDataFile metaData = Program.EditorMetaData;
+			EditorMetaDataItem dependencies;
+			EditorMetaDataItem dependencyContent = null;
+
+			if (!metaData.MetaDataItems.Contains(EditorMetaDataFile.ContentDependencyFiles))
 			{
-				Current.MetaData.Save();
+				dependencies = new EditorMetaDataItem(EditorMetaDataFile.ContentDependencyFiles);
+				metaData.MetaDataItems.Add(dependencies);
+			}
+			else
+			{
+				dependencies = metaData.MetaDataItems[EditorMetaDataFile.ContentDependencyFiles];
 			}
 
-            _contentChanged = false;
+			string itemName = "Content_" + file.FullPath.Replace('/','_');
+
+			if (dependencies.MetaDataItems.Contains(itemName))
+			{
+				dependencyContent = dependencies.MetaDataItems[itemName];
+			}
+
+			// Persist any dependencies.
+			if (Current.Dependencies.Count > 0)
+			{
+				if (dependencyContent == null)
+				{
+					dependencyContent = new EditorMetaDataItem(itemName);
+					dependencies.MetaDataItems.Add(dependencyContent);
+				}
+
+				// Refresh the dependency list.
+				dependencyContent.MetaDataItems.Clear();
+				dependencyContent.MetaDataItems.AddRange(Current.Dependencies);
+			}
+			else
+			{
+				// If we don't have any dependencies, then remove this item from the dependency list.
+				if (dependencyContent != null)
+				{
+					dependencies.MetaDataItems.Remove(dependencyContent);
+				}
+			}
+
+			// Persist the metadata back to the file system.
+			metaData.Save();
+
+			_contentChanged = false;
 
 			// Indicate that we've saved the content.
 			if (ContentSaved != null)

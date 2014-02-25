@@ -289,7 +289,8 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
         /// <summary>
         /// Function to import content from a file system file.
         /// </summary>
-        /// <param name="file">File containing the image to load.</param>
+        /// <param name="fileName">The name of the file to load.</param>
+        /// <param name="imageDataStream">The stream containing the image data.</param>
         /// <param name="newWidth">[Optional] The new width of the image.</param>
         /// <param name="newHeight">[Optional] The new height of the image.</param>
         /// <param name="clip">[Optional] TRUE to clip the image when changing its size, FALSE to stretch it.</param>
@@ -301,18 +302,30 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
         /// Leave the <paramref name="newWidth" /> and <paramref name="newHeight" /> values at 0 to preserve the width and height of the image.  The overridden height will
         /// only apply to 2D, Cube and 3D image types.  Leave the <paramref name="newFormat" /> parameter at Unknown to preserve the image format.
         /// </remarks>
-        IImageEditorContent IImageEditorPlugIn.ImportContent(GorgonFileSystemFileEntry file, int newWidth, int newHeight, bool clip, BufferFormat newFormat)
+        IImageEditorContent IImageEditorPlugIn.ImportContent(string fileName, Stream imageDataStream, int newWidth, int newHeight, bool clip, BufferFormat newFormat)
         {
             GorgonImageCodec codec;
 
-            if (file == null)
+	        if (fileName == null)
+	        {
+		        throw new ArgumentNullException("fileName");
+	        }
+
+	        fileName = Path.GetFileName(fileName);
+
+	        if (string.IsNullOrWhiteSpace(fileName))
+	        {
+		        throw new ArgumentException(Resources.GORIMG_PARAMETER_MUST_NOT_BE_EMPTY);
+	        }
+
+            if (imageDataStream == null)
             {
-                throw new ArgumentNullException("file");
+                throw new ArgumentNullException("imageDataStream");
             }
 
-            if (!Codecs.TryGetValue(new GorgonFileExtension(file.Extension), out codec))
+            if (!Codecs.TryGetValue(new GorgonFileExtension(Path.GetExtension(fileName)), out codec))
             {
-                throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GORIMG_NO_CODEC, file.Name));
+                throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GORIMG_NO_CODEC, fileName));
             }
 
             // Return the codec to the default overrides.
@@ -321,8 +334,8 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
             codec.Height = newHeight;
             codec.Width = newWidth;
 
-            var content = new GorgonImageContent(file.Name, codec);
-            content.Load(file);
+            var content = new GorgonImageContent(fileName, codec);
+            content.Load(fileName, imageDataStream);
 
             // Reset the codec to its default settings.
             codec.Clip = true;

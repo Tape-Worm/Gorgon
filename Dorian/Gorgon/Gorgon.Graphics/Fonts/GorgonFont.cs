@@ -513,16 +513,18 @@ namespace GorgonLibrary.Graphics
 				chunk.Begin("BRSHDATA");
 				var brushType = chunk.Read<GlyphBrushType>();
 
-				Settings.Brush = GorgonGlyphBrush.CreateBrush(brushType);
+				Settings.Brush = GorgonGlyphBrush.CreateBrush(brushType, Graphics);
 
 				if (Settings.Brush != null)
 				{
-					Settings.Brush.Read(Graphics, chunk);
+					Settings.Brush.Read(chunk);
 				}
 
 				chunk.End();
 			}
-			else if (Settings.Brush == null)
+			
+			// If we didn't get a brush, then create a default brush.
+			if (Settings.Brush == null)
 			{
 				Settings.Brush = new GorgonGlyphSolidBrush();
 			}

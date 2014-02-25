@@ -227,84 +227,87 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 
 		        if (imageFileBrowser.ShowDialog(ParentForm) == DialogResult.OK)
 		        {
-		            using(var imageContent = _content.ImageEditor.ImportContent(imageFileBrowser.Files[0],
-		                                                                        0,
-		                                                                        0,
-		                                                                        true,
-		                                                                        BufferFormat.R8G8B8A8_UIntNormal))
-		            {
-		                // We can only use 2D content.
-		                if (imageContent.Image.Settings.ImageType != ImageType.Image2D)
-		                {
-		                    GorgonDialogs.ErrorBox(ParentForm, string.Format(Resources.GORFNT_IMAGE_NOT_2D, imageContent.Name));
-		                    return;
-		                }
+			        using (var fileStream = imageFileBrowser.Files[0].OpenStream(false))
+			        {
+				        using (var imageContent = _content.ImageEditor.ImportContent(imageFileBrowser.Files[0].Name, fileStream,
+				                                                                     0,
+				                                                                     0,
+				                                                                     true,
+				                                                                     BufferFormat.R8G8B8A8_UIntNormal))
+				        {
+					        // We can only use 2D content.
+					        if (imageContent.Image.Settings.ImageType != ImageType.Image2D)
+					        {
+						        GorgonDialogs.ErrorBox(ParentForm, string.Format(Resources.GORFNT_IMAGE_NOT_2D, imageContent.Name));
+						        return;
+					        }
 
-		                // If the size is mismatched with the font textures then ask the user if they wish to resize the 
-		                // texture.
-		                if ((imageContent.Image.Settings.Width != _content.Font.Settings.TextureSize.Width)
-		                    || (imageContent.Image.Settings.Height != _content.Font.Settings.TextureSize.Height))
-		                {
-		                    ConfirmationResult result = GorgonDialogs.ConfirmBox(ParentForm,
-		                                                                         string.Format(
-		                                                                                       Resources
-		                                                                                           .GORFNT_IMAGE_SIZE_MISMATCH_MSG,
-		                                                                                       imageContent.Image.Settings
-		                                                                                                   .Width,
-		                                                                                       imageContent.Image.Settings
-		                                                                                                   .Height,
-		                                                                                       _content.Font.Settings
-		                                                                                               .TextureSize.Width,
-		                                                                                       _content.Font.Settings
-		                                                                                               .TextureSize.Height),
-		                                                                         true,
-		                                                                         false);
+					        // If the size is mismatched with the font textures then ask the user if they wish to resize the 
+					        // texture.
+					        if ((imageContent.Image.Settings.Width != _content.Font.Settings.TextureSize.Width)
+					            || (imageContent.Image.Settings.Height != _content.Font.Settings.TextureSize.Height))
+					        {
+						        ConfirmationResult result = GorgonDialogs.ConfirmBox(ParentForm,
+						                                                             string.Format(
+						                                                                           Resources
+							                                                                           .GORFNT_IMAGE_SIZE_MISMATCH_MSG,
+						                                                                           imageContent.Image.Settings
+						                                                                                       .Width,
+						                                                                           imageContent.Image.Settings
+						                                                                                       .Height,
+						                                                                           _content.Font.Settings
+						                                                                                   .TextureSize.Width,
+						                                                                           _content.Font.Settings
+						                                                                                   .TextureSize.Height),
+						                                                             true,
+						                                                             false);
 
-		                    if (result == ConfirmationResult.Cancel)
-		                    {
-		                        return;
-		                    }
+						        if (result == ConfirmationResult.Cancel)
+						        {
+							        return;
+						        }
 
-		                    // Resize or clip the image.
-		                    imageContent.Image.Resize(_content.Font.Settings.TextureSize.Width,
-		                                              _content.Font.Settings.TextureSize.Height,
-		                                              result == ConfirmationResult.No,
-		                                              ImageFilter.Point);
-		                }
+						        // Resize or clip the image.
+						        imageContent.Image.Resize(_content.Font.Settings.TextureSize.Width,
+						                                  _content.Font.Settings.TextureSize.Height,
+						                                  result == ConfirmationResult.No,
+						                                  ImageFilter.Point);
+					        }
 
 
-						// Remove any array indices from the texture, we don't need them for font glyphs.
-			            var settings = (GorgonTexture2DSettings)imageContent.Image.Settings.Clone();
-			            settings.ArrayCount = 1;
+					        // Remove any array indices from the texture, we don't need them for font glyphs.
+					        var settings = (GorgonTexture2DSettings)imageContent.Image.Settings.Clone();
+					        settings.ArrayCount = 1;
 
-		                var texture = _content.Graphics.Textures.CreateTexture<GorgonTexture2D>(imageContent.Name,
-		                                                                                        imageContent.Image,
-																								settings);
+					        var texture = _content.Graphics.Textures.CreateTexture<GorgonTexture2D>(imageContent.Name,
+					                                                                                imageContent.Image,
+					                                                                                settings);
 
-		                GorgonGlyph newGlyph =
-		                    _content.Font.Settings.Glyphs.FirstOrDefault(item => item.Character == _selectedGlyph.Character);
+					        GorgonGlyph newGlyph =
+						        _content.Font.Settings.Glyphs.FirstOrDefault(item => item.Character == _selectedGlyph.Character);
 
-		                if (newGlyph != null)
-		                {
-		                    _content.Font.Settings.Glyphs.Remove(newGlyph);
+					        if (newGlyph != null)
+					        {
+						        _content.Font.Settings.Glyphs.Remove(newGlyph);
 
-		                    // If this is the only glyph referencing this texture, then dump it.
-		                    if (!_content.Font.Glyphs.Any(item => item.Texture == newGlyph.Texture && item != newGlyph))
-		                    {
-		                        newGlyph.Texture.Dispose();
-		                    }
-		                }
+						        // If this is the only glyph referencing this texture, then dump it.
+						        if (!_content.Font.Glyphs.Any(item => item.Texture == newGlyph.Texture && item != newGlyph))
+						        {
+							        newGlyph.Texture.Dispose();
+						        }
+					        }
 
-		                // Default to the full size of the texture.
-		                newGlyph = new GorgonGlyph(_selectedGlyph.Character,
-		                                           texture,
-		                                           new Rectangle(0, 0, texture.Settings.Width, texture.Settings.Height),
-		                                           Vector2.Zero,
-		                                           Vector3.Zero);
+					        // Default to the full size of the texture.
+					        newGlyph = new GorgonGlyph(_selectedGlyph.Character,
+					                                   texture,
+					                                   new Rectangle(0, 0, texture.Settings.Width, texture.Settings.Height),
+					                                   Vector2.Zero,
+					                                   Vector3.Zero);
 
-		                _content.Font.Settings.Glyphs.Add(newGlyph);
-		                _content.UpdateFont();
-		            }
+					        _content.Font.Settings.Glyphs.Add(newGlyph);
+					        _content.UpdateFont();
+				        }
+			        }
 		        }
 
 		        GorgonFontEditorPlugIn.Settings.LastTextureImportDialogView = imageFileBrowser.FileView;

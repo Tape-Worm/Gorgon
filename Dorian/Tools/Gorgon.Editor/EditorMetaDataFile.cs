@@ -43,6 +43,11 @@ namespace GorgonLibrary.Editor
 	{
 		#region Constants.
 		private const string MetaDataRootName = "Gorgon.Editor.MetaData";           // Name of the root node in the meta data.
+
+		/// <summary>
+		/// Meta data group for content file dependencies.
+		/// </summary>
+		public const string ContentDependencyFiles = "ContentFileDependencies";
 		#endregion
 
 		#region Classes.
@@ -102,7 +107,7 @@ namespace GorgonLibrary.Editor
 		/// <summary>
 		/// Property to return the list of meta data items for the meta data.
 		/// </summary>
-		public IDictionary<string, EditorMetaDataItem> MetaDataItems
+		public EditorMetaDataItemCollection MetaDataItems
 		{
 			get;
 			private set;
@@ -146,7 +151,7 @@ namespace GorgonLibrary.Editor
 
 				item.Deserialize(element);
 
-				MetaDataItems.Add(item.Name, item);
+				MetaDataItems.Add(item);
 			}
 		}
 
@@ -213,7 +218,7 @@ namespace GorgonLibrary.Editor
 			// Rebuild it.
 			foreach (var item in MetaDataItems)
 			{
-				root.Add(item.Value.Serialize());
+				root.Add(item.Serialize());
 			}
 
 			_metaDataFile = ScratchArea.ScratchFiles.WriteFile(Path, null);
@@ -251,7 +256,7 @@ namespace GorgonLibrary.Editor
 				throw new ArgumentException(Resources.GOREDIT_PARAMETER_MUST_NOT_BE_EMPTY, "name");
 			}
 
-			MetaDataItems = new Dictionary<string, EditorMetaDataItem>(new MetaDataNameComparer());
+			MetaDataItems = new EditorMetaDataItemCollection();
 
 			Name = name.FormatFileName();
 

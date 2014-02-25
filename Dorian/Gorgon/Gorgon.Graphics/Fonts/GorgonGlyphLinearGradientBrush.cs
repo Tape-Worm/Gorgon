@@ -226,9 +226,8 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Function to read the brush elements in from a chunked file.
 		/// </summary>
-		/// <param name="graphics">The graphics interface.</param>
 		/// <param name="chunk">Chunk reader used to read the data.</param>
-		internal override void Read(GorgonGraphics graphics, IO.GorgonChunkReader chunk)
+		internal override void Read(IO.GorgonChunkReader chunk)
 		{
 			InterpolationWeights.Clear();
 			InterpolationColors.Clear();

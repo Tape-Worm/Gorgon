@@ -76,8 +76,9 @@ namespace GorgonLibrary.Graphics
 		/// Function to create a glyph brush object.
 		/// </summary>
 		/// <param name="type">Type of glyph brush object.</param>
+		/// <param name="graphics">Graphics interface required by texture brush type.</param>
 		/// <returns>The glyph brush object.</returns>
-		internal static GorgonGlyphBrush CreateBrush(GlyphBrushType type)
+		internal static GorgonGlyphBrush CreateBrush(GlyphBrushType type, GorgonGraphics graphics)
 		{
 			switch (type)
 			{
@@ -86,7 +87,7 @@ namespace GorgonLibrary.Graphics
 				case GlyphBrushType.LinearGradient:
 					return new GorgonGlyphLinearGradientBrush();
 				case GlyphBrushType.Texture:
-					return new GorgonGlyphTextureBrush();
+					return new GorgonGlyphTextureBrush(graphics);
 				case GlyphBrushType.Hatched:
 					return new GorgonGlyphHatchBrush();
 				default:
@@ -109,9 +110,8 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Function to read the brush elements in from a chunked file.
 		/// </summary>
-		/// <param name="graphics">The graphics interface.</param>
 		/// <param name="chunk">Chunk reader used to read the data.</param>
-		abstract internal void Read(GorgonGraphics graphics, GorgonChunkReader chunk);
+		abstract internal void Read(GorgonChunkReader chunk);
 		#endregion
 	}
 }

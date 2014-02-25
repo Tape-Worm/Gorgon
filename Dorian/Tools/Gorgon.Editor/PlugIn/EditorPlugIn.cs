@@ -24,10 +24,7 @@
 // 
 #endregion
 
-using System;
-using System.Collections.Generic;
 using GorgonLibrary.Graphics;
-using GorgonLibrary.IO;
 using GorgonLibrary.PlugIns;
 
 namespace GorgonLibrary.Editor

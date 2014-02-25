@@ -186,6 +186,15 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to &amp;Cancel.
+        /// </summary>
+        internal static string GORFNT_BUTTON_CANCEL_TEXT {
+            get {
+                return ResourceManager.GetString("GORFNT_BUTTON_CANCEL_TEXT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Clip the glyph from a texture..
         /// </summary>
         internal static string GORFNT_BUTTON_CLIP_GLYPH_TIP {
@@ -231,6 +240,15 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to &amp;OK.
+        /// </summary>
+        internal static string GORFNT_BUTTON_OK_TEXT {
+            get {
+                return ResourceManager.GetString("GORFNT_BUTTON_OK_TEXT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Gorgon Font File.
         /// </summary>
         internal static string GORFNT_CONTENT_EXTENSION_DESC {
@@ -272,6 +290,15 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Properties {
         internal static string GORFNT_DLG_BACKGROUND_COLOR_TEXT {
             get {
                 return ResourceManager.GetString("GORFNT_DLG_BACKGROUND_COLOR_TEXT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Brush Editor.
+        /// </summary>
+        internal static string GORFNT_DLG_BRUSH_EDITOR_TEXT {
+            get {
+                return ResourceManager.GetString("GORFNT_DLG_BRUSH_EDITOR_TEXT", resourceCulture);
             }
         }
         
@@ -504,6 +531,15 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Brush Type:.
+        /// </summary>
+        internal static string GORFNT_PROP_VALUE_BRUSH_TYPE {
+            get {
+                return ResourceManager.GetString("GORFNT_PROP_VALUE_BRUSH_TYPE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Clamp.
         /// </summary>
         internal static string GORFNT_PROP_VALUE_CLAMP {
@@ -522,6 +558,24 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Height:.
+        /// </summary>
+        internal static string GORFNT_PROP_VALUE_HEIGHT {
+            get {
+                return ResourceManager.GetString("GORFNT_PROP_VALUE_HEIGHT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Left:.
+        /// </summary>
+        internal static string GORFNT_PROP_VALUE_LEFT {
+            get {
+                return ResourceManager.GetString("GORFNT_PROP_VALUE_LEFT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to None.
         /// </summary>
         internal static string GORFNT_PROP_VALUE_NONE {
@@ -531,11 +585,31 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Open texture.
+        /// </summary>
+        internal static string GORFNT_PROP_VALUE_OPEN_TEXTURE {
+            get {
+                return ResourceManager.GetString("GORFNT_PROP_VALUE_OPEN_TEXTURE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Pattern brush.
         /// </summary>
         internal static string GORFNT_PROP_VALUE_PATTERN_BRUSH {
             get {
                 return ResourceManager.GetString("GORFNT_PROP_VALUE_PATTERN_BRUSH", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Selection area: {0:####0}x{1:####0} - {2:####0}x{3:####0}
+        ///Width:{4:####0}
+        ///Height:{5:####0}.
+        /// </summary>
+        internal static string GORFNT_PROP_VALUE_SELECTLABEL {
+            get {
+                return ResourceManager.GetString("GORFNT_PROP_VALUE_SELECTLABEL", resourceCulture);
             }
         }
         
@@ -594,11 +668,38 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Top:.
+        /// </summary>
+        internal static string GORFNT_PROP_VALUE_TOP {
+            get {
+                return ResourceManager.GetString("GORFNT_PROP_VALUE_TOP", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Unknown brush.
         /// </summary>
         internal static string GORFNT_PROP_VALUE_UNKNOWN_BRUSH {
             get {
                 return ResourceManager.GetString("GORFNT_PROP_VALUE_UNKNOWN_BRUSH", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Width:.
+        /// </summary>
+        internal static string GORFNT_PROP_VALUE_WIDTH {
+            get {
+                return ResourceManager.GetString("GORFNT_PROP_VALUE_WIDTH", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Wrapping mode:.
+        /// </summary>
+        internal static string GORFNT_PROP_VALUE_WRAP_MODE {
+            get {
+                return ResourceManager.GetString("GORFNT_PROP_VALUE_WRAP_MODE", resourceCulture);
             }
         }
         

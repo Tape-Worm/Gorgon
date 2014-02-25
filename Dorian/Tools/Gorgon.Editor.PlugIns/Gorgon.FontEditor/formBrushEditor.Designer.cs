@@ -35,6 +35,7 @@
 			this.pageSolid = new KRBTabControl.TabPageEx();
 			this.colorSolidBrush = new Fetze.WinFormsColor.ColorPickerPanel();
 			this.pageTexture = new KRBTabControl.TabPageEx();
+			this.labelInfo = new System.Windows.Forms.Label();
 			this.buttonOpen = new System.Windows.Forms.Button();
 			this.panelTextureDisplay = new System.Windows.Forms.Panel();
 			this.comboWrapMode = new System.Windows.Forms.ComboBox();
@@ -42,15 +43,15 @@
 			this.numericWidth = new System.Windows.Forms.NumericUpDown();
 			this.numericY = new System.Windows.Forms.NumericUpDown();
 			this.numericX = new System.Windows.Forms.NumericUpDown();
-			this.label6 = new System.Windows.Forms.Label();
-			this.label5 = new System.Windows.Forms.Label();
-			this.label4 = new System.Windows.Forms.Label();
-			this.label3 = new System.Windows.Forms.Label();
-			this.label2 = new System.Windows.Forms.Label();
+			this.labelWrapMode = new System.Windows.Forms.Label();
+			this.labelTexHeight = new System.Windows.Forms.Label();
+			this.labelTexWidth = new System.Windows.Forms.Label();
+			this.labelTexTop = new System.Windows.Forms.Label();
+			this.labelTexLeft = new System.Windows.Forms.Label();
 			this.panel1 = new System.Windows.Forms.Panel();
 			this.panel2 = new System.Windows.Forms.Panel();
 			this.comboBrushType = new System.Windows.Forms.ComboBox();
-			this.label1 = new System.Windows.Forms.Label();
+			this.labelBrushType = new System.Windows.Forms.Label();
 			this.imageFileBrowser = new GorgonLibrary.Editor.EditorFileBrowser();
 			this.tabBrushEditor.SuspendLayout();
 			this.pageSolid.SuspendLayout();
@@ -79,7 +80,7 @@
 			this.buttonCancel.Name = "buttonCancel";
 			this.buttonCancel.Size = new System.Drawing.Size(87, 28);
 			this.buttonCancel.TabIndex = 2;
-			this.buttonCancel.Text = "Cancel";
+			this.buttonCancel.Text = "&Cancel";
 			this.buttonCancel.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
 			this.buttonCancel.UseVisualStyleBackColor = false;
 			// 
@@ -100,7 +101,7 @@
 			this.buttonOK.Name = "buttonOK";
 			this.buttonOK.Size = new System.Drawing.Size(87, 28);
 			this.buttonOK.TabIndex = 1;
-			this.buttonOK.Text = "OK";
+			this.buttonOK.Text = "&OK";
 			this.buttonOK.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
 			this.buttonOK.UseVisualStyleBackColor = false;
 			this.buttonOK.Click += new System.EventHandler(this.buttonOK_Click);
@@ -164,6 +165,7 @@
 			// pageTexture
 			// 
 			this.pageTexture.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(51)))), ((int)(((byte)(51)))), ((int)(((byte)(51)))));
+			this.pageTexture.Controls.Add(this.labelInfo);
 			this.pageTexture.Controls.Add(this.buttonOpen);
 			this.pageTexture.Controls.Add(this.panelTextureDisplay);
 			this.pageTexture.Controls.Add(this.comboWrapMode);
@@ -171,11 +173,11 @@
 			this.pageTexture.Controls.Add(this.numericWidth);
 			this.pageTexture.Controls.Add(this.numericY);
 			this.pageTexture.Controls.Add(this.numericX);
-			this.pageTexture.Controls.Add(this.label6);
-			this.pageTexture.Controls.Add(this.label5);
-			this.pageTexture.Controls.Add(this.label4);
-			this.pageTexture.Controls.Add(this.label3);
-			this.pageTexture.Controls.Add(this.label2);
+			this.pageTexture.Controls.Add(this.labelWrapMode);
+			this.pageTexture.Controls.Add(this.labelTexHeight);
+			this.pageTexture.Controls.Add(this.labelTexWidth);
+			this.pageTexture.Controls.Add(this.labelTexTop);
+			this.pageTexture.Controls.Add(this.labelTexLeft);
 			this.pageTexture.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.pageTexture.IsClosable = false;
 			this.pageTexture.Location = new System.Drawing.Point(1, 1);
@@ -183,6 +185,14 @@
 			this.pageTexture.Size = new System.Drawing.Size(608, 303);
 			this.pageTexture.TabIndex = 0;
 			this.pageTexture.Text = "Texture";
+			// 
+			// labelInfo
+			// 
+			this.labelInfo.Location = new System.Drawing.Point(326, 117);
+			this.labelInfo.Name = "labelInfo";
+			this.labelInfo.Size = new System.Drawing.Size(259, 183);
+			this.labelInfo.TabIndex = 7;
+			this.labelInfo.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			// 
 			// buttonOpen
 			// 
@@ -220,9 +230,9 @@
 			// 
 			this.comboWrapMode.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
 			this.comboWrapMode.FormattingEnabled = true;
-			this.comboWrapMode.Location = new System.Drawing.Point(345, 85);
+			this.comboWrapMode.Location = new System.Drawing.Point(326, 85);
 			this.comboWrapMode.Name = "comboWrapMode";
-			this.comboWrapMode.Size = new System.Drawing.Size(240, 23);
+			this.comboWrapMode.Size = new System.Drawing.Size(259, 23);
 			this.comboWrapMode.TabIndex = 5;
 			this.comboWrapMode.SelectedIndexChanged += new System.EventHandler(this.comboWrapMode_SelectedIndexChanged);
 			// 
@@ -302,50 +312,52 @@
 			this.numericX.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
 			this.numericX.ValueChanged += new System.EventHandler(this.numericX_ValueChanged);
 			// 
-			// label6
+			// labelWrapMode
 			// 
-			this.label6.AutoSize = true;
-			this.label6.Location = new System.Drawing.Point(342, 67);
-			this.label6.Name = "label6";
-			this.label6.Size = new System.Drawing.Size(96, 15);
-			this.label6.TabIndex = 5;
-			this.label6.Text = "Wrapping mode:";
+			this.labelWrapMode.AutoSize = true;
+			this.labelWrapMode.Location = new System.Drawing.Point(323, 67);
+			this.labelWrapMode.Name = "labelWrapMode";
+			this.labelWrapMode.Size = new System.Drawing.Size(96, 15);
+			this.labelWrapMode.TabIndex = 5;
+			this.labelWrapMode.Text = "Wrapping mode:";
 			// 
-			// label5
+			// labelTexHeight
 			// 
-			this.label5.AutoSize = true;
-			this.label5.Location = new System.Drawing.Point(469, 34);
-			this.label5.Name = "label5";
-			this.label5.Size = new System.Drawing.Size(46, 15);
-			this.label5.TabIndex = 4;
-			this.label5.Text = "Height:";
+			this.labelTexHeight.AutoSize = true;
+			this.labelTexHeight.Location = new System.Drawing.Point(469, 34);
+			this.labelTexHeight.Name = "labelTexHeight";
+			this.labelTexHeight.Size = new System.Drawing.Size(46, 15);
+			this.labelTexHeight.TabIndex = 4;
+			this.labelTexHeight.Text = "Height:";
 			// 
-			// label4
+			// labelTexWidth
 			// 
-			this.label4.AutoSize = true;
-			this.label4.Location = new System.Drawing.Point(473, 5);
-			this.label4.Name = "label4";
-			this.label4.Size = new System.Drawing.Size(42, 15);
-			this.label4.TabIndex = 3;
-			this.label4.Text = "Width:";
+			this.labelTexWidth.AutoSize = true;
+			this.labelTexWidth.Location = new System.Drawing.Point(473, 5);
+			this.labelTexWidth.Name = "labelTexWidth";
+			this.labelTexWidth.Size = new System.Drawing.Size(42, 15);
+			this.labelTexWidth.TabIndex = 3;
+			this.labelTexWidth.Text = "Width:";
 			// 
-			// label3
+			// labelTexTop
 			// 
-			this.label3.AutoSize = true;
-			this.label3.Location = new System.Drawing.Point(342, 34);
-			this.label3.Name = "label3";
-			this.label3.Size = new System.Drawing.Size(17, 15);
-			this.label3.TabIndex = 2;
-			this.label3.Text = "Y:";
+			this.labelTexTop.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+			this.labelTexTop.AutoSize = true;
+			this.labelTexTop.Location = new System.Drawing.Point(323, 34);
+			this.labelTexTop.Name = "labelTexTop";
+			this.labelTexTop.Size = new System.Drawing.Size(17, 15);
+			this.labelTexTop.TabIndex = 2;
+			this.labelTexTop.Text = "Y:";
 			// 
-			// label2
+			// labelTexLeft
 			// 
-			this.label2.AutoSize = true;
-			this.label2.Location = new System.Drawing.Point(342, 5);
-			this.label2.Name = "label2";
-			this.label2.Size = new System.Drawing.Size(17, 15);
-			this.label2.TabIndex = 1;
-			this.label2.Text = "X:";
+			this.labelTexLeft.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+			this.labelTexLeft.AutoSize = true;
+			this.labelTexLeft.Location = new System.Drawing.Point(323, 5);
+			this.labelTexLeft.Name = "labelTexLeft";
+			this.labelTexLeft.Size = new System.Drawing.Size(17, 15);
+			this.labelTexLeft.TabIndex = 1;
+			this.labelTexLeft.Text = "X:";
 			// 
 			// panel1
 			// 
@@ -363,7 +375,7 @@
 			// panel2
 			// 
 			this.panel2.Controls.Add(this.comboBrushType);
-			this.panel2.Controls.Add(this.label1);
+			this.panel2.Controls.Add(this.labelBrushType);
 			this.panel2.Dock = System.Windows.Forms.DockStyle.Top;
 			this.panel2.Location = new System.Drawing.Point(1, 25);
 			this.panel2.Name = "panel2";
@@ -380,14 +392,14 @@
 			this.comboBrushType.TabIndex = 1;
 			this.comboBrushType.SelectedIndexChanged += new System.EventHandler(this.comboBrushType_SelectedIndexChanged);
 			// 
-			// label1
+			// labelBrushType
 			// 
-			this.label1.AutoSize = true;
-			this.label1.Location = new System.Drawing.Point(3, 8);
-			this.label1.Name = "label1";
-			this.label1.Size = new System.Drawing.Size(66, 15);
-			this.label1.TabIndex = 0;
-			this.label1.Text = "Brush type:";
+			this.labelBrushType.AutoSize = true;
+			this.labelBrushType.Location = new System.Drawing.Point(3, 8);
+			this.labelBrushType.Name = "labelBrushType";
+			this.labelBrushType.Size = new System.Drawing.Size(66, 15);
+			this.labelBrushType.TabIndex = 0;
+			this.labelBrushType.Text = "Brush type:";
 			// 
 			// imageFileBrowser
 			// 
@@ -448,13 +460,13 @@
 		private System.Windows.Forms.Panel panel1;
 		private System.Windows.Forms.Panel panel2;
 		private System.Windows.Forms.ComboBox comboBrushType;
-        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Label labelBrushType;
         private Fetze.WinFormsColor.ColorPickerPanel colorSolidBrush;
-		private System.Windows.Forms.Label label6;
-		private System.Windows.Forms.Label label5;
-		private System.Windows.Forms.Label label4;
-		private System.Windows.Forms.Label label3;
-		private System.Windows.Forms.Label label2;
+		private System.Windows.Forms.Label labelWrapMode;
+		private System.Windows.Forms.Label labelTexHeight;
+		private System.Windows.Forms.Label labelTexWidth;
+		private System.Windows.Forms.Label labelTexTop;
+		private System.Windows.Forms.Label labelTexLeft;
 		private System.Windows.Forms.ComboBox comboWrapMode;
 		private System.Windows.Forms.NumericUpDown numericHeight;
 		private System.Windows.Forms.NumericUpDown numericWidth;
@@ -463,5 +475,6 @@
 		private System.Windows.Forms.Panel panelTextureDisplay;
 		private System.Windows.Forms.Button buttonOpen;
 		private EditorFileBrowser imageFileBrowser;
+		private System.Windows.Forms.Label labelInfo;
     }
 }
