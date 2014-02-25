@@ -598,4 +598,13 @@ The following characters are not allowed:
   <data name="GOREDIT_DLG_COLOR_TITLE" xml:space="preserve">
     <value>Please select a color...</value>
   </data>
+  <data name="GOREDIT_FILE_NOT_FOUND" xml:space="preserve">
+    <value>Could not find the file '{0}'.</value>
+  </data>
+  <data name="GOREDIT_METADATA_ALREADY_EXISTS" xml:space="preserve">
+    <value>The meta data item '{0}' already exists in this collection.</value>
+  </data>
+  <data name="GOREDIT_METADATA_NOT_FOUND" xml:space="preserve">
+    <value>There is no meta data item with the name '{0}' in this collection.</value>
+  </data>
 </root>

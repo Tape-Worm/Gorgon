@@ -409,4 +409,39 @@ Note: If 'No' is selected, then the image will be clipped to the texture dimensi
   <data name="GORFNT_PROP_VALUE_TILEFLIPY" xml:space="preserve">
     <value>Tile and flip vertically</value>
   </data>
+  <data name="GORFNT_BUTTON_CANCEL_TEXT" xml:space="preserve">
+    <value>&amp;Cancel</value>
+  </data>
+  <data name="GORFNT_BUTTON_OK_TEXT" xml:space="preserve">
+    <value>&amp;OK</value>
+  </data>
+  <data name="GORFNT_DLG_BRUSH_EDITOR_TEXT" xml:space="preserve">
+    <value>Brush Editor</value>
+  </data>
+  <data name="GORFNT_PROP_VALUE_BRUSH_TYPE" xml:space="preserve">
+    <value>Brush Type:</value>
+  </data>
+  <data name="GORFNT_PROP_VALUE_HEIGHT" xml:space="preserve">
+    <value>Height:</value>
+  </data>
+  <data name="GORFNT_PROP_VALUE_LEFT" xml:space="preserve">
+    <value>Left:</value>
+  </data>
+  <data name="GORFNT_PROP_VALUE_OPEN_TEXTURE" xml:space="preserve">
+    <value>Open texture</value>
+  </data>
+  <data name="GORFNT_PROP_VALUE_SELECTLABEL" xml:space="preserve">
+    <value>Selection area: {0:####0}x{1:####0} - {2:####0}x{3:####0}
+Width:{4:####0}
+Height:{5:####0}</value>
+  </data>
+  <data name="GORFNT_PROP_VALUE_TOP" xml:space="preserve">
+    <value>Top:</value>
+  </data>
+  <data name="GORFNT_PROP_VALUE_WIDTH" xml:space="preserve">
+    <value>Width:</value>
+  </data>
+  <data name="GORFNT_PROP_VALUE_WRAP_MODE" xml:space="preserve">
+    <value>Wrapping mode:</value>
+  </data>
 </root>

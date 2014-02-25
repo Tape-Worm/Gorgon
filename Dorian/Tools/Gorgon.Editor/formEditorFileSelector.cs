@@ -1383,9 +1383,6 @@ namespace GorgonLibrary.Editor
 					return null;
 				}
 
-				EditorMetaDataFile metaData = plugIn.GetMetaData(file.FullPath);
-				content.MetaData = metaData;
-
 				using (Stream contentStream = file.OpenStream(false))
 				{
 					content.Read(contentStream);

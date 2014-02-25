@@ -24,13 +24,9 @@
 // 
 #endregion
 
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Xml.Linq;
-using GorgonLibrary.Editor.Properties;
 
 namespace GorgonLibrary.Editor
 {
@@ -44,7 +40,7 @@ namespace GorgonLibrary.Editor
 		/// <summary>
 		/// Property to return the list of child metadata items.
 		/// </summary>
-		public IDictionary<string, EditorMetaDataItem> MetaDataItems
+		public EditorMetaDataItemCollection MetaDataItems
 		{
 			get;
 			private set;
@@ -81,6 +77,8 @@ namespace GorgonLibrary.Editor
 				var item = new EditorMetaDataItem(element.Name.LocalName);
 				var attributes = element.Attributes();
 
+				item.Value = element.Value;
+
 				foreach (var attribute in attributes)
 				{
 					item.Properties.Add(attribute.Name.LocalName, attribute.Value);
@@ -88,7 +86,7 @@ namespace GorgonLibrary.Editor
 
 				item.Deserialize(element);
 
-				MetaDataItems.Add(item.Name, item);
+				MetaDataItems.Add(item);
 			}
 		}
 		
@@ -112,9 +110,9 @@ namespace GorgonLibrary.Editor
 			}
 
 			// Add child nodes.
-			foreach (var item in MetaDataItems.Where(item => !string.IsNullOrWhiteSpace(item.Key)))
+			foreach (var item in MetaDataItems)
 			{
-				result.Add(item.Value.Serialize());
+				result.Add(item.Serialize());
 			}
 
 			return result;
@@ -129,7 +127,7 @@ namespace GorgonLibrary.Editor
 		public EditorMetaDataItem(string name)
 			: base(name)
 		{
-			MetaDataItems = new Dictionary<string, EditorMetaDataItem>(new EditorMetaDataFile.MetaDataNameComparer());
+			MetaDataItems = new EditorMetaDataItemCollection();
 			Properties = new Dictionary<string, string>(new EditorMetaDataFile.MetaDataNameComparer());
 		}
 		#endregion

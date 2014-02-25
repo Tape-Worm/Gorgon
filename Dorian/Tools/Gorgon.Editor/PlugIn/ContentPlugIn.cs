@@ -109,16 +109,6 @@ namespace GorgonLibrary.Editor
 	    public abstract ContentSettings GetContentSettings();
 
 		/// <summary>
-		/// Function to return the meta data for the content.
-		/// </summary>
-		/// <param name="filePath">The path to the file that we're retrieving meta from.</param>
-		/// <returns></returns>
-		public virtual EditorMetaDataFile GetMetaData(string filePath)
-		{
-			return null;
-		}
-        
-		/// <summary>
 		/// Function to return the icon for the content.
 		/// </summary>
 		/// <returns>The 16x16 image for the content.</returns>

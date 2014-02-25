@@ -1065,6 +1065,7 @@ namespace GorgonLibrary.Editor
 				ContentManagement.ContentPaneUnloadAction = null;
 				ContentManagement.ContentEnumerateProperties = null;
 				ContentManagement.ContentInitializedAction = null;
+				ContentManagement.OnGetDependency = null;
 
 
                 // Unhook from file management functionality.
@@ -2667,6 +2668,7 @@ namespace GorgonLibrary.Editor
 															control.Parent = splitPanel1;
 				                                            control.ContentClosed += OnContentClose;
 			                                             };
+			ContentManagement.OnGetDependency = pathToDependency => ScratchArea.ScratchFiles.GetFile(pathToDependency);
 
             // Assign file management linkage.
 			ScratchArea.CanImportFunction = EvaluateFileImport;

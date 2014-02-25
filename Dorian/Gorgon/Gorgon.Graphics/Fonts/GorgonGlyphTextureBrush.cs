@@ -25,6 +25,7 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Linq;
@@ -39,6 +40,15 @@ namespace GorgonLibrary.Graphics
 	public class GorgonGlyphTextureBrush
 		: GorgonGlyphBrush
 	{
+		#region Variables.
+		private string _deferredTextureName = string.Empty;				// Name of a deferred texture.
+		private BufferFormat _textureFormat = BufferFormat.Unknown;		// Format of the texture.
+		private int _textureWidth;										// Width of the texture.
+		private int _textureHeight;										// Height of the texture.
+		private GorgonTexture2D _texture;								// Texture to bind with the brush.
+		private GorgonGraphics _graphics;								// Graphics interface to manage the texture used by the brush.
+		#endregion
+
 		#region Properties.
 		/// <summary>
 		/// Property to return the type of brush.
@@ -75,12 +85,47 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		public GorgonTexture2D Texture
 		{
-			get;
-			private set;
+			get
+			{
+				if ((_texture != null) || (string.IsNullOrWhiteSpace(_deferredTextureName)))
+				{
+					return _texture;
+				}
+
+				FindTexture();
+
+				return _texture;
+			}
+			private set
+			{
+				_deferredTextureName = string.Empty;
+				_texture = value;
+			}
 		}
 		#endregion
 
 		#region Methods.
+		/// <summary>
+		/// Function to find a previously loaded texture with the same dimensions, format and name as the texture assigned to this brush.
+		/// </summary>
+		private void FindTexture()
+		{
+			IEnumerable<GorgonTexture2D> textures = _graphics.GetTrackedObjectsOfType<GorgonTexture2D>();
+
+			_texture = textures.FirstOrDefault(item =>
+			                                   (string.Equals(item.Name,
+			                                                  _deferredTextureName,
+			                                                  StringComparison.OrdinalIgnoreCase)
+			                                    && (item.Settings.Width == _textureWidth)
+			                                    && (item.Settings.Height == _textureHeight)
+			                                    && (item.Settings.Format == _textureFormat)));
+
+			if (_texture != null)
+			{
+				_deferredTextureName = string.Empty;
+			}
+		}
+
 		/// <summary>
 		/// Function to convert this brush to the equivalent GDI+ brush type.
 		/// </summary>
@@ -140,19 +185,10 @@ namespace GorgonLibrary.Graphics
 			chunk.Write(WrapMode);
 
 			chunk.WriteRectangle(TextureRegion != null ? TextureRegion.Value : new RectangleF(0, 0, 1, 1));
-			chunk.WriteString(Texture.Name);
-
-			long streamPosition = chunk.BaseStream.Position;
-
-			chunk.WriteInt32(0);		
-
-			Texture.Save(chunk.BaseStream, new GorgonCodecPNG());
-
-			long size = chunk.BaseStream.Position - streamPosition;
-
-			chunk.BaseStream.Position = streamPosition;
-			chunk.WriteInt32((int)size);
-			chunk.BaseStream.Position += size;
+			chunk.WriteString(_texture.Name);
+			chunk.Write(_texture.Settings.Width);
+			chunk.Write(_texture.Settings.Height);
+			chunk.Write(_texture.Settings.Format);
 
 			chunk.End();
 		}
@@ -160,9 +196,8 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Function to read the brush elements in from a chunked file.
 		/// </summary>
-		/// <param name="graphics">The graphics interface.</param>
 		/// <param name="chunk">Chunk reader used to read the data.</param>
-		internal override void Read(GorgonGraphics graphics, GorgonChunkReader chunk)
+		internal override void Read(GorgonChunkReader chunk)
 		{
 			WrapMode = chunk.Read<WrapMode>();
 
@@ -173,21 +208,13 @@ namespace GorgonLibrary.Graphics
 			}
 
 			TextureRegion = chunk.ReadRectangleF();
-			string textureName = chunk.ReadString();
-			int size = chunk.ReadInt32();
+			_deferredTextureName = chunk.ReadString();
+			_textureWidth = chunk.ReadInt32();
+			_textureHeight = chunk.ReadInt32();
+			_textureFormat = chunk.Read<BufferFormat>();
 
-			// Attempt to load the image from the textures that are already loaded.
-			Texture = graphics.GetTrackedObjectsOfType<GorgonTexture2D>()
-				        .FirstOrDefault(item => string.Equals(item.Name, textureName, StringComparison.OrdinalIgnoreCase));
-
-			if (Texture == null)
-			{
-				Texture = graphics.Textures.FromStream<GorgonTexture2D>(textureName, chunk.BaseStream, size, new GorgonCodecPNG());
-			}
-			else
-			{
-				chunk.SkipBytes(size);
-			}
+			// Try to find the appropriate texture in any previously loaded texture list.
+			FindTexture();
 		}
 		#endregion
 
@@ -195,8 +222,10 @@ namespace GorgonLibrary.Graphics
 		/// <summary>
 		/// Initializes a new instance of the <see cref="GorgonGlyphTextureBrush"/> class.
 		/// </summary>
-		internal GorgonGlyphTextureBrush()
+		/// <param name="graphics">Graphics interface that is managing the texture used by the brush.</param>
+		internal GorgonGlyphTextureBrush(GorgonGraphics graphics)
 		{
+			_graphics = graphics.ImmediateContext;
 		}
 
 		/// <summary>
@@ -212,6 +241,7 @@ namespace GorgonLibrary.Graphics
 			}
 
 			Texture = textureImage;
+			_graphics = Texture.Graphics.ImmediateContext;
 		}
 		#endregion
 	}

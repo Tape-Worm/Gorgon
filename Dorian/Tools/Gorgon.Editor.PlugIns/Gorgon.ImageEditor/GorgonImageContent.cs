@@ -25,6 +25,7 @@
 #endregion
 
 using System.Drawing;
+using System.IO;
 using GorgonLibrary.Editor.ImageEditorPlugIn.Properties;
 using GorgonLibrary.Graphics;
 using GorgonLibrary.IO;
@@ -82,7 +83,7 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
         /// Function to persist the content data to a stream.
         /// </summary>
         /// <param name="stream">Stream that will receive the data.</param>
-        protected override void OnPersist(System.IO.Stream stream)
+        protected override void OnPersist(Stream stream)
         {
         }
 
@@ -90,7 +91,7 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
         /// Function to read the content data from a stream.
         /// </summary>
         /// <param name="stream">Stream containing the content data.</param>
-        protected override void OnRead(System.IO.Stream stream)
+        protected override void OnRead(Stream stream)
         {
             Image = GorgonImageData.FromStream(stream, (int)stream.Length, _codec);
         }
@@ -197,18 +198,16 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 		/// <summary>
 		/// Function to load the image from a file system file entry.
 		/// </summary>
-		/// <param name="file">File to load from.</param>
-	    public void Load(GorgonFileSystemFileEntry file)
+		/// <param name="fileName">The file name of the file to load.</param>
+		/// <param name="stream">The stream containing the file.</param>
+	    public void Load(string fileName, Stream stream)
 	    {
-			using (var stream = file.OpenStream(false))
+			if (!_codec.IsReadable(stream))
 			{
-				if (!_codec.IsReadable(stream))
-				{
-					throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GORIMG_CODEC_CANNOT_READ, file.Name, _codec.CodecDescription));
-				}
-
-				OnRead(stream);
+				throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GORIMG_CODEC_CANNOT_READ, fileName, _codec.CodecDescription));
 			}
+
+			OnRead(stream);
 	    }
         #endregion
 

@@ -79,6 +79,13 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
     class GorgonFontContent
         : ContentObject
 	{
+		#region Constants.
+		/// <summary>
+		/// Dependency key for the texture brush path.
+		/// </summary>
+	    public const string TextureBrushDependency = "TextureBrushPath";			// Dependency key for texture brush path.
+		#endregion
+
 		#region Variables.
 		private GorgonFontContentPanel _panel;              // Interface for editing the font.
         private bool _disposed;                             // Flag to indicate that the object was disposed.
@@ -159,7 +166,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 	            {
 		            return;
 	            }
-
+				
 	            _settings.OutlineSize = value;
 	            OnContentUpdated();
 	            OnContentPropertyChanged("OutlineSize", value);
@@ -607,9 +614,19 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
                 {
                     // Save our settings.
                     GorgonFontEditorPlugIn.Settings.Save();
-
+					
                     if (Font != null)
                     {
+						// Clean up any attached texture brush.
+						var textureBrush = Font.Settings.Brush as GorgonGlyphTextureBrush;
+						
+	                    if ((textureBrush != null)
+							&& (textureBrush.Texture != null))
+	                    {
+		                    textureBrush.Texture.Dispose();
+	                    }
+
+	                    Font.Settings.Brush = null;
                         Font.Dispose();
                     }
 
@@ -731,7 +748,48 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 			return _panel;
 		}
 
-        /// <summary>
+		/// <summary>
+		/// Function to load a dependency file.
+		/// </summary>
+		/// <param name="item">The meta data item for the dependency.</param>
+		/// <param name="stream">Stream containing the dependency file.</param>
+		protected override void OnLoadDependencyFile(EditorMetaDataItem item, Stream stream)
+	    {
+			// If this is not a texture brush path, then skip out.
+			if ((!string.Equals(item.Name, TextureBrushDependency, StringComparison.OrdinalIgnoreCase))
+				|| (string.IsNullOrWhiteSpace(item.Value)))
+			{
+				return;
+			}
+
+			string fileName = Path.GetFileName(item.Value);
+
+			if ((ImageEditor == null)
+				|| (string.IsNullOrWhiteSpace(fileName)))
+			{
+				return;
+			}
+
+			using (IImageEditorContent imageContent = ImageEditor.ImportContent(fileName, stream))
+			{
+				if (imageContent.Image == null)
+				{
+					return;
+				}
+
+				if (imageContent.Image.Settings.ImageType != ImageType.Image2D)
+				{
+					throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GORFNT_IMAGE_NOT_2D, fileName));	
+				}
+
+				// Load the texture.  It will be stored in the graphics interface until we're done with it.
+				// Texture brushes require that the textures be preloaded in order to be assigned to the font settings.
+				// This is because texture brushes are only stored as meta data in the file.
+				Graphics.Textures.CreateTexture<GorgonTexture2D>(fileName, imageContent.Image);
+			}
+	    }
+
+	    /// <summary>
         /// Function to update the font object.
         /// </summary>
         public void UpdateFont()

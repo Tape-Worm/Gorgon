@@ -193,7 +193,7 @@ namespace GorgonLibrary.Editor
 	        if (plugIn == null)
 	        {
 				// If the writer is not set, then remove it from the meta data.
-		        if (Program.EditorMetaData.MetaDataItems.ContainsKey(MetaDataWriterPlugIn))
+		        if (Program.EditorMetaData.MetaDataItems.Contains(MetaDataWriterPlugIn))
 		        {
 			        Program.EditorMetaData.MetaDataItems.Remove(MetaDataWriterPlugIn);
 		        }
@@ -218,7 +218,7 @@ namespace GorgonLibrary.Editor
 			FileWriterPlugIn result;
 
 			// If we have meta-data, then use that to determine which file writer is used.
-	        if ((!skipMetaData) && (Program.EditorMetaData.MetaDataItems.ContainsKey(MetaDataWriterPlugIn))
+	        if ((!skipMetaData) && (Program.EditorMetaData.MetaDataItems.Contains(MetaDataWriterPlugIn))
 					&& (Program.EditorMetaData.MetaDataItems[MetaDataWriterPlugIn].Properties.ContainsKey(MetaDataTypeName)))
 	        {
 				result = (from plugIn in PlugIns.WriterPlugIns

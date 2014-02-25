@@ -137,6 +137,7 @@
     </Compile>
     <Compile Include="EditorMetaDataFile.cs" />
     <Compile Include="EditorMetaDataItem.cs" />
+    <Compile Include="EditorMetaDataItemCollection.cs" />
     <Compile Include="formColorDialog.cs">
       <SubType>Form</SubType>
     </Compile>
