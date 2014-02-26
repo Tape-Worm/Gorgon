@@ -956,7 +956,7 @@ namespace GorgonLibrary.Editor.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The meta data &apos;{0}&apos; is corrupted..
+        ///   Looks up a localized string similar to The meta data for the file is corrupted..
         /// </summary>
         internal static string GOREDIT_METADATA_CORRUPT {
             get {

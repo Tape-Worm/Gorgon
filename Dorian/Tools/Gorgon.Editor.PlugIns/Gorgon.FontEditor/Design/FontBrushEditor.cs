@@ -103,14 +103,10 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 			var descriptor = (ContentTypeDescriptor)context.Instance;
             var document = (GorgonFontContent)descriptor.Content;
 		    formBrushEditor brushEditor = null;
-	        EditorMetaDataItem textureBrushPath = null;
 
-			try
+	        try
 			{
-				if (document.Dependencies.Contains(GorgonFontContent.TextureBrushDependency))
-				{
-					textureBrushPath = document.Dependencies[GorgonFontContent.TextureBrushDependency];
-				}
+				string textureBrushPath = document.Dependencies.FirstOrDefault();
 
 				brushEditor = new formBrushEditor(document, textureBrushPath)
 				              {
@@ -150,29 +146,36 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 					{
 						textureBrush.Texture.Dispose();
 					}
+
+					// Remove the old texture brush dependency (if it existed).
+					if ((!string.IsNullOrWhiteSpace(textureBrushPath))
+						&& (document.Dependencies.Contains(textureBrushPath)))
+					{
+						document.Dependencies.Remove(textureBrushPath);
+					}
 			    }
 
 			    switch (brushEditor.BrushType)
 			    {
 			        case GlyphBrushType.Texture:
-					    textureBrushPath = brushEditor.TextureBrushPath;
 			            brush = brushEditor.TextureBrush;
+
+						// Add the updated texture brush dependency path.
+						if (!string.IsNullOrWhiteSpace(brushEditor.TextureBrushPath))
+						{
+							document.Dependencies.Add(brushEditor.TextureBrushPath);
+						}
 			            break;
 			        case GlyphBrushType.Solid:
-						textureBrushPath = null;
 			            brush = brushEditor.SolidBrush;
 			            break;
 			        case GlyphBrushType.LinearGradient:
-						textureBrushPath = null;
 			            brush = brushEditor.GradientBrush;
 			            break;
 			        case GlyphBrushType.Hatched:
-						textureBrushPath = null;
 			            brush = brushEditor.PatternBrush;
 			            break;
 			    }
-
-				document.Dependencies[GorgonFontContent.TextureBrushDependency] = textureBrushPath;
 
 				return brush;
 			}

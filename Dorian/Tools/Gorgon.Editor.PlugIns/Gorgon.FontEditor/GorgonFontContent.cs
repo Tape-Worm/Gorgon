@@ -79,13 +79,6 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
     class GorgonFontContent
         : ContentObject
 	{
-		#region Constants.
-		/// <summary>
-		/// Dependency key for the texture brush path.
-		/// </summary>
-	    public const string TextureBrushDependency = "TextureBrushPath";			// Dependency key for texture brush path.
-		#endregion
-
 		#region Variables.
 		private GorgonFontContentPanel _panel;              // Interface for editing the font.
         private bool _disposed;                             // Flag to indicate that the object was disposed.
@@ -751,18 +744,12 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		/// <summary>
 		/// Function to load a dependency file.
 		/// </summary>
-		/// <param name="item">The meta data item for the dependency.</param>
+		/// <param name="dependencyPath">Path to the dependency being loaded.</param>
 		/// <param name="stream">Stream containing the dependency file.</param>
-		protected override void OnLoadDependencyFile(EditorMetaDataItem item, Stream stream)
+	    protected override void OnLoadDependencyFile(string dependencyPath, Stream stream)
 	    {
 			// If this is not a texture brush path, then skip out.
-			if ((!string.Equals(item.Name, TextureBrushDependency, StringComparison.OrdinalIgnoreCase))
-				|| (string.IsNullOrWhiteSpace(item.Value)))
-			{
-				return;
-			}
-
-			string fileName = Path.GetFileName(item.Value);
+			string fileName = Path.GetFileName(dependencyPath);
 
 			if ((ImageEditor == null)
 				|| (string.IsNullOrWhiteSpace(fileName)))

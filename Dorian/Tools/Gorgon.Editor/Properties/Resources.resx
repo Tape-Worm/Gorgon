@@ -152,7 +152,7 @@
     <value>file</value>
   </data>
   <data name="GOREDIT_METADATA_CORRUPT" xml:space="preserve">
-    <value>The meta data '{0}' is corrupted.</value>
+    <value>The meta data for the file is corrupted.</value>
   </data>
   <data name="GOREDIT_BTN_OK" xml:space="preserve">
     <value>&amp;OK</value>

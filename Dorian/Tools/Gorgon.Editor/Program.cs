@@ -38,10 +38,6 @@ namespace GorgonLibrary.Editor
 	/// </summary>
 	static class Program
 	{
-		#region Constants.
-		private const string MetaDataFile = ".gorgon.editor.metadata";				// Metadata file name.
-		#endregion
-
 		#region Properties.
 		/// <summary>
 		/// Property to set or return the input interface.
@@ -110,7 +106,7 @@ namespace GorgonLibrary.Editor
 				Application.EnableVisualStyles();
 				Application.SetCompatibleTextRenderingDefault(false);
 
-				EditorMetaData = new EditorMetaDataFile(MetaDataFile);
+				EditorMetaData = new EditorMetaDataFile();
 
 				Settings.Load();
 
