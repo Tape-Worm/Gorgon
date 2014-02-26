@@ -74,11 +74,6 @@ namespace GorgonLibrary.Editor
         }
         #endregion
 
-		#region Constants.
-		private const string MetaDataWriterPlugIn = "WriterPlugIn";                 // Name of the node that contains meta data for the plug-in writer..
-		private const string MetaDataTypeName = "TypeName";                         // Name of attribute/element with type name information.
-		#endregion
-
 		#region Variables.
 		private readonly static Dictionary<GorgonFileExtension, GorgonFileSystemProvider> _readerFiles;
         private readonly static Dictionary<GorgonFileExtension, FileWriterPlugIn> _writerFiles;
@@ -145,7 +140,7 @@ namespace GorgonLibrary.Editor
         {
             ScratchArea.DestroyScratchArea();
             ScratchArea.InitializeScratch();
-			Program.EditorMetaData.MetaDataItems.Clear();
+			Program.EditorMetaData.Reset();
         }
 
         /// <summary>
@@ -192,19 +187,12 @@ namespace GorgonLibrary.Editor
         {
 	        if (plugIn == null)
 	        {
-				// If the writer is not set, then remove it from the meta data.
-		        if (Program.EditorMetaData.MetaDataItems.Contains(MetaDataWriterPlugIn))
-		        {
-			        Program.EditorMetaData.MetaDataItems.Remove(MetaDataWriterPlugIn);
-		        }
+		        Program.EditorMetaData.WriterPlugInType = string.Empty;
 
 		        return;
 	        }
 
-			var item = new EditorMetaDataItem(MetaDataWriterPlugIn);
-
-	        item.Properties[MetaDataTypeName] = plugIn.Name;
-	        Program.EditorMetaData.MetaDataItems[item.Name] = item;
+	        Program.EditorMetaData.WriterPlugInType = plugIn.Name;
         }
 
         /// <summary>
@@ -218,12 +206,12 @@ namespace GorgonLibrary.Editor
 			FileWriterPlugIn result;
 
 			// If we have meta-data, then use that to determine which file writer is used.
-	        if ((!skipMetaData) && (Program.EditorMetaData.MetaDataItems.Contains(MetaDataWriterPlugIn))
-					&& (Program.EditorMetaData.MetaDataItems[MetaDataWriterPlugIn].Properties.ContainsKey(MetaDataTypeName)))
+	        if ((!skipMetaData)
+				&& (!string.IsNullOrWhiteSpace(Program.EditorMetaData.WriterPlugInType)))
 	        {
 				result = (from plugIn in PlugIns.WriterPlugIns
 						  where string.Equals(plugIn.Value.Name,
-											  Program.EditorMetaData.MetaDataItems[MetaDataWriterPlugIn].Properties[MetaDataTypeName],
+											  Program.EditorMetaData.WriterPlugInType,
 											  StringComparison.OrdinalIgnoreCase)
 						  select plugIn.Value).FirstOrDefault();
 

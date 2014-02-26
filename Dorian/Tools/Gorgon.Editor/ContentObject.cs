@@ -25,6 +25,8 @@
 #endregion
 
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
@@ -218,7 +220,7 @@ namespace GorgonLibrary.Editor
 		/// Property to return the list of dependencies for this content.
 		/// </summary>
 		[Browsable(false)]
-	    public EditorMetaDataItemCollection Dependencies
+	    public HashSet<string> Dependencies
 	    {
 		    get;
 		    internal set;
@@ -248,9 +250,9 @@ namespace GorgonLibrary.Editor
 		/// <summary>
 		/// Function to load a dependency file.
 		/// </summary>
-		/// <param name="metaData">Meta data item to load.</param>
+		/// <param name="dependencyPath">Path to the dependency being loaded.</param>
 		/// <param name="stream">Stream containing the dependency file.</param>
-	    protected virtual void OnLoadDependencyFile(EditorMetaDataItem metaData, Stream stream)
+	    protected virtual void OnLoadDependencyFile(string dependencyPath, Stream stream)
 	    {
 	    }
 
@@ -302,9 +304,9 @@ namespace GorgonLibrary.Editor
 		/// <summary>
 		/// Function to read a dependency file from a stream.
 		/// </summary>
-		/// <param name="item">Metadata item for the dependency.</param>
+		/// <param name="dependencyPath">Path to the dependency being loaded.</param>
 		/// <param name="stream">Stream containing the file to read.</param>
-	    internal void LoadDependencyFile(EditorMetaDataItem item, Stream stream)
+	    internal void LoadDependencyFile(string dependencyPath, Stream stream)
 	    {
 			if (stream == null)
 			{
@@ -321,7 +323,7 @@ namespace GorgonLibrary.Editor
 				throw new EndOfStreamException(Resources.GOREDIT_STREAM_EOS);
 			}
 
-			OnLoadDependencyFile(item, stream);
+			OnLoadDependencyFile(dependencyPath, stream);
 		}
 
 		/// <summary>
@@ -437,7 +439,7 @@ namespace GorgonLibrary.Editor
 		/// <param name="name">Name of the content.</param>
 		protected ContentObject(string name)
 		{
-			Dependencies = new EditorMetaDataItemCollection();
+			Dependencies = new HashSet<string>(new EditorMetaDataFile.NameComparer());
 			TypeDescriptor = new ContentTypeDescriptor(this);
             TypeDescriptor.Enumerate(GetType());
 

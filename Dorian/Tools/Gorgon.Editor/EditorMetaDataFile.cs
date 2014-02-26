@@ -38,23 +38,29 @@ namespace GorgonLibrary.Editor
 	/// </summary>
 	/// <remarks>Meta data allows us to attach various types of information that wouldn't normally contain it.  It can be used to show relationships between 
 	/// objects, or point to an icon for a file.</remarks>
-	public class EditorMetaDataFile
-		: INamedObject
+	class EditorMetaDataFile
 	{
 		#region Constants.
+		private const string MetaDataFile = ".gorgon.editor.metadata";				// Metadata file name.
 		private const string MetaDataRootName = "Gorgon.Editor.MetaData";           // Name of the root node in the meta data.
 
 		/// <summary>
 		/// Meta data group for content file dependencies.
 		/// </summary>
 		public const string ContentDependencyFiles = "ContentFileDependencies";
+
+		private const string WriterPlugInNode = "WriterPlugIn";						// Node name for the writer plug-in used by this file.
+		private const string TypeNameAttr = "TypeName";								// Fully qualified type name for the plug-in interface.
+		private const string FileNode = "File";										// Name of the file node.
+		private const string NameAttr = "Name";										// Name attribute name.
+		private const string DependsOnNode = "DependsOn";							// Depends on node.
 		#endregion
 
 		#region Classes.
 		/// <summary>
-		/// Comparer used to find the name of a meta data item.
+		/// Comparer used to find the name of an item.
 		/// </summary>
-		internal class MetaDataNameComparer
+		internal class NameComparer
 			: IEqualityComparer<string>
 		{
 			#region IEqualityComparer<EditorMetaDataItem> Members
@@ -101,31 +107,23 @@ namespace GorgonLibrary.Editor
 		#region Variables.
 		private GorgonFileSystemFileEntry _metaDataFile;					// The file in the file system that is holding our meta data.
 		private XDocument _metaData;										// The meta data XML.
+		private readonly string _path;										// Path to the metadata file.
 		#endregion
 
 		#region Properties.
 		/// <summary>
-		/// Property to return the list of meta data items for the meta data.
+		/// Property to set or return the fully qualified type name of the writer plug-in.
 		/// </summary>
-		public EditorMetaDataItemCollection MetaDataItems
+		public string WriterPlugInType
 		{
 			get;
-			private set;
+			set;
 		}
 
 		/// <summary>
-		/// Property to return the full path to the meta data file.
+		/// Property to return the list of files and associated dependencies.
 		/// </summary>
-		public string Path
-		{
-			get;
-			private set;
-		}
-
-		/// <summary>
-		/// Property to return whether the meta data file should show up in the directory tree or file lists.
-		/// </summary>
-		public bool IsVisible
+		public IDictionary<string, ICollection<string>> Dependencies
 		{
 			get;
 			private set;
@@ -134,25 +132,154 @@ namespace GorgonLibrary.Editor
 
 		#region Methods.
 		/// <summary>
-		/// Function deserialize the nodes from XML.
+		/// Function to add or update a node in the XML tree.
 		/// </summary>
-		/// <param name="parent">Parent XML node.</param>
-		private void Deserialize(XElement parent)
+		/// <param name="parent">Parent node.</param>
+		/// <param name="elementName">Name of the element to add/update.</param>
+		/// <param name="value">Value to set.</param>
+		/// <returns>The node that was updated.</returns>
+		private static XElement AddOrUpdateNode(XElement parent, string elementName, string value = "")
 		{
-			foreach (XElement element in parent.Elements())
-			{
-				var item = new EditorMetaDataItem(element.Name.LocalName);
-				var attributes = element.Attributes();
+			XElement node = parent.Element(elementName);
 
-				foreach (var attribute in attributes)
+			if (node == null)
+			{
+				node = new XElement(elementName);
+				parent.Add(node);
+			}
+
+			if (value != null)
+			{
+				node.Value = value;
+			}
+			else
+			{
+				node.Value = string.Empty;
+			}
+
+			return node;
+		}
+
+		/// <summary>
+		/// Function to add or update an attribute on a node.
+		/// </summary>
+		/// <param name="parent">Parent node to update.</param>
+		/// <param name="attributeName">Name of the attribute to add/update.</param>
+		/// <param name="value">Value to set.</param>
+		/// <returns>The attribute that was updated.</returns>
+		private static XAttribute AddOrUpdateAttribute(XElement parent, string attributeName, string value)
+		{
+			XAttribute attribute = parent.Attribute(attributeName);
+
+			if (attribute == null)
+			{
+				attribute = new XAttribute(attributeName, value);
+				parent.Add(attribute);
+
+				return attribute;
+			}
+
+			attribute.Value = value;
+			return attribute;
+		}
+
+		/// <summary>
+		/// Function to retrieve the writer settings.
+		/// </summary>
+		/// <param name="parent">Parent node of the settings.</param>
+		private void GetWriterSettings(XElement parent)
+		{
+			if (parent == null)
+			{
+				throw new GorgonException(GorgonResult.CannotRead, Resources.GOREDIT_METADATA_CORRUPT);
+			}
+
+			XElement writerPlugInElement = parent.Element(WriterPlugInNode);
+
+			if (writerPlugInElement == null)
+			{
+				throw new GorgonException(GorgonResult.CannotRead, Resources.GOREDIT_METADATA_CORRUPT);
+			}
+
+			XAttribute writerPlugInTypeAttr = writerPlugInElement.Attribute(TypeNameAttr);
+
+			if (writerPlugInTypeAttr == null)
+			{
+				return;
+			}
+			
+			WriterPlugInType = writerPlugInTypeAttr.Value;
+		}
+
+		/// <summary>
+		/// Function to retrieve the dependency list.
+		/// </summary>
+		/// <param name="parent">Parent node.</param>
+		private void GetDependencies(XElement parent)
+		{
+			if (parent == null)
+			{
+				throw new GorgonException(GorgonResult.CannotRead, Resources.GOREDIT_METADATA_CORRUPT);
+			}
+
+			XElement dependencyNode = parent.Element(ContentDependencyFiles);
+
+			if (dependencyNode == null)
+			{
+				return;
+			}
+
+			IEnumerable<XElement> dependencyFiles = dependencyNode.Elements(FileNode);
+
+			Dependencies.Clear();
+
+			// Fill in the list.
+			foreach (XElement file in dependencyFiles)
+			{
+				XAttribute filePath = file.Attribute(NameAttr);
+
+				if ((filePath == null)
+					|| (string.IsNullOrWhiteSpace(filePath.Value)))
 				{
-					item.Properties.Add(attribute.Name.LocalName, attribute.Value);
+					continue;
 				}
 
-				item.Deserialize(element);
+				var fileList = new HashSet<string>(new NameComparer());
 
-				MetaDataItems.Add(item);
+				IEnumerable<XElement> dependencies = file.Elements(DependsOnNode);
+
+				foreach (XElement dependencyFile in dependencies)
+				{
+					if ((string.IsNullOrWhiteSpace(dependencyFile.Value)) 
+						|| (fileList.Contains(dependencyFile.Value)))
+					{
+						continue;
+					}
+
+					fileList.Add(dependencyFile.Value);
+				}
+
+				if (fileList.Count == 0)
+				{
+					continue;
+				}
+
+				Dependencies.Add(filePath.Value, fileList);
 			}
+		}
+
+		/// <summary>
+		/// Function to reset the meta data back to its initial state.
+		/// </summary>
+		public void Reset()
+		{
+			_metaData = new XDocument(new XDeclaration("1.0", "utf-8", "yes"),
+									  new XElement(MetaDataRootName,
+												   new XElement(WriterPlugInNode),
+												   new XElement(ContentDependencyFiles)));
+
+			WriterPlugInType = string.Empty;
+			Dependencies.Clear();
 		}
 
 		/// <summary>
@@ -162,12 +289,12 @@ namespace GorgonLibrary.Editor
 		/// <exception cref="GorgonLibrary.GorgonException">Thrown when the meta data is corrupted.</exception>
 		public void Load()
 		{
-			_metaDataFile = ScratchArea.ScratchFiles.GetFile(Path);
+			_metaDataFile = ScratchArea.ScratchFiles.GetFile(_path);
 
 			// If the file doesn't exist yet, then move on.
 			if (_metaDataFile == null)
 			{
-				_metaData = new XDocument(new XDeclaration("1.0", "utf-8", "yes"), new XElement(MetaDataRootName));
+				Reset();
 				return;
 			}
 
@@ -180,18 +307,11 @@ namespace GorgonLibrary.Editor
 			// Validate the file.
 			XElement rootNode = _metaData.Element(MetaDataRootName);
 
-			if (rootNode == null)
-			{
-				_metaData = null;
-				throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GOREDIT_METADATA_CORRUPT, Name));
-			}
+			GetWriterSettings(rootNode);
 
-			Deserialize(rootNode);
+			GetDependencies(rootNode);
 
-			if (!IsVisible)
-			{
-				ScratchArea.AddBlockedFile(_metaDataFile);
-			}
+			ScratchArea.AddBlockedFile(_metaDataFile);
 		}
 
 		/// <summary>
@@ -209,29 +329,48 @@ namespace GorgonLibrary.Editor
 
 			if (root == null)
 			{
-				return;
+				root = new XElement(MetaDataRootName);
+				_metaData.Add(root);
 			}
 
-			// Clear the current document.
-			root.RemoveAll();
-
-			// Rebuild it.
-			foreach (var item in MetaDataItems)
+			// Add or update the elements to the XML document.
+			XElement writerPlugInElement = AddOrUpdateNode(root, WriterPlugInNode);
+			XAttribute writerTypeAttr = AddOrUpdateAttribute(writerPlugInElement, TypeNameAttr, WriterPlugInType);
+			
+			if (string.IsNullOrWhiteSpace(WriterPlugInType))
 			{
-				root.Add(item.Serialize());
+				writerTypeAttr.Remove();
 			}
 
-			_metaDataFile = ScratchArea.ScratchFiles.WriteFile(Path, null);
+			XElement dependencyList = AddOrUpdateNode(root, ContentDependencyFiles);
+
+			foreach (KeyValuePair<string, ICollection<string>> files in Dependencies)
+			{
+				if ((string.IsNullOrWhiteSpace(files.Key))
+					|| (files.Value == null)
+					|| (files.Value.Count == 0))
+				{
+					continue;
+				}
+
+				XElement file = AddOrUpdateNode(dependencyList, FileNode);
+				AddOrUpdateAttribute(file, NameAttr, files.Key);
+
+				// Add file list.
+				foreach (string dependency in files.Value)
+				{
+					AddOrUpdateNode(file, DependsOnNode, dependency);
+				}
+			}
+
+			_metaDataFile = ScratchArea.ScratchFiles.WriteFile(_path, null);
 			using (Stream stream = _metaDataFile.OpenStream(true))
 			{
 				_metaData.Save(stream);
 			}
 
 			// Add to the block list if this file should not show up.
-			if (!IsVisible)
-			{
-				ScratchArea.AddBlockedFile(_metaDataFile);
-			}
+			ScratchArea.AddBlockedFile(_metaDataFile);
 		}
 		#endregion
 
@@ -239,51 +378,12 @@ namespace GorgonLibrary.Editor
 		/// <summary>
 		/// Initializes a new instance of the <see cref="EditorMetaDataFile"/> class.
 		/// </summary>
-		/// <param name="name">The name of the file.</param>
-		/// <param name="directoryPath">[Optional] A file system directory path that will contain the meta data file.</param>
-		/// <param name="isVisible">[Optional] TRUE if the meta data file should show up in the directory tree or other file lists, FALSE if not.</param>
-		/// <exception cref="System.ArgumentNullException">Thrown when the <paramref name="name"/> parameter is NULL (Nothing in VB.Net).</exception>
-		/// <exception cref="System.ArgumentException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
-		public EditorMetaDataFile(string name, string directoryPath = @"/", bool isVisible = false)
+		public EditorMetaDataFile()
 		{
-			if (name == null)
-			{
-				throw new ArgumentNullException("name");
-			}
+			_path = "/" + MetaDataFile;
+			Dependencies = new Dictionary<string, ICollection<string>>(new NameComparer());
 
-			if (string.IsNullOrWhiteSpace(name))
-			{
-				throw new ArgumentException(Resources.GOREDIT_PARAMETER_MUST_NOT_BE_EMPTY, "name");
-			}
-
-			MetaDataItems = new EditorMetaDataItemCollection();
-
-			Name = name.FormatFileName();
-
-			// If we provided an object link, locate the object.
-			if (string.IsNullOrWhiteSpace(directoryPath))
-			{
-				Path = "/" + Name;
-			}
-			else
-			{
-				Path = directoryPath.FormatDirectory('/') + Name;
-			}
-
-			_metaData = new XDocument(new XDeclaration("1.0", "utf-8", "yes"), new XElement(MetaDataRootName));
-
-			IsVisible = isVisible;
-		}
-		#endregion
-
-		#region INamedObject Members
-		/// <summary>
-		/// Property to return the name of this object.
-		/// </summary>
-		public string Name
-		{
-			get;
-			private set;
+			Reset();
 		}
 		#endregion
 	}

@@ -693,7 +693,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		/// <summary>
 		/// Property to return the path to an existing texture brush.
 		/// </summary>
-	    public EditorMetaDataItem TextureBrushPath
+	    public string TextureBrushPath
 	    {
 		    get;
 			private set;
@@ -1041,12 +1041,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 							// Function to retrieve the transformation and node point values from the image.
 							_selectionArea.SetTexture(_texture, new Rectangle(0, 0, settings.Width, settings.Height));
 
-							if (TextureBrushPath == null)
-							{
-								TextureBrushPath = new EditorMetaDataItem(GorgonFontContent.TextureBrushDependency);
-							}
-
-							TextureBrushPath.Value = imageFileBrowser.Files[0].FullPath;
+							TextureBrushPath = imageFileBrowser.Files[0].FullPath;
 						}
 					}
 				}
@@ -1392,7 +1387,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
         /// </summary>
         /// <param name="fontContent">The current font content interface.</param>
         /// <param name="textureBrushPath">Path to the texture brush.</param>
-        public formBrushEditor(GorgonFontContent fontContent, EditorMetaDataItem textureBrushPath)
+        public formBrushEditor(GorgonFontContent fontContent, string textureBrushPath)
 			: this()
 	    {
 		    TextureBrushPath = textureBrushPath;

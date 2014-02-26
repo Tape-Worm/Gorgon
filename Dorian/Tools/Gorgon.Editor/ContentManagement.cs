@@ -392,37 +392,29 @@ namespace GorgonLibrary.Editor
 			    EditorMetaDataFile metaData = Program.EditorMetaData;
 
 				// Check for dependencies.
-			    if (metaData.MetaDataItems.Contains(EditorMetaDataFile.ContentDependencyFiles))
+			    if ((metaData.Dependencies.ContainsKey(file.FullPath))
+					&& (metaData.Dependencies[file.FullPath].Count > 0))
 			    {
-				    EditorMetaDataItem dependencies = metaData.MetaDataItems[EditorMetaDataFile.ContentDependencyFiles];
-				    EditorMetaDataItem fileList = dependencies.MetaDataItems.FirstOrDefault((EditorMetaDataItem item) =>
-				                                                                            string.Equals("Content_" + file.FullPath.Replace('/', '_'),
-				                                                                                          item.Name,
-				                                                                                          StringComparison
-					                                                                                          .OrdinalIgnoreCase));
+					content.Dependencies.Clear();
 
-				    if (fileList != null)
-				    {
-						content.Dependencies.Clear();
-					    content.Dependencies.AddRange(fileList.MetaDataItems);
+					foreach (string dependencyFile in metaData.Dependencies[file.FullPath])
+					{
+						GorgonFileSystemFileEntry externalFile = OnGetDependency(dependencyFile);
 
-					    foreach (EditorMetaDataItem dependencyFile in content.Dependencies)
-					    {
-							GorgonFileSystemFileEntry externalFile = OnGetDependency(dependencyFile.Value);
+						if (externalFile == null)
+						{
+							// TODO: Change this to a callback which displays a warning and continue the loop.
+							throw new FileNotFoundException(string.Format(Resources.GOREDIT_FILE_NOT_FOUND, dependencyFile));
+						}
 
-							if (externalFile == null)
-							{
-								// TODO: Change this to a callback which displays a warning and continue the loop.
-								throw new FileNotFoundException(string.Format(Resources.GOREDIT_FILE_NOT_FOUND, dependencyFile.Name));
-							}
+						content.Dependencies.Add(dependencyFile);
 
-							// Read the external content.
-						    using (Stream dependencyStream = externalFile.OpenStream(false))
-						    {
-							    content.LoadDependencyFile(dependencyFile, dependencyStream);
-						    }
-					    }
-				    }
+						// Read the external content.
+						using (Stream dependencyStream = externalFile.OpenStream(false))
+						{
+							content.LoadDependencyFile(dependencyFile, dependencyStream);
+						}
+					}
 			    }
 
 		        content.Read(stream);
@@ -452,47 +444,26 @@ namespace GorgonLibrary.Editor
 			{
 				Current.Persist(contentStream);
 			}
-
+			
 			EditorMetaDataFile metaData = Program.EditorMetaData;
-			EditorMetaDataItem dependencies;
-			EditorMetaDataItem dependencyContent = null;
 
-			if (!metaData.MetaDataItems.Contains(EditorMetaDataFile.ContentDependencyFiles))
+			if ((Current.Dependencies != null)
+			    && (Current.Dependencies.Count > 0))
 			{
-				dependencies = new EditorMetaDataItem(EditorMetaDataFile.ContentDependencyFiles);
-				metaData.MetaDataItems.Add(dependencies);
-			}
-			else
-			{
-				dependencies = metaData.MetaDataItems[EditorMetaDataFile.ContentDependencyFiles];
-			}
+				// Update the dependency list.
+				metaData.Dependencies[file.FullPath] = new HashSet<string>(new EditorMetaDataFile.NameComparer());
 
-			string itemName = "Content_" + file.FullPath.Replace('/','_');
-
-			if (dependencies.MetaDataItems.Contains(itemName))
-			{
-				dependencyContent = dependencies.MetaDataItems[itemName];
-			}
-
-			// Persist any dependencies.
-			if (Current.Dependencies.Count > 0)
-			{
-				if (dependencyContent == null)
+				foreach (string dependencyPath in Current.Dependencies)
 				{
-					dependencyContent = new EditorMetaDataItem(itemName);
-					dependencies.MetaDataItems.Add(dependencyContent);
+					metaData.Dependencies[file.FullPath].Add(dependencyPath);
 				}
-
-				// Refresh the dependency list.
-				dependencyContent.MetaDataItems.Clear();
-				dependencyContent.MetaDataItems.AddRange(Current.Dependencies);
 			}
 			else
 			{
-				// If we don't have any dependencies, then remove this item from the dependency list.
-				if (dependencyContent != null)
+				if ((metaData.Dependencies.ContainsKey(file.FullPath))
+					&& (metaData.Dependencies[file.FullPath] != null))
 				{
-					dependencies.MetaDataItems.Remove(dependencyContent);
+					metaData.Dependencies[file.FullPath].Clear();
 				}
 			}
 
