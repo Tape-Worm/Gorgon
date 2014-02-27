@@ -26,22 +26,19 @@
 
 using System;
 using System.Drawing;
+using System.IO;
 using System.Linq;
-using System.Windows.Forms;
 using GorgonLibrary.Editor.Properties;
 using GorgonLibrary.IO;
 
 namespace GorgonLibrary.Editor
 {
 	/// <summary>
-	/// A treeview node for a file.
+	/// A treeview node for a file dependency.
 	/// </summary>
-	class TreeNodeFile
-		: TreeNodeEditor
+	class TreeNodeDependency
+		: TreeNodeFile
 	{
-		#region Variables.
-		#endregion
-
 		#region Properties.
 		/// <summary>
 		/// Property to return the type of node.
@@ -50,17 +47,8 @@ namespace GorgonLibrary.Editor
 		{
 			get
 			{
-				return NodeType.File;
+				return NodeType.Dependency;
 			}
-		}
-
-		/// <summary>
-		/// Property to set or return the font for open files.
-		/// </summary>
-		public Font OpenFont
-		{
-			get;
-			set;
 		}
 
 		/// <summary>
@@ -74,23 +62,7 @@ namespace GorgonLibrary.Editor
 		{
 			get
 			{
-				if ((IsSelected) && (PlugIn != null))
-                {
-					return !IsCut ? DarkFormsRenderer.MenuHilightForeground : Color.Black;
-                }
-
-				if (IsCut)
-				{
-					return Color.Silver;
-				}
-
-				// Draw the text as disabled.
-				if ((PlugIn == null) || (File == null))
-				{
-					return DarkFormsRenderer.DisabledColor;
-				}
-
-				return Color.White;
+				return !IsBroken ? base.ForeColor : Color.Red;
 			}
 			set
 			{
@@ -99,64 +71,36 @@ namespace GorgonLibrary.Editor
 		}
 
 		/// <summary>
-		/// Property to return the plug-in that is linked to the file attached to the node.
+		/// Property to return whether the link for this dependency is broken or not.
 		/// </summary>
-		public ContentPlugIn PlugIn
+		public bool IsBroken
 		{
 			get;
-			protected set;
-		}
-
-		/// <summary>
-		/// Property to return the file associated with this node.
-		/// </summary>
-		public GorgonFileSystemFileEntry File
-		{
-			get
-			{
-				return ScratchArea.ScratchFiles == null ? null : ScratchArea.ScratchFiles.GetFile(Name);
-			}
+			private set;
 		}
 		#endregion
 
 		#region Methods.
 		/// <summary>
-		/// Function to get the file data.
+		/// Function to update the node as a broken file link.
 		/// </summary>
-		private void GetFileData()
+		/// <param name="path">Path to the file.</param>
+		public void UpdateBroken(string path)
 		{
-			ExpandedImage = Resources.unknown_document_16x16;
-			CollapsedImage = ExpandedImage;
+			string fileName = Path.GetFileName(path);
+
+			Name = path;
 			PlugIn = null;
+			CollapsedImage = ExpandedImage = Resources.image_missing_16x16;
 
-			if (string.IsNullOrWhiteSpace(File.Extension))
+			if (string.IsNullOrWhiteSpace(fileName))
 			{
-				return;
+				fileName = Resources.GOREDIT_DEPENDENCY_BROKEN_UNKNOWN;
 			}
 
-            PlugIn = ContentManagement.GetContentPlugInForFile(File.Extension);
-
-			if (PlugIn != null)
-			{
-				ExpandedImage = CollapsedImage = PlugIn.GetContentIcon();
-			}
-		}
-
-		/// <summary>
-		/// Function to update the file information.
-		/// </summary>
-		/// <param name="file">File system file entry to use.</param>
-		public void UpdateFile(GorgonFileSystemFileEntry file)
-		{
-			Name = file.FullPath;
-			Text = file.Name;
-			GetFileData();
-
-			// We have dependencies, so update.
-			if (Program.EditorMetaData.Dependencies.ContainsKey(file.FullPath))
-			{
-				Nodes.Add(new TreeNode("DummyNode"));
-			}
+			Text = string.Format("{0} ({1})", fileName, Resources.GOREDIT_DEPENDENCY_BROKEN);
+			
+			IsBroken = true;
 		}
 		#endregion
 	}

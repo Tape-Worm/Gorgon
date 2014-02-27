@@ -100,52 +100,54 @@ namespace GorgonLibrary.UI
 		}
 
 		/// <summary>
-		/// Function to display the enhanced error dialog.
+		/// Function to retrieve the details for an exception.
 		/// </summary>
-		/// <param name="owner">Owning window of this dialog.</param>
-		/// <param name="message">Supplementary error message.</param>
-		/// <param name="innerException">Exception that was thrown.</param>
-		/// <param name="caption">Caption for the error box.</param>
-		public static void ErrorBox(Form owner, string message, Exception innerException, string caption)
+		/// <param name="innerException">Exception to evaluate.</param>
+		/// <returns>A string containing the details of the exception.</returns>
+		private static string GetDetailsFromException(Exception innerException)
 		{
-			var errorText = new StringBuilder(1024);
-
-		    var errorDialog = new ErrorDialog();
-			// If the owner form is NULL or not available, center on screen.
-			if ((owner == null) || (owner.WindowState == FormWindowState.Minimized) || (!owner.Visible))
+			if (innerException == null)
 			{
-				errorDialog.StartPosition = FormStartPosition.CenterScreen;
+				return Resources.GOR_DLG_ERR_NO_MSG;
 			}
 
 			// Find all inner exceptions.
+			var errorText = new StringBuilder(1024);
 			Exception nextException = innerException;
 
 			while (nextException != null)
 			{
-				errorText.AppendFormat("{0}:  {1}\n{2}:  {3}", Resources.GOR_DLG_ERR_DETAILS_MSG, nextException.Message,
-				                       Resources.GOR_DLG_ERR_EXCEPT_TYPE, nextException.GetType().FullName);
+				errorText.AppendFormat("{0}:  {1}\n{2}:  {3}",
+									   Resources.GOR_DLG_ERR_DETAILS_MSG,
+									   nextException.Message,
+									   Resources.GOR_DLG_ERR_EXCEPT_TYPE,
+									   nextException.GetType().FullName);
 
-			    if (nextException.Source != null)
-			    {
-				    errorText.AppendFormat("{0}:  {1}\n", Resources.GOR_DLG_ERR_SRC, nextException.Source);
-			    }
+				if (nextException.Source != null)
+				{
+					errorText.AppendFormat("{0}:  {1}\n", Resources.GOR_DLG_ERR_SRC, nextException.Source);
+				}
 
-			    if ((nextException.TargetSite != null) && (nextException.TargetSite.DeclaringType != null))
-			    {
-				    errorText.AppendFormat("{0}:  {1}.{2}\n", Resources.GOR_DLG_ERR_TARGET_SITE,
-				                           nextException.TargetSite.DeclaringType.FullName, nextException.TargetSite.Name);
-			    }
+				if ((nextException.TargetSite != null) && (nextException.TargetSite.DeclaringType != null))
+				{
+					errorText.AppendFormat("{0}:  {1}.{2}\n",
+										   Resources.GOR_DLG_ERR_TARGET_SITE,
+										   nextException.TargetSite.DeclaringType.FullName,
+										   nextException.TargetSite.Name);
+				}
 
 				var gorgonException = nextException as GorgonException;
 
 				if (gorgonException != null)
 				{
-					errorText.AppendFormat("{0}: [{1}] {2} (0x{3})", Resources.GOR_DLG_ERR_GOREXCEPT_RESULT,
-					                       gorgonException.ResultCode.Name,
-					                       gorgonException.ResultCode.Description, gorgonException.ResultCode.Code.FormatHex());
+					errorText.AppendFormat("{0}: [{1}] {2} (0x{3})",
+										   Resources.GOR_DLG_ERR_GOREXCEPT_RESULT,
+										   gorgonException.ResultCode.Name,
+										   gorgonException.ResultCode.Description,
+										   gorgonException.ResultCode.Code.FormatHex());
 				}
 
-			    System.Collections.IDictionary extraInfo = nextException.Data;
+				System.Collections.IDictionary extraInfo = nextException.Data;
 
 				// Print custom information.
 				if (extraInfo.Count > 0)
@@ -159,17 +161,18 @@ namespace GorgonLibrary.UI
 							customData.Append("\n");
 						}
 
-					    if (item.Value != null)
-					    {
-						    customData.AppendFormat("{0}: {1}", item.Key, item.Value);
-					    }
+						if (item.Value != null)
+						{
+							customData.AppendFormat("{0}: {1}", item.Key, item.Value);
+						}
 					}
 
-				    if (customData.Length > 0)
-				    {
-					    errorText.AppendFormat("\n{0}:\n-------------------\n{1}\n-------------------\n",
-					                           Resources.GOR_DLG_ERR_CUSTOM_INFO, customData);
-				    }
+					if (customData.Length > 0)
+					{
+						errorText.AppendFormat("\n{0}:\n-------------------\n{1}\n-------------------\n",
+											   Resources.GOR_DLG_ERR_CUSTOM_INFO,
+											   customData);
+					}
 				}
 
 				string stackTrace = FormatStackTrace(nextException.StackTrace);
@@ -187,20 +190,7 @@ namespace GorgonLibrary.UI
 				}
 			}
 
-			errorDialog.ErrorDetails = errorText.ToString();
-
-		    if (string.IsNullOrEmpty(message))
-		    {
-		        errorDialog.Message = innerException != null ? innerException.Message : Resources.GOR_DLG_ERR_NO_MSG;
-		    }
-		    else
-		    {
-		        errorDialog.Message = message;
-		    }
-
-		    errorDialog.Text = caption;
-			errorDialog.ShowDialog(owner);
-			errorDialog.Dispose();
+			return errorText.ToString();
 		}
 
 		/// <summary>
@@ -208,10 +198,17 @@ namespace GorgonLibrary.UI
 		/// </summary>
 		/// <param name="owner">Owning window of this dialog.</param>
 		/// <param name="message">Supplementary error message.</param>
+		/// <param name="caption">Caption for the error box.</param>
 		/// <param name="innerException">Exception that was thrown.</param>
-		public static void ErrorBox(Form owner, string message, Exception innerException)
+		/// <param name="autoShowDetails">[Optional] TRUE to open the details pane, FALSE to leave it closed.</param>
+		public static void ErrorBox(Form owner, string message, string caption, Exception innerException, bool autoShowDetails = false)
 		{
-			ErrorBox(owner, message, innerException, Resources.GOR_DLG_CAPTION_ERROR);
+			if (string.IsNullOrWhiteSpace(message))
+			{
+				message = innerException != null ? innerException.Message : Resources.GOR_DLG_ERR_NO_MSG;
+			}
+
+			ErrorBox(owner, message, caption, GetDetailsFromException(innerException), autoShowDetails);
 		}
 
 		/// <summary>
@@ -221,7 +218,7 @@ namespace GorgonLibrary.UI
 		/// <param name="innerException">Exception that was thrown.</param>
 		public static void ErrorBox(Form owner, Exception innerException)
 		{
-			ErrorBox(owner, null, innerException, Resources.GOR_DLG_CAPTION_ERROR);
+			ErrorBox(owner, null, null, innerException);
 		}
 
 		/// <summary>
@@ -229,57 +226,44 @@ namespace GorgonLibrary.UI
 		/// </summary>
 		/// <param name="owner">Owning window of this dialog.</param>
 		/// <param name="description">Error description.</param>
-		/// <param name="details">Details for the error.</param>
-        /// <param name="showDetail">TRUE to open the window with the detail panel open, FALSE to open it with the detail panel closed.</param>
-		/// <param name="caption">Caption for the error box.</param>
-		public static void ErrorBox(Form owner, string description, string details, bool showDetail, string caption)
+		/// <param name="caption">[Optional] Caption for the error box.</param>
+		/// <param name="details">[Optional] Details for the error.</param>
+		/// <param name="autoShowDetails">[Optional] TRUE to automatically open the details pane, FALSE to leave it closed.</param>
+		/// <remarks>If the <paramref name="details"/> parameter is NULL (Nothing in VB.Net) or empty, then <paramref name="autoShowDetails"/> is ignored.</remarks>
+		public static void ErrorBox(Form owner, string description, string caption = "", string details = "", bool autoShowDetails = false)
 		{
-		    var errorDialog = new ErrorDialog();
-			// If the owner form is NULL or not available, center on screen.
-		    if ((owner == null) || (owner.WindowState == FormWindowState.Minimized) || (!owner.Visible))
-		    {
-		        errorDialog.StartPosition = FormStartPosition.CenterScreen;
-		    }
+			ErrorDialog errorDialog = null;
 
-		    errorDialog.Message = description;
-			errorDialog.ErrorDetails = details;
-			errorDialog.Text = caption;
-            errorDialog.ShowDetailPanel = showDetail;
-			errorDialog.ShowDialog(owner);
-			errorDialog.Dispose();
-		}
+			try
+			{
+				if (string.IsNullOrEmpty(caption))
+				{
+					caption = Resources.GOR_DLG_CAPTION_ERROR;
+				}
 
-		/// <summary>
-		/// Function to display the enhanced error dialog.
-		/// </summary>
-		/// <param name="owner">Owning window of this dialog.</param>
-		/// <param name="description">Error description.</param>
-		/// <param name="details">Details for the error.</param>
-        /// <param name="showDetail">TRUE to open the window with the detail panel open, FALSE to open it with the detail panel closed.</param>
-		public static void ErrorBox(Form owner, string description, string details, bool showDetail)
-		{
-			ErrorBox(owner, description, details, showDetail, Resources.GOR_DLG_CAPTION_ERROR);
-		}
+				errorDialog = new ErrorDialog
+				              {
+					              Message = description,
+					              ErrorDetails = details,
+					              Text = caption,
+								  ShowDetailPanel = (autoShowDetails) && (!string.IsNullOrEmpty(details))
+				              };
 
-        /// <summary>
-        /// Function to display the enhanced error dialog.
-        /// </summary>
-        /// <param name="owner">Owning window of this dialog.</param>
-        /// <param name="description">Error description.</param>
-        /// <param name="details">Details for the error.</param>
-        public static void ErrorBox(Form owner, string description, string details)
-        {
-            ErrorBox(owner, description, details, false, Resources.GOR_DLG_CAPTION_ERROR);
-        }
+				errorDialog.ShowDialog(owner);
 
-		/// <summary>
-		/// Function to display the enhanced error dialog.
-		/// </summary>
-		/// <param name="owner">Owning window of this dialog.</param>
-		/// <param name="description">Error description.</param>		
-		public static void ErrorBox(Form owner, string description)
-		{
-			ErrorBox(owner, description, string.Empty, false, Resources.GOR_DLG_CAPTION_ERROR);
+				// If the owner form is NULL or not available, center on screen.
+				if ((owner == null) || (owner.WindowState == FormWindowState.Minimized) || (!owner.Visible))
+				{
+					errorDialog.StartPosition = FormStartPosition.CenterScreen;
+				}
+			}
+			finally
+			{
+				if (errorDialog != null)
+				{
+					errorDialog.Dispose();
+				}
+			}
 		}
 
 		/// <summary>
@@ -287,10 +271,15 @@ namespace GorgonLibrary.UI
 		/// </summary>
 		/// <param name="owner">Owning window of this dialog.</param>
 		/// <param name="message">Message to display.</param>
-		/// <param name="caption">Caption for the dialog.</param>
-		public static void InfoBox(Form owner, string message, string caption)
+		/// <param name="caption">[Optional] Caption for the dialog.</param>
+		public static void InfoBox(Form owner, string message, string caption = "")
 		{
 			BaseDialog dialog = null;
+
+			if (string.IsNullOrWhiteSpace(caption))
+			{
+				caption = Resources.GOR_DLG_CAPTION_INFO;
+			}
 
 			try
 			{
@@ -325,65 +314,47 @@ namespace GorgonLibrary.UI
 		}
 
 		/// <summary>
-		/// Function to display an information box.
+		/// Function to display the enhanced warning dialog.
 		/// </summary>
 		/// <param name="owner">Owning window of this dialog.</param>
-		/// <param name="message">Message to display.</param>
-		public static void InfoBox(Form owner, string message)
+		/// <param name="description">Error description.</param>
+		/// <param name="caption">[Optional] Caption for the error box.</param>
+		/// <param name="details">[Optional] Details for the error.</param>
+		/// <param name="autoShowDetails">[Optional] TRUE to automatically open the details pane, FALSE to leave it closed.</param>
+		/// <remarks>If the <paramref name="details"/> parameter is NULL (Nothing in VB.Net) or empty, then <paramref name="autoShowDetails"/> is ignored.</remarks>
+		public static void WarningBox(Form owner, string description, string caption = "", string details = "", bool autoShowDetails = false)
 		{
-            InfoBox(owner, message, Resources.GOR_DLG_CAPTION_INFO);
-		}
+			if (string.IsNullOrEmpty(caption))
+			{
+				caption = Resources.GOR_DLG_CAPTION_WARNING;
+			}
 
-		/// <summary>
-		/// Function to display a warning box.
-		/// </summary>
-		/// <param name="owner">Owning window of this dialog.</param>
-		/// <param name="message">Message to display.</param>
-		/// <param name="caption">Caption for the dialog.</param>
-		public static void WarningBox(Form owner, string message, string caption)
-		{
-			BaseDialog dialog = null;
+			WarningDialog warningDialog = null;
+			try
+			{
+				warningDialog = new WarningDialog
+				                {
+					                Message = description,
+					                WarningDetails = details,
+					                Text = caption,
+					                ShowDetailPanel = (autoShowDetails) && (!string.IsNullOrEmpty(details))
+				                };
 
-		    try
-		    {
-		        dialog = new BaseDialog
-		            {
-		                Icon = Resources.GorgonWarning,
-		                DialogImage = Resources.Warning_48x48,
-		                Message = message,
-		                ButtonAction = DialogResult.OK
-		            };
+				// If the owner form is NULL or not available, center on screen.
+				if ((owner == null) || (owner.WindowState == FormWindowState.Minimized) || (!owner.Visible))
+				{
+					warningDialog.StartPosition = FormStartPosition.CenterScreen;
+				}
 
-		        if (owner != null)
-		        {
-		            dialog.MessageHeight = Screen.FromControl(owner).WorkingArea.Height/2;
-		        }
-		        else
-		        {
-		            dialog.MessageHeight = Screen.FromControl(dialog).WorkingArea.Height/2;
-		        }
-
-		        dialog.Text = !string.IsNullOrEmpty(caption) ? caption : Resources.GOR_DLG_CAPTION_WARNING;
-
-		        dialog.ShowDialog(owner);
-		    }
-		    finally
-		    {
-		        if (dialog != null)
-		        {
-		            dialog.Dispose();
-		        }
-		    }
-		}
-
-		/// <summary>
-		/// Function to display a warning box.
-		/// </summary>
-		/// <param name="owner">Owning window of this dialog.</param>
-		/// <param name="message">Message to display.</param>
-		public static void WarningBox(Form owner, string message)
-		{
-            WarningBox(owner, message, Resources.GOR_DLG_CAPTION_WARNING);
+				warningDialog.ShowDialog(owner);
+			}
+			finally
+			{
+				if (warningDialog != null)
+				{
+					warningDialog.Dispose();
+				}
+			}
 		}
 
 		/// <summary>
@@ -391,74 +362,41 @@ namespace GorgonLibrary.UI
 		/// </summary>
 		/// <param name="owner">Owning window of this dialog.</param>
 		/// <param name="message">Message to display.</param>
-		/// <param name="caption">Caption for the dialog.</param>
-		/// <param name="allowCancel">TRUE to show a Cancel button, FALSE to hide.</param>
-		/// <param name="allowToAll">TRUE to show a 'To all' option, FALSE to hide.</param>
+		/// <param name="caption">[Optional] Caption for the dialog.</param>
+		/// <param name="allowCancel">[Optional] TRUE to show a Cancel button, FALSE to hide.</param>
+		/// <param name="allowToAll">[Optional] TRUE to show a 'To all' option, FALSE to hide.</param>
 		/// <returns>Any member of ConfirmationResult except ConfirmationResult.None.</returns>
-		public static ConfirmationResult ConfirmBox(Form owner, string message, string caption, bool allowCancel, bool allowToAll)
+		public static ConfirmationResult ConfirmBox(Form owner, string message, string caption = "", bool allowCancel = false, bool allowToAll = false)
 		{
-		    ConfirmationDialog confirm = allowToAll ? new ConfirmationDialogEx() : new ConfirmationDialog();
+			ConfirmationDialog confirm = null;
+			ConfirmationResult result;
 
-		    confirm.Text = !string.IsNullOrEmpty(caption) ? caption : Resources.GOR_DLG_CAPTION_CONFIRM;
+			if (string.IsNullOrEmpty(caption))
+			{
+				caption = Resources.GOR_DLG_CAPTION_CONFIRM;
+			}
 
-		    confirm.Message = message;
-			confirm.ShowCancel = allowCancel;
-			confirm.ShowDialog(owner);
+			try
+			{
+				confirm = allowToAll ? new ConfirmationDialogEx() : new ConfirmationDialog();
 
-			ConfirmationResult result = confirm.ConfirmationResult;
+				confirm.Text = !string.IsNullOrEmpty(caption) ? caption : Resources.GOR_DLG_CAPTION_CONFIRM;
 
-			confirm.Dispose();
+				confirm.Message = message;
+				confirm.ShowCancel = allowCancel;
+				confirm.ShowDialog(owner);
+
+				result = confirm.ConfirmationResult;
+			}
+			finally
+			{
+				if (confirm != null)
+				{
+					confirm.Dispose();
+				}
+			}
 
 			return result;
-		}
-
-		/// <summary>
-		/// Function to display a confirmation dialog.
-		/// </summary>
-		/// <param name="owner">Owning window of this dialog.</param>
-		/// <param name="message">Message to display.</param>
-		/// <param name="allowCancel">TRUE to show a Cancel button, FALSE to hide.</param>
-		/// <param name="allowToAll">TRUE to show a 'To all' option, FALSE to hide.</param>
-		/// <returns>Any member of ConfirmationResult except ConfirmationResult.None.</returns>
-		public static ConfirmationResult ConfirmBox(Form owner, string message, bool allowCancel, bool allowToAll)
-		{
-			return ConfirmBox(owner, message, string.Empty, allowCancel, allowToAll);
-		}
-
-		/// <summary>
-		/// Function to display a confirmation dialog.
-		/// </summary>
-		/// <param name="owner">Owning window of this dialog.</param>
-		/// <param name="message">Message to display.</param>
-		/// <param name="caption">Caption for the dialog.</param>
-		/// <param name="allowCancel">TRUE to show a Cancel button, FALSE to hide.</param>
-		/// <returns>Any member of ConfirmationResult except ConfirmationResult.None.</returns>
-		public static ConfirmationResult ConfirmBox(Form owner, string message, string caption, bool allowCancel)
-		{
-			return ConfirmBox(owner, message, caption, allowCancel, false);
-		}
-
-		/// <summary>
-		/// Function to display a confirmation dialog.
-		/// </summary>
-		/// <param name="owner">Owning window of this dialog.</param>
-		/// <param name="message">Message to display.</param>
-		/// <param name="caption">Caption for the dialog.</param>
-		/// <returns>Any member of ConfirmationResult except ConfirmationResult.None.</returns>
-		public static ConfirmationResult ConfirmBox(Form owner, string message, string caption)
-		{
-			return ConfirmBox(owner, message, caption, false, false);
-		}
-
-		/// <summary>
-		/// Function to display a confirmation dialog.
-		/// </summary>
-		/// <param name="owner">Owning window of this dialog.</param>
-		/// <param name="message">Message to display.</param>
-		/// <returns>Any member of ConfirmationResult except ConfirmationResult.None.</returns>
-		public static ConfirmationResult ConfirmBox(Form owner, string message)
-		{
-			return ConfirmBox(owner, message, string.Empty, false, false);
 		}
 		#endregion
 	}

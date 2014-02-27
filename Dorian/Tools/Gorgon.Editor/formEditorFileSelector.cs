@@ -1156,7 +1156,7 @@ namespace GorgonLibrary.Editor
 
 			try
 			{
-				FillDirectoryTree((EditorTreeNode)e.Node, false);
+				FillDirectoryTree((TreeNodeEditor)e.Node, false);
 			}
 			catch (Exception ex)
 			{
@@ -1207,7 +1207,7 @@ namespace GorgonLibrary.Editor
 		/// </summary>
 		/// <param name="root">The root node of the tree to fill.</param>
 		/// <param name="setInitialSelected">TRUE to set the initially selected node, FALSE to sjip it.</param>
-		private void FillDirectoryTree(EditorTreeNode root, bool setInitialSelected)
+		private void FillDirectoryTree(TreeNodeEditor root, bool setInitialSelected)
 		{
 			TreeNodeDirectory selectedNode = null;
 		
@@ -1494,7 +1494,7 @@ namespace GorgonLibrary.Editor
 						Invoke(new MethodInvoker(() =>
 						                         {
 							                         GorgonDialogs.ErrorBox(this, string.Format(Resources.GOREDIT_DLG_COULD_NOT_LOAD_THUMBNAIL,
-							                                                              item.FullPath), ex);
+							                                                              item.FullPath), null, ex);
 
 													 if (!imagesFilesLarge.Images.ContainsKey(item.FullPath))
 													 {

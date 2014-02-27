@@ -444,4 +444,10 @@ Height:{5:####0}</value>
   <data name="GORFNT_PROP_VALUE_WRAP_MODE" xml:space="preserve">
     <value>Wrapping mode:</value>
   </data>
+  <data name="GORFNT_BRUSH_IMAGE_EDITOR_MISSING" xml:space="preserve">
+    <value>There is no image editor loaded to handle the texture brush assigned to this font.</value>
+  </data>
+  <data name="GORFNT_BRUSH_IMAGE_MISSING" xml:space="preserve">
+    <value>Unable to load the image data for the texture brush assigned to this font.</value>
+  </data>
 </root>

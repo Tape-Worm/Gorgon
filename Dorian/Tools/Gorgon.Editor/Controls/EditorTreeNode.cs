@@ -48,13 +48,17 @@ namespace GorgonLibrary.Editor
 		/// <summary>
 		/// File node.
 		/// </summary>
-		File = 4
+		File = 4,
+		/// <summary>
+		/// Dependency node.
+		/// </summary>
+		Dependency = 8
 	}
 
 	/// <summary>
 	/// A tree node for the editor.
 	/// </summary>
-	abstract class EditorTreeNode
+	abstract class TreeNodeEditor
 		: TreeNode
 	{
 		#region Properties.
@@ -187,7 +191,7 @@ namespace GorgonLibrary.Editor
 		/// </summary>
 		/// <param name="parentNode">Parent node to evaluate for ancestry.</param>
 		/// <returns>TRUE if the child is ancestor of parent, FALSE if not.</returns>
-		public bool IsAncestorOf(EditorTreeNode parentNode)
+		public bool IsAncestorOf(TreeNodeEditor parentNode)
 		{
 			TreeNode node = Parent;
 
@@ -236,16 +240,6 @@ namespace GorgonLibrary.Editor
 			{
 				TreeView.Invalidate(new Rectangle(0, base.Bounds.Top, TreeView.ClientSize.Width, base.Bounds.Height), true);
 			}			
-		}
-		#endregion
-
-		#region Constructor/Destructor.
-		/// <summary>
-		/// Initializes a new instance of the <see cref="EditorTreeNode"/> class.
-		/// </summary>
-		protected EditorTreeNode()
-		{
-				
 		}
 		#endregion
 	}

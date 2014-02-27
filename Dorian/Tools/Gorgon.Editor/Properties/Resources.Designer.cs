@@ -272,6 +272,42 @@ namespace GorgonLibrary.Editor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The file &apos;{0}&apos; has dependencies that could not be loaded.  The file was loaded normally, but may not render correctly.  Please see the details pane to see which dependency files are missing..
+        /// </summary>
+        internal static string GOREDIT_CANNOT_FIND_DEPENDENCY {
+            get {
+                return ResourceManager.GetString("GOREDIT_CANNOT_FIND_DEPENDENCY", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to File &apos;{0}&apos; is missing..
+        /// </summary>
+        internal static string GOREDIT_CANNOT_FIND_DEPENDENCY_FILE {
+            get {
+                return ResourceManager.GetString("GOREDIT_CANNOT_FIND_DEPENDENCY_FILE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The following files are required, but are missing:.
+        /// </summary>
+        internal static string GOREDIT_CANNOT_FIND_DEPENDENCY_MSG {
+            get {
+                return ResourceManager.GetString("GOREDIT_CANNOT_FIND_DEPENDENCY_MSG", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Error loading dependency &apos;{0}&apos;. Error: {1}.
+        /// </summary>
+        internal static string GOREDIT_CANNOT_LOAD_DEPENDENCY {
+            get {
+                return ResourceManager.GetString("GOREDIT_CANNOT_LOAD_DEPENDENCY", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Cannot use a system location or the root of the system drive for scratch data..
         /// </summary>
         internal static string GOREDIT_CANNOT_USESYS_SCRATCH {
@@ -313,6 +349,24 @@ namespace GorgonLibrary.Editor.Properties {
         internal static string GOREDIT_DEFAULT_TITLE {
             get {
                 return ResourceManager.GetString("GOREDIT_DEFAULT_TITLE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to (Broken link).
+        /// </summary>
+        internal static string GOREDIT_DEPENDENCY_BROKEN {
+            get {
+                return ResourceManager.GetString("GOREDIT_DEPENDENCY_BROKEN", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unknown file.
+        /// </summary>
+        internal static string GOREDIT_DEPENDENCY_BROKEN_UNKNOWN {
+            get {
+                return ResourceManager.GetString("GOREDIT_DEPENDENCY_BROKEN_UNKNOWN", resourceCulture);
             }
         }
         
@@ -1332,6 +1386,26 @@ namespace GorgonLibrary.Editor.Properties {
         internal static System.Drawing.Bitmap image_missing_128x128 {
             get {
                 object obj = ResourceManager.GetObject("image_missing_128x128", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap image_missing_16x16 {
+            get {
+                object obj = ResourceManager.GetObject("image_missing_16x16", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap linked_file_8x8 {
+            get {
+                object obj = ResourceManager.GetObject("linked_file_8x8", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

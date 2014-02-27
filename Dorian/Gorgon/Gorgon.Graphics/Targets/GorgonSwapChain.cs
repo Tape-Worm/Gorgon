@@ -287,6 +287,7 @@ namespace GorgonLibrary.Graphics
                                       () =>
                                       UI.GorgonDialogs.ErrorBox(_parentForm,
                                                                 string.Format(Resources.GORGFX_CATASTROPHIC_ERROR, Gorgon.Log.LogPath),
+																null,
                                                                 ex));
 
                 // If we fail in here, then we have a terminal error in Gorgon, don't risk further corruption.
@@ -330,6 +331,7 @@ namespace GorgonLibrary.Graphics
                                       () =>
                                       UI.GorgonDialogs.ErrorBox(_parentForm,
                                                                 string.Format(Resources.GORGFX_CATASTROPHIC_ERROR, Gorgon.Log.LogPath),
+																null,
                                                                 ex));
 
                 // If we fail in here, then we have a terminal error in Gorgon, don't risk further corruption.
@@ -467,6 +469,7 @@ namespace GorgonLibrary.Graphics
                                       () =>
                                       UI.GorgonDialogs.ErrorBox(_parentForm,
                                                                 string.Format(Resources.GORGFX_CATASTROPHIC_ERROR, Gorgon.Log.LogPath),
+																null,
                                                                 ex));
 
                 // If we fail in here, then we have a terminal error in Gorgon, don't risk further corruption.
@@ -552,6 +555,7 @@ namespace GorgonLibrary.Graphics
                                       () =>
                                       UI.GorgonDialogs.ErrorBox(_parentForm,
                                                                 string.Format(Resources.GORGFX_CATASTROPHIC_ERROR, Gorgon.Log.LogPath),
+																null,
                                                                 ex));
 
                 // If we fail in here, then we have a terminal error in Gorgon, don't risk further corruption.

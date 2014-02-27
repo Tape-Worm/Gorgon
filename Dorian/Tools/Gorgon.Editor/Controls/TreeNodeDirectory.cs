@@ -34,7 +34,7 @@ namespace GorgonLibrary.Editor
 	/// A treeview node for a directory.
 	/// </summary>
 	class TreeNodeDirectory
-		: EditorTreeNode
+		: TreeNodeEditor
 	{
 		#region Properties.
 		/// <summary>
