@@ -248,19 +248,13 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 					            || (imageContent.Image.Settings.Height != _content.Font.Settings.TextureSize.Height))
 					        {
 						        ConfirmationResult result = GorgonDialogs.ConfirmBox(ParentForm,
-						                                                             string.Format(
-						                                                                           Resources
-							                                                                           .GORFNT_IMAGE_SIZE_MISMATCH_MSG,
-						                                                                           imageContent.Image.Settings
-						                                                                                       .Width,
-						                                                                           imageContent.Image.Settings
-						                                                                                       .Height,
-						                                                                           _content.Font.Settings
-						                                                                                   .TextureSize.Width,
-						                                                                           _content.Font.Settings
-						                                                                                   .TextureSize.Height),
-						                                                             true,
-						                                                             false);
+						                                                             string.Format(Resources.GORFNT_IMAGE_SIZE_MISMATCH_MSG,
+						                                                                           imageContent.Image.Settings.Width,
+						                                                                           imageContent.Image.Settings.Height,
+						                                                                           _content.Font.Settings.TextureSize.Width,
+						                                                                           _content.Font.Settings.TextureSize.Height),
+						                                                             null,
+						                                                             true);
 
 						        if (result == ConfirmationResult.Cancel)
 						        {

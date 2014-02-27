@@ -211,7 +211,7 @@ namespace GorgonLibrary.Editor
             }
             catch (Exception ex)
             {
-                GorgonDialogs.ErrorBox(null, string.Format(Resources.GOREDIT_FILE_CANNOT_OPEN, Program.Settings.LastEditorFile), ex);
+                GorgonDialogs.ErrorBox(null, string.Format(Resources.GOREDIT_FILE_CANNOT_OPEN, Program.Settings.LastEditorFile), null, ex);
                 Program.Settings.LastEditorFile = string.Empty;
             }
 	    }

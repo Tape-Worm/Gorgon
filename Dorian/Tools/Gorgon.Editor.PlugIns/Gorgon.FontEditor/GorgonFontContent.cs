@@ -86,6 +86,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		private GorgonSwapChain _swap;						// Swap chain for our display.
         private GorgonSwapChain _textDisplay;               // Swap chain for sample text display.
         private readonly bool _createFont;                  // Flag to indicate that the font should be created after initialization.
+	    private IImageEditorPlugIn _imageEditor;			// Global image editor plug-in.
         #endregion
 
         #region Properties.
@@ -95,8 +96,10 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		[Browsable(false)]
 	    public IImageEditorPlugIn ImageEditor
 		{
-			get;
-			private set;
+			get
+			{
+				return _imageEditor ?? (_imageEditor = GetRegisteredImageEditor());
+			}
 		}
 
 		/// <summary>
@@ -128,6 +131,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
                 _settings.Brush = value;
                 OnContentUpdated();
                 OnContentPropertyChanged("Brush", value);
+				OnContentPropertyChanged("Dependency", value);
             }
         }
 
@@ -732,12 +736,6 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		    _panel.CreateResources();
 			CurrentState = DrawState.DrawFontTextures;
 
-			// Find out if the image editor is loaded.
-			ImageEditor = Gorgon.PlugIns.FirstOrDefault(
-				                              item => string.Equals(item.Name,
-				                                            "GorgonLibrary.Editor.ImageEditorPlugIn.GorgonImageEditorPlugIn",
-				                                            StringComparison.OrdinalIgnoreCase)) as IImageEditorPlugIn;
-
 			return _panel;
 		}
 
@@ -751,17 +749,18 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 			// If this is not a texture brush path, then skip out.
 			string fileName = Path.GetFileName(dependencyPath);
 
-			if ((ImageEditor == null)
-				|| (string.IsNullOrWhiteSpace(fileName)))
+			Debug.Assert(!string.IsNullOrWhiteSpace("fileName"), "Could not retrieve the filename from the dependency path!");
+
+			if (ImageEditor == null)
 			{
-				return;
+				throw new GorgonException(GorgonResult.CannotRead, Resources.GORFNT_BRUSH_IMAGE_EDITOR_MISSING);
 			}
 
 			using (IImageEditorContent imageContent = ImageEditor.ImportContent(fileName, stream))
 			{
 				if (imageContent.Image == null)
 				{
-					return;
+					throw new GorgonException(GorgonResult.CannotRead, Resources.GORFNT_BRUSH_IMAGE_MISSING);
 				}
 
 				if (imageContent.Image.Settings.ImageType != ImageType.Image2D)

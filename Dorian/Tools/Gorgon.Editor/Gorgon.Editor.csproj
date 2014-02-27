@@ -117,6 +117,7 @@
     <Compile Include="Controls\PreferencePanel.Designer.cs">
       <DependentUpon>PreferencePanel.cs</DependentUpon>
     </Compile>
+    <Compile Include="Controls\TreeNodeDependency.cs" />
     <Compile Include="Controls\TreeNodeFile.cs" />
     <Compile Include="Controls\EditorTreeNode.cs" />
     <Compile Include="Controls\panelEx.cs">
@@ -291,6 +292,8 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Gorgon2.ico" />
+    <None Include="Resources\linked_file_8x8.png" />
+    <None Include="Resources\image_missing_16x16.png" />
     <None Include="Resources\image_missing_128x128.png" />
     <None Include="Resources\back_16x16png.png" />
     <None Include="Resources\forward_16x16.png" />

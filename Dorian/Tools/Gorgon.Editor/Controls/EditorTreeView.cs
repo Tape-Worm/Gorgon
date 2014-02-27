@@ -76,9 +76,10 @@ namespace GorgonLibrary.Editor
 		/// </summary>
 		/// <param name="nodes">Source collection.</param>
 		/// <returns>An enumerator for the nodes.</returns>
-		public static IEnumerable<EditorTreeNode> AllNodes(this TreeNodeCollection nodes)
+		public static IEnumerable<TreeNodeEditor> AllNodes(this TreeNodeCollection nodes)
 		{
-			foreach (EditorTreeNode node in nodes.Cast<TreeNode>().Where(nodeItem => nodeItem is EditorTreeNode))
+	        // ReSharper disable once PossibleInvalidCastExceptionInForeachLoop
+			foreach (TreeNodeEditor node in nodes.Cast<TreeNode>().Where(nodeItem => nodeItem is TreeNodeEditor))
 			{
 				yield return node;
 
@@ -89,7 +90,7 @@ namespace GorgonLibrary.Editor
 				}
 
 				// Gather the children for this node.
-				foreach (EditorTreeNode childNode in AllNodes(node.Nodes))
+				foreach (TreeNodeEditor childNode in AllNodes(node.Nodes))
 				{
 					yield return childNode;
 				}
@@ -202,7 +203,7 @@ namespace GorgonLibrary.Editor
         /// A comparer for node sorting.
         /// </summary>
         private class EditorNodeComparer
-            : IComparer<EditorTreeNode>, IComparer
+            : IComparer<TreeNodeEditor>, IComparer
         {
             #region IComparer<EditorTreeNode> Members
             /// <summary>
@@ -214,7 +215,7 @@ namespace GorgonLibrary.Editor
             /// A signed integer that indicates the relative values of <paramref name="x" /> and <paramref name="y" />, as shown in the following table.Value Meaning Less than zero<paramref name="x" /> is less than <paramref name="y" />.Zero<paramref name="x" /> equals <paramref name="y" />.Greater than zero<paramref name="x" /> is greater than <paramref name="y" />.
             /// </returns>
             /// <exception cref="System.NotImplementedException"></exception>
-            public int Compare(EditorTreeNode x, EditorTreeNode y)
+            public int Compare(TreeNodeEditor x, TreeNodeEditor y)
             {
                 // For a root node always return it before other nodes.
                 if ((x.NodeType & NodeType.Root) == NodeType.Root)
@@ -256,8 +257,8 @@ namespace GorgonLibrary.Editor
             /// </returns>
             public int Compare(object x, object y)
             {
-                var xNode = x as EditorTreeNode;
-                var yNode = y as EditorTreeNode;
+                var xNode = x as TreeNodeEditor;
+                var yNode = y as TreeNodeEditor;
 
                 if ((xNode == null)
                     || (yNode == null))
@@ -277,8 +278,9 @@ namespace GorgonLibrary.Editor
         private Brush _selectBrush;						// Brush used for selection background.
         private Pen _focusPen;							// Pen used for focus.
 		private TextBox _renameBox;						// Text box used to rename a node.
-		private EditorTreeNode _editNode;				// Node being edited.
+		private TreeNodeEditor _editNode;				// Node being edited.
 	    private ImageAttributes _fadeAttributes;		// Attributes for faded items.	    
+	    private ImageAttributes _linkAttributes;		// Attributes for linked items.
         #endregion
 
 		#region Properties.
@@ -286,11 +288,11 @@ namespace GorgonLibrary.Editor
 		/// Property to return the selected editor tree node.
 		/// </summary>
 		[Browsable(false)]
-	    public new EditorTreeNode SelectedNode
+	    public new TreeNodeEditor SelectedNode
 	    {
 			get
 			{
-				return base.SelectedNode as EditorTreeNode;
+				return base.SelectedNode as TreeNodeEditor;
 			}
 			set
 			{
@@ -354,6 +356,12 @@ namespace GorgonLibrary.Editor
             {
                 if (disposing)
                 {
+	                if (_linkAttributes != null)
+	                {
+		                _linkAttributes.Dispose();
+		                _linkAttributes = null;
+	                }
+
 					if (_fadeAttributes != null)
 					{
 						_fadeAttributes.Dispose();
@@ -416,7 +424,7 @@ namespace GorgonLibrary.Editor
         {
             Image currentImage;
             Image plusMinusImage;
-	        var node = e.Node as EditorTreeNode;
+	        var node = e.Node as TreeNodeEditor;
 	        Point position = e.Bounds.Location;
 	        ImageAttributes attribs = null;
 
@@ -516,7 +524,30 @@ namespace GorgonLibrary.Editor
             position.X = position.X + 16;
 			
             // Draw the icon.
-            e.Graphics.DrawImage(currentImage, new Rectangle(position, currentImage.Size), 0, 0, currentImage.Width, currentImage.Height, GraphicsUnit.Pixel, attribs);
+	        e.Graphics.DrawImage(currentImage,
+	                             new Rectangle(position, currentImage.Size),
+	                             0,
+	                             0,
+	                             currentImage.Width,
+	                             currentImage.Height,
+	                             GraphicsUnit.Pixel,
+	                             attribs);
+
+			// Draw the link icon overlay if we have a dependency.
+	        if ((node.NodeType & NodeType.Dependency) == NodeType.Dependency)
+	        {
+			    e.Graphics.DrawImage(Resources.linked_file_8x8,
+			                            new Rectangle(position.X,
+			                                        position.Y + currentImage.Height - Resources.linked_file_8x8.Height,
+			                                        Resources.linked_file_8x8.Width,
+			                                        Resources.linked_file_8x8.Height),
+			                            0,
+			                            0,
+			                            Resources.linked_file_8x8.Width,
+			                            Resources.linked_file_8x8.Height,
+			                            GraphicsUnit.Pixel,
+			                            _linkAttributes);
+	        }
 
             // Offset.
 			if (currentImage != null)
@@ -570,7 +601,7 @@ namespace GorgonLibrary.Editor
 		/// Function to show the rename text box.
 		/// </summary>
 		/// <param name="node">Node to edit.</param>
-		public void ShowRenameBox(EditorTreeNode node)
+		public void ShowRenameBox(TreeNodeEditor node)
 		{
 			if (node == null)
 			{
@@ -671,10 +702,24 @@ namespace GorgonLibrary.Editor
 		}
 
 		/// <summary>
+		/// Function to retrieve the node associated with the current content.
+		/// </summary>
+		/// <param name="file">File associated with the node.</param>
+		/// <returns>The node associated with the current content.</returns>
+	    public TreeNodeFile GetCurrentContentNode(GorgonFileSystemFileEntry file)
+	    {
+			// Find our node that corresponds to this content.
+			return (from treeNode in AllNodes()
+			        let fileNode = treeNode as TreeNodeFile
+			        where fileNode != null && fileNode.NodeType == NodeType.File && fileNode.File == file
+			        select fileNode).FirstOrDefault();
+	    }
+
+		/// <summary>
 		/// Function to return an iterator that will search through all nodes in the tree.
 		/// </summary>
 		/// <returns>An enumerator for all the nodes in the tree.</returns>
-	    public IEnumerable<EditorTreeNode> AllNodes()
+	    public IEnumerable<TreeNodeEditor> AllNodes()
 		{
 			return Nodes.AllNodes();
 	    }
@@ -713,8 +758,36 @@ namespace GorgonLibrary.Editor
 		                                         }
 	                                         });
 
+	        var linkMatrix = new ColorMatrix(new []
+	                                         {
+		                                         new[]
+		                                         {
+			                                         1.0f, 0.0f, 0.0f, 0.0f, 0.0f
+		                                         },
+		                                         new[]
+		                                         {
+			                                         0.0f, 1.0f, 0.0f, 0.0f, 0.0f
+		                                         },
+		                                         new[]
+		                                         {
+			                                         0.0f, 0.0f, 1.0f, 0.0f, 0.0f
+		                                         },
+		                                         new[]
+		                                         {
+			                                         0.0f, 0.0f, 0.0f, 0.7f, 0.0f
+		                                         },
+		                                         new[]
+		                                         {
+			                                         0.0f, 0.0f, 0.0f, 0.0f, 1.0f
+		                                         }
+	                                         });
+
 			_fadeAttributes = new ImageAttributes();
 			_fadeAttributes.SetColorMatrix(fadeMatrix, ColorMatrixFlag.Default, ColorAdjustType.Bitmap);
+
+			_linkAttributes = new ImageAttributes();
+	        _linkAttributes.SetColorMatrix(linkMatrix, ColorMatrixFlag.Default, ColorAdjustType.Bitmap);
+
             TreeViewNodeSorter = new EditorNodeComparer();
         }
         #endregion

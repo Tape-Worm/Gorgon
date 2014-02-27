@@ -104,7 +104,9 @@ namespace GorgonLibrary.Editor
 			{
 				// Don't use non browsable properties.
 				if (property.Attributes.Matches(BrowsableAttribute.No))
+				{
 					continue;
+				}
 
 				AddItem(new ContentProperty(property, Content));
 			}

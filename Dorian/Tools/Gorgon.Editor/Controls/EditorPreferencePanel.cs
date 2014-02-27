@@ -122,7 +122,7 @@ namespace GorgonLibrary.Editor
 
             if (hitTest.Item != null)
             {
-                GorgonDialogs.ErrorBox(ParentForm, "Plug-In '" + hitTest.Item.Text + "' failed to load.  See details for information.", hitTest.Item.SubItems[1].Text, true);
+                GorgonDialogs.ErrorBox(ParentForm, "Plug-In '" + hitTest.Item.Text + "' failed to load.  See details for information.", null, hitTest.Item.SubItems[1].Text);
             }
 
         }

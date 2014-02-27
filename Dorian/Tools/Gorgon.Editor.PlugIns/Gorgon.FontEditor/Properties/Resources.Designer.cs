@@ -186,6 +186,24 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to There is no image editor loaded to handle the texture brush assigned to this font..
+        /// </summary>
+        internal static string GORFNT_BRUSH_IMAGE_EDITOR_MISSING {
+            get {
+                return ResourceManager.GetString("GORFNT_BRUSH_IMAGE_EDITOR_MISSING", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unable to load the image data for the texture brush assigned to this font..
+        /// </summary>
+        internal static string GORFNT_BRUSH_IMAGE_MISSING {
+            get {
+                return ResourceManager.GetString("GORFNT_BRUSH_IMAGE_MISSING", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to &amp;Cancel.
         /// </summary>
         internal static string GORFNT_BUTTON_CANCEL_TEXT {

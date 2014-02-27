@@ -88,6 +88,7 @@ namespace GorgonLibrary.Editor
 		private ContentPanel _contentControl;		// Control used to edit/display the content.
 		private string _name = "Content";			// Name of the content.
 	    private bool _disposed;						// Flag to indicate that the object was disposed.
+	    private bool _isOwned;						// Flag to indicate that this content is linked to another piece of content.
 		#endregion
 
         #region Events.
@@ -225,9 +226,41 @@ namespace GorgonLibrary.Editor
 		    get;
 		    internal set;
 	    }
+
+		/// <summary>
+		/// Property to return whether this content has an owner or not.
+		/// </summary>
+	    public bool HasOwner
+	    {
+			get
+			{
+				return _isOwned;
+			}
+			internal set
+			{
+				_isOwned = value;
+				TypeDescriptor["Name"].IsReadOnly = true;
+			}
+	    }
 		#endregion
 
 		#region Methods.
+		/// <summary>
+		/// Function to retrieve the registered image editor for the system.
+		/// </summary>
+		/// <returns>The registered image editor plug-in, or NULL (Nothing in VB.Net) if not found.</returns>
+	    protected IImageEditorPlugIn GetRegisteredImageEditor()
+		{
+			// TODO: We need to make this a little more dynamic.
+			// TODO: A couple of options are present.  We could make this a concrete class in the editor that's public. 
+			// TODO: Or, we could allow the user to switch between editors in the interface.  This would make it so that only
+			// TODO: one image editor plug-in can be active at any given time (this is ideal because it wouldn't make sense to have
+			// TODO: multiple image editors available at once).
+			return Gorgon.PlugIns.FirstOrDefault(item => string.Equals(item.Name,
+			                                                           "GorgonLibrary.Editor.ImageEditorPlugIn.GorgonImageEditorPlugIn",
+			                                                           StringComparison.OrdinalIgnoreCase)) as IImageEditorPlugIn;
+		}
+
         /// <summary>
         /// Function called after the content data has been updated.
         /// </summary>
