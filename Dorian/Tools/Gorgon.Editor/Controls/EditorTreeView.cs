@@ -399,7 +399,27 @@ namespace GorgonLibrary.Editor
             base.Dispose(disposing);
         }
 
-        /// <summary>
+		/// <summary>
+		/// Sends the specified message to the default window procedure.
+		/// </summary>
+		/// <param name="m">The Windows <see cref="T:System.Windows.Forms.Message" /> to process.</param>
+	    protected override void DefWndProc(ref Message m)
+	    {
+		    const int leftDoubleClick = 0x203;
+
+			// Override the double click so that the tree doesn't expand on file nodes.
+			if (m.Msg == leftDoubleClick)
+			{
+				if ((SelectedNode.NodeType & NodeType.Directory) != NodeType.Directory)
+				{
+					return;
+				}
+			}
+
+		    base.DefWndProc(ref m);
+	    }
+
+	    /// <summary>
         /// Raises the <see cref="E:System.Windows.Forms.Control.FontChanged" /> event.
         /// </summary>
         /// <param name="e">An <see cref="T:System.EventArgs" /> that contains the event data.</param>

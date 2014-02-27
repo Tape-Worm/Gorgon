@@ -696,7 +696,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 	    public string TextureBrushPath
 	    {
 		    get;
-			private set;
+			set;
 	    }
 
 		/// <summary>
@@ -1386,11 +1386,9 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
         /// Initializes a new instance of the <see cref="formBrushEditor"/> class.
         /// </summary>
         /// <param name="fontContent">The current font content interface.</param>
-        /// <param name="textureBrushPath">Path to the texture brush.</param>
-        public formBrushEditor(GorgonFontContent fontContent, string textureBrushPath)
+        public formBrushEditor(GorgonFontContent fontContent)
 			: this()
 	    {
-		    TextureBrushPath = textureBrushPath;
 		    _currentContent = fontContent;
 			_previousIdle = Gorgon.ApplicationIdleLoopMethod;
 			Gorgon.ApplicationIdleLoopMethod = null;

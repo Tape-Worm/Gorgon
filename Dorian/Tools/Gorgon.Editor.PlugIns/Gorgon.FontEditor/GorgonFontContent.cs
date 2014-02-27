@@ -36,6 +36,7 @@ using System.Linq;
 using GorgonLibrary.Design;
 using GorgonLibrary.Editor.FontEditorPlugIn.Properties;
 using GorgonLibrary.Graphics;
+using GorgonLibrary.IO;
 using GorgonLibrary.Math;
 using GorgonLibrary.Renderers;
 using SmoothingMode = System.Drawing.Drawing2D.SmoothingMode;
@@ -87,9 +88,20 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
         private GorgonSwapChain _textDisplay;               // Swap chain for sample text display.
         private readonly bool _createFont;                  // Flag to indicate that the font should be created after initialization.
 	    private IImageEditorPlugIn _imageEditor;			// Global image editor plug-in.
+	    private GorgonTexture2D _badGlyphTexture;			// Texture used as a stand-in when a glyph is missing its texture.
         #endregion
 
         #region Properties.
+		/// <summary>
+		/// Property to return the list of textures that are external to the font.
+		/// </summary>
+		[Browsable(false)]
+		internal Dictionary<string, GorgonTexture2D> ExternalTextures
+		{
+			get;
+			private set;
+		}
+
 		/// <summary>
 		/// Property to return the image editor plug-in.
 		/// </summary>
@@ -508,6 +520,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
         /// <summary>
         /// Property to return the type of content.
         /// </summary>
+		[Browsable(false)]
         public override string ContentType
         {
             get 
@@ -519,6 +532,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
         /// <summary>
         /// Property to return whether the content object supports a renderer interface.
         /// </summary>
+        [Browsable(false)]
         public override bool HasRenderer
         {
             get 
@@ -611,19 +625,21 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
                 {
                     // Save our settings.
                     GorgonFontEditorPlugIn.Settings.Save();
+
+	                if (_badGlyphTexture != null)
+	                {
+		                _badGlyphTexture.Dispose();
+	                }
+
+					// Remove any externally linked textures.
+	                foreach (KeyValuePair<string, GorgonTexture2D> texturePath in ExternalTextures)
+	                {
+		                texturePath.Value.Dispose();
+	                }
+					ExternalTextures.Clear();
 					
                     if (Font != null)
                     {
-						// Clean up any attached texture brush.
-						var textureBrush = Font.Settings.Brush as GorgonGlyphTextureBrush;
-						
-	                    if ((textureBrush != null)
-							&& (textureBrush.Texture != null))
-	                    {
-		                    textureBrush.Texture.Dispose();
-	                    }
-
-	                    Font.Settings.Brush = null;
                         Font.Dispose();
                     }
 
@@ -674,7 +690,17 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 	    /// <param name="stream">Stream containing the content data.</param>
 	    protected override void OnRead(Stream stream)
 	    {
-		    Font = Graphics.Fonts.FromStream(Path.GetFileNameWithoutExtension(Name), stream);
+		    Font = Graphics.Fonts.FromStream(Path.GetFileNameWithoutExtension(Name),
+		                                     stream,
+		                                     (name, size) => _badGlyphTexture ??
+		                                                     (_badGlyphTexture = Graphics.Textures.CreateTexture
+			                                                                         <GorgonTexture2D>(name,Resources.bad_glyph_256x256,
+			                                                                                           new GorgonGDIOptions
+			                                                                                           {
+				                                                                                           Width = size.Width,
+				                                                                                           Height = size.Height,
+				                                                                                           Filter = ImageFilter.Point
+			                                                                                           })));
 		    _settings = Font.Settings;
 	    }
 
@@ -753,14 +779,14 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 
 			if (ImageEditor == null)
 			{
-				throw new GorgonException(GorgonResult.CannotRead, Resources.GORFNT_BRUSH_IMAGE_EDITOR_MISSING);
+				throw new GorgonException(GorgonResult.CannotRead, Resources.GORFNT_EXTERN_IMAGE_EDITOR_MISSING);
 			}
 
 			using (IImageEditorContent imageContent = ImageEditor.ImportContent(fileName, stream))
 			{
 				if (imageContent.Image == null)
 				{
-					throw new GorgonException(GorgonResult.CannotRead, Resources.GORFNT_BRUSH_IMAGE_MISSING);
+					throw new GorgonException(GorgonResult.CannotRead, Resources.GORFNT_EXTERN_IMAGE_MISSING);
 				}
 
 				if (imageContent.Image.Settings.ImageType != ImageType.Image2D)
@@ -768,10 +794,10 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 					throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GORFNT_IMAGE_NOT_2D, fileName));	
 				}
 
-				// Load the texture.  It will be stored in the graphics interface until we're done with it.
-				// Texture brushes require that the textures be preloaded in order to be assigned to the font settings.
-				// This is because texture brushes are only stored as meta data in the file.
-				Graphics.Textures.CreateTexture<GorgonTexture2D>(fileName, imageContent.Image);
+				// Load the texture.  
+				// Texture brushes and custom glyphs require that the textures be preloaded in order to be assigned to the font settings.
+				// This is because texture brushes and custom glyphs are only stored as meta data in the file.
+				ExternalTextures.Add(dependencyPath, Graphics.Textures.CreateTexture<GorgonTexture2D>(fileName, imageContent.Image));
 			}
 	    }
 
@@ -888,6 +914,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 			_settings = initialSettings.Settings;
             _createFont = initialSettings.CreateContent;
 	        HasThumbnail = true;
+			ExternalTextures = new Dictionary<string, GorgonTexture2D>();
         }
         #endregion
     }

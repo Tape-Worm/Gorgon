@@ -733,7 +733,7 @@ namespace GorgonLibrary.Editor
 	        {
 		        return;
 	        }
-
+			
 			// Do not re-open the file.
 	        var fileNode = (TreeNodeFile)e.Node;
 
@@ -1217,6 +1217,7 @@ namespace GorgonLibrary.Editor
 		private void treeFiles_BeforeExpand(object sender, TreeViewCancelEventArgs e)
 		{
 			Cursor.Current = Cursors.WaitCursor;
+			Point cursor = treeFiles.PointToClient(Cursor.Position);
 
 			try
 			{
@@ -1230,13 +1231,22 @@ namespace GorgonLibrary.Editor
 				}
 
 				var fileNode = e.Node as TreeNodeFile;
-
+				
 				if ((fileNode == null)
 					|| (fileNode.NodeType != NodeType.File)
 					|| (fileNode.File == null)
 				    || (fileNode.Nodes.Count == 0)
 					|| (!Program.EditorMetaData.Dependencies.ContainsKey(fileNode.File.FullPath)))
 				{
+					return;
+				}
+				
+				// Disable double click to expand the node.
+				if (((e.Action & TreeViewAction.ByMouse) == TreeViewAction.ByMouse)
+					&& ((e.Action & TreeViewAction.Expand) == TreeViewAction.Expand)
+					&& (cursor.X >= e.Node.Bounds.Left))
+				{
+					e.Cancel = true;
 					return;
 				}
 
@@ -1610,8 +1620,6 @@ namespace GorgonLibrary.Editor
 		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
 		private void itemDelete_Click(object sender, EventArgs e)
 		{
-			IList<string> dependencies;
-
 			try
 			{
                 if (treeFiles.SelectedNode == null)
@@ -2794,7 +2802,18 @@ namespace GorgonLibrary.Editor
 			InitializeComponent();
 
 			// Set up linkage to the content management interface.
-			ContentManagement.ContentPanelUnloadAction = () => treeFiles.Refresh();
+			ContentManagement.ContentPanelUnloadAction = () =>
+			                                             {
+															 // Switch back to the content item list.
+				                                             tabDocumentManager.SelectedTab = pageItems;
+				                                             pageProperties.Enabled = false;
+
+															 // Unassign the currently selected object from the property
+															 // pane.
+				                                             propertyItem.SelectedObject = null;
+															 propertyItem.Refresh();
+				                                             treeFiles.Refresh();
+			                                             };
 			ContentManagement.ContentEnumerateProperties = hasProperties =>
 			{
 				propertyItem.PropertyValueChanged -= OnPropertyValueChanged;

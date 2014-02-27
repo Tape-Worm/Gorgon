@@ -144,59 +144,61 @@ namespace GorgonLibrary.Editor
 
             foreach (var plugIn in Gorgon.PlugIns)
             {
-                var item = new ListViewItem();
+	            if ((!(plugIn is EditorPlugIn)) 
+					&& (!(plugIn is GorgonFileSystemProviderPlugIn)))
+	            {
+		            continue;
+	            }
 
-                if ((plugIn is EditorPlugIn) || (plugIn is GorgonFileSystemProviderPlugIn))
-                {
-                    var editorPlugIn = plugIn as EditorPlugIn;
+	            var item = new ListViewItem();
+	            var editorPlugIn = plugIn as EditorPlugIn;
 
-                    item.Name = plugIn.Name;
-                    item.Text = plugIn.Description;
+	            item.Name = plugIn.Name;
+	            item.Text = plugIn.Description;
 
-                    if (plugIn is ContentPlugIn)
-                    {
-                        item.SubItems.Add(Resources.GOREDIT_PLUGIN_TYPE_CONTENT);
-                    }
+	            if (plugIn is ContentPlugIn)
+	            {
+		            item.SubItems.Add(Resources.GOREDIT_PLUGIN_TYPE_CONTENT);
+	            }
 
-                    if (plugIn is FileWriterPlugIn)
-                    {
-                        item.SubItems.Add(Resources.GOREDIT_PLUGIN_TYPE_FILE_WRITER);
-                    }
+	            if (plugIn is FileWriterPlugIn)
+	            {
+		            item.SubItems.Add(Resources.GOREDIT_PLUGIN_TYPE_FILE_WRITER);
+	            }
 
-                    if (plugIn is GorgonFileSystemProviderPlugIn)
-                    {
-                        item.SubItems.Add(Resources.GOREDIT_PLUGIN_TYPE_FILE_READER);
-                    }
+	            if (plugIn is GorgonFileSystemProviderPlugIn)
+	            {
+		            item.SubItems.Add(Resources.GOREDIT_PLUGIN_TYPE_FILE_READER);
+	            }
                     
-                    if ((editorPlugIn != null) && (PlugIns.IsDisabled(editorPlugIn)))
-                    {
-                        item.SubItems[1].Text = Resources.GOREDIT_PLUGIN_TYPE_DISABLED;
-                        item.ForeColor = Color.FromKnownColor(KnownColor.DimGray);
-                        item.Tag = null;
+	            if ((editorPlugIn != null) && (PlugIns.IsDisabled(editorPlugIn)))
+	            {
+		            item.SubItems[1].Text = Resources.GOREDIT_PLUGIN_TYPE_DISABLED;
+		            item.ForeColor = Color.FromKnownColor(KnownColor.DimGray);
+		            item.Tag = null;
 
-                        // We've got a disabled plug-in, add to the secondary list view
-                        // to show why the plug-in was disabled.
-                        var disabledItem = new ListViewItem
-                        {
-                            Name = plugIn.Name,
-                            Text = plugIn.Description,
-                            Tag = plugIn
-                        };
+		            // We've got a disabled plug-in, add to the secondary list view
+		            // to show why the plug-in was disabled.
+		            var disabledItem = new ListViewItem
+		                               {
+			                               Name = plugIn.Name,
+			                               Text = plugIn.Description,
+			                               Tag = plugIn
+		                               };
 
-                        disabledItem.SubItems.Add(PlugIns.GetDisabledReason(plugIn));
-                        disabledItem.SubItems.Add(plugIn.PlugInPath);
+		            disabledItem.SubItems.Add(PlugIns.GetDisabledReason(plugIn));
+		            disabledItem.SubItems.Add(plugIn.PlugInPath);
 
-                        listDisabledPlugIns.Items.Add(disabledItem);
-                    }
-                    else
-                    {
-                        item.Tag = plugIn;
-                    }
+		            listDisabledPlugIns.Items.Add(disabledItem);
+	            }
+	            else
+	            {
+		            item.Tag = plugIn;
+	            }
 
-                    item.SubItems.Add(plugIn.PlugInPath);
-                }
+	            item.SubItems.Add(plugIn.PlugInPath);
 
-                listContentPlugIns.Items.Add(item);                
+	            listContentPlugIns.Items.Add(item);
             }
 
             listContentPlugIns.EndUpdate();
