@@ -444,10 +444,13 @@ Height:{5:####0}</value>
   <data name="GORFNT_PROP_VALUE_WRAP_MODE" xml:space="preserve">
     <value>Wrapping mode:</value>
   </data>
-  <data name="GORFNT_BRUSH_IMAGE_EDITOR_MISSING" xml:space="preserve">
-    <value>There is no image editor loaded to handle the texture brush assigned to this font.</value>
+  <data name="GORFNT_EXTERN_IMAGE_EDITOR_MISSING" xml:space="preserve">
+    <value>There is no image editor loaded to handle the external texture for this font.</value>
   </data>
-  <data name="GORFNT_BRUSH_IMAGE_MISSING" xml:space="preserve">
-    <value>Unable to load the image data for the texture brush assigned to this font.</value>
+  <data name="GORFNT_EXTERN_IMAGE_MISSING" xml:space="preserve">
+    <value>Unable to load the image data for the external texture assigned to this font.</value>
+  </data>
+  <data name="bad_glyph_256x256" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\bad_glyph_256x256.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
 </root>

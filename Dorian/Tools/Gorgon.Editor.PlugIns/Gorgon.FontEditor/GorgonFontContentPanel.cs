@@ -183,10 +183,27 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
                 // Destroy the texture if it's not used by any other glyph.
                 while (_content.Font.Settings.Glyphs.Any(item => item.Character == currentGlyph.Character))
                 {
+					// If no other glyphs are using this texture, then destroy it, and remove it from the 
+					// dependency lists.
                     if (!_content.Font.Settings.Glyphs.Any(item =>
                                                            item.Texture == currentGlyph.Texture
                                                            && item != currentGlyph))
                     {
+						// Find the texture in the external texture list.
+						KeyValuePair<string, GorgonTexture2D> glyphTexture = _content.ExternalTextures.FirstOrDefault(item => item.Value == _selectedGlyph.Texture);
+
+						// Remove from the dependency lists.
+						if (glyphTexture.Value != null)
+						{
+							if (_content.Dependencies.Contains(glyphTexture.Key))
+							{
+								_content.Dependencies.Remove(glyphTexture.Key);
+							}
+
+							_content.ExternalTextures.Remove(glyphTexture.Key);
+							glyphTexture.Value.Dispose();
+						}
+
                         _selectedGlyph.Texture.Dispose();
                     }
 
@@ -282,6 +299,21 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 
 					        if (newGlyph != null)
 					        {
+								// Find the texture in the external texture list.
+						        KeyValuePair<string, GorgonTexture2D> glyphTexture = _content.ExternalTextures.FirstOrDefault(item => item.Value == newGlyph.Texture);
+
+								// If we have a former dependency on the texture assigned to the glyph, then dump it.
+						        if (glyphTexture.Value != null)
+						        {
+							        if (_content.Dependencies.Contains(glyphTexture.Key))
+							        {
+								        _content.Dependencies.Remove(glyphTexture.Key);
+							        }
+
+							        _content.ExternalTextures.Remove(glyphTexture.Key);
+									glyphTexture.Value.Dispose();
+						        }
+
 						        _content.Font.Settings.Glyphs.Remove(newGlyph);
 
 						        // If this is the only glyph referencing this texture, then dump it.
@@ -300,6 +332,12 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 
 					        _content.Font.Settings.Glyphs.Add(newGlyph);
 					        _content.UpdateFont();
+
+					        if (!_content.Dependencies.Contains(imageFileBrowser.Files[0].FullPath))
+					        {
+								_content.ExternalTextures.Add(imageFileBrowser.Files[0].FullPath, newGlyph.Texture);
+						        _content.Dependencies.Add(imageFileBrowser.Files[0].FullPath);
+					        }
 				        }
 			        }
 		        }

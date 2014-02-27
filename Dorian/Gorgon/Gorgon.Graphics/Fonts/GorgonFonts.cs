@@ -126,7 +126,7 @@ namespace GorgonLibrary.Graphics
 		/// <para>-or-</para>
 		/// <para>Thrown if the graphics context is deferred.</para>
 		/// </exception>
-		public GorgonFont FromStream(string name, Stream stream, Func<string, GorgonTexture2D> missingTextureFunction = null)
+		public GorgonFont FromStream(string name, Stream stream, Func<string, Size, GorgonTexture2D> missingTextureFunction = null)
 		{
             if (string.IsNullOrWhiteSpace(name))
             {
@@ -179,7 +179,7 @@ namespace GorgonLibrary.Graphics
 		/// <para>-or-</para>
 		/// <para>Thrown if the graphics context is deferred.</para>
 		/// </exception>
-        public GorgonFont FromMemory(string name, byte[] fontData, Func<string, GorgonTexture2D> missingTextureFunction = null)
+        public GorgonFont FromMemory(string name, byte[] fontData, Func<string, Size, GorgonTexture2D> missingTextureFunction = null)
         {
             using (var memoryStream = new GorgonDataStream(fontData))
             {
@@ -207,7 +207,7 @@ namespace GorgonLibrary.Graphics
 		/// <para>-or-</para>
 		/// <para>Thrown if the graphics context is deferred.</para>
 		/// </exception>
-		public GorgonFont FromFile(string name, string fileName, Func<string, GorgonTexture2D> missingTextureFunction = null)
+		public GorgonFont FromFile(string name, string fileName, Func<string, Size, GorgonTexture2D> missingTextureFunction = null)
 		{
 			FileStream stream = null;
 

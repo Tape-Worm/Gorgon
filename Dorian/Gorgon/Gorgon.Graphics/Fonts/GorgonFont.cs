@@ -481,7 +481,7 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		/// <param name="chunk">Reader for the chunked file.</param>
 		/// <param name="missingFontTextureFunction">The method to call if a user defined glyph texture is missing.</param>
-		internal void ReadFont(GorgonChunkReader chunk, Func<string, GorgonTexture2D> missingFontTextureFunction)
+		internal void ReadFont(GorgonChunkReader chunk, Func<string, Size, GorgonTexture2D> missingFontTextureFunction)
 		{
 			FileStream fileStream = null;
 
@@ -584,7 +584,7 @@ namespace GorgonLibrary.Graphics
 				}
 				
 				// If this is a user texture, and we didn't get one from the cache, then
-				// ask the user load the texture via an event.  Otherwise, throw an exception.
+				// ask the user load the texture via a callback.  Otherwise, throw an exception.
 				if (userTexture)
 				{
 					if (missingFontTextureFunction == null)
@@ -592,7 +592,7 @@ namespace GorgonLibrary.Graphics
 						throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GORGFX_FONT_GLYPH_TEXTURE_NOT_FOUND, textureName));
 					}
 
-					texture = missingFontTextureFunction(textureName);
+					texture = missingFontTextureFunction(textureName, Settings.TextureSize);
 				
 					// Returning NULL will mean we can't load the texture.
 					if (texture == null)

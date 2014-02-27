@@ -63,6 +63,16 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap bad_glyph_256x256 {
+            get {
+                object obj = ResourceManager.GetObject("bad_glyph_256x256", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap cancel_16x16 {
             get {
                 object obj = ResourceManager.GetObject("cancel_16x16", resourceCulture);
@@ -182,24 +192,6 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Properties {
         internal static string GORFNT_ANTIALIAS_STANDARD {
             get {
                 return ResourceManager.GetString("GORFNT_ANTIALIAS_STANDARD", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to There is no image editor loaded to handle the texture brush assigned to this font..
-        /// </summary>
-        internal static string GORFNT_BRUSH_IMAGE_EDITOR_MISSING {
-            get {
-                return ResourceManager.GetString("GORFNT_BRUSH_IMAGE_EDITOR_MISSING", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Unable to load the image data for the texture brush assigned to this font..
-        /// </summary>
-        internal static string GORFNT_BRUSH_IMAGE_MISSING {
-            get {
-                return ResourceManager.GetString("GORFNT_BRUSH_IMAGE_MISSING", resourceCulture);
             }
         }
         
@@ -353,6 +345,24 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Properties {
         internal static string GORFNT_DLG_SHADOW_OFFSET_TEXT {
             get {
                 return ResourceManager.GetString("GORFNT_DLG_SHADOW_OFFSET_TEXT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to There is no image editor loaded to handle the external texture for this font..
+        /// </summary>
+        internal static string GORFNT_EXTERN_IMAGE_EDITOR_MISSING {
+            get {
+                return ResourceManager.GetString("GORFNT_EXTERN_IMAGE_EDITOR_MISSING", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unable to load the image data for the external texture assigned to this font..
+        /// </summary>
+        internal static string GORFNT_EXTERN_IMAGE_MISSING {
+            get {
+                return ResourceManager.GetString("GORFNT_EXTERN_IMAGE_MISSING", resourceCulture);
             }
         }
         

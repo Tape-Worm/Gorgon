@@ -148,14 +148,7 @@ namespace GorgonLibrary.Editor
 				parent.Add(node);
 			}
 
-			if (value != null)
-			{
-				node.Value = value;
-			}
-			else
-			{
-				node.Value = string.Empty;
-			}
+			node.Value = value ?? string.Empty;
 
 			return node;
 		}
@@ -359,7 +352,7 @@ namespace GorgonLibrary.Editor
 				// Add file list.
 				foreach (string dependency in files.Value)
 				{
-					AddOrUpdateNode(file, DependsOnNode, dependency);
+					file.Add(new XElement(DependsOnNode, dependency));
 				}
 			}
 

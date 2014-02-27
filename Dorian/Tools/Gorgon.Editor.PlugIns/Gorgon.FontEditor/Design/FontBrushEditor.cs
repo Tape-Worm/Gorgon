@@ -105,10 +105,15 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		    formBrushEditor brushEditor = null;
 
 	        try
-			{
-				string textureBrushPath = document.Dependencies.FirstOrDefault();
+	        {
+		        string textureBrushPath = string.Empty;
 
-				brushEditor = new formBrushEditor(document, textureBrushPath)
+		        if (document.Brush.BrushType == GlyphBrushType.Texture)
+		        {
+					textureBrushPath = document.ExternalTextures.FirstOrDefault(item => item.Value == ((GorgonGlyphTextureBrush)document.Brush).Texture).Key;
+		        }
+
+				brushEditor = new formBrushEditor(document)
 				              {
 					              BrushType = document.Brush.BrushType
 				              };
@@ -117,6 +122,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 				{
 					case GlyphBrushType.Texture:
 						brushEditor.TextureBrush = (GorgonGlyphTextureBrush)document.Brush;
+						brushEditor.TextureBrushPath = textureBrushPath;
 						break;
 					case GlyphBrushType.Hatched:
 						brushEditor.PatternBrush = (GorgonGlyphHatchBrush)document.Brush;
@@ -136,7 +142,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 			    }
 				
 			    // Destroy the previous brush.
-			    if (document.Brush.BrushType == GlyphBrushType.Texture)
+			    if (brush.BrushType == GlyphBrushType.Texture)
 			    {
 				    var textureBrush = (GorgonGlyphTextureBrush)document.Brush;
 
@@ -151,6 +157,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 					if ((!string.IsNullOrWhiteSpace(textureBrushPath))
 						&& (document.Dependencies.Contains(textureBrushPath)))
 					{
+						document.ExternalTextures.Remove(textureBrushPath);
 						document.Dependencies.Remove(textureBrushPath);
 					}
 			    }
@@ -163,7 +170,11 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 						// Add the updated texture brush dependency path.
 						if (!string.IsNullOrWhiteSpace(brushEditor.TextureBrushPath))
 						{
-							document.Dependencies.Add(brushEditor.TextureBrushPath);
+							if (!document.Dependencies.Contains(brushEditor.TextureBrushPath))
+							{
+								document.Dependencies.Add(brushEditor.TextureBrushPath);
+							}
+							document.ExternalTextures[brushEditor.TextureBrushPath] = brushEditor.TextureBrush.Texture;
 						}
 			            break;
 			        case GlyphBrushType.Solid:
