@@ -27,6 +27,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Xml.Linq;
 using GorgonLibrary.Editor.Properties;
 using GorgonLibrary.IO;
@@ -53,7 +54,6 @@ namespace GorgonLibrary.Editor
 		private const string TypeNameAttr = "TypeName";								// Fully qualified type name for the plug-in interface.
 		private const string FileNode = "File";										// Name of the file node.
 		private const string NameAttr = "Name";										// Name attribute name.
-		private const string DependsOnNode = "DependsOn";							// Depends on node.
 		#endregion
 
 		#region Classes.
@@ -123,7 +123,7 @@ namespace GorgonLibrary.Editor
 		/// <summary>
 		/// Property to return the list of files and associated dependencies.
 		/// </summary>
-		public IDictionary<string, ICollection<string>> Dependencies
+		public IDictionary<string, DependencyCollection> Dependencies
 		{
 			get;
 			private set;
@@ -215,6 +215,8 @@ namespace GorgonLibrary.Editor
 				throw new GorgonException(GorgonResult.CannotRead, Resources.GOREDIT_METADATA_CORRUPT);
 			}
 
+			Dependencies.Clear();
+
 			XElement dependencyNode = parent.Element(ContentDependencyFiles);
 
 			if (dependencyNode == null)
@@ -223,8 +225,6 @@ namespace GorgonLibrary.Editor
 			}
 
 			IEnumerable<XElement> dependencyFiles = dependencyNode.Elements(FileNode);
-
-			Dependencies.Clear();
 
 			// Fill in the list.
 			foreach (XElement file in dependencyFiles)
@@ -237,27 +237,7 @@ namespace GorgonLibrary.Editor
 					continue;
 				}
 
-				var fileList = new HashSet<string>(new NameComparer());
-
-				IEnumerable<XElement> dependencies = file.Elements(DependsOnNode);
-
-				foreach (XElement dependencyFile in dependencies)
-				{
-					if ((string.IsNullOrWhiteSpace(dependencyFile.Value)) 
-						|| (fileList.Contains(dependencyFile.Value)))
-					{
-						continue;
-					}
-
-					fileList.Add(dependencyFile.Value);
-				}
-
-				if (fileList.Count == 0)
-				{
-					continue;
-				}
-
-				Dependencies.Add(filePath.Value, fileList);
+				Dependencies.Add(filePath.Value, DependencyCollection.Deserialize(file.Elements(Dependency.DependencyNode)));
 			}
 		}
 
@@ -272,7 +252,7 @@ namespace GorgonLibrary.Editor
 												   new XElement(ContentDependencyFiles)));
 
 			WriterPlugInType = string.Empty;
-			Dependencies.Clear();
+			Dependencies = new Dictionary<string, DependencyCollection>(new NameComparer());
 		}
 
 		/// <summary>
@@ -337,7 +317,7 @@ namespace GorgonLibrary.Editor
 
 			XElement dependencyList = AddOrUpdateNode(root, ContentDependencyFiles);
 
-			foreach (KeyValuePair<string, ICollection<string>> files in Dependencies)
+			foreach (KeyValuePair<string, DependencyCollection> files in Dependencies)
 			{
 				if ((string.IsNullOrWhiteSpace(files.Key))
 					|| (files.Value == null)
@@ -349,11 +329,7 @@ namespace GorgonLibrary.Editor
 				XElement file = AddOrUpdateNode(dependencyList, FileNode);
 				AddOrUpdateAttribute(file, NameAttr, files.Key);
 
-				// Add file list.
-				foreach (string dependency in files.Value)
-				{
-					file.Add(new XElement(DependsOnNode, dependency));
-				}
+				file.Add(files.Value.Serialize());
 			}
 
 			_metaDataFile = ScratchArea.ScratchFiles.WriteFile(_path, null);
@@ -365,6 +341,70 @@ namespace GorgonLibrary.Editor
 			// Add to the block list if this file should not show up.
 			ScratchArea.AddBlockedFile(_metaDataFile);
 		}
+
+		/// <summary>
+		/// Function to determine if the specified file is linked to another.
+		/// </summary>
+		/// <param name="file">File to check.</param>
+		/// <returns>TRUE if a link is found, FALSE if not.</returns>
+		public bool HasFileLinks(GorgonFileSystemFileEntry file)
+		{
+			return Dependencies.Any(item => item.Value.Contains(file.FullPath));
+		}
+
+		/// <summary>
+		/// Function to determine if the directory or its sub-directories contain files that are linked.
+		/// </summary>
+		/// <param name="directory">Directory to evaluate.</param>
+		/// <returns>TRUE if the directory or sub directory contains file links, FALSE if not.</returns>
+		public bool HasFileLinks(GorgonFileSystemDirectory directory)
+		{
+			if ((directory.Directories.Count > 0) && (directory.Directories.Any(HasFileLinks)))
+			{
+				return true;
+			}
+
+			return directory.Files.Any(HasFileLinks);
+		}
+
+		/// <summary>
+		/// Function to return the files that are linked to the specified file.
+		/// </summary>
+		/// <param name="file">The file to look up.</param>
+		/// <returns>A list of files that are linked to the specified file.</returns>
+		public IList<string> GetFileLinks(GorgonFileSystemFileEntry file)
+		{
+			return Dependencies
+				.Where(item => item.Value.Contains(file.FullPath))
+				.Select(fileEntry => fileEntry.Key)
+				.ToArray();
+		}
+
+		/// <summary>
+		/// Function to returnthe files that are linked within the specified directory.
+		/// </summary>
+		/// <param name="directory">The directory to look up.</param>
+		/// <returns>A list of files within the directory (or sub directories) that are linked to other files.</returns>
+		public IList<string> GetFileLinks(GorgonFileSystemDirectory directory)
+		{
+			var ownerFiles = new List<string>();
+
+			if (directory.Directories.Count > 0)
+			{
+				foreach (IList<string> subFiles in
+					directory.Directories.Select(GetFileLinks).Where(subFiles => subFiles.Count > 0))
+				{
+					ownerFiles.AddRange(subFiles);
+				}
+			}
+
+			foreach (IList<string> files in directory.Files.Select(GetFileLinks).Where(files => files.Count > 0))
+			{
+				ownerFiles.AddRange(files);
+			}
+
+			return ownerFiles;
+		}
 		#endregion
 
 		#region Constructor/Destructor.
@@ -374,7 +414,6 @@ namespace GorgonLibrary.Editor
 		public EditorMetaDataFile()
 		{
 			_path = "/" + MetaDataFile;
-			Dependencies = new Dictionary<string, ICollection<string>>(new NameComparer());
 
 			Reset();
 		}

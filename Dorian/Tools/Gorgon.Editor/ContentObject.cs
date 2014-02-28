@@ -221,7 +221,7 @@ namespace GorgonLibrary.Editor
 		/// Property to return the list of dependencies for this content.
 		/// </summary>
 		[Browsable(false)]
-	    public HashSet<string> Dependencies
+	    public DependencyCollection Dependencies
 	    {
 		    get;
 		    internal set;
@@ -283,9 +283,9 @@ namespace GorgonLibrary.Editor
 		/// <summary>
 		/// Function to load a dependency file.
 		/// </summary>
-		/// <param name="dependencyPath">Path to the dependency being loaded.</param>
+		/// <param name="dependency">The dependency to load.</param>
 		/// <param name="stream">Stream containing the dependency file.</param>
-	    protected virtual void OnLoadDependencyFile(string dependencyPath, Stream stream)
+	    protected virtual void OnLoadDependencyFile(Dependency dependency, Stream stream)
 	    {
 	    }
 
@@ -337,9 +337,9 @@ namespace GorgonLibrary.Editor
 		/// <summary>
 		/// Function to read a dependency file from a stream.
 		/// </summary>
-		/// <param name="dependencyPath">Path to the dependency being loaded.</param>
+		/// <param name="dependency">The dependency to load.</param>
 		/// <param name="stream">Stream containing the file to read.</param>
-	    internal void LoadDependencyFile(string dependencyPath, Stream stream)
+	    internal void LoadDependencyFile(Dependency dependency, Stream stream)
 	    {
 			if (stream == null)
 			{
@@ -356,7 +356,7 @@ namespace GorgonLibrary.Editor
 				throw new EndOfStreamException(Resources.GOREDIT_STREAM_EOS);
 			}
 
-			OnLoadDependencyFile(dependencyPath, stream);
+			OnLoadDependencyFile(dependency, stream);
 		}
 
 		/// <summary>
@@ -472,7 +472,7 @@ namespace GorgonLibrary.Editor
 		/// <param name="name">Name of the content.</param>
 		protected ContentObject(string name)
 		{
-			Dependencies = new HashSet<string>(new EditorMetaDataFile.NameComparer());
+			Dependencies = new DependencyCollection();
 			TypeDescriptor = new ContentTypeDescriptor(this);
             TypeDescriptor.Enumerate(GetType());
 

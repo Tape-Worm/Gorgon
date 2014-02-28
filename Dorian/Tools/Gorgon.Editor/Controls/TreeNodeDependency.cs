@@ -84,12 +84,12 @@ namespace GorgonLibrary.Editor
 		/// <summary>
 		/// Function to update the node as a broken file link.
 		/// </summary>
-		/// <param name="path">Path to the file.</param>
-		public void UpdateBroken(string path)
+		/// <param name="dependency">Path to the file.</param>
+		public void UpdateBroken(Dependency dependency)
 		{
-			string fileName = Path.GetFileName(path);
+			string fileName = Path.GetFileName(dependency.Path);
 
-			Name = path;
+			Name = dependency.Path;
 			PlugIn = null;
 			CollapsedImage = ExpandedImage = Resources.image_missing_16x16;
 

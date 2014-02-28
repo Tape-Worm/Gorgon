@@ -31,8 +31,10 @@ using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Design;
 using System.Drawing.Imaging;
+using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Windows.Forms.VisualStyles;
 using GorgonLibrary.Design;
 using GorgonLibrary.Editor.FontEditorPlugIn.Properties;
 using GorgonLibrary.Graphics;
@@ -80,6 +82,17 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
     class GorgonFontContent
         : ContentObject
 	{
+		#region Constants.
+		/// <summary>
+		/// The type of dependency for a texture brush texture.
+		/// </summary>
+	    public const string TextureBrushTextureType = "TextureBrush";
+		/// <summary>
+		/// The type of dependency for a glyph texture.
+		/// </summary>
+	    public const string GlyphTextureType = "Glyph";
+		#endregion
+
 		#region Variables.
 		private GorgonFontContentPanel _panel;              // Interface for editing the font.
         private bool _disposed;                             // Flag to indicate that the object was disposed.
@@ -92,16 +105,6 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
         #endregion
 
         #region Properties.
-		/// <summary>
-		/// Property to return the list of textures that are external to the font.
-		/// </summary>
-		[Browsable(false)]
-		internal Dictionary<string, GorgonTexture2D> ExternalTextures
-		{
-			get;
-			private set;
-		}
-
 		/// <summary>
 		/// Property to return the image editor plug-in.
 		/// </summary>
@@ -631,12 +634,19 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		                _badGlyphTexture.Dispose();
 	                }
 
-					// Remove any externally linked textures.
-	                foreach (KeyValuePair<string, GorgonTexture2D> texturePath in ExternalTextures)
+					// Remove any externally linked dependencies.
+	                foreach (Dependency dependency in Dependencies)
 	                {
-		                texturePath.Value.Dispose();
+		                var disposable = dependency.DependencyObject as IDisposable;
+
+		                if (disposable == null)
+		                {
+			                continue;
+		                }
+
+		                disposable.Dispose();
+		                dependency.DependencyObject = null;
 	                }
-					ExternalTextures.Clear();
 					
                     if (Font != null)
                     {
@@ -768,12 +778,12 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		/// <summary>
 		/// Function to load a dependency file.
 		/// </summary>
-		/// <param name="dependencyPath">Path to the dependency being loaded.</param>
+		/// <param name="dependency">The dependency to load.</param>
 		/// <param name="stream">Stream containing the dependency file.</param>
-	    protected override void OnLoadDependencyFile(string dependencyPath, Stream stream)
+	    protected override void OnLoadDependencyFile(Dependency dependency, Stream stream)
 	    {
 			// If this is not a texture brush path, then skip out.
-			string fileName = Path.GetFileName(dependencyPath);
+			string fileName = Path.GetFileName(dependency.Path);
 
 			Debug.Assert(!string.IsNullOrWhiteSpace("fileName"), "Could not retrieve the filename from the dependency path!");
 
@@ -782,8 +792,36 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 				throw new GorgonException(GorgonResult.CannotRead, Resources.GORFNT_EXTERN_IMAGE_EDITOR_MISSING);
 			}
 
-			using (IImageEditorContent imageContent = ImageEditor.ImportContent(fileName, stream))
+			if ((!string.Equals(dependency.Type, TextureBrushTextureType, StringComparison.OrdinalIgnoreCase))
+			    && (!string.Equals(dependency.Type, GlyphTextureType, StringComparison.OrdinalIgnoreCase)))
 			{
+				throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GORFNT_DEPENDENCY_UNKNOWN_TYPE, dependency.Type));
+			}
+
+			IImageEditorContent imageContent = null;
+
+			try
+			{
+				// We need to load the image as transformed (either clipped or stretched).
+				if ((string.Equals(dependency.Type, GlyphTextureType, StringComparison.OrdinalIgnoreCase))
+				    && (dependency.Properties.Contains("TransformType")))
+				{
+					int transformWidth = Convert.ToInt32(dependency.Properties["TransformWidth"].Value, CultureInfo.InvariantCulture);
+					int transformHeight = Convert.ToInt32(dependency.Properties["TransformHeight"].Value, CultureInfo.InvariantCulture);
+					imageContent = ImageEditor.ImportContent(fileName,
+					                                         stream,
+					                                         transformWidth,
+					                                         transformHeight,
+					                                         string.Equals(dependency.Properties["TransformType"].Value,
+					                                                       "Clip",
+					                                                       StringComparison.OrdinalIgnoreCase),
+					                                         BufferFormat.R8G8B8A8_UIntNormal);
+				}
+				else
+				{
+					imageContent = ImageEditor.ImportContent(fileName, stream);
+				}
+
 				if (imageContent.Image == null)
 				{
 					throw new GorgonException(GorgonResult.CannotRead, Resources.GORFNT_EXTERN_IMAGE_MISSING);
@@ -791,13 +829,17 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 
 				if (imageContent.Image.Settings.ImageType != ImageType.Image2D)
 				{
-					throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GORFNT_IMAGE_NOT_2D, fileName));	
+					throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GORFNT_IMAGE_NOT_2D, fileName));
 				}
 
-				// Load the texture.  
-				// Texture brushes and custom glyphs require that the textures be preloaded in order to be assigned to the font settings.
-				// This is because texture brushes and custom glyphs are only stored as meta data in the file.
-				ExternalTextures.Add(dependencyPath, Graphics.Textures.CreateTexture<GorgonTexture2D>(fileName, imageContent.Image));
+				dependency.DependencyObject = Graphics.Textures.CreateTexture<GorgonTexture2D>(fileName, imageContent.Image);
+			}
+			finally
+			{
+				if (imageContent != null)
+				{
+					imageContent.Dispose();
+				}
 			}
 	    }
 
@@ -914,7 +956,6 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 			_settings = initialSettings.Settings;
             _createFont = initialSettings.CreateContent;
 	        HasThumbnail = true;
-			ExternalTextures = new Dictionary<string, GorgonTexture2D>();
         }
         #endregion
     }

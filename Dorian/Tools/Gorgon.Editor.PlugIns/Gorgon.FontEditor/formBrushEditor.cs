@@ -788,6 +788,11 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		/// </summary>
 	    private void EnableNumericLimits()
 	    {
+			if (_texture == null)
+			{
+				return;
+			}
+
 			numericWidth.Maximum = _texture.Settings.Width - _selectionArea.SelectionRegion.X;
 			numericHeight.Maximum = _texture.Settings.Height - _selectionArea.SelectionRegion.Y;
 			numericX.Maximum = _texture.Settings.Width - _selectionArea.SelectionRegion.Width;
@@ -1003,6 +1008,20 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 
 				if (imageFileBrowser.ShowDialog(ParentForm) == DialogResult.OK)
 				{
+					// Don't load the same image.
+					if ((!string.IsNullOrWhiteSpace(TextureBrushPath)) &&
+					    (string.Equals(TextureBrushPath, imageFileBrowser.Files[0].FullPath)))
+					{
+						return;
+					}
+
+					// Don't try to re-load a texture in use elsewhere on the font.
+					if (_currentContent.Dependencies.Contains(imageFileBrowser.Files[0].FullPath))
+					{
+						GorgonDialogs.ErrorBox(this, string.Format(Resources.GORFNT_TEXTURE_IN_USE, imageFileBrowser.Files[0].FullPath));
+						return;
+					}
+
 					Cursor.Current = Cursors.WaitCursor;
 
 					// Load the image.

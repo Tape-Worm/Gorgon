@@ -394,7 +394,7 @@ namespace GorgonLibrary.Editor
             Debug.Assert(_currentContentObject != null, "Content should not be NULL!");
 
 			// Indicate that this content is linked to another piece of content.
-			content.HasOwner = CheckForDependencies(file).Count != 0;
+			content.HasOwner = Program.EditorMetaData.HasFileLinks(file);
 
 			// Load the content dependencies if any exist.
 			EditorMetaDataFile metaData = Program.EditorMetaData;
@@ -405,31 +405,28 @@ namespace GorgonLibrary.Editor
 			{
 				var missingDependencies = new List<string>();
 
-				content.Dependencies.Clear();
-
-				foreach (string dependencyFile in metaData.Dependencies[file.FullPath])
+				foreach (Dependency dependencyFile in metaData.Dependencies[file.FullPath])
 				{
 					try
 					{
-						GorgonFileSystemFileEntry externalFile = OnGetDependency(dependencyFile);
+						GorgonFileSystemFileEntry externalFile = OnGetDependency(dependencyFile.Path);
 
 						if (externalFile == null)
 						{
-							missingDependencies.Add(string.Format(Resources.GOREDIT_CANNOT_FIND_DEPENDENCY_FILE, dependencyFile));
+							missingDependencies.Add(string.Format(Resources.GOREDIT_CANNOT_FIND_DEPENDENCY_FILE, dependencyFile.Path));
 							continue;
 						}
-
-						content.Dependencies.Add(dependencyFile);
 
 						// Read the external content.
 						using (Stream dependencyStream = externalFile.OpenStream(false))
 						{
 							content.LoadDependencyFile(dependencyFile, dependencyStream);
+							content.Dependencies[dependencyFile.Path] = dependencyFile;
 						}
 					}
 					catch (Exception ex)
 					{
-						missingDependencies.Add(string.Format(Resources.GOREDIT_CANNOT_LOAD_DEPENDENCY, dependencyFile, ex.Message));
+						missingDependencies.Add(string.Format(Resources.GOREDIT_CANNOT_LOAD_DEPENDENCY, dependencyFile.Path, ex.Message));
 					}
 				}
 
@@ -472,31 +469,9 @@ namespace GorgonLibrary.Editor
 			{
 				Current.Persist(contentStream);
 			}
-			
-			EditorMetaDataFile metaData = Program.EditorMetaData;
 
-			if ((Current.Dependencies != null)
-			    && (Current.Dependencies.Count > 0))
-			{
-				// Update the dependency list.
-				metaData.Dependencies[file.FullPath] = new HashSet<string>(new EditorMetaDataFile.NameComparer());
-
-				foreach (string dependencyPath in Current.Dependencies)
-				{
-					metaData.Dependencies[file.FullPath].Add(dependencyPath);
-				}
-			}
-			else
-			{
-				if ((metaData.Dependencies.ContainsKey(file.FullPath))
-					&& (metaData.Dependencies[file.FullPath] != null))
-				{
-					metaData.Dependencies[file.FullPath].Clear();
-				}
-			}
-
-			// Persist the metadata back to the file system.
-			metaData.Save();
+			Program.EditorMetaData.Dependencies[file.FullPath] = Current.Dependencies;
+			Program.EditorMetaData.Save();
 
 			_contentChanged = false;
 
@@ -505,55 +480,6 @@ namespace GorgonLibrary.Editor
 			{
 				ContentSaved();
 			}
-	    }
-
-		/// <summary>
-		/// Function to determine if the specified file has other files linked to it.
-		/// </summary>
-		/// <param name="file">The file to examine.</param>
-		/// <returns>The names of the files that depend on this file.</returns>
-		public static IList<string> CheckForDependencies(GorgonFileSystemFileEntry file)
-		{
-			EditorMetaDataFile metaData = Program.EditorMetaData;
-			var ownerFiles = new List<string>();
-
-			var files = (from dependency in metaData.Dependencies
-			             where dependency.Value.Contains(file.FullPath)
-			             select dependency.Key).ToArray();
-
-			if (files.Length > 0)
-			{
-				ownerFiles.AddRange(files);
-			}
-
-			return ownerFiles;
-		}
-
-	    /// <summary>
-	    /// Function to examine the files in a directory to determine if any of them are linked with another file.
-	    /// </summary>
-	    /// <param name="directory">Directory containing the files.</param>
-	    /// <returns>The names of the files that depend on a file in this directory.</returns>
-	    /// <remarks>This function will recursively check for files within the subdirectories of this directory as well.</remarks>
-	    public static IList<string> CheckForDependencies(GorgonFileSystemDirectory directory)
-	    {
-		    var ownerFiles = new List<string>();
-
-		    if (directory.Directories.Count > 0)
-		    {
-			    foreach (IList<string> subFiles in
-				    directory.Directories.Select(CheckForDependencies).Where(subFiles => subFiles.Count > 0))
-			    {
-				    ownerFiles.AddRange(subFiles);
-			    }
-		    }
-
-		    foreach (IList<string> files in directory.Files.Select(CheckForDependencies).Where(files => files.Count > 0))
-		    {
-			    ownerFiles.AddRange(files);
-		    }
-
-		    return ownerFiles;
 	    }
 
 	    /// <summary>
