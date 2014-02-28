@@ -128,6 +128,10 @@
     </Compile>
     <Compile Include="Controls\TreeNodeDirectory.cs" />
     <Compile Include="DefaultContent.cs" />
+    <Compile Include="Dependency.cs" />
+    <Compile Include="DependencyCollection.cs" />
+    <Compile Include="DependencyProperty.cs" />
+    <Compile Include="DependencyPropertyCollection.cs" />
     <Compile Include="Designers\AlphaChannelEditor.cs" />
     <Compile Include="Designers\AlphaChannelTypeConverter.cs" />
     <Compile Include="Designers\PointFConverter.cs" />

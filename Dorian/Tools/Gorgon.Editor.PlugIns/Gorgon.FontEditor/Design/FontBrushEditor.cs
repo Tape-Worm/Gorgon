@@ -30,8 +30,6 @@ using System.Drawing;
 using System.Drawing.Design;
 using System.Drawing.Drawing2D;
 using System.Linq;
-using System.Net.Mime;
-using System.Runtime.Versioning;
 using System.Windows.Forms;
 using GorgonLibrary.Editor.FontEditorPlugIn.Properties;
 using GorgonLibrary.Graphics;
@@ -110,10 +108,15 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 
 		        if (document.Brush.BrushType == GlyphBrushType.Texture)
 		        {
-					textureBrushPath = document.ExternalTextures.FirstOrDefault(item => item.Value == ((GorgonGlyphTextureBrush)document.Brush).Texture).Key;
+			        Dependency dependency = document.Dependencies.SingleOrDefault(item => string.Equals(item.Type, GorgonFontContent.TextureBrushTextureType));
+
+			        if (dependency != null)
+			        {
+				        textureBrushPath = dependency.Path;
+			        }
 		        }
 
-				brushEditor = new formBrushEditor(document)
+		        brushEditor = new formBrushEditor(document)
 				              {
 					              BrushType = document.Brush.BrushType
 				              };
@@ -157,8 +160,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 					if ((!string.IsNullOrWhiteSpace(textureBrushPath))
 						&& (document.Dependencies.Contains(textureBrushPath)))
 					{
-						document.ExternalTextures.Remove(textureBrushPath);
-						document.Dependencies.Remove(textureBrushPath);
+						document.Dependencies[textureBrushPath] = null;
 					}
 			    }
 
@@ -170,11 +172,8 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 						// Add the updated texture brush dependency path.
 						if (!string.IsNullOrWhiteSpace(brushEditor.TextureBrushPath))
 						{
-							if (!document.Dependencies.Contains(brushEditor.TextureBrushPath))
-							{
-								document.Dependencies.Add(brushEditor.TextureBrushPath);
-							}
-							document.ExternalTextures[brushEditor.TextureBrushPath] = brushEditor.TextureBrush.Texture;
+							document.Dependencies[brushEditor.TextureBrushPath] = new Dependency(brushEditor.TextureBrushPath,
+							                                                                     GorgonFontContent.TextureBrushTextureType);
 						}
 			            break;
 			        case GlyphBrushType.Solid:

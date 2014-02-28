@@ -631,4 +631,25 @@ The following characters are not allowed:
   <data name="linked_file_8x8" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\linked_file_8x8.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="GOREDIT_DEPENDENCY_CORRUPT" xml:space="preserve">
+    <value>Unable to read the dependency. It has been corrupted.</value>
+  </data>
+  <data name="GOREDIT_DEPENDENCY_NOT_FOUND" xml:space="preserve">
+    <value>No dependency named '{0}' exists in this collection.</value>
+  </data>
+  <data name="GOREDIT_DEPENDENCY_PROP_CORRUPT" xml:space="preserve">
+    <value>Unable to read the dependency property.  It has been corrupted.</value>
+  </data>
+  <data name="GOREDIT_DEPENDENCY_PROP_DOES_NOT_EXIST" xml:space="preserve">
+    <value>The dependency property '{0}' does not exist in this collection.</value>
+  </data>
+  <data name="GOREDIT_DEPENDENCY_PROP_EXISTS" xml:space="preserve">
+    <value>There is already a dependency property with the name of '{0}' in this collection.</value>
+  </data>
+  <data name="GOREDIT_DEPENDENCY_PROP_NO_NAME" xml:space="preserve">
+    <value>The dependency property needs a name.</value>
+  </data>
+  <data name="GOREDIT_DEPENDENCY_PROP_TOSTRING" xml:space="preserve">
+    <value>Dependency property '{0}': '{1}'</value>
+  </data>
 </root>

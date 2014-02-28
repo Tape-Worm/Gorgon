@@ -371,6 +371,69 @@ namespace GorgonLibrary.Editor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Unable to read the dependency. It has been corrupted..
+        /// </summary>
+        internal static string GOREDIT_DEPENDENCY_CORRUPT {
+            get {
+                return ResourceManager.GetString("GOREDIT_DEPENDENCY_CORRUPT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No dependency named &apos;{0}&apos; exists in this collection..
+        /// </summary>
+        internal static string GOREDIT_DEPENDENCY_NOT_FOUND {
+            get {
+                return ResourceManager.GetString("GOREDIT_DEPENDENCY_NOT_FOUND", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unable to read the dependency property.  It has been corrupted..
+        /// </summary>
+        internal static string GOREDIT_DEPENDENCY_PROP_CORRUPT {
+            get {
+                return ResourceManager.GetString("GOREDIT_DEPENDENCY_PROP_CORRUPT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The dependency property &apos;{0}&apos; does not exist in this collection..
+        /// </summary>
+        internal static string GOREDIT_DEPENDENCY_PROP_DOES_NOT_EXIST {
+            get {
+                return ResourceManager.GetString("GOREDIT_DEPENDENCY_PROP_DOES_NOT_EXIST", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to There is already a dependency property with the name of &apos;{0}&apos; in this collection..
+        /// </summary>
+        internal static string GOREDIT_DEPENDENCY_PROP_EXISTS {
+            get {
+                return ResourceManager.GetString("GOREDIT_DEPENDENCY_PROP_EXISTS", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The dependency property needs a name..
+        /// </summary>
+        internal static string GOREDIT_DEPENDENCY_PROP_NO_NAME {
+            get {
+                return ResourceManager.GetString("GOREDIT_DEPENDENCY_PROP_NO_NAME", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Dependency property &apos;{0}&apos;: &apos;{1}&apos;.
+        /// </summary>
+        internal static string GOREDIT_DEPENDENCY_PROP_TOSTRING {
+            get {
+                return ResourceManager.GetString("GOREDIT_DEPENDENCY_PROP_TOSTRING", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Go back..
         /// </summary>
         internal static string GOREDIT_DLG_BACK_TEXT {

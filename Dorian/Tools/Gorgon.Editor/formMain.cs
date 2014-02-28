@@ -558,7 +558,7 @@ namespace GorgonLibrary.Editor
         /// </summary>
         private void ValidateControls()
         {
-	        IList<string> dependencies = null;
+	        bool dependencies = false;
             TreeNodeEditor selectedNode = treeFiles.SelectedNode;
 
             Text = string.Format("{0} - {1}", FileManagement.Filename, Resources.GOREDIT_DEFAULT_TITLE);
@@ -610,20 +610,20 @@ namespace GorgonLibrary.Editor
 				// Don't check the root node.
 		        if (treeFiles.SelectedNode != _rootNode)
 		        {
-			        dependencies = ContentManagement.CheckForDependencies(((TreeNodeDirectory)selectedNode).Directory);
+			        dependencies = Program.EditorMetaData.HasFileLinks(((TreeNodeDirectory)selectedNode).Directory);
 		        }
 
 		        toolStripSeparator4.Visible = true;
 		        popupItemAddContent.Visible = itemAddContent.Enabled = itemAddContent.DropDownItems.Count > 0;
 		        popupItemAddContent.Enabled = itemAddContent.Enabled;
 		        dropNewContent.Enabled = dropNewContent.DropDownItems.Count > 0;
-		        if ((dependencies == null) || (dependencies.Count == 0))
+		        if (dependencies)
 		        {
 			        buttonDeleteContent.Enabled = true;
 		        }
 		        popupItemCreateFolder.Enabled = itemCreateFolder.Enabled = true;
 		        popupItemCreateFolder.Visible = true;
-		        if ((dependencies == null) || (dependencies.Count == 0))
+		        if (dependencies)
 		        {
 			        itemDelete.Enabled = popupItemDelete.Enabled = (tabDocumentManager.SelectedTab == pageItems);
 		        }
@@ -634,7 +634,7 @@ namespace GorgonLibrary.Editor
 		        {
 					popupItemCut.Enabled = popupItemCopy.Enabled = itemCopy.Enabled = itemCut.Enabled = true;
 
-			        if ((dependencies == null) || (dependencies.Count == 0))
+			        if (dependencies)
 			        {
 				        popupItemRename.Enabled = true;
 				        popupItemRename.Text = string.Format("{0}...", Resources.GOREDIT_MENU_RENAME_FOLDER);
@@ -680,7 +680,7 @@ namespace GorgonLibrary.Editor
 
             file = ((TreeNodeFile)selectedNode).File;
 
-	        dependencies = ContentManagement.CheckForDependencies(file);
+	        dependencies = Program.EditorMetaData.HasFileLinks(file);
 
 			toolStripSeparator4.Visible =
 				buttonEditContent.Enabled =
@@ -689,7 +689,7 @@ namespace GorgonLibrary.Editor
 			popupItemPaste.Enabled = itemPaste.Enabled = clipboardData != null && clipboardData.GetDataPresent(typeof(CutCopyObject));
 	        popupItemCopy.Enabled = itemCopy.Enabled = true;
 
-	        if (dependencies.Count != 0)
+	        if (dependencies)
 	        {
 		        return;
 	        }
@@ -1271,11 +1271,11 @@ namespace GorgonLibrary.Editor
 		{
 			fileNode.Nodes.Clear();
 
-			ICollection<string> dependencies = Program.EditorMetaData.Dependencies[fileNode.File.FullPath];
+			DependencyCollection dependencies = Program.EditorMetaData.Dependencies[fileNode.File.FullPath];
 
-			foreach (string dependencyFile in dependencies)
+			foreach (Dependency dependencyFile in dependencies)
 			{
-				GorgonFileSystemFileEntry fileEntry = ScratchArea.ScratchFiles.GetFile(dependencyFile);
+				GorgonFileSystemFileEntry fileEntry = ScratchArea.ScratchFiles.GetFile(dependencyFile.Path);
 				var dependencyNode = new TreeNodeDependency();
 
 				if (fileEntry == null)
