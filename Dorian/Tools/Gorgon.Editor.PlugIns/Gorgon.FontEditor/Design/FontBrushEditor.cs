@@ -160,7 +160,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 					if ((!string.IsNullOrWhiteSpace(textureBrushPath))
 						&& (document.Dependencies.Contains(textureBrushPath)))
 					{
-						document.Dependencies[textureBrushPath] = null;
+						document.Dependencies[textureBrushPath, GorgonFontContent.TextureBrushTextureType] = null;
 					}
 			    }
 
@@ -172,8 +172,9 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 						// Add the updated texture brush dependency path.
 						if (!string.IsNullOrWhiteSpace(brushEditor.TextureBrushPath))
 						{
-							document.Dependencies[brushEditor.TextureBrushPath] = new Dependency(brushEditor.TextureBrushPath,
-							                                                                     GorgonFontContent.TextureBrushTextureType);
+							document.Dependencies[brushEditor.TextureBrushPath, GorgonFontContent.TextureBrushTextureType] =
+								new Dependency(brushEditor.TextureBrushPath,
+								               GorgonFontContent.TextureBrushTextureType);
 						}
 			            break;
 			        case GlyphBrushType.Solid:

@@ -456,7 +456,7 @@ Height:{5:####0}</value>
   <data name="GORFNT_DEPENDENCY_UNKNOWN_TYPE" xml:space="preserve">
     <value>The type '{0}' is not a valid dependency type for a font.</value>
   </data>
-  <data name="GORFNT_TEXTURE_IN_USE" xml:space="preserve">
-    <value>The texture '{0}' is already bound to this font and cannot be bound again.  Please choose another texture.</value>
+  <data name="GORFNT_DEPENDENCY_GLYPH_TEXTURE_BAD_TRANSFORM" xml:space="preserve">
+    <value>The transform type '{0}' is not valid for a glyph texture transformation.</value>
   </data>
 </root>

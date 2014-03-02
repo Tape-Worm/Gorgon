@@ -42,11 +42,9 @@ namespace GorgonLibrary.Graphics
 	{
 		#region Variables.
 		private string _deferredTextureName = string.Empty;				// Name of a deferred texture.
-		private BufferFormat _textureFormat = BufferFormat.Unknown;		// Format of the texture.
-		private int _textureWidth;										// Width of the texture.
-		private int _textureHeight;										// Height of the texture.
+		private readonly GorgonTexture2DSettings _textureSettings;		// Texture settings.
 		private GorgonTexture2D _texture;								// Texture to bind with the brush.
-		private GorgonGraphics _graphics;								// Graphics interface to manage the texture used by the brush.
+		private readonly GorgonGraphics _graphics;						// Graphics interface to manage the texture used by the brush.
 		#endregion
 
 		#region Properties.
@@ -116,9 +114,11 @@ namespace GorgonLibrary.Graphics
 			                                   (string.Equals(item.Name,
 			                                                  _deferredTextureName,
 			                                                  StringComparison.OrdinalIgnoreCase)
-			                                    && (item.Settings.Width == _textureWidth)
-			                                    && (item.Settings.Height == _textureHeight)
-			                                    && (item.Settings.Format == _textureFormat)));
+			                                    && (item.Settings.Width == _textureSettings.Width)
+												&& (item.Settings.Height == _textureSettings.Height)
+												&& (item.Settings.Format == _textureSettings.Format)
+												&& (item.Settings.ArrayCount == _textureSettings.ArrayCount)
+												&& (item.Settings.MipCount == _textureSettings.MipCount)));
 
 			if (_texture != null)
 			{
@@ -189,6 +189,8 @@ namespace GorgonLibrary.Graphics
 			chunk.Write(_texture.Settings.Width);
 			chunk.Write(_texture.Settings.Height);
 			chunk.Write(_texture.Settings.Format);
+			chunk.Write(_texture.Settings.ArrayCount);
+			chunk.Write(_texture.Settings.MipCount);
 
 			chunk.End();
 		}
@@ -209,9 +211,11 @@ namespace GorgonLibrary.Graphics
 
 			TextureRegion = chunk.ReadRectangleF();
 			_deferredTextureName = chunk.ReadString();
-			_textureWidth = chunk.ReadInt32();
-			_textureHeight = chunk.ReadInt32();
-			_textureFormat = chunk.Read<BufferFormat>();
+			_textureSettings.Width = chunk.ReadInt32();
+			_textureSettings.Height = chunk.ReadInt32();
+			_textureSettings.Format = chunk.Read<BufferFormat>();
+			_textureSettings.ArrayCount = chunk.ReadInt32();
+			_textureSettings.MipCount = chunk.ReadInt32();
 
 			// Try to find the appropriate texture in any previously loaded texture list.
 			FindTexture();
@@ -226,6 +230,12 @@ namespace GorgonLibrary.Graphics
 		internal GorgonGlyphTextureBrush(GorgonGraphics graphics)
 		{
 			_graphics = graphics.ImmediateContext;
+			_textureSettings = new GorgonTexture2DSettings
+			                   {
+								   Format = BufferFormat.R8G8B8A8_UIntNormal,
+								   ArrayCount = 1,
+								   MipCount = 1
+			                   };
 		}
 
 		/// <summary>
@@ -241,6 +251,7 @@ namespace GorgonLibrary.Graphics
 			}
 
 			Texture = textureImage;
+			_textureSettings = textureImage.Settings;
 			_graphics = Texture.Graphics.ImmediateContext;
 		}
 		#endregion

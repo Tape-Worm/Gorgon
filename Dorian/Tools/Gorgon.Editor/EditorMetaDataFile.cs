@@ -316,6 +316,7 @@ namespace GorgonLibrary.Editor
 			}
 
 			XElement dependencyList = AddOrUpdateNode(root, ContentDependencyFiles);
+			dependencyList.RemoveAll();
 
 			foreach (KeyValuePair<string, DependencyCollection> files in Dependencies)
 			{
@@ -326,8 +327,8 @@ namespace GorgonLibrary.Editor
 					continue;
 				}
 
-				XElement file = AddOrUpdateNode(dependencyList, FileNode);
-				AddOrUpdateAttribute(file, NameAttr, files.Key);
+				var file = new XElement(FileNode, new XAttribute(NameAttr, files.Key));
+				dependencyList.Add(file);
 
 				file.Add(files.Value.Serialize());
 			}

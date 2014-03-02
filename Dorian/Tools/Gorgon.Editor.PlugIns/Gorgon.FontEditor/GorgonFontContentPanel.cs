@@ -172,7 +172,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 
 		    if (dependency != null)
 		    {
-			    _content.Dependencies[dependency.Path] = null;
+			    _content.Dependencies[dependency.Path, dependency.Type] = null;
 		    }
 
 			glyph.Texture.Dispose();
@@ -229,6 +229,90 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
             }
         }
 
+		/// <summary>
+		/// Function to load a texture.
+		/// </summary>
+		/// <param name="textureFile">The file selected to load.</param>
+	    private GorgonTexture2D LoadTexture(GorgonFileSystemFileEntry textureFile)
+	    {
+			GorgonTexture2D texture;
+			var transform = GlyphTextureTransform.None;
+
+			using (var fileStream = textureFile.OpenStream(false))
+			{
+				using (var imageContent = _content.ImageEditor.ImportContent(imageFileBrowser.Files[0].FullPath,
+				                                                             fileStream,
+				                                                             0,
+				                                                             0,
+				                                                             true,
+				                                                             BufferFormat.R8G8B8A8_UIntNormal))
+				{
+					// We can only use 2D content.
+					if (imageContent.Image.Settings.ImageType != ImageType.Image2D)
+					{
+						GorgonDialogs.ErrorBox(ParentForm, string.Format(Resources.GORFNT_IMAGE_NOT_2D, imageContent.Name));
+						return null;
+					}
+
+					// If the size is mismatched with the font textures then ask the user if they wish to resize the 
+					// texture.
+					if ((imageContent.Image.Settings.Width != _content.Font.Settings.TextureSize.Width)
+					    || (imageContent.Image.Settings.Height != _content.Font.Settings.TextureSize.Height))
+					{
+						ConfirmationResult result = GorgonDialogs.ConfirmBox(ParentForm,
+						                                                     string.Format(
+						                                                                   Resources.GORFNT_IMAGE_SIZE_MISMATCH_MSG,
+						                                                                   imageContent.Image.Settings.Width,
+						                                                                   imageContent.Image.Settings.Height,
+						                                                                   _content.Font.Settings.TextureSize.Width,
+						                                                                   _content.Font.Settings.TextureSize.Height),
+						                                                     null,
+						                                                     true);
+
+						if (result == ConfirmationResult.Cancel)
+						{
+							return null;
+						}
+
+						transform = result == ConfirmationResult.Yes ? GlyphTextureTransform.Scaled : GlyphTextureTransform.Clipped;
+
+						// Resize or clip the image.
+						imageContent.Image.Resize(_content.Font.Settings.TextureSize.Width,
+						                          _content.Font.Settings.TextureSize.Height,
+						                          result == ConfirmationResult.No,
+						                          ImageFilter.Point);
+					}
+
+
+					// Remove any array indices from the texture, we don't need them for font glyphs.
+					var settings = (GorgonTexture2DSettings)imageContent.Image.Settings.Clone();
+					settings.ArrayCount = 1;
+
+					texture = _content.Graphics.Textures.CreateTexture<GorgonTexture2D>(imageContent.Name, imageContent.Image, settings);
+
+					var dependency = new Dependency(textureFile.FullPath, GorgonFontContent.GlyphTextureType)
+					                        {
+						                        DependencyObject = texture
+					                        };
+
+					dependency.Properties[GorgonFontContent.GlyphTextureTransformProp] =
+						new DependencyProperty(GorgonFontContent.GlyphTextureTransformProp, transform.ToString());
+
+					if (transform != GlyphTextureTransform.None)
+					{
+						var converter = new SizeConverter();
+
+						dependency.Properties[GorgonFontContent.GlyphTextureSizeProp] =
+							new DependencyProperty(GorgonFontContent.GlyphTextureSizeProp, converter.ConvertToInvariantString(settings.Size));
+					}
+
+					_content.Dependencies[dependency.Path, GorgonFontContent.GlyphTextureType] = dependency;
+				}
+			}
+
+			return texture;
+	    }
+
         /// <summary>
 		/// Handles the Click event of the buttonGlyphClip control.
 		/// </summary>
@@ -238,7 +322,10 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		{
 		    try
 		    {
-				// TODO: We need a texture selection window.  This window should allow us to load more textures as needed via this interface.
+			    if (!string.IsNullOrWhiteSpace(GorgonFontEditorPlugIn.Settings.LastTextureImportPath))
+			    {
+				    imageFileBrowser.StartDirectory = GorgonFontEditorPlugIn.Settings.LastTextureImportPath;
+			    }
 		        imageFileBrowser.FileExtensions.Clear();
 		        foreach (var extension in _content.ImageEditor.FileExtensions)
 		        {
@@ -249,116 +336,57 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		        imageFileBrowser.FileView = GorgonFontEditorPlugIn.Settings.LastTextureImportDialogView;
 			    imageFileBrowser.DefaultExtension = GorgonFontEditorPlugIn.Settings.LastTextureExtension;
 
-		        if (imageFileBrowser.ShowDialog(ParentForm) == DialogResult.OK)
-		        {
-			        bool needsTransform = false;
-			        bool scaledTransform = false;
-			        Dependency dependency = _content.Dependencies.FirstOrDefault(item => item.DependencyObject == _selectedGlyph.Texture);
+			    if (imageFileBrowser.ShowDialog(ParentForm) == DialogResult.OK)
+			    {
+				    GorgonTexture2D texture = null;
+				    GorgonFileSystemFileEntry file = imageFileBrowser.Files[0];
+				    Dependency dependency = _content.Dependencies.FirstOrDefault(item =>
+				                                                                 item.DependencyObject == _selectedGlyph.Texture 
+																				 && string.Equals(item.Path,
+				                                                                               file.FullPath,
+				                                                                               StringComparison.OrdinalIgnoreCase));
 
-					// Don't load the same texture for the glyph.
-			        if ((dependency != null) && (string.Equals(dependency.Path, imageFileBrowser.Files[0].FullPath)))
-			        {
-				        return;
-			        }
+				    // This texture is already assigned to the glyph, skip the load procedure.
+				    if (dependency != null)
+				    {
+					    return;
+				    }
 
-					// If we already have this texture loaded, then display an stating that we can't load it again.
-			        if (_content.Dependencies.Contains(imageFileBrowser.Files[0].FullPath))
-			        {
-				        GorgonDialogs.ErrorBox(ParentForm, string.Format(Resources.GORFNT_TEXTURE_IN_USE, imageFileBrowser.Files[0].FullPath));
-				        return;
-			        }
+				    if (_content.Dependencies.Contains(file.FullPath, GorgonFontContent.GlyphTextureType))
+				    {
+					    texture = _content.Dependencies[file.FullPath, GorgonFontContent.GlyphTextureType].DependencyObject as GorgonTexture2D;
+				    }
 
-			        using (var fileStream = imageFileBrowser.Files[0].OpenStream(false))
-			        {
-				        using (var imageContent = _content.ImageEditor.ImportContent(imageFileBrowser.Files[0].Name, fileStream,
-				                                                                     0,
-				                                                                     0,
-				                                                                     true,
-				                                                                     BufferFormat.R8G8B8A8_UIntNormal))
-				        {
-					        // We can only use 2D content.
-					        if (imageContent.Image.Settings.ImageType != ImageType.Image2D)
-					        {
-						        GorgonDialogs.ErrorBox(ParentForm, string.Format(Resources.GORFNT_IMAGE_NOT_2D, imageContent.Name));
-						        return;
-					        }
+					// We have no pre-loaded texture, so go get it.
+				    if (texture == null)
+				    {
+					    texture = LoadTexture(file);
+				    }
 
-					        // If the size is mismatched with the font textures then ask the user if they wish to resize the 
-					        // texture.
-					        if ((imageContent.Image.Settings.Width != _content.Font.Settings.TextureSize.Width)
-					            || (imageContent.Image.Settings.Height != _content.Font.Settings.TextureSize.Height))
-					        {
-						        ConfirmationResult result = GorgonDialogs.ConfirmBox(ParentForm,
-						                                                             string.Format(Resources.GORFNT_IMAGE_SIZE_MISMATCH_MSG,
-						                                                                           imageContent.Image.Settings.Width,
-						                                                                           imageContent.Image.Settings.Height,
-						                                                                           _content.Font.Settings.TextureSize.Width,
-						                                                                           _content.Font.Settings.TextureSize.Height),
-						                                                             null,
-						                                                             true);
+					GorgonGlyph newGlyph = _content.Font.Settings.Glyphs.FirstOrDefault(item => item.Character == _selectedGlyph.Character);
 
-						        if (result == ConfirmationResult.Cancel)
-						        {
-							        return;
-						        }
+					while (newGlyph != null)
+					{
+						RemoveGlyphTexture(newGlyph);
+						_content.Font.Settings.Glyphs.Remove(newGlyph);
 
-						        needsTransform = true;
-						        scaledTransform = result == ConfirmationResult.Yes;
+						newGlyph = _content.Font.Settings.Glyphs.FirstOrDefault(item => item.Character == _selectedGlyph.Character);
+					}
 
-						        // Resize or clip the image.
-						        imageContent.Image.Resize(_content.Font.Settings.TextureSize.Width,
-						                                  _content.Font.Settings.TextureSize.Height,
-						                                  result == ConfirmationResult.No,
-						                                  ImageFilter.Point);
-					        }
+					// Default to the full size of the texture.
+					newGlyph = new GorgonGlyph(_selectedGlyph.Character,
+												texture,
+												new Rectangle(0, 0, texture.Settings.Width, texture.Settings.Height),
+												Vector2.Zero,
+												Vector3.Zero);
 
+					_content.Font.Settings.Glyphs.Add(newGlyph);
+					_content.UpdateFont();
 
-					        // Remove any array indices from the texture, we don't need them for font glyphs.
-					        var settings = (GorgonTexture2DSettings)imageContent.Image.Settings.Clone();
-					        settings.ArrayCount = 1;
+					GorgonFontEditorPlugIn.Settings.LastTextureImportPath = file.Directory.FullPath;
+			    }
 
-					        var texture = _content.Graphics.Textures.CreateTexture<GorgonTexture2D>(imageContent.Name,
-					                                                                                imageContent.Image,
-					                                                                                settings);
-
-							GorgonGlyph newGlyph = _content.Font.Settings.Glyphs.FirstOrDefault(item => item.Character == _selectedGlyph.Character); ;
-
-							while (newGlyph != null)
-					        {
-								RemoveGlyphTexture(newGlyph);
-						        _content.Font.Settings.Glyphs.Remove(newGlyph);
-
-								newGlyph = _content.Font.Settings.Glyphs.FirstOrDefault(item => item.Character == _selectedGlyph.Character); ;
-					        }
-
-					        // Default to the full size of the texture.
-					        newGlyph = new GorgonGlyph(_selectedGlyph.Character,
-					                                   texture,
-					                                   new Rectangle(0, 0, texture.Settings.Width, texture.Settings.Height),
-					                                   Vector2.Zero,
-					                                   Vector3.Zero);
-
-					        _content.Font.Settings.Glyphs.Add(newGlyph);
-					        _content.UpdateFont();
-
-					        dependency = new Dependency(imageFileBrowser.Files[0].FullPath, GorgonFontContent.GlyphTextureType)
-					                     {
-						                     DependencyObject = newGlyph.Texture
-					                     };
-
-					        if (needsTransform)
-					        {
-						        dependency.Properties["TransformType"] = new DependencyProperty("TransformType", scaledTransform ? "Scale" : "Clip");
-								dependency.Properties["TransformWidth"] = new DependencyProperty("TransformWidth", texture.Settings.Width.ToString(CultureInfo.InvariantCulture));
-								dependency.Properties["TransformHeight"] = new DependencyProperty("TransformHeight", texture.Settings.Height.ToString(CultureInfo.InvariantCulture));
-					        }
-
-					        _content.Dependencies[dependency.Path] = dependency;
-				        }
-			        }
-		        }
-
-		        GorgonFontEditorPlugIn.Settings.LastTextureImportDialogView = imageFileBrowser.FileView;
+			    GorgonFontEditorPlugIn.Settings.LastTextureImportDialogView = imageFileBrowser.FileView;
 			    GorgonFontEditorPlugIn.Settings.LastTextureExtension = imageFileBrowser.DefaultExtension;
 		    }
 		    catch (Exception ex)

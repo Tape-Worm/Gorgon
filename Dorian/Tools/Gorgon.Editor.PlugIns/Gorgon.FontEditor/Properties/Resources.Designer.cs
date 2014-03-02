@@ -277,6 +277,15 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The transform type &apos;{0}&apos; is not valid for a glyph texture transformation..
+        /// </summary>
+        internal static string GORFNT_DEPENDENCY_GLYPH_TEXTURE_BAD_TRANSFORM {
+            get {
+                return ResourceManager.GetString("GORFNT_DEPENDENCY_GLYPH_TEXTURE_BAD_TRANSFORM", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The type &apos;{0}&apos; is not a valid dependency type for a font..
         /// </summary>
         internal static string GORFNT_DEPENDENCY_UNKNOWN_TYPE {
@@ -755,15 +764,6 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Properties {
         internal static string GORFNT_STREAM_READ_ONLY {
             get {
                 return ResourceManager.GetString("GORFNT_STREAM_READ_ONLY", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The texture &apos;{0}&apos; is already bound to this font and cannot be bound again.  Please choose another texture..
-        /// </summary>
-        internal static string GORFNT_TEXTURE_IN_USE {
-            get {
-                return ResourceManager.GetString("GORFNT_TEXTURE_IN_USE", resourceCulture);
             }
         }
         

@@ -994,6 +994,10 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 
 			try
 			{
+				if (!string.IsNullOrWhiteSpace(GorgonFontEditorPlugIn.Settings.LastTextureImportPath))
+				{
+					imageFileBrowser.StartDirectory = GorgonFontEditorPlugIn.Settings.LastTextureImportPath;
+				}
 
 				imageFileBrowser.FileExtensions.Clear();
 				foreach (var extension in _currentContent.ImageEditor.FileExtensions)
@@ -1015,19 +1019,12 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 						return;
 					}
 
-					// Don't try to re-load a texture in use elsewhere on the font.
-					if (_currentContent.Dependencies.Contains(imageFileBrowser.Files[0].FullPath))
-					{
-						GorgonDialogs.ErrorBox(this, string.Format(Resources.GORFNT_TEXTURE_IN_USE, imageFileBrowser.Files[0].FullPath));
-						return;
-					}
-
 					Cursor.Current = Cursors.WaitCursor;
 
 					// Load the image.
 					using (Stream stream = imageFileBrowser.Files[0].OpenStream(false))
 					{
-						using (IImageEditorContent imageContent = _currentContent.ImageEditor.ImportContent(imageFileBrowser.Files[0].Name, 
+						using (IImageEditorContent imageContent = _currentContent.ImageEditor.ImportContent(imageFileBrowser.Files[0].FullPath, 
 																											stream,
 						                                                                                    0,
 						                                                                                    0,
@@ -1063,6 +1060,8 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 							TextureBrushPath = imageFileBrowser.Files[0].FullPath;
 						}
 					}
+
+					GorgonFontEditorPlugIn.Settings.LastTextureImportPath = imageFileBrowser.Files[0].Directory.FullPath;
 				}
 
 				GorgonFontEditorPlugIn.Settings.LastTextureImportDialogView = imageFileBrowser.FileView;
