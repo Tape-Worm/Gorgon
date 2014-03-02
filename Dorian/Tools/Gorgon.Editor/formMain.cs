@@ -531,8 +531,52 @@ namespace GorgonLibrary.Editor
 	            Cursor.Current = Cursors.WaitCursor;
 
 				if ((selectedNode.NodeType & NodeType.File) == NodeType.File)
-                {
-                    ScratchArea.Export(((TreeNodeFile)treeFiles.SelectedNode).File, dialogExport.SelectedPath, false);
+				{
+					GorgonFileSystemFileEntry file = ((TreeNodeFile)treeFiles.SelectedNode).File;
+
+					// If we have dependencies, then ask to export those as well.
+					if (Program.EditorMetaData.Dependencies.ContainsKey(file.FullPath))
+					{
+						ConfirmationResult result = GorgonDialogs.ConfirmBox(this,
+						                                                     string.Format(Resources.GOREDIT_EXPORT_EXPORT_DEPENDENCIES,
+						                                                                   file.Name), null, true);
+
+						if (result == ConfirmationResult.Cancel)
+						{
+							return;
+						}
+
+						if (result == ConfirmationResult.Yes)
+						{
+							var filePaths = new HashSet<string>();
+							
+							// Merge file paths together in a hash set so we don't get attempts to overwrite the same
+							// file over and over.  This can happen because the same dependency can appear multiple
+							// times for a file.
+							foreach (Dependency dependency in Program.EditorMetaData.Dependencies[file.FullPath])
+							{
+								if (!filePaths.Contains(dependency.Path.ToLowerInvariant()))
+								{
+									filePaths.Add(dependency.Path.ToLowerInvariant());
+								}
+							}
+
+							// Export dependency files.
+							foreach (string path in filePaths)
+							{
+								GorgonFileSystemFileEntry dependFile = ScratchArea.ScratchFiles.GetFile(path);
+
+								if (dependFile == null)
+								{
+									continue;
+								}
+
+								ScratchArea.Export(dependFile, dialogExport.SelectedPath, false, filePaths.Count);
+							}
+						}
+					}
+
+                    ScratchArea.Export(file, dialogExport.SelectedPath, false);
                 } 
                 
                 if ((selectedNode.NodeType & NodeType.Directory) == NodeType.Directory)
@@ -617,28 +661,18 @@ namespace GorgonLibrary.Editor
 		        popupItemAddContent.Visible = itemAddContent.Enabled = itemAddContent.DropDownItems.Count > 0;
 		        popupItemAddContent.Enabled = itemAddContent.Enabled;
 		        dropNewContent.Enabled = dropNewContent.DropDownItems.Count > 0;
-		        if (dependencies)
-		        {
-			        buttonDeleteContent.Enabled = true;
-		        }
+		        buttonDeleteContent.Enabled = !dependencies;
 		        popupItemCreateFolder.Enabled = itemCreateFolder.Enabled = true;
 		        popupItemCreateFolder.Visible = true;
-		        if (dependencies)
-		        {
-			        itemDelete.Enabled = popupItemDelete.Enabled = (tabDocumentManager.SelectedTab == pageItems);
-		        }
+		        itemDelete.Enabled = popupItemDelete.Enabled = (!dependencies) && (tabDocumentManager.SelectedTab == pageItems);
 		        itemDelete.Text = popupItemDelete.Text = string.Format("{0}...", Resources.GOREDIT_MENU_DELETE_FOLDER);
 		        popupItemPaste.Enabled = itemPaste.Enabled = clipboardData != null && clipboardData.GetDataPresent(typeof(CutCopyObject));
 
 		        if (treeFiles.SelectedNode != _rootNode)
 		        {
 					popupItemCut.Enabled = popupItemCopy.Enabled = itemCopy.Enabled = itemCut.Enabled = true;
-
-			        if (dependencies)
-			        {
-				        popupItemRename.Enabled = true;
-				        popupItemRename.Text = string.Format("{0}...", Resources.GOREDIT_MENU_RENAME_FOLDER);
-			        }
+				    popupItemRename.Enabled = !dependencies;
+				    popupItemRename.Text = string.Format("{0}...", Resources.GOREDIT_MENU_RENAME_FOLDER);
 		        }
 		        else
 		        {
@@ -1632,8 +1666,9 @@ namespace GorgonLibrary.Editor
 				if ((selectedNode.NodeType & NodeType.Directory) == NodeType.Directory)
 				{
 					var directoryNode = (TreeNodeDirectory)treeFiles.SelectedNode;
+					string sourcePath = directoryNode.Directory.FullPath;
 
-                    if (GorgonDialogs.ConfirmBox(this, string.Format(Resources.GOREDIT_FILE_DELETE_DIRECTORY_CONFIRM, directoryNode.Directory.FullPath)) == ConfirmationResult.No)
+                    if (GorgonDialogs.ConfirmBox(this, string.Format(Resources.GOREDIT_FILE_DELETE_DIRECTORY_CONFIRM, sourcePath)) == ConfirmationResult.No)
                     {
                         return;
                     }
@@ -1649,14 +1684,31 @@ namespace GorgonLibrary.Editor
 
                     ScratchArea.ScratchFiles.DeleteDirectory(directory);
 
+					var dependencies =
+						Program.EditorMetaData.Dependencies.Where(item =>
+																  item.Key.StartsWith(sourcePath, StringComparison.OrdinalIgnoreCase))
+							   .Select(item => item.Key).ToArray();
+
+					if (dependencies.Length > 0)
+					{
+						foreach (string dependency in dependencies)
+						{
+							Program.EditorMetaData.Dependencies.Remove(dependency);
+						}
+
+						Program.EditorMetaData.Save();
+					}
+
+
                     PruneTree(directoryNode);
 				}
 
                 if ((selectedNode.NodeType & NodeType.File) == NodeType.File)
 				{
 					var fileNode = (TreeNodeFile)treeFiles.SelectedNode;
+					string sourceFilePath = fileNode.File.FullPath;
 
-					if (GorgonDialogs.ConfirmBox(this, string.Format(Resources.GOREDIT_FILE_DELETE_FILE_CONFIRM, fileNode.File.FullPath)) == ConfirmationResult.No)
+					if (GorgonDialogs.ConfirmBox(this, string.Format(Resources.GOREDIT_FILE_DELETE_FILE_CONFIRM, sourceFilePath)) == ConfirmationResult.No)
 					{
 						return;
 					}
@@ -1670,6 +1722,13 @@ namespace GorgonLibrary.Editor
 					}
 
 					ScratchArea.ScratchFiles.DeleteFile(file);
+
+					// Remove the dependency link.
+					if (Program.EditorMetaData.Dependencies.ContainsKey(sourceFilePath))
+					{
+						Program.EditorMetaData.Dependencies.Remove(sourceFilePath);
+						Program.EditorMetaData.Save();
+					}
 
 					PruneTree(fileNode);
 				}
@@ -1996,15 +2055,22 @@ namespace GorgonLibrary.Editor
         /// <param name="newName">The new name for the directory.</param>
         private void RenameDirectoryNode(TreeNodeDirectory sourceDirNode, string newName)
         {
+	        string[] files = null;
+	        string sourcePath = sourceDirNode.Directory.FullPath;
             string openContentPath = string.Empty;
 
-            if ((CurrentOpenFile != null) && (CurrentOpenFile.FullPath.StartsWith(sourceDirNode.Directory.FullPath)))
+            if ((CurrentOpenFile != null) && (CurrentOpenFile.FullPath.StartsWith(sourcePath, StringComparison.OrdinalIgnoreCase)))
             {
-                openContentPath = (CurrentOpenFile.Directory.FullPath.Replace(sourceDirNode.Directory.FullPath,
+                openContentPath = (CurrentOpenFile.Directory.FullPath.Replace(sourcePath,
                                                                               sourceDirNode.Directory.Parent.FullPath +
                                                                               newName)).FormatDirectory('/')
                                   + CurrentOpenFile.Name;
             }
+
+	        if (Program.EditorMetaData.Dependencies.Any(item => item.Key.StartsWith(sourcePath, StringComparison.OrdinalIgnoreCase)))
+	        {
+		        files = ScratchArea.ScratchFiles.FindFiles(sourcePath, "*", true).Select(item => item.FullPath).ToArray();
+	        }
 
             GorgonFileSystemDirectory newDirectory = ScratchArea.Rename(sourceDirNode.Directory, newName);
 
@@ -2012,6 +2078,22 @@ namespace GorgonLibrary.Editor
             {
                 return;
             }
+
+			// Update any dependencies.
+			if ((files != null) && (files.Length > 0))
+			{
+				foreach (string file in files)
+				{
+					if (file.Length == sourcePath.Length)
+					{
+						continue;
+					}
+
+					string destPath = newDirectory.FullPath + file.Substring(sourcePath.Length);
+					UpdateDependencyList(file, destPath, false, false);
+				}
+				Program.EditorMetaData.Save();
+			}
 
             sourceDirNode.Text = newDirectory.Name;
             sourceDirNode.Name = newDirectory.FullPath;
@@ -2050,6 +2132,7 @@ namespace GorgonLibrary.Editor
         /// <param name="newName">The new name for the file.</param>
         private void RenameFileNode(TreeNodeFile sourceFileNode, string newName)
         {
+	        string sourcePath = sourceFileNode.File.FullPath;
 	        bool openContentRenamed = sourceFileNode.File == CurrentOpenFile;
 			
 			GorgonFileSystemFileEntry newFile = ScratchArea.Rename(sourceFileNode.File, newName);
@@ -2058,6 +2141,9 @@ namespace GorgonLibrary.Editor
 			{
 				return;
 			}
+
+			// If we have this file in the dependency list, then rename it there too.
+			UpdateDependencyList(sourcePath, newFile.FullPath, false, true);
 
 			sourceFileNode.Text = newFile.Name;
 			sourceFileNode.Name = newFile.FullPath;
@@ -2178,27 +2264,51 @@ namespace GorgonLibrary.Editor
             treeFiles.BeginUpdate();
             try
             {
+	            string[] files = null;
+	            string sourcePath = sourceNode.Directory.FullPath;
+
                 // If this or one of the ancestor directories contains the file that is currently open, then save it and reopen it after the move.
                 if ((!isCopy)
                     && (CurrentOpenFile != null)
-                    && (CurrentOpenFile.FullPath.StartsWith(sourceNode.Directory.FullPath)))
+					&& (CurrentOpenFile.FullPath.StartsWith(sourcePath, StringComparison.OrdinalIgnoreCase)))
                 {
-	                openContent = (CurrentOpenFile.Directory.FullPath.Replace(sourceNode.Directory.FullPath,
+	                openContent = (CurrentOpenFile.Directory.FullPath.Replace(sourcePath,
 	                                                                          destinationNode.Directory.FullPath +
 	                                                                          sourceNode.Directory.Name)).FormatDirectory('/') +
 	                              CurrentOpenFile.Name;
                 }
 
-                GorgonFileSystemDirectory newDirectory = isCopy
-                                                             ? ScratchArea.Copy(sourceNode.Directory,
-                                                                                destinationNode.Directory.FullPath)
-                                                             : ScratchArea.Move(sourceNode.Directory,
-                                                                                destinationNode.Directory.FullPath);
+	            if (Program.EditorMetaData.Dependencies.Any(item => item.Key.StartsWith(sourcePath, StringComparison.OrdinalIgnoreCase)))
+	            {
+		            files = ScratchArea.ScratchFiles.FindFiles(sourcePath, "*", true).Select(item => item.FullPath).ToArray();
+	            }
+
+	            GorgonFileSystemDirectory newDirectory = isCopy
+		                                                     ? ScratchArea.Copy(sourceNode.Directory,
+		                                                                        destinationNode.Directory.FullPath)
+		                                                     : ScratchArea.Move(sourceNode.Directory,
+		                                                                        destinationNode.Directory.FullPath);
 
                 if (newDirectory == null)
                 {
                     return null;
                 }
+
+				// Update any dependencies.
+	            if ((files != null) && (files.Length > 0))
+	            {
+		            foreach (string file in files)
+		            {
+			            if (file.Length == sourcePath.Length)
+			            {
+				            continue;
+			            }
+
+			            string destPath = newDirectory.FullPath + file.Substring(sourcePath.Length);
+						UpdateDependencyList(file, destPath, isCopy, false);
+		            }
+					Program.EditorMetaData.Save();
+	            }
 
                 result = destinationNode.Nodes.AddDirectory(newDirectory, sourceNode.IsExpanded);
 
@@ -2225,6 +2335,53 @@ namespace GorgonLibrary.Editor
             
             return result;
         }
+		
+		/// <summary>
+		/// Function to update the dependency list when a file is renamed or moved.
+		/// </summary>
+		/// <param name="sourceFile">Source file that contains the dependencies.</param>
+		/// <param name="destFile">Destination file to contain the dependencies.</param>
+		/// <param name="isCopy">TRUE if the update is from a copy operation, FALSE if it's from a cut operation.</param>
+		/// <param name="saveMetaData">TRUE to save the meta data file, FALSE to leave alone.</param>
+		private static void UpdateDependencyList(string sourceFile, string destFile, bool isCopy, bool saveMetaData)
+		{
+			if (!Program.EditorMetaData.Dependencies.ContainsKey(sourceFile))
+			{
+				return;
+			}
+
+			DependencyCollection dependencies = Program.EditorMetaData.Dependencies[sourceFile];
+
+			if (!isCopy)
+			{
+				Program.EditorMetaData.Dependencies.Remove(sourceFile);
+				Program.EditorMetaData.Dependencies[destFile] = dependencies;
+				Program.EditorMetaData.Save();
+				return;
+			}
+
+			Program.EditorMetaData.Dependencies[destFile] = new DependencyCollection();
+
+			// Copy the dependency list.
+			foreach (Dependency dependency in dependencies)
+			{
+				var newDependency = new Dependency(dependency.Path, dependency.Type);
+
+				foreach (DependencyProperty property in dependency.Properties)
+				{
+					newDependency.Properties[property.Name] = property;
+				}
+
+				Program.EditorMetaData.Dependencies[destFile][newDependency.Path, newDependency.Type] = newDependency;
+			}
+
+			if (!saveMetaData)
+			{
+				return;
+			}
+
+			Program.EditorMetaData.Save();
+		}
 
 		/// <summary>
 		/// Function to move or copy a file node.
@@ -2246,6 +2403,8 @@ namespace GorgonLibrary.Editor
             treeFiles.BeginUpdate();
 		    try
 		    {
+			    string sourcePath = sourceNode.File.FullPath;
+
 		        if ((sourceNode.File == CurrentOpenFile)
 		            && (!isCopy))
 		        {
@@ -2266,6 +2425,8 @@ namespace GorgonLibrary.Editor
 		        {
 		            return null;
 		        }
+
+				UpdateDependencyList(sourcePath, newFile.FullPath, isCopy, true);
 
 		        result = destinationNode.Nodes.AddFile(newFile);
 

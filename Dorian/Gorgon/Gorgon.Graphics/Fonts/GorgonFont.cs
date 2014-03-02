@@ -567,8 +567,24 @@ namespace GorgonLibrary.Graphics
 				if ((!textureName.StartsWith("GorgonFont.", StringComparison.OrdinalIgnoreCase))
 					|| (textureName.IndexOf(".InternalTexture_", StringComparison.OrdinalIgnoreCase) == -1))
 				{
+					var textureFormat = BufferFormat.R8G8B8A8_UIntNormal;
+					int mipCount = 1;
+					int arrayCount = 1;
+
+					if (userTexture)
+					{
+						textureFormat = chunk.Read<BufferFormat>();
+						arrayCount = chunk.ReadInt32();
+						mipCount = chunk.ReadInt32();
+					}
+
 					texture = (from internalTexture in Graphics.GetTrackedObjectsOfType<GorgonTexture2D>()
 							  where (string.Equals(internalTexture.Name, textureName, StringComparison.OrdinalIgnoreCase))
+								&& (internalTexture.Settings.Width == Settings.TextureSize.Width)
+								&& (internalTexture.Settings.Height == Settings.TextureSize.Height)
+								&& (internalTexture.Settings.Format == textureFormat)
+								&& (internalTexture.Settings.MipCount == mipCount)
+								&& (internalTexture.Settings.ArrayCount == arrayCount)
 							  select internalTexture).FirstOrDefault();
 				}
 
@@ -840,7 +856,12 @@ namespace GorgonLibrary.Graphics
 					// If we didn't create this texture, then record its name for deferred loading.
 					if (!_internalTextures.Contains(texture))
 					{
+						GorgonTexture2DSettings settings = texture.Settings;
+
 						chunk.WriteBoolean(true);
+						chunk.Write(settings.Format);
+						chunk.Write(settings.ArrayCount);
+						chunk.Write(settings.MipCount);
 						textureCounter++;
 						continue;
 					}

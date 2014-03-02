@@ -311,8 +311,6 @@ namespace GorgonLibrary.Editor.ImageEditorPlugIn
 		        throw new ArgumentNullException("fileName");
 	        }
 
-	        fileName = Path.GetFileName(fileName);
-
 	        if (string.IsNullOrWhiteSpace(fileName))
 	        {
 		        throw new ArgumentException(Resources.GORIMG_PARAMETER_MUST_NOT_BE_EMPTY);

@@ -1251,7 +1251,7 @@ namespace GorgonLibrary.Editor
 				        selectedNode = FindDirectoryNode(ScratchArea.ScratchFiles.GetDirectory(StartDirectory));
 				    }
 
-				    treeDirectories.SelectedNode = _selectedDirectory = selectedNode;
+					treeDirectories.SelectedNode = _selectedDirectory = selectedNode;
 					AddPath(selectedNode);
 				}
 

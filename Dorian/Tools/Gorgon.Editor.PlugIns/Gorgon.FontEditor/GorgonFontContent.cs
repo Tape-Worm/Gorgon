@@ -31,10 +31,8 @@ using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Design;
 using System.Drawing.Imaging;
-using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Windows.Forms.VisualStyles;
 using GorgonLibrary.Design;
 using GorgonLibrary.Editor.FontEditorPlugIn.Properties;
 using GorgonLibrary.Graphics;
@@ -76,6 +74,25 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
         PrevTexture = 5
 	}
 
+	/// <summary>
+	/// Transform state for importing glyph textures.
+	/// </summary>
+	enum GlyphTextureTransform
+	{
+		/// <summary>
+		/// No transform required.
+		/// </summary>
+		None = 0,
+		/// <summary>
+		/// Texture is scaled.
+		/// </summary>
+		Scaled = 1,
+		/// <summary>
+		/// Texture is clipped.
+		/// </summary>
+		Clipped = 2
+	}
+
     /// <summary>
     /// The main content interface.
     /// </summary>
@@ -83,6 +100,14 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
         : ContentObject
 	{
 		#region Constants.
+		/// <summary>
+		/// The type of transformation to apply to a glyph texture.
+		/// </summary>
+	    public const string GlyphTextureTransformProp = "TransformType";
+		/// <summary>
+		/// The size of the transformed texture.
+		/// </summary>
+		public const string GlyphTextureSizeProp = "TransformSize";
 		/// <summary>
 		/// The type of dependency for a texture brush texture.
 		/// </summary>
@@ -782,9 +807,6 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		/// <param name="stream">Stream containing the dependency file.</param>
 	    protected override void OnLoadDependencyFile(Dependency dependency, Stream stream)
 	    {
-			// If this is not a texture brush path, then skip out.
-			string fileName = Path.GetFileName(dependency.Path);
-
 			Debug.Assert(!string.IsNullOrWhiteSpace("fileName"), "Could not retrieve the filename from the dependency path!");
 
 			if (ImageEditor == null)
@@ -802,25 +824,38 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 
 			try
 			{
+				var newSize = Size.Empty;
+				var transform = GlyphTextureTransform.Clipped;
+
 				// We need to load the image as transformed (either clipped or stretched).
-				if ((string.Equals(dependency.Type, GlyphTextureType, StringComparison.OrdinalIgnoreCase))
-				    && (dependency.Properties.Contains("TransformType")))
+				if (string.Equals(dependency.Type, GlyphTextureType, StringComparison.OrdinalIgnoreCase))
 				{
-					int transformWidth = Convert.ToInt32(dependency.Properties["TransformWidth"].Value, CultureInfo.InvariantCulture);
-					int transformHeight = Convert.ToInt32(dependency.Properties["TransformHeight"].Value, CultureInfo.InvariantCulture);
-					imageContent = ImageEditor.ImportContent(fileName,
-					                                         stream,
-					                                         transformWidth,
-					                                         transformHeight,
-					                                         string.Equals(dependency.Properties["TransformType"].Value,
-					                                                       "Clip",
-					                                                       StringComparison.OrdinalIgnoreCase),
-					                                         BufferFormat.R8G8B8A8_UIntNormal);
+					if (!Enum.TryParse(dependency.Properties[GlyphTextureTransformProp].Value, out transform))
+					{
+						throw new GorgonException(GorgonResult.CannotRead,
+						                          string.Format(Resources.GORFNT_DEPENDENCY_GLYPH_TEXTURE_BAD_TRANSFORM,
+						                                        dependency.Properties[GlyphTextureTransformProp].Value));
+					}
+
+					if (transform != GlyphTextureTransform.None)
+					{
+						var converter = new SizeConverter();
+						var sizeObject = converter.ConvertFromInvariantString(dependency.Properties[GlyphTextureSizeProp].Value);
+
+						if (sizeObject != null)
+						{
+							newSize = (Size)sizeObject;
+						}
+					}
+					
 				}
-				else
-				{
-					imageContent = ImageEditor.ImportContent(fileName, stream);
-				}
+
+				imageContent = ImageEditor.ImportContent(dependency.Path,
+				                                         stream,
+				                                         newSize.Width,
+				                                         newSize.Height,
+				                                         transform == GlyphTextureTransform.Clipped,
+				                                         BufferFormat.R8G8B8A8_UIntNormal);
 
 				if (imageContent.Image == null)
 				{
@@ -829,10 +864,10 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 
 				if (imageContent.Image.Settings.ImageType != ImageType.Image2D)
 				{
-					throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GORFNT_IMAGE_NOT_2D, fileName));
+					throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GORFNT_IMAGE_NOT_2D, dependency.Path));
 				}
 
-				dependency.DependencyObject = Graphics.Textures.CreateTexture<GorgonTexture2D>(fileName, imageContent.Image);
+				dependency.DependencyObject = Graphics.Textures.CreateTexture<GorgonTexture2D>(dependency.Path, imageContent.Image);
 			}
 			finally
 			{

@@ -380,6 +380,15 @@ namespace GorgonLibrary.Editor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The {0} dependency &apos;{1}&apos; already exists in this collection..
+        /// </summary>
+        internal static string GOREDIT_DEPENDENCY_EXISTS {
+            get {
+                return ResourceManager.GetString("GOREDIT_DEPENDENCY_EXISTS", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to No dependency named &apos;{0}&apos; exists in this collection..
         /// </summary>
         internal static string GOREDIT_DEPENDENCY_NOT_FOUND {
@@ -621,6 +630,15 @@ namespace GorgonLibrary.Editor.Properties {
         internal static string GOREDIT_EXPORT_DLG_TITLE {
             get {
                 return ResourceManager.GetString("GOREDIT_EXPORT_DLG_TITLE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The file &apos;{0}&apos; is dependent upon other files in the file system.  Would you like to export these dependencies with the file?.
+        /// </summary>
+        internal static string GOREDIT_EXPORT_EXPORT_DEPENDENCIES {
+            get {
+                return ResourceManager.GetString("GOREDIT_EXPORT_EXPORT_DEPENDENCIES", resourceCulture);
             }
         }
         

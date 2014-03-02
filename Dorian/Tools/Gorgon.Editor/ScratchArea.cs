@@ -1393,8 +1393,9 @@ namespace GorgonLibrary.Editor
         /// <param name="file">File to export.</param>
         /// <param name="destinationPath">Path to export the file into.</param>
         /// <param name="overwriteIfExists">TRUE to overwrite the file if it already exists, FALSE to prompt.</param>
+        /// <param name="dependencyCount">Count of dependency files being exported with the file.</param>
         /// <returns>TRUE if the export was successul, FALSE if not.</returns>
-        public static bool Export(GorgonFileSystemFileEntry file, string destinationPath, bool overwriteIfExists)
+        public static bool Export(GorgonFileSystemFileEntry file, string destinationPath, bool overwriteIfExists, int dependencyCount = 0)
         {
             Debug.Assert(ImportExportFileConflictFunction != null, "No file conflict action assigned in single file Export");
 			Debug.Assert(ExceptionAction != null, "No file exception action assigned in single file Export");
@@ -1430,7 +1431,7 @@ namespace GorgonLibrary.Editor
 
             if ((!overwriteIfExists) && (File.Exists(newPath)))
             {
-                ImportExportFileConflictFunction(newPath, 1);
+                ImportExportFileConflictFunction(newPath, 1 + dependencyCount);
             }
 
 	        try

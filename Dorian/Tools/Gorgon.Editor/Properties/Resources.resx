@@ -652,4 +652,10 @@ The following characters are not allowed:
   <data name="GOREDIT_DEPENDENCY_PROP_TOSTRING" xml:space="preserve">
     <value>Dependency property '{0}': '{1}'</value>
   </data>
+  <data name="GOREDIT_DEPENDENCY_EXISTS" xml:space="preserve">
+    <value>The {0} dependency '{1}' already exists in this collection.</value>
+  </data>
+  <data name="GOREDIT_EXPORT_EXPORT_DEPENDENCIES" xml:space="preserve">
+    <value>The file '{0}' is dependent upon other files in the file system.  Would you like to export these dependencies with the file?</value>
+  </data>
 </root>

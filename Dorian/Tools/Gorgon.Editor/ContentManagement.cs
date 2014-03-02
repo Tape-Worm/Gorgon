@@ -421,7 +421,7 @@ namespace GorgonLibrary.Editor
 						using (Stream dependencyStream = externalFile.OpenStream(false))
 						{
 							content.LoadDependencyFile(dependencyFile, dependencyStream);
-							content.Dependencies[dependencyFile.Path] = dependencyFile;
+							content.Dependencies[dependencyFile.Path, dependencyFile.Type] = dependencyFile;
 						}
 					}
 					catch (Exception ex)
