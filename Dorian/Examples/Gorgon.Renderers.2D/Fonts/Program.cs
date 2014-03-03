@@ -33,6 +33,7 @@ using System.Windows.Forms;
 using Fonts.Properties;
 using GorgonLibrary;
 using GorgonLibrary.Graphics;
+using GorgonLibrary.Graphics.Fonts;
 using GorgonLibrary.IO;
 using GorgonLibrary.Renderers;
 using GorgonLibrary.UI;
@@ -127,17 +128,11 @@ namespace Fonts
 									new Vector2(8, 16),
 								},
 								CenterPoint = new Vector2(8, 8),
-								InterpolationColors =
+								Interpolation = 
 								{
-									Color.Purple,
-									Color.Cyan,
-									Color.Firebrick
-								},
-								InterpolationWeights =
-								{
-									0,
-									0.5f,
-									1.0f
+									new GorgonGlyphBrushInterpolator(0, Color.Purple),
+									new GorgonGlyphBrushInterpolator(0.5f, Color.Cyan),
+									new GorgonGlyphBrushInterpolator(1.0f, Color.Firebrick)
 								},
 				                WrapMode = WrapMode.TileFlipXY
 			                };

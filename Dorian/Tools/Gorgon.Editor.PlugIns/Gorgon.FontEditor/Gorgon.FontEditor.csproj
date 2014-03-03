@@ -68,6 +68,12 @@
     <Compile Include="Controls\listBoxFontStyle.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Controls\panelGradient.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\panelGradient.Designer.cs">
+      <DependentUpon>panelGradient.cs</DependentUpon>
+    </Compile>
     <Compile Include="Design\CharacterSetEditor.cs" />
     <Compile Include="Design\CharacterSetTypeConverter.cs" />
     <Compile Include="Design\FontBrushTypeConverter.cs" />
@@ -163,6 +169,9 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Controls\panelGradient.resx">
+      <DependentUpon>panelGradient.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="formBrushEditor.resx">
       <DependentUpon>formBrushEditor.cs</DependentUpon>
     </EmbeddedResource>

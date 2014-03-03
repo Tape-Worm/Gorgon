@@ -703,4 +703,7 @@ Log file location: "{0}"</value>
   <data name="GORGFX_TEXTURE_SRC_NOT_MULTISAMPLED" xml:space="preserve">
     <value>The source texture '{0}' is not multisampled.</value>
   </data>
+  <data name="GORGFX_FONT_BRUSH_INTERPOL_TOSTRING" xml:space="preserve">
+    <value>Weighted interpolation at {0}.  Color: R={1}, G={2}, B={3}, A={4}.</value>
+  </data>
 </root>

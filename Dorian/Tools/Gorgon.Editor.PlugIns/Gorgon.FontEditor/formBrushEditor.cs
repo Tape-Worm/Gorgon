@@ -1159,6 +1159,9 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 				case GlyphBrushType.Texture:
 					tabBrushEditor.SelectedTab = pageTexture;
 					break;
+				case GlyphBrushType.LinearGradient:
+					tabBrushEditor.SelectedTab = pageGradient;
+					break;
 			}
 
 			ValidateCommands();
@@ -1334,12 +1337,15 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 			    colorSolidBrush.OldColor = SolidBrush.Color;
 			    colorSolidBrush.SelectedColor = SolidBrush.Color;
 
+				gradEditor.Brush = GradientBrush;
+
 			    _originalBrushType = BrushType;
 
 			    switch (BrushType)
 			    {
 				    case GlyphBrushType.LinearGradient:
 					    comboBrushType.Text = Resources.GORFNT_PROP_VALUE_GRADIENT_BRUSH;
+					    tabBrushEditor.SelectedTab = pageGradient;
 					    break;
 				    case GlyphBrushType.Hatched:
 					    comboBrushType.Text = Resources.GORFNT_PROP_VALUE_PATTERN_BRUSH;
@@ -1417,11 +1423,8 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 			SolidBrush = new GorgonGlyphSolidBrush();
 	        GradientBrush = new GorgonGlyphLinearGradientBrush
 	                        {
-		                        Angle = 0.0f,
 		                        StartColor = GorgonColor.Black,
-		                        EndColor = GorgonColor.White,
-		                        GammaCorrection = false,
-		                        GradientRegion = new RectangleF(0, 0, 64, 64)
+		                        EndColor = GorgonColor.White
 	                        };
 	        PatternBrush = new GorgonGlyphHatchBrush
 	                       {

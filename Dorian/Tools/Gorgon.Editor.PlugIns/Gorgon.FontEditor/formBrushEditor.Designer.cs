@@ -34,6 +34,8 @@
 			this.tabBrushEditor = new KRBTabControl.KRBTabControl();
 			this.pageSolid = new KRBTabControl.TabPageEx();
 			this.colorSolidBrush = new Fetze.WinFormsColor.ColorPickerPanel();
+			this.pageGradient = new KRBTabControl.TabPageEx();
+			this.gradEditor = new GorgonLibrary.Editor.FontEditorPlugIn.Controls.panelGradient();
 			this.pageTexture = new KRBTabControl.TabPageEx();
 			this.labelInfo = new System.Windows.Forms.Label();
 			this.buttonOpen = new System.Windows.Forms.Button();
@@ -55,6 +57,7 @@
 			this.imageFileBrowser = new GorgonLibrary.Editor.EditorFileBrowser();
 			this.tabBrushEditor.SuspendLayout();
 			this.pageSolid.SuspendLayout();
+			this.pageGradient.SuspendLayout();
 			this.pageTexture.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.numericHeight)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.numericWidth)).BeginInit();
@@ -116,6 +119,7 @@
 			this.tabBrushEditor.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(51)))), ((int)(((byte)(51)))), ((int)(((byte)(51)))));
 			this.tabBrushEditor.Controls.Add(this.pageSolid);
 			this.tabBrushEditor.Controls.Add(this.pageTexture);
+			this.tabBrushEditor.Controls.Add(this.pageGradient);
 			this.tabBrushEditor.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.tabBrushEditor.IsCaptionVisible = false;
 			this.tabBrushEditor.IsDocumentTabStyle = true;
@@ -161,6 +165,26 @@
 			this.colorSolidBrush.Size = new System.Drawing.Size(608, 303);
 			this.colorSolidBrush.TabIndex = 0;
 			this.colorSolidBrush.ColorChanged += new System.EventHandler(this.colorSolidBrush_ColorChanged);
+			// 
+			// pageGradient
+			// 
+			this.pageGradient.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(51)))), ((int)(((byte)(51)))), ((int)(((byte)(51)))));
+			this.pageGradient.Controls.Add(this.gradEditor);
+			this.pageGradient.Font = new System.Drawing.Font("Segoe UI", 9F);
+			this.pageGradient.IsClosable = false;
+			this.pageGradient.Location = new System.Drawing.Point(1, 1);
+			this.pageGradient.Name = "pageGradient";
+			this.pageGradient.Size = new System.Drawing.Size(608, 303);
+			this.pageGradient.TabIndex = 2;
+			this.pageGradient.Text = "Gradient";
+			// 
+			// gradEditor
+			// 
+			this.gradEditor.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.gradEditor.Location = new System.Drawing.Point(0, 0);
+			this.gradEditor.Name = "gradEditor";
+			this.gradEditor.Size = new System.Drawing.Size(608, 303);
+			this.gradEditor.TabIndex = 0;
 			// 
 			// pageTexture
 			// 
@@ -238,6 +262,7 @@
 			// 
 			// numericHeight
 			// 
+			this.numericHeight.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
 			this.numericHeight.Location = new System.Drawing.Point(521, 32);
 			this.numericHeight.Maximum = new decimal(new int[] {
             16384,
@@ -262,6 +287,7 @@
 			// 
 			// numericWidth
 			// 
+			this.numericWidth.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
 			this.numericWidth.Location = new System.Drawing.Point(521, 3);
 			this.numericWidth.Maximum = new decimal(new int[] {
             16384,
@@ -286,6 +312,7 @@
 			// 
 			// numericY
 			// 
+			this.numericY.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
 			this.numericY.Location = new System.Drawing.Point(365, 32);
 			this.numericY.Maximum = new decimal(new int[] {
             16384,
@@ -300,6 +327,7 @@
 			// 
 			// numericX
 			// 
+			this.numericX.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
 			this.numericX.Location = new System.Drawing.Point(365, 3);
 			this.numericX.Maximum = new decimal(new int[] {
             16384,
@@ -436,6 +464,7 @@
 			this.Controls.SetChildIndex(this.tabBrushEditor, 0);
 			this.tabBrushEditor.ResumeLayout(false);
 			this.pageSolid.ResumeLayout(false);
+			this.pageGradient.ResumeLayout(false);
 			this.pageTexture.ResumeLayout(false);
 			this.pageTexture.PerformLayout();
 			((System.ComponentModel.ISupportInitialize)(this.numericHeight)).EndInit();
@@ -476,5 +505,7 @@
 		private System.Windows.Forms.Button buttonOpen;
 		private EditorFileBrowser imageFileBrowser;
 		private System.Windows.Forms.Label labelInfo;
+		private KRBTabControl.TabPageEx pageGradient;
+		private Controls.panelGradient gradEditor;
     }
 }

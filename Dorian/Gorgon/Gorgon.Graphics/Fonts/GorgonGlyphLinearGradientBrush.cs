@@ -28,6 +28,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Drawing;
 using System.Drawing.Drawing2D;
+using GorgonLibrary.Graphics.Fonts;
 using GorgonLibrary.Math;
 
 namespace GorgonLibrary.Graphics
@@ -123,18 +124,9 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
-		/// Property to set or return the interpolation colors for the gradient.
+		/// Property to return the interpolation colors for the gradient.
 		/// </summary>
-		public IList<GorgonColor> InterpolationColors
-		{
-			get;
-			private set;
-		}
-
-		/// <summary>
-		/// Property to set or return the interpolation weights for the gradient.
-		/// </summary>
-		public IList<float> InterpolationWeights
+		public IList<GorgonGlyphBrushInterpolator> Interpolation
 		{
 			get;
 			private set;
@@ -150,21 +142,6 @@ namespace GorgonLibrary.Graphics
 		/// </returns>
 		internal override Brush ToGDIBrush()
 		{
-			var interpColors = new ColorBlend(InterpolationColors.Count.Max(InterpolationWeights.Count).Max(1));
-
-			for (int i = 0; i < interpColors.Colors.Length; i++)
-			{
-				if (i < InterpolationColors.Count)
-				{
-					interpColors.Colors[i] = InterpolationColors[i];
-				}
-
-				if (i < InterpolationWeights.Count)
-				{
-					interpColors.Positions[i] = InterpolationWeights[i];
-				}
-			}
-
 			var result = new LinearGradientBrush(GradientRegion, StartColor, EndColor, Angle, ScaleAngle)
 			             {
 				             GammaCorrection = GammaCorrection,
@@ -176,10 +153,20 @@ namespace GorgonLibrary.Graphics
 				result.LinearColors = LinearColors.Select(item => item.ToColor()).ToArray();
 			}
 
-			if (interpColors.Colors.Length > 1)
+			if (Interpolation.Count < 2)
 			{
-				result.InterpolationColors = interpColors;
+				return result;
 			}
+
+			var interpColors = new ColorBlend(Interpolation.Count);
+
+			for (int i = 0; i < Interpolation.Count; i++)
+			{
+				interpColors.Colors[i] = Interpolation[i].Color;
+				interpColors.Positions[i] = Interpolation[i].Weight;
+			}
+
+			result.InterpolationColors = interpColors;
 
 			return result;
 		}
@@ -206,18 +193,11 @@ namespace GorgonLibrary.Graphics
 				chunk.Write(color);
 			}
 
-			chunk.Write(InterpolationColors.Count);
+			chunk.Write(Interpolation.Count);
 
-			foreach (GorgonColor color in InterpolationColors)
+			foreach (GorgonGlyphBrushInterpolator interpolation in Interpolation)
 			{
-				chunk.Write(color);
-			}
-
-			chunk.Write(InterpolationWeights.Count);
-
-			foreach (float weight in InterpolationWeights)
-			{
-				chunk.Write(weight);
+				interpolation.WriteChunk(chunk);
 			}
 
 			chunk.End();
@@ -229,8 +209,7 @@ namespace GorgonLibrary.Graphics
 		/// <param name="chunk">Chunk reader used to read the data.</param>
 		internal override void Read(IO.GorgonChunkReader chunk)
 		{
-			InterpolationWeights.Clear();
-			InterpolationColors.Clear();
+			Interpolation.Clear();
 			LinearColors.Clear();
 
 			WrapMode = chunk.Read<WrapMode>();
@@ -251,14 +230,7 @@ namespace GorgonLibrary.Graphics
 
 			for (int i = 0; i < counter; i++)
 			{
-				InterpolationColors.Add(chunk.Read<GorgonColor>());
-			}
-
-			counter = chunk.ReadInt32();
-
-			for (int i = 0; i < counter; i++)
-			{
-				InterpolationWeights.Add(chunk.ReadFloat());
+				Interpolation.Add(new GorgonGlyphBrushInterpolator(chunk));
 			}
 		}
 		#endregion
@@ -269,8 +241,7 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		public GorgonGlyphLinearGradientBrush()
 		{
-			InterpolationColors = new List<GorgonColor>();
-			InterpolationWeights = new List<float>();
+			Interpolation = new List<GorgonGlyphBrushInterpolator>();
 			LinearColors = new List<GorgonColor>();
 		}
 		#endregion
