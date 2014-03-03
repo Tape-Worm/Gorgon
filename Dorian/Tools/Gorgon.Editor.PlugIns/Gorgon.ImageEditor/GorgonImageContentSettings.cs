@@ -24,13 +24,8 @@
 // 
 #endregion
 
-using System;
-using System.Drawing;
 using System.IO;
-using System.Windows.Forms;
-using GorgonLibrary.Graphics;
 using GorgonLibrary.IO;
-using GorgonLibrary.UI;
 
 namespace GorgonLibrary.Editor.ImageEditorPlugIn
 {

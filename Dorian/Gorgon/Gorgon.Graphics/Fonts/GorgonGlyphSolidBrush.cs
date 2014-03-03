@@ -25,7 +25,6 @@
 #endregion
 
 using System.Drawing;
-using System.Drawing.Drawing2D;
 using GorgonLibrary.IO;
 
 namespace GorgonLibrary.Graphics

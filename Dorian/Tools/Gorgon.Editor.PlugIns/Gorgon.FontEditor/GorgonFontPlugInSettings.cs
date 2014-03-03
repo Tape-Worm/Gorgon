@@ -25,7 +25,6 @@
 #endregion
 
 using System;
-using System.Configuration;
 using System.Drawing;
 using GorgonLibrary.Configuration;
 using GorgonLibrary.Editor.FontEditorPlugIn.Properties;
@@ -35,7 +34,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 	/// <summary>
 	/// Plug-in specific settings.
 	/// </summary>
-	class GorgonFontProperties
+	class GorgonFontPlugInSettings
 		: EditorPlugInSettings
 	{
 		#region Properties.
@@ -162,9 +161,9 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 
 		#region Constructor/Destructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="GorgonFontProperties"/> class.
+		/// Initializes a new instance of the <see cref="GorgonFontPlugInSettings"/> class.
 		/// </summary>
-		public GorgonFontProperties()
+		public GorgonFontPlugInSettings()
 			: base("FontEditor.PlugIn", new Version(1, 0, 0, 0))
 		{
 			FontTextureSize = new Size(256, 256);

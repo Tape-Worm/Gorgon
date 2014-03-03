@@ -1,10 +1,7 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using System.Runtime.InteropServices;
-using System.Text;
 using System.Drawing;
 using System.Windows.Forms;
-using GorgonLibrary.Graphics.Test.Properties;
 using GorgonLibrary.IO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using GorgonLibrary.Math;

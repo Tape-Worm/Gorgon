@@ -24,17 +24,11 @@
 // 
 #endregion
 
-using System;
-using System.Runtime.InteropServices;
 using System.Text;
-using System.Collections.Generic;
-using System.Windows.Forms;
 using GorgonLibrary.Diagnostics;
 using GorgonLibrary.IO;
 using SlimMath;
-using GorgonLibrary;
 using GorgonLibrary.Math;
-using GorgonLibrary.Graphics;
 using GorgonLibrary.Graphics.Test.Properties;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
