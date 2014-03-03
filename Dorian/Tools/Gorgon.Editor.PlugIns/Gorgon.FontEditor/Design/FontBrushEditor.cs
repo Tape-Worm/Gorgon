@@ -47,42 +47,37 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
         /// <summary>
         /// Function to create a GDI+ linear gradient brush from a gorgon linear gradient font brush.
         /// </summary>
+        /// <param name="region">The region to paint.</param>
         /// <param name="brush">Brush to convert.</param>
         /// <returns>The GDI+ brush.</returns>
-        internal static Brush CreateLinearGradBrush(GorgonGlyphBrush brush)
+        internal static Brush CreateLinearGradBrush(Rectangle region, GorgonGlyphBrush brush)
         {
             var linearBrush = (GorgonGlyphLinearGradientBrush)brush;
-            var interpColors =
-                new ColorBlend(linearBrush.InterpolationColors.Count.Max(linearBrush.InterpolationWeights.Count).Max(1));
+			var result = new LinearGradientBrush(region, linearBrush.StartColor, linearBrush.EndColor, linearBrush.Angle, linearBrush.ScaleAngle)
+			{
+				GammaCorrection = linearBrush.GammaCorrection,
+				WrapMode = linearBrush.WrapMode
+			};
 
-            for (int i = 0; i < interpColors.Colors.Length; i++)
-            {
-                if (i < linearBrush.InterpolationColors.Count)
-                {
-                    interpColors.Colors[i] = linearBrush.InterpolationColors[i];
-                }
+			if (linearBrush.LinearColors.Count > 0)
+			{
+				result.LinearColors = linearBrush.LinearColors.Select(item => item.ToColor()).ToArray();
+			}
 
-                if (i < linearBrush.InterpolationWeights.Count)
-                {
-                    interpColors.Positions[i] = linearBrush.InterpolationWeights[i];
-                }
-            }
+			if (linearBrush.Interpolation.Count == 0)
+			{
+				return result;
+			}
 
-            var result = new LinearGradientBrush(linearBrush.GradientRegion, linearBrush.StartColor, linearBrush.EndColor, linearBrush.Angle, linearBrush.ScaleAngle)
-            {
-                GammaCorrection = linearBrush.GammaCorrection,
-                WrapMode = linearBrush.WrapMode
-            };
+			var interpColors = new ColorBlend(linearBrush.Interpolation.Count.Max(1));
 
-            if (linearBrush.LinearColors.Count > 0)
-            {
-                result.LinearColors = linearBrush.LinearColors.Select(item => item.ToColor()).ToArray();
-            }
+			for (int i = 0; i < linearBrush.Interpolation.Count; i++)
+			{
+				interpColors.Colors[i] = linearBrush.Interpolation[i].Color;
+				interpColors.Positions[i] = linearBrush.Interpolation[i].Weight;
+			}
 
-            if (interpColors.Colors.Length > 1)
-            {
-                result.InterpolationColors = interpColors;
-            }
+			result.InterpolationColors = interpColors;
 
             return result;
         }
@@ -225,7 +220,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
                         e.Graphics.FillRectangle(brush, e.Bounds);
                         break;
                     case GlyphBrushType.LinearGradient:
-                        brush = CreateLinearGradBrush(sourceBrush);
+                        brush = CreateLinearGradBrush(e.Bounds, sourceBrush);
                         e.Graphics.FillRectangle(brush, e.Bounds);
                         break;
                     case GlyphBrushType.Texture:
