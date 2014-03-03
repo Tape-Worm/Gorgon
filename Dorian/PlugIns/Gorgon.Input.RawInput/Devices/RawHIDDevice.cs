@@ -25,7 +25,6 @@
 #endregion
 
 using System;
-using System.Windows.Forms;
 using GorgonLibrary.Diagnostics;
 using GorgonLibrary.Input.Raw.Properties;
 using GorgonLibrary.Native;

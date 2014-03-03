@@ -1,7 +1,5 @@
-﻿using System;
-using System.Windows.Forms;
+﻿using System.Windows.Forms;
 using System.Drawing;
-using System.Windows.Forms.VisualStyles;
 using GorgonLibrary.Graphics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 

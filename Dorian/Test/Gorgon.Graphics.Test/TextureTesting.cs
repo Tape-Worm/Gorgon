@@ -7,7 +7,6 @@ using GorgonLibrary.IO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using GorgonLibrary.Math;
 using GorgonLibrary.Diagnostics;
-using SlimMath;
 
 namespace GorgonLibrary.Graphics.Test
 {

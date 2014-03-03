@@ -26,7 +26,6 @@
 
 using System.Collections.Generic;
 using System.Drawing;
-using System.IO;
 using System.Text;
 using System.Windows.Forms;
 using GorgonLibrary.Editor.FontEditorPlugIn.Properties;
@@ -58,7 +57,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		/// <summary>
 		/// Property to return the settings for the plug-in.
 		/// </summary>
-		internal static GorgonFontProperties Settings
+		internal static GorgonFontPlugInSettings Settings
 		{
 			get;
 			private set;
@@ -223,7 +222,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
                                                                      Resources.GORFNT_CONTENT_EXTENSION_DESC)));
 			UpdateCachedFonts();
 			
-			Settings = new GorgonFontProperties();
+			Settings = new GorgonFontPlugInSettings();
 			Settings.Load();
         }
         #endregion
