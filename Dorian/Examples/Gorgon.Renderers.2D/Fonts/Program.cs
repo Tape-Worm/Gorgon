@@ -140,7 +140,6 @@ namespace Fonts
 			var linBrush = new GorgonGlyphLinearGradientBrush
 			               {
 							   Angle = 45.0f,
-							   GradientRegion = new RectangleF(0, 0, 16, 16),
 							   StartColor = Color.Purple,
 							   EndColor = Color.Yellow
 			               };

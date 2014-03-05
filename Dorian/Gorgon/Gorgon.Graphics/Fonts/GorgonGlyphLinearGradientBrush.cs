@@ -29,7 +29,6 @@ using System.Linq;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using GorgonLibrary.Graphics.Fonts;
-using GorgonLibrary.Math;
 
 namespace GorgonLibrary.Graphics
 {
@@ -40,6 +39,15 @@ namespace GorgonLibrary.Graphics
 		: GorgonGlyphBrush
 	{
 		#region Properties.
+		/// <summary>
+		/// Property to set or return the region for the gradient.
+		/// </summary>
+		internal Rectangle GradientRegion
+		{
+			get;
+			set;
+		}
+
 		/// <summary>
 		/// Property to return the type of brush.
 		/// </summary>
@@ -55,15 +63,6 @@ namespace GorgonLibrary.Graphics
 		/// Property to set or return the wrapping mode for the gradient fill.
 		/// </summary>
 		public WrapMode WrapMode
-		{
-			get;
-			set;
-		}
-
-		/// <summary>
-		/// Property to set or return the region for a single gradient run.
-		/// </summary>
-		public RectangleF GradientRegion
 		{
 			get;
 			set;

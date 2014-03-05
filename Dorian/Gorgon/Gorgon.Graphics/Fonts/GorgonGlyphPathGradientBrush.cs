@@ -147,9 +147,9 @@ namespace GorgonLibrary.Graphics
 
 			var blend = new Blend(BlendFactors.Count.Max(BlendPositions.Count).Max(1));
 			
-			if (Interpolation.Count > 0)
+			if (Interpolation.Count > 2)
 			{
-				var interpColors = new ColorBlend(Interpolation.Count.Max(1));
+				var interpColors = new ColorBlend(Interpolation.Count);
 
 				for (int i = 0; i < Interpolation.Count; i++)
 				{

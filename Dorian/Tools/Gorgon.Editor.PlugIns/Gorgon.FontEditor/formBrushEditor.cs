@@ -773,6 +773,16 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 
         #region Methods.
 		/// <summary>
+		/// Handles the BrushChanged event of the gradEditor control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+		private void gradEditor_BrushChanged(object sender, EventArgs e)
+		{
+			ValidateCommands();
+		}
+
+		/// <summary>
 		/// Function to disable the limits on the numeric fields.
 		/// </summary>
 	    private void DisableNumericLimits()
@@ -975,6 +985,9 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 						numericWidth.Enabled = numericX.Enabled = numericY.Enabled = comboWrapMode.Enabled = _texture != null;
 
 					break;
+				case GlyphBrushType.LinearGradient:
+					buttonOK.Enabled = gradEditor.HasChanged;
+					break;
 			}
 	    }
 
@@ -1116,6 +1129,9 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 							               WrapMode = item.WrapMode,
 							               TextureRegion = _texture.ToTexel(region)
 						               };
+						break;
+					case GlyphBrushType.LinearGradient:
+						GradientBrush = gradEditor.GetUpdatedBrush();
 						break;
 				}
 			}
@@ -1337,6 +1353,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 			    colorSolidBrush.OldColor = SolidBrush.Color;
 			    colorSolidBrush.SelectedColor = SolidBrush.Color;
 
+				gradEditor.SetFont(_currentContent);
 				gradEditor.Brush = GradientBrush;
 
 			    _originalBrushType = BrushType;
