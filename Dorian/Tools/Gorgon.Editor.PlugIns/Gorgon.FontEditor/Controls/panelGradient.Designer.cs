@@ -20,6 +20,45 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Controls
 				components.Dispose();
 			}
 
+			if (disposing)
+			{
+				if (_controlPanelImage != null)
+				{
+					_controlPanelImage.Dispose();
+					_controlPanelImage = null;
+				}
+
+				if (_gradDisplayImage != null)
+				{
+					_gradDisplayImage.Dispose();
+					_gradDisplayImage = null;
+				}
+
+				if (_gradientImage != null)
+				{
+					_gradientImage.Dispose();
+					_gradientImage = null;
+				}
+
+				if (_gradPreviewImage != null)
+				{
+					_gradPreviewImage.Dispose();
+					_gradPreviewImage = null;
+				}
+
+				if (_selectedColorImage != null)
+				{
+					_selectedColorImage.Dispose();
+					_selectedColorImage = null;
+				}
+
+				if (_previewFont != null)
+				{
+					_previewFont.Dispose();
+					_previewFont = null;
+				}
+			}
+
 			base.Dispose(disposing);
 		}
 
@@ -31,6 +70,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Controls
 		/// </summary>
 		private void InitializeComponent()
 		{
+			this.components = new System.ComponentModel.Container();
 			this.panelBrushGradient = new System.Windows.Forms.Panel();
 			this.panelGradientDisplay = new System.Windows.Forms.Panel();
 			this.panelGradControls = new System.Windows.Forms.Panel();
@@ -40,6 +80,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Controls
 			this.checkScaleAngle = new System.Windows.Forms.CheckBox();
 			this.checkUseGamma = new System.Windows.Forms.CheckBox();
 			this.panel1 = new System.Windows.Forms.Panel();
+			this.buttonClear = new System.Windows.Forms.Button();
 			this.label5 = new System.Windows.Forms.Label();
 			this.panelSelectedColor = new System.Windows.Forms.Panel();
 			this.label4 = new System.Windows.Forms.Label();
@@ -48,10 +89,15 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Controls
 			this.label2 = new System.Windows.Forms.Label();
 			this.comboWrapMode = new System.Windows.Forms.ComboBox();
 			this.panelPreview = new System.Windows.Forms.Panel();
+			this.popupNodeEdit = new System.Windows.Forms.ContextMenuStrip(this.components);
+			this.itemDuplicateNode = new System.Windows.Forms.ToolStripMenuItem();
+			this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
+			this.itemDeleteNode = new System.Windows.Forms.ToolStripMenuItem();
 			this.panelBrushGradient.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.numericAngle)).BeginInit();
 			this.panel1.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.numericSelectedWeight)).BeginInit();
+			this.popupNodeEdit.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// panelBrushGradient
@@ -85,10 +131,11 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Controls
 			this.panelGradControls.Name = "panelGradControls";
 			this.panelGradControls.Size = new System.Drawing.Size(530, 16);
 			this.panelGradControls.TabIndex = 1;
-			this.panelGradControls.Paint += new System.Windows.Forms.PaintEventHandler(this.panelBrushPreview_Paint);
-			this.panelGradControls.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.panelBrushPreview_MouseDoubleClick);
-			this.panelGradControls.MouseDown += new System.Windows.Forms.MouseEventHandler(this.panelBrushPreview_MouseDown);
-			this.panelGradControls.MouseMove += new System.Windows.Forms.MouseEventHandler(this.panelBrushPreview_MouseMove);
+			this.panelGradControls.Paint += new System.Windows.Forms.PaintEventHandler(this.panelGradControls_Paint);
+			this.panelGradControls.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.panelGradControls_MouseDoubleClick);
+			this.panelGradControls.MouseDown += new System.Windows.Forms.MouseEventHandler(this.panelGradControls_MouseDown);
+			this.panelGradControls.MouseMove += new System.Windows.Forms.MouseEventHandler(this.panelGradControls_MouseMove);
+			this.panelGradControls.MouseUp += new System.Windows.Forms.MouseEventHandler(this.panelGradControls_MouseUp);
 			// 
 			// labelAngle
 			// 
@@ -144,9 +191,11 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Controls
 			this.checkUseGamma.TabIndex = 2;
 			this.checkUseGamma.Text = "Use Gamma correction?";
 			this.checkUseGamma.UseVisualStyleBackColor = true;
+			this.checkUseGamma.CheckedChanged += new System.EventHandler(this.checkUseGamma_CheckedChanged);
 			// 
 			// panel1
 			// 
+			this.panel1.Controls.Add(this.buttonClear);
 			this.panel1.Controls.Add(this.label5);
 			this.panel1.Controls.Add(this.panelSelectedColor);
 			this.panel1.Controls.Add(this.label4);
@@ -166,6 +215,23 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Controls
 			this.panel1.Size = new System.Drawing.Size(530, 122);
 			this.panel1.TabIndex = 1;
 			// 
+			// buttonClear
+			// 
+			this.buttonClear.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+			this.buttonClear.Enabled = false;
+			this.buttonClear.FlatAppearance.CheckedBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(68)))), ((int)(((byte)(68)))), ((int)(((byte)(68)))));
+			this.buttonClear.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(68)))), ((int)(((byte)(68)))), ((int)(((byte)(68)))));
+			this.buttonClear.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(189)))), ((int)(((byte)(189)))), ((int)(((byte)(189)))));
+			this.buttonClear.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+			this.buttonClear.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			this.buttonClear.Location = new System.Drawing.Point(190, 91);
+			this.buttonClear.Name = "buttonClear";
+			this.buttonClear.Size = new System.Drawing.Size(149, 22);
+			this.buttonClear.TabIndex = 6;
+			this.buttonClear.Text = "&Clear nodes";
+			this.buttonClear.UseVisualStyleBackColor = false;
+			this.buttonClear.Click += new System.EventHandler(this.buttonClear_Click);
+			// 
 			// label5
 			// 
 			this.label5.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
@@ -182,8 +248,10 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Controls
 			this.panelSelectedColor.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
 			this.panelSelectedColor.Location = new System.Drawing.Point(282, 32);
 			this.panelSelectedColor.Name = "panelSelectedColor";
-			this.panelSelectedColor.Size = new System.Drawing.Size(46, 20);
+			this.panelSelectedColor.Size = new System.Drawing.Size(57, 20);
 			this.panelSelectedColor.TabIndex = 5;
+			this.panelSelectedColor.Paint += new System.Windows.Forms.PaintEventHandler(this.panelSelectedColor_Paint);
+			this.panelSelectedColor.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.panelSelectedColor_MouseDoubleClick);
 			// 
 			// label4
 			// 
@@ -196,7 +264,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Controls
 			// 
 			// numericSelectedWeight
 			// 
-			this.numericSelectedWeight.DecimalPlaces = 1;
+			this.numericSelectedWeight.DecimalPlaces = 3;
 			this.numericSelectedWeight.Enabled = false;
 			this.numericSelectedWeight.Increment = new decimal(new int[] {
             1,
@@ -210,9 +278,10 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Controls
             0,
             0});
 			this.numericSelectedWeight.Name = "numericSelectedWeight";
-			this.numericSelectedWeight.Size = new System.Drawing.Size(46, 20);
+			this.numericSelectedWeight.Size = new System.Drawing.Size(57, 20);
 			this.numericSelectedWeight.TabIndex = 4;
 			this.numericSelectedWeight.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+			this.numericSelectedWeight.ValueChanged += new System.EventHandler(this.numericSelectedWeight_ValueChanged);
 			// 
 			// label3
 			// 
@@ -252,6 +321,36 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Controls
 			this.panelPreview.TabIndex = 6;
 			this.panelPreview.Paint += new System.Windows.Forms.PaintEventHandler(this.panelPreview_Paint);
 			// 
+			// popupNodeEdit
+			// 
+			this.popupNodeEdit.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.itemDuplicateNode,
+            this.toolStripMenuItem1,
+            this.itemDeleteNode});
+			this.popupNodeEdit.Name = "contextMenuStrip1";
+			this.popupNodeEdit.Size = new System.Drawing.Size(157, 54);
+			// 
+			// itemDuplicateNode
+			// 
+			this.itemDuplicateNode.Image = global::GorgonLibrary.Editor.FontEditorPlugIn.Properties.Resources.duplicate_16x16;
+			this.itemDuplicateNode.Name = "itemDuplicateNode";
+			this.itemDuplicateNode.Size = new System.Drawing.Size(156, 22);
+			this.itemDuplicateNode.Text = "D&uplicate Node";
+			this.itemDuplicateNode.Click += new System.EventHandler(this.itemDuplicateNode_Click);
+			// 
+			// toolStripMenuItem1
+			// 
+			this.toolStripMenuItem1.Name = "toolStripMenuItem1";
+			this.toolStripMenuItem1.Size = new System.Drawing.Size(153, 6);
+			// 
+			// itemDeleteNode
+			// 
+			this.itemDeleteNode.Image = global::GorgonLibrary.Editor.FontEditorPlugIn.Properties.Resources.delete_item_16x16;
+			this.itemDeleteNode.Name = "itemDeleteNode";
+			this.itemDeleteNode.Size = new System.Drawing.Size(156, 22);
+			this.itemDeleteNode.Text = "Delete Node...";
+			this.itemDeleteNode.Click += new System.EventHandler(this.itemDeleteNode_Click);
+			// 
 			// panelGradient
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -265,6 +364,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Controls
 			this.panel1.ResumeLayout(false);
 			this.panel1.PerformLayout();
 			((System.ComponentModel.ISupportInitialize)(this.numericSelectedWeight)).EndInit();
+			this.popupNodeEdit.ResumeLayout(false);
 			this.ResumeLayout(false);
 
 		}
@@ -288,5 +388,10 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Controls
 		private System.Windows.Forms.Label label3;
 		private System.Windows.Forms.Panel panelPreview;
 		private System.Windows.Forms.Label label5;
+		private System.Windows.Forms.ContextMenuStrip popupNodeEdit;
+		private System.Windows.Forms.ToolStripMenuItem itemDuplicateNode;
+		private System.Windows.Forms.ToolStripSeparator toolStripMenuItem1;
+		private System.Windows.Forms.ToolStripMenuItem itemDeleteNode;
+		private System.Windows.Forms.Button buttonClear;
 	}
 }

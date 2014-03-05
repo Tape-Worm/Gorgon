@@ -179,6 +179,15 @@ namespace GorgonLibrary.Graphics
 			{
 				graphics.CompositingQuality = CompositingQuality.HighQuality;
 
+				if (Settings.Brush.BrushType == GlyphBrushType.LinearGradient)
+				{
+					// Get the size of the character and map the linear brush size to it.
+					SizeF measureRange = graphics.MeasureString(character.ToString(CultureInfo.CurrentCulture), font, new SizeF(position.Width, position.Height), format);
+
+					((GorgonGlyphLinearGradientBrush)Settings.Brush).GradientRegion = new Rectangle(0, 0, (int)measureRange.Width, (int)measureRange.Height);
+					brush = Settings.Brush.ToGDIBrush();
+				}
+
 			    if (outlineBrush != null)
 				{
 					// This may not be 100% accurate, but it works well enough.
@@ -1125,8 +1134,6 @@ namespace GorgonLibrary.Graphics
 					Settings.Brush = new GorgonGlyphSolidBrush();
 				}
 
-				glyphBrush = Settings.Brush.ToGDIBrush();
-
 				if ((Settings.OutlineColor.Alpha > 0) && (Settings.OutlineSize > 0))
 				{
 					outlineBrush = new SolidBrush(Settings.OutlineColor);
@@ -1211,12 +1218,30 @@ namespace GorgonLibrary.Graphics
 				// Default to the line height size.
 				_charBitmap = new Bitmap((int)(System.Math.Ceiling(LineHeight)), (int)(System.Math.Ceiling(LineHeight)));
 
+				// Linear gradients require a region to paint in, so we'll make it the same size as the font line height.
+				if (Settings.Brush.BrushType != GlyphBrushType.LinearGradient)
+				{
+					glyphBrush = Settings.Brush.ToGDIBrush();
+				}
+				
+
 				// Sort by size.
-			    availableCharacters = (from availableChar in availableCharacters
-                                       let charBounds = GetCharRect(graphics, newFont, glyphBrush, outlineBrush, stringFormat, drawFormat, availableChar)
-                                       let sortedChar = new Tuple<char, int>(availableChar, charBounds.Item1.Width * charBounds.Item1.Height)
-									   orderby sortedChar.Item2 descending
-									   select sortedChar.Item1).ToList();
+				using (Brush tempBrush = new SolidBrush(Color.White))
+				{
+					availableCharacters = (from availableChar in availableCharacters
+					                       let charBounds =
+						                       GetCharRect(graphics,
+						                                   newFont,
+						                                   tempBrush,
+						                                   outlineBrush,
+						                                   stringFormat,
+						                                   drawFormat,
+						                                   availableChar)
+					                       let sortedChar =
+						                       new Tuple<char, int>(availableChar, charBounds.Item1.Width * charBounds.Item1.Height)
+					                       orderby sortedChar.Item2 descending
+					                       select sortedChar.Item1).ToList();
+				}
 
 				while (availableCharacters.Count > 0)
 				{
