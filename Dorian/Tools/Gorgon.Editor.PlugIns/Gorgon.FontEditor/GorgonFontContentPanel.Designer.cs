@@ -73,7 +73,6 @@
 			this.buttonPrevTexture = new System.Windows.Forms.ToolStripButton();
 			this.labelTextureCount = new System.Windows.Forms.ToolStripLabel();
 			this.buttonNextTexture = new System.Windows.Forms.ToolStripButton();
-			this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
 			this.dropDownZoom = new System.Windows.Forms.ToolStripDropDownButton();
 			this.menuItem1600 = new System.Windows.Forms.ToolStripMenuItem();
 			this.menuItem800 = new System.Windows.Forms.ToolStripMenuItem();
@@ -86,6 +85,7 @@
 			this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
 			this.menuItemToWindow = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
+			this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
 			this.labelSelectedGlyphInfo = new System.Windows.Forms.ToolStripLabel();
 			this.separatorGlyphInfo = new System.Windows.Forms.ToolStripSeparator();
 			this.labelHoverGlyphInfo = new System.Windows.Forms.ToolStripLabel();
@@ -625,23 +625,11 @@
 		internal GorgonLibrary.UI.GorgonSelectablePanel panelTextures;
         internal System.Windows.Forms.Panel panelText;
         private System.Windows.Forms.Panel panelToolbar;
-        private System.Windows.Forms.ToolStrip stripFontDisplay;
-        private System.Windows.Forms.ToolStripDropDownButton dropDownZoom;
-        private System.Windows.Forms.ToolStripMenuItem menuItem1600;
-        private System.Windows.Forms.ToolStripMenuItem menuItem800;
-        private System.Windows.Forms.ToolStripMenuItem menuItem400;
-        private System.Windows.Forms.ToolStripMenuItem menuItem200;
-        private System.Windows.Forms.ToolStripMenuItem menuItem100;
-        private System.Windows.Forms.ToolStripMenuItem menuItem75;
-        private System.Windows.Forms.ToolStripMenuItem menuItem50;
-        private System.Windows.Forms.ToolStripMenuItem menuItem25;
-        private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
-        private System.Windows.Forms.ToolStripMenuItem menuItemToWindow;
+		private System.Windows.Forms.ToolStrip stripFontDisplay;
         private System.Windows.Forms.ToolStripButton buttonPrevTexture;
         private System.Windows.Forms.ToolStripLabel labelTextureCount;
         private System.Windows.Forms.ToolStripButton buttonNextTexture;
-        private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
-        private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
+		private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
         private System.Windows.Forms.ToolStripLabel labelSelectedGlyphInfo;
 		private System.Windows.Forms.ToolStrip stripCommands;
         private System.Windows.Forms.ToolStripLabel labelHoverGlyphInfo;
@@ -667,6 +655,17 @@
 		private System.Windows.Forms.ToolStripButton buttonGlyphClip;
 		private EditorFileBrowser imageFileBrowser;
         private System.Windows.Forms.ToolStripButton buttonRemoveCustomTexture;
-
+		private System.Windows.Forms.ToolStripDropDownButton dropDownZoom;
+		private System.Windows.Forms.ToolStripMenuItem menuItem1600;
+		private System.Windows.Forms.ToolStripMenuItem menuItem800;
+		private System.Windows.Forms.ToolStripMenuItem menuItem400;
+		private System.Windows.Forms.ToolStripMenuItem menuItem200;
+		private System.Windows.Forms.ToolStripMenuItem menuItem100;
+		private System.Windows.Forms.ToolStripMenuItem menuItem75;
+		private System.Windows.Forms.ToolStripMenuItem menuItem50;
+		private System.Windows.Forms.ToolStripMenuItem menuItem25;
+		private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
+		private System.Windows.Forms.ToolStripMenuItem menuItemToWindow;
+		private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
     }
 }

@@ -179,15 +179,6 @@ namespace GorgonLibrary.Graphics
 			{
 				graphics.CompositingQuality = CompositingQuality.HighQuality;
 
-				if (Settings.Brush.BrushType == GlyphBrushType.LinearGradient)
-				{
-					// Get the size of the character and map the linear brush size to it.
-					SizeF measureRange = graphics.MeasureString(character.ToString(CultureInfo.CurrentCulture), font, new SizeF(position.Width, position.Height), format);
-
-					((GorgonGlyphLinearGradientBrush)Settings.Brush).GradientRegion = new Rectangle(0, 0, (int)measureRange.Width, (int)measureRange.Height);
-					brush = Settings.Brush.ToGDIBrush();
-				}
-
 			    if (outlineBrush != null)
 				{
 					// This may not be 100% accurate, but it works well enough.
@@ -266,13 +257,13 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		/// <param name="g">Graphics interface to use.</param>
 		/// <param name="font">Font to apply.</param>
-		/// <param name="glyphBrush">The brush used to render the glyph.</param>
 		/// <param name="outlineBrush">The brush used to render the glyph outline.</param>
 		/// <param name="format">Format for the font.</param>
 		/// <param name="drawFormat">The string format used to draw the glyph.</param>
 		/// <param name="c">Character to evaluate.</param>
+		/// <param name="measureOnly">TRUE to only retrieve measurements of the character, FALSE to render the actual character.</param>
 		/// <returns>A rectangle for the bounding box and offset of the character.</returns>
-		private Tuple<Rectangle, Vector2, char> GetCharRect(System.Drawing.Graphics g, Font font, Brush glyphBrush, Brush outlineBrush, StringFormat format, StringFormat drawFormat, char c)
+		private Tuple<Rectangle, Vector2, char> GetCharRect(System.Drawing.Graphics g, Font font, Brush outlineBrush, StringFormat format, StringFormat drawFormat, char c, bool measureOnly)
 		{
 			Region[] size = null;
 			Region[] defaultSize = null;
@@ -358,15 +349,39 @@ namespace GorgonLibrary.Graphics
 					charGraphics.PageUnit = g.PageUnit;
 					charGraphics.TextContrast = g.TextContrast;
 					charGraphics.TextRenderingHint = g.TextRenderingHint;
-					
-					// Draw the character.
-				    DrawGlyphCharacter(charGraphics,
-				                       font,
-									   glyphBrush,
-									   outlineBrush,
-				                       drawFormat,
-				                       currentCharacter,
-				                       new Rectangle(0, 0, _charBitmap.Width, _charBitmap.Height));
+
+					// Gradient brushes are a bit of a nuisance because they require a region to render in.
+					if ((Settings.Brush.BrushType == GlyphBrushType.LinearGradient)
+						&& (!measureOnly))
+					{
+						((GorgonGlyphLinearGradientBrush)Settings.Brush).GradientRegion = new Rectangle(0, 0, (int)result.Width, (int)result.Height);
+					}
+
+					Brush glyphBrush = null;
+
+					try
+					{
+						if (!measureOnly)
+						{
+							glyphBrush = Settings.Brush.ToGDIBrush();
+						}
+
+						// Draw the character.
+						DrawGlyphCharacter(charGraphics,
+							                font,
+							                glyphBrush ?? Brushes.White,
+							                outlineBrush,
+							                drawFormat,
+							                currentCharacter,
+							                new Rectangle(0, 0, _charBitmap.Width, _charBitmap.Height));
+					}
+					finally
+					{
+						if (glyphBrush != null)
+						{
+							glyphBrush.Dispose();
+						}
+					}
 
 					// We use unsafe mode to scan pixels, it's much faster.
 				    pixels = _charBitmap.LockBits(new Rectangle(0, 0, _charBitmap.Width, _charBitmap.Height),
@@ -1218,30 +1233,20 @@ namespace GorgonLibrary.Graphics
 				// Default to the line height size.
 				_charBitmap = new Bitmap((int)(System.Math.Ceiling(LineHeight)), (int)(System.Math.Ceiling(LineHeight)));
 
-				// Linear gradients require a region to paint in, so we'll make it the same size as the font line height.
-				if (Settings.Brush.BrushType != GlyphBrushType.LinearGradient)
-				{
-					glyphBrush = Settings.Brush.ToGDIBrush();
-				}
-				
-
 				// Sort by size.
-				using (Brush tempBrush = new SolidBrush(Color.White))
-				{
-					availableCharacters = (from availableChar in availableCharacters
-					                       let charBounds =
-						                       GetCharRect(graphics,
-						                                   newFont,
-						                                   tempBrush,
-						                                   outlineBrush,
-						                                   stringFormat,
-						                                   drawFormat,
-						                                   availableChar)
-					                       let sortedChar =
-						                       new Tuple<char, int>(availableChar, charBounds.Item1.Width * charBounds.Item1.Height)
-					                       orderby sortedChar.Item2 descending
-					                       select sortedChar.Item1).ToList();
-				}
+				availableCharacters = (from availableChar in availableCharacters
+					                    let charBounds =
+						                    GetCharRect(graphics,
+						                                newFont,
+						                                outlineBrush,
+						                                stringFormat,
+						                                drawFormat,
+						                                availableChar,
+														true)
+					                    let sortedChar =
+						                    new Tuple<char, int>(availableChar, charBounds.Item1.Width * charBounds.Item1.Height)
+					                    orderby sortedChar.Item2 descending
+					                    select sortedChar.Item1).ToList();
 
 				while (availableCharacters.Count > 0)
 				{
@@ -1261,7 +1266,7 @@ namespace GorgonLibrary.Graphics
 					// Begin rasterization.
 					foreach (char c in characters)
 					{
-						Tuple<Rectangle, Vector2, char> charBounds = GetCharRect(graphics, newFont, glyphBrush, outlineBrush, stringFormat, drawFormat, c);
+						Tuple<Rectangle, Vector2, char> charBounds = GetCharRect(graphics, newFont, outlineBrush, stringFormat, drawFormat, c, false);
 					    int packingSpace = Settings.PackingSpacing > 0 ? Settings.PackingSpacing * 2 : 1;
 
 						if (charBounds.Item1 == RectangleF.Empty)
