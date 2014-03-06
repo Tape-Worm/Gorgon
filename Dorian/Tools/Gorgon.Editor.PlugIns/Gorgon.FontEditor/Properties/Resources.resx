@@ -262,9 +262,6 @@
   <data name="GORFNT_MENU_FOREGROUND_COLOR" xml:space="preserve">
     <value>&amp;Foreground color...</value>
   </data>
-  <data name="GORFNT_MENU_ZOOM" xml:space="preserve">
-    <value>Zoom</value>
-  </data>
   <data name="GORFNT_PROP_VALUE_TEXTURE_BRUSH" xml:space="preserve">
     <value>Texture brush</value>
   </data>
@@ -437,9 +434,6 @@ Note: If 'No' is selected, then the image will be clipped to the texture dimensi
   <data name="CATEGORY_DESIGN" xml:space="preserve">
     <value>Design</value>
   </data>
-  <data name="GORFNT_MENU_TO_WINDOW" xml:space="preserve">
-    <value>To window</value>
-  </data>
   <data name="GORFNT_DEPENDENCY_GLYPH_TEXTURE_BAD_TRANSFORM" xml:space="preserve">
     <value>The transform type '{0}' is not valid for a glyph texture transformation.</value>
   </data>
@@ -475,5 +469,11 @@ Height:{5:####0}</value>
   <data name="GORFNT_DLG_BRUSH_NODES_CLEAR" xml:space="preserve">
     <value>This will clear all the nodes for the gradient.
 Continue?</value>
+  </data>
+  <data name="GORFNT_MENU_TO_WINDOW" xml:space="preserve">
+    <value>To window</value>
+  </data>
+  <data name="GORFNT_MENU_ZOOM" xml:space="preserve">
+    <value>Zoom</value>
   </data>
 </root>

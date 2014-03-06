@@ -31,6 +31,7 @@ using System.Drawing;
 using System.Globalization;
 using System.Linq;
 using System.Windows.Forms;
+using System.Windows.Forms.VisualStyles;
 using Fetze.WinFormsColor;
 using GorgonLibrary.Animation;
 using GorgonLibrary.Diagnostics;
@@ -81,6 +82,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 	    private GorgonSprite _glyphBackgroundSprite;
         private IEnumerable<GorgonSprite> _sortedTextures;
         private DrawState _nextState = DrawState.DrawFontTextures;
+	    private Point _lastScrollPoint = Point.Empty;
         #endregion
 
         #region Methods.
@@ -663,6 +665,8 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 				buttonNextTexture.Enabled = _currentTextureIndex < _textures.Length - 1 && ((_content.CurrentState == DrawState.DrawFontTextures) ||
 											 _content.CurrentState == DrawState.NextTexture ||
 											 _content.CurrentState == DrawState.PrevTexture);
+
+				dropDownZoom.Enabled = (_content.CurrentState == DrawState.DrawFontTextures);
 
 				labelTextureCount.Text = string.Format("{0}: {1}/{2}", Resources.GORFNT_LABEL_TEXTURE_COUNT, _currentTextureIndex + 1, _textures.Length);
 
@@ -1478,23 +1482,8 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 
 			UpdateTextureRegion(currentTexture);
 
-			var textureRegion = new Rectangle((int)_textureRegion.X,
-			                                  (int)_textureRegion.Y,
-			                                  (int)_textureRegion.Width,
-			                                  (int)_textureRegion.Height);
+			var textureRegion = GetGlyphEditRegion();
 		    var glyphRegion = _selectedGlyph.GlyphCoordinates;
-		    float aspect = (float)glyphRegion.Width / glyphRegion.Height;
-
-		    if (aspect > 1.0f)
-		    {
-			    textureRegion.Height = (int)(textureRegion.Height / aspect);
-			    textureRegion.Y = (int)(_panelMidPoint.Y - (textureRegion.Height * 0.5f));
-		    }
-		    else
-		    {
-			    textureRegion.Width = (int)(textureRegion.Width * aspect);
-			    textureRegion.X = (int)(_panelMidPoint.X - (textureRegion.Width * 0.5f));
-		    }
 
 		    if (_editGlyph != null)
 		    {
@@ -1507,8 +1496,8 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		    if (_editGlyphAnimation.CurrentAnimation == null)
 		    {
 			    _glyphSprite.ScaledSize = Size.Round(textureRegion.Size);
-			    _glyphBackgroundSprite.Size = Size.Round(textureRegion.Size);
-			    _glyphBackgroundSprite.TextureRegion = new RectangleF(Vector2.Zero, _pattern.ToTexel(_glyphBackgroundSprite.Size));
+			    _glyphBackgroundSprite.Size = panelTextures.ClientSize;
+			    _glyphBackgroundSprite.TextureRegion = new RectangleF(Vector2.Zero, _pattern.ToTexel(panelTextures.ClientSize));
 		    }
 		    _content.CurrentState = DrawState.GlyphEdit;
             _nextState = DrawState.FromGlyphEdit;
@@ -1537,6 +1526,31 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
             _textureSprites.AddRange(sprites);
         }
 
+		/// <summary>
+		/// Function to retrieve the size of the glyph edit region.
+		/// </summary>
+		/// <returns>The rectangle containing the glyph.</returns>
+	    private Rectangle GetGlyphEditRegion()
+	    {
+			var glyphRegion = _selectedGlyph.GlyphCoordinates;
+			var panelSize = new Vector2(panelTextures.Size);
+
+			float scale = (panelSize.X > panelSize.Y
+							  ? panelSize.Y / glyphRegion.Height
+							  : panelSize.X / glyphRegion.Width);
+
+			var textureRegion = new Rectangle((int)_textureRegion.X,
+			                                  (int)_textureRegion.Y,
+			                                  (int)(glyphRegion.Width * scale).Min(panelSize.X),
+											  (int)(glyphRegion.Height * scale).Min(panelSize.Y));
+
+			textureRegion.Y = (int)(_panelMidPoint.Y - (textureRegion.Height * 0.5f));
+
+			textureRegion.X = (int)(_panelMidPoint.X - (textureRegion.Width * 0.5f));
+
+			return textureRegion;
+	    }
+
 	    /// <summary>
 		/// Function to initialize the editor transition.
 		/// </summary>
@@ -1551,45 +1565,28 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 			}
 
 			GorgonTexture2D currentTexture = _selectedGlyph.Texture;
-			var textureRegion = new Rectangle((int)_textureRegion.X,
-			                                  (int)_textureRegion.Y,
-			                                  (int)_textureRegion.Width,
-			                                  (int)_textureRegion.Height);
 			var glyphRegion = _selectedGlyph.GlyphCoordinates;
+			var textureRegion = GetGlyphEditRegion();
+			
 			var glyphScreenRegion = _glyphRegions[_selectedGlyph];
 
-			glyphScreenRegion.X = glyphScreenRegion.X + textureRegion.X;
-			glyphScreenRegion.Y = glyphScreenRegion.Y + textureRegion.Y;
+		    if (!editOn)
+		    {
+			    panelTextures.AutoScroll = true;
+			    panelTextures.AutoScrollMinSize =
+				    new Size((int)System.Math.Ceiling(_currentZoom * _textures[_currentTextureIndex].Settings.Width),
+				             (int)System.Math.Ceiling(_currentZoom * _textures[_currentTextureIndex].Settings.Height));
+			    panelTextures.AutoScrollPosition = _lastScrollPoint;
+			    glyphScreenRegion.X += _textureRegion.X + panelTextures.AutoScrollPosition.X;
+			    glyphScreenRegion.Y += _textureRegion.Y + panelTextures.AutoScrollPosition.Y;
+		    }
+		    else
+		    {
+				glyphScreenRegion.X += _textureRegion.X;
+				glyphScreenRegion.Y += _textureRegion.Y;
+		    }
 
-			float aspect = (float)glyphRegion.Width / glyphRegion.Height;
-
-			if (aspect > 1.0f)
-			{
-				textureRegion.Height = (int)(textureRegion.Height / aspect);
-
-				if (!panelTextures.VerticalScroll.Visible)
-				{
-					textureRegion.Y = (int)(_panelMidPoint.Y - (textureRegion.Height * 0.5f));
-				}
-				else
-				{
-					textureRegion.Y = panelTextures.AutoScrollPosition.Y;
-				}
-			}
-			else
-			{
-				textureRegion.Width = (int)(textureRegion.Width * aspect);
-				if (!panelTextures.HorizontalScroll.Visible)
-				{
-					textureRegion.X = (int)(_panelMidPoint.X - (textureRegion.Width * 0.5f));
-				}
-				else
-				{
-					textureRegion.X = panelTextures.AutoScrollPosition.X;
-				}
-			}
-
-			if ((_editGlyph != null) && (editOn))
+		    if ((_editGlyph != null) && (editOn))
 			{
 				_editGlyph.Dispose();
 				_editGlyph = null;
@@ -1616,9 +1613,9 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		    _glyphSprite.Texture = _editGlyph;
 
 		    _glyphBackgroundSprite.Scale = new Vector2(1);
-		    _glyphBackgroundSprite.Position = _textureRegion.Location;
-			_glyphBackgroundSprite.Size = _textureRegion.Size;
-		    _glyphBackgroundSprite.TextureRegion = new RectangleF(Vector2.Zero, _pattern.ToTexel(_textureRegion.Size));
+		    _glyphBackgroundSprite.Position = Vector2.Zero;
+			_glyphBackgroundSprite.Size = panelTextures.ClientSize;
+		    _glyphBackgroundSprite.TextureRegion = new RectangleF(Vector2.Zero, _pattern.ToTexel(panelTextures.ClientSize));
 
 			if (editOn)
 			{
@@ -1636,7 +1633,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 				buttonEditGlyph.Image = Resources.edit_16x16;
 			}
 
-			_editGlyphAnimation.Play(_glyphSprite, "TransitionTo");
+		    _editGlyphAnimation.Play(_glyphSprite, "TransitionTo");
 			_editBackgroundAnimation.Play(_glyphBackgroundSprite, "GlyphBGColor");
 			_content.CurrentState = editOn ? DrawState.ToGlyphEdit : DrawState.FromGlyphEdit;
             _nextState = DrawState.GlyphEdit;
@@ -1659,11 +1656,20 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 			{
 				return;
 			}
+			
+			if (_content.CurrentState == DrawState.ToGlyphEdit)
+			{
+				_lastScrollPoint = new Point(-panelTextures.AutoScrollPosition.X, -panelTextures.AutoScrollPosition.Y);
+				panelTextures.AutoScroll = false;
+				// Reset the state because the resize event triggerd by the auto scroll change 
+				// will mess up the state.
+				_content.CurrentState = DrawState.ToGlyphEdit;
+			}
 
 			_content.CurrentState = _content.CurrentState == DrawState.ToGlyphEdit
 				                        ? DrawState.GlyphEdit
 				                        : DrawState.DrawFontTextures;
-		    _nextState = _content.CurrentState;
+			_nextState = _content.CurrentState;
 			ValidateControls();
 		}
 
@@ -1673,27 +1679,14 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 	    public void DrawGlyphEdit()
 		{
 			DrawFontTexture();
-			
-			var region = new RectangleF(panelTextures.Width / 2.0f - _editGlyph.Settings.Width / 2.0f,
-			                            panelTextures.Height / 2.0f - _editGlyph.Settings.Height / 2.0f,
-			                            _editGlyph.Settings.Width,
-			                            _editGlyph.Settings.Height);
 
-			if (panelTextures.HorizontalScroll.Visible)
-			{
-				region.X = panelTextures.AutoScrollPosition.X;
-			}
-
-			if (panelTextures.VerticalScroll.Visible)
-			{
-				region.Y = panelTextures.AutoScrollPosition.Y;
-			}
+			Rectangle region = GetGlyphEditRegion();
 			
 			_glyphSprite.Position = region.Location;
 			_glyphSprite.ScaledSize = region.Size;
-			_glyphBackgroundSprite.Position = _textureRegion.Location;
-			_glyphBackgroundSprite.ScaledSize = _textureRegion.Size;
-			_glyphBackgroundSprite.TextureRegion = new RectangleF(Vector2.Zero, _pattern.ToTexel(_textureRegion.Size));
+			_glyphBackgroundSprite.Position = Vector2.Zero;
+			_glyphBackgroundSprite.ScaledSize = panelTextures.ClientSize;
+			_glyphBackgroundSprite.TextureRegion = new RectangleF(Vector2.Zero, _pattern.ToTexel(panelTextures.ClientSize));
 
 			_glyphBackgroundSprite.Draw();
 			// TODO: Make an option to show or hide the alpha.

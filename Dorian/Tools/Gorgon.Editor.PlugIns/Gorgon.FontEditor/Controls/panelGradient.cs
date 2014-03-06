@@ -580,24 +580,42 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Controls
 
 			var region = new Rectangle(0, 0, _gradPreviewImage.Width, _gradPreviewImage.Height);
 
+			using (var format = new StringFormat(StringFormat.GenericTypographic))
 			using (System.Drawing.Graphics g = System.Drawing.Graphics.FromImage(_gradPreviewImage))
 			{
+				format.FormatFlags = StringFormatFlags.NoFontFallback | StringFormatFlags.MeasureTrailingSpaces;
+				format.SetMeasurableCharacterRanges(new[] { new CharacterRange(0, 1) });
+
+				Region[] charSize = g.MeasureCharacterRanges("A",
+				                                             _previewFont,
+				                                             new RectangleF(0, 0, _gradPreviewImage.Width, _previewFont.GetHeight()),
+				                                             format);
+
+				RectangleF size = charSize.Length == 0
+					                  ? new RectangleF(0, 0, _gradPreviewImage.Width, _gradPreviewImage.Height)
+					                  : charSize[0].GetBounds(g);
+
+				foreach (Region charRegion in charSize)
+				{
+					charRegion.Dispose();
+				}
+
+				g.PageUnit = GraphicsUnit.Pixel;
 				g.InterpolationMode = InterpolationMode.High;
 				g.CompositingMode = CompositingMode.SourceOver;
 				g.CompositingQuality = CompositingQuality.HighQuality;
 				g.TextRenderingHint = TextRenderingHint.AntiAliasGridFit;
 
-				SizeF textSize = g.MeasureString("A", _previewFont);
-
+				size.X = _gradPreviewImage.Width / 2 - size.Width / 2;
+				size.Y = 0;
+				
 				using (Brush backBrush = new TextureBrush(Resources.Pattern, WrapMode.Tile),
-					brush = UpdateBrush(new Rectangle(0, 0, (int)textSize.Width, _previewFont.Height), true))
+					brush = UpdateBrush(size, true))
 				{
 					g.FillRectangle(backBrush, region);
-					var textRegion = new RectangleF(_gradPreviewImage.Width / 2 - textSize.Width / 2,
-					                                _gradPreviewImage.Height / 2 - textSize.Height / 2,
-					                                textSize.Width,
-					                                textSize.Height);
-					g.DrawString("A", _previewFont, brush, textRegion);
+					
+					g.DrawString("A", _previewFont, brush, size, format);
+					g.DrawRectangle(Pens.Black, size.X, size.Y, size.Width, size.Height);
 				}
 			}
 
@@ -1052,7 +1070,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Controls
 		/// </summary>
 		/// <param name="destRect">Destination rectangle.</param>
 		/// <param name="rotate">TRUE to rotate the gradient, FALSE to keep it oriented as is.</param>
-		private Brush UpdateBrush(Rectangle destRect, bool rotate)
+		private Brush UpdateBrush(RectangleF destRect, bool rotate)
 		{
 			var linearBrush = new LinearGradientBrush(destRect,
 			                                          _handles[0].Color,
