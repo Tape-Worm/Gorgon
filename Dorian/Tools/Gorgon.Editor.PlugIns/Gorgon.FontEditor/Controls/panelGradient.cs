@@ -42,6 +42,11 @@ using GorgonLibrary.UI;
 
 namespace GorgonLibrary.Editor.FontEditorPlugIn.Controls
 {
+    // TODO: Add button to add node.
+    // TODO: Add button to remove node.
+    // TODO: Change color selection panel into a button.
+    // TODO: Implement cursor offset for drag.
+
 	/// <summary>
 	/// A panel that will allow for editing of a linear gradient brush.
 	/// </summary>
@@ -155,6 +160,21 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Controls
 				return hitBox.Contains(mouseCursor);
 			}
 
+            /// <summary>
+            /// Function to get the offset for dragging.
+            /// </summary>
+            /// <param name="mouseCursor">Cursor position.</param>
+            /// <param name="region">Region containing the node.</param>
+		    public Point GetDragOffset(Point mouseCursor, Rectangle region)
+            {
+                Point result = mouseCursor;
+
+                result.X = result.X - (int)((region.Width - 1) * Weight) - 8;
+                result.Y = result.Y - region.Height - 16;
+                
+                return result;
+            }
+
 			/// <summary>
 			/// Function to draw the weight node.
 			/// </summary>
@@ -226,6 +246,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Controls
 		private List<WeightHandle> _handles;					// Weight handles.
 		private WeightHandle _selectedNode;						// Selected node handle.
 		private bool _nodeDrag;									// Flag to indicate that the node is being dragged.
+	    private Point _nodeDragOffset;                          // Node dragging cursor offset.
 		private Bitmap _controlPanelImage;						// Image used in the control panel.
 		private Bitmap _gradDisplayImage;						// Gradient fill image for the editor panel.
 		private Bitmap _gradientImage;							// Gradient fill image for the editor panel.
@@ -936,6 +957,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Controls
 				switch (e.Button)
 				{
 					case MouseButtons.Left:
+				        _nodeDragOffset = _selectedNode.GetDragOffset(e.Location, panelGradControls.ClientRectangle);
 						_nodeDrag = ((_selectedNode.Index > 0) && (_selectedNode.Index < _handles.Count - 1));
 						break;
 					case MouseButtons.Right:

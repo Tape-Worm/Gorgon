@@ -227,6 +227,7 @@ namespace GorgonLibrary.Editor
 		/// <summary>
 		/// Property to return whether this content has an owner or not.
 		/// </summary>
+        [Browsable(false)]
 	    public bool HasOwner
 	    {
 			get
