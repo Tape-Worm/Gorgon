@@ -118,7 +118,9 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Gorgon2.ico" />
-    <None Include="Resources\delete_item_16x16.png" />
+    <None Include="Resources\clear_16x16.png" />
+    <None Include="Resources\add_16x16.png" />
+    <None Include="Resources\remove_16x16.png" />
     <None Include="Resources\duplicate_16x16.png" />
     <None Include="Resources\bad_glyph_256x256.png" />
     <None Include="Resources\open_image_16x16.png" />

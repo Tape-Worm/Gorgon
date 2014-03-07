@@ -30,6 +30,7 @@ using System.Collections.ObjectModel;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
+using System.Drawing.Text;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -173,35 +174,24 @@ namespace GorgonLibrary.Graphics
 	    /// <param name="position">Position on the bitmap.</param>
 	    private void DrawGlyphCharacter(System.Drawing.Graphics graphics, Font font, Brush brush, Brush outlineBrush, StringFormat format, char character, Rectangle position)
 		{
-			SmoothingMode smoothMode = graphics.SmoothingMode;
-
-	        try
+			if (outlineBrush != null)
 			{
-				graphics.CompositingQuality = CompositingQuality.HighQuality;
-
-			    if (outlineBrush != null)
+				// This may not be 100% accurate, but it works well enough.
+				for (int x = 0; x <= Settings.OutlineSize * 2; x++)
 				{
-					// This may not be 100% accurate, but it works well enough.
-					for (int x = 0; x <= Settings.OutlineSize * 2; x++)
+					for (int y = 0; y <= Settings.OutlineSize * 2; y++)
 					{
-						for (int y = 0; y <= Settings.OutlineSize * 2; y++)
-						{
-							Rectangle offsetRect = position;
-							offsetRect.Offset(x, y);
-							graphics.DrawString(character.ToString(CultureInfo.CurrentCulture), font, outlineBrush, offsetRect, format);
-						}
+						Rectangle offsetRect = position;
+						offsetRect.Offset(x, y);
+						graphics.DrawString(character.ToString(CultureInfo.CurrentCulture), font, outlineBrush, offsetRect, format);
 					}
-
-					position.Offset(Settings.OutlineSize, Settings.OutlineSize);
 				}
 
-				graphics.DrawString(character.ToString(CultureInfo.CurrentCulture), font, brush, position, format);
-				graphics.Flush();
+				position.Offset(Settings.OutlineSize, Settings.OutlineSize);
 			}
-			finally
-			{
-				graphics.SmoothingMode = smoothMode;
-			}
+
+			graphics.DrawString(character.ToString(CultureInfo.CurrentCulture), font, brush, position, format);
+			graphics.Flush();
 		}
 
 		/// <summary>
@@ -344,6 +334,13 @@ namespace GorgonLibrary.Graphics
 				// Perform cropping.
 				using (System.Drawing.Graphics charGraphics = System.Drawing.Graphics.FromImage(_charBitmap))
 				{
+					// For some reason, when setting the mode to source copy and using no anti-aliasing, the characters
+					// get really messed up (at least on my system).  The down side is that non-anti-aliased characters
+					// won't be able to use the alpha channel in the glyph.
+					charGraphics.CompositingMode = Settings.AntiAliasingMode != FontAntiAliasMode.None
+						                               ? CompositingMode.SourceCopy
+						                               : CompositingMode.SourceOver;
+					charGraphics.CompositingQuality = CompositingQuality.HighQuality;
 					charGraphics.Clear(Color.FromArgb(0, 0, 0, 0));
 
 					charGraphics.PageUnit = g.PageUnit;
@@ -354,7 +351,20 @@ namespace GorgonLibrary.Graphics
 					if ((Settings.Brush.BrushType == GlyphBrushType.LinearGradient)
 						&& (!measureOnly))
 					{
-						((GorgonGlyphLinearGradientBrush)Settings.Brush).GradientRegion = new Rectangle(0, 0, (int)result.Width, (int)result.Height);
+						if (result.Width > result.Height)
+						{
+							((GorgonGlyphLinearGradientBrush)Settings.Brush).GradientRegion = new Rectangle(0,
+							                                                                                0,
+							                                                                                (int)result.Width,
+							                                                                                (int)result.Width);
+						}
+						else
+						{
+							((GorgonGlyphLinearGradientBrush)Settings.Brush).GradientRegion = new Rectangle(0,
+																											0,
+																											(int)result.Height,
+																											(int)result.Height);
+						}
 					}
 
 					Brush glyphBrush = null;
@@ -1253,6 +1263,8 @@ namespace GorgonLibrary.Graphics
 				    // Resort our characters from lowest to highest since we've altered the list.
 					var characters = availableCharacters.ToArray();
 
+					graphics.CompositingMode = CompositingMode.SourceCopy;
+					graphics.CompositingQuality = CompositingQuality.HighQuality;
 					graphics.Clear(Color.FromArgb(0, 0, 0, 0));
 
 					// Create a texture.

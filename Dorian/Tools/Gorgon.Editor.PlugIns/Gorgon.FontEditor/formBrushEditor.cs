@@ -1353,7 +1353,6 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 			    colorSolidBrush.OldColor = SolidBrush.Color;
 			    colorSolidBrush.SelectedColor = SolidBrush.Color;
 
-				gradEditor.SetFont(_currentContent);
 				gradEditor.Brush = GradientBrush;
 
 			    _originalBrushType = BrushType;
