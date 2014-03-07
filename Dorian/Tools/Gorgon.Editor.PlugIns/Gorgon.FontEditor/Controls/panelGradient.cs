@@ -30,7 +30,6 @@ using System.ComponentModel;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
-using System.Drawing.Text;
 using System.Linq;
 using System.Windows.Forms;
 using Fetze.WinFormsColor;
@@ -42,11 +41,6 @@ using GorgonLibrary.UI;
 
 namespace GorgonLibrary.Editor.FontEditorPlugIn.Controls
 {
-    // TODO: Add button to add node.
-    // TODO: Add button to remove node.
-    // TODO: Change color selection panel into a button.
-    // TODO: Implement cursor offset for drag.
-
 	/// <summary>
 	/// A panel that will allow for editing of a linear gradient brush.
 	/// </summary>
@@ -165,14 +159,10 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Controls
             /// </summary>
             /// <param name="mouseCursor">Cursor position.</param>
             /// <param name="region">Region containing the node.</param>
-		    public Point GetDragOffset(Point mouseCursor, Rectangle region)
+            /// <returns>The offset of the node from the cursor.</returns>
+		    public int GetDragOffset(Point mouseCursor, Rectangle region)
             {
-                Point result = mouseCursor;
-
-                result.X = result.X - (int)((region.Width - 1) * Weight) - 8;
-                result.Y = result.Y - region.Height - 16;
-                
-                return result;
+                return (int)((region.Width - 1) * Weight) - mouseCursor.X;
             }
 
 			/// <summary>
@@ -246,13 +236,12 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Controls
 		private List<WeightHandle> _handles;					// Weight handles.
 		private WeightHandle _selectedNode;						// Selected node handle.
 		private bool _nodeDrag;									// Flag to indicate that the node is being dragged.
-	    private Point _nodeDragOffset;                          // Node dragging cursor offset.
+	    private int _nodeDragOffset;							// Node dragging cursor offset.
 		private Bitmap _controlPanelImage;						// Image used in the control panel.
 		private Bitmap _gradDisplayImage;						// Gradient fill image for the editor panel.
 		private Bitmap _gradientImage;							// Gradient fill image for the editor panel.
 		private Bitmap _gradPreviewImage;						// Gradient fill image for the preview.
 		private Bitmap _selectedColorImage;						// Selected color image.
-		private Font _previewFont;								// Font for the preview.
 		#endregion
 
 		#region Events.
@@ -365,11 +354,11 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Controls
 		}
 
 		/// <summary>
-		/// Handles the Click event of the buttonClear control.
+		/// Handles the Click event of the buttonClearNodes control.
 		/// </summary>
 		/// <param name="sender">The source of the event.</param>
 		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-		private void buttonClear_Click(object sender, EventArgs e)
+		private void buttonClearNodes_Click(object sender, EventArgs e)
 		{
 			try
 			{
@@ -391,6 +380,23 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Controls
 				DrawPreview();
 				ValidateControls();
 			}
+		}
+
+		/// <summary>
+		/// Handles the PreviewKeyDown event of the panelSelectedColor control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="PreviewKeyDownEventArgs"/> instance containing the event data.</param>
+		private void panelSelectedColor_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
+		{
+			if ((e.KeyCode != Keys.Enter)
+				&& (e.KeyCode != Keys.Space))
+			{
+				return;
+			}
+
+			panelSelectedColor_DoubleClick(sender, EventArgs.Empty);
+			e.IsInputKey = true;
 		}
 
 		/// <summary>
@@ -417,10 +423,14 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Controls
 		/// </summary>
 		private void ValidateControls()
 		{
-			numericSelectedWeight.Enabled = (_selectedNode != null) && (_selectedNode.Index > 0) &&
-			                                (_selectedNode.Index < _handles.Count - 1);
+			itemRemoveNode.Enabled =
+				buttonRemoveNode.Enabled =
+				numericSelectedWeight.Enabled = (_selectedNode != null) && (_selectedNode.Index > 0) &&
+				                                (_selectedNode.Index < _handles.Count - 1);
 
-			buttonClear.Enabled = _handles.Count > 2;
+			itemDuplicateNode.Enabled = panelSelectedColor.Enabled = buttonDuplicateNode.Enabled = _selectedNode != null;
+
+			buttonClearNodes.Enabled = _handles.Count > 2;
 
 			if (_selectedNode != null)
 			{
@@ -593,50 +603,20 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Controls
 		private void DrawPreview(System.Drawing.Graphics panelGraphics = null)
 		{
 			if ((_gradPreviewImage == null)
-				|| (Brush == null)
-				|| (_previewFont == null))
+				|| (Brush == null))
 			{
 				return;
 			}
 
 			var region = new Rectangle(0, 0, _gradPreviewImage.Width, _gradPreviewImage.Height);
 
-			using (var format = new StringFormat(StringFormat.GenericTypographic))
 			using (System.Drawing.Graphics g = System.Drawing.Graphics.FromImage(_gradPreviewImage))
 			{
-				format.FormatFlags = StringFormatFlags.NoFontFallback | StringFormatFlags.MeasureTrailingSpaces;
-				format.SetMeasurableCharacterRanges(new[] { new CharacterRange(0, 1) });
-
-				Region[] charSize = g.MeasureCharacterRanges("A",
-				                                             _previewFont,
-				                                             new RectangleF(0, 0, _gradPreviewImage.Width, _previewFont.GetHeight()),
-				                                             format);
-
-				RectangleF size = charSize.Length == 0
-					                  ? new RectangleF(0, 0, _gradPreviewImage.Width, _gradPreviewImage.Height)
-					                  : charSize[0].GetBounds(g);
-
-				foreach (Region charRegion in charSize)
-				{
-					charRegion.Dispose();
-				}
-
-				g.PageUnit = GraphicsUnit.Pixel;
-				g.InterpolationMode = InterpolationMode.High;
-				g.CompositingMode = CompositingMode.SourceOver;
-				g.CompositingQuality = CompositingQuality.HighQuality;
-				g.TextRenderingHint = TextRenderingHint.AntiAliasGridFit;
-
-				size.X = _gradPreviewImage.Width / 2 - size.Width / 2;
-				size.Y = 0;
-				
 				using (Brush backBrush = new TextureBrush(Resources.Pattern, WrapMode.Tile),
-					brush = UpdateBrush(size, true))
+					brush = UpdateBrush(panelPreview.ClientRectangle, true))
 				{
 					g.FillRectangle(backBrush, region);
-					
-					g.DrawString("A", _previewFont, brush, size, format);
-					g.DrawRectangle(Pens.Black, size.X, size.Y, size.Width, size.Height);
+					g.FillRectangle(brush, region);
 				}
 			}
 
@@ -704,11 +684,11 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Controls
 		}
 
 		/// <summary>
-		/// Handles the MouseDoubleClick event of the panelSelectedColor control.
+		/// Handles the DoubleClick event of the panelSelectedColor control.
 		/// </summary>
 		/// <param name="sender">The source of the event.</param>
-		/// <param name="e">The <see cref="MouseEventArgs"/> instance containing the event data.</param>
-		private void panelSelectedColor_MouseDoubleClick(object sender, MouseEventArgs e)
+		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+		private void panelSelectedColor_DoubleClick(object sender, EventArgs e)
 		{
 			if (_selectedNode == null)
 			{
@@ -810,6 +790,10 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Controls
 
 				OnChanged();
 			}
+			catch (Exception ex)
+			{
+				GorgonDialogs.ErrorBox(ParentForm, ex);
+			}
 			finally
 			{
 				DrawControls();
@@ -827,35 +811,47 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Controls
 		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
 		private void itemDuplicateNode_Click(object sender, EventArgs e)
 		{
-			if ((_selectedNode == null)
-				|| (_controlPanelImage == null))
+			try
 			{
-				return;
+				if ((_selectedNode == null)
+				    || (_controlPanelImage == null))
+				{
+					return;
+				}
+
+				float weightPosition = _selectedNode.Weight * _controlPanelImage.Width;
+
+				if (weightPosition < _controlPanelImage.Width - 16)
+				{
+					weightPosition = (weightPosition + 16.0f) / _controlPanelImage.Width;
+				}
+				else
+				{
+					weightPosition = (weightPosition - 16.0f) / _controlPanelImage.Width;
+				}
+
+				_selectedNode.IsSelected = false;
+				_selectedNode = new WeightHandle(weightPosition, _selectedNode.Color, -1)
+				                {
+					                IsSelected = true
+				                };
+				_handles.Add(_selectedNode);
+				SortWeightHandles();
+
+				OnChanged();
 			}
-
-			float weightPosition = _selectedNode.Weight * _controlPanelImage.Width;
-
-			if (weightPosition < _controlPanelImage.Width - 16)
+			catch (Exception ex)
 			{
-				weightPosition = (weightPosition + 16.0f) / _controlPanelImage.Width;
+				GorgonDialogs.ErrorBox(ParentForm, ex);
 			}
-			else
+			finally
 			{
-				weightPosition = (weightPosition - 16.0f) / _controlPanelImage.Width;
+				DrawControls();
+				DrawGradientDisplay();
+				DrawSelectedColor();
+				DrawPreview();
+				ValidateControls();
 			}
-
-			_selectedNode.IsSelected = false;
-			_selectedNode = new WeightHandle(weightPosition, _selectedNode.Color, -1);
-			_handles.Add(_selectedNode);
-			SortWeightHandles();
-
-			DrawControls();
-			DrawGradientDisplay();
-			DrawSelectedColor();
-			DrawPreview();
-			ValidateControls();
-
-			OnChanged();
 		}
 
 		/// <summary>
@@ -881,11 +877,11 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Controls
 		}
 
 		/// <summary>
-		/// Handles the Click event of the itemDeleteNode control.
+		/// Handles the Click event of the itemRemoveNode control.
 		/// </summary>
 		/// <param name="sender">The source of the event.</param>
 		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-		private void itemDeleteNode_Click(object sender, EventArgs e)
+		private void itemRemoveNode_Click(object sender, EventArgs e)
 		{
 			// If we right click, then drop the node.
 			if (GorgonDialogs.ConfirmBox(ParentForm, Resources.GORFNT_DLG_BRUSH_GRAD_DROP_NODE) == ConfirmationResult.No)
@@ -946,22 +942,26 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Controls
 					                                        item.HitTest(e.Location, panelGradControls.ClientRectangle)
 					                                        && (item.Index == 0 || item.Index <= _handles.Count - 1));
 
-					if (_selectedNode == null)
-					{
-						return;
-					}
 				}
 
-				_selectedNode.IsSelected = true;
+				if (_selectedNode != null)
+				{
+					_selectedNode.IsSelected = true;
+				}
 
 				switch (e.Button)
 				{
 					case MouseButtons.Left:
+						if (_selectedNode == null)
+						{
+							return;
+						}
+
 				        _nodeDragOffset = _selectedNode.GetDragOffset(e.Location, panelGradControls.ClientRectangle);
 						_nodeDrag = ((_selectedNode.Index > 0) && (_selectedNode.Index < _handles.Count - 1));
 						break;
 					case MouseButtons.Right:
-						itemDeleteNode.Enabled = ((_selectedNode.Index > 0) && (_selectedNode.Index < _handles.Count - 1));
+						ValidateControls();
 						popupNodeEdit.Show(panelGradControls, e.Location);
 						break;
 				}
@@ -972,6 +972,39 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Controls
 				DrawSelectedColor();
 				DrawControls();
 			}
+		}
+
+		/// <summary>
+		/// Handles the Click event of the itemAddNode control.
+		/// </summary>
+		/// <param name="sender">The source of the event.</param>
+		/// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+		private void itemAddNode_Click(object sender, EventArgs e)
+		{
+			float weightPosition = _controlPanelImage.Width / 2.0f;
+
+			if (sender == itemAddNode)
+			{
+				weightPosition = panelGradControls.PointToClient(new Point(popupNodeEdit.Left, popupNodeEdit.Top)).X;
+			}
+
+			// Adjust position to be near the selected node if a node is selected.
+			if ((_selectedNode != null)
+				&& (_controlPanelImage != null))
+			{
+				weightPosition = _selectedNode.Weight * _controlPanelImage.Width;
+
+				if (weightPosition < _controlPanelImage.Width - 16)
+				{
+					weightPosition += 16.0f;
+				}
+				else
+				{
+					weightPosition -= 16.0f;
+				}
+			}
+
+			panelGradientDisplay_MouseDoubleClick(sender, new MouseEventArgs(MouseButtons.Left, 1, (int)weightPosition, 0, 0));
 		}
 
 		/// <summary>
@@ -993,12 +1026,6 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Controls
 
 			if (selectedHandle == null)
 			{
-				// Ask just in case we have an accidental double click.
-				if (GorgonDialogs.ConfirmBox(ParentForm, Resources.GORFNT_DLG_BRUSH_GRAD_ADD_NODE) == ConfirmationResult.Yes)
-				{
-					panelGradientDisplay_MouseDoubleClick(sender, new MouseEventArgs(e.Button, e.Clicks, e.X, 0, 0));
-					OnChanged();
-				}
 				return;
 			}
 
@@ -1017,7 +1044,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Controls
 				return;
 			}
 
-			float newWeight = (float)e.X / (panelGradControls.ClientSize.Width - 1);
+			float newWeight = (float)(e.X + _nodeDragOffset) / (panelGradControls.ClientSize.Width - 1);
 
 			if (newWeight < 0.0f)
 			{
@@ -1169,15 +1196,6 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Controls
 			{
 				GorgonDialogs.ErrorBox(ParentForm, ex);
 			}
-		}
-
-		/// <summary>
-		/// Function to set the currently active font.
-		/// </summary>
-		/// <param name="content">Content containing the font.</param>
-		public void SetFont(GorgonFontContent content)
-		{
-			_previewFont = new Font(content.FontFamily, _gradPreviewImage.Height - 8, content.FontStyle, GraphicsUnit.Pixel);			
 		}
 
 		/// <summary>

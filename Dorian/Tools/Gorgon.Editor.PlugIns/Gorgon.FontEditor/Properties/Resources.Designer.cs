@@ -63,6 +63,16 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap add_16x16 {
+            get {
+                object obj = ResourceManager.GetObject("add_16x16", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap bad_glyph_256x256 {
             get {
                 object obj = ResourceManager.GetObject("bad_glyph_256x256", resourceCulture);
@@ -101,6 +111,16 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap clear_16x16 {
+            get {
+                object obj = ResourceManager.GetObject("clear_16x16", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap Color {
             get {
                 object obj = ResourceManager.GetObject("Color", resourceCulture);
@@ -114,16 +134,6 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Properties {
         internal static System.Drawing.Bitmap cut_16x16 {
             get {
                 object obj = ResourceManager.GetObject("cut_16x16", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap delete_item_16x16 {
-            get {
-                object obj = ResourceManager.GetObject("delete_item_16x16", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -347,16 +357,6 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Properties {
         internal static string GORFNT_DLG_BRUSH_EDITOR_TEXT {
             get {
                 return ResourceManager.GetString("GORFNT_DLG_BRUSH_EDITOR_TEXT", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to This will add a new node to the gradient.
-        ///Continue?.
-        /// </summary>
-        internal static string GORFNT_DLG_BRUSH_GRAD_ADD_NODE {
-            get {
-                return ResourceManager.GetString("GORFNT_DLG_BRUSH_GRAD_ADD_NODE", resourceCulture);
             }
         }
         
@@ -1078,6 +1078,16 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Properties {
         internal static string PROP_TEXTURESIZE_NAME {
             get {
                 return ResourceManager.GetString("PROP_TEXTURESIZE_NAME", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap remove_16x16 {
+            get {
+                object obj = ResourceManager.GetObject("remove_16x16", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
             }
         }
         
