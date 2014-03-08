@@ -337,9 +337,10 @@ namespace GorgonLibrary.Graphics
 					// For some reason, when setting the mode to source copy and using no anti-aliasing, the characters
 					// get really messed up (at least on my system).  The down side is that non-anti-aliased characters
 					// won't be able to use the alpha channel in the glyph.
-					charGraphics.CompositingMode = Settings.AntiAliasingMode != FontAntiAliasMode.None
+					/*charGraphics.CompositingMode = Settings.AntiAliasingMode != FontAntiAliasMode.None
 						                               ? CompositingMode.SourceCopy
-						                               : CompositingMode.SourceOver;
+						                               : CompositingMode.SourceOver;*/
+                    charGraphics.CompositingMode = CompositingMode.SourceCopy;
 					charGraphics.CompositingQuality = CompositingQuality.HighQuality;
 					charGraphics.Clear(Color.FromArgb(0, 0, 0, 0));
 
