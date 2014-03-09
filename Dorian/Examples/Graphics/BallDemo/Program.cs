@@ -472,13 +472,13 @@ namespace GorgonLibrary.Graphics.Example
 			// Create our font.
 			_ballFont = _graphics.Fonts.CreateFont("Arial 9pt Bold", new GorgonFontSettings 
             {
-				AntiAliasingMode = FontAntiAliasMode.AntiAliasHQ,
+				AntiAliasingMode = FontAntiAliasMode.AntiAlias,
 				FontStyle = FontStyle.Bold,
 				FontFamilyName = "Arial",
 				FontHeightMode = FontHeightMode.Points,
 				Characters = " ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890()_.-+:\u2191\u2193",				
 				Size = 9.0f,
-				OutlineColor = GorgonColor.Black,
+				OutlineColor1 = GorgonColor.Black,
 				OutlineSize = 1
 			});
 

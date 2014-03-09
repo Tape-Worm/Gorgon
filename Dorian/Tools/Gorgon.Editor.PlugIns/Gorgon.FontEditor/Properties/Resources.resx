@@ -157,8 +157,8 @@
   <data name="GORFNT_BUTTON_OK_TEXT" xml:space="preserve">
     <value>&amp;OK</value>
   </data>
-  <data name="PROP_OUTLINECOLOR_NAME" xml:space="preserve">
-    <value>Outline Color</value>
+  <data name="PROP_OUTLINECOLOR1_NAME" xml:space="preserve">
+    <value>Outline Color 1</value>
   </data>
   <data name="GORFNT_PROP_VALUE_LEFT" xml:space="preserve">
     <value>Left:</value>
@@ -302,8 +302,8 @@ The current video device '{0}' has a feature level of {1}.</value>
   <data name="GORFNT_LABEL_HOVER_GLYPH" xml:space="preserve">
     <value>Glyph</value>
   </data>
-  <data name="PROP_OUTLINECOLOR_DESC" xml:space="preserve">
-    <value>Sets the outline color for the glyphs with outlines.  Note that the outline size must be greater than 0 before it is applied to the glyph.</value>
+  <data name="PROP_OUTLINECOLOR1_DESC" xml:space="preserve">
+    <value>Sets the starting outline color for the glyphs with outlines.  Note that the outline size must be greater than 0 before it is applied to the glyph.</value>
   </data>
   <data name="GORFNT_DEPENDENCY_GLYPH_TEXTURE_BAD_TRANSFORM" xml:space="preserve">
     <value>The transform type '{0}' is not valid for a glyph texture transformation.</value>
@@ -477,5 +477,11 @@ Height:{5:####0}</value>
   </data>
   <data name="clear_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\clear_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="PROP_OUTLINECOLOR2_DESC" xml:space="preserve">
+    <value>Sets the ending outline color for the glyphs with outlines.  Note that the outline size must be greater than 0 before it is applied to the glyph.</value>
+  </data>
+  <data name="PROP_OUTLINECOLOR2_NAME" xml:space="preserve">
+    <value>Outline Color 2</value>
   </data>
 </root>

@@ -974,20 +974,38 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Sets the outline color for the glyphs with outlines.  Note that the outline size must be greater than 0 before it is applied to the glyph..
+        ///   Looks up a localized string similar to Sets the starting outline color for the glyphs with outlines.  Note that the outline size must be greater than 0 before it is applied to the glyph..
         /// </summary>
-        internal static string PROP_OUTLINECOLOR_DESC {
+        internal static string PROP_OUTLINECOLOR1_DESC {
             get {
-                return ResourceManager.GetString("PROP_OUTLINECOLOR_DESC", resourceCulture);
+                return ResourceManager.GetString("PROP_OUTLINECOLOR1_DESC", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Outline Color.
+        ///   Looks up a localized string similar to Outline Color 1.
         /// </summary>
-        internal static string PROP_OUTLINECOLOR_NAME {
+        internal static string PROP_OUTLINECOLOR1_NAME {
             get {
-                return ResourceManager.GetString("PROP_OUTLINECOLOR_NAME", resourceCulture);
+                return ResourceManager.GetString("PROP_OUTLINECOLOR1_NAME", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sets the ending outline color for the glyphs with outlines.  Note that the outline size must be greater than 0 before it is applied to the glyph..
+        /// </summary>
+        internal static string PROP_OUTLINECOLOR2_DESC {
+            get {
+                return ResourceManager.GetString("PROP_OUTLINECOLOR2_DESC", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Outline Color 2.
+        /// </summary>
+        internal static string PROP_OUTLINECOLOR2_NAME {
+            get {
+                return ResourceManager.GetString("PROP_OUTLINECOLOR2_NAME", resourceCulture);
             }
         }
         

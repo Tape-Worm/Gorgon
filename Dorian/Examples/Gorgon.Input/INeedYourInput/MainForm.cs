@@ -372,7 +372,7 @@ namespace GorgonLibrary.Examples
 				    {
 					FontFamilyName = "Arial",
 					FontStyle = FontStyle.Bold,
-					AntiAliasingMode = FontAntiAliasMode.AntiAliasHQ,
+					AntiAliasingMode = FontAntiAliasMode.AntiAlias,
 					FontHeightMode = FontHeightMode.Points,
 					Size = 9.0f
 				});

@@ -306,6 +306,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Controls
 				DrawGradientDisplay();
 				DrawPreview();
 				DrawSelectedColor();
+				ValidateControls();
 				numericSelectedWeight.Value = 0;
 			}
 		}
@@ -898,6 +899,10 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Controls
 
 				OnChanged();
 			}
+			catch (Exception ex)
+			{
+				GorgonDialogs.ErrorBox(ParentForm, ex);
+			}
 			finally
 			{
 				DrawControls();
@@ -1176,8 +1181,8 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Controls
 				                               PixelFormat.Format32bppArgb);
 
 				_gradientImage = new Bitmap(panelGradientDisplay.ClientSize.Width,
-											   panelGradientDisplay.ClientSize.Height,
-											   PixelFormat.Format32bppArgb);
+				                            panelGradientDisplay.ClientSize.Height,
+				                            PixelFormat.Format32bppArgb);
 
 				_gradPreviewImage = new Bitmap(panelPreview.ClientSize.Width,
 				                               panelPreview.ClientSize.Height,
@@ -1195,6 +1200,10 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Controls
 			catch (Exception ex)
 			{
 				GorgonDialogs.ErrorBox(ParentForm, ex);
+			}
+			finally
+			{
+				ValidateControls();
 			}
 		}
 

@@ -182,7 +182,7 @@ namespace Fonts
 			_font = _graphics.Fonts.CreateFont("TestFont",
 			                                   new GorgonFontSettings
 			                                   {
-												   AntiAliasingMode = FontAntiAliasMode.AntiAliasHQ,
+												   AntiAliasingMode = FontAntiAliasMode.AntiAlias,
 												   FontFamilyName = "Times New Roman",
 												   FontStyle = FontStyle.Bold,
 												   Size = 24.0f,

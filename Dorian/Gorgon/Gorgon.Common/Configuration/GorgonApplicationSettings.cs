@@ -193,7 +193,15 @@ namespace GorgonLibrary.Configuration
 
 		    if (type.IsEnum)
 		    {
-		        return Enum.Parse(type, value);
+			    string[] enumValues = Enum.GetNames(type);
+			    int valueIndex = Array.IndexOf(enumValues, value);
+
+			    if (valueIndex == -1)
+			    {
+				    valueIndex = 0;
+			    }
+
+			    return Enum.Parse(type, enumValues[valueIndex]);
 		    }
 
 		    var attrib = type.GetCustomAttributes(typeof(TypeConverterAttribute), true) as IList<TypeConverterAttribute>;

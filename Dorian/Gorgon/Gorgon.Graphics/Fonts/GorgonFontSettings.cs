@@ -41,13 +41,9 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		None = 0,
 		/// <summary>
-		/// Anti-aliasing, low quality.  
+		/// Anti-aliasing.
 		/// </summary>
-		AntiAlias = 1,
-		/// <summary>
-		/// Anti-aliasing, high quality.
-		/// </summary>
-		AntiAliasHQ = 2
+		AntiAlias = 1
 	}
 
 	/// <summary>
@@ -73,7 +69,6 @@ namespace GorgonLibrary.Graphics
 		#region Variables.
 		private Size _textureSize = new Size(256, 256);						// Texture size.
 		private IEnumerable<char> _characters = string.Empty;				// The list of characters supported by the font.
-		private int _contrast = 4;											// Text contrasting.
 		private int _packSpace = 1;											// Packing spacing.
 		#endregion
 
@@ -109,31 +104,6 @@ namespace GorgonLibrary.Graphics
 		{
 			get;
 			set;
-		}
-
-		/// <summary>
-		/// Property to set or return the contrast when anti-aliasing.
-		/// </summary>
-		/// <remarks>The default value is 4.  This value is has a range of 0 to 12.</remarks>
-		public int TextContrast
-		{
-			get
-			{
-				return _contrast;
-			}
-			set
-			{
-				if (value < 0)
-				{
-					value = 0;
-				}
-				if (value > 12)
-				{
-					value = 12;
-				}
-
-				_contrast = value;
-			}
 		}			
 
 		/// <summary>
@@ -220,12 +190,26 @@ namespace GorgonLibrary.Graphics
 		}
 
 		/// <summary>
-		/// Property to set or return the color of the outline.
+		/// Property to set or return the starting color of the outline.
 		/// </summary>
 		/// <remarks>
-		/// If the alpha channel is set to 0.0f, then outlining will be disabled since it will be invisible.
+		/// If the alpha channel is set to 0.0f and the <see cref="OutlineColor2"/> alpha channel is set to 0.0f, then outlining will be disabled since it will be invisible.
 		/// <para>The default value is Black (A=1.0f, R=0.0f, G=0.0f, B=0.0f).</para></remarks>
-		public GorgonColor OutlineColor
+		public GorgonColor OutlineColor1
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Property to set or return the ending color of the outline.
+		/// </summary>
+		/// <remarks>
+		/// If the alpha channel is set to 0.0f and the <see cref="OutlineColor1"/> alpha channel is set to 0.0f, then outlining will be disabled since it will be invisible.
+		/// <para>If the <see cref="OutlineSize"/> is less than 3 or if the OutlineColor1 property is the same as this one, then this value will not be used.</para>
+		/// <para>The default value is Black (A=1.0f, R=0.0f, G=0.0f, B=0.0f).</para>
+		/// </remarks>
+		public GorgonColor OutlineColor2
 		{
 			get;
 			set;
@@ -361,7 +345,8 @@ namespace GorgonLibrary.Graphics
 						 Where(c => !char.IsControl(c));
 
 			FontHeightMode = FontHeightMode.Points;
-			OutlineColor = Color.Black;
+			OutlineColor1 = Color.Black;
+			OutlineColor2 = Color.Black;
 			OutlineSize = 0;
 			Brush = new GorgonGlyphSolidBrush
 			        {
@@ -369,7 +354,7 @@ namespace GorgonLibrary.Graphics
 			        };
 			FontStyle = FontStyle.Regular;
 			DefaultCharacter = ' ';
-			AntiAliasingMode = FontAntiAliasMode.AntiAliasHQ;
+			AntiAliasingMode = FontAntiAliasMode.AntiAlias;
 		}
 		#endregion		
 	}
