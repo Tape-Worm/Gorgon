@@ -113,7 +113,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 					case "anti-alias":
 						return FontAntiAliasMode.AntiAlias;
 					default:
-						return FontAntiAliasMode.AntiAliasHQ;
+						return FontAntiAliasMode.AntiAlias;
 				}
 			}
 		}

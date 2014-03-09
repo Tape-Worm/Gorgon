@@ -111,7 +111,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		/// <summary>
 		/// Property to set or return the default font anti-alias mode.
 		/// </summary>
-		[ApplicationSetting("FontAntiAliasMode", Graphics.FontAntiAliasMode.AntiAliasHQ, typeof(Graphics.FontAntiAliasMode), "FontEditor")]
+		[ApplicationSetting("FontAntiAliasMode", Graphics.FontAntiAliasMode.AntiAlias, typeof(Graphics.FontAntiAliasMode), "FontEditor")]
 		public Graphics.FontAntiAliasMode FontAntiAliasMode
 		{
 			get;

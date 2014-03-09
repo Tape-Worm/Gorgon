@@ -70,8 +70,7 @@ namespace GorgonLibrary.Graphics
 			            "Gorgon.Default.Font",
 			            new GorgonFontSettings
 			            {
-			                AntiAliasingMode = FontAntiAliasMode.AntiAliasHQ,
-			                TextContrast = 2,
+			                AntiAliasingMode = FontAntiAliasMode.AntiAlias,
 			                Characters = Enumerable.Range(32, 127).
 			                    Select(Convert.ToChar).
 			                    Where(c => !char.IsControl(c)),

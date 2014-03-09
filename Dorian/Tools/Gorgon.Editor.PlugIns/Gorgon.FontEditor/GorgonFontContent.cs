@@ -181,7 +181,8 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
         [LocalCategory(typeof(Resources), "CATEGORY_APPEARANCE"), 
 		LocalDescription(typeof(Resources), "PROP_OUTLINESIZE_DESC"),
 		LocalDisplayName(typeof(Resources), "PROP_OUTLINESIZE_NAME"),
-		DefaultValue(0)]
+		DefaultValue(0),
+		RefreshProperties(RefreshProperties.All)]
         public int OutlineSize
         {
             get
@@ -203,6 +204,14 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 	            {
 		            return;
 	            }
+
+				// Show the secondardy outline color if we have enough space in our outline.
+		        if (TypeDescriptor.Contains("OutlineColor2"))
+		        {
+			        ContentProperty prop = TypeDescriptor["OutlineColor2"];
+
+			        prop.IsReadOnly = value < 3;
+		        }
 				
 	            _settings.OutlineSize = value;
 	            OnContentUpdated();
@@ -214,27 +223,53 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
         /// Function to set the base color for the font glyphs.
         /// </summary>
 		[LocalCategory(typeof(Resources), "CATEGORY_APPEARANCE"), 
-		LocalDescription(typeof(Resources), "PROP_OUTLINECOLOR_DESC"),
-		LocalDisplayName(typeof(Resources), "PROP_OUTLINECOLOR_NAME"),
+		LocalDescription(typeof(Resources), "PROP_OUTLINECOLOR1_DESC"),
+		LocalDisplayName(typeof(Resources), "PROP_OUTLINECOLOR1_NAME"),
 		DefaultValue(0xFF000000), Editor(typeof(RGBAEditor), typeof(UITypeEditor)), TypeConverter(typeof(RGBATypeConverter))]
-        public Color OutlineColor
+        public Color OutlineColor1
         {
             get
             {
-                return _settings.OutlineColor.ToColor();
+                return _settings.OutlineColor1.ToColor();
             }
             set
             {
-	            if (_settings.OutlineColor.ToColor() == value)
+	            if (_settings.OutlineColor1.ToColor() == value)
 	            {
 		            return;
 	            }
 
-	            _settings.OutlineColor = value;
+	            _settings.OutlineColor1 = value;
 	            OnContentUpdated();
 	            OnContentPropertyChanged("OutlineColor", value);
             }
         }
+
+		/// <summary>
+		/// Function to set the base color for the font glyphs.
+		/// </summary>
+		[LocalCategory(typeof(Resources), "CATEGORY_APPEARANCE"),
+		LocalDescription(typeof(Resources), "PROP_OUTLINECOLOR2_DESC"),
+		LocalDisplayName(typeof(Resources), "PROP_OUTLINECOLOR2_NAME"),
+		DefaultValue(0xFF000000), Editor(typeof(RGBAEditor), typeof(UITypeEditor)), TypeConverter(typeof(RGBATypeConverter))]
+		public Color OutlineColor2
+		{
+			get
+			{
+				return _settings.OutlineColor2.ToColor();
+			}
+			set
+			{
+				if (_settings.OutlineColor2.ToColor() == value)
+				{
+					return;
+				}
+
+				_settings.OutlineColor2 = value;
+				OnContentUpdated();
+				OnContentPropertyChanged("OutlineColor", value);
+			}
+		}
 
         /// <summary>
         /// Property to set or return the font size.
@@ -342,7 +377,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
         [LocalCategory(typeof(Resources), "CATEGORY_APPEARANCE"), 
 		LocalDescription(typeof(Resources), "PROP_ANTIALIASMODE_DESC"),
 		LocalDisplayName(typeof(Resources), "PROP_ANTIALIASMODE_NAME"),
-		DefaultValue(FontAntiAliasMode.AntiAliasHQ)]
+		DefaultValue(FontAntiAliasMode.AntiAlias)]
         public FontAntiAliasMode FontAntiAliasMode
         {
             get
@@ -361,41 +396,6 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 	            OnContentPropertyChanged("FontAntiAliasMode", value);
             }
         }
-
-		/// <summary>
-		/// Property to set or return the contrast of the glyphs.
-		/// </summary>
-		[LocalCategory(typeof(Resources), "CATEGORY_APPEARANCE"), 
-		LocalDescription(typeof(Resources), "PROP_TEXTCONTRAST_DESC"),
-		LocalDisplayName(typeof(Resources), "PROP_TEXTCONTRAST_NAME"),
-		DefaultValue(4)]
-		public int TextContrast
-		{
-			get
-			{
-				return _settings.TextContrast;
-			}
-			set
-			{
-				if (value < 0)
-				{
-					value = 0;
-				}
-				if (value > 12)
-				{
-					value = 12;
-				}
-
-				if (value == _settings.TextContrast)
-				{
-					return;
-				}
-
-				_settings.TextContrast = value;
-				OnContentUpdated();
-				OnContentPropertyChanged("TextContrast", value);
-			}
-		}
 		
 		/// <summary>
         /// Property to set or return whether the font size should be in point size or pixel size.
@@ -737,6 +737,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 				                                                                                           Filter = ImageFilter.Point
 			                                                                                           })));
 		    _settings = Font.Settings;
+			TypeDescriptor["OutlineColor2"].IsReadOnly = _settings.OutlineSize < 3;
 	    }
 
         /// <summary>
@@ -991,6 +992,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 			_settings = initialSettings.Settings;
             _createFont = initialSettings.CreateContent;
 	        HasThumbnail = true;
+	        TypeDescriptor["OutlineColor2"].IsReadOnly = initialSettings.Settings.OutlineSize < 3;
         }
         #endregion
     }

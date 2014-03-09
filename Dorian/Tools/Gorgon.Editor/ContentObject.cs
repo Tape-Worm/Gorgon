@@ -101,7 +101,7 @@ namespace GorgonLibrary.Editor
         /// Property to return the type descriptor for this content.
         /// </summary>
         [Browsable(false)]
-        internal ContentTypeDescriptor TypeDescriptor
+        protected internal ContentTypeDescriptor TypeDescriptor
         {
             get;
             private set;
@@ -237,7 +237,7 @@ namespace GorgonLibrary.Editor
 			internal set
 			{
 				_isOwned = value;
-				TypeDescriptor["Name"].IsReadOnly = true;
+				TypeDescriptor["Name"].IsReadOnly = value;
 			}
 	    }
 		#endregion

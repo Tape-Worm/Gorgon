@@ -648,7 +648,7 @@ namespace GorgonLibrary.Renderers
 			float cosVal = angle.Cos();							// Cached cosine.
 			float sinVal = angle.Sin();							// Cached sine.
 
-			if ((_font.Settings.OutlineColor.Alpha > 0) && (_font.Settings.OutlineSize > 0))
+			if (_font.HasOutline)
 			{
 				outlineOffset = new Vector2(_font.Settings.OutlineSize, _font.Settings.OutlineSize);
 			}
@@ -792,7 +792,7 @@ namespace GorgonLibrary.Renderers
 				return;
 			}
 
-			if (_font.Settings.OutlineColor.Alpha > 0)
+			if (_font.Settings.OutlineColor1.Alpha > 0)
 			{
 				outlineSize = _font.Settings.OutlineSize;
 			}
@@ -1001,7 +1001,7 @@ namespace GorgonLibrary.Renderers
 				return result;
 			}
 
-			if (_font.Settings.OutlineColor.Alpha > 0)
+			if (_font.Settings.OutlineColor1.Alpha > 0)
 			{
 				outlineSize = _font.Settings.OutlineSize;
 			}

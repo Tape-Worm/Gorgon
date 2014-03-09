@@ -30,13 +30,13 @@ using System.Collections.ObjectModel;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
-using System.Drawing.Text;
 using System.Globalization;
 using System.IO;
 using System.Linq;
 using GorgonLibrary.Diagnostics;
 using GorgonLibrary.Graphics.Properties;
 using GorgonLibrary.IO;
+using GorgonLibrary.Math;
 using GorgonLibrary.Native;
 using SlimMath;
 
@@ -74,6 +74,17 @@ namespace GorgonLibrary.Graphics
 		#endregion
 
 		#region Properties.
+		/// <summary>
+		/// Property to return whether there is an outline for this font.
+		/// </summary>
+		public bool HasOutline
+		{
+			get
+			{
+				return Settings.OutlineSize > 0 && (Settings.OutlineColor1.Alpha > 0 || Settings.OutlineColor2.Alpha > 0);
+			}
+		}
+
         /// <summary>
         /// Property to return whether the object was disposed or not.
         /// </summary>
@@ -167,31 +178,86 @@ namespace GorgonLibrary.Graphics
 	    /// </summary>
 	    /// <param name="graphics">Graphics interface.</param>
 	    /// <param name="font">Font to use.</param>
-	    /// <param name="brush">Brush used to paint the glyph.</param>
-	    /// <param name="outlineBrush">Brush used to pain the glyph outline.</param>
 	    /// <param name="format">Formatter for the string.</param>
 	    /// <param name="character">Character to write.</param>
 	    /// <param name="position">Position on the bitmap.</param>
-	    private void DrawGlyphCharacter(System.Drawing.Graphics graphics, Font font, Brush brush, Brush outlineBrush, StringFormat format, char character, Rectangle position)
-		{
-			if (outlineBrush != null)
-			{
-				// This may not be 100% accurate, but it works well enough.
-				for (int x = 0; x <= Settings.OutlineSize * 2; x++)
-				{
-					for (int y = 0; y <= Settings.OutlineSize * 2; y++)
-					{
-						Rectangle offsetRect = position;
-						offsetRect.Offset(x, y);
-						graphics.DrawString(character.ToString(CultureInfo.CurrentCulture), font, outlineBrush, offsetRect, format);
-					}
-				}
+	    /// <param name="useDefaultBrush">TRUE to use the default brush, FALSE to use the font glyph brush.</param>
+	    private void DrawGlyphCharacter(System.Drawing.Graphics graphics, Font font, StringFormat format, char character, Rectangle position, bool useDefaultBrush)
+	    {
+		    string charString = character.ToString(CultureInfo.CurrentCulture);
 
-				position.Offset(Settings.OutlineSize, Settings.OutlineSize);
+			graphics.CompositingMode = CompositingMode.SourceOver;
+			graphics.CompositingQuality = CompositingQuality.HighQuality;
+			graphics.Clear(Color.FromArgb(0));
+
+			switch (Settings.AntiAliasingMode)
+			{
+				case FontAntiAliasMode.AntiAlias:
+					graphics.SmoothingMode = SmoothingMode.AntiAlias;
+					graphics.InterpolationMode = InterpolationMode.HighQualityBicubic;
+					break;
+				default:
+					graphics.SmoothingMode = SmoothingMode.None;
+					graphics.InterpolationMode = InterpolationMode.NearestNeighbor;
+					break;
 			}
 
-			graphics.DrawString(character.ToString(CultureInfo.CurrentCulture), font, brush, position, format);
-			graphics.Flush();
+			if ((Settings.Brush.BrushType == GlyphBrushType.LinearGradient)
+				&& (!useDefaultBrush))
+			{
+				((GorgonGlyphLinearGradientBrush)Settings.Brush).GradientRegion = position;
+			}
+
+		    using (Brush brush = useDefaultBrush ? new SolidBrush(Color.White) : Settings.Brush.ToGDIBrush())
+		    {
+				using (var outlineRenderer = new GraphicsPath())
+				{
+					outlineRenderer.AddString(charString,
+					                            font.FontFamily,
+					                            (int)Settings.FontStyle,
+					                            font.Size,
+					                            new RectangleF(0, 0, _charBitmap.Width, _charBitmap.Height), 
+					                            format);
+
+					// If we want an outline, then draw that first.
+					if (HasOutline)
+					{
+						if ((Settings.OutlineColor1 == Settings.OutlineColor2)
+						    || (Settings.OutlineSize < 3))
+						{
+							using (var outlinePen = new Pen(Settings.OutlineColor1, Settings.OutlineSize * 2))
+							{
+								outlinePen.LineJoin = LineJoin.Round;
+								graphics.DrawPath(outlinePen, outlineRenderer);
+							}
+						}
+						else
+						{
+							GorgonColor start = Settings.OutlineColor1;
+							GorgonColor end = Settings.OutlineColor2;
+
+							// Fade from the first to the second color via a linear function.
+							for (int i = Settings.OutlineSize; i > 0; --i)
+							{
+								float delta = ((float)(i - 1) / (Settings.OutlineSize - 1));
+								GorgonColor penColor;
+
+								GorgonColor.Lerp(ref start, ref end, delta, out penColor);
+
+								using (var outlinePen = new Pen(penColor, i))
+								{
+									outlinePen.LineJoin = LineJoin.Round;
+									graphics.DrawPath(outlinePen, outlineRenderer);
+								}
+							}
+						}
+					}
+
+					graphics.FillPath(brush, outlineRenderer);
+				}
+		    }
+
+		    graphics.Flush();
 		}
 
 		/// <summary>
@@ -247,13 +313,11 @@ namespace GorgonLibrary.Graphics
 		/// </summary>
 		/// <param name="g">Graphics interface to use.</param>
 		/// <param name="font">Font to apply.</param>
-		/// <param name="outlineBrush">The brush used to render the glyph outline.</param>
 		/// <param name="format">Format for the font.</param>
 		/// <param name="drawFormat">The string format used to draw the glyph.</param>
 		/// <param name="c">Character to evaluate.</param>
-		/// <param name="measureOnly">TRUE to only retrieve measurements of the character, FALSE to render the actual character.</param>
-		/// <returns>A rectangle for the bounding box and offset of the character.</returns>
-		private Tuple<Rectangle, Vector2, char> GetCharRect(System.Drawing.Graphics g, Font font, Brush outlineBrush, StringFormat format, StringFormat drawFormat, char c, bool measureOnly)
+		/// <returns>A rectangle for the bounding box.</returns>
+		private Rectangle GetCharRect(System.Drawing.Graphics g, Font font, StringFormat format, StringFormat drawFormat, ref char c)
 		{
 			Region[] size = null;
 			Region[] defaultSize = null;
@@ -279,7 +343,7 @@ namespace GorgonLibrary.Graphics
 			    if ((size.Length == 0)
 			        && (defaultSize.Length == 0))
 			    {
-			        return new Tuple<Rectangle, Vector2, char>(Rectangle.Empty, Vector2.Zero, currentCharacter);
+			        return Rectangle.Empty;
 			    }
 
 			    // If we didn't get a size, but we have a default, then use that.
@@ -302,12 +366,12 @@ namespace GorgonLibrary.Graphics
 				    if ((result.Width < 0.1f)
 				        || (result.Height < 0.1f))
 				    {
-				        return new Tuple<Rectangle, Vector2, char>(Rectangle.Empty, Vector2.Zero, c);
+				        return Rectangle.Empty;
 				    }
 				}
 
 				// Don't apply outline padding to whitespace.
-				if ((Settings.OutlineSize > 0) && (Settings.OutlineColor.Alpha > 0.0f) && (!char.IsWhiteSpace(c)))
+				if ((HasOutline) && (!char.IsWhiteSpace(c)))
 				{
 					result.Width += Settings.OutlineSize * 3;
 					result.Height += Settings.OutlineSize * 3;
@@ -334,65 +398,15 @@ namespace GorgonLibrary.Graphics
 				// Perform cropping.
 				using (System.Drawing.Graphics charGraphics = System.Drawing.Graphics.FromImage(_charBitmap))
 				{
-					// For some reason, when setting the mode to source copy and using no anti-aliasing, the characters
-					// get really messed up (at least on my system).  The down side is that non-anti-aliased characters
-					// won't be able to use the alpha channel in the glyph.
-					/*charGraphics.CompositingMode = Settings.AntiAliasingMode != FontAntiAliasMode.None
-						                               ? CompositingMode.SourceCopy
-						                               : CompositingMode.SourceOver;*/
-                    charGraphics.CompositingMode = CompositingMode.SourceCopy;
-					charGraphics.CompositingQuality = CompositingQuality.HighQuality;
-					charGraphics.Clear(Color.FromArgb(0, 0, 0, 0));
-
 					charGraphics.PageUnit = g.PageUnit;
-					charGraphics.TextContrast = g.TextContrast;
-					charGraphics.TextRenderingHint = g.TextRenderingHint;
 
-					// Gradient brushes are a bit of a nuisance because they require a region to render in.
-					if ((Settings.Brush.BrushType == GlyphBrushType.LinearGradient)
-						&& (!measureOnly))
-					{
-						if (result.Width > result.Height)
-						{
-							((GorgonGlyphLinearGradientBrush)Settings.Brush).GradientRegion = new Rectangle(0,
-							                                                                                0,
-							                                                                                (int)result.Width,
-							                                                                                (int)result.Width);
-						}
-						else
-						{
-							((GorgonGlyphLinearGradientBrush)Settings.Brush).GradientRegion = new Rectangle(0,
-																											0,
-																											(int)result.Height,
-																											(int)result.Height);
-						}
-					}
-
-					Brush glyphBrush = null;
-
-					try
-					{
-						if (!measureOnly)
-						{
-							glyphBrush = Settings.Brush.ToGDIBrush();
-						}
-
-						// Draw the character.
-						DrawGlyphCharacter(charGraphics,
-							                font,
-							                glyphBrush ?? Brushes.White,
-							                outlineBrush,
-							                drawFormat,
-							                currentCharacter,
-							                new Rectangle(0, 0, _charBitmap.Width, _charBitmap.Height));
-					}
-					finally
-					{
-						if (glyphBrush != null)
-						{
-							glyphBrush.Dispose();
-						}
-					}
+					// Draw the character.
+					DrawGlyphCharacter(charGraphics,
+							            font,
+							            drawFormat,
+							            currentCharacter,
+							            new Rectangle(0, 0, _charBitmap.Width, _charBitmap.Height),
+										true);
 
 					// We use unsafe mode to scan pixels, it's much faster.
 				    pixels = _charBitmap.LockBits(new Rectangle(0, 0, _charBitmap.Width, _charBitmap.Height),
@@ -441,11 +455,9 @@ namespace GorgonLibrary.Graphics
                     // ReSharper restore InvertIf
 				}
 
-			    return
-			        new Tuple<Rectangle, Vector2, char>(
-			            Rectangle.FromLTRB(cropTopLeft.X, cropTopLeft.Y, cropRightBottom.X, cropRightBottom.Y),
-			            cropTopLeft,
-			            currentCharacter);
+				c = currentCharacter;
+
+				return Rectangle.FromLTRB(cropTopLeft.X, cropTopLeft.Y, cropRightBottom.X, cropRightBottom.Y);
 			}
 			finally
 			{
@@ -537,9 +549,9 @@ namespace GorgonLibrary.Graphics
 			// Write rendering information.
 			chunk.Begin("RNDRDATA");
 			Settings.AntiAliasingMode = chunk.Read<FontAntiAliasMode>();
-			Settings.OutlineColor = chunk.Read<GorgonColor>();
+			Settings.OutlineColor1 = chunk.Read<GorgonColor>();
+			Settings.OutlineColor2 = chunk.Read<GorgonColor>();
 			Settings.OutlineSize = chunk.ReadInt32();
-			Settings.TextContrast = chunk.ReadInt32();
 			chunk.End();
 
 			// Read in the glyph brush.
@@ -855,9 +867,9 @@ namespace GorgonLibrary.Graphics
 				// Write rendering information.
 				chunk.Begin("RNDRDATA");
 				chunk.Write(Settings.AntiAliasingMode);
-				chunk.Write(Settings.OutlineColor);
+				chunk.Write(Settings.OutlineColor1);
+				chunk.Write(Settings.OutlineColor2);
 				chunk.WriteInt32(Settings.OutlineSize);
-				chunk.WriteInt32(Settings.TextContrast);
 				chunk.End();
 
 				// If we assigned a brush to render the glyph, then serialize it.
@@ -1116,8 +1128,6 @@ namespace GorgonLibrary.Graphics
 		/// </exception>
 		internal void GenerateFont(GorgonFontSettings settings)
 		{
-			Brush glyphBrush = null;
-			Brush outlineBrush = null;
 			Font newFont = null;
 		    Bitmap tempBitmap = null;
 			StringFormat stringFormat = null;
@@ -1160,30 +1170,11 @@ namespace GorgonLibrary.Graphics
 					Settings.Brush = new GorgonGlyphSolidBrush();
 				}
 
-				if ((Settings.OutlineColor.Alpha > 0) && (Settings.OutlineSize > 0))
-				{
-					outlineBrush = new SolidBrush(Settings.OutlineColor);
-				}
-
 				// Create the font and the rasterizing surface.				
 				tempBitmap = new Bitmap(Settings.TextureSize.Width, Settings.TextureSize.Height, PixelFormat.Format32bppArgb);
 				
 				graphics = System.Drawing.Graphics.FromImage(tempBitmap);
 				graphics.PageUnit = GraphicsUnit.Pixel;
-				graphics.TextContrast = Settings.TextContrast;
-				switch (Settings.AntiAliasingMode)
-				{
-					case FontAntiAliasMode.AntiAliasHQ:
-						graphics.TextRenderingHint = System.Drawing.Text.TextRenderingHint.AntiAliasGridFit;
-						break;
-					case FontAntiAliasMode.AntiAlias:
-						graphics.TextRenderingHint = System.Drawing.Text.TextRenderingHint.AntiAlias;
-						break;
-					default:
-						graphics.TextRenderingHint = System.Drawing.Text.TextRenderingHint.SingleBitPerPixelGridFit;
-						break;
-				}
-
 				
 				// Scale the font appropriately.
 			    if (Settings.FontHeightMode == FontHeightMode.Points)
@@ -1238,31 +1229,55 @@ namespace GorgonLibrary.Graphics
 			        availableCharacters.Insert(0, settings.DefaultCharacter);
 			    }
 
-				// Get kerning and glyph advancement information.
-				IDictionary<char, ABC> charABC = GetKerningInformation(graphics, newFont, availableCharacters);
-
 				// Default to the line height size.
 				_charBitmap = new Bitmap((int)(System.Math.Ceiling(LineHeight)), (int)(System.Math.Ceiling(LineHeight)));
 
-				// Sort by size.
-				availableCharacters = (from availableChar in availableCharacters
-					                    let charBounds =
-						                    GetCharRect(graphics,
-						                                newFont,
-						                                outlineBrush,
-						                                stringFormat,
-						                                drawFormat,
-						                                availableChar,
-														true)
-					                    let sortedChar =
-						                    new Tuple<char, int>(availableChar, charBounds.Item1.Width * charBounds.Item1.Height)
-					                    orderby sortedChar.Item2 descending
-					                    select sortedChar.Item1).ToList();
+				// Get kerning and glyph advancement information.
+				IDictionary<char, ABC> charABC = GetKerningInformation(graphics, newFont, availableCharacters);
+				var charBounds = new Dictionary<char, Rectangle>();
+
+				var gradRegion = new Rectangle(Int32.MaxValue, Int32.MaxValue, Int32.MinValue, Int32.MinValue);
+
+				// Get all the character rectangles.
+				foreach (char availableChar in availableCharacters)
+				{
+					char updatedChar = availableChar;
+
+					Rectangle charRect = GetCharRect(graphics, newFont, stringFormat, drawFormat, ref updatedChar);
+
+					if (charRect == Rectangle.Empty)
+					{
+						continue;
+					}
+
+					charBounds[updatedChar] = charRect;
+
+					// Find the largest bounding area for the gradient fill (if we have one).
+					gradRegion = Rectangle.FromLTRB(gradRegion.Left.Min(charRect.Left),
+					                           gradRegion.Top.Min(charRect.Top),
+					                           gradRegion.Right.Max(charRect.Right),
+					                           gradRegion.Bottom.Max(charRect.Bottom));
+				}
+
+				// Because the dictionary above remaps characters (if they don't have a glyph or their rects are empty),
+				// we'll need to drop these from our main list of characters.
+				availableCharacters.RemoveAll(item => !charBounds.ContainsKey(item));
 
 				while (availableCharacters.Count > 0)
 				{
-				    // Resort our characters from lowest to highest since we've altered the list.
-					var characters = availableCharacters.ToArray();
+					// Sort by size.
+					availableCharacters.Sort((left, right) =>
+					                         {
+						                         Size leftSize = charBounds[left].Size;
+						                         Size rightSize = charBounds[right].Size;
+
+						                         if (leftSize.Height == rightSize.Height)
+						                         {
+							                         return left.CompareTo(right);
+						                         }
+
+						                         return leftSize.Height < rightSize.Height ? 1 : -1; //leftArea < rightArea ? 1 : -1;
+					                         });
 
 					graphics.CompositingMode = CompositingMode.SourceCopy;
 					graphics.CompositingQuality = CompositingQuality.HighQuality;
@@ -1277,46 +1292,61 @@ namespace GorgonLibrary.Graphics
 					GorgonGlyphPacker.CreateRoot(Settings.TextureSize);
 
 					// Begin rasterization.
-					foreach (char c in characters)
-					{
-						Tuple<Rectangle, Vector2, char> charBounds = GetCharRect(graphics, newFont, outlineBrush, stringFormat, drawFormat, c, false);
-					    int packingSpace = Settings.PackingSpacing > 0 ? Settings.PackingSpacing * 2 : 1;
+					int charIndex = 0;
+					int packingSpace = Settings.PackingSpacing > 0 ? Settings.PackingSpacing * 2 : 1;
 
-						if (charBounds.Item1 == RectangleF.Empty)
-						{
-							availableCharacters.Remove(c);
-							continue;
-						}
-						
-						Size size = charBounds.Item1.Size;
+					while (charIndex < availableCharacters.Count)
+					{
+						char c = availableCharacters[charIndex];
+						Rectangle charRect = charBounds[c];
+					    
+						Size size = charRect.Size;
 						size.Width += 1;
 						size.Height += 1;
 
 						// Don't add whitespace, we can auto calculate that.
-						if (!Char.IsWhiteSpace(charBounds.Item3))
+						if (!Char.IsWhiteSpace(c))
 						{
-						    Rectangle? placement = GorgonGlyphPacker.Add(new Size(charBounds.Item1.Size.Width + packingSpace, charBounds.Item1.Size.Height + packingSpace));
+							Rectangle? placement = GorgonGlyphPacker.Add(new Size(charRect.Width + packingSpace, charRect.Height + packingSpace));
 						    
                             if (placement == null)
-						    {
+                            {
+	                            ++charIndex;
 						        continue;
 						    }
+
+							availableCharacters.Remove(c);
 
 						    Point location = placement.Value.Location;
 
 						    location.X += Settings.PackingSpacing;
 						    location.Y += Settings.PackingSpacing;
-						    availableCharacters.Remove(c);
 
-						    graphics.DrawImage(_charBitmap, new Rectangle(location, size), new Rectangle(charBounds.Item1.Location, size), GraphicsUnit.Pixel);
+							using (var charGraphics = System.Drawing.Graphics.FromImage(_charBitmap))
+							{
+								charGraphics.PageUnit = GraphicsUnit.Pixel;
+								DrawGlyphCharacter(charGraphics,
+								                   newFont,
+								                   drawFormat,
+								                   c,
+								                   Rectangle.Inflate(new Rectangle(charRect.Left,
+								                                                   gradRegion.Top,
+								                                                   charRect.Width,
+								                                                   gradRegion.Height),
+								                                     2,
+								                                     2),
+								                   false);
+							}
+							
+						    graphics.DrawImage(_charBitmap, new Rectangle(location, size), new Rectangle(charRect.Location, size), GraphicsUnit.Pixel);
 
 							ABC advanceData;
-							charABC.TryGetValue(charBounds.Item3, out advanceData);
+							charABC.TryGetValue(c, out advanceData);
 
-						    Glyphs.Add(new GorgonGlyph(charBounds.Item3,
+						    Glyphs.Add(new GorgonGlyph(c,
 						                               currentTexture,
 						                               new Rectangle(location, size),
-						                               charBounds.Item2,
+						                               charRect.Location,
 						                               new Vector3(advanceData.A, advanceData.B, advanceData.C))
 						               {
 						                   IsExternalTexture = false
@@ -1378,16 +1408,6 @@ namespace GorgonLibrary.Graphics
 				if (newFont != null)
 				{
 					newFont.Dispose();
-				}
-
-				if ((glyphBrush != null) && (Settings.Brush == null))
-				{
-					glyphBrush.Dispose();
-				}
-
-				if (outlineBrush != null)
-				{
-					outlineBrush.Dispose();
 				}
 
 				if (graphics != null)

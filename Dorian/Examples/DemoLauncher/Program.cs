@@ -353,7 +353,7 @@ namespace GorgonLibrary.Examples
 				{
 					FontFamilyName = "Marlett",
 					Size = 11.25f,
-					AntiAliasingMode = FontAntiAliasMode.AntiAliasHQ,
+					AntiAliasingMode = FontAntiAliasMode.AntiAlias,
 					FontHeightMode = FontHeightMode.Points,
 					TextureSize = new Size(64, 32),
 					Characters = "0r "
@@ -364,10 +364,10 @@ namespace GorgonLibrary.Examples
 				{
 					FontFamilyName = "Segoe UI",
 					FontStyle = FontStyle.Bold,
-					OutlineColor = GorgonColor.Black,
+					OutlineColor1 = GorgonColor.Black,
 					OutlineSize = 1,
 					Size = 11.25f,
-					AntiAliasingMode = FontAntiAliasMode.AntiAliasHQ,
+					AntiAliasingMode = FontAntiAliasMode.AntiAlias,
 					FontHeightMode = FontHeightMode.Points
 				});
 			

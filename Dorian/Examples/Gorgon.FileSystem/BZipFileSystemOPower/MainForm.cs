@@ -169,7 +169,7 @@ namespace GorgonLibrary.Examples
             _textFont = _graphics.Fonts.CreateFont("GiGi_24pt", new GorgonFontSettings
                 {
                 FontFamilyName = "GiGi",
-                AntiAliasingMode = FontAntiAliasMode.AntiAliasHQ,
+                AntiAliasingMode = FontAntiAliasMode.AntiAlias,
                 Size = 24.0f,
                 FontHeightMode = FontHeightMode.Points,
                 TextureSize = new Size(512, 256)
@@ -181,7 +181,7 @@ namespace GorgonLibrary.Examples
                 {
                 FontFamilyName = Font.FontFamily.Name,
                 FontStyle = FontStyle.Bold,
-                AntiAliasingMode = FontAntiAliasMode.AntiAliasHQ,
+                AntiAliasingMode = FontAntiAliasMode.AntiAlias,
                 Size = Font.Size,
                 FontHeightMode = FontHeightMode.Points
             });
