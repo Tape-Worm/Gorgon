@@ -123,14 +123,5 @@ namespace GorgonLibrary.Editor
 			return UITypeEditorEditStyle.DropDown;
 		}
 		#endregion
-
-		#region Constructor/Destructor.
-		/// <summary>
-		/// Initializes a new instance of the <see cref="AlphaChannelEditor"/> class.
-		/// </summary>
-		public AlphaChannelEditor()
-		{
-		}
-		#endregion
 	}
 }

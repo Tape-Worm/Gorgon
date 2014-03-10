@@ -34,11 +34,10 @@ using System.Windows.Forms;
 
 namespace GorgonLibrary.Editor.FontEditorPlugIn
 {
-	// ReSharper disable once InconsistentNaming
 	/// <summary>
 	/// A combo box for displaying hatch patterns.
 	/// </summary>
-	class comboPatterns
+	class ComboPatterns
 		: ComboBox
 	{
 		#region Variables.
@@ -83,20 +82,10 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		{
 			get
 			{
-				if (_patternList.Count == 0)
-				{
-					RefreshPatterns();
-				}
-
-				return SelectedItem == null ? HatchStyle.BackwardDiagonal : _patternList[SelectedItem.ToString()];
+				return SelectedIndex == -1 ? HatchStyle.BackwardDiagonal : _patternList[Items[SelectedIndex].ToString()];
 			}
 			set
 			{
-				if (_patternList.Count == 0)
-				{
-					RefreshPatterns();
-				}
-
 				string properName = GetProperName(value.ToString());
 
 				if (!_patternList.ContainsKey(properName))
@@ -104,7 +93,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 					return;
 				}
 
-				SelectedItem = _patternList[properName];
+				SelectedIndex = Items.IndexOf(properName);
 			}
 		}
 		#endregion
@@ -185,19 +174,6 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		}
 
 		/// <summary>
-		/// Raises the <see cref="E:System.Windows.Forms.ComboBox.DropDown" /> event.
-		/// </summary>
-		/// <param name="e">An <see cref="T:System.EventArgs" /> that contains the event data.</param>
-		protected override void OnDropDown(EventArgs e)
-		{
-			base.OnDropDown(e);
-
-			object selected = SelectedItem;
-			RefreshPatterns();
-			SelectedItem = selected;
-		}
-
-		/// <summary>
 		/// Function to refresh the font list.
 		/// </summary>
 		public void RefreshPatterns()
@@ -221,9 +197,9 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 
 		#region Constructor/Destructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="comboPatterns"/> class.
+		/// Initializes a new instance of the <see cref="ComboPatterns"/> class.
 		/// </summary>
-		public comboPatterns()
+		public ComboPatterns()
 		{
 			base.DrawMode = DrawMode.OwnerDrawVariable;
 			base.Sorted = true;

@@ -52,7 +52,7 @@
 			this.buttonOK = new System.Windows.Forms.Button();
 			this.buttonCancel = new System.Windows.Forms.Button();
 			this.tipInfo = new System.Windows.Forms.ToolTip(this.components);
-			this.comboFonts = new GorgonLibrary.Editor.FontEditorPlugIn.comboFonts();
+			this.comboFonts = new GorgonLibrary.Editor.FontEditorPlugIn.ComboFonts();
 			this.buttonCharacterList = new System.Windows.Forms.Button();
 			((System.ComponentModel.ISupportInitialize)(this.numericSize)).BeginInit();
 			this.panel1.SuspendLayout();
@@ -530,7 +530,7 @@
 		#endregion
 
 		private System.Windows.Forms.Label label1;
-		private comboFonts comboFonts;
+		private ComboFonts comboFonts;
 		private System.Windows.Forms.CheckBox checkBold;
 		private System.Windows.Forms.CheckBox checkItalic;
 		private System.Windows.Forms.CheckBox checkUnderline;

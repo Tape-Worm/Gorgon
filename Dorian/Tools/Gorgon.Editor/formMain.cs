@@ -65,11 +65,6 @@ namespace GorgonLibrary.Editor
 			/// Flag to indicate that the object is being cut.
 			/// </summary>
 			public bool IsCut;
-
-			/// <summary>
-			/// Flag to indicate that the object is a file node.
-			/// </summary>
-			public bool IsFile;
 			#endregion
 
 			#region Constructor/Destructor.
@@ -78,12 +73,10 @@ namespace GorgonLibrary.Editor
 			/// </summary>
 			/// <param name="fullPath">Path to the object being cut/copied.</param>
 			/// <param name="isCut">TRUE if the object is being cut instead of copied, FALSE if not.</param>
-			/// <param name="isFile">TRUE if the object is a file node, FALSE if it's a directory.</param>
-			public CutCopyObject(string fullPath, bool isCut, bool isFile)
+			public CutCopyObject(string fullPath, bool isCut)
 			{
 				FullPath = fullPath;
 				IsCut = isCut;
-				IsFile = isFile;
 			}
 			#endregion
 		}
@@ -999,15 +992,14 @@ namespace GorgonLibrary.Editor
 			    }
 
 				IDataObject clipData = Clipboard.GetDataObject();
-				var cutCopyObject = new CutCopyObject();
 
-				if ((clipData == null)
+			    if ((clipData == null)
 					|| (!clipData.GetDataPresent(typeof(CutCopyObject))))
 				{
 					return;
 				}
 
-				cutCopyObject = (CutCopyObject)clipData.GetData(typeof(CutCopyObject));
+				var cutCopyObject = (CutCopyObject)clipData.GetData(typeof(CutCopyObject));
 
 				if (cutCopyObject.FullPath == null)
 				{
@@ -1083,8 +1075,7 @@ namespace GorgonLibrary.Editor
 				treeFiles.SelectedNode.Redraw();
 
 				var cutCopyObject = new CutCopyObject(treeFiles.SelectedNode.FullPath,
-				                                      ((sender == itemCut) || (sender == popupItemCut)),
-				                                      treeFiles.SelectedNode.NodeType == NodeType.File);
+				                                      ((sender == itemCut) || (sender == popupItemCut)));
 
 				Clipboard.SetDataObject(cutCopyObject);
 			}
@@ -1276,8 +1267,7 @@ namespace GorgonLibrary.Editor
 				}
 				
 				// Disable double click to expand the node.
-				if (((e.Action & TreeViewAction.ByMouse) == TreeViewAction.ByMouse)
-					&& ((e.Action & TreeViewAction.Expand) == TreeViewAction.Expand)
+				if ((e.Action == TreeViewAction.ByMouse)
 					&& (cursor.X >= e.Node.Bounds.Left))
 				{
 					e.Cancel = true;

@@ -26,6 +26,7 @@
 
 using System;
 using System.Drawing;
+using System.Drawing.Text;
 using System.Windows.Forms;
 using System.Windows.Forms.Design;
 
@@ -34,7 +35,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 	/// <summary>
 	/// Font list box control.
 	/// </summary>
-	class listBoxFont
+	class ListBoxFont
 		: ListBox
 	{
 		#region Properties.
@@ -59,27 +60,37 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 
 			TextFormatFlags flags = TextFormatFlags.EndEllipsis | TextFormatFlags.NoPrefix | TextFormatFlags.Left | TextFormatFlags.SingleLine | TextFormatFlags.VerticalCenter;
 
-			if ((e.Index < 0) || (e.Index >= Items.Count))
-				return;
+		    if ((e.Index < 0)
+		        || (e.Index >= Items.Count))
+		    {
+		        return;
+		    }
 
-			if ((this.RightToLeft & System.Windows.Forms.RightToLeft.Yes) == System.Windows.Forms.RightToLeft.Yes)
-				flags |= TextFormatFlags.RightToLeft;
+		    if (RightToLeft == RightToLeft.Yes)
+		    {
+		        flags |= TextFormatFlags.RightToLeft;
+		    }
 
-			e.DrawBackground();
+		    e.DrawBackground();
 
-			if ((e.State & DrawItemState.Focus) == DrawItemState.Focus)
-				e.DrawFocusRectangle();
+		    if ((e.State & DrawItemState.Focus) == DrawItemState.Focus)
+		    {
+		        e.DrawFocusRectangle();
+		    }
 
-			string fontName = Items[e.Index].ToString();            
-			if (GorgonFontEditorPlugIn.CachedFonts.ContainsKey(fontName.ToLower()))
-			{
-				e.Graphics.TextRenderingHint = System.Drawing.Text.TextRenderingHint.ClearTypeGridFit;
-				Size measure = TextRenderer.MeasureText(e.Graphics, fontName, this.Font, e.Bounds.Size, flags);
-				var textBounds = new Rectangle(e.Bounds.Width - measure.Width + e.Bounds.Left, e.Bounds.Top, e.Bounds.Width, e.Bounds.Height);
-				var fontBounds = new Rectangle(e.Bounds.Left, e.Bounds.Top, textBounds.X - 2, e.Bounds.Height);
-				TextRenderer.DrawText(e.Graphics, fontName, GorgonFontEditorPlugIn.CachedFonts[fontName.ToLower()], fontBounds, e.ForeColor, e.BackColor, flags);
-				TextRenderer.DrawText(e.Graphics, fontName, this.Font, textBounds, e.ForeColor, e.BackColor, flags);
-			}
+		    string fontName = Items[e.Index].ToString();
+
+		    if (!GorgonFontEditorPlugIn.CachedFonts.ContainsKey(fontName.ToLower()))
+		    {
+		        return;
+		    }
+
+		    e.Graphics.TextRenderingHint = TextRenderingHint.ClearTypeGridFit;
+		    Size measure = TextRenderer.MeasureText(e.Graphics, fontName, Font, e.Bounds.Size, flags);
+		    var textBounds = new Rectangle(e.Bounds.Width - measure.Width + e.Bounds.Left, e.Bounds.Top, e.Bounds.Width, e.Bounds.Height);
+		    var fontBounds = new Rectangle(e.Bounds.Left, e.Bounds.Top, textBounds.X - 2, e.Bounds.Height);
+		    TextRenderer.DrawText(e.Graphics, fontName, GorgonFontEditorPlugIn.CachedFonts[fontName.ToLower()], fontBounds, e.ForeColor, e.BackColor, flags);
+		    TextRenderer.DrawText(e.Graphics, fontName, Font, textBounds, e.ForeColor, e.BackColor, flags);
 		}
 
 		/// <summary>
@@ -89,25 +100,26 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
 		{
 			base.OnSelectedIndexChanged(e);
 
-			if (Service != null)
-				Service.CloseDropDown();
+		    if (Service != null)
+		    {
+		        Service.CloseDropDown();
+		    }
 		}
 		#endregion
 
 		#region Constructor/Destructor.
 		/// <summary>
-		/// Initializes a new instance of the <see cref="listBoxFont"/> class.
+		/// Initializes a new instance of the <see cref="ListBoxFont"/> class.
 		/// </summary>
-		public listBoxFont()
+		public ListBoxFont()
 		{
 			Items.Clear();
 
-			foreach (var font in GorgonFontEditorPlugIn.CachedFonts)
-				Items.Add(font.Value.FontFamily.Name);
-
-			this.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawVariable;
-			this.ItemHeight = 19;
-			this.Width = 256;
+		    foreach (var font in GorgonFontEditorPlugIn.CachedFonts)
+		    {
+		        Items.Add(font.Value.FontFamily.Name);
+		    }
+			Width = 256;
 		}
 		#endregion
 
