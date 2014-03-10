@@ -55,14 +55,8 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn
             var linearBrush = (GorgonGlyphLinearGradientBrush)brush;
 			var result = new LinearGradientBrush(region, linearBrush.StartColor, linearBrush.EndColor, linearBrush.Angle, linearBrush.ScaleAngle)
 			{
-				GammaCorrection = linearBrush.GammaCorrection,
-				WrapMode = linearBrush.WrapMode
+				GammaCorrection = linearBrush.GammaCorrection
 			};
-
-			if (linearBrush.LinearColors.Count > 0)
-			{
-				result.LinearColors = linearBrush.LinearColors.Select(item => item.ToColor()).ToArray();
-			}
 
 			if (linearBrush.Interpolation.Count == 0)
 			{

@@ -86,8 +86,6 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Controls
 			this.label4 = new System.Windows.Forms.Label();
 			this.numericSelectedWeight = new System.Windows.Forms.NumericUpDown();
 			this.label3 = new System.Windows.Forms.Label();
-			this.label2 = new System.Windows.Forms.Label();
-			this.comboWrapMode = new System.Windows.Forms.ComboBox();
 			this.panelPreview = new System.Windows.Forms.Panel();
 			this.popupNodeEdit = new System.Windows.Forms.ContextMenuStrip(this.components);
 			this.itemAddNode = new System.Windows.Forms.ToolStripMenuItem();
@@ -221,7 +219,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Controls
 			// 
 			this.numericAngle.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
 			this.numericAngle.DecimalPlaces = 1;
-			this.numericAngle.Location = new System.Drawing.Point(49, 7);
+			this.numericAngle.Location = new System.Drawing.Point(49, 5);
 			this.numericAngle.Maximum = new decimal(new int[] {
             3599,
             0,
@@ -236,7 +234,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Controls
 			// label1
 			// 
 			this.label1.AutoSize = true;
-			this.label1.Location = new System.Drawing.Point(103, 8);
+			this.label1.Location = new System.Drawing.Point(103, 7);
 			this.label1.Name = "label1";
 			this.label1.Size = new System.Drawing.Size(11, 13);
 			this.label1.TabIndex = 3;
@@ -271,8 +269,6 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Controls
 			this.panel1.Controls.Add(this.label4);
 			this.panel1.Controls.Add(this.numericSelectedWeight);
 			this.panel1.Controls.Add(this.label3);
-			this.panel1.Controls.Add(this.label2);
-			this.panel1.Controls.Add(this.comboWrapMode);
 			this.panel1.Controls.Add(this.labelAngle);
 			this.panel1.Controls.Add(this.checkUseGamma);
 			this.panel1.Controls.Add(this.numericAngle);
@@ -290,7 +286,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Controls
 			this.panelSelectedColor.BackgroundImage = global::GorgonLibrary.Editor.FontEditorPlugIn.Properties.Resources.Pattern;
 			this.panelSelectedColor.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
 			this.panelSelectedColor.Enabled = false;
-			this.panelSelectedColor.Location = new System.Drawing.Point(282, 32);
+			this.panelSelectedColor.Location = new System.Drawing.Point(282, 31);
 			this.panelSelectedColor.Name = "panelSelectedColor";
 			this.panelSelectedColor.Size = new System.Drawing.Size(57, 20);
 			this.panelSelectedColor.TabIndex = 5;
@@ -300,18 +296,19 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Controls
 			// 
 			// label5
 			// 
-			this.label5.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-			this.label5.AutoSize = true;
-			this.label5.Location = new System.Drawing.Point(393, 8);
+			this.label5.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+			this.label5.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			this.label5.Location = new System.Drawing.Point(432, 3);
 			this.label5.Name = "label5";
-			this.label5.Size = new System.Drawing.Size(48, 13);
+			this.label5.Size = new System.Drawing.Size(95, 22);
 			this.label5.TabIndex = 12;
-			this.label5.Text = "Preview:";
+			this.label5.Text = "Preview";
+			this.label5.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
 			// 
 			// label4
 			// 
 			this.label4.AutoSize = true;
-			this.label4.Location = new System.Drawing.Point(187, 34);
+			this.label4.Location = new System.Drawing.Point(189, 35);
 			this.label4.Name = "label4";
 			this.label4.Size = new System.Drawing.Size(79, 13);
 			this.label4.TabIndex = 10;
@@ -326,7 +323,7 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Controls
             0,
             0,
             65536});
-			this.numericSelectedWeight.Location = new System.Drawing.Point(282, 6);
+			this.numericSelectedWeight.Location = new System.Drawing.Point(282, 5);
 			this.numericSelectedWeight.Maximum = new decimal(new int[] {
             1,
             0,
@@ -341,36 +338,18 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Controls
 			// label3
 			// 
 			this.label3.AutoSize = true;
-			this.label3.Location = new System.Drawing.Point(187, 8);
+			this.label3.Location = new System.Drawing.Point(189, 9);
 			this.label3.Name = "label3";
 			this.label3.Size = new System.Drawing.Size(89, 13);
 			this.label3.TabIndex = 8;
 			this.label3.Text = "Selected Weight:";
 			// 
-			// label2
-			// 
-			this.label2.AutoSize = true;
-			this.label2.Location = new System.Drawing.Point(6, 76);
-			this.label2.Name = "label2";
-			this.label2.Size = new System.Drawing.Size(66, 13);
-			this.label2.TabIndex = 7;
-			this.label2.Text = "Wrap Mode:";
-			// 
-			// comboWrapMode
-			// 
-			this.comboWrapMode.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-			this.comboWrapMode.FormattingEnabled = true;
-			this.comboWrapMode.Location = new System.Drawing.Point(9, 92);
-			this.comboWrapMode.Name = "comboWrapMode";
-			this.comboWrapMode.Size = new System.Drawing.Size(140, 21);
-			this.comboWrapMode.TabIndex = 3;
-			// 
 			// panelPreview
 			// 
-			this.panelPreview.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+			this.panelPreview.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
 			this.panelPreview.BackgroundImage = global::GorgonLibrary.Editor.FontEditorPlugIn.Properties.Resources.Pattern;
 			this.panelPreview.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-			this.panelPreview.Location = new System.Drawing.Point(396, 24);
+			this.panelPreview.Location = new System.Drawing.Point(432, 24);
 			this.panelPreview.Name = "panelPreview";
 			this.panelPreview.Size = new System.Drawing.Size(95, 95);
 			this.panelPreview.TabIndex = 6;
@@ -449,8 +428,6 @@ namespace GorgonLibrary.Editor.FontEditorPlugIn.Controls
 		private System.Windows.Forms.CheckBox checkScaleAngle;
 		private System.Windows.Forms.CheckBox checkUseGamma;
 		private System.Windows.Forms.Panel panel1;
-		private System.Windows.Forms.Label label2;
-		private System.Windows.Forms.ComboBox comboWrapMode;
 		private System.Windows.Forms.Panel panelGradientDisplay;
 		private System.Windows.Forms.Panel panelGradControls;
 		private System.Windows.Forms.Label label4;

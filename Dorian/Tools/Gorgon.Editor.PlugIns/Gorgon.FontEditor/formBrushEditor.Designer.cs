@@ -34,6 +34,10 @@
 			this.tabBrushEditor = new KRBTabControl.KRBTabControl();
 			this.pageSolid = new KRBTabControl.TabPageEx();
 			this.colorSolidBrush = new Fetze.WinFormsColor.ColorPickerPanel();
+			this.pagePattern = new KRBTabControl.TabPageEx();
+			this.panelHatchEditor = new GorgonLibrary.Editor.FontEditorPlugIn.Controls.panelHatch();
+			this.pageGradient = new KRBTabControl.TabPageEx();
+			this.panelGradEditor = new GorgonLibrary.Editor.FontEditorPlugIn.Controls.panelGradient();
 			this.pageTexture = new KRBTabControl.TabPageEx();
 			this.labelInfo = new System.Windows.Forms.Label();
 			this.buttonOpen = new System.Windows.Forms.Button();
@@ -48,8 +52,6 @@
 			this.labelTexWidth = new System.Windows.Forms.Label();
 			this.labelTexTop = new System.Windows.Forms.Label();
 			this.labelTexLeft = new System.Windows.Forms.Label();
-			this.pageGradient = new KRBTabControl.TabPageEx();
-			this.gradEditor = new GorgonLibrary.Editor.FontEditorPlugIn.Controls.panelGradient();
 			this.panel1 = new System.Windows.Forms.Panel();
 			this.panel2 = new System.Windows.Forms.Panel();
 			this.comboBrushType = new System.Windows.Forms.ComboBox();
@@ -57,12 +59,13 @@
 			this.imageFileBrowser = new GorgonLibrary.Editor.EditorFileBrowser();
 			this.tabBrushEditor.SuspendLayout();
 			this.pageSolid.SuspendLayout();
+			this.pagePattern.SuspendLayout();
+			this.pageGradient.SuspendLayout();
 			this.pageTexture.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.numericHeight)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.numericWidth)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.numericY)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.numericX)).BeginInit();
-			this.pageGradient.SuspendLayout();
 			this.panel1.SuspendLayout();
 			this.panel2.SuspendLayout();
 			this.SuspendLayout();
@@ -119,6 +122,7 @@
 			this.tabBrushEditor.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(51)))), ((int)(((byte)(51)))), ((int)(((byte)(51)))));
 			this.tabBrushEditor.Controls.Add(this.pageSolid);
 			this.tabBrushEditor.Controls.Add(this.pageTexture);
+			this.tabBrushEditor.Controls.Add(this.pagePattern);
 			this.tabBrushEditor.Controls.Add(this.pageGradient);
 			this.tabBrushEditor.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.tabBrushEditor.IsCaptionVisible = false;
@@ -128,7 +132,7 @@
 			this.tabBrushEditor.ItemSize = new System.Drawing.Size(0, 28);
 			this.tabBrushEditor.Location = new System.Drawing.Point(1, 56);
 			this.tabBrushEditor.Name = "tabBrushEditor";
-			this.tabBrushEditor.SelectedIndex = 2;
+			this.tabBrushEditor.SelectedIndex = 1;
 			this.tabBrushEditor.Size = new System.Drawing.Size(610, 338);
 			this.tabBrushEditor.TabBorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(89)))), ((int)(((byte)(89)))), ((int)(((byte)(89)))));
 			this.tabBrushEditor.TabGradient.ColorEnd = System.Drawing.Color.FromArgb(((int)(((byte)(89)))), ((int)(((byte)(89)))), ((int)(((byte)(89)))));
@@ -144,7 +148,7 @@
 			// 
 			this.pageSolid.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(58)))), ((int)(((byte)(58)))), ((int)(((byte)(58)))));
 			this.pageSolid.Controls.Add(this.colorSolidBrush);
-			this.pageSolid.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.pageSolid.Font = new System.Drawing.Font("Segoe UI", 9F);
 			this.pageSolid.ForeColor = System.Drawing.Color.White;
 			this.pageSolid.IsClosable = false;
 			this.pageSolid.Location = new System.Drawing.Point(1, 1);
@@ -166,6 +170,50 @@
 			this.colorSolidBrush.TabIndex = 0;
 			this.colorSolidBrush.ColorChanged += new System.EventHandler(this.colorSolidBrush_ColorChanged);
 			// 
+			// pagePattern
+			// 
+			this.pagePattern.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(51)))), ((int)(((byte)(51)))), ((int)(((byte)(51)))));
+			this.pagePattern.Controls.Add(this.panelHatchEditor);
+			this.pagePattern.Font = new System.Drawing.Font("Segoe UI", 9F);
+			this.pagePattern.ForeColor = System.Drawing.Color.White;
+			this.pagePattern.IsClosable = false;
+			this.pagePattern.Location = new System.Drawing.Point(1, 1);
+			this.pagePattern.Name = "pagePattern";
+			this.pagePattern.Size = new System.Drawing.Size(608, 303);
+			this.pagePattern.TabIndex = 3;
+			this.pagePattern.Text = "Pattern";
+			// 
+			// panelHatchEditor
+			// 
+			this.panelHatchEditor.Brush = null;
+			this.panelHatchEditor.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.panelHatchEditor.Location = new System.Drawing.Point(0, 0);
+			this.panelHatchEditor.Name = "panelHatchEditor";
+			this.panelHatchEditor.Size = new System.Drawing.Size(608, 303);
+			this.panelHatchEditor.TabIndex = 0;
+			// 
+			// pageGradient
+			// 
+			this.pageGradient.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(51)))), ((int)(((byte)(51)))), ((int)(((byte)(51)))));
+			this.pageGradient.Controls.Add(this.panelGradEditor);
+			this.pageGradient.Font = new System.Drawing.Font("Segoe UI", 9F);
+			this.pageGradient.ForeColor = System.Drawing.Color.White;
+			this.pageGradient.IsClosable = false;
+			this.pageGradient.Location = new System.Drawing.Point(1, 1);
+			this.pageGradient.Name = "pageGradient";
+			this.pageGradient.Size = new System.Drawing.Size(608, 303);
+			this.pageGradient.TabIndex = 2;
+			this.pageGradient.Text = "Gradient";
+			// 
+			// panelGradEditor
+			// 
+			this.panelGradEditor.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.panelGradEditor.Location = new System.Drawing.Point(0, 0);
+			this.panelGradEditor.Name = "panelGradEditor";
+			this.panelGradEditor.Size = new System.Drawing.Size(608, 303);
+			this.panelGradEditor.TabIndex = 0;
+			this.panelGradEditor.BrushChanged += new System.EventHandler(this.gradEditor_BrushChanged);
+			// 
 			// pageTexture
 			// 
 			this.pageTexture.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(51)))), ((int)(((byte)(51)))), ((int)(((byte)(51)))));
@@ -183,6 +231,7 @@
 			this.pageTexture.Controls.Add(this.labelTexTop);
 			this.pageTexture.Controls.Add(this.labelTexLeft);
 			this.pageTexture.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.pageTexture.ForeColor = System.Drawing.Color.White;
 			this.pageTexture.IsClosable = false;
 			this.pageTexture.Location = new System.Drawing.Point(1, 1);
 			this.pageTexture.Name = "pageTexture";
@@ -367,27 +416,6 @@
 			this.labelTexLeft.TabIndex = 1;
 			this.labelTexLeft.Text = "X:";
 			// 
-			// pageGradient
-			// 
-			this.pageGradient.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(51)))), ((int)(((byte)(51)))), ((int)(((byte)(51)))));
-			this.pageGradient.Controls.Add(this.gradEditor);
-			this.pageGradient.Font = new System.Drawing.Font("Segoe UI", 9F);
-			this.pageGradient.IsClosable = false;
-			this.pageGradient.Location = new System.Drawing.Point(1, 1);
-			this.pageGradient.Name = "pageGradient";
-			this.pageGradient.Size = new System.Drawing.Size(608, 303);
-			this.pageGradient.TabIndex = 2;
-			this.pageGradient.Text = "Gradient";
-			// 
-			// gradEditor
-			// 
-			this.gradEditor.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.gradEditor.Location = new System.Drawing.Point(0, 0);
-			this.gradEditor.Name = "gradEditor";
-			this.gradEditor.Size = new System.Drawing.Size(608, 303);
-			this.gradEditor.TabIndex = 0;
-			this.gradEditor.BrushChanged += new System.EventHandler(this.gradEditor_BrushChanged);
-			// 
 			// panel1
 			// 
 			this.panel1.AutoSize = true;
@@ -465,13 +493,14 @@
 			this.Controls.SetChildIndex(this.tabBrushEditor, 0);
 			this.tabBrushEditor.ResumeLayout(false);
 			this.pageSolid.ResumeLayout(false);
+			this.pagePattern.ResumeLayout(false);
+			this.pageGradient.ResumeLayout(false);
 			this.pageTexture.ResumeLayout(false);
 			this.pageTexture.PerformLayout();
 			((System.ComponentModel.ISupportInitialize)(this.numericHeight)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this.numericWidth)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this.numericY)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this.numericX)).EndInit();
-			this.pageGradient.ResumeLayout(false);
 			this.panel1.ResumeLayout(false);
 			this.panel2.ResumeLayout(false);
 			this.panel2.PerformLayout();
@@ -507,6 +536,8 @@
 		private EditorFileBrowser imageFileBrowser;
 		private System.Windows.Forms.Label labelInfo;
 		private KRBTabControl.TabPageEx pageGradient;
-		private Controls.panelGradient gradEditor;
+		private Controls.panelGradient panelGradEditor;
+		private KRBTabControl.TabPageEx pagePattern;
+		private Controls.panelHatch panelHatchEditor;
     }
 }

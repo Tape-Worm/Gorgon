@@ -59,6 +59,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Controls\comboPatterns.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Controls\comboFonts.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -73,6 +76,12 @@
     </Compile>
     <Compile Include="Controls\panelGradient.Designer.cs">
       <DependentUpon>panelGradient.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\panelHatch.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\panelHatch.Designer.cs">
+      <DependentUpon>panelHatch.cs</DependentUpon>
     </Compile>
     <Compile Include="Design\CharacterSetEditor.cs" />
     <Compile Include="Design\CharacterSetTypeConverter.cs" />
@@ -175,6 +184,9 @@
   <ItemGroup>
     <EmbeddedResource Include="Controls\panelGradient.resx">
       <DependentUpon>panelGradient.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\panelHatch.resx">
+      <DependentUpon>panelHatch.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="formBrushEditor.resx">
       <DependentUpon>formBrushEditor.cs</DependentUpon>
